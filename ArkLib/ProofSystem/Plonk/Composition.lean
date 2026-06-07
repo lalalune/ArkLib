@@ -505,6 +505,154 @@ theorem plonkCheckVerifier_soundness :
             rw [hx.1] at hrunOpt
             simp at hrunOpt
 
+/-- The composed two-message Plonk verifier has ordinary zero-error straightline knowledge
+soundness. The extractor is deterministic: it reads the input witness from the first prover message
+of the full transcript. Any supported accepting run then forces the verifier output to be exactly
+`(cs, transcript.fst 0)`, so output-relation validity cannot coexist with extractor failure. -/
+theorem plonkCheckVerifier_knowledgeSoundness :
+    (plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).knowledgeSoundness init impl
+        (plonkCheckRelIn 𝓡 numWires numGates)
+        (plonkCheckRelOut 𝓡 numWires numGates) 0 := by
+  unfold Verifier.knowledgeSoundness
+  refine ⟨fun _stmt _witOut tr _proveLog _verifyLog => pure (tr.fst ⟨0, by simp⟩),
+    fun stmtIn witIn prover => ?_⟩
+  simp only [ENNReal.coe_zero, nonpos_iff_eq_zero, probEvent_eq_zero_iff]
+  intro x hx hbad
+  rcases x with ⟨cs, extracted, stmtOut, witOut⟩
+  simp only at hbad
+  apply hbad.1
+  rw [OptionT.mem_support_iff] at hx
+  simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+  obtain ⟨s, _hs, hx⟩ := hx
+  simp only [StateT.run'_eq, OptionT.run_bind, Option.elimM, support_map, Set.mem_image] at hx
+  obtain ⟨⟨execOpt, s'⟩, hx, hexecOpt⟩ := hx
+  simp only at hexecOpt
+  rw [simulateQ_bind] at hx
+  rw [StateT.run_bind] at hx
+  rw [mem_support_bind_iff] at hx
+  obtain ⟨⟨runLogOpt, s1⟩, hrunLog, hx⟩ := hx
+  cases runLogOpt with
+  | none =>
+      simp only [Option.elim_none] at hx
+      rw [simulateQ_pure, StateT.run_pure] at hx
+      simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
+      rw [hx.1] at hexecOpt
+      simp at hexecOpt
+  | some runLog =>
+      simp only [Option.elim_some] at hx
+      rw [simulateQ_bind] at hx
+      rw [StateT.run_bind] at hx
+      rw [mem_support_bind_iff] at hx
+      obtain ⟨⟨extractOpt, s2⟩, hextract, hx⟩ := hx
+      rw [liftM_pure] at hextract
+      rw [OptionT.run_pure] at hextract
+      rw [simulateQ_pure, StateT.run_pure] at hextract
+      simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hextract
+      rw [hextract.1, hextract.2] at hx
+      simp only [Option.elim_some] at hx
+      rw [OptionT.run_pure] at hx
+      rw [simulateQ_pure, StateT.run_pure] at hx
+      simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
+      rw [hx.1] at hexecOpt
+      simp only [Option.some.injEq] at hexecOpt
+      have hstmt : stmtIn = cs := congrArg Prod.fst hexecOpt
+      have hextracted : runLog.1.1.1.fst ⟨0, by simp⟩ = extracted :=
+        congrArg (fun y => y.2.1) hexecOpt
+      rw [← hstmt, ← hextracted]
+      have hrunSupport :
+          (some runLog.1, s1) ∈ support
+            ((simulateQ (impl.addLift challengeQueryImpl)
+              (((Reduction.mk prover
+                (plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+                  (numGates := numGates))).run stmtIn witIn).run) :
+                StateT σ ProbComp _).run s) := by
+        have hdiscard := Reduction.runWithLog_discard_logs_eq_run
+          (reduction := Reduction.mk prover
+            (plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+              (numGates := numGates)))
+          (stmt := stmtIn) (wit := witIn)
+        have heq := congrArg OptionT.run hdiscard
+        simp only [OptionT.run_map] at heq
+        have hmap :
+            (some runLog.1, s1) ∈ support
+              ((((Option.map Prod.fst) <$>
+                simulateQ (impl.addLift challengeQueryImpl)
+                  ((Reduction.runWithLog stmtIn witIn
+                    (Reduction.mk prover
+                      (plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+                        (numGates := numGates)))).run)) :
+                  StateT σ ProbComp _).run s) := by
+          rw [StateT.run_map, support_map, Set.mem_image]
+          exact ⟨(some runLog, s1), hrunLog, rfl⟩
+        rw [← simulateQ_map, heq] at hmap
+        exact hmap
+      unfold Reduction.run at hrunSupport
+      simp only [OptionT.run_bind, Option.elimM] at hrunSupport
+      rw [simulateQ_bind] at hrunSupport
+      rw [StateT.run_bind] at hrunSupport
+      rw [mem_support_bind_iff] at hrunSupport
+      obtain ⟨⟨proverOpt, sp⟩, _hprover, hrunSupport⟩ := hrunSupport
+      cases proverOpt with
+      | none =>
+          simp only [Option.elim_none] at hrunSupport
+          rw [simulateQ_pure, StateT.run_pure] at hrunSupport
+          simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq, reduceCtorEq]
+            at hrunSupport
+          exact False.elim hrunSupport.1
+      | some proverResult =>
+          simp only [Option.elim_some] at hrunSupport
+          rw [simulateQ_bind] at hrunSupport
+          rw [StateT.run_bind] at hrunSupport
+          rw [mem_support_bind_iff] at hrunSupport
+          obtain ⟨⟨verifierOpt, sv⟩, hverifier, hrunSupport⟩ := hrunSupport
+          cases verifierOpt with
+          | none =>
+              simp only [Option.elim_none] at hrunSupport
+              rw [simulateQ_pure, StateT.run_pure] at hrunSupport
+              simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq, reduceCtorEq]
+                at hrunSupport
+              exact False.elim hrunSupport.1
+          | some verifierResult =>
+              simp only [Option.elim_some] at hrunSupport
+              cases verifierResult with
+              | none =>
+                  simp only [Option.getM_none, OptionT.run_failure, pure_bind, Option.elim_none]
+                    at hrunSupport
+                  rw [simulateQ_pure, StateT.run_pure] at hrunSupport
+                  simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq, reduceCtorEq]
+                    at hrunSupport
+                  exact False.elim hrunSupport.1
+              | some verifierOut =>
+                  simp only [Option.getM_some, OptionT.run_pure, pure_bind, Option.elim_some]
+                    at hrunSupport
+                  rw [simulateQ_pure, StateT.run_pure] at hrunSupport
+                  simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq,
+                    Option.some.injEq] at hrunSupport
+                  have htr : runLog.1.1.1 = proverResult.1 := by
+                    exact congrArg (fun y => y.1.1) hrunSupport.1
+                  rw [htr]
+                  let w : Fin numWires → 𝓡 := proverResult.1.fst ⟨0, by simp⟩
+                  let f : Fin (3 * numGates) → 𝓡 := proverResult.1.snd ⟨0, by simp⟩
+                  by_cases hAccept :
+                      stmtIn.accepts w ∧
+                        ExtendedWireAssignmentMatches 𝓡 numWires numGates stmtIn w f ∧
+                          CopyConstraintsSatisfied f stmtIn.perm
+                  · refine ⟨hAccept.1, ?_⟩
+                    intro i
+                    rw [← hAccept.2.1 (stmtIn.perm i), ← hAccept.2.1 i]
+                    exact hAccept.2.2 i
+                  · simp only [Verifier.run, plonkCheckVerifier_verify_eq] at hverifier
+                    rw [if_neg hAccept] at hverifier
+                    rw [OptionT.run_failure] at hverifier
+                    rw [liftM_pure] at hverifier
+                    rw [OptionT.run_pure] at hverifier
+                    rw [simulateQ_pure] at hverifier
+                    rw [StateT.run_pure] at hverifier
+                    simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq]
+                      at hverifier
+                    exact False.elim (by simpa using hverifier.1)
+
 /-- The composed two-message Plonk verifier has zero-error round-by-round knowledge soundness. The
 round-by-round extractor keeps the gate witness as the intermediate witness and reads the final
 input witness from the first prover message of the full transcript. -/
@@ -575,6 +723,7 @@ theorem plonkCheckVerifier_rbrKnowledgeSoundness :
 #print axioms Plonk.permCheckAfterGateVerifier_rbrSoundness
 #print axioms Plonk.plonkCheckVerifier_rbrSoundness
 #print axioms Plonk.plonkCheckVerifier_soundness
+#print axioms Plonk.plonkCheckVerifier_knowledgeSoundness
 #print axioms Plonk.plonkCheckVerifier_rbrKnowledgeSoundness
 
 end Composition

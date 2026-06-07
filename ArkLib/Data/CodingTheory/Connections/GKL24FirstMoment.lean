@@ -209,6 +209,59 @@ theorem lineAgreeSet_inter_card_ge_of_card_ge
     Finset.card_add_card_le_card_univ_add_card_inter A B
   nlinarith
 
+/-- **Large line-agreement intersections from two bad witnesses.** If two line-agreement domains
+come from bad-witness memberships at MCA radius `δ`, and `2 * δ ≤ p`, then Bonferroni gives the
+large-intersection hypothesis required by the maximal correlated-agreement-domain residual.
+
+This removes one recurring paper-side obligation from future max-corr residual producers: once
+the Johnson-lifted MCA radius is known to satisfy `2δ_mca ≤ p`, pairwise intersections are
+automatic from the existing witness-size clauses. -/
+theorem lineAgreeSet_inter_card_ge_of_mem_mcaBadWitness
+    (MC : Submodule F (ι → F)) (δ p : ℝ≥0) (u₀ u₁ w w' : ι → F)
+    (hp_le_one : p ≤ 1)
+    (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
+    {γ γ' : F}
+    (hγ : γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w)
+    (hγ' : γ' ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w') :
+    ((1 - p) * Fintype.card ι : ℝ≥0) ≤
+      (((lineAgreeSet u₀ u₁ w γ ∩ lineAgreeSet u₀ u₁ w' γ').card : ℕ) : ℝ≥0) := by
+  have hγ_card_nn :=
+    lineAgreeSet_card_ge_of_mem_mcaBadWitness MC δ u₀ u₁ w hγ
+  have hγ'_card_nn :=
+    lineAgreeSet_card_ge_of_mem_mcaBadWitness MC δ u₀ u₁ w' hγ'
+  have hγ_card :
+      (1 - (δ : ℝ)) * (Fintype.card ι : ℝ) ≤
+        ((lineAgreeSet u₀ u₁ w γ).card : ℝ) := by
+    have h2 :
+        (((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ)) ≤
+          ((lineAgreeSet u₀ u₁ w γ).card : ℝ) := by
+      exact_mod_cast hγ_card_nn
+    exact (NNReal.coe_one_sub_mul_le δ (by positivity)).trans h2
+  have hγ'_card :
+      (1 - (δ : ℝ)) * (Fintype.card ι : ℝ) ≤
+        ((lineAgreeSet u₀ u₁ w' γ').card : ℝ) := by
+    have h2 :
+        (((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ)) ≤
+          ((lineAgreeSet u₀ u₁ w' γ').card : ℝ) := by
+      exact_mod_cast hγ'_card_nn
+    exact (NNReal.coe_one_sub_mul_le δ (by positivity)).trans h2
+  have hbon :
+      (1 - (δ : ℝ)) * (Fintype.card ι : ℝ) +
+          (1 - (δ : ℝ)) * (Fintype.card ι : ℝ) -
+            (Fintype.card ι : ℝ) ≤
+        (((lineAgreeSet u₀ u₁ w γ ∩ lineAgreeSet u₀ u₁ w' γ').card : ℕ) : ℝ) :=
+    lineAgreeSet_inter_card_ge_of_card_ge u₀ u₁ w w' γ γ' hγ_card hγ'_card
+  have hp_real :
+      (((1 - p : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ)) =
+        (1 - (p : ℝ)) * (Fintype.card ι : ℝ) := by
+    rw [NNReal.coe_sub hp_le_one, NNReal.coe_one]
+  apply NNReal.coe_le_coe.mp
+  simp only [NNReal.coe_mul, NNReal.coe_natCast]
+  rw [hp_real]
+  have hnpos : (0 : ℝ) < (Fintype.card ι : ℝ) := by
+    exact_mod_cast Fintype.card_pos_iff.mpr (inferInstance : Nonempty ι)
+  nlinarith [hbon, hδp, hnpos.le]
+
 /-- **Two line-agreement domains intersect in a correlated-agreement domain.** If distinct
 scalars `γ ≠ γ'` make codewords `wγ,wγ' ∈ MC` agree with the same stack lines on their respective
 domains, then on the intersection one can solve the two equations for codewords `v₀,v₁ ∈ MC`
@@ -960,6 +1013,30 @@ theorem mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
   · intro γ _hγ
     exact linePetal_subset_compl D u₀ u₁ w γ
 
+/-- **Strict-expansion-only max-corr residual.**  This is a smaller producer surface for the
+GKL24/GCXK25 first-moment route.  Compared with `GKL24MaxCorrWitnessCoverResidual`, it asks only
+for a close-codeword carrier and, for each carried codeword, a maximal correlated-agreement domain
+that is strictly expanded by every bad line-agreement domain.
+
+The pairwise large-intersection clause is derived by
+`GKL24MaxCorrWitnessCoverResidual_of_strict_cover` from the witness-size lower bounds when the
+Johnson parameter relation `2 * δ_mca ≤ p` holds. -/
+def GKL24MaxCorrStrictWitnessCoverResidual
+    (MC : Submodule F (ι → F)) (δ p : ℝ≥0) (B_T : ℝ) : Prop :=
+  ∀ u : WordStack F (Fin 2) ι,
+    ∃ T : Finset (ι → F),
+      (∀ w ∈ T, w ∈ (MC : Set (ι → F))) ∧
+        mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) ⊆
+          T.biUnion (fun w =>
+            mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w) ∧
+        (T.card : ℝ) ≤ B_T ∧
+          ∀ w ∈ T,
+            ∃ D : Finset ι,
+              maxCorrAgreeDomain MC p (u 0) (u 1) D ∧
+                ∀ γ ∈ mcaBadWitness
+                    (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
+                  D ⊂ lineAgreeSet (u 0) (u 1) w γ
+
 /-- **Maximal-domain form of the GKL24/GCXK25 witness-cover residual.**  This is the
 carrier-level version of `mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain`: every
 stack has a close-codeword carrier, and each carried codeword has a maximal
@@ -988,6 +1065,26 @@ def GKL24MaxCorrWitnessCoverResidual
                       ((1 - p) * Fintype.card ι : ℝ≥0) ≤
                         (((lineAgreeSet (u 0) (u 1) w γ ∩
                             lineAgreeSet (u 0) (u 1) w γ').card : ℕ) : ℝ≥0))
+
+/-- A strict-expansion-only max-corr residual gives the full max-corr residual whenever
+`2 * δ ≤ p` and `p ≤ 1`.  The missing pairwise large-intersection clause follows from
+`lineAgreeSet_inter_card_ge_of_mem_mcaBadWitness`. -/
+theorem GKL24MaxCorrWitnessCoverResidual_of_strict_cover
+    (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
+    (hp_le_one : p ≤ 1)
+    (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
+    (hstrict : GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T) :
+    GKL24MaxCorrWitnessCoverResidual MC δ p B_T := by
+  intro u
+  obtain ⟨T, hTsub, hcover, hcard, hstrictT⟩ := hstrict u
+  refine ⟨T, hTsub, hcover, hcard, ?_⟩
+  intro w hw
+  obtain ⟨D, hD, hstrictD⟩ := hstrictT w hw
+  refine ⟨D, hD, hstrictD, ?_⟩
+  intro γ hγ γ' hγ' _hne
+  exact
+    lineAgreeSet_inter_card_ge_of_mem_mcaBadWitness
+      MC δ p (u 0) (u 1) w w hp_le_one hδp hγ hγ'
 
 /-- A maximal-domain witness-cover residual instantiates the corrected first-moment
 witness-cover residual with per-codeword count `p · n`. -/
@@ -1292,6 +1389,7 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.linePetal_subset_compl
 #print axioms ProximityGap.linePetal_disjoint_of_inter_lineAgreeSet_eq
 #print axioms ProximityGap.lineAgreeSet_inter_card_ge_of_card_ge
+#print axioms ProximityGap.lineAgreeSet_inter_card_ge_of_mem_mcaBadWitness
 #print axioms ProximityGap.pairJointAgreesOn_inter_lineAgreeSet_of_ne
 #print axioms ProximityGap.maxCorrAgreeDomain.eq_of_subset
 #print axioms ProximityGap.inter_lineAgreeSet_eq_of_maxCorrAgreeDomain
@@ -1302,6 +1400,7 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.badScalars_card_le_radius_mul_card_of_linePetal_core_eq
 #print axioms ProximityGap.mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals
 #print axioms ProximityGap.mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
+#print axioms ProximityGap.GKL24MaxCorrWitnessCoverResidual_of_strict_cover
 #print axioms ProximityGap.GKL24PetalWitnessCoverResidual_of_maxCorr_cover
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_petal_cover
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover
