@@ -200,6 +200,23 @@ theorem openTranscript_entry_verifies {s : Skeleton} (hashFn : α → α → α)
   obtain ⟨i, _hi, rfl⟩ := ho
   simpa [saltedLeaves_get] using salted_completeness hashFn salts leaves i
 
+/-- Any candidate salted pair that verifies against the transcript root using an honest transcript
+entry's path equals the pair carried by that entry. This packages deterministic extraction for
+individual entries of `openTranscript`. -/
+theorem openTranscript_entry_unique_against_candidate {s : Skeleton} (hashFn : α → α → α)
+    (hinj : ∀ a b c d, hashFn a b = hashFn c d → a = c ∧ b = d)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (o : (i : SkeletonLeafIndex s) × α × α × List.Vector α i.depth)
+    (ho : o ∈ (openTranscript hashFn salts leaves idxs).2)
+    (salt value : α)
+    (h : getPutativeRootWithHash o.1 (leafCommit hashFn salt value) o.2.2.2 hashFn
+        = (openTranscript hashFn salts leaves idxs).1) :
+    salt = o.2.1 ∧ value = o.2.2.1 := by
+  simp [openTranscript] at ho h ⊢
+  obtain ⟨i, _hi, rfl⟩ := ho
+  exact salted_opening_unique_against_honest_tree hashFn hinj salts leaves i salt value (by
+    simpa [openTranscript] using h)
+
 section HidingDefinition
 
 variable [DecidableEq α] [SampleableType α]
@@ -235,4 +252,5 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.multi_salted_openings_unique_against_honest_tree
 #print axioms InductiveMerkleTree.openTranscript
 #print axioms InductiveMerkleTree.openTranscript_entry_verifies
+#print axioms InductiveMerkleTree.openTranscript_entry_unique_against_candidate
 #print axioms InductiveMerkleTree.Hiding
