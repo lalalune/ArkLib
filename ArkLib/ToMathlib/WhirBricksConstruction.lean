@@ -250,6 +250,12 @@ theorem whirVectorSpec_card_messageIdx (M : ℕ) :
   exact Fintype.card_eq_zero_iff.mpr (whirVectorSpec_messageIdx_isEmpty (F := F) M)
 
 omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Message indices in the converted WHIR scratch `ProtocolSpec` are exactly `Fin 0`. -/
+noncomputable def whirVectorSpec_toProtocolSpec_messageIdxEquivFin (M : ℕ) :
+    ((whirVectorSpec M).toProtocolSpec F).MessageIdx ≃ Fin 0 :=
+  Fintype.equivFinOfCardEq (whirVectorSpec_card_messageIdx (F := F) M)
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 /-- The converted protocol spec has the same `2 * M + 2` verifier-challenge indices. -/
 theorem whirVectorSpec_toProtocolSpec_card_challengeIdx (M : ℕ) :
     Fintype.card (((whirVectorSpec M).toProtocolSpec F).ChallengeIdx) = 2 * M + 2 := by
@@ -472,6 +478,7 @@ end RBRSoundnessAssembly
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
 #print axioms whirVectorSpec_messageIdx_isEmpty
 #print axioms whirVectorSpec_card_messageIdx
+#print axioms whirVectorSpec_toProtocolSpec_messageIdxEquivFin
 #print axioms whirVectorSpec_toProtocolSpec_card_challengeIdx
 #print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin_apply
