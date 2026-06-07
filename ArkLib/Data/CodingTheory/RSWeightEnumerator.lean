@@ -39,7 +39,36 @@ theorem natCard_ker_evalOnS (α : ι ↪ F) (deg : ℕ) (S : Finset ι) (hS : S.
   rw [Nat.card_eq_fintype_card, Module.card_eq_pow_finrank (K := F),
     finrank_ker_evalOnS α deg S hS]
 
+/-- **MDS support count, general `S`.**  Drops the `|S| ≤ deg` hypothesis: when `|S| > deg` the
+vanishing subspace collapses to `⊥` (a degree-`<deg` polynomial cannot vanish on more than `deg−1`
+nodes), and `q^{deg−|S|} = q^0 = 1` matches by `ℕ`-subtraction.  This is the form the inclusion–
+exclusion for `A_d` needs (zero-sets `T` range up to size `n`). -/
+theorem natCard_ker_evalOnS_general (α : ι ↪ F) (deg : ℕ) (S : Finset ι) :
+    Nat.card (LinearMap.ker (evalOnS α deg S)) = (Fintype.card F) ^ (deg - S.card) := by
+  by_cases hS : S.card ≤ deg
+  · exact natCard_ker_evalOnS α deg S hS
+  · push_neg at hS
+    haveI : FiniteDimensional F (Polynomial.degreeLT F deg) :=
+      FiniteDimensional.of_injective (Polynomial.degreeLTEquiv F deg).toLinearMap
+        (Polynomial.degreeLTEquiv F deg).injective
+    rw [Nat.sub_eq_zero_of_le hS.le, pow_zero]
+    obtain ⟨S', hS'sub, hS'card⟩ := Finset.exists_subset_card_eq (le_of_lt hS)
+    have hbot' : LinearMap.ker (evalOnS α deg S') = ⊥ := by
+      have hf := finrank_ker_evalOnS α deg S' (by omega : S'.card ≤ deg)
+      rw [hS'card, Nat.sub_self] at hf
+      exact Submodule.finrank_eq_zero.mp hf
+    have hle : LinearMap.ker (evalOnS α deg S) ≤ LinearMap.ker (evalOnS α deg S') := by
+      intro p hp
+      rw [LinearMap.mem_ker] at hp ⊢
+      ext i
+      have hmem : (i : ι) ∈ S := hS'sub i.2
+      have := congrFun hp ⟨(i : ι), hmem⟩
+      simpa [evalOnS] using this
+    rw [le_bot_iff.mp (hbot' ▸ hle)]
+    simp
+
 end ArkLib.CS25
 
 -- Axiom audit.
 #print axioms ArkLib.CS25.natCard_ker_evalOnS
+#print axioms ArkLib.CS25.natCard_ker_evalOnS_general
