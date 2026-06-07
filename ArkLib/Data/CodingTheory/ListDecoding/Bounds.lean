@@ -2040,49 +2040,19 @@ result holds (cf. "Optimal Proximity Gap for Folded RS via Subspace Designs",
 arXiv 2601.10047). It is simply unformalized: mathlib has no subspace-design /
 Reed-Solomon / list-decoding API, so discharging the `sorry` is a ground-up formalization
 task, not a port. See `research/formal/arklib-proof-research-2026-06.md`. -/
-def subspaceDesign_list_decoding_cz25
+/-- **ABF26 Theorem 3.4 [CZ25 Thm B.5].**
+τ-subspace-design codes are list-decodable up to capacity.
+This is discharged from the corrected residual `CZ25SpanBound'`. -/
+theorem subspaceDesign_list_decoding_cz25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
-    (_h : IsSubspaceDesign s τ C)
-    (η : ℝ) (_hη_pos : 0 < η) : Prop :=
+    (h : IsSubspaceDesign s τ C) (η : ℝ) (hη_pos : 0 < η)
+    (hSB : CZ25SpanBound' s τ C h η hη_pos) :
     (Lambda ((C : Set (ι → Fin s → F)))
         (1 - τ (Nat.floor (1 / η)) - η) : ENNReal) ≤
-      ENNReal.ofReal ((1 - τ (Nat.floor (1 / η))) / η)
-  -- ABF26-T3.4; external statement [CZ25 Thm B.5].
-  -- Missing ingredient: CZ25 Thm B.5's subspace-design list-decoding-up-to-capacity bound.
-  -- |Λ(C,1-τ(1/η)-η)|≤(1-τ(1/η))/η follows from IsSubspaceDesign (in-tree D2.16) PLUS CZ25's
-  -- design→list-size analysis (a dimension-counting bound on the close-codeword subspace),
-  -- whose elementary rate lower bound prerequisite L2.17 (`subspaceDesign_tau_lower`) is now
-  -- proven in-tree. The remaining blocker is the CZ25 design→Λ conversion itself (absent).
-  -- Genuinely external.
-
-/-- **ABF26 Theorem 3.4 [CZ25 Thm B.5] — honest reduction form.**
-
-The *full in-tree-provable content* of T3.4, with the single genuinely-external ingredient
-— the CZ25 / Guruswami–Kopparty **dimension-counting core** — surfaced as the explicit
-hypothesis `hDC : CZ25DimensionCount …`.
-
-`CZ25DimensionCount` (defined in `ListDecoding/CZ25DesignToLambda.lean`) is precisely the
-per-received-word real list-size bound `|Λ(C, δ, f)| ≤ (1 - τ(⌊1/η⌋))/η` obtained from the
-affine-span dimension count against the subspace-design budget. Everything else — the
-negative-radius degenerate regime (`δ < 0 ⟹ empty list`), the `ℝ`-membership bridge, and
-the packaging of the per-word `ncard` bounds into the maximised `Λ` through the
-`ENat`→`ENNReal.ofReal` coercion — is **proven with no `sorry` and no new axioms** in
-`subspaceDesign_list_decoding_cz25_of_dimensionCount`, to which this is a direct wrapper.
-This pins the genuine residual precisely inside `hDC` and discharges T3.4's own content.
-
-This derives the **exact** `Prop` body of `subspaceDesign_list_decoding_cz25` above; any
-caller holding the dimension-counting residual should route through this theorem. -/
-theorem subspaceDesign_list_decoding_cz25_of_residual
-    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-    {F : Type} [Field F] [Fintype F] [DecidableEq F]
-    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
-    (h : IsSubspaceDesign s τ C)
-    (η : ℝ) (hη_pos : 0 < η)
-    (hDC : CZ25DimensionCount s τ C h η hη_pos) :
-    subspaceDesign_list_decoding_cz25 s τ C h η hη_pos :=
-  subspaceDesign_list_decoding_cz25_of_dimensionCount s τ C h η hη_pos hDC
+      ENNReal.ofReal ((1 - τ (Nat.floor (1 / η))) / η) :=
+  subspaceDesign_list_decoding_cz25_of_spanBound' s τ C h η hη_pos hSB
 
 /-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — honest reduction form.**
 

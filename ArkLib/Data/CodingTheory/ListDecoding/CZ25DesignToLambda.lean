@@ -153,6 +153,7 @@ def CZ25DimensionCount
     (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
     (_h : IsSubspaceDesign s τ C) (η' : ℝ) (_hη' : 0 < η') : Prop :=
   ∀ f : ι → Fin s → F,
+    0 ≤ 1 - τ (Nat.floor (1 / η')) - η' →
     ((closeCodewordsRel ((C : Set (ι → Fin s → F))) f
         (1 - τ (Nat.floor (1 / η')) - η')).ncard : ℝ)
       ≤ (1 - τ (Nat.floor (1 / η'))) / η'
@@ -194,7 +195,7 @@ theorem subspaceDesign_list_decoding_cz25_of_dimensionCount
     rw [hm0]
     simp
   · -- Non-degenerate radius: the dimension-counting residual gives the real bound.
-    have hreal : (m : ℝ) ≤ bound := hDC f
+    have hreal : (m : ℝ) ≤ bound := hDC f hδnonneg
     exact ENNReal.ofReal_le_ofReal hreal
 
 end CZ25DesignToLambda
