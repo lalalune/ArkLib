@@ -36,8 +36,11 @@ cleanup() {
 trap cleanup EXIT
 
 # Tracked but intentionally excluded from the umbrella import until its direct
-# compile terminates under the normal validation budget.
-readonly UMBRELLA_IMPORT_EXCLUDES_RE='^ArkLib/ToMathlib/GHSZ02LargeNProof\.lean$'
+# compile terminates under the normal validation budget / is build-verified.
+# FRSGeomSubspaceDesign: the T2.18 capstone (composes the verified AdmissibleDischarge
+# lemmas with frs_is_subspaceDesign_gk16_of_admissible); held out of the umbrella until
+# build-verified to keep the root green during the concurrent toolchain churn.
+readonly UMBRELLA_IMPORT_EXCLUDES_RE='^ArkLib/ToMathlib/GHSZ02LargeNProof\.lean$|^ArkLib/Data/CodingTheory/ReedSolomon/FRSGeomSubspaceDesign\.lean$'
 
 git ls-files -- 'ArkLib/*.lean' \
   | grep -Ev "$UMBRELLA_IMPORT_EXCLUDES_RE" \
