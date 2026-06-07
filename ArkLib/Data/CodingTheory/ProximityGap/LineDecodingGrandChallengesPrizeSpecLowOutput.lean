@@ -232,6 +232,171 @@ theorem mcaThreshold_bracket_prize_allRates_of_forall_not_mcaEvent
     ⟨hne, _hsat, hlower, hupper⟩
   exact ⟨hne, hlower, hupper⟩
 
+/-- Repaired double-cover data supplies a single prize-rate concrete `mcaThreshold` lower bracket,
+dropping the threshold satisfy/maximality payload. -/
+theorem mcaThreshold_lower_bracket_prize_ofDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) δ) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne := by
+  rcases mcaThreshold_spec_and_lower_bracket_prize_ofDoubleCover
+      domain j δ hδ_le_one hcov with
+    ⟨hne, _hsat, hlower⟩
+  exact ⟨hne, hlower⟩
+
+/-- Named per-bad-scalar double-cover data supplies a single prize-rate concrete `mcaThreshold`
+lower bracket, dropping the threshold satisfy/maximality payload. -/
+theorem mcaThreshold_lower_bracket_prize_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) γ) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne := by
+  rcases mcaThreshold_spec_and_lower_bracket_prize_ofBadScalarDoubleCover
+      domain j δ hδ_le_one hcov with
+    ⟨hne, _hsat, hlower⟩
+  exact ⟨hne, hlower⟩
+
+/-- Zero bad-scalar counts supply a single prize-rate concrete `mcaThreshold` lower bracket,
+dropping the threshold satisfy/maximality payload. -/
+theorem mcaThreshold_lower_bracket_prize_of_mcaBadCount_zero
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hzero : ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) = 0) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne := by
+  rcases mcaThreshold_spec_and_lower_bracket_prize_of_mcaBadCount_zero
+      domain j δ hδ_le_one hzero with
+    ⟨hne, _hsat, hlower⟩
+  exact ⟨hne, hlower⟩
+
+/-- Direct no-bad-event frontiers supply a single prize-rate concrete `mcaThreshold` lower bracket,
+dropping the threshold satisfy/maximality payload. -/
+theorem mcaThreshold_lower_bracket_prize_of_forall_not_mcaEvent
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hno : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) γ) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne := by
+  rcases mcaThreshold_spec_and_lower_bracket_prize_of_forall_not_mcaEvent
+      domain j δ hδ_le_one hno with
+    ⟨hne, _hsat, hlower⟩
+  exact ⟨hne, hlower⟩
+
+/-- Repaired double-cover data and an explicit upper witness supply a single prize-rate concrete
+`mcaThreshold` two-sided bracket, dropping the threshold satisfy/maximality payload. -/
+theorem mcaThreshold_bracket_prize_ofDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) δ)
+    (whi : GrandChallenges.MCAUpperWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar)
+    (hδhi : whi.δ ≤ 1) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne ∧
+        mcaThreshold C epsStar hne < latticeIndexOf (ι := ι) whi.δ hδhi := by
+  rcases mcaThreshold_spec_and_bracket_prize_ofDoubleCover
+      domain j δ hδ_le_one hcov whi hδhi with
+    ⟨hne, _hsat, hlower, hupper⟩
+  exact ⟨hne, hlower, hupper⟩
+
+/-- Named per-bad-scalar double-cover data and an explicit upper witness supply a single
+prize-rate concrete `mcaThreshold` two-sided bracket, dropping the threshold satisfy/maximality
+payload. -/
+theorem mcaThreshold_bracket_prize_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) γ)
+    (whi : GrandChallenges.MCAUpperWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar)
+    (hδhi : whi.δ ≤ 1) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne ∧
+        mcaThreshold C epsStar hne < latticeIndexOf (ι := ι) whi.δ hδhi := by
+  rcases mcaThreshold_spec_and_bracket_prize_ofBadScalarDoubleCover
+      domain j δ hδ_le_one hcov whi hδhi with
+    ⟨hne, _hsat, hlower, hupper⟩
+  exact ⟨hne, hlower, hupper⟩
+
+/-- Zero bad-scalar counts and an explicit upper witness supply a single prize-rate concrete
+`mcaThreshold` two-sided bracket, dropping the threshold satisfy/maximality payload. -/
+theorem mcaThreshold_bracket_prize_of_mcaBadCount_zero
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hzero : ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) = 0)
+    (whi : GrandChallenges.MCAUpperWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar)
+    (hδhi : whi.δ ≤ 1) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne ∧
+        mcaThreshold C epsStar hne < latticeIndexOf (ι := ι) whi.δ hδhi := by
+  rcases mcaThreshold_spec_and_bracket_prize_of_mcaBadCount_zero
+      domain j δ hδ_le_one hzero whi hδhi with
+    ⟨hne, _hsat, hlower, hupper⟩
+  exact ⟨hne, hlower, hupper⟩
+
+/-- Direct no-bad-event frontiers and an explicit upper witness supply a single prize-rate concrete
+`mcaThreshold` two-sided bracket, dropping the threshold satisfy/maximality payload. -/
+theorem mcaThreshold_bracket_prize_of_forall_not_mcaEvent
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hno : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) γ)
+    (whi : GrandChallenges.MCAUpperWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar)
+    (hδhi : whi.δ ≤ 1) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne ∧
+        mcaThreshold C epsStar hne < latticeIndexOf (ι := ι) whi.δ hδhi := by
+  rcases mcaThreshold_spec_and_bracket_prize_of_forall_not_mcaEvent
+      domain j δ hδ_le_one hno whi hδhi with
+    ⟨hne, _hsat, hlower, hupper⟩
+  exact ⟨hne, hlower, hupper⟩
+
 end LineDecodingPrizeSpec
 
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lower_bracket_prize_allRates_ofDoubleCover
@@ -242,6 +407,14 @@ end LineDecodingPrizeSpec
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_bracket_prize_allRates_ofBadScalarDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_bracket_prize_allRates_of_mcaBadCount_zero
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_bracket_prize_allRates_of_forall_not_mcaEvent
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lower_bracket_prize_ofDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lower_bracket_prize_ofBadScalarDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lower_bracket_prize_of_mcaBadCount_zero
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lower_bracket_prize_of_forall_not_mcaEvent
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_bracket_prize_ofDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_bracket_prize_ofBadScalarDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_bracket_prize_of_mcaBadCount_zero
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_bracket_prize_of_forall_not_mcaEvent
 
 end GrandChallengesLattice
 
