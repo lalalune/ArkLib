@@ -533,6 +533,40 @@ theorem W𝒪_dvd_βHensel_zero_of_alphaWeight (x₀ : F) (R : F[X][X][Y])
   rw [W𝒪_dvd_βHensel_zero_of_alpha H x₀ R hHyp hH ha_eq]
   exact mul_comm a (W𝒪 H)
 
+/-- The base carved regularity case supplies the base divisibility-with-weight case without the
+all-orders P2 lift hypothesis.  It uses only the already-proved base lift identity folded through
+`W𝒪_dvd_βHensel_zero_of_alpha`. -/
+theorem DivWeightLe_zero.of_alphaWeight_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hα0 : AlphaGenuineRegularWeightLe_zero H x₀ R hHyp hH D) :
+    DivWeightLe_zero H x₀ R hHyp hH D := by
+  obtain ⟨a, ha_eq, ha_wt⟩ := hα0
+  refine ⟨a, ?_, ha_wt⟩
+  rw [W𝒪_dvd_βHensel_zero_of_alpha H x₀ R hHyp hH ha_eq]
+  simp only [Nat.mul_zero, Nat.zero_sub, pow_zero, mul_one, zero_add, pow_one]
+
+/-- The base divisibility-with-weight case supplies the base carved regularity case without the
+all-orders P2 lift hypothesis. -/
+theorem AlphaGenuineRegularWeightLe_zero.of_divWeight_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ)
+    (hdiv0 : DivWeightLe_zero H x₀ R hHyp hH D) :
+    AlphaGenuineRegularWeightLe_zero H x₀ R hHyp hH D := by
+  obtain ⟨a, hfact, ha_wt⟩ := hdiv0
+  refine ⟨a, ?_, ha_wt⟩
+  exact alpha_eq_embedding_of_fact H x₀ R hHyp 0 hfact
+    (βHensel_lift_identity_zero H x₀ R hHyp)
+
+/-- The `t = 0` alpha/divisibility equivalence needs only the proved base lift identity, not the
+full all-orders P2 lift identity used by `alphaWeight_zero_iff_divWeight_zero`. -/
+theorem alphaWeight_zero_iff_divWeight_zero_base (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) :
+    AlphaGenuineRegularWeightLe_zero H x₀ R hHyp hH D ↔
+      DivWeightLe_zero H x₀ R hHyp hH D := by
+  constructor
+  · exact DivWeightLe_zero.of_alphaWeight_zero H x₀ R hHyp hH D
+  · exact AlphaGenuineRegularWeightLe_zero.of_divWeight_zero H x₀ R hHyp hH D
+
 end AlphaWeight
 
 end BCIKS20.HenselNumerator
@@ -568,3 +602,6 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight'
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alpha
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alphaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero.of_alphaWeight_zero
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero.of_divWeight_zero
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_zero_iff_divWeight_zero_base

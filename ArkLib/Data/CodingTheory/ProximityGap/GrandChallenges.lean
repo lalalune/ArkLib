@@ -612,10 +612,34 @@ theorem exists_mcaLowerWitness_of_ignoredSource_mcaConjecture (h : mcaConjecture
           w.δ = δ :=
   exists_mcaLowerWitness_of_mcaConjecture h
 
+/-- Prize-rate specialization of the ignored-source MCA-conjecture bridge.  The conjecture remains
+an explicit hypothesis; this merely fixes `ε* = epsStar` and the ABF26 prize-rate dimension
+`k := ⌊prizeRates j * |L|⌋₊` for downstream one-sided progress. -/
+theorem exists_prize_mcaLowerWitness_of_ignored_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (j : Fin 4) (δ : ℝ≥0),
+        let k : ℕ := ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (epsStar : ENNReal) →
+        ∃ w : MCALowerWitness (ReedSolomon.code domain k : Set (ιC → FC)) epsStar,
+          w.δ = δ := by
+  obtain ⟨c₁, c₂, c₃, hLower⟩ := exists_mcaLowerWitness_of_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain j δ
+  dsimp only
+  exact hLower (domain := domain)
+    (k := ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊) (ε_star := epsStar) (δ := δ)
+
 #print axioms ProximityGap.GrandChallenges.mcaConjectureBound
 #print axioms ProximityGap.GrandChallenges.mcaConjecture
 #print axioms ProximityGap.GrandChallenges.nonempty_mcaLowerWitness_of_ignoredSource_mcaConjecture
 #print axioms ProximityGap.GrandChallenges.exists_mcaLowerWitness_of_ignoredSource_mcaConjecture
+#print axioms ProximityGap.GrandChallenges.exists_prize_mcaLowerWitness_of_ignored_mcaConjecture
 
 /-! ## Witness-carrying resolutions for the Grand List Decoding Challenge
 

@@ -5,7 +5,7 @@ Authors: Quang Dao
 -/
 
 import ArkLib.OracleReduction.Security.RoundByRound
-import ArkLib.OracleReduction.Security.ZeroKnowledge
+import ArkLib.OracleReduction.Security.OracleZeroKnowledge
 
 open OracleComp ProtocolSpec
 
@@ -365,6 +365,85 @@ theorem oracleReduction_completeness
   --   OracleComp.neverFails_pure, implies_true, OracleComp.support_pure, Set.mem_singleton_iff,
   --   Prod.mk.injEq, and_imp, true_and]
   -- aesop
+
+/-- The honest transcript distribution for the plain `ReduceClaim` oracle reduction is the
+deterministic empty transcript. The mapped output oracle statement and witness appear only in the
+output data, never in the zero-round transcript. -/
+theorem honestTranscriptDist_oracleReduction_evalDist
+    (stmtIn : StmtIn) (oStmtIn : ∀ i, OStmtIn i) (witIn : WitIn) :
+    evalDist (Reduction.honestTranscriptDist init impl
+        (oracleReduction oSpec mapStmt mapWit embedIdx hEq).toReduction
+        ⟨stmtIn, oStmtIn⟩ witIn) =
+      evalDist (pure default : OptionT ProbComp (FullTranscript !p[])) := by
+  apply evalDist_ext
+  intro transcript
+  classical
+  unfold Reduction.honestTranscriptDist
+  have hrun : (oracleReduction oSpec mapStmt mapWit embedIdx hEq).toReduction.run
+      ⟨stmtIn, oStmtIn⟩ witIn =
+      (pure ((default,
+          ((mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn), mapWit stmtIn witIn)),
+          (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)) :
+        OptionT (OracleComp _) _) := by
+    simp only [oracleReduction, OracleReduction.toReduction, Reduction.run, oracleProver,
+      oracleVerifier, OracleVerifier.toVerifier, Prover.run, Verifier.run, Prover.runToRound]
+    rfl
+  rw [hrun]
+  simp only [map_pure, OptionT.run_pure, simulateQ_pure, StateT.run'_eq, StateT.run_pure,
+    bind_pure_comp]
+  rw [OptionT.probOutput_eq, OptionT.probOutput_eq]
+  simp [probOutput_map_const, HasEvalPMF.probFailure_eq_zero]
+
+/-- The plain `ReduceClaim` oracle reduction is perfectly HVZK for any input relation: it has no
+messages or challenges, so the identity empty-transcript simulator matches every honest transcript
+distribution. -/
+theorem oracleReduction_perfectHVZK
+    (relIn : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)) :
+    OracleReduction.perfectHVZK init impl relIn
+      (oracleReduction oSpec mapStmt mapWit embedIdx hEq)
+      Reduction.idTranscriptSimulator := by
+  intro stmtIn witIn _
+  exact (honestTranscriptDist_oracleReduction_evalDist (oSpec := oSpec)
+    (mapStmt := mapStmt) (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)
+    stmtIn.1 stmtIn.2 witIn).symm
+
+/-- Perfect HVZK implies statistical HVZK for the plain `ReduceClaim` oracle reduction at every
+error budget. -/
+theorem oracleReduction_statisticalHVZK
+    (relIn : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)) (ε : NNReal) :
+    OracleReduction.statisticalHVZK init impl relIn
+      (oracleReduction oSpec mapStmt mapWit embedIdx hEq)
+      Reduction.idTranscriptSimulator ε :=
+  (oracleReduction_perfectHVZK (oSpec := oSpec) (mapStmt := mapStmt)
+    (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)
+    (init := init) (impl := impl) relIn).statisticalHVZK ε
+
+/-- The plain `ReduceClaim` oracle reduction has an explicit perfect-HVZK simulator for any input
+relation. -/
+theorem oracleReduction_isHVZK
+    (relIn : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)) :
+    OracleReduction.isHVZK init impl relIn
+      (oracleReduction oSpec mapStmt mapWit embedIdx hEq) :=
+  ⟨Reduction.idTranscriptSimulator,
+    oracleReduction_perfectHVZK (oSpec := oSpec) (mapStmt := mapStmt)
+      (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)
+      (init := init) (impl := impl) relIn⟩
+
+/-- The plain `ReduceClaim` oracle reduction has statistical HVZK for any input relation and error
+budget. -/
+theorem oracleReduction_isStatHVZK
+    (relIn : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)) (ε : NNReal) :
+    OracleReduction.isStatHVZK init impl relIn
+      (oracleReduction oSpec mapStmt mapWit embedIdx hEq) ε :=
+  (oracleReduction_isHVZK (oSpec := oSpec) (mapStmt := mapStmt)
+    (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)
+    (init := init) (impl := impl) relIn).isStatHVZK ε
+
+#print axioms ReduceClaim.honestTranscriptDist_oracleReduction_evalDist
+#print axioms ReduceClaim.oracleReduction_perfectHVZK
+#print axioms ReduceClaim.oracleReduction_statisticalHVZK
+#print axioms ReduceClaim.oracleReduction_isHVZK
+#print axioms ReduceClaim.oracleReduction_isStatHVZK
 
 variable {mapWitInv : (StmtIn × (∀ i, OStmtIn i)) → WitOut → WitIn}
 
