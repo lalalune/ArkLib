@@ -279,6 +279,29 @@ theorem mcaWitness_injOn [NoZeroSMulDivisors F A]
   exact hi0 (mca_two_agree_imp_u1_vanish_on_inter u₀ u₁ (wf γ) γ γ' hne (Sf γ) (Sf γ')
     (hagree γ hγ) hagree2 i hi)
 
+/-- **Support beats complements ⇒ a nonzero coordinate in the overlap.** If the support of `u₁`
+(coordinates where `u₁ ≠ 0`) is strictly larger than `|Sᶜ| + |S'ᶜ|`, then `u₁` does not vanish on
+all of `S ∩ S'`. With agreement sets of size `≥ (1-δ)n` (complements `≤ ⌊δn⌋`), this activates the
+witness-injectivity hypothesis whenever `weight(u₁) > 2⌊δn⌋` — the concrete proximity-gap
+condition. -/
+theorem exists_nonzero_on_inter
+    (u₁ : ι → A) (S S' : Finset ι)
+    (h : Sᶜ.card + S'ᶜ.card <
+        (Finset.univ.filter (fun i => u₁ i ≠ 0)).card) :
+    ∃ i ∈ S ∩ S', u₁ i ≠ 0 := by
+  by_contra hc
+  push_neg at hc
+  have hsub : (Finset.univ.filter (fun i => u₁ i ≠ 0)) ⊆ (S ∩ S')ᶜ := by
+    intro i hi
+    rw [Finset.mem_filter] at hi
+    rw [Finset.mem_compl]
+    intro hii
+    exact hi.2 (hc i hii)
+  have hcard := Finset.card_le_card hsub
+  rw [Finset.compl_inter] at hcard
+  have hunion : (Sᶜ ∪ S'ᶜ).card ≤ Sᶜ.card + S'ᶜ.card := Finset.card_union_le _ _
+  omega
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
