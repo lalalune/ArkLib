@@ -63,6 +63,37 @@ theorem t0_residual_iff_uncleared_emb_eq_cleared_emb
   · intro h
     rw [h, ← hbridge, mul_div_assoc, div_self (pow_ne_zero _ hW), mul_one]
 
+/-- Constructor form of `t0_residual_iff_uncleared_emb_eq_cleared_emb`. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_uncleared_emb_eq_cleared_emb
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
+    (hdeg : Bivariate.natDegreeY
+        (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))) = R.natDegree)
+    (hgap :
+      embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+        = embeddingOf𝒪Into𝕃 H
+            (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0))) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  (t0_residual_iff_uncleared_emb_eq_cleared_emb H x₀ R hHyp hd hζ hdeg).2 hgap
+
+/-- Projection form of `t0_residual_iff_uncleared_emb_eq_cleared_emb`. -/
+theorem uncleared_emb_eq_cleared_emb_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
+    (hdeg : Bivariate.natDegreeY
+        (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))) = R.natDegree)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+      = embeddingOf𝒪Into𝕃 H
+          (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) :=
+  (t0_residual_iff_uncleared_emb_eq_cleared_emb H x₀ R hHyp hd hζ hdeg).1 hpart
+
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20.HenselNumerator.t0_residual_iff_uncleared_emb_eq_cleared_emb
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoPartitionMatchAt.zero_of_uncleared_emb_eq_cleared_emb
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.uncleared_emb_eq_cleared_emb_of_partitionMatchAt_zero

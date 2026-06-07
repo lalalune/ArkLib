@@ -20,6 +20,10 @@ in the bad line-agreement sets, the `(1−p)·n` pairwise intersection) are the 
 Lemma 1 / Cor 1 content.
 -/
 
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+
 namespace ProximityGap
 
 open scoped NNReal
@@ -33,8 +37,8 @@ form a nonempty finite family of `Finset ι`s; a maximal-cardinality member is m
 inclusion (any larger domain containing it has equal cardinality, hence equals it). -/
 theorem exists_maxCorrAgreeDomain_of_nonempty
     (MC : Submodule F (ι → F)) (p : ℝ≥0) (u₀ u₁ : ι → F)
-    (h : ∃ D₀, corrAgreeDomain MC p u₀ u₁ D₀) :
-    ∃ D, maxCorrAgreeDomain MC p u₀ u₁ D := by
+    (h : ∃ D₀ : Finset ι, corrAgreeDomain MC p u₀ u₁ D₀) :
+    ∃ D : Finset ι, maxCorrAgreeDomain MC p u₀ u₁ D := by
   classical
   obtain ⟨D₀, hD₀⟩ := h
   set 𝒮 : Finset (Finset ι) :=
