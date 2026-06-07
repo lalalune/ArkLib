@@ -195,6 +195,53 @@ noncomputable def finalExpectedClaimFromOracles
   let z ← zEvalFromFinalOracles R pp stmt
   pure ((r .A * a + r .B * b + r .C * c) * z)
 
+/-- The pure terminal value corresponding to `finalExpectedClaimFromOracles`: evaluate the
+second-sum-check endpoint directly from the final oracle statements. This value is the algebraic
+target that the second sum-check emits before the verifier runs the final `CheckClaim`. -/
+noncomputable def finalExpectedClaimValue
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) : R :=
+  let r : R1CS.MatrixIdx → R := stmt.2.1
+  let r_x : Fin pp.ℓ_m → R := stmt.2.2.1
+  let r_y : Fin pp.ℓ_n → R := stmt.1
+  let x : Statement.AfterFirstMessage R pp := stmt.2.2.2.2
+  let z := R1CS.𝕫 x (oStmt (.inr (.inr 0)))
+  let zEval : R := MvPolynomial.eval r_y (MvPolynomial.MLE (z ∘ finFunctionFinEquiv))
+  let matrixEval (idx : R1CS.MatrixIdx) : R :=
+    MvPolynomial.eval r_y
+      ((oStmt (.inr (.inl idx))).toMLE
+        ⸨(MvPolynomial.C ∘ r_x : Fin pp.ℓ_m → MvPolynomial (Fin pp.ℓ_n) R)⸩)
+  (r .A * matrixEval .A + r .B * matrixEval .B + r .C * matrixEval .C) * zEval
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The terminal algebraic endpoint of Spartan's second sum-check: evaluating
+`secondSumCheckVirtualPolynomial` at the sampled `r_y` is exactly the final expected claim value. -/
+theorem secondSumCheckVirtualPolynomial_eval_eq_finalExpectedClaimValue
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt) =
+      finalExpectedClaimValue R pp stmt oStmt := by
+  classical
+  simp [secondSumCheckVirtualPolynomial, finalExpectedClaimValue, MvPolynomial.eval_add,
+    MvPolynomial.eval_mul, MvPolynomial.eval_C]
+  ring
+
+/-- **NAMED RESIDUAL — second-sum-check terminal endpoint.** The value handed to the final
+target-carrying `CheckClaim` is the evaluation of Spartan's second sum-check virtual polynomial at
+the verifier's final challenge. -/
+def secondSumcheckTerminalEndpointResidual : Prop :=
+  ∀ (stmt : FinalStatement R pp) (oStmt : ∀ i, FinalOracleStatement R pp i),
+    MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt) =
+      finalExpectedClaimValue R pp stmt oStmt
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The second-sum-check terminal endpoint residual is discharged by expanding the polynomial
+definition and evaluating products/sums. -/
+theorem secondSumcheckTerminalEndpointResidual_holds :
+    secondSumcheckTerminalEndpointResidual R pp := by
+  intro stmt oStmt
+  exact secondSumCheckVirtualPolynomial_eval_eq_finalExpectedClaimValue R pp stmt oStmt
+
 /-- The concrete target-carrying final Spartan predicate. Unlike the earlier frontier predicate,
 this records the real terminal equation from the Spartan reference implementation: the target
 emitted by the second sum-check must equal the matrix linear combination at `(r_x,r_y)` times
@@ -492,6 +539,10 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms finalMatrixEvalFromOracles
 #print axioms zEvalFromFinalOracles
 #print axioms finalExpectedClaimFromOracles
+#print axioms finalExpectedClaimValue
+#print axioms secondSumCheckVirtualPolynomial_eval_eq_finalExpectedClaimValue
+#print axioms secondSumcheckTerminalEndpointResidual
+#print axioms secondSumcheckTerminalEndpointResidual_holds
 #print axioms finalClaimPredicate
 #print axioms finalCheckWithClaim
 #print axioms finalCheckWithClaimRelIn
