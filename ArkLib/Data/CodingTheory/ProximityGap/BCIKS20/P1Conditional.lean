@@ -296,6 +296,106 @@ theorem βHenselStructuredWeightInvariant_of_alphaWeight_succLift'
   AlphaWeight.βHenselStructuredWeightInvariant_of_alphaWeight_succLift'
     H x₀ R hHyp hH hDH hDRx0 hdR2 hliftSucc hα k
 
+/-! ### 3″. Structured-prefix invariant auto-unlock wrappers -/
+
+/-- Structured-prefix invariant unlocked by the Faà-di-Bruno successor residual. -/
+theorem βHenselStructuredWeightInvariant_unlocked
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  βHenselStructuredWeightInvariant_of_lift' H x₀ R hHyp hH hDH hDRx0 hdR2
+    (fun t => βHensel_lift_identity_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero t)
+    hα k
+
+/-- Structured-prefix invariant unlocked by the Faà-di-Bruno successor residual, from concrete
+divisibility. -/
+theorem βHenselStructuredWeightInvariant_unlocked_of_divWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k := by
+  let hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+    fun t => βHensel_lift_identity_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero t
+  exact βHenselStructuredWeightInvariant_unlocked H x₀ R hHyp hH hDH hDRx0 hdR2 hzero
+    ((alphaWeight_iff_divWeight H x₀ R hHyp hH D hlift).2 hdiv) k
+
+/-- Structured-prefix invariant unlocked by full P2 vanishing. -/
+theorem βHenselStructuredWeightInvariant_unlocked_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  βHenselStructuredWeightInvariant_of_lift' H x₀ R hHyp hH hDH hDRx0 hdR2
+    (fun t => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 t) hα k
+
+/-- Structured-prefix invariant unlocked by full P2 vanishing, from concrete divisibility. -/
+theorem βHenselStructuredWeightInvariant_unlocked_of_fullVanishes_divWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k := by
+  let hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+    fun t => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 t
+  exact βHenselStructuredWeightInvariant_unlocked_of_fullVanishes H x₀ R hHyp hH hDH
+    hDRx0 hdR2 hvan ((alphaWeight_iff_divWeight H x₀ R hHyp hH D hlift).2 hdiv) k
+
+/-- Structured-prefix invariant unlocked by the restricted P2 match. -/
+theorem βHenselStructuredWeightInvariant_unlocked_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  βHenselStructuredWeightInvariant_of_lift' H x₀ R hHyp hH hDH hDRx0 hdR2
+    (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t) hα k
+
+/-- Structured-prefix invariant unlocked by the restricted P2 match, from concrete divisibility. -/
+theorem βHenselStructuredWeightInvariant_unlocked_of_restrictedMatch_divWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k := by
+  let hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+    fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t
+  exact βHenselStructuredWeightInvariant_unlocked_of_restrictedMatch H x₀ R hHyp hH hDH
+    hDRx0 hdR2 hmatch ((alphaWeight_iff_divWeight H x₀ R hHyp hH D hlift).2 hdiv) k
+
 /-! ### 4. The fully-assembled conditional (P1), and the auto-unlock witness
 
 `weight_ξ_bound` (PROVEN in `RationalFunctions`) discharges `hξ` under its regime, and
@@ -612,6 +712,12 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_of_normalized_divWeight_cases'
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_of_alphaWeight_succLift
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_of_alphaWeight_succLift'
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_divWeight
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_fullVanishes_divWeight
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_restrictedMatch_divWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_lift
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_divWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_lift'

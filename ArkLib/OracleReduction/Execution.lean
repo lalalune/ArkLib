@@ -812,6 +812,38 @@ lemma simulateQ_add_run_liftM_left
       liftComp oa.run (oSpec + spec₂) by rw [liftComp_eq_liftM]]
   rw [QueryImpl.simulateQ_add_liftComp_left]
 
+omit pSpec in
+/-- Interpreting a computation lifted through `spec₁ + (spec₂ + spec₃)` and then across the
+add-association `SubSpec` against an implementation on `(spec₁ + spec₂) + spec₃` ignores the
+right-hand implementation when the source computation only queries `spec₁ + spec₂`. -/
+lemma simulateQ_add_liftComp_add_assoc_left
+    {ι₁ ι₂ ι₃ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    {spec₃ : OracleSpec ι₃} {σ : Type}
+    (impl₁₂ : QueryImpl (spec₁ + spec₂) (StateT σ ProbComp))
+    (impl₃ : QueryImpl spec₃ (StateT σ ProbComp))
+    (oa : OracleComp (spec₁ + spec₂) α) :
+    simulateQ (impl₁₂ + impl₃)
+        (OracleComp.liftComp
+          (OracleComp.liftComp oa (spec₁ + (spec₂ + spec₃)))
+          ((spec₁ + spec₂) + spec₃)) =
+      simulateQ impl₁₂ oa := by
+  induction oa using OracleComp.inductionOn with
+  | pure _ => rfl
+  | query_bind t oa ih =>
+      rcases t with t | t
+      · simp only [OracleComp.liftComp_bind, OracleComp.liftComp_query, simulateQ_bind,
+          simulateQ_query]
+        refine bind_congr ?_
+        intro x
+        exact ih x
+      · simp only [OracleComp.liftComp_bind, OracleComp.liftComp_query, simulateQ_bind,
+          simulateQ_query]
+        refine bind_congr ?_
+        intro x
+        exact ih x
+
+#print axioms simulateQ_add_liftComp_add_assoc_left
+
 end OptionTLifts
 
 section SingleMessage
