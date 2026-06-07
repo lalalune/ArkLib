@@ -57,6 +57,18 @@ theorem frs_bound_simplify
   field_simp
   ring
 
+/-- If the C3.5 slack is the reciprocal of a positive natural number, then the documented
+floor/real reconciliation `1 / η = ⌊1 / η⌋` holds. -/
+theorem one_div_eta_eq_natFloor_of_eta_eq_one_div_nat
+    {m : ℕ} (hm : 0 < m) {η : ℝ} (hη : η = 1 / (m : ℝ)) :
+    (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ) := by
+  subst η
+  have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
+  have hdiv : (1 : ℝ) / (1 / (m : ℝ)) = (m : ℝ) := by
+    field_simp [hm_ne]
+  rw [hdiv]
+  norm_num
+
 /-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — reduction form.**
 
 Given the two genuine external ingredients (T3.4 and T2.18) **as hypotheses**, folded RS
@@ -248,5 +260,6 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible
 
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_injective
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible
+#print axioms one_div_eta_eq_natFloor_of_eta_eq_one_div_nat
 
 end CodingTheory
