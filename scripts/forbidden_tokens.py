@@ -27,6 +27,10 @@ AXIOM_RE = re.compile(
     r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*axiom\s+"
     r"([A-Za-z_][A-Za-z0-9_'.]*)"
 )
+THEOREM_TRUE_RE = re.compile(
+    r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*theorem\s+"
+    r"([A-Za-z_][A-Za-z0-9_'.]*)\s*:\s*True\b"
+)
 
 ALLOWLIST_PATH = Path(__file__).resolve().parent / "residual_axioms.txt"
 
@@ -138,6 +142,14 @@ def main() -> int:
                         f"{path}:{idx}: forbidden custom axiom declaration {name} "
                         f"(add to scripts/residual_axioms.txt only if it is a documented, "
                         f"tracked residual)"
+                    )
+            tm = THEOREM_TRUE_RE.match(line)
+            if tm:
+                name = tm.group(1)
+                if name.endswith("_residual") or name in allowlist:
+                    failures.append(
+                        f"{path}:{idx}: forbidden vacuous placebo {name} : True "
+                        f"(cannot launder residuals via trivial theorems)"
                     )
             pos += len(line)
 
