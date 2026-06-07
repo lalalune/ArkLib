@@ -579,6 +579,7 @@ import ArkLib.ToMathlib.SbetaPackaging
 import ArkLib.ToMathlib.Section5Concrete
 import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.SiegelInterpolation
+import ArkLib.ToMathlib.StraightlineRewindingBridge
 import ArkLib.ToMathlib.SubspacePolyLinearized
 import ArkLib.ToMathlib.SubstFieldCaveat
 import ArkLib.ToMathlib.TailDegProducer
