@@ -22,10 +22,15 @@ WHIR #113, Fiat-Shamir #116, sumcheck #13/#114.
   disagreement points.
 * `Polynomial.card_filter_forall_isRoot_le` — for a nonzero polynomial of degree `< N`, at most
   `(N-1)^s` length-`s` tuples are all roots.
+* `Polynomial.card_filter_exists_not_isRoot_ge` — the complementary lower bound on length-`s`
+  tuples with at least one non-root coordinate.
 * `Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt` — two distinct degree-`< N`
   polynomials agree on every coordinate of at most `(N-1)^s` length-`s` tuples.
 * `Polynomial.card_filter_exists_eval_ne_ge_of_natDegree_lt` — the complementary lower bound on
   length-`s` tuples with at least one coordinate of disagreement.
+* `Polynomial.prob_filter_forall_isRoot_le` /
+  `Polynomial.prob_filter_exists_not_isRoot_ge` — uniform-tuple probability wrappers for the
+  one-polynomial root and non-root counting bounds.
 * `Polynomial.prob_filter_forall_eval_eq_le_of_natDegree_lt` /
   `Polynomial.prob_filter_exists_eval_ne_ge_of_natDegree_lt` — uniform-tuple probability wrappers
   for the agreement and disagreement counting bounds.
@@ -147,6 +152,30 @@ theorem card_filter_forall_isRoot_le {F : Type*} [Field F] [Fintype F] [Decidabl
   rw [card_filter_forall_pi (β := F) s (fun x : F => p.IsRoot x)]
   exact Nat.pow_le_pow_left hroot_card s
 
+/-- If `p` is nonzero of degree `< N`, then at least `|F|^s - (N-1)^s` length-`s`
+tuples have some non-root coordinate. -/
+theorem card_filter_exists_not_isRoot_ge {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {N s : ℕ} {p : F[X]} (hp0 : p ≠ 0) (hp : p.natDegree < N) :
+    Fintype.card F ^ s - (N - 1) ^ s ≤
+      (Finset.univ.filter (fun r : Fin s → F => ∃ i, ¬ p.IsRoot (r i))).card := by
+  have hroot :=
+    Polynomial.card_filter_forall_isRoot_le (F := F) (N := N) (s := s) (p := p) hp0 hp
+  have hsplit :=
+    Finset.card_filter_add_card_filter_not
+      (s := (Finset.univ : Finset (Fin s → F)))
+      (p := fun r : Fin s → F => ∀ i, p.IsRoot (r i))
+  have hbad_filter :
+      (Finset.univ.filter (fun r : Fin s → F => ¬ ∀ i, p.IsRoot (r i)))
+        = Finset.univ.filter (fun r : Fin s → F => ∃ i, ¬ p.IsRoot (r i)) := by
+    ext r
+    simp
+  have hcard_fun : Fintype.card (Fin s → F) = Fintype.card F ^ s := by
+    simp
+  have hcard_univ : (Finset.univ : Finset (Fin s → F)).card = Fintype.card F ^ s := by
+    rw [Finset.card_univ, hcard_fun]
+  rw [hbad_filter, hcard_univ] at hsplit
+  omega
+
 /-- Two distinct polynomials of degree `< N` agree on every coordinate of at most `(N-1)^s`
 length-`s` tuples. -/
 theorem card_filter_forall_eval_eq_le_of_natDegree_lt {F : Type*} [Field F] [Fintype F]
@@ -185,6 +214,53 @@ theorem card_filter_exists_eval_ne_ge_of_natDegree_lt {F : Type*} [Field F] [Fin
     rw [Finset.card_univ, hcard_fun]
   rw [hbad_filter, hcard_univ] at hsplit
   omega
+
+/-- Uniform-tuple probability upper bound for all sampled coordinates being roots of a nonzero
+degree-`< N` polynomial. -/
+theorem prob_filter_forall_isRoot_le {F : Type*} [Field F] [Fintype F] [Nonempty F]
+    {N s : ℕ} {p : F[X]} (hp0 : p ≠ 0) (hp : p.natDegree < N) :
+    (PMF.uniformOfFintype (Fin s → F)).toOuterMeasure
+        {r : Fin s → F | ∀ i, p.IsRoot (r i)}
+      ≤ (((N - 1) ^ s : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ^ s := by
+  classical
+  let E : Finset (Fin s → F) :=
+    Finset.univ.filter (fun r : Fin s → F => ∀ i, p.IsRoot (r i))
+  have hset :
+      {r : Fin s → F | ∀ i, p.IsRoot (r i)} = (E : Set (Fin s → F)) := by
+    ext r
+    simp [E]
+  have hcard_fun : Fintype.card (Fin s → F) = Fintype.card F ^ s := by
+    simp
+  have hcount : E.card ≤ (N - 1) ^ s :=
+    _root_.Polynomial.card_filter_forall_isRoot_le
+      (F := F) (N := N) (s := s) (p := p) hp0 hp
+  rw [hset, _root_.uniform_event_mass, hcard_fun]
+  rw [Nat.cast_pow]
+  exact ENNReal.div_le_div_right (Nat.cast_le.mpr hcount) _
+
+/-- Uniform-tuple probability lower bound for seeing at least one non-root coordinate of a
+nonzero degree-`< N` polynomial. -/
+theorem prob_filter_exists_not_isRoot_ge {F : Type*} [Field F] [Fintype F] [Nonempty F]
+    {N s : ℕ} {p : F[X]} (hp0 : p ≠ 0) (hp : p.natDegree < N) :
+    (((Fintype.card F ^ s - (N - 1) ^ s : ℕ) : ℝ≥0∞)
+        / (Fintype.card F : ℝ≥0∞) ^ s)
+      ≤ (PMF.uniformOfFintype (Fin s → F)).toOuterMeasure
+          {r : Fin s → F | ∃ i, ¬ p.IsRoot (r i)} := by
+  classical
+  let E : Finset (Fin s → F) :=
+    Finset.univ.filter (fun r : Fin s → F => ∃ i, ¬ p.IsRoot (r i))
+  have hset :
+      {r : Fin s → F | ∃ i, ¬ p.IsRoot (r i)} = (E : Set (Fin s → F)) := by
+    ext r
+    simp [E]
+  have hcard_fun : Fintype.card (Fin s → F) = Fintype.card F ^ s := by
+    simp
+  have hcount : Fintype.card F ^ s - (N - 1) ^ s ≤ E.card :=
+    _root_.Polynomial.card_filter_exists_not_isRoot_ge
+      (F := F) (N := N) (s := s) (p := p) hp0 hp
+  rw [hset, _root_.uniform_event_mass, hcard_fun]
+  rw [Nat.cast_pow]
+  exact ENNReal.div_le_div_right (Nat.cast_le.mpr hcount) _
 
 /-- Uniform-tuple probability upper bound for all-coordinate agreement of two distinct
 degree-`< N` polynomials. -/
@@ -258,8 +334,13 @@ end Finset
 #print axioms Polynomial.card_eval_agreement_le_of_natDegree_lt
 #print axioms Polynomial.card_eval_disagreement_ge_of_natDegree_lt
 #print axioms Polynomial.card_filter_forall_isRoot_le
+#print axioms Polynomial.card_filter_exists_not_isRoot_ge
 #print axioms Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt
 #print axioms Polynomial.card_filter_exists_eval_ne_ge_of_natDegree_lt
+set_option linter.style.longLine false in
+#print axioms Polynomial.prob_filter_forall_isRoot_le
+set_option linter.style.longLine false in
+#print axioms Polynomial.prob_filter_exists_not_isRoot_ge
 set_option linter.style.longLine false in
 #print axioms Polynomial.prob_filter_forall_eval_eq_le_of_natDegree_lt
 set_option linter.style.longLine false in
