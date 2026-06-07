@@ -99,9 +99,11 @@ private theorem card_sum_of_mem_image {i c : ℕ} {m : Multiset ℕ}
 /-- `positivePart` of a no-zero multiset with zero-padding strips exactly the padding. -/
 private theorem positivePart_add_replicate_zero (s : Multiset ℕ) (h0 : (0 : ℕ) ∉ s) (k : ℕ) :
     positivePart (s + Multiset.replicate k 0) = s := by
-  rw [positivePart, Multiset.filter_add, Multiset.filter_replicate]
-  simp only [if_neg (by simp), add_zero]
-  exact Multiset.filter_eq_self.mpr (fun a ha => by rintro rfl; exact h0 ha)
+  have hs : s.filter (fun n => n ≠ 0) = s :=
+    Multiset.filter_eq_self.mpr (fun a ha => by rintro rfl; exact h0 ha)
+  have hr : (Multiset.replicate k 0).filter (fun n => n ≠ 0) = 0 :=
+    Multiset.filter_eq_nil.mpr (fun a ha => by rw [Multiset.eq_of_mem_replicate ha]; simp)
+  rw [positivePart, Multiset.filter_add, hs, hr, add_zero]
 
 /-- **Inner-sum reindex (the combinatorial heart of the bijection).**  For `T > 0`, the guarded
 value-multiset inner sum re-indexes over the partitions `λ` of `c` with at most `i` parts and no
@@ -166,20 +168,25 @@ theorem innerSum_reindex {M : Type*} [CommSemiring M] (i c T : ℕ) (hT : 0 < T)
     have hcard := (card_sum_of_mem_image (Finset.mem_filter.mp hm).1).1
     have hz : i - (positivePart m).card = zeroCount m := by
       rw [← hcard, ← zeroCount_add_positivePart_card m, Nat.add_sub_cancel]
-    rw [hz, Multiset.add_comm, replicate_zero_add_positivePart]
+    show positivePart m + Multiset.replicate (i - (positivePart m).card) 0 = m
+    rw [hz, add_comm]
+    exact replicate_zero_add_positivePart m
   · -- right inverse: positivePart (λ.parts + zeros) = λ  (as partitions)
     intro lam hlam
+    have h0 : (0 : ℕ) ∉ lam.parts := fun h => Nat.lt_irrefl 0 (lam.parts_pos h)
     apply Nat.Partition.ext
-    exact positivePart_add_replicate_zero lam.parts (lam.parts_pos.imp (fun h => h) ▸ fun h => absurd rfl (by simpa using (lam.parts_pos h).ne')) _
+    exact positivePart_add_replicate_zero lam.parts h0 (i - lam.parts.card)
   · -- value equality
     intro m hm
     have hcard := (card_sum_of_mem_image (Finset.mem_filter.mp hm).1).1
+    have hpple : (positivePart m).card ≤ i := by
+      have h := Multiset.card_le_card (Multiset.filter_le (fun n => n ≠ 0) m)
+      rw [hcard] at h; exact h
     have hz : zeroCount m = i - (positivePart m).card := by
       rw [← hcard, ← zeroCount_add_positivePart_card m, Nat.add_sub_cancel]
     have hchoose : (zeroCount m + (positivePart m).card).choose (zeroCount m)
         = i.choose (positivePart m).card := by
-      rw [zeroCount_add_positivePart_card, hcard, Nat.choose_symm_diff]
-      · congr 1; omega
+      rw [zeroCount_add_positivePart_card, hcard, hz, Nat.choose_symm hpple]
     rw [countPerms_smul_prod_split m b, hchoose, hz]
 
 end BCIKS20.HenselNumerator
@@ -188,3 +195,4 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.prod_map_eq_zero_pow_mul_positivePart
 #print axioms BCIKS20.HenselNumerator.countPerms_smul_prod_split
 #print axioms BCIKS20.HenselNumerator.mem_image_valueMultiset_of_card_sum
+#print axioms BCIKS20.HenselNumerator.innerSum_reindex
