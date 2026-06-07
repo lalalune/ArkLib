@@ -505,7 +505,14 @@ convention, collapse the right-hand side to `0` and assert `ε_mca ≤ 0` (a deg
 **Source status (verified 2026-06-03).** In the current `[ABF26]` `.tex` source this
 conjecture lives inside an `\ignore{…}` block (around line 2030), i.e. it is a *draft*
 statement not rendered in the compiled paper. The term-by-term content here is faithful to
-that draft; treat it as tracking a draft conjecture, not a stable rendered theorem. -/
+that draft; treat it as tracking a draft conjecture, not a stable rendered theorem.
+
+**Open prize — keep as a named hypothesis.** This is the genuinely open ABF26 Grand Challenge 1
+prize (the beyond-UDR Guruswami–Sudan list-decoder mass bound), the uniform form with constants
+quantified *before* the `∀` over codes. Downstream developments must consume it as an explicit
+hypothesis; do not launder it into a theorem by assuming an equivalent packaged form. Its
+GS-exposed counterpart is `MCAGS.epsMCAgs_prizeBound_conjecture` /
+`GrandChallenge141PrizeMath.epsMCAgsPrizeUniformConjecture`. Tracking: Issue #141. -/
 def mcaConjecture : Prop :=
   ∃ c₁ c₂ c₃ : ℝ,
     ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
