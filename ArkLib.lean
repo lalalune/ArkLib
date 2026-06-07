@@ -122,8 +122,6 @@ import ArkLib.Data.CodingTheory.ListDecoding.FPRUNERealStep
 import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
 import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
-import ArkLib.Data.CodingTheory.ListDecoding.ScratchJH02
-import ArkLib.Data.CodingTheory.ListDecoding.ScratchSeq
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLineSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearized
 import ArkLib.Data.CodingTheory.ListSizeVolumeBound
@@ -211,7 +209,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoExtract
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoXiTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ScratchDvd138
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WPowerInjective
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
@@ -256,7 +253,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
-import ArkLib.Data.CodingTheory.ProximityGap.Core3RadiusWrapperScratch
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
@@ -496,10 +492,6 @@ import ArkLib.Data.Probability.UniformPushforward
 import ArkLib.Data.Probability.UniformSubset
 import ArkLib.Data.RingTheory.TowerOfAlgebra
 import ArkLib.Data.UniPoly.Basic
-import ArkLib.FS116Collapse_keep
-import ArkLib.FS116Final_uniq
-import ArkLib.FS116Main_keep
-import ArkLib.FS116Scratch
 import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
@@ -650,10 +642,8 @@ import ArkLib.ProofSystem.Plonk.Composition
 import ArkLib.ProofSystem.Plonk.PermutationCheck
 import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.ProofSystem.RingSwitching.General
-import ArkLib.ProofSystem.RingSwitching.Issue19Scratch
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Profile
-import ArkLib.ProofSystem.RingSwitching.Scratch
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
@@ -681,7 +671,6 @@ import ArkLib.ProofSystem.ToyProblem.Spec.General
 import ArkLib.ProofSystem.ToyProblem.Spec.SimplifiedIOR
 import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.Folding
-import ArkLib.ProofSystem.Whir.FoldingScratchDev
 import ArkLib.ProofSystem.Whir.KeystoneReduction
 import ArkLib.ProofSystem.Whir.MCAAffineLineGenerator
 import ArkLib.ProofSystem.Whir.MCAConjectureStatus
