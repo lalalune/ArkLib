@@ -127,6 +127,7 @@ structure RadiusData {k : ℕ} {δ : ℚ} {u₀ u₁ : Fin n → F} {Q : F[Z][X]
   /-- the genuine Johnson-radius premise. -/
   hradius : (dist : ℝ) / n < proximity_gap_johnson k n m
 
+omit [DecidableEq (RatFunc F)] [DecidableEq (Polynomial F)] in
 /-- **Link 1 (the count field, derived from the radius).**
 
 From the per-`z` radius data (and `k+1 ≤ n`, `1 ≤ m`), the GS-factor `hcount` side condition of
@@ -196,7 +197,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 open CorrelatedAgreementListDecodingClosed HcardDischarge
 
-omit [DecidableEq ι] in
+omit [Nonempty ι] [DecidableEq ι] in
 /-- **Link 2 (the betaRec call into the keystone residual), over-strong bundle.**
 
 `StrictCoeffPolysResidual` follows from a per-`P` producer of `Section5StrictData u P`.  The producer
@@ -221,7 +222,7 @@ theorem strictCoeffPolysResidual_of_section5Data {k deg : ℕ} {domain : ι ↪ 
   intro hk u hprob hJ hsqrt P hP
   exact hcoeffPoly_witness_of_section5Data (hExtract hk u hprob hJ hsqrt P hP)
 
-omit [DecidableEq ι] in
+omit [Nonempty ι] [DecidableEq ι] in
 /-- **Link 2 (the betaRec call into the keystone residual), satisfiable finite-range bundle.**
 
 Identical to `strictCoeffPolysResidual_of_section5Data` but from the *satisfiable* corrected bundle

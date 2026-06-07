@@ -137,6 +137,23 @@ theorem not_grandMCAChallenge_bot_epsStar_of_lt_inv_card
     ¬ grandMCAChallenge (F := F) (ι := ι) (⊥ : LinearCode ι F) epsStar :=
   not_grandMCAChallenge_bot_of_lt_inv_card (ι := ι) (F := F) epsStar hε
 
+/-- Any zero-code MCA resolution forces the target error to be at least the exact zero-code value
+`1 / |F|`. This is the contrapositive form of `not_GrandMCAResolution_bot_of_lt_inv_card`. -/
+theorem inv_card_le_of_GrandMCAResolution_bot (ε_star : ℝ≥0)
+    (h : Nonempty (GrandChallenges.GrandMCAResolution (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) ε_star)) :
+    (1 : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal) :=
+  le_of_not_gt fun hε =>
+    not_GrandMCAResolution_bot_of_lt_inv_card (ι := ι) (F := F) ε_star hε h
+
+/-- If the bottom linear code satisfies the Grand MCA predicate, then the target error is at least
+the exact zero-code value `1 / |F|`. -/
+theorem inv_card_le_of_grandMCAChallenge_bot (ε_star : ℝ≥0)
+    (h : grandMCAChallenge (F := F) (ι := ι) (⊥ : LinearCode ι F) ε_star) :
+    (1 : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal) :=
+  le_of_not_gt fun hε =>
+    not_grandMCAChallenge_bot_of_lt_inv_card (ι := ι) (F := F) ε_star hε h
+
 omit [DecidableEq F] in
 /-- Concrete `epsStar = 2^-128` specialization: if `|F| < 2^128`, then the formal threshold
 is below the exact zero-code MCA value `1 / |F|`. -/
@@ -213,6 +230,8 @@ end General
 #print axioms not_GrandMCAResolution_bot_epsStar_of_lt_inv_card
 #print axioms not_grandMCAChallenge_bot_of_lt_inv_card
 #print axioms not_grandMCAChallenge_bot_epsStar_of_lt_inv_card
+#print axioms inv_card_le_of_GrandMCAResolution_bot
+#print axioms inv_card_le_of_grandMCAChallenge_bot
 #print axioms epsStar_lt_inv_card_of_card_lt_two_pow
 #print axioms not_GrandMCAResolution_bot_epsStar_of_card_lt_two_pow
 #print axioms not_grandMCAChallenge_bot_epsStar_of_card_lt_two_pow

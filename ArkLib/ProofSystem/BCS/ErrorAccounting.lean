@@ -408,6 +408,38 @@ theorem bcs_union_bound_mono_error {m : ℕ} (μ : UnionBoundPr E)
     (bcs_union_bound μ badInteraction badOpen εInteraction₁ εOpen₁ hInteraction hOpen)
     (bcsTotalError_mono hInteraction_mono hOpen_mono)
 
+/-- Relax the interaction budget for the no-opening generic BCS union-bound base case. -/
+theorem bcs_union_bound_zero_mono_error (μ : UnionBoundPr E)
+    (badInteraction : E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂) :
+    μ.pr (μ.union badInteraction (μ.unionFin (Fin.elim0 : Fin 0 → E)))
+      ≤ εInteraction₂ :=
+  le_trans
+    (bcs_union_bound_zero μ badInteraction εInteraction₁ hInteraction)
+    hInteraction_mono
+
+/-- Relax the interaction and opening budgets for the single-opening generic BCS union-bound
+base case. -/
+theorem bcs_union_bound_one_mono_error (μ : UnionBoundPr E)
+    (badInteraction badOpen : E)
+    (εInteraction₁ εInteraction₂ εOpen₁ εOpen₂ : ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : μ.pr badOpen ≤ εOpen₁)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : εOpen₁ ≤ εOpen₂) :
+    μ.pr (μ.union badInteraction (μ.unionFin (fun _ : Fin 1 => badOpen)))
+      ≤ εInteraction₂ + εOpen₂ := by
+  calc
+    μ.pr (μ.union badInteraction (μ.unionFin (fun _ : Fin 1 => badOpen)))
+        ≤ bcsTotalError εInteraction₂ (fun _ : Fin 1 => εOpen₂) :=
+      bcs_union_bound_mono_error μ badInteraction (fun _ : Fin 1 => badOpen)
+        εInteraction₁ εInteraction₂ (fun _ : Fin 1 => εOpen₁) (fun _ : Fin 1 => εOpen₂)
+        hInteraction (fun _ => hOpen) hInteraction_mono (fun _ => hOpen_mono)
+    _ = εInteraction₂ + εOpen₂ :=
+      bcsTotalError_one εInteraction₂ (fun _ : Fin 1 => εOpen₂)
+
 /-- Relax the interaction and opening budgets for the one-more-opening generic union-bound
 recurrence. -/
 theorem bcs_union_bound_succ_mono_error {m : ℕ} (μ : UnionBoundPr E)
@@ -995,6 +1027,8 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_union_bound_append_zero_left
 #print axioms bcs_union_bound_append_zero_right
 #print axioms bcs_union_bound_mono_error
+#print axioms bcs_union_bound_zero_mono_error
+#print axioms bcs_union_bound_one_mono_error
 #print axioms bcs_union_bound_succ_mono_error
 #print axioms bcs_union_bound_append_mono_error
 #print axioms bcs_union_bound_append_full_mono_error
