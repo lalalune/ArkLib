@@ -1,0 +1,130 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
+import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
+import Mathlib.Tactic.Linarith
+
+/-!
+# Faithful ABF26 Theorem 4.21 — genuine GS list-size bound on the MCA bad-scalar count (#140)
+
+The black-box form of ABF26 Theorem 4.21 (`lineDecodable_imp_epsMCA_le_target`) is
+**mathematically false** and is *proven* refuted in-tree (`LineDecodingRefutation.lean`).
+
+The first repair attempt routed the conclusion `ε_mca C δ = 0` through the hypothesis
+`MCAForallDoubleCover C δ` (per-coordinate "double cover" by two distinct scalars). That repair
+is **circular**: two distinct scalars pin a degree-`≤1` line, so the double cover collapses to
+joint agreement, and the in-tree theorem `epsMCA_eq_zero_iff_MCAForallDoubleCover` proves
+
+  `MCAForallDoubleCover C δ ↔ epsMCA C δ = 0`.
+
+The "repaired" hypothesis is therefore *goal-equivalent* to the conclusion — it assumes (an exact
+restatement of) what it sets out to prove, so it carries no content.
+
+This module gives the **non-circular** repair. The genuine open Guruswami–Sudan content is
+exposed as honest interpolation data — a *single* candidate codeword-pair `v = (v₀, v₁) ∈ C²`
+whose affine line `v₀ + γ·v₁` `µ`-agrees (weight `≥ α`) with the received line `u₀ + γ·u₁` at
+*every* bad scalar `γ` — together with the genuine failure of correlated agreement for that pair.
+This hypothesis is **strictly weaker** than `epsMCA = 0`: it asserts the existence of a shared
+low-degree interpolant covering the bad scalars, *not* the absence of bad scalars. From it the
+**proven** BCIKS20 list-agreement-on-a-curve bound
+(`WeightedAgreement.sufficiently_large_list_agreement_on_curve_implies_correlated_agreement`)
+delivers a real list-size cap on the bad-scalar count:
+
+  `mcaBadCount C δ u₀ u₁ < M·n + 1`,
+
+i.e. per stack `ε_mca`-contribution `< (M·n + 1)/|F|` — the authentic `a/|F|` shape of T4.21
+(`l = 0` for the affine line, `M` the common denominator of the weight profile `µ`, `n = |ι|`).
+Contrapositive of the curve bound: were there `≥ M·n + 1` bad scalars sharing the interpolant,
+the curve lemma would force correlated agreement, contradicting its failure.
+
+The remaining genuinely-open content is *constructing* the GS interpolant `v` (the
+Guruswami–Sudan list decoder of `u₀ + Z·u₁` over `F(Z)`); this module faithfully isolates that
+as the explicit, non-circular hypothesis `hcover`/`hfail`, with the extraction itself proven.
+
+## References
+
+- [ABF26] Arnon-Boneh-Fenzi. Theorem 4.21. *Open Problems in List Decoding and Correlated
+  Agreement.*
+- [GG25] Goyal-Guruswami; [BCIKS20] Ben-Sasson et al. (the curve list-agreement bound).
+-/
+
+set_option linter.unusedSectionVars false
+
+open Finset
+open scoped NNReal
+
+namespace ProximityGap
+
+open WeightedAgreement
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+/-- **Faithful ABF26 Theorem 4.21 core — genuine GS list-size bound on the MCA bad-scalar count.**
+
+The *non-circular* replacement for the refuted black-box `lineDecodable_imp_epsMCA_le_target` and
+for the circular `MCAForallDoubleCover` repair (whose hypothesis is provably equivalent to the
+conclusion `ε_mca = 0` via `epsMCA_eq_zero_iff_MCAForallDoubleCover`). The open Guruswami–Sudan
+content is exposed as genuine interpolation data — a *single* candidate codeword-pair
+`v = (v₀, v₁) ∈ C²` whose affine line `v₀ + γ·v₁` `µ`-agrees (weight `≥ α`) with the received
+line `u₀ + γ·u₁` at *every* bad scalar `γ` — together with the genuine failure of correlated
+agreement for that pair. From this the **proven** BCIKS20 list-agreement-on-a-curve bound
+(`sufficiently_large_list_agreement_on_curve_implies_correlated_agreement`) gives the real
+list-size cap
+
+  `mcaBadCount C δ u₀ u₁ < M·n + 1`,
+
+i.e. per-stack `ε_mca`-contribution `< (M·n + 1)/|F|`, the genuine `a/|F|` shape of T4.21
+(`l = 0` for the affine line; `M` the common denominator of the weight profile `µ`, `n = |ι|`).
+
+The hypothesis is strictly weaker than the conclusion: it asserts a shared low-degree interpolant
+covering the bad scalars, **not** the absence of bad scalars. Contrapositive of the curve bound:
+were there `≥ M·n + 1` bad scalars, the curve lemma would force correlated agreement,
+contradicting `hfail`. -/
+theorem mcaBadCount_lt_of_gs_curve_cover
+    (C : Set (ι → F)) (δ : ℝ≥0) (u₀ u₁ : ι → F)
+    (μ : ι → Set.Icc (0 : ℚ) 1) (M : ℕ) (hM : 0 < M)
+    (hμ : ∀ i, ∃ n : ℤ, (μ i).1 = (n : ℚ) / (M : ℚ))
+    (α : ℝ≥0) (v : Fin 2 → ι → F)
+    (hcover : ∀ γ : F, mcaEvent C δ u₀ u₁ γ →
+        (α : ℝ) ≤ agree μ (fun x => Curve.polynomialCurveEval (F := F) (A := F) ![u₀, u₁] γ x)
+                    (fun x => Curve.polynomialCurveEval (F := F) (A := F) v γ x))
+    (hfail : mu_set μ { x : ι | ∀ i, (![u₀, u₁] : Fin 2 → ι → F) i x = v i x } < (α : ℝ)) :
+    mcaBadCount (F := F) C δ u₀ u₁ < M * Fintype.card ι + 1 := by
+  classical
+  by_contra hge
+  push_neg at hge
+  -- `S'` is exactly the bad-scalar set; `mcaBadCount = S'.card`.
+  set S' : Finset F := univ.filter (fun γ : F => mcaEvent C δ u₀ u₁ γ) with hS'
+  have hcard : mcaBadCount (F := F) C δ u₀ u₁ = S'.card := rfl
+  rw [hcard] at hge
+  -- size hypotheses for the curve lemma, `l = 0`
+  have hn_pos : 0 < Fintype.card ι := Fintype.card_pos
+  have hMn : 2 ≤ M * Fintype.card ι + 1 := by
+    have : 1 ≤ M * Fintype.card ι := Nat.one_le_iff_ne_zero.mpr (by positivity)
+    omega
+  have h1 : S'.card > 0 + 1 := by omega
+  have h2 : S'.card ≥ (M * Fintype.card ι + 1) * (0 + 1) := by simpa using hge
+  -- the cover gives curve-agreement at every bad scalar `z ∈ S'`
+  have hagree : ∀ z ∈ S',
+      (α : ℝ) ≤ agree μ
+        (fun x => Curve.polynomialCurveEval (F := F) (A := F) ![u₀, u₁] z x)
+        (fun x => Curve.polynomialCurveEval (F := F) (A := F) v z x) := by
+    intro z hz
+    exact hcover z (Finset.mem_filter.mp hz).2
+  -- proven BCIKS20 curve bound forces correlated agreement
+  have hcorr :
+      mu_set μ { x : ι | ∀ i, (![u₀, u₁] : Fin 2 → ι → F) i x = v i x } ≥ (α : ℝ) :=
+    sufficiently_large_list_agreement_on_curve_implies_correlated_agreement
+      (l := 0) (u := ![u₀, u₁]) (μ := μ) (α := α) (M := M) hμ (v := v) (S' := S')
+      h1 h2 hagree
+  exact absurd hcorr (not_le.mpr hfail)
+
+end ProximityGap
+
+/-! ### `#print axioms` verification anchor -/
+
+#print axioms ProximityGap.mcaBadCount_lt_of_gs_curve_cover
