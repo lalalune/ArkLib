@@ -189,4 +189,3 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_T218
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_T218
 
 end CodingTheory
-
