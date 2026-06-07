@@ -597,6 +597,7 @@ import ArkLib.ToMathlib.BetaToCurveCoeffPolys
 import ArkLib.ToMathlib.BetaToCurveCoeffPolysOffcentre
 import ArkLib.ToMathlib.BetaWeightCollapse
 import ArkLib.ToMathlib.BetaWeightInduction
+import ArkLib.ToMathlib.BGKS20AllButOne
 import ArkLib.ToMathlib.BigOperators.Fin
 import ArkLib.ToMathlib.BivariateDegreeToolkit
 import ArkLib.ToMathlib.BoundaryDischarge

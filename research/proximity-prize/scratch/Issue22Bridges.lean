@@ -89,7 +89,7 @@ set_option linter.unusedDecidableInType false
 namespace ProximityGap.GrandChallenges.Issue22
 
 open scoped NNReal ENNReal BigOperators
-open ProximityGap ProximityGap.GrandChallenges CodingTheory CodingTheory.Bridge
+open ProximityGap ProximityGap.GrandChallenges CodingTheory CodingTheory.Bridge Polynomial
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]

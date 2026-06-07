@@ -286,6 +286,119 @@ theorem mcaThreshold_spec_and_lower_bracket_prize_allRates_of_forall_not_mcaEven
   exact mcaThreshold_spec_and_lower_bracket_prize_of_forall_not_mcaEvent
     domain j (δ j) (hδ_le_one j) (hno j)
 
+/-- Package repaired double-cover data and explicit upper witnesses into all four per-rate
+threshold two-sided brackets. -/
+theorem mcaThreshold_spec_and_bracket_prize_allRates_ofDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j))
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤
+              mcaThreshold C epsStar hne ∧
+            mcaThreshold C epsStar hne <
+              latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  intro j
+  exact mcaThreshold_spec_and_bracket_prize_ofDoubleCover
+    domain j (δ j) (hδ_le_one j) (hcov j) (whi j) (hδhi j)
+
+/-- Package named per-bad-scalar double-cover data and explicit upper witnesses into all four
+per-rate threshold two-sided brackets. -/
+theorem mcaThreshold_spec_and_bracket_prize_allRates_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤
+              mcaThreshold C epsStar hne ∧
+            mcaThreshold C epsStar hne <
+              latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  intro j
+  exact mcaThreshold_spec_and_bracket_prize_ofBadScalarDoubleCover
+    domain j (δ j) (hδ_le_one j) (hcov j) (whi j) (hδhi j)
+
+/-- Package zero bad-scalar counts and explicit upper witnesses into all four per-rate threshold
+two-sided brackets. -/
+theorem mcaThreshold_spec_and_bracket_prize_allRates_of_mcaBadCount_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hzero : ∀ j : Fin 4, ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) = 0)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤
+              mcaThreshold C epsStar hne ∧
+            mcaThreshold C epsStar hne <
+              latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  intro j
+  exact mcaThreshold_spec_and_bracket_prize_of_mcaBadCount_zero
+    domain j (δ j) (hδ_le_one j) (hzero j) (whi j) (hδhi j)
+
+/-- Package direct no-bad-event frontiers and explicit upper witnesses into all four per-rate
+threshold two-sided brackets. -/
+theorem mcaThreshold_spec_and_bracket_prize_allRates_of_forall_not_mcaEvent
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hno : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤
+              mcaThreshold C epsStar hne ∧
+            mcaThreshold C epsStar hne <
+              latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  intro j
+  exact mcaThreshold_spec_and_bracket_prize_of_forall_not_mcaEvent
+    domain j (δ j) (hδ_le_one j) (hno j) (whi j) (hδhi j)
+
 private theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
     (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
     (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
@@ -1180,6 +1293,14 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_allRates_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_allRates_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_bracket_prize_allRates_ofDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_bracket_prize_allRates_ofBadScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_bracket_prize_allRates_of_mcaBadCount_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_bracket_prize_allRates_of_forall_not_mcaEvent
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_ofDoubleCover
 set_option linter.style.longLine false in
