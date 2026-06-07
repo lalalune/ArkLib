@@ -70,6 +70,15 @@ noncomputable def queryError : ℝ≥0 :=
 noncomputable def totalError (δ : ℝ≥0) : ℝ≥0 :=
   (∑ i : Fin k, roundError k s d (ω := ω) δ i) + queryError k s d l (ω := ω)
 
+omit [DecidableEq F] [NeZero l] in
+/-- The query-phase accounting contribution is included in `totalError`.
+
+This is only a projection from the additive budget, not the deferred FRI soundness theorem. -/
+theorem queryError_le_totalError (δ : ℝ≥0) :
+    queryError k s d l (ω := ω) ≤ totalError k s d l (ω := ω) δ := by
+  unfold totalError
+  exact le_add_of_nonneg_left (zero_le _)
+
 end Spec
 
 end Fri

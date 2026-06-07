@@ -490,6 +490,7 @@ lemma logical_queryFiberPoints_eq_fiberEvaluations
   funext u
   simp only [logical_queryFiberPoints, fiberEvaluations]
   rw [getFiberPoint_eq_qMap_total_fiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) k v u]
+  rfl
 
 lemma logical_computeFoldedValue_eq_iterated_fold
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ) j)

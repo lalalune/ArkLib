@@ -210,6 +210,27 @@ theorem htailDeg_of_polynomial_representative {x₀ : F} {R : F[X][X][Y]}
   rw [alphaFromBeta_eq_lift_coeff hsubst hγ hrep t,
     Polynomial.coeff_eq_zero_of_natDegree_lt ht, map_zero]
 
+/-! The same tail producer is monotone in the cutoff: once the polynomial representative has
+degree at most `T`, every coefficient above `T` vanishes.  This is the shape needed when the
+finite-counting cutoff is chosen by the cardinality budget rather than set definitionally to
+`Ppoly.natDegree`. -/
+
+/-- **Tail-degree producer for any larger cutoff.**  If the §5 representative has degree at most
+`T`, then the `htailDeg` conclusion holds above `T`.  This reuses
+`htailDeg_of_polynomial_representative`; it does not assume the vanishing conclusion. -/
+theorem htailDeg_of_polynomial_representative_le_bound {x₀ : F} {R : F[X][X][Y]}
+    {hHyp : Hypotheses x₀ R H}
+    {Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H} {Ppoly : F[X][Y]}
+    (hsubst : PowerSeries.HasSubst (Claim59Conditional.shiftSeries x₀ H))
+    (hγ : γ x₀ R H hHyp =
+      (PowerSeries.mk (αFromBeta x₀ R H hHyp Bcoeff)).subst
+        (Claim59Conditional.shiftSeries x₀ H))
+    (hrep : polyToPowerSeries𝕃 H Ppoly = γ x₀ R H hHyp)
+    {T : ℕ} (hT : Ppoly.natDegree ≤ T) :
+    ∀ t, T < t → αFromBeta x₀ R H hHyp Bcoeff t = 0 := by
+  intro t ht
+  exact htailDeg_of_polynomial_representative hsubst hγ hrep t (lt_of_le_of_lt hT ht)
+
 /-! ## Step 5 — packaged form: the `htailDeg` of a `Section5StrictDataFin`-shaped datum
 
 The same conclusion bundled to read off the explicit Prop-5.5 fields of the corrected datum,
@@ -237,3 +258,6 @@ theorem htailDeg_with_bound {x₀ : F} {R : F[X][X][Y]}
 end TailDegProducer
 
 end ArkLib
+
+/-! ## Axiom audit — tail-degree producer surface. -/
+#print axioms ArkLib.TailDegProducer.htailDeg_of_polynomial_representative_le_bound
