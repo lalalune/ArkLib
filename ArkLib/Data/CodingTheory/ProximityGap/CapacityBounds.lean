@@ -1660,6 +1660,29 @@ structure FRSEpsMCACapacityGG25TLeFrontier
       (1 - τ (t + 1) - 3 / (2 * t)).toNNReal
   htη : (t : ℝ) ≤ 2 / η
 
+/-- Convert the honest `t ≤ 2 / η` frontier into the older raw-bound frontier expected by
+downstream consumers, deriving the `hBound` field from the proved arithmetic bridge. -/
+noncomputable def FRSEpsMCACapacityGG25TLeFrontier.toFrontier
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {domain : ι ↪ F} {k s : ℕ} {ω : F} {η : ℝ}
+    (frontier : FRSEpsMCACapacityGG25TLeFrontier domain k s ω η) :
+    FRSEpsMCACapacityGG25Frontier domain k s ω η :=
+  { hη_pos := frontier.hη_pos
+    hη_lt := frontier.hη_lt
+    hs_gt := frontier.hs_gt
+    τ := frontier.τ
+    t := frontier.t
+    ht := frontier.ht
+    hT218 := frontier.hT218
+    hT413 := frontier.hT413
+    hRadius := frontier.hRadius
+    hBound := by
+      exact frs_capacity_realBound_of_t_le
+        (Fintype.card ι) η frontier.t (Fintype.card F)
+        (Nat.cast_nonneg _) frontier.hη_pos frontier.hη_lt
+        (by exact_mod_cast frontier.ht) (by positivity) frontier.htη }
+
 /-- Reassemble the public folded-RS MCA-up-to-capacity statement from the `t ≤ 2 / η` frontier,
 using the proved arithmetic residual instead of requiring callers to supply `hBound` directly. -/
 theorem frs_epsMCA_capacity_gg25_of_tle_frontier
@@ -1816,6 +1839,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.FRSEpsMCACapacityGG25Frontier
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_frontier
 #print axioms CodingTheory.FRSEpsMCACapacityGG25TLeFrontier
+#print axioms CodingTheory.FRSEpsMCACapacityGG25TLeFrontier.toFrontier
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_tle_frontier
 #print axioms CodingTheory.rs_epsCA_bchks25_item2
 #print axioms CodingTheory.rs_epsCA_bchks25_item2_of_bound

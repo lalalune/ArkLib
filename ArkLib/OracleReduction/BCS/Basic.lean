@@ -549,6 +549,18 @@ theorem BCSOpeningSchedule.toOpeningStatements_subset
   exact (BCSOpeningSchedule.mem_toOpeningStatements_iff schedule₂ statement).2
     ⟨request, hsubset request hrequest, hstatement_eq⟩
 
+/-- The indexed opening-statement view determines the original typed opening schedule. -/
+theorem BCSOpeningSchedule.toOpeningStatements_injective
+    {CommitmentType : pSpec.MessageIdx → Type} :
+    Function.Injective
+      (fun schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType =>
+        schedule.toOpeningStatements) := by
+  intro schedule₁ schedule₂ h
+  dsimp [BCSOpeningSchedule.toOpeningStatements] at h
+  exact
+    (BCSOpeningRequest.indexed_toOpeningStatement_injective
+      (pSpec := pSpec) (Oₘ := Oₘ) (CommitmentType := CommitmentType)).list_map h
+
 /-- Duplicate-free typed opening schedules remain duplicate-free after conversion to indexed
 opening statements. -/
 theorem BCSOpeningSchedule.toOpeningStatements_nodup
@@ -943,6 +955,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_forall
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_exists
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_subset
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_injective
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied

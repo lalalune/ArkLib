@@ -253,10 +253,37 @@ theorem rs_epsCA_implies_lambda_extended_cs25_complete
   exact deepHoleJointFar_holds domain u a k δ
     (mem_sampleSet_imp_off_domain ha) hkS
 
+/-- Prop-level CS25 endpoint from the fully discharged deep-hole chain.
+
+This targets the public ABF26 T5.3 / CS25 proposition from
+`ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA`, while keeping the arithmetic side
+conditions required by the complete deep-hole proof explicit. -/
+theorem rs_epsCA_implies_lambda_extended_cs25_complete_prop
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (η : ℝ)
+    (hk_pos : 0 < k)
+    (hδ_pos : 0 < δ)
+    (hδ_min :
+        (δ : ℝ) < Code.minDist ((ReedSolomon.code domain k : Set (ι → F)))
+                    / Fintype.card ι)
+    (hη_lo : 0 ≤ η) (hη_lt : η < 1)
+    (hkn : k + 1 ≤ Fintype.card ι)
+    (hs_pos : (0 : ℝ) < Fintype.card F - Fintype.card ι)
+    (hkS : k < Fintype.card ι - Nat.floor (δ.toNNReal * Fintype.card ι))
+    (hε_ca :
+        (epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            δ.toNNReal δ.toNNReal).toReal ≤
+          η * (1 / k - Fintype.card ι / (k * Fintype.card F))) :
+    CodingTheory.rs_epsCA_implies_lambda_extended_cs25 domain k δ η
+      hk_pos hδ_pos hδ_min hη_lo hη_lt hε_ca :=
+  rs_epsCA_implies_lambda_extended_cs25_complete
+    domain k δ η hk_pos hη_lo hη_lt hkn hs_pos (le_of_lt hδ_pos) hkS hε_ca
+
 end CodingTheory.CS25.DeepHole
 
 section AxiomAudit
 #print axioms CodingTheory.CS25.DeepHole.deepHoleJointFar_holds
 #print axioms CodingTheory.CS25.DeepHole.deepHoleProbResidual_holds
 #print axioms CodingTheory.CS25.DeepHole.rs_epsCA_implies_lambda_extended_cs25_complete
+#print axioms CodingTheory.CS25.DeepHole.rs_epsCA_implies_lambda_extended_cs25_complete_prop
 end AxiomAudit

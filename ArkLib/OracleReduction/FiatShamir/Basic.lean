@@ -278,6 +278,43 @@ theorem fiatShamir_completeness_unroll_of_runCollapse
     hCollapse stmtIn witIn
   rw [hcollapse]
 
+/-- Basic Fiat-Shamir completeness follows from the run-collapse residual and completeness of the
+explicit honest-execution experiment. This is the forward direction of
+`fiatShamir_completeness_unroll_of_runCollapse`, packaged for downstream users that do not need the
+full equivalence. -/
+theorem fiatShamir_completeness_of_honestExecution
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hCollapse : ∀ stmtIn witIn,
+      fiatShamir_runCollapseResidual impl R stmtIn witIn)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      (R.fiatShamirHonestExecution) completenessError) :
+    R.fiatShamir.completeness init impl relIn relOut completenessError :=
+  (fiatShamir_completeness_unroll_of_runCollapse init impl relIn relOut completenessError
+    R hCollapse).2 hHonest
+
+/-- Transformed basic Fiat-Shamir completeness can be projected back to completeness of the explicit
+honest-execution experiment once the run-collapse residual is available. This is the reverse
+direction of `fiatShamir_completeness_unroll_of_runCollapse`, exposed as a theorem-level helper. -/
+theorem fiatShamir_honestExecution_completeness_of_completeness
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hCollapse : ∀ stmtIn witIn,
+      fiatShamir_runCollapseResidual impl R stmtIn witIn)
+    (hFS : R.fiatShamir.completeness init impl relIn relOut completenessError) :
+    Reduction.completenessFromRun init impl relIn relOut
+      (R.fiatShamirHonestExecution) completenessError :=
+  (fiatShamir_completeness_unroll_of_runCollapse init impl relIn relOut completenessError
+    R hCollapse).1 hFS
+
 -- Future work: discharge `fiatShamir_runCollapseResidual` itself.
 -- `Reduction.run_of_prover_first` is now available, and `simulateQ_add_run_liftM_left` in
 -- `Execution.lean` collapses the unused outer challenge oracle on lifted `OptionT` runs. The
@@ -287,6 +324,8 @@ theorem fiatShamir_completeness_unroll_of_runCollapse
 
 #print axioms Reduction.fiatShamir_runCollapseResidual
 #print axioms Reduction.fiatShamir_completeness_unroll_of_runCollapse
+#print axioms Reduction.fiatShamir_completeness_of_honestExecution
+#print axioms Reduction.fiatShamir_honestExecution_completeness_of_completeness
 
 end Completeness
 
