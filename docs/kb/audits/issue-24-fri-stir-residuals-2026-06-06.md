@@ -92,14 +92,19 @@ Current source also exposes the #14 split frontier:
 - `FriSoundnessParts` separates the Claim 8.3 proof boundary into the
   Claim 8.2 lift to the full-domain statement, sequential-composition
   soundness, and the `totalError` accounting step.
+- `Fri.batchedFRIreduction_verifier_eq_append` and
+  `Fri.batchedFRISequentialCompositionSoundness_of_append` specialize the
+  existing append soundness API to the concrete Batched FRI verifier seam,
+  reducing the sequential-composition field to the per-phase soundness inputs
+  plus the generic `OracleVerifier.appendSoundnessResidual`.
 - `fri_soundness_of_parts` reassembles the faithful `fri_soundness` residual
   from those three named ingredients.
 
 The query-round acceptance field now has a proved combinatorial core and two
 adapters into the split frontier. This is still not a proof of Claims 8.2 or
 8.3: the batching/oracle-lens reduction, the coding-theoretic bridge into
-`Code.jointAgreement`, the sequential-composition soundness theorem, and the
-`totalError` accounting step remain open proof work.
+`Code.jointAgreement`, the generic append residual / virtual-oracle soundness
+preservation, and the `totalError` accounting step remain open proof work.
 
 ### STIR proximity gap
 

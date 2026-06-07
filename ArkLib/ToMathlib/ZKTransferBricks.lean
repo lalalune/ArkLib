@@ -17,6 +17,10 @@ import ArkLib.OracleReduction.Security.ZeroKnowledge
     `evalDist`-equal simulator.
   - `statisticalHVZK.simulator_congr`: statistical HVZK is preserved under the same simulator
     distribution congruence, with the error budget unchanged.
+  - `perfectHVZK.isHVZK` / `statisticalHVZK.isStatHVZK`: package a concrete simulator proof into
+    the corresponding existential zero-knowledge property.
+  - `perfectHVZK.isHVZK_of_simulator_congr` / `statisticalHVZK.isStatHVZK_of_simulator_congr`:
+    package an `evalDist`-equal normalized simulator into the existential API.
   - `statisticalHVZK.simulator_triangle`: two statistical-HVZK bounds compose by the triangle
     inequality, giving a combined error budget. This is the shape used when transferring a
     simulator across an `evalDist`-equal intermediate honest distribution.
@@ -113,6 +117,48 @@ theorem statisticalHVZK.simulator_congr
   unfold tvDist
   rw [← hsim stmtIn]
   exact h stmtIn witIn hMem
+
+/-- **A concrete perfect-HVZK simulator witnesses existential HVZK.** -/
+theorem perfectHVZK.isHVZK
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec}
+    (h : perfectHVZK init impl rel R sim) :
+    _root_.Reduction.isHVZK init impl rel R :=
+  ⟨sim, h⟩
+
+/-- **A concrete statistical-HVZK simulator witnesses existential statistical HVZK.** -/
+theorem statisticalHVZK.isStatHVZK
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R sim ε) :
+    _root_.Reduction.isStatHVZK init impl rel R ε :=
+  ⟨sim, h⟩
+
+/-- **Package a perfect-HVZK proof after normalizing the simulator distribution.** -/
+theorem perfectHVZK.isHVZK_of_simulator_congr
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn pSpec}
+    (h : perfectHVZK init impl rel R sim)
+    (hsim : ∀ stmtIn, evalDist (sim stmtIn) = evalDist (sim' stmtIn)) :
+    _root_.Reduction.isHVZK init impl rel R :=
+  ⟨sim', h.simulator_congr hsim⟩
+
+/-- **Package a statistical-HVZK proof after normalizing the simulator distribution.** -/
+theorem statisticalHVZK.isStatHVZK_of_simulator_congr
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R sim ε)
+    (hsim : ∀ stmtIn, evalDist (sim stmtIn) = evalDist (sim' stmtIn)) :
+    _root_.Reduction.isStatHVZK init impl rel R ε :=
+  ⟨sim', h.simulator_congr hsim⟩
 
 /-- **Triangle composition of statistical HVZK.** If `sim₁` is within `ε₁` of the honest
 distribution and the honest distribution is within `ε₂` of `sim₂`'s, then `sim₁` is within
@@ -415,6 +461,10 @@ theorem isHVZK.triangle_honestDist_symm_zero
 #print axioms statisticalHVZK.congr_honestDist
 #print axioms perfectHVZK.simulator_congr
 #print axioms statisticalHVZK.simulator_congr
+#print axioms perfectHVZK.isHVZK
+#print axioms statisticalHVZK.isStatHVZK
+#print axioms perfectHVZK.isHVZK_of_simulator_congr
+#print axioms statisticalHVZK.isStatHVZK_of_simulator_congr
 #print axioms statisticalHVZK.simulator_triangle
 #print axioms statisticalHVZK.triangle_honestDist
 #print axioms statisticalHVZK.triangle_honestDist_symm

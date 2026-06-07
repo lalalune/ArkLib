@@ -77,6 +77,51 @@ theorem statisticalHVZK.simulator_congr
     statisticalHVZK init impl rel R sim' ε :=
   Reduction.statisticalHVZK.simulator_congr h hsim
 
+/-- **A concrete OracleReduction perfect-HVZK simulator witnesses existential HVZK.** -/
+theorem perfectHVZK.isHVZK
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn OStmtIn pSpec}
+    (h : perfectHVZK init impl rel R sim) :
+    _root_.OracleReduction.isHVZK init impl rel R :=
+  ⟨sim, h⟩
+
+/-- **A concrete OracleReduction statistical-HVZK simulator witnesses existential statistical
+HVZK.** -/
+theorem statisticalHVZK.isStatHVZK
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn OStmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R sim ε) :
+    _root_.OracleReduction.isStatHVZK init impl rel R ε :=
+  ⟨sim, h⟩
+
+/-- **Package an OracleReduction perfect-HVZK proof after normalizing the simulator
+distribution.** -/
+theorem perfectHVZK.isHVZK_of_simulator_congr
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn OStmtIn pSpec}
+    (h : perfectHVZK init impl rel R sim)
+    (hsim : ∀ stmtIn, evalDist (sim stmtIn) = evalDist (sim' stmtIn)) :
+    _root_.OracleReduction.isHVZK init impl rel R :=
+  ⟨sim', h.simulator_congr hsim⟩
+
+/-- **Package an OracleReduction statistical-HVZK proof after normalizing the simulator
+distribution.** -/
+theorem statisticalHVZK.isStatHVZK_of_simulator_congr
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn OStmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R sim ε)
+    (hsim : ∀ stmtIn, evalDist (sim stmtIn) = evalDist (sim' stmtIn)) :
+    _root_.OracleReduction.isStatHVZK init impl rel R ε :=
+  ⟨sim', h.simulator_congr hsim⟩
+
 /-- **Triangle composition of statistical HVZK at the OracleReduction API boundary.** -/
 theorem statisticalHVZK.simulator_triangle
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -342,6 +387,10 @@ theorem isHVZK.triangle_honestDist_symm_zero
 #print axioms statisticalHVZK.congr_honestDist
 #print axioms perfectHVZK.simulator_congr
 #print axioms statisticalHVZK.simulator_congr
+#print axioms perfectHVZK.isHVZK
+#print axioms statisticalHVZK.isStatHVZK
+#print axioms perfectHVZK.isHVZK_of_simulator_congr
+#print axioms statisticalHVZK.isStatHVZK_of_simulator_congr
 #print axioms statisticalHVZK.simulator_triangle
 #print axioms statisticalHVZK.triangle_honestDist
 #print axioms statisticalHVZK.triangle_honestDist_symm

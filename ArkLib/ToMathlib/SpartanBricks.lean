@@ -278,6 +278,43 @@ def finalCheckWithClaimRelOut :
     Set ((FinalClaimStatement R pp × (∀ i, FinalOracleStatement R pp i)) × Unit) :=
   Set.univ
 
+/-- Pure semantic input relation for the target-carrying Spartan final check: the carried target is
+the algebraic final expected claim value determined by the final Spartan statement and oracle
+statements. This is the relation-level front door corresponding to `finalClaimPredicate`; the
+oracle verifier checks the same value through oracle queries. -/
+@[reducible]
+def finalCheckWithClaimValueRelIn :
+    Set ((FinalClaimStatement R pp × (∀ i, FinalOracleStatement R pp i)) × Unit) :=
+  { x | x.1.1.1 = finalExpectedClaimValue R pp x.1.1.2 x.1.2 }
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- If the carried target is the second-sum-check polynomial endpoint, then it satisfies the pure
+target-carrying final-check relation. -/
+theorem finalCheckWithClaimValueRelIn_of_secondSumcheckEval
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (hTarget : target =
+      MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt)) :
+    (((target, stmt), oStmt), ()) ∈ finalCheckWithClaimValueRelIn R pp := by
+  simp [finalCheckWithClaimValueRelIn, hTarget,
+    secondSumCheckVirtualPolynomial_eval_eq_finalExpectedClaimValue]
+
+/-- **NAMED RESIDUAL — final target relation from the second-sum-check endpoint.** The target
+threaded into Spartan's final `CheckClaim` belongs to the pure target-carrying relation whenever it
+is the endpoint emitted by the second sum-check. -/
+def finalCheckWithClaimValueRelResidual : Prop :=
+  ∀ (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i),
+    target = MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt) →
+      (((target, stmt), oStmt), ()) ∈ finalCheckWithClaimValueRelIn R pp
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The pure final target relation residual follows from the terminal endpoint bridge. -/
+theorem finalCheckWithClaimValueRelResidual_holds :
+    finalCheckWithClaimValueRelResidual R pp := by
+  intro target stmt oStmt hTarget
+  exact finalCheckWithClaimValueRelIn_of_secondSumcheckEval R pp target stmt oStmt hTarget
+
 /-- The terminal-check input relation: the random-linear-combination of the bundled evaluation
 claims, taken in the clear at the prover's view, is well-formed. (The value-level relation; the
 oracle reduction's verifier checks `finalPredicate`.) -/
@@ -547,6 +584,10 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms finalCheckWithClaim
 #print axioms finalCheckWithClaimRelIn
 #print axioms finalCheckWithClaimRelOut
+#print axioms finalCheckWithClaimValueRelIn
+#print axioms finalCheckWithClaimValueRelIn_of_secondSumcheckEval
+#print axioms finalCheckWithClaimValueRelResidual
+#print axioms finalCheckWithClaimValueRelResidual_holds
 #print axioms finalCheckRelIn
 #print axioms finalCheckRelOut
 #print axioms firstSumcheckResidual

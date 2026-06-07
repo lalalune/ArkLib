@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
+import ArkLib.ToMathlib.Polynomial.HasseDerivEval
 
 /-!
 # BCIKS20 Appendix A.4 — P2 assembly partition-form frontier (issue #139)

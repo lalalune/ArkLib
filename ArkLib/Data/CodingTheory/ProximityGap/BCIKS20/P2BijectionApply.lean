@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Bijection
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
+import ArkLib.ToMathlib.PartitionRecursion
 
 /-!
 # BCIKS20 Appendix A.4 — `restrictedFaaDiBrunoSum` in partition form (toward `RestrictedFaaDiBrunoMatch`)
@@ -76,6 +77,61 @@ theorem partitionProd_guard_eq (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypot
   have hne : l ≠ t + 1 := fun h => hT (h ▸ hl)
   rw [dif_pos (show l < t + 1 by omega)]
 
+/-- **Positive outer index automatically satisfies the recursion exclusion.**  If `0 < i₁`, then
+`λ ⊢ t+1-i₁` partitions a total strictly smaller than `t+1`, so `(t+1)` cannot occur as a part. -/
+theorem partition_notMem_succ_of_pos_i1 (t i1 : ℕ) (hi1 : 0 < i1)
+    (lam : Nat.Partition (t + 1 - i1)) :
+    (t + 1) ∉ lam.parts :=
+  ArkLib.Nat.Partition.notMem_parts_of_lt lam (by omega)
+
+/-- **Positive outer index makes the recursion partition filter vacuous.**  In the `i₁ > 0` branch
+of `(A.1)`, every partition of `t+1-i₁` automatically avoids the forbidden part `t+1`. -/
+theorem partition_filter_notMem_succ_eq_univ_of_pos_i1 (t i1 : ℕ) (hi1 : 0 < i1) :
+    ((Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+        (fun lam => (t + 1) ∉ lam.parts))
+      = Finset.univ := by
+  classical
+  ext lam
+  simp [partition_notMem_succ_of_pos_i1 t i1 hi1 lam]
+
+/-- **Positive outer index collapses the `βHensel_succ` product guard.**  This is
+`partitionProd_guard_eq` with the `(t+1) ∉ λ.parts` side condition discharged by
+`Nat.Partition.notMem_parts_of_lt`. -/
+theorem partitionProd_guard_eq_of_pos_i1 (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t i1 : ℕ) (hi1 : 0 < i1)
+    (lam : Nat.Partition (t + 1 - i1)) :
+    partitionProd lam (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0)
+      = partitionProd lam (βHensel H x₀ R hHyp) :=
+  partitionProd_guard_eq H x₀ R hHyp t i1 lam
+    (partition_notMem_succ_of_pos_i1 t i1 hi1 lam)
+
+/-- **Zero outer index exclusion is exactly non-indiscreteness.**  For `λ ⊢ t+1`, the forbidden
+part `(t+1)` occurs iff `λ` is the one-part partition `indiscrete (t+1)`. -/
+theorem partition_notMem_succ_iff_ne_indiscrete (t : ℕ)
+    (lam : Nat.Partition (t + 1)) :
+    (t + 1) ∉ lam.parts ↔ lam ≠ Nat.Partition.indiscrete (t + 1) :=
+  not_congr (ArkLib.Nat.Partition.mem_self_iff_eq_indiscrete (Nat.succ_pos t) (p := lam))
+
+/-- **Zero outer index filter removes exactly the indiscrete partition.**  The `i₁ = 0` branch of
+the `(A.1)` recursion ranges over all partitions of `t+1` except the single part `[t+1]`. -/
+theorem partition_filter_notMem_succ_eq_univ_erase_indiscrete (t : ℕ) :
+    ((Finset.univ : Finset (Nat.Partition (t + 1))).filter
+        (fun lam => (t + 1) ∉ lam.parts))
+      = Finset.univ.erase (Nat.Partition.indiscrete (t + 1)) := by
+  classical
+  ext lam
+  simp [partition_notMem_succ_iff_ne_indiscrete t lam]
+
+/-- **Non-indiscrete zero outer index collapses the `βHensel_succ` product guard.**  This is the
+`i₁ = 0` complement to `partitionProd_guard_eq_of_pos_i1`. -/
+theorem partitionProd_guard_eq_of_ne_indiscrete (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (lam : Nat.Partition (t + 1))
+    (hne : lam ≠ Nat.Partition.indiscrete (t + 1)) :
+    partitionProd lam (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0)
+      = partitionProd lam (βHensel H x₀ R hHyp) :=
+  partitionProd_guard_eq H x₀ R hHyp t 0 lam
+    ((partition_notMem_succ_iff_ne_indiscrete t lam).2 hne)
+
 /-- **Embedding of the `(A.1)` recursion `βHensel (t+1)` into `𝕃 H`.**  Pushes the ring
 homomorphism `embeddingOf𝒪Into𝕃` through `βHensel_succ` (sum, negation, products, powers) and
 discharges the guard via `partitionProd_guard_eq`, giving the `(i₁,λ)` sum with the partition
@@ -89,9 +145,65 @@ theorem embed_βHensel_succ (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypothes
               * embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
               * embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R i1 lam)
               * embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp)) := by
-  rw [βHensel_succ, map_neg, map_sum]
+  rw [βHensel_succ, RingHom.map_neg]
+  rw [show
+    (embeddingOf𝒪Into𝕃 H)
+        (∑ i1 ∈ Finset.range (t + 2),
+          ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                    (fun lam => (t + 1) ∉ lam.parts),
+            (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+              * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+              * B_coeff H x₀ R i1 lam
+              * partitionProd lam
+                  (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0))
+      = ∑ i1 ∈ Finset.range (t + 2),
+          (embeddingOf𝒪Into𝕃 H)
+            (∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                      (fun lam => (t + 1) ∉ lam.parts),
+              (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+                * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+                * B_coeff H x₀ R i1 lam
+                * partitionProd lam
+                    (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0)) by
+    change (embeddingOf𝒪Into𝕃 H).toAddMonoidHom
+        (∑ i1 ∈ Finset.range (t + 2),
+          ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                    (fun lam => (t + 1) ∉ lam.parts),
+            (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+              * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+              * B_coeff H x₀ R i1 lam
+              * partitionProd lam
+                  (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0))
+      = _
+    simp]
   refine congrArg Neg.neg (Finset.sum_congr rfl (fun i1 _ => ?_))
-  rw [map_sum]
+  rw [show
+    (embeddingOf𝒪Into𝕃 H)
+        (∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                  (fun lam => (t + 1) ∉ lam.parts),
+          (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+            * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+            * B_coeff H x₀ R i1 lam
+            * partitionProd lam
+                (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0))
+      = ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                  (fun lam => (t + 1) ∉ lam.parts),
+          (embeddingOf𝒪Into𝕃 H)
+            ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+              * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+              * B_coeff H x₀ R i1 lam
+              * partitionProd lam
+                  (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0)) by
+    change (embeddingOf𝒪Into𝕃 H).toAddMonoidHom
+        (∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                  (fun lam => (t + 1) ∉ lam.parts),
+          (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+            * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+            * B_coeff H x₀ R i1 lam
+            * partitionProd lam
+                (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0))
+      = _
+    simp]
   refine Finset.sum_congr rfl (fun lam hlam => ?_)
   rw [partitionProd_guard_eq H x₀ R hHyp t i1 lam (Finset.mem_filter.mp hlam).2]
   simp only [map_mul, map_pow]
@@ -192,6 +304,12 @@ end BCIKS20.HenselNumerator
 -- Axiom audit.
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoSum_eq_partitionForm
 #print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq
+#print axioms BCIKS20.HenselNumerator.partition_notMem_succ_of_pos_i1
+#print axioms BCIKS20.HenselNumerator.partition_filter_notMem_succ_eq_univ_of_pos_i1
+#print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq_of_pos_i1
+#print axioms BCIKS20.HenselNumerator.partition_notMem_succ_iff_ne_indiscrete
+#print axioms BCIKS20.HenselNumerator.partition_filter_notMem_succ_eq_univ_erase_indiscrete
+#print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq_of_ne_indiscrete
 #print axioms BCIKS20.HenselNumerator.embed_βHensel_succ
 #print axioms BCIKS20.HenselNumerator.coeff_succ_βHenselAssembled_partitionForm
 #print axioms BCIKS20.HenselNumerator.restrictedMatch_rhs_eq_recursionPartitionForm
