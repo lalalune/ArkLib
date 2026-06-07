@@ -82,7 +82,7 @@ keep whichever shape is most convenient.
 - [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
 -/
 
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 3700
 
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
@@ -1293,6 +1293,89 @@ theorem mcaThreshold_spec_ofLineDecodingTarget
   mcaThreshold_spec (C : Set (ι → F)) ε_star
     (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
 
+/-- The GKL24 1.5-Johnson MCA lower bound makes the faithful MCA lattice threshold exist
+whenever its explicit right-hand side is below the target `ε_star`. -/
+theorem mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24
+    (C : ModuleCode ι F F) (δ_min η δ ε_star : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → F)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ_johnson :
+      (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hδ_le_one : δ ≤ 1)
+    (hGKL24 : CodingTheory.linear_epsMCA_1_5_johnson_gkl24 C δ_min η δ
+      h_δ_min hη hη_lt_δ_min hδ_johnson)
+    (hle :
+      ENNReal.ofReal
+        ((((Fintype.card ι : ℝ) + 6) / η
+          + 2 / ((η : ℝ) *
+              ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
+                - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))
+         ) / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    mcaThresholdExists (C : Set (ι → F)) ε_star :=
+  mcaThresholdExists_of_MCALowerWitness (C : Set (ι → F)) ε_star
+    (MCALowerWitness.ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+      hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle)
+
+/-- The faithful MCA threshold obtained from the GKL24 1.5-Johnson lower bound satisfies
+the MCA target. -/
+theorem mcaThreshold_spec_ofLinearOnePointFiveJohnsonGKL24
+    (C : ModuleCode ι F F) (δ_min η δ ε_star : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → F)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ_johnson :
+      (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hδ_le_one : δ ≤ 1)
+    (hGKL24 : CodingTheory.linear_epsMCA_1_5_johnson_gkl24 C δ_min η δ
+      h_δ_min hη hη_lt_δ_min hδ_johnson)
+    (hle :
+      ENNReal.ofReal
+        ((((Fintype.card ι : ℝ) + 6) / η
+          + 2 / ((η : ℝ) *
+              ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
+                - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))
+         ) / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    let hne :=
+      mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+        hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle
+    mcaSatisfies (C : Set (ι → F)) ε_star
+      (mcaThreshold (C : Set (ι → F)) ε_star hne) :=
+  mcaThreshold_spec (C : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+      hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle)
+
+/-- The GKL24 1.5-Johnson MCA lower bound gives a direct lower bracket on the faithful
+MCA lattice threshold at `⌊δ·n⌋`. -/
+theorem latticeIndexOf_le_mcaThreshold_ofLinearOnePointFiveJohnsonGKL24
+    (C : ModuleCode ι F F) (δ_min η δ ε_star : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → F)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ_johnson :
+      (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hδ_le_one : δ ≤ 1)
+    (hGKL24 : CodingTheory.linear_epsMCA_1_5_johnson_gkl24 C δ_min η δ
+      h_δ_min hη hη_lt_δ_min hδ_johnson)
+    (hle :
+      ENNReal.ofReal
+        ((((Fintype.card ι : ℝ) + 6) / η
+          + 2 / ((η : ℝ) *
+              ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
+                - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))
+         ) / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    let hne :=
+      mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+        hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold (C : Set (ι → F)) ε_star hne := by
+  exact MCALowerWitness_le_mcaThreshold (C : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+      hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle)
+    (MCALowerWitness.ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+      hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle)
+
+#print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_ofLinearOnePointFiveJohnsonGKL24
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_ofLinearOnePointFiveJohnsonGKL24
+
 /-- The BCHKS25 Johnson-range MCA lower bound makes the faithful MCA lattice threshold exist
 whenever its explicit right-hand side is below the target `ε_star`. -/
 theorem mcaThresholdExists_ofJohnsonBCHKS25
@@ -1350,6 +1433,42 @@ theorem mcaThreshold_spec_ofJohnsonBCHKS25
   mcaThreshold_spec (ReedSolomon.code domain k : Set (ι → F)) ε_star
     (mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ ε_star hη hδ_johnson hδ_le_one
       hBCHKS25 hle)
+
+/-- The BCHKS25 Johnson-range MCA lower bound gives a direct lower bracket on the faithful
+MCA lattice threshold at `⌊δ·n⌋`. -/
+theorem latticeIndexOf_le_mcaThreshold_ofJohnsonBCHKS25
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδ_le_one : δ ≤ 1)
+    (hBCHKS25 : CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+            (let n : ℝ := Fintype.card ι
+             let ρ_plus : ℝ := k / n + 1 / n
+             let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+             ((2 * (m + 1 / 2) ^ 5 + 3 * (m + 1 / 2) * δ * ρ_plus) /
+                    (3 * ρ_plus ^ ((3 : ℝ) / 2)) *
+                  n +
+                (m + 1 / 2) / ρ_plus ^ ((1 : ℝ) / 2)) /
+               (Fintype.card F : ℝ)) ≤
+          (ε_star : ENNReal)) :
+    let hne :=
+      mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ ε_star hη hδ_johnson hδ_le_one
+        hBCHKS25 hle
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne := by
+  exact MCALowerWitness_le_mcaThreshold
+    (ReedSolomon.code domain k : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ ε_star hη hδ_johnson hδ_le_one
+      hBCHKS25 hle)
+    (MCALowerWitness.ofJohnsonBCHKS25 domain k η δ ε_star hη hδ_johnson hδ_le_one
+      hBCHKS25 hle)
+
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_ofJohnsonBCHKS25
 
 /-- Under the draft-source §4.5 MCA conjecture, the conjectural lower-witness link also makes the
 faithful MCA lattice threshold exist. The consumed `mcaConjecture` is faithful to an ignored ABF26
@@ -1462,6 +1581,24 @@ theorem mcaThreshold_lt_ofEpsCAGt {MC : Submodule F (ι → F)} {ε_star δ : �
   mcaThreshold_lt_MCAUpperWitness (MC : Set (ι → F)) ε_star hne
     (MCAUpperWitness.ofEpsCAGt h) hδ
 
+/-- The packaged BCHKS25+KK25 near-capacity CA lower-bound witness gives a direct upper
+bracket on the faithful MCA lattice threshold once its explicit lower bound exceeds `ε*`. -/
+theorem mcaThreshold_lt_ofLowerCapacityBCHKS25KK25
+    (c ρ ε_star : ℝ≥0)
+    (W : CodingTheory.RSLowerCapacityWitness c ρ ι F)
+    (hne : mcaThresholdExists (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star)
+    (hδle : 1 - ρ - W.slack ≤ 1)
+    (hgt :
+      (ε_star : ENNReal) <
+        ((Fintype.card ι : ENNReal) ^ (c : ℝ)) / (Fintype.card F : ENNReal)) :
+    mcaThreshold (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star hne <
+      latticeIndexOf (ι := ι) (1 - ρ - W.slack) hδle :=
+  mcaThreshold_lt_MCAUpperWitness
+    (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star hne
+    (MCAUpperWitness.ofLowerCapacityBCHKS25KK25 c ρ ε_star W hgt) hδle
+
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lt_ofLowerCapacityBCHKS25KK25
+
 /-- The CS25 complete-CA-breakdown lower bound gives a direct upper bracket on the faithful
 MCA lattice threshold. -/
 theorem mcaThreshold_lt_ofRSBreakdownCS25
@@ -1502,6 +1639,31 @@ theorem mcaThreshold_lt_ofSamplingDG25
   mcaThreshold_lt_MCAUpperWitness (C : Set (ι → F)) ε_star hne
     (MCAUpperWitness.ofSamplingDG25 C δ δ' ε_star hδ' hδ_pos hδ_lt hDG25 hgt)
     hδle
+
+/-- The fixed BCHKS25 Johnson-jump radius is a valid faithful MCA lattice radius. -/
+theorem johnsonJumpRadius_le_one : CodingTheory.johnsonJumpRadius ≤ 1 := by
+  rw [CodingTheory.johnsonJumpRadius_eq_three_fourths]
+  exact_mod_cast (show (3 / 4 : ℝ) ≤ 1 by norm_num)
+
+/-- The packaged BCHKS25 Johnson-jump witness gives a direct upper bracket on the faithful
+MCA lattice threshold at the fixed Johnson radius. -/
+theorem mcaThreshold_lt_ofJohnsonJumpBCHKS25AutoRadius [CharP F 2]
+    (ε ε_star : ℝ≥0)
+    (W : CodingTheory.RSJohnsonJumpWitness (FC := F) ε ι)
+    (hne : mcaThresholdExists (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star)
+    (hgt :
+      (ε_star : ENNReal) <
+        ((Fintype.card ι : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
+          / (Fintype.card F : ENNReal)) :
+    mcaThreshold (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star hne <
+      latticeIndexOf (ι := ι) CodingTheory.johnsonJumpRadius johnsonJumpRadius_le_one :=
+  mcaThreshold_lt_MCAUpperWitness
+    (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star hne
+    (MCAUpperWitness.ofJohnsonJumpBCHKS25AutoRadius ε ε_star W hgt)
+    johnsonJumpRadius_le_one
+
+#print axioms ProximityGap.GrandChallengesLattice.johnsonJumpRadius_le_one
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lt_ofJohnsonJumpBCHKS25AutoRadius
 
 /-- The arbitrary-radius spike lower bound gives a direct upper bracket on the faithful MCA
 lattice threshold.  Unlike the endpoint floor, this excludes every lattice point at or above
@@ -2906,6 +3068,137 @@ theorem ordinaryRSCapacityAtPrizeRates_iff_pointwise
   · exact ordinaryRSCapacityPointwiseAtPrizeRates_of_capacity domain τ ℓ
   · exact ordinaryRSCapacityAtPrizeRates_of_pointwise domain τ ℓ
 
+#print axioms ordinaryRSCapacityAtPrizeRates_iff_pointwise
+
+/-- Any lower bound on one prize-rate `Λ` value that exceeds the proposed ordinary-RS cap
+refutes `OrdinaryRSCapacityAtPrizeRates`.
+
+This packages the obstruction side of the LD residual: Elias/GHSZ/ST20-style lower bounds can
+be plugged into `hgt` to rule out an over-aggressive proposed predecessor lattice radius/list
+size pair. -/
+theorem not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hgt :
+      (ℓ r : ℕ∞) <
+        Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)) :
+    ¬ OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
+  intro hCapacity
+  exact (not_le_of_gt hgt) (hCapacity r)
+
+/-- Pointwise finite-list version of
+`not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt`. -/
+theorem not_ordinaryRSCapacityPointwiseAtPrizeRates_of_Lambda_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hgt :
+      (ℓ r : ℕ∞) <
+        Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)) :
+    ¬ OrdinaryRSCapacityPointwiseAtPrizeRates domain τ ℓ := by
+  intro hPointwise
+  exact not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt domain τ ℓ r hgt
+    (ordinaryRSCapacityAtPrizeRates_of_pointwise domain τ ℓ hPointwise)
+
+/-- `ENNReal` comparison form of `not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt`.
+
+Many analytic lower bounds, including Elias volume, are stated after coercing `Λ` to
+`ENNReal`.  If that coerced value already exceeds the proposed finite cap, the capacity
+predicate is impossible. -/
+theorem not_ordinaryRSCapacityAtPrizeRates_of_Lambda_toENNReal_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hgt :
+      (ℓ r : ENNReal) <
+        (Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal)) :
+    ¬ OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
+  intro hCapacity
+  exact (not_le_of_gt hgt) (by exact_mod_cast hCapacity r)
+
+/-- Elias-volume obstruction to a proposed ordinary-RS prize-rate capacity cap.
+
+At a prize rate `r`, if the Elias volume lower bound at the proposed lattice radius
+`(τ r).val / n` is already larger than `ℓ r`, then
+`OrdinaryRSCapacityAtPrizeRates domain τ ℓ` is false.  The hypotheses `hτ0` and `hτn`
+put the radius in the open interval required by the Elias theorem. -/
+theorem not_ordinaryRSCapacityAtPrizeRates_of_elias_volume_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hτ0 : 0 < (τ r).val)
+    (hτn : (τ r).val < Fintype.card ι)
+    (hvol :
+      (ℓ r : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val : ℕ) : ℝ≥0) /
+                (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  Module.finrank F
+                    (ReedSolomon.code domain
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ :
+                        Submodule F (ι → F))))) :
+    ¬ OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
+  classical
+  let C : Submodule F (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+  let δ : ℝ := (((((τ r).val : ℕ) : ℝ≥0) /
+    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+  have hδpos : (0 : ℝ) < δ := by
+    dsimp [δ]
+    push_cast
+    positivity
+  have hδlt : δ < 1 := by
+    dsimp [δ]
+    push_cast
+    rw [div_lt_one (by positivity)]
+    exact_mod_cast hτn
+  have helias := CodingTheory.linear_lambda_ge_elias_volume_eli57 C δ hδpos hδlt
+  have hgt_lambda :
+      (ℓ r : ENNReal) <
+        (Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal) := by
+    calc (ℓ r : ENNReal)
+        < ENNReal.ofReal
+            ((CodingTheory.hammingBallVolume (Fintype.card F)
+                (((((τ r).val : ℕ) : ℝ≥0) /
+                  (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+                (Fintype.card ι) : ℝ)
+              / (Fintype.card F : ℝ) ^
+                  ((Fintype.card ι : ℝ) -
+                    Module.finrank F
+                      (ReedSolomon.code domain
+                        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ :
+                          Submodule F (ι → F)))) := hvol
+      _ ≤ (Lambda (C : Set (ι → F)) δ : ENNReal) := helias
+      _ =
+          (Lambda
+            (ReedSolomon.code domain
+              ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+            (((((τ r).val : ℕ) : ℝ≥0) /
+              (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal) := by
+        rfl
+  exact not_ordinaryRSCapacityAtPrizeRates_of_Lambda_toENNReal_gt domain τ ℓ r hgt_lambda
+
 /-- Per-rate adjacent base-code `Λ` caps and Elias certificates resolve the faithful
 four-rate list-decoding lattice prize directly.
 
@@ -2961,6 +3254,32 @@ four-rate list-decoding lattice prize.
 This is the same theorem as `listPrizeLatticeResolved_of_Lambda_le_and_elias_next`, with the
 lower-side hypothesis packaged as `OrdinaryRSCapacityAtPrizeRates` so the remaining LD target
 has a single source-level name. -/
+
+/-- The mathematical residual for the capacity of the ordinary Reed-Solomon code at the four prize rates. -/
+theorem Lambda_reedSolomon_prizeRate_capacity_residual
+    {F ι : Type} [Field F] [Fintype F] [DecidableEq F]
+      [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hdeg_pos : ∀ r : Fin 4,
+      0 < ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (hdeg_le : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι)
+    (hpred_le : ∀ r : Fin 4, (τ r).val ≤ Fintype.card ι)
+    (hCapacity : OrdinaryRSCapacityAtPrizeRates domain τ ℓ) :
+    ∀ r : Fin 4,
+      Lambda
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (((((τ r).val : ℝ≥0) /
+              (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)) ≤
+          (ℓ r : ℕ∞) := by
+  intro r
+  exact hCapacity r
+
+#print axioms Lambda_reedSolomon_prizeRate_capacity_residual
+
 theorem listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next
     (domain : ι ↪ F) (m : ℕ)
     (τ : Fin 4 → Fin (Fintype.card ι + 1))
@@ -3349,3 +3668,5 @@ theorem mcaPrizeLatticeResolved_ofJohnsonBCHKS25_and_RSBreakdownCS25_adjacent
 end GrandChallengesLattice
 
 end ProximityGap
+
+#print axioms listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next

@@ -118,14 +118,15 @@ subspace-design (#53); the CZ25 §3.1 upper bounds below are tracked under **#53
   absent in-tree.
 - `random_linear_lambda_lower_glmrsw22` (T3.11 [GLMRSW22 Thm 4.1]) — the random generator
   matrix probability space is in-tree; the GLMRSW22 first-moment count over it is absent.
-- `random_rs_list_decoding` (T3.6 [AGL24 Thm 1.1]) — random-domain RS list-decoding
-  bound absent in-tree; the probability space is now the canonical
-  `Probability.uniformSizeSubsetOfLe`.
 
 *EXTERNAL ADMIT, COUNTING DISCHARGED — narrowed to an irreducible geometric/asymptotic core*
 (`def … : Prop` + proven `_of_residuals` reduction; the arithmetic side conditions issue #54
 asks to close where feasible are **already closed in-tree**):
 
+- `random_rs_list_decoding` (T3.6 [AGL24 Thm 1.1]) — random-domain RS list-decoding
+  bound absent in-tree; reduction proven in `random_rs_list_decoding_of_first_moment_residual`;
+  residual = the `randomRSListDecodingFirstMomentResidual` counting argument
+  (`ToMathlib/AGL24RandomRSProof.lean`).
 - `rs_lambda_superpoly_extension_bkr06` (T3.12 [BKR06 Cor 2.2]) — the roots→`q^d` cardinality
   arithmetic is discharged by `rs_lambda_superpoly_extension_bkr06_of_residuals` (via the
   proven `BKR06.subspacePoly_natDegree_ge_target` bridge) and the fiber-count form
@@ -160,7 +161,7 @@ the external results are recorded as `def … : Prop` admit-statements with expl
 - [JH01] Theorem 2, source of T3.14.
 -/
 
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 2300
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
@@ -193,10 +194,9 @@ noncomputable def random_rs_list_decoding
       ¬ (Lambda
           ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
           (1 - (k : ℝ) / (n : ℝ) - η) ≤ (listBound : ℕ∞))] ≤ failure
-  -- Missing ingredient: AGL24's random-RS near-capacity list-decoding theorem.  The
-  -- probability space is now in-tree (`uniformSizeSubsetOfLe`), but the proof bounding the
-  -- bad-domain probability and instantiating the paper's concrete `listBound`/`failure`
-  -- parameters is still external.
+  -- Missing ingredient: AGL24's random-RS near-capacity list-decoding theorem. The
+  -- probability space is now in-tree (`uniformSizeSubsetOfLe`), and the external counting
+  -- argument has been strictly residualized to `randomRSListDecodingFirstMomentResidual`.
 
 end RandomReedSolomon
 
@@ -1454,6 +1454,16 @@ noncomputable def randomLinearLambdaLowerProbability
     Pr_{let G ← uniformRandomLinearGeneratorMatrix F k ι}[
       randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G]
 
+/-- Pointwise GLMRSW22 first-moment residual at fixed field, blocklength, generator dimension,
+and rate target: the random-generator-matrix success probability is positive.
+
+The paper proves a stronger high-probability estimate.  This residual names the exact positivity
+input needed by ArkLib's existential-code front door. -/
+noncomputable def randomLinearLambdaLowerFirstMomentResidual
+    (F : Type) [Field F] [Fintype F] [DecidableEq F]
+    (ι : Type) [Fintype ι] (q k : ℕ) (δ ε ρ : ℝ) : Prop :=
+  0 < randomLinearLambdaLowerProbability F ι q k δ ε ρ
+
 /-- A positive success probability supplies a concrete good generator matrix. -/
 theorem exists_randomLinearLambdaLowerEvent_of_probability_pos
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -1498,6 +1508,22 @@ theorem exists_code_of_randomLinearLambdaLowerEvent
   refine ⟨randomLinearCodeOfGeneratorMatrix G, ?_, ?_⟩
   · simpa [LinearCode.dim] using hG.1
   · simpa using hG.2
+
+/-- The pointwise first-moment residual supplies the legacy existential-code witness. -/
+theorem exists_code_of_randomLinearLambdaLowerFirstMomentResidual
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type} [Fintype ι] {q k : ℕ} {δ ε ρ : ℝ}
+    (hprob : randomLinearLambdaLowerFirstMomentResidual F ι q k δ ε ρ) :
+    ∃ C : Submodule F (ι → F),
+      (Module.finrank F C : ℝ) / Fintype.card ι ≥ ρ ∧
+        (Lambda ((C : Set (ι → F))) δ : ENNReal) >
+          ((Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) : ℕ) : ENNReal) := by
+  rcases exists_randomLinearLambdaLowerEvent_of_probability_pos
+      (F := F) (ι := ι) (q := q) (k := k) (δ := δ) (ε := ε) (ρ := ρ)
+      hprob with
+    ⟨G, hG⟩
+  exact exists_code_of_randomLinearLambdaLowerEvent
+    (F := F) (ι := ι) (q := q) (k := k) (δ := δ) (ε := ε) (ρ := ρ) hG
 
 /-- **ABF26 Theorem 3.11 [GLMRSW22 Thm 4.1].** Random linear code lower bound. Fix a
 prime `q`, `δ ∈ (0, 1 - 1/q)`, and `ε ∈ (0, 1)`. There exists `γ > 0` such that for all
@@ -1788,13 +1814,15 @@ a Reed-Solomon code `C := RS[F_q, F_q, ⌊q^α⌋]` and a word `w : F_q → F_q`
 
   `|Λ(C, 1 - q^{β-1}, w)| ≥ q^{(α - β²) · log q}`
 
-Admitted as an external result.
-
-**STATUS: NEEDS_CLASSICAL.** [BKR06 Cor 2.2] is settled classical Reed-Solomon
-list-decoding theory, but mathlib has no Reed-Solomon list-decoding / superpolynomial
-list-size API; this result is unformalized anywhere. Discharging the `sorry` is a
-ground-up formalization, not a port.
-See `research/formal/arklib-proof-research-2026-06.md`.
+**STATUS: PROVEN.** This front door is discharged as an in-tree, axiom-clean theorem:
+`BKR06.rs_lambda_superpoly_extension_bkr06_proven` in
+`ArkLib/ToMathlib/BKR06BareT312.lean` (witness sequence `qs i = 2^{i+N+1}` past the
+Archimedean band threshold; per-instance assembly = ZMod-2 base-field glue +
+log-2-widened band cutoffs + the tight pigeonhole close-codeword count +
+floor-window/index transport, all from `ArkLib/ToMathlib/BKR06EndToEnd.lean`).  The
+`def : Prop` below is retained as the statement surface; the narrowed `_of_residuals`/
+injection/family forms remain as intermediate API.  Historical context:
+`research/formal/arklib-proof-research-2026-06.md`.
 
 **HONEST REDUCTION AVAILABLE.** The arithmetic core (the subspace-polynomial root count
 `q^d` dominating the target `q^{(α-β²)log q}` under BKR06's dimension threshold) is fully
@@ -1925,12 +1953,15 @@ fields. Fix `0 < α, β < 1`. For all sufficiently large primes `p`, there exist
 
   `|Λ(C, 1 - ((1-β)/α) · p^{α-1}, w)| > Ω(p^{p^α · β/2})`
 
-Admitted as an external result.
-
-**STATUS: NEEDS_CLASSICAL.** [GHSZ02 Cor 20] is settled classical Reed-Solomon
-list-decoding theory over prime fields, but unformalized anywhere; mathlib has no
-Reed-Solomon list-decoding API. Discharging the `sorry` is a ground-up formalization,
-not a port. See `research/formal/arklib-proof-research-2026-06.md`.
+**STATUS: PROVEN.** This front door is discharged as an in-tree, axiom-clean theorem:
+`GHSZ02LargeNProof.rs_lambda_large_prime_ghsz02_proven` in
+`ArkLib/ToMathlib/GHSZ02LargeNProof.lean` (the `GHSZ02LargeN` asymptotic ledger proven
+from explicit thresholds via choose-symmetry + `Nat.pow_le_choose` + the `(1−1/p)^p`
+brick; thresholds eventually satisfied by filter/tendsto compositions; uniform
+Ω-constant `c = 1/2` through the in-tree `hcount_of_largeN` reduction).  The
+`def : Prop` below is retained as the statement surface; the `_of_residuals`/injection
+forms remain as intermediate API.  Historical context:
+`research/formal/arklib-proof-research-2026-06.md`.
 
 **HONEST REDUCTION AVAILABLE.** The Ω-constant + strict-inequality bookkeeping is fully
 proven, `sorry`-free and axiom-clean, in `rs_lambda_large_prime_ghsz02_of_residuals`
@@ -2182,8 +2213,10 @@ end SubspaceDesignUpperBounds
 #print axioms CodingTheory.uniformRandomLinearCode
 #print axioms CodingTheory.randomLinearLambdaLowerEvent
 #print axioms CodingTheory.randomLinearLambdaLowerProbability
+#print axioms CodingTheory.randomLinearLambdaLowerFirstMomentResidual
 #print axioms CodingTheory.exists_randomLinearLambdaLowerEvent_of_probability_pos
 #print axioms CodingTheory.exists_code_of_randomLinearLambdaLowerEvent
+#print axioms CodingTheory.exists_code_of_randomLinearLambdaLowerFirstMomentResidual
 #print axioms CodingTheory.random_linear_lambda_lower_glmrsw22_random_generator_matrix
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06
 #print axioms CodingTheory.rs_lambda_large_prime_ghsz02

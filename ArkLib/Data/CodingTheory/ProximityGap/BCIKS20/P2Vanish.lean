@@ -7,15 +7,15 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reindex
 
 /-!
-# BCIKS20 Appendix A.4 — P2 finale, part 3: the full-sum vanishing, carved to ONE weight identity
+# BCIKS20 Appendix A.4 — P2 finale, part 3: the full-sum vanishing frontier
 
 Wipe-proof companion: works ONLY against the built `P2Match`/`P2Close`/`HenselNumerator` oleans.
 
 `FaaDiBrunoFullSumVanishes H x₀ R hHyp` (= `∀ t, faaDiBrunoFullSum (t+1) = 0`, equivalently
 `coeff (t+1) (eval (βHenselAssembled) Q) = 0`) is the LAST genuinely-unformalized content of
 BCIKS20 A.4's P2.  This file proves the two load-bearing *connective* facts that the paper's
-match rests on — and that were previously folded into the opaque `prefactor_eq_paper` WALL — and
-isolates the genuine residual into ONE explicit `Nat` weight identity:
+match rests on — zero-peeling and exponent balance — and exposes the remaining residual as the
+term-level `RestrictedFaaDiBrunoMatch`:
 
 1. **The zero-peeling reindex (`countPerms_replicate_zero_add`, PROVEN, axiom-clean).**  A
    value-multiset `m` of the full Faà-di-Bruno sum splits into its `j0` zero-entries and its
@@ -32,20 +32,20 @@ isolates the genuine residual into ONE explicit `Nat` weight identity:
    absorbed by the `−ζ` of `RestrictedFaaDiBrunoMatch`, since `ξ = W^{d−2}·ζ`) and **W-leftover
    exactly `i+δ−2`** (the `B_coeff`/Y-Hasse `W`-content).  No imbalance: the telescopes close.
 
-3. **The single residual weight identity (`PrefactorWeightMatch`).**  Under the `m ↔ (j0,λ)`
+3. **The local weight identity (`PrefactorWeightMatch`).**  Under the `m ↔ (j0,λ)`
    bijection and the Y-Hasse reindex `j ↦ (n, Σλ)` with `j = n + Σλ` (`Δ_Y^{Σλ}` shifts the
    Y-coefficient index by `Σλ` and emits `C(n+Σλ, Σλ) = C(j, Σλ)`, `Nat.choose_symm`), the FULL
-   weight `countPerms m = C(j, j0)·multinomial λ = C(j, Σλ)·multinomial λ` must equal the recursion
-   weight `prefactor · (Y-Hasse binomial)`.  This pins the genuine residual to the single named
-   `Prop` `PrefactorWeightMatch` below, from which `FaaDiBrunoFullSumVanishes` (hence all of P2)
-   follows by the PROVEN `restrictedMatch_iff_fullVanishes`.
+   weight `countPerms m = C(j, j0)·multinomial λ = C(j, Σλ)·multinomial λ` is accounted for by the
+   positive-part `prefactor` (`lam.parts.countPerms`) together with the Y-Hasse binomial emitted by
+   `hasseDerivY_coeff`.
 
-FINDING (recorded, not faked): the in-tree `prefactor i i1 λ = C(i, i1)·multinomial λ` carries the
-binomial `C(i, i1)` keyed to the **X-Taylor order `i1`**, but the Faà-di-Bruno-derived weight is
-`C(j, Σλ)·multinomial λ`, keyed to the **Y-degree `j` and `Σλ = cardλ`** — an `i1`-independent
-binomial.  The two agree iff `C(i, i1) = C(j, Σλ)` along the bijection, which is *not* an identity
-of the in-tree `prefactor` (it would need `prefactor` re-keyed to `C(j, Σλ)`).  This is the precise,
-minimal form of the `prefactor_eq_paper` WALL — see `dispositions/pc-w16.md`.
+FINDING UPDATE (2026-06-06): earlier audit notes described the in-tree `prefactor` as
+`C(i, i1)·multinomial λ`.  The current implementation has already been normalized:
+`prefactor i i1 λ = lam.parts.countPerms` (`prefactor_eq_countPerms`), with no explicit
+X-Taylor binomial stored in `prefactor`.  The remaining P2 frontier is therefore not a standalone
+`prefactor` re-keying.  It is the term-level derivation of `RestrictedFaaDiBrunoMatch`, wiring
+the proven zero-peel identity, `hasseDerivY_coeff`, `coeff_Q_eq_B`, the assembled-product
+denominator formulas, and the `ζ` sign/clearing convention into one equality of sums.
 -/
 
 noncomputable section
@@ -119,14 +119,13 @@ theorem exponent_balance_W (i1 b t i δ : ℤ) (h : i1 + b = t + 1) :
     ((i1 + δ - 1) + (b + i)) - (t + 2) = i + δ - 2 := by
   linarith
 
-/-! ## 3. The single residual weight identity, and the reduction to it
+/-! ## 3. The local weight identity, and the reduction surface
 
 Everything connective is now PROVEN (the bijection reindex + the W/ξ telescope).  The genuine
-residual is the single `Nat` weight identity `PrefactorWeightMatch`: that the full Faà-di-Bruno
-value-multiset weight `countPerms m` equals the `(A.1)` recursion weight `prefactor · (Y-Hasse
-binomial)` along the bijection.  By §1 the LHS is `C(j, Σλ)·multinomial λ`; the recursion supplies
-`multinomial λ` (in `prefactor`) and `C(j, Σλ)` (the `Δ_Y^{Σλ}` Hasse binomial).  This `Prop`
-captures *exactly* that alignment and nothing else. -/
+weight identity `PrefactorWeightMatch` is no longer open: by §1 the LHS is
+`C(j, Σλ)·multinomial λ`; the recursion supplies `multinomial λ` in `prefactor` and `C(j, Σλ)`
+from the `Δ_Y^{Σλ}` Hasse binomial.  The remaining surface is the term-level assembly of these
+facts into `RestrictedFaaDiBrunoMatch`. -/
 
 /-- **The single residual weight identity of P2's full-sum vanishing.**  For every
 value-multiset `m = replicate j0 0 + λ` (positives `λ`, `0 ∉ λ`) appearing in the order-`(t+1)`
@@ -136,10 +135,9 @@ recursion weight: the Y-Hasse binomial `C(j, Σλ)` times the positive-part mult
 (`countPerms m = C(j, Σλ)·countPerms λ`); it is named here as the explicit hinge of the
 `coeff_eval_Q_faaDiBruno ↔ βHensel_succ` match so the residual is a single, inspectable `Prop`.
 
-The remaining genuinely-open step (the `prefactor_eq_paper` WALL) is that the recursion's `B_coeff`
-prefactor `C(R.natDegree, i1)·multinomial λ` re-keys to this `C(j, Σλ)·multinomial λ` — i.e. that
-the in-tree X-Taylor binomial `C(R.natDegree, i1)` is replaced by the Y-Hasse binomial `C(j, Σλ)`.
-See the FINDING in the module docstring. -/
+The remaining genuinely-open step is not this `Nat` identity; it is proving the full
+`RestrictedFaaDiBrunoMatch` equality of sums from the definitions of `B_coeff`,
+`βHensel_succ`, and the restricted Faà-di-Bruno expansion. -/
 def PrefactorWeightMatch : Prop :=
   ∀ (j0 : ℕ) (lam : Multiset ℕ), (0 : ℕ) ∉ lam →
     (Multiset.replicate j0 0 + lam).countPerms
@@ -206,8 +204,8 @@ theorem faaDiBrunoSuccSumZeroResidual_of_restrictedMatch (x₀ : F) (R : F[X][X]
 `fullVanishes_of_restrictedMatch` into the imported `P2_closed_of_fullVanishes`: the carved core
 `RestrictedFaaDiBrunoMatch` discharges the assembled-series root AND the repaired lift identity for
 all orders.  Everything else of P2 is PROVEN.  The combinatorial half of the match
-(`PrefactorWeightMatch`) is PROVEN here; the single remaining open step is the `B_coeff`-prefactor
-re-keying recorded as the module FINDING. -/
+(`PrefactorWeightMatch`) is PROVEN here; the single remaining open step is the term-level proof of
+`RestrictedFaaDiBrunoMatch` recorded in the module finding. -/
 theorem P2_closed_of_restrictedMatch (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :

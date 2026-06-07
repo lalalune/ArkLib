@@ -131,3 +131,10 @@ def Hiding {s : Skeleton} (hashFn : α → α → α)
 end HidingDefinition
 
 end InductiveMerkleTree
+
+/-! ### Axiom audit (issue #119 salted Merkle construction / hiding-definition front doors) -/
+
+#print axioms InductiveMerkleTree.saltedLeaves_get
+#print axioms InductiveMerkleTree.salted_completeness
+#print axioms InductiveMerkleTree.openTranscript
+#print axioms InductiveMerkleTree.Hiding

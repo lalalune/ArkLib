@@ -638,7 +638,11 @@ omit r L 𝔽q ℓ 𝓡 ϑ γ_repetitions [NeZero r] [Field L] [Fintype L]
 /-- Oracle frontier index: captures valid oracle indices for a given statement index.
     In Binary Basefold, the oracle can be at most 1 index behind the statement index.
     - At statement index `i+1`, the oracle can be at `i` (after fold) or `i+1` (after commit)
--/
+
+`@[reducible]` so that the standard `Subtype` coercion applies at raw-`Fin (m + 1)`-keyed
+call sites (e.g. `foldingBadEventAtBlock`'s `oracleIdx` slot): behind a non-reducible
+`def` the elaborator cannot see the subtype to insert `↑`. -/
+@[reducible]
 def OracleFrontierIndex {m : ℕ} (stmtIdx : Fin (m + 1)) :=
   { val : Fin (m + 1) // val.val ≤ stmtIdx.val ∧ stmtIdx.val ≤ val.val + 1 }
 

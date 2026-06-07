@@ -431,6 +431,83 @@ theorem seqCompose_perfectCompleteness
         init impl (rel 0) (rel (Fin.last m)) :=
   hSeqComposePerfectCompleteness
 
+set_option maxHeartbeats 1000000 in
+-- The induction proof creates large dependent Fin goals in the successor case.
+/-- **Brick (issue #25): n-ary `seqCompose` perfect completeness reduces to the binary `append`
+keystone.** By induction on `m`: base case `Reduction.id_perfectCompleteness`; step unfolds via
+`seqCompose_succ` and discharges the binary `append` with `hAppend` + the IH. Feeding the eventual
+unconditional binary `reduction_append_perfectCompleteness` as `hAppend` closes the n-ary statement.
+Modeled on the proven `seqCompose'_appendCoherent` induction. -/
+theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
+    (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    [∀ i, ∀ j, SampleableType ((pSpec i).Challenge j)]
+    (R : (i : Fin m) →
+      Reduction oSpec (Stmt i.castSucc) (Wit i.castSucc) (Stmt i.succ) (Wit i.succ) (pSpec i))
+    (rel : (i : Fin (m + 1)) → Set (Stmt i × Wit i))
+    (hAppend : ∀ {S₁ W₁ S₂ W₂ S₃ W₃ : Type} {k₁ k₂ : ℕ}
+        {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
+        [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
+        (R₁ : Reduction oSpec S₁ W₁ S₂ W₂ p₁) (R₂ : Reduction oSpec S₂ W₂ S₃ W₃ p₂)
+        {r₁ : Set (S₁ × W₁)} {r₂ : Set (S₂ × W₂)} {r₃ : Set (S₃ × W₃)},
+        R₁.perfectCompleteness init impl r₁ r₂ → R₂.perfectCompleteness init impl r₂ r₃ →
+        (R₁.append R₂).perfectCompleteness init impl r₁ r₃)
+    (h : ∀ i, (R i).perfectCompleteness init impl (rel i.castSucc) (rel i.succ)) :
+    (seqCompose Stmt Wit R).perfectCompleteness init impl (rel 0) (rel (Fin.last m)) := by
+  induction m with
+  | zero =>
+    rw [seqCompose_zero]
+    simpa using
+      (Reduction.id_perfectCompleteness (init := init) (impl := impl) (rel := rel 0))
+  | succ m ih =>
+    change ((R 0).append
+        (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))))
+      |>.perfectCompleteness init impl (rel 0) (rel (Fin.succ (Fin.last m)))
+    exact hAppend (R 0) _ (h 0)
+      (ih (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))
+        (fun i => rel (Fin.succ i)) (fun i => h (Fin.succ i)))
+
+set_option maxHeartbeats 1000000 in
+-- The induction proof creates large dependent Fin goals in the successor case.
+/-- **Brick (issue #25): n-ary `seqCompose` completeness reduces to the binary `append` keystone.**
+Error-bearing analogue of `seqCompose_perfectCompleteness_of_append`: base case
+`Reduction.id_perfectCompleteness` (= completeness with error `0`) and `∑ (i : Fin 0) = 0`;
+step splits the error with `Fin.sum_univ_succ` into `completenessError 0 + ∑ tail` and applies
+`hAppend`. -/
+theorem seqCompose_completeness_of_append {m : ℕ}
+    (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    [∀ i, ∀ j, SampleableType ((pSpec i).Challenge j)]
+    (R : (i : Fin m) →
+      Reduction oSpec (Stmt i.castSucc) (Wit i.castSucc) (Stmt i.succ) (Wit i.succ) (pSpec i))
+    (rel : (i : Fin (m + 1)) → Set (Stmt i × Wit i))
+    (completenessError : Fin m → ℝ≥0)
+    (hAppend : ∀ {S₁ W₁ S₂ W₂ S₃ W₃ : Type} {k₁ k₂ : ℕ}
+        {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
+        [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
+        (R₁ : Reduction oSpec S₁ W₁ S₂ W₂ p₁) (R₂ : Reduction oSpec S₂ W₂ S₃ W₃ p₂)
+        {r₁ : Set (S₁ × W₁)} {r₂ : Set (S₂ × W₂)} {r₃ : Set (S₃ × W₃)} {e₁ e₂ : ℝ≥0},
+        R₁.completeness init impl r₁ r₂ e₁ → R₂.completeness init impl r₂ r₃ e₂ →
+        (R₁.append R₂).completeness init impl r₁ r₃ (e₁ + e₂))
+    (h : ∀ i, (R i).completeness init impl (rel i.castSucc) (rel i.succ) (completenessError i)) :
+    (seqCompose Stmt Wit R).completeness init impl (rel 0) (rel (Fin.last m))
+      (∑ i, completenessError i) := by
+  induction m with
+  | zero =>
+    rw [seqCompose_zero, Fin.sum_univ_zero]
+    simpa [Reduction.perfectCompleteness] using
+      (Reduction.id_perfectCompleteness (init := init) (impl := impl) (rel := rel 0))
+  | succ m ih =>
+    rw [Fin.sum_univ_succ]
+    change ((R 0).append
+        (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))))
+      |>.completeness init impl (rel 0) (rel (Fin.succ (Fin.last m)))
+        (completenessError 0 + ∑ i, completenessError (Fin.succ i))
+    exact hAppend (R 0) _ (h 0)
+      (ih (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))
+        (fun i => rel (Fin.succ i)) (fun i => completenessError (Fin.succ i))
+        (fun i => h (Fin.succ i)))
+
 end Reduction
 
 namespace Verifier

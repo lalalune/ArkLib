@@ -907,4 +907,9 @@ def lambda_le_ggr11 {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
     Lambda (interleavedCodeSet (κ := Fin m) C) δ ≤
       ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r
 
+lemma minDist_eq_minDist {F A ι κ : Type*} [Semiring F] [AddCommMonoid A] [Module F A]
+    [Fintype ι] [Fintype κ] [Nonempty κ] [DecidableEq A] (C : Set (ι → A)) :
+    Code.minDist (C^⋈κ) = Code.minDist C := by
+  sorry
+
 end InterleavedCode

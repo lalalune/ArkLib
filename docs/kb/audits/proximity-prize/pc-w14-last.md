@@ -23,10 +23,11 @@ Compile: `cd /home/shaw/arklib-prize && export PATH=$HOME/.elan/bin:$PATH && lak
 - line 1589 `βHensel_succ_term_weight_le` — the **P1** residual (gated on the structured IH; NOT this task's target; documented honest WALL, unchanged).
 - line 2425 `trunc_defect_cancel_assembled` — the carved **P2** residual (this task; smaller than the original `faaDiBruno_succ_sum_eq_zero` sorry).
 
-NOTE re task's "should be 1": that target presumed a FULL P2 close. P2 is NOT fully closed — the
-genuine `prefactor_eq_paper` combinatorial-weight collapse (Hasse-intrinsic `C(i,Σλ)` vs paper
-`multinomial(j0,λ)`) remains the irreducible frontier. I did NOT fake it. I drove it to a smaller,
-truer carving and proved one new connective lemma toward it.
+NOTE re task's "should be 1": that target presumed a FULL P2 close. P2 is NOT fully closed. The
+2026-06-06 correction is that current `prefactor` is already normalized to the positive-part
+`countPerms`, so the frontier is not a separate `prefactor_eq_paper` definition. The irreducible
+frontier is the term-level `RestrictedFaaDiBrunoMatch` equality of sums, with the local
+zero-peel/Y-Hasse weight identity already proven.
 
 ## End-to-end audit (run in-file via `#print axioms`, then prints removed — verbatim)
 ```
@@ -135,14 +136,12 @@ Concretely, expand both sides and match term-by-term:
 - The `ζ · coeff(t+1)(βHenselAssembled)` term: by `βHensel_succ`, `coeff(t+1)(βHenselAssembled)` is
   (modulo the `W/ξ` clearing `prod_map_coeff_assembled`/`partitionProd_coeff_assembled`) the
   negative of the `(A.1)` sum `−∑_{i1}∑_{λ, (t+1)∉λ.parts} W^{…}ξ^{…}·B_coeff·partitionProd`.
-- The collapse is `prefactor_eq_paper`: per-(i,a,m) Faà-di-Bruno weight is
-  `C(i,a)·countPerms(m)` (antidiagonal binomial × value-multiset permutation count), and
-  `B_coeff`'s `prefactor = C(R.natDegree, i1)·multinomial(λ)`. The reconciliation is supplied by
-  `prefactor_paper_factorization` (`(j0+Σλ;j0,λ)=C(j0+Σλ,Σλ)·multinomial(λ)`) +
-  `countPerms_eq_multinomial`/`prefactor_eq_choose_mul_countPerms`, with the index identification
-  `m ↔ λ` (value-multiset ↔ partition of `b=Σλ` into `i` slots, the `i−Σλ` zero slots being the
-  `j0=i−Σλ` order-0 multiplicity that `prefactor_paper_factorization` packages) and the `W`/`ξ`
-  power telescopes `partition_sum_add_one_local` / `(lam.parts.map (fun l => 2*l-1)).sum`.
+- The collapse now factors as: `prefactor` contributes only `lam.parts.countPerms`, while
+  `hasseDerivY_coeff` contributes the Y-Hasse binomial `C(j, Σλ)`. The proven zero-peeling lemma
+  `countPerms_replicate_zero_add_choose_sl` packages those as the full value-multiset weight
+  `countPerms(m)`. The remaining work is not to change `prefactor`, but to formalize the full
+  index/value equality between the restricted Faà-di-Bruno sum and the `(A.1)` sum, including the
+  `B_coeff` carrier, the `ζ` sign, and the `W`/`ξ` clearing powers.
   The remaining unformalized work is the bijective index match `m ↔ (i1, λ)` (with the
   `i = i0 + i1`, the `(t+1)∉parts`/`(t+1)∉m` guard alignment, and the zero-slot/`j0` bookkeeping)
   and the resulting term-by-term weight equality. This is the genuine A.4 combinatorial core; it is

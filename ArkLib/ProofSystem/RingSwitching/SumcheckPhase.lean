@@ -606,24 +606,91 @@ same round polynomial as the direct `FullTranscript.messages` projection used by
 collapse. This is the transcript-API bridge needed by the weakened KState path in issue #29. -/
 private theorem iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges
     (tr : FullTranscript (pSpecSumcheckRound L)) :
-    (ProtocolSpec.Transcript.equivMessagesChallenges
+  (ProtocolSpec.Transcript.equivMessagesChallenges
       (k := Fin.last 2) (pSpec := pSpecSumcheckRound L)
       (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L))).1
-        ⟨⟨0, by omega⟩, by simp [pSpecSumcheckRound]⟩ =
+        ⟨⟨0, by decide⟩, by rfl⟩ =
       FullTranscript.messages tr ⟨0, rfl⟩ := by
-  simp
+  rfl
 
 /-- The `equivMessagesChallenges` challenge view of a full single-round sumcheck transcript is the
 same verifier challenge as the direct `FullTranscript.challenges` projection used by verifier-run
 collapse. -/
 private theorem iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges
     (tr : FullTranscript (pSpecSumcheckRound L)) :
-    (ProtocolSpec.Transcript.equivMessagesChallenges
+  (ProtocolSpec.Transcript.equivMessagesChallenges
       (k := Fin.last 2) (pSpec := pSpecSumcheckRound L)
       (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L))).2
-        ⟨⟨1, by omega⟩, by simp [pSpecSumcheckRound]⟩ =
+        ⟨⟨1, by decide⟩, by rfl⟩ =
       FullTranscript.challenges tr ⟨1, rfl⟩ := by
-  simp
+  rfl
+
+/-- The intended post-challenge local KState payload for one iterated sumcheck round.
+
+This is the named target for issue #29's next proof step: consume the verifier-run transcript
+collapse and the two projection identities above to strengthen the post-challenge local checks in
+`iteratedSumcheckKStateProp`. -/
+def iteratedSumcheckPostChallengeLocalChecks (i : Fin ℓ')
+    (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L))
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (witMid : SumcheckWitness L ℓ' i.castSucc) : Prop :=
+  let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i)
+    (h := witMid.H)
+  let h_i : L⦃≤ 2⦄[X] := by
+    simpa [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound] using
+      (ProtocolSpec.Transcript.equivMessagesChallenges
+        (k := Fin.last 2) (pSpec := pSpecSumcheckRound L) tr).1
+          ⟨⟨0, by decide⟩, by rfl⟩
+  let r_i' : L := by
+    simpa [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound] using
+      (ProtocolSpec.Transcript.equivMessagesChallenges
+        (k := Fin.last 2) (pSpec := pSpecSumcheckRound L) tr).2
+          ⟨⟨1, by decide⟩, by rfl⟩
+  let explicitVCheck :=
+    (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
+  let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
+  explicitVCheck ∧ localizedTargetCheck
+
+/-- Direct-`FullTranscript` form of the post-challenge local KState payload.
+
+This is definitionally aligned with `iteratedSumcheckOracleVerifier_verify_collapse`, whose verifier
+run reads `FullTranscript.messages tr ⟨0, rfl⟩` and `FullTranscript.challenges tr ⟨1, rfl⟩`
+directly. The bridge theorem below connects it back to the `Transcript.equivMessagesChallenges`
+form used by the KState API. -/
+def iteratedSumcheckPostChallengeFullTranscriptLocalChecks (i : Fin ℓ')
+    (tr : FullTranscript (pSpecSumcheckRound L))
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (witMid : SumcheckWitness L ℓ' i.castSucc) : Prop :=
+  let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i)
+    (h := witMid.H)
+  let h_i : L⦃≤ 2⦄[X] := FullTranscript.messages tr ⟨0, rfl⟩
+  let r_i' : L := FullTranscript.challenges tr ⟨1, rfl⟩
+  let explicitVCheck :=
+    (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
+  let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
+  explicitVCheck ∧ localizedTargetCheck
+
+/-- The post-challenge KState payload's `equivMessagesChallenges` form is equivalent to the direct
+`FullTranscript` form used by verifier-run collapse. This is the concrete #29 bridge consumed by the
+eventual nontrivial `toFun_full` proof. -/
+theorem iteratedSumcheckPostChallengeLocalChecks_iff_fullTranscript (i : Fin ℓ')
+    (tr : FullTranscript (pSpecSumcheckRound L))
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (witMid : SumcheckWitness L ℓ' i.castSucc) :
+    iteratedSumcheckPostChallengeLocalChecks
+        (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') i
+        (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L)) stmt witMid
+      ↔ iteratedSumcheckPostChallengeFullTranscriptLocalChecks
+        (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') i
+        tr stmt witMid := by
+  constructor <;> intro h <;>
+    simpa [iteratedSumcheckPostChallengeLocalChecks,
+      iteratedSumcheckPostChallengeFullTranscriptLocalChecks,
+      ProtocolSpec.Transcript.equivMessagesChallenges,
+      ProtocolSpec.Transcript.toMessagesChallenges,
+      ProtocolSpec.Transcript.toMessagesUpTo,
+      ProtocolSpec.Transcript.toChallengesUpTo,
+      ProtocolSpec.FullTranscript.messages, ProtocolSpec.FullTranscript.challenges] using h
 
 /-- **Extracted-witness ground-truth telescoping (issue #29).** For the iterated-round RBR extractor
 (`extractOut`), whose extracted last witness has `H = projectToMidSumcheckPoly … i.castSucc
@@ -719,14 +786,9 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     -- `probEvent_badSumcheckEventProp_degree_two_le` bounds it by `2/|L|` — the sharp per-round
     -- knowledge error (vs. the current `roundKnowledgeError = 1`).
     --
-    -- The transcript projection bridge is now named above:
-    -- `iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges` and
-    -- `iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges`. The remaining
-    -- mechanical step is consuming those identities in a nontrivial `toFun_full`, replacing this
-    -- placeholder post-challenge `True` state with `explicitVCheck ∧ localizedTargetCheck`, then
-    -- routing the local probability bound through the RBR theorem. Until that lands the
-    -- post-challenge state stays `True` and the RBR theorem below uses the always-valid unit bound,
-    -- so the file remains sound and green.
+    -- The transcript projection bridge and the sharper post-challenge payload are named above.
+    -- The theorem below intentionally proves the always-valid unit bound; using the sharper
+    -- payload would require a nontrivial `toFun_full` proof and a matching local probability bound.
     True
 
 /-- Knowledge state function (KState) for single round -/
@@ -1357,7 +1419,7 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
         (impl := impl)
         (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
         (relOut := aOStmtIn.toRelInput)
-        (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ'))) :
+        (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L := L) (ℓ' := ℓ'))) :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
@@ -1370,7 +1432,7 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
     (impl := impl)
     (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
     (relOut := aOStmtIn.toRelInput)
-    (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ')) := by
+    (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L := L) (ℓ' := ℓ')) := by
   exact hAppendRbrKnowledgeSoundness
 
 end LargeFieldReduction

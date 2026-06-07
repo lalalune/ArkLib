@@ -1,13 +1,22 @@
+/-! # PARKED MODULE (#60, NAMED-RESIDUAL convention)
+
+This module (landed by PR #532) targets a PolyFun API that was since redesigned
+(`Spec.Strategy.withRoles` / `Spec.Counterpart` / `Spec.PublicCoinCounterpart` moved to the
+`SyntaxOver`/`ShapeOver`/`StrategyOver.TwoParty` forms, PolyFun `5d3a160`).  Nothing in ArkLib
+imports it.  Parked to keep the root build green; un-park by migrating to the Over-style API
+(see issue #60 for the full diagnosis). -/
+
 /-
+/- 
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
--/
+ -/
 import ArkLib.Interaction.Reduction
 import ArkLib.Interaction.Oracle.Spec
 import PolyFun.Interaction.TwoParty.Refine
 
-/-!
+/- !
 # Oracle Decoration, Oracle Verifiers, and Oracle Reductions
 
 This module bridges the generic `Interaction.Spec` layer with VCVio's oracle
@@ -68,7 +77,7 @@ it.
 - `Oracle/StateChain.lean` — N-ary state chain composition for oracle reductions
 - `OracleReification.lean` — optional concrete oracle materialization
 - `OracleSecurity.lean` — completeness, soundness, knowledge soundness
--/
+ -/
 
 universe u v w
 
@@ -76,23 +85,23 @@ open OracleComp OracleSpec
 
 namespace Interaction
 
-/-! ## Oracle decoration
+/- ! ## Oracle decoration
 
 `OracleDecoration` is a `Role.Refine` specialized to `OracleInterface`:
 it carries an `OracleInterface X` at each sender node and recurses directly
-at receiver nodes (no junk data). -/
+at receiver nodes (no junk data).  -/
 
-/-- An `OracleDecoration` assigns an `OracleInterface` instance (as data, not a
-typeclass) to each sender node. Defined as `Role.Refine OracleInterface`. -/
+/- - An `OracleDecoration` assigns an `OracleInterface` instance (as data, not a
+typeclass) to each sender node. Defined as `Role.Refine OracleInterface`.  -/
 abbrev OracleDecoration (spec : Spec) (roles : RoleDecoration spec) :=
   Interaction.Role.Refine OracleInterface spec roles
 
-/-- Oracle-statement data for an indexed oracle-statement family. -/
+/- - Oracle-statement data for an indexed oracle-statement family.  -/
 abbrev OracleStatement {ιₛ : Type v} (OStmt : ιₛ → Type w) :=
   ∀ i, OStmt i
 
-/-- A local statement bundled with oracle-statement data for a fixed ambient
-input `i`. Used for both oracle inputs and oracle outputs. -/
+/- - A local statement bundled with oracle-statement data for a fixed ambient
+input `i`. Used for both oracle inputs and oracle outputs.  -/
 structure StatementWithOracles
     {Input : Type u}
     (LocalStmt : Input → Type v) {ιₛ : Input → Type v}
@@ -101,9 +110,9 @@ structure StatementWithOracles
   stmt : LocalStmt i
   oracleStmt : OracleStatement (OStmt i)
 
-/-! ## Query handles and oracle spec -/
+/- ! ## Query handles and oracle spec  -/
 
-/-- Index type for oracle queries given a specific transcript path. At each
+/- - Index type for oracle queries given a specific transcript path. At each
 sender node, the verifier can either:
 - query the current node's oracle interface (`.inl q`), or
 - recurse into the subtree determined by the transcript move (`.inr h`).
@@ -111,7 +120,7 @@ sender node, the verifier can either:
 At receiver nodes, there is no oracle to query, so we recurse immediately.
 
 The transcript parameter ensures that the index type is well-typed: it
-determines which subtree (and hence which oracle interfaces) are reachable. -/
+determines which subtree (and hence which oracle interfaces) are reachable.  -/
 def OracleDecoration.QueryHandle :
     (spec : Spec) → (roles : RoleDecoration spec) → OracleDecoration spec roles →
     Spec.Transcript spec → Type
@@ -121,8 +130,8 @@ def OracleDecoration.QueryHandle :
   | .node _ rest, ⟨.receiver, rRest⟩, odFn, ⟨x, trRest⟩ =>
       QueryHandle (rest x) (rRest x) (odFn x) trRest
 
-/-- The oracle specification for querying sender-node messages along a given
-transcript path. Maps each `QueryHandle` to its response type. -/
+/- - The oracle specification for querying sender-node messages along a given
+transcript path. Maps each `QueryHandle` to its response type.  -/
 def OracleDecoration.toOracleSpec :
     (spec : Spec) → (roles : RoleDecoration spec) → (od : OracleDecoration spec roles) →
     (tr : Spec.Transcript spec) → OracleSpec (QueryHandle spec roles od tr)
@@ -134,9 +143,9 @@ def OracleDecoration.toOracleSpec :
   | .node _ rest, ⟨.receiver, rRest⟩, odFn, ⟨x, trRest⟩ =>
       toOracleSpec (rest x) (rRest x) (odFn x) trRest
 
-/-- Answer oracle queries using the message values from a transcript. At each
+/- - Answer oracle queries using the message values from a transcript. At each
 sender node, the transcript provides the actual move `x : X`, which is used as
-the message argument to `OracleInterface`'s implementation. -/
+the message argument to `OracleInterface`'s implementation.  -/
 def OracleDecoration.answerQuery :
     (spec : Spec) → (roles : RoleDecoration spec) → (od : OracleDecoration spec roles) →
     (tr : Spec.Transcript spec) →
@@ -149,8 +158,8 @@ def OracleDecoration.answerQuery :
   | .node _ rest, ⟨.receiver, rRest⟩, odFn, ⟨x, trRest⟩ =>
       answerQuery (rest x) (rRest x) (odFn x) trRest
 
-/-- Answer queries to the combined oracle context consisting of the input oracle
-statements and the sender-message oracles available along a transcript. -/
+/- - Answer queries to the combined oracle context consisting of the input oracle
+statements and the sender-message oracles available along a transcript.  -/
 def OracleDecoration.oracleContextImpl
     {ιₛᵢ : Type} {OStmtIn : ιₛᵢ → Type} [∀ i, OracleInterface.{0, u} (OStmtIn i)] :
     (spec : Spec.{0}) → (roles : RoleDecoration spec) → (od : OracleDecoration.{0, 0} spec roles) →
@@ -162,8 +171,8 @@ def OracleDecoration.oracleContextImpl
 
 namespace OracleDecoration.QueryHandle
 
-/-- Embed a first-phase query handle into the combined query-handle type for
-`Spec.append`. -/
+/- - Embed a first-phase query handle into the combined query-handle type for
+`Spec.append`.  -/
 def appendLeft :
     (spec₁ : Spec) → (spec₂ : Spec.Transcript spec₁ → Spec) →
     (roles₁ : RoleDecoration spec₁) →
@@ -188,8 +197,8 @@ def appendLeft :
         (rRest x) (fun p => roles₂ ⟨x, p⟩) (odFn x) (fun p => od₂ ⟨x, p⟩)
         tr₁Rest tr₂ q
 
-/-- Embed a second-phase query handle into the combined query-handle type for
-`Spec.append`. -/
+/- - Embed a second-phase query handle into the combined query-handle type for
+`Spec.append`.  -/
 def appendRight :
     (spec₁ : Spec) → (spec₂ : Spec.Transcript spec₁ → Spec) →
     (roles₁ : RoleDecoration spec₁) →
@@ -326,9 +335,9 @@ variable {od₁ : OracleDecoration spec₁ roles₁}
 variable {od₂ : (tr₁ : Spec.Transcript spec₁) → OracleDecoration (spec₂ tr₁) (roles₂ tr₁)}
 variable (tr₁ : Spec.Transcript spec₁) (tr₂ : Spec.Transcript (spec₂ tr₁))
 
-/-- Route a first-phase transcript-message query into the appended transcript's
+/- - Route a first-phase transcript-message query into the appended transcript's
 oracle specification. The only transport needed here is the response-type
-equality witnessed by `QueryHandle.appendLeft_range`. -/
+equality witnessed by `QueryHandle.appendLeft_range`.  -/
 def liftAppendLeftQuery :
     QueryImpl (OracleDecoration.toOracleSpec spec₁ roles₁ od₁ tr₁)
       (OracleComp
@@ -348,9 +357,9 @@ def liftAppendLeftQuery :
         (OracleDecoration.QueryHandle.appendLeft
           spec₁ spec₂ roles₁ roles₂ od₁ od₂ tr₁ tr₂ q)))
 
-/-- Route a second-phase transcript-message query into the appended transcript's
+/- - Route a second-phase transcript-message query into the appended transcript's
 oracle specification. The only transport needed here is the response-type
-equality witnessed by `QueryHandle.appendRight_range`. -/
+equality witnessed by `QueryHandle.appendRight_range`.  -/
 def liftAppendRightQuery :
     QueryImpl (OracleDecoration.toOracleSpec (spec₂ tr₁) (roles₂ tr₁) (od₂ tr₁) tr₂)
       (OracleComp
@@ -373,8 +382,8 @@ def liftAppendRightQuery :
 variable {ιₛ : Type} {OStmt : ιₛ → Type}
 variable [∀ i, OracleInterface (OStmt i)]
 
-/-- Lift the first-phase oracle context `[OStmt]ₒ + msgSpec₁` into the appended
-oracle context `[OStmt]ₒ + msgSpecAppend`. -/
+/- - Lift the first-phase oracle context `[OStmt]ₒ + msgSpec₁` into the appended
+oracle context `[OStmt]ₒ + msgSpecAppend`.  -/
 def liftAppendLeftContext :
     QueryImpl ([OStmt]ₒ + OracleDecoration.toOracleSpec spec₁ roles₁ od₁ tr₁)
       (OracleComp
@@ -400,8 +409,8 @@ def liftAppendLeftContext :
           (.inr <| OracleDecoration.QueryHandle.appendLeft
             spec₁ spec₂ roles₁ roles₂ od₁ od₂ tr₁ tr₂ q)))
 
-/-- Lift the second-phase oracle context `[OStmt]ₒ + msgSpec₂` into the
-appended oracle context `[OStmt]ₒ + msgSpecAppend`. -/
+/- - Lift the second-phase oracle context `[OStmt]ₒ + msgSpec₂` into the
+appended oracle context `[OStmt]ₒ + msgSpecAppend`.  -/
 def liftAppendRightContext :
     QueryImpl ([OStmt]ₒ + OracleDecoration.toOracleSpec (spec₂ tr₁) (roles₂ tr₁) (od₂ tr₁) tr₂)
       (OracleComp
@@ -778,18 +787,18 @@ end QueryRouting
 
 namespace OracleDecoration
 
-/-! ## Bridge definitions
+/- ! ## Bridge definitions
 
 These definitions bridge `OracleDecoration` to `MonadDecoration` and
 transcript-indexed output, enabling the unification of `OracleCounterpart`
 with `Counterpart.withMonads`. The oracle computation monad `OracleComp`
-constrains these definitions to `Spec.{0}`. -/
+constrains these definitions to `Spec.{0}`.  -/
 
-/-- Compute the per-node `MonadDecoration` from an oracle decoration and
+/- - Compute the per-node `MonadDecoration` from an oracle decoration and
 accumulated oracle spec. Sender nodes get `Id` (pure observation, `Id α = α`
 definitionally), receiver nodes get `OracleComp (oSpec + [OStmtIn]ₒ + accSpec)`
 (oracle computation with current access). The accumulated spec grows at sender
-nodes and stays fixed at receiver nodes. -/
+nodes and stays fixed at receiver nodes.  -/
 def toMonadDecoration {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
     {ιₛᵢ : Type} (OStmtIn : ιₛᵢ → Type) [∀ i, OracleInterface.{0, u} (OStmtIn i)] :
     (spec : Spec.{0}) → (roles : RoleDecoration spec) → OracleDecoration.{0, 0} spec roles →
@@ -803,11 +812,11 @@ def toMonadDecoration {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
       ⟨⟨OracleComp (oSpec + [OStmtIn]ₒ + accSpec), inferInstance⟩,
        fun x => toMonadDecoration oSpec OStmtIn (rest x) (rRest x) (odFn x) accSpec⟩
 
-/-- Convert oracle-spec-indexed output to transcript-indexed output by threading
+/- - Convert oracle-spec-indexed output to transcript-indexed output by threading
 the accumulated oracle spec through the tree. At each `.done` node, applies
 `Output` to the final accumulated spec. At sender nodes, the accumulated spec
 grows by the sender's oracle interface spec. At receiver nodes, the accumulated
-spec is unchanged. -/
+spec is unchanged.  -/
 def liftOutput
     (Output : {ιₐ : Type} → OracleSpec.{0, u} ιₐ → Type) :
     (spec : Spec.{u}) → (roles : RoleDecoration spec) → OracleDecoration.{u, 0} spec roles →
@@ -819,17 +828,17 @@ def liftOutput
   | .node _ rest, ⟨.receiver, rRest⟩, odFn, _, accSpec, ⟨x, trRest⟩ =>
       liftOutput Output (rest x) (rRest x) (odFn x) accSpec trRest
 
-/-! ## Oracle counterpart (unified with `Counterpart.withMonads`)
+/- ! ## Oracle counterpart (unified with `Counterpart.withMonads`)
 
 `OracleCounterpart` is the round-by-round challenger with growing oracle access,
 defined as `Counterpart.withMonads` with the `MonadDecoration` computed from
 the oracle decoration. At sender nodes the monad is `Id` (pure observation);
-at receiver nodes the monad is `OracleComp` with accumulated oracle access. -/
+at receiver nodes the monad is `OracleComp` with accumulated oracle access.  -/
 
-/-- Round-by-round challenger with growing oracle access, defined as
+/- - Round-by-round challenger with growing oracle access, defined as
 `Counterpart.withMonads` with the monad decoration computed from the oracle
 decoration. The oracle-spec-indexed `Output` is converted to a
-transcript-indexed family by `liftOutput`. -/
+transcript-indexed family by `liftOutput`.  -/
 abbrev OracleCounterpart {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
     {ιₛᵢ : Type} (OStmtIn : ιₛᵢ → Type) [∀ i, OracleInterface.{0, 0} (OStmtIn i)]
     (Output : {ιₐ : Type} → OracleSpec.{0, 0} ιₐ → Type)
@@ -839,9 +848,9 @@ abbrev OracleCounterpart {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
     (toMonadDecoration oSpec OStmtIn spec roles od accSpec)
     (liftOutput Output spec roles od accSpec)
 
-/-- `InteractiveOracleVerifier` is the round-by-round oracle verifier whose
+/- - `InteractiveOracleVerifier` is the round-by-round oracle verifier whose
 terminal output is a verification function. The return type may depend on both
-the input statement and the realized transcript. -/
+the input statement and the realized transcript.  -/
 abbrev InteractiveOracleVerifier {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
     (pSpec : Spec.{0}) (roles : RoleDecoration pSpec)
     (od : OracleDecoration.{0, 0} pSpec roles)
@@ -855,11 +864,11 @@ abbrev InteractiveOracleVerifier {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
         OracleComp (oSpec + [OStmtIn]ₒ + toOracleSpec pSpec roles od tr)
           (StmtOut s tr))
 
-/-! ## Conversions -/
+/- ! ## Conversions  -/
 
-/-- Map the output of an `OracleCounterpart`, applying `f` at each `.done` leaf.
+/- - Map the output of an `OracleCounterpart`, applying `f` at each `.done` leaf.
 At sender nodes (monad = `Id`), the map is applied purely. At receiver nodes
-(monad = `OracleComp`), the map is lifted through the oracle computation. -/
+(monad = `OracleComp`), the map is lifted through the oracle computation.  -/
 def OracleCounterpart.mapOutput {ι : Type} {oSpec : OracleSpec.{0, 0} ι}
     {ιₛᵢ : Type} {OStmtIn : ιₛᵢ → Type} [∀ i, OracleInterface.{0, 0} (OStmtIn i)]
     {Output₁ Output₂ : {ιₐ : Type} → OracleSpec.{0, 0} ιₐ → Type}
@@ -877,15 +886,15 @@ def OracleCounterpart.mapOutput {ι : Type} {oSpec : OracleSpec.{0, 0} ι}
         let ⟨x, ocRest⟩ ← oc
         return ⟨x, mapOutput f (rest x) (rRest x) (odFn x) accSpec ocRest⟩
 
-/-! ## Oracle prover and oracle reduction -/
+/- ! ## Oracle prover and oracle reduction  -/
 
-/-- Oracle prover: given ambient input `i`, local statement/oracle data,
+/- - Oracle prover: given ambient input `i`, local statement/oracle data,
 performs monadic setup in `OracleComp oSpec` and produces a role-dependent
 strategy. The honest prover output is the next local statement bundled with its
 output oracle statements, together with the next witness.
 
 This is a specialization of `Prover` with `m = OracleComp oSpec` and the
-local statement type bundled with named oracle statements. -/
+local statement type bundled with named oracle statements.  -/
 abbrev OracleProver {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
     (SharedIn : Type)
     (Context : SharedIn → Spec.{0})
@@ -906,7 +915,7 @@ abbrev OracleProver {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
         (fun _ => StatementOut shared tr) (fun _ => OStatementOut shared tr) shared)
     WitnessOut
 
-/-- Oracle reduction: pairs an oracle prover with a verifier that uses per-node
+/- - Oracle reduction: pairs an oracle prover with a verifier that uses per-node
 monads (`Id` at sender, `OracleComp` at receiver) via `Counterpart.withMonads`.
 This is the oracle analog of `Reduction`, where the verifier's per-node monad
 structure (growing oracle access) replaces the fixed monad of `Counterpart`.
@@ -915,7 +924,7 @@ The honest prover outputs the next plain statement bundled with its output
 oracle statements. The verifier produces the plain next statement, while the
 `simulate` field exposes query-level access to the output oracle family.
 Concrete reification of those output oracles is optional and lives in a
-separate layer. -/
+separate layer.  -/
 structure OracleReduction {ι : Type} (oSpec : OracleSpec ι)
     (SharedIn : Type)
     (Context : SharedIn → Spec)
@@ -948,9 +957,9 @@ structure OracleReduction {ι : Type} (oSpec : OracleSpec ι)
 
 namespace OracleReduction
 
-/-- Full oracle-only verifier output for an oracle reduction at transcript `tr`:
+/- - Full oracle-only verifier output for an oracle reduction at transcript `tr`:
 the plain output statement together with the query implementation exposing the
-output-oracle access. -/
+output-oracle access.  -/
 abbrev VerifierOutput
     {SharedIn : Type}
     {Context : SharedIn → Spec.{0}}
@@ -969,8 +978,8 @@ abbrev VerifierOutput
       ([OStatementIn shared]ₒ +
         toOracleSpec (Context shared) (Roles shared) (oracleDeco shared) tr))
 
-/-- Package the verifier's plain output statement together with the verifier's
-output-oracle query access. -/
+/- - Package the verifier's plain output statement together with the verifier's
+output-oracle query access.  -/
 def verifierOutput
     {ι : Type} {oSpec : OracleSpec.{0, 0} ι}
     {SharedIn : Type} {ιₛᵢ : SharedIn → Type}
@@ -994,8 +1003,8 @@ def verifierOutput
       (Roles := Roles) (oracleDeco := oracleDeco) OStatementOut shared tr :=
   ⟨stmtOut, reduction.simulate shared tr⟩
 
-/-- The verifier-side monad decoration induced by an oracle reduction, starting
-from an accumulated sender-message oracle spec `accSpec`. -/
+/- - The verifier-side monad decoration induced by an oracle reduction, starting
+from an accumulated sender-message oracle spec `accSpec`.  -/
 abbrev verifierMD
     {ι : Type} {oSpec : OracleSpec.{0, 0} ι}
     {SharedIn : Type} {ιₛᵢ : SharedIn → Type}
@@ -1022,14 +1031,14 @@ end OracleReduction
 
 end OracleDecoration
 
-/-- A verifier-only oracle protocol surface, analogous to `Interaction.Verifier`.
+/- - A verifier-only oracle protocol surface, analogous to `Interaction.Verifier`.
 Its primary index is the shared ambient spine `SharedIn`, which determines the
 protocol context, roles, oracle decoration, and oracle families. The carried
 explicit claim inside that fixed protocol is `StatementIn shared`.
 
 The verifier returns the explicit output statement directly, while `simulate`
 exposes the implicit output oracle behavior at the query level. Concrete
-reification of that output oracle family is an optional outer layer. -/
+reification of that output oracle family is an optional outer layer.  -/
 structure OracleVerifier {ι : Type} (oSpec : OracleSpec ι)
     (SharedIn : Type)
     (Context : SharedIn → Spec)
@@ -1082,8 +1091,8 @@ instance
 
 namespace OracleDecoration.OracleReduction
 
-/-- Forget the prover and witness bookkeeping of an oracle reduction, keeping
-only the verifier-side interaction and output-oracle simulation. -/
+/- - Forget the prover and witness bookkeeping of an oracle reduction, keeping
+only the verifier-side interaction and output-oracle simulation.  -/
 def toVerifier
     {ι : Type} {oSpec : OracleSpec ι}
     {SharedIn : Type} {ιₛᵢ : SharedIn → Type}
@@ -1110,7 +1119,7 @@ def toVerifier
 
 end OracleDecoration.OracleReduction
 
-/-! ## Oracle.Spec-based prover, verifier, and reduction
+/- ! ## Oracle.Spec-based prover, verifier, and reduction
 
 These definitions use `Oracle.Spec` (the inductive type with `.public`/`.oracle`)
 instead of `Spec` + `OracleDecoration`. Output types and `simulate` are indexed
@@ -1119,15 +1128,15 @@ message values.
 
 Like the `OracleDecoration`-based types above, everything is indexed by a
 `SharedIn` ambient input that determines the protocol context, roles, oracle
-decoration, and statement/witness families. -/
+decoration, and statement/witness families.  -/
 
 namespace Oracle
 
-/-- Oracle prover on `Oracle.Spec`: given ambient input `shared`, local
+/- - Oracle prover on `Oracle.Spec`: given ambient input `shared`, local
 statement/oracle data and witness, performs monadic setup in `OracleComp oSpec`
 and produces a role-dependent strategy on `(Context shared).toInteractionSpec`.
 The honest prover output is the next local statement bundled with its output
-oracle statements, plus the next witness. -/
+oracle statements, plus the next witness.  -/
 abbrev Prover {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
     (SharedIn : Type)
     (Context : SharedIn → Spec)
@@ -1156,7 +1165,7 @@ abbrev Prover {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
         shared)
     (fun shared tr => WitnessOut shared ((Context shared).projectPublic tr))
 
-/-- Oracle verifier on `Oracle.Spec`: the interactive verifier (`toFun`) and
+/- - Oracle verifier on `Oracle.Spec`: the interactive verifier (`toFun`) and
 output-oracle simulation (`simulate`), both on the same `Oracle.Spec`.
 
 The verifier uses `Counterpart.withMonads` with `toMonadDecoration`, giving
@@ -1167,7 +1176,7 @@ protocol structure.
 
 The `simulate` field provides query-level access to output oracle statements,
 indexed by `PublicTranscript` (so it is definitionally independent of oracle
-message values). -/
+message values).  -/
 structure Verifier {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
     (SharedIn : Type)
     (Context : SharedIn → Spec)
@@ -1198,13 +1207,13 @@ structure Verifier {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
       (OracleComp
         ([OStatementIn shared]ₒ + (Context shared).toOracleSpec (OracleDeco shared) pt))
 
-/-- Oracle reduction on `Oracle.Spec`: bundles a prover and a verifier for the
+/- - Oracle reduction on `Oracle.Spec`: bundles a prover and a verifier for the
 same protocol. The prover produces strategies on `(Context shared).toInteractionSpec`
 while the verifier interacts via `Counterpart.withMonads` with growing oracle
 access.
 
 All output types are indexed by `PublicTranscript`, ensuring they do not
-depend on oracle message values. -/
+depend on oracle message values.  -/
 structure Reduction {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
     (SharedIn : Type)
     (Context : SharedIn → Spec)
@@ -1229,8 +1238,8 @@ structure Reduction {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
   verifier : Verifier oSpec SharedIn Context Roles OracleDeco StatementIn OStatementIn
     StatementOut OStatementOut
 
-/-- Forget the prover and witness of an `Oracle.Reduction`, keeping the
-verifier. -/
+/- - Forget the prover and witness of an `Oracle.Reduction`, keeping the
+verifier.  -/
 def Reduction.toVerifier
     {ι : Type} {oSpec : OracleSpec.{0, 0} ι}
     {SharedIn : Type}
@@ -1260,3 +1269,5 @@ def Reduction.toVerifier
 end Oracle
 
 end Interaction
+
+-/

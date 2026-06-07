@@ -53,7 +53,6 @@ The proof is a genuine piece of algebraic number theory, carried out here in ful
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
 * [Nguyen, N. K., O'Rourke, G., and Zhang, J., *Hachi: Efficient Lattice-Based Multilinear
     Polynomial Commitments over Extension Fields*][NOZ26]
--/
 
 open scoped BigOperators
 
@@ -165,7 +164,6 @@ theorem exists_sqrt_neg_one (hq5 : q % 8 = 5) : ∃ r : ZMod q, r ^ 2 = -1 := by
   obtain ⟨r, hr⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := q)).mpr hp
   exact ⟨r, by rw [sq, ← hr]⟩
 
-omit [NeZero q] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
 /-- `q` does not divide `2^{α+1}` (it is an odd prime). -/
 theorem q_not_dvd_twoPow (hq5 : q % 8 = 5) : ¬ q ∣ 2 ^ (α + 1) := by
   intro hdvd
@@ -173,7 +171,6 @@ theorem q_not_dvd_twoPow (hq5 : q % 8 = 5) : ¬ q ∣ 2 ^ (α + 1) := by
   have hq2 : q ≤ 2 := Nat.le_of_dvd (by norm_num) hq
   omega
 
-omit [NeZero q] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
 /-- The negacyclic modulus splits as a product of the two conjugate binomials:
 `X^{2^{β+1}} + 1 = (X^{2^β} − r)(X^{2^β} + r)` when `r² = −1`. -/
 theorem X_pow_add_one_eq_mul {r : ZMod q} (hr : r ^ 2 = -1) (β : ℕ) :
@@ -188,7 +185,6 @@ theorem X_pow_add_one_eq_mul {r : ZMod q} (hr : r ^ 2 = -1) (β : ℕ) :
       = (Polynomial.X ^ (2 ^ β)) ^ 2 - (Polynomial.C r) ^ 2 := by ring
   rw [hfac, hCr, hr, Polynomial.C_neg, Polynomial.C_1, sub_neg_eq_add]
 
-omit [NeZero q] in
 /-- Each conjugate factor `X^{2^β} − r` (and its sign-flip via `r ↦ −r`) is irreducible over
 `ZMod q` for `q ≡ 5 (mod 8)`: it divides `cyclotomic (2^{β+2})` and its degree `2^β` equals the
 multiplicative order of `q` modulo `2^{β+2}` (`orderOf_q_mod_twoPow`), so the
@@ -264,7 +260,6 @@ theorem coeff_of_dvd_X_pow_sub_C {S : Type*} [CommRing S] [Nontrivial S] {m : �
     rw [show m + i - m = i from by omega, this, mul_zero, sub_zero]
   rw [hci, hcmi]
 
-omit [NeZero q] in
 /-- **Minimum-distance bound.** If a conjugate factor `X^{2^β} − s` (`s² = −1`) divides the reduced
 lift of a ring element `c : Rq (powTwoCyclotomic (β+1))` whose squared `ℓ₂` norm is `< q`, then
 `c = 0`. This is the LS18 statement that the nonzero elements of the ideal `(X^{2^β} − s)` have
@@ -314,7 +309,6 @@ theorem eq_zero_of_dvd_X_pow_sub_C {β : ℕ} {s : ZMod q} (hs : s ^ 2 = -1)
       ← Finset.sum_add_distrib]
   -- Each term is `0`, so all coefficients vanish.
   have hterm0 : ∀ i, i < 2 ^ β → A i = 0 ∧ B i = 0 := by
-    intro i hi
     have hle : A i ^ 2 + B i ^ 2
         ≤ Rq.l2NormSq (powTwoCyclotomic (R := ZMod q) (β + 1)) c := by
       rw [hsplit]
@@ -343,7 +337,6 @@ theorem eq_zero_of_dvd_X_pow_sub_C {β : ℕ} {s : ZMod q} (hs : s ^ 2 = -1)
         (by rw [show (2 : ℕ) ^ (β + 1) = 2 * 2 ^ β from by rw [pow_succ]; ring]; omega)
       rwa [← CompPoly.CPolynomial.coeff_toPoly] at this
 
-omit [NeZero q] in
 /-- **Lyubashevsky–Seiler: short elements are invertible** (LS18, Cor. 1.2; Hachi, Lemma 3).
 Over the power-of-two cyclotomic modulus `powTwoCyclotomic α` (`φ = X^{2^α}+1`) with a prime
 `q ≡ 5 (mod 8)`, a nonzero element of `Rq (powTwoCyclotomic α)` with centered `ℓ₁` norm

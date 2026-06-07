@@ -245,3 +245,7 @@ def stir_rbr_soundness
 end RBRSoundness
 
 end StirIOP
+
+/- Axiom audit for the STIR main theorem residual front doors (#24). -/
+#print axioms StirIOP.stir_main
+#print axioms StirIOP.stir_rbr_soundness

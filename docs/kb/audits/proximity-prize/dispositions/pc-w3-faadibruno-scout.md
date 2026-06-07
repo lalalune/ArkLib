@@ -19,7 +19,9 @@ must reproduce:
 - `partitionProd lam b = ∏_l (b l)^{λ_l}` (:341) with `partitionProd_eq_prod_count`
   (:347), `_indiscrete` (:371), `_mul` (:377).
 - `sigmaLambda lam = lam.parts.card = Σλ` (:326).
-- `prefactor i i1 lam = C(i,i1) · multinomial(parts.count)` (:391), `prefactor_pos` (:396).
+- `prefactor i i1 lam = lam.parts.countPerms` (`prefactor_eq_countPerms`); the explicit scalar is
+  the positive-part multinomial/countPerms only. Hasse binomials are emitted by the Hasse
+  derivative coefficient lemmas, not stored in `prefactor`.
 - `B_coeff i1 lam = prefactor • hasseCoeffRepr𝒪` (:549) — the genuine `B_{i1,λ} ∈ 𝒪 H`.
 - `βHensel` (:1103) is itself the (A.1) recursion whose RHS already IS a
   `Σ_{i1} Σ_{λ, (k+1)∉λ.parts} W^{…} ξ^{…} B_coeff · partitionProd lam β`. So the
@@ -76,8 +78,9 @@ Then the chain is:
     with multiplicities `λ_l`; the number of compositions mapping to a given partition
     is exactly the `multinomial`. The product `∏_j α^{l_j}` becomes `∏_l (α_l)^{λ_l} =
     partitionProd lam α`, and the multinomial count is `prefactor`'s `multinomial`
-    factor; the `C(i,i1)` factor is the `Y`-Hasse/binomial choosing which i1 of the i
-    Y-slots take the `α_0 = const` branch. NET: order-t coeff of R(X,γ,Z) =
+    factor. The `C(j,Σλ)` binomial is supplied separately by `hasseDerivY_coeff` after the
+    zero-peeling reindex (`countPerms_replicate_zero_add_choose_sl`). NET: order-t coeff of
+    R(X,γ,Z) =
     `Σ_{i1} Σ_{λ ⊢ (t-i1)} prefactor · (Hasse coeff of R) · partitionProd lam α`
     = the `Σ B_{i1,λ} · ∏ α^{λ_l}` structure of (A.1). The (A.1) recursion defining
     α (RationalFunctions.lean:3029-3033 / βHensel:1103) is precisely the choice making

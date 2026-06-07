@@ -81,6 +81,7 @@ namespace BCIKS20.HenselNumerator
 open Polynomial Polynomial.Bivariate
 open BCIKS20AppendixA
 open ProximityPrize.BCIKS20.GammaGenuine
+open AlphaWeight
 
 section P1Conditional
 
@@ -314,11 +315,11 @@ end BCIKS20.HenselNumerator
 
 -- Axiom audit: every proof-carrying declaration in this file depends on exactly the three standard
 -- axioms `[propext, Classical.choice, Quot.sound]` (no `sorry`/`admit`/`axiom`/`native_decide`).
-#print axioms BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_W𝒪
-#print axioms BCIKS20.HenselNumerator.βHensel_eq_alpha_mul_of_lift
-#print axioms BCIKS20.HenselNumerator.alpha_eq_embedding_of_fact
-#print axioms BCIKS20.HenselNumerator.alphaWeight_iff_divWeight
-#print axioms BCIKS20.HenselNumerator.βHensel_weight_structured
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.embeddingOf𝒪Into𝕃_W𝒪
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_eq_alpha_mul_of_lift
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alpha_eq_embedding_of_fact
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_structured
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_lift
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_divWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_lift'

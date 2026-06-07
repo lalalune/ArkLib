@@ -196,6 +196,39 @@ namespace HenselDatumProducer
 
 /-! ### Roots from Divisibility -/
 
+/-- Input configuration for the matching-divisibility route to the Hensel datum.
+
+This is the same per-`z` data as `SepHenselInput`, except the two root facts are supplied in the
+shape produced by the GS matching extractor: `Y - root` divides the per-`z` matching polynomial. -/
+structure MatchingDvdInput {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (u : WordStack F (Fin (k + 1)) ι) (P : F → Polynomial F) (v₀ v₁ : F[X]) :
+    Type where
+  /-- per-`z` matching polynomial over `F⟦X⟧`. -/
+  f : F → Polynomial (PowerSeries F)
+  /-- per-`z` common approximation. -/
+  a₀ : F → PowerSeries F
+  /-- `↑(P z)` is a root of the matching polynomial, expressed as a linear factor. -/
+  hPdvd : ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+    (Polynomial.X - Polynomial.C ((P z : PowerSeries F))) ∣ f z
+  /-- `↑(lift.eval (C z))` is a root of the matching polynomial, expressed as a linear factor. -/
+  hQdvd : ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+    (Polynomial.X - Polynomial.C
+      ((((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)).eval
+            (Polynomial.C z) : F[X]) : PowerSeries F)) ∣ f z
+  /-- `↑(P z)` reduces to the approximation mod `X`. -/
+  hPapprox : ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+    (P z : PowerSeries F) - a₀ z ∈ Ideal.span {(PowerSeries.X : PowerSeries F)}
+  /-- `↑(lift.eval (C z))` reduces to the approximation mod `X`. -/
+  hQapprox : ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+    ((((Polynomial.map Polynomial.C v₀)
+        + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)).eval
+          (Polynomial.C z) : F[X]) : PowerSeries F) - a₀ z
+      ∈ Ideal.span {(PowerSeries.X : PowerSeries F)}
+  /-- per-`z` separability of the matching polynomial. -/
+  hsep : ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+    (f z).Separable
+
 /-- Construct a `HenselDatum` when root properties are expressed as factor divisibility
 statements. -/
 def henselDatum_of_matchingDvd_and_sep {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
@@ -227,8 +260,65 @@ def henselDatum_of_matchingDvd_and_sep {k deg : ℕ} {domain : ι ↪ F} {δ : �
       hQapprox := hQapprox
       hsep := hsep }
 
+/-- Construct a `HenselDatum` from the bundled matching-divisibility input. -/
+def henselDatum_of_matchingDvdInput {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    {u : WordStack F (Fin (k + 1)) ι} {P : F → Polynomial F} {v₀ v₁ : F[X]}
+    (d : MatchingDvdInput (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁) :
+    HPzBridge.HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁ :=
+  henselDatum_of_matchingDvd_and_sep d.f d.a₀ d.hPdvd d.hQdvd d.hPapprox d.hQapprox d.hsep
+
 end HenselDatumProducer
+
+/-- Derives the full `hPz` field from the matching-divisibility route.
+
+The residual hypothesis is a producer for `MatchingDvdInput` for every linear representative
+consistent with `γ`.  The per-`z` identity is still derived by Hensel uniqueness through
+`HPzBridge.hPz_of_henselDatum`; the remaining separate input is the usual degree bound for the
+representative. -/
+theorem hPz_of_matchingDvdInput {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+    {hHyp : BCIKS20AppendixA.ClaimA2.Hypotheses x₀ R H}
+    {u : WordStack F (Fin (k + 1)) ι} {P : F → Polynomial F}
+    (hInput : ∀ v₀ v₁ : F[X],
+      BCIKS20AppendixA.ClaimA2.γ x₀ R H hHyp = BCIKS20AppendixA.polyToPowerSeries𝕃 H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      HenselDatumProducer.MatchingDvdInput
+        (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+    (hdeg : ∀ v₀ v₁ : F[X],
+      BCIKS20AppendixA.ClaimA2.γ x₀ R H hHyp = BCIKS20AppendixA.polyToPowerSeries𝕃 H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1) :
+    ∀ v₀ v₁ : F[X],
+      BCIKS20AppendixA.ClaimA2.γ x₀ R H hHyp = BCIKS20AppendixA.polyToPowerSeries𝕃 H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        P z = ((Polynomial.map Polynomial.C v₀)
+            + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)).eval
+            (Polynomial.C z))
+        ∧ v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1 :=
+  HPzBridge.hPz_of_henselDatum
+    (fun v₀ v₁ hlin =>
+      HenselDatumProducer.henselDatum_of_matchingDvdInput (hInput v₀ v₁ hlin)) hdeg
 
 end ArkLib
 
+/-! ## Axiom audit — every declaration must rest only on
+`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`.
 
+These anchors cover the reduced #91 supplier surface:
+`SepHenselInput -> HPzBridge.HenselDatum -> hPz`, plus the
+matching-divisibility adapter and its direct `hPz` landing theorem. -/
+#print axioms ArkLib.HenselDatumProducer.SepHenselInput
+#print axioms ArkLib.HenselDatumProducer.MatchingDvdInput
+#print axioms ArkLib.HenselDatumProducer.eval_sub_mem_span_X_of_congr
+#print axioms ArkLib.HenselDatumProducer.approxRoot_of_isRoot_of_congr
+#print axioms ArkLib.HenselDatumProducer.isUnit_derivative_eval_of_separable
+#print axioms ArkLib.HenselDatumProducer.isUnit_derivative_of_separable_of_isRoot_of_congr
+#print axioms ArkLib.HenselDatumProducer.henselDatum_of_sepInput
+#print axioms ArkLib.hPz_of_sepHenselInput
+#print axioms ArkLib.HenselDatumProducer.henselDatum_of_matchingDvd_and_sep
+#print axioms ArkLib.HenselDatumProducer.henselDatum_of_matchingDvdInput
+#print axioms ArkLib.hPz_of_matchingDvdInput

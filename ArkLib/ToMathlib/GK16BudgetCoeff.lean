@@ -81,4 +81,18 @@ theorem coeff_prod_sum_of_natDegree_le
     · intro hcontra
       exact absurd (Finset.mem_antidiagonal.mpr (by simp)) hcontra
 
+/-- **Leading coefficient of a finite product, at the natural total degree.** The coefficient of
+`∏ i ∈ s, f i` at the sum `∑ i ∈ s, natDegree (f i)` of the factors' degrees equals the product
+`∏ i ∈ s, leadingCoeff (f i)` of the factors' leading coefficients.
+
+This is the `e i = natDegree (f i)` specialisation of `coeff_prod_sum_of_natDegree_le` (each
+factor's own bound is its degree, and `coeff (f i) (natDegree (f i)) = leadingCoeff (f i)`), and is
+exactly the diagonal-term computation underlying "the coefficient of the top monomial of a
+determinant whose columns have distinct degrees is the determinant of the leading-term matrix". -/
+theorem coeff_prod_sum_natDegree_eq_prod_leadingCoeff
+    (f : ι → R[X]) (s : Finset ι) :
+    coeff (∏ i ∈ s, f i) (∑ i ∈ s, (f i).natDegree) = ∏ i ∈ s, (f i).leadingCoeff := by
+  rw [coeff_prod_sum_of_natDegree_le f (fun i => (f i).natDegree) s (fun _ _ => le_rfl)]
+  rfl
+
 end Polynomial

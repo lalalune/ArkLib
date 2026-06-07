@@ -4,7 +4,8 @@
 Scans every .lean file under ArkLib/ and fails if live (non-comment) code
 contains:
   - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
-  - a custom `axiom` declaration.
+  - a custom `axiom` declaration whose name is not an allowlisted, documented
+    residual (see scripts/residual_axioms.txt).
 
 Comment and docstring occurrences are ignored. `sorry`/`admit` are handled
 separately by scripts/sorry_census.py --fail-on-holes; this precheck runs
@@ -18,7 +19,27 @@ import sys
 from pathlib import Path
 
 TOKEN_RE = re.compile(r"\b(native_decide|bv_decide)\b")
-AXIOM_RE = re.compile(r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*axiom\b")
+# Capture the declared axiom name so it can be checked against the residual
+# allowlist. The name may be namespaced/contain primes; we keep the simple
+# token as written at the declaration site.
+AXIOM_RE = re.compile(
+    r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*axiom\s+"
+    r"([A-Za-z_][A-Za-z0-9_'.]*)"
+)
+
+ALLOWLIST_PATH = Path(__file__).resolve().parent / "residual_axioms.txt"
+
+
+def load_allowlist(path: Path) -> set[str]:
+    """Names of documented residual axioms permitted in live source."""
+    if not path.exists():
+        return set()
+    names: set[str] = set()
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if line:
+            names.add(line.split()[0])
+    return names
 
 
 def comment_mask(text: str) -> list[bool]:
@@ -50,7 +71,10 @@ def comment_mask(text: str) -> list[bool]:
 
 def main() -> int:
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
+    allowlist = load_allowlist(ALLOWLIST_PATH)
     failures: list[str] = []
+    allowed_hits: list[str] = []
+    seen_allowed: set[str] = set()
     for path in sorted((root / "ArkLib").rglob("*.lean")):
         text = path.read_text(encoding="utf-8", errors="replace")
         mask = comment_mask(text)
@@ -61,15 +85,41 @@ def main() -> int:
         pos = 0
         for idx, line in enumerate(text.splitlines(True), start=1):
             first_live = next((off for off, ch in enumerate(line) if not ch.isspace()), None)
-            if first_live is not None and not mask[pos + first_live] and AXIOM_RE.match(line):
-                failures.append(f"{path}:{idx}: forbidden custom axiom declaration")
+            if first_live is None or mask[pos + first_live]:
+                pos += len(line)
+                continue
+            am = AXIOM_RE.match(line)
+            if am:
+                name = am.group(1)
+                if name in allowlist:
+                    seen_allowed.add(name)
+                    allowed_hits.append(f"{path}:{idx}: allowed documented residual axiom {name}")
+                else:
+                    failures.append(
+                        f"{path}:{idx}: forbidden custom axiom declaration {name} "
+                        f"(add to scripts/residual_axioms.txt only if it is a documented, "
+                        f"tracked residual)"
+                    )
             pos += len(line)
+
+    stale = sorted(allowlist - seen_allowed)
+    if stale:
+        print(
+            "WARNING: residual_axioms.txt entries match no live axiom (discharged? "
+            "remove the line): " + ", ".join(stale),
+            file=sys.stderr,
+        )
 
     if failures:
         print("\n".join(failures), file=sys.stderr)
         print(f"\nFORBIDDEN: {len(failures)} laundering token(s) in live source", file=sys.stderr)
         return 1
-    print("forbidden-token precheck: clean (no native_decide / bv_decide / custom axiom)")
+    if allowed_hits:
+        print("\n".join(allowed_hits))
+    print(
+        "forbidden-token precheck: clean (no native_decide / bv_decide / "
+        f"undocumented custom axiom; {len(allowed_hits)} allowlisted residual axiom(s))"
+    )
     return 0
 
 

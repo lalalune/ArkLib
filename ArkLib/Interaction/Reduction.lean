@@ -1,13 +1,25 @@
+/-! # PARKED MODULE (#60, NAMED-RESIDUAL convention)
+
+This module (landed by PR #532) targets a PolyFun API that was since redesigned
+(`Spec.Strategy.withRoles` / `Spec.Counterpart` / `Spec.PublicCoinCounterpart` moved to the
+`SyntaxOver`/`ShapeOver`/`StrategyOver.TwoParty` forms, PolyFun `5d3a160`).  Nothing in ArkLib
+imports it.  Parked to keep the root build green; un-park by migrating to the Over-style API
+(see issue #60 for the full diagnosis). -/
+
 /-
+/- 
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
--/
+ -/
 import PolyFun.Interaction.Basic.Spec
 import PolyFun.Interaction.Basic.Chain
 import PolyFun.Interaction.TwoParty.Compose
+import PolyFun.Interaction.TwoParty.Decoration
+import PolyFun.Interaction.TwoParty.Strategy
+import PolyFun.Interaction.TwoParty.Syntax
 
-/-!
+/- !
 # Provers, Verifiers, and Reductions
 
 Interactive protocol participants and their composition, built on `Spec` with
@@ -68,36 +80,38 @@ a separate foundational object.
 
 See `Security.lean` for completeness, soundness, and knowledge soundness
 definitions built on this execution model.
--/
+ -/
 
 universe u v w
 
 namespace Interaction
 
-/-! ## Protocol participants -/
+open TwoParty
 
-/-- Output produced by an honest prover: the next statement together with the
-next witness to be forwarded by composition. -/
+/- ! ## Protocol participants  -/
+
+/- - Output produced by an honest prover: the next statement together with the
+next witness to be forwarded by composition.  -/
 abbrev HonestProverOutput (StatementOut : Type u) (WitnessOut : Type v) :=
   StatementOut × WitnessOut
 
 namespace HonestProverOutput
 
-/-- Statement component of an honest prover output. -/
+/- - Statement component of an honest prover output.  -/
 abbrev stmt {StatementOut : Type u} {WitnessOut : Type v}
     (out : HonestProverOutput StatementOut WitnessOut) : StatementOut :=
   out.1
 
-/-- Witness component of an honest prover output. -/
+/- - Witness component of an honest prover output.  -/
 abbrev wit {StatementOut : Type u} {WitnessOut : Type v}
     (out : HonestProverOutput StatementOut WitnessOut) : WitnessOut :=
   out.2
 
 end HonestProverOutput
 
-/-- A prover: given ambient input `i`, local statement `stmt`, and local witness
+/- - A prover: given ambient input `i`, local statement `stmt`, and local witness
 `wit`, performs monadic setup and produces a role-dependent strategy whose
-output is `HonestProverOutput (StatementOut i tr) (WitnessOut i tr)`. -/
+output is `HonestProverOutput (StatementOut i tr) (WitnessOut i tr)`.  -/
 abbrev Prover (m : Type u → Type u)
     (SharedIn : Type v)
     (Context : SharedIn → Spec)
@@ -105,13 +119,14 @@ abbrev Prover (m : Type u → Type u)
     (StatementIn WitnessIn : SharedIn → Type w)
     (StatementOut WitnessOut : (i : SharedIn) → Spec.Transcript (Context i) → Type u) :=
   (i : SharedIn) → StatementIn i → WitnessIn i →
-    m (Spec.Strategy.withRoles m (Context i) (Roles i)
+    m (StrategyOver (SyntaxOver.TwoParty.pairedSpec m) Participant.focal
+      (Context i) (Roles i)
       (fun tr => HonestProverOutput (StatementOut i tr) (WitnessOut i tr)))
 
-/-- A verifier: given ambient input `i` and local statement `stmt`, provides a
+/- - A verifier: given ambient input `i` and local statement `stmt`, provides a
 `Counterpart` with `StatementOut i tr` at `.done`. No `OptionT` wrapping — the
 caller chooses whether `StatementOut` includes `Option` for accept/reject
-semantics. -/
+semantics.  -/
 abbrev Verifier (m : Type u → Type u)
     (SharedIn : Type v)
     (Context : SharedIn → Spec)
@@ -119,9 +134,10 @@ abbrev Verifier (m : Type u → Type u)
     (StatementIn : SharedIn → Type w)
     (StatementOut : (i : SharedIn) → Spec.Transcript (Context i) → Type u) :=
   (i : SharedIn) → StatementIn i →
-    Spec.Counterpart m (Context i) (Roles i) (fun tr => StatementOut i tr)
+    StrategyOver (SyntaxOver.TwoParty.pairedSpec m) Participant.counterpart
+      (Context i) (Roles i) (fun tr => StatementOut i tr)
 
-/-- A verifier whose receiver nodes are public-coin in the strong replayable
+/- - A verifier whose receiver nodes are public-coin in the strong replayable
 sense captured by `Spec.PublicCoinCounterpart`.
 
 An ordinary `Verifier` is enough to execute a protocol, but not enough to
@@ -129,7 +145,7 @@ replay a prescribed receiver transcript: at a verifier node, the continuation
 is hidden inside an opaque monadic sample. `PublicCoinVerifier` keeps the same
 overall interface while strengthening receiver nodes so they expose both a
 challenge sampler and a challenge-indexed continuation family. Forgetting this
-extra structure recovers an ordinary `Verifier`. -/
+extra structure recovers an ordinary `Verifier`.  -/
 abbrev PublicCoinVerifier (m : Type u → Type u)
     (SharedIn : Type v)
     (Context : SharedIn → Spec)
@@ -137,12 +153,12 @@ abbrev PublicCoinVerifier (m : Type u → Type u)
     (StatementIn : SharedIn → Type w)
     (StatementOut : (i : SharedIn) → Spec.Transcript (Context i) → Type u) :=
   (i : SharedIn) → StatementIn i →
-    Spec.PublicCoinCounterpart m (Context i) (Roles i)
-      (fun tr => StatementOut i tr)
+    StrategyOver (TwoParty.PublicCoinCounterpart.counterpartSyntax m) PUnit.unit
+      (Context i) (Roles i) (fun tr => StatementOut i tr)
 
 namespace PublicCoinVerifier
 
-/-- Forget that a verifier is public-coin and view it as an ordinary verifier. -/
+/- - Forget that a verifier is public-coin and view it as an ordinary verifier.  -/
 def toVerifier {m : Type u → Type u} [Monad m]
     {SharedIn : Type v}
     {Context : SharedIn → Spec}
@@ -151,9 +167,9 @@ def toVerifier {m : Type u → Type u} [Monad m]
     {StatementOut : (i : SharedIn) → Spec.Transcript (Context i) → Type u}
     (verifier : PublicCoinVerifier m SharedIn Context Roles StatementIn StatementOut) :
     Verifier m SharedIn Context Roles StatementIn StatementOut :=
-  fun i stmt => (verifier i stmt).toCounterpart
+  fun i stmt => TwoParty.PublicCoinCounterpart.toCounterpart (verifier i stmt)
 
-/-- Replay a full transcript through a public-coin verifier. -/
+/- - Replay a full transcript through a public-coin verifier.  -/
 def replay {m : Type u → Type u} [Monad m]
     {SharedIn : Type v}
     {Context : SharedIn → Spec}
@@ -163,11 +179,11 @@ def replay {m : Type u → Type u} [Monad m]
     (verifier : PublicCoinVerifier m SharedIn Context Roles StatementIn StatementOut)
     (i : SharedIn) (stmt : StatementIn i) (tr : Spec.Transcript (Context i)) :
     m (StatementOut i tr) :=
-  Spec.PublicCoinCounterpart.replay (verifier i stmt) tr
+  TwoParty.PublicCoinCounterpart.replay (verifier i stmt) tr
 
 end PublicCoinVerifier
 
-/-- A reduction pairs a prover with a verifier for the same protocol. -/
+/- - A reduction pairs a prover with a verifier for the same protocol.  -/
 structure Reduction (m : Type u → Type u)
     (SharedIn : Type v)
     (Context : SharedIn → Spec)
@@ -177,9 +193,9 @@ structure Reduction (m : Type u → Type u)
   prover : Prover m SharedIn Context Roles StatementIn WitnessIn StatementOut WitnessOut
   verifier : Verifier m SharedIn Context Roles StatementIn StatementOut
 
-/-- A reduction whose verifier is public-coin in the replayable sense of
+/- - A reduction whose verifier is public-coin in the replayable sense of
 `PublicCoinVerifier`. The prover is unchanged; only the verifier carries the
-extra structure needed by verifier-side Fiat-Shamir. -/
+extra structure needed by verifier-side Fiat-Shamir.  -/
 structure PublicCoinReduction (m : Type u → Type u)
     (SharedIn : Type v)
     (Context : SharedIn → Spec)
@@ -191,8 +207,8 @@ structure PublicCoinReduction (m : Type u → Type u)
 
 namespace PublicCoinReduction
 
-/-- Forget that a reduction is public-coin and recover the underlying ordinary
-interactive reduction. -/
+/- - Forget that a reduction is public-coin and recover the underlying ordinary
+interactive reduction.  -/
 def toReduction {m : Type u → Type u} [Monad m]
     {SharedIn : Type v}
     {Context : SharedIn → Spec}
@@ -208,11 +224,11 @@ def toReduction {m : Type u → Type u} [Monad m]
 
 end PublicCoinReduction
 
-/-- A proof system is a reduction where the prover does not forward any
+/- - A proof system is a reduction where the prover does not forward any
 witness to the next stage (`WitnessOut = PUnit`). Accept/reject semantics
 are not fixed here — they are determined by the choice of `StatementOut`
 (e.g., `Bool`, `Option _`) and the security definitions. Its honest prover
-output is `HonestProverOutput StatementOut PUnit`. -/
+output is `HonestProverOutput StatementOut PUnit`.  -/
 abbrev Proof (m : Type u → Type u)
     (SharedIn : Type v)
     (Context : SharedIn → Spec)
@@ -221,12 +237,12 @@ abbrev Proof (m : Type u → Type u)
     (StatementOut : (i : SharedIn) → Spec.Transcript (Context i) → Type u) :=
   Reduction m SharedIn Context Roles StatementIn WitnessIn StatementOut (fun _ _ => PUnit)
 
-/-! ## Execution -/
+/- ! ## Execution  -/
 
-/-- Execute a reduction: run the prover's strategy against the verifier's
+/- - Execute a reduction: run the prover's strategy against the verifier's
 counterpart (via `Strategy.runWithRoles`). Returns the transcript, the
  prover's output (`HonestProverOutput StatementOut WitnessOut`), and the verifier's output
- (`StatementOut`). -/
+ (`StatementOut`).  -/
 def Reduction.execute {m : Type u → Type u} [Monad m]
     {SharedIn : Type v}
     {Context : SharedIn → Spec}
@@ -241,8 +257,8 @@ def Reduction.execute {m : Type u → Type u} [Monad m]
   let strategy ← reduction.prover i stmt wit
   Spec.Strategy.runWithRoles (Context i) (Roles i) strategy (reduction.verifier i stmt)
 
-/-- Run a prover strategy against a verifier. Convenience wrapper around
-`Spec.Strategy.runWithRoles` that applies the input-indexed verifier. -/
+/- - Run a prover strategy against a verifier. Convenience wrapper around
+`Spec.Strategy.runWithRoles` that applies the input-indexed verifier.  -/
 def Verifier.run {m : Type u → Type u} [Monad m]
     {SharedIn : Type v}
     {Context : SharedIn → Spec}
@@ -257,13 +273,13 @@ def Verifier.run {m : Type u → Type u} [Monad m]
     m ((tr : Spec.Transcript (Context i)) × OutputP tr × StatementOut i tr) :=
   Spec.Strategy.runWithRoles (Context i) (Roles i) prover (v i stmt)
 
-/-! ## Sequential composition -/
+/- ! ## Sequential composition  -/
 
-/-- Compose a reduction with a transcript-indexed continuation reduction.
+/- - Compose a reduction with a transcript-indexed continuation reduction.
 The first reduction runs over `ctx₁`, producing intermediate outputs `StmtMid` and
 `WitMid`. These feed into `reduction2`, whose protocol `ctx₂` may depend on the
 first transcript. The composed output types are factored two-argument families,
-lifted through `Transcript.liftAppend`. -/
+lifted through `Transcript.liftAppend`.  -/
 def Reduction.comp {m : Type u → Type u} [Monad m]
     {SharedIn : Type v}
     {StatementIn : SharedIn → Type w}
@@ -304,8 +320,8 @@ def Reduction.comp {m : Type u → Type u} [Monad m]
     Spec.Counterpart.append (reduction1.verifier i stmt) (fun tr₁ sMid =>
       reduction2.verifier ⟨i, stmt, tr₁⟩ sMid)
 
-/-- Executing a sequentially composed reduction factors into first executing the
-prefix reduction and then the suffix interaction induced by its outputs. -/
+/- - Executing a sequentially composed reduction factors into first executing the
+prefix reduction and then the suffix interaction induced by its outputs.  -/
 theorem Reduction.execute_comp
     {m : Type u → Type u} [Monad m] [Spec.LawfulCommMonad m]
     {SharedIn : Type v}
@@ -439,7 +455,7 @@ theorem Reduction.execute_comp
         (cpt₁ := reduction1.verifier i stmt)
         (cpt₂ := fun tr₁ sMid => reduction2.verifier ⟨i, stmt, tr₁⟩ sMid))
 
-/-- Compose per-stage prover and verifier step functions into a reduction over
+/- - Compose per-stage prover and verifier step functions into a reduction over
 a chained protocol `Spec.stateChain Stage spec advance n`.
 
 The prover and verifier each carry evolving state through the state chain:
@@ -451,7 +467,7 @@ The prover and verifier each carry evolving state through the state chain:
   `verifierStep`. The terminal verifier state becomes `StatementOut`.
 
 Both output types are computed as `Transcript.stateChainFamily` of the respective
-state families. -/
+state families.  -/
 def Reduction.stateChainComp {m : Type u → Type u} [Monad m]
     {SharedIn : Type v}
     {StatementIn WitnessIn : SharedIn → Type w}
@@ -488,7 +504,7 @@ def Reduction.stateChainComp {m : Type u → Type u} [Monad m]
   verifier i stmt :=
     Spec.Counterpart.stateChainComp verifierStep n 0 (initStage i) (verifierInit i stmt)
 
-/-! ## Chain-based (stateless) reduction composition
+/- ! ## Chain-based (stateless) reduction composition
 
 Reduction composition over an `n`-round protocol described by `Spec.Chain`,
 with **no prover state, no verifier state, and no round index family**.
@@ -499,13 +515,13 @@ The remaining chain implicitly encodes prior transcript context
 (since it was obtained by applying prior transcripts to the original
 continuation). No state flows between rounds (per-round outputs are `PUnit`).
 The final `StatementOut` and `WitnessOut` are computed from the full
-transcript via caller-supplied result functions. -/
+transcript via caller-supplied result functions.  -/
 
 namespace Spec
 
-/-- Build a `Decoration S` for `Chain.toSpec n c` from per-round decorators.
+/- - Build a `Decoration S` for `Chain.toSpec n c` from per-round decorators.
 At each level, the decorator receives the remaining `Chain` and
-produces the decoration for the current round's spec. -/
+produces the decoration for the current round's spec.  -/
 def Decoration.ofChain {S : Type u → Type v}
     (decoAt : {k : Nat} → (rem : Chain.{u} (k + 1)) → Decoration S rem.1) :
     (n : Nat) → (c : Chain.{u} n) → Decoration S (Chain.toSpec n c)
@@ -516,8 +532,8 @@ def Decoration.ofChain {S : Type u → Type v}
 
 namespace Chain
 
-/-- Build a `RoleDecoration` for the full spec from per-round role
-assignments. Specializes `Decoration.ofChain` to `fun _ => Role`. -/
+/- - Build a `RoleDecoration` for the full spec from per-round role
+assignments. Specializes `Decoration.ofChain` to `fun _ => Role`.  -/
 abbrev roles
     (rolesAt : {k : Nat} → (rem : Chain.{u} (k + 1)) → RoleDecoration rem.1) :
     (n : Nat) → (c : Chain.{u} n) → RoleDecoration (Chain.toSpec n c) :=
@@ -525,10 +541,10 @@ abbrev roles
 
 end Chain
 
-/-- Compose per-round prover strategies into a full strategy over the
+/- - Compose per-round prover strategies into a full strategy over the
 chain. Each round's step receives the remaining `Chain` and
 produces the strategy for that round's spec. Output is `PUnit` — no
-state flows between rounds. -/
+state flows between rounds.  -/
 def Strategy.ofChain {m : Type u → Type u} [Monad m]
     {rolesAt : {k : Nat} → (rem : Chain.{u} (k + 1)) → RoleDecoration rem.1}
     (step : {k : Nat} → (rem : Chain.{u} (k + 1)) →
@@ -544,9 +560,9 @@ def Strategy.ofChain {m : Type u → Type u} [Monad m]
       (fun _ => PUnit.{u + 1}) (fun _ => PUnit.{u + 1})
       strat (fun tr _ => Strategy.ofChain step n (cont tr))
 
-/-- Compose per-round verifier counterparts into a full counterpart over
+/- - Compose per-round verifier counterparts into a full counterpart over
 the chain. Each round's step receives the remaining `Chain` and
-produces the counterpart for that round's spec. Output is `PUnit`. -/
+produces the counterpart for that round's spec. Output is `PUnit`.  -/
 def Counterpart.ofChain {m : Type u → Type u} [Monad m]
     {rolesAt : {k : Nat} → (rem : Chain.{u} (k + 1)) → RoleDecoration rem.1}
     (step : {k : Nat} → (rem : Chain.{u} (k + 1)) →
@@ -564,11 +580,11 @@ def Counterpart.ofChain {m : Type u → Type u} [Monad m]
 
 end Spec
 
-/-- Compose per-round prover and verifier steps into a full `Reduction`
+/- - Compose per-round prover and verifier steps into a full `Reduction`
 over an `n`-round `Chain`. No `ProverState`, `VerifierState`, or
 round index family. Per-round steps produce `PUnit` — no state flows
 between rounds. The final `StatementOut` and `WitnessOut` are computed
-from the full transcript via `stmtResult` and `witResult`. -/
+from the full transcript via `stmtResult` and `witResult`.  -/
 def Reduction.ofChain {m : Type u → Type u} [Monad m]
     {SharedIn : Type v}
     {WitnessIn : SharedIn → Type w}
@@ -602,3 +618,5 @@ def Reduction.ofChain {m : Type u → Type u} [Monad m]
       (Spec.Counterpart.ofChain (rolesAt := rolesAt) (verifierRound i) n (c i))
 
 end Interaction
+
+-/

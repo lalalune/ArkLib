@@ -176,6 +176,139 @@ theorem mcaBadWitness_card_le_card_real
     ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) ≤ (Fintype.card ι : ℝ) := by
   exact_mod_cast mcaBadWitness_card_le_card MC δ u₀ u₁ w hw
 
+/-! ### Pairwise sharpening of the per-codeword count (toward GCXK25's `b = δ·n`)
+
+The single-codeword determinacy above gives `b = |support u₁| ≤ n`. A *strictly sharper* in-tree
+count — within a factor of `2` of GCXK25's first-moment `b = δ·n` — follows from comparing **two
+distinct** bad combining points witnessed by the *same* codeword `w`. If `γ ≠ γ'` are both bad for
+`w`, their witness sets `S, S'` (each `≥ (1-δ)·n`) intersect in `≥ (1-2δ)·n` coordinates, on which
+`u₀ + γ•u₁ = w = u₀ + γ'•u₁` forces `(γ-γ')•u₁ = 0`, i.e. `u₁ = 0`. Hence `secondSupport u₁ ≤ 2δ·n`
+whenever `w` witnesses at least two bad points, sharpening the per-codeword count to
+`b = max 1 (2·δ·n)`. -/
+
+/-- The **zero set** of `u₁`: the coordinates where it vanishes. Complement of `secondSupport u₁`
+in `univ`; on it the line `u₀ + γ • u₁` is independent of `γ`. -/
+def secondZeros (u₁ : ι → F) : Finset ι :=
+  Finset.univ.filter (fun i => u₁ i = 0)
+
+/-- `secondZeros` and `secondSupport` partition `univ`: `|secondSupport| + |secondZeros| = n`. -/
+theorem secondSupport_card_add_secondZeros_card (u₁ : ι → F) :
+    (secondSupport u₁).card + (secondZeros u₁).card = Fintype.card ι := by
+  classical
+  rw [secondSupport, secondZeros]
+  have h := Finset.card_filter_add_card_filter_not (s := (Finset.univ : Finset ι))
+    (p := fun i => u₁ i ≠ 0)
+  have hneg : (Finset.univ.filter (fun i => ¬ u₁ i ≠ 0)) =
+      (Finset.univ.filter (fun i => u₁ i = 0)) := by
+    apply Finset.filter_congr
+    intro i _
+    simp
+  rw [hneg] at h
+  rw [h, Finset.card_univ]
+
+/-- If a coordinate lies in both witness sets of two **distinct** bad combining points `γ ≠ γ'`
+(both witnessed by the same `w`), then `u₁` vanishes there. -/
+theorem u1_zero_of_mem_both_witness
+    (u₀ u₁ w : ι → F) {γ γ' : F} (hγ : γ ≠ γ') {i : ι}
+    (h : w i = u₀ i + γ • u₁ i) (h' : w i = u₀ i + γ' • u₁ i) :
+    u₁ i = 0 := by
+  have heq : γ • u₁ i = γ' • u₁ i := by
+    have := h.symm.trans h'
+    simpa using add_left_cancel this
+  rw [smul_eq_mul, smul_eq_mul] at heq
+  have : (γ - γ') * u₁ i = 0 := by ring_nf; linear_combination heq
+  rcases mul_eq_zero.mp this with hsub | hu
+  · exact absurd (sub_eq_zero.mp hsub) hγ
+  · exact hu
+
+/-- **Pairwise sharpening of the support.** If a fixed codeword `w ∈ MC` witnesses two *distinct*
+bad combining points `γ ≠ γ'`, then `|secondSupport u₁| ≤ 2·δ·n`.
+
+Proof: the witness sets `S, S'` (each `≥ (1-δ)·n`) intersect (inclusion–exclusion) in `≥ (1-2δ)·n`
+coordinates, where `u₁` vanishes (`u1_zero_of_mem_both_witness`); so `S ∩ S' ⊆ secondZeros u₁` and
+`|secondSupport u₁| = n - |secondZeros u₁| ≤ n - (1-2δ)·n = 2δ·n`. -/
+theorem secondSupport_card_le_two_delta_of_two_witnesses
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F)
+    {γ γ' : F} (hγ : γ ≠ γ')
+    (hmem : γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w)
+    (hmem' : γ' ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w) :
+    ((secondSupport u₁).card : ℝ) ≤ 2 * (δ : ℝ) * (Fintype.card ι : ℝ) := by
+  classical
+  rw [mcaBadWitness, Finset.mem_filter] at hmem hmem'
+  obtain ⟨S, hScard, hwline, _⟩ := hmem.2
+  obtain ⟨S', hS'card, hwline', _⟩ := hmem'.2
+  have hsub : S ∩ S' ⊆ secondZeros u₁ := by
+    intro i hi
+    rw [Finset.mem_inter] at hi
+    rw [secondZeros, Finset.mem_filter]
+    exact ⟨Finset.mem_univ _,
+      u1_zero_of_mem_both_witness u₀ u₁ w hγ (hwline i hi.1) (hwline' i hi.2)⟩
+  have hincl : (S.card : ℝ) + (S'.card : ℝ) ≤
+      (Fintype.card ι : ℝ) + ((S ∩ S').card : ℝ) := by
+    have h := Finset.card_union_add_card_inter S S'
+    have hunion : (S ∪ S').card ≤ Fintype.card ι := by
+      calc (S ∪ S').card ≤ (Finset.univ : Finset ι).card :=
+            Finset.card_le_card (fun x _ => Finset.mem_univ _)
+        _ = Fintype.card ι := Finset.card_univ
+    have hcast : ((S ∪ S').card : ℝ) + ((S ∩ S').card : ℝ) =
+        (S.card : ℝ) + (S'.card : ℝ) := by exact_mod_cast h
+    have hu : ((S ∪ S').card : ℝ) ≤ (Fintype.card ι : ℝ) := by exact_mod_cast hunion
+    linarith
+  have hinterle : ((S ∩ S').card : ℝ) ≤ ((secondZeros u₁).card : ℝ) := by
+    exact_mod_cast Finset.card_le_card hsub
+  have hSlb : (1 - (δ : ℝ)) * (Fintype.card ι : ℝ) ≤ (S.card : ℝ) := by
+    have hc : ((1 - δ) * Fintype.card ι : ℝ≥0) ≤ (S.card : ℝ≥0) := hScard
+    have h2 : ((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ) ≤ (S.card : ℝ) := by
+      have := (NNReal.coe_le_coe.mpr hc); push_cast at this ⊢; convert this using 2
+    calc (1 - (δ : ℝ)) * (Fintype.card ι : ℝ)
+        ≤ ((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ) := by
+          refine mul_le_mul_of_nonneg_right ?_ (by positivity)
+          rw [show ((1 - δ : ℝ≥0) : ℝ) = max (1 - (δ : ℝ)) 0 by rw [NNReal.coe_sub_def]; simp]
+          exact le_max_left _ _
+      _ ≤ (S.card : ℝ) := h2
+  have hS'lb : (1 - (δ : ℝ)) * (Fintype.card ι : ℝ) ≤ (S'.card : ℝ) := by
+    have hc : ((1 - δ) * Fintype.card ι : ℝ≥0) ≤ (S'.card : ℝ≥0) := hS'card
+    have h2 : ((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ) ≤ (S'.card : ℝ) := by
+      have := (NNReal.coe_le_coe.mpr hc); push_cast at this ⊢; convert this using 2
+    calc (1 - (δ : ℝ)) * (Fintype.card ι : ℝ)
+        ≤ ((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ) := by
+          refine mul_le_mul_of_nonneg_right ?_ (by positivity)
+          rw [show ((1 - δ : ℝ≥0) : ℝ) = max (1 - (δ : ℝ)) 0 by rw [NNReal.coe_sub_def]; simp]
+          exact le_max_left _ _
+      _ ≤ (S'.card : ℝ) := h2
+  have hzeros_lb : (1 - 2 * (δ : ℝ)) * (Fintype.card ι : ℝ) ≤ ((secondZeros u₁).card : ℝ) := by
+    nlinarith [hincl, hinterle, hSlb, hS'lb]
+  have hpart : ((secondSupport u₁).card : ℝ) + ((secondZeros u₁).card : ℝ) =
+      (Fintype.card ι : ℝ) := by exact_mod_cast secondSupport_card_add_secondZeros_card u₁
+  nlinarith [hzeros_lb, hpart]
+
+/-- **Sharpened per-codeword first-moment count.** For a `Submodule` code `MC` and a fixed
+codeword `w ∈ MC`,
+
+  `|mcaBadWitness w| ≤ max 1 (2·δ·n)`.
+
+This strictly improves the in-tree `b = n` count of `mcaBadWitness_card_le_card` toward GCXK25's
+sharp `b = δ·n` (within a factor of `2` and additive `1`). The `max 1` absorbs the degenerate
+`≤ 1`-witness case; with `≥ 2` bad points the pairwise argument bounds the count by `2·δ·n`. -/
+theorem mcaBadWitness_card_le_two_delta_mul_card
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F)
+    (hw : w ∈ (MC : Set (ι → F))) :
+    ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) ≤
+      max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ)) := by
+  classical
+  set W := mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w with hW
+  rcases le_or_gt W.card 1 with hle | hgt
+  · calc ((W.card : ℝ)) ≤ 1 := by exact_mod_cast hle
+      _ ≤ max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ)) := le_max_left _ _
+  · obtain ⟨γ, hγ, γ', hγ', hne⟩ := Finset.one_lt_card.mp hgt
+    have hsupp : ((secondSupport u₁).card : ℝ) ≤ 2 * (δ : ℝ) * (Fintype.card ι : ℝ) :=
+      secondSupport_card_le_two_delta_of_two_witnesses MC δ u₀ u₁ w hne hγ hγ'
+    have hcard : ((W.card : ℝ)) ≤ ((secondSupport u₁).card : ℝ) := by
+      rw [hW]; exact_mod_cast mcaBadWitness_card_le_support MC δ u₀ u₁ w hw
+    calc ((W.card : ℝ)) ≤ ((secondSupport u₁).card : ℝ) := hcard
+      _ ≤ 2 * (δ : ℝ) * (Fintype.card ι : ℝ) := hsupp
+      _ ≤ max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ)) := le_max_right _ _
+
 end
 
 section Compose
@@ -206,6 +339,41 @@ theorem mcaBad_card_le_listFactor_mul_card
     (by positivity) hb_card ?_
   intro w hw
   exact mcaBadWitness_card_le_card_real MC δ u₀ u₁ w (hTsub w hw)
+
+/-- **Sharpened in-tree per-stack count `|mcaBad u| ≤ B_T · max 1 (2·δ·n)`.** This composes the
+pairwise sharpened per-codeword count (`mcaBadWitness_card_le_two_delta_mul_card`) with the
+union-bound brick, giving a per-stack bound a factor of `≈2` from GCXK25's `B_T · δ · n` — strictly
+better than the `B_T · n` of `mcaBad_card_le_listFactor_mul_card`, with no external hypothesis. -/
+theorem mcaBad_card_le_listFactor_mul_two_delta_card
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ : ι → F)
+    (T : Finset (ι → F)) (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T)
+    (hTsub : ∀ w ∈ T, w ∈ (MC : Set (ι → F)))
+    {B_T : ℝ} (hb_card : (T.card : ℝ) ≤ B_T) :
+    ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ) ≤
+      B_T * max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ)) := by
+  refine mcaBad_card_le_listFactor_mul_perCodeword (MC : Set (ι → F)) δ u₀ u₁ T hT
+    (le_trans zero_le_one (le_max_left _ _)) hb_card ?_
+  intro w hw
+  exact mcaBadWitness_card_le_two_delta_mul_card MC δ u₀ u₁ w (hTsub w hw)
+
+/-- **Sharpened in-tree `ε_mca` bound.** With carrier `T` containing exactly the codewords of `MC`
+of size `≤ B_T`,
+
+  `ε_mca(MC, δ) ≤ ENNReal.ofReal ((B_T · max 1 (2·δ·n)) / |F|)`.
+
+The fully in-tree (`sorry`-free, axiom-clean) sharpening of `epsMCA_le_ofReal_of_listFactor`:
+the per-codeword count is `max 1 (2·δ·n)` rather than `n`, a factor `≈2` from GCXK25's `δ·n`. -/
+theorem epsMCA_le_ofReal_of_listFactor_two_delta
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ}
+    (T : Finset (ι → F))
+    (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T) (hTsub : ∀ w ∈ T, w ∈ (MC : Set (ι → F)))
+    (hcard : (T.card : ℝ) ≤ B_T) :
+    epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
+      ENNReal.ofReal
+        ((B_T * max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) := by
+  refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
+  intro u
+  exact mcaBad_card_le_listFactor_mul_two_delta_card MC δ (u 0) (u 1) T hT hTsub hcard
 
 /-- **`ε_mca` bound from the in-tree first-moment count + a list-size factor.** Given a single
 codeword carrier `T` (containing exactly the codewords of `MC`) of size `≤ B_T`,
@@ -360,3 +528,8 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_inTree_firstMoment_card
+#print axioms ProximityGap.u1_zero_of_mem_both_witness
+#print axioms ProximityGap.secondSupport_card_le_two_delta_of_two_witnesses
+#print axioms ProximityGap.mcaBadWitness_card_le_two_delta_mul_card
+#print axioms ProximityGap.mcaBad_card_le_listFactor_mul_two_delta_card
+#print axioms ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta

@@ -19,56 +19,7 @@ open OracleComp OracleSpec SubSpec ProtocolSpec
 
 universe u v
 
--- namespace loggingOracle
 
--- variable {ι : Type u} {spec : OracleSpec ι} {α β : Type u}
-
--- @[simp]
--- theorem impl_run {i : ι} {t : spec.domain i} :
---     (loggingOracle.impl (query i t)).run = (do let u ← query i t; return (u, [⟨i, ⟨t, u⟩⟩])) :=
---   rfl
-
--- @[simp]
--- theorem simulateQ_map_fst (oa : OracleComp spec α) :
---     Prod.fst <$> (simulateQ loggingOracle oa).run = oa := by
---   induction oa using OracleComp.induction with
---   | pure a => simp
---   | query_bind i t oa ih => simp [simulateQ_bind, ih]
---   | failure => simp
-
--- @[simp]
--- theorem simulateQ_bind_fst (oa : OracleComp spec α) (f : α → OracleComp spec β) :
---     (do let a ← (simulateQ loggingOracle oa).run; f a.1) = oa >>= f := by
---   induction oa using OracleComp.induction with
---   | pure a => simp
---   | query_bind i t oa ih => simp [simulateQ_bind, ih]
---   | failure => simp
-
--- /-- We often have to specify `oa` and `f` for this to be applied -/
--- theorem simulateQ_bind_fst_comp (oa : OracleComp spec α) (f : α → OracleComp spec β) :
---     (do let a ← (simulateQ loggingOracle oa).run; f a.1) = (do let a ← oa; f a) := by
---   induction oa using OracleComp.induction with
---   | pure a => simp
---   | query_bind i t oa ih => simp [simulateQ_bind, ih]
---   | failure => simp
-
--- /-- Ideally, this theorem can also compare the logs of the two oracle computations.
-
--- For this to work, we need an extra function mapping `superSpec.QueryLog` to `spec.QueryLog`.
-
--- This function always exists if `superSpec` is `spec + something`, and extensions thereof, but may
--- not be guaranteed to exist in general, if we just have the current fields in the type class. -/
--- @[simp]
--- theorem simulateQ_run_liftComp_fst {ι' : Type u} {superSpec : OracleSpec ι'}
---     (oa : OracleComp spec α) [SubSpec spec superSpec] :
---       Prod.fst <$> (simulateQ loggingOracle oa).run.liftComp superSpec =
---         Prod.fst <$> (simulateQ loggingOracle (oa.liftComp superSpec)).run := by
---   induction oa using OracleComp.induction with
---   | pure a => simp
---   | query_bind i t oa ih => simp [simulateQ_bind, ih]
---   | failure => simp
-
--- end loggingOracle
 
 section Execution
 

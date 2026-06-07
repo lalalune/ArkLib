@@ -302,3 +302,9 @@ theorem rs_epsCA_implies_lambda_extended_cs25_jointFar
 
 end CodingTheory.CS25.DeepHole
 
+/- Axiom audit for the CS25 joint-far discharge of `DeepHoleProbResidual` (#22). -/
+#print axioms CodingTheory.CS25.DeepHole.DeepHoleJointFar
+#print axioms CodingTheory.CS25.DeepHole.pr_caCloseEvent_le_epsCA
+#print axioms CodingTheory.CS25.DeepHole.numDistinct_le_eps_of_jointFar
+#print axioms CodingTheory.CS25.DeepHole.deepHoleProbResidual_of_jointFar
+#print axioms CodingTheory.CS25.DeepHole.rs_epsCA_implies_lambda_extended_cs25_jointFar

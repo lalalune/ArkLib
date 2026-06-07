@@ -140,6 +140,17 @@ variable {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
   [HasMessageSize pSpec] [∀ i, Serialize (pSpec.Message i) (Vector U (messageSize i))]
   [HasChallengeSize pSpec] [∀ i, Deserialize (pSpec.Challenge i) (Vector U (challengeSize i))]
 
+/-- The `NonInteractiveReduction` produced by the DSFS transform is prover-first: its single round
+is a `P_to_V` message. -/
+local instance dsfsProverOnly :
+    ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ where
+  prover_first' := by simp
+
+/-- The `NonInteractiveReduction` produced by the salted DSFS transform is prover-first. -/
+local instance dsfsSaltedProverOnly {δ : Nat} :
+    ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[ProtocolSpec.Messages.SaltedProof (pSpec := pSpec) (U := U) δ]⟩ where
+  prover_first' := by simp
+
 /-- The unsalted DSFS honest execution packaged in the generic `completenessFromRun` format. -/
 def duplexSpongeFiatShamirHonestExecution
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
@@ -172,7 +183,6 @@ def duplexSpongeFiatShamir_run_eq_honestExecution
     Prop :=
     (R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn =
       liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
-
 
 /-- The transformed salted DSFS run is the lifted explicit honest execution. -/
 def duplexSpongeFiatShamirSalted_run_eq_honestExecution {δ : Nat}
@@ -245,11 +255,7 @@ def duplexSpongeFiatShamirSalted_completeness_unroll {δ : Nat}
         (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt)
         completenessError
 
-/-- The `NonInteractiveReduction` produced by the DSFS transform is prover-first: its single round
-is a `P_to_V` message. -/
-local instance dsfsProverOnly :
-    ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ where
-  prover_first' := by simp
+
 
 /-- **Reduction of `duplexSpongeFiatShamir_completeness_unroll` to the run-collapse residual.**
 
@@ -307,7 +313,7 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_runCollapse {δ : Na
   have hcollapse :
       simulateQ (QueryImpl.addLift impl challengeQueryImpl)
           ((R.duplexSpongeFiatShamirSalted (U := U) sampleSalt).run stmtIn witIn).run =
-      simulateQ impl
+        simulateQ impl
           (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U)
             sampleSalt stmtIn witIn).run :=
     hCollapse stmtIn witIn

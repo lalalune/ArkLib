@@ -354,6 +354,258 @@ theorem rs_close_codewords_card_ge_trivial_regime
       ≤ 1 := htarget
     _ ≤ _ := by exact_mod_cast hpos
 
+/-! ## Floor bookkeeping and band choice (rest of gap (1))
+
+The bare T3.12 window is `k = ⌊(#K)^α⌋ = ⌊((q:ℝ)^m)^α⌋`.  `rs_window_le_floor` shows the
+construction's window `q^u + 1` fits inside it whenever `u + 1 ≤ α·m` (so the count
+transports via `rs_closeCodewords_ncard_mono_window`).  `bkr06_band_choice` produces, for
+any `0 ≤ β ≤ 1`, `α ≤ 1` and `m` large enough (the single explicit largeness condition
+`β²·m + 2β + 3 ≤ α·m`, satisfiable for any `β² < α` once `m ≥ (2β+3)/(α−β²)`), explicit
+cutoffs `u`, `v` meeting **all** side conditions of the tight chain *and* the window
+condition simultaneously. -/
+
+/-- **Window floor bookkeeping.**  `q^u + 1 ≤ ⌊((q:ℝ)^m)^α⌋` whenever `u + 1 ≤ α·m`
+(`2 ≤ q`): the construction's window fits inside the bare statement's. -/
+lemma rs_window_le_floor (q m u : ℕ) (α : ℝ) (hq : 2 ≤ q)
+    (hum : (u + 1 : ℝ) ≤ α * m) :
+    q ^ u + 1 ≤ Nat.floor (((q : ℝ) ^ m) ^ α) := by
+  have hq0 : (0 : ℝ) < q := by exact_mod_cast Nat.lt_of_lt_of_le Nat.zero_lt_two hq
+  have hq1 : (1 : ℝ) ≤ q := by
+    exact_mod_cast Nat.le_of_lt (Nat.lt_of_lt_of_le Nat.one_lt_two hq)
+  apply Nat.le_floor
+  push_cast
+  have h1 : (q : ℝ) ^ u + 1 ≤ (q : ℝ) ^ (u + 1) := by
+    have hnat : q ^ u + 1 ≤ q ^ (u + 1) := by
+      have hpos : 0 < q ^ u := Nat.pow_pos (by omega)
+      calc q ^ u + 1 ≤ q ^ u + q ^ u := by omega
+        _ = 2 * q ^ u := by ring
+        _ ≤ q * q ^ u := Nat.mul_le_mul_right _ hq
+        _ = q ^ (u + 1) := by rw [pow_succ]; ring
+    exact_mod_cast hnat
+  calc (q : ℝ) ^ u + 1 ≤ (q : ℝ) ^ (u + 1) := h1
+    _ = (q : ℝ) ^ (((u + 1 : ℕ)) : ℝ) := (Real.rpow_natCast _ _).symm
+    _ ≤ (q : ℝ) ^ ((m : ℝ) * α) := by
+        apply Real.rpow_le_rpow_of_exponent_le hq1
+        push_cast
+        rw [mul_comm]
+        exact hum
+    _ = ((q : ℝ) ^ m) ^ α := by
+        rw [← Real.rpow_natCast (q : ℝ) m, ← Real.rpow_mul hq0.le]
+
+/-- **Band choice.**  For `0 ≤ β ≤ 1`, `α ≤ 1`, and `m` past the explicit largeness
+threshold `β²·m + 2β + 3 ≤ α·m`, the cutoffs `u := ⌈β²m + 2β + 1⌉₊` and
+`v := max ⌈βm⌉₊ u` satisfy **all** side conditions of the tight chain and the window
+condition: `v ≤ m`, `u ≤ v`, `v² ≤ m·u`, `u < m`, `β·m ≤ v`, and `u + 1 ≤ α·m`. -/
+lemma bkr06_band_choice (m : ℕ) (α β : ℝ) (hβ0 : 0 ≤ β) (hβ1 : β ≤ 1) (hα1 : α ≤ 1)
+    (hm : β ^ 2 * m + 2 * β + 3 ≤ α * m) :
+    ∃ u v : ℕ, v ≤ m ∧ u ≤ v ∧ v ^ 2 ≤ m * u ∧ u < m ∧
+      β * m ≤ (v : ℝ) ∧ (u + 1 : ℝ) ≤ α * m := by
+  set u : ℕ := ⌈β ^ 2 * m + 2 * β + 1⌉₊ with hu
+  set v : ℕ := max ⌈β * m⌉₊ u with hv
+  -- basic positivity / size facts
+  have hm3 : (3 : ℝ) ≤ m := by nlinarith [sq_nonneg β, Nat.cast_nonneg (α := ℝ) m]
+  have hu_lb : β ^ 2 * m + 2 * β + 1 ≤ (u : ℝ) := Nat.le_ceil _
+  have hu_ub : (u : ℝ) < β ^ 2 * m + 2 * β + 2 := by
+    have := Nat.ceil_lt_add_one
+      (by positivity : (0 : ℝ) ≤ β ^ 2 * m + 2 * β + 1)
+    calc (u : ℝ) < β ^ 2 * m + 2 * β + 1 + 1 := this
+      _ = β ^ 2 * m + 2 * β + 2 := by ring
+  -- u + 1 ≤ α·m  (window condition)
+  have hwindow : (u + 1 : ℝ) ≤ α * m := by nlinarith
+  -- u < m
+  have hum : u < m := by
+    have : (u : ℝ) + 1 ≤ (m : ℝ) := le_trans hwindow (by nlinarith)
+    exact_mod_cast this
+  -- v ≤ m
+  have hvm : v ≤ m := by
+    apply max_le _ (le_of_lt hum)
+    apply Nat.ceil_le.mpr
+    calc β * m ≤ 1 * m := by nlinarith [Nat.cast_nonneg (α := ℝ) m]
+      _ = (m : ℝ) := one_mul _
+  -- β·m ≤ v
+  have hβv : β * m ≤ (v : ℝ) := by
+    calc β * m ≤ (⌈β * m⌉₊ : ℝ) := Nat.le_ceil _
+      _ ≤ (v : ℝ) := by exact_mod_cast le_max_left _ _
+  -- v² ≤ m·u
+  have hv2 : v ^ 2 ≤ m * u := by
+    have hcases := max_cases ⌈β * m⌉₊ u
+    rcases hcases with ⟨hveq, _⟩ | ⟨hveq, _⟩
+    · -- v = ⌈βm⌉: (v:ℝ) < βm + 1, so v² < (βm+1)² ≤ m·(β²m+2β+1) ≤ m·u
+      have hvub : (v : ℝ) < β * m + 1 := by
+        rw [hv, hveq]
+        exact Nat.ceil_lt_add_one (by positivity)
+      have hv0 : (0 : ℝ) ≤ (v : ℝ) := Nat.cast_nonneg _
+      have hsq : ((v : ℝ)) ^ 2 ≤ (m : ℝ) * u := by nlinarith
+      exact_mod_cast hsq
+    · -- v = u: u² ≤ m·u from u ≤ m
+      rw [hv, hveq, pow_two]
+      exact Nat.mul_le_mul_right u (le_of_lt hum)
+  exact ⟨u, v, hvm, le_max_right _ _, hv2, hum, hβv, hwindow⟩
+
+/-! ## Exponent-comparison band (the last numeric before the bare-T3.12 assembly)
+
+The bare statement's count target at `Q = q^m` is `Q^{(α−β²)·log Q} = q^{(α−β²)·m²·log q}`,
+while the tight chain delivers `q^{m·u − v²}`.  `bkr06_band_choice_exponent` produces a
+*log-widened* band — `u := ⌈β²m + (α−β²)·L·m + 2β + 1⌉₊`, `v := ⌈βm⌉₊`, with `L`
+abstracting `log q` — meeting all six side conditions **and** the count comparison
+`(α−β²)·L·m² ≤ m·u − v²`, under two explicit largeness hypotheses.  Feasibility of
+`u ≤ v` rests on `(α−β²)·L < β(1−β)`, which at the `q = 2` witness sequence
+(`L = log 2 < 1`) is automatic from `α < β`. -/
+
+/-- **Band choice with exponent comparison.**  For `0 ≤ β ≤ 1`, `α ≤ 1`, `β² ≤ α`,
+`0 ≤ L`, and `m` past the two explicit largeness thresholds, the cutoffs
+`u := ⌈β²m + (α−β²)·L·m + 2β + 1⌉₊` and `v := ⌈βm⌉₊` satisfy all six side conditions
+of the tight chain *and* the count comparison `(α−β²)·L·m² ≤ m·u − v²` (stated in `ℝ`;
+the `ℕ`-side nonnegativity `v² ≤ m·u` is part of the conclusion). -/
+lemma bkr06_band_choice_exponent (m : ℕ) (α β L : ℝ)
+    (hβ0 : 0 ≤ β) (hβ1 : β ≤ 1) (hα1 : α ≤ 1) (hαβ2 : β ^ 2 ≤ α) (hL0 : 0 ≤ L)
+    (hL1 : β ^ 2 * m + (α - β ^ 2) * L * m + 2 * β + 2 ≤ β * m)
+    (hL2 : β ^ 2 * m + (α - β ^ 2) * L * m + 2 * β + 3 ≤ α * m) :
+    ∃ u v : ℕ, v ≤ m ∧ u ≤ v ∧ v ^ 2 ≤ m * u ∧ u < m ∧
+      β * m ≤ (v : ℝ) ∧ (u + 1 : ℝ) ≤ α * m ∧
+      (α - β ^ 2) * L * m ^ 2 ≤ (m : ℝ) * u - (v : ℝ) ^ 2 := by
+  have hcast0 : (0 : ℝ) ≤ (m : ℝ) := Nat.cast_nonneg m
+  have hprod0 : (0 : ℝ) ≤ (α - β ^ 2) * L * m :=
+    mul_nonneg (mul_nonneg (sub_nonneg.mpr hαβ2) hL0) hcast0
+  set A : ℝ := β ^ 2 * m + (α - β ^ 2) * L * m + 2 * β + 1 with hA
+  have hA0 : (0 : ℝ) ≤ A := by
+    have hsq : (0 : ℝ) ≤ β ^ 2 * m := mul_nonneg (sq_nonneg β) hcast0
+    nlinarith
+  set u : ℕ := ⌈A⌉₊ with hu
+  set v : ℕ := ⌈β * m⌉₊ with hv
+  have hu_lb : A ≤ (u : ℝ) := Nat.le_ceil _
+  have hu_ub : (u : ℝ) < A + 1 := Nat.ceil_lt_add_one hA0
+  have hv_lb : β * m ≤ (v : ℝ) := Nat.le_ceil _
+  have hv_ub : (v : ℝ) < β * m + 1 :=
+    Nat.ceil_lt_add_one (mul_nonneg hβ0 hcast0)
+  -- m ≥ 2 (in ℝ), from hL2: α·m ≥ 2β + 3 ≥ 3 and α·m ≤ m
+  have hm2 : (2 : ℝ) ≤ m := by
+    have hsq : (0 : ℝ) ≤ β ^ 2 * m := mul_nonneg (sq_nonneg β) hcast0
+    nlinarith
+  -- window: u + 1 ≤ α·m
+  have hwindow : (u : ℝ) + 1 ≤ α * m := by nlinarith
+  -- u < m
+  have hum : u < m := by
+    have : (u : ℝ) + 1 ≤ (m : ℝ) := le_trans hwindow (by nlinarith)
+    exact_mod_cast this
+  -- u ≤ v  (from A + 1 ≤ β·m ≤ v)
+  have huv : u ≤ v := by
+    have : (u : ℝ) < (v : ℝ) := by nlinarith
+    exact_mod_cast le_of_lt this
+  -- v ≤ m
+  have hvm : v ≤ m := by
+    apply Nat.ceil_le.mpr
+    nlinarith
+  -- v² ≤ m·u  (real side, then cast)
+  have hv2R : ((v : ℝ)) ^ 2 ≤ (m : ℝ) * u := by
+    have hmu : (m : ℝ) * A ≤ (m : ℝ) * u :=
+      mul_le_mul_of_nonneg_left hu_lb hcast0
+    have hv0 : (0 : ℝ) ≤ (v : ℝ) := Nat.cast_nonneg _
+    nlinarith
+  have hv2 : v ^ 2 ≤ m * u := by exact_mod_cast hv2R
+  -- exponent comparison
+  have hexp : (α - β ^ 2) * L * m ^ 2 ≤ (m : ℝ) * u - (v : ℝ) ^ 2 := by
+    have hmu : (m : ℝ) * A ≤ (m : ℝ) * u :=
+      mul_le_mul_of_nonneg_left hu_lb hcast0
+    have hv0 : (0 : ℝ) ≤ (v : ℝ) := Nat.cast_nonneg _
+    nlinarith
+  exact ⟨u, v, hvm, huv, hv2, hum, hv_lb, hwindow, hexp⟩
+
+/-! ## Index transport along an equivalence (gap (2))
+
+The bare T3.12 statement quantifies over abstract index types `ι` with `#ι = #F`; the
+construction lives at `ι = K`, `domain = refl`.  Precomposition with an equivalence
+`e : ι ≃ K` relabels coordinates: codeword membership transports through
+`evalOnPoints`, ball membership through the index-relabeling invariance of the
+(relative) Hamming distance, and the count follows by injectivity. -/
+
+/-- Index relabeling preserves the Hamming distance.  (Mathlib's `hammingDist_comp`
+is codomain-side composition; this is the index-side counterpart.) -/
+lemma hammingDist_comp_equiv {ι κ F' : Type*} [Fintype ι] [Fintype κ] [DecidableEq F']
+    (e : ι ≃ κ) (w c : κ → F') :
+    hammingDist (w ∘ e) (c ∘ e) = hammingDist w c := by
+  classical
+  simp only [hammingDist]
+  exact Finset.card_equiv e (by simp)
+
+/-- Index relabeling preserves the relative Hamming distance (the index cardinalities
+agree via the equivalence). -/
+lemma relHammingDist_comp_equiv {ι κ F' : Type*} [Fintype ι] [Fintype κ]
+    [Nonempty ι] [Nonempty κ] [DecidableEq F']
+    (e : ι ≃ κ) (w c : κ → F') :
+    Code.relHammingDist (w ∘ e) (c ∘ e) = Code.relHammingDist w c := by
+  unfold Code.relHammingDist
+  rw [hammingDist_comp_equiv e w c, Fintype.card_congr e]
+
+/-- **Count transport along `e : ι ≃ K`.**  The close-codeword count of
+`RS[K, refl, k]` around `w` injects (by precomposition) into the count of
+`RS[K, e.toEmbedding, k]` around `w ∘ e` over the abstract index type `ι`. -/
+theorem rs_closeCodewords_ncard_transport
+    {ι : Type*} [Fintype ι] [Nonempty ι]
+    (e : ι ≃ K) (k : ℕ) (w : K → K) (δ : ℝ) :
+    (ListDecodable.closeCodewordsRel
+        ((ReedSolomon.code (Function.Embedding.refl K) k : Set (K → K))) w δ).ncard ≤
+      (ListDecodable.closeCodewordsRel
+        ((ReedSolomon.code e.toEmbedding k : Set (ι → K))) (w ∘ e) δ).ncard := by
+  classical
+  apply Set.ncard_le_ncard_of_injOn (fun c => c ∘ e)
+  · rintro c ⟨hcode, hball⟩
+    refine ⟨?_, ?_⟩
+    · -- codeword membership transports through `evalOnPoints`
+      obtain ⟨p, hp, hpc⟩ := hcode
+      refine ⟨p, hp, ?_⟩
+      funext i
+      have h2 := congrFun hpc (e i)
+      simp only [ReedSolomon.evalOnPoints, LinearMap.coe_mk, AddHom.coe_mk,
+        Function.Embedding.refl_apply] at h2
+      simpa [ReedSolomon.evalOnPoints, LinearMap.coe_mk, AddHom.coe_mk,
+        Equiv.coe_toEmbedding] using h2
+    · -- ball membership transports through the distance equality.  The `δᵣ` terms in
+      -- the goal carry `relHammingBall`'s baked-in instances, which differ from the
+      -- ambient ones (subsingleton mismatch) — bridge each side with `convert`/`congr!`.
+      simp only [ListDecodable.relHammingBall, Set.mem_setOf_eq] at hball ⊢
+      have hd : Code.relHammingDist (w ∘ ⇑e) (c ∘ ⇑e) = Code.relHammingDist w c :=
+        relHammingDist_comp_equiv e w c
+      have hgoal : ((Code.relHammingDist (w ∘ ⇑e) (c ∘ ⇑e) : ℚ≥0) : ℝ) ≤ δ := by
+        rw [hd]
+        convert hball using 2
+        congr!
+      convert hgoal using 2
+      congr!
+  · intro c₁ _ c₂ _ h
+    funext x
+    have := congrFun h (e.symm x)
+    simpa using this
+
+/-! ## Prime-power base-field glue
+
+The bare T3.12 statement hands us an abstract finite field `F'` with
+`#F' = 2^{i+1}` (the witness sequence).  To run the tight chain we must view `F'` as a
+genuine extension of a base field: `charP_of_card_eq_prime_pow` recovers `CharP F' 2`
+from the cardinality alone, after which `ZMod.algebra` equips `F'` with its
+`ZMod 2`-algebra structure, and `finrank_eq_of_card_eq_pow` pins the extension degree. -/
+
+/-- A finite field whose cardinality is a prime power `p^n` has characteristic `p`.
+(The characteristic is some prime `p'` with `#F' = p'^k`; unique factorization forces
+`p' = p`.) -/
+lemma charP_of_card_eq_prime_pow {F' : Type*} [Field F'] [Fintype F']
+    {p n : ℕ} (hp : p.Prime) (hcard : Fintype.card F' = p ^ n) : CharP F' p := by
+  obtain ⟨p', hchar, k, hp', hcardp⟩ := FiniteField.card' F'
+  have hpk : p' ^ (k : ℕ) = p ^ n := by rw [← hcardp, hcard]
+  have hdvd : p' ∣ p ^ n := hpk ▸ dvd_pow_self p' (by exact_mod_cast k.pos.ne')
+  have hp'p : p' = p := (Nat.prime_dvd_prime_iff_eq hp' hp).mp (hp'.dvd_of_dvd_pow hdvd)
+  exact hp'p ▸ hchar
+
+/-- If `#F' = q` and `#K' = q^n` for an `F'`-algebra `K'` (`2 ≤ q`), the extension
+degree is exactly `n`. -/
+lemma finrank_eq_of_card_eq_pow {K' F' : Type*} [Field K'] [Fintype K']
+    [Field F'] [Fintype F'] [Algebra F' K'] {q n : ℕ} (hq : 2 ≤ q)
+    (hF : Fintype.card F' = q) (hK : Fintype.card K' = q ^ n) :
+    Module.finrank F' K' = n := by
+  have h := Module.card_eq_pow_finrank (K := F') (V := K')
+  rw [hF, hK] at h
+  exact Nat.pow_right_injective hq h.symm
+
 #print axioms BKR06.bkr06_param_ineq_extension
 #print axioms BKR06.agreement_count_ge_card
 #print axioms BKR06.mem_closeCodewordsRel_of_subspace
@@ -361,5 +613,13 @@ theorem rs_close_codewords_card_ge_trivial_regime
 #print axioms BKR06.rs_close_codewords_card_ge_bkr06_exponent_form
 #print axioms BKR06.rs_closeCodewords_ncard_mono_window
 #print axioms BKR06.rs_close_codewords_card_ge_trivial_regime
+#print axioms BKR06.rs_window_le_floor
+#print axioms BKR06.bkr06_band_choice
+#print axioms BKR06.bkr06_band_choice_exponent
+#print axioms BKR06.hammingDist_comp_equiv
+#print axioms BKR06.relHammingDist_comp_equiv
+#print axioms BKR06.rs_closeCodewords_ncard_transport
+#print axioms BKR06.charP_of_card_eq_prime_pow
+#print axioms BKR06.finrank_eq_of_card_eq_pow
 
 end BKR06

@@ -46,18 +46,30 @@ inputs that those assemblers carry as raw hypotheses are exactly `hx0`, `hsep`, 
   honestly-provable fragment `claim57_hfactor_irreducible_of_pg_Rset` (every `pg_Rset` member is
   irreducible) and keep `hfactor` itself as the documented bridge hypothesis.
 
-* **`hx0` / `hsep`** — *reduced to the discriminant-nonvanishing substrate plus a named separability
-  bridge.*  `exists_good_x₀_evalX_discr_y_ne` proves, **outright**, the Claim-5.6 specialization
-  step over `pg_Rset`: under the honest per-factor side conditions that each `pg_Rset` factor is
-  positive-`Y`-degree and fraction-field separable (the inseparability side condition flagged in
-  the issue, exposed rather than faked), and a field-size bound, there exists `x₀ : F` with
-  `evalX x₀ (discr_y R) ≠ 0` for every `R ∈ pg_Rset`.  The final step turning
-  `evalX x₀ (discr_y R) ≠ 0` into the `hx0`/`hsep` field shapes
-  (`evalX (C x₀) R ≠ 0` and `(evalX (C x₀) R).Separable`) needs the discriminant/specialization
-  commutation `discr (evalX (C x₀) R) = evalX x₀ (discr_y R)` together with the
-  `discr ≠ 0 ⟹ Separable` converse, neither of which is currently available in tree (only the
-  forward `discr_ne_zero_of_separable_field` is); these are exposed as the named bridge hypotheses
-  `hx0`/`hsep` themselves.
+* **`hx0`** — *discharged outright, in the exact consumer (X) shape (Finding F12 resolved).*  The
+  earlier `exists_good_x₀_evalX_discr_y_ne` is **`Z`-shaped** (`evalX x₀ (discr_y R)` specializes the
+  *inner* `Z` variable of `discr_y R : F[Z][X]`), but the `hx0`/`hsep` consumer fields are
+  **`X`-shaped** (`evalX (C x₀) R` specializes the *middle* `X` variable of `R : (F[Z][X])[Y]`).
+  These specialize different variables, so the `Z`-producer does not feed the `X`-consumer.
+  `exists_good_x₀_X_shape_ne` **reruns the avoidance argument against the `X`-specialization**
+  directly, producing — outright — an `x₀ : F` with `evalX (C x₀) R ≠ 0` for every `R ∈ pg_Rset`,
+  under the honest per-factor `Z`-witness `hlead` (a `Z`-value not killing the `X`-leading
+  coefficient) and the [BCIKS20] large-field budget `hcard`.  The exact finiteness is made precise:
+  `evalX (C x₀) R = 0` forces `R.leadingCoeff.eval (C x₀) = 0`, and the bad `x₀` inject into the
+  roots of `R.leadingCoeff.map (evalRingHom z) : F[X]` (lemmas `c56_evalC_bad_set_card_le`,
+  `claim57_badXC_card_le`).  This is the exact `hx0` field — **no longer a named hypothesis**.
+
+* **`hsep`** — *reduced to the honest domain-level separability residual.*  Over the *domain* `F[Z]`
+  (where `evalX (C x₀) R` lives), `Separable` (= `IsCoprime f f.derivative`) is **not** implied by
+  discriminant nonvanishing: by `resultant_deriv` the derivative-resultant is `±·leadingCoeff·discr`,
+  and a unit Bézout right-hand side needs the *whole* resultant to be a unit — i.e. both the
+  `Y`-leading coefficient and the discriminant of `evalX (C x₀) R` must be units of `F[Z]` (nonzero
+  `F`-constants in `Z`), strictly stronger than nonvanishing.  `separable_evalX_of_resultant_isUnit`
+  (built on `Polynomial.separable_of_resultant_isUnit`, `DiscriminantSeparable`, Lemma 2′) exposes
+  exactly that honest condition; `hsep` is therefore kept as the §5 good-point separability residual
+  `hsepPt` (separability of the *non-collapsing* specialized factors), matching the F8/F10 precedents
+  rather than faking domain separability from the discriminant.  The full `hx0 ∧ hsep` producer is
+  `exists_good_x₀_X_shape`.
 
 * **`hcount` / `hA` / `A`** — *already discharged upstream* (`Claim57Supply.lean`).  Re-exported
   here only through the assembled constructor.
@@ -69,7 +81,10 @@ inputs that those assemblers carry as raw hypotheses are exactly `hx0`, `hsep`, 
 
 * **Assembly** — `Claim57Residuals.ofInTree` collects the minimal honest remaining hypotheses
   (`hx0`, `hsep`, the single Johnson budget `hJohnson`, `hlarge`, `hfactor`) into the full bundle
-  via the proven upstream `claim57Residuals_of_gsInterpolant`.
+  via the proven upstream `claim57Residuals_of_gsInterpolant`.  `Claim57Residuals.ofInTree2` goes
+  further: it **produces `x₀` internally** and discharges the `hx0` field via `exists_good_x₀_X_shape`,
+  so the residual §5 surface shrinks to `{hsepPt, hlarge, hfactor}` (plus the explicit Johnson and
+  X-specialization-budget data), returning `Σ' x₀, Claim57Residuals … x₀ …`.
 
 No `sorry`/`axiom`/`native_decide`.
 

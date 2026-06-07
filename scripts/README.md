@@ -12,6 +12,9 @@ This directory contains various utility scripts for the ArkLib project.
 - **`check-imports.sh`** - Check if ArkLib.lean is up to date with all imports
 - **`check-warning-log.py`** - Fail on scoped warning classes found in a captured build log
 - **`check-docs-integrity.py`** - Check docs links and the `CLAUDE.md` symlink
+- **`proximity_prize_cleanroom_audit.py`** - Optional post-build clean-room audit for
+  proximity-prize final declarations: checks blessed axioms and rejects residual or
+  goal-equivalent `Prop` assumptions in active manifest targets
 - **`lint-style.py`** - Python-based style linting
 - **`lint-style.lean`** - Lean-based style linting
 
@@ -63,6 +66,15 @@ python generate_dependency_graph.py --root ../../ --output-dir ../../dependency_
 ### Build Timing Helper
 ```bash
 bash scripts/build_timing_report.sh --help
+```
+
+### Proximity Prize Clean-Room Audit
+```bash
+# Requires the relevant modules to be built, like scripts/axiom_audit.py.
+python3 scripts/proximity_prize_cleanroom_audit.py
+
+# Manifest-only smoke check.
+python3 scripts/proximity_prize_cleanroom_audit.py --dry-run
 ```
 
 ### Update Library Imports

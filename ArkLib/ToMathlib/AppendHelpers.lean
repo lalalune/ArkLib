@@ -24,25 +24,7 @@ variable {ι : Type} {oSpec : OracleSpec ι}
 
 namespace OracleComp
 
-/-- The monadic lifting operation `liftComp` preserves the support of a computation.
-Specifically, for any oracle spec extension `superSpec` that embeds `oSpec`, the set of reachable
-outcomes of `liftComp mx superSpec` is identical to the support of the original computation `mx`.
-This constitutes the support-level projection of the distributional identity `evalDist_liftComp`. -/
-theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
-    [MonadLift (OracleQuery oSpec) (OracleQuery superSpec)]
-    (mx : OracleComp oSpec α) :
-    support (OracleComp.liftComp mx superSpec) = support mx := by
-  induction mx using OracleComp.inductionOn with
-  | pure x => simp
-  | query_bind t oa ih =>
-      rw [OracleComp.liftComp_bind, OracleComp.liftComp_query]
-      ext y
-      simp only [support_bind, Set.mem_iUnion, support_map, Set.mem_image,
-        OracleComp.support_query, Set.mem_univ, true_and, exists_eq, exists_const,
-        OracleQuery.cont_query, OracleQuery.input_query, id_eq, ih]
-      constructor
-      · rintro ⟨i, -, hi⟩; exact ⟨i, hi⟩
-      · rintro ⟨i, hi⟩; exact ⟨i, ⟨i, by simp, rfl⟩, hi⟩
+-- `support_liftComp` is now provided upstream by VCVio (`OracleComp.support_liftComp`).
 
 end OracleComp
 
@@ -101,7 +83,10 @@ theorem verifier_output_mem_run_support
                     OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run
                   = some <$> OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
                       (oSpec + [pSpec.Challenge]ₒ) := by
-                rw [liftComp_eq_liftM]; rfl
+                rw [liftComp_eq_liftM]
+                simp only [liftM, monadLift, MonadLift.monadLift, MonadLiftT.monadLift,
+                  OptionT.lift, OptionT.mk, OptionT.run, map_eq_pure_bind, simulateQ_bind,
+                  simulateQ_pure, OracleComp.liftComp]
               rw [hrun, support_map, OracleComp.support_liftComp, Set.mem_image] at hLift
               obtain ⟨w, hw, hwEq⟩ := hLift
               rw [Option.some.injEq] at hwEq

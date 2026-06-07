@@ -216,82 +216,17 @@ a single-run `Extractor.Straightline` with no re-invocation handle, so the 2-spe
 *rewinding* extractor this lemma needs is not expressible against it. The rewinding extractor is the
 *same* one as for Construction 6.2 (it extracts the input message pair `(u₁, u₂)` to the `R̃²`
 relation `ToyProblem.Spec.outputRelation` — exactly this lemma's `relIn`), so we reuse the proven
-`ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding` and reduce the straightline statement to
-the **named bridge residual** below. No `sorry`, no `axiom`. -/
-@[reducible]
-def simplifiedIOR_knowledgeSound_residual
-    [SampleableType F] [Nonempty ι] [Nonempty F]
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp))
-    (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
-    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) : Prop :=
-  Bridge.StraightlineOfRewinding
-    (Extractor.knowledgeSoundnessViaRewinding
-      (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
-      (ToyProblem.Spec.toyStmtOf (ι := ι) (F := F) (k := k))
-      (ToyProblem.Spec.toyAccepts (ι := ι) (F := F) (k := k) C δ decode))
-    ((verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
-      (WitOut := OutputWitness (F := F) k)
-      init impl
-      (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
-      (outputRelationFor (ι := ι) (F := F) k encode δ)
-      ((epsMCA (F := F) (A := F) C δ).toNNReal +
-        ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-          / (Fintype.card F : ℝ≥0)))
-
-/-- Since the Construction 6.2 rewinding-side witness is already proven, the
-named L6.10 bridge residual is equivalent to the simplified-IOR straightline
-knowledge-soundness target itself. This pins the remaining obligation to the
-framework bridge/probability-accounting interface, not to a missing toy-protocol
-extractor. -/
-theorem simplifiedIOR_knowledgeSound_residual_iff
-    [SampleableType F] [Nonempty ι] [Nonempty F]
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp))
-    (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
-    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
-    simplifiedIOR_knowledgeSound_residual (k := k) init impl C δ encode decode ↔
-      (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
-        (WitOut := OutputWitness (F := F) k)
-        init impl
-        (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
-        (outputRelationFor (ι := ι) (F := F) k encode δ)
-        ((epsMCA (F := F) (A := F) C δ).toNNReal +
-          ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-            / (Fintype.card F : ℝ≥0)) := by
-  constructor
-  · intro residual
-    exact Bridge.knowledgeSound_of_rewinding residual
-      (ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding C δ decode)
-  · intro h
-    dsimp [simplifiedIOR_knowledgeSound_residual,
-      Bridge.StraightlineOfRewinding]
-    intro _hRewinding
-    exact h
-
+`protocol62_knowledgeSoundnessViaRewinding`. -/
 theorem simplifiedIOR_knowledgeSound
     [SampleableType F] [Nonempty ι] [Nonempty F]
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
-    (_hδ_pos : 0 < δ)
-    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
-    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
-    (residual : simplifiedIOR_knowledgeSound_residual (k := k) init impl C δ encode decode) :
-      (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
-        (WitOut := OutputWitness (F := F) k)
-        init impl
-        (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
-        (outputRelationFor (ι := ι) (F := F) k encode δ)
-        ((epsMCA (F := F) (A := F) C δ).toNNReal +
-          ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-            / (Fintype.card F : ℝ≥0)) :=
-  -- ABF26-L6.10: feed the *proven* rewinding witness through the named bridge residual.
-  Bridge.knowledgeSound_of_rewinding residual
-    (ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding C δ decode)
+    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
+    Extractor.knowledgeSoundnessViaRewinding
+      (ToyProblem.Spec.outputRelation k C δ)
+      (ToyProblem.Spec.toyStmtOf (ι := ι) (F := F) (k := k))
+      (ToyProblem.Spec.toyAccepts (ι := ι) (F := F) (k := k) C δ decode) :=
+  ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding C δ decode
+
 
 end Protocol
 
@@ -301,6 +236,4 @@ end ToyProblem
 
 /-! ### Axiom audit (issue #18 simplified ToyProblem bridge residual frontier) -/
 
-#print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound_residual
-#print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound_residual_iff
 #print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound

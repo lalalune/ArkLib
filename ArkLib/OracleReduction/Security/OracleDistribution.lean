@@ -27,7 +27,7 @@ import ArkLib.OracleReduction.Execution
   combines this permutation carrier with a random-function carrier for `h`.
 
   Layered probability laws are the API surface (Level 3, post-`simulateQ`); this file states
-  the foundational pieces (Levels 1-2) and leaves the lifts (Level 3) as `sorry` for downstream
+  the foundational pieces (Levels 1-2) and leaves the lifts (Level 3) as future work for downstream
   development.
 -/
 

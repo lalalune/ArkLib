@@ -24,7 +24,7 @@ Imports: mathlib-only (`RingTheory.PowerSeries.Substitution`, `Combinatorics.Enu
 ## Staged residual (documented `sorry`, NOT faked)
 
 - `fiberCard_eq_countPerms_staged {k t} (m) (hcard hsum)` — `#{l ∈ finsuppAntidiag (range k) t | valueMultiset (range k) l = m} = Multiset.countPerms m`. STATED with `sorry`. This is the load-bearing identity that turns L4's fiber-card weight into the `prefactor`/`Nat.multinomial` of BCIKS20 (A.1). NOT proven here: it needs a `Finset.finsuppAntidiagEquiv : finsuppAntidiag s n ≃ Sym s n` argument + `Multiset.countPerms_filter_ne` zero-part bookkeeping — a self-contained but non-trivial later-wave brick.
-- The full in-tree `compositionSum_eq_partitionSum` (landing on `Nat.Partition`/`partitionProd`/`prefactor`/`sigmaLambda` from `HenselNumerator.lean`) is NOT stated as a decl; the gap vs L5 is exactly (i) the zero-part split (the `Nat.choose i i₁` of `prefactor`) and (ii) `fiberCard_eq_countPerms_staged`. The scout's HasSubst/recentering WALL (γ's coeff peel `coeff_n γ = α_n`) is untouched — that is Wave 4, as the scout flagged.
+- The full in-tree `compositionSum_eq_partitionSum` (landing on `Nat.Partition`/`partitionProd`/`prefactor`/`sigmaLambda` from `HenselNumerator.lean`) is NOT stated as a decl; the gap vs L5 is the zero-part/value-multiset split plus `fiberCard_eq_countPerms_staged`. Current `prefactor` is only the positive-part `countPerms`; the Y-Hasse binomial is supplied separately by Hasse-derivative coefficient extraction. The scout's HasSubst/recentering WALL (γ's coeff peel `coeff_n γ = α_n`) is untouched — that is Wave 4, as the scout flagged.
 
 ## Honest scope / what this is NOT
 

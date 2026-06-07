@@ -686,6 +686,24 @@ theorem mcaThresholdLattice_bracketed_ofHab25Johnson_and_SamplingDG25
     domain k η δ_lo δ_hi δ' ε_star hη hδ_johnson hδlo_le_one hGS hle hδhi hδ'
     hδ_pos hδ_lt hDG25 hgt
 
+/-!
+Axiom audit for the Hab25Core front-door residuals and Grand-MCA lattice wrappers.
+-/
+#print axioms Hab25CAInput
+#print axioms Hab25GSInterpolation
+#print axioms epsMCA_le_of_GSInterpolation
+#print axioms hab25_mca_johnson_bound
+#print axioms mcaLowerWitness_ofHab25Johnson
+#print axioms mcaThresholdExists_ofHab25Johnson
+#print axioms mcaThreshold_spec_ofHab25Johnson
+#print axioms mcaLowerWitness_ofHab25Johnson_viaBCHKS25
+#print axioms mcaThresholdExists_ofHab25Johnson_viaBCHKS25
+#print axioms mcaThreshold_spec_ofHab25Johnson_viaBCHKS25
+#print axioms mcaThreshold_spec_ofHab25Johnson_directBCHKS25
+#print axioms mcaThresholdLattice_bracketed_ofHab25Johnson_and_epsCAGt
+#print axioms mcaThresholdLattice_bracketed_ofHab25Johnson_and_RSBreakdownCS25
+#print axioms mcaThresholdLattice_bracketed_ofHab25Johnson_and_SamplingDG25
+
 end Hab25Johnson
 
 end CodingTheory.ProximityGap.Hab25Core

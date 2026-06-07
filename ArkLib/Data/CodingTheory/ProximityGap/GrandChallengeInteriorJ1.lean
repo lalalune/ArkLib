@@ -56,6 +56,17 @@ The radius `1/n` is the first nonzero MCA lattice point, `mcaLatticePoint n 1`.
 * `epsMCA_interiorJ1_le` — `ε_mca(C, 1/n) ≤ 2/q` (upper bound; SILVER).
 * `epsMCA_interiorJ1_ge` — `2/q ≤ ε_mca(C, 1/n)` (lower bound; spike plant).
 * `epsMCA_interiorJ1_eq` — `ε_mca(C, 1/n) = 2/q` (GOLD).
+* `mcaSatisfies_interiorJ1_iff_two_div_card_le`, `one_le_mcaThreshold_of_interiorJ1`,
+  `mcaThreshold_lt_one_of_interiorJ1_gt`, `mcaPrizeLattice_one_le_of_interiorJ1`,
+  `mcaPrizeLattice_lt_one_of_interiorJ1_gt` — faithful lattice-threshold consequences of the
+  exact J1 value.
+* `mcaThreshold_eq_j1_of_interiorJ1_and_spikeJ2`,
+  `mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2` — exact J1 threshold resolution in
+  the adjacent band `2/q ≤ ε* < 3/q`, using the exact J1 value and the `3`-spike obstruction at
+  lattice index J2.
+* `mcaPrizeLatticeResolved_j1_of_interiorJ1_and_card_between` — the same adjacent-band
+  resolution specialized to the formal prize threshold `ε* = 2⁻¹²⁸`, using the field-size band
+  `2·2¹²⁸ ≤ q < 3·2¹²⁸`.
 -/
 
 set_option linter.unusedSectionVars false
@@ -191,17 +202,48 @@ theorem epsMCA_interiorJ1_le
   have := mcaBadCount_j1_le_two_via_quadratic domain hk (u 0) (u 1)
   exact_mod_cast this
 
-/-- The size hypothesis of the `2`-spike construction at radius `1/n` is an equality:
-`(1 - 1/n)·n = n - 1 = n - 2 + 1` (for `1 ≤ n`). -/
+/-- The size hypothesis of the `2`-spike construction at radius `1/n`: `(1 - 1/n)·n ≤ n - 2 + 1`.
+For `2 ≤ n` this is the equality `(1 - 1/n)·n = n - 1 = n - 2 + 1`; for `n = 1` the right side is
+`1 ≥ 0` and the bound is loose.  Note `ℝ≥0` has truncated subtraction (no `AddGroupWithOne`), so
+the cast `↑(n - 1) = ↑n - 1` is routed through `NNReal.coe_sub`. -/
 theorem spike_two_size_at_interiorJ1 {n : ℕ} (hn1 : 1 ≤ n) :
     ((1 - (1 : ℝ≥0) / (n : ℝ≥0)) * (n : ℝ≥0)) ≤ ((n - 2 + 1 : ℕ) : ℝ≥0) := by
-  have hnpos : 0 < n := hn1
-  have hnne : (n : ℝ≥0) ≠ 0 := Nat.cast_ne_zero.mpr hnpos.ne'
+  have hnne : (n : ℝ≥0) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
   have key : ((1 - (1 : ℝ≥0) / (n : ℝ≥0)) * (n : ℝ≥0)) = (n : ℝ≥0) - 1 := by
     rw [tsub_mul, one_mul, div_mul_cancel₀ _ hnne]
   rw [key]
-  have he : (n - 2 + 1 : ℕ) = n - 1 := by omega
-  rw [he, Nat.cast_sub hn1, Nat.cast_one]
+  by_cases hn2 : 2 ≤ n
+  · have h1 : (n - 2 + 1 : ℕ) = n - 1 := by omega
+    rw [h1, ← NNReal.coe_le_coe, NNReal.coe_sub]
+    · change (n : ℝ) - 1 ≤ ((n - 1 : ℕ) : ℝ)
+      rw [Nat.cast_sub hn1, Nat.cast_one]
+    · exact_mod_cast hn1
+  · -- `n = 1`: the left side is `0`, while the right side is `1`.
+    have hn_eq : n = 1 := by omega
+    subst hn_eq
+    norm_num
+
+/-- The size hypothesis of the `3`-spike construction at radius `2/n`:
+`(1 - 2/n)·n ≤ n - 3 + 1`.  Under `3 ≤ n`, this is the equality
+`(1 - 2/n)·n = n - 2 = n - 3 + 1`. -/
+theorem spike_three_size_at_interiorJ2 {n : ℕ} (hn3 : 3 ≤ n) :
+    ((1 - mcaLatticePoint n
+        (⟨2, by omega⟩ : Fin (n + 1))) * (n : ℝ≥0)) ≤
+      ((n - 3 + 1 : ℕ) : ℝ≥0) := by
+  have hnne : (n : ℝ≥0) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
+  have h2n : (2 : ℝ≥0) ≤ (n : ℝ≥0) := by
+    exact_mod_cast (by omega : 2 ≤ n)
+  unfold mcaLatticePoint
+  change ((1 - (2 : ℝ≥0) / (n : ℝ≥0)) * (n : ℝ≥0)) ≤
+    ((n - 3 + 1 : ℕ) : ℝ≥0)
+  have key :
+      ((1 - (2 : ℝ≥0) / (n : ℝ≥0)) * (n : ℝ≥0)) = (n : ℝ≥0) - 2 := by
+    rw [tsub_mul, one_mul, div_mul_cancel₀ _ hnne]
+  rw [key]
+  have hright : (n - 3 + 1 : ℕ) = n - 2 := by omega
+  rw [hright, ← NNReal.coe_le_coe, NNReal.coe_sub h2n]
+  change (n : ℝ) - 2 ≤ ((n - 2 : ℕ) : ℝ)
+  rw [Nat.cast_sub (by omega : 2 ≤ n), Nat.cast_ofNat]
 
 /-- **Lower bound: `2/q ≤ ε_mca(C, 1/n)`.**  The explicit `2`-spike plant
 (`epsMCA_ge_spike` with `t = 2`) realizes two bad scalars at radius `1/n`.  This is the research
@@ -242,6 +284,289 @@ theorem epsMCA_interiorJ1_eq
             omega⟩ : Fin (Fintype.card ι + 1)))
       = (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
   le_antisymm (epsMCA_interiorJ1_le domain hk) (epsMCA_interiorJ1_ge domain hk hq)
+
+/-! ## Faithful threshold consequences of the exact J1 value -/
+
+/-- **Exact J1 lattice satisfaction criterion.**  At the first nonzero MCA lattice point, the
+faithful predicate `mcaSatisfies` is equivalent to the single scalar inequality `2 / |F| ≤ ε*`. -/
+theorem mcaSatisfies_interiorJ1_iff_two_div_card_le
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 2 ≤ Fintype.card F)
+    (ε_star : ℝ≥0) :
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    mcaSatisfies
+        (ReedSolomon.code domain k : Set (ι → F)) ε_star j1 ↔
+      (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞) := by
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  simpa [mcaSatisfies, j1] using
+    (show
+      epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F))
+          (mcaLatticePoint (Fintype.card ι) j1) ≤ (ε_star : ℝ≥0∞) ↔
+        (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞) from by
+          rw [epsMCA_interiorJ1_eq domain hk hq])
+
+/-- If `2 / |F| ≤ ε*`, the faithful MCA lattice threshold is at least the J1 index. -/
+theorem one_le_mcaThreshold_of_interiorJ1
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 2 ≤ Fintype.card F)
+    {ε_star : ℝ≥0}
+    (hgood : (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞)) :
+    let C : Set (ι → F) := ReedSolomon.code domain k
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    let hne : mcaThresholdExists C ε_star :=
+      ⟨j1, (mcaSatisfies_interiorJ1_iff_two_div_card_le domain hk hq ε_star).mpr hgood⟩
+    j1 ≤ mcaThreshold C ε_star hne := by
+  let C : Set (ι → F) := ReedSolomon.code domain k
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  have hsat : mcaSatisfies C ε_star j1 :=
+    (mcaSatisfies_interiorJ1_iff_two_div_card_le domain hk hq ε_star).mpr hgood
+  let hne : mcaThresholdExists C ε_star := ⟨j1, hsat⟩
+  exact le_mcaThreshold C ε_star hne hsat
+
+/-- If `ε* < 2 / |F|`, then any existing faithful MCA threshold is strictly below J1. -/
+theorem mcaThreshold_lt_one_of_interiorJ1_gt
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 2 ≤ Fintype.card F)
+    {ε_star : ℝ≥0}
+    (hbad : (ε_star : ℝ≥0∞) < (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star) :
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne < j1 := by
+  let C : Set (ι → F) := ReedSolomon.code domain k
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  by_contra hnot
+  have hj1_le : j1 ≤ mcaThreshold C ε_star hne := not_lt.mp hnot
+  have hsat_threshold : mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=
+    mcaThreshold_spec C ε_star hne
+  have hsat_j1 : mcaSatisfies C ε_star j1 :=
+    mcaSatisfies_downward_closed C ε_star hj1_le hsat_threshold
+  exact (not_le_of_gt hbad)
+    ((mcaSatisfies_interiorJ1_iff_two_div_card_le domain hk hq ε_star).mp hsat_j1)
+
+/-- Four-rate MCA prize lower bracket from the exact J1 value.  When `2 / |F| ≤ ε*` and each
+prize-rate degree has a genuine J1 window (`k + 3 ≤ n`), every faithful MCA prize threshold is at
+least index `1`. -/
+theorem mcaPrizeLattice_one_le_of_interiorJ1
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hq : 2 ≤ Fintype.card F)
+    (hgood : (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (epsStar : ℝ≥0∞)) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      let hne : mcaThresholdExists C epsStar :=
+        ⟨j1,
+          (mcaSatisfies_interiorJ1_iff_two_div_card_le domain (hk r) hq epsStar).mpr
+            hgood⟩
+      j1 ≤ mcaThreshold C epsStar hne := by
+  intro r
+  exact one_le_mcaThreshold_of_interiorJ1 domain (hk r) hq hgood
+
+/-- Four-rate MCA prize upper bracket below J1 when `ε* < 2 / |F|`.  In that small-field regime,
+any existing faithful threshold at the prize rates must be the zero lattice index. -/
+theorem mcaPrizeLattice_lt_one_of_interiorJ1_gt
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hq : 2 ≤ Fintype.card F)
+    (hbad : (epsStar : ℝ≥0∞) < (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+    (hne : ∀ r : Fin 4,
+      mcaThresholdExists
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      mcaThreshold C epsStar (hne r) < j1 := by
+  intro r
+  exact mcaThreshold_lt_one_of_interiorJ1_gt domain (hk r) hq hbad (hne r)
+
+/-! ## Exact adjacent J1/J2 threshold band -/
+
+/-- **Exact J1 threshold from the exact J1 value and the adjacent `3`-spike obstruction.**
+
+If `2 / |F| ≤ ε* < 3 / |F|`, then J1 satisfies the faithful MCA bound while the explicit
+`3`-spike construction makes J2 fail it.  Since the faithful threshold is the greatest
+satisfying lattice index, any existing threshold is exactly J1. -/
+theorem mcaThreshold_eq_j1_of_interiorJ1_and_spikeJ2
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι)
+    (hq3 : 3 ≤ Fintype.card F)
+    {ε_star : ℝ≥0}
+    (hJ1 : (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞))
+    (hJ2 : (ε_star : ℝ≥0∞) < (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star) :
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne = j1 := by
+  let C : Set (ι → F) := ReedSolomon.code domain k
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  let j2 : Fin (Fintype.card ι + 1) := ⟨2, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  have hq2 : 2 ≤ Fintype.card F := by omega
+  have hsat_j1 : mcaSatisfies C ε_star j1 :=
+    (mcaSatisfies_interiorJ1_iff_two_div_card_le domain hk hq2 ε_star).mpr hJ1
+  have hle : j1 ≤ mcaThreshold C ε_star hne :=
+    le_mcaThreshold C ε_star hne hsat_j1
+  have hn3 : 3 ≤ Fintype.card ι := by omega
+  have ht_n : 3 + k ≤ Fintype.card ι := by omega
+  have hspike_size :
+      ((1 - mcaLatticePoint (Fintype.card ι) j2) * (Fintype.card ι : ℝ≥0)) ≤
+        ((Fintype.card ι - 3 + 1 : ℕ) : ℝ≥0) := by
+    simpa [j2] using spike_three_size_at_interiorJ2 (n := Fintype.card ι) hn3
+  have hspike := epsMCA_ge_spike domain k 3
+    (mcaLatticePoint (Fintype.card ι) j2) ht_n hq3 hspike_size
+  have hbad_j2 :
+      epsMCA (F := F) (A := F) C (mcaLatticePoint (Fintype.card ι) j2) >
+        (ε_star : ℝ≥0∞) :=
+    lt_of_lt_of_le hJ2 (by simpa [C] using hspike)
+  have hlt : mcaThreshold C ε_star hne < j2 := by
+    by_contra hnot
+    have hj2_le : j2 ≤ mcaThreshold C ε_star hne := not_lt.mp hnot
+    have hsat_threshold : mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=
+      mcaThreshold_spec C ε_star hne
+    have hsat_j2 : mcaSatisfies C ε_star j2 :=
+      mcaSatisfies_downward_closed C ε_star hj2_le hsat_threshold
+    exact (not_le_of_gt hbad_j2) hsat_j2
+  have hval : (mcaThreshold C ε_star hne).val = j1.val := by
+    have hle_val : j1.val ≤ (mcaThreshold C ε_star hne).val :=
+      Fin.le_iff_val_le_val.mp hle
+    have hlt_val : (mcaThreshold C ε_star hne).val < j2.val :=
+      Fin.lt_def.mp hlt
+    have hj1val : j1.val = 1 := rfl
+    have hj2val : j2.val = 2 := rfl
+    omega
+  exact Fin.ext hval
+
+/-- **Four-rate faithful MCA prize resolution in the adjacent J1/J2 band.**
+
+When every prize-rate Reed-Solomon code has a genuine J1 window and
+`2 / |F| ≤ ε* < 3 / |F|`, the faithful MCA prize lattice is exactly the constant J1
+assignment. -/
+theorem mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hq3 : 3 ≤ Fintype.card F)
+    (hJ1 : (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (epsStar : ℝ≥0∞))
+    (hJ2 : (epsStar : ℝ≥0∞) < (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) :
+    mcaPrizeLatticeResolved domain
+      (fun _ : Fin 4 => ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩) := by
+  intro r
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  have hq2 : 2 ≤ Fintype.card F := by omega
+  have hsat : mcaSatisfies C epsStar j1 :=
+    (mcaSatisfies_interiorJ1_iff_two_div_card_le domain (hk r) hq2 epsStar).mpr hJ1
+  let hne : mcaThresholdExists C epsStar := ⟨j1, hsat⟩
+  refine ⟨hne, ?_⟩
+  simpa [C, j1] using
+    (mcaThreshold_eq_j1_of_interiorJ1_and_spikeJ2
+      domain (hk r) hq3 hJ1 hJ2 hne)
+
+/-! ## Concrete `ε* = 2⁻¹²⁸` field-size specialization -/
+
+/-- Field-size lower band for the J1 side of the formal prize threshold:
+`2/q ≤ 2⁻¹²⁸` follows from `2·2¹²⁸ ≤ q`. -/
+theorem two_div_card_le_epsStar_of_card_ge_two_mul_two_pow
+    (hcard : (2 : ℕ) * 2 ^ (128 : ℕ) ≤ Fintype.card F) :
+    (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (epsStar : ℝ≥0∞) := by
+  set q := Fintype.card F with hq_def
+  have heps : (epsStar : ℝ≥0∞) = (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ := by
+    rw [epsStar]
+    push_cast
+    rw [one_div]
+  rw [heps]
+  have hq0 : (q : ℝ≥0∞) ≠ 0 := by
+    simp only [ne_eq, Nat.cast_eq_zero]
+    rw [hq_def]
+    exact Fintype.card_ne_zero
+  have hqtop : (q : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top q
+  rw [ENNReal.div_le_iff hq0 hqtop]
+  have hpow_ne_zero : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ 0 := by positivity
+  have hpow_ne_top : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ ⊤ := by finiteness
+  rw [← ENNReal.div_eq_inv_mul]
+  rw [ENNReal.le_div_iff_mul_le (Or.inl hpow_ne_zero) (Or.inl hpow_ne_top)]
+  have hcast :
+      (((2 : ℕ) * 2 ^ (128 : ℕ) : ℕ) : ℝ≥0∞) ≤ (q : ℝ≥0∞) := by
+    exact_mod_cast (by simpa [hq_def] using hcard)
+  calc (2 : ℝ≥0∞) * (2 ^ (128 : ℕ) : ℝ≥0∞)
+      = (((2 : ℕ) * 2 ^ (128 : ℕ) : ℕ) : ℝ≥0∞) := by push_cast; ring
+    _ ≤ (q : ℝ≥0∞) := hcast
+
+/-- Field-size upper band for the J2 spike obstruction at the formal prize threshold:
+`2⁻¹²⁸ < 3/q` follows from `q < 3·2¹²⁸`. -/
+theorem epsStar_lt_three_div_card_of_card_lt_three_mul_two_pow
+    (hcard : Fintype.card F < (3 : ℕ) * 2 ^ (128 : ℕ)) :
+    (epsStar : ℝ≥0∞) < (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+  set q := Fintype.card F with hq_def
+  have heps : (epsStar : ℝ≥0∞) = (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ := by
+    rw [epsStar]
+    push_cast
+    rw [one_div]
+  rw [heps]
+  have hq0 : (q : ℝ≥0∞) ≠ 0 := by
+    simp only [ne_eq, Nat.cast_eq_zero]
+    rw [hq_def]
+    exact Fintype.card_ne_zero
+  have hqtop : (q : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top q
+  rw [ENNReal.lt_div_iff_mul_lt (Or.inl hq0) (Or.inl hqtop)]
+  have hpow_ne_zero : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ 0 := by positivity
+  have hpow_ne_top : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ ⊤ := by finiteness
+  rw [← ENNReal.div_eq_inv_mul]
+  rw [ENNReal.div_lt_iff (Or.inl hpow_ne_zero) (Or.inl hpow_ne_top)]
+  have hcast :
+      (q : ℝ≥0∞) < (((3 : ℕ) * 2 ^ (128 : ℕ) : ℕ) : ℝ≥0∞) := by
+    exact_mod_cast (by simpa [hq_def] using hcard)
+  calc (q : ℝ≥0∞)
+      < (((3 : ℕ) * 2 ^ (128 : ℕ) : ℕ) : ℝ≥0∞) := hcast
+    _ = (3 : ℝ≥0∞) * (2 ^ (128 : ℕ) : ℝ≥0∞) := by push_cast; ring
+
+/-- **Formal-prize adjacent J1/J2 field-size band.**
+
+If every prize-rate RS code has a genuine J1 window and
+`2·2¹²⁸ ≤ |F| < 3·2¹²⁸`, then the faithful MCA prize lattice is exactly the constant J1
+assignment at the formal threshold `ε* = 2⁻¹²⁸`. -/
+theorem mcaPrizeLatticeResolved_j1_of_interiorJ1_and_card_between
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hcard_lo : (2 : ℕ) * 2 ^ (128 : ℕ) ≤ Fintype.card F)
+    (hcard_hi : Fintype.card F < (3 : ℕ) * 2 ^ (128 : ℕ)) :
+    mcaPrizeLatticeResolved domain
+      (fun _ : Fin 4 => ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩) := by
+  have hq3 : 3 ≤ Fintype.card F :=
+    le_trans (by norm_num : 3 ≤ (2 : ℕ) * 2 ^ (128 : ℕ)) hcard_lo
+  exact mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2 domain hk hq3
+    (two_div_card_le_epsStar_of_card_ge_two_mul_two_pow (F := F) hcard_lo)
+    (epsStar_lt_three_div_card_of_card_lt_three_mul_two_pow (F := F) hcard_hi)
 
 end GrandChallengesLattice
 

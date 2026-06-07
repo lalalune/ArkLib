@@ -135,10 +135,11 @@ numerator is tail-zero (the genuine `betaRec` output), it *is* such a finite pol
 The two facts below make that precise and show the affine-curve (linear) structure is preserved
 under recentering — exactly the `degreeX ≤ 1` payload the curve-coefficient extraction reads off. -/
 
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 /-- The shift series is the recentering map `X ↦ X - x₀`, exhibited as the substitution-free
 power series `X - C (fieldTo𝕃 x₀)`. -/
 theorem shiftSeries_eq_X_sub_C (x₀ : F) :
-    shiftSeries x₀ H = PowerSeries.X - PowerSeries.C (𝕃 H) (fieldTo𝕃 x₀) := by
+    shiftSeries x₀ H = PowerSeries.X - PowerSeries.C (fieldTo𝕃 x₀) := by
   ext t
   rw [shiftSeries, PowerSeries.coeff_mk, map_sub, PowerSeries.coeff_X, PowerSeries.coeff_C]
   match t with
@@ -146,6 +147,9 @@ theorem shiftSeries_eq_X_sub_C (x₀ : F) :
   | 1 => simp
   | (n + 2) => simp
 
+set_option synthInstance.maxHeartbeats 400000 in
+-- The `aeval`/power-series instances are expensive to synthesize in the linear recentering proof.
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 /-- **Recentering preserves the affine-curve (linear) structure.**  Applying the off-center
 shift `aeval (shiftSeries x₀ H) ·` to a linear numerator `C a + b·X` returns the linear series
 `C (a − b·x₀) + b·X`: the `X`-coefficient `b` is unchanged and only the constant term is shifted.
@@ -154,11 +158,11 @@ curve-coefficient-polynomial extraction. -/
 theorem aeval_shiftSeries_linear (x₀ : F) (a b : 𝕃 H) :
     Polynomial.aeval (shiftSeries x₀ H)
         (Polynomial.C a + Polynomial.C b * Polynomial.X)
-      = PowerSeries.C (𝕃 H) (a - b * fieldTo𝕃 x₀)
-        + PowerSeries.C (𝕃 H) b * PowerSeries.X := by
-  rw [map_add, map_mul, Polynomial.aeval_C, Polynomial.aeval_C, Polynomial.aeval_X,
-    shiftSeries_eq_X_sub_C, map_sub]
-  ring
+      = PowerSeries.C (a - b * fieldTo𝕃 x₀)
+        + PowerSeries.C b * PowerSeries.X := by
+  rw [shiftSeries_eq_X_sub_C]
+  simp [Polynomial.aeval_def]
+  ring_nf
 
 end SubstFieldCaveat
 

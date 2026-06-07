@@ -147,9 +147,10 @@ theorem trunc_defect_eq_restrictedFaaDiBrunoSum (x₀ : F) (R : F[X][X][Y])
 bijecting the restricted value-multisets `m` (entries = orders, zeros allowed, `card = i`,
 `(t+1) ∉ m`) against the `(A.1)` index pairs `(i1, λ)` — X-Taylor order `ab.1 = i1`, positive
 entries forming `λ ⊢ ab.2`, zero-slot count `i − card λ` the Y-degree bookkeeping — matching
-`countPerms m` against `prefactor = C(i,i1)·multinomial(λ)`, the per-term values via `coeff_Q_eq_B`
+`countPerms m` against the positive-part `prefactor = λ.parts.countPerms` together with the
+Y-Hasse binomial from `hasseDerivY_coeff`, the per-term values via `coeff_Q_eq_B`
   + `partitionProd_coeff_assembled`, and clearing the `W`/`ξ` telescopes with
-  `ζ_ne_zero`/`den_ne_zero`.
+  the `ζ` sign/denominator conventions.
 THIS is the last genuinely unformalized content of P2; everything else of P2 is PROVEN. -/
 def RestrictedFaaDiBrunoMatch (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) : Prop :=
@@ -193,9 +194,10 @@ all orders.  Everything else of P2 — STEP 1, the order-`0` base, the Newton li
 `PowerSeries.ext` assembly, the denominator clearing, and the uniqueness reduction to
 `gammaGenuine` — is PROVEN (here and upstream).
 
-WIRE-IN (one-line edit to `HenselNumerator.lean`, NOT made here): replace the body of the sorried
-`faaDiBruno_succ_sum_eq_zero` so it is discharged from `RestrictedFaaDiBrunoMatch` via
-`coeff_succ_eval_defect_reduction` + `trunc_defect_cancel_assembled`. -/
+WIRE-IN (not made here): the legacy `faaDiBruno_succ_sum_eq_zero`/`FaaDiBrunoSuccSumZeroResidual`
+frontier is discharged from `RestrictedFaaDiBrunoMatch` via
+`coeff_succ_eval_defect_reduction` + `trunc_defect_cancel_assembled`; the genuinely open step is
+still proving the `B_coeff` prefactor re-keying that supplies `RestrictedFaaDiBrunoMatch`. -/
 theorem P2_closed (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
     (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0)
@@ -205,5 +207,15 @@ theorem P2_closed (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R 
             * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :=
   ⟨assembledSeries_isRoot_of_match H x₀ R hHyp hmatch,
     βHensel_lift_identity_of_match H x₀ R hHyp hmatch⟩
+
+-- In-file axiom audit for the carved P2 core and its conditional endpoint reductions.
+section AxiomAudit
+#print axioms RestrictedFaaDiBrunoMatch
+#print axioms trunc_defect_eq_restrictedFaaDiBrunoSum
+#print axioms trunc_defect_cancel_assembled
+#print axioms assembledSeries_isRoot_of_match
+#print axioms βHensel_lift_identity_of_match
+#print axioms P2_closed
+end AxiomAudit
 
 end BCIKS20.HenselNumerator

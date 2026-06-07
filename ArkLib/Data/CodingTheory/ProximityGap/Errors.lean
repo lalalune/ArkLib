@@ -94,7 +94,7 @@ set_option linter.unusedSectionVars false
 -- This file's L4.6 quantitative-residual block (the `jointlyProximate*_udr` count bounds toward
 -- ABF26 Lemma 4.6) pushes it past the default 1500-line cap; matching the precedent of other
 -- large ProximityGap files (e.g. `BCIKS20/AffineSpaces.lean`).
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2000
 
 namespace ProximityGap
 
@@ -255,12 +255,94 @@ theorem epsCA_le_one (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) :
     exact Pr_le_one ($ᵖ F) fun γ => δᵣ(u 0 + γ • u 1, C) ≤ δ_fld
 
 open Classical in
+/-- **Covering ⟹ complete CA breakdown (the `≥ 1` half).**
+
+If a stack `u` is *not* jointly `δ_int`-close to `C`, yet **every** point of its affine line
+`u 0 + γ • u 1` is `δ_fld`-close to `C`, then `1 ≤ ε_ca(C, δ_fld, δ_int)`.  The `u`-term of the
+`epsCA` supremum is `Pr_γ[δᵣ(u 0 + γ • u 1, C) ≤ δ_fld]`, which is `1` because the event holds
+for *every* `γ` (the indicator is constantly `1`, so the mass is the full `∑' γ, ($ᵖ F) γ = 1`).
+
+This isolates the CS25 complete-breakdown content (ABF26 T4.17, issue #82) as a single
+*covering* fact — "the whole random line lands in the `δ`-neighbourhood of `C`" — separated from
+the supremum mechanics; the remaining work is to exhibit such a non-jointly-close, line-covered
+stack in the entropy band (CS25's probabilistic covering, feeding the proven entropy/ball-count
+input `linear_lambda_ge_entropy_volume`). -/
+theorem one_le_epsCA_of_line_covered (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0)
+    (u : WordStack A (Fin 2) ι) (hu : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hcover : ∀ γ : F, δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    1 ≤ epsCA (F := F) C δ_fld δ_int := by
+  unfold epsCA
+  refine le_trans ?_ (le_iSup _ u)
+  rw [if_neg hu, prob_tsum_form_singleton]
+  have h : (∑' γ : F, ($ᵖ F) γ * (if δᵣ(u 0 + γ • u 1, C) ≤ δ_fld then (1 : ENNReal) else 0))
+      = ∑' γ : F, ($ᵖ F) γ :=
+    tsum_congr fun γ => by rw [if_pos (hcover γ), mul_one]
+  rw [h]
+  exact ($ᵖ F).tsum_coe.ge
+
+open Classical in
+/-- **Averaging existence: a fully line-covered stack exists when few stacks fail.**
+
+If the total number of "far" `γ` across all stacks,
+`∑_u #{γ : Δᵣ(u 0 + γ • u 1, C) > δ}`, is strictly below the stack count
+`Fintype.card (WordStack A (Fin 2) ι)`, then some stack `u` has its *whole* affine line
+`u 0 + γ • u 1` within relative distance `δ` of `C` (pigeonhole: not every stack can carry
+`≥ 1` far `γ`).  Feeds `one_le_epsCA_of_line_covered`; the remaining content for the CS25 #82
+breakdown is the double-count `∑_u #{far γ} = |F| · |ι → F| · |{w : Δᵣ(w,C) > δ}|` with the
+δ-neighbourhood-complement bound on `|{w : Δᵣ(w,C) > δ}|`. -/
+theorem exists_line_covered_stack_of_sum_far_lt (C : Set (ι → A)) (δ : ℝ≥0)
+    (hsum : (∑ u : WordStack A (Fin 2) ι,
+              (Finset.univ.filter (fun γ : F => ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ)).card)
+            < Fintype.card (WordStack A (Fin 2) ι)) :
+    ∃ u : WordStack A (Fin 2) ι, ∀ γ : F, δᵣ(u 0 + γ • u 1, C) ≤ δ := by
+  by_contra hcon
+  push_neg at hcon
+  have h1 : ∀ u : WordStack A (Fin 2) ι,
+      1 ≤ (Finset.univ.filter (fun γ : F => ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ)).card := by
+    intro u
+    obtain ⟨γ, hγ⟩ := hcon u
+    refine Finset.card_pos.mpr ⟨γ, ?_⟩
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    exact not_le.mpr hγ
+  have hge : Fintype.card (WordStack A (Fin 2) ι)
+      ≤ ∑ u : WordStack A (Fin 2) ι,
+          (Finset.univ.filter (fun γ : F => ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ)).card := by
+    rw [Fintype.card_eq_sum_ones]
+    exact Finset.sum_le_sum (fun u _ => h1 u)
+  omega
+
+open Classical in
 /-- The MCA error is bounded by the total probability mass. -/
 theorem epsMCA_le_one (C : Set (ι → A)) (δ : ℝ≥0) :
     epsMCA (F := F) C δ ≤ 1 := by
   unfold epsMCA
   refine iSup_le fun u => ?_
   exact Pr_le_one ($ᵖ F) fun γ => mcaEvent C δ (u 0) (u 1) γ
+
+open Classical in
+/-- **MCA analogue of `one_le_epsCA_of_line_covered` (the `≥ 1` half).**
+
+If the MCA bad event `mcaEvent C δ (u 0) (u 1) γ` holds for *every* `γ`, then
+`1 ≤ ε_mca(C, δ)`.  The `ε_mca`-supremum term at `u` is `Pr_γ[mcaEvent C δ (u 0) (u 1) γ]`,
+which is the full mass `∑' γ, ($ᵖ F) γ = 1` because the indicator is constantly `1`.  This
+isolates an MCA complete-breakdown to a single stack whose every random combination triggers the
+bad event, separated from the supremum mechanics.  This is the exact MCA dual of
+`one_le_epsCA_of_line_covered`; it is foundational infrastructure for a future MCA
+complete-breakdown (the MCA analogue of the CS25 CA breakdown).  Note the current MCA-side issues
+(#66/#85/#99) instead concern epsMCA/epsMCAgs *upper* bounds (faithfulness, mass), so they do not
+consume this lemma directly. -/
+theorem one_le_epsMCA_of_mcaEvent_forall (C : Set (ι → A)) (δ : ℝ≥0)
+    (u : WordStack A (Fin 2) ι)
+    (h : ∀ γ : F, mcaEvent C δ (u 0) (u 1) γ) :
+    1 ≤ epsMCA (F := F) C δ := by
+  unfold epsMCA
+  refine le_trans ?_ (le_iSup _ u)
+  rw [prob_tsum_form_singleton]
+  have heq : (∑' γ : F, ($ᵖ F) γ * (if mcaEvent C δ (u 0) (u 1) γ then (1 : ENNReal) else 0))
+      = ∑' γ : F, ($ᵖ F) γ :=
+    tsum_congr fun γ => by rw [if_pos (h γ), mul_one]
+  rw [heq]
+  exact ($ᵖ F).tsum_coe.ge
 
 /-! ## Monotonicity of `epsCA` (ABF26 Definition 4.1 sub-tasks 4–5)
 

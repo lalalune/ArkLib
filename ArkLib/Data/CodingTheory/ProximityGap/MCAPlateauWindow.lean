@@ -468,6 +468,53 @@ theorem mcaPrizeLatticeResolved_of_chooseBounds_and_spike_adjacent
     (mcaThreshold_eq_of_lowerWitnesses_and_spike_adjacent
       domain wlo t δ_hi hδhi ht_n ht_q hspike_radius hspike_gt hadj' j)
 
+/-- Packaged four-rate plateau-window frontier for #70.
+
+The fields are exactly the arithmetic-facing inputs consumed by
+`mcaPrizeLatticeResolved_of_chooseBounds_and_spike_adjacent`: per-rate lower radii with the
+canonical-window binomial/count upper bound, per-rate spike radii and spike sizes, and the one-step
+lattice adjacency check.  The hard work remains proving these fields for the prize rates; this
+structure only makes the route reusable and prevents downstream files from repeating the long
+hypothesis list. -/
+structure MCAPrizeChooseSpikeFrontier (domain : ι ↪ F) where
+  δ_lo : Fin 4 → ℝ≥0
+  δ_hi : Fin 4 → ℝ≥0
+  t : Fin 4 → ℕ
+  δ_lo_le_one : ∀ j : Fin 4, δ_lo j ≤ 1
+  choose_bound : ∀ j : Fin 4,
+    ((Fintype.card ι).choose
+        (max
+          (⌈((1 : ℝ≥0) - δ_lo j) * (Fintype.card ι : ℝ≥0)⌉₊)
+          (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1)) : ENNReal) /
+      (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal)
+  δ_hi_le_one : ∀ j : Fin 4, δ_hi j ≤ 1
+  t_le_n : ∀ j : Fin 4,
+    t j + ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι
+  t_le_q : ∀ j : Fin 4, t j ≤ Fintype.card F
+  spike_radius : ∀ j : Fin 4,
+    ((1 - δ_hi j) * Fintype.card ι : ℝ≥0) ≤
+      (Fintype.card ι - t j + 1 : ℕ)
+  spike_gt : ∀ j : Fin 4,
+    (epsStar : ENNReal) < (t j : ENNReal) / (Fintype.card F : ENNReal)
+  adjacent : ∀ j : Fin 4,
+    (latticeIndexOf (ι := ι) (δ_hi j) (δ_hi_le_one j)).val =
+      (latticeIndexOf (ι := ι) (δ_lo j) (δ_lo_le_one j)).val + 1
+
+/-- Reassemble a faithful MCA lattice-prize resolution from the packaged plateau-window
+frontier. -/
+theorem mcaPrizeLatticeResolved_of_chooseSpikeFrontier
+    (domain : ι ↪ F)
+    (frontier : MCAPrizeChooseSpikeFrontier (F := F) domain) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (frontier.δ_lo j) (frontier.δ_lo_le_one j)) :=
+  mcaPrizeLatticeResolved_of_chooseBounds_and_spike_adjacent
+    domain frontier.δ_lo frontier.δ_hi frontier.t frontier.δ_lo_le_one
+    frontier.choose_bound frontier.δ_hi_le_one frontier.t_le_n frontier.t_le_q
+    frontier.spike_radius frontier.spike_gt frontier.adjacent
+
+#print axioms ProximityGap.MCAPrizeChooseSpikeFrontier
+#print axioms ProximityGap.mcaPrizeLatticeResolved_of_chooseSpikeFrontier
+
 end LatticeBracket
 
 end ProximityGap

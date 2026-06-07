@@ -175,10 +175,38 @@ faithfulness holds and the GS error clears `ε*`, the radius is a genuine `MCALo
 
 /-- **Faithful GS-list family.** The abstract Grand MCA bad-event probability is bounded by the
 GS-exposed bad-event probability for the supplied list family.  This is the named faithfulness
-surface that #66 still needs beyond UDR. -/
+surface that #66 still needs beyond UDR.
+
+The intended proof target is not a naive comparison between the abstract event and the non-row
+`mcaEventGS` singleton bridge.  The beyond-UDR route has to normalize the abstract pair witness
+to the GS-row event below, then provide list faithfulness for that row witness. -/
 def FaithfulGSFamily (C : Set (ι → F)) (δ : ℝ≥0)
     (L : WordStack F (Fin 2) ι → Finset (ι → F)) : Prop :=
   epsMCA (F := F) (A := F) C δ ≤ epsMCAgs (F := F) C δ L
+
+/-- **Pointwise GS-row faithfulness target.** This is the correct event-level target for the
+#66 faithfulness proof: every abstract `mcaEvent` for a stack and challenge `γ` must be converted
+to the row-normalized GS event against that stack's list.
+
+The hard proof is the row/pair normalization plus list coverage.  This declaration only names the
+target in the shape that can be lifted to `FaithfulGSFamily`. -/
+def GSRowFaithfulnessTarget (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) : Prop :=
+  ∀ u : WordStack F (Fin 2) ι, ∀ γ : F,
+    mcaEvent C δ (u 0) (u 1) γ → mcaEventGSrow (L u) C δ (u 0) (u 1) γ
+
+/-- A pointwise row-normalization/list-faithfulness target supplies the global faithful-family
+comparison by probability monotonicity and the two worst-case suprema. -/
+theorem FaithfulGSFamily.of_rowFaithfulnessTarget (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F))
+    (hrow : GSRowFaithfulnessTarget (F := F) C δ L) :
+    FaithfulGSFamily (F := F) C δ L := by
+  unfold FaithfulGSFamily epsMCA epsMCAgs
+  refine iSup_le fun u => ?_
+  refine le_trans (Pr_le_Pr_of_implies _ _ _ (hrow u)) ?_
+  exact le_iSup
+    (fun u : WordStack F (Fin 2) ι =>
+      Pr_{let γ ← $ᵖ F}[mcaEventGSrow (L u) C δ (u 0) (u 1) γ]) u
 
 /-- A faithful GS family plus a GS mass bound bounds the actual Grand MCA error. -/
 theorem epsMCA_le_of_faithful_mass (C : Set (ι → F)) (δ : ℝ≥0)
@@ -263,6 +291,8 @@ def MCALowerWitness.ofGSPivotFrontier (C : LinearCode ι F) (δ ε_star : ℝ≥
 /-! ## Source audit for the faithful GS mass and pivot-frontier layers -/
 
 #print axioms FaithfulGSFamily
+#print axioms GSRowFaithfulnessTarget
+#print axioms FaithfulGSFamily.of_rowFaithfulnessTarget
 #print axioms epsMCA_le_of_faithful_mass
 #print axioms MCALowerWitness.ofGSMassBound
 #print axioms GSMassLowerWitnessFrontier

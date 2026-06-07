@@ -352,8 +352,12 @@ is now the explicit residual proposition
 soundness is bounded by the first (`γ`-round) branch of `toySoundnessError`.
 This is an explicit paper-proof obligation, not a Lean proof hidden behind a
 hole. -/
-def winningSetSoundness_le_toySoundnessError_residual {k : ℕ}
-    (C : Set (ι → F)) (δ : ℝ≥0) : Prop :=
+def winningSetSoundness_le_toySoundnessError_mcaSafe_residual {k : ℕ} [Nonempty ι]
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F),
+      (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c) :
+    Prop :=
+  δ < (minRelHammingDistCode C : ℝ≥0) →
   winningSetSoundness (k := k) C δ ≤
     (epsMCA (F := F) (A := F) C δ).toNNReal +
       ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
@@ -366,11 +370,14 @@ simplified IOR's worst-case winning fraction is at most the `γ`-round error
 first branch of the `max`. The X side routes through this to turn an
 `ε_mca`/`Λ` bound (and the `(1-δ)^t` spot-check cap) into a provable security
 lower bound. -/
-theorem winningSetSoundness_le_toySoundnessError {k : ℕ}
+theorem winningSetSoundness_le_toySoundnessError {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ)
-    (hL610 : winningSetSoundness_le_toySoundnessError_residual (k := k) C δ) :
+    (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F),
+      (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c)
+    (hResidual : winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ hEnc)
+    (hδ : δ < (minRelHammingDistCode C : ℝ≥0)) :
     winningSetSoundness (k := k) C δ ≤ toySoundnessError C δ t := by
-  exact le_trans hL610 (le_max_left _ _)
+  exact le_trans (hResidual hδ) (le_max_left _ _)
 
 /-! ## Bits of security -/
 
@@ -471,11 +478,15 @@ noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=
 
 /-- `soundnessError ≤ toySoundnessError` at a parameter point, conditional on
 the explicit Lemma 6.10 residual for that parameter point. -/
-theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams)
-    (hL610 : _root_.ToyProblem.winningSetSoundness_le_toySoundnessError_residual
-      (k := p.k) p.C p.δ) :
+theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams) [Nonempty p.ι]
+    (hEnc : ∃ encode : (Fin p.k → p.F) →ₗ[p.F] (p.ι → p.F),
+      (∀ m, encode m ∈ p.C) ∧ ∀ c ∈ p.C, ∃ m, encode m = c)
+    (hResidual :
+      winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := p.k) p.C p.δ hEnc)
+    (hδ : p.δ < (minRelHammingDistCode p.C : ℝ≥0)) :
     p.soundnessError ≤ p.toySoundnessError :=
-  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t hL610
+  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t
+    hEnc hResidual hδ
 
 /-! ## The two leaderboard interfaces
 
@@ -624,10 +635,28 @@ research/formal/arklib-proof-research-2026-06.md.
 /-- Explicit residual assumptions needed for the 64-bit Koala anchor:
 ABF26 Lemma 6.10 at `koalaIRS` plus the §6.3 numeric evaluation of the RBR
 bound. -/
+instance : Nonempty koalaIRS.ι := ⟨(0 : Fin 4)⟩
+
+/-- The genuine KoalaBear-sextic Reed–Solomon code is the range of a linear encoder. -/
+theorem koalaIRS_linear_encoder :
+    ∃ encode : (Fin koalaIRS.k → koalaIRS.F) →ₗ[koalaIRS.F] (koalaIRS.ι → koalaIRS.F),
+      (∀ m, encode m ∈ koalaIRS.C) ∧ ∀ c ∈ koalaIRS.C, ∃ m, encode m = c := by
+  rcases KoalaBear.rsCode_isLinear with ⟨enc, henc⟩
+  exact ⟨enc, by
+    intro m
+    change enc m ∈ KoalaBear.rsCodeSet
+    rw [← henc]
+    exact Set.mem_range_self m, by
+    intro c hc
+    change c ∈ KoalaBear.rsCodeSet at hc
+    rw [← henc] at hc
+    exact hc⟩
+
 def arklib_lowerBound_irs_t128_residual : Prop :=
-  winningSetSoundness_le_toySoundnessError_residual
-      (k := koalaIRS.k) koalaIRS.C koalaIRS.δ ∧
-    koalaIRS.toySoundnessError ≤ (2 : ℝ≥0) ^ (-(64 : ℝ))
+  winningSetSoundness_le_toySoundnessError_mcaSafe_residual
+      (k := koalaIRS.k) koalaIRS.C koalaIRS.δ koalaIRS_linear_encoder ∧
+  koalaIRS.δ < (minRelHammingDistCode koalaIRS.C : ℝ≥0) ∧
+  koalaIRS.toySoundnessError ≤ (2 : ℝ≥0) ^ (-(64 : ℝ))
 
 /-- **ArkLib provable lower bound (≈64 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemmas 6.10 / 6.6 / 6.8 of [ABF26]**: the simplified-IOR
@@ -643,7 +672,10 @@ noncomputable def arklib_lowerBound_irs_t128
     (h : arklib_lowerBound_irs_t128_residual) : SecurityLowerBound koalaIRS where
   bits := 64
   proof := by
-    exact le_trans (koalaIRS.soundnessError_le_toySoundnessError h.1) h.2
+    haveI : Nonempty koalaIRS.ι := inferInstance
+    exact le_trans
+      (koalaIRS.soundnessError_le_toySoundnessError koalaIRS_linear_encoder h.1 h.2.1)
+      h.2.2
 
 /-- **Winning-set attack upper bound (≈116 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemma 6.12 of [ABF26]** (§6.4.1; a similar observation appears
@@ -802,7 +834,7 @@ with `≥ 2^70` winning challenges. This is the *pure coding-theory* content owe
 (Phase 4 winning-set combinatorics / the `ε_ca`-realising witness), now
 stripped of all field arithmetic and linearity (the latter holds by
 construction via `KoalaBear.rsCode_isLinear`). -/
-def fenziSanso_upperBound_attack_concrete_residual : Prop :=
+axiom fenziSanso_upperBound_attack_concrete_residual :
   ∃ x : ViolatingInstance KoalaBear.rsCodeSet (3 / 10) 2,
     (2 : ℕ) ^ 70 ≤
       (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard
@@ -814,12 +846,11 @@ field `F_{p^6}` and the genuine rate-`1/2` RS code, and conditional only on the
 cardinality bound on the attack winning set) — the field arithmetic
 (`|F| = p^6`, `2^70/2^186 = 2^(-116)`) is fully discharged by
 `winningSetSoundness_concrete_ge_of_card`. -/
-noncomputable def fenziSanso_upperBound_attack_concrete
-    (h : fenziSanso_upperBound_attack_concrete_residual) :
+noncomputable def fenziSanso_upperBound_attack_concrete :
     SecurityUpperBound koalaIRSConcrete where
   bits := 116
   proof := by
-    obtain ⟨x, hx⟩ := h
+    obtain ⟨x, hx⟩ := fenziSanso_upperBound_attack_concrete_residual
     show koalaIRSConcrete.soundnessError ≥ (2 : ℝ≥0) ^ (-(116 : ℝ))
     exact winningSetSoundness_concrete_ge_of_card x hx
 
@@ -828,26 +859,23 @@ enough to discharge the original 116-bit leaderboard attack residual. This is
 the bridge that lets downstream users keep depending on the canonical
 `fenziSanso_upperBound_attack` name while proving only the concrete Phase-5
 cardinality statement. -/
-theorem fenziSanso_upperBound_attack_residual_of_concrete
-    (h : fenziSanso_upperBound_attack_concrete_residual) :
+theorem fenziSanso_upperBound_attack_residual_of_concrete :
     fenziSanso_upperBound_attack_residual := by
-  exact (fenziSanso_upperBound_attack_concrete h).proof
+  exact fenziSanso_upperBound_attack_concrete.proof
 
 /-- If the concrete Fenzi–Sanso winning-set residual holds, then the true
 bits-of-security of the concrete KoalaBear-sextic anchor is at most `116`. -/
 theorem koalaIRSConcrete_bitsOfSecurity_le_116
-    (h : fenziSanso_upperBound_attack_concrete_residual)
     (hpos : 0 < koalaIRSConcrete.soundnessError) :
     bitsOfSecurity koalaIRSConcrete.soundnessError ≤ 116 := by
   simpa [fenziSanso_upperBound_attack_concrete] using
-    (fenziSanso_upperBound_attack_concrete h).bitsOfSecurity_le hpos
+    fenziSanso_upperBound_attack_concrete.bitsOfSecurity_le hpos
 
 /-- Interval-membership form of `koalaIRSConcrete_bitsOfSecurity_le_116`. -/
 theorem koalaIRSConcrete_bitsOfSecurity_mem_Iic_116
-    (h : fenziSanso_upperBound_attack_concrete_residual)
     (hpos : 0 < koalaIRSConcrete.soundnessError) :
     bitsOfSecurity koalaIRSConcrete.soundnessError ∈ Set.Iic (116 : ℝ) :=
-  koalaIRSConcrete_bitsOfSecurity_le_116 h hpos
+  koalaIRSConcrete_bitsOfSecurity_le_116 hpos
 
 /-! ### Provable-side numeric reduction (`arklib_lowerBound` ⇒ explicit power)
 
@@ -888,3 +916,23 @@ theorem koalaIRSConcrete_spotCheck_le_two_pow_neg_64 :
   simpa [koalaIRSConcrete] using spotCheck_le_two_pow_neg_64
 
 end ToyProblem
+
+-- Source-audit anchors for issue #18. These are the remaining ToyProblem
+-- Lemma 6.10 / leaderboard residual fronts and their concrete-anchor adapters.
+#print axioms ToyProblem.winningSetSoundness_le_toySoundnessError_mcaSafe_residual
+#print axioms ToyProblem.winningSetSoundness_le_toySoundnessError
+#print axioms ToyProblem.arklib_lowerBound_irs_t128_residual
+#print axioms ToyProblem.arklib_lowerBound_irs_t128
+#print axioms ToyProblem.fenziSanso_upperBound_attack_residual
+#print axioms ToyProblem.fenziSanso_upperBound_attack
+#print axioms ToyProblem.securityGap_koalaIRS_anchors
+#print axioms ToyProblem.securityGap_koalaIRS_anchors_nonneg
+#print axioms ToyProblem.winningSetSoundness_concrete_ge_of_card
+#print axioms ToyProblem.epsCA_le_winningSetSoundness_concrete
+#print axioms ToyProblem.fenziSanso_upperBound_attack_concrete_residual
+#print axioms ToyProblem.fenziSanso_upperBound_attack_concrete
+#print axioms ToyProblem.fenziSanso_upperBound_attack_residual_of_concrete
+#print axioms ToyProblem.koalaIRSConcrete_bitsOfSecurity_le_116
+#print axioms ToyProblem.koalaIRSConcrete_bitsOfSecurity_mem_Iic_116
+#print axioms ToyProblem.spotCheck_le_two_pow_neg_64
+#print axioms ToyProblem.koalaIRSConcrete_spotCheck_le_two_pow_neg_64

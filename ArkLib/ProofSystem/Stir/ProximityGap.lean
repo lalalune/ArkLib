@@ -38,8 +38,12 @@ namespace STIR
   then ∃ S ⊆ ι, |S| ≥ (1 - δ) * |ι| and
   ∀ i : m, ∃ u : C, u(S) = fᵢ(S)
 
-  STATUS (audit 2026-06-04, branch arklib-sorry-fixes). Open proof. Two independent,
-  machine-checked blockers — this is a documented statement-vs-source mismatch, not a closure:
+  STATUS (audit refreshed 2026-06-06, #122). This is still an inert STIR
+  front-door `Prop`, but the old "flat sorry keystone" provenance is stale:
+  the downstream BCIKS20/Combine surface is now expressed through named,
+  explicit residual hypotheses rather than hidden proof holes.
+
+  Two independent blockers remain:
 
   1. STATEMENT DEFECT (free `GenFun`). As written, `GenFun : F → Fin m → F` is universally
      quantified with no constraint, so the statement is FALSE: instantiate `GenFun r j = 0`,
@@ -52,22 +56,23 @@ namespace STIR
      a `ProximityGenerator`-style hypothesis on `GenFun`). This file has no consumers
      (`grep STIR.proximity_gap` ⇒ only its own definition), so the statement is currently inert.
 
-  2. SOURCE open proof (Johnson/√ρ regime). Even the monomial instance reduces to BCIKS20 Thm 1.5,
-     `ProximityGap.correlatedAgreement_affine_curves` (Data/.../BCIKS20/Curves.lean), via
-     `proximityError F degree ρ δ m = (m-1) * errorBound δ degree domain` and the degree-`(m-1)`
-     curve `∑ᵢ rⁱ • fᵢ`. But `correlatedAgreement_affine_curves` is a flat `sorry`, and the whole
-     BCIKS20 CA tree (lines → spaces → curves) is proven ONLY in the unique-decoding regime
-     `δ ≤ relUDR`: the affine-lines base `RS_correlatedAgreement_affineLines`
-     (Data/.../BCIKS20/AffineLines/Main.lean:40) is open in the list-decoding regime
-     `relUDR < δ < 1 - √ρ`. `#print axioms` confirms `correlatedAgreement_affine_spaces`,
-     `correlatedAgreement_affine_curves`, `proximity_gap_RSCodes` and `Combine.combine_theorem`
-     all carry `sorryAx`; only `RS_correlatedAgreement_affineLines_uniqueDecodingRegime` is clean
-     (axioms ⊆ {propext, Classical.choice, Quot.sound}). The √ρ-radius hypothesis here
-     (`δ < 1 - Bstar ρ`, with `Bstar ρ = √ρ = sqrtRate`) hits exactly the unproven LDR branch.
+  2. SOURCE residuals (Johnson/√ρ regime). Even the monomial instance reduces to BCIKS20
+     Thm 1.5, `ProximityGap.correlatedAgreement_affine_curves`
+     (Data/.../BCIKS20/Curves.lean), via
+     `proximityError F degree ρ δ m = (m-1) * errorBound δ degree domain` and the
+     degree-`(m-1)` curve `∑ᵢ rⁱ • fᵢ`. The current curve theorem is no longer a raw
+     `sorry`: it is proved from the explicit residuals `StrictCoeffPolysResidual`
+     (strict Johnson coefficient-polynomial extraction; owned by #7/#61) and
+     `BoundaryProbabilityResidual` / older `BoundaryCardResidual` compatibility
+     (closed square-root boundary; owned by #64/#7). `Combine.combine_theorem` likewise
+     takes `StrictCoeffPolysResidual` as an explicit argument and routes through
+     `correlatedAgreement_affine_curves_of_strict_coeff_polys`.
 
-  Honest residual: close `AffineLines/Main.lean:40` (Thm 5.1, list-decoding regime), which
-  lifts `correlatedAgreement_affine_curves`; then `proximity_gap` (monomial form) follows from
-  the curves CA. No clean intermediate path exists today. -/
+  Honest residual: repair this front door by specializing to the monomial generator and
+  thread the current residual arguments (`StrictCoeffPolysResidual` plus the boundary
+  branch when needed) through the BCIKS20 curve theorem / STIR combine layer. The
+  statement-level STIR ownership remains #24; the correlated-agreement residual owners
+  are #7/#61/#64. -/
 def proximity_gap
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
   {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}
@@ -87,3 +92,6 @@ def proximity_gap
     ∀ i : Fin m, ∃ u : ι → F, u ∈ (code φ degree) ∧ ∀ x ∈ S, f i x = u x
 
 end STIR
+
+/- Axiom audit for the STIR proximity-gap residual front door (#24). -/
+#print axioms STIR.proximity_gap

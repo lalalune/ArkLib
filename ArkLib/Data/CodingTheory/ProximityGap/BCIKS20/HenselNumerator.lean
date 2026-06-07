@@ -65,7 +65,8 @@ genuine `β` recursion of BCIKS20 (A.1) over the in-tree ring `𝒪 H`:
    `βHenselAssembled_eq_gammaGenuine` / `βHensel_lift_identity_of_assembledSeries_isRoot` (via
    `gammaGenuine_unique`).  The residual is the order-`≥1` Faà-di-Bruno bridge
    `coeff_eval ↔ B_coeff·partitionProd` (equivalently the (A.1)-recursion ↔ Newton-correction
-   match), gated on the STATED-NOT-PROVEN combinatorial reconciliation `prefactor_eq_paper`.
+   match), now narrowed to the named term-level residual `RestrictedFaaDiBrunoMatch` in
+   `P2Close.lean`/`P2Vanish.lean`.
 
 WAVE 3 SCOPE (§4c′ / 4d below).  The reusable **`Λ`-weight calculus over `𝒪 H`**, all PROVEN
 axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`):
@@ -116,7 +117,7 @@ binomial-weighted shift (its weight is genuinely positive, see `mvBinom_pos` /
 genuine multiplicity.
 -/
 
-set_option linter.style.longFile 2600
+set_option linter.style.longFile 2800
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
 set_option linter.style.longLine false
 set_option linter.unusedVariables false
@@ -405,15 +406,13 @@ theorem partitionProd_mul {m : ℕ} (lam : Nat.Partition m) (b c : ℕ → M) :
       = partitionProd lam b * partitionProd lam c := by
   rw [partitionProd, partitionProd, partitionProd, ← Multiset.prod_map_mul]
 
-/-- The combinatorial **prefactor** of BCIKS20's `A_{i1,λ}` coefficient (lines 4042–4080),
-as an explicit natural number: the binomial `C(i, i1)` times the multinomial over the parts of
-`λ` together with the order-0 multiplicity.  Here it is rendered as
-`Nat.choose i i1 * Nat.multinomial (lam.parts.toFinset) (lam.parts.count)` — the genuine
-`multinomial(λ₁, …, λ_l, …)` over distinct part-multiplicities.
+/-- The explicit combinatorial **prefactor** in BCIKS20's `A_{i1,λ}` coefficient (lines
+4042-4080): the multinomial over the positive parts of `λ`.
 
-WALL (deferred to a later wave): the *matching lemma* equating this with the exact
-paper combinatorial factor (reconciling the Hasse-derivative's intrinsic `C(j, Σλ)` weight
-against the paper's `multinomial(j0, λ)`) is `prefactor_eq_paper` below — STATED, not proven. -/
+The Hasse binomial weights are emitted by `hasseDerivX`/`hasseDerivY` coefficient extraction; they
+are not stored in this scalar. Earlier campaign notes described this definition as
+`Nat.choose i i1 * Nat.multinomial ...`; that was repaired on 2026-06-05. The arguments `i` and
+`i1` remain only for signature stability with older callers. -/
 def prefactor {m : ℕ} (_i _i1 : ℕ) (lam : Nat.Partition m) : ℕ :=
   -- **DEFINITIONAL REPAIR (2026-06-05, campaign bug #5, kernel-grounded — see P2Vanish.lean):**
   -- the previous form carried an extra explicit binomial `Nat.choose i i1`. The genuine
@@ -423,8 +422,8 @@ def prefactor {m : ℕ} (_i _i1 : ℕ) (lam : Nat.Partition m) : ℕ :=
   -- recursion is the partition multinomial. Args retained for signature stability.
   Nat.multinomial lam.parts.toFinset (fun l => lam.parts.count l)
 
-/-- The prefactor is genuinely positive whenever the binomial part is (so it is never a
-secretly-zero placeholder): `Nat.multinomial` is always `> 0`. -/
+/-- The prefactor is genuinely positive (so it is never a secretly-zero placeholder):
+`Nat.multinomial` is always `> 0`. -/
 theorem prefactor_pos {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) (_hi : i1 ≤ i) :
     0 < prefactor i i1 lam := by
   rw [prefactor]
@@ -437,9 +436,9 @@ theorem countPerms_parts_eq_multinomial {m : ℕ} (lam : Nat.Partition m) :
       Nat.multinomial lam.parts.toFinset (fun l => lam.parts.count l) :=
   ArkLib.PowerSeriesComposition.countPerms_eq_multinomial lam.parts
 
-/-- `prefactor` as the binomial Hasse weight times the composition fiber-count
-`countPerms`.  This is the direct bridge from
-`PowerSeriesComposition.coeff_pow_eq_partitionSum` to the `B_coeff` normalization. -/
+/-- `prefactor` is exactly the positive-part composition fiber-count `countPerms`.
+This is the direct bridge from `PowerSeriesComposition.coeff_pow_eq_partitionSum` to the `B_coeff`
+normalization; no explicit Hasse binomial is included in the scalar. -/
 theorem prefactor_eq_countPerms {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) :
     prefactor i i1 lam = lam.parts.countPerms := by
   rw [prefactor, countPerms_parts_eq_multinomial]
@@ -1658,7 +1657,7 @@ This is the honest remaining per-term obligation after the wave-5 arithmetic: pr
 def βHenselSuccTermStructuredWeightResidual (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
     (hDH : Bivariate.totalDegree H ≤ D) (hdR2 : 2 ≤ Bivariate.natDegreeY R) (k : ℕ)
-    (hStructured : βHenselStructuredWeightInvariant H x₀ R hHyp hH k)
+    (hStructured : βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k)
     (i1 : ℕ) (_hi1 : i1 ∈ Finset.range (k + 2))
     (lam : Nat.Partition (k + 1 - i1)) (_hlam : (k + 1) ∉ lam.parts) : Prop :=
     weight_Λ_over_𝒪 hH
@@ -1682,14 +1681,14 @@ theorem βHenselSuccTermWeightResidual_of_structured
     (hIH : ∀ l, l < k + 1 →
       weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
         ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
-    (hStructured : βHenselStructuredWeightInvariant H x₀ R hHyp hH k)
+    (hStructured : βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k)
     (hterm : ∀ (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
       (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts),
-        βHenselSuccTermStructuredWeightResidual H x₀ R hHyp hH hDH hdR2
+        βHenselSuccTermStructuredWeightResidual (H := H) x₀ R hHyp hH hDH hdR2
           k hStructured i1 hi1 lam hlam)
     (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
     (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
-    βHenselSuccTermWeightResidual H x₀ R hHyp hH hDH hdR2 k hIH i1 hi1 lam hlam := by
+    βHenselSuccTermWeightResidual (H := H) x₀ R hHyp hH hDH hdR2 k hIH i1 hi1 lam hlam := by
   exact hterm i1 hi1 lam hlam
 
 /-- **(P1) full weight bound.**  `weight_Λ_over_𝒪 hH (βHensel … t) D ≤ (2t+1)·natDegreeY R·D`.
@@ -1714,7 +1713,7 @@ theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypoth
           ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
       (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
       (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts),
-        βHenselSuccTermWeightResidual H x₀ R hHyp hH _hDH hdR2 k hIH i1 hi1 lam hlam)
+        βHenselSuccTermWeightResidual (H := H) x₀ R hHyp hH _hDH hdR2 k hIH i1 hi1 lam hlam)
     (t : ℕ) :
     weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
@@ -2496,8 +2495,9 @@ This residual carries NO false content: it is a true statement (the genuine `gam
 root, `gammaGenuine_root`, and the A.1 recursion reproduces its coefficients), and the only
 missing piece is the formal Faà-di-Bruno bridge
 `coeff_eval ↔ partition sums ↔ B_coeff·partitionProd`
-for the *assembled* series, which is gated on the STATED-NOT-PROVEN combinatorial reconciliation
-`prefactor_eq_paper` (the Hasse-intrinsic `C(j,Σλ)` weight vs the paper's `multinomial(j0,λ)`).
+for the *assembled* series, now isolated as `RestrictedFaaDiBrunoMatch` in `P2Close.lean`.
+The local zero-peel/Y-Hasse weight identity is already proven in `P2Vanish.lean`; the open work is
+the full term-by-term equality of sums, including the `ζ` sign and denominator clearing.
 Carved as small as possible: a single per-successor-order coefficient equality, with the order-`0`
 base case, the extensionality assembly, the denominator clearing, and the uniqueness reduction to
 `gammaGenuine` all PROVEN.  See `pc-w11-bridge.md`. -/
@@ -2555,10 +2555,11 @@ end Wave2
 
 /-! ## 5. Staged specifications still deferred (honest WALLs)
 
-* `prefactor_eq_paper` : `prefactor i i1 lam = <paper combinatorial factor>`.
-  WALL: reconcile the Hasse-derivative's intrinsic `C(j, Σλ)` weight against the paper's
-  `multinomial(j0, λ)`.  (The `B_coeff` definition uses `prefactor` directly; the matching
-  lemma only affects the exact embedding identity, not the genuineness of the object.)
+* `RestrictedFaaDiBrunoMatch`: prove the term-level equality between the restricted
+  Faà-di-Bruno expansion and the `(A.1)` `B_coeff · partitionProd` recursion.  The old
+  `prefactor_eq_paper` wording was historical: current `prefactor` is already
+  `lam.parts.countPerms`, and the local `C(j, Σλ)` zero-peel/Y-Hasse weight identity is proven in
+  `P2Vanish.lean`.  What remains is the full reindexing and value equality of the two sums.
 
 * `B_coeff` weight + embedding lemmas (the (a-residual), §4b/§4b′) — feed (P1)'s per-term WALL
   `βHensel_succ_term_weight_le`.  FULLY PROVEN (wave 6, axiom-clean, P2-independent):
@@ -2588,6 +2589,174 @@ end Wave2
   supplied (via P2), the per-term collapse is mechanical.
 
 * iterated-Hasse Leibniz/product rule — needed only for (P2). -/
+
+/-! ### 4e. (P1) the per-term WALL, discharged from the structured IH (Issue #89)
+
+The genuine remaining (P1) per-term obligation `βHenselSuccTermStructuredWeightResidual` — the
+"WALL" — is closed here from the proven over-`𝒪` weight calculus.  WAVE-5 Fact #3 already records
+(numerically) that the *structured* IH closes the *loose* target per-term; this assembles it:
+split the literal `(A.1)` summand `W^{i1+δ-1}·ξ^{2i1+Σλ-2}·B_{i1,λ}·∏β^λ` factor-by-factor with
+`weight_Λ_over_𝒪_mul_le`, bound each factor with the proven
+`weight_Λ_over_𝒪_pow_le`/`weight_Λ_over_𝒪_W`/`ClaimA2.weight_ξ_bound`/`B_coeff_weight_le_graded`/
+`partitionProd_βHensel_weight_structured_le`, then collapse the `ℕ` bound with the new engine
+`structured_term_collapse`.  The surviving-partition exclusion `(k+1) ∉ λ.parts` forces `Σλ ≥ 2`
+at `i1 = 0`, which telescopes the `ξ`-exponent coefficient to exactly `2k`.  Genuine named degree
+premises only — no loose-IH route, no hidden strengthening, no `sorry`.  Routed into the full (P1)
+bound `βHensel_weight_bound_of_structured_invariant`, which reduces (P1) to the single named gap
+`βHenselStructuredWeightInvariant` (= `AlphaGenuineRegularWeightLe`/`DivWeightLe`). -/
+
+/-- Pure-ℕ collapse of the assembled per-term structured weight bound to the loose
+`(2(k+1)+1)·d·D` target. -/
+theorem structured_term_collapse (d dH D wW k i1 sl : ℕ)
+    (hd : 2 ≤ d) (hdH : 1 ≤ dH) (hdHd : dH ≤ d) (hW : wW + dH ≤ D)
+    (hi1 : i1 ≤ k + 1) (hσ : sl ≤ k + 1 - i1)
+    (hσ0 : i1 = 0 → 2 ≤ sl) :
+    (i1 + (if i1 = 0 then 1 else 0) - 1) * wW
+      + (2 * i1 + sl - 2) * ((d - 1) * (D - dH + 1))
+      + ((d - sl) * (D + 1 - dH) + (D - sl))
+      + (sl + ((k + 1 - i1) + sl) * wW + (2 * (k + 1 - i1) - sl) * ((d - 1) * (D - dH + 1)))
+      ≤ (2 * (k + 1) + 1) * d * D := by
+  have hXcoef : (2 * i1 + sl - 2) + (2 * (k + 1 - i1) - sl) = 2 * k := by
+    rcases Nat.eq_zero_or_pos i1 with h | h
+    · subst h; have h2 := hσ0 rfl; omega
+    · omega
+  have hWcoef : (i1 + (if i1 = 0 then 1 else 0) - 1) + ((k + 1 - i1) + sl) ≤ k + 1 + sl := by
+    split_ifs with hh
+    · subst hh; omega
+    · omega
+  set X := (d - 1) * (D - dH + 1) with hX
+  set DdH := D + 1 - dH with hDdH
+  set eW := i1 + (if i1 = 0 then 1 else 0) - 1 with heW
+  set eξ := 2 * i1 + sl - 2 with heξ
+  set mσ := 2 * (k + 1 - i1) - sl with hmσ
+  set mw := (k + 1 - i1) + sl with hmw
+  set dσ := d - sl with hdσ
+  set Dσ := D - sl with hDσ
+  have hreg :
+      eW * wW + eξ * X + (dσ * DdH + Dσ) + (sl + mw * wW + mσ * X)
+        = (eW + mw) * wW + (eξ + mσ) * X + (dσ * DdH + Dσ) + sl := by ring
+  rw [hreg, hXcoef]
+  have hb1 : (eW + mw) * wW ≤ (k + 1 + sl) * wW := Nat.mul_le_mul hWcoef (le_refl wW)
+  have hb2 : dσ * DdH ≤ d * DdH := Nat.mul_le_mul (Nat.sub_le d sl) (le_refl DdH)
+  have hb3 : Dσ ≤ D := Nat.sub_le D sl
+  refine le_trans (by
+    refine Nat.add_le_add (Nat.add_le_add (Nat.add_le_add hb1 le_rfl)
+      (Nat.add_le_add hb2 hb3)) le_rfl) ?_
+  simp only [hX, hDdH]
+  obtain ⟨r, rfl⟩ : ∃ r, D = dH + r := ⟨D - dH, by omega⟩
+  obtain ⟨c, rfl⟩ : ∃ c, d = c + 2 := ⟨d - 2, by omega⟩
+  obtain ⟨e, rfl⟩ : ∃ e, dH = e + 1 := ⟨dH - 1, by omega⟩
+  have hwWr : wW ≤ r := by omega
+  have hσk : sl ≤ k + 1 := by omega
+  have hd1 : (c + 2) - 1 = c + 1 := by omega
+  have hr1 : (e + 1 + r) - (e + 1) + 1 = r + 1 := by omega
+  have hrD : (e + 1 + r) + 1 - (e + 1) = r + 1 := by omega
+  rw [hd1, hr1, hrD]
+  have hwwterm : (k + 1 + sl) * wW ≤ (2 * k + 2) * r :=
+    le_trans (Nat.mul_le_mul (le_refl (k + 1 + sl)) hwWr)
+      (Nat.mul_le_mul (by omega) (le_refl r))
+  nlinarith [hwwterm, hσk, Nat.zero_le k, Nat.zero_le c, Nat.zero_le r, Nat.zero_le e,
+    Nat.zero_le (k * c), Nat.zero_le (k * r), Nat.zero_le (c * r), Nat.zero_le (k * c * r),
+    Nat.zero_le (c * e), Nat.zero_le (k * e), Nat.zero_le (k * c * e), Nat.zero_le (r * e)]
+
+variable {F : Type} [Field F]
+variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+
+/-- **The per-term WALL, discharged.**  Given the structured IH (`hStructured`) and the genuine
+named degree premises, the literal `(A.1)` summand weight is below the loose `(2(k+1)+1)·d_R·D`
+target.  This closes `βHenselSuccTermStructuredWeightResidual`. -/
+theorem βHenselSuccTermStructuredWeightResidual_holds
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHd : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (k : ℕ)
+    (hStructured : βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k)
+    (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
+    βHenselSuccTermStructuredWeightResidual H x₀ R hHyp hH hDH hdR2 k hStructured i1 hi1 lam hlam := by
+  have hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some (1 + (l + 1) * (H.leadingCoeff).natDegree
+            + (2 * l - 1) * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) :=
+    fun l hl => hStructured l hl
+  have hWfac :
+      weight_Λ_over_𝒪 hH ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)) D
+        ≤ WithBot.some ((i1 + deltaSave i1 - 1) * (H.leadingCoeff).natDegree) :=
+    le_trans (weight_Λ_over_𝒪_pow_le H hH hDH (W𝒪 H) (i1 + deltaSave i1 - 1))
+      (nsmul_withBot_le _ _ (weight_Λ_over_𝒪_W H hH hDH))
+  have hξfac :
+      weight_Λ_over_𝒪 hH ((ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)) D
+        ≤ WithBot.some ((2 * i1 + sigmaLambda lam - 2)
+            * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) :=
+    le_trans (weight_Λ_over_𝒪_pow_le H hH hDH (ClaimA2.ξ x₀ R H hHyp) (2 * i1 + sigmaLambda lam - 2))
+      (nsmul_withBot_le _ _ (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0))
+  have hBfac := B_coeff_weight_le_graded H x₀ R i1 lam hH hDH hRgraded
+  have hPfac := partitionProd_βHensel_weight_structured_le H x₀ R hHyp hH hDH k i1
+    (H.leadingCoeff).natDegree
+    ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) hIH lam hlam
+  have hi1le : i1 ≤ k + 1 := by have := Finset.mem_range.mp hi1; omega
+  have hcard_le_sum : lam.parts.card ≤ lam.parts.sum := by
+    calc lam.parts.card = (lam.parts.map (fun _ => 1)).sum := by simp
+      _ ≤ (lam.parts.map id).sum :=
+        Multiset.sum_map_le_sum_map _ _ (fun l hl => lam.parts_pos hl)
+      _ = lam.parts.sum := by simp
+  have hσ : sigmaLambda lam ≤ k + 1 - i1 := by
+    rw [sigmaLambda]; rw [lam.parts_sum] at hcard_le_sum; exact hcard_le_sum
+  have hσ0 : i1 = 0 → 2 ≤ sigmaLambda lam := by
+    intro hi0
+    rw [sigmaLambda]
+    have hsum : lam.parts.sum = k + 1 := by rw [lam.parts_sum, hi0, Nat.sub_zero]
+    by_contra hlt
+    have hcases : lam.parts.card = 0 ∨ lam.parts.card = 1 := by omega
+    rcases hcases with h0 | h1
+    · rw [Multiset.card_eq_zero] at h0
+      rw [h0, Multiset.sum_zero] at hsum; omega
+    · rw [Multiset.card_eq_one] at h1
+      obtain ⟨a, ha⟩ := h1
+      rw [ha, Multiset.sum_singleton] at hsum
+      apply hlam
+      rw [ha]
+      exact Multiset.mem_singleton.mpr hsum.symm
+  unfold βHenselSuccTermStructuredWeightResidual
+  refine le_trans (weight_Λ_over_𝒪_mul_le H hH hDH _ _) ?_
+  refine le_trans (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) (le_refl _)) ?_
+  refine le_trans
+    (add_le_add (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) (le_refl _)) (le_refl _)) ?_
+  refine le_trans (add_le_add (add_le_add (add_le_add hWfac hξfac) hBfac) hPfac) ?_
+  simp only [deltaSave]
+  exact_mod_cast structured_term_collapse (Bivariate.natDegreeY R) (Bivariate.natDegreeY H) D
+    (H.leadingCoeff).natDegree k i1 (sigmaLambda lam)
+    hdR2 (by have : Bivariate.natDegreeY H = H.natDegree := rfl; omega) hdHd hW hi1le hσ hσ0
+
+/-- **(P1) full weight bound from the structured invariant.**  Routing the per-term WALL
+(`βHenselSuccTermStructuredWeightResidual_holds`) through `βHenselSuccTermWeightResidual_of_structured`
+into `βHensel_weight_bound` reduces the entire `(P1)` bound `Λ_𝒪(β_t) ≤ (2t+1)·d_R·D` to the
+single named gap `βHenselStructuredWeightInvariant` (= `AlphaGenuineRegularWeightLe`/`DivWeightLe`)
+for all `k`, plus the genuine degree premises.  No loose-IH route, no `sorry`. -/
+theorem βHensel_weight_bound_of_structured_invariant
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHd : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hStructuredAll : ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  refine βHensel_weight_bound H x₀ R hHyp hH hDH hdR2 ?_ t
+  intro k hIH i1 hi1 lam hlam
+  exact βHenselSuccTermWeightResidual_of_structured H x₀ R hHyp hH hDH hdR2 k hIH
+    (hStructuredAll k)
+    (fun i1' hi1' lam' hlam' =>
+      βHenselSuccTermStructuredWeightResidual_holds H x₀ R hHyp hH hDH hdR2 hdHd hW hRgraded hDRx0
+        k (hStructuredAll k) i1' hi1' lam' hlam')
+    i1 hi1 lam hlam
 
 end BCIKS20.HenselNumerator
 

@@ -1,14 +1,23 @@
+/-! # PARKED MODULE (#60, NAMED-RESIDUAL convention)
+
+This module (landed by PR #532) targets a PolyFun API that was since redesigned
+(`Spec.Strategy.withRoles` / `Spec.Counterpart` / `Spec.PublicCoinCounterpart` moved to the
+`SyntaxOver`/`ShapeOver`/`StrategyOver.TwoParty` forms, PolyFun `5d3a160`).  Nothing in ArkLib
+imports it.  Parked to keep the root build green; un-park by migrating to the Over-style API
+(see issue #60 for the full diagnosis). -/
+
 /-
+/- 
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
--/
+ -/
 import PolyFun.Interaction.Basic.Spec
 import PolyFun.Interaction.Basic.Append
 import PolyFun.Interaction.TwoParty.Strategy
 import ArkLib.OracleReduction.OracleInterface
 
-/-!
+/- !
 # Oracle Protocol Specification
 
 `Oracle.Spec` is the canonical protocol specification for oracle reductions.
@@ -54,7 +63,7 @@ This structural distinction gives:
 
 ### Verifier monad decoration
 - `Spec.toMonadDecoration` — per-node monad assignment for the verifier.
--/
+ -/
 
 universe u
 
@@ -62,14 +71,14 @@ open OracleComp OracleSpec
 
 namespace Interaction.Oracle
 
-/-- The canonical protocol specification for oracle reductions.
+/- - The canonical protocol specification for oracle reductions.
 
 - `.public X rest`: a public message node. The continuation depends on the
   message `x : X`. Used for plain sender messages and receiver challenges.
 - `.oracle X rest`: an oracle message node. The continuation is structurally
   constant (does not depend on the message). Used for prover oracle messages
   that the verifier accesses only through queries.
-- `.done`: end of protocol. -/
+- `.done`: end of protocol.  -/
 inductive Spec : Type 1 where
   | done : Spec
   | «public» (X : Type) (rest : X → Spec) : Spec
@@ -77,34 +86,34 @@ inductive Spec : Type 1 where
 
 namespace Spec
 
-/-! ## Role and oracle decorations -/
+/- ! ## Role and oracle decorations  -/
 
-/-- Role assignment for an `Oracle.Spec`. Only `.public` nodes carry a role
+/- - Role assignment for an `Oracle.Spec`. Only `.public` nodes carry a role
 (`sender` or `receiver`). `.oracle` nodes are always sender, so no annotation
-is stored. -/
+is stored.  -/
 def RoleDeco : Oracle.Spec → Type
   | .done => PUnit
   | .«public» _ rest => Role × ((x : _) → RoleDeco (rest x))
   | .oracle _ rest => RoleDeco rest
 
-/-- Oracle interface assignment. `.oracle` nodes carry an `OracleInterface`
-(defining the query-response structure). `.public` nodes just recurse. -/
+/- - Oracle interface assignment. `.oracle` nodes carry an `OracleInterface`
+(defining the query-response structure). `.public` nodes just recurse.  -/
 def OracleDeco : Oracle.Spec → Type 1
   | .done => PUnit
   | .«public» _ rest => (x : _) → OracleDeco (rest x)
   | .oracle X rest => OracleInterface X × OracleDeco rest
 
-/-! ## Forgetful map to Interaction.Spec -/
+/- ! ## Forgetful map to Interaction.Spec  -/
 
-/-- Convert an `Oracle.Spec` to a plain `Interaction.Spec`. `.oracle` nodes
-become nodes with *definitionally constant* continuation. -/
+/- - Convert an `Oracle.Spec` to a plain `Interaction.Spec`. `.oracle` nodes
+become nodes with *definitionally constant* continuation.  -/
 def toInteractionSpec : Oracle.Spec → Interaction.Spec
   | .done => .done
   | .«public» X rest => .node X (fun x => (rest x).toInteractionSpec)
   | .oracle X rest => .node X (fun _ => rest.toInteractionSpec)
 
-/-- Lift role decoration to `RoleDecoration` on `toInteractionSpec`. `.oracle`
-nodes are always `.sender`. -/
+/- - Lift role decoration to `RoleDecoration` on `toInteractionSpec`. `.oracle`
+nodes are always `.sender`.  -/
 def toSpecRoles : (s : Oracle.Spec) → RoleDeco s → RoleDecoration s.toInteractionSpec
   | .done, _ => ⟨⟩
   | .«public» _ rest, ⟨role, rRest⟩ =>
@@ -112,17 +121,17 @@ def toSpecRoles : (s : Oracle.Spec) → RoleDeco s → RoleDecoration s.toIntera
   | .oracle _ rest, roles =>
       ⟨.sender, fun _ => toSpecRoles rest roles⟩
 
-/-! ## Public transcript -/
+/- ! ## Public transcript  -/
 
-/-- The *public transcript* contains only `.public` node messages (challenges
+/- - The *public transcript* contains only `.public` node messages (challenges
 and plain sender messages). All `.oracle` messages are dropped. This is the
-verifier's direct view of the interaction, without oracle queries. -/
+verifier's direct view of the interaction, without oracle queries.  -/
 def PublicTranscript : Oracle.Spec → Type
   | .done => PUnit
   | .«public» X rest => (x : X) × PublicTranscript (rest x)
   | .oracle _ rest => PublicTranscript rest
 
-/-- Project a full `Interaction.Spec.Transcript` to the `PublicTranscript`. -/
+/- - Project a full `Interaction.Spec.Transcript` to the `PublicTranscript`.  -/
 def projectPublic :
     (s : Oracle.Spec) →
     Interaction.Spec.Transcript s.toInteractionSpec → PublicTranscript s
@@ -130,12 +139,12 @@ def projectPublic :
   | .«public» _ rest, ⟨x, tr⟩ => ⟨x, projectPublic (rest x) tr⟩
   | .oracle _ rest, ⟨_, tr⟩ => projectPublic rest tr
 
-/-! ## Oracle query infrastructure -/
+/- ! ## Oracle query infrastructure  -/
 
-/-- Index type for oracle queries, parameterized by `PublicTranscript`.
+/- - Index type for oracle queries, parameterized by `PublicTranscript`.
 At `.oracle` nodes, the verifier can query the current node's oracle interface
 (`.inl q`) or recurse into subsequent oracles (`.inr h`). At `.public` nodes,
-the transcript determines which subtree to recurse into. -/
+the transcript determines which subtree to recurse into.  -/
 def QueryHandle :
     (s : Oracle.Spec) → OracleDeco s → PublicTranscript s → Type
   | .done, _, _ => Empty
@@ -144,8 +153,8 @@ def QueryHandle :
   | .oracle _X rest, ⟨oi, odRest⟩, pt =>
       oi.Query ⊕ QueryHandle rest odRest pt
 
-/-- The oracle specification for querying oracle messages along a given
-`PublicTranscript` path. Maps each `QueryHandle` to its response type. -/
+/- - The oracle specification for querying oracle messages along a given
+`PublicTranscript` path. Maps each `QueryHandle` to its response type.  -/
 def toOracleSpec :
     (s : Oracle.Spec) → (od : OracleDeco s) →
     (pt : PublicTranscript s) → OracleSpec (QueryHandle s od pt)
@@ -156,9 +165,9 @@ def toOracleSpec :
     | .inl q => oi.toOC.spec q
     | .inr handle => toOracleSpec rest odRest pt handle
 
-/-- Answer oracle queries using the message values from a full transcript.
+/- - Answer oracle queries using the message values from a full transcript.
 At each `.oracle` node, the transcript provides the actual message `x : X`,
-which is used to compute responses via `OracleInterface`. -/
+which is used to compute responses via `OracleInterface`.  -/
 def answerQuery :
     (s : Oracle.Spec) → (od : OracleDeco s) →
     (tr : Interaction.Spec.Transcript s.toInteractionSpec) →
@@ -170,9 +179,9 @@ def answerQuery :
     | .inl q => (oi.toOC.impl q).run x
     | .inr handle => answerQuery rest odRest tr handle
 
-/-! ## Verifier monad decoration -/
+/- ! ## Verifier monad decoration  -/
 
-/-- Compute the per-node `MonadDecoration` for the verifier on `toInteractionSpec`.
+/- - Compute the per-node `MonadDecoration` for the verifier on `toInteractionSpec`.
 
 - At `.oracle` nodes: monad is `Id` (verifier ignores the message value),
   but the accumulated oracle spec grows (verifier can query this oracle at
@@ -180,7 +189,7 @@ def answerQuery :
 - At `.public .sender` nodes: monad is `Id`, no accumulation.
 - At `.public .receiver` nodes: monad is `OracleComp` with full accumulated
   access (external oracles + input oracle statements + accumulated oracle
-  messages). -/
+  messages).  -/
 def toMonadDecoration {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
     {ιₛᵢ : Type} (OStmtIn : ιₛᵢ → Type) [∀ i, OracleInterface.{0, 0} (OStmtIn i)] :
     (s : Oracle.Spec) → (roles : RoleDeco s) → (od : OracleDeco s) →
@@ -198,18 +207,18 @@ def toMonadDecoration {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
        fun _ => toMonadDecoration oSpec OStmtIn rest roles odRest
          (accSpec + @OracleInterface.spec _ oi)⟩
 
-/-! ## Sequential composition -/
+/- ! ## Sequential composition  -/
 
-/-- Sequential composition of `Oracle.Spec`: run `s₁` first, then continue with
+/- - Sequential composition of `Oracle.Spec`: run `s₁` first, then continue with
 `s₂ pt₁` where `pt₁ : PublicTranscript s₁` records the public messages from the
 first phase. At `.oracle` nodes the suffix is passed through unchanged, since
-oracle messages do not appear in `PublicTranscript`. -/
+oracle messages do not appear in `PublicTranscript`.  -/
 def append : (s₁ : Oracle.Spec) → (PublicTranscript s₁ → Oracle.Spec) → Oracle.Spec
   | .done, s₂ => s₂ ⟨⟩
   | .«public» X rest, s₂ => .«public» X (fun x => (rest x).append (fun pt => s₂ ⟨x, pt⟩))
   | .oracle X rest, s₂ => .oracle X (rest.append s₂)
 
-/-- Role decoration for an appended `Oracle.Spec`. -/
+/- - Role decoration for an appended `Oracle.Spec`.  -/
 def RoleDeco.append :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     RoleDeco s₁ → ((pt : PublicTranscript s₁) → RoleDeco (s₂ pt)) → RoleDeco (s₁.append s₂)
@@ -219,7 +228,7 @@ def RoleDeco.append :
         (rRest x) (fun pt => r₂ ⟨x, pt⟩)⟩
   | .oracle _ rest, s₂, r₁, r₂ => RoleDeco.append rest s₂ r₁ r₂
 
-/-- Oracle decoration for an appended `Oracle.Spec`. -/
+/- - Oracle decoration for an appended `Oracle.Spec`.  -/
 def OracleDeco.append :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     OracleDeco s₁ → ((pt : PublicTranscript s₁) → OracleDeco (s₂ pt)) →
@@ -231,7 +240,7 @@ def OracleDeco.append :
   | .oracle _ rest, s₂, ⟨oi, odRest⟩, od₂ =>
       ⟨oi, OracleDeco.append rest s₂ odRest od₂⟩
 
-/-- `PublicTranscript` of an appended spec decomposes into a prefix and suffix. -/
+/- - `PublicTranscript` of an appended spec decomposes into a prefix and suffix.  -/
 def PublicTranscript.append :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (pt₁ : PublicTranscript s₁) → PublicTranscript (s₂ pt₁) →
@@ -242,7 +251,7 @@ def PublicTranscript.append :
   | .oracle _ rest, s₂, pt₁, pt₂ =>
       PublicTranscript.append rest s₂ pt₁ pt₂
 
-/-- Split a `PublicTranscript` of an appended spec into prefix and suffix. -/
+/- - Split a `PublicTranscript` of an appended spec into prefix and suffix.  -/
 def PublicTranscript.split :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     PublicTranscript (s₁.append s₂) →
@@ -254,7 +263,7 @@ def PublicTranscript.split :
   | .oracle _ rest, s₂, pt =>
       PublicTranscript.split rest s₂ pt
 
-/-- Splitting after appending recovers the original components. -/
+/- - Splitting after appending recovers the original components.  -/
 @[simp]
 theorem PublicTranscript.split_append :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
@@ -267,7 +276,7 @@ theorem PublicTranscript.split_append :
   | .oracle _ rest, s₂, pt₁, pt₂ =>
       split_append rest s₂ pt₁ pt₂
 
-/-- Appending the components produced by `split` recovers the original. -/
+/- - Appending the components produced by `split` recovers the original.  -/
 @[simp]
 theorem PublicTranscript.append_split :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
@@ -281,11 +290,11 @@ theorem PublicTranscript.append_split :
   | .oracle _ rest, s₂, pt =>
       append_split rest s₂ pt
 
-/-- Lift a two-argument type family indexed by per-phase `PublicTranscript`s to a
+/- - Lift a two-argument type family indexed by per-phase `PublicTranscript`s to a
 single-argument family on the combined `PublicTranscript` of `s₁.append s₂`.
 
 `liftAppend s₁ s₂ F (PublicTranscript.append s₁ s₂ pt₁ pt₂)` reduces
-**definitionally** to `F pt₁ pt₂`. -/
+**definitionally** to `F pt₁ pt₂`.  -/
 def PublicTranscript.liftAppend :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     ((pt₁ : PublicTranscript s₁) → PublicTranscript (s₂ pt₁) → Type u) →
@@ -297,7 +306,7 @@ def PublicTranscript.liftAppend :
   | .oracle _ rest, s₂, F, pt =>
       liftAppend rest s₂ F pt
 
-/-- `liftAppend` on an appended transcript reduces to the original family. -/
+/- - `liftAppend` on an appended transcript reduces to the original family.  -/
 @[simp]
 theorem PublicTranscript.liftAppend_append :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
@@ -313,7 +322,7 @@ theorem PublicTranscript.liftAppend_append :
   | .oracle _ rest, s₂, F, pt₁, pt₂ =>
       liftAppend_append rest s₂ F pt₁ pt₂
 
-/-- `liftAppend` equals the original family applied to the split components. -/
+/- - `liftAppend` equals the original family applied to the split components.  -/
 theorem PublicTranscript.liftAppend_split :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (F : (pt₁ : PublicTranscript s₁) → PublicTranscript (s₂ pt₁) → Type u) →
@@ -328,7 +337,7 @@ theorem PublicTranscript.liftAppend_split :
   | .oracle _ rest, s₂, F, pt =>
       liftAppend_split rest s₂ F pt
 
-/-- Transport a `liftAppend` value to the pair-indexed family via `split`. -/
+/- - Transport a `liftAppend` value to the pair-indexed family via `split`.  -/
 def PublicTranscript.unliftAppend :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (F : (pt₁ : PublicTranscript s₁) → PublicTranscript (s₂ pt₁) → Type u) →
@@ -343,7 +352,7 @@ def PublicTranscript.unliftAppend :
   | .oracle _ rest, s₂, F, pt, val =>
       unliftAppend rest s₂ F pt val
 
-/-- Transport a pair-indexed value into `liftAppend` via `append`. -/
+/- - Transport a pair-indexed value into `liftAppend` via `append`.  -/
 def PublicTranscript.packAppend :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (F : (pt₁ : PublicTranscript s₁) → PublicTranscript (s₂ pt₁) → Type u) →
@@ -356,9 +365,9 @@ def PublicTranscript.packAppend :
   | .oracle _ rest, s₂, F, pt₁, pt₂, x =>
       packAppend rest s₂ F pt₁ pt₂ x
 
-/-- `toInteractionSpec` commutes with `append`: the interaction spec of a
+/- - `toInteractionSpec` commutes with `append`: the interaction spec of a
 composed oracle spec is the interaction spec append (with appropriate indexing
-through `projectPublic`). -/
+through `projectPublic`).  -/
 theorem toInteractionSpec_append :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (s₁.append s₂).toInteractionSpec =
@@ -373,9 +382,9 @@ theorem toInteractionSpec_append :
       congr 1; ext _
       exact toInteractionSpec_append rest s₂
 
-/-- Embed a pair of `Interaction.Spec.Transcript`s (one for each phase) into a
+/- - Embed a pair of `Interaction.Spec.Transcript`s (one for each phase) into a
 single transcript of the composed oracle spec. Defined by structural recursion
-on `Oracle.Spec`, so `toInteractionSpec` reduces at each step. -/
+on `Oracle.Spec`, so `toInteractionSpec` reduces at each step.  -/
 def transcriptAppend :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (tr₁ : Interaction.Spec.Transcript s₁.toInteractionSpec) →
@@ -388,7 +397,7 @@ def transcriptAppend :
   | .oracle _ rest, s₂, ⟨x, tr₁⟩, tr₂ =>
       ⟨x, transcriptAppend rest s₂ tr₁ tr₂⟩
 
-/-- `projectPublic` commutes with `transcriptAppend`. -/
+/- - `projectPublic` commutes with `transcriptAppend`.  -/
 theorem projectPublic_transcriptAppend :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (tr₁ : Interaction.Spec.Transcript s₁.toInteractionSpec) →
@@ -407,9 +416,9 @@ theorem projectPublic_transcriptAppend :
       simp only [Spec.append, projectPublic, transcriptAppend]
       exact projectPublic_transcriptAppend rest s₂ tr₁ tr₂
 
-/-! ## Query infrastructure for appended specs -/
+/- ! ## Query infrastructure for appended specs  -/
 
-/-- Embed a query handle from the first phase into the appended spec. -/
+/- - Embed a query handle from the first phase into the appended spec.  -/
 def QueryHandle.appendLeft :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (od₁ : OracleDeco s₁) → (od₂ : (pt : PublicTranscript s₁) → OracleDeco (s₂ pt)) →
@@ -424,7 +433,7 @@ def QueryHandle.appendLeft :
   | .oracle _ rest, s₂, ⟨_, odRest⟩, od₂, pt₁, pt₂, .inr h =>
       .inr (QueryHandle.appendLeft rest s₂ odRest od₂ pt₁ pt₂ h)
 
-/-- Embed a query handle from the second phase into the appended spec. -/
+/- - Embed a query handle from the second phase into the appended spec.  -/
 def QueryHandle.appendRight :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (od₁ : OracleDeco s₁) → (od₂ : (pt : PublicTranscript s₁) → OracleDeco (s₂ pt)) →
@@ -439,8 +448,8 @@ def QueryHandle.appendRight :
   | .oracle _ rest, s₂, ⟨_, odRest⟩, od₂, pt₁, pt₂, q =>
       .inr (QueryHandle.appendRight rest s₂ odRest od₂ pt₁ pt₂ q)
 
-/-- Decompose a query handle of the appended spec into a left (first phase) or
-right (second phase) query handle. Inverse of `appendLeft`/`appendRight`. -/
+/- - Decompose a query handle of the appended spec into a left (first phase) or
+right (second phase) query handle. Inverse of `appendLeft`/`appendRight`.  -/
 def QueryHandle.splitAppend :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (od₁ : OracleDeco s₁) → (od₂ : (pt : PublicTranscript s₁) → OracleDeco (s₂ pt)) →
@@ -460,12 +469,12 @@ def QueryHandle.splitAppend :
       | .inl q₁ => .inl (.inr q₁)
       | .inr q₂ => .inr q₂
 
-/-- Route a first-phase query handle into the combined spec indexed by `pt`,
+/- - Route a first-phase query handle into the combined spec indexed by `pt`,
 where `pt : PublicTranscript (s₁.append s₂)`. Unlike `appendLeft` (which
 takes `pt₁` and `pt₂` separately and produces a handle at `append pt₁ pt₂`),
 this takes the combined `pt` directly and indexes the input handle by
 `(split pt).1`. The key property is that `toOracleSpec` at the routed handle
-**definitionally** agrees with the first phase's `toOracleSpec`. -/
+**definitionally** agrees with the first phase's `toOracleSpec`.  -/
 def QueryHandle.routeLeft :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (od₁ : OracleDeco s₁) → (od₂ : (pt₁ : PublicTranscript s₁) → OracleDeco (s₂ pt₁)) →
@@ -480,11 +489,11 @@ def QueryHandle.routeLeft :
   | .oracle _ rest, s₂, ⟨_, odRest⟩, od₂, pt, .inr h =>
       .inr (routeLeft rest s₂ odRest od₂ pt h)
 
-/-- Route a second-phase query handle into the combined spec indexed by `pt`.
+/- - Route a second-phase query handle into the combined spec indexed by `pt`.
 Unlike `appendRight`, takes the combined `pt` directly and indexes the input
 handle by `(split pt).1` and `(split pt).2`. The key property is that
 `toOracleSpec` at the routed handle **definitionally** agrees with the second
-phase's `toOracleSpec`. -/
+phase's `toOracleSpec`.  -/
 def QueryHandle.routeRight :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (od₁ : OracleDeco s₁) → (od₂ : (pt₁ : PublicTranscript s₁) → OracleDeco (s₂ pt₁)) →
@@ -500,8 +509,8 @@ def QueryHandle.routeRight :
   | .oracle _ rest, s₂, ⟨_, odRest⟩, od₂, pt, q =>
       .inr (routeRight rest s₂ odRest od₂ pt q)
 
-/-- The oracle spec at a left query handle in the appended spec matches the
-first phase's oracle spec. -/
+/- - The oracle spec at a left query handle in the appended spec matches the
+first phase's oracle spec.  -/
 theorem toOracleSpec_appendLeft :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (od₁ : OracleDeco s₁) → (od₂ : (pt : PublicTranscript s₁) → OracleDeco (s₂ pt)) →
@@ -518,8 +527,8 @@ theorem toOracleSpec_appendLeft :
   | .oracle _ rest, s₂, ⟨_, odRest⟩, od₂, pt₁, pt₂, .inr h =>
       toOracleSpec_appendLeft rest s₂ odRest od₂ pt₁ pt₂ h
 
-/-- The oracle spec at a right query handle in the appended spec matches the
-second phase's oracle spec. -/
+/- - The oracle spec at a right query handle in the appended spec matches the
+second phase's oracle spec.  -/
 theorem toOracleSpec_appendRight :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (od₁ : OracleDeco s₁) → (od₂ : (pt : PublicTranscript s₁) → OracleDeco (s₂ pt)) →
@@ -536,14 +545,14 @@ theorem toOracleSpec_appendRight :
   | .oracle _ rest, s₂, ⟨_, odRest⟩, od₂, pt₁, pt₂, q =>
       toOracleSpec_appendRight rest s₂ odRest od₂ pt₁ pt₂ q
 
-/-- Restrict an oracle query implementation for the combined `toOracleSpec` of
+/- - Restrict an oracle query implementation for the combined `toOracleSpec` of
 `s₁.append s₂` at combined transcript `pt` to answer only first-phase queries.
 
 Defined by structural recursion on `s₁`. At each step, `toOracleSpec`,
 `OracleDeco.append`, and `PublicTranscript.split` all reduce definitionally,
 so no casts are needed. At `.oracle` nodes, first-phase handles are in `.inl`
 position; the embedding is restricted via `.inr` to skip the current oracle
-node. -/
+node.  -/
 def restrictLeft {r : Type → Type} [Monad r] :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (od₁ : OracleDeco s₁) → (od₂ : (pt₁ : PublicTranscript s₁) → OracleDeco (s₂ pt₁)) →
@@ -559,13 +568,13 @@ def restrictLeft {r : Type → Type} [Monad r] :
     | .inr h =>
         restrictLeft rest s₂ odRest od₂ pt (fun h' => embed (.inr h')) h
 
-/-- Restrict an oracle query implementation for the combined `toOracleSpec` of
+/- - Restrict an oracle query implementation for the combined `toOracleSpec` of
 `s₁.append s₂` at combined transcript `pt` to answer only second-phase queries.
 
 Defined by structural recursion on `s₁`. At `.done`, the combined spec
 reduces to the second-phase spec, so the embedding applies directly. At
 `.oracle` nodes, the embedding is restricted via `.inr`. At `.public` nodes,
-the transcript component `x` routes into the correct subtree. -/
+the transcript component `x` routes into the correct subtree.  -/
 def restrictRight {r : Type → Type} [Monad r] :
     (s₁ : Oracle.Spec) → (s₂ : PublicTranscript s₁ → Oracle.Spec) →
     (od₁ : OracleDeco s₁) → (od₂ : (pt₁ : PublicTranscript s₁) → OracleDeco (s₂ pt₁)) →
@@ -584,3 +593,5 @@ def restrictRight {r : Type → Type} [Monad r] :
 end Spec
 
 end Interaction.Oracle
+
+-/

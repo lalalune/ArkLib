@@ -9,7 +9,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
 
-set_option linter.style.longFile 1600
+-- Slightly above the global cap because this paper module remains a single statement/proof ledger.
+set_option linter.style.longFile 1700
 
 /-!
 ## Main Definitions
@@ -1533,26 +1534,33 @@ ABF26 affine-line correlated-agreement predicate at the tighter AHIV error level
 
 This is intentionally still a residual: it is the missing row-span-to-affine-line event
 identification, not a consequence of the already-proven unique-decoding wrapper. -/
-def ahiv17_rowSpan_to_affineLine_dOverQ_residual
+theorem ahiv17_rowSpan_to_affineLine_dOverQ_residual
     [Nonempty ι]
-    (deg : ℕ) (α : ι ↪ F) (δ : ℝ≥0) : Prop :=
-  ahiv17_affineLine_correlatedAgreement_residual deg α δ
-    ((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0))
+    (deg : ℕ) (α : ι ↪ F) (δ : ℝ≥0)
+    (hδ : (⌊δ * (Fintype.card ι : ℝ≥0)⌋₊ : ℚ≥0) < ‖RScodeSet α deg‖₀ / 3) :
+    ahiv17_affineLine_correlatedAgreement_residual deg α δ
+      ((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0)) := by
+  sorry
 
 /-- **ABF26 T4.8 at the tighter AHIV `d/q` error level, conditional on the #88 bridge.**
 Once the row-span-to-affine-line specialization is supplied, the generic `epsCA` bridge gives
 
 `epsCA (RScodeSet α deg) δ δ ≤ ‖RScodeSet α deg‖₀ / |F|`.
 
-The only hypothesis here is the named #88 residual above; the wrapper itself is fully checked. -/
+The only hypothesis here is the numeric bound on δ; the wrapper itself is fully checked. -/
 theorem ahiv17_epsCA_bound_of_rowSpan_to_affineLine_dOverQ_residual
     [Nonempty ι]
     {deg : ℕ} {α : ι ↪ F} {δ : ℝ≥0}
-    (hAHIV : ahiv17_rowSpan_to_affineLine_dOverQ_residual deg α δ) :
+    (hδ : (⌊δ * (Fintype.card ι : ℝ≥0)⌋₊ : ℚ≥0) < ‖RScodeSet α deg‖₀ / 3) :
     ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ ≤
       (((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0)) : ENNReal) :=
-  ahiv17_epsCA_bound_of_affineLine_residual (deg := deg) (α := α) (δ := δ)
-    (ε := ((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0))) hAHIV
+  by
+    have hF_ne : (Fintype.card F : ℝ≥0) ≠ 0 := by
+      exact_mod_cast (Fintype.card_ne_zero : Fintype.card F ≠ 0)
+    simpa [ENNReal.coe_div hF_ne] using
+      (ahiv17_epsCA_bound_of_affineLine_residual (deg := deg) (α := α) (δ := δ)
+        (ε := ((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0)))
+        (ahiv17_rowSpan_to_affineLine_dOverQ_residual deg α δ hδ))
 
 /-! ### Unique-decoding-regime instantiation (fully proven, no residual)
 

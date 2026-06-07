@@ -126,3 +126,11 @@ theorem multi_instance_extracted_leaves_unique {s : Skeleton}
   exact extracted_leaf_unique leaf_data_tree o.1 hashFn hinj o.2 (hver o ho)
 
 end InductiveMerkleTree
+
+/-! ### Axiom audit (issue #119 deterministic Merkle binding/extraction core) -/
+
+#print axioms InductiveMerkleTree.getPutativeRootWithHash_injective_of_hash_injective
+#print axioms InductiveMerkleTree.opening_binding
+#print axioms InductiveMerkleTree.extractLeaf_eq_opened
+#print axioms InductiveMerkleTree.extracted_leaf_unique
+#print axioms InductiveMerkleTree.multi_instance_extracted_leaves_unique

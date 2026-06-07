@@ -296,19 +296,7 @@ protected def cast (R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmt
   prover := R.prover.cast hn hSpec
   verifier := R.verifier.cast hn hSpec hOₘ
 
--- @[simp]
--- theorem cast_id :
---     OracleReduction.cast rfl rfl (fun _ => rfl) =
---       (id : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec₁ → _) := by
---   ext : 2 <;> simp [OracleReduction.cast]
 
--- Need to cast oracle interface as well
--- instance instDCast₂OracleReduction :
---     DCast₂ Nat ProtocolSpec
---     (fun _ pSpec => OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec)
--- where
---   dcast₂ := OracleReduction.cast
---   dcast₂_id := OracleReduction.cast_id
 
 @[simp]
 theorem cast_toReduction
@@ -449,17 +437,7 @@ namespace OracleReduction
 
 variable (R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec₁)
 
--- @[simp]
--- theorem cast_completeness (ε : ℝ≥0) (hComplete : R.completeness init impl relIn relOut ε) :
---     (R.cast hn hSpec hOₘ).completeness init impl relIn relOut ε := by
---   unfold completeness
---   rw [cast_toReduction]
---   exact Reduction.cast_completeness hn hSpec R.toReduction ε hComplete
 
--- @[simp]
--- theorem cast_perfectCompleteness (hComplete : R.perfectCompleteness init impl relIn relOut) :
---     (R.cast hn hSpec hOₘ).perfectCompleteness init impl relIn relOut :=
---   cast_completeness hn hSpec hOₘ R 0 hComplete
 
 end OracleReduction
 

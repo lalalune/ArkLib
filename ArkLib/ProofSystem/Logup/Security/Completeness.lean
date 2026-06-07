@@ -208,8 +208,8 @@ error. This reduction's own body contains no `sorry`. -/
 theorem logup_completeness_of_residual
     (h : SubPhaseCompletenessResidual oSpec F n M params init impl)
     (hAppendCompleteness :
-      (logupOracleReduction oSpec F n M params).completeness init impl
-        (inputRelation F n M) outputRelation (logupCompletenessError F n)) :
+      (outerOracleReduction oSpec F n M params).appendCompletenessResidual
+        (sumcheckOracleReduction oSpec F n M params) h.1 h.2) :
     (logupOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) outputRelation (logupCompletenessError F n) := by
   obtain ⟨hOuter, hSum⟩ := h
@@ -224,7 +224,7 @@ theorem logup_completeness_of_residual
     (outerOracleReduction oSpec F n M params)
     (sumcheckOracleReduction oSpec F n M params)
     hOuter hSum
-    (by simpa only [add_zero] using hAppendCompleteness)
+    hAppendCompleteness
   simpa only [add_zero] using hc
 
 end Completeness

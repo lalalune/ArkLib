@@ -116,7 +116,7 @@ The probability hypothesis at the boundary is `Pr[…] > k · 0 = 0`, which yiel
 positivity of the good-coefficient set.  No cardinality lower bound large enough to drive the
 `jointAgreement` assembly is available. -/
 
-omit [Nonempty ι] [DecidableEq ι] in
+omit [DecidableEq ι] in
 /-- **The exact in-tree boundary fact.**  At the closed boundary, the front-door probability
 hypothesis implies *only* `0 < (RS_goodCoeffsCurve …).card`.  This is strictly weaker than the
 `card ≥ (|ι| + 1) · k` required by the assembly bridge, so route (i) cannot reach `jointAgreement`
@@ -397,14 +397,13 @@ theorem boundaryProbabilityResidual_of_lattice_data
       (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
     hStrict
 
-omit [DecidableEq ι] in
 /-- The affine-curves keystone can consume the exact lattice branch through the smaller
 `BoundaryCardLatticeData` surface. This is the direct front-door adapter: the strict Johnson
 coefficient-polynomial residual and strict-subradius producer are unchanged, while the exact
 lattice branch is supplied through `BoundaryCardLatticeData` rather than the older
 `BoundaryCardLatticeResidual`. -/
 theorem correlatedAgreement_affine_curves_of_lattice_data
-    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg] [DecidableEq ι]
     (hStrictCoeff :
       ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hLatticeData :
@@ -417,8 +416,9 @@ theorem correlatedAgreement_affine_curves_of_lattice_data
       jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u))
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
     (deg := deg) (domain := domain) (δ := δ) hStrictCoeff hStrict
     (boundaryCardLatticeResidual_of_lattice_data
       (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)

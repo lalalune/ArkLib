@@ -136,6 +136,24 @@ def DivWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
         = a * (W𝒪 H) ^ (t + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t - 1)
       ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
 
+def DivWeightLe_zero (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ) : Prop :=
+  ∃ a : 𝒪 H, βHensel H x₀ R hHyp 0 = a * (W𝒪 H) ^ (0 + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * 0 - 1) ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
+
+def DivWeightLe_succ (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ) (t : ℕ) : Prop :=
+  ∃ a : 𝒪 H, βHensel H x₀ R hHyp (t + 1) = a * (W𝒪 H) ^ (t + 1 + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * (t + 1) - 1) ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
+
+theorem DivWeightLe_of_cases (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ)
+    (h0 : DivWeightLe_zero H x₀ R hHyp hH D)
+    (hsucc : ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t) :
+    DivWeightLe H x₀ R hHyp hH D := by
+  intro t
+  cases t
+  · exact h0
+  · exact hsucc _
+
 /-! ### 1′. The two halves of the `𝕃 ↔ 𝒪` bridge
 
 -/
@@ -216,8 +234,52 @@ This is the genuine forward closure: the carved link + the lift identity yield t
 structured weight invariant, via the `𝒪`-level factorization + the proven sub-multiplicative `Λ_𝒪`
 calculus.  It
 shows `AlphaGenuineRegularWeightLe` is at least as strong as the structured invariant (and, by §2's
-sub-additivity remark, strictly stronger).  `βHensel_weight_structured` is supplied by
-`HenselNumerator`. -/
+sub-additivity remark, strictly stronger). -/
+
+/-- **(P1) the STRUCTURED INVARIANT, conditional.**  Given `hlift`, the carved link `hα`, and the
+`Λ(ξ)` bound `hξ` (`weight_ξ_bound`, automatic under its regime), the structured invariant
+`Λ_𝒪(βHensel l) ≤ 1 + (l+1)·Λ(W) + e_l·Λ(ξ)` holds, with `Λ(W) = (lc H).natDegree`,
+`Λ(ξ) ≤ (d−1)·(D−dH+1)`, `e_l = 2l−1` (ℕ-truncated).  Route: the link gives `β_l = a_l·W𝒪^{l+1}·ξ^{e_l}`
+(Task-1 `𝕃 → 𝒪`), then `weight_Λ_over_𝒪_mul_le`/`_pow_le`/`_W` + `nsmul_withBot_le` + `Λ(a_l) ≤ 1`. -/
+theorem βHensel_weight_structured (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ} (hDH : Bivariate.totalDegree H ≤ D)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (l : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+      ≤ WithBot.some
+          (1 + (l + 1) * (H.leadingCoeff).natDegree
+            + (2 * l - 1)
+              * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
+  -- Task 1 (`𝕃 → 𝒪`): extract `a_l` and the `𝒪`-level factorization.
+  obtain ⟨a, ha_eq, ha_wt⟩ := hα l
+  have hfact : βHensel H x₀ R hHyp l
+      = a * (W𝒪 H) ^ (l + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * l - 1) :=
+    βHensel_eq_alpha_mul_of_lift H x₀ R hHyp hH l ha_eq (hlift l)
+  rw [hfact]
+  -- Sub-multiplicativity over `𝒪`: split the two products.
+  refine (weight_Λ_over_𝒪_mul_le H hH hDH _ _).trans ?_
+  refine le_trans (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) (le_refl _)) ?_
+  -- (ii) `Λ_𝒪(W𝒪^{l+1}) ≤ (l+1)·Λ(W) ≤ (l+1)·(lc H).natDegree`.
+  have hW_pow : weight_Λ_over_𝒪 hH ((W𝒪 H) ^ (l + 1)) D
+      ≤ WithBot.some ((l + 1) * (H.leadingCoeff).natDegree) := by
+    refine (weight_Λ_over_𝒪_pow_le H hH hDH (W𝒪 H) (l + 1)).trans ?_
+    exact nsmul_withBot_le (l + 1) _ (weight_Λ_over_𝒪_W H hH hDH)
+  -- (iii) `Λ_𝒪(ξ^{2l−1}) ≤ (2l−1)·Λ(ξ) ≤ (2l−1)·((d−1)(D−dH+1))`.
+  have hξ_pow : weight_Λ_over_𝒪 hH ((ClaimA2.ξ x₀ R H hHyp) ^ (2 * l - 1)) D
+      ≤ WithBot.some
+          ((2 * l - 1) * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
+    refine (weight_Λ_over_𝒪_pow_le H hH hDH (ClaimA2.ξ x₀ R H hHyp) (2 * l - 1)).trans ?_
+    exact nsmul_withBot_le (2 * l - 1) _ hξ
+  -- Combine: `(Λ(a) + Λ(W^{l+1})) + Λ(ξ^{e_l}) ≤ (1 + (l+1)Λ(W)) + e_l·Λ(ξ)`.
+  refine le_trans (add_le_add (add_le_add ha_wt hW_pow) hξ_pow) ?_
+  rw [← WithBot.coe_add, ← WithBot.coe_add]
 
 /-! ### 4. (P1) the loose weight bound, PROVEN from the structured invariant -/
 

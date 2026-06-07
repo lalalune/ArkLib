@@ -675,28 +675,40 @@ run induction + output assembly remain). Once `Prover.append_run` is available, 
 3. union bound ⇒ total error `completenessError₁ + completenessError₂`.
 The genuinely-deep dependency is therefore *only* `Prover.append_run`; the probabilistic step is the
 standard two-stage success-probability union bound. -/
+def reductionAppendCompletenessResidual
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) : Prop :=
+  (R₁.append R₂).completeness init impl rel₁ rel₃ (completenessError₁ + completenessError₂)
+
 theorem reduction_append_completeness
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
     {completenessError₁ completenessError₂ : ℝ≥0}
     (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
     (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂)
-    (hAppendCompleteness :
-      (R₁.append R₂).completeness init impl
-        rel₁ rel₃ (completenessError₁ + completenessError₂)) :
+    (hResidual : reductionAppendCompletenessResidual R₁ R₂ h₁ h₂) :
       (R₁.append R₂).completeness init impl
         rel₁ rel₃ (completenessError₁ + completenessError₂) :=
-  hAppendCompleteness
+  hResidual
+
+def reductionAppendPerfectCompletenessResidual
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) : Prop :=
+  (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃
 
 theorem reduction_append_perfectCompleteness
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
     (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
     (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
-    (hAppendPerfectCompleteness :
-      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃) :
-      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
-  exact hAppendPerfectCompleteness
+    (hResidual : reductionAppendPerfectCompletenessResidual R₁ R₂ h₁ h₂) :
+      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ :=
+  hResidual
 
 end Reduction
 
@@ -719,16 +731,21 @@ malicious prover `P↾₁` (running rounds
 3. A union bound over these two events gives `soundnessError₁ + soundnessError₂`.
 The genuinely new content is the malicious-prover seam decomposition (no analogue of the honest
 `Prover.append` exists in the codebase yet) plus the probabilistic union bound; both are deep. -/
+def appendSoundnessResidual {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) : Prop :=
+  (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂)
+
 theorem append_soundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
     {soundnessError₁ soundnessError₂ : ℝ≥0}
     (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
     (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂)
-    (hAppendSoundness :
-      (V₁.append V₂).soundness init impl lang₁ lang₃
-        (soundnessError₁ + soundnessError₂)) :
+    (hResidual : appendSoundnessResidual V₁ V₂ h₁ h₂) :
       (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) :=
-  hAppendSoundness
+  hResidual
 
 /-- **NAMED RESIDUAL (deep, arbitrary-prover seam decomposition + extractor composition).**
 Sequential composition preserves straightline knowledge soundness with additive error.
@@ -741,42 +758,40 @@ and the bad knowledge event `(stmtIn, witIn') ∉ relIn ∧ (stmtOut, witOut) �
 union-bounded
 through the intermediate `(stmt₂, wit₂)` pair. The extractor query-log routing across the seam
 (`proveQueryLog.fst` / `verifyQueryLog`) is the additional new content over `append_soundness`. -/
+def appendKnowledgeSoundnessResidual
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) : Prop :=
+  (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃ (knowledgeError₁ + knowledgeError₂)
+
 theorem append_knowledgeSoundness
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
     {knowledgeError₁ knowledgeError₂ : ℝ≥0}
     (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
     (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂)
-    (hAppendKnowledgeSoundness :
-      (V₁.append V₂).knowledgeSoundness init impl
-        rel₁ rel₃ (knowledgeError₁ + knowledgeError₂)) :
+    (hResidual : appendKnowledgeSoundnessResidual V₁ V₂ h₁ h₂) :
       (V₁.append V₂).knowledgeSoundness init impl
         rel₁ rel₃ (knowledgeError₁ + knowledgeError₂) :=
-  hAppendKnowledgeSoundness
+  hResidual
 
 /-- **NAMED RESIDUAL (deep) + DOCUMENTED STATEMENT GAP (missing side conditions).**
 Sequential composition preserves round-by-round soundness, with the per-round error obtained by
 routing through `ChallengeIdx.sumEquiv`.
 
-The composite state function is intended to be `Verifier.StateFunction.append` (proven, above),
-which witnesses the existential in the target `rbrSoundness`. *However*, `StateFunction.append`
-carries two
-side hypotheses that this theorem's statement does not currently provide, so as stated the theorem
-cannot be discharged via the intended route (a faithful proof must thread these in):
-  * `hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩` — the first verifier must be
-    *deterministic & non-failing*. The crossing inversion of `S₁.toFun_full` into the pointwise
-    `verify … ∉ lang₂` (the mechanism that makes the composite `toFun_full` true, per the
-    `StateFunction.append` statement-repair note) requires `V₁` to be a `pure`-verifier.
-  * `hInit : ∃ s, s ∈ support init` — at least one reachable initial state, else the `Pr = 0`
-    inversion is vacuous.
-With those two hypotheses added (or a more general `StateFunction.append` that drops determinism),
-the remaining content is: instantiate the composite state function, then per challenge round `i` of
-the
-appended protocol case on whether `i` lies in phase 1 (defer to `h₁`'s round bound, the appended
-challenge index `ChallengeIdx.inl i` carrying error `rbrSoundnessError₁ i`) or phase 2 (defer to
-`h₂`, `ChallengeIdx.inr`), the partial transcript split by the proven `Transcript.fst`/`.snd`
-transports — a per-round probabilistic argument with no honest-prover seam (rbr soundness is
-single-round, so no `Prover.append_run` is needed here). -/
+The composite state function is intended to be `Verifier.StateFunction.append` (proven, above). -/
+def appendRbrSoundnessResidual {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) : Prop :=
+  (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+    (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm)
+
 theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
@@ -784,12 +799,10 @@ theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lan
     {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
     (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
     (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂)
-    (hAppendRbrSoundness :
-      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
-        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+    (hResidual : appendRbrSoundnessResidual V₁ V₂ h₁ h₂) :
       (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
         (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
-  hAppendRbrSoundness
+  hResidual
 
 /-- **NAMED RESIDUAL (deep) + DOCUMENTED STATEMENT GAP (missing side conditions).**
 Sequential composition preserves round-by-round knowledge soundness.
@@ -808,6 +821,16 @@ With those added, the residue is the per-round knowledge bound: case on phase-1 
 appended challenge index, defer to `h₁`/`h₂`, and identify the composite `extractMid`/`extractOut`
 (per `Extractor.RoundByRound.append`'s construction) with the per-phase extractors across the
 seam. -/
+def appendRbrKnowledgeSoundnessResidual
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) : Prop :=
+  (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+    (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm)
+
 theorem append_rbrKnowledgeSoundness
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
@@ -815,12 +838,10 @@ theorem append_rbrKnowledgeSoundness
     {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
     (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
     (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂)
-    (hAppendRbrKnowledgeSoundness :
-      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
-        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+    (hResidual : appendRbrKnowledgeSoundnessResidual V₁ V₂ h₁ h₂) :
       (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
         (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
-  hAppendRbrKnowledgeSoundness
+  hResidual
 
 end Verifier
 
@@ -848,6 +869,15 @@ variable {Stmt₁ : Type} {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type}
 
 namespace OracleReduction
 
+def appendCompletenessResidual
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) : Prop :=
+  (R₁.append R₂).completeness init impl rel₁ rel₃ (completenessError₁ + completenessError₂)
+
 theorem append_completeness
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
@@ -855,12 +885,18 @@ theorem append_completeness
     {completenessError₁ completenessError₂ : ℝ≥0}
     (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
     (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂)
-    (hAppendCompleteness :
-      (R₁.append R₂).completeness init impl
-        rel₁ rel₃ (completenessError₁ + completenessError₂)) :
+    (hResidual : appendCompletenessResidual R₁ R₂ h₁ h₂) :
       (R₁.append R₂).completeness init impl
         rel₁ rel₃ (completenessError₁ + completenessError₂) :=
-  hAppendCompleteness
+  hResidual
+
+def appendPerfectCompletenessResidual
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) : Prop :=
+  (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃
 
 theorem append_perfectCompleteness
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
@@ -868,10 +904,9 @@ theorem append_perfectCompleteness
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
     (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
     (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
-    (hAppendPerfectCompleteness :
-      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃) :
+    (hResidual : appendPerfectCompletenessResidual R₁ R₂ h₁ h₂) :
       (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ :=
-  hAppendPerfectCompleteness
+  hResidual
 
 end OracleReduction
 
@@ -881,6 +916,15 @@ variable {lang₁ : Set (Stmt₁ × (∀ i, OStmt₁ i))}
     {lang₂ : Set (Stmt₂ × (∀ i, OStmt₂ i))}
     {lang₃ : Set (Stmt₃ × (∀ i, OStmt₃ i))}
 
+def appendSoundnessResidual
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) : Prop :=
+  (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂)
+
 theorem append_soundness
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
@@ -888,10 +932,18 @@ theorem append_soundness
     {soundnessError₁ soundnessError₂ : ℝ≥0}
     (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
     (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂)
-    (hAppendSoundness :
-      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂)) :
+    (hResidual : appendSoundnessResidual V₁ V₂ h₁ h₂) :
       (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) :=
-  hAppendSoundness
+  hResidual
+
+def appendKnowledgeSoundnessResidual
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) : Prop :=
+  (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃ (knowledgeError₁ + knowledgeError₂)
 
 theorem append_knowledgeSoundness
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
@@ -900,12 +952,20 @@ theorem append_knowledgeSoundness
     {knowledgeError₁ knowledgeError₂ : ℝ≥0}
     (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
     (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂)
-    (hAppendKnowledgeSoundness :
-      (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃
-        (knowledgeError₁ + knowledgeError₂)) :
+    (hResidual : appendKnowledgeSoundnessResidual V₁ V₂ h₁ h₂) :
       (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃
         (knowledgeError₁ + knowledgeError₂) :=
-  hAppendKnowledgeSoundness
+  hResidual
+
+def appendRbrSoundnessResidual (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) : Prop :=
+  (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+    (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm)
 
 theorem append_rbrSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
@@ -914,12 +974,21 @@ theorem append_rbrSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt�
     {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
     (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
     (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂)
-    (hAppendRbrSoundness :
-      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
-        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+    (hResidual : appendRbrSoundnessResidual V₁ V₂ h₁ h₂) :
       (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
         (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
-  hAppendRbrSoundness
+  hResidual
+
+def appendRbrKnowledgeSoundnessResidual
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) : Prop :=
+  (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+    (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm)
 
 theorem append_rbrKnowledgeSoundness
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
@@ -929,12 +998,10 @@ theorem append_rbrKnowledgeSoundness
     {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
     (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
     (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂)
-    (hAppendRbrKnowledgeSoundness :
-      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
-        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+    (hResidual : appendRbrKnowledgeSoundnessResidual V₁ V₂ h₁ h₂) :
       (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
         (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
-  hAppendRbrKnowledgeSoundness
+  hResidual
 
 end OracleVerifier
 
@@ -2534,6 +2601,40 @@ theorem append_PrvState_natAdd_interior_succ (k : Fin n) (hk : 0 < (k : ℕ)) :
         = (Fin.natAdd (m + 1) k).cast (by omega) from by ext; simp; omega]
   exact this
 
+/-- **State-type equality at the final appended round.**  For a non-empty right block (`0 < n`), the
+appended prover's state type at the last round `Fin.last (m + n)` is `P₂`'s state at its own last
+round `Fin.last n`.  Specialisation of `append_PrvState_natAdd_succ` at `k = ⟨n-1, _⟩`
+(`(natAdd (m+1) ⟨n-1,_⟩).cast = Fin.last (m+n)`, `⟨n-1,_⟩.succ = Fin.last n`); mirror of
+`append_PrvState_natAdd_castSucc`.  The state transport needed by the right-block `output` assembly. -/
+theorem append_PrvState_last (hn : 0 < n) :
+    (P₁.append P₂).PrvState (Fin.last (m + n)) = P₂.PrvState (Fin.last n) := by
+  have hpred : (⟨n - 1, by omega⟩ : Fin n).succ = Fin.last n := by ext; simp; omega
+  have h := append_PrvState_natAdd_succ (P₁ := P₁) (P₂ := P₂) (⟨n - 1, by omega⟩ : Fin n)
+  rw [hpred] at h
+  rw [show (Fin.last (m + n) : Fin (m + n + 1))
+        = (Fin.natAdd (m + 1) (⟨n - 1, by omega⟩ : Fin n)).cast (by omega) from by
+        ext; simp; omega]
+  exact h
+
+/-- **Output assembly at the final appended round.**  For a non-empty right block (`0 < n`), the
+appended prover's `output` at the last round is `P₂`'s `output` applied to the final state
+transported by `append_PrvState_last` — exactly `Prover.append`'s `output` branch for `n ≠ 0`.  This
+is the `output`-assembly step of the right-block characterization of `append_run`.  (The `DCast.dcast`
+of the definition is reconciled to `_root_.cast` via `dcast_eq_root_cast`; the residual transport is
+closed by `cast_heq`/proof-irrelevance.) -/
+theorem append_output_last (hn : 0 < n)
+    (state : (P₁.append P₂).PrvState (Fin.last (m + n))) :
+    (P₁.append P₂).output state = P₂.output (cast (append_PrvState_last hn) state) := by
+  have hn0 : ¬ (n = 0) := by omega
+  show (P₁.append P₂).output state = _
+  unfold Prover.append
+  simp only [hn0, ↓reduceDIte]
+  congr 1
+  apply eq_of_heq
+  refine HEq.trans ?_ (cast_heq (append_PrvState_last hn) state).symm
+  simp only [dcast_eq_root_cast, eq_mp_eq_cast, _root_.cast_cast]
+  exact cast_heq _ _
+
 /-- **Right interior-round `sendMessage` reduction.**  At an interior right round `Fin.natAdd m k`
 (`k : Fin n`, `k > 0`, the `i > m` branch of `Prover.append.sendMessage`), the appended prover's
 `sendMessage` is heterogeneously equal to `P₂`'s `sendMessage` at round `k`. -/
@@ -2596,6 +2697,140 @@ transcript is `happend transcript₁ tr₂`: the appended `processRound` at a ri
 supplies the missing per-round handle for right *challenge* rounds, completing the round-local
 reduction set for the right block (`{send,receive}Message_natAdd`, `{send,receive}_seam`,
 `getChallenge_natAdd`). -/
+
+
+/-- **Right interior-round `processRound` reduction (message branch).**  At an interior right round
+`Fin.natAdd m k` (`k : Fin n`, `k > 0` — the `i > m` branch, *not* the seam), the appended prover's
+`processRound` on a `pure` input reduces (heterogeneously) to `P₂`'s message step on the
+state-transported input, concatenated onto the appended transcript `rInt.1`.  Mirror of the proven
+seam reduction `append_processRound_seam_message`, but *simpler*: no `P₁.output >>= P₂.input`
+threading (that only happens at the seam).  The transcript-prefix is *not* handled here — it enters
+only at the right-block run-induction assembly (via `concat_append_right`); at the round level the
+appended transcript `rInt.1` is grown directly. -/
+theorem append_processRound_natAdd_message (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V)
+    (hDir₂ : pSpec₂.dir k = .P_to_V)
+    (rInt : (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).castSucc
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc) :
+    HEq ((P₁.append P₂).processRound (Fin.natAdd m k) (pure rInt))
+      (Bind.bind
+        (liftM (P₂.sendMessage ⟨k, hDir₂⟩
+            (cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k hk) rInt.2)) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            (pSpec₂.Message ⟨k, hDir₂⟩ × P₂.PrvState k.succ))
+        (fun p => (pure
+            (rInt.1.concat (cast (append_Message_natAdd k hDir hDir₂).symm p.1),
+              cast (append_PrvState_natAdd_interior_succ (P₁ := P₁) (P₂ := P₂) k hk).symm p.2) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+                × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)))) := by
+  rw [processRound_message (P₁.append P₂) (Fin.natAdd m k) hDir (pure rInt)]
+  simp only [pure_bind]
+  refine bind_heq_congr
+    (α := (pSpec₁ ++ₚ pSpec₂).Message ⟨Fin.natAdd m k, hDir⟩
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+    (α' := pSpec₂.Message ⟨k, hDir₂⟩ × P₂.PrvState k.succ)
+    (β := (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+    (β' := (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+    (by rw [append_Message_natAdd k hDir hDir₂, append_PrvState_natAdd_interior_succ k hk]) rfl ?_ ?_
+  · have hαeq : ((pSpec₁ ++ₚ pSpec₂).Message ⟨Fin.natAdd m k, hDir⟩
+          × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+        = (pSpec₂.Message ⟨k, hDir₂⟩ × P₂.PrvState k.succ) := by
+      rw [append_Message_natAdd k hDir hDir₂, append_PrvState_natAdd_interior_succ k hk]
+    show HEq (OracleComp.liftComp ((P₁.append P₂).sendMessage ⟨Fin.natAdd m k, hDir⟩ rInt.2)
+            (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+        (OracleComp.liftComp
+          (OracleComp.liftComp (P₂.sendMessage ⟨k, hDir₂⟩
+              (cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k hk) rInt.2))
+            (oSpec + [pSpec₁.Challenge]ₒ))
+          (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+    rw [liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+      (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+    exact liftComp_heq_congr (spec := oSpec) (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      hαeq (append_sendMessage_natAdd k hk hDir hDir₂ rInt.2)
+  · rintro ⟨msg, ns⟩ ⟨msg', ns'⟩ hmsg
+    obtain ⟨hm, hns⟩ :=
+      prod_heq_split (append_Message_natAdd k hDir hDir₂)
+        (append_PrvState_natAdd_interior_succ k hk) hmsg
+    refine pure_heq_pure (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) rfl ?_
+    refine prodMk_heq rfl rfl ?_ ?_
+    · have : msg = cast (append_Message_natAdd k hDir hDir₂).symm msg' :=
+        eq_of_heq (hm.trans (cast_heq _ _).symm)
+      rw [this]
+    · apply heq_of_eq
+      exact eq_of_heq (hns.trans (cast_heq _ _).symm)
+
+/-- **Right interior-round `processRound` reduction (challenge branch).**  The `V_to_P` analogue of
+`append_processRound_natAdd_message`: at an interior right challenge round, the appended
+`processRound` on a `pure` input reduces to `P₂`'s `getChallenge`/`receiveChallenge` on the
+state-transported input.  Mirror of `append_processRound_seam_challenge`, simpler (no `P₁.output`). -/
+theorem append_processRound_natAdd_challenge (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P)
+    (hDir₂ : pSpec₂.dir k = .V_to_P)
+    (rInt : (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).castSucc
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc) :
+    HEq ((P₁.append P₂).processRound (Fin.natAdd m k) (pure rInt))
+      (Bind.bind
+        (liftM (pSpec₂.getChallenge ⟨k, hDir₂⟩) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (pSpec₂.Challenge ⟨k, hDir₂⟩))
+        (fun challenge =>
+          Bind.bind
+            (liftM (P₂.receiveChallenge ⟨k, hDir₂⟩
+                (cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k hk) rInt.2)) :
+              OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                (pSpec₂.Challenge ⟨k, hDir₂⟩ → P₂.PrvState k.succ))
+            (fun f => (pure
+                (rInt.1.concat (cast (append_Challenge_natAdd k hDir hDir₂).symm challenge),
+                  cast (append_PrvState_natAdd_interior_succ (P₁ := P₁) (P₂ := P₂) k hk).symm
+                    (f challenge)) :
+                OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                  ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+                    × (P₁.append P₂).PrvState (Fin.natAdd m k).succ))))) := by
+  rw [processRound_challenge' (P₁.append P₂) (Fin.natAdd m k) hDir (pure rInt)]
+  simp only [pure_bind]
+  have hChalEq : (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩
+      = pSpec₂.Challenge ⟨k, hDir₂⟩ := append_Challenge_natAdd k hDir hDir₂
+  refine bind_heq_congr (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) hChalEq rfl ?_ ?_
+  · exact liftM_heq_congr (spec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) hChalEq
+      (append_getChallenge_natAdd k hDir hDir₂)
+  · rintro chalA chal₂ hchal
+    refine bind_heq_congr (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (α := (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩
+        → (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+      (α' := pSpec₂.Challenge ⟨k, hDir₂⟩ → P₂.PrvState k.succ)
+      (β := (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+        × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+      (β' := (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+        × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+      (by rw [hChalEq, append_PrvState_natAdd_interior_succ k hk]) rfl ?_ ?_
+    · have hαeq : ((pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩
+            → (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+          = (pSpec₂.Challenge ⟨k, hDir₂⟩ → P₂.PrvState k.succ) := by
+        rw [hChalEq, append_PrvState_natAdd_interior_succ k hk]
+      show HEq (OracleComp.liftComp ((P₁.append P₂).receiveChallenge ⟨Fin.natAdd m k, hDir⟩ rInt.2)
+              (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+          (OracleComp.liftComp
+            (OracleComp.liftComp (P₂.receiveChallenge ⟨k, hDir₂⟩
+                (cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k hk) rInt.2))
+              (oSpec + [pSpec₁.Challenge]ₒ))
+            (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+      rw [liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+        (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+      exact liftComp_heq_congr (spec := oSpec)
+        (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) hαeq
+        (append_receiveChallenge_natAdd k hk hDir hDir₂ rInt.2)
+    · rintro fA f₂ hf
+      refine pure_heq_pure (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) rfl ?_
+      refine prodMk_heq rfl rfl ?_ ?_
+      · have : chalA = cast (append_Challenge_natAdd k hDir hDir₂).symm chal₂ :=
+          eq_of_heq (hchal.trans (cast_heq _ _).symm)
+        rw [this]
+      · apply heq_of_eq
+        refine eq_of_heq (HEq.trans ?_ (cast_heq _ _).symm)
+        exact heq_app hChalEq (by rw [hChalEq, append_PrvState_natAdd_interior_succ k hk]) hf hchal
 
 /-- **Seam-peel of the right-block continuation (structural step).**  Continuing the appended
 prover's run from the seam-round state index `m` (`= (⟨m,_⟩ : Fin (m+n)).castSucc`, the state going
@@ -2737,14 +2972,7 @@ commutative monad (such as `Id`, i.e. all oracle queries are answered determinis
 all oracle queries are answered probabilistically, `Option`, `ReaderT ρ`, `Set`, `WriterT` into a
 commutative monoid, etc.). -/
 
--- theorem append_run_interp {m : Type → Type} [Monad m] [m.IsCommutative]
---     {interp : OracleImpl oSpec m} : ((R₁.append R₂).run stmt wit).runM interp =
---         (do
---           let ⟨ctx₁, stmt₂, transcript₁⟩ ← liftM (R₁.run stmt wit)
---           let ⟨ctx₂, stmt₃, transcript₂⟩ ← liftM (R₂.run stmt₂ ctx₁.2)
---           return ⟨ctx₂, stmt₃, transcript₁ ++ₜ transcript₂⟩).runM interp := by
---   unfold run append
---   simp [Prover.append_run, Verifier.append_run]
+
 
 end Reduction
 

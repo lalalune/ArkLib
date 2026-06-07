@@ -28,7 +28,8 @@ The headline result `weighted_list_agreement_on_curves_implies_correlated_agreem
 these into correlated agreement on curves.
 -/
 
-set_option linter.style.longFile 2900
+-- Slightly above the global cap while the §6 curve machinery remains a cohesive proof module.
+set_option linter.style.longFile 3000
 
 namespace ProximityGap
 
@@ -2621,7 +2622,6 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
   exact correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary
     (deg := deg) (domain := domain) (δ := δ) hδ hStrictCoeff hBoundary
 
-omit [DecidableEq ι] in
 /-- Compatibility wrapper for callers that still carry the older
 closed-boundary cardinality residual. -/
 theorem correlatedAgreement_affine_curves_of_boundaryCardResidual {k : ℕ}
@@ -2632,13 +2632,13 @@ theorem correlatedAgreement_affine_curves_of_boundaryCardResidual {k : ℕ}
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
   exact correlatedAgreement_affine_curves
     (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
     (boundaryProbabilityResidual_of_boundaryCardResidual
       (deg := deg) (domain := domain) (δ := δ) hδ hBoundaryCard)
     hδ
 
-omit [DecidableEq ι] in
 /-- Canonical strict-branch compatibility wrapper for the sharpened final
 residual surface. -/
 theorem correlatedAgreement_affine_curves_of_strictCanonicalCoeffPolysResidual {k : ℕ}
@@ -2650,13 +2650,13 @@ theorem correlatedAgreement_affine_curves_of_strictCanonicalCoeffPolysResidual {
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
   exact correlatedAgreement_affine_curves
     (deg := deg) (domain := domain) (δ := δ)
     (strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual
       (deg := deg) (domain := domain) (δ := δ) hStrictCanonical)
     hBoundary hδ
 
-omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
 Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter

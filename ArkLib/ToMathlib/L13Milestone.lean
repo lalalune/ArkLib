@@ -165,7 +165,6 @@ open scoped BigOperators ENNReal ProbabilityTheory LinearCode
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
-omit [DecidableEq ι] in
 /-- **The §5 keystone, β-identification-residual-free (L13 milestone).**
 
 The BCIKS20 keystone goal `δ_ε_correlatedAgreementCurves` holds in the strict square-root Johnson
@@ -195,7 +194,6 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin
   correlatedAgreement_affine_curves_johnson_of_betaRecFin_strict
     (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput
 
-omit [DecidableEq ι] in
 /-- **The closed-radius §5 keystone, β-identification-residual-free, with the boundary quantized.**
 
 This is the non-strict companion to
@@ -206,7 +204,7 @@ from the quantization split in `BoundaryCardResidual.lean`: the non-lattice part
 strict subradius by `hStrictBoundary`, and the exact `1/n` lattice points are isolated in
 `BoundaryCardLatticeResidual`. -/
 theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual
-    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg] [DecidableEq ι]
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
     (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
       Pr_{
@@ -225,13 +223,13 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_resid
       ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual
         (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  correlatedAgreement_affine_curves_johnson_of_betaRecFin
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact correlatedAgreement_affine_curves_johnson_of_betaRecFin
     (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput
     (ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
       (k := k) (deg := deg) (domain := domain) (δ := δ) hLattice hStrictBoundary)
 
-omit [DecidableEq ι] in
 /-- Closed-radius §5 keystone with the β-identification residual removed and the lattice-boundary
 residual discharged from explicit boundary-card data.
 
@@ -274,10 +272,12 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_boundaryData
                 ∀ j < deg, (P z).coeff j = (B j).eval z)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual
-    (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput hStrictBoundary
-    (ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
-      (k := k) (deg := deg) (domain := domain) (δ := δ) hBoundaryData)
+  by
+    classical
+    exact correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput hStrictBoundary
+      (ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
+        (k := k) (deg := deg) (domain := domain) (δ := δ) hBoundaryData)
 
 /-! ## Axiom audit
 

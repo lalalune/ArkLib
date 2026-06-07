@@ -72,8 +72,7 @@ NO admit/axiom. `valueMultiset_insert` even narrower (`[propext, Quot.sound]`).
 ## Residual
 
 None for this file. Downstream (NOT in scope here): the keystone in `HenselNumerator.lean` still
-needs the `Nat.Partition` zero-part split (the `prefactor` `Nat.choose i i₁` factor splitting
-positive parts from constant-branch slots) and the `γ`-coefficient HasSubst/recentering peel
+needs the `Nat.Partition` zero-part split and the `γ`-coefficient HasSubst/recentering peel
 (`coeff_n γ = α_n`) — the scout's Wave-4 WALL, untouched here. `compositionSum_eq_partitionSum`
-lands on `countPerms`/`Nat.multinomial`, which is the multiplicity weight those objects consume;
-bridging `countPerms` ⇄ `partitionProd`/`sigmaLambda` is the remaining keystone integration.
+lands on `countPerms`/`Nat.multinomial`, which is the multiplicity weight consumed by the current
+positive-part `prefactor`; the Y-Hasse binomial is a separate coefficient-extraction factor.

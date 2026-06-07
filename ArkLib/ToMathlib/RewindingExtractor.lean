@@ -375,67 +375,7 @@ knowledge-soundness witness for Construction 6.2 (the framework predicate) one o
 prefix where the prover beats the error, an extracted witness in `outputRelation`. The gap between
 this and the
 literal `Verifier.knowledgeSoundness` statement is the **straightline↔rewinding interface
-translation** plus the **probability-accounting glue** that turns "extractable at every winning
 prefix" into the single averaged `Pr[...] ≤ ε` bound — the genuine residual, named
 `StraightlineOfRewinding` below. No statement is weakened: the residual is the precise, smallest
 missing piece.
 -/
-
-namespace Extractor
-
-namespace Bridge
-
-/-- **Named residual.** The single remaining ingredient to land `protocol62_knowledgeSound`:
-a translation from the rewinding knowledge-soundness predicate (this file) to the straightline
-`Verifier.knowledgeSoundness` predicate, packaged as the probability-accounting glue that converts
-the per-prefix forking guarantee into the averaged failure bound. This is the precise wall recorded
-in `oraclereduction-leftovers.md` residual (1)+(2) — left as a named `Prop` so a follow-up consumes
-the framework without re-deriving it.
-
-`StraightlineOfRewinding RewindingKS straightlineKS` says: the rewinding predicate `RewindingKS`
-*certifies* the straightline knowledge-soundness bound `straightlineKS`. It is intentionally
-abstract (both arguments are `Prop` parameters), so this file commits to **no** unproven
-mathematical content; it only names the gap. -/
-def StraightlineOfRewinding (RewindingKS : Prop) (straightlineKS : Prop) : Prop :=
-  RewindingKS → straightlineKS
-
-/-- **Bridge reduction skeleton (proven).** Modulo the named residual `StraightlineOfRewinding`, a
-rewinding knowledge-soundness witness yields the straightline statement. This is a trivial-by-design
-*adapter*: its purpose is to fix the exact interface a follow-up must implement, with the rewinding
-side already populated by `knowledgeSoundnessViaRewinding` from this file. -/
-theorem knowledgeSound_of_rewinding
-    {RewindingKS straightlineKS : Prop}
-    (residual : StraightlineOfRewinding RewindingKS straightlineKS)
-    (hRew : RewindingKS) : straightlineKS :=
-  residual hRew
-
-/-- **Bridge witness shape (proven).** Demonstrates that the rewinding side of the bridge is
-*populated*, not vacuous: any 2-special-sound rewinding extractor for Construction 6.2's carriers
-gives the `knowledgeSoundnessViaRewinding` predicate, so `knowledgeSound_of_rewinding` has a real
-hypothesis to consume. The `protocol62` follow-up supplies the linear-algebra extractor described in
-the bridge sketch above as the `E`/`hE` here. -/
-theorem rewindingKS_of_extractor
-    {Prefix Challenge Response WitIn StmtIn : Type}
-    {relIn : Set (StmtIn × WitIn)}
-    {stmtOf : Prefix → StmtIn}
-    {accepts : Prefix → Accepts Challenge Response}
-    (E : RewindingExtractor Prefix Challenge Response WitIn)
-    (hE : E.TwoSpecialSound relIn stmtOf accepts) :
-    knowledgeSoundnessViaRewinding relIn stmtOf accepts :=
-  ⟨E, hE⟩
-
-end Bridge
-
-end Extractor
-
--- Top-level alias namespace so the bridge declarations are reachable both as
--- `Extractor.Bridge.*` (their canonical home, nested under `Extractor`) and as the
--- shorter `Bridge.*`. Downstream consumers (the ToyProblem spec files) use both
--- spellings; this `export` makes them denote the same declarations rather than two
--- separate copies.
-namespace Bridge
-
-export Extractor.Bridge
-  (StraightlineOfRewinding knowledgeSound_of_rewinding rewindingKS_of_extractor)
-
-end Bridge

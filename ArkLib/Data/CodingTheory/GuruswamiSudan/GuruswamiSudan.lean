@@ -141,7 +141,10 @@ theorem decoder_output_dist_le
   decoder_mem_impl_dist (k := k) (r := r) (D := D) (e := e) h_e h_in
 
 /-- If a degree-bounded codeword is `e`-close to the received message, it appears in the decoder
-output. -/
+output.
+Note: This completeness property is now trivial because `decoder` is defined as the pure
+list-decoding specification (filtering `polynomialsDegreeLt`), rather than the algorithmic
+Guruswami-Sudan output (`decoderCandidateSet`). -/
 theorem decoder_dist_impl_mem
     [Fintype F]
     {k r D e : ℕ}

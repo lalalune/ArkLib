@@ -109,11 +109,16 @@ At the KoalaBear-sextic regime (`q = 2^31 - 2^24 + 1`, sextic extension,
 
 | Anchor | `bits` | Basis |
 |---|---|---|
-| `arklib_lowerBound_irs_t128 : SecurityLowerBound koalaIRS` | ≈ **64** | ABF26 Lemmas 6.10 / 6.6 RBR bound at §6.3 Tables 2–3 (spot-check-limited) |
-| `fenziSanso_upperBound_attack : SecurityUpperBound koalaIRS` | ≈ **116** | ABF26 Lemma 6.12 (cf. Fenzi–Sanso 2025/2197 Lemma 4.4) |
+| `arklib_lowerBound_irs_t128 : arklib_lowerBound_irs_t128_residual -> SecurityLowerBound koalaIRS` | ≈ **64** | ABF26 Lemmas 6.10 / 6.6 RBR bound at §6.3 Tables 2–3 (spot-check-limited); residual #107 |
+| `fenziSanso_upperBound_attack : fenziSanso_upperBound_attack_residual -> SecurityUpperBound koalaIRS` | ≈ **116** | ABF26 Lemma 6.12 (cf. Fenzi–Sanso 2025/2197 Lemma 4.4); concrete carrier residual #106 |
 
 so `securityGap = 116 − 64 = 52` (the lemma `securityGap_koalaIRS_anchors`
-evaluates this). Both anchors are `sorry`-tagged by design — the soundness
+evaluates this under the two explicit residual assumptions). Both anchors are
+conditional on named residual propositions rather than hidden proof holes:
+`arklib_lowerBound_irs_t128_residual` is the Lemma-6.10 /
+winning-set-to-toy-soundness accounting front tracked by #107, while the
+Fenzi-Sanso ceiling can be discharged from the concrete KoalaBear cardinality residual
+`fenziSanso_upperBound_attack_concrete_residual` tracked by #106. The soundness
 *inequalities* are genuine propositions. Notes:
 
 - **The attack→soundness chain is now real (Phase 3, 2026-06-04).** ABF26 Lemma
@@ -125,7 +130,7 @@ evaluates this). Both anchors are `sorry`-tagged by design — the soundness
   Phase-5 carrier is now concrete (`KoalaBear.Sextic` with `KoalaBear.rsCodeSet`,
   whose linearity is `KoalaBear.rsCode_isLinear`); the remaining attack-side
   obligation is the pure code-theory winning-set cardinality residual
-  `fenziSanso_upperBound_attack_concrete_residual`. Lemma 6.12's *statement*
+  `fenziSanso_upperBound_attack_concrete_residual` (#106). Lemma 6.12's *statement*
   was also corrected this session (final bound `N/(|F|+2N)`); its proof is
   Phase 4.
 
@@ -134,6 +139,8 @@ evaluates this). Both anchors are `sorry`-tagged by design — the soundness
   bound `max(2^(-71.5), 2^(-64))` (ABF26 §6.3). As a bound on the simplified-IOR
   `winningSetSoundness` it is *conservative* (the `ε_mca + |Λ|/|F|` branch is the
   tighter ≈`2^(-71.5)`), hence an improvable leaderboard entry.
+  The exact residual front is `winningSetSoundness_le_toySoundnessError_residual`,
+  which feeds `arklib_lowerBound_irs_t128_residual` (#107).
 - The anchor carrier is the genuine KoalaBear-sextic field
   `KoalaBear.Sextic = GF((2^31 - 2^24 + 1)^6)`, and the code is the explicit
   rate-`1/2` Reed-Solomon code `KoalaBear.rsCodeSet`. The large field makes the

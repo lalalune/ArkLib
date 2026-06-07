@@ -406,8 +406,9 @@ theorem boundary_lattice_iff_sqrtRate_mul_card_mem {deg : ℕ} {domain : ι ↪ 
     · -- `s·n = n − (1−s)·n`.
       rw [hfloor, hdistrib]
       rw [tsub_tsub_cancel_of_le hsn_le]
-    · rw [hdistrib, ← hfloor]
-      exact tsub_le_self
+    · rw [hdistrib]
+      calc (↑⌊n - s * n⌋₊ : ℝ≥0) ≤ n - s * n := Nat.floor_le (by positivity)
+        _ ≤ n := tsub_le_self
   · rintro ⟨m, hm, hmle⟩
     -- `s·n = n − m` ⇒ `(1−s)·n = m`, an integer, so its floor equals itself.
     have hval : (1 - s) * n = (m : ℝ≥0) := by
@@ -435,7 +436,7 @@ The boundary `BoundaryCardResidual` is reconstructed from `hStrict` and `hLattic
 this corollary moves the entire non-lattice boundary off the measure-zero boundary into the strict
 interior, leaving `hLattice` as the only genuinely boundary-specific datum. -/
 theorem correlatedAgreement_affine_curves_of_lattice_residual {k deg : ℕ} {domain : ι ↪ F}
-    {δ : ℝ≥0} [NeZero deg]
+    {δ : ℝ≥0} [NeZero deg] [DecidableEq ι]
     (hStrictCoeff :
       ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hStrict : ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
@@ -446,26 +447,27 @@ theorem correlatedAgreement_affine_curves_of_lattice_residual {k deg : ℕ} {dom
     (hLattice : BoundaryCardLatticeResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  ProximityGap.correlatedAgreement_affine_curves_of_boundaryCardResidual
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact ProximityGap.correlatedAgreement_affine_curves_of_boundaryCardResidual
     (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
     (boundaryCardResidual_of_lattice_residual (deg := deg) (domain := domain) hLattice hStrict)
     hδ
 
-omit [DecidableEq ι] in
 /-- [BCIKS20] Theorem 1.5 using the packaged boundary quantization residuals.  This is equivalent
 to `correlatedAgreement_affine_curves_of_lattice_residual`, but makes the exact remaining boundary
 surface a single reusable input. -/
 theorem correlatedAgreement_affine_curves_of_quantization_residuals {k deg : ℕ} {domain : ι ↪ F}
-    {δ : ℝ≥0} [NeZero deg]
+    {δ : ℝ≥0} [NeZero deg] [DecidableEq ι]
     (hStrictCoeff :
       ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hBoundary :
       BoundaryCardQuantizationResiduals (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  correlatedAgreement_affine_curves_of_lattice_residual
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact correlatedAgreement_affine_curves_of_lattice_residual
     (deg := deg) (domain := domain) (δ := δ)
     hStrictCoeff hBoundary.strictInterior hBoundary.lattice hδ
 

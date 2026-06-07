@@ -212,6 +212,29 @@ def fiatShamirHonestExecution
   let stmtOut ← (R.verifier.fiatShamir).run stmtIn proof
   return ⟨⟨proof, ctxOut⟩, stmtOut⟩
 
+/-- The transformed basic Fiat-Shamir run is the lifted explicit honest execution. -/
+def fiatShamir_run_eq_honestExecution
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    Prop :=
+    R.fiatShamir.run stmtIn witIn =
+      liftM (R.fiatShamirHonestExecution stmtIn witIn)
+
+/-- Residual for collapsing the outer basic-Fiat-Shamir challenge implementation after unrolling
+the transformed run. The right-hand honest execution already queries the Fiat-Shamir challenge
+oracle directly; the remaining content is the same `OptionT` lift-coherence wall as the DSFS
+completeness bridge, specialized to the unsalted basic transform. -/
+def fiatShamir_runCollapseResidual
+    {σ : Type}
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    Prop :=
+    simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+        (R.fiatShamir.run stmtIn witIn).run =
+      simulateQ impl
+        (R.fiatShamirHonestExecution stmtIn witIn).run
+
 /-- Completeness of the transformed one-message reduction is equivalent to the explicit honest
 Fiat-Shamir execution packaged via `Reduction.fiatShamirHonestExecution`. -/
 def fiatShamir_completeness_unroll
@@ -226,12 +249,43 @@ def fiatShamir_completeness_unroll
       Reduction.completenessFromRun init impl relIn relOut
         (R.fiatShamirHonestExecution) completenessError
 
--- Future work: discharge `fiatShamir_completeness_unroll`.
+/-- **Reduction of `fiatShamir_completeness_unroll` to the run-collapse residual.**
+
+Given the per-input `fiatShamir_runCollapseResidual`, completeness of the transformed one-message
+basic Fiat-Shamir reduction is definitionally the generic `completenessFromRun` predicate over
+`fiatShamirHonestExecution`. -/
+theorem fiatShamir_completeness_unroll_of_runCollapse
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hCollapse : ∀ stmtIn witIn,
+      fiatShamir_runCollapseResidual impl R stmtIn witIn) :
+    fiatShamir_completeness_unroll init impl relIn relOut completenessError R := by
+  unfold fiatShamir_completeness_unroll
+  rw [Reduction.completeness_iff_completenessFromRun]
+  unfold Reduction.completenessFromRun
+  refine forall_congr' fun stmtIn => forall_congr' fun witIn => ?_
+  refine imp_congr_right fun _ => ?_
+  have hcollapse :
+      simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          (R.fiatShamir.run stmtIn witIn).run =
+        simulateQ impl
+          (R.fiatShamirHonestExecution stmtIn witIn).run :=
+    hCollapse stmtIn witIn
+  rw [hcollapse]
+
+-- Future work: discharge `fiatShamir_runCollapseResidual` itself.
 -- `Reduction.run_of_prover_first` is now available, and `simulateQ_add_run_liftM_left` in
 -- `Execution.lean` collapses the unused outer challenge oracle on lifted `OptionT` runs. The
 -- remaining gap is the final file-local normalization between the elaborated run of
 -- `R.fiatShamir` and `liftM (R.fiatShamirHonestExecution ...)`, where Lean still chooses multiple
 -- coercion paths for the same lifted computation.
+
+#print axioms Reduction.fiatShamir_runCollapseResidual
+#print axioms Reduction.fiatShamir_completeness_unroll_of_runCollapse
 
 end Completeness
 
