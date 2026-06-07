@@ -79,7 +79,37 @@ theorem hasseDeriv_eval_eq_sum {R : Type*} [CommRing R] (k : ℕ) (p : R[X]) (a 
     have hik : k ≤ i := hi.2
     rw [Nat.sub_add_cancel hik]
 
+/-- **`+m` choose-shift reindex.** Connects the Taylor-sum shape `∑_i C(i+m,m)·(c(i+m)·pow i)`
+(BCIKS20 `hasseEvalAtRoot_eq_taylorSum`) to the partition-form shape `∑_j C(j,m)·(c j·pow (j-m))`
+(LHS of `RestrictedFaaDiBrunoMatch` via `restrictedFaaDiBrunoSum_eq_partitionForm`). Bijection
+`i ↦ i+m`; `j < m` terms vanish (`Nat.choose_eq_zero_of_lt`). nsmul form, reusable for P2. -/
+theorem sum_choose_shift_reindex {L : Type*} [CommRing L]
+    (c : ℕ → L) (pow : ℕ → L) (m N : ℕ) :
+    ∑ i ∈ Finset.range (N + 1), ((i + m).choose m) • (c (i + m) * pow i)
+      = ∑ j ∈ Finset.range (N + m + 1), (j.choose m) • (c j * pow (j - m)) := by
+  symm
+  rw [← Finset.sum_filter_add_sum_filter_not (Finset.range (N + m + 1)) (fun j => m ≤ j)]
+  have hlow : ∑ j ∈ (Finset.range (N + m + 1)).filter (fun j => ¬ m ≤ j),
+        (j.choose m) • (c j * pow (j - m)) = 0 := by
+    refine Finset.sum_eq_zero (fun j hj => ?_)
+    rw [Finset.mem_filter] at hj
+    rw [Nat.choose_eq_zero_of_lt (not_le.mp hj.2)]; simp
+  rw [hlow, add_zero]
+  refine Finset.sum_bij' (fun j _ => j - m) (fun i _ => i + m) ?_ ?_ ?_ ?_ ?_
+  · intro j hj
+    simp only [Finset.mem_filter, Finset.mem_range] at hj ⊢; omega
+  · intro i _
+    simp only [Finset.mem_filter, Finset.mem_range] at *; omega
+  · intro j hj
+    simp only [Finset.mem_filter, Finset.mem_range] at hj
+    dsimp only; omega
+  · intro i _; dsimp only; omega
+  · intro j hj
+    simp only [Finset.mem_filter, Finset.mem_range] at hj
+    rw [Nat.sub_add_cancel hj.2]
+
 end Polynomial
 
 -- Axiom audit.
 #print axioms Polynomial.hasseDeriv_eval_eq_sum
+#print axioms Polynomial.sum_choose_shift_reindex
