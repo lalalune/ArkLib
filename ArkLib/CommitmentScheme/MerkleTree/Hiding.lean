@@ -246,6 +246,17 @@ theorem openTranscriptPayloads_openTranscript_indices {s : Skeleton} (hashFn : �
         (fun payload => payload.1) = idxs := by
   simp [openTranscriptPayloads_openTranscript_eq, Function.comp_def]
 
+/-- Bounded lookup in the honest payload projection returns the requested index with its honest
+salt and leaf value. -/
+@[simp] theorem openTranscriptPayloads_openTranscript_getElem {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) (n : ℕ)
+    (h : n < idxs.length) :
+    (openTranscriptPayloads (openTranscript hashFn salts leaves idxs))[n]'(by
+      rw [openTranscriptPayloads_openTranscript_length]
+      exact h) =
+      (idxs[n]'h, salts.get (idxs[n]'h), leaves.get (idxs[n]'h)) := by
+  simp [openTranscriptPayloads_openTranscript_eq]
+
 /-- Duplicate-free requested indices give duplicate-free honest transcript payloads. -/
 theorem openTranscriptPayloads_openTranscript_nodup {s : Skeleton} (hashFn : α → α → α)
     (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
@@ -593,6 +604,7 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_eq
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_length
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_indices
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_getElem
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_nodup
 #print axioms InductiveMerkleTree.openTranscript_entries_payload_eq_of_agree
 #print axioms InductiveMerkleTree.openTranscriptPayloads_eq_of_agree
