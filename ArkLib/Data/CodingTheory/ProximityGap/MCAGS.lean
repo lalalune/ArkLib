@@ -567,13 +567,13 @@ This is the bridge that resolves the point-wise tracker using the uniform open p
 theorem epsMCAgs_prizeBound_conjecture_of_uniform (h : uniformEpsMCAgsPrizeBoundConjecture) :
     ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
       {F : Type} [Field F] [Fintype F] [DecidableEq F]
-      (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
-      (L : WordStack F (Fin 2) ι → Finset (ι → F))
-      (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)),
-      epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ := by
+      (domain : ι ↪ F) (m : ℕ),
+      epsMCAgs_prizeBound_conjecture domain m := by
   obtain ⟨c₁, c₂, c₃, h_uni⟩ := h
-  intro ι _ _ _ F _ _ _ domain j m η δ hη L hδ
-  exact ⟨c₁, c₂, c₃, h_uni domain j m η δ hη L hδ⟩
+  intro ι _ _ _ F _ _ _ domain m
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro j η δ hη hδ L
+  exact h_uni domain j m η δ hη L hδ
 
 end Prize
 

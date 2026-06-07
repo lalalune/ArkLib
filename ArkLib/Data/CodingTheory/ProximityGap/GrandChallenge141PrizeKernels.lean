@@ -31,9 +31,9 @@ kernel:
   list-size factor proved, not assumed.
 
 * `epsMCAgs_prizeBound_of_gsWindow` — packages the GS-window bound through the explicit-constant
-  prize reduction, realising the per-input prize conjecture with the list size **proved**, the
-  open content reduced to: the GS data exists per stack (interpolation feasibility), pivot
-  covering holds, the radius is in the GS window, and the numeric clearance.
+  prize RHS for one fixed rate/radius/list assignment. This is the fixed-instance inequality with
+  the list size **proved**; the full per-input/uniform conjecture still requires hypotheses that
+  work across all rates, radii, and list assignments.
 
 Nothing here proves the open prize (the *uniform* beyond-Johnson bound). It pushes the frontier
 to exactly the boundary of what Guruswami–Sudan supplies, with the list-size kernel proved.
@@ -79,6 +79,7 @@ theorem gsWindow_msg_card_le
     Qu hQu hm ha xs Pu S hk hwdu hpdegu hvanu hxinju hcardu
 
 set_option maxHeartbeats 400000 in
+-- Keep the elaboration-heavy GS/list-size application hidden behind `gsWindow_msg_card_le`.
 /-- **Grand Challenge 1 Johnson-window kernel.** With per-stack Guruswami–Sudan interpolation
 data and pivot covering, the GS-exposed MCA error is bounded by the **proved** GS output-list
 size over `q`:
@@ -113,15 +114,15 @@ theorem epsMCAgs_le_gsWindow_div
         (hvan u) (hxinj u) (hcard u)))
 
 set_option maxHeartbeats 800000 in
-/-- **Per-input prize from the proved GS window list size.** Composing the Johnson-window kernel
-with the explicit-constant prize reduction: if additionally the proved list-size mass clears the
-prize right-hand side for some constants, the per-input GS prize conjecture holds — with the
-list-size factor **proved** by Guruswami–Sudan, the open content reduced to the GS data,
-covering, in-window radius, and the numeric clearance. Tracking: Issue #141. -/
+-- This wrapper composes two named inequalities; keeping them opaque avoids an isDefEq blowup.
+/-- **Fixed-instance prize RHS bound from the proved GS window list size.** Composing the
+Johnson-window kernel with the explicit-constant prize RHS: if additionally the proved list-size
+mass clears the prize right-hand side for some constants, this fixed `j, η, δ, L` instance satisfies
+the prize-shaped inequality. This does not prove the global per-input conjecture, whose constants
+must work for all rates, radii, and list assignments. Tracking: Issue #141. -/
 theorem epsMCAgs_prizeBound_of_gsWindow
-    (domain : ι ↪ F) (j : Fin 4) (mPrize : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
+    (domain : ι ↪ F) (j : Fin 4) (mPrize : ℕ) (η δ : ℝ≥0)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))
-    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
     {k m a : ℕ} (hm : 0 < m) (ha : 0 < a) (hk : 0 < k - 1)
     (xs : ι → F)
     (Q : WordStack F (Fin 2) ι → (F[X])[X])
@@ -142,12 +143,15 @@ theorem epsMCAgs_prizeBound_of_gsWindow
     (hclear : ((((m * a - 1) / (k - 1) : ℕ) : ENNReal) / (Fintype.card F : ENNReal)) ≤
       ENNReal.ofReal
         (epsMCAgsPrizeBound (Fintype.card F) mPrize (ProximityGap.prizeRates j) η c₁ c₂ c₃)) :
-    epsMCAgs_prizeBound_conjecture domain j mPrize η δ hη L hδ :=
-  ⟨c₁, c₂, c₃,
-    le_trans
-      (epsMCAgs_le_gsWindow_div (F := F) _ δ L hm ha hk xs Q P S hQ hwd hpdeg hvan hxinj hcard
-        hbridge hcov)
-      hclear⟩
+    epsMCAgs (F := F)
+      ((ReedSolomon.code (domain := domain)
+        ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L
+      ≤ ENNReal.ofReal
+          (epsMCAgsPrizeBound (Fintype.card F) mPrize (ProximityGap.prizeRates j) η c₁ c₂ c₃) :=
+  le_trans
+    (epsMCAgs_le_gsWindow_div (F := F) _ δ L hm ha hk xs Q P S hQ hwd hpdeg hvan hxinj hcard
+      hbridge hcov)
+    hclear
 
 /-! ## Source audit -/
 
