@@ -10,6 +10,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
 import ArkLib.ProofSystem.RingSwitching.Profile
 import ArkLib.ProofSystem.Sumcheck.Structured
+import ArkLib.ToMathlib.ExtractedIssueBricks
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Matrix.Basic
 
@@ -1722,12 +1723,8 @@ which a nonzero univariate polynomial `p` vanishes is at most `p.natDegree`. Thi
 of the Schwartz–Zippel argument. -/
 theorem card_filter_eval_zero_le {L : Type*} [CommRing L] [IsDomain L]
     [Fintype L] [DecidableEq L] (p : L[X]) (hp : p ≠ 0) :
-    (Finset.univ.filter (fun x => p.eval x = 0)).card ≤ p.natDegree := by
-  apply Polynomial.card_le_degree_of_subset_roots
-  intro x hx
-  simp only [Finset.mem_val, Finset.mem_filter, Finset.mem_univ, true_and] at hx
-  rw [Polynomial.mem_roots hp, IsRoot.def]
-  exact hx
+    (Finset.univ.filter (fun x => p.eval x = 0)).card ≤ p.natDegree :=
+  _root_.Polynomial.card_filter_eval_zero_le p hp
 
 /-- **Schwartz–Zippel probability bound (uniform-challenge / `probEvent` form).** For a nonzero
 univariate `p` over a finite integral domain `L` with `p.natDegree ≤ d`, the probability that a

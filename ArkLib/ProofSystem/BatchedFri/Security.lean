@@ -1286,6 +1286,49 @@ theorem fri_query_soundness_lift_subdomainZero_to_domain
   jointAgreement_subdomainZero_to_domain
     (n := n) (ω := ω) (δ := 1 - α) (W := f) h_query
 
+omit [Nontrivial 𝔽] in
+/-- Full-domain Claim 8.2 front door from the proved query-density and Batched FRI lens pieces.
+
+This composes `fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens` with the
+subdomain-zero/full-domain lift, leaving the coding-theoretic correlated-agreement bridge explicit.
+-/
+theorem fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+    {t m : ℕ}
+    {α : ℝ≥0}
+    (f : Fin t.succ → (ω → 𝔽))
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (queries l : ℕ)
+    {agreementBridge : Prop}
+    (pieces_imply_claim :
+      queryRoundDensityBound G δ queries →
+      batchedFRIOracleLensReduction
+        (n := n) (s := s) (d := d) (ω := ω)
+        (domain_size_cond := domain_size_cond) l t →
+      agreementBridge →
+      fri_query_soundness (n := n) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
+    (h_agreementBridge : agreementBridge) :
+    Code.jointAgreement
+      (F := 𝔽)
+      (κ := Fin t.succ)
+      (ι := ω)
+      (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+      (δ := 1 - α)
+      (W := f) :=
+  fri_query_soundness_lift_subdomainZero_to_domain
+    (n := n) (ω := ω) (f := f) h_agreement m_ge_3
+    (fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+      (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
+      (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+      h_agreement m_ge_3 G δ queries l pieces_imply_claim h_agreementBridge)
+
 /-- Split frontier for Claim 8.3.  The `fri_soundness` residual is the end-to-end
 verifier-failure statement for batched FRI, while the remaining proof should be assembled from
 separate ingredients:
@@ -1331,6 +1374,7 @@ theorem fri_soundness_of_parts
 #print axioms Fri.reedSolomon_code_subdomainZero_transport
 #print axioms Fri.jointAgreement_subdomainZero_to_domain
 #print axioms Fri.fri_query_soundness_lift_subdomainZero_to_domain
+#print axioms Fri.fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_soundness_of_parts
 
 end Soundness
@@ -1360,5 +1404,6 @@ end Fri
 #print axioms Fri.reedSolomon_code_subdomainZero_transport
 #print axioms Fri.jointAgreement_subdomainZero_to_domain
 #print axioms Fri.fri_query_soundness_lift_subdomainZero_to_domain
+#print axioms Fri.fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.fri_soundness_of_parts

@@ -354,6 +354,28 @@ theorem fiatShamir_completeness_of_honestExecution_mono_relations
       fiatShamir_completeness_of_honestExecution init impl relIn relOut
         completenessError R hCollapse hHonest
 
+/-- Basic Fiat-Shamir completeness can simultaneously transport relations and increase the target
+completeness error after applying the run-collapse residual. -/
+theorem fiatShamir_completeness_of_honestExecution_mono_relations_error
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {relIn relIn' : Set (StmtIn × WitIn)}
+    {relOut relOut' : Set (StmtOut × WitOut)}
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hCollapse : ∀ stmtIn witIn,
+      fiatShamir_runCollapseResidual impl R stmtIn witIn)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      (R.fiatShamirHonestExecution) completenessError₁)
+    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut')
+    (hle : completenessError₁ ≤ completenessError₂) :
+    R.fiatShamir.completeness init impl relIn' relOut' completenessError₂ := by
+  have hComplete :
+      R.fiatShamir.completeness init impl relIn' relOut' completenessError₁ :=
+    fiatShamir_completeness_of_honestExecution_mono_relations init impl
+      completenessError₁ R hCollapse hHonest hIn hOut
+  exact Reduction.completeness_error_mono init impl hle hComplete
+
 -- Future work: discharge `fiatShamir_runCollapseResidual` itself.
 -- `Reduction.run_of_prover_first` is now available, and `simulateQ_add_run_liftM_left` in
 -- `Execution.lean` collapses the unused outer challenge oracle on lifted `OptionT` runs. The
@@ -367,6 +389,7 @@ theorem fiatShamir_completeness_of_honestExecution_mono_relations
 #print axioms Reduction.fiatShamir_honestExecution_completeness_of_completeness
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_error
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_relations
+#print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_relations_error
 
 end Completeness
 
