@@ -60,6 +60,11 @@ Current source exposes both sides of that frontier as named parts:
   gives the same Claim 8.3 reassembly along the probability-space query-round
   route, with query lift, concrete sequential composition, and arithmetic
   total-error accounting supplied.
+- `Fri.fri_query_soundness_of_forall_mem` and
+  `Fri.friSoundnessQueryLift_of_forall_mem` prove the complete-codeword extreme
+  of the correlated-agreement bridge: if every row is already in the
+  corresponding Reed-Solomon code, the `Code.jointAgreement` conclusion holds
+  on the full coordinate set.
 - `Code.jointAgreement_equiv_of_codeword_transport` proves the finite-domain
   transport part of that lift across an equivalence of coordinate domains, once
   the corresponding codeword transport hypothesis is supplied.
@@ -150,8 +155,10 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
 
 1. Connect the structural Batched FRI oracle-lens package to the still
    residualized virtual-oracle soundness-preservation theorem.
-2. Derive the Claim 8.2 `Code.jointAgreement` conclusion for the batched input
-   stack.
+2. Derive the general Claim 8.2 `Code.jointAgreement` conclusion for the
+   batched input stack.  The all-rows-already-codewords extreme is now proved by
+   `Fri.fri_query_soundness_of_forall_mem`, but the real correlated-agreement
+   bridge remains open.
 3. Connect the Claim 8.2 output through
    `Fri.fri_query_soundness_lift_subdomainZero_to_domain`, then prove the
    remaining generic append residual / virtual-oracle soundness preservation

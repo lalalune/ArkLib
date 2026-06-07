@@ -885,6 +885,35 @@ def fri_query_soundness
         (δ := 1 - α)
         (W := f)
 
+omit [Nontrivial 𝔽] in
+/-- Complete-codeword extreme of the correlated-agreement bridge for Claim 8.2.
+
+If every word in the queried stack is already a Reed-Solomon codeword on `ω.subdomain 0`, then
+the `Code.jointAgreement` conclusion in `fri_query_soundness` holds on the full coordinate set.
+The general correlated-agreement-to-joint-agreement bridge remains the open case. -/
+theorem fri_query_soundness_of_forall_mem
+    {t : ℕ}
+    {α : ℝ≥0}
+    (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+    (_h_agreement :
+      correlated_agreement_density
+        (Fₛ f)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    {m : ℕ}
+    (_m_ge_3 : m ≥ 3)
+    (h_mem :
+      ∀ i, f i ∈
+        (ReedSolomon.code
+          (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := _h_agreement) (m_ge_3 := _m_ge_3) := by
+  exact Code.jointAgreement_of_forall_mem
+    (F := 𝔽) (κ := Fin t.succ) (ι := ω.subdomain 0)
+    (C := (ReedSolomon.code
+      (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+    (δ := 1 - α) (W := f) h_mem
+
 /-- Split frontier for Claim 8.2.  The existing `fri_query_soundness` residual is the final
 `Code.jointAgreement` conclusion, while the proof should be assembled from three independent
 ingredients:
@@ -1155,6 +1184,7 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.queryRoundDensityBound_holds
 #print axioms Fri.batchedFRIOracleLensReduction
 #print axioms Fri.batchedFRIOracleLensReduction_holds
+#print axioms Fri.fri_query_soundness_of_forall_mem
 #print axioms Fri.fri_query_soundness_of_parts
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
@@ -1568,6 +1598,28 @@ def friSoundnessQueryLift
       (δ := 1 - α)
       (W := f)
 
+omit [Fintype 𝔽] [Nontrivial 𝔽] in
+/-- Complete-codeword extreme of the Claim 8.3 query-lift field.
+
+If every full-domain row is already a Reed-Solomon codeword on `ω`, then the query-lift field holds
+on the full coordinate set.  The general Claim 8.2 correlated-agreement bridge remains explicit in
+the query-round wrappers. -/
+theorem friSoundnessQueryLift_of_forall_mem
+    {t m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (_m_ge_3 : m ≥ 3)
+    (h_mem :
+      ∀ i, f i ∈
+        (ReedSolomon.code
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier) :
+    friSoundnessQueryLift (n := n) (ω := ω) f _m_ge_3 := by
+  unfold friSoundnessQueryLift
+  exact Code.jointAgreement_of_forall_mem
+    (F := 𝔽) (κ := Fin t.succ) (ι := ω)
+    (C := (ReedSolomon.code
+      (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+    (W := f) h_mem
+
 omit [Nontrivial 𝔽] in
 /-- The proved query-density/oracle-lens front door supplies the Claim 8.3 query-lift field. -/
 theorem friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLens
@@ -1899,6 +1951,7 @@ theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequent
 #print axioms Fri.friSoundnessSequentialComposition
 #print axioms Fri.friSoundnessSequentialComposition_of_append
 #print axioms Fri.friSoundnessQueryLift
+#print axioms Fri.friSoundnessQueryLift_of_forall_mem
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
@@ -1926,6 +1979,7 @@ end Fri
 #print axioms Fri.queryRoundDensityBound_holds
 #print axioms Fri.batchedFRIOracleLensReduction
 #print axioms Fri.batchedFRIOracleLensReduction_holds
+#print axioms Fri.fri_query_soundness_of_forall_mem
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBound
@@ -1942,6 +1996,7 @@ end Fri
 #print axioms Fri.batchedFRISequentialCompositionSoundness_of_append
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.friSoundnessQueryLift
+#print axioms Fri.friSoundnessQueryLift_of_forall_mem
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
