@@ -75,21 +75,19 @@ theorem whirVectorSpec_card_challengeIdx (M : ℕ) :
     Fintype.card (whirVectorSpec M).ChallengeIdx = 2 * M + 2 := by
   classical
   -- `ChallengeIdx` is the subtype of `Fin (2*M+2)` with `dir i = V_to_P`, which is everything.
-  rw [show (whirVectorSpec M).ChallengeIdx
-        = {i : Fin (2 * M + 2) // (whirVectorSpec M).dir i = Direction.V_to_P} from rfl]
-  have : ∀ i : Fin (2 * M + 2), (whirVectorSpec M).dir i = Direction.V_to_P := fun _ => rfl
-  rw [Fintype.card_subtype]
-  simp only [this, decide_true, Finset.filter_true_of_mem, Finset.mem_univ, implies_true]
-  simp [Finset.card_univ]
+  change Fintype.card {i : Fin (2 * M + 2) // Direction.V_to_P = Direction.V_to_P} =
+    2 * M + 2
+  simp
 
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 /-- There are **no** prover messages in `whirVectorSpec`: every slot is a challenge. -/
 theorem whirVectorSpec_messageIdx_isEmpty (M : ℕ) :
     IsEmpty ((whirVectorSpec M).toProtocolSpec F).MessageIdx := by
   constructor
   rintro ⟨i, hi⟩
   -- `dir i = P_to_V` but every dir is `V_to_P`.
-  simp only [VectorSpec.toProtocolSpec] at hi
-  exact absurd hi (by rw [show (whirVectorSpec M).dir i = Direction.V_to_P from rfl]; decide)
+  change Direction.V_to_P = Direction.P_to_V at hi
+  cases hi
 
 instance (M : ℕ) :
     ∀ j, OracleInterface (((whirVectorSpec M).toProtocolSpec F).Message j) :=
