@@ -1,5 +1,6 @@
 import Mathlib.Data.ENNReal.Inv
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Algebra.Group.Equiv.Basic
