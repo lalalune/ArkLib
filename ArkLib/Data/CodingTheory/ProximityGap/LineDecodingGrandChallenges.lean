@@ -287,6 +287,90 @@ theorem latticeIndexOf_le_mcaThreshold_of_forall_not_mcaEvent
       (mcaThresholdExists_of_forall_not_mcaEvent C δ ε_star hδ_le_one hno)
       (GrandChallenges.MCALowerWitness.of_forall_not_mcaEvent C δ ε_star hδ_le_one hno)
 
+/-- Prize-rate repaired double-cover data gives the lower bracket for the corresponding faithful
+MCA threshold. -/
+theorem latticeIndexOf_le_mcaThreshold_prize_ofDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) δ) :
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar
+        (mcaThresholdExists_ofDoubleCover
+          (ReedSolomon.code domain
+            ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          δ epsStar hδ_le_one hcov) :=
+  latticeIndexOf_le_mcaThreshold_ofDoubleCover
+    (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    δ epsStar hδ_le_one hcov
+
+/-- Prize-rate named per-bad-scalar double-cover data gives the lower bracket for the
+corresponding faithful MCA threshold. -/
+theorem latticeIndexOf_le_mcaThreshold_prize_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) γ) :
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar
+        (mcaThresholdExists_ofBadScalarDoubleCover
+          (ReedSolomon.code domain
+            ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          δ epsStar hδ_le_one hcov) :=
+  latticeIndexOf_le_mcaThreshold_ofBadScalarDoubleCover
+    (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    δ epsStar hδ_le_one hcov
+
+/-- Prize-rate zero bad-scalar counts give the lower bracket for the corresponding faithful MCA
+threshold. -/
+theorem latticeIndexOf_le_mcaThreshold_prize_of_mcaBadCount_zero
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hzero : ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) = 0) :
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar
+        (mcaThresholdExists_of_mcaBadCount_zero
+          (ReedSolomon.code domain
+            ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          δ epsStar hδ_le_one hzero) :=
+  latticeIndexOf_le_mcaThreshold_of_mcaBadCount_zero
+    (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    δ epsStar hδ_le_one hzero
+
+/-- Prize-rate direct no-bad-event frontiers give the lower bracket for the corresponding
+faithful MCA threshold. -/
+theorem latticeIndexOf_le_mcaThreshold_prize_of_forall_not_mcaEvent
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hno : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) γ) :
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar
+        (mcaThresholdExists_of_forall_not_mcaEvent
+          (ReedSolomon.code domain
+            ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          δ epsStar hδ_le_one hno) :=
+  latticeIndexOf_le_mcaThreshold_of_forall_not_mcaEvent
+    (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    δ epsStar hδ_le_one hno
+
 /-- Per-rate repaired double-cover data resolves the faithful MCA lattice prize existentially.
 This is the prize-facing aggregation of the #140 repaired coverage theorem through the existing
 lower-witness lattice front door. -/
@@ -383,6 +467,14 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_of_forall_not_mcaEvent
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_prize_ofDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_prize_ofBadScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_prize_of_mcaBadCount_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_prize_of_forall_not_mcaEvent
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_ofDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_ofBadScalarDoubleCover
