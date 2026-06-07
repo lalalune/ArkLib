@@ -5,6 +5,9 @@ Authors: Quang Dao
 -/
 
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.OracleReduction.Security.ZeroKnowledge
+
+open OracleComp ProtocolSpec
 
 /-!
   # Simple (Oracle) Reduction: Locally / non-interactively reduce a claim
@@ -108,6 +111,56 @@ theorem reduction_completeness --(h : init.neverFails)
     cases hx
     exact ⟨(hRel stmtIn witIn).mp hIn, rfl⟩
 
+/-- The honest transcript distribution for `ReduceClaim` is the deterministic empty transcript.
+The mapped witness appears only in the output data, never in the zero-round transcript. -/
+theorem honestTranscriptDist_reduction_evalDist
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    evalDist (Reduction.honestTranscriptDist init impl
+        (reduction oSpec mapStmt mapWit) stmtIn witIn) =
+      evalDist (pure default : OptionT ProbComp (FullTranscript !p[])) := by
+  apply evalDist_ext
+  intro transcript
+  classical
+  unfold Reduction.honestTranscriptDist
+  have hrun : (reduction oSpec mapStmt mapWit).run stmtIn witIn =
+      (pure ((default, (mapStmt stmtIn, mapWit stmtIn witIn)), mapStmt stmtIn) :
+        OptionT (OracleComp _) _) := by
+    simp [reduction, Reduction.run, prover, verifier, Prover.run, Verifier.run,
+      Prover.runToRound]
+    rfl
+  simp only [hrun, map_pure, OptionT.run_pure, simulateQ_pure, StateT.run'_eq,
+    StateT.run_pure, bind_pure_comp]
+  rw [OptionT.probOutput_eq, OptionT.probOutput_eq]
+  simp [probOutput_map_const, HasEvalPMF.probFailure_eq_zero]
+
+/-- `ReduceClaim` is perfectly HVZK for any input relation: it has no messages or challenges, so
+the identity empty-transcript simulator matches every honest transcript distribution. -/
+theorem reduction_perfectHVZK (relIn : Set (StmtIn × WitIn)) :
+    Reduction.perfectHVZK init impl relIn
+      (reduction oSpec mapStmt mapWit) Reduction.idTranscriptSimulator := by
+  intro stmtIn witIn _
+  exact (honestTranscriptDist_reduction_evalDist (oSpec := oSpec)
+    (mapStmt := mapStmt) (mapWit := mapWit) stmtIn witIn).symm
+
+/-- Perfect HVZK implies statistical HVZK for `ReduceClaim` at every error budget. -/
+theorem reduction_statisticalHVZK (relIn : Set (StmtIn × WitIn)) (ε : NNReal) :
+    Reduction.statisticalHVZK init impl relIn
+      (reduction oSpec mapStmt mapWit) Reduction.idTranscriptSimulator ε :=
+  (reduction_perfectHVZK (oSpec := oSpec) (mapStmt := mapStmt)
+    (mapWit := mapWit) (init := init) (impl := impl) relIn).statisticalHVZK ε
+
+/-- `ReduceClaim` has an explicit perfect-HVZK simulator for any input relation. -/
+theorem reduction_isHVZK (relIn : Set (StmtIn × WitIn)) :
+    Reduction.isHVZK init impl relIn (reduction oSpec mapStmt mapWit) :=
+  ⟨Reduction.idTranscriptSimulator, reduction_perfectHVZK (oSpec := oSpec)
+    (mapStmt := mapStmt) (mapWit := mapWit) (init := init) (impl := impl) relIn⟩
+
+/-- `ReduceClaim` has statistical HVZK for any input relation and error budget. -/
+theorem reduction_isStatHVZK (relIn : Set (StmtIn × WitIn)) (ε : NNReal) :
+    Reduction.isStatHVZK init impl relIn (reduction oSpec mapStmt mapWit) ε :=
+  (reduction_isHVZK (oSpec := oSpec) (mapStmt := mapStmt)
+    (mapWit := mapWit) (init := init) (impl := impl) relIn).isStatHVZK ε
+
 /-- The round-by-round extractor for the `ReduceClaim` (oracle) reduction. Requires a mapping
   `mapWitInv` from the output witness to the input witness. -/
 def extractor (mapWitInv : StmtIn → WitOut → WitIn) :
@@ -175,6 +228,12 @@ theorem verifier_rbrKnowledgeSoundness (hRel : ∀ stmtIn witOut,
   refine ⟨_, _, knowledgeStateFunction relIn relOut hRel, ?_⟩
   simp only [ProtocolSpec.ChallengeIdx]
   exact fun _ _ _ i => Fin.elim0 i.1
+
+#print axioms ReduceClaim.honestTranscriptDist_reduction_evalDist
+#print axioms ReduceClaim.reduction_perfectHVZK
+#print axioms ReduceClaim.reduction_statisticalHVZK
+#print axioms ReduceClaim.reduction_isHVZK
+#print axioms ReduceClaim.reduction_isStatHVZK
 
 end Reduction
 
