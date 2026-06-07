@@ -26,7 +26,7 @@ These are fully self-contained named Reed–Solomon results with no abstract hyp
 namespace ReedSolomon
 
 open ProximityGap
-open scoped Polynomial
+open scoped Polynomial NNReal
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {F : Type*} [Field F] [DecidableEq F]
 
