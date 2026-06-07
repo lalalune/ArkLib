@@ -41,6 +41,11 @@ Current source exposes both sides of that frontier as named parts:
   correlated-agreement bridge.
 - `FriSoundnessParts` splits Claim 8.3 into the Claim 8.2 lift, the
   sequential-composition soundness step, and the `totalError` accounting step.
+- `Fri.batchedFRIreduction_verifier_eq_append` and
+  `Fri.batchedFRISequentialCompositionSoundness_of_append` expose the concrete
+  Batched FRI append seam: if the batching-round verifier, lifted-FRI verifier,
+  and generic `OracleVerifier.appendSoundnessResidual` are available, the
+  appended verifier has additive soundness error.
 - `Code.jointAgreement_equiv_of_codeword_transport` proves the finite-domain
   transport part of that lift across an equivalence of coordinate domains, once
   the corresponding codeword transport hypothesis is supplied.
@@ -65,6 +70,11 @@ Current source exposes both sides of that frontier as named parts:
   value-level `liftingLens.stmt`.
 - `BatchedFri.Spec.batchedFRIreduction` composes the batching round with the
   FRI fold/final/query phases.
+- `Fri.batchedFRIreduction_verifier_eq_append` identifies its verifier with the
+  append of `BatchingRound.batchOracleReduction.verifier` and
+  `BatchedFri.Spec.liftedFRI.verifier`; the companion theorem
+  `Fri.batchedFRISequentialCompositionSoundness_of_append` specializes the
+  generic append soundness theorem to that concrete Batched FRI seam.
 - `Code.jointAgreement` and `jointAgreement_iff_jointProximity` are available
   in `ArkLib/Data/CodingTheory/InterleavedCode.lean`.
 - `Code.jointAgreement_equiv_of_codeword_transport` transports a
@@ -127,8 +137,9 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
    stack.
 3. Connect the Claim 8.2 output through
    `Fri.fri_query_soundness_lift_subdomainZero_to_domain`, then prove the
-   remaining sequential-composition and `totalError` accounting steps for Claim
-   8.3 (`fri_soundness`) / end-to-end Batched FRI soundness.
+   remaining generic append residual / virtual-oracle soundness preservation
+   and `totalError` accounting steps for Claim 8.3 (`fri_soundness`) /
+   end-to-end Batched FRI soundness.
 
 This audit does not close the mathematical residual. It confirms that the
 current source no longer hides Claim 8.2 behind a vacuous `True` theorem and
