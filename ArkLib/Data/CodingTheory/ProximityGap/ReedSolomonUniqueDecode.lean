@@ -119,9 +119,16 @@ theorem interpolant_recovers {k dA dB e : ℕ} [NeZero k] {α : ι ↪ F} {y : �
       omega
   -- `deg (A + p·B) ≤ max(dA−1, (k−1)+(dB−1)) ≤ n − e − 1`
   have hdeg : (A + p * B).natDegree ≤ Fintype.card ι - e - 1 := by
-    refine le_trans (natDegree_add_le _ _) (max_le ?_ ?_)
-    · omega
-    · exact le_trans natDegree_mul_le (by omega)
+    have hA' : A.natDegree ≤ Fintype.card ι - e - 1 := by omega
+    have hpB' : (p * B).natDegree ≤ Fintype.card ι - e - 1 := by
+      rcases eq_or_ne B 0 with rfl | hB0
+      · simp
+      rcases eq_or_ne p 0 with rfl | hp0
+      · simp
+      · rw [natDegree_mul hp0 hB0]
+        have hBnd : B.natDegree < dB := (natDegree_lt_iff_degree_lt hB0).mpr (mem_degreeLT.mp hB)
+        omega
+    exact le_trans (natDegree_add_le _ _) (max_le hA' hpB')
   -- `A + p·B` vanishes at the `≥ n − e` agreement coordinates
   have hroot : ∀ i, y i = p.eval (α i) → (A + p * B).eval (α i) = 0 := by
     intro i hi
