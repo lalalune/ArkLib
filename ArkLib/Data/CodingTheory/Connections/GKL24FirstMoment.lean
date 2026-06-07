@@ -161,6 +161,30 @@ theorem linePetal_nonempty_of_ssubset_lineAgreeSet
   obtain ⟨i, hiA, hiD⟩ := hnot
   exact ⟨i, Finset.mem_sdiff.mpr ⟨hiA, hiD⟩⟩
 
+/-- A line petal is always contained in the complement of its core domain. -/
+theorem linePetal_subset_compl (D : Finset ι) (u₀ u₁ w : ι → F) (γ : F) :
+    linePetal D u₀ u₁ w γ ⊆ (Finset.univ \ D) := by
+  intro i hi
+  rw [linePetal, Finset.mem_sdiff] at hi
+  exact Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, hi.2⟩
+
+/-- If two line-agreement sets intersect exactly in `D`, their petals outside `D` are disjoint.
+This is the set-theoretic final step in the GCXK/GKL sunflower accounting once maximality has
+identified the common core. -/
+theorem linePetal_disjoint_of_inter_lineAgreeSet_eq
+    {D : Finset ι} {u₀ u₁ wγ wγ' : ι → F} {γ γ' : F}
+    (hcore :
+      lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ' = D) :
+    Disjoint (linePetal D u₀ u₁ wγ γ) (linePetal D u₀ u₁ wγ' γ') := by
+  classical
+  refine Finset.disjoint_left.mpr ?_
+  intro i hiγ hiγ'
+  rw [linePetal, Finset.mem_sdiff] at hiγ hiγ'
+  have hiD : i ∈ D := by
+    rw [← hcore, Finset.mem_inter]
+    exact ⟨hiγ.1, hiγ'.1⟩
+  exact hiγ.2 hiD
+
 /-- **Two line-agreement domains intersect in a correlated-agreement domain.** If distinct
 scalars `γ ≠ γ'` make codewords `wγ,wγ' ∈ MC` agree with the same stack lines on their respective
 domains, then on the intersection one can solve the two equations for codewords `v₀,v₁ ∈ MC`
@@ -1012,6 +1036,8 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card
 #print axioms ProximityGap.lineAgreeSet_card_ge_of_mem_mcaBadWitness
 #print axioms ProximityGap.linePetal_nonempty_of_ssubset_lineAgreeSet
+#print axioms ProximityGap.linePetal_subset_compl
+#print axioms ProximityGap.linePetal_disjoint_of_inter_lineAgreeSet_eq
 #print axioms ProximityGap.pairJointAgreesOn_inter_lineAgreeSet_of_ne
 #print axioms ProximityGap.maxCorrAgreeDomain.eq_of_subset
 #print axioms ProximityGap.inter_lineAgreeSet_eq_of_maxCorrAgreeDomain
