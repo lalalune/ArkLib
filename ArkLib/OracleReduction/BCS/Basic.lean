@@ -291,6 +291,20 @@ def BCSOpeningRequest.toOpeningStatement {CommitmentType : pSpec.MessageIdx → 
     request.toOpeningStatement.2.2 = request.response :=
   rfl
 
+/-- The indexed statement emitted by a typed opening request remembers the whole request. -/
+theorem BCSOpeningRequest.indexed_toOpeningStatement_injective
+    {CommitmentType : pSpec.MessageIdx → Type} :
+    Function.Injective
+      (fun request : BCSOpeningRequest (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType =>
+        (⟨request.messageIdx, request.toOpeningStatement⟩ :
+          (i : pSpec.MessageIdx) ×
+            BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType i)) := by
+  intro request₁ request₂ h
+  cases request₁
+  cases request₂
+  cases h
+  rfl
+
 /-- The concrete query/opening schedule consumed by the BCS opening phase.
 
 For a non-adaptive oracle verifier this schedule should be obtained from
@@ -378,6 +392,18 @@ theorem BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
     (hstatement : statement ∈ schedule.toOpeningStatements) :
     ∃ request ∈ schedule, statement = ⟨request.messageIdx, request.toOpeningStatement⟩ :=
   (BCSOpeningSchedule.mem_toOpeningStatements_iff schedule statement).1 hstatement
+
+/-- Duplicate-free typed opening schedules remain duplicate-free after conversion to indexed
+opening statements. -/
+theorem BCSOpeningSchedule.toOpeningStatements_nodup
+    {CommitmentType : pSpec.MessageIdx → Type}
+    {schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hschedule : schedule.Nodup) :
+    schedule.toOpeningStatements.Nodup := by
+  rw [BCSOpeningSchedule.toOpeningStatements]
+  exact hschedule.map
+    (BCSOpeningRequest.indexed_toOpeningStatement_injective
+      (pSpec := pSpec) (Oₘ := Oₘ) (CommitmentType := CommitmentType))
 
 /-- The typed opening-log boundary for the not-yet-generic BCS compiler.
 
@@ -739,6 +765,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningRequest.toOpeningStatement_commitment
 #print axioms OracleReduction.BCSOpeningRequest.toOpeningStatement_query
 #print axioms OracleReduction.BCSOpeningRequest.toOpeningStatement_response
+#print axioms OracleReduction.BCSOpeningRequest.indexed_toOpeningStatement_injective
 #print axioms OracleReduction.BCSOpeningSchedule
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nil
@@ -748,6 +775,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_iff
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_of_mem
 #print axioms OracleReduction.BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.intro

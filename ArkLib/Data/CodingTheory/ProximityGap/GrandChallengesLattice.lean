@@ -90,7 +90,7 @@ set_option linter.unusedSectionVars false
 
 namespace ProximityGap
 
-open scoped NNReal ProbabilityTheory
+open scoped NNReal ProbabilityTheory BigOperators
 open Code
 
 namespace GrandChallengesLattice
@@ -1619,6 +1619,36 @@ theorem mcaThreshold_lt_ofRSBreakdownCS25
   mcaThreshold_lt_MCAUpperWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star hne
     (MCAUpperWitness.ofRSBreakdownCS25 domain k δ ε_star hq_ge hδ_lo hδ_hi hCS25 hε)
     hδle
+
+open Classical in
+/-- The CS25 count-budget route to complete CA breakdown gives a direct upper bracket on the
+faithful MCA lattice threshold. -/
+theorem mcaThreshold_lt_ofRSBreakdownCS25Counts
+    (domain : ι ↪ F) (k : ℕ) (δ ε_star : ℝ≥0)
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star)
+    (hδle : δ ≤ 1)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hsum :
+      (∑ u : Code.WordStack F (Fin 2) ι,
+          (Finset.univ.filter (fun γ : F =>
+            ¬ δᵣ(u 0 + γ • u 1, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ)).card)
+        + (Finset.univ.filter (fun u : Code.WordStack F (Fin 2) ι =>
+            Code.jointProximity (C := (ReedSolomon.code domain k : Set (ι → F))) (u := u) δ)).card
+      < Fintype.card (Code.WordStack F (Fin 2) ι))
+    (hε : (ε_star : ENNReal) < 1) :
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+      latticeIndexOf (ι := ι) δ hδle :=
+  mcaThreshold_lt_MCAUpperWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star hne
+    (MCAUpperWitness.ofRSBreakdownCS25Counts domain k δ ε_star hq_ge hδ_lo hδ_hi hsum hε)
+    hδle
+
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lt_ofRSBreakdownCS25Counts
 
 /-- The DG25 sampling lower bound gives a direct upper bracket on the faithful MCA lattice
 threshold once the sampling lower bound is numerically above `ε*`. -/
