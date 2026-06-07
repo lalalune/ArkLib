@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
+import ArkLib.Data.CodingTheory.HammingBallVolume
+import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
 
 /-!
 # Counting jointly-close stacks (toward T4.17, #82)
@@ -21,9 +23,9 @@ open scoped NNReal
 
 namespace CS25
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι]
-variable {κ : Type*} [Fintype κ] [DecidableEq κ]
-variable {A : Type*} [Fintype A] [DecidableEq A]
+variable {ι : Type} [Fintype ι] [DecidableEq ι]
+variable {κ : Type} [Fintype κ] [DecidableEq κ]
+variable {A : Type} [Fintype A] [DecidableEq A]
 
 /-- **The interleaved code is the `κ`-fold product of `C`.** As a type, `C^⋈κ ≃ (κ → C)` via the
 transpose map `V ↦ (k ↦ Vᵀ k)`. -/
@@ -135,5 +137,44 @@ theorem card_jointProximity_le [Nonempty ι] (C : Set (ι → A)) [AddCommGroup 
     exact jointProximity_iff_jointProximityNat C u δ
   rw [hset]
   exact card_jointProximityNat_le C _
+
+/-- NNReal/Real agreement of the ball radius floor `⌊δ·n⌋`. -/
+private theorem floor_nnreal_eq_real (δ : ℝ≥0) (n : ℕ) :
+    ⌊δ * (n : ℝ≥0)⌋₊ = ⌊(δ : ℝ) * (n : ℝ)⌋₊ := by
+  have hcoe : ((δ * (n : ℝ≥0) : ℝ≥0) : ℝ) = (δ : ℝ) * (n : ℝ) := by push_cast; ring
+  refine le_antisymm (Nat.le_floor ?_) (Nat.le_floor ?_)
+  · calc ((⌊δ * (n : ℝ≥0)⌋₊ : ℝ))
+        = ((⌊δ * (n : ℝ≥0)⌋₊ : ℝ≥0) : ℝ) := by push_cast; ring
+      _ ≤ ((δ * (n : ℝ≥0) : ℝ≥0) : ℝ) := by exact_mod_cast Nat.floor_le (zero_le _)
+      _ = (δ : ℝ) * (n : ℝ) := hcoe
+  · have h : ((⌊(δ : ℝ) * (n : ℝ)⌋₊ : ℝ)) ≤ ((δ * (n : ℝ≥0) : ℝ≥0) : ℝ) := by
+      rw [hcoe]; exact Nat.floor_le (by positivity)
+    exact_mod_cast h
+
+/-- The interleaved-ball volume `V'_{⌊δn⌋}` equals `hammingBallVolume (q^|κ|) δ n`, the explicit
+sum `∑_{i≤⌊δn⌋} C(n,i)(q^|κ|-1)^i` over the interleaved alphabet `κ→A`. -/
+theorem interleaved_ball_card_eq_volume [Nonempty ι] [AddCommGroup A] (δ : ℝ≥0) :
+    (Finset.univ.filter (fun w : InterleavedWord A κ ι =>
+        hammingDist w 0 ≤ ⌊δ * (Fintype.card ι : ℝ≥0)⌋₊)).card
+      = CodingTheory.hammingBallVolume (Fintype.card (κ → A)) (δ : ℝ) (Fintype.card ι) := by
+  have heq := floor_nnreal_eq_real δ (Fintype.card ι)
+  rw [CodingTheory.hammingBallVolume_eq_ncard_hammingBall (δ : ℝ) (0 : ι → (κ → A)),
+    ← CodingTheory.filter_card_eq_hammingBall_ncard, ← heq]
+  refine Finset.card_nbij' id id ?_ ?_ ?_ ?_ <;> intro w hw <;>
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and, id_eq,
+      hammingDist_comm] at hw ⊢ <;> exact hw
+
+open Classical in
+/-- **Explicit (band-ready) `#{jointProx}` bound.** `#{u : jointProximity C u δ} ≤
+|C|^|κ| · hammingBallVolume(q^|κ|, δ, n)` — ingredient (b) of the CS25 breakdown budget `hfar`, with
+the interleaved-ball volume in explicit summation form (to be bounded by
+`hammingBallVolume_le_qEntropy_real_radius` in the final band arithmetic). -/
+theorem card_jointProximity_le_volume [Nonempty ι] (C : Set (ι → A)) [AddCommGroup A]
+    [Fintype ↥C] (δ : ℝ≥0) :
+    (Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card
+      ≤ (Fintype.card ↥C) ^ (Fintype.card κ)
+        * CodingTheory.hammingBallVolume (Fintype.card (κ → A)) (δ : ℝ) (Fintype.card ι) := by
+  refine le_trans (card_jointProximity_le C δ) (Nat.mul_le_mul_left _ ?_)
+  exact le_of_eq (interleaved_ball_card_eq_volume δ)
 
 end CS25
