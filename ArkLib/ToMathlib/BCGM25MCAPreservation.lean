@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
+import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 
 /-!
 # BCGM25/BSGM25 — native-API MCA preservation bricks (issue #100)
@@ -25,6 +26,17 @@ lemmas that do **not** assume the external BCGM25 polynomial-generator theorem; 
 * `isMCAGenerator_iterate_rightMul` — `IsMCAGenerator` is preserved under any finite sequence of
   right-multiplications by left-pseudoinvertible matrices (square, so the output type is stable),
   again with the same error.
+
+* `polynomialGenerator_isMCAGenerator_bcgm25_iff` /
+  `polynomialGenerator_isMCAGenerator_bcgm25_of_native` (Brick B) — the **front-door transfer**.
+  The canonical statement surface
+  `CodingTheory.polynomialGenerator_isMCAGenerator_bcgm25` is, by construction, the native
+  predicate `CoreDefinitions.IsMCAGenerator G ε_mca LC`.  Brick B records that definitional
+  bridge as a checked `Iff` and a transfer lemma, so the public BCGM25 surface is *anchored to
+  the proved native predicate* (the one Brick A's preservation lemmas manipulate) rather than
+  restated externally.  This does **not** prove the external polynomial-generator construction;
+  it shows that whenever the native MCA predicate is established (e.g. transported through the
+  Brick A preservation lemmas), the front-door Prop holds verbatim.
 
 ## References
 
@@ -84,7 +96,43 @@ lemma isMCAGenerator_iterate_rightMul
       have := ih (generatorByRightMul G A) hstep
       simpa [Function.iterate_succ', Function.comp] using this
 
+/-! ### Brick B — front-door transfer to `polynomialGenerator_isMCAGenerator_bcgm25` -/
+
+variable {seedDim : ℕ}
+
+/-- **Brick B (definitional bridge).** The canonical BCGM25 statement surface
+`CodingTheory.polynomialGenerator_isMCAGenerator_bcgm25` is, by construction, exactly the native
+predicate `CoreDefinitions.IsMCAGenerator G ε_mca LC`.  This `Iff` records that the public
+front-door Prop and the proved native predicate are interchangeable, so the BCGM25 surface is
+anchored to the generator-native vocabulary that the preservation lemmas above manipulate.  The
+polynomial-generator witness `hPoly` is data the front door carries but does not affect the
+underlying MCA claim. -/
+lemma polynomialGenerator_isMCAGenerator_bcgm25_iff
+    (Ssub : Fin seedDim → Set F)
+    [Nonempty (∀ i, Ssub i)] [Fintype (∀ i, Ssub i)]
+    (G : Generator (∀ i, Ssub i) ℓ F) (ε_mca : I → I) (LC : LinearCode ι F)
+    (hPoly : CoreDefinitions.IsPolynomialGenerator Ssub G) :
+    CodingTheory.polynomialGenerator_isMCAGenerator_bcgm25 Ssub G ε_mca LC hPoly
+      ↔ IsMCAGenerator G ε_mca LC :=
+  Iff.rfl
+
+/-- **Brick B (transfer).** From the proved native MCA predicate `IsMCAGenerator G ε_mca LC`
+(the form produced by the Brick A preservation lemmas) and a polynomial-generator witness, the
+canonical front-door Prop `polynomialGenerator_isMCAGenerator_bcgm25` holds verbatim.  This wires
+the generator-native preservation bricks to the public BCGM25 statement surface without assuming
+the external polynomial-generator construction. -/
+lemma polynomialGenerator_isMCAGenerator_bcgm25_of_native
+    (Ssub : Fin seedDim → Set F)
+    [Nonempty (∀ i, Ssub i)] [Fintype (∀ i, Ssub i)]
+    (G : Generator (∀ i, Ssub i) ℓ F) (ε_mca : I → I) (LC : LinearCode ι F)
+    (hPoly : CoreDefinitions.IsPolynomialGenerator Ssub G)
+    (hMCA : IsMCAGenerator G ε_mca LC) :
+    CodingTheory.polynomialGenerator_isMCAGenerator_bcgm25 Ssub G ε_mca LC hPoly :=
+  (polynomialGenerator_isMCAGenerator_bcgm25_iff Ssub G ε_mca LC hPoly).mpr hMCA
+
 end BCGM25MCAPreservation
 
 #print axioms BCGM25MCAPreservation.isMCAGenerator_projected_rightMul
 #print axioms BCGM25MCAPreservation.isMCAGenerator_iterate_rightMul
+#print axioms BCGM25MCAPreservation.polynomialGenerator_isMCAGenerator_bcgm25_iff
+#print axioms BCGM25MCAPreservation.polynomialGenerator_isMCAGenerator_bcgm25_of_native

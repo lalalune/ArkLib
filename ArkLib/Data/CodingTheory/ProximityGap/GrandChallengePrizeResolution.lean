@@ -308,8 +308,3 @@ theorem prizeResolution_ld (domain : ι ↪ F) {m : ℕ} (hm : 0 < m)
 end ListSide
 
 end ProximityGap
-
--- TEMP AUDIT
-#print axioms ProximityGap.GrandChallenges.prizeResolution_mca_M521
-#print axioms ProximityGap.GrandChallenges.mersenne521_prime
-#print axioms ProximityGap.GrandChallenges.prizeResolution_mca_of_numeric
