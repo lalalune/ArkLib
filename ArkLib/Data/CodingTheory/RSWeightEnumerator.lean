@@ -64,8 +64,9 @@ theorem natCard_ker_evalOnS_general (α : ι ↪ F) (deg : ℕ) (S : Finset ι) 
       have hmem : (i : ι) ∈ S := hS'sub i.2
       have := congrFun hp ⟨(i : ι), hmem⟩
       simpa [evalOnS] using this
-    rw [le_bot_iff.mp (hbot' ▸ hle)]
-    simp
+    have hbot : LinearMap.ker (evalOnS α deg S) = ⊥ := by
+      rw [eq_bot_iff, ← hbot']; exact hle
+    rw [hbot]; simp
 
 end ArkLib.CS25
 
