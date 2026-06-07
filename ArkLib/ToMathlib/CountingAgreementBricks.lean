@@ -6,7 +6,9 @@ Authors: ArkLib Contributors
 import Mathlib
 
 /-!
-# Counting / polynomial-agreement / hypercube bricks (WHIR #113, Fiat-Shamir #116, sumcheck #13/#114)
+# Counting / polynomial-agreement / hypercube bricks
+
+WHIR #113, Fiat-Shamir #116, sumcheck #13/#114.
 
 * `card_filter_forall_pi` — the count of length-`s` tuples whose every coordinate satisfies a
   predicate `Q` is `(#Q)^s` (WHIR out-of-domain / FS union-bound counting, #113/#116).
@@ -21,6 +23,8 @@ import Mathlib
   `(N-1)^s` length-`s` tuples are all roots.
 * `Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt` — two distinct degree-`< N`
   polynomials agree on every coordinate of at most `(N-1)^s` length-`s` tuples.
+* `Polynomial.card_filter_exists_eval_ne_ge_of_natDegree_lt` — the complementary lower bound on
+  length-`s` tuples with at least one coordinate of disagreement.
 * `Finset.sum_boolCube_prod_factor_eq_prod_sum` — the boolean-hypercube identity
   `∑_{x∈{0,1}^σ} ∏ᵢ (xᵢ=0 ? aᵢ : bᵢ) = ∏ᵢ (aᵢ + bᵢ)` underlying multilinear-extension sumcheck
   folding (#13/#114).
@@ -137,6 +141,32 @@ theorem card_filter_forall_eval_eq_le_of_natDegree_lt {F : Type*} [Field F] [Fin
   rw [card_filter_forall_pi (β := F) s (fun x : F => p.eval x = q.eval x)]
   exact Nat.pow_le_pow_left hagree s
 
+/-- Two distinct polynomials of degree `< N` disagree on at least one coordinate of at least
+`|F|^s - (N-1)^s` length-`s` tuples. -/
+theorem card_filter_exists_eval_ne_ge_of_natDegree_lt {F : Type*} [Field F] [Fintype F]
+    [DecidableEq F] {N s : ℕ} {p q : F[X]} (hpq : p ≠ q) (hp : p.natDegree < N)
+    (hq : q.natDegree < N) :
+    Fintype.card F ^ s - (N - 1) ^ s ≤
+      (Finset.univ.filter (fun r : Fin s → F => ∃ i, p.eval (r i) ≠ q.eval (r i))).card := by
+  have hagree :=
+    Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt (F := F) (N := N) (s := s)
+      (p := p) (q := q) hpq hp hq
+  have hsplit :=
+    Finset.card_filter_add_card_filter_not
+      (s := (Finset.univ : Finset (Fin s → F)))
+      (p := fun r : Fin s → F => ∀ i, p.eval (r i) = q.eval (r i))
+  have hbad_filter :
+      (Finset.univ.filter (fun r : Fin s → F => ¬ ∀ i, p.eval (r i) = q.eval (r i)))
+        = Finset.univ.filter (fun r : Fin s → F => ∃ i, p.eval (r i) ≠ q.eval (r i)) := by
+    ext r
+    simp
+  have hcard_fun : Fintype.card (Fin s → F) = Fintype.card F ^ s := by
+    simp
+  have hcard_univ : (Finset.univ : Finset (Fin s → F)).card = Fintype.card F ^ s := by
+    rw [Finset.card_univ, hcard_fun]
+  rw [hbad_filter, hcard_univ] at hsplit
+  omega
+
 end Polynomial
 
 namespace Finset
@@ -160,4 +190,5 @@ end Finset
 #print axioms Polynomial.card_eval_disagreement_ge_of_natDegree_lt
 #print axioms Polynomial.card_filter_forall_isRoot_le
 #print axioms Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt
+#print axioms Polynomial.card_filter_exists_eval_ne_ge_of_natDegree_lt
 #print axioms Finset.sum_boolCube_prod_factor_eq_prod_sum
