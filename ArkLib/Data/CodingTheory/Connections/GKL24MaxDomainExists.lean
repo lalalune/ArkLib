@@ -336,4 +336,16 @@ theorem mcaBadWitness_card_le_pn_of_common {MC : Submodule F (ι → F)} {δ p :
     ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ≥0) ≤ p * Fintype.card ι :=
   mcaBadWitness_card_le_pn hp (Finset.Subset.refl _) hlb hub
 
+/-- **Per-stack bad count from the witness cover.**  The per-stack bad-combiner set `mcaBad` is
+covered by the per-codeword witness sets over any carrier `T ⊇ C` (`mcaBad_subset_biUnion_…`), so
+`|mcaBad| ≤ ∑_{w ∈ T} |mcaBadWitness w|`.  Combined with the per-codeword first-moment bounds
+(`mcaBadWitness_card_le_compl_common` etc.), this lifts the GKL24 first moment from individual
+codewords to the per-stack count that the GCXK25 list-decoding→MCA reduction consumes. -/
+theorem mcaBad_card_le_sum_mcaBadWitness {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ : ι → F}
+    (T : Finset (ι → F)) (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T) :
+    (mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card
+      ≤ ∑ w ∈ T, (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card :=
+  le_trans (Finset.card_le_card (mcaBad_subset_biUnion_mcaBadWitness _ δ u₀ u₁ T hT))
+    Finset.card_biUnion_le
+
 end ProximityGap
