@@ -152,7 +152,7 @@ lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K]
   (relOut := mlIOPCS.toRelInput)
   (init:=init) (impl:=impl) := by
   apply OracleReduction.append_perfectCompleteness
-    (hAppendPerfectCompleteness := hBatchingCoreAppendPerfectCompleteness)
+    (hResidual := hBatchingCoreAppendPerfectCompleteness)
   · exact BatchingPhase.batchingReduction_perfectCompleteness κ L K P ℓ ℓ' h_l
        mlIOPCS.toAbstractOStmtIn hBatching
   · exact SumcheckPhase.coreInteraction_perfectCompleteness
@@ -203,7 +203,7 @@ theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
      := by
   apply OracleReduction.append_perfectCompleteness (Oₛ₃:=by
     exact fun _ ↦ OracleInterface.instDefault)
-    (hAppendPerfectCompleteness := hFullAppendPerfectCompleteness)
+    (hResidual := hFullAppendPerfectCompleteness)
   · exact batchingCore_perfectCompleteness κ L K P ℓ ℓ' h_l mlIOPCS init hBatching hRounds
       hCoreInteractionAppendPerfectCompleteness hBatchingCoreAppendPerfectCompleteness
   · exact mlIOPCS.perfectCompleteness
@@ -269,7 +269,7 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
   unfold fullOracleVerifier fullRbrKnowledgeError
   have batchInteractionRBRKS :=
     OracleVerifier.append_rbrKnowledgeSoundness (init:=init) (impl:=impl)
-    (hAppendRbrKnowledgeSoundness := hBatchingCoreAppendRbrKnowledgeSoundness)
+    (hResidual := hBatchingCoreAppendRbrKnowledgeSoundness)
     (rel₁:=fullInputRelation κ L K P ℓ ℓ' h_l mlIOPCS)
     (rel₂:=sumcheckRoundRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn 0)
     (rel₃:=mlIOPCS.toRelInput)
@@ -284,7 +284,7 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
 
   have res :=
     OracleVerifier.append_rbrKnowledgeSoundness (init:=init) (impl:=impl)
-    (hAppendRbrKnowledgeSoundness := hFullAppendRbrKnowledgeSoundness)
+    (hResidual := hFullAppendRbrKnowledgeSoundness)
     (rel₁:=fullInputRelation κ L K P ℓ ℓ' h_l mlIOPCS)
     (rel₂:=mlIOPCS.toRelInput)
     (rel₃:=fullOutputRelation)
