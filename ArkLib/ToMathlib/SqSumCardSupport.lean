@@ -15,7 +15,7 @@ open Finset
 
 namespace Finset
 
-variable {α R : Type*} [Fintype α] [LinearOrderedRing R]
+variable {α R : Type*} [Fintype α] [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R]
 
 theorem sq_sum_le_card_support_mul_sum_sq (f : α → R) :
     (∑ a, f a) ^ 2 ≤ (univ.filter (fun a => f a ≠ 0)).card * (∑ a, f a ^ 2) := by
