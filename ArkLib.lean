@@ -45,6 +45,7 @@ import ArkLib.Data.CodingTheory.BerlekampWelch.Condition
 import ArkLib.Data.CodingTheory.BerlekampWelch.ElocPoly
 import ArkLib.Data.CodingTheory.BerlekampWelch.Existence
 import ArkLib.Data.CodingTheory.BerlekampWelch.Sorries
+import ArkLib.Data.CodingTheory.BinomialEntropyBallBound
 import ArkLib.Data.CodingTheory.BinomialEntropyBound
 import ArkLib.Data.CodingTheory.CodeGeometry
 import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
