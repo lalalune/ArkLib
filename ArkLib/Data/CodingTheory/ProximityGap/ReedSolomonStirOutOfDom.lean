@@ -62,4 +62,16 @@ theorem reedSolomon_out_of_dom_smpl_2
         δ.coe_nonneg hbig he hdeg)
     h_nonempty
 
+/-- **The smooth-domain Reed–Solomon code is `(δ, dZ)`-list-decodable.**  `smoothCode φ m` is by
+definition `RS[2^m]` over the smooth domain `φ`, so the Sudan/GS list-decodability bound applies
+directly.  This is the list-decodability hypothesis WHIR's out-of-domain-sampling lemmas consume. -/
+theorem smoothCode_listDecodable {m dX dZ : ℕ} {φ : ι ↪ F} [Smooth φ] {δ : ℝ}
+    (hδ0 : 0 ≤ δ)
+    (hbig : Fintype.card ι < (dX + 1) * (dZ + 1))
+    (he : ⌊δ * Fintype.card ι⌋₊ < Fintype.card ι)
+    (hdeg : dX + dZ * (2 ^ m - 1) < Fintype.card ι - ⌊δ * Fintype.card ι⌋₊) :
+    ListDecodable.listDecodable ((ReedSolomon.smoothCode φ m : Set (ι → F))) δ (dZ : ℝ) := by
+  haveI : NeZero (2 ^ m) := ⟨pow_ne_zero m two_ne_zero⟩
+  exact reedSolomon_listDecodable (α := φ) (k := 2 ^ m) (dX := dX) (dZ := dZ) hδ0 hbig he hdeg
+
 end ReedSolomon
