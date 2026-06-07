@@ -258,6 +258,39 @@ structure BCSOpeningRequest (CommitmentType : pSpec.MessageIdx → Type) where
   query : (Oₘ messageIdx).Query
   response : (Oₘ messageIdx).Response query
 
+/-- The dependent opening statement for one committed oracle message.
+
+For `CommitmentType = Commitment`, this is exactly the statement type consumed by
+`Reduction.bcsMessageOpening` at the message index `i`. -/
+abbrev BCSOpeningStatementAt (CommitmentType : pSpec.MessageIdx → Type)
+    (i : pSpec.MessageIdx) :=
+  CommitmentType i × (q : (Oₘ i).Query) × (Oₘ i).Response q
+
+/-- Convert one typed BCS opening request to the dependent opening statement expected by the
+per-message commitment-opening reduction. -/
+def BCSOpeningRequest.toOpeningStatement {CommitmentType : pSpec.MessageIdx → Type}
+    (request : BCSOpeningRequest (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType request.messageIdx :=
+  (request.commitment, ⟨request.query, request.response⟩)
+
+@[simp] theorem BCSOpeningRequest.toOpeningStatement_commitment
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (request : BCSOpeningRequest (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    request.toOpeningStatement.1 = request.commitment :=
+  rfl
+
+@[simp] theorem BCSOpeningRequest.toOpeningStatement_query
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (request : BCSOpeningRequest (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    request.toOpeningStatement.2.1 = request.query :=
+  rfl
+
+@[simp] theorem BCSOpeningRequest.toOpeningStatement_response
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (request : BCSOpeningRequest (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    request.toOpeningStatement.2.2 = request.response :=
+  rfl
+
 /-- The concrete query/opening schedule consumed by the BCS opening phase.
 
 For a non-adaptive oracle verifier this schedule should be obtained from
@@ -266,6 +299,35 @@ commitments and oracle responses.  In the fully adaptive case, the future query-
 produce the same shape from the realized verifier execution. -/
 abbrev BCSOpeningSchedule (CommitmentType : pSpec.MessageIdx → Type) :=
   List (BCSOpeningRequest (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
+
+/-- A schedule as the list of indexed opening statements that the per-message opening reductions
+must discharge. -/
+def BCSOpeningSchedule.toOpeningStatements {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    List ((i : pSpec.MessageIdx) ×
+      BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType i) :=
+  schedule.map fun request => ⟨request.messageIdx, request.toOpeningStatement⟩
+
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_nil
+    {CommitmentType : pSpec.MessageIdx → Type} :
+    (BCSOpeningSchedule.toOpeningStatements (pSpec := pSpec) (Oₘ := Oₘ)
+      (CommitmentType := CommitmentType) []) = [] :=
+  rfl
+
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_cons
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (request : BCSOpeningRequest (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    BCSOpeningSchedule.toOpeningStatements (request :: schedule) =
+      ⟨request.messageIdx, request.toOpeningStatement⟩ ::
+        BCSOpeningSchedule.toOpeningStatements schedule :=
+  rfl
+
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_length
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    schedule.toOpeningStatements.length = schedule.length :=
+  List.length_map _
 
 /-- The typed opening-log boundary for the not-yet-generic BCS compiler.
 
@@ -622,7 +684,16 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSTransform
 #print axioms OracleReduction.BCSCompiledPhases
 #print axioms OracleReduction.BCSOpeningRequest
+#print axioms OracleReduction.BCSOpeningStatementAt
+#print axioms OracleReduction.BCSOpeningRequest.toOpeningStatement
+#print axioms OracleReduction.BCSOpeningRequest.toOpeningStatement_commitment
+#print axioms OracleReduction.BCSOpeningRequest.toOpeningStatement_query
+#print axioms OracleReduction.BCSOpeningRequest.toOpeningStatement_response
 #print axioms OracleReduction.BCSOpeningSchedule
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nil
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_cons
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_length
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.intro
