@@ -432,8 +432,47 @@ theorem treeStructure_of_eraseDecodeTree
             _ ≤ (Lambda C δ) * (((b' + 1 + r').choose r' : ℕ∞) * (Lambda C δ) ^ r') :=
                 mul_le_mul' (le_refl _) (mul_le_mul' hcast (le_refl _))
 
+/-- Concrete Erase-Decode trees supply the named GGR11 tree frontier. This is the granular
+frontier form of `treeStructure_of_eraseDecodeTree`, useful for downstream code that wants the
+per-word witness interface rather than the older anonymous residual. -/
+theorem treeFrontier_of_eraseDecodeTree
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      ∃ t : EraseDecodeTree,
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+            ≤ t.leafCount ∧
+        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
+    GGR11TreeFrontier C δ m b r :=
+  frontier_of_treeStructure (treeStructure_of_eraseDecodeTree hL H)
+
+/-- Concrete Erase-Decode trees discharge the per-word GGR11 list-size bound. -/
+theorem perWordBound_of_eraseDecodeTree
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      ∃ t : EraseDecodeTree,
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+            ≤ t.leafCount ∧
+        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
+    GGR11PerWordBound C δ m b r :=
+  perWordBound_of_treeFrontier (treeFrontier_of_eraseDecodeTree hL H)
+
+/-- End-to-end interleaved list-size bound from concrete Erase-Decode trees. -/
+theorem lambda_le_ggr11_of_eraseDecodeTree
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      ∃ t : EraseDecodeTree,
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+            ≤ t.leafCount ∧
+        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
+    Lambda (Code.interleavedCodeSet (κ := Fin m) C) δ
+      ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
+  lambda_le_ggr11_of_treeFrontier (treeFrontier_of_eraseDecodeTree hL H)
+
 -- Axiom audit.
 #print axioms EraseDecodeTree.leafCount_le
 #print axioms treeStructure_of_eraseDecodeTree
+#print axioms treeFrontier_of_eraseDecodeTree
+#print axioms perWordBound_of_eraseDecodeTree
+#print axioms lambda_le_ggr11_of_eraseDecodeTree
 
 end InterleavedCode.GGR11
