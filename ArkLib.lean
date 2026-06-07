@@ -452,7 +452,6 @@ import ArkLib.Data.Probability.UniformPushforward
 import ArkLib.Data.Probability.UniformSubset
 import ArkLib.Data.RingTheory.TowerOfAlgebra
 import ArkLib.Data.UniPoly.Basic
-import ArkLib.GrandChallengesScratch
 import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
@@ -514,7 +513,6 @@ import ArkLib.OracleReduction.Security.ZeroKnowledge
 import ArkLib.OracleReduction.Security.ZeroKnowledgeKernel
 import ArkLib.OracleReduction.SimulateQ
 import ArkLib.OracleReduction.VectorIOR
-import ArkLib.P2Scratch
 import ArkLib.ProofSystem.BCS.ErrorAccounting
 import ArkLib.ProofSystem.BatchedFri.QueryRoundAnalysis
 import ArkLib.ProofSystem.BatchedFri.QueryRoundProbability
