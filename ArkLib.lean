@@ -510,6 +510,7 @@ import ArkLib.ToMathlib.AGL23CountingProof
 import ArkLib.ToMathlib.AGL24RandomRSProof
 import ArkLib.ToMathlib.AHIVRowSpanBridge
 import ArkLib.ToMathlib.AppendHelpers
+import ArkLib.ToMathlib.AveragingExistence
 import ArkLib.ToMathlib.AxiomSweep
 import ArkLib.ToMathlib.BCGM25MCAPreservation
 import ArkLib.ToMathlib.BKR06BareT312
@@ -573,6 +574,7 @@ import ArkLib.ToMathlib.GK16Finish
 import ArkLib.ToMathlib.GK16Structural
 import ArkLib.ToMathlib.GSFactorData
 import ArkLib.ToMathlib.GammaFromBeta
+import ArkLib.ToMathlib.GreedyDisjointCover
 import ArkLib.ToMathlib.HPzBridge
 import ArkLib.ToMathlib.HasseDerivNumeratorConcrete
 import ArkLib.ToMathlib.HasseDerivNumeratorGeneral
