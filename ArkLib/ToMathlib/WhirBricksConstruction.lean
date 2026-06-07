@@ -11,6 +11,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.Data.Polynomial.Interface
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.RBRSoundness
+import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
 
 /-!
 # WHIR VectorSpec challenge budget (scratch brick B)
