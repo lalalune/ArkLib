@@ -70,11 +70,9 @@ the proven `OracleReduction.append_perfectCompleteness` yields perfect completen
 reduction. -/
 theorem reduction_perfectCompleteness_of_phases
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ) [NeZero l]
-    [∀ i, SampleableType
+    [hFoldChallenge : ∀ i, SampleableType
       ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F).Challenge i)]
-    [∀ i, SampleableType
-      ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F ++ₚ QueryRound.pSpec l (ω := ω)).Challenge i)]
-    [∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
+    [hQueryChallenge : ∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
     {relMid relOut : Set ((FinalStatement F k × ∀ j, FinalOracleStatement s ω j) ×
       Witness F s d (Fin.last (k + 1)))}
     {relIn : Set ((Statement F (0 : Fin (k + 1)) × ∀ j, OracleStatement s ω (0 : Fin (k + 1)) j) ×
@@ -88,14 +86,9 @@ theorem reduction_perfectCompleteness_of_phases
       (reductionFold k s d (ω := ω))
       (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l) hFold hQuery) :
     OracleReduction.perfectCompleteness init impl relIn relOut
-      (Fri.Spec.reduction k s d dom_size_cond l) := by
-  change ((reductionFold k s d (ω := ω)).append
-      (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l)).perfectCompleteness
-    init impl relIn relOut
+      ((reductionFold k s d (ω := ω)).append
+        (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l)) := by
   unfold OracleReduction.appendPerfectCompletenessResidual at hResidual
-  change ((reductionFold k s d (ω := ω)).append
-      (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l)).perfectCompleteness
-    init impl relIn relOut at hResidual
   exact hResidual
 
 end Completeness
