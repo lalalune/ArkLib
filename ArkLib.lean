@@ -92,6 +92,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.BKR06SubspacePoly
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityReduction
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25DesignToLambda
+import ArkLib.Data.CodingTheory.ListDecoding.CZ25GeomCapacity
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanBoundBridge
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanDimension
 import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
@@ -663,8 +664,6 @@ import ArkLib.ToMathlib.ToyStep4
 import ArkLib.ToMathlib.UMSubspaceDesignProof
 import ArkLib.ToMathlib.UniformTranslationAverage
 import ArkLib.ToMathlib.WeightLambdaCalculus
-import ArkLib.ToMathlib.WhirBricksConstruction
-import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.ZKDefA
 import ArkLib.ToMathlib.ZKDefC
