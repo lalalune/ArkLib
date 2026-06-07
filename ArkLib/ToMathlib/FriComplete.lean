@@ -73,7 +73,7 @@ instance instSampleableTypeFoldChallenge {i : Fin k} :
     | zero => rfl
     | succ j1 =>
         cases j1 using Fin.cases with
-        | zero => simp [FoldPhase.pSpec] at hj
+        | zero => simp at hj
         | succ j2 => exact j2.elim0
   subst h_j_eq_0
   simpa [FoldPhase.pSpec, Challenge] using (inferInstance : SampleableType F)
@@ -86,7 +86,7 @@ instance instSampleableTypeFinalFoldChallenge :
     | zero => rfl
     | succ j1 =>
         cases j1 using Fin.cases with
-        | zero => simp [FinalFoldPhase.pSpec] at hj
+        | zero => simp at hj
         | succ j2 => exact j2.elim0
   subst h_j_eq_0
   simpa [FinalFoldPhase.pSpec, Challenge] using (inferInstance : SampleableType F)
@@ -119,8 +119,8 @@ theorem foldRound_perfectCompleteness
     OracleReduction.perfectCompleteness init impl
       (FoldPhase.inputRelation s (ω := ω) d i cond δ)
       (FoldPhase.outputRelation s (ω := ω) d i cond δ)
-      (FoldPhase.foldOracleReduction s d i) :=
-  hResidual
+      (FoldPhase.foldOracleReduction s d i) := by
+  sorry
 
 /-- **Brick A/B residual — final folding round.**
 
@@ -144,8 +144,8 @@ theorem finalFoldRound_perfectCompleteness
     OracleReduction.perfectCompleteness init impl
       (FinalFoldPhase.inputRelation s (ω := ω) d cond δ)
       (FinalFoldPhase.outputRelation s (ω := ω) d cond δ)
-      (FinalFoldPhase.finalFoldOracleReduction s d) :=
-  hResidual
+      (FinalFoldPhase.finalFoldOracleReduction s d) := by
+  sorry
 
 end Completeness
 

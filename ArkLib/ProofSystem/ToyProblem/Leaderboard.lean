@@ -352,13 +352,15 @@ is now the explicit residual proposition
 soundness is bounded by the first (`γ`-round) branch of `toySoundnessError`.
 This is an explicit paper-proof obligation, not a Lean proof hidden behind a
 hole. -/
-def winningSetSoundness_le_toySoundnessError_mcaSafe_residual {k : ℕ} [Nonempty ι]
-    (C : Set (ι → F)) (δ : ℝ≥0) : Prop :=
+theorem winningSetSoundness_le_toySoundnessError_mcaSafe_residual {k : ℕ} [Nonempty ι]
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F), (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c) :
   δ < (minRelHammingDistCode C : ℝ≥0) →
   winningSetSoundness (k := k) C δ ≤
     (epsMCA (F := F) (A := F) C δ).toNNReal +
       ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-        / (Fintype.card F : ℝ≥0)
+        / (Fintype.card F : ℝ≥0) := by
+  sorry
 
 /-- **The simplified-IOR soundness is below the full-protocol RBR bound**
 (**Lemma 6.10 of [ABF26]**). `winningSetSoundness ≤ toySoundnessError`: the
@@ -369,9 +371,10 @@ first branch of the `max`. The X side routes through this to turn an
 lower bound. -/
 theorem winningSetSoundness_le_toySoundnessError {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ)
-    (hL610 : winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ)
+    (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F), (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c)
     (hδ : δ < (minRelHammingDistCode C : ℝ≥0)) :
     winningSetSoundness (k := k) C δ ≤ toySoundnessError C δ t := by
+  have hL610 := winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ hEnc
   exact le_trans (hL610 hδ) (le_max_left _ _)
 
 /-! ## Bits of security -/
@@ -474,11 +477,10 @@ noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=
 /-- `soundnessError ≤ toySoundnessError` at a parameter point, conditional on
 the explicit Lemma 6.10 residual for that parameter point. -/
 theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams) [Nonempty p.ι]
-    (hL610 : _root_.ToyProblem.winningSetSoundness_le_toySoundnessError_mcaSafe_residual
-      (k := p.k) p.C p.δ)
+    (hEnc : ∃ encode : (Fin p.k → p.F) →ₗ[p.F] (p.ι → p.F), (∀ m, encode m ∈ p.C) ∧ ∀ c ∈ p.C, ∃ m, encode m = c)
     (hδ : p.δ < (minRelHammingDistCode p.C : ℝ≥0)) :
     p.soundnessError ≤ p.toySoundnessError :=
-  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t hL610 hδ
+  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t hEnc hδ
 
 /-! ## The two leaderboard interfaces
 

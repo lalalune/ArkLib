@@ -159,4 +159,79 @@ theorem ordinaryRSCapacityAtPrizeRates_of_johnson_sq_rsDegreeLe
   haveI : NeZero ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ := ⟨(hdeg_pos r).ne'⟩
   exact ReedSolomon.minDist_eq' (α := domain) (hdeg_le r)
 
+/-! ## End-to-end: Johnson capacity ⊕ adjacent Elias certificate resolve the LD prize
+
+The capacity reductions above land on the named lower-side predicate
+`OrdinaryRSCapacityAtPrizeRates`.  The proven
+`GrandChallengesLattice.listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next`
+consumes that predicate (plus the interleaving budget and the adjacent Elias-volume failure
+certificate) to resolve the faithful four-rate list-decoding lattice prize.  Composing the two
+gives a single criterion whose only remaining content is the per-rate Johnson capacity
+inequality `hsq` and the per-rate adjacent Elias-volume inequality `hvol_next` — both finite
+numeric checks at the concrete prize degrees `k_r = ⌊ρ_r · n⌋`. -/
+
+/-- **Johnson-capacity ⊕ Elias closing of the faithful four-rate list-decoding lattice prize.**
+
+For each prize rate, the squared Johnson inequality `hsq` supplies the ordinary-RS list-size
+cap `Λ(RS_{k_r}, (τ r).val / n) ≤ ℓ r` (the lower side of the Lambda-Elias frontier, via
+`Lambda_le_of_johnson_sq`), and the Elias-volume inequality `hvol_next` certifies the failure
+at the adjacent index `(τ r).val + 1`.  Together they pin the faithful list-decoding lattice
+threshold at `τ`.  This is the capacity-resolved analogue of
+`listPrizeLatticeResolved_of_johnson_sq_and_elias_next`, routed explicitly through the named
+`OrdinaryRSCapacityAtPrizeRates` predicate. -/
+theorem listPrizeLatticeResolved_of_ordinaryRSCapacity_johnson_sq_and_elias_next
+    (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hm : m ≠ 0)
+    (hnext : ∀ r : Fin 4, (τ r).val + 1 < Fintype.card ι)
+    (hq1 : 1 < Fintype.card F)
+    (hP : ∀ r : Fin 4,
+      (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+        ((Fintype.card ι - (τ r).val : ℕ) : ℝ))
+    (hsq : ∀ r : Fin 4,
+      ((ℓ r : ℝ) + 1)
+          * ((((Fintype.card ι - (τ r).val : ℕ) : ℝ)) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+        > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+          * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+              + (ℓ r : ℝ)
+                * (((Fintype.card ι -
+                    Code.minDist
+                      (ReedSolomon.code domain
+                        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ :
+                          Set (ι → F)) : ℕ) : ℝ) -
+                    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))))
+    (hpow : ∀ r : Fin 4,
+      ((ℓ r : ENNReal)) ^ m ≤
+        (epsStar : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol_next : ∀ r : Fin 4,
+      (epsStar : ENNReal) * (Fintype.card F : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val + 1 : ℕ) : ℝ≥0) /
+                    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  Module.finrank F
+                    (ReedSolomon.code domain
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊))))
+    (hne : ∀ r : Fin 4,
+      (GrandChallenges.listLatticeSet
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar).Nonempty) :
+    listPrizeLatticeResolved domain m τ :=
+  listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next
+    domain m τ ℓ hm hnext
+    (ordinaryRSCapacityAtPrizeRates_of_johnson_sq domain τ ℓ hq1 hP hsq)
+    hpow hvol_next hne
+
 end ProximityGap
+
+-- AXIOM AUDIT (temporary)
+#print axioms ProximityGap.ordinaryRSCapacityAtPrizeRates_of_johnson_sq
+#print axioms ProximityGap.ordinaryRSCapacityAtPrizeRates_of_johnson_sq_rsDistance
+#print axioms ProximityGap.ordinaryRSCapacityAtPrizeRates_of_johnson_sq_rsDegreeLe
+#print axioms ProximityGap.listPrizeLatticeResolved_of_ordinaryRSCapacity_johnson_sq_and_elias_next
