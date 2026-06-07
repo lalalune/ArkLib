@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.SubspaceDesign
+import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleSubspaceDesign
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanBoundBridge
@@ -406,6 +407,63 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter_eta
         domain k s ω L hL_dom hL_zero hω0 hs_order hinter hkLs hkord))
     hCap
 
+/-- Coordinate-fiber-cap route from the discharged T2.18 order/coset-separation front door.
+This packages the inter-orbit condition via `admissible_of_orderOf_ge_of_cosetSep`. -/
+theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_cosetSep
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (hL_zero : (0 : F) ∉ L) (hω0 : ω ≠ 0) (hs_order : s ≤ orderOf ω)
+    (hcoset : ∀ α ∈ L, ∀ β ∈ L, ∀ i : ℕ, α * ω ^ i = β → α = β)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
+    (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+        (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
+        CZ25CoordFiberCap s τ C h η' hη')
+    (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
+        ENNReal) ≤
+      ENNReal.ofReal bound :=
+  frs_list_decoding_capacity_cz25_of_coordFiberCap_T218
+    domain k s ω hs_pos η hη_pos hη_lt_s
+    (frs_is_subspaceDesign_cz25Profile_of_orderOf_ge_of_cosetSep
+      domain k s ω L hL_dom hL_zero hω0 hs_order hcoset hkLs hkord)
+    hCap hηnat
+
+/-- Reciprocal-natural version of
+`frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_cosetSep`. -/
+theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_cosetSep_eta_eq_one_div_nat
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) {m : ℕ} (hm : 0 < m) (hη : η = 1 / (m : ℝ)) (hms : m < s)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (hL_zero : (0 : F) ∉ L) (hω0 : ω ≠ 0) (hs_order : s ≤ orderOf ω)
+    (hcoset : ∀ α ∈ L, ∀ β ∈ L, ∀ i : ℕ, α * ω ^ i = β → α = β)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
+    (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+        (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
+        CZ25CoordFiberCap s τ C h η' hη') :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
+        ENNReal) ≤
+      ENNReal.ofReal bound := by
+  exact frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat
+    domain k s ω hs_pos η hm hη hms
+    (frs_is_subspaceDesign_cz25Profile_of_orderOf_ge_of_cosetSep
+      domain k s ω L hL_dom hL_zero hω0 hs_order hcoset hkLs hkord)
+    hCap
+
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_injective
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible
 #print axioms one_div_eta_eq_natFloor_of_eta_eq_one_div_nat
@@ -415,5 +473,8 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter_eta
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter
 #print axioms
   frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter_eta_eq_one_div_nat
+#print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_cosetSep
+#print axioms
+  frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_cosetSep_eta_eq_one_div_nat
 
 end CodingTheory
