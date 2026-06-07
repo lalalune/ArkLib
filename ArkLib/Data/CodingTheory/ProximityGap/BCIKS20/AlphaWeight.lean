@@ -492,6 +492,24 @@ theorem AlphaGenuineRegularWeightLe.of_divWeight_cases (x₀ : F) (R : F[X][X][Y
     AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
   (alphaWeight_iff_divWeight_cases H x₀ R hHyp hH D hlift).2 ⟨h0, hsucc⟩
 
+/-- Assemble the concrete `𝒪`-divisibility form from carved alpha-weight base and successor cases,
+given the lift identity. This is the dual case-wise constructor to
+`AlphaGenuineRegularWeightLe.of_divWeight_cases`. -/
+theorem DivWeightLe.of_alphaWeight_cases (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (h0 : AlphaGenuineRegularWeightLe_zero H x₀ R hHyp hH D)
+    (hsucc : ∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  DivWeightLe.of_cases H x₀ R hHyp hH D
+    ((alphaWeight_zero_iff_divWeight_zero H x₀ R hHyp hH D hlift).1 h0)
+    (fun t =>
+      (alphaWeight_succ_iff_divWeight_succ H x₀ R hHyp hH D hlift t).1 (hsucc t))
+
 /-! ### 3. The STRUCTURED INVARIANT — PROVEN from `AlphaGenuineRegularWeightLe` + `hlift`
 
 This is the genuine forward closure: the carved link + the lift identity yield the paper's
@@ -975,6 +993,25 @@ theorem AlphaGenuineRegularWeightLe.of_divWeight_cases_succLift
   (alphaWeight_iff_divWeight_cases_of_succLift H x₀ R hHyp hH D hliftSucc).2
     ⟨h0, hsucc⟩
 
+/-- Assemble the concrete `𝒪`-divisibility form from carved alpha-weight base and successor cases,
+requiring only successor-order lift identities; the base case uses the proved zero-order bridge. -/
+theorem DivWeightLe.of_alphaWeight_cases_succLift
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (h0 : AlphaGenuineRegularWeightLe_zero H x₀ R hHyp hH D)
+    (hsucc : ∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  DivWeightLe.of_cases H x₀ R hHyp hH D
+    (DivWeightLe_zero.of_alphaWeight_zero H x₀ R hHyp hH D h0)
+    (fun t =>
+      (alphaWeight_succ_iff_divWeight_succ_of_succLift H x₀ R hHyp hH D
+        hliftSucc t).1 (hsucc t))
+
 /-- Transport the full carved alpha-weight residual to the full divisibility-with-weight residual
 using only successor-order lift identities; the base case uses the proved zero-order bridge. -/
 theorem DivWeightLe.of_alphaWeight_succLift (x₀ : F) (R : F[X][X][Y])
@@ -1263,6 +1300,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_succ_iff_divWeight_succ
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_divWeight_cases
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.of_alphaWeight_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_structured
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_structured_of_divWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHenselStructuredWeightInvariant_of_alphaWeight
@@ -1286,6 +1324,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_succ_iff_divWeight_succ_of_succLift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight_cases_of_succLift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_divWeight_cases_succLift
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.of_alphaWeight_cases_succLift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.of_alphaWeight_succLift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_divWeight_succLift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_normalized_divWeight_cases_succLift
