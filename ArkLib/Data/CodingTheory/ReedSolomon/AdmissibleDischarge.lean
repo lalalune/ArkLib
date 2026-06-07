@@ -123,4 +123,26 @@ theorem geomDomain_cosetSep_lt (γ : F) (s n : ℕ) (hs : 0 < s) (hsn : s * n �
 theorem geomDomain_ne_zero (γ : F) (s n : ℕ) (hγ : γ ≠ 0) (i : Fin n) :
     geomDomainFn γ s n i ≠ 0 := pow_ne_zero _ hγ
 
+/-- **`Admissible` holds unconditionally on the canonical geometric domain.** For `γ ≠ 0` of
+order `≥ s·n` with `0 < s`, `0 < n`, the image `{γ^{s·i} : i ∈ Fin n}` is `Admissible` with fold
+length `s` and folding element `γ`. Both clauses are discharged: intra-orbit from `s ≤ orderOf γ`,
+inter-orbit from `geomDomain_cosetSep_lt`. This is the GR08 folded-RS setup, with no remaining
+side condition. -/
+theorem geomDomain_admissible (γ : F) (s n : ℕ)
+    (hs : 0 < s) (hn : 0 < n) (hγ : γ ≠ 0) (hsn : s * n ≤ orderOf γ) :
+    Admissible (Finset.image (geomDomainFn γ s n) Finset.univ) s γ := by
+  have hs_ord : s ≤ orderOf γ := le_trans (by
+    calc s = s * 1 := (mul_one s).symm
+      _ ≤ s * n := Nat.mul_le_mul_left s hn) hsn
+  have h0 : (0 : F) ∉ Finset.image (geomDomainFn γ s n) Finset.univ := by
+    intro hmem
+    obtain ⟨i, _, hi⟩ := Finset.mem_image.mp hmem
+    exact geomDomain_ne_zero γ s n hγ i hi
+  refine ⟨?_, admissible_intra_of_orderOf_ge _ s γ h0 hs_ord⟩
+  -- inter-orbit clause from the bounded coset separation
+  intro α hα β hβ hne i hi heq
+  obtain ⟨a, _, rfl⟩ := Finset.mem_image.mp hα
+  obtain ⟨b, _, rfl⟩ := Finset.mem_image.mp hβ
+  exact hne (congrArg (geomDomainFn γ s n) (geomDomain_cosetSep_lt γ s n hs hsn a b i hi heq))
+
 end ReedSolomon.Folded
