@@ -9,8 +9,8 @@ import ArkLib.Data.CodingTheory.ListDecodability
 /-!
 # Basic facts about Hamming balls (`ListDecodable.hammingBall` / `relHammingBall`)
 
-Centre membership and radius monotonicity for the Hamming-ball *sets* defined in
-`ListDecodability.lean` — foundational facts for covering / list-decoding arguments.
+Centre membership, radius monotonicity, and the zero-radius singleton for the Hamming-ball
+*sets* from `ListDecodability.lean` — foundational facts for covering / list-decoding arguments.
 -/
 
 namespace ListDecodable
@@ -35,8 +35,16 @@ lemma relHammingBall_mono {y : ι → F} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) :
   simp only [relHammingBall, Set.mem_setOf_eq] at hx ⊢
   exact le_trans hx h
 
+/-- A zero-radius Hamming ball is the singleton of its centre. -/
+lemma hammingBall_zero (y : ι → F) : hammingBall y 0 = {y} := by
+  ext x
+  simp only [hammingBall, Set.mem_setOf_eq, Nat.le_zero, hammingDist_eq_zero,
+    Set.mem_singleton_iff]
+  exact eq_comm
+
 end ListDecodable
 
 #print axioms ListDecodable.self_mem_hammingBall
 #print axioms ListDecodable.hammingBall_mono
 #print axioms ListDecodable.relHammingBall_mono
+#print axioms ListDecodable.hammingBall_zero
