@@ -98,12 +98,14 @@ theorem sum_choose_shift_reindex {L : Type*} [CommRing L]
   refine Finset.sum_bij' (fun j _ => j - m) (fun i _ => i + m) ?_ ?_ ?_ ?_ ?_
   · intro j hj
     simp only [Finset.mem_filter, Finset.mem_range] at hj ⊢; omega
-  · intro i _
-    simp only [Finset.mem_filter, Finset.mem_range] at *; omega
+  · intro i hi
+    simp only [Finset.mem_filter, Finset.mem_range] at hi ⊢; omega
   · intro j hj
     simp only [Finset.mem_filter, Finset.mem_range] at hj
     dsimp only; omega
-  · intro i _; dsimp only; omega
+  · intro i hi
+    simp only [Finset.mem_range] at hi
+    dsimp only; omega
   · intro j hj
     simp only [Finset.mem_filter, Finset.mem_range] at hj
     rw [Nat.sub_add_cancel hj.2]

@@ -165,11 +165,13 @@ theorem mcaBadWitness_card_mul_le [NoZeroSMulDivisors F A]
   -- sum the lower bounds: |bad|·(|T| - δn) ≤ ∑ ≤ |T|
   have hlb : (bad.card : ℝ) * ((T.card : ℝ) - δ * Fintype.card ι) ≤
       ∑ γ ∈ bad, ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ) := by
-    have hconst : (bad.card : ℝ) * ((T.card : ℝ) - δ * Fintype.card ι)
-        = ∑ _γ ∈ bad, ((T.card : ℝ) - δ * Fintype.card ι) := by
-      rw [Finset.sum_const, nsmul_eq_mul]
-    rw [hconst]
-    exact Finset.sum_le_sum hterm
+    calc
+      (bad.card : ℝ) * ((T.card : ℝ) - δ * Fintype.card ι)
+          = ∑ _γ ∈ bad, ((T.card : ℝ) - δ * Fintype.card ι) := by
+            simp [Finset.sum_const, nsmul_eq_mul]
+            ring
+      _ ≤ ∑ γ ∈ bad, ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ) :=
+            Finset.sum_le_sum hterm
   calc (bad.card : ℝ) * ((T.card : ℝ) - δ * Fintype.card ι)
       ≤ ∑ γ ∈ bad, ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ) := hlb
     _ ≤ (T.card : ℝ) := hsum_leR
@@ -233,4 +235,3 @@ theorem exists_large_agree_zero_of_small_weight
     exact (Finset.mem_compl.mp hi) (mem_supp₁.mpr hne)
 
 end ProximityGap
-
