@@ -62,6 +62,62 @@ theorem friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLe
   exact
     fri_query_soundness_lift_subdomainZero_to_domain
       (n := n) (ω := ω) (f := f) h_agreement m_ge_3
+    (fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
+        (n := n) (s := s) (d := d) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        h_agreement m_ge_3 G δ queries l domain_size_cond
+        pieces_imply_claim h_agreementBridge)
+
+omit [Nontrivial 𝔽] in
+/-- Raw full-domain Claim 8.2 conclusion from the proved probability-space query-round theorem
+and the Batched FRI oracle-lens piece.
+
+This is the probability-route analogue of
+`fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLens`, returning the underlying
+`Code.jointAgreement` target rather than the packaged Claim 8.3 query-lift field. -/
+theorem fri_jointAgreement_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
+    {t m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    (G : Finset ι) (δ : ℝ≥0∞) (queries l : ℕ)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    {agreementBridge : Prop}
+    (pieces_imply_claim :
+      QueryRound.probabilityAcceptanceBound G δ queries →
+      batchedFRIOracleLensReduction
+        (n := n) (s := s) (d := d) (ω := ω)
+        (domain_size_cond := domain_size_cond) l t →
+      agreementBridge →
+      fri_query_soundness (n := n) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
+    (h_agreementBridge : agreementBridge) :
+    Code.jointAgreement
+      (F := 𝔽)
+      (κ := Fin t.succ)
+      (ι := ω)
+      (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+      (δ :=
+        let ρ_sqrt :=
+          ReedSolomon.sqrtRate
+            (2 ^ n)
+            (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+        let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+        1 - α)
+      (W := f) := by
+  exact
+    fri_query_soundness_lift_subdomainZero_to_domain
+      (n := n) (ω := ω) (f := f) h_agreement m_ge_3
       (fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
         (n := n) (s := s) (d := d) (ω := ω)
         (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
@@ -491,6 +547,8 @@ theorem
 
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
+set_option linter.style.longLine false in
+#print axioms Fri.fri_jointAgreement_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialComposition
 set_option linter.style.longLine false in
