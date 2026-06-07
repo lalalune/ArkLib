@@ -811,6 +811,7 @@ import ArkLib.ToMathlib.L13Milestone
 import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LineDecodingCoverageProof
+import ArkLib.ToMathlib.LinearizedHomogeneous
 import ArkLib.ToMathlib.LinearizedKernel
 import ArkLib.ToMathlib.LinearizedProductClosure
 import ArkLib.ToMathlib.LinearizedSupport
