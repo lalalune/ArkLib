@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Bijection
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 
 /-!
 # BCIKS20 Appendix A.4 — `restrictedFaaDiBrunoSum` in partition form (toward `RestrictedFaaDiBrunoMatch`)
@@ -115,6 +116,21 @@ theorem coeff_succ_βHenselAssembled_partitionForm (x₀ : F) (R : F[X][X][Y])
   unfold βHenselAssembled
   rw [PowerSeries.coeff_mk, embed_βHensel_succ]
 
+/-- **Y-Hasse coefficient commutation.**  The middle-`X` Hasse derivative `Δ_X^{i₁}` and the
+evaluation `X ↦ x₀` commute past the outer-`Y` Hasse derivative `Δ_Y^m`, which only contributes the
+Taylor binomial via `hasseDerivY_coeff`:
+
+  `(evalX(C x₀)(Δ_X^{i₁}(Δ_Y^m R))).coeff i = C(i+m, m) · (evalX(C x₀)(Δ_X^{i₁} R)).coeff (i+m)`.
+
+This is the polynomial heart of the α₀-Taylor identity: it turns the order-`(i+m)` `Y`-coefficient of
+`Δ_X^{i₁} R` (with its Hasse weight) into the order-`i` coefficient of the Hasse-`Y`-shifted object. -/
+theorem evalX_hasseDeriv_Y_coeff (x₀ : F) (R : F[X][X][Y]) (i1 m i : ℕ) :
+    (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))).coeff i
+      = (i + m).choose m
+          • (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff (i + m) := by
+  rw [evalX_C_coeff, hasseDerivX_coeff, hasseDerivY_coeff, evalX_C_coeff, hasseDerivX_coeff,
+    map_nsmul (Polynomial.hasseDeriv i1), Polynomial.eval_smul]
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
@@ -122,3 +138,4 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq
 #print axioms BCIKS20.HenselNumerator.embed_βHensel_succ
 #print axioms BCIKS20.HenselNumerator.coeff_succ_βHenselAssembled_partitionForm
+#print axioms BCIKS20.HenselNumerator.evalX_hasseDeriv_Y_coeff
