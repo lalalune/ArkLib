@@ -289,6 +289,44 @@ theorem bcs_union_bound_append_zero_right {m : ℕ} (μ : UnionBoundPr E)
     hInteraction hOpen (fun i => Fin.elim0 i)
   simpa [bcsTotalError] using h
 
+/-- Relax the interaction/opening budgets after applying the generic BCS union bound. This is the
+error-accounting wrapper used when phase-local analyses prove sharper bounds than the final
+compiler budget records. -/
+theorem bcs_union_bound_mono_error {m : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badOpen : Fin m → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εOpen₁ εOpen₂ : Fin m → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+      ≤ bcsTotalError εInteraction₂ εOpen₂ :=
+  le_trans
+    (bcs_union_bound μ badInteraction badOpen εInteraction₁ εOpen₁ hInteraction hOpen)
+    (bcsTotalError_mono hInteraction_mono hOpen_mono)
+
+/-- Relax the interaction and both opening-batch budgets after applying the batched BCS union
+bound. -/
+theorem bcs_union_bound_append_mono_error {m n : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badLeft : Fin m → E) (badRight : Fin n → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εLeft₁ εLeft₂ : Fin m → ℝ≥0) (εRight₁ εRight₂ : Fin n → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hLeft : ∀ i, μ.pr (badLeft i) ≤ εLeft₁ i)
+    (hRight : ∀ i, μ.pr (badRight i) ≤ εRight₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hLeft_mono : ∀ i, εLeft₁ i ≤ εLeft₂ i)
+    (hRight_mono : ∀ i, εRight₁ i ≤ εRight₂ i) :
+    μ.pr (μ.union badInteraction (μ.unionFin (Fin.append badLeft badRight)))
+      ≤ bcsTotalError εInteraction₂ εLeft₂ + ∑ i, εRight₂ i := by
+  refine le_trans
+    (bcs_union_bound_append μ badInteraction badLeft badRight
+      εInteraction₁ εLeft₁ εRight₁ hInteraction hLeft hRight) ?_
+  exact add_le_add
+    (bcsTotalError_mono hInteraction_mono hLeft_mono)
+    (Finset.sum_le_sum fun i _ => hRight_mono i)
+
 /-! ## 3. Specialization to the two-phase `append` shape
 
 The reduction-level `OracleReduction.BCSTransform` is literally
@@ -312,6 +350,21 @@ theorem bcs_append_accounting (μ : UnionBoundPr E)
   -- `unionFin` on a `Fin 1` family is `union (badOpen) empty`; total error is
   -- `εInteraction + εOpen` by `bcsTotalError_one`.
   simpa [UnionBoundPr.unionFin, bcsTotalError_one] using h
+
+/-- Relax the interaction and composite-opening budgets after applying the two-phase append
+accounting. -/
+theorem bcs_append_accounting_mono_error (μ : UnionBoundPr E)
+    (badInteraction badOpen : E)
+    (εInteraction₁ εInteraction₂ εOpen₁ εOpen₂ : ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : μ.pr badOpen ≤ εOpen₁)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : εOpen₁ ≤ εOpen₂) :
+    μ.pr (μ.union badInteraction (μ.union badOpen μ.empty))
+      ≤ εInteraction₂ + εOpen₂ :=
+  le_trans
+    (bcs_append_accounting μ badInteraction badOpen εInteraction₁ εOpen₁ hInteraction hOpen)
+    (add_le_add hInteraction_mono hOpen_mono)
 
 /-- Consistency check: the two-phase total and the `m = 1` `bcsTotalError` agree,
 so collapsing the opening phase to one composite reduction loses no accounting. -/
@@ -368,7 +421,10 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_union_bound_append
 #print axioms bcs_union_bound_append_zero_left
 #print axioms bcs_union_bound_append_zero_right
+#print axioms bcs_union_bound_mono_error
+#print axioms bcs_union_bound_append_mono_error
 #print axioms bcs_append_accounting
+#print axioms bcs_append_accounting_mono_error
 #print axioms bcs_two_phase_total_eq
 #print axioms maxUnionBoundPr
 
