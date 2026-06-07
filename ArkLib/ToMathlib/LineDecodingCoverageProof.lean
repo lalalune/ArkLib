@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 
 /-!
-# LineDecoding: repair the refuted black-box ABF26 T4.21 statement (issue #141)
+# LineDecoding: repair the refuted black-box ABF26 T4.21 statement (issue #140)
 
 The previous `mcaForallDoubleCover_holds`, backed by the unsound `axiom mcaForallDoubleCover_residual`
 (which asserted `MCAForallDoubleCover` for *all* codes/radii), has been removed: that universal claim

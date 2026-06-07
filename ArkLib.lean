@@ -490,6 +490,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructur
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
 import ArkLib.OracleReduction.FiatShamir.SingleSalt
+import ArkLib.OracleReduction.FiatShamir.StateRestorationTransport
 import ArkLib.OracleReduction.FiatShamir.ZKResidualBridge
 import ArkLib.OracleReduction.FiatShamir.ZKTransport
 import ArkLib.OracleReduction.LiftContext.Lens
