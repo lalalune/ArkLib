@@ -952,20 +952,21 @@ lemma fold_preTensorCombine_eq_affineLineEvaluation_split
       (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩
         (steps := steps + 1) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
         f_i r_chal) = multilinearCombine U r_chal := by
-    intro r_chal; ext y'
-    rw [iterated_fold_eq_matrix_form]
-    unfold localized_fold_matrix_form single_point_localized_fold_matrix_form multilinearCombine
-    simp only [dotProduct, smul_eq_mul]
-    exact Finset.sum_congr rfl fun _ _ => rfl
+    intro r_chal
+    exact iterated_fold_eq_multilinearCombine_preTensorCombine 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps + 1)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i) (r_chal := r_chal)
   have h_fold_eq_V : ∀ r_chal : Fin steps → L,
       (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx
         (steps := steps) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
         fold_1_f r_chal) = multilinearCombine V r_chal := by
-    intro r_chal; ext y'
-    rw [iterated_fold_eq_matrix_form]
-    unfold localized_fold_matrix_form single_point_localized_fold_matrix_form multilinearCombine
-    simp only [dotProduct, smul_eq_mul]
-    exact Finset.sum_congr rfl fun _ _ => rfl
+    intro r_chal
+    -- `midIdx_fin_ℓ` is the `Fin ℓ` lift of `midIdx`; the two folds coincide up to that lift.
+    have h := iterated_fold_eq_multilinearCombine_preTensorCombine 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := midIdx_fin_ℓ) (steps := steps)
+      (destIdx := destIdx) (h_destIdx := by simp only [midIdx_fin_ℓ]; omega)
+      (h_destIdx_le := h_destIdx_le) (f_i := fold_1_f) (r_chal := r_chal)
+    simpa only [V, midIdx_fin_ℓ] using h
   have h_indicator : ∀ (W : WordStack L (Fin (2 ^ steps))
       (sDomain 𝔽q β h_ℓ_add_R_rate destIdx)) (j' : Fin (2 ^ steps))
       (y' : sDomain 𝔽q β h_ℓ_add_R_rate destIdx),
@@ -1072,29 +1073,32 @@ lemma fold_eq_multilinearCombine_preTensorCombine_step1
       (destIdx := destIdx) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i r_new
     = multilinearCombine (F := L) U (fun (_ : Fin 1) => r_new) := by
   intro U
-  ext y
-  rw [fold_eval_single_matrix_mul_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := ⟨i, by omega⟩) (destIdx := destIdx) (h_destIdx := by omega)
-    (h_destIdx_le := h_destIdx_le) (f := f_i) (r_challenge := r_new)]
-  unfold fold_single_matrix_mul_form multilinearCombine
-  dsimp [U]
-  have h_blk :
-      blockDiagMatrix (L := L) (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (n := 0)
-        (Mz₀ := (1 : Matrix (Fin (2 ^ 0)) (Fin (2 ^ 0)) L))
-        (Mz₁ := (1 : Matrix (Fin (2 ^ 0)) (Fin (2 ^ 0)) L))
-      = (1 : Matrix (Fin (2 ^ 1)) (Fin (2 ^ 1)) L) := by
-    ext a b <;> fin_cases a <;> fin_cases b <;>
-      simp [blockDiagMatrix, reindexSquareMatrix, Matrix.from4Blocks]
-  simp [preTensorCombine_WordStack, foldMatrix, challengeTensorExpansion, h_blk]
-  have h_w0 :
-      vecHead (multilinearWeight (F := L) (r := fun _ : Fin 1 => r_new)) =
-        multilinearWeight (F := L) (r := fun _ : Fin 1 => r_new) 0 := by
+  -- The single fold is the `1`-step iterated fold with the constant challenge `r_new`.
+  have h_fold_eq_iter :
+      fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+        (destIdx := destIdx) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i r_new
+      = iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ 1
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)
+          (r_challenges := fun (_ : Fin 1) => r_new) := by
+    rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩) (steps := 0)
+      (midIdx := ⟨i, by omega⟩) (destIdx := destIdx)
+      (h_midIdx := by omega) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)]
+    -- inner `iterated_fold 0` is `f_i`, and the last challenge is `r_new`.
+    funext y
+    rw [show (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ 0
+        (destIdx := ⟨i, by omega⟩) (by omega) (by omega) f_i
+        (Fin.init (fun (_ : Fin 1) => r_new))) = f_i from by
+      funext z
+      rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+        (h_destIdx := rfl) (h_destIdx_le := by omega)]
+      rfl]
+    simp only [Fin.last_zero]
     rfl
-  have h_w1 :
-      vecHead (vecTail (multilinearWeight (F := L) (r := fun _ : Fin 1 => r_new))) =
-        multilinearWeight (F := L) (r := fun _ : Fin 1 => r_new) 1 := by
-    rfl
-  rw [h_w0, h_w1]
+  rw [h_fold_eq_iter]
+  exact congrFun (iterated_fold_eq_multilinearCombine_preTensorCombine 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := 1)
+    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i)
+    (r_chal := fun (_ : Fin 1) => r_new)) _
 
 /-- **Connecting fiberwiseClose of a folded function to affine line evaluation proximity.**
 Given `f_i : S^i → L` with preTensorCombine `U := preTensorCombine(i, s+1, destIdx, f_i)` of

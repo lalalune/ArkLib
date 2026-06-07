@@ -88,9 +88,9 @@ def extractSuffixFromChallenge (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by o
   cast (by
       apply congrArg (fun i => ↥(sDomain 𝔽q β h_ℓ_add_R_rate i))
       apply Fin.eq_of_val_eq
-      simp only [Fin.val_mk, zero_add])
+      simp only [zero_add])
     (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := destIdx.val)
-      (h_bound := by simpa only [Fin.val_mk, zero_add] using h_destIdx_le) (x := v))
+      (h_bound := by simpa only [zero_add] using h_destIdx_le) (x := v))
 
 omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ [NeZero 𝓡] in
 /-- **Congruence Lemma for Challenge Suffixes**:
@@ -408,7 +408,7 @@ def logical_checkSingleFoldingStep
     let c_cur := logical_computeFoldedValue 𝔽q β k_prev v stmt f_prev_on_fiber
     -- f_i_val = oracle value at overlap point
     let oracle_point_idx := extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (v := v) (i := ⟨i, by omega⟩) (steps := ϑ)
+      (v := v) (i := ⟨i, k_mul_ϑ_lt_ℓ (k := k)⟩) (steps := ϑ)
     let f_i_val := f_i_on_fiber oracle_point_idx
     c_cur = f_i_val
   else True
@@ -746,10 +746,7 @@ lemma logical_checkSingleRepetition_guard_eq
       (getFiberPoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) j_idx v
         (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (v := v)
-          (i := ⟨j_idx.val * ϑ, by
-            exact
-              lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-                (h := k_mul_ϑ_lt_ℓ (k := j_idx))⟩)
+          (i := ⟨j_idx.val * ϑ, k_mul_ϑ_lt_ℓ (k := j_idx)⟩)
           (steps := ϑ))) at h_step
   rw [← previousSuffix_eq_getFiberPoint_extractMiddleFinMask
     (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
