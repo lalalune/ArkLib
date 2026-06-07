@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightCleared
 
 /-!
 # All-prefix packaging for the BCIKS20 Appendix-A weight invariant
@@ -555,6 +555,164 @@ theorem βHensel_weight_bound_of_structured_invariant_normalized_divWeight_cases
       (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0)
       t
 
+/-- Package the fixed-prefix structured invariant from repaired cleared-base div-weight cases into
+the all-`k` family consumed by `βHensel_weight_bound_of_structured_invariant`. -/
+theorem βHenselStructuredWeightInvariant_all_of_divWeight_clearedBaseCases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ} (hDH : Bivariate.totalDegree H ≤ D)
+    (hdiv : DivWeightLe_clearedBaseCases H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_of_divWeight_clearedBaseCases
+      H x₀ R hHyp hH hDH hdiv hξ k
+
+/-- Package the all-`k` structured invariant from repaired cleared-base div-weight cases, with the
+`ξ` side condition discharged by `ClaimA2.weight_ξ_bound`. -/
+theorem βHenselStructuredWeightInvariant_all_of_divWeight_clearedBaseCases'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdiv : DivWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  βHenselStructuredWeightInvariant_all_of_divWeight_clearedBaseCases
+    H x₀ R hHyp hH hDH hdiv
+    (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0)
+
+/-- Package repaired alpha-side cleared-base cases into the all-`k` structured-invariant surface,
+using successor-order lift identities to reach the div-weight side. -/
+theorem βHenselStructuredWeightInvariant_all_of_alphaWeight_clearedBaseCases_succLift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ} (hDH : Bivariate.totalDegree H ≤ D)
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_of_alphaWeight_clearedBaseCases_succLift
+      H x₀ R hHyp hH hDH hliftSucc hα hξ k
+
+/-- Package repaired alpha-side cleared-base cases into the all-`k` structured-invariant surface,
+with `ξ` discharged by `ClaimA2.weight_ξ_bound`. -/
+theorem βHenselStructuredWeightInvariant_all_of_alphaWeight_clearedBaseCases_succLift'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  βHenselStructuredWeightInvariant_all_of_alphaWeight_clearedBaseCases_succLift
+    H x₀ R hHyp hH hDH hliftSucc hα
+    (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0)
+
+/-- Route repaired cleared-base div-weight cases through the all-`k` structured-invariant front
+door for the full P1 weight bound. -/
+theorem βHensel_weight_bound_of_structured_invariant_divWeight_clearedBaseCases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdiv : DivWeightLe_clearedBaseCases H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_structured_invariant H x₀ R hHyp hH hDH hdR2
+    hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_divWeight_clearedBaseCases
+        H x₀ R hHyp hH hDH hdiv hξ)
+      t
+
+/-- Route repaired cleared-base div-weight cases through the all-`k` structured-invariant front
+door, with `ξ` discharged. -/
+theorem βHensel_weight_bound_of_structured_invariant_divWeight_clearedBaseCases'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdiv : DivWeightLe_clearedBaseCases H x₀ R hHyp hH D)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_structured_invariant_divWeight_clearedBaseCases
+    H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 hdiv
+    (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0) t
+
+/-- Route repaired alpha-side cleared-base cases through the all-`k` structured-invariant front
+door via successor-order lift identities. -/
+theorem βHensel_weight_bound_of_structured_invariant_alphaWeight_clearedBaseCases_succLift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_structured_invariant H x₀ R hHyp hH hDH hdR2
+    hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_alphaWeight_clearedBaseCases_succLift
+        H x₀ R hHyp hH hDH hliftSucc hα hξ)
+      t
+
+/-- Route repaired alpha-side cleared-base cases through the all-`k` structured-invariant front
+door via successor-order lift identities, with `ξ` discharged. -/
+theorem βHensel_weight_bound_of_structured_invariant_alphaWeight_clearedBaseCases_succLift'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_structured_invariant_alphaWeight_clearedBaseCases_succLift
+    H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 hliftSucc hα
+    (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0) t
+
 end AlphaWeight
 
 end BCIKS20.HenselNumerator
@@ -584,3 +742,11 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_structured_invariant_normalized_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_structured_invariant_divWeight'
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_structured_invariant_normalized_divWeight_cases'
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHenselStructuredWeightInvariant_all_of_divWeight_clearedBaseCases
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHenselStructuredWeightInvariant_all_of_divWeight_clearedBaseCases'
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHenselStructuredWeightInvariant_all_of_alphaWeight_clearedBaseCases_succLift
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHenselStructuredWeightInvariant_all_of_alphaWeight_clearedBaseCases_succLift'
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_structured_invariant_divWeight_clearedBaseCases
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_structured_invariant_divWeight_clearedBaseCases'
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_structured_invariant_alphaWeight_clearedBaseCases_succLift
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_structured_invariant_alphaWeight_clearedBaseCases_succLift'
