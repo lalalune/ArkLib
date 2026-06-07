@@ -217,6 +217,62 @@ theorem MLE_degreeOf (evals : (σ → Fin 2) → R) (i : σ) : degreeOf i (MLE e
 
 end DegreeOf
 
+/-! ### Linearity of the multilinear extension in the evaluation function
+
+`MLE evals = ∑ x, eqPolynomial x * C (evals x)` is manifestly `R`-linear in `evals`.  These
+lemmas record additivity, scalar homogeneity, and commutation with finite sums — the algebraic
+foundation behind sum-check-style reductions, where the multilinear extension of a *linear
+combination* of evaluation vectors (e.g. a matrix-vector product `M *ᵥ z = ∑ⱼ zⱼ • colⱼ`) splits
+as the same combination of the column extensions. -/
+section Linearity
+
+/-- **MLE is additive in the evaluation function.** -/
+theorem MLE_add (f g : (σ → Fin 2) → R) : MLE (f + g) = MLE f + MLE g := by
+  unfold MLE
+  rw [← Finset.sum_add_distrib]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [Pi.add_apply, map_add, mul_add]
+
+/-- **MLE is scalar-homogeneous in the evaluation function.** -/
+theorem MLE_smul (c : R) (f : (σ → Fin 2) → R) : MLE (c • f) = C c * MLE f := by
+  unfold MLE
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [Pi.smul_apply, smul_eq_mul, map_mul]
+  ring
+
+/-- **MLE commutes with finite sums of evaluation functions.** -/
+theorem MLE_sum {ι : Type*} (s : Finset ι) (f : ι → (σ → Fin 2) → R) :
+    MLE (∑ j ∈ s, f j) = ∑ j ∈ s, MLE (f j) := by
+  unfold MLE
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [Finset.sum_apply, map_sum, Finset.mul_sum]
+
+/-- **Pointwise form of `MLE_sum`.**  The multilinear extension of a pointwise finite sum of
+evaluation functions is the sum of their extensions — the shape that arises when an evaluation
+vector is written as a linear combination, `evals x = ∑ⱼ g j x`. -/
+theorem MLE_sum_pointwise {ι : Type*} (s : Finset ι) (g : ι → (σ → Fin 2) → R) :
+    MLE (fun x => ∑ j ∈ s, g j x) = ∑ j ∈ s, MLE (g j) := by
+  rw [← MLE_sum]
+  congr 1
+  funext x
+  exact (Finset.sum_apply x s g).symm
+
+/-- **MLE of a scaled-sum (matrix-vector) evaluation vector.**  When the evaluation function is a
+linear combination `evals x = ∑ⱼ z j * g j x` (the shape of a matrix-vector product
+`(M *ᵥ z) i = ∑ⱼ M i j * z j`, with `g j` the `j`-th column evaluations and `z j` the scalars),
+its extension splits as `∑ⱼ z j • MLE (g j)`.  This is the algebraic identity underlying the
+sum-check decomposition `MLE(M *ᵥ z)(r) = ∑ⱼ z j · MLE(colⱼ)(r)`. -/
+theorem MLE_scaled_sum {ι : Type*} (s : Finset ι) (z : ι → R) (g : ι → (σ → Fin 2) → R) :
+    MLE (fun x => ∑ j ∈ s, z j * g j x) = ∑ j ∈ s, C (z j) * MLE (g j) := by
+  rw [show (fun x => ∑ j ∈ s, z j * g j x) = ∑ j ∈ s, z j • g j by
+        funext x; rw [Finset.sum_apply]; exact Finset.sum_congr rfl fun j _ => rfl]
+  rw [MLE_sum]
+  exact Finset.sum_congr rfl fun j _ => MLE_smul (z j) (g j)
+
+end Linearity
+
 -- Note: add lemmas about the uniqueness of multilinear polynomials up to evaluations on hypercube
 
 variable [DecidableEq R] [IsDomain R]
