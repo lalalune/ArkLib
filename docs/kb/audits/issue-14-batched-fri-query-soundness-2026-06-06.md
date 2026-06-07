@@ -52,6 +52,10 @@ Current source exposes both sides of that frontier as named parts:
   reassembles Claim 8.3 with the query-lift and concrete sequential fields
   supplied while leaving the append residual and `totalError` consumption
   explicit.
+- `Fri.friSoundnessTotalErrorAccounting` names the exact `εC 𝔽 n s m ρ_sqrt +
+  α ^ l` arithmetic budget used by `fri_soundness`, and
+  `Fri.friSoundnessTotalErrorAccounting_of_phase_bounds` proves it from
+  separate batching and FRI-tail error bounds.
 - `Code.jointAgreement_equiv_of_codeword_transport` proves the finite-domain
   transport part of that lift across an equivalence of coordinate domains, once
   the corresponding codeword transport hypothesis is supplied.
@@ -151,7 +155,9 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
    end-to-end Batched FRI soundness.  The concrete sequential-composition field
    itself is now named by `Fri.friSoundnessSequentialComposition` and supplied
    by `Fri.friSoundnessSequentialComposition_of_append` once the generic append
-   residual is available.
+   residual is available; the arithmetic `εC + α^l` budget is named by
+   `Fri.friSoundnessTotalErrorAccounting` and supplied from per-phase error
+   bounds by `Fri.friSoundnessTotalErrorAccounting_of_phase_bounds`.
 
 This audit does not close the mathematical residual. It confirms that the
 current source no longer hides Claim 8.2 behind a vacuous `True` theorem and

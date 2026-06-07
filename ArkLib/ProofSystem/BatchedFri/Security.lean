@@ -1465,6 +1465,49 @@ theorem friSoundnessSequentialComposition_of_append
       (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
       init impl lang₁ lang₂ lang₃ h_batch h_fri h_residual)
 
+open ENNReal in
+/-- The concrete total-error accounting proposition used by the Claim 8.3 frontier.
+
+This names the arithmetic budget comparison between the additive sequential-composition error
+`batchError + friError` and the threshold appearing in `fri_soundness`, namely
+`εC 𝔽 n s m ρ_sqrt + α ^ l`. -/
+def friSoundnessTotalErrorAccounting
+    {l m : ℕ}
+    (_m_ge_3 : m ≥ 3)
+    (batchError friError : ℝ≥0) : Prop :=
+  let ρ_sqrt :=
+    ReedSolomon.sqrtRate
+      (2 ^ n)
+      (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+  let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+  ((batchError + friError : ℝ≥0) : ℝ≥0∞) ≤ εC 𝔽 n s m ρ_sqrt + α ^ l
+
+open ENNReal in
+omit [Nontrivial 𝔽] in
+/-- Per-phase error bounds imply the concrete Claim 8.3 total-error accounting field. -/
+theorem friSoundnessTotalErrorAccounting_of_phase_bounds
+    {l m : ℕ}
+    (m_ge_3 : m ≥ 3)
+    {batchError friError : ℝ≥0}
+    (h_batch :
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽);
+       (batchError : ℝ≥0∞) ≤ εC 𝔽 n s m ρ_sqrt))
+    (h_fri :
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽);
+       let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))));
+       (friError : ℝ≥0∞) ≤ α ^ l)) :
+    friSoundnessTotalErrorAccounting
+      (n := n) (s := s) (ω := ω) (l := l) m_ge_3 batchError friError := by
+  unfold friSoundnessTotalErrorAccounting
+  rw [ENNReal.coe_add]
+  exact add_le_add h_batch h_fri
+
 /-- Split frontier for Claim 8.3.  The `fri_soundness` residual is the end-to-end
 verifier-failure statement for batched FRI, while the remaining proof should be assembled from
 separate ingredients:
@@ -1750,6 +1793,101 @@ theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequent
       init impl lang₁ lang₂ lang₃ h_batch h_fri h_residual)
     h_total
 
+open ENNReal in
+omit [Nontrivial 𝔽] in
+/-- Reassemble Claim 8.3 after discharging the query-lift, concrete sequential-composition, and
+concrete total-error-accounting fields.  The remaining explicit inputs are the Claim 8.2 bridge
+and the deep append residual / virtual-oracle preservation hypotheses needed to supply the phase
+soundness bounds. -/
+theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError
+    {t l m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (queries : ℕ)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    [∀ i, SampleableType ((BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t).Challenge i)]
+    [∀ i, SampleableType ((Spec.pSpecFold (ω := ω) k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
+      Spec.QueryRound.pSpec (ω := ω) l).Challenge i)]
+    (lang₁ : Set (Unit × (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₂ : Set (((Fin t → 𝔽) × Spec.Statement 𝔽 (0 : Fin (k + 1))) ×
+      (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₃ : Set (Spec.FinalStatement 𝔽 k × (∀ i, Spec.FinalOracleStatement s (ω := ω) i)))
+    {batchError friError : ℝ≥0}
+    (h_batch_soundness : OracleVerifier.soundness
+      (init := init) (impl := impl)
+      lang₁ lang₂
+      (BatchedFri.Spec.BatchingRound.batchOracleReduction
+        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
+      batchError)
+    (h_fri_soundness : OracleVerifier.soundness
+      (init := init) (impl := impl)
+      lang₂ lang₃
+      (BatchedFri.Spec.liftedFRI
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
+      friError)
+    (h_residual : OracleVerifier.appendSoundnessResidual
+      (init := init) (impl := impl)
+      (BatchedFri.Spec.BatchingRound.batchOracleReduction
+        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
+      (BatchedFri.Spec.liftedFRI
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
+      h_batch_soundness h_fri_soundness)
+    (h_batch_error :
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽);
+       (batchError : ℝ≥0∞) ≤ εC 𝔽 n s m ρ_sqrt))
+    (h_fri_error :
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽);
+       let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))));
+       (friError : ℝ≥0∞) ≤ α ^ l))
+    {agreementBridge : Prop}
+    (query_pieces_imply_claim :
+      queryRoundDensityBound G δ queries →
+      batchedFRIOracleLensReduction
+        (n := n) (s := s) (d := d) (ω := ω)
+        (domain_size_cond := domain_size_cond) l t →
+      agreementBridge →
+      fri_query_soundness (n := n) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
+    (soundness_pieces_imply_claim :
+      friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 →
+      friSoundnessSequentialComposition
+        (n := n) (s := s) (d := d) (ω := ω) (l := l)
+        (domain_size_cond := domain_size_cond)
+        init impl lang₁ lang₃ batchError friError →
+      friSoundnessTotalErrorAccounting
+        (n := n) (s := s) (ω := ω) (l := l) m_ge_3 batchError friError →
+      fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+        (domain_size_cond := domain_size_cond) f m_ge_3)
+    (h_agreementBridge : agreementBridge) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 := by
+  exact
+    fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
+      (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
+      f m_ge_3 G δ queries h_agreement init impl lang₁ lang₂ lang₃
+      h_batch_soundness h_fri_soundness h_residual query_pieces_imply_claim
+      soundness_pieces_imply_claim h_agreementBridge
+      (friSoundnessTotalErrorAccounting_of_phase_bounds
+        (n := n) (s := s) (ω := ω) (l := l) m_ge_3 h_batch_error h_fri_error)
+
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.subdomainZeroEquiv
 #print axioms Fri.reedSolomon_code_subdomainZero_transport
@@ -1767,6 +1905,9 @@ set_option linter.style.longLine false in
 #print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
+#print axioms Fri.friSoundnessTotalErrorAccounting
+#print axioms Fri.friSoundnessTotalErrorAccounting_of_phase_bounds
+#print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError
 #print axioms Fri.fri_soundness_of_parts
 
 end Soundness
