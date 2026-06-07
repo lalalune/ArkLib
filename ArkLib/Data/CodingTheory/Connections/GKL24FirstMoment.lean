@@ -111,6 +111,22 @@ same maximal domain; the cardinality consumer for such petals is
 def linePetal (D : Finset ι) (u₀ u₁ w : ι → F) (γ : F) : Finset ι :=
   lineAgreeSet u₀ u₁ w γ \ D
 
+/-- A correlated-agreement domain at radius `p`: a large coordinate set on which the stack
+`(u₀,u₁)` jointly agrees with a codeword pair from `MC`. GCXK/GKL maximal domains are maximal
+sets satisfying this predicate. -/
+def corrAgreeDomain (MC : Submodule F (ι → F)) (p : ℝ≥0) (u₀ u₁ : ι → F)
+    (D : Finset ι) : Prop :=
+  ((1 - p) * Fintype.card ι : ℝ≥0) ≤ (D.card : ℝ≥0) ∧
+    pairJointAgreesOn (MC : Set (ι → F)) D u₀ u₁
+
+/-- A maximal correlated-agreement domain: no larger correlated-agreement domain strictly
+contains it. This explicit formulation avoids relying on a particular `Maximal` API and matches
+the inclusion argument needed for the GCXK/GKL sunflower step. -/
+def maxCorrAgreeDomain (MC : Submodule F (ι → F)) (p : ℝ≥0) (u₀ u₁ : ι → F)
+    (D : Finset ι) : Prop :=
+  corrAgreeDomain MC p u₀ u₁ D ∧
+    ∀ E : Finset ι, D ⊆ E → corrAgreeDomain MC p u₀ u₁ E → E ⊆ D
+
 theorem mem_lineAgreeSet_iff (u₀ u₁ w : ι → F) (γ : F) (i : ι) :
     i ∈ lineAgreeSet u₀ u₁ w γ ↔ w i = u₀ i + γ • u₁ i := by
   simp [lineAgreeSet]
@@ -183,6 +199,41 @@ theorem pairJointAgreesOn_inter_lineAgreeSet_of_ne
           simp [smul_eq_mul]
       _ = u₀ i := by ring
   exact ⟨hv₀_i, hv₁_i⟩
+
+/-- Maximality identifies any larger correlated-agreement domain containing `D` with `D`
+itself. -/
+theorem maxCorrAgreeDomain.eq_of_subset
+    {MC : Submodule F (ι → F)} {p : ℝ≥0} {u₀ u₁ : ι → F} {D E : Finset ι}
+    (hD : maxCorrAgreeDomain MC p u₀ u₁ D)
+    (hsub : D ⊆ E) (hE : corrAgreeDomain MC p u₀ u₁ E) :
+    E = D :=
+  Finset.Subset.antisymm (hD.2 E hsub hE) hsub
+
+/-- **Maximal-domain intersection identification.** If a maximal correlated-agreement domain
+`D` lies inside two line-agreement domains and their intersection is large enough, then the
+intersection is exactly `D`. The algebraic fact that the intersection is a joint-agreement domain
+is supplied by `pairJointAgreesOn_inter_lineAgreeSet_of_ne`; maximality then rules out a strict
+expansion. -/
+theorem inter_lineAgreeSet_eq_of_maxCorrAgreeDomain
+    (MC : Submodule F (ι → F)) (p : ℝ≥0) (D : Finset ι)
+    (u₀ u₁ wγ wγ' : ι → F) {γ γ' : F}
+    (hD : maxCorrAgreeDomain MC p u₀ u₁ D)
+    (hDγ : D ⊆ lineAgreeSet u₀ u₁ wγ γ)
+    (hDγ' : D ⊆ lineAgreeSet u₀ u₁ wγ' γ')
+    (hIlarge :
+      ((1 - p) * Fintype.card ι : ℝ≥0) ≤
+        (((lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ').card : ℕ) : ℝ≥0))
+    (hne : γ ≠ γ') (hwγ : wγ ∈ (MC : Set (ι → F))) (hwγ' : wγ' ∈ (MC : Set (ι → F))) :
+    lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ' = D := by
+  classical
+  have hsub :
+      D ⊆ lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ' := by
+    intro i hi
+    exact Finset.mem_inter.mpr ⟨hDγ hi, hDγ' hi⟩
+  have hI : corrAgreeDomain MC p u₀ u₁
+      (lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ') := by
+    exact ⟨hIlarge, pairJointAgreesOn_inter_lineAgreeSet_of_ne MC u₀ u₁ wγ wγ' hne hwγ hwγ'⟩
+  exact maxCorrAgreeDomain.eq_of_subset hD hsub hI
 
 /-- **Single-codeword determinacy (the core in-tree fact).** For a `Submodule` code `MC` and a
 fixed codeword `w ∈ MC`, every bad combining point `γ ∈ mcaBadWitness w` equals
@@ -962,6 +1013,8 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.lineAgreeSet_card_ge_of_mem_mcaBadWitness
 #print axioms ProximityGap.linePetal_nonempty_of_ssubset_lineAgreeSet
 #print axioms ProximityGap.pairJointAgreesOn_inter_lineAgreeSet_of_ne
+#print axioms ProximityGap.maxCorrAgreeDomain.eq_of_subset
+#print axioms ProximityGap.inter_lineAgreeSet_eq_of_maxCorrAgreeDomain
 #print axioms ProximityGap.badScalars_card_le_domain_compl_of_disjoint_petals
 #print axioms ProximityGap.badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals
 #print axioms ProximityGap.mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals

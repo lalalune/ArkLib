@@ -123,6 +123,30 @@ def permCheckAfterGateReduction :
 def plonkCheckPSpec : ProtocolSpec 2 :=
   gateCheckPSpec 𝓡 numWires ++ₚ permCheckPSpec 𝓡 numGates
 
+omit [CommRing 𝓡] [DecidableEq 𝓡] in
+private theorem plonkCheckPSpec_challengeIdx_false
+    (i : (plonkCheckPSpec 𝓡 numWires numGates).ChallengeIdx) : False := by
+  rcases i with ⟨i, hdir⟩
+  have hi : (i : ℕ) = 0 ∨ (i : ℕ) = 1 := by omega
+  rcases hi with hi | hi
+  · have : i = ⟨0, by omega⟩ := by ext; exact hi
+    rw [this] at hdir
+    simp [Fin.vappend_eq_append] at hdir
+  · have : i = ⟨1, by omega⟩ := by ext; exact hi
+    rw [this] at hdir
+    change Fin.append
+        (fun i : Fin 1 => match i with | 0 => Direction.P_to_V)
+        (fun i : Fin 1 => match i with | 0 => Direction.P_to_V)
+        (Fin.natAdd 1 (0 : Fin 1)) = Direction.V_to_P at hdir
+    rw [Fin.append_right] at hdir
+    simp at hdir
+
+instance : ∀ i, VCVCompatible ((plonkCheckPSpec 𝓡 numWires numGates).Challenge i) :=
+  fun i => False.elim (plonkCheckPSpec_challengeIdx_false 𝓡 numWires numGates i)
+
+instance : ∀ i, SampleableType ((plonkCheckPSpec 𝓡 numWires numGates).Challenge i) :=
+  fun i => False.elim (plonkCheckPSpec_challengeIdx_false 𝓡 numWires numGates i)
+
 @[reducible]
 def plonkCheckProver :
     Prover []ₒ
@@ -142,6 +166,54 @@ def plonkCheckVerifier :
   Verifier.append
     (gateCheckVerifier (𝓡 := 𝓡) (numWires := numWires) (numGates := numGates))
     (permCheckAfterGateVerifier 𝓡 numWires numGates)
+
+theorem plonkCheckVerifier_verify_eq
+    (cs : Plonk.ConstraintSystem 𝓡 numWires numGates)
+    (transcript : FullTranscript (plonkCheckPSpec 𝓡 numWires numGates)) :
+    (plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).verify cs transcript =
+      let w : Fin numWires → 𝓡 := transcript.fst ⟨0, by simp⟩
+      let f : Fin (3 * numGates) → 𝓡 := transcript.snd ⟨0, by simp⟩
+      if cs.accepts w ∧
+          ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
+            CopyConstraintsSatisfied f cs.perm then
+        pure (cs, w)
+      else
+        failure := by
+  simp only [plonkCheckVerifier, Verifier.append, gateCheckVerifier_verify_eq]
+  let w : Fin numWires → 𝓡 := transcript.fst ⟨0, by simp⟩
+  let f : Fin (3 * numGates) → 𝓡 := transcript.snd ⟨0, by simp⟩
+  change
+    ((do
+      let mid ←
+        (if cs.accepts w then
+          pure (cs, w)
+        else
+          failure : OptionT (OracleComp []ₒ)
+            (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))
+      let out ←
+        (if ExtendedWireAssignmentMatches 𝓡 numWires numGates mid.1 mid.2 f ∧
+              CopyConstraintsSatisfied f mid.1.perm then
+            pure (mid.1, mid.2)
+          else
+            failure : OptionT (OracleComp []ₒ)
+              (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))
+      pure out) : OptionT (OracleComp []ₒ)
+        (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡))) =
+      (if cs.accepts w ∧
+            ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
+              CopyConstraintsSatisfied f cs.perm then
+          pure (cs, w)
+        else
+          failure : OptionT (OracleComp []ₒ)
+            (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))
+  by_cases hGate : cs.accepts w
+  · by_cases hPerm :
+        ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
+          CopyConstraintsSatisfied f cs.perm
+    · simp [hGate, hPerm]
+    · simp [hGate, hPerm]
+  · simp [hGate]
 
 @[reducible]
 def plonkCheckReduction :
@@ -186,12 +258,156 @@ def plonkCheckLangOut :
     Set (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) :=
   plonkCheckRel 𝓡 numWires numGates
 
+variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+
+/-- The post-gate permutation verifier has zero-error round-by-round soundness for the full
+gate-and-copy language on its `(cs, w)` statement. The verifier returns only the input statement,
+so any accepted output in `plonkCheckLangOut` immediately puts the input statement in the same
+language. -/
+theorem permCheckAfterGateVerifier_rbrSoundness :
+    (permCheckAfterGateVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).rbrSoundness init impl
+        (plonkCheckLangOut 𝓡 numWires numGates)
+        (plonkCheckLangOut 𝓡 numWires numGates) 0 := by
+  refine ⟨{
+    toFun := fun _ stmt _ => stmt ∈ plonkCheckLangOut 𝓡 numWires numGates
+    toFun_empty := fun _ => Iff.rfl
+    toFun_next := fun _ _ _ _ h _ => h
+    toFun_full := fun stmt tr hstmt => by
+      rcases stmt with ⟨cs, w⟩
+      rw [probEvent_eq_zero_iff]
+      intro out hout houtLang
+      rw [OptionT.mem_support_iff] at hout
+      simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hout
+      obtain ⟨s, _, hout⟩ := hout
+      by_cases hAccept :
+          ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w (tr ⟨0, by simp⟩) ∧
+            CopyConstraintsSatisfied (tr ⟨0, by simp⟩) cs.perm
+      · have hrun :
+            (simulateQ impl
+              ((permCheckAfterGateVerifier (𝓡 := 𝓡) (numWires := numWires)
+                (numGates := numGates)).run (cs, w) tr)).run' s =
+              pure (some (cs, w)) := by
+          simp only [Verifier.run]
+          split_ifs with h
+          · change (simulateQ impl (pure (some (cs, w)) : OracleComp []ₒ
+                (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+                  (Fin numWires → 𝓡))))).run' s =
+              pure (some (cs, w))
+            rw [simulateQ_pure]
+            change Prod.fst <$> (pure (some (cs, w)) : StateT σ ProbComp
+              (Option (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))).run s =
+              pure (some (cs, w))
+            rw [StateT.run_pure]
+            simp [map_pure]
+          · exact False.elim (h (by simpa using hAccept))
+        rw [hrun] at hout
+        simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hout
+        subst out
+        exact hstmt houtLang
+      · have hrun :
+            (simulateQ impl
+              ((permCheckAfterGateVerifier (𝓡 := 𝓡) (numWires := numWires)
+                (numGates := numGates)).run (cs, w) tr)).run' s =
+              pure none := by
+          simp only [Verifier.run]
+          split_ifs with h
+          · exact False.elim (hAccept (by simpa using h))
+          · change (simulateQ impl (pure none : OracleComp []ₒ
+                (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+                  (Fin numWires → 𝓡))))).run' s =
+              pure none
+            rw [simulateQ_pure]
+            change Prod.fst <$> (pure none : StateT σ ProbComp
+              (Option (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))).run s =
+              pure none
+            rw [StateT.run_pure]
+            simp [map_pure]
+        rw [hrun] at hout
+        simp at hout
+  }, ?_⟩
+  intro _ _ _ _ _ _ ⟨⟨0, _⟩, hdir⟩
+  exact absurd hdir (by simp)
+
+/-- The composed two-message Plonk verifier has zero-error round-by-round soundness for the
+gate-and-copy satisfiability language. Since both rounds are prover-message rounds, the RBR
+challenge condition is empty; a successful full transcript directly exposes the satisfying gate
+witness. -/
+theorem plonkCheckVerifier_rbrSoundness :
+    (plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).rbrSoundness init impl
+        (plonkCheckLangIn 𝓡 numWires numGates)
+        (plonkCheckLangOut 𝓡 numWires numGates) 0 := by
+  refine ⟨{
+    toFun := fun _ cs _ => cs ∈ plonkCheckLangIn 𝓡 numWires numGates
+    toFun_empty := fun _ => Iff.rfl
+    toFun_next := fun _ _ _ _ h _ => h
+    toFun_full := fun cs tr hcs => ?_
+  }, ?_⟩
+  · rw [probEvent_eq_zero_iff]
+    intro out hout houtLang
+    rw [OptionT.mem_support_iff] at hout
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hout
+    obtain ⟨s, _, hout⟩ := hout
+    let w : Fin numWires → 𝓡 := tr.fst ⟨0, by simp⟩
+    let f : Fin (3 * numGates) → 𝓡 := tr.snd ⟨0, by simp⟩
+    by_cases hAccept :
+        cs.accepts w ∧ ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
+          CopyConstraintsSatisfied f cs.perm
+    · have hrun :
+          (simulateQ impl
+            ((plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+              (numGates := numGates)).run cs tr)).run' s =
+            pure (some (cs, w)) := by
+        simp only [Verifier.run, plonkCheckVerifier_verify_eq]
+        split_ifs with h
+        · change (simulateQ impl (pure (some (cs, w)) : OracleComp []ₒ
+              (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+                (Fin numWires → 𝓡))))).run' s =
+            pure (some (cs, w))
+          rw [simulateQ_pure]
+          change Prod.fst <$> (pure (some (cs, w)) : StateT σ ProbComp
+            (Option (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))).run s =
+            pure (some (cs, w))
+          rw [StateT.run_pure]
+          simp [map_pure]
+        · exact False.elim (h (by simpa using hAccept))
+      rw [hrun] at hout
+      simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hout
+      subst out
+      exact hcs ⟨w, houtLang⟩
+    · have hrun :
+          (simulateQ impl
+            ((plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+              (numGates := numGates)).run cs tr)).run' s =
+            pure none := by
+        simp only [Verifier.run, plonkCheckVerifier_verify_eq]
+        split_ifs with h
+        · exact False.elim (hAccept (by simpa using h))
+        · change (simulateQ impl (pure none : OracleComp []ₒ
+              (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+                (Fin numWires → 𝓡))))).run' s =
+            pure none
+          rw [simulateQ_pure]
+          change Prod.fst <$> (pure none : StateT σ ProbComp
+            (Option (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))).run s =
+            pure none
+          rw [StateT.run_pure]
+          simp [map_pure]
+      rw [hrun] at hout
+      simp at hout
+  · intro _ _ _ _ _ _ i
+    exact False.elim (plonkCheckPSpec_challengeIdx_false 𝓡 numWires numGates i)
+
+#print axioms Plonk.plonkCheckVerifier_verify_eq
 #print axioms Plonk.permCheckAfterGateVerifier_verify_eq
 #print axioms Plonk.permCheckAfterGateVerifier_mem_support_iff
 #print axioms Plonk.plonkCheckReduction_eq_append
 #print axioms Plonk.plonkCheckRel
 #print axioms Plonk.plonkCheckLangIn
 #print axioms Plonk.plonkCheckLangOut
+#print axioms Plonk.permCheckAfterGateVerifier_rbrSoundness
+#print axioms Plonk.plonkCheckVerifier_rbrSoundness
 
 end Composition
 
