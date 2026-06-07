@@ -323,6 +323,23 @@ theorem soundness.mono_error
   exact le_trans (hSound WitIn WitOut witIn prover stmtIn hstmtIn)
     (ENNReal.coe_le_coe.mpr hle)
 
+/-- Verifier soundness is monotone in the input and output languages.
+
+If soundness holds for a smaller honest input language and a larger accepting output language, then
+it also holds after enlarging the honest input language and shrinking the accepting output language.
+-/
+theorem soundness.mono_languages
+    {langIn langIn' : Set StmtIn} {langOut langOut' : Set StmtOut}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    {soundnessError : ℝ≥0}
+    (hSound : soundness init impl langIn langOut verifier soundnessError)
+    (hIn : langIn ⊆ langIn') (hOut : langOut' ⊆ langOut) :
+    soundness init impl langIn' langOut' verifier soundnessError := by
+  intro WitIn WitOut witIn prover stmtIn hstmtIn
+  refine le_trans ?_ (hSound WitIn WitOut witIn prover stmtIn ?_)
+  · exact probEvent_mono fun _ _ h => hOut h
+  · exact fun h => hstmtIn (hIn h)
+
 -- How would one define a rewinding extractor? It should have oracle access to the prover's
 -- functions (receive challenges and send messages), and be able to observe & simulate the prover's
 -- oracle queries
@@ -371,6 +388,24 @@ theorem knowledgeSoundness.mono_error
   obtain ⟨extractor, hSound⟩ := hSound
   exact ⟨extractor, fun stmtIn witIn prover =>
     le_trans (hSound stmtIn witIn prover) (ENNReal.coe_le_coe.mpr hle)⟩
+
+/-- Straightline knowledge soundness is monotone in the input and output relations.
+
+If knowledge soundness holds for a smaller valid input relation and a larger valid output relation,
+then it also holds after enlarging the valid input relation and shrinking the valid output relation.
+-/
+theorem knowledgeSoundness.mono_relations
+    {relIn relIn' : Set (StmtIn × WitIn)} {relOut relOut' : Set (StmtOut × WitOut)}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    {knowledgeError : ℝ≥0}
+    (hSound : knowledgeSoundness init impl relIn relOut verifier knowledgeError)
+    (hIn : relIn ⊆ relIn') (hOut : relOut' ⊆ relOut) :
+    knowledgeSoundness init impl relIn' relOut' verifier knowledgeError := by
+  obtain ⟨extractor, hSound⟩ := hSound
+  refine ⟨extractor, fun stmtIn witIn prover => ?_⟩
+  refine le_trans ?_ (hSound stmtIn witIn prover)
+  exact probEvent_mono fun ⟨stmtIn', witIn', stmtOut, witOut⟩ _ h =>
+    ⟨fun hValid => h.1 (hIn hValid), hOut h.2⟩
 
 /-- An extractor is **monotone** if its success probability on a given query log is the same as
   the success probability on any extension of that query log. -/

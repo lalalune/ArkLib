@@ -276,6 +276,46 @@ theorem RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_data
       (k := 1) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
 
 omit [DecidableEq ι] in
+/-- Square-endpoint affine-line capstone with the strict Johnson branch supplied by the verified
+`betaRec` capsule and the exact lattice branch supplied through `BoundaryCardLatticeData`.
+
+Compared with `RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_data`, this
+square-endpoint adapter does not require the strict-interior boundary producer: once
+`deg * |ι|` is a square, the closed boundary is exactly the isolated lattice-data branch. -/
+theorem RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_data_isSquare
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hSquare : IsSquare (deg * Fintype.card ι))
+    (hInput : ∀ (_hk : 0 < 1) (u : WordStack F (Fin 2) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          (((1 : ℕ) : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ArkLib.KeystoneStrictResidual.BetaCurveInput
+        (k := 1) (deg := deg) (domain := domain) (δ := δ) u)
+    (hLatticeData :
+      ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
+        (k := 1) (deg := deg) (domain := domain) (δ := δ)) :
+  δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  have hcurves :=
+    ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_data_isSquare
+      (k := 1) (deg := deg) (domain := domain) (δ := δ)
+      (ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
+        (k := 1) (deg := deg) (domain := domain) (δ := δ) hInput)
+      hLatticeData hδ hsqrt_le hdeg hSquare
+  unfold δ_ε_correlatedAgreementAffineLines
+  intro u hprob
+  unfold δ_ε_correlatedAgreementCurves at hcurves
+  exact hcurves u (by
+    simpa [one_mul, Fin.sum_univ_two] using hprob)
+
+omit [DecidableEq ι] in
 /-- Closed-boundary affine-line capstone with the strict Johnson branch supplied by the verified
 `betaRec` capsule and the complete square-root boundary quantization package.
 
@@ -574,6 +614,45 @@ theorem RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_lattice_data
       (k := 1) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
 
 omit [DecidableEq ι] in
+/-- Square-endpoint affine-line capstone with the finite-range `betaRec` capsule and the exact
+lattice branch supplied through `BoundaryCardLatticeData`.
+
+This is the finite-range companion to
+`RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_data_isSquare`. -/
+theorem RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_lattice_data_isSquare
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hSquare : IsSquare (deg * Fintype.card ι))
+    (hInput : ∀ (_hk : 0 < 1) (u : WordStack F (Fin 2) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          (((1 : ℕ) : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ArkLib.KeystoneStrictResidual.BetaCurveInputFin
+        (k := 1) (deg := deg) (domain := domain) (δ := δ) u)
+    (hLatticeData :
+      ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
+        (k := 1) (deg := deg) (domain := domain) (δ := δ)) :
+  δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  have hcurves :=
+    ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_data_isSquare
+      (k := 1) (deg := deg) (domain := domain) (δ := δ)
+      (ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRecFin
+        (k := 1) (deg := deg) (domain := domain) (δ := δ) hInput)
+      hLatticeData hδ hsqrt_le hdeg hSquare
+  unfold δ_ε_correlatedAgreementAffineLines
+  intro u hprob
+  unfold δ_ε_correlatedAgreementCurves at hcurves
+  exact hcurves u (by
+    simpa [one_mul, Fin.sum_univ_two] using hprob)
+
+omit [DecidableEq ι] in
 /-- Closed-boundary affine-line capstone with the finite-range `betaRec` capsule and the complete
 square-root boundary quantization package.
 
@@ -725,6 +804,8 @@ end ProximityGap
 #print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_quantization_data
 #print axioms
+  ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_data_isSquare
+#print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentre_strict
 #print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentre_boundaryCard
@@ -736,6 +817,8 @@ end ProximityGap
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentre_quantization_data
 #print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_quantization_data
+#print axioms
+  ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_lattice_data_isSquare
 #print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentreFin_strict
 #print axioms
