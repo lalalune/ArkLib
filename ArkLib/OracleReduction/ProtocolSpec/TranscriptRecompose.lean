@@ -109,7 +109,21 @@ theorem appendRight_concat (T₁ : FullTranscript pSpec₁) {k : Fin n} (msg : p
         exact ((cast_heq _ _).trans (cast_heq _ _)).trans
           (((cast_heq _ _).trans (cast_heq _ _)).symm)
 
+/-- **`appendRight` of the empty `pSpec₂` transcript** is just `T₁` (heterogeneously): the base of
+the right-block recursion, where no `pSpec₂` rounds have run yet. -/
+theorem appendRight_empty (T₁ : FullTranscript pSpec₁) :
+    HEq (appendRight T₁ (default : pSpec₂.Transcript (0 : Fin (n + 1)))) T₁ := by
+  refine Function.hfunext ?_ ?_
+  · congr 1
+  · intro i j hij
+    have hv : i.val = j.val := (Fin.heq_ext_iff (by simp)).mp hij
+    simp only [appendRight]
+    rw [dif_pos (show i.val < m from by have := i.isLt; simp at this; omega)]
+    refine (cast_heq _ _).trans ?_
+    rw [show (⟨i.val, by have := i.isLt; simp at this; omega⟩ : Fin m) = j from by ext; exact hv]
+
 end ProtocolSpec.Transcript
 
 #check @ProtocolSpec.Transcript.appendRight
 #print axioms ProtocolSpec.Transcript.appendRight_concat
+#print axioms ProtocolSpec.Transcript.appendRight_empty
