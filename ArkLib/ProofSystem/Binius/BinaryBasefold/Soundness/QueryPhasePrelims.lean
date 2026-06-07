@@ -112,6 +112,7 @@ lemma extractSuffixFromChallenge_congr_destIdx
   subst h_idx_eq
   rw [cast_eq]
 
+set_option maxHeartbeats 2000000 in
 omit [SampleableType L] h_β₀_eq_1 in
 /-- **First Oracle Equals Polynomial Oracle Function**:
 When `strictOracleFoldingConsistencyProp` holds, the first oracle (`getFirstOracle`) equals

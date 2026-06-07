@@ -131,6 +131,29 @@ theorem evalX_hasseDeriv_Y_coeff (x₀ : F) (R : F[X][X][Y]) (i1 m i : ℕ) :
   rw [evalX_C_coeff, hasseDerivX_coeff, hasseDerivY_coeff, evalX_C_coeff, hasseDerivX_coeff,
     map_nsmul (Polynomial.hasseDeriv i1), Polynomial.eval_smul]
 
+/-- **The α₀-Taylor identity.**  Evaluating the iterated Hasse coefficient at the generic root
+`α₀ = T/W` (`hasseEvalAtRoot`) is the Hasse-Taylor sum: by `eval₂_eq_sum_range` and the Y-Hasse
+commutation (brick 9), each order-`i` term is the order-`(i+m)` coefficient of `Δ_X^{i₁} R` weighted
+by `C(i+m, m)` and `α₀^i`:
+
+  `hasseEvalAtRoot i₁ m = ∑_i C(i+m, m) · (lift((Δ_X^{i₁}R)|_{x₀}).coeff(i+m)) · α₀^i`.
+
+This is exactly the (reindexed) α₀-Taylor shape appearing on the LHS of `RestrictedFaaDiBrunoMatch`
+(`restrictedFaaDiBrunoSum_eq_partitionForm`), now identified with the embedding-side
+`hasseEvalAtRoot` / `B_coeff` object. -/
+theorem hasseEvalAtRoot_eq_taylorSum (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    hasseEvalAtRoot H x₀ R i1 m
+      = ∑ i ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
+              (hasseDerivX i1 (hasseDerivY m R))).natDegree + 1),
+          (i + m).choose m
+            • (liftToFunctionField (H := H)
+                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff (i + m))
+                * (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) ^ i) := by
+  unfold hasseEvalAtRoot
+  rw [Polynomial.eval₂_eq_sum_range]
+  refine Finset.sum_congr rfl (fun i _ => ?_)
+  rw [evalX_hasseDeriv_Y_coeff, map_nsmul (liftToFunctionField (H := H)), smul_mul_assoc]
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
@@ -139,3 +162,4 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.embed_βHensel_succ
 #print axioms BCIKS20.HenselNumerator.coeff_succ_βHenselAssembled_partitionForm
 #print axioms BCIKS20.HenselNumerator.evalX_hasseDeriv_Y_coeff
+#print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_taylorSum
