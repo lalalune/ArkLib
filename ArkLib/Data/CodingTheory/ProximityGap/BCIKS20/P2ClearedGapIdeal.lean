@@ -44,7 +44,7 @@ theorem uncleared_emb_eq_cleared_emb_iff_zeroClearingPolyFull_sub_mem
     embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) ↔
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) ↔
       (∑ i ∈ Finset.range (R.natDegree + 1),
           Polynomial.C
             ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i
@@ -63,7 +63,7 @@ theorem zeroClearingPolyFull_sub_mem_of_uncleared_emb_eq_cleared_emb
       embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0))) :
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree))) :
       (∑ i ∈ Finset.range (R.natDegree + 1),
           Polynomial.C
             ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i
@@ -87,7 +87,7 @@ theorem uncleared_emb_eq_cleared_emb_of_zeroClearingPolyFull_sub_mem
     embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
       = embeddingOf𝒪Into𝕃 H
           (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) :=
+            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) :=
   (uncleared_emb_eq_cleared_emb_iff_zeroClearingPolyFull_sub_mem
     H x₀ R hHyp hd hζ hdeg).2 hmem
 
@@ -101,7 +101,7 @@ theorem uncleared_emb_eq_cleared_emb_of_leadingCoeff_one
     embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
       = embeddingOf𝒪Into𝕃 H
           (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) :=
+            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) :=
   uncleared_emb_eq_cleared_emb_of_partitionMatchAt_zero H x₀ R hHyp hd hζ hdeg
     (restrictedPartitionMatchAt_zero_of_leadingCoeff_one H x₀ R hHyp hd hlc)
 
@@ -115,7 +115,7 @@ theorem uncleared_emb_eq_cleared_emb_iff_zeroClearingPolyFull_sub_mem_of_hyp
     embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) ↔
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) ↔
       (∑ i ∈ Finset.range (R.natDegree + 1),
           Polynomial.C
             ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i
@@ -135,7 +135,7 @@ theorem zeroClearingPolyFull_sub_mem_of_uncleared_emb_eq_cleared_emb_of_hyp
       embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0))) :
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree))) :
       (∑ i ∈ Finset.range (R.natDegree + 1),
           Polynomial.C
             ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i
@@ -160,7 +160,7 @@ theorem uncleared_emb_eq_cleared_emb_of_zeroClearingPolyFull_sub_mem_of_hyp
     embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
       = embeddingOf𝒪Into𝕃 H
           (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) :=
+            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) :=
   (uncleared_emb_eq_cleared_emb_iff_zeroClearingPolyFull_sub_mem_of_hyp
     H x₀ R hHyp hd hdeg).2 hmem
 
@@ -175,7 +175,7 @@ theorem uncleared_emb_eq_cleared_emb_of_leadingCoeff_one_of_hyp
     embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
       = embeddingOf𝒪Into𝕃 H
           (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) :=
+            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) :=
   uncleared_emb_eq_cleared_emb_of_leadingCoeff_one H x₀ R hHyp hd
     (ζ_ne_zero H x₀ R hHyp) hdeg hlc
 

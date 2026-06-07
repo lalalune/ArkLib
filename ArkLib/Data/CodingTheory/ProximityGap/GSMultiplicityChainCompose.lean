@@ -26,8 +26,8 @@ vanishing now rests on {Q_multiplicity (proven) + Q_deg (proven) + the list-deco
 
 `GSMultiplicityCore.Q_vanishes_on_close_codeword_graph_of_radius` already discharges the *raw count*
 side condition `natWeightedDegree (eval_on_Z Q z) 1 k < m·#A` of the BCIKS20 §5 keystone
-`Agreement.Q_vanishes_on_close_codeword_graph`, but at the cost of a **named** weighted-degree-budget
-hypothesis
+`Agreement.Q_vanishes_on_close_codeword_graph`, but at the cost of a **named**
+weighted-degree-budget hypothesis
 
   `hwdeg : natWeightedDegree (eval_on_Z Q z) 1 k ≤ proximity_gap_degree_bound k n m`.
 
@@ -156,10 +156,11 @@ theorem Q_vanishes_on_close_codeword_graph_of_Qdeg [DecidableEq (Polynomial F)]
     (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
     (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
     (hcard : A.card = n - dist) :
-    (Trivariate.eval_on_Z Q z).eval (Pz hS) = 0 :=
-  Core3GSMultiplicity.Q_vanishes_on_close_codeword_graph_of_radius
-    (F := F) (h_gs := h_gs) hS hQz_ne A hA hk hm hdist hradius
-    (Qdeg_eval_on_Z_le_proximity_gap_degree_bound (z := z) h_gs) hcard
+    (Trivariate.eval_on_Z Q z).eval (Pz hS) = 0 := by
+  classical
+  exact Core3GSMultiplicity.Q_vanishes_on_close_codeword_graph_of_radius
+      (F := F) (h_gs := h_gs) hS hQz_ne A hA hk hm hdist hradius
+      (Qdeg_eval_on_Z_le_proximity_gap_degree_bound (z := z) h_gs) hcard
 
 /-- `pg_eval_on_Z` form of `Q_vanishes_on_close_codeword_graph_of_Qdeg` (matching the extraction
 toolbox API), with the free count and degree budget both discharged from `h_gs`. -/
@@ -174,10 +175,11 @@ theorem Q_vanishes_on_close_codeword_graph_pg_of_Qdeg [DecidableEq (Polynomial F
     (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
     (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
     (hcard : A.card = n - dist) :
-    (pg_eval_on_Z (F := F) Q z).eval (Pz hS) = 0 :=
-  Core3GSMultiplicity.Q_vanishes_on_close_codeword_graph_pg_of_radius
-    (F := F) (h_gs := h_gs) hS hQz_ne A hA hk hm hdist hradius
-    (Qdeg_eval_on_Z_le_proximity_gap_degree_bound (z := z) h_gs) hcard
+    (pg_eval_on_Z (F := F) Q z).eval (Pz hS) = 0 := by
+  classical
+  exact Core3GSMultiplicity.Q_vanishes_on_close_codeword_graph_pg_of_radius
+      (F := F) (h_gs := h_gs) hS hQz_ne A hA hk hm hdist hradius
+      (Qdeg_eval_on_Z_le_proximity_gap_degree_bound (z := z) h_gs) hcard
 
 /-- Matching-factor divisibility form: `X - C (Pz hS) ∣ pg_eval_on_Z Q z` from the Johnson radius
 alone (free count and degree budget discharged from `h_gs`). -/
@@ -192,10 +194,11 @@ theorem Q_graph_factor_dvd_of_Qdeg [DecidableEq (Polynomial F)]
     (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
     (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
     (hcard : A.card = n - dist) :
-    Polynomial.X - Polynomial.C (Pz hS) ∣ pg_eval_on_Z (F := F) Q z :=
-  Polynomial.dvd_iff_isRoot.mpr
-    (Q_vanishes_on_close_codeword_graph_pg_of_Qdeg
-      (F := F) (h_gs := h_gs) hS hQz_ne A hA hk hm hdist hradius hcard)
+    Polynomial.X - Polynomial.C (Pz hS) ∣ pg_eval_on_Z (F := F) Q z := by
+  classical
+  exact Polynomial.dvd_iff_isRoot.mpr
+      (Q_vanishes_on_close_codeword_graph_pg_of_Qdeg
+        (F := F) (h_gs := h_gs) hS hQz_ne A hA hk hm hdist hradius hcard)
 
 end Core3Compose
 
