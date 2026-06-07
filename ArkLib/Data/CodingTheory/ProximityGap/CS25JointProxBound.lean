@@ -17,6 +17,7 @@ and the interleaved code `C^⋈κ = {V | ∀ k, V.transpose k ∈ C}` has exactl
 -/
 
 open Code
+open scoped NNReal
 
 namespace CS25
 
@@ -105,5 +106,34 @@ theorem card_jointProximityNat_le (C : Set (ι → A)) [AddCommGroup A] [Fintype
           * (Finset.univ.filter (fun w : InterleavedWord A κ ι => hammingDist w 0 ≤ e)).card := by
         rw [h𝒞, Finset.card_image_of_injective _ Subtype.val_injective, Finset.card_univ,
           interleavedCodeSet_card]
+
+/-- **Bridge.** Relative joint proximity at `δ` is absolute joint proximity at `⌊δ·n⌋`. Immediate
+from `Code.relDistFromCode_le_iff_distFromCode_le` (`δᵣ ≤ δ ↔ Δ₀ ≤ ⌊δ·n⌋`). -/
+theorem jointProximity_iff_jointProximityNat [Nonempty ι] (C : Set (ι → A))
+    (u : WordStack A κ ι) (δ : ℝ≥0) :
+    jointProximity C (u := u) δ ↔
+      jointProximityNat C (u := u) ⌊δ * (Fintype.card ι : ℝ≥0)⌋₊ := by
+  unfold jointProximity jointProximityNat
+  exact Code.relDistFromCode_le_iff_distFromCode_le _ δ
+
+open Classical in
+/-- **Jointly-`δ`-close stack count bound (relative form).** The number of stacks jointly within
+relative distance `δ` of `C` is at most `|C|^|κ| · V'`, where `V'` is the interleaved-ball volume at
+radius `⌊δ·n⌋`. This is ingredient (b) of the CS25 complete-CA-breakdown count budget `hfar`. -/
+theorem card_jointProximity_le [Nonempty ι] (C : Set (ι → A)) [AddCommGroup A] [Fintype ↥C]
+    (δ : ℝ≥0) :
+    (Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card
+      ≤ (Fintype.card ↥C) ^ (Fintype.card κ)
+        * (Finset.univ.filter (fun w : InterleavedWord A κ ι =>
+            hammingDist w 0 ≤ ⌊δ * (Fintype.card ι : ℝ≥0)⌋₊)).card := by
+  have hset :
+      (Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ))
+        = (Finset.univ.filter (fun u : WordStack A κ ι =>
+            jointProximityNat C (u := u) ⌊δ * (Fintype.card ι : ℝ≥0)⌋₊)) := by
+    ext u
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    exact jointProximity_iff_jointProximityNat C u δ
+  rw [hset]
+  exact card_jointProximityNat_le C _
 
 end CS25
