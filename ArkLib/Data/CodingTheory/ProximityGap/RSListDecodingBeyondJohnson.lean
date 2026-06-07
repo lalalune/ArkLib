@@ -48,13 +48,18 @@ def RSListDecodingCapacityConjecture
         ((ReedSolomon.code (domain := domain) ⌊ρ * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
         w (RSCapacityRadius ρ η)).ncard ≤ ℓ
 
-/-- A list-size bound kernel: if the capacity conjecture holds, we can extract the bound ℓ. -/
+/-- A list-size bound kernel: if the capacity conjecture holds, we can extract the genuine
+list-size bound `ℓ` — every word has at most `ℓ` codewords of the rate-`ρ` RS code within the
+capacity radius.  (Previously concluded the vacuous `∃ ℓ, True`; now it exposes the real bound,
+which is exactly the conjecture's content.) -/
 theorem exists_listSize_bound_of_capacity_conjecture
     {ι F : Type} [Field F] [Fintype F] [Fintype ι]
     (domain : ι ↪ F) (ρ η : ℝ≥0)
     (hConj : RSListDecodingCapacityConjecture domain ρ η) :
-    ∃ (ℓ : ℕ), True := by
-  rcases hConj with ⟨ℓ, _⟩
-  exact ⟨ℓ, trivial⟩
+    ∃ (ℓ : ℕ), ∀ (w : ι → F),
+      (ListDecodable.closeCodewordsRel
+          ((ReedSolomon.code (domain := domain) ⌊ρ * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+          w (RSCapacityRadius ρ η)).ncard ≤ ℓ :=
+  hConj
 
 end ProximityGap
