@@ -143,11 +143,9 @@ theorem cz25SpanBound'_of_coordFiberCap
       (((Lset.card : ℝ) - 1) * τ r₀ + 1) * Fintype.card ι := le_trans hagree_lb hcap
   have hn_pos : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
   have hchain' : (Lset.card : ℝ) * (τ r₀ + η) ≤ ((Lset.card : ℝ) - 1) * τ r₀ + 1 := by
-    have hL := hchain
-    rw [mul_assoc] at hL
     have hLe : (Lset.card : ℝ) * (τ r₀ + η) * Fintype.card ι ≤
         (((Lset.card : ℝ) - 1) * τ r₀ + 1) * Fintype.card ι := by
-      rw [mul_assoc]; exact hL
+      simpa [mul_assoc] using hchain
     exact le_of_mul_le_mul_right hLe hn_pos
   have hLη : (Lset.card : ℝ) * η ≤ 1 - τ r₀ := by nlinarith [hchain']
   refine ⟨Lset.card - 1, ?_, ?_⟩
