@@ -228,6 +228,32 @@ theorem alphaWeight_iff_divWeight (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hy
     obtain ⟨a, hfact, ha_wt⟩ := hd t
     exact ⟨a, alpha_eq_embedding_of_fact H x₀ R hHyp t hfact (hlift t), ha_wt⟩
 
+/-- Named forward adapter from the carved regularity form to the concrete `𝒪`-divisibility form,
+given the lift identity. -/
+theorem DivWeightLe.of_alphaWeight (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight H x₀ R hHyp hH D hlift).1 hα
+
+/-- Named reverse adapter from the concrete `𝒪`-divisibility form to carved regularity, given the
+lift identity. -/
+theorem AlphaGenuineRegularWeightLe.of_divWeight (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight H x₀ R hHyp hH D hlift).2 hdiv
+
 /-! ### 3. The STRUCTURED INVARIANT — PROVEN from `AlphaGenuineRegularWeightLe` + `hlift`
 
 This is the genuine forward closure: the carved link + the lift identity yield the paper's
@@ -375,6 +401,8 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_eq_alpha_mul_of_lift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alpha_eq_embedding_of_fact
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.of_alphaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_divWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_structured
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight'
