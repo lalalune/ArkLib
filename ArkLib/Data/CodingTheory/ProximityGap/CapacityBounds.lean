@@ -196,7 +196,7 @@ subspace-design inputs).
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
-set_option linter.style.longFile 1600
+set_option linter.style.longFile 1700
 
 namespace CodingTheory
 
@@ -1238,6 +1238,29 @@ def frs_epsMCA_capacity_gg25
   -- bound collapse to 2n/(η|F|)+24/(η³|F|)). Blocked on T4.13 (above) + T2.18 (external admit
   -- in SubspaceDesign.lean). No independent external content beyond those two.
 
+/-- Public T4.14 wrapper from the named folded-RS capacity MCA bound.
+
+The direct counterpart of `subspaceDesign_epsMCA_gg25_of_bound`: it packages the explicit
+`ε_mca(FRS, 1-ρ-η) ≤ 2n/(η|F|)+24/(η³|F|)` inequality as the public `frs_epsMCA_capacity_gg25`
+Prop front door, so a downstream port that establishes the final bound directly (without threading
+through the T4.13/T2.18 residual bundle) closes the external statement in one step. -/
+theorem frs_epsMCA_capacity_gg25_of_bound
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1)
+    (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (hbound :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      epsMCA (F := F) (A := Fin s → F)
+          ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F)))
+          ((1 - ρ - η).toNNReal) ≤
+        ENNReal.ofReal (2 * n / (η * Fintype.card F)
+          + 24 / (η ^ 3 * Fintype.card F))) :
+    frs_epsMCA_capacity_gg25 domain k s ω η hη_pos hη_lt hs_gt := by
+  simpa [frs_epsMCA_capacity_gg25] using hbound
+
 /-- **ABF26 Theorem 4.14 [GG25 Cor 4.10] — checked reduction form.**
 
 This discharges the theorem's *corollary* content.  Given:
@@ -1541,6 +1564,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.subspaceDesign_epsMCA_gg25
 #print axioms CodingTheory.subspaceDesign_epsMCA_gg25_of_bound
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_bound
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals_prop
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_bound
