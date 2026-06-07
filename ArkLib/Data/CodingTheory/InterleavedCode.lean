@@ -730,6 +730,29 @@ theorem jointAgreement_equiv_of_codeword_transport
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx_filter ⊢
       simpa using hx_filter
 
+/-- **Reed-Solomon joint-agreement transport across a domain reindexing.**
+
+Specialises `jointAgreement_equiv_of_codeword_transport` to Reed-Solomon codes: if the two
+evaluation embeddings agree up to the coordinate equivalence `e` (`domain₁ x = domain₂ (e x)`),
+then joint agreement of the reindexed word stack against the code on `domain₁` lifts to joint
+agreement of the original word stack against the code on `domain₂`.  The Reed-Solomon-specific
+codeword transport is discharged by `ReedSolomon.code_reindex_mem`.  This is the coding-theoretic
+core of the FRI/STIR Claim 8.3 lift between an evaluation subdomain and the full domain. -/
+theorem jointAgreement_reedSolomon_equiv
+    {F : Type*} [Semiring F] [DecidableEq F]
+    {κ ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂]
+    (e : ι₁ ≃ ι₂) {domain₁ : ι₁ ↪ F} {domain₂ : ι₂ ↪ F} {n : ℕ}
+    (hdom : ∀ x, domain₁ x = domain₂ (e x))
+    {δ : NNReal} {W₂ : κ → ι₂ → F}
+    (h : jointAgreement (C := (↑(ReedSolomon.code domain₁ n) : Set (ι₁ → F)))
+          (δ := δ) (W := fun k x => W₂ k (e x))) :
+    jointAgreement (C := (↑(ReedSolomon.code domain₂ n) : Set (ι₂ → F)))
+      (δ := δ) (W := W₂) := by
+  refine jointAgreement_equiv_of_codeword_transport e
+    (↑(ReedSolomon.code domain₁ n)) (↑(ReedSolomon.code domain₂ n)) δ W₂ ?_ h
+  intro v hv
+  exact ReedSolomon.code_reindex_mem e hdom hv
+
 open InterleavedCode in
 /-- Equivalence between the agreement-based definition `jointAgreement` and
 the distance/proximity-based definition `jointProximity` (the latter is represented in

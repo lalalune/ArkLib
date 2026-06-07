@@ -237,6 +237,31 @@ lemma code_mono {n m : ℕ} (h : n ≤ m) (α : ι ↪ F) :
 lemma code_zero (α : ι ↪ F) : code α 0 = ⊥ := by
   rw [code, Polynomial.degreeLT_zero, Submodule.map_bot]
 
+/-- **Reed-Solomon codeword transport across a domain reindexing.**
+
+If two evaluation embeddings agree up to a coordinate equivalence `e`
+(`domain₁ x = domain₂ (e x)`), then reindexing any `domain₁`-codeword along `e.symm` yields a
+`domain₂`-codeword of the same degree bound.
+
+A codeword is the evaluation vector of a fixed polynomial of degree `< n`; relabelling the
+evaluation points by a bijection that matches the points pointwise leaves it the evaluation
+vector of the *same* polynomial, hence still a codeword.  This supplies the Reed-Solomon-specific
+`hC` hypothesis consumed by `Code.jointAgreement_equiv_of_codeword_transport`, which is the lift
+of joint agreement from one evaluation domain to an equivalent one (e.g. from `ω.subdomain 0`
+to `ω` in the FRI/STIR Claim 8.3 accounting). -/
+theorem code_reindex_mem {ι₁ ι₂ : Type*} (e : ι₁ ≃ ι₂)
+    {domain₁ : ι₁ ↪ F} {domain₂ : ι₂ ↪ F} {n : ℕ}
+    (hdom : ∀ x, domain₁ x = domain₂ (e x))
+    {f : ι₁ → F} (hf : f ∈ code domain₁ n) :
+    (fun y => f (e.symm y)) ∈ code domain₂ n := by
+  rw [mem_code_iff_exists_polynomial] at hf
+  obtain ⟨p, hdeg, rfl⟩ := hf
+  refine mem_code_of_polynomial_of_degree_lt_of_eval p hdeg (fun y => ?_)
+  show evalOnPoints domain₁ p (e.symm y) = p.eval (domain₂ y)
+  have hev : evalOnPoints domain₁ p (e.symm y) = p.eval (domain₁ (e.symm y)) := by
+    simp [evalOnPoints]
+  rw [hev, hdom (e.symm y), Equiv.apply_symm_apply]
+
 end
 
 section
