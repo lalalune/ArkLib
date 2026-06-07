@@ -18,8 +18,8 @@ import Mathlib.Tactic.Positivity
 
 The simplified `fprune_one_step` (in `FPRUNEPotential.lean`) proves the one-step potential
 inequality under the implicit assumption that the candidate codeword agrees on *every* eligible
-coordinate. The **actual** FPRUNE recursion (Goyal–Guruswami 2025 / arXiv 2512.08017, Def. 8) carries
-an agreement indicator: the potential is
+coordinate. The **actual** FPRUNE recursion (Goyal–Guruswami 2025 / arXiv 2512.08017,
+Def. 8) carries an agreement indicator: the potential is
 
   `f_{η,η'}(ℋ,c,T) = [c agrees with the lists on all of T] · (1-η')^{|T|} / (dim ℋ + η)`,
 

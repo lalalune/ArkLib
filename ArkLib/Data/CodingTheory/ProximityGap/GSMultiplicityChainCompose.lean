@@ -75,7 +75,7 @@ namespace Core3Compose
 
 open ProximityGap Trivariate RatFunc GuruswamiSudan
 
-variable {F : Type} [Field F] {n : ℕ}
+variable {F : Type} [Field F] [DecidableEq F] {n : ℕ}
 
 /-! ## The degree-constant reconciliation: `D_X` ↔ `proximity_gap_degree_bound`
 
@@ -110,7 +110,6 @@ This is exactly the `hwdeg` hypothesis of
 (`BivariateDegreeToolkit.natWeightedDegree_one_k_eval_on_Z_le`), and the strict real bound floors to
 the integer budget. -/
 theorem Qdeg_eval_on_Z_le_proximity_gap_degree_bound
-    [DecidableEq F]
     {m k : ℕ} {u₀ u₁ : Fin n → F} {Q : F[Z][X][Y]} {ωs : Fin n ↪ F} {z : F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
     Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k ≤
@@ -127,7 +126,7 @@ theorem Qdeg_eval_on_Z_le_proximity_gap_degree_bound
 
 /-! ## The composition: keystone with `Q_deg` consumed, free count fully discharged -/
 
-variable [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F]
+variable [DecidableEq (RatFunc F)] [Finite F]
 
 /-- **BCIKS20 §5 graph vanishing from the Johnson radius alone — free count *and* degree budget
 gone.**
