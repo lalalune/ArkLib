@@ -882,6 +882,58 @@ theorem correlatedAgreement_affine_curves_of_isSquare_deg_mul_card {k deg : ℕ}
       (deg := deg) (domain := domain) hsqrt_le hdeg hSquare hLattice)
     hδ
 
+omit [DecidableEq ι] in
+/-- Square-endpoint cardinality residual from concrete lattice data.
+
+This is the core-namespace `BoundaryCardLatticeData` counterpart of
+`boundaryCardResidual_of_isSquare_deg_mul_card`, avoiding a manual lowering through
+`BoundaryCardLatticeResidual` at call sites. -/
+theorem BoundaryCardLatticeData.toBoundaryCardResidual_isSquare {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (h : BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hSquare : IsSquare (deg * Fintype.card ι)) :
+    BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  boundaryCardResidual_of_isSquare_deg_mul_card
+    (deg := deg) (domain := domain) (δ := δ) hsqrt_le hdeg hSquare h.toLatticeResidual
+
+omit [DecidableEq ι] in
+/-- Square-endpoint boundary-probability residual from concrete lattice data. -/
+theorem BoundaryCardLatticeData.toBoundaryProbabilityResidual_isSquare {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (h : BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hSquare : IsSquare (deg * Fintype.card ι)) :
+    ProximityGap.BoundaryProbabilityResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  boundaryProbabilityResidual_of_isSquare_deg_mul_card
+    (deg := deg) (domain := domain) (δ := δ) hδ hsqrt_le hdeg hSquare h.toLatticeResidual
+
+omit [DecidableEq ι] in
+/-- Curve-facing square-endpoint adapter from concrete lattice data.
+
+This is the data-level counterpart of `correlatedAgreement_affine_curves_of_isSquare_deg_mul_card`:
+once the endpoint is known to be the exact square branch, the final curve keystone consumes the
+smaller `BoundaryCardLatticeData` package directly. -/
+theorem correlatedAgreement_affine_curves_of_lattice_data_isSquare {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hData : BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hSquare : IsSquare (deg * Fintype.card ι)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact correlatedAgreement_affine_curves_of_isSquare_deg_mul_card
+    (deg := deg) (domain := domain) (δ := δ)
+    hStrictCoeff hData.toLatticeResidual hδ hsqrt_le hdeg hSquare
+
 end BoundaryCardResidual
 
 end ArkLib
@@ -934,3 +986,8 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
   ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_not_isSquare_deg_mul_card
 #print axioms
   ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_isSquare_deg_mul_card
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.toBoundaryCardResidual_isSquare
+#print axioms
+  ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.toBoundaryProbabilityResidual_isSquare
+#print axioms
+  ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_data_isSquare

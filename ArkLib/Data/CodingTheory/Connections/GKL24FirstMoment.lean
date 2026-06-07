@@ -1187,6 +1187,16 @@ theorem mcaEvent_prob_le_ofReal_of_gkl24_witnessCover_residual
   mcaEvent_prob_le_of_mcaBad_card_le (MC : Set (ι → F)) δ (u 0) (u 1)
     (mcaBad_card_le_of_gkl24_witnessCover_residual MC δ hb0 hres u)
 
+/-- Probability-level front door from the maximal-domain witness-cover residual. -/
+theorem mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_residual
+    (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
+    (hres : GKL24MaxCorrWitnessCoverResidual MC δ p B_T)
+    (u : WordStack F (Fin 2) ι) :
+    Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) γ] ≤
+      ENNReal.ofReal ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
+  mcaEvent_prob_le_of_mcaBad_card_le (MC : Set (ι → F)) δ (u 0) (u 1)
+    (mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual MC δ p hres u)
+
 /-- **Alias for the witness-cover residual in the canonical ABF26 T5.1 parameter shape.**
 This is the future plug-in point for the GCXK25/GKL24 maximal-domain charging theorem at
 `B_T := L²`, `b := δ_list · n`. -/
@@ -1304,6 +1314,7 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_witnessCover_residual
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual
 #print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_witnessCover_residual
+#print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_residual
 #print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_witnessCover_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_witnessCover_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_residual

@@ -298,6 +298,73 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual
         _ ≤ (L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η :=
           le_add_of_nonneg_right (by positivity))
 
+/-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — first-moment summand from the
+maximal-correlated-domain GKL24 residual.**
+
+This is the first-moment-only `ε_mca` consumer for the sharpened residual surface
+`GKL24MaxCorrWitnessCoverResidual`: at the Johnson-lifted MCA radius, with `B_T = L²` and
+list-decoding radius `p = δ`, the in-tree max-correlation bridge gives the
+`L²·δ·n / |F|` summand. -/
+theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_maxCorr_residual
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
+    (_hη_pos : 0 < η) (_hη_lt : η < 1) (_hη_le_δ : η ≤ δ)
+    (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    (hres :
+        ProximityGap.GKL24MaxCorrWitnessCoverResidual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          δ.toNNReal
+          ((L : ℝ) ^ 2)) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        (((L : ℝ) ^ 2 * (δ * Fintype.card ι)) / Fintype.card F) := by
+  have h := ProximityGap.epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_residual C
+    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+    δ.toNNReal hres
+  simpa [Real.toNNReal_of_nonneg (le_of_lt hδ_pos), mul_assoc] using h
+
+/-- **ABF26 T5.1 front door from the maximal-correlated-domain GKL24 residual.**
+This is the carrier-faithful, maximal-agree-domain version of
+`linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual`. The residual supplies
+per-codeword maximal correlated agree domains with list factor `B_T = L²` and radius `p = δ`;
+the in-tree bridge converts it to the `L²·δ·n` first-moment bad-count term, then pads by the
+nonnegative `1 / η` second-moment slack to match the ABF26 T5.1 RHS. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
+    (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    (hres :
+        ProximityGap.GKL24MaxCorrWitnessCoverResidual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          δ.toNNReal
+          ((L : ℝ) ^ 2)) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        (((L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η) / Fintype.card F) :=
+  linear_listSize_to_epsMCA_gcxk25_of_bad_count C L δ η
+    hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ
+    (fun u => by
+      have hfirst :
+          ((ProximityGap.mcaBad (F := F) ((C : Set (ι → F)))
+              ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) (u 0) (u 1)).card : ℝ) ≤
+            (L : ℝ) ^ 2 * ((δ.toNNReal : ℝ) * (Fintype.card ι : ℝ)) :=
+        ProximityGap.mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          δ.toNNReal hres u
+      calc
+        ((ProximityGap.mcaBad (F := F) ((C : Set (ι → F)))
+              ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) (u 0) (u 1)).card : ℝ)
+            ≤ (L : ℝ) ^ 2 * ((δ.toNNReal : ℝ) * (Fintype.card ι : ℝ)) := hfirst
+        _ = (L : ℝ) ^ 2 * δ * Fintype.card ι := by
+          rw [Real.toNNReal_of_nonneg (le_of_lt hδ_pos)]
+          simp only [NNReal.coe_mk]
+          ring_nf
+        _ ≤ (L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η :=
+          le_add_of_nonneg_right (by positivity))
+
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — unconditional in-tree first-moment
 relaxation.**  This is the same first-moment plumbing as
 `linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual`, but with the genuinely proven
@@ -507,6 +574,22 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual_prop
     linear_listSize_to_epsMCA_gcxk25 C L δ η
       hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ :=
   linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual C L δ η
+    hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres
+
+/-- Prop-level wrapper for T5.1 from the maximal-domain witness-cover residual front door. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual_prop
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
+    (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    (hres :
+        ProximityGap.GKL24MaxCorrWitnessCoverResidual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          δ.toNNReal
+          ((L : ℝ) ^ 2)) :
+    linear_listSize_to_epsMCA_gcxk25 C L δ η
+      hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ :=
+  linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual C L δ η
     hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres
 
 end ListImpliesMCA
@@ -1289,6 +1372,8 @@ public propositions. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_maxCorr_residual
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_univ
@@ -1298,6 +1383,8 @@ public propositions. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count_prop
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual_prop
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual_prop
+#print axioms
+  CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual_prop
 #print axioms CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne
 #print axioms CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25_of_exists_allButOne
 #print axioms CodingTheory.rs_epsCA_separation_bgks20_of_exists_allButOne
