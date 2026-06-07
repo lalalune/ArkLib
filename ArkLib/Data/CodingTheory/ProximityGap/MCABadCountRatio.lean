@@ -262,4 +262,27 @@ theorem grandMCAChallenge_iff_choose_le_of_cT_injOn (domain : ι ↪ F) (k : ℕ
         ≤ (ε_star : ENNReal) := by
   rw [grandMCAChallenge_iff_epsMCA_one, epsMCA_one_eq_choose_div_of_cT_injOn domain k u₀ hu₀]
 
+/-- **Sharp four-rate MCA prize decision.** Under ratio-injectivity at each prize rate (some
+`u₀ j` with injective `c_T` over the `(k_j+1)`-subsets, `k_j := ⌊ρ_j·n⌋`), the ABF26 §1 MCA
+prize holds iff `C(n, k_j+1)/q ≤ ε*` at all four prize rates — the sharp analogue of
+`mcaPrize_iff_of_quadratic_field`, deciding the prize on smaller fields than the
+`q > C(C(n,k+1),2)` quadratic-field regime. -/
+open GrandChallenges in
+theorem mcaPrize_iff_of_cT_injOn (domain : ι ↪ F)
+    (u₀ : Fin 4 → (ι → F))
+    (hu₀ : ∀ j : Fin 4,
+      ∀ T ∈ (Finset.univ : Finset ι).powersetCard
+          (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1),
+      ∀ T' ∈ (Finset.univ : Finset ι).powersetCard
+          (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1),
+        cT domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ T (u₀ j) =
+          cT domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ T' (u₀ j) → T = T') :
+    mcaPrize domain ↔
+      ∀ j : Fin 4,
+        ((Fintype.card ι).choose (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ENNReal) /
+            (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal) := by
+  unfold mcaPrize grandMCAChallengeRSrate grandMCAChallengeRS
+  exact forall_congr' fun j =>
+    grandMCAChallenge_iff_choose_le_of_cT_injOn domain _ (u₀ j) (hu₀ j) epsStar
+
 end ProximityGap
