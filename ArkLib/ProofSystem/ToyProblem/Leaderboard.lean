@@ -352,15 +352,15 @@ is now the explicit residual proposition
 soundness is bounded by the first (`γ`-round) branch of `toySoundnessError`.
 This is an explicit paper-proof obligation, not a Lean proof hidden behind a
 hole. -/
-theorem winningSetSoundness_le_toySoundnessError_mcaSafe_residual {k : ℕ} [Nonempty ι]
+def winningSetSoundness_le_toySoundnessError_mcaSafe_residual {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0)
     (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F), (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c) :
+    Prop :=
   δ < (minRelHammingDistCode C : ℝ≥0) →
   winningSetSoundness (k := k) C δ ≤
     (epsMCA (F := F) (A := F) C δ).toNNReal +
       ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-        / (Fintype.card F : ℝ≥0) := by
-  sorry
+        / (Fintype.card F : ℝ≥0)
 
 /-- **The simplified-IOR soundness is below the full-protocol RBR bound**
 (**Lemma 6.10 of [ABF26]**). `winningSetSoundness ≤ toySoundnessError`: the
@@ -372,10 +372,10 @@ lower bound. -/
 theorem winningSetSoundness_le_toySoundnessError {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ)
     (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F), (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c)
+    (hResidual : winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ hEnc)
     (hδ : δ < (minRelHammingDistCode C : ℝ≥0)) :
     winningSetSoundness (k := k) C δ ≤ toySoundnessError C δ t := by
-  have hL610 := winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ hEnc
-  exact le_trans (hL610 hδ) (le_max_left _ _)
+  exact le_trans (hResidual hδ) (le_max_left _ _)
 
 /-! ## Bits of security -/
 

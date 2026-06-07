@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 
-import VCVio
+import VCVio.OracleComp.SimSemantics.Append
 import ArkLib.Data.GroupTheory.PrimeOrder
 import ArkLib.Data.Classes.Serde
 
@@ -73,15 +73,11 @@ theorem target_mem_closure {prev : List G} {target : G}
   rw [← repr.hEq]
   exact zipWith_pow_prod_mem_closure prev repr.exponents
 
-/-- The identity has a representation over every basis, using the all-zero exponent vector. -/
+/-- The identity has a representation over every basis. The current representation format permits
+short exponent lists because `zipWith` truncates, so the empty exponent vector represents `1`. -/
 def one (prev : List G) : GroupRepresentation (p := p) prev 1 where
-  exponents := List.replicate prev.length 0
-  hEq := by
-    induction prev with
-    | nil =>
-        simp
-    | cons g prev ih =>
-        simp [ih]
+  exponents := []
+  hEq := by simp
 
 /-- Over the empty basis, every representation targets the identity. -/
 theorem target_eq_one_of_nil {target : G}
