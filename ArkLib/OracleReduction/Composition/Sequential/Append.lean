@@ -1694,6 +1694,30 @@ theorem liftComp_bind_liftComp {ι₁ ι₂ ι₃ : Type} {spec : OracleSpec ι�
     (superSpec := superSpec) hquery]
   simp only [OracleComp.liftComp_pure]
 
+/-- **Collapse a doubly-lifted `spec` bind whose continuation is also lifted from `spec`.**
+This is the base-spec continuation version of `liftComp_bind_liftComp`: after lifting
+`x : OracleComp spec` to `midSpec`, binding into a `midSpec`-lifted continuation `k a`, and then
+lifting to `superSpec`, the result is the same as lifting both `x` and each `k a` directly to
+`superSpec`. -/
+theorem liftComp_bind_liftComp_comp {ι₁ ι₂ ι₃ : Type} {spec : OracleSpec ι₁}
+    {midSpec : OracleSpec ι₂} {superSpec : OracleSpec ι₃}
+    [MonadLiftT (OracleQuery spec) (OracleQuery midSpec)]
+    [MonadLiftT (OracleQuery midSpec) (OracleQuery superSpec)]
+    [MonadLiftT (OracleQuery spec) (OracleQuery superSpec)]
+    (hquery : ∀ (t : spec.Domain),
+      OracleComp.liftComp (liftM (spec.query t) : OracleComp midSpec (spec.Range t)) superSpec
+        = (liftM (spec.query t) : OracleComp superSpec (spec.Range t)))
+    {α β : Type} (x : OracleComp spec α) (k : α → OracleComp spec β) :
+    ((OracleComp.liftComp x midSpec >>= fun a => OracleComp.liftComp (k a) midSpec) :
+        OracleComp midSpec β).liftComp superSpec =
+      (OracleComp.liftComp x superSpec >>= fun a => OracleComp.liftComp (k a) superSpec) := by
+  rw [OracleComp.liftComp_bind, liftComp_liftComp (spec := spec) (midSpec := midSpec)
+    (superSpec := superSpec) hquery]
+  congr 1
+  funext a
+  exact liftComp_liftComp (spec := spec) (midSpec := midSpec) (superSpec := superSpec) hquery
+    (k a)
+
 /-- **Diamond collapse for nested `liftM` over `OracleComp`.**  Two composed lifts
 `spec → midSpec → superSpec` collapse to the single direct lift (expressed as `liftComp X
 superSpec`), given the per-query coherence `hco` (`fun _ => rfl` for the canonical `+`
@@ -3099,6 +3123,7 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
 
 #print axioms Prover.appendRunRightResidual
 #print axioms Prover.append_run
+#print axioms Prover.liftComp_bind_liftComp_comp
 
 -- Future work: define a function that extracts a second prover from the combined prover.
 
