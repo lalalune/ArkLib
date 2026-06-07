@@ -973,6 +973,69 @@ theorem BCSCompilerFrontierSatisfied.knowledge_soundness_preservation_target
     frontier.knowledge_soundness_preservation_target :=
   h.2.2.2.2.2.2
 
+omit Oₘ in
+/-- Project the phase-realization obligations from a satisfied BCS compiler frontier. -/
+theorem BCSCompilerFrontierSatisfied.phase {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    (h : BCSCompilerFrontierSatisfied phases frontier) :
+    BCSPhaseRealizationFrontier phases :=
+  ⟨h.1, h.2.1⟩
+
+omit Oₘ in
+/-- Project the security-preservation obligations from a satisfied BCS compiler frontier. -/
+theorem BCSCompilerFrontierSatisfied.security {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    (h : BCSCompilerFrontierSatisfied phases frontier) :
+    BCSSecurityFrontierSatisfied frontier :=
+  ⟨h.2.2.1, h.2.2.2.1, h.2.2.2.2.1, h.2.2.2.2.2.1, h.2.2.2.2.2.2⟩
+
+omit Oₘ in
+/-- Rebuild a satisfied BCS compiler frontier from its separated phase and security halves. -/
+theorem BCSCompilerFrontierSatisfied.ofPhaseAndSecurity {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    (hPhase : BCSPhaseRealizationFrontier phases)
+    (hSecurity : BCSSecurityFrontierSatisfied frontier) :
+    BCSCompilerFrontierSatisfied phases frontier :=
+  ⟨hPhase.1, hPhase.2, hSecurity.1, hSecurity.2.1, hSecurity.2.2.1,
+    hSecurity.2.2.2.1, hSecurity.2.2.2.2⟩
+
+omit Oₘ in
+/-- A satisfied BCS compiler frontier is exactly the conjunction of the separated
+phase-realization and security-preservation frontiers. -/
+theorem BCSCompilerFrontierSatisfied.iff_phase_and_security {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases} :
+    BCSCompilerFrontierSatisfied phases frontier ↔
+      BCSPhaseRealizationFrontier phases ∧ BCSSecurityFrontierSatisfied frontier := by
+  constructor
+  · intro h
+    exact ⟨BCSCompilerFrontierSatisfied.phase h, BCSCompilerFrontierSatisfied.security h⟩
+  · intro h
+    exact BCSCompilerFrontierSatisfied.ofPhaseAndSecurity h.1 h.2
+
 /-- Compatibility name for the full BCS compiler-frontier checklist. -/
 abbrev BCSCompilerFrontierReady {StmtMid WitMid : Type}
     {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
@@ -1214,6 +1277,10 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.completeness_preservation_target
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.soundness_preservation_target
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.knowledge_soundness_preservation_target
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.phase
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.security
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.ofPhaseAndSecurity
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.iff_phase_and_security
 #print axioms OracleReduction.BCSCompilerFrontierReady
 #print axioms OracleReduction.BCSCompilerFrontierReady.intro
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofPhaseFields
