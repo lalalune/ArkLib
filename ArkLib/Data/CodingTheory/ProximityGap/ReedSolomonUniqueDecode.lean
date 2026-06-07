@@ -175,4 +175,47 @@ theorem berlekamp_welch_recovers {α : ι ↪ F} {k e : ℕ} [NeZero k]
       _ ≤ (N - E * f).natDegree := card_roots' _
   omega
 
+open Polynomial in
+/-- **Common-locator full-radius joint agreement (BCIKS20 bivariate-lift core).**  Suppose a single
+error locator `E ≠ 0` (degree `≤ e`) and codeword polynomials `g₀, g₁` of degree `< k` satisfy the
+two key equations `E(αᵢ)·u₀ᵢ = (E·g₀)(αᵢ)` and `E(αᵢ)·u₁ᵢ = (E·g₁)(αᵢ)` on every coordinate.  Then
+on the set `{i : E(αᵢ) ≠ 0}` — of size `≥ n − e` — **both** `u₀` and `u₁` agree with the codewords
+`eval g₀`, `eval g₁`.  This is exactly the mechanism that achieves the *full* radius `e/n` (not the
+two-line `2δ`): the **shared** locator forces a **common** agreement set, eliminating the factor-2
+loss.  (The remaining BCIKS20 ingredient is the bivariate existence of such a shared `(E, g₀, g₁)`
+from the many-close-scalars hypothesis.) -/
+theorem jointAgreement_of_common_locator {α : ι ↪ F} {k e : ℕ}
+    {u₀ u₁ : ι → F} {E g₀ g₁ : F[X]}
+    (hE0 : E ≠ 0) (hEdeg : E.natDegree ≤ e)
+    (hkey₀ : ∀ i, E.eval (α i) * u₀ i = (E * g₀).eval (α i))
+    (hkey₁ : ∀ i, E.eval (α i) * u₁ i = (E * g₁).eval (α i)) :
+    ∃ S : Finset ι, Fintype.card ι - e ≤ S.card ∧
+      (∀ i ∈ S, u₀ i = g₀.eval (α i)) ∧ (∀ i ∈ S, u₁ i = g₁.eval (α i)) := by
+  classical
+  refine ⟨Finset.univ.filter (fun i => E.eval (α i) ≠ 0), ?_, ?_, ?_⟩
+  · -- `|{E(αᵢ) ≠ 0}| = n − |{E(αᵢ) = 0}| ≥ n − e`
+    have hroots : (Finset.univ.filter (fun i => E.eval (α i) = 0)).card ≤ e := by
+      have hsub : (Finset.univ.filter (fun i => E.eval (α i) = 0)).map α ⊆ E.roots.toFinset := by
+        intro x hx
+        rw [Finset.mem_map] at hx; obtain ⟨i, hi, rfl⟩ := hx
+        rw [Multiset.mem_toFinset, mem_roots hE0, IsRoot.def]
+        exact (Finset.mem_filter.mp hi).2
+      calc (Finset.univ.filter (fun i => E.eval (α i) = 0)).card
+          = ((Finset.univ.filter (fun i => E.eval (α i) = 0)).map α).card := (Finset.card_map _).symm
+        _ ≤ E.roots.toFinset.card := Finset.card_le_card hsub
+        _ ≤ Multiset.card E.roots := Multiset.toFinset_card_le _
+        _ ≤ E.natDegree := card_roots' _
+        _ ≤ e := hEdeg
+    have hcompl : (Finset.univ.filter (fun i => E.eval (α i) ≠ 0))
+        = (Finset.univ.filter (fun i => E.eval (α i) = 0))ᶜ := by ext i; simp
+    rw [hcompl, Finset.card_compl]; omega
+  · intro i hi
+    have hEne : E.eval (α i) ≠ 0 := (Finset.mem_filter.mp hi).2
+    have h := hkey₀ i; rw [eval_mul] at h
+    exact mul_left_cancel₀ hEne h
+  · intro i hi
+    have hEne : E.eval (α i) ≠ 0 := (Finset.mem_filter.mp hi).2
+    have h := hkey₁ i; rw [eval_mul] at h
+    exact mul_left_cancel₀ hEne h
+
 end ReedSolomon

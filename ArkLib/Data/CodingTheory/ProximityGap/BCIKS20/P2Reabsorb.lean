@@ -22,6 +22,9 @@ binomial and an `α₀^{i-|λ|}` factor) and the **RHS recursion form**
   partition-form inner sum (over the Y-degree `j`, at a partition with `|λ| = m` parts) exposes.
   This is the entropy-free reabsorption of the Y-degree sum into the single embedding object
   `hasseEvalAtRoot`.
+* `restrictedFaaDiBrunoPartitionZeroPowerSum_eq_hasseEvalAtRoot` — the fixed `t = 0`
+  specialization of that reabsorption, reducing the surviving LHS power sum to
+  `hasseEvalAtRoot H x₀ R 1 0`.
 
 NO `axiom`/`admit`/`native_decide`/`sorry`. Audited in-file via `#print axioms`.
 -/
@@ -91,48 +94,70 @@ theorem hasseEvalAtRoot_eq_QDegreeBinomReindex (x₀ : F) (R : F[X][X][Y]) (i1 m
   rw [← taylorCollapse (H := H) x₀ R i1 m]
   simp [α₀]
 
-/-- The surviving order-zero partition LHS is exactly the `(i₁, m) = (1, 0)` Hasse
-evaluation at the base root. -/
+/-- **Order-zero LHS reabsorption.**  After the order-zero branch collapse in `P2Assembly`,
+the surviving LHS power sum is exactly the cleared root evaluation `hasseEvalAtRoot ... 1 0`. -/
 theorem restrictedFaaDiBrunoPartitionZeroPowerSum_eq_hasseEvalAtRoot
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
-    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp
-      = hasseEvalAtRoot H x₀ R 1 0 := by
-  rw [hasseEvalAtRoot_eq_QDegreeBinomReindex]
-  simp [restrictedFaaDiBrunoPartitionZeroPowerSum,
+    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+      hasseEvalAtRoot H x₀ R 1 0 := by
+  unfold restrictedFaaDiBrunoPartitionZeroPowerSum
+  rw [hasseEvalAtRoot_eq_QDegreeBinomReindex H x₀ R 1 0,
     coeff_zero_βHenselAssembled H x₀ R hHyp]
+  simp
 
-/-- For the empty partition, the surviving `B_coeff` is just the bare un-cleared
-iterated-Hasse representative. -/
-omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
-theorem B_coeff_indiscrete_zero_eq_hasseCoeffRepr𝒪
-    (x₀ : F) (R : F[X][X][Y]) :
-    B_coeff H x₀ R 1 (Nat.Partition.indiscrete 0)
-      = hasseCoeffRepr𝒪 H x₀ R 1 0 := by
-  simp [B_coeff, prefactor, sigmaLambda]
-
-/-- The surviving order-zero RHS target with the empty-partition `B_coeff` numerator unfolded. -/
-theorem restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff
+/-- At order zero, the normalized partition residual is equivalent to the reabsorbed LHS
+`hasseEvalAtRoot` equaling the single surviving RHS `B_coeff` term. -/
+theorem restrictedPartitionMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
-    restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp
-      = ClaimA2.ζ R x₀ H
-        * (embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
-          / ((liftToFunctionField (H := H) H.leadingCoeff) ^ 2
-              * embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))) := by
-  simp [restrictedMatchRecursionPartitionZeroSingleBcoeff,
-    B_coeff_indiscrete_zero_eq_hasseCoeffRepr𝒪]
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      hasseEvalAtRoot H x₀ R 1 0 =
+        restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp := by
+  rw [restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp,
+    restrictedFaaDiBrunoPartitionZeroPowerSum_eq_hasseEvalAtRoot H x₀ R hHyp]
 
-/-- The surviving order-zero RHS target with both the `B_coeff` numerator and the `ξ`
-denominator expanded, without cancelling the `ζ` factor. -/
-theorem restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff_div_ζ
+/-- Build the fixed order-zero partition residual from the reabsorbed LHS equality. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_hasseEvalAtRoot_eq_singleBcoeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero :
+      hasseEvalAtRoot H x₀ R 1 0 =
+        restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  (restrictedPartitionMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff H x₀ R hHyp).2 hzero
+
+/-- Project the reabsorbed LHS equality from the fixed order-zero partition residual. -/
+theorem hasseEvalAtRoot_eq_singleBcoeff_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    hasseEvalAtRoot H x₀ R 1 0 =
+      restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp :=
+  (restrictedPartitionMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff H x₀ R hHyp).1 hpart
+
+/-- The carved order-zero P2 core is equivalent to the reabsorbed LHS `hasseEvalAtRoot` equaling
+the single surviving RHS `B_coeff` term. -/
+theorem restrictedMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
-    restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp
-      = ClaimA2.ζ R x₀ H
-        * (embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
-          / ((liftToFunctionField (H := H) H.leadingCoeff) ^ 2
-              * ((liftToFunctionField (H := H) H.leadingCoeff) ^ (R.natDegree - 2)
-                  * ClaimA2.ζ R x₀ H))) := by
-  rw [restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff,
-    ClaimA2.embeddingOf𝒪Into𝕃_ξ]
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      hasseEvalAtRoot H x₀ R 1 0 =
+        restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp :=
+  (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).trans
+    (restrictedPartitionMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff H x₀ R hHyp)
+
+/-- Build the carved order-zero P2 core from the reabsorbed LHS equality. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_hasseEvalAtRoot_eq_singleBcoeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero :
+      hasseEvalAtRoot H x₀ R 1 0 =
+        restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
+  (restrictedMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff H x₀ R hHyp).2 hzero
+
+/-- Project the reabsorbed LHS equality from the carved order-zero P2 core. -/
+theorem hasseEvalAtRoot_eq_singleBcoeff_of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    hasseEvalAtRoot H x₀ R 1 0 =
+      restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp :=
+  (restrictedMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff H x₀ R hHyp).1 hmatch
 
 end BCIKS20.HenselNumerator
 
@@ -141,6 +166,12 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_binomReindex
 #print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_QDegreeBinomReindex
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoPartitionZeroPowerSum_eq_hasseEvalAtRoot
-#print axioms BCIKS20.HenselNumerator.B_coeff_indiscrete_zero_eq_hasseCoeffRepr𝒪
-#print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff
-#print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff_div_ζ
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedPartitionMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoPartitionMatchAt.zero_of_hasseEvalAtRoot_eq_singleBcoeff
+#print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_singleBcoeff_of_partitionMatchAt_zero
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_hasseEvalAtRoot_eq_singleBcoeff
+#print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_singleBcoeff_of_restrictedMatchAt_zero

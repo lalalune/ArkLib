@@ -27,6 +27,7 @@ inductive MatrixIdx where | A | B | C deriving Inhabited, DecidableEq
 
 namespace MatrixIdx
 
+omit R [CommSemiring R] in
 /-- The three R1CS matrix coordinates `(A,B,C)` are equivalent to `Fin 3`. -/
 def equivFin3 : MatrixIdx ≃ Fin 3 where
   toFun
@@ -45,14 +46,42 @@ def equivFin3 : MatrixIdx ≃ Fin 3 where
     intro i
     fin_cases i <;> rfl
 
+omit R [CommSemiring R] in
 instance : Fintype MatrixIdx := Fintype.ofEquiv (Fin 3) equivFin3.symm
 
+omit R [CommSemiring R] in
 @[simp]
 theorem card_eq : Fintype.card MatrixIdx = 3 := by
   simpa using Fintype.card_congr equivFin3
 
+omit R [CommSemiring R] in
+/-- The finite universe of R1CS matrix coordinates is exactly `{A,B,C}`. -/
+theorem univ_eq : (Finset.univ : Finset MatrixIdx) = {.A, .B, .C} := by
+  ext idx
+  cases idx <;> simp
+
+omit R [CommSemiring R] in
+/-- Universal quantification over R1CS matrix coordinates is the conjunction of the three cases. -/
+theorem forall_iff (P : MatrixIdx → Prop) :
+    (∀ idx : MatrixIdx, P idx) ↔ P .A ∧ P .B ∧ P .C := by
+  constructor
+  · intro h
+    exact ⟨h .A, h .B, h .C⟩
+  · rintro ⟨hA, hB, hC⟩ idx
+    cases idx <;> assumption
+
+omit R [CommSemiring R] in
+/-- A finite sum over R1CS matrix coordinates splits into the `(A,B,C)` summands. -/
+theorem sum_eq {M : Type*} [AddCommMonoid M] (f : MatrixIdx → M) :
+    (∑ idx : MatrixIdx, f idx) = f .A + f .B + f .C := by
+  rw [univ_eq]
+  simp [add_assoc]
+
 #print axioms R1CS.MatrixIdx.equivFin3
 #print axioms R1CS.MatrixIdx.card_eq
+#print axioms R1CS.MatrixIdx.univ_eq
+#print axioms R1CS.MatrixIdx.forall_iff
+#print axioms R1CS.MatrixIdx.sum_eq
 
 end MatrixIdx
 
