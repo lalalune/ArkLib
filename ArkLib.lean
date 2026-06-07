@@ -740,3 +740,4 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps
