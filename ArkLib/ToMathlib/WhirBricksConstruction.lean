@@ -650,6 +650,20 @@ theorem paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles {M : ℕ
   rw [paperTranscriptSlotPayload_mainFoldedOracle]
   exact congrArg (packFiniteFunction (ιs i.succ)) (funext (hT i))
 
+omit [SampleableType F] in
+/-- Polynomial-extension consistency for the main-loop out-of-domain replies. -/
+structure PaperOutOfDomainExtension {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (T : PaperTranscriptData P d) where
+  extensionPolynomial : Fin M → Polynomial F
+  agreesWithFoldedOracle :
+    ∀ i : Fin M, ∀ x : ιs i.succ,
+      (extensionPolynomial i).eval (P.φ i.succ x) = T.mainFoldedOracle i x
+  reply_eq_eval :
+    ∀ i : Fin M,
+      T.mainOutOfDomainReply i =
+        (extensionPolynomial i).eval (T.mainOutOfDomainChallenge i)
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
