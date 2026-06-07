@@ -60,7 +60,30 @@ theorem combinePoly_natDegree_le {F : Type*} [Field F] {m : ℕ} (dstar : ℕ) (
         · exact hg i
     _ = dstar := by omega
 
+/-- **STIR DegCor-operator degree bound** (Def. 4.12, single-summand companion of
+`combinePoly_natDegree_le`): `f · (∑_{l ≤ dstar - degree} (X·C r)^l)` has `natDegree ≤ dstar`. -/
+theorem degCorPoly_natDegree_le {F : Type*} [Field F] (dstar degree : ℕ) (r : F)
+    (f : Polynomial F) (hf : f.natDegree ≤ degree) (hdeg : degree ≤ dstar) :
+    (f * (∑ l ∈ Finset.range (dstar - degree + 1), (X * C r) ^ l)).natDegree ≤ dstar := by
+  calc (f * (∑ l ∈ Finset.range (dstar - degree + 1), (X * C r) ^ l)).natDegree
+      ≤ f.natDegree + (∑ l ∈ Finset.range (dstar - degree + 1), (X * C r) ^ l).natDegree :=
+        natDegree_mul_le
+    _ ≤ degree + (dstar - degree) := by gcongr; exact geomFactor_natDegree_le r (dstar - degree)
+    _ = dstar := by omega
+
 end Polynomial
+
+/-- **Closed form of the field geometric series** `∑_{l ≤ n} q^l` used by the STIR/FRI
+degree-correction factor: `n+1` when `q = 1`, else `(1 - q^(n+1))/(1 - q)`. -/
+theorem geomSeries_field_eq_cases {F : Type*} [Field F] [DecidableEq F] (q : F) (n : ℕ) :
+    ∑ l ∈ Finset.range (n + 1), q ^ l =
+      if q = 1 then (n + 1 : F) else (1 - q ^ (n + 1)) / (1 - q) := by
+  split_ifs with hq
+  · subst hq; simp
+  · rw [geom_sum_eq hq, div_eq_div_iff (sub_ne_zero.mpr hq) (sub_ne_zero.mpr (Ne.symm hq))]
+    ring
 
 #print axioms Polynomial.geomFactor_natDegree_le
 #print axioms Polynomial.combinePoly_natDegree_le
+#print axioms Polynomial.degCorPoly_natDegree_le
+#print axioms geomSeries_field_eq_cases

@@ -430,6 +430,43 @@ noncomputable def paperTranscriptFullTranscript {M : ℕ} {ιs : Fin (M + 1) →
     exact paperTranscriptSlotPayload P d T
       ((Fintype.equivFin (PaperTranscriptSlot P)).symm i)
 
+omit [Field F] [SampleableType F] in
+/-- The prover-message projection of assembled paper transcript data. -/
+noncomputable def paperTranscriptMessage {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (T : PaperTranscriptData P d)
+    (i : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).MessageIdx) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message i :=
+  (paperTranscriptFullTranscript P d T).messages i
+
+omit [Field F] [SampleableType F] in
+/-- The verifier-challenge projection of assembled paper transcript data. -/
+noncomputable def paperTranscriptChallenge {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (T : PaperTranscriptData P d)
+    (i : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).ChallengeIdx) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenge i :=
+  (paperTranscriptFullTranscript P d T).challenges i
+
+omit [Field F] [SampleableType F] in
+/-- A prover-side adapter that emits the prover-message slots from supplied paper transcript data.
+
+This is not yet the WHIR honest prover: the real prover must compute `PaperTranscriptData` from the
+input oracle and prior verifier challenges.  This adapter is the first actual `OracleProver` object
+over the paper-order protocol shape, isolating the remaining algebraic transcript-generation
+problem from ArkLib's prover-state API. -/
+noncomputable def paperTranscriptOracleProver {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (makeTranscript :
+      (Unit × (∀ u : Unit, OracleStatement (ιs 0) F u)) × Unit → PaperTranscriptData P d) :
+    OracleProver []ₒ Unit (OracleStatement (ιs 0) F) Unit
+      Bool (fun _ : Empty => Unit) Unit ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F) where
+  PrvState := fun _ => PaperTranscriptData P d
+  input := makeTranscript
+  sendMessage := fun i T => pure (paperTranscriptMessage P d T i, T)
+  receiveChallenge := fun _ T => pure (fun _ => T)
+  output := fun _ => pure ((true, fun e => nomatch e), ())
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an

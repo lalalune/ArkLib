@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.LinearCombination
 import ArkLib.Data.CodingTheory.InterleavedCode
 
 /-!
@@ -122,5 +123,49 @@ theorem jointAgreement_two_delta_of_two_lines
       simpa using (hagree j hj).2
 
 end JointAgreement
+
+/-! ### Toward the genuine radius `δ`: the many-points linearity argument
+
+The factor-2 loss above comes from intersecting just two agreement sets.  If instead the affine-line
+words agree with a *fixed* codeword pair `(v₀, v₁)` — the BCIKS20 "curve" hypothesis, available in
+the unique-decoding regime where the close codeword is unique and hence affine-linear in the
+combining scalar — then agreement can be read off **coordinate by coordinate**, and a single
+coordinate seen by two distinct scalars already pins both `u₀` and `u₁` there.  Aggregating over many
+close scalars drives the joint-agreement radius from `2δ` back toward `δ`. -/
+
+/-- **Per-coordinate linearity.**  If at coordinate `i` the affine-line word agrees with the fixed
+codeword line `v₀ + z • v₁` for two distinct scalars `z ≠ z'`, then `u₀` and `u₁` agree with `v₀`
+and `v₁` at `i`.  (The two linear equations `a + z·b = 0`, `a + z'·b = 0` with `a := u₀ᵢ - v₀ᵢ`,
+`b := u₁ᵢ - v₁ᵢ` force `a = b = 0`.) -/
+theorem eq_at_coord_of_two_scalars
+    {u₀ u₁ v₀ v₁ : ι → F} {i : ι} {z z' : F} (hzz' : z ≠ z')
+    (h : u₀ i + z • u₁ i = v₀ i + z • v₁ i)
+    (h' : u₀ i + z' • u₁ i = v₀ i + z' • v₁ i) :
+    u₀ i = v₀ i ∧ u₁ i = v₁ i := by
+  simp only [smul_eq_mul] at h h'
+  -- subtract the two equations: `(z - z')·(u₁ᵢ - v₁ᵢ) = 0`
+  have hb : (z - z') * (u₁ i - v₁ i) = 0 := by linear_combination h - h'
+  have hu₁ : u₁ i = v₁ i := by
+    rcases mul_eq_zero.mp hb with hz | hb'
+    · exact absurd (sub_eq_zero.mp hz) hzz'
+    · exact sub_eq_zero.mp hb'
+  refine ⟨?_, hu₁⟩
+  -- back-substitute to get `u₀ᵢ = v₀ᵢ`
+  have := h
+  rw [hu₁] at this
+  linarith
+
+/-- **Many-points joint agreement on the fixed-line agreement core.**  Given a fixed codeword pair
+`(v₀, v₁)` and, for each scalar `z` in a set `Z`, an agreement set `S z` on which the affine-line
+word equals `v₀ + z • v₁`, every coordinate seen by *two distinct* scalars of `Z` agrees with both
+`v₀` and `v₁`.  Hence the joint-agreement set is `⋃_{z≠z'} (S z ∩ S z')` — no factor-2 radius loss
+per coordinate. -/
+theorem eq_at_coord_of_mem_two_agree
+    {u₀ u₁ v₀ v₁ : ι → F} {Z : Finset F} {S : F → Finset ι} {i : ι}
+    (hagree : ∀ z ∈ Z, ∀ j ∈ S z, u₀ j + z • u₁ j = v₀ j + z • v₁ j)
+    {z z' : F} (hz : z ∈ Z) (hz' : z' ∈ Z) (hzz' : z ≠ z')
+    (hiz : i ∈ S z) (hiz' : i ∈ S z') :
+    u₀ i = v₀ i ∧ u₁ i = v₁ i :=
+  eq_at_coord_of_two_scalars hzz' (hagree z hz i hiz) (hagree z' hz' i hiz')
 
 end ProximityGap
