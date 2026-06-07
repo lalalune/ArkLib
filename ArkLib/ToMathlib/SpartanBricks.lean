@@ -279,21 +279,76 @@ def firstSumcheckResidual : Prop :=
     (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) Unit
     (Sumcheck.Spec.pSpec R 2 pp.ℓ_m))
 
-/-- **NAMED RESIDUAL — R1CS ↔ MLE encoding equality.** The chaining correctness obligation: the
-output claim of the first sum-check (an evaluation of `ℱ` at `r_x`) equals, after `sendEvalClaim`
-+ `linearCombination`, the input target of the second sum-check (the random-linear-combination
-`∑ idx r_idx · v_idx` of the bundled evaluation claims) under the multilinear-extension encoding of
-the R1CS matrix-vector products. This is the single genuinely-mathematical gap between the two
-sum-check phases. -/
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- **R1CS matrix-vector MLE decomposition.** Each bundled Spartan evaluation claim
+`v_idx = MLE(M_idx *ᵥ z)(r_x)` is the scaled sum of the column MLEs of `M_idx`, weighted by the
+R1CS vector `z = x || w`. This is the algebraic core that makes the second sum-check input
+sum-check-friendly. -/
+theorem evalClaimValue_eq_scaled_sum
+    (stmt : Statement.AfterFirstSumcheck R pp)
+    (oStmt : ∀ i, OracleStatement.AfterFirstSumcheck R pp i)
+    (idx : R1CS.MatrixIdx) :
+    let r_x : Fin pp.ℓ_m → R := stmt.1
+    let x : Statement.AfterFirstMessage R pp := stmt.2.2
+    let z := R1CS.𝕫 x (oStmt (.inr 0))
+    evalClaimValue R pp stmt oStmt idx =
+      ∑ j : Fin pp.toSizeR1CS.n,
+        z j * MvPolynomial.eval r_x
+          (MvPolynomial.MLE
+            (fun xBits : Fin pp.ℓ_m → Fin 2 =>
+              oStmt (.inl idx) (finFunctionFinEquiv xBits) j)) := by
+  classical
+  dsimp only
+  let r_x : Fin pp.ℓ_m → R := stmt.1
+  let x : Statement.AfterFirstMessage R pp := stmt.2.2
+  let z := R1CS.𝕫 x (oStmt (.inr 0))
+  let M := oStmt (.inl idx)
+  change
+    MvPolynomial.eval r_x
+      (MvPolynomial.MLE ((Matrix.mulVec M z) ∘ finFunctionFinEquiv))
+      =
+        ∑ j : Fin pp.toSizeR1CS.n,
+          z j * MvPolynomial.eval r_x
+            (MvPolynomial.MLE
+              (fun xBits : Fin pp.ℓ_m → Fin 2 => M (finFunctionFinEquiv xBits) j))
+  have hfun :
+      ((Matrix.mulVec M z) ∘ finFunctionFinEquiv)
+        =
+          fun xBits : Fin pp.ℓ_m → Fin 2 =>
+            ∑ j : Fin pp.toSizeR1CS.n, z j * M (finFunctionFinEquiv xBits) j := by
+    funext xBits
+    simp [Matrix.mulVec, dotProduct, PublicParams.toSizeR1CS, mul_comm]
+  rw [hfun]
+  simpa using
+    (MvPolynomial.MLE_eval_scaled_sum
+      (σ := Fin pp.ℓ_m) (R := R) (s := (Finset.univ : Finset (Fin pp.toSizeR1CS.n)))
+      (z := z)
+      (g := fun j (xBits : Fin pp.ℓ_m → Fin 2) => M (finFunctionFinEquiv xBits) j)
+      r_x)
+
+/-- **NAMED RESIDUAL — R1CS ↔ MLE encoding equality.** The chaining correctness obligation:
+after `sendEvalClaim`, each evaluation claim exposes the genuine matrix-vector/MLE decomposition
+that the second sum-check consumes. This replaces the prior self-equality with the actual
+scaled-column identity for every matrix index. -/
 def r1csMleEncodingResidual : Prop :=
   ∀ (stmt : Statement.AfterFirstSumcheck R pp)
-    (oStmt : ∀ i, OracleStatement.AfterFirstSumcheck R pp i),
-    evalClaimValue R pp stmt oStmt = evalClaimValue R pp stmt oStmt
+    (oStmt : ∀ i, OracleStatement.AfterFirstSumcheck R pp i)
+    (idx : R1CS.MatrixIdx),
+    let r_x : Fin pp.ℓ_m → R := stmt.1
+    let x : Statement.AfterFirstMessage R pp := stmt.2.2
+    let z := R1CS.𝕫 x (oStmt (.inr 0))
+    evalClaimValue R pp stmt oStmt idx =
+      ∑ j : Fin pp.toSizeR1CS.n,
+        z j * MvPolynomial.eval r_x
+          (MvPolynomial.MLE
+            (fun xBits : Fin pp.ℓ_m → Fin 2 =>
+              oStmt (.inl idx) (finFunctionFinEquiv xBits) j))
 
-/-- The R1CS↔MLE encoding residual is reflexively discharged at the stated (self-)equality level;
-the substantive cross-phase identity is carried into the composed relation chain. -/
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The R1CS↔MLE encoding residual is discharged by the matrix-vector MLE scaled-sum identity. -/
 theorem r1csMleEncodingResidual_holds : r1csMleEncodingResidual R pp := by
-  intro stmt oStmt; rfl
+  intro stmt oStmt idx
+  exact evalClaimValue_eq_scaled_sum R pp stmt oStmt idx
 
 /-! ## Brick D — composition of the Spartan PIOP
 
@@ -378,8 +433,11 @@ def composedRbrKnowledgeSoundnessResidual
   Rc.verifier.rbrKnowledgeSoundness init impl
     (spartanRelIn R pp) (finalCheckRelOut R pp) rbrKnowledgeError
 
-/-! ### Axiom audit for the target-carrying final-check frontier -/
+/-! ### Axiom audit for the target-carrying final-check frontier and encoding residual -/
 
+#print axioms evalClaimValue_eq_scaled_sum
+#print axioms r1csMleEncodingResidual
+#print axioms r1csMleEncodingResidual_holds
 #print axioms FinalClaimStatement
 #print axioms finalMatrixEvalFromOracles
 #print axioms zEvalFromFinalOracles
