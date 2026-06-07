@@ -111,6 +111,80 @@ noncomputable def semanticMessageIdxEquivFin (M : ℕ) :
     semanticMessageIdx M ≃ Fin (2 * M + 2) :=
   Fintype.equivFinOfCardEq (semanticMessageIdx_card M)
 
+/-! ### A WHIR `VectorSpec` with real prover-message slots
+
+The all-challenge `whirVectorSpec` below is the exact shape currently consumed by
+`whir_rbr_soundness`.  The next construction layer is a bona fide ArkLib `VectorSpec` with both
+prover-message and verifier-challenge indices.  We keep the prover-message block first and the
+challenge block second; interleaving those slots into the exact paper transcript order is a later
+transport/equivalence brick.
+-/
+
+/-- A block-ordered WHIR vector protocol shape with `2*M+2` prover messages followed by
+`2*M+2` verifier challenges.  Every payload is represented as one field element for this skeleton;
+the eventual Construction 5.1 `VectorIOP` will refine the message payload meanings. -/
+@[reducible]
+def whirBlockVectorSpec (M : ℕ) :
+    ProtocolSpec.VectorSpec ((2 * M + 2) + (2 * M + 2)) where
+  dir := fun i => if i.1 < 2 * M + 2 then Direction.P_to_V else Direction.V_to_P
+  length := fun _ => 1
+
+/-- Challenge indices of the block-ordered WHIR skeleton are the second block. -/
+def whirBlockVectorSpec_challengeIdxEquivFin (M : ℕ) :
+    (whirBlockVectorSpec M).ChallengeIdx ≃ Fin (2 * M + 2) where
+  toFun i := ⟨i.1.1 - (2 * M + 2), by
+    have hiUpper : i.1.1 < (2 * M + 2) + (2 * M + 2) := i.1.2
+    have hnot : ¬ i.1.1 < 2 * M + 2 := by
+      intro hlt
+      have hv := i.2
+      simp [whirBlockVectorSpec, hlt] at hv
+    omega⟩
+  invFun j := ⟨⟨(2 * M + 2) + j.1, by omega⟩, by
+    have hnot : ¬ (2 * M + 2) + j.1 < 2 * M + 2 := by omega
+    simp [whirBlockVectorSpec, hnot]⟩
+  left_inv i := by
+    ext
+    have hiUpper : i.1.1 < (2 * M + 2) + (2 * M + 2) := i.1.2
+    have hnot : ¬ i.1.1 < 2 * M + 2 := by
+      intro hlt
+      have hv := i.2
+      simp [whirBlockVectorSpec, hlt] at hv
+    simp
+    omega
+  right_inv j := by
+    ext
+    simp
+
+/-- Prover-message indices of the block-ordered WHIR skeleton are the first block. -/
+def whirBlockVectorSpec_messageIdxEquivFin (M : ℕ) :
+    (whirBlockVectorSpec M).MessageIdx ≃ Fin (2 * M + 2) where
+  toFun i := ⟨i.1.1, by
+    by_cases hlt : i.1.1 < 2 * M + 2
+    · exact hlt
+    · have hv := i.2
+      simp [whirBlockVectorSpec, hlt] at hv⟩
+  invFun j := ⟨⟨j.1, by omega⟩, by
+    have hlt : j.1 < 2 * M + 2 := j.2
+    simp [whirBlockVectorSpec, hlt]⟩
+  left_inv i := by
+    ext
+    simp
+  right_inv j := by
+    ext
+    simp
+
+/-- The block-ordered WHIR skeleton has the expected challenge budget. -/
+theorem whirBlockVectorSpec_card_challengeIdx (M : ℕ) :
+    Fintype.card (whirBlockVectorSpec M).ChallengeIdx = 2 * M + 2 := by
+  rw [Fintype.card_congr (whirBlockVectorSpec_challengeIdxEquivFin M)]
+  simp
+
+/-- The block-ordered WHIR skeleton has the expected prover-message budget. -/
+theorem whirBlockVectorSpec_card_messageIdx (M : ℕ) :
+    Fintype.card (whirBlockVectorSpec M).MessageIdx = 2 * M + 2 := by
+  rw [Fintype.card_congr (whirBlockVectorSpec_messageIdxEquivFin M)]
+  simp
+
 /-! ### The WHIR protocol-spec direction vector
 
 WHIR runs `M + 1` rounds; each round contributes **two** verifier challenges (the folding
@@ -410,6 +484,10 @@ end RBRSoundnessAssembly
 #print axioms semanticChallengeIdxEquivFin
 #print axioms semanticMessageIdx_card
 #print axioms semanticMessageIdxEquivFin
+#print axioms whirBlockVectorSpec_challengeIdxEquivFin
+#print axioms whirBlockVectorSpec_messageIdxEquivFin
+#print axioms whirBlockVectorSpec_card_challengeIdx
+#print axioms whirBlockVectorSpec_card_messageIdx
 #print axioms whir_rbr_soundness_of_whirVectorSpec_secure_gap
 
 end Construction
