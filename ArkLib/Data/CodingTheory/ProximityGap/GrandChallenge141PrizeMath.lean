@@ -181,6 +181,46 @@ def epsMCAgsPrizeUniformConjecture
         ≤ ENNReal.ofReal
             (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)
 
+/-- The honest uniform GS-exposed prize immediately supplies the legacy per-input
+`epsMCAgs_prizeBound_conjecture` surface, with the same constant triple. This is only an adapter:
+the uniform conjecture remains an explicit hypothesis. -/
+theorem epsMCAgs_prizeBound_conjecture_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m)
+    (j : Fin 4) (η δ : ℝ≥0) (hη : 0 < η)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F))
+    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) :
+    epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ := by
+  rcases hUniform with ⟨c₁, c₂, c₃, hbound⟩
+  exact ⟨c₁, c₂, c₃, hbound j η δ hη hδ L⟩
+
+/-- The honest uniform GS-exposed prize supplies the existing mass-bound API uniformly in the
+prize parameters: the same constant triple works for every rate, gap, radius, and list family.
+This keeps the uniform conjecture as an explicit hypothesis while routing it into
+`epsMCAgsMassBound`. -/
+theorem exists_uniform_epsMCAgsMassBound_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (j : Fin 4) (η δ : ℝ≥0),
+        0 < η →
+        (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
+        ∀ L : WordStack F (Fin 2) ι → Finset (ι → F),
+          epsMCAgsMassBound (F := F)
+            ((ReedSolomon.code (domain := domain)
+              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                Set (ι → F))) δ L
+            (ENNReal.ofReal
+              (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)) := by
+  rcases hUniform with ⟨c₁, c₂, c₃, hbound⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro j η δ hη hδ L
+  exact epsMCAgsMassBound_of_epsMCAgs_le
+    ((ReedSolomon.code (domain := domain)
+      ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+        Set (ι → F))) δ L
+    (hbound j η δ hη hδ L)
+
 end PerInput
 
 /-! ## 3. Explicit-constant conditional reduction (open content named, no laundering) -/
@@ -226,6 +266,8 @@ end Reduction
 #print axioms epsMCAgs_le_one
 #print axioms epsMCA_le_one
 #print axioms epsMCAgs_prizeBound_conjecture_holds
+#print axioms epsMCAgs_prizeBound_conjecture_of_uniformConjecture
+#print axioms exists_uniform_epsMCAgsMassBound_of_uniformConjecture
 #print axioms epsMCAgs_prizeBound_of_listSize_clears
 
 end MCAGS
