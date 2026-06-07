@@ -503,6 +503,94 @@ theorem latticeIndexOf_le_mcaThreshold_prize_of_forall_not_mcaEvent
     (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
     δ epsStar hδ_le_one hno
 
+/-- Prize-rate repaired double-cover data packages threshold existence, satisfaction, and the
+lower lattice bracket for the selected faithful MCA threshold. -/
+theorem mcaThreshold_spec_and_lower_bracket_prize_ofDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) δ) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+        latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne := by
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  let hne : mcaThresholdExists C epsStar :=
+    mcaThresholdExists_ofDoubleCover C δ epsStar hδ_le_one hcov
+  refine ⟨hne, ?_, ?_⟩
+  · exact mcaThreshold_spec_ofDoubleCover C δ epsStar hδ_le_one hcov
+  · exact latticeIndexOf_le_mcaThreshold_ofDoubleCover C δ epsStar hδ_le_one hcov
+
+/-- Prize-rate named per-bad-scalar double-cover data packages threshold existence, satisfaction,
+and the lower lattice bracket for the selected faithful MCA threshold. -/
+theorem mcaThreshold_spec_and_lower_bracket_prize_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) γ) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+        latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne := by
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  let hne : mcaThresholdExists C epsStar :=
+    mcaThresholdExists_ofBadScalarDoubleCover C δ epsStar hδ_le_one hcov
+  refine ⟨hne, ?_, ?_⟩
+  · exact mcaThreshold_spec_ofBadScalarDoubleCover C δ epsStar hδ_le_one hcov
+  · exact latticeIndexOf_le_mcaThreshold_ofBadScalarDoubleCover C δ epsStar hδ_le_one hcov
+
+/-- Prize-rate zero bad-scalar counts package threshold existence, satisfaction, and the lower
+lattice bracket for the selected faithful MCA threshold. -/
+theorem mcaThreshold_spec_and_lower_bracket_prize_of_mcaBadCount_zero
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hzero : ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) = 0) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+        latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne := by
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  let hne : mcaThresholdExists C epsStar :=
+    mcaThresholdExists_of_mcaBadCount_zero C δ epsStar hδ_le_one hzero
+  refine ⟨hne, ?_, ?_⟩
+  · exact mcaThreshold_spec_of_mcaBadCount_zero C δ epsStar hδ_le_one hzero
+  · exact latticeIndexOf_le_mcaThreshold_of_mcaBadCount_zero C δ epsStar hδ_le_one hzero
+
+/-- Prize-rate direct no-bad-event frontiers package threshold existence, satisfaction, and the
+lower lattice bracket for the selected faithful MCA threshold. -/
+theorem mcaThreshold_spec_and_lower_bracket_prize_of_forall_not_mcaEvent
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hno : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) γ) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+        latticeIndexOf (ι := ι) δ hδ_le_one ≤ mcaThreshold C epsStar hne := by
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  let hne : mcaThresholdExists C epsStar :=
+    mcaThresholdExists_of_forall_not_mcaEvent C δ epsStar hδ_le_one hno
+  refine ⟨hne, ?_, ?_⟩
+  · exact mcaThreshold_spec_of_forall_not_mcaEvent C δ epsStar hδ_le_one hno
+  · exact latticeIndexOf_le_mcaThreshold_of_forall_not_mcaEvent C δ epsStar hδ_le_one hno
+
 /-- Per-rate repaired double-cover data resolves the faithful MCA lattice prize existentially.
 This is the prize-facing aggregation of the #140 repaired coverage theorem through the existing
 lower-witness lattice front door. -/
@@ -829,6 +917,14 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_prize_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_prize_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_ofDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_ofBadScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_of_mcaBadCount_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_of_forall_not_mcaEvent
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_ofDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_ofBadScalarDoubleCover
