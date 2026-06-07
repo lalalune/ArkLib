@@ -265,6 +265,16 @@ theorem id_perfectHVZK
   intro stmtIn witIn _
   exact (honestTranscriptDist_id_evalDist init impl stmtIn witIn).symm
 
+/-- The zero-round identity reduction satisfies statistical honest-verifier zero-knowledge for any
+  relation and error bound. -/
+theorem id_statisticalHVZK
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rel : Set (StmtIn × WitIn)) (ε : ℝ≥0) :
+    statisticalHVZK init impl rel
+      (Reduction.id : Reduction oSpec StmtIn WitIn StmtIn WitIn !p[])
+      idTranscriptSimulator ε :=
+  (id_perfectHVZK init impl rel).statisticalHVZK ε
+
 /-- The zero-round identity reduction is honest-verifier zero-knowledge for any relation. -/
 theorem id_isHVZK
     (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
@@ -272,6 +282,15 @@ theorem id_isHVZK
     isHVZK init impl rel
       (Reduction.id : Reduction oSpec StmtIn WitIn StmtIn WitIn !p[]) :=
   ⟨idTranscriptSimulator, id_perfectHVZK init impl rel⟩
+
+/-- The zero-round identity reduction is statistically honest-verifier zero-knowledge for any
+  relation and error bound. -/
+theorem id_isStatHVZK
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rel : Set (StmtIn × WitIn)) (ε : ℝ≥0) :
+    isStatHVZK init impl rel
+      (Reduction.id : Reduction oSpec StmtIn WitIn StmtIn WitIn !p[]) ε :=
+  (id_isHVZK init impl rel).isStatHVZK ε
 
 end Identity
 
@@ -281,7 +300,9 @@ end Identity
 #print axioms perfectHVZK.statisticalHVZK
 #print axioms honestTranscriptDist_id_evalDist
 #print axioms id_perfectHVZK
+#print axioms id_statisticalHVZK
 #print axioms id_isHVZK
+#print axioms id_isStatHVZK
 #print axioms perfectHVZK.mono_relation
 #print axioms isHVZK.mono_relation
 #print axioms statisticalHVZK.mono_relation
