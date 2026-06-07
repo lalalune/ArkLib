@@ -169,6 +169,19 @@ theorem mcaThreshold_spec_ofDoubleCover (C : Set (ι → F)) (δ ε_star : ℝ�
   mcaThreshold_spec C ε_star
     (mcaThresholdExists_ofDoubleCover C δ ε_star hδ_le_one hcov)
 
+/-- Repaired double-cover data gives the lattice lower bracket for the faithful MCA threshold. -/
+theorem latticeIndexOf_le_mcaThreshold_ofDoubleCover
+    (C : Set (ι → F)) (δ ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : MCAForallDoubleCover (F := F) (A := F) C δ) :
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold C ε_star
+        (mcaThresholdExists_ofDoubleCover C δ ε_star hδ_le_one hcov) := by
+  simpa [mcaThresholdExists_ofDoubleCover, GrandChallenges.MCALowerWitness.ofDoubleCover]
+    using MCALowerWitness_le_mcaThreshold C ε_star
+      (mcaThresholdExists_ofDoubleCover C δ ε_star hδ_le_one hcov)
+      (GrandChallenges.MCALowerWitness.ofDoubleCover C δ ε_star hδ_le_one hcov)
+
 /-- A named per-bad-scalar double-cover target makes the faithful MCA lattice threshold exist. -/
 theorem mcaThresholdExists_ofBadScalarDoubleCover (C : Set (ι → F)) (δ ε_star : ℝ≥0)
     (hδ_le_one : δ ≤ 1)
@@ -189,6 +202,22 @@ theorem mcaThreshold_spec_ofBadScalarDoubleCover (C : Set (ι → F)) (δ ε_sta
   mcaThreshold_spec C ε_star
     (mcaThresholdExists_ofBadScalarDoubleCover C δ ε_star hδ_le_one hcov)
 
+/-- Named per-bad-scalar double-cover data gives the lattice lower bracket for the faithful
+MCA threshold. -/
+theorem latticeIndexOf_le_mcaThreshold_ofBadScalarDoubleCover
+    (C : Set (ι → F)) (δ ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F) C δ (u 0) (u 1) γ) :
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold C ε_star
+        (mcaThresholdExists_ofBadScalarDoubleCover C δ ε_star hδ_le_one hcov) := by
+  simpa [mcaThresholdExists_ofBadScalarDoubleCover,
+    GrandChallenges.MCALowerWitness.ofBadScalarDoubleCover]
+    using MCALowerWitness_le_mcaThreshold C ε_star
+      (mcaThresholdExists_ofBadScalarDoubleCover C δ ε_star hδ_le_one hcov)
+      (GrandChallenges.MCALowerWitness.ofBadScalarDoubleCover C δ ε_star hδ_le_one hcov)
+
 /-- Zero bad-scalar counts make the faithful MCA lattice threshold exist. -/
 theorem mcaThresholdExists_of_mcaBadCount_zero (C : Set (ι → F)) (δ ε_star : ℝ≥0)
     (hδ_le_one : δ ≤ 1)
@@ -208,6 +237,21 @@ theorem mcaThreshold_spec_of_mcaBadCount_zero (C : Set (ι → F)) (δ ε_star :
   mcaThreshold_spec C ε_star
     (mcaThresholdExists_of_mcaBadCount_zero C δ ε_star hδ_le_one hzero)
 
+/-- Zero bad-scalar counts give the lattice lower bracket for the faithful MCA threshold. -/
+theorem latticeIndexOf_le_mcaThreshold_of_mcaBadCount_zero
+    (C : Set (ι → F)) (δ ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hzero : ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0) :
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold C ε_star
+        (mcaThresholdExists_of_mcaBadCount_zero C δ ε_star hδ_le_one hzero) := by
+  simpa [mcaThresholdExists_of_mcaBadCount_zero,
+    GrandChallenges.MCALowerWitness.of_mcaBadCount_zero]
+    using MCALowerWitness_le_mcaThreshold C ε_star
+      (mcaThresholdExists_of_mcaBadCount_zero C δ ε_star hδ_le_one hzero)
+      (GrandChallenges.MCALowerWitness.of_mcaBadCount_zero C δ ε_star hδ_le_one hzero)
+
 /-- A direct no-bad-event frontier makes the faithful MCA lattice threshold exist. -/
 theorem mcaThresholdExists_of_forall_not_mcaEvent (C : Set (ι → F)) (δ ε_star : ℝ≥0)
     (hδ_le_one : δ ≤ 1)
@@ -226,6 +270,22 @@ theorem mcaThreshold_spec_of_forall_not_mcaEvent (C : Set (ι → F)) (δ ε_sta
     mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=
   mcaThreshold_spec C ε_star
     (mcaThresholdExists_of_forall_not_mcaEvent C δ ε_star hδ_le_one hno)
+
+/-- A direct no-bad-event frontier gives the lattice lower bracket for the faithful MCA
+threshold. -/
+theorem latticeIndexOf_le_mcaThreshold_of_forall_not_mcaEvent
+    (C : Set (ι → F)) (δ ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hno : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F) C δ (u 0) (u 1) γ) :
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold C ε_star
+        (mcaThresholdExists_of_forall_not_mcaEvent C δ ε_star hδ_le_one hno) := by
+  simpa [mcaThresholdExists_of_forall_not_mcaEvent,
+    GrandChallenges.MCALowerWitness.of_forall_not_mcaEvent]
+    using MCALowerWitness_le_mcaThreshold C ε_star
+      (mcaThresholdExists_of_forall_not_mcaEvent C δ ε_star hδ_le_one hno)
+      (GrandChallenges.MCALowerWitness.of_forall_not_mcaEvent C δ ε_star hδ_le_one hno)
 
 /-- Per-rate repaired double-cover data resolves the faithful MCA lattice prize existentially.
 This is the prize-facing aggregation of the #140 repaired coverage theorem through the existing
@@ -306,16 +366,23 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallenges.exists_prize_mcaLowerWitness_of_forall_not_mcaEvent
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_ofDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_ofDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_ofDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_ofBadScalarDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_ofBadScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_ofBadScalarDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_of_mcaBadCount_zero
 set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_of_mcaBadCount_zero
+set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_of_forall_not_mcaEvent
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_of_forall_not_mcaEvent
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_ofDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_ofBadScalarDoubleCover
