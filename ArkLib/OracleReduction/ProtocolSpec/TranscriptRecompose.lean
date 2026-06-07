@@ -32,3 +32,26 @@ theorem fst_append_snd (T : FullTranscript (pSpec₁ ++ₚ pSpec₂)) : T.fst ++
 end ProtocolSpec.FullTranscript
 
 #print axioms ProtocolSpec.FullTranscript.fst_append_snd
+
+namespace Transcript
+
+variable {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+
+/-- Append a full `pSpec₁` transcript and a *partial* `pSpec₂` transcript into a partial transcript
+for the concatenated protocol — the right-block analogue of the partial `fst`/`snd` projections,
+needed to state the right-block run characterization of `Prover.append_run` (#13). -/
+def appendRight (T₁ : FullTranscript pSpec₁) {k : Fin (n + 1)} (T₂ : pSpec₂.Transcript k) :
+    (pSpec₁ ++ₚ pSpec₂).Transcript ⟨m + k.val, by omega⟩ :=
+  fun i =>
+    if hi : i.val < m then
+      cast (Fin.vappend_left_of_lt pSpec₁.Type pSpec₂.Type ⟨i.val, by omega⟩ hi).symm
+        (T₁ ⟨i.val, hi⟩)
+    else
+      have hi2 : i.val - m < k.val := by have := i.isLt; simp only [Fin.val_mk] at this; omega
+      cast (Fin.vappend_right_of_not_lt pSpec₁.Type pSpec₂.Type ⟨i.val, by omega⟩ hi).symm
+        (T₂ ⟨i.val - m, hi2⟩)
+
+end Transcript
+
+end ProtocolSpec
+#check @ProtocolSpec.Transcript.appendRight

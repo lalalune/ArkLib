@@ -132,10 +132,10 @@ theorem restrictedMatch_rhs_eq_recursionPartitionForm (x₀ : F) (R : F[X][X][Y]
           embeddingOf𝒪Into𝕃 H (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
             * embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
             * embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R i1 lam)
-            * embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+            * embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp));
     let den : 𝕃 H :=
       (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
-        * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1)
+        * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1);
     - (ClaimA2.ζ R x₀ H
         * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp))
       = ClaimA2.ζ R x₀ H * (recSum / den) := by

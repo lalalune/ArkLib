@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.OracleReduction.Security.ZeroKnowledge
 import Mathlib.Data.FinEnum
 
 /-!
@@ -52,6 +53,8 @@ def pSpec : ProtocolSpec 1 := ⟨!v[.P_to_V], !v[Witness]⟩
 
 instance : ∀ i, VCVCompatible ((pSpec Witness).Challenge i) | ⟨0, h⟩ => nomatch h
 
+instance : ∀ i, SampleableType ((pSpec Witness).Challenge i) | ⟨0, h⟩ => nomatch h
+
 instance : ProverOnly (pSpec Witness) where
   prover_first' := by simp
 
@@ -91,6 +94,77 @@ theorem reduction_run (stmtIn : Statement) (witIn : Witness) :
   rw [Reduction.run_of_prover_first]
   simp only [reduction, prover, verifier, id_eq]
   rfl
+
+/-- The simulator for the `SendWitness` reduction when the relation's witness is determined by
+the input statement. It emits the single prover message that the honest prover would send for
+`witOf stmt`. -/
+def transcriptSimulator (witOf : Statement → Witness) :
+    Reduction.TranscriptSimulator oSpec Statement (pSpec Witness) :=
+  fun stmt => pure (fun i => match i with | ⟨0, _⟩ => witOf stmt)
+
+/-- The honest transcript distribution for `SendWitness` is the deterministic one-message
+transcript containing the actual witness. -/
+theorem honestTranscriptDist_reduction_evalDist
+    (stmtIn : Statement) (witIn : Witness) :
+    evalDist (Reduction.honestTranscriptDist init impl
+        (reduction oSpec Statement Witness) stmtIn witIn) =
+      evalDist (pure (fun i => match i with | ⟨0, _⟩ => witIn) :
+        OptionT ProbComp (FullTranscript (pSpec Witness))) := by
+  apply evalDist_ext
+  intro transcript
+  classical
+  unfold Reduction.honestTranscriptDist
+  rw [reduction_run]
+  simp only [map_pure, OptionT.run_pure, simulateQ_pure, StateT.run'_eq,
+    StateT.run_pure, bind_pure_comp]
+  rw [OptionT.probOutput_eq, OptionT.probOutput_eq]
+  simp [probOutput_map_const, HasEvalPMF.probFailure_eq_zero]
+
+/-- `SendWitness` is perfectly HVZK for relations whose witness is determined by the statement.
+The hypothesis is necessary: the protocol transcript reveals the witness. -/
+theorem reduction_perfectHVZK_of_witness_eq
+    (witOf : Statement → Witness)
+    (hRel : ∀ stmt wit, (stmt, wit) ∈ relIn → wit = witOf stmt) :
+    Reduction.perfectHVZK init impl relIn
+      (reduction oSpec Statement Witness)
+      (transcriptSimulator (oSpec := oSpec) (Statement := Statement) (Witness := Witness)
+        witOf) := by
+  intro stmt wit hrel
+  unfold transcriptSimulator
+  rw [← hRel stmt wit hrel]
+  exact (honestTranscriptDist_reduction_evalDist (oSpec := oSpec) (init := init)
+    (impl := impl) stmt wit).symm
+
+/-- Perfect HVZK implies statistical HVZK for the statement-determined-witness
+`SendWitness` relation at every error budget. -/
+theorem reduction_statisticalHVZK_of_witness_eq
+    (witOf : Statement → Witness)
+    (hRel : ∀ stmt wit, (stmt, wit) ∈ relIn → wit = witOf stmt) (ε : NNReal) :
+    Reduction.statisticalHVZK init impl relIn
+      (reduction oSpec Statement Witness)
+      (transcriptSimulator (oSpec := oSpec) (Statement := Statement) (Witness := Witness)
+        witOf) ε :=
+  (reduction_perfectHVZK_of_witness_eq (oSpec := oSpec) (Statement := Statement)
+    (Witness := Witness) (init := init) (impl := impl) (relIn := relIn) witOf hRel).statisticalHVZK ε
+
+/-- `SendWitness` has an explicit perfect-HVZK simulator when the relation's witness is
+statement-determined. -/
+theorem reduction_isHVZK_of_witness_eq
+    (witOf : Statement → Witness)
+    (hRel : ∀ stmt wit, (stmt, wit) ∈ relIn → wit = witOf stmt) :
+    Reduction.isHVZK init impl relIn (reduction oSpec Statement Witness) :=
+  ⟨transcriptSimulator (oSpec := oSpec) (Statement := Statement) (Witness := Witness) witOf,
+    reduction_perfectHVZK_of_witness_eq (oSpec := oSpec) (Statement := Statement)
+      (Witness := Witness) (init := init) (impl := impl) (relIn := relIn) witOf hRel⟩
+
+/-- `SendWitness` has statistical HVZK at every error budget when the relation's witness is
+statement-determined. -/
+theorem reduction_isStatHVZK_of_witness_eq
+    (witOf : Statement → Witness)
+    (hRel : ∀ stmt wit, (stmt, wit) ∈ relIn → wit = witOf stmt) (ε : NNReal) :
+    Reduction.isStatHVZK init impl relIn (reduction oSpec Statement Witness) ε :=
+  (reduction_isHVZK_of_witness_eq (oSpec := oSpec) (Statement := Statement)
+    (Witness := Witness) (init := init) (impl := impl) (relIn := relIn) witOf hRel).isStatHVZK ε
 
 open Classical in
 /-- The `SendWitness` reduction satisfies perfect completeness. -/
@@ -155,6 +229,13 @@ theorem reduction_rbr_knowledge_soundness :
   intro _stmtIn _witIn _prover ⟨⟨0, _⟩, hdir⟩
   -- hdir : (pSpec Witness).dir ⟨0, _⟩ = .V_to_P, but the direction is .P_to_V
   exact absurd hdir (by simp [pSpec])
+
+#print axioms SendWitness.transcriptSimulator
+#print axioms SendWitness.honestTranscriptDist_reduction_evalDist
+#print axioms SendWitness.reduction_perfectHVZK_of_witness_eq
+#print axioms SendWitness.reduction_statisticalHVZK_of_witness_eq
+#print axioms SendWitness.reduction_isHVZK_of_witness_eq
+#print axioms SendWitness.reduction_isStatHVZK_of_witness_eq
 
 end Reduction
 

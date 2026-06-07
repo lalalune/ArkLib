@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.HammingBallVolume
+import ArkLib.ToMathlib.ExtractedIssueBricks
 
 /-!
 # Basic facts about the q-ary Hamming-ball volume
@@ -42,11 +43,8 @@ theorem one_le_hammingBallVolume (q : ℕ) (δ : ℝ) (n : ℕ) :
 /-- **The q-ary Hamming-ball volume never exceeds the whole space `q^n`** (for `1 ≤ q`). -/
 theorem hammingBallVolume_le_qpow (q : ℕ) (hq : 1 ≤ q) (δ : ℝ) (n : ℕ) :
     hammingBallVolume q δ n ≤ q ^ n := by
-  have hfull : ∑ i ∈ Finset.range (n + 1), Nat.choose n i * (q - 1) ^ i = q ^ n := by
-    have h := add_pow (q - 1) 1 n
-    simp only [one_pow, mul_one, Nat.cast_id] at h
-    rw [Nat.sub_add_cancel hq] at h
-    rw [h]; exact Finset.sum_congr rfl (fun i _ => by ring)
+  have hfull : ∑ i ∈ Finset.range (n + 1), Nat.choose n i * (q - 1) ^ i = q ^ n :=
+    _root_.sum_range_choose_mul_sub_one_pow_eq_qpow q n hq
   have hzero : ∀ i, n < i → Nat.choose n i * (q - 1) ^ i = 0 := by
     intro i hi; rw [Nat.choose_eq_zero_of_lt hi, Nat.zero_mul]
   unfold hammingBallVolume
@@ -68,11 +66,8 @@ layer sum covers all of `range (n+1)`. -/
 theorem hammingBallVolume_eq_qpow_of_one_le (q : ℕ) (hq : 1 ≤ q) {δ : ℝ} (hδ : 1 ≤ δ) (n : ℕ) :
     hammingBallVolume q δ n = q ^ n := by
   refine le_antisymm (hammingBallVolume_le_qpow q hq δ n) ?_
-  have hfull : ∑ i ∈ Finset.range (n + 1), Nat.choose n i * (q - 1) ^ i = q ^ n := by
-    have h := add_pow (q - 1) 1 n
-    simp only [one_pow, mul_one, Nat.cast_id] at h
-    rw [Nat.sub_add_cancel hq] at h
-    rw [h]; exact Finset.sum_congr rfl (fun i _ => by ring)
+  have hfull : ∑ i ∈ Finset.range (n + 1), Nat.choose n i * (q - 1) ^ i = q ^ n :=
+    _root_.sum_range_choose_mul_sub_one_pow_eq_qpow q n hq
   rw [← hfull]
   unfold hammingBallVolume
   apply Finset.sum_le_sum_of_subset
