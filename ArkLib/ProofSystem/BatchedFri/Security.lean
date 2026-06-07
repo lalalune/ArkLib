@@ -2326,6 +2326,165 @@ theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineL
         (n := n) (s := s) (d := d) (ω := ω)
         f m_ge_3 G δ_query queries l domain_size_cond h_agreement h_ca h_prob)
 
+/-- The fixed-radius RS affine-line inputs for the density-route Batched FRI wrappers.
+
+This packages the BCIKS20 affine-line theorem inputs used by the query-level
+`...AndRSAffineLine` density route. -/
+def friRSAffineLineDensityInputs
+    (f : Fin 2 → (ω → 𝔽)) (m : ℕ) : Prop :=
+  let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+  let u : Code.WordStack 𝔽 (Fin 2) (ω.subdomain 0) :=
+    fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)
+  let α_fri : ℝ≥0 :=
+    let ρ_sqrt :=
+      ReedSolomon.sqrtRate
+        (2 ^ n)
+        (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+    ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+  let δ_fri : ℝ≥0 := 1 - α_fri
+  ProximityGap.StrictCoeffPolysResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) ∧
+    ProximityGap.BoundaryCardResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) ∧
+    δ_fri ≤ 1 - ReedSolomon.sqrtRate (2 ^ n) rsDomain ∧
+    Pr_{let z ← $ᵖ 𝔽}[
+      δᵣ(u 0 + z • u 1, (ReedSolomon.code rsDomain (2 ^ n)).carrier) ≤ δ_fri] >
+      ProximityGap.errorBound δ_fri (2 ^ n) rsDomain
+
+/-- Density-route Claim 8.3 query-lift specialized to the Batched FRI subdomain Reed-Solomon
+affine-line correlated-agreement theorem. -/
+theorem friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
+    {m : ℕ}
+    (f : Fin 2 → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ_query : ℝ≥0) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    (h_rs : friRSAffineLineDensityInputs (n := n) (ω := ω) f m) :
+    friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 := by
+  let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+  let u : Code.WordStack 𝔽 (Fin 2) (ω.subdomain 0) :=
+    fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)
+  let α_fri : ℝ≥0 :=
+    let ρ_sqrt :=
+      ReedSolomon.sqrtRate
+        (2 ^ n)
+        (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+    ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+  let δ_fri : ℝ≥0 := 1 - α_fri
+  dsimp [friRSAffineLineDensityInputs] at h_rs
+  rcases h_rs with ⟨hStrictCoeff, hBoundaryCard, hδ, h_prob⟩
+  have hStrictCoeff' :
+      ProximityGap.StrictCoeffPolysResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := δ_fri) := by
+    simpa [rsDomain, α_fri, δ_fri] using hStrictCoeff
+  have hBoundaryCard' :
+      ProximityGap.BoundaryCardResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := δ_fri) := by
+    simpa [rsDomain, α_fri, δ_fri] using hBoundaryCard
+  have hδ' : δ_fri ≤ 1 - ReedSolomon.sqrtRate (2 ^ n) rsDomain := by
+    simpa [rsDomain, α_fri, δ_fri] using hδ
+  have h_prob' :
+      Pr_{let z ← $ᵖ 𝔽}[
+        δᵣ(u 0 + z • u 1, (ReedSolomon.code rsDomain (2 ^ n)).carrier) ≤ δ_fri] >
+        ProximityGap.errorBound δ_fri (2 ^ n) rsDomain := by
+    simpa [rsDomain, u, α_fri, δ_fri] using h_prob
+  unfold friSoundnessQueryLift
+  exact
+    fri_query_soundness_lift_subdomainZero_to_domain
+      (n := n) (ω := ω) (f := f) h_agreement m_ge_3
+      (fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
+        (n := n) (s := s) (d := d) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        h_agreement m_ge_3 G δ_query queries l domain_size_cond
+        (by simpa [rsDomain, α_fri, δ_fri] using hStrictCoeff')
+        (by simpa [rsDomain, α_fri, δ_fri] using hBoundaryCard')
+        (by simpa [rsDomain, α_fri, δ_fri] using hδ')
+        (by simpa [rsDomain, u, α_fri, δ_fri] using h_prob'))
+
+open ENNReal in
+/-- Density-route Claim 8.3 residual specialized to the Batched FRI subdomain Reed-Solomon
+affine-line correlated-agreement theorem. -/
+theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
+    {l m : ℕ}
+    (f : Fin 2 → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ_query : ℝ≥0) (queries : ℕ)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    (h_rs : friRSAffineLineDensityInputs (n := n) (ω := ω) f m) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 := by
+  exact
+    fri_soundness_of_queryLift
+      (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
+      f m_ge_3
+      (friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
+        (n := n) (s := s) (d := d) (ω := ω)
+        f m_ge_3 G δ_query queries l domain_size_cond h_agreement h_rs)
+
+/-- Raw full-domain Claim 8.2 conclusion from the Batched FRI subdomain Reed-Solomon affine-line
+density-route wrapper. -/
+theorem fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
+    {m : ℕ}
+    (f : Fin 2 → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ_query : ℝ≥0) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    (h_rs : friRSAffineLineDensityInputs (n := n) (ω := ω) f m) :
+    Code.jointAgreement
+      (F := 𝔽)
+      (κ := Fin 2)
+      (ι := ω)
+      (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+      (δ :=
+        let ρ_sqrt :=
+          ReedSolomon.sqrtRate
+            (2 ^ n)
+            (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+        let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+        1 - α)
+      (W := f) := by
+  change friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3
+  exact
+    friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
+      (n := n) (s := s) (d := d) (ω := ω)
+      f m_ge_3 G δ_query queries l domain_size_cond h_agreement h_rs
+
 omit [Nontrivial 𝔽] in
 /-- Density-route Claim 8.3 query-lift from the affine-space correlated-agreement predicate.
 
@@ -2964,6 +3123,8 @@ theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequent
 #print axioms Fri.jointAgreement_subdomainZero_to_domain
 #print axioms Fri.fri_query_soundness_lift_subdomainZero_to_domain
 #print axioms Fri.fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+set_option linter.style.longLine false in
+#print axioms Fri.fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
 #print axioms Fri.batchedFRIreduction_verifier_eq_append
 #print axioms Fri.batchedFRISequentialCompositionSoundness_of_append
 #print axioms Fri.friSoundnessSequentialComposition
@@ -2978,6 +3139,10 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineLineCA
 set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineDensityInputs
+set_option linter.style.longLine false in
+#print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
+set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineSpaceCA
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndCurveCA
@@ -2989,6 +3154,8 @@ set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
 set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineLineCA
+set_option linter.style.longLine false in
+#print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
 set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineSpaceCA
 set_option linter.style.longLine false in
@@ -3037,6 +3204,8 @@ end Fri
 #print axioms Fri.jointAgreement_subdomainZero_to_domain
 #print axioms Fri.fri_query_soundness_lift_subdomainZero_to_domain
 #print axioms Fri.fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+set_option linter.style.longLine false in
+#print axioms Fri.fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
 #print axioms Fri.batchedFRIreduction_verifier_eq_append
 #print axioms Fri.batchedFRISequentialCompositionSoundness_of_append
 #print axioms Fri.FriSoundnessParts
@@ -3050,6 +3219,10 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineLineCA
 set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineDensityInputs
+set_option linter.style.longLine false in
+#print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
+set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineSpaceCA
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndCurveCA
@@ -3061,6 +3234,8 @@ set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
 set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineLineCA
+set_option linter.style.longLine false in
+#print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
 set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineSpaceCA
 set_option linter.style.longLine false in
