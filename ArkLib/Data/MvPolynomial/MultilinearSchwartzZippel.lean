@@ -71,4 +71,27 @@ theorem multilinear_agree_card_mul_le
   rw [hfilter]
   exact hmain
 
+/-- **Multilinear identity testing, probability-ratio form.**  Two distinct multilinear
+polynomials over `Fin s` agree at a uniformly random point with probability at most `s/|F|`:
+`|{x : eval x p = eval x q}| / |F|^s ≤ s / |F|`.  This is the soundness bound of one sum-check
+round in directly-usable ratio form. -/
+theorem multilinear_agree_prob_le
+    {p q : MvPolynomial (Fin s) F}
+    (hp : p ∈ F⦃≤ 1⦄[X (Fin s)]) (hq : q ∈ F⦃≤ 1⦄[X (Fin s)]) (hpq : p ≠ q) :
+    ((Finset.univ.filter (fun x : Fin s → F => eval x p = eval x q)).card : ℝ)
+        / (Fintype.card F : ℝ) ^ s
+      ≤ (s : ℝ) / Fintype.card F := by
+  have hFpos : (0 : ℝ) < Fintype.card F := by exact_mod_cast Fintype.card_pos
+  have hcount := multilinear_agree_card_mul_le hp hq hpq
+  have hcountR :
+      ((Finset.univ.filter (fun x : Fin s → F => eval x p = eval x q)).card : ℝ)
+          * Fintype.card F
+        ≤ (s : ℝ) * (Fintype.card F) ^ s := by exact_mod_cast hcount
+  rw [div_le_div_iff₀ (by positivity) hFpos]
+  -- |agree| · |F| ≤ s · |F|^s  ⟹  |agree| · |F| ≤ s · |F|^s  (rearranged)
+  calc ((Finset.univ.filter (fun x : Fin s → F => eval x p = eval x q)).card : ℝ)
+        * Fintype.card F
+      ≤ (s : ℝ) * (Fintype.card F) ^ s := hcountR
+    _ = (s : ℝ) * (Fintype.card F) ^ s := rfl
+
 end MvPolynomial
