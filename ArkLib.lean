@@ -179,6 +179,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
