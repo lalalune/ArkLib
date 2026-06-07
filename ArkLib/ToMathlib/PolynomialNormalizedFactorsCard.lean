@@ -68,7 +68,6 @@ theorem card_posNatDegree_normalizedFactors_toFinset_le_natDegree
           + (((s.filter (fun q : R[X] => ¬ 0 < q.natDegree))).map natDegree).sum := by
     conv_lhs => rw [← Multiset.filter_add_not (fun q : R[X] => 0 < q.natDegree) s]
     rw [Multiset.map_add, Multiset.sum_add]
-    simp [sPos]
   have hpos_sum_le : (sPos.map natDegree).sum ≤ (s.map natDegree).sum := by
     rw [hsplit]
     exact Nat.le_add_right _ _

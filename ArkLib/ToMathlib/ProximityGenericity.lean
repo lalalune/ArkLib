@@ -1,0 +1,81 @@
+import Mathlib
+
+/-! Finite-field genericity counting for BCIKS20 §5 Claim 5.7 (`hx0`/`hsep` specialization). -/
+exists when the field is larger than the total degree. The formalizable core of the
+`hx0`/`hsep` genericity in `GraphExtractionHypotheses` (BCIKS20 §5 Claim 5.7). -/
+
+open Polynomial Finset
+
+namespace ProximityGap.Genericity
+
+variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+
+/-- **Good evaluation point exists (finite-field counting).** Given a finite family of nonzero
+polynomials whose degrees sum to less than `|F|`, some field element is a non-root of all of
+them. The bad set `⋃ roots` has at most `∑ natDegree < |F|` elements. -/
+theorem exists_eval_ne_zero_of_sum_natDegree_lt
+    (ps : Finset F[X]) (hne : ∀ p ∈ ps, p ≠ 0)
+    (hcard : ∑ p ∈ ps, p.natDegree < Fintype.card F) :
+    ∃ x : F, ∀ p ∈ ps, p.eval x ≠ 0 := by
+  classical
+  set bad : Finset F := ps.biUnion (fun p => p.roots.toFinset) with hbad
+  have hbad_card : bad.card < Fintype.card F := by
+    calc bad.card ≤ ∑ p ∈ ps, (p.roots.toFinset).card := Finset.card_biUnion_le
+      _ ≤ ∑ p ∈ ps, p.natDegree := by
+          apply Finset.sum_le_sum
+          intro p _hp
+          exact le_trans (Multiset.toFinset_card_le _) (Polynomial.card_roots' p)
+      _ < Fintype.card F := hcard
+  have hne_univ : bad ≠ (Finset.univ : Finset F) := by
+    intro h
+    rw [h, Finset.card_univ] at hbad_card
+    exact lt_irrefl _ hbad_card
+  obtain ⟨x, hx⟩ : ∃ x : F, x ∉ bad := by
+    by_contra h
+    push Not at h
+    exact hne_univ (Finset.eq_univ_iff_forall.mpr h)
+  refine ⟨x, fun p hp hpx => ?_⟩
+  apply hx
+  rw [hbad, Finset.mem_biUnion]
+  refine ⟨p, hp, ?_⟩
+  rw [Multiset.mem_toFinset, Polynomial.mem_roots (hne p hp)]
+  exact hpx
+
+/-- **Good point for an indexed obstruction family.** If per-`R` obstruction polynomials
+`obstr R` (`R ∈ Rs`) are nonzero with total degree `< |F|`, a single `x₀` makes all of them
+nonvanish. In the #8 application `Rs = pg_Rset` and `obstr R` packages the leading-coefficient
+witness (for `hx0`) / the Y-discriminant (for `hsep`), so a good specialization `x₀` exists
+once `|F|` exceeds the total obstruction degree. -/
+theorem exists_good_point_of_obstructions
+    {ι : Type*} (Rs : Finset ι) (obstr : ι → F[X])
+    (hne : ∀ R ∈ Rs, obstr R ≠ 0)
+    (hcard : ∑ R ∈ Rs, (obstr R).natDegree < Fintype.card F) :
+    ∃ x : F, ∀ R ∈ Rs, (obstr R).eval x ≠ 0 := by
+  classical
+  set bad : Finset F := Rs.biUnion (fun R => (obstr R).roots.toFinset) with hbad
+  have hbad_card : bad.card < Fintype.card F := by
+    calc bad.card ≤ ∑ R ∈ Rs, ((obstr R).roots.toFinset).card := Finset.card_biUnion_le
+      _ ≤ ∑ R ∈ Rs, (obstr R).natDegree := by
+          apply Finset.sum_le_sum
+          intro R _hR
+          exact le_trans (Multiset.toFinset_card_le _) (Polynomial.card_roots' (obstr R))
+      _ < Fintype.card F := hcard
+  have hne_univ : bad ≠ (Finset.univ : Finset F) := by
+    intro h
+    rw [h, Finset.card_univ] at hbad_card
+    exact lt_irrefl _ hbad_card
+  obtain ⟨x, hx⟩ : ∃ x : F, x ∉ bad := by
+    by_contra h
+    push Not at h
+    exact hne_univ (Finset.eq_univ_iff_forall.mpr h)
+  refine ⟨x, fun R hR hRx => ?_⟩
+  apply hx
+  rw [hbad, Finset.mem_biUnion]
+  refine ⟨R, hR, ?_⟩
+  rw [Multiset.mem_toFinset, Polynomial.mem_roots (hne R hR)]
+  exact hRx
+
+#print axioms ProximityGap.Genericity.exists_eval_ne_zero_of_sum_natDegree_lt
+#print axioms ProximityGap.Genericity.exists_good_point_of_obstructions
+
+end ProximityGap.Genericity

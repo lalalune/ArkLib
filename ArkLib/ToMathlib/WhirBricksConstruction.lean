@@ -647,6 +647,11 @@ theorem whir_rbr_soundness_of_whirVectorSpec_secure_gap
 end RBRSoundnessAssembly
 
 #print axioms whirVectorSpec_card_challengeIdx
+#print axioms paperTranscriptSlotDirection
+#print axioms paperTranscriptSlotLength
+#print axioms whirPaperTranscriptVectorSpec
+#print axioms whirPaperTranscriptVectorSpec_dir
+#print axioms whirPaperTranscriptVectorSpec_length
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
