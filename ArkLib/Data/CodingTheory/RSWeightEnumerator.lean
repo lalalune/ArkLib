@@ -127,9 +127,9 @@ theorem card_evalWeight_le (α : ι ↪ F) (deg : ℕ)
   classical
   calc (Finset.univ.filter
           (fun p : Polynomial.degreeLT F deg => (evalSupport α p).card = d)).card
-      ≤ ((Finset.univ : Finset ι).powersetCard d).biUnion
+      ≤ (((Finset.univ : Finset ι).powersetCard d).biUnion
           (fun T => Finset.univ.filter (fun p : Polynomial.degreeLT F deg =>
-            p ∈ LinearMap.ker (evalOnS α deg Tᶜ))) |>.card := by
+            p ∈ LinearMap.ker (evalOnS α deg Tᶜ)))).card := by
         refine Finset.card_le_card (fun p hp => ?_)
         rw [Finset.mem_filter] at hp
         refine Finset.mem_biUnion.mpr ⟨evalSupport α p, ?_, ?_⟩
