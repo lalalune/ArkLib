@@ -81,4 +81,46 @@ theorem admissible_of_orderOf_ge_of_cosetSep
   admissible_of_orderOf_ge_of_inter L s ω h0 hs
     (admissible_inter_of_cosetSep L s ω hcoset)
 
+/-! ## Canonical geometric folded-RS domain
+
+The standard GR08 folded-RS evaluation domain `L = {γ^{s·i}}` with folding element `ω = γ`.
+For `γ` of multiplicative order `≥ s·n`, this domain is injective, nonzero, and `⟨γ⟩`-coset
+separated *within the fold window* `i < s` — so its `Admissible` predicate is **unconditional**.
+This turns the FRS τ-subspace-design (ABF26 T2.18) into a fully discharged statement for the
+canonical domain, with no remaining side condition beyond the order bound `s·n ≤ orderOf γ`. -/
+
+/-- The geometric folded-RS domain map `i ↦ γ^{s·i}` on `Fin n`. -/
+def geomDomainFn (γ : F) (s n : ℕ) : Fin n → F := fun i => γ ^ (s * i.val)
+
+/-- Bounded coset-separation: within the fold window `i < s`, the geometric domain points have
+disjoint `γ`-orbits, provided `s·n ≤ orderOf γ`. -/
+theorem geomDomain_cosetSep_lt (γ : F) (s n : ℕ) (hs : 0 < s) (hsn : s * n ≤ orderOf γ) :
+    ∀ a : Fin n, ∀ b : Fin n, ∀ i : ℕ, i < s →
+      geomDomainFn γ s n a * γ ^ i = geomDomainFn γ s n b → a = b := by
+  intro a b i hi heq
+  unfold geomDomainFn at heq
+  rw [← pow_add] at heq
+  -- both exponents land in `Iio (orderOf γ)`
+  have hexp_a : s * a.val + i < orderOf γ := by
+    calc s * a.val + i < s * a.val + s := by omega
+      _ = s * (a.val + 1) := by ring
+      _ ≤ s * n := Nat.mul_le_mul_left s (by omega)
+      _ ≤ orderOf γ := hsn
+  have hexp_b : s * b.val < orderOf γ :=
+    lt_of_lt_of_le (Nat.mul_lt_mul_of_lt_of_le (le_refl s) b.isLt hs) hsn
+  have hnat : s * a.val + i = s * b.val :=
+    pow_injOn_Iio_orderOf (Set.mem_Iio.mpr hexp_a) (Set.mem_Iio.mpr hexp_b) heq
+  -- `s·a + i = s·b`, `i < s`, `s > 0` ⇒ `a = b`
+  have hab : a.val = b.val := by
+    have hle : s * a.val ≤ s * b.val := by omega
+    have hlt : s * b.val < s * (a.val + 1) := by rw [Nat.mul_succ]; omega
+    have h1 : a.val ≤ b.val := Nat.le_of_mul_le_mul_left hle hs
+    have h2 : b.val < a.val + 1 := Nat.lt_of_mul_lt_mul_left hlt
+    omega
+  exact Fin.ext hab
+
+/-- The geometric domain is nonzero (`0 ∉ {γ^{s·i}}`) when `γ ≠ 0`. -/
+theorem geomDomain_ne_zero (γ : F) (s n : ℕ) (hγ : γ ≠ 0) (i : Fin n) :
+    geomDomainFn γ s n i ≠ 0 := pow_ne_zero _ hγ
+
 end ReedSolomon.Folded
