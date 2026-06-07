@@ -242,6 +242,34 @@ def fiatShamir_runCollapseResidual
       simulateQ impl
         (R.fiatShamirHonestExecution stmtIn witIn).run
 
+/-- The named run-equality residual discharges the outer basic-Fiat-Shamir challenge-collapse
+residual.  After rewriting the transformed run to the lifted explicit honest execution, the only
+normalization step is the `OptionT.run` lift through the right-associated oracle sum; this is
+collapsed by `simulateQ_add_liftComp_add_assoc_left`. -/
+theorem fiatShamir_runCollapseResidual_of_run_eq_honestExecution
+    {σ : Type}
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn)
+    (hRun : fiatShamir_run_eq_honestExecution R stmtIn witIn) :
+    fiatShamir_runCollapseResidual impl R stmtIn witIn := by
+  unfold fiatShamir_runCollapseResidual fiatShamir_run_eq_honestExecution at *
+  rw [hRun]
+  let chSpec := [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ
+  change simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+      (OracleComp.liftComp
+        (OracleComp.liftComp (R.fiatShamirHonestExecution stmtIn witIn).run
+          (oSpec + (fsChallengeOracle StmtIn pSpec + chSpec)))
+        ((oSpec + fsChallengeOracle StmtIn pSpec) + chSpec)) =
+    simulateQ impl (R.fiatShamirHonestExecution stmtIn witIn).run
+  simpa [chSpec, QueryImpl.addLift_def, QueryImpl.liftTarget_self] using
+    simulateQ_add_liftComp_add_assoc_left
+      (spec₁ := oSpec) (spec₂ := fsChallengeOracle StmtIn pSpec) (spec₃ := chSpec)
+      impl
+      (QueryImpl.liftTarget (StateT σ ProbComp)
+        (challengeQueryImpl (pSpec := FiatShamirProtocolSpec (pSpec := pSpec))))
+      (R.fiatShamirHonestExecution stmtIn witIn).run
+
 /-- Completeness of the transformed one-message reduction is equivalent to the explicit honest
 Fiat-Shamir execution packaged via `Reduction.fiatShamirHonestExecution`. -/
 def fiatShamir_completeness_unroll
@@ -284,6 +312,24 @@ theorem fiatShamir_completeness_unroll_of_runCollapse
     hCollapse stmtIn witIn
   rw [hcollapse]
 
+/-- The named run-equality residual is enough to unroll basic-Fiat-Shamir completeness to the
+explicit honest-execution experiment. This packages
+`fiatShamir_runCollapseResidual_of_run_eq_honestExecution` into the existing unroll bridge. -/
+theorem fiatShamir_completeness_unroll_of_runEq
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hRun : ∀ stmtIn witIn,
+      fiatShamir_run_eq_honestExecution R stmtIn witIn) :
+    fiatShamir_completeness_unroll init impl relIn relOut completenessError R :=
+  fiatShamir_completeness_unroll_of_runCollapse init impl relIn relOut
+    completenessError R fun stmtIn witIn =>
+      fiatShamir_runCollapseResidual_of_run_eq_honestExecution impl R stmtIn witIn
+        (hRun stmtIn witIn)
+
 /-- Basic Fiat-Shamir completeness follows from the run-collapse residual and completeness of the
 explicit honest-execution experiment. This is the forward direction of
 `fiatShamir_completeness_unroll_of_runCollapse`, packaged for downstream users that do not need the
@@ -302,6 +348,24 @@ theorem fiatShamir_completeness_of_honestExecution
     R.fiatShamir.completeness init impl relIn relOut completenessError :=
   (fiatShamir_completeness_unroll_of_runCollapse init impl relIn relOut completenessError
     R hCollapse).2 hHonest
+
+/-- Basic Fiat-Shamir completeness follows from the named run-equality residual and completeness of
+the explicit honest-execution experiment. This leaves the genuine run-equality theorem as the only
+completeness-side residual. -/
+theorem fiatShamir_completeness_of_runEq
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hRun : ∀ stmtIn witIn,
+      fiatShamir_run_eq_honestExecution R stmtIn witIn)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      (R.fiatShamirHonestExecution) completenessError) :
+    R.fiatShamir.completeness init impl relIn relOut completenessError :=
+  (fiatShamir_completeness_unroll_of_runEq init impl relIn relOut completenessError
+    R hRun).2 hHonest
 
 /-- Transformed basic Fiat-Shamir completeness can be projected back to completeness of the explicit
 honest-execution experiment once the run-collapse residual is available. This is the reverse
@@ -382,21 +446,21 @@ theorem fiatShamir_completeness_of_honestExecution_mono_relations_error
       completenessError₁ R hCollapse hHonest hIn hOut
   exact Reduction.completeness_error_mono init impl hle hComplete
 
--- Future work: discharge `fiatShamir_runCollapseResidual` itself.
--- `Reduction.run_of_prover_first` is now available, and `simulateQ_add_run_liftM_left` in
--- `Execution.lean` collapses the unused outer challenge oracle on lifted `OptionT` runs. The
--- remaining gap is the final file-local normalization between the elaborated run of
--- `R.fiatShamir` and `liftM (R.fiatShamirHonestExecution ...)`, where Lean still chooses multiple
--- coercion paths for the same lifted computation.
+-- Future work: discharge `fiatShamir_run_eq_honestExecution` itself.  The outer challenge-collapse
+-- residual is now a theorem once that run equality is supplied; the remaining content is the
+-- structural equality between `R.fiatShamir.run` and the explicit honest Fiat-Shamir execution.
 
 #print axioms Reduction.fiatShamir_runCollapseResidual
+#print axioms Reduction.fiatShamir_runCollapseResidual_of_run_eq_honestExecution
 #print axioms Reduction.FiatShamirProtocolSpec
 #print axioms Reduction.FiatShamirProofTranscript
 #print axioms Reduction.fiatShamirHonestExecution
 #print axioms Reduction.fiatShamir_run_eq_honestExecution
 #print axioms Reduction.fiatShamir_completeness_unroll
 #print axioms Reduction.fiatShamir_completeness_unroll_of_runCollapse
+#print axioms Reduction.fiatShamir_completeness_unroll_of_runEq
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution
+#print axioms Reduction.fiatShamir_completeness_of_runEq
 #print axioms Reduction.fiatShamir_honestExecution_completeness_of_completeness
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_error
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_relations
