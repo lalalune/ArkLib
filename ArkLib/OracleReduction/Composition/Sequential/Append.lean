@@ -1628,6 +1628,23 @@ theorem liftM_query_heq {ιs : Type} {spec : OracleSpec ιs} {α α' : Type}
     HEq (liftM q : OracleComp spec α) (liftM q' : OracleComp spec α') := by
   subst hα; rw [eq_of_heq hq]
 
+/-- Normalize a lifted `pure` immediately under a bind.  This names the rewrite needed when the
+`liftComp_pure` simplification is hidden inside an append-composition bind. -/
+theorem liftComp_pure_bind {ι ι' : Type} {spec : OracleSpec ι} {superSpec : OracleSpec ι'}
+    [MonadLiftT (OracleQuery spec) (OracleQuery superSpec)]
+    {α β : Type} (x : α) (f : α → OracleComp superSpec β) :
+    ((pure x : OracleComp spec α).liftComp superSpec >>= f) = f x := by
+  simp only [OracleComp.liftComp_pure, pure_bind]
+
+/-- Pure-continuation companion to `liftComp_pure_bind`. -/
+theorem liftComp_pure_bind_pure {ι ι' : Type} {spec : OracleSpec ι}
+    {superSpec : OracleSpec ι'}
+    [MonadLiftT (OracleQuery spec) (OracleQuery superSpec)]
+    {α β : Type} (x : α) (k : α → β) :
+    ((pure x : OracleComp spec α).liftComp superSpec >>= fun a => pure (k a))
+      = (pure (k x) : OracleComp superSpec β) := by
+  rw [liftComp_pure_bind]
+
 /-- HEq of two oracle queries over the same spec whose inputs agree and whose response types are
 propositionally equal, with HEq continuations. -/
 theorem oracleQuery_heq {ιs : Type} {spec : OracleSpec ιs} {α α' : Type}
@@ -3372,6 +3389,8 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
 
 #print axioms Prover.appendRunRightResidual
 #print axioms Prover.append_run
+#print axioms Prover.liftComp_pure_bind
+#print axioms Prover.liftComp_pure_bind_pure
 #print axioms Prover.liftComp_bind_liftComp_comp
 #print axioms Prover.append_processRound_seam_message_comp
 #print axioms Prover.append_processRound_seam_challenge_comp
