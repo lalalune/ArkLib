@@ -168,4 +168,48 @@ theorem eq_at_coord_of_mem_two_agree
     u₀ i = v₀ i ∧ u₁ i = v₁ i :=
   eq_at_coord_of_two_scalars hzz' (hagree z hz i hiz) (hagree z' hz' i hiz')
 
+section DoubleCounting
+
+variable [Fintype ι]
+
+/-- The set of coordinates seen by at least two scalars of `Z` (where `u₀, u₁` are pinned). -/
+noncomputable def doubleHitSet (Z : Finset F) (S : F → Finset ι) : Finset ι :=
+  Finset.univ.filter (fun i => 2 ≤ (Z.filter (fun z => i ∈ S z)).card)
+
+/-- **Double-counting incidence bound.**  Summing the agreement-set sizes counts incidences
+`(z, i)` with `i ∈ S z`; a coordinate not in `doubleHitSet` carries `≤ 1` incidence and one in it
+carries `≤ |Z|`, so `∑_{z∈Z} |S z| ≤ |doubleHitSet|·|Z| + (n − |doubleHitSet|)`.  Combined with
+`∑_{z∈Z}|S z| ≥ |Z|·(1−δ)n`, this drives the joint-agreement size toward `(1−δ)n` as `|Z|` grows. -/
+theorem sum_card_le_doubleHit (Z : Finset F) (S : F → Finset ι) :
+    (∑ z ∈ Z, (S z).card) ≤
+      (doubleHitSet Z S).card * Z.card + (Fintype.card ι - (doubleHitSet Z S).card) := by
+  classical
+  set c : ι → ℕ := fun i => (Z.filter (fun z => i ∈ S z)).card with hc
+  -- double count: ∑_{z∈Z} |S z| = ∑_i c i
+  have hdc : (∑ z ∈ Z, (S z).card) = ∑ i : ι, c i := by
+    simp only [hc, Finset.card_filter]
+    rw [Finset.sum_comm]
+    refine Finset.sum_congr rfl fun z _ => ?_
+    rw [Finset.card_eq_sum_ones, Finset.sum_filter]
+  rw [hdc, ← Finset.sum_filter_add_sum_filter_not Finset.univ (fun i => 2 ≤ c i) c]
+  have hbig : (doubleHitSet Z S) = Finset.univ.filter (fun i => 2 ≤ c i) := rfl
+  gcongr ?_ + ?_
+  · -- on doubleHitSet, c i ≤ |Z|
+    calc (∑ i ∈ Finset.univ.filter (fun i => 2 ≤ c i), c i)
+        ≤ ∑ _i ∈ Finset.univ.filter (fun i => 2 ≤ c i), Z.card :=
+          Finset.sum_le_sum fun i _ => Finset.card_filter_le _ _
+      _ = (doubleHitSet Z S).card * Z.card := by rw [Finset.sum_const, smul_eq_mul, hbig]
+  · -- off doubleHitSet, c i ≤ 1
+    calc (∑ i ∈ Finset.univ.filter (fun i => ¬ 2 ≤ c i), c i)
+        ≤ ∑ _i ∈ Finset.univ.filter (fun i => ¬ 2 ≤ c i), 1 :=
+          Finset.sum_le_sum fun i hi => by
+            simp only [Finset.mem_filter, not_le] at hi; omega
+      _ = (Finset.univ.filter (fun i => ¬ 2 ≤ c i)).card := by
+          rw [Finset.sum_const, smul_eq_mul, mul_one]
+      _ ≤ Fintype.card ι - (doubleHitSet Z S).card := by
+          rw [hbig, Finset.filter_not, Finset.card_sdiff (Finset.filter_subset _ _)]
+          simp [Finset.card_univ]
+
+end DoubleCounting
+
 end ProximityGap
