@@ -34,6 +34,9 @@ WHIR #113, Fiat-Shamir #116, sumcheck #13/#114.
 * `Polynomial.card_filter_forall_eval_eq_le_of_sub_natDegree_le` /
   `Polynomial.card_filter_exists_eval_ne_ge_of_sub_natDegree_le` — direct `D^s` count bounds
   from a degree bound `(p - q).natDegree ≤ D`.
+* `Polynomial.card_filter_forall_eval_eq_const_le_of_sub_C_natDegree_le` /
+  `Polynomial.card_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le` — direct `D^s` count
+  bounds for one polynomial hitting or missing a fixed field value.
 * `Polynomial.prob_filter_forall_isRoot_le` /
   `Polynomial.prob_filter_exists_not_isRoot_ge` — uniform-tuple probability wrappers for the
   one-polynomial root and non-root counting bounds.
@@ -46,6 +49,9 @@ WHIR #113, Fiat-Shamir #116, sumcheck #13/#114.
 * `Polynomial.prob_filter_forall_eval_eq_le_of_sub_natDegree_le` /
   `Polynomial.prob_filter_exists_eval_ne_ge_of_sub_natDegree_le` — the direct degree-bound
   probability wrappers for coordinatewise agreement/disagreement.
+* `Polynomial.prob_filter_forall_eval_eq_const_le_of_sub_C_natDegree_le` /
+  `Polynomial.prob_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le` — the corresponding
+  fixed-value probability wrappers.
 * `Finset.sum_boolCube_prod_factor_eq_prod_sum` — the boolean-hypercube identity
   `∑_{x∈{0,1}^σ} ∏ᵢ (xᵢ=0 ? aᵢ : bᵢ) = ∏ᵢ (aᵢ + bᵢ)` underlying multilinear-extension sumcheck
   folding (#13/#114).
@@ -291,6 +297,53 @@ theorem card_filter_exists_eval_ne_ge_of_sub_natDegree_le {F : Type*} [Field F] 
   rw [hbad_filter, hcard_univ] at hsplit
   omega
 
+/-- If `p - C a` has degree at most `D`, then at most `D^s` tuples evaluate to `a`
+at every coordinate. -/
+theorem card_filter_forall_eval_eq_const_le_of_sub_C_natDegree_le {F : Type*}
+    [Field F] [Fintype F] [DecidableEq F] {D s : ℕ} {p : F[X]} {a : F}
+    (hp0 : p - C a ≠ 0) (hdeg : (p - C a).natDegree ≤ D) :
+    (Finset.univ.filter (fun r : Fin s → F => ∀ i, p.eval (r i) = a)).card ≤
+      D ^ s := by
+  have hroots :
+      (Finset.univ.filter (fun r : Fin s → F => ∀ i, (p - C a).IsRoot (r i))).card ≤
+        D ^ s :=
+    Polynomial.card_filter_forall_isRoot_le_of_natDegree_le
+      (F := F) (D := D) (s := s) (p := p - C a) hp0 hdeg
+  have hsubset :
+      Finset.univ.filter (fun r : Fin s → F => ∀ i, p.eval (r i) = a) ⊆
+        Finset.univ.filter (fun r : Fin s → F => ∀ i, (p - C a).IsRoot (r i)) := by
+    intro r hr
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hr ⊢
+    intro i
+    rw [Polynomial.IsRoot.def, Polynomial.eval_sub, Polynomial.eval_C, sub_eq_zero]
+    exact hr i
+  exact (Finset.card_le_card hsubset).trans hroots
+
+/-- Complementary count from a direct degree bound on `p - C a`. -/
+theorem card_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le {F : Type*}
+    [Field F] [Fintype F] [DecidableEq F] {D s : ℕ} {p : F[X]} {a : F}
+    (hp0 : p - C a ≠ 0) (hdeg : (p - C a).natDegree ≤ D) :
+    Fintype.card F ^ s - D ^ s ≤
+      (Finset.univ.filter (fun r : Fin s → F => ∃ i, p.eval (r i) ≠ a)).card := by
+  have hagree :=
+    Polynomial.card_filter_forall_eval_eq_const_le_of_sub_C_natDegree_le
+      (F := F) (D := D) (s := s) (p := p) (a := a) hp0 hdeg
+  have hsplit :=
+    Finset.card_filter_add_card_filter_not
+      (s := (Finset.univ : Finset (Fin s → F)))
+      (p := fun r : Fin s → F => ∀ i, p.eval (r i) = a)
+  have hbad_filter :
+      (Finset.univ.filter (fun r : Fin s → F => ¬ ∀ i, p.eval (r i) = a))
+        = Finset.univ.filter (fun r : Fin s → F => ∃ i, p.eval (r i) ≠ a) := by
+    ext r
+    simp
+  have hcard_fun : Fintype.card (Fin s → F) = Fintype.card F ^ s := by
+    simp
+  have hcard_univ : (Finset.univ : Finset (Fin s → F)).card = Fintype.card F ^ s := by
+    rw [Finset.card_univ, hcard_fun]
+  rw [hbad_filter, hcard_univ] at hsplit
+  omega
+
 /-- Uniform-tuple probability upper bound for all sampled coordinates being roots of a nonzero
 degree-`< N` polynomial. -/
 theorem prob_filter_forall_isRoot_le {F : Type*} [Field F] [Fintype F] [Nonempty F]
@@ -477,6 +530,53 @@ theorem prob_filter_exists_eval_ne_ge_of_sub_natDegree_le {F : Type*} [Field F] 
   rw [Nat.cast_pow]
   exact ENNReal.div_le_div_right (Nat.cast_le.mpr hcount) _
 
+/-- Uniform-tuple fixed-value probability from a direct degree bound on `p - C a`. -/
+theorem prob_filter_forall_eval_eq_const_le_of_sub_C_natDegree_le {F : Type*}
+    [Field F] [Fintype F] [Nonempty F] {D s : ℕ} {p : F[X]} {a : F}
+    (hp0 : p - C a ≠ 0) (hdeg : (p - C a).natDegree ≤ D) :
+    (PMF.uniformOfFintype (Fin s → F)).toOuterMeasure
+        {r : Fin s → F | ∀ i, p.eval (r i) = a}
+      ≤ ((D ^ s : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ^ s := by
+  classical
+  let E : Finset (Fin s → F) :=
+    Finset.univ.filter (fun r : Fin s → F => ∀ i, p.eval (r i) = a)
+  have hset :
+      {r : Fin s → F | ∀ i, p.eval (r i) = a} = (E : Set (Fin s → F)) := by
+    ext r
+    simp [E]
+  have hcard_fun : Fintype.card (Fin s → F) = Fintype.card F ^ s := by
+    simp
+  have hcount : E.card ≤ D ^ s :=
+    _root_.Polynomial.card_filter_forall_eval_eq_const_le_of_sub_C_natDegree_le
+      (F := F) (D := D) (s := s) (p := p) (a := a) hp0 hdeg
+  rw [hset, _root_.uniform_event_mass, hcard_fun]
+  rw [Nat.cast_pow]
+  exact ENNReal.div_le_div_right (Nat.cast_le.mpr hcount) _
+
+/-- Uniform-tuple non-fixed-value probability from a direct degree bound on `p - C a`. -/
+theorem prob_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le {F : Type*}
+    [Field F] [Fintype F] [Nonempty F] {D s : ℕ} {p : F[X]} {a : F}
+    (hp0 : p - C a ≠ 0) (hdeg : (p - C a).natDegree ≤ D) :
+    (((Fintype.card F ^ s - D ^ s : ℕ) : ℝ≥0∞)
+        / (Fintype.card F : ℝ≥0∞) ^ s)
+      ≤ (PMF.uniformOfFintype (Fin s → F)).toOuterMeasure
+          {r : Fin s → F | ∃ i, p.eval (r i) ≠ a} := by
+  classical
+  let E : Finset (Fin s → F) :=
+    Finset.univ.filter (fun r : Fin s → F => ∃ i, p.eval (r i) ≠ a)
+  have hset :
+      {r : Fin s → F | ∃ i, p.eval (r i) ≠ a} = (E : Set (Fin s → F)) := by
+    ext r
+    simp [E]
+  have hcard_fun : Fintype.card (Fin s → F) = Fintype.card F ^ s := by
+    simp
+  have hcount : Fintype.card F ^ s - D ^ s ≤ E.card :=
+    _root_.Polynomial.card_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le
+      (F := F) (D := D) (s := s) (p := p) (a := a) hp0 hdeg
+  rw [hset, _root_.uniform_event_mass, hcard_fun]
+  rw [Nat.cast_pow]
+  exact ENNReal.div_le_div_right (Nat.cast_le.mpr hcount) _
+
 end Polynomial
 
 namespace Finset
@@ -507,6 +607,8 @@ end Finset
 #print axioms Polynomial.card_filter_exists_eval_ne_ge_of_natDegree_lt
 #print axioms Polynomial.card_filter_forall_eval_eq_le_of_sub_natDegree_le
 #print axioms Polynomial.card_filter_exists_eval_ne_ge_of_sub_natDegree_le
+#print axioms Polynomial.card_filter_forall_eval_eq_const_le_of_sub_C_natDegree_le
+#print axioms Polynomial.card_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le
 set_option linter.style.longLine false in
 #print axioms Polynomial.prob_filter_forall_isRoot_le
 set_option linter.style.longLine false in
@@ -523,4 +625,8 @@ set_option linter.style.longLine false in
 #print axioms Polynomial.prob_filter_forall_eval_eq_le_of_sub_natDegree_le
 set_option linter.style.longLine false in
 #print axioms Polynomial.prob_filter_exists_eval_ne_ge_of_sub_natDegree_le
+set_option linter.style.longLine false in
+#print axioms Polynomial.prob_filter_forall_eval_eq_const_le_of_sub_C_natDegree_le
+set_option linter.style.longLine false in
+#print axioms Polynomial.prob_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le
 #print axioms Finset.sum_boolCube_prod_factor_eq_prod_sum
