@@ -82,10 +82,15 @@ theorem secondSupport_card_add_secondZeros_card (u₁ : ι → F) :
     (secondSupport u₁).card + (secondZeros u₁).card = Fintype.card ι := by
   classical
   rw [secondSupport, secondZeros]
-  rw [Finset.filter_card_add_filter_neg_card_eq_card (p := fun i => u₁ i ≠ 0)]
-  · simp
-  · intro i
-    exact Classical.dec _
+  have h := Finset.card_filter_add_card_filter_not (s := (Finset.univ : Finset ι))
+    (p := fun i => u₁ i ≠ 0)
+  have hneg : (Finset.univ.filter (fun i => ¬ u₁ i ≠ 0)) =
+      (Finset.univ.filter (fun i => u₁ i = 0)) := by
+    apply Finset.filter_congr
+    intro i _
+    simp
+  rw [hneg] at h
+  rw [h, Finset.card_univ]
 
 /-- If a coordinate lies in both witness sets `S, S'` of two **distinct** bad combining points
 `γ ≠ γ'` (both witnessed by the same `w`), then `u₁` vanishes there. -/
@@ -202,7 +207,7 @@ theorem mcaBadWitness_card_le_two_delta_mul_card
       max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ)) := by
   classical
   set W := mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w with hW
-  rcases le_or_lt W.card 1 with hle | hgt
+  rcases le_or_gt W.card 1 with hle | hgt
   · calc ((W.card : ℝ)) ≤ 1 := by exact_mod_cast hle
       _ ≤ max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ)) := le_max_left _ _
   · -- Two distinct witnesses exist, so the support is `≤ 2δn`.
