@@ -156,6 +156,48 @@ theorem univ_eq_singleton_indiscrete_zero :
   · intro _
     exact Finset.mem_univ p
 
+/-! ### The one-total partition and the excluded singleton branch -/
+
+/-- Every partition of `1` contains the part `1`. -/
+theorem one_mem_parts_of_one (p : Nat.Partition 1) : 1 ∈ p.parts := by
+  by_contra hnot
+  have hzero : p.parts = 0 := by
+    rw [Multiset.eq_zero_iff_forall_notMem]
+    intro a ha
+    have hpos := p.parts_pos ha
+    have hle : a ≤ p.parts.sum := Multiset.le_sum_of_mem ha
+    rw [p.parts_sum] at hle
+    have ha1 : a = 1 := by omega
+    exact hnot (ha1 ▸ ha)
+  have hsum0 : p.parts.sum = 0 := by
+    rw [hzero]
+    rfl
+  have hsum1 : p.parts.sum = 1 := p.parts_sum
+  omega
+
+/-- Every partition of `1` is the one-part/indiscrete partition. -/
+theorem eq_indiscrete_one (p : Nat.Partition 1) :
+    p = Nat.Partition.indiscrete 1 :=
+  eq_indiscrete_of_mem_self (by omega) (one_mem_parts_of_one p)
+
+/-- The finite type of partitions of `1` is the singleton `{indiscrete 1}`. -/
+theorem univ_eq_singleton_indiscrete_one :
+    (Finset.univ : Finset (Nat.Partition 1)) = {Nat.Partition.indiscrete 1} := by
+  ext p
+  constructor
+  · intro _
+    exact Finset.mem_singleton.mpr (eq_indiscrete_one p)
+  · intro _
+    exact Finset.mem_univ p
+
+/-- Filtering partitions of `1` by exclusion of the part `1` leaves the empty finset. -/
+theorem univ_filter_notMem_one_eq_empty :
+    ((Finset.univ : Finset (Nat.Partition 1)).filter (fun lam => 1 ∉ lam.parts)) = ∅ := by
+  classical
+  rw [univ_eq_singleton_indiscrete_one]
+  ext p
+  simp
+
 /-! ### THE decreasing-measure lemma (the `i₁ = 0` case; what §6 of the DAG specifies) -/
 
 /-- **The key export for L7's well-founded recursion (`i₁ = 0` case).**
