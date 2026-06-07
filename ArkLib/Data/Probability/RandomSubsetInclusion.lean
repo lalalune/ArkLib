@@ -72,6 +72,66 @@ theorem card_filter_mem_powersetCard_mul {s : Finset α} {x : α} (hx : x ∈ s)
     -- key : s.card * (s.card - 1).choose m = s.card.choose (m + 1) * (m + 1)
     rw [mul_comm ((s.card - 1).choose m) s.card, key, mul_comm]
 
+/-- **Hypergeometric pairwise-inclusion count.** For distinct `x, y ∈ s`,
+`|{L ∈ s.powersetCard n : x ∈ L ∧ y ∈ L}| · (|s| · (|s| − 1)) = n · (n − 1) · |s.powersetCard n|`.
+Division-free `ℕ` form of `Pr[x ∈ L ∧ y ∈ L] = n(n−1) / (|s|(|s|−1))` for a uniformly random
+size-`n` subset — the second-moment / pairwise ingredient for random-domain (random RS)
+concentration. Reduces to the single-inclusion count on `s.erase x`. -/
+theorem card_filter_mem_mem_powersetCard_mul {s : Finset α} {x y : α}
+    (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y) (n : ℕ) :
+    ((s.powersetCard n).filter (fun L => x ∈ L ∧ y ∈ L)).card * (s.card * (s.card - 1))
+      = n * (n - 1) * (s.powersetCard n).card := by
+  cases n with
+  | zero =>
+    rw [Finset.powersetCard_zero, Finset.filter_singleton]
+    simp
+  | succ m =>
+    have hyex : y ∈ s.erase x := Finset.mem_erase.2 ⟨hxy.symm, hy⟩
+    -- bijection L ↦ L.erase x : {L ∋ x,y} ≃ {T ∋ y, T ⊆ s.erase x}
+    have hbij : ((s.powersetCard (m + 1)).filter (fun L => x ∈ L ∧ y ∈ L)).card
+        = (((s.erase x).powersetCard m).filter (fun L => y ∈ L)).card := by
+      refine Finset.card_bij' (fun L _ => L.erase x) (fun T _ => insert x T) ?hi ?hj ?linv ?rinv
+      case hi =>
+        intro L hL
+        rw [Finset.mem_filter, Finset.mem_powersetCard] at hL
+        obtain ⟨⟨hLs, hLc⟩, hxL, hyL⟩ := hL
+        rw [Finset.mem_filter, Finset.mem_powersetCard]
+        exact ⟨⟨Finset.erase_subset_erase x hLs,
+            by rw [Finset.card_erase_of_mem hxL, hLc, Nat.add_sub_cancel]⟩,
+          Finset.mem_erase.2 ⟨hxy.symm, hyL⟩⟩
+      case hj =>
+        intro T hT
+        rw [Finset.mem_filter, Finset.mem_powersetCard] at hT
+        obtain ⟨⟨hTs, hTc⟩, hyT⟩ := hT
+        have hxT : x ∉ T := fun h => (Finset.mem_erase.1 (hTs h)).1 rfl
+        rw [Finset.mem_filter, Finset.mem_powersetCard]
+        exact ⟨⟨Finset.insert_subset hx (hTs.trans (Finset.erase_subset x s)),
+          by rw [Finset.card_insert_of_notMem hxT, hTc]⟩,
+          Finset.mem_insert_self x T, Finset.mem_insert_of_mem hyT⟩
+      case linv =>
+        intro L hL
+        rw [Finset.mem_filter] at hL
+        exact Finset.insert_erase hL.2.1
+      case rinv =>
+        intro T hT
+        rw [Finset.mem_filter, Finset.mem_powersetCard] at hT
+        exact Finset.erase_insert (fun h => (Finset.mem_erase.1 (hT.1.1 h)).1 rfl)
+    rw [hbij]
+    have hsingle := card_filter_mem_powersetCard_mul (s := s.erase x) hyex m
+    rw [Finset.card_powersetCard, Finset.card_erase_of_mem hx] at hsingle
+    rw [Finset.card_powersetCard]
+    have hpos : 0 < s.card := Finset.card_pos.2 ⟨x, hx⟩
+    have hchoose := Nat.succ_mul_choose_eq (s.card - 1) m
+    simp only [Nat.succ_eq_add_one, Nat.sub_add_cancel hpos] at hchoose
+    set c := (((s.erase x).powersetCard m).filter (fun L => y ∈ L)).card with hc
+    -- hsingle : c * (s.card - 1) = m * (s.card - 1).choose m ;  goal uses c
+    have hkey : c * (s.card * (s.card - 1)) = (m + 1) * m * (s.card).choose (m + 1) := by
+      rw [mul_left_comm c s.card (s.card - 1), hsingle,
+        mul_left_comm s.card m ((s.card - 1).choose m), hchoose,
+        mul_comm ((s.card).choose (m + 1)) (m + 1), ← mul_assoc, mul_comm m (m + 1)]
+    simpa using hkey
+
 end ArkLib.RandomSubset
 
 #print axioms ArkLib.RandomSubset.card_filter_mem_powersetCard_mul
+#print axioms ArkLib.RandomSubset.card_filter_mem_mem_powersetCard_mul
