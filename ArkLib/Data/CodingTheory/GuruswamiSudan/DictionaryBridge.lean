@@ -51,7 +51,18 @@ theorem toPoly_add (k D : ℕ) (c c' : CoeffSpace (F := F) k D) :
   refine Finset.sum_congr rfl (fun st _ => ?_)
   rw [← Polynomial.monomial_add, ← Polynomial.monomial_add]
 
+/-- **Base-case Hasse correspondence (order `(0,0)`).** The bivariate evaluation of `toPoly c`
+at `(x₀, y₀)` equals the order-`(0,0)` Hasse coefficient (plain evaluation). This anchors the
+`GSMultInterp.hasseCoeff ↔ Polynomial`-side bivariate-Hasse dictionary at the root condition; the
+general order-`(a,b)` case is the remaining crux. -/
+theorem toPoly_eval (k D : ℕ) (c : CoeffSpace (F := F) k D) (x₀ y₀ : F) :
+    ((toPoly k D c).eval (Polynomial.C y₀)).eval x₀ = hasseCoeff k D c 0 0 x₀ y₀ := by
+  rw [hasseCoeff_zero_zero, toPoly, Polynomial.eval_finset_sum, Polynomial.eval_finset_sum]
+  refine Finset.sum_congr rfl (fun st _ => ?_)
+  simp [Polynomial.eval_monomial, Polynomial.eval_pow, mul_assoc]
+
 #print axioms GSMultInterp.toPoly_coeff
 #print axioms GSMultInterp.toPoly_add
+#print axioms GSMultInterp.toPoly_eval
 
 end GSMultInterp

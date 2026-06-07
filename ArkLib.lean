@@ -374,6 +374,7 @@ import ArkLib.Data.CodingTheory.RSCodewordWeight
 import ArkLib.Data.CodingTheory.RSNearCount
 import ArkLib.Data.CodingTheory.RSVanishingDim
 import ArkLib.Data.CodingTheory.RSWeightEnumerator
+import ArkLib.Data.CodingTheory.RandomLinearCodeCodewordCount
 import ArkLib.Data.CodingTheory.RandomLinearCodeEquidistribution
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMoment
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMomentExists
