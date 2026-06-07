@@ -648,6 +648,369 @@ theorem βHensel_weight_bound_of_structured_invariant_unlocked_of_restrictedMatc
         H x₀ R hHyp hH hDH hDRx0 hdR2 hmatch hdiv)
       t
 
+/-! ## All-order structured-invariant endpoint consumers -/
+
+/-- Package the structured-invariant endpoint as a direct all-`t` weight-bound family. -/
+theorem βHensel_weight_bound_all_of_structured_invariant
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hStructuredAll : ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  fun t =>
+    βHensel_weight_bound_of_structured_invariant H x₀ R hHyp hH hDH hdR2
+      hdHR hW hRgraded hDRx0 hStructuredAll t
+
+/-- All-`t` P1 weight bound from carved alpha regularity and an explicit `ξ` side condition. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_lift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_lift H x₀ R hHyp hH hDH hlift hα hξ)
+
+/-- All-`t` P1 weight bound from carved alpha regularity with `ξ` discharged. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_lift'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_lift' H x₀ R hHyp hH hDH
+        hDRx0 hdR2 hlift hα)
+
+/-- Direct all-`t` P1 alias for the explicit-`ξ` carved-alpha structured endpoint. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_alphaWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (AlphaWeight.βHenselStructuredWeightInvariant_all_of_alphaWeight
+        H x₀ R hHyp hH hDH hlift hα hξ)
+
+/-- Direct all-`t` P1 alias for the discharged-`ξ` carved-alpha structured endpoint. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_alphaWeight'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_alphaWeight' H x₀ R hHyp hH
+        hDH hDRx0 hdR2 hlift hα)
+
+/-- All-`t` P1 weight bound from the `DivWeightLe` structured route. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_divWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdiv : DivWeightLe H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_divWeight H x₀ R hHyp hH hDH hdiv hξ)
+
+/-- All-`t` P1 weight bound from the `DivWeightLe` structured route with `ξ` discharged. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_divWeight'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_divWeight' H x₀ R hHyp hH
+        hDH hDRx0 hdR2 hdiv)
+
+/-- All-`t` P1 weight bound from normalized divisibility targets. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_normalized_divWeight_cases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_normalized_divWeight_cases
+        H x₀ R hHyp hH hDH h0 hsucc hξ)
+
+/-- All-`t` P1 weight bound from normalized divisibility targets with `ξ` discharged. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_normalized_divWeight_cases'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_normalized_divWeight_cases'
+        H x₀ R hHyp hH hDH hDRx0 hdR2 h0 hsucc)
+
+/-- All-`t` P1 weight bound from successor-lift carved alpha regularity. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_alphaWeight_succLift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_alphaWeight_succLift
+        H x₀ R hHyp hH hDH hliftSucc hα hξ)
+
+/-- All-`t` P1 weight bound from successor-lift carved alpha regularity with `ξ` discharged. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_alphaWeight_succLift'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_of_alphaWeight_succLift'
+        H x₀ R hHyp hH hDH hDRx0 hdR2 hliftSucc hα)
+
+/-- All-`t` P1 weight bound from the successor-residual-unlocked route. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_unlocked
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_unlocked H x₀ R hHyp hH
+        hDH hDRx0 hdR2 hzero hα)
+
+/-- All-`t` P1 weight bound from the successor-residual-unlocked `DivWeightLe` route. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_unlocked_of_divWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_unlocked_of_divWeight H x₀ R hHyp hH
+        hDH hDRx0 hdR2 hzero hdiv)
+
+/-- All-`t` P1 weight bound from the full-vanishing-unlocked route. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_unlocked_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_unlocked_of_fullVanishes H x₀ R hHyp hH
+        hDH hDRx0 hdR2 hvan hα)
+
+/-- All-`t` P1 weight bound from the full-vanishing-unlocked `DivWeightLe` route. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_unlocked_of_fullVanishes_divWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_unlocked_of_fullVanishes_divWeight
+        H x₀ R hHyp hH hDH hDRx0 hdR2 hvan hdiv)
+
+/-- All-`t` P1 weight bound from the restricted-match-unlocked route. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_unlocked_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_unlocked_of_restrictedMatch
+        H x₀ R hHyp hH hDH hDRx0 hdR2 hmatch hα)
+
+/-- All-`t` P1 weight bound from the restricted-match-unlocked `DivWeightLe` route. -/
+theorem βHensel_weight_bound_all_of_structured_invariant_unlocked_of_restrictedMatch_divWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant H x₀ R hHyp hH hDH
+    hdR2 hdHR hW hRgraded hDRx0
+      (βHenselStructuredWeightInvariant_all_unlocked_of_restrictedMatch_divWeight
+        H x₀ R hHyp hH hDH hDRx0 hdR2 hmatch hdiv)
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit: this compatibility layer composes existing P1/P2 surfaces and introduces no new
@@ -684,3 +1047,20 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_unlocked_of_fullVanishes_divWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_unlocked_of_restrictedMatch
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_unlocked_of_restrictedMatch_divWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_lift
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_lift'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_alphaWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_alphaWeight'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_divWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_divWeight'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_normalized_divWeight_cases
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_normalized_divWeight_cases'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_alphaWeight_succLift
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_alphaWeight_succLift'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_unlocked
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_unlocked_of_divWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_unlocked_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_unlocked_of_fullVanishes_divWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_unlocked_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_unlocked_of_restrictedMatch_divWeight
