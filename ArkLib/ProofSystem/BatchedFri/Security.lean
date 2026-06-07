@@ -388,6 +388,21 @@ theorem queryRound_acceptance_le
     singleQuery_acceptance_le G δ hN h_density
   exact pow_le_pow_left₀ (by positivity) hbase t
 
+omit [DecidableEq ι] in
+/-- **Query-round acceptance bound (density-ratio form).**  This is the same combinatorial
+query-round bound as `queryRound_acceptance_le`, but with the natural density hypothesis
+`|G| / N ≤ 1 - δ` exposed directly. -/
+theorem queryRound_acceptance_le_of_density
+    (G : Finset ι) (δ : ℝ≥0) (t : ℕ)
+    (h_density : (G.card : ℝ≥0) / (Fintype.card ι) ≤ 1 - δ) :
+    ((Finset.univ.filter (fun q : Fin t → ι => ∀ j, q j ∈ G)).card : ℝ≥0)
+        / (Fintype.card ι) ^ t
+      ≤ (1 - δ) ^ t := by
+  rw [card_allQueriesIn G t]
+  push_cast
+  rw [← div_pow]
+  exact pow_le_pow_left₀ (by positivity) h_density t
+
 /-- Geometric amplification: when `0 < δ ≤ 1` the per-round acceptance bound `(1 - δ) ^ t`
 is antitone in the number of query repetitions `t`, so the query phase drives the
 soundness error to zero geometrically. -/
@@ -419,6 +434,19 @@ theorem queryRoundAcceptanceBound_holds
     queryRoundAcceptanceBound G δ t := by
   intro hN h_density
   exact QueryRound.queryRound_acceptance_le G δ t hN h_density
+
+/-- Public density-ratio front door for the proved query-round acceptance inequality.
+
+This is useful when downstream proximity arguments have already produced the normalized density
+bound `|G| / N ≤ 1 - δ`, avoiding a round trip through the multiplicative card form. -/
+theorem queryRoundAcceptanceBound_of_density
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (t : ℕ)
+    (h_density : (G.card : ℝ≥0) / (Fintype.card ι) ≤ 1 - δ) :
+    ((Finset.univ.filter (fun q : Fin t → ι => ∀ j, q j ∈ G)).card : ℝ≥0)
+        / (Fintype.card ι) ^ t
+      ≤ (1 - δ) ^ t :=
+  QueryRound.queryRound_acceptance_le_of_density G δ t h_density
 
 noncomputable def oracleImpl
     (l : ℕ) (z : Fin (k + 1) → 𝔽) (f : (ω.subdomain 0) → 𝔽) :
@@ -932,6 +960,8 @@ theorem fri_query_soundness_of_queryRoundAcceptanceBound
     (queryRoundAcceptanceBound_holds G δ queries) h_lens h_agreementBridge
 
 #print axioms Fri.FriQuerySoundnessParts
+#print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
+#print axioms Fri.queryRoundAcceptanceBound_of_density
 #print axioms Fri.fri_query_soundness_of_parts
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
@@ -1024,6 +1054,8 @@ end Fri
 #print axioms Fri.fri_query_soundness
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.fri_query_soundness_of_parts
+#print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
+#print axioms Fri.queryRoundAcceptanceBound_of_density
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
 #print axioms Fri.fri_soundness
