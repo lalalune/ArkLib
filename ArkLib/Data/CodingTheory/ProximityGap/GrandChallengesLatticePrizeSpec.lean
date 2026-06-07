@@ -280,6 +280,79 @@ theorem exists_mcaPrizeLatticeResolved_with_brackets_of_lowerWitnesses
     ⟨τ, hτ, _hspec, hlower, hupper⟩
   exact ⟨τ, hτ, hlower, hupper⟩
 
+/-- A single explicit prize-rate lower MCA witness gives the concrete faithful threshold, its
+satisfy fact, and the lower lattice bracket at the witness radius. -/
+theorem mcaThreshold_spec_and_lower_bracket_prize_of_lowerWitness
+    (domain : ι ↪ F) (j : Fin 4)
+    (w : MCALowerWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+        latticeIndexOf (ι := ι) w.δ w.le_one ≤ mcaThreshold C epsStar hne := by
+  dsimp only
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  let hne : mcaThresholdExists C epsStar :=
+    mcaThresholdExists_of_MCALowerWitness C epsStar w
+  exact ⟨hne, mcaThreshold_spec C epsStar hne, MCALowerWitness_le_mcaThreshold C epsStar hne w⟩
+
+/-- Low-output projection of `mcaThreshold_spec_and_lower_bracket_prize_of_lowerWitness`: it keeps
+only the concrete lower lattice bracket at the witness radius. -/
+theorem mcaThreshold_lower_bracket_prize_of_lowerWitness
+    (domain : ι ↪ F) (j : Fin 4)
+    (w : MCALowerWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) w.δ w.le_one ≤ mcaThreshold C epsStar hne := by
+  rcases mcaThreshold_spec_and_lower_bracket_prize_of_lowerWitness domain j w with
+    ⟨hne, _hsat, hlower⟩
+  exact ⟨hne, hlower⟩
+
+/-- Explicit lower MCA witnesses at all four prize rates give the concrete faithful thresholds,
+their satisfy facts, and lower lattice brackets at the witness radii. -/
+theorem mcaThreshold_spec_and_lower_bracket_prize_allRates_of_lowerWitnesses
+    (domain : ι ↪ F)
+    (w : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+          latticeIndexOf (ι := ι) (w j).δ (w j).le_one ≤
+            mcaThreshold C epsStar hne := by
+  intro j
+  exact mcaThreshold_spec_and_lower_bracket_prize_of_lowerWitness domain j (w j)
+
+/-- Low-output projection of
+`mcaThreshold_spec_and_lower_bracket_prize_allRates_of_lowerWitnesses`: it keeps only the concrete
+lower lattice bracket at each prize-rate witness radius. -/
+theorem mcaThreshold_lower_bracket_prize_allRates_of_lowerWitnesses
+    (domain : ι ↪ F)
+    (w : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        latticeIndexOf (ι := ι) (w j).δ (w j).le_one ≤ mcaThreshold C epsStar hne := by
+  intro j
+  rcases mcaThreshold_spec_and_lower_bracket_prize_allRates_of_lowerWitnesses domain w j with
+    ⟨hne, _hsat, hlower⟩
+  exact ⟨hne, hlower⟩
+
 /-- Pointwise prize-rate consequences of the ignored-source MCA conjecture expose only the
 selected-threshold satisfy/maximality specification. The conjecture remains an explicit
 hypothesis, and all numeric side conditions are supplied separately for each prize rate. -/
@@ -881,6 +954,14 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_lowerWitnesses
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_brackets_of_lowerWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_of_lowerWitness
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lower_bracket_prize_of_lowerWitness
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_allRates_of_lowerWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lower_bracket_prize_allRates_of_lowerWitnesses
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_of_ignoredSource_mcaConjecture
 set_option linter.style.longLine false in
