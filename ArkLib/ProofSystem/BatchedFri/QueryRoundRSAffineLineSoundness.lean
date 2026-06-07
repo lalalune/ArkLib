@@ -52,6 +52,155 @@ theorem friRSAffineLineProbabilityInputs_iff_densityInputs
   · exact friRSAffineLineDensityInputs_of_probabilityInputs (n := n) (ω := ω) f m
   · exact friRSAffineLineProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m
 
+/-- Project the strict coefficient-polynomial residual from probability-route RS affine-line
+inputs. -/
+theorem friRSAffineLineProbabilityInputs.strictCoeff
+    (f : Fin 2 → (ω → 𝔽)) (m : ℕ)
+    (h : friRSAffineLineProbabilityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    ProximityGap.StrictCoeffPolysResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) := by
+  dsimp
+  dsimp [friRSAffineLineProbabilityInputs] at h
+  exact h.1
+
+/-- Project the boundary-cardinality residual from probability-route RS affine-line inputs. -/
+theorem friRSAffineLineProbabilityInputs.boundaryCard
+    (f : Fin 2 → (ω → 𝔽)) (m : ℕ)
+    (h : friRSAffineLineProbabilityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    ProximityGap.BoundaryCardResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) := by
+  dsimp
+  dsimp [friRSAffineLineProbabilityInputs] at h
+  exact h.2.1
+
+/-- Project the square-root-radius side condition from probability-route RS affine-line inputs. -/
+theorem friRSAffineLineProbabilityInputs.sqrtRadius
+    (f : Fin 2 → (ω → 𝔽)) (m : ℕ)
+    (h : friRSAffineLineProbabilityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    δ_fri ≤ 1 - ReedSolomon.sqrtRate (2 ^ n) rsDomain := by
+  dsimp
+  dsimp [friRSAffineLineProbabilityInputs] at h
+  exact h.2.2.1
+
+/-- Project the affine-line probability trigger from probability-route RS affine-line inputs. -/
+theorem friRSAffineLineProbabilityInputs.lineProbability
+    (f : Fin 2 → (ω → 𝔽)) (m : ℕ)
+    (h : friRSAffineLineProbabilityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let u : Code.WordStack 𝔽 (Fin 2) (ω.subdomain 0) :=
+      fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    Pr_{let z ← $ᵖ 𝔽}[
+      δᵣ(u 0 + z • u 1, (ReedSolomon.code rsDomain (2 ^ n)).carrier) ≤ δ_fri] >
+      ProximityGap.errorBound δ_fri (2 ^ n) rsDomain := by
+  dsimp
+  dsimp [friRSAffineLineProbabilityInputs] at h
+  exact h.2.2.2
+
+/-- Project the strict coefficient-polynomial residual from density-route RS affine-line inputs. -/
+theorem friRSAffineLineDensityInputs.strictCoeff
+    (f : Fin 2 → (ω → 𝔽)) (m : ℕ)
+    (h : friRSAffineLineDensityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    ProximityGap.StrictCoeffPolysResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) := by
+  exact friRSAffineLineProbabilityInputs.strictCoeff (n := n) (ω := ω) f m
+    (friRSAffineLineProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m h)
+
+/-- Project the boundary-cardinality residual from density-route RS affine-line inputs. -/
+theorem friRSAffineLineDensityInputs.boundaryCard
+    (f : Fin 2 → (ω → 𝔽)) (m : ℕ)
+    (h : friRSAffineLineDensityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    ProximityGap.BoundaryCardResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) := by
+  exact friRSAffineLineProbabilityInputs.boundaryCard (n := n) (ω := ω) f m
+    (friRSAffineLineProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m h)
+
+/-- Project the square-root-radius side condition from density-route RS affine-line inputs. -/
+theorem friRSAffineLineDensityInputs.sqrtRadius
+    (f : Fin 2 → (ω → 𝔽)) (m : ℕ)
+    (h : friRSAffineLineDensityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    δ_fri ≤ 1 - ReedSolomon.sqrtRate (2 ^ n) rsDomain := by
+  exact friRSAffineLineProbabilityInputs.sqrtRadius (n := n) (ω := ω) f m
+    (friRSAffineLineProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m h)
+
+/-- Project the affine-line probability trigger from density-route RS affine-line inputs. -/
+theorem friRSAffineLineDensityInputs.lineProbability
+    (f : Fin 2 → (ω → 𝔽)) (m : ℕ)
+    (h : friRSAffineLineDensityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let u : Code.WordStack 𝔽 (Fin 2) (ω.subdomain 0) :=
+      fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    Pr_{let z ← $ᵖ 𝔽}[
+      δᵣ(u 0 + z • u 1, (ReedSolomon.code rsDomain (2 ^ n)).carrier) ≤ δ_fri] >
+      ProximityGap.errorBound δ_fri (2 ^ n) rsDomain := by
+  exact friRSAffineLineProbabilityInputs.lineProbability (n := n) (ω := ω) f m
+    (friRSAffineLineProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m h)
+
 /-- Probability-route RS affine-line inputs can feed the density-route full-domain query lift. -/
 theorem friSoundnessQueryLift_densityRSAffineLine_of_probabilityInputs
     {m : ℕ}
@@ -248,6 +397,22 @@ set_option linter.style.longLine false in
 #print axioms Fri.friRSAffineLineProbabilityInputs_of_densityInputs
 set_option linter.style.longLine false in
 #print axioms Fri.friRSAffineLineProbabilityInputs_iff_densityInputs
+set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineProbabilityInputs.strictCoeff
+set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineProbabilityInputs.boundaryCard
+set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineProbabilityInputs.sqrtRadius
+set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineProbabilityInputs.lineProbability
+set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineDensityInputs.strictCoeff
+set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineDensityInputs.boundaryCard
+set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineDensityInputs.sqrtRadius
+set_option linter.style.longLine false in
+#print axioms Fri.friRSAffineLineDensityInputs.lineProbability
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_densityRSAffineLine_of_probabilityInputs
 set_option linter.style.longLine false in
