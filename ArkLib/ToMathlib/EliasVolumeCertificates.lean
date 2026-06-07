@@ -154,7 +154,7 @@ theorem fourRate_hvol_next_card8 (domain : ι ↪ F)
     (j := (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℕ) + 1) (ε_star := epsStar)
     (e := (Fintype.card ι : ℝ) - (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℝ)) ?_
   -- the real-side numeric inequality, per rate, evaluating `hammingBallVolume`
-  rw [hF, hn, epsStar_real_eq, hk]
+  rw [hF, epsStar_real_eq, hk, hn]
   fin_cases r
   · -- r = 0: k = 4, j = 5; denominator 8^(8-4)
     simp only [List.get]
@@ -204,9 +204,12 @@ theorem fourRate_budget_target {F : Type*} [Fintype F]
     (hq : 2 ^ 128 ≤ Fintype.card F) :
     ((1 : ENNReal)) ^ 1 ≤ (epsStar : ENNReal) * (Fintype.card F : ENNReal) := by
   rw [epsStar_enn_eq, pow_one]
-  rw [← mul_one ((2 ^ 128 : ENNReal)⁻¹)]
-  gcongr
-  norm_cast
+  have hqE : (2 ^ (128 : ℕ) : ENNReal) ≤ (Fintype.card F : ENNReal) := by
+    exact_mod_cast hq
+  rw [← ENNReal.mul_le_iff_le_inv]
+  · simpa using hqE
+  · simp
+  · simp
 
 end Concrete
 end ProximityGap
