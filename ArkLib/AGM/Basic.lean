@@ -112,12 +112,37 @@ def map {H : Type*} [Group H] (f : G →* H) {prev : List G} {target : G}
   exponents := repr.exponents
   hEq := by rw [zipWith_pow_map, repr.hEq]
 
+/-- **Rank-1 representation.** Over a singleton basis `[g]`, any power `g ^ a.val` of the generator
+is representable (the single-generator building block of representation completeness). -/
+def singleton (g : G) (a : ZMod p) : GroupRepresentation (p := p) [g] (g ^ a.val) where
+  exponents := [a]
+  hEq := by simp
+
+/-- **Basis weakening.** An algebraically-represented target stays representable when the basis is
+extended on the left by extra generators: pad the exponent vector with zeros for the new
+generators (each contributes `g ^ 0 = 1`). The constructive complement to `target_mem_closure`. -/
+def prependBasis {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) (extra : List G) :
+    GroupRepresentation (p := p) (extra ++ prev) target where
+  exponents := List.replicate extra.length 0 ++ repr.exponents
+  hEq := by
+    rcases repr with ⟨exps, hEq⟩
+    induction extra with
+    | nil => simpa using hEq
+    | cons g gs ih =>
+        simp only [List.length_cons, List.replicate_succ, List.cons_append,
+          List.zipWith_cons_cons, List.prod_cons]
+        rw [show ((0 : ZMod p).val) = 0 from by simp, pow_zero, one_mul]
+        exact ih
+
 #print axioms GroupRepresentation.zipWith_pow_prod_mem_closure
 #print axioms GroupRepresentation.target_mem_closure
 #print axioms GroupRepresentation.one
 #print axioms GroupRepresentation.target_eq_one_of_nil
 #print axioms GroupRepresentation.zipWith_pow_map
 #print axioms GroupRepresentation.map
+#print axioms GroupRepresentation.singleton
+#print axioms GroupRepresentation.prependBasis
 
 end GroupRepresentation
 
