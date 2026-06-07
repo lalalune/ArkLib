@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith
 
 /-!
-# FPRUNE good-coordinate existence (Goyal–Guruswami 2025 / arXiv 2512.08017, Lemma 3.4 existence half)
+# FPRUNE good-coordinate existence (Chen–Zhang 2025 / arXiv 2512.08017, Lemma 3.4 existence half)
 
 The polynomial list-decoding bound for subspace-design codes is proven via the `FPRUNE`
 algorithm, which recursively samples a **good** coordinate `i` — one that strictly drops the
@@ -25,6 +25,8 @@ CZ25 Definition 6):
 
 * `good_filter_nonempty_of_weight_budget` — the abstract averaging principle: a finite family
   of reals with average below a threshold has a member below the threshold.
+* `card_good_ge_of_weight_budget` — the quantitative count form: at least `n·(1 - B/θ)`
+  coordinates are good, the mass bound FPRUNE's sampling step consumes.
 * `good_coord_exists_of_design` — the FPRUNE good set `{i | dim ℋ_i + η ≤ (1-η')(r+η)}` is
   nonempty, because the design budget forces `∑_i (dim ℋ_i + η) ≤ (r·τ(r) + η)·n`, which lies
   below `(1-η')(r+η)·n` exactly when `r·τ(r) + η < (1-η')(r+η)` (the capacity regime).
@@ -38,7 +40,7 @@ Quot.sound]`).
 
 ## References
 
-- [GG25] Goyal–Guruswami. Lemmas 3.4–3.5 (subspace-design pruning route to list recovery),
+- [CZ25] Chen–Zhang. Thm B.5 / Lemmas 3.4–3.5 (subspace-design route to capacity list decoding),
   arXiv 2512.08017.
 - [ABF26] Arnon-Boneh-Fenzi. *Open Problems in List Decoding and Correlated Agreement*, §2.5.
 -/
@@ -71,6 +73,38 @@ theorem good_filter_nonempty_of_weight_budget {ι : Type*} [Fintype ι] [Nonempt
   have h2 : (Fintype.card ι : ℝ) * B < (Fintype.card ι : ℝ) * θ :=
     mul_lt_mul_of_pos_left hB hcardpos
   linarith [hcontra, h2]
+
+/-- **Quantitative good-coordinate count (averaging / Markov, count form).** With nonnegative
+weights `a` and budget `∑ a ≤ n·B`, at least `n - n·B/θ = n·(1 - B/θ)` coordinates are good
+(`a i ≤ θ`). This is the quantitative companion to `good_filter_nonempty_of_weight_budget`: it
+is the count FPRUNE's sampling step needs, since the good coordinates must carry enough weight
+for the recursion's probability distribution. (Each bad coordinate has `a i > θ`, so the bad
+set contributes `≥ #bad · θ` to the budget `≤ n·B`, giving `#bad ≤ n·B/θ`.) -/
+theorem card_good_ge_of_weight_budget {ι : Type*} [Fintype ι]
+    (a : ι → ℝ) (ha : ∀ i, 0 ≤ a i) (θ B : ℝ) (hθ : 0 < θ)
+    (hbudget : ∑ i, a i ≤ (Fintype.card ι : ℝ) * B) :
+    (Fintype.card ι : ℝ) - (Fintype.card ι : ℝ) * B / θ ≤
+      ((univ.filter (fun i => a i ≤ θ)).card : ℝ) := by
+  classical
+  have hsplit :
+      ((univ.filter (fun i => a i ≤ θ)).card : ℝ)
+        + ((univ.filter (fun i => ¬ a i ≤ θ)).card : ℝ)
+        = (Fintype.card ι : ℝ) := by
+    rw [← Nat.cast_add, Finset.card_filter_add_card_filter_not, Finset.card_univ]
+  have hbad_weight : ((univ.filter (fun i => ¬ a i ≤ θ)).card : ℝ) * θ
+      ≤ ∑ i ∈ univ.filter (fun i => ¬ a i ≤ θ), a i := by
+    have h := Finset.card_nsmul_le_sum (univ.filter (fun i => ¬ a i ≤ θ)) a θ
+      (fun i hi => le_of_lt (not_le.mp (Finset.mem_filter.mp hi).2))
+    simpa [nsmul_eq_mul] using h
+  have hbad_le_total : ∑ i ∈ univ.filter (fun i => ¬ a i ≤ θ), a i ≤ ∑ i, a i :=
+    Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _) (fun i _ _ => ha i)
+  have hbad_bound : ((univ.filter (fun i => ¬ a i ≤ θ)).card : ℝ) * θ
+      ≤ (Fintype.card ι : ℝ) * B :=
+    le_trans hbad_weight (le_trans hbad_le_total hbudget)
+  have hbad_div : ((univ.filter (fun i => ¬ a i ≤ θ)).card : ℝ)
+      ≤ (Fintype.card ι : ℝ) * B / θ := by
+    rw [le_div_iff₀ hθ]; exact hbad_bound
+  linarith [hsplit, hbad_div]
 
 variable {ι : Type} [Fintype ι] [Nonempty ι]
 variable {F : Type} [Field F]
@@ -151,5 +185,6 @@ end CodingTheory.ListDecoding
 /-! ### `#print axioms` verification anchors -/
 
 #print axioms CodingTheory.ListDecoding.good_filter_nonempty_of_weight_budget
+#print axioms CodingTheory.ListDecoding.card_good_ge_of_weight_budget
 #print axioms CodingTheory.ListDecoding.good_coord_exists_of_design
 #print axioms CodingTheory.ListDecoding.exists_good_coord_dim_lt_of_design

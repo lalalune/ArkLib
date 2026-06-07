@@ -28,4 +28,3 @@ cs25_rs_epsCA_breakdown_lower  # #82 CS25 complete CA breakdown lower-bound resi
 bchks25_rs_epsCA_johnson_jump  # #83 BCHKS25 Johnson-jump witness external paper residual
 gg25_subspaceDesign_epsMCA  # #86 GG25 subspace-design MCA external paper residual
 gg25_frs_epsMCA_capacity  # #86 GG25 FRS capacity MCA external paper residual
-
