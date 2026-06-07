@@ -2229,6 +2229,63 @@ theorem frs_list_decoding_capacity_cz25_of_residuals_prop
   frs_list_decoding_capacity_cz25_of_residuals
     domain k s ω hs_pos η hη_pos hη_lt_s hT218 hT34 hηnat
 
+/-- Prop-level C3.5 endpoint from the unique-list/T2.18 easy slice.
+
+This wraps the unfolded reduction `frs_list_decoding_capacity_cz25_of_T218_le_one`, so callers
+with a T2.18 folded-RS subspace-design instance and a per-word `ncard ≤ 1` close-list hypothesis
+can target the named external `frs_list_decoding_capacity_cz25` proposition directly. -/
+theorem frs_list_decoding_capacity_cz25_of_T218_le_one_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hle : ∀ f : ι → Fin s → F,
+      (closeCodewordsRel
+          ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) f
+          (1 - (fun r ↦ if r ∈ Finset.Icc 1 s then
+              (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+            (Nat.floor (1 / η)) - η)).ncard ≤ 1)
+    (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
+    frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s :=
+  frs_list_decoding_capacity_cz25_of_T218_le_one
+    domain k s ω hs_pos η hη_pos hη_lt_s hT218 hle hηnat
+
+/-- Prop-level C3.5 endpoint from the unique-list/T2.18 easy slice, using the documented
+reciprocal-natural slack convention `η = 1 / m` to discharge the floor side condition. -/
+theorem frs_list_decoding_capacity_cz25_of_T218_le_one_eta_eq_one_div_nat_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    {m : ℕ} (hm : 0 < m) (hη : η = 1 / (m : ℝ))
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hle : ∀ f : ι → Fin s → F,
+      (closeCodewordsRel
+          ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) f
+          (1 - (fun r ↦ if r ∈ Finset.Icc 1 s then
+              (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+            (Nat.floor (1 / η)) - η)).ncard ≤ 1) :
+    frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
+  have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
+  have h_one_div : (1 : ℝ) / η = (m : ℝ) := by
+    rw [hη]
+    field_simp [hm_ne]
+  have hms : m < s := by
+    have hmsR : (m : ℝ) < (s : ℝ) := by
+      rwa [h_one_div] at hη_lt_s
+    exact_mod_cast hmsR
+  exact frs_list_decoding_capacity_cz25_of_T218_le_one_eta_eq_one_div_nat
+    domain k s ω hs_pos η hm hη hms hT218 hle
+
 /-- Prop-level C3.5 endpoint from coordinate-fiber cap plus T2.18, using the documented
 reciprocal-natural slack convention `η = 1 / m` to discharge the floor side condition. -/
 theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat_prop
@@ -2451,6 +2508,9 @@ end SubspaceDesignUpperBounds
 #print axioms CodingTheory.rs_lambda_large_prime_ghsz02_of_injection
 #print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_residuals
 #print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_residuals_prop
+#print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_T218_le_one_prop
+#print axioms
+  CodingTheory.frs_list_decoding_capacity_cz25_of_T218_le_one_eta_eq_one_div_nat_prop
 #print axioms
   CodingTheory.frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat_prop
 #print axioms

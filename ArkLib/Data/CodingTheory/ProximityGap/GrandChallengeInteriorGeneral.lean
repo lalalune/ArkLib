@@ -225,6 +225,7 @@ theorem epsMCA_interiorJ2_ge
   simpa using hspike
 
 set_option maxHeartbeats 800000 in
+-- The contradiction proof combines `Fin` threshold order, monotonicity, and ENNReal coercions.
 /-- **J2 lattice satisfaction lower bracket.**  At the interior radius `2/n`, if the faithful
 MCA bound is to hold (`mcaSatisfies` at index `2`), then `3/q ≤ ε*` is necessary — because
 the `3`-spike plant forces `ε_mca(C, 2/n) ≥ 3/q`.  Contrapositively, when `ε* < 3/q` the
@@ -242,7 +243,7 @@ theorem mcaThreshold_lt_two_of_interiorJ2_gt
   let j2 : Fin (Fintype.card ι + 1) := ⟨2, by
     have hn : 0 < Fintype.card ι := Fintype.card_pos
     omega⟩
-  show mcaThreshold C ε_star hne < j2
+  change mcaThreshold C ε_star hne < j2
   by_contra hnot
   have hj2_le : j2 ≤ mcaThreshold C ε_star hne := not_lt.mp hnot
   have hsat_threshold : mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=

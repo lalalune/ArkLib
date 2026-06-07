@@ -56,6 +56,24 @@ theorem card_normalizedFactors_toFinset_le_natDegree (p : K[X]) :
   simp only [Multiset.card_map, smul_eq_mul, mul_one, hsum] at key
   exact key
 
+/-- Degree-budget corollary of `card_normalizedFactors_toFinset_le_natDegree`.
+
+If an external construction bounds `p.natDegree` by `ell`, then the number of distinct
+normalized irreducible factors is bounded by the same `ell`. This is the direct `hYbound`
+shape used by Hab25 algebraic-data packages. -/
+theorem card_normalizedFactors_toFinset_le_of_natDegree_le
+    (p : K[X]) {ell : ℕ} (hp : p.natDegree ≤ ell) :
+    (normalizedFactors p).toFinset.card ≤ ell :=
+  (card_normalizedFactors_toFinset_le_natDegree p).trans hp
+
+/-- Strict degree-budget corollary of `card_normalizedFactors_toFinset_le_natDegree`. -/
+theorem card_normalizedFactors_toFinset_lt_of_natDegree_lt
+    (p : K[X]) {ell : ℕ} (hp : p.natDegree < ell) :
+    (normalizedFactors p).toFinset.card < ell :=
+  lt_of_le_of_lt (card_normalizedFactors_toFinset_le_natDegree p) hp
+
 end Polynomial
 
 #print axioms Polynomial.card_normalizedFactors_toFinset_le_natDegree
+#print axioms Polynomial.card_normalizedFactors_toFinset_le_of_natDegree_le
+#print axioms Polynomial.card_normalizedFactors_toFinset_lt_of_natDegree_lt

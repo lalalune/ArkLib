@@ -215,6 +215,36 @@ theorem plonkCheckVerifier_verify_eq
     · simp [hGate, hPerm]
   · simp [hGate]
 
+theorem plonkCheckVerifier_mem_support_iff
+    (cs : Plonk.ConstraintSystem 𝓡 numWires numGates)
+    (transcript : FullTranscript (plonkCheckPSpec 𝓡 numWires numGates))
+    (out : Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) :
+    some out ∈ support
+      ((plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+        (numGates := numGates)).verify cs transcript).run ↔
+      let w : Fin numWires → 𝓡 := transcript.fst ⟨0, by simp⟩
+      let f : Fin (3 * numGates) → 𝓡 := transcript.snd ⟨0, by simp⟩
+      cs.accepts w ∧
+        ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
+          CopyConstraintsSatisfied f cs.perm ∧ out = (cs, w) := by
+  rw [plonkCheckVerifier_verify_eq]
+  let w : Fin numWires → 𝓡 := transcript.fst ⟨0, by simp⟩
+  let f : Fin (3 * numGates) → 𝓡 := transcript.snd ⟨0, by simp⟩
+  by_cases hAccept :
+      cs.accepts w ∧ ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
+        CopyConstraintsSatisfied f cs.perm
+  · rw [if_pos hAccept]
+    constructor
+    · intro hout
+      exact ⟨hAccept.1, hAccept.2.1, hAccept.2.2, by simpa using hout⟩
+    · intro h
+      simp [h.2.2.2]
+  · rw [if_neg hAccept]
+    constructor
+    · simp
+    · intro h
+      exact False.elim (hAccept ⟨h.1, h.2.1, h.2.2.1⟩)
+
 @[reducible]
 def plonkCheckReduction :
     Reduction []ₒ
@@ -458,6 +488,7 @@ theorem plonkCheckVerifier_rbrKnowledgeSoundness :
   exact False.elim (plonkCheckPSpec_challengeIdx_false 𝓡 numWires numGates i)
 
 #print axioms Plonk.plonkCheckVerifier_verify_eq
+#print axioms Plonk.plonkCheckVerifier_mem_support_iff
 #print axioms Plonk.permCheckAfterGateVerifier_verify_eq
 #print axioms Plonk.permCheckAfterGateVerifier_mem_support_iff
 #print axioms Plonk.plonkCheckReduction_eq_append
