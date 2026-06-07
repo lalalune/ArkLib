@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoExtract
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
 
 /-!
 # BCIKS20 Appendix A.4 — monic all-order W-free residual surface
 
-`RestrictedFaaDiBrunoExtract.lean` proves that when `H.leadingCoeff = 1`, every `W` factor on the
-recursion side of the partition residual collapses.  This file names the resulting W-free
-recursion-side form and packages the corresponding residual equivalences.
+`P2Assembly.lean` exposes the recursion-side partition residual.  This file proves locally that
+when `H.leadingCoeff = 1`, every `W` factor on that recursion side collapses, then names the
+resulting W-free recursion-side form and packages the corresponding residual equivalences.
 
 This is not a proof of the all-order P2 core: the W-free target still contains the ξ telescope and
 the Faà-di-Bruno `B_coeff`/`partitionProd` combinatorics.  It just removes the W-power obstruction
@@ -52,8 +52,8 @@ theorem restrictedMatchRecursionPartitionForm_eq_WfreeForm_of_leadingCoeff_one
     restrictedMatchRecursionPartitionForm H x₀ R hHyp t =
       restrictedMatchRecursionPartitionWfreeForm H x₀ R hHyp t := by
   unfold restrictedMatchRecursionPartitionWfreeForm
-  exact restrictedMatchRecursionPartitionForm_eq_Wfree_of_leadingCoeff_one
-    H x₀ R hHyp t hlc
+  unfold restrictedMatchRecursionPartitionForm
+  simp only [embed_W𝒪, hlc, map_one, one_pow, one_mul]
 
 /-- Under monic `H`, the partition residual is equivalent to the W-free target equation. -/
 theorem restrictedPartitionMatchAt_iff_WfreeForm_of_leadingCoeff_one
