@@ -806,6 +806,142 @@ omit [Fintype F] [SampleableType F] in
   simp [paperFinalRandomnessEvaluationsOfTranscript, paperFinalRandomnessEvaluation,
     paperFinalPolynomialCoefficientsOfTranscript]
 
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Algebraic consistency data for one paper-order WHIR transcript.
+
+This bundles the three transcript facts that an honest Construction 5.1 prover must establish
+before the verifier can run the fold/OOD/final checks: folded-oracle messages are transported
+`Fold.fold_k` outputs, OOD replies are evaluations of the extension polynomials, and the final
+polynomial payload is the coefficient vector of the polynomial used for final-randomness checks. -/
+structure PaperTranscriptAlgebraicConsistency {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d) where
+  folded_oracles :
+    paperTranscriptHasFoldedOracles P d S bridge hNeg source foldChallenge hFoldLe T
+  ood_extension : PaperOutOfDomainExtension P d T
+  final_polynomial : PaperFinalPolynomialCoefficients P d T
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Final-randomness evaluations supplied by a bundled algebraically consistent transcript. -/
+noncomputable def paperTranscriptAlgebraicConsistencyFinalEvaluations {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T) :
+    Vector F (P.repeatParam (Fin.last M)) :=
+  paperFinalRandomnessEvaluations P d T cons.final_polynomial
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperTranscriptAlgebraicConsistencyFinalEvaluations_get {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T)
+    (j : Fin (P.repeatParam (Fin.last M))) :
+    (paperTranscriptAlgebraicConsistencyFinalEvaluations P d S bridge hNeg source foldChallenge
+      hFoldLe T cons).get j =
+      cons.final_polynomial.polynomial.eval (T.finalRandomness.get j) := by
+  simp [paperTranscriptAlgebraicConsistencyFinalEvaluations, paperFinalRandomnessEvaluation]
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- A bundled transcript consistency witness exposes the folded-oracle payload equation. -/
+theorem paperTranscriptSlotPayload_mainFoldedOracle_of_algebraicConsistency {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T)
+    (i : Fin M) :
+    paperTranscriptSlotPayload P d T (.mainFoldedOracle i) =
+      packFiniteFunction (ιs i.succ)
+        (paperFoldedOracleFrom P S bridge hNeg source foldChallenge hFoldLe i) :=
+  paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles P d S bridge hNeg source
+    foldChallenge hFoldLe T cons.folded_oracles i
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- A bundled transcript consistency witness exposes the OOD-reply payload equation. -/
+theorem paperTranscriptSlotPayload_mainOutOfDomainReply_of_algebraicConsistency {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T)
+    (i : Fin M) :
+    paperTranscriptSlotPayload P d T (.mainOutOfDomainReply i) =
+      singletonFieldPayload
+        ((cons.ood_extension.extensionPolynomial i).eval (T.mainOutOfDomainChallenge i)) :=
+  paperTranscriptSlotPayload_mainOutOfDomainReply_of_extension P d T cons.ood_extension i
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- A bundled transcript consistency witness exposes the final-polynomial payload equation. -/
+theorem paperTranscriptSlotPayload_finalPolynomial_of_algebraicConsistency {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T) :
+    paperTranscriptSlotPayload P d T .finalPolynomial =
+      Vector.ofFn fun k : Fin (2 ^ P.varCount (Fin.last M)) =>
+        cons.final_polynomial.polynomial.coeff k :=
+  paperTranscriptSlotPayload_finalPolynomial_of_coefficientsWitness P d T cons.final_polynomial
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
@@ -1376,6 +1512,12 @@ end RBRSoundnessAssembly
 #print axioms paperFinalRandomnessEvaluations_get
 #print axioms paperFinalRandomnessEvaluationsOfTranscript
 #print axioms paperFinalRandomnessEvaluationsOfTranscript_get
+#print axioms PaperTranscriptAlgebraicConsistency
+#print axioms paperTranscriptAlgebraicConsistencyFinalEvaluations
+#print axioms paperTranscriptAlgebraicConsistencyFinalEvaluations_get
+#print axioms paperTranscriptSlotPayload_mainFoldedOracle_of_algebraicConsistency
+#print axioms paperTranscriptSlotPayload_mainOutOfDomainReply_of_algebraicConsistency
+#print axioms paperTranscriptSlotPayload_finalPolynomial_of_algebraicConsistency
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
