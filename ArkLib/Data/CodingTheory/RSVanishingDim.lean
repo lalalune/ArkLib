@@ -30,8 +30,8 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] {F : Type*} [Field F] [Decid
 noncomputable def evalOnS (α : ι ↪ F) (deg : ℕ) (S : Finset ι) :
     Polynomial.degreeLT F deg →ₗ[F] (S → F) where
   toFun p := fun i => (p : F[X]).eval (α (i : ι))
-  map_add' p q := by ext i; simp
-  map_smul' c p := by ext i; simp
+  map_add' p q := by ext i; simp [Submodule.coe_add, Polynomial.eval_add]
+  map_smul' c p := by ext i; simp [Submodule.coe_smul, Polynomial.eval_smul]
 
 /-- **Lagrange surjectivity.** For `|S| ≤ deg`, every prescription of values on the points
 `{α i : i ∈ S}` is realised by some degree-`<deg` polynomial. -/
@@ -44,12 +44,12 @@ theorem evalOnS_surjective (α : ι ↪ F) (deg : ℕ) (S : Finset ι) (hS : S.c
   have hinj : Set.InjOn (fun i => α i) (S : Set ι) := α.injective.injOn
   set p : F[X] := Lagrange.interpolate S (fun i => α i) r with hp
   have hdeg : p.degree < (deg : WithBot ℕ) := by
-    calc p.degree < (S.card : WithBot ℕ) := Lagrange.degree_interpolate_lt hinj
+    calc p.degree < (S.card : WithBot ℕ) := Lagrange.degree_interpolate_lt r hinj
       _ ≤ (deg : WithBot ℕ) := by exact_mod_cast hS
   refine ⟨⟨p, Polynomial.mem_degreeLT.mpr hdeg⟩, ?_⟩
   ext i
   show (p : F[X]).eval (α (i : ι)) = v i
-  rw [hp, Lagrange.eval_interpolate_at_node hinj i.2]
+  rw [hp, Lagrange.eval_interpolate_at_node r hinj i.2]
   simp [hr, i.2]
 
 /-- **Vanishing-subspace dimension.** The degree-`<deg` polynomials vanishing on `S` (with
@@ -59,10 +59,12 @@ theorem finrank_ker_evalOnS (α : ι ↪ F) (deg : ℕ) (S : Finset ι) (hS : S.
   classical
   have hsurj := evalOnS_surjective α deg S hS
   have hrank : Module.finrank F (LinearMap.range (evalOnS α deg S)) = S.card := by
-    rw [LinearMap.range_eq_top.mpr hsurj, finrank_top, finrank_fintype_fun_eq_card,
-      Fintype.card_coe]
+    rw [LinearMap.range_eq_top.mpr hsurj, finrank_top, Module.finrank_pi, Fintype.card_coe]
   have hdom : Module.finrank F (Polynomial.degreeLT F deg) = deg :=
-    Polynomial.finrank_degreeLT_n
+    Polynomial.finrank_degreeLT_n deg
+  haveI : FiniteDimensional F (Polynomial.degreeLT F deg) :=
+    FiniteDimensional.of_injective (Polynomial.degreeLTEquiv F deg).toLinearMap
+      (Polynomial.degreeLTEquiv F deg).injective
   have hrn := LinearMap.finrank_range_add_finrank_ker (evalOnS α deg S)
   rw [hrank, hdom] at hrn
   omega
