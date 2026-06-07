@@ -35,11 +35,11 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
+open Classical in
+omit [Nonempty ι] [DecidableEq F] in
 /-- **Combined covering existence.** If the total number of "far" `γ` across all stacks plus the
 number of jointly-`δ`-close stacks is strictly below the stack count, then some stack is *both*
 line-covered and not jointly `δ`-close. -/
-open Classical in
-omit [Nonempty ι] [DecidableEq F] in
 theorem exists_covered_not_jointProx_stack_of_counts (C : Set (ι → A)) (δ : ℝ≥0)
     (hsum :
       (∑ u : WordStack A (Fin 2) ι,
@@ -50,7 +50,7 @@ theorem exists_covered_not_jointProx_stack_of_counts (C : Set (ι → A)) (δ : 
       (∀ γ : F, δᵣ(u 0 + γ • u 1, C) ≤ δ) ∧ ¬ jointProximity C u δ := by
   classical
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   -- `hcon : ∀ u, (∀ γ, δᵣ(u 0 + γ • u 1, C) ≤ δ) → jointProximity C u δ`
   set far : WordStack A (Fin 2) ι → ℕ :=
     fun u => (univ.filter (fun γ : F => ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ)).card with hfar
