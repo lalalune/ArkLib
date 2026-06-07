@@ -203,3 +203,34 @@ theorem epsMCA_eq_zero_of_forall_double_cover (C : Set (ι → A)) (δ : ℝ≥0
 end
 
 end ProximityGap
+
+namespace CodingTheory
+
+open ProximityGap
+open scoped NNReal ProbabilityTheory
+
+section RepairedTarget
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+
+/-- **Repaired discharge of the legacy target proposition.** The old black-box statement remains a
+named `Prop`, because line-decodability alone is refuted. Once the repaired theorem's explicit
+double-cover data is supplied, however, `ε_mca(C, δ) = 0`, so the legacy target conclusion follows
+without using the false implication. -/
+theorem lineDecodable_imp_epsMCA_le_target_of_forall_double_cover
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hcov : MCAForallDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ) :
+    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
+  dsimp [lineDecodable_imp_epsMCA_le_target]
+  rw [epsMCA_eq_zero_of_forall_double_cover (F := F) (A := A) (C : Set (ι → A)) δ hcov]
+  exact zero_le _
+
+#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_double_cover
+
+end RepairedTarget
+
+end CodingTheory
