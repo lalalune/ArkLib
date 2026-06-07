@@ -109,9 +109,11 @@ Current source also exposes the #14 split frontier:
 - `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError`
   routes the proved probability-space query-round front door through the
   concrete sequential-composition and total-accounting fields.
-- `Fri.fri_query_soundness_of_forall_mem` and
-  `Fri.friSoundnessQueryLift_of_forall_mem` cover the all-rows-already-codewords
-  extreme of the correlated-agreement bridge, leaving the general bridge open.
+- `Fri.fri_query_soundness_of_forall_mem`,
+  `Fri.friSoundnessQueryLift_of_forall_mem`, and
+  `Fri.fri_soundness_of_forall_mem` cover the all-rows-already-codewords
+  extreme of the correlated-agreement bridge, including the end-to-end Claim 8.3
+  implication; the general bridge remains open.
 - `fri_soundness_of_parts` reassembles the faithful `fri_soundness` residual
   from those three named ingredients.
 
