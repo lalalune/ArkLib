@@ -188,6 +188,19 @@ def openTranscript {s : Skeleton} (hashFn : α → α → α)
   (tree.getRootValue,
     idxs.map (fun i => ⟨i, salts.get i, leaves.get i, generateProof tree i⟩))
 
+/-- The honest salted transcript emits exactly one opening entry for each requested index. -/
+theorem openTranscript_entries_length {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    (openTranscript hashFn salts leaves idxs).2.length = idxs.length := by
+  simp [openTranscript]
+
+/-- Projecting honest salted transcript entries to their indices recovers the requested index list.
+This names the basic transcript-shape invariant used by simulators and deterministic extractors. -/
+theorem openTranscript_entries_indices {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    ((openTranscript hashFn salts leaves idxs).2.map (fun o => o.1)) = idxs := by
+  simp [openTranscript, Function.comp_def]
+
 /-- Every opening emitted by the honest salted transcript carries the honest salt and leaf value
 for its own index. This exposes the transcript data invariant used by deterministic extraction and
 future simulator/hybrid arguments. -/
@@ -320,6 +333,8 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.salted_opening_unique_against_honest_tree
 #print axioms InductiveMerkleTree.multi_salted_openings_unique_against_honest_tree
 #print axioms InductiveMerkleTree.openTranscript
+#print axioms InductiveMerkleTree.openTranscript_entries_length
+#print axioms InductiveMerkleTree.openTranscript_entries_indices
 #print axioms InductiveMerkleTree.openTranscript_entry_eq_honest_pair
 #print axioms InductiveMerkleTree.openTranscript_entry_verifies
 #print axioms InductiveMerkleTree.openTranscript_entry_unique_against_candidate
