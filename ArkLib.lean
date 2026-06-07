@@ -130,6 +130,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineSpaces
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightAll
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightCleared
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
@@ -137,6 +138,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.GoodCoeffs
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.JointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.UniqueDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.FaaDiBrunoBijectionPieces
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HasseEvalConnectives
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
@@ -166,6 +168,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicOrderZero
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfree
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeConsumers
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeFullSum
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeFullSumAt
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeGlobal
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reabsorb
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reindex
@@ -175,6 +178,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoExtract
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoXiTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
@@ -197,6 +201,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropyGen
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness
+import ArkLib.Data.CodingTheory.ProximityGap.CS25JointProxBound
 import ArkLib.Data.CodingTheory.ProximityGap.CS25NonDegeneratePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSCoveredFraction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSNearBound

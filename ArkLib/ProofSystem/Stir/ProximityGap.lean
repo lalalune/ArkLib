@@ -9,6 +9,7 @@ import ArkLib.Data.CodingTheory.Basic.Distance
 import ArkLib.Data.CodingTheory.Basic.LinearCode
 import ArkLib.Data.CodingTheory.Basic.RelativeDistance
 import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.Probability.Notation
 import ArkLib.ProofSystem.Stir.ProximityBound
 
@@ -91,7 +92,29 @@ def proximity_gap
     S.card ≥ (1 - δ) * (Fintype.card ι) ∧
     ∀ i : Fin m, ∃ u : ι → F, u ∈ (code φ degree) ∧ ∀ x ∈ S, f i x = u x
 
+/-- The STIR proximity-gap front-door conclusion is exactly `Code.jointAgreement` for the
+Reed-Solomon code, via the per-word `∀∃` bridge `Code.jointAgreement_iff_forall_exists`.  This
+connects the bespoke STIR conclusion to the shared `jointAgreement` API (its `_mono`,
+`_mono_code`, `_iff_jointProximity` lemmas), matching the FRI/WHIR proximity-gap conclusion shape.
+The two-sided hypotheses are inert in the body, so the equivalence holds unconditionally. -/
+theorem proximity_gap_iff_jointAgreement
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}
+    {degree m : ℕ} {δ : ℝ≥0} {f : Fin m → ι → F} {GenFun : F → Fin m → F}
+    (hGen : ∀ r j, GenFun r j = r ^ (j : ℕ))
+    (hδPos : 0 < δ)
+    (hδLt : δ < 1 - Bstar (LinearCode.rate (code φ degree)))
+    (hProb :
+      Pr_{ let r ← $ᵖ F}[δᵣ((fun x => ∑ j : Fin m, (GenFun r j) * f j x), code φ degree) ≤ δ] >
+        ENNReal.ofReal (proximityError F degree (LinearCode.rate (code φ degree)) δ m)) :
+    proximity_gap hGen hδPos hδLt hProb ↔
+      Code.jointAgreement (C := (↑(code φ degree) : Set (ι → F))) (δ := δ) (W := f) := by
+  rw [Code.jointAgreement_iff_forall_exists]
+  unfold proximity_gap
+  simp only [SetLike.mem_coe]
+
 end STIR
 
 /- Axiom audit for the STIR proximity-gap residual front door (#24). -/
 #print axioms STIR.proximity_gap
+#print axioms STIR.proximity_gap_iff_jointAgreement
