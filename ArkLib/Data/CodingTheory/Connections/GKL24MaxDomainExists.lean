@@ -371,4 +371,17 @@ theorem mcaBad_card_le_carrier_two_delta {MC : Submodule F (ι → F)} {δ : ℝ
     _ = T.card * max 1 (2 * (δ : ℝ) * Fintype.card ι) := by
         rw [Finset.sum_const, nsmul_eq_mul]
 
+/-- **`ε_mca` bound from a codeword carrier (GKL24 first moment → MCA error).**  For any carrier `T`
+covering the code, `ε_mca(C, δ) ≤ |T|·max(1, 2δn) / |F|`.  This is the end-to-end bridge: the entire
+GKL24 first-moment chain (sunflower count → per-codeword `2δn` → per-stack carrier bound) feeds the
+`ε_mca` glue (`epsMCA_le_ofReal_of_forall_mcaBad_card_le`).  The bound is parameterized by `|T|`, so
+a sharper cover (the `L` close codewords) plugs straight in to give the list-size-scaled MCA error. -/
+theorem epsMCA_le_two_delta_of_carrier {MC : Submodule F (ι → F)} {δ : ℝ≥0}
+    (T : Finset (ι → F)) (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T)
+    (hTsub : ∀ w ∈ T, w ∈ (MC : Set (ι → F))) :
+    epsMCA (F := F) (A := F) ((MC : Set (ι → F))) δ
+      ≤ ENNReal.ofReal ((T.card : ℝ) * max 1 (2 * (δ : ℝ) * Fintype.card ι) / Fintype.card F) :=
+  epsMCA_le_ofReal_of_forall_mcaBad_card_le _ δ
+    (fun _ => mcaBad_card_le_carrier_two_delta T hT hTsub)
+
 end ProximityGap
