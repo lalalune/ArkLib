@@ -231,6 +231,18 @@ theorem perfectHVZK.statisticalHVZK_mono_relation
     OracleReduction.statisticalHVZK init impl rel' oracleReduction sim ε :=
   OracleReduction.perfectHVZK.statisticalHVZK (h.mono_relation hsub) ε
 
+/-- Zero-error statistical HVZK for oracle reductions converts back to perfect HVZK for the
+  same simulator. -/
+theorem statisticalHVZK_zero.perfectHVZK
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {oracleReduction :
+      OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn OStmtIn pSpec}
+    (h : statisticalHVZK init impl rel oracleReduction sim 0) :
+    OracleReduction.perfectHVZK init impl rel oracleReduction sim :=
+  (perfectHVZK_iff_statisticalHVZK_zero init impl rel oracleReduction sim).2 h
+
 /-- Zero-error statistical HVZK for oracle reductions transports back to perfect HVZK on a
   subrelation. The same simulator is reused after restricting the relation. -/
 theorem statisticalHVZK_zero.perfectHVZK_mono_relation
@@ -240,7 +252,7 @@ theorem statisticalHVZK_zero.perfectHVZK_mono_relation
       OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
     {sim : TranscriptSimulator oSpec StmtIn OStmtIn pSpec}
     (h : statisticalHVZK init impl rel oracleReduction sim 0) (hsub : rel' ⊆ rel) :
-    perfectHVZK init impl rel' oracleReduction sim :=
+    OracleReduction.perfectHVZK init impl rel' oracleReduction sim :=
   (perfectHVZK_iff_statisticalHVZK_zero init impl rel' oracleReduction sim).2
     (h.mono_relation hsub)
 
@@ -356,6 +368,7 @@ end Identity
 #print axioms isStatHVZK.mono_error
 #print axioms statisticalHVZK.mono_relation_error
 #print axioms perfectHVZK.statisticalHVZK_mono_relation
+#print axioms statisticalHVZK_zero.perfectHVZK
 #print axioms statisticalHVZK_zero.perfectHVZK_mono_relation
 #print axioms isStatHVZK.mono_relation_error
 #print axioms isHVZK.isStatHVZK_mono_relation_error
