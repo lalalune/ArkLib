@@ -139,14 +139,16 @@ lemma polyToOracleFunc_eq_getFirstOracle
   simp only [id_eq] at h_first_oracle ⊢
   rw [h_first_oracle]
   funext y
-  conv_rhs =>
-    rw [iterated_fold_congr_steps_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps' := 0)
+  -- `iterated_fold` over `0 * ϑ = 0` steps is the identity (modulo the definitional index `cast`);
+  -- expose the `Eq.mp` as a `cast` and discharge it, then collapse the zero-step fold.
+  simp only [eq_mp_eq_cast]
+  rw [iterated_fold_congr_steps_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps' := 0)
       (h_destIdx := by simp only [Nat.zero_mod, zero_mul, Fin.coe_ofNat_eq_mod, add_zero])
       (h_destIdx_le := by simp only [zero_mul, zero_le])
       (h_steps_eq_steps' := by simp only [zero_mul])]
-    rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
+  rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
       (h_destIdx := by simp only [Nat.zero_mod, zero_mul, Fin.coe_ofNat_eq_mod])]
-  conv_rhs => simp only [cast_cast, cast_eq]; simp only [←fun_eta_expansion]
+  simp only [polyToOracleFunc, cast_cast, cast_eq]
 
 /-- Decompose challenge v at position i into (fiberIndex, suffix).
     This is the inverse of `Nat.joinBits` in some sense.
@@ -473,6 +475,7 @@ lemma getFiberPoint_eq_qMap_total_fiber
   unfold getFiberPoint
   simp only [oraclePositionToDomainIndex, id_eq]
 
+set_option maxHeartbeats 1600000 in
 lemma logical_queryFiberPoints_eq_fiberEvaluations
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ) j)
     (k : Fin (ℓ / ϑ)) (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by omega⟩) :
