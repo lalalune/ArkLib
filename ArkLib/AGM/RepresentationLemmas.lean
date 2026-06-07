@@ -32,6 +32,8 @@ transports a representation, preserving exponents).  This file adds the matching
   in the closure of the union of their bases (the soundness complement to
   `GroupRepresentation.mul`).
 * `mul_target_mem_of_forall_mem` — subgroup-relative composition soundness against a fixed `H`.
+* `map_mul_target_mem_of_forall_mem` — functorial composition soundness: the homomorphic image of a
+  composed target lands in `K` whenever the mapped bases do (AGM ⇒ GGM transfer brick).
 -/
 
 namespace AGM.GroupRepresentation
@@ -188,6 +190,20 @@ theorem mul_target_mem_of_forall_mem {prev₁ prev₂ : List G} {t₁ t₂ : G}
     t₁ * t₂ ∈ H :=
   Subgroup.mul_mem _ (r₁.target_mem_of_forall_mem H h₁) (r₂.target_mem_of_forall_mem H h₂)
 
+/-- **Functorial composition soundness (AGM ⇒ GGM transfer).** If a group hom `f` sends every basis
+element of both representations into a subgroup `K`, then the image `f (t₁ * t₂)` of the composed
+target lies in `K`. This is the multiplicative-composition form of `map_target_mem_of_forall_mem`,
+the structural fact a transfer reduction uses to push a composed algebraic output through `f` while
+staying inside the target-group subgroup. -/
+theorem map_mul_target_mem_of_forall_mem {H : Type*} [Group H] (f : G →* H)
+    {prev₁ prev₂ : List G} {t₁ t₂ : G}
+    (r₁ : GroupRepresentation (p := p) prev₁ t₁) (r₂ : GroupRepresentation (p := p) prev₂ t₂)
+    (K : Subgroup H) (h₁ : ∀ g ∈ prev₁, f g ∈ K) (h₂ : ∀ g ∈ prev₂, f g ∈ K) :
+    f (t₁ * t₂) ∈ K := by
+  rw [map_mul]
+  exact Subgroup.mul_mem _
+    (r₁.map_target_mem_of_forall_mem f K h₁) (r₂.map_target_mem_of_forall_mem f K h₂)
+
 end AGM.GroupRepresentation
 
 /-! ### Axiom audit (issue #118 representation companion lemmas) -/
@@ -207,3 +223,4 @@ end AGM.GroupRepresentation
 #print axioms AGM.GroupRepresentation.append
 #print axioms AGM.GroupRepresentation.mul_target_mem_closure
 #print axioms AGM.GroupRepresentation.mul_target_mem_of_forall_mem
+#print axioms AGM.GroupRepresentation.map_mul_target_mem_of_forall_mem
