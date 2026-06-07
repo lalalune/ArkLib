@@ -1296,6 +1296,50 @@ theorem
             (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
         (δ := 1 - α) (ε := ε) (u := f) h_ca h_prob)
 
+/-- Density-route Claim 8.2 front door from the polynomial-curve correlated-agreement predicate.
+
+This is the query-level analogue of the full-domain curve CA adapter: callers supply the curve CA
+predicate and its single-field-sample probability trigger, and the theorem routes it through the
+concrete `Code.jointProximity` front door. -/
+theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndCurveCA
+    {t : ℕ}
+    {α : ℝ≥0}
+    (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ f)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    {m : ℕ}
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    {ε : ℝ≥0}
+    (h_ca :
+      ProximityGap.δ_ε_correlatedAgreementCurves
+        (F := 𝔽) (A := 𝔽) (ι := ω.subdomain 0) (k := t)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier
+        (1 - α) ε)
+    (h_prob :
+      Pr_{let r ← $ᵖ 𝔽}[
+        δᵣ(∑ i : Fin (t + 1), (r ^ (i : ℕ)) • f i,
+          (ReedSolomon.code
+            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+          ≤ 1 - α] > t * ε) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
+  exact
+    fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
+      (n := n) (s := s) (d := d) (ω := ω)
+      (f := f) h_agreement m_ge_3 G δ queries l domain_size_cond
+      (ProximityGap.jointProximity_of_δ_ε_correlatedAgreementCurves
+        (F := 𝔽) (A := 𝔽) (ι := ω.subdomain 0) (k := t)
+        (C :=
+          (ReedSolomon.code
+            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+        (δ := 1 - α) (ε := ε) (u := f) h_ca h_prob)
+
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
 #print axioms Fri.queryRoundAcceptanceBound_of_density
@@ -1316,6 +1360,8 @@ set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
 set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineSpacesCA
+set_option linter.style.longLine false in
+#print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndCurveCA
 
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining
