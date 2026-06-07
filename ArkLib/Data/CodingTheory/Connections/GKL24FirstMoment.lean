@@ -98,6 +98,53 @@ map ranges over this set, and the bad combining points all land in its image. -/
 def secondSupport (u₁ : ι → F) : Finset ι :=
   Finset.univ.filter (fun i => u₁ i ≠ 0)
 
+/-- The agreement domain of the line `u₀ + γ • u₁` with a codeword `w`. GCXK/GKL maximal-domain
+arguments reason about strict expansions of these domains over a fixed correlated-agreement core.
+-/
+def lineAgreeSet (u₀ u₁ w : ι → F) (γ : F) : Finset ι :=
+  Finset.univ.filter (fun i => w i = u₀ i + γ • u₁ i)
+
+/-- The petal of a line-agreement set outside a candidate maximal domain `D`. The GKL/GCXK
+sunflower lemma supplies pairwise disjoint nonempty petals for distinct bad scalars above the
+same maximal domain; the cardinality consumer for such petals is
+`badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals`. -/
+def linePetal (D : Finset ι) (u₀ u₁ w : ι → F) (γ : F) : Finset ι :=
+  lineAgreeSet u₀ u₁ w γ \ D
+
+theorem mem_lineAgreeSet_iff (u₀ u₁ w : ι → F) (γ : F) (i : ι) :
+    i ∈ lineAgreeSet u₀ u₁ w γ ↔ w i = u₀ i + γ • u₁ i := by
+  simp [lineAgreeSet]
+
+/-- A scalar in `mcaBadWitness w` gives a large line-agreement set for `w`. This extracts the
+paper-side agree-domain object from the existing ArkLib witness definition. -/
+theorem lineAgreeSet_card_ge_of_mem_mcaBadWitness
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F) {γ : F}
+    (hγ : γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w) :
+    ((1 - δ) * Fintype.card ι : ℝ≥0) ≤
+      ((lineAgreeSet u₀ u₁ w γ).card : ℝ≥0) := by
+  classical
+  rw [mcaBadWitness, Finset.mem_filter] at hγ
+  obtain ⟨S, hScard, hwline, _hpair⟩ := hγ.2
+  have hsub : S ⊆ lineAgreeSet u₀ u₁ w γ := by
+    intro i hi
+    rw [mem_lineAgreeSet_iff]
+    exact hwline i hi
+  exact le_trans hScard (by exact_mod_cast Finset.card_le_card hsub)
+
+/-- A strict expansion `D ⊂ lineAgreeSet ...` has a nonempty petal outside `D`. This is the
+nonemptiness input consumed by the disjoint-petal cardinality wrapper. -/
+theorem linePetal_nonempty_of_ssubset_lineAgreeSet
+    {D : Finset ι} {u₀ u₁ w : ι → F} {γ : F}
+    (hstrict : D ⊂ lineAgreeSet u₀ u₁ w γ) :
+    (linePetal D u₀ u₁ w γ).Nonempty := by
+  classical
+  have hnot : ¬ lineAgreeSet u₀ u₁ w γ ⊆ D := by
+    intro hsub
+    exact hstrict.2 hsub
+  rw [Finset.not_subset] at hnot
+  obtain ⟨i, hiA, hiD⟩ := hnot
+  exact ⟨i, Finset.mem_sdiff.mpr ⟨hiA, hiD⟩⟩
+
 /-- **Single-codeword determinacy (the core in-tree fact).** For a `Submodule` code `MC` and a
 fixed codeword `w ∈ MC`, every bad combining point `γ ∈ mcaBadWitness w` equals
 `combiningPoint w u₀ u₁ i` at some coordinate `i ∈ secondSupport u₁`.
@@ -780,6 +827,8 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.GKL24FirstMomentResidual_inTree_card
 #print axioms ProximityGap.GKL24FirstMomentResidual_inTree_two_delta_card
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card
+#print axioms ProximityGap.lineAgreeSet_card_ge_of_mem_mcaBadWitness
+#print axioms ProximityGap.linePetal_nonempty_of_ssubset_lineAgreeSet
 #print axioms ProximityGap.badScalars_card_le_domain_compl_of_disjoint_petals
 #print axioms ProximityGap.badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_residual

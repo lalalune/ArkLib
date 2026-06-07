@@ -1,4 +1,5 @@
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
+import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleSubspaceDesign
 
 /-!
 # Axiom-backed proofs for CapacityBounds external Prop statements
@@ -200,6 +201,39 @@ theorem frs_epsMCA_capacity_gg25_proven
     frs_epsMCA_capacity_gg25 domain k s ω η hη_pos hη_lt hs_gt :=
   gg25_frs_epsMCA_capacity domain k s ω η hη_pos hη_lt hs_gt
 
+/-- **T4.14 derived from T4.13 + the *proved* T2.18 instance — no independent T4.14 axiom.**
+
+For a folded-RS code whose evaluation domain satisfies the explicit GK16 admissibility conditions
+(`0 ∉ L`, `s ≤ orderOf ω`, inter-orbit separation, degree budgets), the FRS subspace-design
+property (T2.18) is *proved* in-tree by
+`frs_is_subspaceDesign_cz25Profile_of_orderOf_ge_of_inter`. Combined with the GG25 subspace-design
+MCA bound (T4.13, the `gg25_subspaceDesign_epsMCA` axiom) at the honest paper parameter choice
+`η = τ_FRS(t+1) - ρ + 3/(2t)` with `t ≤ 2/η` and `t + 1 ≤ s`, the capstone
+`frs_epsMCA_capacity_gg25_of_subspaceDesign_eta` (whose radius/bound arithmetic residuals are both
+proved) yields the public folded-RS MCA-up-to-capacity statement.
+
+This witnesses T4.14 as a genuine corollary of **T4.13 alone** (T2.18 being now proved), discharged
+without appeal to the standalone `gg25_frs_epsMCA_capacity` axiom — exactly the
+"reduce to T4.13 + T2.18" disposition recorded in the `CapacityBounds` ledger. -/
+theorem frs_epsMCA_capacity_gg25_proven_of_t413
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1) (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (t : ℕ) (ht : 0 < t) (hts : t + 1 ≤ s)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (h0 : (0 : F) ∉ L) (hω0 : ω ≠ 0) (hs_order : s ≤ orderOf ω)
+    (hinter : ∀ α ∈ L, ∀ β ∈ L, α ≠ β → ∀ i : ℕ, i < s → α * ω ^ i ≠ β)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
+    (hη : η = (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - (t : ℝ))
+        - (k : ℝ) / Fintype.card ι + 3 / (2 * t))
+    (htη : (t : ℝ) ≤ 2 / η) :
+    frs_epsMCA_capacity_gg25 domain k s ω η hη_pos hη_lt hs_gt := by
+  have hT218 := frs_is_subspaceDesign_cz25Profile_of_orderOf_ge_of_inter
+    domain k s ω L hL_dom h0 hω0 hs_order hinter hkLs hkord
+  exact frs_epsMCA_capacity_gg25_of_subspaceDesign_eta
+    domain k s ω η hη_pos hη_lt hs_gt t ht hts hT218
+    (gg25_subspaceDesign_epsMCA s _ (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
+    hη htη
+
 end SubspaceDesign
 
 #print axioms CodingTheory.linear_epsMCA_1_5_johnson_gkl24_proven
@@ -211,5 +245,6 @@ end SubspaceDesign
 #print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25_proven
 #print axioms CodingTheory.subspaceDesign_epsMCA_gg25_proven
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven_of_t413
 
 end CodingTheory

@@ -48,7 +48,7 @@ Downstream users include the BCIKS20 list-decoding agreement files under
 | Hensel-lift coefficients `α`, `γ` | present | `ClaimA2.α`, `ClaimA2.α'`, `ClaimA2.γ`, `ClaimA2.γ'` | The definitions exist and are consumed by the list-decoding agreement file. |
 | Genuine Hensel numerator recursion | present | `BCIKS20.HenselNumerator.βHensel`, `βHensel_zero`, `βHensel_succ` | The paper's `(A.1)` recursion is now represented directly, separate from the older `ClaimA2.β` placeholder path. |
 | Hensel numerator weight bound `(P1)` | present-but-incomplete | `βHenselSuccTermWeightResidual`, `βHenselStructuredWeightInvariant`, `βHenselSuccTermStructuredWeightResidual`, `βHenselSuccTermWeightResidual_of_structured` | The old loose-IH per-term wall is now narrowed to the structured `α_t`/`β_t` weight-invariant route. The structured product/telescoping arithmetic is present; the structured invariant itself remains tied to the `(P2)` root identity. |
-| Hensel lift identity `(P2)` / Faà-di-Bruno root bridge | present-but-incomplete | `FaaDiBrunoSuccSumZeroResidual`, `coeff_succ_eval_βHenselAssembled`, `βHensel_lift_identity`, `βHenselAssembled_eq_gammaGenuine` | Base case, uniqueness reduction, and the formal Faà-di-Bruno expansion are in-tree. The remaining bridge is the named local combinatorial residual `FaaDiBrunoSuccSumZeroResidual`, which feeds the order-`≥1` root-vanishing statement for the assembled numerator series. |
+| Hensel lift identity `(P2)` / Faà-di-Bruno root bridge | present-but-incomplete | `FaaDiBrunoSuccSumZeroResidual`, `RestrictedFaaDiBrunoMatch`, `restrictedFaaDiBrunoSum_eq_partitionForm`, `coeff_succ_βHenselAssembled_partitionForm`, `hasseEvalAtRoot_eq_taylorSum`, `Polynomial.hasseDeriv_eval_eq_sum`, `βHensel_lift_identity`, `βHenselAssembled_eq_gammaGenuine` | Base case, uniqueness reduction, the full/restricted-sum equivalence, the restricted value-multiset reindex, the coefficient-side `(A.1)` partition form, and the Hasse-evaluation sum identity are in-tree. The remaining bridge is the term-level proof of `RestrictedFaaDiBrunoMatch`, which then feeds `FaaDiBrunoSuccSumZeroResidual` and the order-`≥1` root-vanishing statement for the assembled numerator series. |
 
 ## Near-Term Work
 
@@ -57,9 +57,15 @@ named Hensel tracks without reintroducing broad placeholders:
 
 - prove the structured `α_t`/`β_t` weight invariant feeding
   `βHenselSuccTermStructuredWeightResidual`;
-- prove the local Faà-di-Bruno combinatorial cancellation
-  `FaaDiBrunoSuccSumZeroResidual`, which then feeds
-  `coeff_succ_eval_βHenselAssembled`;
+- prove the term-level `RestrictedFaaDiBrunoMatch` assembly by composing the canonical landed
+  P2 pieces:
+  `restrictedFaaDiBrunoSum_eq_partitionForm`, `coeff_succ_βHenselAssembled_partitionForm`,
+  `hasseEvalAtRoot_eq_taylorSum`, `Polynomial.hasseDeriv_eval_eq_sum`,
+  `partitionProd_coeff_assembled`, and the W/xi telescope lemmas in `P2Vanish.lean`;
+- avoid reviving the obsolete local scratch shape `P2Assembly.lean`: its useful content is already
+  represented by the tracked `P2BijectionApply.lean` declarations, while a standalone theorem named
+  `coeff_succ_βHenselAssembled` would collide with the existing `HenselNumerator.lean` residual
+  endpoint;
 - keep the loose-IH wall documented as intentionally insufficient, not as a theorem search target.
 
 The supporting reusable work remains useful around regular elements, canonical representatives, and
