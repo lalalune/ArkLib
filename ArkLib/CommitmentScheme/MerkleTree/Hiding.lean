@@ -504,7 +504,8 @@ equality of the induced output distributions of the transcript over the random c
 the perfect-hiding specialization; a computational version would replace `=` by an
 indistinguishability relation.
 
-This is a *definition only*; see the module roadmap for why a proof is out of scope here. -/
+The simulator/hybrid theorem below discharges this predicate from a real-to-simulator transcript
+equality premise. -/
 def Hiding {s : Skeleton} (hashFn : α → α → α)
     (sampleSalts : OracleComp (spec α) (LeafData α s))
     (idxs : List (SkeletonLeafIndex s)) : Prop :=
