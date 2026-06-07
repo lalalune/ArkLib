@@ -202,6 +202,30 @@ theorem bcs_union_bound {m : ℕ} (μ : UnionBoundPr E)
           exact hOpen i
     _ = bcsTotalError εInteraction εOpen := rfl
 
+/-- Batched-opening union bound for a left/right split of the committed-message openings.
+
+This is the probabilistic companion to `bcsTotalError_append`: if the opening failures have been
+grouped into two consecutive batches, the union of the appended opening failures is bounded by the
+left batch's BCS total plus the right batch's opening-error sum. -/
+theorem bcs_union_bound_append {m n : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badLeft : Fin m → E) (badRight : Fin n → E)
+    (εInteraction : ℝ≥0) (εLeft : Fin m → ℝ≥0) (εRight : Fin n → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hLeft : ∀ i, μ.pr (badLeft i) ≤ εLeft i)
+    (hRight : ∀ i, μ.pr (badRight i) ≤ εRight i) :
+    μ.pr (μ.union badInteraction (μ.unionFin (Fin.append badLeft badRight)))
+      ≤ bcsTotalError εInteraction εLeft + ∑ i, εRight i := by
+  have hOpen : ∀ i : Fin (m + n),
+      μ.pr ((Fin.append badLeft badRight) i) ≤ (Fin.append εLeft εRight) i := by
+    intro i
+    cases i using Fin.addCases with
+    | left i => simpa using hLeft i
+    | right i => simpa using hRight i
+  have h := bcs_union_bound (m := m + n) μ badInteraction
+    (Fin.append badLeft badRight) εInteraction (Fin.append εLeft εRight)
+    hInteraction hOpen
+  simpa [bcsTotalError_append] using h
+
 /-! ## 3. Specialization to the two-phase `append` shape
 
 The reduction-level `OracleReduction.BCSTransform` is literally
@@ -276,6 +300,7 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms UnionBoundPr.unionFin
 #print axioms UnionBoundPr.pr_unionFin_le
 #print axioms bcs_union_bound
+#print axioms bcs_union_bound_append
 #print axioms bcs_append_accounting
 #print axioms bcs_two_phase_total_eq
 #print axioms maxUnionBoundPr
