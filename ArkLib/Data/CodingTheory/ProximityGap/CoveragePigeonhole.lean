@@ -148,11 +148,16 @@ theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [Decidabl
     apply Finset.sum_le_sum
     intro i _
     exact le_trans (Finset.sum_le_sum (fun j _ => hterm i j)) (hinner i)
-  rw [Finset.sum_add_distrib, Finset.sum_const, Finset.card_univ, smul_eq_mul] at hbound
+  have heq2 : (∑ i, ((S i).card + Fintype.card κ * t))
+      = (∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t) := by
+    rw [Finset.sum_add_distrib]
+    congr 1
+    rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+  rw [heq2] at hbound
   have hmass := sq_sum_card_le_card_mul_sum_inter S
   have hchain : (∑ i, (S i).card) ^ 2
       ≤ Fintype.card ι * ((∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t)) :=
-    le_trans hmass (Nat.mul_le_mul_left _ hbound)
+    le_trans hmass (Nat.mul_le_mul le_rfl hbound)
   have heq : Fintype.card ι * ((∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t))
       = (Fintype.card κ) ^ 2 * t * Fintype.card ι + Fintype.card ι * (∑ i, (S i).card) := by
     ring
