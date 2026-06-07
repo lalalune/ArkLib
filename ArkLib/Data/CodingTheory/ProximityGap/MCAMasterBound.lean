@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.Data.Set.Card
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Tactic.Abel
@@ -151,5 +152,41 @@ theorem ncard_badScalars_le_one_of_dependent {K M : Type*} [Field K] [AddCommGro
   calc {γ : K | ∃ V ∈ 𝒱, s₀ + γ • s₁ ∈ V ∧ s₁ ∉ V}.ncard
       ≤ ({(-c : K)} : Set K).ncard := Set.ncard_le_ncard hsub (Set.finite_singleton _)
     _ = 1 := Set.ncard_singleton _
+
+open scoped Classical in
+/-- **MDS-genericity incidence bound** (sharpening engine).  If every `(d+1)`-element
+subfamily of `w : ι → M` is linearly independent — the defining genericity of an MDS dual,
+where every `r` parity columns are independent — then any subspace `W` of dimension `≤ d`
+contains at most `d` of the vectors `w i`.
+
+Reason: `d+1` vectors `w i` inside `W` would be a linearly independent set (genericity) of
+size `d+1` living in a space of dimension `≤ d`, which is impossible.
+
+This sharpens the master bound below capacity: at agreement `a = n-1` (so `e* = 1`) the bad
+patterns are single columns `span {hᵢ}`, and the bad scalars inject into the columns lying in
+the `2`-dimensional syndrome pencil `Π`; for `r ≥ 3` at most `2` columns lie in `Π`, giving
+the secant value `E(n-1) ≤ 2` — far below the master bound `C(n,1) = n`. -/
+theorem card_indices_mem_le_of_general_position
+    {K M ι : Type*} [Field K] [AddCommGroup M] [Module K M] [Module.Finite K M]
+    [Fintype ι] [DecidableEq ι] (w : ι → M) (W : Submodule K M) (d : ℕ)
+    (hWd : Module.finrank K W ≤ d)
+    (hgen : ∀ s : Finset ι, s.card = d + 1 → LinearIndependent K (fun i : ↥s => w ↑i)) :
+    (Finset.univ.filter (fun i => w i ∈ W)).card ≤ d := by
+  by_contra hlt
+  push_neg at hlt
+  obtain ⟨s, hsub, hcard⟩ :=
+    Finset.exists_subset_card_eq (n := d + 1)
+      (show d + 1 ≤ (Finset.univ.filter (fun i => w i ∈ W)).card by omega)
+  have hmem : ∀ i ∈ s, w i ∈ W := fun i hi => (Finset.mem_filter.mp (hsub hi)).2
+  have hind : LinearIndependent K (fun i : ↥s => w ↑i) := hgen s hcard
+  let v' : ↥s → W := fun i => ⟨w ↑i, hmem ↑i i.2⟩
+  have hsubtype : (W.subtype) ∘ v' = (fun i : ↥s => w ↑i) := rfl
+  have hv' : LinearIndependent K v' := by
+    have h := hind
+    rw [← hsubtype] at h
+    exact h.of_comp W.subtype
+  have hcardle : Fintype.card ↥s ≤ Module.finrank K W := hv'.fintype_card_le_finrank
+  rw [Fintype.card_coe, hcard] at hcardle
+  omega
 
 end ArkLib.MCAMasterBound
