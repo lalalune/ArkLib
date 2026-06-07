@@ -124,6 +124,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.ScratchJH02
 import ArkLib.Data.CodingTheory.ListDecoding.ScratchSeq
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLineSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearized
 import ArkLib.Data.CodingTheory.ListSizeVolumeBound
 import ArkLib.Data.CodingTheory.PolishchukSpielman
