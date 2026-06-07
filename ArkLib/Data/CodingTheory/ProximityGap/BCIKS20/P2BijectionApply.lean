@@ -105,6 +105,33 @@ theorem partitionProd_guard_eq_of_pos_i1 (x₀ : F) (R : F[X][X][Y])
   partitionProd_guard_eq H x₀ R hHyp t i1 lam
     (partition_notMem_succ_of_pos_i1 t i1 hi1 lam)
 
+/-- **Zero outer index exclusion is exactly non-indiscreteness.**  For `λ ⊢ t+1`, the forbidden
+part `(t+1)` occurs iff `λ` is the one-part partition `indiscrete (t+1)`. -/
+theorem partition_notMem_succ_iff_ne_indiscrete (t : ℕ)
+    (lam : Nat.Partition (t + 1)) :
+    (t + 1) ∉ lam.parts ↔ lam ≠ Nat.Partition.indiscrete (t + 1) :=
+  not_congr (ArkLib.Nat.Partition.mem_self_iff_eq_indiscrete (Nat.succ_pos t) (p := lam))
+
+/-- **Zero outer index filter removes exactly the indiscrete partition.**  The `i₁ = 0` branch of
+the `(A.1)` recursion ranges over all partitions of `t+1` except the single part `[t+1]`. -/
+theorem partition_filter_notMem_succ_eq_univ_erase_indiscrete (t : ℕ) :
+    ((Finset.univ : Finset (Nat.Partition (t + 1))).filter
+        (fun lam => (t + 1) ∉ lam.parts))
+      = Finset.univ.erase (Nat.Partition.indiscrete (t + 1)) := by
+  classical
+  ext lam
+  simp [partition_notMem_succ_iff_ne_indiscrete t lam]
+
+/-- **Non-indiscrete zero outer index collapses the `βHensel_succ` product guard.**  This is the
+`i₁ = 0` complement to `partitionProd_guard_eq_of_pos_i1`. -/
+theorem partitionProd_guard_eq_of_ne_indiscrete (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (lam : Nat.Partition (t + 1))
+    (hne : lam ≠ Nat.Partition.indiscrete (t + 1)) :
+    partitionProd lam (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0)
+      = partitionProd lam (βHensel H x₀ R hHyp) :=
+  partitionProd_guard_eq H x₀ R hHyp t 0 lam
+    ((partition_notMem_succ_iff_ne_indiscrete t lam).2 hne)
+
 /-- **Embedding of the `(A.1)` recursion `βHensel (t+1)` into `𝕃 H`.**  Pushes the ring
 homomorphism `embeddingOf𝒪Into𝕃` through `βHensel_succ` (sum, negation, products, powers) and
 discharges the guard via `partitionProd_guard_eq`, giving the `(i₁,λ)` sum with the partition
@@ -280,6 +307,9 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.partition_notMem_succ_of_pos_i1
 #print axioms BCIKS20.HenselNumerator.partition_filter_notMem_succ_eq_univ_of_pos_i1
 #print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq_of_pos_i1
+#print axioms BCIKS20.HenselNumerator.partition_notMem_succ_iff_ne_indiscrete
+#print axioms BCIKS20.HenselNumerator.partition_filter_notMem_succ_eq_univ_erase_indiscrete
+#print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq_of_ne_indiscrete
 #print axioms BCIKS20.HenselNumerator.embed_βHensel_succ
 #print axioms BCIKS20.HenselNumerator.coeff_succ_βHenselAssembled_partitionForm
 #print axioms BCIKS20.HenselNumerator.restrictedMatch_rhs_eq_recursionPartitionForm
