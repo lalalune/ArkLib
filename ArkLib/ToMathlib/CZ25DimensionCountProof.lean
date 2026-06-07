@@ -29,6 +29,8 @@ that the greedy chain (step 1 of the issue-#93 proof architecture) consumes:
   intersection of those agreement sets, giving at least `(1 - 2δ)·n` vanishing coordinates.
   The list-level aggregate and coordinate-first swap put this in the table form consumed by
   the design budget.
+* **recentred span setup** — for a submodule code `C`, close codewords are elements of `C`,
+  so every difference `c - c₀` is in `C` and the finite recentred span lies below `C`.
 
 All results are stated for the block alphabet `Fin s → F` (so `α = Fin s → F`, not a field),
 matching the subspace-design coordinate structure, and are `sorry`-free / axiom-clean
@@ -307,6 +309,39 @@ lemma sum_coord_diff_vanish_ge_of_subset_closeCodewordsRel
 
 end DifferenceVanish
 
+section RecentredSpan
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [DecidableEq F]
+
+/-- **Recentred differences stay in the code submodule.** If `c` and `c₀` are both codewords
+in the close list around `f`, then the difference `c - c₀` lies in the submodule code `C`.
+This is the closure fact used when forming the recentred span
+`span {c - c₀ | c ∈ L}` before applying the subspace-design budget. -/
+lemma diff_mem_of_mem_closeCodewordsRel
+    (s : ℕ) (C : Submodule F (ι → Fin s → F)) (f c c₀ : ι → Fin s → F) {δ : ℝ}
+    (hc : c ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hc₀ : c₀ ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ) :
+    c - c₀ ∈ C := by
+  rw [mem_closeCodewordsRel_iff_real] at hc hc₀
+  exact C.sub_mem hc.1 hc₀.1
+
+/-- **The finite recentred span is a subspace of the code.** If `c₀` and every `c ∈ L` are
+close codewords for a submodule code `C`, then the span of the recentred differences
+`{c - c₀ | c ∈ L}` lies below `C`. This is the submodule-closure setup needed before
+choosing a basis and feeding the recentred family to `sum_card_vanishing_le_design`. -/
+lemma span_diffs_le_of_subset_closeCodewordsRel
+    (s : ℕ) (C : Submodule F (ι → Fin s → F)) (f c₀ : ι → Fin s → F) {δ : ℝ}
+    (L : Finset (ι → Fin s → F))
+    (hc₀ : c₀ ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hL : ∀ c ∈ L, c ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ) :
+    Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F))) ≤ C := by
+  rw [Submodule.span_le]
+  rintro x ⟨c, hcL, rfl⟩
+  exact diff_mem_of_mem_closeCodewordsRel s C f c c₀ (hL c hcL) hc₀
+
+end RecentredSpan
+
 /-! ### `#print axioms` verification anchors -/
 
 section AxiomCheck
@@ -343,3 +378,5 @@ end CodingTheory
 #print axioms CodingTheory.sum_diff_vanish_swap
 #print axioms CodingTheory.sum_diff_vanish_ge_of_subset_closeCodewordsRel
 #print axioms CodingTheory.sum_coord_diff_vanish_ge_of_subset_closeCodewordsRel
+#print axioms CodingTheory.diff_mem_of_mem_closeCodewordsRel
+#print axioms CodingTheory.span_diffs_le_of_subset_closeCodewordsRel
