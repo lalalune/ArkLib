@@ -36,7 +36,7 @@ theorem frs_geomDomain_isSubspaceDesign
     (γ : F) (k s n : ℕ)
     (hs : 0 < s) (hn : 0 < n) (hγ : γ ≠ 0) (hsn : s * n ≤ orderOf γ)
     (hkLs : k ≤ s * n) (hkord : k ≤ orderOf γ) :
-    IsSubspaceDesign s
+    CodingTheory.IsSubspaceDesign s
       (fun r ↦ if r ∈ Finset.Icc 1 s then (k - 1 : ℝ) / Fintype.card (Fin n) else 1)
       (frsCode (geomDomainEmb γ s n hs hsn) k s γ) := by
   haveI : Nonempty (Fin n) := ⟨⟨0, hn⟩⟩
@@ -48,7 +48,7 @@ theorem frs_geomDomain_isSubspaceDesign
   have hL_dom : ∀ i : Fin n, geomDomainEmb γ s n hs hsn i ∈
       Finset.image (geomDomainEmb γ s n hs hsn) Finset.univ := by
     intro i; exact Finset.mem_image_of_mem _ (Finset.mem_univ i)
-  exact frs_is_subspaceDesign_gk16_of_admissible
+  exact CodingTheory.frs_is_subspaceDesign_gk16_of_admissible
     (geomDomainEmb γ s n hs hsn) k s γ
     (Finset.image (geomDomainEmb γ s n hs hsn) Finset.univ)
     hL_dom hγ hadm hkLs' hkord
