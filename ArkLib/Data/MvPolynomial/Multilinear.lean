@@ -271,6 +271,20 @@ theorem MLE_scaled_sum {ι : Type*} (s : Finset ι) (z : ι → R) (g : ι → (
   rw [MLE_sum]
   exact Finset.sum_congr rfl fun j _ => MLE_smul (z j) (g j)
 
+/-- **MLE evaluation as an eq-weighted sum over the hypercube.**  Evaluating the multilinear
+extension at any point `r` is the `eqTilde`-weighted sum of the hypercube evaluations:
+`eval r (MLE f) = ∑_{x ∈ {0,1}^σ} eqTilde r x · f x`, where `eqTilde r x = eval x (eqPolynomial r)`
+is the multilinear equality kernel.  This is the fundamental identity underlying sum-check folding
+(the general-ring analogue of the specialized `MLE_eval_eq_sum_eqTilde` in `RingSwitching/Prelude`). -/
+theorem MLE_eval_eq_sum_eqTilde (f : (σ → Fin 2) → R) (r : σ → R) :
+    eval r (MLE f) = ∑ x : σ → Fin 2, eqTilde r (x : σ → R) * f x := by
+  unfold MLE
+  rw [map_sum]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [eval_mul, eval_C]
+  simp only [eqTilde]
+  rw [eqPolynomial_symm]
+
 /-- **Evaluation form of `MLE_scaled_sum`.**  Evaluating the multilinear extension of a
 matrix-vector evaluation vector at a point `r` splits as the scalar combination of the column
 extensions evaluated at `r`:
