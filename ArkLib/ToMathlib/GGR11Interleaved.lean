@@ -324,6 +324,7 @@ theorem ggr11_treeStructure_of_le_exp [Fintype F] [Nonempty ι]
   · -- Pascal: Λ^(r'+1) ≤ Λ^(r'+1) + Λ · Λ^(r')
     intro b' r'; simp only; exact le_add_right (le_refl _)
 
+set_option linter.unusedFintypeInType false in
 /-- Over a *finite* field, the elementary `m ≤ r` regime supplies the **named** GGR11 tree
 frontier, not just the anonymous `GGR11TreeStructure`.  This exposes the per-received-word
 `Nonempty (GGR11TreeWitness …)` surface (the form preferred by downstream reassembly) in the
@@ -331,7 +332,6 @@ consistency sub-case, by routing `ggr11_treeStructure_of_le_exp` through `fronti
 
 As with `ggr11_treeStructure_of_le_exp`, this is the consistency sub-case `m ≤ r`; the genuine
 GGR11 content is the complementary finite `m > r` Erase-Decode construction, which remains external. -/
-set_option linter.unusedFintypeInType false in
 theorem ggr11_treeFrontier_of_le_exp [Fintype F] [Nonempty ι]
     {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
     (hmr : m ≤ r) (hL : 1 ≤ Lambda C δ) :
