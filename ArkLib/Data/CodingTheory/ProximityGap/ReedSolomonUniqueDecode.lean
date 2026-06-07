@@ -8,6 +8,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Polynomial.UnivariateAgreement
 import ArkLib.Data.Polynomial.DegreeLTDimension
+import ArkLib.Data.CodingTheory.ListDecodability
 
 /-!
 # Reed–Solomon unique decoding (concrete instantiation)
@@ -313,6 +314,38 @@ theorem reedSolomon_list_size {k dX dZ e : ℕ} [NeZero k] {α : ι ↪ F} {y : 
     rw [hfilter]; exact (hL c hcL).2
   calc L.card = (L.image f).card := (Finset.card_image_of_injOn hinj).symm
     _ ≤ dZ := sudan_list_size hbig he hdeg (L.image f) hL'
+
+open Polynomial in
+/-- **Reed–Solomon list-decodability bound `Λ(RS, δ) ≤ dZ`.**  Discharges ArkLib's list-size
+predicate for Reed–Solomon: under the Sudan conditions (with the error budget `⌊δ·n⌋`), the list
+size `Λ(RS[k], δ) = ⨆_f |{c ∈ RS : δᵣ(f,c) ≤ δ}|` is at most `dZ`.  This connects the concrete
+list-decoding theorem `reedSolomon_list_size` to the `Λ` machinery that CZ25 / CS25 consume. -/
+theorem reedSolomon_Lambda_le [Fintype F] [Nonempty ι] {k dX dZ : ℕ} [NeZero k] {α : ι ↪ F}
+    {δ : ℝ} (hδ0 : 0 ≤ δ)
+    (hbig : Fintype.card ι < (dX + 1) * (dZ + 1))
+    (he : ⌊δ * Fintype.card ι⌋₊ < Fintype.card ι)
+    (hdeg : dX + dZ * (k - 1) < Fintype.card ι - ⌊δ * Fintype.card ι⌋₊) :
+    ListDecodable.Lambda ((ReedSolomon.code α k : Set (ι → F))) δ ≤ (dZ : ℕ∞) := by
+  classical
+  refine iSup_le fun f => ?_
+  haveI : Fintype (ListDecodable.closeCodewordsRel
+      ((ReedSolomon.code α k : Set (ι → F))) f δ) := (Set.toFinite _).fintype
+  rw [Set.ncard_eq_toFinset_card']
+  -- the close codewords form a Finset to which `reedSolomon_list_size` applies
+  have hmono : ((ListDecodable.closeCodewordsRel
+      ((ReedSolomon.code α k : Set (ι → F))) f δ).toFinset).card ≤ dZ := by
+    refine reedSolomon_list_size hbig he hdeg _ fun c hc => ?_
+    rw [Set.mem_toFinset] at hc
+    obtain ⟨hcC, hcball⟩ := hc
+    refine ⟨hcC, ?_⟩
+    -- `δᵣ(f,c) ≤ δ` ⟹ `#{i : f i ≠ c i} ≤ ⌊δ·n⌋`
+    have hrel : (Code.relHammingDist f c : ℝ) ≤ δ := by exact_mod_cast hcball
+    have hn : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
+    have hreleq : (Code.relHammingDist f c : ℝ) = (hammingDist f c : ℝ) / Fintype.card ι := by
+      rw [Code.relHammingDist]; push_cast; ring
+    rw [hreleq, div_le_iff₀ hn, hammingDist_eq_card_filter_ne] at hrel
+    exact Nat.le_floor (by push_cast at hrel ⊢; linarith)
+  exact_mod_cast hmono
 
 open Polynomial in
 /-- **Berlekamp–Welch key-equation existence.**  If a received word `y` is within `e` Hamming
