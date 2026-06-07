@@ -27,7 +27,7 @@ open MvPolynomial LinearMvExtension
 
 variable {F : Type} [Field F] [DecidableEq F]
 variable {n : ℕ}
-variable {domain : SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))}
+variable {domain : ReedSolomon.SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))}
 variable {k : ℕ} {x : F}
 
 lemma foldWord_eq_evalOnPoints_powAlgHom [NeZero n] {α : F}
@@ -35,10 +35,10 @@ lemma foldWord_eq_evalOnPoints_powAlgHom [NeZero n] {α : F}
   (hf : f = evalOnPoints domain (powAlgHom g.1)) :
   foldWord domain f 1 α = 
     evalOnPoints 
-      (domain.subdomain 1) 
+      (domain.subdomainNatReversed 1)
       (powAlgHom (g.1.aeval (fun i ↦ 
           if h : i = 0 then C α else MvPolynomial.X (⟨i.val - 1, by omega⟩ : Fin (n - 1))))) := by 
-  have hchar := CosetFftDomainClass.domain_implies_char_ne_2 domain
+  have hchar := CosetFftDomain.subdomain_implies_char_ne_2 domain
   have h2ne0 : (2 : F) ≠ 0 := fun contra ↦ hchar <|
     ringChar.of_eq (CharP.ringChar_of_prime_eq_zero Nat.prime_two contra)
   subst hf
@@ -52,13 +52,9 @@ lemma foldWord_eq_evalOnPoints_powAlgHom [NeZero n] {α : F}
     simp_all
   aesop 
     (add safe (by field_simp))
-    (add simp 
-      [evalOnPoints, 
-       subdomain_sqFoldMapGen_eq_pow_domain, 
-       evalOnPoints_sq_eq_evalOnPoints_subdomain])
+    (add simp [evalOnPoints])
     (add unsafe 
       [(by ring_nf), 
-       (by rw [add_comm, mul_comm]), 
-       sqFoldMapGen_eq_sqFoldMapGen_of_pow_apply_eq_pow_apply])
+       (by rw [add_comm, mul_comm])])
 
 end ProximityGap

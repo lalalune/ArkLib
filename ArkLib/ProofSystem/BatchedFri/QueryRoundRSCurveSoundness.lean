@@ -239,6 +239,156 @@ theorem friRSCurveProbabilityInputs_iff_densityInputs
   · exact friRSCurveDensityInputs_of_probabilityInputs (n := n) (ω := ω) f m
   · exact friRSCurveProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m
 
+/-- Project the strict coefficient-polynomial residual from probability-route RS-curve inputs. -/
+theorem friRSCurveProbabilityInputs.strictCoeff
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveProbabilityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    ProximityGap.StrictCoeffPolysResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := t) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) := by
+  dsimp
+  dsimp [friRSCurveProbabilityInputs] at h
+  exact h.1
+
+/-- Project the boundary-probability residual from probability-route RS-curve inputs. -/
+theorem friRSCurveProbabilityInputs.boundaryProbability
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveProbabilityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    ProximityGap.BoundaryProbabilityResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := t) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) := by
+  dsimp
+  dsimp [friRSCurveProbabilityInputs] at h
+  exact h.2.1
+
+/-- Project the square-root-radius side condition from probability-route RS-curve inputs. -/
+theorem friRSCurveProbabilityInputs.sqrtRadius
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveProbabilityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    δ_fri ≤ 1 - ReedSolomon.sqrtRate (2 ^ n) rsDomain := by
+  dsimp
+  dsimp [friRSCurveProbabilityInputs] at h
+  exact h.2.2.1
+
+/-- Project the polynomial-curve probability trigger from probability-route RS-curve inputs. -/
+theorem friRSCurveProbabilityInputs.curveProbability
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveProbabilityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let u : Code.WordStack 𝔽 (Fin t.succ) (ω.subdomain 0) :=
+      fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    Pr_{let r ← $ᵖ 𝔽}[
+      δᵣ(∑ i : Fin (t + 1), (r ^ (i : ℕ)) • u i,
+        (ReedSolomon.code rsDomain (2 ^ n)).carrier) ≤ δ_fri] >
+      t * ProximityGap.errorBound δ_fri (2 ^ n) rsDomain := by
+  dsimp
+  dsimp [friRSCurveProbabilityInputs] at h
+  exact h.2.2.2
+
+/-- Project the strict coefficient-polynomial residual from density-route RS-curve inputs. -/
+theorem friRSCurveDensityInputs.strictCoeff
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveDensityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    ProximityGap.StrictCoeffPolysResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := t) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) := by
+  exact friRSCurveProbabilityInputs.strictCoeff (n := n) (ω := ω) f m
+    (friRSCurveProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m h)
+
+/-- Project the boundary-probability residual from density-route RS-curve inputs. -/
+theorem friRSCurveDensityInputs.boundaryProbability
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveDensityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    ProximityGap.BoundaryProbabilityResidual
+      (F := 𝔽) (ι := ω.subdomain 0) (k := t) (deg := 2 ^ n)
+      (domain := rsDomain) (δ := δ_fri) := by
+  exact friRSCurveProbabilityInputs.boundaryProbability (n := n) (ω := ω) f m
+    (friRSCurveProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m h)
+
+/-- Project the square-root-radius side condition from density-route RS-curve inputs. -/
+theorem friRSCurveDensityInputs.sqrtRadius
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveDensityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    δ_fri ≤ 1 - ReedSolomon.sqrtRate (2 ^ n) rsDomain := by
+  exact friRSCurveProbabilityInputs.sqrtRadius (n := n) (ω := ω) f m
+    (friRSCurveProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m h)
+
+/-- Project the polynomial-curve probability trigger from density-route RS-curve inputs. -/
+theorem friRSCurveDensityInputs.curveProbability
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveDensityInputs (n := n) (ω := ω) f m) :
+    let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+    let u : Code.WordStack 𝔽 (Fin t.succ) (ω.subdomain 0) :=
+      fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)
+    let α_fri : ℝ≥0 :=
+      let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+      ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))
+    let δ_fri : ℝ≥0 := 1 - α_fri
+    Pr_{let r ← $ᵖ 𝔽}[
+      δᵣ(∑ i : Fin (t + 1), (r ^ (i : ℕ)) • u i,
+        (ReedSolomon.code rsDomain (2 ^ n)).carrier) ≤ δ_fri] >
+      t * ProximityGap.errorBound δ_fri (2 ^ n) rsDomain := by
+  exact friRSCurveProbabilityInputs.curveProbability (n := n) (ω := ω) f m
+    (friRSCurveProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m h)
+
 /-- Density-route Claim 8.3 query-lift specialized to the Batched FRI subdomain Reed-Solomon
 polynomial-curve correlated-agreement theorem. -/
 theorem friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSCurve
@@ -581,6 +731,22 @@ set_option linter.style.longLine false in
 #print axioms Fri.friRSCurveProbabilityInputs_of_densityInputs
 set_option linter.style.longLine false in
 #print axioms Fri.friRSCurveProbabilityInputs_iff_densityInputs
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveProbabilityInputs.strictCoeff
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveProbabilityInputs.boundaryProbability
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveProbabilityInputs.sqrtRadius
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveProbabilityInputs.curveProbability
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveDensityInputs.strictCoeff
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveDensityInputs.boundaryProbability
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveDensityInputs.sqrtRadius
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveDensityInputs.curveProbability
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSCurve
 set_option linter.style.longLine false in

@@ -275,6 +275,7 @@ This is `ProximityGap.Q_vanishes_on_close_codeword_graph` with its raw count hyp
 by `keystone_count_of_radius`: if the agreement set has cardinality `n - dist`, the close word is
 inside the GS/Johnson radius, and the specialized interpolant has the standard weighted-degree
 budget, then `(eval_on_Z Q z).eval (Pz hS) = 0`. -/
+omit [DecidableEq (RatFunc F)] in
 theorem Q_vanishes_on_close_codeword_graph_of_radius [DecidableEq (Polynomial F)]
     {m k : ℕ} {δ : ℚ} {u₀ u₁ : Fin n → F} {Q : F[Z][X][Y]} {ωs : Fin n ↪ F}
     {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)

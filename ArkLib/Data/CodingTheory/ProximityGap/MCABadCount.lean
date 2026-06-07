@@ -169,6 +169,20 @@ theorem grandMCAChallenge_iff_forall_badCount_le (C : LinearCode ι F) (ε_star 
   have hqt : (Fintype.card F : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top _
   rw [ENNReal.div_le_iff hq0 hqt, iSup_le_iff]
 
+/-- The top/full linear code satisfies the formal Grand MCA Challenge at every threshold. This
+is the direct challenge-level endpoint form of `mcaBadCount_univ_eq_zero`: the top code has no
+bad scalars for any stack, so the radius-one finite-count criterion is immediate. -/
+theorem grandMCAChallenge_top (ε_star : ℝ≥0) :
+    grandMCAChallenge (F := F) (ι := ι) (⊤ : LinearCode ι F) ε_star := by
+  classical
+  rw [grandMCAChallenge_iff_forall_badCount_le]
+  intro u
+  rw [show (((⊤ : LinearCode ι F) : Set (ι → F)) = Set.univ) by
+    ext x
+    simp]
+  rw [mcaBadCount_univ_eq_zero]
+  simp
+
 #print axioms ProximityGap.mcaBadCount_eq_zero_of_forall_not_mcaEvent
 #print axioms ProximityGap.mcaBadCount_univ_eq_zero
 #print axioms ProximityGap.mcaBadCount_eq_zero_iff_forall_not_mcaEvent
@@ -176,5 +190,6 @@ theorem grandMCAChallenge_iff_forall_badCount_le (C : LinearCode ι F) (ε_star 
 #print axioms ProximityGap.forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero
 #print axioms ProximityGap.epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_not_mcaEvent
+#print axioms ProximityGap.grandMCAChallenge_top
 
 end ProximityGap

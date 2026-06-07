@@ -256,12 +256,15 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSCounting
 import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
+import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMathLowOutput
+import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingBeyondJohnson
+import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAgsPrizeUniformConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141UniformResolved
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeDecision
