@@ -556,8 +556,10 @@ lemma iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask
       (by
         have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
         omega)
-      (cast (congrArg (fun m => ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨m, by omega⟩))
-          (Nat.zero_add (i.val + steps)))
+      (cast (congrArg (fun w : Fin r => ↥(sDomain 𝔽q β h_ℓ_add_R_rate w))
+          (Fin.eq_of_val_eq (a := ⟨(⟨0, Nat.pos_of_neZero ℓ⟩ : Fin ℓ).val + (i.val + steps), by
+                simp only [Fin.val_mk, zero_add]; omega⟩)
+            (b := ⟨i.val + steps, by omega⟩) (by simp only [Fin.val_mk, zero_add])))
         (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩)
           (k := i.val + steps)
           (h_bound := by simp only [Fin.val_mk, zero_add]; omega) v))
