@@ -127,6 +127,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineSpaces
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightAll
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightClearedObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
