@@ -5,6 +5,7 @@ Authors: Quang Dao
 -/
 
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.OracleReduction.Security.ZeroKnowledge
 
 /-!
   # The Trivial (Oracle) Reduction: Do Nothing!
@@ -57,6 +58,39 @@ theorem reduction_perfectCompleteness :
 theorem verifier_rbrKnowledgeSoundness :
     (verifier oSpec Statement).rbrKnowledgeSoundness init impl rel rel 0 :=
   Verifier.id_rbrKnowledgeSoundness init impl
+
+/-- The `DoNothing` reduction is perfectly HVZK for any relation. -/
+@[simp]
+theorem reduction_perfectHVZK :
+    Reduction.perfectHVZK init impl rel (reduction oSpec Statement Witness)
+      Reduction.idTranscriptSimulator :=
+  Reduction.id_perfectHVZK init impl rel
+
+/-- The `DoNothing` reduction is statistically HVZK for any relation and error budget. -/
+@[simp]
+theorem reduction_statisticalHVZK (ε : NNReal) :
+    Reduction.statisticalHVZK init impl rel (reduction oSpec Statement Witness)
+      Reduction.idTranscriptSimulator ε :=
+  (reduction_perfectHVZK (oSpec := oSpec) (Statement := Statement)
+    (Witness := Witness) (init := init) (impl := impl) rel).statisticalHVZK ε
+
+/-- The `DoNothing` reduction has an explicit perfect-HVZK simulator for any relation. -/
+@[simp]
+theorem reduction_isHVZK :
+    Reduction.isHVZK init impl rel (reduction oSpec Statement Witness) :=
+  Reduction.id_isHVZK init impl rel
+
+/-- The `DoNothing` reduction has statistical HVZK for any relation and error budget. -/
+@[simp]
+theorem reduction_isStatHVZK (ε : NNReal) :
+    Reduction.isStatHVZK init impl rel (reduction oSpec Statement Witness) ε :=
+  (reduction_isHVZK (oSpec := oSpec) (Statement := Statement)
+    (Witness := Witness) (init := init) (impl := impl) rel).isStatHVZK ε
+
+#print axioms DoNothing.reduction_perfectHVZK
+#print axioms DoNothing.reduction_statisticalHVZK
+#print axioms DoNothing.reduction_isHVZK
+#print axioms DoNothing.reduction_isStatHVZK
 
 end Reduction
 
