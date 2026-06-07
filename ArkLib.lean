@@ -159,6 +159,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentLinear
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
+import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
@@ -379,6 +380,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructur
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
 import ArkLib.OracleReduction.FiatShamir.SingleSalt
+import ArkLib.OracleReduction.FiatShamir.ZKResidualBridge
 import ArkLib.OracleReduction.LiftContext.Lens
 import ArkLib.OracleReduction.LiftContext.OracleReduction
 import ArkLib.OracleReduction.LiftContext.OracleStatementPreserving
