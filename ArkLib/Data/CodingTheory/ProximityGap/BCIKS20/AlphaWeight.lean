@@ -290,6 +290,38 @@ theorem DivWeightLe.of_normalized_cases (x₀ : F) (R : F[X][X][Y])
     DivWeightLe H x₀ R hHyp hH D :=
   (divWeight_iff_normalized_cases H x₀ R hHyp hH D).2 ⟨h0, hsucc⟩
 
+/-- Project the normalized base and successor factor targets from a full `DivWeightLe` proof. -/
+theorem DivWeightLe.normalized_cases (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+      (∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) ∧
+        ∀ t : ℕ, ∃ a : 𝒪 H,
+          βHensel H x₀ R hHyp (t + 1)
+            = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+            weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (divWeight_iff_normalized_cases H x₀ R hHyp hH D).1 hdiv
+
+/-- Project the normalized base factor target from a full `DivWeightLe` proof. -/
+theorem DivWeightLe.normalized_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (DivWeightLe.normalized_cases H x₀ R hHyp hH D hdiv).1
+
+/-- Project a normalized successor factor target from a full `DivWeightLe` proof. -/
+theorem DivWeightLe.normalized_succ (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D t : ℕ)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (DivWeightLe.normalized_cases H x₀ R hHyp hH D hdiv).2 t
+
 /-! ### 1′. The two halves of the `𝕃 ↔ 𝒪` bridge
 
 -/
@@ -857,6 +889,9 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_succ_iff_normalized_factor
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_iff_normalized_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.of_normalized_cases
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.normalized_cases
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.normalized_zero
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.normalized_succ
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.embeddingOf𝒪Into𝕃_W𝒪
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_eq_alpha_mul_of_lift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alpha_eq_embedding_of_fact
