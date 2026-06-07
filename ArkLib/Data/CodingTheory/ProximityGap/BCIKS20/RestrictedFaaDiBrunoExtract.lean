@@ -895,3 +895,13 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroClearingPolyFull_lift
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.zeroClearingPolyFull_lift_of_partitionMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.liftBivariate_eq_zero_iff_mem_span_H_tilde'
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.liftBivariate_eq_iff_sub_mem_span_H_tilde'
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.zeroClearingPolyFull_sub_eq
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_sub_mem
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_zeroClearingPolyFull_sub_mem
