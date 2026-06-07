@@ -363,6 +363,7 @@ import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
 import ArkLib.OracleReduction.BCS.Basic
+import ArkLib.OracleReduction.BCS.FrontierBricks
 import ArkLib.OracleReduction.Basic
 import ArkLib.OracleReduction.Cast
 import ArkLib.OracleReduction.Completeness
