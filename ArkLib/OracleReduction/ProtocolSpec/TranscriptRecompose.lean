@@ -150,6 +150,22 @@ theorem appendRight_fst_snd (T : FullTranscript (pSpec₁ ++ₚ pSpec₂)) :
   rw [appendRight_full]
   exact FullTranscript.fst_append_snd T
 
+/-- **First-half projection of a full `appendRight`.**  Projecting the appended full transcript back
+to its `pSpec₁` half recovers `T₁`. The inverse of `appendRight_fst_snd` on the left component. -/
+theorem appendRight_full_fst (T₁ : FullTranscript pSpec₁) (T₂ : FullTranscript pSpec₂) :
+    (show FullTranscript (pSpec₁ ++ₚ pSpec₂) from appendRight (k := Fin.last n) T₁ T₂).fst = T₁ := by
+  rw [show (show FullTranscript (pSpec₁ ++ₚ pSpec₂) from appendRight (k := Fin.last n) T₁ T₂)
+        = T₁ ++ₜ T₂ from appendRight_full T₁ T₂]
+  exact FullTranscript.append_fst T₁ T₂
+
+/-- **Second-half projection of a full `appendRight`.**  Projecting the appended full transcript back
+to its `pSpec₂` half recovers `T₂`. The inverse of `appendRight_fst_snd` on the right component. -/
+theorem appendRight_full_snd (T₁ : FullTranscript pSpec₁) (T₂ : FullTranscript pSpec₂) :
+    (show FullTranscript (pSpec₁ ++ₚ pSpec₂) from appendRight (k := Fin.last n) T₁ T₂).snd = T₂ := by
+  rw [show (show FullTranscript (pSpec₁ ++ₚ pSpec₂) from appendRight (k := Fin.last n) T₁ T₂)
+        = T₁ ++ₜ T₂ from appendRight_full T₁ T₂]
+  exact FullTranscript.append_snd T₁ T₂
+
 end ProtocolSpec.Transcript
 
 #check @ProtocolSpec.Transcript.appendRight

@@ -132,6 +132,35 @@ theorem epsMCA_eq_zero_iff (C : Set (ι → A)) (δ : ℝ≥0) :
     rw [prob_uniform_eq_card_filter_div_card, Finset.filter_false_of_mem (fun γ _ => h u γ)]
     simp
 
+open Classical in
+/-- **Closed form for the MCA error.** `epsMCA` equals the supremum over word stacks of the
+bad-scalar count, divided by `|F|`. -/
+theorem epsMCA_eq_iSup_badCount_div (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) (A := A) C δ =
+      (⨆ u : WordStack A (Fin 2) ι,
+        ((Finset.filter (fun γ : F => mcaEvent C δ (u 0) (u 1) γ) Finset.univ).card : ℝ≥0∞))
+        / (Fintype.card F : ℝ≥0∞) := by
+  unfold epsMCA
+  have h : ∀ u : WordStack A (Fin 2) ι,
+      Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
+        = ((Finset.filter (fun γ : F => mcaEvent C δ (u 0) (u 1) γ) Finset.univ).card : ℝ≥0∞)
+          / (Fintype.card F : ℝ≥0∞) := by
+    intro u
+    rw [prob_uniform_eq_card_filter_div_card]
+    simp only [ENNReal.coe_natCast]
+  simp_rw [h]
+  rw [← ENNReal.iSup_div]
+
+open Classical in
+/-- **Positive MCA error characterization.** `0 < epsMCA C δ` iff some word stack admits a bad
+scalar. Complements `epsMCA_eq_zero_iff`. -/
+theorem epsMCA_pos_iff (C : Set (ι → A)) (δ : ℝ≥0) :
+    0 < epsMCA (F := F) (A := A) C δ ↔
+      ∃ (u : WordStack A (Fin 2) ι) (γ : F), mcaEvent C δ (u 0) (u 1) γ := by
+  rw [pos_iff_ne_zero, Ne, epsMCA_eq_zero_iff]
+  push_neg
+  tauto
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
