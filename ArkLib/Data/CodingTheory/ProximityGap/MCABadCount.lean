@@ -60,6 +60,16 @@ theorem mcaBadCount_eq_zero_of_forall_not_mcaEvent
   intro γ _ hγ
   exact h γ hγ
 
+/-- The full code has no bad scalars in the finite MCA bad-count model. -/
+theorem mcaBadCount_univ_eq_zero
+    (δ : ℝ≥0) (u₀ u₁ : ι → A) :
+    mcaBadCount (F := F) (A := A) (Set.univ : Set (ι → A)) δ u₀ u₁ = 0 := by
+  refine mcaBadCount_eq_zero_of_forall_not_mcaEvent
+    (F := F) (A := A) (Set.univ : Set (ι → A)) δ u₀ u₁ ?_
+  intro γ
+  rintro ⟨S, hS, hw, hno⟩
+  exact hno ⟨u₀, Set.mem_univ _, u₁, Set.mem_univ _, fun i _ => ⟨rfl, rfl⟩⟩
+
 /-- The finite bad-scalar count vanishes exactly when no scalar realizes the MCA bad event. -/
 theorem mcaBadCount_eq_zero_iff_forall_not_mcaEvent
     (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) :
@@ -160,6 +170,7 @@ theorem grandMCAChallenge_iff_forall_badCount_le (C : LinearCode ι F) (ε_star 
   rw [ENNReal.div_le_iff hq0 hqt, iSup_le_iff]
 
 #print axioms ProximityGap.mcaBadCount_eq_zero_of_forall_not_mcaEvent
+#print axioms ProximityGap.mcaBadCount_univ_eq_zero
 #print axioms ProximityGap.mcaBadCount_eq_zero_iff_forall_not_mcaEvent
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
 #print axioms ProximityGap.forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero
