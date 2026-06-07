@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.RSVanishingDim
+import Mathlib.FieldTheory.Finiteness
 
 /-!
 # Reed–Solomon (MDS) support counts — toward the weight enumerator `A_d`
@@ -27,16 +28,18 @@ variable {F : Type*} [Field F] [DecidableEq F] [Fintype F]
 polynomials vanishing on a coordinate set `S` with `|S| ≤ deg` is `q^{deg − |S|}` — the cardinality
 of the vanishing subspace `ker (evalOnS α deg S)`, whose dimension is `deg − |S|`
 (`finrank_ker_evalOnS`).  The inclusion–exclusion building block of the RS/MDS weight enumerator. -/
-theorem card_ker_evalOnS (α : ι ↪ F) (deg : ℕ) (S : Finset ι) (hS : S.card ≤ deg) :
-    Fintype.card (LinearMap.ker (evalOnS α deg S)) = (Fintype.card F) ^ (deg - S.card) := by
+theorem natCard_ker_evalOnS (α : ι ↪ F) (deg : ℕ) (S : Finset ι) (hS : S.card ≤ deg) :
+    Nat.card (LinearMap.ker (evalOnS α deg S)) = (Fintype.card F) ^ (deg - S.card) := by
   haveI : FiniteDimensional F (Polynomial.degreeLT F deg) :=
     FiniteDimensional.of_injective (Polynomial.degreeLTEquiv F deg).toLinearMap
       (Polynomial.degreeLTEquiv F deg).injective
-  haveI : Fintype (LinearMap.ker (evalOnS α deg S)) :=
-    FiniteDimensional.fintypeOfFintype F _
-  rw [Module.card_eq_pow_finrank (K := F), finrank_ker_evalOnS α deg S hS]
+  haveI : Fintype (Polynomial.degreeLT F deg) :=
+    Fintype.ofEquiv (Fin deg → F) (Polynomial.degreeLTEquiv F deg).symm.toEquiv
+  haveI : Fintype (LinearMap.ker (evalOnS α deg S)) := Fintype.ofFinite _
+  rw [Nat.card_eq_fintype_card, Module.card_eq_pow_finrank (K := F),
+    finrank_ker_evalOnS α deg S hS]
 
 end ArkLib.CS25
 
 -- Axiom audit.
-#print axioms ArkLib.CS25.card_ker_evalOnS
+#print axioms ArkLib.CS25.natCard_ker_evalOnS
