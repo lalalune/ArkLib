@@ -539,6 +539,117 @@ noncomputable def paperTranscriptVectorIOP {M : ℕ} {ιs : Fin (M + 1) → Type
   prover := paperTranscriptOracleProver P d makeTranscript
   verifier := paperTranscriptOracleVerifier P d verify
 
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Domain bridge needed to state that a paper-order folded-oracle message is an actual
+`Fold.fold_k` output.
+
+The folding library computes on `BlockRelDistance.indexPowT (S i) (P.φ i) k`, while the WHIR
+parameter record exposes the next paper domain as `ιs (i+1)`.  A real Construction 5.1 prover must
+either provide this identification or strengthen `Params` so the identification is definitional. -/
+structure PaperFoldDomainBridge {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F) (S : ∀ i : Fin (M + 1), Finset (ιs i)) where
+  nextDomainEquiv :
+    (i : Fin M) →
+      ιs i.succ ≃
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc)
+          (P.foldingParam i.castSucc)
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperFoldDomainBridge_nextDomainEquiv_apply {M : ℕ}
+    {ιs : Fin (M + 1) → Type} (P : Params ιs F)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i)) (bridge : PaperFoldDomainBridge P S)
+    (i : Fin M) (x : ιs i.succ) :
+    bridge.nextDomainEquiv i x =
+      (bridge.nextDomainEquiv i) x :=
+  rfl
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- The folded oracle produced by one WHIR transition, transported back to the paper domain.
+
+`source i` is the function on the current round's power-domain representation, and
+`foldChallenge i` is the batch of folding challenges for that transition. -/
+noncomputable def paperFoldedOracleFrom {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (i : Fin M) (x : ιs i.succ) : F :=
+  letI : ∀ j : ℕ,
+      Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j) :=
+    hNeg i
+  Fold.fold_k (source i) (foldChallenge i) (hFoldLe i) (bridge.nextDomainEquiv i x)
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperFoldedOracleFrom_apply {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (i : Fin M) (x : ιs i.succ) :
+    paperFoldedOracleFrom P S bridge hNeg source foldChallenge hFoldLe i x =
+      letI : ∀ j : ℕ,
+          Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j) :=
+        hNeg i
+      Fold.fold_k (source i) (foldChallenge i) (hFoldLe i)
+        (bridge.nextDomainEquiv i x) :=
+  rfl
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Predicate saying the paper transcript's folded-oracle messages are the actual `Fold.fold_k`
+outputs for the supplied source functions and folding challenges. -/
+def paperTranscriptHasFoldedOracles {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d) : Prop :=
+  ∀ i x,
+    T.mainFoldedOracle i x =
+      paperFoldedOracleFrom P S bridge hNeg source foldChallenge hFoldLe i x
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- If a transcript's folded-oracle slot satisfies the folding predicate, then the packed payload
+for that named paper slot is exactly the packed transported `Fold.fold_k` output. -/
+theorem paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (hT : paperTranscriptHasFoldedOracles P d S bridge hNeg source foldChallenge hFoldLe T)
+    (i : Fin M) :
+    paperTranscriptSlotPayload P d T (.mainFoldedOracle i) =
+      packFiniteFunction (ιs i.succ)
+        (paperFoldedOracleFrom P S bridge hNeg source foldChallenge hFoldLe i) := by
+  rw [paperTranscriptSlotPayload_mainFoldedOracle]
+  exact congrArg (packFiniteFunction (ιs i.succ)) (funext (hT i))
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
@@ -1088,6 +1199,12 @@ end RBRSoundnessAssembly
 #print axioms paperTranscriptOracleProver
 #print axioms paperTranscriptOracleVerifier
 #print axioms paperTranscriptVectorIOP
+#print axioms PaperFoldDomainBridge
+#print axioms paperFoldDomainBridge_nextDomainEquiv_apply
+#print axioms paperFoldedOracleFrom
+#print axioms paperFoldedOracleFrom_apply
+#print axioms paperTranscriptHasFoldedOracles
+#print axioms paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply

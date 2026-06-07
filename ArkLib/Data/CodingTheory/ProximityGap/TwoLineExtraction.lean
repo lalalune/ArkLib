@@ -238,6 +238,49 @@ theorem doubleHitSet_subset_joint
   rw [Finset.mem_filter] at hz hz'
   exact eq_at_coord_of_mem_two_agree hagree hz.1 hz'.1 hzz' hz.2 hz'.2
 
+/-- **Many-points correlated agreement (complete quantitative form).**  Fix codewords `v₀, v₁` and
+a set `Z` of `M := |Z|` combining scalars such that the affine-line word agrees with `v₀ + z • v₁`
+on a set `S z` of size `≥ (1−δ)n` for every `z ∈ Z`.  Then the joint-agreement set
+`J := {i : u₀ i = v₀ i ∧ u₁ i = v₁ i}` satisfies
+
+  `M·(1−δ)·n ≤ |J|·(M−1) + n`,    i.e.    `|J| ≥ (M(1−δ)n − n)/(M−1) → (1−δ)n  as M → ∞`.
+
+This is the BCIKS20 unique-decoding correlated-agreement bound in full: the joint-agreement radius
+is `δ + δ/(M−1)`, whose `δ/(M−1)` term is exactly the `O(1/|F|)` correction in BCIKS20's statements
+(with `M ≈ δ·|F|` close scalars).  No residual — it is the precise achieved bound. -/
+theorem correlatedAgreement_card_of_linear_family
+    {u₀ u₁ v₀ v₁ : ι → F} {Z : Finset F} {S : F → Finset ι} {δ : ℝ}
+    (hM : 1 ≤ Z.card)
+    (hagree : ∀ z ∈ Z, ∀ j ∈ S z, u₀ j + z • u₁ j = v₀ j + z • v₁ j)
+    (hSize : ∀ z ∈ Z, (1 - δ) * Fintype.card ι ≤ (S z).card) :
+    (Z.card : ℝ) * ((1 - δ) * Fintype.card ι)
+      ≤ (Finset.univ.filter (fun i => u₀ i = v₀ i ∧ u₁ i = v₁ i)).card * ((Z.card : ℝ) - 1)
+        + Fintype.card ι := by
+  classical
+  set dH : ℕ := (doubleHitSet Z S).card with hdHdef
+  set J : ℕ := (Finset.univ.filter (fun i => u₀ i = v₀ i ∧ u₁ i = v₁ i)).card with hJdef
+  -- ∑|S z| ≥ M·(1−δ)n
+  have hsum_lb : (Z.card : ℝ) * ((1 - δ) * Fintype.card ι) ≤ ∑ z ∈ Z, ((S z).card : ℝ) := by
+    have h1 : ∑ _z ∈ Z, ((1 - δ) * Fintype.card ι) ≤ ∑ z ∈ Z, ((S z).card : ℝ) :=
+      Finset.sum_le_sum hSize
+    rwa [Finset.sum_const, nsmul_eq_mul] at h1
+  -- ∑|S z| ≤ dH·M + (n − dH)  (cast the ℕ incidence bound)
+  have hdHle : dH ≤ Fintype.card ι := Finset.card_le_univ _
+  have hsum_ub : (∑ z ∈ Z, ((S z).card : ℝ)) ≤ dH * (Z.card : ℝ) + (Fintype.card ι - dH) := by
+    have hnat := sum_card_le_doubleHit (F := F) Z S
+    have : ((∑ z ∈ Z, (S z).card : ℕ) : ℝ)
+        ≤ ((dH * Z.card + (Fintype.card ι - dH) : ℕ) : ℝ) := by exact_mod_cast hnat
+    push_cast [Nat.cast_sub hdHle] at this
+    convert this using 2 <;> push_cast <;> ring
+  -- dH ≤ J (the double-hit set is a joint-agreement set)
+  have hJ : (dH : ℝ) ≤ (J : ℝ) := by
+    exact_mod_cast Finset.card_le_card (doubleHitSet_subset_joint hagree)
+  have hMnn : (0 : ℝ) ≤ (Z.card : ℝ) - 1 := by
+    have : (1 : ℝ) ≤ Z.card := by exact_mod_cast hM
+    linarith
+  -- combine: M(1−δ)n ≤ Σ ≤ dH(M−1)+n ≤ J(M−1)+n
+  nlinarith [hsum_lb, hsum_ub, hJ, hMnn, mul_nonneg (sub_nonneg.mpr hJ) hMnn]
+
 end DoubleCounting
 
 section UniqueDecoding
