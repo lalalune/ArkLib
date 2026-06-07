@@ -265,3 +265,7 @@ theorem card_le_div
   exact card_mul_johnsonDenom_le C w d e hd he hen hdn
 
 end ArkLib.JohnsonBound
+
+/- Axiom audit. -/
+#print axioms ArkLib.JohnsonBound.card_mul_johnsonDenom_le
+#print axioms ArkLib.JohnsonBound.card_le_div
