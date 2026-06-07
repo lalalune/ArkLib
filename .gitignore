@@ -33,6 +33,17 @@
 /.vscode/
 __pycache__/
 
+# Root-level agent scratch & one-off build artifacts — keep local, never commit to main
+# (issue #110/#60 build hygiene). Root-anchored so real modules under ArkLib/
+# (e.g. ArkLib/ProofSystem/RingSwitching/Scratch.lean) are unaffected.
+/scratch/
+/scratch*.lean
+/scratch*.py
+/patch*.py
+/*_err.txt
+/full_file.txt
+/.tmp_*
+
 # Vendored / scratch artifacts (review-only; not part of the repo content)
 # Reference PDFs (ABF26 + cited works), see references/MANIFEST.md if vendored.
 *.pdf
