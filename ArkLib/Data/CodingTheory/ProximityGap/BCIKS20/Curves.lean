@@ -2575,7 +2575,10 @@ omit [DecidableEq ι] in
 /-- Exact residual needed by the non-strict boundary branch of the list-decoding
 assembly. Unlike `BoundaryCardResidual`, this retains the probability and
 Johnson-side hypotheses available at the branch point, so callers do not have
-to prove `jointAgreement` for every merely nonempty good-coefficient set. -/
+to prove `jointAgreement` for every merely nonempty good-coefficient set in
+strict branches. At the exact square-root endpoint, however, `errorBound = 0`,
+so this is still only an explicit assumption surface rather than an automatic
+boundary theorem. -/
 def BoundaryProbabilityResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     Pr_{

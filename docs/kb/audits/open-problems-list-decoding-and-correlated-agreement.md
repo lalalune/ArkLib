@@ -249,11 +249,16 @@ than mathematical. These drive the grand-challenge instantiation phase.
    formalization of Section 4. Phase 1 re-expresses the WHIR notion as a
    specialization of the new general `epsMCA`.
 
-3. **The non-unique-decoding branch of BCIKS20 AffineLines is residualized.**
+3. **The non-unique-decoding branch of BCIKS20 AffineLines is residualized, and the old exact
+   boundary residual is refuted.**
    The old raw line reference for `RS_correlatedAgreement_affineLines` is
-   superseded. Current blockers are the named `StrictCoeffPolysResidual`,
-   `BoundaryCardResidual`, and `BoundaryCardLatticeResidual` interfaces, plus
-   the supporting bivariate-existence machinery in
+   superseded. The bare closed-endpoint `BoundaryCardResidual`,
+   `BoundaryCardLatticeResidual`, and `BoundaryProbabilityResidual` interfaces
+   are not merely open: `BoundaryCardResidualRefutation` gives a small
+   `ZMod 5` counterexample. Current boundary work must therefore use a
+   stronger quantitative/cardinality or coefficient-polynomial interface,
+   alongside the named `StrictCoeffPolysResidual` interface and the supporting
+   bivariate-existence machinery in
    [JointAgreement.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/JointAgreement.lean).
 
 4. **Historical proximity-gap raw-hole inventories are superseded.**
