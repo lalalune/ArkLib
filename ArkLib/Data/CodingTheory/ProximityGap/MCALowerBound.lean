@@ -101,6 +101,37 @@ theorem epsMCA_univ_eq_zero (δ : ℝ≥0) :
 #print axioms ProximityGap.not_mcaEvent_univ
 #print axioms ProximityGap.mcaEvent_prob_univ_eq_zero
 
+open Classical in
+/-- **Characterization of zero MCA error.** `epsMCA C δ = 0` iff no word stack admits a bad
+scalar (`mcaEvent` never fires). The MCA error is exactly the obstruction to universal joint
+matchability. -/
+theorem epsMCA_eq_zero_iff (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) (A := A) C δ = 0 ↔
+      ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ := by
+  constructor
+  · intro h u γ hev
+    have hle : Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ] ≤ 0 :=
+      h ▸ mcaEvent_prob_le_epsMCA C δ u
+    rw [prob_uniform_eq_card_filter_div_card] at hle
+    have hz : ((Finset.filter (fun γ : F => mcaEvent C δ (u 0) (u 1) γ) Finset.univ).card : ℝ≥0)
+        / (Fintype.card F : ℝ≥0) = 0 := by
+      have := le_antisymm (by exact_mod_cast hle) (zero_le _)
+      exact_mod_cast this
+    have hcard0 : (Finset.filter (fun γ : F => mcaEvent C δ (u 0) (u 1) γ) Finset.univ).card = 0 := by
+      rcases (div_eq_zero_iff.mp hz) with h1 | h2
+      · exact_mod_cast h1
+      · exact absurd (by exact_mod_cast h2 : (Fintype.card F : ℝ≥0) = 0) (by exact_mod_cast Fintype.card_ne_zero)
+    have hmem : γ ∈ Finset.filter (fun γ : F => mcaEvent C δ (u 0) (u 1) γ) Finset.univ := by
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and]; exact hev
+    rw [Finset.card_eq_zero] at hcard0
+    rw [hcard0] at hmem
+    simp at hmem
+  · intro h
+    unfold epsMCA
+    refine le_antisymm (iSup_le fun u => ?_) (zero_le _)
+    rw [prob_uniform_eq_card_filter_div_card, Finset.filter_false_of_mem (fun γ _ => h u γ)]
+    simp
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
