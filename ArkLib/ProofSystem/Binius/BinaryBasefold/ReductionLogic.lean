@@ -363,21 +363,9 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
     simp only [step, foldStepLogic]
     -- Fact 4: Prover and verifier oracle statements agree
     funext j
-    have hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc := j.isLt
-    simp only [OracleVerifier.mkVerifierOStmtOut, Function.Embedding.coeFn_mk, Fin.eta]
-    split
-    · rename_i j' heq
-      -- heq : (if hj : ↑j < ... then Sum.inl j else ...) = Sum.inl j'
-      -- Since hj holds, we have Sum.inl j = Sum.inl j', so j = j'
-      simp only [hj, ↓reduceDIte] at heq
-      cases heq
-      simpa [eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
-    · rename_i heq
-      -- This case is impossible: the if-then-else evaluates to Sum.inl j when hj holds
-      -- So we have Sum.inl j = Sum.inr j✝, which is a contradiction
-      simp only [hj, ↓reduceDIte] at heq
-      -- heq : Sum.inl j = Sum.inr j✝ is a contradiction
-      cases heq
+    simp only [Prod.mk.eta, Fin.isValue, MessageIdx, Fin.is_lt, ↓reduceDIte,
+      Fin.eta, Fin.zero_eta, Fin.mk_one, Function.Embedding.coeFn_mk, Sum.inl.injEq,
+      OracleVerifier.mkVerifierOStmtOut_inl, cast_eq]
 
   -- Key fact: Oracle statements are unchanged in the fold step
   -- (all oracle indices map via Sum.inl in the embedding)
