@@ -48,10 +48,37 @@ theorem bitsOfIndex_apply_eq_zero_or_one {n : ℕ}
   · exact Or.inr (bitsOfIndex_apply_of_getBit_eq_one (L := L) k j h)
   · exact Or.inl (bitsOfIndex_apply_of_getBit_ne_one (L := L) k j h)
 
+/-- `bitsOfIndex` returns `1` exactly on source coordinates whose natural bit is `1`. -/
+theorem bitsOfIndex_apply_eq_one_iff {n : ℕ}
+    (k : Fin (2 ^ n)) (j : Fin n) :
+    bitsOfIndex (L := L) k j = 1 ↔ Nat.getBit j.val k.val = 1 := by
+  constructor
+  · intro h
+    by_contra hbit
+    have hzero := bitsOfIndex_apply_of_getBit_ne_one (L := L) k j hbit
+    rw [hzero] at h
+    exact zero_ne_one h
+  · intro h
+    exact bitsOfIndex_apply_of_getBit_eq_one (L := L) k j h
+
+/-- `bitsOfIndex` returns `0` exactly on source coordinates whose natural bit is not `1`. -/
+theorem bitsOfIndex_apply_eq_zero_iff {n : ℕ}
+    (k : Fin (2 ^ n)) (j : Fin n) :
+    bitsOfIndex (L := L) k j = 0 ↔ Nat.getBit j.val k.val ≠ 1 := by
+  constructor
+  · intro h hbit
+    have hone := bitsOfIndex_apply_of_getBit_eq_one (L := L) k j hbit
+    rw [hone] at h
+    exact one_ne_zero h
+  · intro h
+    exact bitsOfIndex_apply_of_getBit_ne_one (L := L) k j h
+
 #print axioms bitsOfIndex
 #print axioms bitsOfIndex_apply
 #print axioms bitsOfIndex_apply_of_getBit_eq_one
 #print axioms bitsOfIndex_apply_of_getBit_ne_one
 #print axioms bitsOfIndex_apply_eq_zero_or_one
+#print axioms bitsOfIndex_apply_eq_one_iff
+#print axioms bitsOfIndex_apply_eq_zero_iff
 
 end Binius.BinaryBasefold
