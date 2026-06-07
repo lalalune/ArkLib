@@ -2441,6 +2441,27 @@ theorem append_Message_seam (hn : 0 < n)
     show (⟨m, by omega⟩ : Fin (m + n)) = Fin.natAdd m (⟨0, hn⟩ : Fin n) from by ext; simp,
     Fin.append_right]
 
+/-- Seam-specialized `appendRight_concat` for the message branch.  This packages the transcript
+reconciliation used by the right-block seam base: growing the carried `pSpec₁` prefix by `pSpec₂`'s
+round-0 message is the same as growing the appended seam transcript by the cast seam message. -/
+theorem appendRight_concat_seam_message (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (T₁ : FullTranscript pSpec₁)
+    (msg : pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩) :
+    HEq
+      (Transcript.appendRight T₁
+        (Transcript.concat msg (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))))
+      (Transcript.concat
+        (m := (⟨m, by omega⟩ : Fin (m + n)))
+        (cast (append_Message_seam hn hDir hDir₂).symm msg)
+        (Transcript.appendRight T₁
+          (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))) := by
+  exact ProtocolSpec.Transcript.appendRight_concat
+    (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂) T₁
+    (k := (⟨0, hn⟩ : Fin n)) msg
+    (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))
+
 /-- **Seam-round `processRound` bridge (message branch).**  The seam-round counterpart of
 `append_processRound_left_message`: resolving the appended prover's `processRound` at the seam round
 `m` applied to the (`pure`d) seam start `rSeam` is heterogeneously equal to the `liftM` of the
@@ -2539,6 +2560,25 @@ theorem append_Challenge_seam (hn : 0 < n)
   rw [Fin.vappend_eq_append,
     show (⟨m, by omega⟩ : Fin (m + n)) = Fin.natAdd m (⟨0, hn⟩ : Fin n) from by ext; simp,
     Fin.append_right]
+
+/-- Seam-specialized `appendRight_concat` for the challenge branch. -/
+theorem appendRight_concat_seam_challenge (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (T₁ : FullTranscript pSpec₁)
+    (challenge : pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩) :
+    HEq
+      (Transcript.appendRight T₁
+        (Transcript.concat challenge (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))))
+      (Transcript.concat
+        (m := (⟨m, by omega⟩ : Fin (m + n)))
+        (cast (append_Challenge_seam hn hDir hDir₂).symm challenge)
+        (Transcript.appendRight T₁
+          (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))) := by
+  exact ProtocolSpec.Transcript.appendRight_concat
+    (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂) T₁
+    (k := (⟨0, hn⟩ : Fin n)) challenge
+    (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))
 
 /-- **Seam-round `getChallenge` reduction.**  At the seam round `m` (`= Fin.natAdd m ⟨0,_⟩`), the
 appended protocol's `getChallenge` is heterogeneously equal to the `liftM` (along the right
@@ -3392,6 +3432,8 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
 #print axioms Prover.liftComp_pure_bind
 #print axioms Prover.liftComp_pure_bind_pure
 #print axioms Prover.liftComp_bind_liftComp_comp
+#print axioms Prover.appendRight_concat_seam_message
+#print axioms Prover.appendRight_concat_seam_challenge
 #print axioms Prover.append_processRound_seam_message_comp
 #print axioms Prover.append_processRound_seam_challenge_comp
 
