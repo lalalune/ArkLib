@@ -339,7 +339,7 @@ projection of the original typed schedule. -/
   induction schedule with
   | nil => rfl
   | cons request schedule ih =>
-      simp [BCSOpeningSchedule.toOpeningStatements, ih]
+      simp [BCSOpeningSchedule.toOpeningStatements]
 
 /-- Membership in the indexed opening-statement view is exactly membership in the original typed
 schedule, transported through `BCSOpeningRequest.toOpeningStatement`. -/
