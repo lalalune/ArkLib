@@ -634,6 +634,29 @@ def BCSOpeningLogBridge {StmtMid WitMid : Type}
     (log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) : Prop :=
   BCSOpeningLogFrontierSatisfied log → phases.opening_realizes_query_log
 
+/-- Apply a discharged typed opening-log bridge to a satisfied opening-log frontier. -/
+theorem BCSOpeningLogBridge.apply {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hBridge : BCSOpeningLogBridge phases log)
+    (hLog : BCSOpeningLogFrontierSatisfied log) :
+    phases.opening_realizes_query_log :=
+  hBridge hLog
+
+/-- A phase that already realizes the query log supplies the trivial opening-log bridge. -/
+theorem BCSOpeningLogBridge.ofOpeningRealization {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hOpening : phases.opening_realizes_query_log) :
+    BCSOpeningLogBridge phases log :=
+  fun _ => hOpening
+
 /-- Interpret a packaged BCS compiler-frontier object as the currently available transformed
 reduction.  This is definitionally the `Reduction.append` composition used by `BCSTransform`. -/
 def BCSCompiledPhases.toReduction {StmtMid WitMid : Type}
@@ -656,6 +679,18 @@ def BCSPhaseRealizationFrontier {StmtMid WitMid : Type}
       (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
       (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e) : Prop :=
   phases.interaction_realizes_oracle_messages ∧ phases.opening_realizes_query_log
+
+omit Oₘ in
+/-- Package the two phase-realization fields directly. -/
+theorem BCSPhaseRealizationFrontier.intro {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    (hInteraction : phases.interaction_realizes_oracle_messages)
+    (hOpening : phases.opening_realizes_query_log) :
+    BCSPhaseRealizationFrontier phases :=
+  ⟨hInteraction, hOpening⟩
 
 /-- Project the interaction-realization brick from the named phase frontier. -/
 theorem BCSPhaseRealizationFrontier.interaction {StmtMid WitMid : Type}
@@ -862,6 +897,27 @@ theorem BCSCompilerFrontierReady.intro {StmtMid WitMid : Type}
     BCSCompilerFrontierReady phases frontier :=
   ⟨hPhase.1, hPhase.2, hCorrect, hBindingOrExtract, hComplete, hSound, hKS⟩
 
+/-- Build the full ready checklist directly from the raw phase-realization and security fields. -/
+theorem BCSCompilerFrontierReady.ofPhaseFields {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    (hInteraction : phases.interaction_realizes_oracle_messages)
+    (hOpening : phases.opening_realizes_query_log)
+    (hCorrect : frontier.commitment_correctness_available)
+    (hBindingOrExtract : frontier.commitment_binding_or_extractability_available)
+    (hComplete : frontier.completeness_preservation_target)
+    (hSound : frontier.soundness_preservation_target)
+    (hKS : frontier.knowledge_soundness_preservation_target) :
+    BCSCompilerFrontierReady phases frontier :=
+  BCSCompilerFrontierReady.intro
+    (BCSPhaseRealizationFrontier.intro hInteraction hOpening)
+    hCorrect hBindingOrExtract hComplete hSound hKS
+
 /-- Project the phase-realization obligations from a ready BCS compiler frontier. -/
 theorem BCSCompilerFrontierReady.phase {StmtMid WitMid : Type}
     {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
@@ -974,8 +1030,11 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.queryLog
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.retainedWitnesses
 #print axioms OracleReduction.BCSOpeningLogBridge
+#print axioms OracleReduction.BCSOpeningLogBridge.apply
+#print axioms OracleReduction.BCSOpeningLogBridge.ofOpeningRealization
 #print axioms OracleReduction.BCSCompiledPhases.toReduction
 #print axioms OracleReduction.BCSPhaseRealizationFrontier
+#print axioms OracleReduction.BCSPhaseRealizationFrontier.intro
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.interaction
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.opening
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.ofOpeningLogBridge
@@ -991,5 +1050,6 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.knowledge_soundness_preservation_target
 #print axioms OracleReduction.BCSCompilerFrontierReady
 #print axioms OracleReduction.BCSCompilerFrontierReady.intro
+#print axioms OracleReduction.BCSCompilerFrontierReady.ofPhaseFields
 #print axioms OracleReduction.BCSCompilerFrontierReady.phase
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofOpeningLogBridge
