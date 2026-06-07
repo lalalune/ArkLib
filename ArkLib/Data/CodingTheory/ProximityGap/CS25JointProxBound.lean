@@ -12,11 +12,37 @@ import ArkLib.Data.CodingTheory.EntropyVolumeUpperBall
 /-!
 # Counting jointly-close stacks (toward T4.17, #82)
 
-Toward the `#{jointProx}` upper bound needed to assemble the CS25 complete-CA-breakdown count
-budget `hfar`. This file first establishes the cardinality of the interleaved code: a stack is
-jointly `δ`-close to `C` iff its interleaving `⋈|u = uᵀ` is close to *some* interleaved codeword,
-and the interleaved code `C^⋈κ = {V | ∀ k, V.transpose k ∈ C}` has exactly `|C|^|κ|` codewords
-(it is the `κ`-fold product of `C`, via the transpose bijection).
+The `#{jointProx}` upper bound — ingredient (b) of the CS25 complete-CA-breakdown count budget
+`hfar` — proved here end to end. A stack is jointly `δ`-close to `C` iff its interleaving
+`⋈|u = uᵀ` is within `δ` of *some* interleaved codeword; the interleaved code
+`C^⋈κ = {V | ∀ k, V.transpose k ∈ C}` is the `κ`-fold product of `C` (transpose bijection), with
+`|C|^|κ|` codewords. The union bound over those codewords then gives, in successively explicit
+forms:
+
+* `card_jointProximity_le`      : `#{jointProx} ≤ |C|^|κ| · V'_{⌊δn⌋}`;
+* `card_jointProximity_le_volume`: `… = |C|^|κ| · hammingBallVolume(q^|κ|, δ, n)`;
+* `card_jointProximity_le_qEntropy`: `… ≤ |C|^|κ| · (n+1) · (q^|κ|)^{n·H_{q^|κ|}(δ)}` (below the
+  `q^|κ|`-ary capacity).
+
+## Band analysis: why this does **not** close T4.17 by averaging
+
+`rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts` discharges T4.17 from the count budget
+`hsum : q^{n+1}·#{far} + #{jointProx} < q^{2n}` (using `sum_far_card_eq`). With coverage saturated
+(`#{far} ≈ 0` from `hδ_lo`), `hsum` reduces to `#{jointProx} < q^{2n}`, i.e. `H_{q²}(δ) < 1 − ρ`
+(`ρ = k/n`, `κ = Fin 2`). The bound above is essentially **tight** (the union bound is the right
+upper bound on a covered set), so this is the genuine obstruction, not slack:
+
+* At high rate (`ρ` near `hδ_hi`'s ceiling `1 − δ − 2/n`) the *interleaved* code `C^⋈` has rate
+  `2ρ ≈ 2(1−δ)`, far above its own capacity, so its `δ`-coverage **saturates**:
+  `#{jointProx} ≈ q^{2n}` and `hsum` is simply **false** — almost every stack is jointly close.
+* The breakdown `ε_ca = 1` is nonetheless true there, witnessed by a *rare* covered,
+  not-jointly-close stack that the averaging/counting budget provably cannot locate.
+
+Hence T4.17's full-band closure requires the **explicit entropy-ball construction** of that witness
+(`rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_covered_stack` with a *named* covered stack),
+not the counting route — placing it in the same explicit-construction class as T4.16/T4.18. The
+counting route does suffice on the sub-band where `H_{q²}(δ) < 1 − ρ` (interleaved coverage below
+saturation), for which the lemmas here are exactly the input.
 -/
 
 open Code
