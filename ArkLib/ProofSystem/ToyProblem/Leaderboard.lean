@@ -649,7 +649,11 @@ noncomputable def arklib_lowerBound_irs_t128
   bits := 64
   proof := by
     haveI : Nonempty koalaIRS.ι := inferInstance
-    exact le_trans (koalaIRS.soundnessError_le_toySoundnessError h.1 h.2.1) h.2.2
+    have hEnc : ∃ encode : (Fin koalaIRS.k → koalaIRS.F) →ₗ[koalaIRS.F] (koalaIRS.ι → koalaIRS.F),
+      (∀ m, encode m ∈ koalaIRS.C) ∧ ∀ c ∈ koalaIRS.C, ∃ m, encode m = c := by
+      rcases KoalaBear.rsCodeSet_linear_encoder with ⟨enc, henc⟩
+      exact ⟨enc, by rewrite [henc]; exact fun m => Set.mem_range_self m, by rewrite [henc]; exact fun c hc => hc⟩
+    exact le_trans (koalaIRS.soundnessError_le_toySoundnessError hEnc h.1) h.2
 
 /-- **Winning-set attack upper bound (≈116 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemma 6.12 of [ABF26]** (§6.4.1; a similar observation appears

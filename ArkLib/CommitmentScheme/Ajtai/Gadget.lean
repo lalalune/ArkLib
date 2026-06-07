@@ -30,7 +30,6 @@ units-place sketch with the actual digit-decomposition API.
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
 * [Nguyen, N. K., O'Rourke, G., and Zhang, J., *Hachi: Efficient Lattice-Based Multilinear
     Polynomial Commitments over Extension Fields*][NOZ26]
--/
 
 open CompPoly ArkLib.Lattices ArkLib.Lattices.CyclotomicModulus
 
@@ -149,13 +148,11 @@ omit [DecidableEq R] in
 
 /-! ## Degree / coefficient facts for reduced representatives -/
 
-omit [DecidableEq R] in
 /-- `Φ.φ.natDegree`, the truncation length of decompositions, does not exceed `deg φ`. -/
 theorem phi_natDegree_le_degree : (Φ.φ.natDegree : WithBot ℕ) ≤ Φ.φ.toPoly.degree :=
   le_of_eq (by rw [CompPoly.CPolynomial.natDegree_toPoly,
     Polynomial.degree_eq_natDegree (IsCyclotomic.monic (Φ := Φ)).ne_zero])
 
-omit [DecidableEq R] in
 /-- A reduced representative has zero coefficients at and beyond `deg φ`. -/
 theorem coeff_eq_zero_of_natDegree_le (a : Rq Φ) {k : ℕ} (hk : Φ.φ.natDegree ≤ k) :
     a.1.coeff k = 0 := by
@@ -168,7 +165,6 @@ theorem coeff_eq_zero_of_natDegree_le (a : Rq Φ) {k : ℕ} (hk : Φ.φ.natDegre
         exact Polynomial.degree_eq_natDegree (IsCyclotomic.monic (Φ := Φ)).ne_zero
     _ ≤ (k : WithBot ℕ) := by exact_mod_cast hk
 
-omit [DecidableEq R] in
 /-- The constant `constRq Φ c` has underlying polynomial `C c` (no reduction occurs, as
 `deg (C c) = 0 < deg φ`). -/
 theorem constRq_val (h1 : 1 ≤ Φ.φ.natDegree) (c : R) :
@@ -182,7 +178,6 @@ theorem constRq_val (h1 : 1 ≤ Φ.φ.natDegree) (c : R) :
     exact_mod_cast (h1 : 0 < Φ.φ.natDegree)
   exact lt_of_le_of_lt Polynomial.degree_C_le hpos
 
-omit [DecidableEq R] in
 /-- Multiplying by the constant `constRq Φ c` scales coefficients by `c`. -/
 theorem constRq_mul_coeff (h1 : 1 ≤ Φ.φ.natDegree) (c : R) (x : Rq Φ) (k : ℕ) :
     (constRq Φ c * x).1.coeff k = c * x.1.coeff k := by
@@ -199,7 +194,6 @@ theorem constRq_mul_coeff (h1 : 1 ≤ Φ.φ.natDegree) (c : R) (x : Rq Φ) (k : 
 
 /-! ## The gadget product as a block digit-sum -/
 
-omit [DecidableEq R] in
 /-- The gadget entry at the flattened index `finProdFinEquiv (i', e)` is `constRq (base^e)`
 on the diagonal block and `0` elsewhere. -/
 theorem gadgetEntry_finProdFinEquiv (base : R) {rows digits : Nat} (hd : 0 < digits)
@@ -215,7 +209,6 @@ theorem gadgetEntry_finProdFinEquiv (base : R) {rows digits : Nat} (hd : 0 < dig
   rw [hdiv, hmod]
   simp only [Fin.ext_iff]
 
-omit [DecidableEq R] in
 /-- The gadget product, evaluated at row `i`, is the base-weighted sum of the `digits`
 slots of block `i`. -/
 theorem gadgetMul_apply (base : R) {rows digits : Nat} (hd : 0 < digits)
@@ -232,7 +225,6 @@ theorem gadgetMul_apply (base : R) {rows digits : Nat} (hd : 0 < digits)
     rw [gadgetEntry_finProdFinEquiv Φ base hd i i e, if_pos rfl]
   · intro i' _ hne
     apply Finset.sum_eq_zero
-    intro e _
     rw [gadgetEntry_finProdFinEquiv Φ base hd i i' e, if_neg hne, zero_mul]
   · intro h
     exact absurd (Finset.mem_univ i) h
@@ -282,7 +274,6 @@ theorem gadgetDecompose_lawful {rows digits : Nat} (hd : 0 < digits) (h1 : 1 ≤
     simp only [Rq.coeffHom_apply]
   have hterm : ∀ e : Fin digits,
       (constRq Φ (base ^ (e : ℕ)) * Rq.ofFinCoeff Φ Φ.φ.natDegree
-          (fun k' => dd.digit ((x i).1.coeff k') e)).1.coeff k
         = base ^ (e : ℕ) * (if k < Φ.φ.natDegree then dd.digit ((x i).1.coeff k) e else 0) := by
     intro e
     rw [constRq_mul_coeff Φ h1, Rq.ofFinCoeff_coeff Φ _ (phi_natDegree_le_degree Φ)]

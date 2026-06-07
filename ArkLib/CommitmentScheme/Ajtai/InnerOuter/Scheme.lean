@@ -61,7 +61,6 @@ together with `verify_weak`.
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
 * [Nguyen, N. K., O'Rourke, G., and Zhang, J., *Hachi: Efficient Lattice-Based Multilinear
     Polynomial Commitments over Extension Fields*][NOZ26]
--/
 
 open OracleComp CommitmentScheme CompPoly ArkLib.Lattices ArkLib.Lattices.CyclotomicModulus
   ArkLib.Lattices.Ajtai
@@ -147,8 +146,6 @@ def generateDecomps (decomp : Decomposition Φ messageRows messageDigits innerRo
 
 /-- Compute the outer commitment from the decomposition data. -/
 def commitWithDecomps
-    (pp : PublicParams Φ innerRows messageRows messageDigits outerRows blocks innerDigits)
-    (decomp : Decomp Φ innerRows messageRows messageDigits blocks innerDigits) :
     Commitment Φ outerRows :=
   Simple.commit Φ pp.outerMatrix (PolyVec.flattenBlocks decomp.innerDecomp)
 
@@ -163,7 +160,6 @@ section WeakScheme
 
 variable {q : ℕ} [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)]
   (Φ : CyclotomicModulus (ZMod q)) [IsCyclotomic Φ]
-variable {innerRows messageRows messageDigits outerRows blocks innerDigits : Nat}
 
 /-- Verify a Hachi/Greyhound weak opening `(sᵢ, t̂ᵢ, cᵢ)ᵢ` against the outer commitment `u`.
 
@@ -175,7 +171,6 @@ Hachi [NOZ26, §4.1]) and outer-commits to `u`.
 The nonzero check `0 < ‖cᵢ‖₁` stands in for invertibility of `cᵢ`; the latter follows from the
 `ℓ₁` bound by [LS18] (see the module docstring). -/
 def verify_weak (base : ZMod q) (βSq γ κ : Nat)
-    (pp : PublicParams Φ innerRows messageRows messageDigits outerRows blocks innerDigits)
     (u : Commitment Φ outerRows)
     (opening : Opening Φ innerRows messageRows messageDigits blocks innerDigits) : Bool :=
   (List.finRange blocks).all (fun i =>

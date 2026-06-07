@@ -28,7 +28,6 @@ the module form used by Greyhound [NS24] and Hachi [NOZ26].
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
 * [Nguyen, N. K., O'Rourke, G., and Zhang, J., *Hachi: Efficient Lattice-Based Multilinear
     Polynomial Commitments over Extension Fields*][NOZ26]
--/
 
 open OracleComp CompPoly ArkLib.Lattices
 open scoped ENNReal
@@ -86,7 +85,6 @@ def relation {rows cols : Nat}
 
 /-- Module-SIS as an instance of the generic SIS search game. -/
 def problem (rows cols : Nat) [SampleableType (PolyMatrix (Rq Φ) rows cols)]
-    [DecidableEq (PolyVec (Rq Φ) cols)] [DecidableEq (PolyVec (Rq Φ) rows)]
     (isShort : Solution Φ cols → Bool) :
     SIS.Problem (PolyMatrix (Rq Φ) rows cols) (Solution Φ cols) where
   sampleChallenge := $ᵗ (PolyMatrix (Rq Φ) rows cols)
@@ -94,19 +92,16 @@ def problem (rows cols : Nat) [SampleableType (PolyMatrix (Rq Φ) rows cols)]
 
 /-- A Module-SIS adversary. -/
 abbrev Adversary (rows cols : Nat) [SampleableType (PolyMatrix (Rq Φ) rows cols)]
-    [DecidableEq (PolyVec (Rq Φ) cols)] [DecidableEq (PolyVec (Rq Φ) rows)]
     (isShort : Solution Φ cols → Bool) :=
   SIS.Adversary (problem Φ rows cols isShort)
 
 /-- The Module-SIS experiment. -/
 def experiment (rows cols : Nat) [SampleableType (PolyMatrix (Rq Φ) rows cols)]
-    [DecidableEq (PolyVec (Rq Φ) cols)] [DecidableEq (PolyVec (Rq Φ) rows)]
     (isShort : Solution Φ cols → Bool) (adv : Adversary Φ rows cols isShort) : ProbComp Bool :=
   SIS.experiment (problem Φ rows cols isShort) adv
 
 /-- The Module-SIS advantage. -/
 noncomputable def advantage (rows cols : Nat) [SampleableType (PolyMatrix (Rq Φ) rows cols)]
-    [DecidableEq (PolyVec (Rq Φ) cols)] [DecidableEq (PolyVec (Rq Φ) rows)]
     (isShort : Solution Φ cols → Bool) (adv : Adversary Φ rows cols isShort) : ℝ≥0∞ :=
   SIS.advantage (problem Φ rows cols isShort) adv
 

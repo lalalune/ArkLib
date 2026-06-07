@@ -31,7 +31,6 @@ product norm inequality `‖fg‖ ≤ ‖f‖₁·‖g‖`.
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
 * [Nguyen, N. K., O'Rourke, G., and Zhang, J., *Hachi: Efficient Lattice-Based Multilinear
     Polynomial Commitments over Extension Fields*][NOZ26]
--/
 
 open scoped BigOperators
 
@@ -60,18 +59,15 @@ theorem powTwo_toPoly :
   rw [CompPoly.CPolynomial.toPoly_add, CompPoly.CPolynomial.toPoly_pow,
     CompPoly.CPolynomial.toPoly_X, CompPoly.CPolynomial.toPoly_one]
 
-omit [NeZero q] in
 /-- The Mathlib degree of the power-of-two modulus is `2^α`. -/
 theorem powTwo_toPoly_natDegree : (Φ).φ.toPoly.natDegree = 2 ^ α := by
   rw [powTwo_toPoly, ← Polynomial.C_1, natDegree_X_pow_add_C]
 
-omit [NeZero q] in
 /-- The `CPolynomial` degree of the modulus is `2^α`; this is the index range of the
 centered norms. -/
 theorem powTwo_natDegree : (Φ).φ.natDegree = 2 ^ α := by
   rw [CompPoly.CPolynomial.natDegree_toPoly, powTwo_toPoly_natDegree]
 
-omit [NeZero q] in
 /-- A reduced representative has all coefficients beyond `2^α` equal to zero. -/
 theorem coeff_toPoly_eq_zero_of_le {a : Rq Φ} {i : ℕ} (hi : 2 ^ α ≤ i) :
     a.1.toPoly.coeff i = 0 := by
@@ -80,7 +76,6 @@ theorem coeff_toPoly_eq_zero_of_le {a : Rq Φ} {i : ℕ} (hi : 2 ^ α ≤ i) :
   rw [powTwo_toPoly, ← Polynomial.C_1, degree_X_pow_add_C (by positivity)]
   exact_mod_cast hi
 
-omit [NeZero q] in
 /-- A reduced representative has Mathlib degree strictly below `2^α`. -/
 theorem natDegree_toPoly_lt (a : Rq Φ) : a.1.toPoly.natDegree < 2 ^ α := by
   rcases eq_or_ne a.1.toPoly 0 with h | h
@@ -89,7 +84,6 @@ theorem natDegree_toPoly_lt (a : Rq Φ) : a.1.toPoly.natDegree < 2 ^ α := by
     refine lt_of_lt_of_le (CyclotomicModulus.degree_toPoly_lt_of_reduced _ a.2) ?_
     rw [powTwo_toPoly, ← Polynomial.C_1, degree_X_pow_add_C (by positivity)]
 
-omit [NeZero q] in
 /-- The integer-cast of a centered representative recovers the coefficient in `ZMod q`. -/
 theorem intCast_valMinAbs_coeff (a : Rq Φ) (i : ℕ) :
     (((a.1.coeff i).valMinAbs : ℤ) : ZMod q) = a.1.toPoly.coeff i := by
@@ -131,7 +125,6 @@ theorem coeff_modByMonic_X_pow_add_one {S : Type*} [CommRing S] [Nontrivial S] {
     conv_lhs => rw [hfeq]
     rw [Polynomial.coeff_add, hgQ, Polynomial.coeff_add, hk2, hQk2, hrem, add_zero, add_zero]
   have hfk0 : f.coeff k = Q.coeff k + (f %ₘ g).coeff k := by
-    conv_lhs => rw [hfeq]
     rw [Polynomial.coeff_add, hgQ, Polynomial.coeff_add, hk1, zero_add]
   rw [hfk, hfk0]; ring
 
@@ -145,20 +138,16 @@ omit [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
 /-- For `k < n` and `i < n`, the negacyclic index lands in `range n`. -/
 theorem negIdx_lt {n k i : ℕ} (hn : 0 < n) : negIdx n k i < n := Nat.mod_lt _ hn
 
-omit [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
 /-- The negacyclic index is `k − i` when `i ≤ k`. -/
 theorem negIdx_of_le {n k i : ℕ} (hk : k < n) (hik : i ≤ k) : negIdx n k i = k - i := by
   unfold negIdx
   have h : n + k - i = n + (k - i) := by omega
   rw [h, Nat.add_mod_left, Nat.mod_eq_of_lt (by omega)]
 
-omit [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
 /-- The negacyclic index is `n + k − i` when `k < i < n`. -/
 theorem negIdx_of_gt {n k i : ℕ} (hi : i < n) (hik : k < i) : negIdx n k i = n + k - i := by
-  unfold negIdx
   exact Nat.mod_eq_of_lt (by omega)
 
-omit [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
 /-- The negacyclic index map is an involution on `range n` (for fixed `k < n`). -/
 theorem negIdx_negIdx {n k i : ℕ} (hk : k < n) (hi : i < n) :
     negIdx n k (negIdx n k i) = i := by
@@ -166,18 +155,14 @@ theorem negIdx_negIdx {n k i : ℕ} (hk : k < n) (hi : i < n) :
   · rw [negIdx_of_le hk hik, negIdx_of_le hk (by omega)]; omega
   · rw [negIdx_of_gt hi hik, negIdx_of_gt (by omega) (by omega)]; omega
 
-omit [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
 /-- Summing over `range n` is invariant under the negacyclic index permutation. -/
 theorem sum_negIdx_eq {β : Type*} [AddCommMonoid β] {n k : ℕ} (hk : k < n) (F : ℕ → β) :
     ∑ i ∈ Finset.range n, F (negIdx n k i) = ∑ i ∈ Finset.range n, F i := by
   apply Finset.sum_nbij' (negIdx n k) (negIdx n k)
   · intro i hi; exact Finset.mem_range.mpr (negIdx_lt (by omega))
-  · intro i hi; exact Finset.mem_range.mpr (negIdx_lt (by omega))
-  · intro i hi; exact negIdx_negIdx hk (Finset.mem_range.mp hi)
   · intro i hi; exact negIdx_negIdx hk (Finset.mem_range.mp hi)
   · intro i hi; rfl
 
-omit [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
 /-- Summing over `range n` in the *index argument* `k` of the negacyclic map is also
 permutation-invariant: `k ↦ (n + k − i) mod n` is the rotation by `n − i`, a bijection of
 `range n`, with inverse `k ↦ (k + i) mod n`. This is the second leg of the [Mic07]
@@ -193,8 +178,6 @@ theorem sum_negIdx_eq_k {β : Type*} [AddCommMonoid β] {n i : ℕ} (hi : i < n)
     change ((n + k - i) % n + i) % n = k
     rw [Nat.add_mod ((n + k - i) % n) i n, Nat.mod_mod, ← Nat.add_mod]
     rw [show n + k - i + i = n + k from by omega, Nat.add_mod_left, Nat.mod_eq_of_lt hk']
-  · intro k hk
-    have hk' : k < n := Finset.mem_range.mp hk
     change negIdx n ((k + i) % n) i = k
     unfold negIdx
     set m := (k + i) % n with hm
@@ -266,7 +249,6 @@ theorem mul_coeff_valMinAbs_le (d w : Rq Φ) {k : ℕ} (hk : k < 2 ^ α) :
     have hnegSum : ∑ i ∈ Finset.filter (fun i => ¬ i ≤ k) (Finset.range n),
           ((Dz i : ZMod q) * (Wz (n + k - i) : ZMod q))
         = (d.1.toPoly * w.1.toPoly).coeff (n + k) := by
-      rw [Polynomial.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ
         (fun i j => d.1.toPoly.coeff i * w.1.toPoly.coeff j) (n + k)]
       have hsub : Finset.filter (fun i => ¬ i ≤ k) (Finset.range n) ⊆ Finset.range (n + k + 1) := by
         intro i hi; simp only [Finset.mem_filter, Finset.mem_range] at hi ⊢; omega
@@ -310,8 +292,6 @@ bounded by `‖d‖₁²·‖w‖₂²`: the discrete Cauchy–Schwarz over the 
 double-counted with the [Mic07] permutation `Σ_k |w_{σ(k,i)}|² = ‖w‖₂²`. -/
 theorem Rq.l2NormSq_mul_le (d w : Rq Φ) :
     Rq.l2NormSq Φ (d * w) ≤ (Rq.l1Norm Φ d) ^ 2 * Rq.l2NormSq Φ w := by
-  set n := 2 ^ α with hn
-  have hnpos : 0 < n := by rw [hn]; positivity
   -- Abbreviations for the centered absolute values, lifted to `ℤ`.
   set a : ℕ → ℤ := fun i => ((d.1.coeff i).valMinAbs.natAbs : ℤ) with ha
   set b : ℕ → ℤ := fun j => ((w.1.coeff j).valMinAbs.natAbs : ℤ) with hb
@@ -332,7 +312,6 @@ theorem Rq.l2NormSq_mul_le (d w : Rq Φ) :
       (((d * w).1.coeff k).valMinAbs.natAbs : ℤ) ^ 2
         ≤ (∑ i ∈ Finset.range n, a i * b (negIdx n k i)) ^ 2 := by
     intro k hk
-    have hk' : k < n := Finset.mem_range.mp hk
     have hbound := mul_coeff_valMinAbs_le (α := α) d w hk'
     have hbound' : (((d * w).1.coeff k).valMinAbs.natAbs : ℤ)
         ≤ ∑ i ∈ Finset.range n, a i * b (negIdx n k i) := by
@@ -362,16 +341,10 @@ theorem Rq.l2NormSq_mul_le (d w : Rq Φ) :
     _ = (∑ i ∈ Finset.range n, a i)
           * ∑ k ∈ Finset.range n, ∑ i ∈ Finset.range n, a i * b (negIdx n k i) ^ 2 := by
         rw [Finset.mul_sum]
-    _ = (∑ i ∈ Finset.range n, a i)
           * ∑ i ∈ Finset.range n, a i * ∑ k ∈ Finset.range n, b (negIdx n k i) ^ 2 := by
         rw [Finset.sum_comm]
         congr 1
-        refine Finset.sum_congr rfl (fun i _ => ?_)
-        rw [Finset.mul_sum]
-    _ = (∑ i ∈ Finset.range n, a i)
           * ∑ i ∈ Finset.range n, a i * ∑ k ∈ Finset.range n, b k ^ 2 := by
-        congr 1
-        refine Finset.sum_congr rfl (fun i hi => ?_)
         rw [sum_negIdx_eq_k (Finset.mem_range.mp hi) (fun j => b j ^ 2)]
     _ = (∑ i ∈ Finset.range n, a i) ^ 2 * ∑ k ∈ Finset.range n, b k ^ 2 := by
         rw [← Finset.sum_mul, sq]; ring

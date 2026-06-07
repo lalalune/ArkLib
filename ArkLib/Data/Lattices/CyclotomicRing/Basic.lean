@@ -41,7 +41,6 @@ The only extra fact is `quotientHom_reduce`: reduction modulo
 * `cyclotomicRing_eq` — the semantic ring is `Polynomial R ⧸ (cyclotomic m R)`.
 * `quotientHom_reduce` — `quotientHom (reduce p) = quotientHom p`.
 * `quotientHom_mul` — `quotientHom (mul a b) = quotientHom a * quotientHom b`.
--/
 
 open Polynomial CompPoly CompPoly.CPolynomial
 
@@ -72,7 +71,6 @@ then reduce modulo `φ`.
 Future work add proper NTT multiplication here, not just reduce-after-CPolynomial-mul
 (or prove equivalence to the NTT-based definition once we have the NTT).
 Can we adapt CompPoly NTT for this?
--/
 def mul (a b : CPolynomial R) : CPolynomial R := Φ.reduce (a * b)
 
 /-- The soundness bridge: send a computable polynomial to the semantic
