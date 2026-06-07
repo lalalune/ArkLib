@@ -120,6 +120,7 @@ noncomputable def whirPaperTranscriptVectorSpec {M : ℕ} {ιs : Fin (M + 1) →
   length := fun i =>
     paperTranscriptSlotLength P d ((Fintype.equivFin (PaperTranscriptSlot P)).symm i)
 
+omit [Field F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem whirPaperTranscriptVectorSpec_dir {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (i : Fin (Fintype.card (PaperTranscriptSlot P))) :
@@ -127,6 +128,7 @@ noncomputable def whirPaperTranscriptVectorSpec {M : ℕ} {ιs : Fin (M + 1) →
       paperTranscriptSlotDirection ((Fintype.equivFin (PaperTranscriptSlot P)).symm i) :=
   rfl
 
+omit [Field F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem whirPaperTranscriptVectorSpec_length {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (i : Fin (Fintype.card (PaperTranscriptSlot P))) :

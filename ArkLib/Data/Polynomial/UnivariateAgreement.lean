@@ -47,13 +47,14 @@ theorem card_agree_le_of_ne {p q : F[X]} {d : ℕ}
     _ ≤ d := max_le hp hq
 
 /-- **Univariate agreement probability bound.**  Two distinct degree-`≤ d` polynomials agree at a
-uniformly random point with probability at most `d/|F|`. -/
+uniformly random point with probability at most `d/|F|`: `|agree| · |F| ≤ d · |F|^?` — here in the
+clean `|agree| / |F| ≤ d / |F|` ratio form (the FRI / univariate sum-check round soundness). -/
 theorem prob_agree_le_of_ne {p q : F[X]} {d : ℕ}
     (hp : p.natDegree ≤ d) (hq : q.natDegree ≤ d) (hpq : p ≠ q) :
-    ((Finset.univ.filter (fun x : F => p.eval x = q.eval x)).card : ℝ) / Fintype.card F
-      ≤ (d : ℝ) / Fintype.card F := by
-  have hcard : ((Finset.univ.filter (fun x : F => p.eval x = q.eval x)).card : ℝ) ≤ (d : ℝ) :=
-    Nat.cast_le.mpr (card_agree_le_of_ne hp hq hpq)
+    let N : ℕ := (Finset.univ.filter (fun x : F => p.eval x = q.eval x)).card
+    (N : ℝ) / (Fintype.card F : ℝ) ≤ (d : ℝ) / (Fintype.card F : ℝ) := by
+  intro N
+  have hcard : (N : ℝ) ≤ (d : ℝ) := Nat.cast_le.mpr (card_agree_le_of_ne hp hq hpq)
   exact div_le_div_of_nonneg_right hcard (by positivity)
 
 end Polynomial
