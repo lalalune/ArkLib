@@ -51,6 +51,7 @@ as the explicit, non-circular hypothesis `hcover`/`hfail`, with the extraction i
 - [GG25] Goyal-Guruswami; [BCIKS20] Ben-Sasson et al. (the curve list-agreement bound).
 -/
 
+set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
 
 open Finset
@@ -96,7 +97,7 @@ theorem mcaBadCount_lt_of_gs_curve_cover
     mcaBadCount (F := F) C δ u₀ u₁ < M * Fintype.card ι + 1 := by
   classical
   by_contra hge
-  push_neg at hge
+  push Not at hge
   -- `S'` is exactly the bad-scalar set; `mcaBadCount = S'.card`.
   set S' : Finset F := univ.filter (fun γ : F => mcaEvent C δ u₀ u₁ γ) with hS'
   have hcard : mcaBadCount (F := F) C δ u₀ u₁ = S'.card := rfl
@@ -123,8 +124,64 @@ theorem mcaBadCount_lt_of_gs_curve_cover
       h1 h2 hagree
   exact absurd hcorr (not_le.mpr hfail)
 
+/-- Uniform `ε_mca` wrapper for the faithful T4.21 repair.
+
+If every received affine-line stack admits genuine GS curve-cover data, the per-stack bound from
+`mcaBadCount_lt_of_gs_curve_cover` lifts through the exact bad-count formula to
+`ε_mca C δ ≤ (M * |ι| + 1) / |F|`. This is only a packaging step: the open interpolation content
+remains precisely the supplied `hcover`. -/
+theorem epsMCA_le_of_forall_gs_curve_cover
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (μ : ι → Set.Icc (0 : ℚ) 1) (M : ℕ) (hM : 0 < M)
+    (hμ : ∀ i, ∃ n : ℤ, (μ i).1 = (n : ℚ) / (M : ℚ))
+    (α : ℝ≥0)
+    (hcover : ∀ u : Code.WordStack F (Fin 2) ι, ∃ v : Fin 2 → ι → F,
+      (∀ γ : F, mcaEvent C δ (u 0) (u 1) γ →
+          (α : ℝ) ≤ agree μ
+            (fun x => Curve.polynomialCurveEval (F := F) (A := F) ![u 0, u 1] γ x)
+            (fun x => Curve.polynomialCurveEval (F := F) (A := F) v γ x)) ∧
+      mu_set μ { x : ι | ∀ i, (![u 0, u 1] : Fin 2 → ι → F) i x = v i x } <
+        (α : ℝ)) :
+    epsMCA (F := F) (A := F) C δ ≤
+      ((M * Fintype.card ι + 1 : ℕ) : ENNReal) / (Fintype.card F : ENNReal) := by
+  classical
+  rw [epsMCA_eq_iSup_mcaBadCount]
+  refine ENNReal.div_le_div_right ?_ _
+  refine iSup_le fun u => ?_
+  rcases hcover u with ⟨v, hcov, hfail⟩
+  have hlt :
+      mcaBadCount (F := F) C δ (u 0) (u 1) < M * Fintype.card ι + 1 :=
+    mcaBadCount_lt_of_gs_curve_cover C δ (u 0) (u 1) μ M hM hμ α v hcov hfail
+  exact_mod_cast Nat.le_of_lt hlt
+
+/-- Package the faithful uniform GS cover as an `MCALowerWitness` once the usual budget comparison
+against the target threshold is available. -/
+noncomputable def GrandChallenges.MCALowerWitness.of_forall_gs_curve_cover
+    (C : Set (ι → F)) {δ ε_star : ℝ≥0}
+    (μ : ι → Set.Icc (0 : ℚ) 1) (M : ℕ) (hM : 0 < M)
+    (hμ : ∀ i, ∃ n : ℤ, (μ i).1 = (n : ℚ) / (M : ℚ))
+    (α : ℝ≥0)
+    (hδ : δ ≤ 1)
+    (hcover : ∀ u : Code.WordStack F (Fin 2) ι, ∃ v : Fin 2 → ι → F,
+      (∀ γ : F, mcaEvent C δ (u 0) (u 1) γ →
+          (α : ℝ) ≤ agree μ
+            (fun x => Curve.polynomialCurveEval (F := F) (A := F) ![u 0, u 1] γ x)
+            (fun x => Curve.polynomialCurveEval (F := F) (A := F) v γ x)) ∧
+      mu_set μ { x : ι | ∀ i, (![u 0, u 1] : Fin 2 → ι → F) i x = v i x } <
+        (α : ℝ))
+    (hbudget :
+      ((M * Fintype.card ι + 1 : ℕ) : ENNReal) / (Fintype.card F : ENNReal) ≤
+        (ε_star : ENNReal)) :
+    GrandChallenges.MCALowerWitness (F := F) C ε_star :=
+  GrandChallenges.MCALowerWitness.ofLe hδ
+    (le_trans
+      (epsMCA_le_of_forall_gs_curve_cover C δ μ M hM hμ α hcover)
+      hbudget)
+
 end ProximityGap
 
 /-! ### `#print axioms` verification anchor -/
 
 #print axioms ProximityGap.mcaBadCount_lt_of_gs_curve_cover
+#print axioms ProximityGap.epsMCA_le_of_forall_gs_curve_cover
+#print axioms ProximityGap.GrandChallenges.MCALowerWitness.of_forall_gs_curve_cover

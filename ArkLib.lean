@@ -330,6 +330,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepair
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepairExtra
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingT421Faithful
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
+import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountGrandChallenge
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountRatio
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
