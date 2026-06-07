@@ -54,6 +54,7 @@ import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
 import ArkLib.Data.CodingTheory.Connections.SmoothDomainMCAWitness
 import ArkLib.Data.CodingTheory.DivergenceOfSets
+import ArkLib.Data.CodingTheory.EntropyCapacityValue
 import ArkLib.Data.CodingTheory.EntropyVolumeBound
 import ArkLib.Data.CodingTheory.Erasure
 import ArkLib.Data.CodingTheory.ExtensionCodes
@@ -299,6 +300,7 @@ import ArkLib.Data.Probability.Combinatorial
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
 import ArkLib.Data.Probability.RandomSubsetInclusion
+import ArkLib.Data.Probability.RandomSubsetInclusionExists
 import ArkLib.Data.Probability.UniformPushforward
 import ArkLib.Data.Probability.UniformSubset
 import ArkLib.Data.RingTheory.TowerOfAlgebra

@@ -85,10 +85,39 @@ theorem target_eq_one_of_nil {target : G}
     target = 1 := by
   simpa using repr.hEq.symm
 
+/-- A group hom commutes with the `zipWith`-power product over a basis: applying `f` pointwise to
+  the basis and reusing the same exponents equals `f` of the original product. -/
+theorem zipWith_pow_map {H : Type*} [Group H] (f : G →* H)
+    (prev : List G) (exponents : List (ZMod p)) :
+    ((prev.map f).zipWith (fun g a => g ^ a.val) exponents).prod
+      = f ((prev.zipWith (fun g a => g ^ a.val) exponents).prod) := by
+  induction prev generalizing exponents with
+  | nil => simp
+  | cons g prev ih =>
+    cases exponents with
+    | nil => simp
+    | cons a exponents =>
+      simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, map_mul, map_pow]
+      rw [ih exponents]
+
+/-- **Functoriality of representations under group homomorphisms.** A group hom `f : G →* H`
+  transports an algebraic representation of `target` over basis `prev` to one of `f target` over
+  the image basis `prev.map f`, with the *same* exponent vector. This is the structural core of the
+  AGM ⇒ GGM transfer ([JM24]): an algebraic representation is preserved by any group
+  homomorphism, so the exponents an algebraic adversary commits to in `G` certify the image
+  element in `H`. -/
+def map {H : Type*} [Group H] (f : G →* H) {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) :
+    GroupRepresentation (p := p) (prev.map f) (f target) where
+  exponents := repr.exponents
+  hEq := by rw [zipWith_pow_map, repr.hEq]
+
 #print axioms GroupRepresentation.zipWith_pow_prod_mem_closure
 #print axioms GroupRepresentation.target_mem_closure
 #print axioms GroupRepresentation.one
 #print axioms GroupRepresentation.target_eq_one_of_nil
+#print axioms GroupRepresentation.zipWith_pow_map
+#print axioms GroupRepresentation.map
 
 end GroupRepresentation
 

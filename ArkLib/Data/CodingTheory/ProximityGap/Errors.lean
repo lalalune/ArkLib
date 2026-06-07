@@ -94,7 +94,7 @@ set_option linter.unusedSectionVars false
 -- This file's L4.6 quantitative-residual block (the `jointlyProximate*_udr` count bounds toward
 -- ABF26 Lemma 4.6) pushes it past the default 1500-line cap; matching the precedent of other
 -- large ProximityGap files (e.g. `BCIKS20/AffineSpaces.lean`).
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2000
 
 namespace ProximityGap
 
@@ -279,6 +279,37 @@ theorem one_le_epsCA_of_line_covered (C : Set (ι → A)) (δ_fld δ_int : ℝ�
     tsum_congr fun γ => by rw [if_pos (hcover γ), mul_one]
   rw [h]
   exact ($ᵖ F).tsum_coe.ge
+
+open Classical in
+/-- **Averaging existence: a fully line-covered stack exists when few stacks fail.**
+
+If the total number of "far" `γ` across all stacks,
+`∑_u #{γ : Δᵣ(u 0 + γ • u 1, C) > δ}`, is strictly below the stack count
+`Fintype.card (WordStack A (Fin 2) ι)`, then some stack `u` has its *whole* affine line
+`u 0 + γ • u 1` within relative distance `δ` of `C` (pigeonhole: not every stack can carry
+`≥ 1` far `γ`).  Feeds `one_le_epsCA_of_line_covered`; the remaining content for the CS25 #82
+breakdown is the double-count `∑_u #{far γ} = |F| · |ι → F| · |{w : Δᵣ(w,C) > δ}|` with the
+δ-neighbourhood-complement bound on `|{w : Δᵣ(w,C) > δ}|`. -/
+theorem exists_line_covered_stack_of_sum_far_lt (C : Set (ι → A)) (δ : ℝ≥0)
+    (hsum : (∑ u : WordStack A (Fin 2) ι,
+              (Finset.univ.filter (fun γ : F => ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ)).card)
+            < Fintype.card (WordStack A (Fin 2) ι)) :
+    ∃ u : WordStack A (Fin 2) ι, ∀ γ : F, δᵣ(u 0 + γ • u 1, C) ≤ δ := by
+  by_contra hcon
+  push_neg at hcon
+  have h1 : ∀ u : WordStack A (Fin 2) ι,
+      1 ≤ (Finset.univ.filter (fun γ : F => ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ)).card := by
+    intro u
+    obtain ⟨γ, hγ⟩ := hcon u
+    refine Finset.card_pos.mpr ⟨γ, ?_⟩
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    exact not_le.mpr hγ
+  have hge : Fintype.card (WordStack A (Fin 2) ι)
+      ≤ ∑ u : WordStack A (Fin 2) ι,
+          (Finset.univ.filter (fun γ : F => ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ)).card := by
+    rw [Fintype.card_eq_sum_ones]
+    exact Finset.sum_le_sum (fun u _ => h1 u)
+  omega
 
 open Classical in
 /-- The MCA error is bounded by the total probability mass. -/
