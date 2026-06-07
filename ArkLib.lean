@@ -795,6 +795,7 @@ import ArkLib.ToMathlib.L13Milestone
 import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LineDecodingCoverageProof
+import ArkLib.ToMathlib.LinearizedKernel
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.List.Basic
 import ArkLib.ToMathlib.MCAFirstMomentArithBricks
