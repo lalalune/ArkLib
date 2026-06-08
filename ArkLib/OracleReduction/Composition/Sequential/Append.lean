@@ -3977,6 +3977,20 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
           simp only [Fin.le_def, Fin.val_last]; omega)]
   simpa [appendRunRightResidual] using hRight
 
+/-- **Sequential-composition completeness for a message-first `P₂` (UNCONDITIONAL).**  When the seam
+round (`pSpec₂`'s round 0) is a prover message, running the appended prover `P₁.append P₂` is exactly
+running `P₁` then `P₂` and concatenating transcripts — no residual hypothesis required.  Combines the
+conditional `append_run` with the kernel-clean discharge `appendRunRightResidual_holds_msg`.  This is
+the completeness half of the LogUp-style sequential composition (#13) for the message-seam case. -/
+theorem append_run_msg (stmt : Stmt₁) (wit : Wit₁) (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V) :
+      (P₁.append P₂).run stmt wit = (do
+        let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
+        let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
+        return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) :=
+  append_run stmt wit (appendRunRightResidual_holds_msg stmt wit hn hDir hDir₂)
+
 #print axioms Prover.appendRunRightResidual
 #print axioms Prover.append_run
 #print axioms Prover.liftComp_pure_bind
