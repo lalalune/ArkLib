@@ -1265,4 +1265,39 @@ theorem fiatShamir_knowledgeSoundness_of_stateRestoration_prepost_mono_relations
 #print axioms fiatShamir_soundness_of_stateRestoration_prepost_mono_languages_error
 #print axioms fiatShamir_knowledgeSoundness_of_stateRestoration_prepost_mono_relations_error
 
+section CanonicalKnowledgeSoundness
+
+set_option linter.unusedSimpArgs false
+set_option linter.unusedSectionVars false
+set_option maxHeartbeats 2000000
+
+local instance fiatShamirProverOnlyCanonicalKS : ProtocolSpec.ProverOnly
+    (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) where
+  prover_first' := by simp
+
+/-- Knowledge-soundness analogue of `fiatShamirAdversary_runCollapse`: collapse the
+`Reduction.runWithLog` of the transformed one-message reduction to an explicit logged adversary
+execution over `oSpec + fsChallengeOracle`.  The log discarding is handled by
+`loggingOracle.fst_map_run_simulateQ`; the prover-first structure lets us reuse the soundness
+machinery. -/
+theorem fiatShamir_runWithLog_simulateQ_fst
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    (fun o => Option.map Prod.fst o) <$>
+        simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          (Reduction.runWithLog stmtIn witIn
+            { prover := P, verifier := V.fiatShamir }).run =
+      simulateQ impl (fiatShamirAdversaryExecution P V stmtIn witIn).run := by
+  rw [← fiatShamirAdversary_runCollapse impl P V stmtIn witIn]
+  rw [← Reduction.runWithLog_discard_logs_eq_run (reduction :=
+    { prover := P, verifier := V.fiatShamir })]
+  rw [OptionT.run_map, simulateQ_map]
+
+#print axioms Reduction.fiatShamir_runWithLog_simulateQ_fst
+
+end CanonicalKnowledgeSoundness
+
 end Reduction
