@@ -272,6 +272,26 @@ theorem probEvent_optionT_mk {α : Type} (PROG : ProbComp (Option α)) (p : α �
 
 #print axioms probEvent_optionT_mk
 
+/-- **`simulateQ` of a lifted pure value is `pure (some ·)`.** Collapses the deterministic seam
+"combine" stage (which just pairs the two phases' transcripts/outputs via `pure`) so that the `snd`
+prover stage and the `V₁` verifier stage become adjacent — a single `evalDist_simulateQ_swap`
+then suffices for the `appendSoundness` reorder. Connect brick. -/
+theorem simQ_liftM_pure {ι : Type} {spec : OracleSpec ι} {γ τ : Type}
+    (so : QueryImpl spec (StateT τ ProbComp)) (W : γ) :
+    simulateQ so (liftM (pure W : OracleComp spec γ) : OptionT (OracleComp spec) γ).run
+      = pure (some W) := by simp
+
+/-- **`Option.elimM` on a `pure (some ·)` scrutinee reduces to the success branch.** The companion
+collapse to `simQ_liftM_pure`: once the combine stage is `pure (some W)`, its `elimM` short-circuit
+selects the continuation at `W`. Connect brick. -/
+theorem elimM_pure_some {M : Type → Type _} [Monad M] [LawfulMonad M] {α β : Type}
+    (a : α) (y : M (Option β)) (f : α → M (Option β)) :
+    Option.elimM (pure (some a)) y f = f a := by
+  rw [Option.elimM, pure_bind]; rfl
+
+#print axioms simQ_liftM_pure
+#print axioms elimM_pure_some
+
 /-- **`simulateQ` preserves the `σ`-state on its support, when every query implementation does.**
 Holds for `challengeQueryImpl` (which threads `σ` unchanged) and for empty `oSpec`. This is the
 independence ingredient for the seam swap: a state-preserving prover stage cannot affect a later
