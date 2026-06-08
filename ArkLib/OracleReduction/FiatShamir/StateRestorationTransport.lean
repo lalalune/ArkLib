@@ -1463,6 +1463,18 @@ private theorem probEvent_stateT_run_map_congr
   subst my
   rfl
 
+private theorem probEvent_stateT_run_fst_congr
+    {σ α : Type} (init : ProbComp σ)
+    (mx my : StateT σ ProbComp (Option α)) (p : Option α → Prop)
+    (h : mx = my) :
+    probEvent (do
+        let s ← init
+        (fun x : Option α × σ => x.1) <$> mx.run s) p =
+      probEvent (do
+        let s ← init
+        (fun x : Option α × σ => x.1) <$> my.run s) p := by
+  exact probEvent_stateT_run_map_congr init mx my (fun x : Option α × σ => x.1) p h
+
 private theorem simulateQ_optionT_bind_mk_some_run
     {ι : Type} {spec : OracleSpec ι} {σ α β : Type}
     (impl : QueryImpl spec (StateT σ ProbComp))
@@ -1769,7 +1781,7 @@ set_option maxHeartbeats 10000000 in
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of
 `fiatShamir_soundnessTransferResidual_canonical`. -/
-theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
+opaque fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
     (srImpl : QueryImpl oSpec
       (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
@@ -1796,36 +1808,12 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (stmtIn := stmtIn) (witIn := witIn)
   simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self] at hCollapse
   rw [probEvent_optionT_stateT_init]
-  change
-      Pr[fun o : Option (StmtIn × WitIn × StmtOut × WitOut) =>
-          o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut |
-        (do
-          let s ← srInit
-          (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
-              QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
-            (simulateQ
-              (fiatShamirCoupledQueryImpl
-                (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl +
-                QueryImpl.liftTarget
-                  (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp)
-                  challengeQueryImpl)
-              (do
-                let d ← Reduction.runWithLog stmtIn witIn
-                  { prover := prover, verifier := V.fiatShamir }
-                let extractedWitIn ←
-                  liftM do
-                    let transcript ← OptionT.mk (some <$>
-                      Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1.1 0))
-                    liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
-                pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run).run s :
-          ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)))] ≤ ↑knowledgeError
-  rw [probEvent_stateT_run_map_congr
+  have hProbCollapse := probEvent_stateT_run_fst_congr
     (init := srInit)
-    (f := fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
-        QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1)
     (p := fun o => o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut)
-    (h := hCollapse)]
-  simpa [fiatShamirAdversaryExecution,
+    (h := hCollapse)
+  exact le_trans (le_of_eq hProbCollapse) (by
+    simpa [fiatShamirAdversaryExecution,
     Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
     Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
     fiatShamirCoupledQueryImpl,
@@ -1835,7 +1823,7 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     Verifier.fiatShamir_verify_eq,
     Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
     Reduction.run, Prover.run, Prover.runToRound, Prover.processRound,
-    QueryImpl.addLift_def] using h
+    QueryImpl.addLift_def] using h)
 
 end CanonicalKnowledgeSoundness
 
