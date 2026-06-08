@@ -1433,6 +1433,63 @@ private theorem transcriptFromFSChallengeLog_run_withQueryLog_snd_support
   rw [hrun']
   rfl
 
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- Any support point of the Fiat-Shamir verifier log contains, as a prefix of its
+slow-Fiat-Shamir projection, the log produced by the transcript derivation from the proof
+messages.  The log-backed parser therefore reconstructs that derived transcript from the whole
+verifier log. -/
+private theorem fiatShamirVerifier_verify_loggedTranscript_support
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (stmtIn : StmtIn)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    {z : Option StmtOut × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)}
+    (hz : z ∈ support
+      (OracleComp.withQueryLog ((V.fiatShamir).verify stmtIn proof))) :
+    ∃ d : pSpec.FullTranscript × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec),
+      d ∈ support
+        (OracleComp.withQueryLog
+          (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0))) ∧
+      transcriptFromFSChallengeLog
+          (StmtIn := StmtIn) (pSpec := pSpec) (proof 0) z.2.snd =
+        some d.1 := by
+  rw [Verifier.fiatShamir_verify_eq] at hz
+  have hcollapse :
+      (let messages : pSpec.Messages := proof 0;
+        (do
+          let transcript ← (liftM
+            (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages) :
+              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                pSpec.FullTranscript)
+          let v ← (liftM (V.verify stmtIn transcript).run :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) (Option StmtOut))
+          v.getM : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut).run)
+        =
+      (do
+        let transcript ←
+          (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0))
+        (liftM (V.verify stmtIn transcript).run :
+          OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut))) := by
+    apply congrArg OptionT.run
+    dsimp only
+    apply bind_congr
+    intro transcript
+    exact optionT_lift_run_bind_getM (V.verify stmtIn transcript)
+  rw [hcollapse] at hz
+  rw [OracleComp.withQueryLog_bind, mem_support_bind_iff] at hz
+  obtain ⟨derivePoint, hderive, hcont⟩ := hz
+  rw [support_map, Set.mem_image] at hcont
+  obtain ⟨contPoint, _hcontPoint, hmap⟩ := hcont
+  rcases derivePoint with ⟨transcript, deriveLog⟩
+  rcases contPoint with ⟨stmtOut, contLog⟩
+  refine ⟨(transcript, deriveLog), hderive, ?_⟩
+  subst z
+  simp only [Prod.map_apply, id_eq]
+  rw [queryLog_snd_append]
+  exact transcriptFromFSChallengeLog_run_withQueryLog_snd_support
+    (oSpec := oSpec) (StmtIn := StmtIn) (pSpec := pSpec)
+    stmtIn (proof 0) contLog.snd hderive
+
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
 
