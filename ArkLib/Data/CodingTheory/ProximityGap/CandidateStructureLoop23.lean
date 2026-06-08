@@ -47,12 +47,14 @@ theorem pow_fold_mem {x : F} {N d : ℕ} (hdvd : d ∣ N) (hx : x ^ N = 1) :
 The prize is therefore scale-invariant under the `μ_d` fold — the same conjecture one level down. -/
 theorem recursive_rate_preserved {k N d : ℝ} (hd : d ≠ 0) :
     (k / d) / (N / d) = k / N := by
-  rw [div_div_div_cancel_right₀]
+  rcases eq_or_ne N 0 with hN | hN
+  · rw [hN]; simp
+  · field_simp
 
 /-- **`2^m`-tower depth.** For the prize's dyadic smooth domain `N = 2^m`, folding by `d = 2` exactly
 `m` times reaches `μ_1`: `2^m / 2^m = 1`. So the recursion has exactly `m` levels — the prize is a
 depth-`m` fold tower, and a disproof needs the orbit contributions to accumulate super-polynomially
 across these `m` levels (a single level is absorbed, Loop21). -/
-theorem tower_depth (m : ℕ) : (2 ^ m) / (2 ^ m) = 1 := Nat.div_self (Nat.pos_pow_of_pos m (by norm_num))
+theorem tower_depth (m : ℕ) : (2 ^ m) / (2 ^ m) = 1 := Nat.div_self (by positivity)
 
 end ArkLib.ProximityGap.StructureLoop23

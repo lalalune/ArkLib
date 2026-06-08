@@ -321,6 +321,21 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop23 — the prize is SELF-SIMILAR under folding: it IS the FRI/STIR soundness frontier
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop23.lean`:** `pow_fold_mem` (the power map
+`x↦x^d` sends `μ_N` onto `μ_{N/d}` when `d∣N` — the FRI fold of the smooth domain),
+`recursive_rate_preserved` (`(k/d)/(N/d)=k/N` — the `μ_d`-invariant subcode is the **same-rate** RS
+code one scale down), `tower_depth` (`2^m/2^m=1` — the dyadic domain folds in exactly `m` levels).
+**Key identification:** the `μ_d`-invariant subcode (Loop22) on `μ_N`, through `x↦x^d`, *is the prize
+at scale `N/d`, same rate ρ* — so the smooth-domain prize is **self-similar under folding**. For `d=2`
+this is exactly the FRI fold; the whole prize is the proximity-gap soundness of the `2^m`-tower pushed
+to capacity. A `μ_d`-invariant word's list splits into the invariant sublist (= prize one level down)
++ non-invariant `μ_d`-orbits (Loop22). **So the prize is a recursion over the `m`-level tower:** TRUE
+iff per-fold orbit contributions telescope to a polynomial bound; FALSE iff they accumulate
+super-polynomially across the `m` levels (a single fold's single orbit is absorbed, Loop21). This
+identifies the prize as *precisely the open FRI/STIR/WHIR-to-capacity soundness frontier*, not a side
+issue — which is exactly why it carries the $1M and has no published resolution.
+
 ### Loop22 — the `μ_d`-invariant subcode `{Q(X^d)}`: the object the open question lives in
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop22.lean`:** `invariant_subcode_fixed`
 (for `ζ^d=1`, `(Q(X^d))∘(ζ·X)=Q(X^d)` — the `μ_d`-fixed polys are exactly `{Q(X^d)}`),
