@@ -146,6 +146,87 @@ theorem johnson_second_moment (L : Finset (ι → F)) (f : ι → F) (d : ℕ)
     _ ≤ n * ((∑ c ∈ L, (n - hammingDist c f)) + L.card * (L.card - 1) * (n - d)) := by
         exact Nat.mul_le_mul_left _ hdiag
 
+/-- **Distance-form Johnson list bound from the per-word second moment.** If every word in `L` is
+within Hamming radius `e` of `f`, distinct words of `L` have pairwise distance at least `d`, and the
+Johnson denominator is nonnegative, then
+
+`|L| · ((n-e)² - n(n-d)) ≤ n²`.
+
+This is the consumer-facing cap produced by `johnson_second_moment`; when the denominator is
+strictly positive, callers can divide to get the usual Johnson list-size bound. -/
+theorem johnson_distance_list_bound (L : Finset (ι → F)) (f : ι → F) (d e : ℕ)
+    (hclose : ∀ c ∈ L, hammingDist c f ≤ e)
+    (hpair : ∀ c ∈ L, ∀ c' ∈ L, c ≠ c' → d ≤ hammingDist c c')
+    (hgap : Fintype.card ι * (Fintype.card ι - d) ≤ (Fintype.card ι - e) ^ 2) :
+    L.card * ((Fintype.card ι - e) ^ 2 - Fintype.card ι * (Fintype.card ι - d))
+      ≤ Fintype.card ι ^ 2 := by
+  classical
+  set n := Fintype.card ι with hn
+  set α := n - e with hα
+  set β := n - d with hβ
+  set A := ∑ c ∈ L, (n - hammingDist c f) with hA
+  have hclose_agree : ∀ c ∈ L, α ≤ n - hammingDist c f := by
+    intro c hc
+    have hcf := hclose c hc
+    omega
+  have hAlo : L.card * α ≤ A := by
+    rw [hA]
+    rw [show L.card * α = ∑ _c ∈ L, α by rw [Finset.sum_const, smul_eq_mul]]
+    exact Finset.sum_le_sum hclose_agree
+  have hAhi : A ≤ L.card * n := by
+    rw [hA]
+    calc (∑ c ∈ L, (n - hammingDist c f)) ≤ ∑ _c ∈ L, n := by
+          exact Finset.sum_le_sum fun _ _ => Nat.sub_le _ _
+      _ = L.card * n := by rw [Finset.sum_const, smul_eq_mul]
+  have hmoment : A ^ 2 ≤ n * (A + L.card * (L.card - 1) * β) := by
+    simpa [hA, hn, hβ] using johnson_second_moment L f d hpair
+  have hchain :
+      (L.card * α) ^ 2 ≤ n * (L.card * n + L.card * (L.card - 1) * β) := by
+    refine le_trans (Nat.pow_le_pow_left hAlo 2) ?_
+    refine le_trans hmoment ?_
+    exact Nat.mul_le_mul_left n (Nat.add_le_add_right hAhi _)
+  by_cases hL : L.card = 0
+  · simp [hL]
+  have hLpos : 0 < L.card := Nat.pos_of_ne_zero hL
+  have hleft : (L.card * α) ^ 2 = L.card * (L.card * α ^ 2) := by ring
+  have hright :
+      n * (L.card * n + L.card * (L.card - 1) * β)
+        = L.card * (n ^ 2 + (L.card - 1) * n * β) := by ring
+  rw [hleft, hright] at hchain
+  have key : L.card * α ^ 2 ≤ n ^ 2 + (L.card - 1) * n * β :=
+    Nat.le_of_mul_le_mul_left hchain hLpos
+  have hgap' : n * β ≤ α ^ 2 := by
+    simpa [hn, hα, hβ] using hgap
+  have hsplit : L.card * α ^ 2 =
+      L.card * (α ^ 2 - n * β) + L.card * (n * β) := by
+    rw [← Nat.mul_add, Nat.sub_add_cancel hgap']
+  have hLpred : L.card = (L.card - 1) + 1 := by omega
+  have hmbeta : L.card * (n * β) = (L.card - 1) * (n * β) + n * β := by
+    calc
+      L.card * (n * β) = ((L.card - 1) + 1) * (n * β) := by
+        conv_lhs => rw [hLpred]
+      _ = (L.card - 1) * (n * β) + n * β := by rw [Nat.add_mul, one_mul]
+  have hright' :
+      n ^ 2 + (L.card - 1) * n * β = n ^ 2 + (L.card - 1) * (n * β) := by
+    ring
+  rw [hsplit, hmbeta, hright'] at key
+  have key' :
+      L.card * (α ^ 2 - n * β) + n * β ≤ n ^ 2 := by
+    have hpack :
+        (L.card * (α ^ 2 - n * β) + n * β) + (L.card - 1) * (n * β)
+          ≤ n ^ 2 + (L.card - 1) * (n * β) := by
+      calc
+        (L.card * (α ^ 2 - n * β) + n * β) + (L.card - 1) * (n * β)
+            = L.card * (α ^ 2 - n * β) + ((L.card - 1) * (n * β) + n * β) := by
+              ring
+        _ ≤ n ^ 2 + (L.card - 1) * (n * β) := key
+    exact Nat.le_of_add_le_add_right hpack
+  have hdenom_le : L.card * (α ^ 2 - n * β) ≤
+      L.card * (α ^ 2 - n * β) + n * β := Nat.le_add_right _ _
+  have hfinal := le_trans hdenom_le key'
+  simpa [hn, hα, hβ] using hfinal
+
 #print axioms johnson_second_moment
+#print axioms johnson_distance_list_bound
 
 end ArkLib.CodingTheory.JohnsonPerWord
