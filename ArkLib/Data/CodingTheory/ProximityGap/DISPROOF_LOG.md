@@ -321,6 +321,32 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop22 — the `μ_d`-invariant subcode `{Q(X^d)}`: the object the open question lives in
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop22.lean`:** `invariant_subcode_fixed`
+(for `ζ^d=1`, `(Q(X^d))∘(ζ·X)=Q(X^d)` — the `μ_d`-fixed polys are exactly `{Q(X^d)}`),
+`invariant_subcode_natDegree` (`deg Q(X^d)=d·deg Q` ⇒ invariant subcode `{Q(X^d):deg Q<k/d}`, dim
+`≈k/d`). **Crux, concrete:** at a `μ_d`-invariant received word, either every close codeword is
+`μ_d`-invariant (⇒ in the small `k/d`-dim subcode — controlled, proof lean) or a non-invariant one
+exists (⇒ its `μ_d`-orbit of size `∣d` is all in the list ⇒ list `≥d`, disproof lean). Larger `d`
+shrinks the subcode but raises transitivity. The prize is decided by where this lands at `1−ρ−η`.
+
+### Loop21 (swarm) — a single symmetry orbit is too small to disprove (orbit absorbed)
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop21.lean`:** `range_card_le_domain` (a
+symmetry orbit has size `≤` the acting group `≤ N=2^m`), `linear_orbit_bound_blocks_fixed_gap_refutation`
+(a list bounded by one orbit `≤ n` does not `BeatsEveryPolynomial`). **This shoots down the Loop20
+single-orbit disproof route:** one `μ_d`-orbit gives only *linear* growth `≤ N=2^m`, absorbed by the
+prize's `(2^m)^{c₁}` numerator. A symmetry disproof needs **many** coexisting orbits (super-poly), not
+one — exactly the Loop22 multi-orbit question.
+
+### Loop20 — the smooth domain's RS automorphism group acts on the list (symmetry mechanism)
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop20.lean`:** `scaling_preserves_degreeLT`
+(scaling the argument by a root of unity is an RS code automorphism), `scaling_iterate_preserves_degreeLT`.
+So `μ_N` acts on the smooth-domain code; with Loop6's orbit bound, a received word's close-codeword
+list is permuted by its stabilizer, a free orbit forcing list `≥` orbit size. Both-ways: full `μ_N`
+transitive ⇒ invariant words constant ⇒ list 1 below capacity (proof lean); a large free orbit needs
+an intermediate `μ_d` (Loop22). Loop21 (swarm) then caps a *single* orbit as absorbed — so the open
+question is the *multi-orbit* balance.
+
 ### Loop19 — the smooth domain's sparse annihilator: the concrete smooth-vs-generic obstruction
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop19.lean`:**
 `smooth_domain_annihilated_by_sparse` (every element of a smooth subgroup domain of size `N` is a
