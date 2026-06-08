@@ -71,7 +71,7 @@ theorem matVecMLE_mem_restrictDegree
     matVecMLE pp 𝕩 oStmt idx ∈ R⦃≤ 1⦄[X Fin pp.ℓ_m] :=
   MLE_mem_restrictDegree _
 
-omit [IsDomain R] [Fintype R] in
+omit [IsDomain R] [Fintype R] [DecidableEq R] in
 /-- **First sum-check virtual polynomial degree bound.** `ℱ` has degree `≤ 3` per variable: the
 `eqPolynomial` factor contributes `1` and the product `Ã·B̃` contributes `2`. -/
 theorem firstSumCheckVirtualPolynomial_mem_restrictDegree
@@ -121,7 +121,6 @@ theorem firstSumCheckVirtualPolynomial_hypercubeSum_eq_zeroCheckEval
   -- The `eq` weights match via symmetry: `eval (X:→R) (eqPolynomial τ) = eval τ (eqPolynomial X)`.
   rw [eqPolynomial_symm]
 
-omit [IsDomain R] [Fintype R] [DecidableEq R] in
 /-- **First sum-check completeness target.** On any R1CS-satisfying instance the first sum-check's
 Boolean-hypercube sum is `0`: the zero-check polynomial `𝒢` is identically zero, so `𝒢(τ) = 0`. This
 is the target value the honest first sum-check proves, pinned by the preceding `RandomQuery` phase. -/

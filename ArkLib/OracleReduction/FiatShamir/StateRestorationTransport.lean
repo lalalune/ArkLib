@@ -3033,7 +3033,11 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
               (challengeQueryImpl
                 (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
             ((z.1.getM :
-              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut).run)
+              OptionT
+                (OracleComp
+                  ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                    [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                StmtOut).run)
         stmtOut?.elim (pure none) fun stmtOut => do
           let witIn? ←
             simulateQ
@@ -3118,27 +3122,6 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   refine ⟨fiatShamirStraightlineExtractorOfStateRestoration
     (oSpec := oSpec) (pSpec := pSpec) srExtractor, ?_⟩
   intro stmtIn witIn prover
-  have h :=
-    hbound (Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver
-      (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
-  dsimp only [Verifier.knowledgeSoundness]
-  rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
-  refine le_trans ?_ h
-  simp [Verifier.StateRestoration.knowledgeSoundness,
-    fiatShamirCoupledQueryImpl,
-    ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl',
-    Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
-    Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
-    Verifier.fiatShamir_verify_eq,
-    fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel_simp,
-    Reduction.runWithLog, Prover.runWithLog,
-    Reduction.run, Prover.run, Prover.runToRound, Prover.processRound]
-  refine Verifier.StateFunction.probEvent_bind_mono_heteroEvent (fun table _ => ?_)
-  simp only [OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, OptionT.run_pure,
-    Option.elimM, simulateQ_option_elimM, simulateQ_bind, simulateQ_map, simulateQ_pure,
-    StateT.run_bind, StateT.run_map, map_bind, bind_assoc, pure_bind, map_eq_pure_bind,
-    Option.elim_some]
-  trace_state
   sorry
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side
