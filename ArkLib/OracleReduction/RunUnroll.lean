@@ -292,6 +292,21 @@ theorem elimM_pure_some {M : Type → Type _} [Monad M] [LawfulMonad M] {α β :
 #print axioms simQ_liftM_pure
 #print axioms elimM_pure_some
 
+/-- **Lifted never-failing stage collapses its `Option`-elim.** A prover phase enters the seam chain
+as `liftM X` for a plain (never-failing) `X : OracleComp`; running its `OptionT.run` and then
+`Option.elim`-ing always takes the success branch, so the whole `liftM`/elim layer is just `X >>= k`.
+This is what lets the two *prover* stages (`fst`, `snd`) be treated as plain `OracleComp` binds in the
+seam swap (`evalDist_simulateQ_swap_prefix`), while the *verifier* stages keep their genuine
+short-circuit. -/
+theorem lift_run_elim {ι : Type} {spec : OracleSpec ι} {α β : Type}
+    (X : OracleComp spec α) (k : α → OracleComp spec (Option β)) :
+    ((liftM X : OptionT (OracleComp spec) α).run >>= fun o => o.elim (pure none) k)
+      = X >>= k := by
+  simp only [OptionT.run, OptionT.lift, OptionT.mk, liftM, monadLift, MonadLift.monadLift,
+    map_eq_pure_bind, bind_assoc, pure_bind, Option.elim]
+
+#print axioms lift_run_elim
+
 /-- **`simulateQ` preserves the `σ`-state on its support, when every query implementation does.**
 Holds for `challengeQueryImpl` (which threads `σ` unchanged) and for empty `oSpec`. This is the
 independence ingredient for the seam swap: a state-preserving prover stage cannot affect a later
