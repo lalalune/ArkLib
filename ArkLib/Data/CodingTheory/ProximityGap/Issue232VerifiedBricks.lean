@@ -41,8 +41,17 @@ Contents:
   (agreement ⇒ the codeword is a root), `natDegree_eval_le` (the explicit GS degree budget), and
   `sudan_codeword_list_bound` (the quantitative Sudan list bound `|L| ≤ deg_Y(H)` for codewords
   agreeing beyond `deg_X(H) + (k-1)·deg_Y(H)`) — the full combinatorial *and* quantitative GS core.
+* Multiplicities — `sum_rootMultiplicity_le`, `eval_zero_of_multiplicity_agreement`, and
+  `gs_multiplicity_list_bound` (the multiplicity-`r` root counting and list bound).
 * Quantitative GS parameters — `sudan_params_feasible` (the pure-arithmetic feasibility of the GS
-  parameter program: a `d_X` exists with interpolation space `> n` and budget `< t`).
+  parameter program: a `d_X` exists with interpolation space `> n` and budget `< t`; for
+  multiplicity `r`, reuse it with `t ↦ t·r`, `n ↦ n·r(r+1)/2`).
+
+Note on radius: the bricks above use the **box** degree bound `(deg_X, deg_Y)`, which realizes the
+Sudan radius `1 − √(2ρ)` (the multiplicity-`r` factors cancel in the box model). Reaching the
+**Johnson** radius `1 − √ρ` requires *weighted-degree* `(1, k-1)` interpolation (triangular monomial
+support of dimension `~D²/(2(k-1))`); pushing past Johnson for explicit smooth-domain RS is the open
+prize. The multiplicity root counting here is the correct, reusable ingredient for both.
 * Refutations — `refute_naive_matrix_rank_bound`, `refute_naive_alg_independence_bound`.
 -/
 
@@ -252,6 +261,64 @@ theorem sudan_codeword_list_bound [DecidableEq F]
   have hroot : ∀ p ∈ L, Polynomial.eval p H = 0 := by
     intro p hp
     refine eval_zero_of_agreement_gt_degree H p (curve p) (hcurve p hp) ?_
+    have hd : (Polynomial.eval p H).natDegree ≤ B + H.natDegree * p.natDegree :=
+      natDegree_eval_le H p B hB
+    have hmul : H.natDegree * p.natDegree ≤ H.natDegree * k := by gcongr; exact hdeg p hp
+    have := hbig p hp
+    omega
+  have hsub : L ⊆ H.roots.toFinset := by
+    intro p hp; rw [Multiset.mem_toFinset, Polynomial.mem_roots hH]; exact hroot p hp
+  calc L.card ≤ H.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ H.natDegree := le_trans (Multiset.toFinset_card_le _) (Polynomial.card_roots' _)
+
+/-- **Sum of root multiplicities is bounded by the degree.** `∑_{a ∈ A} mult_a(g) ≤ deg g`. -/
+theorem sum_rootMultiplicity_le [DecidableEq F] (g : Polynomial F) (A : Finset F) :
+    ∑ a ∈ A, g.rootMultiplicity a ≤ g.natDegree := by
+  have h1 : ∑ a ∈ A, g.rootMultiplicity a = ∑ a ∈ A, Multiset.count a g.roots :=
+    Finset.sum_congr rfl (fun a _ => (Polynomial.count_roots g).symm)
+  have hexpand : Multiset.card g.roots = ∑ a ∈ A ∪ g.roots.toFinset, Multiset.count a g.roots := by
+    rw [← Multiset.toFinset_sum_count_eq g.roots]
+    refine Finset.sum_subset Finset.subset_union_right ?_
+    intro a _ ha; rw [Multiset.count_eq_zero]
+    exact fun hmem => ha (Multiset.mem_toFinset.mpr hmem)
+  have hstep : ∑ a ∈ A, Multiset.count a g.roots ≤ Multiset.card g.roots := by
+    rw [hexpand]; exact Finset.sum_le_sum_of_subset Finset.subset_union_left
+  rw [h1]; exact le_trans hstep (Polynomial.card_roots' g)
+
+/-- **Agreement-with-multiplicity ⇒ root.** If `g(X) := H(X,p(X))` vanishes to order `≥ r` at each
+of `|A|` points and `deg g < |A|·r`, then `g ≡ 0`. The factor-`r` budget is the multiplicity
+generalization of `eval_zero_of_agreement_gt_degree`. -/
+theorem eval_zero_of_multiplicity_agreement [DecidableEq F]
+    (H : Polynomial (Polynomial F)) (p : Polynomial F) (A : Finset F) (r : ℕ)
+    (hmult : ∀ a ∈ A, r ≤ (Polynomial.eval p H).rootMultiplicity a)
+    (hdeg : (Polynomial.eval p H).natDegree < A.card * r) :
+    Polynomial.eval p H = 0 := by
+  by_contra hne
+  set g := Polynomial.eval p H with hg
+  have hsum : ∑ a ∈ A, g.rootMultiplicity a ≤ g.natDegree := sum_rootMultiplicity_le g A
+  have hge : A.card * r ≤ ∑ a ∈ A, g.rootMultiplicity a := by
+    calc A.card * r = ∑ _a ∈ A, r := by rw [Finset.sum_const, smul_eq_mul]
+      _ ≤ ∑ a ∈ A, g.rootMultiplicity a := Finset.sum_le_sum hmult
+  omega
+
+/-- **Quantitative GS list bound with multiplicities.** An interpolant `H ≠ 0` whose `Y`-coefficients
+have `X`-degree `≤ B`, with each listed degree-`≤ k` codeword vanishing to order `≥ r` on a
+curve-agreement set of size `> (B + deg_Y(H)·k)/r`, lists at most `deg_Y(H)` codewords. The
+multiplicity-`r` root counting is correct and reusable; note that realizing the **Johnson** radius
+`1 − √ρ` (rather than the Sudan radius `1 − √(2ρ)`) requires *weighted-degree* `(1, k-1)`
+interpolation, since with the box bound `(deg_X, deg_Y)` the `r` factors cancel — see the module
+note. -/
+theorem gs_multiplicity_list_bound [DecidableEq F]
+    (H : Polynomial (Polynomial F)) (hH : H ≠ 0) (B k r : ℕ)
+    (hB : ∀ i, (H.coeff i).natDegree ≤ B)
+    (L : Finset (Polynomial F)) (hdeg : ∀ p ∈ L, p.natDegree ≤ k)
+    (curve : Polynomial F → Finset F)
+    (hmult : ∀ p ∈ L, ∀ a ∈ curve p, r ≤ (Polynomial.eval p H).rootMultiplicity a)
+    (hbig : ∀ p ∈ L, B + H.natDegree * k < (curve p).card * r) :
+    L.card ≤ H.natDegree := by
+  have hroot : ∀ p ∈ L, Polynomial.eval p H = 0 := by
+    intro p hp
+    refine eval_zero_of_multiplicity_agreement H p (curve p) r (hmult p hp) ?_
     have hd : (Polynomial.eval p H).natDegree ≤ B + H.natDegree * p.natDegree :=
       natDegree_eval_le H p B hB
     have hmul : H.natDegree * p.natDegree ≤ H.natDegree * k := by gcongr; exact hdeg p hp
