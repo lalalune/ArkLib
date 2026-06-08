@@ -299,6 +299,37 @@ theorem probEvent_simQ_run'_congr_marginal
 
 #print axioms probEvent_simQ_run'_congr_marginal
 
+/-- **Two-handler `liftComp` simulation bridge.** A computation `oa` over a *sub*-oracle `I₀` can be
+either (i) lifted into a larger oracle `M₀` and simulated by a handler `h` there, or (ii) simulated
+directly by a handler `h₁` on `I₀`. If the two handlers agree *per lifted query* (`hquery`), they
+agree on *all* computations. This is the device that reconciles the message-seam phase-1 game — which
+runs the malicious prover's `pSpec₁` half under the *combined* challenge oracle
+`[(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ` (the seam factoring lifts via `OracleComp.liftComp`) — with
+`V₁.soundness`, which runs it under `pSpec₁`'s own challenge oracle. The entire (cast-heavy) content
+of that reconciliation is concentrated into the single hypothesis `hquery`; this lemma discharges the
+free-monad induction once and for all. -/
+theorem simulateQ_liftComp_run_eq_of_query
+    {ιᵢ ιₘ : Type} {I₀ : OracleSpec ιᵢ} {M₀ : OracleSpec ιₘ} {σ' : Type}
+    [MonadLiftT (OracleQuery I₀) (OracleQuery M₀)]
+    (h : QueryImpl M₀ (StateT σ' ProbComp)) (h₁ : QueryImpl I₀ (StateT σ' ProbComp))
+    (hquery : ∀ (t : I₀.Domain) (s : σ'),
+      (simulateQ h (OracleComp.liftComp (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) M₀)).run s
+        = (h₁ t).run s)
+    {γ : Type} (oa : OracleComp I₀ γ) (s : σ') :
+    (simulateQ h (OracleComp.liftComp oa M₀)).run s = (simulateQ h₁ oa).run s := by
+  induction oa using OracleComp.inductionOn generalizing s with
+  | pure x => simp [simulateQ_pure, StateT.run_pure, OracleComp.liftComp_pure]
+  | query_bind t k ih =>
+      have hq1 : simulateQ h₁ (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) = h₁ t := by
+        simp [simulateQ_query]
+      rw [OracleComp.liftComp_bind, simulateQ_bind, StateT.run_bind, hquery t s,
+          simulateQ_bind, StateT.run_bind, hq1]
+      refine bind_congr ?_
+      rintro ⟨a, s'⟩
+      exact ih a s'
+
+#print axioms simulateQ_liftComp_run_eq_of_query
+
 /-- **`OptionT.mk`-to-`ProbComp` `probEvent` bridge.** The soundness game is phrased as a
 `probEvent` over an `OptionT ProbComp` (the verifier may reject = fail), while the union-bound
 toolkit (`probComp_seam_union_le`) is stated at the bare `ProbComp` level with a `none`-as-failure
