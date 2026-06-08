@@ -150,4 +150,34 @@ theorem second_moment_translate (C : Finset (ι → F)) (r : ℕ) :
   exact Finset.sum_congr rfl
     (fun c _ => Finset.sum_congr rfl (fun c' _ => pairBall_translate c c' r))
 
+/-- **Linear reindexing.** For `C` closed under addition and subtraction, summing any `g` over the
+*differences* `c' - c` of ordered pairs equals `|C|` copies of the sum of `g` over `C`. (For each
+`c`, the map `c' ↦ c' - c` bijects `C` with `C`.) -/
+theorem sum_pairs_diff {β : Type*} [AddCommMonoid β] {C : Finset (ι → F)}
+    (hadd : ∀ a ∈ C, ∀ b ∈ C, a + b ∈ C) (hsub : ∀ a ∈ C, ∀ b ∈ C, a - b ∈ C)
+    (g : (ι → F) → β) :
+    ∑ c ∈ C, ∑ c' ∈ C, g (c' - c) = C.card • ∑ v ∈ C, g v := by
+  have key : ∀ c ∈ C, (∑ c' ∈ C, g (c' - c)) = ∑ v ∈ C, g v := by
+    intro c hc
+    refine Finset.sum_bij' (fun c' _ => c' - c) (fun v _ => v + c) ?_ ?_ ?_ ?_ ?_
+    · intro c' hc'; exact hsub c' hc' c hc
+    · intro v hv; exact hadd v hv c hc
+    · intro c' _; exact sub_add_cancel c' c
+    · intro v _; exact add_sub_cancel_right v c
+    · intro c' _; rfl
+  rw [Finset.sum_congr rfl key, Finset.sum_const]
+
+/-- **Second moment for a linear code.** The `|C|²` pair sum collapses to `|C|` times a sum over
+codewords: `Σ_f |Λ(C,r,f)|² = |C| · Σ_{v∈C} N(v,r)`, where `N(v,r) = #{g : d(0,g) ≤ r ∧ d(v,g) ≤ r}`.
+Since each difference `v = c' - c` is itself a codeword, the second moment is governed entirely by the
+codewords' weights (next: `N(v,r)` depends only on `wt(v)`, giving `Σ_w A_w · N(w,r)`). -/
+theorem second_moment_linear {C : Finset (ι → F)}
+    (hadd : ∀ a ∈ C, ∀ b ∈ C, a + b ∈ C) (hsub : ∀ a ∈ C, ∀ b ∈ C, a - b ∈ C) (r : ℕ) :
+    ∑ f : ι → F, (lam C r f).card ^ 2
+      = C.card • ∑ v ∈ C,
+          (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card := by
+  rw [second_moment_translate]
+  exact sum_pairs_diff hadd hsub
+    (fun v => (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card)
+
 end ArkLib.CodingTheory.ListMoments
