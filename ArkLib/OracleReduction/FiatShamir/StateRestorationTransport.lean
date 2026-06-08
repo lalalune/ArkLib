@@ -113,6 +113,118 @@ end Messages
 
 end ProtocolSpec
 
+section TranscriptDeterminism
+
+namespace ProtocolSpec
+
+variable {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι} {StmtIn : Type}
+  [∀ i, SampleableType (pSpec.Challenge i)]
+
+/-- A single challenge-oracle query, simulated through the cached challenge-table state
+implementation, is a deterministic read of the table that leaves the table unchanged.
+
+This is the per-query atom underlying the read-only determinism of the slow Fiat-Shamir transcript
+derivation: `fsChallengeQueryImplState` answers a challenge query by `fun f => pure (f q, f)`, i.e.
+it looks up the cached table without sampling or mutating it, so the shared-oracle implementation
+`srImpl` is never consulted. -/
+theorem simulateQ_addLift_fsChallenge_query_run
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (q : (fsChallengeOracle StmtIn pSpec).Domain)
+    (table : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) :
+    StateT.run (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+      (query (spec := fsChallengeOracle StmtIn pSpec) q :
+        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+          ((fsChallengeOracle StmtIn pSpec).Range q))) table =
+        (pure (table q, table) : ProbComp ((fsChallengeOracle StmtIn pSpec).Range q ×
+          QueryImpl (fsChallengeOracle StmtIn pSpec) Id)) := by
+  rw [show (query (spec := fsChallengeOracle StmtIn pSpec) q :
+        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+          ((fsChallengeOracle StmtIn pSpec).Range q))
+      = liftM (liftM (OracleSpec.query q) :
+          OracleQuery (oSpec + fsChallengeOracle StmtIn pSpec)
+            ((fsChallengeOracle StmtIn pSpec).Range q)) from rfl,
+    simulateQ_query]
+  simp only [OracleQuery.liftM_add_right_def, QueryImpl.addLift, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply, fsChallengeQueryImplState, simulateQ_query, id_map']
+  rfl
+
+namespace MessagesUpTo
+
+/-- Through the cached challenge-table state implementation, the auxiliary slow Fiat-Shamir
+transcript derivation is read-only deterministic: running it leaves the table unchanged and returns
+a fixed transcript value. This is proved by induction on the round index, using
+`simulateQ_addLift_fsChallenge_query_run` at each verifier-challenge step. -/
+theorem deriveTranscriptSRAux_simulateQ_run
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
+    (j : Fin (k + 1))
+    (table : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) :
+    ∃ t : pSpec.Transcript (j.castLE (by omega)),
+      StateT.run (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+        (deriveTranscriptSRAux stmtIn k messages j)) table =
+        (pure (t, table) :
+          ProbComp (pSpec.Transcript (j.castLE (by omega)) ×
+            QueryImpl (fsChallengeOracle StmtIn pSpec) Id)) := by
+  induction j using Fin.induction with
+  | zero =>
+    refine ⟨fun i => i.elim0, ?_⟩
+    simp [deriveTranscriptSRAux, simulateQ_pure]
+  | succ i ih =>
+    obtain ⟨t, ht⟩ := ih
+    simp only [deriveTranscriptSRAux] at ht ⊢
+    rw [Fin.induction_succ, simulateQ_bind, StateT.run_bind, ht, pure_bind]
+    split
+    · next hDir =>
+      rw [simulateQ_bind, StateT.run_bind, simulateQ_addLift_fsChallenge_query_run,
+        pure_bind, simulateQ_pure, StateT.run_pure]
+      exact ⟨_, rfl⟩
+    · rw [simulateQ_pure]
+      refine ⟨_, rfl⟩
+
+/-- Read-only determinism of the slow Fiat-Shamir partial-transcript derivation through the cached
+challenge-table state, specialized to the full derivation up to round `k`. -/
+theorem deriveTranscriptSR_simulateQ_run
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
+    (table : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) :
+    ∃ t : pSpec.Transcript k,
+      StateT.run (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+        (deriveTranscriptSR (oSpec := oSpec) stmtIn k messages)) table =
+        (pure (t, table) :
+          ProbComp (pSpec.Transcript k × QueryImpl (fsChallengeOracle StmtIn pSpec) Id)) :=
+  deriveTranscriptSRAux_simulateQ_run srImpl stmtIn k messages (Fin.last k) table
+
+end MessagesUpTo
+
+namespace Messages
+
+/-- Read-only determinism of the slow Fiat-Shamir full-transcript derivation through the cached
+challenge-table state implementation: it leaves the table unchanged and returns a fixed transcript.
+
+This is the keystone used by the knowledge-soundness transfer to collapse the redundant transcript
+derivation (the Fiat-Shamir verifier derives the transcript to check the proof, and the
+straightline extractor re-derives it from the same proof and table). -/
+theorem deriveTranscriptFS_simulateQ_run
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (stmtIn : StmtIn) (messages : pSpec.Messages)
+    (table : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) :
+    ∃ t : pSpec.FullTranscript,
+      StateT.run (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+        (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages)) table =
+        (pure (t, table) :
+          ProbComp (pSpec.FullTranscript × QueryImpl (fsChallengeOracle StmtIn pSpec) Id)) :=
+  MessagesUpTo.deriveTranscriptSR_simulateQ_run srImpl stmtIn (Fin.last n) messages table
+
+end Messages
+
+end ProtocolSpec
+
+end TranscriptDeterminism
+
 namespace Verifier
 
 /-- The basic Fiat-Shamir verifier can be expanded using the state-restoration transcript
@@ -787,7 +899,6 @@ theorem fiatShamir_soundnessTransferResidual_canonical
   refine le_trans ?_ h
   simp [Verifier.soundness, Verifier.StateRestoration.soundness,
     fiatShamirAdversaryExecution, fiatShamirCoupledQueryImpl,
-    ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl',
     probEvent_optionT_stateT_init,
     probEvent_payload_option_eq_stmt,
     Verifier.StateFunction.probEvent_optionT_mk_eq_elim, hstmtIn,
@@ -1296,7 +1407,65 @@ theorem fiatShamir_runWithLog_simulateQ_fst
     { prover := P, verifier := V.fiatShamir })]
   rw [OptionT.run_map, simulateQ_map]
 
-#print axioms Reduction.fiatShamir_runWithLog_simulateQ_fst
+set_option linter.flexible false in
+theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (knowledgeError : ℝ≥0)
+    (V : Verifier oSpec StmtIn StmtOut pSpec) :
+    fiatShamir_knowledgeSoundnessTransferResidual srInit srImpl srInit
+      (fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
+      relIn relOut knowledgeError V := by
+  classical
+  intro hSR
+  obtain ⟨srExtractor, hSRbound⟩ := hSR
+  refine ⟨fiatShamirStraightlineExtractorOfStateRestoration srExtractor, ?_⟩
+  intro stmtIn witIn prover
+  have h := hSRbound (Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver
+    (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
+  dsimp only
+  refine le_trans ?_ h
+  simp only [Verifier.knowledgeSoundness, Verifier.StateRestoration.knowledgeSoundness,
+    fiatShamirStraightlineExtractorOfStateRestoration, fiatShamirCoupledQueryImpl,
+    Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
+    Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
+    Verifier.fiatShamir_verify_eq, OptionT.run_bind, simulateQ_bind, Option.elimM,
+    simulateQ_option_elim, bind_assoc, pure_bind, map_bind]
+  rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
+  refine Verifier.StateFunction.probEvent_bind_mono_heteroEvent (fun table _ => ?_)
+  refine le_trans (probEvent_stateT_bind_fst_mono_hetero
+    (mx := simulateQ ((srImpl.addLift fsChallengeQueryImplState).addLift challengeQueryImpl)
+      (runWithLog stmtIn witIn { prover := prover, verifier := V.fiatShamir }).run)
+    (oc := fun (a : Option (((Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
+            StmtOut × WitOut) × StmtOut) × _ × _))
+        (table' : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) =>
+      a.elim (pure none) (fun r =>
+        StateT.run'
+          (show StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp
+              (Option (StmtIn × WitIn × StmtOut × WitOut)) from do
+            let x_1 ← simulateQ (srImpl.addLift fsChallengeQueryImplState)
+              (fiatShamirStraightlineExtractorOfStateRestoration srExtractor
+                stmtIn r.1.1.2.2 r.1.1.1 default default).run
+            x_1.elim (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+                (pure none : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+                  (Option (StmtIn × WitIn × StmtOut × WitOut))))
+              (fun x_2 =>
+                simulateQ (srImpl.addLift fsChallengeQueryImplState)
+                  ((pure (stmtIn, x_2, r.1.2, r.1.1.2.2) :
+                    OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                      (StmtIn × WitIn × StmtOut × WitOut)).run))) table'))
+    (p := fun o : Option (StmtIn × WitIn × StmtOut × WitOut) =>
+      o.elim False (fun x => (x.1, x.2.1) ∉ relIn ∧ (x.2.2.1, x.2.2.2) ∈ relOut))
+    (q := fun o : Option (StmtIn × WitIn × StmtOut × WitOut) =>
+      o.elim False (fun x => (x.1, x.2.1) ∉ relIn ∧ (x.2.2.1, x.2.2.2) ∈ relOut))
+    (s := table) (h := ?perElem)) (le_of_eq ?heq)
+  · intro a s' ha
+    trace_state
+    sorry
+  · trace_state
+    sorry
 
 end CanonicalKnowledgeSoundness
 
