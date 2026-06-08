@@ -141,6 +141,54 @@ theorem prob_someQueryOut_ge (G : Finset ι) (δ : ℝ≥0∞) (t : ℕ) [Nonemp
   rw [hev, prob_compl_eq]
   exact tsub_le_tsub_left (prob_allQueriesIn_le G δ t h_density) 1
 
+/-! ### Query-round detection amplification (issue #14)
+
+The detection lower bound `1 - (1 - δ) ^ t` from `prob_someQueryOut_ge` is monotone in the number
+of queries `t` and, for `t ≥ 1`, dominates the single-query rejection probability `δ`. These
+arithmetic facts turn a single-query rejection guarantee — in particular the BCIKS20 RS
+affine-line proximity threshold `ε := errorBound δ deg domain`, which lower-bounds the
+single-query detection of a `δ`-far word — into a `t`-round rejection guarantee. -/
+
+/-- `(1 - δ) ^ t` is antitone in `t`, since `1 - δ ≤ 1`: more queries can only shrink the
+joint-acceptance probability of a far word. -/
+theorem accProb_antitone (δ : ℝ≥0∞) {t₁ t₂ : ℕ} (h : t₁ ≤ t₂) :
+    (1 - δ) ^ t₂ ≤ (1 - δ) ^ t₁ :=
+  pow_le_pow_right_of_le_one (by simp) tsub_le_self h
+
+/-- The per-round detection lower bound `1 - (1 - δ) ^ t` is monotone in the number of queries
+`t`: more queries can only increase the rejection guarantee. -/
+theorem detectBound_monotone (δ : ℝ≥0∞) {t₁ t₂ : ℕ} (h : t₁ ≤ t₂) :
+    (1 : ℝ≥0∞) - (1 - δ) ^ t₁ ≤ 1 - (1 - δ) ^ t₂ :=
+  tsub_le_tsub_left (accProb_antitone δ h) 1
+
+/-- With a single query the detection lower bound is exactly `δ`: a `δ`-far word is rejected with
+probability `≥ 1 - (1 - δ) ^ 1 = δ`. -/
+theorem detectBound_one (δ : ℝ≥0∞) (hδ : δ ≤ 1) :
+    (1 : ℝ≥0∞) - (1 - δ) ^ 1 = δ := by
+  rw [pow_one, tsub_tsub_cancel_of_le hδ]
+
+/-- For at least one query, the `t`-round detection lower bound dominates the single-query
+rejection probability `δ`. -/
+theorem detectBound_ge_delta (δ : ℝ≥0∞) (hδ : δ ≤ 1) {t : ℕ} (ht : 1 ≤ t) :
+    δ ≤ (1 : ℝ≥0∞) - (1 - δ) ^ t :=
+  (detectBound_one δ hδ).symm ▸ detectBound_monotone δ ht
+
+omit [DecidableEq ι] in
+/-- **A query round rejects a far word with probability ≥ the proximity bound.** If a proximity
+error threshold `ε` (e.g. the BCIKS20 RS affine-line `errorBound δ deg domain`) lower-bounds the
+single-query rejection probability `δ` of a `δ`-far word, then the `t`-query round (`t ≥ 1`)
+rejects that word — `some query lands outside the good set` — with probability at least `ε`.
+
+This is the arithmetic bridge from the single-round RS affine-line proximity rejection to the
+amplified `t`-round query phase: increasing the query count never decreases the guarantee. -/
+theorem prob_someQueryOut_ge_proximity
+    (G : Finset ι) (δ ε : ℝ≥0∞) (t : ℕ) [Nonempty ι]
+    (hδ : δ ≤ 1) (hε : ε ≤ δ) (ht : 1 ≤ t)
+    (h_density : (G.card : ℝ≥0∞) / Fintype.card ι ≤ 1 - δ) :
+    ε ≤ (PMF.uniformOfFintype (Fin t → ι)).toOuterMeasure
+          {q : Fin t → ι | ¬ (∀ j, q j ∈ G)} :=
+  le_trans (le_trans hε (detectBound_ge_delta δ hδ ht)) (prob_someQueryOut_ge G δ t h_density)
+
 /-! ### Axiom audit (issue #14 query-round probability brick) -/
 
 #print axioms prob_singleQueryIn
@@ -148,5 +196,10 @@ theorem prob_someQueryOut_ge (G : Finset ι) (δ : ℝ≥0∞) (t : ℕ) [Nonemp
 #print axioms prob_allQueriesIn_le
 #print axioms prob_someQueryOut_ge
 #print axioms prob_compl_eq
+#print axioms accProb_antitone
+#print axioms detectBound_monotone
+#print axioms detectBound_one
+#print axioms detectBound_ge_delta
+#print axioms prob_someQueryOut_ge_proximity
 
 end ArkLib.Fri.QueryRoundProb
