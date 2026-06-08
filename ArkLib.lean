@@ -417,6 +417,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Issue244Refutation
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonCapacityBound
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonListBound
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonPerWord
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSimplexBound
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingBadScalarCount
