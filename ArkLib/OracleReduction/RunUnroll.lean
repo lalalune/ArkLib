@@ -563,6 +563,33 @@ theorem seam_swap_evalDist_eq
 
 #print axioms seam_swap_evalDist_eq
 
+/-- **Seam swap as a `probEvent` equality (the `rw`/`simp`-usable form for the concrete goal).** The
+`probEvent`-level companion to `seam_swap_evalDist_eq`: any event `p` has the same probability under the
+natural-order seam chain and the union-bound-order chain. This is the form actually applied to the
+concrete `appendSoundness` goal — via `simp only [seam_swap_probEvent_eq …]` (so the higher-order
+`W2 x a s₂` is beta-reduced to match the goal's body), turning the soundness goal into
+`probComp_seam_union_le`'s shape without ever triggering the `exact`-defeq blow-up. -/
+theorem seam_swap_probEvent_eq
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (p : Option D → Prop) :
+    Pr[p | init >>= fun s => (simulateQ so
+        (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+          W2 x a s₂).run).run' s]
+    = Pr[p | init >>= fun s => (simulateQ so
+        ((liftM FST >>= fun x => W1 x >>= fun s₂ =>
+            (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+          >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s] := by
+  unfold probEvent
+  rw [seam_swap_evalDist_eq init so hso FST SND W1 W2 hB]
+
+#print axioms seam_swap_probEvent_eq
+
 /-- **Two-phase seam soundness with the snd↔V₁ reorder built in.** This is the abstract heart of
 `appendSoundness`: a malicious-prover seam chain runs the two prover phases `FST`, `SND` and the two
 verifier phases `W1` (`= V₁`), `W2` (`= V₂`) in the *natural* order `FST → SND → W1 → W2`, but the
