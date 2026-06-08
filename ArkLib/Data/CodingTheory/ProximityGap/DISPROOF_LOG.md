@@ -16,11 +16,11 @@ cross-checked: the dependency spine (Loop24→25, Loop21→Carving10) builds and
 and every brick lives in its own `ArkLib.ProximityGap.*Loop_n` namespace (no collisions). The whole
 proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_disproof_backup/`.
 
-**Current-checkout caveat (2026-06-08):** `main` at `88ee6e9cd` does not currently carry every
-historical brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
+**Current-checkout caveat (2026-06-08):** this checkout does not currently carry every historical
+brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, 29, and 30 have been restored as self-contained arithmetic bricks in the current
+Loops 27, 28, 29, 30, and 31 have been restored as self-contained arithmetic bricks in the current
 checkout.
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
@@ -337,6 +337,21 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop31 — variable multiplicative exponents: only the total exponent matters
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop31.lean`:**
+`variable_exponent_product_eq` (`∏_{j<m}2^(e_j)=2^(∑_{j<m}e_j)`),
+`variable_exponent_product_le_domain_pow` (if `∑e_j≤m*c`, the product is at most the final-domain
+degree-`c` polynomial), `variable_exponent_product_le_domain_pow_of_pointwise` (bounded per-level
+exponents are prize-safe), and `variable_exponent_product_overflows_of_sum` (if `m*d<∑e_j`, the
+product beats final degree `d`).
+**Disproof attempt:** replace Loop30's rigid local factors `(2^j)^c` with adaptive or uneven factors
+`2^(e_j)` and hope the irregularity itself defeats every fixed polynomial in `2^m`.
+**Disproof of the disproof:** no — the product sees only the cumulative exponent. If the total
+exponent is linear in the depth `m`, or if every level exponent is uniformly bounded, the prize
+numerator absorbs the tower. A variable-factor disproof must prove a **superlinear cumulative
+exponent** realized by the actual smooth-domain GS/proximity process. Merely naming uneven local
+factors does not disprove the conjecture.
 
 ### Loop30 — local polynomial multiplicative factors are dangerous only as a product
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop30.lean`:**

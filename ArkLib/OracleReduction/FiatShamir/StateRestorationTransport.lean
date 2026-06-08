@@ -1408,6 +1408,53 @@ private theorem stateT_option_elimM_map_eq
   | mk oa _s' =>
       cases oa <;> rfl
 
+private theorem stateT_option_elimM_congr
+    {σ α β : Type} (mx : StateT σ ProbComp (Option α))
+    (f g : α → StateT σ ProbComp (Option β))
+    (h : ∀ a, f a = g a) :
+    Option.elimM mx (pure none) f = Option.elimM mx (pure none) g := by
+  unfold Option.elimM
+  apply bind_congr
+  intro oa
+  cases oa <;> simp [h]
+
+private theorem stateT_option_elimM_some_map_eq
+    {σ α β : Type} (mx : StateT σ ProbComp α)
+    (k : α → StateT σ ProbComp (Option β)) :
+    Option.elimM (some <$> mx) (pure none) k = (mx >>= k) := by
+  unfold Option.elimM
+  apply StateT.ext
+  intro s
+  simp only [StateT.run_bind, StateT.run_map]
+  rw [bind_map_left]
+  apply bind_congr
+  intro x
+  cases x
+  rfl
+
+private theorem stateT_option_elimM_bind_eq
+    {σ α β γ : Type} (mx : StateT σ ProbComp α)
+    (my : α → StateT σ ProbComp (Option β))
+    (k : β → StateT σ ProbComp (Option γ)) :
+    Option.elimM (mx >>= my) (pure none) k =
+      (mx >>= fun a => Option.elimM (my a) (pure none) k) := by
+  unfold Option.elimM
+  rw [bind_assoc]
+
+private theorem simulateQ_optionT_bind_mk_some_run
+    {ι : Type} {spec : OracleSpec ι} {σ α β : Type}
+    (impl : QueryImpl spec (StateT σ ProbComp))
+    (oa : OracleComp spec α)
+    (k : α → OptionT (OracleComp spec) β) :
+    simulateQ impl (OptionT.run (do
+        let a ← OptionT.mk (some <$> oa)
+        k a)) =
+      (do
+        let a ← simulateQ impl oa
+        simulateQ impl (OptionT.run (k a))) := by
+  simp [OptionT.run_bind, OptionT.run_mk, simulateQ_option_elimM, simulateQ_map,
+    stateT_option_elimM_some_map_eq]
+
 /-- Generic bridge: a `Reduction.run`-bind equals the corresponding `runWithLog`-bind whose
 continuation only reads the run result (the query logs are discarded).  This is the no-HOU
 direction (rewrite `run` to `Prod.fst <$> runWithLog`), and it is the canonical way to discharge
@@ -1675,7 +1722,25 @@ theorem fiatShamirKnowledgeExec_runCollapse
                 (StmtIn × WitIn × StmtOut × WitOut))) := by
     intro d extractedWitIn
     simp only [OptionT.run_pure, simulateQ_pure]
-  simp [K, QueryImpl.addLift_def, hLift, hPure]
+  apply stateT_option_elimM_congr
+  trace_state
+  intro d
+  dsimp [K]
+  simp only [QueryImpl.addLift_def]
+  rw [hLift d]
+  rw [simulateQ_optionT_bind_mk_some_run
+    (impl := impl)
+    (oa := Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1 0))
+    (k := fun transcript =>
+      (liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn))]
+  rw [stateT_option_elimM_bind_eq]
+  apply bind_congr
+  intro transcript
+  apply stateT_option_elimM_congr
+  intro extractedWitIn
+  rw [hPure d extractedWitIn]
+  simp only [OptionT.run_pure, simulateQ_pure]
 
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of

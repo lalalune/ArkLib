@@ -87,6 +87,49 @@ theorem same_scalar_of_far (C : Submodule F (ι → F)) (P P' u₀ u₁ : ι →
   rw [hammingDist_comm] at hf
   omega
 
+
+/-- Translation: `d(a - x, b) = d(a, b + x)` (relabel the disagreement coordinates). -/
+theorem hammingDist_sub_left (a x b : ι → F) :
+    hammingDist (a - x) b = hammingDist a (b + x) := by
+  unfold hammingDist
+  congr 1
+  ext i
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Pi.sub_apply, Pi.add_apply, ne_eq,
+    sub_eq_iff_eq_add]
+
+/-- Translation invariance: `d(u + a, u + b) = d(a, b)`. -/
+theorem hammingDist_add_left_cancel (u a b : ι → F) :
+    hammingDist (u + a) (u + b) = hammingDist a b := by
+  unfold hammingDist
+  congr 1
+  ext i
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Pi.add_apply, ne_eq, add_right_inj]
+
+/-- **Near-direction branch.** If the direction `u₁` is within `2r` of a codeword `c₁ ∈ C`, then any
+codeword `P` that is `r`-close to the line `{u₀+γ·u₁}` has its shift `P - γ·c₁` within `3r` of `u₀`.
+So in the near branch every line-list codeword, shifted by `γ·c₁`, lands in the single per-word list
+`Λ(C, u₀, 3δ)` — the structured branch of the BCIKS20 dichotomy for #232. -/
+theorem near_case (P u₀ u₁ c₁ : ι → F) {γ : F} (r : ℕ)
+    (hnear : hammingDist u₁ c₁ ≤ 2 * r)
+    (hP : hammingDist P (u₀ + γ • u₁) ≤ r) :
+    hammingDist (P - γ • c₁) u₀ ≤ 3 * r := by
+  calc hammingDist (P - γ • c₁) u₀
+      = hammingDist P (u₀ + γ • c₁) := hammingDist_sub_left P (γ • c₁) u₀
+    _ ≤ hammingDist P (u₀ + γ • u₁) + hammingDist (u₀ + γ • u₁) (u₀ + γ • c₁) :=
+        hammingDist_triangle _ _ _
+    _ ≤ r + 2 * r := by
+        gcongr
+        · exact hP
+        · calc hammingDist (u₀ + γ • u₁) (u₀ + γ • c₁)
+              = hammingDist (γ • u₁) (γ • c₁) := hammingDist_add_left_cancel u₀ (γ • u₁) (γ • c₁)
+            _ = hammingNorm (γ • u₁ - γ • c₁) := hammingDist_eq_hammingNorm _ _
+            _ = hammingNorm (γ • (u₁ - c₁)) := by rw [smul_sub]
+            _ ≤ hammingNorm (u₁ - c₁) := hammingNorm_smul_le_hammingNorm
+            _ = hammingDist u₁ c₁ := (hammingDist_eq_hammingNorm u₁ c₁).symm
+            _ ≤ 2 * r := hnear
+    _ = 3 * r := by ring
+
 end ArkLib.CodingTheory.Collision
 #print axioms ArkLib.CodingTheory.Collision.collision
 #print axioms ArkLib.CodingTheory.Collision.same_scalar_of_far
+#print axioms ArkLib.CodingTheory.Collision.near_case
