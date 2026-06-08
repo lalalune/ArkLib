@@ -57,7 +57,7 @@ theorem rs_ld_threshold_strict_rate12
     exact_mod_cast h
   have hq2 : (Fintype.card F : ℝ) ≤ 2 ^ 256 := by exact_mod_cast hF2
   have hneg := CodingTheory.rs_uptoCapacity_false_rate12_n256 α hq1 hq2
-  -- bridge the negative-result `ofReal` form to the lemma's coercion-product form, at radius 128/256
+  -- bridge the negative-result `ofReal` form to the coercion-product form, at radius 128/256
   have hover : ((1 : ℝ≥0) / 2 ^ 128 : ℝ≥0) * (Fintype.card F : ENNReal)
       < (Lambda ((ReedSolomon.code α 128 : Set (Fin 256 → F)))
           (((128 : ℝ≥0) / (Fintype.card (Fin 256) : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal) := by
