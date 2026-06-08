@@ -111,6 +111,7 @@ noncomputable def firstSCEvalFromOracles
   let c ← matVecMLEEvalFromOracles pp oSpec stmt.2 point .C
   pure (MvPolynomial.eval point (MvPolynomial.eqPolynomial stmt.1) * (a * b - c))
 
+omit [SampleableType R] in
 /-- **`simOStmt` faithfulness (single-family).** The honest simulation of `firstSCEvalFromOracles`
 equals `eval point ℱ`. -/
 theorem firstSCEvalFromOracles_simOracle
@@ -123,6 +124,7 @@ theorem firstSCEvalFromOracles_simOracle
   refine congrArg pure ?_
   simp only [firstSumCheckVirtualPolynomial, map_mul, map_sub]
 
+omit [SampleableType R] in
 /-- **`hfaith` for the first sum-check lens.** The lens' reconstruction lifted into the verifier's
 full oracle spec and simulated under the honest two-family oracle equals `eval point ℱ`. -/
 theorem firstSCEvalFromOracles_simOracle2
@@ -219,10 +221,8 @@ for the first sum-check lift, the first-phase analogue of `secondSumcheckCoheren
 omit [Fintype R] [SampleableType R] in
 /-- **`firstSumcheckResidual` discharged (degree-corrected).** The first sum-check oracle reduction
 exists, of the type the Spartan composition consumes — over `ℓ_m` variables with the **degree-`3`**
-sum-check protocol spec. (The scaffold's `firstSumcheckResidual` in `ToMathlib/SpartanBricks` declares
-degree `2`; the honest degree is `3` because `ℱ = eq · (Ã·B̃ − C̃)` is `eq` (degree 1) times a
-degree-2 product.) -/
-omit [Fintype R] [SampleableType R] in
+sum-check protocol spec. (The scaffold's `firstSumcheckResidual` declares degree `2`; the honest
+degree is `3` because `ℱ = eq · (Ã·B̃ − C̃)` is `eq` (degree 1) times a degree-2 product.) -/
 theorem firstSumcheckReduction_nonempty :
     Nonempty (OracleReduction oSpec
       (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit

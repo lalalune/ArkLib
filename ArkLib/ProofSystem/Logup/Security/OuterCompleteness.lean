@@ -569,6 +569,34 @@ theorem probEvent_outerVerify_reject_challenge_le (oStmt : ∀ i, OStmtIn F n M 
       (Fintype.card_congr (Equiv.subtypeEquiv (Equiv.cast hTy.symm) (fun _ => Iff.rfl)))
   · exact congrArg Nat.cast (Fintype.card_congr (Equiv.cast hTy.symm))
 
+/-- **Embedded-verifier accept collapse.** On a transcript whose `x`-challenge is accepted
+(`outerVerifyAccepts`), the outer reduction's embedded (plain) verifier run is a pure successful
+output: its `OptionT.run` is `pure (some …)`, so it never fails (`none`). This is the verifier-side
+half of the per-state accept-zero step in `outer_perState_none_le` — a direct repackaging of the
+pole-scan collapse `simulateQ_outerVerify_eq` under the named acceptance predicate. -/
+theorem outerVerifier_run_accept_eq_pure
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (tr : FullTranscript (outerPSpec F n params))
+    (hacc : outerVerifyAccepts F n M stmtIn.2 (chalX F n M params tr.challenges)) :
+    ∃ v, (Verifier.run stmtIn tr (outerVerifier oSpec F n M params).toVerifier).run
+      = (pure (some v) : OracleComp oSpec
+          (Option (StmtAfterOuter F n M params
+            × (∀ i, OStmtAfterOuter F n M params i)))) := by
+  classical
+  refine ⟨({ xChallenge := chalX F n M params tr.challenges,
+            zChallenge := (chalBatch F n M params tr.challenges).1,
+            batchingScalars := (chalBatch F n M params tr.challenges).2 },
+          fun i => match h : (outerVerifier oSpec F n M params).embed i with
+            | .inl j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ stmtIn.2 j :
+                OStmtAfterOuter F n M params i)
+            | .inr j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ tr.messages j :
+                OStmtAfterOuter F n M params i)), ?_⟩
+  show ((outerVerifier oSpec F n M params).toVerifier.verify stmtIn tr).run = _
+  unfold OracleVerifier.toVerifier
+  simp only
+  rw [simulateQ_outerVerify_eq, if_pos hacc]
+  rfl
+
 set_option maxHeartbeats 3200000 in
 /-- **Per-(initial-state) pole bound for the simulated outer run (DEV — accept-zero pending).**
 
@@ -609,7 +637,8 @@ theorem outer_perState_none_le
     right
     sorry
   · rw [if_pos hacc]
-    exact mul_le_of_le_one_right (zero_le _) (by exact probEvent_le_one)
+    refine mul_le_of_le_one_right (zero_le _) ?_
+    exact probEvent_le_one
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :

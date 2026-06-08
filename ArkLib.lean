@@ -447,6 +447,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LinearizedPolynomialHasse
 import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingCapacityOverflow
 import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingConjectureRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingThreshold
+import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingUnconditionalRefute
 import ArkLib.Data.CodingTheory.ProximityGap.ListSizeMoments
 import ArkLib.Data.CodingTheory.ProximityGap.ListSizeMomentsConcrete
 import ArkLib.Data.CodingTheory.ProximityGap.ListSizeMomentsWeight
