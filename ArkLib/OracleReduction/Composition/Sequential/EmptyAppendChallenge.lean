@@ -50,29 +50,25 @@ theorem support_simulateQ_challengeQueryImpl_append_left
         (liftM (([pSpec₁.Challenge]ₒ).query i)
           : OracleComp ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _))
       = Set.univ := by
-  -- Expose the `OracleQuery`-level inclusion so `SubSpec.liftM_eq_lift` fires.
+  -- Every appended challenge handler outcome has full support: unfolded, it is a uniform sample,
+  -- and crucially this subgoal keeps the challenge type in `.Challenge` form, where the
+  -- `SampleableType` instance is synthesized directly (avoiding the oracle's `.Range ⟨·, ()⟩` form).
+  have hsupp : ∀ (q : ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Domain),
+      support (challengeQueryImpl (pSpec := pSpec₁ ++ₚ pSpec₂) q) = Set.univ := by
+    intro q
+    -- Give `α` explicitly in `.Challenge` form so the `SampleableType` instance synthesizes; the
+    -- oracle's `.Range q` result type is defeq, which `exact` bridges.
+    exact support_uniformSample ((pSpec₁ ++ₚ pSpec₂).Challenge q.1)
+  -- Expose the `OracleQuery`-level inclusion so `SubSpec.liftM_eq_lift` fires, then reduce.
   rw [show (liftM (([pSpec₁.Challenge]ₒ).query i) : OracleComp ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
         = liftM ((MonadLift.monadLift (([pSpec₁.Challenge]ₒ).query i))
             : OracleQuery ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) from rfl]
-  rw [SubSpec.liftM_eq_lift, simulateQ_query, support_map, challengeQueryImpl]
-  -- Reduce the lens action and query projections, then collapse the support of the (full-support)
-  -- uniform sample, all in one pass so `support_uniformSample` fires on the reduced form. The
-  -- continuation is the bijective response transport `h ▸ ·`, so its image of `Set.univ` is again
-  -- `Set.univ`.
-  -- Reduce the lens projections (so the continuation becomes the bijective response transport
-  -- `h ▸ ·`) and the oracle's `.Range ⟨idx, ()⟩` form down to `.Challenge idx` (so the uniform
-  -- sample's `SampleableType` instance can be synthesized).
-  dsimp only [SubSpec.onQuery, SubSpec.onResponse, OracleQuery.input_apply, OracleQuery.cont_apply,
-    OracleSpec.query, OracleQuery.mk, Function.comp, Function.id_comp,
-    OracleSpec.Range, OracleInterface.toOracleSpec, OracleInterface.Response,
-    ProtocolSpec.challengeOracleInterface, OracleContext.spec]
-  -- The inner uniform sample has full support, so the image under the (bijective) transport is all
-  -- of `Set.univ`. `@mem_support_uniformSample _ _ _` unifies its `SampleableType` instance from the
-  -- goal's term (the oracle's `.Range` form) rather than re-synthesizing it.
-  apply Set.eq_univ_of_forall
-  intro y
-  rw [Set.mem_image]
+  rw [SubSpec.liftM_eq_lift, simulateQ_query, support_map, hsupp, Set.image_univ, Set.range_eq_univ]
+  -- The continuation is the bijective response transport `h ▸ ·`, hence surjective, so the image of
+  -- `Set.univ` is again `Set.univ`.
+  dsimp only [SubSpec.onResponse, OracleQuery.cont_apply, OracleSpec.query, OracleQuery.mk,
+    Function.comp, Function.id_comp]
   generalize_proofs h
-  exact ⟨h.symm ▸ y, @mem_support_uniformSample _ _ _, eqRec_eqRec_symm h y⟩
+  exact eqRec_surjective h
 
 end ProtocolSpec
