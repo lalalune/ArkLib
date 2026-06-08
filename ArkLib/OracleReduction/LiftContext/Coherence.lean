@@ -48,6 +48,24 @@ variable {ι : Type} {oSpec : OracleSpec ι}
     {Inner_ιₛᵢ : Type} {InnerOStmtIn : Inner_ιₛᵢ → Type} [∀ i, OracleInterface (InnerOStmtIn i)]
     {n : ℕ} {pSpec : ProtocolSpec n} [∀ i, OracleInterface (pSpec.Message i)]
 
+/-- **Doubly-lifted-to-singly simulated.** Simulating a `(oSpec + [fam]ₒ)`-computation lifted up
+into `oSpec + ([fam]ₒ + [Msg]ₒ)` under the two-family honest oracle `simOracle2` coincides with
+simulating it directly under the single-family honest oracle `simOracle`. This is the standard tool
+for discharging the per-inner-query faithfulness condition of a concrete lens: it strips the
+prover-message summand that the lens' `simOStmt` never touches. -/
+lemma simulateQ_simOracle2_liftComp
+    {ιf : Type} {fam : ιf → Type} [∀ i, OracleInterface (fam i)]
+    {ιm : Type} {Msg : ιm → Type} [∀ i, OracleInterface (Msg i)]
+    (oos : ∀ i, fam i) (msgs : ∀ i, Msg i) {α : Type}
+    (Y : OracleComp (oSpec + [fam]ₒ) α) :
+    simulateQ (simOracle2 oSpec oos msgs) (OracleComp.liftComp Y (oSpec + ([fam]ₒ + [Msg]ₒ)))
+      = simulateQ (simOracle oSpec oos) Y := by
+  rw [OracleComp.liftComp_def, ← QueryImpl.simulateQ_compose]
+  congr 1
+  funext t
+  rw [QueryImpl.apply_compose]
+  rcases t with q | q <;> rfl
+
 /-- The combined per-query implementation underlying the nested simulation: route an inner-big query
 through `fullRouter simOStmt`, evaluate the resulting `ReaderT` at the outer input statement `s`,
 then
