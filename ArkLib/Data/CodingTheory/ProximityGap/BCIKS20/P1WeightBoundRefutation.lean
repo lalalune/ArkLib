@@ -47,6 +47,21 @@ lemma badH_natDegree_pos : 0 < (Polynomial.X : F[X][Y]).natDegree := by
   rw [badH_natDegree]
   norm_num
 
+lemma evalX_hasseDerivX_badR_one_zero (x₀ : F) :
+    Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX 1 (hasseDerivY 0 (badR x₀)))
+      = Polynomial.C ((Polynomial.X : F[X]) ^ 2) := by
+  rw [hasseDerivY_zero, badR, hasseDerivX_add]
+  have hY : hasseDerivX 1 (Polynomial.X : F[X][X][Y]) = 0 := by
+    unfold hasseDerivX
+    simp
+  have hC : hasseDerivX 1 (Polynomial.C (badLiftCoeff x₀) : F[X][X][Y])
+      = Polynomial.C (Polynomial.C ((Polynomial.X : F[X]) ^ 2)) := by
+    unfold hasseDerivX badLiftCoeff
+    simp
+  rw [hY, hC, zero_add]
+  simp [Bivariate.evalX_eq_map]
+
 end
 
 end BCIKS20.HenselNumerator

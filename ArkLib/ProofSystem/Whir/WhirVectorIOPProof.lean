@@ -40,7 +40,7 @@ theorem whir_vector_iop_breakthrough
         Fintype (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst1 0
       let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
         Nonempty (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst2 0
-      ∀ j : Fin ((P.foldingParam 0) + 1),
+      ∀ _ : Fin ((P.foldingParam 0) + 1),
         let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
       ∀ j : Fin (P.foldingParam 0),
         ε_fold 0 j ≤
@@ -62,7 +62,7 @@ theorem whir_vector_iop_breakthrough
         Fintype (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst1
       let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
         Nonempty (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst2
-      ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+      ∀ i : Fin (M + 1), ∀ _ : Fin ((P.foldingParam i) + 1),
         let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
       ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
         ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ)

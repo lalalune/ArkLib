@@ -12,38 +12,38 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 # Refutation targets for naive Grand Challenge 1 hypotheses
 
 The brute-force hypotheses are useful red-team targets, but several attempted counterexample
-proofs were left as `sorry` stubs and the file also carried conflict markers. This file keeps the
-refutation goals as named `Prop`s until each counterexample is formalized in a separate proof file.
+proofs were left as `sorry` stubs or used older signatures. This file keeps the refutation goals
+as named `Prop`s until each counterexample is formalized in a proof file.
 -/
 
-def refute_Hyp1 : Prop :=
-  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp1_ResultantRankBound H L
+def refute_Hyp1 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp1_ResultantRankBound D H L
 
-def refute_Hyp2 : Prop :=
-  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp2_SmoothCurveIntersection H L
+def refute_Hyp2 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp2_SmoothCurveIntersection D H L
 
-def refute_Hyp3 (domain : ι ↪ F) : Prop :=
-  ¬ ∀ L : Finset (ι → F), Hyp3_PuncturedSupportSparsity domain L
+def refute_Hyp3 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp3_PuncturedSupportSparsity D H L
 
-def refute_Hyp4 : Prop :=
-  ¬ ∀ H : F[X][Y], ∀ u : ι → F, Hyp4_DerivativeMultiplicityCollapse H u
+def refute_Hyp4 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], Hyp4_DerivativeMultiplicityCollapse D H
 
-def refute_Hyp5 : Prop :=
-  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp5_SchwartzZippelDensity H L
+def refute_Hyp5 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp5_SchwartzZippelDensity D H L
 
-def refute_Hyp6 : Prop :=
-  ¬ ∀ L : Finset (ι → F), Hyp6_SubSpaceEvasion L
+def refute_Hyp6 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp6_SubSpaceEvasion D H L
 
-def refute_Hyp7 : Prop :=
-  ¬ ∀ L : Finset (ι → F), ∀ k : ℕ, Hyp7_MatrixRankBound L k
+def refute_Hyp7 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), ∀ k : ℕ, Hyp7_MatrixRankBound D H L k
 
-def refute_Hyp8 : Prop :=
-  ¬ ∀ L : Finset (ι → F), Hyp8_AlgebraicIndependence L
+def refute_Hyp8 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp8_AlgebraicIndependence D H L
 
-def refute_Hyp9 : Prop :=
-  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp9_MultiplicityIntersection H L
+def refute_Hyp9 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp9_MultiplicityIntersection D H L
 
-def refute_Hyp10 : Prop :=
-  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp10_AffineVarietyDimension H L
+def refute_Hyp10 (D : ι ↪ F) : Prop :=
+  ¬ ∀ H : F[X][Y], ∀ L : Finset (ι → F), Hyp10_AffineVarietyDimension D H L
 
 end GrandChallenge1BruteForceRefutations

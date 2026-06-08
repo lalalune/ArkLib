@@ -33,7 +33,6 @@ lemma smooth_subgroup_is_pseudo_random {F : Type} [Field F] [Fintype F]
     exact hx.2
   exact le_trans (Multiset.card_le_of_le h_subset) h_roots
 
-<<<<<<< Updated upstream
 /-- Open bridge from deterministic pseudorandom root counting to the MCA bound. -/
 def mca_bound_of_pseudo_random {F : Type} [Field F] [Fintype F]
     (L : Finset F) (deg : ℕ) (C : Set (F → F)) (δ : ℝ≥0) : Prop :=
