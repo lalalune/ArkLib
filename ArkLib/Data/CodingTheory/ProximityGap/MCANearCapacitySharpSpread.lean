@@ -186,4 +186,75 @@ theorem Wsharp_natsum_lt (hp : n * n ≤ p) (k s : ℕ) (hkn : k + 1 ≤ n) :
       _ < n * n := mul_lt_mul_of_pos_left (by omega) hnpos
   omega
 
+/-! ## The sharp maximal spread lower bound -/
+
+/-- **Sharp maximal near-capacity MCA lower bound on the arithmetic domain.**
+For the Reed–Solomon code of dimension `k` on the arithmetic domain `i ↦ (i : ZMod p)` over a prime
+field with `n² ≤ p`, with `1 ≤ k` and `k+1 ≤ n`, at radius `δ = 1-(k+1)/n` (capacity minus `1/n`):
+`ε_mca(C, δ) ≥ ((k+1)(n-k-1) + 1) / |F|`.
+The `(k+1)(n-k-1)+1` water-filled windows for `s = 0,…,(k+1)(n-1-k)` have node-sums `T + s` covering
+the **entire** `(k+1)`-subset-sum interval of `{0,…,n-1}`, hence distinct bad scalars. This is the
+tight ceiling of the single-line arithmetic-domain method (no window family on `{0,…,n-1}` beats it),
+strengthening the staircase bound `MCANearCapacityQuadratic.epsMCA_quadratic_ge` and removing its
+`n ≥ 2k+1` restriction. -/
+theorem epsMCA_sharp_ge (hp : n * n ≤ p) (hk : 1 ≤ k) (hkn : k + 1 ≤ n) :
+    (((k + 1) * (n - 1 - k) + 1 : ℕ) : ℝ≥0∞) / (Fintype.card (ZMod p) : ℝ≥0∞)
+      ≤ epsMCA (F := ZMod p) (A := ZMod p)
+          (ReedSolomon.code
+              (domain := dom (p := p) (n := n) (by have := NeZero.pos n; nlinarith [hp])) k
+            : Set (Fin n → ZMod p))
+          (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
+  have hnp : n ≤ p := by have := NeZero.pos n; nlinarith [hp]
+  -- dom-sum of a window = cast of its integer node-sum
+  have hcastsum : ∀ s, (∑ i ∈ Wsharp n k s, dom (p := p) hnp i)
+      = (((∑ i ∈ Wsharp n k s, (i : ℕ)) : ℕ) : ZMod p) := by
+    intro s; rw [Nat.cast_sum]; rfl
+  -- dom-sum = cast (s + T) on the valid offset range
+  have hdomsum : ∀ s, s ≤ (k + 1) * (n - 1 - k) →
+      (∑ i ∈ Wsharp n k s, dom (p := p) hnp i)
+        = (((s + ∑ j ∈ Finset.range (k + 1), j) : ℕ) : ZMod p) := by
+    intro s hs; rw [hcastsum s, Wsharp_natsum k s hkn hs]
+  -- the offset determines the window (distinct sums in `ZMod p`)
+  have key : ∀ s ∈ Finset.range ((k + 1) * (n - 1 - k) + 1),
+      ∀ s' ∈ Finset.range ((k + 1) * (n - 1 - k) + 1),
+      (∑ i ∈ Wsharp n k s, dom (p := p) hnp i) = (∑ i ∈ Wsharp n k s', dom (p := p) hnp i) →
+        s = s' := by
+    intro s hs s' hs' hsum
+    rw [Finset.mem_range] at hs hs'
+    rw [hdomsum s (by omega), hdomsum s' (by omega)] at hsum
+    have hsp : s + ∑ j ∈ Finset.range (k + 1), j < p := by
+      rw [← Wsharp_natsum k s hkn (by omega)]; exact Wsharp_natsum_lt hp k s hkn
+    have hsp' : s' + ∑ j ∈ Finset.range (k + 1), j < p := by
+      rw [← Wsharp_natsum k s' hkn (by omega)]; exact Wsharp_natsum_lt hp k s' hkn
+    have hcast := (ZMod.natCast_eq_natCast_iff' _ _ _).mp hsum
+    rw [Nat.mod_eq_of_lt hsp, Nat.mod_eq_of_lt hsp'] at hcast
+    omega
+  -- the window family
+  set 𝒮 : Finset (Finset (Fin n)) :=
+    (Finset.range ((k + 1) * (n - 1 - k) + 1)).image (fun s => Wsharp n k s) with h𝒮
+  have hwinInj : Set.InjOn (fun s => Wsharp n k s)
+      (Finset.range ((k + 1) * (n - 1 - k) + 1) : Set ℕ) := by
+    intro s hs s' hs' hss'
+    exact key s (by simpa using hs) s' (by simpa using hs') (by simp only at hss'; rw [hss'])
+  have h𝒮card : 𝒮.card = (k + 1) * (n - 1 - k) + 1 := by
+    rw [h𝒮, Finset.card_image_of_injOn hwinInj, Finset.card_range]
+  have hcard : ∀ S ∈ 𝒮, S.card = k + 1 := by
+    intro S hS
+    rw [h𝒮, Finset.mem_image] at hS
+    obtain ⟨s, _, rfl⟩ := hS
+    exact Wsharp_card k s hkn
+  have hinj : Set.InjOn (fun S => -(∑ i ∈ S, dom (p := p) hnp i)) (𝒮 : Set (Finset (Fin n))) := by
+    intro S hS S' hS' hSS'
+    rw [Finset.mem_coe, h𝒮, Finset.mem_image] at hS hS'
+    obtain ⟨s, hs, rfl⟩ := hS
+    obtain ⟨s', hs', rfl⟩ := hS'
+    simp only at hSS'
+    have hs2 := key s (by simpa using hs) s' (by simpa using hs') (neg_injective hSS')
+    rw [hs2]
+  have hbound := epsMCA_ge_of_window_family (F := ZMod p) (dom (p := p) hnp) k hk
+    𝒮 hcard hinj
+  rwa [h𝒮card] at hbound
+
+#print axioms epsMCA_sharp_ge
+
 end ProximityGap.MCANearCapacitySharpSpread
