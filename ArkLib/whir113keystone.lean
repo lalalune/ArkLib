@@ -67,10 +67,26 @@ theorem reduction_append_perfectCompleteness_msg
             liftM_map] using hq)]
     -- now: `Pr[⊥ | OptionT.mk CompositeRawRun] = 0`  (raw composite run never fails)
     sorry
-  · -- GOAL: `∀ x ∈ support (OptionT.mk do init; (simulateQ pImpl CompositeRun).run'), E₃ x`.
-    -- Collapse via support_bind_simulateQ_run'_eq_mk (inline discharge) → raw support; decompose
-    -- bind support into (tr₁,s₂,w₂,vs₂)∈supp(R₁.run) and (tr₂,s₃,w₃,vs₃)∈supp(R₂.run s₂ w₂).
-    -- hs₁ ⇒ s₂=vs₂ ∧ (vs₂,w₂)∈rel₂; then (h₂ s₂ w₂ ‹∈rel₂›).2 on the R₂ piece gives E₃.
+  · intro x hx
+    rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
+      (impl := impl.addLift challengeQueryImpl) (hImplSupp := by
+        intro β q s'
+        cases q with | mk t f =>
+        cases t with
+        | inl i => exact hImplSupp (OracleQuery.mk i f) s'
+        | inr i =>
+          simp only [QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+            QueryImpl.addLift_def, QueryImpl.add_apply_inr]
+          have hq := support_challengeQueryImpl_run_eq (q := OracleQuery.mk i f) s'
+          rw [support_liftM]
+          simpa only [ChallengeIdx, Challenge, add_apply_inr, QueryImpl.liftTarget_apply,
+            StateT.run_map, StateT.run_monadLift, monadLift_self, bind_pure_comp, Functor.map_map,
+            support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
+            support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+            liftM_map] using hq)] at hx
+    simp only [OptionT.mem_support_mk, MonadLift.monadLift, liftM, monadLift, MonadLiftT.monadLift,
+      OptionT.run_mk, OptionT.run_bind, OptionT.run_lift, Option.getM, bind_pure_comp] at hx
+    trace_state
     sorry
 
 end Reduction
