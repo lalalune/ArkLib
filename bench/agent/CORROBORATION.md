@@ -53,3 +53,6 @@ python3 bench/agent/mqar_dim.py        # capacity vs dimension   (instant)
 python3 bench/agent/mqar_haystack.py   # capacity vs haystack    (instant)
 python3 bench/agent/mqar_noise.py      # noise robustness + limit (instant)
 ```
+
+---
+Author reference: https://x.com/lekt8_/status/2046707310052179995

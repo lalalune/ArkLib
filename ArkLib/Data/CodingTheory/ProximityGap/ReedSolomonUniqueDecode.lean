@@ -423,6 +423,75 @@ theorem berlekamp_welch_exists {α : ι ↪ F} {k e : ℕ} [NeZero k]
         by_contra h; exact hi (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
       rw [eval_mul, hyc]
 
+omit [DecidableEq ι] in
+open Polynomial in
+/-- **Product shared-locator existence (factor-2 radius).** If `u₀` and `u₁` are respectively
+within `e₀` and `e₁` Hamming errors of Reed–Solomon codeword polynomials `f₀` and `f₁`, then the
+product of the two ordinary error locators is a single locator satisfying both key equations.
+Its degree is at most `e₀ + e₁`, exposing the honest union/product-locator factor-2 ceiling. -/
+theorem reedSolomon_sharedLocator_product_exists {α : ι ↪ F} {e₀ e₁ : ℕ}
+    {u₀ u₁ : ι → F} {f₀ f₁ : F[X]}
+    (herr₀ : (Finset.univ.filter (fun i => u₀ i ≠ f₀.eval (α i))).card ≤ e₀)
+    (herr₁ : (Finset.univ.filter (fun i => u₁ i ≠ f₁.eval (α i))).card ≤ e₁) :
+    ∃ E : F[X], E ≠ 0 ∧ E.natDegree ≤ e₀ + e₁ ∧
+      (∀ i, E.eval (α i) * u₀ i = (E * f₀).eval (α i)) ∧
+      (∀ i, E.eval (α i) * u₁ i = (E * f₁).eval (α i)) := by
+  classical
+  set errs₀ := Finset.univ.filter (fun i => u₀ i ≠ f₀.eval (α i)) with herrs₀
+  set errs₁ := Finset.univ.filter (fun i => u₁ i ≠ f₁.eval (α i)) with herrs₁
+  set E₀ : F[X] := ∏ i ∈ errs₀, (X - C (α i)) with hE₀
+  set E₁ : F[X] := ∏ i ∈ errs₁, (X - C (α i)) with hE₁
+  set E : F[X] := E₀ * E₁ with hE
+  have hE₀ne : E₀ ≠ 0 := by
+    rw [hE₀]
+    exact Finset.prod_ne_zero_iff.mpr fun i _ => X_sub_C_ne_zero (α i)
+  have hE₁ne : E₁ ≠ 0 := by
+    rw [hE₁]
+    exact Finset.prod_ne_zero_iff.mpr fun i _ => X_sub_C_ne_zero (α i)
+  have hEne : E ≠ 0 := by
+    rw [hE]
+    exact mul_ne_zero hE₀ne hE₁ne
+  have hE₀deg : E₀.natDegree ≤ e₀ := by
+    rw [hE₀, natDegree_prod _ _ fun i _ => X_sub_C_ne_zero (α i)]
+    simp only [natDegree_X_sub_C, Finset.sum_const, smul_eq_mul, mul_one]
+    exact herr₀
+  have hE₁deg : E₁.natDegree ≤ e₁ := by
+    rw [hE₁, natDegree_prod _ _ fun i _ => X_sub_C_ne_zero (α i)]
+    simp only [natDegree_X_sub_C, Finset.sum_const, smul_eq_mul, mul_one]
+    exact herr₁
+  have hEdeg : E.natDegree ≤ e₀ + e₁ := by
+    rw [hE, natDegree_mul hE₀ne hE₁ne]
+    omega
+  refine ⟨E, hEne, hEdeg, ?_, ?_⟩
+  · intro i
+    by_cases hi : i ∈ errs₀
+    · have hE₀z : E₀.eval (α i) = 0 := by
+        rw [hE₀, eval_prod]
+        exact Finset.prod_eq_zero hi (by simp)
+      have hEz : E.eval (α i) = 0 := by
+        rw [hE, eval_mul, hE₀z, zero_mul]
+      simp [hEz, eval_mul]
+    · have hyc : u₀ i = f₀.eval (α i) := by
+        by_contra h
+        exact hi (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
+      rw [eval_mul, hyc]
+      rw [hE, eval_mul]
+      rw [eval_mul]
+  · intro i
+    by_cases hi : i ∈ errs₁
+    · have hE₁z : E₁.eval (α i) = 0 := by
+        rw [hE₁, eval_prod]
+        exact Finset.prod_eq_zero hi (by simp)
+      have hEz : E.eval (α i) = 0 := by
+        rw [hE, eval_mul, hE₁z, mul_zero]
+      simp [hEz, eval_mul]
+    · have hyc : u₁ i = f₁.eval (α i) := by
+        by_contra h
+        exact hi (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
+      rw [eval_mul, hyc]
+      rw [hE, eval_mul]
+      rw [eval_mul]
+
 open Polynomial in
 /-- **Berlekamp–Welch recovery.**  In the unique-decoding regime `k + 2e < n`, any solution
 `(E, N)` of the key equation (with `E ≠ 0`, `deg E ≤ e`, `deg N < k + e`) for a word `y` that is
@@ -587,8 +656,124 @@ theorem reedSolomon_jointAgreement_of_shared_locator_exact [Fintype F]
     norm_num
     rw [div_mul_cancel₀ _ (by exact_mod_cast hn.ne')]
 
+omit [DecidableEq ι] in
+/-- **Degree-one decoding-curve counting bridge.** If each scalar `z ∈ Z` has a codeword on the
+degree-one polynomial family `g₀ + z • g₁` agreeing with the affine-line word `u₀ + z • u₁` on at
+least `(1 - δ) n` coordinates, then the joint agreement coordinates for `(u₀, u₁)` against
+`(g₀, g₁)` satisfy the standard many-points correlated-agreement count. -/
+theorem reedSolomon_jointAgreement_of_degreeOne_decoding_curve
+    {α : ι ↪ F} {u₀ u₁ : ι → F} {g₀ g₁ : F[X]} {Z : Finset F} {δ : ℝ}
+    (hZ : 2 ≤ Z.card)
+    (hcurve : ∀ z ∈ Z, (1 - δ) * Fintype.card ι ≤
+      (Finset.univ.filter
+        (fun i => u₀ i + z • u₁ i = (g₀ + z • g₁).eval (α i))).card) :
+    (Z.card : ℝ) * ((1 - δ) * Fintype.card ι) ≤
+      (Finset.univ.filter
+          (fun i => u₀ i = g₀.eval (α i) ∧ u₁ i = g₁.eval (α i))).card
+        * ((Z.card : ℝ) - 1) + Fintype.card ι := by
+  classical
+  refine ProximityGap.correlatedAgreement_card_of_linear_family
+    (F := F) (Z := Z) (S := fun z =>
+      Finset.univ.filter
+        (fun i => u₀ i + z • u₁ i = (g₀ + z • g₁).eval (α i)))
+    (u₀ := u₀) (u₁ := u₁)
+    (v₀ := fun i => g₀.eval (α i)) (v₁ := fun i => g₁.eval (α i))
+    ?_ ?_ ?_
+  · exact le_trans (by norm_num : 1 ≤ 2) hZ
+  · intro z hz j hj
+    have hmem := (Finset.mem_filter.mp hj).2
+    simpa [Polynomial.eval_add, Polynomial.eval_smul, smul_eq_mul] using hmem
+  · exact hcurve
+
+open Polynomial in
+/-- **C2 — Nested-error full-radius joint agreement.**  If the error set of `u₁` against `f₁` is
+contained in that of `u₀` against `f₀` (`hnest`), then the single ordinary error locator for the
+`u₀`-errors, `E = ∏_{errs₀}(X − C αᵢ)` (degree `≤ e₀`), discharges *both* shared key equations: on
+the agreement coordinates of `u₀` it forces agreement of `u₁` as well, because there `i ∉ errs₀ ⊆
+errs₁ᶜ`.  Feeding `E` to `reedSolomon_jointAgreement_of_shared_locator_exact` yields joint agreement
+at the **full** radius `e₀ / |ι|` with no factor-2 loss — the special structured case in which the
+union/product locator of `reedSolomon_sharedLocator_product_exists` collapses to a single factor. -/
+theorem reedSolomon_jointAgreement_fullRadius_of_nested_errors [Fintype F]
+    {α : ι ↪ F} {k e₀ : ℕ} [NeZero k] {u₀ u₁ : ι → F} {f₀ f₁ : F[X]}
+    (hf₀ : f₀ ∈ Polynomial.degreeLT F k) (hf₁ : f₁ ∈ Polynomial.degreeLT F k)
+    (herr₀ : (Finset.univ.filter (fun i => u₀ i ≠ f₀.eval (α i))).card ≤ e₀)
+    (hnest : Finset.univ.filter (fun i => u₁ i ≠ f₁.eval (α i)) ⊆
+             Finset.univ.filter (fun i => u₀ i ≠ f₀.eval (α i)))
+    (hn : 0 < Fintype.card ι) (he : e₀ ≤ Fintype.card ι) :
+    Code.jointAgreement (↑(ReedSolomon.code α k) : Set (ι → F))
+      ((e₀ : ℝ≥0) / (Fintype.card ι : ℝ≥0))
+      (![u₀, u₁] : Fin 2 → ι → F) := by
+  classical
+  set errs₀ := Finset.univ.filter (fun i => u₀ i ≠ f₀.eval (α i)) with herrs₀
+  set E : F[X] := ∏ i ∈ errs₀, (X - C (α i)) with hE
+  have hEne : E ≠ 0 := by
+    rw [hE]; exact Finset.prod_ne_zero_iff.mpr fun i _ => X_sub_C_ne_zero (α i)
+  have hEdeg : E.natDegree ≤ e₀ := by
+    rw [hE, natDegree_prod _ _ fun i _ => X_sub_C_ne_zero (α i)]
+    simp only [natDegree_X_sub_C, Finset.sum_const, smul_eq_mul, mul_one]
+    exact herr₀
+  have hkey₀ : ∀ i, E.eval (α i) * u₀ i = (E * f₀).eval (α i) := by
+    intro i
+    by_cases hi : i ∈ errs₀
+    · have hEz : E.eval (α i) = 0 := by
+        rw [hE, eval_prod]; exact Finset.prod_eq_zero hi (by simp)
+      simp [hEz, eval_mul]
+    · have hyc : u₀ i = f₀.eval (α i) := by
+        by_contra h; exact hi (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
+      rw [eval_mul, hyc]
+  have hkey₁ : ∀ i, E.eval (α i) * u₁ i = (E * f₁).eval (α i) := by
+    intro i
+    by_cases hi : i ∈ errs₀
+    · have hEz : E.eval (α i) = 0 := by
+        rw [hE, eval_prod]; exact Finset.prod_eq_zero hi (by simp)
+      simp [hEz, eval_mul]
+    · have hi₁ : i ∉ Finset.univ.filter (fun i => u₁ i ≠ f₁.eval (α i)) := fun h => hi (hnest h)
+      have hyc : u₁ i = f₁.eval (α i) := by
+        by_contra h; exact hi₁ (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
+      rw [eval_mul, hyc]
+  exact reedSolomon_jointAgreement_of_shared_locator_exact
+    hEne hEdeg hf₀ hf₁ hkey₀ hkey₁ hn he
+
+omit [Fintype ι] in
+open Polynomial in
+/-- **C3 — Shared-locator degree lower bound (the factor-2 loss is forced).**  Take single-error
+words `u₀ = δ_a`, `u₁ = δ_b` with `a ≠ b`, and target codewords `f₀ = f₁ = 0` (so `e₀ = e₁ = 1`).
+Any nonzero locator `E` solving both key equations vanishes at the two *distinct* points `α a`,
+`α b`, hence `2 ≤ E.natDegree`.  So **no** single locator of degree `≤ max e₀ e₁ = 1` exists for a
+fixed `(f₀, f₁)`: the union/product degree `e₀ + e₁` of `reedSolomon_sharedLocator_product_exists`
+is optimal for any elementary construction.  (This does *not* contradict the conditional
+shared-locator theorems, which take a hypothetical `(E, g₀, g₁)`; it is exactly *why* BCIKS20 must
+route the exact radius through many-close-scalars averaging rather than a fixed-target locator.) -/
+theorem reedSolomon_sharedLocator_degree_lower_bound {α : ι ↪ F} {a b : ι} (hab : a ≠ b)
+    {E : F[X]} (hE0 : E ≠ 0)
+    (hkey₀ : ∀ i, E.eval (α i) * (if i = a then (1 : F) else 0) = (E * 0).eval (α i))
+    (hkey₁ : ∀ i, E.eval (α i) * (if i = b then (1 : F) else 0) = (E * 0).eval (α i)) :
+    2 ≤ E.natDegree := by
+  classical
+  have haa : E.eval (α a) = 0 := by
+    have h := hkey₀ a; simpa using h
+  have hbb : E.eval (α b) = 0 := by
+    have h := hkey₁ b; simpa using h
+  have hαab : α a ≠ α b := α.injective.ne hab
+  have hsub : ({α a, α b} : Finset F) ⊆ E.roots.toFinset := by
+    intro x hx
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+    rw [Multiset.mem_toFinset, mem_roots hE0, IsRoot.def]
+    rcases hx with rfl | rfl
+    · exact haa
+    · exact hbb
+  have hcard : ({α a, α b} : Finset F).card = 2 := Finset.card_pair hαab
+  calc 2 = ({α a, α b} : Finset F).card := hcard.symm
+    _ ≤ E.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card E.roots := Multiset.toFinset_card_le _
+    _ ≤ E.natDegree := card_roots' _
+
 #print axioms ReedSolomon.jointAgreement_of_common_locator
+#print axioms ReedSolomon.reedSolomon_sharedLocator_product_exists
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator_exact
+#print axioms ReedSolomon.reedSolomon_jointAgreement_of_degreeOne_decoding_curve
+#print axioms ReedSolomon.reedSolomon_jointAgreement_fullRadius_of_nested_errors
+#print axioms ReedSolomon.reedSolomon_sharedLocator_degree_lower_bound
 
 end ReedSolomon

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.SubspaceDesign
+import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEPotential
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith
 
@@ -30,6 +31,9 @@ CZ25 Definition 6):
 * `good_coord_exists_of_design` — the FPRUNE good set `{i | dim ℋ_i + η ≤ (1-η')(r+η)}` is
   nonempty, because the design budget forces `∑_i (dim ℋ_i + η) ≤ (r·τ(r) + η)·n`, which lies
   below `(1-η')(r+η)·n` exactly when `r·τ(r) + η < (1-η')(r+η)` (the capacity regime).
+* `fprune_one_step_of_design` — plugs that nonempty good-coordinate set into
+  `fprune_one_step`, eliminating the raw `J.Nonempty` hypothesis for the design-instantiated
+  one-step potential inequality.
 * `card_good_coord_ge_of_design` — the quantitative design-code count: `≥ n·(1 - (r·τ(r)+η)/θ)`
   good coordinates, the FPRUNE sampling mass (positive in the capacity regime).
 * `exists_good_coord_dim_lt_of_design` — packages a good coordinate together with the **strict
@@ -150,6 +154,40 @@ theorem good_coord_exists_of_design
   rw [hexp]
   linarith [hdesign]
 
+/-- **Design-instantiated FPRUNE one-step inequality.** The subspace-design budget supplies the
+nonempty good-coordinate set required by `fprune_one_step`, so the one-step potential inequality
+can be stated directly from the design capacity condition, without taking `J.Nonempty` as a raw
+hypothesis. -/
+theorem fprune_one_step_of_design
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)) (h : IsSubspaceDesign s τ C)
+    (η η' : ℝ) (hη : 0 < η) (hη' : 0 ≤ 1 - η')
+    (ℋ : Submodule F (ι → Fin s → F)) (hℋ : ℋ ≤ C)
+    (r : ℕ) (hr : Module.finrank F ℋ = r)
+    (hcap : (r : ℝ) * τ r + η < (1 - η') * ((r : ℝ) + η)) :
+    let d : ι → ℕ := fun i => Module.finrank F (↥(ℋ ⊓
+      (LinearMap.ker
+        (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) :
+      Submodule F (ι → Fin s → F)))
+    let J : Finset ι := univ.filter (fun i => (d i : ℝ) + η ≤ (1 - η') * ((r : ℝ) + η))
+    η / ((r : ℕ) + η) ≤
+      ∑ j ∈ J, ((((d j : ℝ) + η) * (1 - η')) / (∑ k ∈ J, ((d k : ℝ) + η)))
+                  * (η / ((d j : ℕ) + η)) := by
+  classical
+  let d : ι → ℕ := fun i => Module.finrank F (↥(ℋ ⊓
+    (LinearMap.ker
+      (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) :
+    Submodule F (ι → Fin s → F)))
+  let J : Finset ι := univ.filter (fun i => (d i : ℝ) + η ≤ (1 - η') * ((r : ℝ) + η))
+  change η / ((r : ℕ) + η) ≤
+      ∑ j ∈ J, ((((d j : ℝ) + η) * (1 - η')) / (∑ k ∈ J, ((d k : ℝ) + η)))
+                  * (η / ((d j : ℕ) + η))
+  have hJ : J.Nonempty := by
+    simpa [J, d] using good_coord_exists_of_design s τ C h η η' ℋ hℋ r hr hcap
+  have hgood : ∀ j ∈ J, (d j : ℝ) + η ≤ (1 - η') * ((r : ℝ) + η) := by
+    intro j hj
+    simpa [J] using hj
+  exact fprune_one_step η η' hη hη' r J d hJ hgood
+
 /-- **Quantitative FPRUNE good-coordinate count for a subspace-design code.** Under the same
 setup as `good_coord_exists_of_design` (with `0 < η` and `0 < (1-η')(r+η)`), at least
 `n - n·(r·τ(r)+η)/((1-η')(r+η))` coordinates are FPRUNE-good. This is the design-code count
@@ -226,5 +264,6 @@ end CodingTheory.ListDecoding
 #print axioms CodingTheory.ListDecoding.good_filter_nonempty_of_weight_budget
 #print axioms CodingTheory.ListDecoding.card_good_ge_of_weight_budget
 #print axioms CodingTheory.ListDecoding.good_coord_exists_of_design
+#print axioms CodingTheory.ListDecoding.fprune_one_step_of_design
 #print axioms CodingTheory.ListDecoding.card_good_coord_ge_of_design
 #print axioms CodingTheory.ListDecoding.exists_good_coord_dim_lt_of_design

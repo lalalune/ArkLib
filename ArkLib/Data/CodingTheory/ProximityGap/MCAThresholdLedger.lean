@@ -23,6 +23,8 @@ Every entry below carries a machine-checked verdict. The point is twofold:
   is downward closed (monotonicity of `ε_mca`), so `δ*` is well-defined as its supremum. This is
   the bracketing engine: any proven `ε_mca(C, δ₀) ≤ ε*` gives `δ* ≥ δ₀`, and any proven
   `ε_mca(C, δ₁) > ε*` gives `δ* ≤ δ₁`.
+  The API `mcaGoodRadii` / `mcaDeltaStar` / `le_mcaDeltaStar_of_good` /
+  `mcaDeltaStar_le_of_bad` makes this `sSup` bracketing explicit inside `[0,1]`.
 
 * `candidate_floor_is_exact_REFUTED` — **REFUTED.** The candidate "`ε_mca` equals its
   unconditional floor `1/|F|` everywhere below capacity" (which would trivialize the prize, making
@@ -71,6 +73,66 @@ theorem mca_good_set_downward_closed (C : Set (ι → A)) (εstar : ℝ≥0∞) 
     epsMCA (F := F) (A := A) C δ₁ ≤ εstar :=
   le_trans (epsMCA_mono C hle) hgood
 
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] [Fintype A] [DecidableEq A] in
+/-- The good MCA radii inside the meaningful radius interval `[0,1]`: radii whose MCA error is at
+most the target `εstar`. Bounding by `1` gives a genuine `sSup` threshold even before the exact
+interior answer is known. -/
+def mcaGoodRadii (C : Set (ι → A)) (εstar : ℝ≥0∞) : Set ℝ≥0 :=
+  {δ | δ ≤ 1 ∧ epsMCA (F := F) (A := A) C δ ≤ εstar}
+
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] [Fintype A] [DecidableEq A] in
+/-- The formal MCA threshold candidate: the supremum of good radii inside `[0,1]`. This is the
+machine-checked object bracketed by pointwise good/bad bounds below. -/
+noncomputable def mcaDeltaStar (C : Set (ι → A)) (εstar : ℝ≥0∞) : ℝ≥0 :=
+  sSup (mcaGoodRadii (F := F) (A := A) C εstar)
+
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] [Fintype A] [DecidableEq A] in
+/-- The good-radius set is bounded above by `1`, by construction. -/
+theorem mcaGoodRadii_bddAbove (C : Set (ι → A)) (εstar : ℝ≥0∞) :
+    BddAbove (mcaGoodRadii (F := F) (A := A) C εstar) :=
+  ⟨1, fun _ hδ => hδ.1⟩
+
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] [Fintype A] [DecidableEq A] in
+/-- **Lower bracket for `δ*`.** Any proven good point `δ ≤ 1` lies below the formal threshold. -/
+theorem le_mcaDeltaStar_of_good (C : Set (ι → A)) (εstar : ℝ≥0∞) {δ : ℝ≥0}
+    (hδ : δ ≤ 1) (hgood : epsMCA (F := F) (A := A) C δ ≤ εstar) :
+    δ ≤ mcaDeltaStar (F := F) (A := A) C εstar := by
+  exact le_csSup (mcaGoodRadii_bddAbove (F := F) (A := A) C εstar) ⟨hδ, hgood⟩
+
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] [Fintype A] [DecidableEq A] in
+/-- A bad point is an upper bound for all good radii: if `εstar < ε_mca(C, δbad)`, monotonicity
+prevents any good radius from lying at or above `δbad`. -/
+theorem mcaGoodRadii_le_of_bad (C : Set (ι → A)) (εstar : ℝ≥0∞) {δbad δ : ℝ≥0}
+    (hbad : εstar < epsMCA (F := F) (A := A) C δbad)
+    (hδ : δ ∈ mcaGoodRadii (F := F) (A := A) C εstar) :
+    δ ≤ δbad := by
+  by_contra hnot
+  have hbad_le : δbad ≤ δ := le_of_not_ge hnot
+  have hmono : epsMCA (F := F) (A := A) C δbad ≤ epsMCA (F := F) (A := A) C δ :=
+    by
+      classical
+      unfold epsMCA
+      apply iSup_mono
+      intro u
+      apply Pr_le_Pr_of_implies
+      intro γ h_event
+      obtain ⟨S, hS_card, hline, hpair⟩ := h_event
+      exact ⟨S, le_trans
+        (mul_le_mul_of_nonneg_right (tsub_le_tsub_left hbad_le 1) (zero_le _)) hS_card,
+        hline, hpair⟩
+  exact not_le_of_gt hbad (le_trans hmono hδ.2)
+
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] [Fintype A] [DecidableEq A] in
+/-- **Upper bracket for `δ*`.** Any proven bad point lies above the formal threshold. This version
+does not require the good-radius set to be nonempty; it uses the `upperBounds` form of `csSup`. -/
+theorem mcaDeltaStar_le_of_bad (C : Set (ι → A)) (εstar : ℝ≥0∞) {δbad : ℝ≥0}
+    (hbad : εstar < epsMCA (F := F) (A := A) C δbad) :
+    mcaDeltaStar (F := F) (A := A) C εstar ≤ δbad := by
+  unfold mcaDeltaStar
+  exact csSup_le' (show δbad ∈ upperBounds
+      (mcaGoodRadii (F := F) (A := A) C εstar) from
+    fun δ hδ => mcaGoodRadii_le_of_bad (F := F) (A := A) C εstar hbad hδ)
+
 /-! ## VERDICT 1 — REFUTED: the MCA error is *not* pinned to its `1/|F|` floor -/
 
 /-- The unconditional floor `ε_mca ≥ 1/|F|` (all codes, below capacity) is *not* tight: a concrete
@@ -110,6 +172,9 @@ theorem tested_radius_below_capacity :
   norm_num
 
 #print axioms mca_good_set_downward_closed
+#print axioms le_mcaDeltaStar_of_good
+#print axioms mcaGoodRadii_le_of_bad
+#print axioms mcaDeltaStar_le_of_bad
 #print axioms candidate_floor_is_exact_REFUTED
 #print axioms candidate_uptocapacity_REFUTED
 #print axioms tested_radius_below_capacity

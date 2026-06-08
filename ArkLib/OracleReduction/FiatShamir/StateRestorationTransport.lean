@@ -502,11 +502,58 @@ theorem fiatShamirCoupledQueryImpl_apply_right
       (fun f => pure (f q, f)) := by
   rfl
 
+/-- The coupled implementation is exactly the original-oracle implementation plus the fixed-state
+cached Fiat-Shamir challenge implementation. This is the `addLift` form consumed by generic
+simulation lemmas. -/
+theorem fiatShamirCoupledQueryImpl_eq_addLift_fsChallengeQueryImplState
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp)) :
+    fiatShamirCoupledQueryImpl (pSpec := pSpec) (StmtIn := StmtIn) srImpl =
+      srImpl.addLift
+        (ProtocolSpec.fsChallengeQueryImplState (Statement := StmtIn) (pSpec := pSpec)) := by
+  rfl
+
+/-- Simulating a lifted original-oracle computation through the coupled Fiat-Shamir implementation
+projects to the original state-restoration implementation. -/
+theorem simulateQ_fiatShamirCoupled_liftComp_left
+    {α : Type}
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (oa : OracleComp oSpec α) :
+    simulateQ
+        (fiatShamirCoupledQueryImpl (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
+        (OracleComp.liftComp oa (oSpec + fsChallengeOracle StmtIn pSpec)) =
+      simulateQ srImpl oa := by
+  simpa [fiatShamirCoupledQueryImpl, QueryImpl.addLift_def] using
+    (QueryImpl.simulateQ_add_liftComp_left
+      (impl₁' := srImpl)
+      (impl₂' := ProtocolSpec.fsChallengeQueryImplState
+        (Statement := StmtIn) (pSpec := pSpec))
+      (oa := oa))
+
+/-- `liftM` form of `simulateQ_fiatShamirCoupled_liftComp_left`. -/
+theorem simulateQ_fiatShamirCoupled_liftM_left
+    {α : Type}
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (oa : OracleComp oSpec α) :
+    simulateQ
+        (fiatShamirCoupledQueryImpl (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
+        (liftM oa : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) α) =
+      simulateQ srImpl oa := by
+  rw [show (liftM oa : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) α) =
+      OracleComp.liftComp oa (oSpec + fsChallengeOracle StmtIn pSpec) by
+        rw [OracleComp.liftComp_eq_liftM]]
+  exact simulateQ_fiatShamirCoupled_liftComp_left srImpl oa
+
 end Reduction
 
 #print axioms Reduction.fiatShamirCoupledQueryImpl
 #print axioms Reduction.fiatShamirCoupledQueryImpl_apply_left
 #print axioms Reduction.fiatShamirCoupledQueryImpl_apply_right
+#print axioms Reduction.fiatShamirCoupledQueryImpl_eq_addLift_fsChallengeQueryImplState
+#print axioms Reduction.simulateQ_fiatShamirCoupled_liftComp_left
+#print axioms Reduction.simulateQ_fiatShamirCoupled_liftM_left
 
 end CoupledQueryImpl
 

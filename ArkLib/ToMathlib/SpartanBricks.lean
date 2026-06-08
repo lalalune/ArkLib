@@ -183,6 +183,120 @@ noncomputable def zEvalFromFinalOracles
       pure (acc + coeff * zVal))
     (0 : R)
 
+/-- One verifier-side Boolean summand in the oracle-free reconstruction of `Z(r_y)`. This is the
+same accumulator step as `zEvalFromFinalOracles`, with witness-oracle queries answered directly
+from the final oracle statement. -/
+noncomputable def zEvalPureFoldStep
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (acc : R) (yEnum : Fin (2 ^ pp.ℓ_n)) : R :=
+  let r_y : Fin pp.ℓ_n → R := stmt.1
+  let x : Statement.AfterFirstMessage R pp := stmt.2.2.2.2
+  let yBits : Fin pp.ℓ_n → R := boolPoint R yEnum
+  let coeff : R := MvPolynomial.eval r_y (MvPolynomial.eqPolynomial yBits)
+  let zVal : R :=
+    if hy : (yEnum : ℕ) < pp.toSizeR1CS.n_x then
+      x ⟨(yEnum : ℕ), hy⟩
+    else
+      OracleInterface.answer (oStmt (.inr (.inr 0)))
+        (boolPoint R
+          (⟨(yEnum : ℕ) - pp.toSizeR1CS.n_x,
+            by
+              have hlt := yEnum.isLt
+              have hnx : pp.toSizeR1CS.n_x = 2 ^ pp.ℓ_n - 2 ^ pp.ℓ_w := rfl
+              have hle : 2 ^ pp.ℓ_w ≤ 2 ^ pp.ℓ_n :=
+                Nat.pow_le_pow_of_le (by decide) pp.ℓ_w_le_ℓ_n
+              omega⟩ : Fin (2 ^ pp.ℓ_w)))
+  acc + coeff * zVal
+
+/-- Oracle-free Boolean accumulator reconstruction of `Z(r_y)`, obtained from
+`zEvalFromFinalOracles` by interpreting the witness oracle with a concrete final oracle
+statement. -/
+noncomputable def zEvalPureFold
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) : R :=
+  (Finset.univ : Finset (Fin (2 ^ pp.ℓ_n))).toList.foldl
+    (zEvalPureFoldStep R pp stmt oStmt)
+    (0 : R)
+
+private noncomputable def zEvalOracleFoldStep
+    (stmt : FinalStatement R pp) (acc : R) (yEnum : Fin (2 ^ pp.ℓ_n)) :
+    OracleComp [FinalOracleStatement R pp]ₒ R := do
+  let r_y : Fin pp.ℓ_n → R := stmt.1
+  let x : Statement.AfterFirstMessage R pp := stmt.2.2.2.2
+  let yBits : Fin pp.ℓ_n → R := boolPoint R yEnum
+  let coeff : R := MvPolynomial.eval r_y (MvPolynomial.eqPolynomial yBits)
+  let zVal : R ←
+    if hy : (yEnum : ℕ) < pp.toSizeR1CS.n_x then
+      (pure (x ⟨(yEnum : ℕ), hy⟩) :
+        OracleComp [FinalOracleStatement R pp]ₒ R)
+    else
+      (OracleComp.lift <| OracleSpec.query
+        (spec := [FinalOracleStatement R pp]ₒ)
+        (show [FinalOracleStatement R pp]ₒ.Domain from
+          ⟨.inr (.inr 0),
+            boolPoint R
+              (⟨(yEnum : ℕ) - pp.toSizeR1CS.n_x,
+                by
+                  have hlt := yEnum.isLt
+                  have hnx : pp.toSizeR1CS.n_x = 2 ^ pp.ℓ_n - 2 ^ pp.ℓ_w := rfl
+                  have hle : 2 ^ pp.ℓ_w ≤ 2 ^ pp.ℓ_n :=
+                    Nat.pow_le_pow_of_le (by decide) pp.ℓ_w_le_ℓ_n
+                  omega⟩ : Fin (2 ^ pp.ℓ_w))⟩) :
+        OracleComp [FinalOracleStatement R pp]ₒ R)
+  pure (acc + coeff * zVal)
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+private theorem zEvalOracleFoldStep_simOracle0
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (acc : R) (yEnum : Fin (2 ^ pp.ℓ_n)) :
+    simulateQ (OracleInterface.simOracle0 (FinalOracleStatement R pp) oStmt)
+        (zEvalOracleFoldStep R pp stmt acc yEnum)
+      =
+    zEvalPureFoldStep R pp stmt oStmt acc yEnum := by
+  classical
+  unfold zEvalOracleFoldStep zEvalPureFoldStep
+  by_cases hy : (yEnum : ℕ) < pp.toSizeR1CS.n_x
+  · simp [hy, simulateQ_pure]
+    rfl
+  · simp [hy, simulateQ_query, OracleInterface.simOracle0]
+    rfl
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+private theorem zEvalOracleFold_simOracle0
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (xs : List (Fin (2 ^ pp.ℓ_n))) (acc : R) :
+    simulateQ (OracleInterface.simOracle0 (FinalOracleStatement R pp) oStmt)
+        (xs.foldlM (zEvalOracleFoldStep R pp stmt) acc)
+      =
+    xs.foldl (zEvalPureFoldStep R pp stmt oStmt) acc := by
+  classical
+  induction xs generalizing acc with
+  | nil =>
+      rfl
+  | cons y ys ih =>
+      rw [List.foldlM_cons, List.foldl_cons, simulateQ_bind,
+        zEvalOracleFoldStep_simOracle0 R pp stmt oStmt acc y]
+      exact ih (zEvalPureFoldStep R pp stmt oStmt acc y)
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Interpreting `zEvalFromFinalOracles` with the honest `simOracle0` implementation for a final
+oracle statement eliminates all oracle effects and returns the explicit Boolean accumulator fold.
+This is the oracle-elimination half of the Spartan final `Z(r_y)` reconstruction. -/
+theorem zEvalFromFinalOracles_simOracle0_eq_pureFold
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    simulateQ (OracleInterface.simOracle0 (FinalOracleStatement R pp) oStmt)
+        (zEvalFromFinalOracles R pp stmt)
+      =
+    zEvalPureFold R pp stmt oStmt := by
+  classical
+  unfold zEvalFromFinalOracles zEvalPureFold
+  exact zEvalOracleFold_simOracle0 R pp stmt oStmt
+    (Finset.univ : Finset (Fin (2 ^ pp.ℓ_n))).toList 0
+
 /-- The expected terminal value after the second Spartan sum-check:
 `(r_A A(r_x,r_y) + r_B B(r_x,r_y) + r_C C(r_x,r_y)) * Z(r_y)`. -/
 noncomputable def finalExpectedClaimFromOracles
@@ -997,6 +1111,8 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_resi
 #print axioms FinalClaimStatement
 #print axioms finalMatrixEvalFromOracles
 #print axioms zEvalFromFinalOracles
+#print axioms zEvalPureFold
+#print axioms zEvalFromFinalOracles_simOracle0_eq_pureFold
 #print axioms finalExpectedClaimFromOracles
 #print axioms finalExpectedClaimValue
 #print axioms secondSumCheckVirtualPolynomial_eval_eq_finalExpectedClaimValue

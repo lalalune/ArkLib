@@ -67,4 +67,24 @@ variable {R : Type*} [CommRing R] {m n : ℕ}
 noncomputable def toMLE (A : Matrix (Fin (2 ^ m)) (Fin (2 ^ n)) R) : R[X Fin n][X Fin m] :=
   MLE' (MLE' ∘ A)
 
+/-- Evaluating `toMLE` at Boolean row and column points recovers the corresponding matrix entry. -/
+theorem toMLE_eval_boolPoint
+    (M : Matrix (Fin (2 ^ m)) (Fin (2 ^ n)) R)
+    (xBits : Fin m → Fin 2) (yBits : Fin n → Fin 2) :
+    MvPolynomial.eval (yBits : Fin n → R)
+        (MvPolynomial.eval ((MvPolynomial.C ∘ (xBits : Fin m → R)) :
+          Fin m → MvPolynomial (Fin n) R) M.toMLE)
+      = M (finFunctionFinEquiv xBits) (finFunctionFinEquiv yBits) := by
+  rw [Matrix.toMLE]
+  have hx :
+      ((MvPolynomial.C ∘ (xBits : Fin m → R)) :
+          Fin m → MvPolynomial (Fin n) R) =
+        (xBits : Fin m → MvPolynomial (Fin n) R) := by
+    funext i
+    simp
+  rw [hx, MvPolynomial.MLE'_eval_zeroOne]
+  simp
+
+#print axioms Matrix.toMLE_eval_boolPoint
+
 end Matrix

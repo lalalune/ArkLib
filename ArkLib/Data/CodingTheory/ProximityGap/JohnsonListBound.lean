@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
+import Mathlib.InformationTheory.Hamming
 
 /-!
 # Johnson list-decoding bound for codes
@@ -21,6 +22,8 @@ combinatorial core of the proven "`δ ≤ Johnson ⟹ small list`" regime (#141/
   pairwise codeword agreement `≤ b`.
 * `johnson_list_bound_div` — the consumer-facing divided form under the strict Johnson gap.
 * `johnson_unique_decoding_eq_one` — the nonempty exact-singleton unique-decoding endpoint.
+* `johnson_list_bound_div_of_hammingDist` / `johnson_unique_decoding_eq_one_of_hammingDist` —
+  distance-facing endpoints using pairwise Hamming-distance separation directly.
 -/
 
 open Finset
@@ -122,8 +125,59 @@ theorem johnson_unique_decoding_eq_one {ι F : Type*} [Fintype ι] [DecidableEq 
   exact Nat.le_antisymm (johnson_unique_decoding f L a b hclose hagree h2a)
     (Finset.card_pos.mpr hL)
 
+/-- Agreement count plus Hamming distance partitions the coordinate set. -/
+theorem agree_card_add_hammingDist {ι F : Type*} [Fintype ι] [DecidableEq F] (c c' : ι → F) :
+    (Finset.univ.filter (fun x => c x = c' x)).card + hammingDist c c'
+      = Fintype.card ι := by
+  classical
+  simpa [hammingDist] using
+    (Finset.card_filter_add_card_filter_not
+      (s := (Finset.univ : Finset ι)) (p := fun x : ι => c x = c' x))
+
+/-- A pairwise Hamming-distance lower bound gives the pairwise agreement upper bound consumed by
+the Johnson second-moment API. -/
+theorem agree_card_le_card_sub_of_hammingDist_ge {ι F : Type*} [Fintype ι] [DecidableEq F]
+    {c c' : ι → F} {d : ℕ} (hd : d ≤ hammingDist c c') :
+    (Finset.univ.filter (fun x => c x = c' x)).card ≤ Fintype.card ι - d := by
+  have hpartition := agree_card_add_hammingDist c c'
+  omega
+
+/-- **Distance-form divided Johnson list bound.** If every listed word agrees with `f` on at least
+`a` coordinates and distinct listed words have pairwise Hamming distance at least `d`, then the
+Johnson list cap holds with pairwise agreement parameter `|ι| - d`. -/
+theorem johnson_list_bound_div_of_hammingDist {ι F : Type*} [Fintype ι] [DecidableEq F]
+    (f : ι → F) (L : Finset (ι → F)) (a d : ℕ)
+    (hclose : ∀ c ∈ L, a ≤ (Finset.univ.filter (fun x => c x = f x)).card)
+    (hdist : ∀ c ∈ L, ∀ c' ∈ L, c ≠ c' → d ≤ hammingDist c c')
+    (hgap : Fintype.card ι * (Fintype.card ι - d) < a ^ 2) :
+    L.card ≤
+      (Fintype.card ι) ^ 2 / (a ^ 2 - Fintype.card ι * (Fintype.card ι - d)) := by
+  classical
+  exact johnson_list_bound_div f L a (Fintype.card ι - d) hclose
+    (fun c hc c' hc' hne =>
+      agree_card_le_card_sub_of_hammingDist_ge (hdist c hc c' hc' hne))
+    hgap
+
+/-- **Distance-form exact unique-decoding endpoint.** The nonempty exact-singleton endpoint with
+pairwise Hamming-distance separation supplied directly. -/
+theorem johnson_unique_decoding_eq_one_of_hammingDist {ι F : Type*} [Fintype ι] [DecidableEq F]
+    (f : ι → F) (L : Finset (ι → F)) (a d : ℕ) (hL : L.Nonempty)
+    (hclose : ∀ c ∈ L, a ≤ (Finset.univ.filter (fun x => c x = f x)).card)
+    (hdist : ∀ c ∈ L, ∀ c' ∈ L, c ≠ c' → d ≤ hammingDist c c')
+    (h2a : Fintype.card ι + (Fintype.card ι - d) < 2 * a) :
+    L.card = 1 := by
+  classical
+  exact johnson_unique_decoding_eq_one f L a (Fintype.card ι - d) hL hclose
+    (fun c hc c' hc' hne =>
+      agree_card_le_card_sub_of_hammingDist_ge (hdist c hc c' hc' hne))
+    h2a
+
 end ArkLib.JohnsonList
 
 -- Axiom audit.
 #print axioms ArkLib.JohnsonList.johnson_list_bound_div
 #print axioms ArkLib.JohnsonList.johnson_unique_decoding_eq_one
+#print axioms ArkLib.JohnsonList.agree_card_add_hammingDist
+#print axioms ArkLib.JohnsonList.agree_card_le_card_sub_of_hammingDist_ge
+#print axioms ArkLib.JohnsonList.johnson_list_bound_div_of_hammingDist
+#print axioms ArkLib.JohnsonList.johnson_unique_decoding_eq_one_of_hammingDist
