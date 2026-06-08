@@ -108,7 +108,41 @@ restatement would be fake content. Recorded as a dead end pending an actual mech
 Folded-RS variant collapses to the same RS correlation by the folding isomorphism, so it
 inherits the same generosity. → O2 does not disprove.
 
+### O3 (attempted) — Frobenius-orbit blowup of the bad-γ count
+**Key reading of the target (verified against `Errors.lean`/`MCAGS.lean`):** `epsMCA` is the
+probability `Pr_{γ←$ᵖ F}[mcaEvent] = (#bad γ)/q`, sup'd over word stacks. So the conjecture
+`epsMCAgs ≤ (1/q)·(2^m)^{c₁}/(ρ^{c₂}η^{c₃})` asserts, for fixed prize `m,ρ,η`, that the **bad-γ
+count is a constant independent of `q`** — the sharpest framing yet.
+Idea: take `u₀,u₁` over the prime subfield `F_p`, RS code Frobenius-stable. Then `φ:x↦x^p`
+preserves Hamming distance to the stable code and `(u₀+γu₁)^φ = u₀+γ^p u₁`, so **`γ` bad ⟹ `γ^p`
+bad** — the bad set is `φ`-closed, a union of Frobenius orbits. A bad scalar of degree `d` forces
+`d` bad scalars; in a tower `q=p^s` (`p` fixed), a high-degree bad scalar gives `#bad ≥ s = log_p q
+→ ∞`, **violating the constant bound → disproof.**
+**Verified sorry-free, axiom-clean in `CandidateDisproofLoop6.lean`:**
+`frobenius_iterate_mem` / `frobenius_orbit_subset` / `frobenius_orbit_card_le` (a `φ`-closed set
+with a degree-`d` element has card `≥ d`); `const_badcount_forbids_high_degree` (a constant
+bad-count bound `#S ≤ C` forces every bad scalar to degree `≤ C`, i.e. into the bounded subfield
+`F_{p^{⌊C⌋}}`); `degree_can_exceed_any_constant`.
+**Disproof of the disproof (why O3 does NOT close the prize):** the missing link is *realizability*
+— a Frobenius-stable `(u₀,u₁)` with a **high-degree** bad scalar **at prize radius** `δ ≤ 1−ρ−η`.
+BCIKS20 (proven below Johnson) forces the bad set to be small-or-essentially-all-of-`F`; a lone
+high-degree orbit in the gap is exactly the *unestablished beyond-Johnson case*. So O3 gives a hard
+**necessary structural condition** — *all bad γ live in a bounded-degree subfield* — but not a
+disproof. Kept as a standing constraint; sharply narrows what a real disproof must produce.
+
+## Standing constraint lemmas — addendum (O3)
+
+- **`const_badcount_forbids_high_degree`** (`CandidateDisproofLoop6.lean`, sorry-free, axiom-clean):
+  under the conjecture's constant bad-count claim, with `φ`-closed (prime-field-input) bad set,
+  every bad scalar has degree `≤ C` over `F_p`. A disproof = realizing a high-degree bad scalar at
+  prize radius; the proximity-gap dichotomy is the obstruction to doing so in the gap.
+
 ## Open angles not yet tried (to avoid repetition)
 
-- O3: characteristic/domain pathologies (Frobenius-stable subfields) affecting the
-  *constant* `c₁` rather than the asymptotics.
+- O4: try to *realize* the O3 obstruction — construct a Frobenius-stable `(u₀,u₁)` with a
+  high-degree bad scalar at radius in the live band `[1−√ρ, 1−ρ−η]` (the only place it could exist).
+  If the proximity-gap "small-or-everything" dichotomy provably forbids a lone orbit in the gap that
+  *constrains further*; if it permits one, that is the disproof.
+- O5: examine whether `epsMCAgs`'s GS-row restriction (strictly rarer than the raw line-close event,
+  via `epsMCAgs ≤ epsCA`) caps the bad count below the Frobenius lower bound, refuting O3-style
+  growth outright.
