@@ -27,4 +27,3 @@ cs25_rs_epsCA_breakdown_lower  # #82 external CS25 lower-bound half of complete 
 bchks25_rs_epsCA_johnson_jump  # #83 external BCHKS25 Johnson-jump witness family
 gg25_subspaceDesign_epsMCA  # #86 external GG25 subspace-design MCA bound
 gg25_frs_epsMCA_capacity  # #86 external GG25 folded-RS capacity MCA bound
-fenziSanso_upperBound_attack_concrete_residual  # #106 concrete KoalaBear winning-set residual

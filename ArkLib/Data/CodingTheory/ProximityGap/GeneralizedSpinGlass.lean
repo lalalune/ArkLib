@@ -1,6 +1,7 @@
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.NNReal.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
@@ -21,6 +22,7 @@ variable [Field F] [Fintype F] [DecidableEq F]
 
 open Code
 open ProximityGap
+open scoped NNReal
 
 /-- A bundle of vectors `U` is shattered at distance `D` if any two distinct
 elements in `U` are separated by distance STRICTLY greater than `D`. -/
@@ -39,9 +41,11 @@ def GeneralizedSpinGlassHypothesis
 
 /-- If the generalized Spin-Glass Hypothesis holds for `C` with a sufficiently 
 large shattering distance `D_shatter`, it strictly limits the affine subspace 
-dimension that the list can contain, thus bounding `epsMCA`. -/
+dimension that the list can contain. This forces the number of bad `γ` in the 
+`mcaEvent` to be at most `V_crit`, thereby bounding `epsMCA` by `V_crit / |F|`. -/
 theorem epsMCA_bound_of_GeneralizedSpinGlass
     (C : LinearCode ι F) (δ : ℝ≥0) (V_crit : ℕ) (D_shatter : ℕ)
     (h_sg : GeneralizedSpinGlassHypothesis (C : Set (ι → F)) δ V_crit D_shatter) :
-    epsMCA (F := F) (A := F) (C : Set (ι → F)) δ ≤ 1 := by
-  sorry -- Affine subspace dimension bound via shattering
+    epsMCA (F := F) (A := F) (C : Set (ι → F)) δ ≤ 
+      ENNReal.ofReal ((V_crit : ℝ) / (Fintype.card F : ℝ)) := by
+  sorry -- Affine subspace dimension bounded by shattering limit V_crit
