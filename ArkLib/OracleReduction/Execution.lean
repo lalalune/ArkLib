@@ -613,6 +613,43 @@ theorem runToRound_eq_bind_continueFromTo
       refine bind_congr (fun rk => ?_)
       rw [← processRound_eq_bind]
 
+/-- **Transitivity / range-split of `continueFromTo`.**  For `k ≤ k' ≤ j`, continuing the prover's
+run from round `k` to round `j` equals continuing `k → k'` and then `k' → j`.  Proved by
+`Fin.induction` on `j` via `continueFromTo_succ_of_ne`, `processRound_eq_bind`, and `bind_assoc`
+(the `continueFromTo`-prefix analogue of `runToRound_eq_bind_continueFromTo`).  This is the split a
+sequential-composition right-block run characterization needs to peel the seam round off the interior
+rounds. -/
+theorem continueFromTo_trans (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (k k' j : Fin (n + 1)) (hkk' : k ≤ k') (hk'j : k' ≤ j)
+    (rk : pSpec.Transcript k × prover.PrvState k) :
+    continueFromTo prover stmt wit k j rk
+      = continueFromTo prover stmt wit k k' rk >>= continueFromTo prover stmt wit k' j := by
+  induction j using Fin.induction with
+  | zero =>
+    have hk'0 : k' = 0 := le_antisymm hk'j (Fin.zero_le _)
+    have hk0 : k = 0 := le_antisymm (hkk'.trans hk'j) (Fin.zero_le _)
+    subst hk'0; subst hk0
+    simp only [continueFromTo_self, pure_bind]
+  | succ m ih =>
+    rcases eq_or_lt_of_le hk'j with heq | hlt
+    · subst heq
+      conv_rhs => rw [show (continueFromTo prover stmt wit (m.succ) (m.succ))
+                        = (fun rk => pure rk)
+                          from funext (continueFromTo_self prover stmt wit _)]
+      rw [bind_pure]
+    · have hk'm : k' ≤ m.castSucc := by rw [Fin.le_castSucc_iff]; exact hlt
+      have hne : (k : Fin (n + 1)) ≠ m.succ := ne_of_lt (lt_of_le_of_lt hkk' hlt)
+      have hne' : (k' : Fin (n + 1)) ≠ m.succ := ne_of_lt hlt
+      rw [continueFromTo_succ_of_ne prover stmt wit k m hne rk, ih hk'm]
+      have hcont : continueFromTo prover stmt wit k' m.succ
+          = fun rk => prover.processRound m (continueFromTo prover stmt wit k' m.castSucc rk) :=
+        funext (fun rk => continueFromTo_succ_of_ne prover stmt wit k' m hne' rk)
+      rw [hcont, processRound_eq_bind m prover
+            (continueFromTo prover stmt wit k k' rk >>= continueFromTo prover stmt wit k' m.castSucc),
+          bind_assoc]
+      refine bind_congr (fun rk => ?_)
+      rw [← processRound_eq_bind]
+
 /-! ### Direction-resolved single-round peels
 
 The two lemmas below resolve the `processRound` direction match into the two honest round shapes,
