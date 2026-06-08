@@ -1403,8 +1403,37 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_resi
 #print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
 #print axioms composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval
 #print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel
-#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual
-#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_residual
+/-- Instantiate the composed PIOP residual by chaining all seven phases. -/
+theorem composedPIOPResidual_holds
+    (hFirstSumcheck : firstSumcheckResidual R pp oSpec)
+    (hSecondSumcheck : secondSumcheckResidual R pp oSpec) :
+    composedPIOPResidual R pp oSpec := by
+  have ⟨R3⟩ := hFirstSumcheck
+  have ⟨R6⟩ := hSecondSumcheck
+  let R1 := oracleReduction.firstMessage R pp oSpec
+  let R2 := oracleReduction.firstChallenge R pp oSpec
+  let R4 := oracleReduction.sendEvalClaim R pp oSpec
+  let R5 := oracleReduction.linearCombination R pp oSpec
+  let R7 := finalCheck R pp oSpec
+  let Rc := R1.append (R2.append (R3.append (R4.append (R5.append (R6.append R7)))))
+  exact ⟨_, _, inferInstance, inferInstance, ⟨Rc⟩⟩
+
+/-- Instantiate the target-carrying composed PIOP residual by chaining all seven phases,
+ending with `finalCheckWithClaim`. -/
+theorem composedPIOPWithClaimResidual_holds
+    (hFirstSumcheck : firstSumcheckResidual R pp oSpec)
+    (hSecondSumcheck : secondSumcheckResidual R pp oSpec) :
+    composedPIOPWithClaimResidual R pp oSpec := by
+  have ⟨R3⟩ := hFirstSumcheck
+  have ⟨R6⟩ := hSecondSumcheck
+  let R1 := oracleReduction.firstMessage R pp oSpec
+  let R2 := oracleReduction.firstChallenge R pp oSpec
+  let R4 := oracleReduction.sendEvalClaim R pp oSpec
+  let R5 := oracleReduction.linearCombination R pp oSpec
+  let R7 := finalCheckWithClaim R pp oSpec
+  let Rc := R1.append (R2.append (R3.append (R4.append (R5.append (R6.append R7)))))
+  exact ⟨_, _, inferInstance, inferInstance, ⟨Rc⟩⟩
+
 
 end Bricks
 

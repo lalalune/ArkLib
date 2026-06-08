@@ -63,6 +63,17 @@ theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
     liftM_bind, bind_assoc, liftM_pure, pure_bind]
   apply eq_of_heq
   have hseam := append_runToRound_seam (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit)
+  refine bind_heq_congr
+    (by rw [append_Transcript_last_empty, append_PrvState_last_empty]) rfl hseam
+    (fun rSeam x hr => ?_)
+  obtain ⟨ht, hs⟩ := prod_heq_split (append_Transcript_last_empty (pSpec₂ := pSpec₂))
+    (append_PrvState_last_empty P₁ P₂) hr
+  have hc2 : cast (append_PrvState_last_empty P₁ P₂) rSeam.2 = x.2 :=
+    eq_of_heq ((cast_heq _ _).trans hs)
+  have hc1 : cast (append_Transcript_last_empty (pSpec₂ := pSpec₂)) rSeam.1 = x.1 :=
+    eq_of_heq ((cast_heq _ _).trans ht)
+  rw [hc2]
+  apply heq_of_eq
   trace_state
   sorry
 

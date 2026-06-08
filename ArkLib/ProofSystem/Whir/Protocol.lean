@@ -61,6 +61,16 @@ def whirVectorIOP_isSecureWithGap {F : Type} [Field F] [SampleableType F] {M : �
   VectorIOP.IsSecureWithGap (whirRelation m0 (P.φ 0) 0) (whirRelation m0 (P.φ 0) δ)
     εRbr (whirVectorIOP P d)
 
+/-- The WHIR `VectorIOP` is secure with gap if its completeness and RBR soundness residuals hold. -/
+theorem whirVectorIOP_isSecureWithGap_holds {F : Type} [Field F] [SampleableType F] {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) {m0 : ℕ} (δ : ℝ≥0)
+    (εRbr : ((whirVectorSpec M).toProtocolSpec F).ChallengeIdx → ℝ≥0)
+    (hComplete : whirVectorIOP_perfectCompleteness P d (m0 := m0))
+    (hSound : whirVectorIOP_rbrKnowledgeSoundness P d δ εRbr (m0 := m0)) :
+    whirVectorIOP_isSecureWithGap P d δ εRbr :=
+  ⟨hComplete, hSound⟩
+
 /-- If the concrete WHIR `VectorIOP` security residual is supplied, it discharges the paper-level
 `whir_rbr_soundness` statement. This is plumbing, not a fake proof of the residual. -/
 theorem whir_rbr_soundness_of_secure_gap {F : Type} [Field F] [SampleableType F] {M : ℕ}
