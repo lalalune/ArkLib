@@ -607,4 +607,190 @@ theorem merge_processRound_seam_challenge
   · refine heq_app rfl ?_ hf hchal
     rw [merge_PrvState_seam_succ P hn]
 
+theorem merge_PrvState_castLE_castSucc (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (i : Fin m) :
+    ((Prover.fst P).append (Prover.snd P)).PrvState
+        (Fin.castLE (show m ≤ m + n by omega) i).castSucc
+      = P.PrvState (Fin.castLE (show m ≤ m + n by omega) i).castSucc :=
+  (append_PrvState_castSucc (P₁ := Prover.fst P) (P₂ := Prover.snd P) i).trans
+    (fst_PrvState_castSucc' P i).symm
+
+theorem merge_PrvState_castLE_succ (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (i : Fin m) :
+    ((Prover.fst P).append (Prover.snd P)).PrvState (Fin.castLE (show m ≤ m + n by omega) i).succ
+      = P.PrvState (Fin.castLE (show m ≤ m + n by omega) i).succ :=
+  (append_PrvState_succ (P₁ := Prover.fst P) (P₂ := Prover.snd P) i).trans
+    (fst_PrvState_succ' P i).symm
+
+theorem merge_sendMessage_left (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (i : Fin m)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.castLE (show m ≤ m + n by omega) i) = .P_to_V)
+    (hDir₁ : pSpec₁.dir i = .P_to_V)
+    (stateA : ((Prover.fst P).append (Prover.snd P)).PrvState
+      (Fin.castLE (show m ≤ m + n by omega) i).castSucc)
+    (stateP : P.PrvState (Fin.castLE (show m ≤ m + n by omega) i).castSucc)
+    (hst : HEq stateA stateP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).sendMessage
+          ⟨Fin.castLE (show m ≤ m + n by omega) i, hDir⟩ stateA)
+        (P.sendMessage ⟨Fin.castLE (show m ≤ m + n by omega) i, hDir⟩ stateP) := by
+  refine (append_sendMessage_left (P₁ := Prover.fst P) (P₂ := Prover.snd P)
+    i hDir hDir₁ stateA).trans ?_
+  refine (sendMessage_heq_congr (P := Prover.fst P) rfl ?_).trans
+    (fst_sendMessage_left P i hDir hDir₁ stateP).symm
+  exact (cast_heq _ _).trans (hst.trans (cast_heq _ _).symm)
+
+theorem merge_receiveChallenge_left (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (i : Fin m)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.castLE (show m ≤ m + n by omega) i) = .V_to_P)
+    (hDir₁ : pSpec₁.dir i = .V_to_P)
+    (stateA : ((Prover.fst P).append (Prover.snd P)).PrvState
+      (Fin.castLE (show m ≤ m + n by omega) i).castSucc)
+    (stateP : P.PrvState (Fin.castLE (show m ≤ m + n by omega) i).castSucc)
+    (hst : HEq stateA stateP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).receiveChallenge
+          ⟨Fin.castLE (show m ≤ m + n by omega) i, hDir⟩ stateA)
+        (P.receiveChallenge ⟨Fin.castLE (show m ≤ m + n by omega) i, hDir⟩ stateP) := by
+  refine (append_receiveChallenge_left (P₁ := Prover.fst P) (P₂ := Prover.snd P)
+    i hDir hDir₁ stateA).trans ?_
+  refine (receiveChallenge_heq_congr (P := Prover.fst P) rfl ?_).trans
+    (fst_receiveChallenge_left P i hDir hDir₁ stateP).symm
+  exact (cast_heq _ _).trans (hst.trans (cast_heq _ _).symm)
+
+theorem merge_processRound_left_message
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (i : Fin m) (hDir₁ : pSpec₁.dir i = .P_to_V)
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.castLE (show m ≤ m + n by omega) i).castSucc
+        × ((Prover.fst P).append (Prover.snd P)).PrvState
+            (Fin.castLE (show m ≤ m + n by omega) i).castSucc))
+    (curP : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.castLE (show m ≤ m + n by omega) i).castSucc
+        × P.PrvState (Fin.castLE (show m ≤ m + n by omega) i).castSucc))
+    (hcur : HEq curA curP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).processRound
+          (Fin.castLE (show m ≤ m + n by omega) i) curA)
+        (P.processRound (Fin.castLE (show m ≤ m + n by omega) i) curP) := by
+  have hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.castLE (show m ≤ m + n by omega) i) = .P_to_V := by
+    rw [append_dir_castLE]; exact hDir₁
+  rw [processRound_message ((Prover.fst P).append (Prover.snd P))
+      (Fin.castLE (show m ≤ m + n by omega) i) hDir curA,
+    processRound_message P (Fin.castLE (show m ≤ m + n by omega) i) hDir curP]
+  refine bind_heq_congr (by rw [merge_PrvState_castLE_castSucc P i])
+    (by rw [merge_PrvState_castLE_succ P i]) hcur ?_
+  rintro ⟨t, s⟩ ⟨t', s'⟩ hr
+  obtain ⟨ht, hs⟩ := prod_heq_split rfl (merge_PrvState_castLE_castSucc P i) hr
+  dsimp only
+  refine bind_heq_congr (by rw [merge_PrvState_castLE_succ P i])
+    (by rw [merge_PrvState_castLE_succ P i])
+    (liftComp_heq_congr (spec := oSpec) (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (by rw [merge_PrvState_castLE_succ P i])
+      (merge_sendMessage_left P i hDir hDir₁ s s' hs)) ?_
+  rintro ⟨msg, ns⟩ ⟨msg', ns'⟩ hmsg
+  obtain ⟨hm, hns⟩ := prod_heq_split rfl (merge_PrvState_castLE_succ P i) hmsg
+  refine pure_heq_pure (by rw [merge_PrvState_castLE_succ P i]) ?_
+  refine prodMk_heq rfl (merge_PrvState_castLE_succ P i) ?_ hns
+  rw [eq_of_heq hm, eq_of_heq ht]
+
+theorem merge_processRound_left_challenge
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (i : Fin m) (hDir₁ : pSpec₁.dir i = .V_to_P)
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.castLE (show m ≤ m + n by omega) i).castSucc
+        × ((Prover.fst P).append (Prover.snd P)).PrvState
+            (Fin.castLE (show m ≤ m + n by omega) i).castSucc))
+    (curP : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.castLE (show m ≤ m + n by omega) i).castSucc
+        × P.PrvState (Fin.castLE (show m ≤ m + n by omega) i).castSucc))
+    (hcur : HEq curA curP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).processRound
+          (Fin.castLE (show m ≤ m + n by omega) i) curA)
+        (P.processRound (Fin.castLE (show m ≤ m + n by omega) i) curP) := by
+  have hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.castLE (show m ≤ m + n by omega) i) = .V_to_P := by
+    rw [append_dir_castLE]; exact hDir₁
+  rw [processRound_challenge' ((Prover.fst P).append (Prover.snd P))
+      (Fin.castLE (show m ≤ m + n by omega) i) hDir curA,
+    processRound_challenge' P (Fin.castLE (show m ≤ m + n by omega) i) hDir curP]
+  refine bind_heq_congr (by rw [merge_PrvState_castLE_castSucc P i])
+    (by rw [merge_PrvState_castLE_succ P i]) hcur ?_
+  rintro ⟨t, s⟩ ⟨t', s'⟩ hr
+  obtain ⟨ht, hs⟩ := prod_heq_split rfl (merge_PrvState_castLE_castSucc P i) hr
+  dsimp only
+  refine bind_heq_congr rfl (by rw [merge_PrvState_castLE_succ P i]) HEq.rfl ?_
+  rintro chal chal' hchal
+  refine bind_heq_congr (by rw [merge_PrvState_castLE_succ P i])
+    (by rw [merge_PrvState_castLE_succ P i])
+    (liftComp_heq_congr (spec := oSpec) (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (by rw [merge_PrvState_castLE_succ P i])
+      (merge_receiveChallenge_left P i hDir hDir₁ s s' hs)) ?_
+  rintro fA f' hf
+  refine pure_heq_pure (by rw [merge_PrvState_castLE_succ P i]) ?_
+  refine prodMk_heq rfl (merge_PrvState_castLE_succ P i) ?_ ?_
+  · rw [eq_of_heq hchal, eq_of_heq ht]
+  · refine heq_app rfl ?_ hf hchal
+    rw [merge_PrvState_castLE_succ P i]
+
+
+/-- **Per-round processRound merge for any round index.** -/
+theorem merge_processRound_any (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (i : Fin (m + n))
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript i.castSucc
+        × ((Prover.fst P).append (Prover.snd P)).PrvState i.castSucc))
+    (curP : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript i.castSucc × P.PrvState i.castSucc))
+    (hcur : HEq curA curP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).processRound i curA)
+        (P.processRound i curP) := by
+  revert curA curP hcur
+  refine Fin.addCases (fun i' => ?_) (fun i'' => ?_) i
+  · intro curA curP hcur
+    cases hd : pSpec₁.dir i' with
+    | P_to_V => exact merge_processRound_left_message P i' hd _ _ hcur
+    | V_to_P => exact merge_processRound_left_challenge P i' hd _ _ hcur
+  · intro curA curP hcur
+    have hn : 0 < n := by have := i''.isLt; omega
+    rcases Nat.eq_zero_or_pos i''.val with h0 | hpos
+    · have hi'' : i'' = (⟨0, hn⟩ : Fin n) := by ext; exact h0
+      subst hi''
+      cases hd : (pSpec₁ ++ₚ pSpec₂).dir ⟨m, by omega⟩ with
+      | P_to_V =>
+        have hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .P_to_V := by
+          rw [← append_dir_natAdd (pSpec₁ := pSpec₁)]
+          rw [show (Fin.natAdd m (⟨0, hn⟩ : Fin n)) = (⟨m, by omega⟩ : Fin (m + n)) from by ext; simp]
+          exact hd
+        exact merge_processRound_seam_message P hn hd hDir₂ _ _ hcur
+      | V_to_P =>
+        have hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .V_to_P := by
+          rw [← append_dir_natAdd (pSpec₁ := pSpec₁)]
+          rw [show (Fin.natAdd m (⟨0, hn⟩ : Fin n)) = (⟨m, by omega⟩ : Fin (m + n)) from by ext; simp]
+          exact hd
+        exact merge_processRound_seam_challenge P hn hd hDir₂ _ _ hcur
+    · cases hd : pSpec₂.dir i'' with
+      | P_to_V =>
+        have hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m i'') = .P_to_V := by
+          rw [append_dir_natAdd]; exact hd
+        exact merge_processRound_natAdd_message P i'' hpos hDir _ _ hcur
+      | V_to_P =>
+        have hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m i'') = .V_to_P := by
+          rw [append_dir_natAdd]; exact hd
+        exact merge_processRound_natAdd_challenge P i'' hpos hDir _ _ hcur
+
+/-- **Run-level merge (keystone).** -/
+theorem merge_runToRound (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (stmt : Stmt₁) (wit : Wit₁) (j : Fin (m + n + 1)) :
+    HEq (((Prover.fst P).append (Prover.snd P)).runToRound j stmt wit)
+        (P.runToRound j stmt wit) := by
+  induction j using Fin.induction with
+  | zero =>
+    rw [Prover.runToRound_zero_of_prover_first, Prover.runToRound_zero_of_prover_first]
+    have hS0 : ((Prover.fst P).append (Prover.snd P)).PrvState 0 = P.PrvState 0 := by
+      have h := append_PrvState_castLE (P₁ := Prover.fst P) (P₂ := Prover.snd P) (0 : Fin (m + 1))
+      simpa using h
+    refine pure_heq_pure (by rw [hS0]) ?_
+    refine prodMk_heq rfl hS0 HEq.rfl ?_
+    exact append_input_heq (P₁ := Prover.fst P) (P₂ := Prover.snd P)
+  | succ i ih =>
+    rw [Prover.runToRound_succ, Prover.runToRound_succ]
+    exact merge_processRound_any P i _ _ ih
+
 end Prover
