@@ -20,6 +20,8 @@ theorem reduction_append_perfectCompleteness_msg
     (hn : 0 < n)
     (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
     (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
@@ -27,20 +29,48 @@ theorem reduction_append_perfectCompleteness_msg
     (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
   rw [perfectCompleteness_eq_prob_one] at h₁ h₂ ⊢
   intro stmtIn witIn hIn
-  -- The composite run factors (inline) via the proven syntactic prover keystone.
-  have hrun :
-      (R₁.append R₂).run stmtIn witIn = (do
-        let proverResult ← liftM (((do
-          let ⟨tr₁, s₂, w₂⟩ ← liftM (R₁.prover.run stmtIn witIn)
-          let ⟨tr₂, s₃, w₃⟩ ← liftM (R₂.prover.run s₂ w₂)
-          pure (tr₁ ++ₜ tr₂, s₃, w₃)) :
-            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
-              (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × Wit₃)))
-        let stmtOut ← liftM ((R₁.append R₂).verifier.run stmtIn proverResult.1).run
-        return (proverResult, ← stmtOut.getM)) := by
-    unfold Reduction.run
-    rw [show (R₁.append R₂).prover = R₁.prover.append R₂.prover from rfl,
-      Prover.append_run_msg (P₁ := R₁.prover) (P₂ := R₂.prover) stmtIn witIn hn hDir hDir₂]
-  sorry
+  -- Unfold the composite run in place and factor the prover via the proven syntactic keystone.
+  simp only [Reduction.run, Reduction.append,
+    Prover.append_run_msg (P₁ := R₁.prover) (P₂ := R₂.prover) stmtIn witIn hn hDir hDir₂]
+  -- VERIFIED TO HERE: composite run factored to  do P₁; P₂; (V₁∘V₂); getM.
+  -- Goal & h₁,h₂ are all `probEvent (OptionT.mk do init; (simulateQ pImpl RUN).run') E = 1`.
+  -- REMAINING (support reduction, mirror `unroll_n_message_reduction_perfectCompleteness`):
+  --  1. `probEvent_eq_one_iff` + `probFailure_simulateQ_iff_stateful_run'_mk`
+  --     + `support_bind_simulateQ_run'_eq_mk` (needs `hInit`,`hImplSupp` + the challenge-oracle
+  --     `hImplSupp` discharge for `addLift impl challengeQueryImpl`) to turn all three into
+  --     raw-support conditions over `(.run …).run`.
+  --  2. Decompose the composite raw support (bind support) into P₁,P₂,V₁,V₂ pieces.
+  --  3. From h₁ on (stmtIn,witIn): every (tr₁,s₂,w₂,vs₂)∈supp(R₁.run) has s₂=vs₂ ∧ (vs₂,w₂)∈rel₂.
+  --  4. With s₂=vs₂, the (tr₂,s₃,w₃,vs₃) piece ∈ supp(R₂.run s₂ w₂); apply h₂ ⇒ E.
+  simp only [probEvent_eq_one_iff] at h₁ h₂ ⊢
+  obtain ⟨hf₁, hs₁⟩ := h₁ stmtIn witIn hIn
+  refine ⟨?_, ?_⟩
+  · -- GOAL: `Pr[⊥ | OptionT.mk do init; (simulateQ pImpl CompositeRun).run'] = 0`.
+    rw [OptionT.probFailure_mk_bind_eq_zero_iff]
+    refine ⟨by rw [probFailure_eq_zero_iff]; exact hInit, ?_⟩
+    intro s hs
+    rw [probFailure_simulateQ_iff_stateful_run'_mk
+      (impl := impl.addLift challengeQueryImpl) (hImplSupp := by
+        intro β q s'
+        cases q with | mk t f =>
+        cases t with
+        | inl i => exact hImplSupp (OracleQuery.mk i f) s'
+        | inr i =>
+          simp only [QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+            QueryImpl.addLift_def, QueryImpl.add_apply_inr]
+          have hq := support_challengeQueryImpl_run_eq (q := OracleQuery.mk i f) s'
+          rw [support_liftM]
+          simpa only [ChallengeIdx, Challenge, add_apply_inr, QueryImpl.liftTarget_apply,
+            StateT.run_map, StateT.run_monadLift, monadLift_self, bind_pure_comp, Functor.map_map,
+            support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
+            support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+            liftM_map] using hq)]
+    -- now: `Pr[⊥ | OptionT.mk CompositeRawRun] = 0`  (raw composite run never fails)
+    sorry
+  · -- GOAL: `∀ x ∈ support (OptionT.mk do init; (simulateQ pImpl CompositeRun).run'), E₃ x`.
+    -- Collapse via support_bind_simulateQ_run'_eq_mk (inline discharge) → raw support; decompose
+    -- bind support into (tr₁,s₂,w₂,vs₂)∈supp(R₁.run) and (tr₂,s₃,w₃,vs₃)∈supp(R₂.run s₂ w₂).
+    -- hs₁ ⇒ s₂=vs₂ ∧ (vs₂,w₂)∈rel₂; then (h₂ s₂ w₂ ‹∈rel₂›).2 on the R₂ piece gives E₃.
+    sorry
 
 end Reduction
