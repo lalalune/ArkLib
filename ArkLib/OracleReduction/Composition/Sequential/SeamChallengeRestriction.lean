@@ -159,3 +159,6 @@ theorem evalDist_simulateQ_liftM_run_eq_of_query
       exact ih a s'
 
 end ArkLib.SeamChallengeRestriction
+
+#print axioms ArkLib.SeamChallengeRestriction.evalDist_simulateQ_liftM_run_eq_of_query
+#print axioms ArkLib.SeamChallengeRestriction.hquery_evalDist
