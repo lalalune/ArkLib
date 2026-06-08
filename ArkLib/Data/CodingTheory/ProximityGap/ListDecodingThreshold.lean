@@ -113,35 +113,8 @@ theorem exists_two_of_close_codeword {C : Finset (ι → F)} (r : ℕ) {v : ι �
     rw [lam, Finset.mem_filter]; exact ⟨hv, hdv⟩
   exact Finset.one_lt_card.mpr ⟨0, h0mem, v, hvmem, fun h => hvne h.symm⟩
 
-
-/-- **Moment-method consistency: below half the minimum distance the second moment equals the first.**
-For a linear code (`0 ∈ C`, closed under `±`) with minimum distance `> 2r`, every off-diagonal
-pair-ball `N(v,r)` vanishes (`pairBall_eq_zero`), so `second_moment_linear = |C|·Σ_{v∈C} N(v,r)`
-collapses to `|C|·N(0,r) = |C|·V(r) = Σ_f |Λ|` (the first moment). Hence `Σ_f |Λ|² = Σ_f |Λ|` — which,
-via `exists_two_of_second_gt_first`, re-derives unique decoding (`|Λ| ≤ 1`) purely from the moments,
-matching `list_le_one_of_min_weight`. A self-consistency check tying the two halves together. -/
-theorem second_moment_eq_first_of_min_weight {C : Finset (ι → F)}
-    (hadd : ∀ a ∈ C, ∀ b ∈ C, a + b ∈ C) (hsub : ∀ a ∈ C, ∀ b ∈ C, a - b ∈ C)
-    (h0 : (0 : ι → F) ∈ C) (r : ℕ)
-    (hmin : ∀ v ∈ C, v ≠ 0 → 2 * r < hammingNorm v) :
-    (∑ f : ι → F, (lam C r f).card ^ 2) = ∑ f : ι → F, (lam C r f).card := by
-  rw [second_moment_linear hadd hsub r]
-  have hsingle : (∑ v ∈ C, (Finset.univ.filter
-        (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card)
-      = (Finset.univ.filter
-        (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist (0 : ι → F) g ≤ r)).card := by
-    refine Finset.sum_eq_single_of_mem (0 : ι → F) h0 (fun v hv hvne => ?_)
-    exact pairBall_eq_zero v r (hmin v hv hvne)
-  have hN0 : (Finset.univ.filter
-        (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist (0 : ι → F) g ≤ r)).card
-      = ballVol ι F r := by
-    simp only [and_self]
-    rfl
-  rw [hsingle, hN0, smul_eq_mul, first_moment]
-
 #print axioms pairBall_eq_zero
 #print axioms list_le_one_of_min_weight
 #print axioms exists_two_of_close_codeword
-#print axioms second_moment_eq_first_of_min_weight
 
 end ArkLib.CodingTheory.ListMoments
