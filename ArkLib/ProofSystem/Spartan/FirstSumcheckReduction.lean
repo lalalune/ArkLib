@@ -93,7 +93,9 @@ theorem matVecMLEEvalFromOracles_simOracle
     rw [matVecMLE, MLE_eval_eq_sum_eqTilde]
     refine Fintype.sum_equiv finFunctionFinEquiv _ _ ?_ |>.symm
     intro xBits
-    simp only [eqTilde, boolPoint, Equiv.symm_apply_apply, Function.comp_apply]
+    simp only [eqTilde, Function.comp_apply]
+    unfold boolPoint
+    simp only [Equiv.symm_apply_apply]
     rw [eqPolynomial_symm]
   · -- each outer step is deterministic: the inner fold reconstructs `(M *ᵥ 𝕫)(x)`
     intro acc xEnum

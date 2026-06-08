@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Team
 -/
 
-import Mathlib.LinearAlgebra.Matrix.LinearIndependent
+import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.Matrix.Basis
 import ArkLib.Data.Polynomial.Multivariate.Interpolation
 import ArkLib.Data.Polynomial.Multivariate.HasseDerivative
