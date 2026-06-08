@@ -41,24 +41,23 @@ theorem fourier_pair_identity (C : Submodule F (ι → F))
       = (Fintype.card ((ι → F) ⧸ C) : ℂ)
           * (((B ×ˢ B).filter (fun wf : (ι → F) × (ι → F) => wf.1 - wf.2 ∈ C)).card : ℂ) := by
   classical
-  set G := (ι → F) ⧸ C
   -- per-pair character orthogonality
   have key : ∀ w f : ι → F,
-      (∑ ψ : AddChar G ℂ, ψ (C.mkQ w) * (-ψ) (C.mkQ f))
-        = if w - f ∈ C then (Fintype.card G : ℂ) else 0 := by
+      (∑ ψ : AddChar ((ι → F) ⧸ C) ℂ, ψ (C.mkQ w) * (-ψ) (C.mkQ f))
+        = if w - f ∈ C then (Fintype.card ((ι → F) ⧸ C) : ℂ) else 0 := by
     intro w f
-    have hpt : ∀ ψ : AddChar G ℂ,
+    have hpt : ∀ ψ : AddChar ((ι → F) ⧸ C) ℂ,
         ψ (C.mkQ w) * (-ψ) (C.mkQ f) = ψ (C.mkQ (w - f)) := by
       intro ψ
       rw [AddChar.neg_apply', ← AddChar.map_neg_eq_inv, ← AddChar.map_add_eq_mul, map_sub]
       congr 1; abel
     simp_rw [hpt]
     rw [AddChar.sum_apply_eq_ite]
-    simp only [Submodule.Quotient.mk_eq_zero, Submodule.mkQ_apply]
+    simp only [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
   -- assemble
   have hL :
-      (∑ ψ : AddChar G ℂ, (∑ w ∈ B, ψ (C.mkQ w)) * (∑ f ∈ B, (-ψ) (C.mkQ f)))
-        = ∑ w ∈ B, ∑ f ∈ B, (if w - f ∈ C then (Fintype.card G : ℂ) else 0) := by
+      (∑ ψ : AddChar ((ι → F) ⧸ C) ℂ, (∑ w ∈ B, ψ (C.mkQ w)) * (∑ f ∈ B, (-ψ) (C.mkQ f)))
+        = ∑ w ∈ B, ∑ f ∈ B, (if w - f ∈ C then (Fintype.card ((ι → F) ⧸ C) : ℂ) else 0) := by
     simp_rw [Finset.sum_mul_sum]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl (fun w _ => ?_)

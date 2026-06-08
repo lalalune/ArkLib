@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
 
 /-!
 # Un-cleared embedding of the iterated-Hasse coefficient (BCIKS20 A.4, issue #139)
@@ -36,6 +36,21 @@ theorem embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared (x₀ : F) (R : F[X
       = Polynomial.eval₂ (liftToFunctionField (H := H)) (functionFieldT (H := H))
           (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))) := by
   rw [hasseCoeffRepr𝒪, embeddingOf𝒪Into𝕃_mk, liftBivariate_eq_eval₂_functionFieldT]
+
+/-- The un-cleared `Y ↦ T` embedding of `hasseCoeffRepr𝒪` in shifted Hasse-Taylor
+sum form, parallel to `hasseEvalAtRoot_eq_taylorSum` with `T/W` replaced by `T`. -/
+theorem embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared_eq_taylorSum
+    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m)
+      = ∑ i ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
+              (hasseDerivX i1 (hasseDerivY m R))).natDegree + 1),
+          (i + m).choose m
+            • (liftToFunctionField (H := H)
+                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff (i + m))
+                * (functionFieldT (H := H)) ^ i) := by
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared, Polynomial.eval₂_eq_sum_range]
+  refine Finset.sum_congr rfl (fun i _ => ?_)
+  rw [evalX_hasseDeriv_Y_coeff, map_nsmul (liftToFunctionField (H := H)), smul_mul_assoc]
 
 /-- The per-term equality target asserting that the plain `hasseCoeffRepr𝒪` embedding already
 matches the cleared root evaluation.  This is intentionally a named target, not a theorem: #139's
@@ -124,6 +139,8 @@ theorem HasseCoeffRepr𝒪UnclearedEval₂WDivTarget.of_wDivTarget
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared_eq_taylorSum
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedMatchesRoot
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂Target
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedWDivTarget
