@@ -48,14 +48,16 @@ theorem additive_polynomial_step_le_next_pow
     (hstep : ∀ j, T (j + 1) ≤ T j + C * (((2 : ℝ) ^ m) ^ c)) (hbase : T 0 ≤ B₀) :
     T m ≤ B₀ + C * (((2 : ℝ) ^ m) ^ (c + 1)) := by
   let b : ℝ := C * (((2 : ℝ) ^ m) ^ c)
-  have hlin : T m ≤ T 0 + (m : ℝ) * b := by
-    induction m with
-    | zero => simp [hbase]
+  have hlin_all : ∀ k : ℕ, T k ≤ T 0 + (k : ℝ) * b := by
+    intro k
+    induction k with
+    | zero => simp
     | succ n ih =>
         calc
           T (n + 1) ≤ T n + b := hstep n
           _ ≤ (T 0 + (n : ℝ) * b) + b := by linarith
           _ = T 0 + (n + 1 : ℕ) * b := by push_cast; ring
+  have hlin : T m ≤ T 0 + (m : ℝ) * b := hlin_all m
   have hdepth : (m : ℝ) * b ≤ C * (((2 : ℝ) ^ m) ^ (c + 1)) := by
     dsimp [b]
     calc
