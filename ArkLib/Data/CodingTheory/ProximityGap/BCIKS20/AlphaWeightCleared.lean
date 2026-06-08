@@ -546,6 +546,64 @@ theorem fullyClearedWeightLe_of_succ_betaWeights (x₀ : F) (R : F[X][X][Y])
   ⟨fullyClearedWeightLe_base H x₀ R hHyp hH hd hD,
     fun t => AlphaGenuineRegularWeightLe_succ_cleared.of_lift H x₀ R hHyp hH t (hlift t) (hsucc t)⟩
 
+/-- Project the order-zero beta-weight bound from the fully-cleared predicate. -/
+theorem FullyClearedWeightLe.betaWeight_zero
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hfull : FullyClearedWeightLe H x₀ R hHyp hH D) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1 :=
+  ((fullyClearedWeightLe_iff_betaWeights H x₀ R hHyp hH D hlift).1 hfull).1
+
+/-- Project a successor beta-weight bound from the fully-cleared predicate. This is the direct
+consumer API for the remaining per-order weight wall, without unpacking the equivalence theorem. -/
+theorem FullyClearedWeightLe.succ_betaWeight
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hfull : FullyClearedWeightLe H x₀ R hHyp hH D) (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp (t + 1)) D
+      ≤ WithBot.some ((2 * (t + 1) + 1) * Bivariate.natDegreeY R * D) :=
+  ((fullyClearedWeightLe_iff_betaWeights H x₀ R hHyp hH D hlift).1 hfull).2 t
+
+/-- Forward projection of the fully-cleared predicate to both beta-weight families. -/
+theorem FullyClearedWeightLe.betaWeights
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hfull : FullyClearedWeightLe H x₀ R hHyp hH D) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1 ∧
+      ∀ t : ℕ, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp (t + 1)) D
+        ≤ WithBot.some ((2 * (t + 1) + 1) * Bivariate.natDegreeY R * D) :=
+  (fullyClearedWeightLe_iff_betaWeights H x₀ R hHyp hH D hlift).1 hfull
+
+/-- Build the fully-cleared predicate from the projected beta-weight family shape. -/
+theorem FullyClearedWeightLe.of_betaWeights
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (h0 : weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp (t + 1)) D
+      ≤ WithBot.some ((2 * (t + 1) + 1) * Bivariate.natDegreeY R * D)) :
+    FullyClearedWeightLe H x₀ R hHyp hH D :=
+  (fullyClearedWeightLe_iff_betaWeights H x₀ R hHyp hH D hlift).2 ⟨h0, hsucc⟩
+
 end AlphaWeight
 end BCIKS20.HenselNumerator
 
@@ -585,5 +643,9 @@ namespace BCIKS20.HenselNumerator.AlphaWeight
 #print axioms fullyClearedWeightLe_iff_betaWeights
 #print axioms fullyClearedWeightLe_base
 #print axioms fullyClearedWeightLe_of_succ_betaWeights
+#print axioms FullyClearedWeightLe.betaWeight_zero
+#print axioms FullyClearedWeightLe.succ_betaWeight
+#print axioms FullyClearedWeightLe.betaWeights
+#print axioms FullyClearedWeightLe.of_betaWeights
 
 end BCIKS20.HenselNumerator.AlphaWeight
