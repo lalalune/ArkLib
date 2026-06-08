@@ -336,6 +336,65 @@ theorem second_moment_linear {C : Finset (ι → F)}
   exact sum_pairs_diff hadd hsub
     (fun v => (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card)
 
+/-- **Worst-case squared-list lower bound for a linear code.** Combining
+`exists_large_list_sq` with the exact linear-code second moment gives a received word whose squared
+list size witnesses the weight-enumerator sum directly. -/
+theorem exists_large_list_sq_linear {C : Finset (ι → F)}
+    (hadd : ∀ a ∈ C, ∀ b ∈ C, a + b ∈ C) (hsub : ∀ a ∈ C, ∀ b ∈ C, a - b ∈ C) (r : ℕ) :
+    ∃ f : ι → F,
+      C.card • ∑ v ∈ C,
+          (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card
+        ≤ Fintype.card (ι → F) * (lam C r f).card ^ 2 := by
+  obtain ⟨f, hf⟩ := exists_large_list_sq C r
+  rw [second_moment_linear hadd hsub] at hf
+  exact ⟨f, hf⟩
+
+/-- **Linear-code list-ambiguity criterion.** If the exact linear-code second moment (the
+weight-enumerator sum) is strictly larger than the first moment, then some received word has at least
+two nearby codewords. -/
+theorem exists_two_of_linear_second_gt_first {C : Finset (ι → F)}
+    (hadd : ∀ a ∈ C, ∀ b ∈ C, a + b ∈ C) (hsub : ∀ a ∈ C, ∀ b ∈ C, a - b ∈ C) (r : ℕ)
+    (h :
+      (∑ f : ι → F, (lam C r f).card)
+        < C.card • ∑ v ∈ C,
+            (Finset.univ.filter
+              (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card) :
+    ∃ f : ι → F, 2 ≤ (lam C r f).card := by
+  refine exists_two_of_second_gt_first C r ?_
+  rw [second_moment_linear hadd hsub]
+  exact h
+
+/-- **Linear-code second-moment covering lower bound.** The Paley-Zygmund/Cauchy-Schwarz covering
+bound with the second moment rewritten as the exact linear-code weight-enumerator sum. -/
+theorem covering_lower_bound_linear {C : Finset (ι → F)}
+    (hadd : ∀ a ∈ C, ∀ b ∈ C, a + b ∈ C) (hsub : ∀ a ∈ C, ∀ b ∈ C, a - b ∈ C) (r : ℕ) :
+    (C.card * ballVol ι F r) ^ 2
+      ≤ (Finset.univ.filter (fun f => 1 ≤ (lam C r f).card)).card
+          * (C.card • ∑ v ∈ C,
+            (Finset.univ.filter
+              (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card) := by
+  calc (C.card * ballVol ι F r) ^ 2
+      ≤ (Finset.univ.filter (fun f => 1 ≤ (lam C r f).card)).card
+          * ∑ f : ι → F, (lam C r f).card ^ 2 := covering_lower_bound C r
+    _ = (Finset.univ.filter (fun f => 1 ≤ (lam C r f).card)).card
+          * (C.card • ∑ v ∈ C,
+            (Finset.univ.filter
+              (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card) := by
+        rw [second_moment_linear hadd hsub]
+
+/-- **Linear-code Markov tail bound.** The number of received words with list size at least `a` is
+bounded by the exact linear-code second moment, i.e. by the weight-enumerator sum. -/
+theorem markov_tail_bound_linear {C : Finset (ι → F)}
+    (hadd : ∀ a ∈ C, ∀ b ∈ C, a + b ∈ C) (hsub : ∀ a ∈ C, ∀ b ∈ C, a - b ∈ C) (r a : ℕ) :
+    a ^ 2 * (Finset.univ.filter (fun f => a ≤ (lam C r f).card)).card
+      ≤ C.card • ∑ v ∈ C,
+          (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card := by
+  calc a ^ 2 * (Finset.univ.filter (fun f => a ≤ (lam C r f).card)).card
+      ≤ ∑ f : ι → F, (lam C r f).card ^ 2 := markov_tail_bound C r a
+    _ = C.card • ∑ v ∈ C,
+          (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card :=
+        second_moment_linear hadd hsub r
+
 /-- **Hamming distance is invariant under permuting coordinates.** -/
 lemma hammingDist_comp_perm (σ : Equiv.Perm ι) (a b : ι → F) :
     hammingDist (a ∘ σ) (b ∘ σ) = hammingDist a b := by
@@ -507,6 +566,10 @@ end ArkLib.CodingTheory.ListMoments
 #print axioms ArkLib.CodingTheory.ListMoments.exists_large_list
 #print axioms ArkLib.CodingTheory.ListMoments.second_moment_eq_first_iff_forall_list_card_le_one
 #print axioms ArkLib.CodingTheory.ListMoments.exists_two_iff_second_gt_first
+#print axioms ArkLib.CodingTheory.ListMoments.exists_large_list_sq_linear
+#print axioms ArkLib.CodingTheory.ListMoments.exists_two_of_linear_second_gt_first
 #print axioms ArkLib.CodingTheory.ListMoments.covering_lower_bound
+#print axioms ArkLib.CodingTheory.ListMoments.covering_lower_bound_linear
+#print axioms ArkLib.CodingTheory.ListMoments.markov_tail_bound_linear
 #print axioms ArkLib.CodingTheory.ListMoments.pairBall_scale
 #print axioms ArkLib.CodingTheory.ListMoments.pairBall_weight
