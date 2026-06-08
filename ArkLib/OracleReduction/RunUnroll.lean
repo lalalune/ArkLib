@@ -250,4 +250,30 @@ theorem probComp_seam_union_le
 
 #print axioms probComp_seam_union_le
 
+/-- **`simulateQ` preserves the `σ`-state on its support, when every query implementation does.**
+Holds for `challengeQueryImpl` (which threads `σ` unchanged) and for empty `oSpec`. This is the
+independence ingredient for the seam swap: a state-preserving prover stage cannot affect a later
+verifier stage's `simulateQ` state, so the two stages commute distributionally
+(`OracleComp.evalDist_bind_comm`). -/
+theorem simulateQ_state_preserving
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {α : Type} (X : OracleComp spec α) (s : σ) :
+    ∀ x ∈ support ((simulateQ so X).run s), x.2 = s := by
+  induction X using OracleComp.inductionOn generalizing s with
+  | pure a =>
+    intro x hx
+    simp only [simulateQ_pure, StateT.run_pure, support_pure, Set.mem_singleton_iff] at hx
+    subst hx; rfl
+  | query_bind t oa ih =>
+    intro x hx
+    simp only [simulateQ_bind, simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query,
+      id_map, StateT.run_bind, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨⟨u, s'⟩, hmem1, hmem2⟩ := hx
+    have hs' : s' = s := hso t s ⟨u, s'⟩ hmem1
+    exact hs' ▸ ih u s' x hmem2
+
+#print axioms simulateQ_state_preserving
+
 end OptionTStateT
