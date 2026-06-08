@@ -141,6 +141,63 @@ theorem exists_two_of_second_gt_first (C : Finset (ι → F)) (r : ℕ)
     rcases hf with h0 | h0 <;> simp [h0]
   omega
 
+/-- **Exact list-ambiguity criterion (equality form).** The first and second moments are equal
+exactly when every received word has list size at most one. Equivalently, the only way the second
+moment can exceed the first is the presence of an ambiguous received word. This is the equality
+companion to `exists_two_of_second_gt_first`. -/
+theorem second_moment_eq_first_iff_forall_list_card_le_one (C : Finset (ι → F)) (r : ℕ) :
+    (∑ f : ι → F, (lam C r f).card ^ 2) = ∑ f : ι → F, (lam C r f).card ↔
+      ∀ f : ι → F, (lam C r f).card ≤ 1 := by
+  constructor
+  · intro heq f
+    by_contra hnot
+    have htwo : 2 ≤ (lam C r f).card := by omega
+    have hle : ∀ g ∈ (Finset.univ : Finset (ι → F)),
+        (lam C r g).card ≤ (lam C r g).card ^ 2 := by
+      intro g _
+      rcases Nat.eq_zero_or_pos (lam C r g).card with h0 | hpos
+      · simp [h0]
+      · rw [pow_two]
+        simpa using Nat.mul_le_mul_left (lam C r g).card hpos
+    have hlt_f : (lam C r f).card < (lam C r f).card ^ 2 := by
+      rw [pow_two]
+      have hpos : 0 < (lam C r f).card := by omega
+      have hone : 1 < (lam C r f).card := by omega
+      simpa using Nat.mul_lt_mul_of_pos_left hone hpos
+    have hlt : (∑ g : ι → F, (lam C r g).card)
+        < ∑ g : ι → F, (lam C r g).card ^ 2 :=
+      Finset.sum_lt_sum hle ⟨f, Finset.mem_univ f, hlt_f⟩
+    rw [heq] at hlt
+    exact (lt_irrefl _) hlt
+  · intro h
+    refine Finset.sum_congr rfl (fun f _ => ?_)
+    have hf : (lam C r f).card = 0 ∨ (lam C r f).card = 1 := by have := h f; omega
+    rcases hf with h0 | h1
+    · simp [h0]
+    · simp [h1]
+
+/-- **Exact list-ambiguity criterion (strict form).** A code has an ambiguous received word at
+radius `r` iff its second list-size moment is strictly larger than its first moment. -/
+theorem exists_two_iff_second_gt_first (C : Finset (ι → F)) (r : ℕ) :
+    (∃ f : ι → F, 2 ≤ (lam C r f).card) ↔
+      (∑ f : ι → F, (lam C r f).card) < ∑ f : ι → F, (lam C r f).card ^ 2 := by
+  constructor
+  · rintro ⟨f, htwo⟩
+    have hle : ∀ g ∈ (Finset.univ : Finset (ι → F)),
+        (lam C r g).card ≤ (lam C r g).card ^ 2 := by
+      intro g _
+      rcases Nat.eq_zero_or_pos (lam C r g).card with h0 | hpos
+      · simp [h0]
+      · rw [pow_two]
+        simpa using Nat.mul_le_mul_left (lam C r g).card hpos
+    have hlt_f : (lam C r f).card < (lam C r f).card ^ 2 := by
+      rw [pow_two]
+      have hpos : 0 < (lam C r f).card := by omega
+      have hone : 1 < (lam C r f).card := by omega
+      simpa using Nat.mul_lt_mul_of_pos_left hone hpos
+    exact Finset.sum_lt_sum hle ⟨f, Finset.mem_univ f, hlt_f⟩
+  · exact exists_two_of_second_gt_first C r
+
 /-- **Second-moment covering lower bound (Paley–Zygmund / Cauchy–Schwarz).** The number of received
 words with a nonempty decoding list is at least `(Σ_f |Λ|)² / (Σ_f |Λ|²) = (|C|·V(r))² / (Σ_f |Λ|²)`.
 Clearing the denominator: `(|C|·V(r))² ≤ #{f : |Λ(C,r,f)| ≥ 1} · Σ_f |Λ(C,r,f)|²`. Together with the
@@ -448,6 +505,8 @@ end ArkLib.CodingTheory.ListMoments
 
 -- axiom audit anchors
 #print axioms ArkLib.CodingTheory.ListMoments.exists_large_list
+#print axioms ArkLib.CodingTheory.ListMoments.second_moment_eq_first_iff_forall_list_card_le_one
+#print axioms ArkLib.CodingTheory.ListMoments.exists_two_iff_second_gt_first
 #print axioms ArkLib.CodingTheory.ListMoments.covering_lower_bound
 #print axioms ArkLib.CodingTheory.ListMoments.pairBall_scale
 #print axioms ArkLib.CodingTheory.ListMoments.pairBall_weight
