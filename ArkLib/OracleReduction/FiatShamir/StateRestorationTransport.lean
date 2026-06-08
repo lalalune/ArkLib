@@ -1501,7 +1501,7 @@ omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
   [∀ i, SampleableType (pSpec.Challenge i)] in
 /-- Run-level normalization for the slow Fiat-Shamir verifier: first derive the transcript from the
 one proof message, then run the original verifier on that transcript. -/
-private theorem fiatShamirVerifier_verify_run_eq_bind
+theorem fiatShamirVerifier_verify_run_eq_bind
     (V : Verifier oSpec StmtIn StmtOut pSpec)
     (stmtIn : StmtIn)
     (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec))) :
@@ -1549,6 +1549,8 @@ private theorem fiatShamirVerifier_verify_run_eq_bind
   exact optionT_run_liftM_bind_liftOptionT_add
     (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0))
     (fun transcript => V.verify stmtIn transcript)
+
+#print axioms Reduction.fiatShamirVerifier_verify_run_eq_bind
 
 omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
   [∀ i, SampleableType (pSpec.Challenge i)] in
