@@ -191,21 +191,6 @@ theorem RestrictedFaaDiBrunoRangeWfreeMatch.of_WfreeMatch
     RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp :=
   (WfreeMatch_iff_rangeWfreeMatch H x₀ R hHyp).1 hWfree
 
-/-- The proved monic carved match supplies the global range-indexed W-free target directly. -/
-theorem RestrictedFaaDiBrunoRangeWfreeMatch.of_monic
-    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hlc : H.leadingCoeff = 1) :
-    RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp :=
-  RestrictedFaaDiBrunoRangeWfreeMatch.of_WfreeMatch H x₀ R hHyp
-    (RestrictedFaaDiBrunoWfreeMatch.of_monic H x₀ R hHyp hlc)
-
-/-- The proved monic carved match supplies each fixed range-indexed W-free equation directly. -/
-theorem RestrictedFaaDiBrunoRangeWfreeMatchAt.of_monic
-    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (t : ℕ) (hlc : H.leadingCoeff = 1) :
-    RestrictedFaaDiBrunoRangeWfreeMatchAt H x₀ R hHyp t :=
-  (RestrictedFaaDiBrunoRangeWfreeMatch.of_monic H x₀ R hHyp hlc) t
-
 /-- Project the global W-free predicate from the global range-indexed target. -/
 theorem RestrictedFaaDiBrunoWfreeMatch.of_rangeWfreeMatch
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -270,10 +255,6 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.WfreeMatch_iff_rangeWfreeMatch
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoRangeWfreeMatch.of_WfreeMatch
-set_option linter.style.longLine false in
-#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoRangeWfreeMatch.of_monic
-set_option linter.style.longLine false in
-#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoRangeWfreeMatchAt.of_monic
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoWfreeMatch.of_rangeWfreeMatch
 set_option linter.style.longLine false in

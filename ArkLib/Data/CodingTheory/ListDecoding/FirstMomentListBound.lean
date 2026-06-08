@@ -74,39 +74,4 @@ theorem card_le_of_expectation_bounds
   rw [le_div_iff₀ hβ]
   exact card_mul_le_of_expectation_bounds p hp_nonneg hp_sum L g β M hLower hSimul
 
-/-- **List-size bound from un-normalized weights.** If `w` is a nonnegative finite weight
-function with total mass `W > 0`, the first-moment shell can be applied after normalizing
-`p T = w T / W`. This is the feeder form used by FPRUNE-style arguments that naturally produce
-unnormalized coordinate-set weights. -/
-theorem card_le_of_weight_bounds
-    [Fintype Ω] (w : Ω → ℝ) (hw_nonneg : ∀ T, 0 ≤ w T)
-    (W : ℝ) (hW : 0 < W) (hWsum : W = ∑ T, w T)
-    (L : Finset α) (g : α → Ω → ℝ) (β M : ℝ) (hβ : 0 < β)
-    (hLower : ∀ c ∈ L, β * W ≤ ∑ T, w T * g c T)
-    (hSimul : ∀ T, (∑ c ∈ L, g c T) ≤ M) :
-    (L.card : ℝ) ≤ M / β := by
-  let p : Ω → ℝ := fun T => w T / W
-  have hp_nonneg : ∀ T, 0 ≤ p T := fun T => div_nonneg (hw_nonneg T) (le_of_lt hW)
-  have hp_sum : ∑ T, p T = 1 := by
-    simp only [p]
-    simp only [div_eq_mul_inv]
-    rw [← Finset.sum_mul, ← hWsum]
-    exact mul_inv_cancel₀ (ne_of_gt hW)
-  have hLower' : ∀ c ∈ L, β ≤ ∑ T, p T * g c T := by
-    intro c hc
-    have hsum : ∑ T, p T * g c T = (∑ T, w T * g c T) / W := by
-      simp only [p]
-      simp only [div_eq_mul_inv]
-      calc
-        ∑ T, (w T * W⁻¹) * g c T = ∑ T, (w T * g c T) * W⁻¹ := by
-          refine Finset.sum_congr rfl (fun T _ => ?_)
-          rw [mul_assoc, mul_comm W⁻¹ (g c T), ← mul_assoc]
-        _ = (∑ T, w T * g c T) * W⁻¹ := by rw [← Finset.sum_mul]
-        _ = (∑ T, w T * g c T) / W := by rw [div_eq_mul_inv]
-    rw [hsum, le_div_iff₀ hW]
-    exact hLower c hc
-  exact card_le_of_expectation_bounds p hp_nonneg hp_sum L g β M hβ hLower' hSimul
-
-#print axioms CodingTheory.ListDecoding.card_le_of_weight_bounds
-
 end CodingTheory.ListDecoding

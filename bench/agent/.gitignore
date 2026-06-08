@@ -1,6 +1,0 @@
-# Regenerable artifacts (rebuilt by mine_premises.py / rank_train_eval.py).
-arklib_premises.jsonl
-*.pt
-__pycache__/
-mqar_result.json
-*_result.json

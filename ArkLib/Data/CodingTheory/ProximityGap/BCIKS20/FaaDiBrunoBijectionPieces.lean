@@ -59,24 +59,6 @@ open ArkLib.PowerSeriesComposition
 open BCIKS20AppendixA
 open ProximityPrize.BCIKS20.GammaGenuine
 
-/-- **Hasse-derivative evaluation = binomial zero-slot sum (novel bridge for BCIKS20 P2 #139,
-axiom-clean).**  The binomial-weighted "zero-slot" sum `∑ᵢ C(i,k)·xⁱ⁻ᵏ·(P.coeff i)` is exactly the
-evaluation of the `k`-th Hasse derivative of `P` at `x`.  This is the missing combinatorial→algebraic
-bridge that collapses the LHS partition form's `i`-sum (Y-degree index `i`, partition card
-`k = sigmaLambda λ`, zero-slot power `α₀^{i-k}`) into the `Δ_Y^k`-Hasse object underlying `B_coeff`
-(`= countPerms λ • hasseCoeffRepr𝒪 i₁ (sigmaLambda λ)`).  Evaluated at `x = α₀ = T/W` (the root,
-`βHenselAssembled_constantCoeff`) it is precisely `hasseEvalAtRoot`.  General over any `CommRing`. -/
-theorem hasseDeriv_eval_eq_binom_zeroSlot_sum {R : Type*} [CommRing R]
-    (P : R[X]) (x : R) (k : ℕ) :
-    Polynomial.eval x (Polynomial.hasseDeriv k P)
-      = ∑ i ∈ Finset.range (P.natDegree + 1),
-          (i.choose k) • (x ^ (i - k) * P.coeff i) := by
-  classical
-  rw [Polynomial.hasseDeriv_eval_eq_sum]
-  refine Finset.sum_congr rfl (fun i _ => ?_)
-  rw [nsmul_eq_mul]
-  ring
-
 namespace BCIKS20.HenselNumerator
 
 variable {F : Type} [Field F]
@@ -223,7 +205,6 @@ theorem restrictedFaaDiBruno_zero_partition_inner_eq (x₀ : F) (R : F[X][X][Y])
 end BCIKS20.HenselNumerator
 
 -- Axiom audit: every novel bijection piece rests only on [propext, Classical.choice, Quot.sound].
-#print axioms hasseDeriv_eval_eq_binom_zeroSlot_sum
 #print axioms BCIKS20.HenselNumerator.outerIndex_reindex
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoPartitionForm_eq_rangeForm
 #print axioms BCIKS20.HenselNumerator.countPerms_eq_factorial_of_nodup
