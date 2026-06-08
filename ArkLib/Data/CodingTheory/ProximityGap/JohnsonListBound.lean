@@ -51,4 +51,38 @@ theorem johnson_list_bound {ι F : Type*} [Fintype ι] [DecidableEq ι] [Decidab
   have key := ArkLib.Coverage.card_mul_sub_le_of_agreement S a b hlo hpair hgap
   rwa [Fintype.card_coe] at key
 
+/-- **Unique decoding.**  If every word in `L` agrees with `f` on at least `a` coordinates and
+distinct words of `L` agree pairwise on at most `b`, then whenever `n + b < 2a` the list is a
+singleton: `L.card ≤ 1`.  (Inclusion–exclusion: two such words would share `≥ 2a − n > b`
+coordinates.)  Taking `b = n − d` this is the unique-decoding radius `a > (n + n − d)/2`,
+i.e. agreement above `n − d/2` — the proven `δ < δ_min/2` regime. -/
+theorem johnson_unique_decoding {ι F : Type*} [Fintype ι] [DecidableEq ι] [DecidableEq F]
+    (f : ι → F) (L : Finset (ι → F)) (a b : ℕ)
+    (hclose : ∀ c ∈ L, a ≤ (Finset.univ.filter (fun x => c x = f x)).card)
+    (hagree : ∀ c ∈ L, ∀ c' ∈ L, c ≠ c' →
+      (Finset.univ.filter (fun x => c x = c' x)).card ≤ b)
+    (h2a : Fintype.card ι + b < 2 * a) :
+    L.card ≤ 1 := by
+  classical
+  rw [Finset.card_le_one]
+  intro c hc c' hc'
+  by_contra hne
+  set Sc := Finset.univ.filter (fun x => c x = f x) with hSc
+  set Sc' := Finset.univ.filter (fun x => c' x = f x) with hSc'
+  have hca : a ≤ Sc.card := hclose c hc
+  have hca' : a ≤ Sc'.card := hclose c' hc'
+  have hunion : (Sc ∪ Sc').card ≤ Fintype.card ι := by
+    have hss : (Sc ∪ Sc') ⊆ (Finset.univ : Finset ι) := Finset.subset_univ (Sc ∪ Sc')
+    calc (Sc ∪ Sc').card ≤ (Finset.univ : Finset ι).card := Finset.card_le_card hss
+      _ = Fintype.card ι := Finset.card_univ
+  have hie : (Sc ∪ Sc').card + (Sc ∩ Sc').card = Sc.card + Sc'.card :=
+    Finset.card_union_add_card_inter Sc Sc'
+  have hsub : (Sc ∩ Sc').card ≤ b := by
+    refine le_trans (Finset.card_le_card ?_) (hagree c hc c' hc' hne)
+    intro x hx
+    rw [Finset.mem_inter, hSc, hSc'] at hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx ⊢
+    exact hx.1.trans hx.2.symm
+  omega
+
 end ArkLib.JohnsonList
