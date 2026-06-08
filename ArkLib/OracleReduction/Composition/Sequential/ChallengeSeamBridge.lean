@@ -15,28 +15,33 @@ whereas the appended run's lifted sub-runs route challenge queries through the *
 `[(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ`. Reconciling the two is the concrete form of the #433
 monad-commutation gap, for the message seam.
 
-This file collects the machine-checked atoms for that bridge. See
-`docs/kb/audits/append-keystone-state-2026-06-08.md` for the full proof architecture and the
-remaining assembly (these atoms are *not* the finished keystone; the high-level
-`append_completeness`/`append_soundness` theorems remain residual-gated).
+This file proves that bridge (left/`pSpec₁` half) at the `evalDist` level. See
+`docs/kb/audits/append-keystone-state-2026-06-08.md` for the full proof architecture. The bridge
+is the deep distributional crux; the high-level `append_completeness`/`append_soundness` theorems
+remain residual-gated pending the *assembly* on top of it (run support-decomposition / union bound).
 
-Key facts established here:
-* `liftM_map_comm` — the `liftM`/`map` naturality used to thread the response-cast through the
-  `StateT σ ProbComp` lift.
+Main result:
+* `evalDist_challengeSeam_bridge_left` — `evalDist ((simulateQ pImpl_combined (liftM oa)).run s)
+  = evalDist ((simulateQ pImpl₁ oa).run s)`. The concrete distributional form of #433 for the
+  message seam: per-phase hypotheses stated over the component challenge oracle transfer to the
+  appended run that routes through the combined oracle.
+
+Supporting facts (all machine-checked, axiom-clean):
+* `liftM_map_comm` — `liftM`/`map` naturality for `ProbComp → StateT σ ProbComp`, threading the
+  challenge response-cast through the state lift.
 * `evalDist_cast_uniformSample` — uniform sampling is invariant under transport along a type
   equality (uniqueness of the uniform distribution pushed along the bijective `cast`). This is
-  the genuine distributional content at a challenge seam: the seam challenge types
+  *why* the bridge is necessarily distributional: the seam challenge types
   `(pSpec₁ ++ₚ pSpec₂).Challenge (.inl i)` and `pSpec₁.Challenge i` are only *propositionally*
-  equal, so the bridge cannot hold as a syntactic computation equality — only at the
-  `evalDist`/`support` level that completeness and soundness actually consume.
-* `support_cast_uniformSample` — the support-level analogue (full support both sides), the
-  lighter closer used by the support-decomposition perfect-completeness route.
-* `simulateQ_addLift_liftM_inl` — the oSpec-query (left) half of the bridge, an exact
-  computation equality.
+  equal, so no syntactic computation equality holds — only this `evalDist`/`support` form, which is
+  exactly what completeness and soundness consume.
+* `support_cast_uniformSample` — the support-level analogue (full support both sides), the lighter
+  closer for the support-decomposition perfect-completeness route.
+* `simulateQ_addLift_liftM_inl` — the oSpec-query half of the per-query step, an exact computation
+  equality.
 
-Remaining for the full keystone (see the audit doc): the inr (challenge) half of the bridge
-assembled at `evalDist`/`support` level from the atoms above, then the `Reduction.run`
-support-decomposition (perfect completeness) and the soundness union-bound over the
+Remaining for the full keystone (see the audit doc): the symmetric right/`pSpec₂` bridge, then the
+`Reduction.run` support-decomposition (perfect completeness) and the soundness union-bound over the
 intermediate statement.
 -/
 
@@ -105,6 +110,72 @@ theorem simulateQ_addLift_liftM_inl (t : ι) :
     QueryImpl.add_apply_inl]
   exact id_map (impl t)
 
+/-- **Challenge-oracle seam bridge (left half), at `evalDist`.** Simulating a computation `oa` over
+the `pSpec₁`-side oracles under the *combined* challenge oracle (after lifting into the appended
+protocol) has the same output distribution as simulating it directly under the `pSpec₁` challenge
+oracle. This is the concrete, distributional form of the #433 monad-commutation gap for the message
+seam: the per-phase completeness/soundness hypotheses (stated over the component oracle) transfer to
+the appended run (which routes through the combined oracle).
+
+The proof folds the lift into the implementation (`liftComp_def` + `QueryImpl.simulateQ_compose`),
+then applies `evalDist_simulateQ_run_eq_of_impl_evalDist_eq` with the per-query distributional
+equality: the `Sum.inl` (oSpec) queries agree exactly, and the `Sum.inr` (challenge) queries agree
+*as distributions* by `liftM_map_comm` + `evalDist_cast_uniformSample` (the seam challenge types are
+only propositionally equal, so this is genuinely distributional, not syntactic). -/
+theorem evalDist_challengeSeam_bridge_left (oa : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) α)
+    (s : σ) :
+    evalDist ((simulateQ (impl.addLift (challengeQueryImpl (pSpec := pSpec₁ ++ₚ pSpec₂)) :
+        QueryImpl _ (StateT σ ProbComp))
+        (liftM oa : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)).run s)
+      = evalDist ((simulateQ (impl.addLift (challengeQueryImpl (pSpec := pSpec₁)) :
+        QueryImpl _ (StateT σ ProbComp)) oa).run s) := by
+  rw [show (liftM oa : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
+      = OracleComp.liftComp oa _ from rfl]
+  rw [OracleComp.liftComp_def, ← QueryImpl.simulateQ_compose]
+  apply evalDist_simulateQ_run_eq_of_impl_evalDist_eq
+  intro t s'
+  rw [QueryImpl.apply_compose]
+  cases t with
+  | inl t =>
+      -- oSpec query: the two implementations agree exactly (computation equality), so a fortiori
+      -- in distribution.
+      have hcomp : simulateQ (impl.addLift (challengeQueryImpl (pSpec := pSpec₁ ++ₚ pSpec₂)) :
+            QueryImpl _ (StateT σ ProbComp))
+            (liftM (OracleSpec.query (spec := oSpec + [pSpec₁.Challenge]ₒ) (Sum.inl t))
+              : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
+          = (impl.addLift (challengeQueryImpl (pSpec := pSpec₁)) :
+              QueryImpl _ (StateT σ ProbComp)) (Sum.inl t) := by
+        rw [show (liftM (OracleSpec.query (spec := oSpec + [pSpec₁.Challenge]ₒ) (Sum.inl t))
+              : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
+            = liftM (liftM (OracleSpec.query (spec := oSpec + [pSpec₁.Challenge]ₒ) (Sum.inl t))
+                : OracleQuery (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) from rfl]
+        rw [OracleQuery.liftM_right_add_right_add_query]
+        simp only [simulateQ_query, OracleQuery.cont_query, OracleQuery.input_query,
+          QueryImpl.addLift_def, QueryImpl.add_apply_inl]
+        exact id_map _
+      rw [hcomp]
+  | inr t =>
+      have h : (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl t.fst) = pSpec₁.Challenge t.fst := by
+        simp [ChallengeIdx.inl, ProtocolSpec.append]
+      rw [show (liftM (OracleSpec.query (spec := oSpec + [pSpec₁.Challenge]ₒ) (Sum.inr t))
+            : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
+          = liftM (liftM (OracleSpec.query (spec := oSpec + [pSpec₁.Challenge]ₒ) (Sum.inr t))
+              : OracleQuery (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) from rfl]
+      rw [OracleQuery.liftM_right_add_right_add_query, simulateQ_query]
+      show evalDist (((cast h) <$>
+          (liftM (uniformSample ((pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl t.fst))) :
+            StateT σ ProbComp _)).run s')
+        = evalDist ((liftM (uniformSample (pSpec₁.Challenge t.fst)) : StateT σ ProbComp _).run s')
+      rw [liftM_map_comm]
+      rw [show ((liftM ((cast h) <$>
+            uniformSample ((pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl t.fst))) :
+            StateT σ ProbComp _).run s')
+          = (·, s') <$> ((cast h) <$>
+            uniformSample ((pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl t.fst))) from rfl,
+          show ((liftM (uniformSample (pSpec₁.Challenge t.fst)) : StateT σ ProbComp _).run s')
+          = (·, s') <$> uniformSample (pSpec₁.Challenge t.fst) from rfl]
+      rw [evalDist_map, evalDist_cast_uniformSample h, ← evalDist_map]
+
 end Prover
 
 -- Axiom audit (verified sorry-free / axiom-clean):
@@ -112,3 +183,4 @@ end Prover
 #print axioms Prover.evalDist_cast_uniformSample
 #print axioms Prover.simulateQ_addLift_liftM_inl
 #print axioms Prover.support_cast_uniformSample
+#print axioms Prover.evalDist_challengeSeam_bridge_left

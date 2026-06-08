@@ -2953,12 +2953,13 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
     (stmtIn : StmtIn) (witIn : WitIn) :
     simulateQ (QueryImpl.addLift impl challengeQueryImpl)
         ((do
-          let ⟨⟨⟨transcript, ⟨_, witOut⟩⟩, stmtOut⟩, proveQueryLog, verifyQueryLog⟩ ←
-            (Reduction.mk P V.fiatShamir).runWithLog stmtIn witIn
-          let extractedWitIn ← fiatShamirStraightlineExtractorOfStateRestoration
-            (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut transcript
-            proveQueryLog.fst verifyQueryLog
-          return (stmtIn, extractedWitIn, stmtOut, witOut)).run) =
+          let d ← Reduction.runWithLog stmtIn witIn
+            { prover := P, verifier := V.fiatShamir }
+          let extractedWitIn ←
+            liftM (fiatShamirStraightlineExtractorOfStateRestoration
+              (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn d.1.1.2.2
+              d.1.1.1 d.2.1.fst d.2.2)
+          pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run) =
       simulateQ impl
         ((do
           let state := P.input (stmtIn, witIn)
@@ -3000,6 +3001,7 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
   -- `simulateQ_addLift_fiatShamirChallenge_optionT` at the per-`pr` leaf.
   sorry
 
+set_option pp.all true in
 set_option linter.flexible false in
 /-- Canonical coupled state-restoration knowledge soundness implies basic Fiat-Shamir knowledge
 soundness when both games use the same sampled cached Fiat-Shamir challenge table. -/

@@ -664,7 +664,7 @@ theorem outer_perState_none_le
     simp only [OptionT.run_pure, support_pure, Set.mem_singleton_iff, reduceCtorEq] at hxnone
   · rw [if_pos hacc]
     refine le_trans (mul_le_mul_left' probEvent_le_one _) (le_of_eq ?_)
-    rw [mul_one]
+    exact mul_one _
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :

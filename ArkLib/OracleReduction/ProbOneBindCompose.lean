@@ -30,6 +30,8 @@ open scoped ENNReal
 
 namespace OracleComp
 
+universe u v
+
 variable {α β : Type u} {m : Type u → Type v} [Monad m] [HasEvalSPMF m]
 
 /-- **Probability-one bind composition.** If `mx` satisfies `p` with probability `1`, and `f a`
@@ -44,6 +46,6 @@ lemma probEvent_bind_eq_one (mx : m α) (f : α → m β) {p : α → Prop} {goo
   refine tsum_congr fun a => ?_
   by_cases h : a ∈ support mx
   · rw [hf a (hsupp a h), mul_one]
-  · rw [probOutput_eq_zero_of_not_mem_support h, zero_mul]
+  · simp [probOutput_eq_zero_of_not_mem_support h]
 
 end OracleComp

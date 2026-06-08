@@ -15,6 +15,13 @@ provided, scans only those Lean files/directories. Fails if live
     while proving nothing about the named obligation.
   - any other vacuous declaration named like a residual/keystone/conjecture
     obligation and typed as `True`.
+  - a bodyless `opaque`/`constant` declaration (no `:=` body). Such a
+    declaration introduces an *unproven inhabitant* of its statement type, so
+    it is axiom-equivalent — and `constant` no longer parses in Lean 4. This is
+    the laundering pattern the #114 audit removed: `noncomputable constant
+    foo_holds : <security Prop>` asserts the obligation with no proof and slips
+    past the `axiom` check above. (`opaque foo : T := v`, with a real body, is
+    fine and is *not* flagged.)
 
 Comment and docstring occurrences are ignored. `sorry`/`admit` are handled
 separately by scripts/sorry_census.py --fail-on-holes; this precheck runs
@@ -38,9 +45,16 @@ AXIOM_RE = re.compile(
 DECL_RE = re.compile(
     r"^\s*(?:@\[[^\]]*\]\s*)?"
     r"(?:protected\s+|private\s+|scoped\s+|noncomputable\s+)*"
-    r"(axiom|theorem|lemma|def|abbrev|opaque)\s+([A-Za-z_][A-Za-z0-9_'.]*)",
+    r"(axiom|theorem|lemma|def|abbrev|opaque|constant)\s+([A-Za-z_][A-Za-z0-9_'.]*)",
     re.MULTILINE,
 )
+
+# A bodyless `opaque`/`constant` declaration introduces an *unproven inhabitant* of its statement
+# type — it is axiom-equivalent (and `constant` no longer even parses in Lean 4). This is the
+# laundering vector the #114 audit caught: `noncomputable constant foo_holds : <security Prop>`
+# asserts the obligation with no proof and slips past the `axiom` check above. We flag any live
+# `opaque`/`constant` head that has no top-level `:=` body.
+OPAQUE_KINDS = {"opaque", "constant"}
 
 ALLOWLIST_PATH = Path(__file__).resolve().parent / "residual_axioms.txt"
 
@@ -279,11 +293,22 @@ def main() -> int:
         decls = list(DECL_RE.finditer(live_text))
         for decl_index, dm in enumerate(decls):
             kind, name = dm.group(1), dm.group(2)
+            next_decl_start = decls[decl_index + 1].start() if decl_index + 1 < len(decls) else None
+            if kind in OPAQUE_KINDS:
+                limit = next_decl_start if next_decl_start is not None else len(live_text)
+                if live_text.find(":=", dm.end(), limit) == -1:
+                    line = text.count("\n", 0, dm.start()) + 1
+                    failures.append(
+                        f"{path}:{line}: bodyless {kind} declaration {name} introduces an "
+                        f"unproven inhabitant of its statement type (axiom-equivalent "
+                        f"laundering); provide a real ':=' proof/definition, or state the "
+                        f"obligation as an explicit Prop or a tracked sorry"
+                    )
+                continue
             if kind in {"theorem", "lemma"}:
                 continue
             if not is_residual_like(name, allowlist):
                 continue
-            next_decl_start = decls[decl_index + 1].start() if decl_index + 1 < len(decls) else None
             end = declaration_header_end(live_text, dm.end(), next_decl_start)
             header = live_text[dm.end():end]
             result_type = top_level_result_type(header)

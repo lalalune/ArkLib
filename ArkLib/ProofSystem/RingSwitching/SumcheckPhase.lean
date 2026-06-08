@@ -1112,12 +1112,8 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
       Sumcheck.Structured.roundOracleVerifier, FullTranscript.mk2, guard_eq]
     erw [OptionT.simulateQ_bind]
     erw [OptionT.simulateQ_simOracle2_liftM_query_T2]
-    erw [OptionT.bind]
-    simp only [OracleInterface.answer, OptionT.run_pure, Option.elim, bind_pure_comp, map_pure,
-      OptionT.mk, OptionT.simulateQ_bind, OptionT.simulateQ_ite, OptionT.simulateQ_pure,
-      OptionT.simulateQ_failure, h_V_check, if_true]
-    trace_state
-    sorry
+    simp [OptionT.simulateQ_bind, OptionT.simulateQ_ite, OptionT.simulateQ_pure,
+      OptionT.simulateQ_failure, OptionT.simulateQ_map, h_V_check]
   rw [probEvent_eq_one_iff]
   dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
     Sumcheck.Structured.roundOracleReduction,

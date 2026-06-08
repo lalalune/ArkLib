@@ -112,8 +112,23 @@ intermediate statement `stmt₂`.
 
 ## Bottom line
 
-The prover-side keystone is done. The open work is the Reduction/Verifier-level assembly,
-whose single shared deep ingredient is the challenge-oracle seam bridge above (inl half
-proven; inr half reduced to a mechanical fappend cast). This is a multi-session
-formalization; the residual `def : Prop` stubs are the honest gap markers and must not be
-collapsed to tautologies.
+The prover-side keystone is done, and the shared deep ingredient — the **challenge-oracle seam
+bridge (left/`pSpec₁` half)** — is now **proven and axiom-clean** as
+`Prover.evalDist_challengeSeam_bridge_left` in
+`ArkLib/OracleReduction/Composition/Sequential/ChallengeSeamBridge.lean`:
+
+```
+evalDist ((simulateQ (impl.addLift challengeQueryImpl_combined) (liftM oa)).run s)
+  = evalDist ((simulateQ (impl.addLift challengeQueryImpl₁) oa).run s)
+```
+
+Proof = `liftComp_def` + `QueryImpl.simulateQ_compose` (fold the lift into the impl) then
+`evalDist_simulateQ_run_eq_of_impl_evalDist_eq` (vcvio, StateT/Basic.lean) with the two per-query
+goals: inl exact (computation), inr via `liftM_map_comm` + `evalDist_cast_uniformSample` +
+`evalDist_map` (the `cont` is defeq to `cast h` by proof-irrelevance; `Finite` of the challenge
+type is auto-derived from `SampleableType`).
+
+Open work remaining for the high-level theorems: (1) the symmetric right/`pSpec₂` bridge
+(analogous, `Sum.inr`-routing); (2) the `Reduction.run` support-decomposition assembly for
+`append_perfectCompleteness_msg`; (3) the soundness union-bound for `appendSoundnessResidual`. The
+residual `def : Prop` stubs remain honest gap markers and must not be collapsed to tautologies.
