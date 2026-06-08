@@ -1647,9 +1647,9 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
     refine tsum_congr (fun x_1 => ?_)
     congr 1
-    -- Leaf goal (verified by `trace_state`), with the prefix values `a` (sendMessage), `x` (output),
+    -- Leaf goal (verified by `trace_state`), with prefix values `a` (sendMessage), `x` (output),
     -- `x_1` (deriveTranscriptFS, `x_1.1` = transcript) in scope:
-    --   LHS = Pr[reject/accept | verify_bundled >>= (·.elim none) (re-derive; srExtractor; payload)]
+    --   LHS = Pr[ok? | verify_bundled >>= (·.elim none) (re-derive; srExtractor; payload)]
     --   RHS = Pr[match | verify_so >>= srExtractor >>= payload]
     -- This is EXACTLY `ks_payload_eq relIn relOut stmtIn x.1.2 mv me x_1.2`, with
     --   mv = simulateQ srSR (liftComp (Verifier.run stmtIn x_1.1 V) …)   -- Option StmtOut
