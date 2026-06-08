@@ -20,8 +20,8 @@ proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_di
 brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, 29, 30, 31, 32, and 33 have been restored as self-contained arithmetic bricks in the
-current checkout.
+Loops 27, 28, 29, 30, 31, 32, 33, and 34 have been restored as self-contained arithmetic bricks in
+the current checkout.
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
@@ -337,6 +337,19 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop34 — bounded-count linear spikes are absorbed
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop34.lean`:**
+`sparse_linear_spike_sum_le` (if the spike support has size `≤K` and each active spike is `≤m*h`,
+then the total spike mass is `≤m*(K*h)`), `sparse_linear_spike_product_eq`, and
+`sparse_linear_spike_product_le_domain_pow` (baseline `c` plus a bounded number of height-linear
+spikes is absorbed by final degree `c+K*h`).
+**Disproof attempt:** maybe a constant number of extremely tall fold levels, each as large as the
+full depth, can create a multiplicative product that beats every fixed final-domain polynomial.
+**Disproof of the disproof:** no — a bounded number of height-`O(m)` spikes only adds a constant
+amount to the exponent density, hence only raises the allowed polynomial degree. A spike-based
+counterexample must make the number of spikes or their height-density unbounded in the actual
+smooth-domain GS/proximity process. A few full-depth spikes are still prize-safe.
 
 ### Loop33 — bounded sparse spikes are absorbed
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop33.lean`:**

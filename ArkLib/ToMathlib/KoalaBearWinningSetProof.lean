@@ -9,7 +9,7 @@ import ArkLib.ToMathlib.KoalaIRSAccounting
 /-!
 # The concrete KoalaBear winning-set residual is a structural obstruction (`#106`)
 
-The leaderboard axiom `ToyProblem.fenziSanso_upperBound_attack_concrete_residual` asks for a
+The leaderboard residual `ToyProblem.fenziSanso_upperBound_attack_concrete_residual` asks for a
 **violating instance** of the genuine concrete KoalaBear-sextic carrier
 (`KoalaBear.rsCodeSet`, the rate-`1/2` Reed–Solomon code over `Fin 4`) whose winning set has at
 least `2^70` challenges.
@@ -132,3 +132,29 @@ theorem winning_pair_eq_of_common_subset
   exact ⟨a, b, fun j hj => ⟨ha j hj, hb j hj⟩⟩
 
 end KoalaBear
+
+namespace ToyProblem
+
+open scoped NNReal
+
+/-- The documented `|Ω| ≤ 4` obstruction is strong enough to refute the concrete
+Fenzi-Sanso leaderboard residual.
+
+This theorem isolates the final arithmetic/wrapper step from the remaining
+combinatorial cap.  Once the structural lemmas above are upgraded into
+`hcap`, the old `2^70`-challenge residual closes by contradiction, since
+`4 < 2^70`. -/
+theorem not_fenziSanso_upperBound_attack_concrete_residual_of_winningSet_ncard_le_four
+    (hcap :
+      ∀ x : ViolatingInstance KoalaBear.rsCodeSet (3 / 10) 2,
+        (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard ≤ 4) :
+    ¬ fenziSanso_upperBound_attack_concrete_residual := by
+  rintro ⟨x, hx⟩
+  have hle : (2 : ℕ) ^ 70 ≤ 4 := le_trans hx (hcap x)
+  norm_num at hle
+
+end ToyProblem
+
+#print axioms KoalaBear.two_winning_same_subset_imp_lineInCode
+#print axioms KoalaBear.winning_pair_eq_of_common_subset
+#print axioms ToyProblem.not_fenziSanso_upperBound_attack_concrete_residual_of_winningSet_ncard_le_four
