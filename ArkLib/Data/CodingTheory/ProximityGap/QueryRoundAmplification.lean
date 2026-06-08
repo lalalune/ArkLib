@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
@@ -20,19 +22,20 @@ most `pᵐ`.
 * `accept_transcripts_card_le` — hence `≤ kᵐ` when `|A| ≤ k`.
 * `accept_density_le` — the real-valued soundness bound: all-accept count `≤ pᵐ · |dom|ᵐ`
   when `|A| ≤ p·|dom|`, i.e. acceptance probability `≤ pᵐ`.
+* `accept_probability_eq` / `accept_probability_le` — the literal quotient-probability form.
 -/
 
 open Finset
 
 namespace ArkLib.QueryRound
 
-variable {α : Type*} [DecidableEq α]
+variable {α : Type*}
 
 /-- The number of `m`-round transcripts that accept on every round (each query lands in `A`) is
 exactly `|A|ᵐ`. -/
 theorem accept_transcripts_card (A : Finset α) (m : ℕ) :
     (Fintype.piFinset (fun _ : Fin m => A)).card = A.card ^ m :=
-  Finset.card_piFinset_const A m
+  Fintype.card_piFinset_const A m
 
 /-- If each round's accept set has size `≤ k`, at most `kᵐ` transcripts accept on every round. -/
 theorem accept_transcripts_card_le (A : Finset α) (m k : ℕ) (hA : A.card ≤ k) :
@@ -53,7 +56,35 @@ theorem accept_density_le (A dom : Finset α) (m : ℕ) (p : ℝ)
   calc (A.card : ℝ) ^ m
       ≤ (p * dom.card) ^ m := by
         gcongr
-        exact Nat.cast_nonneg _
     _ = p ^ m * (dom.card : ℝ) ^ m := by rw [mul_pow]
 
+/-- **Exact all-round acceptance fraction.**  The fraction of `m`-round transcripts whose every
+query lands in `A`, measured against all `m`-round transcripts over `dom`, is
+`(|A| / |dom|)^m`.  This is the quotient-probability form of `accept_transcripts_card`. -/
+theorem accept_probability_eq (A dom : Finset α) (m : ℕ) :
+    ((Fintype.piFinset (fun _ : Fin m => A)).card : ℝ) /
+        ((Fintype.piFinset (fun _ : Fin m => dom)).card : ℝ)
+      = ((A.card : ℝ) / (dom.card : ℝ)) ^ m := by
+  rw [accept_transcripts_card, accept_transcripts_card]
+  push_cast
+  rw [div_pow]
+
+/-- **Query-round amplification, quotient form.**  If the per-round accept set has density at
+most `p` in a nonempty query domain, then the fraction of fully accepting `m`-round transcripts is
+at most `pᵐ`. -/
+theorem accept_probability_le (A dom : Finset α) (m : ℕ) (p : ℝ)
+    (hdom : dom.Nonempty) (hp : (A.card : ℝ) ≤ p * dom.card) :
+    ((Fintype.piFinset (fun _ : Fin m => A)).card : ℝ) /
+        ((Fintype.piFinset (fun _ : Fin m => dom)).card : ℝ)
+      ≤ p ^ m := by
+  have hcount := accept_density_le A dom m p hp
+  have htotal_pos : 0 < ((Fintype.piFinset (fun _ : Fin m => dom)).card : ℝ) := by
+    rw [accept_transcripts_card]
+    exact_mod_cast pow_pos (Finset.card_pos.mpr hdom) m
+  exact (div_le_iff₀ htotal_pos).2 (by simpa using hcount)
+
 end ArkLib.QueryRound
+
+-- Axiom audit.
+#print axioms ArkLib.QueryRound.accept_probability_eq
+#print axioms ArkLib.QueryRound.accept_probability_le
