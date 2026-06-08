@@ -16,9 +16,10 @@ volume `V(r) = #{g : d(0,g) ≤ r}`. This file makes `V(r)` an explicit number, 
 `V(r) = Σ_{i=0}^{r} C(n,i) · (q-1)^i`,  `n = |ι|`, `q = |F|`,
 
 so `exists_large_list`, `covering_lower_bound`, and `markov_tail_bound` become concrete inequalities
-in `n, q, r` for any code. The keystone is the **Hamming sphere count** `#{f : wt(f) = i} = C(n,i)·(q-1)^i`,
-proven by realizing the support-fixed slice as a `Fintype.piFinset` (nonzero values on the support, `0`
-off it). This identity is not currently in mathlib.
+in `n, q, r` for any code. The keystone is the **Hamming sphere count**
+`#{f : wt(f) = i} = C(n,i)·(q-1)^i`, proven by realizing the support-fixed slice as a
+`Fintype.piFinset` (nonzero values on the support, `0` off it). This identity is not currently in
+mathlib.
 -/
 
 namespace ArkLib.CodingTheory.BallVolume
@@ -108,7 +109,7 @@ theorem hammingNorm_card (i : ℕ) :
       · exact fun h => h.2
       · intro h
         refine ⟨?_, h⟩
-        show (Finset.univ.filter (fun j => f j ≠ 0)).card = i
+        change (Finset.univ.filter (fun j => f j ≠ 0)).card = i
         rw [h]; exact hS.2
     rw [hrw, support_eq_card, hS.2]
   rw [Finset.sum_congr rfl hterm, Finset.sum_const, Finset.card_powersetCard,
