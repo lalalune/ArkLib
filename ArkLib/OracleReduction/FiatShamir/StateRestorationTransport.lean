@@ -1796,6 +1796,29 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (stmtIn := stmtIn) (witIn := witIn)
   simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self] at hCollapse
   rw [probEvent_optionT_stateT_init]
+  change
+      Pr[fun o : Option (StmtIn × WitIn × StmtOut × WitOut) =>
+          o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut |
+        (do
+          let s ← srInit
+          (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
+              QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
+            (simulateQ
+              (fiatShamirCoupledQueryImpl
+                (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl +
+                QueryImpl.liftTarget
+                  (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp)
+                  challengeQueryImpl)
+              (do
+                let d ← Reduction.runWithLog stmtIn witIn
+                  { prover := prover, verifier := V.fiatShamir }
+                let extractedWitIn ←
+                  liftM do
+                    let transcript ← OptionT.mk (some <$>
+                      Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1.1 0))
+                    liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
+                pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run).run s :
+          ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)))] ≤ ↑knowledgeError
   rw [probEvent_stateT_run_map_congr
     (init := srInit)
     (f := fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
