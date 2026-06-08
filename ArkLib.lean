@@ -319,6 +319,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop1
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop2
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop3
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop4
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop5
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDomainSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateExtrapolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFoldedRS

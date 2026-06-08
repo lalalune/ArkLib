@@ -43,4 +43,17 @@ theorem run_empty (s : Stmt₂) (w : Wit₂) :
   simp only [Fin.induction_zero, pure_bind]
   rfl
 
+/-- **The `n = 0` discharge of `appendRunRightResidual`.** -/
+theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
+    appendRunRightResidual (P₁ := P₁) (P₂ := P₂) stmt wit := by
+  unfold appendRunRightResidual
+  have hcont : (P₁.append P₂).continueFromTo stmt wit (⟨m, by omega⟩ : Fin (m + 0 + 1))
+      (Fin.last (m + 0)) = pure := by
+    funext rk; exact continueFromTo_self _ _ _ _ rk
+  rw [hcont]
+  simp only [bind_pure]
+  simp only [run_eq_runToRound_last (prover := P₁), run_empty, append_output_empty]
+  trace_state
+  sorry
+
 end Prover
