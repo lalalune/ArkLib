@@ -3,93 +3,63 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop6
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
-# Loop 7 (O4 + O5) — the conditional disproof, and Frobenius-robustness across the chain
+# Loop 7 — why near-capacity Frobenius orbits do not yet disprove the prize
 
-Loop 6 (O3) showed: with prime-field inputs and a Frobenius-stable code, the MCA bad-γ set is
-closed under `φ : x ↦ x^p`, so a constant bad-count bound forces every bad scalar into a
-bounded-degree subfield. This file closes the two follow-up angles from `DISPROOF_LOG.md`.
+Loop 6 isolated a real obstruction: if a Frobenius-stable bad-scalar set is bounded by a
+field-independent constant `C`, then every bad scalar has bounded Frobenius degree. A high-degree
+bad scalar would therefore be a promising disproof mechanism.
 
-## O4 — the conditional disproof (what realizing the obstruction would buy)
+Loop 7 records the first disproof of that disproof. The toy Frobenius constructions found so far
+sit extremely close to capacity: the available gap behaves like `η ≲ A / d`, where `d` is the
+Frobenius-orbit degree. In that regime a linear orbit lower bound `#bad = O(d)` is only
+`O(1 / η)`, and the prize RHS is explicitly allowed to contain an `η^{-c₃}` factor. Thus such a
+family cannot refute the field-universal prize by itself; to beat the conjecture one needs either
+a high-degree orbit at fixed gap, or bad-count growth faster than every permitted polynomial in
+`1/η` and the interleaving width.
 
-`realizing_high_degree_bad_scalar_disproves`: if one can *realize* a Frobenius-closed bad set
-containing a scalar of degree `d > C` at prize radius — where `C = (2^m)^{c₁}/(ρ^{c₂}η^{c₃})` is the
-conjecture's constant — then the conjecture is **false** (we derive `False` from the bound). This is
-the exact, machine-checked statement of "the only thing between us and a disproof is a high-degree
-bad scalar in the live band." It is a *conditional* disproof: its hypotheses include the
-realizability that O3 left open.
-
-**Disproof of the disproof (O4):** the antecedent is precisely the unestablished beyond-Johnson
-case. Below the Johnson radius BCIKS20 forbids a lone high-degree orbit (bad set is small or all of
-`F`); in the band `[1−√ρ, 1−ρ−η]` no construction is known. So the conditional does not fire — no
-disproof, only a sharpened target.
-
-## O5 — Frobenius-robustness: the GS-row restriction is not an escape
-
-One hope was that `epsMCAgs`'s GS-row event (strictly rarer than the raw line-close event, via
-`epsMCAgs ≤ epsCA ≤ line-close`) might cap the bad count *below* the Frobenius lower bound, refuting
-O3-style growth. It cannot: **every** level of the dominance chain is defined by closeness to the
-same Frobenius-stable code with `φ`-fixed inputs, hence each bad-event predicate is `φ`-invariant,
-hence each satisfying set is `φ`-closed and inherits the *same* orbit lower bound. We prove this for
-an arbitrary `φ`-invariant predicate (`frobenius_invariant_card_ge`): the constraint is robust, so
-O5 provides no refutation of O3 — it strengthens it (the bounded-subfield condition binds `epsCA`
-and the line-close error too, not just `mcaEvent`).
-
-All results are sorry-free and axiom-clean. See `DISPROOF_LOG.md` (O4, O5).
+The lemmas below are intentionally just the reusable arithmetic guardrail.
 -/
 
 namespace ArkLib.ProximityGap.DisproofLoop7
 
-open ArkLib.ProximityGap.DisproofLoop6
+/-- If a degree parameter `d` only appears when the prize gap is at most `A / d`, then the degree
+is bounded by the inverse gap: `d ≤ A / η`.
 
-variable {F : Type*} [Field F] [DecidableEq F]
+This is the core self-refutation for the near-capacity Frobenius-orbit attack: a growing orbit
+whose growth is paid for by a shrinking gap is polynomial in `1/η`, exactly the kind of growth the
+prize bound allows. -/
+theorem degree_le_const_div_gap_of_gap_le_const_div_degree
+    {d : ℕ} {η A : ℝ}
+    (hd : 0 < (d : ℝ)) (hη : 0 < η)
+    (hgap : η ≤ A / (d : ℝ)) :
+    (d : ℝ) ≤ A / η := by
+  have hmul : η * (d : ℝ) ≤ A := by
+    calc
+      η * (d : ℝ) ≤ (A / (d : ℝ)) * (d : ℝ) :=
+        mul_le_mul_of_nonneg_right hgap (le_of_lt hd)
+      _ = A := by field_simp [ne_of_gt hd]
+  rw [le_div_iff₀ hη]
+  simpa [mul_comm] using hmul
 
-/-- **O4 — conditional disproof.** If a Frobenius-closed bad set `S` (the O3 setup: prime-field
-inputs, `φ`-stable code) has cardinality bounded by the conjecture's constant `C`
-(`epsMCA = #S/q ≤ C/q`), yet contains a scalar `y` of degree `d > C` over `F_p` (its first `d`
-Frobenius iterates distinct), then `False`: realizing such a scalar disproves the conjecture. The
-hypotheses isolate exactly the open realizability question. -/
-theorem realizing_high_degree_bad_scalar_disproves
-    {p : ℕ} {S : Finset F} {C : ℝ}
-    (hclosed : ∀ x ∈ S, x ^ p ∈ S)
-    (hbound : (S.card : ℝ) ≤ C)
-    {y : F} (hy : y ∈ S) (d : ℕ)
-    (hinj : Set.InjOn (fun k => y ^ (p ^ k)) (Finset.range d))
-    (hdeg : C < (d : ℝ)) : False := by
-  have hle : (d : ℝ) ≤ C := const_badcount_forbids_high_degree hclosed hbound hy d hinj
-  linarith
+/-- Linear bad-count growth in such a near-capacity family is absorbed by one inverse-gap factor.
 
-section Robustness
-variable [Fintype F]
-
-/-- A `φ`-invariant predicate's satisfying set is closed under `φ : x ↦ x^p`. The bad-event
-predicates of the whole dominance chain (`mcaEvent`, CA, line-close) are `φ`-invariant when the code
-is `φ`-stable and the inputs are `φ`-fixed, since closeness to a `φ`-stable code is `φ`-invariant. -/
-theorem frobenius_invariant_filter_closed
-    {p : ℕ} (P : F → Prop) [DecidablePred P]
-    (hinv : ∀ x, P x → P (x ^ p)) :
-    ∀ x ∈ Finset.univ.filter P, x ^ p ∈ Finset.univ.filter P := by
-  intro x hx
-  rw [Finset.mem_filter] at hx ⊢
-  exact ⟨Finset.mem_univ _, hinv x hx.2⟩
-
-/-- **O5 — robustness of the Frobenius lower bound.** For *any* `φ`-invariant bad-event predicate
-`P`, if some satisfying scalar `y` has degree `d` over `F_p`, then the satisfying set has cardinality
-`≥ d`. Applying this to the line-close / CA / mcaEvent predicates shows the GS-row restriction does
-not escape the Frobenius lower bound: the bounded-subfield constraint binds every level of
-`epsMCAgs ≤ epsCA ≤ line-close`. -/
-theorem frobenius_invariant_card_ge
-    {p : ℕ} (P : F → Prop) [DecidablePred P]
-    (hinv : ∀ x, P x → P (x ^ p))
-    {y : F} (hy : P y) (d : ℕ)
-    (hinj : Set.InjOn (fun k => y ^ (p ^ k)) (Finset.range d)) :
-    d ≤ (Finset.univ.filter P).card := by
-  refine frobenius_orbit_card_le (frobenius_invariant_filter_closed P hinv) ?_ d hinj
-  rw [Finset.mem_filter]
-  exact ⟨Finset.mem_univ _, hy⟩
-
-end Robustness
+If `#bad ≤ B d` and the construction only works with `η ≤ A/d`, then `#bad ≤ (B A)/η`. So a
+merely linear Frobenius-orbit family cannot beat a prize RHS with even a first power of `1/η`.
+-/
+theorem linear_badcount_le_const_div_gap_of_gap_le_const_div_degree
+    {bad d : ℕ} {η A B : ℝ}
+    (hd : 0 < (d : ℝ)) (hη : 0 < η) (hB : 0 ≤ B)
+    (hbad : (bad : ℝ) ≤ B * (d : ℝ))
+    (hgap : η ≤ A / (d : ℝ)) :
+    (bad : ℝ) ≤ (B * A) / η := by
+  have hdle : (d : ℝ) ≤ A / η :=
+    degree_le_const_div_gap_of_gap_le_const_div_degree hd hη hgap
+  calc
+    (bad : ℝ) ≤ B * (d : ℝ) := hbad
+    _ ≤ B * (A / η) := mul_le_mul_of_nonneg_left hdle hB
+    _ = (B * A) / η := by ring
 
 end ArkLib.ProximityGap.DisproofLoop7

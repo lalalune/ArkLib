@@ -54,38 +54,9 @@ oracles in `Spec.lean`) answers its only (unit) query with the message itself. -
 @[simp] lemma answer_instDefault {M : Type _} (m : M) (q : Unit) :
     @OracleInterface.answer M OracleInterface.instDefault m q = m := rfl
 
-open OracleInterface in
-/-- Local message-query collapse for `OracleInterface.simOracle2`. -/
-lemma simulateQ_simOracle2_messageQuery {ι : Type} {oSpec : OracleSpec ι}
-    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
-    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
-    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
-    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
-      (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _)
-      = (pure (OracleInterface.answer (t₂ qm.1) qm.2) : OracleComp oSpec _) := by
-  change simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
-      (liftM ((oSpec + ([T₁]ₒ + [T₂]ₒ)).query (Sum.inr (Sum.inr qm)))) = _
-  rw [simulateQ_spec_query]
-  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
-    QueryImpl.liftTarget_apply]
-  change liftM (OracleInterface.simOracle0 T₂ t₂ qm) = _
-  simp only [OracleInterface.simOracle0]
-  rfl
-
-open OracleInterface in
-/-- OptionT/query form of `simulateQ_simOracle2_messageQuery`. -/
-lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
-    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
-    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
-    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
-    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
-      (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
-      = (OptionT.lift (pure (OracleInterface.answer (t₂ qm.1) qm.2))
-          : OptionT (OracleComp oSpec) _) := by
-  rw [show (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
-        = OptionT.lift (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _) from rfl]
-  rw [simulateQ_optionT_lift, simulateQ_simOracle2_messageQuery]
-  rfl
+-- dedup-audit(#257): `simulateQ_simOracle2_messageQuery` and `..._query` removed here;
+-- they are byte-identical to the originals in `RingSwitching/Prelude.lean` (imported above,
+-- parent `RingSwitching` namespace), so the unqualified references below resolve to those.
 
 variable (κ : ℕ) [NeZero κ]
 variable (L : Type) [CommRing L] [Nontrivial L] [Fintype L] [DecidableEq L]

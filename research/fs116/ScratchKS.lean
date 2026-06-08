@@ -22,6 +22,23 @@ section Probe
 set_option linter.unusedSectionVars false
 set_option maxHeartbeats 2000000
 
+private theorem stateT_option_bind_map_eq
+    {σ α β γ : Type} (mx : StateT σ ProbComp (Option α)) (f : α → β)
+    (k : β → StateT σ ProbComp (Option γ)) :
+    (mx >>= fun oa => match oa with
+      | none => pure none
+      | some a => k (f a)) =
+    ((Option.map f <$> mx) >>= fun ob => match ob with
+      | none => pure none
+      | some b => k b) := by
+  funext s
+  simp only [StateT.run_bind, StateT.run_map, map_bind]
+  apply bind_congr
+  intro x
+  cases x with
+  | mk oa s' =>
+      cases oa <;> simp
+
 local instance fiatShamirProverOnlyCanonicalKSScratch : ProtocolSpec.ProverOnly
     (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) where
   prover_first' := by simp
@@ -52,7 +69,7 @@ theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical
     fiatShamirCoupledQueryImpl,
     ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl',
     probEvent_map, map_bind, Functor.map_map, Function.comp,
-    StateT.run_bind, StateT.run_map, liftM_eq_monadLift,
+    StateT.run_bind, StateT.run_map,
     Verifier.fiatShamir_verify_eq,
     Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
     Reduction.run, Prover.run, Prover.runToRound, Prover.processRound]

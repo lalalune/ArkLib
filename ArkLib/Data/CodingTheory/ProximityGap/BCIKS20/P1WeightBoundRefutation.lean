@@ -76,11 +76,16 @@ lemma evalX_hasseDerivX_badR_one_zero (x₀ : F) :
   rw [hY, hC, zero_add]
   simp [Bivariate.evalX_eq_map]
 
+lemma evalX_hasseDerivX_badR_one (x₀ : F) :
+    Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (badR x₀))
+      = Polynomial.C ((Polynomial.X : F[X]) ^ 2) := by
+  simpa using evalX_hasseDerivX_badR_one_zero (F := F) x₀
+
 lemma hasseCoeffRepr𝒪_badR_one_zero (x₀ : F) :
     hasseCoeffRepr𝒪 (Polynomial.X : F[X][Y]) x₀ (badR x₀) 1 0 =
       Ideal.Quotient.mk (Ideal.span {H_tilde' (Polynomial.X : F[X][Y])})
         (Polynomial.C ((Polynomial.X : F[X]) ^ 2)) := by
-  simp [hasseCoeffRepr𝒪, evalX_hasseDerivX_badR_one_zero]
+  simp [hasseCoeffRepr𝒪, evalX_hasseDerivX_badR_one]
 
 end
 
