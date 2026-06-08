@@ -3027,14 +3027,21 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   -- The LHS of `h` is exactly the probEvent of the RHS of `h_eq`.
   -- We want to prove `probEvent (goal_LHS) f ≤ probEvent (goal_RHS) g`.
   -- Since `goal_LHS = srInit >>= fun s => (RHS of h_eq).run' s`, we can rewrite.
-  refine le_trans (le_of_eq ?_) h
-  -- Goal: probEvent(FS game, elim-predicate) = probEvent(direct SR game, match-predicate).
-  -- These have DIFFERENT output shapes (FS aborts → `Option (StmtIn×WitIn×StmtOut×WitOut)`; the SR game
-  -- carries `Option StmtOut`), so a plain `congr` is wrong. The bridge is the PROVEN leaf
-  -- `probEvent_knowledgePayload_option_eq_stateRestoration` (peeling `srInit` via
-  -- `probEvent_bind_mono_heteroEvent`), composed with `h_eq` for the FS→direct collapse — mirroring
-  -- `fiatShamir_soundnessTransferResidual_canonical`'s leaf assembly (which uses
-  -- `probEvent_payload_option_eq_stmt`). Structure above is now correct; this is the remaining leaf.
+  have h_eq_rw : (simulateQ (fiatShamirCoupledQueryImpl srImpl) do
+      let x ← prover.sendMessage ⟨0, trivial⟩ (prover.input (stmtIn, witIn))
+      let x_1 ← prover.output x.2
+      let x ← Messages.deriveTranscriptFS stmtIn x.1
+      pure (x_1, x)) =
+      (simulateQ (fiatShamirCoupledQueryImpl srImpl) do
+      let x ←
+        runWithLog
+          (do
+            let x ← prover.sendMessage ⟨0, trivial⟩ (prover.input (stmtIn, witIn))
+            let x_1 ← prover.output x.2
+            pure (x.1, x_1))
+      let x_1 ← Messages.deriveTranscriptFS stmtIn x.1
+      pure (x.2, x_1)) := h_eq
+  rw [h_eq_rw]
   sorry
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side
