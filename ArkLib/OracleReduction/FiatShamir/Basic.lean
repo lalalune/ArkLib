@@ -220,6 +220,17 @@ def fiatShamirHonestExecution
   let stmtOut ← (R.verifier.fiatShamir).run stmtIn proof
   return ⟨⟨proof, ctxOut⟩, stmtOut⟩
 
+omit [VCVCompatible StmtIn] [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- Raw proof-message send step of the transformed basic Fiat-Shamir prover. -/
+theorem fiatShamir_sendMessage_eq_raw
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    (R.prover.fiatShamir).sendMessage =
+      fun | ⟨0, _⟩ => fun ⟨stmtIn, state⟩ => do
+        let ⟨messages, _, state⟩ ←
+          R.prover.runToRoundFS (Fin.last n) stmtIn state
+        return ⟨messages, state⟩ := by
+  rfl
+
 /-- The transformed basic Fiat-Shamir run is the lifted explicit honest execution. -/
 def fiatShamir_run_eq_honestExecution
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
@@ -769,6 +780,7 @@ theorem fiatShamir_completeness_of_perfect_runEq_mono_relations_error
 #print axioms Reduction.FiatShamirProtocolSpec
 #print axioms Reduction.FiatShamirProofTranscript
 #print axioms Reduction.fiatShamirHonestExecution
+#print axioms Reduction.fiatShamir_sendMessage_eq_raw
 #print axioms Reduction.fiatShamir_run_eq_honestExecution
 #print axioms Reduction.fiatShamir_completeness_unroll
 #print axioms Reduction.fiatShamir_completeness_unroll_of_runCollapse
