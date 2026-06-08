@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.ProofSystem.Spartan.Basic
+import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 
 /-!
 # The Spartan first sum-check virtual polynomial `ℱ` and its cube-sum identity (issue #114)
