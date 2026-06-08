@@ -1415,8 +1415,23 @@ private theorem transcriptFromFSChallengeLog_run_withQueryLog_snd_support
           ProtocolSpec.Messages.deriveTranscriptSR,
           ProtocolSpec.MessagesUpTo.deriveTranscriptFS,
           ProtocolSpec.MessagesUpTo.deriveTranscriptSR] using hz)
+  have hrun' :
+      (transcriptFromFSChallengeLogAux
+        (StmtIn := StmtIn) (pSpec := pSpec)
+        (k := Fin.last n) messages (Fin.last (Fin.last n))).run'
+          (z.2.snd ++ tail) = some z.1 := by
+    unfold StateT.run'
+    change (fun x => x.1) <$>
+        (transcriptFromFSChallengeLogAux
+          (StmtIn := StmtIn) (pSpec := pSpec)
+          (k := Fin.last n) messages (Fin.last (Fin.last n))).run
+            (z.2.snd ++ tail) =
+      some z.1
+    rw [haux]
+    rfl
   unfold transcriptFromFSChallengeLog
-  simpa [StateT.run'] using congrArg (Option.map Prod.fst) haux
+  rw [hrun']
+  rfl
 
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
@@ -1458,8 +1473,44 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_apply
         liftM (srExtractor stmtIn witOut transcript default default)) := by
   rfl
 
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- On verifier logs produced by a logged slow-Fiat-Shamir transcript derivation, the canonical
+log-backed Fiat-Shamir extractor is exactly the underlying state-restoration extractor applied to
+the logged transcript. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_loggedTranscript_support
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut) (messages : pSpec.Messages)
+    (proveQueryLog verifyQueryLog :
+      QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))
+    (tail : QueryLog (fsChallengeOracle StmtIn pSpec))
+    {z : pSpec.FullTranscript × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)}
+    (hz : z ∈ support
+      (OracleComp.withQueryLog
+        (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages)))
+    (hVerify : verifyQueryLog.snd = z.2.snd ++ tail) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut
+        (fun | ⟨0, _⟩ => messages) proveQueryLog verifyQueryLog =
+      (liftM (srExtractor stmtIn witOut z.1 default default) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn) := by
+  unfold fiatShamirStraightlineExtractorOfStateRestoration
+  rw [hVerify]
+  change (do
+      let transcript ← OptionT.mk (pure <|
+        transcriptFromFSChallengeLog
+          (StmtIn := StmtIn) (pSpec := pSpec) messages (z.2.snd ++ tail))
+      liftM (srExtractor stmtIn witOut transcript default default)) =
+    (liftM (srExtractor stmtIn witOut z.1 default default) :
+      OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+  rw [transcriptFromFSChallengeLog_run_withQueryLog_snd_support
+    (oSpec := oSpec) (StmtIn := StmtIn) (pSpec := pSpec)
+    stmtIn messages tail hz]
+  rfl
+
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_apply
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_loggedTranscript_support
 
 end CanonicalKnowledgeSoundnessSupport
 
