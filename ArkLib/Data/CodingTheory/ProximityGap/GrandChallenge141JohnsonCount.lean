@@ -161,6 +161,23 @@ theorem reedSolomon_wholeLine_card_field_le_johnson_of_hwit
     exact_mod_cast hFL_nat
   exact le_trans hFL_q hLJ
 
+/-- **Concrete `Fin 4`, `k = 2` Johnson-window arithmetic.** For the issue #244 concrete
+instance, throughout the genuine Johnson-window Hamming radii (`e ≤ 4` and positive denominator),
+the RS Johnson list-size expression is strictly smaller than the 5-element field size. Combined
+with `reedSolomon_wholeLine_card_field_le_johnson_of_hwit`, this is the numeric contradiction
+side of the common-center refutation. -/
+theorem johnson_fin4_k2_bound_lt_five {e : ℕ}
+    (hen : e ≤ 4)
+    (hJ : 0 < ArkLib.JohnsonBound.johnsonDenom 4 (4 - 2 + 1) e) :
+    (4 : ℚ) * (((4 - 2 + 1 : ℕ) : ℚ)) /
+        ArkLib.JohnsonBound.johnsonDenom 4 (4 - 2 + 1) e < 5 := by
+  interval_cases e
+  · norm_num [ArkLib.JohnsonBound.johnsonDenom]
+  · norm_num [ArkLib.JohnsonBound.johnsonDenom]
+  · norm_num [ArkLib.JohnsonBound.johnsonDenom] at hJ
+  · norm_num [ArkLib.JohnsonBound.johnsonDenom] at hJ
+  · norm_num [ArkLib.JohnsonBound.johnsonDenom] at hJ
+
 /-- **T1 — the missing wiring lemma (axiom-clean).**
 
 In the up-to-Johnson regime (`0 < johnsonDenom`), the number of pencil scalars `γ` whose line
@@ -269,6 +286,7 @@ theorem rs_epsMCA_le_johnson_ceil_of_hwit
 #print axioms ProximityGap.MCAGS.reedSolomon_affineLine_relDistFromCode_eq_zero_of_mem
 #print axioms ProximityGap.MCAGS.reedSolomon_affineLine_all_scalars_close_of_mem
 #print axioms ProximityGap.MCAGS.reedSolomon_wholeLine_card_field_le_johnson_of_hwit
+#print axioms ProximityGap.MCAGS.johnson_fin4_k2_bound_lt_five
 
 end ProximityGap.MCAGS
 
