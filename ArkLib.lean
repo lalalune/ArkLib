@@ -208,6 +208,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1XiOrderExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Bijection
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedBridge
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedGapIdeal
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
