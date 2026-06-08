@@ -307,6 +307,33 @@ theorem lift_run_elim {ι : Type} {spec : OracleSpec ι} {α β : Type}
 
 #print axioms lift_run_elim
 
+/-- **Never-failing stage marginalizes in a discarded-`none` bind.** If `X` never fails
+(`Pr[⊥|X]=0`), then running it and discarding its result to return `none` is distributionally just
+`pure none` — its randomness washes out. This is the probabilistic heart of the seam elim-commute:
+when the verifier `V₁` rejects (the `none` branch), whether the *next* prover stage `snd` was already
+run (natural order) or skipped (union-bound order) cannot change the outcome distribution, because
+`snd` never fails and so marginalizes away. -/
+theorem evalDist_bind_const_none {γ β : Type} (X : ProbComp γ) (hX : Pr[⊥ | X] = 0) :
+    evalDist (X >>= fun _ => (pure none : ProbComp (Option β))) = pure none := by
+  classical
+  have h1 : Pr[= (none : Option β) | X >>= fun _ => (pure none : ProbComp (Option β))] = 1 := by
+    rw [probOutput_bind_eq_tsum]; simp only [probOutput_pure_self, mul_one]
+    exact tsum_probOutput_eq_one' hX
+  have hsupp := (probOutput_eq_one_iff (mx := X >>= fun _ => (pure none : ProbComp (Option β)))
+    (x := none)).mp h1
+  rw [show (pure none : SPMF (Option β))
+        = evalDist (pure none : ProbComp (Option β)) from (evalDist_pure none).symm]
+  apply SPMF.ext; intro o
+  rw [← probOutput_def, ← probOutput_def]
+  cases o with
+  | none => rw [h1, probOutput_pure_self]
+  | some b =>
+    have hmem : (some b : Option β) ∉ support (X >>= fun _ => (pure none : ProbComp (Option β))) := by
+      rw [hsupp.2]; simp
+    rw [probOutput_eq_zero_of_not_mem_support hmem, probOutput_pure]; simp
+
+#print axioms evalDist_bind_const_none
+
 /-- **`simulateQ` preserves the `σ`-state on its support, when every query implementation does.**
 Holds for `challengeQueryImpl` (which threads `σ` unchanged) and for empty `oSpec`. This is the
 independence ingredient for the seam swap: a state-preserving prover stage cannot affect a later
