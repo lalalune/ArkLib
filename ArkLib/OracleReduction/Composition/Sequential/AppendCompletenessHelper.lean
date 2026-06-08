@@ -67,7 +67,7 @@ theorem mem_support_append_run_decompose
     · simp only [Option.elim, pure_bind, OptionT.run_bind, Option.elimM, bind_assoc,
         mem_support_bind_iff] at hx
       rw [show (R₁.append R₂).verifier = R₁.verifier.append R₂.verifier from rfl,
-        Verifier.append_run, append_fst, append_snd] at hx
+        Verifier.append_run, ProtocolSpec.FullTranscript.append_fst, ProtocolSpec.FullTranscript.append_snd] at hx
       simp only [OptionT.run_bind, Option.elimM, bind_assoc, mem_support_bind_iff,
         liftM_bind, support_liftM, Set.mem_image] at hx
       obtain ⟨sv2opt, hsv2, hx⟩ := hx

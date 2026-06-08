@@ -14,17 +14,40 @@ variable {ι : Type} {oSpec : OracleSpec ι} {Stmt₁ Wit₁ Stmt₂ Wit₂ Stmt
   {R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁}
   {R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂}
 
--- Helper: a single reduction's experiment support membership decomposes (σ=Unit) into prover and
--- verifier outcome memberships. This is the reusable characterization for both R₁/R₂ and the
--- appended reduction.
-example (R : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁) (stmt : Stmt₁) (wit : Wit₁)
-    (u : Unit) (p : Option (pSpec₁.FullTranscript × Stmt₂ × Wit₂))
-    (hp : p ∈ support ((simulateQ (impl.addLift challengeQueryImpl)
-      (liftM (R.prover.run stmt wit)).run).run' u)) :
-    ∃ pr, p = some pr := by
-  simp only [OptionT.run_lift, simulateQ_map, StateT.run'_eq, StateT.run_map, map_map,
-    support_map, Set.mem_image] at hp
-  obtain ⟨a, _ha, rfl⟩ := hp
-  exact ⟨_, rfl⟩
+example
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
+    (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
+  unfold perfectCompleteness at h₁ h₂ ⊢
+  rw [completeness_iff_completenessFromRun] at h₁ h₂ ⊢
+  unfold completenessFromRun at h₁ h₂ ⊢
+  intro stmt wit hmem
+  dsimp only
+  rw [run_append_empty]
+  simp only [ENNReal.coe_zero, tsub_zero, ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  · sorry
+  · intro out hout
+    rw [OptionT.mem_support_iff] at hout
+    simp only [OptionT.run_mk] at hout
+    rw [mem_support_bind_iff] at hout
+    obtain ⟨u, _hu, hout⟩ := hout
+    simp only [OptionT.run_bind, OptionT.run_pure, bind_assoc, Option.elimM] at hout
+    -- peel P₁
+    rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff] at hout
+    obtain ⟨p1, hp1, hout⟩ := hout
+    simp only [OptionT.run_lift, simulateQ_map, StateT.run'_eq, StateT.run_map, Functor.map_map,
+      support_map, Set.mem_image] at hp1
+    obtain ⟨pr1, hpr1, rfl⟩ := hp1
+    simp only [Option.elim] at hout
+    -- peel P₂
+    rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff] at hout
+    obtain ⟨p2, hp2, hout⟩ := hout
+    simp only [OptionT.run_lift, simulateQ_map, StateT.run'_eq, StateT.run_map, Functor.map_map,
+      support_map, Set.mem_image] at hp2
+    obtain ⟨pr2, hpr2, rfl⟩ := hp2
+    simp only [Option.elim] at hout
+    trace_state
+    sorry
 
 end Reduction

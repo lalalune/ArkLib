@@ -100,8 +100,8 @@ theorem exists_large_list (C : Finset (ι → F)) (r : ℕ) :
   by_contra h
   push_neg at h
   have hne : (Finset.univ : Finset (ι → F)).Nonempty := Finset.univ_nonempty
-  have hsum : (∑ _f : ι → F, C.card * ballVol ι F r)
-      < ∑ f : ι → F, Fintype.card (ι → F) * (lam C r f).card :=
+  have hsum : (∑ f : ι → F, Fintype.card (ι → F) * (lam C r f).card)
+      < ∑ _f : ι → F, C.card * ballVol ι F r :=
     Finset.sum_lt_sum_of_nonempty hne (fun f _ => h f)
   rw [Finset.sum_const, Finset.card_univ, smul_eq_mul, ← Finset.mul_sum, first_moment] at hsum
   exact lt_irrefl _ hsum
@@ -367,5 +367,6 @@ end Field
 end ArkLib.CodingTheory.ListMoments
 
 -- axiom audit anchors
+#print axioms ArkLib.CodingTheory.ListMoments.exists_large_list
 #print axioms ArkLib.CodingTheory.ListMoments.pairBall_scale
 #print axioms ArkLib.CodingTheory.ListMoments.pairBall_weight

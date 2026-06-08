@@ -1,5 +1,5 @@
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
-import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationHasse
+import ArkLib.Data.CodingTheory.Quarantine.CandidateDerandomizationHasse
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 

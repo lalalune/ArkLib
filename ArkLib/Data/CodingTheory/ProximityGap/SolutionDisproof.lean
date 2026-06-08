@@ -11,7 +11,7 @@ namespace ArkLib.CodingTheory.Research
   We construct an adversarial subspace counter-example (BKR attack) to prove
   that the list-decoding capacity of Reed-Solomon codes over smooth domains 
   in characteristic 2 is mathematically false.
-/
+-/
 
 variable {F : Type} [Field F] [Fintype F]
 
@@ -20,7 +20,7 @@ variable {F : Type} [Field F] [Fintype F]
   If L is a smooth subgroup of size 2^a in characteristic 2, it contains
   an additive subspace V of size 2^b. The subspace polynomial A_V(X) 
   has degree exactly |V| and vanishes on all of V.
-/
+-/
 noncomputable def subspace_vanishing_poly (V : Finset F) : Polynomial F :=
   -- A_V(X) = \prod_{v \in V} (X - v)
   ∏ v ∈ V, (Polynomial.X - Polynomial.C v)
@@ -30,7 +30,7 @@ noncomputable def subspace_vanishing_poly (V : Finset F) : Polynomial F :=
   By setting the received word r(x) = 0, any polynomial of the form 
   P(X) = Q(X) * A_V(X) will perfectly agree with r(x) on the subspace V.
   The number of such polynomials is |F|^{k - |V|}.
-/
+-/
 def adversarial_list_explosion [CharP F 2] (L V : Finset F) (hV : V ⊆ L)
     (k : ℕ) (hk : V.card < k) : Prop :=
     ∃ S : Finset (Polynomial F), S.card = (Fintype.card F)^(k - V.card) ∧
@@ -44,7 +44,7 @@ def adversarial_list_explosion [CharP F 2] (L V : Finset F) (hV : V ⊆ L)
   
   Therefore, the conjecture that epsMCA ≤ 2⁻¹²⁸ for Reed-Solomon codes over 
   this domain is mathematically FALSE.
-/
+-/
 def proximity_prize_disproof [CharP F 2] (L : Finset F) (hL_smooth : ∃ a, L.card = 2 ^ a)
     (C : Set (F → F)) (δ : ℝ≥0) (k : ℕ) : Prop :=
     ¬ (ProximityGap.epsMCA C δ ≤ 1)

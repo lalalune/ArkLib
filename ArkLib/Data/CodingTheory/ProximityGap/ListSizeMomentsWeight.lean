@@ -88,3 +88,6 @@ theorem second_moment_eq_of_weightEnum {C C' : Finset (ι → F)}
         hconst _ (fun v hv => (Finset.mem_filter.mp hv).2), hwe w]
 
 end ArkLib.CodingTheory.ListMoments
+
+#print axioms ArkLib.CodingTheory.ListMoments.second_moment_eq_of_weightEnum
+#print axioms ArkLib.CodingTheory.ListMoments.second_moment_grouped_by_weight
