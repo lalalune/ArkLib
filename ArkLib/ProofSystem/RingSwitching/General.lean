@@ -132,6 +132,9 @@ lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K]
         (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
         (init := init)
         (impl := impl))
+    (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
     (hBatchingCoreAppendPerfectCompleteness :
       (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
         (pSpec := pSpecLargeFieldReduction κ L K P ℓ')
@@ -155,22 +158,6 @@ lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K]
       κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn
       (init := init) (impl := impl) hRounds hCoreInteractionAppendPerfectCompleteness)
     (hResidual := hBatchingCoreAppendPerfectCompleteness)
-    (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
-      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
-    (hCoreInteractionAppendPerfectCompleteness :
-      (SumcheckPhase.coreInteractionOracleReduction κ L K P ℓ ℓ' h_l
-        mlIOPCS.toAbstractOStmtIn).perfectCompleteness
-        (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
-        (OStmtIn := mlIOPCS.toAbstractOStmtIn.OStmtIn)
-        (StmtOut := MLPEvalStatement L ℓ')
-        (OStmtOut := mlIOPCS.toAbstractOStmtIn.OStmtIn)
-        (WitIn := SumcheckWitness L ℓ' 0)
-        (WitOut := WitMLP L ℓ')
-        (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn 0)
-        (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
-        (init := init)
-        (impl := impl))
     (hBatchingCoreAppendPerfectCompleteness :
       (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
         (pSpec := pSpecLargeFieldReduction κ L K P ℓ')

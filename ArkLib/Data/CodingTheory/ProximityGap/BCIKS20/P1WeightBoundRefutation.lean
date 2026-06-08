@@ -49,7 +49,9 @@ lemma badH_natDegree_pos : 0 < (Polynomial.X : F[X][Y]).natDegree := by
 
 lemma derivative_badLiftCoeff (x₀ : F) :
     Polynomial.derivative (badLiftCoeff x₀) = Polynomial.C ((Polynomial.X : F[X]) ^ 2) := by
-  simp [badLiftCoeff, Polynomial.derivative_mul, Polynomial.derivative_sub]
+  rw [badLiftCoeff, Polynomial.derivative_mul, Polynomial.derivative_sub,
+    Polynomial.derivative_X, Polynomial.derivative_C, sub_zero, Polynomial.derivative_C,
+    mul_zero, add_zero, one_mul]
 
 lemma evalX_hasseDerivX_badR_one_zero (x₀ : F) :
     Bivariate.evalX (Polynomial.C x₀)
@@ -61,7 +63,7 @@ lemma evalX_hasseDerivX_badR_one_zero (x₀ : F) :
     simp
   have hC : hasseDerivX 1 (Polynomial.C (badLiftCoeff x₀) : F[X][X][Y])
       = Polynomial.C (Polynomial.C ((Polynomial.X : F[X]) ^ 2)) := by
-    unfold hasseDerivX badLiftCoeff
+    unfold hasseDerivX
     simp [derivative_badLiftCoeff]
   rw [hY, hC, zero_add]
   simp [Bivariate.evalX_eq_map]
