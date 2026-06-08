@@ -1118,14 +1118,14 @@ The parser only checks the challenge-round index.  In the honest verifier log ge
 `Verifier.fiatShamir`, the query payload itself is produced by `deriveTranscriptFS`; checking the
 full payload would require unnecessary equality assumptions on messages and statements. -/
 private def popFSChallengeFromLog
-    (expected : pSpec.ChallengeIdx) :
+    (expected : Fin n) :
     StateT (QueryLog (fsChallengeOracle StmtIn pSpec)) Option
-      (pSpec.Challenge expected) := fun log =>
+      (pSpec.«Type» expected) := fun log =>
   match log with
   | [] => none
   | ⟨⟨idx, _payload⟩, response⟩ :: rest =>
-      if h : idx = expected then
-        some (h ▸ response, rest)
+      if h : idx.1 = expected then
+        some (h ▸ (show pSpec.«Type» idx.1 from response), rest)
       else
         none
 
@@ -1141,9 +1141,9 @@ private def transcriptFromFSChallengeLogAux
       let prevTranscript ← ih
       match hDir : pSpec.dir (i.castLE (by omega)) with
       | .V_to_P =>
-          let challenge ← popFSChallengeFromLog
-            (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩
-          pure (prevTranscript.concat challenge)
+        let challenge ← popFSChallengeFromLog
+            (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))
+        pure (prevTranscript.concat challenge)
       | .P_to_V =>
           pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
     j
@@ -1185,41 +1185,23 @@ private theorem popFSChallengeFromLog_cons_self
     (payload : (challengeOracleInterfaceSR StmtIn pSpec idx).Query)
     (response : pSpec.Challenge idx)
     (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
-    (popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec) idx).run
+    (popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec) idx.1).run
       (⟨⟨idx, payload⟩, response⟩ :: tail) =
-        some (response, tail) := by
+        some ((show pSpec.«Type» idx.1 from response), tail) := by
   unfold popFSChallengeFromLog
-  change (if h : idx = idx then some (h ▸ response, tail) else none) =
-    some (response, tail)
+  change (if h : idx.1 = idx.1 then
+      some (h ▸ (show pSpec.«Type» idx.1 from response), tail) else none) =
+    some ((show pSpec.«Type» idx.1 from response), tail)
   simp
 
-private theorem transcriptFromFSChallengeLogAux_succ_v
-    (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
-    (i : Fin k)
-    (hDir : pSpec.dir (i.castLE (by omega)) = .V_to_P)
-    (log : QueryLog (fsChallengeOracle StmtIn pSpec)) :
-    (transcriptFromFSChallengeLogAux
-      (StmtIn := StmtIn) (pSpec := pSpec) k messages i.succ).run log =
-      ((transcriptFromFSChallengeLogAux
-        (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc).run log).bind
-        (fun p =>
-          ((popFSChallengeFromLog
-            (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩).run p.2).bind
-            (fun c => some (p.1.concat c.1, c.2))) := by
-  simp [transcriptFromFSChallengeLogAux, Fin.induction_succ, hDir]
+private theorem dir_eq_of_castLE_eq
+    (k : Fin (n + 1)) (i : Fin k) {d₁ d₂ : Direction}
+    (h₁ : pSpec.dir (i.castLE (by omega)) = d₁)
+    (h₂ : pSpec.dir (i.castLE (by omega)) = d₂) :
+    d₁ = d₂ := by
+  exact h₁.symm.trans h₂
 
-private theorem transcriptFromFSChallengeLogAux_succ_p
-    (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
-    (i : Fin k)
-    (hDir : pSpec.dir (i.castLE (by omega)) = .P_to_V)
-    (log : QueryLog (fsChallengeOracle StmtIn pSpec)) :
-    (transcriptFromFSChallengeLogAux
-      (StmtIn := StmtIn) (pSpec := pSpec) k messages i.succ).run log =
-      ((transcriptFromFSChallengeLogAux
-        (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc).run log).map
-        (fun p => (p.1.concat (messages ⟨i, hDir⟩), p.2)) := by
-  simp [transcriptFromFSChallengeLogAux, Fin.induction_succ, hDir]
-
+set_option maxHeartbeats 800000 in
 private theorem transcriptFromFSChallengeLogAux_run_logging
     (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
     (j : Fin (k + 1)) (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
@@ -1246,6 +1228,7 @@ private theorem transcriptFromFSChallengeLogAux_run_logging
         simp_all [simulateQ_bind, WriterT.run_bind, WriterT.run_pure, simulateQ_pure,
           bind_assoc, queryLog_snd_append, QueryLog.snd, popFSChallengeFromLog_cons_self]
       · next hDir =>
+        rw [← ih tail]
         simp_all [simulateQ_bind, WriterT.run_bind, WriterT.run_pure, simulateQ_pure,
           bind_assoc, Option.map_bind, Option.bind_eq_bind]
 
