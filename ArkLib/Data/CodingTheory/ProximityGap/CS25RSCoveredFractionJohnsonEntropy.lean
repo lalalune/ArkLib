@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropyListSize
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSListDecoding
+import ArkLib.Data.CodingTheory.ProximityGap.CS25RSJohnsonRadius
 
 /-!
 # Entropy/rate-form Reed–Solomon covered fraction via the Johnson list size (#82)
@@ -58,7 +59,34 @@ theorem rs_covered_count_johnson_entropy (domain : ι ↪ F) (k : ℕ) [NeZero k
     rw [hfe]; exact hlist
   exact covered_count_entropy_listSize hqf (rsCodeFinset domain k) r ℓ hr0 hrn hL hpos
 
+/-- **Existential entropy-form RS covered fraction up to the Johnson radius (#232).**
+The qualitative RS Johnson-radius theorem supplies a list-size witness `ℓ`, and the entropy
+covered-fraction bound uses that witness directly. -/
+theorem rs_covered_count_johnson_radius_entropy
+    (hqf : 2 ≤ Fintype.card F) (domain : ι ↪ F) (k : ℕ) [NeZero k] (r : ℕ)
+    (hq1 : 1 < Fintype.card F) (hn : 0 < Fintype.card ι)
+    (hr0 : 0 < r) (hrn : r < Fintype.card ι)
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤ ((Fintype.card ι - r : ℕ) : ℝ))
+    (hradius :
+      (((Fintype.card ι - r : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+      > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+        * (((Fintype.card ι - (Fintype.card ι - (k - 1)) : ℕ) : ℝ)
+            - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))
+    (hpos : 0 < (rsCodeFinset domain k).card
+        * (univ.filter (fun w : ι → F => hammingDist w 0 ≤ r)).card) :
+    ∃ ℓ : ℕ,
+      ((rsCodeFinset domain k).card : ℝ)
+          * (Fintype.card F : ℝ)
+            ^ ((Fintype.card ι : ℝ)
+              * qEntropy (Fintype.card F) ((r : ℝ) / (Fintype.card ι : ℝ)))
+        ≤ ((Fintype.card ι : ℝ) + 1)
+            * (univ.filter (fun w : ι → F => closeCount (rsCodeFinset domain k) r w ≠ 0)).card
+            * ℓ := by
+  obtain ⟨ℓ, hL⟩ := rs_johnson_radius domain k r hq1 hn hP hradius
+  exact ⟨ℓ, covered_count_entropy_listSize hqf (rsCodeFinset domain k) r ℓ hr0 hrn hL hpos⟩
+
 end ArkLib.CS25
 
 -- Axiom audit.
 #print axioms ArkLib.CS25.rs_covered_count_johnson_entropy
+#print axioms ArkLib.CS25.rs_covered_count_johnson_radius_entropy

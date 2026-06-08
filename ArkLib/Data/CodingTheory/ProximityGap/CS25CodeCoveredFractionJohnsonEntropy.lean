@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropyListSize
+import ArkLib.Data.CodingTheory.ProximityGap.CS25CodeJohnsonRadius
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSListDecoding
 
 /-!
@@ -58,7 +59,32 @@ theorem code_covered_count_johnson_entropy (𝒞 : Finset (ι → F)) (r ℓ d :
       exact hmin x hx.1 y hy.1 hxy
   exact covered_count_entropy_listSize hqf 𝒞 r ℓ hr0 hrn hL hpos
 
+/-- **Existential entropy-form covered fraction up to the Johnson radius (#232).**  The qualitative
+Johnson-radius theorem supplies a list-size witness `ℓ`, and the entropy covered-fraction bound
+uses that witness directly. -/
+theorem code_covered_count_johnson_radius_entropy
+    (hqf : 2 ≤ Fintype.card F) (𝒞 : Finset (ι → F)) (r d : ℕ)
+    (hq1 : 1 < Fintype.card F) (hn : 0 < Fintype.card ι)
+    (hr0 : 0 < r) (hrn : r < Fintype.card ι)
+    (hmin : ∀ c ∈ 𝒞, ∀ c' ∈ 𝒞, c ≠ c' → d ≤ hammingDist c c')
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤ ((Fintype.card ι - r : ℕ) : ℝ))
+    (hradius :
+      (((Fintype.card ι - r : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+      > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+        * (((Fintype.card ι - d : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))
+    (hpos : 0 < 𝒞.card * (univ.filter (fun w : ι → F => hammingDist w 0 ≤ r)).card) :
+    ∃ ℓ : ℕ,
+      (𝒞.card : ℝ)
+          * (Fintype.card F : ℝ)
+            ^ ((Fintype.card ι : ℝ)
+              * qEntropy (Fintype.card F) ((r : ℝ) / (Fintype.card ι : ℝ)))
+        ≤ ((Fintype.card ι : ℝ) + 1)
+            * (univ.filter (fun w : ι → F => closeCount 𝒞 r w ≠ 0)).card * ℓ := by
+  obtain ⟨ℓ, hL⟩ := code_johnson_radius 𝒞 r d hq1 hn hmin hP hradius
+  exact ⟨ℓ, covered_count_entropy_listSize hqf 𝒞 r ℓ hr0 hrn hL hpos⟩
+
 end ArkLib.CS25
 
 -- Axiom audit.
 #print axioms ArkLib.CS25.code_covered_count_johnson_entropy
+#print axioms ArkLib.CS25.code_covered_count_johnson_radius_entropy

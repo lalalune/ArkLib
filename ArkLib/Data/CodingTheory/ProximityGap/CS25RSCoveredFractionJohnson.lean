@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSListDecoding
+import ArkLib.Data.CodingTheory.ProximityGap.CS25RSJohnsonRadius
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionListSize
 
 /-!
@@ -52,7 +53,29 @@ theorem rs_covered_count_johnson (domain : ι ↪ F) (k : ℕ) [NeZero k] (r ℓ
     apply Finset.filter_congr; intro c _; rw [hammingDist_comm]
   rw [hfe]; exact hlist
 
+/-- **Existential RS covered fraction up to the Johnson radius (#232).**  The qualitative RS
+Johnson-radius theorem supplies a list-size witness `ℓ`, and that witness gives
+`|RS|·V ≤ |close|·ℓ`. -/
+theorem rs_covered_count_johnson_radius (domain : ι ↪ F) (k : ℕ) [NeZero k]
+    (r : ℕ) (hq1 : 1 < Fintype.card F) (hn : 0 < Fintype.card ι)
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤ ((Fintype.card ι - r : ℕ) : ℝ))
+    (hradius :
+      (((Fintype.card ι - r : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+      > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+        * (((Fintype.card ι - (Fintype.card ι - (k - 1)) : ℕ) : ℝ)
+            - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))
+    (hpos : 0 < (rsCodeFinset domain k).card
+        * (univ.filter (fun w : ι → F => hammingDist w 0 ≤ r)).card) :
+    ∃ ℓ : ℕ,
+      (rsCodeFinset domain k).card
+          * (univ.filter (fun w : ι → F => hammingDist w 0 ≤ r)).card
+        ≤ (univ.filter (fun w : ι → F => closeCount (rsCodeFinset domain k) r w ≠ 0)).card
+            * ℓ := by
+  obtain ⟨ℓ, hL⟩ := rs_johnson_radius domain k r hq1 hn hP hradius
+  exact ⟨ℓ, covered_count_mul_listSize_ge (rsCodeFinset domain k) r ℓ hL hpos⟩
+
 end ArkLib.CS25
 
 -- Axiom audit.
 #print axioms ArkLib.CS25.rs_covered_count_johnson
+#print axioms ArkLib.CS25.rs_covered_count_johnson_radius
