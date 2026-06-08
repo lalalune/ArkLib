@@ -1472,9 +1472,32 @@ private theorem fiatShamirVerifier_verify_loggedTranscript_support
           OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut))) := by
     apply congrArg OptionT.run
     dsimp only
+    change ((liftM
+          (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+            pSpec.FullTranscript) >>= fun transcript =>
+        ((liftM (V.verify stmtIn transcript).run :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) (Option StmtOut)) >>=
+            fun v => v.getM)) =
+      ((liftM
+          (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+            pSpec.FullTranscript) >>= fun transcript =>
+        (liftM (V.verify stmtIn transcript) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut))
     apply bind_congr
     intro transcript
     exact optionT_lift_run_bind_getM (V.verify stmtIn transcript)
+  change z ∈ support (OracleComp.withQueryLog
+      (let messages : pSpec.Messages := proof 0;
+        (do
+          let transcript ← (liftM
+            (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages) :
+              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                pSpec.FullTranscript)
+          let v ← (liftM (V.verify stmtIn transcript).run :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) (Option StmtOut))
+          v.getM : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut).run)) at hz
   rw [hcollapse] at hz
   rw [OracleComp.withQueryLog_bind, mem_support_bind_iff] at hz
   obtain ⟨derivePoint, hderive, hcont⟩ := hz
