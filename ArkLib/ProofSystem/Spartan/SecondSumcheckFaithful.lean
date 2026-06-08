@@ -33,7 +33,7 @@ mathematical core is the **`simOStmt` faithfulness** of the lens used by the sec
 All results are axiom-clean (`propext`, `Classical.choice`, `Quot.sound`).
 -/
 
-open MvPolynomial OracleComp OracleSpec OracleInterface
+open MvPolynomial OracleComp OracleSpec OracleInterface OracleVerifier.LiftContext
 
 namespace OracleComp
 
@@ -174,5 +174,37 @@ theorem secondSumcheckEvalFromOracles_simOracle2
       simp only [OracleQuery.cont_query, OracleQuery.input_query, id_map]
       erw [simulateQ_spec_query]
       rfl
+
+/-- **`LiftContextCoherent` instance for the Spartan second sum-check lens.** Discharges the #433
+framework gate (`OracleVerifier.LiftContextCoherent.toVerifier_comm`) for the second sum-check lift,
+built from the three coherences via `liftContextCoherent_of`:
+* `hproj` — `rfl` (the lens' `projStmt` matches `toLens.proj`'s non-oracle component);
+* `hfaith` — the `simOStmt` faithfulness `secondSumcheckEvalFromOracles_simOracle2`;
+* `hlift` — `simp` (the lens' output lift discards the inner oracle component).
+
+This is the second-phase instantiation of the framework discharge landed in `LiftContext/Coherence`:
+the previously-open `toVerifier_comm` is now a proved instance for the Spartan second sum-check,
+unblocking its completeness transfer through `liftContext_perfectCompleteness`. -/
+@[reducible] noncomputable def secondSumcheckCoherent :
+    OracleVerifier.LiftContextCoherent (secondSumcheckOracleLens pp oSpec)
+      (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier :=
+  liftContextCoherent_of (secondSumcheckOracleLens pp oSpec) _
+    (fun _ _ => rfl)
+    (by
+      intro os oos transcript q
+      obtain ⟨t, stmt⟩ := os
+      obtain ⟨idx, point⟩ := q
+      refine (secondSumcheckEvalFromOracles_simOracle2 pp oSpec oos transcript.messages stmt
+        point).trans ?_
+      simp only [secondSumcheckOracleLens, secondSumcheckStmtLens, OracleStatement.Lens.proj,
+        OracleInterface.simOracle2, QueryImpl.addLift, QueryImpl.add_apply_inl,
+        QueryImpl.add_apply_inr, QueryImpl.liftTarget_apply, OracleInterface.simOracle0,
+        OracleInterface.answer]
+      rfl)
+    (by
+      intro os oos transcript so
+      obtain ⟨t, stmt⟩ := os
+      simp [secondSumcheckOracleLens, secondSumcheckStmtLens, OracleStatement.Lens.lift,
+        OracleStatement.Lens.proj])
 
 end Spartan.Spec

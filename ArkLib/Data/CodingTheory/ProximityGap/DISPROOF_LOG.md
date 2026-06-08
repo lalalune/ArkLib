@@ -331,6 +331,17 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop27 — polynomial additive fold costs are still absorbed
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop27.lean`:**
+`fold_depth_mul_domain_pow_le_next_pow` (`m·(2^m)^c ≤ (2^m)^(c+1)`) and
+`additive_polynomial_step_le_next_pow` (if each fold adds at most `C·(2^m)^c`, then
+`T(m)≤B₀+C·(2^m)^(c+1)`). **Disproof attempt:** maybe the additive/union-bound model from Loop26
+still refutes the prize if every fold contributes polynomially many new close codewords. **Disproof
+of the disproof:** no — the tower depth is only `m=log₂N`, and `m` is absorbed by one extra power of
+`N=2^m`. So any **polynomial additive** per-fold cost remains prize-safe. The remaining disproof
+target is now stricter: either a super-polynomial additive contribution at some fold, or genuinely
+multiplicative branching with an `N`-growing factor.
+
 ### Loop26 — additive vs multiplicative per-fold growth (narrows the disproof target)
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop26.lean`:** `additive_recursion_linear`
 (`T(j+1)≤T(j)+b` ⟹ `T(m)≤T(0)+m·b`), `additive_recursion_le_domain` (with `b≥0`, base `T(0)≤B₀`,

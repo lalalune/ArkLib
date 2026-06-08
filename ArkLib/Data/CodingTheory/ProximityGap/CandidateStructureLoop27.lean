@@ -10,8 +10,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop26
 
 Loop 26 shot down the multiplicative-tower disproof if the per-fold contribution is additive with a
 constant cost. This file pushes that self-refutation one step further: even if each fold contributes
-a **polynomial** amount in the top domain size `N = 2^m`, summing over all `m = log₂ N` folds is still
-polynomial. The logarithmic depth is absorbed by one extra domain power:
+a **polynomial** amount in the top domain size `N = 2^m`, summing over all `m = log₂ N` folds is
+still polynomial. The logarithmic depth is absorbed by one extra domain power:
 
     m · (2^m)^c ≤ (2^m)^(c+1).
 
@@ -39,7 +39,9 @@ theorem fold_depth_mul_domain_pow_le_next_pow (c m : ℕ) :
     (m : ℝ) * (((2 : ℝ) ^ m) ^ c) ≤
         ((2 : ℝ) ^ m) * (((2 : ℝ) ^ m) ^ c) :=
       mul_le_mul_of_nonneg_right hm hnonneg
-    _ = ((2 : ℝ) ^ m) ^ (c + 1) := by rw [pow_succ]
+    _ = ((2 : ℝ) ^ m) ^ (c + 1) := by
+      rw [pow_succ]
+      ring
 
 /-- **Polynomial additive per-fold cost is prize-safe.** If every fold adds at most a degree-`c`
 polynomial in the top domain size `2^m`, then after all `m` folds the list is bounded by the base
