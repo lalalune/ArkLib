@@ -3,6 +3,7 @@ import ArkLib.OracleReduction.Completeness
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.Logup.Security.OuterRun
 import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
+import ArkLib.OracleReduction.RunUnroll
 
 open scoped NNReal ENNReal
 open OracleComp ProtocolSpec
@@ -567,6 +568,45 @@ theorem probEvent_outerVerify_reject_challenge_le (oStmt : ∀ i, OStmtIn F n M 
     exact congrArg Nat.cast
       (Fintype.card_congr (Equiv.subtypeEquiv (Equiv.cast hTy.symm) (fun _ => Iff.rfl)))
   · exact congrArg Nat.cast (Fintype.card_congr (Equiv.cast hTy.symm))
+
+set_option maxHeartbeats 3200000 in
+/-- **Per-(initial-state) pole bound for the simulated outer run (DEV — accept-zero pending).**
+
+Discharges the `hPole` obligation of `probFailure_outerCompletenessRunComp_le_of_perStateNone`: the
+simulated reduction run returns `none` with probability at most `logupCompletenessError`.  Peels the
+never-failing prover head (`optionT_lift_bind_run` + `outerProver_run_closed_form`), marginalises the
+round-1 `x`-challenge (`probEvent_run'_simulateQ_addLift_getChallenge_bind`), and bounds the resulting
+weighted sum by the verifier rejection event via `probEvent_outerVerify_reject_challenge_le`.  The
+per-`c` split: on accept the run never fails (accept-zero, pending); on reject the failure probability
+is trivially `≤ 1`. -/
+theorem outer_perState_none_le
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (witIn : WitIn F n M params)
+    (s : σ) :
+    Pr[= none | ((simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+        (((outerOracleReduction oSpec F n M params).toReduction.run stmtIn witIn).run) :
+          StateT σ ProbComp (Option (OuterCompletenessRunResult F n M params))).run' s)]
+      ≤ (logupCompletenessError F n : ℝ≥0∞) := by
+  classical
+  haveI : Inhabited F := ⟨0⟩
+  haveI : SampleableType ((outerPSpec F n params).Challenge ⟨1, rfl⟩) :=
+    instOuterPSpecChallengeSampleable ⟨1, rfl⟩
+  rw [outerReduction_run_closed_form, optionT_lift_bind_run, outerProver_run_closed_form]
+  simp only [outerProver, bind_pure_comp, pure_bind, map_pure, bind_assoc, liftM_pure]
+  rw [← probEvent_eq_eq_probOutput,
+    ChallengeCoherence.probEvent_run'_simulateQ_addLift_getChallenge_bind]
+  refine le_trans ?_
+    (probEvent_outerVerify_reject_challenge_le (params := params) (oStmt := stmtIn.2))
+  rw [probEvent_eq_tsum_ite]
+  refine ENNReal.tsum_le_tsum (fun c => ?_)
+  by_cases hacc : outerVerifyAccepts F n M stmtIn.2 c
+  · -- On an accepting challenge `c`, the simulated verifier run returns `some` (never fails): the
+    -- batch `⟨3⟩` challenge marginalises out and `simulateQ_outerVerify_eq` collapses the verifier to
+    -- `pure …`.  Pending: the verifier-collapse-under-`simulateQ`/`OptionT`/`StateT` layering.
+    rw [if_neg (not_not.mpr hacc)]
+    sorry
+  · rw [if_pos hacc]
+    exact mul_le_of_le_one_right (zero_le _) (by simp)
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
