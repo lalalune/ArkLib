@@ -63,9 +63,11 @@ degree below `k`, so the whole `μ_N`-orbit of a codeword lies in `RS[k]`. (Degr
 is closed under composition — the substance of "`μ_N` acts on `RS[k]`".) -/
 theorem scaling_iterate_preserves_degreeLT {p : F[X]} {k : ℕ} {ω : F}
     (hp : p.natDegree < k) (j : ℕ) :
-    (Nat.rec p (fun _ q => q.comp (C ω * X)) j).natDegree < k := by
+    (((fun q => q.comp (C ω * X))^[j]) p).natDegree < k := by
   induction j with
   | zero => simpa using hp
-  | succ n ih => exact scaling_preserves_degreeLT ih
+  | succ n ih =>
+      rw [Function.iterate_succ_apply']
+      exact scaling_preserves_degreeLT ih
 
 end ArkLib.ProximityGap.StructureLoop20

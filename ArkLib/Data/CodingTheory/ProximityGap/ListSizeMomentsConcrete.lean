@@ -30,10 +30,7 @@ theorem ballVol_closed (r : ℕ) :
     ballVol ι F r
       = ∑ i ∈ Finset.range (r + 1), (Fintype.card ι).choose i * (Fintype.card F - 1) ^ i := by
   unfold ballVol
-  have hpred : (fun f : ι → F => hammingDist (0 : ι → F) f ≤ r)
-      = (fun f : ι → F => hammingNorm f ≤ r) := by
-    funext f; rw [hammingDist_zero_left]
-  rw [hpred]
+  simp only [hammingDist_zero_left]
   exact ArkLib.CodingTheory.BallVolume.ballVol_eq r
 
 /-- **Concrete worst-case list lower bound.** At radius `r`, some received word `f` has a decoding
