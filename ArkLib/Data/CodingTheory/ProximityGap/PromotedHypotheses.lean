@@ -1,6 +1,6 @@
 import Mathlib.InformationTheory.Hamming
 import ArkLib.Data.CodingTheory.ReedSolomon
-import ArkLib.Data.CodingTheory.UniqueDecodingListBound
+import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
 
 open Finset
 open scoped NNReal

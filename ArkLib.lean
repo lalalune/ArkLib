@@ -315,6 +315,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomization
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationHasse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationMatrix
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop6
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDomainSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateExtrapolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFoldedRS
@@ -623,6 +624,7 @@ import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.General
+import ArkLib.OracleReduction.Composition.Sequential.N0AppendScratch
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
@@ -1017,5 +1019,4 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
-import ArkLib.scratch_append_pc
 import ArkLib.whir113keystone
