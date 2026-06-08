@@ -282,15 +282,23 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### P2 / O9-repair — the Johnson-range bound lands on the prize RHS shape (Loop11)
+**Verified sorry-free, axiom-clean in `CandidateProofLoop11.lean`:** `hab25_le_prizeShape` —
+under the smooth-domain size linkage `n = |domain| ≤ 2^m`, the Haböck `n²` bound
+`(ℓ⁷/3)(ρn)²/q` is dominated by the prize shape `(1/q)·(2^m)²·K` with `K = ℓ⁷ρ²/3`, i.e. the
+prize's `(2^m)^{c₁}` term **is** the domain-size `n²` factor (`c₁ = 2`, `c₂ = c₃ = 0`). This repairs
+the O9 statement-fidelity gap and lands the proven Johnson-range (large-gap) proof-side bound on the
+prize's own RHS. Does not close the prize: Johnson range only; consumes the Hab25 residuals.
+
 ## Open angles not yet tried (to avoid repetition)
 
 - O8: strengthen O7 to **fixed-gap** Frobenius realization: produce high-degree bad scalars with
   some constant `η > 0` independent of extension degree, or prove this is impossible. *(Partially
   probed by O7′: fixed-gap prime-field samples show NO list growth — leans toward "impossible";
   needs exhaustive worst-case search or a proof, and the `GF(2^s)` Frobenius version.)*
-- O9: repair/formalize the GS RHS domain-size linkage: add or consume a hypothesis
-  `Fintype.card ι = 2^m` (or a comparable smooth-domain size condition) before using
-  `epsMCAgsPrizeUniversalConjecture` as the prize-facing statement.
+- O9: **addressed** by Loop11/P2 at the arithmetic level (the `n ≤ 2^m` linkage absorbs the `n²`
+  factor into `(2^m)²`). Remaining: thread the `Fintype.card ι ≤ 2^m` hypothesis through the actual
+  `epsMCAgsPrizeUniversalConjecture` statement in `GrandChallenge141UniformResolved.lean`.
 - O10: attack via a *list-size lower bound* in the band `(1−√ρ, 1−ρ−η]` at fixed `η` — the O6′
   reduction shows this is the only remaining disproof route; connect to known RS capacity
   list-decoding lower bounds (Ben-Sasson–Kopparty–Radhakrishnan / Guruswami–Rudra) and check whether
