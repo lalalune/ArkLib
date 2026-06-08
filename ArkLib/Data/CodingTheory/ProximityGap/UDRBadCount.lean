@@ -15,21 +15,23 @@ The Table-1 row-2 MCA upper bound `ε_mca(C, δ) ≤ O(δn)/|F|` below the uniqu
 ([ACFY25],[BCIKS20], currently an external admit) reduces to a per-stack bound on the number of
 "bad" scalars. This file proves that bound from scratch:
 
-  `badCount_udr_le` — for a code `C ⊆ F^ι` with the minimum-distance property `hmd` (codewords
-  disagreeing on `< d` coordinates are equal), a stack `(u₀,u₁)` whose bad scalars `G` each carry a
-  witness set `S γ` of size `≥ t` and witness codeword `w γ` (`= u₀ + γ·u₁` on `S γ`, not
-  pair-joint on `S γ`), in the regime `3(n−t) < d`, satisfies `|G| ≤ 2(n−t)`.
+  `badCount_udr_le` — for a code `C ⊆ F^ι` with the minimum-distance property `hmd`
+  (codewords disagreeing on `< d` coordinates are equal), a stack `(u₀,u₁)` whose bad
+  scalars `G` each carry a witness set `S γ` of size `≥ t` and witness codeword `w γ`
+  (`= u₀ + γ·u₁` on `S γ`, not pair-joint on `S γ`), in the regime `3(n−t) < d`,
+  satisfies `|G| ≤ 2(n−t)`.
 
-Since `n − t ≈ δn` (the witness miss budget) and the RS minimum distance is `d = n − k + 1`, this
-gives `ε_mca ≤ 2δn/|F|` below the unique-decoding radius via
+Since `n − t ≈ δn` (the witness miss budget) and the RS minimum distance is
+`d = n − k + 1`, this gives `ε_mca ≤ 2δn/|F|` below the unique-decoding radius via
 `ProximityGap.epsMCA_le_of_badCount_le`. The proof combines two engines:
 
-* `badGamma_affine_card_le` — bad scalars on the affine error line `e₀ + γ·e₁` are pinned to the
-  support of `e₁` (`#bad ≤ weight(e₁)`).
-* the line dichotomy — two distinct bad scalars produce nearby codewords `c₀, c₁` agreeing with
-  `u₀, u₁` on the witness overlap; minimum distance collapses every bad witness codeword to
-  `c₀ + γ·c₁`, so each bad `γ` makes `(u₀−c₀) + γ(u₁−c₁)` vanish on its witness set, with `e₁`
-  supported on the `≤ 2(n−t)` coordinates off the overlap.
+* `badGamma_affine_card_le` — bad scalars on the affine error line `e₀ + γ·e₁` are
+  pinned to the support of `e₁` (`#bad ≤ weight(e₁)`).
+* the line dichotomy — two distinct bad scalars produce nearby codewords `c₀, c₁`
+  agreeing with `u₀, u₁` on the witness overlap; minimum distance collapses every bad
+  witness codeword to `c₀ + γ·c₁`, so each bad `γ` makes
+  `(u₀−c₀) + γ(u₁−c₁)` vanish on its witness set, with `e₁` supported on the
+  `≤ 2(n−t)` coordinates off the overlap.
 
 `pairJoint` here is the local copy of `ProximityGap.pairJointAgreesOn`; wiring this to `mcaEvent`
 (extracting the witness data + the RS minimum distance) is the remaining plumbing step toward
@@ -38,7 +40,8 @@ tightening the positive-side lower witness past `δ = 0`.
 All results are hole-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
 ## References
-- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026. #232.
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
+  2026. #232.
 - [ACFY25] WHIR; [BCIKS20] Proximity gaps for Reed–Solomon codes.
 -/
 
@@ -46,30 +49,36 @@ namespace ProximityGap.UDR
 
 open Finset
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι] [Nonempty ι]
-variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+variable {ι : Type*} [Fintype ι] [Nonempty ι]
+variable {F : Type*} [Field F] [DecidableEq F]
 
 /-- Pair-joint agreement on a coordinate set (local copy of `ProximityGap.pairJointAgreesOn`). -/
 def pairJoint (C : Submodule F (ι → F)) (S : Finset ι) (u₀ u₁ : ι → F) : Prop :=
   ∃ v₀ ∈ C, ∃ v₁ ∈ C, ∀ i ∈ S, v₀ i = u₀ i ∧ v₁ i = u₁ i
 
-theorem badGamma_le (e₀ e₁ : ι → F) :
-    (univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0)).card
-      ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := by
+theorem badGamma_le (G : Finset F) (e₀ e₁ : ι → F)
+    (hG : ∀ γ ∈ G, ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0) :
+    G.card ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := by
   classical
   apply Finset.card_le_card_of_injOn
-    (fun γ => if h : ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0 then h.choose else Classical.arbitrary ι)
+    (fun γ =>
+      if h : ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0 then h.choose
+      else Classical.arbitrary ι)
   · intro γ hγ
-    simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hγ
-    simp only [dif_pos hγ, coe_filter, mem_univ, true_and, Set.mem_setOf_eq]
-    exact hγ.choose_spec.1
+    have hγbad := hG γ hγ
+    simp only [dif_pos hγbad, coe_filter, mem_univ, true_and, Set.mem_setOf_eq]
+    exact hγbad.choose_spec.1
   · intro γ₁ hγ₁ γ₂ hγ₂ heq
-    simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hγ₁ hγ₂
-    simp only [dif_pos hγ₁, dif_pos hγ₂] at heq
-    have h1 := hγ₁.choose_spec; have h2 := hγ₂.choose_spec
+    have hγ₁bad := hG γ₁ hγ₁
+    have hγ₂bad := hG γ₂ hγ₂
+    simp only [dif_pos hγ₁bad, dif_pos hγ₂bad] at heq
+    have h1 := hγ₁bad.choose_spec
+    have h2 := hγ₂bad.choose_spec
     rw [← heq] at h2
     exact mul_right_cancel₀ h1.1
-      (by linear_combination h1.2 - h2.2 : γ₁ * e₁ hγ₁.choose = γ₂ * e₁ hγ₁.choose)
+      (by
+        linear_combination h1.2 - h2.2 :
+          γ₁ * e₁ hγ₁bad.choose = γ₂ * e₁ hγ₁bad.choose)
 
 theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t : ℕ)
     (htn : t < Fintype.card ι)
@@ -105,7 +114,8 @@ theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t
       have ea := hwS γa haG i hmem.1
       simp only [hc₀def, Pi.sub_apply, Pi.smul_apply, hci, ea, smul_eq_mul]; ring
     have hTcard : 2 * t ≤ Fintype.card ι + T.card := by
-      have hun : (S γa ∪ S γb).card ≤ Fintype.card ι := by simpa using card_le_univ (S γa ∪ S γb)
+      have hun : (S γa ∪ S γb).card ≤ Fintype.card ι := by
+        simpa using card_le_univ (S γa ∪ S γb)
       have hui : (S γa ∪ S γb).card + T.card = (S γa).card + (S γb).card :=
         card_union_add_card_inter (S γa) (S γb)
       have ha := hSt γa haG; have hb := hSt γb hbG
@@ -121,12 +131,12 @@ theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t
       calc (univ.filter (fun i => e₁ i ≠ 0)).card ≤ Tᶜ.card := card_le_card hsub
         _ = Fintype.card ι - T.card := card_compl T
         _ ≤ 2 * (Fintype.card ι - t) := by omega
-    have hGsub : G ⊆ univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0) := by
+    have hGbad : ∀ γ ∈ G, ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0 := by
       intro γ hγ
-      simp only [mem_filter, mem_univ, true_and]
       have hcollapse : w γ = c₀ + γ • c₁ := by
         apply hmd _ (hwC γ hγ) _ (C.add_mem hc₀C (C.smul_mem _ hc₁C))
-        have hsub2 : (univ.filter (fun i => w γ i ≠ (c₀ + γ • c₁) i)) ⊆ (T ∩ S γ)ᶜ := by
+        have hsub2 :
+            (univ.filter (fun i => w γ i ≠ (c₀ + γ • c₁) i)) ⊆ (T ∩ S γ)ᶜ := by
           intro i hi; simp only [mem_filter, mem_univ, true_and] at hi
           simp only [mem_compl, mem_inter, not_and]; intro hiT hiS
           apply hi
@@ -136,7 +146,8 @@ theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t
         have hcardle : (univ.filter (fun i => w γ i ≠ (c₀ + γ • c₁) i)).card < d := by
           have hle := card_le_card hsub2
           rw [card_compl] at hle
-          have hun : (T ∪ S γ).card ≤ Fintype.card ι := by simpa using card_le_univ (T ∪ S γ)
+          have hun : (T ∪ S γ).card ≤ Fintype.card ι := by
+            simpa using card_le_univ (T ∪ S γ)
           have hui : (T ∪ S γ).card + (T ∩ S γ).card = T.card + (S γ).card :=
             card_union_add_card_inter T (S γ)
           have hsg := hSt γ hγ
@@ -144,7 +155,7 @@ theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t
         exact hcardle
       have hnpj := hno γ hγ
       have hexi : ∃ i ∈ S γ, ¬ (c₀ i = u₀ i ∧ c₁ i = u₁ i) := by
-        by_contra hcon; push_neg at hcon
+        by_contra hcon; push Not at hcon
         exact hnpj ⟨c₀, hc₀C, c₁, hc₁C, fun i hi => hcon i hi⟩
       obtain ⟨i, hiS, hidis⟩ := hexi
       have hci := congrFun hcollapse i
@@ -165,10 +176,9 @@ theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t
           exact (sub_eq_zero.mp hz).symm
       exact ⟨i, he₁i, haff⟩
     calc G.card
-        ≤ (univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0)).card := card_le_card hGsub
-      _ ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := badGamma_le e₀ e₁
+        ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := badGamma_le G e₀ e₁ hGbad
       _ ≤ 2 * (Fintype.card ι - t) := hsupp
-  · push_neg at hG
+  · push Not at hG
     have h1 : G.card ≤ 1 := Finset.card_le_one.mpr (fun a ha b hb => hG a ha b hb)
     omega
 
