@@ -121,7 +121,20 @@ theorem append_perfectCompleteness_message
       OptionT.mk, support_map, Set.mem_image, Option.some.injEq, bind_pure_comp,
       exists_eq_right] at hP₁
     rw [OracleComp.support_liftComp] at hP₁
-    trace_state
+    simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+      OptionT.mk, bind_pure_comp, support_map, Set.mem_image, Option.some.injEq,
+      Prod.mk.injEq, Prod.exists, exists_prop, exists_eq_right] at hP₂
+    have hP₂f : (fulltr, s₃', w₃') ∈ support
+        ((fun a : pSpec₂.FullTranscript × Stmt₃ × Wit₃ => (tr₁ ++ₜ a.1, a.2)) <$>
+          ((Prover.run s₂ w₂ R₂.prover).liftComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))) := hP₂
+    rw [support_map, OracleComp.support_liftComp] at hP₂f
+    obtain ⟨⟨tr₂, s₃'', w₃''⟩, hP₂core, heq⟩ := hP₂f
+    simp only [Prod.mk.injEq] at heq
+    obtain ⟨hfull, rfl, rfl⟩ := heq
+    subst hfull
+    -- Cores extracted: hP₁ : (tr₁,s₂,w₂) ∈ support (P₁.run), hP₂core : (tr₂,s₃'',w₃'') ∈
+    -- support (P₂.run s₂ w₂); hV : the appended verifier on tr₁ ++ₜ tr₂. Remaining: decompose hV
+    -- into V₁/V₂ outputs, then feed h₁ (⇒ s₂ = V₁-out ∧ ∈ rel₂) and h₂ (⇒ goal).
     sorry
 
 end Reduction
