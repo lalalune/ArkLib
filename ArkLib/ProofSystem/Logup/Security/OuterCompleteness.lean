@@ -2,6 +2,7 @@ import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.OracleReduction.Completeness
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.Logup.Security.OuterRun
+import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
 
 open scoped NNReal ENNReal
 open OracleComp ProtocolSpec
@@ -541,6 +542,32 @@ theorem optionT_lift_bind_run {ι' : Type} {spec : OracleSpec ι'} {α β : Type
   rw [optionT_run_bind, optionT_run_lift, ← bind_pure_comp, bind_assoc]
   simp only [pure_bind]
 
+/-- **Outer verifier rejection bound over the protocol's own challenge measure.**
+
+`probEvent_outerVerify_reject_le` bounds the rejection probability when `x` is drawn from
+`uniformSample F`.  The marginal produced by `ChallengeCoherence.probEvent_run'_…_getChallenge_bind`
+instead measures against `$ᵗ ((outerPSpec …).Challenge ⟨1, rfl⟩)` — uniform sampling over the
+protocol's *own* challenge type at round `⟨1⟩`.  Those two measures coincide: `Challenge ⟨1, rfl⟩` is
+definitionally `F`, and `probEvent_uniformSample` evaluates either measure to the same
+`Fintype.card`-based ratio, which is independent of the (non-defeq) `SampleableType` instance carried
+along.  This is the bridge that lets the per-state pole obligation cite the verifier-side bound. -/
+theorem probEvent_outerVerify_reject_challenge_le (oStmt : ∀ i, OStmtIn F n M i)
+    [SampleableType ((outerPSpec F n params).Challenge ⟨1, rfl⟩)] :
+    Pr[(fun c => ¬ outerVerifyAccepts F n M oStmt c) |
+        ($ᵗ ((outerPSpec F n params).Challenge ⟨1, rfl⟩))]
+      ≤ (logupCompletenessError F n : ℝ≥0∞) := by
+  classical
+  haveI hfin : Fintype ((outerPSpec F n params).Challenge ⟨1, rfl⟩) :=
+    (inferInstance : Fintype F)
+  have hTy : (outerPSpec F n params).Challenge ⟨1, rfl⟩ = F := rfl
+  refine le_trans (le_of_eq ?_) (probEvent_outerVerify_reject_le (oStmt := oStmt))
+  rw [probEvent_uniformSample, probEvent_uniformSample]
+  convert rfl using 2
+  · rw [← Fintype.card_subtype, ← Fintype.card_subtype]
+    exact congrArg Nat.cast
+      (Fintype.card_congr (Equiv.subtypeEquiv (Equiv.cast hTy.symm) (fun _ => Iff.rfl)))
+  · exact congrArg Nat.cast (Fintype.card_congr (Equiv.cast hTy.symm))
+
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
     OuterCompletenessRunResidual oSpec F n M params init impl ↔
@@ -565,3 +592,4 @@ end Logup
 #print axioms Logup.outerProver_run_closed_form
 #print axioms Logup.outerReduction_run_closed_form
 #print axioms Logup.getChallenge_simulateQ_eq
+#print axioms Logup.probEvent_outerVerify_reject_challenge_le
