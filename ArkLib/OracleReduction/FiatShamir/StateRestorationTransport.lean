@@ -1812,7 +1812,23 @@ opaque fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (init := srInit)
     (p := fun o => o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut)
     (h := hCollapse)
-  refine le_trans ?_ ?_
+  refine le_trans (b := probEvent
+      (do
+        let s ← srInit
+        (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
+            QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
+          (simulateQ
+            (fiatShamirCoupledQueryImpl
+              (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
+            (do
+              let d ← fiatShamirAdversaryExecution prover V stmtIn witIn
+              let extractedWitIn ←
+                liftM do
+                  let transcript ← OptionT.mk (some <$>
+                    Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1 0))
+                  liftM (srExtractor stmtIn d.1.2.2 transcript default default)
+              pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run).run s)
+      (fun o => o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut)) ?_ ?_
   · convert (le_of_eq hProbCollapse) using 1
     rfl
   · refine le_trans ?_ h
