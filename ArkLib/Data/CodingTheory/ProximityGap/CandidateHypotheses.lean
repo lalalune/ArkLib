@@ -3,6 +3,8 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
+open Classical
+
 /-!
 # Interdisciplinary Candidate Hypotheses for the Proximity Gap
 

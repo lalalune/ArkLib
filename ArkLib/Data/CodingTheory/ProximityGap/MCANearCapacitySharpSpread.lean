@@ -64,7 +64,7 @@ theorem waterfill_sum (m s : ℕ) :
   | zero => simp
   | succ K ih =>
     rw [Finset.sum_range_succ, ih]
-    rcases Nat.le_or_lt s (K * m) with hsKm | hsKm
+    rcases Nat.lt_or_ge s (K * m) with hsKm | hsKm
     · have h1 : min s (K * m) = s := by omega
       have h2 : s - K * m = 0 := by omega
       have h3 : min s ((K + 1) * m) = s := by
@@ -72,19 +72,19 @@ theorem waterfill_sum (m s : ℕ) :
         omega
       rw [h1, h2, h3]; simp
     · have h1 : min s (K * m) = K * m := by omega
-      rcases Nat.le_or_lt ((K + 1) * m) s with hs1 | hs1
-      · have hge : m ≤ s - K * m := by
-          have : (K + 1) * m = K * m + m := by ring
-          omega
-        have h2 : min m (max 0 (s - K * m)) = m := by omega
-        have h3 : min s ((K + 1) * m) = (K + 1) * m := by omega
-        rw [h1, h2, h3]; ring
+      rcases Nat.lt_or_ge s ((K + 1) * m) with hs1 | hs1
       · have hlt : s - K * m < m := by
           have : (K + 1) * m = K * m + m := by ring
           omega
         have h2 : min m (max 0 (s - K * m)) = s - K * m := by omega
         have h3 : min s ((K + 1) * m) = s := by omega
         rw [h1, h2, h3]; omega
+      · have hge : m ≤ s - K * m := by
+          have : (K + 1) * m = K * m + m := by ring
+          omega
+        have h2 : min m (max 0 (s - K * m)) = m := by omega
+        have h3 : min s ((K + 1) * m) = (K + 1) * m := by omega
+        rw [h1, h2, h3]; ring
 
 /-! ## The gap profile and window for a given offset -/
 
@@ -107,11 +107,12 @@ theorem gapProfile_sum (m k s : ℕ) (hs : s ≤ (k + 1) * m) :
     apply Finset.sum_congr rfl
     intro j hj
     rw [Finset.mem_range] at hj
-    congr 2
-    omega
-  rw [gap]
-  simp only
-  rw [hreflect, waterfill_sum m s (k + 1)]
+    have hkj : k - j = k + 1 - 1 - j := by omega
+    rw [hkj]
+  have hunfold : (∑ j ∈ Finset.range (k + 1), gap m k s j)
+      = ∑ j ∈ Finset.range (k + 1), min m (max 0 (s - (k - j) * m)) := by
+    simp only [gap]
+  rw [hunfold, hreflect, waterfill_sum m s (k + 1)]
   omega
 
 /-- The gap profile is weakly increasing in `j`. -/
@@ -126,5 +127,63 @@ theorem aNode_strictMono (m k s : ℕ) {j j' : ℕ} (hj : j < j') (hj'k : j' ≤
     aNode m k s j < aNode m k s j' := by
   have hmono : gap m k s j ≤ gap m k s j' := gap_mono m k s (by omega) hj'k
   rw [aNode, aNode]; omega
+
+/-- Every window node is `< n` (the top gap is `≤ m = n-1-k`, the top index is `k`). -/
+theorem aNode_lt (k s : ℕ) {j : ℕ} (hj : j ≤ k) (hkn : k + 1 ≤ n) :
+    aNode (n - 1 - k) k s j < n := by
+  have hgle : gap (n - 1 - k) k s j ≤ n - 1 - k := min_le_left _ _
+  rw [aNode]; omega
+
+/-! ## The window for an offset and its `ZMod p` sum -/
+
+/-- The `(k+1)`-node window realizing offset `s`: nodes `aⱼ = cⱼ + j`, `j = 0,…,k`. -/
+def Wsharp (n k s : ℕ) [NeZero n] : Finset (Fin n) :=
+  (Finset.range (k + 1)).image (fun j => node (aNode (n - 1 - k) k s j))
+
+/-- The window node-index map is injective on `{0,…,k}` (strict monotonicity + nodes `< n`). -/
+theorem aNode_node_injOn (k s : ℕ) (hkn : k + 1 ≤ n) :
+    Set.InjOn (fun j => node (aNode (n - 1 - k) k s j) : ℕ → Fin n)
+      (Finset.range (k + 1) : Set ℕ) := by
+  intro a ha b hb hab
+  simp only [Finset.coe_range, Set.mem_Iio] at ha hb
+  simp only at hab
+  have hva : ((node (aNode (n - 1 - k) k s a) : Fin n) : ℕ) = aNode (n - 1 - k) k s a :=
+    node_val_of_lt (aNode_lt k s (by omega) hkn)
+  have hvb : ((node (aNode (n - 1 - k) k s b) : Fin n) : ℕ) = aNode (n - 1 - k) k s b :=
+    node_val_of_lt (aNode_lt k s (by omega) hkn)
+  have hval : aNode (n - 1 - k) k s a = aNode (n - 1 - k) k s b := by rw [← hva, ← hvb, hab]
+  rcases Nat.lt_trichotomy a b with h | h | h
+  · exact absurd hval (Nat.ne_of_lt (aNode_strictMono _ k s h (by omega)))
+  · exact h
+  · exact absurd hval.symm (Nat.ne_of_lt (aNode_strictMono _ k s h (by omega)))
+
+/-- The window has exactly `k+1` nodes. -/
+theorem Wsharp_card (k s : ℕ) (hkn : k + 1 ≤ n) : (Wsharp n k s).card = k + 1 := by
+  rw [Wsharp, Finset.card_image_of_injOn (aNode_node_injOn k s hkn), Finset.card_range]
+
+/-- The integer node-sum of the window is `s + T`, where `T = ∑_{j≤k} j`. -/
+theorem Wsharp_natsum (k s : ℕ) (hkn : k + 1 ≤ n) (hs : s ≤ (k + 1) * (n - 1 - k)) :
+    (∑ i ∈ Wsharp n k s, (i : ℕ)) = s + ∑ j ∈ Finset.range (k + 1), j := by
+  rw [Wsharp, Finset.sum_image (aNode_node_injOn k s hkn)]
+  have hnode : ∀ j ∈ Finset.range (k + 1),
+      ((node (aNode (n - 1 - k) k s j) : Fin n) : ℕ) = aNode (n - 1 - k) k s j := by
+    intro j hj
+    rw [Finset.mem_range] at hj
+    exact node_val_of_lt (aNode_lt k s (by omega) hkn)
+  rw [Finset.sum_congr rfl hnode]
+  simp only [aNode]
+  rw [Finset.sum_add_distrib, gapProfile_sum (n - 1 - k) k s hs]
+
+/-- The window node-sum is `< n²`, hence `< p`. -/
+theorem Wsharp_natsum_lt (hp : n * n ≤ p) (k s : ℕ) (hkn : k + 1 ≤ n) :
+    (∑ i ∈ Wsharp n k s, (i : ℕ)) < p := by
+  have hle : (∑ i ∈ Wsharp n k s, (i : ℕ)) ≤ (Wsharp n k s).card • (n - 1) :=
+    Finset.sum_le_card_nsmul _ _ _ (fun i _ => by have := i.isLt; omega)
+  rw [Wsharp_card k s hkn, smul_eq_mul] at hle
+  have hnpos : 0 < n := NeZero.pos n
+  have hstep : (k + 1) * (n - 1) < n * n :=
+    calc (k + 1) * (n - 1) ≤ n * (n - 1) := Nat.mul_le_mul_right _ (by omega)
+      _ < n * n := mul_lt_mul_of_pos_left (by omega) hnpos
+  omega
 
 end ProximityGap.MCANearCapacitySharpSpread
