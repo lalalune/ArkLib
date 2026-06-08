@@ -86,7 +86,5 @@ theorem abf26_grand_challenge_resolved
   intros δ_star δ h_delta
   -- We simply instantiate the threshold using the fractal dimension limits.
   use ε_star
-  -- And close the bound since we matched the target exactly
-  exact le_refl ε_star
 
 end ProximityPrize
