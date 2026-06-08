@@ -1,0 +1,157 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpread
+
+/-!
+# Codeword-level witness pinning: the honest list-decoding ⇒ MCA reduction (ABF26 #232)
+
+`MCAEndpointUpper.lean` bounds `ε_mca ≤ 2^n / |F|` by showing the witness **set** map `γ ↦ S_γ`
+is injective on bad scalars (each set pins at most one bad `γ`), so the bad-scalar count is at
+most the number of subsets `2^n`. `MCAWitnessSpread.lean` records the dual lower-bound
+obstruction: distinct bad scalars require distinct witness sets.
+
+This file sharpens the count from the witness *set* level to the witness *codeword* level, in the
+regime `δ < 1/2`. The payoff is the **honest** form of ABF26 direction §2 (list-decoding ⇒ MCA):
+below `δ = 1/2`, the MCA bad-scalar count of a full-support line is at most the number of
+codewords agreeing with some line point on a size-`≥(1-δ)n` set — i.e. the *line list size*.
+This is *not* the refuted black-box double-coverage reduction (`LineDecodingCounting.lean`); it
+uses a disjointness pigeonhole that is unconditionally valid for `δ < 1/2`.
+
+## Main results
+
+* `unique_bad_gamma_common_codeword` — **codeword pinning.** For any `u₁` of full support and any
+  codeword `w`, if `w` agrees with `u₀ + γ₁·u₁` on `S₁` and with `u₀ + γ₂·u₁` on `S₂` where
+  `|ι| < |S₁| + |S₂|`, then `γ₁ = γ₂`. (The hypothesis `|ι| < |S₁| + |S₂|` forces `S₁ ∩ S₂ ≠ ∅`;
+  on the overlap, `(γ₁ - γ₂)·u₁ = 0` with `u₁` of full support forces `γ₁ = γ₂`.)
+* `card_sum_gt_of_lt_half` — the `δ < 1/2` driver: two witness sets each of size `≥ (1-δ)n`
+  satisfy `|ι| < |S₁| + |S₂|`.
+* `badCount_le_witnessCodeword_card` — **the reduction.** For `δ < 1/2` and a full-support line,
+  the bad-scalar count is at most the number of distinct line-witnessing codewords (the line list
+  size). Plug into `ProximityGap.epsMCA_le_of_badCount_le` to obtain an `ε_mca` bound from any
+  uniform list-size bound.
+
+## Honest scope
+
+The full-support hypothesis on `u₁` is genuine: for a line whose second word has zeros, a single
+codeword can witness several bad scalars (it agrees with the whole line on the zero coordinates),
+so the codeword-level pinning degrades. Lifting the per-stack bound to a clean `ε_mca` bound over
+*all* stacks therefore still requires handling the non-full-support case. And the line list size
+itself, beyond the Johnson radius for explicit smooth-domain RS, is the open prize core — this
+file reduces MCA to it, it does not bound it.
+
+All results are hole-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
+
+## References
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026.
+  Tracking issue #232; direction §2 (list-decoding ⇒ MCA).
+-/
+
+set_option linter.unusedSectionVars false
+
+open scoped NNReal ENNReal BigOperators
+open ProximityGap Code
+
+namespace ProximityGap.MCAWitnessSpreadCodeword
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+
+/-- **Codeword pinning (full-support line, overlapping witnesses).** If a single codeword `w`
+agrees with the line `u₀ + γ₁·u₁` on `S₁` and with `u₀ + γ₂·u₁` on `S₂`, and the two witness sets
+are jointly large enough to overlap (`|ι| < |S₁| + |S₂|`), then for a full-support `u₁` the two
+scalars coincide. -/
+theorem unique_bad_gamma_common_codeword
+    (u₀ u₁ : ι → A) (hsupp : ∀ i, u₁ i ≠ 0)
+    {γ₁ γ₂ : F} {w : ι → A} {S₁ S₂ : Finset ι}
+    (hcard : Fintype.card ι < S₁.card + S₂.card)
+    (h₁ : ∀ i ∈ S₁, w i = u₀ i + γ₁ • u₁ i)
+    (h₂ : ∀ i ∈ S₂, w i = u₀ i + γ₂ • u₁ i) :
+    γ₁ = γ₂ := by
+  by_contra hne
+  have hd : γ₁ - γ₂ ≠ 0 := sub_ne_zero.mpr hne
+  have hinter : (S₁ ∩ S₂).Nonempty := by
+    rw [← Finset.card_pos]
+    have hun : (S₁ ∪ S₂).card ≤ Fintype.card ι := by simpa using Finset.card_le_univ (S₁ ∪ S₂)
+    have hui : (S₁ ∪ S₂).card + (S₁ ∩ S₂).card = S₁.card + S₂.card :=
+      Finset.card_union_add_card_inter S₁ S₂
+    omega
+  obtain ⟨i, hi⟩ := hinter
+  rw [Finset.mem_inter] at hi
+  have e : u₀ i + γ₁ • u₁ i = u₀ i + γ₂ • u₁ i := by rw [← h₁ i hi.1, ← h₂ i hi.2]
+  have hz : (γ₁ - γ₂) • u₁ i = 0 := by
+    have h3 : γ₁ • u₁ i = γ₂ • u₁ i := add_left_cancel e
+    rw [sub_smul, h3, sub_self]
+  exact hsupp i (by rw [← inv_smul_smul₀ hd (u₁ i), hz, smul_zero])
+
+/-- **The `δ < 1/2` overlap driver.** Two witness sets each of relative size `≥ 1 - δ` jointly
+exceed `|ι|` when `δ < 1/2`, so they must overlap. -/
+theorem card_sum_gt_of_lt_half (δ : ℝ≥0) (hδ : δ < 1/2) {S₁ S₂ : Finset ι}
+    (h₁ : (1 - δ) * Fintype.card ι ≤ (S₁.card : ℝ≥0))
+    (h₂ : (1 - δ) * Fintype.card ι ≤ (S₂.card : ℝ≥0)) :
+    Fintype.card ι < S₁.card + S₂.card := by
+  have hn : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos (α := ι)
+  have hδ1 : δ ≤ 1 := le_of_lt (lt_of_lt_of_le hδ (by norm_num))
+  have hδ' : (δ : ℝ) < 1/2 := by exact_mod_cast hδ
+  have c1 : (1 - (δ : ℝ)) * Fintype.card ι ≤ (S₁.card : ℝ) := by
+    have h := NNReal.coe_le_coe.mpr h₁
+    rwa [NNReal.coe_mul, NNReal.coe_sub hδ1, NNReal.coe_natCast, NNReal.coe_natCast,
+      NNReal.coe_one] at h
+  have c2 : (1 - (δ : ℝ)) * Fintype.card ι ≤ (S₂.card : ℝ) := by
+    have h := NNReal.coe_le_coe.mpr h₂
+    rwa [NNReal.coe_mul, NNReal.coe_sub hδ1, NNReal.coe_natCast, NNReal.coe_natCast,
+      NNReal.coe_one] at h
+  have key : (Fintype.card ι : ℝ) < (S₁.card : ℝ) + (S₂.card : ℝ) := by
+    nlinarith [c1, c2, hn, hδ', mul_pos hn (by linarith : (0:ℝ) < 1 - 2 * δ)]
+  exact_mod_cast key
+
+open Classical in
+/-- **Bad-scalar count ≤ line list size (`δ < 1/2`, full-support line).** The honest list-decoding
+⇒ MCA reduction: below `δ = 1/2`, distinct bad scalars are witnessed by distinct codewords, so the
+bad-scalar count of the stack `u` is at most the number of codewords agreeing with some line point
+`u 0 + γ·(u 1)` on a size-`≥(1-δ)n` set — the line list size. Combine with
+`ProximityGap.epsMCA_le_of_badCount_le` to turn a uniform list-size bound into an `ε_mca` bound. -/
+theorem badCount_le_witnessCodeword_card
+    (C : Set (ι → A)) (δ : ℝ≥0) (hδ : δ < 1/2) (u : WordStack A (Fin 2) ι)
+    (hsupp : ∀ i, u 1 i ≠ 0) :
+    (Finset.univ.filter (fun γ : F => mcaEvent C δ (u 0) (u 1) γ)).card
+      ≤ (Finset.univ.filter (fun w : ι → A => w ∈ C ∧ ∃ S : Finset ι,
+          (1 - δ) * Fintype.card ι ≤ (S.card : ℝ≥0) ∧
+          ∃ γ : F, ∀ i ∈ S, w i = u 0 i + γ • u 1 i)).card := by
+  apply Finset.card_le_card_of_injOn
+    (f := fun γ => if hγ : mcaEvent C δ (u 0) (u 1) γ
+      then (hγ.choose_spec.2.1).choose else 0)
+  · intro γ hγf
+    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq] at hγf
+    have hγ : mcaEvent C δ (u 0) (u 1) γ := hγf
+    have hspec := hγ.choose_spec
+    have hwspec := hspec.2.1.choose_spec
+    simp only [dif_pos hγ, Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
+    exact ⟨hwspec.1, hγ.choose, hspec.1, γ, fun i hi => hwspec.2 i hi⟩
+  · intro γ₁ hγ₁f γ₂ hγ₂f hfeq
+    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq] at hγ₁f hγ₂f
+    have hγ₁ : mcaEvent C δ (u 0) (u 1) γ₁ := hγ₁f
+    have hγ₂ : mcaEvent C δ (u 0) (u 1) γ₂ := hγ₂f
+    simp only [dif_pos hγ₁, dif_pos hγ₂] at hfeq
+    set w := (hγ₁.choose_spec.2.1).choose with hw
+    have h1spec := hγ₁.choose_spec
+    have h2spec := hγ₂.choose_spec
+    have hw1 := h1spec.2.1.choose_spec
+    have hw2 := h2spec.2.1.choose_spec
+    have hcard := card_sum_gt_of_lt_half δ hδ h1spec.1 h2spec.1
+    refine unique_bad_gamma_common_codeword (u 0) (u 1) hsupp hcard (w := w)
+      (S₁ := hγ₁.choose) (S₂ := hγ₂.choose) ?_ ?_
+    · intro i hi; exact hw1.2 i hi
+    · intro i hi
+      have hi2 := hw2.2 i hi
+      rw [← hfeq] at hi2
+      exact hi2
+
+#print axioms unique_bad_gamma_common_codeword
+#print axioms card_sum_gt_of_lt_half
+#print axioms badCount_le_witnessCodeword_card
+
+end ProximityGap.MCAWitnessSpreadCodeword

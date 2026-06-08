@@ -449,6 +449,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpread
+import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpreadCodeword
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpreadExample
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeCharacterization
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeExact
