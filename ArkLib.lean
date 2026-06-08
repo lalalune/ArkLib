@@ -762,6 +762,7 @@ import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
 import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
+import ArkLib.ProofSystem.Spartan.SecondSumcheckSimOStmt
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
 import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
 import ArkLib.ProofSystem.Stir.Combine
