@@ -188,8 +188,8 @@ theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [D
     have hterm : ∀ i j, (S i ∩ S j).card ≤ (if i = j then Fintype.card ι else b) := by
       intro i j
       by_cases h : i = j
-      · rw [if_pos h, h, Finset.inter_self]
-        exact Finset.card_le_univ (S j)
+      · rw [if_pos h]
+        exact (Finset.card_le_card (Finset.subset_univ (S i ∩ S j))).trans_eq Finset.card_univ
       · simp only [h, if_false]; exact hpair i j h
     have hinner : ∀ i, (∑ j, (if i = j then Fintype.card ι else b))
         ≤ Fintype.card ι + Fintype.card κ * b := by
