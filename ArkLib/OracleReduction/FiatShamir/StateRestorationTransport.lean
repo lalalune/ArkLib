@@ -1392,6 +1392,51 @@ local instance fiatShamirProverOnlyCanonicalKS : ProtocolSpec.ProverOnly
     (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) where
   prover_first' := by simp
 
+/-- Generic bridge: a `Reduction.run`-bind equals the corresponding `runWithLog`-bind whose
+continuation only reads the run result (the query logs are discarded).  This is the no-HOU
+direction (rewrite `run` to `Prod.fst <$> runWithLog`), and it is the canonical way to discharge
+the knowledge-soundness game's `runWithLog` exec when the straightline extractor ignores its query
+logs (see `fiatShamirStraightlineExtractorOfStateRestoration_log_irrel`). -/
+theorem bind_run_eq_bind_runWithLog_fst
+    {γ : Type} (red : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn)
+    (F : ((pSpec.FullTranscript × StmtOut × WitOut) × StmtOut) →
+         OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) γ) :
+    (Reduction.run stmt wit red >>= F) =
+      (Reduction.runWithLog stmt wit red >>= fun d => F d.1) := by
+  rw [← Reduction.runWithLog_discard_logs_eq_run (reduction := red)]
+  rw [map_eq_pure_bind, bind_assoc]
+  simp only [pure_bind]
+
+/-- The canonical Fiat-Shamir straightline extractor induced by a state-restoration extractor does
+not depend on the query-log arguments supplied by the knowledge-soundness game (it reconstructs the
+shared transcript from the proof messages and calls the SR extractor with default logs). -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_log_irrel
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (pLog vLog pLog' vLog' :
+      QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog vLog =
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog' vLog' :=
+  rfl
+
+/-- `simp`-oriented form of `fiatShamirStraightlineExtractorOfStateRestoration_log_irrel`:
+normalize the query-log arguments to `default`.  Unlike `rw`, `simp only` reliably matches the
+extractor application under the knowledge-soundness game's `liftM`. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_log_irrel_simp
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (pLog vLog : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog vLog =
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof default default :=
+  rfl
+
 /-- Knowledge-soundness analogue of `fiatShamirAdversary_runCollapse`: collapse the
 `Reduction.runWithLog` of the transformed one-message reduction to an explicit adversary execution
 over `oSpec + fsChallengeOracle`. -/
