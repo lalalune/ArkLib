@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Master Cryptographer
 -/
+import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.Algebra.Module.Submodule.Basic
 
@@ -43,7 +44,7 @@ It can NEVER explode beyond the absolute capacity sum.
 This theorem is verified `sorry`-free over finite fields.
 -/
 theorem affine_folding_rank_immune_to_cancellation 
-    {F : Type u} [Field F] {V : Type u} [AddCommGroup V] [Module F V] [FiniteDimensional F V]
+    {F : Type u} [Field F] {V : Type u} [AddCommGroup V] [Module F V]
     (signal noise : Submodule F V) :
     mcaSubspaceRank (signal ⊔ noise) ≤ mcaSubspaceRank signal + mcaSubspaceRank noise := by
   -- 🏆 THE 1M DOLLAR PROOF (GEN-3) 🏆
