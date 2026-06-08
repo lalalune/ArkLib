@@ -41,6 +41,8 @@ Contents:
   (agreement ⇒ the codeword is a root), `natDegree_eval_le` (the explicit GS degree budget), and
   `sudan_codeword_list_bound` (the quantitative Sudan list bound `|L| ≤ deg_Y(H)` for codewords
   agreeing beyond `deg_X(H) + (k-1)·deg_Y(H)`) — the full combinatorial *and* quantitative GS core.
+* Quantitative GS parameters — `sudan_params_feasible` (the pure-arithmetic feasibility of the GS
+  parameter program: a `d_X` exists with interpolation space `> n` and budget `< t`).
 * Refutations — `refute_naive_matrix_rank_bound`, `refute_naive_alg_independence_bound`.
 -/
 
@@ -261,6 +263,24 @@ theorem sudan_codeword_list_bound [DecidableEq F]
     _ ≤ H.natDegree := le_trans (Multiset.toFinset_card_le _) (Polynomial.card_roots' _)
 
 end ListDecoding
+
+/-! ## Quantitative GS parameters -/
+
+/-- **Sudan parameter feasibility (pure arithmetic).** Given target agreement `t`, code dimension
+`k`, `n` evaluation points, and a chosen `Y`-degree `d_Y` with `(k-1)·d_Y < t`: if
+`n < (t - (k-1)·d_Y)·(d_Y + 1)`, then there is an `X`-degree `d_X` for which (i) the bivariate
+interpolation space `{deg_X ≤ d_X, deg_Y ≤ d_Y}` has dimension `(d_X+1)(d_Y+1) > n` (so a nonzero
+interpolant through the `n` points exists, by `interpolation_kernel_nontrivial`), and (ii) the GS
+degree budget `d_X + (k-1)·d_Y < t` holds (so `sudan_codeword_list_bound` then caps the list at
+`d_Y`). Optimizing `d_Y` in this feasibility region yields the Sudan decoding radius. -/
+theorem sudan_params_feasible (n k t dY : ℕ)
+    (hbudget : (k - 1) * dY < t)
+    (hfeas : n < (t - (k - 1) * dY) * (dY + 1)) :
+    ∃ dX : ℕ, n < (dX + 1) * (dY + 1) ∧ dX + (k - 1) * dY < t := by
+  refine ⟨t - 1 - (k - 1) * dY, ?_, ?_⟩
+  · have hrw : t - 1 - (k - 1) * dY + 1 = t - (k - 1) * dY := by omega
+    rw [hrw]; exact hfeas
+  · omega
 
 /-! ## Refutations of naive list-size bounds -/
 
