@@ -2,7 +2,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 
 open Classical
-open scoped BigOperators
+open scoped BigOperators NNReal
 
 namespace ArkLib.CodingTheory.Research
 
@@ -22,12 +22,12 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 object is intentionally left as future work rather than replaced by a fake witness. -/
 def HasBoundedListSize (F : Type) [Field F] [Fintype F]
     (C : Set (F → F)) (m : ℕ) (δ : ℝ≥0) (ε : ℝ≥0) : Prop :=
-  ∃ listBound : ℕ, (listBound : ℝ≥0) ≤ ε * Fintype.card F
+  ∃ listBound : ℕ, (listBound : ℝ≥0) ≤ ε * (Fintype.card F : ℝ≥0)
 
 /-- The open bridge from list-size control to MCA control. -/
 def mca_of_bounded_list_size {F : Type} [Field F] [Fintype F]
     (C : Set (F → F)) (m : ℕ) (δ : ℝ≥0) (ε : ℝ≥0) : Prop :=
-  HasBoundedListSize F C m δ ε → ProximityGap.epsMCA C δ ≤ ε
+  HasBoundedListSize F C m δ ε → ProximityGap.epsMCA (F := F) (A := F) C δ ≤ ε
 
 /-- **OPEN CONJECTURE — Candidate 2 (list-decoding collapse).** The MCA prize-lattice resolution
 target this strategy aims to reach for a Reed–Solomon evaluation `domain`. This is the *statement*

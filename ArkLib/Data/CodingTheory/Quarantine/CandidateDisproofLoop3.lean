@@ -6,7 +6,7 @@ open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- 
+/-!
   Loop 3 Hypothesis: Interleaved Error Clustering.
   Instead of exploiting vanishing polynomials directly, we use the fact that 
   the size of the multiplicative group |L| = 2^a - 1 is often highly composite.
@@ -27,7 +27,7 @@ variable {F : Type} [Field F] [Fintype F] [CharP F 2]
 -/
 def interleaved_coset_explosion (L : Finset F) (d1 d2 : ℕ)
     (h_factor : L.card = d1 * d2) : Prop :=
-    ∃ S : Finset F[X], 
+    ∃ S : Finset (Polynomial F),
       -- FLAWED: While concentrating errors onto specific cosets leaves other cosets clean,
       -- the fundamental bound of Reed-Solomon codes is blind to topology.
       -- The maximum number of roots of Q(X, P(X)) is bounded by the *global* degree of Q.

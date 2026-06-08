@@ -57,8 +57,7 @@ theorem below_johnson_of_large_gap
   have h3 : (0 : ℝ) < 1 - δ := lt_of_le_of_lt hsqrt_nonneg h2
   -- square the strict inequality `√ρ < 1−δ` (both nonneg), then use `(√ρ)² = ρ`
   have hsq : (Real.sqrt ρ) ^ 2 < (1 - δ) ^ 2 := by
-    apply pow_lt_pow_left h2 hsqrt_nonneg
-    norm_num
+    exact pow_lt_pow_left₀ h2 hsqrt_nonneg (by norm_num)
   rwa [Real.sq_sqrt (le_of_lt hρ0)] at hsq
 
 /-- **The Johnson list budget is `q`-independent and monotone in the gap.** With `ρ < (1−δ)²`
@@ -75,7 +74,7 @@ theorem johnson_listbudget_le
     have h1 : Real.sqrt ρ < ρ + η := by linarith
     have hpos : (0:ℝ) < ρ + η := lt_of_le_of_lt hsqrt_nonneg h1
     have hsq : (Real.sqrt ρ) ^ 2 < (ρ + η) ^ 2 := by
-      apply pow_lt_pow_left h1 hsqrt_nonneg; norm_num
+      exact pow_lt_pow_left₀ h1 hsqrt_nonneg (by norm_num)
     rw [Real.sq_sqrt (le_of_lt hρ0)] at hsq
     linarith
   have hden1 : 0 < (1 - δ) ^ 2 - ρ := by
@@ -86,7 +85,7 @@ theorem johnson_listbudget_le
     have h1 : Real.sqrt ρ < ρ + η := by linarith
     linarith
   have hmono : (ρ + η) ^ 2 ≤ (1 - δ) ^ 2 := by
-    apply pow_le_pow_left hbase hδ
+    exact pow_le_pow_left₀ hbase hδ 2
   have hdenle : (ρ + η) ^ 2 - ρ ≤ (1 - δ) ^ 2 - ρ := by linarith
   exact one_div_le_one_div_of_le hden2 hdenle
 
@@ -104,7 +103,7 @@ theorem johnson_budget_qindependent_pos
   have hsqrt_nonneg : 0 ≤ Real.sqrt ρ := Real.sqrt_nonneg ρ
   have h1 : Real.sqrt ρ < ρ + η := by linarith
   have hsq : (Real.sqrt ρ) ^ 2 < (ρ + η) ^ 2 := by
-    apply pow_lt_pow_left h1 hsqrt_nonneg; norm_num
+    exact pow_lt_pow_left₀ h1 hsqrt_nonneg (by norm_num)
   rw [Real.sq_sqrt (le_of_lt hρ0)] at hsq
   have hden : 0 < (ρ + η) ^ 2 - ρ := by linarith
   exact one_div_pos.mpr hden

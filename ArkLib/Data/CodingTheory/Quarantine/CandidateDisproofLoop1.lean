@@ -6,7 +6,7 @@ open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- 
+/-!
   Loop 1 Hypothesis: The Multiplicative Trace-Projected BKR Variant.
   We attempt to project the multiplicative cyclic subgroup onto an additive basis 
   using the Absolute Field Trace Tr_{F/F_2}(x).
@@ -15,9 +15,9 @@ namespace ArkLib.CodingTheory.Research
 variable {F : Type} [Field F] [Fintype F] [CharP F 2]
 
 /-- The Absolute Trace Polynomial. -/
-def trace_poly (d : ℕ) : F[X] :=
+noncomputable def trace_poly (d : ℕ) : Polynomial F :=
   -- Tr(X) = X + X^2 + X^4 + ... + X^{2^{d-1}}
-  ∑ i in Finset.range d, Polynomial.X ^ (2 ^ i)
+  ∑ i ∈ Finset.range d, Polynomial.X ^ (2 ^ i)
 
 /--
   The Trace Subspace Hypothesis.
@@ -26,7 +26,7 @@ def trace_poly (d : ℕ) : F[X] :=
   of Tr(X) inside L.
 -/
 def trace_fiber_explosion (L : Finset F) (k : ℕ) : Prop :=
-    ∃ S : Finset F[X], 
+    ∃ S : Finset (Polynomial F),
       -- FLAWED: The trace polynomial Tr(X) evaluates to 0 on an additive subspace.
       -- BUT we are evaluating on L. The roots of Tr(X) in L are NOT closed under
       -- addition unless 0 \in L. But L is a multiplicative group, so 0 \notin L.
