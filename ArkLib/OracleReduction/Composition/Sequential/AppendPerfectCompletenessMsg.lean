@@ -69,6 +69,8 @@ theorem append_perfectCompleteness_message
     (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
     [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
     [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₁.Challenge]ₒ).Fintype] [(oSpec + [pSpec₁.Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₂.Challenge]ₒ).Fintype] [(oSpec + [pSpec₂.Challenge]ₒ).Inhabited]
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
@@ -143,13 +145,75 @@ theorem append_perfectCompleteness_message
     obtain ⟨s₂', hV₁, s₃, hV₂, hV₃⟩ := hV
     simp only [OptionT.monad_pure_eq_pure, OptionT.mem_support_OptionT_pure_run_some_iff] at hV₃
     subst hV₃
-    -- All four component outcomes extracted (oSpec / pSpecᵢ-spec cores):
-    --   hP₁ : (tr₁,s₂,w₂) ∈ support (P₁.run stmtIn witIn)
-    --   hV₁ : some s₂' ∈ support (V₁.run stmtIn tr₁)            (V₁ output statement s₂')
-    --   hP₂core : (tr₂,s₃'',w₃'') ∈ support (P₂.run s₂ w₂)
-    --   hV₂ : some x_2 ∈ support (V₂.run s₂' tr₂)               (V₂ output statement x_2)
-    -- Remaining: feed h₁ on R₁'s outcome ((tr₁,s₂,w₂),s₂') ⇒ s₂ = s₂' ∧ (s₂',w₂) ∈ rel₂;
-    -- then h₂ on R₂'s outcome ((tr₂,s₃'',w₃''),x_2) ⇒ goal.
-    sorry
+    have key₁ := hs₁ ((tr₁, s₂, w₂), s₂') (by
+      rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
+        (impl := impl.addLift challengeQueryImpl) (hImplSupp := by
+          intro β q s'
+          cases q with | mk t f =>
+          cases t with
+          | inl i => exact hImplSupp (OracleQuery.mk i f) s'
+          | inr i =>
+            simp only [QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+              QueryImpl.addLift_def, QueryImpl.add_apply_inr]
+            have hq := support_challengeQueryImpl_run_eq (q := OracleQuery.mk i f) s'
+            rw [support_liftM]
+            simpa only [ChallengeIdx, Challenge, add_apply_inr, QueryImpl.liftTarget_apply,
+              StateT.run_map, StateT.run_monadLift, monadLift_self, bind_pure_comp, Functor.map_map,
+              support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
+              support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+              liftM_map] using hq)]
+      rw [OptionT.mem_support_iff]
+      simp only [Reduction.run, liftM_bind, ChallengeIdx, Challenge, liftM_pure, bind_pure_comp,
+        liftM_OptionT_eq, Prod.mk.eta, bind_assoc, bind_map_left, OptionT.support_mk,
+        Set.mem_setOf_eq, Prod.mk.injEq, liftComp_eq_liftM, OptionT.mem_support_iff, support_bind,
+        support_map, Set.mem_iUnion, Set.mem_image, Prod.exists, exists_prop]
+      dsimp only [Functor.map, OptionT.instMonad, OptionT.mk, OptionT.run]
+      simp only [OptionT.monad_bind_eq_bind, OptionT.mem_support_OptionT_bind_run_some_iff,
+        OptionT.mem_support_OptionT_pure_run_some_iff, Function.comp_apply, Prod.exists]
+      refine ⟨tr₁, s₂, w₂, ?_, some s₂', ?_, s₂', ?_, rfl⟩
+      · simpa only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+          OptionT.mk, bind_pure_comp, support_map, Set.mem_image, Option.some.injEq,
+          exists_eq_right] using hP₁
+      · sorry -- V₁ leaf: simulateQ inl-lift strip from hV₁
+      · simp [Option.getM, OptionT.monad_pure_eq_pure,
+          OptionT.mem_support_OptionT_pure_run_some_iff])
+    simp only at key₁
+    obtain ⟨hrel₂, hs₂eq⟩ := key₁
+    subst hs₂eq
+    obtain ⟨hf₂, hs₂⟩ := h₂ s₂ w₂ hrel₂
+    have key₂ := hs₂ ((tr₂, s₃'', w₃''), x_2) (by
+      rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
+        (impl := impl.addLift challengeQueryImpl) (hImplSupp := by
+          intro β q s'
+          cases q with | mk t f =>
+          cases t with
+          | inl i => exact hImplSupp (OracleQuery.mk i f) s'
+          | inr i =>
+            simp only [QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+              QueryImpl.addLift_def, QueryImpl.add_apply_inr]
+            have hq := support_challengeQueryImpl_run_eq (q := OracleQuery.mk i f) s'
+            rw [support_liftM]
+            simpa only [ChallengeIdx, Challenge, add_apply_inr, QueryImpl.liftTarget_apply,
+              StateT.run_map, StateT.run_monadLift, monadLift_self, bind_pure_comp, Functor.map_map,
+              support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
+              support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+              liftM_map] using hq)]
+      rw [OptionT.mem_support_iff]
+      simp only [Reduction.run, liftM_bind, ChallengeIdx, Challenge, liftM_pure, bind_pure_comp,
+        liftM_OptionT_eq, Prod.mk.eta, bind_assoc, bind_map_left, OptionT.support_mk,
+        Set.mem_setOf_eq, Prod.mk.injEq, liftComp_eq_liftM, OptionT.mem_support_iff, support_bind,
+        support_map, Set.mem_iUnion, Set.mem_image, Prod.exists, exists_prop]
+      dsimp only [Functor.map, OptionT.instMonad, OptionT.mk, OptionT.run]
+      simp only [OptionT.monad_bind_eq_bind, OptionT.mem_support_OptionT_bind_run_some_iff,
+        OptionT.mem_support_OptionT_pure_run_some_iff, Function.comp_apply, Prod.exists]
+      refine ⟨tr₂, s₃'', w₃'', ?_, some x_2, ?_, x_2, ?_, rfl⟩
+      · simpa only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+          OptionT.mk, bind_pure_comp, support_map, Set.mem_image, Option.some.injEq,
+          exists_eq_right] using hP₂core
+      · sorry -- V₂ leaf: simulateQ inl-lift strip from hV₂
+      · simp [Option.getM, OptionT.monad_pure_eq_pure,
+          OptionT.mem_support_OptionT_pure_run_some_iff])
+    simp only at key₂
+    exact ⟨key₂.1, key₂.2⟩
 
 end Reduction
