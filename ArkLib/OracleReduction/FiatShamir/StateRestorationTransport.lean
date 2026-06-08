@@ -1252,6 +1252,74 @@ private theorem popFSChallengeFromLog_cons_self
     some ((show pSpec.«Type» idx.1 from response), tail)
   simp
 
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- Every support point of `deriveTranscriptSRAux.withQueryLog` can be replayed by the
+Fiat-Shamir challenge-log parser.  The parser consumes exactly the slow-Fiat-Shamir projection of
+the logged derivation and leaves the supplied tail untouched. -/
+private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
+    (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
+    (j : Fin (k + 1)) (tail : QueryLog (fsChallengeOracle StmtIn pSpec))
+    {z : pSpec.Transcript (j.castLE (Nat.succ_le_of_lt k.isLt)) ×
+      QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)}
+    (hz : z ∈ support
+      (OracleComp.withQueryLog
+        (ProtocolSpec.MessagesUpTo.deriveTranscriptSRAux
+          (oSpec := oSpec) stmtIn k messages j))) :
+    (transcriptFromFSChallengeLogAux
+        (StmtIn := StmtIn) (pSpec := pSpec) k messages j).run (z.2.snd ++ tail) =
+      some (z.1, tail) := by
+  induction j using Fin.induction generalizing tail with
+  | zero =>
+      simp only [ProtocolSpec.MessagesUpTo.deriveTranscriptSRAux, Fin.induction_zero,
+        OracleComp.withQueryLog_pure, mem_support_pure_iff] at hz
+      subst z
+      simp [transcriptFromFSChallengeLogAux, QueryLog.snd]
+  | succ i ih =>
+      simp only [ProtocolSpec.MessagesUpTo.deriveTranscriptSRAux,
+        transcriptFromFSChallengeLogAux, Fin.induction_succ] at hz ⊢
+      split
+      · next hDir =>
+          rw [OracleComp.withQueryLog_bind, mem_support_bind_iff] at hz
+          obtain ⟨pref, hpref, hcont⟩ := hz
+          simp only [hDir] at hcont
+          rw [support_map, Set.mem_image] at hcont
+          obtain ⟨contPoint, hcontPoint, hz_eq⟩ := hcont
+          rw [OracleComp.withQueryLog_bind, mem_support_bind_iff] at hcontPoint
+          obtain ⟨challenge, hchallenge, hpure⟩ := hcontPoint
+          rw [OracleComp.withQueryLog_query, mem_support_bind_iff] at hchallenge
+          obtain ⟨response, _hresponse, hqueryPure⟩ := hchallenge
+          rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hqueryPure
+          obtain ⟨rfl, rfl⟩ := hqueryPure
+          rw [support_map, Set.mem_image] at hpure
+          obtain ⟨purePoint, hpurePoint, hz_eq⟩ := hpure
+          rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hpurePoint
+          subst purePoint
+          rcases pref with ⟨prevTranscript, prefixLog⟩
+          simp only [Prod.map_apply, id_eq, List.append_nil, Prod.mk.injEq] at hz_eq
+          rcases hz_eq with ⟨rfl, hcontLog⟩
+          subst contPoint
+          simp only [Prod.map_apply, id_eq, List.append_nil] at hcontLog
+          subst z
+          rw [queryLog_snd_append, queryLog_snd_singleton_inr, List.append_assoc]
+          rw [ih ([⟨⟨⟨i.castLE (by omega), hDir⟩,
+            (stmtIn, messages.take i.castSucc)⟩, response⟩] ++ tail) hpref]
+          exact popFSChallengeFromLog_cons_self
+            (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩
+            (stmtIn, messages.take i.castSucc) response tail
+      · next hDir =>
+          rw [OracleComp.withQueryLog_bind, mem_support_bind_iff] at hz
+          obtain ⟨pref, hpref, hcont⟩ := hz
+          simp only [hDir] at hcont
+          rw [support_map, Set.mem_image] at hcont
+          obtain ⟨purePoint, hpurePoint, hz_eq⟩ := hcont
+          rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hpurePoint
+          subst purePoint
+          rcases pref with ⟨prevTranscript, prefixLog⟩
+          simp only [Prod.map_apply, id_eq, List.append_nil, Prod.mk.injEq] at hz_eq
+          rcases hz_eq with ⟨rfl, rfl⟩
+          rw [ih tail hpref]
+
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
 
