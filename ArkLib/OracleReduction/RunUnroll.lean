@@ -376,6 +376,20 @@ theorem evalDist_cast_uniformSample {α β : Type} [SampleableType α] [Sampleab
 
 #print axioms evalDist_cast_uniformSample
 
+/-- **Uniform sampling pushed along a bijection.** Generalizes `evalDist_cast_uniformSample` from a
+type-equality cast to an arbitrary bijection `f : α → β`. For the seam's challenge-oracle restriction
+this is what's actually needed: the challenge `SubSpec`'s response map (`(liftM q).cont`) is a bijection
+by `LawfulSubSpec`, so the combined-oracle uniform challenge maps onto `pSpec₁`'s uniform challenge
+*without* ever naming the underlying (private) `range_challenge_append_inl` cast. -/
+theorem evalDist_map_bijective_uniformSample {α β : Type}
+    [SampleableType α] [SampleableType β] [Finite α]
+    (f : α → β) (hf : Function.Bijective f) :
+    evalDist (f <$> ($ᵗ α : ProbComp α)) = evalDist ($ᵗ β : ProbComp β) := by
+  refine evalDist_ext (fun y => ?_)
+  exact probOutput_map_bijective_uniform_cross (α := α) (β := β) f hf y
+
+#print axioms evalDist_map_bijective_uniformSample
+
 /-- **`OptionT.mk`-to-`ProbComp` `probEvent` bridge.** The soundness game is phrased as a
 `probEvent` over an `OptionT ProbComp` (the verifier may reject = fail), while the union-bound
 toolkit (`probComp_seam_union_le`) is stated at the bare `ProbComp` level with a `none`-as-failure
