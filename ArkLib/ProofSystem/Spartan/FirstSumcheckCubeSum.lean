@@ -63,7 +63,7 @@ noncomputable def firstSumCheckVirtualPolynomial
   eqPolynomial τ *
     (matVecMLE pp 𝕩 oStmt .A * matVecMLE pp 𝕩 oStmt .B - matVecMLE pp 𝕩 oStmt .C)
 
-omit [IsDomain R] [Fintype R] in
+omit [IsDomain R] [Fintype R] [DecidableEq R] in
 /-- Each matrix-vector factor `M̃` is multilinear (degree `≤ 1` per variable). -/
 theorem matVecMLE_mem_restrictDegree
     (𝕩 : Statement.AfterFirstMessage R pp)
@@ -120,3 +120,18 @@ theorem firstSumCheckVirtualPolynomial_hypercubeSum_eq_zeroCheckEval
     Function.comp_apply, eval_C, Equiv.symm_apply_apply]
   -- The `eq` weights match via symmetry: `eval (X:→R) (eqPolynomial τ) = eval τ (eqPolynomial X)`.
   rw [eqPolynomial_symm]
+
+omit [IsDomain R] [Fintype R] [DecidableEq R] in
+/-- **First sum-check completeness target.** On any R1CS-satisfying instance the first sum-check's
+Boolean-hypercube sum is `0`: the zero-check polynomial `𝒢` is identically zero, so `𝒢(τ) = 0`. This
+is the target value the honest first sum-check proves, pinned by the preceding `RandomQuery` phase. -/
+theorem firstSumCheckVirtualPolynomial_hypercubeSum_eq_zero_of_satisfied
+    (τ : Fin pp.ℓ_m → R)
+    (𝕩 : Statement.AfterFirstMessage R pp)
+    (oStmt : ∀ i, OracleStatement.AfterFirstMessage R pp i)
+    (h : R1CS.relation R pp.toSizeR1CS 𝕩 (fun idx => oStmt (.inl idx)) (oStmt (.inr 0))) :
+    (∑ X : Fin pp.ℓ_m → Fin 2,
+        MvPolynomial.eval (fun i => ((X i : Fin 2) : R)) (firstSumCheckVirtualPolynomial pp τ 𝕩 oStmt))
+      = 0 := by
+  rw [firstSumCheckVirtualPolynomial_hypercubeSum_eq_zeroCheckEval pp τ 𝕩 oStmt,
+    zeroCheckVirtualPolynomial_eq_zero_of_satisfied pp 𝕩 oStmt h, map_zero]
