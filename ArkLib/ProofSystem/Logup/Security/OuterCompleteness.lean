@@ -794,6 +794,17 @@ theorem outerCompletenessRunResidual_proved :
     OuterCompletenessRunResidual oSpec F n M params init impl :=
   fun hInit => outerOracleReduction_completeness oSpec F n M params init impl hInit
 
+/-- **LogUp completeness residual shrunk to the embedded sumcheck alone.** The `SubPhaseCompletenessResidual`
+of LogUp Protocol 2 (#13) is a conjunction `outer-completeness ∧ sumcheck-completeness`.  The first
+conjunct is now a *theorem* (`outerOracleReduction_completeness`), so under `NeverFail init` the whole
+residual reduces to just the embedded sumcheck completeness — the only remaining (upstream) blocker on
+the completeness side. -/
+theorem subPhaseCompletenessResidual_of_sumcheck (hInit : NeverFail init)
+    (hSum : (sumcheckOracleReduction oSpec F n M params).completeness init impl
+      (midRelation F n M params) outputRelation 0) :
+    SubPhaseCompletenessResidual oSpec F n M params init impl :=
+  ⟨outerOracleReduction_completeness oSpec F n M params init impl hInit, hSum⟩
+
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
     OuterCompletenessRunResidual oSpec F n M params init impl ↔
