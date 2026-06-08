@@ -94,6 +94,7 @@ import ArkLib.Data.CodingTheory.HammingBallVolumeBasics
 import ArkLib.Data.CodingTheory.HammingBound
 import ArkLib.Data.CodingTheory.HammingBoundRate
 import ArkLib.Data.CodingTheory.InterleavedCode
+import ArkLib.Data.CodingTheory.InterleavedFinOneEq
 import ArkLib.Data.CodingTheory.InterleavedListSize
 import ArkLib.Data.CodingTheory.InterleavedRowDistance
 import ArkLib.Data.CodingTheory.JohnsonBound.Basic
