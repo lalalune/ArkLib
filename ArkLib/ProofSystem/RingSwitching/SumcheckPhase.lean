@@ -813,7 +813,11 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
   toFun := fun m ⟨stmt, oStmt⟩ tr witMid =>
     iteratedSumcheckKStateProp κ L K P ℓ ℓ' h_l
       (i := i) (m := m) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
-  toFun_empty := fun _ _ => by
+  toFun_empty := fun stmtIn witMid => by
+    have h_cast :
+        cast (iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).eqIn witMid = witMid := by
+      exact eq_of_heq (cast_heq _ _)
+    rw [h_cast]
     simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.val_castSucc, cast_eq,
       Set.mem_setOf_eq, iteratedSumcheckKStateProp, masterKStateProp,
       iteratedSumcheckRbrExtractor, true_and]
@@ -823,7 +827,6 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     · -- m = 0: succ = 1, castSucc = 0
       dsimp [iteratedSumcheckKStateProp, masterKStateProp, iteratedSumcheckRbrExtractor]
         at h_succ ⊢
-      simp only [Fin.succ_mk, Fin.castSucc_mk, Fin.castAdd_mk] at h_succ ⊢
       exact h_succ.2
     · -- m = 1: dir 1 = V_to_P, contradicts hDir
       simp [pSpecSumcheckRound] at hDir
@@ -1002,7 +1005,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
         (i := i) (t' := witMid.t') (ctx := stmtOStmtIn.1.ctx)
         (challenges := stmtOStmtIn.1.challenges) (r' := r_i')
     rw [h_hstar_cube, ← h_wit_struct_after]
-    simpa [Polynomial.eval] using h_sumcheck_after_eval.symm
+    exact h_sumcheck_after_eval.symm
   have h_round0_cons_of_eq (h_eq : h_i.val = h_star_extracted.val) :
       sumcheckConsistencyProp (boolDomain L (ℓ' - ↑i.castSucc))
         stmtOStmtIn.1.sumcheck_target witBefore.H := by
@@ -1014,8 +1017,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
       intro b _
       rw [← h_eq]
     have h_points_cube := getSumcheckRoundPoly_points_sum_eq_cube
-      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
-      (h_l := h_l) (aOStmtIn := aOStmtIn) (i := i) (H := witBefore.H)
+      (L := L) (ℓ' := ℓ') (i := i) (H := witBefore.H)
     unfold sumcheckConsistencyProp
     rw [← h_points_star, h_points_cube]
   have h_poly_ne : h_i.val ≠ h_star_extracted.val := by
@@ -1023,7 +1025,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
     apply h_kState_before_false
     have h_poly_eq_subtype : h_i = h_star_extracted := Subtype.ext h_eq
     have h_round0_cons := h_round0_cons_of_eq h_eq
-    exact ⟨⟨h_explicit_after, h_poly_eq_subtype⟩, h_H_before, h_round0_cons, h_compat_after⟩
+    exact ⟨⟨h_explicit_after, h_poly_eq_subtype⟩, trivial, h_round0_cons, h_compat_after⟩
   have h_bad_extracted : badSumcheckEventProp (L := L) r_i' h_i h_star_extracted := by
     exact ⟨h_poly_ne, h_star_eval_r_i.symm⟩
   refine ⟨witMid, h_compat_after, ?_⟩
