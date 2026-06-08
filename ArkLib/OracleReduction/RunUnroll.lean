@@ -265,6 +265,40 @@ theorem probEvent_run_eq_run'_fst
 
 #print axioms probEvent_run_eq_run'_fst
 
+/-- **Marginalization congruence for seam `probEvent`s.** Two `OptionT`-valued computations `X`, `Y`
+that agree after projecting their value through `g` (`g <$> X = g <$> Y`) yield the *same* probability
+for any event that reads only `g` of the (successful) result. This is the device that turns the seam's
+phase-1 game (built over the prover's full output `(transcript, state, ())`) into `V₁.soundness`'s game
+(built over `Reduction.run`, whose prover output is a dummy `Stmt₂`): both share the *verifier-output
+marginal* (`Prod.snd`), so the differing — and irrelevant — prover output is averaged away. -/
+theorem probEvent_simQ_run'_congr_marginal
+    (so : QueryImpl spec (StateT σ ProbComp)) (init : ProbComp σ)
+    (X Y : OptionT (OracleComp spec) α) (g : α → β) (q : β → Prop)
+    (h : (g <$> X) = (g <$> Y)) :
+    Pr[fun o => Option.elim o False (fun a => q (g a)) |
+        init >>= fun s => (simulateQ so X.run).run' s]
+    = Pr[fun o => Option.elim o False (fun a => q (g a)) |
+        init >>= fun s => (simulateQ so Y.run).run' s] := by
+  have h' : Option.map g <$> X.run = Option.map g <$> Y.run := by
+    have := congrArg OptionT.run h
+    simpa only [OptionT.run_map] using this
+  have h'' : (Option.map g <$> simulateQ so X.run) = (Option.map g <$> simulateQ so Y.run) := by
+    rw [← simulateQ_map, ← simulateQ_map, h']
+  have key : (Option.map g <$> (init >>= fun s => (simulateQ so X.run).run' s))
+           = (Option.map g <$> (init >>= fun s => (simulateQ so Y.run).run' s)) := by
+    simp only [map_bind, StateT.run'_eq]
+    refine bind_congr (fun s => ?_)
+    have h3 := congrFun (congrArg StateT.run h'') s
+    simp only [StateT.run_map] at h3
+    have h4 := congrArg (fun z => Prod.fst <$> z) h3
+    simp only [Functor.map_map, Function.comp] at h4 ⊢
+    exact h4
+  have hpe : (fun o : Option α => Option.elim o False (fun a => q (g a)))
+      = (fun ob => Option.elim ob False q) ∘ (Option.map g) := by funext o; cases o <;> rfl
+  rw [hpe, probEvent_comp, probEvent_comp, key]
+
+#print axioms probEvent_simQ_run'_congr_marginal
+
 /-- **`OptionT.mk`-to-`ProbComp` `probEvent` bridge.** The soundness game is phrased as a
 `probEvent` over an `OptionT ProbComp` (the verifier may reject = fail), while the union-bound
 toolkit (`probComp_seam_union_le`) is stated at the bare `ProbComp` level with a `none`-as-failure
