@@ -469,4 +469,59 @@ theorem merge_processRound_natAdd_challenge
   · refine heq_app rfl ?_ hf hchal
     rw [merge_PrvState_natAdd_succ P k]
 
+/-- **Seam-round sendMessage merge.** At the seam (round `m`), the append-of-restrictions and `P`
+agree on `sendMessage`. Uses `append_sendMessage_seam`; since `(fst P).output = pure`, the seam bind
+collapses (`pure_bind`) to `snd`'s round-0 step, related to `P` via `snd_sendMessage_natAdd` at `k=0`. -/
+theorem merge_sendMessage_seam (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir ⟨m, by omega⟩ = .P_to_V)
+    (hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .P_to_V)
+    (stateA : ((Prover.fst P).append (Prover.snd P)).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (stateP : P.PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hst : HEq stateA stateP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).sendMessage ⟨⟨m, by omega⟩, hDir⟩ stateA)
+        (P.sendMessage ⟨⟨m, by omega⟩, hDir⟩ stateP) := by
+  have hDir' : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m (⟨0, hn⟩ : Fin n)) = .P_to_V := by
+    rw [show (Fin.natAdd m (⟨0, hn⟩ : Fin n)) = (⟨m, by omega⟩ : Fin (m + n)) from by ext; simp]
+    exact hDir
+  have hMsg : (pSpec₁ ++ₚ pSpec₂).Message ⟨Fin.natAdd m (⟨0, hn⟩ : Fin n), hDir'⟩
+      = pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩ := append_Message_natAdd (⟨0, hn⟩ : Fin n) hDir' hDir₂
+  refine (append_sendMessage_seam (P₁ := Prover.fst P) (P₂ := Prover.snd P)
+    hn hDir hDir₂ stateA).trans ?_
+  dsimp only [Prover.fst, Prover.snd]
+  rw [pure_bind]
+  refine (map_heq_self (by rw [hMsg]; congr 1) _ _ ?_).trans
+    (sendMessage_heq_congr (P := P) (by ext; simp)
+      ((cast_heq _ _).trans ((cast_heq _ _).trans hst)))
+  rintro ⟨msg, st⟩
+  exact prodMk_heq hMsg.symm rfl (cast_heq _ _) HEq.rfl
+
+/-- **Seam-round receiveChallenge merge.** -/
+theorem merge_receiveChallenge_seam (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir ⟨m, by omega⟩ = .V_to_P)
+    (hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .V_to_P)
+    (stateA : ((Prover.fst P).append (Prover.snd P)).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (stateP : P.PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hst : HEq stateA stateP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).receiveChallenge ⟨⟨m, by omega⟩, hDir⟩ stateA)
+        (P.receiveChallenge ⟨⟨m, by omega⟩, hDir⟩ stateP) := by
+  have hDir' : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m (⟨0, hn⟩ : Fin n)) = .V_to_P := by
+    rw [show (Fin.natAdd m (⟨0, hn⟩ : Fin n)) = (⟨m, by omega⟩ : Fin (m + n)) from by ext; simp]
+    exact hDir
+  have hChal : (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m (⟨0, hn⟩ : Fin n), hDir'⟩
+      = pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩ := append_Challenge_natAdd (⟨0, hn⟩ : Fin n) hDir' hDir₂
+  refine (append_receiveChallenge_seam (P₁ := Prover.fst P) (P₂ := Prover.snd P)
+    hn hDir hDir₂ stateA).trans ?_
+  dsimp only [Prover.fst, Prover.snd]
+  rw [pure_bind]
+  refine (map_heq_self (by rw [hChal]; congr 1) _ _ ?_).trans
+    (receiveChallenge_heq_congr (P := P) (by ext; simp)
+      ((cast_heq _ _).trans ((cast_heq _ _).trans hst)))
+  intro f
+  refine Function.hfunext hChal.symm ?_
+  intro c c' hcc
+  have hc : cast hChal.symm c = c' := eq_of_heq ((cast_heq _ _).trans hcc)
+  rw [hc]
+
 end Prover
