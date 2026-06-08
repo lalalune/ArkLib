@@ -25,11 +25,11 @@ theorem not_DivWeightLe_zero_of_not_dvd_X (x₀ : F) (R : F[X][X][Y])
   have hEq2 : βHensel H x₀ R hHyp 0 = a * W𝒪 H := by simpa using hEq
   rw [βHensel_zero] at hEq2
   set A := canonicalRepOf𝒪 hH a with hA
-  have hA_mk : Ideal.Quotient.mk _ A = a := canonicalRepOf𝒪_mk_eq hH a
-  have hW_mk : W𝒪 H = Ideal.Quotient.mk _ (Polynomial.C H.leadingCoeff) := rfl
-  have hmk_eq : Ideal.Quotient.mk _ (Polynomial.X : F[X][Y]) = Ideal.Quotient.mk _ (A * Polynomial.C H.leadingCoeff) := by
+  have hA_mk : Ideal.Quotient.mk (Ideal.span {H_tilde' H}) A = a := mk_canonicalRepOf𝒪 hH a
+  have hW_mk : W𝒪 H = Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (Polynomial.C H.leadingCoeff) := rfl
+  have hmk_eq : Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (Polynomial.X : F[X][Y]) = Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (A * Polynomial.C H.leadingCoeff) := by
     rw [hEq2, ← hA_mk, hW_mk, ← map_mul]
-  have hdif : Ideal.Quotient.mk _ ((Polynomial.X : F[X][Y]) - A * Polynomial.C H.leadingCoeff) = 0 := by
+  have hdif : Ideal.Quotient.mk (Ideal.span {H_tilde' H}) ((Polynomial.X : F[X][Y]) - A * Polynomial.C H.leadingCoeff) = 0 := by
     rw [map_sub, hmk_eq, sub_self]
   have hdegX : (Polynomial.X : F[X][Y]).degree < (H_tilde' H).degree := by
     rw [Polynomial.degree_X, Polynomial.degree_eq_natDegree (H_tilde'_monic H hH).ne_zero, natDegree_H_tilde' hH]

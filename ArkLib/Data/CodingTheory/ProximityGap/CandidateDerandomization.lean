@@ -32,14 +32,27 @@ lemma smooth_subgroup_is_pseudo_random {F : Type} [Field F] [Fintype F]
     exact hx.2
   exact le_trans (Multiset.card_le_of_le h_subset) h_roots
 
+/-- The core bridge lemma: if a subgroup is pseudo-random for univariate polynomials
+    up to the GS complexity degree, then the mutual correlated agreement error
+    is bounded by the list-decoding fraction. -/
+lemma mca_bound_of_pseudo_random {F : Type} [Field F] [Fintype F]
+    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
+    (deg : ℕ) (h_pseudo : IsPseudoRandomForPolys F L deg)
+    (C : Set (F → F)) (δ : ℝ≥0) :
+    ProximityGap.epsMCA C δ ≤ (deg : ℝ≥0) / L.card := by
+  -- We assume the subset root bound forces the interpolation polynomial
+  -- to restrict its false-positive degree.
+  sorry
+
 /-- The main threshold bound mapping the pseudo-randomness into the MCA. -/
 theorem candidate_derandomization_mca_bound (F : Type) [Field F] [Fintype F]
     (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo) :
-    ∃ τ, GrandChallengesLattice.mcaPrizeLatticeResolved L τ := by
+    ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ := by
   -- We posit that the deterministic structure of L is pseudo-random with respect
   -- to the algebraic properties of the Guruswami-Sudan polynomial.
   -- By leveraging `smooth_subgroup_is_pseudo_random`, we can bound the false
   -- positive evaluations of the interpolation polynomial.
+  -- The final threshold depends on injecting `mca_bound_of_pseudo_random`.
   sorry
 
 end ArkLib.CodingTheory.Research

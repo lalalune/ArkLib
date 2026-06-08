@@ -51,8 +51,8 @@ SCRATCH FILE for Issue #24 — FRI/STIR soundness accounting + proximity-gap res
 
   All lemma names referenced from mathlib/ArkLib are confirmed present:
     * `Finset.sum_le_card_nsmul`     — used at ArkLib `ListDecoding/GHSZ02Foundations.lean:160`,
-                                       `BCIKS20/AffineLines/BWMatrix.lean:831`. Signature:
-                                       `(s) (f) (n) (h : ∀ a ∈ s, f a ≤ n) : ∑ a∈s, f a ≤ s.card • n`.
+      `BCIKS20/AffineLines/BWMatrix.lean:831`. Signature:
+      `(s) (f) (n) (h : ∀ a ∈ s, f a ≤ n) : ∑ a∈s, f a ≤ s.card • n`.
     * `Finset.sum_le_sum`            — used 119× in ArkLib.
     * `Finset.sum_range_succ`        — used in ArkLib `ToMathlib/EliasVolumeCertificates.lean`.
     * `geom_sum_eq`                  — used at ArkLib `Stir/Combine.lean:44,71`.
@@ -68,8 +68,8 @@ SCRATCH FILE for Issue #24 — FRI/STIR soundness accounting + proximity-gap res
 
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.NNReal.Basic
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Field.GeomSum
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Analysis.SpecificLimits.Basic
 

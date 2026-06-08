@@ -176,12 +176,12 @@ theorem neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natD
     - (ClaimA2.ζ R x₀ H * PowerSeries.coeff 1 (βHenselAssembled H x₀ R hHyp))
         = restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 := by
       simpa using restrictedMatch_rhs_eq_restrictedRecursionPartitionForm H x₀ R hHyp 0
-    _ = restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp := by
-      exact restrictedMatchRecursionPartitionForm_zero_eq_singleBcoeff H x₀ R hHyp
+    _ = restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp := by
+      exact restrictedMatchRecursionPartitionForm_zero_eq_single_B_coeff H x₀ R hHyp
     _ = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
           / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
       exact
-        restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff_div_W_natDegree
+        restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_W_natDegree
           H x₀ R hHyp hd (ζ_ne_zero H x₀ R hHyp)
 
 /-- **Order-zero recursion-side closed form, solved coefficient form.**  Dividing the previous
@@ -219,21 +219,6 @@ def RestrictedMatchAtZeroTaylorWDivTarget (x₀ : F) (R : F[X][X][Y]) : Prop :=
               ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff (i + 0))
             * (functionFieldT (H := H)) ^ i))
       / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree
-
-/-- The un-cleared `Y ↦ T` embedding of `hasseCoeffRepr𝒪` in shifted Hasse-Taylor form. -/
-theorem embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared_eq_taylorSum
-    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
-    embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m)
-      = ∑ i ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
-              (hasseDerivX i1 (hasseDerivY m R))).natDegree + 1),
-          (i + m).choose m
-            • (liftToFunctionField (H := H)
-                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff (i + m))
-                * (functionFieldT (H := H)) ^ i) := by
-  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared]
-  rw [Polynomial.eval₂_eq_sum_range]
-  refine Finset.sum_congr rfl (fun i _ => ?_)
-  rw [evalX_hasseDeriv_Y_coeff, map_nsmul (liftToFunctionField (H := H)), smul_mul_assoc]
 
 /-- The carved order-zero P2 core is exactly the named Taylor/W-divisor target under the same
 degree hypothesis as the order-zero RHS cancellation. -/
@@ -767,15 +752,17 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
           (hasseCoeffRepr𝒪_cleared H x₀ R i1 m
             (Bivariate.natDegreeY
-              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))) : 𝒪 H)
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))))
+          : 𝒪 H)
       * liftToFunctionField (H := H) H.leadingCoeff ^ e
       =
       liftToFunctionField (H := H) H.leadingCoeff
           ^ Bivariate.natDegreeY
               (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
         * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m) := by
-  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared H x₀ R i1 m
-    (Bivariate.natDegreeY
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared
+    (H := H) (x₀ := x₀) (R := R) (i1 := i1) (m := m)
+    (k := Bivariate.natDegreeY
       (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))) le_rfl, htarget]
   rw [mul_assoc,
     div_mul_cancel₀ _ (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H)))]
@@ -792,7 +779,8 @@ theorem embeddingCleared_eq_uncleared_of_wDivTarget_exactDegree
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
           (hasseCoeffRepr𝒪_cleared H x₀ R i1 m
             (Bivariate.natDegreeY
-              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))) : 𝒪 H)
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))))
+          : 𝒪 H)
       =
       embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m) := by
   have hscale :=
@@ -816,9 +804,7 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_restrictedMatchAt_zer
     (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0
-            (Bivariate.natDegreeY
-              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))))) : 𝒪 H)
+          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree) : 𝒪 H)
       * liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
       =
       liftToFunctionField (H := H) H.leadingCoeff
@@ -837,9 +823,7 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_partitionMatchAt_zero
     (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0
-            (Bivariate.natDegreeY
-              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))))) : 𝒪 H)
+          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree) : 𝒪 H)
       * liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
       =
       liftToFunctionField (H := H) H.leadingCoeff
@@ -861,14 +845,16 @@ theorem embeddingCleared_eq_Wpow_mul_uncleared_of_target (x₀ : F) (R : F[X][X]
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
           (hasseCoeffRepr𝒪_cleared H x₀ R i1 m
             (Bivariate.natDegreeY
-              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))) : 𝒪 H)
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))))
+          : 𝒪 H)
       = liftToFunctionField (H := H) H.leadingCoeff
             ^ Bivariate.natDegreeY
                 (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
           * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m) := by
-  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared H x₀ R i1 m
-      (Bivariate.natDegreeY
-        (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))) le_rfl,
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared
+    (H := H) (x₀ := x₀) (R := R) (i1 := i1) (m := m)
+    (k := Bivariate.natDegreeY
+      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))) le_rfl,
     (HasseCoeffRepr𝒪UnclearedMatchesRoot.of_eval₂Target H x₀ R i1 m htarget)]
 
 /-! ### Public kernel bridge for `liftBivariate` and the order-zero core as ideal membership
@@ -1031,9 +1017,8 @@ membership is, by contrast, GENUINELY FALSE for generic `R` even under the full 
 order-zero numerator depends on `p = evalX (C x₀) (Δ_X^1 R)`, the transverse `X`-Hasse derivative,
 which is unconstrained by either field of `Hypotheses`. Concretely, with `F = ℚ`,
 `H = X·Y² + Y + X` (so `lc = X`, monic-fails), `evalX (C 0) R = H · (Y + X)` (separable, so both
-  hypotheses hold) and a generic transverse part, the difference sum is NOT in `⟨H_tilde' H⟩`
-  (verified by exact division by the monic generator `H_tilde' H`). Hence
-  `RestrictedFaaDiBrunoMatchAt … 0` is
+hypotheses hold) and a generic transverse part, the difference sum is NOT in `⟨H_tilde' H⟩` (verified
+by exact division by the monic generator `H_tilde' H`). Hence `RestrictedFaaDiBrunoMatchAt … 0` is
 NOT a theorem from `ClaimA2.Hypotheses` alone in the non-monic regime: the recursively-defined
 `βHenselAssembled` order-1 coefficient (the recursion RHS) does not, in general, agree with the
 genuine root quantity `hasseEvalAtRoot` (the LHS). The order-zero match is therefore part of the
