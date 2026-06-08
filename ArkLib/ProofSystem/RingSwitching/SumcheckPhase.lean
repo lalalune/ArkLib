@@ -1073,6 +1073,15 @@ theorem iteratedSumcheck_round_logic_complete (i : Fin ℓ')
         (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (i := i) (t' := wit.t') (ctx := stmt.ctx)
         (challenges := stmt.challenges) (r' := r')
 
+/-- `OptionT.bind` of an honest `pure (some a)` reduces to the continuation at `a`. Used to collapse
+the verifier run after the message query has been resolved to a concrete answer. -/
+private lemma optionT_bind_pure_some {ιₐ : Type} {specₐ : OracleSpec ιₐ} {α β : Type}
+    (a : α) (g : α → OptionT (OracleComp specₐ) β) :
+    OptionT.bind (M := OracleComp specₐ) (pure (some a)) g = g a := by
+  rw [OptionT.bind]
+  simp only [OptionT.run, pure_bind]
+  rfl
+
 set_option maxHeartbeats 1000000 in
 theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
     (hInit : NeverFail init) :
@@ -1110,9 +1119,16 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
       h_relIn r1
     simp only [OracleVerifier.toVerifier, iteratedSumcheckOracleVerifier,
       Sumcheck.Structured.roundOracleVerifier, FullTranscript.mk2, guard_eq]
-    simp [OptionT.simulateQ_bind, OptionT.simulateQ_simOracle2_liftM_query_T2,
-      OptionT.simulateQ_ite, OptionT.simulateQ_pure, OptionT.simulateQ_failure,
-      OptionT.simulateQ_map, h_V_check, OptionT.run_bind, OptionT.run_pure, bind_assoc]
+    erw [OptionT.simulateQ_bind]
+    erw [OptionT.simulateQ_simOracle2_liftM_query_T2]
+    rw [optionT_bind_pure_some]
+    erw [OptionT.simulateQ_bind]
+    rw [OptionT.simulateQ_ite, OptionT.simulateQ_pure, OptionT.simulateQ_failure]
+    simp only [OracleInterface.answer, OracleInterface.instDefault, ReaderT.run, h_V_check,
+      if_true]
+    rw [optionT_bind_pure_some]
+    trace_state
+    sorry
   rw [probEvent_eq_one_iff]
   dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
     Sumcheck.Structured.roundOracleReduction,

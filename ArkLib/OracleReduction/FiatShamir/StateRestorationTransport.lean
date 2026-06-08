@@ -3001,6 +3001,14 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
   -- `simulateQ_addLift_fiatShamirChallenge_optionT` at the per-`pr` leaf.
   sorry
 
+/-- Re-fold the unfolded one-message Fiat-Shamir protocol spec (exposed by `dsimp` of the reducible
+abbreviation) back to `FiatShamirProtocolSpec`, so that `simp`/`rw` discrimination-tree keys line up
+with lemmas stated against the folded abbreviation. -/
+@[simp]
+theorem fiatShamirProtocolSpec_fold :
+    (⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ : ProtocolSpec 1) =
+      FiatShamirProtocolSpec (pSpec := pSpec) := rfl
+
 set_option linter.flexible false in
 /-- Canonical coupled state-restoration knowledge soundness implies basic Fiat-Shamir knowledge
 soundness when both games use the same sampled cached Fiat-Shamir challenge table. -/
@@ -3026,7 +3034,8 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   dsimp only [Verifier.knowledgeSoundness]
   rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
   refine le_trans ?_ h
-  simp only [fiatShamirKnowledgeExec_loggedExtractor_eq_direct
+  simp only [fiatShamirProtocolSpec_fold]
+  rw [fiatShamirKnowledgeExec_loggedExtractor_eq_direct
     (impl := fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec)
       (StmtIn := StmtIn) srImpl)
     (P := prover) (V := V) (srExtractor := srExtractor) (stmtIn := stmtIn) (witIn := witIn)]
