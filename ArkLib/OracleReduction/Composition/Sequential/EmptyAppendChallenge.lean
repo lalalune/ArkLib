@@ -35,10 +35,10 @@ namespace ProtocolSpec
 variable {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
   [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
 
-/-- The dependent transport `fun a => h ▸ a` along any type equality `h : A = B` is surjective. -/
-private theorem eqRec_surjective {A B : Type} (h : A = B) :
-    Function.Surjective (fun a : A => h ▸ a) := by
-  subst h; exact fun y => ⟨y, rfl⟩
+/-- Transporting forward along `h` then back along `h.symm` is the identity. -/
+private theorem eqRec_eqRec_symm {A B : Type} (h : A = B) (y : B) :
+    h ▸ (h.symm ▸ y : A) = y := by
+  subst h; rfl
 
 /-- **Challenge-oracle support agreement (left embedding).** Simulating the appended challenge
 handler on a left-challenge query of `pSpec₁` (lifted along the canonical challenge sub-spec
@@ -59,8 +59,10 @@ theorem support_simulateQ_challengeQueryImpl_append_left
   dsimp only [SubSpec.onQuery, SubSpec.onResponse]
   -- The inner uniform sample has full support; the continuation is the bijective response
   -- transport `h ▸ ·`, so its image of `Set.univ` is again `Set.univ`.
-  simp only [support_uniformSample, Set.image_univ, Set.range_eq_univ]
+  apply Set.eq_univ_of_forall
+  intro y
+  rw [Set.mem_image]
   generalize_proofs h
-  exact eqRec_surjective h
+  exact ⟨h.symm ▸ y, mem_support_uniformSample _, eqRec_eqRec_symm h y⟩
 
 end ProtocolSpec

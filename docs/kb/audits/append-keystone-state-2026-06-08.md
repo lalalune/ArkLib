@@ -70,10 +70,25 @@ Verified reduction path (via `QueryImpl.simulateQ_liftM_eq_of_query`, two per-qu
   lift to expose `simulateQ_query`, then discharge the `Fin.fappend₂`/`ChallengeIdx.inl`
   cast (mechanical but several `rfl`-routing rewrites; not yet closed).
 
-Crucial subtlety confirmed by probing: do **not** add a free
-`[∀ i, SampleableType ((pSpec₁ ++ₚ pSpec₂).Challenge i)]` instance — with an arbitrary
-instance the bridge is false (would need uniqueness-of-uniform). Let it synthesize from the
-`pSpecᵢ` instances so the fappend coherence is available.
+Crucial subtlety confirmed by probing: the seam challenge types
+`(pSpec₁ ++ₚ pSpec₂).Challenge (inl i)` and `pSpec₁.Challenge i` are only *propositionally*
+equal (rfl fails), and even with the synthesized `Fin.fappend₂` instance the samplers are not
+defeq across the cast. So a **computation-level** bridge (via `simulateQ_liftM_eq_of_query`)
+is the wrong target — it would demand the two `selectElem`s be equal as computations.
+
+**Correct framing: state the bridge at `evalDist` level**, matching how completeness/soundness
+actually consume it (cf. the proven `append_run_evalDist`). Then the inr per-query goal is
+`evalDist ((cast ▸) <$> $ᵗ A) = evalDist ($ᵗ B)` — **uniqueness of the uniform
+distribution**, which IS provable from the `SampleableType` axioms
+(`probOutput_selectElem_eq` + `mem_support_selectElem`) via `evalDist_ext`. Confirmed the
+route typechecks (`evalDist_ext; intro x; …`), remaining is the `Pr[=x] = 1/card` pinning.
+
+Two atomic sub-lemmas isolated:
+- **Atom 1 (PROVEN):** `f <$> (liftM x : StateT σ ProbComp _) = liftM (f <$> x)` by
+  `simp only [map_eq_pure_bind, liftM_bind, liftM_pure]`.
+- **Atom 2 (route confirmed):** uniqueness of uniform *distribution* —
+  `evalDist i1.selectElem = evalDist i2.selectElem` for two `SampleableType` instances, via
+  `evalDist_ext` + the equiprobability/full-support axioms.
 
 ### After the bridge
 

@@ -2936,36 +2936,6 @@ theorem fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
   rw [← simulateQ_map]
   rw [Prover.runWithLog_discard_log_eq_run]
 
-omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
-  [∀ i, SampleableType (pSpec.Challenge i)] in
-/-- Abstract bind-form of the prover-log collapse: any continuation that reads only the prover-run
-result (via `Prod.fst`) can be rebased from the logged prover run over the lifted challenge oracle to
-the direct send/output prover execution.  Stated with an explicit continuation `g` so it can be
-applied by `rw` without higher-order unification fighting an anonymous block, and proven via
-`fiatShamirProver_runWithLog_simulateQ_fst_eq_direct` and `bind_map_left`. -/
-theorem fiatShamirProver_runWithLog_simulateQ_bind_factor
-    {σ β : Type}
-    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
-    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
-      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
-    (stmtIn : StmtIn) (witIn : WitIn)
-    (g : (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
-        StateT σ ProbComp (Option β)) :
-    (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp)
-        (challengeQueryImpl (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-        (Prover.runWithLog stmtIn witIn P) >>= fun x => g x.1)
-      = (simulateQ impl
-          (do
-            let state := P.input (stmtIn, witIn)
-            let ⟨proofMessages, state⟩ ← P.sendMessage ⟨0, by simp⟩ state
-            let ctxOut ← P.output state
-            let proof : Reduction.FiatShamirProofTranscript (pSpec := pSpec) := fun
-              | ⟨0, _⟩ => proofMessages
-            pure ⟨proof, ctxOut⟩) >>= g) := by
-  have h := fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
-    (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)
-  simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self] at h
-  rw [← h, bind_map_left]
 
 omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
   [∀ i, SampleableType (pSpec.Challenge i)] in
@@ -3017,9 +2987,18 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
     StateT.run_simulateQ_optiont_map, StateT.run_pure_some_bind_map,
     Option.map_comp_lambda, simulateQ_map_monadLift_getM_run,
     optionT_run_simulateQ_liftquery, OptionT.run_monadLift, monadLift_self]
+  -- Collapse the `some <$> _ >>= fun x => x.elim _ _` shells into plain binds, leaving the clean
+  -- goal `simulateQ (addLift impl ch) (Prover.runWithLog …) >>= (fun x => loggedBlock x.1)
+  --        = <direct send/output/deriveTranscriptFS/verify/srExtractor chain>`.
   simp only [stateT_bind_some_elim_eq]
-  refine Eq.trans (fiatShamirProver_runWithLog_simulateQ_bind_factor impl P stmtIn witIn _) ?_
-  trace_state
+  -- TODO(#116, KS transfer): the big `simp` above normalises the inner `monadLift` into a form a
+  -- hand-written continuation cannot reproduce (invisible `MonadLift` instance terms), so the
+  -- `change`/Klog fold and any `Prod.fst`-factoring of the anonymous block fail.  The robust fix is
+  -- to mirror the proven sibling `fiatShamirKnowledgeExec_runCollapse`: use the SMALL simp
+  -- `simp only [OptionT.run_bind, simulateQ_option_elimM, simulateQ_pure]`, keep `addLift` FOLDED,
+  -- and pair the prover bridge `fiatShamirProver_runWithLog_simulateQ_fst_eq_direct` with the payload
+  -- bridge `fiatShamirVerifier_loggedExtractor_payload_eq_direct` and the challenge-strip lemma
+  -- `simulateQ_addLift_fiatShamirChallenge_optionT` at the per-`pr` leaf.
   sorry
 
 set_option linter.flexible false in

@@ -34,19 +34,6 @@ namespace Spartan.Spec
 variable {R : Type} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R]
   (pp : Spartan.PublicParams)
 
-/-- Appending the empty (`Fin 0`) vector on the left, then casting `Fin ℓ_m ≃ Fin (0 + (ℓ_m - 0))`,
-is just the original point (composed with the trivial index cast). Hence evaluating `ℱ` at the
-round-`0` sum-check point equals evaluating it at the Boolean cube point directly. -/
-theorem eval_appendElim0_cast (x : Fin (pp.ℓ_m - (0 : Fin (pp.ℓ_m + 1))) → R)
-    (p : MvPolynomial (Fin pp.ℓ_m) R) (h : pp.ℓ_m = 0 + (pp.ℓ_m - (0 : Fin (pp.ℓ_m + 1)))) :
-    MvPolynomial.eval (Fin.append Fin.elim0 x ∘ Fin.cast h) p
-      = MvPolynomial.eval (fun j : Fin pp.ℓ_m => x (Fin.cast (by simp) j)) p := by
-  congr 1
-  funext j
-  simp only [Function.comp_apply]
-  rw [Fin.append_right_eq_append, Fin.append]  -- fall through to addCases
-  rfl
-
 omit [SampleableType R] in
 /-- **First sum-check `proj_complete`.** On any R1CS-satisfying instance, the projected inner
 sum-check instance (empty challenge, target `0`, oracle `ℱ`) satisfies the round-`0` sum-check
@@ -61,10 +48,12 @@ theorem firstSumcheck_proj_mem_relationRound
           ∀ i, Sumcheck.Spec.OracleStatement R pp.ℓ_m 3 i)), ())
       ∈ Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1))) := by
   simp only [Sumcheck.Spec.relationRound, Set.mem_setOf_eq]
-  rw [Spartan.sum_boolDomain_eq_sum_boolFn]
-  rw [← firstSumCheckVirtualPolynomial_hypercubeSum_eq_zero_of_satisfied pp τ 𝕩 oStmt h]
+  rw [Spartan.sum_boolDomain_eq_sum_boolFn,
+    ← firstSumCheckVirtualPolynomial_hypercubeSum_eq_zero_of_satisfied pp τ 𝕩 oStmt h]
   refine Finset.sum_congr rfl fun Y _ => ?_
-  rw [eval_appendElim0_cast]
-  rfl
+  apply congrArg (fun pt => MvPolynomial.eval pt (firstSumCheckVirtualPolynomial pp τ 𝕩 oStmt))
+  rw [Fin.elim0_append]
+  funext j
+  simp only [Function.comp_apply, Fin.cast_cast, Fin.cast_eq_self]
 
 end Spartan.Spec
