@@ -520,6 +520,73 @@ theorem evalDist_simulateQ_run'_state_indep
 
 #print axioms evalDist_simulateQ_run'_state_indep
 
+/-- **Two-phase seam soundness with the snd↔V₁ reorder built in.** This is the abstract heart of
+`appendSoundness`: a malicious-prover seam chain runs the two prover phases `FST`, `SND` and the two
+verifier phases `W1` (`= V₁`), `W2` (`= V₂`) in the *natural* order `FST → SND → W1 → W2`, but the
+union bound needs the `(FST→W1) ; (SND→W2)` factorization. This lemma performs that reorder internally
+(`lift_run_elim` collapses the never-failing prover lifts; `evalDist_simulateQ_swap_prefix` swaps `SND`
+past `W1`; `elim_comm_prefix` moves `SND` inside `W1`'s accept-branch), then applies
+`probComp_seam_union_le`. The caller supplies only the two per-phase bounds `h₁` (on `FST→W1`) and
+`h₂` (on `SND→W2`) — which are exactly `V₁`/`V₂`'s soundness against the seam-restricted provers — plus
+the state-preservation `hso` and the prover-never-fails side-condition `hB` (both hold for the
+interactive challenge oracle over an empty shared spec). The result is the additive bound `e₁ + e₂`. -/
+theorem probComp_seam_swap_union_le
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (pg : C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 True (fun p : A × C => pg p.2)
+          | init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
+    (h₂ : ∀ (p : A × C) (s' : σ),
+          (some p, s') ∈ support (init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p.2 →
+          Pr[fun o => ¬ Option.elim o True qg
+            | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
+    Pr[fun o => ¬ Option.elim o True qg
+        | init >>= fun s => (simulateQ so
+            (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+              W2 x a s₂).run).run' s] ≤ e₁ + e₂ := by
+  have key : 𝒟[init >>= fun s => (simulateQ so
+        (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+          W2 x a s₂).run).run' s]
+      = 𝒟[init >>= fun s => (simulateQ so
+        ((liftM FST >>= fun x => W1 x >>= fun s₂ =>
+            (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+          >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s] := by
+    have h1 : (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+        W2 x a s₂ : OptionT (OracleComp spec) D).run
+      = FST >>= fun x => SND x >>= fun a => (W1 x).run >>= fun o₁ =>
+          o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run) := by
+      simp only [OptionT.run_bind, Option.elimM, lift_run_elim, bind_assoc]
+    have h2 : (((liftM FST >>= fun x => W1 x >>= fun s₂ =>
+          (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+        >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2) : OptionT (OracleComp spec) D).run
+      = FST >>= fun x => (W1 x).run >>= fun o₁ =>
+          o₁.elim (pure none) (fun s₂ => SND x >>= fun a => (W2 x a s₂).run) := by
+      simp only [OptionT.run_bind, Option.elimM, lift_run_elim, bind_assoc, OptionT.run_pure,
+        pure_bind, Option.elim_some]
+    rw [h1, h2, evalDist_bind, evalDist_bind]
+    refine bind_congr fun s => ?_
+    rw [evalDist_simulateQ_swap_prefix so hso FST SND (fun x => (W1 x).run)
+        (fun x a o₁ => o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run)) s]
+    exact elim_comm_prefix so hso FST (fun x => (W1 x).run) SND
+      (fun x a s₂ => (W2 x a s₂).run) hB s
+  have hmain := probComp_seam_union_le init so
+    (liftM FST >>= fun x => W1 x >>= fun s₂ => (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+    (fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2)
+    (fun p : A × C => pg p.2) qg e₁ e₂ h₁ h₂
+  unfold probEvent at hmain ⊢
+  rw [key]; exact hmain
+
+#print axioms probComp_seam_swap_union_le
+
 section AddLiftBridges
 open ProtocolSpec
 variable {ι : Type} {oSpec : OracleSpec ι} {σ : Type} {n : ℕ} {pSpec : ProtocolSpec n}
