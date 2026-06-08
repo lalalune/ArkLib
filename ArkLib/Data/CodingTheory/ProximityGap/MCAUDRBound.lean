@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 
 /-!
 # Connected unique-decoding-regime MCA bound for Reed–Solomon, from scratch (#232)
@@ -210,7 +211,39 @@ theorem epsMCA_rs_udr_le (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintyp
     simp only [hSdef, dif_pos h]
     exact h.choose_spec.2.2
 
+open Classical in
+/-- **A non-trivial `MCALowerWitness` from the UDR bound.** For a large enough field
+(`2(n−t)·2^128 ≤ |F|`, `t = ⌈(1-δ)n⌉`) in the unique-decoding regime, radius `δ` certifies
+`ε_mca(RS, δ) ≤ ε*` (`ε* = 2^{-128}`), so the Grand MCA threshold satisfies `δ* ≥ δ`. This upgrades
+the lower witness from `δ = 0` to the unique-decoding radius `δ ≲ (1−ρ)/3`. -/
+noncomputable def rs_mcaLowerWitness_udr (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintype.card ι)
+    (δ : ℝ≥0) (hδ1 : δ ≤ 1)
+    (htn : ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊ < Fintype.card ι)
+    (hreg : 3 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) < Fintype.card ι - k + 1)
+    (hF : 2 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) * 2 ^ 128 ≤ Fintype.card F) :
+    GrandChallenges.MCALowerWitness (ReedSolomon.code α k : Set (ι → F)) epsStar where
+  δ := δ
+  le_one := hδ1
+  bound := by
+    refine le_trans (epsMCA_rs_udr_le α k hk δ htn hreg) ?_
+    set m : ℕ := 2 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) with hm
+    have hmpos : 0 < m := by rw [hm]; omega
+    have hm0 : (m : ℝ≥0∞) ≠ 0 := by exact_mod_cast hmpos.ne'
+    have hmt : (m : ℝ≥0∞) ≠ ⊤ := by exact_mod_cast (ENNReal.natCast_ne_top m)
+    have hcoe : (epsStar : ENNReal) = 1 / 2 ^ 128 := by
+      rw [epsStar, ENNReal.coe_div (by positivity), ENNReal.coe_one, ENNReal.coe_pow,
+        ENNReal.coe_ofNat]
+    rw [hcoe]
+    have hFge : ((m * 2 ^ 128 : ℕ) : ℝ≥0∞) ≤ (Fintype.card F : ℝ≥0∞) := by exact_mod_cast hF
+    have hcast : ((m * 2 ^ 128 : ℕ) : ℝ≥0∞) = (m : ℝ≥0∞) * 2 ^ 128 := by push_cast; ring
+    calc (m : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)
+        ≤ (m : ℝ≥0∞) / ((m * 2 ^ 128 : ℕ) : ℝ≥0∞) := ENNReal.div_le_div_left hFge (m : ℝ≥0∞)
+      _ = (m : ℝ≥0∞) / ((m : ℝ≥0∞) * 2 ^ 128) := by rw [hcast]
+      _ = (m : ℝ≥0∞) * 1 / ((m : ℝ≥0∞) * 2 ^ 128) := by rw [mul_one]
+      _ = 1 / 2 ^ 128 := ENNReal.mul_div_mul_left 1 (2 ^ 128) hm0 hmt
+
 #print axioms badCount_udr_le
 #print axioms epsMCA_rs_udr_le
+#print axioms rs_mcaLowerWitness_udr
 
 end ProximityGap.UDRwire
