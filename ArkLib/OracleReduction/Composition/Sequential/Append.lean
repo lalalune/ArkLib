@@ -3690,6 +3690,57 @@ theorem append_continueFromTo_seam_start_message_processRound (hn : 0 < n)
     (liftComp_processRound_zero_message_appendRight
       (P₁ := P₁) (P₂ := P₂) hn hDir₂ T₁ ctxIn₂).symm
 
+/-- Challenge-branch seam start with the boundary computation split out explicitly.
+
+Unlike the message branch, the appended prover's seam challenge round samples the verifier
+challenge before replaying `P₁.output`, while `P₂.processRound 0` would require the `P₂.input`
+state before its challenge query.  This theorem preserves that challenge-first order and normalizes
+the two replayed `oSpec` computations to direct appended-spec lifts. -/
+theorem append_continueFromTo_seam_start_challenge_split (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeam.1 =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))) :
+    HEq (Prover.continueFromTo (P₁.append P₂) stmt wit
+          (⟨m, by omega⟩ : Fin (m + n)).castSucc
+          (⟨m, by omega⟩ : Fin (m + n)).succ rSeam)
+      ((liftM (pSpec₂.getChallenge ⟨⟨0, hn⟩, hDir₂⟩) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩)) >>= fun challenge =>
+        OracleComp.liftComp
+          (P₁.output (cast (append_PrvState_seam_castSucc (P₁ := P₁) (P₂ := P₂) hn) rSeam.2))
+          (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) >>= fun ctxIn₂ =>
+        OracleComp.liftComp
+          (P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂))
+          (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) >>= fun f =>
+        (pure
+          (Transcript.appendRight T₁
+              (Transcript.concat challenge
+                (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))),
+            cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm
+              (f challenge)) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+              × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ))) := by
+  refine HEq.trans (append_continueFromTo_seam_step_challenge_appendRight
+    (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit) hn hDir hDir₂ T₁ rSeam hT) ?_
+  apply heq_of_eq
+  congr 1
+  funext challenge
+  rw [liftM_bind, bind_assoc]
+  rw [liftM_via_leftChallenge_eq_liftComp
+    (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂)
+    (X := P₁.output (cast (append_PrvState_seam_castSucc (P₁ := P₁) (P₂ := P₂) hn) rSeam.2))]
+  congr 1
+  funext ctxIn₂
+  rw [liftM_via_leftChallenge_eq_liftComp
+    (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂)
+    (X := P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂))]
+
 /-- Seam transcript type equality: the appended transcript at the seam round `⟨m⟩.castSucc`
 (covering only `pSpec₁`'s rounds) is `pSpec₁`'s full transcript. -/
 theorem append_Transcript_seam_castSucc (hn : 0 < n) :
@@ -3898,6 +3949,7 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
 #print axioms Prover.liftComp_processRound_zero_message_appendRight
 #print axioms Prover.liftComp_processRound_zero_challenge_appendRight
 #print axioms Prover.append_continueFromTo_seam_start_message_processRound
+#print axioms Prover.append_continueFromTo_seam_start_challenge_split
 
 -- Future work: define a function that extracts a second prover from the combined prover.
 
