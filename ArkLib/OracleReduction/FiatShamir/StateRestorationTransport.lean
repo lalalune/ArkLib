@@ -1193,6 +1193,33 @@ private theorem popFSChallengeFromLog_cons_self
     some (response, tail)
   simp
 
+private theorem transcriptFromFSChallengeLogAux_succ_v
+    (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
+    (i : Fin k)
+    (hDir : pSpec.dir (i.castLE (by omega)) = .V_to_P)
+    (log : QueryLog (fsChallengeOracle StmtIn pSpec)) :
+    (transcriptFromFSChallengeLogAux
+      (StmtIn := StmtIn) (pSpec := pSpec) k messages i.succ).run log =
+      ((transcriptFromFSChallengeLogAux
+        (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc).run log).bind
+        (fun p =>
+          ((popFSChallengeFromLog
+            (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩).run p.2).bind
+            (fun c => some (p.1.concat c.1, c.2))) := by
+  simp [transcriptFromFSChallengeLogAux, Fin.induction_succ, hDir]
+
+private theorem transcriptFromFSChallengeLogAux_succ_p
+    (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
+    (i : Fin k)
+    (hDir : pSpec.dir (i.castLE (by omega)) = .P_to_V)
+    (log : QueryLog (fsChallengeOracle StmtIn pSpec)) :
+    (transcriptFromFSChallengeLogAux
+      (StmtIn := StmtIn) (pSpec := pSpec) k messages i.succ).run log =
+      ((transcriptFromFSChallengeLogAux
+        (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc).run log).map
+        (fun p => (p.1.concat (messages ⟨i, hDir⟩), p.2)) := by
+  simp [transcriptFromFSChallengeLogAux, Fin.induction_succ, hDir]
+
 private theorem transcriptFromFSChallengeLogAux_run_logging
     (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
     (j : Fin (k + 1)) (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
@@ -1216,10 +1243,9 @@ private theorem transcriptFromFSChallengeLogAux_run_logging
       rw [Fin.induction_succ]
       split
       · next hDir =>
-        cases hDir
-        simp_all [simulateQ_bind, WriterT.run_bind, bind_assoc]
+        simp_all [simulateQ_bind, WriterT.run_bind, WriterT.run_pure, simulateQ_pure,
+          bind_assoc, queryLog_snd_append, QueryLog.snd, popFSChallengeFromLog_cons_self]
       · next hDir =>
-        cases hDir
         simp_all [simulateQ_bind, WriterT.run_bind, WriterT.run_pure, simulateQ_pure,
           bind_assoc, Option.map_bind, Option.bind_eq_bind]
 
