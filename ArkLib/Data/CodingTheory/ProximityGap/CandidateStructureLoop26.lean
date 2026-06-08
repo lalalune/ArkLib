@@ -35,8 +35,8 @@ strictly stronger requirement than Loop24/25 alone stated. See `DISPROOF_LOG.md`
 
 namespace ArkLib.ProximityGap.StructureLoop26
 
-/-- **Additive per-fold recursion is linear in the number of folds.** If `T(j+1) ≤ T(j) + b` at every
-fold, then after `m` folds `T(m) ≤ T(0) + m·b`. -/
+/-- **Additive per-fold recursion is linear in the number of folds.** If `T(j+1) ≤ T(j) + b` at
+every fold, then after `m` folds `T(m) ≤ T(0) + m·b`. -/
 theorem additive_recursion_linear
     (T : ℕ → ℝ) (b : ℝ) (hstep : ∀ j, T (j + 1) ≤ T j + b) :
     ∀ m, T m ≤ T 0 + m * b := by

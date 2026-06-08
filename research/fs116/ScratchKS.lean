@@ -3,6 +3,7 @@ import ArkLib.OracleReduction.FiatShamir.StateRestorationTransport
 noncomputable section
 
 open OracleComp OracleSpec ProtocolSpec
+open ArkLib.FiatShamir.CompletenessAux
 open scoped NNReal
 
 namespace Reduction
@@ -81,6 +82,45 @@ private theorem scratch_probEvent_optionT_stateT_init
     rw [map_eq_pure_bind]
     simp only [bind_assoc, pure_bind, Option.elim_some]]
   exact Verifier.StateFunction.probEvent_optionT_mk_eq_elim _ _
+
+@[simp] private theorem simulateQ_addLift_optionT_liftM_run
+    {m : ℕ} {qSpec : ProtocolSpec m} [∀ i, SampleableType (qSpec.Challenge i)]
+    {σ α : Type}
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (oa : OptionT (OracleComp oSpec) α) :
+    simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+        ((liftM oa : OptionT (OracleComp (oSpec + [qSpec.Challenge]ₒ)) α).run) =
+      simulateQ impl oa.run := by
+  change
+    (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+        (liftM oa : OptionT (OracleComp (oSpec + [qSpec.Challenge]ₒ)) α)).run =
+      (simulateQ impl oa : OptionT (StateT σ ProbComp) α).run
+  rw [OptionT.simulateQ_addLift_liftM]
+
+@[simp] private theorem simulateQ_addLift_fiatShamir_liftM_base_optionT_run
+    {σ α : Type}
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (oa : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α) :
+    simulateQ
+        (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+        ((liftM oa : OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α).run) =
+      simulateQ impl oa.run := by
+  rw [congrArg OptionT.run
+    (fiatShamir_liftM_base_optionT_to_append_eq_direct
+      (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) (oa := oa))]
+  simp only [OptionT.run_mk]
+  rw [show OracleComp.liftComp oa.run
+        ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ) =
+      (liftM oa.run : OracleComp
+        ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ) (Option α)) by
+    rw [OracleComp.liftComp_eq_liftM]]
+  exact simulateQ_addLift_liftM
+    (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))
+    (impl := impl) (oa := oa.run)
 
 local instance fiatShamirProverOnlyCanonicalKSScratch : ProtocolSpec.ProverOnly
     (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) where
@@ -194,11 +234,56 @@ theorem scratch_fiatShamirKnowledgeExec_runCollapse
         simulateQ impl (fiatShamirAdversaryExecution P V stmtIn witIn).run :=
     fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn
   rw [hfst]
-  simp only [K, QueryImpl.addLift_def, QueryImpl.liftTarget_self, liftM_eq_monadLift,
-    OracleComp.liftM_OptionT_eq, OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk,
-    optionT_monadLift_run, simulateQ_bind, simulateQ_map, simulateQ_pure,
-    simulateQ_addLift_liftM, simulateQ_option_elimM, Option.elimM, bind_assoc,
-    pure_bind, map_bind]
+  have hLift :
+      ∀ d : ((Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
+          (StmtOut × WitOut)) × StmtOut),
+        simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+          (OptionT.run
+            ((liftM
+              (do
+                let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                  (oSpec := oSpec) stmtIn (d.1.1 0))
+                liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+                  OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)) :
+                OptionT
+                  (OracleComp
+                    ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                      [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                  WitIn)) =
+        simulateQ impl
+          (OptionT.run
+            (do
+              let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                (oSpec := oSpec) stmtIn (d.1.1 0))
+              liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+                OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)) := by
+    intro d
+    exact simulateQ_addLift_fiatShamir_liftM_base_optionT_run
+      impl
+      (do
+        let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+          (oSpec := oSpec) stmtIn (d.1.1 0))
+        liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+  have hPure :
+      ∀ (d : ((Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
+          (StmtOut × WitOut)) × StmtOut)) (extractedWitIn : WitIn),
+        simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+          (OptionT.run
+            ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
+              OptionT
+                (OracleComp
+                  ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                    [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                (StmtIn × WitIn × StmtOut × WitOut))) =
+        simulateQ impl
+          (OptionT.run
+            ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
+              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                (StmtIn × WitIn × StmtOut × WitOut))) := by
+    intro d extractedWitIn
+    simp
+  simp [K, QueryImpl.addLift_def, hLift, hPure]
 
 theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))

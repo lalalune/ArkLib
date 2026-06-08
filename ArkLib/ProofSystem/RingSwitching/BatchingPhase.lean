@@ -7,6 +7,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Basic
+import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Probability.Notation
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
 
@@ -49,6 +50,15 @@ open Sumcheck.Structured
 
 noncomputable section
 namespace RingSwitching.BatchingPhase
+
+/-- Bridge the framework's `SampleableType` uniform sampler to the PMF uniform notation used by
+Schwartz-Zippel lemmas. -/
+private theorem probEvent_uniformSample_eq_Pr_uniform {α : Type} [SampleableType α] [Fintype α]
+    [Nonempty α] (p : α → Prop) [DecidablePred p] :
+    Pr[p | ($ᵗ α)] = Pr_{ let x ← $ᵖ α }[p x] := by
+  rw [probEvent_uniformSample]
+  rw [prob_uniform_eq_card_filter_div_card]
+  norm_num
 
 /-- The default oracle interface (`OracleInterface.instDefault`, used by the ring-switching message
 oracles in `Spec.lean`) answers its only (unit) query with the message itself. -/
@@ -641,7 +651,7 @@ lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L] [IsDoma
     (msg0 s_bar : P.A) :
     Pr[fun y =>
       badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar |
-        ($ᵖ (Fin κ → L))] ≤
+        ($ᵗ (Fin κ → L))] ≤
       batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) ⟨1, rfl⟩ := by
   classical
   unfold badBatchingEventProp
@@ -651,10 +661,10 @@ lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L] [IsDoma
     -- Rewrite compute_s0 equality as mismatch polynomial root
     have h_mono :
         Pr[fun y => compute_s0 κ L K P msg0 y = compute_s0 κ L K P s_bar y |
-            ($ᵖ (Fin κ → L))] ≤
+            ($ᵗ (Fin κ → L))] ≤
           Pr[fun y => MvPolynomial.eval y
               (batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar) = 0 |
-            ($ᵖ (Fin κ → L))] := by
+            ($ᵗ (Fin κ → L))] := by
       apply probEvent_mono
       intro y _ h_eq
       rw [← batching_compute_s0_sub_eq_eval_mismatch (κ := κ) (L := L) (K := K) (P := P)
@@ -691,11 +701,10 @@ lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L] [IsDoma
       rw [ENNReal.coe_div (hr := by simp only [ne_eq, Nat.cast_eq_zero, Fintype.card_ne_zero,
         not_false_eq_true])]
       simp only [ENNReal.coe_ofNat, ENNReal.coe_natCast]
+    rw [probEvent_uniformSample_eq_Pr_uniform]
     exact h_sz
   · -- msg0 = s_bar: event is False ∧ _, which never holds
-    simp only [h_ne, false_and]
-    simp only [PMF.monad_pure_eq_pure, PMF.monad_bind_eq_bind, PMF.bind_const, PMF.pure_apply,
-      eq_iff_iff, iff_false, not_true_eq_false, ↓reduceIte, _root_.zero_le]
+    simpa [h_ne]
 
 /-- Extraction failure implies a witness-dependent bad batching event. -/
 lemma batching_rbrExtractionFailureEvent_imply_badBatchingEvent [Fintype L] [DecidableEq L]
@@ -719,7 +728,8 @@ lemma batching_rbrExtractionFailureEvent_imply_badBatchingEvent [Fintype L] [Dec
   rcases doomEscape with ⟨witMid, h_kState_before_false, h_kState_after_true⟩
   have h_after :
       batchingKStateProp (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-        (m := 2) (tr := FullTranscript.mk2 msg0 y) stmtOStmtIn.1 witMid stmtOStmtIn.2 := h_kState_after_true
+        (aOStmtIn := aOStmtIn) (m := 2) (tr := FullTranscript.mk2 msg0 y)
+        (stmt := stmtOStmtIn.1) (witMid := witMid) (oStmt := stmtOStmtIn.2) := h_kState_after_true
   simp only [batchingKStateProp, Transcript.equivMessagesChallenges] at h_after
   have h_t_eq := h_after.1
   have h_compute_eq := h_after.2.1
@@ -749,7 +759,7 @@ lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDoma
         (extractor := batchingRbrExtractor (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
           (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
         (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => msg0)
-        (challenge := y) | ($ᵖ (Fin κ → L))] ≤
+        (challenge := y) | ($ᵗ (Fin κ → L))] ≤
       batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) ⟨1, rfl⟩ := by
   classical
   let P_event := rbrExtractionFailureEvent
@@ -766,10 +776,10 @@ lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDoma
         stmtOStmtIn msg0 y_doom h_doomEscape
     let s_bar_fixed := embedded_MLP_eval κ L K P ℓ ℓ' h_l witMid.t' stmtOStmtIn.1.t_eval_point
     have h_prob_mono :
-        Pr[fun y => P_event y | ($ᵖ (Fin κ → L))] ≤
+        Pr[fun y => P_event y | ($ᵗ (Fin κ → L))] ≤
           Pr[fun y =>
               badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar_fixed |
-            ($ᵖ (Fin κ → L))] := by
+            ($ᵗ (Fin κ → L))] := by
       apply probEvent_mono
       intro y _ h_doomEscape'
       obtain ⟨witMid', _h_mid_compat', h_bad_extracted'⟩ :=
@@ -777,7 +787,7 @@ lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDoma
           (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl)
           stmtOStmtIn msg0 y h_doomEscape'
       have h_t_eq : witMid'.t' = witMid.t' := by
-        unfold rbrExtractionFailureEvent at h_doomEscape h_doomEscape'
+        dsimp [P_event, rbrExtractionFailureEvent] at h_doomEscape h_doomEscape'
         rcases h_doomEscape with ⟨_, h_before_false, _⟩
         rcases h_doomEscape' with ⟨_, h_before_false', _⟩
         simp only [batchingKnowledgeStateFunction, batchingKStateProp, Transcript.equivMessagesChallenges,
@@ -788,8 +798,8 @@ lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDoma
     exact probability_bound_badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P)
       (msg0 := msg0) (s_bar := s_bar_fixed)
   · have h_prob_mono_false :
-        Pr[fun y => P_event y | ($ᵖ (Fin κ → L))] ≤
-          Pr[fun _ : Fin κ → L => False | ($ᵖ (Fin κ → L))] := by
+        Pr[fun y => P_event y | ($ᵗ (Fin κ → L))] ≤
+          Pr[fun _ : Fin κ → L => False | ($ᵗ (Fin κ → L))] := by
       apply probEvent_mono
       intro y _ h_doomEscape
       exact False.elim ((not_exists.mp h_doom y) h_doomEscape)

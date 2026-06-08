@@ -8,6 +8,7 @@ import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Probability.Notation
 import ArkLib.OracleReduction.Security.RoundByRound
 set_option linter.style.longFile 0
