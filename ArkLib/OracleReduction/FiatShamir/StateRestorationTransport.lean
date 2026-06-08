@@ -1470,6 +1470,42 @@ theorem simulateQ_addLift_fsChallenge_preserves_state {γ : Type}
     | inr q_f =>
       simp [QueryImpl.addLift, QueryImpl.add_apply_inr, fsChallengeQueryImplState, StateT.run]
 
+/-- KS payload reconciliation.  The Fiat-Shamir game fails through the option monad when the verifier
+rejects and only then bundles the extracted witness; the state-restoration game keeps the verifier's
+`Option StmtOut` and runs the extractor `me` unconditionally.  Since `me` is independent of the
+verifier result, the two have the same success-event probability (the verifier-reject branch
+contributes nothing to either success event, and the accept branch agrees up to commuting the input
+and output relation conjuncts). -/
+theorem ks_payload_eq {σ' StmtIn' WitIn' StmtOut' WitOut' : Type}
+    (relIn' : Set (StmtIn' × WitIn')) (relOut' : Set (StmtOut' × WitOut'))
+    (stmtIn' : StmtIn') (witOut' : WitOut')
+    (mv : StateT σ' ProbComp (Option StmtOut')) (me : StateT σ' ProbComp WitIn') (s : σ') :
+    Pr[fun o : Option (StmtIn' × WitIn' × StmtOut' × WitOut') =>
+        o.elim False (fun x => (x.1, x.2.1) ∉ relIn' ∧ (x.2.2.1, x.2.2.2) ∈ relOut') |
+      (fun x : Option (StmtIn' × WitIn' × StmtOut' × WitOut') × σ' => x.1) <$>
+        (mv >>= fun so? => so?.elim (pure none) (fun so =>
+          me >>= fun wi => pure (some (stmtIn', wi, so, witOut')))).run s]
+    = Pr[(fun x : StmtIn' × WitIn' × Option StmtOut' × WitOut' =>
+        match x with | (a, b, some c, d) => (c, d) ∈ relOut' ∧ (a, b) ∉ relIn' | _ => False) |
+      (fun x : (StmtIn' × WitIn' × Option StmtOut' × WitOut') × σ' => x.1) <$>
+        (mv >>= fun so? =>
+          me >>= fun wi => pure (stmtIn', wi, so?, witOut')).run s] := by
+  simp only [StateT.run_bind, probEvent_map]
+  rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
+  refine tsum_congr (fun p => ?_)
+  congr 1
+  obtain ⟨so?, s2⟩ := p
+  cases so? with
+  | none =>
+    simp only [Option.elim_none, StateT.run_pure, bind_pure_comp, StateT.run_map, probEvent_map,
+      Function.comp]
+    rw [probEvent_eq_zero_iff.mpr (fun _ hx => by simp_all),
+      probEvent_eq_zero_iff.mpr (fun _ _ => by simp)]
+  | some so =>
+    simp only [Option.elim_some, StateT.run_bind, StateT.run_pure, bind_pure_comp, StateT.run_map,
+      probEvent_map, Function.comp]
+    exact probEvent_ext (fun x _ => and_comm)
+
 set_option linter.flexible false in
 theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
