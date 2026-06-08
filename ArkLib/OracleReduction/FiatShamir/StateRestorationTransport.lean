@@ -1505,6 +1505,29 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
         simulateQ_map_monadLift_getM_run, optionT_run_simulateQ_liftquery,
         OptionT.run_pure, StateT.run_pure, _root_.map_pure]
   · -- heq: FS knowledge-soundness game = SR knowledge-soundness game (reduction faithfulness)
+    rw [Reduction.fiatShamir_runWithLog_bind_collapse
+      (impl := (srImpl.addLift fsChallengeQueryImplState :
+        QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec)
+          (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp)))
+      (P := prover) (V := V) (stmtIn := stmtIn) (witIn := witIn) (table := table)
+      (d := pure none)
+      (F := fun p a2 =>
+        StateT.run' (m := ProbComp)
+          (do
+            let x_1 ← simulateQ (srImpl.addLift fsChallengeQueryImplState)
+              (fiatShamirStraightlineExtractorOfStateRestoration srExtractor stmtIn
+                p.1.2.2 p.1.1 default default).run
+            x_1.elim (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+                (pure none : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+                  (Option (StmtIn × WitIn × StmtOut × WitOut))))
+              fun x_2 => simulateQ (srImpl.addLift fsChallengeQueryImplState)
+                (pure (stmtIn, x_2, p.2, p.1.2.2) :
+                  OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                    (StmtIn × WitIn × StmtOut × WitOut)).run) a2)]
+    -- After the bridge: LHS runs `fiatShamirAdversaryExecution` (sendMessage, output, derive,
+    -- verify) then the extractor (derive again, srExtractor); RHS is the SR knowledge game.
+    -- Remaining: unfold advExec, collapse the extractor's redundant `deriveTranscriptFS` via the
+    -- determinism keystone, and reconcile the option-payload predicates.
     sorry
 
 end CanonicalKnowledgeSoundness
