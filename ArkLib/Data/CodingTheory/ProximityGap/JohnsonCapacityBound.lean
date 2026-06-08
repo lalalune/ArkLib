@@ -60,4 +60,12 @@ theorem johnson_lt_capacity {δ : ℝ} (h0 : 0 < δ) (h1 : δ < 1) :
   have key : (1 - δ) < Real.sqrt (1 - δ) := (Real.lt_sqrt hd).mpr hsq
   linarith
 
+/-- Reed–Solomon strict form: `1 - √ρ < 1 - ρ` for `ρ ∈ (0,1)`.  In particular the Johnson/
+capacity gap `[1 - √ρ, 1 - ρ]` is nondegenerate at each prize rate `ρ ∈ {1/2,1/4,1/8,1/16}`. -/
+theorem johnson_rs_lt_capacity {ρ : ℝ} (h0 : 0 < ρ) (h1 : ρ < 1) :
+    1 - Real.sqrt ρ < 1 - ρ := by
+  have hsq : ρ ^ 2 < ρ := by nlinarith
+  have key : ρ < Real.sqrt ρ := (Real.lt_sqrt h0.le).mpr hsq
+  linarith
+
 end ArkLib.JohnsonCapacity
