@@ -22,7 +22,11 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- The adversarial stack: row 0 = `w₀`, row 1 = `0`. -/
+<<<<<<< HEAD
+def badStack (w₀ : ι → F) : Matrix (Fin 2) ι F := ![w₀, 0]
+=======
 def badStack (w₀ : ι → F) : WordStack F (Fin 2) ι := ![w₀, 0]
+>>>>>>> fork/main
 
 @[simp] theorem badStack_zero (w₀ : ι → F) : (badStack w₀) 0 = w₀ := rfl
 @[simp] theorem badStack_one (w₀ : ι → F) : (badStack w₀) 1 = (0 : ι → F) := rfl
@@ -80,7 +84,11 @@ theorem epsMCAgs_badList_eq_one
     (w₀ : ι → F) (hw₀C : w₀ ∈ C) (hw₀ne : w₀ ≠ 0) :
     epsMCAgs (F := F) C δ (fun _ => ({w₀} : Finset (ι → F))) = 1 := by
   classical
+<<<<<<< HEAD
+  refine le_antisymm (by unfold epsMCAgs; exact iSup_le fun u => Pr_le_one _ _) ?_
+=======
   refine le_antisymm (epsMCAgs_le_one C δ _) ?_
+>>>>>>> fork/main
   rw [← Pr_badStack_eq_one C δ hδ w₀ hw₀C hw₀ne]
   exact le_iSup (fun u => Pr_{let γ ← $ᵖ F}[mcaEventGSrow ((fun _ => ({w₀} : Finset (ι → F))) u)
       C δ (u 0) (u 1) γ]) (badStack w₀)
@@ -166,6 +174,17 @@ theorem not_uniformEpsMCAgsPrizeBoundConjecture :
       rw [one_div, Real.inv_rpow (by norm_num)]
     have hp_pos : (0 : ℝ) < p := by positivity
     have hpow_pos : (0 : ℝ) < (2 : ℝ) ^ (c₂ + c₃) := Real.rpow_pos_of_pos (by norm_num) _
+<<<<<<< HEAD
+    rw [e1, e2, mul_one, e3, div_eq_mul_inv, inv_inv, one_div, inv_mul_eq_div,
+        div_lt_one hp_pos]
+    exact hpow_lt
+  -- `key : 1 ≤ ofReal(RHS)` but `ofReal(RHS) < 1` (since `RHS < 1`): contradiction.
+  have hlt1 : ENNReal.ofReal
+      (epsMCAgsPrizeBound (Fintype.card (ZMod p)) 0 (ProximityGap.prizeRates 0) (1 / 2) c₁ c₂ c₃) < 1 :=
+    ENNReal.ofReal_lt_one.mpr hRHS
+  exact absurd key (not_le.mpr hlt1)
+
+=======
     rw [e1, e2, e3]
     rw [div_lt_one (by positivity)]
     rw [le_iff_lt_or_eq] at hpow_lt
@@ -180,3 +199,4 @@ theorem not_uniformEpsMCAgsPrizeBoundConjecture :
   rw [← ENNReal.ofReal_one] at this
   have hle := (ENNReal.ofReal_le_ofReal_iff (le_of_lt (by linarith [hRHS] : (0:ℝ) < 1))).mp this
   linarith [hRHS]
+>>>>>>> fork/main
