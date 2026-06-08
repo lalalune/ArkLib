@@ -321,6 +321,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop3
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop4
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop5
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop6
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop7
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDomainSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateExtrapolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFoldedRS
@@ -330,6 +331,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateImmunity
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateMultilinearHypercube
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateResultantCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateSliceRank
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateSubfieldProjection
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateSyndrome
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
@@ -397,7 +399,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOneExact
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeResolutionWitness
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
-import ArkLib.Data.CodingTheory.ProximityGap.MCAConjectureRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Core
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.ListThreshold
@@ -442,6 +443,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LogUpAppendProof
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountGrandChallenge
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountRatio
+import ArkLib.Data.CodingTheory.ProximityGap.MCAConjectureRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
@@ -640,6 +642,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.N0AppendScratch
+import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
