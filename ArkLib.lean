@@ -114,13 +114,9 @@ import ArkLib.Data.CodingTheory.ListDecoding.BKR06SubspacePoly
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.BCHKS25
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.CapacityBoundsProofs
-import ArkLib.Data.CodingTheory.ListDecoding.Bounds.CapacityBoundsProofsScratch
-import ArkLib.Data.CodingTheory.ListDecoding.Bounds.CapacityBoundsProofsScratch2
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.GKL24
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.General
-import ArkLib.Data.CodingTheory.ListDecoding.Bounds.MissingLemmas
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.RandomAndReedSolomon
-import ArkLib.Data.CodingTheory.ListDecoding.Bounds.ScratchDegree
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.SubspaceDesign
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityPropEndpoint
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityReduction
