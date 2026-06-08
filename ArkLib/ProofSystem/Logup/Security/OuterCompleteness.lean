@@ -378,6 +378,43 @@ theorem outerProver_transcript_message_readback
   · simp only [FullTranscript.messages, Transcript.concat, Fin.isValue]
     rfl
 
+/-- **Outer verifier output oracle-statement agreement (foundational, axiom-clean).**
+
+The outer verifier recomputes its output oracle statements off the transcript via `embed`
+(`.input i → .inl i` passthrough, `.multiplicity → .inr ⟨0⟩`, `.helpers → .inr ⟨2⟩`) through the
+dependent `hEq`/`embed` transport of `OracleVerifier.run`.  Given the transcript carries the honest
+prover's round-0/round-2 messages (`honestMultiplicity oStmt` / `honestHelpers params oStmt x` — as
+exposed by `outerProver_transcript_message_readback` on the closed-form run), the verifier's output
+oracle-statement function coincides *exactly* with the honest prover's output oracle-statement
+function (`outerProver.output`).  This is the oracle-statement half of the prover/verifier
+output-statement agreement (`prvStmtOut = stmtOut`), the complement-zero content of
+`OuterCompletenessRunFactsResidual`; the statement-record half is `outerProver_transcript_challenge_readback`.
+
+The outerVerifier's `embed`/`hEq` are concrete `rfl` on each `OuterOracleIdx` constructor, so the
+`hEq i ▸ h ▸` transports compute away under `cases i`. -/
+theorem outerVerifier_oStmtOut_eq
+    (oStmt : ∀ i, OStmtIn F n M i)
+    (transcript : (outerPSpec F n params).FullTranscript)
+    (x : F)
+    (hm : transcript.messages (⟨0, rfl⟩ : (outerPSpec F n params).MessageIdx)
+            = honestMultiplicity oStmt)
+    (hh : transcript.messages (⟨2, rfl⟩ : (outerPSpec F n params).MessageIdx)
+            = honestHelpers params oStmt x) :
+    (fun i => match h : (outerVerifier oSpec F n M params).embed i with
+        | .inl j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ oStmt j :
+            OStmtAfterOuter F n M params i)
+        | .inr j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ transcript.messages j :
+            OStmtAfterOuter F n M params i))
+      = (fun
+          | .input i => oStmt i
+          | .multiplicity => honestMultiplicity oStmt
+          | .helpers => honestHelpers params oStmt x) := by
+  funext i
+  cases i with
+  | input j => rfl
+  | multiplicity => simpa using hm
+  | helpers => simpa using hh
+
 set_option maxHeartbeats 3200000 in
 /-- **Outer-completeness failure bound reduced to the per-(initial-state) pole event (axiom-clean).**
 
