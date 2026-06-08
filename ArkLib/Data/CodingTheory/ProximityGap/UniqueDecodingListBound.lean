@@ -148,7 +148,7 @@ theorem exists_center_within_half {x y : ι → F} (hxy : x ≠ y) :
         rw [Finset.piecewise_eq_of_notMem _ _ _ hiT]
         rw [hSdef, Finset.mem_filter] at hiS
         exact Ne.symm hiS.2
-    rw [hy, Finset.card_sdiff hTS, hScard, hTcard]; omega
+    rw [hy, Finset.card_sdiff, Finset.inter_eq_left.mpr hTS, hScard, hTcard]; omega
 
 /-- **Sharpness of `listBall_card_le_one`.** Two distinct codewords `x ≠ y` (a code with minimum
 distance `d = hammingDist x y`) yield a decoding list of size `≥ 2` at radius `e = ⌈d/2⌉`, where
@@ -159,13 +159,12 @@ theorem listBall_two_at_half {x y : ι → F} (hxy : x ≠ y) :
   obtain ⟨r, hxr, hyr⟩ := exists_center_within_half hxy
   refine ⟨r, (hammingDist x y + 1) / 2, by omega, ?_⟩
   have hxmem : x ∈ listBall {x, y} r ((hammingDist x y + 1) / 2) := by
-    simp only [listBall, Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton]
-    rw [hammingDist_comm x r]
-    exact ⟨Or.inl rfl, hxr⟩
+    have hx : x ∈ ({x, y} : Finset (ι → F)) := Finset.mem_insert_self x {y}
+    simpa only [listBall, Finset.mem_filter] using ⟨hx, hxr⟩
   have hymem : y ∈ listBall {x, y} r ((hammingDist x y + 1) / 2) := by
-    simp only [listBall, Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton]
-    rw [hammingDist_comm y r]
-    exact ⟨Or.inr rfl, hyr⟩
+    have hy : y ∈ ({x, y} : Finset (ι → F)) :=
+      Finset.mem_insert_of_mem (Finset.mem_singleton_self y)
+    simpa only [listBall, Finset.mem_filter] using ⟨hy, hyr⟩
   exact Finset.one_lt_card.mpr ⟨x, hxmem, y, hymem, hxy⟩
 
 end ArkLib.CodingTheory.UniqueDecoding
