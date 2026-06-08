@@ -18,10 +18,20 @@ namespace BCIKS20.HenselNumerator
 
 variable {F : Type} [Field F]
 
-#check Polynomial.irreducible_X
-#check Polynomial.natDegree_X
-#check Polynomial.separable_X
-#check ClaimA2.Hypotheses
-#check AlphaWeight.AlphaGenuineRegularWeightLe
+noncomputable section
+
+/-- The unconstrained first lift-direction coefficient used by the counterexample family. -/
+def badLiftCoeff (x₀ : F) : F[X][X] :=
+  ((Polynomial.X : F[X][X]) - Polynomial.C (Polynomial.C x₀)) *
+    Polynomial.C ((Polynomial.X : F[X]) ^ 2)
+
+/-- A valid `ClaimA2.Hypotheses` input whose first lift-direction coefficient has `X`-degree `2`.
+Specializing the middle variable at `x₀` kills the added term, so `R(x₀, Y) = Y`. -/
+def badR (x₀ : F) : F[X][X][Y] :=
+  (Polynomial.X : F[X][X][Y]) + Polynomial.C (badLiftCoeff x₀)
+
+lemma evalX_badR (x₀ : F) :
+    Bivariate.evalX (Polynomial.C x₀) (badR x₀) = (Polynomial.X : F[X][Y]) := by
+  simp [badR, badLiftCoeff, Bivariate.evalX_eq_map]
 
 end BCIKS20.HenselNumerator

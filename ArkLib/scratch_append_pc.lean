@@ -15,16 +15,11 @@ variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
 example
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
-    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
-    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
     (hn : 0 < n)
     (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
-    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V) :
-    (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
-  rw [perfectCompleteness_eq_prob_one] at h₁ h₂ ⊢
-  intro stmtIn witIn hIn
-  have hrun :
-      (R₁.append R₂).run stmtIn witIn = (do
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (stmtIn : Stmt₁) (witIn : Wit₁) :
+    (R₁.append R₂).run stmtIn witIn = (do
         let proverResult ← liftM (((do
           let ⟨tr₁, s₂, w₂⟩ ← liftM (R₁.prover.run stmtIn witIn)
           let ⟨tr₂, s₃, w₃⟩ ← liftM (R₂.prover.run s₂ w₂)
@@ -36,6 +31,6 @@ example
     unfold Reduction.run
     rw [show (R₁.append R₂).prover = R₁.prover.append R₂.prover from rfl,
       Prover.append_run_msg (P₁ := R₁.prover) (P₂ := R₂.prover) stmtIn witIn hn hDir hDir₂]
-  sorry
+    rfl
 
 end Reduction

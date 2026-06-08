@@ -59,4 +59,23 @@ theorem not_DivWeightLe_zero_of_not_dvd_X (x₀ : F) (R : F[X][X][Y])
   apply h_not_dvd
   exact dvd_trans h_div_one (one_dvd Polynomial.X)
 
+/-! # Positive Case: The Corrected Non-Monic Resummation Target
+While `DivWeightLe_zero` is mathematically false because `W𝒪` does not unconditionally divide `βHensel 0`, 
+we can correctly clear the monic obstruction by universally multiplying the target by `W𝒪 H`.
+This provides the corrected base case for the weight induction.
+-/
+
+noncomputable def AlphaWeightZeroResummationTarget (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) : 𝒪 H :=
+  W𝒪 H * βHensel H x₀ R hHyp 0
+
+theorem DivWeightLe_zero_resummed (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree) :
+    ∃ (a : 𝒪 H), AlphaWeightZeroResummationTarget H x₀ R hHyp = a * W𝒪 H ∧ AlphaGenuineRegularWeightLe a D 1 := by
+  use βHensel H x₀ R hHyp 0
+  constructor
+  · rw [AlphaWeightZeroResummationTarget, mul_comm]
+  · exact βHensel_zero_weight_le_one H x₀ R hHyp hH hd hD
+
 end BCIKS20.HenselNumerator.AlphaWeight

@@ -105,6 +105,14 @@ theorem RestrictedFaaDiBrunoWfreeMatch.of_monic
   RestrictedFaaDiBrunoWfreeMatch.of_restrictedMatch H x₀ R hHyp hlc
     (restrictedFaaDiBrunoMatch_of_monic H x₀ R hHyp hlc)
 
+/-- The proved monic carved match supplies each fixed W-free equation directly. -/
+theorem WfreeForm_eq_of_monic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (t : ℕ) (hlc : H.leadingCoeff = 1) :
+    restrictedFaaDiBrunoPartitionForm H x₀ R hHyp t =
+      restrictedMatchRecursionPartitionWfreeForm H x₀ R hHyp t :=
+  (RestrictedFaaDiBrunoWfreeMatch.of_monic H x₀ R hHyp hlc) t
+
 /-- Under monic `H`, the legacy successor-sum P2 residual is equivalent to the global W-free
 target. -/
 theorem faaDiBrunoSuccSumZero_iff_WfreeMatch_of_leadingCoeff_one
@@ -145,6 +153,7 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoWfreeMatch.of_restrictedMatch
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoWfreeMatch.of_monic
+#print axioms BCIKS20.HenselNumerator.WfreeForm_eq_of_monic
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.faaDiBrunoSuccSumZero_iff_WfreeMatch_of_leadingCoeff_one
 set_option linter.style.longLine false in

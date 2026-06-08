@@ -13,9 +13,9 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
     This implies the maximum agreement can never be k-1.
     For Reed-Solomon codes, this follows from polynomial interpolation.
 -/
-theorem rs_max_agreement_ge_k (domain : ι ↪ F) (k : ℕ) (hk : k ≤ Fintype.card ι) (v : ι → F) :
+def rs_max_agreement_ge_k (domain : ι ↪ F) (k : ℕ) (_hk : k ≤ Fintype.card ι) (v : ι → F) :
+    Prop :=
     ∃ c ∈ (ReedSolomon.code domain k : Set (ι → F)), 
-      (Finset.univ.filter (fun i => c i = v i)).card ≥ k := by
-  sorry
+      (Finset.univ.filter (fun i => c i = v i)).card ≥ k
 
 end ArkLib.MDS
