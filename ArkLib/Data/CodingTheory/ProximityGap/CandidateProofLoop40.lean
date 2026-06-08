@@ -33,7 +33,7 @@ the whole band with a *constant* numerator.
 that `Q2` + the sparse bound + the union bound deliver the prize. It does **not** verify Chai–Fan's
 unconditional sparse claim or their action-orbit lemma (the full eprint PDF was inaccessible at the
 time of writing; the abstract advertises a "five-line proof above Johnson", a claim that warrants
-independent scrutiny before trust). `Q2` is itself an **unproven conjecture**, exactly the open core.
+scrutiny before trust). `Q2` is itself an **unproven conjecture**, exactly the open core.
 Two independent conditional paths now land the prize — BGM-for-smooth (Loop 39) and sparse-dominance
 `Q2` (this file) — which strengthens the "leans TRUE" position without closing it. Do **not** treat
 the prize as resolved. See `DISPROOF_LOG.md` (Loop40, and the updated LITERATURE FRONTIER).
@@ -44,7 +44,7 @@ namespace ArkLib.ProximityGap.ProofLoop40
 open scoped BigOperators
 
 /-- **Sparse-dominance conditional prize mass.** Given the Chai–Fan unconditional *sparse* per-round
-bound `eSparse ≤ C/q` and the `Q2` sparse-worst-case dominance hypothesis (`∀ j < m, e j ≤ eSparse`),
+bound `eSparse ≤ C/q` and the `Q2` sparse-worst-case dominance (`∀ j < m, e j ≤ eSparse`),
 the union-bound total error over the `m` fold rounds lands on the prize RHS
 
     ∑_{j<m} e j ≤ (1/q) · (2^m)^1 · C ,
@@ -74,7 +74,7 @@ theorem sparse_dominance_prize_mass
     _ ≤ ((2 : ℝ) ^ m) * (C / q) := by gcongr
     _ = (1 / q) * ((2 : ℝ) ^ m) ^ 1 * C := by rw [pow_one]; ring
 
-/-- **Non-vacuity.** The sparse-dominance bound is a genuine (finite, nonnegative) constant numerator:
+/-- **Non-vacuity.** The sparse-dominance bound is a genuine nonnegative constant numerator:
 for `C > 0`, `q > 0` the prize RHS is positive at every depth. -/
 theorem sparse_dominance_const_pos {C q : ℝ} {m : ℕ} (hC : 0 < C) (hq : 0 < q) :
     0 < (1 / q) * ((2 : ℝ) ^ m) ^ 1 * C := by

@@ -59,6 +59,16 @@ the deciding question is whether *deterministic smooth-domain* RS behaves like t
 generic/folded case (poly soundness ⇒ prize TRUE) or like Diamond–Gruen's adversarial low-rate
 families (super-poly ⇒ prize FALSE) — at *fixed* prize rate. No construction currently reaches that.
 
+**JUNE 2026 UPDATE — two new above-Johnson eprints, both still conditional / unread:**
+* **Chai–Fan 2026/861** (Action–Orbit): `O(1)/|F|` for plain RS on the cyclic (smooth-subgroup) domain
+  above Johnson, **unconditional only for sparse inputs**; general case `⟹` conjecture **Q2
+  (sparse-worst-case dominance)** = our open core. Formalized as the conditional reduction Loop40.
+  The sparse-unconditional half is the literature twin of our Loops 33/34. PDF inaccessible (403);
+  "five-line proof" claim unverified — scrutinize before trust.
+* **2026/858** (Threshold-Halving, RVW): claims unconditional soundness above Johnson for
+  FRI/STIR/WHIR — unread, to scrutinize; if sound at the prize radius/rate it would be the strongest
+  lever yet. Net position **unchanged: prize OPEN**; both papers are conditional or unverified here.
+
 **Resolved-prize bibliography to formalize next (O11/O12):** port Ben-Sasson 2025/2055 Thm 1.5
 (poly soundness up to Johnson) and the Crites–Stewart reduction (CA-beyond-capacity ⇒ impossible
 list-decoding) — the latter is a clean disproof of the *at-capacity* sibling we can make sorry-free.
@@ -338,6 +348,31 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop40 — SECOND PATH: sparse-worst-case dominance (Q2, Chai–Fan 2026/861) ⟹ prize (conditional)
+**Verified sorry-free, axiom-clean in `CandidateProofLoop40.lean`:** `sparse_dominance_prize_mass`
+(given the unconditional sparse per-round bound `eSparse ≤ C/q` and `Q2` dominance `∀ j<m, e_j ≤
+eSparse`, the union-bound total lands on the prize RHS `(1/q)·(2^m)^1·C`, triple `c₁=1, c₂=c₃=0` — a
+`q`-independent *constant* numerator, no `η` factor) and `sparse_dominance_const_pos` (non-vacuous).
+**Literature trigger (June 2026 pass).** Chai–Fan, eprint 2026/861 ("Action–Orbit FRI Soundness Above
+the Johnson Radius: a rigorous `O(1)/|F|` bound on plain Reed–Solomon") independently reaches THIS
+log's frontier from the other side: it proves the per-round proximity error on the *cyclic* (smooth
+multiplicative-subgroup) domain is `≤ C/|F|` above Johnson **unconditionally for sparse adversary
+inputs** — the literature twin of our Loops 33/34 (bounded sparse spikes absorbed) — and reduces the
+general case to a single conjecture **Q2 "sparse-worst-case dominance"** (worst case dominated by the
+sparse case). Their `Q2` is the literature name for exactly the open core this log isolated: does the
+worst case reduce to the provably-safe sparse/bounded case.
+**What this gives.** A *second independent* conditional path to the prize, parallel to Loop39's BGM
+route, via a different mechanism (action-orbit symmetry, not list-decoding). Both now land the prize
+across the whole band from one hypothesis each — BGM-for-smooth (Loop39) and `Q2` (Loop40) — which
+strengthens the "leans TRUE" position. Loop40's path is even cleaner (constant numerator `c₂=c₃=0`).
+**Caveats (honest).** This brick formalizes only the *logical reduction* (`Q2` + sparse bound + union
+bound ⟹ prize); it does **not** verify Chai–Fan's unconditional sparse claim or their action-orbit
+lemma — the full eprint PDF was inaccessible (eprint.iacr.org 403), and the advertised "five-line proof
+above Johnson" for a problem three groups missed warrants independent scrutiny before trust. `Q2` is an
+unproven conjecture = the open core. Prize remains OPEN; do not treat as resolved. See also eprint
+2026/858 (Threshold-Halving, RVW) claiming unconditional soundness above Johnson for FRI/STIR/WHIR —
+also unread, also to scrutinize.
 
 ### Loop39 — INTEGRATION CAPSTONE: BGM budget × FRI union bound ⟹ full-band prize (conditional)
 **Verified sorry-free, axiom-clean in `CandidateProofLoop39.lean`:** `bgmBudget_le_inv_gap`
