@@ -268,8 +268,8 @@ This routes the GR08 folded-RS domain `i ↦ γ^(s*i)` through the proved geomet
 T2.18/CZ25-profile wrapper, then uses the GG25 T4.13 proof supply to derive the public
 T4.14 capacity statement without the standalone T4.14 axiom. -/
 theorem frs_epsMCA_capacity_gg25_proven_of_t413_geomDomain
-    (hGG25 : gg25_subspaceDesign_epsMCA_residual (ι := ι) (F := F))
     {n : ℕ} [NeZero n]
+    (hGG25 : gg25_subspaceDesign_epsMCA_residual (ι := Fin n) (F := F))
     (γ : F) (k s : ℕ)
     (hs : 0 < s) (hγ : γ ≠ 0) (hsn : s * n ≤ orderOf γ)
     (hkLs : k ≤ s * n) (hkord : k ≤ orderOf γ)
@@ -346,8 +346,8 @@ noncomputable def frs_epsMCA_capacity_gg25_tleFrontier_proven_of_t413_cosetSep
 
 /-- Canonical geometric-domain T4.13-backed `t ≤ 2 / η` frontier. -/
 noncomputable def frs_epsMCA_capacity_gg25_tleFrontier_proven_of_t413_geomDomain
-    (hGG25 : gg25_subspaceDesign_epsMCA_residual (ι := ι) (F := F))
     {n : ℕ} [NeZero n]
+    (hGG25 : gg25_subspaceDesign_epsMCA_residual (ι := Fin n) (F := F))
     (γ : F) (k s : ℕ)
     (hs : 0 < s) (hγ : γ ≠ 0) (hsn : s * n ≤ orderOf γ)
     (hkLs : k ≤ s * n) (hkord : k ≤ orderOf γ)
@@ -413,8 +413,8 @@ noncomputable def frs_epsMCA_capacity_gg25_frontier_proven_of_t413_cosetSep
 
 /-- Canonical geometric-domain T4.13-backed raw-bound frontier. -/
 noncomputable def frs_epsMCA_capacity_gg25_frontier_proven_of_t413_geomDomain
-    (hGG25 : gg25_subspaceDesign_epsMCA_residual (ι := ι) (F := F))
     {n : ℕ} [NeZero n]
+    (hGG25 : gg25_subspaceDesign_epsMCA_residual (ι := Fin n) (F := F))
     (γ : F) (k s : ℕ)
     (hs : 0 < s) (hγ : γ ≠ 0) (hsn : s * n ≤ orderOf γ)
     (hkLs : k ≤ s * n) (hkord : k ≤ orderOf γ)
