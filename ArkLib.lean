@@ -249,6 +249,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20AppAProof
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.CollinearProximates
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
+import ArkLib.Data.CodingTheory.ProximityGap.BallVolume
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
