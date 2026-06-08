@@ -150,7 +150,7 @@ theorem secondSumcheckEvalFromOracles_simOracle
     Fin.cast_eq_self]
   ring
 
-omit [IsDomain R] [Fintype R] [DecidableEq R] in
+omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
 /-- **`hfaith` for the second sum-check lens.** The lens' oracle reconstruction
 `secondSumcheckEvalFromOracles`, lifted into the verifier's full oracle spec and simulated under the
 honest two-family oracle `simOracle2`, equals `eval point ℳ`. This is the exact per-inner-query
