@@ -142,6 +142,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyRank
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyRecursion
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTop
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTranslate
+import ArkLib.Data.CodingTheory.ListDecoding.UniqueDecodingPairwise
 import ArkLib.Data.CodingTheory.ListSizeVolumeBound
 import ArkLib.Data.CodingTheory.PlotkinBound
 import ArkLib.Data.CodingTheory.PlotkinBoundCard
