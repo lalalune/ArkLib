@@ -34,4 +34,40 @@ lemma evalX_badR (x₀ : F) :
     Bivariate.evalX (Polynomial.C x₀) (badR x₀) = (Polynomial.X : F[X][Y]) := by
   simp [badR, badLiftCoeff, Bivariate.evalX_eq_map]
 
+lemma badR_hypotheses (x₀ : F) :
+    ClaimA2.Hypotheses x₀ (badR x₀) (Polynomial.X : F[X][Y]) := by
+  constructor
+  · simpa [evalX_badR] using (dvd_rfl : (Polynomial.X : F[X][Y]) ∣ Polynomial.X)
+  · simpa [evalX_badR] using (Polynomial.separable_X (R := F[X]))
+
+lemma badH_natDegree : (Polynomial.X : F[X][Y]).natDegree = 1 := by
+  rw [Polynomial.natDegree_X]
+
+lemma badH_natDegree_pos : 0 < (Polynomial.X : F[X][Y]).natDegree := by
+  rw [badH_natDegree]
+  norm_num
+
+lemma derivative_badLiftCoeff (x₀ : F) :
+    Polynomial.derivative (badLiftCoeff x₀) = Polynomial.C ((Polynomial.X : F[X]) ^ 2) := by
+  rw [badLiftCoeff, Polynomial.derivative_mul, Polynomial.derivative_sub,
+    Polynomial.derivative_X, Polynomial.derivative_C, sub_zero, Polynomial.derivative_C,
+    mul_zero, add_zero, one_mul]
+
+lemma evalX_hasseDerivX_badR_one_zero (x₀ : F) :
+    Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX 1 (hasseDerivY 0 (badR x₀)))
+      = Polynomial.C ((Polynomial.X : F[X]) ^ 2) := by
+  rw [hasseDerivY_zero, badR, hasseDerivX_add]
+  have hY : hasseDerivX 1 (Polynomial.X : F[X][X][Y]) = 0 := by
+    unfold hasseDerivX
+    simp
+  have hC : hasseDerivX 1 (Polynomial.C (badLiftCoeff x₀) : F[X][X][Y])
+      = Polynomial.C (Polynomial.C ((Polynomial.X : F[X]) ^ 2)) := by
+    unfold hasseDerivX
+    simp [derivative_badLiftCoeff]
+  rw [hY, hC, zero_add]
+  simp [Bivariate.evalX_eq_map]
+
+end
+
 end BCIKS20.HenselNumerator

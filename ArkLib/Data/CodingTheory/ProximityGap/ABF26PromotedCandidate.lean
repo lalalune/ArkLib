@@ -41,7 +41,7 @@ noncomputable def promoted_threshold_δ_star (k : ℕ) : ℝ :=
     per ArkLib Issue #232, "a swarm/formalizer cannot derive the threshold by grinding; the
     prize needs a new mathematical idea... keep the open core honest." Earlier revisions of
     this file laundered the claim through two `axiom`s (`promoted_interleaved_mca_conjecture`,
-    `resolves_grand_mca_prize`); those are removed because asserting an unproven
+    `resolves_grand_mca_prize`); those are removed here because asserting an unproven
     `GrandMCAResolution` as an axiom is exactly the fake-completion pattern banned by #169/#171.
 
     Unfolding it: a `GrandMCAResolution` packages both directions of the Grand MCA Challenge —

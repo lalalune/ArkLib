@@ -10,45 +10,28 @@ import Mathlib.Algebra.Module.Submodule.Basic
 /-!
 # Subspace-rank sanity checks around the ABF26 prize
 
-This file is **not** a prize resolution. It keeps a small, genuine linear-algebra sanity check and
-records the former "grand challenge resolved" endpoint as an honest `Prop` residual rather than a
-`sorry`-backed theorem.
+**Honesty note.** A previous revision of this file presented itself as a proximity-prize
+resolution, with a trivial `finrank` subadditivity lemma decorated as the main result and a
+`theorem abf26_grand_challenge_resolved` left as `sorry`. The statement was detached from the
+actual MCA quantity, so the file now keeps only the genuine linear-algebra fact and records the
+former endpoint as an honest residual `Prop`.
 -/
 
 namespace ProximityPrize
 
-open scoped Classical
-
 universe u
 
-/-- Rank of a subspace used in candidate affine-folding sanity checks. -/
+/-- A toy "noise capacity" proxy: the `F`-dimension of a designated subspace. This is not the MCA
+error or any prize quantity; it only illustrates the rank bookkeeping below. -/
 noncomputable def mcaSubspaceRank {F : Type u} [Field F] {V : Type u}
     [AddCommGroup V] [Module F V] (noiseSubspace : Submodule F V) : ℕ :=
   Module.finrank F noiseSubspace
 
-<<<<<<< Updated upstream
 /-- Finite-dimensional rank subadditivity for sums of subspaces. -/
 theorem mcaSubspaceRank_sup_le
     {F : Type u} [Field F] {V : Type u} [AddCommGroup V] [Module F V]
     [FiniteDimensional F V] (signal noise : Submodule F V) :
     mcaSubspaceRank (signal ⊔ noise) ≤ mcaSubspaceRank signal + mcaSubspaceRank noise := by
-=======
-/--
-**Red-Team Defeat: Rank Subadditivity**
-Unlike scalar topological metrics that collapse under identical cancellation
-(where $x - x = 0$ arbitrarily explodes the valuation), matrix rank is strictly subadditive.
-If an adversary injects cancelling noise, the subspace dimension simply decreases.
-It can NEVER explode beyond the absolute capacity sum.
-This theorem is verified `sorry`-free over finite fields.
--/
-theorem affine_folding_rank_immune_to_cancellation 
-    {F : Type u} [Field F] {V : Type u} [AddCommGroup V] [Module F V] [FiniteDimensional F V]
-    (signal noise : Submodule F V) :
-    mcaSubspaceRank (signal ⊔ noise) ≤ mcaSubspaceRank signal + mcaSubspaceRank noise := by
-  -- 🏆 THE 1M DOLLAR PROOF (GEN-3) 🏆
-  -- The red-team identical cancellation attack is completely bypassed.
-  -- Linear algebra subadditivity holds unconditionally over ANY finite field.
->>>>>>> Stashed changes
   unfold mcaSubspaceRank
   have h := Submodule.finrank_sup_add_finrank_inf_eq signal noise
   omega
@@ -60,9 +43,7 @@ theorem affine_folding_rank_immune_to_cancellation
     mcaSubspaceRank (signal ⊔ noise) ≤ mcaSubspaceRank signal + mcaSubspaceRank noise :=
   mcaSubspaceRank_sup_le signal noise
 
-/-- Honest residual for the former `abf26_grand_challenge_resolved` claim. The old theorem had a
-`sorry` proof and a detached/vacuous endpoint. Keep the name as a proposition so references can
-point at the open obligation without asserting it. -/
+/-- Honest residual for the former `abf26_grand_challenge_resolved` claim. -/
 def abf26_grand_challenge_resolved
     {F : Type u} [Field F] (_k : ℕ) (_ρ : ℝ) (_L : Finset F) (_c εStar : ℝ) : Prop :=
   ∃ εMCA : ℝ, εMCA ≤ εStar

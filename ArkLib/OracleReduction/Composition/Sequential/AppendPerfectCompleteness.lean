@@ -40,11 +40,29 @@ The `hImplSupp` hypothesis (the appended verifier's stateful oracle queries have
 *support*) is what makes the support decomposition go through despite a stateful `impl`; it is exactly
 why the support route works where a naive distributional route would also have to track `σ`-state.
 
-## Status
+## Status (verified scaffold + precise remaining gap)
 
-In-progress formalization of the support-decomposition argument above. The prover-run factoring is
-consumed from the already-proven `Append`/`AppendRunEvalDist` keystones; the remaining content is the
-`mem_support_bind_iff` decomposition + pointwise application of `h₁`, `h₂`.
+The following steps are machine-checked (`lake env lean`, against built deps):
+* `rw [perfectCompleteness_eq_prob_one]` reduces `h₁`, `h₂`, and the goal to `Pr[·] = 1`.
+* `rw [probEvent_eq_one_iff]; refine ⟨?_, ?_⟩` splits the goal into **no-failure** (`Pr[⊥ | ·] = 0`)
+  and **support containment** (`∀ x ∈ support …, good₃ x`).
+* `Prover.append_run_msg` (with `hn`, `hDir`, `hDir₂`) factors `(R₁.append R₂).prover.run` into
+  `P₁.run` then `P₂.run` (the rewrite fires; closing the explicit `hrun` to a stated RHS is a
+  destructuring-vs-`match` defeq).
+
+The remaining gap is the one piece that has kept this keystone unproven library-wide: the support
+in the goal sits behind three wrappers — `OptionT.mk`, `StateT.run'` (from `init`), and
+`simulateQ (impl.addLift challengeQueryImpl)` — so `support_bind`/`mem_support_bind_iff` do **not**
+fire directly (verified: they leave the term intact). Closing it requires unfolding those three
+layers and then the *challenge-oracle seam split* — relating the combined
+`challengeQueryImpl` over `pSpec₁ ++ₚ pSpec₂` to the component handlers across the seam round `m`
+(the building blocks exist: `append_getChallenge_left` / `append_getChallenge_natAdd`,
+`range_challenge_append_inl`/`inr`, and vcvio's `simulateQ_add_liftM_left`/`right` /
+`simulateQ_liftM_eq_of_query`). With the run decomposed under `simulateQ`, `h₁` pins
+`V₁`'s output to `P₁`'s output statement `s₂ ∈ rel₂` and `h₂` lands the result in `rel₃`.
+
+Stated below as a named residual so the obligation is explicit and the scaffold above is recorded;
+discharging it closes compositional completeness for `Logup`/`Fri`/`BCS`/WHIR at once.
 -/
 
 open OracleComp OracleSpec ProtocolSpec

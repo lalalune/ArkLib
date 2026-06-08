@@ -40,7 +40,7 @@ theorem whir_vector_iop_breakthrough
         Fintype (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst1 0
       let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
         Nonempty (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst2 0
-      ∀ j : Fin ((P.foldingParam 0) + 1),
+      ∀ _ : Fin ((P.foldingParam 0) + 1),
         let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
       ∀ j : Fin (P.foldingParam 0),
         ε_fold 0 j ≤
@@ -62,7 +62,7 @@ theorem whir_vector_iop_breakthrough
         Fintype (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst1
       let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
         Nonempty (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst2
-      ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+      ∀ i : Fin (M + 1), ∀ _ : Fin ((P.foldingParam i) + 1),
         let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
       ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
         ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ)
@@ -80,7 +80,8 @@ theorem whir_vector_iop_breakthrough
         (WhirIOP.whirRelation m_0 (P.φ 0) (h.δ 0)) ε_rbr π) :
     WhirIOP.whir_rbr_soundness (F := F) (M := M) ι (d := d) (dstar := dstar)
       (P := P) (S := S) (hParams := hParams) (h := h) hm_0 (σ₀ := σ₀)
-      (wPoly₀ := wPoly₀) (δ := δ) ε_fold ε_out ε_shift ε_fin :=
+      (wPoly₀ := wPoly₀) (δ := δ) ε_fold ε_out ε_shift ε_fin
+      h_fold_0 h_out h_shift h_fold_i h_fin :=
   WhirIOP.Construction.whir_rbr_soundness_of_whirVectorSpec_secure_gap
     (F := F) (M := M) (ιs := ι) (d := d) (dstar := dstar)
     (P := P) (S := S) (hParams := hParams) (h := h) hm_0

@@ -315,6 +315,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomization
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationHasse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationMatrix
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop1
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop2
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop3
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop4
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop5
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop6
@@ -323,6 +326,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateExtrapolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFoldedRS
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFractionalGS
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFrobeniusFold
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateImmunity
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateMultilinearHypercube
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateResultantCollapse
@@ -413,9 +417,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
 import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue232VerifiedBricks
+import ArkLib.Data.CodingTheory.ProximityGap.Issue244Refutation
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonCapacityBound
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonListBound
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSimplexBound
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingBadScalarCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
@@ -473,6 +479,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
+import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesA
+import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesB
+import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesC
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityPrizeProof
@@ -480,9 +489,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.RSListSize
+import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
+import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
@@ -691,6 +702,7 @@ import ArkLib.ProofSystem.BatchedFri.QueryRoundSoundness
 import ArkLib.ProofSystem.BatchedFri.Security
 import ArkLib.ProofSystem.BatchedFri.Spec.General
 import ArkLib.ProofSystem.BatchedFri.Spec.SingleRound
+import ArkLib.ProofSystem.Binius.BBFSmallFieldIOPCS
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Code
@@ -725,12 +737,6 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Relay
 import ArkLib.ProofSystem.Binius.FRIBinius.CoreInteractionPhase
 import ArkLib.ProofSystem.Binius.FRIBinius.General
 import ArkLib.ProofSystem.Binius.FRIBinius.Prelude
-import ArkLib.ProofSystem.Binius.RingSwitching.BBFSmallFieldIOPCS
-import ArkLib.ProofSystem.Binius.RingSwitching.BatchingPhase
-import ArkLib.ProofSystem.Binius.RingSwitching.General
-import ArkLib.ProofSystem.Binius.RingSwitching.Prelude
-import ArkLib.ProofSystem.Binius.RingSwitching.Spec
-import ArkLib.ProofSystem.Binius.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.Component.CheckClaim
 import ArkLib.ProofSystem.Component.DoNothing
 import ArkLib.ProofSystem.Component.NoInteraction

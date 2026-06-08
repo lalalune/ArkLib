@@ -9,8 +9,10 @@ namespace ArkLib.CodingTheory.Research
 /-!
 # Candidate: derandomizing random-puncturing bounds
 
-The univariate root-counting fact below is proved. The leap from that fact to a beyond-Johnson
-MCA threshold is deliberately recorded as a `Prop`, not as a theorem with `sorry`.
+Candidate attack strategy on the open MCA Grand Challenge prize: port random-puncturing
+list-decodability bounds to explicit, smooth evaluation domains. The univariate root-counting
+fact below is proved. The leap from that fact to a beyond-Johnson MCA threshold is deliberately
+recorded as a `Prop`, not as a theorem with `sorry`.
 -/
 
 /-- A set acts pseudorandomly for low-degree univariate root counting. -/
@@ -36,6 +38,9 @@ def mca_bound_of_pseudo_random {F : Type} [Field F] [Fintype F]
     (L : Finset F) (deg : ℕ) (C : Set (F → F)) (δ : ℝ≥0) : Prop :=
   IsPseudoRandomForPolys F L deg → ProximityGap.epsMCA C δ ≤ (deg : ℝ≥0) / L.card
 
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
 /-- Candidate endpoint for resolving the lattice prize through derandomization.
 
 Stated against a Reed–Solomon evaluation `domain : ι ↪ F` — the type
@@ -43,9 +48,12 @@ Stated against a Reed–Solomon evaluation `domain : ι ↪ F` — the type
 statement type-checks. (An earlier revision passed a bare `Finset F` here, which does not unify
 with the required `ι ↪ F` and silently failed to elaborate.) This is an open conjecture recorded
 as a `Prop`, not a theorem. -/
-def candidate_derandomization_mca_bound {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-    {F : Type} [Field F] [Fintype F] [DecidableEq F] (domain : ι ↪ F) : Prop :=
+def candidate_derandomization_mca_bound_conjecture (domain : ι ↪ F) : Prop :=
   ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
     ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved domain τ
+
+/-- Backwards-compatible name for the derandomization endpoint. -/
+def candidate_derandomization_mca_bound (domain : ι ↪ F) : Prop :=
+  candidate_derandomization_mca_bound_conjecture domain
 
 end ArkLib.CodingTheory.Research

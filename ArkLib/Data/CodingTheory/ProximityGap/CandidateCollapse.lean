@@ -9,10 +9,14 @@ namespace ArkLib.CodingTheory.Research
 /-!
 # Candidate: list-decoding collapse
 
-This file records the proposed route "interleaved list-size control implies MCA control" as
-named `Prop` surfaces. Earlier revisions stated these bridges as theorems with `sorry`; that
-misrepresented an open ABF26 prize route as proved content.
+This file records a *candidate attack strategy* on the open MCA Grand Challenge prize, not a
+proof of it. The proposed route is: a tight interleaved list-decoding size bound
+`|Lambda(C^m, delta)| <= epsilon * |F|` would bridge to the `epsMCA` proximity-gap error.
+The bridge and endpoint are named `Prop` surfaces rather than `sorry`-backed theorems.
 -/
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- Interleaved list decoding has the requested epsilon-scale bound.  The exact list-decoding
 object is intentionally left as future work rather than replaced by a fake witness. -/
@@ -25,9 +29,15 @@ def mca_of_bounded_list_size {F : Type} [Field F] [Fintype F]
     (C : Set (F → F)) (m : ℕ) (δ : ℝ≥0) (ε : ℝ≥0) : Prop :=
   HasBoundedListSize F C m δ ε → ProximityGap.epsMCA C δ ≤ ε
 
-/-- Candidate endpoint for resolving the lattice prize through the list-decoding-collapse route. -/
-def candidate_collapse_mca_bound (F : Type) [Field F] [Fintype F]
-    (L : Finset F) : Prop :=
-  ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ
+/-- **OPEN CONJECTURE — Candidate 2 (list-decoding collapse).** The MCA prize-lattice resolution
+target this strategy aims to reach for a Reed–Solomon evaluation `domain`. This is the *statement*
+of an open problem (the existence of resolving lattice thresholds), not a proved fact. -/
+def candidate_collapse_mca_bound_conjecture (domain : ι ↪ F) : Prop :=
+  ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+    ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved domain τ
+
+/-- Backwards-compatible name for the list-decoding-collapse endpoint. -/
+def candidate_collapse_mca_bound (domain : ι ↪ F) : Prop :=
+  candidate_collapse_mca_bound_conjecture domain
 
 end ArkLib.CodingTheory.Research

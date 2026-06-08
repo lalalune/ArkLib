@@ -54,18 +54,56 @@ The automated gates flag `sorry`, `admit`, `native_decide`, non-allowlisted `axi
    obligation), or a clearly-labeled tracked `sorry`/residual axiom — never a `theorem … := sorry`
    whose name implies it's done.
 
-## Confirmed findings
+5. **Re-larp: the same open-problem-as-theorem regenerated.** De-larping one file does not stop a
+   new file with the identical shape from appearing. The recurring ArkLib instance is a
+   `theorem …_mca_exact_match : ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ`
+   where `L : Finset F` — but `mcaPrizeLatticeResolved` requires `domain : ι ↪ F`, so the
+   *statement* is a type error that `sorry` cannot hide, and the file does not compile. Because
+   nothing imports these `Candidate*` files, a per-file `lake build` of an unrelated module never
+   surfaces the breakage — only a full-manifest `lake build ArkLib` (or `#check @thename`) does.
+   **Detection:** `grep -rn "mcaPrizeLatticeResolved [A-Za-z]* " ArkLib --include=*.lean` and check
+   each argument is an `ι ↪ F` embedding, not a `Finset`/`Set`; and run a full-manifest build in CI,
+   not just changed-file builds.
+
+## Gap in the current gates
+
+`forbidden_tokens.py` + `sorry_census.py` are necessary but not sufficient. They do **not** catch
+patterns 1, 2, 3, or 5 above. Recommended additions: (a) a CI step that runs
+`lake build ArkLib` (the whole manifest) so non-compiling files imported by `ArkLib.lean` fail the
+build even when nothing else imports them; (b) the flagship axiom sweep
+(`scripts/axiom_audit.py` against `scripts/flagship_axioms.txt`) extended to every theorem whose
+name contains `discharged|resolved|closed|complete|exact_match|keystone` — each must be
+`sorryAx`-free or it is laundering.
+
+## Confirmed findings (snapshot — these move; re-run the audit to refresh)
+
+Findings are dated because the live count of holes/larp changes continuously when multiple agents
+edit the tree. Treat this section as a worked example of the patterns above, not a current
+liability list.
 
 - **WHIR (`ArkLib/ProofSystem/Whir/Protocol.lean`), open obligation #113.** The `whirVectorIOP`
   is built from `whirVerify := fun _ _ => pure true` (accepts everything) and an all-zeros
-  `whirMakeTranscript`. `whirVectorIOP_rbrKnowledgeSoundness` is `sorry` and is **false as stated**
-  (an accept-all verifier admits no knowledge extractor — pattern 2). `whir_rbr_soundness_discharged`
-  is a sorry-free wrapper that transitively rests on that sorry via `whirVectorIOP_isSecureWithGap`
-  (pattern 1); its name overstates the state. A real verifier (the algebraic sumcheck/folding/OOD/
-  shift/final checks) plus a genuine RBR-soundness proof is the actual #113 obligation — research
-  scale, per the construction's own comments in `ArkLib/ToMathlib/WhirBricksConstruction.lean`
-  (`paperTranscriptVectorIOP`: "perfect completeness and RBR soundness still require instantiating
-  `verify` with the algebraic WHIR checks").
+  `whirMakeTranscript`. `whirVectorIOP_rbrKnowledgeSoundness` was `sorry` and is **false as stated**
+  for that stub (an accept-all verifier admits no knowledge extractor — pattern 2), while
+  `whir_rbr_soundness_discharged` was a sorry-free wrapper resting on that sorry via
+  `whirVectorIOP_isSecureWithGap` (pattern 1). A real verifier (algebraic sumcheck/folding/OOD/
+  shift/final checks) plus a genuine RBR-soundness proof — *and a real, statement-dependent honest
+  prover, since the all-zeros transcript can never pass real checks* — is the actual #113
+  obligation, research scale, per the construction's own comments in
+  `ArkLib/ToMathlib/WhirBricksConstruction.lean` (`paperTranscriptVectorIOP`: "perfect completeness
+  and RBR soundness still require instantiating `verify` with the algebraic WHIR checks").
+
+- **`ABF26PromotedCandidate.lean` axiom-larp — removed (good).** Previously declared
+  `axiom resolves_grand_mca_prize` and `axiom promoted_interleaved_mca_conjecture` — custom axioms
+  literally asserting the open MCA prize is resolved (neither was on the
+  `scripts/residual_axioms.txt` allowlist). Both have been deleted; the real-axiom count dropped
+  from 12 to 10 and `forbidden_tokens.py` is green.
+
+- **`CandidateFrobeniusFold.lean` — re-larp (pattern 5).** A later-added `Candidate*` file in the
+  manifest (`ArkLib.lean`) with `theorem frobenius_mca_exact_match : ∃ τ, mcaPrizeLatticeResolved L
+  τ` fed `L : Finset F` (needs `ι ↪ F`): a statement-level type error, so the file does not compile
+  and breaks a full-manifest build, while its proof comment itself admits the approach is "FLAWED".
+  Example of why a full `lake build ArkLib` gate (above) is needed.
 
 ## Method to re-run this audit
 
