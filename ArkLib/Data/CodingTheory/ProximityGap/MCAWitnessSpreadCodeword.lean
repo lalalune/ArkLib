@@ -13,19 +13,20 @@ is injective on bad scalars (each set pins at most one bad `γ`), so the bad-sca
 most the number of subsets `2^n`. `MCAWitnessSpread.lean` records the dual lower-bound
 obstruction: distinct bad scalars require distinct witness sets.
 
-This file sharpens the count from the witness *set* level to the witness *codeword* level, in the
-regime `δ < 1/2`. The payoff is the **honest** form of ABF26 direction §2 (list-decoding ⇒ MCA):
-below `δ = 1/2`, the MCA bad-scalar count of a full-support line is at most the number of
-codewords agreeing with some line point on a size-`≥(1-δ)n` set — i.e. the *line list size*.
-This is *not* the refuted black-box double-coverage reduction (`LineDecodingCounting.lean`); it
-uses a disjointness pigeonhole that is unconditionally valid for `δ < 1/2`.
+This file sharpens the count from the witness *set* level to the witness *codeword* level. The
+payoff is the **honest** form of ABF26 direction §2 (list-decoding ⇒ MCA): below `δ = 1/2`, the
+MCA bad-scalar count of a full-support line is at most the number of codewords agreeing with some
+line point on a size-`≥(1-δ)n` set — i.e. the *line list size*. This is *not* the refuted
+black-box double-coverage reduction (`LineDecodingCounting.lean`); it uses a disjointness
+pigeonhole that is unconditionally valid for `δ < 1/2`.
 
 ## Main results
 
-* `unique_bad_gamma_common_codeword` — **codeword pinning.** For any `u₁` of full support and any
-  codeword `w`, if `w` agrees with `u₀ + γ₁·u₁` on `S₁` and with `u₀ + γ₂·u₁` on `S₂` where
-  `|ι| < |S₁| + |S₂|`, then `γ₁ = γ₂`. (The hypothesis `|ι| < |S₁| + |S₂|` forces `S₁ ∩ S₂ ≠ ∅`;
-  on the overlap, `(γ₁ - γ₂)·u₁ = 0` with `u₁` of full support forces `γ₁ = γ₂`.)
+* `unique_bad_gamma_common_codeword_general` — **codeword pinning (general).** For any line and any
+  codeword `w`, if `w` agrees with `u₀ + γ₁·u₁` on `S₁` and with `u₀ + γ₂·u₁` on `S₂` where the
+  overlap outruns the zero-set of `u₁` (`|ι| + #{i : u₁ i = 0} < |S₁| + |S₂|`), then `γ₁ = γ₂`.
+* `unique_bad_gamma_common_codeword` — the full-support specialization (`#{i : u₁ i = 0} = 0`, so
+  the condition is just `|ι| < |S₁| + |S₂|`).
 * `card_sum_gt_of_lt_half` — the `δ < 1/2` driver: two witness sets each of size `≥ (1-δ)n`
   satisfy `|ι| < |S₁| + |S₂|`.
 * `badCount_le_witnessCodeword_card` — **the reduction.** For `δ < 1/2` and a full-support line,
@@ -35,12 +36,12 @@ uses a disjointness pigeonhole that is unconditionally valid for `δ < 1/2`.
 
 ## Honest scope
 
-The full-support hypothesis on `u₁` is genuine: for a line whose second word has zeros, a single
-codeword can witness several bad scalars (it agrees with the whole line on the zero coordinates),
-so the codeword-level pinning degrades. Lifting the per-stack bound to a clean `ε_mca` bound over
-*all* stacks therefore still requires handling the non-full-support case. And the line list size
-itself, beyond the Johnson radius for explicit smooth-domain RS, is the open prize core — this
-file reduces MCA to it, it does not bound it.
+The full-support hypothesis on `u₁` in the headline reduction is genuine: for a line whose second
+word has many zeros, a single codeword can witness several bad scalars (it agrees with the whole
+line on the zero coordinates), so the codeword-level pinning degrades — quantified exactly by the
+zero-count term in `unique_bad_gamma_common_codeword_general`. And the line list size itself,
+beyond the Johnson radius for explicit smooth-domain RS, is the open prize core — this file
+reduces MCA to it, it does not bound it.
 
 All results are hole-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
@@ -60,10 +61,38 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
-/-- **Codeword pinning (full-support line, overlapping witnesses).** If a single codeword `w`
-agrees with the line `u₀ + γ₁·u₁` on `S₁` and with `u₀ + γ₂·u₁` on `S₂`, and the two witness sets
-are jointly large enough to overlap (`|ι| < |S₁| + |S₂|`), then for a full-support `u₁` the two
-scalars coincide. -/
+/-- **Codeword pinning (general).** If a single codeword `w` agrees with the line `u₀ + γ₁·u₁` on
+`S₁` and with `u₀ + γ₂·u₁` on `S₂`, and the two witness sets are jointly large enough that their
+overlap must contain a coordinate where `u₁ ≠ 0` (`|ι| + #{i : u₁ i = 0} < |S₁| + |S₂|`), then
+`γ₁ = γ₂`. No full-support assumption: the overlap simply has to outrun the zero-set of `u₁`. -/
+theorem unique_bad_gamma_common_codeword_general
+    (u₀ u₁ : ι → A)
+    {γ₁ γ₂ : F} {w : ι → A} {S₁ S₂ : Finset ι}
+    (hcard : Fintype.card ι + (Finset.univ.filter (fun i => u₁ i = 0)).card
+        < S₁.card + S₂.card)
+    (h₁ : ∀ i ∈ S₁, w i = u₀ i + γ₁ • u₁ i)
+    (h₂ : ∀ i ∈ S₂, w i = u₀ i + γ₂ • u₁ i) :
+    γ₁ = γ₂ := by
+  by_contra hne
+  have hd : γ₁ - γ₂ ≠ 0 := sub_ne_zero.mpr hne
+  have hun : (S₁ ∪ S₂).card ≤ Fintype.card ι := by simpa using Finset.card_le_univ (S₁ ∪ S₂)
+  have hui : (S₁ ∪ S₂).card + (S₁ ∩ S₂).card = S₁.card + S₂.card :=
+    Finset.card_union_add_card_inter S₁ S₂
+  have hintergt : (Finset.univ.filter (fun i => u₁ i = 0)).card < (S₁ ∩ S₂).card := by omega
+  have hnsub : ¬ (S₁ ∩ S₂) ⊆ Finset.univ.filter (fun i => u₁ i = 0) := fun hsub =>
+    absurd (Finset.card_le_card hsub) (not_le.mpr hintergt)
+  obtain ⟨i, hiInter, hiZero⟩ := Finset.not_subset.mp hnsub
+  rw [Finset.mem_inter] at hiInter
+  have hu1 : u₁ i ≠ 0 := fun h => hiZero (Finset.mem_filter.mpr ⟨Finset.mem_univ i, h⟩)
+  have e : u₀ i + γ₁ • u₁ i = u₀ i + γ₂ • u₁ i := by rw [← h₁ i hiInter.1, ← h₂ i hiInter.2]
+  have hz : (γ₁ - γ₂) • u₁ i = 0 := by
+    have h3 : γ₁ • u₁ i = γ₂ • u₁ i := add_left_cancel e
+    rw [sub_smul, h3, sub_self]
+  exact hu1 (by rw [← inv_smul_smul₀ hd (u₁ i), hz, smul_zero])
+
+/-- **Codeword pinning (full-support line).** The full-support specialization of
+`unique_bad_gamma_common_codeword_general`: when `u₁` has no zeros, the zero-set is empty so the
+overlap condition is just `|ι| < |S₁| + |S₂|`. -/
 theorem unique_bad_gamma_common_codeword
     (u₀ u₁ : ι → A) (hsupp : ∀ i, u₁ i ≠ 0)
     {γ₁ γ₂ : F} {w : ι → A} {S₁ S₂ : Finset ι}
@@ -71,21 +100,10 @@ theorem unique_bad_gamma_common_codeword
     (h₁ : ∀ i ∈ S₁, w i = u₀ i + γ₁ • u₁ i)
     (h₂ : ∀ i ∈ S₂, w i = u₀ i + γ₂ • u₁ i) :
     γ₁ = γ₂ := by
-  by_contra hne
-  have hd : γ₁ - γ₂ ≠ 0 := sub_ne_zero.mpr hne
-  have hinter : (S₁ ∩ S₂).Nonempty := by
-    rw [← Finset.card_pos]
-    have hun : (S₁ ∪ S₂).card ≤ Fintype.card ι := by simpa using Finset.card_le_univ (S₁ ∪ S₂)
-    have hui : (S₁ ∪ S₂).card + (S₁ ∩ S₂).card = S₁.card + S₂.card :=
-      Finset.card_union_add_card_inter S₁ S₂
-    omega
-  obtain ⟨i, hi⟩ := hinter
-  rw [Finset.mem_inter] at hi
-  have e : u₀ i + γ₁ • u₁ i = u₀ i + γ₂ • u₁ i := by rw [← h₁ i hi.1, ← h₂ i hi.2]
-  have hz : (γ₁ - γ₂) • u₁ i = 0 := by
-    have h3 : γ₁ • u₁ i = γ₂ • u₁ i := add_left_cancel e
-    rw [sub_smul, h3, sub_self]
-  exact hsupp i (by rw [← inv_smul_smul₀ hd (u₁ i), hz, smul_zero])
+  refine unique_bad_gamma_common_codeword_general u₀ u₁ ?_ h₁ h₂
+  have hempty : (Finset.univ.filter (fun i => u₁ i = 0)) = ∅ :=
+    Finset.filter_eq_empty_iff.mpr fun i _ => hsupp i
+  rw [hempty, Finset.card_empty]; omega
 
 /-- **The `δ < 1/2` overlap driver.** Two witness sets each of relative size `≥ 1 - δ` jointly
 exceed `|ι|` when `δ < 1/2`, so they must overlap. -/
@@ -150,6 +168,7 @@ theorem badCount_le_witnessCodeword_card
       rw [← hfeq] at hi2
       exact hi2
 
+#print axioms unique_bad_gamma_common_codeword_general
 #print axioms unique_bad_gamma_common_codeword
 #print axioms card_sum_gt_of_lt_half
 #print axioms badCount_le_witnessCodeword_card
