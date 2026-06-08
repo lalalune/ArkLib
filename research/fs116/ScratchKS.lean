@@ -102,25 +102,19 @@ private theorem scratch_probEvent_optionT_stateT_init
     (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
     (oa : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α) :
     simulateQ
-        (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+        (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+          (challengeQueryImpl
+            (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
         ((liftM oa : OptionT (OracleComp
           ((oSpec + fsChallengeOracle StmtIn pSpec) +
             [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α).run) =
       simulateQ impl oa.run := by
-  rw [congrArg OptionT.run
-    (fiatShamir_liftM_base_optionT_to_append_eq_direct
-      (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) (oa := oa))]
-  simp only [OptionT.run_mk]
-  rw [show OracleComp.liftComp oa.run
-        ((oSpec + fsChallengeOracle StmtIn pSpec) +
-          [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ) =
-      (liftM oa.run : OracleComp
-        ((oSpec + fsChallengeOracle StmtIn pSpec) +
-          [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ) (Option α)) by
-    rw [OracleComp.liftComp_eq_liftM]]
-  exact simulateQ_addLift_liftM
-    (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))
-    (impl := impl) (oa := oa.run)
+  exact simulateQ_add_run_liftM_left
+    (impl₁ := impl)
+    (impl₂ := QueryImpl.liftTarget (StateT σ ProbComp)
+      (challengeQueryImpl
+        (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+    (oa := oa)
 
 local instance fiatShamirProverOnlyCanonicalKSScratch : ProtocolSpec.ProverOnly
     (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) where
@@ -279,10 +273,10 @@ theorem scratch_fiatShamirKnowledgeExec_runCollapse
         simulateQ impl
           (OptionT.run
             ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
-              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                  OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
                 (StmtIn × WitIn × StmtOut × WitOut))) := by
     intro d extractedWitIn
-    simp
+    simp only [OptionT.run_pure, simulateQ_pure]
   simp [K, QueryImpl.addLift_def, hLift, hPure]
 
 theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical

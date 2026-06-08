@@ -1387,6 +1387,8 @@ set_option linter.unusedSimpArgs false
 set_option linter.unusedSectionVars false
 set_option maxHeartbeats 2000000
 
+attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
+
 local instance fiatShamirProverOnlyCanonicalKS : ProtocolSpec.ProverOnly
     (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) where
   prover_first' := by simp
@@ -1603,7 +1605,59 @@ theorem fiatShamirKnowledgeExec_runCollapse
         simulateQ impl (fiatShamirAdversaryExecution P V stmtIn witIn).run :=
     fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn
   rw [hfst]
-  simp [K, QueryImpl.addLift_def, simulateQ_addLift_optionT_liftM_run]
+  have hLift :
+      ∀ d : ((Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
+          (StmtOut × WitOut)) × StmtOut),
+        simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+          (OptionT.run
+            ((liftM
+              (do
+                let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                  (oSpec := oSpec) stmtIn (d.1.1 0))
+                liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+                  OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)) :
+                OptionT
+                  (OracleComp
+                    ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                      [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                  WitIn)) =
+        simulateQ impl
+          (OptionT.run
+            (do
+              let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                (oSpec := oSpec) stmtIn (d.1.1 0))
+              liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+                OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)) := by
+    intro d
+    exact simulateQ_add_run_liftM_left
+      (impl₁ := impl)
+      (impl₂ := QueryImpl.liftTarget (StateT σ ProbComp)
+        (challengeQueryImpl
+          (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+      (do
+        let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+          (oSpec := oSpec) stmtIn (d.1.1 0))
+        liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+  have hPure :
+      ∀ (d : ((Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
+          (StmtOut × WitOut)) × StmtOut)) (extractedWitIn : WitIn),
+        simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+          (OptionT.run
+            ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
+              OptionT
+                (OracleComp
+                  ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                    [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                (StmtIn × WitIn × StmtOut × WitOut))) =
+        simulateQ impl
+          (OptionT.run
+            ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
+              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                (StmtIn × WitIn × StmtOut × WitOut))) := by
+    intro d extractedWitIn
+    simp only [OptionT.run_pure, simulateQ_pure]
+  simp [K, QueryImpl.addLift_def, hLift, hPure]
 
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of

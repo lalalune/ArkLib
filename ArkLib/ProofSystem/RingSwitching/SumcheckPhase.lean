@@ -57,6 +57,15 @@ open Sumcheck.Structured
 namespace RingSwitching.SumcheckPhase
 noncomputable section
 
+/-- Bridge the framework's `SampleableType` uniform sampler to the PMF uniform notation used by
+some standalone probability lemmas. -/
+private theorem probEvent_uniformSample_eq_Pr_uniform {α : Type} [SampleableType α] [Fintype α]
+    [Nonempty α] (p : α → Prop) [DecidablePred p] :
+    Pr[p | ($ᵗ α)] = Pr_{ let x ← $ᵖ α }[p x] := by
+  rw [probEvent_uniformSample]
+  rw [prob_uniform_eq_card_filter_div_card]
+  norm_num
+
 variable (κ : ℕ) [NeZero κ]
 variable (L : Type) [CommRing L] [Nontrivial L] [Fintype L] [DecidableEq L]
   [SampleableType L]
@@ -950,23 +959,23 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
   simp only [iteratedSumcheckKnowledgeStateFunction] at h_kState_before_false h_kState_after_true
   unfold iteratedSumcheckKStateProp at h_kState_before_false h_kState_after_true
   simp only [Fin.isValue, Fin.castSucc_one, Fin.succ_one_eq_two, Nat.reduceAdd] at h_kState_before_false h_kState_after_true
-  simp only [Transcript.concat, sumcheckVerifierStmtOut] at h_kState_before_false h_kState_after_true
+  simp only [Transcript.concat] at h_kState_before_false h_kState_after_true
   unfold masterKStateProp witnessStructuralInvariant at h_kState_before_false h_kState_after_true
   simp only [iteratedSumcheckRbrExtractor, Fin.isValue] at h_kState_before_false h_kState_after_true
   have h_explicit_after :
-      h_i.val.eval (P.basis 0) + h_i.val.eval (P.basis 1) = stmtOStmtIn.1.sumcheck_target := by
-    simpa using h_kState_after_true.1.1
+      (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmtOStmtIn.1.sumcheck_target := by
+    simpa using h_kState_after_true.1
   have h_sumcheck_after :
-      sumcheckConsistencyProp (𝓑 := P.basis) (Polynomial.eval r_i' h_i.val) witMid.H := by
-    simpa using h_kState_after_true.1.2
+      sumcheckConsistencyProp (boolDomain L (ℓ' - ↑i.succ)) (h_i.val.eval r_i') witMid.H := by
+    simpa [sumcheckConsistencyProp] using h_kState_after_true.2.2.1
   have h_wit_struct_after :
       witMid.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witMid.t')
         (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
-        (i := i.succ) (challenges := Fin.snoc stmtOStmtIn.1.challenges r_i') := by
+        (i := i.succ) (challenges := Fin.cons r_i' stmtOStmtIn.1.challenges) := by
     simpa using h_kState_after_true.2.1
   have h_compat_after :
       aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ := by
-    simpa using h_kState_after_true.2.2
+    simpa using h_kState_after_true.2.2.2
   let witBefore : SumcheckWitness L ℓ' i.castSucc :=
     (iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
       (m := 1) stmtOStmtIn (FullTranscript.mk2 h_i r_i') witMid
@@ -975,51 +984,46 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
         (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges) := by
     dsimp [witBefore, iteratedSumcheckRbrExtractor]
   let h_star_extracted : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := witBefore.H)
-  have h_star_eval_sum :
-      h_star_extracted.val.eval (P.basis 0) + h_star_extracted.val.eval (P.basis 1) =
-      stmtOStmtIn.1.sumcheck_target := by
-    rw [getSumcheckRoundPoly_sum_eq_consistency]
-    have h_kState_round0_struct :
-        witBefore.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witMid.t')
-          (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
-          (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges) := h_H_before
-    have h_round0_cons : sumcheckConsistencyProp (𝓑 := P.basis) stmtOStmtIn.1.sumcheck_target witBefore.H := by
-      rw [h_kState_round0_struct, h_wit_struct_after] at h_sumcheck_after
-      have h_cons_snoc := projectToMidSumcheckPoly_consistency (L := L) (ℓ := ℓ')
-        (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
-        (t := witMid.t') (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges) (r_i := r_i')
-        (𝓑 := P.basis)
-      unfold sumcheckConsistencyProp at h_sumcheck_after ⊢
-      rw [h_cons_snoc]
-      exact h_sumcheck_after
-    exact h_round0_cons
+  have h_sumcheck_after_eval :
+      h_i.val.eval r_i' = ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube, witMid.H.val.eval z := by
+    simpa [sumcheckConsistencyProp] using h_sumcheck_after
   have h_star_eval_r_i :
       h_star_extracted.val.eval r_i' = Polynomial.eval r_i' h_i.val := by
-    rw [getSumcheckRoundPoly_eval_eq_snoc]
-    have h_H_snoc : projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witMid.t')
-          (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
-          (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges)
-        = witBefore.H := h_H_before.symm
-    rw [h_H_snoc]
-    have h_H_witMid :
-        witMid.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witMid.t')
-          (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
-          (i := i.succ) (challenges := Fin.snoc stmtOStmtIn.1.challenges r_i') := h_wit_struct_after
-    rw [← h_H_witMid]
-    exact h_sumcheck_after
+    have h_hstar_cube :
+        h_star_extracted.val.eval r_i' =
+          ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube,
+            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witMid.t')
+              (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
+              (i := i.succ) (challenges := Fin.cons r_i' stmtOStmtIn.1.challenges)).val.eval z := by
+      dsimp [h_star_extracted]
+      rw [h_H_before]
+      exact iteratedSumcheck_hStar_extracted_eval_eq_cube_succ
+        (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+        (i := i) (t' := witMid.t') (ctx := stmtOStmtIn.1.ctx)
+        (challenges := stmtOStmtIn.1.challenges) (r' := r_i')
+    rw [h_hstar_cube, ← h_wit_struct_after]
+    simpa [Polynomial.eval] using h_sumcheck_after_eval.symm
+  have h_round0_cons_of_eq (h_eq : h_i.val = h_star_extracted.val) :
+      sumcheckConsistencyProp (boolDomain L (ℓ' - ↑i.castSucc))
+        stmtOStmtIn.1.sumcheck_target witBefore.H := by
+    have h_points_star :
+        (∑ b ∈ (boolDomain L ℓ').points i, h_star_extracted.val.eval b) =
+          stmtOStmtIn.1.sumcheck_target := by
+      rw [← h_explicit_after]
+      apply Finset.sum_congr rfl
+      intro b _
+      rw [← h_eq]
+    have h_points_cube := getSumcheckRoundPoly_points_sum_eq_cube
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
+      (h_l := h_l) (aOStmtIn := aOStmtIn) (i := i) (H := witBefore.H)
+    unfold sumcheckConsistencyProp
+    rw [← h_points_star, h_points_cube]
   have h_poly_ne : h_i.val ≠ h_star_extracted.val := by
     intro h_eq
     apply h_kState_before_false
-    simp only [iteratedSumcheckKStateProp, h_explicit_after, true_and, h_compat_after]
-    have h_star_struct_kState :
-        witBefore.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witMid.t')
-          (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
-          (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges) := h_H_before
-    have h_star_extracted_eq : h_star_extracted = getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := witBefore.H) := rfl
-    have h_star_poly_eq : h_star_extracted.val = h_i.val := h_eq.symm
-    apply Subtype.ext at h_star_poly_eq
-    rw [← h_star_poly_eq]
-    exact ⟨h_star_extracted_eq.symm, h_star_struct_kState⟩
+    have h_poly_eq_subtype : h_i = h_star_extracted := Subtype.ext h_eq
+    have h_round0_cons := h_round0_cons_of_eq h_eq
+    exact ⟨⟨h_explicit_after, h_poly_eq_subtype⟩, h_H_before, h_round0_cons, h_compat_after⟩
   have h_bad_extracted : badSumcheckEventProp (L := L) r_i' h_i h_star_extracted := by
     exact ⟨h_poly_ne, h_star_eval_r_i.symm⟩
   refine ⟨witMid, h_compat_after, ?_⟩
@@ -1040,7 +1044,7 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
           (h_l := h_l) aOStmtIn (init := init) (impl := impl) i)
         (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i)
         (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => h_i)
-        (challenge := y) | ($ᵖ L)] ≤
+        (challenge := y) | ($ᵗ L)] ≤
       roundKnowledgeError L ℓ' i := by
   classical
   let P_event := rbrExtractionFailureEvent
@@ -1062,8 +1066,8 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
         (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges)
     let h_star_fixed : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := H_fixed)
     have h_prob_mono :
-        Pr[fun y => P_event y | ($ᵖ L)] ≤
-          Pr[fun y => badSumcheckEventProp (L := L) y h_i h_star_fixed | ($ᵖ L)] := by
+        Pr[fun y => P_event y | ($ᵗ L)] ≤
+          Pr[fun y => badSumcheckEventProp (L := L) y h_i h_star_fixed | ($ᵗ L)] := by
       apply probEvent_mono
       intro y _ h_doomEscape'
       exact by
@@ -1073,7 +1077,7 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
             (aOStmtIn := aOStmtIn) (impl := impl) (init := init)
             i stmtOStmtIn h_i y h_doomEscape'
         have h_t_eq : witMid'.t' = t_fixed := by
-          unfold rbrExtractionFailureEvent at h_doomEscape h_doomEscape'
+          dsimp [P_event, rbrExtractionFailureEvent] at h_doomEscape h_doomEscape'
           rcases h_doomEscape with ⟨_, h_before_false, _⟩
           rcases h_doomEscape' with ⟨_, h_before_false', _⟩
           simp only [iteratedSumcheckKnowledgeStateFunction, iteratedSumcheckKStateProp, Transcript.equivMessagesChallenges,
@@ -1085,7 +1089,7 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
     have h_sz := probEvent_badSumcheckEventProp_degree_two_le (h_i := h_i) (h_star := h_star_fixed)
     simpa using h_sz
   · have h_prob_mono_false :
-        Pr[fun y => P_event y | ($ᵖ L)] ≤ Pr[fun _ : L => False | ($ᵖ L)] := by
+        Pr[fun y => P_event y | ($ᵗ L)] ≤ Pr[fun _ : L => False | ($ᵗ L)] := by
       apply probEvent_mono
       intro y _ h_doomEscape
       exact False.elim ((not_exists.mp h_doom y) h_doomEscape)

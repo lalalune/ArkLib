@@ -8,9 +8,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop24
 /-!
 # Loop 28 — variable fold factors: only the product matters
 
-Loop 24 used a constant multiplicative factor `a` at every fold. Loop 26/27 then narrowed the additive
-side. This file corrects the multiplicative disproof target: a single `N`-dependent fold factor is
-not automatically a counterexample. What matters is the **product** of all fold factors.
+Loop 24 used a constant multiplicative factor `a` at every fold. Loop 26/27 then narrowed the
+additive side. This file corrects the multiplicative disproof target: a single `N`-dependent fold
+factor is not automatically a counterexample. What matters is the **product** of all fold factors.
 
 If the fold recurrence is
 
@@ -38,16 +38,16 @@ Loop 24 recurrence is only a special case; with factors `a_j`, the full blowup i
 theorem variable_fold_recursion_telescopes
     (T a : ℕ → ℝ) (ha : ∀ j, 0 ≤ a j)
     (hstep : ∀ j, T (j + 1) ≤ a j * T j) :
-    ∀ m, T m ≤ (∏ j in Finset.range m, a j) * T 0 := by
+    ∀ m, T m ≤ (∏ j ∈ Finset.range m, a j) * T 0 := by
   intro m
   induction m with
   | zero => simp
   | succ n ih =>
       calc
         T (n + 1) ≤ a n * T n := hstep n
-        _ ≤ a n * ((∏ j in Finset.range n, a j) * T 0) :=
+        _ ≤ a n * ((∏ j ∈ Finset.range n, a j) * T 0) :=
           mul_le_mul_of_nonneg_left ih (ha n)
-        _ = (∏ j in Finset.range (n + 1), a j) * T 0 := by
+        _ = (∏ j ∈ Finset.range (n + 1), a j) * T 0 := by
           rw [Finset.prod_range_succ]
           ring
 
@@ -58,7 +58,7 @@ per-fold factor. -/
 theorem variable_fold_polynomial_of_product_bound
     (T a : ℕ → ℝ) {c m : ℕ} (ha : ∀ j, 0 ≤ a j) (hT0 : 0 ≤ T 0)
     (hstep : ∀ j, T (j + 1) ≤ a j * T j)
-    (hprod : (∏ j in Finset.range m, a j) ≤ ((2 : ℝ) ^ m) ^ c) :
+    (hprod : (∏ j ∈ Finset.range m, a j) ≤ ((2 : ℝ) ^ m) ^ c) :
     T m ≤ ((2 : ℝ) ^ m) ^ c * T 0 := by
   refine le_trans (variable_fold_recursion_telescopes T a ha hstep m) ?_
   exact mul_le_mul_of_nonneg_right hprod hT0
