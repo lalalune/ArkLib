@@ -646,6 +646,7 @@ import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.N0CompScratch
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
+import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution

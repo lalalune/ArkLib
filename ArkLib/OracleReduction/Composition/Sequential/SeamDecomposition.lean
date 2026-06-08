@@ -6,37 +6,32 @@ Authors: ArkLib Contributors
 import ArkLib.OracleReduction.Composition.Sequential.Append
 
 /-!
-# Malicious-prover seam decomposition for `pSpec₁ ++ₚ pSpec₂` (issue #13 / #25)
+# Malicious-prover seam decomposition for sequential composition (issue #13 / #25)
 
 The soundness composition theorem `Verifier.append_soundness` (in `Append.lean`) is residual-gated
-on `appendSoundnessResidual`, whose stated obstruction is:
+on `appendSoundnessResidual`. Its stated obstruction: soundness quantifies over an arbitrary
+malicious prover `P` over `pSpec₁ ++ₚ pSpec₂`, so the proof must decompose `P` at the seam round `m`
+into a `pSpec₁`-phase malicious prover (running rounds `0` to `m-1`, with `P`'s round-`m` output
+context as its `output`) and a `pSpec₂`-phase malicious prover (resuming from that context). No
+analogue of the honest `Prover.append` existed in the codebase yet.
 
-> soundness quantifies over an *arbitrary malicious* prover `P` over `pSpec₁ ++ₚ pSpec₂`, so the
-> proof must decompose `P` at the seam round `m` into a `pSpec₁`-phase malicious prover `P↾₁`
-> (running rounds `0..m-1`, with `P`'s round-`m` output context as its `output`) and a `pSpec₂`-phase
-> malicious prover `P↾₂` (resuming from that context). … no analogue of the honest `Prover.append`
-> exists in the codebase yet.
+This file supplies that missing construction: `Prover.fst` (the left half) and `Prover.snd` (the
+right half). They are the inverse of the honest `Prover.append`: where `Prover.append` glues two
+provers into one over the appended protocol, `fst` and `snd` split an arbitrary prover over the
+appended protocol back into its two phases, carrying `P`'s seam state (its `PrvState` at the last
+`pSpec₁` round) across the cut.
 
-This file supplies exactly that missing construction: `Prover.fst` (the `P↾₁` left half) and
-`Prover.snd` (the `P↾₂` right half).  They are the inverse of the honest `Prover.append`: where
-`Prover.append` glues two provers into one over the appended protocol, `fst`/`snd` *split* an
-arbitrary prover over the appended protocol back into its two phases, carrying `P`'s seam state
-(its `PrvState` at the last `pSpec₁` round) across the cut.
+- `Prover.fst P` runs rounds `0` to `m-1` exactly as `P`, then outputs the seam state.
+- `Prover.snd P` resumes from the seam state (passed in as the input statement) and runs rounds `m`
+  to `m+n-1` exactly as `P`, ending with `P`'s own output.
 
-* `Prover.fst P : Prover … Stmt₁ Wit₁ (P.PrvState ⟨m⟩) Unit pSpec₁` — runs rounds `0..m-1` exactly
-  as `P`, then outputs the seam state.
-* `Prover.snd P : Prover … (P.PrvState ⟨m⟩) Unit Stmt₃ Wit₃ pSpec₂` — resumes from the seam state
-  (passed in as the input statement) and runs rounds `m..m+n-1` exactly as `P`, ending with `P`'s
-  own output.
+The constructions reuse the left/right-half transport lemmas (`append_dir_castLE`, `append_dir_natAdd`,
+`append_Message_castLE`, `append_Message_natAdd`, `append_Challenge_natAdd`) proven in `Append.lean`.
+Each round of a restriction lies wholly in one half of the appended protocol, so, unlike
+`Prover.append` (which case-splits on `i < m`, `i = m`, `i > m`), no per-round case analysis is needed.
 
-The constructions reuse the left-/right-half transport lemmas (`append_dir_castLE`/`_natAdd`,
-`append_Message_castLE`/`_natAdd`, `append_Challenge_natAdd`) proven in `Append.lean`.  Each round
-of a restriction lies wholly in one half of the appended protocol, so — unlike `Prover.append`,
-which must case-split on `i < m`, `i = m`, `i > m` — no per-round case analysis is needed.
-
-These are axiom-clean and `sorry`-free.  The remaining steps toward `appendSoundnessResidual` are
-the seam-merge identity (`P` agrees with `(Prover.fst P).append (Prover.snd P)` on its run) and the
-probabilistic union bound over the intermediate statement; both are documented in `appendSoundness`.
+These are axiom-clean and `sorry`-free. The remaining steps toward `appendSoundnessResidual` are the
+run-level seam-merge identity and the probabilistic union bound over the intermediate statement.
 -/
 
 open OracleComp ProtocolSpec OracleVerifier.Append
@@ -80,7 +75,7 @@ def fst (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂
     have hsucc : Fin.castLE hle i.succ = (Fin.castLE hmn i).succ := by ext; simp
     have hChal : (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.castLE hmn i, hDir'⟩
         = pSpec₁.Challenge ⟨i, hDir⟩ := by
-      show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.castLE hmn i) = pSpec₁.«Type» i
+      change Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.castLE hmn i) = pSpec₁.«Type» i
       rw [Fin.vappend_eq_append,
         show (Fin.castLE hmn i) = Fin.castAdd n i from by ext; simp, Fin.append_left]
     refine (fun f => ?_) <$> (P.receiveChallenge ⟨Fin.castLE hmn i, hDir'⟩ (hcs ▸ state))
