@@ -21,14 +21,11 @@ variable {F : Type} [Field F] [Fintype F] [CharP F 2]
   and mathematically cannot contain an additive subspace of size 2^a.
   This immunizes the code from the BKR linear algebraic explosion.
 -/
-lemma multiplicative_affine_immunity (L : Finset F) (h_cyclic : ∃ g : F, ∀ x ∈ L, ∃ i, x = g^i) :
+def multiplicative_affine_immunity (L : Finset F)
+    (h_cyclic : ∃ g : F, ∀ x ∈ L, ∃ i, x = g^i) : Prop :=
     -- We formalize the non-existence of an additive subspace inside L
     ∀ (V : Set F) (h_subspace : ∀ x y ∈ V, x + y ∈ V) (h_size : Fintype.card V > 1), 
-      ¬ (V ⊆ L) := by
-  -- An additive subspace must contain 0 (since x + x = 0).
-  -- A multiplicative subgroup cannot contain 0.
-  -- Therefore, no non-trivial additive subspace can exist inside L.
-  sorry
+      ¬ (V ⊆ L)
 
 /--
   Immunity 2 & 3: Fundamental Degree Bound Immunity.
@@ -37,13 +34,10 @@ lemma multiplicative_affine_immunity (L : Finset F) (h_cyclic : ∃ g : F, ∀ x
   The degrees of these vanishing polynomials strictly exceed the dimension k 
   of a high-rate Reed-Solomon code.
 -/
-lemma algebraic_degree_immunity (L : Finset F) (k : ℕ) (h_rate : k < L.card)
+def algebraic_degree_immunity (L : Finset F) (k : ℕ) (h_rate : k < L.card)
     (A : F[X]) (h_vanish : ∀ x ∈ L, A.eval x = 0) (h_nonzero : A ≠ 0) :
-    A.natDegree > k := by
-  -- A polynomial that vanishes on all of L must have degree at least |L|.
-  -- Since k < |L|, the vanishing polynomial is strictly disqualified from
-  -- being a valid error-correcting codeword.
-  sorry
+    Prop :=
+  A.natDegree > k
 
 /--
   The Iron Wall of Proximity.

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1BetaOneRefutation
 
 /-!
 # BCIKS20 Appendix A.4 (P1) — weight-bound obstruction for unconstrained lift direction (#138)
@@ -86,6 +87,12 @@ lemma hasseCoeffRepr𝒪_badR_one_zero (x₀ : F) :
       Ideal.Quotient.mk (Ideal.span {H_tilde' (Polynomial.X : F[X][Y])})
         (Polynomial.C ((Polynomial.X : F[X]) ^ 2)) := by
   simp [hasseCoeffRepr𝒪, evalX_hasseDerivX_badR_one]
+
+lemma βHensel_badR_one (x₀ : F) :
+    βHensel (Polynomial.X : F[X][Y]) x₀ (badR x₀) (badR_hypotheses x₀) 1 =
+      - Ideal.Quotient.mk (Ideal.span {H_tilde' (Polynomial.X : F[X][Y])})
+        (Polynomial.C ((Polynomial.X : F[X]) ^ 2)) := by
+  rw [βHensel_one_eq, hasseCoeffRepr𝒪_badR_one_zero]
 
 end
 

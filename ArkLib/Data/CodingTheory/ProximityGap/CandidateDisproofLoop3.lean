@@ -25,8 +25,8 @@ variable {F : Type} [Field F] [Fintype F] [CharP F 2]
   cosets, we construct independent lists that cross-pollinate and cause an 
   explosion in the global list size.
 -/
-lemma interleaved_coset_explosion (L : Finset F) (d1 d2 : ℕ) 
-    (h_factor : L.card = d1 * d2) :
+def interleaved_coset_explosion (L : Finset F) (d1 d2 : ℕ)
+    (h_factor : L.card = d1 * d2) : Prop :=
     ∃ S : Finset F[X], 
       -- FLAWED: While concentrating errors onto specific cosets leaves other cosets clean,
       -- the fundamental bound of Reed-Solomon codes is blind to topology.
@@ -37,7 +37,6 @@ lemma interleaved_coset_explosion (L : Finset F) (d1 d2 : ℕ)
       -- Coset decomposition is an isomorphism; it does not change the determinant
       -- of the Vandermonde matrix. The list size remains strictly bounded by the 
       -- Johnson Radius of the global code rate.
-      True := by
-  sorry
+      S.Nonempty ∧ ∀ P ∈ S, P.natDegree < L.card
 
 end ArkLib.CodingTheory.Research

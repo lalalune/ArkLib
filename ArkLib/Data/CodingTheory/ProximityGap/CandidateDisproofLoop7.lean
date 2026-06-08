@@ -3,27 +3,84 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop6
 import Mathlib.Algebra.Order.Field.Basic
 
 /-!
-# Loop 7 — why near-capacity Frobenius orbits do not yet disprove the prize
+# Loop 7 — conditional Frobenius disproofs and their first self-refutation
 
 Loop 6 isolated a real obstruction: if a Frobenius-stable bad-scalar set is bounded by a
 field-independent constant `C`, then every bad scalar has bounded Frobenius degree. A high-degree
 bad scalar would therefore be a promising disproof mechanism.
 
-Loop 7 records the first disproof of that disproof. The toy Frobenius constructions found so far
-sit extremely close to capacity: the available gap behaves like `η ≲ A / d`, where `d` is the
-Frobenius-orbit degree. In that regime a linear orbit lower bound `#bad = O(d)` is only
-`O(1 / η)`, and the prize RHS is explicitly allowed to contain an `η^{-c₃}` factor. Thus such a
-family cannot refute the field-universal prize by itself; to beat the conjecture one needs either
-a high-degree orbit at fixed gap, or bad-count growth faster than every permitted polynomial in
-`1/η` and the interleaving width.
+Loop 7 keeps three reusable pieces:
 
-The lemmas below are intentionally just the reusable arithmetic guardrail.
+* a conditional contradiction: a constant bad-count bound plus a bad scalar whose Frobenius degree
+  exceeds that constant is impossible;
+* an abstract filter form: any Frobenius-invariant bad-event predicate inherits the same orbit
+  lower bound, so the obstruction is not specific to one presentation of the event;
+* the first disproof of the disproof: the toy Frobenius constructions found so far sit extremely
+  close to capacity, with `η ≲ A / d`. In that regime a linear orbit lower bound `#bad = O(d)` is
+  only `O(1 / η)`, and the prize RHS is explicitly allowed to contain an `η^{-c₃}` factor.
+
+Thus near-capacity linear-orbit growth cannot refute the field-universal prize by itself; to beat
+the conjecture one needs either a high-degree orbit at fixed gap, or bad-count growth faster than
+every permitted polynomial in `1/η` and the interleaving width.
 -/
 
 namespace ArkLib.ProximityGap.DisproofLoop7
+
+variable {F : Type*} [Field F] [DecidableEq F]
+
+/-- **Conditional Frobenius disproof.** If a Frobenius-closed bad set has the conjectural
+constant-cardinality bound `#S ≤ C`, but contains a scalar whose first `d` Frobenius iterates are
+distinct with `C < d`, then the assumptions are inconsistent.
+
+This packages Loop 6's orbit lower bound in the exact "realizing a high-degree bad scalar would
+disprove the constant bad-count claim" form. -/
+theorem realizing_high_degree_bad_scalar_disproves
+    {p : ℕ} {S : Finset F} {C : ℝ} {y : F} {d : ℕ}
+    (hclosed : ∀ x ∈ S, x ^ p ∈ S)
+    (hbound : (S.card : ℝ) ≤ C)
+    (hy : y ∈ S)
+    (hinj : Set.InjOn (fun k => y ^ (p ^ k)) (Finset.range d))
+    (hgt : C < (d : ℝ)) :
+    False := by
+  have hle : (d : ℝ) ≤ C :=
+    ArkLib.ProximityGap.DisproofLoop6.const_badcount_forbids_high_degree
+      hclosed hbound hy d hinj
+  exact not_lt_of_ge hle hgt
+
+section InvariantPredicate
+
+variable [Fintype F]
+
+/-- If a predicate is Frobenius-invariant, then the finite set of elements satisfying it is closed
+under Frobenius. -/
+theorem frobenius_invariant_filter_closed
+    (p : ℕ) (P : F → Prop) [DecidablePred P]
+    (hP : ∀ x : F, P x → P (x ^ p)) :
+    ∀ x ∈ (Finset.univ.filter P), x ^ p ∈ (Finset.univ.filter P) := by
+  intro x hx
+  rw [Finset.mem_filter] at hx ⊢
+  exact ⟨Finset.mem_univ _, hP x hx.2⟩
+
+/-- **Predicate form of the Frobenius orbit lower bound.** For any Frobenius-invariant bad-event
+predicate `P`, a satisfying scalar with `d` distinct Frobenius iterates forces at least `d`
+satisfying scalars. -/
+theorem frobenius_invariant_card_ge
+    {p : ℕ} (P : F → Prop) [DecidablePred P]
+    (hP : ∀ x : F, P x → P (x ^ p))
+    {y : F} (hy : P y) (d : ℕ)
+    (hinj : Set.InjOn (fun k => y ^ (p ^ k)) (Finset.range d)) :
+    d ≤ (Finset.univ.filter P).card := by
+  refine ArkLib.ProximityGap.DisproofLoop6.frobenius_orbit_card_le
+    (S := Finset.univ.filter P) ?_ ?_ d hinj
+  · exact frobenius_invariant_filter_closed p P hP
+  · rw [Finset.mem_filter]
+    exact ⟨Finset.mem_univ _, hy⟩
+
+end InvariantPredicate
 
 /-- If a degree parameter `d` only appears when the prize gap is at most `A / d`, then the degree
 is bounded by the inverse gap: `d ≤ A / η`.

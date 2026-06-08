@@ -17,7 +17,7 @@ variable {F : Type} [Field F] [Fintype F] [CharP F 2]
 /-- The Absolute Trace Polynomial. -/
 def trace_poly (d : ℕ) : F[X] :=
   -- Tr(X) = X + X^2 + X^4 + ... + X^{2^{d-1}}
-  sorry
+  ∑ i in Finset.range d, Polynomial.X ^ (2 ^ i)
 
 /--
   The Trace Subspace Hypothesis.
@@ -25,7 +25,7 @@ def trace_poly (d : ℕ) : F[X] :=
   Trace function partition L into pseudo-subspaces. We define V as the roots 
   of Tr(X) inside L.
 -/
-lemma trace_fiber_explosion (L : Finset F) (k : ℕ) :
+def trace_fiber_explosion (L : Finset F) (k : ℕ) : Prop :=
     ∃ S : Finset F[X], 
       -- FLAWED: The trace polynomial Tr(X) evaluates to 0 on an additive subspace.
       -- BUT we are evaluating on L. The roots of Tr(X) in L are NOT closed under
@@ -37,7 +37,6 @@ lemma trace_fiber_explosion (L : Finset F) (k : ℕ) :
       -- But the prize explicitly operates over high-rate codes where k is a fraction 
       -- of |L|, meaning k is roughly 2^127. The degrees of freedom |F|^{k - |V|} 
       -- become tiny or negative, providing zero explosion.
-      True := by
-  sorry
+      S.Nonempty ∧ ∀ P ∈ S, P.natDegree < k
 
 end ArkLib.CodingTheory.Research

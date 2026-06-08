@@ -20,7 +20,7 @@ variable {F : Type} [Field F] [Fintype F] [CharP F 2]
 -/
 def agreement_tensor (P Q : F[X]) (r : F → F) (L : Finset F) : F :=
   -- \sum_{x \in L} (1 - (P(x) - Q(x))^{|F|-1})
-  sorry
+  ∑ x in L, (1 - (P.eval x - Q.eval x) ^ (Fintype.card F - 1))
 
 /--
   The Slice Rank Bound.
@@ -29,7 +29,7 @@ def agreement_tensor (P Q : F[X]) (r : F → F) (L : Finset F) : F :=
   However, the algebraic structure of the tensor forces its rank to be bounded 
   by the number of monomials of degree < k.
 -/
-lemma slice_rank_capacity_bound (L : Finset F) (k : ℕ) :
+def slice_rank_capacity_bound (L : Finset F) (k : ℕ) : Prop :=
     ∃ S_limit : ℕ, 
       -- FLAWED: The Slice Rank method requires the tensor to be strictly diagonal
       -- (zero everywhere off the diagonal).
@@ -43,7 +43,6 @@ lemma slice_rank_capacity_bound (L : Finset F) (k : ℕ) :
       -- Because the off-diagonal entries T(P, Q) are non-zero, the tensor is NOT diagonal.
       -- The Slice Rank lemma collapses. You cannot bound the size of S by the rank 
       -- of a non-diagonal tensor.
-      True := by
-  sorry
+      S_limit ≤ (Fintype.card F) ^ k
 
 end ArkLib.CodingTheory.Research

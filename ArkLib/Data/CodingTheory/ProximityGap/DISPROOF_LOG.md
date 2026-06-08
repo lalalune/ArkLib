@@ -8,15 +8,23 @@ make that reason a sorry-free Lean lemma.
 
 ## The target
 
-`MCAGS.epsMCAgs_prizeBound_conjecture` (and `uniformEpsMCAgsPrizeBoundConjecture`):
-there exist universal `c₁,c₂,c₃` such that for every prize rate `ρ = prizeRates j`,
-gap `η > 0`, and radius
+Live target: the field-universal, faithful GS form
+`MCAGS.epsMCAgsPrizeUniversalConjecture` / `MCAGS.UniversalGSListMassBound`.
+There must be one constant triple `c₁,c₂,c₃`, chosen before the field, such that
+for every prize rate `ρ = prizeRates j`, gap `η > 0`, and radius
 
     δ ≤ 1 − ρ − η          (★ strictly below list-decoding capacity 1−ρ)
 
-the GS-exposed MCA error obeys
+there exists a faithful GS list family whose GS-exposed MCA error obeys
 
     epsMCAgs(RS_ρ, δ, L) ≤ (1/q) · (2^m)^{c₁} / (ρ^{c₂} η^{c₃}).
+
+Do **not** re-target the stale surfaces:
+`MCAGS.epsMCAgs_prizeBound_conjecture domain m` is fixed-field and already a theorem
+(`epsMCAgs_prizeBound_conjecture_holds`, constants can absorb `q`), while
+`uniformEpsMCAgsPrizeBoundConjecture` with `∀ L` is already false as stated
+(`MCAGSPrizeRefutation.not_uniformEpsMCAgsPrizeBoundConjecture`) because arbitrary
+adversarial list families are not the genuine decoder output.
 
 The single most important structural fact is the gap `η > 0` in (★): the radius is
 held **strictly below capacity**. Any disproof must produce a super-polynomial

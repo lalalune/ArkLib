@@ -135,7 +135,7 @@ theorem Wfin_card (hk : 1 ≤ k) {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k)
   rw [← hva, ← hvb, hab]
 
 /-- The `ZMod p` node-sum of a grid window equals the integer sum, cast. -/
-theorem dom_sum (hnp : n ≤ p) (hk : 1 ≤ k) {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k) :
+theorem dom_sum (hnp : n ≤ p) {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k) :
     (∑ i ∈ Wfin n k q r, dom (p := p) hnp i) = (((∑ m ∈ Wnat k q r, m) : ℕ) : ZMod p) := by
   have hlt := Wnat_lt hq hr
   rw [Wfin, Finset.sum_image (by
@@ -160,12 +160,12 @@ theorem euclid_uniq {K q r q' r' : ℕ} (hK : 0 < K) (hr : r < K) (hr' : r' < K)
   exact ⟨Nat.eq_of_mul_eq_mul_left hK (by omega), rfl⟩
 
 /-- Every grid window sum is `< p`, so distinct integer sums stay distinct in `ZMod p`. -/
-theorem Wnat_sum_lt (hp : n * n ≤ p) (hk : 1 ≤ k) {q r : ℕ}
+theorem Wnat_sum_lt (hp : n * n ≤ p) {q r : ℕ}
     (hq : q < n - 2 * k) (hr : r ≤ k) : (∑ m ∈ Wnat k q r, m) < p := by
-  have hcard := Wnat_card (q := q) (r := r) hk hr
+  have hcard := Wnat_card (k := k) (q := q) (r := r)
   have hle : (∑ m ∈ Wnat k q r, m) ≤ (k + 1) * (n - 1) := by
     calc (∑ m ∈ Wnat k q r, m) ≤ (Wnat k q r).card • (n - 1) :=
-          Finset.sum_le_card_nsmul _ _ _ (fun m hm => by have := Wnat_lt hk hq hr m hm; omega)
+          Finset.sum_le_card_nsmul _ _ _ (fun m hm => by have := Wnat_lt hq hr m hm; omega)
       _ = (k + 1) * (n - 1) := by rw [hcard, smul_eq_mul]
   have hk1n : k + 1 ≤ n := by omega
   have hnpos : 0 < n := NeZero.pos n
@@ -181,15 +181,15 @@ noncomputable def family (n k : ℕ) [NeZero n] : Finset (Finset (Fin n)) :=
   ((Finset.range (n - 2 * k)) ×ˢ (Finset.range (k + 1))).image (fun qr => Wfin n k qr.1 qr.2)
 
 /-- **The staircase sums are injective on the grid** — the heart of the quadratic count. -/
-theorem sumval_injOn (hp : n * n ≤ p) (hk : 1 ≤ k) :
+theorem sumval_injOn (hp : n * n ≤ p) :
     Set.InjOn (fun qr : ℕ × ℕ => (((∑ m ∈ Wnat k qr.1 qr.2, m) : ℕ) : ZMod p))
       (((Finset.range (n - 2 * k)) ×ˢ (Finset.range (k + 1)) : Finset (ℕ × ℕ)) : Set (ℕ × ℕ)) := by
   intro qr hqr qr' hqr' h
   simp only [Finset.coe_product, Set.mem_prod, Finset.coe_range, Set.mem_Iio] at hqr hqr'
   obtain ⟨hq, hr⟩ := hqr
   obtain ⟨hq', hr'⟩ := hqr'
-  have hb1 := Wnat_sum_lt hp hk (q := qr.1) (r := qr.2) hq (by omega)
-  have hb2 := Wnat_sum_lt hp hk (q := qr'.1) (r := qr'.2) hq' (by omega)
+  have hb1 := Wnat_sum_lt hp (q := qr.1) (r := qr.2) hq (by omega)
+  have hb2 := Wnat_sum_lt hp (q := qr'.1) (r := qr'.2) hq' (by omega)
   have heq : (∑ m ∈ Wnat k qr.1 qr.2, m) = (∑ m ∈ Wnat k qr'.1 qr'.2, m) := by
     have := (ZMod.natCast_eq_natCast_iff' _ _ _).mp h
     rwa [Nat.mod_eq_of_lt hb1, Nat.mod_eq_of_lt hb2] at this
@@ -223,7 +223,7 @@ theorem epsMCA_quadratic_ge (hp : n * n ≤ p) (hk : 1 ≤ k) (hn : 2 * k + 1 �
       = (((∑ m ∈ Wnat k qr.1 qr.2, m) : ℕ) : ZMod p) := by
     intro qr hqr
     rw [hgrid, Finset.mem_product, Finset.mem_range, Finset.mem_range] at hqr
-    exact dom_sum hnp hk hqr.1 (by omega)
+    exact dom_sum hnp hqr.1 (by omega)
   -- windows are injective on the grid (their sums already are)
   have hwinInj : Set.InjOn win (grid : Set (ℕ × ℕ)) := by
     intro qr hqr qr' hqr' hww
