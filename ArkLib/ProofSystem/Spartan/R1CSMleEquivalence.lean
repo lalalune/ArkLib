@@ -156,6 +156,74 @@ theorem mle'_eq_zero_iff_forall {n : ℕ}
   · intro h x
     exact h (finFunctionFinEquiv x)
 
+/-! ### Bridge to the actual `R1CS.relation`
+
+The equivalences above are stated over abstract residual functions. The genuine reduction the first
+Spartan phase certifies is between the concrete `R1CS.relation` (the Hadamard equation
+`(A𝕫) ∘ (B𝕫) = (C𝕫)` defined in `ConstraintSystem/R1CS.lean`) and the MLE-vanishing claim the
+zero-check is run on. We bridge the two here so the abstract MLE equivalence transfers verbatim to
+the protocol-level relation. -/
+
+open Matrix in
+/-- **`R1CS.relation` ⟺ pointwise row equality.**
+
+`R1CS.relation` is the `Pi`-valued Hadamard equation `(A *ᵥ 𝕫) * (B *ᵥ 𝕫) = (C *ᵥ 𝕫)`; this
+unfolds to the pointwise statement that every row satisfies `(A𝕫)i · (B𝕫)i = (C𝕫)i`. -/
+theorem r1cs_relation_iff_forall_row {sz : R1CS.Size}
+    (stmt : Fin sz.n_x → R) (M : R1CS.MatrixIdx → Matrix (Fin sz.m) (Fin sz.n) R)
+    (wit : Fin sz.n_w → R) :
+    R1CS.relation R sz stmt M wit
+      ↔ ∀ i : Fin sz.m,
+          (M .A *ᵥ R1CS.𝕫 stmt wit) i * (M .B *ᵥ R1CS.𝕫 stmt wit) i
+            = (M .C *ᵥ R1CS.𝕫 stmt wit) i := by
+  simp only [R1CS.relation]
+  rw [funext_iff]
+  rfl
+
+open Matrix in
+/-- **`R1CS.relation` ⟺ the row residual vanishes pointwise.**
+
+Rephrasing the Hadamard equality as the vanishing of the row residual
+`(A𝕫)i · (B𝕫)i − (C𝕫)i`, which is exactly the function the zero-check / first sum-check extends. -/
+theorem r1cs_relation_iff_forall_residual {sz : R1CS.Size}
+    (stmt : Fin sz.n_x → R) (M : R1CS.MatrixIdx → Matrix (Fin sz.m) (Fin sz.n) R)
+    (wit : Fin sz.n_w → R) :
+    R1CS.relation R sz stmt M wit
+      ↔ ∀ i : Fin sz.m,
+          (M .A *ᵥ R1CS.𝕫 stmt wit) i * (M .B *ᵥ R1CS.𝕫 stmt wit) i
+            - (M .C *ᵥ R1CS.𝕫 stmt wit) i = 0 := by
+  rw [r1cs_relation_iff_forall_row]
+  exact forall_congr' fun _ => (sub_eq_zero).symm
+
+open Matrix in
+/-- The R1CS row residual on `Fin sz.m`: `(A𝕫)i · (B𝕫)i − (C𝕫)i`. -/
+def r1csResidual {sz : R1CS.Size}
+    (stmt : Fin sz.n_x → R) (M : R1CS.MatrixIdx → Matrix (Fin sz.m) (Fin sz.n) R)
+    (wit : Fin sz.n_w → R) : Fin sz.m → R :=
+  fun i => (M .A *ᵥ R1CS.𝕫 stmt wit) i * (M .B *ᵥ R1CS.𝕫 stmt wit) i
+            - (M .C *ᵥ R1CS.𝕫 stmt wit) i
+
+open Matrix in
+/-- **The R1CS zero-check reduction on the actual `R1CS.relation`.**
+
+When the row count is `sz.m = 2 ^ k`, `R1CS.relation` holds **iff** the multilinear extension `MLE'`
+of the row residual is the zero polynomial — the exact polynomial Spartan's zero-check / first
+sum-check is run on. This connects the abstract residual/MLE equivalence (`mle'_eq_zero_iff_forall`)
+to the concrete `R1CS.relation` from `ConstraintSystem/R1CS.lean`, closing the first-phase reduction
+identity at the protocol-relation level. -/
+theorem r1cs_relation_iff_mle'_residual_zero {k : ℕ} {sz : R1CS.Size} (hm : sz.m = 2 ^ k)
+    (stmt : Fin sz.n_x → R) (M : R1CS.MatrixIdx → Matrix (Fin sz.m) (Fin sz.n) R)
+    (wit : Fin sz.n_w → R) :
+    R1CS.relation R sz stmt M wit
+      ↔ MLE' (fun i : Fin (2 ^ k) =>
+            r1csResidual stmt M wit (Fin.cast hm.symm i)) = 0 := by
+  rw [r1cs_relation_iff_forall_residual, mle'_eq_zero_iff_forall]
+  constructor
+  · intro h i; exact h (Fin.cast hm.symm i)
+  · intro h i
+    have := h (Fin.cast hm i)
+    simpa [r1csResidual, Fin.cast_cast] using this
+
 /-! ## 2. The matrix-vector / MLE scaled-sum decomposition (second sum-check input)
 
 `v_idx = MLE(M *ᵥ 𝕫)(r_x)` decomposes as `∑_j 𝕫 j · MLE(col_j)(r_x)`. This is the
@@ -320,6 +388,9 @@ theorem final_check_consistency {m n : ℕ}
 #print axioms r1cs_residual_iff_mle_zero
 #print axioms r1cs_hadamard_iff_mle_zero
 #print axioms mle'_eq_zero_iff_forall
+#print axioms r1cs_relation_iff_forall_row
+#print axioms r1cs_relation_iff_forall_residual
+#print axioms r1cs_relation_iff_mle'_residual_zero
 #print axioms mulVec_MLE_eval_eq_scaled_sum
 #print axioms MLE_hypercubeSum
 #print axioms MLE_hypercubeSum_weighted
