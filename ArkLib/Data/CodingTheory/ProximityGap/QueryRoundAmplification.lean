@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
