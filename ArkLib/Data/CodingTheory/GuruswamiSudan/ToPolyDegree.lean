@@ -1,4 +1,4 @@
-import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryBridge
+import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryHasse
 import ArkLib.ToMathlib.BivariateDegreeToolkit
 
 /-! The `(1,k)`-weighted degree of `toPoly c` is `< D`: every monomial of `toPoly` has bidegree
@@ -41,7 +41,23 @@ theorem toPoly_natWeightedDegree_lt (k D : ℕ) (hD : 0 < D) (c : CoeffSpace (F 
     rw [mem_monoIdx]; push_neg; intro _ _; omega
   exact hcoeff (toPoly_coeff_zero_of_not_mem k D c _ j hnotmem)
 
+/-- **Guruswami–Sudan bivariate interpolation theorem (complete, `F[X][Y]` form).** When the
+feasibility bound `n·m(m+1)/2 < #monomials` holds, there is a **nonzero** bivariate polynomial of
+`(1,k)`-weighted degree `< D` vanishing to order `m` at every interpolation point. This is the
+full GS interpolation witness, assembled from the in-tree `CoeffSpace` existence through the
+dictionary (`toPoly`, `vanishesToOrder_toPoly_iff`) and the degree bound. -/
+theorem exists_bivariate_GS_interpolant (k D m n : ℕ) (hD : 0 < D) (xs ys : Fin n → F)
+    (hfeas : n * (m * (m + 1) / 2) < (monoIdx k D).card) :
+    ∃ Q : Polynomial (Polynomial F), Q ≠ 0 ∧
+      Polynomial.Bivariate.natWeightedDegree Q 1 k < D ∧
+      ∀ i : Fin n, ArkLib.GS.vanishesToOrder m Q (xs i) (ys i) := by
+  obtain ⟨c, hc0, hcv⟩ := exists_ne_zero_vanishesToOrder k D m n xs ys hfeas
+  refine ⟨toPoly k D c, toPoly_ne_zero k D hc0, toPoly_natWeightedDegree_lt k D hD c, fun i => ?_⟩
+  rw [vanishesToOrder_toPoly_iff]
+  exact hcv i
+
 #print axioms GSMultInterp.toPoly_coeff_zero_of_not_mem
 #print axioms GSMultInterp.toPoly_natWeightedDegree_lt
+#print axioms GSMultInterp.exists_bivariate_GS_interpolant
 
 end GSMultInterp

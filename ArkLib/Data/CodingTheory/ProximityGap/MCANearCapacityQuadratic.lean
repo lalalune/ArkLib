@@ -147,6 +147,117 @@ theorem dom_sum (hnp : n ≤ p) (hk : 1 ≤ k) {q r : ℕ} (hq : q < n - 2 * k) 
   show (((node m : Fin n) : ℕ) : ZMod p) = ((m : ℕ) : ZMod p)
   rw [node_val_of_lt (hlt m hm)]
 
+/-- Uniqueness of Euclidean division: the "digits" `(q, r)` with `r < K` are determined by
+`K·q + r`. This is what makes the staircase sums injective. -/
+theorem euclid_uniq {K q r q' r' : ℕ} (hK : 0 < K) (hr : r < K) (hr' : r' < K)
+    (h : K * q + r = K * q' + r') : q = q' ∧ r = r' := by
+  have hrr : r = r' := by
+    have hmod : (K * q + r) % K = (K * q' + r') % K := by rw [h]
+    rwa [Nat.mul_add_mod, Nat.mul_add_mod, Nat.mod_eq_of_lt hr, Nat.mod_eq_of_lt hr'] at hmod
+  subst hrr
+  exact ⟨Nat.eq_of_mul_eq_mul_left hK (by omega), rfl⟩
+
+/-- Every grid window sum is `< p`, so distinct integer sums stay distinct in `ZMod p`. -/
+theorem Wnat_sum_lt (hp : n * n ≤ p) (hk : 1 ≤ k) {q r : ℕ}
+    (hq : q < n - 2 * k) (hr : r ≤ k) : (∑ m ∈ Wnat k q r, m) < p := by
+  have hcard := Wnat_card (q := q) (r := r) hk hr
+  have hle : (∑ m ∈ Wnat k q r, m) ≤ (k + 1) * (n - 1) := by
+    calc (∑ m ∈ Wnat k q r, m) ≤ (Wnat k q r).card • (n - 1) :=
+          Finset.sum_le_card_nsmul _ _ _ (fun m hm => by have := Wnat_lt hk hq hr m hm; omega)
+      _ = (k + 1) * (n - 1) := by rw [hcard, smul_eq_mul]
+  have hk1n : k + 1 ≤ n := by omega
+  have hnpos : 0 < n := NeZero.pos n
+  have hstep : (k + 1) * (n - 1) < n * n :=
+    calc (k + 1) * (n - 1) ≤ n * (n - 1) := Nat.mul_le_mul_right' hk1n _
+      _ < n * n := mul_lt_mul_of_pos_left (by omega) hnpos
+  omega
+
 /-! ## The quadratic lower bound -/
+
+/-- The staircase window family `{ W(q,r) : 0 ≤ q < n-2k, 0 ≤ r ≤ k }` as a `Finset` of windows. -/
+noncomputable def family (n k : ℕ) [NeZero n] : Finset (Finset (Fin n)) :=
+  ((Finset.range (n - 2 * k)) ×ˢ (Finset.range (k + 1))).image (fun qr => Wfin n k qr.1 qr.2)
+
+/-- **The staircase sums are injective on the grid** — the heart of the quadratic count. -/
+theorem sumval_injOn (hp : n * n ≤ p) (hk : 1 ≤ k) :
+    Set.InjOn (fun qr : ℕ × ℕ => (((∑ m ∈ Wnat k qr.1 qr.2, m) : ℕ) : ZMod p))
+      (((Finset.range (n - 2 * k)) ×ˢ (Finset.range (k + 1)) : Finset (ℕ × ℕ)) : Set (ℕ × ℕ)) := by
+  intro qr hqr qr' hqr' h
+  simp only [Finset.coe_product, Set.mem_prod, Finset.coe_range, Set.mem_Iio] at hqr hqr'
+  obtain ⟨hq, hr⟩ := hqr
+  obtain ⟨hq', hr'⟩ := hqr'
+  have hb1 := Wnat_sum_lt hp hk (q := qr.1) (r := qr.2) hq (by omega)
+  have hb2 := Wnat_sum_lt hp hk (q := qr'.1) (r := qr'.2) hq' (by omega)
+  have heq : (∑ m ∈ Wnat k qr.1 qr.2, m) = (∑ m ∈ Wnat k qr'.1 qr'.2, m) := by
+    have := (ZMod.natCast_eq_natCast_iff' _ _ _).mp h
+    rwa [Nat.mod_eq_of_lt hb1, Nat.mod_eq_of_lt hb2] at this
+  rw [Wnat_sum, Wnat_sum] at heq
+  have hKeq : (k + 1) * qr.1 + qr.2 = (k + 1) * qr'.1 + qr'.2 := by omega
+  obtain ⟨hh1, hh2⟩ := euclid_uniq (Nat.succ_pos k) (by omega) (by omega) hKeq
+  exact Prod.ext hh1 hh2
+
+/-- **Quadratic near-capacity MCA lower bound on the arithmetic domain.**
+For the Reed–Solomon code of dimension `k` on the arithmetic domain `i ↦ (i : ZMod p)` over a prime
+field with `n² ≤ p`, with `n ≥ 2k+1` (`ρ < 1/2`) and `k ≥ 1`, at radius `δ = 1-(k+1)/n` (capacity
+minus `1/n`):
+`ε_mca(C, δ) ≥ (n-2k)·(k+1) / |F|`.
+The `(n-2k)·(k+1)` staircase windows `{q,…,q+k-1}∪{q+k+r}` have distinct node-sums
+`(k+1)·q + (G+k) + r` (injective by Euclidean division), realizing a **quadratic** `Θ(k(n-k))` witness
+spread — quadratically stronger than the sunflower family's linear `n-k`
+(`MCANearCapacityGK.epsMCA_ge_of_prefix_sunflower`). -/
+theorem epsMCA_quadratic_ge (hp : n * n ≤ p) (hk : 1 ≤ k) (hn : 2 * k + 1 ≤ n) :
+    (((n - 2 * k) * (k + 1) : ℕ) : ℝ≥0∞) / (Fintype.card (ZMod p) : ℝ≥0∞)
+      ≤ epsMCA (F := ZMod p) (A := ZMod p)
+          (ReedSolomon.code (domain := dom (p := p) (by omega)) k : Set (Fin n → ZMod p))
+          (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
+  have hnp : n ≤ p := by omega
+  set grid : Finset (ℕ × ℕ) :=
+    (Finset.range (n - 2 * k)) ×ˢ (Finset.range (k + 1)) with hgrid
+  set win : ℕ × ℕ → Finset (Fin n) := fun qr => Wfin n k qr.1 qr.2 with hwin
+  -- the sum-value of a window equals the cast integer sum, on the grid
+  have hval : ∀ qr ∈ grid, (∑ i ∈ win qr, dom (p := p) hnp i)
+      = (((∑ m ∈ Wnat k qr.1 qr.2, m) : ℕ) : ZMod p) := by
+    intro qr hqr
+    rw [hgrid, Finset.mem_product, Finset.mem_range, Finset.mem_range] at hqr
+    exact dom_sum hnp hk hqr.1 (by omega)
+  -- windows are injective on the grid (their sums already are)
+  have hwinInj : Set.InjOn win (grid : Set (ℕ × ℕ)) := by
+    intro qr hqr qr' hqr' hww
+    refine sumval_injOn (p := p) hp hk hqr hqr' ?_
+    have e1 := hval qr (by simpa using hqr)
+    have e2 := hval qr' (by simpa using hqr')
+    simp only at e1 e2 ⊢
+    rw [← e1, ← e2, hww]
+  -- |family| = (n-2k)·(k+1)
+  have hfamcard : (family n k).card = (n - 2 * k) * (k + 1) := by
+    rw [family, ← hgrid, ← hwin, Finset.card_image_of_injOn hwinInj, hgrid,
+      Finset.card_product, Finset.card_range, Finset.card_range]
+  -- each window has card k+1
+  have hcard : ∀ S ∈ family n k, S.card = k + 1 := by
+    intro S hS
+    rw [family, Finset.mem_image] at hS
+    obtain ⟨qr, hqr, rfl⟩ := hS
+    rw [hgrid, Finset.mem_product, Finset.mem_range, Finset.mem_range] at hqr
+    exact Wfin_card hk hqr.1 (by omega)
+  -- the bad-scalar map is injective on the family
+  have hinj : Set.InjOn (fun S => -(∑ i ∈ S, dom (p := p) hnp i)) (family n k : Set (Finset (Fin n))) := by
+    intro S hS S' hS' hSS'
+    rw [Finset.mem_coe, family, Finset.mem_image] at hS hS'
+    obtain ⟨qr, hqr, rfl⟩ := hS
+    obtain ⟨qr', hqr', rfl⟩ := hS'
+    have e1 := hval qr hqr
+    have e2 := hval qr' hqr'
+    simp only at hSS' e1 e2
+    have hcast : (((∑ m ∈ Wnat k qr.1 qr.2, m) : ℕ) : ZMod p)
+        = (((∑ m ∈ Wnat k qr'.1 qr'.2, m) : ℕ) : ZMod p) := by
+      rw [← e1, ← e2]; exact neg_injective hSS'
+    have hpair := sumval_injOn (p := p) hp hk (by simpa using hqr) (by simpa using hqr')
+      (by simpa using hcast)
+    rw [hpair]
+  have hbound := epsMCA_ge_of_window_family (F := ZMod p) (dom (p := p) hnp) k hk
+    (family n k) hcard hinj
+  rwa [hfamcard] at hbound
+
+#print axioms epsMCA_quadratic_ge
 
 end ProximityGap.MCANearCapacityQuadratic

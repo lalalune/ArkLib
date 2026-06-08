@@ -66,7 +66,8 @@ theorem hyp30_max_agreement_not_k_minus_one (v : ι → F) :
       exact hp_deg
     · intro i
       rfl
-  · apply Finset.card_le_card
+  · rw [← hS_card]
+    apply Finset.card_le_card
     intro i hi
     simp only [mem_filter, mem_univ, true_and]
     apply congrArg
