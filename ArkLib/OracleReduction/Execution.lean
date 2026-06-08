@@ -664,6 +664,22 @@ theorem processRound_zero_pure_eq_runToRound {n : ℕ} {pSpec : ProtocolSpec n} 
   rw [runToRound_succ]
   congr 1
 
+/-- **P₂-side right-block assembly.**  The seam round's `processRound 0 (pure(default, input))` bound
+with the interior continuation `continueFromTo 1 → last` is exactly `runToRound (Fin.last n)` — i.e.
+the appended right block, projected to `P₂`, reconstructs `P₂`'s full run-to-round.  Combines
+`processRound_zero_pure_eq_runToRound` (seam → `runToRound 1`) with `runToRound_eq_bind_continueFromTo`
+(`runToRound 1 >>= continueFromTo 1 last = runToRound last`). -/
+theorem processRound_zero_continueFromTo_eq_runToRound_last {n : ℕ} {pSpec : ProtocolSpec n}
+    (hn : 0 < n) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (s : StmtIn) (w : WitIn) :
+    (prover.processRound (⟨0, hn⟩ : Fin n)
+        (pure ((default : pSpec.Transcript (⟨0, by omega⟩ : Fin (n + 1))), prover.input (s, w)))
+      >>= prover.continueFromTo s w (⟨0, hn⟩ : Fin n).succ (Fin.last n))
+      = prover.runToRound (Fin.last n) s w := by
+  rw [processRound_zero_pure_eq_runToRound hn]
+  exact (runToRound_eq_bind_continueFromTo prover s w (⟨0, hn⟩ : Fin n).succ (Fin.last n)
+    (by rw [Fin.le_def, Fin.val_succ, Fin.val_last]; omega)).symm
+
 /-! ### Direction-resolved single-round peels
 
 The two lemmas below resolve the `processRound` direction match into the two honest round shapes,
