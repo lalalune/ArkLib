@@ -423,6 +423,75 @@ theorem berlekamp_welch_exists {α : ι ↪ F} {k e : ℕ} [NeZero k]
         by_contra h; exact hi (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
       rw [eval_mul, hyc]
 
+omit [DecidableEq ι] in
+open Polynomial in
+/-- **Product shared-locator existence (factor-2 radius).** If `u₀` and `u₁` are respectively
+within `e₀` and `e₁` Hamming errors of Reed–Solomon codeword polynomials `f₀` and `f₁`, then the
+product of the two ordinary error locators is a single locator satisfying both key equations.
+Its degree is at most `e₀ + e₁`, exposing the honest union/product-locator factor-2 ceiling. -/
+theorem reedSolomon_sharedLocator_product_exists {α : ι ↪ F} {e₀ e₁ : ℕ}
+    {u₀ u₁ : ι → F} {f₀ f₁ : F[X]}
+    (herr₀ : (Finset.univ.filter (fun i => u₀ i ≠ f₀.eval (α i))).card ≤ e₀)
+    (herr₁ : (Finset.univ.filter (fun i => u₁ i ≠ f₁.eval (α i))).card ≤ e₁) :
+    ∃ E : F[X], E ≠ 0 ∧ E.natDegree ≤ e₀ + e₁ ∧
+      (∀ i, E.eval (α i) * u₀ i = (E * f₀).eval (α i)) ∧
+      (∀ i, E.eval (α i) * u₁ i = (E * f₁).eval (α i)) := by
+  classical
+  set errs₀ := Finset.univ.filter (fun i => u₀ i ≠ f₀.eval (α i)) with herrs₀
+  set errs₁ := Finset.univ.filter (fun i => u₁ i ≠ f₁.eval (α i)) with herrs₁
+  set E₀ : F[X] := ∏ i ∈ errs₀, (X - C (α i)) with hE₀
+  set E₁ : F[X] := ∏ i ∈ errs₁, (X - C (α i)) with hE₁
+  set E : F[X] := E₀ * E₁ with hE
+  have hE₀ne : E₀ ≠ 0 := by
+    rw [hE₀]
+    exact Finset.prod_ne_zero_iff.mpr fun i _ => X_sub_C_ne_zero (α i)
+  have hE₁ne : E₁ ≠ 0 := by
+    rw [hE₁]
+    exact Finset.prod_ne_zero_iff.mpr fun i _ => X_sub_C_ne_zero (α i)
+  have hEne : E ≠ 0 := by
+    rw [hE]
+    exact mul_ne_zero hE₀ne hE₁ne
+  have hE₀deg : E₀.natDegree ≤ e₀ := by
+    rw [hE₀, natDegree_prod _ _ fun i _ => X_sub_C_ne_zero (α i)]
+    simp only [natDegree_X_sub_C, Finset.sum_const, smul_eq_mul, mul_one]
+    exact herr₀
+  have hE₁deg : E₁.natDegree ≤ e₁ := by
+    rw [hE₁, natDegree_prod _ _ fun i _ => X_sub_C_ne_zero (α i)]
+    simp only [natDegree_X_sub_C, Finset.sum_const, smul_eq_mul, mul_one]
+    exact herr₁
+  have hEdeg : E.natDegree ≤ e₀ + e₁ := by
+    rw [hE, natDegree_mul hE₀ne hE₁ne]
+    omega
+  refine ⟨E, hEne, hEdeg, ?_, ?_⟩
+  · intro i
+    by_cases hi : i ∈ errs₀
+    · have hE₀z : E₀.eval (α i) = 0 := by
+        rw [hE₀, eval_prod]
+        exact Finset.prod_eq_zero hi (by simp)
+      have hEz : E.eval (α i) = 0 := by
+        rw [hE, eval_mul, hE₀z, zero_mul]
+      simp [hEz, eval_mul]
+    · have hyc : u₀ i = f₀.eval (α i) := by
+        by_contra h
+        exact hi (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
+      rw [eval_mul, hyc]
+      rw [hE, eval_mul]
+      rw [eval_mul]
+  · intro i
+    by_cases hi : i ∈ errs₁
+    · have hE₁z : E₁.eval (α i) = 0 := by
+        rw [hE₁, eval_prod]
+        exact Finset.prod_eq_zero hi (by simp)
+      have hEz : E.eval (α i) = 0 := by
+        rw [hE, eval_mul, hE₁z, mul_zero]
+      simp [hEz, eval_mul]
+    · have hyc : u₁ i = f₁.eval (α i) := by
+        by_contra h
+        exact hi (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
+      rw [eval_mul, hyc]
+      rw [hE, eval_mul]
+      rw [eval_mul]
+
 open Polynomial in
 /-- **Berlekamp–Welch recovery.**  In the unique-decoding regime `k + 2e < n`, any solution
 `(E, N)` of the key equation (with `E ≠ 0`, `deg E ≤ e`, `deg N < k + e`) for a word `y` that is
@@ -617,6 +686,7 @@ theorem reedSolomon_jointAgreement_of_degreeOne_decoding_curve
   · exact hcurve
 
 #print axioms ReedSolomon.jointAgreement_of_common_locator
+#print axioms ReedSolomon.reedSolomon_sharedLocator_product_exists
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator_exact
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_degreeOne_decoding_curve
