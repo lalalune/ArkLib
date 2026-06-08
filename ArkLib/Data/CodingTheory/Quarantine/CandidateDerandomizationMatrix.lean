@@ -3,14 +3,14 @@ import ArkLib.Data.CodingTheory.Quarantine.CandidateDerandomizationHasse
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 
-open Classical
-open scoped BigOperators Matrix
+open scoped BigOperators Matrix NNReal
 
 namespace ArkLib.CodingTheory.Research
 
 /-! # Candidate: exact interpolation matrix formulation -/
 
-variable {F : Type} [Field F] [Fintype F]
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- Coefficients of a bivariate interpolation polynomial. -/
 def InterpolationCoefficients (degX degY : ℕ) := Fin degX → Fin degY → F
@@ -25,7 +25,7 @@ def gs_interpolation_matrix (L : Finset F) (_r : F → F) (degX degY m : ℕ) :
 
 /-- Open rank/kernel statement for the real smooth-subgroup GS interpolation matrix. -/
 def smooth_subgroup_kernel_bound (L : Finset F) (r : F → F) (degX degY m : ℕ) : Prop :=
-  L.card.IsPowerOfTwo →
+  (∃ e : ℕ, L.card = 2 ^ e) →
     ringChar F = 2 →
     L.card * m < degX * degY →
     degX < L.card →
@@ -33,7 +33,8 @@ def smooth_subgroup_kernel_bound (L : Finset F) (r : F → F) (degX degY m : ℕ
       c ≠ 0 ∧ Matrix.mulVec (gs_interpolation_matrix L r degX degY m) c = 0
 
 /-- Open bridge from the matrix rank statement to the prize lattice endpoint. -/
-def epsMCA_exact_match (L : Finset F) (C : Set (F → F)) (δ : ℝ≥0) : Prop :=
-  ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ
+def epsMCA_exact_match (domain : ι ↪ F) (_C : Set (ι → F)) (_δ : ℝ≥0) : Prop :=
+  ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+    ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved domain τ
 
 end ArkLib.CodingTheory.Research

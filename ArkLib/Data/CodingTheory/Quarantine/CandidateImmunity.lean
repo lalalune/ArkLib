@@ -1,11 +1,10 @@
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 
-open Classical
 open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- 
+/-!
   The Immutable Laws of Cyclic Reed-Solomon Geometry.
   These lemmas formalize the mathematical constraints that survived the 
   aggressive red-teaming of adversarial disproof attacks. 
@@ -13,7 +12,7 @@ namespace ArkLib.CodingTheory.Research
   to the standard algebraic explosion vulnerabilities.
 -/
 
-variable {F : Type} [Field F] [Fintype F] [CharP F 2]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F] [CharP F 2]
 
 /--
   Immunity 1: Multiplicative Subgroup Affine Immunity.
@@ -24,8 +23,8 @@ variable {F : Type} [Field F] [Fintype F] [CharP F 2]
 def multiplicative_affine_immunity (L : Finset F)
     (h_cyclic : ∃ g : F, ∀ x ∈ L, ∃ i, x = g^i) : Prop :=
     -- We formalize the non-existence of an additive subspace inside L
-    ∀ (V : Set F) (h_subspace : ∀ x y ∈ V, x + y ∈ V) (h_size : Fintype.card V > 1), 
-      ¬ (V ⊆ L)
+    ∀ (V : Finset F) (h_subspace : ∀ x ∈ V, ∀ y ∈ V, x + y ∈ V) (h_size : V.card > 1),
+      ¬ V ⊆ L
 
 /--
   Immunity 2 & 3: Fundamental Degree Bound Immunity.
@@ -35,7 +34,7 @@ def multiplicative_affine_immunity (L : Finset F)
   of a high-rate Reed-Solomon code.
 -/
 def algebraic_degree_immunity (L : Finset F) (k : ℕ) (h_rate : k < L.card)
-    (A : F[X]) (h_vanish : ∀ x ∈ L, A.eval x = 0) (h_nonzero : A ≠ 0) :
+    (A : Polynomial F) (h_vanish : ∀ x ∈ L, A.eval x = 0) (h_nonzero : A ≠ 0) :
     Prop :=
   A.natDegree > k
 
@@ -46,6 +45,6 @@ def algebraic_degree_immunity (L : Finset F) (k : ℕ) (h_rate : k < L.card)
   over cyclic multiplicative subgroups.
 -/
 def proximity_immunity_shield (L : Finset F) (k : ℕ) : Prop :=
-  ∃ A : F[X], A ≠ 0 ∧ (∀ x ∈ L, A.eval x = 0) ∧ k < A.natDegree
+  ∃ A : Polynomial F, A ≠ 0 ∧ (∀ x ∈ L, A.eval x = 0) ∧ k < A.natDegree
 
 end ArkLib.CodingTheory.Research
