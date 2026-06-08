@@ -1449,6 +1449,19 @@ private theorem stateT_option_elimM_bind_eq
   unfold Option.elimM
   rw [bind_assoc]
 
+private theorem probEvent_stateT_run_map_congr
+    {σ α β : Type} (init : ProbComp σ)
+    (mx my : StateT σ ProbComp α) (f : α × σ → β) (p : β → Prop)
+    (h : mx = my) :
+    probEvent (do
+        let s ← init
+        f <$> mx.run s) p =
+      probEvent (do
+        let s ← init
+        f <$> my.run s) p := by
+  subst my
+  rfl
+
 private theorem simulateQ_optionT_bind_mk_some_run
     {ι : Type} {spec : OracleSpec ι} {σ α β : Type}
     (impl : QueryImpl spec (StateT σ ProbComp))
@@ -1782,7 +1795,82 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self] at hCollapse
   rw [probEvent_optionT_stateT_init]
   have hCollapseRun := congrFun (congrArg StateT.run hCollapse)
-  simp only [hCollapseRun]
+  have hInitCollapse :
+      (do
+        let s ← srInit
+        (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
+            QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
+          (simulateQ
+            (fiatShamirCoupledQueryImpl
+              (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl +
+              QueryImpl.liftTarget
+                (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp)
+                challengeQueryImpl)
+            (do
+              let d ← Reduction.runWithLog stmtIn witIn
+                { prover := prover, verifier := V.fiatShamir }
+              let extractedWitIn ←
+                liftM do
+                  let transcript ← OptionT.mk (some <$>
+                    Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1.1 0))
+                  liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
+              pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run).run s :
+        ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut))) =
+      (do
+        let s ← srInit
+        (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
+            QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
+          (simulateQ
+            (fiatShamirCoupledQueryImpl
+              (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
+            (do
+              let d ← fiatShamirAdversaryExecution prover V stmtIn witIn
+              let extractedWitIn ←
+                liftM do
+                  let transcript ← OptionT.mk (some <$>
+                    Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1 0))
+                  liftM (srExtractor stmtIn d.1.2.2 transcript default default)
+              pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run).run s :
+        ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut))) := by
+    apply bind_congr
+    intro s
+    exact congrArg
+      (fun mx : ProbComp
+          (Option (StmtIn × WitIn × StmtOut × WitOut) ×
+            QueryImpl (fsChallengeOracle StmtIn pSpec) Id) =>
+        (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
+            QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$> mx)
+      (hCollapseRun s)
+  change
+      Pr[fun o : Option (StmtIn × WitIn × StmtOut × WitOut) =>
+          o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut |
+        (do
+          let s ← srInit
+          (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
+              QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
+            (simulateQ
+              (fiatShamirCoupledQueryImpl
+                (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl +
+                QueryImpl.liftTarget
+                  (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp)
+                  challengeQueryImpl)
+              (do
+                let d ← Reduction.runWithLog stmtIn witIn
+                  { prover := prover, verifier := V.fiatShamir }
+                let extractedWitIn ←
+                  liftM do
+                    let transcript ← OptionT.mk (some <$>
+                      Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1.1 0))
+                    liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
+                pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run).run s :
+          ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)))] ≤ ↑knowledgeError
+  have hProbCollapse :=
+    congrArg
+      (fun c : ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) =>
+        probEvent c (fun o => o.elim False fun x =>
+          (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut))
+      hInitCollapse
+  rw [hProbCollapse]
   refine le_trans ?_ h
   simp [fiatShamirAdversaryExecution,
     Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
