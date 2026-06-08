@@ -5,44 +5,15 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
-import ArkLib.Data.CodingTheory.HammingBallVolume
-import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
-import ArkLib.Data.CodingTheory.EntropyVolumeUpperBall
 
 /-!
 # Counting jointly-close stacks (toward T4.17, #82)
 
-The `#{jointProx}` upper bound — ingredient (b) of the CS25 complete-CA-breakdown count budget
-`hfar` — proved here end to end. A stack is jointly `δ`-close to `C` iff its interleaving
-`⋈|u = uᵀ` is within `δ` of *some* interleaved codeword; the interleaved code
-`C^⋈κ = {V | ∀ k, V.transpose k ∈ C}` is the `κ`-fold product of `C` (transpose bijection), with
-`|C|^|κ|` codewords. The union bound over those codewords then gives, in successively explicit
-forms:
-
-* `card_jointProximity_le`      : `#{jointProx} ≤ |C|^|κ| · V'_{⌊δn⌋}`;
-* `card_jointProximity_le_volume`: `… = |C|^|κ| · hammingBallVolume(q^|κ|, δ, n)`;
-* `card_jointProximity_le_qEntropy`: `… ≤ |C|^|κ| · (n+1) · (q^|κ|)^{n·H_{q^|κ|}(δ)}` (below the
-  `q^|κ|`-ary capacity).
-
-## Band analysis: why this does **not** close T4.17 by averaging
-
-`rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts` discharges T4.17 from the count budget
-`hsum : q^{n+1}·#{far} + #{jointProx} < q^{2n}` (using `sum_far_card_eq`). With coverage saturated
-(`#{far} ≈ 0` from `hδ_lo`), `hsum` reduces to `#{jointProx} < q^{2n}`, i.e. `H_{q²}(δ) < 1 − ρ`
-(`ρ = k/n`, `κ = Fin 2`). The bound above is essentially **tight** (the union bound is the right
-upper bound on a covered set), so this is the genuine obstruction, not slack:
-
-* At high rate (`ρ` near `hδ_hi`'s ceiling `1 − δ − 2/n`) the *interleaved* code `C^⋈` has rate
-  `2ρ ≈ 2(1−δ)`, far above its own capacity, so its `δ`-coverage **saturates**:
-  `#{jointProx} ≈ q^{2n}` and `hsum` is simply **false** — almost every stack is jointly close.
-* The breakdown `ε_ca = 1` is nonetheless true there, witnessed by a *rare* covered,
-  not-jointly-close stack that the averaging/counting budget provably cannot locate.
-
-Hence T4.17's full-band closure requires the **explicit entropy-ball construction** of that witness
-(`rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_covered_stack` with a *named* covered stack),
-not the counting route — placing it in the same explicit-construction class as T4.16/T4.18. The
-counting route does suffice on the sub-band where `H_{q²}(δ) < 1 − ρ` (interleaved coverage below
-saturation), for which the lemmas here are exactly the input.
+Toward the `#{jointProx}` upper bound needed to assemble the CS25 complete-CA-breakdown count
+budget `hfar`. This file first establishes the cardinality of the interleaved code: a stack is
+jointly `δ`-close to `C` iff its interleaving `⋈|u = uᵀ` is close to *some* interleaved codeword,
+and the interleaved code `C^⋈κ = {V | ∀ k, V.transpose k ∈ C}` has exactly `|C|^|κ|` codewords
+(it is the `κ`-fold product of `C`, via the transpose bijection).
 -/
 
 open Code
@@ -50,9 +21,9 @@ open scoped NNReal
 
 namespace CS25
 
-variable {ι : Type} [Fintype ι] [DecidableEq ι]
-variable {κ : Type} [Fintype κ] [DecidableEq κ]
-variable {A : Type} [Fintype A] [DecidableEq A]
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+variable {κ : Type*} [Fintype κ] [DecidableEq κ]
+variable {A : Type*} [Fintype A] [DecidableEq A]
 
 /-- **The interleaved code is the `κ`-fold product of `C`.** As a type, `C^⋈κ ≃ (κ → C)` via the
 transpose map `V ↦ (k ↦ Vᵀ k)`. -/
@@ -164,164 +135,5 @@ theorem card_jointProximity_le [Nonempty ι] (C : Set (ι → A)) [AddCommGroup 
     exact jointProximity_iff_jointProximityNat C u δ
   rw [hset]
   exact card_jointProximityNat_le C _
-
-/-- NNReal/Real agreement of the ball radius floor `⌊δ·n⌋`. -/
-private theorem floor_nnreal_eq_real (δ : ℝ≥0) (n : ℕ) :
-    ⌊δ * (n : ℝ≥0)⌋₊ = ⌊(δ : ℝ) * (n : ℝ)⌋₊ := by
-  have hcoe : ((δ * (n : ℝ≥0) : ℝ≥0) : ℝ) = (δ : ℝ) * (n : ℝ) := by push_cast; ring
-  refine le_antisymm (Nat.le_floor ?_) (Nat.le_floor ?_)
-  · calc ((⌊δ * (n : ℝ≥0)⌋₊ : ℝ))
-        = ((⌊δ * (n : ℝ≥0)⌋₊ : ℝ≥0) : ℝ) := by push_cast; ring
-      _ ≤ ((δ * (n : ℝ≥0) : ℝ≥0) : ℝ) := by exact_mod_cast Nat.floor_le (zero_le _)
-      _ = (δ : ℝ) * (n : ℝ) := hcoe
-  · have h : ((⌊(δ : ℝ) * (n : ℝ)⌋₊ : ℝ)) ≤ ((δ * (n : ℝ≥0) : ℝ≥0) : ℝ) := by
-      rw [hcoe]; exact Nat.floor_le (by positivity)
-    exact_mod_cast h
-
-/-- The interleaved-ball volume `V'_{⌊δn⌋}` equals `hammingBallVolume (q^|κ|) δ n`, the explicit
-sum `∑_{i≤⌊δn⌋} C(n,i)(q^|κ|-1)^i` over the interleaved alphabet `κ→A`. -/
-theorem interleaved_ball_card_eq_volume [Nonempty ι] [AddCommGroup A] (δ : ℝ≥0) :
-    (Finset.univ.filter (fun w : InterleavedWord A κ ι =>
-        hammingDist w 0 ≤ ⌊δ * (Fintype.card ι : ℝ≥0)⌋₊)).card
-      = CodingTheory.hammingBallVolume (Fintype.card (κ → A)) (δ : ℝ) (Fintype.card ι) := by
-  have heq := floor_nnreal_eq_real δ (Fintype.card ι)
-  rw [CodingTheory.hammingBallVolume_eq_ncard_hammingBall (δ : ℝ) (0 : ι → (κ → A)),
-    ← CodingTheory.filter_card_eq_hammingBall_ncard, ← heq]
-  refine Finset.card_nbij' id id ?_ ?_ ?_ ?_ <;> intro w hw <;>
-    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and, id_eq,
-      hammingDist_comm] at hw ⊢ <;> exact hw
-
-open Classical in
-/-- **Explicit (band-ready) `#{jointProx}` bound.** `#{u : jointProximity C u δ} ≤
-|C|^|κ| · hammingBallVolume(q^|κ|, δ, n)` — ingredient (b) of the CS25 breakdown budget `hfar`, with
-the interleaved-ball volume in explicit summation form (to be bounded by
-`hammingBallVolume_le_qEntropy_real_radius` in the final band arithmetic). -/
-theorem card_jointProximity_le_volume [Nonempty ι] (C : Set (ι → A)) [AddCommGroup A]
-    [Fintype ↥C] (δ : ℝ≥0) :
-    (Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card
-      ≤ (Fintype.card ↥C) ^ (Fintype.card κ)
-        * CodingTheory.hammingBallVolume (Fintype.card (κ → A)) (δ : ℝ) (Fintype.card ι) := by
-  refine le_trans (card_jointProximity_le C δ) (Nat.mul_le_mul_left _ ?_)
-  exact le_of_eq (interleaved_ball_card_eq_volume δ)
-
-open Classical in
-/-- **Explicit qEntropy `#{jointProx}` bound.** Below the `q^|κ|`-ary capacity
-(`δ ≤ 1 − 1/q^|κ|`), the jointly-`δ`-close stack count obeys
-`#{jointProx} ≤ |C|^|κ| · (n+1) · (q^|κ|)^{n · H_{q^|κ|}(δ)}`. This is ingredient (b) of the CS25
-breakdown budget `hfar` in the exponential entropy form the final band inequality consumes (the
-`q^{2k}·(n+1)·q^{2n·H_{q²}(δ)}` term for the `Fin 2` stacks). -/
-theorem card_jointProximity_le_qEntropy [Nonempty ι] (C : Set (ι → A)) [AddCommGroup A]
-    [Fintype ↥C] (δ : ℝ≥0)
-    (hq : 2 ≤ Fintype.card (κ → A))
-    (hδcap : (δ : ℝ) ≤ 1 - 1 / (Fintype.card (κ → A) : ℝ)) :
-    ((Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card : ℝ)
-      ≤ ((Fintype.card ↥C) ^ (Fintype.card κ) : ℝ)
-        * (((Fintype.card ι : ℝ) + 1)
-          * (Fintype.card (κ → A) : ℝ)
-              ^ ((Fintype.card ι : ℝ) * CodingTheory.qEntropy (Fintype.card (κ → A)) (δ : ℝ))) := by
-  have hvol : ((Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card : ℝ)
-      ≤ ((Fintype.card ↥C) ^ (Fintype.card κ) : ℝ)
-        * (CodingTheory.hammingBallVolume (Fintype.card (κ → A)) (δ : ℝ) (Fintype.card ι) : ℝ) := by
-    have h := card_jointProximity_le_volume (κ := κ) C δ
-    calc ((Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card : ℝ)
-        ≤ (((Fintype.card ↥C) ^ (Fintype.card κ)
-            * CodingTheory.hammingBallVolume (Fintype.card (κ → A)) (δ : ℝ) (Fintype.card ι) : ℕ) : ℝ) := by
-          exact_mod_cast h
-      _ = _ := by push_cast; ring
-  refine hvol.trans ?_
-  refine mul_le_mul_of_nonneg_left ?_ (by positivity)
-  exact CodingTheory.hammingBallVolume_le_qEntropy_real_radius hq (δ : ℝ)
-    Fintype.card_pos δ.coe_nonneg hδcap
-
-/-- **Real-analysis core of the sub-band jointProx inequality.** For `Q > 1`, the explicit qEntropy
-`#{jointProx}` bound `Q^k · (n+1) · Q^{n·H}` drops below `Q^n` exactly when the rate-plus-entropy
-budget `k + log_Q(n+1) + n·H ≤ n` holds — i.e. the sub-band condition `ρ + H_Q(δ) < 1` (with the
-`log_Q(n+1)/n` slack). Pure `rpow`/`logb` arithmetic; the `Fin 2` instance has `Q = q²`,
-`Q^k = q^{2k} = |C|^|κ|`, `Q^n = #stacks`. -/
-theorem pow_succ_rpow_entropy_le {Q : ℝ} (hQ : 1 < Q) (k n : ℕ) (H : ℝ)
-    (h : (k : ℝ) + Real.logb Q ((n : ℝ) + 1) + (n : ℝ) * H ≤ (n : ℝ)) :
-    Q ^ (k : ℝ) * (((n : ℝ) + 1) * Q ^ ((n : ℝ) * H)) ≤ Q ^ (n : ℝ) := by
-  have hQ0 : (0 : ℝ) < Q := by linarith
-  have hn1 : (0 : ℝ) < (n : ℝ) + 1 := by positivity
-  have hlogb : ((n : ℝ) + 1) = Q ^ Real.logb Q ((n : ℝ) + 1) :=
-    (Real.rpow_logb hQ0 hQ.ne' hn1).symm
-  calc Q ^ (k : ℝ) * (((n : ℝ) + 1) * Q ^ ((n : ℝ) * H))
-      = Q ^ (k : ℝ) * (Q ^ Real.logb Q ((n : ℝ) + 1) * Q ^ ((n : ℝ) * H)) := by rw [← hlogb]
-    _ = Q ^ ((k : ℝ) + (Real.logb Q ((n : ℝ) + 1) + (n : ℝ) * H)) := by
-        rw [← Real.rpow_add hQ0, ← Real.rpow_add hQ0]
-    _ ≤ Q ^ (n : ℝ) := Real.rpow_le_rpow_of_exponent_le hQ.le (by linarith)
-
-/-- **`#stacks = Q^n`** for the interleaved alphabet `Q = |κ→A|`, `n = |ι|`. -/
-theorem card_wordStack_eq :
-    Fintype.card (WordStack A κ ι) = (Fintype.card (κ → A)) ^ (Fintype.card ι) := by
-  show Fintype.card (κ → ι → A) = (Fintype.card (κ → A)) ^ Fintype.card ι
-  simp only [Fintype.card_fun]
-  rw [← pow_mul, ← pow_mul, Nat.mul_comm]
-
-open Classical in
-/-- **JointProx half of the band inequality, closed on the sub-band.** When the code's rate
-identity `|C|^|κ| = Q^k` holds (e.g. RS, `|C| = q^k`, `Q = q^|κ|`) and the sub-band rate condition
-`k + log_Q(n+1) + n·H_Q(δ) ≤ n` holds below capacity, the jointly-`δ`-close stacks number at most the
-total stack count: `#{jointProx} ≤ #stacks`. Combines `card_jointProximity_le_qEntropy` with the
-`rpow` core `pow_succ_rpow_entropy_le`. -/
-theorem card_jointProximity_le_card_stacks_of_subband [Nonempty ι] (C : Set (ι → A))
-    [AddCommGroup A] [Fintype ↥C] (δ : ℝ≥0) (k : ℕ)
-    (hq : 2 ≤ Fintype.card (κ → A))
-    (hδcap : (δ : ℝ) ≤ 1 - 1 / (Fintype.card (κ → A) : ℝ))
-    (hrate : (Fintype.card ↥C) ^ (Fintype.card κ) = (Fintype.card (κ → A)) ^ k)
-    (hsub : (k : ℝ) + Real.logb (Fintype.card (κ → A)) ((Fintype.card ι : ℝ) + 1)
-        + (Fintype.card ι : ℝ) * CodingTheory.qEntropy (Fintype.card (κ → A)) (δ : ℝ)
-          ≤ (Fintype.card ι : ℝ)) :
-    (Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card
-      ≤ Fintype.card (WordStack A κ ι) := by
-  have hQ1 : (1 : ℝ) < (Fintype.card (κ → A) : ℝ) := by exact_mod_cast hq
-  rw [← Nat.cast_le (α := ℝ), card_wordStack_eq, Nat.cast_pow,
-    ← Real.rpow_natCast (Fintype.card (κ → A) : ℝ) (Fintype.card ι)]
-  refine (card_jointProximity_le_qEntropy (κ := κ) C δ hq hδcap).trans ?_
-  have hcard : ((Fintype.card ↥C : ℝ)) ^ (Fintype.card κ)
-      = (Fintype.card (κ → A) : ℝ) ^ (k : ℝ) := by
-    rw [← Nat.cast_pow, hrate, Nat.cast_pow, Real.rpow_natCast]
-  rw [hcard]
-  exact pow_succ_rpow_entropy_le hQ1 k (Fintype.card ι) _ hsub
-
-/-- **Generalized rpow core** with an explicit exponent target `m`: `Q^k·(n+1)·Q^{n·H} ≤ Q^m`
-whenever `k + log_Q(n+1) + n·H ≤ m`. (`pow_succ_rpow_entropy_le` is the `m = n` case.) -/
-theorem pow_succ_rpow_entropy_le' {Q : ℝ} (hQ : 1 < Q) (k n m : ℕ) (H : ℝ)
-    (h : (k : ℝ) + Real.logb Q ((n : ℝ) + 1) + (n : ℝ) * H ≤ (m : ℝ)) :
-    Q ^ (k : ℝ) * (((n : ℝ) + 1) * Q ^ ((n : ℝ) * H)) ≤ Q ^ (m : ℝ) := by
-  have hQ0 : (0 : ℝ) < Q := by linarith
-  have hn1 : (0 : ℝ) < (n : ℝ) + 1 := by positivity
-  have hlogb : ((n : ℝ) + 1) = Q ^ Real.logb Q ((n : ℝ) + 1) :=
-    (Real.rpow_logb hQ0 hQ.ne' hn1).symm
-  calc Q ^ (k : ℝ) * (((n : ℝ) + 1) * Q ^ ((n : ℝ) * H))
-      = Q ^ (k : ℝ) * (Q ^ Real.logb Q ((n : ℝ) + 1) * Q ^ ((n : ℝ) * H)) := by rw [← hlogb]
-    _ = Q ^ ((k : ℝ) + (Real.logb Q ((n : ℝ) + 1) + (n : ℝ) * H)) := by
-        rw [← Real.rpow_add hQ0, ← Real.rpow_add hQ0]
-    _ ≤ Q ^ (m : ℝ) := Real.rpow_le_rpow_of_exponent_le hQ.le (by linarith)
-
-open Classical in
-/-- **Tightened jointProx sub-band bound.** With the rate identity `|C|^|κ| = Q^k` and the
-sub-band condition `k + log_Q(n+1) + n·H_Q(δ) ≤ m`, the jointly-`δ`-close stacks number at most
-`Q^m`. For `m = n−1` (one below the stack exponent `n`), this gives `#{jointProx} ≤ Q^{n-1}`
-(`= q^{2n−2}` for the `Fin 2` stacks) — exactly the bound `count_budget_lt` consumes. -/
-theorem card_jointProximity_le_pow_of_subband [Nonempty ι] (C : Set (ι → A))
-    [AddCommGroup A] [Fintype ↥C] (δ : ℝ≥0) (k m : ℕ)
-    (hq : 2 ≤ Fintype.card (κ → A))
-    (hδcap : (δ : ℝ) ≤ 1 - 1 / (Fintype.card (κ → A) : ℝ))
-    (hrate : (Fintype.card ↥C) ^ (Fintype.card κ) = (Fintype.card (κ → A)) ^ k)
-    (hsub : (k : ℝ) + Real.logb (Fintype.card (κ → A)) ((Fintype.card ι : ℝ) + 1)
-        + (Fintype.card ι : ℝ) * CodingTheory.qEntropy (Fintype.card (κ → A)) (δ : ℝ)
-          ≤ (m : ℝ)) :
-    (Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card
-      ≤ (Fintype.card (κ → A)) ^ m := by
-  have hQ1 : (1 : ℝ) < (Fintype.card (κ → A) : ℝ) := by exact_mod_cast hq
-  rw [← Nat.cast_le (α := ℝ), Nat.cast_pow,
-    ← Real.rpow_natCast (Fintype.card (κ → A) : ℝ) m]
-  refine (card_jointProximity_le_qEntropy (κ := κ) C δ hq hδcap).trans ?_
-  have hcard : ((Fintype.card ↥C : ℝ)) ^ (Fintype.card κ)
-      = (Fintype.card (κ → A) : ℝ) ^ (k : ℝ) := by
-    rw [← Nat.cast_pow, hrate, Nat.cast_pow, Real.rpow_natCast]
-  rw [hcard]
-  exact pow_succ_rpow_entropy_le' hQ1 k (Fintype.card ι) m _ hsub
 
 end CS25

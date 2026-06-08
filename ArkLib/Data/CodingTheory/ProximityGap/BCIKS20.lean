@@ -33,4 +33,3 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
 
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchProof

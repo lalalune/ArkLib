@@ -3,7 +3,6 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
--- dedup-audit(#257): deliberate kernel-clean witness artifact for audit #49; fuller proof in FamilyRefutationComplete.lean. Not duplication. #257 D.
 
 import ArkLib.Data.CodingTheory.JohnsonBound.Family
 
