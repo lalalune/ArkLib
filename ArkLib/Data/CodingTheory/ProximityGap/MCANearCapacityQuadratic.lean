@@ -106,7 +106,7 @@ theorem Wnat_sum (k q r : ℕ) :
     rintro ⟨i, hi, hcontra⟩
     rw [Finset.mem_range] at hi; omega
   rw [Wnat, Finset.sum_union hdisj, Finset.sum_singleton,
-    Finset.sum_image (by intro a _ b _ h; omega)]
+    Finset.sum_image (by intro a _ b _ h; simp only at h; omega)]
   have : (∑ i ∈ Finset.range k, (q + i)) = k * q + ∑ i ∈ Finset.range k, i := by
     rw [Finset.sum_add_distrib, Finset.sum_const, Finset.card_range, smul_eq_mul, mul_comm]
   rw [this]; ring
@@ -118,7 +118,7 @@ theorem Wnat_card (hk : 1 ≤ k) {q r : ℕ} (hr : r ≤ k) : (Wnat k q r).card 
     rintro ⟨i, hi, hcontra⟩
     rw [Finset.mem_range] at hi; omega
   rw [Wnat, Finset.card_union_of_disjoint hdisj, Finset.card_singleton,
-    Finset.card_image_of_injective _ (by intro a b h; omega), Finset.card_range]
+    Finset.card_image_of_injective _ (by intro a b h; simp only at h; omega), Finset.card_range]
 
 /-! ## Transport to `Fin n` and `ZMod p` -/
 

@@ -893,7 +893,6 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       · exact h_wit_struct_In
       · exact ⟨h_sumcheck_In, h_oStmtIn_compat⟩
 
-/-- RBR knowledge soundness for one sumcheck round under the current weak post-challenge state.
 /-- Extraction failure implies a witness-dependent bad sumcheck event.
   The extracted `witMid` also carries oracle compatibility at the same `oStmt`. -/
 lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [DecidableEq L]
