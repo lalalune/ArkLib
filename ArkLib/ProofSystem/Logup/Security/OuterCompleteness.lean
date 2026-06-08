@@ -282,6 +282,74 @@ theorem outerProver_run_closed_form
   rw [Prover.run_eq_runToRound_last, outerProver_runToRound_closed_form]
   simp only [bind_assoc, pure_bind]
 
+/-- **Closed form of the full outer oracle-reduction run (`toReduction.run`).**
+
+`Reduction.run` first runs the prover, then lifts the verifier over the produced transcript. The outer
+oracle reduction's prover/verifier are *definitionally* `outerProver`/`outerVerifier`, so its
+`toReduction.run` is the explicit `Reduction.run` do-block over those two: run the prover, lift the
+verifier over the produced transcript, and project the verdict. Composed with the banked
+`outerProver_run_closed_form`, the prover head reduces to the two-challenge closed form (the `x`
+sample at round 1, the `batch` sample at round 3, every other prover step pure), so the only
+randomness in the run is the two uniform challenge samples — exactly what the simulated experiment
+(`outerCompletenessRunComp`) resolves through `challengeQueryImpl`. -/
+theorem outerReduction_run_closed_form
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (witIn : WitIn F n M params) :
+    (outerOracleReduction oSpec F n M params).toReduction.run stmtIn witIn = (do
+      let proverResult ← liftM ((outerProver oSpec F n M params).run stmtIn witIn)
+      let stmtOut ← liftM
+        ((outerVerifier oSpec F n M params).toVerifier.run stmtIn proverResult.1).run
+      return ⟨proverResult, ← stmtOut.getM⟩) := by
+  rfl
+
+
+/-- **Challenge-sample collapse for the simulated outer run (foundational, axiom-clean).**
+
+Simulating an outer-phase challenge query (`getChallenge i`) through the lifted challenge oracle
+implementation (`challengeQueryImpl`, the right summand of `addLift impl challengeQueryImpl`) resolves
+to a single uniform sample `$ᵗ (Challenge i)`. This is the load-bearing brick that turns each of the
+honest outer prover's two `getChallenge` calls (the round-1 `x` and round-3 `batch`) — exposed by
+`outerProver_run_closed_form` — into a plain uniform draw once the run is pushed through
+`simulateQ (addLift impl challengeQueryImpl)`, leaving the two challenge samples as the *only*
+randomness of the simulated outer experiment. It is the challenge-side counterpart of the
+verifier-side `simulateQ_outerVerify_eq` collapse, and feeds the round-1 marginal calculation that
+transports `x` to the table-pole event bounded by `probEvent_outerVerify_reject_le`. -/
+theorem getChallenge_simulateQ_eq (i : (outerPSpec F n params).ChallengeIdx) :
+    simulateQ (QueryImpl.liftTarget (StateT σ ProbComp)
+        (challengeQueryImpl (pSpec := outerPSpec F n params)))
+      ((outerPSpec F n params).getChallenge i)
+      = (liftM ($ᵗ ((outerPSpec F n params).Challenge i)) :
+          StateT σ ProbComp ((outerPSpec F n params).Challenge i)) := by
+  unfold ProtocolSpec.getChallenge
+  erw [simulateQ_spec_query]
+  rfl
+
+/-- **Transcript challenge readback for the closed-form outer run (foundational, axiom-clean).**
+
+The closed-form prover transcript is the 4-fold `Transcript.concat` (`Fin.snoc`) chain
+`((((default).concat m₀).concat x).concat m₂).concat batch`.  The outer verifier reads its two
+challenges off this transcript via `chalX`/`chalBatch` (`= transcript ⟨1,rfl⟩` / `transcript ⟨3,rfl⟩`),
+while the honest prover's output record uses the received challenges `x`/`batch` directly.  This
+lemma settles that they coincide: each `getChallenge` sample is read back unchanged at its own
+round index.  Pure finite `Fin.snoc` computation (the last `snoc` for `batch` at index `3 = last`,
+and `x` at `1 = castSucc²` peeled through the inner `snoc`s). -/
+theorem outerProver_transcript_challenge_readback
+    (m₀ : (outerPSpec F n params).Message ⟨0, rfl⟩)
+    (x : (outerPSpec F n params).Challenge ⟨1, rfl⟩)
+    (m₂ : (outerPSpec F n params).Message ⟨2, rfl⟩)
+    (batch : (outerPSpec F n params).Challenge ⟨3, rfl⟩) :
+    chalX F n M params
+        (((((default : (outerPSpec F n params).Transcript 0).concat m₀).concat x).concat m₂).concat
+            batch).challenges = x ∧
+    chalBatch F n M params
+        (((((default : (outerPSpec F n params).Transcript 0).concat m₀).concat x).concat m₂).concat
+            batch).challenges = batch := by
+  constructor
+  · simp only [chalX, FullTranscript.challenges, Transcript.concat, Fin.isValue]
+    rfl
+  · simp only [chalBatch, FullTranscript.challenges, Transcript.concat, Fin.isValue]
+    rfl
+
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
     OuterCompletenessRunResidual oSpec F n M params init impl ↔
@@ -304,3 +372,5 @@ end Logup
 #print axioms Logup.outerCompletenessRunResidual_iff
 #print axioms Logup.outerProver_runToRound_closed_form
 #print axioms Logup.outerProver_run_closed_form
+#print axioms Logup.outerReduction_run_closed_form
+#print axioms Logup.getChallenge_simulateQ_eq
