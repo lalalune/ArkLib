@@ -125,6 +125,7 @@ theorem firstSumCheckVirtualPolynomial_hypercubeSum_eq_zeroCheckEval
 Boolean-hypercube sum is `0`: the zero-check polynomial `𝒢` is identically zero, so `𝒢(τ) = 0`. This
 is the target value the honest first sum-check proves, pinned by the preceding `RandomQuery` phase. -/
 theorem firstSumCheckVirtualPolynomial_hypercubeSum_eq_zero_of_satisfied
+    [SampleableType R]
     (τ : Fin pp.ℓ_m → R)
     (𝕩 : Statement.AfterFirstMessage R pp)
     (oStmt : ∀ i, OracleStatement.AfterFirstMessage R pp i)
