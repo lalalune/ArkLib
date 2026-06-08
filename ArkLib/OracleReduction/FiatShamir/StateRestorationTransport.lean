@@ -1243,13 +1243,12 @@ private theorem popFSChallengeFromLog_cons_self
     (payload : (challengeOracleInterfaceSR StmtIn pSpec idx).Query)
     (response : pSpec.Challenge idx)
     (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
-    (popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec) idx.1).run
+    (popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec) idx).run
       (⟨⟨idx, payload⟩, response⟩ :: tail) =
-        some ((show pSpec.«Type» idx.1 from response), tail) := by
+        some (response, tail) := by
   unfold popFSChallengeFromLog
-  change (if h : idx.1 = idx.1 then
-      some (h ▸ (show pSpec.«Type» idx.1 from response), tail) else none) =
-    some ((show pSpec.«Type» idx.1 from response), tail)
+  change (if h : idx = idx then some (by cases h; exact response, tail) else none) =
+    some (response, tail)
   simp
 
 omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
@@ -1332,7 +1331,7 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
                   let prevTranscript ← transcriptFromFSChallengeLogAux
                     (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc
                   let challenge ← popFSChallengeFromLog
-                    (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))
+                    (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩
                   pure (prevTranscript.concat challenge)).run
                     (prefixLog.snd ++
                       (([⟨q, response⟩] :
@@ -1345,7 +1344,8 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
                           QueryLog (fsChallengeOracle StmtIn pSpec)) ++ tail))).bind
                   fun p =>
                     (((popFSChallengeFromLog
-                      (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))).run p.2).bind
+                      (StmtIn := StmtIn) (pSpec := pSpec)
+                      ⟨i.castLE (by omega), hDir⟩).run p.2).bind
                         fun p' => some (p.1.concat p'.1, p'.2))) =
                 some (prevTranscript.concat response, tail)
               rw [ih (([⟨q, response⟩] :
