@@ -70,16 +70,14 @@ theorem rs_listDecoding_unconditional_refute
     rw [ENNReal.ofReal_lt_ofReal_iff (by positivity)]
     exact h_frac_ineq
     
-  have h1 : (ε_star : ENNReal) = ENNReal.ofReal (1 / 2^128) := by
-    change (↑(1 / 2^128 : ℝ≥0) : ENNReal) = ENNReal.ofReal (1 / 2^128)
-    exact ENNReal.ofReal_coe_nnreal.symm
-  have h2 : (Fintype.card F : ENNReal) = ENNReal.ofReal 512 := by
-    rw [hF]
-    exact (ENNReal.ofReal_natCast 512).symm
-  have h3 : ENNReal.ofReal (1 / 2^128) * ENNReal.ofReal 512 = ENNReal.ofReal (((1:ℝ)/2^128) * 512) := by
-    rw [← ENNReal.ofReal_mul (by positivity)]
   have h_lhs : (ε_star : ENNReal) * (Fintype.card F : ENNReal) = ENNReal.ofReal (((1:ℝ)/2^128) * 512) := by
-    rw [h1, h2, h3]
+    rw [hF]
+    have h_star : (ε_star : ENNReal) = ENNReal.ofReal ((1:ℝ)/2^128) := by
+      exact (ENNReal.ofReal_coe_nnreal).symm
+    rw [h_star]
+    have h_512 : (↑(512 : ℕ) : ENNReal) = ENNReal.ofReal 512 := by exact (ENNReal.ofReal_natCast 512).symm
+    rw [h_512]
+    exact (ENNReal.ofReal_mul (by positivity)).symm
     
   have h_rhs : ENNReal.ofReal ((15038444377787151650375685174672066866184745648104990144801868042631311965349583186687113127436881863901183439685096266306134014845093896518687887500318643741231245706972137096355926069772282796303516592374232422397286597635243040152624139714724822095620997714592598555826889405216067258998463940758959084232627994908541115856290575725343:ℝ) / (512:ℝ)^121) = ENNReal.ofReal (↑(hammingBallVolume 512 (120 / 128) 128) / (512 : ℝ) ^ (128 - 7 : ℕ)) := by
     rw [h_vol]

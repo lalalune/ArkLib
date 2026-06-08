@@ -641,7 +641,7 @@ theorem outer_perState_none_le
     right
     sorry
   · rw [if_pos hacc]
-    exact le_of_le_of_eq (mul_le_mul_left' probEvent_le_one _) (mul_one _)
+    exact le_of_le_of_eq (mul_le_mul_left' probEvent_le_one _) (by rw [mul_one])
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :

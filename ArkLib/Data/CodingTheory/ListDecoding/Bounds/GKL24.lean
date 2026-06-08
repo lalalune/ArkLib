@@ -53,15 +53,19 @@ lemma mem_pairs_lt {i j m : ℕ} : (i, j) ∈ pairs_lt m ↔ i + j < m := by
   induction m with
   | zero => simp [pairs_lt]
   | succ m ih =>
-    simp only [pairs_lt, List.mem_append, List.mem_map, List.mem_range, ih, Prod.mk.injEq]
+    rw [pairs_lt, List.mem_append, ih, List.mem_map]
     constructor
-    · rintro (h | ⟨a, ha, rfl, rfl⟩)
+    · rintro (h | ⟨a, ha, hEq⟩)
       · omega
-      · omega
+      · rw [List.mem_range] at ha
+        rw [Prod.mk.injEq] at hEq
+        omega
     · intro h
       rcases lt_or_ge (i + j) m with h' | h'
       · exact Or.inl h'
-      · exact Or.inr ⟨i, by omega, rfl, by omega⟩
+      · refine Or.inr ⟨i, ?_, ?_⟩
+        · rw [List.mem_range]; omega
+        · rw [Prod.mk.injEq]; omega
 
 /-- Maps a pair to a `Fin 2` multi-index. -/
 noncomputable def d_of_pair (p : ℕ × ℕ) : Fin 2 →₀ ℕ :=
@@ -142,12 +146,14 @@ lemma matrix_exists_mulVec_eq_zero_of_lt {m : ℕ} {n : Type*} [Fintype n] [Deci
     intro v hv
     by_contra h_nz
     exact h_not v h_nz hv
-  have : Fintype.card n ≤ m := by simpa using LinearMap.finrank_le_finrank_of_injective h_inj
+  have hle := LinearMap.finrank_le_finrank_of_injective h_inj
+  have : Fintype.card n ≤ m := by
+    simpa [Module.finrank_pi, Fintype.card_fin] using hle
   omega
 
 /-- The kernel vector assembles into a nonzero polynomial. -/
 lemma Q_of_v_ne_zero {deg_X deg_Y : ℕ} (v : MonomialIndex deg_X deg_Y → F) (hv : v ≠ 0) :
-    (∑ mono, v mono • colMonomial deg_X deg_Y mono) ≠ 0 := by
+    (∑ mono, v mono • colMonomial deg_X deg_Y mono : MvPolynomial (Fin 2) F) ≠ 0 := by
   intro h_sum
   apply hv
   ext mono
@@ -209,7 +215,8 @@ theorem gkl24_interpolation_existence
   -- Extract a nontrivial kernel vector of the condition matrix.
   obtain ⟨v, hv_ne, hv_zero⟩ :=
     matrix_exists_mulVec_eq_zero_of_lt (GKL24Matrix pts multiplicities deg_X deg_Y) hcard
-  set Q := ∑ mono : MonomialIndex deg_X deg_Y, v mono • colMonomial deg_X deg_Y mono with hQdef
+  set Q := (∑ mono : MonomialIndex deg_X deg_Y, v mono • colMonomial deg_X deg_Y mono :
+    MvPolynomial (Fin 2) F) with hQdef
   -- Every monomial of `Q` is one of the bounded column monomials.
   have hmem : ∀ m ∈ Q.support,
       ∃ mono : MonomialIndex deg_X deg_Y, m = d_of_pair (mono.1.val, mono.2.val) := by

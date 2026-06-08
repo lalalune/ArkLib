@@ -768,7 +768,7 @@ def secondSumcheckResidual : Prop :=
     (Statement.AfterSecondSumcheck R pp) (OracleStatement.AfterSecondSumcheck R pp) Unit
     (Sumcheck.Spec.pSpec R 2 pp.ℓ_n))
 
-theorem secondSumcheckResidual_holds : secondSumcheckResidual R pp :=
+theorem secondSumcheckResidual_holds : secondSumcheckResidual R pp oSpec :=
   ⟨secondSumcheckReduction R pp oSpec⟩
 
 /-- **NAMED RESIDUAL — first sum-check reduction existence.** Symmetric to
@@ -780,7 +780,7 @@ def firstSumcheckResidual : Prop :=
     (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) Unit
     (Sumcheck.Spec.pSpec R 3 pp.ℓ_m))
 
-theorem firstSumcheckResidual_holds : firstSumcheckResidual R pp :=
+theorem firstSumcheckResidual_holds : firstSumcheckResidual R pp oSpec :=
   ⟨firstSumcheckReduction R pp oSpec⟩
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
@@ -1008,7 +1008,7 @@ def composedPIOPResidual : Prop :=
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
 
-theorem composedPIOPResidual_holds : composedPIOPResidual R pp := sorry
+theorem composedPIOPResidual_holds : composedPIOPResidual R pp oSpec := sorry
 
 /-- **NAMED RESIDUAL — target-carrying composed Spartan PIOP existence.** This is the same
 composition obligation as `composedPIOPResidual`, but with the real terminal `CheckClaim` endpoint:
@@ -1022,7 +1022,7 @@ def composedPIOPWithClaimResidual : Prop :=
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
 
-theorem composedPIOPWithClaimResidual_holds : composedPIOPWithClaimResidual R pp := sorry
+theorem composedPIOPWithClaimResidual_holds : composedPIOPWithClaimResidual R pp oSpec := sorry
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP perfect completeness.** Discharged, once the composed
 reduction `Rc` (over its combined spec `pSpecC`) is available, by iterated

@@ -1091,39 +1091,10 @@ theorem probe_iteratedSumcheck_completeness [IsDomain L]
     iteratedSumcheckOracleVerifier, Sumcheck.Structured.roundOracleReduction,
     Sumcheck.Structured.roundOracleProver, Sumcheck.Structured.roundOracleVerifier,
     OracleVerifier.toVerifier, FullTranscript.mk2]
-  -- Collapse the honest verifier run: it queries the prover message, the sum-check guard passes by
-  -- the logic-completeness lemma, and it outputs the next-round statement.
-  have hverify : ∀ r1 : L,
-      simulateQ (OracleInterface.simOracle2 []ₒ oStmtIn
-          (FullTranscript.mk2 (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H) r1).messages)
-        (do
-          let h_i ← query (spec := [(pSpecSumcheckRound L).Message]ₒ) ⟨⟨0, rfl⟩, ()⟩
-          guard (∑ b ∈ (boolDomain L ℓ').points i, Polynomial.eval b ↑h_i = stmtIn.sumcheck_target)
-          pure (f := OptionT (OracleComp []ₒ))
-            ({ sumcheck_target :=
-                  Polynomial.eval
-                    ((FullTranscript.mk2 (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H)
-                        r1).challenges ⟨1, rfl⟩) ↑h_i,
-                challenges :=
-                  Fin.cons ((FullTranscript.mk2 (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H)
-                      r1).challenges ⟨1, rfl⟩) stmtIn.challenges,
-                ctx := stmtIn.ctx } :
-              Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.succ))
-        = pure
-            ({ sumcheck_target :=
-                  Polynomial.eval r1 ↑(getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H),
-                challenges := Fin.cons r1 stmtIn.challenges, ctx := stmtIn.ctx } :
-              Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.succ) := by
-    intro r1
-    obtain ⟨h_V_check, -⟩ := iteratedSumcheck_round_logic_complete (κ := κ) (L := L) (K := K)
-      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) i stmtIn oStmtIn witIn
-      h_relIn r1
-    rw [OptionT.simulateQ_bind, OptionT.simulateQ_simOracle2_liftM_query_T2]
-    trace_state
-    sorry
   refine ⟨?_, ?_⟩
   · simp only [liftComp_pure, liftM_pure, pure_bind, bind_pure_comp, Function.comp,
-      FullTranscript.mk2, hverify]
+      FullTranscript.mk2, OptionT.simulateQ_bind, OptionT.simulateQ_simOracle2_liftM_query_T2,
+      OptionT.simulateQ_map, OptionT.simulateQ_pure, map_pure]
     trace_state
     sorry
   · sorry
