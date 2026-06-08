@@ -408,13 +408,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticePrizeSpec
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticeResolvedSpec
+import ArkLib.Data.CodingTheory.ProximityGap.MCAGSPrizeRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSPrizeVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSWitness
+import ArkLib.Data.CodingTheory.ProximityGap.MCAGeneralLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeExact
-import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeLowerBound
-import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeCharacterization
-import ArkLib.Data.CodingTheory.ProximityGap.MCAGeneralLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMasterBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMiddleBand
@@ -425,8 +424,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpread
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpreadExample
+import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeCharacterization
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeGuardrail
+import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeUpperBound
 import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
@@ -438,6 +439,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
+import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSListSize
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
@@ -572,6 +574,7 @@ import ArkLib.Data.UniPoly.Basic
 import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
+import ArkLib.MCACapacityTrivial_keep
 import ArkLib.MCAGSRefutationCore_keep
 import ArkLib.OracleReduction.BCS.BCSCompilerProof
 import ArkLib.OracleReduction.BCS.Basic
