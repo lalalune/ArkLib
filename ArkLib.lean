@@ -827,6 +827,7 @@ import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
+import ArkLib.ProofSystem.Spartan.FirstSumcheckDegree
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
 import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
 import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
