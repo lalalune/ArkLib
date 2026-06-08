@@ -768,6 +768,7 @@ import ArkLib.ToMathlib.BKR06EndToEnd
 import ArkLib.ToMathlib.BKR06FiberCount
 import ArkLib.ToMathlib.BKR06Injection
 import ArkLib.ToMathlib.BKR06Pigeonhole
+import ArkLib.ToMathlib.BKR06TightFamily
 import ArkLib.ToMathlib.BadLineWitnessProof
 import ArkLib.ToMathlib.BetaIdentify
 import ArkLib.ToMathlib.BetaInputSupply
