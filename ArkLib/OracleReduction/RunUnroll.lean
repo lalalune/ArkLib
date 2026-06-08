@@ -330,6 +330,52 @@ theorem simulateQ_liftComp_run_eq_of_query
 
 #print axioms simulateQ_liftComp_run_eq_of_query
 
+/-- **`evalDist` two-handler `liftComp` simulation bridge.** The `evalDist`-level analogue of
+`simulateQ_liftComp_run_eq_of_query`, needed when the per-query agreement holds only as a
+*distribution* equality (e.g. the seam's challenge oracle, where the two handlers sample uniformly
+from types that are equal only *propositionally* — `(pSpec₁ ++ₚ pSpec₂).Challenge (inl c) = pSpec₁.Challenge c`
+— so their `SampleableType` instances differ syntactically). `probEvent` is defined through `evalDist`,
+so this still feeds the downstream `probEvent` reconciliation. -/
+theorem evalDist_simulateQ_liftComp_run_eq_of_query
+    {ιᵢ ιₘ : Type} {I₀ : OracleSpec ιᵢ} {M₀ : OracleSpec ιₘ} {σ' : Type}
+    [MonadLiftT (OracleQuery I₀) (OracleQuery M₀)]
+    (h : QueryImpl M₀ (StateT σ' ProbComp)) (h₁ : QueryImpl I₀ (StateT σ' ProbComp))
+    (hquery : ∀ (t : I₀.Domain) (s : σ'),
+      evalDist ((simulateQ h (OracleComp.liftComp
+        (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) M₀)).run s)
+        = evalDist ((h₁ t).run s))
+    {γ : Type} (oa : OracleComp I₀ γ) (s : σ') :
+    evalDist ((simulateQ h (OracleComp.liftComp oa M₀)).run s)
+      = evalDist ((simulateQ h₁ oa).run s) := by
+  induction oa using OracleComp.inductionOn generalizing s with
+  | pure x => simp [simulateQ_pure, StateT.run_pure, OracleComp.liftComp_pure]
+  | query_bind t k ih =>
+      have hq1 : simulateQ h₁ (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) = h₁ t := by
+        simp [simulateQ_query]
+      rw [OracleComp.liftComp_bind, simulateQ_bind, StateT.run_bind,
+          simulateQ_bind, StateT.run_bind, hq1, evalDist_bind, evalDist_bind, hquery t s]
+      refine bind_congr ?_
+      rintro ⟨a, s'⟩
+      exact ih a s'
+
+#print axioms evalDist_simulateQ_liftComp_run_eq_of_query
+
+/-- **Transport of uniform sampling along a type equality.** If `α = β` (propositionally), the
+uniform sample on `α`, cast to `β`, has the same distribution as the uniform sample on `β` — even
+though the two `SampleableType` instances are independent. The cast is a bijection, so every output
+has equal probability on both sides. This is the arithmetic kernel of the seam's challenge-oracle
+restriction: `(pSpec₁ ++ₚ pSpec₂).Challenge (inl c)` and `pSpec₁.Challenge c` are equal types sampled
+by distinct instances, reconciled here. -/
+theorem evalDist_cast_uniformSample {α β : Type} [SampleableType α] [SampleableType β] [Finite α]
+    (h : α = β) :
+    evalDist ((fun x => (h ▸ x : β)) <$> ($ᵗ α : ProbComp α)) = evalDist ($ᵗ β : ProbComp β) := by
+  have hbij : Function.Bijective (fun x => (h ▸ x : β)) := by
+    subst h; simpa using Function.bijective_id
+  refine evalDist_ext (fun y => ?_)
+  exact probOutput_map_bijective_uniform_cross (α := α) (β := β) (fun x => (h ▸ x : β)) hbij y
+
+#print axioms evalDist_cast_uniformSample
+
 /-- **`OptionT.mk`-to-`ProbComp` `probEvent` bridge.** The soundness game is phrased as a
 `probEvent` over an `OptionT ProbComp` (the verifier may reject = fail), while the union-bound
 toolkit (`probComp_seam_union_le`) is stated at the bare `ProbComp` level with a `none`-as-failure
