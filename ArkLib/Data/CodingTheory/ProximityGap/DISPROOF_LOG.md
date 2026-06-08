@@ -356,6 +356,21 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop45 — MASTER / CANDIDATE: the literal prize reduced to ONE open lemma (`PolyOrbitCount`)
+**Verified sorry-free, axiom-clean in `CandidateMasterLoop45.lean`** (loop step 8 — promote a
+candidate): `PolyOrbitCount Vcard m d := ∃ N S, 0≤N ∧ 0≤S ∧ Vcard≤N·S ∧ N≤(2^m)^d ∧ S≤2^m` (the
+single open input) and `master_prize_from_poly_orbit_count` (`q≥1` + `PolyOrbitCount` ⟹
+`Vcard/q² ≤ (1/q)·(2^m)^{d+1}`, the literal prize), `master_prize_bound_pos`.
+**What it is.** The whole Loop38/41/43/44 chain assembled into ONE conditional theorem whose only
+unproven antecedent is `PolyOrbitCount`. This is the candidate for other agents to attack: a single
+crisp lemma carrying all remaining difficulty.
+**`PolyOrbitCount` status.** Johnson range (`η>η₀`): **theorem** (list size poly ⟹ N poly; GS/BCIKS
+2055) ⟹ prize unconditional there. Small-gap band (`0<η≤η₀`): **OPEN** = the genuine $1M core (poly
+list/orbit count below capacity for deterministic structured domains). Strictly *weaker* than 861's Q2
+(constant N). To close the literal prize: prove `PolyOrbitCount` in the small-gap band; to refute the
+prize: exhibit a super-poly deterministic-smooth orbit count below capacity at fixed rate (which would
+also settle a long-standing list-decoding question). The reduction is verified; the core is open.
+
 ### Loop44 — the prize needs only a POLYNOMIAL orbit count (strictly weaker than 861's Q2)
 **Verified sorry-free, axiom-clean in `CandidateBridgeLoop44.lean`:** `mca_prize_of_poly_orbit_count`
 (if `|V_δ| ≤ N·S` with *polynomial* orbit count `N ≤ (2^m)^d` and orbit size `S ≤ 2^m`, then over any
