@@ -2967,8 +2967,7 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
             OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
               (StmtIn × WitIn × StmtOut × WitOut)).run) := by
   rw [Reduction.runWithLog]
-  simp only [Verifier.fiatShamir, Verifier.run,
-    QueryImpl.addLift_def, QueryImpl.liftTarget_self, liftM_eq_monadLift,
+  simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self, liftM_eq_monadLift,
     OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, optionT_monadLift_run,
     simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_addLift_liftM,
     OptionT.simulateQ_addLift_liftM, Option.getM_map_run, Option.elimM,
