@@ -1645,16 +1645,13 @@ theorem fiatShamirKnowledgeExec_runCollapse
       (spec₃ := [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
       (oa := oa)]
     simp only [OptionT.run_mk]
-    rw [← OracleComp.liftComp_add_assoc_right
-      (spec₁ := oSpec) (spec₂ := fsChallengeOracle StmtIn pSpec)
-      (spec₃ := [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
-      (oa := oa.run)]
-    exact simulateQ_add_liftComp_add_assoc_left
+    simpa [OracleComp.liftComp_add_assoc_right] using
+      (simulateQ_add_liftComp_add_assoc_left
       (impl₁₂ := impl)
       (impl₃ := QueryImpl.liftTarget (StateT σ ProbComp)
         (challengeQueryImpl
           (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-      (oa := oa.run)
+      (oa := oa.run))
   have hPure :
       ∀ (d : ((Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
           (StmtOut × WitOut)) × StmtOut)) (extractedWitIn : WitIn),
