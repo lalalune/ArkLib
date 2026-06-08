@@ -52,7 +52,7 @@ lemma mult_ge_mul [DecidableEq σ] (a : σ → R) (m n : ℕ) (p q : MvPolynomia
   have h_add : (uv.1 + uv.2).sum (fun _ v => v) = uv.1.sum (fun _ v => v) + uv.2.sum (fun _ v => v) := by
     apply Finsupp.sum_add_index' <;> simp
   rw [huv] at h_add
-  have hd_eq : d.sum (fun _ v => v) = uv.1.sum (fun _ v => v) + uv.2.sum (fun _ v => v) := h_add.symm
+  have hd_eq : d.sum (fun _ v => v) = uv.1.sum (fun _ v => v) + uv.2.sum (fun _ v => v) := h_add
   by_cases h1 : (uv.1.sum fun _ v => v) < m
   · rw [map_mul, hp uv.1 h1, zero_mul]
   · have h2 : (uv.2.sum fun _ v => v) < n := by omega
