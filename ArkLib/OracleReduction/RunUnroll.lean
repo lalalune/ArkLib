@@ -276,4 +276,22 @@ theorem simulateQ_state_preserving
 
 #print axioms simulateQ_state_preserving
 
+/-- **State-fixing for a simulated bind.** When the implementation preserves `σ`, the continuation of
+a simulated bind runs from the *same* state `s` (not a threaded one), since the first stage leaves `σ`
+unchanged. This is the step that makes the seam stages commute: after fixing all states to `s`, the
+value-binds can be reordered by `bind_comm`/`evalDist_bind_comm`. -/
+theorem simulateQ_run_bind_state_fixed
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {α β : Type} (A : OracleComp spec α) (g : α → OracleComp spec β) (s : σ) :
+    (simulateQ so (A >>= g)).run s
+      = (simulateQ so A).run s >>= fun p => (simulateQ so (g p.1)).run s := by
+  rw [simulateQ_bind, StateT.run_bind]
+  refine OracleComp.bind_congr_of_forall_mem_support _ (fun p hp => ?_)
+  obtain ⟨a, s'⟩ := p
+  rw [show s' = s from simulateQ_state_preserving so hso A s ⟨a, s'⟩ hp]
+
+#print axioms simulateQ_run_bind_state_fixed
+
 end OptionTStateT

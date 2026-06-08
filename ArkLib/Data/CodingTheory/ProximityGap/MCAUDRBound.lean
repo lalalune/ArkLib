@@ -25,6 +25,7 @@ Axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 namespace ProximityGap.UDRwire
 
 open Finset ProximityGap
+open scoped NNReal ENNReal
 
 variable {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -147,6 +148,20 @@ theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t
     have h1 : G.card ≤ 1 := Finset.card_le_one.mpr (fun a ha b hb => hG a ha b hb)
     omega
 
+/-- RS minimum-distance, agreement form: degree-`<k` codewords disagreeing on `< n − k + 1`
+coordinates are equal (via `ReedSolomon.code_eq_of_agree`). -/
+theorem rs_min_dist (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintype.card ι) :
+    ∀ a ∈ (ReedSolomon.code α k : Set (ι → F)), ∀ b ∈ (ReedSolomon.code α k : Set (ι → F)),
+      (univ.filter (fun i => a i ≠ b i)).card < Fintype.card ι - k + 1 → a = b := by
+  intro a ha b hb hdis
+  refine ReedSolomon.code_eq_of_agree hk ha hb (S := univ.filter (fun i => a i = b i))
+    (fun i hi => (mem_filter.mp hi).2) ?_
+  have hpart := Finset.filter_card_add_filter_neg_card_eq_card (s := (univ : Finset ι))
+    (p := fun i => a i = b i)
+  simp only [Finset.card_univ] at hpart
+  simp only [ne_eq] at hdis
+  omega
+
 open Classical in
 /-- **Connected UDR MCA bound for Reed–Solomon (from scratch, no admit).** For `RS[F,α,k]` with
 `k ≤ n` and the unique-decoding regime `3(n − ⌈(1-δ)n⌉) < n − k + 1`,
@@ -157,17 +172,7 @@ theorem epsMCA_rs_udr_le (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintyp
     epsMCA (F := F) (A := F) (ReedSolomon.code α k : Set (ι → F)) δ
       ≤ (2 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) : ℕ) / (Fintype.card F : ℝ≥0∞) := by
   set t : ℕ := ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊ with htdef
-  have hmd : ∀ a ∈ (ReedSolomon.code α k : Set (ι → F)), ∀ b ∈ (ReedSolomon.code α k : Set (ι → F)),
-      (univ.filter (fun i => a i ≠ b i)).card < Fintype.card ι - k + 1 → a = b := by
-    intro a ha b hb hdis
-    refine ReedSolomon.code_eq_of_agree hk ha hb (S := univ.filter (fun i => a i = b i))
-      (fun i hi => (mem_filter.mp hi).2) ?_
-    have hpart : (univ.filter (fun i => a i = b i)).card
-        + (univ.filter (fun i => ¬ a i = b i)).card = Fintype.card ι := by
-      rw [Finset.filter_card_add_filter_neg_card_eq_card, card_univ]
-    have heq2 : (univ.filter (fun i => ¬ a i = b i)) = (univ.filter (fun i => a i ≠ b i)) := rfl
-    rw [heq2] at hpart
-    omega
+  have hmd := rs_min_dist α k hk
   apply epsMCA_le_of_badCount_le (F := F) (A := F) (ReedSolomon.code α k : Set (ι → F)) δ
     (2 * (Fintype.card ι - t))
   intro u
