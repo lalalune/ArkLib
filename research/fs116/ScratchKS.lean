@@ -87,6 +87,7 @@ theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical
       (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
   dsimp only
   simp [fiatShamirStraightlineExtractorOfStateRestoration]
+  rw [scratch_probEvent_optionT_stateT_init]
   refine le_trans ?_ h
   simp [Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
     Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,

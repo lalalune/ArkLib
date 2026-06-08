@@ -21,6 +21,7 @@ example
   rw [completeness_iff_completenessFromRun]
   unfold completenessFromRun
   intro stmt wit hmem
+  unfold perfectCompleteness at h₁ h₂
   rw [completeness_iff_completenessFromRun] at h₁ h₂
   unfold completenessFromRun at h₁ h₂
   simp only [ENNReal.coe_zero, tsub_zero] at *
