@@ -1162,10 +1162,23 @@ private def transcriptFromFSChallengeLog
 private theorem run_simulateQ_loggingOracle_query
     {ι : Type} {spec : OracleSpec ι} (q : spec.Domain) :
     (simulateQ loggingOracle (liftM (OracleSpec.query (spec := spec) q))).run =
-      (fun u : spec.Range q => (u, [⟨q, u⟩])) <$> (OracleSpec.query (spec := spec) q) := by
+      (fun u : spec.Range q =>
+          (u, ([⟨q, u⟩] : QueryLog spec))) <$>
+        (liftM (OracleSpec.query (spec := spec) q) : OracleComp spec (spec.Range q)) := by
   simpa using
     (OracleComp.run_simulateQ_loggingOracle_query_bind
       (spec := spec) (t := q) (mx := fun u : spec.Range q => pure u))
+
+private theorem queryLog_snd_append
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    (log₁ log₂ : QueryLog (spec₁ + spec₂)) :
+    (log₁ ++ log₂).snd = log₁.snd ++ log₂.snd := by
+  induction log₁ with
+  | nil => rfl
+  | cons entry tail _ih =>
+      cases entry with
+      | mk q r =>
+          cases q <;> simp [QueryLog.snd]
 
 private theorem transcriptFromFSChallengeLogAux_run_logging
     (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
@@ -1192,9 +1205,42 @@ private theorem transcriptFromFSChallengeLogAux_run_logging
       simp only [simulateQ_bind, WriterT.run_bind, bind_assoc]
       split
       · next hDir =>
-          rw [run_simulateQ_loggingOracle_query]
-          simp [ih, QueryLog.snd, popFSChallengeFromLog]
+          simp [OracleComp.run_simulateQ_loggingOracle_query_bind, ih,
+            queryLog_snd_append, QueryLog.snd, popFSChallengeFromLog]
       · simp [ih, QueryLog.snd]
+
+private theorem transcriptFromFSChallengeLog_run_logging
+    (stmtIn : StmtIn) (messages : pSpec.Messages)
+    (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
+    (do
+        let z ← (simulateQ (OracleSpec.loggingOracle
+          (spec := oSpec + fsChallengeOracle StmtIn pSpec))
+          (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages)).run
+        pure (transcriptFromFSChallengeLog
+          (StmtIn := StmtIn) (pSpec := pSpec) messages (z.2.snd ++ tail))) =
+      (fun transcript => some transcript) <$>
+        Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages := by
+  have h := transcriptFromFSChallengeLogAux_run_logging
+    (oSpec := oSpec) (StmtIn := StmtIn) (pSpec := pSpec)
+    stmtIn (Fin.last n) messages (Fin.last (Fin.last n)) tail
+  have h' := congrArg (fun c =>
+      (fun o : Option (pSpec.FullTranscript × QueryLog (fsChallengeOracle StmtIn pSpec)) =>
+        Option.map Prod.fst o) <$> c) h
+  simpa [transcriptFromFSChallengeLog, StateT.run', Function.comp] using h'
+
+private theorem transcriptFromFSChallengeLog_run_logging_tail_nil
+    (stmtIn : StmtIn) (messages : pSpec.Messages) :
+    (do
+        let z ← (simulateQ (OracleSpec.loggingOracle
+          (spec := oSpec + fsChallengeOracle StmtIn pSpec))
+          (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages)).run
+        pure (transcriptFromFSChallengeLog
+          (StmtIn := StmtIn) (pSpec := pSpec) messages z.2.snd)) =
+      (fun transcript => some transcript) <$>
+        Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages := by
+  simpa using transcriptFromFSChallengeLog_run_logging
+    (oSpec := oSpec) (StmtIn := StmtIn) (pSpec := pSpec)
+    stmtIn messages ([] : QueryLog (fsChallengeOracle StmtIn pSpec))
 
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
