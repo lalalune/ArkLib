@@ -206,10 +206,45 @@ then gives only linear growth in `1/η`, and Loop 7 shows such growth is absorba
 single inverse-gap factor. This is evidence for the O3 mechanism, but **not** a prize
 disproof. A real disproof needs fixed positive `η` (or super-polynomial growth in `1/η`).
 
+### O6′ — the `q`-independence reduction (the disproof's precise target), Loop8
+Reading the *genuine* target `epsMCAgsPrizeUniversalConjecture` / `UniversalGSListMassBound`: the
+in-tree chain (`MCAGSWitness.lean`) gives `PivotCovering ∧ |L|≤ℓ ⟹ epsMCAgs ≤ ℓ/q`, and the mass
+clause is `ℓ/q ≤ (1/q)·(2^m)^{c₁}/(ρ^{c₂}η^{c₃})`. The `1/q` cancels, so the list size is forced
+`≤ B := (2^m)^{c₁}/(ρ^{c₂}η^{c₃})`, **independent of `q`** — and since the universal quantifier order
+fixes `c₁,c₂,c₃` (hence `B`) *before the field*, the GS list size must be `q`-bounded by a constant
+at every prize rate and fixed gap.
+**Verified sorry-free, axiom-clean in `CandidateDisproofLoop8.lean`:** `listsize_le_numerator_of_mass`
+(the `1/q` cancellation), `listsize_gt_numerator_refutes_mass`, `listsize_can_exceed_any_numerator`,
+`single_instance_over_numerator_refutes`.
+**Reduction:** the prize is **false** iff, at some prize rate and *fixed* gap `η>0`, the minimal
+pivot-covering faithful GS list size grows without bound as `q→∞` (the dual of "RS list-decodable to
+capacity with `q`-independent lists below `1−ρ`").
+**Disproof of the disproof (O6′):** that `q`-unbounded fixed-gap growth is exactly the open dual and
+is *not* established; below Johnson the list is provably `q`-independent, and the in-tree `ε_mca`
+lower bounds are only `poly/q` (within bound). Sharpens the target; does not disprove.
+
+### O7′ — fixed-gap empirical probe over prime fields (evidence bearing on O8)
+Numpy brute-force, RS over `F_p` (`n=p`, rate `ρ=1/2`), **sampled** max list size:
+* shrinking gap `η=1/n` (threshold `k+1`): max list `2, 5, 36` for `p=5,7,11` — grows (the
+  *absorbed* `poly(1/η)=poly(n)` regime; matches the concurrent `GF(2^s)` O7 counts `3,4,7,11`).
+* **fixed gap `η=0.1`** (radius held in-band, `1−√ρ < δ < 1−ρ`): max list `2, 5, 5` for `p=5,7,11`
+  — **no growth with field size**.
+* fixed gap `η=0.2`: radius drops below Johnson → max list `1` (unique decoding), as predicted.
+So the list explosion is driven by the *shrinking gap*, not by `q` at fixed gap — empirical support
+for Loop7's self-refutation and O6′. **Caveats (honest):** sampled (not exhaustive worst-case), tiny
+fields, integer-rounded radius; suggestive of conjecture-survival, *not* proof. → no disproof; weakly
+*supports* the conjecture. Script: `o7_fixed_gap_probe.py` (in this dir).
+
 ## Open angles not yet tried (to avoid repetition)
 
 - O8: strengthen O7 to **fixed-gap** Frobenius realization: produce high-degree bad scalars with
-  some constant `η > 0` independent of extension degree, or prove this is impossible.
+  some constant `η > 0` independent of extension degree, or prove this is impossible. *(Partially
+  probed by O7′: fixed-gap prime-field samples show NO list growth — leans toward "impossible";
+  needs exhaustive worst-case search or a proof, and the `GF(2^s)` Frobenius version.)*
 - O9: repair/formalize the GS RHS domain-size linkage: add or consume a hypothesis
   `Fintype.card ι = 2^m` (or a comparable smooth-domain size condition) before using
   `epsMCAgsPrizeUniversalConjecture` as the prize-facing statement.
+- O10: attack via a *list-size lower bound* in the band `(1−√ρ, 1−ρ−η]` at fixed `η` — the O6′
+  reduction shows this is the only remaining disproof route; connect to known RS capacity
+  list-decoding lower bounds (Ben-Sasson–Kopparty–Radhakrishnan / Guruswami–Rudra) and check whether
+  any apply at a prize rate with fixed positive gap.
