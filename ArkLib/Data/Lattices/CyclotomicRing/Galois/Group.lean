@@ -85,6 +85,44 @@ theorem galoisAut_comp (α i j : ℕ) (hi : Odd i) (hj : Odd j)
     galoisAut_toQuotient α (i * j) (hi.mul hj), galoisAutₛ_toQuotient α j hj, galoisAutₛ_mk,
     galoisAutₛ_toQuotient α (i * j) (hi.mul hj), aeval_X_pow_aeval_X_pow]
 
+/-! ## Periodicity of the Galois action in the exponent (mod `2^{α+1}`) -/
+
+/-- In the cyclotomic quotient, `X^i = X^{i mod 2^{α+1}}`, since `X^{2^{α+1}} = 1`
+(`(X^{2^α})² = (−1)² = 1`). -/
+theorem mkX_pow_periodic (α i : ℕ) :
+    (Ideal.Quotient.mk (powTwoCyclotomic (R := R) α).modIdeal) (Polynomial.X ^ i)
+      = Ideal.Quotient.mk _ (Polynomial.X ^ (i % 2 ^ (α + 1))) := by
+  set i' := i % 2 ^ (α + 1) with hi'
+  rw [Ideal.Quotient.eq]
+  have hsplit : i = 2 ^ (α + 1) * (i / 2 ^ (α + 1)) + i' := by
+    rw [hi']; exact (Nat.div_add_mod i (2 ^ (α + 1))).symm
+  rw [hsplit, pow_add, pow_mul, ← sub_one_mul]
+  simp only [modIdeal, powTwoCyclotomic_toPoly, Ideal.mem_span_singleton]
+  refine Dvd.dvd.mul_right ?_ _
+  have h1 : (Polynomial.X ^ 2 ^ α + 1 : Polynomial R) ∣ Polynomial.X ^ 2 ^ (α + 1) - 1 := by
+    have he : (Polynomial.X ^ 2 ^ (α + 1) - 1 : Polynomial R)
+        = (Polynomial.X ^ 2 ^ α - 1) * (Polynomial.X ^ 2 ^ α + 1) := by
+      rw [show 2 ^ (α + 1) = 2 ^ α * 2 from by rw [pow_succ], pow_mul]; ring
+    rw [he]; exact Dvd.intro_left _ rfl
+  have h2 : (Polynomial.X ^ 2 ^ (α + 1) - 1 : Polynomial R)
+      ∣ (Polynomial.X ^ 2 ^ (α + 1)) ^ (i / 2 ^ (α + 1)) - 1 := by
+    simpa using sub_dvd_pow_sub_pow (Polynomial.X ^ 2 ^ (α + 1) : Polynomial R) 1 (i / 2 ^ (α + 1))
+  exact h1.trans h2
+
+/-- **The Galois automorphism `σ_i` depends only on `i mod 2^{α+1}`.** Since `X` has order
+`2^{α+1}` in the cyclotomic quotient, `σ_i = σ_{i mod 2^{α+1}}`. -/
+theorem galoisAut_periodic (α i : ℕ) (hi : Odd i) (a : Rq (powTwoCyclotomic (R := R) α)) :
+    galoisAut (powTwoCyclotomic α) i a
+      = galoisAut (powTwoCyclotomic α) (i % 2 ^ (α + 1)) a := by
+  have hi' : Odd (i % 2 ^ (α + 1)) := by
+    rw [Nat.odd_iff, Nat.mod_mod_of_dvd i (dvd_pow_self 2 (Nat.succ_ne_zero α))]
+    exact Nat.odd_iff.mp hi
+  apply Rq.toQuotient_injective
+  rw [galoisAut_toQuotient α i hi, galoisAut_toQuotient α (i % 2 ^ (α + 1)) hi',
+    galoisAutₛ_toQuotient α i hi, galoisAutₛ_toQuotient α (i % 2 ^ (α + 1)) hi',
+    Polynomial.aeval_def, Polynomial.aeval_def, Polynomial.algebraMap_eq,
+    Polynomial.hom_eval₂, Polynomial.hom_eval₂, mkX_pow_periodic]
+
 /-! ## 2-adic order kernel for `4k+1`
 
 These two lemmas are the number-theoretic heart of the `Hexp` / `traceH_mem_fixed` story:
