@@ -132,6 +132,3 @@ theorem append_run_empty (stmt : Stmt₁) (wit : Wit₁) :
   append_run stmt wit (appendRunRightResidual_holds_empty P₁ P₂ stmt wit)
 
 end Prover
-
-#print axioms Prover.append_run_empty
-#print axioms Prover.appendRunRightResidual_holds_empty

@@ -7,7 +7,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
 open Finset
 open Polynomial
 open scoped NNReal
-open scoped Classical
 
 namespace ArkLib.ProximityGap.PromotedHypotheses
 
@@ -47,25 +46,31 @@ theorem h30_agreement_lower_bound (f : F → F) (S : Finset F) :
     exact Lagrange.eval_interpolate_at_node f (fun _ _ _ _ h => h) hx
 
 include hk in
+open Classical in
 theorem hyp30_max_agreement_not_k_minus_one (v : ι → F) :
     ∃ c ∈ (ReedSolomon.code domain k : Set (ι → F)), 
       (Finset.univ.filter (fun i => c i = v i)).card ≥ k := by
   have hk' : k ≤ Finset.card (Finset.univ : Finset ι) := by rw [Finset.card_univ]; exact hk
-  obtain ⟨S, _, hS_card⟩ := Finset.exists_subset_card_eq hk'
+  have h_exists : ∃ S : Finset ι, S.card = k := by
+    obtain ⟨S, _, hS_card⟩ := Finset.exists_subset_card_eq hk'
+    exact ⟨S, hS_card⟩
+  obtain ⟨S, hS_card⟩ := h_exists
   let f : F → F := fun x => if hx : ∃ i ∈ S, domain i = x then v (Classical.choose hx) else 0
-  have h_bound := h30_agreement_lower_bound f (S.map domain.toEmbedding)
+  have h_bound := h30_agreement_lower_bound f (S.map domain)
   obtain ⟨p, hp_deg, hp_eval⟩ := h_bound
   let c : ι → F := fun i => p.eval (domain i)
   use c
   constructor
-  · apply ReedSolomon.mem_code_of_degree_lt
-    rw [Finset.card_map, hS_card] at hp_deg
-    exact hp_deg
-  · apply Finset.card_le_of_subset
+  · apply ReedSolomon.mem_code_of_polynomial_of_degree_lt_of_eval p
+    · rw [Finset.card_map, hS_card] at hp_deg
+      exact hp_deg
+    · intro i
+      rfl
+  · apply Finset.card_le_card
     intro i hi
     simp only [mem_filter, mem_univ, true_and]
     apply congrArg
-    have h_mem : domain i ∈ S.map domain.toEmbedding := Finset.mem_map_of_mem domain.toEmbedding hi
+    have h_mem : domain i ∈ S.map domain := Finset.mem_map_of_mem domain hi
     have eval_eq := hp_eval (domain i) h_mem
     dsimp [c]
     rw [eval_eq]
@@ -76,6 +81,7 @@ theorem hyp30_max_agreement_not_k_minus_one (v : ι → F) :
     have h_i : Classical.choose hx = i := domain.injective h_choose_eq
     rw [dif_pos hx, h_i]
 
+open Classical in
 theorem hyp8_translation_invariance (x y c : ι → F) :
     hammingDist (x + c) (y + c) = hammingDist x y := by
   dsimp [hammingDist, dist]
@@ -86,6 +92,7 @@ theorem hyp8_translation_invariance (x y c : ι → F) :
   · intro h heq; apply h; rw [heq]
   · intro h heq; apply h; exact add_right_cancel heq
 
+open Classical in
 theorem hyp7_barycentric_center (c_map : F → (ι → F)) 
     (h_valid : ∀ γ : F, c_map γ ∈ (ReedSolomon.code domain k : Set (ι → F))) :
     (∑ γ : F, c_map γ) ∈ (ReedSolomon.code domain k : Set (ι → F)) := by
