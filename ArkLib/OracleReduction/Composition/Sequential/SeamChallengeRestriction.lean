@@ -139,16 +139,16 @@ twin of VCVio's `simulateQ_liftM_eq_of_query`: if two handlers `h` (over the lar
 under `h₁`. Free-monad induction; the per-query hypothesis is discharged by `hquery_evalDist`. -/
 theorem evalDist_simulateQ_liftM_run_eq_of_query
     {ιᵢ ιₘ : Type} {I₀ : OracleSpec ιᵢ} {M₀ : OracleSpec ιₘ} {σ' : Type}
-    [MonadLiftT (OracleComp I₀) (OracleComp M₀)]
+    [MonadLiftT (OracleComp I₀) (OracleComp M₀)] [LawfulMonadLiftT (OracleComp I₀) (OracleComp M₀)]
     (h : QueryImpl M₀ (StateT σ' ProbComp)) (h₁ : QueryImpl I₀ (StateT σ' ProbComp))
     (hq : ∀ (t : I₀.Domain) (s : σ'),
       evalDist ((simulateQ h (liftM (liftM (I₀.query t) :
-        OracleComp I₀ (I₀.Range t)) : OracleComp M₀)).run s) = evalDist ((h₁ t).run s))
+        OracleComp I₀ (I₀.Range t)) : OracleComp M₀ (I₀.Range t))).run s) = evalDist ((h₁ t).run s))
     {δ : Type} (oa : OracleComp I₀ δ) (s : σ') :
-    evalDist ((simulateQ h (liftM oa : OracleComp M₀)).run s)
+    evalDist ((simulateQ h (liftM oa : OracleComp M₀ δ)).run s)
       = evalDist ((simulateQ h₁ oa).run s) := by
   induction oa using OracleComp.inductionOn generalizing s with
-  | pure x => simp
+  | pure x => simp [simulateQ_pure, StateT.run_pure]
   | query_bind t k ih =>
       have hq1 : simulateQ h₁ (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) = h₁ t := by
         simp [simulateQ_query]

@@ -731,6 +731,8 @@ import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendChallenge
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendReduction
 import ArkLib.OracleReduction.Composition.Sequential.General
+import ArkLib.OracleReduction.Composition.Sequential.SeamChallengeRestriction
+import ArkLib.OracleReduction.Composition.Sequential.SeamCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
