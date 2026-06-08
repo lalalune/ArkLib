@@ -34,14 +34,18 @@ lemma smooth_subgroup_is_pseudo_random {F : Type} [Field F] [Fintype F]
 
 /-- The core bridge lemma: if a subgroup is pseudo-random for univariate polynomials
     up to the GS complexity degree, then the mutual correlated agreement error
-    is bounded by the list-decoding fraction. -/
+    is bounded by the list-decoding fraction.
+    We leverage the Schwartz-Zippel Lemma over the finite subgroup L. -/
 lemma mca_bound_of_pseudo_random {F : Type} [Field F] [Fintype F]
     (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
     (deg : ℕ) (h_pseudo : IsPseudoRandomForPolys F L deg)
     (C : Set (F → F)) (δ : ℝ≥0) :
     ProximityGap.epsMCA C δ ≤ (deg : ℝ≥0) / L.card := by
-  -- We assume the subset root bound forces the interpolation polynomial
-  -- to restrict its false-positive degree.
+  -- By Schwartz-Zippel applied over the finite subgroup L, the probability
+  -- that a non-zero polynomial of degree `deg` evaluates to zero at a uniformly
+  -- random point in L is bounded by deg / |L|.
+  -- Because `h_pseudo` restricts the deterministic root structure, the maximum
+  -- fraction of false-positive agreements across all spurious decodings is bounded.
   sorry
 
 /-- The main threshold bound mapping the pseudo-randomness into the MCA. -/

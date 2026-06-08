@@ -1589,23 +1589,6 @@ theorem βHensel_weight_bound_of_alphaWeight_cases_succLift
     (DivWeightLe.of_alphaWeight_cases_succLift H x₀ R hHyp hH D hliftSucc h0 hsucc)
     hξ t
 
-
-/-- **The sharp `t+1` obstruction.** -/
-theorem AlphaGenuineRegularWeightLe_succ (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hH : 0 < H.natDegree) (D : ℕ) (t : ℕ)
-    (hDiv : DivWeightLe_succ H x₀ R hHyp hH D t)
-    (hlift :
-      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
-        = αGenuine H x₀ R hHyp (t + 1)
-            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
-            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1)) :
-    ∃ a : 𝒪 H,
-      embeddingOf𝒪Into𝕃 H a = αGenuine H x₀ R hHyp (t + 1)
-        ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 := by
-  obtain ⟨a, hfact, ha_wt⟩ := hDiv
-  exact ⟨a, alpha_eq_embedding_of_fact H x₀ R hHyp (t + 1) hfact hlift, ha_wt⟩
-
 end AlphaWeight
 
 end BCIKS20.HenselNumerator

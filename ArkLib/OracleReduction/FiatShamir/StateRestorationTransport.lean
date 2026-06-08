@@ -993,6 +993,52 @@ theorem fiatShamir_soundness_of_stateRestoration_canonical
 
 end CanonicalSoundness
 
+<<<<<<< HEAD
+=======
+section CanonicalKnowledgeSoundnessSupport
+
+/-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
+by a state-restoration extractor for the underlying interactive verifier.
+
+The transformed proof transcript contains exactly the underlying protocol messages.  The adapter
+derives the shared slow-Fiat-Shamir/state-restoration transcript from those messages and then calls
+the state-restoration extractor with the default query logs used by the current
+state-restoration knowledge-soundness game. -/
+def fiatShamirStraightlineExtractorOfStateRestoration
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec) :
+    Extractor.Straightline (oSpec + fsChallengeOracle StmtIn pSpec)
+      StmtIn WitIn WitOut (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) :=
+  fun stmtIn witOut proof _proveQueryLog _verifyQueryLog => do
+    let messages : pSpec.Messages := proof 0
+    let transcript ← messages.deriveTranscriptFS (oSpec := oSpec) stmtIn
+    liftM (srExtractor stmtIn witOut transcript default default)
+
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- Unfolding equation for
+`fiatShamirStraightlineExtractorOfStateRestoration`, exposing the proof-message replay and
+state-restoration extractor call. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_apply
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (proveQueryLog verifyQueryLog :
+      QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor
+        stmtIn witOut proof proveQueryLog verifyQueryLog =
+      (do
+        let messages : pSpec.Messages := proof 0
+        let transcript ← messages.deriveTranscriptFS (oSpec := oSpec) stmtIn
+        liftM (srExtractor stmtIn witOut transcript default default)) := by
+  rfl
+
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_apply
+
+end CanonicalKnowledgeSoundnessSupport
+
+>>>>>>> 2d6d6ea7b7467832627d6b38deb68224d14873dd
 /-- Basic Fiat-Shamir soundness from a transfer residual at the target error, after first relaxing
 the state-restoration soundness hypothesis to that target error. -/
 theorem fiatShamir_soundness_of_stateRestoration_pre_mono_error

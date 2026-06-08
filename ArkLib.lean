@@ -308,6 +308,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomization
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationHasse
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationMatrix
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDomainSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateExtrapolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFoldedRS
