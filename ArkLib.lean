@@ -464,6 +464,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAMiddleBand
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityGeneralRate
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityQuadratic
+import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacitySharpSpread
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
