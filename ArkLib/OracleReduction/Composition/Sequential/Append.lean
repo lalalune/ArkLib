@@ -3710,7 +3710,6 @@ theorem seam_transcript_appendRight (hn : 0 < n)
   apply eq_of_heq
   refine HEq.trans (cast_heq (append_Transcript_seam_castSucc hn) rSeamT).symm ?_
   exact (Transcript.appendRight_empty (cast (append_Transcript_seam_castSucc hn) rSeamT)).symm
-end Prover
 
 /-- **Right-block run characterization (message seam).**  The appended prover's continuation over the
 entire right block — from the seam round `⟨m⟩` to the last round — is, heterogeneously, `P₁`'s output
