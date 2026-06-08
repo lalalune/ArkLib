@@ -2241,6 +2241,69 @@ private theorem probEvent_stateT_run_fst_congr
         (fun x : Option α × σ => x.1) <$> my.run s) p := by
   exact probEvent_stateT_run_map_congr init mx my (fun x : Option α × σ => x.1) p h
 
+/-- Knowledge-soundness event leaf: aborting on verifier failure and then extracting has the same
+bad-event probability as the state-restoration game shape that records an `Option StmtOut` and
+still runs the extractor.  The event is false in the `none` branch, so the extractor distribution
+there is irrelevant. -/
+private theorem probEvent_knowledgePayload_option_eq_stateRestoration
+    {σ StmtIn WitIn StmtOut WitOut : Type}
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (mx : StateT σ ProbComp (Option StmtOut))
+    (my : StateT σ ProbComp WitIn) (s : σ) :
+    Pr[fun o : Option (StmtIn × WitIn × StmtOut × WitOut) =>
+        o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ (x.2.2.1, x.2.2.2) ∈ relOut |
+      (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) × σ => x.1) <$>
+        (Option.elimM mx (pure none) (fun stmtOut => do
+          let witIn ← my
+          pure (some (stmtIn, witIn, stmtOut, witOut)))).run s] =
+    Pr[(fun x : StmtIn × WitIn × Option StmtOut × WitOut =>
+        match x with
+        | (stmtIn, witIn, some stmtOut, witOut) =>
+            (stmtOut, witOut) ∈ relOut ∧ (stmtIn, witIn) ∉ relIn
+        | _ => False) |
+      (fun x : (StmtIn × WitIn × Option StmtOut × WitOut) × σ => x.1) <$>
+        (do
+          let stmtOut? ← mx
+          let witIn ← my
+          pure (stmtIn, witIn, stmtOut?, witOut)).run s] := by
+  classical
+  simp only [probEvent_map]
+  unfold Option.elimM
+  simp only [StateT.run_bind]
+  rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
+  apply tsum_congr
+  intro x
+  rcases x with ⟨stmtOut?, s'⟩
+  cases stmtOut? with
+  | none =>
+      have hfalse :
+          probEvent (my.run s')
+            ((((fun x : StmtIn × WitIn × Option StmtOut × WitOut =>
+              match x with
+              | (stmtIn, witIn, some stmtOut, witOut) =>
+                  (stmtOut, witOut) ∈ relOut ∧ (stmtIn, witIn) ∉ relIn
+              | _ => False) ∘ fun x => x.1) ∘
+                fun a : WitIn × σ => ((stmtIn, a.1, none, witOut), a.2))) = 0 := by
+        rw [probEvent_eq_tsum_indicator]
+        simp
+      simp only [StateT.run_pure, probEvent_pure, Option.elim_none]
+      simp [hfalse]
+  | some stmtOut =>
+      simp only [Option.elim_some, StateT.run_bind, StateT.run_pure]
+      congr 1
+      symm
+      rw [probEvent_bind_eq_tsum]
+      symm
+      rw [probEvent_bind_eq_tsum]
+      apply tsum_congr
+      intro y
+      rcases y with ⟨witIn, _s''⟩
+      rw [probEvent_pure, probEvent_pure]
+      by_cases hOut : (stmtOut, witOut) ∈ relOut <;>
+      by_cases hIn : (stmtIn, witIn) ∈ relIn <;>
+        simp [hOut, hIn, and_comm]
+
 private theorem simulateQ_optionT_bind_mk_some_run
     {ι : Type} {spec : OracleSpec ι} {σ α β : Type}
     (impl : QueryImpl spec (StateT σ ProbComp))
