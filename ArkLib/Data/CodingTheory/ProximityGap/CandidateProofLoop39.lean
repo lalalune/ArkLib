@@ -6,16 +6,16 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop38
 
 /-!
-# Loop 39 (PROOF, conditional) — integration capstone: BGM budget × FRI union bound ⟹ full-band prize
+# Loop 39 (PROOF, conditional) — capstone: BGM budget × FRI union bound ⟹ full-band prize
 
 This file integrates the two frontiers that Loops 37 and 38 isolated:
 
-* **Loop 17 (P4)** — the Brakensiek–Gopi–Makam *generic* list-decoding-capacity budget at the prize
-  radius, `L_BGM(ρ,η) = (1−ρ−η)/η ≤ 1/η`, is `q`-independent and carries no `n`/`(2^m)` factor. It is
-  the one budget finite across the **entire** band `0 < η ≤ 1−ρ`, including the small-gap region
-  `0 < η ≤ η₀` the Johnson method cannot reach.
-* **Loop 38** — the actual BCIKS proximity-gaps / FRI soundness mechanism composes its `m` per-round
-  events as a **union bound** `∑_{j<m} e_j`, additive, never a multiplicative tower.
+* **Loop 17 (P4)** — the Brakensiek–Gopi–Makam *generic* list-decoding-capacity budget at the
+  prize radius, `L_BGM(ρ,η) = (1−ρ−η)/η ≤ 1/η`, is `q`-independent and carries no `n`/`(2^m)`
+  factor. It is the one budget finite across the **entire** band `0 < η ≤ 1−ρ`, including the
+  small-gap region `0 < η ≤ η₀` the Johnson method cannot reach.
+* **Loop 38** — the actual BCIKS proximity-gaps / FRI soundness mechanism composes its `m`
+  per-round events as a **union bound** `∑_{j<m} e_j`, additive, never a multiplicative tower.
 
 Composing them: if each per-round proximity event is the one-shot BGM event `e_j ≤ L_BGM(ρ,η)/q`,
 then the union-bound total error obeys
@@ -24,17 +24,17 @@ then the union-bound total error obeys
         = (1/q) · (2^m)^1 / η^1 ,
 
 i.e. **exactly the prize RHS** with the single constant triple `c₁ = 1, c₂ = 0, c₃ = 1`, for
-**every** gap `η > 0`, including the small-gap band. This is the first statement that lands the prize
-on its own RHS *across the entire band* (not just the Johnson range) from one clean hypothesis, in the
-shape the real FRI mechanism actually produces.
+**every** gap `η > 0`, including the small-gap band. This is the first statement that lands the
+prize on its own RHS *across the entire band* (not just the Johnson range) from one clean
+hypothesis, in the shape the real FRI mechanism actually produces.
 
 The hypothesis discharged here, `hround : ∀ j < m, e j ≤ L_BGM(ρ,η)/q`, is precisely
 **(BGM-for-smooth)**: that the deterministic smooth multiplicative-subgroup RS code's per-round
-proximity event is bounded by the *generic* BGM capacity budget. In the Johnson range it is the BCIKS
-2025/2055 theorem (so the prize is unconditional there); in the small-gap band it is the genuine open
-core. This brick is conditional and does **not** close the prize — it certifies that the open core has
-been reduced to exactly one hypothesis, and that hypothesis lands the prize. See `DISPROOF_LOG.md`
-(Loop39).
+proximity event is bounded by the *generic* BGM capacity budget. In the Johnson range it is the
+BCIKS 2025/2055 theorem (so the prize is unconditional there); in the small-gap band it is the
+genuine open core. This brick is conditional and does **not** close the prize — it certifies that
+the open core is reduced to exactly one hypothesis, and that hypothesis lands the prize. See
+`DISPROOF_LOG.md` (Loop39).
 -/
 
 namespace ArkLib.ProximityGap.ProofLoop39
@@ -44,7 +44,7 @@ open scoped BigOperators
 /-- The BGM (generic list-decoding capacity) budget at the prize radius: `(1−ρ−η)/η`. -/
 noncomputable def bgmBudget (ρ η : ℝ) : ℝ := (1 - ρ - η) / η
 
-/-- The BGM budget is at most `1/η` for a below-capacity radius (`0 ≤ 1−ρ−η`) and positive gap. -/
+/-- The BGM budget is at most `1/η` for `ρ ≥ 0` and positive gap `η`. -/
 theorem bgmBudget_le_inv_gap {ρ η : ℝ} (hρ : 0 ≤ ρ) (hη : 0 < η) :
     bgmBudget ρ η ≤ 1 / η := by
   unfold bgmBudget
@@ -63,10 +63,10 @@ If every per-round FRI/proximity event `e j` is bounded by the one-shot BGM capa
 
     ∑_{j<m} e j ≤ (1/q) · (2^m)^1 / η ,
 
-with the single constant triple `c₁ = 1, c₂ = 0, c₃ = 1`, for **every** gap `η > 0` — including the
-small-gap band the Johnson method cannot reach. The per-round budget is carried *once* (into the
-depth-independent factor `1/η`), exactly as Loop 37 requires, and accumulated *additively* (the union
-bound), exactly as Loop 38 establishes for the real mechanism. -/
+with the single constant triple `c₁ = 1, c₂ = 0, c₃ = 1`, for **every** gap `η > 0` — including
+the small-gap band the Johnson method cannot reach. The per-round budget is carried *once* (into
+the depth-independent factor `1/η`), exactly as Loop 37 requires, and accumulated *additively*
+(the union bound), exactly as Loop 38 establishes for the real mechanism. -/
 theorem full_band_prize_mass
     (e : ℕ → ℝ) {ρ η q : ℝ} {m : ℕ}
     (hρ : 0 ≤ ρ) (hcap : 0 ≤ 1 - ρ - η) (hη : 0 < η) (hq : 0 < q)

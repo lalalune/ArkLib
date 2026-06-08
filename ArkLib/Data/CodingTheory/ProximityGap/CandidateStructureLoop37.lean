@@ -32,8 +32,8 @@ the *single universal base* `2^{c₁}`. Therefore:
 
 The consequence — recorded as `prize_decomposition` — is a structural decomposition of the prize
 RHS: the depth-exponential part `(2^m)^{c₁}` may carry only the gap-INDEPENDENT universal constant,
-while **all** gap dependence must be confined to the depth-INDEPENDENT factor `G = 1/(ρ^{c₂} η^{c₃})`
-that is paid **once**, not per round. This explains the proven regimes: the Johnson-range bound
+while **all** gap dependence must be confined to the depth-INDEPENDENT factor
+`G = 1/(ρ^{c₂} η^{c₃})` paid **once**, not per round. This explains the proven regimes: Johnson
 (Loop11/P2) places the domain-size factor `n² = (2^m)²` with `c₁ = 2` and pushes the `ℓ⁷ρ²` list
 budget into the denominator — exactly a single gap-dependent factor, never a per-round one.
 
