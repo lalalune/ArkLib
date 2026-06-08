@@ -70,7 +70,6 @@ import ArkLib.Data.CodingTheory.EntropyVolumeBound
 import ArkLib.Data.CodingTheory.EntropyVolumeListSize
 import ArkLib.Data.CodingTheory.EntropyVolumeUpper
 import ArkLib.Data.CodingTheory.EntropyVolumeUpperBall
-import ArkLib.Data.CodingTheory.EntropyVolumeUpperBound
 import ArkLib.Data.CodingTheory.Erasure
 import ArkLib.Data.CodingTheory.ExtensionCodes
 import ArkLib.Data.CodingTheory.ExternalDebt
@@ -984,7 +983,6 @@ import ArkLib.ToMathlib.WeightLambdaCalculus
 import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.ZKConcreteSimulatorProof
 import ArkLib.ToMathlib.ZKDefA
-import ArkLib.ToMathlib.ZKDefC
 import ArkLib.ToMathlib.ZKTransferBricks
 import ArkLib.ToVCVio.EvalDist.Defs.Support
 import ArkLib.ToVCVio.EvalDist.Instances.OptionT
