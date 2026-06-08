@@ -381,4 +381,92 @@ theorem merge_receiveChallenge_natAdd (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ W
     (snd_receiveChallenge_natAdd P k hDir hDir₂ stateP).symm
   exact (cast_heq _ _).trans (hst.trans (cast_heq _ _).symm)
 
+/-- State-type eq at a right-interior `castSucc` (k>0): the append-of-restrictions and `P` agree. -/
+theorem merge_PrvState_natAdd_castSucc (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (k : Fin n) (hk : 0 < (k : ℕ)) :
+    ((Prover.fst P).append (Prover.snd P)).PrvState (Fin.natAdd m k).castSucc
+      = P.PrvState (Fin.natAdd m k).castSucc :=
+  (append_PrvState_natAdd_castSucc (P₁ := Prover.fst P) (P₂ := Prover.snd P) k hk).trans
+    (congrArg P.PrvState (by ext; simp))
+
+/-- State-type eq at a right-interior `succ`. -/
+theorem merge_PrvState_natAdd_succ (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (k : Fin n) :
+    ((Prover.fst P).append (Prover.snd P)).PrvState (Fin.natAdd m k).succ
+      = P.PrvState (Fin.natAdd m k).succ := by
+  rw [show (Fin.natAdd m k).succ = (Fin.natAdd (m+1) k).cast (by omega) from by ext; simp; omega]
+  rw [append_PrvState_natAdd_succ (P₁ := Prover.fst P) (P₂ := Prover.snd P) k]
+  exact congrArg P.PrvState (by ext; simp; omega)
+
+/-- **Right-interior per-round processRound merge (message branch, k>0).** Both sides are over the
+appended protocol, so transcripts match in type; `sendMessage` agreement is `merge_sendMessage_natAdd`
+lifted via `liftComp_heq_congr`. -/
+theorem merge_processRound_natAdd_message
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V)
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).castSucc
+        × ((Prover.fst P).append (Prover.snd P)).PrvState (Fin.natAdd m k).castSucc))
+    (curP : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).castSucc
+        × P.PrvState (Fin.natAdd m k).castSucc))
+    (hcur : HEq curA curP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).processRound (Fin.natAdd m k) curA)
+        (P.processRound (Fin.natAdd m k) curP) := by
+  have hDir₂ : pSpec₂.dir k = .P_to_V := by rw [← append_dir_natAdd (pSpec₁ := pSpec₁)]; exact hDir
+  rw [processRound_message ((Prover.fst P).append (Prover.snd P)) (Fin.natAdd m k) hDir curA,
+    processRound_message P (Fin.natAdd m k) hDir curP]
+  refine bind_heq_congr (by rw [merge_PrvState_natAdd_castSucc P k hk])
+    (by rw [merge_PrvState_natAdd_succ P k]) hcur ?_
+  rintro ⟨t, s⟩ ⟨t', s'⟩ hr
+  obtain ⟨ht, hs⟩ := prod_heq_split rfl (merge_PrvState_natAdd_castSucc P k hk) hr
+  dsimp only
+  refine bind_heq_congr (by rw [merge_PrvState_natAdd_succ P k])
+    (by rw [merge_PrvState_natAdd_succ P k])
+    (liftComp_heq_congr (spec := oSpec) (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (by rw [merge_PrvState_natAdd_succ P k])
+      (merge_sendMessage_natAdd P k hk hDir hDir₂ s s' hs)) ?_
+  rintro ⟨msg, ns⟩ ⟨msg', ns'⟩ hmsg
+  obtain ⟨hm, hns⟩ := prod_heq_split rfl (merge_PrvState_natAdd_succ P k) hmsg
+  refine pure_heq_pure (by rw [merge_PrvState_natAdd_succ P k]) ?_
+  refine prodMk_heq rfl (merge_PrvState_natAdd_succ P k) ?_ hns
+  rw [eq_of_heq hm, eq_of_heq ht]
+
+/-- **Right-interior per-round processRound merge (challenge branch, k>0).** -/
+theorem merge_processRound_natAdd_challenge
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P)
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).castSucc
+        × ((Prover.fst P).append (Prover.snd P)).PrvState (Fin.natAdd m k).castSucc))
+    (curP : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).castSucc
+        × P.PrvState (Fin.natAdd m k).castSucc))
+    (hcur : HEq curA curP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).processRound (Fin.natAdd m k) curA)
+        (P.processRound (Fin.natAdd m k) curP) := by
+  have hDir₂ : pSpec₂.dir k = .V_to_P := by rw [← append_dir_natAdd (pSpec₁ := pSpec₁)]; exact hDir
+  rw [processRound_challenge' ((Prover.fst P).append (Prover.snd P)) (Fin.natAdd m k) hDir curA,
+    processRound_challenge' P (Fin.natAdd m k) hDir curP]
+  refine bind_heq_congr (by rw [merge_PrvState_natAdd_castSucc P k hk])
+    (by rw [merge_PrvState_natAdd_succ P k]) hcur ?_
+  rintro ⟨t, s⟩ ⟨t', s'⟩ hr
+  obtain ⟨ht, hs⟩ := prod_heq_split rfl (merge_PrvState_natAdd_castSucc P k hk) hr
+  dsimp only
+  refine bind_heq_congr rfl (by rw [merge_PrvState_natAdd_succ P k]) HEq.rfl ?_
+  rintro chal chal' hchal
+  refine bind_heq_congr (by rw [merge_PrvState_natAdd_succ P k])
+    (by rw [merge_PrvState_natAdd_succ P k])
+    (liftComp_heq_congr (spec := oSpec) (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (by rw [merge_PrvState_natAdd_succ P k])
+      (merge_receiveChallenge_natAdd P k hk hDir hDir₂ s s' hs)) ?_
+  rintro fA f' hf
+  refine pure_heq_pure (by rw [merge_PrvState_natAdd_succ P k]) ?_
+  refine prodMk_heq rfl (merge_PrvState_natAdd_succ P k) ?_ ?_
+  · rw [eq_of_heq hchal, eq_of_heq ht]
+  · refine heq_app rfl ?_ hf hchal
+    rw [merge_PrvState_natAdd_succ P k]
+
 end Prover
