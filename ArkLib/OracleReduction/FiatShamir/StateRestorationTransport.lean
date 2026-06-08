@@ -1781,7 +1781,7 @@ set_option maxHeartbeats 10000000 in
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of
 `fiatShamir_soundnessTransferResidual_canonical`. -/
-opaque fiatShamir_knowledgeSoundnessTransferResidual_canonical
+theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
     (srImpl : QueryImpl oSpec
       (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
@@ -1830,7 +1830,7 @@ opaque fiatShamir_knowledgeSoundnessTransferResidual_canonical
               pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run).run s)
       (fun o => o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut)) ?_ ?_
   · convert (le_of_eq hProbCollapse) using 1
-    rfl
+    simp [Reduction.FiatShamirProtocolSpec]
   · refine le_trans ?_ h
     simp [fiatShamirAdversaryExecution,
     Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
