@@ -83,7 +83,30 @@ theorem append_perfectCompleteness_message
   simp only [probEvent_eq_one_iff] at h₁ h₂ ⊢
   obtain ⟨hf₁, hs₁⟩ := h₁ stmtIn witIn hIn
   refine ⟨?_, ?_⟩
-  · sorry
+  · rw [OptionT.probFailure_mk_bind_eq_zero_iff]
+    refine ⟨by rw [probFailure_eq_zero_iff]; exact hInit, ?_⟩
+    intro s _hs
+    rw [probFailure_simulateQ_iff_stateful_run'_mk (impl := impl.addLift challengeQueryImpl)
+      (hImplSupp := by
+        intro β q s'
+        cases q with | mk t f =>
+        cases t with
+        | inl i => exact hImplSupp (OracleQuery.mk i f) s'
+        | inr i =>
+          simp only [QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+            QueryImpl.addLift_def, QueryImpl.add_apply_inr]
+          have hq := support_challengeQueryImpl_run_eq (q := OracleQuery.mk i f) s'
+          rw [support_liftM]
+          simpa only [ChallengeIdx, Challenge, add_apply_inr, QueryImpl.liftTarget_apply,
+            StateT.run_map, StateT.run_monadLift, monadLift_self, bind_pure_comp, Functor.map_map,
+            support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
+            support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+            liftM_map] using hq)]
+    -- Raw composite never-fails: provers are total; the appended verifier `V₁.append V₂` never
+    -- returns `none` on the honest transcript (from `hf₁` for V₁ and `h₂`'s no-failure for V₂,
+    -- valid since the support half pins `V₁`'s output statement into `rel₂`). Mechanical
+    -- re-decomposition mirroring the support half via `probFailure_mk_do_bindT_eq_zero_iff`.
+    sorry
   · intro x hx
     rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
       (impl := impl.addLift challengeQueryImpl) (hImplSupp := by
