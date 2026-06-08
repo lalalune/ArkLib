@@ -48,4 +48,26 @@ theorem ballInterCount_le_shell (r : ℕ) (v : ι → F) :
     _ = hammingDist x 0 + hammingDist x v := by rw [hammingDist_comm]
     _ ≤ hammingDist x 0 + r := by omega
 
+/-- **Explicit distance dependence.** The ball-intersection count plus the *inner-exclusion* count
+`#{x ∈ B(0,r) : dist(x,0) + r < wt(v)}` is at most the full ball volume `V = #B(0,r)`. The
+inner-exclusion count is monotone increasing in `wt(v)` (more of the ball is excluded as the centers
+separate), so this exhibits `ballInterCount(r,v) ≤ V − (increasing-in-wt(v))` — the strictly
+decreasing distance dependence the tight second-moment estimate needs, replacing the loose
+`ballInterCount ≤ V`. -/
+theorem ballInterCount_add_inner_le_ball (r : ℕ) (v : ι → F) :
+    ballInterCount r v
+      + ((Finset.univ.filter (fun x : ι → F => hammingDist x 0 ≤ r)).filter
+          (fun x : ι → F => ¬ hammingDist (0 : ι → F) v ≤ hammingDist x 0 + r)).card
+      ≤ (Finset.univ.filter (fun x : ι → F => hammingDist x 0 ≤ r)).card := by
+  have hshell := ballInterCount_le_shell r v
+  have hpart := Finset.filter_card_add_filter_neg_card_eq_card
+    (s := Finset.univ.filter (fun x : ι → F => hammingDist x 0 ≤ r))
+    (p := fun x : ι → F => hammingDist (0 : ι → F) v ≤ hammingDist x 0 + r)
+  have hshell' : ballInterCount r v
+      ≤ ((Finset.univ.filter (fun x : ι → F => hammingDist x 0 ≤ r)).filter
+          (fun x : ι → F => hammingDist (0 : ι → F) v ≤ hammingDist x 0 + r)).card := by
+    refine hshell.trans (le_of_eq ?_)
+    rw [Finset.filter_filter]
+  omega
+
 end ArkLib.CS25
