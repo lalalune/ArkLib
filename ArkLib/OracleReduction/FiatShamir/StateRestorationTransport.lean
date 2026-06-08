@@ -3125,6 +3125,9 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
   refine le_trans ?_ h
   simp only [fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel_simp]
+  rw [fiatShamirKnowledgeExec_loggedExtractor_eq_direct
+    (impl := fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
+    (P := prover) (V := V) (srExtractor := srExtractor) (stmtIn := stmtIn) (witIn := witIn)]
   trace_state
   sorry
 
