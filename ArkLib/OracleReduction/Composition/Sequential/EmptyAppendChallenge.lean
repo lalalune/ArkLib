@@ -131,4 +131,60 @@ theorem support_simulateQ_challengeQueryImpl_append_left
   generalize_proofs h
   exact eqRec_surjective h
 
+/-- Evaluating a `ProbComp` lifted into `StateT σ ProbComp` with `run' u` recovers it on the nose
+(the lift adds the state `u`, which `run'` then discards), so its support is unchanged. -/
+theorem support_run'_map_liftM {σ : Type} (u : σ) {α : Type} (p : ProbComp α) :
+    support ((fun x => x.1) <$> (liftM p : StateT σ ProbComp α).run u) = support p := by
+  have h : (liftM p : StateT σ ProbComp α).run u = (fun a => (a, u)) <$> p := rfl
+  rw [h]; simp [Set.image_image]
+
+/-- **Per-query challenge-spec agreement for the honest-execution handler (feeder for
+`support_run'_simulateQ_liftM_eq_of_query`).** For a `Subsingleton` state, simulating the appended
+honest handler `impl.addLift challengeQueryImpl` on a query lifted from the component challenge spec
+has the same `run' u`-support as the component handler. `oSpec` queries agree exactly (the widening
+fixes the left summand); challenge queries route into the appended challenge oracle, which has full
+support by `support_simulateQ_challengeQueryImpl_append_left`. This discharges the `h` hypothesis of
+`OracleComp.support_run'_simulateQ_liftM_eq_of_query`, so the appended honest experiment's
+prover/verifier marginals transport back to the component-protocol experiments. -/
+theorem support_run'_simulateQ_addLift_challenge_query_eq
+    {ιₒ : Type} {oSpec : OracleSpec ιₒ} {σ : Type} [Subsingleton σ] (u : σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (t : (oSpec + [pSpec₁.Challenge]ₒ).Domain) :
+    support ((simulateQ ((impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp)))
+      (liftM (liftM ((oSpec + [pSpec₁.Challenge]ₒ).query t)
+        : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) _)
+        : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)).run' u)
+      = support (((impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec₁.Challenge]ₒ) (StateT σ ProbComp)) t).run' u) := by
+  rcases t with t | t
+  · -- `oSpec` query: the widening fixes the left summand, so the lift is the same query in the
+    -- appended spec, and both honest handlers restrict to `impl` there.
+    rw [show (liftM (liftM ((oSpec + [pSpec₁.Challenge]ₒ).query (Sum.inl t))
+          : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) _)
+          : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
+        = liftM ((oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).query (Sum.inl t)) from rfl]
+    simp [simulateQ_spec_query, QueryImpl.addLift_def, QueryImpl.add_apply_inl,
+      QueryImpl.liftTarget_self]
+  · -- challenge query: both sides have full support.
+    rw [show support (((impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec₁.Challenge]ₒ) (StateT σ ProbComp)) (Sum.inr t)).run' u) = Set.univ from by
+      simp only [QueryImpl.addLift_def, QueryImpl.add_apply_inr, QueryImpl.liftTarget, StateT.run'_eq]
+      refine (support_run'_map_liftM u (challengeQueryImpl t)).trans ?_
+      rw [challengeQueryImpl]
+      exact support_uniformSample (pSpec₁.Challenge t.1)]
+    -- LHS: the widened `inr` query is the challenge query lifted into the appended challenge oracle;
+    -- route through `simulateQ_add_liftComp_right` to reuse the challenge support agreement.
+    simp only [StateT.run'_eq]
+    rw [show (liftM (liftM ((oSpec + [pSpec₁.Challenge]ₒ).query (Sum.inr t))
+          : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) _)
+          : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
+        = OracleComp.liftComp (liftM (([pSpec₁.Challenge]ₒ).query t)
+            : OracleComp ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
+            (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) from rfl]
+    rw [QueryImpl.addLift_def]
+    erw [QueryImpl.simulateQ_add_liftComp_right]
+    rw [simulateQ_liftTarget, support_run'_map_liftM u]
+    exact support_simulateQ_challengeQueryImpl_append_left t
+
 end ProtocolSpec
