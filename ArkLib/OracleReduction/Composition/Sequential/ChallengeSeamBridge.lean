@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.ToVCVio.Simulation
 
 /-!
 # Challenge-oracle seam bridge — verified building blocks
@@ -272,6 +273,49 @@ theorem support_challengeSeam_bridge_right (oa : OracleComp (oSpec + [pSpec₂.C
       evalDist_challengeSeam_bridge_right oa s]
   ext x
   exact mem_support_iff_of_evalDist_eq h2 x
+
+/-- **Support-faithfulness of the appended challenge implementation.** If the base oSpec
+implementation `impl` is support-faithful (`hImplSupp`), then so is `impl.addLift challengeQueryImpl`
+over the combined `oSpec + [pSpec.Challenge]ₒ`: each query's stateful-run support (first component)
+equals the lifted query's support. The oSpec (`Sum.inl`) queries reduce to `hImplSupp`; the challenge
+(`Sum.inr`) queries are uniform with full support (`support_challengeQueryImpl_run_eq`), bridged by
+`liftM_map_comm`.
+
+This is the gate for the perfect-completeness *support* route: with it,
+`ArkLib.ToVCVio.Simulation`'s `support_simulateQ_run'_eq` /
+`OptionT.support_run_simulateQ_run'_eq` collapse the whole `simulateQ pImpl … .run' s` layer of the
+appended completeness experiment to OracleComp-level `support (run)`, where the run factoring
+(`Prover.append_run_msg` + `Verifier.append_run`) and `h₁`/`h₂` apply. (For `pSpec := pSpec₁ ++ₚ
+pSpec₂` it gives faithfulness of the appended-protocol challenge implementation.) -/
+theorem addLift_challenge_support_faithful {N : ℕ} {pSpec : ProtocolSpec N}
+    [∀ i, SampleableType (pSpec.Challenge i)]
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β)) :
+    ∀ {β} (q : OracleQuery (oSpec + [pSpec.Challenge]ₒ) β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery
+          (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp)) q).run s)
+        = support (liftM q : OracleComp (oSpec + [pSpec.Challenge]ₒ) β) := by
+  intro β q s
+  obtain ⟨t, f⟩ := q
+  cases t with
+  | inl t =>
+      have hh := hImplSupp (⟨t, f⟩ : OracleQuery oSpec β) s
+      simp only [QueryImpl.mapQuery, OracleQuery.input,
+        QueryImpl.addLift_def, QueryImpl.add_apply_inl, QueryImpl.liftTarget_apply,
+        liftM, monadLift, MonadLift.monadLift, mem_support_liftM_iff] at hh ⊢
+      refine hh.trans ?_
+      ext u; constructor <;> rintro ⟨x, hx⟩ <;> exact ⟨x, hx⟩
+  | inr t =>
+      have hc := support_challengeQueryImpl_run_eq (pSpec := pSpec)
+        (⟨t, f⟩ : OracleQuery [pSpec.Challenge]ₒ β) s
+      simp only [QueryImpl.mapQuery, OracleQuery.input,
+        QueryImpl.addLift_def, QueryImpl.add_apply_inr, QueryImpl.liftTarget_apply] at hc ⊢
+      rw [← liftM_map_comm] at hc
+      refine hc.trans ?_
+      ext u; simp only [mem_support_liftM_iff]
+      constructor <;> rintro ⟨x, hx⟩ <;> exact ⟨x, hx⟩
 
 end Prover
 

@@ -212,4 +212,33 @@ theorem exists_powerSeries_root_xdep :
     ∃ Γ : R⟦X⟧, constantCoeff Γ = c ∧ Polynomial.eval Γ P = 0 :=
   ⟨γ P c, constantCoeff_γ P c, eval_γ_eq_zero P c hc0 hu⟩
 
+/-! ## `eval₂` form (coefficient-wise; avoids materializing the mapped polynomial)
+
+When the target ring `R⟦X⟧` carries an expensive `R` (e.g. a function field built as a heavy
+quotient), materializing `P.map f : R⟦X⟧[Y]` in a *statement* makes elaboration blow up.  This
+`eval₂` reformulation keeps the polynomial `P` over the light base ring `A` and the coefficient
+map `f : A →+* R⟦X⟧` separate, so the heavy mapped polynomial only ever appears inside the proof
+(once), never in the signature. -/
+
+variable {A : Type*} [CommRing A]
+
+/-- **Hensel-root existence, `eval₂` form.**  Given a coefficient map `f : A →+* R⟦X⟧` and
+`P : A[Y]`, if `c : R` is a simple root of the order-0 reduction `eval₂ (constantCoeff ∘ f) c`
+(`hroot`, with `hunit` its simplicity), then there is `Γ : R⟦X⟧` with `constantCoeff Γ = c` and
+`eval₂ f Γ P = 0`. -/
+theorem exists_powerSeries_root_eval₂ (f : A →+* R⟦X⟧) {P : Polynomial A} {c : R}
+    (hroot : Polynomial.eval₂ ((constantCoeff (R := R)).comp f) c P = 0)
+    (hunit : IsUnit (Polynomial.eval₂ ((constantCoeff (R := R)).comp f) c
+      (Polynomial.derivative P))) :
+    ∃ Γ : R⟦X⟧, constantCoeff Γ = c ∧ Polynomial.eval₂ f Γ P = 0 := by
+  have hmap : (P.map f).map (constantCoeff (R := R)) = P.map ((constantCoeff (R := R)).comp f) :=
+    Polynomial.map_map f _
+  have hroot' : ((P.map f).map (constantCoeff (R := R))).eval c = 0 := by
+    rw [hmap, ← Polynomial.eval₂_eq_eval_map]; exact hroot
+  have hunit' : IsUnit ((Polynomial.derivative ((P.map f).map (constantCoeff (R := R)))).eval c) := by
+    rw [hmap, ← Polynomial.derivative_map, ← Polynomial.eval₂_eq_eval_map]; exact hunit
+  obtain ⟨Γ, hc, hev⟩ := exists_powerSeries_root_xdep (P := P.map f) (c := c) hroot' hunit'
+  refine ⟨Γ, hc, ?_⟩
+  rw [Polynomial.eval₂_eq_eval_map]; exact hev
+
 end ProximityPrize.HenselExistenceXDep

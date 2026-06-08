@@ -6,6 +6,7 @@ Authors: Quang Dao
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.OracleReduction.Security.OracleZeroKnowledge
 import ArkLib.OracleReduction.Security.ZeroKnowledge
+import ArkLib.OracleReduction.Composition.Sequential.Append
 import Mathlib.Data.FinEnum
 
 /-!
@@ -368,6 +369,26 @@ def oracleReduction : OracleReduction oSpec
     (oraclePSpec Witness) where
   prover := oracleProver oSpec Statement OStatement Witness
   verifier := oracleVerifier oSpec Statement OStatement Witness
+instance instOracleVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (oracleVerifier oSpec Statement OStatement Witness) where
+  hCohInl i k h := by
+    rcases i with i | i
+    · simp only [oracleVerifier, Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inl,
+        Embedding.refl_apply] at h
+      obtain rfl := Sum.inl.inj h
+      rfl
+    · simp only [oracleVerifier, Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inr] at h
+      cases h
+  hCohInr i k h := by
+    rcases i with i | i
+    · simp only [oracleVerifier, Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inl,
+        Embedding.refl_apply] at h
+      cases h
+    · simp only [oracleVerifier, Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inr] at h
+      obtain rfl := Sum.inr.inj h
+      fin_cases i
+      rfl
+
 
 variable {Statement} {OStatement} {Witness}
 

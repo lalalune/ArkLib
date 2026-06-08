@@ -5,6 +5,7 @@ Authors: Quang Dao
 -/
 import ArkLib.OracleReduction.LiftContext.OracleReduction
 import ArkLib.OracleReduction.Security.OracleZeroKnowledge
+import ArkLib.OracleReduction.Composition.Sequential.Append
 
 /-!
 # Simple Oracle Reduction: Random Query
@@ -107,6 +108,16 @@ def oracleReduction :
     (Query OStatement) (fun _ : Fin 2 => OStatement) Unit (pSpec OStatement) where
   prover := oracleProver oSpec OStatement
   verifier := oracleVerifier oSpec OStatement
+
+instance instOracleVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (oracleVerifier oSpec OStatement) where
+  hCohInl i k h := by
+    simp only [oracleVerifier, Function.Embedding.inl_apply] at h
+    obtain rfl := Sum.inl.inj h
+    rfl
+  hCohInr i k h := by
+    simp only [oracleVerifier, Function.Embedding.inl_apply] at h
+    cases h
 
 instance : VerifierOnly (pSpec OStatement) where
   verifier_first' := by simp
