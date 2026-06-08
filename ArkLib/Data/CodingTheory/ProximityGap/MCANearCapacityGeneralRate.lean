@@ -254,8 +254,31 @@ theorem epsMCA_ge_of_sunflower_family [NeZero n] (domain : Fin n ↪ F)
   have hbound := epsMCA_ge_of_window_family domain k hk 𝒮 hcard hinj
   rwa [h𝒮card] at hbound
 
+omit [DecidableEq F] in
+/-- **Complement-tail sunflower endpoint.** The canonical tail `Finset.univ \ B` packages the
+headline finite sunflower instance directly: for any base `B` of size `k`, the disjoint complement
+tail has `n-k` coordinates, hence the window family `insert i B` gives
+`ε_mca(C, 1-(k+1)/n) ≥ (n-k)/|F|`. -/
+theorem epsMCA_ge_of_sunflower_compl [NeZero n] (domain : Fin n ↪ F)
+    (k : ℕ) (hk : 1 ≤ k) (B : Finset (Fin n)) (hB : B.card = k) :
+    (((n - k : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+      ≤ epsMCA (F := F) (A := F)
+          (ReedSolomon.code (domain := domain) k : Set (Fin n → F))
+          (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
+  classical
+  set T : Finset (Fin n) := (Finset.univ : Finset (Fin n)) \ B with hT
+  have hdisj : Disjoint B T := by
+    rw [hT, Finset.disjoint_left]
+    intro x hxB hxT
+    exact (Finset.mem_sdiff.mp hxT).2 hxB
+  have hbound := epsMCA_ge_of_sunflower_family domain k hk B T hB hdisj
+  have hTcard : T.card = n - k := by
+    rw [hT, Finset.card_sdiff, Finset.card_univ, Fintype.card_fin, Finset.inter_univ, hB]
+  rwa [hTcard] at hbound
+
 #print axioms mcaEvent_of_window
 #print axioms epsMCA_ge_of_window_family
 #print axioms epsMCA_ge_of_sunflower_family
+#print axioms epsMCA_ge_of_sunflower_compl
 
 end ProximityGap.MCANearCapacityGK
