@@ -3032,7 +3032,8 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
             (impl + QueryImpl.liftTarget (StateT σ ProbComp)
               (challengeQueryImpl
                 (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-            z.1.getM.run
+            ((z.1.getM :
+              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut).run)
         stmtOut?.elim (pure none) fun stmtOut => do
           let witIn? ←
             simulateQ
