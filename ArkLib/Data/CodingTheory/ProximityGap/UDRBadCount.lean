@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.Data.Finset.Card
 import Mathlib.Tactic.Abel
@@ -48,9 +49,11 @@ All results are hole-free and axiom-clean (`[propext, Classical.choice, Quot.sou
 namespace ProximityGap.UDR
 
 open Finset
+open Code
+open scoped NNReal ENNReal
 
-variable {ι : Type*} [Fintype ι] [Nonempty ι]
-variable {F : Type*} [Field F] [DecidableEq F]
+variable {ι : Type} [Fintype ι] [Nonempty ι]
+variable {F : Type} [Field F] [DecidableEq F]
 
 /-- Pair-joint agreement on a coordinate set (local copy of `ProximityGap.pairJointAgreesOn`). -/
 def pairJoint (C : Submodule F (ι → F)) (S : Finset ι) (u₀ u₁ : ι → F) : Prop :=
@@ -182,8 +185,85 @@ theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t
     have h1 : G.card ≤ 1 := Finset.card_le_one.mpr (fun a ha b hb => hG a ha b hb)
     omega
 
+open Classical in
+/-- **MCA-event wiring for the UDR bad-scalar core.** If every scalar in a finite set
+`G` fires the actual `mcaEvent`, and every MCA witness set is large enough to have size
+at least `t`, then the abstract `badCount_udr_le` hypotheses are satisfied by choosing
+the witness set and codeword from each event. -/
+theorem badCount_udr_le_of_mcaEvent
+    (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (δ : ℝ≥0) (d t : ℕ)
+    (htn : t < Fintype.card ι)
+    (hmd : ∀ a ∈ C, ∀ b ∈ C, (univ.filter (fun i => a i ≠ b i)).card < d → a = b)
+    (hreg : 3 * (Fintype.card ι - t) < d)
+    (hδt : ∀ {S : Finset ι},
+      (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι → t ≤ S.card)
+    (G : Finset F)
+    (hG : ∀ γ ∈ G, mcaEvent (F := F) (A := F) (C : Set (ι → F)) δ u₀ u₁ γ) :
+    G.card ≤ 2 * (Fintype.card ι - t) := by
+  let S : F → Finset ι := fun γ =>
+    if hγ : γ ∈ G then (hG γ hγ).choose else univ
+  let w : F → ι → F := fun γ =>
+    if hγ : γ ∈ G then (hG γ hγ).choose_spec.2.1.choose else 0
+  refine badCount_udr_le C u₀ u₁ d t htn hmd hreg G S w ?_ ?_ ?_ ?_
+  · intro γ hγ
+    dsimp [S]
+    simp only [hγ, ↓reduceDIte]
+    exact hδt (hG γ hγ).choose_spec.1
+  · intro γ hγ
+    dsimp [w]
+    simp only [hγ, ↓reduceDIte]
+    exact (hG γ hγ).choose_spec.2.1.choose_spec.1
+  · intro γ hγ i hi
+    dsimp [S, w] at hi ⊢
+    simp only [hγ, ↓reduceDIte] at hi ⊢
+    exact (hG γ hγ).choose_spec.2.1.choose_spec.2 i hi
+  · intro γ hγ hp
+    dsimp [S] at hp
+    simp only [hγ, ↓reduceDIte] at hp
+    have hp' : pairJointAgreesOn (C : Set (ι → F)) (hG γ hγ).choose u₀ u₁ := by
+      simpa [pairJoint, pairJointAgreesOn] using hp
+    exact (hG γ hγ).choose_spec.2.2 hp'
+
+open Classical in
+/-- **UDR bad-scalar count for the actual MCA event.** Under the same hypotheses, the
+number of bad scalars in the MCA definition is at most `2(n-t)`. -/
+theorem mcaEvent_badCount_udr_le [Fintype F]
+    (C : Submodule F (ι → F)) (u : WordStack F (Fin 2) ι) (δ : ℝ≥0) (d t : ℕ)
+    (htn : t < Fintype.card ι)
+    (hmd : ∀ a ∈ C, ∀ b ∈ C, (univ.filter (fun i => a i ≠ b i)).card < d → a = b)
+    (hreg : 3 * (Fintype.card ι - t) < d)
+    (hδt : ∀ {S : Finset ι},
+      (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι → t ≤ S.card) :
+    (univ.filter (fun γ : F =>
+      mcaEvent (F := F) (A := F) (C : Set (ι → F)) δ (u 0) (u 1) γ)).card
+      ≤ 2 * (Fintype.card ι - t) := by
+  refine badCount_udr_le_of_mcaEvent C (u 0) (u 1) δ d t htn hmd hreg hδt _ ?_
+  intro γ hγ
+  simpa only [mem_filter, mem_univ, true_and] using hγ
+
+open Classical in
+/-- **UDR MCA upper bound, modulo the natural/real witness-size bridge.** If the
+minimum-distance and radius hypotheses hold uniformly, then
+`ε_mca(C, δ) ≤ 2(n-t)/|F|`. -/
+theorem epsMCA_udr_le [Fintype F]
+    (C : Submodule F (ι → F)) (δ : ℝ≥0) (d t : ℕ)
+    (htn : t < Fintype.card ι)
+    (hmd : ∀ a ∈ C, ∀ b ∈ C, (univ.filter (fun i => a i ≠ b i)).card < d → a = b)
+    (hreg : 3 * (Fintype.card ι - t) < d)
+    (hδt : ∀ {S : Finset ι},
+      (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι → t ≤ S.card) :
+    epsMCA (F := F) (A := F) (C : Set (ι → F)) δ
+      ≤ ((2 * (Fintype.card ι - t) : ℕ) : ℝ≥0∞) /
+          (Fintype.card F : ℝ≥0∞) := by
+  refine epsMCA_le_of_badCount_le (F := F) (A := F) (C : Set (ι → F)) δ
+    (2 * (Fintype.card ι - t)) ?_
+  intro u
+  exact mcaEvent_badCount_udr_le C u δ d t htn hmd hreg hδt
 
 #print axioms badGamma_le
 #print axioms badCount_udr_le
+#print axioms badCount_udr_le_of_mcaEvent
+#print axioms mcaEvent_badCount_udr_le
+#print axioms epsMCA_udr_le
 
 end ProximityGap.UDR
