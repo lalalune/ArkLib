@@ -231,6 +231,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualAffineLineRefut
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
+import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterShell
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterVanish
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersection
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionBound
