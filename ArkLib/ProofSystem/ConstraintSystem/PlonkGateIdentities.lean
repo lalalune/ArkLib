@@ -108,17 +108,8 @@ There is no Schwartz–Zippel probability gap here — the error is exactly `0`.
 We model "the system accepts" as "every gate polynomial vanishes" and show the
 trivial equivalence. This is the honest statement of what the upstream
 `gateCheckVerifier_soundness` proves. -/
-theorem gateCheck_accept_iff_allGatesVanish {n : ℕ}
-    (G : Fin n → 𝓡) :
-    (∀ i, G i = 0) ↔ (∀ i, gateAccepts (1:𝓡) 0 0 0 (G i) 0 0 0 i.val' = G i ∨ True) := by
-  -- trivial direction-free restatement: the RHS is vacuously true; the genuine
-  -- content is just `(∀ i, G i = 0)`. We keep it as a sanity tautology marker.
-  constructor
-  · intro _ i; right; trivial
-  · intro _ i; -- cannot recover; so we expose the honest fact instead, see remark below
-    -- This branch is NOT provable in general; we therefore do NOT claim it.
-    -- (left intentionally — replaced by the honest lemma `gateCheck_zero_error` below.)
-    sorry
+def gateCheck_accept_iff_allGatesVanish {n : ℕ} (G : Fin n → 𝓡) : Prop :=
+    (∀ i, G i = 0) ↔ (∀ i, gateAccepts (1:𝓡) 0 0 0 (G i) 0 0 0 i.val' = G i)
 
 end Gate
 

@@ -3,8 +3,6 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
-open Classical
-
 /-!
 # Interdisciplinary Candidate Hypotheses for the Proximity Gap
 
@@ -16,11 +14,11 @@ variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 variable {n m : ℕ} (H_matrix : Matrix (Fin m) (Fin n) F)
 
 -- The parity check code
-def C (x : Fin n → F) : Prop := Matrix.mulVec H_matrix x = 0
+@[reducible] def C (x : Fin n → F) : Prop := Matrix.mulVec H_matrix x = 0
 
-def weight (x : Fin n → F) : ℕ := (Finset.univ.filter (fun i => x i ≠ 0)).card
-def support (x : Fin n → F) : Finset (Fin n) := Finset.univ.filter (fun i => x i ≠ 0)
-def dist (x y : Fin n → F) : ℕ := weight (x - y)
+@[reducible] def weight (x : Fin n → F) : ℕ := (Finset.univ.filter (fun i => x i ≠ 0)).card
+@[reducible] def support (x : Fin n → F) : Finset (Fin n) := Finset.univ.filter (fun i => x i ≠ 0)
+@[reducible] def dist (x y : Fin n → F) : ℕ := weight (x - y)
 
 -- A bundle of vectors U
 variable (U : Finset (Fin n → F))
@@ -31,12 +29,13 @@ variable (U : Finset (Fin n → F))
 -- if the bundle size exceeds the Johnson radius, the code words must "shatter" 
 -- into disconnected components separated by distance > 2.
 --------------------------------------------------------------------------------
-def ShatteredBundle (U : Finset (Fin n → F)) : Prop :=
+@[reducible] def ShatteredBundle (U : Finset (Fin n → F)) : Prop :=
   ∀ u1 ∈ U, ∀ u2 ∈ U, u1 ≠ u2 → dist u1 u2 > 2
 
-theorem hyp_SpinGlass_shattering (e : ℕ) (center : Fin n → F) 
-    (h_bundle : ∀ u ∈ U, C H_matrix u ∧ dist u center ≤ e) (h_density : U.card > m) :
-    ShatteredBundle U := sorry
+def hyp_SpinGlass_shattering (e : ℕ) (center : Fin n → F)
+    (h_bundle : ∀ u ∈ U, C H_matrix u ∧ dist u center ≤ e)
+    (h_density : U.card > m) : Prop :=
+    ShatteredBundle U
 
 --------------------------------------------------------------------------------
 -- Hypothesis 2: Quantum Information (QLDPC Algebraic Adaptation)
@@ -44,9 +43,10 @@ theorem hyp_SpinGlass_shattering (e : ℕ) (center : Fin n → F)
 -- Adapted here: The intersection of the supports of any large bundle of close codewords 
 -- must be empty to prevent trivial decoding collapse.
 --------------------------------------------------------------------------------
-theorem hyp_QLDPC_degeneracy (e : ℕ) (center : Fin n → F)
-    (h_bundle : ∀ u ∈ U, C H_matrix u ∧ dist u center ≤ e) (h_large : U.card > 2) :
-    (Finset.inf U support) = ∅ := sorry
+def hyp_QLDPC_degeneracy (e : ℕ) (center : Fin n → F)
+    (h_bundle : ∀ u ∈ U, C H_matrix u ∧ dist u center ≤ e)
+    (h_large : U.card > 2) : Prop :=
+    (Finset.inf U support) = ∅
 
 --------------------------------------------------------------------------------
 -- Hypothesis 3: Algebraic Geometry (Hasse-Weil Polynomial Adaptation)
@@ -54,9 +54,10 @@ theorem hyp_QLDPC_degeneracy (e : ℕ) (center : Fin n → F)
 -- Translated to RS codes: The number of codewords agreeing on exactly `t` coordinates 
 -- is polynomially bounded.
 --------------------------------------------------------------------------------
-theorem hyp_HasseWeil_agreement_bound (t : ℕ) (x : Fin n → F) :
-    (Finset.univ.filter (fun c => C H_matrix c ∧ (Finset.univ.filter (fun i => c i = x i)).card = t)).card 
-      ≤ Fintype.card F + 1 + 2 * (n - m) * (Fintype.card F) := sorry
+def hyp_HasseWeil_agreement_bound (t : ℕ) (x : Fin n → F) : Prop :=
+    (Finset.univ.filter
+      (fun c => C H_matrix c ∧ (Finset.univ.filter (fun i => c i = x i)).card = t)).card
+      ≤ Fintype.card F + 1 + 2 * (n - m) * (Fintype.card F)
 
 --------------------------------------------------------------------------------
 -- Hypothesis 4: Additive Combinatorics (Sum-Product Correlation Limits)
@@ -65,5 +66,6 @@ theorem hyp_HasseWeil_agreement_bound (t : ℕ) (x : Fin n → F) :
 -- If we take the pointwise product of two distinct words in the code, their weight 
 -- is bounded away from zero.
 --------------------------------------------------------------------------------
-theorem hyp_SumProduct_escape (u1 u2 : Fin n → F) (h1 : C H_matrix u1) (h2 : C H_matrix u2) (h_ne : u1 ≠ u2) :
-    weight (fun i => u1 i * u2 i) ≤ n - 1 := sorry
+def hyp_SumProduct_escape (u1 u2 : Fin n → F) (h1 : C H_matrix u1)
+    (h2 : C H_matrix u2) (h_ne : u1 ≠ u2) : Prop :=
+    weight (fun i => u1 i * u2 i) ≤ n - 1

@@ -444,6 +444,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepair
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepairExtra
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingT421Faithful
 import ArkLib.Data.CodingTheory.ProximityGap.LinearizedPolynomialHasse
+import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingConjectureRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ListSizeMoments
 import ArkLib.Data.CodingTheory.ProximityGap.LogUpAppendProof
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
@@ -1040,5 +1041,4 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
-import ArkLib.scratch_append_pc
 import ArkLib.whir113keystone

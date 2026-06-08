@@ -176,6 +176,24 @@ line-close error too, not just `mcaEvent`. Not a disproof; a robustness strength
   `η ≤ A/d` and `#bad ≤ B·d`, their bad count is `≤ (B·A)/η`; near-capacity linear
   orbit growth is absorbed by the prize's `η^{-c₃}` allowance.
 
+### O6 (attempted) — exploit missing domain-size factor in the GS RHS
+Idea: the formalized GS RHS
+`epsMCAgsPrizeBound q m ρ η = (1/q)·(2^m)^{c₁}/(ρ^{c₂}η^{c₃})` appears to carry no
+domain-size `n`. If `m` can be fixed while the domain size grows, then even ordinary
+`~ n/q` proximity-gap bad counts would beat the bound and disprove the formal statement.
+
+**Audit result:** `GrandChallenges.mcaConjectureBound` does carry `(n : ℝ)^{c₁}` with
+`n = |domain|`. The GS-exposed version replaces this by `(2^m)^{c₁}` and its comments say
+the prize parameters are `(2^m, 1/ρ, 1/η)`, so the intended reading is almost certainly
+`2^m = |domain|` (or at least comparable to it) for smooth domains. However,
+`epsMCAgsPrizeUniversalConjecture` / `UniversalGSListMassBound` currently quantify over
+all domains with no local side condition tying `m` to `Fintype.card ι`.
+
+**Disproof of the disproof (O6):** an `n`-growth counterexample would attack this formal
+linkage, not the prize mathematics. Until the statement is repaired or accompanied by a
+`Fintype.card ι = 2^m` / comparability hypothesis, do not claim a prize disproof from
+domain-size scaling alone. Keep this as a statement-fidelity constraint.
+
 ### O7 (attempted) — brute-force Frobenius witnesses in tiny tower fields
 Toy search over `GF(2^s)` for `s = 3,4,5,6` found actual full-degree bad scalars in
 Frobenius-stable RS instances: domain `{0} ∪ orbit(α)` (`n=s+1`), prize-rate degree
@@ -190,12 +208,8 @@ disproof. A real disproof needs fixed positive `η` (or super-polynomial growth 
 
 ## Open angles not yet tried (to avoid repetition)
 
-- O6 (sharp, potential real disproof OR misreading — handle carefully): the formalized RHS
-  `(1/q)·(2^m)^{c₁}/(ρ^{c₂}η^{c₃})` carries **no `n` (domain size)**, so it claims a bad-count
-  *constant in `n`*. But proximity-gap theory (BCIKS) typically allows the small-side bad count to
-  scale like `~ n` (or list-size·n)/q. Audit whether the formalized `epsMCAgs_prizeBound_conjecture`
-  is faithful to ABF26 (whose bound carries degree/`n` factors): if the formal RHS genuinely omits a
-  needed `n`, the formal statement could be false for trivial scaling reasons — but verify against
-  `Errors.lean`/`MCAGS.lean` and ABF26 before claiming; I am usually wrong on formalization-fidelity.
 - O8: strengthen O7 to **fixed-gap** Frobenius realization: produce high-degree bad scalars with
   some constant `η > 0` independent of extension degree, or prove this is impossible.
+- O9: repair/formalize the GS RHS domain-size linkage: add or consume a hypothesis
+  `Fintype.card ι = 2^m` (or a comparable smooth-domain size condition) before using
+  `epsMCAgsPrizeUniversalConjecture` as the prize-facing statement.

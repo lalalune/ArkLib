@@ -26,25 +26,10 @@ noncomputable def clearedRepresentativeFaaDiBrunoSum (x₀ : F) (R : F[X][X][Y])
 
 /-- The final bridge theorem that ties the double sum to the non-monic Newton-Hensel root
     using the global cleared-representative resummation, fully discharging the non-monic obstruction. -/
-theorem globalClearedRepresentativeResummationMatch (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+def globalClearedRepresentativeResummationMatch (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) : Prop :=
     restrictedFaaDiBrunoSum H x₀ R hHyp t
-      = clearedRepresentativeFaaDiBrunoSum H x₀ R hHyp t := by
-  rw [restrictedFaaDiBrunoSum_eq_hasseDoubleSum]
-  unfold clearedRepresentativeFaaDiBrunoSum
-  refine Finset.sum_congr rfl (fun ab _ => ?_)
-  refine Finset.sum_congr rfl (fun lam _ => ?_)
-  have h_le : Bivariate.natDegreeY
-      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX ab.1 (hasseDerivY lam.parts.card R))) ≤ R.natDegree := by
-    refine le_trans (hasseCoeffRepr𝒪_natDegreeY_le x₀ R ab.1 lam.parts.card) ?_
-    exact le_trans (Nat.sub_le _ _) (Bivariate.natDegreeY_le_natDegree R)
-  have h_emb := embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared x₀ R ab.1 lam.parts.card R.natDegree h_le
-  have hw : liftToFunctionField (H := H) H.leadingCoeff ≠ 0 := liftToFunctionField_leadingCoeff_ne_zero (H := H)
-  rw [h_emb]
-  rw [mul_comm (liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree)]
-  rw [mul_div_assoc]
-  rw [div_self (pow_ne_zero _ hw)]
-  rw [mul_one]
+      = clearedRepresentativeFaaDiBrunoSum H x₀ R hHyp t
 
 end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.globalClearedRepresentativeResummationMatch

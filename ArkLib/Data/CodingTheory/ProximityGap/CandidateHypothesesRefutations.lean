@@ -44,7 +44,11 @@ lemma dist_le_e : ∀ u ∈ U, dist u center ≤ 2 := by decide
 -- Here |U| = 3 > 2, but dist(w1, w2) = 2, not > 2.
 --------------------------------------------------------------------------------
 theorem refute_SpinGlass_shattering :
-    ¬ (ShatteredBundle U) := by decide
+    ¬ (ShatteredBundle U) := by
+  intro h
+  have h_shatter : dist w1 w2 > 2 := h w1 (by decide) w2 (by decide) (by decide)
+  revert h_shatter
+  decide
 
 --------------------------------------------------------------------------------
 -- Refuting Hypothesis 2: Quantum Information (QLDPC Degeneracy)
@@ -82,4 +86,8 @@ def c4 : Fin 3 → F := ![2, 2, 2]
 -- So over n=3, weight is 3, which is not <= 2.
 theorem refute_SumProduct_escape :
     ¬ (∀ (u1 u2 : Fin 3 → F), C H_MDS u1 → C H_MDS u2 → u1 ≠ u2 → 
-      weight (fun i => u1 i * u2 i) ≤ 2) := by decide
+      weight (fun i => u1 i * u2 i) ≤ 2) := by
+  intro h
+  have h_bound : weight (fun i => c3 i * c4 i) ≤ 2 := h c3 c4 (by decide) (by decide) (by decide)
+  revert h_bound
+  decide

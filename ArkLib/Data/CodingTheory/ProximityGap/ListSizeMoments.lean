@@ -87,4 +87,67 @@ theorem first_moment (C : Finset (ι → F)) (r : ℕ) :
     exact card_dist_le_eq_ballVol r c
   rw [Finset.sum_congr rfl (fun c _ => hinner c), Finset.sum_const, smul_eq_mul]
 
+/-- **Translation of the pair-ball count.** The number of words within distance `r` of *both* `c` and
+`c'` depends only on the difference `c' - c`: it equals the number of `g` within `r` of both `0` and
+`c' - c`. -/
+lemma pairBall_translate (c c' : ι → F) (r : ℕ) :
+    (Finset.univ.filter (fun f => hammingDist c f ≤ r ∧ hammingDist c' f ≤ r)).card
+      = (Finset.univ.filter
+          (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist (c' - c) g ≤ r)).card := by
+  refine Finset.card_nbij' (fun f => f - c) (fun g => g + c) ?_ ?_ ?_ ?_
+  · intro f hf
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hf ⊢
+    obtain ⟨h1, h2⟩ := hf
+    refine ⟨?_, ?_⟩
+    · have hh := hammingDist_translate c (f - c)
+      rw [sub_add_cancel] at hh
+      rw [← hh]; exact h1
+    · have hh := hammingDist_add_right (c' - c) (f - c) c
+      rw [sub_add_cancel, sub_add_cancel] at hh
+      rw [← hh]; exact h2
+  · intro g hg
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hg ⊢
+    obtain ⟨h1, h2⟩ := hg
+    refine ⟨?_, ?_⟩
+    · rw [hammingDist_translate c g]; exact h1
+    · have hh := hammingDist_add_right (c' - c) g c
+      rw [sub_add_cancel] at hh
+      rw [hh]; exact h2
+  · intro f _; exact sub_add_cancel f c
+  · intro g _; exact add_sub_cancel_right g c
+
+/-- **Second-moment expansion.** `Σ_f |Λ(C,r,f)|²` counts, over ordered pairs of codewords, the words
+within distance `r` of both. -/
+theorem second_moment_pairs (C : Finset (ι → F)) (r : ℕ) :
+    ∑ f : ι → F, (lam C r f).card ^ 2
+      = ∑ c ∈ C, ∑ c' ∈ C,
+          (Finset.univ.filter (fun f => hammingDist c f ≤ r ∧ hammingDist c' f ≤ r)).card := by
+  have hsq : ∀ f : ι → F,
+      (lam C r f).card ^ 2
+        = ∑ c ∈ C, ∑ c' ∈ C, (if hammingDist c f ≤ r ∧ hammingDist c' f ≤ r then (1 : ℕ) else 0) := by
+    intro f
+    rw [lam, Finset.card_filter, pow_two, Finset.sum_mul_sum]
+    refine Finset.sum_congr rfl (fun c _ => Finset.sum_congr rfl (fun c' _ => ?_))
+    by_cases h1 : hammingDist c f ≤ r <;> by_cases h2 : hammingDist c' f ≤ r <;> simp [h1, h2]
+  simp only [hsq]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl (fun c _ => ?_)
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl (fun c' _ => ?_)
+  rw [← Finset.card_filter]
+
+/-- **Second moment in difference-reduced form.** `Σ_f |Λ(C,r,f)|²` equals `Σ_{c,c'∈C}` of a count
+that depends only on the difference `c' - c`. For a linear code this collapses onto the weight
+enumerator: each difference `c' - c` is itself a codeword, and the count depends only on its weight,
+so `Σ_f |Λ|² = |C| · Σ_w A_w · N(w,r)` (`A_w` the weight enumerator, `N(w,r)` the pair-ball count of a
+weight-`w` vector). This is the exact second moment underlying direction A for pinning `δ*`. -/
+theorem second_moment_translate (C : Finset (ι → F)) (r : ℕ) :
+    ∑ f : ι → F, (lam C r f).card ^ 2
+      = ∑ c ∈ C, ∑ c' ∈ C,
+          (Finset.univ.filter
+            (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist (c' - c) g ≤ r)).card := by
+  rw [second_moment_pairs]
+  exact Finset.sum_congr rfl
+    (fun c _ => Finset.sum_congr rfl (fun c' _ => pairBall_translate c c' r))
+
 end ArkLib.CodingTheory.ListMoments

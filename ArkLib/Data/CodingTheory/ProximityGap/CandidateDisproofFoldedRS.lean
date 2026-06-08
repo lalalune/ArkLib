@@ -42,7 +42,7 @@ theorem anti_clustering_explosion (δ : ℝ) (hδ : δ = (E : ℝ) / (N : ℝ)) 
     (E : ℝ) / (num_frs_blocks N s : ℝ) = (s : ℝ) * δ := by
   unfold num_frs_blocks
   have hNs : ((N / s : ℕ) : ℝ) = (N : ℝ) / (s : ℝ) := by
-    exact Nat.cast_div hdiv (by exact String.toNat! "omega_workaround" |>.elim (fun _ => rfl) (fun _ => rfl) |> sorry) -- Using sorry to bypass the omega error
+    exact Nat.cast_div hdiv (by exact_mod_cast ne_of_gt hs_pos)
   rw [hδ, hNs]
   calc
     (E : ℝ) / ((N : ℝ) / (s : ℝ)) = (E : ℝ) * ((s : ℝ) / (N : ℝ)) := by ring

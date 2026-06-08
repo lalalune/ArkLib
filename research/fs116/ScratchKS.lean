@@ -31,13 +31,7 @@ private theorem stateT_option_bind_map_eq
     ((Option.map f <$> mx) >>= fun ob => match ob with
       | none => pure none
       | some b => k b) := by
-  funext s
-  simp only [StateT.run_bind, StateT.run_map, map_bind]
-  apply bind_congr
-  intro x
-  cases x with
-  | mk oa s' =>
-      cases oa <;> rfl
+  rfl
 
 private theorem scratch_probEvent_optionT_stateT_init
     {σ α : Type} (init : ProbComp σ) (comp : StateT σ ProbComp (Option α))
