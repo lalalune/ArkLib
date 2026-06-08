@@ -1124,8 +1124,7 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
     simp only [OracleInterface.answer, OracleInterface.instDefault, ReaderT.run, h_V_check,
       if_true]
     erw [optionT_bind_pure_some]
-    trace_state
-    sorry
+    rfl
   rw [probEvent_eq_one_iff]
   dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
     Sumcheck.Structured.roundOracleReduction,
