@@ -3690,6 +3690,28 @@ theorem append_continueFromTo_seam_start_message_processRound (hn : 0 < n)
     (liftComp_processRound_zero_message_appendRight
       (P₁ := P₁) (P₂ := P₂) hn hDir₂ T₁ ctxIn₂).symm
 
+/-- Seam transcript type equality: the appended transcript at the seam round `⟨m⟩.castSucc`
+(covering only `pSpec₁`'s rounds) is `pSpec₁`'s full transcript. -/
+theorem append_Transcript_seam_castSucc (hn : 0 < n) :
+    (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      = FullTranscript pSpec₁ := by
+  have := append_Transcript_castLE (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂) (Fin.last m)
+  rw [show ((Fin.last m).castLE (show m + 1 ≤ m + n + 1 by omega) : Fin (m + n + 1))
+        = (⟨m, by omega⟩ : Fin (m + n)).castSucc from by ext; simp] at this
+  exact this
+
+/-- **Free `hT`**: any appended seam transcript is the `appendRight` of its `pSpec₁`-projection and the
+empty `pSpec₂` prefix.  Discharges the `hT` hypothesis of `append_continueFromTo_right_msg` for free
+(no run-embedding induction), via `appendRight_empty`. -/
+theorem seam_transcript_appendRight (hn : 0 < n)
+    (rSeamT : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc) :
+    rSeamT = Transcript.appendRight (cast (append_Transcript_seam_castSucc hn) rSeamT)
+      (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))) := by
+  apply eq_of_heq
+  refine HEq.trans (cast_heq (append_Transcript_seam_castSucc hn) rSeamT).symm ?_
+  exact (Transcript.appendRight_empty (cast (append_Transcript_seam_castSucc hn) rSeamT)).symm
+end Prover
+
 /-- **Right-block run characterization (message seam).**  The appended prover's continuation over the
 entire right block — from the seam round `⟨m⟩` to the last round — is, heterogeneously, `P₁`'s output
 threaded into `P₂`'s full run-to-round, transported into the appended transcript via `appendRight`.
