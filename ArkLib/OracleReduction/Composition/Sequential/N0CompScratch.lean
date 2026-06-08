@@ -47,8 +47,8 @@ example
       · simp only [Option.elim_some] at hout
         -- split the appended verifier V₁;V₂; push simulateQ through the verifier's liftComp
         rw [Verifier.append_run] at hout
-        simp only [← OracleComp.liftComp_eq_liftM, QueryImpl.addLift,
-          simulateQ_add_liftComp_left, OptionT.run_bind, OptionT.run_pure, bind_assoc,
+        simp only [← OracleComp.liftComp_eq_liftM, QueryImpl.addLift_def,
+          QueryImpl.simulateQ_add_liftComp_left, OptionT.run_bind, OptionT.run_pure, bind_assoc,
           Option.elimM] at hout
         trace_state
         sorry
