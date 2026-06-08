@@ -1792,7 +1792,19 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     Verifier.fiatShamir_verify_eq,
     Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
     Reduction.run, Prover.run, Prover.runToRound, Prover.processRound,
-    fiatShamirKnowledgeExec_runCollapse, QueryImpl.addLift_def, hCollapse]
+    QueryImpl.addLift_def]
+  rw [hCollapse]
+  simp [fiatShamirAdversaryExecution,
+    Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
+    Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
+    fiatShamirCoupledQueryImpl,
+    ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl',
+    probEvent_map, map_bind, Functor.map_map, Function.comp,
+    StateT.run_bind, StateT.run_map,
+    Verifier.fiatShamir_verify_eq,
+    Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
+    Reduction.run, Prover.run, Prover.runToRound, Prover.processRound,
+    QueryImpl.addLift_def]
 
 #print axioms Reduction.fiatShamirKnowledgeExec_runCollapse
 #print axioms Reduction.fiatShamir_knowledgeSoundnessTransferResidual_canonical
