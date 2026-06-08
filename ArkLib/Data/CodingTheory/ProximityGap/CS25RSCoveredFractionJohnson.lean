@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSListDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSJohnsonRadius
+import ArkLib.Data.CodingTheory.ProximityGap.CS25RSJohnsonRadiusSqrt
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionListSize
 
 /-!
@@ -74,8 +75,33 @@ theorem rs_covered_count_johnson_radius (domain : ι ↪ F) (k : ℕ) [NeZero k]
   obtain ⟨ℓ, hL⟩ := rs_johnson_radius domain k r hq1 hn hP hradius
   exact ⟨ℓ, covered_count_mul_listSize_ge (rsCodeFinset domain k) r ℓ hL hpos⟩
 
+/-- **RS covered fraction from the explicit sqrt-form Johnson radius (#232).**  The textbook
+`√(T·B) < A` condition supplies the list-size witness used by the second-moment bound. -/
+theorem rs_covered_count_johnson_radius_sqrt
+    (domain : ι ↪ F) (k : ℕ) [NeZero k] (r : ℕ)
+    (hq1 : 1 < Fintype.card F) (hn : 0 < Fintype.card ι)
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤ ((Fintype.card ι - r : ℕ) : ℝ))
+    (hApos : 0 < ((Fintype.card ι - r : ℕ) : ℝ)
+      - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))
+    (hradius :
+      Real.sqrt
+          (((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+            * (((Fintype.card ι - (Fintype.card ι - (k - 1)) : ℕ) : ℝ)
+                - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))
+        < ((Fintype.card ι - r : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))
+    (hpos : 0 < (rsCodeFinset domain k).card
+        * (univ.filter (fun w : ι → F => hammingDist w 0 ≤ r)).card) :
+    ∃ ℓ : ℕ,
+      (rsCodeFinset domain k).card
+          * (univ.filter (fun w : ι → F => hammingDist w 0 ≤ r)).card
+        ≤ (univ.filter (fun w : ι → F => closeCount (rsCodeFinset domain k) r w ≠ 0)).card
+            * ℓ := by
+  obtain ⟨ℓ, hL⟩ := rs_johnson_radius_sqrt domain k r hq1 hn hP hApos hradius
+  exact ⟨ℓ, covered_count_mul_listSize_ge (rsCodeFinset domain k) r ℓ hL hpos⟩
+
 end ArkLib.CS25
 
 -- Axiom audit.
 #print axioms ArkLib.CS25.rs_covered_count_johnson
 #print axioms ArkLib.CS25.rs_covered_count_johnson_radius
+#print axioms ArkLib.CS25.rs_covered_count_johnson_radius_sqrt
