@@ -307,32 +307,28 @@ theorem lift_run_elim {ι : Type} {spec : OracleSpec ι} {α β : Type}
 
 #print axioms lift_run_elim
 
-/-- **Never-failing stage marginalizes in a discarded-`none` bind.** If `X` never fails
-(`Pr[⊥|X]=0`), then running it and discarding its result to return `none` is distributionally just
-`pure none` — its randomness washes out. This is the probabilistic heart of the seam elim-commute:
-when the verifier `V₁` rejects (the `none` branch), whether the *next* prover stage `snd` was already
+/-- **Never-failing stage marginalizes in a discarded-constant bind.** If `X` never fails
+(`Pr[⊥|X]=0`), then running it and discarding its result to return a fixed `c` is distributionally
+just `pure c` — its randomness washes out. This is the probabilistic heart of the seam elim-commute:
+when the verifier `V₁` rejects (the failure branch), whether the *next* prover stage `snd` was already
 run (natural order) or skipped (union-bound order) cannot change the outcome distribution, because
 `snd` never fails and so marginalizes away. -/
-theorem evalDist_bind_const_none {γ β : Type} (X : ProbComp γ) (hX : Pr[⊥ | X] = 0) :
-    evalDist (X >>= fun _ => (pure none : ProbComp (Option β))) = pure none := by
-  classical
-  have h1 : Pr[= (none : Option β) | X >>= fun _ => (pure none : ProbComp (Option β))] = 1 := by
+theorem evalDist_bind_const {γ δ : Type} (X : ProbComp γ) (c : δ) (hX : Pr[⊥ | X] = 0) :
+    evalDist (X >>= fun _ => (pure c : ProbComp δ)) = pure c := by
+  haveI : DecidableEq δ := Classical.decEq δ
+  have h1 : Pr[= c | X >>= fun _ => (pure c : ProbComp δ)] = 1 := by
     rw [probOutput_bind_eq_tsum]; simp only [probOutput_pure_self, mul_one]
     exact tsum_probOutput_eq_one' hX
-  have hsupp := (probOutput_eq_one_iff (mx := X >>= fun _ => (pure none : ProbComp (Option β)))
-    (x := none)).mp h1
-  rw [show (pure none : SPMF (Option β))
-        = evalDist (pure none : ProbComp (Option β)) from (evalDist_pure none).symm]
+  have hsupp := (probOutput_eq_one_iff (mx := X >>= fun _ => (pure c : ProbComp δ)) (x := c)).mp h1
+  rw [show (pure c : SPMF δ) = evalDist (pure c : ProbComp δ) from (evalDist_pure c).symm]
   apply SPMF.ext; intro o
   rw [← probOutput_def, ← probOutput_def]
-  cases o with
-  | none => rw [h1, probOutput_pure_self]
-  | some b =>
-    have hmem : (some b : Option β) ∉ support (X >>= fun _ => (pure none : ProbComp (Option β))) := by
-      rw [hsupp.2]; simp
-    rw [probOutput_eq_zero_of_not_mem_support hmem, probOutput_pure]; simp
+  rcases eq_or_ne o c with rfl | ho
+  · rw [h1, probOutput_pure_self]
+  · have hmem : o ∉ support (X >>= fun _ => (pure c : ProbComp δ)) := by rw [hsupp.2]; simpa using ho
+    rw [probOutput_eq_zero_of_not_mem_support hmem, probOutput_pure]; simp [ho]
 
-#print axioms evalDist_bind_const_none
+#print axioms evalDist_bind_const
 
 /-- **`simulateQ` preserves the `σ`-state on its support, when every query implementation does.**
 Holds for `challengeQueryImpl` (which threads `σ` unchanged) and for empty `oSpec`. This is the
@@ -423,6 +419,45 @@ theorem evalDist_simulateQ_swap_prefix
   exact SPMF.bind_comm _ _ _
 
 #print axioms evalDist_simulateQ_swap_prefix
+
+/-- **Seam elim-commute under a common prefix (full evalDist).** After the `snd ↔ V₁` swap, the chain
+reads `… >>= fun o => Bb >>= fun b => o.elim (pure none) (C b)` — the prover stage `Bb` (= `snd`) sits
+*outside* the verifier output `o`'s short-circuit, but the union-bound form needs it *inside* the
+success branch (run only when `V₁` accepts). This lemma moves `Bb` inside the elim at the full
+`evalDist` level (so it composes with `evalDist_simulateQ_swap_prefix`): on `o = some c` both orders
+run `Bb >>= C c`; on `o = none` the natural order runs-and-discards `Bb` while the union-bound order
+skips it, and these agree because `Bb` never fails (`hB`) and so marginalizes (`evalDist_bind_const`).
+This is the final tool turning the flat soundness chain into `probComp_seam_union_le`'s `mx >>= my`. -/
+theorem elim_comm_prefix
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {α₀ γ β δ : Type}
+    (PRE : OracleComp spec α₀) (mO : α₀ → OracleComp spec (Option γ))
+    (Bb : α₀ → OracleComp spec β) (C : α₀ → β → γ → OracleComp spec (Option δ))
+    (hB : ∀ (x : α₀) (s' : σ), Pr[⊥ | (simulateQ so (Bb x)).run s'] = 0)
+    (s : σ) :
+    evalDist ((simulateQ so (PRE >>= fun x => mO x >>= fun o => Bb x >>= fun b =>
+        o.elim (pure none) (fun c => C x b c))).run' s)
+      = evalDist ((simulateQ so (PRE >>= fun x => mO x >>= fun o =>
+        o.elim (pure none) (fun c => Bb x >>= fun b => C x b c))).run' s) := by
+  rw [StateT.run'_eq, StateT.run'_eq, evalDist_map, evalDist_map]
+  congr 1
+  simp only [simulateQ_run_bind_state_fixed so hso, evalDist_bind]
+  refine bind_congr fun p => ?_
+  refine bind_congr fun q => ?_
+  cases hq : q.1 with
+  | some c => simp only [Option.elim_some, simulateQ_run_bind_state_fixed so hso, evalDist_bind]
+  | none =>
+    simp only [Option.elim_none]
+    have hp : 𝒟[(simulateQ so (pure none : OracleComp spec (Option δ))).run s]
+        = (pure (none, s) : SPMF (Option δ × σ)) := by simp
+    rw [hp, show (𝒟[(simulateQ so (Bb p.1)).run s] >>= fun _ => (pure (none, s) : SPMF (Option δ × σ)))
+        = evalDist ((simulateQ so (Bb p.1)).run s >>= fun _ => pure (none, s)) from by
+          rw [evalDist_bind]; simp]
+    exact evalDist_bind_const _ (none, s) (hB p.1 s)
+
+#print axioms elim_comm_prefix
 
 /-- **Elim-stage commute (bad-event level).** A never-failing plain stage `B` may be moved across an
 `Option`-elim short-circuit without changing the probability of a `none`-false event `badpred`: running
