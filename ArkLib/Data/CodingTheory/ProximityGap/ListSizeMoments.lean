@@ -7,6 +7,7 @@ import Mathlib.InformationTheory.Hamming
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Algebra.Order.Chebyshev
 
 /-!
 # The moment method for list size (verified, self-contained) — direction A for #232
@@ -122,6 +123,32 @@ theorem exists_large_list_sq (C : Finset (ι → F)) (r : ℕ) :
     Finset.sum_lt_sum_of_nonempty hne (fun f _ => h f)
   rw [← Finset.mul_sum, Finset.sum_const, Finset.card_univ, smul_eq_mul] at hsum
   exact lt_irrefl _ hsum
+
+/-- **Second-moment covering lower bound (Paley–Zygmund / Cauchy–Schwarz).** The number of received
+words with a nonempty decoding list is at least `(Σ_f |Λ|)² / (Σ_f |Λ|²) = (|C|·V(r))² / (Σ_f |Λ|²)`.
+Clearing the denominator: `(|C|·V(r))² ≤ #{f : |Λ(C,r,f)| ≥ 1} · Σ_f |Λ(C,r,f)|²`. Together with the
+exact second moment (`second_moment_linear`), this *rigorously lower-bounds the covered fraction*
+near capacity — the quantitative core of the disproof/tightness direction (a definite fraction of
+received words is list-decodable, no matter the worst-case structure). -/
+theorem covering_lower_bound (C : Finset (ι → F)) (r : ℕ) :
+    (C.card * ballVol ι F r) ^ 2
+      ≤ (Finset.univ.filter (fun f => 1 ≤ (lam C r f).card)).card
+          * ∑ f : ι → F, (lam C r f).card ^ 2 := by
+  set S := Finset.univ.filter (fun f => 1 ≤ (lam C r f).card) with hS
+  have hzero : ∀ f ∈ (Finset.univ : Finset (ι → F)), f ∉ S → (lam C r f).card = 0 := by
+    intro f _ hfS
+    rw [hS, Finset.mem_filter] at hfS
+    push_neg at hfS
+    have := hfS (Finset.mem_univ f)
+    omega
+  have hsum1 : (∑ f ∈ S, (lam C r f).card) = ∑ f : ι → F, (lam C r f).card :=
+    Finset.sum_subset (Finset.subset_univ S) hzero
+  have hsum2 : (∑ f ∈ S, (lam C r f).card ^ 2) = ∑ f : ι → F, (lam C r f).card ^ 2 := by
+    refine Finset.sum_subset (Finset.subset_univ S) (fun f hf hfS => ?_)
+    rw [hzero f hf hfS]; ring
+  have hcs := sq_sum_le_card_mul_sum_sq (s := S) (f := fun f => (lam C r f).card)
+  rw [hsum1, first_moment, hsum2] at hcs
+  exact hcs
 
 /-- **Translation of the pair-ball count.** The number of words within distance `r` of *both* `c` and
 `c'` depends only on the difference `c' - c`: it equals the number of `g` within `r` of both `0` and
@@ -385,5 +412,6 @@ end ArkLib.CodingTheory.ListMoments
 
 -- axiom audit anchors
 #print axioms ArkLib.CodingTheory.ListMoments.exists_large_list
+#print axioms ArkLib.CodingTheory.ListMoments.covering_lower_bound
 #print axioms ArkLib.CodingTheory.ListMoments.pairBall_scale
 #print axioms ArkLib.CodingTheory.ListMoments.pairBall_weight
