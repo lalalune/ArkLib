@@ -321,6 +321,22 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop18 — the prize is ONE decision; both leans hinge on it; Loop15's lean is NOT decisive
+**Verified sorry-free, axiom-clean in `CandidateDecisionLoop18.lean`:** `prize_mass_iff_listsize_le`
+(`ℓ/q ≤ (1/q)·B ↔ ℓ ≤ B`), `prize_dichotomy`, `decision_qindependent`. Both full-band reductions
+collapse to the *same* binary fact: **prize TRUE ⟺ the smooth-domain RS list at the prize radius is
+`≤ B` (the `q`-independent numerator); prize FALSE ⟺ it grows with `q` at fixed `(ρ,η)`.** Exhaustive
+and mutually exclusive.
+**HONEST CORRECTION (shooting down my own Loop15 lean):** the prize's exact object is *plain
+smooth-deterministic* RS below capacity, and **all three known capacity methods fail to apply to it**:
+second-moment dies at `η₀` (Loop16); BGM needs *generic* points (smooth subgroups are structured,
+Loop17 antecedent unproven); the folded-RS capacity result (arXiv 2601.10047) needs *folded* codes /
+subspace-design codes, *not* plain RS. The structural leans **CONFLICT**: Loop15's degree-buffer
+leans TRUE, but the deterministic-domain hardness (Diamond–Gruen super-poly at low rate; BCIKS
+"Johnson is the genuine limit for *deterministic* RS") leans FALSE. So Loop15's lean is **not
+decisive** — the prize is genuinely undecided, hinging on whether smooth = generic for list-size, a
+single open question no current technique resolves.
+
 ### Loop16 — the second-moment method's wall IS the carving threshold `η₀` (open core is intrinsic)
 **Verified sorry-free, axiom-clean in `CandidateBridgeLoop16.lean`:** instantiating the in-tree
 `johnson_list_bound` via the rate-shift (`a=(ρ+η)n`, `b=ρn`), the Johnson denominator is
