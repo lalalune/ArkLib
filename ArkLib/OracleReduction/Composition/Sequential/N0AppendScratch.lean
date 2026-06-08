@@ -54,7 +54,12 @@ theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
     have hcont : (P₁.append P₂).continueFromTo stmt wit (⟨m, by omega⟩ : Fin (m + 0 + 1))
         (Fin.last (m + 0)) = pure := by
       funext rk; exact continueFromTo_self _ _ _ _ rk
-    rw [hcont]; simp
+    rw [hcont]
+    first
+      | exact bind_pure _
+      | simp only [bind_pure]
+      | rw [bind_pure_comp, id_map']
+      | simp [bind_pure_comp]
   simp only [hcollapse, run_eq_runToRound_last (prover := P₁), run_empty, append_output_empty,
     liftM_bind, bind_assoc]
   apply eq_of_heq
