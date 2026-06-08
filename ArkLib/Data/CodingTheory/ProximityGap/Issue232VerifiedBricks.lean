@@ -32,7 +32,8 @@ Contents:
   vanishing polynomial) and `dyadic_factor_coprime_trivial` (2-adic CRT product-grid obstruction).
 * Threshold geometry — `johnson_radius_le_capacity`, `radius_mono_in_exponent` (the
   `1 − ρ^{m/(m+1)}` family interpolates Johnson→capacity; the `1 − ρ^{2/3}` candidate is the
-  `m = 2` member), and `candidate_between_johnson_and_capacity`.
+  `m = 2` member), `radius_between_johnson_and_capacity_of_exponent`, and
+  `candidate_between_johnson_and_capacity`.
 * List-decoding engine — `fiber_root_card_le`, `grid_zero_count_le`, `on_curve_iff_mem_roots`,
   `gs_list_card_le` (the GS list-size bound `|list| ≤ deg_Y(H)`), `interpolation_kernel_nontrivial`
   (a low-degree interpolant exists by counting), and `eval_zero_of_agreement_gt_degree`
@@ -123,13 +124,22 @@ theorem radius_mono_in_exponent (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ ≤ 1) (s t : 
   have hpow : ρ ^ t ≤ ρ ^ s := rpow_le_rpow_of_exponent_ge h0 h1 hst
   linarith
 
+/-- Any interpolation exponent in `[1/2, 1]` gives a radius between the Johnson radius and
+capacity: `1 − ρ^{1/2} ≤ 1 − ρ^s ≤ 1 − ρ`. This packages the threshold bookkeeping needed for
+the whole interleaving family `s = m/(m+1)` without asserting the open quantitative threshold. -/
+theorem radius_between_johnson_and_capacity_of_exponent (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ ≤ 1)
+    (s : ℝ) (hlo : (1/2 : ℝ) ≤ s) (hhi : s ≤ 1) :
+    1 - ρ ^ (1/2 : ℝ) ≤ 1 - ρ ^ s ∧ 1 - ρ ^ s ≤ 1 - ρ := by
+  refine ⟨radius_mono_in_exponent ρ h0 h1 _ _ hlo, ?_⟩
+  have := radius_mono_in_exponent ρ h0 h1 s 1 hhi
+  rwa [rpow_one] at this
+
 /-- The `1 − ρ^{2/3}` candidate sits between Johnson and capacity:
 `1 − ρ^{1/2} ≤ 1 − ρ^{2/3} ≤ 1 − ρ`. -/
 theorem candidate_between_johnson_and_capacity (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ ≤ 1) :
     1 - ρ ^ (1/2 : ℝ) ≤ 1 - ρ ^ (2/3 : ℝ) ∧ 1 - ρ ^ (2/3 : ℝ) ≤ 1 - ρ := by
-  refine ⟨radius_mono_in_exponent ρ h0 h1 _ _ (by norm_num), ?_⟩
-  have := radius_mono_in_exponent ρ h0 h1 (2/3 : ℝ) 1 (by norm_num)
-  rwa [rpow_one] at this
+  exact radius_between_johnson_and_capacity_of_exponent ρ h0 h1 (2/3 : ℝ) (by norm_num)
+    (by norm_num)
 
 end Threshold
 
@@ -233,5 +243,7 @@ theorem refute_naive_alg_independence_bound {ι F : Type*} [Fintype ι] [Fintype
   have hlt : Fintype.card F < Fintype.card F ^ 2 := by
     rw [pow_two]; exact lt_mul_of_one_lt_left (by omega) (by omega)
   omega
+
+#print axioms radius_between_johnson_and_capacity_of_exponent
 
 end ArkLib.ProximityGap.Issue232Bricks
