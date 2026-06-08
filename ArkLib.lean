@@ -439,6 +439,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepair
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepairExtra
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingT421Faithful
+import ArkLib.Data.CodingTheory.ProximityGap.LineDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.LinearizedPolynomialHasse
 import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingCapacityOverflow
 import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingConjectureRefutation
