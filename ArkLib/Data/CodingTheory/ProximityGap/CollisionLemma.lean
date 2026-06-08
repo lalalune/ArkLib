@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # The collision lemma for the proximity-gap line (#232)
@@ -69,5 +70,23 @@ theorem collision (P P' u₀ u₁ : ι → F) {γ γ' : F} (hγ : γ ≠ γ') (r
     _ ≤ r + r := Nat.add_le_add hP hP'
     _ = 2 * r := by ring
 
+/-- **Dichotomy corollary: a far direction forces a single scalar.** If every codeword is `> 2r`-far
+from the direction `u₁` (i.e. `Δ(u₁, C) > 2δ`), then any two codewords of `C` that are `r`-close to the
+line `{u₀+γ·u₁}` must be close at the **same** scalar `γ`. Contrapositive of `collision`: distinct
+scalars would put `(γ-γ')⁻¹·(P-P') ∈ C` within `2r` of `u₁`. Hence the line list collapses to a single
+per-word list `Λ(C, u₀+γu₁, δ)` — the far branch of the BCIKS20 dichotomy for #232. -/
+theorem same_scalar_of_far (C : Submodule F (ι → F)) (P P' u₀ u₁ : ι → F)
+    (hP_C : P ∈ C) (hP'_C : P' ∈ C) {γ γ' : F} (r : ℕ)
+    (hfar : ∀ c ∈ C, 2 * r < hammingDist u₁ c)
+    (hP : hammingDist P (u₀ + γ • u₁) ≤ r) (hP' : hammingDist P' (u₀ + γ' • u₁) ≤ r) :
+    γ = γ' := by
+  by_contra hne
+  have hmem : (γ - γ')⁻¹ • (P - P') ∈ C := C.smul_mem _ (C.sub_mem hP_C hP'_C)
+  have hco := collision P P' u₀ u₁ hne r hP hP'
+  have hf := hfar _ hmem
+  rw [hammingDist_comm] at hf
+  omega
+
 end ArkLib.CodingTheory.Collision
 #print axioms ArkLib.CodingTheory.Collision.collision
+#print axioms ArkLib.CodingTheory.Collision.same_scalar_of_far
