@@ -41,5 +41,6 @@ theorem run_empty (s : Stmt₂) (w : Wit₂) :
   have h_last_eq_zero : (Fin.last 0) = (0 : Fin 1) := rfl
   rw! (castMode := .all) [h_last_eq_zero]
   simp only [Fin.induction_zero, pure_bind]
+  rfl
 
 end Prover

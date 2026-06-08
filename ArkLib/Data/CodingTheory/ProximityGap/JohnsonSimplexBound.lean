@@ -95,7 +95,7 @@ theorem johnson_simplex_bound (L : Finset (ι → F)) (w : ι → F) (a b : ℝ)
     Finset.sum_mul_sq_le_sq_mul_sq Finset.univ A (phi w)
   have hsqA : (∑ p : ι × F, A p ^ 2) = ∑ p : ι × F, A p * A p := by simp [pow_two]
   have hsqw : (∑ p : ι × F, phi w p ^ 2) = ∑ p : ι × F, phi w p * phi w p := by simp [pow_two]
-  rw [hsqA, hsqw, hAA, hww, hAw, ← pow_two] at hCS
+  rw [hsqA, hsqw, hAA, hww, hAw] at hCS
   -- Lower bound on the target sum: `Σ_c agree(c,w) ≥ |L|·a`.
   have hTarget : (L.card : ℝ) * a ≤ ∑ c ∈ L, (agree c w : ℝ) := by
     calc (L.card : ℝ) * a = ∑ _c ∈ L, a := by rw [Finset.sum_const, nsmul_eq_mul]
