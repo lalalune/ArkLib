@@ -20,8 +20,8 @@ proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_di
 brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, and 37 are present as self-contained arithmetic
-bricks in the current checkout (`CandidateStructureLoop37.lean` added 2026-06-08, sorry-free,
+Loops 27 through 38 are present as self-contained arithmetic bricks in the current checkout
+(`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
@@ -338,6 +338,32 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop38 — the real FRI/proximity mechanism composes per-round events ADDITIVELY (union bound)
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop38.lean`:**
+`fri_union_bound` (per-round error `e_j ≤ p` ⇒ total `∑_{j<m} e_j ≤ m·p`),
+`fri_total_error_le_domain_pow_mul` (`m·p ≤ (2^m)·p` via `m < 2^m`, prize numerator exponent
+`c₁=1` with the one-shot budget `p` carried once), and `fri_additive_beats_multiplicative` (for
+`a ≥ 2`, `m ≥ 2`: `m·a ≤ a^m` — the additive union-bound mode is strictly cheaper than the
+multiplicative tower).
+**Hypothesis class.** Loop37 said a disproof needs a per-round *multiplicative* factor growing in `m`
+or `1/η`. So ask: does the actual BCIKS proximity-gaps / FRI soundness mechanism compose its per-round
+events multiplicatively (danger) or additively (safe)?
+**Disproof attempt.** Try to read the `m`-round FRI recursion as a product: each fold re-runs the
+proximity test, so maybe the soundness errors compound like `∏ (1+e_j)` and tower up super-polynomially
+across the `m = log₂ n` rounds. **Disproof of the disproof:** no — the proven BCIKS soundness bound is a
+**union bound**: the total error is `∑_{j<m} e_j`, each `e_j ≤ B(ρ,η)/q` a single correlated-agreement
+event. `fri_union_bound` is exactly this additive accumulation; it lands in the Loop27/29 safe regime,
+the depth factor `m` absorbed by `m < 2^m` (`fri_total_error_le_domain_pow_mul`, giving `c₁=1`), and the
+per-round budget `B(ρ,η)` paid **once** into the depth-independent factor `G` — precisely Loop37's safe
+envelope. `fri_additive_beats_multiplicative` certifies the gap: the multiplicative tower the disproof
+needs is strictly larger than the additive cost the mechanism actually pays.
+**What this localizes.** The entire disproof question is now: does the per-round event probability *stay*
+one-shot (`≤ B(ρ,η)/q`, `B` depending only on `ρ,η`) across the small-gap band `δ ≤ 1−ρ−η`? In the
+Johnson range that is the theorem BCIKS 2025/2055 — and there the union-bound structure here makes the
+prize hold outright. In the small-gap band it is exactly the open BGM-for-smooth fact (Loop17). No
+construction makes the per-round event compound multiplicatively; the union-bound structure of the FRI
+recursion forbids it by design.
 
 ### Loop37 — the per-round multiplier must be GAP-independent, not merely depth-independent
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop37.lean`:**
