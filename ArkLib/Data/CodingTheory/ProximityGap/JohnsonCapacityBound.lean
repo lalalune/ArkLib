@@ -42,4 +42,22 @@ theorem johnson_rs_le_capacity {ρ : ℝ} (h0 : 0 ≤ ρ) (h1 : ρ ≤ 1) :
   have key : ρ ≤ Real.sqrt ρ := Real.le_sqrt_of_sq_le hsq
   linarith
 
+/-- The Johnson radius is nonnegative: `0 ≤ 1 - √(1 - δ)` for `δ ∈ [0,1]` (since
+`√(1 - δ) ≤ √1 = 1`). -/
+theorem johnson_nonneg {δ : ℝ} (h0 : 0 ≤ δ) (h1 : δ ≤ 1) : 0 ≤ 1 - Real.sqrt (1 - δ) := by
+  have hle : Real.sqrt (1 - δ) ≤ 1 := by
+    calc Real.sqrt (1 - δ) ≤ Real.sqrt 1 := Real.sqrt_le_sqrt (by linarith)
+      _ = 1 := Real.sqrt_one
+  linarith
+
+/-- The Johnson radius lies *strictly* below capacity on the open interval:
+`1 - √(1 - δ) < δ` for `δ ∈ (0,1)`.  Hence the Grand Challenge gap `[J(δ_min), δ_min]` is a
+genuine nondegenerate interval whenever `0 < δ_min < 1`. -/
+theorem johnson_lt_capacity {δ : ℝ} (h0 : 0 < δ) (h1 : δ < 1) :
+    1 - Real.sqrt (1 - δ) < δ := by
+  have hd : (0 : ℝ) ≤ 1 - δ := by linarith
+  have hsq : (1 - δ) ^ 2 < 1 - δ := by nlinarith
+  have key : (1 - δ) < Real.sqrt (1 - δ) := (Real.lt_sqrt hd).mpr hsq
+  linarith
+
 end ArkLib.JohnsonCapacity
