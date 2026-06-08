@@ -114,4 +114,23 @@ theorem line_agree_count_mul_le [Fintype F] (u₀ u₁ c : ι → F) (a : ℕ) :
 
 #print axioms line_agree_count_mul_le
 
+/-- **Assembly brick: line bad-γ count ≤ sum over witness codewords.** If every "bad" scalar `γ`
+(line agrees with some codeword on `≥ a` coordinates) has its witness codeword in a finite list `L`,
+then the number of bad scalars is at most the sum, over `c ∈ L`, of the per-codeword line-agreement
+counts. Combined with `line_agree_count_mul_le`, this reduces the MCA→Johnson bad-γ bound to bounding
+the *witness-codeword count* `|L|` — the remaining (research-scale) ingredient. -/
+theorem badGamma_card_le_sum [Fintype F] (u₀ u₁ : ι → F) (a : ℕ) (L : Finset (ι → F))
+    (bad : Finset F)
+    (hwit : ∀ γ ∈ bad, ∃ c ∈ L, a ≤ (univ.filter (fun i => u₀ i + γ * u₁ i = c i)).card) :
+    bad.card ≤ ∑ c ∈ L,
+      (univ.filter (fun γ : F => a ≤ (univ.filter (fun i => u₀ i + γ * u₁ i = c i)).card)).card := by
+  classical
+  refine le_trans (Finset.card_le_card ?_) Finset.card_biUnion_le
+  intro γ hγ
+  obtain ⟨c, hcL, hc⟩ := hwit γ hγ
+  rw [Finset.mem_biUnion]
+  exact ⟨c, hcL, by simp only [Finset.mem_filter, Finset.mem_univ, true_and]; exact hc⟩
+
+#print axioms badGamma_card_le_sum
+
 end ProximityGap
