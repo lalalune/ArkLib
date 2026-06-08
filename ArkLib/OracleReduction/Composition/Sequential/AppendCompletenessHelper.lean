@@ -14,9 +14,14 @@ theorem mem_support_run_of_prover_verifier
   unfold Reduction.run
   simp only [OptionT.run_bind, Option.elimM, bind_assoc, mem_support_bind_iff]
   refine ⟨some (tr, prv), ?_, ?_⟩
-  · sorry
+  · show some (tr, prv) ∈ support (some <$> R.prover.run stmt wit)
+    simp only [support_map, Set.mem_image, Option.some.injEq]; exact ⟨_, hP, rfl⟩
   · simp only [Option.elim_some, mem_support_bind_iff]
     refine ⟨some (some vout), ?_, ?_⟩
-    · revert hV; extract_goal; sorry
-    · sorry
+    · show some (some vout) ∈ support
+        (some <$> liftComp ((R.verifier.run stmt tr).run) (oSpec + [pSpec.Challenge]ₒ))
+      simp only [support_map, support_liftComp, Set.mem_image, Option.some.injEq]
+      exact ⟨some vout, hV, rfl⟩
+    · simp only [Option.elim_some, Option.getM_some, OptionT.run_pure, OptionT.run_bind,
+        pure_bind, support_pure, Set.mem_singleton_iff]
 end Reduction
