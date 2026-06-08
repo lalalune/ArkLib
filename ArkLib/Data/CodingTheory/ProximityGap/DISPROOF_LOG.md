@@ -20,8 +20,8 @@ proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_di
 brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, 29, 30, and 31 have been restored as self-contained arithmetic bricks in the current
-checkout.
+Loops 27, 28, 29, 30, 31, and 32 have been restored as self-contained arithmetic bricks in the
+current checkout.
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
@@ -337,6 +337,21 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop32 — block grouping cannot hide multiplicative exponent growth
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop32.lean`:**
+`block_exponent_product_eq` (`∏_{i<r}2^(b_i)=2^(∑_{i<r}b_i)`),
+`block_exponent_product_le_domain_pow` (if block widths sum to `m` and every block exponent is
+`≤ width_i*c`, the blocked product is at most `((2^m)^c)`), and
+`block_exponent_product_overflows_of_sum` (only total block exponent `>m*d` overflows final
+degree `d`).
+**Disproof attempt:** hide multiplicative growth by grouping fold levels into irregular blocks or by
+using spiky block factors, hoping the grouped accounting beats every fixed polynomial even when local
+average density looks bounded. **Disproof of the disproof:** no — block exponents still add. If every
+block has bounded exponent density relative to its width, then the whole product is absorbed by the
+prize numerator. Blocking/spiking only matters if the **total** block exponent has unbounded density
+in the final depth, which must be realized by the actual smooth-domain GS/proximity process. Mere
+regrouping is not a counterexample.
 
 ### Loop31 — variable multiplicative exponents: only the total exponent matters
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop31.lean`:**
