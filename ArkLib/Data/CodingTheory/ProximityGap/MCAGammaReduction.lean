@@ -66,6 +66,55 @@ theorem pigeonhole_large_fibers {ι : Type*} [Fintype ι] {κ : Type*} [Decidabl
   rw [Nat.mul_comm]
   omega
 
+/-- **The pigeonhole bound is tight.** For `t ≥ 1`, the quotient map `i ↦ ⌊i/t⌋` on `Fin (m·t)` hits
+every one of the `m` targets exactly `t` times, so all `m` fibers are large and `t · m = m·t = |ι|`:
+equality holds in `pigeonhole_large_fibers`. Hence the reduction `#bad-γ ≤ (line list)·n/t` cannot be
+improved in general — it is the exact relationship, so the MCA prize is *genuinely equivalent* to the
+line list-decoding bound (not merely upper-bounded by it). -/
+theorem pigeonhole_large_fibers_tight (m t : ℕ) (ht : 1 ≤ t) :
+    t * ((Finset.univ.image (fun i : Fin (m * t) => (⟨i.val / t, by
+        have hi := i.isLt; exact Nat.div_lt_of_lt_mul (by rwa [Nat.mul_comm] at hi)⟩ : Fin m))).filter
+      (fun y => t ≤ (Finset.univ.filter
+        (fun i : Fin (m * t) => (⟨i.val / t, by
+          have hi := i.isLt
+          exact Nat.div_lt_of_lt_mul (by rwa [Nat.mul_comm] at hi)⟩ : Fin m) = y)).card)).card
+      = Fintype.card (Fin (m * t)) := by
+  classical
+  set h : Fin (m * t) → Fin m := fun i => ⟨i.val / t, by
+    have hi := i.isLt; exact Nat.div_lt_of_lt_mul (by rwa [Nat.mul_comm] at hi)⟩ with hh
+  -- every target `y` has a fiber of size `≥ t`: the `t` indices `y*t, …, y*t+t-1` all map to `y`
+  have hfiber : ∀ y : Fin m, t ≤ (Finset.univ.filter (fun i => h i = y)).card := by
+    intro y
+    have hsub : (Finset.univ.image (fun j : Fin t => (⟨y.val * t + j.val, by
+        have hj := j.isLt; have hy := y.isLt; nlinarith⟩ : Fin (m * t))))
+        ⊆ Finset.univ.filter (fun i => h i = y) := by
+      intro i hi
+      rw [Finset.mem_image] at hi
+      obtain ⟨j, -, rfl⟩ := hi
+      rw [Finset.mem_filter]
+      refine ⟨Finset.mem_univ _, ?_⟩
+      rw [hh, Fin.ext_iff]
+      show (y.val * t + j.val) / t = y.val
+      rw [Nat.add_mul_div_left _ _ (by omega), Nat.div_eq_of_lt j.isLt, zero_add]
+    calc t = (Finset.univ.image (fun j : Fin t => (⟨y.val * t + j.val, by
+              have hj := j.isLt; have hy := y.isLt; nlinarith⟩ : Fin (m * t)))).card := by
+            rw [Finset.card_image_of_injOn, Finset.card_univ, Fintype.card_fin]
+            intro a _ b _ hab
+            rw [Fin.ext_iff] at hab; exact Fin.ext (by omega)
+      _ ≤ _ := Finset.card_le_card hsub
+  -- hence all `m` targets are "large", and the image is all of `Fin m`
+  have himg : Finset.univ.image h = Finset.univ := by
+    rw [Finset.eq_univ_iff_forall]
+    intro y
+    rw [Finset.mem_image]
+    exact ⟨⟨y.val * t, by have := y.isLt; nlinarith⟩, Finset.mem_univ _, by
+      rw [hh, Fin.ext_iff]; show (y.val * t) / t = y.val; rw [Nat.mul_div_cancel _ (by omega)]⟩
+  have hlarge : (Finset.univ.image h).filter
+      (fun y => t ≤ (Finset.univ.filter (fun i => h i = y)).card) = Finset.univ := by
+    rw [himg, Finset.filter_true_of_mem (fun y _ => hfiber y)]
+  rw [hlarge, Finset.card_univ, Fintype.card_fin, Fintype.card_fin, Nat.mul_comm]
+
 #print axioms pigeonhole_large_fibers
+#print axioms pigeonhole_large_fibers_tight
 
 end ArkLib.CodingTheory.MCAReduction

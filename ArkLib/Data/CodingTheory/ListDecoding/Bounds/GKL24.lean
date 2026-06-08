@@ -29,9 +29,9 @@ theorem gkl24_interpolation_existence
     (deg_X deg_Y : ℕ)
     (h_dim : (points.sum (fun p => (multiplicities p + 1) * multiplicities p / 2)) < (deg_X + 1) * (deg_Y + 1)) :
     ∃ Q : MvPolynomial (Fin 2) F, Q ≠ 0 ∧
-      (MvPolynomial.degrees Q (0 : Fin 2) ≤ deg_X) ∧
-      (MvPolynomial.degrees Q (1 : Fin 2) ≤ deg_Y) ∧
-      ∀ p ∈ points, ArkLib.Polynomial.Multivariate.mult_ge Q p (multiplicities p) := by
+      (MvPolynomial.degreeOf 0 Q ≤ deg_X) ∧
+      (MvPolynomial.degreeOf 1 Q ≤ deg_Y) ∧
+      ∀ p ∈ points, ArkLib.MvPolynomial.mult_ge ![p.1, p.2] (multiplicities p) Q := by
   sorry
 
 end CodingTheory.Bounds.GKL24
