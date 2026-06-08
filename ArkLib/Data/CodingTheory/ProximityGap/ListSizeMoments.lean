@@ -106,6 +106,23 @@ theorem exists_large_list (C : Finset (ι → F)) (r : ℕ) :
   rw [Finset.sum_const, Finset.card_univ, smul_eq_mul, ← Finset.mul_sum, first_moment] at hsum
   exact lt_irrefl _ hsum
 
+/-- **Worst-case squared list size is at least the second-moment average.** Some received word has
+`|Λ(C,r,f)|² ≥ E_f[|Λ|²]`, i.e. `qⁿ · |Λ(C,r,f)|² ≥ Σ_{f'} |Λ(C,r,f')|²`. Combined with
+`second_moment_linear`, this gives a *worst-case* list-size lower bound `∃ f, qⁿ·|Λ(f)|² ≥ |C|·Σ_{v∈C}
+N(v,r)` driven by the codeword weights — strictly sharper near capacity than the first-moment bound
+when the second moment is inflated by codeword clustering. -/
+theorem exists_large_list_sq (C : Finset (ι → F)) (r : ℕ) :
+    ∃ f : ι → F,
+      (∑ f' : ι → F, (lam C r f').card ^ 2) ≤ Fintype.card (ι → F) * (lam C r f).card ^ 2 := by
+  by_contra h
+  push_neg at h
+  have hne : (Finset.univ : Finset (ι → F)).Nonempty := Finset.univ_nonempty
+  have hsum : (∑ f : ι → F, Fintype.card (ι → F) * (lam C r f).card ^ 2)
+      < ∑ _f : ι → F, ∑ f' : ι → F, (lam C r f').card ^ 2 :=
+    Finset.sum_lt_sum_of_nonempty hne (fun f _ => h f)
+  rw [← Finset.mul_sum, Finset.sum_const, Finset.card_univ, smul_eq_mul] at hsum
+  exact lt_irrefl _ hsum
+
 /-- **Translation of the pair-ball count.** The number of words within distance `r` of *both* `c` and
 `c'` depends only on the difference `c' - c`: it equals the number of `g` within `r` of both `0` and
 `c' - c`. -/
