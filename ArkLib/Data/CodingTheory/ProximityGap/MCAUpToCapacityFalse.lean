@@ -29,14 +29,15 @@ exponent (the CS25 list-explosion spread), which is the genuinely open construct
 All results are hole-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
 ## References
-- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026. #232.
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
+  2026. #232.
 -/
 
 namespace ProximityGap.MCANearCapacityGK
 
 open scoped NNReal ENNReal
 
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {F : Type} [Field F] [Fintype F]
 variable {n : ℕ}
 
 /-- **The up-to-capacity MCA bound fails near capacity (small-field regime).** For an RS code with
@@ -50,11 +51,12 @@ theorem rs_mca_uptoCapacity_false_of_smallField [NeZero n] (domain : Fin n ↪ F
       < epsMCA (F := F) (A := F)
           (ReedSolomon.code (domain := domain) k : Set (Fin n → F))
           (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
+  classical
   refine lt_of_lt_of_le ?_ (epsMCA_ge_of_prefix_sunflower domain k hk hkn)
   have hqpos : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
   have hnk : (0 : ℝ) < ((n - k : ℕ) : ℝ) := by
     by_contra h
-    push_neg at h
+    push Not at h
     have hz : ((n - k : ℕ) : ℝ) = 0 := le_antisymm h (by positivity)
     rw [hz, zero_mul] at hsmall
     linarith [hqpos]
