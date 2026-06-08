@@ -57,9 +57,13 @@ theorem list_le_one_of_min_weight {C : Finset (ι → F)}
   rw [not_le] at hgt
   obtain ⟨c, hc, c', hc', hne⟩ := Finset.one_lt_card.mp hgt
   rw [lam, Finset.mem_filter] at hc hc'
-  have hv : c - c' ∈ C := hsub c hc.1 c' hc'.1
-  have hvne : c - c' ≠ 0 := sub_ne_zero.mpr hne
-  have hwt : 2 * r < hammingNorm (c - c') := hmin _ hv hvne
+  have hv : c' - c ∈ C := hsub c' hc'.1 c hc.1
+  have hvne : c' - c ≠ 0 := sub_ne_zero.mpr (Ne.symm hne)
+  have hwt : 2 * r < hammingNorm (-c + c') := by
+    have hdiff : (-c + c') = c' - c := by
+      ext i
+      simp [sub_eq_add_neg, add_comm]
+    simpa [hdiff] using hmin _ hv hvne
   have hd : hammingDist c c' = hammingNorm (c - c') := by
     have h := hammingDist_add_right (c - c') (0 : ι → F) c'
     rw [sub_add_cancel, zero_add, hammingDist_zero_right] at h

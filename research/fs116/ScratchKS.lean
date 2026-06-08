@@ -186,7 +186,7 @@ theorem scratch_fiatShamirKnowledgeExec_runCollapse
                 ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
                   OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
                     (StmtIn × WitIn × StmtOut × WitOut))))
-  rw [fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn]
+  conv_lhs => rw [fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn]
   simp [K]
 
 theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical
