@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ProofSystem.Spartan.Basic
+import ArkLib.ProofSystem.Spartan.FirstSumcheckReduction
+import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
 import ArkLib.ProofSystem.Component.CheckClaim
 import ArkLib.ProofSystem.Sumcheck.Spec.General
@@ -766,6 +768,9 @@ def secondSumcheckResidual : Prop :=
     (Statement.AfterSecondSumcheck R pp) (OracleStatement.AfterSecondSumcheck R pp) Unit
     (Sumcheck.Spec.pSpec R 2 pp.ℓ_n))
 
+theorem secondSumcheckResidual_holds : secondSumcheckResidual R pp :=
+  ⟨secondSumcheckReduction R pp oSpec⟩
+
 /-- **NAMED RESIDUAL — first sum-check reduction existence.** Symmetric to
 `secondSumcheckResidual`, over `ℓ_m` variables on `ℱ(X)`, lifting the proven sum-check reduction
 along the Spartan lens routing `ℱ` into the sum-check oracle statement. -/
@@ -773,7 +778,10 @@ def firstSumcheckResidual : Prop :=
   Nonempty (OracleReduction oSpec
     (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
     (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) Unit
-    (Sumcheck.Spec.pSpec R 2 pp.ℓ_m))
+    (Sumcheck.Spec.pSpec R 3 pp.ℓ_m))
+
+theorem firstSumcheckResidual_holds : firstSumcheckResidual R pp :=
+  ⟨firstSumcheckReduction R pp oSpec⟩
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- **R1CS matrix-vector MLE decomposition.** Each bundled Spartan evaluation claim
@@ -992,6 +1000,19 @@ seven leaves (the sum-check phases) are themselves residuals
 We existentially quantify the combined `pSpecC` (rather than spelling out the `Fin.vsum`/`++ₚ`
 arithmetic) so the residual records exactly the protocol-level obligation without committing to a
 brittle size normal form. -/
+noncomputable def composedPIOP :
+    OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalStatement R pp) (FinalOracleStatement R pp) Unit
+      _ :=
+  oracleReduction.firstMessage R pp oSpec |>.append
+    (oracleReduction.firstChallenge R pp oSpec |>.append
+      (firstSumcheckReduction R pp oSpec |>.append
+        (oracleReduction.sendEvalClaim R pp oSpec |>.append
+          (oracleReduction.linearCombination R pp oSpec |>.append
+            (secondSumcheckReduction R pp oSpec |>.append
+              (finalCheck R pp oSpec))))))
+
 def composedPIOPResidual : Prop :=
   ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))
     (_ : ∀ i, SampleableType (pSpecC.Challenge i)),
@@ -1000,10 +1021,26 @@ def composedPIOPResidual : Prop :=
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
 
+theorem composedPIOPResidual_holds : composedPIOPResidual R pp :=
+  ⟨_, _, _, _, ⟨composedPIOP R pp oSpec⟩⟩
+
 /-- **NAMED RESIDUAL — target-carrying composed Spartan PIOP existence.** This is the same
 composition obligation as `composedPIOPResidual`, but with the real terminal `CheckClaim` endpoint:
 the output statement carries the second-sum-check target value alongside the final Spartan context,
 so the final predicate can check `target = expected(r_x,r_y,A,B,C,Z)`. -/
+noncomputable def composedPIOPWithClaim :
+    OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
+      _ :=
+  oracleReduction.firstMessage R pp oSpec |>.append
+    (oracleReduction.firstChallenge R pp oSpec |>.append
+      (firstSumcheckReduction R pp oSpec |>.append
+        (oracleReduction.sendEvalClaim R pp oSpec |>.append
+          (oracleReduction.linearCombination R pp oSpec |>.append
+            (secondSumcheckReduction R pp oSpec |>.append
+              (finalCheckWithClaim R pp oSpec))))))
+
 def composedPIOPWithClaimResidual : Prop :=
   ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))
     (_ : ∀ i, SampleableType (pSpecC.Challenge i)),
@@ -1011,6 +1048,9 @@ def composedPIOPWithClaimResidual : Prop :=
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
+
+theorem composedPIOPWithClaimResidual_holds : composedPIOPWithClaimResidual R pp :=
+  ⟨_, _, _, _, ⟨composedPIOPWithClaim R pp oSpec⟩⟩
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP perfect completeness.** Discharged, once the composed
 reduction `Rc` (over its combined spec `pSpecC`) is available, by iterated
@@ -1028,6 +1068,23 @@ def composedCompletenessResidual
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)
+
+theorem composedCompletenessResidual_holds
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) :
+    composedCompletenessResidual R pp oSpec (composedPIOP R pp oSpec) init impl := by
+  apply OracleReduction.append_perfectCompleteness
+  · apply OracleReduction.append_perfectCompleteness
+    · apply OracleReduction.append_perfectCompleteness
+      · apply OracleReduction.append_perfectCompleteness
+        · apply OracleReduction.append_perfectCompleteness
+          · apply OracleReduction.append_perfectCompleteness
+            · sorry
+            · sorry
+          · sorry
+        · sorry
+      · sorry
+    · sorry
+  · sorry
 
 /-- Target-carrying version of `composedCompletenessResidual`, for a composed Spartan reduction
 ending at `finalCheckWithClaim`. -/
