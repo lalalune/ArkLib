@@ -26,13 +26,14 @@ unique-decoding radius (ABF26 Table-1 row 2). All results are hole-free and axio
 (`[propext, Classical.choice, Quot.sound]`).
 
 ## References
-- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026. #232.
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
+  2026. #232.
 - [BCIKS20] Proximity gaps for Reed–Solomon codes.
 -/
 
 namespace ProximityGap
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+variable {ι : Type*} [DecidableEq ι]
 variable {F : Type*} [Field F]
 variable {A : Type*} [AddCommGroup A] [Module F A]
 
@@ -55,7 +56,7 @@ theorem u1_close_of_two_line_points (C : Submodule F (ι → A)) (u₀ u₁ : ι
   simp only [Pi.smul_apply, hwi, inv_smul_smul₀ hd]
 
 /-- The overlap of two witness sets is large: `|S₁| + |S₂| ≤ n + |S₁ ∩ S₂|`. -/
-theorem card_inter_ge (S₁ S₂ : Finset ι) :
+theorem card_inter_ge [Fintype ι] (S₁ S₂ : Finset ι) :
     S₁.card + S₂.card ≤ Fintype.card ι + (S₁ ∩ S₂).card := by
   have hun : (S₁ ∪ S₂).card ≤ Fintype.card ι := by simpa using Finset.card_le_univ (S₁ ∪ S₂)
   have hui : (S₁ ∪ S₂).card + (S₁ ∩ S₂).card = S₁.card + S₂.card :=
