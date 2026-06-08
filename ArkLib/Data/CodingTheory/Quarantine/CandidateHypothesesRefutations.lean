@@ -3,7 +3,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic
 
-import ArkLib.Data.CodingTheory.ProximityGap.CandidateHypotheses
+import ArkLib.Data.CodingTheory.Quarantine.CandidateHypotheses
 
 /-!
 # Refutations of Interdisciplinary Candidate Hypotheses

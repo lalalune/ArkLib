@@ -89,6 +89,23 @@ theorem first_moment (C : Finset (ι → F)) (r : ℕ) :
     exact card_dist_le_eq_ballVol r c
   rw [Finset.sum_congr rfl (fun c _ => hinner c), Finset.sum_const, smul_eq_mul]
 
+/-- **Worst-case list size is at least the average (first-moment lower bound).** Some received word
+has a decoding list at least as large as the average `|C|·V(r)/qⁿ`. Concretely (clearing the `qⁿ`
+denominator): there is an `f` with `qⁿ · |Λ(C,r,f)| ≥ |C| · V(r)`. Near capacity, where `|C|·V(r)/qⁿ`
+is large, this *rigorously* exhibits a received word with a large list — the worst-case lower bound
+that any proximity-gap/small-list claim must respect (the disproof direction, from the first moment
+alone, no linearity needed). -/
+theorem exists_large_list (C : Finset (ι → F)) (r : ℕ) :
+    ∃ f : ι → F, C.card * ballVol ι F r ≤ Fintype.card (ι → F) * (lam C r f).card := by
+  by_contra h
+  push_neg at h
+  have hne : (Finset.univ : Finset (ι → F)).Nonempty := Finset.univ_nonempty
+  have hsum : (∑ _f : ι → F, C.card * ballVol ι F r)
+      < ∑ f : ι → F, Fintype.card (ι → F) * (lam C r f).card :=
+    Finset.sum_lt_sum_of_nonempty hne (fun f _ => h f)
+  rw [Finset.sum_const, Finset.card_univ, smul_eq_mul, ← Finset.mul_sum, first_moment] at hsum
+  exact lt_irrefl _ hsum
+
 /-- **Translation of the pair-ball count.** The number of words within distance `r` of *both* `c` and
 `c'` depends only on the difference `c' - c`: it equals the number of `g` within `r` of both `0` and
 `c' - c`. -/
