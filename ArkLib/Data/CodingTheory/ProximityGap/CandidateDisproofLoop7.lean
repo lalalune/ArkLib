@@ -6,6 +6,9 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop6
 import Mathlib.Algebra.Order.Field.Basic
 
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+
 /-!
 # Loop 7 — conditional Frobenius disproofs and their first self-refutation
 
@@ -57,7 +60,6 @@ variable [Fintype F]
 
 /-- If a predicate is Frobenius-invariant, then the finite set of elements satisfying it is closed
 under Frobenius. -/
-omit [DecidableEq F] in
 theorem frobenius_invariant_filter_closed
     (p : ℕ) (P : F → Prop) [DecidablePred P]
     (hP : ∀ x : F, P x → P (x ^ p)) :
