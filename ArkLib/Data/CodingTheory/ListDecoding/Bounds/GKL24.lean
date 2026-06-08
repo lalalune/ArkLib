@@ -6,10 +6,7 @@ Authors: ArkLib Team
 
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.Matrix.Basis
-import ArkLib.Data.Polynomial.Multivariate.Interpolation
 import ArkLib.Data.Polynomial.Multivariate.HasseDerivative
-import ArkLib.Data.CodingTheory.SubspaceDesign.Basic
 
 /-!
 # List-Decoding Capacity Bounds from GKL24

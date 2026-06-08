@@ -604,7 +604,9 @@ theorem outer_perState_none_le
     -- batch `⟨3⟩` challenge marginalises out and `simulateQ_outerVerify_eq` collapses the verifier to
     -- `pure …`.  Pending: the verifier-collapse-under-`simulateQ`/`OptionT`/`StateT` layering.
     rw [if_neg (not_not.mpr hacc)]
-    extract_goal
+    refine nonpos_iff_eq_zero.mpr ?_
+    rw [mul_eq_zero]
+    right
     sorry
   · rw [if_pos hacc]
     exact mul_le_of_le_one_right (zero_le _) (by simp)

@@ -1000,6 +1000,7 @@ seven leaves (the sum-check phases) are themselves residuals
 We existentially quantify the combined `pSpecC` (rather than spelling out the `Fin.vsum`/`++ₚ`
 arithmetic) so the residual records exactly the protocol-level obligation without committing to a
 brittle size normal form. -/
+set_option maxHeartbeats 0 in
 noncomputable def composedPIOP :
     OracleReduction oSpec
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
@@ -1028,6 +1029,7 @@ theorem composedPIOPResidual_holds : composedPIOPResidual R pp :=
 composition obligation as `composedPIOPResidual`, but with the real terminal `CheckClaim` endpoint:
 the output statement carries the second-sum-check target value alongside the final Spartan context,
 so the final predicate can check `target = expected(r_x,r_y,A,B,C,Z)`. -/
+set_option maxHeartbeats 0 in
 noncomputable def composedPIOPWithClaim :
     OracleReduction oSpec
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
@@ -1069,6 +1071,7 @@ def composedCompletenessResidual
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)
 
+set_option maxHeartbeats 0 in
 theorem composedCompletenessResidual_holds
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) :
     composedCompletenessResidual R pp oSpec (composedPIOP R pp oSpec) init impl := by

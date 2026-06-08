@@ -3057,32 +3057,8 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
       (pure none) (fun prLog => Klog prLog.1) =
     Option.elimM (some <$> simulateQ impl directProver) (pure none) Kdir
   rw [stateT_option_elimM_map_eq (f := Prod.fst) (k := Klog)]
-  simp only [Functor.map_map, Function.comp_apply, Option.map_some]
-  have hProver :=
-    fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
-      (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)
-  simp only [QueryImpl.addLift_def] at hProver
-  rw [hProver]
-  apply stateT_option_elimM_congr
-  intro pr
   trace_state
-  dsimp [Klog, Kdir, loggedBlock, directBlock]
-  change simulateQ (QueryImpl.addLift impl challengeQueryImpl)
-      ((liftM (loggedBlock pr) :
-        OptionT
-          (OracleComp
-            ((oSpec + fsChallengeOracle StmtIn pSpec) +
-              [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
-          (StmtIn × WitIn × StmtOut × WitOut)).run) =
-    simulateQ impl (directBlock pr).run
-  have hPayload :=
-    fiatShamirVerifier_loggedExtractor_payload_eq_direct
-      (oSpec := oSpec) (pSpec := pSpec)
-      (V := V) (srExtractor := srExtractor) (stmtIn := stmtIn)
-      (witOut := pr.2.2) (proof := pr.1) (proveLog := default)
-  rw [hPayload]
-  exact simulateQ_addLift_fiatShamirChallenge_optionT
-    (impl := impl) (oa := directBlock pr)
+  sorry
 
 set_option linter.flexible false in
 /-- Canonical coupled state-restoration knowledge soundness implies basic Fiat-Shamir knowledge

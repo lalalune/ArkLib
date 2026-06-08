@@ -1002,6 +1002,69 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
   refine ⟨witMid, h_compat_after, ?_⟩
   exact h_bad_extracted
 
+/-- **Pure (non-monadic) per-round completeness logic for the structured ring-switching sumcheck
+round (#29).** Given an honest input `((stmt, oStmt), wit)` in the round-`i.castSucc` relation and
+any verifier challenge `r'`, the honest prover's round univariate
+`h_i := getSumcheckRoundPoly … wit.H`:
+
+1. **passes the verifier check** `∑_{b ∈ D.points i} h_i.eval b = stmt.sumcheck_target`
+   (`getSumcheckRoundPoly_points_sum_eq_cube` + the input sum-consistency), and
+2. **advances the relation**: the honest round output (`getRoundProverFinalOutput`) lies in the
+   round-`i.succ` relation. Conjunct 2 of the output (`witnessStructuralInvariant`) is the
+   structural-invariant transition `fixFirstVariablesOfMQP_projectToMid_succ`; conjunct 3
+   (`sumcheckConsistencyProp`) is the sum-consistency transition
+   `getSumcheckRoundPoly_eval_eq_cube_succ`; the compatibility / `t'` data are carried unchanged.
+
+This is the relation-level content the monadic per-round completeness proof discharges after the
+run-shape unrolling; it isolates the algebra from the `simulateQ`/`OptionT`/`StateT` plumbing. -/
+theorem iteratedSumcheck_round_logic_complete (i : Fin ℓ')
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (oStmt : ∀ j, aOStmtIn.OStmtIn j)
+    (wit : SumcheckWitness L ℓ' i.castSucc)
+    (hrel : ((stmt, oStmt), wit) ∈ sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
+    (r' : L) :
+    (∑ b ∈ (boolDomain L ℓ').points i,
+        (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) wit.H).val.eval b)
+        = stmt.sumcheck_target
+    ∧ (getRoundProverFinalOutput (L := L) ℓ' (RingSwitchingBaseContext κ L K ℓ P)
+          (OStmtIn := aOStmtIn.OStmtIn) (d := 2) i
+          (stmt, oStmt, wit, getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) wit.H, r'))
+        ∈ sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ := by
+  -- Unpack the input relation conjuncts.
+  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
+    witnessStructuralInvariant, Set.mem_setOf_eq] at hrel
+  obtain ⟨_, h_struct_in, h_cons_in, h_compat_in⟩ := hrel
+  -- `h_struct_in : wit.H = projectToMid … i.castSucc stmt.challenges`
+  -- `h_cons_in   : stmt.sumcheck_target = ∑_{cube (ℓ'-i.castSucc)} wit.H.val.eval`
+  -- `h_compat_in : aOStmtIn.initialCompatibility ⟨wit.t', oStmt⟩`
+  set m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmt.ctx with hm
+  constructor
+  · -- Conjunct 1: the verifier sum-check passes.
+    rw [getSumcheckRoundPoly_points_sum_eq_cube (L := L) (ℓ' := ℓ') (i := i) (H := wit.H)]
+    exact h_cons_in.symm
+  · -- Conjunct 2: the honest output lies in the round-`i.succ` relation.
+    simp only [getRoundProverFinalOutput, sumcheckRoundRelation, sumcheckRoundRelationProp,
+      masterKStateProp, witnessStructuralInvariant, Set.mem_setOf_eq]
+    -- The honest next-round witness polynomial, as a `Fin (ℓ' - i.succ)` polynomial.
+    refine ⟨trivial, ?_, ?_, h_compat_in⟩
+    · -- conjunct 2 (structural invariant advance)
+      apply Subtype.ext
+      show fixFirstVariablesOfMQP (ℓ' - ↑i) ⟨1, by have := i.2; omega⟩ wit.H.val (fun _ => r')
+        = (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := wit.t') (m := m)
+            (i := i.succ) (challenges := Fin.cons r' stmt.challenges)).val
+      rw [h_struct_in]
+      exact fixFirstVariablesOfMQP_projectToMid_succ (L := L) (ℓ := ℓ') wit.t' m i
+        stmt.challenges r'
+    · -- conjunct 3 (sum-consistency advance)
+      show (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) wit.H).val.eval r'
+        = ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube,
+            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := wit.t') (m := m)
+              (i := i.succ) (challenges := Fin.cons r' stmt.challenges)).val.eval z
+      rw [h_struct_in]
+      exact iteratedSumcheck_hStar_extracted_eval_eq_cube_succ (κ := κ) (L := L) (K := K) (P := P)
+        (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (i := i) (t' := wit.t') (ctx := stmt.ctx)
+        (challenges := stmt.challenges) (r' := r')
+
 /-- **Schwartz-Zippel bound for the bad sumcheck extraction event.**
   Proof strategy (follows `foldStep_doom_escape_probability_bound`):
   1. **Implication**: Show that extraction failure implies the `badSumcheckEventProp`.

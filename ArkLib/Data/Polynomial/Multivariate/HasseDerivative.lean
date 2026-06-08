@@ -1,5 +1,7 @@
-import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.Data.Finsupp.Antidiagonal
 
 namespace ArkLib.MvPolynomial
 
@@ -25,7 +27,8 @@ lemma hasseDeriv_add (d : σ →₀ ℕ) (p q : MvPolynomial σ R) :
   rw [map_add, coeff_add]
 
 lemma hasseDeriv_mul (d : σ →₀ ℕ) (p q : MvPolynomial σ R) :
-    hasseDeriv d (p * q) = Finset.sum d.antidiagonal (fun uv => hasseDeriv uv.1 p * hasseDeriv uv.2 q) := by
+    hasseDeriv d (p * q)
+      = Finset.sum (Finset.antidiagonal d) (fun uv => hasseDeriv uv.1 p * hasseDeriv uv.2 q) := by
   dsimp [hasseDeriv]
   rw [map_mul, coeff_mul]
 

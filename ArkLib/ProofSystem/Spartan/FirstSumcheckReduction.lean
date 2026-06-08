@@ -91,12 +91,11 @@ theorem matVecMLEEvalFromOracles_simOracle
     congr 1
     rw [foldl_add_eq_sum', zero_add, Finset.sum_map_toList]
     rw [matVecMLE, MLE_eval_eq_sum_eqTilde]
-    refine Fintype.sum_equiv finFunctionFinEquiv _ _ ?_ |>.symm
+    refine Fintype.sum_equiv finFunctionFinEquiv _ _ ?_
     intro xBits
-    simp only [eqTilde, Function.comp_apply]
-    unfold boolPoint
-    simp only [Equiv.symm_apply_apply]
-    rw [eqPolynomial_symm]
+    have hb : boolPoint R (finFunctionFinEquiv xBits) = (fun i => ((xBits i : Fin 2) : R)) := by
+      funext j; simp [boolPoint, Equiv.symm_apply_apply]
+    rw [hb, eqTilde, eqPolynomial_symm, Function.comp_apply]
   · -- each outer step is deterministic: the inner fold reconstructs `(M *ᵥ 𝕫)(x)`
     intro acc xEnum
     simp only [simulateQ_bind, matVecRowSum_simOracle, pure_bind, simulateQ_pure]
