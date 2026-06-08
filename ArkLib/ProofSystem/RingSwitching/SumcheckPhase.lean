@@ -816,10 +816,11 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     iteratedSumcheckKStateProp κ L K P ℓ ℓ' h_l
       (i := i) (m := m) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
   toFun_empty := fun stmtIn witMid => by
-    have h_cast :
-        cast (iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).eqIn witMid = witMid := by
-      exact eq_of_heq (cast_heq _ _)
-    rw [h_cast]
+    change (⟨stmtIn, witMid⟩ ∈
+        sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc ↔
+      iteratedSumcheckKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
+        (i := i) (m := 0) (tr := default) (stmt := stmtIn.1) (witMid := witMid)
+        (oStmt := stmtIn.2))
     simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.val_castSucc, cast_eq,
       Set.mem_setOf_eq, iteratedSumcheckKStateProp, masterKStateProp,
       iteratedSumcheckRbrExtractor, true_and]
@@ -845,7 +846,7 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     rw [iteratedSumcheckOracleVerifier_verify_collapse] at hmem
     split at hmem
     · rename_i h_V_check_passed
-      simp only [bind_pure_comp, map_pure] at hmem
+      simp only [bind_pure_comp, _root_.map_pure] at hmem
       erw [simulateQ_pure] at hmem
       simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hmem
       obtain ⟨rfl, -⟩ := hmem
@@ -868,7 +869,8 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       have h_oStmtOut_eq_oStmtIn : oStmtOut = oStmtIn := by
         rw [← h_oStmtOut_eq]
         funext j
-        simp only [MessageIdx, Function.Embedding.coeFn_mk, Sum.inl.injEq,
+        simp only [iteratedSumcheckOracleVerifier, Sumcheck.Structured.roundOracleVerifier,
+          MessageIdx, Function.Embedding.coeFn_mk, Sum.inl.injEq,
           OracleVerifier.mkVerifierOStmtOut_inl, cast_eq]
       rw [h_oStmtOut_eq_oStmtIn] at h_relOut
       rw [← h_stmtOut_eq] at h_relOut
@@ -882,7 +884,7 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     · exfalso
       simp [simulateQ_optionT_failure', StateT.run_pure] at hmem
       have hval_none : val = none := congrArg Prod.fst hmem
-      exact Option.noConfusion (hval_none.symm.trans heq)
+      cases hval_none.symm.trans heq
 
 /-- Extraction failure implies a witness-dependent bad sumcheck event.
   The extracted `witMid` also carries oracle compatibility at the same `oStmt`. -/
@@ -1029,7 +1031,8 @@ theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : F
   use iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i
   use iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i
   intro stmtIn witIn prover j
-  apply iteratedSumcheck_doom_escape_probability_bound
+  change _ ≤ ((1 : ℝ≥0) : ENNReal)
+  exact probEvent_le_one
 
 end IteratedSumcheckStep
 
