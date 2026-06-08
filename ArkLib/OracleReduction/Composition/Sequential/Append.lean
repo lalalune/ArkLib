@@ -1763,6 +1763,24 @@ theorem liftM_liftM_via_comp {ιs ιm ιp : Type} {spec : OracleSpec ιs} {midSp
       from (liftComp_eq_liftM _).symm]
   exact liftComp_liftComp hco X
 
+/-- Collapse the transitive `liftM` path that lifts an `oSpec` computation through the left
+challenge layer before the appended challenge layer.  This is the instance shape produced by
+`liftM_bind` after splitting the seam `P₁.output >>= P₂.sendMessage` block, while
+the right-block round normalizers use the direct `liftComp` path. -/
+theorem liftM_via_leftChallenge_eq_liftComp
+    {α : Type} (X : OracleComp oSpec α) :
+    (@liftM (OracleComp oSpec)
+        (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+        (instMonadLiftTOfMonadLift (OracleComp oSpec) (OracleComp (oSpec + [pSpec₁.Challenge]ₒ))
+          (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)))
+        α X)
+      = OracleComp.liftComp X (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) := by
+  change (liftM (liftM X : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) α) :
+      OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
+    = OracleComp.liftComp X (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+  exact liftM_liftM_via_comp (spec := oSpec) (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+    (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) X (fun _ => rfl)
+
 
 
 /-- `processRound` resolved at a message (`P_to_V`) round (mirror of the library's
@@ -3627,6 +3645,51 @@ theorem liftComp_processRound_zero_challenge_appendRight (hn : 0 < n)
   rw [liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₂.Challenge]ₒ)
     (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
 
+/-- Message-branch seam start in the same lifted `P₂.processRound 0` shape consumed by the
+right-block interior fold.  This composes the appendRight-threaded one-round seam step with
+`liftComp_processRound_zero_message_appendRight`, and also collapses the transitive left-challenge
+lift introduced by splitting `P₁.output >>= P₂.sendMessage`. -/
+theorem append_continueFromTo_seam_start_message_processRound (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeam.1 =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))) :
+    HEq (Prover.continueFromTo (P₁.append P₂) stmt wit
+          (⟨m, by omega⟩ : Fin (m + n)).castSucc
+          (⟨m, by omega⟩ : Fin (m + n)).succ rSeam)
+      ((liftM (P₁.output (cast (append_PrvState_seam_castSucc hn) rSeam.2)) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Stmt₂ × Wit₂)) >>= fun ctxIn₂ =>
+        (liftM
+          (P₂.processRound (⟨0, hn⟩ : Fin n)
+            (pure
+              ((default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))),
+                P₂.input ctxIn₂))) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            (pSpec₂.Transcript (⟨0, hn⟩ : Fin n).succ ×
+              P₂.PrvState (⟨0, hn⟩ : Fin n).succ)) >>= fun p =>
+        (pure
+          (Transcript.appendRight T₁ p.1,
+            cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm p.2) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+              × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ))) := by
+  refine HEq.trans (append_continueFromTo_seam_step_message_appendRight
+    (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit) hn hDir hDir₂ T₁ rSeam hT) ?_
+  apply heq_of_eq
+  rw [liftM_bind, bind_assoc]
+  congr 1
+  funext ctxIn₂
+  rw [liftM_via_leftChallenge_eq_liftComp
+    (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂)
+    (X := P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂))]
+  simpa [OracleComp.liftComp_eq_liftM] using
+    (liftComp_processRound_zero_message_appendRight
+      (P₁ := P₁) (P₂ := P₂) hn hDir₂ T₁ ctxIn₂).symm
+
 
 /-- **`Fin.snoc`/`Fin.hconcat` bridge (partial `(T)` family).**  A partial-transcript
 `Transcript.concat msg T` is `Fin.snoc T msg` over the transcript motive `δ`; the prefix/snoc
@@ -3709,6 +3772,7 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
 #print axioms Prover.liftComp_pure_bind
 #print axioms Prover.liftComp_pure_bind_pure
 #print axioms Prover.liftComp_bind_liftComp_comp
+#print axioms Prover.liftM_via_leftChallenge_eq_liftComp
 #print axioms Prover.appendRight_concat_seam_message
 #print axioms Prover.appendRight_concat_seam_challenge
 #print axioms Prover.append_processRound_seam_message_comp
@@ -3717,6 +3781,7 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
 #print axioms Prover.append_continueFromTo_seam_step_challenge_appendRight
 #print axioms Prover.liftComp_processRound_zero_message_appendRight
 #print axioms Prover.liftComp_processRound_zero_challenge_appendRight
+#print axioms Prover.append_continueFromTo_seam_start_message_processRound
 
 -- Future work: define a function that extracts a second prover from the combined prover.
 
