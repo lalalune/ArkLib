@@ -2477,6 +2477,21 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel
         (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog' vLog :=
   rfl
 
+/-- Simp-oriented form of prover-log irrelevance for the canonical Fiat-Shamir straightline
+extractor. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel_simp
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (pLog vLog : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog vLog =
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof default vLog := by
+  exact fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel
+    (srExtractor := srExtractor) (stmtIn := stmtIn) (witOut := witOut)
+    (proof := proof) (pLog := pLog) (pLog' := default) (vLog := vLog)
+
 /-- The verifier-side log is used only through its slow-Fiat-Shamir challenge projection.  Original
 oracle queries in the verifier log are ignored by the canonical extractor. -/
 theorem fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_snd_congr
@@ -2559,6 +2574,7 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_inl_right_ir
     (queryLog_snd_append_inl_right verifyLog originalLog)
 
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel_simp
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_snd_congr
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_log_congr
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_inl_left_irrel
@@ -2831,6 +2847,22 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     hbound (Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver
       (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
   dsimp only [Verifier.knowledgeSoundness]
+  rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
+  refine le_trans ?_ h
+  simp [Verifier.StateRestoration.knowledgeSoundness,
+    fiatShamirCoupledQueryImpl,
+    ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl',
+    Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
+    Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
+    Verifier.fiatShamir_verify_eq,
+    fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel_simp,
+    Reduction.runWithLog, Prover.runWithLog,
+    Reduction.run, Prover.run, Prover.runToRound, Prover.processRound]
+  refine Verifier.StateFunction.probEvent_bind_mono_heteroEvent (fun table _ => ?_)
+  simp only [OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, OptionT.run_pure,
+    Option.elimM, simulateQ_option_elimM, simulateQ_bind, simulateQ_map, simulateQ_pure,
+    StateT.run_bind, StateT.run_map, map_bind, bind_assoc, pure_bind, map_eq_pure_bind,
+    Option.elim_some]
   trace_state
   sorry
 
