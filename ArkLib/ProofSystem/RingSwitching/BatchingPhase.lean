@@ -7,6 +7,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Basic
+import ArkLib.Data.Probability.Notation
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
 
 /-!
@@ -43,7 +44,7 @@ Output: `witOut = (Statement (L := L) (ℓ := ℓ')`
 
 open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial
   Module TensorProduct Nat Matrix
-open scoped NNReal
+open scoped NNReal ProbabilityTheory
 open Sumcheck.Structured
 
 noncomputable section
@@ -222,7 +223,8 @@ lemma oracleVerifier_verify_collapse
          else pure (failureState κ L K P ℓ ℓ' stmt (FullTranscript.messages tr ⟨0, by rfl⟩))
          : OptionT (OracleComp []ₒ) _) := by
   simp only [oracleVerifier]
-  rw [simulateQ_optionT_bind, simulateQ_simOracle2_query]
+  rw [simulateQ_optionT_bind]
+  erw [simulateQ_simOracle2_query]
   -- `simulateQ (simOracle2 …) (query) = OptionT.lift (pure (answer …))`. Reduce the lift-bind at
   -- the `.run` level via `OptionT.run_bind_lift` (+ `pure_bind`), then push `simulateQ` through
   -- the query-free `if`.
@@ -519,23 +521,6 @@ theorem batchingReduction_perfectCompleteness
     (init := init) (impl := impl) :=
   hBatching
 
-/-- RBR knowledge soundness for the batching phase oracle verifier. `IsDomain K` (alongside the
-existing `IsDomain L`) is required by the round-0 knowledge-state conjunct's DP24 capstone; it
-holds in every real instantiation (e.g. `binaryTowerProfile` builds from a field `K`). -/
-theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
-    OracleVerifier.rbrKnowledgeSoundness
-    (verifier := oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))
-    (init := init) (impl := impl)
-    (relIn := batchingInputRelation κ L K P ℓ ℓ' h_l aOStmtIn)
-    (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
-    (rbrKnowledgeError := batchingRBRKnowledgeError (κ:=κ) (L:=L) (K:=K) (P:=P)) := by
-  -- Proof follows by constructing the extractor and knowledge state function.
-  use batchingWitMid L K ℓ ℓ'
-  use batchingRbrExtractor κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
-  use batchingKnowledgeStateFunction κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl)
-  intro stmtIn witIn prover iChal
-  apply batching_doom_escape_probability_bound
-
 /-- Mismatch polynomial from row-decomposition difference `msg0 - s_bar`. -/
 noncomputable def batchingMismatchPoly (msg0 s_bar : P.A) : MvPolynomial (Fin κ) L :=
   MvPolynomial.MLE (fun u : Fin κ → Fin 2 =>
@@ -629,6 +614,30 @@ lemma batchingMismatchPoly_nonzero_of_embed_ne
   but their `compute_s0` values agree at the batching challenges `y`. -/
 def badBatchingEventProp (y : Fin κ → L) (msg0 s_bar : P.A) : Prop :=
   msg0 ≠ s_bar ∧ compute_s0 κ L K P msg0 y = compute_s0 κ L K P s_bar y
+
+/-- Extraction-failure/doom-escape event for the batching phase RBR proof. -/
+def rbrExtractionFailureEvent
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
+    (kSF : (oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)).KnowledgeStateFunction
+      init impl
+      (relIn := batchingInputRelation κ L K P ℓ ℓ' h_l aOStmtIn)
+      (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
+      (extractor := batchingRbrExtractor κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)))
+    (extractor : Extractor.RoundByRound []ₒ
+      (BatchingStmtIn L ℓ × (∀ j, aOStmtIn.OStmtIn j))
+      (BatchingWitIn L K ℓ ℓ') (SumcheckWitness L ℓ' 0)
+      (pSpecBatching (κ := κ) (L := L) (K := K) (P := P))
+      (batchingWitMid L K ℓ ℓ'))
+    (j : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).ChallengeIdx)
+    (stmtIn : BatchingStmtIn L ℓ × (∀ j, aOStmtIn.OStmtIn j))
+    (transcript : Transcript j.1.castSucc
+      (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)))
+    (challenge : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).Challenge j.1) :
+    Prop :=
+  ∃ witMid : batchingWitMid L K ℓ ℓ' j.1.succ,
+    ¬ kSF j.1.castSucc stmtIn transcript
+      (extractor.extractMid j.1 stmtIn (transcript.concat challenge) witMid) ∧
+      kSF j.1.succ stmtIn (transcript.concat challenge) witMid
 
 /-- **Schwartz-Zippel bound for the bad batching event.** -/
 lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L]
@@ -782,6 +791,23 @@ lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L]
         exact not_exists.mp h_doom y)
     apply le_trans h_prob_mono_false
     simp [PMF.pure_apply]
+
+/-- RBR knowledge soundness for the batching phase oracle verifier. `IsDomain K` (alongside the
+existing `IsDomain L`) is required by the round-0 knowledge-state conjunct's DP24 capstone; it
+holds in every real instantiation (e.g. `binaryTowerProfile` builds from a field `K`). -/
+theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
+    OracleVerifier.rbrKnowledgeSoundness
+    (verifier := oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))
+    (init := init) (impl := impl)
+    (relIn := batchingInputRelation κ L K P ℓ ℓ' h_l aOStmtIn)
+    (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
+    (rbrKnowledgeError := batchingRBRKnowledgeError (κ:=κ) (L:=L) (K:=K) (P:=P)) := by
+  -- Proof follows by constructing the extractor and knowledge state function.
+  use batchingWitMid L K ℓ ℓ'
+  use batchingRbrExtractor κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
+  use batchingKnowledgeStateFunction κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl)
+  intro stmtIn witIn prover iChal
+  apply batching_doom_escape_probability_bound
 
 end BatchingPhase
 end RingSwitching

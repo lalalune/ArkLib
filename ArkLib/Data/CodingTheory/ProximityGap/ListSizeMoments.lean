@@ -180,4 +180,48 @@ theorem second_moment_linear {C : Finset (ι → F)}
   exact sum_pairs_diff hadd hsub
     (fun v => (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card)
 
+/-- **Hamming distance is invariant under permuting coordinates.** -/
+lemma hammingDist_comp_perm (σ : Equiv.Perm ι) (a b : ι → F) :
+    hammingDist (a ∘ σ) (b ∘ σ) = hammingDist a b := by
+  unfold hammingDist
+  refine Finset.card_nbij' (fun i => σ i) (fun j => σ.symm j) ?_ ?_ ?_ ?_
+  · intro i hi
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and,
+      Function.comp_apply] at hi ⊢
+    exact hi
+  · intro j hj
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and,
+      Function.comp_apply, Equiv.apply_symm_apply] at hj ⊢
+    exact hj
+  · intro i _; exact σ.symm_apply_apply i
+  · intro j _; exact σ.apply_symm_apply j
+
+/-- **Coordinate-permutation invariance of the pair-ball count `N`.** `N(v, r) = N(v ∘ σ, r)`: only
+the *multiset* of values of `v` matters, not their positions. (Combined with per-coordinate scaling —
+the monomial symmetry over a field — this gives that `N` depends only on the Hamming weight `wt(v)`,
+collapsing `Σ_{v∈C} N(v,r)` onto the weight enumerator `Σ_w A_w · N(w,r)`.) -/
+lemma pairBall_perm (σ : Equiv.Perm ι) (v : ι → F) (r : ℕ) :
+    (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card
+      = (Finset.univ.filter
+          (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist (v ∘ σ) g ≤ r)).card := by
+  refine Finset.card_nbij' (fun g => g ∘ σ) (fun h => h ∘ σ.symm) ?_ ?_ ?_ ?_
+  · intro g hg
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hg ⊢
+    obtain ⟨h1, h2⟩ := hg
+    have h0 : hammingDist (0 : ι → F) (g ∘ σ) = hammingDist (0 : ι → F) g :=
+      hammingDist_comp_perm σ 0 g
+    exact ⟨h0 ▸ h1, (hammingDist_comp_perm σ v g) ▸ h2⟩
+  · intro h hh
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hh ⊢
+    obtain ⟨h1, h2⟩ := hh
+    have h0 : hammingDist (0 : ι → F) (h ∘ σ.symm) = hammingDist (0 : ι → F) h :=
+      hammingDist_comp_perm σ.symm 0 h
+    have hv : hammingDist v (h ∘ σ.symm) = hammingDist (v ∘ σ) h := by
+      have hvs : (v ∘ σ) ∘ σ.symm = v := by ext i; simp
+      have := hammingDist_comp_perm σ.symm (v ∘ σ) h
+      rwa [hvs] at this
+    exact ⟨h0 ▸ h1, hv ▸ h2⟩
+  · intro g _; funext i; simp
+  · intro h _; funext i; simp
+
 end ArkLib.CodingTheory.ListMoments

@@ -33,7 +33,8 @@ private theorem stateT_option_bind_map_eq
       | some b => k b) := by
   apply StateT.ext
   intro s
-  simp only [StateT.run_bind, StateT.run_map, map_bind]
+  simp only [StateT.run_bind, StateT.run_map]
+  rw [bind_map_left]
   apply bind_congr
   intro x
   cases x with

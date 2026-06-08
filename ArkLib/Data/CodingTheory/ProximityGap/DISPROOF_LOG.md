@@ -235,6 +235,36 @@ for Loop7's self-refutation and O6′. **Caveats (honest):** sampled (not exhaus
 fields, integer-rounded radius; suggestive of conjecture-survival, *not* proof. → no disproof; weakly
 *supports* the conjecture. Script: `o7_fixed_gap_probe.py` (in this dir).
 
+## Proof attempts (the OTHER direction — the prize is won by a proof *or* a disproof)
+
+### P1 — the large-gap regime is provable: a `q`-independent Johnson list budget (Loop9)
+The disproof side fenced the open core to *small* gaps `η ≤ √ρ−ρ`. The proof side carves off the
+complementary regime. Instantiate the in-tree Johnson list bound
+`JohnsonListBound.johnson_list_bound_div` (`|L| ≤ n²/(a²−n·b)`) at a Reed–Solomon code with
+agreement `a=(1−δ)n` and pairwise codeword agreement `b=ρn` (RS is MDS, distinct degree-`<k` polys
+agree on `≤ k−1 < ρn`): then `a²−n·b = n²·((1−δ)²−ρ)` and
+
+    |L| ≤ 1/((1−δ)² − ρ),   **independent of `n` and `q`**, finite ⟺ `(1−δ)² > ρ` (below Johnson).
+
+By Loop5 (`large_gap_forces_below_johnson`), `η > √ρ−ρ ⟹ δ ≤ 1−ρ−η < 1−√ρ`, so the budget is finite
+and `≤ 1/((ρ+η)²−ρ)`, a positive `(ρ,η)`-only constant. **Verified sorry-free, axiom-clean in
+`CandidateProofLoop9.lean`:** `below_johnson_of_large_gap`, `johnson_listbudget_le`,
+`johnson_budget_qindependent_pos`. This is the proof-side mirror of Loop8's `q`-independence: in the
+large-gap regime the prize's list-size budget is met with no `q`-dependence.
+**Disproof of the proof (P1):** (i) the budget `1/((ρ+η)²−ρ)` **blows up as `η→(√ρ−ρ)⁺`**, so it is
+`poly(1/(η−(√ρ−ρ)))`, *not* `poly(1/η)` — Johnson only proves the prize for gaps bounded **away
+from** the Johnson threshold, not up to it. (ii) The Johnson bound caps the actual decoding-ball
+size; wiring it into a `FaithfulGSFamily` + `PivotCovering` family (the in-tree mass-bound chain)
+needs the classical GS *decoder construction* (absent from mathlib). So P1 is a genuine **partial
+proof** — the combinatorial `q`-independent core in the large-gap regime — exactly as partial as the
+disproof side, and meeting it at the Johnson threshold `η = √ρ−ρ`.
+
+### Synthesis: the problem is carved at the Johnson threshold `η₀ = √ρ−ρ`
+- `η > η₀` (large gap): **provable** — radius below Johnson, `q`-independent list budget (P1/Loop9).
+- `η ≤ η₀` (small gap): **open** — radius in the band `(1−√ρ, 1−ρ−η]`; disproof needs a fixed-gap
+  `q`-growing list-size lower bound (O6′/Loop8), proof needs beyond-UDR GS decoding. Both partial
+  sides meet exactly here; the prize lives in this band.
+
 ## Open angles not yet tried (to avoid repetition)
 
 - O8: strengthen O7 to **fixed-gap** Frobenius realization: produce high-degree bad scalars with

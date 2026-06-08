@@ -6,6 +6,10 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
+import ArkLib.OracleReduction.Composition.Sequential.General
+import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.Data.Probability.Notation
+import ArkLib.OracleReduction.Security.RoundByRound
 set_option linter.style.longFile 0
 set_option linter.style.longLine false
 set_option linter.unusedVariables false
@@ -13,11 +17,6 @@ set_option linter.unusedSectionVars false
 set_option linter.unusedSimpArgs false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedFintypeInType false
-
-import ArkLib.OracleReduction.Composition.Sequential.General
-import ArkLib.OracleReduction.Composition.Sequential.Append
-import ArkLib.Data.Probability.Notation
-import ArkLib.OracleReduction.Security.RoundByRound
 
 /-!
 # Ring-Switching Core Interaction Phase

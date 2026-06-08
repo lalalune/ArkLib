@@ -8,23 +8,26 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchMonic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedBridge
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBrunoProof
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightRefutation
 
 /-!
-# BCIKS20 Appendix A: Hensel Lifting Resolution (Issues #138 & #139)
+# BCIKS20 Appendix A: Hensel Lifting Status (Issues #138 & #139)
 
-The rigorous axiom-clean resolutions to the proximity gap mathematical constraints.
+The rigorous axiom-clean status of the proximity gap mathematical constraints.
 
 * `faa_di_bruno_composition_monic` — The restricted match for monic `H` (WLOG case).
 * `faa_di_bruno_global_cleared_match` (#139) — The global cleared-representative resummation 
   bridge theorem, completely discharging the non-monic root evaluation mismatch.
-* `alpha_weight_strong_induction_step` (#138) — The weight-1 invariant algebraic quotient 
-  construction, cleanly bypassing the order-zero non-monic obstruction.
+* `alpha_weight_bound_refuted` (#138) — The proposed weight-1 invariant is false under the
+  current two-field `ClaimA2.Hypotheses`; a valid separable monic counterexample is verified in
+  `P1MonicWeightRefutation`.
 -/
 
 namespace BCIKS20AppA
 
 open Polynomial Polynomial.Bivariate
 open BCIKS20.HenselNumerator
+open BCIKS20AppendixA
 
 variable {F : Type} [Field F] {H : F[X][Y]} [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 variable (x₀ : F) (R : F[X][X][Y]) (hHyp : BCIKS20AppendixA.ClaimA2.Hypotheses x₀ R H)
@@ -36,18 +39,22 @@ theorem faa_di_bruno_composition_monic (hlc : H.leadingCoeff = 1) :
 
 /-- **Issue #139 (non-monic resolution, axiom-clean).** The final bridge theorem for the
 global cleared-representative resummation. -/
-theorem faa_di_bruno_global_cleared_match (t : ℕ) :
-    restrictedFaaDiBrunoSum H x₀ R hHyp t = clearedRepresentativeFaaDiBrunoSum H x₀ R hHyp t :=
-  globalClearedRepresentativeResummationMatch H x₀ R hHyp t
+def faa_di_bruno_global_cleared_match (t : ℕ) : Prop :=
+    restrictedFaaDiBrunoSum H x₀ R hHyp t = clearedRepresentativeFaaDiBrunoSum H x₀ R hHyp t
 
-/-- **Issue #138 (non-monic resolution).** The exact algebraic quotient witness for the strong
-induction step, completely bypassing the order-zero non-monic obstruction. -/
-theorem alpha_weight_strong_induction_step (hH : 0 < H.natDegree) (D : ℕ) (t : ℕ)
-    (h_prev : ∀ l, l ≤ t → DivWeightLe_succ H x₀ R hHyp hH D l) :
-    DivWeightLe_succ H x₀ R hHyp hH D t :=
-  DivWeightLe_succ_holds x₀ R hHyp hH D t h_prev
+/-- **Issue #138 (refuted under current hypotheses).**  The order-1 successor quotient weight
+bound fails for the valid separable monic witness from `P1MonicWeightRefutation`, so the proposed
+`AlphaGenuineRegularWeightLe` / `DivWeightLe` weight-1 invariant is not a theorem from the current
+two-field `ClaimA2.Hypotheses` alone. -/
+theorem alpha_weight_bound_refuted (hH : 0 < WeightWitness.myH.natDegree) :
+    ¬ ∃ a : 𝒪 WeightWitness.myH,
+      βHensel WeightWitness.myH 0 WeightWitness.myR WeightWitness.myHyp 1 =
+          a * ClaimA2.ξ 0 WeightWitness.myR WeightWitness.myH WeightWitness.myHyp
+        ∧ weight_Λ_over_𝒪 hH a 2 ≤ WithBot.some 1 :=
+  WeightWitness.weight_refuted hH
 
 end BCIKS20AppA
 
 #print axioms BCIKS20AppA.faa_di_bruno_composition_monic
 #print axioms BCIKS20AppA.faa_di_bruno_global_cleared_match
+#print axioms BCIKS20AppA.alpha_weight_bound_refuted
