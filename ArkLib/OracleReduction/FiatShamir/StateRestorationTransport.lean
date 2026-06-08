@@ -2449,6 +2449,58 @@ private theorem simulateQ_optionT_bind_mk_some_run
   simp [OptionT.run_bind, OptionT.run_mk, simulateQ_option_elimM, simulateQ_map,
     stateT_option_elimM_some_map_eq]
 
+/-- Simulating an `OptionT` computation that only uses the base Fiat-Shamir oracle is unchanged by
+adding the one-message transformed verifier's empty challenge layer. -/
+private theorem simulateQ_addLift_fiatShamirChallenge_optionT
+    {σ α : Type}
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (oa : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α) :
+    simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+        ((liftM oa :
+          OptionT
+            (OracleComp
+              ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+            α).run) =
+      simulateQ impl oa.run := by
+  dsimp [QueryImpl.addLift_def]
+  change
+    simulateQ
+        (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+          (challengeQueryImpl
+            (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+        (OptionT.run
+          ((liftM
+            (liftM oa :
+              OptionT
+                (OracleComp
+                  (oSpec + (fsChallengeOracle StmtIn pSpec +
+                    [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)))
+                α)) :
+            OptionT
+              (OracleComp
+                ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                  [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+              α)) =
+      simulateQ impl (OptionT.run oa)
+  rw [OracleComp.liftM_OptionT_add_assoc_right
+    (spec₁ := oSpec) (spec₂ := fsChallengeOracle StmtIn pSpec)
+    (spec₃ := [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
+    (oa := oa)]
+  simp only [OptionT.run_mk]
+  have hSim :=
+    simulateQ_add_liftComp_add_assoc_left
+      (impl₁₂ := impl)
+      (impl₃ := QueryImpl.liftTarget (StateT σ ProbComp)
+        (challengeQueryImpl
+          (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+      (oa := oa.run)
+  rw [OracleComp.liftComp_add_assoc_right
+    (spec₁ := oSpec) (spec₂ := fsChallengeOracle StmtIn pSpec)
+    (spec₃ := [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
+    (oa := oa.run)] at hSim
+  exact hSim
+
 /-- Generic bridge: a `Reduction.run`-bind equals the corresponding `runWithLog`-bind whose
 continuation only reads the run result.  This is the no-HOU direction (rewrite `run` to
 `Prod.fst <$> runWithLog`). -/
@@ -2842,10 +2894,36 @@ theorem fiatShamirProver_run_simulateQ_eq_direct
           let proof : Reduction.FiatShamirProofTranscript (pSpec := pSpec) := fun
             | ⟨0, _⟩ => proofMessages
           pure ⟨proof, ctxOut⟩) := by
-  rw [Prover.run]
-  simp only [Prover.runToRound, Prover.processRound]
-  trace_state
-  sorry
+  rw [Prover.run_of_prover_first
+    (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))]
+  simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self, liftComp_eq_liftM,
+    bind_assoc, pure_bind, simulateQ_bind, simulateQ_map, simulateQ_pure,
+    simulateQ_addLift_liftM, map_bind, bind_pure_comp]
+  rfl
+
+/-- Logged prover execution collapses to the explicit send/output execution after projecting away
+the query log. -/
+theorem fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
+    {σ : Type}
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    Prod.fst <$>
+        simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          (Prover.runWithLog stmtIn witIn P) =
+      simulateQ impl
+        (do
+          let state := P.input (stmtIn, witIn)
+          let ⟨proofMessages, state⟩ ← P.sendMessage ⟨0, by simp⟩ state
+          let ctxOut ← P.output state
+          let proof : Reduction.FiatShamirProofTranscript (pSpec := pSpec) := fun
+            | ⟨0, _⟩ => proofMessages
+          pure ⟨proof, ctxOut⟩) := by
+  rw [← fiatShamirProver_run_simulateQ_eq_direct
+    (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)]
+  rw [← simulateQ_map]
+  rw [Prover.runWithLog_discard_log_eq_run]
 
 omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
   [∀ i, SampleableType (pSpec.Challenge i)] in
@@ -2888,7 +2966,7 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
           pure (stmtIn, extractedWitIn, stmtOut, ctxOut.2) :
             OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
               (StmtIn × WitIn × StmtOut × WitOut)).run) := by
-  rw [Reduction.runWithLog, Prover.runWithLog]
+  rw [Reduction.runWithLog]
   simp only [Verifier.fiatShamir, Verifier.run,
     QueryImpl.addLift_def, QueryImpl.liftTarget_self, liftM_eq_monadLift,
     OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, optionT_monadLift_run,
@@ -2897,7 +2975,7 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
     simulateQ_option_elim, bind_assoc, pure_bind, map_bind,
     StateT.run_simulateQ_optiont_map, StateT.run_pure_some_bind_map,
     Option.map_comp_lambda, simulateQ_map_monadLift_getM_run,
-    optionT_run_simulateQ_liftquery, OptionT.run_monadLift]
+    optionT_run_simulateQ_liftquery, OptionT.run_monadLift, monadLift_self]
   trace_state
   sorry
 
