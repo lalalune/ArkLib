@@ -117,4 +117,25 @@ def snd (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂
     have hlast : Fin.natAdd m (Fin.last n) = Fin.last (m + n) := by ext; simp
     exact P.output (hlast ▸ state)
 
+/-- **Phase-1 seam prover recast to an honest `Stmt₂`-output prover.** `Prover.fst P` outputs the seam
+*state* (needed by `Prover.snd`), but `V₁.soundness` quantifies over provers whose output statement has
+the verifier's output type `Stmt₂`. Since the verifier reads only the *transcript* (never the prover's
+output), this recast — identical rounds to `Prover.fst P`, but emitting a fixed dummy claim `c : Stmt₂` —
+produces the *same transcript distribution* (`fstCast_runToRound`) yet is a valid `V₁.soundness` prover.
+This is the bridge that turns the seam's phase-1 bound (`h₁`) into a direct application of `V₁.soundness`. -/
+def fstCast {Stmt₂ : Type} (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (c : Stmt₂) :
+    Prover oSpec Stmt₁ Wit₁ Stmt₂ Unit pSpec₁ where
+  PrvState := (Prover.fst P).PrvState
+  input := (Prover.fst P).input
+  sendMessage := (Prover.fst P).sendMessage
+  receiveChallenge := (Prover.fst P).receiveChallenge
+  output := fun _ => pure (c, ())
+
+/-- `Prover.fstCast P c` runs the *same rounds* as `Prover.fst P`, hence the same
+`runToRound` (transcript-and-state) — the recast only changes the (irrelevant) final output. -/
+@[simp] theorem fstCast_runToRound {Stmt₂ : Type}
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (c : Stmt₂)
+    (k : Fin (m + 1)) (stmt : Stmt₁) (wit : Wit₁) :
+    (Prover.fstCast P c).runToRound k stmt wit = (Prover.fst P).runToRound k stmt wit := rfl
+
 end Prover
