@@ -30,6 +30,40 @@ a 0-round trailing protocol consumes (see `EmptyAppendReduction`, `SubsingletonS
 
 open OracleSpec OracleComp ProtocolSpec SubSpec
 
+namespace OracleComp
+
+variable {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+  {α : Type} {mo : Type → Type} [Monad mo] [LawfulMonad mo] [HasEvalSet mo]
+  [MonadLiftT (OracleComp spec₁) (OracleComp spec₂)]
+  [LawfulMonadLiftT (OracleComp spec₁) (OracleComp spec₂)]
+
+/-- **Support-level transport of `simulateQ` across a lift.** If, for every query, simulating the
+lifted query under `impl` has the same support as `impl₁`, then simulating any lifted computation
+under `impl` has the same support as simulating it under `impl₁`.
+
+This is the support analogue of VCVio's `simulateQ_liftM_eq_of_query`, needed when the two handlers
+agree only up to support rather than syntactically — e.g. the challenge oracle across an append seam,
+whose uniform samplers use distinct `SampleableType` instances (see
+`support_simulateQ_challengeQueryImpl_append_left`). It carries the appended honest-execution
+experiment's prover/verifier marginals back to the component-protocol experiments, which is the step
+the `n=0` perfect-completeness composition needs before applying the component completeness
+hypotheses. -/
+theorem support_simulateQ_liftM_eq_of_query
+    (impl : QueryImpl spec₂ mo) (impl₁ : QueryImpl spec₁ mo)
+    (h : ∀ t, support (simulateQ impl
+      (liftM (liftM (spec₁.query t) : OracleComp spec₁ (spec₁.Range t))
+        : OracleComp spec₂ (spec₁.Range t))) = support (impl₁ t))
+    (oa : OracleComp spec₁ α) :
+    support (simulateQ impl (liftM oa : OracleComp spec₂ α)) = support (simulateQ impl₁ oa) := by
+  induction oa using OracleComp.inductionOn with
+  | pure x => simp
+  | query_bind t k ih =>
+      rw [liftM_bind, simulateQ_bind, simulateQ_bind, simulateQ_spec_query,
+        support_bind, support_bind, h t]
+      exact Set.iUnion₂_congr fun x _ => ih x
+
+end OracleComp
+
 namespace ProtocolSpec
 
 variable {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
