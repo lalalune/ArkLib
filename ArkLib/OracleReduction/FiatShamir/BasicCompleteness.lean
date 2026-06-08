@@ -47,6 +47,13 @@ theorem optionT_lift_run_bind_getM [Monad M] [LawfulMonad M] (X : OptionT M α) 
   funext o
   cases o <;> rfl
 
+theorem optionT_lift_run_map_getM [Monad M] [LawfulMonad M]
+    (X : OptionT M β) (f : β → α) :
+    ((liftM X.run : OptionT M (Option β)) >>=
+        fun o => f <$> (o.getM : OptionT M β)) =
+      (f <$> X : OptionT M α) := by
+  simp only [← bind_pure_comp, ← bind_assoc, optionT_lift_run_bind_getM]
+
 variable {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
 
 theorem monadLift_optionT_lift_run_getM (X : OptionT (OracleComp spec₁) α) :
@@ -93,6 +100,7 @@ theorem optionT_run_simulateQ_liftquery (X : OptionT (OracleComp spec₁) α) :
 
 #print axioms liftM_eq_monadLift
 #print axioms optionT_lift_run_bind_getM
+#print axioms optionT_lift_run_map_getM
 #print axioms monadLift_optionT_lift_run_getM
 #print axioms monadLift_optionT_lift_run_map_getM
 #print axioms liftM_optionT_combined
