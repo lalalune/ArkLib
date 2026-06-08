@@ -2953,13 +2953,12 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
     (stmtIn : StmtIn) (witIn : WitIn) :
     simulateQ (QueryImpl.addLift impl challengeQueryImpl)
         ((do
-          let d ← Reduction.runWithLog stmtIn witIn
-            { prover := P, verifier := V.fiatShamir }
-          let extractedWitIn ←
-            liftM (fiatShamirStraightlineExtractorOfStateRestoration
-              (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn d.1.1.2.2
-              d.1.1.1 default d.2.2)
-          pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run) =
+          let ⟨⟨⟨transcript, ⟨_, witOut⟩⟩, stmtOut⟩, proveQueryLog, verifyQueryLog⟩ ←
+            (Reduction.mk P V.fiatShamir).runWithLog stmtIn witIn
+          let extractedWitIn ← fiatShamirStraightlineExtractorOfStateRestoration
+            (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut transcript
+            proveQueryLog.fst verifyQueryLog
+          return (stmtIn, extractedWitIn, stmtOut, witOut)).run) =
       simulateQ impl
         ((do
           let state := P.input (stmtIn, witIn)
