@@ -77,8 +77,8 @@ theorem run_empty (s : Stmt₂) (w : Wit₂) :
   rfl
 
 /-- **The `n = 0` discharge of `Prover.appendRunRightResidual`.** When the trailing protocol is
-empty, the right-block continuation collapses (`continueFromTo_self`), the left block is the seam run
-(`append_runToRound_seam`), and the output is the empty-append branch (`append_output_empty`); the
+empty, the right-block continuation collapses (`continueFromTo_self`), the left block is the seam
+run (`append_runToRound_seam`), and the output is the empty-append branch (`append_output_empty`); the
 appended run then matches `P₁.run >>= P₂.run` with the empty trailing transcript. The analogue of
 `Prover.appendRunRightResidual_holds_msg` for `n = 0`. -/
 theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
