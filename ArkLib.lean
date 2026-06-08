@@ -391,6 +391,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAGSPrizeVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeExact
+import ArkLib.Data.CodingTheory.ProximityGap.MCAGeneralLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMasterBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMiddleBand
