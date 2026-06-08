@@ -1,6 +1,7 @@
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.GKL24
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.BCHKS25
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.SubstitutionMultiplicity
+import ArkLib.Data.CodingTheory.ListDecoding.Bounds.GuruswamiSudanListSize
 import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.Polynomial.RingDivision
@@ -120,5 +121,54 @@ theorem capacity_bound_implies_y_root [DecidableEq F]
   rw [← aeval_eval_eq Q f x]
   show Polynomial.eval x P = 0
   rw [hP0, Polynomial.eval_zero]
+
+/-- **Guruswami–Sudan list-decoding bound.** Interpolating a single `Q` from the received word,
+*every* low-degree polynomial `f` that agrees with `received` on more than
+`deg_X + deg_Y · deg(f)` (multiplicity-weighted) points makes the substitution `Q(X, f(X))`
+vanish, hence is a `Y`-root of `Q`. As `Q` has `Y`-degree `≤ deg_Y`, there are at most `deg_Y`
+such codewords.
+
+This is the headline classical list-decoding theorem: it composes the interpolation
+(`gkl24_interpolation_existence`), the per-codeword vanishing (`rootMultiplicity_aeval_ge` +
+`bchks25_vanishing…`), and the list-size bound (`gs_list_size_bound`). -/
+theorem gs_list_decoding_bound [DecidableEq F]
+    (points : Finset F) (received : F → F) (multiplicities : (F × F) → ℕ) (deg_X deg_Y : ℕ)
+    (h_dim : (points.sum (fun x => (multiplicities (x, received x) + 1)
+        * multiplicities (x, received x) / 2)) < (deg_X + 1) * (deg_Y + 1))
+    (S : Finset (Polynomial F))
+    (hS : ∀ f ∈ S,
+      (points.filter (fun z => f.eval z = received z)).sum (fun z => multiplicities (z, received z))
+        > deg_X + deg_Y * f.natDegree) :
+    S.card ≤ deg_Y := by
+  classical
+  have h_dim' : ((points.image (fun x => (x, received x))).sum
+      (fun p => (multiplicities p + 1) * multiplicities p / 2)) < (deg_X + 1) * (deg_Y + 1) := by
+    rw [Finset.sum_image (fun x _ y _ h => (Prod.ext_iff.mp h).1)]
+    exact h_dim
+  obtain ⟨Q, hQ_neq, hQ_degX, hQ_degY, hQ_mult⟩ :=
+    GKL24.gkl24_interpolation_existence (points.image (fun x => (x, received x)))
+      multiplicities deg_X deg_Y h_dim'
+  refine CodingTheory.Bounds.gs_list_size_bound Q hQ_neq deg_Y hQ_degY S ?_
+  -- every `f ∈ S` annihilates `Q`: `Q(X, f(X)) = 0`.
+  intro f hf
+  set P : Polynomial F :=
+    MvPolynomial.aeval (fun i => if i = 0 then (Polynomial.X : Polynomial F) else f) Q with hPdef
+  by_cases hPne : P = 0
+  · exact hPne
+  · refine BCHKS25.bchks25_vanishing_of_multiplicity_sum_gt_degree P
+      (points.filter (fun z => f.eval z = received z))
+      (fun z => multiplicities (z, received z)) ?_ ?_
+    · intro z hz
+      have hz_points : z ∈ points := Finset.mem_of_mem_filter z hz
+      have hz_eq : f.eval z = received z := (Finset.mem_filter.mp hz).2
+      have hz_points' : (z, f.eval z) ∈ points.image (fun x => (x, received x)) := by
+        rw [hz_eq]; exact Finset.mem_image_of_mem _ hz_points
+      have h_mult_Q := hQ_mult (z, f.eval z) hz_points'
+      have hmult_eq : multiplicities (z, received z) = multiplicities (z, f.eval z) := by rw [hz_eq]
+      show multiplicities (z, received z) ≤ Polynomial.rootMultiplicity z P
+      rw [hmult_eq]
+      exact CodingTheory.Bounds.rootMultiplicity_aeval_ge Q f z
+        (multiplicities (z, f.eval z)) (hPdef ▸ hPne) h_mult_Q
+    · exact lt_of_le_of_lt (natDegree_aeval_le Q deg_X deg_Y hQ_degX hQ_degY f) (hS f hf)
 
 end CodingTheory.Bounds.Capacity
