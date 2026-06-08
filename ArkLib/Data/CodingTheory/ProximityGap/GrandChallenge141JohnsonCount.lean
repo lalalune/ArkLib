@@ -54,6 +54,60 @@ set_option linter.unusedSectionVars false
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- **Whole RS affine line stays in the code.** If two endpoint words are Reed-Solomon codewords,
+then every affine-line word `c₀ + γ • (c₁ - c₀)` is again a Reed-Solomon codeword. This is the
+linearity mechanism behind the `hwitAll` refutation: a whole scalar line can be distance-zero
+close to the code. -/
+theorem reedSolomon_affineLine_mem_of_mem {k : ℕ} {domain : ι ↪ F}
+    {c₀ c₁ : ι → F}
+    (hc₀ : c₀ ∈ (ReedSolomon.code domain k : Set (ι → F)))
+    (hc₁ : c₁ ∈ (ReedSolomon.code domain k : Set (ι → F)))
+    (γ : F) :
+    c₀ + γ • (c₁ - c₀) ∈ (ReedSolomon.code domain k : Set (ι → F)) := by
+  change c₀ + γ • (c₁ - c₀) ∈ ReedSolomon.code domain k
+  exact Submodule.add_mem _ hc₀ (Submodule.smul_mem _ γ (Submodule.sub_mem _ hc₁ hc₀))
+
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+/-- **Whole RS affine line has distance zero from the code.** Each scalar point on the affine line
+through two Reed-Solomon codewords is itself in the code, hence has zero relative distance from the
+code. -/
+theorem reedSolomon_affineLine_relDistFromCode_eq_zero_of_mem
+    {k : ℕ} {domain : ι ↪ F} {c₀ c₁ : ι → F}
+    (hc₀ : c₀ ∈ (ReedSolomon.code domain k : Set (ι → F)))
+    (hc₁ : c₁ ∈ (ReedSolomon.code domain k : Set (ι → F)))
+    (γ : F) :
+    δᵣ(c₀ + γ • (c₁ - c₀), (ReedSolomon.code domain k : Set (ι → F))) = 0 := by
+  classical
+  set line : ι → F := c₀ + γ • (c₁ - c₀) with hline
+  have hline_mem : line ∈ (ReedSolomon.code domain k : Set (ι → F)) := by
+    rw [hline]
+    exact reedSolomon_affineLine_mem_of_mem hc₀ hc₁ γ
+  apply le_antisymm
+  · calc
+      δᵣ(line, (ReedSolomon.code domain k : Set (ι → F)))
+          ≤ (Code.relHammingDist line line : ENNReal) :=
+            Code.relDistFromCode_le_relDist_to_mem line line hline_mem
+      _ = 0 := by
+        rw [Code.relHammingDist, hammingDist_self]
+        simp only [Nat.cast_zero, zero_div]
+        rw [← ENNReal.coe_nnratCast]
+        simp only [NNRat.cast_zero, ENNReal.coe_zero]
+  · exact zero_le _
+
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+/-- **All scalar points on an RS codeword line are close.** Since each affine-line point through
+two Reed-Solomon codewords is in the code, every scalar is line-close at every radius `δ`. -/
+theorem reedSolomon_affineLine_all_scalars_close_of_mem
+    {k : ℕ} {domain : ι ↪ F} {c₀ c₁ : ι → F} {δ : ℝ≥0}
+    (hc₀ : c₀ ∈ (ReedSolomon.code domain k : Set (ι → F)))
+    (hc₁ : c₁ ∈ (ReedSolomon.code domain k : Set (ι → F))) :
+    ∀ γ : F, δᵣ(c₀ + γ • (c₁ - c₀),
+      (ReedSolomon.code domain k : Set (ι → F))) ≤ δ := by
+  intro γ
+  rw [reedSolomon_affineLine_relDistFromCode_eq_zero_of_mem hc₀ hc₁ γ]
+  exact zero_le _
+
 /-- **T1 — the missing wiring lemma (axiom-clean).**
 
 In the up-to-Johnson regime (`0 < johnsonDenom`), the number of pencil scalars `γ` whose line
@@ -157,6 +211,10 @@ theorem rs_epsMCA_le_johnson_ceil_of_hwit
         (ReedSolomon.code domain k : Set (ι → F))) ≤ δ)).card : ℚ) ≤ (ℓ : ℚ) := by
     rw [hℓ]; exact le_trans h1 (Nat.le_ceil _)
   exact_mod_cast hcq
+
+#print axioms ProximityGap.MCAGS.reedSolomon_affineLine_mem_of_mem
+#print axioms ProximityGap.MCAGS.reedSolomon_affineLine_relDistFromCode_eq_zero_of_mem
+#print axioms ProximityGap.MCAGS.reedSolomon_affineLine_all_scalars_close_of_mem
 
 end ProximityGap.MCAGS
 
