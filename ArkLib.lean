@@ -462,6 +462,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
+import ArkLib.Data.CodingTheory.ProximityGap.MCAUpToCapacityFalse
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpread
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpreadCodeword
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpreadExample

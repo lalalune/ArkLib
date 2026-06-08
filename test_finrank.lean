@@ -1,0 +1,3 @@
+import Mathlib.LinearAlgebra.FiniteDimensional
+
+#check exists_nontrivial_solution_of_finrank_lt_finrank
