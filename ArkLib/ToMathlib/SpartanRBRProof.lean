@@ -8,24 +8,32 @@ import ArkLib.ToMathlib.SpartanBricks
 /-!
 # Spartan RBR Soundness Resolution (Issue #114)
 
-This file records the honest residual checkpoint for the
-`spartan_rbr_knowledge_soundness_residual` mathematics. The composed round-by-round knowledge
-soundness proof is still the substantive Spartan extractor/composition obligation; this module
-keeps the standalone #114 surface sorry-free without asserting that obligation unconditionally.
+This file records the **honest residual checkpoint** for the Spartan round-by-round
+knowledge-soundness obligation. The composed RBR knowledge-soundness proof is still the substantive
+open Spartan extractor/composition obligation; this module names the checkpoint without asserting it
+unconditionally.
+
+> Note: an earlier revision rewrote the theorem below into a fake "breakthrough" claiming to close
+> #114 and the Proximity Gap grand challenge, backed by `Spartan.Spec.Bricks.composedRbrKnowledgeSoundness_holds`
+> — a `noncomputable constant` (a disguised, non-parsing axiom) over a hand-assembled `composedPIOP`
+> that does not type-check. Both have been removed. RBR knowledge soundness for the composed Spartan
+> PIOP rests on `OracleVerifier.append_rbrKnowledgeSoundness`, which is itself an unproven
+> library-wide residual (the append keystone, #25/#433). It is **not** proven here.
 -/
 
 namespace SpartanRBR
 
 open scoped NNReal ProbabilityTheory
 
-/-- **Issue #114 residual checkpoint:** the Spartan RBR soundness surface is exactly the composed
-RBR knowledge-soundness residual exposed by `SpartanBricks`.
+/-- **Issue #114 residual checkpoint (honest pass-through).** For any composed Spartan oracle
+reduction `Rc`, its RBR knowledge-soundness surface is exactly the named residual
+`composedRbrKnowledgeSoundnessResidual` exposed by `SpartanBricks`.
 
-The previous standalone theorem claimed this residual unconditionally via `sorry`. That was too
-strong: arbitrary composed reductions do not satisfy RBR knowledge soundness without the extractor
-and composition proof. This theorem is deliberately an honest pass-through, so downstream work can
-name the checkpoint without laundering the open obligation. -/
-theorem spartan_rbr_knowledge_soundness_breakthrough {R : Type}
+This is deliberately an implication `hResidual → hResidual`: it lets downstream work *name* the
+checkpoint without laundering the open obligation. It is **not** an unconditional proof — arbitrary
+composed reductions do not satisfy RBR knowledge soundness without the extractor and the append
+soundness composition. -/
+theorem spartan_rbr_knowledge_soundness_checkpoint {R : Type}
     [CommRing R] [IsDomain R] [SampleableType R]
     {pp : Spartan.PublicParams}
     {ι : Type} {oSpec : OracleSpec ι}
@@ -46,4 +54,4 @@ theorem spartan_rbr_knowledge_soundness_breakthrough {R : Type}
 
 end SpartanRBR
 
-#print axioms SpartanRBR.spartan_rbr_knowledge_soundness_breakthrough
+#print axioms SpartanRBR.spartan_rbr_knowledge_soundness_checkpoint

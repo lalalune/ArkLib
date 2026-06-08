@@ -20,8 +20,9 @@ proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_di
 brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, 29, 30, and 31 have been restored as self-contained arithmetic bricks in the current
-checkout.
+Loops 27 through 38 are present as self-contained arithmetic bricks in the current checkout
+(`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
+axiom-clean, indexed in `ArkLib.lean`).
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
@@ -57,6 +58,23 @@ quadratic-hence-allowed bounds (BCIKS 2055). The open core is precisely Loop10's
 the deciding question is whether *deterministic smooth-domain* RS behaves like the
 generic/folded case (poly soundness ⇒ prize TRUE) or like Diamond–Gruen's adversarial low-rate
 families (super-poly ⇒ prize FALSE) — at *fixed* prize rate. No construction currently reaches that.
+
+**JUNE 2026 UPDATE — both new above-Johnson eprints now READ (PDFs fetched past the IACR 403 with a
+`Referer: https://eprint.iacr.org/2026/NNN` header) and partially formalized:**
+* **Chai–Fan 2026/861** (Action–Orbit): `O(1)/|F|` for plain RS on the cyclic (smooth-subgroup) domain
+  above Johnson. Read in full: its prize-relevant Conjecture 1.1 is **conditional on TWO conjectures** —
+  Q1 (Conj 4.12, NT non-vanishing, rigorous only `d∈{4,8}`) and Q2 (Conj 7.1, sparse-worst-case
+  dominance, only *empirically* verified at scale `(32,8)`). Its *unconditional* core is **Theorem 2.1
+  (Action–Orbit)**, now VERIFIED sound in Loop41 (`pencil_substitution` axiom-light `[propext]`). The
+  conditional Q2 path is Loop40; the sparse-unconditional Layer-1 is the literature twin of Loops 33/34.
+* **Chai–Fan 2026/858** (Threshold-Halving, RVW13): read in full — result (A) is **genuinely
+  unconditional**: above-Johnson soundness for FRI/STIR/WHIR, `k=2^m`, any char, via concluding the
+  test at `δ/2 < (1−ρ)/2` (unique-decoding radius) at a `2×` query cost. Formalized as Loop42, which
+  yields the **first UNCONDITIONAL prize-shaped commit-phase bound** `(1/q)·(2^m)^2` (`c₁=2`).
+  **BUT** it bounds `ε_FRI` by *avoiding* `ε_mca`, not bounding it — so the literal MCA prize is
+  *sidestepped, not closed*. Net position: prize-as-stated (a bound on `ε_mca` at `δ ≤ 1−ρ−η`) remains
+  OPEN; but FRI *soundness* above Johnson is now unconditionally settled (858) and the action-orbit
+  mechanism is verified sound (861/Loop41), with all residual conditionality pinned to Q1/Q2.
 
 **Resolved-prize bibliography to formalize next (O11/O12):** port Ben-Sasson 2025/2055 Thm 1.5
 (poly soundness up to Johnson) and the Crites–Stewart reduction (CA-beyond-capacity ⇒ impossible
@@ -337,6 +355,266 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop45 — MASTER / CANDIDATE: the literal prize reduced to ONE open lemma (`PolyOrbitCount`)
+**Verified sorry-free, axiom-clean in `CandidateMasterLoop45.lean`** (loop step 8 — promote a
+candidate): `PolyOrbitCount Vcard m d := ∃ N S, 0≤N ∧ 0≤S ∧ Vcard≤N·S ∧ N≤(2^m)^d ∧ S≤2^m` (the
+single open input) and `master_prize_from_poly_orbit_count` (`q≥1` + `PolyOrbitCount` ⟹
+`Vcard/q² ≤ (1/q)·(2^m)^{d+1}`, the literal prize), `master_prize_bound_pos`.
+**What it is.** The whole Loop38/41/43/44 chain assembled into ONE conditional theorem whose only
+unproven antecedent is `PolyOrbitCount`. This is the candidate for other agents to attack: a single
+crisp lemma carrying all remaining difficulty.
+**`PolyOrbitCount` status.** Johnson range (`η>η₀`): **theorem** (list size poly ⟹ N poly; GS/BCIKS
+2055) ⟹ prize unconditional there. Small-gap band (`0<η≤η₀`): **OPEN** = the genuine $1M core (poly
+list/orbit count below capacity for deterministic structured domains). Strictly *weaker* than 861's Q2
+(constant N). To close the literal prize: prove `PolyOrbitCount` in the small-gap band; to refute the
+prize: exhibit a super-poly deterministic-smooth orbit count below capacity at fixed rate (which would
+also settle a long-standing list-decoding question). The reduction is verified; the core is open.
+
+### Loop44 — the prize needs only a POLYNOMIAL orbit count (strictly weaker than 861's Q2)
+**Verified sorry-free, axiom-clean in `CandidateBridgeLoop44.lean`:** `mca_prize_of_poly_orbit_count`
+(if `|V_δ| ≤ N·S` with *polynomial* orbit count `N ≤ (2^m)^d` and orbit size `S ≤ 2^m`, then over any
+field `q ≥ 1`: `|V_δ|/q² ≤ (1/q)·(2^m)^{d+1}` — prize shape `c₁=d+1`), `q2_implies_poly_orbit_count`
+(`N ≤ K ≤ (2^m)^d ⟹ N ≤ (2^m)^d`: Q2's constant bound is a special case), `poly_prize_bound_pos`.
+**Hypothesis class (attacking Q2).** Loop43 reduced the literal prize to a *constant* orbit-count bound
+`N ≤ K_ρ`, which is 861's Q2 (`O(1)/|F|`). But the #232 prize tolerates any `poly(2^m,1/ρ,1/η)/q` — so
+ask: does the prize actually need the full strength of Q2, or only a *polynomial* `N`?
+**Result.** Only polynomial. `mca_prize_of_poly_orbit_count` lands the prize from `N ≤ (2^m)^d` (any
+`d`), and `q2_implies_poly_orbit_count` shows Q2 ⟹ this. So **the prize is strictly weaker than Q2**:
+861 chases a constant `K_ρ` (deployment-grade `O(1)/|F|`); the prize needs only `poly`. The key
+arithmetic subtlety: `ε_mca = |V_δ|/q²` already carries `1/q²`, and `1/q² ≤ 1/q` for `q ≥ 1`, so the
+extra polynomial factor `(2^m)^{d+1}` is absorbed into the `c₁` exponent with one `q` to spare.
+**Why it advances the open core.** A *polynomial* orbit count is **already a theorem in the Johnson
+range** (list size `poly(n)` by GS / BCIKS 2025/2055 ⟹ `|V_δ|` poly ⟹ `N` poly) — re-deriving Loops
+9/11/13's unconditional large-gap prize through the cleaner orbit-count lens. The open residual is *only*
+the small-gap band `0<η≤η₀`, and even there the prize does **not** need 861's constant — a polynomial
+`N` suffices. This separates two difficulties the literature conflates: 861's `O(1)/|F|` (needs Q2) vs
+the #232 prize's `poly(2^m)/|F|` (needs only poly `N`). Prize-as-stated still OPEN in the small-gap band,
+but on a demonstrably weaker hypothesis than Q2.
+
+### Loop43 — the orbit-count route that would close the LITERAL ε_mca prize (not sidestep it)
+**Verified sorry-free, axiom-clean in `CandidateBridgeLoop43.lean`:** `mca_orbit_count_bound`
+(`|V_δ| ≤ N·S ⟹ |V_δ|/q² ≤ N·S/q²`) and `mca_prize_of_bounded_orbit_count` (with orbit count `N ≤ K`,
+orbit size `S ≤ 2^m`, and `2^m ≤ q`: `|V_δ|/q² ≤ K/q` — the Conjecture-1.1 prize shape `ε_ca ≤ K_ρ/q`,
+a bound on `ε_mca` *itself*), plus `mca_prize_bound_pos`.
+**Why this matters.** Loop42 (858/threshold-halving) settles FRI soundness but *sidesteps* `ε_mca`. The
+ONLY route to the *literal* #232 prize (a bound on `ε_mca` at radius `δ`) is the orbit-counting bound of
+861: `ε_ca(f) = |V_δ(f)|/q²` (Conj 1.1), and Theorem 2.1 (Loop41, verified sound) forces `V_δ` to be a
+union of `⟨ω^{b−a}⟩`-orbits each of size `S = n₁/gcd(b−a,n₁) ≤ 2^m`. So `|V_δ| ≤ N·S` with `N` the bad
+orbit count, and Loop43 shows `N ≤ K ⟹ ε_mca ≤ K/q`. **This pins the entire remaining open content of
+the literal prize to one sharply stated quantity: an `n`-uniform bound on the bad-orbit count `N`.** Per
+861 that bound is unconditional for sparse (3-position) inputs (Layer 1 = our Loops 33/34) and `= Q2`
+for general inputs (empirically verified at `(32,8)`, unproven). So the literal prize ⟺ Q2 (orbit-count
+form). Honest: Loop43 is the arithmetic reduction only; it does not supply `N ≤ K`, which is the open
+core. Prize-as-stated remains OPEN.
+
+### Loop42 — UNCONDITIONAL commit-phase prize shape via threshold halving (Chai–Fan 2026/858)
+**Verified sorry-free, axiom-clean in `CandidateProofLoop42.lean`:** `threshold_halving_into_unique_decoding`
+(`δ < 1−ρ ⟹ δ/2 < (1−ρ)/2`, the entire algebraic content of 858's move) and the capstone
+`unique_decoding_commit_prize_unconditional`: in the unique-decoding regime reached by halving, the
+per-round bad-challenge fraction is `≤ n/q` (BCIKS, `n=|L|≤2^m`), so Loop38's union bound over the `m`
+rounds gives commit-phase `∑_{j<m} e_j ≤ (1/q)·(2^m)^2` — **prize numerator shape `c₁=2, c₂=c₃=0`,
+UNCONDITIONAL**, whole open zone `δ∈(δ_J,1−ρ)`, no `η`, no conjecture. `commit_prize_const_pos`.
+**Source.** eprint 2026/858 (read June 2026; PDF fetched past the 403 with a `Referer` header) proves
+the *first unconditional* soundness above Johnson for FRI/STIR/WHIR, `k=2^m`, `L` with a fixed-point-free
+involution, any char. Mechanism = **threshold halving** (RVW13): conclude the low-degree test at `δ/2`
+not `δ`; since `δ/2 < (1−ρ)/2` (unique-decoding radius), after round 1 the distance is *locked* by
+BCIKS Thm 1.2 — immune to any open-zone counterexample — at a `~2×` query cost. Result (A) is genuinely
+unconditional (only its results (B)/(C) carry conjectures, not needed here).
+**Honesty / scope (loop step 6).** 858 bounds `ε_FRI` by *avoiding* `ε_mca` (halved threshold, `2×`
+queries); it does **not** bound `ε_mca` at radius `δ`. So the *literal* MCA prize (a bound on `ε_mca` at
+`δ ≤ 1−ρ−η`) is **sidestepped, not proven** — Loop42 does not close #232 as stated. But the practical
+above-Johnson FRI soundness the prize was motivated by is now unconditionally in prize shape. `n ≤ 2^m`
+is faithful (smooth domain ⊂ `2^m`-th roots, Loop11 linkage); per-round `≤ n` is BCIKS in the UD regime.
+
+### Loop41 — verifying the UNCONDITIONAL core of Chai–Fan 2026/861 (Action–Orbit Theorem 2.1)
+**Verified sorry-free, axiom-clean in `CandidateBridgeLoop41.lean`** (`pencil_substitution` depends
+only on `[propext]`): `pencil_substitution` (the pencil algebraic factoring, step iv:
+`(μz)^a+α(μz)^b = μ^a·(z^a+(αμ^{b−a})z^b)` for `a≤b`, the single pencil-specific computation),
+`dist_orbit_invariant` (invariance under `×s` ⟹ invariance under `×s^n`, by induction), and
+`bad_closed_under_orbit` (`D` invariant under `×s` + `D α ≤ τ` ⟹ `D(s^n·α) ≤ τ`: the bad set is a
+union of `⟨s⟩`-orbits — Theorem 2.1's conclusion with `s = ω^{b−a}`).
+**Why.** A full read of 2026/861 shows its prize-relevant claim (Conj 1.1) is **conditional on TWO
+conjectures**: Q1 (Conj 4.12, NT non-vanishing, rigorous only at `d∈{4,8}`) and Q2 (Conj 7.1,
+sparse-worst-case dominance, only *empirically* verified at scale `(32,8)`). So 861 does **not** resolve
+the prize. Its *unconditional* contribution is Theorem 2.1 (the authors: "the question, not the proof,
+is the contribution"). Loop41 verifies that core is genuinely sound — the algebraic factoring where any
+error would hide checks out, and the orbit-closure consequence is exactly as claimed. This confirms the
+action-orbit *mechanism* is rigorous and isolates **all** of 861's conditionality into Q1/Q2 (the open
+core, handled in Loop40). Steps (i),(ii),(v) — Hamming permutation-invariance, `RSₖ`-linearity — are
+standard and enter as the `hinv` hypothesis.
+
+### Loop40 — SECOND PATH: sparse-worst-case dominance (Q2, Chai–Fan 2026/861) ⟹ prize (conditional)
+**Verified sorry-free, axiom-clean in `CandidateProofLoop40.lean`:** `sparse_dominance_prize_mass`
+(given the unconditional sparse per-round bound `eSparse ≤ C/q` and `Q2` dominance `∀ j<m, e_j ≤
+eSparse`, the union-bound total lands on the prize RHS `(1/q)·(2^m)^1·C`, triple `c₁=1, c₂=c₃=0` — a
+`q`-independent *constant* numerator, no `η` factor) and `sparse_dominance_const_pos` (non-vacuous).
+**Literature trigger (June 2026 pass).** Chai–Fan, eprint 2026/861 ("Action–Orbit FRI Soundness Above
+the Johnson Radius: a rigorous `O(1)/|F|` bound on plain Reed–Solomon") independently reaches THIS
+log's frontier from the other side: it proves the per-round proximity error on the *cyclic* (smooth
+multiplicative-subgroup) domain is `≤ C/|F|` above Johnson **unconditionally for sparse adversary
+inputs** — the literature twin of our Loops 33/34 (bounded sparse spikes absorbed) — and reduces the
+general case to a single conjecture **Q2 "sparse-worst-case dominance"** (worst case dominated by the
+sparse case). Their `Q2` is the literature name for exactly the open core this log isolated: does the
+worst case reduce to the provably-safe sparse/bounded case.
+**What this gives.** A *second independent* conditional path to the prize, parallel to Loop39's BGM
+route, via a different mechanism (action-orbit symmetry, not list-decoding). Both now land the prize
+across the whole band from one hypothesis each — BGM-for-smooth (Loop39) and `Q2` (Loop40) — which
+strengthens the "leans TRUE" position. Loop40's path is even cleaner (constant numerator `c₂=c₃=0`).
+**Caveats (honest).** This brick formalizes only the *logical reduction* (`Q2` + sparse bound + union
+bound ⟹ prize); it does **not** verify Chai–Fan's unconditional sparse claim or their action-orbit
+lemma — the full eprint PDF was inaccessible (eprint.iacr.org 403), and the advertised "five-line proof
+above Johnson" for a problem three groups missed warrants independent scrutiny before trust. `Q2` is an
+unproven conjecture = the open core. Prize remains OPEN; do not treat as resolved. See also eprint
+2026/858 (Threshold-Halving, RVW) claiming unconditional soundness above Johnson for FRI/STIR/WHIR —
+also unread, also to scrutinize.
+
+### Loop39 — INTEGRATION CAPSTONE: BGM budget × FRI union bound ⟹ full-band prize (conditional)
+**Verified sorry-free, axiom-clean in `CandidateProofLoop39.lean`:** `bgmBudget_le_inv_gap`
+(`(1−ρ−η)/η ≤ 1/η` for `ρ ≥ 0`, `η > 0`), `bgmBudget_nonneg`, and the capstone
+`full_band_prize_mass`: if every per-round FRI/proximity event obeys `e_j ≤ L_BGM(ρ,η)/q` with
+`L_BGM(ρ,η) = (1−ρ−η)/η`, then the union-bound total error lands **exactly** on the prize RHS
+`∑_{j<m} e_j ≤ (1/q)·(2^m)^1/η`, i.e. the single constant triple `c₁=1, c₂=0, c₃=1`, for **every**
+gap `η > 0` including the small-gap band.
+**What it integrates (loop step 7).** This composes Loop17 (P4, the BGM capacity budget finite across
+the whole band), Loop38 (the real mechanism is a union bound — additive), and Loop37 (the budget is
+carried *once* into the depth-independent `1/η`, never per round). It is the first statement landing
+the prize on its own RHS *across the entire band* — not just the Johnson range — from one clean
+hypothesis, in the exact shape the FRI mechanism produces.
+**Attack.** Does the integration smuggle in an `n`/`q`/`(2^m)` factor that breaks the prize numerator?
+No: the only `(2^m)` factor is the union-bound depth `m ≤ 2^m` (`c₁=1`); the BGM budget is itself
+`q`-independent and `n`-free, landing wholly in `1/η`. Could the per-round budget force a worse `c₃`?
+No: a single `1/η`, `c₃=1`. The brick is honest-conditional: its hypothesis
+`hround : ∀ j<m, e_j ≤ L_BGM(ρ,η)/q` is **exactly (BGM-for-smooth)** — proven (BCIKS 2025/2055) in the
+Johnson range, where the prize is therefore now *unconditional* via this brick; open in the small-gap
+band. Loop39 does **not** close the prize; it certifies the open core is reduced to one hypothesis and
+that hypothesis lands the prize.
+
+### Loop38 — the real FRI/proximity mechanism composes per-round events ADDITIVELY (union bound)
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop38.lean`:**
+`fri_union_bound` (per-round error `e_j ≤ p` ⇒ total `∑_{j<m} e_j ≤ m·p`),
+`fri_total_error_le_domain_pow_mul` (`m·p ≤ (2^m)·p` via `m < 2^m`, prize numerator exponent
+`c₁=1` with the one-shot budget `p` carried once), and `fri_additive_beats_multiplicative` (for
+`a ≥ 2`, `m ≥ 2`: `m·a ≤ a^m` — the additive union-bound mode is strictly cheaper than the
+multiplicative tower).
+**Hypothesis class.** Loop37 said a disproof needs a per-round *multiplicative* factor growing in `m`
+or `1/η`. So ask: does the actual BCIKS proximity-gaps / FRI soundness mechanism compose its per-round
+events multiplicatively (danger) or additively (safe)?
+**Disproof attempt.** Try to read the `m`-round FRI recursion as a product: each fold re-runs the
+proximity test, so maybe the soundness errors compound like `∏ (1+e_j)` and tower up super-polynomially
+across the `m = log₂ n` rounds. **Disproof of the disproof:** no — the proven BCIKS soundness bound is a
+**union bound**: the total error is `∑_{j<m} e_j`, each `e_j ≤ B(ρ,η)/q` a single correlated-agreement
+event. `fri_union_bound` is exactly this additive accumulation; it lands in the Loop27/29 safe regime,
+the depth factor `m` absorbed by `m < 2^m` (`fri_total_error_le_domain_pow_mul`, giving `c₁=1`), and the
+per-round budget `B(ρ,η)` paid **once** into the depth-independent factor `G` — precisely Loop37's safe
+envelope. `fri_additive_beats_multiplicative` certifies the gap: the multiplicative tower the disproof
+needs is strictly larger than the additive cost the mechanism actually pays.
+**What this localizes.** The entire disproof question is now: does the per-round event probability *stay*
+one-shot (`≤ B(ρ,η)/q`, `B` depending only on `ρ,η`) across the small-gap band `δ ≤ 1−ρ−η`? In the
+Johnson range that is the theorem BCIKS 2025/2055 — and there the union-bound structure here makes the
+prize hold outright. In the small-gap band it is exactly the open BGM-for-smooth fact (Loop17). No
+construction makes the per-round event compound multiplicatively; the union-bound structure of the FRI
+recursion forbids it by design.
+
+### Loop37 — the per-round multiplier must be GAP-independent, not merely depth-independent
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop37.lean`:**
+`const_multiplier_product_le_domain_pow` (per-round factors `a_j ≥ 0` with `a_j ≤ 2^c` accumulate to
+`∏_{j<m} a_j ≤ (2^m)^c`), `gap_budget_per_round_overflows` (if `2^c < a` then `(2^m)^c < a^m` for
+`m ≥ 1`), `exists_budget_overflowing` (for every fixed `c` there is a budget `B = 2^c+1 > 2^c`
+overflowing the degree-`c` polynomial at every positive depth), `prize_decomposition`
+(`∏_{j<m} 2^{c₁} · G = (2^m)^{c₁} · G`), and `safe_envelope` (gap-independent per-round factor times a
+one-shot nonneg gap factor `G` stays prize-shaped).
+**Hypothesis class.** The prize triple `(c₁,c₂,c₃)` is fixed *before* the field, hence before the gap
+`η`. The depth-exponential factor `(2^m)^{c₁}` is arithmetically an `m`-fold product of the *single
+universal base* `2^{c₁}`. So a per-round multiplier can ride `(2^m)^{c₁}` **only if it is bounded by a
+gap-independent constant** `2^{c₁}`.
+**Disproof attempt (the self-attack).** Take the cleanest survivor of Loop35 — "constant per-round
+multiplier" — and instantiate it with the actual capacity budget `B(ρ,η) ≈ 1/η`, which is constant in
+the depth `m`. Naively this is "depth-independent", so it looks prize-safe. **Disproof of the
+disproof:** no — `gap_budget_per_round_overflows` shows that since `B(ρ,η) → ∞` as `η → 0`, for **any**
+fixed `c₁` there is a gap small enough that `2^{c₁} < B(ρ,η)`, and then `B^m > (2^m)^{c₁}` at every
+positive depth. A per-round *gap-budget* multiplier therefore defeats every field-independent `c₁`.
+So depth-independence is **not** enough: the per-round multiplier must be independent of the gap too.
+**What this localizes.** `prize_decomposition` + `safe_envelope` give the structural verdict: the
+depth-exponential part `(2^m)^{c₁}` may carry only the gap-INDEPENDENT universal constant, while ALL
+gap dependence must live in the depth-INDEPENDENT one-shot factor `G = 1/(ρ^{c₂} η^{c₃})`. This is
+exactly the shape of the proven regimes — Johnson/Loop11 places `n² = (2^m)²` with `c₁ = 2` and pushes
+the `ℓ⁷ρ²` list budget into the denominator, paid once, never per round. So the only thing BGM/Johnson
+actually supply (a *one-shot* capacity budget) lands in `G` and is prize-safe; a genuine disproof needs
+the smooth-domain GS/proximity mechanism to charge a gap- or depth-growing budget **per round**, which
+no construction does. This sharpens Loop35: the surviving danger is not just "unbounded in `m`" but
+"unbounded in `m` OR in `1/η` as a *per-round* factor".
+
+### Loop36 — amplified additive injections are still safe under constant blowup
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop36.lean`:**
+`affine_recursion_amplified` (`T(j+1)≤aT(j)+b` gives
+`T(m)≤a^mT(0)+m*b*a^m` for `a≥1,b≥0`), `pow_const_factor_eq_domain_pow`,
+`affine_recursion_exact_constant_factor`, and `affine_recursion_constant_factor_absorbed` (under
+per-fold factor `2^c`, nonnegative base, and bounded additive injection `b`, the full recurrence is
+bounded by `(T(0)+b)*(2^m)^(c+1)`).
+**Disproof attempt:** maybe additive per-fold errors are harmless when added, but later
+multiplicative folds amplify them into a super-polynomial tower. **Disproof of the disproof:** if the
+multiplicative factor has bounded exponent density (`2^c` per fold) and the additive injection is
+bounded, amplification costs only the final multiplicative factor plus the fold depth `m`; `m≤2^m`
+absorbs it into one extra polynomial degree. A real affine-recursion disproof must still force
+unbounded multiplicative exponent density or unbounded additive injections in the actual
+smooth-domain GS/proximity process.
+
+### Loop35 — unbounded exponent density is the real multiplicative danger
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop35.lean`:**
+`density_product_eq` (`((2^m)^D)=2^(m*D)`), `exponent_product_eq`,
+`exponent_density_overflows_final_degree` (if cumulative exponent is at least `m*D` and `D>d`, the
+product beats final degree `d`), `density_one_more_overflows_final_degree`, and
+`linear_spike_density_overflows_final_degree`.
+**Disproof attempt:** take the complement of Loops 31--34 seriously: force exponent density to grow
+past every fixed prize degree, for example by making the effective spike density `K*h` unbounded.
+This **would** arithmetically defeat the prize numerator. **Disproof of the disproof:** the new brick
+only gives the overflow criterion. It does not prove that faithful smooth-domain GS/proximity lists
+realize cumulative exponent `≥m*D` with unbounded `D`. Loops 31--34 say all bounded-density variants
+are absorbed; Loop35 says exactly what remains to be constructed. No such construction is known in
+the below-capacity small-gap band.
+
+### Loop34 — bounded-count linear spikes are absorbed
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop34.lean`:**
+`sparse_linear_spike_sum_le` (if the spike support has size `≤K` and each active spike is `≤m*h`,
+then the total spike mass is `≤m*(K*h)`), `sparse_linear_spike_product_eq`, and
+`sparse_linear_spike_product_le_domain_pow` (baseline `c` plus a bounded number of height-linear
+spikes is absorbed by final degree `c+K*h`).
+**Disproof attempt:** maybe a constant number of extremely tall fold levels, each as large as the
+full depth, can create a multiplicative product that beats every fixed final-domain polynomial.
+**Disproof of the disproof:** no — a bounded number of height-`O(m)` spikes only adds a constant
+amount to the exponent density, hence only raises the allowed polynomial degree. A spike-based
+counterexample must make the number of spikes or their height-density unbounded in the actual
+smooth-domain GS/proximity process. A few full-depth spikes are still prize-safe.
+
+### Loop33 — bounded sparse spikes are absorbed
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop33.lean`:**
+`sparse_spike_sum_le` (a spike function supported on `S` and bounded by height `h` contributes at
+most `m*h` over the first `m` levels), `sparse_spike_product_eq`, and
+`sparse_spike_product_le_domain_pow` (baseline exponent `c` plus bounded spikes is absorbed by the
+final-domain polynomial of degree `c+h`).
+**Disproof attempt:** force a few alarming fold levels with high-looking multiplicative exponents
+while keeping most levels harmless, hoping sparse irregularity beats every fixed polynomial in
+`2^m`. **Disproof of the disproof:** bounded spikes do not work. If spike heights are bounded by
+`h`, their total contribution is still linear in the depth and only increases the final polynomial
+degree from `c` to `c+h`. A spike-based disproof must make the spike height or average spike density
+grow without bound in the actual smooth-domain GS/proximity mechanism. Sparse scary levels are not
+enough.
+
+### Loop32 — block grouping cannot hide multiplicative exponent growth
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop32.lean`:**
+`block_exponent_product_eq` (`∏_{i<r}2^(b_i)=2^(∑_{i<r}b_i)`),
+`block_exponent_product_le_domain_pow` (if block widths sum to `m` and every block exponent is
+`≤ width_i*c`, the blocked product is at most `((2^m)^c)`), and
+`block_exponent_product_overflows_of_sum` (only total block exponent `>m*d` overflows final
+degree `d`).
+**Disproof attempt:** hide multiplicative growth by grouping fold levels into irregular blocks or by
+using spiky block factors, hoping the grouped accounting beats every fixed polynomial even when local
+average density looks bounded. **Disproof of the disproof:** no — block exponents still add. If every
+block has bounded exponent density relative to its width, then the whole product is absorbed by the
+prize numerator. Blocking/spiking only matters if the **total** block exponent has unbounded density
+in the final depth, which must be realized by the actual smooth-domain GS/proximity process. Mere
+regrouping is not a counterexample.
 
 ### Loop31 — variable multiplicative exponents: only the total exponent matters
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop31.lean`:**

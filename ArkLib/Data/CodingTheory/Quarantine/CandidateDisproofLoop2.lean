@@ -5,7 +5,7 @@ open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- 
+/-!
   Loop 2 Hypothesis: The High-Degree Polynomial Aliasing Attack.
   We attempt to use polynomials of degree greater than or equal to k that "alias" 
   into valid codewords on the multiplicative subgroup L.
@@ -21,7 +21,7 @@ variable {F : Type} [Field F] [Fintype F] [CharP F 2]
   will identically match r(x) everywhere on L.
 -/
 def high_degree_aliasing_explosion (L : Finset F) (k : ℕ) : Prop :=
-    ∃ S : Finset F[X], 
+    ∃ S : Finset (Polynomial F),
       -- FLAWED: While X^{|L|} - 1 indeed vanishes on L, its degree is exactly |L|.
       -- A valid Reed-Solomon codeword must have degree strictly less than k.
       -- Since k < |L| (as it is an error-correcting code), multiplying any Q(X) 

@@ -5,6 +5,8 @@ import Mathlib.Tactic
 
 import ArkLib.Data.CodingTheory.Quarantine.CandidateHypotheses
 
+set_option maxRecDepth 4096
+
 /-!
 # Refutations of Interdisciplinary Candidate Hypotheses
 

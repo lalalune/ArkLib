@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ProofSystem.Spartan.Basic
+import ArkLib.ProofSystem.Spartan.FirstSumcheckReduction
+import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
 import ArkLib.ProofSystem.Component.CheckClaim
 import ArkLib.ProofSystem.Sumcheck.Spec.General
@@ -61,7 +63,7 @@ noncomputable section
 
 open scoped NNReal
 
-variable (R : Type) [CommRing R] [IsDomain R] [Fintype R] (pp : PublicParams)
+variable (R : Type) [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] (pp : PublicParams)
 variable {ι : Type} (oSpec : OracleSpec ι) [SampleableType R]
 
 namespace Bricks
@@ -762,9 +764,12 @@ sub-development; once that lens `L₂` is supplied, this is
 `(Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).liftContext L₂.toContext L₂`. -/
 def secondSumcheckResidual : Prop :=
   Nonempty (OracleReduction oSpec
-    (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
+    (R × Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
     (Statement.AfterSecondSumcheck R pp) (OracleStatement.AfterSecondSumcheck R pp) Unit
     (Sumcheck.Spec.pSpec R 2 pp.ℓ_n))
+
+theorem secondSumcheckResidual_holds : secondSumcheckResidual R pp oSpec :=
+  ⟨secondSumcheckReduction pp oSpec⟩
 
 /-- **NAMED RESIDUAL — first sum-check reduction existence.** Symmetric to
 `secondSumcheckResidual`, over `ℓ_m` variables on `ℱ(X)`, lifting the proven sum-check reduction
@@ -773,7 +778,10 @@ def firstSumcheckResidual : Prop :=
   Nonempty (OracleReduction oSpec
     (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
     (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) Unit
-    (Sumcheck.Spec.pSpec R 2 pp.ℓ_m))
+    (Sumcheck.Spec.pSpec R 3 pp.ℓ_m))
+
+theorem firstSumcheckResidual_holds : firstSumcheckResidual R pp oSpec :=
+  ⟨firstSumcheckReduction pp oSpec⟩
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- **R1CS matrix-vector MLE decomposition.** Each bundled Spartan evaluation claim
@@ -992,6 +1000,20 @@ seven leaves (the sum-check phases) are themselves residuals
 We existentially quantify the combined `pSpecC` (rather than spelling out the `Fin.vsum`/`++ₚ`
 arithmetic) so the residual records exactly the protocol-level obligation without committing to a
 brittle size normal form. -/
+-- **Why this is a `sorry`-tracked residual, not an assembled term.**  Iterating
+-- `OracleReduction.append` over the seven phases (`firstMessage ▷ firstChallenge ▷ firstSumcheck ▷
+-- sendEvalClaim ▷ linearCombination ▷ secondSumcheck ▷ finalCheck`) does *not* yet type-check:
+--   1. **Witness threading.** `firstMessage` (a `SendSingleWitness` phase) outputs witness `Unit`,
+--      so `append` demands the next phase consume input witness `Unit`; but `oracleReduction.firstChallenge`
+--      is currently declared with input witness `Witness R pp` (`ProofSystem/Spartan/Basic.lean`).
+--   2. **`OracleVerifier.Append.AppendCoherent`.**  `OracleReduction.append` requires an
+--      `AppendCoherent` instance for each left-operand verifier (chained by
+--      `AppendCoherent.append`/`oracleReductionAppend` from the leaves).  No leaf instance exists
+--      yet — synthesis fails first at `(oracleReduction.firstMessage …).verifier`.
+-- These are real, open engineering obligations.  We therefore keep the composition as the honest
+-- existence residual below, `sorry`-gated (tracked by `scripts/sorry_census.py`) rather than
+-- assembled by non-compiling/laundered code.  See issue #114 and the append keystone (#25/#433).
+
 def composedPIOPResidual : Prop :=
   ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))
     (_ : ∀ i, SampleableType (pSpecC.Challenge i)),
@@ -999,6 +1021,8 @@ def composedPIOPResidual : Prop :=
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
+
+theorem composedPIOPResidual_holds : composedPIOPResidual R pp oSpec := sorry
 
 /-- **NAMED RESIDUAL — target-carrying composed Spartan PIOP existence.** This is the same
 composition obligation as `composedPIOPResidual`, but with the real terminal `CheckClaim` endpoint:
@@ -1011,6 +1035,8 @@ def composedPIOPWithClaimResidual : Prop :=
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
+
+theorem composedPIOPWithClaimResidual_holds : composedPIOPWithClaimResidual R pp oSpec := sorry
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP perfect completeness.** Discharged, once the composed
 reduction `Rc` (over its combined spec `pSpecC`) is available, by iterated
@@ -1028,6 +1054,15 @@ def composedCompletenessResidual
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)
+
+-- **No `composedCompleteness_holds` here.**  An earlier revision asserted
+-- `composedCompletenessResidual … (composedPIOP …) …` via `noncomputable constant` — a disguised
+-- axiom (an unproven inhabitant of the perfect-completeness `Prop`) that, moreover, does not parse
+-- in Lean 4 and is not caught by `scripts/forbidden_tokens.py` (which flags `axiom`, not
+-- `constant`/`opaque`).  Composed perfect completeness is *not* available: it would follow from
+-- `OracleReduction.append_perfectCompleteness`, which is itself an unproven library-wide residual
+-- (the `Prover.append_run` / `simulateQ`-support keystone, #25/#433).  The honest surface is the
+-- `composedCompletenessResidual` obligation above; it has no proof yet.
 
 /-- Target-carrying version of `composedCompletenessResidual`, for a composed Spartan reduction
 ending at `finalCheckWithClaim`. -/
@@ -1178,6 +1213,13 @@ def composedRbrKnowledgeSoundnessResidual
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) : Prop :=
   Rc.verifier.rbrKnowledgeSoundness init impl
     (spartanRelIn R pp) (finalCheckRelOut R pp) rbrKnowledgeError
+
+-- **No `composedRbrKnowledgeSoundness_holds` here.**  As with completeness above, an earlier
+-- revision asserted this composed RBR knowledge-soundness `Prop` via `noncomputable constant` — a
+-- disguised, non-parsing axiom.  RBR knowledge soundness for the composition is *not* available: it
+-- would follow from `OracleVerifier.append_rbrKnowledgeSoundness` (per-round `2/|R|` sum-check error
+-- combined via `ChallengeIdx.sumEquiv`), which is an unproven library-wide residual.  The honest
+-- surface is the `composedRbrKnowledgeSoundnessResidual` obligation above; it has no proof yet.
 
 /-- Target-carrying version of `composedRbrKnowledgeSoundnessResidual`, for composed Spartan
 verifiers ending at `finalCheckWithClaim`. -/

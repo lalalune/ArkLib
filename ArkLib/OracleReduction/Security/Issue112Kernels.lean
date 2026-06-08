@@ -26,6 +26,26 @@ namespace Issue112
 open OracleComp OracleSpec ProtocolSpec
 open scoped ProbabilityTheory
 
+/-- Public transcript data exposed by an oracle-reduction run for simulator comparison. -/
+abbrev ZKConcretePublicView {ιₛₒ : Type} (OStmtOut : ιₛₒ → Type)
+    {n : ℕ} (pSpec : ProtocolSpec n) (StmtOut : Type) : Type :=
+  pSpec.FullTranscript × StmtOut × (∀ i, OStmtOut i)
+
+/-- Project the full oracle-reduction run to the public transcript/output view. -/
+def oracleReductionPublicRun
+    {ι : Type} {oSpec : OracleSpec ι}
+    {StmtIn : Type} {ιₛᵢ : Type} {OStmtIn : ιₛᵢ → Type} {WitIn : Type}
+    {StmtOut : Type} {ιₛₒ : Type} {OStmtOut : ιₛₒ → Type} {WitOut : Type}
+    {n : ℕ} {pSpec : ProtocolSpec n}
+    [∀ i, OracleInterface (OStmtIn i)] [∀ i, OracleInterface (pSpec.Message i)]
+    (stmtIn : StmtIn) (oStmtIn : ∀ i, OStmtIn i) (witIn : WitIn)
+    (R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec) :
+    OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))
+      (ZKConcretePublicView OStmtOut pSpec StmtOut) := do
+  let out ← OracleReduction.run stmtIn oStmtIn witIn R
+  let ⟨⟨transcript, _proverOut, _witOut⟩, verifierOut⟩ := out
+  return (transcript, verifierOut.1, verifierOut.2)
+
 /-- **Explicit Simulator Construction Kernel.**
 This states the existence of a simulator for the `isHVZK` definition. The mathematics here
 is isolating the simulator's explicit construction and bounding the statistical distance
@@ -45,11 +65,20 @@ def ZKConcreteSimulatorKernel
     (rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn))
     (R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec) : Prop :=
   ∃ (simulator : StmtIn → (∀ i, OStmtIn i) →
-      OracleComp oSpec (pSpec.FullTranscript × StmtOut × (∀ i, OStmtOut i))),
+      OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))
+        (ZKConcretePublicView OStmtOut pSpec StmtOut)),
     ∀ stmtIn oStmtIn witIn, (((stmtIn, oStmtIn), witIn) ∈ rel) →
       -- The simulated transcript distribution equals the real execution distribution
-      (simulate impl (init >>= fun s => simulator stmtIn oStmtIn) =
-       simulate impl (init >>= fun s => Reduction.run R stmtIn witIn))
+      (init >>= fun s =>
+          (simulateQ
+            (QueryImpl.addLift impl (challengeQueryImpl (pSpec := pSpec)) :
+              QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp))
+            (simulator stmtIn oStmtIn).run).run' s) =
+        (init >>= fun s =>
+          (simulateQ
+            (QueryImpl.addLift impl (challengeQueryImpl (pSpec := pSpec)) :
+              QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp))
+            (oracleReductionPublicRun stmtIn oStmtIn witIn R).run).run' s)
 
 end Issue112
 end ProximityGap

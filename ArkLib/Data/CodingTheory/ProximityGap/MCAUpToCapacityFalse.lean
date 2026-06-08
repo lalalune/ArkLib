@@ -52,6 +52,7 @@ theorem rs_mca_uptoCapacity_false_of_smallField [NeZero n] (domain : Fin n ↪ F
       < epsMCA (F := F) (A := F)
           (ReedSolomon.code (domain := domain) k : Set (Fin n → F))
           (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
+  classical
   refine lt_of_lt_of_le ?_ (epsMCA_ge_of_prefix_sunflower domain k hk hkn)
   have hqpos : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
   have hnk : (0 : ℝ) < ((n - k : ℕ) : ℝ) := by

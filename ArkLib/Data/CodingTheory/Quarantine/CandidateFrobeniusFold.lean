@@ -3,11 +3,11 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Algebra.CharP.Lemmas
 
 open Classical
-open scoped BigOperators Matrix
+open scoped BigOperators Matrix NNReal
 
 namespace ArkLib.CodingTheory.Research
 
-/-- 
+/-!
   Candidate 11: Frobenius-Folded Subspace Matrix
   We combine the multivariate folding technique with the characteristic 2 
   Frobenius endomorphism to break the Johnson radius without alphabet blowup.
@@ -59,7 +59,7 @@ lemma frobenius_noise_correlation [CharP F 2] (P : F → F) (r : F → F) (E : F
 -- not unify with `ι ↪ F` and silently failed to elaborate.)
 def frobenius_mca_exact_match {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F] [CharP F 2] (domain : ι ↪ F)
-    (_C : Set (F → F)) (_δ : ℝ≥0) : Prop :=
+    (_C : Set (ι → F)) (_δ : ℝ≥0) : Prop :=
   ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
     ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved domain τ
 

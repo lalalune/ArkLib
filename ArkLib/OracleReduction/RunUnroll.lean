@@ -376,4 +376,52 @@ theorem evalDist_simulateQ_run'_state_indep
 
 #print axioms evalDist_simulateQ_run'_state_indep
 
+section AddLiftBridges
+open ProtocolSpec
+variable {ι : Type} {oSpec : OracleSpec ι} {σ : Type} {n : ℕ} {pSpec : ProtocolSpec n}
+  [∀ i, SampleableType (pSpec.Challenge i)]
+
+/-- **`addLift impl challengeQueryImpl` is state-preserving when `impl` is.** The challenge half is a
+`liftM` of a `ProbComp` (state untouched: `(liftM mx).run s = (·, s) <$> mx`); the `oSpec` half is `impl`
+(state-preserving by hypothesis; vacuous when `oSpec = []ₒ`). Discharges the `hso` side-condition of the
+seam toolkit for the actual soundness/completeness implementation `impl.addLift challengeQueryImpl`. -/
+theorem addLift_state_preserving (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (himpl : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s) :
+    ∀ (t : (oSpec + [pSpec.Challenge]ₒ).Domain) (s : σ) (x : _ × σ),
+      x ∈ support (((impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) t).run s) → x.2 = s := by
+  rintro (t | t) s x hx
+  · simp only [QueryImpl.addLift_def, QueryImpl.add_apply_inl, QueryImpl.liftTarget_apply,
+      monadLift_self] at hx
+    exact himpl t s x hx
+  · simp only [QueryImpl.addLift_def, QueryImpl.add_apply_inr, QueryImpl.liftTarget_apply] at hx
+    change x ∈ support ((fun a => (a, s)) <$> challengeQueryImpl t) at hx
+    simp only [support_map, Set.mem_image] at hx
+    obtain ⟨a, _, rfl⟩ := hx; rfl
+
+/-- **`addLift impl challengeQueryImpl` is value-state-blind when `impl` is.** Discharges `hvb`. -/
+theorem addLift_value_blind (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (himpl : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    ∀ (t : (oSpec + [pSpec.Challenge]ₒ).Domain) (s s' : σ),
+      evalDist (((impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) t).run' s)
+        = evalDist (((impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) t).run' s') := by
+  rintro (t | t) s s'
+  · simp only [QueryImpl.addLift_def, QueryImpl.add_apply_inl, QueryImpl.liftTarget_apply,
+      monadLift_self]
+    exact himpl t s s'
+  · have h : ∀ r : σ, evalDist (((impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) (Sum.inr t)).run' r)
+        = evalDist (challengeQueryImpl t) := by
+      intro r
+      simp only [QueryImpl.addLift_def, QueryImpl.add_apply_inr, QueryImpl.liftTarget_apply]
+      change evalDist ((fun a => a.1) <$> ((fun a => (a, r)) <$> challengeQueryImpl t)) = _
+      simp [Functor.map_map]
+    rw [h s, h s']
+
+end AddLiftBridges
+
 end OptionTStateT

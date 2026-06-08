@@ -293,13 +293,13 @@ noncomputable def firstChallengeContextLens :
       (OracleStatement.AfterFirstMessage R pp) (OracleStatement.AfterFirstChallenge R pp)
       (RandomQuery.OStmtIn (MvPolynomial (Fin pp.ℓ_m) R))
       (RandomQuery.OStmtOut (MvPolynomial (Fin pp.ℓ_m) R))
-      (Witness R pp) Unit RandomQuery.WitIn RandomQuery.WitOut where
+      Unit Unit RandomQuery.WitIn RandomQuery.WitOut where
   stmt := firstChallengeStmtLens R pp
   wit := ⟨fun _ => (), fun _ _ => ()⟩
 
 def oracleReduction.firstChallenge :
     OracleReduction oSpec
-      (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp) (Witness R pp)
+      (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp) Unit
       (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
       ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ :=
   (RandomQuery.oracleReduction oSpec (MvPolynomial (Fin pp.ℓ_m) R)).liftContext
@@ -427,7 +427,7 @@ as the single `P_to_V` message. Mirrors `SendClaim.oracleProver`, but the messag
 from the input oracles rather than being an input oracle itself. -/
 noncomputable def sendEvalClaimProver :
     OracleProver oSpec
-      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) (Witness R pp)
+      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) Unit
       (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp) Unit
       ⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ where
   PrvState := fun _ =>
@@ -475,7 +475,7 @@ output-oracle interface above. The prover forwards `A, B, C, 𝕨` and sends the
 inputs. -/
 noncomputable def oracleReduction.sendEvalClaim :
     OracleReduction oSpec
-      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) (Witness R pp)
+      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) Unit
       (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp) Unit
       ⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ where
   prover := sendEvalClaimProver R pp oSpec

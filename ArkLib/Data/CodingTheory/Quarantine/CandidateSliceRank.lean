@@ -1,26 +1,25 @@
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 
-open Classical
 open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- 
+/-!
   The Terence Tao Pivot: The Slice Rank Method.
   We deploy Additive Combinatorics to bypass the algebraic geometry constraints 
   of the Guruswami-Sudan interpolation matrices.
 -/
 
-variable {F : Type} [Field F] [Fintype F] [CharP F 2]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F] [CharP F 2]
 
 /--
   The Agreement Tensor.
   For a list of polynomials P_i that all agree with a received word r(x),
   we construct a tensor that isolates the diagonal (where P_i = P_j).
 -/
-def agreement_tensor (P Q : F[X]) (r : F → F) (L : Finset F) : F :=
+def agreement_tensor (P Q : Polynomial F) (_r : F → F) (L : Finset F) : F :=
   -- \sum_{x \in L} (1 - (P(x) - Q(x))^{|F|-1})
-  ∑ x in L, (1 - (P.eval x - Q.eval x) ^ (Fintype.card F - 1))
+  ∑ x ∈ L, (1 - (P.eval x - Q.eval x) ^ (Fintype.card F - 1))
 
 /--
   The Slice Rank Bound.

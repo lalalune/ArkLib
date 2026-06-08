@@ -103,7 +103,7 @@ lemma foldWordAux_of_k_2
       (x := (CosetFftDomain.subdomain domain 1) i)
       (by simp) (by simp [y])
     have hpre : Finset.preimage {y.1, -y.1} domain (by simp) = {j, j'} := by
-      aesop (add unsafe (by apply CosetFftDomainClass.injective (ω := domain)))
+      aesop (add unsafe (by apply CosetFftDomain.injective (ω := domain)))
     ext u
     simp only [mem_filter, mem_univ, true_and, ←hpre, ←h, Nat.sub_zero, mem_preimage,
       CosetFftDomain.mem_toFinset_iff_mem, iff_and_self]
@@ -123,7 +123,7 @@ lemma foldWordAux_of_k_2
         simp only [mem_filter, CosetFftDomain.mem_toFinset_iff_mem]
         rw [CosetFftDomainClass.mem_subdomain_0_iff_mem]
         aesop)
-      (fun _ _ _ _ h ↦ CosetFftDomainClass.injective h)
+      (fun _ _ _ _ h ↦ CosetFftDomain.injective h)
       (fun b hb ↦ by
         obtain ⟨⟨j, hb⟩, hb'⟩ :
           b ∈ domain ∧ b ^ 2 = (CosetFftDomain.subdomain domain 1) i := by
@@ -132,7 +132,7 @@ lemma foldWordAux_of_k_2
         exact ⟨j, by simp [hb, hb'], by simp [hb]⟩)
   apply Polynomial.eq_of_eval_eq_degree (n := 2) (s := {y.1, -y.1})
   · exact lt_of_lt_of_le
-      (Lagrange.degree_interpolate_lt _ CosetFftDomainClass.injOn)
+      (Lagrange.degree_interpolate_lt _ CosetFftDomain.injOn)
       (by simp [hcard])
   · exact lt_of_le_of_lt (Polynomial.degree_add_le _ _) <| by
       simp only [X_mul_C, degree_mul, degree_X, WithBot.coe_ofNat, sup_lt_iff]
@@ -143,7 +143,7 @@ lemma foldWordAux_of_k_2
   · conv_rhs =>
       rw [←hcard]
     exact Finset.card_le_card_of_injOn (f := domain)
-      (fun x hx ↦ by aesop) CosetFftDomainClass.injOn
+      (fun x hx ↦ by aesop) CosetFftDomain.injOn
   · intro x hx
     have hx : (x = domain j ∧ y.1 = domain j) ∨
               (x = domain j' ∧ y.1 = -domain j') := by aesop
@@ -152,11 +152,11 @@ lemma foldWordAux_of_k_2
     have hj' := even_add_odd_eq_of_not_charp_2 (f j') (f j) (domain j') (by simp)
       (CosetFftDomainClass.domain_implies_char_ne_2 domain)
     rcases hx with ⟨rfl, hy⟩ | ⟨rfl, hy⟩
-    · rw [Lagrange.eval_interpolate_at_node _ CosetFftDomainClass.injOn (by simp),
+    · rw [Lagrange.eval_interpolate_at_node _ CosetFftDomain.injOn (by simp),
           hy]
       conv_lhs => rw [hj]
       simp
-    · rw [Lagrange.eval_interpolate_at_node _ CosetFftDomainClass.injOn (by simp), hy]
+    · rw [Lagrange.eval_interpolate_at_node _ CosetFftDomain.injOn (by simp), hy]
       conv_lhs => rw [hj']
       simp
       grind
@@ -301,7 +301,7 @@ private lemma roots_in_domain_card_eq_if_x_in_domain
         (add simp [Nat.sub_zero, mem_filter, CosetFftDomain.mem_toFinset_iff_mem])
         (add safe [(by rw [CosetFftDomainClass.mem_subdomain_0_iff_mem])])
     )
-    (fun _ _ _ _ h ↦ CosetFftDomainClass.injective h)
+    (fun _ _ _ _ h ↦ CosetFftDomain.injective h)
     (fun b ↦ by
       have := @CosetFftDomainClass.mem_subdomain_0_iff_mem
       aesop (add simp [CosetFftDomainClass.mem_def]))
@@ -635,7 +635,7 @@ private lemma contradictory_hamming_dist_formula {s : Finset F}
       (g := fun x ↦ Finset.card {j | domain j ^ (2 ^ k) = x})
       (i := fun i _ ↦ domain.subdomain k i)
       (by aesop)
-      CosetFftDomainClass.injOn
+      CosetFftDomain.injOn
       (by {
         intro b hb
         obtain ⟨a, ha⟩ : ∃ i, b = (CosetFftDomain.subdomain domain k) i := by
@@ -705,7 +705,7 @@ private lemma correlated_agreement_implies_contradictory_hamm_dist
       apply Finset.card_le_card_of_injOn Prod.fst
         (f_inj := fun _ _ _ _ h ↦ by
           aesop
-            (add unsafe [(by apply CosetFftDomainClass.injective (ω := domain.subdomain k))])
+            (add unsafe [(by apply CosetFftDomain.injective (ω := domain.subdomain k))])
 )
       rintro ⟨a₁, a₂⟩ ha
       simp_all only [product_eq_sprod, coe_filter, mem_product, mem_univ, mem_preimage, true_and,
@@ -757,7 +757,7 @@ private lemma dist_from_code_bound_of_correlated_agreement
     exact le_trans h_k_d <| by
       exact le_trans h_d <| by
         rw [←size_of_smooth_coset_domain_eq_pow_of_2 (ω := domain)]
-        simp only [CosetFftDomain.toFinset]
+        simp only [CosetFftDomainClass.toFinset]
         exact Finset.card_le_card (by simp)
   }) h_u_deg
     aesop (add safe [mem_code_of_polynomial_of_natDegree_lt_of_eval])

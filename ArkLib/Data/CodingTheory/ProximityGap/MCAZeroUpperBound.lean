@@ -7,20 +7,21 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 
 /-!
-# The `δ = 0` MCA upper bound, from scratch
+# The `δ = 0` MCA upper bound, from scratch (Table-1 row 1, #232 positive side)
 
 ABF26 Table 1, first row. We prove the from-scratch upper bound
 
   `ε_mca(C, 0) ≤ 1/|F|`     (`epsMCA_zero_le_inv`)
 
-for every `F`-submodule code `C`, without gaps. At `δ = 0` the witness set is forced
-to be all of `ι`, so a bad scalar `γ` is one with `u₀ + γ • u₁ ∈ C` but not both
-`u₀, u₁ ∈ C`. At most one such `γ` exists: two distinct scalars force `u₁ ∈ C`, then
-`u₀ ∈ C`. Hence the bad-scalar count is `≤ 1` for every stack, and `ε_mca ≤ 1/|F|`.
+for **every** `F`-submodule code `C` — no admit, axiom-clean. At `δ = 0` the witness
+set is forced to be all of `ι`, so a "bad" scalar `γ` is one with `u₀ + γ·u₁ ∈ C`
+but not both `u₀, u₁ ∈ C`; at most one such `γ` exists (two would force `u₁ ∈ C`,
+then `u₀ ∈ C`). Hence the bad-scalar count is `≤ 1` for every stack, and
+`ε_mca ≤ 1/|F|`.
 
-Combined with a near-capacity upper witness, this supplies the lower endpoint for the
-Grand MCA threshold bracket. The witness `rs_mcaLowerWitness_zero` packages the bound for
-Reed-Solomon codes at the project challenge value `ε* = 2^-128`.
+Combined with `rs_mcaUpperWitness` (near capacity), this gives an admit-free two-sided bracket on
+the Grand MCA threshold: `0 ≤ δ* ≤ 1 − (k+1)/n`. The lower end is the matched
+`MCALowerWitness` `rs_mcaLowerWitness_zero` (for `|F| ≥ 2^128`).
 
 All results are hole-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
@@ -43,7 +44,7 @@ variable {F : Type} [Field F] [Fintype F]
 variable {A : Type} [Fintype A] [AddCommGroup A] [Module F A]
 
 open Classical in
-/-- **The `δ = 0` MCA upper bound.** Every `F`-submodule code satisfies
+/-- **The `δ = 0` MCA upper bound (from scratch).** Every `F`-submodule code satisfies
 `ε_mca(C, 0) ≤ 1/|F|`. -/
 theorem epsMCA_zero_le_inv (C : Submodule F (ι → A)) :
     epsMCA (F := F) (A := A) (C : Set (ι → A)) 0 ≤ 1 / (Fintype.card F : ℝ≥0∞) := by
@@ -66,18 +67,14 @@ theorem epsMCA_zero_le_inv (C : Submodule F (ι → A)) :
     have hS₁ := huniv hS₁card
     have hmem₁ : u 0 + γ₁ • u 1 ∈ C := by
       have he : w₁ = u 0 + γ₁ • u 1 := by
-        funext i
-        have := hw₁ i (by rw [hS₁]; exact Finset.mem_univ i)
-        simpa using this
-      rw [he] at hw₁C
-      exact hw₁C
+        funext i; have := hw₁ i (by rw [hS₁]; exact Finset.mem_univ i); simpa using this
+      rw [he] at hw₁C; exact hw₁C
     have hmem₂ : u 0 + γ₂ • u 1 ∈ C := by
       have he : w₂ = u 0 + γ₂ • u 1 := by
         funext i
         have := hw₂ i (by rw [huniv hS₂card]; exact Finset.mem_univ i)
         simpa using this
-      rw [he] at hw₂C
-      exact hw₂C
+      rw [he] at hw₂C; exact hw₂C
     by_contra hne
     have hd : γ₁ - γ₂ ≠ 0 := sub_ne_zero.mpr hne
     have hdiff : (γ₁ - γ₂) • u 1 ∈ C := by
@@ -85,21 +82,20 @@ theorem epsMCA_zero_le_inv (C : Submodule F (ι → A)) :
           (u 0 + γ₁ • u 1) - (u 0 + γ₂ • u 1) := by
         rw [sub_smul]
         abel
-      rw [he]
-      exact C.sub_mem hmem₁ hmem₂
+      rw [he]; exact C.sub_mem hmem₁ hmem₂
     have hu1 : u 1 ∈ C := by
       have := C.smul_mem (γ₁ - γ₂)⁻¹ hdiff
       rwa [inv_smul_smul₀ hd] at this
     have hu0 : u 0 ∈ C := by
       have he : u 0 = (u 0 + γ₁ • u 1) - γ₁ • u 1 := by abel
-      rw [he]
-      exact C.sub_mem hmem₁ (C.smul_mem γ₁ hu1)
+      rw [he]; exact C.sub_mem hmem₁ (C.smul_mem γ₁ hu1)
     exact hno₁ ⟨u 0, hu0, u 1, hu1, fun i _ => ⟨rfl, rfl⟩⟩
   have hmain := epsMCA_le_of_badCount_le (F := F) (A := A) (C : Set (ι → A)) 0 1 key
   simpa using hmain
 
-/-- **Matched `MCALowerWitness` at `δ = 0`.** For a field with `|F| ≥ 2^128`, radius
-`0` certifies `ε_mca(RS, 0) ≤ ε*`, so any threshold resolution satisfies `δ* ≥ 0`. -/
+/-- **Matched `MCALowerWitness` at `δ = 0`.** For a field with `|F| ≥ 2^128`,
+radius `0` certifies `ε_mca(RS, 0) ≤ ε*` (`ε* = 2^{-128}`), so any resolution's
+threshold satisfies `δ* ≥ 0`. -/
 noncomputable def rs_mcaLowerWitness_zero {n : ℕ} [NeZero n] (domain : Fin n ↪ F) (k : ℕ)
     (hF : (2 : ℝ≥0∞) ^ 128 ≤ (Fintype.card F : ℝ≥0∞)) :
     GrandChallenges.MCALowerWitness

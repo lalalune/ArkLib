@@ -7,21 +7,20 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUpToCapacityFalse
 
 /-!
-# A one-sided resolution witness for the Grand MCA Challenge
+# A one-sided resolution witness for the Grand MCA Challenge (#232)
 
-`GrandChallenges.MCAUpperWitness C ε*` is the issue's data structure for upper one-sided
-progress: a radius `δ` with `ε_mca(C, δ) > ε*`, which forces any resolution's threshold to
-satisfy `δ* ≤ δ`. This file constructs such a witness for Reed-Solomon codes from the
-gap-free MCA refutation
+`GrandChallenges.MCAUpperWitness C ε*` is the issue's data structure for *upper one-sided
+progress*: a radius `δ` with `ε_mca(C, δ) > ε*`, which forces any resolution's threshold to satisfy
+`δ* ≤ δ`. This file constructs such a witness for Reed–Solomon from the admit-free MCA refutation
 `ProximityGap.MCANearCapacityGK.rs_mca_uptoCapacity_false_of_smallField`.
 
 > **`rs_mcaUpperWitness`**: for an RS code with `1 ≤ k ≤ n` over a field with
-> `|F| < (n - k) * 2^128`, the radius `δ = 1 - (k+1)/n` is a certified
-> `MCAUpperWitness` at the prize threshold `ε* = 2^-128`.
+> `|F| < (n−k)·2^128`, the radius `δ = 1 − (k+1)/n` is a certified `MCAUpperWitness`
+> at the prize threshold `ε* = 2^{-128}`.
 
-So the prize threshold `δ*` for these codes provably satisfies `δ* ≤ 1 - (k+1)/n`,
-strictly below capacity in this field regime. This packages the upper end of the
-`δ*` search interval in the same witness API as the rest of `GrandChallenges`.
+So the prize threshold `δ*` for these codes provably satisfies `δ* ≤ 1 − (k+1)/n` (strictly below
+capacity). This pins the *upper* end of the `δ*` search interval, machine-checked and axiom-clean —
+genuine, if partial, progress on the positive Grand MCA Challenge's resolution data.
 
 All results are hole-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
@@ -37,10 +36,9 @@ open scoped NNReal ENNReal
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ}
 
-/-- **An `MCAUpperWitness` for Reed-Solomon from the sunflower MCA refutation.**
-For `1 ≤ k ≤ n` and a field with `|F| < (n - k) * 2^128`, the near-capacity radius
-`δ = 1 - (k+1)/n` certifies `ε_mca(RS, δ) > ε*`, so the MCA threshold satisfies
-`δ* ≤ δ`. -/
+/-- **An `MCAUpperWitness` for Reed–Solomon from the sunflower MCA refutation.** For `1 ≤ k ≤ n`
+and a field with `|F| < (n−k)·2^128`, the near-capacity radius `δ = 1 − (k+1)/n` certifies
+`ε_mca(RS, δ) > ε*`, so the MCA threshold satisfies `δ* ≤ δ`. -/
 noncomputable def rs_mcaUpperWitness [NeZero n] (domain : Fin n ↪ F) (k : ℕ) (hk : 1 ≤ k)
     (hkn : k ≤ n) (hsmall : (Fintype.card F : ℝ) < ((n - k : ℕ) : ℝ) * 2 ^ 128) :
     MCAUpperWitness (ReedSolomon.code (domain := domain) k : Set (Fin n → F)) epsStar where

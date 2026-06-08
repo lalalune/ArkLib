@@ -1,9 +1,11 @@
-import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.Data.Finsupp.Antidiagonal
 
 namespace ArkLib.MvPolynomial
 
-open MvPolynomial
+open _root_.MvPolynomial
 open Finsupp
 
 variable {σ : Type*} {R : Type*} [CommRing R]
@@ -24,8 +26,9 @@ lemma hasseDeriv_add (d : σ →₀ ℕ) (p q : MvPolynomial σ R) :
   dsimp [hasseDeriv]
   rw [map_add, coeff_add]
 
-lemma hasseDeriv_mul (d : σ →₀ ℕ) (p q : MvPolynomial σ R) :
-    hasseDeriv d (p * q) = Finset.sum d.antidiagonal (fun uv => hasseDeriv uv.1 p * hasseDeriv uv.2 q) := by
+lemma hasseDeriv_mul [DecidableEq σ] (d : σ →₀ ℕ) (p q : MvPolynomial σ R) :
+    hasseDeriv d (p * q)
+      = Finset.sum (Finset.antidiagonal d) (fun uv => hasseDeriv uv.1 p * hasseDeriv uv.2 q) := by
   dsimp [hasseDeriv]
   rw [map_mul, coeff_mul]
 
@@ -39,17 +42,17 @@ lemma mult_ge_add (a : σ → R) (m : ℕ) (p q : MvPolynomial σ R)
   intro d hd
   rw [hasseDeriv_add, map_add, hp d hd, hq d hd, add_zero]
 
-lemma mult_ge_mul (a : σ → R) (m n : ℕ) (p q : MvPolynomial σ R)
+lemma mult_ge_mul [DecidableEq σ] (a : σ → R) (m n : ℕ) (p q : MvPolynomial σ R)
     (hp : mult_ge a m p) (hq : mult_ge a n q) : mult_ge a (m + n) (p * q) := by
   intro d hd
   rw [hasseDeriv_mul, map_sum]
   apply Finset.sum_eq_zero
   intro uv huv
-  rw [Finsupp.mem_antidiagonal] at huv
+  rw [Finset.mem_antidiagonal] at huv
   have h_add : (uv.1 + uv.2).sum (fun _ v => v) = uv.1.sum (fun _ v => v) + uv.2.sum (fun _ v => v) := by
     apply Finsupp.sum_add_index' <;> simp
   rw [huv] at h_add
-  have hd_eq : d.sum (fun _ v => v) = uv.1.sum (fun _ v => v) + uv.2.sum (fun _ v => v) := h_add.symm
+  have hd_eq : d.sum (fun _ v => v) = uv.1.sum (fun _ v => v) + uv.2.sum (fun _ v => v) := h_add
   by_cases h1 : (uv.1.sum fun _ v => v) < m
   · rw [map_mul, hp uv.1 h1, zero_mul]
   · have h2 : (uv.2.sum fun _ v => v) < n := by omega

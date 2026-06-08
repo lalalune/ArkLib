@@ -362,6 +362,18 @@ lemma foldNth_natDegree_le {n : ℕ} [NeZero n] (f : 𝔽[X]) (β : 𝔽) :
     _ = (splitNth f n i).natDegree := by simp [natDegree_C]
     _ ≤ f.natDegree / n := splitNth_degree_le
 
+/-- Pointwise even/odd evaluation split for `n = 2`:
+`f(y) = f₀(y²) + y · f₁(y²)` where `f₀ = splitNth f 2 0` (even part) and
+`f₁ = splitNth f 2 1` (odd part). This is the reusable building block underlying the
+`+`/`-` identities below. -/
+lemma splitNth_two_eval (f : 𝔽[X]) (y : 𝔽) :
+    f.eval y =
+      (splitNth f 2 0).eval (y ^ 2) + y * (splitNth f 2 1).eval (y ^ 2) := by
+  conv_lhs => rw [splitNth_def 2 f]
+  rw [eval_finset_sum, Fin.sum_univ_two]
+  simp only [Fin.val_zero, Fin.val_one, pow_zero, pow_one, eval_mul, eval_X,
+    one_mul, splitNth_eval_comp_pow]
+
 /-- Lemma 2: Even evaluation identity
 
 For any polynomial `f` and field element `x`,
