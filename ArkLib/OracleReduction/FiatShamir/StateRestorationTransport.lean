@@ -3019,8 +3019,13 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
           (impl + QueryImpl.liftTarget (StateT σ ProbComp)
             (challengeQueryImpl
               (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-          (monadLift
-            (simulateQ loggingOracle (Verifier.run stmtIn pr.1 V.fiatShamir)).run).run
+          ((monadLift
+            (simulateQ loggingOracle (Verifier.run stmtIn pr.1 V.fiatShamir)).run :
+              OptionT
+                (OracleComp
+                  ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                    [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                (Option StmtOut × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))).run
       z?.elim (pure none) fun z => do
         let stmtOut? ←
           simulateQ
@@ -3032,12 +3037,17 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
           let witIn? ←
             simulateQ
               (impl + QueryImpl.liftTarget (StateT σ ProbComp)
-                (challengeQueryImpl
-                  (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-              (monadLift
+              (challengeQueryImpl
+                (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+              ((monadLift
                 (fiatShamirStraightlineExtractorOfStateRestoration
                   (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn pr.2.2 pr.1
-                  default z.2)).run
+                  default z.2) :
+                OptionT
+                  (OracleComp
+                    ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                      [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                  WitIn).run
           witIn?.elim (pure none) fun witIn =>
             simulateQ
               (impl + QueryImpl.liftTarget (StateT σ ProbComp)
