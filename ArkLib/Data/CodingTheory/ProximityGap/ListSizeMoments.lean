@@ -167,6 +167,25 @@ theorem covering_lower_bound (C : Finset (ι → F)) (r : ℕ) :
   rw [hsum1, first_moment, hsum2] at hcs
   exact hcs
 
+/-- **Second-moment tail (Markov) upper bound — the proximity-gap direction.** The number of received
+words with a *large* list `|Λ| ≥ a` is at most `Σ_f |Λ|² / a²`: `a² · #{f : |Λ(C,r,f)| ≥ a} ≤ Σ_f
+|Λ(C,r,f)|²`. Since the right side is the *exact* second moment (a weight-enumerator sum), this is the
+rigorous **upper** bound on the number of "bad" (large-list) received words — the direction a proximity
+gap must establish. Below the Johnson radius the second moment is small, so few words are bad; this is
+the quantitative skeleton of "the gap holds below Johnson". Pairs with `covering_lower_bound`. -/
+theorem markov_tail_bound (C : Finset (ι → F)) (r a : ℕ) :
+    a ^ 2 * (Finset.univ.filter (fun f => a ≤ (lam C r f).card)).card
+      ≤ ∑ f : ι → F, (lam C r f).card ^ 2 := by
+  set S := Finset.univ.filter (fun f => a ≤ (lam C r f).card) with hS
+  calc a ^ 2 * S.card
+      = ∑ _f ∈ S, a ^ 2 := by rw [Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+    _ ≤ ∑ f ∈ S, (lam C r f).card ^ 2 := by
+        refine Finset.sum_le_sum (fun f hf => ?_)
+        rw [hS, Finset.mem_filter] at hf
+        exact Nat.pow_le_pow_left hf.2 2
+    _ ≤ ∑ f : ι → F, (lam C r f).card ^ 2 :=
+        Finset.sum_le_sum_of_subset (Finset.subset_univ S)
+
 /-- **Translation of the pair-ball count.** The number of words within distance `r` of *both* `c` and
 `c'` depends only on the difference `c' - c`: it equals the number of `g` within `r` of both `0` and
 `c' - c`. -/
