@@ -1407,6 +1407,31 @@ theorem fiatShamir_runWithLog_simulateQ_fst
     { prover := P, verifier := V.fiatShamir })]
   rw [OptionT.run_map, simulateQ_map]
 
+/-- Collapse the logged one-message Fiat-Shamir reduction run inside a log-independent continuation:
+since the continuation `F` only reads the proof/output/verifier payload (`Prod.fst` of the logged
+result, never the query logs), the coupled `runWithLog` execution can be replaced by the explicit
+adversary execution `fiatShamirAdversaryExecution`. This is the knowledge-soundness analogue of how
+the soundness transfer rewrites `Reduction.run` via `fiatShamirAdversary_runCollapse`. -/
+theorem fiatShamir_runWithLog_bind_collapse {γ : Type}
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) (table : σ) (d : ProbComp γ)
+    (F : ((Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) × StmtOut) →
+      σ → ProbComp γ) :
+    (StateT.run (simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+        (Reduction.runWithLog stmtIn witIn
+          { prover := P, verifier := V.fiatShamir }).run) table >>=
+      fun a => a.1.elim d (fun r => F (Prod.fst r) a.2))
+    = (StateT.run (simulateQ impl (fiatShamirAdversaryExecution P V stmtIn witIn).run) table >>=
+      fun a => a.1.elim d (fun r => F r a.2)) := by
+  have hbridge := fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn
+  conv_rhs => rw [← hbridge, StateT.run_map]
+  rw [bind_map_left]
+  refine bind_congr fun a => ?_
+  cases a.1 <;> rfl
+
 set_option linter.flexible false in
 theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
@@ -1479,7 +1504,7 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
         StateT.run_simulateQ_optiont_map, StateT.run_pure_some_bind_map, Option.map_comp_lambda,
         simulateQ_map_monadLift_getM_run, optionT_run_simulateQ_liftquery,
         OptionT.run_pure, StateT.run_pure, _root_.map_pure]
-  · trace_state
+  · -- heq: FS knowledge-soundness game = SR knowledge-soundness game (reduction faithfulness)
     sorry
 
 end CanonicalKnowledgeSoundness
