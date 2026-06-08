@@ -350,6 +350,38 @@ theorem outerProver_transcript_challenge_readback
   · simp only [chalBatch, FullTranscript.challenges, Transcript.concat, Fin.isValue]
     rfl
 
+set_option maxHeartbeats 3200000 in
+/-- **Outer-completeness failure bound reduced to the per-(initial-state) pole event (axiom-clean).**
+
+The standard outer-run failure probability is bounded by `logupCompletenessError` *given* the
+per-initial-state fact that the simulated reduction run returns `none` (its only failure mode, the
+verifier rejecting the sampled `x`-challenge) with probability at most that error.
+
+This discharges all of the run-level probability plumbing — the `OptionT.mk` failure split
+(`OptionT.probFailure_mk`: bare `⊥` is `0` in `ProbComp`, so failure surfaces only as `none`) and the
+average over the never-failing `init` state (`probEvent_bind_le_of_forall_le`) — leaving exactly the
+per-state pole obligation.  That remaining obligation is the simulated-verifier-run collapse to
+`¬ outerVerifyAccepts` marginalised over the uniform `x`, bounded by `probEvent_outerVerify_reject_le`. -/
+theorem probFailure_outerCompletenessRunComp_le_of_perStateNone
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (witIn : WitIn F n M params)
+    (hPole : ∀ s : σ,
+      Pr[= none | ((simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          (((outerOracleReduction oSpec F n M params).toReduction.run stmtIn witIn).run) :
+            StateT σ ProbComp (Option (OuterCompletenessRunResult F n M params))).run' s)]
+        ≤ (logupCompletenessError F n : ℝ≥0∞)) :
+    Pr[⊥ | outerCompletenessRunComp oSpec F n M params init impl stmtIn witIn]
+      ≤ (logupCompletenessError F n : ℝ≥0∞) := by
+  unfold outerCompletenessRunComp
+  rw [OptionT.probFailure_mk]
+  refine le_trans (b := 0 + (logupCompletenessError F n : ℝ≥0∞)) ?_ (by rw [zero_add])
+  gcongr ?_ + ?_
+  · simp [HasEvalPMF.probFailure_eq_zero]
+  · rw [← probEvent_eq_eq_probOutput]
+    refine probEvent_bind_le_of_forall_le (fun s _ => ?_)
+    rw [probEvent_eq_eq_probOutput]
+    exact hPole s
+
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
     OuterCompletenessRunResidual oSpec F n M params init impl ↔
