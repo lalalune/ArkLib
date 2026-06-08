@@ -529,6 +529,29 @@ theorem batchingReduction_perfectCompleteness
     (init := init) (impl := impl) :=
   hBatching
 
+/-- Row-expansion form of `compute_s0` on the tensor sent by the honest embedding of an arbitrary
+large-field multilinear polynomial `t'`.
+
+This packages the exact orientation currently used by the batching verifier: `compute_s0` reads
+`P.decomposeRows`, so it extracts the basis coordinates of the `t'` value in the `φ₁` factor and
+weights them by the suffix equality factor. The sharp batching RBR bridge can use this lemma to
+separate the already-proven row extraction from the remaining KState/verifier-run plumbing. -/
+lemma compute_s0_embedded_MLP_eval_eq_sum
+    [IsDomain L] [IsDomain K]
+    (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) (y : Fin κ → L) :
+    compute_s0 κ L K P (embedded_MLP_eval κ L K P ℓ ℓ' h_l t' r) y =
+      ∑ u : Fin κ → Fin 2,
+        eqTilde (fun i => (if u i == 1 then (1 : L) else 0)) y *
+          (∑ w : Fin ℓ' → Fin 2,
+            P.basis.repr
+                (eval (fun i => (if w i == 1 then (1 : L) else 0)) t'.val) u •
+              (eqTilde (fun i => (if w i == 1 then (1 : L) else 0))
+                (getEvaluationPointSuffix κ L ℓ ℓ' h_l r))) := by
+  unfold compute_s0
+  apply Finset.sum_congr rfl
+  intro u _
+  rw [decomposeRows_embedded_MLP_eval']
+
 /-- Mismatch polynomial from row-decomposition difference `msg0 - s_bar`. -/
 noncomputable def batchingMismatchPoly (msg0 s_bar : P.A) : MvPolynomial (Fin κ) L :=
   MvPolynomial.MLE (fun u : Fin κ → Fin 2 =>
@@ -780,4 +803,5 @@ end RingSwitching
 /-! ### Axiom audit (issue #29 batching Schwartz-Zippel frontier) -/
 
 #print axioms RingSwitching.BatchingPhase.batchingMismatchPoly_nonzero_of_ne
+#print axioms RingSwitching.BatchingPhase.compute_s0_embedded_MLP_eval_eq_sum
 #print axioms RingSwitching.BatchingPhase.probability_bound_badBatchingEventProp_sharp
