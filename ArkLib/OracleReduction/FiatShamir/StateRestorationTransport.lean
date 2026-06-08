@@ -3054,20 +3054,31 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
               (impl + QueryImpl.liftTarget (StateT σ ProbComp)
                 (challengeQueryImpl
                   (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-              (pure (stmtIn, witIn, stmtOut, pr.2.2)).run
+              (((pure (stmtIn, witIn, stmtOut, pr.2.2)) :
+                OptionT
+                  (OracleComp
+                    ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                      [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                  (StmtIn × WitIn × StmtOut × WitOut)).run)
   let Kdir :
       (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
         StateT σ ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) := fun pr =>
     simulateQ impl (directBlock pr).run
   change Option.elimM
-      (some <$> simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+      (some <$> simulateQ
+        (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+          (challengeQueryImpl
+            (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
         (Prover.runWithLog stmtIn witIn P))
       (pure none) (fun prLog => Klog prLog.1) =
     Option.elimM (some <$> simulateQ impl directProver) (pure none) Kdir
   rw [stateT_option_elimM_map_eq (f := Prod.fst) (k := Klog)]
   simp only [Functor.map_map, Function.comp_apply, Option.map_some]
-  rw [fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
-    (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)]
+  have hProver :=
+    fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
+      (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)
+  simp only [QueryImpl.addLift_def] at hProver
+  rw [hProver]
   apply stateT_option_elimM_congr
   intro pr
   dsimp [Klog, Kdir, loggedBlock, directBlock]
