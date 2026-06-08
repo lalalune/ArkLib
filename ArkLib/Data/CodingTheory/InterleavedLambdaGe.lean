@@ -27,7 +27,8 @@ lower bound is the bridge that propagates a base-code list-size *lower* bound in
 lattice at **any** arity `m`. Axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
 ## References
-- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026. #232.
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated
+  Agreement*. 2026. #232.
 -/
 
 open ListDecodable Code InterleavedCode
