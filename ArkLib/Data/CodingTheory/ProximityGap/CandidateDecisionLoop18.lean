@@ -47,7 +47,7 @@ theorem prize_mass_iff_listsize_le {ℓ B q : ℝ} (hq : 0 < q) :
 /-- **Exhaustive dichotomy.** For any list size `ℓ` and `q`-independent numerator `B`, exactly one
 holds: the prize mass clause (`ℓ ≤ B`, prize TRUE side) or its strict failure (`B < ℓ`, prize FALSE
 side). The prize is a single binary decision about the list-size function. -/
-theorem prize_dichotomy (ℓ B : ℝ) : ℓ ≤ B ∨ B < ℓ := le_or_lt ℓ B
+theorem prize_dichotomy (ℓ B : ℝ) : ℓ ≤ B ∨ B < ℓ := le_or_gt ℓ B
 
 /-- **`q`-independence of the decision.** The criterion `ℓ ≤ B` does not mention `q`: if the list
 size `ℓ` is the *same* across a family of fields (the deterministic smooth-domain regime, where the

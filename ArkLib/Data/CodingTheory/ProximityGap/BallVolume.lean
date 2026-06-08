@@ -69,14 +69,12 @@ theorem support_eq_card (S : Finset ι) :
         have h := hmem i
         rw [if_pos hiS, Finset.mem_filter] at h
         exact h.2
-  rw [hset, Fintype.card_piFinset]
-  have hAcard : ∀ i, (A i).card = if i ∈ S then (Fintype.card F - 1) else 1 := by
-    intro i
-    rw [hA]
-    split_ifs with hi
-    · exact card_filter_ne_zero
-    · exact Finset.card_singleton 0
-  simp only [hAcard, Finset.prod_ite_mem, Finset.univ_inter, Finset.prod_const]
+  rw [hset, Fintype.card_piFinset,
+    ← Finset.prod_subset (Finset.subset_univ S)
+      (fun i _ hiS => by rw [hA, if_neg hiS]; exact Finset.card_singleton 0),
+    Finset.prod_congr rfl
+      (fun i hiS => by rw [hA, if_pos hiS]; exact card_filter_ne_zero),
+    Finset.prod_const]
 
 /-- **Hamming sphere count.** `#{f : wt(f) = i} = C(n,i)·(q-1)^i`. -/
 theorem hammingNorm_card (i : ℕ) :
