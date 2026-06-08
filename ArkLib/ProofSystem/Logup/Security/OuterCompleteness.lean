@@ -670,6 +670,21 @@ theorem outer_perState_none_le
     apply mul_le_of_le_one_right'
     exact probEvent_le_one
 
+/-- **Outer-phase completeness failure bound (now fully proved).** The standard outer-completeness
+run fails (returns `⊥`) with probability at most `logupCompletenessError`.  This discharges the
+`hFailure` half of `OuterCompletenessRunFactsResidual` end-to-end: the run-level plumbing of
+`probFailure_outerCompletenessRunComp_le_of_perStateNone` is fed the per-(initial-state) pole bound
+`outer_perState_none_le` (whose accept-zero step is now closed). The remaining content of the outer
+completeness residual is purely the complement-zero (`hComplZero`) per-state agreement fact. -/
+theorem outer_completenessRun_failure_le
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (witIn : WitIn F n M params) :
+    Pr[⊥ | outerCompletenessRunComp oSpec F n M params init impl stmtIn witIn]
+      ≤ (logupCompletenessError F n : ℝ≥0∞) := by
+  refine probFailure_outerCompletenessRunComp_le_of_perStateNone oSpec F n M params init impl
+    stmtIn witIn (fun s => ?_)
+  exact outer_perState_none_le oSpec F n M params impl stmtIn witIn s
+
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
     OuterCompletenessRunResidual oSpec F n M params init impl ↔
@@ -695,3 +710,6 @@ end Logup
 #print axioms Logup.outerReduction_run_closed_form
 #print axioms Logup.getChallenge_simulateQ_eq
 #print axioms Logup.probEvent_outerVerify_reject_challenge_le
+#print axioms Logup.outerVerifier_run_accept_eq_pure
+#print axioms Logup.outer_perState_none_le
+#print axioms Logup.outer_completenessRun_failure_le
