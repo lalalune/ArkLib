@@ -77,3 +77,64 @@ theorem completeness_iff_run_unrolled
 #print axioms completeness_iff_run_unrolled
 
 end Reduction
+
+/-! ## Challenge-coherence for the standard interactive challenge oracle
+
+The honest interactive execution answers the verifier's `getChallenge` queries with fresh uniform
+samples (`challengeQueryImpl`), routed through `QueryImpl.addLift impl challengeQueryImpl` together
+with the shared-oracle implementation `impl`. The two lemmas below push that challenge sampling out
+of `simulateQ … |>.run'`, exposing the challenge as a `uniformSample`. This is the reusable
+"FS-class" coherence step that downstream completeness/soundness probability computations need (e.g.
+the LogUp outer-phase pole event depends only on the sampled challenge `x`). -/
+
+namespace ChallengeCoherence
+
+variable {ι : Type} {oSpec : OracleSpec ι} {n : ℕ} {pSpec : ProtocolSpec n}
+  [∀ i, SampleableType (pSpec.Challenge i)] {σ β : Type}
+
+/-- Simulating a single (lifted) `getChallenge i` under `QueryImpl.addLift impl challengeQueryImpl`
+collapses to the lifted uniform sampler `liftM ($ᵗ pSpec.Challenge i)`: the challenge oracle ignores
+the shared-oracle implementation and samples uniformly. -/
+theorem simulateQ_addLift_getChallenge
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (i : pSpec.ChallengeIdx) :
+    (simulateQ (QueryImpl.addLift impl challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp))
+        (liftM (getChallenge pSpec i) :
+          OracleComp (oSpec + [pSpec.Challenge]ₒ) (pSpec.Challenge i)))
+      = (liftM ($ᵗ pSpec.Challenge i) : StateT σ ProbComp (pSpec.Challenge i)) := by
+  rw [← OracleComp.liftComp_eq_liftM (mx := getChallenge pSpec i), QueryImpl.addLift]
+  rw [QueryImpl.simulateQ_liftComp_right_eq_of_apply
+        (QueryImpl.liftTarget (StateT σ ProbComp) impl
+          + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+        (QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+        (fun t => by rw [QueryImpl.add_apply_inr])]
+  show simulateQ (QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+      (liftM (([pSpec.Challenge]ₒ).query ⟨i, ()⟩)) = _
+  rw [simulateQ_spec_query, QueryImpl.liftTarget_apply]
+  rfl
+
+/-- **Challenge-coherence bind-exposure brick.** Running, under `simulateQ (addLift impl
+challengeQueryImpl)` with state `s`, a `getChallenge`-then-`k` computation equals: sample the
+challenge uniformly, then run `k` from the *same* state `s`. (The challenge oracle samples uniformly
+and leaves the `σ`-state untouched.) This exposes the verifier's fresh challenge as a
+`uniformSample` for probability computations — the reusable FS-class coherence step. -/
+theorem run'_simulateQ_addLift_getChallenge_bind
+    (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ)
+    (i : pSpec.ChallengeIdx)
+    (k : pSpec.Challenge i → OracleComp (oSpec + [pSpec.Challenge]ₒ) β) :
+    (simulateQ (QueryImpl.addLift impl challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp))
+        ((liftM (getChallenge pSpec i) :
+            OracleComp (oSpec + [pSpec.Challenge]ₒ) (pSpec.Challenge i)) >>= k)).run' s
+      = ($ᵗ pSpec.Challenge i) >>= fun c =>
+          (simulateQ (QueryImpl.addLift impl challengeQueryImpl :
+            QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) (k c)).run' s := by
+  rw [simulateQ_bind, simulateQ_addLift_getChallenge]
+  rw [StateT.run'_eq, StateT.run_bind, StateT.run_monadLift]
+  simp only [bind_assoc, pure_bind, map_bind, StateT.run'_eq, monadLift_self]
+
+#print axioms simulateQ_addLift_getChallenge
+#print axioms run'_simulateQ_addLift_getChallenge_bind
+
+end ChallengeCoherence
