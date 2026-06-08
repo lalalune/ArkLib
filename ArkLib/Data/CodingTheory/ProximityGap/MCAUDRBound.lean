@@ -158,8 +158,10 @@ theorem rs_min_dist (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintype.car
     (fun i hi => (mem_filter.mp hi).2) ?_
   have hpart := Finset.filter_card_add_filter_neg_card_eq_card (s := (univ : Finset ι))
     (p := fun i => a i = b i)
-  simp only [Finset.card_univ] at hpart
-  simp only [ne_eq] at hdis
+  rw [Finset.card_univ] at hpart
+  have hpart' : (univ.filter (fun i => a i = b i)).card
+      + (univ.filter (fun i => a i ≠ b i)).card = Fintype.card ι := hpart
+  have hk1 : 1 ≤ k := Nat.one_le_iff_ne_zero.mpr (NeZero.ne k)
   omega
 
 open Classical in
