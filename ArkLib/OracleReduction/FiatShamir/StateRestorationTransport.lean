@@ -1633,11 +1633,22 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     have hml : ∀ {α : Type} (x : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) α),
         monadLift x = x := fun x => rfl
     simp only [hml]
-    -- Both sides now share the syntactic prefix `sendMessage; output; deriveTranscriptFS`
-    -- (the impls `fsChallengeQueryImplState` and `srChallengeQueryImpl'` are defeq).  Remaining:
-    -- peel that shared prefix (`probEvent_bind_eq_tsum`), then at the verify+extractor leaf reshape
-    -- the LHS proof-bundling via `Option.map`, collapse the re-derived transcript via
-    -- `deriveTranscriptFS_simulateQ_run` + `simulateQ_addLift_fsChallenge_preserves_state`, and
+    -- Unify the two (defeq) challenge-oracle impls so the shared prefix is syntactically identical.
+    simp only [ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl']
+    -- Peel the shared prefix `sendMessage; output; deriveTranscriptFS` term-by-term: the prefix is
+    -- now identical on both sides, so each `Pr[= · | prefixStep]` factor matches and only the
+    -- verify+extractor leaf remains.
+    rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
+    refine tsum_congr (fun a => ?_)
+    congr 1
+    rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
+    refine tsum_congr (fun x => ?_)
+    congr 1
+    rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
+    refine tsum_congr (fun x_1 => ?_)
+    congr 1
+    -- Leaf: reshape the LHS proof-bundling via `Option.map`, collapse the re-derived transcript via
+    -- `deriveTranscriptFS_simulateQ_run` + `simulateQ_addLift_fsChallenge_preserves_state`, then
     -- apply `ks_payload_eq`.
     sorry
 
