@@ -841,6 +841,7 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
 import ArkLib.ProofSystem.Spartan.SecondSumcheckSimOStmt
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
 import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
+import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.ErrorAccumulation
 import ArkLib.ProofSystem.Stir.MainThm
