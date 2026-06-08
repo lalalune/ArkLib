@@ -171,4 +171,30 @@ theorem gs_list_decoding_bound [DecidableEq F]
         (multiplicities (z, f.eval z)) (hPdef ▸ hPne) h_mult_Q
     · exact lt_of_le_of_lt (natDegree_aeval_le Q deg_X deg_Y hQ_degX hQ_degY f) (hS f hf)
 
+/-- **Sudan list-decoding radius** (multiplicity-`1` specialisation of `gs_list_decoding_bound`).
+For `n = |points|` evaluation points and any degrees `deg_X, deg_Y` with `n < (deg_X+1)(deg_Y+1)`,
+the number of polynomials of degree `< k` that agree with `received` on more than
+`deg_X + deg_Y·(k-1)` points is at most `deg_Y`. Optimising `deg_X, deg_Y` recovers the Sudan
+radius; here the parameters are left explicit. -/
+theorem sudan_list_decoding_bound [DecidableEq F]
+    (points : Finset F) (received : F → F) (k deg_X deg_Y : ℕ)
+    (h_dim : points.card < (deg_X + 1) * (deg_Y + 1))
+    (S : Finset (Polynomial F))
+    (hdeg : ∀ f ∈ S, f.natDegree ≤ k - 1)
+    (hagree : ∀ f ∈ S,
+      (points.filter (fun z => f.eval z = received z)).card > deg_X + deg_Y * (k - 1)) :
+    S.card ≤ deg_Y := by
+  classical
+  refine gs_list_decoding_bound points received (fun _ => 1) deg_X deg_Y ?_ S ?_
+  · simpa using h_dim
+  · intro f hf
+    have hcard : (points.filter (fun z => f.eval z = received z)).sum
+        (fun z => (fun _ => 1) (z, received z)) =
+        (points.filter (fun z => f.eval z = received z)).card := by
+      simp
+    rw [hcard]
+    calc deg_X + deg_Y * f.natDegree
+        ≤ deg_X + deg_Y * (k - 1) := by gcongr; exact hdeg f hf
+      _ < (points.filter (fun z => f.eval z = received z)).card := hagree f hf
+
 end CodingTheory.Bounds.Capacity
