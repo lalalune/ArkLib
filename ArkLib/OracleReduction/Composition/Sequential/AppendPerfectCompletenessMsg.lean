@@ -68,7 +68,10 @@ private theorem probFailure_lift_run_getM {ι₁ ι₂ : Type} {spec₁ : Oracle
               : OptionT (OracleComp spec₂) (γ × S'))] = Pr[⊥ | W] := by
   simp only [OptionT.liftM_run_getM_bind]
   simp only [bind_pure_comp, probFailure_map]
-  rw [OptionT.probFailure_eq, OptionT.run_liftM_run, OptionT.probFailure_eq (mx := W)]
+  rw [OptionT.probFailure_eq, OptionT.probFailure_eq (mx := W)]
+  have hrun : (liftM W : OptionT (OracleComp spec₂) S').run = liftComp W.run spec₂ := by
+    rw [OracleComp.liftM_OptionT_eq, OracleComp.liftComp_def]; rfl
+  rw [hrun]
   simp only [HasEvalPMF.probFailure_eq_zero, zero_add, OracleComp.probOutput_liftComp]
 
 /-- **Perfect completeness composes under `Reduction.append` (message-seam case).** -/
