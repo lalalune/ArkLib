@@ -383,6 +383,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonCapacityBound
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonListBound
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingBadScalarCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
@@ -414,11 +415,13 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMasterBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMiddleBand
+import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityGeneralRate
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpread
+import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpreadExample
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeGuardrail
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeUpperBound
