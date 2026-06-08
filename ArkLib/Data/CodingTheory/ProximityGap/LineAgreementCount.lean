@@ -318,7 +318,49 @@ theorem badGamma_mul_le_johnson_ball_mul_weight_of_fullSupport
   simpa using
     badGamma_mul_gap_le_johnson_ball_mul_weight u₀ u₁ f C a 0 d e bad hwit hbase hdist hgap
 
+/-- Divided form of `badGamma_mul_gap_le_johnson_ball_mul_weight`. When the usable agreement gap
+`a - b` is positive, the bad-scalar count is at most the Johnson-support cap divided by that gap. -/
+theorem badGamma_le_johnson_ball_mul_weight_div_gap
+    (u₀ u₁ f : ι → F) (C : Finset (ι → F)) (a b d e : ℕ) (bad : Finset F)
+    (hwit :
+      ∀ γ ∈ bad, ∃ c ∈ C, hammingDist c f ≤ e ∧
+        a ≤ (univ.filter (fun i => u₀ i + γ * u₁ i = c i)).card)
+    (hbase :
+      ∀ c ∈ C, hammingDist c f ≤ e →
+        (univ.filter (fun i => u₁ i = 0 ∧ u₀ i = c i)).card ≤ b)
+    (hdist : ∀ c ∈ C, ∀ c' ∈ C, c ≠ c' → d ≤ hammingDist c c')
+    (hgap : Fintype.card ι * (Fintype.card ι - d) < (Fintype.card ι - e) ^ 2)
+    (hab : b < a) :
+    bad.card ≤
+      ((Fintype.card ι ^ 2 /
+        ((Fintype.card ι - e) ^ 2 - Fintype.card ι * (Fintype.card ι - d)))
+        * (univ.filter (fun i => u₁ i ≠ 0)).card) / (a - b) := by
+  have hmul :=
+    badGamma_mul_gap_le_johnson_ball_mul_weight u₀ u₁ f C a b d e bad hwit hbase hdist hgap
+  exact (Nat.le_div_iff_mul_le (Nat.sub_pos_of_lt hab)).2 hmul
+
+/-- Divided full-support Johnson-ball bad-scalar bound. With no zero coordinates in `u₁`, the
+usable gap is `a`, so a positive agreement threshold directly divides the Johnson-support cap. -/
+theorem badGamma_le_johnson_ball_mul_weight_div_of_fullSupport
+    (u₀ u₁ f : ι → F) (C : Finset (ι → F)) (a d e : ℕ) (bad : Finset F)
+    (hwit :
+      ∀ γ ∈ bad, ∃ c ∈ C, hammingDist c f ≤ e ∧
+        a ≤ (univ.filter (fun i => u₀ i + γ * u₁ i = c i)).card)
+    (hdist : ∀ c ∈ C, ∀ c' ∈ C, c ≠ c' → d ≤ hammingDist c c')
+    (hgap : Fintype.card ι * (Fintype.card ι - d) < (Fintype.card ι - e) ^ 2)
+    (hsupp : ∀ i, u₁ i ≠ 0) (ha : 0 < a) :
+    bad.card ≤
+      ((Fintype.card ι ^ 2 /
+        ((Fintype.card ι - e) ^ 2 - Fintype.card ι * (Fintype.card ι - d)))
+        * (univ.filter (fun i => u₁ i ≠ 0)).card) / a := by
+  have hmul :=
+    badGamma_mul_le_johnson_ball_mul_weight_of_fullSupport u₀ u₁ f C a d e bad hwit hdist
+      hgap hsupp
+  exact (Nat.le_div_iff_mul_le ha).2 hmul
+
 #print axioms badGamma_mul_gap_le_johnson_ball_mul_weight
 #print axioms badGamma_mul_le_johnson_ball_mul_weight_of_fullSupport
+#print axioms badGamma_le_johnson_ball_mul_weight_div_gap
+#print axioms badGamma_le_johnson_ball_mul_weight_div_of_fullSupport
 
 end ProximityGap
