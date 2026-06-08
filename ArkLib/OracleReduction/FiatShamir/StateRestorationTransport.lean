@@ -1619,6 +1619,15 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
       OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, simulateQ_bind, simulateQ_map,
       simulateQ_pure, StateT.run_bind, StateT.run_map, StateT.run_pure, map_bind, bind_assoc,
       pure_bind, bind_pure_comp, Option.elimM, Functor.map_map, Function.comp]
+    -- Flatten the vacuous `some`-wraps (only the verifier can fail), giving the explicit flat goal:
+    -- LHS = sendMessage; output; derive→t1; verify(t1)→Option stmtOut; (on some) extractor derives
+    -- the transcript AGAIN (t2) and runs srExtractor; vs RHS = sendMessage; output; derive→t;
+    -- verify(t)→Option; srExtractor(t).  Remaining: collapse t2=t1 (keystone +
+    -- `simulateQ_addLift_fsChallenge_preserves_state`), then `ks_payload_eq` for the verify/extractor
+    -- leaf.
+    simp only [bind_map_left, Option.elim_some, simulateQ_bind, simulateQ_map, simulateQ_pure,
+      StateT.run_bind, StateT.run_map, StateT.run_pure, bind_assoc, map_bind, pure_bind,
+      bind_pure_comp, Function.comp]
     sorry
 
 end CanonicalKnowledgeSoundness
