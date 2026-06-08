@@ -41,13 +41,13 @@ noncomputable def rangePreimageEmbedding [Fintype G] (f : G → α) :
     have hz : f (Classical.choose z.property) = z.1 := Classical.choose_spec z.property
     calc
       y.1 = f (Classical.choose y.property) := hy.symm
-      _ = f (Classical.choose z.property) := by rw [h]
+      _ = f (Classical.choose z.property) := congrArg f h
       _ = z.1 := hz
 
 /-- **Finite-orbit cap.** The image of a finite group action, or any finite family of symmetries, has
 cardinality at most the number of acting symmetries. In Loop 20 language, one smooth-domain symmetry
 orbit cannot be larger than the smooth group itself. -/
-theorem range_card_le_domain [Fintype G] [Fintype (Set.range (f : G → α))] (f : G → α) :
+theorem range_card_le_domain [Fintype G] (f : G → α) [Fintype (Set.range f)] :
     Fintype.card (Set.range f) ≤ Fintype.card G :=
   Fintype.card_le_of_embedding (rangePreimageEmbedding f)
 
