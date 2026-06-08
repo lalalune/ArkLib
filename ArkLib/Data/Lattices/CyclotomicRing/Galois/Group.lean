@@ -164,6 +164,21 @@ theorem two_pow_succ_dvd_four_mul_add_one_pow (α k κ : ℕ)
   have h := two_pow_dvd_one_add_two_pow_pow (κ + 2) (α - (κ + 1)) (by omega)
   rwa [show (κ + 2) + (α - (κ + 1)) = α + 1 from by omega] at h
 
+/-- The natural-number form: `(4k+1)^{2^α/(2k)} ≡ 1 (mod 2^{α+1})`. The orbit-wrap-around fact
+that closes `Hexp` under multiplication by `4k+1`. -/
+theorem four_mul_add_one_pow_ord_mod (α k κ : ℕ) (hk : k = 2 ^ κ) (hκ : κ + 1 ≤ α) :
+    (4 * k + 1) ^ (2 ^ α / (2 * k)) % 2 ^ (α + 1) = 1 := by
+  have hZ := two_pow_succ_dvd_four_mul_add_one_pow α k κ hk hκ
+  have hmod : ((4 * k + 1) ^ (2 ^ α / (2 * k)) : ℕ) ≡ 1 [MOD 2 ^ (α + 1)] := by
+    rw [Nat.modEq_iff_dvd]
+    have hd : ((2 ^ (α + 1) : ℕ) : ℤ) ∣
+        ((1 : ℕ) : ℤ) - ((4 * k + 1) ^ (2 ^ α / (2 * k)) : ℕ) := by
+      push_cast; simpa using (dvd_neg.mpr hZ)
+    exact_mod_cast hd
+  have hlt : 1 < 2 ^ (α + 1) := Nat.one_lt_pow (by omega) (by norm_num)
+  rw [Nat.ModEq, Nat.one_mod_eq_one.mpr (by omega)] at hmod
+  exact hmod
+
 /-! ## The subgroup `H` as an exponent set -/
 
 /-- The exponent set enumerating `H = ⟨σ_{-1}, σ_{4k+1}⟩` inside `(Z / 2^{α+1})ˣ`:

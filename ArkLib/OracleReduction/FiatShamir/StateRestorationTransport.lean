@@ -2978,41 +2978,7 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
           pure (stmtIn, extractedWitIn, stmtOut, ctxOut.2) :
             OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
               (StmtIn × WitIn × StmtOut × WitOut)).run) := by
-  simp only [OptionT.run_bind, simulateQ_option_elimM, simulateQ_pure]
-  let K :
-      (((Reduction.FiatShamirProofTranscript (pSpec := pSpec) × (StmtOut × WitOut)) ×
-          StmtOut) × (QueryLog ((oSpec + fsChallengeOracle StmtIn pSpec) +
-              [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ) ×
-            QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))) →
-        StateT σ ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) := fun d =>
-      Option.elimM
-        (simulateQ (QueryImpl.addLift impl challengeQueryImpl)
-          (OptionT.run
-            ((liftM
-              (fiatShamirStraightlineExtractorOfStateRestoration
-                (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn d.1.1.2.2
-                d.1.1.1 d.2.1.fst d.2.2) :
-                  OptionT
-                    (OracleComp
-                      ((oSpec + fsChallengeOracle StmtIn pSpec) +
-                        [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
-                    WitIn)))
-        (pure none) fun extractedWitIn =>
-          simulateQ (QueryImpl.addLift impl challengeQueryImpl)
-            (OptionT.run
-              ((pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)) :
-                OptionT
-                  (OracleComp
-                    ((oSpec + fsChallengeOracle StmtIn pSpec) +
-                      [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
-                  (StmtIn × WitIn × StmtOut × WitOut)))
-  change Option.elimM
-      (simulateQ (QueryImpl.addLift impl challengeQueryImpl)
-        (Reduction.runWithLog stmtIn witIn { prover := P, verifier := V.fiatShamir }).run)
-      (pure none) K = _
   sorry
-
-set_option pp.explicit true
 
 /-- Re-fold the unfolded one-message Fiat-Shamir protocol spec (exposed by `dsimp` of the reducible
 abbreviation) back to `FiatShamirProtocolSpec`, so that `simp`/`rw` discrimination-tree keys line up
@@ -3046,12 +3012,29 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
       (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
   dsimp only [Verifier.knowledgeSoundness]
   rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
-  refine le_trans ?_ h
-  rw [fiatShamirKnowledgeExec_loggedExtractor_eq_direct
+  have h_eq := fiatShamirKnowledgeExec_loggedExtractor_eq_direct
     (impl := fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec)
       (StmtIn := StmtIn) srImpl)
-    (P := prover) (V := V) (srExtractor := srExtractor) (stmtIn := stmtIn) (witIn := witIn)]
-  trace_state
+    (P := prover) (V := V) (srExtractor := srExtractor) (stmtIn := stmtIn) (witIn := witIn)
+  dsimp only [fsChallengeOracle] at h_eq
+  rw [Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS] at h
+  dsimp only [Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver, fsChallengeOracle] at h
+  rw [← ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl'] at h
+  change probEvent (do let s ← srInit; (simulateQ (fiatShamirCoupledQueryImpl srImpl) _).run' s) _ ≤ _ at h
+  -- Now simplify `bind` in `h`
+  simp only [OptionT.mk_bind, OptionT.run_mk, bind_assoc, pure_bind] at h
+  
+  -- The LHS of `h` is exactly the probEvent of the RHS of `h_eq`.
+  -- We want to prove `probEvent (goal_LHS) f ≤ probEvent (goal_RHS) g`.
+  -- Since `goal_LHS = srInit >>= fun s => (RHS of h_eq).run' s`, we can rewrite.
+  refine le_trans (le_of_eq ?_) h
+  -- Goal: probEvent(FS game, elim-predicate) = probEvent(direct SR game, match-predicate).
+  -- These have DIFFERENT output shapes (FS aborts → `Option (StmtIn×WitIn×StmtOut×WitOut)`; the SR game
+  -- carries `Option StmtOut`), so a plain `congr` is wrong. The bridge is the PROVEN leaf
+  -- `probEvent_knowledgePayload_option_eq_stateRestoration` (peeling `srInit` via
+  -- `probEvent_bind_mono_heteroEvent`), composed with `h_eq` for the FS→direct collapse — mirroring
+  -- `fiatShamir_soundnessTransferResidual_canonical`'s leaf assembly (which uses
+  -- `probEvent_payload_option_eq_stmt`). Structure above is now correct; this is the remaining leaf.
   sorry
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side

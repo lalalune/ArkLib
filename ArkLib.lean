@@ -883,6 +883,7 @@ import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
+import ArkLib.ProofSystem.Spartan.FirstSumcheckComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckCubeSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckDegree
 import ArkLib.ProofSystem.Spartan.FirstSumcheckFaithful
@@ -1142,3 +1143,4 @@ import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
 import ArkLib.scratch_n0comp
 import ArkLib.whir113keystone
+import ArkLib.Data.CodingTheory.SubspaceDesign.NormTorus

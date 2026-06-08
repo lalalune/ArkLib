@@ -16,10 +16,13 @@ whereas the appended run's lifted sub-runs route challenge queries through the *
 `[(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ`. Reconciling the two is the concrete form of the #433
 monad-commutation gap, for the message seam.
 
-This file proves that bridge (left/`pSpec₁` half) at the `evalDist` level. See
-`docs/kb/audits/append-keystone-state-2026-06-08.md` for the full proof architecture. The bridge
-is the deep distributional crux; the high-level `append_completeness`/`append_soundness` theorems
-remain residual-gated pending the *assembly* on top of it (run support-decomposition / union bound).
+This file proves that bridge (left/`pSpec₁` half) at the `evalDist` level, plus the
+support-faithfulness gate (`addLift_challenge_support_faithful`). See
+`docs/kb/audits/append-keystone-state-2026-06-08.md` for the full proof architecture. The bridge is
+the deep distributional crux (the concrete #433 monad-commutation). The completeness half of the
+keystone is now **discharged** on top of this file —
+`Reduction.append_perfectCompleteness_msg_proof` in `AppendPerfectCompletenessProof.lean` (axiom-clean)
+— via the support-decomposition route. The `append_soundness` union bound remains.
 
 Main results:
 * `evalDist_challengeSeam_bridge_left` — `evalDist ((simulateQ pImpl_combined (liftM oa)).run s)

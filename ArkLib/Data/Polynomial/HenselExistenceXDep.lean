@@ -231,12 +231,12 @@ theorem exists_powerSeries_root_eval₂ (f : A →+* R⟦X⟧) {P : Polynomial A
     (hunit : IsUnit (Polynomial.eval₂ ((constantCoeff (R := R)).comp f) c
       (Polynomial.derivative P))) :
     ∃ Γ : R⟦X⟧, constantCoeff Γ = c ∧ Polynomial.eval₂ f Γ P = 0 := by
-  have hmap : (P.map f).map (constantCoeff (R := R)) = P.map ((constantCoeff (R := R)).comp f) :=
-    Polynomial.map_map f _
+  have hmap : (P.map f).map (constantCoeff (R := R)) = P.map ((constantCoeff (R := R)).comp f) := by
+    rw [Polynomial.map_map]
   have hroot' : ((P.map f).map (constantCoeff (R := R))).eval c = 0 := by
     rw [hmap, ← Polynomial.eval₂_eq_eval_map]; exact hroot
   have hunit' : IsUnit ((Polynomial.derivative ((P.map f).map (constantCoeff (R := R)))).eval c) := by
-    rw [hmap, ← Polynomial.derivative_map, ← Polynomial.eval₂_eq_eval_map]; exact hunit
+    rw [hmap, Polynomial.derivative_map, ← Polynomial.eval₂_eq_eval_map]; exact hunit
   obtain ⟨Γ, hc, hev⟩ := exists_powerSeries_root_xdep (P := P.map f) (c := c) hroot' hunit'
   refine ⟨Γ, hc, ?_⟩
   rw [Polynomial.eval₂_eq_eval_map]; exact hev

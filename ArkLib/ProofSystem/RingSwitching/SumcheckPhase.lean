@@ -1147,13 +1147,14 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
     intro x hx
     simp only [OptionT.mem_support_iff, OptionT.run_bind, support_bind, Set.mem_iUnion,
       OptionT.run_pure, support_pure, Set.mem_singleton_iff, exists_prop, OptionT.run_map,
-      OptionT.run_monadLift, support_map,
-      Set.mem_image, OracleComp.liftComp_pure, liftComp_eq_liftM, _root_.map_pure] at hx
+      OptionT.run_monadLift, support_map, support_liftM,
+      Set.mem_image, _root_.map_pure] at hx
     obtain ⟨i_1, -, x_1, hx1, rfl⟩ := hx
     obtain ⟨_, h_rel_out⟩ := iteratedSumcheck_round_logic_complete (κ := κ) (L := L) (K := K)
       (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) i stmtIn oStmtIn witIn
       h_relIn i_1
-    obtain rfl := eq_of_mem_support_liftM_pure _ _ hx1
+    obtain rfl : x_1 = _ := by grind [OptionT.mem_support_iff, OracleComp.support_liftComp,
+      support_pure, mem_support_pure_iff]
     exact ⟨h_rel_out, rfl, rfl⟩
 
 /-- **Schwartz-Zippel bound for the bad sumcheck extraction event.**

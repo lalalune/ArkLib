@@ -79,9 +79,28 @@ theorem traceHComp_eq (α k : ℕ) (a : Rq (powTwoCyclotomic (R := R) α)) :
     traceHComp α k a = traceH α k a :=
   traceOverComp_eq _ _ _
 
+/-- **General invariance.** If the exponent automorphism `σ_j` permutes a finite exponent set `S`
+(all-odd, with `i ↦ j·i mod 2^{α+1}` injective and self-mapping `S`), then the trace over `S` is
+fixed by `σ_j`. This reduces `traceH_mem_fixed` to the pure combinatorics of `Hexp` being closed
+under `×4k+1` and `×(−1)` mod `2^{α+1}`. -/
+theorem galoisAut_traceOver_eq (α j : ℕ) (hj : Odd j) (S : Finset ℕ)
+    (hodd : ∀ i ∈ S, Odd i)
+    (hinj : ∀ x ∈ S, ∀ y ∈ S, j * x % 2 ^ (α + 1) = j * y % 2 ^ (α + 1) → x = y)
+    (hbij : S.image (fun i => j * i % 2 ^ (α + 1)) = S)
+    (a : Rq (powTwoCyclotomic (R := R) α)) :
+    galoisAut (powTwoCyclotomic α) j (traceOver (powTwoCyclotomic α) S a)
+      = traceOver (powTwoCyclotomic α) S a := by
+  rw [traceOver, ← galoisRingHom_apply α j hj, map_sum]
+  simp only [galoisRingHom_apply]
+  rw [Finset.sum_congr rfl (fun i hi => galoisAut_comp α j i hj (hodd i hi) a),
+      Finset.sum_congr rfl (fun i hi => galoisAut_periodic α (j * i) (hj.mul (hodd i hi)) a)]
+  rw [← Finset.sum_image (f := fun y => galoisAut (powTwoCyclotomic α) y a)
+        (g := fun i => j * i % 2 ^ (α + 1)) hinj, hbij]
+
 /-- `Tr_H` is fixed by every generator of `H`, hence lands in the fixed subring `R_q^H`.
-DEFERRED (rated 7): needs the group structure of `H` (a generator permutes the sum over `Hexp`),
-which in turn rests on the composition law `galoisAut_comp`. -/
+Reduces, via `galoisAut_traceOver_eq`, to the three elementary `Hexp` facts: all-odd, the
+`×j mod 2^{α+1}` injectivity (coprimality), and the orbit closure `Hexp.image (×j) = Hexp`
+(the `4k+1`-shift wraps via `four_mul_add_one_pow_ord_mod`; the `−1` step swaps the `±` halves). -/
 theorem traceH_mem_fixed (α k : ℕ) (a : Rq (powTwoCyclotomic (R := R) α)) :
     conjAut α (traceH α k a) = traceH α k a ∧ genAut α k (traceH α k a) = traceH α k a := by
   sorry

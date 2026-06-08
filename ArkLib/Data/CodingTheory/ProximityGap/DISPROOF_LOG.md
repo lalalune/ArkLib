@@ -873,3 +873,40 @@ prize's own RHS. Does not close the prize: Johnson range only; consumes the Hab2
   reduction shows this is the only remaining disproof route; connect to known RS capacity
   list-decoding lower bounds (Ben-Sasson–Kopparty–Radhakrishnan / Guruswami–Rudra) and check whether
   any apply at a prize rate with fixed positive gap.
+
+### O11 / Loop46 — the BCHKS §7 multiplicative-subgroup attack, reduced to a subgroup-sumset bound
+
+The freshest negative construction (BCHKS, "On Proximity Gaps for Reed–Solomon Codes", Nov 11 2025,
+**Theorem 7.1**) is an *explicit* proximity-gap attack on RS over a **multiplicative subgroup** —
+the prize's exact smooth domain. Read in full and formalized (the certain core) in
+`CandidateAttackLoop46.lean` (sorry-free, axiom-clean `[propext, Classical.choice, Quot.sound]`).
+
+**Attack in prize coordinates.** Code `RS[F_q, Φ⁻¹(E), n−(ℓ+2)c]`, `Φ:H→G`, `x↦x^c`, `n=c·|E|`.
+For `E ⊆ G` with ℓ-fold *distinct-subset-sumset* `|E^{(+ℓ)}| ≥ a`, there are `≥ a` bad scalars at
+radius `γ=ℓc/n` while `[f,g]` is `(ℓ+1)/ℓ·γ`-far. Prize translation (rate `ρ=1−(ℓ+2)c/n`, gap
+`η=(1−ρ)−γ`):
+* `thm71_freeSet_eq`: the rate **pins** the free set, `|E|=(ℓ+2)/(1−ρ)`, and the gap identity
+  `η=2(1−ρ)/(ℓ+2)` collapses it to **`|E|=2/η`** — independent of `q, n, c`.
+* `thm71_badCount_le_subsets`: bad count `a=|E^{(+ℓ)}|≤2^{|E|}` — a function of `(ρ,η)` **only**.
+
+**The dichotomy (new).** Prize tolerates `ε_mca ≤ (1/q)(2^m)^{c₁}/(ρ^{c₂}η^{c₃})`, `2^m=|domain|`;
+§7 contributes `ε_mca=a/q`.
+* `thm71_within_prize`: whenever the prize numerator `≥ a`, §7 respects the prize. Since `a` is
+  *fixed* by `(ρ,η)` while `(2^m)^{c₁}→∞` with the domain, **every large domain absorbs §7** — the
+  formal reason all prior loops saw §7-type attacks "survive".
+* `thm71_minimal_domain_pressure_{c2,c3}` + `thm71_refutes_prize`: at the **minimal** domain
+  `2^m=|E|=2/η` (domain = the small subgroup), a *maximal* sumset `a=2^{|E|}=2^{2^m}` beats
+  `(2^m)^{c₁}` already at the proven Johnson exponent `c₁=2` (`256<2^16`) and the gap widens
+  doubly-exponentially — no fixed `c₁` survives.
+
+**Reduction.** The §7 disproof route ⟺ **how big is `|G^{(+ℓ)}|` for a smooth subgroup `G` of order
+`2^m` at the §7-critical `ℓ`?** Poly in `(2^m,1/η)` ⟹ prize survives §7; super-poly in `2^m` at
+fixed gap ⟹ prize-as-stated **false**. This is genuine additive combinatorics of multiplicative
+subgroups (cf. BCHKS §7 / Conj. 1.12). *Leaning survive*: a full subgroup obeys the vanishing
+power-sums `∑_{g∈G} g^j=0` (`1≤j<|G|`), strong additive relations that should keep `|G^{(+ℓ)}|`
+far below `2^{|G|}` — but this is **unproven either way**, and (per O6) the minimal-domain case also
+turns on whether the prize statement's `2^m=|domain|` linkage is enforced at small `n`. Prize OPEN.
+
+**Next (O11→):** bound `|G^{(+ℓ)}|` for a 2-power multiplicative subgroup using the vanishing
+power-sum / Newton-identity relations (would *prove* the prize survives §7, modulo the list-decoding
+core O10); or find a subgroup family with super-poly subset-sumset at the critical `ℓ` (disproof).

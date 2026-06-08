@@ -110,6 +110,30 @@ with `mem_support_bind_iff` through the `simulateQ`/`StateT.run'`/`OptionT` laye
 Soundness: same seam split via `run_seam_factor`, then a two-event union bound through the
 intermediate statement `stmt₂`.
 
+## UPDATE — completeness keystone CLOSED (axiom-clean, landed)
+
+`Reduction.append_perfectCompleteness_msg_proof` in
+`ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessProof.lean` **proves**
+sequential-composition perfect completeness for the message seam — `lake build` passes (3719 jobs),
+axioms `[propext, Classical.choice, Quot.sound]` only (no `sorryAx`). This discharges the
+completeness residual that `AppendPerfectCompleteness.lean` records as a `def : Prop`, unblocking the
+completeness half of #114/#62/#13 (LogUp/Fri/BCS/WHIR) for message-seam compositions.
+
+Proof architecture (the verified route, no monad commutation):
+1. `probEvent_eq_one_iff` → no-failure + `∀ x ∈ support, good x`.
+2. Support-faithfulness gate `Prover.addLift_challenge_support_faithful` (challenge oracle is
+   uniform/full-support; oSpec via `hImplSupp`) ⟹ `support_simulateQ_run'_eq` collapses
+   `simulateQ pImpl … .run'` to OracleComp `support (run)`.
+3. Run factoring `Prover.append_run_msg` (syntactic, message seam) + `Verifier.append_run`.
+4. Support decomposition (peel the P₁≫P₂≫V₁≫V₂ bind chain) + reconstruction via
+   `mem_support_run_of_prover_verifier` (good side) / `none_mem_support_run_of_prover_verifier`
+   (no-fail side) + the per-phase `h₁`/`h₂` reduced the same way.
+
+New axiom-clean supporting lemmas (same file): `LawfulSubSpec` instances for the left/right challenge
+subspecs (`onResponse` = bijective `range_challenge_append_*` cast), lift-unwrap helpers, and the
+failure-side run reconstruction. The challenge-oracle seam bridges (`ChallengeSeamBridge.lean`) are the
+ingredient for the *error-bounded* completeness and the *soundness* union bound — still open.
+
 ## Bottom line
 
 The prover-side keystone is done, and the shared deep ingredient — the **challenge-oracle seam
