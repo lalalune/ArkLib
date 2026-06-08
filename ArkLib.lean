@@ -486,6 +486,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeGuardrail
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeUpperBound
+import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroUpperBound
 import ArkLib.Data.CodingTheory.ProximityGap.MDSMaxAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
