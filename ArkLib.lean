@@ -128,6 +128,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBoundedSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyCompSub
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyDecomp
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyGeneralSupport
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyKernel
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLineSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearMap
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearized
