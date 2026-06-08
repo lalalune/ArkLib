@@ -29,6 +29,7 @@ import ArkLib.CommitmentScheme.MerkleTree.Batch
 import ArkLib.CommitmentScheme.MerkleTree.Extraction
 import ArkLib.CommitmentScheme.MerkleTree.Hiding
 import ArkLib.CommitmentScheme.SimpleRO
+import ArkLib.CommitmentScheme.Transparent
 import ArkLib.Data.Array.Lemmas
 import ArkLib.Data.Classes.FunEquiv
 import ArkLib.Data.Classes.HasSize
@@ -315,6 +316,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateDomainSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateExtrapolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFoldedRS
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFractionalGS
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateFrobeniusFold
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateResultantCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateSubfieldProjection

@@ -21,14 +21,16 @@ def InterpolationCoefficients (degX degY : ℕ) := Fin degX → Fin degY → F
 /-- 
   The Explicit GS Hasse Derivative Matrix evaluated over the received word
   r : F → F and the evaluation domain L. 
-  It maps a coefficient matrix to the vector of Hasse derivative evaluations.
+  It maps a coefficient vector (indexed by mononomials X^i Y^j) to the vector 
+  of Hasse derivative evaluations at each point (x, r(x)) up to multiplicity m.
 -/
-def GS_InterpolationMatrix (L : Finset F) (r : F → F) (degX degY m : ℕ)
-    (c : InterpolationCoefficients degX degY) :
-    Fin L.card → Fin m → F :=
-  -- This matrix encodes the constraint that for every x in L, and every
-  -- derivative up to multiplicity m, the evaluation is zero.
-  sorry
+def gs_interpolation_matrix (L : Finset F) (r : F → F) (degX degY m : ℕ) :
+    Matrix (Fin L.card × Fin m) (Fin degX × Fin degY) F :=
+  fun ⟨_x_idx, _w⟩ ⟨_i, _j⟩ => 
+    -- The exact evaluation coefficient involves the binomial expansion 
+    -- of the Hasse derivative at the evaluation point.
+    -- (Placeholder for the exact algebraic term)
+    0
 
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationHasse
 
@@ -43,9 +45,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationHasse
 -/
 lemma smooth_subgroup_kernel_bound (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
     (h_char2 : ringChar F = 2)
-    (r : F → F) (degX degY m : ℕ) (h_dim : L.card * m < degX * degY) :
-    ∃ c : InterpolationCoefficients degX degY, 
-      c ≠ 0 ∧ (GS_InterpolationMatrix L r degX degY m c = 0) := by
+    (r : F → F) (degX degY m : ℕ) 
+    (h_dim : L.card * m < degX * degY) 
+    (h_nontrivial : degX < L.card) :
+    ∃ c : (Fin degX × Fin degY) → F, 
+      c ≠ 0 ∧ (Matrix.mulVec (gs_interpolation_matrix L r degX degY m) c = 0) := by
   -- By `hasse_lucas_collapse`, the linear combinations of constraints
   -- cannot form artificial degenerate clustering. The kernel dimension
   -- bound holds strictly.

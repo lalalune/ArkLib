@@ -1,58 +1,77 @@
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.MvPolynomial
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import Mathlib.Algebra.Polynomial.HasseDeriv
+import Mathlib.Algebra.CharP.Lemmas
 
-open Classical
-open scoped BigOperators
+/-!
+# Hasse-derivative collapse of the vanishing polynomial over a char-2 smooth subgroup
+
+For the Ethereum Proximity Prize "derandomization" direction (Issue #232), one combinatorial
+ingredient is that over a *smooth* (power-of-two-sized) multiplicative subgroup `L` of a binary
+field, the strictly-intermediate Hasse derivatives of the vanishing polynomial
+`V_L(X) = X^{|L|} - 1` collapse to zero. This is the precise Lucas/Frobenius statement, proved
+here in full — no `sorry`, no custom axiom.
+
+The previous revision of this file laundered the intended consequences through a `sorry`-valued
+custom `HasseDerivative` def, a `sorry`-valued `hasse_lucas_collapse`, and a vacuous
+`… : True := by trivial` "rank bound" placebo (exactly the axiom-laundering pattern banned by
+#169/#171). All three are removed: we use mathlib's `Polynomial.hasseDeriv` and prove the real
+identity, and the genuinely-open interpolation-matrix rank statement is *not* faked here (it
+belongs to the open derandomization research surface, not a `True` theorem).
+
+Contents (both machine-checked, `[propext, Classical.choice, Quot.sound]`-clean):
+
+* `choose_two_pow_cast_eq_zero` — in any commutative ring of characteristic `2`, the middle
+  binomial coefficient `C(2^a, m)` casts to `0` for `0 < m < 2^a`. Proof: the `X^m`-coefficient
+  of `(X+1)^{2^a}` is `C(2^a, m)` (binomial theorem), but `(X+1)^{2^a} = X^{2^a} + 1` by the
+  Frobenius endomorphism, whose `X^m`-coefficient is `0` strictly between the endpoints.
+* `hasseDeriv_X_pow_two_pow_sub_one` — consequently `hasseDeriv m (X^{2^a} - 1) = 0` for
+  `0 < m < 2^a`: the genuine "Hasse–Lucas collapse" of `V_L`.
+
+These are honest guardrails for the open derandomization direction; they do **not** by themselves
+bound any interpolation-matrix rank or resolve the prize threshold `δ*`.
+-/
+
+open Polynomial
 
 namespace ArkLib.CodingTheory.Research
 
-/-- 
-  The Hasse Derivative Subgroup Identity.
-  We explicitly construct the algebraic collapse of the Guruswami-Sudan Hasse 
-  derivative constraints over a smooth (power-of-two) subgroup in char 2.
--/
+variable {R : Type*} [CommRing R]
 
-variable {F : Type} [Field F] [Fintype F]
+/-- **Char-2 middle binomial vanishing.** In a commutative ring of characteristic two,
+`C(2^a, m)` casts to zero whenever `0 < m < 2^a`. The endpoints `m = 0` and `m = 2^a` give
+`C = 1`; everything strictly between collapses — the Lucas/Kummer statement for the prime `2`.
 
-/-- 
-  Formal representation of the Hasse Derivative in characteristic 2.
-  H^(m)(P(X)) evaluated at x.
--/
-def HasseDerivative (P : Polynomial F) (m : ℕ) (x : F) : F :=
-  -- This defines the formal Hasse derivative.
-  sorry
+Proof: comparing the `X^m`-coefficients of the equal polynomials `(X+1)^{2^a}` (whose
+`X^m`-coefficient is `C(2^a, m)` by the binomial theorem) and `X^{2^a} + 1` (the Frobenius
+form, whose `X^m`-coefficient is `0` for `0 < m < 2^a`). -/
+lemma choose_two_pow_cast_eq_zero [CharP R 2] (a m : ℕ) (hm : 0 < m) (hlt : m < 2 ^ a) :
+    ((2 ^ a).choose m : R) = 0 := by
+  have hfrob : (X + 1 : R[X]) ^ (2 ^ a) = X ^ (2 ^ a) + 1 := by
+    have h : (X + 1 : R[X]) ^ (2 ^ a) = X ^ (2 ^ a) + (1 : R[X]) ^ (2 ^ a) :=
+      add_pow_char_pow X 1 2 a
+    rwa [one_pow] at h
+  have e := congrArg (fun p : R[X] => p.coeff m) hfrob
+  simp only [coeff_X_add_one_pow, coeff_add, coeff_X_pow, coeff_one] at e
+  rw [if_neg (Nat.ne_of_lt hlt), if_neg (Nat.pos_iff_ne_zero.mp hm), add_zero] at e
+  exact e
 
-/-- 
-  The Lucas Theorem Collapse over the Binius subgroup.
-  For a field of characteristic 2, the binomial coefficient C(n, m) = 0 mod 2
-  for all 0 < m < n when n is a power of 2.
-  This forces all intermediate Hasse derivatives of the vanishing polynomial 
-  V_L(X) = X^n - 1 to identically vanish.
--/
-lemma hasse_lucas_collapse (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
-    (h_char2 : ringChar F = 2) (m : ℕ) (h_m_pos : 0 < m) (h_m_lt : m < L.card)
-    (x : F) (hx : x ∈ L) :
-    HasseDerivative (X ^ L.card - 1) m x = 0 := by
-  -- By Lucas's Theorem, choose(L.card, m) ≡ 0 mod 2.
-  -- The Hasse derivative of X^n is choose(n, m) X^{n-m}.
-  -- Since ringChar F = 2, this identically vanishes.
-  sorry
+/-- **Hasse–Lucas collapse of the vanishing polynomial.** Over a characteristic-`2` ring, every
+strictly-intermediate Hasse derivative of `V_L(X) = X^{|L|} - 1` vanishes identically when
+`|L| = 2^a` is a power of two: `hasseDeriv m (X^{2^a} - 1) = 0` for `0 < m < 2^a`.
 
-/--
-  The Orthogonal Rank Lemma.
-  Because all intermediate Hasse derivatives of the vanishing polynomial
-  collapse to zero, the block-Vandermonde constraints over the subgroup L
-  form a strictly orthogonal basis. 
-  This mechanically guarantees that no local linear dependencies can 
-  artificially inflate the rank of the interpolation matrix.
--/
-lemma hasse_vandermonde_rank_bound (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
-    (h_char2 : ringChar F = 2) (degX degY m : ℕ) :
-    -- This lemma mathematically ensures that the kernel dimension
-    -- is exactly lower-bounded by (degX * degY) - (L.card * m),
-    -- preventing adversarial clustering.
-    True := by
-  trivial
+This formalizes the comment that "all intermediate Hasse derivatives of the vanishing polynomial
+`X^n - 1` identically vanish" over a smooth (power-of-two) subgroup in characteristic two. -/
+theorem hasseDeriv_X_pow_two_pow_sub_one [CharP R 2] (a m : ℕ) (hm : 0 < m) (hlt : m < 2 ^ a) :
+    hasseDeriv m (X ^ (2 ^ a) - 1 : R[X]) = 0 := by
+  ext j
+  rw [coeff_zero, hasseDeriv_coeff, coeff_sub, coeff_X_pow, coeff_one]
+  by_cases hj : j + m = 2 ^ a
+  · rw [if_pos hj, if_neg (show ¬ j + m = 0 by omega), sub_zero, mul_one, hj]
+    exact choose_two_pow_cast_eq_zero a m hm hlt
+  · rw [if_neg hj, if_neg (show ¬ j + m = 0 by omega), sub_zero, mul_zero]
 
 end ArkLib.CodingTheory.Research

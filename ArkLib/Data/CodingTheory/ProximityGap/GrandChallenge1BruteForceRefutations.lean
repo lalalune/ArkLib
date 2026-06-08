@@ -34,7 +34,26 @@ theorem refute_Hyp5 : ¬ (∀ (H : F[X][Y]) (L : Finset (ι → F)), Hyp5_Schwar
     Finset.sup_empty, Nat.bot_eq_zero, Nat.zero_mul, Finset.card_singleton] at h1
 
 theorem refute_Hyp6 (hι : Fintype.card ι ≥ 2) : ¬ (∀ (L : Finset (ι → F)), Hyp6_SubSpaceEvasion L) := by
-  sorry -- Counterexample: L containing two linearly independent functions.
+  have hnt : Nontrivial ι := Fintype.one_lt_card_iff_nontrivial.mp (by omega)
+  obtain ⟨a, b, hab⟩ := exists_pair_ne ι
+  intro h
+  obtain ⟨v, _, hcov⟩ := h {Pi.single a 1, Pi.single b 1}
+  obtain ⟨c1, hc1⟩ := hcov (Pi.single a 1) (by simp)
+  obtain ⟨c2, hc2⟩ := hcov (Pi.single b 1) (by simp)
+  -- Evaluate the two scalar-multiple equations at indices a and b.
+  have e1b := congrFun hc1 b
+  have e2b := congrFun hc2 b
+  rw [Pi.single_eq_of_ne hab.symm, Pi.smul_apply, smul_eq_mul] at e1b
+  rw [Pi.single_eq_same, Pi.smul_apply, smul_eq_mul] at e2b
+  -- e1b : 0 = c1 * v b ; e2b : 1 = c2 * v b
+  have hvb : v b ≠ 0 := by
+    intro hvb0; rw [hvb0, mul_zero] at e2b; exact one_ne_zero e2b
+  have e1a := congrFun hc1 a
+  rw [Pi.single_eq_same, Pi.smul_apply, smul_eq_mul] at e1a
+  -- e1a : 1 = c1 * v a
+  have hc1ne : c1 ≠ 0 := by
+    intro hc10; rw [hc10, zero_mul] at e1a; exact one_ne_zero e1a
+  exact hvb (by rw [eq_comm, mul_eq_zero] at e1b; exact e1b.resolve_left hc1ne)
 
 theorem refute_Hyp7 : ¬ (∀ (L : Finset (ι → F)) (k : ℕ), Hyp7_MatrixRankBound L k) := by
   intro h
@@ -42,7 +61,15 @@ theorem refute_Hyp7 : ¬ (∀ (L : Finset (ι → F)) (k : ℕ), Hyp7_MatrixRank
   simp only [Hyp7_MatrixRankBound, Finset.card_singleton, pow_two, Nat.mul_zero] at h1
 
 theorem refute_Hyp8 (hι : Fintype.card ι ≥ 2) : ¬ (∀ (L : Finset (ι → F)), Hyp8_AlgebraicIndependence L) := by
-  sorry -- Counterexample: Crites-Stewart capacity bounds or L = Finset.univ (size |F|^|ι| > |F|).
+  intro h
+  have h1 := h Finset.univ
+  rw [Hyp8_AlgebraicIndependence, Finset.card_univ, Fintype.card_fun] at h1
+  -- h1 : Fintype.card F ^ Fintype.card ι ≤ Fintype.card F
+  have hq : 1 < Fintype.card F := Fintype.one_lt_card
+  have hpow : Fintype.card F ^ 2 ≤ Fintype.card F ^ Fintype.card ι :=
+    Nat.pow_le_pow_right (by omega) hι
+  have e2 : Fintype.card F ^ 2 = Fintype.card F * Fintype.card F := by ring
+  nlinarith [h1, hpow, e2, hq]
 
 theorem refute_Hyp9 : ¬ (∀ (H : F[X][Y]) (L : Finset (ι → F)), Hyp9_MultiplicityIntersection H L) := by
   intro h
