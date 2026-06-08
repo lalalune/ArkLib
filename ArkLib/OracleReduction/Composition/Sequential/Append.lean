@@ -1763,6 +1763,24 @@ theorem liftM_liftM_via_comp {ιs ιm ιp : Type} {spec : OracleSpec ιs} {midSp
       from (liftComp_eq_liftM _).symm]
   exact liftComp_liftComp hco X
 
+/-- Collapse the transitive `liftM` path that lifts an `oSpec` computation through the left
+challenge layer before the appended challenge layer.  This is the instance shape produced by
+`liftM_bind` after splitting the seam `P₁.output >>= P₂.sendMessage` block, while
+the right-block round normalizers use the direct `liftComp` path. -/
+theorem liftM_via_leftChallenge_eq_liftComp
+    {α : Type} (X : OracleComp oSpec α) :
+    (@liftM (OracleComp oSpec)
+        (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+        (instMonadLiftTOfMonadLift (OracleComp oSpec) (OracleComp (oSpec + [pSpec₁.Challenge]ₒ))
+          (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)))
+        α X)
+      = OracleComp.liftComp X (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) := by
+  change (liftM (liftM X : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) α) :
+      OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
+    = OracleComp.liftComp X (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+  exact liftM_liftM_via_comp (spec := oSpec) (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+    (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) X (fun _ => rfl)
+
 
 
 /-- `processRound` resolved at a message (`P_to_V`) round (mirror of the library's
@@ -2441,6 +2459,27 @@ theorem append_Message_seam (hn : 0 < n)
     show (⟨m, by omega⟩ : Fin (m + n)) = Fin.natAdd m (⟨0, hn⟩ : Fin n) from by ext; simp,
     Fin.append_right]
 
+/-- Seam-specialized `appendRight_concat` for the message branch.  This packages the transcript
+reconciliation used by the right-block seam base: growing the carried `pSpec₁` prefix by `pSpec₂`'s
+round-0 message is the same as growing the appended seam transcript by the cast seam message. -/
+theorem appendRight_concat_seam_message (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (T₁ : FullTranscript pSpec₁)
+    (msg : pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩) :
+    HEq
+      (Transcript.appendRight T₁
+        (Transcript.concat msg (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))))
+      (Transcript.concat
+        (m := (⟨m, by omega⟩ : Fin (m + n)))
+        (cast (append_Message_seam hn hDir hDir₂).symm msg)
+        (Transcript.appendRight T₁
+          (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))) := by
+  exact ProtocolSpec.Transcript.appendRight_concat
+    (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂) T₁
+    (k := (⟨0, hn⟩ : Fin n)) msg
+    (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))
+
 /-- **Seam-round `processRound` bridge (message branch).**  The seam-round counterpart of
 `append_processRound_left_message`: resolving the appended prover's `processRound` at the seam round
 `m` applied to the (`pure`d) seam start `rSeam` is heterogeneously equal to the `liftM` of the
@@ -2539,6 +2578,25 @@ theorem append_Challenge_seam (hn : 0 < n)
   rw [Fin.vappend_eq_append,
     show (⟨m, by omega⟩ : Fin (m + n)) = Fin.natAdd m (⟨0, hn⟩ : Fin n) from by ext; simp,
     Fin.append_right]
+
+/-- Seam-specialized `appendRight_concat` for the challenge branch. -/
+theorem appendRight_concat_seam_challenge (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (T₁ : FullTranscript pSpec₁)
+    (challenge : pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩) :
+    HEq
+      (Transcript.appendRight T₁
+        (Transcript.concat challenge (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))))
+      (Transcript.concat
+        (m := (⟨m, by omega⟩ : Fin (m + n)))
+        (cast (append_Challenge_seam hn hDir hDir₂).symm challenge)
+        (Transcript.appendRight T₁
+          (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))) := by
+  exact ProtocolSpec.Transcript.appendRight_concat
+    (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂) T₁
+    (k := (⟨0, hn⟩ : Fin n)) challenge
+    (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))
 
 /-- **Seam-round `getChallenge` reduction.**  At the seam round `m` (`= Fin.natAdd m ⟨0,_⟩`), the
 appended protocol's `getChallenge` is heterogeneously equal to the `liftM` (along the right
@@ -3310,6 +3368,328 @@ theorem append_continueFromTo_seam_step_challenge (hn : 0 < n)
   rw [append_continueFromTo_seam_peel hn rSeam]
   exact append_processRound_seam_challenge hn hDir hDir₂ rSeam
 
+/-- If the carried seam transcript is the `appendRight` image of a `pSpec₁` full transcript and
+the empty `pSpec₂` prefix, then adding a seam message is the same as adding the message inside the
+right transcript and re-appending it. -/
+theorem appendRight_concat_seam_message_of_eq (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeamT : (pSpec₁ ++ₚ pSpec₂).Transcript
+      (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeamT =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))
+    (msg : pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩) :
+    HEq
+      (rSeamT.concat (cast (append_Message_seam hn hDir hDir₂).symm msg))
+      (Transcript.appendRight T₁
+        (Transcript.concat msg
+          (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))) := by
+  subst hT
+  exact (appendRight_concat_seam_message hn hDir hDir₂ T₁ msg).symm
+
+/-- Pair-level version of `appendRight_concat_seam_message_of_eq`, carrying the seam successor
+state cast unchanged. -/
+theorem appendRight_pair_seam_message_of_eq (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeamT : (pSpec₁ ++ₚ pSpec₂).Transcript
+      (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeamT =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))
+    (msg : pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩)
+    (ns : P₂.PrvState (⟨0, hn⟩ : Fin n).succ) :
+    HEq
+      (rSeamT.concat (cast (append_Message_seam hn hDir hDir₂).symm msg),
+        cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm ns)
+      (Transcript.appendRight T₁
+          (Transcript.concat msg
+            (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))),
+        cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm ns) := by
+  refine prodMk_heq rfl rfl ?_ HEq.rfl
+  exact appendRight_concat_seam_message_of_eq hn hDir hDir₂ T₁ rSeamT hT msg
+
+/-- Challenge analogue of `appendRight_concat_seam_message_of_eq`. -/
+theorem appendRight_concat_seam_challenge_of_eq (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeamT : (pSpec₁ ++ₚ pSpec₂).Transcript
+      (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeamT =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))
+    (challenge : pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩) :
+    HEq
+      (rSeamT.concat (cast (append_Challenge_seam hn hDir hDir₂).symm challenge))
+      (Transcript.appendRight T₁
+        (Transcript.concat challenge
+          (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))) := by
+  subst hT
+  exact (appendRight_concat_seam_challenge hn hDir hDir₂ T₁ challenge).symm
+
+/-- Pair-level challenge analogue of `appendRight_pair_seam_message_of_eq`. -/
+theorem appendRight_pair_seam_challenge_of_eq (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeamT : (pSpec₁ ++ₚ pSpec₂).Transcript
+      (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeamT =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))
+    (challenge : pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩)
+    (ns : P₂.PrvState (⟨0, hn⟩ : Fin n).succ) :
+    HEq
+      (rSeamT.concat (cast (append_Challenge_seam hn hDir hDir₂).symm challenge),
+        cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm ns)
+      (Transcript.appendRight T₁
+          (Transcript.concat challenge
+            (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))),
+        cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm ns) := by
+  refine prodMk_heq rfl rfl ?_ HEq.rfl
+  exact appendRight_concat_seam_challenge_of_eq hn hDir hDir₂ T₁ rSeamT hT challenge
+
+/-- `appendRight`-threaded message-branch seam step.  This repackages
+`append_continueFromTo_seam_step_message` so the transcript produced by the seam round is already in
+the same `appendRight T₁ (...)` shape used by the right-block interior induction. -/
+theorem append_continueFromTo_seam_step_message_appendRight (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeam.1 =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))) :
+    HEq (Prover.continueFromTo (P₁.append P₂) stmt wit
+          (⟨m, by omega⟩ : Fin (m + n)).castSucc
+          (⟨m, by omega⟩ : Fin (m + n)).succ rSeam)
+      (Bind.bind
+        (liftM (do
+            let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) rSeam.2)
+            P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) :
+            OracleComp oSpec
+              (pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩ ×
+                P₂.PrvState (⟨0, hn⟩ : Fin n).succ)) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            (pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩ ×
+              P₂.PrvState (⟨0, hn⟩ : Fin n).succ))
+        (fun p => (pure
+            (Transcript.appendRight T₁
+                (Transcript.concat p.1
+                  (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))),
+              cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm p.2) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+                × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ)))) := by
+  refine HEq.trans (append_continueFromTo_seam_step_message
+    (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit) hn hDir hDir₂ rSeam) ?_
+  refine bind_heq_congr rfl rfl HEq.rfl ?_
+  rintro ⟨msg, ns⟩ ⟨msg', ns'⟩ hp
+  cases eq_of_heq hp
+  refine pure_heq_pure (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) rfl ?_
+  exact appendRight_pair_seam_message_of_eq
+    (P₁ := P₁) (P₂ := P₂) hn hDir hDir₂ T₁ rSeam.1 hT msg ns
+
+/-- Challenge-branch analogue of `append_continueFromTo_seam_step_message_appendRight`. -/
+theorem append_continueFromTo_seam_step_challenge_appendRight (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeam.1 =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))) :
+    HEq (Prover.continueFromTo (P₁.append P₂) stmt wit
+          (⟨m, by omega⟩ : Fin (m + n)).castSucc
+          (⟨m, by omega⟩ : Fin (m + n)).succ rSeam)
+      (Bind.bind
+        (liftM (pSpec₂.getChallenge ⟨⟨0, hn⟩, hDir₂⟩) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩))
+        (fun challenge =>
+          Bind.bind
+            (liftM (do
+                let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) rSeam.2)
+                P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) :
+                OracleComp oSpec
+                  (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩ →
+                    P₂.PrvState (⟨0, hn⟩ : Fin n).succ)) :
+              OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩ →
+                  P₂.PrvState (⟨0, hn⟩ : Fin n).succ))
+            (fun f => (pure
+              (Transcript.appendRight T₁
+                  (Transcript.concat challenge
+                    (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))),
+                cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm
+                  (f challenge)) :
+              OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+                  × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ))))) := by
+  refine HEq.trans (append_continueFromTo_seam_step_challenge
+    (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit) hn hDir hDir₂ rSeam) ?_
+  refine bind_heq_congr rfl rfl HEq.rfl ?_
+  intro challenge challenge' hChallenge
+  obtain rfl := eq_of_heq hChallenge
+  refine bind_heq_congr rfl rfl HEq.rfl ?_
+  intro f f' hf
+  obtain rfl := eq_of_heq hf
+  refine pure_heq_pure (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) rfl ?_
+  exact appendRight_pair_seam_challenge_of_eq
+    (P₁ := P₁) (P₂ := P₂) hn hDir hDir₂ T₁ rSeam.1 hT challenge (f challenge)
+
+/-- Message-branch normalization for direct lifted `P₂.processRound 0` at the seam base.  It
+unfolds the empty-transcript round, pushes `liftComp` through the round bind, and collapses the
+nested `oSpec → oSpec + [pSpec₂.Challenge]ₒ → appended` lift. -/
+theorem liftComp_processRound_zero_message_appendRight (hn : 0 < n)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (T₁ : FullTranscript pSpec₁) (ctxIn₂ : Stmt₂ × Wit₂) :
+    (OracleComp.liftComp
+        (P₂.processRound (⟨0, hn⟩ : Fin n)
+          (pure
+            ((default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))),
+              P₂.input ctxIn₂)))
+        (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) >>= fun p =>
+      (pure
+        (Transcript.appendRight T₁ p.1,
+          cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm p.2) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+          ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+            × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ)))
+      =
+    (OracleComp.liftComp
+        (P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂))
+        (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) >>= fun p =>
+      (pure
+        (Transcript.appendRight T₁
+          (Transcript.concat p.1
+            (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))),
+          cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm p.2) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+          ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+            × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ))) := by
+  rw [processRound_message P₂ (⟨0, hn⟩ : Fin n) hDir₂
+    (pure ((default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))), P₂.input ctxIn₂))]
+  simp only [pure_bind, OracleComp.liftComp_bind, OracleComp.liftComp_pure, bind_assoc]
+  rw [show (liftM (P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂)) :
+        OracleComp (oSpec + [pSpec₂.Challenge]ₒ)
+          (pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩ ×
+            P₂.PrvState (⟨0, hn⟩ : Fin n).succ))
+      = OracleComp.liftComp (P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂))
+        (oSpec + [pSpec₂.Challenge]ₒ) from
+          (OracleComp.liftComp_eq_liftM (superSpec := oSpec + [pSpec₂.Challenge]ₒ) _).symm]
+  rw [liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₂.Challenge]ₒ)
+    (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+
+/-- Challenge-branch analogue of `liftComp_processRound_zero_message_appendRight`. -/
+theorem liftComp_processRound_zero_challenge_appendRight (hn : 0 < n)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (T₁ : FullTranscript pSpec₁) (ctxIn₂ : Stmt₂ × Wit₂) :
+    (OracleComp.liftComp
+        (P₂.processRound (⟨0, hn⟩ : Fin n)
+          (pure
+            ((default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))),
+              P₂.input ctxIn₂)))
+        (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) >>= fun p =>
+      (pure
+        (Transcript.appendRight T₁ p.1,
+          cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm p.2) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+          ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+            × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ)))
+      =
+    (Bind.bind
+      (liftM (pSpec₂.getChallenge ⟨⟨0, hn⟩, hDir₂⟩) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+          (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩))
+      (fun challenge =>
+        OracleComp.liftComp
+          (P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂))
+          (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) >>= fun f =>
+        (pure
+          (Transcript.appendRight T₁
+            (Transcript.concat challenge
+              (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))),
+            cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm
+              (f challenge)) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+              × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ)))) := by
+  rw [processRound_challenge' P₂ (⟨0, hn⟩ : Fin n) hDir₂
+    (pure ((default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))), P₂.input ctxIn₂))]
+  simp only [pure_bind, OracleComp.liftComp_bind, OracleComp.liftComp_pure, bind_assoc]
+  rw [show (liftM (pSpec₂.getChallenge ⟨⟨0, hn⟩, hDir₂⟩) :
+        OracleComp (oSpec + [pSpec₂.Challenge]ₒ)
+          (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩))
+      = OracleComp.liftComp (pSpec₂.getChallenge ⟨⟨0, hn⟩, hDir₂⟩)
+        (oSpec + [pSpec₂.Challenge]ₒ) from
+          (OracleComp.liftComp_eq_liftM (superSpec := oSpec + [pSpec₂.Challenge]ₒ) _).symm]
+  rw [liftComp_liftComp (spec := [pSpec₂.Challenge]ₒ)
+    (midSpec := oSpec + [pSpec₂.Challenge]ₒ)
+    (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+  congr 1
+  funext challenge
+  rw [show (liftM (P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂)) :
+        OracleComp (oSpec + [pSpec₂.Challenge]ₒ)
+          (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩ →
+            P₂.PrvState (⟨0, hn⟩ : Fin n).succ))
+      = OracleComp.liftComp (P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂))
+        (oSpec + [pSpec₂.Challenge]ₒ) from
+          (OracleComp.liftComp_eq_liftM (superSpec := oSpec + [pSpec₂.Challenge]ₒ) _).symm]
+  rw [liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₂.Challenge]ₒ)
+    (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+
+/-- Message-branch seam start in the same lifted `P₂.processRound 0` shape consumed by the
+right-block interior fold.  This composes the appendRight-threaded one-round seam step with
+`liftComp_processRound_zero_message_appendRight`, and also collapses the transitive left-challenge
+lift introduced by splitting `P₁.output >>= P₂.sendMessage`. -/
+theorem append_continueFromTo_seam_start_message_processRound (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeam.1 =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))) :
+    HEq (Prover.continueFromTo (P₁.append P₂) stmt wit
+          (⟨m, by omega⟩ : Fin (m + n)).castSucc
+          (⟨m, by omega⟩ : Fin (m + n)).succ rSeam)
+      ((liftM (P₁.output (cast (append_PrvState_seam_castSucc hn) rSeam.2)) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Stmt₂ × Wit₂)) >>= fun ctxIn₂ =>
+        (liftM
+          (P₂.processRound (⟨0, hn⟩ : Fin n)
+            (pure
+              ((default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))),
+                P₂.input ctxIn₂))) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            (pSpec₂.Transcript (⟨0, hn⟩ : Fin n).succ ×
+              P₂.PrvState (⟨0, hn⟩ : Fin n).succ)) >>= fun p =>
+        (pure
+          (Transcript.appendRight T₁ p.1,
+            cast (append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm p.2) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+              × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ))) := by
+  refine HEq.trans (append_continueFromTo_seam_step_message_appendRight
+    (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit) hn hDir hDir₂ T₁ rSeam hT) ?_
+  apply heq_of_eq
+  rw [liftM_bind, bind_assoc]
+  congr 1
+  funext ctxIn₂
+  rw [liftM_via_leftChallenge_eq_liftComp
+    (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂)
+    (X := P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂))]
+  simpa [OracleComp.liftComp_eq_liftM] using
+    (liftComp_processRound_zero_message_appendRight
+      (P₁ := P₁) (P₂ := P₂) hn hDir₂ T₁ ctxIn₂).symm
+
 
 /-- **`Fin.snoc`/`Fin.hconcat` bridge (partial `(T)` family).**  A partial-transcript
 `Transcript.concat msg T` is `Fin.snoc T msg` over the transcript motive `δ`; the prefix/snoc
@@ -3392,8 +3772,16 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
 #print axioms Prover.liftComp_pure_bind
 #print axioms Prover.liftComp_pure_bind_pure
 #print axioms Prover.liftComp_bind_liftComp_comp
+#print axioms Prover.liftM_via_leftChallenge_eq_liftComp
+#print axioms Prover.appendRight_concat_seam_message
+#print axioms Prover.appendRight_concat_seam_challenge
 #print axioms Prover.append_processRound_seam_message_comp
 #print axioms Prover.append_processRound_seam_challenge_comp
+#print axioms Prover.append_continueFromTo_seam_step_message_appendRight
+#print axioms Prover.append_continueFromTo_seam_step_challenge_appendRight
+#print axioms Prover.liftComp_processRound_zero_message_appendRight
+#print axioms Prover.liftComp_processRound_zero_challenge_appendRight
+#print axioms Prover.append_continueFromTo_seam_start_message_processRound
 
 -- Future work: define a function that extracts a second prover from the combined prover.
 

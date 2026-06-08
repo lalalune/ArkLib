@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfree
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchMonic
 
 /-!
 # BCIKS20 Appendix A.4 — monic W-free all-order interface
@@ -96,6 +97,14 @@ theorem RestrictedFaaDiBrunoWfreeMatch.of_restrictedMatch
     RestrictedFaaDiBrunoWfreeMatch H x₀ R hHyp :=
   (restrictedFaaDiBrunoMatch_iff_WfreeMatch_of_leadingCoeff_one H x₀ R hHyp hlc).1 hmatch
 
+/-- The proved monic carved match supplies the global W-free target directly. -/
+theorem RestrictedFaaDiBrunoWfreeMatch.of_monic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hlc : H.leadingCoeff = 1) :
+    RestrictedFaaDiBrunoWfreeMatch H x₀ R hHyp :=
+  RestrictedFaaDiBrunoWfreeMatch.of_restrictedMatch H x₀ R hHyp hlc
+    (restrictedFaaDiBrunoMatch_of_monic H x₀ R hHyp hlc)
+
 /-- Under monic `H`, the legacy successor-sum P2 residual is equivalent to the global W-free
 target. -/
 theorem faaDiBrunoSuccSumZero_iff_WfreeMatch_of_leadingCoeff_one
@@ -134,6 +143,8 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatch.of_WfreeMatch
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoWfreeMatch.of_restrictedMatch
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoWfreeMatch.of_monic
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.faaDiBrunoSuccSumZero_iff_WfreeMatch_of_leadingCoeff_one
 set_option linter.style.longLine false in

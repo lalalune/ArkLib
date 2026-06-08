@@ -123,8 +123,17 @@ import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
 import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyAdditive
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBiUnion
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBoundedSupport
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyCompSub
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyDecomp
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyGeneralSupport
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyKernel
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLineSupport
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearMap
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearized
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyRecursion
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTranslate
 import ArkLib.Data.CodingTheory.ListSizeVolumeBound
 import ArkLib.Data.CodingTheory.PolishchukSpielman
 import ArkLib.Data.CodingTheory.PolishchukSpielman.Degrees
@@ -224,6 +233,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualAffineLineRefut
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
+import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterShell
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterVanish
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersection
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionBound
@@ -294,6 +304,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141JohnsonCount
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMathLowOutput
@@ -823,6 +834,8 @@ import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LineDecodingCoverageProof
 import ArkLib.ToMathlib.LinearizedHomogeneous
 import ArkLib.ToMathlib.LinearizedKernel
+import ArkLib.ToMathlib.LinearizedPattern
+import ArkLib.ToMathlib.LinearizedPigeonhole
 import ArkLib.ToMathlib.LinearizedProductClosure
 import ArkLib.ToMathlib.LinearizedRecursionStep
 import ArkLib.ToMathlib.LinearizedSupport

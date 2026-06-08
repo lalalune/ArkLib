@@ -16,6 +16,8 @@ ranking aid, measured honestly against a baseline.
 | `ebm_core.py` | self-contained tiny transformer + InfoNCE energy loss + held-out ranking probe | `torch` |
 | `rank_train_eval.py` | trains the selector, evaluates on held-out theorems, exits non-zero unless it decisively beats the untrained baseline | `torch` |
 | `rank_gate.sh` | the witness: mine → train → eval; exit 0 only on a decisive win | `torch` |
+| `mqar_capacity.py` | *why* an energy read ranks well: associative-recall (MQAR) capacity of the energy read (= softmax attention) vs a bounded linear-attention baseline | `torch` |
+| `suggest_premises.py` | the selector **as a tool**: given a goal statement, rank the whole library and return the top-k likely-relevant lemmas (`--witness` for held-out recall) | `torch` |
 
 ## Run
 
