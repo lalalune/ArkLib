@@ -43,6 +43,12 @@ theorem run_empty (s : Stmt₂) (w : Wit₂) :
   simp only [Fin.induction_zero, pure_bind]
   rfl
 
+/-- **The `n = 0` discharge of `Prover.appendRunRightResidual`.** When the trailing protocol is
+empty, the right-block continuation collapses (`continueFromTo_self`), the left block is the seam run
+(`append_runToRound_seam`), and the output is the empty-append branch (`append_output_empty`); the
+appended run then matches `P₁.run >>= P₂.run` with the empty trailing transcript. This is the
+sequential-composition prover-run factoring for an empty second phase — the analogue of
+`appendRunRightResidual_holds_msg` for `n = 0`. -/
 theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
     appendRunRightResidual (P₁ := P₁) (P₂ := P₂) stmt wit := by
   unfold appendRunRightResidual
@@ -54,11 +60,7 @@ theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
         (Fin.last (m + 0)) = pure := by
       funext rk; exact continueFromTo_self _ _ _ _ rk
     rw [hcont]
-    first
-      | exact bind_pure _
-      | simp only [bind_pure]
-      | rw [bind_pure_comp, id_map']
-      | simp [bind_pure_comp]
+    exact bind_pure _
   simp only [hcollapse, run_eq_runToRound_last (prover := P₁), run_empty, append_output_empty,
     liftM_bind, bind_assoc, liftM_pure, pure_bind]
   apply eq_of_heq
@@ -70,11 +72,23 @@ theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
     (append_PrvState_last_empty P₁ P₂) hr
   have hc2 : cast (append_PrvState_last_empty P₁ P₂) rSeam.2 = x.2 :=
     eq_of_heq ((cast_heq _ _).trans hs)
-  have hc1 : cast (append_Transcript_last_empty (pSpec₂ := pSpec₂)) rSeam.1 = x.1 :=
-    eq_of_heq ((cast_heq _ _).trans ht)
   rw [hc2]
   apply heq_of_eq
-  trace_state
-  sorry
+  have htr : rSeam.1 = x.1 ++ₜ (default : pSpec₂.FullTranscript) := by
+    have hempty : (x.1 ++ₜ (default : pSpec₂.FullTranscript)) ≍ x.1 := by
+      rw [← Transcript.appendRight_full]
+      exact Transcript.appendRight_empty x.1
+    exact eq_of_heq (ht.trans hempty.symm)
+  rw [htr]
+  have hLL : ∀ {α : Type} (c : OracleComp oSpec α),
+      (liftM (liftM c : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) α) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
+      = (liftM c : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α) := by
+    intro α c
+    simp only [← OracleComp.liftComp_eq_liftM]
+    exact liftComp_liftComp (fun t => rfl) c
+  simp only [hLL, Prod.mk.eta]
+
+#print axioms appendRunRightResidual_holds_empty
 
 end Prover
