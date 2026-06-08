@@ -2936,13 +2936,13 @@ theorem fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
   rw [← simulateQ_map]
   rw [Prover.runWithLog_discard_log_eq_run]
 
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
 /-- Abstract bind-form of the prover-log collapse: any continuation that reads only the prover-run
 result (via `Prod.fst`) can be rebased from the logged prover run over the lifted challenge oracle to
 the direct send/output prover execution.  Stated with an explicit continuation `g` so it can be
 applied by `rw` without higher-order unification fighting an anonymous block, and proven via
 `fiatShamirProver_runWithLog_simulateQ_fst_eq_direct` and `bind_map_left`. -/
-omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
-  [∀ i, SampleableType (pSpec.Challenge i)] in
 theorem fiatShamirProver_runWithLog_simulateQ_bind_factor
     {σ β : Type}
     (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
