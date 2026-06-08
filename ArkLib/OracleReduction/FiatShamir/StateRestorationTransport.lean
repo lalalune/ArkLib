@@ -1765,7 +1765,7 @@ theorem fiatShamirKnowledgeExec_runCollapse
   · exact stateT_option_elimM_congr₂ (hLift d) (fun extractedWitIn =>
       hPure d extractedWitIn)
   · rfl
-set_option maxHeartbeats 4000000 in
+set_option maxHeartbeats 10000000 in
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of
 `fiatShamir_soundnessTransferResidual_canonical`. -/
@@ -1825,8 +1825,7 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
         QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1)
     (p := fun o => o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut)
     (h := hCollapse)]
-  refine le_trans ?_ h
-  simp [fiatShamirAdversaryExecution,
+  simpa [fiatShamirAdversaryExecution,
     Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
     Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
     fiatShamirCoupledQueryImpl,
@@ -1836,7 +1835,7 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     Verifier.fiatShamir_verify_eq,
     Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
     Reduction.run, Prover.run, Prover.runToRound, Prover.processRound,
-    QueryImpl.addLift_def]
+    QueryImpl.addLift_def] using h
 
 end CanonicalKnowledgeSoundness
 
