@@ -13,13 +13,15 @@ When an oracle verifier is lifted along an `OracleStatement.OracleLens`, its inn
 are re-routed through the lens' `simOStmt` and answered against the *outer* oracle statements
 (consulting the outer input statement via `ReaderT`). Converting the lifted verifier back to a plain
 verifier (`toVerifier`) then simulates those routed queries under the honest *outer* oracle
-(`simOracle2`). The coherence condition `OracleVerifier.LiftContextCoherent.toVerifier_comm` requires
+(`simOracle2`). The coherence condition
+`OracleVerifier.LiftContextCoherent.toVerifier_comm` requires
 this to coincide with simulating the *inner* verifier directly against the *projected inner* oracle
 statements.
 
 This module proves the heart of that coincidence — the **nested-`simulateQ` agreement**:
 
-* `fullRouter_simOracle2_agree`: routing a whole computation through `fullRouter simOStmt`, evaluating
+* `fullRouter_simOracle2_agree`: routing a whole computation through `fullRouter simOStmt`,
+  evaluating
   the resulting `ReaderT` at the outer input statement, and simulating under the honest outer oracle
   equals simulating the original computation under the honest inner oracle — *given* a per-query
   coherence equation (`combinedRouter = simOracle2 …`).
@@ -29,7 +31,8 @@ This module proves the heart of that coincidence — the **nested-`simulateQ` ag
   prover messages — are automatic).
 
 Together these turn the open `toVerifier_comm` obligation into a single, checkable per-inner-query
-faithfulness statement, which an honest virtual lens (e.g. the sum-check / Spartan lenses) discharges
+faithfulness statement, which an honest virtual lens (e.g. the sum-check / Spartan lenses)
+discharges
 by reconstructing each inner oracle evaluation from the outer oracle queries.
 
 The two genuinely-content lemmas are axiom-clean (`propext`, `Quot.sound` only).
@@ -46,7 +49,8 @@ variable {ι : Type} {oSpec : OracleSpec ι}
     {n : ℕ} {pSpec : ProtocolSpec n} [∀ i, OracleInterface (pSpec.Message i)]
 
 /-- The combined per-query implementation underlying the nested simulation: route an inner-big query
-through `fullRouter simOStmt`, evaluate the resulting `ReaderT` at the outer input statement `s`, then
+through `fullRouter simOStmt`, evaluate the resulting `ReaderT` at the outer input statement `s`,
+then
 simulate under the honest outer oracle `simOracle2`. -/
 noncomputable def combinedRouter
     (simOStmt : QueryImpl [InnerOStmtIn]ₒ
@@ -75,8 +79,10 @@ lemma simulateQ_fullRouter_run_eq_simulateQ_combinedRouter
       exact bind_congr fun u => ih u
 
 /-- **Nested-`simulateQ` agreement.** Given the per-query coherence equation
-`combinedRouter simOStmt outerOStmt msgs s = simOracle2 oSpec innerOStmt msgs`, routing a computation
-through `fullRouter simOStmt` and simulating under the honest *outer* oracle agrees with simulating it
+`combinedRouter simOStmt outerOStmt msgs s = simOracle2 oSpec innerOStmt msgs`, routing a
+computation
+through `fullRouter simOStmt` and simulating under the honest *outer* oracle agrees with
+simulating it
 directly under the honest *inner* oracle. -/
 theorem fullRouter_simOracle2_agree
     (simOStmt : QueryImpl [InnerOStmtIn]ₒ
@@ -141,7 +147,7 @@ section Builder
 
 open ProtocolSpec
 
-variable {OuterStmtOut InnerStmtOut : Type}
+variable {InnerStmtIn OuterStmtOut InnerStmtOut : Type}
     {Outer_ιₛₒ : Type} {OuterOStmtOut : Outer_ιₛₒ → Type} [∀ i, OracleInterface (OuterOStmtOut i)]
     {Inner_ιₛₒ : Type} {InnerOStmtOut : Inner_ιₛₒ → Type} [∀ i, OracleInterface (InnerOStmtOut i)]
 
@@ -177,7 +183,7 @@ theorem liftContext_toVerifier_comm_verify
       (combinedRouter_eq_simOracle2 _ _ _ _ _ hfaith), hproj]
   refine OptionT.ext ?_
   simp only [OptionT.run_bind, OptionT.run_pure, Option.elimM, pure_bind]
-  show (_ >>= _) >>= _ = _ >>= _
+  change (_ >>= _) >>= _ = _ >>= _
   rw [bind_assoc]
   apply bind_congr
   intro mo
@@ -218,7 +224,8 @@ theorem liftContext_toVerifier_comm_of
   exact liftContext_toVerifier_comm_verify stmtLens V os oos transcript (hproj os oos)
     (hfaith os oos transcript) (hlift os oos transcript)
 
-/-- **`LiftContextCoherent` instance builder.** Discharges the #433 framework obligation for any lens
+/-- **`LiftContextCoherent` instance builder.** Discharges the #433 framework obligation for any
+lens
 satisfying the three coherence conditions — turning the previously-open `toVerifier_comm` into a
 checklist (statement projection + output lift + per-inner-query oracle faithfulness) that honest
 virtual lenses satisfy. -/
