@@ -415,6 +415,47 @@ theorem outerVerifier_oStmtOut_eq
   | multiplicity => simpa using hm
   | helpers => simpa using hh
 
+/-- **Honest outer prover/verifier output-pair agreement (foundational, axiom-clean).**
+
+The single `prvStmtOut = stmtOut` value-fact, gluing the two banked agreement halves: given the
+closed-form transcript carries the honest challenges (`x`/`batch`, via
+`outerProver_transcript_challenge_readback`) and the honest messages
+(`honestMultiplicity`/`honestHelpers`, via `outerProver_transcript_message_readback`), the honest
+prover's output statement pair (`outerProver.output` on the final state `(oStmt, x, batch)`) equals
+the pair the verifier recomputes from the same transcript — the statement record read off the
+challenges (`chalX`/`chalBatch`) and the oracle statements read via `embed`. This is exactly the
+pointwise per-state agreement consumed by
+`probEvent_outerCompletenessRunComp_compl_eq_zero_of_perState` (the complement-zero / Fact 1
+obligation of `OuterCompletenessRunFactsResidual`). -/
+theorem outerProver_output_pair_eq_verifier_recompute
+    (oStmt : ∀ i, OStmtIn F n M i)
+    (x : F)
+    (batch : BatchingChallenge F n params.numGroups)
+    (transcript : (outerPSpec F n params).FullTranscript)
+    (hx : chalX F n M params transcript.challenges = x)
+    (hb : chalBatch F n M params transcript.challenges = batch)
+    (hm : transcript.messages (⟨0, rfl⟩ : (outerPSpec F n params).MessageIdx)
+            = honestMultiplicity oStmt)
+    (hh : transcript.messages (⟨2, rfl⟩ : (outerPSpec F n params).MessageIdx)
+            = honestHelpers params oStmt x) :
+    (show StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i) from
+      ({ xChallenge := x, zChallenge := batch.1, batchingScalars := batch.2 },
+       fun
+        | .input i => oStmt i
+        | .multiplicity => honestMultiplicity oStmt
+        | .helpers => honestHelpers params oStmt x))
+      = ({ xChallenge := chalX F n M params transcript.challenges,
+           zChallenge := (chalBatch F n M params transcript.challenges).1,
+           batchingScalars := (chalBatch F n M params transcript.challenges).2 },
+         fun i => match h : (outerVerifier oSpec F n M params).embed i with
+           | .inl j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ oStmt j :
+               OStmtAfterOuter F n M params i)
+           | .inr j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ transcript.messages j :
+               OStmtAfterOuter F n M params i)) := by
+  rw [hx, hb]
+  refine Prod.ext rfl ?_
+  exact (outerVerifier_oStmtOut_eq oSpec F n M params oStmt transcript x hm hh).symm
+
 set_option maxHeartbeats 3200000 in
 /-- **Outer-completeness failure bound reduced to the per-(initial-state) pole event (axiom-clean).**
 
