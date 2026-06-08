@@ -222,4 +222,23 @@ theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [D
   rw [e1, e2] at key
   exact Nat.le_of_mul_le_mul_left key Fintype.card_pos
 
+/-- **Explicit list-size cap** (division-free Johnson bound).  Under the second-moment
+hypotheses, if additionally `|ι| · b ≤ a²` then `card κ · (a² − |ι|·b) ≤ |ι|²`.  Dividing,
+this is the familiar `(list size) ≤ |ι|² / (a² − |ι|·b)` — an explicit upper bound on the
+number of codewords with pairwise agreement `≤ b` each agreeing with a received word on `≥ a`
+coordinates, the list-decoding count the prize bounds (#141/#232). -/
+theorem card_mul_sub_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι]
+    [DecidableEq κ] [Nonempty κ] (S : κ → Finset ι) (a b : ℕ)
+    (hlo : ∀ i, a ≤ (S i).card)
+    (hpair : ∀ i j, i ≠ j → (S i ∩ S j).card ≤ b)
+    (hgap : Fintype.card ι * b ≤ a ^ 2) :
+    Fintype.card κ * (a ^ 2 - Fintype.card ι * b) ≤ (Fintype.card ι) ^ 2 := by
+  have h := card_mul_sq_le_of_agreement S a b hlo hpair
+  have hd : Fintype.card κ * (a ^ 2 - Fintype.card ι * b)
+        + Fintype.card κ * (Fintype.card ι * b) = Fintype.card κ * a ^ 2 := by
+    rw [← Nat.mul_add, Nat.sub_add_cancel hgap]
+  have hassoc : Fintype.card κ * (Fintype.card ι * b)
+      = Fintype.card κ * Fintype.card ι * b := by ring
+  omega
+
 end ArkLib.Coverage
