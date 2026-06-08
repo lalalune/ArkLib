@@ -193,4 +193,23 @@ theorem simulateQ_run_optionT_bind_run
 
 #print axioms simulateQ_run_optionT_bind_run
 
+/-- `run'`-level analogue of `simulateQ_run_optionT_bind_run`: distributing `simulateQ so` over the
+`OptionT.run` of a bind, dropping the final state (`run'`). Directly matches the soundness/completeness
+game shape `(simulateQ so X.run).run' s` (used to split such a game into its two stages for a
+`probEvent`/`probFailure` union bound). -/
+theorem simulateQ_run'_optionT_bind_run
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (mx : OptionT (OracleComp spec) α) (my : α → OptionT (OracleComp spec) β) (s : σ) :
+    (simulateQ so ((mx >>= my : OptionT (OracleComp spec) β)).run).run' s
+      = (simulateQ so mx.run).run s >>= fun p =>
+          p.1.elim (pure none) (fun a => (simulateQ so (my a).run).run' p.2) := by
+  rw [StateT.run'_eq, simulateQ_run_optionT_bind_run, map_bind]
+  refine bind_congr fun p => ?_
+  obtain ⟨o, s'⟩ := p
+  cases o with
+  | none => simp [StateT.run'_eq]
+  | some a => simp only [Option.elim_some, StateT.run'_eq]
+
+#print axioms simulateQ_run'_optionT_bind_run
+
 end OptionTStateT
