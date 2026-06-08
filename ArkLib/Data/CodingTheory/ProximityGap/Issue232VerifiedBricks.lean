@@ -33,8 +33,10 @@ Contents:
 * Threshold geometry — `johnson_radius_le_capacity`, `radius_mono_in_exponent` (the
   `1 − ρ^{m/(m+1)}` family interpolates Johnson→capacity; the `1 − ρ^{2/3}` candidate is the
   `m = 2` member), and `candidate_between_johnson_and_capacity`.
-* List-decoding engine — `fiber_root_card_le`, `grid_zero_count_le`, `on_curve_iff_mem_roots`, and
-  `gs_list_card_le` (the Guruswami–Sudan list-size bound `|list| ≤ deg_Y(H)`).
+* List-decoding engine — `fiber_root_card_le`, `grid_zero_count_le`, `on_curve_iff_mem_roots`,
+  `gs_list_card_le` (the GS list-size bound `|list| ≤ deg_Y(H)`), `interpolation_kernel_nontrivial`
+  (a low-degree interpolant exists by counting), and `eval_zero_of_agreement_gt_degree`
+  (agreement ⇒ the codeword is a root) — together the full combinatorial GS skeleton.
 * Refutations — `refute_naive_matrix_rank_bound`, `refute_naive_alg_independence_bound`.
 -/
 
@@ -163,6 +165,28 @@ Decoding Challenge; the open part is the interpolation degree budget pinning `δ
 theorem gs_list_card_le (H : Polynomial (Polynomial F)) :
     H.roots.card ≤ H.natDegree :=
   Polynomial.card_roots' H
+
+/-- **Agreement ⇒ root (the heart of Guruswami–Sudan).** Let `H ∈ F[X][Y]` and `p ∈ F[X]` a
+candidate message. If `g(X) := H(X, p(X)) = eval p H` vanishes on an agreement set `A` with
+`|A| > deg_X(g)`, then `g ≡ 0`, i.e. `H(X, p(X)) = 0` — so `p` is one of the `≤ deg_Y(H)` roots
+counted by `gs_list_card_le`. The GS degree budget is exactly the hypothesis
+`natDegree (eval p H) < A.card` (which follows from `deg_X H + (k-1)·deg_Y H < t`). Chaining
+`interpolation_kernel_nontrivial` → this → `gs_list_card_le` is the full combinatorial GS
+list-size bound. -/
+theorem eval_zero_of_agreement_gt_degree [DecidableEq F]
+    (H : Polynomial (Polynomial F)) (p : Polynomial F)
+    (A : Finset F) (hA : ∀ a ∈ A, (Polynomial.eval p H).eval a = 0)
+    (hdeg : (Polynomial.eval p H).natDegree < A.card) :
+    Polynomial.eval p H = 0 := by
+  by_contra hne
+  have hsub : A ⊆ (Polynomial.eval p H).roots.toFinset := by
+    intro a ha
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hne]
+    exact hA a ha
+  have h1 : A.card ≤ (Polynomial.eval p H).roots.toFinset.card := Finset.card_le_card hsub
+  have h2 : (Polynomial.eval p H).roots.toFinset.card ≤ (Polynomial.eval p H).natDegree :=
+    le_trans (Multiset.toFinset_card_le _) (Polynomial.card_roots' _)
+  omega
 
 /-- **Interpolation existence by counting (the GS interpolation engine).** A linear map from a
 finite-dimensional `V` to `W` with `finrank W < finrank V` has a nonzero kernel vector. With
