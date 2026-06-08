@@ -740,6 +740,7 @@ import ArkLib.ToMathlib.AxiomSweep
 import ArkLib.ToMathlib.BCGM25MCAPreservation
 import ArkLib.ToMathlib.BGKS20AllButOne
 import ArkLib.ToMathlib.BKR06Agreement
+import ArkLib.ToMathlib.BKR06AgreementFinrank
 import ArkLib.ToMathlib.BKR06BareT312
 import ArkLib.ToMathlib.BKR06Close
 import ArkLib.ToMathlib.BKR06CloseBridge
