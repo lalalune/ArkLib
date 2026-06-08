@@ -1118,7 +1118,6 @@ The parser only checks the challenge-round index.  In the honest verifier log ge
 `Verifier.fiatShamir`, the query payload itself is produced by `deriveTranscriptFS`; checking the
 full payload would require unnecessary equality assumptions on messages and statements. -/
 private def popFSChallengeFromLog
-<<<<<<< HEAD
     (expected : pSpec.ChallengeIdx) :
     StateT (QueryLog (fsChallengeOracle StmtIn pSpec)) Option
       (pSpec.Challenge expected) := fun log =>
@@ -1127,16 +1126,6 @@ private def popFSChallengeFromLog
   | ⟨⟨idx, _payload⟩, response⟩ :: rest =>
       if h : idx = expected then
         some (by cases h; exact response, rest)
-=======
-    (expected : Fin n) :
-    StateT (QueryLog (fsChallengeOracle StmtIn pSpec)) Option
-      (pSpec.«Type» expected) := fun log =>
-  match log with
-  | [] => none
-  | ⟨⟨idx, _payload⟩, response⟩ :: rest =>
-      if h : idx.1 = expected then
-        some (h ▸ (show pSpec.«Type» idx.1 from response), rest)
->>>>>>> 29dd2c57d4a44621457f6f8a3155a9416516ae08
       else
         none
 
@@ -1152,15 +1141,9 @@ private def transcriptFromFSChallengeLogAux
       let prevTranscript ← ih
       match hDir : pSpec.dir (i.castLE (by omega)) with
       | .V_to_P =>
-<<<<<<< HEAD
           let challenge ← popFSChallengeFromLog
             (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩
           pure (prevTranscript.concat challenge)
-=======
-        let challenge ← popFSChallengeFromLog
-            (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))
-        pure (prevTranscript.concat challenge)
->>>>>>> 29dd2c57d4a44621457f6f8a3155a9416516ae08
       | .P_to_V =>
           pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
     j
@@ -1197,8 +1180,6 @@ private theorem queryLog_snd_append
       | mk q r =>
           cases q <;> simp [QueryLog.snd]
 
-<<<<<<< HEAD
-=======
 private theorem queryLog_snd_singleton_inr
     {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
     (q : spec₂.Domain) (r : spec₂.Range q) :
@@ -1670,7 +1651,6 @@ private theorem fiatShamirVerifier_verify_loggedTranscript_support
     (oSpec := oSpec) (StmtIn := StmtIn) (pSpec := pSpec)
     stmtIn (proof 0) contLog.snd hderive
 
->>>>>>> 29dd2c57d4a44621457f6f8a3155a9416516ae08
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
 
@@ -2392,8 +2372,6 @@ private theorem probEvent_stateT_run_fst_congr
         (fun x : Option α × σ => x.1) <$> my.run s) p := by
   exact probEvent_stateT_run_map_congr init mx my (fun x : Option α × σ => x.1) p h
 
-<<<<<<< HEAD
-=======
 /-- Knowledge-soundness event leaf: aborting on verifier failure and then extracting has the same
 bad-event probability as the state-restoration game shape that records an `Option StmtOut` and
 still runs the extractor.  The event is false in the `none` branch, so the extractor distribution
@@ -2457,7 +2435,6 @@ private theorem probEvent_knowledgePayload_option_eq_stateRestoration
       by_cases hIn : (stmtIn, witIn) ∈ relIn <;>
         simp [hOut, hIn, and_comm]
 
->>>>>>> 29dd2c57d4a44621457f6f8a3155a9416516ae08
 private theorem simulateQ_optionT_bind_mk_some_run
     {ι : Type} {spec : OracleSpec ι} {σ α β : Type}
     (impl : QueryImpl spec (StateT σ ProbComp))
@@ -2499,8 +2476,6 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel
       fiatShamirStraightlineExtractorOfStateRestoration
         (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog' vLog :=
   rfl
-<<<<<<< HEAD
-=======
 
 /-- The verifier-side log is used only through its slow-Fiat-Shamir challenge projection.  Original
 oracle queries in the verifier log are ignored by the canonical extractor. -/
@@ -2588,7 +2563,6 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_inl_right_ir
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_log_congr
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_inl_left_irrel
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_inl_right_irrel
->>>>>>> 29dd2c57d4a44621457f6f8a3155a9416516ae08
 
 /-- Knowledge-soundness analogue of `fiatShamirAdversary_runCollapse`: collapse the
 `Reduction.runWithLog` of the transformed one-message reduction to an explicit adversary execution
