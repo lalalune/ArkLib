@@ -146,6 +146,53 @@ theorem johnson_second_moment (L : Finset (ι → F)) (f : ι → F) (d : ℕ)
     _ ≤ n * ((∑ c ∈ L, (n - hammingDist c f)) + L.card * (L.card - 1) * (n - d)) := by
         exact Nat.mul_le_mul_left _ hdiag
 
+
+/-- **Explicit Johnson list bound.** For a list `L` of codewords each within `e` of `f`, pairwise at
+distance `≥ d` (with `d, e ≤ n`):  `|L|·((n-e)² - n·(n-d)) ≤ n·d`.  When the Johnson condition
+`(n-e)² > n(n-d)` holds, this bounds `|L| ≤ n·d / ((n-e)² - n(n-d))` — polynomial. This is the closed
+form of the per-word object that `CollisionLemma` reduces #232 to; it is the proven below-Johnson
+half. -/
+theorem johnson_list_bound (L : Finset (ι → F)) (f : ι → F) (e d : ℕ)
+    (hd : d ≤ Fintype.card ι) (he : e ≤ Fintype.card ι)
+    (hclose : ∀ c ∈ L, hammingDist c f ≤ e)
+    (hpair : ∀ c ∈ L, ∀ c' ∈ L, c ≠ c' → d ≤ hammingDist c c') :
+    (L.card : ℤ) * (((Fintype.card ι : ℤ) - e) ^ 2
+        - (Fintype.card ι : ℤ) * ((Fintype.card ι : ℤ) - d))
+      ≤ (Fintype.card ι : ℤ) * d := by
+  classical
+  rcases Nat.eq_zero_or_pos L.card with hL0 | hLpos
+  · rw [hL0]; simp only [Nat.cast_zero, zero_mul]; positivity
+  · have hsm := johnson_second_moment L f d hpair
+    set n := Fintype.card ι with hn
+    set A := ∑ c ∈ L, (n - hammingDist c f) with hA
+    have hc1 : (1 : ℕ) ≤ L.card := hLpos
+    have hlo : L.card * (n - e) ≤ A := by
+      rw [hA]
+      have h : ∑ _c ∈ L, (n - e) ≤ ∑ c ∈ L, (n - hammingDist c f) :=
+        Finset.sum_le_sum (fun c hc => by have := hclose c hc; omega)
+      rwa [Finset.sum_const, smul_eq_mul] at h
+    have hhi : A ≤ L.card * n := by
+      rw [hA]
+      have h : ∑ c ∈ L, (n - hammingDist c f) ≤ ∑ _c ∈ L, n :=
+        Finset.sum_le_sum (fun c _ => by omega)
+      rwa [Finset.sum_const, smul_eq_mul] at h
+    have hsmZ : (A : ℤ) ^ 2
+        ≤ (n : ℤ) * ((A : ℤ) + (L.card : ℤ) * ((L.card : ℤ) - 1) * ((n : ℤ) - (d : ℤ))) := by
+      calc (A : ℤ) ^ 2 = ((A ^ 2 : ℕ) : ℤ) := by push_cast; ring
+        _ ≤ ((n * (A + L.card * (L.card - 1) * (n - d)) : ℕ) : ℤ) := by exact_mod_cast hsm
+        _ = (n : ℤ) * ((A : ℤ) + (L.card : ℤ) * ((L.card : ℤ) - 1) * ((n : ℤ) - (d : ℤ))) := by
+            push_cast [Nat.cast_sub hd, Nat.cast_sub hc1]; ring
+    have hloZ : (L.card : ℤ) * ((n : ℤ) - (e : ℤ)) ≤ (A : ℤ) := by
+      calc (L.card : ℤ) * ((n : ℤ) - (e : ℤ)) = ((L.card * (n - e) : ℕ) : ℤ) := by
+            push_cast [Nat.cast_sub he]; ring
+        _ ≤ (A : ℤ) := by exact_mod_cast hlo
+    have hhiZ : (A : ℤ) ≤ (L.card : ℤ) * (n : ℤ) := by exact_mod_cast hhi
+    have hLnn : (0 : ℤ) ≤ (L.card : ℤ) := Int.natCast_nonneg _
+    have hnenn : (0 : ℤ) ≤ (n : ℤ) - (e : ℤ) := by simp only [sub_nonneg]; exact_mod_cast he
+    nlinarith [hsmZ, hloZ, hhiZ, hLnn, hnenn,
+      mul_nonneg hLnn hnenn, sq_nonneg ((A : ℤ) - (L.card : ℤ) * ((n : ℤ) - (e : ℤ)))]
+
 #print axioms johnson_second_moment
 
 end ArkLib.CodingTheory.JohnsonPerWord
+#print axioms ArkLib.CodingTheory.JohnsonPerWord.johnson_list_bound

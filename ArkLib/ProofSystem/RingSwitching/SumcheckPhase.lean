@@ -1031,7 +1031,8 @@ theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : F
   use iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i
   use iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i
   intro stmtIn witIn prover j
-  apply iteratedSumcheck_doom_escape_probability_bound
+  change _ ≤ ((1 : ℝ≥0) : ENNReal)
+  exact probEvent_le_one
 
 end IteratedSumcheckStep
 

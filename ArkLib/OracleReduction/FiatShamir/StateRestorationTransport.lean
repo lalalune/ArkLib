@@ -1774,26 +1774,16 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
       (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
   dsimp only
   simp [fiatShamirStraightlineExtractorOfStateRestoration]
-  rw [probEvent_optionT_stateT_init]
   have hCollapse := fiatShamirKnowledgeExec_runCollapse
     (impl := fiatShamirCoupledQueryImpl
       (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
     (P := prover) (V := V) (srExtractor := srExtractor)
     (stmtIn := stmtIn) (witIn := witIn)
-  simp only [fiatShamirCoupledQueryImpl, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
-    ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl'] at hCollapse
+  simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self] at hCollapse
+  rw [probEvent_optionT_stateT_init]
+  have hCollapseRun := congrFun (congrArg StateT.run hCollapse)
+  rw [hCollapseRun]
   refine le_trans ?_ h
-  simp [Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
-    Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
-    fiatShamirCoupledQueryImpl,
-    ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl',
-    probEvent_map, map_bind, Functor.map_map, Function.comp,
-    StateT.run_bind, StateT.run_map,
-    Verifier.fiatShamir_verify_eq,
-    Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
-    Reduction.run, Prover.run, Prover.runToRound, Prover.processRound,
-    QueryImpl.addLift_def]
-  rw [hCollapse]
   simp [fiatShamirAdversaryExecution,
     Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
     Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
