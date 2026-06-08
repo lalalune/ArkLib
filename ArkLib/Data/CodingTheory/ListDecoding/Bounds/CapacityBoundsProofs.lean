@@ -27,14 +27,14 @@ Any codeword with agreement strictly greater than the list decoding radius will 
 to a Y-root of the interpolating polynomial Q(X,Y). -/
 theorem capacity_bound_implies_y_root
     (points : Finset F)
-    (f : F → F)
+    (f : Polynomial F)
     (received : F → F)
     (multiplicities : (F × F) → ℕ)
     (deg_X deg_Y : ℕ)
     (h_dim : (points.sum (fun x => (multiplicities (x, received x) + 1) * multiplicities (x, received x) / 2)) < (deg_X + 1) * (deg_Y + 1))
-    (h_agree : (points.filter (fun x => f x = received x)).sum (fun x => multiplicities (x, received x)) > deg_X + deg_Y * (points.card)) :
+    (h_agree : (points.filter (fun x => f.eval x = received x)).sum (fun x => multiplicities (x, received x)) > deg_X + deg_Y * f.natDegree) :
     ∃ Q : MvPolynomial (Fin 2) F, Q ≠ 0 ∧
-      (∀ x ∈ points, f x = received x → MvPolynomial.eval (fun i => if i = 0 then x else f x) Q = 0) := by
+      (∀ x, MvPolynomial.eval (fun i => if i = 0 then x else f.eval x) Q = 0) := by
   sorry
 
 end CodingTheory.Bounds.Capacity
