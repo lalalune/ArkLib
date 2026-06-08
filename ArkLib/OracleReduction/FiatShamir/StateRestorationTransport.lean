@@ -1125,7 +1125,7 @@ private def popFSChallengeFromLog
   | [] => none
   | ⟨⟨idx, _payload⟩, response⟩ :: rest =>
       if h : idx = expected then
-        some (by cases h; exact response, rest)
+        some (h ▸ response, rest)
       else
         none
 
@@ -1189,8 +1189,39 @@ private theorem popFSChallengeFromLog_cons_self
       (⟨⟨idx, payload⟩, response⟩ :: tail) =
         some (response, tail) := by
   unfold popFSChallengeFromLog
-  rw [dif_pos rfl]
-  rfl
+  change (if h : idx = idx then some (h ▸ response, tail) else none) =
+    some (response, tail)
+  simp
+
+private theorem transcriptFromFSChallengeLogAux_run_logging
+    (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
+    (j : Fin (k + 1)) (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
+    (do
+        let z ← (simulateQ (OracleSpec.loggingOracle
+          (spec := oSpec + fsChallengeOracle StmtIn pSpec))
+          (MessagesUpTo.deriveTranscriptSRAux (oSpec := oSpec) stmtIn k messages j)).run
+        pure ((transcriptFromFSChallengeLogAux
+          (StmtIn := StmtIn) (pSpec := pSpec) k messages j).run (z.2.snd ++ tail))) =
+      (fun transcript => some (transcript, tail)) <$>
+        MessagesUpTo.deriveTranscriptSRAux (oSpec := oSpec) stmtIn k messages j := by
+  revert tail
+  induction j using Fin.induction with
+  | zero =>
+      intro tail
+      simp [transcriptFromFSChallengeLogAux, MessagesUpTo.deriveTranscriptSRAux,
+        simulateQ_pure, QueryLog.snd]
+  | succ i ih =>
+      intro tail
+      simp only [transcriptFromFSChallengeLogAux, MessagesUpTo.deriveTranscriptSRAux]
+      rw [Fin.induction_succ]
+      split
+      · next hDir =>
+        cases hDir
+        simp_all [simulateQ_bind, WriterT.run_bind, bind_assoc]
+      · next hDir =>
+        cases hDir
+        simp_all [simulateQ_bind, WriterT.run_bind, WriterT.run_pure, simulateQ_pure,
+          bind_assoc, Option.map_bind, Option.bind_eq_bind]
 
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
