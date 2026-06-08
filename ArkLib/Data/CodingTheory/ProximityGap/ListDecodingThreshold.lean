@@ -88,33 +88,21 @@ theorem exists_two_of_close_codeword {C : Finset (ι → F)} (r : ℕ) {v : ι �
   have hsupp : Finset.univ.filter (fun i => g i ≠ 0) = T \ T₀ := by
     ext i
     rw [Finset.mem_filter, Finset.mem_sdiff, hT, Finset.mem_filter]
-    simp only [Finset.mem_univ, true_and, hg]
-    by_cases hi : i ∈ T₀
-    · simp only [hi, if_true]
-      constructor
-      · intro h; exact absurd rfl h
-      · rintro ⟨_, h⟩; exact absurd hi h
-    · simp only [hi, if_false]
-      constructor
-      · intro h; exact ⟨h, hi⟩
-      · rintro ⟨h, _⟩; exact h
+    by_cases hi : i ∈ T₀ <;> simp [hg, hi]
   -- the disagreement set of `v` and `g` is exactly `T₀`
   have hvg : Finset.univ.filter (fun i => v i ≠ g i) = T₀ := by
     ext i
     rw [Finset.mem_filter]
-    simp only [Finset.mem_univ, true_and, hg]
     by_cases hi : i ∈ T₀
     · have hvi : v i ≠ 0 := by
         have hh := hT₀sub hi; rw [hT, Finset.mem_filter] at hh; exact hh.2
-      simp only [hi, if_true]
-      exact ⟨fun _ => hi, fun _ => hvi⟩
-    · simp only [hi, if_false]
-      exact ⟨fun h => absurd rfl h, fun h => absurd h hi⟩
+      simp [hg, hi, hvi]
+    · simp [hg, hi]
   -- distance of `g` to `0` and to `v`
   have hd0 : hammingDist (0 : ι → F) g ≤ r := by
     rw [hammingDist_zero_left]
     show (Finset.univ.filter (fun i => g i ≠ 0)).card ≤ r
-    rw [hsupp, Finset.card_sdiff hT₀sub, hTcard, hT₀card]; omega
+    rw [hsupp, Finset.card_sdiff_of_subset hT₀sub, hTcard, hT₀card]; omega
   have hdv : hammingDist v g ≤ r := by
     show (Finset.univ.filter (fun i => v i ≠ g i)).card ≤ r
     rw [hvg, hT₀card]; omega
