@@ -435,6 +435,7 @@ import ArkLib.Data.CodingTheory.RandomLinearCodeCodewordCount
 import ArkLib.Data.CodingTheory.RandomLinearCodeEquidistribution
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMoment
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMomentExists
+import ArkLib.Data.CodingTheory.RandomLinearCodeFullRankCount
 import ArkLib.Data.CodingTheory.RandomLinearCodeMatrixEquidist
 import ArkLib.Data.CodingTheory.RandomLinearCodePairwiseProb
 import ArkLib.Data.CodingTheory.RandomLinearCodeParallelProb
