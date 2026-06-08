@@ -81,8 +81,7 @@ theorem mem_support_append_run_decompose
         · simp at hx
         · simp only [Option.elim, Option.getM_some, OptionT.run_pure, map_pure, support_pure,
             Set.mem_singleton_iff, Option.some.injEq] at hx
-          obtain ⟨hx1, hx2⟩ := hx
-          subst hx1 hx2
+          subst hx
           exact ⟨tr1, s2, w2, sv2, tr2, hp1, hsv2, hp2, hsv3⟩
 
 end AppendKeystone
