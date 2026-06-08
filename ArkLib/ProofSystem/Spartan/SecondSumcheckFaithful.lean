@@ -90,6 +90,7 @@ lemma simulateQ_simOracle_foldlM (oos : ∀ i, OracleStatement.AfterLinearCombin
 `simOracle`, of the inlined oracle reconstruction `secondSumcheckEvalFromOracles` equals
 `eval point ℳ`. The three matrix queries answer the bivariate `toMLE` evaluations and the
 Boolean-cube fold reconstructs `Z(point)`. -/
+omit [IsDomain R] [Fintype R] [DecidableEq R] in
 theorem secondSumcheckEvalFromOracles_simOracle
     (oos : ∀ i, OracleStatement.AfterLinearCombination R pp i)
     (stmt : Statement.AfterLinearCombination R pp) (point : Fin pp.ℓ_n → R) :

@@ -194,7 +194,8 @@ theorem scratch_fiatShamirKnowledgeExec_runCollapse
         simulateQ impl (fiatShamirAdversaryExecution P V stmtIn witIn).run :=
     fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn
   rw [hfst]
-  simp [K]
+  simp [K, QueryImpl.addLift_def, OptionT.simulateQ_addLift_liftM,
+    simulateQ_addLift_liftM]
 
 theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))

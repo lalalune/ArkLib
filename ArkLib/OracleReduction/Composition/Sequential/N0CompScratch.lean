@@ -55,7 +55,8 @@ example
         · simp only [Option.elim_none, simulateQ_pure, StateT.run'_eq, StateT.run_pure,
             map_pure, support_pure, Set.mem_singleton_iff, reduceCtorEq] at hout
         · simp only [Option.elim_some] at hout
-          rw [← OracleComp.liftComp_eq_liftM] at hv1
+          simp only [OracleComp.liftComp_eq_liftM] at hv1
+          rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff] at hv1
           trace_state
           sorry
 
