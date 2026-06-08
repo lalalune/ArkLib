@@ -86,8 +86,8 @@ For the rate-`1/2` Reed–Solomon code `RS[F, α, 128]` on a size-`256` domain, 
 `m = 1` and prize tolerance `ε* = 2^{-128}`, over any field with `2^128 ≤ |F|`, the faithful
 list-decoding lattice is nonempty and its threshold satisfies `64 ≤ δ*-index ≤ 128`
 (`0.25 ≤ δ* ≤ 0.5` in relative-radius units): the unique-decoding radius `δ_min/2` lower bounds it
-and the capacity radius `1 − ρ` upper bounds it. (The negative-side `rs_uptoCapacity_false_rate12_n256`
-further shows the upper end is not attained.) -/
+and the capacity radius `1 − ρ` upper bounds it. (The negative-side
+`rs_uptoCapacity_false_rate12_n256` further shows the upper end is not attained.) -/
 theorem rs_ld_threshold_pin_rate12
     {F : Type} [Field F] [Fintype F] [DecidableEq F] (α : Fin 256 ↪ F)
     (hF : (2 : ℕ) ^ 128 ≤ Fintype.card F) :
