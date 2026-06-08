@@ -264,7 +264,7 @@ namespace Reduction
 attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
 
 variable {n : ℕ}
-variable {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι} {StmtIn α : Type}
+variable {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι} {StmtIn α β : Type}
 
 /-- Directly lifting a base Fiat-Shamir-oracle computation into the appended one-message
 Fiat-Shamir protocol oracle spec is the same path as first lifting it into `OptionT` over the base
@@ -345,12 +345,104 @@ theorem fiatShamir_liftM_base_optionT_to_append_eq_direct
   rw [fiatShamir_liftM_base_optionT_to_rightAssoc_to_append]
   exact fiatShamir_liftM_rightAssoc_to_append_eq_direct oa
 
+/-- Running the direct append-lift of a base Fiat-Shamir oracle computation is the explicit
+`some`-map over the direct `liftComp` path into the appended one-message challenge spec. -/
+theorem fiatShamir_liftM_oracleComp_to_append_run
+    (oa : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) α) :
+    ((liftM oa : OptionT (OracleComp
+      ((oSpec + fsChallengeOracle StmtIn pSpec) +
+        [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α).run) =
+      (some <$> OracleComp.liftComp oa
+        ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) := by
+  rw [fiatShamir_liftM_base_to_append_eq_nested oa]
+  rw [fiatShamir_liftM_base_optionT_to_append_eq_direct
+    (oa := (liftM oa : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α))]
+  simp only [OptionT.run_mk]
+  change OracleComp.liftComp (some <$> oa)
+      ((oSpec + fsChallengeOracle StmtIn pSpec) +
+        [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ) =
+    some <$> OracleComp.liftComp oa
+      ((oSpec + fsChallengeOracle StmtIn pSpec) +
+        [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
+  rw [OracleComp.liftComp_map]
+
+/-- Appended-spec lift/getM collapse for a mapped base `OptionT` computation. This is the
+right-associated analogue of the completeness helper used by the one-message run-shape proof. -/
+theorem fiatShamir_lift_run_map_getM_to_append
+    (X : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) β)
+    (f : β → α) :
+    ((liftM X.run :
+        OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) (Option β)) >>=
+        fun o => f <$> (o.getM : OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) β)) =
+      (f <$> (liftM X : OptionT (OracleComp
+        ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) β) :
+        OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α) := by
+  apply OptionT.ext
+  simp only [OptionT.run_bind, OptionT.run_map]
+  rw [fiatShamir_liftM_oracleComp_to_append_run (oa := X.run)]
+  rw [congrArg OptionT.run (fiatShamir_liftM_base_optionT_to_append_eq_direct X)]
+  simp only [OptionT.run_mk, Option.elimM, bind_assoc, map_eq_pure_bind, pure_bind]
+  refine bind_congr ?_
+  intro x
+  cases x <;> rfl
+
+/-- Appended-spec lift/getM collapse for a base `OptionT` computation. -/
+theorem fiatShamir_lift_run_bind_getM_to_append
+    (X : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α) :
+    ((liftM X.run :
+        OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) (Option α)) >>=
+        fun o => (o.getM : OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α)) =
+      (liftM X : OptionT (OracleComp
+        ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α) := by
+  apply OptionT.ext
+  simp only [OptionT.run_bind]
+  rw [fiatShamir_liftM_oracleComp_to_append_run (oa := X.run)]
+  rw [congrArg OptionT.run (fiatShamir_liftM_base_optionT_to_append_eq_direct X)]
+  simp only [OptionT.run_mk, Option.elimM, bind_assoc, map_eq_pure_bind, pure_bind]
+  conv_rhs =>
+    rw [← bind_pure (OracleComp.liftComp X.run
+      ((oSpec + fsChallengeOracle StmtIn pSpec) +
+        [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))]
+  congr 1
+  funext x
+  cases x <;> rfl
+
+/-- Same appended-spec `getM` collapse, with the continuation written as `Option.getM`. -/
+theorem fiatShamir_lift_run_Option_getM_to_append
+    (X : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α) :
+    ((liftM X.run :
+        OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) (Option α)) >>=
+        Option.getM) =
+      (liftM X : OptionT (OracleComp
+        ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α) := by
+  exact fiatShamir_lift_run_bind_getM_to_append X
+
 end Reduction
 
 #print axioms Reduction.fiatShamir_liftM_base_to_append_eq_nested
 #print axioms Reduction.fiatShamir_liftM_base_optionT_to_rightAssoc_to_append
 #print axioms Reduction.fiatShamir_liftM_rightAssoc_to_append_eq_direct
 #print axioms Reduction.fiatShamir_liftM_base_optionT_to_append_eq_direct
+#print axioms Reduction.fiatShamir_liftM_oracleComp_to_append_run
+#print axioms Reduction.fiatShamir_lift_run_map_getM_to_append
+#print axioms Reduction.fiatShamir_lift_run_bind_getM_to_append
+#print axioms Reduction.fiatShamir_lift_run_Option_getM_to_append
 
 end FiatShamirLiftPath
 
