@@ -84,7 +84,6 @@ theorem simulateQ_addLift_liftM_inl (t : ι) :
             : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) _)
           (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) from rfl]
   simp only [OracleComp.liftComp_query, OracleQuery.cont_query, OracleQuery.input_query,
-    id_map, simulateQ_spec_query]
-  rfl
+    id_map, simulateQ_query, QueryImpl.add_apply_inl]
 
 end Prover
