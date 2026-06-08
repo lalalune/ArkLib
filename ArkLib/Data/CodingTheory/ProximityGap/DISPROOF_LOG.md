@@ -321,6 +321,18 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop16 — the second-moment method's wall IS the carving threshold `η₀` (open core is intrinsic)
+**Verified sorry-free, axiom-clean in `CandidateBridgeLoop16.lean`:** instantiating the in-tree
+`johnson_list_bound` via the rate-shift (`a=(ρ+η)n`, `b=ρn`), the Johnson denominator is
+`a²−n·b = n²((ρ+η)²−ρ)` (`johnson_denom_eq`), positive iff `(ρ+η)²>ρ` (`johnson_denom_pos_iff`) iff
+`η>η₀=√ρ−ρ` (`sq_gt_iff_large_gap`). And `second_moment_fails_in_band`: for `η<η₀` the denominator is
+`≤0`, so `johnson_list_bound`/`_div` give **no** list bound. **Consequence:** the open core is *not* a
+gap in this development — it is the intrinsic wall of *every* first/second-moment / Johnson /
+pairwise-agreement argument, which provably bottoms out exactly at `η₀`. Crossing it requires a
+genuinely higher method (GS multiplicities — top out at Johnson for plain RS; or BGM genericity —
+needs generic, not smooth-deterministic, points). This is *why* the prize is the live frontier: the
+carving `η₀` is method-intrinsic, not an artifact of approach.
+
 ### Loop15 — rate-shift bridge: prize radius = capacity of shifted rate `ρ+η` (leans TRUE)
 **Verified sorry-free, axiom-clean in `CandidateBridgeLoop15.lean`:** `prize_radius_eq_shifted_capacity`
 (`1−ρ−η = 1−(ρ+η)`), `prize_agreement_eq_shifted_rate`, `degree_buffer` (`(ρ+η)n − ρn = ηn`),
