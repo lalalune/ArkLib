@@ -3001,6 +3001,8 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
   -- `simulateQ_addLift_fiatShamirChallenge_optionT` at the per-`pr` leaf.
   sorry
 
+set_option pp.explicit true
+
 /-- Re-fold the unfolded one-message Fiat-Shamir protocol spec (exposed by `dsimp` of the reducible
 abbreviation) back to `FiatShamirProtocolSpec`, so that `simp`/`rw` discrimination-tree keys line up
 with lemmas stated against the folded abbreviation. -/
@@ -3034,7 +3036,7 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   dsimp only [Verifier.knowledgeSoundness]
   rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
   refine le_trans ?_ h
-  simp only [fiatShamirProtocolSpec_fold]
+  simp only [Nat.zero_add, fiatShamirProtocolSpec_fold]
   rw [fiatShamirKnowledgeExec_loggedExtractor_eq_direct
     (impl := fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec)
       (StmtIn := StmtIn) srImpl)

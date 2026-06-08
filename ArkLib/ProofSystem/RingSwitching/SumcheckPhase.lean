@@ -1077,10 +1077,8 @@ theorem iteratedSumcheck_round_logic_complete (i : Fin ℓ')
 the verifier run after the message query has been resolved to a concrete answer. -/
 private lemma optionT_bind_pure_some {ιₐ : Type} {specₐ : OracleSpec ιₐ} {α β : Type}
     (a : α) (g : α → OptionT (OracleComp specₐ) β) :
-    OptionT.bind (M := OracleComp specₐ) (pure (some a)) g = g a := by
-  rw [OptionT.bind]
-  simp only [OptionT.run, pure_bind]
-  rfl
+    OptionT.bind (OptionT.mk (pure (some a))) g = g a :=
+  pure_bind a g
 
 set_option maxHeartbeats 1000000 in
 theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
@@ -1121,12 +1119,11 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
       Sumcheck.Structured.roundOracleVerifier, FullTranscript.mk2, guard_eq]
     erw [OptionT.simulateQ_bind]
     erw [OptionT.simulateQ_simOracle2_liftM_query_T2]
-    rw [optionT_bind_pure_some]
-    erw [OptionT.simulateQ_bind]
+    erw [optionT_bind_pure_some]
     rw [OptionT.simulateQ_ite, OptionT.simulateQ_pure, OptionT.simulateQ_failure]
     simp only [OracleInterface.answer, OracleInterface.instDefault, ReaderT.run, h_V_check,
       if_true]
-    rw [optionT_bind_pure_some]
+    erw [optionT_bind_pure_some]
     trace_state
     sorry
   rw [probEvent_eq_one_iff]

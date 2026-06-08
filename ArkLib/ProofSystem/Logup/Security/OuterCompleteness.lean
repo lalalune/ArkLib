@@ -663,9 +663,10 @@ theorem outer_perState_none_le
     rw [← bind_pure_comp, optionT_run_bind, OptionT.run_pure, pure_bind] at hxnone
     simp only [OptionT.run_pure, support_pure, Set.mem_singleton_iff, reduceCtorEq] at hxnone
   · rw [if_pos hacc]
-    refine le_trans (mul_le_mul' (le_refl _) (d := 1) ?_) (le_of_eq ?_)
+    refine le_trans (mul_le_mul' (le_refl _) (d := 1) ?_) ?_
     · exact probEvent_le_one
-    · exact mul_one _
+    · rw [mul_one]
+      exact le_of_eq rfl
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :

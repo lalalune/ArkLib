@@ -128,7 +128,27 @@ goals: inl exact (computation), inr via `liftM_map_comm` + `evalDist_cast_unifor
 `evalDist_map` (the `cont` is defeq to `cast h` by proof-irrelevance; `Finite` of the challenge
 type is auto-derived from `SampleableType`).
 
-Open work remaining for the high-level theorems: (1) the symmetric right/`pSpec₂` bridge
-(analogous, `Sum.inr`-routing); (2) the `Reduction.run` support-decomposition assembly for
-`append_perfectCompleteness_msg`; (3) the soundness union-bound for `appendSoundnessResidual`. The
-residual `def : Prop` stubs remain honest gap markers and must not be collapsed to tautologies.
+Both bridges (left + right) and their support corollaries are now proven (8 axiom-clean lemmas).
+
+### Cleaner route for PERFECT completeness (does NOT need the bridges)
+
+`append_perfectCompleteness_msg` carries the `hImplSupp` support-faithfulness hypothesis. With it,
+`ArkLib/ToVCVio/Simulation.lean`'s `support_simulateQ_run'_eq` /
+`OptionT.support_run_simulateQ_run'_eq` collapse the whole `simulateQ pImpl … .run' s` layer to
+**OracleComp-level `support (run)`** — provided `pImpl = impl.addLift challengeQueryImpl_combined`
+is support-faithful, which holds because (a) the oSpec part is `hImplSupp`, (b) the challenge part is
+`$ᵗ` with full support (`mem_support_selectElem`). At that level the combined-vs-component challenge
+spec mismatch dissolves: `support (liftM (P₁.run)) = support (P₁.run)` since the lift preserves
+support (full on challenges). So perfect completeness = support route:
+1. `probEvent_eq_one_iff` → NeverFails (`neverFails_of_simulateQ_mk`) + support-good;
+2. `OptionT.support_run_simulateQ_run'_eq` (both for the goal and inside `h₁`/`h₂`) → OracleComp
+   support;
+3. run factoring (`append_run_msg` + `Verifier.append_run`) + reverse of
+   `mem_support_run_of_prover_verifier` (AppendCompletenessHelper.lean) + `support_liftComp` to
+   extract the P₁/V₁/P₂/V₂ pieces and apply `h₁` then `h₂`.
+
+The verified assembly skeleton (steps 1–2 of the goal side) compiles; the remaining work is step 3's
+reverse support-decomposition plus NeverFails — bookkeeping, no deep crux. The **evalDist bridges**
+(`evalDist_challengeSeam_bridge_*`) are the ingredient for the genuinely-distributional cases:
+error-bounded completeness and soundness (`appendSoundnessResidual`'s union bound). The residual
+`def : Prop` stubs remain honest gap markers and must not be collapsed to tautologies.
