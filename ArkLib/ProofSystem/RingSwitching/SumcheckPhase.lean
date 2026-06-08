@@ -1058,8 +1058,15 @@ theorem iteratedSumcheck_round_logic_complete (i : Fin ℓ')
     · -- conjunct 3 (sum-consistency advance)
       show (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) wit.H).val.eval r'
         = ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube,
-            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := wit.t') (m := m)
-              (i := i.succ) (challenges := Fin.cons r' stmt.challenges)).val.eval z
+            (fixFirstVariablesOfMQP (ℓ' - ↑i) ⟨1, by have := i.2; omega⟩ wit.H.val
+              (fun _ => r')).eval z
+      rw [show (fixFirstVariablesOfMQP (ℓ' - ↑i) ⟨1, by have := i.2; omega⟩ wit.H.val
+              (fun _ => r'))
+            = (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := wit.t') (m := m)
+                (i := i.succ) (challenges := Fin.cons r' stmt.challenges)).val from by
+          rw [h_struct_in]
+          exact fixFirstVariablesOfMQP_projectToMid_succ (L := L) (ℓ := ℓ') wit.t' m i
+            stmt.challenges r']
       rw [h_struct_in]
       exact iteratedSumcheck_hStar_extracted_eval_eq_cube_succ (κ := κ) (L := L) (K := K) (P := P)
         (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (i := i) (t' := wit.t') (ctx := stmt.ctx)

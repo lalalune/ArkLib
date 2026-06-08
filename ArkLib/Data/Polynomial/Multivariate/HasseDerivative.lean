@@ -5,7 +5,7 @@ import Mathlib.Data.Finsupp.Antidiagonal
 
 namespace ArkLib.MvPolynomial
 
-open MvPolynomial
+open _root_.MvPolynomial
 open Finsupp
 
 variable {σ : Type*} {R : Type*} [CommRing R]
@@ -26,7 +26,7 @@ lemma hasseDeriv_add (d : σ →₀ ℕ) (p q : MvPolynomial σ R) :
   dsimp [hasseDeriv]
   rw [map_add, coeff_add]
 
-lemma hasseDeriv_mul (d : σ →₀ ℕ) (p q : MvPolynomial σ R) :
+lemma hasseDeriv_mul [DecidableEq σ] (d : σ →₀ ℕ) (p q : MvPolynomial σ R) :
     hasseDeriv d (p * q)
       = Finset.sum (Finset.antidiagonal d) (fun uv => hasseDeriv uv.1 p * hasseDeriv uv.2 q) := by
   dsimp [hasseDeriv]
@@ -42,7 +42,7 @@ lemma mult_ge_add (a : σ → R) (m : ℕ) (p q : MvPolynomial σ R)
   intro d hd
   rw [hasseDeriv_add, map_add, hp d hd, hq d hd, add_zero]
 
-lemma mult_ge_mul (a : σ → R) (m n : ℕ) (p q : MvPolynomial σ R)
+lemma mult_ge_mul [DecidableEq σ] (a : σ → R) (m n : ℕ) (p q : MvPolynomial σ R)
     (hp : mult_ge a m p) (hq : mult_ge a n q) : mult_ge a (m + n) (p * q) := by
   intro d hd
   rw [hasseDeriv_mul, map_sum]

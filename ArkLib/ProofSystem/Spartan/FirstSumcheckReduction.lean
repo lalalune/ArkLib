@@ -73,6 +73,7 @@ noncomputable def matVecMLEEvalFromOracles
       pure (acc + coeff * rowVal))
     (0 : R)
 
+omit [SampleableType R] in
 /-- **`M̃`-factor faithfulness.** The honest simulation of `matVecMLEEvalFromOracles` equals
 `eval point M̃` (`= eval point (matVecMLE …)`). The outer fold collapses to the `eqTilde`-weighted
 hypercube sum that is exactly `MLE_eval_eq_sum_eqTilde` for `M *ᵥ 𝕫`. -/
@@ -90,9 +91,8 @@ theorem matVecMLEEvalFromOracles_simOracle
   · -- collapse the outer fold to a `Finset.sum`, then identify it with `eval point M̃`
     congr 1
     rw [foldl_add_eq_sum', zero_add, Finset.sum_map_toList]
-    rw [matVecMLE, MLE_eval_eq_sum_eqTilde]
-    refine Fintype.sum_equiv finFunctionFinEquiv _ _ ?_
-    intro xBits
+    rw [matVecMLE, MLE_eval_eq_sum_eqTilde, ← Equiv.sum_comp finFunctionFinEquiv]
+    refine Finset.sum_congr rfl fun xBits _ => ?_
     have hb : boolPoint R (finFunctionFinEquiv xBits) = (fun i => ((xBits i : Fin 2) : R)) := by
       funext j; simp [boolPoint, Equiv.symm_apply_apply]
     rw [hb, eqTilde, eqPolynomial_symm, Function.comp_apply]
@@ -207,14 +207,26 @@ for the first sum-check lift, the first-phase analogue of `secondSumcheckCoheren
       refine (firstSCEvalFromOracles_simOracle2 pp oSpec oos transcript.messages ⟨τ, 𝕩⟩
         point).trans ?_
       simp only [firstSumcheckOracleLens, firstSumcheckStmtLens, OracleStatement.Lens.proj,
-        OracleInterface.simOracle2, QueryImpl.addLift, QueryImpl.add_apply_inl,
-        QueryImpl.add_apply_inr, QueryImpl.liftTarget_apply, OracleInterface.simOracle0,
-        OracleInterface.answer]
+        OracleInterface.simOracle2, QueryImpl.addLift,
+        QueryImpl.add_apply_inr, QueryImpl.liftTarget_apply]
       rfl)
     (by
       intro os oos transcript so
       obtain ⟨τ, 𝕩⟩ := os
       simp [firstSumcheckOracleLens, firstSumcheckStmtLens, OracleStatement.Lens.lift,
         OracleStatement.Lens.proj])
+
+/-- **`firstSumcheckResidual` discharged (degree-corrected).** The first sum-check oracle reduction
+exists, of the type the Spartan composition consumes — over `ℓ_m` variables with the **degree-`3`**
+sum-check protocol spec. (The scaffold's `firstSumcheckResidual` in `ToMathlib/SpartanBricks` declares
+degree `2`; the honest degree is `3` because `ℱ = eq · (Ã·B̃ − C̃)` is `eq` (degree 1) times a
+degree-2 product.) -/
+omit [Fintype R] [SampleableType R] in
+theorem firstSumcheckReduction_nonempty :
+    Nonempty (OracleReduction oSpec
+      (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
+      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) Unit
+      (Sumcheck.Spec.pSpec R 3 pp.ℓ_m)) :=
+  ⟨firstSumcheckReduction pp oSpec⟩
 
 end Spartan.Spec

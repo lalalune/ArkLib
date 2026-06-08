@@ -3019,31 +3019,31 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
           (impl + QueryImpl.liftTarget (StateT σ ProbComp)
             (challengeQueryImpl
               (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-          (monadLift
-            (simulateQ loggingOracle (Verifier.run stmtIn pr.1 V.fiatShamir)).run).run
+          (OptionT.run (monadLift
+            (simulateQ loggingOracle (Verifier.run stmtIn pr.1 V.fiatShamir)).run))
       z?.elim (pure none) fun z => do
         let stmtOut? ←
           simulateQ
             (impl + QueryImpl.liftTarget (StateT σ ProbComp)
               (challengeQueryImpl
                 (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-            z.1.getM.run
+            (OptionT.run z.1.getM)
         stmtOut?.elim (pure none) fun stmtOut => do
           let witIn? ←
             simulateQ
               (impl + QueryImpl.liftTarget (StateT σ ProbComp)
               (challengeQueryImpl
                 (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-              (monadLift
+              (OptionT.run (monadLift
                 (fiatShamirStraightlineExtractorOfStateRestoration
                   (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn pr.2.2 pr.1
-                  default z.2)).run
+                  default z.2)))
           witIn?.elim (pure none) fun witIn =>
             simulateQ
               (impl + QueryImpl.liftTarget (StateT σ ProbComp)
                 (challengeQueryImpl
                   (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-              (pure (stmtIn, witIn, stmtOut, pr.2.2)).run
+              (OptionT.run (pure (stmtIn, witIn, stmtOut, pr.2.2)))
   let Kdir :
       (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
         StateT σ ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) := fun pr =>
@@ -3057,8 +3057,31 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
       (pure none) (fun prLog => Klog prLog.1) =
     Option.elimM (some <$> simulateQ impl directProver) (pure none) Kdir
   rw [stateT_option_elimM_map_eq (f := Prod.fst) (k := Klog)]
-  trace_state
-  sorry
+  simp only [Functor.map_map, Function.comp_apply, Option.map_some]
+  have hProver :=
+    fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
+      (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)
+  simp only [QueryImpl.addLift_def] at hProver
+  rw [hProver]
+  apply stateT_option_elimM_congr
+  intro pr
+  dsimp [Klog, Kdir, loggedBlock, directBlock]
+  change simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+      ((liftM (loggedBlock pr) :
+        OptionT
+          (OracleComp
+            ((oSpec + fsChallengeOracle StmtIn pSpec) +
+              [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+          (StmtIn × WitIn × StmtOut × WitOut)).run) =
+    simulateQ impl (directBlock pr).run
+  have hPayload :=
+    fiatShamirVerifier_loggedExtractor_payload_eq_direct
+      (oSpec := oSpec) (pSpec := pSpec)
+      (V := V) (srExtractor := srExtractor) (stmtIn := stmtIn)
+      (witOut := pr.2.2) (proof := pr.1) (proveLog := default)
+  rw [hPayload]
+  exact simulateQ_addLift_fiatShamirChallenge_optionT
+    (impl := impl) (oa := directBlock pr)
 
 set_option linter.flexible false in
 /-- Canonical coupled state-restoration knowledge soundness implies basic Fiat-Shamir knowledge
