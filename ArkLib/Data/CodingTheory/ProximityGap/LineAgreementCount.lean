@@ -42,11 +42,11 @@ open Finset
 
 variable {ι F : Type*} [Fintype ι] [DecidableEq ι] [Field F] [DecidableEq F]
 
+set_option linter.unusedSectionVars false in
 /-- **Per-codeword line-agreement count.** The scalars `γ` whose line point `u₀ + γ·u₁` agrees with
 `c` on `≥ a` coordinates are few: their count times `(a − b₀)` is at most `weight(u₁)`, where
 `b₀ = #{i : u₁ i = 0 ∧ u₀ i = c i}`. (A single fixed codeword can be hit with high agreement by only
 `≤ weight(u₁)/(a − b₀)` scalars on the line.) -/
-omit [DecidableEq ι] in
 theorem line_agree_count_mul_le [Fintype F] (u₀ u₁ c : ι → F) (a : ℕ) :
     (univ.filter (fun γ : F => a ≤ (univ.filter (fun i => u₀ i + γ * u₁ i = c i)).card)).card
         * (a - (univ.filter (fun i => u₁ i = 0 ∧ u₀ i = c i)).card)
