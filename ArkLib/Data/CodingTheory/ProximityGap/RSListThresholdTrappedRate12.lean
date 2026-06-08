@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdJohnsonGeneral
-import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityListDecodingFalse
+import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityFalseGeneral
 
 /-!
 # Definitive capstone: `δ*` trapped in the gap, capacity strictly unattained (rate `1/2`, #232)
@@ -15,11 +15,13 @@ for the headline prize rate `ρ = 1/2`, combining both sides of the squeeze:
   `rs_ld_threshold_trapped_rate12` — for `RS[F, α, 128]` on a size-`256` domain, `m = 1`,
   `ε* = 2^{-128}`, over any field with `263·2^128 ≤ |F| ≤ 2^256`:
 
-  1. **(two-sided trap)** `75 ≤ listLatticeThreshold ≤ 128` — i.e. `δ* ∈ [0.293, 0.5]`, the
-     Johnson radius `1 − √ρ ≈ 0.293` lower-bounds it (`rs_ld_threshold_johnson_pin_general`) and the
-     capacity radius `1 − ρ = 0.5` upper-bounds it;
-  2. **(capacity strictly unattained)** `Λ(RS[128], 1/2) > ε*·|F|` — at the capacity radius the list
-     blows past the budget (`rs_uptoCapacity_false_rate12_n256`), so `δ*` does **not** reach capacity.
+  1. **(two-sided trap)** `75 ≤ listLatticeThreshold ≤ 128` — i.e. `δ* ∈ [0.293, 0.5]`,
+     the Johnson radius `1 − √ρ ≈ 0.293` lower-bounds it
+     (`rs_ld_threshold_johnson_pin_general`) and the capacity radius `1 − ρ = 0.5`
+     upper-bounds it;
+  2. **(capacity strictly unattained)** `Λ(RS[128], 1/2) > ε*·|F|` — at the capacity
+     radius the list blows past the budget (`rs_uptoCapacity_false_rate12_n256`), so `δ*`
+     does **not** reach capacity.
 
 Together: `δ*` is trapped in the half-open Johnson→capacity gap `[1 − √ρ, 1 − ρ)`, with the upper
 endpoint provably excluded. Pinning the exact value *inside* this gap is the open $1M problem; this
@@ -28,7 +30,8 @@ theorem records the complete proven envelope and fabricates nothing.
 Axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
 ## References
-- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026. #232.
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026.
+  #232.
 -/
 
 namespace ProximityGap
@@ -36,13 +39,13 @@ namespace ProximityGap
 open scoped NNReal ENNReal
 open ListDecodable
 
-/-- **Definitive rate-`1/2` envelope for the genuine list-decoding threshold.** For `RS[F, α, 128]`
-on a size-`256` domain, `m = 1`, `ε* = 2^{-128}`, over any field with `263·2^128 ≤ |F| ≤ 2^256`:
-the lattice threshold is trapped `75 ≤ δ*-index ≤ 128` (Johnson radius to capacity), **and** the list
-size at the capacity radius `1/2` strictly exceeds the budget — so `δ*` lies in `[1−√ρ, 1−ρ)` with
-capacity provably unattained. -/
+/-- **Definitive rate-`1/2` envelope for the genuine list-decoding threshold.** For
+`RS[F, α, 128]` on a size-`256` domain, `m = 1`, `ε* = 2^{-128}`, over any field with
+`263·2^128 ≤ |F| ≤ 2^256`: the lattice threshold is trapped `75 ≤ δ*-index ≤ 128`
+(Johnson radius to capacity), **and** the list size at the capacity radius `1/2` strictly
+exceeds the budget — so `δ*` lies in `[1−√ρ, 1−ρ)` with capacity provably unattained. -/
 theorem rs_ld_threshold_trapped_rate12
-    {F : Type} [Field F] [Fintype F] [DecidableEq F] (α : Fin 256 ↪ F)
+    {F : Type} [Field F] [Fintype F] (α : Fin 256 ↪ F)
     (hF1 : (263 : ℕ) * 2 ^ 128 ≤ Fintype.card F) (hF2 : Fintype.card F ≤ 2 ^ 256) :
     (∃ hne : (GrandChallenges.listLatticeSet
         (ReedSolomon.code α 128 : Set (Fin 256 → F)) 1 ((1 : ℝ≥0) / 2 ^ 128)).Nonempty,
@@ -57,11 +60,13 @@ theorem rs_ld_threshold_trapped_rate12
   refine ⟨?_, ?_⟩
   · -- two-sided trap, lower edge at the Johnson radius (j = 75)
     have hl : (Fintype.card (Fin 256) ^ 2 /
-        ((Fintype.card (Fin 256) - 75) ^ 2 - Fintype.card (Fin 256) * (128 - 1)) : ℕ) = 263 := by
+        ((Fintype.card (Fin 256) - 75) ^ 2 -
+          Fintype.card (Fin 256) * (128 - 1)) : ℕ) = 263 := by
       simp only [Fintype.card_fin]; norm_num
     have hr : (263 : ℝ≥0) ≤ ((1 : ℝ≥0) / 2 ^ 128) * (Fintype.card F : ℝ≥0) := by
-      have hFr : (263 : ℝ≥0) * (2 : ℝ≥0) ^ 128 ≤ (Fintype.card F : ℝ≥0) := by exact_mod_cast hF1
-      have hmul := mul_le_mul_left' hFr ((1 : ℝ≥0) / 2 ^ 128)
+      have hFr : (263 : ℝ≥0) * (2 : ℝ≥0) ^ 128 ≤ (Fintype.card F : ℝ≥0) := by
+        exact_mod_cast hF1
+      have hmul := mul_le_mul_right hFr ((1 : ℝ≥0) / 2 ^ 128)
       have hone : ((1 : ℝ≥0) / 2 ^ 128) * ((263 : ℝ≥0) * 2 ^ 128) = 263 := by
         rw [one_div, mul_comm (263 : ℝ≥0) ((2 : ℝ≥0) ^ 128), ← mul_assoc,
           inv_mul_cancel₀ (by positivity), one_mul]
