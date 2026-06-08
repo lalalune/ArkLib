@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ProofSystem.Spartan.Basic
+import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
 import ArkLib.ProofSystem.Component.CheckClaim
 import ArkLib.ProofSystem.Sumcheck.Spec.General
 import ArkLib.OracleReduction.Composition.Sequential.Append
@@ -52,6 +53,8 @@ structured:
 
 open OracleComp OracleInterface ProtocolSpec Function
 
+deriving instance Fintype for R1CS.MatrixIdx
+
 namespace Spartan.Spec
 
 noncomputable section
@@ -62,6 +65,16 @@ variable (R : Type) [CommRing R] [IsDomain R] [Fintype R] (pp : PublicParams)
 variable {ι : Type} (oSpec : OracleSpec ι) [SampleableType R]
 
 namespace Bricks
+
+private theorem matrixIdx_sum {α : Type*} [AddCommMonoid α] (f : R1CS.MatrixIdx → α) :
+    ∑ idx : R1CS.MatrixIdx, f idx = f .A + f .B + f .C := by
+  change Finset.univ.sum f = f .A + f .B + f .C
+  rw [show (Finset.univ : Finset R1CS.MatrixIdx) =
+      {R1CS.MatrixIdx.A, R1CS.MatrixIdx.B, R1CS.MatrixIdx.C} by
+    ext idx
+    fin_cases idx <;> simp]
+  simp
+  ac_rfl
 
 /-! ## Brick C — final `CheckClaim` for the evaluation claims
 
@@ -833,6 +846,112 @@ theorem r1csMleEncodingResidual_holds : r1csMleEncodingResidual R pp := by
   intro stmt oStmt idx
   exact evalClaimValue_eq_scaled_sum R pp stmt oStmt idx
 
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Evaluating `Matrix.toMLE` at an arbitrary row point and a Boolean column point recovers the
+row-MLE of the selected matrix column. This is the column-side bridge used by the second Spartan
+sum-check cube-sum identity. -/
+theorem matrix_toMLE_eval_row_boolColumn
+    (M : Matrix (Fin (2 ^ pp.ℓ_m)) (Fin (2 ^ pp.ℓ_n)) R)
+    (r_x : Fin pp.ℓ_m → R) (yBits : Fin pp.ℓ_n → Fin 2) :
+    MvPolynomial.eval (yBits : Fin pp.ℓ_n → R)
+        (MvPolynomial.eval
+          ((MvPolynomial.C ∘ r_x) : Fin pp.ℓ_m → MvPolynomial (Fin pp.ℓ_n) R)
+          M.toMLE)
+      =
+      MvPolynomial.eval r_x
+        (MvPolynomial.MLE
+          (fun xBits : Fin pp.ℓ_m → Fin 2 =>
+            M (finFunctionFinEquiv xBits) (finFunctionFinEquiv yBits))) := by
+  classical
+  rw [Matrix.toMLE, MvPolynomial.MLE']
+  rw [MvPolynomial.MLE_eval_eq_sum_eqTilde]
+  rw [MvPolynomial.MLE_eval_eq_sum_eqTilde]
+  simp [MvPolynomial.MLE', MvPolynomial.eqTilde, MvPolynomial.eval_mul]
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- **Second sum-check input claim threading.** The Boolean-cube sum of Spartan's second
+sum-check virtual polynomial equals the random linear combination of the first sum-check
+evaluation claims computed from the matrix/witness oracles. -/
+theorem secondSumCheckVirtualPolynomial_hypercubeSum_eq_evalClaimValue
+    (stmt : Statement.AfterLinearCombination R pp)
+    (oStmt : ∀ i, OracleStatement.AfterLinearCombination R pp i) :
+    (∑ yBits : Fin pp.ℓ_n → Fin 2,
+        MvPolynomial.eval (yBits : Fin pp.ℓ_n → R)
+          (secondSumCheckVirtualPolynomial R pp stmt oStmt))
+      =
+      ∑ idx : R1CS.MatrixIdx,
+        stmt.1 idx *
+          evalClaimValue R pp stmt.2 (fun i => oStmt (.inr i)) idx := by
+  classical
+  let r : R1CS.MatrixIdx → R := stmt.1
+  let r_x : Fin pp.ℓ_m → R := stmt.2.1
+  let x : Statement.AfterFirstMessage R pp := stmt.2.2.2
+  let z := R1CS.𝕫 x (oStmt (.inr (.inr 0)))
+  let Mat : R1CS.MatrixIdx → Matrix (Fin (2 ^ pp.ℓ_m)) (Fin (2 ^ pp.ℓ_n)) R :=
+    fun idx => oStmt (.inr (.inl idx))
+  have htarget :
+      (∑ idx ∈ (Finset.univ : Finset R1CS.MatrixIdx),
+          r idx * MvPolynomial.eval r_x
+            (MvPolynomial.MLE ((Matrix.mulVec (Mat idx) z) ∘ finFunctionFinEquiv)))
+        =
+        ∑ j : Fin (2 ^ pp.ℓ_n),
+          z j * (∑ idx ∈ (Finset.univ : Finset R1CS.MatrixIdx),
+            r idx *
+              MvPolynomial.eval r_x
+                (MvPolynomial.MLE
+                  (fun xBits : Fin pp.ℓ_m → Fin 2 =>
+                    Mat idx (finFunctionFinEquiv xBits) j))) :=
+    Spartan.Scratch114.secondSumcheck_target_eq_cube_sum
+      (R := R) (s := (Finset.univ : Finset R1CS.MatrixIdx))
+      (Mat := Mat) (z := z) (r_x := r_x) (coeff := r)
+  have hclaim :
+      (∑ idx : R1CS.MatrixIdx,
+          stmt.1 idx *
+            evalClaimValue R pp stmt.2 (fun i => oStmt (.inr i)) idx)
+        =
+        ∑ idx ∈ (Finset.univ : Finset R1CS.MatrixIdx),
+          r idx * MvPolynomial.eval r_x
+            (MvPolynomial.MLE ((Matrix.mulVec (Mat idx) z) ∘ finFunctionFinEquiv)) := by
+    simp [evalClaimValue, r, r_x, x, z, Mat, PublicParams.toSizeR1CS]
+    rfl
+  rw [hclaim, htarget]
+  refine Fintype.sum_equiv (finFunctionFinEquiv (m := 2) (n := pp.ℓ_n))
+    (fun yBits : Fin pp.ℓ_n → Fin 2 =>
+      MvPolynomial.eval (yBits : Fin pp.ℓ_n → R)
+        (secondSumCheckVirtualPolynomial R pp stmt oStmt))
+    (fun yEnum : Fin (2 ^ pp.ℓ_n) =>
+      z yEnum * (∑ idx ∈ (Finset.univ : Finset R1CS.MatrixIdx),
+        r idx *
+          MvPolynomial.eval r_x
+            (MvPolynomial.MLE
+              (fun xBits : Fin pp.ℓ_m → Fin 2 =>
+                Mat idx (finFunctionFinEquiv xBits) yEnum))))
+    ?_
+  intro yBits
+  simp [secondSumCheckVirtualPolynomial, matrix_toMLE_eval_row_boolColumn, r, r_x, x, z, Mat,
+    MvPolynomial.eval_add, MvPolynomial.eval_mul, MvPolynomial.eval_C]
+  rw [matrixIdx_sum]
+  ring_nf
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Stored-claim form of `secondSumCheckVirtualPolynomial_hypercubeSum_eq_evalClaimValue`: if the
+bundled eval-claim oracle contains the honest `evalClaimValue`, the second sum-check's initial
+cube-sum equals the random linear combination of that stored oracle. -/
+theorem secondSumCheckVirtualPolynomial_hypercubeSum_eq_claimOracle
+    (stmt : Statement.AfterLinearCombination R pp)
+    (oStmt : ∀ i, OracleStatement.AfterLinearCombination R pp i)
+    (hEval : ∀ idx,
+      oStmt (.inl 0) idx = evalClaimValue R pp stmt.2 (fun i => oStmt (.inr i)) idx) :
+    (∑ yBits : Fin pp.ℓ_n → Fin 2,
+        MvPolynomial.eval (yBits : Fin pp.ℓ_n → R)
+          (secondSumCheckVirtualPolynomial R pp stmt oStmt))
+      =
+      ∑ idx : R1CS.MatrixIdx,
+        stmt.1 idx * oStmt (.inl 0) idx := by
+  rw [secondSumCheckVirtualPolynomial_hypercubeSum_eq_evalClaimValue R pp stmt oStmt]
+  refine Finset.sum_congr rfl fun idx _ => ?_
+  rw [hEval idx]
+
 /-! ## Brick D — composition of the Spartan PIOP
 
 We compose the phases pairwise with the proven `OracleReduction.append`. Because the existing
@@ -1219,6 +1338,9 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_resi
 #print axioms evalClaimValue_eq_scaled_sum
 #print axioms r1csMleEncodingResidual
 #print axioms r1csMleEncodingResidual_holds
+#print axioms matrix_toMLE_eval_row_boolColumn
+#print axioms secondSumCheckVirtualPolynomial_hypercubeSum_eq_evalClaimValue
+#print axioms secondSumCheckVirtualPolynomial_hypercubeSum_eq_claimOracle
 #print axioms FinalClaimStatement
 #print axioms finalMatrixEvalFromOracles
 #print axioms zEvalFromFinalOracles
