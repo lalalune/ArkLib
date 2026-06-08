@@ -890,6 +890,7 @@ import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
 import ArkLib.ProofSystem.Spartan.FirstChallengeComplete
+import ArkLib.ProofSystem.Spartan.FirstChallengeTransfer
 import ArkLib.ProofSystem.Spartan.FirstSumcheckCubeSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckDegree
 import ArkLib.ProofSystem.Spartan.FirstSumcheckFaithful
