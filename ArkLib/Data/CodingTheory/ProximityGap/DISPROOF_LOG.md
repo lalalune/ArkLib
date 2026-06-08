@@ -137,12 +137,42 @@ disproof. Kept as a standing constraint; sharply narrows what a real disproof mu
   every bad scalar has degree `≤ C` over `F_p`. A disproof = realizing a high-degree bad scalar at
   prize radius; the proximity-gap dichotomy is the obstruction to doing so in the gap.
 
+### O4 (attempted) — the conditional disproof from realizing the O3 obstruction
+**Verified sorry-free, axiom-clean in `CandidateDisproofLoop7.lean`:**
+`realizing_high_degree_bad_scalar_disproves` — if a Frobenius-closed bad set with `#S ≤ C`
+(conjecture's constant) contains a scalar of degree `d > C` at prize radius, derive `False`. This is
+the exact machine-checked statement that *the only thing between us and a disproof is a high-degree
+bad scalar in the live band*.
+**Disproof of the disproof (O4):** the antecedent is the unestablished beyond-Johnson case — below
+Johnson BCIKS20 forbids a lone high-degree orbit; in `[1−√ρ, 1−ρ−η]` no construction is known. The
+conditional does not fire. → not a disproof, a sharpened target.
+
+### O5 (attempted) — does the GS-row restriction escape the Frobenius lower bound? (No.)
+**Verified sorry-free, axiom-clean in `CandidateDisproofLoop7.lean`:**
+`frobenius_invariant_filter_closed`, `frobenius_invariant_card_ge` — for *any* `φ`-invariant
+bad-event predicate `P`, a degree-`d` satisfying scalar forces `#{P} ≥ d`. Since closeness to a
+`φ`-stable code is `φ`-invariant, **every** level of `epsMCAgs ≤ epsCA ≤ line-close` is `φ`-invariant
+and inherits the same orbit lower bound.
+**Outcome:** O5's hoped escape **fails** — the GS-row restriction does not cap the count below the
+Frobenius bound. This *strengthens* O3: the bounded-subfield constraint binds `epsCA` and the
+line-close error too, not just `mcaEvent`. Not a disproof; a robustness strengthening.
+
+## Standing constraint lemmas — addendum (O4/O5)
+
+- **`realizing_high_degree_bad_scalar_disproves`** (`CandidateDisproofLoop7.lean`): conditional
+  disproof; isolates realizability as the sole open hypothesis.
+- **`frobenius_invariant_card_ge`** (`CandidateDisproofLoop7.lean`): the Frobenius lower bound is
+  robust across the whole dominance chain — the constraint is not specific to `mcaEvent`.
+
 ## Open angles not yet tried (to avoid repetition)
 
-- O4: try to *realize* the O3 obstruction — construct a Frobenius-stable `(u₀,u₁)` with a
-  high-degree bad scalar at radius in the live band `[1−√ρ, 1−ρ−η]` (the only place it could exist).
-  If the proximity-gap "small-or-everything" dichotomy provably forbids a lone orbit in the gap that
-  *constrains further*; if it permits one, that is the disproof.
-- O5: examine whether `epsMCAgs`'s GS-row restriction (strictly rarer than the raw line-close event,
-  via `epsMCAgs ≤ epsCA`) caps the bad count below the Frobenius lower bound, refuting O3-style
-  growth outright.
+- O6 (sharp, potential real disproof OR misreading — handle carefully): the formalized RHS
+  `(1/q)·(2^m)^{c₁}/(ρ^{c₂}η^{c₃})` carries **no `n` (domain size)**, so it claims a bad-count
+  *constant in `n`*. But proximity-gap theory (BCIKS) typically allows the small-side bad count to
+  scale like `~ n` (or list-size·n)/q. Audit whether the formalized `epsMCAgs_prizeBound_conjecture`
+  is faithful to ABF26 (whose bound carries degree/`n` factors): if the formal RHS genuinely omits a
+  needed `n`, the formal statement could be false for trivial scaling reasons — but verify against
+  `Errors.lean`/`MCAGS.lean` and ABF26 before claiming; I am usually wrong on formalization-fidelity.
+- O7: brute-force realizability over a tiny tower field `GF(p^s)` (small `s`) — search for a
+  Frobenius-stable `(u₀,u₁)` with a high-degree bad `γ` in the band, reusing `BruteForceSearch.lean`.
+  A found witness is evidence toward disproof; a proven absence over all small cases constrains.

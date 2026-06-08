@@ -911,7 +911,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
       let witBefore : SumcheckWitness L ℓ' i.castSucc :=
         (iteratedSumcheckRbrExtractor.{0,0,0} κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
           (m := 1) stmtOStmtIn (FullTranscript.mk2 h_i r_i') witMid
-      let h_star : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' P.basis (i := i) (h := witBefore.H)
+      let h_star : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := witBefore.H)
       badSumcheckEventProp r_i' h_i h_star := by
   classical
   unfold rbrExtractionFailureEvent at doomEscape
@@ -943,7 +943,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
         (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
         (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges) := by
     dsimp [witBefore, iteratedSumcheckRbrExtractor]
-  let h_star_extracted : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' P.basis (i := i) (h := witBefore.H)
+  let h_star_extracted : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := witBefore.H)
   have h_star_eval_sum :
       h_star_extracted.val.eval (P.basis 0) + h_star_extracted.val.eval (P.basis 1) =
       stmtOStmtIn.1.sumcheck_target := by
@@ -984,7 +984,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
         witBefore.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witMid.t')
           (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
           (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges) := h_H_before
-    have h_star_extracted_eq : h_star_extracted = getSumcheckRoundPoly ℓ' P.basis (i := i) (h := witBefore.H) := rfl
+    have h_star_extracted_eq : h_star_extracted = getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := witBefore.H) := rfl
     have h_star_poly_eq : h_star_extracted.val = h_i.val := h_eq.symm
     apply Subtype.ext at h_star_poly_eq
     rw [← h_star_poly_eq]
@@ -1028,7 +1028,7 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
       projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t_fixed)
         (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
         (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges)
-    let h_star_fixed : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' P.basis (i := i) (h := H_fixed)
+    let h_star_fixed : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := H_fixed)
     have h_prob_mono := prob_mono (D := $ᵖ L)
       (f := fun y => P_event y)
       (g := fun y => badSumcheckEventProp y h_i h_star_fixed)
