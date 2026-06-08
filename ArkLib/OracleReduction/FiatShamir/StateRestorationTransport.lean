@@ -1472,7 +1472,14 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
       (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
     (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
     (knowledgeError : ℝ≥0)
-    (V : Verifier oSpec StmtIn StmtOut pSpec) :
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    -- The shared oracle leaves the cached Fiat-Shamir challenge table untouched on every query.
+    -- Every real shared-oracle implementation satisfies this; it is needed because the straightline
+    -- extractor re-derives the transcript after the verifier runs, and that must match the
+    -- state-restoration game's single derivation.
+    (hsrPres : ∀ (q : oSpec.Domain) (s : QueryImpl (fsChallengeOracle StmtIn pSpec) Id),
+      Prod.snd <$> (StateT.run (srImpl q) s) =
+        (pure s : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))) :
     fiatShamir_knowledgeSoundnessTransferResidual srInit srImpl srInit
       (fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
       relIn relOut knowledgeError V := by
