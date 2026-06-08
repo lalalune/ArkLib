@@ -58,4 +58,33 @@ theorem support_run'_simulateQ_addLift_eq
   OptionT.support_run_simulateQ_run'_eq _ (R.run stmt wit) s
     (Prover.addLift_challenge_support_faithful (pSpec := pSpec) impl hImplSupp)
 
+omit [oSpec.Fintype] [oSpec.Inhabited] in
+/-- **Honest-execution experiment support membership reduces to OracleComp `support (run)`.** Any
+outcome `x` reachable in the perfect-completeness experiment
+`OptionT.mk do (s ← init); (simulateQ (impl.addLift challengeQueryImpl) (R.run …)).run' s` (with the
+`init`-bind and the three simulation wrappers) corresponds to `some x ∈ support (R.run …)` at the
+OracleComp level. Combines `OptionT.mem_support_iff`, the `init`-bind `support_bind`, and the
+wrapper-collapse `support_run'_simulateQ_addLift_eq`. (The `init`-nonemptiness is not even needed for
+this direction.) -/
+theorem mem_support_experiment_imp_mem_support_run
+    [(oSpec + [pSpec.Challenge]ₒ).Fintype] [(oSpec + [pSpec.Challenge]ₒ).Inhabited]
+    {init : ProbComp σ}
+    (R : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    (stmt : Stmt₁) (wit : Wit₁)
+    (x : (FullTranscript pSpec × Stmt₂ × Wit₂) × Stmt₂)
+    (hx : x ∈ support (m := OptionT ProbComp)
+      (OptionT.mk do
+        let s ← init
+        (StateT.run' (simulateQ (impl.addLift (challengeQueryImpl (pSpec := pSpec)))
+          (R.run stmt wit)) s))) :
+    some x ∈ support (m := OracleComp (oSpec + [pSpec.Challenge]ₒ))
+      (α := Option ((FullTranscript pSpec × Stmt₂ × Wit₂) × Stmt₂)) (R.run stmt wit) := by
+  rw [OptionT.mem_support_iff] at hx
+  simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+  obtain ⟨s, _hs, hx⟩ := hx
+  rwa [support_run'_simulateQ_addLift_eq R hImplSupp stmt wit s] at hx
+
 end Reduction

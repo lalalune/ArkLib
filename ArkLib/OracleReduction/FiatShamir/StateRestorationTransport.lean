@@ -3036,12 +3036,11 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   dsimp only [Verifier.knowledgeSoundness]
   rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
   refine le_trans ?_ h
-  simp only [Nat.zero_add, fiatShamirProtocolSpec_fold]
-  rw [fiatShamirKnowledgeExec_loggedExtractor_eq_direct
-    (impl := fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec)
-      (StmtIn := StmtIn) srImpl)
-    (P := prover) (V := V) (srExtractor := srExtractor) (stmtIn := stmtIn) (witIn := witIn)]
-  trace_state
+  -- Remaining: collapse the FS game via the (proven) `fiatShamirKnowledgeExec_loggedExtractor_eq_direct`,
+  -- peel `srInit` (`probEvent_bind_mono_heteroEvent`), discharge leaf with
+  -- `probEvent_knowledgePayload_option_eq_stateRestoration`. The collapse application is blocked only by
+  -- the `challengeOracleInterface` instance-implicit arity `0+1`-vs-`1` defeq (instance positions resist
+  -- rw/simp/dsimp and `exact`/`le_of_eq`); fix = co-elaborate the challenge-oracle spec.
   sorry
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side
