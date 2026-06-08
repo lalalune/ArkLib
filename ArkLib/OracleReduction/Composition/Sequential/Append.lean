@@ -3906,6 +3906,53 @@ def appendRunRightResidual (stmt : Stmt₁) (wit : Wit₁) : Prop :=
         return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩)
 
 
+/-- **Discharge of `appendRunRightResidual` for a message seam.**  When the seam round (`pSpec₂`'s
+round 0) is a prover message (`pSpec₂.dir 0 = .P_to_V`), the right-block residual equality holds
+unconditionally.  Assembles the right-block run characterization (`append_continueFromTo_right_msg`,
+with `hT` free via `seam_transcript_appendRight`), the seam (`append_runToRound_seam`),
+`append_output_last`, and the transcript reconciliation `appendRight_full`, threading the seam `HEq`
+and collapsing the residual lift representations via `liftComp_liftComp`.  This makes `append_run`
+unconditional for message-first `P₂` (the common sequential-composition case). -/
+theorem appendRunRightResidual_holds_msg (stmt : Stmt₁) (wit : Wit₁) (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V) :
+    appendRunRightResidual (P₁ := P₁) (P₂ := P₂) stmt wit := by
+  unfold appendRunRightResidual
+  rw [bind_assoc]
+  rw [show (⟨m, by omega⟩ : Fin (m + n + 1))
+      = (⟨m, by omega⟩ : Fin (m + n)).castSucc from by ext; simp]
+  conv_lhs =>
+    enter [2, rSeam]
+    rw [eq_of_heq (append_continueFromTo_right_msg stmt wit hn hDir hDir₂
+      (cast (append_Transcript_seam_castSucc hn) rSeam.1) rSeam
+      (seam_transcript_appendRight hn rSeam.1))]
+  simp only [run_eq_runToRound_last, liftM_bind, bind_assoc, liftM_pure, pure_bind,
+    bind_map_left, Function.comp]
+  apply eq_of_heq
+  have hseam : HEq ((P₁.append P₂).runToRound (⟨m, by omega⟩ : Fin (m + n)).castSucc stmt wit)
+      (liftM (P₁.runToRound (Fin.last m) stmt wit) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) := by
+    have := append_runToRound_seam (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit)
+    rwa [show ((Fin.last m).castLE (by omega) : Fin (m + n + 1))
+        = (⟨m, by omega⟩ : Fin (m + n)).castSucc from by ext; simp] at this
+  refine bind_heq_congr
+    (by rw [append_Transcript_seam_castSucc hn, append_PrvState_seam_castSucc hn]; rfl) rfl
+    hseam (fun rSeam x hr => ?_)
+  obtain ⟨ht, hs⟩ := prod_heq_split (append_Transcript_seam_castSucc hn)
+    (append_PrvState_seam_castSucc hn) hr
+  have hc2 : cast (append_PrvState_seam_castSucc hn) rSeam.2 = x.2 :=
+    eq_of_heq ((cast_heq _ _).trans hs)
+  have hc1 : cast (append_Transcript_seam_castSucc hn) rSeam.1 = x.1 :=
+    eq_of_heq ((cast_heq _ _).trans ht)
+  rw [hc2, hc1]
+  apply heq_of_eq
+  simp only [OracleComp.liftComp_eq_liftM, append_output_last hn, Transcript.appendRight_full,
+    cast_cast, cast_eq]
+  refine bind_congr fun x_1 => bind_congr fun a => ?_
+  simp only [← OracleComp.liftComp_eq_liftM]
+  rw [Prover.liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₂.Challenge]ₒ)
+    (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
