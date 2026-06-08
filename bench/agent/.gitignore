@@ -3,3 +3,4 @@ arklib_premises.jsonl
 *.pt
 __pycache__/
 mqar_result.json
+*_result.json
