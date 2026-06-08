@@ -3001,6 +3001,7 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
   -- `simulateQ_addLift_fiatShamirChallenge_optionT` at the per-`pr` leaf.
   sorry
 
+set_option pp.explicit true in
 set_option linter.flexible false in
 /-- Canonical coupled state-restoration knowledge soundness implies basic Fiat-Shamir knowledge
 soundness when both games use the same sampled cached Fiat-Shamir challenge table. -/

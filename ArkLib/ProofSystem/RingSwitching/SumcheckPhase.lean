@@ -1109,9 +1109,9 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
       (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) i stmtIn oStmtIn witIn
       h_relIn r1
     simp only [OracleVerifier.toVerifier, iteratedSumcheckOracleVerifier,
-      Sumcheck.Structured.roundOracleVerifier, FullTranscript.mk2,
-      OptionT.simulateQ_bind, OptionT.simulateQ_simOracle2_liftM_query_T2, guard_eq,
-      OptionT.simulateQ_ite, OptionT.simulateQ_pure, OptionT.simulateQ_failure]
+      Sumcheck.Structured.roundOracleVerifier, FullTranscript.mk2, guard_eq]
+    erw [OptionT.simulateQ_bind]
+    rw [OptionT.simulateQ_simOracle2_liftM_query_T2]
     trace_state
     sorry
   rw [probEvent_eq_one_iff]
