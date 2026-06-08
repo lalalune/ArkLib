@@ -41,6 +41,14 @@ private theorem stateT_option_bind_map_eq
   | mk oa s' =>
       cases oa <;> rfl
 
+private theorem stateT_option_elimM_map_eq
+    {σ α β γ : Type} (mx : StateT σ ProbComp (Option α)) (f : α → β)
+    (k : β → StateT σ ProbComp (Option γ)) :
+    Option.elimM mx (pure none) (fun a => k (f a)) =
+      Option.elimM (Option.map f <$> mx) (pure none) k := by
+  unfold Option.elimM
+  exact stateT_option_bind_map_eq mx f k
+
 private theorem scratch_probEvent_optionT_stateT_init
     {σ α : Type} (init : ProbComp σ) (comp : StateT σ ProbComp (Option α))
     (p : α → Prop) :
@@ -97,17 +105,18 @@ theorem scratch_fiatShamirKnowledgeExec_runCollapse
               liftM (srExtractor stmtIn d.1.2.2 transcript default default)
           pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run) := by
   simp only [OptionT.run_bind, simulateQ_option_elimM, simulateQ_pure]
-  rw [stateT_option_bind_map_eq
+  rw [stateT_option_elimM_map_eq
     (f := Prod.fst)
     (k := fun d =>
-      simulateQ (QueryImpl.addLift impl challengeQueryImpl)
-        ((do
-          let extractedWitIn ←
-            liftM do
+      Option.elimM
+        (simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          (liftM do
               let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
                 (oSpec := oSpec) stmtIn (d.1.1 0))
-              liftM (srExtractor stmtIn d.1.2.2 transcript default default)
-          pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run))]
+              liftM (srExtractor stmtIn d.1.2.2 transcript default default)).run)
+        (pure none) fun extractedWitIn =>
+          simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+            (pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run)]
   rw [fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn]
 
 theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical
