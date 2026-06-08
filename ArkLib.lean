@@ -1021,6 +1021,7 @@ import ArkLib.ToMathlib.PowerSeriesHenselianA
 import ArkLib.ToMathlib.PowerSeriesNewton
 import ArkLib.ToMathlib.PowerSeriesSubstCoeff
 import ArkLib.ToMathlib.PrizeRateEliasCapacity
+import ArkLib.ToMathlib.ProbEventBindOne
 import ArkLib.ToMathlib.Prop55
 import ArkLib.ToMathlib.ProtocolCountingBricks
 import ArkLib.ToMathlib.ProximityGenericity
