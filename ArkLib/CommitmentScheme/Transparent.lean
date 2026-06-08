@@ -75,12 +75,15 @@ def transparentScheme :
     }
   }
 
+omit [DecidableEq ι] [oSpec.Fintype] in
 @[simp] theorem transparentScheme_keygen :
     (transparentScheme (oSpec := oSpec) (Data := Data)).keygen = return ((), ()) := rfl
 
+omit [DecidableEq ι] [oSpec.Fintype] in
 @[simp] theorem transparentScheme_commit (ck : Unit) (data : Data) :
     (transparentScheme (oSpec := oSpec) (Data := Data)).commit ck data = return (data, ()) := rfl
 
+omit [DecidableEq ι] [oSpec.Fintype] in
 /-- The opening verifier accepts `(cm, q, y)` (on any transcript) exactly when re-evaluating the
 oracle on the committed data reproduces the claimed response. This is the algebraic heart of both
 the correctness and the binding arguments. -/
@@ -95,6 +98,7 @@ section Correctness
 
 variable {σ : Type} (s₀ : σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
 
+omit [DecidableEq ι] [oSpec.Fintype] in
 /-- **Perfect correctness of the transparent scheme.** The honest commit-then-open execution is
 accepted with probability one. The scheme makes no oracle queries, so this holds for any ambient
 oracle implementation `impl` and any fixed initial simulator state `s₀` (as with
@@ -119,7 +123,7 @@ theorem transparentScheme_perfectCorrectness :
   rw [transparentScheme_commit, mem_support_pure_iff] at hcommit
   obtain ⟨rfl, rfl⟩ := Prod.mk.inj hcommit
   -- The opening is prover-first (a single P→V message).
-  haveI : ProverOnly (openingPSpec) := { prover_first' := by simp [openingPSpec] }
+  haveI : ProverOnly (openingPSpec) := { prover_first' := by simp }
   rw [Reduction.run_of_prover_first] at hx
   simp only [OptionT.run_bind, OptionT.run_pure] at hx
   -- The honest opening verifier accepts: it re-evaluates the oracle on the committed data, which
@@ -161,5 +165,10 @@ mathematical content of binding — is exactly `opening_verify` above: the verdi
 the single boolean `decide (answer cm q = y)`. Lifting it through the full `Commitment.binding`
 game (which threads the verdict through `Reduction.run` against an arbitrary malicious prover) is a
 mechanical downstream step. -/
+
+-- Axiom audit: these report only the standard `[propext, Classical.choice, Quot.sound]` and no
+-- `sorryAx`.
+#print axioms transparentScheme_perfectCorrectness
+#print axioms opening_verify
 
 end Commitment.Transparent
