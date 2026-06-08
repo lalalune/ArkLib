@@ -605,6 +605,7 @@ import ArkLib.OracleReduction.Cast
 import ArkLib.OracleReduction.Completeness
 import ArkLib.OracleReduction.Composition.Parallel.Basic
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
@@ -929,6 +930,7 @@ import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
 import ArkLib.ToMathlib.MvPolynomial.Equiv
 import ArkLib.ToMathlib.NearCertainBadLineProof
+import ArkLib.ToMathlib.OracleCompEvalDistBindComm
 import ArkLib.ToMathlib.OracleZKTransferBricks
 import ArkLib.ToMathlib.PartitionRecursion
 import ArkLib.ToMathlib.PlaceGeometrySupply
