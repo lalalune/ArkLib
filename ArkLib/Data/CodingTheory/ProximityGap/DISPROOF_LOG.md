@@ -6,6 +6,16 @@ so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
 Default assumption: my disproof is wrong — find the precise reason it fails and
 make that reason a sorry-free Lean lemma.
 
+## CORPUS INTEGRITY (verified)
+
+All 23 verified bricks (`CandidateDisproofLoop{4,5,6,7,8,12,14}`, `CandidateProofLoop{9,11,13,17}`,
+`CandidateCarvingLoop10`, `CandidateBridgeLoop{15,16}`, `CandidateDecisionLoop18`,
+`CandidateStructureLoop{19,20,21,22,23,24,25,26}`) are each **sorry-free and axiom-clean**
+(`[propext, Classical.choice, Quot.sound]`), verified individually with `lake env lean` and
+cross-checked: the dependency spine (Loop24→25, Loop21→Carving10) builds and audits clean *together*,
+and every brick lives in its own `ArkLib.ProximityGap.*Loop_n` namespace (no collisions). The whole
+proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_disproof_backup/`.
+
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
 A web-research pass (June 2026) located the precise state of the art. **Our verified carving at the
