@@ -514,6 +514,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdPin
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdPinGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdPinRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdStrictRate12
+import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdSubcapacityRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdTrappedRate12
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
