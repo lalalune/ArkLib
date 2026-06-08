@@ -256,6 +256,41 @@ end Prover
 
 end FiatShamirAdversaryAdapter
 
+section FiatShamirLiftPath
+
+namespace Reduction
+
+attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
+
+variable {n : ℕ}
+variable {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι} {StmtIn α : Type}
+
+/-- Directly lifting a base Fiat-Shamir-oracle computation into the appended one-message
+Fiat-Shamir protocol oracle spec is the same path as first lifting it into `OptionT` over the base
+spec and then lifting that `OptionT` computation to the appended spec.
+
+This names the lift-path coherence exposed by the #116 coupled soundness run expansion, where the
+generic one-message `Reduction.run_of_prover_first` chooses the direct source-level path but
+hand-written SR-transcript shapes naturally elaborate through the nested `OptionT` path. -/
+theorem fiatShamir_liftM_base_to_append_eq_nested
+    (oa : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) α) :
+    (liftM oa :
+        OptionT (OracleComp ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α)
+      =
+      (liftM
+        ((liftM oa :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α)) :
+        OptionT (OracleComp ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α) := by
+  rfl
+
+end Reduction
+
+#print axioms Reduction.fiatShamir_liftM_base_to_append_eq_nested
+
+end FiatShamirLiftPath
+
 section CoupledQueryImpl
 
 namespace Reduction
