@@ -1386,6 +1386,7 @@ section CanonicalKnowledgeSoundness
 
 set_option linter.unusedSimpArgs false
 set_option linter.unusedSectionVars false
+set_option maxHeartbeats 4000000
 
 attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
 
@@ -1768,7 +1769,6 @@ theorem fiatShamirKnowledgeExec_runCollapse
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of
 `fiatShamir_soundnessTransferResidual_canonical`. -/
-set_option maxHeartbeats 4000000 in
 theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
     (srImpl : QueryImpl oSpec
