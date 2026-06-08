@@ -5,25 +5,20 @@ open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- Candidate 6: Guruswami-Sudan Fractional Over-Relaxation
-    We hypothesize that a fractional degree constraint in the interpolation phase
-    analytically yields mass bounds exceeding the Johnson radius. -/
+/-! # Candidate: fractional Guruswami-Sudan relaxation -/
 
+/-- Proposed fractional interpolation invariant. -/
 def HasFractionalOverRelaxation {F : Type} [Field F] [Fintype F] (L : Finset F) : Prop :=
-  -- Represents the existence of a valid fractional degree interpolation
-  sorry
+  ∃ slack : ℝ≥0, 0 < slack ∧ slack < 1 ∧ L.Nonempty
 
-/-- The fractional interpolation bridge lemma. -/
-lemma mca_bound_of_fractional_relaxation {F : Type} [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
-    (h_fract : HasFractionalOverRelaxation L)
-    (C : Set (F → F)) (δ : ℝ≥0) :
-    ProximityGap.epsMCA C δ ≤ 2⁻¹²⁸ := by
-  sorry
+/-- Open bridge from fractional relaxation to MCA control. -/
+def mca_bound_of_fractional_relaxation {F : Type} [Field F] [Fintype F]
+    (L : Finset F) (C : Set (F → F)) (δ : ℝ≥0) : Prop :=
+  HasFractionalOverRelaxation L → ProximityGap.epsMCA C δ ≤ 2⁻¹²⁸
 
-theorem candidate_fractional_gs_mca_bound (F : Type) [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo) :
-    ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ := by
-  sorry
+/-- Candidate endpoint for the fractional-GS route. -/
+def candidate_fractional_gs_mca_bound (F : Type) [Field F] [Fintype F]
+    (L : Finset F) : Prop :=
+  ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ
 
 end ArkLib.CodingTheory.Research

@@ -6,57 +6,39 @@ open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- Candidate 1: Derandomization
-    Can we port the [GZ23] random-puncturing list-decodability bounds
-    to explicit, smooth evaluation domains `L`?
-    If `L` is an explicit multiplicative subgroup, we attempt to show that
-    the density of roots mimics a random subset of `F`. -/
-/-- A subgroup L is considered 'pseudo-random' for low-degree polynomials
-    if no low-degree non-zero polynomial can have a disproportionately large
-    number of roots inside L. -/
-def IsPseudoRandomForPolys (F : Type) [Field F] (L : Finset F) (deg : ℕ) : Prop :=
-  ∀ (p : Polynomial F), p ≠ 0 → p.natDegree ≤ deg →
-    (L.filter (fun x => p.eval x = 0)).card ≤ p.natDegree
+/-!
+# Candidate: derandomizing random-puncturing bounds
 
-/-- Every subgroup of a finite field acts pseudo-randomly for univariate polynomials
-    due to the fundamental theorem of algebra. -/
+The univariate root-counting fact below is proved. The leap from that fact to a beyond-Johnson
+MCA threshold is deliberately recorded as a `Prop`, not as a theorem with `sorry`.
+-/
+
+/-- A set acts pseudorandomly for low-degree univariate root counting. -/
+def IsPseudoRandomForPolys (F : Type) [Field F] (L : Finset F) (deg : ℕ) : Prop :=
+  ∀ p : Polynomial F, p ≠ 0 → p.natDegree ≤ deg →
+    (L.filter fun x => p.eval x = 0).card ≤ p.natDegree
+
+/-- Any finite subset satisfies the basic univariate root-counting bound. -/
 lemma smooth_subgroup_is_pseudo_random {F : Type} [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo) (deg : ℕ) :
+    (L : Finset F) (_hL_smooth : L.card.IsPowerOfTwo) (deg : ℕ) :
     IsPseudoRandomForPolys F L deg := by
-  intro p hp hdeg
+  intro p hp _hdeg
   have h_roots := Polynomial.card_roots hp
-  have h_subset : (L.filter (fun x => p.eval x = 0)).val ⊆ p.roots := by
+  have h_subset : (L.filter fun x => p.eval x = 0).val ≤ p.roots := by
     intro x hx
     simp only [Finset.mem_val, Finset.mem_filter] at hx
     rw [Polynomial.mem_roots hp]
     exact hx.2
   exact le_trans (Multiset.card_le_of_le h_subset) h_roots
 
-/-- The core bridge lemma: if a subgroup is pseudo-random for univariate polynomials
-    up to the GS complexity degree, then the mutual correlated agreement error
-    is bounded by the list-decoding fraction.
-    We leverage the Schwartz-Zippel Lemma over the finite subgroup L. -/
-lemma mca_bound_of_pseudo_random {F : Type} [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
-    (deg : ℕ) (h_pseudo : IsPseudoRandomForPolys F L deg)
-    (C : Set (F → F)) (δ : ℝ≥0) :
-    ProximityGap.epsMCA C δ ≤ (deg : ℝ≥0) / L.card := by
-  -- By Schwartz-Zippel applied over the finite subgroup L, the probability
-  -- that a non-zero polynomial of degree `deg` evaluates to zero at a uniformly
-  -- random point in L is bounded by deg / |L|.
-  -- Because `h_pseudo` restricts the deterministic root structure, the maximum
-  -- fraction of false-positive agreements across all spurious decodings is bounded.
-  sorry
+/-- Open bridge from deterministic pseudorandom root counting to the MCA bound. -/
+def mca_bound_of_pseudo_random {F : Type} [Field F] [Fintype F]
+    (L : Finset F) (deg : ℕ) (C : Set (F → F)) (δ : ℝ≥0) : Prop :=
+  IsPseudoRandomForPolys F L deg → ProximityGap.epsMCA C δ ≤ (deg : ℝ≥0) / L.card
 
-/-- The main threshold bound mapping the pseudo-randomness into the MCA. -/
-theorem candidate_derandomization_mca_bound (F : Type) [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo) :
-    ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ := by
-  -- We posit that the deterministic structure of L is pseudo-random with respect
-  -- to the algebraic properties of the Guruswami-Sudan polynomial.
-  -- By leveraging `smooth_subgroup_is_pseudo_random`, we can bound the false
-  -- positive evaluations of the interpolation polynomial.
-  -- The final threshold depends on injecting `mca_bound_of_pseudo_random`.
-  sorry
+/-- Candidate endpoint for resolving the lattice prize through derandomization. -/
+def candidate_derandomization_mca_bound (F : Type) [Field F] [Fintype F]
+    (L : Finset F) : Prop :=
+  ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ
 
 end ArkLib.CodingTheory.Research

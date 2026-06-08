@@ -5,24 +5,20 @@ open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- Candidate 8: Evaluation Domain Automorphism Triviality
-    The power-of-two subgroup forces all interpolation polynomials bounding
-    the list size to exhibit translational symmetry, exponentially reducing their count. -/
+/-! # Candidate: evaluation-domain symmetry -/
 
+/-- Proposed symmetry invariant needed by the candidate route. -/
 def HasTranslationalSymmetry {F : Type} [Field F] [Fintype F] (L : Finset F) : Prop :=
-  sorry
+  ∀ x ∈ L, ∀ y ∈ L, x + y ∈ L
 
-/-- The symmetry bridge lemma. -/
-lemma mca_bound_of_symmetry {F : Type} [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
-    (h_sym : HasTranslationalSymmetry L)
-    (C : Set (F → F)) (δ : ℝ≥0) :
-    ProximityGap.epsMCA C δ ≤ 2⁻¹²⁸ := by
-  sorry
+/-- Open bridge from the symmetry invariant to MCA control. -/
+def mca_bound_of_symmetry {F : Type} [Field F] [Fintype F]
+    (L : Finset F) (C : Set (F → F)) (δ : ℝ≥0) : Prop :=
+  HasTranslationalSymmetry L → ProximityGap.epsMCA C δ ≤ 2⁻¹²⁸
 
-theorem candidate_symmetry_mca_bound (F : Type) [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo) :
-    ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ := by
-  sorry
+/-- Candidate endpoint for the symmetry route. -/
+def candidate_symmetry_mca_bound (F : Type) [Field F] [Fintype F]
+    (L : Finset F) : Prop :=
+  ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ
 
 end ArkLib.CodingTheory.Research

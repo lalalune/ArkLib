@@ -6,14 +6,11 @@ open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- Candidate 4: Syndrome-Space Lens
-    Use the syndrome-space change-of-basis (per Ben-Sasson, Carmon 2025/1712)
-    to model the phase transition exactly at the capacity boundary. -/
-theorem candidate_syndrome_mca_bound (F : Type) [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo) :
-    ∃ τ, GrandChallengesLattice.mcaPrizeLatticeResolved L τ := by
-  -- We project the errors into the syndrome space and evaluate the collision probability
-  -- of linear combinations to define the threshold `δ*`.
-  sorry
+/-! # Candidate: syndrome-space lens -/
+
+/-- Candidate endpoint for a syndrome-space phase-transition route. -/
+def candidate_syndrome_mca_bound (F : Type) [Field F] [Fintype F]
+    (L : Finset F) : Prop :=
+  ∃ τ, GrandChallengesLattice.mcaPrizeLatticeResolved L τ
 
 end ArkLib.CodingTheory.Research

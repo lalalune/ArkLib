@@ -5,23 +5,20 @@ open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- Candidate 7: Random Sub-field Projection Constraint
-    Projecting the evaluation space down to a prime sub-field restricts the algebraic degree. -/
+/-! # Candidate: prime-subfield projection -/
 
+/-- Proposed projection invariant. -/
 def HasPrimeSubfieldProjection {F : Type} [Field F] [Fintype F] (L : Finset F) : Prop :=
-  sorry
+  ∃ projectionSize : ℕ, 0 < projectionSize ∧ projectionSize ≤ L.card
 
-/-- The sub-field projection bridge lemma. -/
-lemma mca_bound_of_subfield_projection {F : Type} [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
-    (h_proj : HasPrimeSubfieldProjection L)
-    (C : Set (F → F)) (δ : ℝ≥0) :
-    ProximityGap.epsMCA C δ ≤ 2⁻¹²⁸ := by
-  sorry
+/-- Open bridge from projection structure to MCA control. -/
+def mca_bound_of_subfield_projection {F : Type} [Field F] [Fintype F]
+    (L : Finset F) (C : Set (F → F)) (δ : ℝ≥0) : Prop :=
+  HasPrimeSubfieldProjection L → ProximityGap.epsMCA C δ ≤ 2⁻¹²⁸
 
-theorem candidate_subfield_projection_mca_bound (F : Type) [Field F] [Fintype F]
-    (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo) :
-    ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ := by
-  sorry
+/-- Candidate endpoint for the subfield-projection route. -/
+def candidate_subfield_projection_mca_bound (F : Type) [Field F] [Fintype F]
+    (L : Finset F) : Prop :=
+  ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ
 
 end ArkLib.CodingTheory.Research

@@ -1592,7 +1592,7 @@ theorem βHensel_weight_bound_of_alphaWeight_cases_succLift
 
 
 /-- **The sharp `t+1` obstruction.** -/
-theorem AlphaGenuineRegularWeightLe_succ (x₀ : F) (R : F[X][X][Y])
+theorem AlphaGenuineRegularWeightLe_succ_alt (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hH : 0 < H.natDegree) (D : ℕ) (t : ℕ)
     (hDiv : DivWeightLe_succ H x₀ R hHyp hH D t)
@@ -1615,7 +1615,7 @@ end BCIKS20.HenselNumerator
 -- `[propext, Classical.choice, Quot.sound]` (no `sorry`/`admit`/`axiom`/`native_decide`).
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero
-#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_succ
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_succ_alt
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.zero
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.succ
