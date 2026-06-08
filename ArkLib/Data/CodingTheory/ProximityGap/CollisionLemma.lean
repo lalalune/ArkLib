@@ -113,20 +113,21 @@ theorem near_case (P u₀ u₁ c₁ : ι → F) {γ : F} (r : ℕ)
     (hnear : hammingDist u₁ c₁ ≤ 2 * r)
     (hP : hammingDist P (u₀ + γ • u₁) ≤ r) :
     hammingDist (P - γ • c₁) u₀ ≤ 3 * r := by
+  have hdir : hammingDist (u₀ + γ • u₁) (u₀ + γ • c₁) ≤ 2 * r := by
+    rw [hammingDist_add_left_cancel]
+    refine le_trans ?_ hnear
+    unfold hammingDist
+    apply Finset.card_le_card
+    intro i hi
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Pi.smul_apply, smul_eq_mul,
+      ne_eq] at hi ⊢
+    intro he
+    exact hi (by rw [he])
   calc hammingDist (P - γ • c₁) u₀
       = hammingDist P (u₀ + γ • c₁) := hammingDist_sub_left P (γ • c₁) u₀
     _ ≤ hammingDist P (u₀ + γ • u₁) + hammingDist (u₀ + γ • u₁) (u₀ + γ • c₁) :=
         hammingDist_triangle _ _ _
-    _ ≤ r + 2 * r := by
-        gcongr
-        · exact hP
-        · calc hammingDist (u₀ + γ • u₁) (u₀ + γ • c₁)
-              = hammingDist (γ • u₁) (γ • c₁) := hammingDist_add_left_cancel u₀ (γ • u₁) (γ • c₁)
-            _ = hammingNorm (γ • u₁ - γ • c₁) := hammingDist_eq_hammingNorm _ _
-            _ = hammingNorm (γ • (u₁ - c₁)) := by rw [smul_sub]
-            _ ≤ hammingNorm (u₁ - c₁) := hammingNorm_smul_le_hammingNorm
-            _ = hammingDist u₁ c₁ := (hammingDist_eq_hammingNorm u₁ c₁).symm
-            _ ≤ 2 * r := hnear
+    _ ≤ r + 2 * r := Nat.add_le_add hP hdir
     _ = 3 * r := by ring
 
 end ArkLib.CodingTheory.Collision
