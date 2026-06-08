@@ -82,6 +82,28 @@ theorem append_perfectCompleteness_message
     Prover.append_run_msg (P₁ := R₁.prover) (P₂ := R₂.prover) stmtIn witIn hn hDir hDir₂]
   simp only [probEvent_eq_one_iff] at h₁ h₂ ⊢
   obtain ⟨hf₁, hs₁⟩ := h₁ stmtIn witIn hIn
+  obtain ⟨s₀, hs₀⟩ := support_nonempty_of_neverFails init hInit
+  rw [OptionT.probFailure_mk_bind_eq_zero_iff] at hf₁
+  replace hf₁ := hf₁.2 s₀ hs₀
+  rw [probFailure_simulateQ_iff_stateful_run'_mk (impl := impl.addLift challengeQueryImpl)
+    (hImplSupp := by
+      intro β q s'
+      cases q with | mk t f =>
+      cases t with
+      | inl i => exact hImplSupp (OracleQuery.mk i f) s'
+      | inr i =>
+        simp only [QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+          QueryImpl.addLift_def, QueryImpl.add_apply_inr]
+        have hq := support_challengeQueryImpl_run_eq (q := OracleQuery.mk i f) s'
+        rw [support_liftM]
+        simpa only [ChallengeIdx, Challenge, add_apply_inr, QueryImpl.liftTarget_apply,
+          StateT.run_map, StateT.run_monadLift, monadLift_self, bind_pure_comp, Functor.map_map,
+          support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
+          support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+          liftM_map] using hq)] at hf₁
+  simp only [Reduction.run] at hf₁
+  rw [OptionT.probFailure_mk_do_bindT_eq_zero_iff] at hf₁
+  obtain ⟨_, hV₁nf⟩ := hf₁
   refine ⟨?_, ?_⟩
   · rw [OptionT.probFailure_mk_bind_eq_zero_iff]
     refine ⟨by rw [probFailure_eq_zero_iff]; exact hInit, ?_⟩
