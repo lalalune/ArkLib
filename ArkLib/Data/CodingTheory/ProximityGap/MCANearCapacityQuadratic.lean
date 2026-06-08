@@ -168,7 +168,7 @@ theorem Wnat_sum_lt (hp : n * n ≤ p) (hk : 1 ≤ k) {q r : ℕ}
   have hk1n : k + 1 ≤ n := by omega
   have hnpos : 0 < n := NeZero.pos n
   have hstep : (k + 1) * (n - 1) < n * n :=
-    calc (k + 1) * (n - 1) ≤ n * (n - 1) := Nat.mul_le_mul_right' hk1n _
+    calc (k + 1) * (n - 1) ≤ n * (n - 1) := mul_le_mul_right' hk1n _
       _ < n * n := mul_lt_mul_of_pos_left (by omega) hnpos
   omega
 
@@ -208,7 +208,7 @@ spread — quadratically stronger than the sunflower family's linear `n-k`
 theorem epsMCA_quadratic_ge (hp : n * n ≤ p) (hk : 1 ≤ k) (hn : 2 * k + 1 ≤ n) :
     (((n - 2 * k) * (k + 1) : ℕ) : ℝ≥0∞) / (Fintype.card (ZMod p) : ℝ≥0∞)
       ≤ epsMCA (F := ZMod p) (A := ZMod p)
-          (ReedSolomon.code (domain := dom (p := p) (by omega)) k : Set (Fin n → ZMod p))
+          (ReedSolomon.code (domain := dom (p := p) (n := n) (by omega)) k : Set (Fin n → ZMod p))
           (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
   have hnp : n ≤ p := by omega
   set grid : Finset (ℕ × ℕ) :=

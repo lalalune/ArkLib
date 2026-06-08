@@ -69,7 +69,7 @@ theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical
     fiatShamirCoupledQueryImpl,
     ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl',
     probEvent_map, map_bind, Functor.map_map, Function.comp,
-    StateT.run_bind, StateT.run_map, liftM_eq_monadLift,
+    StateT.run_bind, StateT.run_map,
     Verifier.fiatShamir_verify_eq,
     Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
     Reduction.run, Prover.run, Prover.runToRound, Prover.processRound]
