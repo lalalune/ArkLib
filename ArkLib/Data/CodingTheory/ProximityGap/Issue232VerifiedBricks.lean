@@ -17,6 +17,8 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Data.Finset.Prod
+import Mathlib.Algebra.BigOperators.Intervals
 
 /-!
 # Verified bricks for the Ethereum Proximity Prize (Issue #232)
@@ -36,24 +38,23 @@ Contents:
   `1 − ρ^{m/(m+1)}` family interpolates Johnson→capacity; the `1 − ρ^{2/3}` candidate is the
   `m = 2` member), and `candidate_between_johnson_and_capacity`.
 * List-decoding engine — `fiber_root_card_le`, `grid_zero_count_le`, `on_curve_iff_mem_roots`,
-  `gs_list_card_le` (the GS root-count bound `|roots H| ≤ deg_Y(H)`),
-  `gs_candidate_finset_card_le` (the finite candidate-list wrapper),
-  `interpolation_kernel_nontrivial` (a low-degree interpolant exists by counting),
-  `eval_zero_of_agreement_gt_degree` (agreement ⇒ the codeword is a root), `natDegree_eval_le`
-  (the explicit GS degree budget), and `sudan_codeword_list_bound` (the quantitative Sudan list
-  bound `|L| ≤ deg_Y(H)` for codewords agreeing beyond `deg_X(H) + (k-1)·deg_Y(H)`) — the full
-  combinatorial *and* quantitative GS core.
+  `gs_list_card_le` (the GS list-size bound `|list| ≤ deg_Y(H)`), `interpolation_kernel_nontrivial`
+  (a low-degree interpolant exists by counting), `eval_zero_of_agreement_gt_degree`
+  (agreement ⇒ the codeword is a root), `natDegree_eval_le` (the explicit GS degree budget), and
+  `sudan_codeword_list_bound` (the quantitative Sudan list bound `|L| ≤ deg_Y(H)` for codewords
+  agreeing beyond `deg_X(H) + (k-1)·deg_Y(H)`) — the full combinatorial *and* quantitative GS core.
 * Multiplicities — `sum_rootMultiplicity_le`, `eval_zero_of_multiplicity_agreement`, and
   `gs_multiplicity_list_bound` (the multiplicity-`r` root counting and list bound).
 * Quantitative GS parameters — `sudan_params_feasible` (the pure-arithmetic feasibility of the GS
   parameter program: a `d_X` exists with interpolation space `> n` and budget `< t`; for
   multiplicity `r`, reuse it with `t ↦ t·r`, `n ↦ n·r(r+1)/2`).
 
-Note on radius: the bricks above use the **box** degree bound `(deg_X, deg_Y)`, which realizes the
-Sudan radius `1 − √(2ρ)` (the multiplicity-`r` factors cancel in the box model). Reaching the
-**Johnson** radius `1 − √ρ` requires *weighted-degree* `(1, k-1)` interpolation (triangular monomial
-support of dimension `~D²/(2(k-1))`); pushing past Johnson for explicit smooth-domain RS is the open
-prize. The multiplicity root counting here is the correct, reusable ingredient for both.
+Note on radius: the list-decoding bricks use the **box** degree bound `(deg_X, deg_Y)`, which
+realizes the Sudan radius `1 − √(2ρ)`. Reaching the **Johnson** radius `1 − √ρ` requires
+*weighted-degree* `(1, k-1)` interpolation; its triangular monomial count is now formalized
+(`weighted_degree_count`) together with the key `D² ≤ 2(k-1)·N(D)` lower bound
+(`weighted_degree_count_lb`) — the factor `2` over the rectangle that *is* Johnson-over-Sudan.
+Pushing past Johnson for explicit smooth-domain RS remains the open prize.
 * Refutations — `refute_naive_matrix_rank_bound`, `refute_naive_alg_independence_bound`.
 -/
 
@@ -182,20 +183,6 @@ Decoding Challenge; the open part is the interpolation degree budget pinning `δ
 theorem gs_list_card_le (H : Polynomial (Polynomial F)) :
     H.roots.card ≤ H.natDegree :=
   Polynomial.card_roots' H
-
-/-- **Finite GS candidate-list bound.** If every candidate message polynomial in a finite family
-`Ps` lies on a nonzero interpolation curve `H`, then the candidate list has cardinality at most
-`deg_Y(H)`. This is the downstream finite-set consumer form of `gs_list_card_le`. -/
-theorem gs_candidate_finset_card_le (H : Polynomial (Polynomial F)) (hH : H ≠ 0)
-    (Ps : Finset (Polynomial F)) (hcurve : ∀ p ∈ Ps, Polynomial.eval p H = 0) :
-    Ps.card ≤ H.natDegree := by
-  classical
-  have hsub : Ps.val ⊆ H.roots := by
-    intro p hp
-    rw [← Finset.mem_def] at hp
-    rw [Polynomial.mem_roots hH]
-    exact hcurve p hp
-  exact Polynomial.card_le_degree_of_subset_roots hsub
 
 /-- **GS degree budget.** For `H ∈ F[X][Y]` whose `Y`-coefficients all have `X`-degree `≤ B`
 (`B = deg_X H`) and a message `p ∈ F[X]`, the substituted univariate `H(X, p(X)) = eval p H` has
@@ -365,6 +352,105 @@ theorem sudan_params_feasible (n k t dY : ℕ)
     rw [hrw]; exact hfeas
   · omega
 
+/-! ### Weighted-degree (Johnson) monomial count
+
+The box interpolation space `(d_X+1)(d_Y+1)` realizes the Sudan radius. The Johnson radius comes
+from the *weighted*-degree `(1, w)` space (`w = k-1`), whose monomial count is the triangular
+`N(D) = ∑_b (D - w·b + 1) ≈ D²/(2w)` — a factor `2` above the largest fitting rectangle. -/
+
+open Finset in
+/-- **Weighted-degree monomial count.** The number of monomials `X^a Y^b` of weighted `(1,w)`-degree
+`≤ D` (i.e. `a + w·b ≤ D`) equals `∑_b (D - w·b + 1)` over feasible `b`. -/
+theorem weighted_degree_count (D w : ℕ) :
+    ((Finset.range (D + 1) ×ˢ Finset.range (D + 1)).filter (fun p => p.2 + w * p.1 ≤ D)).card
+      = ∑ b ∈ Finset.range (D + 1), (if w * b ≤ D then D - w * b + 1 else 0) := by
+  rw [Finset.card_eq_sum_card_fiberwise (f := Prod.fst) (t := Finset.range (D + 1))
+        (fun x hx => (Finset.mem_product.mp (Finset.mem_filter.mp hx).1).1)]
+  refine Finset.sum_congr rfl (fun b hb => ?_)
+  have hbD : b < D + 1 := Finset.mem_range.mp hb
+  have hfib : (((Finset.range (D + 1) ×ˢ Finset.range (D + 1)).filter
+        (fun p => p.2 + w * p.1 ≤ D)).filter (fun x => x.1 = b))
+      = ({b} ×ˢ ((Finset.range (D + 1)).filter (fun a => a + w * b ≤ D))) := by
+    ext ⟨b', a⟩
+    simp only [Finset.mem_filter, Finset.mem_product, Finset.mem_range, Finset.mem_singleton]
+    constructor
+    · rintro ⟨⟨⟨_, ha⟩, hle⟩, rfl⟩; exact ⟨rfl, ha, hle⟩
+    · rintro ⟨rfl, ha, hle⟩; exact ⟨⟨⟨hbD, ha⟩, hle⟩, rfl⟩
+  rw [hfib, Finset.card_product, Finset.card_singleton, one_mul]
+  by_cases h : w * b ≤ D
+  · rw [if_pos h, show Finset.filter (fun a => a + w * b ≤ D) (Finset.range (D + 1))
+            = Finset.range (D - w * b + 1) by ext a; simp only [Finset.mem_filter, Finset.mem_range]; omega,
+        Finset.card_range]
+  · rw [if_neg h, Finset.filter_false_of_mem
+        (fun a ha => by simp only [Finset.mem_range] at ha; omega), Finset.card_empty]
+
+open Finset in
+/-- **Weighted-degree count lower bound (the Johnson factor).** `D² ≤ 2w · N(D)`, i.e.
+`N(D) > D²/(2w)` — the triangular factor of `2` over the rectangle bound, exactly the Johnson
+improvement over Sudan in the GS interpolation feasibility. With `w = k-1` and degree budget
+`D < t` (from `eval_zero_of_agreement_gt_degree`), feasibility `N(D) > n` then holds for
+`t² > 2(k-1)·n`-type thresholds approaching the Johnson radius `1 − √ρ`. -/
+theorem weighted_degree_count_lb (D w : ℕ) (hw : 0 < w) :
+    D * D ≤ 2 * w *
+      ((Finset.range (D + 1) ×ˢ Finset.range (D + 1)).filter (fun p => p.2 + w * p.1 ≤ D)).card := by
+  rw [weighted_degree_count]
+  set m := D / w with hm
+  have hwm : w * m ≤ D := by rw [mul_comm]; exact Nat.div_mul_le_self D w
+  have hmD : m ≤ D := Nat.div_le_self D w
+  have hlt : D < w * (m + 1) := by
+    have h1 := Nat.div_add_mod D w
+    rw [← hm] at h1
+    have h2 := Nat.mod_lt D hw
+    have h3 : w * (m + 1) = w * m + w := by rw [Nat.mul_succ]
+    omega
+  clear_value m
+  clear hm
+  have hsub : Finset.range (m + 1) ⊆ Finset.range (D + 1) := by
+    intro x hx; rw [Finset.mem_range] at hx ⊢; omega
+  have hzero : ∀ b ∈ Finset.range (D + 1), b ∉ Finset.range (m + 1) →
+      (if w * b ≤ D then D - w * b + 1 else 0) = 0 := by
+    intro b _ hb'
+    have hbge : m + 1 ≤ b := by by_contra hc; exact hb' (Finset.mem_range.mpr (by omega))
+    have hle : w * (m + 1) ≤ w * b := by gcongr
+    exact if_neg (Nat.not_le.mpr (lt_of_lt_of_le hlt hle))
+  have hsum_eq : (∑ b ∈ Finset.range (D + 1), if w * b ≤ D then D - w * b + 1 else 0)
+      = ∑ b ∈ Finset.range (m + 1), (D - w * b + 1) := by
+    rw [← Finset.sum_subset hsub hzero]
+    refine Finset.sum_congr rfl (fun b hb => ?_)
+    have hbm : b ≤ m := by have := Finset.mem_range.mp hb; omega
+    rw [if_pos (le_trans (by gcongr) hwm)]
+  rw [hsum_eq]
+  have hterm : ∀ b ∈ Finset.range (m + 1),
+      (D - w * b + 1) + (D - w * (m - b) + 1) = 2 * (D + 1) - w * m := by
+    intro b hb
+    have hbm : b ≤ m := by have := Finset.mem_range.mp hb; omega
+    have h1 : w * b ≤ D := le_trans (by gcongr) hwm
+    have h2 : w * (m - b) ≤ D := le_trans (by gcongr; omega) hwm
+    have h3 : w * b + w * (m - b) = w * m := by rw [← Nat.mul_add]; congr 1; omega
+    omega
+  have hreflect : (∑ b ∈ Finset.range (m + 1), (D - w * b + 1))
+      = ∑ b ∈ Finset.range (m + 1), (D - w * (m - b) + 1) :=
+    (Finset.sum_range_reflect (fun b => D - w * b + 1) (m + 1)).symm
+  have hkey : (∑ b ∈ Finset.range (m + 1), (D - w * b + 1))
+      + (∑ b ∈ Finset.range (m + 1), (D - w * (m - b) + 1))
+      = (m + 1) * (2 * (D + 1) - w * m) := by
+    rw [← Finset.sum_add_distrib, Finset.sum_congr rfl hterm, Finset.sum_const,
+        Finset.card_range, Nat.nsmul_eq_mul]
+  have h2sum : 2 * (∑ b ∈ Finset.range (m + 1), (D - w * b + 1))
+      = (m + 1) * (2 * (D + 1) - w * m) := by
+    have heq : 2 * (∑ b ∈ Finset.range (m + 1), (D - w * b + 1))
+        = (∑ b ∈ Finset.range (m + 1), (D - w * b + 1))
+            + (∑ b ∈ Finset.range (m + 1), (D - w * (m - b) + 1)) := by omega
+    rw [heq]; exact hkey
+  have hfin : 2 * w * (∑ b ∈ Finset.range (m + 1), (D - w * b + 1))
+      = w * (m + 1) * (2 * (D + 1) - w * m) := by
+    rw [mul_comm 2 w, mul_assoc, h2sum, ← mul_assoc]
+  rw [hfin]
+  have hA : D + 1 ≤ w * (m + 1) := by omega
+  have hB : D + 2 ≤ 2 * (D + 1) - w * m := by omega
+  calc D * D ≤ (D + 1) * (D + 2) := Nat.mul_le_mul (by omega) (by omega)
+    _ ≤ w * (m + 1) * (2 * (D + 1) - w * m) := Nat.mul_le_mul hA hB
+
 /-! ## Refutations of naive list-size bounds -/
 
 /-- **Refute Hyp7 (naive matrix-rank list bound `|L| ≤ k²`).** False unconditionally: a single
@@ -388,7 +474,5 @@ theorem refute_naive_alg_independence_bound {ι F : Type*} [Fintype ι] [Fintype
   have hlt : Fintype.card F < Fintype.card F ^ 2 := by
     rw [pow_two]; exact lt_mul_of_one_lt_left (by omega) (by omega)
   omega
-
-#print axioms gs_candidate_finset_card_le
 
 end ArkLib.ProximityGap.Issue232Bricks
