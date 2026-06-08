@@ -321,6 +321,19 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop25 — anchored recursion: the whole prize is now ONE open scalar inequality
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop25.lean`:** `recursion_anchored`
+(constant blowup `a≤2^c` + base `T(0)≤B₀` ⟹ `T(m)≤(2^m)^c·B₀`), `fold_list_le_domain_pow` (base
+`T(0)≤1` ⟹ `T(m)≤(2^m)^c`). **Base case** `T(0)≤1`: below the unique-decoding radius the list is a
+singleton (Johnson/unique decoding, in-tree `JohnsonList.johnson_unique_decoding`). Assembling Loop24's
+telescoping + this proven base: the full scale-`2^m` list is bounded by the **explicit `q`-independent
+polynomial `(2^m)^c`**, which clears the prize RHS with `c₁=c`. **Net:** every ingredient of the TRUE
+branch is now *proven* — the carving, the telescoping, the base, the RHS fit — **except one real
+number**: the per-fold blowup `a` and whether `a ≤ 2^c` for an `N`-independent `c`. The entire
+ABF26 prize is thereby reduced to a *single open scalar inequality* about the smooth-deterministic
+per-fold proximity-gap soundness. That scalar's `N`-dependence is the isolated `$1M` question (no
+published answer); it cannot be fabricated.
+
 ### Loop24 — the per-fold recursion criterion: constant blowup ⟹ polynomial ⟹ prize TRUE
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop24.lean`:** `fold_recursion_telescopes`
 (`T(j+1)≤a·T(j)` ⟹ `T(m)≤aᵐ·T(0)`), `constant_blowup_polynomial` (`a≤2^c` ⟹ `aᵐ≤(2^m)^c`),
