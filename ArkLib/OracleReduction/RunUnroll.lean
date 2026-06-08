@@ -251,6 +251,20 @@ theorem probComp_seam_union_le
 
 #print axioms probComp_seam_union_le
 
+/-- **`.run`-to-`.run'` probEvent bridge (state projection).** `probComp_seam_union_le`'s `h₁` is stated
+over the *full* `StateT` result `(simulateQ so X).run` with a predicate reading only the value component
+`r.1`, whereas `Verifier.soundness` is stated over the value-only `.run'`. Since `.run' = (·.1) <$> .run`,
+a predicate that ignores the state agrees on both: this lemma bridges the two, letting the seam's `h₁`/`h₂`
+be discharged directly from `V₁`/`V₂.soundness`. -/
+theorem probEvent_run_eq_run'_fst
+    (so : QueryImpl spec (StateT σ ProbComp)) (init : ProbComp σ)
+    {α : Type} (X : OracleComp spec α) (P : α → Prop) :
+    Pr[fun r => P r.1 | init >>= fun s => (simulateQ so X).run s]
+      = Pr[P | init >>= fun s => (simulateQ so X).run' s] := by
+  simp only [StateT.run'_eq, ← map_bind, probEvent_map, Function.comp_def]
+
+#print axioms probEvent_run_eq_run'_fst
+
 /-- **`OptionT.mk`-to-`ProbComp` `probEvent` bridge.** The soundness game is phrased as a
 `probEvent` over an `OptionT ProbComp` (the verifier may reject = fail), while the union-bound
 toolkit (`probComp_seam_union_le`) is stated at the bare `ProbComp` level with a `none`-as-failure
