@@ -1180,68 +1180,6 @@ private theorem queryLog_snd_append
       | mk q r =>
           cases q <;> simp [QueryLog.snd]
 
-private theorem transcriptFromFSChallengeLogAux_run_logging
-    (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
-    (j : Fin (k + 1)) (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
-    (do
-        let z ← (simulateQ (OracleSpec.loggingOracle
-          (spec := oSpec + fsChallengeOracle StmtIn pSpec))
-          (MessagesUpTo.deriveTranscriptSRAux (oSpec := oSpec) stmtIn k messages j)).run
-        pure ((transcriptFromFSChallengeLogAux
-          (StmtIn := StmtIn) (pSpec := pSpec) k messages j).run (z.2.snd ++ tail))) =
-      (fun transcript =>
-          some (transcript, tail)) <$>
-        MessagesUpTo.deriveTranscriptSRAux (oSpec := oSpec) stmtIn k messages j := by
-  revert tail
-  induction j using Fin.induction with
-  | zero =>
-      intro tail
-      simp [transcriptFromFSChallengeLogAux, MessagesUpTo.deriveTranscriptSRAux,
-        QueryLog.snd]
-  | succ i ih =>
-      intro tail
-      simp only [transcriptFromFSChallengeLogAux, MessagesUpTo.deriveTranscriptSRAux] at ih ⊢
-      rw [Fin.induction_succ]
-      simp only [simulateQ_bind, WriterT.run_bind, bind_assoc]
-      split
-      · next hDir =>
-          simp [OracleComp.run_simulateQ_loggingOracle_query_bind, ih,
-            queryLog_snd_append, QueryLog.snd, popFSChallengeFromLog]
-      · simp [ih, QueryLog.snd]
-
-private theorem transcriptFromFSChallengeLog_run_logging
-    (stmtIn : StmtIn) (messages : pSpec.Messages)
-    (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
-    (do
-        let z ← (simulateQ (OracleSpec.loggingOracle
-          (spec := oSpec + fsChallengeOracle StmtIn pSpec))
-          (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages)).run
-        pure (transcriptFromFSChallengeLog
-          (StmtIn := StmtIn) (pSpec := pSpec) messages (z.2.snd ++ tail))) =
-      (fun transcript => some transcript) <$>
-        Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages := by
-  have h := transcriptFromFSChallengeLogAux_run_logging
-    (oSpec := oSpec) (StmtIn := StmtIn) (pSpec := pSpec)
-    stmtIn (Fin.last n) messages (Fin.last (Fin.last n)) tail
-  have h' := congrArg (fun c =>
-      (fun o : Option (pSpec.FullTranscript × QueryLog (fsChallengeOracle StmtIn pSpec)) =>
-        Option.map Prod.fst o) <$> c) h
-  simpa [transcriptFromFSChallengeLog, StateT.run', Function.comp] using h'
-
-private theorem transcriptFromFSChallengeLog_run_logging_tail_nil
-    (stmtIn : StmtIn) (messages : pSpec.Messages) :
-    (do
-        let z ← (simulateQ (OracleSpec.loggingOracle
-          (spec := oSpec + fsChallengeOracle StmtIn pSpec))
-          (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages)).run
-        pure (transcriptFromFSChallengeLog
-          (StmtIn := StmtIn) (pSpec := pSpec) messages z.2.snd)) =
-      (fun transcript => some transcript) <$>
-        Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages := by
-  simpa using transcriptFromFSChallengeLog_run_logging
-    (oSpec := oSpec) (StmtIn := StmtIn) (pSpec := pSpec)
-    stmtIn messages ([] : QueryLog (fsChallengeOracle StmtIn pSpec))
-
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
 
@@ -1894,68 +1832,12 @@ theorem fiatShamirKnowledgeExec_runCollapse
   · exact stateT_option_elimM_congr₂ (hLift d) (fun extractedWitIn =>
       hPure d extractedWitIn)
   · rfl
-set_option maxHeartbeats 800000 in
-/-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
-table. This is the knowledge-soundness analogue of
-`fiatShamir_soundnessTransferResidual_canonical`. -/
-theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
-    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
-    (srImpl : QueryImpl oSpec
-      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
-    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
-    (knowledgeError : ℝ≥0)
-    (V : Verifier oSpec StmtIn StmtOut pSpec) :
-    fiatShamir_knowledgeSoundnessTransferResidual srInit srImpl srInit
-      (fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
-      relIn relOut knowledgeError V := by
-  intro hSR
-  obtain ⟨srExtractor, hSR⟩ := hSR
-  refine ⟨fiatShamirStraightlineExtractorOfStateRestoration
-      (oSpec := oSpec) (pSpec := pSpec) srExtractor, ?_⟩
-  intro stmtIn witIn prover
-  have h :=
-    hSR (Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver
-      (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
-  dsimp only
-  simp [fiatShamirStraightlineExtractorOfStateRestoration]
-  have hCollapse := fiatShamirKnowledgeExec_runCollapse
-    (impl := fiatShamirCoupledQueryImpl
-      (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
-    (P := prover) (V := V) (srExtractor := srExtractor)
-    (stmtIn := stmtIn) (witIn := witIn)
-  simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self] at hCollapse
-  rw [probEvent_optionT_stateT_init]
-  have hProbCollapse := probEvent_stateT_run_fst_congr
-    (init := srInit)
-    (p := fun o => o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut)
-    (h := hCollapse)
-  refine le_trans (b := probEvent
-      (do
-        let s ← srInit
-        (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
-            QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
-          (simulateQ
-            (fiatShamirCoupledQueryImpl
-              (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
-            (do
-              let d ← fiatShamirAdversaryExecution prover V stmtIn witIn
-              let extractedWitIn ←
-                liftM do
-                  let transcript ← OptionT.mk (some <$>
-                    Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1 0))
-                  liftM (srExtractor stmtIn d.1.2.2 transcript default default)
-              pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run).run s)
-      (fun o => o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut)) ?_ ?_
-  · convert (le_of_eq hProbCollapse) using 1
-    simp [Reduction.FiatShamirProtocolSpec]
-  · simpa [fiatShamirAdversaryExecution,
-      Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
-      Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
-      fiatShamirCoupledQueryImpl,
-      ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl',
-      probEvent_map, map_bind, Functor.map_map, Function.comp,
-      StateT.run_bind, StateT.run_map,
-      Verifier.run, QueryImpl.addLift_def, QueryImpl.liftTarget_self] using h
+
+-- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side
+-- Fiat-Shamir challenges.  Re-deriving the transcript after verifier execution is not sound for an
+-- arbitrary stateful `srImpl`, because original-oracle verifier queries may mutate the cached
+-- challenge table.  The extractor above therefore replays `verifyQueryLog.snd`; the remaining
+-- theorem should compare `Reduction.runWithLog` against the state-restoration game using that log.
 
 end CanonicalKnowledgeSoundness
 
