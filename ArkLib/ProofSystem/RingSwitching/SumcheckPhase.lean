@@ -1093,8 +1093,9 @@ theorem probe_iteratedSumcheck_completeness [IsDomain L]
     OracleVerifier.toVerifier, FullTranscript.mk2]
   refine ⟨?_, ?_⟩
   · simp only [liftComp_pure, liftM_pure, pure_bind, bind_pure_comp, Function.comp,
-      FullTranscript.mk2, OptionT.simulateQ_bind, OptionT.simulateQ_simOracle2_liftM_query_T2,
-      OptionT.simulateQ_map, OptionT.simulateQ_pure, map_pure]
+      FullTranscript.mk2]
+    erw [simulateQ_bind]
+    rw [OptionT.simulateQ_simOracle2_liftM_query_T2]
     trace_state
     sorry
   · sorry
