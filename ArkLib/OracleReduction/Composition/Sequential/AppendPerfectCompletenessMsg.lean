@@ -109,10 +109,10 @@ theorem append_perfectCompleteness_message
         Set.mem_iUnion, implies_true, and_self, true_and, OptionT.probFailure_mk_do_bindT_eq_zero_iff,
         HasEvalPMF.probFailure_eq_zero, probFailure_pure]
     · intro pr hpr
-      simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
-        OptionT.mk, bind_pure_comp, support_map, Set.mem_image, OracleComp.support_liftComp,
-        support_bind, Set.mem_iUnion, exists_prop] at hpr
-      trace_state
+      -- Reduces to `none ∉ support (V₁.append V₂).run pr.1` (the appended verifier never rejects on
+      -- the honest transcript). Provable by decomposing `hf₁` (R₁ never fails ⇒ V₁ never `none`) and
+      -- `h₂` (R₂ never fails ⇒ V₂ never `none`, valid since `hs₁` pins V₁'s output into `rel₂`),
+      -- mirroring the proven support half. The only remaining gap in the keystone.
       sorry
   · intro x hx
     rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
