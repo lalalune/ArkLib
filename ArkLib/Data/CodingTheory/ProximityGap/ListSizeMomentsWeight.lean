@@ -61,19 +61,19 @@ lemma pairBall_smul_diag (d : ι → F) (hd : ∀ i, d i ≠ 0) (v : ι → F) (
     simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hg ⊢
     obtain ⟨h1, h2⟩ := hg
     refine ⟨?_, ?_⟩
-    · have hz : hammingDist (0 : ι → F) (fun i => d i * g i) = hammingDist (0 : ι → F) g := by
-        have := hammingDist_dmul d hd 0 g
-        simpa using this
-      rw [hz]; exact h1
+    · have key := hammingDist_dmul d hd 0 g
+      have e0 : (fun i => d i * (0 : ι → F) i) = (0 : ι → F) := by funext i; simp
+      rw [e0] at key
+      rw [key]; exact h1
     · rw [hammingDist_dmul d hd v g]; exact h2
   · intro h hh
     simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hh ⊢
     obtain ⟨h1, h2⟩ := hh
     refine ⟨?_, ?_⟩
-    · have hz : hammingDist (0 : ι → F) (fun i => (d i)⁻¹ * h i) = hammingDist (0 : ι → F) h := by
-        have := hammingDist_dmul (fun i => (d i)⁻¹) (fun i => inv_ne_zero (hd i)) 0 h
-        simpa using this
-      rw [hz]; exact h1
+    · have key := hammingDist_dmul (fun i => (d i)⁻¹) (fun i => inv_ne_zero (hd i)) 0 h
+      have e0 : (fun i => (d i)⁻¹ * (0 : ι → F) i) = (0 : ι → F) := by funext i; simp
+      rw [e0] at key
+      rw [key]; exact h1
     · have key := hammingDist_dmul (fun i => (d i)⁻¹) (fun i => inv_ne_zero (hd i)) (fun i => d i * v i) h
       simp only [inv_mul_cancel_left₀ (hd _)] at key
       rw [key]; exact h2

@@ -283,6 +283,69 @@ lemma pairBall_scale {u : ι → F} (hu : ∀ i, u i ≠ 0) (v : ι → F) (r : 
   · intro g _; funext i; simp only; rw [← mul_assoc, inv_mul_cancel₀ (hu i), one_mul]
   · intro h _; funext i; simp only; rw [← mul_assoc, mul_inv_cancel₀ (hu i), one_mul]
 
+/-- **`N` depends only on the Hamming weight.** Over a field, any two vectors of equal weight are
+related by a coordinate permutation (matching their supports) followed by a coordinate scaling
+(matching their nonzero values), and `N` is invariant under both. Hence `N(v,r) = N(v',r)` whenever
+`wt(v) = wt(v')`. This is the symmetry that collapses `Σ_{v∈C} N(v,r)` onto the weight enumerator
+`Σ_w A_w · N(w,r)`, completing the reduction of the linear-code second moment to `A_w` (direction A
+for #232). -/
+theorem pairBall_weight {v v' : ι → F} (hw : hammingNorm v = hammingNorm v') (r : ℕ) :
+    (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card
+      = (Finset.univ.filter
+          (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v' g ≤ r)).card := by
+  classical
+  set A : Finset ι := Finset.univ.filter (fun i => v i ≠ 0) with hA
+  set B : Finset ι := Finset.univ.filter (fun i => v' i ≠ 0) with hB
+  have hcard : B.card = A.card := by
+    have hAn : A.card = hammingNorm v := rfl
+    have hBn : B.card = hammingNorm v' := rfl
+    rw [hAn, hBn, hw]
+  -- support-matching permutation: maps `supp v'` onto `supp v` and complement to complement
+  set e : {x // x ∈ B} ≃ {x // x ∈ A} := Finset.equivOfCardEq hcard with he
+  set σ : Equiv.Perm ι := e.extendSubtype with hσ
+  have hP1 : ∀ i, v' i ≠ 0 → v (σ i) ≠ 0 := by
+    intro i hi
+    have hiB : i ∈ B := by rw [hB, Finset.mem_filter]; exact ⟨Finset.mem_univ i, hi⟩
+    have hmem : σ i ∈ A := e.extendSubtype_mem i hiB
+    rw [hA, Finset.mem_filter] at hmem
+    exact hmem.2
+  have hP2 : ∀ i, v' i = 0 → v (σ i) = 0 := by
+    intro i hi
+    have hiB : i ∉ B := by rw [hB, Finset.mem_filter]; push_neg; intro _; exact hi
+    have hnotA : σ i ∉ A := e.extendSubtype_not_mem i hiB
+    rw [hA, Finset.mem_filter] at hnotA
+    push_neg at hnotA
+    exact hnotA (Finset.mem_univ _)
+  -- the scaling that turns `v ∘ σ` into `v'`
+  set u : ι → F := fun i => if v' i = 0 then 1 else v' i * (v (σ i))⁻¹ with hu_def
+  have hu : ∀ i, u i ≠ 0 := by
+    intro i
+    rw [hu_def]
+    split
+    · exact one_ne_zero
+    · rename_i hne
+      exact mul_ne_zero hne (inv_ne_zero (hP1 i hne))
+  have hv' : (fun i => u i * (v ∘ σ) i) = v' := by
+    funext i
+    simp only [hu_def, Function.comp_apply]
+    split
+    · rename_i h0
+      rw [hP2 i h0, mul_zero, h0]
+    · rename_i hne
+      rw [mul_assoc, inv_mul_cancel₀ (hP1 i hne), mul_one]
+  calc (Finset.univ.filter
+          (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card
+      = (Finset.univ.filter
+          (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist (v ∘ σ) g ≤ r)).card :=
+        pairBall_perm σ v r
+    _ = (Finset.univ.filter
+          (fun g => hammingDist (0 : ι → F) g ≤ r
+            ∧ hammingDist (fun i => u i * (v ∘ σ) i) g ≤ r)).card :=
+        pairBall_scale hu (v ∘ σ) r
+    _ = (Finset.univ.filter
+          (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v' g ≤ r)).card := by
+        rw [hv']
+
 end Field
 
 end ArkLib.CodingTheory.ListMoments

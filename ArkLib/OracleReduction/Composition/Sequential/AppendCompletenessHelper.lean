@@ -18,10 +18,12 @@ theorem mem_support_run_of_prover_verifier
     simp only [support_map, Set.mem_image, Option.some.injEq]; exact ⟨_, hP, rfl⟩
   · simp only [Option.elim_some, mem_support_bind_iff]
     refine ⟨some (some vout), ?_, ?_⟩
-    · show some (some vout) ∈ support
-        (some <$> liftComp ((R.verifier.run stmt tr).run) (oSpec + [pSpec.Challenge]ₒ))
-      simp only [support_map, support_liftComp, Set.mem_image, Option.some.injEq]
+    · rw [OptionT.run_liftM_run, support_map,
+        support_simulateQ_eq_OracleComp_of_superSpec _ _ (fun _ => rfl)]
+      simp only [Set.mem_image, Option.some.injEq]
       exact ⟨some vout, hV, rfl⟩
     · simp only [Option.elim_some, Option.getM_some, OptionT.run_pure, OptionT.run_bind,
         pure_bind, support_pure, Set.mem_singleton_iff]
 end Reduction
+
+#print axioms mem_support_run_of_prover_verifier

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Real.Archimedean
+import Mathlib.Tactic
 
 /-!
 # Loop 8 (O6') — the disproof reduces to a `q`-growing list size below capacity
