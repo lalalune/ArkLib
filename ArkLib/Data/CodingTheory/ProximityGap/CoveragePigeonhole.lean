@@ -189,7 +189,7 @@ theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [D
       intro i j
       by_cases h : i = j
       · rw [if_pos h]
-        have hss : (S i ∩ S j) ⊆ (Finset.univ : Finset ι) := Finset.subset_univ _
+        have hss : (S i ∩ S j) ⊆ (Finset.univ : Finset ι) := Finset.subset_univ (S i ∩ S j)
         calc (S i ∩ S j).card
             ≤ (Finset.univ : Finset ι).card := Finset.card_le_card hss
           _ = Fintype.card ι := Finset.card_univ

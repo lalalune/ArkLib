@@ -13,9 +13,9 @@ not jointly close — is tracked **honestly** as the named proposition
 `ProximityGap.Issue14.BatchedFRIJointProximityKernel` (an open `def : Prop` in `Issue14Kernels`).
 
 Its proof is the beyond-list-decoding-radius mass bound and is **not** in tree. This module
-intentionally contains **no** `theorem` discharging it: an earlier
-`batched_fri_joint_proximity_breakthrough : … := by sorry` "Resolution" was removed because it
-laundered the open residual into `sorryAx` while claiming a breakthrough. Downstream developments
-should consume `BatchedFRIJointProximityKernel` as an explicit hypothesis until the underlying
-list-decoding bound is actually proved.
+intentionally contains **no** `theorem` discharging it: an earlier `breakthrough`/`Resolution`
+theorem whose proof was an unfilled hole was removed, because it laundered the open residual into
+an unproved-axiom dependency while claiming a breakthrough. Downstream developments should consume
+`BatchedFRIJointProximityKernel` as an explicit hypothesis until the underlying list-decoding bound
+is actually proved.
 -/
