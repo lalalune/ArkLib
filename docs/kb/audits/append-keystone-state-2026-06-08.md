@@ -86,9 +86,20 @@ route typechecks (`evalDist_ext; intro x; …`), remaining is the `Pr[=x] = 1/ca
 Two atomic sub-lemmas isolated:
 - **Atom 1 (PROVEN):** `f <$> (liftM x : StateT σ ProbComp _) = liftM (f <$> x)` by
   `simp only [map_eq_pure_bind, liftM_bind, liftM_pure]`.
-- **Atom 2 (route confirmed):** uniqueness of uniform *distribution* —
-  `evalDist i1.selectElem = evalDist i2.selectElem` for two `SampleableType` instances, via
-  `evalDist_ext` + the equiprobability/full-support axioms.
+- **Atom 2 (PROVEN):** uniform transport across the seam type equality —
+  `evalDist (cast h <$> uniformSample A) = evalDist (uniformSample B)` for `h : A = B`,
+  `[Finite A]`, by `evalDist_ext; intro y; exact
+  probOutput_map_bijective_uniform_cross (α := A) (β := B) (cast h) (cast_bijective h) y`.
+  (The vcvio lemma `probOutput_map_bijective_uniform_cross` is exactly uniqueness-of-uniform
+  pushed along a bijection; the cast is bijective.) No never-fail hypothesis needed — it is
+  baked into `probOutput_uniformSample`/`sum_probOutput_eq_one`.
+
+Both atoms + the inl case are machine-checked (scratch `lake env lean`, against `Append.olean`).
+The bridge then assembles at evalDist/support level (NOT computation level — the challenge case
+is only a distributional equality). For *perfect* completeness the support route is even lighter:
+the challenge sampler has full support on both (equal) types, so
+`support (simulateQ pImpl_comb (liftM oa)) = support (simulateQ pImpl₁ oa)` holds with
+`mem_support_selectElem` alone.
 
 ### After the bridge
 

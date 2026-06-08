@@ -55,16 +55,14 @@ theorem support_simulateQ_challengeQueryImpl_append_left
         = liftM ((MonadLift.monadLift (([pSpec₁.Challenge]ₒ).query i))
             : OracleQuery ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) from rfl]
   rw [SubSpec.liftM_eq_lift, simulateQ_query, support_map, challengeQueryImpl]
-  -- Unfold the lens action and reduce the query projections so the uniform sample is exposed
-  -- (and its `SampleableType` instance can be synthesized).
-  dsimp only [SubSpec.onQuery, SubSpec.onResponse, OracleQuery.input_apply, OracleQuery.cont_apply,
-    OracleSpec.query, OracleQuery.mk, Function.comp, Function.id_comp]
-  -- The inner uniform sample has full support; the continuation is the bijective response
-  -- transport `h ▸ ·`, so its image of `Set.univ` is again `Set.univ`.
-  apply Set.eq_univ_of_forall
-  intro y
-  rw [Set.mem_image]
+  -- Reduce the lens action and query projections, then collapse the support of the (full-support)
+  -- uniform sample, all in one pass so `support_uniformSample` fires on the reduced form. The
+  -- continuation is the bijective response transport `h ▸ ·`, so its image of `Set.univ` is again
+  -- `Set.univ`.
+  simp only [SubSpec.onQuery, SubSpec.onResponse, OracleQuery.input_apply, OracleQuery.cont_apply,
+    OracleSpec.query, OracleQuery.mk, Function.comp, Function.id_comp,
+    support_uniformSample, Set.image_univ, Set.range_eq_univ]
   generalize_proofs h
-  exact ⟨h.symm ▸ y, mem_support_uniformSample _, eqRec_eqRec_symm h y⟩
+  exact eqRec_surjective h
 
 end ProtocolSpec

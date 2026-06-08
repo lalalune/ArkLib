@@ -52,6 +52,8 @@ theorem firstSumcheck_proj_mem_relationRound
   refine Finset.sum_congr rfl fun Y _ => ?_
   apply congrArg (fun pt => MvPolynomial.eval pt (firstSumCheckVirtualPolynomial pp τ 𝕩 oStmt))
   funext j
-  simp only [Function.comp_apply, Fin.elim0_append, Fin.cast_cast, Fin.cast_eq_self]
+  simp only [Function.comp_apply, Fin.append, Fin.addCases, Fin.cast,
+    eq_rec_constant, Fin.castLT, Fin.subNat]
+  rfl
 
 end Spartan.Spec

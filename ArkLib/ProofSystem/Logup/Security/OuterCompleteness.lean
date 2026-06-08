@@ -574,22 +574,24 @@ theorem probEvent_outerVerify_reject_challenge_le (oStmt : ∀ i, OStmtIn F n M 
 output: its `OptionT.run` is `pure (some …)`, so it never fails (`none`). This is the verifier-side
 half of the per-state accept-zero step in `outer_perState_none_le` — a direct repackaging of the
 pole-scan collapse `simulateQ_outerVerify_eq` under the named acceptance predicate. -/
-theorem outerVerifier_run_accept_no_none
+theorem outerVerifier_run_accept_eq_pure
     (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
     (tr : FullTranscript (outerPSpec F n params))
     (hacc : outerVerifyAccepts F n M stmtIn.2 (chalX F n M params tr.challenges)) :
-    none ∉
-      support ((Verifier.run stmtIn tr (outerVerifier oSpec F n M params).toVerifier).run) := by
+    ∃ v, (Verifier.run stmtIn tr (outerVerifier oSpec F n M params).toVerifier).run
+      = (pure (some v) : OracleComp oSpec
+          (Option (StmtAfterOuter F n M params
+            × (∀ i, OStmtAfterOuter F n M params i)))) := by
   classical
-  show none ∉
-    support ((outerVerifier oSpec F n M params).toVerifier.verify stmtIn tr).run
+  refine ⟨_, ?_⟩
+  show ((outerVerifier oSpec F n M params).toVerifier.verify stmtIn tr).run = _
   unfold OracleVerifier.toVerifier
   simp only
   rw [simulateQ_outerVerify_eq]
   rw [if_pos (show (∀ (u : Hypercube n),
       chalX F n M params tr.challenges + evalOnHypercube (tableOracle stmtIn.2) u ≠ 0) from hacc)]
   rw [pure_bind, OptionT.run_pure]
-  simp
+  rfl
 
 set_option maxHeartbeats 3200000 in
 /-- **Per-(initial-state) pole bound for the simulated outer run (DEV — accept-zero pending).**
