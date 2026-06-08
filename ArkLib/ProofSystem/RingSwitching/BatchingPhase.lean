@@ -7,7 +7,6 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Basic
-import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Probability.Notation
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
 
