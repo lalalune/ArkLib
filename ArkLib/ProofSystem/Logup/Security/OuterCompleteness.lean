@@ -599,6 +599,7 @@ theorem outerVerifier_run_accept_eq_pure
   rw [if_pos (show (∀ (u : Hypercube n),
       chalX F n M params tr.challenges + evalOnHypercube (tableOracle stmtIn.2) u ≠ 0) from hacc)]
   rw [pure_bind, OptionT.run_pure]
+  rfl
 
 set_option maxHeartbeats 3200000 in
 /-- **Per-(initial-state) pole bound for the simulated outer run (DEV — accept-zero pending).**
