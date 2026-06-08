@@ -319,6 +319,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop5
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop6
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop7
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop8
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop11
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop9
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
@@ -627,9 +628,9 @@ import ArkLib.Data.Polynomial.HenselSeriesCoeff
 import ArkLib.Data.Polynomial.Indicator
 import ArkLib.Data.Polynomial.Interface
 import ArkLib.Data.Polynomial.MonomialBasis
-import ArkLib.Data.CodingTheory.ListDecoding.GuruswamiSudan.Basic
-import ArkLib.Data.Polynomial.Multivariate.Interpolation
+import ArkLib.Data.Polynomial.MultinomialChainRule
 import ArkLib.Data.Polynomial.Multivariate.HasseDerivative
+import ArkLib.Data.Polynomial.Multivariate.Interpolation
 import ArkLib.Data.Polynomial.NewtonLinearization
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.Polynomial.Prelims
@@ -664,6 +665,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessHelper
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
+import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendReduction
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.N0CompScratch
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
