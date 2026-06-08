@@ -1180,6 +1180,8 @@ private theorem queryLog_snd_append
       | mk q r =>
           cases q <;> simp [QueryLog.snd]
 
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
 private theorem popFSChallengeFromLog_cons_self
     (idx : pSpec.ChallengeIdx)
     (payload : (challengeOracleInterfaceSR StmtIn pSpec idx).Query)
@@ -1193,102 +1195,6 @@ private theorem popFSChallengeFromLog_cons_self
       some (h ▸ (show pSpec.«Type» idx.1 from response), tail) else none) =
     some ((show pSpec.«Type» idx.1 from response), tail)
   simp
-
-private theorem dir_eq_of_castLE_eq
-    (k : Fin (n + 1)) (i : Fin k) {d₁ d₂ : Direction}
-    (h₁ : pSpec.dir (i.castLE (by omega)) = d₁)
-    (h₂ : pSpec.dir (i.castLE (by omega)) = d₂) :
-    d₁ = d₂ := by
-  exact h₁.symm.trans h₂
-
-private theorem transcriptFromFSChallengeLogAux_succ_p
-    (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
-    (i : Fin k)
-    (hDir : pSpec.dir (i.castLE (by omega)) = .P_to_V)
-    (log : QueryLog (fsChallengeOracle StmtIn pSpec)) :
-    (transcriptFromFSChallengeLogAux
-      (StmtIn := StmtIn) (pSpec := pSpec) k messages i.succ).run log =
-      ((transcriptFromFSChallengeLogAux
-        (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc).run log).map
-        (fun p => (p.1.concat (messages ⟨i, hDir⟩), p.2)) := by
-  simp only [transcriptFromFSChallengeLogAux]
-  rw [Fin.induction_succ]
-  split
-  · next hDir' =>
-      have hContr : Direction.V_to_P = Direction.P_to_V :=
-        dir_eq_of_castLE_eq (pSpec := pSpec) k i hDir' hDir
-      cases hContr
-  · next hDir' =>
-      have hMsg :
-          ∀ h : pSpec.dir (i.castLE (by omega)) = Direction.P_to_V,
-            messages ⟨i, h⟩ = messages ⟨i, hDir⟩ := by
-        intro h
-        have hProof : h = hDir := Subsingleton.elim h hDir
-        cases hProof
-        rfl
-      change
-        Option.map
-          (fun p : pSpec.Transcript (i.castSucc.castLE (by omega)) ×
-              QueryLog (fsChallengeOracle StmtIn pSpec) =>
-            (Transcript.concat (messages ⟨i, hDir'⟩) p.1, p.2))
-          ((Fin.induction (pure fun i => i.elim0)
-              (fun i ih => do
-                let prevTranscript ← ih
-                match hDir : pSpec.dir (i.castLE (by omega)) with
-                | .V_to_P =>
-                    (fun a => prevTranscript.concat a) <$>
-                      popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec)
-                        (i.castLE (by omega))
-                | .P_to_V =>
-                    pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
-              i.castSucc).run log) =
-          Option.map
-            (fun p : pSpec.Transcript (i.castSucc.castLE (by omega)) ×
-                QueryLog (fsChallengeOracle StmtIn pSpec) =>
-              (Transcript.concat (messages ⟨i, hDir⟩) p.1, p.2))
-            ((Fin.induction (pure fun i => i.elim0)
-                (fun i ih => do
-                  let prevTranscript ← ih
-                  match hDir : pSpec.dir (i.castLE (by omega)) with
-                  | .V_to_P =>
-                      (fun a => prevTranscript.concat a) <$>
-                        popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec)
-                          (i.castLE (by omega))
-                  | .P_to_V =>
-                      pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
-                i.castSucc).run log)
-      rw [hMsg hDir']
-
-set_option maxHeartbeats 800000 in
-private theorem transcriptFromFSChallengeLogAux_run_logging
-    (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
-    (j : Fin (k + 1)) (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
-    (do
-        let z ← (simulateQ (OracleSpec.loggingOracle
-          (spec := oSpec + fsChallengeOracle StmtIn pSpec))
-          (MessagesUpTo.deriveTranscriptSRAux (oSpec := oSpec) stmtIn k messages j)).run
-        pure ((transcriptFromFSChallengeLogAux
-          (StmtIn := StmtIn) (pSpec := pSpec) k messages j).run (z.2.snd ++ tail))) =
-      (fun transcript => some (transcript, tail)) <$>
-        MessagesUpTo.deriveTranscriptSRAux (oSpec := oSpec) stmtIn k messages j := by
-  revert tail
-  induction j using Fin.induction with
-  | zero =>
-      intro tail
-      simp [transcriptFromFSChallengeLogAux, MessagesUpTo.deriveTranscriptSRAux,
-        simulateQ_pure, QueryLog.snd]
-  | succ i ih =>
-      intro tail
-      simp only [transcriptFromFSChallengeLogAux, MessagesUpTo.deriveTranscriptSRAux]
-      rw [Fin.induction_succ]
-      split
-      · next hDir =>
-        simp_all [simulateQ_bind, WriterT.run_bind, WriterT.run_pure, simulateQ_pure,
-          bind_assoc, queryLog_snd_append, QueryLog.snd, popFSChallengeFromLog_cons_self]
-      · next hDir =>
-        rw [← ih tail]
-        simp_all [simulateQ_bind, WriterT.run_bind, WriterT.run_pure, simulateQ_pure,
-          bind_assoc, Option.map_bind, Option.bind_eq_bind]
 
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
@@ -1698,6 +1604,47 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel
       fiatShamirStraightlineExtractorOfStateRestoration
         (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog' vLog :=
   rfl
+
+/-- The verifier-side log is used only through its slow-Fiat-Shamir challenge projection.  Original
+oracle queries in the verifier log are ignored by the canonical extractor. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_snd_congr
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (pLog verifyLog verifyLog' :
+      QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))
+    (hVerify : verifyLog.snd = verifyLog'.snd) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog verifyLog =
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog verifyLog' := by
+  unfold fiatShamirStraightlineExtractorOfStateRestoration
+  simp [hVerify]
+
+/-- Combined log congruence for the canonical extractor: the prover log is ignored, and verifier
+logs are interchangeable when their slow-Fiat-Shamir challenge projections agree. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_log_congr
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (pLog pLog' verifyLog verifyLog' :
+      QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))
+    (hVerify : verifyLog.snd = verifyLog'.snd) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog verifyLog =
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog' verifyLog' := by
+  rw [fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel
+    (srExtractor := srExtractor) (stmtIn := stmtIn) (witOut := witOut)
+    (proof := proof) (pLog := pLog) (pLog' := pLog') (vLog := verifyLog)]
+  exact fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_snd_congr
+    (srExtractor := srExtractor) (stmtIn := stmtIn) (witOut := witOut)
+    (proof := proof) (pLog := pLog') (verifyLog := verifyLog)
+    (verifyLog' := verifyLog') hVerify
+
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_snd_congr
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_log_congr
 
 /-- Knowledge-soundness analogue of `fiatShamirAdversary_runCollapse`: collapse the
 `Reduction.runWithLog` of the transformed one-message reduction to an explicit adversary execution
