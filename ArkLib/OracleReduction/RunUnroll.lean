@@ -158,3 +158,39 @@ theorem probEvent_run'_simulateQ_addLift_getChallenge_bind
 #print axioms probEvent_run'_simulateQ_addLift_getChallenge_bind
 
 end ChallengeCoherence
+
+/-! ## `StateT`-valued `OptionT`-bind distribution under `simulateQ`
+
+The codebase has `OptionT.simulateQ_{bind,pure,map,…}` for *`OracleComp`-valued* implementations, but
+the interactive-execution semantics (`Reduction.completeness`) simulate with `QueryImpl.addLift impl
+challengeQueryImpl`, whose target is `StateT σ ProbComp`. The lemma below is the missing `StateT`-valued
+analogue of `OptionT.simulateQ_bind`: it distributes `simulateQ so` over the `OptionT.run` of a bind,
+threading the simulation state across the seam. It is the coherence step that lets a completeness run
+of the form `mx >>= my` (prover sample → verifier check) be analyzed stage-by-stage at the `run`-level. -/
+
+namespace OptionTStateT
+
+variable {ι : Type} {spec : OracleSpec ι} {σ α β : Type}
+
+/-- **`StateT`-valued `OptionT`-bind distribution under `simulateQ`.** Running `simulateQ so` (for a
+`StateT σ ProbComp`-valued `so`) over `(mx >>= my).run` distributes: run the first stage threading
+the state, then `Option.elim` into the second stage from the threaded state (or short-circuit to
+`none`). -/
+theorem simulateQ_run_optionT_bind_run
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (mx : OptionT (OracleComp spec) α) (my : α → OptionT (OracleComp spec) β) (s : σ) :
+    (simulateQ so ((mx >>= my : OptionT (OracleComp spec) β)).run).run s
+      = (simulateQ so mx.run).run s >>= fun p =>
+          p.1.elim (pure (none, p.2)) (fun a => (simulateQ so (my a).run).run p.2) := by
+  have hrun : ((mx >>= my : OptionT (OracleComp spec) β)).run
+      = mx.run >>= fun o => match o with | some a => (my a).run | none => pure none := rfl
+  rw [hrun, simulateQ_bind, StateT.run_bind]
+  refine bind_congr fun p => ?_
+  obtain ⟨o, s'⟩ := p
+  cases o with
+  | none => simp [simulateQ_pure, StateT.run_pure]
+  | some a => rfl
+
+#print axioms simulateQ_run_optionT_bind_run
+
+end OptionTStateT
