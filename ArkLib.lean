@@ -734,6 +734,7 @@ import ArkLib.OracleReduction.Security.StateRestoration
 import ArkLib.OracleReduction.Security.TranscriptTree
 import ArkLib.OracleReduction.Security.ZeroKnowledge
 import ArkLib.OracleReduction.Security.ZeroKnowledgeKernel
+import ArkLib.OracleReduction.SimOracleFoldlM
 import ArkLib.OracleReduction.SimulateQ
 import ArkLib.OracleReduction.VectorIOR
 import ArkLib.ProofSystem.BCS.ErrorAccounting
