@@ -62,7 +62,7 @@ def listBall (C : Finset (ι → F)) (r : ι → F) (e : ℕ) : Finset (ι → F
 has at most one element. This is the `δ < δ_min/2` "below unique decoding" regime of the ABF26 table:
 the list is a singleton, so list-decoding collapses to unique decoding. -/
 theorem listBall_card_le_one {C : Finset (ι → F)} {d e : ℕ}
-    (hC : MinDistGe (↑C) d) (h2e : 2 * e < d) (r : ι → F) :
+    (hC : MinDistGe (C : Set (ι → F)) d) (h2e : 2 * e < d) (r : ι → F) :
     (listBall C r e).card ≤ 1 := by
   rw [Finset.card_le_one]
   intro x hx y hy

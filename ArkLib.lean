@@ -194,11 +194,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.MonicFaaDiBrunoMatch
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.MonicFaaDiBrunoMatchAlt
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1BetaOneRefutation
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicIntegrality
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1Conditional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAll
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAllCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalCleared
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicIntegrality
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWfreeCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1XiOrderExtraction
@@ -422,6 +422,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepair
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepairExtra
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingT421Faithful
+import ArkLib.Data.CodingTheory.ProximityGap.LinearizedPolynomialHasse
 import ArkLib.Data.CodingTheory.ProximityGap.LogUpAppendProof
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountGrandChallenge
