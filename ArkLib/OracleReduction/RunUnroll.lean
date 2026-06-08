@@ -315,4 +315,29 @@ theorem evalDist_simulateQ_swap
 
 #print axioms evalDist_simulateQ_swap
 
+/-- **Elim-stage commute (bad-event level).** A never-failing plain stage `B` may be moved across an
+`Option`-elim short-circuit without changing the probability of a `none`-false event `badpred`: running
+`B` before the elim (always) vs inside the `some`-branch (only on success) agree on `badpred`, since the
+`none` branch outputs `none` either way (where `badpred` is false). Bridges the full-evalDist stage swap
+(`evalDist_simulateQ_swap`) to `probComp_seam_union_le`'s short-circuiting `mx >>= my` for
+`appendSoundness`. -/
+theorem probEvent_elim_comm {α γ β : Type}
+    (mO : ProbComp (Option α)) (B : ProbComp γ)
+    (C : α → γ → ProbComp (Option β)) (badpred : Option β → Prop) (hnone : ¬ badpred none) :
+    Pr[badpred | mO >>= fun o => B >>= fun b => o.elim (pure none) (fun a => C a b)]
+      = Pr[badpred | mO >>= fun o => o.elim (pure none) (fun a => B >>= fun b => C a b)] := by
+  classical
+  rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
+  refine tsum_congr fun o => ?_
+  congr 1
+  cases o with
+  | none =>
+    simp only [Option.elim_none]
+    rw [probEvent_bind_eq_tsum]
+    simp [probEvent_pure, hnone]
+  | some a =>
+    simp only [Option.elim_some]
+
+#print axioms probEvent_elim_comm
+
 end OptionTStateT
