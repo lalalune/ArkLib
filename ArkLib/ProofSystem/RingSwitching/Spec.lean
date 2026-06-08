@@ -157,6 +157,38 @@ instance instInhabitedPSpecSumcheckRoundChallenge :
   change Inhabited L
   exact ⟨0⟩
 
+instance instOracleInterfaceChallengePSpecBatching :
+    ∀ j, OracleInterface ((pSpecBatching κ L K P).Challenge j) :=
+  ProtocolSpec.challengeOracleInterface
+
+instance instFintypePSpecBatchingChallenge :
+    ([(pSpecBatching κ L K P).Challenge]ₒ).Fintype := by
+  refine { fintype_B := ?_ }
+  intro x
+  rcases x with ⟨⟨i, hi⟩, q⟩
+  have h1 : i = 1 := by
+    fin_cases i
+    · simp [pSpecBatching] at hi
+    · rfl
+  subst h1
+  cases q
+  change Fintype (Fin κ → L)
+  infer_instance
+
+instance instInhabitedPSpecBatchingChallenge :
+    ([(pSpecBatching κ L K P).Challenge]ₒ).Inhabited := by
+  refine { inhabited_B := ?_ }
+  intro x
+  rcases x with ⟨⟨i, hi⟩, q⟩
+  have h1 : i = 1 := by
+    fin_cases i
+    · simp [pSpecBatching] at hi
+    · rfl
+  subst h1
+  cases q
+  change Inhabited (Fin κ → L)
+  exact ⟨fun _ => 0⟩
+
 end Pspec
 
 end
