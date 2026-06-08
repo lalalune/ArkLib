@@ -340,4 +340,40 @@ theorem probEvent_elim_comm {α γ β : Type}
 
 #print axioms probEvent_elim_comm
 
+/-- **Value-state-independence of a simulated run.** If every query implementation both preserves the
+state (`hso`) and produces a value-distribution independent of the input state (`hvb`), then the whole
+simulated computation's value-distribution (`run'`) is independent of the starting state. Holds for
+`challengeQueryImpl` (uniform sample, `σ` untouched) and empty `oSpec`. Lets `probComp_seam_union_le`'s
+per-threaded-state `h₂` be discharged by the verifier's (state-averaged) soundness, since every threaded
+state gives the same value-distribution. -/
+theorem evalDist_simulateQ_run'_state_indep
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    (hvb : ∀ (t : spec.Domain) (s s' : σ),
+      evalDist ((so t).run' s) = evalDist ((so t).run' s'))
+    {α : Type} (X : OracleComp spec α) (s s' : σ) :
+    evalDist ((simulateQ so X).run' s) = evalDist ((simulateQ so X).run' s') := by
+  induction X using OracleComp.inductionOn generalizing s s' with
+  | pure a => simp [simulateQ_pure, StateT.run'_eq, StateT.run_pure]
+  | query_bind t oa ih =>
+    have hq : ∀ r : σ, (simulateQ so (liftM (OracleSpec.query t))).run r = (so t).run r := by
+      intro r; simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, id_map]
+    have key : ∀ r : σ,
+        evalDist ((simulateQ so (liftM (OracleSpec.query t) >>= oa)).run' r)
+        = (evalDist ((so t).run' r)) >>= fun a => evalDist ((simulateQ so (oa a)).run' r) := by
+      intro r
+      rw [StateT.run'_eq, simulateQ_run_bind_state_fixed so hso (liftM (OracleSpec.query t)) oa r,
+        hq r, map_bind, evalDist_bind,
+        show (evalDist ((so t).run' r)) = (fun x => x.1) <$> evalDist ((so t).run r) from by
+          rw [StateT.run'_eq, evalDist_map],
+        bind_map_left]
+      refine bind_congr fun p => ?_
+      rw [StateT.run'_eq]
+    rw [key s, key s', hvb t s s']
+    refine bind_congr fun a => ?_
+    rw [ih a s s']
+
+#print axioms evalDist_simulateQ_run'_state_indep
+
 end OptionTStateT
