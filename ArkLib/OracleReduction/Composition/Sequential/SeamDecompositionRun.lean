@@ -825,7 +825,6 @@ theorem merge_run (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++�
   rintro o o' ho
   exact pure_heq_pure rfl (prodMk_heq rfl rfl ht ho)
 
-<<<<<<< HEAD
 /-- **Run-level seam factoring of an arbitrary malicious prover (message-first seam).**
 `P.run = (fst P).run >>= (snd P).run` (concatenating transcripts) — the decomposition
 `appendSoundnessResidual` needs. Combines the run merge with the proven `append_run_msg`. -/
@@ -840,19 +839,3 @@ theorem run_seam_factor (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec�
     (append_run_msg (P₁ := Prover.fst P) (P₂ := Prover.snd P) stmt wit hn hDir hDir₂)
 
 end Prover
-=======
-/-- **Run-level seam factoring of an arbitrary malicious prover (message-first seam).**
-`P.run = (fst P).run >>= (snd P).run` (concatenating transcripts) — the decomposition
-`appendSoundnessResidual` needs. Combines the run merge with the proven `append_run_msg`. -/
-theorem run_seam_factor (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (hn : 0 < n)
-    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
-    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V) (stmt : Stmt₁) (wit : Wit₁) :
-    P.run stmt wit = (do
-      let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM ((Prover.fst P).run stmt wit)
-      let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM ((Prover.snd P).run stmt₂ wit₂)
-      return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) :=
-  (merge_run P hn stmt wit).symm.trans
-    (append_run_msg (P₁ := Prover.fst P) (P₂ := Prover.snd P) stmt wit hn hDir hDir₂)
-
-end Prover
->>>>>>> 5e35d18b283e9a22deaefb0219336f5f04d5d74d
