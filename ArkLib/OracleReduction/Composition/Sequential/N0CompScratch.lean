@@ -45,7 +45,17 @@ example
       · simp only [Option.elim_none, simulateQ_pure, StateT.run'_eq, StateT.run_pure,
         map_pure, support_pure, Set.mem_singleton_iff, reduceCtorEq] at hout
       · simp only [Option.elim_some] at hout
-        trace_state
-        sorry
+        -- split the appended verifier V₁;V₂ and peel
+        rw [Verifier.append_run] at hout
+        simp only [OptionT.run_bind, OptionT.run_pure, OptionT.run_lift, bind_assoc,
+          Option.elimM] at hout
+        rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff] at hout
+        obtain ⟨v1, hv1, hout⟩ := hout
+        rcases v1 with _ | sv1
+        · simp only [Option.elim_none, simulateQ_pure, StateT.run'_eq, StateT.run_pure,
+            map_pure, support_pure, Set.mem_singleton_iff, reduceCtorEq] at hout
+        · simp only [Option.elim_some] at hout
+          trace_state
+          sorry
 
 end Reduction

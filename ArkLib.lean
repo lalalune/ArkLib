@@ -319,6 +319,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop15
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop16
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateCarvingLoop10
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDecisionLoop18
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop12
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop14
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop4
