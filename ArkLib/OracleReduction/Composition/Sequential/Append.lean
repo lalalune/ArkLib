@@ -3690,6 +3690,97 @@ theorem append_continueFromTo_seam_start_message_processRound (hn : 0 < n)
     (liftComp_processRound_zero_message_appendRight
       (P₁ := P₁) (P₂ := P₂) hn hDir₂ T₁ ctxIn₂).symm
 
+/-- **Right-block run characterization (message seam).**  The appended prover's continuation over the
+entire right block — from the seam round `⟨m⟩` to the last round — is, heterogeneously, `P₁`'s output
+threaded into `P₂`'s full run-to-round, transported into the appended transcript via `appendRight`.
+Assembles the seam (`append_continueFromTo_seam_start_message_processRound`), the interior fold
+(`append_continueFromTo_right_interior`), the range-split (`continueFromTo_trans`), and the P₂-side
+fold (`processRound_zero_continueFromTo_eq_runToRound_last`); the `1 + (n-1) = n` index gaps are
+bridged by `continueFromTo_heq_target` / `liftComp_continueFromTo_heq_target`.  Discharges the appended
+side of `appendRunRightResidual`. -/
+theorem append_continueFromTo_right_msg (stmt : Stmt₁) (wit : Wit₁) (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (T₁ : FullTranscript pSpec₁)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeam.1 = Transcript.appendRight T₁
+      (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))) :
+    HEq (Prover.continueFromTo (P₁.append P₂) stmt wit (⟨m, by omega⟩ : Fin (m + n)).castSucc
+          (Fin.last (m + n)) rSeam)
+      ((liftM (P₁.output (cast (append_PrvState_seam_castSucc hn) rSeam.2)) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Stmt₂ × Wit₂)) >>= fun ctx =>
+        ((fun p => (Transcript.appendRight T₁ p.1,
+            cast (append_PrvState_last (P₁ := P₁) (P₂ := P₂) hn).symm p.2)) <$>
+          liftComp (P₂.runToRound (Fin.last n) ctx.1 ctx.2)
+            (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.last (m + n))
+              × (P₁.append P₂).PrvState (Fin.last (m + n))))) := by
+  rw [continueFromTo_trans (P₁.append P₂) stmt wit (⟨m, by omega⟩ : Fin (m + n)).castSucc
+    (⟨m, by omega⟩ : Fin (m + n)).succ (Fin.last (m + n))
+    (by rw [Fin.le_def, Fin.val_castSucc, Fin.val_succ]; omega)
+    (by rw [Fin.le_def, Fin.val_succ, Fin.val_last]; omega) rSeam]
+  rw [eq_of_heq (append_continueFromTo_seam_start_message_processRound
+    (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit) hn hDir hDir₂ T₁ rSeam hT)]
+  simp only [bind_assoc, pure_bind]
+  refine bind_heq_congr rfl rfl HEq.rfl (fun ctx ctx' hc => ?_)
+  obtain rfl := eq_of_heq hc
+  obtain ⟨c1, c2⟩ := ctx
+  rw [← processRound_zero_continueFromTo_eq_runToRound_last hn P₂ c1 c2,
+    OracleComp.liftComp_bind, map_bind, ← OracleComp.liftComp_eq_liftM]
+  refine bind_heq_congr rfl rfl HEq.rfl (fun p p' hp => ?_)
+  obtain rfl := eq_of_heq hp
+  rcases Nat.lt_or_ge n 2 with hlt | hge
+  · -- n = 1: both sides pure(bridge p) via continueFromTo_self
+    have hn1 : n = 1 := by omega
+    subst hn1
+    have hL : (Fin.last (m + 1) : Fin (m + 1 + 1)) = (⟨m, by omega⟩ : Fin (m + 1)).succ := by
+      apply Fin.ext; simp [Fin.val_last, Fin.val_succ]
+    refine HEq.trans (continueFromTo_heq_target hL (P₁.append P₂) stmt wit _) ?_
+    rw [continueFromTo_self]
+    have hRHS : (P₂.continueFromTo c1 c2 (⟨0, hn⟩ : Fin 1).succ (Fin.last 1) p
+        : OracleComp (oSpec + [pSpec₂.Challenge]ₒ) _) = pure p :=
+      continueFromTo_self _ _ _ _ _
+    rw [hRHS]
+    first
+      | rfl
+      | (apply heq_of_eq; rfl)
+      | (apply heq_of_eq; congr 1)
+      | (apply heq_of_eq; simp only [OracleComp.liftComp_pure, map_pure]; congr 1)
+  · -- n ≥ 2: interior induction at k₀ = ⟨1, hge⟩
+    have hint := append_continueFromTo_right_interior (P₁ := P₁) (P₂ := P₂)
+      (stmt := stmt) (wit := wit) (stmt₂ := c1) (wit₂ := c2)
+      T₁ (⟨1, hge⟩ : Fin n) (by simp only [Fin.val_mk]; omega) (n - 1)
+      (by simp only [Fin.val_mk]; omega) p
+    rw [bind_pure_comp] at hint
+    have eL : (Fin.last (m + n) : Fin (m + n + 1))
+        = ⟨m + ((⟨1, hge⟩ : Fin n).val + (n - 1)), by simp only [Fin.val_mk]; omega⟩ := by
+      apply Fin.ext; simp only [Fin.val_last, Fin.val_mk]; omega
+    refine HEq.trans (continueFromTo_heq_target eL (P₁.append P₂) stmt wit
+      (Transcript.appendRight T₁ p.1, cast (append_PrvState_seam_succ hn).symm p.2)) ?_
+    refine HEq.trans hint ?_
+    have eR : (⟨(⟨1, hge⟩ : Fin n).val + (n - 1), by simp only [Fin.val_mk]; omega⟩ : Fin (n + 1))
+        = Fin.last n := by apply Fin.ext; simp only [Fin.val_last, Fin.val_mk]; omega
+    have eRapp : (⟨m + ((⟨1, hge⟩ : Fin n).val + (n - 1)), by simp only [Fin.val_mk]; omega⟩
+        : Fin (m + n + 1)) = Fin.last (m + n) := by
+      apply Fin.ext; simp only [Fin.val_last, Fin.val_mk]; omega
+    congr 1
+    · rw [eR]
+    · rw [eRapp]
+    · have happ : ∀ {j₁ j₂ : Fin (n + 1)} (hj : j₁ = j₂) {u : pSpec₂.Transcript j₁}
+          {u' : pSpec₂.Transcript j₂}, HEq u u' →
+          HEq (Transcript.appendRight T₁ u) (Transcript.appendRight T₁ u') := by
+        intro j₁ j₂ hj u u' hu; subst hj; rw [eq_of_heq hu]
+      refine Function.hfunext (by rw [eR]) fun a a' ha => ?_
+      obtain ⟨t, s⟩ := a
+      obtain ⟨t', s'⟩ := a'
+      obtain ⟨ht, hs⟩ := prod_heq_split (by rw [eR]) (by rw [eR]) ha
+      exact prodMk_heq (by rw [eRapp]) (by rw [eRapp]) (happ eR ht)
+        ((cast_heq _ _).trans (hs.trans (cast_heq _ _).symm))
+    · exact liftComp_continueFromTo_heq_target eR P₂ c1 c2 p
+
+
 
 /-- **`Fin.snoc`/`Fin.hconcat` bridge (partial `(T)` family).**  A partial-transcript
 `Transcript.concat msg T` is `Fin.snoc T msg` over the transcript motive `δ`; the prefix/snoc
