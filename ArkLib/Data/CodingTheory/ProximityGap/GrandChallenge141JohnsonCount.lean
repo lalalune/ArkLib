@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.JohnsonBound.ReedSolomonListSize
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 
 /-!
 # ABF26 Grand Challenge 1 (#141) — the sub-Johnson MCA count→error wiring
@@ -158,3 +159,37 @@ theorem rs_epsMCA_le_johnson_ceil_of_hwit
   exact_mod_cast hcq
 
 end ProximityGap.MCAGS
+
+namespace ProximityGap.GrandChallenges
+
+open ProximityGap ProximityGap.MCAGS
+
+/-- **Wire the sub-Johnson `epsMCA` bound into the `MCALowerWitness` prize API (axiom-clean).**
+Given the up-to-Johnson hypotheses and the explicit sub-Johnson clustering `hwitAll`, plus the
+numeric envelope `hle : ⌈Johnson⌉/|F| ≤ ε*`, the RS code admits a `MCALowerWitness` at `ε*`. This
+connects `rs_epsMCA_le_johnson_ceil_of_hwit` to the prize lower-witness machinery (it was otherwise
+wired into no witness). Both `hwitAll` (the sub-`√ρ` decoder bridge) and `hle` are kept explicit;
+no open conjecture is smuggled, and the beyond-Johnson keystone is untouched. -/
+noncomputable def MCALowerWitness.ofRsJohnsonCount
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {k : ℕ} [NeZero k] (domain : ι ↪ F) (hk : k ≤ Fintype.card ι)
+    (δ : ℝ≥0) (e : ℕ) (hen : e ≤ Fintype.card ι)
+    (hJ : 0 < ArkLib.JohnsonBound.johnsonDenom
+            (Fintype.card ι) (Fintype.card ι - k + 1) e)
+    (Cset : Finset (ι → F))
+    (hCset : (↑Cset : Set (ι → F)) = (ReedSolomon.code domain k : Set (ι → F)))
+    (hwitAll : ∀ u : Code.WordStack F (Fin 2) ι, ∃ x : ι, u 1 x ≠ 0 ∧ ∃ w : ι → F,
+      ∀ γ : F, δᵣ(u 0 + γ • u 1, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ →
+        ∃ c ∈ Cset, Δ₀(c, w) ≤ e ∧ c x = u 0 x + γ * u 1 x)
+    (hδ : δ ≤ 1)
+    (ε_star : ℝ≥0)
+    (hle : ((⌈(Fintype.card ι : ℚ) * ((Fintype.card ι - k + 1 : ℕ) : ℚ)
+            / ArkLib.JohnsonBound.johnsonDenom
+                (Fintype.card ι) (Fintype.card ι - k + 1) e⌉₊ : ℕ) : ENNReal)
+        / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    MCALowerWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
+  MCALowerWitness.ofLe hδ
+    (le_trans (rs_epsMCA_le_johnson_ceil_of_hwit domain hk δ e hen hJ Cset hCset hwitAll) hle)
+
+end ProximityGap.GrandChallenges
