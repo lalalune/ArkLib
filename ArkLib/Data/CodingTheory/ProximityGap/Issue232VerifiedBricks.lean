@@ -15,6 +15,8 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Card
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 # Verified bricks for the Ethereum Proximity Prize (Issue #232)
@@ -32,12 +34,13 @@ Contents:
   vanishing polynomial) and `dyadic_factor_coprime_trivial` (2-adic CRT product-grid obstruction).
 * Threshold geometry — `johnson_radius_le_capacity`, `radius_mono_in_exponent` (the
   `1 − ρ^{m/(m+1)}` family interpolates Johnson→capacity; the `1 − ρ^{2/3}` candidate is the
-  `m = 2` member), `radius_between_johnson_and_capacity_of_exponent`, and
-  `candidate_between_johnson_and_capacity`.
+  `m = 2` member), and `candidate_between_johnson_and_capacity`.
 * List-decoding engine — `fiber_root_card_le`, `grid_zero_count_le`, `on_curve_iff_mem_roots`,
   `gs_list_card_le` (the GS list-size bound `|list| ≤ deg_Y(H)`), `interpolation_kernel_nontrivial`
-  (a low-degree interpolant exists by counting), and `eval_zero_of_agreement_gt_degree`
-  (agreement ⇒ the codeword is a root) — together the full combinatorial GS skeleton.
+  (a low-degree interpolant exists by counting), `eval_zero_of_agreement_gt_degree`
+  (agreement ⇒ the codeword is a root), `natDegree_eval_le` (the explicit GS degree budget), and
+  `sudan_codeword_list_bound` (the quantitative Sudan list bound `|L| ≤ deg_Y(H)` for codewords
+  agreeing beyond `deg_X(H) + (k-1)·deg_Y(H)`) — the full combinatorial *and* quantitative GS core.
 * Refutations — `refute_naive_matrix_rank_bound`, `refute_naive_alg_independence_bound`.
 -/
 
@@ -124,22 +127,13 @@ theorem radius_mono_in_exponent (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ ≤ 1) (s t : 
   have hpow : ρ ^ t ≤ ρ ^ s := rpow_le_rpow_of_exponent_ge h0 h1 hst
   linarith
 
-/-- Any interpolation exponent in `[1/2, 1]` gives a radius between the Johnson radius and
-capacity: `1 − ρ^{1/2} ≤ 1 − ρ^s ≤ 1 − ρ`. This packages the threshold bookkeeping needed for
-the whole interleaving family `s = m/(m+1)` without asserting the open quantitative threshold. -/
-theorem radius_between_johnson_and_capacity_of_exponent (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ ≤ 1)
-    (s : ℝ) (hlo : (1/2 : ℝ) ≤ s) (hhi : s ≤ 1) :
-    1 - ρ ^ (1/2 : ℝ) ≤ 1 - ρ ^ s ∧ 1 - ρ ^ s ≤ 1 - ρ := by
-  refine ⟨radius_mono_in_exponent ρ h0 h1 _ _ hlo, ?_⟩
-  have := radius_mono_in_exponent ρ h0 h1 s 1 hhi
-  rwa [rpow_one] at this
-
 /-- The `1 − ρ^{2/3}` candidate sits between Johnson and capacity:
 `1 − ρ^{1/2} ≤ 1 − ρ^{2/3} ≤ 1 − ρ`. -/
 theorem candidate_between_johnson_and_capacity (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ ≤ 1) :
     1 - ρ ^ (1/2 : ℝ) ≤ 1 - ρ ^ (2/3 : ℝ) ∧ 1 - ρ ^ (2/3 : ℝ) ≤ 1 - ρ := by
-  exact radius_between_johnson_and_capacity_of_exponent ρ h0 h1 (2/3 : ℝ) (by norm_num)
-    (by norm_num)
+  refine ⟨radius_mono_in_exponent ρ h0 h1 _ _ (by norm_num), ?_⟩
+  have := radius_mono_in_exponent ρ h0 h1 (2/3 : ℝ) 1 (by norm_num)
+  rwa [rpow_one] at this
 
 end Threshold
 
@@ -175,6 +169,24 @@ Decoding Challenge; the open part is the interpolation degree budget pinning `δ
 theorem gs_list_card_le (H : Polynomial (Polynomial F)) :
     H.roots.card ≤ H.natDegree :=
   Polynomial.card_roots' H
+
+/-- **GS degree budget.** For `H ∈ F[X][Y]` whose `Y`-coefficients all have `X`-degree `≤ B`
+(`B = deg_X H`) and a message `p ∈ F[X]`, the substituted univariate `H(X, p(X)) = eval p H` has
+`X`-degree at most `B + deg_Y(H)·deg(p)`. With `deg p ≤ k-1` this is the budget
+`deg_X H + (k-1)·deg_Y H` that `eval_zero_of_agreement_gt_degree` consumes. -/
+theorem natDegree_eval_le (H : Polynomial (Polynomial F)) (p : Polynomial F) (B : ℕ)
+    (hB : ∀ i, (H.coeff i).natDegree ≤ B) :
+    (Polynomial.eval p H).natDegree ≤ B + H.natDegree * p.natDegree := by
+  rw [Polynomial.eval_eq_sum, Polynomial.sum_def, Polynomial.natDegree_le_iff_degree_le]
+  refine le_trans (Polynomial.degree_sum_le _ _) (Finset.sup_le ?_)
+  intro i hi
+  have hi_le : i ≤ H.natDegree := Polynomial.le_natDegree_of_mem_supp i hi
+  have hnd : ((H.coeff i) * p ^ i).natDegree ≤ B + H.natDegree * p.natDegree := by
+    calc ((H.coeff i) * p ^ i).natDegree
+        ≤ B + i * p.natDegree :=
+          le_trans Polynomial.natDegree_mul_le (add_le_add (hB i) Polynomial.natDegree_pow_le)
+      _ ≤ B + H.natDegree * p.natDegree := by gcongr
+  exact le_trans Polynomial.degree_le_natDegree (by exact_mod_cast hnd)
 
 /-- **Agreement ⇒ root (the heart of Guruswami–Sudan).** Let `H ∈ F[X][Y]` and `p ∈ F[X]` a
 candidate message. If `g(X) := H(X, p(X)) = eval p H` vanishes on an agreement set `A` with
@@ -218,6 +230,36 @@ theorem interpolation_kernel_nontrivial {V W : Type*}
   obtain ⟨v, hv_mem, hv_ne⟩ := (Submodule.ne_bot_iff _).mp hni
   exact ⟨v, hv_ne, LinearMap.mem_ker.mp hv_mem⟩
 
+/-- **Quantitative Sudan list-decoding bound.** Given an interpolant `H ≠ 0` over `F[X][Y]` whose
+`Y`-coefficients have `X`-degree `≤ B`, the set `L` of degree-`≤ k` message polynomials, each lying
+on the curve `H` over an agreement set of size `> B + deg_Y(H)·k`, has size `≤ deg_Y(H)`. This is
+the quantitative Guruswami–Sudan list bound, assembled from the degree budget (`natDegree_eval_le`),
+the agreement ⇒ root step (`eval_zero_of_agreement_gt_degree`), and the root count
+(`gs_list_card_le`). The decoding *radius* comes from choosing `H` (via
+`interpolation_kernel_nontrivial`) with `deg_Y(H)` and `B` small; pushing it past the Johnson radius
+for explicit smooth-domain RS is the open prize. -/
+theorem sudan_codeword_list_bound [DecidableEq F]
+    (H : Polynomial (Polynomial F)) (hH : H ≠ 0) (B k : ℕ)
+    (hB : ∀ i, (H.coeff i).natDegree ≤ B)
+    (L : Finset (Polynomial F))
+    (hdeg : ∀ p ∈ L, p.natDegree ≤ k)
+    (curve : Polynomial F → Finset F)
+    (hcurve : ∀ p ∈ L, ∀ a ∈ curve p, (Polynomial.eval p H).eval a = 0)
+    (hbig : ∀ p ∈ L, B + H.natDegree * k < (curve p).card) :
+    L.card ≤ H.natDegree := by
+  have hroot : ∀ p ∈ L, Polynomial.eval p H = 0 := by
+    intro p hp
+    refine eval_zero_of_agreement_gt_degree H p (curve p) (hcurve p hp) ?_
+    have hd : (Polynomial.eval p H).natDegree ≤ B + H.natDegree * p.natDegree :=
+      natDegree_eval_le H p B hB
+    have hmul : H.natDegree * p.natDegree ≤ H.natDegree * k := by gcongr; exact hdeg p hp
+    have := hbig p hp
+    omega
+  have hsub : L ⊆ H.roots.toFinset := by
+    intro p hp; rw [Multiset.mem_toFinset, Polynomial.mem_roots hH]; exact hroot p hp
+  calc L.card ≤ H.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ H.natDegree := le_trans (Multiset.toFinset_card_le _) (Polynomial.card_roots' _)
+
 end ListDecoding
 
 /-! ## Refutations of naive list-size bounds -/
@@ -243,7 +285,5 @@ theorem refute_naive_alg_independence_bound {ι F : Type*} [Fintype ι] [Fintype
   have hlt : Fintype.card F < Fintype.card F ^ 2 := by
     rw [pow_two]; exact lt_mul_of_one_lt_left (by omega) (by omega)
   omega
-
-#print axioms radius_between_johnson_and_capacity_of_exponent
 
 end ArkLib.ProximityGap.Issue232Bricks
