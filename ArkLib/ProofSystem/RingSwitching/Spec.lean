@@ -157,6 +157,35 @@ instance instInhabitedPSpecSumcheckRoundChallenge :
   change Inhabited L
   exact ⟨0⟩
 
+/-- The challenge oracle of the batching phase (round 1, type `Fin κ → L`). -/
+instance instOracleInterfaceChallengePSpecBatching :
+    ∀ j, OracleInterface ((pSpecBatching κ L K P).Challenge j) :=
+  ProtocolSpec.challengeOracleInterface
+
+/-- The batching challenge oracle is finite (its only query, round 1, returns `Fin κ → L`). Needed
+by the 2-message-round completeness `unroll`, mirroring the sumcheck-round instance. -/
+instance instFintypePSpecBatchingChallenge :
+    ([(pSpecBatching κ L K P).Challenge]ₒ).Fintype := by
+  refine { fintype_B := ?_ }
+  intro x
+  rcases x with ⟨⟨i, hi⟩, q⟩
+  have h1 : i = 1 := by fin_cases i <;> first | rfl | (simp [pSpecBatching] at hi)
+  subst h1
+  cases q
+  change Fintype (Fin κ → L)
+  infer_instance
+
+instance instInhabitedPSpecBatchingChallenge :
+    ([(pSpecBatching κ L K P).Challenge]ₒ).Inhabited := by
+  refine { inhabited_B := ?_ }
+  intro x
+  rcases x with ⟨⟨i, hi⟩, q⟩
+  have h1 : i = 1 := by fin_cases i <;> first | rfl | (simp [pSpecBatching] at hi)
+  subst h1
+  cases q
+  change Inhabited (Fin κ → L)
+  exact ⟨fun _ => 0⟩
+
 end Pspec
 
 end
