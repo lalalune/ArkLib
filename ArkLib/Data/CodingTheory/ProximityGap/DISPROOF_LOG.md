@@ -2434,3 +2434,16 @@ Per-line decode heaviness bounded by code parameters (n,d,a,|C|) alone. The per-
 14/14b/14c/14d) is now self-contained and fully explicit. Open: the |C| (codeword count) is the
 trivial bound; the actual prize needs |C| → RS list size and the adversarial-line pair count past
 birthday — where smooth-domain RS structure must enter.
+
+### O42 / Round-14e — close-pair-restricted per-line second moment (RS weight slice)
+
+LineSecondMomentSharp.lean (axiom-clean) sharpens 14b's off-diagonal from the trivial |C|²−|C| to
+|closePairs| (codeword pairs at distance ≤ 2(n−a)). Key dovetail: by the proven badSet_eq_empty,
+FAR pairs (w > 2(n−a)) contribute 0 (no line point decodes both); and in the 2a>n prize window every
+CLOSE pair (w ≤ 2(n−a) = 2n−2a < 2a ⟺ n<2a) automatically obeys the uniform-bound hypothesis 2a>w —
+so the two round-14 regime facts meet with no gap.
+* badSet_empty_of_far, offDiag_badSet_sum_eq_close, line_second_moment_bound_sharp:
+  (∑|Λ|²)·(2a−d) ≤ (∑|Λ|)·(2a−d) + |closePairs|·2(n−d); closePairs_card_le (≤ |C|²−|C|).
+|closePairs| = the w≤2(n−a) slice of the MDS/RS weight enumerator (tiny for high-distance codes) —
+the genuine RS object where smooth-domain structure must enter the prize. Per-line chain rounds
+14/14b/14c/14d/14e now: pair-cooc → first/second moment → heavy-set → close-pair sharpening.
