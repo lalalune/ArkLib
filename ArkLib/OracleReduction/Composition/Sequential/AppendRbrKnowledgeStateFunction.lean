@@ -454,7 +454,199 @@ def KnowledgeStateFunction.append {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fi
       --   This sub-case is provable (it is NOT the `hBound` residual — that is a *probabilistic*
       --   per-round bound, a different obligation); the blocker is purely the `Pr > 0` plumbing from
       --   `hVerify` (the same deterministic-run collapse used in `toFun_full` below).
-      sorry
+      rw [not_lt] at hlt
+      -- `hPrev`'s index `roundIdx.succ.val = roundIdx + 1 > m` always lands in the `kSF₂` branch.
+      have hnsucc : ¬ ((roundIdx : ℕ) + 1 ≤ m) := by omega
+      simp only [Fin.val_succ, dif_neg hnsucc] at hPrev
+      -- The phase-2 direction at this round.
+      have hDir₂ : pSpec₂.dir ⟨(roundIdx : ℕ) - m, by omega⟩ = .P_to_V := by
+        rw [show pSpec₂.dir ⟨(roundIdx : ℕ) - m, by omega⟩
+              = (pSpec₁.dir ++ᵛ pSpec₂.dir) roundIdx
+            from (Fin.vappend_right_of_not_lt _ _ _ (by omega : ¬ (roundIdx : ℕ) < m)).symm]
+        exact hDir
+      -- The message transported into the second segment's type.
+      have hmsgty₂ : (pSpec₁ ++ₚ pSpec₂).Type roundIdx
+          = pSpec₂.Type ⟨(roundIdx : ℕ) - m, by omega⟩ := by
+        show Fin.vappend pSpec₁.Type pSpec₂.Type roundIdx = _
+        rw [Fin.vappend_right_of_not_lt _ _ _ (by omega : ¬ (roundIdx : ℕ) < m)]
+      -- The phase-2 truncated transcript: `tr.snd` as a `castSucc`-indexed transcript.
+      set trs : pSpec₂.Transcript (⟨(roundIdx : ℕ) - m, by omega⟩ : Fin n).castSucc :=
+        (by simpa using tr.snd) with htrs_def
+      -- The phase-1 prefix as a genuine full transcript (`roundIdx ≥ m`, so the domain is all `m`).
+      have hmin : min (roundIdx : ℕ) m = m := by omega
+      set trFst : pSpec₁.FullTranscript := (by simpa [hmin] using tr.fst) with htrFst_def
+      have htrFst_heq : (trFst : pSpec₁.FullTranscript) ≍ tr.fst := cast_heq _ _
+      by_cases hcross : (roundIdx : ℕ) = m
+      · -- CROSSING (`roundIdx = m`): goal's `roundIdx.castSucc.val = m ≤ m` lands in `kSF₁`.
+        have hcs : (roundIdx : ℕ) ≤ m := by omega
+        simp only [Fin.val_castSucc, dif_pos hcs]
+        have hn1 : 0 < n := by have := (roundIdx : Fin (m + n)).isLt; omega
+        -- (1) `hPrev` (at phase-2 index `roundIdx + 1 - m = 1`) reshaped to `kSF₂.toFun 0.succ
+        --     (verify … trFst) (empty.concat msg₂) witMid₂`.
+        have hmsgty0 : (pSpec₁ ++ₚ pSpec₂).Type roundIdx = pSpec₂.Type (⟨0, hn1⟩ : Fin n) := by
+          rw [hmsgty₂]; congr 1; ext; simp only [Fin.val_mk]; omega
+        set witMid₂ : WitMid₂ (⟨0, hn1⟩ : Fin n).succ :=
+          cast (show WitMid₂ ⟨((roundIdx : Fin (m + n)).succ : ℕ) - m, by simp only [Fin.val_succ]; omega⟩
+              = WitMid₂ (⟨0, hn1⟩ : Fin n).succ from by
+                congr 1; ext; simp only [Fin.val_succ, Fin.val_mk]; omega)
+            (cast (appendWitMid_gt (by simp only [Fin.val_succ]; omega :
+              ¬ ((roundIdx : Fin (m + n)).succ : ℕ) ≤ m)) witMid) with hwitMid₂_def
+        let empty2 : pSpec₂.Transcript (⟨0, hn1⟩ : Fin n).castSucc := fun i => i.elim0
+        -- the phase-1 prefix is invariant under the phase-2 concat (crossing version)
+        have htrFstEq : HEq (Transcript.concat msg tr).fst tr.fst :=
+          concat_fst_heq_phase2 hlt tr msg
+        -- the phase-2 tail seam at the crossing collapses to `empty2.concat msg₂`: reuse the
+        -- interior seam lemma, then reconcile the empty prefix (`trs ≍ empty2`, both subsingleton)
+        -- and the `msg` recast (`cast hmsgty₂ msg ≍ cast hmsgty0 msg`).
+        have hsnd : HEq (Transcript.concat msg tr).snd (empty2.concat (cast hmsgty0 msg)) := by
+          refine HEq.trans (concat_snd_heq_phase2 hlt tr msg hmsgty₂) ?_
+          apply Function.hfunext
+          · congr 1; simp only [Fin.val_succ, Fin.val_mk]; omega
+          · intro a a' haa'
+            have haa : (a : ℕ) = (a' : ℕ) := by
+              have := Fin.heq_ext_iff (by simp only [Fin.val_succ, Fin.val_mk]; omega) |>.mp haa'
+              omega
+            simp only [Transcript.concat, Fin.snoc]
+            obtain ⟨av, hav_lt⟩ := a
+            obtain ⟨av', hav'_lt⟩ := a'
+            simp only [Fin.val_mk] at haa hav_lt hav'_lt
+            -- at the crossing `roundIdx - m = 0`, both snocs are at their (unique) last position
+            rw [dif_neg (show ¬ av < (roundIdx : ℕ) - m from by omega),
+                dif_neg (show ¬ av' < 0 from by omega)]
+            refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+            exact HEq.trans (cast_heq hmsgty₂ msg) (cast_heq hmsgty0 msg).symm
+        have hPrev₂ : kSF₂.toFun (⟨0, hn1⟩ : Fin n).succ (verify stmt₁ trFst)
+            (empty2.concat (cast hmsgty0 msg)) witMid₂ := by
+          convert hPrev using 2 <;>
+            first
+              | (simp only [Fin.val_succ, Fin.val_mk]; omega)
+              | -- statement: `verify stmt₁ trFst = verify stmt₁ <(concat msg tr).fst>`
+                (congr 1;
+                 exact eq_of_heq (HEq.trans htrFst_heq (HEq.trans htrFstEq.symm (cast_heq _ _).symm)))
+              | -- transcript: `empty2.concat msg₂ ≍ <(concat msg tr).snd>`
+                exact hsnd.symm
+              | exact HEq.trans hsnd.symm (cast_heq _ _).symm
+              | -- witness: `witMid₂ ≍ <cast (appendWitMid_gt) witMid>` — unfold the `set` def via
+                -- `simp` (it handles the HEq motive), then peel the cast.
+                (simp only [hwitMid₂_def]; exact cast_heq _ _)
+        -- (2) `kSF₂.toFun_next 0` descends `hPrev₂` to `kSF₂.toFun 0 (verify…) default (extractMid…)`.
+        have hDir₂0 : pSpec₂.dir (⟨0, hn1⟩ : Fin n) = .P_to_V := by
+          have : (⟨0, hn1⟩ : Fin n) = ⟨(roundIdx : ℕ) - m, by omega⟩ := by
+            ext; simp only [Fin.val_mk]; omega
+          rw [this]; exact hDir₂
+        have hStep := kSF₂.toFun_next (⟨0, hn1⟩ : Fin n) hDir₂0 (verify stmt₁ trFst)
+          empty2 (cast hmsgty0 msg) witMid₂ hPrev₂
+        -- `0.castSucc = 0` and `empty2 = default`: reshape `hStep` into `kSF₂.toFun 0 … default …`.
+        have hcs0 : (⟨0, hn1⟩ : Fin n).castSucc = (0 : Fin (n + 1)) := by ext; simp
+        set witE2 : WitMid₂ (0 : Fin (n + 1)) :=
+          E₂.extractMid (⟨0, hn1⟩ : Fin n) (verify stmt₁ trFst)
+            (empty2.concat (cast hmsgty0 msg)) witMid₂ with hwitE2_def
+        have hStep0 : kSF₂.toFun (0 : Fin (n + 1)) (verify stmt₁ trFst) default
+            (cast (congrArg WitMid₂ hcs0) witE2) := by
+          rw [hwitE2_def]
+          refine (kToFun_congr kSF₂.toFun hcs0 (verify stmt₁ trFst) ?_ ?_).mp hStep
+          · -- `empty2 ≍ default` (both empty over `Fin 0` / the subsingleton transcript)
+            refine HEq.trans (HEq.rfl : empty2 ≍ empty2) ?_
+            apply Function.hfunext (by rw [hcs0])
+            intro a _ _; exact a.elim0
+          · exact (cast_heq _ _).symm
+        -- (3) `kSF₂.toFun_empty` → `(verify stmt₁ trFst, cast E₂.eqIn witE2') ∈ rel₂`.
+        have hMem : (verify stmt₁ trFst,
+            cast E₂.eqIn (cast (congrArg WitMid₂ hcs0) witE2)) ∈ rel₂ :=
+          (kSF₂.toFun_empty (verify stmt₁ trFst) (cast (congrArg WitMid₂ hcs0) witE2)).mpr hStep0
+        -- (4) deterministic-run positivity + `kSF₁.toFun_full` yields the goal.
+        have hPr := run_pos_of_mem_rel (impl := impl) (init := init) verify hVerify hInit stmt₁ trFst
+          (cast E₂.eqIn (cast (congrArg WitMid₂ hcs0) witE2)) hMem
+        have hFull := kSF₁.toFun_full stmt₁ trFst
+          (cast E₂.eqIn (cast (congrArg WitMid₂ hcs0) witE2)) hPr
+        -- Transport `hFull` (`kSF₁.toFun (last m) stmt₁ trFst (E₁.extractOut …)`) to the goal.
+        -- The goal's witness is `cast (appendWitMid_le hcs) (append.extractMid roundIdx …)`, which by
+        -- `appendExtractMid_cross` equals `E₁.extractOut stmt₁ trFst (cast E₂.eqIn (E₂.extractMid 0 …))`.
+        have hExtEq : HEq (cast (appendWitMid_le hcs)
+              ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid roundIdx stmt₁
+                (Transcript.concat msg tr) witMid))
+            (E₁.extractOut stmt₁ trFst
+              (cast E₂.eqIn (E₂.extractMid (⟨0, hn1⟩ : Fin n) (verify stmt₁ trFst)
+                (empty2.concat (cast hmsgty0 msg)) witMid₂))) :=
+          (cast_heq _ _).trans (appendExtractMid_cross E₁ E₂ verify roundIdx hcross hn1 stmt₁
+            (Transcript.concat msg tr) witMid trFst (htrFstEq.trans htrFst_heq.symm)
+            (empty2.concat (cast hmsgty0 msg)) hsnd witMid₂
+            (by rw [hwitMid₂_def]; exact ((cast_heq _ _).trans (cast_heq _ _)).symm))
+        -- `hFull`'s extractOut argument and `hExtEq`'s coincide: both apply `E₂.extractMid 0` to the
+        -- round-1 transcript `empty2.concat msg₂`. (`witE2` is *defined* as that `extractMid` call.)
+        have hWitOut : E₁.extractOut stmt₁ trFst
+              (cast E₂.eqIn (cast (congrArg WitMid₂ hcs0) witE2))
+            = E₁.extractOut stmt₁ trFst
+              (cast E₂.eqIn (E₂.extractMid (⟨0, hn1⟩ : Fin n) (verify stmt₁ trFst)
+                (empty2.concat (cast hmsgty0 msg)) witMid₂)) := by
+          have hcc : cast (congrArg WitMid₂ hcs0) witE2 = witE2 := eq_of_heq (cast_heq _ _)
+          rw [hcc, hwitE2_def]
+        rw [hWitOut] at hFull
+        -- Now transport `hFull` to the goal across index/transcript/witness coherences.
+        refine Eq.mp ?_ hFull
+        exact kToFun_congr₁ kSF₁.toFun
+          (Fin.ext (by rw [Fin.val_last, Fin.coe_castSucc]; exact hcross.symm) :
+            (Fin.last m)
+              = (⟨(roundIdx : Fin (m + n)).castSucc, by simp only [Fin.coe_castSucc]; omega⟩
+                : Fin (m + 1)))
+          stmt₁ (htrFst_heq.trans (cast_heq _ _).symm) hExtEq.symm
+      · -- PHASE-2 INTERIOR (`m < roundIdx`): goal's `roundIdx.castSucc.val = roundIdx > m` → `kSF₂`.
+        have hgt : m < (roundIdx : ℕ) := lt_of_le_of_ne hlt (Ne.symm hcross)
+        have hncs : ¬ ((roundIdx : ℕ) ≤ m) := by omega
+        simp only [Fin.val_castSucc, dif_neg hncs]
+        -- The phase-2 truncated witness, reindexed to `⟨roundIdx-m,_⟩.succ`.
+        set wit₂ : WitMid₂ (⟨(roundIdx : ℕ) - m, by omega⟩ : Fin n).succ :=
+          cast (show WitMid₂ ⟨((roundIdx : Fin (m + n)).succ : ℕ) - m, by simp only [Fin.val_succ]; omega⟩
+              = WitMid₂ (⟨(roundIdx : ℕ) - m, by omega⟩ : Fin n).succ from by
+                congr 1; ext; simp only [Fin.val_succ, Fin.val_mk]; omega)
+            (cast (appendWitMid_gt hnsucc) witMid) with hwit₂_def
+        -- The shared transcript-tail seam.
+        have htrEq : HEq (Transcript.concat msg tr).snd (trs.concat (cast hmsgty₂ msg)) :=
+          concat_snd_heq_phase2 hlt tr msg hmsgty₂
+        -- The phase-1 prefix is invariant under the phase-2 concat.
+        have htrFstEq : HEq (Transcript.concat msg tr).fst tr.fst :=
+          concat_fst_heq_phase2 hlt tr msg
+        -- `hPrev` reshaped to `kSF₂.toFun (succ) (verify stmt₁ trFst) (trs.concat msg₂) wit₂`.
+        have hPrev₂ : kSF₂.toFun (⟨(roundIdx : ℕ) - m, by omega⟩ : Fin n).succ
+            (verify stmt₁ trFst) (trs.concat (cast hmsgty₂ msg)) wit₂ := by
+          convert hPrev using 2 <;>
+            first
+              | (simp only [Fin.val_succ, Fin.val_mk]; omega)
+              | -- statement: `verify stmt₁ trFst = verify stmt₁ <(concat msg tr).fst>`
+                (congr 1;
+                 exact eq_of_heq (HEq.trans htrFst_heq (HEq.trans htrFstEq.symm (cast_heq _ _).symm)))
+              | -- transcript: `trs.concat msg₂ ≍ <(concat msg tr).snd>`
+                exact htrEq.symm
+              | exact HEq.trans htrEq.symm (cast_heq _ _).symm
+              | -- witness: `wit₂ ≍ <cast (appendWitMid_gt) witMid>` — unfold the `set` def via simp,
+                -- then peel the cast.
+                (simp only [hwit₂_def]; exact cast_heq _ _)
+        -- Apply `kSF₂.toFun_next` and transport to the goal via `appendExtractMid_gt`.
+        have key := kSF₂.toFun_next ⟨(roundIdx : ℕ) - m, by omega⟩ hDir₂ (verify stmt₁ trFst)
+          trs (cast hmsgty₂ msg) wit₂ hPrev₂
+        -- Identify the goal's witness `cast _ (append.extractMid …)` with `key`'s
+        -- `E₂.extractMid ⟨roundIdx-m,_⟩ (verify stmt₁ trFst) (trs.concat msg₂) wit₂`.
+        have hExtEq : HEq (cast (appendWitMid_gt hncs)
+              ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid roundIdx stmt₁
+                (Transcript.concat msg tr) witMid))
+            (E₂.extractMid ⟨(roundIdx : ℕ) - m, by omega⟩ (verify stmt₁ trFst)
+              (trs.concat (cast hmsgty₂ msg)) wit₂) :=
+          (cast_heq _ _).trans (appendExtractMid_gt E₁ E₂ verify roundIdx hgt stmt₁
+            (Transcript.concat msg tr) witMid trFst (htrFstEq.trans htrFst_heq.symm)
+            (trs.concat (cast hmsgty₂ msg)) htrEq wit₂
+            (by rw [hwit₂_def]; exact ((cast_heq _ _).trans (cast_heq _ _)).symm))
+        -- Close the goal by transporting `key` across the index/statement/transcript/witness
+        -- coherences. The goal's verify-statement is on `tr.fst`; `key`'s is on `trFst`; equal.
+        -- `convert` auto-unifies the defeq legs; the remaining goals are dispatched uniformly.
+        convert key using 2 <;>
+          first
+            | (apply Fin.ext; omega)
+            | (congr 1; exact eq_of_heq (HEq.trans (cast_heq _ _) htrFst_heq.symm))
+            | exact cast_heq _ _
+            | exact hExtEq
+            | exact hExtEq.symm
+            | exact eq_of_heq hExtEq
+            | exact (eq_of_heq hExtEq).symm
   -- `toFun_full`: at the last round the appended verifier's output factors through `V₂` on
   -- `verify stmt₁ tr.fst` (the `Verifier.append` run, which `pure`-binds `V₁`'s deterministic
   -- output), and `extractOut` composes as `E₁.extractOut ∘ (cast E₂.eqIn) ∘ E₂.extractOut` (for
