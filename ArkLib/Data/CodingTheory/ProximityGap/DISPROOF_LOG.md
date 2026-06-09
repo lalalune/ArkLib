@@ -3025,3 +3025,69 @@ the O42 h-parametrization):
   says the truth is even cleaner (nonzero fibers ≤ 2 at the tested scale).
 * Remaining beyond that: syndromes engaging the LOW window (received words at smaller
   distance scales) — the genuinely-all-words quantifier = S-two Conjecture 1 proper.
+### O53 — E1 + the char-0 bijection FORMALIZED; the minpoly bridge (nubs, 2026-06-09)
+
+Two new axiom-clean bricks (both `[propext, Classical.choice, Quot.sound]`):
+
+**`ArkLib/ToMathlib/OddCharacterOrthogonality.lean`** — E1, the O38 engine:
+- `odd_power_orthogonality`: `∑_{i<m2} ζ^{(2i+1)j}·ζ^{−(2i+1)j'}` = `m2`/`0` on/off diagonal
+  (factor as `ζ^δ · ∑(ζ^{2δ})^i`; primitivity kills the geometric sum).
+- `parseval_odd_powers`: `∑_{i<m2} (∑_j c_j w_i^j)(∑_j c_j w_i^{−j}) = m2·∑ c_j²` for
+  `w_i = ζ^{2i+1}` — over `ℂ` this is `∑_{i∈(ℤ/m)^×} |σ_i(α)|² = (m/2)∑c_j²`, the Parseval
+  step of the shared norm engine (O38 / the O49-transfer's `|N| ≤ C(w,j)^{φ(n)}` trick).
+  The engine's core identity is now formal.
+
+**`ArkLib/ToMathlib/CyclotomicPatternInjectivity.lean`** — the bijection step of Theorem A:
+- `pattern_sum_injective`: ℤ-combinations of `ζ^0..ζ^{2^k−1}` (`ζ` primitive `2^{k+1}`-th,
+  char 0) determine their coefficients — difference polynomial has degree `< 2^k =
+  deg Φ_{2^{k+1}} = deg minpoly_ℚ(ζ)`, so it vanishes identically.
+- `signed_subset_sum_injective`: `(P,N) ↦ ∑_P ζ^j − ∑_N ζ^j` injective on disjoint pairs —
+  so `n0_pattern_count` (DisjointPairCount.lean) is now formally the EXACT char-0 image
+  count: distinct admissible patterns give distinct subset sums.
+- `natDegree_minpoly_rat_two_pow`: `deg minpoly_ℚ(ζ) = 2^k` — discharges the
+  `LinearIndependent` hypothesis of `R11.antipodal_of_sum_zero`
+  (LamLeungUnconditionalQ.lean) at every 2-power level via `R11.linearIndependent_pow_le`.
+  NOTE (same-hour convergence): O50's `vanishing_sum_antipodal` independently
+  machine-checks the antipodal theorem by the same cyclotomic-minpoly technique — the
+  bridge here remains as leaf `ToMathlib` API (coefficient determination + the degree
+  fact), complementary to O50's end-to-end form.
+
+### O54 — the tower theorem from the second seat: independent same-hour proof, EXACT char-0 verification, and the descent-step brick (nubs, 2026-06-09)
+
+While O48 ("THE DICHOTOMY RESOLVES TRUE") was landing, this seat independently derived the
+same theorem from the O47 crystallization — convergence, not duplication; recorded as
+cross-verification (the same norm O38 received). Three things here are NEW relative to
+O48/O50:
+
+**1. A second, independently-found proof with a cleaner induction packaging** (no separate
+coset-assembly step — the assembly is free because `s^L` is a homomorphism with kernel
+`μ_{2^L}`): for `S ⊆ μ_n`, `n = 2^m`, `1 ≤ t < n`, `L = ⌊log₂ t⌋ + 1`,
+
+    e₁(S) = ⋯ = e_t(S) = 0  ⟺  S = (s^L)⁻¹(U) for some U ⊆ μ_{n/2^L}.
+
+(⟸): on a `μ_{2^L}`-coset, `p_j = 0` unless `2^L | j`, and `j ≤ t < 2^L`; Newton converts.
+(⟹) induction on t: Newton ⟹ `p₁..p_t(S) = 0`; `e₁ = 0` + the t=1 theorem ⟹ `S = s⁻¹(T)`;
+the pair identity `p_{2j}(S) = 2·p_j(T)` hands `T ⊆ μ_{n/2}` the conditions at `⌊t/2⌋ ≥ 1`;
+induct; `⌊log₂⌊t/2⌋⌋ + 2 = ⌊log₂ t⌋ + 1`. Count `C(n/2^L, w/2^L)`, agreeing with O48's
+`d = 2^L` = smallest 2-power `> t`. The general-t induction here goes through the SAME
+single mechanism at every rung (square-root-pair power sums), so the O48 assembly's
+per-rung root-of-unity arguments (`mul_i_closure` etc.) are subsumed by one lemma family.
+
+**2. EXACT characteristic-0 verification** (strengthens O48's F₂₅₇ proxy): probe
+`scripts/probes/probe_tower_fiber.py` computes in `ℤ[x]/(x^{n/2}+1)` — exact integers, no
+finite-field proxy, `e_j` computed DIRECTLY (so the check is independent of the Newton
+step) — at n = 8 AND 16, ALL weights, t ≤ 6: ALL PASS, including every predicted empty
+fiber (`2^L ∤ w`) and the t-plateaus.
+
+**3. The descent-step identity as reusable API**: `ArkLib/ToMathlib/SqrtPairPowerSum.lean`
+(axiom-clean) — `sum_pow_even_sqrtPairs` (`∑_{x∈s⁻¹(T)} x^{2j} = 2·∑_{z∈T} z^j`, the
+general-j engine of step (⟹), generalizing O48's t=2 hdesc step and O50's t=2 resolution
+to arbitrary depth), `sum_pow_odd_sqrtPairs` (odd power sums vanish), `card_sqrtPairs`
+(`|s⁻¹(T)| = 2|T|`) — any field of char ≠ 2. Together with O50's machine-checked base case
+the general-t mechanization now lacks only: Newton's identities glue (Mathlib:
+`MvPolynomial.NewtonIdentities`) + the finite-depth induction scaffold.
+
+With the O49 effective transfer (`p > C(w,⌊w/2⌋)^{φ(n)}`), the count is unconditional at
+production-scale primes. What remains of the prize core is unchanged and shared: extending
+from unit syndromes to ALL received words (the MCA quantifier) — Conjecture D / the
+classical band.
