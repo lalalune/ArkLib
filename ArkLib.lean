@@ -1317,6 +1317,7 @@ import ArkLib.ToMathlib.BadLineWitnessProof
 import ArkLib.ToMathlib.BetaIdentify
 import ArkLib.ToMathlib.BetaInputSupply
 import ArkLib.ToMathlib.BetaMatchingVanishes
+import ArkLib.ToMathlib.BetaMatchingVanishesOn
 import ArkLib.ToMathlib.BetaRecGenuineBridge
 import ArkLib.ToMathlib.BetaRecursion
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
