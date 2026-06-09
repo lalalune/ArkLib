@@ -209,6 +209,60 @@ theorem four_mul_add_one_pow_ord_mod (α k κ : ℕ) (hk : k = 2 ^ κ) (hκ : κ
   rw [Nat.ModEq, Nat.one_mod_eq_one.mpr (by omega)] at hmod
   exact hmod
 
+/-- **Injectivity of the `+`-orbit enumeration.** The map `a ↦ (4·2^κ+1)^a mod 2^{α+1}` is
+injective on `[0, 2^α/(2·2^κ)) = [0, 2^{α-κ-1})`: the multiplicative order of `4·2^κ+1` in
+`(ℤ/2^{α+1})ˣ` is *exactly* `2^{α-κ-1}` (order-divides via `four_mul_add_one_pow_ord_mod`,
+half-order non-vanishing via `four_mul_add_one_pow_half_ord_mod`, pinned by
+`orderOf_eq_prime_pow`), so distinct exponents in that range give distinct residues. -/
+theorem four_mul_add_one_pow_inj (α κ a a' : ℕ) (hκα : κ + 1 ≤ α)
+    (ha : a < 2 ^ (α - κ - 1)) (ha' : a' < 2 ^ (α - κ - 1))
+    (h : (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1) = (4 * 2 ^ κ + 1) ^ a' % 2 ^ (α + 1)) :
+    a = a' := by
+  rcases Nat.lt_or_ge (α - κ - 1) 1 with h0 | h1
+  · -- `α - κ - 1 = 0`, so the range is `[0,1)` and `a = a' = 0`
+    have hz : α - κ - 1 = 0 := by omega
+    rw [hz, pow_zero] at ha ha'; omega
+  · -- `α ≥ κ + 2`: run the exact-order argument
+    have hκα2 : κ + 2 ≤ α := by omega
+    have hM1 : (1 : ℕ) < 2 ^ (α + 1) := Nat.one_lt_pow (by omega) (by norm_num)
+    haveI : NeZero (2 ^ (α + 1)) := ⟨by positivity⟩
+    haveI : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
+    have hg_odd : Odd (4 * 2 ^ κ + 1) := ⟨2 * 2 ^ κ, by ring⟩
+    have hcop : Nat.Coprime (4 * 2 ^ κ + 1) (2 ^ (α + 1)) :=
+      (Nat.coprime_pow_right_iff (by omega) _ _).mpr
+        (Nat.coprime_comm.mp ((Nat.prime_two.coprime_iff_not_dvd).mpr
+          (Nat.two_dvd_ne_zero.mpr (Nat.odd_iff.mp hg_odd))))
+    -- the unit `u = 4·2^κ+1` in `(ℤ/2^{α+1})ˣ`
+    set u : (ZMod (2 ^ (α + 1)))ˣ := ZMod.unitOfCoprime (4 * 2 ^ κ + 1) hcop with hu
+    have hu_coe : (u : ZMod (2 ^ (α + 1))) = ((4 * 2 ^ κ + 1 : ℕ) : ZMod (2 ^ (α + 1))) :=
+      ZMod.coe_unitOfCoprime _ _
+    have hpow_iff : ∀ n : ℕ, u ^ n = 1 ↔ (4 * 2 ^ κ + 1) ^ n % 2 ^ (α + 1) = 1 := by
+      intro n
+      rw [← Units.val_eq_one, Units.val_pow_eq_pow_val, hu_coe, ← Nat.cast_pow,
+        ← Nat.cast_one (R := ZMod (2 ^ (α + 1))), ZMod.natCast_eq_natCast_iff, Nat.ModEq,
+        Nat.one_mod_eq_one.mpr (by omega)]
+    -- `2^α/(2·2^κ) = 2^{α-κ-1}`
+    have he : 2 ^ α / (2 * 2 ^ κ) = 2 ^ (α - κ - 1) := by
+      rw [show (2 : ℕ) * 2 ^ κ = 2 ^ (κ + 1) from by rw [pow_succ]; ring,
+        Nat.pow_div (by omega) (by norm_num), show α - (κ + 1) = α - κ - 1 from by omega]
+    have hdiv : u ^ (2 ^ (α - κ - 1)) = 1 := by
+      rw [hpow_iff, ← he]; exact four_mul_add_one_pow_ord_mod α (2 ^ κ) κ rfl hκα
+    have hhalf : u ^ (2 ^ (α - κ - 2)) ≠ 1 := by
+      rw [ne_eq, hpow_iff]; exact four_mul_add_one_pow_half_ord_mod α (2 ^ κ) κ rfl hκα2
+    have horderOf : orderOf u = 2 ^ (α - κ - 1) := by
+      have key := orderOf_eq_prime_pow (p := 2) (n := α - κ - 2) hhalf
+        (by rwa [show α - κ - 2 + 1 = α - κ - 1 from by omega])
+      rwa [show α - κ - 2 + 1 = α - κ - 1 from by omega] at key
+    -- transport the residue equality `h` to `u^a = u^a'`, then use injectivity below order
+    have huu : u ^ a = u ^ a' := by
+      apply Units.ext
+      rw [Units.val_pow_eq_pow_val, Units.val_pow_eq_pow_val, hu_coe, ← Nat.cast_pow,
+        ← Nat.cast_pow, ZMod.natCast_eq_natCast_iff]
+      exact h
+    have hmod : a ≡ a' [MOD orderOf u] := pow_eq_pow_iff_modEq.mp huu
+    rw [horderOf, Nat.ModEq, Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt ha'] at hmod
+    exact hmod
+
 /-- Modular periodicity of powers: if `p^ord ≡ 1 (mod M)` then `p^n ≡ p^{n mod ord} (mod M)`. -/
 theorem pow_mod_period (p ord M n : ℕ) (h1 : p ^ ord % M = 1) (hM : 1 < M) :
     p ^ n % M = p ^ (n % ord) % M := by
@@ -357,6 +411,74 @@ order exactly `d/(2k)` in `(Z/2^{α+1})ˣ`; the weaker `k ∣ 2^α` (= `k ∣ d`
 DEFERRED (rated 8): order of `4k+1` in `(Z/2^{α+1})ˣ` plus injectivity of the enumeration. -/
 theorem Hexp_card (α k : ℕ) (hk2pow : ∃ κ, k = 2 ^ κ) (hk : 2 * k ∣ 2 ^ α) :
     (Hexp α k).card = 2 ^ α / k := by
-  sorry
+  obtain ⟨κ, rfl⟩ := hk2pow
+  have h2k : (2 : ℕ) * 2 ^ κ = 2 ^ (κ + 1) := by rw [pow_succ]; ring
+  have hκα : κ + 1 ≤ α := by
+    have hdvd : (2 : ℕ) ^ (κ + 1) ∣ 2 ^ α := by rw [← h2k]; exact hk
+    exact (Nat.pow_dvd_pow_iff_le_right (by norm_num : (1 : ℕ) < 2)).mp hdvd
+  -- basic facts about the modulus `M = 2^{α+1}` and base `g = 4·2^κ+1`
+  have hMpos : (0 : ℕ) < 2 ^ (α + 1) := by positivity
+  have h4M : (4 : ℕ) ∣ 2 ^ (α + 1) := by
+    rw [show (4 : ℕ) = 2 ^ 2 from rfl]; exact pow_dvd_pow 2 (by omega)
+  have hg_odd : Odd (4 * 2 ^ κ + 1) := ⟨2 * 2 ^ κ, by ring⟩
+  -- the `+`-residue `p(a) = g^a % M` is a nonzero residue `≡ 1 (mod 4)`
+  have hp_pos : ∀ a, 0 < (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1) := by
+    intro a
+    have hd : (2 : ℕ) ∣ 2 ^ (α + 1) := dvd_pow_self 2 (by omega)
+    have : Odd ((4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1)) := by
+      rw [Nat.odd_iff, Nat.mod_mod_of_dvd _ hd, ← Nat.odd_iff]; exact hg_odd.pow
+    exact this.pos
+  have hp_lt : ∀ a, (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1) < 2 ^ (α + 1) := fun a => Nat.mod_lt _ hMpos
+  have hg4 : (4 * 2 ^ κ + 1) % 4 = 1 := by
+    rw [show 4 * 2 ^ κ + 1 = 1 + 2 ^ κ * 4 from by ring, Nat.add_mul_mod_self_right]
+  have hp4 : ∀ a, (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1) % 4 = 1 := by
+    intro a; rw [Nat.mod_mod_of_dvd _ h4M, Nat.pow_mod, hg4, one_pow]; omega
+  -- the `−`-residue `n(a) = (M - p(a)) % M = M - p(a)`, with `n(a) ≡ 3 (mod 4)`
+  have hn_val : ∀ a, (2 ^ (α + 1) - (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1)) % 2 ^ (α + 1)
+      = 2 ^ (α + 1) - (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1) := by
+    intro a; exact Nat.mod_eq_of_lt (by have := hp_pos a; have := hp_lt a; omega)
+  have hn4 : ∀ a, (2 ^ (α + 1) - (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1)) % 2 ^ (α + 1) % 4 = 3 := by
+    intro a; rw [hn_val a]; have := hp4 a; have := hp_lt a; have := hp_pos a; omega
+  -- each `±`-cell `{p(a), n(a)}` has exactly two elements
+  have hcell : ∀ a, ({(4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1),
+      (2 ^ (α + 1) - (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1)) % 2 ^ (α + 1)} : Finset ℕ).card = 2 := by
+    intro a; apply Finset.card_pair
+    have h1 := hp4 a; have h2 := hn4 a; intro heq; rw [heq] at h1; omega
+  -- distinct cells are disjoint
+  have hdisj : ∀ a ∈ Finset.range (2 ^ α / (2 * 2 ^ κ)),
+      ∀ a' ∈ Finset.range (2 ^ α / (2 * 2 ^ κ)), a ≠ a' →
+      Disjoint ({(4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1),
+          (2 ^ (α + 1) - (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1)) % 2 ^ (α + 1)} : Finset ℕ)
+        ({(4 * 2 ^ κ + 1) ^ a' % 2 ^ (α + 1),
+          (2 ^ (α + 1) - (4 * 2 ^ κ + 1) ^ a' % 2 ^ (α + 1)) % 2 ^ (α + 1)} : Finset ℕ) := by
+    intro a ha a' ha' hne
+    rw [Finset.mem_range] at ha ha'
+    have he : 2 ^ α / (2 * 2 ^ κ) = 2 ^ (α - κ - 1) := by
+      rw [h2k, Nat.pow_div (by omega) (by norm_num), show α - (κ + 1) = α - κ - 1 from by omega]
+    rw [he] at ha ha'
+    -- `p(a) ≠ p(a')` by injectivity of the `+`-orbit enumeration (exact order)
+    have hpp : (4 * 2 ^ κ + 1) ^ a % 2 ^ (α + 1) ≠ (4 * 2 ^ κ + 1) ^ a' % 2 ^ (α + 1) :=
+      fun heq => hne (four_mul_add_one_pow_inj α κ a a' hκα ha ha' heq)
+    rw [Finset.disjoint_left]
+    intro x hx hx'
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx hx'
+    obtain hx | hx := hx <;> obtain hx' | hx' := hx' <;> rw [hx] at hx'
+    · exact hpp hx'
+    · have h1 := hp4 a; have h2 := hn4 a'; rw [hx'] at h1; omega
+    · have h1 := hn4 a; have h2 := hp4 a'; rw [hx'] at h1; omega
+    · rw [hn_val a, hn_val a'] at hx'
+      have := hp_lt a; have := hp_lt a'; have := hp_pos a; have := hp_pos a'
+      exact hpp (by omega)
+  -- assemble: `|Hexp| = ∑_{a < ord} 2 = 2·ord = 2^α / 2^κ`
+  have hRHS : 2 ^ α / 2 ^ κ = 2 * (2 ^ α / (2 * 2 ^ κ)) := by
+    have e1 : 2 ^ α / 2 ^ κ = 2 ^ (α - κ) := Nat.pow_div (by omega) (by norm_num)
+    have e2 : 2 ^ α / (2 * 2 ^ κ) = 2 ^ (α - κ - 1) := by
+      rw [h2k, Nat.pow_div (by omega) (by norm_num), show α - (κ + 1) = α - κ - 1 from by omega]
+    rw [e1, e2]
+    conv_lhs => rw [show α - κ = (α - κ - 1) + 1 from by omega, pow_succ]
+    ring
+  rw [hRHS, Hexp, Finset.card_biUnion hdisj]
+  rw [Finset.sum_congr rfl (fun a _ => hcell a), Finset.sum_const, Finset.card_range,
+    smul_eq_mul, Nat.mul_comm]
 
 end ArkLib.Lattices.CyclotomicModulus
