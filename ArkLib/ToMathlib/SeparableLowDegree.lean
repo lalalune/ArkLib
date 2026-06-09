@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import Mathlib
 
+set_option linter.style.longLine false
+
 /-!
 # Irreducible polynomials of degree below the characteristic are separable
 
