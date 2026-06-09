@@ -801,12 +801,10 @@ theorem combine_theorem_proximityError
   refine combine_theorem fs degs hdegs δ hδPos hStrictCoeff hδLt (lt_of_le_of_lt ?_ hProb)
   have hb := mul_errorBound_le_proximityError (ι := ι) (F := F)
     (deg := dstar) (m := m * (dstar + 1) - ∑ i, degs i) (domain := φ) (δ := δ)
-  refine le_trans (le_of_eq ?_) hb
-  congr 1
-  rcases le_total (∑ i, degs i) (m * (dstar + 1)) with h | h
-  · rw [Nat.cast_sub h]
-  · rw [Nat.sub_eq_zero_of_le h, Nat.cast_zero,
-      tsub_eq_zero_of_le (by exact_mod_cast h)]
+  refine le_trans (le_of_eq ?_) (ENNReal.coe_le_coe.mpr hb)
+  rw [ENNReal.coe_mul, ENNReal.coe_sub, ENNReal.coe_one, ENNReal.coe_natCast,
+    ENNReal.natCast_sub]
+  norm_cast
 
 open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
 /-- **Lemma 4.13, `proximityError` threshold, UNCONDITIONAL small-field regime.** -/
