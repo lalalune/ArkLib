@@ -189,6 +189,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionResidual
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.GoodCoeffs
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.GoodSetAggregate
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.HeavyCodeword
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.JointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.ListSizeResidual
