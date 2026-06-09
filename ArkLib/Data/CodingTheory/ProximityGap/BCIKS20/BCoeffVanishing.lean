@@ -31,6 +31,20 @@ theorem B_coeff_eq_zero_of_natDegree_lt (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {
   rw [hasseDerivY_eq_zero_of_lt R h, hX0, hE0]
   simp
 
+/-- **Parameterized `hbξ` reduction**: the ξ weight budget follows from per-coefficient
+degree bounds on `ξ_pre` (the honest GS-bundle input shape), via `weight_Λ_le_iff`. -/
+theorem xi_weight_le_of_coeff_bounds (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D b : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hcoeff : ∀ n ∈ (ClaimA2.ξ_pre x₀ R H).support,
+      n * (D + 1 - Bivariate.natDegreeY H) + ((ClaimA2.ξ_pre x₀ R H).coeff n).natDegree ≤ b) :
+    weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D ≤ (WithBot.some b : WithBot ℕ) := by
+  refine (weight_Λ_over_𝒪_le_of_mk_eq hDH hH (r := ClaimA2.ξ_pre x₀ R H) rfl).trans ?_
+  rw [weight_Λ_le_iff]
+  exact hcoeff
+
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20.HenselNumerator.B_coeff_eq_zero_of_natDegree_lt
+#print axioms BCIKS20.HenselNumerator.xi_weight_le_of_coeff_bounds
