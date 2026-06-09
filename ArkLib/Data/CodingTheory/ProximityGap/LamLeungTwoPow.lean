@@ -385,6 +385,73 @@ theorem full_tower {M : ℕ} {ζ : F} (hζ : IsPrimitiveRoot ζ (2 ^ M))
       exact hh)
     exact hfinal
 
+/-- **The prize-shaped count corollary**: the number of `w`-subsets of a `2^M`-torsion
+domain with vanishing power-sum window `1 ≤ j < 2^s` is at most `2^(#image)` where
+`#image` is the number of `2^s`-th-power classes of the domain — for `D₀ = μ_n` this is
+`2^(n/2^s)`, i.e. `2^{O(1/η)}` at window scale `t = 2^s − 1 = Θ(ηn)`: the KK25/S-two
+budget, as a kernel-checked counting statement. Mechanism: by `full_tower` each such `S`
+is `μ_{2^s}`-closed, hence exactly recoverable from its `2^s`-th-power image
+(`S = D₀.filter (x ↦ x^{2^s} ∈ image)`), so the family injects into the subsets of the
+power-class space. -/
+theorem tower_count [DecidableEq F] {M : ℕ} {ζ : F} (hζ : IsPrimitiveRoot ζ (2 ^ M))
+    {s : ℕ} (hsM : s ≤ M) {D₀ : Finset F} (hD₀ : ∀ x ∈ D₀, x ^ (2 ^ M) = 1) (w : ℕ) :
+    ((D₀.powersetCard w).filter (fun S =>
+        ∀ j, 1 ≤ j → j < 2 ^ s → ∑ x ∈ S, x ^ j = 0)).card
+      ≤ 2 ^ (D₀.image (· ^ (2 ^ s))).card := by
+  classical
+  rw [← Finset.card_powerset]
+  apply Finset.card_le_card_of_injOn (fun S => S.image (· ^ (2 ^ s)))
+  · -- maps into the powerset of the image space
+    intro S hS
+    have hS2 := Finset.mem_coe.mp hS
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at hS2
+    simp only [Finset.mem_coe, Finset.mem_powerset]
+    intro y hy
+    obtain ⟨x, hx, rfl⟩ := Finset.mem_image.mp hy
+    exact Finset.mem_image.mpr ⟨x, hS2.1.1 hx, rfl⟩
+  · -- injective: S is recoverable from its power image
+    intro S hSm S' hSm' himg
+    have hmem := Finset.mem_coe.mp hSm
+    have hmem' := Finset.mem_coe.mp hSm'
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at hmem hmem'
+    obtain ⟨⟨hSD, _⟩, hPS⟩ := hmem
+    obtain ⟨⟨hSD', _⟩, hPS'⟩ := hmem'
+    -- both are μ_{2^s}-closed by the tower theorem
+    have hclos : ∀ x ∈ S, ∀ h : F, h ^ (2 ^ s) = 1 → h * x ∈ S :=
+      full_tower hζ (fun x hx => hD₀ x (hSD hx)) s hsM hPS
+    have hclos' : ∀ x ∈ S', ∀ h : F, h ^ (2 ^ s) = 1 → h * x ∈ S' :=
+      full_tower hζ (fun x hx => hD₀ x (hSD' hx)) s hsM hPS'
+    -- recovery: x ∈ S ⟺ x ∈ D₀ ∧ x^(2^s) ∈ image
+    have hrec : ∀ (T : Finset F), T ⊆ D₀ →
+        (∀ x ∈ T, ∀ h : F, h ^ (2 ^ s) = 1 → h * x ∈ T) →
+        (∀ x ∈ T, x ≠ 0) →
+        T = D₀.filter (fun x => x ^ (2 ^ s) ∈ T.image (· ^ (2 ^ s))) := by
+      intro T hTD hTclos hT0
+      apply Finset.Subset.antisymm
+      · intro x hx
+        exact Finset.mem_filter.mpr ⟨hTD hx, Finset.mem_image.mpr ⟨x, hx, rfl⟩⟩
+      · intro x hx
+        obtain ⟨hxD, hxim⟩ := Finset.mem_filter.mp hx
+        obtain ⟨x₀, hx₀, hpow⟩ := Finset.mem_image.mp hxim
+        have hx₀0 : x₀ ≠ 0 := hT0 x₀ hx₀
+        have hx00 : x₀ ^ (2 ^ s) ≠ 0 := pow_ne_zero _ hx₀0
+        have hq : (x / x₀) ^ (2 ^ s) = 1 := by
+          rw [div_pow, ← hpow, div_self hx00]
+        have := hTclos x₀ hx₀ (x / x₀) hq
+        rwa [div_mul_cancel₀ x hx₀0] at this
+    have hT0S : ∀ x ∈ S, x ≠ 0 := by
+      intro x hx h0
+      have := hD₀ x (hSD hx)
+      rw [h0, zero_pow (by positivity : (0:ℕ) < 2 ^ M).ne'] at this
+      exact one_ne_zero (α := F) this.symm
+    have hT0S' : ∀ x ∈ S', x ≠ 0 := by
+      intro x hx h0
+      have := hD₀ x (hSD' hx)
+      rw [h0, zero_pow (by positivity : (0:ℕ) < 2 ^ M).ne'] at this
+      exact one_ne_zero (α := F) this.symm
+    simp only [] at himg
+    rw [hrec S hSD hclos hT0S, hrec S' hSD' hclos' hT0S', himg]
+
 end FullTower
 
 end LamLeungTwoPow

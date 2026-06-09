@@ -3178,3 +3178,20 @@ KK25/S-two `2^{O(1/η)}` budget); (c) the Conj-41/δ* composition through R20/R2
 (d) effective char-0 → `F_p` height threshold beyond O49's resolution where it applies;
 (e) the MCA quantifier (unit syndromes → all received words). (d)/(e) genuinely open research;
 the prize core (δ* inside `(1−√ρ, 1−ρ)`) remains 100% open.
+
+### O55 — tower_count: the 2^{O(1/η)} budget as a machine-checked COUNTING theorem
+
+`LamLeungTwoPow.tower_count` (axiom-clean, 0 sorry): the number of w-subsets of any
+2^M-torsion domain with vanishing power-sum window 1 ≤ j < 2^s is
+
+    ≤ 2^{#(2^s-th-power classes of the domain)}   (= 2^{n/2^s} on μ_n).
+
+Mechanism: by full_tower (O53) every such subset is μ_{2^s}-closed, hence EXACTLY
+recoverable from its 2^s-th-power image (S = D₀.filter (x ↦ x^{2^s} ∈ image S)) — the
+family injects into the subsets of the power-class space. At window scale
+t = 2^s − 1 = Θ(ηn) this is the KK25/S-two budget 2^{O(1/η)}, now a counting THEOREM
+(char 0; F_p above the O49 threshold). With O45's lossless syndrome transfer, the
+all-ones-error syndrome lists deep in the interior on 2-power domains are budget-bounded,
+machine-checked end to end: full_tower + tower_count + zero_fiber_filter_eq +
+compat_gamma_count form one complete verified pipeline from "vanishing window" to
+"list count ≤ 2^{O(1/η)}".
