@@ -443,6 +443,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSExactCountWall
 import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
 import ArkLib.Data.CodingTheory.ProximityGap.GSInterpolationExistence
 import ArkLib.Data.CodingTheory.ProximityGap.GSJohnsonWall
+import ArkLib.Data.CodingTheory.ProximityGap.GSHasseMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
