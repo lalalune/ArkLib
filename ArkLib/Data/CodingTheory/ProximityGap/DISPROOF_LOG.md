@@ -1588,3 +1588,29 @@ cache (type-checks in memory, never writes oleans), so many agents verify concur
 **Net.** Open core (list UPPER bound past Johnson; q-dependent concentration) unmoved — research-grade.
 Round 9 = the state-of-the-art *bracket* machinery + a concrete two-sided pin + first fiber tightness.
 All on main (`0e39a4435`), axiom-clean, 0 sorry. Issue stays open.
+
+### O28 / Round-9d — roots of unity have MINIMAL additive energy `E ≤ 3|S|²` (characteristic 0)
+
+The fourth-moment identity (O27) reduced the deep-interior question to the additive energy `E(G)` of the
+smooth subgroup. `RootsOfUnityAdditiveEnergy.lean` (axiom-clean) proves the structural fact that, **in
+characteristic 0**, that energy is *minimal*:
+
+* `unitCircle_reps_le_two`: for `s ≠ 0` and any finite `S` on the complex unit circle (`y·conj y = 1`,
+  e.g. the `n`-th roots of unity), the number of representations `#{y∈S : s−y∈S}` is `≤ 2`. Mechanism:
+  a unit-circle `y` with `s−y` also on the circle satisfies the **quadratic**
+  `conj(s)·y² − (s·conj s)·y + s = 0` (from `y·conj y = 1` and `(s−y)·conj(s−y) = 1`, pure ℂ-conjugate
+  algebra via `linear_combination`), and a nonzero quadratic has `≤ 2` roots (`Polynomial.card_roots'`).
+* `unitCircle_additiveEnergy_le`: hence `E(S) = ∑_{a,b∈S} #{y∈S:(a+b)−y∈S} ≤ 3·|S|²` — the **diagonal**
+  `a+b=0` contributes `≤|S|` pairs (each `≤|S|`), the rest `≤|S|²` pairs (each `≤2`).
+
+**Why it matters.** Minimal additive energy `E(S)=Θ(|S|²)` is exactly maximal *anti-concentration* of the
+subset-sum count — the regime where the §7/averaging attack is **defeated**. Combined with the
+fourth-moment bridge (`∑_b ‖η_b‖⁴ = q·E`), this is the **clean characteristic-0 resolution**: the smooth
+(roots-of-unity) domain provably has the *minimal* additive energy, so it resists the attack — in char 0.
+
+**Honest scope.** The Proximity Prize lives over a *finite field* `F_q`. The `≤2`-representations
+argument uses complex conjugation (`conj y = y⁻¹` on the unit circle), which has **no `F_q` analogue** —
+over `F_q` a multiplicative subgroup's additive energy is the genuinely *open* sum-product quantity (it
+can be large depending on `|G|` vs `q`). So this proves the smooth domain is "good" in the char-0 model
+and pins the finite-field gap precisely as: *bound the additive energy of the `2^k`-subgroup over `F_q`*
+(equivalently the worst-case subgroup Gauss sum / Weil). 48+ verified bricks rounds 1–9.
