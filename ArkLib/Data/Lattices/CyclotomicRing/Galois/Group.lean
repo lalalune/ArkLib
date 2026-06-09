@@ -16,8 +16,9 @@ This file pins the two generators (`σ_{-1}` with exponent `2^{α+1}-1 ≡ -1`, 
 records their oddness (so they are genuine automorphisms), and provides the explicit exponent
 set `Hexp` enumerating `H` for use by the trace map. The composition law `σ_i ∘ σ_j = σ_{ij}`
 (for odd `i, j`) and `σ_1 = id` are proven via the soundness bridge; the order computation
-`|⟨4k+1⟩| = d/(2k)` (Hachi [NOZ26, §3, Claim 1] / [LS18, Lem 2.4]) remains sorried (number
-theory).
+`|H| = d/k = 2^α/k` (Hachi [NOZ26, §3, Claim 1] / [LS18, Lem 2.4]) is now proven sorry-free
+(`Hexp_card`), resting on the *exact* 2-adic order of `4k+1` in `(ℤ/2^{α+1})ˣ`
+(`four_mul_add_one_pow_inj`).
 
 ## Main definitions
 
@@ -408,7 +409,11 @@ The hypotheses match Hachi [NOZ26, §3, Claim 1] / [LS18, Lem 2.4]: `k` is a pow
 order exactly `d/(2k)` in `(Z/2^{α+1})ˣ`; the weaker `k ∣ 2^α` (= `k ∣ d`) does not suffice
 (e.g. `k = 2^α` gives `2k ∤ d`, so `2^α/(2k)` is not the true order).
 
-DEFERRED (rated 8): order of `4k+1` in `(Z/2^{α+1})ˣ` plus injectivity of the enumeration. -/
+Proof: `card_biUnion` over the `2^α/(2k)` orbit cells `{±(4k+1)^a}`. Each cell has two elements
+(`+`/`−` differ mod 4: `(4k+1)^a ≡ 1`, `−(4k+1)^a ≡ 3`). Distinct cells are disjoint: the `+`/`−`
+cross terms again differ mod 4, while same-sign collisions reduce to injectivity of
+`a ↦ (4k+1)^a mod 2^{α+1}` on `[0, 2^{α-κ-1})` (`four_mul_add_one_pow_inj`, using the *exact*
+order `2^{α-κ-1}`). So `|Hexp| = 2 · 2^α/(2k) = 2^α/k`. -/
 theorem Hexp_card (α k : ℕ) (hk2pow : ∃ κ, k = 2 ^ κ) (hk : 2 * k ∣ 2 ^ α) :
     (Hexp α k).card = 2 ^ α / k := by
   obtain ⟨κ, rfl⟩ := hk2pow
