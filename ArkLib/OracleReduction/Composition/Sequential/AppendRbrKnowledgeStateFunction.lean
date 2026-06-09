@@ -149,6 +149,81 @@ theorem appendExtractMid_cross {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (
   case hf =>
     exact heq_of_eq (congr_heq HEq.rfl (HEq.trans (cast_heq _ _) htrf))
 
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **Dependent congruence for a knowledge state function's `toFun`.** Two applications of a (raw)
+round-by-round knowledge `toFun` family agree (as `Prop`s) when the round indices are equal and the
+transcript and intermediate-witness arguments are heterogeneously equal. The protocol-independent
+glue that lets the seam-transport HEq facts collapse into the `Prop`-level equalities consumed by
+`kSF₁.toFun_next` / `kSF₂.toFun_next`. -/
+theorem kToFun_congr {WitMid : Fin (n+1)→Type} {Stmt : Type}
+    (f : (r : Fin (n+1)) → Stmt → pSpec₂.Transcript r → WitMid r → Prop)
+    {r₁ r₂ : Fin (n+1)} (hr : r₁ = r₂) (stmt : Stmt)
+    {t₁ : pSpec₂.Transcript r₁} {t₂ : pSpec₂.Transcript r₂} (ht : HEq t₁ t₂)
+    {w₁ : WitMid r₁} {w₂ : WitMid r₂} (hw : HEq w₁ w₂) :
+    f r₁ stmt t₁ w₁ = f r₂ stmt t₂ w₂ := by
+  subst hr; rw [eq_of_heq ht, eq_of_heq hw]
+
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **`kToFun_congr` for the first (phase-1) protocol.** Same as `kToFun_congr` over `pSpec₁`. -/
+theorem kToFun_congr₁ {WitMid : Fin (m+1)→Type} {Stmt : Type}
+    (f : (r : Fin (m+1)) → Stmt → pSpec₁.Transcript r → WitMid r → Prop)
+    {r₁ r₂ : Fin (m+1)} (hr : r₁ = r₂) (stmt : Stmt)
+    {t₁ : pSpec₁.Transcript r₁} {t₂ : pSpec₁.Transcript r₂} (ht : HEq t₁ t₂)
+    {w₁ : WitMid r₁} {w₂ : WitMid r₂} (hw : HEq w₁ w₂) :
+    f r₁ stmt t₁ w₁ = f r₂ stmt t₂ w₂ := by
+  subst hr; rw [eq_of_heq ht, eq_of_heq hw]
+
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **The phase-1 transcript-truncation seam.** For a phase-1 round (`roundIdx < m`), concatenating a
+phase-1 message `msg` and taking the appended-spec transcript's phase-1 truncation is heterogeneously
+equal to first truncating and then concatenating the recast message. Mirrors the inline computation in
+`StateFunction.append.toFun_next`. -/
+theorem concat_fst_heq_phase1 {roundIdx : Fin (m + n)} (hlt : (roundIdx : ℕ) < m)
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript roundIdx.castSucc)
+    (msg : (pSpec₁ ++ₚ pSpec₂).Type roundIdx)
+    (hmsgty : (pSpec₁ ++ₚ pSpec₂).Type roundIdx = pSpec₁.Type ⟨roundIdx, hlt⟩) :
+    HEq (Transcript.concat msg tr).fst
+        (Transcript.concat (cast hmsgty msg)
+          (by simpa [show (roundIdx : ℕ) ≤ m from le_of_lt hlt] using tr.fst :
+            pSpec₁.Transcript (⟨roundIdx, hlt⟩ : Fin m).castSucc)) := by
+  have hcs : (roundIdx : ℕ) ≤ m := le_of_lt hlt
+  apply Function.hfunext
+  · congr 1; simp only [Fin.val_succ]; omega
+  · intro a a' haa'
+    have hav : a.val = a'.val := by
+      have := Fin.heq_ext_iff (by simp only [Fin.val_succ]; omega) |>.mp haa'
+      omega
+    simp only [Transcript.concat, Transcript.fst]
+    obtain ⟨av, hav_lt⟩ := a
+    simp only [Fin.val_succ] at hav hav_lt ⊢
+    rw [show min ((roundIdx : ℕ) + 1) m = (roundIdx : ℕ) + 1 from by omega] at hav_lt
+    simp only [Fin.snoc]
+    by_cases hlast : av = roundIdx
+    · rw [dif_neg (show ¬ av < roundIdx from by omega),
+          dif_neg (show ¬ (a' : ℕ) < roundIdx from by omega)]
+      -- goal `cast (cast msg) ≍ cast (cast hmsgty msg)`; route both through `msg`.
+      refine HEq.trans (b := msg) (HEq.trans (cast_heq _ _) (cast_heq _ _)) ?_
+      exact HEq.symm (HEq.trans (cast_heq _ _) (cast_heq hmsgty msg))
+    · have hlt' : av < roundIdx := by omega
+      rw [dif_pos (show (a' : ℕ) < roundIdx from by omega),
+          dif_pos (show av < roundIdx from hlt')]
+      refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+      have hmincard : min (roundIdx : ℕ) m = (roundIdx : ℕ) := by omega
+      refine HEq.trans ?_ (dcongr_heq (f₁ := Transcript.fst tr)
+        (a₁ := (⟨av, by omega⟩ : Fin (min (roundIdx : ℕ) m)))
+        (a₂ := (a'.castLT (show (a' : ℕ) < roundIdx from by omega)))
+        (Fin.heq_ext_iff hmincard |>.mpr (by simpa using hav))
+        (fun t₁ t₂ ht => by
+          have hv : (t₁ : ℕ) = (t₂ : ℕ) := Fin.val_eq_val_of_heq ht
+          show pSpec₁.Type _ = pSpec₁.Type _
+          congr 1; ext; simpa using hv)
+        (fun _ _ => HEq.symm (cast_heq _ _ :
+          (by simpa [hcs] using tr.fst : pSpec₁.Transcript ⟨roundIdx, by omega⟩)
+            ≍ Transcript.fst tr)))
+      unfold Transcript.fst
+      refine HEq.trans ?_ (cast_heq _ _).symm
+      congr 1
+
 /-- The sequential composition of two **knowledge** state functions, witness-threaded analogue of
 `Verifier.StateFunction.append`. Built against the proven composite extractor
 `Extractor.RoundByRound.append E₁ E₂ verify`. -/
@@ -185,7 +260,57 @@ def KnowledgeStateFunction.append {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fi
     refine Iff.trans (kSF₁.toFun_empty stmtIn (cast (appendWitMid_le h0) witMid)) (Iff.of_eq ?_)
     congr 1
     funext i; exact i.elim0
-  toFun_next := by sorry
+  toFun_next := by
+    intro roundIdx hDir stmt₁ tr msg witMid hPrev
+    by_cases hlt : (roundIdx : ℕ) < m
+    · -- Phase 1: both `roundIdx.succ` and `roundIdx.castSucc` land in the `≤ m` (kSF₁) branch.
+      have hsucc : (roundIdx : ℕ) + 1 ≤ m := hlt
+      have hcs : (roundIdx : ℕ) ≤ m := le_of_lt hlt
+      simp only [Fin.val_succ, Fin.val_castSucc, dif_pos hsucc] at hPrev
+      simp only [Fin.val_succ, Fin.val_castSucc, dif_pos hcs]
+      -- The phase-1 direction.
+      have hDir₁ : pSpec₁.dir ⟨roundIdx, hlt⟩ = .P_to_V := by
+        rw [← Fin.vappend_left_of_lt pSpec₁.dir pSpec₂.dir roundIdx hlt]; exact hDir
+      have hmsgty : (pSpec₁ ++ₚ pSpec₂).Type roundIdx = pSpec₁.Type ⟨roundIdx, hlt⟩ := by
+        show Fin.vappend pSpec₁.Type pSpec₂.Type roundIdx = pSpec₁.Type ⟨roundIdx, hlt⟩
+        rw [Fin.vappend_left_of_lt _ _ _ hlt]
+      -- The phase-1 truncated transcript and witness.
+      set trf : pSpec₁.Transcript (⟨roundIdx, hlt⟩ : Fin m).castSucc :=
+        (by simpa [hcs] using tr.fst) with htrf_def
+      set wit₁ : WitMid₁ (⟨roundIdx, hlt⟩ : Fin m).succ :=
+        cast (appendWitMid_le hsucc) witMid with hwit₁_def
+      -- The shared transcript-truncation seam.
+      have htrEq : HEq (Transcript.concat msg tr).fst (trf.concat (cast hmsgty msg)) :=
+        concat_fst_heq_phase1 hlt tr msg hmsgty
+      -- `hPrev` reshaped to `kSF₁.toFun (succ) stmt₁ (trf.concat (cast msg)) wit₁`.
+      have hPrev₁ : kSF₁.toFun (⟨roundIdx, hlt⟩ : Fin m).succ stmt₁
+          (trf.concat (cast hmsgty msg)) wit₁ := by
+        have e : kSF₁.toFun (⟨roundIdx, hlt⟩ : Fin m).succ stmt₁ (trf.concat (cast hmsgty msg)) wit₁
+            = kSF₁.toFun ⟨(roundIdx : ℕ) + 1, by omega⟩ stmt₁
+              (by simpa [hsucc] using (Transcript.concat msg tr).fst)
+              (cast (appendWitMid_le hsucc) witMid) :=
+          kToFun_congr₁ kSF₁.toFun (Fin.ext (by simp [Fin.val_succ]))
+            stmt₁ (htrEq.symm.trans (cast_heq _ _).symm) HEq.rfl
+        rw [e]; exact hPrev
+      -- Apply `kSF₁.toFun_next` and transport to the goal via `appendExtractMid_le`.
+      have key := kSF₁.toFun_next ⟨roundIdx, hlt⟩ hDir₁ stmt₁ trf (cast hmsgty msg) wit₁ hPrev₁
+      -- The goal's witness is `cast _ ((append…).extractMid …)`; `key`'s is
+      -- `E₁.extractMid ⟨roundIdx,hlt⟩ stmt₁ (trf.concat (cast msg)) wit₁`. Identify via
+      -- `appendExtractMid_le`, the transcripts via `htrf_def`/`htrEq`.
+      have hExtEq : HEq (cast (appendWitMid_le hcs)
+            ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid roundIdx stmt₁
+              (Transcript.concat msg tr) witMid))
+          (E₁.extractMid ⟨roundIdx, hlt⟩ stmt₁ (trf.concat (cast hmsgty msg)) wit₁) :=
+        (cast_heq _ _).trans (appendExtractMid_le E₁ E₂ verify roundIdx hlt stmt₁
+          (Transcript.concat msg tr) witMid (trf.concat (cast hmsgty msg)) htrEq wit₁
+          (cast_heq _ _).symm)
+      -- Close the goal by transporting `key` across the index/transcript/witness coherences.
+      refine Eq.mp ?_ key
+      exact kToFun_congr₁ kSF₁.toFun
+        (Fin.ext (by simp [Fin.val_castSucc]) :
+          (⟨roundIdx, hlt⟩ : Fin m).castSucc = ⟨(roundIdx : ℕ), by omega⟩)
+        stmt₁ ((cast_heq _ _).trans (cast_heq _ _).symm) hExtEq.symm
+    · sorry
   toFun_full := by sorry
 
 end Verifier
