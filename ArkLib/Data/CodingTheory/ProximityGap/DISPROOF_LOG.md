@@ -1034,3 +1034,15 @@ algebraic-integer sums in `ℤ[ζ]` have bounded norm, so a large prime `p ≡ 1
 infinitely many) admits a degree-1 prime `𝔭 ∣ p` keeping them distinct mod `𝔭` — witnessing a finite
 field with super-poly bad count, hence the finite-field disproof. The combinatorial core is proven;
 the lifting is O16's residual.
+
+**Update (Loop50, concrete capstone).** The char-0 lower bound is now **fully concrete**, no abstract
+hypothesis: `subsetSum_injective_of_isPrimitiveRoot` discharges the no-relation condition from `ζ`'s
+minimal polynomial (`IsPrimitiveRoot.totient_le_degree_minpoly` + `minpoly.isIntegrallyClosed_dvd`
+over integrally-closed `ℤ`), and `card_subsetSumset_isPrimitiveRoot_two_pow_ge` concludes: **for an
+actual primitive `2^m`-th root of unity in any characteristic-0 field, the subset-sumset over the
+half-domain has `≥ 2^{2^{m-1}}` elements** — super-exponential in the domain `2^m`. The char-0 §7
+disproof is therefore *proven* (with `thm71_no_fixed_exponent`). The sole remaining residual for a
+finite-field disproof of the prize-as-stated is the **number-theoretic lifting**: pick a large prime
+`p ≡ 1 (mod 2^m)` (Dirichlet) and a degree-1 prime `𝔭 ∣ p`; the `2^{2^{m-1}}` distinct algebraic-
+integer sums in `ℤ[ζ]` (bounded norm) stay distinct mod `𝔭`, witnessing `F_p` with super-poly bad
+count. That lifting needs `NumberField`/Dedekind-domain machinery and is O16's residual.
