@@ -15,8 +15,7 @@ namespace ArkLib.CodingTheory.Research
 
 variable {F : Type} [Field F] [Fintype F]
 
-/-- 
-  The Frobenius-Folded GS Constraint Matrix.
+/-- The Frobenius-Folded GS Constraint Matrix.
   Evaluates a trivariate polynomial Q(X, Y_0, Y_1) at the points 
   (x, r(x), r(x^2)) for each x in the evaluation domain L.
 -/

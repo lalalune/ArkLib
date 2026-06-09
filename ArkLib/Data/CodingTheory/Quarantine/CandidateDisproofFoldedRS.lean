@@ -32,8 +32,7 @@ variable {N E s : ℕ}
 /-- The total number of FRS blocks is `N / s`. -/
 def num_frs_blocks (N s : ℕ) : ℕ := N / s
 
-/-- 
-The standard Reed-Solomon error rate is `δ = E / N`.
+/-- The standard Reed-Solomon error rate is `δ = E / N`.
 The induced FRS block-error rate is `E / (N / s)`.
 We formally show this perfectly scales the error rate by a factor of `s`.
 -/
