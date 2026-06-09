@@ -903,6 +903,8 @@ import ArkLib.ProofSystem.Logup.Security.OuterSoundness
 import ArkLib.ProofSystem.Logup.Security.Soundness
 import ArkLib.ProofSystem.Logup.Security.SoundnessConverse
 import ArkLib.ProofSystem.Logup.Security.SubPhaseSplit
+import ArkLib.ProofSystem.Logup.Security.SumcheckCompleteness
+import ArkLib.ProofSystem.Logup.Security.SumcheckSoundness
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckBridge
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckPolynomial
 import ArkLib.ProofSystem.Plonk.Basic
