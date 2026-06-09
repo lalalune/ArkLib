@@ -202,6 +202,21 @@ theorem eval_liftComp_emptySpec_cross {ι₁ ι₂ : Type} {s₁ : OracleSpec ι
   | pure a => simp [evalWithAnswerFn]
   | query_bind t k ih => exact PEmpty.elim t
 
+/-- When an oracle spec has empty query domain (no query is possible), simulating any computation
+over it through a stateful probabilistic implementation collapses to a `pure` of its deterministic
+value — equal to evaluating it against any total answer table. The bridge from the deterministic
+`evalWithAnswerFn` semantics to the probabilistic `simulateQ`/`honestTranscriptDist` semantics in
+the query-free case. -/
+theorem simulateQ_run'_eq_pure_of_isEmpty_domain {ι : Type} {spec : OracleSpec ι}
+    [IsEmpty spec.Domain] {σ α : Type} (impl : QueryImpl spec (StateT σ ProbComp))
+    (comp : OracleComp spec α) (s : σ) (f : QueryImpl spec Id) :
+    (simulateQ impl comp).run' s = pure (evalWithAnswerFn f comp) := by
+  induction comp using OracleComp.inductionOn with
+  | pure a =>
+    rw [simulateQ_pure, StateT.run'_eq, StateT.run_pure, map_pure]
+    rfl
+  | query_bind t k ih => exact (IsEmpty.false t).elim
+
 set_option maxHeartbeats 1000000 in
 /-- **Challenge-free prover-run correspondence.** When the protocol has no challenge rounds and no
 shared oracle (`oSpec = []ₒ`), the Fiat-Shamir prover run and the interactive prover run produce the
