@@ -427,4 +427,61 @@ theorem append_soundness_msg'
     rw [← QueryImpl.simulateQ_compose]
     rfl
 
+/-- **Unconditional discharge of the named append-soundness residual, message-seam case.** The
+`Prop` `Verifier.appendSoundnessResidual V₁ V₂ h₁ h₂` is *definitionally*
+`(V₁.append V₂).soundness init impl lang₁ lang₃ (ε₁ + ε₂)` — i.e. exactly the conclusion
+of `append_soundness_msg'`. Hence for the message-first seam (the case that arises in the BCS
+compiler and in LogUp Protocol 2) the residual is no longer an unproved hypothesis: it follows
+from `append_soundness_msg'` under the same message-seam side conditions
+(`hn`/`hDir`/`hDir₂` pinning the seam round and `pSpec₂`'s opening round to prover messages,
+and `himplSP`/`himplNF`/`himplVB` on `impl`). This lets callers that previously had to *assume*
+`appendSoundnessResidual` (e.g. `Verifier.append_soundness` and
+`BCSCompiledPhases.toReduction_soundness_of_append`) instead *prove* it. -/
+theorem append_soundness_msg_residual
+    [Inhabited Stmt₂]
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃} {ε₁ ε₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ ε₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ ε₂)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    Verifier.appendSoundnessResidual (init := init) (impl := impl)
+      (lang₁ := lang₁) (lang₂ := lang₂) (lang₃ := lang₃) V₁ V₂ h₁ h₂ :=
+  append_soundness_msg' V₁ V₂ h₁ h₂ hn hDir hDir₂ himplSP himplNF himplVB
+
+/-- **Unconditional binary append-soundness, message-seam case** (the conclusion of
+`Verifier.append_soundness` with the residual hypothesis *eliminated*). This is the drop-in
+replacement for `Verifier.append_soundness` whenever the seam is a prover message: it proves
+`(V₁.append V₂).soundness init impl lang₁ lang₃ (ε₁ + ε₂)` outright, instead of
+assuming the named residual `appendSoundnessResidual`. -/
+theorem append_soundness_msg
+    [Inhabited Stmt₂]
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃} {ε₁ ε₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ ε₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ ε₂)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (V₁.append V₂).soundness init impl lang₁ lang₃ (ε₁ + ε₂) :=
+  Verifier.append_soundness V₁ V₂ h₁ h₂
+    (append_soundness_msg_residual V₁ V₂ h₁ h₂ hn hDir hDir₂ himplSP himplNF himplVB)
+
 end Verifier
+
+-- Axiom audit: the unconditional message-seam composition lemmas must not introduce `sorryAx`.
+#print axioms Verifier.append_soundness_msg_residual
+#print axioms Verifier.append_soundness_msg

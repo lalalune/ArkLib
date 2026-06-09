@@ -799,6 +799,7 @@ import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
 import ArkLib.MCACapacityTrivial_keep
 import ArkLib.MCAGSRefutationCore_keep
+import ArkLib.OracleReduction.BCS.AppendSoundnessMsg
 import ArkLib.OracleReduction.BCS.BCSCompilerProof
 import ArkLib.OracleReduction.BCS.Basic
 import ArkLib.OracleReduction.BCS.CompletenessPreservation
