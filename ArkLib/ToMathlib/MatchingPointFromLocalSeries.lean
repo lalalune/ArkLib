@@ -70,7 +70,21 @@ noncomputable def matchingPoint_of_localSeries_dvd {x₀ : F} {R : F[X][X][Y]}
   matchingPoint_of_localSeries hHyp hξ hlc z root hx aP
     (Polynomial.dvd_iff_isRoot.mp hdvd) haP_cong hsep t haP_coeff
 
+/-- **The per-`z` separability supply:** the specialized matching polynomial inherits
+separability from `Y`-separability of `R` itself (the GS squarefree-factor condition), by
+mapping the coprimality witnesses through the two coefficient homs. -/
+theorem specialized_separable_of_R_separable {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : Hypotheses x₀ R H)
+    (z : F) (root : rationalRoot (H_tilde' H) z)
+    (hx : (π_z z root) (ξ x₀ R H hHyp) ≠ 0)
+    (hR : R.Separable) :
+    ((R.map (coeffHom_loc x₀ hHyp)).map
+      (PowerSeries.map (π_hat_z hHyp z root hx))).Separable :=
+  (hR.map (f := coeffHom_loc x₀ hHyp)).map
+    (f := PowerSeries.map (π_hat_z hHyp z root hx))
+
 end ArkLib
 
 #print axioms ArkLib.matchingPoint_of_localSeries
 #print axioms ArkLib.matchingPoint_of_localSeries_dvd
+#print axioms ArkLib.specialized_separable_of_R_separable
