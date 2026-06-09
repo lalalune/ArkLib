@@ -312,6 +312,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualAffineLineRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BruteForceSearch
+import ArkLib.Data.CodingTheory.ProximityGap.C2CoreEliminationBound
 import ArkLib.Data.CodingTheory.ProximityGap.CAPairExtractionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy

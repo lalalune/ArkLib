@@ -2206,3 +2206,29 @@ to divisors of one ℤ-determinant — the effective Schwartz-Zippel threshold m
 the k-wise independence of error-locator normals is EMPIRICALLY FALSE at c=2 k≥3 (common-core triples
 have rank ≤ 2c < 3c) — the pairwise→k-wise promotion is structurally blocked; and the birthday-bound
 conjecture (max_γ M_γ ≤ C₁·C(n,w)/p uniform) is their remaining c=2 door.
+### O37 — the c=2 core-elimination bound LANDED (`C2CoreEliminationBound.lean`) + an honest proviso found in 2026/858 Thm 38
+
+The O33-flagged "formalizable, companion-note-sized" c=2 worst-case bound of ePrint
+2026/858 §7.5 is now machine-checked (axiom-clean, 0 sorry, 0 warnings, any field):
+
+* `syndr_insert` — the shift identity engine of their Lemma 37: adjoining a point to a
+  core acts LINEARLY on every shifted syndrome functional ⟹ the c=2 compatibility system
+  is bilinear in (extension point, line parameter).
+* `coreQuad` + `coreQuad_eval_eq_zero` — the degree-≤2 elimination resultant per
+  (w−1)-core; every compatible extension point is a root (their Thm 38 elimination).
+* `gamma_unique` — division-free Möbius-image well-definedness: a nondegenerate core
+  admits ≤ 1 compatible γ per extension point.
+* `c2_core_bound` — #{γ : ∃ E compatible} ≤ 2·C(n, w−1), p-independent.
+* **HONEST FINDING (de-laundering):** the paper packages the result as
+  `M_compat ≤ min(p, 2·C(n,w−1))` with the degenerate case handled by "≤ p trivially" —
+  but `min` claims BOTH components, and a degenerate support (all four window functionals
+  vanish) makes EVERY γ ∈ F_p compatible, so the 2·C(n,w−1) component genuinely needs a
+  nondegeneracy proviso. `coreQuad_eq_zero_of_degenerate` (not stated in the paper) pins
+  the minimal such hypothesis: a degenerate support kills the quadratic of every one of
+  its cores, so "every support has ≥ 1 core with nonzero quadratic" (our `hq`) is exactly
+  the right granularity. `c2_min_bound` is the honest min-form under `hq`;
+  `c2_card_bound` is what survives without it.
+
+Net: the verified codimension ladder now reads c≥w (unique decoding) → incidence/Fisher
+cap → GS walls at Johnson → **c=2 core-elimination (this)** → c≥3 = Conjecture 41 ≈ the
+prize's open core, starting exactly one codimension above what is now machine-checked.
