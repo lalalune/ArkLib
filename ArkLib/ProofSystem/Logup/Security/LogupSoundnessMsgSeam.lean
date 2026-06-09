@@ -219,3 +219,67 @@ end EmptyOracle
 end Logup
 
 #print axioms Logup.logup_soundness_msgSeam_emptyOracle
+
+namespace Logup
+
+section AnyMid
+
+variable {ι : Type} (oSpec : OracleSpec ι)
+variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)]
+  [SampleableType F]
+variable (n M : ℕ)
+variable (params : ProtocolParams M)
+variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+
+local instance instInhabitedFieldMsgSeamAnyMid : Inhabited F := ⟨0⟩
+
+/-- **Language-generic LogUp soundness composition (message seam).**
+
+The full LogUp verifier is sound from the input language into the output language with additive
+error `e₁ + e₂`, for **any** intermediate language `langMid` threading the outer → sumcheck seam:
+the seam routing (binary verifier fusion + the proven message-seam append keystone) is entirely
+independent of the choice of intermediate language.  This is the future-proof composition front
+door: in particular it accepts the *sharp* corrected intermediate language
+`midSoundnessProtocolLanguageSharp` (`OuterSoundnessSharp.lean`) directly, whereas the pinned
+`logup_soundness_msgSeam` is stated over `midSoundnessProtocolLanguage` (whose unrestricted
+denominator-clearing makes its outer obligation unsatisfiable in the typical regime — see
+`prob_midSoundnessLanguage_ge_compl_support`). -/
+theorem logup_soundness_msgSeam_anyMid
+    (langMid : Set (StmtAfterOuter F n M params × ∀ i, OStmtAfterOuter F n M params i))
+    (e₁ e₂ : ℝ≥0)
+    (hn : 0 < n)
+    (hOuter :
+      (outerVerifier oSpec F n M params).soundness init impl
+        (inputRelation F n M).language langMid e₁)
+    (hSumcheck :
+      (sumcheckVerifier oSpec F n M params).soundness init impl
+        langMid outputRelation.language e₂)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (e₁ + e₂) :=
+  OracleVerifier.append_soundness.{0, 0}
+    (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
+    hOuter hSumcheck
+    (OracleVerifier.oracleAppendSoundnessResidual_of_plain.{0, 0}
+      (init := init) (impl := impl)
+      (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
+      hOuter hSumcheck
+      (_root_.Verifier.append_soundness_msg
+        (outerVerifier oSpec F n M params).toVerifier
+        (sumcheckVerifier oSpec F n M params).toVerifier
+        hOuter hSumcheck
+        (logupSumcheck_length_pos n hn)
+        (logup_seam_dir F n M params hn)
+        (logupSumcheckPSpec_first_dir F n M params hn)
+        himplSP himplNF himplVB))
+
+end AnyMid
+
+end Logup
+
+#print axioms Logup.logup_soundness_msgSeam_anyMid
