@@ -693,8 +693,6 @@ import ArkLib.Data.Polynomial.FoldingPolynomial
 import ArkLib.Data.Polynomial.Frobenius
 import ArkLib.Data.Polynomial.GammaSubstObstruction
 import ArkLib.Data.Polynomial.HenselExistence
-import ArkLib.Data.Polynomial.HenselExistenceXDep
-import ArkLib.Data.Polynomial.HenselRootExistenceBCIKS
 import ArkLib.Data.Polynomial.HenselSeriesCoeff
 import ArkLib.Data.Polynomial.Indicator
 import ArkLib.Data.Polynomial.Interface
