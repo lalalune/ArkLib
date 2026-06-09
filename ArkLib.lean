@@ -1015,11 +1015,13 @@ import ArkLib.OracleReduction.SimulateQ
 import ArkLib.OracleReduction.VectorIOR
 import ArkLib.ProofSystem.BCS.ErrorAccounting
 import ArkLib.ProofSystem.BCS.TransparentEndToEnd
+import ArkLib.ProofSystem.BatchedFri.CosetInjectivity
 import ArkLib.ProofSystem.BatchedFri.QueryRoundAnalysis
 import ArkLib.ProofSystem.BatchedFri.QueryRoundProbability
 import ArkLib.ProofSystem.BatchedFri.QueryRoundRSAffineLineSoundness
 import ArkLib.ProofSystem.BatchedFri.QueryRoundRSCurveSoundness
 import ArkLib.ProofSystem.BatchedFri.QueryRoundSoundness
+import ArkLib.ProofSystem.BatchedFri.QuerySoundnessSmallField
 import ArkLib.ProofSystem.BatchedFri.Security
 import ArkLib.ProofSystem.BatchedFri.Spec.General
 import ArkLib.ProofSystem.BatchedFri.Spec.SingleRound
