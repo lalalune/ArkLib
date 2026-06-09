@@ -2284,3 +2284,25 @@ E1 — any size bound must exceed 2^252.4 ≫ the 2^228.4 ceiling, so the window
 ARITHMETIC (splitting/divisibility) or a new construction, not better inequalities (E1 is
 essentially tight on the difference set). The transition zone N₀ ≲ p < T (lattice statistics of
 𝔭 ∩ {−2..2}^{m/2}); P-B untouched (descent lane O13–O13″).
+
+### O37 addendum — the literal Thm 38 `min` packaging is REFUTED (machine-checked counterexample)
+
+The O37 proviso is not caution — it is necessary. `C2CoreEliminationBound.lean` §DegenerateLine
+(axiom-clean, 0 sorry, 0 warnings) upgrades the paper's own Remark-31 evaluation-syndrome device
+to a LINE: take `s₁ = s_α, s₂ = s_β` (evaluation syndromes) with `{α, β} ⊆ E`. Both window
+functionals of `Λ_E` and `X·Λ_E` are `x^r·Λ_E(x)` at a root of `Λ_E`, so they vanish at both
+line endpoints ⟹ EVERY `γ ∈ F` is compatible:
+
+* `compat_evalSynd_line` — the degeneracy construction (any field, char-free).
+* `degenerate_line_full` — the compatible-γ set is all of `F`.
+* `thm38_min_bound_fails` — `M_compat ≤ min(p, 2·C(n, w−1))` FAILS whenever
+  `|F| > 2·C(n, w−1)` — i.e. for every prize-relevant field size.
+* `thm38_refutation_instance` — concrete witness over `ZMod 11` (n=3, w=2, N=4:
+  count 11 > 6 = the claimed bound).
+
+Honest scope: the refutation targets `M_compat` exactly as the theorem prints it
+(`M_true ≤ M_compat ≤ min(...)`); for `M_true` the same supports contribute nothing (the
+Vandermonde solution is supported on `{α,β}`), so their headline `M_true` claims survive —
+what's broken is the middle inequality's packaging, fixed by the O37 nondegeneracy proviso
+(`c2_min_bound`). The Möbius/core method itself is sound and is now machine-checked in its
+corrected form.

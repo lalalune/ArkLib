@@ -296,4 +296,113 @@ theorem c2_min_bound {s₁ s₂ : ℕ → F} {N : ℕ} {D₀ : Finset F} {w : �
 
 end Count
 
+/-! ## Refutation of the literal Theorem 38 packaging: degenerate lines exist
+
+The proviso above is not vacuous caution — the unproviso'd `min(p, 2·C(n,w−1))` claim is
+**false** for adversarial lines, by the paper's own Remark-31 device upgraded to a line:
+take the line spanned by two *evaluation syndromes* `s_α, s_β` with `{α, β} ⊆ E`. Both
+window functionals of `Λ_E` and `X·Λ_E` are then `x^r·Λ_E(x)` evaluated at a root of
+`Λ_E`, so they vanish on both endpoints of the line — every `γ ∈ F` is compatible, the
+compatible-`γ` set is all of `F`, and the `2·C(n,w−1)` component fails whenever
+`|F| > 2·C(n,w−1)`. (For their `M_true` the same supports contribute nothing — the
+Vandermonde solution is supported on `{α, β}` only — so the refutation targets exactly
+the `M_compat ≤ min(...)` claim as printed.) -/
+
+section DegenerateLine
+
+/-- The evaluation syndrome at `x`: `s_j = x^j`. -/
+def evalSynd (x : F) : ℕ → F := fun j => x ^ j
+
+/-- On a window past the degree, the syndrome pairing against an evaluation syndrome is
+plain evaluation. -/
+lemma synd_evalSynd {P : F[X]} {N : ℕ} (hdeg : P.natDegree < N) (x : F) :
+    synd (evalSynd x) N P = P.eval x :=
+  (Polynomial.eval_eq_sum_range' hdeg x).symm
+
+lemma loc_natDegree_le (E : Finset F) : (loc E).natDegree ≤ E.card := by
+  rw [loc]
+  refine le_trans (Polynomial.natDegree_prod_le _ _) (le_of_eq ?_)
+  simp
+
+lemma loc_eval_eq_zero {E : Finset F} {x : F} (hx : x ∈ E) : (loc E).eval x = 0 := by
+  rw [loc, eval_prod]
+  exact Finset.prod_eq_zero hx (by simp)
+
+/-- **The degeneracy construction**: a support containing both endpoints of the
+evaluation-syndrome line is compatible at *every* line parameter `γ`. -/
+theorem compat_evalSynd_line {E : Finset F} {α β : F} {N : ℕ}
+    (hα : α ∈ E) (hβ : β ∈ E) (hN : E.card + 1 < N) (γ : F) :
+    Compat (evalSynd α) (evalSynd β) N E γ := by
+  have hdeg : ∀ r : ℕ, r ≤ 1 → ((X : F[X]) ^ r * loc E).natDegree < N := by
+    intro r hr
+    have h1 : ((X : F[X]) ^ r * loc E).natDegree ≤ r + E.card := by
+      refine le_trans natDegree_mul_le ?_
+      have := loc_natDegree_le E
+      have hx : ((X : F[X]) ^ r).natDegree ≤ r := natDegree_X_pow_le r
+      omega
+    omega
+  have hzero : ∀ (x : F), x ∈ E → ∀ r : ℕ, r ≤ 1 →
+      syndr (evalSynd x) N r E = 0 := by
+    intro x hx r hr
+    rw [syndr, synd_evalSynd (hdeg r hr)]
+    simp [loc_eval_eq_zero hx]
+  exact ⟨by rw [hzero α hα 0 (by norm_num), hzero β hβ 0 (by norm_num)]; ring,
+         by rw [hzero α hα 1 le_rfl, hzero β hβ 1 le_rfl]; ring⟩
+
+variable [Fintype F] [DecidableEq F]
+
+omit [DecidableEq F] in
+open Classical in
+/-- On the evaluation-syndrome line through two points of a common support, **every**
+`γ ∈ F` is compatible: the compatible-parameter set is the whole field. -/
+theorem degenerate_line_full {D₀ : Finset F} {w N : ℕ} {α β : F}
+    (hE : ∃ E ∈ D₀.powersetCard w, α ∈ E ∧ β ∈ E) (hN : w + 1 < N) :
+    (Finset.univ.filter fun γ : F =>
+        ∃ E ∈ D₀.powersetCard w, Compat (evalSynd α) (evalSynd β) N E γ)
+      = Finset.univ := by
+  obtain ⟨E, hEmem, hα, hβ⟩ := hE
+  have hcard : E.card = w := (Finset.mem_powersetCard.mp hEmem).2
+  ext γ
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, iff_true]
+  exact ⟨E, hEmem, compat_evalSynd_line hα hβ (by omega) γ⟩
+
+omit [DecidableEq F] in
+open Classical in
+/-- **Refutation of the literal 2026/858 Theorem 38 packaging**: without the
+nondegeneracy proviso, the claimed bound `M_compat ≤ min(p, 2·C(n, w−1))` FAILS on the
+evaluation-syndrome line as soon as `|F| > 2·C(n, w−1)`. -/
+theorem thm38_min_bound_fails {D₀ : Finset F} {w N : ℕ} {α β : F}
+    (hE : ∃ E ∈ D₀.powersetCard w, α ∈ E ∧ β ∈ E) (hN : w + 1 < N)
+    (hbig : 2 * D₀.card.choose (w - 1) < Fintype.card F) :
+    ¬ ((Finset.univ.filter fun γ : F =>
+        ∃ E ∈ D₀.powersetCard w, Compat (evalSynd α) (evalSynd β) N E γ).card
+      ≤ min (Fintype.card F) (2 * D₀.card.choose (w - 1))) := by
+  rw [degenerate_line_full hE hN, Finset.card_univ]
+  omega
+
+instance : Fact (Nat.Prime 11) := ⟨by norm_num⟩
+
+open Classical in
+/-- Concrete witness over `ZMod 11`: domain `{0,1,2}`, `w = 2`, support `{0,1}`,
+window `N = 4` — the compatible-`γ` count is `11 > 6 = min(11, 2·C(3,1))`. -/
+theorem thm38_refutation_instance :
+    ¬ ((Finset.univ.filter fun γ : ZMod 11 =>
+        ∃ E ∈ ({0, 1, 2} : Finset (ZMod 11)).powersetCard 2,
+          Compat (evalSynd 0) (evalSynd 1) 4 E γ).card
+      ≤ min (Fintype.card (ZMod 11))
+          (2 * ({0, 1, 2} : Finset (ZMod 11)).card.choose (2 - 1))) := by
+  have hwit : ({0, 1} : Finset (ZMod 11)) ∈
+      ({0, 1, 2} : Finset (ZMod 11)).powersetCard 2 := by decide
+  have h := thm38_min_bound_fails (F := ZMod 11) (D₀ := {0, 1, 2}) (w := 2) (N := 4)
+    (α := 0) (β := 1)
+    ⟨{0, 1}, hwit, by decide, by decide⟩ (by norm_num)
+    (by rw [ZMod.card]; decide)
+  convert h using 2
+  congr 1
+  ext γ
+  simp only [Finset.mem_filter]
+
+end DegenerateLine
+
+
 end C2CoreBound
