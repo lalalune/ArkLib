@@ -88,9 +88,9 @@ theorem spike_size_at_latticeJ (n : ℕ) (j : Fin (n + 1)) (hn : 0 < n)
   unfold mcaLatticePoint
   rw [show (n - (j.val + 1) + 1 : ℕ) = n - j.val from by omega]
   -- (1 - j/n) · n = n - j
-  rw [tsub_mul, one_mul, NNReal.div_mul_cancel₀ _ (ne_of_gt hn_pos)]
+  rw [tsub_mul, one_mul, div_mul_cancel₀ _ (ne_of_gt hn_pos)]
   -- n - j ≤ n - j
-  exact le_refl _
+  exact le_refl ((n - j.val : ℕ) : ℝ≥0)
 
 /-- **The general spike-plant MCA lower bound at lattice index `j`.**
 
@@ -110,7 +110,7 @@ the wide-regime condition `n - k ≥ 2j + 1`), this gives the exact value
 `WideRegimeDisjointness.lean`, these are all below the Johnson radius. -/
 theorem epsMCA_generalJ_ge
     (domain : ι ↪ F) {k : ℕ} (j : Fin (Fintype.card ι + 1))
-    (hjpos : 0 < j.val) (hjn : j.val < Fintype.card ι)
+    (hjn : j.val < Fintype.card ι)
     (ht_n : j.val + 1 + k ≤ Fintype.card ι)
     (ht_q : j.val + 1 ≤ Fintype.card F) :
     (↑(j.val + 1) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤
@@ -128,7 +128,7 @@ This is the **upper bracket** for the MCA threshold: it tells us `δ* ≤ j/n`
 when `j + 2 > ε* · |F|`, equivalently `j ≥ ⌊ε* · |F|⌋`. -/
 theorem epsMCA_threshold_upper_bracket_from_spike
     (domain : ι ↪ F) {k : ℕ} (j : Fin (Fintype.card ι + 1))
-    (hjpos : 0 < j.val) (hjn : j.val < Fintype.card ι)
+    (hjn : j.val < Fintype.card ι)
     (ht_n : j.val + 1 + k ≤ Fintype.card ι)
     (ht_q : j.val + 1 ≤ Fintype.card F)
     (ε_star : ℝ≥0)
@@ -136,6 +136,6 @@ theorem epsMCA_threshold_upper_bracket_from_spike
     (ε_star : ℝ≥0∞) <
       epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F))
         (mcaLatticePoint (Fintype.card ι) j) :=
-  lt_of_lt_of_le hε_lt (epsMCA_generalJ_ge domain j hjpos hjn ht_n ht_q)
+  lt_of_lt_of_le hε_lt (epsMCA_generalJ_ge domain j hjn ht_n ht_q)
 
 end ProximityGap

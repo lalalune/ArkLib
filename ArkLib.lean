@@ -659,8 +659,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetWall
 import ArkLib.Data.CodingTheory.ProximityGap.Round9SalieQuarticReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Round9SubgroupCharExpansion
-import ArkLib.Data.CodingTheory.ProximityGap.SatCheck2_tmp
-import ArkLib.Data.CodingTheory.ProximityGap.SatCheck_tmp
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovFrobeniusReduction
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovHasseInterface
