@@ -1351,6 +1351,7 @@ import ArkLib.ToMathlib.EliasVolumeCertificates
 import ArkLib.ToMathlib.EmbeddingCoefficientCommutation
 import ArkLib.ToMathlib.ExtractedIssueBricks
 import ArkLib.ToMathlib.FaaDiBrunoMatchProof
+import ArkLib.ToMathlib.FaithfulCurveExtraction
 import ArkLib.ToMathlib.FinSumMvPolyBricks
 import ArkLib.ToMathlib.FiniteSeriesToPoly
 import ArkLib.ToMathlib.Finset.Basic
