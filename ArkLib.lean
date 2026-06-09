@@ -848,6 +848,7 @@ import ArkLib.Data.Polynomial.RationalFunctionsStrong
 import ArkLib.Data.Polynomial.SplitFold
 import ArkLib.Data.Polynomial.Trivariate
 import ArkLib.Data.Polynomial.UnivariateAgreement
+import ArkLib.Data.Polynomial.WeightZLinear
 import ArkLib.Data.Probability.Combinatorial
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
