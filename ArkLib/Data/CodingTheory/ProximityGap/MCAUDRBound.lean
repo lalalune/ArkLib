@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.JointAgreement
 
 /-!
 # Connected unique-decoding-regime MCA bound for Reed–Solomon, from scratch (#232)
@@ -242,8 +243,159 @@ noncomputable def rs_mcaLowerWitness_udr (α : ι ↪ F) (k : ℕ) [NeZero k] (h
       _ = (m : ℝ≥0∞) * 1 / ((m : ℝ≥0∞) * 2 ^ 128) := by rw [mul_one]
       _ = 1 / 2 ^ 128 := ENNReal.mul_div_mul_left 1 (2 ^ 128) hm0 hmt
 
+/-! ## Extension to the *full* unique-decoding radius via the proximity-gap dichotomy
+
+The bound `badCount_udr_le` needs `3(n − t) < d` because it bootstraps the global codeword pair
+from *two* bad scalars (so the agreement set is an intersection of two witness sets, size `2t − n`,
+and a third witness intersection costs another `(n − t)`). The Polishchuk–Spielman-backed
+`RS_jointAgreement_of_goodCoeffs_card_gt` instead hands the global pair directly on a *single*
+size-`t` set, removing one factor: the regime relaxes to `2(n − t) < d`, i.e. the *full*
+unique-decoding radius `δ ≤ (d−1)/(2n)`. -/
+
+/-- **Bad-scalar bound with a handed-in global pair (e.g. from `jointAgreement`).** Needs only
+`2(n − t) < d`. The pair `(c₀, c₁)` agreeing with `(u₀, u₁)` on a single size-`t` set `S₀` lets the
+min-distance step pin `w γ = c₀ + γ • c₁` (agreement on `S₀ ∩ S γ`, size `≥ 2t − n`), after which
+`¬ pairJointAgreesOn` forces an `i ∈ E := supp(e₁)` with `e₀ i + γ · e₁ i = 0`; that map
+`γ ↦ i` is injective (`badGamma_le`), so the bad count is `≤ |E| ≤ n − t`. -/
+theorem badCount_udr_le_jointAgreement (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t : ℕ)
+    (hmd : ∀ a ∈ C, ∀ b ∈ C, (univ.filter (fun i => a i ≠ b i)).card < d → a = b)
+    (hreg : 2 * (Fintype.card ι - t) < d)
+    (c₀ c₁ : ι → F) (hc₀C : c₀ ∈ C) (hc₁C : c₁ ∈ C)
+    (S₀ : Finset ι) (hS₀t : t ≤ S₀.card)
+    (hc₀S : ∀ i ∈ S₀, c₀ i = u₀ i) (hc₁S : ∀ i ∈ S₀, c₁ i = u₁ i)
+    (G : Finset F) (S : F → Finset ι) (w : F → ι → F)
+    (hSt : ∀ γ ∈ G, t ≤ (S γ).card)
+    (hwC : ∀ γ ∈ G, w γ ∈ C)
+    (hwS : ∀ γ ∈ G, ∀ i ∈ S γ, w γ i = u₀ i + γ • u₁ i)
+    (hno : ∀ γ ∈ G, ¬ pairJointAgreesOn (C : Set (ι → F)) (S γ) u₀ u₁) :
+    G.card ≤ Fintype.card ι - t := by
+  classical
+  set e₀ : ι → F := u₀ - c₀ with he₀def
+  set e₁ : ι → F := u₁ - c₁ with he₁def
+  have he₁S₀ : ∀ i ∈ S₀, e₁ i = 0 := fun i hi => by
+    simp only [he₁def, Pi.sub_apply, hc₁S i hi, sub_self]
+  have hsupp : (univ.filter (fun i => e₁ i ≠ 0)).card ≤ Fintype.card ι - t := by
+    have hsub : (univ.filter (fun i => e₁ i ≠ 0)) ⊆ S₀ᶜ := by
+      intro i hi; simp only [mem_filter, mem_univ, true_and] at hi
+      simp only [mem_compl]; intro hiS₀; exact hi (he₁S₀ i hiS₀)
+    calc (univ.filter (fun i => e₁ i ≠ 0)).card ≤ S₀ᶜ.card := card_le_card hsub
+      _ = Fintype.card ι - S₀.card := card_compl S₀
+      _ ≤ Fintype.card ι - t := by omega
+  have hGsub : G ⊆ univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0) := by
+    intro γ hγ
+    simp only [mem_filter, mem_univ, true_and]
+    have hcollapse : w γ = c₀ + γ • c₁ := by
+      apply hmd _ (hwC γ hγ) _ (C.add_mem hc₀C (C.smul_mem _ hc₁C))
+      have hsub2 : (univ.filter (fun i => w γ i ≠ (c₀ + γ • c₁) i)) ⊆ (S₀ ∩ S γ)ᶜ := by
+        intro i hi; simp only [mem_filter, mem_univ, true_and] at hi
+        simp only [mem_compl, mem_inter, not_and]; intro hiS₀ hiS
+        apply hi
+        have e1 := hc₀S i hiS₀; have e2 := hc₁S i hiS₀; have e3 := hwS γ hγ i hiS
+        simp only [Pi.add_apply, Pi.smul_apply, e1, e2, e3, smul_eq_mul]
+      have hcardle : (univ.filter (fun i => w γ i ≠ (c₀ + γ • c₁) i)).card < d := by
+        have hle := card_le_card hsub2
+        rw [card_compl] at hle
+        have hun : (S₀ ∪ S γ).card ≤ Fintype.card ι := by simpa using card_le_univ (S₀ ∪ S γ)
+        have hui : (S₀ ∪ S γ).card + (S₀ ∩ S γ).card = S₀.card + (S γ).card :=
+          card_union_add_card_inter S₀ (S γ)
+        have hsg := hSt γ hγ
+        omega
+      exact hcardle
+    have hnpj := hno γ hγ
+    have hexi : ∃ i ∈ S γ, ¬ (c₀ i = u₀ i ∧ c₁ i = u₁ i) := by
+      by_contra hcon; push_neg at hcon
+      exact hnpj ⟨c₀, hc₀C, c₁, hc₁C, fun i hi => hcon i hi⟩
+    obtain ⟨i, hiS, hidis⟩ := hexi
+    have hci := congrFun hcollapse i
+    simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul] at hci
+    have hsi := hwS γ hγ i hiS
+    rw [smul_eq_mul] at hsi
+    have hc : u₀ i + γ * u₁ i = c₀ i + γ * c₁ i := by rw [← hsi, hci]
+    have haff : e₀ i + γ * e₁ i = 0 := by
+      simp only [he₀def, he₁def, Pi.sub_apply]; linear_combination hc
+    have he₁i : e₁ i ≠ 0 := by
+      intro h0
+      rw [h0, mul_zero, add_zero] at haff
+      apply hidis
+      refine ⟨?_, ?_⟩
+      · have hz : u₀ i - c₀ i = 0 := by simpa only [he₀def, Pi.sub_apply] using haff
+        exact (sub_eq_zero.mp hz).symm
+      · have hz : u₁ i - c₁ i = 0 := by simpa only [he₁def, Pi.sub_apply] using h0
+        exact (sub_eq_zero.mp hz).symm
+    exact ⟨i, he₁i, haff⟩
+  calc G.card
+      ≤ (univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0)).card := card_le_card hGsub
+    _ ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := badGamma_le e₀ e₁
+    _ ≤ Fintype.card ι - t := hsupp
+
+open Code Classical in
+/-- **Full-UDR MCA bound for Reed–Solomon.** For `RS[F, α, k]` with `k ≤ n`, *below the unique-
+decoding radius* (`δ ≤ relUDR`) and in the regime `2(n − ⌈(1−δ)n⌉) < n − k + 1`,
+`ε_mca(RS, δ) ≤ |ι|/|F|`. The proof splits each pencil via `RS_goodCoeffs_card_dichotomy`: if the
+δ-close count is `≤ |ι|` the bad count is too (`badCount_le_lineCloseCount`); otherwise
+`jointAgreement` holds and `badCount_udr_le_jointAgreement` bounds the bad count by `n − t ≤ |ι|`.
+This extends `epsMCA_rs_udr_le` (regime `3(n − t) < d`) to the full unique-decoding radius. -/
+theorem epsMCA_rs_udr_le_full (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintype.card ι) (δ : ℝ≥0)
+    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code α k))
+    (hreg : 2 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) < Fintype.card ι - k + 1) :
+    epsMCA (F := F) (A := F) (ReedSolomon.code α k : Set (ι → F)) δ
+      ≤ (Fintype.card ι : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+  set t : ℕ := ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊ with htdef
+  have hmd := rs_min_dist α k hk
+  apply epsMCA_le_of_badCount_le (F := F) (A := F) (ReedSolomon.code α k : Set (ι → F)) δ
+    (Fintype.card ι)
+  intro u
+  by_cases hgt : (RS_goodCoeffs (deg := k) (domain := α) u δ).card > Fintype.card ι
+  · have hja := RS_jointAgreement_of_goodCoeffs_card_gt (deg := k) (domain := α) hδ u hgt
+    obtain ⟨S₀, hS₀card, v, hv⟩ := hja
+    have hS₀t : t ≤ S₀.card := by
+      rw [htdef]; exact Nat.ceil_le.mpr (by exact_mod_cast hS₀card)
+    have hc₀C : v 0 ∈ ReedSolomon.code α k := (hv 0).1
+    have hc₁C : v 1 ∈ ReedSolomon.code α k := (hv 1).1
+    have hc₀S : ∀ i ∈ S₀, v 0 i = u 0 i := fun i hi => by
+      have := (hv 0).2 hi; rw [Finset.mem_filter] at this; exact this.2
+    have hc₁S : ∀ i ∈ S₀, v 1 i = u 1 i := fun i hi => by
+      have := (hv 1).2 hi; rw [Finset.mem_filter] at this; exact this.2
+    set G : Finset F :=
+      univ.filter (fun γ : F =>
+        mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ) with hGdef
+    set Sf : F → Finset ι := fun γ =>
+      if h : mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ
+        then h.choose else ∅ with hSdef
+    set wf : F → ι → F := fun γ =>
+      if h : mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ
+        then (h.choose_spec.2.1).choose else 0 with hwdef
+    have hbound := badCount_udr_le_jointAgreement (ReedSolomon.code α k) (u 0) (u 1)
+      (Fintype.card ι - k + 1) t hmd hreg (v 0) (v 1) hc₀C hc₁C S₀ hS₀t hc₀S hc₁S
+      G Sf wf ?_ ?_ ?_ ?_
+    · exact le_trans (by simpa [hGdef] using hbound) (Nat.sub_le _ _)
+    · intro γ hγ
+      rw [hGdef, mem_filter] at hγ; have h := hγ.2
+      simp only [hSdef, dif_pos h]
+      rw [htdef]; exact Nat.ceil_le.mpr (by exact_mod_cast h.choose_spec.1)
+    · intro γ hγ
+      rw [hGdef, mem_filter] at hγ; have h := hγ.2
+      simp only [hwdef, dif_pos h]; exact (h.choose_spec.2.1).choose_spec.1
+    · intro γ hγ i hi
+      rw [hGdef, mem_filter] at hγ; have h := hγ.2
+      simp only [hwdef, dif_pos h]; simp only [hSdef, dif_pos h] at hi
+      exact (h.choose_spec.2.1).choose_spec.2 i hi
+    · intro γ hγ
+      rw [hGdef, mem_filter] at hγ; have h := hγ.2
+      simp only [hSdef, dif_pos h]; exact h.choose_spec.2.2
+  · push_neg at hgt
+    refine le_trans (badCount_le_lineCloseCount (ReedSolomon.code α k : Set (ι → F)) δ u) ?_
+    have heq : (univ.filter (fun γ : F => δᵣ(u 0 + γ • u 1,
+        (ReedSolomon.code α k : Set (ι → F))) ≤ δ))
+        = RS_goodCoeffs (deg := k) (domain := α) u δ := by
+      rw [RS_goodCoeffs]
+    rw [heq]; exact hgt
+
 #print axioms badCount_udr_le
 #print axioms epsMCA_rs_udr_le
 #print axioms rs_mcaLowerWitness_udr
+#print axioms badCount_udr_le_jointAgreement
+#print axioms epsMCA_rs_udr_le_full
 
 end ProximityGap.UDRwire
