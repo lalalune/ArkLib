@@ -1772,3 +1772,19 @@ between the off-diagonal kernel (`fa6d16534`), the O11′ sumset probes, and KK2
 search at this scale found ONLY structured bad scalars — supporting the exhaustiveness hypothesis
 (H1: structured families are the whole list past Johnson), the upper-bound route's best hope.
 Reproduction: /home/nubs/proximity-research/probe_kk_live.py (seed 9).
+
+### O11‴ — EXACT char-0 subgroup-sumset formula (data-confirmed) + averaged moderate-p route (nubs, 2026-06-09)
+
+Fiber statistics of e₁ on r-subsets of the order-m (2-power) subgroup are p-INDEPENDENT at moderate
+p (identical at 786433 and 2013265921): all collisions are characteristic-0, and the only
+small-coefficient 2-power cyclotomic relation is the pairing ζ^{j+m/2} = −ζ^j. Hence (derived, and
+EXACTLY matching data):
+  image(m,r) = Σ_{s≤r, s≡r(2), r−s≤2(m/2−s)} C(m/2,s)·2^s   (m=16,r=8: 3281 ✓; m=8,r=4: 41 ✓)
+  maxfiber(m,r) = C(m/2,⌊r/2⌋)                              (70 = C(8,4) ✓; 6 = C(4,2) ✓)
+Asymptotics ~3^{m/2} = 2^{0.79m} — replaces the H(ρ) heuristics with sharp constants in the
+bad-scalar counts (O11″ lift). Moderate-p rigor: a modular collision forces p | N(α) with
+0<|N(α)|≤m^{m/2}; counting (α,p) pairs + Dirichlet gives an AVERAGED theorem-shape — for most
+primes p ≈ 2^{1.2m} ≡ 1 mod m (inside the prize window for m ≤ 200), ZERO modular collisions, so
+the image equals the exact formula. Sketch (elementary; pending careful write-up); the per-prime
+statement is the residual P-A kernel. Char-0 formula is finite combinatorics + standard cyclotomic
+independence ⟹ Lean-formalizable brick (queued). Probes: probe_fibers.py in the research folder.
