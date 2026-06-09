@@ -1962,3 +1962,14 @@ marginal layer is rigidly balanced-overlap with full coefficient support. The co
 mechanism must engage the witnesses' mutual algebra, not agreement-set combinatorics. Next: targeted
 literature check (deep-hole / balanced-overlap phenomena in list decoding) + the witnesses' pairwise
 agreement algebra. Scripts: probe_h2.py.
+
+**O30 probe (pair-count field scaling, nubs).** Rate-1/2 order-8 smooth instances, n=8 k=4 a=5,
+30 random lines each: per-line list mass M = ∑_γ|Λ(γ)| is FIELD-SIZE INDEPENDENT (48.1 / 51.8 /
+52.9 at q = 17 / 41 / 73), while co-occurring pairs per line match the birthday estimate M²/2q
+exactly (predicted 73 / 30 / 17, observed 53.7 / 23.2 / 15.3). So on random lines the off-diagonal
+is purely birthday-random: per-line 2nd moment ≈ M + O(M²/q) — exactly the poly/|F| shape the prize
+needs. The reduced conjecture: (i) M ≤ poly(n) uniformly over lines (M is the line-list mass, a
+combinatorial (n,k,a) quantity, empirically constant in q), and (ii) adversarial lines cannot beat
+birthday by more than poly(n) (vote anti-concentration — where smooth-domain RS structure must
+enter). Either piece failing would localize the obstruction; both holding pins ε_line ≈ M²/q per
+line. Evidence, not proof; lower-bound side untested on adversarial lines.
