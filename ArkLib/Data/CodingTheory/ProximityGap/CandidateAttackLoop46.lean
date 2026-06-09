@@ -143,7 +143,7 @@ prize-as-stated (`2^m = |domain|`, all sizes, one fixed triple) is refuted. This
 sense in which the §7 route *threatens* the prize, conditional on the O11 sumset-growth question. -/
 theorem thm71_no_fixed_exponent (c₁ : ℕ) :
     ∃ m : ℕ, ((2 : ℝ) ^ m) ^ c₁ < (2 : ℝ) ^ (2 ^ m) := by
-  refine ⟨c₁ + 1, ?_⟩
+  refine ⟨2 ^ (c₁ + 1), ?_⟩
   rw [← pow_mul]
   exact pow_lt_pow_right₀ (by norm_num) (pow_mul_lt_two_pow_two_pow c₁)
 

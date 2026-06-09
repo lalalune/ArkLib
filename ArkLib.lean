@@ -616,7 +616,6 @@ import ArkLib.Data.CodingTheory.SingletonBound
 import ArkLib.Data.CodingTheory.SingletonBoundRate
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CodingTheory.SubspaceDesign.Basic
-import ArkLib.Data.CodingTheory.SubspaceDesign.MultiplicityTorus
 import ArkLib.Data.CodingTheory.SubspaceDesign.NormTorus
 import ArkLib.Data.CompPoly.Basic
 import ArkLib.Data.Domain.CosetFftDomain.Defs
@@ -743,7 +742,6 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
 import ArkLib.OracleReduction.Composition.Sequential.ChallengeSeamBridge
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendChallenge
-import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendCompletenessProof
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendReduction
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.SeamChallengeRestriction

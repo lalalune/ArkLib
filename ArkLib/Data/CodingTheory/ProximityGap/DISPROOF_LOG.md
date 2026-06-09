@@ -910,3 +910,37 @@ turns on whether the prize statement's `2^m=|domain|` linkage is enforced at sma
 **Next (O11→):** bound `|G^{(+ℓ)}|` for a 2-power multiplicative subgroup using the vanishing
 power-sum / Newton-identity relations (would *prove* the prize survives §7, modulo the list-decoding
 core O10); or find a subgroup family with super-poly subset-sumset at the critical `ℓ` (disproof).
+
+**Update (Loop46+):** the disproof *branch* of O11 is now a sorry-free theorem
+(`thm71_no_fixed_exponent`, axiom-clean): for **every** fixed numerator exponent `c₁` there is a
+minimal domain `2^m` at which a maximal sumset `2^{2^m}` strictly exceeds `(2^m)^{c₁}`. So *if* the
+subgroup sumset attains its `2^{|G|}` bound at fixed gap, the prize-as-stated is refuted — no fixed
+triple survives. Honest correction to the earlier "leans survive": the survive direction is **not**
+free — it requires actually proving `|G^{(+ℓ)}|` is sub-exponential (the power-sum bound), which is
+open. The §7 route genuinely threatens the minimal-domain prize (and re-opens the O6 statement-
+fidelity question: is the prize claimed at small `n`, or only asymptotically?).
+
+### O12 / Loop47 — "many values at a random point" ⟹ proximity gaps stop at the list-decoding radius
+
+The *forward* direction of the equivalence (the prize is **as hard as** RS list-decoding to
+`1−ρ−η`) is now machine-checked in `CandidateListDecEquivLoop47.lean` (sorry-free, axiom-clean).
+
+* **Combinatorial engine already in-tree.** BCHKS Lemma 6.1 (= ABF26 "Claim B.1",
+  `Probability.exists_large_image_of_pairwise_collision_bound`, on `cauchy_schwarz_fiber`) is already
+  proven sorry-free. Loop47 adds the clean **deterministic product form**
+  `manyValues_of_pairwise_agree`: any `c : Fin L → (ι→F)` pairwise agreeing on `≤ A` points has a
+  point `i` with `L·|ι| ≤ |{c j i}|·(|ι| + L·A)`, i.e. `|values at i| ≥ L·|ι|/(|ι|+L·A)`. Applied to
+  a ball of `>q` RS codewords (`|ι|=q`, `A=k−1`) ⟹ a point carrying `Ω(q/n)` values.
+* **Theorem 1.9 punchline.** `thm19_qIndependence_contradiction`: if list-decoding fails at the prize
+  radius badly enough that the bad-scalar count obeys `q ≤ 2·D·bad` (`D=2^m=|domain|`), then **no
+  fixed prize exponent `c₁` survives** — a field with `q > 2·D^{c₁+1}` refutes `bad ≤ D^{c₁}`. `D` is
+  pinned by `(ρ,η)`, `q→∞` is allowed ⟹ every `c₁` beaten.
+* **Cited residual.** Only BCHKS Claim 6.2 (the rational-function bridge `f=c/(X−α)`, `g=−1/(X−α)`
+  turning "value `z` at `α`" into "`f+zg` is `γ`-close") is kept as the hypothesis `hMany_bridge` in
+  `prize_false_of_listDecoding_failure`; formalizing it over the RS API is the next residual.
+
+**Net.** Loop47 (list-decoding-fails ⟹ prize-false) + the in-tree converse (Loop8/O6′: prize ⟹
+`q`-independent list) pin the prize as **equivalent** to RS list-decoding with `q`-independent lists
+up to `1−ρ−η` — a classical, wide-open problem. The prize is neither closed nor mintable; it is now
+*provably exactly as hard as* that problem. Both O11 (disproof side, §7 sumset) and O10/O12 (the
+list-decoding core) remain open.

@@ -69,7 +69,7 @@ honest oracle query) to `pure`. -/
 @[local simp] lemma map_liftM_Id {ιj : Type} {sp : OracleSpec ιj} {α β : Type} (f : α → β)
     (v : Id α) : (f <$> liftM v : OracleComp sp β) = pure (f v) := rfl
 
-omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
+omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- Simulating a `foldlM` whose every step simulates to a pure value collapses to the `foldl` of the
 pure steps. -/
 lemma simulateQ_simOracle_foldlM (oos : ∀ i, OracleStatement.AfterLinearCombination R pp i)
@@ -86,7 +86,7 @@ lemma simulateQ_simOracle_foldlM (oos : ∀ i, OracleStatement.AfterLinearCombin
       rw [List.foldlM_cons, List.foldl_cons, simulateQ_bind, hstep]
       simpa using ih (stepPure acc y)
 
-omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
+omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- **`simOStmt` faithfulness (Step B).** The honest simulation, under the single-family oracle
 `simOracle`, of the inlined oracle reconstruction `secondSumcheckEvalFromOracles` equals
 `eval point ℳ`. The three matrix queries answer the bivariate `toMLE` evaluations and the
@@ -150,7 +150,7 @@ theorem secondSumcheckEvalFromOracles_simOracle
     Fin.cast_eq_self]
   ring
 
-omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
+omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- **`hfaith` for the second sum-check lens.** The lens' oracle reconstruction
 `secondSumcheckEvalFromOracles`, lifted into the verifier's full oracle spec and simulated under the
 honest two-family oracle `simOracle2`, equals `eval point ℳ`. This is the exact per-inner-query

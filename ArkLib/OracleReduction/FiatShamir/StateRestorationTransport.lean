@@ -3027,7 +3027,12 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   -- The LHS of `h` is exactly the probEvent of the RHS of `h_eq`.
   -- We want to prove `probEvent (goal_LHS) f ≤ probEvent (goal_RHS) g`.
   -- Since `goal_LHS = srInit >>= fun s => (RHS of h_eq).run' s`, we can rewrite.
-  rw [← h_eq]
+  simp only [h_eq]
+  -- Now h and the goal are exactly the same except maybe some structural matching.
+  -- The predicate in the goal is `fun o ↦ o.elim False fun x ↦ (x.1, x.2.1) ∉ relIn ∧ (x.2.2.1, x.2.2.2) ∈ relOut`.
+  -- The predicate in `h` is `fun x ↦ match x with | (stmtIn, witIn, some stmtOut, witOut) => ...`.
+  -- And `stmtOut` might be wrapped in `Option` in one place but not another?
+  -- Wait, `exact h` might just work if the types are definitionally equal.
   exact h
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side

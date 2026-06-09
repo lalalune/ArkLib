@@ -197,6 +197,14 @@ theorem mul_mod_inj (α j x y : ℕ) (hj : Odd j) (hx : x < 2 ^ (α + 1)) (hy : 
   have hmod : x ≡ y [MOD 2 ^ (α + 1)] := Nat.ModEq.cancel_left_of_coprime hgcd h
   rwa [Nat.ModEq, Nat.mod_eq_of_lt hx, Nat.mod_eq_of_lt hy] at hmod
 
+/-- Multiplication distributes over modular negation: `j·(M−z) ≡ −(j·z) (mod M)`. -/
+theorem mul_sub_mod (j z M : ℕ) (hM : 0 < M) (hz : z ≤ M) :
+    j * (M - z) % M = (M - j * z % M) % M := by
+  have hcast : ((j * (M - z) : ℕ) : ZMod M) = ((M - j * z % M : ℕ) : ZMod M) := by
+    rw [Nat.cast_mul, Nat.cast_sub hz, Nat.cast_sub (Nat.mod_lt _ hM).le]
+    push_cast [ZMod.natCast_self, ZMod.natCast_mod]; ring
+  exact (ZMod.natCast_eq_natCast_iff _ _ _).mp hcast
+
 /-! ## The subgroup `H` as an exponent set -/
 
 /-- The exponent set enumerating `H = ⟨σ_{-1}, σ_{4k+1}⟩` inside `(Z / 2^{α+1})ˣ`:
@@ -230,6 +238,84 @@ theorem Hexp_lt (α k i : ℕ) (hi : i ∈ Hexp α k) : i < 2 ^ (α + 1) := by
   simp only [Hexp, Finset.mem_biUnion, Finset.mem_insert, Finset.mem_singleton] at hi
   obtain ⟨a, -, ha⟩ := hi
   rcases ha with rfl | rfl <;> exact Nat.mod_lt _ (by positivity)
+
+/-- **`Hexp` is closed under multiplication by `4k+1` mod `2^{α+1}`.** `σ_{4k+1}` cyclically
+shifts each `±`-orbit by one (`a ↦ (a+1) mod ord`), wrapping via
+`four_mul_add_one_pow_ord_mod`. -/
+theorem Hexp_image_gen (α k κ : ℕ) (hk : k = 2 ^ κ) (hκ : κ + 1 ≤ α) :
+    (Hexp α k).image (fun i => (4 * k + 1) * i % 2 ^ (α + 1)) = Hexp α k := by
+  have hord1 : (4 * k + 1) ^ (2 ^ α / (2 * k)) % 2 ^ (α + 1) = 1 :=
+    four_mul_add_one_pow_ord_mod α k κ hk hκ
+  have hMlt : 1 < 2 ^ (α + 1) := Nat.one_lt_pow (by omega) (by norm_num)
+  have hMpos : 0 < 2 ^ (α + 1) := by positivity
+  have hordpos : 0 < 2 ^ α / (2 * k) := by
+    subst hk
+    rw [show 2 * 2 ^ κ = 2 ^ (κ + 1) from by rw [pow_succ]; ring, Nat.pow_div (by omega) (by norm_num)]
+    positivity
+  refine Finset.eq_of_subset_of_card_le ?_ ?_
+  · intro y hy
+    simp only [Finset.mem_image] at hy
+    obtain ⟨i, hi, rfl⟩ := hy
+    simp only [Hexp, Finset.mem_biUnion, Finset.mem_insert, Finset.mem_singleton,
+      Finset.mem_range] at hi ⊢
+    obtain ⟨a, ha, hia⟩ := hi
+    have hpos : (4 * k + 1) * ((4 * k + 1) ^ a % 2 ^ (α + 1)) % 2 ^ (α + 1)
+        = (4 * k + 1) ^ ((a + 1) % (2 ^ α / (2 * k))) % 2 ^ (α + 1) := by
+      have h := (Nat.mod_modEq ((4 * k + 1) ^ a) (2 ^ (α + 1))).mul_left (4 * k + 1)
+      rw [Nat.ModEq] at h
+      rw [h, ← pow_succ', pow_mod_period _ _ _ (a + 1) hord1 hMlt]
+    refine ⟨(a + 1) % (2 ^ α / (2 * k)), Nat.mod_lt _ hordpos, ?_⟩
+    rcases hia with rfl | rfl
+    · left; exact hpos
+    · right
+      have hz : (4 * k + 1) ^ a % 2 ^ (α + 1) ≤ 2 ^ (α + 1) := (Nat.mod_lt _ hMpos).le
+      have e1 : (4 * k + 1) * ((2 ^ (α + 1) - (4 * k + 1) ^ a % 2 ^ (α + 1)) % 2 ^ (α + 1))
+            % 2 ^ (α + 1)
+          = (4 * k + 1) * (2 ^ (α + 1) - (4 * k + 1) ^ a % 2 ^ (α + 1)) % 2 ^ (α + 1) := by
+        have h := (Nat.mod_modEq (2 ^ (α + 1) - (4 * k + 1) ^ a % 2 ^ (α + 1)) (2 ^ (α + 1))).mul_left
+          (4 * k + 1)
+        rwa [Nat.ModEq] at h
+      rw [e1, mul_sub_mod _ _ _ hMpos hz, hpos]
+  · rw [Finset.card_image_of_injOn]
+    intro x hx y hy hxy
+    exact mul_mod_inj α (4 * k + 1) x y ⟨2 * k, by ring⟩
+      (Hexp_lt α k x (Finset.mem_coe.mp hx)) (Hexp_lt α k y (Finset.mem_coe.mp hy)) hxy
+
+/-- **`Hexp` is closed under multiplication by `2^{α+1}−1 ≡ −1` mod `2^{α+1}`.** `σ_{−1}` swaps
+the two `±` halves of each orbit cell, fixing the cell index. -/
+theorem Hexp_image_conj (α k : ℕ) :
+    (Hexp α k).image (fun i => (2 ^ (α + 1) - 1) * i % 2 ^ (α + 1)) = Hexp α k := by
+  have hMpos : 0 < 2 ^ (α + 1) := by positivity
+  refine Finset.eq_of_subset_of_card_le ?_ ?_
+  · intro y hy
+    simp only [Finset.mem_image] at hy
+    obtain ⟨i, hi, rfl⟩ := hy
+    simp only [Hexp, Finset.mem_biUnion, Finset.mem_insert, Finset.mem_singleton,
+      Finset.mem_range] at hi ⊢
+    obtain ⟨a, ha, hia⟩ := hi
+    have hpapos : 0 < (4 * k + 1) ^ a % 2 ^ (α + 1) := by
+      have hp : Odd ((4 * k + 1) ^ a) := Odd.pow ⟨2 * k, by ring⟩
+      rcases Nat.eq_zero_or_pos ((4 * k + 1) ^ a % 2 ^ (α + 1)) with h | h
+      · have hd : (2 : ℕ) ∣ 2 ^ (α + 1) := dvd_pow_self 2 (by omega)
+        rw [Nat.odd_iff, ← Nat.mod_mod_of_dvd _ hd, h] at hp; simp at hp
+      · exact h
+    have hlt : (4 * k + 1) ^ a % 2 ^ (α + 1) < 2 ^ (α + 1) := Nat.mod_lt _ hMpos
+    refine ⟨a, ha, ?_⟩
+    rcases hia with rfl | rfl
+    · right
+      rw [mul_comm, mul_sub_mod _ _ _ hMpos (by omega), mul_one, Nat.mod_mod]
+    · left
+      rw [Nat.mod_eq_of_lt (by omega : 2 ^ (α + 1) - (4 * k + 1) ^ a % 2 ^ (α + 1) < 2 ^ (α + 1)),
+        mul_comm, mul_sub_mod _ _ _ hMpos (by omega), mul_one,
+        Nat.mod_eq_of_lt (by omega : 2 ^ (α + 1) - (4 * k + 1) ^ a % 2 ^ (α + 1) < 2 ^ (α + 1)),
+        Nat.sub_sub_self (le_of_lt hlt), Nat.mod_eq_of_lt hlt]
+  · rw [Finset.card_image_of_injOn]
+    intro x hx y hy hxy
+    have hodd : Odd (2 ^ (α + 1) - 1) := by
+      have : 1 ≤ 2 ^ (α + 1) := Nat.one_le_two_pow
+      refine ⟨2 ^ α - 1, ?_⟩; rw [pow_succ]; omega
+    exact mul_mod_inj α (2 ^ (α + 1) - 1) x y hodd
+      (Hexp_lt α k x (Finset.mem_coe.mp hx)) (Hexp_lt α k y (Finset.mem_coe.mp hy)) hxy
 
 /-- `|H| = d/k = 2^α / k` (Hachi [NOZ26, §3], from `|⟨4k+1⟩| = d/(2k)` and the `±` factor).
 

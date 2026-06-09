@@ -11,16 +11,16 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
 /-!
 # The Spartan second sum-check phase preserves completeness (issue #114)
 
-The Spartan second sum-check oracle reduction (`secondSumcheckReduction`) is the `liftContext` of the
-generic multi-round sum-check oracle reduction onto Spartan's virtual polynomial `ℳ`. This module
-assembles the **completeness transfer** for that lift, the second-phase analogue of
+The Spartan second sum-check oracle reduction (`secondSumcheckReduction`) is the `liftContext` of
+the generic multi-round sum-check oracle reduction onto Spartan's virtual polynomial `ℳ`. This
+module assembles the **completeness transfer** for that lift, the second-phase analogue of
 `FirstSumcheckComplete`.
 
 The new ingredient, relative to the first sum-check, is **target reconciliation**: the inner
 sum-check target is *not* the constant `0` but the random-linear-combination of the bundled
-evaluation claims, which `liftContext`'s `projStmt` cannot compute from the oracles and so is carried
-in the outer input statement (the leading `R` of `R × Statement.AfterLinearCombination`). The outer
-input relation `secondSumcheckRelIn` therefore pins that carried target to the honest RLC value
+evaluation claims, which `liftContext`'s `projStmt` cannot compute from the oracles and so is
+carried in the outer input statement (the leading `R` of `R × Statement.AfterLinearCombination`).
+The outer input relation `secondSumcheckRelIn` therefore pins that carried target to the honest RLC
 (`t = ∑ idx, r idx · v_idx`); on that nose the cube-sum identity
 (`secondSC_relationRound_zero`) discharges `proj_complete`.
 
@@ -54,9 +54,9 @@ def secondSumcheckRelIn :
         ∧ x.1.1.1 = ∑ idx, x.1.1.2.1 idx *
             evalClaimValue R pp x.1.1.2.2 (fun i => x.1.2 (.inr i)) idx }
 
-/-- **Outer output relation of the second sum-check phase.** R1CS satisfiability carried through: the
-output statement `(r_y, stmt)` adds the sum-check challenge `r_y`, but the matrix/witness oracles and
-public input `𝕩 = stmt.2.2.2` are unchanged. -/
+/-- **Outer output relation of the second sum-check phase.** R1CS satisfiability carried through:
+the output statement `(r_y, stmt)` adds the sum-check challenge `r_y`, but the matrix/witness
+oracles and public input `𝕩 = stmt.2.2.2` are unchanged. -/
 def secondSumcheckRelOut :
     Set ((Statement.AfterSecondSumcheck R pp ×
         (∀ i, OracleStatement.AfterSecondSumcheck R pp i)) × Unit) :=
@@ -91,9 +91,9 @@ instance secondSumcheckLensComplete :
     simp only [secondSumcheckRelIn, Set.mem_setOf_eq] at hRelIn
     simpa only [secondSumcheckRelOut, Set.mem_setOf_eq] using hRelIn.1
 
-/-- **Second sum-check phase perfect completeness (issue #114).** The Spartan second sum-check oracle
-reduction is perfectly complete from `secondSumcheckRelIn` to `secondSumcheckRelOut`, given the inner
-multi-round sum-check perfect completeness `h_inner`.
+/-- **Second sum-check phase perfect completeness (issue #114).** The Spartan second sum-check
+oracle reduction is perfectly complete from `secondSumcheckRelIn` to `secondSumcheckRelOut`, given
+the inner multi-round sum-check perfect completeness `h_inner`.
 
 The transfer is `OracleReduction.liftContext_perfectCompleteness` with the coherence instance
 `secondSumcheckCoherent` (#433), the lens-completeness instance `secondSumcheckLensComplete`, and
