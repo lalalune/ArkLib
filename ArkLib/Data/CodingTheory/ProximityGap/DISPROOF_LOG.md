@@ -2894,3 +2894,16 @@ new math): (i) the level-iteration statement (re-encoding bookkeeping), (ii) the
 reduction (non-disjoint: divide by common locator factor, top-window agreement passes to cofactors),
 (iii) the final composition into Conj-41/δ*. Power-sum ≡ e-window over CharZero by Newton (Mathlib
 has NewtonIdentities for the formal bridge when needed).
+
+### O51 / Round-27 — sunflower-core reduction (Step 2 chain complete over verified parts)
+
+`RigiditySunflowerCore.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+cofactor_window ((Q·R₁−Q·R₂).degree < d ⟹ Q.degree + (R₁−R₂).degree < d — factor + degree_mul,
+3 lines in the degree-of-difference formulation) + nodal_core_split (Λ_A = Λ_{A∩B}·Λ_{A∖B}) +
+sunflower_core_reduction (equal windows ⟹ disjoint residuals with core-shifted equal windows).
+STEP 2 CHAIN COMPLETE over verified links: core division (R27) → antipodal closure (R25) → window
+halving (R26 iterate) → 2^k-lift petals (R22). STRUCTURE THEOREM (component-verified): equal-window
+families in μ_{2N} = SUNFLOWERS (core + 2^k-lift petals), all sizes, all linear windows, char 0,
+independence dischargeable (R12). REMAINING PLUMBING: level-iteration statement + Conj-41/δ*
+composition. KEY FORMULATION LESSON: state window agreement as (P₁−P₂).degree < d — products,
+cofactors, and shifts become one-line degree_mul arithmetic (vs coefficient-indexed agony).
