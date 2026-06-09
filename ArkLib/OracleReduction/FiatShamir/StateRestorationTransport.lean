@@ -3340,32 +3340,12 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   -- Remaining: distribute `simulateQ` over the state-restoration verifier block on the right, peel
   -- the shared total send/output/transcript prefix, and finish at the leaf with
   -- `probEvent_knowledgePayload_option_eq_stateRestoration`.
-  -- DEBUG: Use `show` to rewrite the RHS computation into explicit bind form.
-  -- First, peel the shared prefix on both sides at the probEvent level.
-  -- Both sides are `probEvent (fst <$> comp.run s) p` for some `comp`.
-  -- The LHS `comp` is already in distributed form. Let's distribute the RHS.
-  -- The RHS probEvent argument is: `simulateQ impl (do x ← A; x₁ ← B x; ...)`.
-  -- But `simulateQ impl (a >>= f) = simulateQ impl a >>= fun x => simulateQ impl (f x)`,
-  -- i.e. `simulateQ_bind`. The issue is that do-notation IS bind, so simp should fire.
-  -- Let's check what's happening:
-  -- h is of the wrong form after simp so * might not be reaching the RHS properly.
-  -- Instead of `at *`, only target the goal:
-  rw [show (simulateQ (fiatShamirCoupledQueryImpl srImpl)
-          (do
-            let x ← prover.sendMessage ⟨0, ⋯⟩ (prover.input (stmtIn, witIn))
-            let x_1 ← prover.output x.2
-            let x ← Messages.deriveTranscriptFS stmtIn x.1
-            let stmtOut ← monadLift (V.verify stmtIn x)
-            let witIn ← monadLift (srExtractor stmtIn x_1.2 x default default)
-            pure (stmtIn, witIn, stmtOut, x_1.2))) =
-        (simulateQ (fiatShamirCoupledQueryImpl srImpl) (prover.sendMessage ⟨0, ⋯⟩ (prover.input (stmtIn, witIn))) >>= fun x =>
-         simulateQ (fiatShamirCoupledQueryImpl srImpl) (prover.output x.2) >>= fun x_1 =>
-         simulateQ (fiatShamirCoupledQueryImpl srImpl) (Messages.deriveTranscriptFS stmtIn x.1) >>= fun x =>
-         simulateQ (fiatShamirCoupledQueryImpl srImpl) (monadLift (V.verify stmtIn x)) >>= fun stmtOut =>
-         simulateQ (fiatShamirCoupledQueryImpl srImpl) (monadLift (srExtractor stmtIn x_1.2 x default default)) >>= fun witIn =>
-         simulateQ (fiatShamirCoupledQueryImpl srImpl) (pure (stmtIn, witIn, stmtOut, x_1.2)))
-    from by simp only [simulateQ_bind]]
-  simp only [simulateQ_pure]
+  -- The tail below was committed mid-edit with goal-display `⋯` placeholders and did not
+  -- elaborate (failed instance synthesis at the pasted `show` term), breaking every full
+  -- build of this module. Restored to an honest `sorry`; the distribute-RHS / peel-prefix /
+  -- leaf plan above still stands, with the extractor leaf needing the `(liftM e).run =
+  -- some <$> …` collapse (cf. `OptionT.run_liftM_run`, `simulateQ_optionT_bind_mk_some_run`)
+  -- before `probEvent_knowledgePayload_option_eq_stateRestoration` applies.
   sorry
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side
