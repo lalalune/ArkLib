@@ -239,4 +239,73 @@ theorem sum_jointCoverCount_mgf_le (C : Finset (ι → F)) (δ : ℝ≥0) (θ : 
   rw [Finset.mul_sum]
   exact Finset.sum_le_sum (fun e _ => jointCoverCount_mgf_le δ e θ hθ0 hθ1)
 
+/-- **Weight-enumerator binomial bound (MDS input).** For any code `C` whose weight distribution
+satisfies the MDS bound `A_d ≤ C(n,d)·q^{d}/q^{n−k}`, and any `X, Y ≥ 0`,
+
+  `∑_{e∈C} Y^{n−wt(e)} X^{wt(e)} ≤ (q·X + Y)^n / q^{n−k}`.
+
+Pure fiberwise grouping + the binomial theorem: `∑_d C(n,d)(qX)^d Y^{n−d} = (qX+Y)^n`. -/
+theorem weightEnum_mds_le (C : Finset (ι → F)) (X Y : ℝ) (hX : 0 ≤ X) (hY : 0 ≤ Y) (k : ℕ)
+    (hA : ∀ d : ℕ, ((C.filter (fun e => hammingNorm e = d)).card : ℝ)
+            ≤ (Nat.choose (Fintype.card ι) d : ℝ) * (Fintype.card F : ℝ) ^ d
+                / (Fintype.card F : ℝ) ^ (Fintype.card ι - k)) :
+    ∑ e ∈ C, Y ^ (Fintype.card ι - hammingNorm e) * X ^ (hammingNorm e)
+      ≤ ((Fintype.card F : ℝ) * X + Y) ^ (Fintype.card ι)
+          / (Fintype.card F : ℝ) ^ (Fintype.card ι - k) := by
+  classical
+  set n := Fintype.card ι
+  set q := (Fintype.card F : ℝ)
+  have hfib : ∑ e ∈ C, Y ^ (n - hammingNorm e) * X ^ (hammingNorm e)
+      = ∑ d ∈ Finset.range (n + 1),
+          ∑ e ∈ C.filter (fun e => hammingNorm e = d),
+            Y ^ (n - hammingNorm e) * X ^ (hammingNorm e) := by
+    refine (Finset.sum_fiberwise_of_maps_to ?_ _).symm
+    intro e _
+    exact Finset.mem_range.mpr (Nat.lt_succ_of_le hammingNorm_le_card_fintype)
+  rw [hfib]
+  have hbound : ∀ d ∈ Finset.range (n + 1),
+      ∑ e ∈ C.filter (fun e => hammingNorm e = d), Y ^ (n - hammingNorm e) * X ^ (hammingNorm e)
+        ≤ (Nat.choose n d : ℝ) * q ^ d / q ^ (n - k) * (Y ^ (n - d) * X ^ d) := by
+    intro d _
+    have hconst : ∑ e ∈ C.filter (fun e => hammingNorm e = d),
+        Y ^ (n - hammingNorm e) * X ^ (hammingNorm e)
+          = ((C.filter (fun e => hammingNorm e = d)).card : ℝ) * (Y ^ (n - d) * X ^ d) := by
+      rw [Finset.sum_congr rfl (fun e he => by rw [(Finset.mem_filter.mp he).2]),
+        Finset.sum_const, nsmul_eq_mul]
+    rw [hconst]
+    exact mul_le_mul_of_nonneg_right (hA d) (by positivity)
+  refine le_trans (Finset.sum_le_sum hbound) ?_
+  rw [add_pow, Finset.sum_div]
+  refine Finset.sum_le_sum (fun d _ => ?_)
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  ring_nf
+  rfl
+
+/-- **Full MDS second-moment Chernoff bound.** Combining `sum_jointCoverCount_mgf_le` with the
+weight-enumerator binomial bound: for every `θ ∈ [0,1]` and any code whose weight distribution obeys
+the MDS bound `A_d ≤ C(n,d)q^{d}/q^{n−k}`,
+
+  `θ^{2r} · ∑_{e∈C} I(e) ≤ (q·(2θ+(q−2)θ²) + (1+(q−1)θ²))^n / q^{n−k}`,    `r = ⌊δ·n⌋`.
+
+The right-hand side is a fully explicit `(θ, q, n, k)`-expression; minimizing the per-`θ` bound over
+`θ ∈ [0,1]` yields the CS25 second-moment exponent for Reed–Solomon (MDS) codes — the final input to
+the `ε_ca` capacity-breakdown that the Grand MCA Challenge framework consumes. -/
+theorem sum_jointCoverCount_mgf_mds_le (C : Finset (ι → F)) (δ : ℝ≥0) (θ : ℝ)
+    (hθ0 : 0 ≤ θ) (hθ1 : θ ≤ 1) (k : ℕ)
+    (hA : ∀ d : ℕ, ((C.filter (fun e => hammingNorm e = d)).card : ℝ)
+            ≤ (Nat.choose (Fintype.card ι) d : ℝ) * (Fintype.card F : ℝ) ^ d
+                / (Fintype.card F : ℝ) ^ (Fintype.card ι - k)) :
+    θ ^ (2 * ⌊(δ : ℝ) * (Fintype.card ι : ℝ)⌋₊) * (∑ e ∈ C, (jointCoverCount δ 0 e : ℝ))
+      ≤ ((Fintype.card F : ℝ) * (2 * θ + ((Fintype.card F : ℝ) - 2) * θ ^ 2)
+            + (1 + ((Fintype.card F : ℝ) - 1) * θ ^ 2)) ^ (Fintype.card ι)
+          / (Fintype.card F : ℝ) ^ (Fintype.card ι - k) := by
+  haveI : Nonempty F := ⟨0⟩
+  have hq1 : (1 : ℝ) ≤ (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
+  have hX : 0 ≤ 2 * θ + ((Fintype.card F : ℝ) - 2) * θ ^ 2 := by
+    nlinarith [mul_nonneg hθ0 (sub_nonneg.mpr hθ1),
+      mul_nonneg (le_trans zero_le_one hq1) (sq_nonneg θ), sq_nonneg θ]
+  have hY : 0 ≤ 1 + ((Fintype.card F : ℝ) - 1) * θ ^ 2 := by
+    nlinarith [mul_nonneg (by linarith : (0:ℝ) ≤ (Fintype.card F : ℝ) - 1) (sq_nonneg θ)]
+  exact le_trans (sum_jointCoverCount_mgf_le C δ θ hθ0 hθ1) (weightEnum_mds_le C _ _ hX hY k hA)
+
 end ArkLib.CS25
