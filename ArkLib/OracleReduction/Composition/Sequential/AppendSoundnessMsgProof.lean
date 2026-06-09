@@ -17,18 +17,26 @@ union bound shared across issues #13 / #25 / #62 / #433.
 
 ## Proof architecture (all bricks proven upstream)
 
-1. **Run factoring.** `Prover.run_seam_factor` splits the arbitrary malicious prover into
-   `prover.fst` / `prover.snd`; `Verifier.append_run` (`rfl`) splits `V₁.run ≫ V₂.run`. With
-   `FullTranscript.append_fst/snd` and `OptionT.liftM_run_getM_bind` the appended soundness run
-   refolds to the canonical seam chain `liftM FST ≫ liftM SND ≫ W1 ≫ W2`.
-2. **Reorder** (`seam_swap_probEvent_eq`): commute the `snd` prover stage past the `V₁` verifier
-   stage (state-preserving ⇒ distributionally independent) into the union-bound order.
-3. **Union bound** (`probComp_seam_union_le`): the bad event `stmtOut ∈ lang₃` factors through the
-   intermediate `stmt₂ ∈ lang₂`, giving `ε₁ + ε₂`.
-4. **Stage bounds**: `V₁.soundness ε₁` on `prover.fstSound`, `V₂.soundness ε₂` on `prover.sndSound`.
+1. **Run factoring** (verified, this file). `Prover.run_seam_factor` splits the arbitrary malicious
+   prover over `pSpec₁ ++ₚ pSpec₂` into `prover.fst` / `prover.snd`; `Verifier.append_run` (`rfl`)
+   splits `V₁.run ≫ V₂.run`. With `FullTranscript.append_fst/snd` and `OptionT.liftM_run_getM_bind`
+   the appended soundness experiment refolds to the canonical seam chain `liftM FST ≫ liftM SND ≫
+   W1 ≫ W2` (provers first, then verifiers).
+2. **Reorder + union bound** (verified, this file). The goal is in `probComp_seam_swap_union_le`'s
+   natural order; that proven theorem commutes the `snd` prover stage past the `V₁` verifier stage
+   (state-preserving ⇒ distributionally independent) and bounds the bad event `stmtOut ∈ lang₃` —
+   which factors through the intermediate `stmt₂ ∈ lang₂` — by `ε₁ + ε₂`.
+3. **Stage bounds** (the two remaining `sorry`s — the genuine per-phase soundness content). Each is
+   `Vᵢ.soundness εᵢ` applied to the phase-`i` seam soundness prover (`prover.fstSound` /
+   `prover.sndSound`), modulo the challenge-oracle-seam reconciliation (the appended game runs each
+   phase's rounds under the *combined* challenge oracle, whereas `Vᵢ.soundness` runs them under
+   `pSpecᵢ`'s own — bridged by `evalDist_challengeSeam_bridge_left/right`) and, for phase 1, the
+   marginalization of `fstSound`'s dummy prover output (`probEvent_simQ_run'_congr_marginal`).
 
-The side conditions `himplSP` / `himplNF` are discharged for the honest interactive implementation
-`impl.addLift challengeQueryImpl` by `addLift_state_preserving` / `addLift_neverFail`.
+The side conditions `himplSP` (state-preserving `impl`) and `himplNF` (never-failing `impl`) are the
+soundness analogue of the completeness proof's `hImplSupp` / `hInit`; they are discharged for the
+honest interactive implementation `impl.addLift challengeQueryImpl` by `addLift_state_preserving` /
+`addLift_neverFail`.
 -/
 
 open OracleComp OracleSpec ProtocolSpec OptionTStateT
@@ -44,7 +52,9 @@ variable {ι : Type} {oSpec : OracleSpec ι} {Stmt₁ Stmt₂ Stmt₃ : Type}
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
 /-- **Binary sequential-composition soundness, message-seam case.** Reduces the appended-verifier
-soundness experiment to the two per-phase soundness bounds via the verified seam toolkit. -/
+soundness experiment (over an arbitrary malicious prover) to the two per-phase soundness bounds via
+the verified seam toolkit. The remaining two goals are exactly `V₁.soundness ε₁` on the phase-1 seam
+prover and `V₂.soundness ε₂` on the phase-2 seam prover, modulo the challenge-oracle-seam bridges. -/
 theorem append_soundness_msg'
     [Inhabited Stmt₂]
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
@@ -67,26 +77,36 @@ theorem append_soundness_msg'
   simp only [liftM_bind, bind_assoc, map_eq_pure_bind, liftM_map, bind_map_left,
     OptionT.liftM_run_getM_bind, liftM_pure, pure_bind,
     FullTranscript.append_fst, FullTranscript.append_snd]
-  -- Bridge the bad-event predicate to the union-bound `¬·∈lang` form.
+  -- Bridge the bad-event predicate `stmtOut ∈ lang₃` to the union-bound `¬·∈lang` form.
   rw [show (fun o : Option ((FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × WitOut) × Stmt₃) =>
         o.elim False fun x => x.2 ∈ lang₃)
-      = (fun o => ¬ Option.elim o True (fun d => d.2 ∉ lang₃)) from by
+      = (fun o => ¬ Option.elim o True
+          (fun d : (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × WitOut) × Stmt₃ =>
+            d.2 ∉ lang₃)) from by
         funext o; cases o with
         | none => simp
         | some d => simp only [Option.elim_some, not_not]]
-  -- Reorder (`snd` past `V₁`) + two-stage union bound: `stmtOut ∈ lang₃` factors through
-  -- `stmt₂ ∈ lang₂`, giving `ε₁ + ε₂`. The goal is in `probComp_seam_swap_union_le`'s natural
-  -- order, so all seam pieces are supplied explicitly (first-order; no HO-inference blowup).
+  -- Reorder (`snd` past `V₁`) + two-stage union bound. The goal is in
+  -- `probComp_seam_swap_union_le`'s natural order `FST → SND → V₁ → V₂`; `FST`/`SND` are given and
+  -- `W1`/`W2` are inferred by higher-order *pattern* (Miller) unification (each applied only to
+  -- distinct bound variables), which avoids the `exact`/`apply` defeq blow-up.
   refine probComp_seam_swap_union_le init pImpl (addLift_state_preserving impl himplSP)
     (liftM (prover.fst.run stmtIn witIn))
     (fun x => liftM (prover.snd.run x.2.1 x.2.2))
-    _ _
-    (fun x s' => simulateQ_run_neverFail _ (addLift_neverFail impl himplNF) _ s')
-    (fun s₂ => s₂ ∉ lang₂) (fun d : _ × Stmt₃ => d.2 ∉ lang₃) (ε₁ : ℝ≥0∞) (ε₂ : ℝ≥0∞) ?_ ?_
+    _ _ (fun x s' => simulateQ_run_neverFail _ (addLift_neverFail impl himplNF) _ s')
+    (fun s₂ => s₂ ∉ lang₂)
+    (fun d : (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × WitOut) × Stmt₃ => d.2 ∉ lang₃)
+    (ε₁ : ℝ≥0∞) (ε₂ : ℝ≥0∞) ?_ ?_
   · -- Phase-1 bound: `V₁.soundness ε₁` on the phase-1 soundness prover `prover.fstSound`.
-    exact h₁ _ _ witIn (Prover.fstSound prover) stmtIn hstmtIn pImpl
+    have h1_bound := h₁ _ _ witIn (Prover.fstSound prover) stmtIn hstmtIn
+    have h1_bridge : Pr[fun r => ¬ Option.elim r.1 True (fun p => p.2 ∉ lang₂) | init >>= fun s => (simulateQ pImpl (liftM (liftM (Prover.run stmtIn witIn prover.fst)) >>= fun x => liftM (V₁.run stmtIn x.1) >>= fun s₂ => (pure (x, s₂) : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) _)).run).run s] = Pr[(fun x => match x with | (fst, stmtOut) => stmtOut ∈ lang₂) | (OptionT.mk (init >>= fun s => (simulateQ pImpl (Reduction.run stmtIn witIn { prover := prover.fstSound, verifier := V₁ }).run).run' s) : OptionT _ _)] := sorry
+    rw [h1_bridge]
+    exact h1_bound
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
-    intro p s' hp
-    exact h₂ _ _ p.1.2.1 (Prover.sndSound prover) p.2 hp pImpl
+    intro p s' _ h_pg
+    have h2_bound := h₂ _ _ p.1.2.1 (Prover.sndSound prover) p.2 h_pg
+    have h2_bridge : Pr[fun o => ¬o.elim True fun d => d.2 ∉ lang₃ | ((simulateQ pImpl (do let a ← liftM ((fun x => liftM (Prover.run x.2.1 x.2.2 prover.snd)) p.1); let __do_lift ← liftM (V₂.run p.2 a.1); pure ((p.1.1 ++ₜ a.1, a.2.1, a.2.2), __do_lift)).run).run' s')] = Pr[(fun x => match x with | (fst, stmtOut) => stmtOut ∈ lang₃) | (OptionT.mk (init >>= fun s => (simulateQ pImpl (Reduction.run p.2 p.1.2.1 { prover := prover.sndSound, verifier := V₂ }).run).run' s) : OptionT _ _)] := sorry
+    rw [h2_bridge]
+    exact h2_bound
 
 end Verifier
