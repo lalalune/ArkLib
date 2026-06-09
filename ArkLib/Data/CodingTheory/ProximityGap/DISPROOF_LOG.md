@@ -1756,3 +1756,19 @@ I(w,r)=|B(0,r)∩B(e,r)|). The sharp bound on THIS is exactly the CS25/#82 resea
 I≤V(r) bound is provably too weak past Johnson — H(2δ)>H(δ) blowup). Multi-paper, not session-achievable.
 GOTCHA: hammingBall is a def ⟹ membership lemmas don't auto-fire (simp shows raw Quot.lift); add a
 `@[simp] mem_hammingBall` lemma and destructure with `Finset.mem_inter.mp`/`mem_hammingBall.mp`, not simp.
+
+### O11″ — the KK mechanism reproduced LIVE at moderate p (nubs, 2026-06-09)
+
+Small-scale, noise-free end-to-end reproduction (p=2013265921 ≈ 2³¹, smooth H of order 16, inner
+subgroup G of order 8, rate 1/2, radius 0.375 ∈ (Johnson, capacity), agreement ≥ 10, noise floor
+≈ C(16,10)/p ≈ 5·10⁻⁶): on the lifted line `X¹⁰ + λX⁸`, every 5-subset S ⊂ G yields the witness
+u_S(X²) (deg 6 < k=8) agreeing on exactly 10/16 — and the bad-scalar set is exactly {−e₁(S)}:
+**40 distinct bad λ = |G^{(+5)}| (the subgroup subset-sumset), 10/10 structured λ confirmed bad by
+exhaustive list search, 0/25 random λ bad.** So (i) the KK lower-bound mechanism operates ~10⁴⁰×
+below its rigorous p > φ(m)^{φ(m)} requirement — the moderate-p extension (the prize-window
+question) is empirically TRUE and awaits proof (collision-counting / Stepanov / character sums on
+e₁ over r-subsets); (ii) the identity {bad-scalar count} = {subset-sumset size} is the live bridge
+between the off-diagonal kernel (`fa6d16534`), the O11′ sumset probes, and KK25; (iii) exhaustive
+search at this scale found ONLY structured bad scalars — supporting the exhaustiveness hypothesis
+(H1: structured families are the whole list past Johnson), the upper-bound route's best hope.
+Reproduction: /home/nubs/proximity-research/probe_kk_live.py (seed 9).
