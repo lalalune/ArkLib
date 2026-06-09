@@ -545,7 +545,16 @@ theorem simulateQ_emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt�
     (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
     simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitOStmt₂Query V₁ i q)
       = pure ((Oₛ₂ i).answer (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst i) q) := by
-  sorry
+  unfold emitOStmt₂Query
+  split
+  · next k h =>
+    rw [emitOStmtQueryInl_simulateQ, mkVerifierOStmtOut_inl V₁.embed V₁.hEq oStmt tr.fst i k h]
+    congr 1
+    exact eq_of_heq ((eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm)
+  · next k h =>
+    rw [emitOStmtQueryInr_simulateQ, mkVerifierOStmtOut_inr V₁.embed V₁.hEq oStmt tr.fst i k h]
+    congr 1
+    exact eq_of_heq ((eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm)
 
 /-- **V₂-side router collapse.** Running `V₂`'s queries through `router₂ V₁` and then the combined
 `simOracle2` is the same as running them through `V₂`'s own `simOracle2` over the oracle statements
@@ -557,7 +566,12 @@ lemma router2_collapse (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OSt
     (OracleInterface.simOracle2 oSpec oStmt tr.messages) ∘ₛ (router₂ V₁)
       = OracleInterface.simOracle2 oSpec
           (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst) tr.snd.messages := by
-  sorry
+  funext q
+  rw [QueryImpl.apply_compose]
+  rcases q with t | (⟨i, q⟩ | ⟨i, q⟩) <;> dsimp only [router₂]
+  · rfl
+  · exact simulateQ_emitOStmt₂Query V₁ oStmt tr i q
+  · exact simulateQ_emitMessageInr oStmt tr i q
 
 end OracleVerifier.Append
 
