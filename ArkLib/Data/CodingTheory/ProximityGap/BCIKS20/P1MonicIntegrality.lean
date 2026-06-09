@@ -114,7 +114,30 @@ theorem alphaGenuine_regular_of_monic (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA
   rw [map_mul, map_pow, hlift, hlc, map_one, one_pow, mul_one, mul_assoc, ← mul_pow,
     ← huξ, ← map_mul, Units.mul_inv, map_one, one_pow, mul_one]
 
+/-- **The divisibility half of #138 (monic), PROVEN unconditionally.**  For monic `H`, `ξ` is a
+unit (`isUnit_ξ_of_monic`), so `ξ^{2t+1}` divides `βHensel (t+1)` in `𝒪 H` for *every* `t`, with the
+explicit witness `βHensel (t+1) · (ξ⁻¹)^{2t+1}`.  This is the *divisibility* conjunct of
+`SuccDivWeightLe_of_monic` — needing **no lift identity and no degree hypothesis**.  Together with
+`P1MonicWeightRefutation.weight_refuted` it isolates the entire remaining open content of #138 to the
+*weight* conjunct alone: the clearing always exists; only `Λ_𝒪(quotient) ≤ 1` can fail (and does,
+without a `deg R` bound). -/
+theorem xi_pow_dvd_βHensel_succ_of_monic (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hlc : H.leadingCoeff = 1) (t : ℕ) :
+    ∃ a : 𝒪 H, βHensel H x₀ R hHyp (t + 1) = a * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) := by
+  obtain ⟨uξ, huξ⟩ := isUnit_ξ_of_monic H x₀ R hHyp hlc
+  have hinv : (↑uξ⁻¹ : 𝒪 H) * ClaimA2.ξ x₀ R H hHyp = 1 := by
+    rw [← huξ]; exact uξ.inv_mul
+  refine ⟨βHensel H x₀ R hHyp (t + 1) * (↑uξ⁻¹ : 𝒪 H) ^ (2 * t + 1), ?_⟩
+  have hregroup :
+      βHensel H x₀ R hHyp (t + 1) * (↑uξ⁻¹ : 𝒪 H) ^ (2 * t + 1)
+          * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1)
+        = βHensel H x₀ R hHyp (t + 1)
+            * ((↑uξ⁻¹ : 𝒪 H) * ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) := by
+    ring
+  rw [hregroup, hinv, one_pow, mul_one]
+
 #print axioms isUnit_ξ_of_monic
 #print axioms alphaGenuine_regular_of_monic
+#print axioms xi_pow_dvd_βHensel_succ_of_monic
 
 end BCIKS20.HenselNumerator

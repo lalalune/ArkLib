@@ -220,3 +220,56 @@ theorem mem_support_run'_simulateQ_liftM_lift_iff {ιₒ : Type} {oSpec : Oracle
   · intro h; exact ⟨pr, h, rfl⟩
 
 end ProtocolSpec
+
+namespace Reduction
+
+variable {ι : Type} {oSpec : OracleSpec ι} {StmtIn WitIn StmtOut WitOut : Type}
+  {N : ℕ} {pSpec : ProtocolSpec N} [∀ i, SampleableType (pSpec.Challenge i)]
+  {σ : Type} [Subsingleton σ] (u : σ)
+  (c : QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp))
+
+/-- `some pr ∈ support` of a `some <$>`-lifted marginal iff the plain marginal holds. The
+`OptionT.lift`/`run'` book-keeping that lets a plain support membership feed a run-experiment
+support membership. -/
+theorem mem_support_some_map {α} (oa : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) (pr : α) :
+    some pr ∈ support ((simulateQ c (Option.some <$> oa)).run' u)
+    ↔ pr ∈ support ((simulateQ c oa).run' u) := by
+  rw [simulateQ_map]
+  have hmap : ((Option.some <$> simulateQ c oa).run' u)
+      = Option.some <$> (simulateQ c oa).run' u := by
+    simp only [StateT.run'_eq, StateT.run_map, Functor.map_map, Function.comp]
+  rw [hmap, support_map, Set.mem_image]
+  constructor
+  · rintro ⟨a, ha, h⟩; exact (Option.some_injective _ h) ▸ ha
+  · intro h; exact ⟨pr, h, rfl⟩
+
+variable (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+
+/-- **Reassembly of a run-experiment support element from its prover and verifier marginals**
+(the reverse of the support peel, for a `Subsingleton` state). If the prover marginal contains
+`pres` and the verifier marginal on `pres.1` accepts with `sv`, then the honest run experiment's
+support contains the combined outcome `(pres, sv)`. This is the forward direction the completeness
+composition needs to feed its peeled, transported marginals into the component completeness
+hypotheses `h₁`/`h₂`. -/
+theorem mem_support_run_of_marginals (stmt : StmtIn) (wit : WitIn)
+    (pres : pSpec.FullTranscript × StmtOut × WitOut) (sv : StmtOut)
+    (hp : pres ∈ support ((simulateQ c (R.prover.run stmt wit)).run' u))
+    (hv : some sv ∈ support
+      ((simulateQ c (liftM ((R.verifier.run stmt pres.1).run) :
+        OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option StmtOut))).run' u)) :
+    some (pres, sv) ∈ support ((simulateQ c (R.run stmt wit).run).run' u) := by
+  unfold Reduction.run
+  simp only [OptionT.run_bind, OptionT.run_lift, OptionT.run_pure, bind_assoc, Option.elimM]
+  rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff]
+  refine ⟨some pres, (mem_support_some_map u c _ pres).mpr hp, ?_⟩
+  simp only [Option.elim_some, bind_assoc]
+  rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff]
+  refine ⟨some (some sv), ?_, ?_⟩
+  · show some (some sv) ∈ support ((simulateQ c (Option.some <$>
+        (liftM ((R.verifier.run stmt pres.1).run) :
+          OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option StmtOut)))).run' u)
+    exact (mem_support_some_map u c _ (some sv)).mpr hv
+  · simp only [Option.elim_some, Option.getM_some, simulateQ_pure, StateT.run'_eq, StateT.run_pure,
+      map_pure, support_pure, Set.mem_singleton_iff]
+
+end Reduction

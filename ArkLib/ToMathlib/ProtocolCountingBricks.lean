@@ -64,6 +64,15 @@ theorem card_someQueryOut_eq {ι : Type*} [Fintype ι] [DecidableEq ι] (G : Fin
   rw [hall, htot] at hsplit
   omega
 
+/-- `Finset`-namespaced alias for `card_someQueryOut_eq`. PR #291's salvaged Batched-FRI counting
+wrapper (`ProximityGap.Issue14.query_tuple_someQueryOut_card_eq`) references this lemma under the
+`Finset.` qualifier even though the brick lives at the root namespace; expose the alias so that
+reference resolves robustly across namespace/import drift. -/
+theorem Finset.card_someQueryOut_eq {ι : Type*} [Fintype ι] [DecidableEq ι] (G : Finset ι) (t : ℕ) :
+    (univ.filter (fun q : Fin t → ι => ¬ ∀ j, q j ∈ G)).card
+      = Fintype.card ι ^ t - G.card ^ t :=
+  _root_.card_someQueryOut_eq G t
+
 #print axioms Finset.sum_div_mul_prod_eq_sum_mul_prod_erase
 #print axioms Finset.fiber_sum_one_div_const_add_eq_card_div
 #print axioms card_someQueryOut_eq

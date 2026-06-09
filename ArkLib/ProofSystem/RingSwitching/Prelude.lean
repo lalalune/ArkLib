@@ -398,13 +398,26 @@ def RingSwitching_SumcheckMultParam :
   combinator_natDegree_le := by intro _; exact Polynomial.natDegree_X_le
 }
 
-/-- Step 5 (V): Compute `s₀ := Σ_{u ∈ {0,1}^κ} eqTilde(u, r'') ⋅ ŝ_u`,
-where ŝ_u is the row components of ŝ. -/
+/-- Step 5 (V): Compute the round-0 batched sumcheck target
+`s₀ := Σ_{u ∈ {0,1}^κ} eqTilde(u, r'') ⋅ ŝ_u`, where `ŝ_u` is the **column** components of `ŝ`.
+
+Orientation (completeness fix, the dual of the `performCheckOriginalEvaluation` defect #8 /
+`compute_final_eq_value` defect #10): `s₀` is the target the batched sumcheck proves, i.e. it
+must equal `Σ_x A(x)·t'(x)` where `A = compute_A_MLE` is the verifier's (witness-independent)
+sumcheck multiplier. Since `A_func(w) = Σ_u β.repr(eq̃(suffix, w))_u • eq̃(u, r'')` carries the
+`β.repr` on the *eq*-factor, the matching extraction of `ŝ = Σ_w eq̃(w, suffix) ⊗ t'(w)` is the
+**column** one (`decomposeColumns (φ₀ a · φ₁ b) = β.repr a • b`, extracting the `φ₀`/`eq` factor):
+`Σ_u eq̃(u, r'') · (columns ŝ)_u = Σ_x A_func(x)·t'(x)` exactly (`compute_s0_eq_sum_A_func`).
+The *row* orientation (extracting the `φ₁`/`t'` factor) gives the transposed bilinear pairing
+`AᵀB` vs `BᵀA`, which is *not* symmetric, so completeness fails for rows — and re-orienting `A`
+cannot fix it, since `A_func` is witness-independent and the row form puts `β.repr` on the
+witness `t'(w)`. The downstream batching soundness (`batchingMismatchPoly`, faithful via
+`decomposeColumns_spec`) is orientation-agnostic and uses the same column decomposition. -/
 def compute_s0 (s_hat : P.A) (r''_batching : Fin κ → L) : L :=
   Finset.sum Finset.univ fun (u : Fin κ → Fin 2) =>
     let u_as_L : Fin κ → L := fun i => if (u i == 1) then 1 else 0
     (eqTilde u_as_L r''_batching)
-      * (P.decomposeRows s_hat u)
+      * (P.decomposeColumns s_hat u)
 
 /-- Compute the tensor `e := eq̃(φ₀(r_κ), ..., φ₀(r_{ℓ-1}), φ₁(r'_0), ..., φ₁(r'_{ℓ'-1}))` -/
 def compute_final_eq_tensor (r : Fin ℓ → L) (r' : Fin ℓ' → L) : P.A :=
@@ -921,6 +934,30 @@ lemma decomposeRows_embedded_MLP_eval' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ
   apply Finset.sum_congr rfl
   intro w _
   rw [P.decomposeRows_φ₀_mul_φ₁]
+
+omit [CharP L₀ 2] in
+/-- **Generic column extraction for an embedded large-field multilinear polynomial** (the dual of
+`decomposeRows_embedded_MLP_eval'`). For arbitrary `t' : L⦃≤1⦄[X Fin ℓ']`, the column coordinates
+of `embedded_MLP_eval t' r` extract the basis coordinates of the *suffix equality factor*, scaled
+into the `t'` value at each Boolean suffix:
+`(columns ŝ)_u = Σ_w β.repr(eq̃(w, r_suffix))_u • t'(w)`.
+This is the load-bearing orientation lemma behind the batched-sumcheck target `compute_s0`
+(`compute_s0_eq_sum_A_func`): the column form puts `β.repr` on the verifier-known `eq`-factor, so
+it matches the witness-independent batching multiplier `compute_A_func`. -/
+lemma decomposeColumns_embedded_MLP_eval' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+    (h_l : ℓ = ℓ' + κ₀) (t' : MultilinearPoly L₀ ℓ') (r : Fin ℓ → L₀)
+    (u : Fin κ₀ → Fin 2) :
+    P.decomposeColumns
+        (embedded_MLP_eval κ₀ L₀ K₀ P ℓ ℓ' h_l t' r) u
+      = ∑ w : Fin ℓ' → Fin 2,
+          P.basis.repr
+              (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
+                (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)) u •
+            (eval (fun i => (if w i == 1 then (1 : L₀) else 0)) t'.val) := by
+  rw [embedded_MLP_eval_eq_sum', P.decomposeColumns_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [P.decomposeColumns_φ₀_mul_φ₁]
 
 omit [CharP L₀ 2] in
 /-- **Generic row recovery of `t`-evaluations** over an abstract `P` whose basis is `P.basis`.

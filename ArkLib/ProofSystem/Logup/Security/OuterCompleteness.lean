@@ -86,7 +86,10 @@ variable (n M : ℕ)
 variable (params : ProtocolParams M)
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
 
-local instance : Inhabited F := ⟨0⟩
+/-- `F` is inhabited (by `0`). Explicitly named (rather than anonymous) so it does not collide with
+the identically-typed anonymous `local instance` in `Security/Soundness.lean` when a downstream
+module (e.g. `Security/SubPhaseSplit.lean`) imports both files. -/
+local instance instInhabitedFieldOuterCompleteness : Inhabited F := ⟨0⟩
 
 /-- Result type of the standard outer-completeness run experiment. -/
 abbrev OuterCompletenessRunResult :=

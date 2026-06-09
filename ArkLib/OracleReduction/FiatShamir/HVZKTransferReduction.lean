@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.OracleReduction.FiatShamir.Basic
+import ArkLib.OracleReduction.FiatShamir.BasicCompleteness
 import ArkLib.OracleReduction.Security.ZeroKnowledge
 
 /-!
@@ -49,6 +50,42 @@ def msgProjFS (t : FullTranscript pSpec) :
     FullTranscript (FiatShamirProtocolSpec (pSpec := pSpec)) :=
   fun | ⟨0, _⟩ => t.messages
 
+attribute [-instance] Reduction.fiatShamirZKNoChallengeSampleable in
+set_option maxHeartbeats 1000000 in
+/-- **FS-side collapse of the honest transcript distribution.**
+
+The honest Fiat-Shamir transcript distribution of the *transformed* reduction `R.fiatShamir` equals
+(as a raw `OptionT ProbComp` term) the transcript projection of the *explicit* honest execution
+`R.fiatShamirHonestExecution`, run under the same shared-oracle implementation `fsImpl` — no
+challenge oracle is appended on the right, since the honest execution already queries the
+Fiat-Shamir oracle directly. This is the honest-distribution form of the proven completeness
+run-collapse `Reduction.fiatShamir_runCollapse`, isolating the remaining `coupling` content to a
+statement purely about `R.fiatShamirHonestExecution` (whose challenges are drawn through
+`runToRoundFS`). -/
+theorem honestTranscriptDist_fiatShamir_eq_honestExecution
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) :
+    honestTranscriptDist fsInit fsImpl R.fiatShamir stmt wit
+      = OptionT.mk
+          (do
+            let s ← fsInit
+            (Option.map (fun r => r.1.1) <$>
+              simulateQ fsImpl (R.fiatShamirHonestExecution stmt wit).run).run' s) := by
+  unfold honestTranscriptDist
+  apply OptionT.ext
+  simp only [OptionT.run_mk]
+  congr 1
+  funext s
+  rw [OptionT.run_map, simulateQ_map]
+  have hc := fiatShamir_runCollapse fsImpl R stmt wit
+  unfold Reduction.fiatShamir_runCollapseResidual at hc
+  -- With the file-local vacuous `SampleableType` instance for the empty FS `ChallengeIdx`
+  -- locally disabled (`attribute [-instance]` above), the appended challenge oracle matches the
+  -- one baked into `fiatShamir_runCollapseResidual`, so `hc` applies directly.
+  exact congrArg (fun z => ((Option.map (fun r => r.1.1)) <$> z).run' s) hc
+
 /-- **Basic Fiat-Shamir HVZK transfer, reduced to the coupling kernel.**
 
 Given the coupling identity — that the honest Fiat-Shamir transcript distribution equals the
@@ -77,7 +114,43 @@ theorem fiatShamir_hvzkTransfer_of_coupling
   rw [evalDist_map, hsim stmt wit hmem, ← evalDist_map]
   exact coupling stmt wit hmem
 
+/-! ### Canonical uniformly-sampling Fiat-Shamir challenge implementation -/
+
+/-- The canonical uniformly-sampling Fiat-Shamir challenge implementation: ignore the
+statement/messages domain payload and answer each challenge-round query by a fresh uniform sample
+`$ᵗ (pSpec.Challenge i)`, mirroring the interactive verifier's `challengeQueryImpl`. -/
+def uniformFSChallengeImpl :
+    QueryImpl (fsChallengeOracle StmtIn pSpec) ProbComp :=
+  fun q => $ᵗ (pSpec.Challenge q.1)
+
+/-- The canonical Fiat-Shamir shared-oracle implementation built from an interactive implementation
+`impl` by appending the canonical uniform challenge implementation `uniformFSChallengeImpl`. -/
+def canonicalFSImpl (impl : QueryImpl oSpec (StateT σ ProbComp)) :
+    QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp) :=
+  impl.addLift (uniformFSChallengeImpl (StmtIn := StmtIn) (pSpec := pSpec))
+
+section Probe
+
+attribute [-instance] Reduction.fiatShamirZKNoChallengeSampleable in
+set_option maxHeartbeats 0 in
+example (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) :
+    evalDist (msgProjFS <$> honestTranscriptDist init impl R stmt wit)
+      = evalDist (honestTranscriptDist init (canonicalFSImpl impl) R.fiatShamir stmt wit) := by
+  rw [show honestTranscriptDist init (canonicalFSImpl impl) R.fiatShamir stmt wit
+        = _ from honestTranscriptDist_fiatShamir_eq_honestExecution init (canonicalFSImpl impl)
+          R stmt wit]
+  unfold honestTranscriptDist
+  rw [OptionT.run_map]
+  simp only [OptionT.run_mk, evalDist_map, map_bind, Functor.map_map]
+  trace_state
+  sorry
+
+end Probe
+
 end Reduction
 
 #print axioms Reduction.msgProjFS
+#print axioms Reduction.honestTranscriptDist_fiatShamir_eq_honestExecution
 #print axioms Reduction.fiatShamir_hvzkTransfer_of_coupling

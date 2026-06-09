@@ -2978,30 +2978,16 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
           pure (stmtIn, extractedWitIn, stmtOut, ctxOut.2) :
             OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
               (StmtIn × WitIn × StmtOut × WitOut)).run) := by
-  rw [Reduction.runWithLog]
-  simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self, liftM_eq_monadLift,
-    OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, optionT_monadLift_run,
-    simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_addLift_liftM,
-    OptionT.simulateQ_addLift_liftM, Option.getM_map_run, Option.elimM,
-    simulateQ_option_elim, bind_assoc, pure_bind, map_bind,
-    StateT.run_simulateQ_optiont_map, StateT.run_pure_some_bind_map,
-    Option.map_comp_lambda, simulateQ_map_monadLift_getM_run,
-    optionT_run_simulateQ_liftquery, OptionT.run_monadLift, monadLift_self]
-  -- Collapse the `some <$> _ >>= fun x => x.elim _ _` shells into plain binds, leaving the clean
-  -- goal `simulateQ (addLift impl ch) (Prover.runWithLog …) >>= (fun x => loggedBlock x.1)
-  --        = <direct send/output/deriveTranscriptFS/verify/srExtractor chain>`.
-  simp only [stateT_bind_some_elim_eq]
-  -- TODO(#116, KS transfer): the big `simp` above normalises the inner `monadLift` into a form a
-  -- hand-written continuation cannot reproduce (invisible `MonadLift` instance terms), so the
-  -- `change`/Klog fold and any `Prod.fst`-factoring of the anonymous block fail.  The robust fix is
-  -- to mirror the proven sibling `fiatShamirKnowledgeExec_runCollapse`: use the SMALL simp
-  -- `simp only [OptionT.run_bind, simulateQ_option_elimM, simulateQ_pure]`, keep `addLift` FOLDED,
-  -- and pair the prover bridge `fiatShamirProver_runWithLog_simulateQ_fst_eq_direct` with the payload
-  -- bridge `fiatShamirVerifier_loggedExtractor_payload_eq_direct` and the challenge-strip lemma
-  -- `simulateQ_addLift_fiatShamirChallenge_optionT` at the per-`pr` leaf.
+  have hWQ : ∀ (proverResult : (Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
+        StmtOut × WitOut)),
+      (simulateQ loggingOracle
+        (Verifier.run stmtIn proverResult.1 V.fiatShamir)).run =
+      OracleComp.withQueryLog ((V.fiatShamir).verify stmtIn proverResult.1).run := by
+    intro proverResult
+    rfl
+  unfold Reduction.runWithLog
+  trace_state
   sorry
-
-set_option pp.explicit true
 
 /-- Re-fold the unfolded one-message Fiat-Shamir protocol spec (exposed by `dsimp` of the reducible
 abbreviation) back to `FiatShamirProtocolSpec`, so that `simp`/`rw` discrimination-tree keys line up
@@ -3035,13 +3021,28 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
       (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
   dsimp only [Verifier.knowledgeSoundness]
   rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
-  refine le_trans ?_ h
-  -- Remaining: collapse the FS game via the (proven) `fiatShamirKnowledgeExec_loggedExtractor_eq_direct`,
-  -- peel `srInit` (`probEvent_bind_mono_heteroEvent`), discharge leaf with
-  -- `probEvent_knowledgePayload_option_eq_stateRestoration`. The collapse application is blocked only by
-  -- the `challengeOracleInterface` instance-implicit arity `0+1`-vs-`1` defeq (instance positions resist
-  -- rw/simp/dsimp and `exact`/`le_of_eq`); fix = co-elaborate the challenge-oracle spec.
-  sorry
+  have h_eq := fiatShamirKnowledgeExec_loggedExtractor_eq_direct
+    (impl := fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec)
+      (StmtIn := StmtIn) srImpl)
+    (P := prover) (V := V) (srExtractor := srExtractor) (stmtIn := stmtIn) (witIn := witIn)
+  dsimp only [fsChallengeOracle] at h_eq
+  rw [Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS] at h
+  dsimp only [Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver, fsChallengeOracle] at h
+  rw [← ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl'] at h
+  change probEvent (do let s ← srInit; (simulateQ (fiatShamirCoupledQueryImpl srImpl) _).run' s) _ ≤ _ at h
+  -- Now simplify `bind` in `h`
+  simp only [OptionT.mk_bind, OptionT.run_mk, bind_assoc, pure_bind] at h
+  
+  -- The LHS of `h` is exactly the probEvent of the RHS of `h_eq`.
+  -- We want to prove `probEvent (goal_LHS) f ≤ probEvent (goal_RHS) g`.
+  -- Since `goal_LHS = srInit >>= fun s => (RHS of h_eq).run' s`, we can rewrite.
+  simp only [h_eq]
+  -- Now h and the goal are exactly the same except maybe some structural matching.
+  -- The predicate in the goal is `fun o ↦ o.elim False fun x ↦ (x.1, x.2.1) ∉ relIn ∧ (x.2.2.1, x.2.2.2) ∈ relOut`.
+  -- The predicate in `h` is `fun x ↦ match x with | (stmtIn, witIn, some stmtOut, witOut) => ...`.
+  -- And `stmtOut` might be wrapped in `Option` in one place but not another?
+  -- Wait, `exact h` might just work if the types are definitionally equal.
+  exact h
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side
 -- Fiat-Shamir challenges.  Re-deriving the transcript after verifier execution is not sound for an

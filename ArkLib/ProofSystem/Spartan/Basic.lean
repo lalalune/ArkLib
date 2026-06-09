@@ -481,6 +481,23 @@ noncomputable def oracleReduction.sendEvalClaim :
   prover := sendEvalClaimProver R pp oSpec
   verifier := sendEvalClaimVerifier R pp oSpec
 
+instance instSendEvalClaimVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (sendEvalClaimVerifier R pp oSpec) where
+  hCohInl i k h := by
+    rcases i with i | i
+    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
+      cases h
+    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
+      obtain rfl := Sum.inl.inj h
+      rfl
+  hCohInr i k h := by
+    rcases i with i | i
+    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
+      obtain rfl := Sum.inr.inj h
+      rfl
+    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
+      cases h
+
 /-!
   ## Random linear combination challenges
 
@@ -558,6 +575,16 @@ def oracleReduction.linearCombination :
       ⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩ where
   prover := linearCombinationProver R pp oSpec
   verifier := linearCombinationVerifier R pp oSpec
+
+instance instLinearCombinationVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (linearCombinationVerifier R pp oSpec) where
+  hCohInl i k h := by
+    simp only [linearCombinationVerifier, Function.Embedding.inl_apply] at h
+    obtain rfl := Sum.inl.inj h
+    rfl
+  hCohInr i k h := by
+    simp only [linearCombinationVerifier, Function.Embedding.inl_apply] at h
+    cases h
 
 /-!
   ## Second sum-check

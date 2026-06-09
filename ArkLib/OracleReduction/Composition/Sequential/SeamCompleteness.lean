@@ -3,6 +3,7 @@ Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import ArkLib.OracleReduction.RunUnroll
+import ArkLib.OracleReduction.Security.RoundByRound
 
 /-!
 # Two-stage seam *completeness* union bound
@@ -22,7 +23,7 @@ discharges the probabilistic union bound `e₁ + e₂`.
 -/
 
 open OracleComp OracleSpec ProtocolSpec OptionTStateT
-open scoped ENNReal
+open scoped ENNReal NNReal
 
 namespace OracleReduction
 
@@ -71,4 +72,165 @@ theorem probComp_seam_completeness
 
 end OracleReduction
 
+namespace OptionTStateT
+
+variable {ι : Type} {spec : OracleSpec ι} {σ : Type}
+
+/-- **Two-phase seam *completeness* with the snd↔V₁ reorder built in.** The completeness twin of
+`OptionTStateT.probComp_seam_swap_union_le` (the soundness reorder-union bound in `RunUnroll.lean`).
+
+The appended *honest* reduction run executes both prover phases first (`FST`, then `SND`) and then
+both verifier phases (`W1 = V₁`, then `W2 = V₂`): the natural order `FST → SND → W1 → W2`. To apply
+the two-stage completeness union bound `OracleReduction.probComp_seam_completeness` (whose stages are
+`(FST→W1) ; (SND→W2) = R₁.run ; R₂.run`) the `SND` prover stage and the `W1` verifier stage must be
+swapped. Under a state-preserving oracle implementation (`hso`) the two stages are distributionally
+independent, so `OptionTStateT.seam_swap_evalDist_eq` performs that reorder as a bare `evalDist`
+equality (predicate-independent, hence valid for completeness just as for soundness). This lemma
+chains that reorder with `probComp_seam_completeness`, in the *completeness* failure convention
+(`none` is bad; predicates `¬ Option.elim · False ·`). The result is the additive error `e₁ + e₂`.
+
+The side-condition `hB` (the `SND` prover phase never fails) holds for any prover run, which is a
+plain `OracleComp` with no `OptionT` failure. -/
+theorem probComp_seam_swap_completeness
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (pg : A × C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 False pg
+          | init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
+    (h₂ : ∀ (p : A × C) (s' : σ),
+          (some p, s') ∈ support (init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p →
+          Pr[fun o => ¬ Option.elim o False qg
+            | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
+    Pr[fun o => ¬ Option.elim o False qg
+        | init >>= fun s => (simulateQ so
+            (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+              W2 x a s₂).run).run' s] ≤ e₁ + e₂ := by
+  have key := seam_swap_evalDist_eq init so hso FST SND W1 W2 hB
+  have hmain := OracleReduction.probComp_seam_completeness init so
+    (liftM FST >>= fun x => W1 x >>= fun s₂ => (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+    (fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2)
+    pg qg e₁ e₂ h₁ h₂
+  unfold probEvent at hmain ⊢
+  rw [key]; exact hmain
+
+/-- The `seam_swap` natural-order `OptionT` run, unfolded to the plain-`OracleComp` `Option.elim`
+chain (`OptionT.run_bind` + `lift_run_elim`). This is the shape a concrete appended-reduction run
+arrives in after the message-seam unfolding (`Prover.append_run_msg` + `Verifier.append_run`). -/
+theorem seam_natural_run_eq {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D) :
+    ((liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ => W2 x a s₂
+        : OptionT (OracleComp spec) D).run)
+      = FST >>= fun x => SND x >>= fun a => (W1 x).run >>= fun o₁ =>
+          o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run) := by
+  simp only [OptionT.run_bind, Option.elimM, lift_run_elim]
+
+/-- **`P/A/B/k`-form swap completeness.** `probComp_seam_swap_completeness` with the natural-order
+chain pre-unfolded (via `seam_natural_run_eq`) into the plain `FST → SND → W1 → W2` `Option.elim`
+shape. This is the form that `apply`s directly against a concrete simulated appended-reduction run
+(provers `FST=P₁`, `SND=P₂` first, then verifiers `W1=V₁`, `W2=V₂`+assemble) once it has been
+normalized by the message-seam unfolding, with no need to spell out the (deeply nested) `W1`/`W2`
+by hand — they are inferred by unification. -/
+theorem probComp_seam_swap_completeness_PABk
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (pg : A × C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 False pg
+          | init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
+    (h₂ : ∀ (p : A × C) (s' : σ),
+          (some p, s') ∈ support (init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p →
+          Pr[fun o => ¬ Option.elim o False qg
+            | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
+    Pr[fun o => ¬ Option.elim o False qg
+        | init >>= fun s => (simulateQ so
+            (FST >>= fun x => SND x >>= fun a => (W1 x).run >>= fun o₁ =>
+              o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run))).run' s] ≤ e₁ + e₂ := by
+  have key := probComp_seam_swap_completeness init so hso FST SND W1 W2 hB pg qg e₁ e₂ h₁ h₂
+  rwa [seam_natural_run_eq] at key
+
+end OptionTStateT
+
+namespace OracleReduction
+
+/-- **General completeness bridge: `Pr[good | OptionT.mk ma] ≥ 1 - e` from one bad-event bound.**
+
+For a `ProbComp`-level game `ma : ProbComp (Option α)` that is *total* (`Pr[⊥|ma] = 0`, i.e. the
+sampling never fails — its only failure mode is the explicit `none` output), the success
+probability of the `OptionT` view is `1 - Pr[bad | ma]` where the bad event is `none`-or-`¬good`
+(`fun o => ¬ Option.elim o False good`). Hence a single bad-event bound `Pr[bad|ma] ≤ e` gives the
+completeness lower bound `Pr[good | OptionT.mk ma] ≥ 1 - e`.
+
+This is the general analogue of `Logup.probEvent_ge_one_sub_of_compl_zero`, which requires the
+complement to vanish exactly (`Pr[¬good] = 0`) and bounds only the failure probability separately.
+Here the two are fused into the single `none`-or-`¬good` event, the exact event the seam union
+bounds (`probComp_seam_completeness` / `OptionTStateT.probComp_seam_swap_completeness`) produce. -/
+theorem probEvent_optionT_mk_ge_of_bad_le {α : Type} (ma : ProbComp (Option α))
+    (good : α → Prop) (e : ℝ≥0∞)
+    (htot : Pr[⊥ | ma] = 0)
+    (hbad : Pr[fun o => ¬ Option.elim o False good | ma] ≤ e) :
+    Pr[good | (OptionT.mk ma : OptionT ProbComp α)] ≥ 1 - e := by
+  rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
+  have hc := probEvent_compl ma (fun o => Option.elim o False good)
+  rw [htot, tsub_zero] at hc
+  rw [ge_iff_le, tsub_le_iff_right]
+  calc (1 : ℝ≥0∞)
+      = Pr[fun o => Option.elim o False good | ma]
+        + Pr[fun o => ¬ Option.elim o False good | ma] := hc.symm
+    _ ≤ Pr[fun o => Option.elim o False good | ma] + e := by gcongr
+
+/-- **Completeness from a single bad-event bound + game totality (general adapter).**
+
+The general companion of `Logup.completenessFromRun_of_compl_zero_failure_bound`: instead of
+separately requiring the completeness complement to vanish and the failure probability to be bounded,
+this consumes one combined bad-event bound `hbad` (failure-or-`¬good` on the simulated game, bounded
+by `completenessError`) plus the game totality `htot` (the simulated `ProbComp` never fails, so the
+only failure surfacing in the bound is the explicit `none`). It is the bridge the message-seam
+append-completeness keystone feeds with the `probComp_seam_swap_completeness` union bound. -/
+theorem completenessFromRun_of_bad_le
+    {StmtIn WitIn StmtOut WitOut : Type}
+    {ιᵣ : Type} {runSpec : OracleSpec ιᵣ} {σᵣ : Type} {Trace : Type}
+    (runInit : ProbComp σᵣ)
+    (runImpl : QueryImpl runSpec (StateT σᵣ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (run : (stmtIn : StmtIn) → (witIn : WitIn) →
+      OptionT (OracleComp runSpec) ((Trace × StmtOut × WitOut) × StmtOut))
+    (completenessError : ℝ≥0)
+    (hbad :
+      ∀ stmtIn witIn, (stmtIn, witIn) ∈ relIn →
+        Pr[fun o => ¬ Option.elim o False
+              (fun (r : (Trace × StmtOut × WitOut) × StmtOut) =>
+                (r.2, r.1.2.2) ∈ relOut ∧ r.1.2.1 = r.2) |
+            (do (simulateQ runImpl (run stmtIn witIn).run).run' (← runInit))]
+          ≤ (completenessError : ℝ≥0∞))
+    (htot :
+      ∀ stmtIn witIn, (stmtIn, witIn) ∈ relIn →
+        Pr[⊥ | (do (simulateQ runImpl (run stmtIn witIn).run).run' (← runInit))] = 0) :
+    Reduction.completenessFromRun runInit runImpl relIn relOut run completenessError := by
+  intro stmtIn witIn hRel
+  exact probEvent_optionT_mk_ge_of_bad_le _ _ _ (htot stmtIn witIn hRel) (hbad stmtIn witIn hRel)
+
+end OracleReduction
+
 #print axioms OracleReduction.probComp_seam_completeness
+#print axioms OptionTStateT.probComp_seam_swap_completeness
+#print axioms OracleReduction.probEvent_optionT_mk_ge_of_bad_le
+#print axioms OracleReduction.completenessFromRun_of_bad_le

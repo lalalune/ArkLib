@@ -7,6 +7,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Basic
+import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
@@ -569,10 +570,11 @@ theorem batchingReduction_perfectCompleteness
 /-- Row-expansion form of `compute_s0` on the tensor sent by the honest embedding of an arbitrary
 large-field multilinear polynomial `t'`.
 
-This packages the exact orientation currently used by the batching verifier: `compute_s0` reads
-`P.decomposeRows`, so it extracts the basis coordinates of the `t'` value in the `φ₁` factor and
-weights them by the suffix equality factor. The sharp batching RBR bridge can use this lemma to
-separate the already-proven row extraction from the remaining KState/verifier-run plumbing. -/
+This packages the orientation used by the batching verifier: `compute_s0` reads
+`P.decomposeColumns`, so it extracts the basis coordinates of the *suffix equality factor* (the
+`φ₀`/`eq` tensor factor) and weights them by `eqTilde(u, y)`, scaling the `t'` value at each
+Boolean suffix. This is the column form that matches the witness-independent batching multiplier
+`compute_A_func` — see `compute_s0_eq_sum_A_func`. -/
 lemma compute_s0_embedded_MLP_eval_eq_sum
     [IsDomain L] [IsDomain K]
     (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) (y : Fin κ → L) :
@@ -581,18 +583,200 @@ lemma compute_s0_embedded_MLP_eval_eq_sum
         eqTilde (fun i => (if u i == 1 then (1 : L) else 0)) y *
           (∑ w : Fin ℓ' → Fin 2,
             P.basis.repr
-                (eval (fun i => (if w i == 1 then (1 : L) else 0)) t'.val) u •
-              (eqTilde (fun i => (if w i == 1 then (1 : L) else 0))
-                (getEvaluationPointSuffix κ L ℓ ℓ' h_l r))) := by
+                (eqTilde (fun i => (if w i == 1 then (1 : L) else 0))
+                  (getEvaluationPointSuffix κ L ℓ ℓ' h_l r)) u •
+              (eval (fun i => (if w i == 1 then (1 : L) else 0)) t'.val)) := by
   unfold compute_s0
   apply Finset.sum_congr rfl
   intro u _
-  rw [decomposeRows_embedded_MLP_eval']
+  rw [decomposeColumns_embedded_MLP_eval']
 
-/-- Mismatch polynomial from row-decomposition difference `msg0 - s_bar`. -/
+/-- **Round-0 batching consistency (completeness keystone).** For the honest prover's tensor
+`ŝ = embedded_MLP_eval t' r`, the verifier's batched sumcheck target `compute_s0 ŝ y` equals the
+honest sumcheck value `Σ_x A_func(x)·t'(x)`, where `A_func = compute_A_func` is the verifier's
+(witness-independent) batching multiplier. This is the identity the batching perfect-completeness
+needs (`sumcheck_target = Σ_cube H` with `H = A_MLE · t'`). It holds because `compute_s0` reads the
+**column** decomposition (`decomposeColumns_embedded_MLP_eval'`), which puts `β.repr` on the
+verifier-known `eq`-factor — matching `A_func`'s structure. The proof is a `sum_comm` + `eqTilde`
+symmetry rearrangement: both sides equal `Σ_u Σ_w β.repr(eq̃(w,suffix))_u • (eq̃(u,y)·t'(w))`. -/
+lemma compute_s0_eq_sum_A_func
+    [IsDomain L] [IsDomain K]
+    (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) (y : Fin κ → L) :
+    compute_s0 κ L K P (embedded_MLP_eval κ L K P ℓ ℓ' h_l t' r) y =
+      ∑ x : Fin ℓ' → Fin 2,
+        compute_A_func κ L K P ℓ' (getEvaluationPointSuffix κ L ℓ ℓ' h_l r) y x *
+          eval (fun i => (if x i == 1 then (1 : L) else 0)) t'.val := by
+  rw [compute_s0_embedded_MLP_eval_eq_sum]
+  unfold compute_A_func
+  simp only [Finset.sum_mul, Finset.mul_sum, smul_mul_assoc, mul_smul_comm]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl (fun w _ => Finset.sum_congr rfl (fun u _ => ?_))
+  rw [eqTilde_comm (getEvaluationPointSuffix κ L ℓ ℓ' h_l r)
+    (fun i => (if w i == 1 then (1 : L) else 0))]
+
+/-- **Round-0 batching sumcheck consistency (completeness keystone, abstract multiplier).** For the
+honest prover's embedded tensor `ŝ = embedded_MLP_eval t' r`, the batched sumcheck target
+`compute_s0 ŝ y` equals the honest sumcheck consistency sum `∑_{x ∈ {0,1}^ℓ'} H(x)` over the
+Boolean hypercube, where `H = projectToMidSumcheckPoly t' m 0` is the round-0 sumcheck polynomial
+of the product `m · t'`, provided the multiplier `m` matches `compute_A_func` on Boolean inputs.
+
+This is the `sumcheckConsistencyProp (boolDomain L _) (compute_s0 …) H` conjunct of the batching
+output relation — the conjunct made *provable* exactly by the column orientation of `compute_s0`
+(`compute_s0_eq_sum_A_func`). Proof: the cube sum reindexes to the Boolean hypercube (pinned
+`boolEmbedding`, with `Field L` from the finite domain), `projectToMidSumcheckPoly … 0` evaluates
+to `(m · t')` (the `i = 0` case of `fixFirstVariablesOfMQP_eval` fixes no variables), and
+`eval (m·t') = (eval m)·(eval t') = A_func · t'` summand-wise. The batching analog of
+`iteratedSumcheck_round_logic_complete`. -/
+theorem batching_consistency_of_multpoly [IsDomain L] [IsDomain K]
+    (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) (y : Fin κ → L)
+    (m : MultilinearPoly L ℓ')
+    (hm : ∀ b : Fin ℓ' → Fin 2,
+      eval (fun i => (if b i == 1 then (1 : L) else 0)) m.val
+        = compute_A_func κ L K P ℓ' (getEvaluationPointSuffix κ L ℓ ℓ' h_l r) y b) :
+    compute_s0 κ L K P (embedded_MLP_eval κ L K P ℓ ℓ' h_l t' r) y
+      = ∑ x ∈ (boolDomain L (ℓ' - (0 : Fin (ℓ' + 1)).val)).cube,
+          (projectToMidSumcheckPoly ℓ' t' m 0 Fin.elim0).val.eval x := by
+  letI : Field L := Fintype.fieldOfDomain L
+  rw [show (boolDomain L (ℓ' - (0 : Fin (ℓ' + 1)).val)).cube
+      = (univ.map (boolEmbedding L)) ^ᶠ (ℓ' - (0 : Fin (ℓ' + 1)).val) from rfl,
+    RingSwitching.boolHypercube_sum_pinned (boolEmbedding L) (by
+      intro c; rcases Fin.exists_fin_two.mp ⟨c, rfl⟩ with h | h <;> rw [h] <;> simp)]
+  rw [compute_s0_eq_sum_A_func]
+  refine Finset.sum_congr rfl (fun b _ => ?_)
+  have hproj : (projectToMidSumcheckPoly ℓ' t' m 0 Fin.elim0).val.eval
+        (fun j => (if b j == 1 then (1 : L) else 0))
+      = (m.val * t'.val).eval (fun j => (if b j == 1 then (1 : L) else 0)) := by
+    rw [projectToMidSumcheckPoly_eq_fixVars]
+    erw [fixFirstVariablesOfMQP_eval]
+    refine congrArg (fun g => eval g (m.val * t'.val)) ?_
+    funext i
+    simp only [Equiv.trans_apply, finCongr_apply]
+    rcases hsym : finSumFinEquiv.symm (Fin.cast (by simp) i) with j | j
+    · simp only [Sum.elim_inl]
+      have hji : j = i := by
+        have hi := congrArg finSumFinEquiv hsym
+        rw [Equiv.apply_symm_apply] at hi
+        apply Fin.ext
+        have hval := congrArg Fin.val hi
+        simpa [finSumFinEquiv_apply_left] using hval.symm
+      rw [hji]
+    · exact j.elim0
+  rw [MvPolynomial.eval_mul, hm b] at hproj
+  exact hproj.symm
+
+/-- **Round-0 batching sumcheck consistency (honest instance).** The hypothesis-free form: with the
+honest multiplier `m = compute_A_MLE` (the multilinear extension of `compute_A_func`), the Boolean
+agreement hypothesis holds by `MLE_eval_zeroOne`, so the batched target equals the honest sumcheck
+sum. This is exactly the consistency conjunct of `sumcheckRoundRelation 0` for the honest batching
+output `(stmtOut with sumcheck_target = compute_s0 ŝ y, witOut.H = projectToMidSumcheckPoly t' A_MLE 0)`. -/
+theorem batching_consistency_honest [IsDomain L] [IsDomain K]
+    (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) (y : Fin κ → L) :
+    compute_s0 κ L K P (embedded_MLP_eval κ L K P ℓ ℓ' h_l t' r) y
+      = ∑ x ∈ (boolDomain L (ℓ' - (0 : Fin (ℓ' + 1)).val)).cube,
+          (projectToMidSumcheckPoly ℓ' t'
+            (compute_A_MLE κ L K P ℓ' (getEvaluationPointSuffix κ L ℓ ℓ' h_l r) y)
+            0 Fin.elim0).val.eval x := by
+  apply batching_consistency_of_multpoly
+  intro b
+  have hcoe : (fun i => (if b i == 1 then (1 : L) else 0)) = (fun i => ((b i : Fin 2) : L)) := by
+    funext i; rcases Fin.exists_fin_two.mp ⟨b i, rfl⟩ with h | h <;> rw [h] <;> simp
+  rw [hcoe, compute_A_MLE]
+  exact MvPolynomial.MLE_eval_zeroOne b _
+
+set_option maxHeartbeats 1000000 in
+/-- **Batching perfect completeness — `batchingReduction_perfectCompleteness_residual` PROVEN.**
+The honest batching reduction is perfectly complete (given `NeverFail init`). The verifier-run
+collapse is the deterministic `oracleVerifier_verify_collapse`; the honest accept branch fires
+because `performCheckOriginalEvaluation_packMLE_iff` turns the relation's `original_claim = t(r)`
+into `performCheck = true`; and the honest output lies in `sumcheckRoundRelation 0` because the
+structural invariant holds by construction, the sumcheck-consistency conjunct is exactly
+`batching_consistency_honest` (the column-orientation keystone), and `initialCompatibility` is
+carried from the input relation. The monadic run-shape is the proven 2-message-round template
+`unroll_2_message_reduction_perfectCompleteness` (cf. `iteratedSumcheckOracleReduction_perfectCompleteness_proved`).
+
+Consumers carrying `NeverFail init` should call this directly (the `_residual` `Prop` is stated
+without `NeverFail`). -/
+theorem batchingReduction_perfectCompleteness_proved [IsDomain L] [IsDomain K]
+    (hInit : NeverFail init) :
+    batchingReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := aOStmtIn) (init := init) (impl := impl) := by
+  classical
+  haveI : Nonempty L := ⟨0⟩
+  rw [batchingReduction_perfectCompleteness_residual,
+    OracleReduction.unroll_2_message_reduction_perfectCompleteness (oSpec := []ₒ)
+    (pSpec := pSpecBatching (κ := κ) (L := L) (K := K) (P := P)) (init := init) (impl := impl)
+    (hInit := hInit) (hDir0 := by rfl) (hDir1 := by rfl)
+    (hImplSupp := by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])]
+  intro stmtIn oStmtIn witIn h_relIn
+  obtain ⟨h_t'_eq, h_claim, h_compat⟩ := h_relIn
+  -- honest verifier collapses to `pure accept` (performCheck = true)
+  have hverify : ∀ r1 : Fin κ → L,
+      (oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)).toVerifier.verify (stmtIn, oStmtIn)
+          (FullTranscript.mk2 (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) r1)
+        = (pure (batchingAcceptStatement κ L K P ℓ ℓ' stmtIn
+              (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) r1, oStmtIn)
+            : OptionT (OracleComp []ₒ) _) := by
+    intro r1
+    have hcheck : performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmtIn.original_claim
+        stmtIn.t_eval_point
+        (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) = true := by
+      rw [h_t'_eq, performCheckOriginalEvaluation_packMLE_iff]; exact h_claim
+    simp only [OracleVerifier.toVerifier]
+    rw [oracleVerifier_verify_collapse]
+    simp only [FullTranscript.messages, FullTranscript.challenges, FullTranscript.mk2]
+    rw [if_pos hcheck]
+    simp only [pure_bind, batchingAcceptStatement, oracleVerifier]
+  -- relation membership of the honest accept output
+  have h_rel_out : ∀ r1 : Fin κ → L,
+      ((batchingAcceptStatement κ L K P ℓ ℓ' stmtIn
+          (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) r1, oStmtIn),
+        ({ t' := witIn.t',
+           H := projectToMidSumcheckPoly ℓ' witIn.t'
+             ((RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly
+               { t_eval_point := stmtIn.t_eval_point, original_claim := stmtIn.original_claim,
+                 s_hat := embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point,
+                 r_batching := r1 })
+             0 Fin.elim0 } : SumcheckWitness L ℓ' 0))
+        ∈ sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0 := by
+    intro r1
+    refine ⟨trivial, rfl, ?_, h_compat⟩
+    exact batching_consistency_honest (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
+      (h_l := h_l) (t' := witIn.t') (r := stmtIn.t_eval_point) (y := r1)
+  rw [probEvent_eq_one_iff]
+  dsimp only [batchingOracleReduction, oracleProver]
+  simp only [liftComp_pure, liftM_pure, pure_bind, bind_pure_comp, Function.comp, hverify,
+    liftComp_pure, _root_.map_pure]
+  refine ⟨?_, ?_⟩
+  · -- No failure: a uniform challenge sample followed by `pure`.
+    rw [probFailure_bind_eq_zero_iff]
+    refine ⟨?_, fun r1 _ => ?_⟩
+    · simp only [OptionT.probFailure_liftM, OracleComp.probFailure_liftComp,
+        HasEvalPMF.probFailure_eq_zero]
+    · rw [probFailure_map]
+      erw [OracleComp.liftComp_pure]
+      apply probFailure_pure
+  · -- Correctness: the honest output lies in the batching output relation.
+    intro x hx
+    simp only [OptionT.mem_support_iff, OptionT.run_bind, support_bind, Set.mem_iUnion,
+      OptionT.run_pure, support_pure, Set.mem_singleton_iff, exists_prop, OptionT.run_map,
+      OptionT.run_monadLift, support_map, support_liftM,
+      Set.mem_image, _root_.map_pure] at hx
+    obtain ⟨r1, -, x_1, hx1, rfl⟩ := hx
+    change x_1 ∈ _root_.support (pure _ : OptionT (OracleComp _) _) at hx1
+    simp only [OptionT.mem_support_iff, OptionT.run_pure, support_pure, Set.mem_preimage,
+      Set.mem_singleton_iff, Option.some.injEq] at hx1
+    subst hx1
+    exact ⟨h_rel_out r1, rfl, rfl⟩
+
+
+
+/-- Mismatch polynomial from column-decomposition difference `msg0 - s_bar`. The batching verifier
+target `compute_s0` reads `decomposeColumns`, so the soundness mismatch test uses the same
+(faithful, by `decomposeColumns_spec`) column decomposition. -/
 noncomputable def batchingMismatchPoly (msg0 s_bar : P.A) : MvPolynomial (Fin κ) L :=
   MvPolynomial.MLE (fun u : Fin κ → Fin 2 =>
-    P.decomposeRows msg0 u - P.decomposeRows s_bar u)
+    P.decomposeColumns msg0 u - P.decomposeColumns s_bar u)
 
 /-- The mismatch polynomial evaluates to the `compute_s0` difference. -/
 lemma batching_compute_s0_sub_eq_eval_mismatch
@@ -611,7 +795,7 @@ lemma batchingMismatchPoly_totalDegree_le
   have h_mem : Poly ∈ MvPolynomial.restrictDegree (Fin κ) L 1 := by
     exact (MvPolynomial.MLE_mem_restrictDegree (σ := Fin κ) (R := L)
       (evals := fun u : Fin κ → Fin 2 =>
-        P.decomposeRows msg0 u - P.decomposeRows s_bar u))
+        P.decomposeColumns msg0 u - P.decomposeColumns s_bar u))
   have h_degOf : ∀ i : Fin κ, MvPolynomial.degreeOf i Poly ≤ 1 := by
     intro i
     exact (MvPolynomial.mem_restrictDegree_iff_degreeOf_le (p := Poly) (n := 1)).1 h_mem i
@@ -631,25 +815,26 @@ lemma batchingMismatchPoly_totalDegree_le
     _ ≤ κ := by
       simpa using (Finset.card_le_univ (s := m.support))
 
-/-- If the two batched `A`-values differ, their row-decomposition mismatch polynomial is nonzero. -/
+/-- If the two batched `A`-values differ, their column-decomposition mismatch polynomial is
+nonzero. -/
 lemma batchingMismatchPoly_nonzero_of_ne
     (msg0 s_bar : P.A) (h_ne : msg0 ≠ s_bar) :
     batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar ≠ 0 := by
-  have h_rows_ne :
-      (P.decomposeRows msg0) ≠
-      (P.decomposeRows s_bar) := by
+  have h_cols_ne :
+      (P.decomposeColumns msg0) ≠
+      (P.decomposeColumns s_bar) := by
     intro h_eq
     apply h_ne
     calc msg0
-      _ = ∑ u, P.φ₀ (P.decomposeRows msg0 u) * P.φ₁ (P.basis u) := P.decomposeRows_spec msg0
-      _ = ∑ u, P.φ₀ (P.decomposeRows s_bar u) * P.φ₁ (P.basis u) := by simp [h_eq]
-      _ = s_bar := (P.decomposeRows_spec s_bar).symm
+      _ = ∑ u, P.φ₁ (P.decomposeColumns msg0 u) * P.φ₀ (P.basis u) := P.decomposeColumns_spec msg0
+      _ = ∑ u, P.φ₁ (P.decomposeColumns s_bar u) * P.φ₀ (P.basis u) := by simp [h_eq]
+      _ = s_bar := (P.decomposeColumns_spec s_bar).symm
   have h_diff_ne :
       (fun u : Fin κ → Fin 2 =>
-        P.decomposeRows msg0 u -
-        P.decomposeRows s_bar u) ≠ 0 := by
+        P.decomposeColumns msg0 u -
+        P.decomposeColumns s_bar u) ≠ 0 := by
     intro h_zero
-    apply h_rows_ne
+    apply h_cols_ne
     funext u
     exact sub_eq_zero.mp (congrFun h_zero u)
   intro h_poly_zero
@@ -663,8 +848,8 @@ lemma batchingMismatchPoly_nonzero_of_ne
   have hu_eval_mle :
       MvPolynomial.eval (fun i => ((u i : Fin 2) : L))
         (batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar) =
-      P.decomposeRows msg0 u -
-        P.decomposeRows s_bar u := by
+      P.decomposeColumns msg0 u -
+        P.decomposeColumns s_bar u := by
     simp [batchingMismatchPoly, MvPolynomial.MLE_eval_zeroOne]
   rw [hu_eval_mle] at hu_eval_zero
   exact hu_eval_zero
@@ -678,22 +863,23 @@ lemma batchingMismatchPoly_nonzero_of_embed_ne
     batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0
       (embedded_MLP_eval κ L K P ℓ ℓ' h_l t' stmt.t_eval_point) ≠ 0 := by
   let s_bar := embedded_MLP_eval κ L K P ℓ ℓ' h_l t' stmt.t_eval_point
-  have h_rows_ne :
-      (P.decomposeRows msg0) ≠
-      (P.decomposeRows s_bar) := by
+  have h_cols_ne :
+      (P.decomposeColumns msg0) ≠
+      (P.decomposeColumns s_bar) := by
     intro h_eq
     have hs : msg0 = s_bar := by
       calc msg0
-        _ = ∑ u, P.φ₀ (P.decomposeRows msg0 u) * P.φ₁ (P.basis u) := P.decomposeRows_spec msg0
-        _ = ∑ u, P.φ₀ (P.decomposeRows s_bar u) * P.φ₁ (P.basis u) := by simp [h_eq]
-        _ = s_bar := (P.decomposeRows_spec s_bar).symm
+        _ = ∑ u, P.φ₁ (P.decomposeColumns msg0 u) * P.φ₀ (P.basis u) :=
+          P.decomposeColumns_spec msg0
+        _ = ∑ u, P.φ₁ (P.decomposeColumns s_bar u) * P.φ₀ (P.basis u) := by simp [h_eq]
+        _ = s_bar := (P.decomposeColumns_spec s_bar).symm
     exact h_embed_ne (by simpa [s_bar] using hs.symm)
   have h_diff_ne :
       (fun u : Fin κ → Fin 2 =>
-        P.decomposeRows msg0 u -
-        P.decomposeRows s_bar u) ≠ 0 := by
+        P.decomposeColumns msg0 u -
+        P.decomposeColumns s_bar u) ≠ 0 := by
     intro h_zero
-    apply h_rows_ne
+    apply h_cols_ne
     funext u
     exact sub_eq_zero.mp (congrFun h_zero u)
   intro h_poly_zero
@@ -710,8 +896,8 @@ lemma batchingMismatchPoly_nonzero_of_embed_ne
   have hu_eval_mle :
       MvPolynomial.eval (fun i => ((u i : Fin 2) : L))
         (batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar) =
-      P.decomposeRows msg0 u -
-        P.decomposeRows s_bar u := by
+      P.decomposeColumns msg0 u -
+        P.decomposeColumns s_bar u := by
     simp [batchingMismatchPoly, MvPolynomial.MLE_eval_zeroOne]
   rw [hu_eval_mle] at hu_eval_zero
   exact hu_eval_zero
@@ -1020,4 +1206,8 @@ end RingSwitching
 #print axioms RingSwitching.BatchingPhase.batching_rbrExtractionFailureEvent_accept_pack_or_embed
 #print axioms RingSwitching.BatchingPhase.batching_doom_accept_imply_bad_of_bridges
 #print axioms RingSwitching.BatchingPhase.compute_s0_embedded_MLP_eval_eq_sum
+#print axioms RingSwitching.BatchingPhase.compute_s0_eq_sum_A_func
+#print axioms RingSwitching.BatchingPhase.batching_consistency_of_multpoly
+#print axioms RingSwitching.BatchingPhase.batching_consistency_honest
+#print axioms RingSwitching.BatchingPhase.batchingReduction_perfectCompleteness_proved
 #print axioms RingSwitching.BatchingPhase.probability_bound_badBatchingEventProp_sharp

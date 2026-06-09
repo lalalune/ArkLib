@@ -195,6 +195,16 @@ noncomputable def firstSumcheckReduction :
   (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).liftContext
     (firstSumcheckContextLens pp) (firstSumcheckOracleLens pp oSpec)
 
+instance instFirstSumcheckVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (firstSumcheckReduction (R := R) pp oSpec).verifier where
+  hCohInl i k h := by
+    simp only [firstSumcheckReduction, OracleVerifier.liftContext, Function.Embedding.inl_apply] at h
+    obtain rfl := Sum.inl.inj h
+    rfl
+  hCohInr i k h := by
+    simp only [firstSumcheckReduction, OracleVerifier.liftContext, Function.Embedding.inl_apply] at h
+    cases h
+
 /-- **`LiftContextCoherent` instance for the Spartan first sum-check lens** — the #433 framework gate
 for the first sum-check lift, the first-phase analogue of `secondSumcheckCoherent`. -/
 @[reducible] noncomputable def firstSumcheckCoherent :

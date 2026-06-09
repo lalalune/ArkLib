@@ -51,11 +51,15 @@ noncomputable def secondSCEvalPure
   let z ← zEvalFromFinalOracles R pp ⟨point, stmt⟩
   pure ((r .A * a + r .B * b + r .C * c) * z)
 
+-- This proof's `simp` needs `DecidableEq R` (the `variable` block carries `[Fintype R]` but not
+-- `[DecidableEq R]`). Upstream instance-search drift made synthesizing it from the proof-local
+-- `classical` too expensive (timing out both the `synthInstance` and `isDefEq` heartbeat budgets),
+-- so we supply it as an explicit hypothesis instead. Callers already have `[DecidableEq R]`.
 omit [IsDomain R] [Fintype R] in
 /-- **`simOStmt` faithfulness.** The honest interpretation of the oracle reconstruction of `ℳ`
 equals `eval point ℳ`. This is the mathematical core of `OracleVerifier.LiftContextCoherent` for the
 Spartan second sum-check lift, hence of its completeness transfer. -/
-theorem secondSCEvalPure_simOracle0
+theorem secondSCEvalPure_simOracle0 [DecidableEq R]
     (stmt : Statement.AfterLinearCombination R pp)
     (oStmt : ∀ i, FinalOracleStatement R pp i) (point : Fin pp.ℓ_n → R) :
     simulateQ (OracleInterface.simOracle0 (FinalOracleStatement R pp) oStmt)
@@ -71,7 +75,7 @@ theorem secondSCEvalPure_simOracle0
             (oStmt (.inr (.inl idx))).toMLE) := by
     intro idx
     simp only [simulateQ_query, OracleInterface.simOracle0, OracleQuery.cont_query,
-      OracleQuery.input_query, id_map]
+      OracleQuery.input_query]
     rfl
   unfold secondSCEvalPure
   simp only [simulateQ_bind, hq, zEvalFromFinalOracles_simOracle0_eq_mle_z, simulateQ_pure]

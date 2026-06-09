@@ -193,6 +193,16 @@ noncomputable def secondSumcheckReduction :
   (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).liftContext
     (secondSumcheckContextLens pp) (secondSumcheckOracleLens pp oSpec)
 
+instance instSecondSumcheckVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (secondSumcheckReduction (R := R) pp oSpec).verifier where
+  hCohInl i k h := by
+    simp only [secondSumcheckReduction, OracleVerifier.liftContext, Function.Embedding.inl_apply] at h
+    obtain rfl := Sum.inl.inj h
+    rfl
+  hCohInr i k h := by
+    simp only [secondSumcheckReduction, OracleVerifier.liftContext, Function.Embedding.inl_apply] at h
+    cases h
+
 #print axioms secondSumcheckReduction
 
 end Spartan.Spec

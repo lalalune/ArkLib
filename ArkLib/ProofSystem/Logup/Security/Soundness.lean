@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.ProofSystem.Logup.Protocol
+import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckBridge
 
 /-!
 # LogUp Soundness
@@ -87,10 +88,10 @@ noncomputable def logupSoundnessError (F : Type) [Fintype F] (n M : ℕ) (params
   outerSoundnessError F n M params + sumcheckSoundnessError
 
 /-- The intermediate language threaded between the outer LogUp phase and the embedded sumcheck.
-The outer phase carries no acceptance obligation into the sumcheck, so this is `Set.univ` (the
-language of the trivial `midRelation` of the completeness development). -/
+This is the set of intermediate statements whose embedded-sumcheck claim `logupOuterSumcheckClaim`
+is true (i.e. zero). This is the exact claim that the embedded sumcheck receives and verifies. -/
 def midLanguage : Set (StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)) :=
-  Set.univ
+  { p | logupOuterSumcheckClaim F n M params p.1 p.2 = 0 }
 
 /-- The full LogUp verifier is, definitionally, the sequential composition of the outer verifier and
 the embedded sumcheck verifier. This is the structural fact driving the soundness proof via

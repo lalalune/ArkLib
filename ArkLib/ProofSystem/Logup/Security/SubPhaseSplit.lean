@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ProofSystem.Logup.Security.Soundness
 import ArkLib.ProofSystem.Logup.Security.Completeness
+import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
 
 /-!
 # LogUp Protocol 2 — splitting the sub-phase residuals into independent obligations
@@ -238,6 +239,33 @@ theorem logup_completeness_of_subPhase_append
       (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
   logup_completeness_of_bricks oSpec F n M params init impl
     ⟨hSub.1, hSub.2, hAppend⟩
+
+/-! ### Discharging the outer completeness half (issue #13 acceptance: shrink the residual) -/
+
+/-- **The outer completeness half is no longer a residual.** `OuterCompletenessResidual` is exactly
+the conclusion of the fully-proven `outerOracleReduction_completeness` (the honest outer LogUp oracle
+reduction is complete with error `logupCompletenessError`, established end-to-end in
+`Security/OuterCompleteness.lean` via the pole bound `card_poleSet_le` / `probEvent_pole_le` and the
+per-state agreement `outer_perState_agree`). Under the standard completeness assumption
+`NeverFail init` it therefore holds unconditionally — removing the outer half of the LogUp
+completeness residual surface (issue #13 acceptance "remove or shrink the residuals"). -/
+theorem outerCompletenessResidual_of_neverFail (hInit : NeverFail init) :
+    OuterCompletenessResidual oSpec F n M params init impl :=
+  outerOracleReduction_completeness oSpec F n M params init impl hInit
+
+/-- **LogUp completeness from the sumcheck + append halves alone.** With the outer half discharged by
+`outerCompletenessResidual_of_neverFail`, the full completeness reduction needs only the embedded
+sumcheck completeness (`SumcheckCompletenessResidual`) and the append-composition completeness brick
+— the two remaining completeness obligations of LogUp Protocol 2. -/
+theorem logup_completeness_of_sumcheck_append (hInit : NeverFail init)
+    (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl)
+    (hAppend :
+      AppendCompletenessResidual oSpec F n M params init impl
+        (outerCompletenessResidual_of_neverFail oSpec F n M params init impl hInit) hSumcheck) :
+    (logupOracleReduction oSpec F n M params).completeness init impl
+      (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
+  logup_completeness_of_split oSpec F n M params init impl
+    (outerCompletenessResidual_of_neverFail oSpec F n M params init impl hInit) hSumcheck hAppend
 
 end Split
 

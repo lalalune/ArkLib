@@ -22,8 +22,9 @@ reordering. We decompose the appended-run support via `OptionT.mem_support_Optio
 into the four `P₁/P₂/V₁/V₂` outcomes, reconstruct the `R₁`/`R₂` run outcomes, and feed `h₁`, `h₂`.
 
 The forward support-decomposition (steps 1–2 of the outline; the historically-blocking step) is
-machine-checked below to the four component outcomes; the remaining `sorry`s are the (conjecture-free)
-mechanical re-assembly (feed `h₁`/`h₂`) and the no-failure half.
+machine-checked below to the four component outcomes, followed by the (conjecture-free) mechanical
+re-assembly (feed `h₁`/`h₂`) and the no-failure half. The whole theorem is now proved with no
+`sorry` and no new axioms.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -66,13 +67,12 @@ private theorem probFailure_lift_run_getM {ι₁ ι₂ : Type} {spec₁ : Oracle
     {S' γ : Type} (W : OptionT (OracleComp spec₁) S') (c : γ) :
     Pr[⊥ | (do let stmtOut ← liftM W.run; let vs ← stmtOut.getM; pure (c, vs)
               : OptionT (OracleComp spec₂) (γ × S'))] = Pr[⊥ | W] := by
-  simp only [OptionT.liftM_run_getM_bind]
-  simp only [bind_pure_comp, probFailure_map]
-  rw [OptionT.probFailure_eq, OptionT.probFailure_eq (mx := W)]
-  have hrun : (liftM W : OptionT (OracleComp spec₂) S').run = liftComp W.run spec₂ := by
-    rw [OracleComp.liftM_OptionT_eq, OracleComp.liftComp_def]; rfl
-  rw [hrun]
-  simp only [HasEvalPMF.probFailure_eq_zero, zero_add, OracleComp.probOutput_liftComp]
+  rw [OptionT.liftM_run_getM_bind W (fun vs => pure (c, vs)), bind_pure_comp, probFailure_map,
+    OptionT.probFailure_eq (m := OracleComp spec₂), OptionT.probFailure_eq (m := OracleComp spec₁)]
+  simp only [HasEvalPMF.probFailure_eq_zero, zero_add]
+  change probOutput (m := OracleComp spec₂) (mx := liftComp W.run spec₂) (x := none) =
+    probOutput (m := OracleComp spec₁) (mx := W.run) (x := none)
+  rw [OracleComp.probOutput_liftComp (spec := spec₁) (superSpec := spec₂) (mx := W.run) (x := none)]
 
 /-- **Perfect completeness composes under `Reduction.append` (message-seam case).** -/
 theorem append_perfectCompleteness_message
@@ -160,11 +160,89 @@ theorem append_perfectCompleteness_message
         exists_eq_right] at hP₁piece
       rw [OracleComp.support_liftComp] at hP₁piece
       have hV₁f := hV₁nf (tr₁, s₂, w₂) (by simpa only [OptionT.support_liftM] using hP₁piece)
-      -- `hV₁f` : V₁ never returns `none` on `tr₁` (in `verifier+getM` form). Goal: the appended
-      -- verifier never returns `none` on `pr.1 = tr₁ ++ₜ tr₂`. Decompose `hpr2` for `tr₂`; split via
-      -- `Verifier.append_run`; reduce both to `none ∉ support (·.run)`; V₁ via `hV₁f`, V₂ via
-      -- `hs₁ ((tr₁,s₂,w₂),·) ⇒ rel₂ ⇒ h₂`'s no-failure. The one remaining mechanical gap.
-      sorry
+      rw [probFailure_lift_run_getM] at hV₁f
+      -- Decompose `hpr2` to learn `pr = (tr₁ ++ₜ tr₂, s₃, w₃)` with `(tr₂,s₃,w₃) ∈ support (P₂.run s₂ w₂)`.
+      simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+        OptionT.mk, bind_pure_comp, support_map, Set.mem_image, Option.some.injEq,
+        Prod.mk.injEq, Prod.exists, exists_prop, exists_eq_right] at hpr2
+      have hpr2f : pr ∈ support
+          ((fun a : pSpec₂.FullTranscript × Stmt₃ × Wit₃ => (tr₁ ++ₜ a.1, a.2)) <$>
+            ((Prover.run s₂ w₂ R₂.prover).liftComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))) := hpr2
+      rw [support_map, OracleComp.support_liftComp] at hpr2f
+      obtain ⟨⟨tr₂, s₃, w₃⟩, hP₂core, rfl⟩ := hpr2f
+      -- Reduce the goal (verifier+getM never-fails) to the appended verifier never returning `none`.
+      rw [probFailure_lift_run_getM, Verifier.append_run]
+      simp only [FullTranscript.append_fst, FullTranscript.append_snd, bind_pure_comp]
+      rw [probFailure_bind_eq_zero_iff]
+      refine ⟨hV₁f, ?_⟩
+      intro s' hs'mem
+      -- `hs₁` on the reconstructed `R₁` outcome `((tr₁,s₂,w₂), s')` gives `(s',w₂) ∈ rel₂ ∧ s₂ = s'`.
+      have key := hs₁ ((tr₁, s₂, w₂), s') (by
+        rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
+          (impl := impl.addLift challengeQueryImpl) (hImplSupp := by
+            intro β q s''
+            cases q with | mk t f =>
+            cases t with
+            | inl i => exact hImplSupp (OracleQuery.mk i f) s''
+            | inr i =>
+              simp only [QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+                QueryImpl.addLift_def, QueryImpl.add_apply_inr]
+              have hq := support_challengeQueryImpl_run_eq (q := OracleQuery.mk i f) s''
+              rw [support_liftM]
+              simpa only [ChallengeIdx, Challenge, add_apply_inr, QueryImpl.liftTarget_apply,
+                StateT.run_map, StateT.run_monadLift, monadLift_self, bind_pure_comp, Functor.map_map,
+                support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
+                support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+                liftM_map] using hq)]
+        rw [OptionT.mem_support_iff]
+        simp only [Reduction.run, liftM_bind, ChallengeIdx, Challenge, liftM_pure, bind_pure_comp,
+          liftM_OptionT_eq, Prod.mk.eta, bind_assoc, bind_map_left, OptionT.support_mk,
+          Set.mem_setOf_eq, Prod.mk.injEq, liftComp_eq_liftM, OptionT.mem_support_iff, support_bind,
+          support_map, Set.mem_iUnion, Set.mem_image, Prod.exists, exists_prop]
+        dsimp only [Functor.map, OptionT.instMonad, OptionT.mk, OptionT.run]
+        simp only [OptionT.monad_bind_eq_bind, OptionT.mem_support_OptionT_bind_run_some_iff,
+          OptionT.mem_support_OptionT_pure_run_some_iff, Function.comp_apply, Prod.exists]
+        refine ⟨tr₁, s₂, w₂, ?_, some s', ?_, s', ?_, rfl⟩
+        · simpa only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+            OptionT.mk, bind_pure_comp, support_map, Set.mem_image, Option.some.injEq,
+            exists_eq_right] using hP₁piece
+        · simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+            OptionT.mk, bind_pure_comp]
+          rw [support_simulateQ_eq_OracleComp_of_superSpec (h_supp := by intro β q; rfl)]
+          simpa only [support_map, Set.mem_image, Option.some.injEq, OptionT.run,
+            exists_eq_right] using hs'mem
+        · simp [Option.getM, OptionT.monad_pure_eq_pure,
+            OptionT.mem_support_OptionT_pure_run_some_iff])
+      simp only at key
+      obtain ⟨hrel₂, hs2eq⟩ := key
+      subst hs2eq
+      -- Decompose `h₂`'s no-failure (same chain as `hf₁ → hV₁nf`) to get V₂ never-`none`.
+      obtain ⟨hf₂, _⟩ := h₂ s₂ w₂ hrel₂
+      obtain ⟨s₀', hs₀'⟩ := support_nonempty_of_neverFails init hInit
+      rw [OptionT.probFailure_mk_bind_eq_zero_iff] at hf₂
+      replace hf₂ := hf₂.2 s₀' hs₀'
+      rw [probFailure_simulateQ_iff_stateful_run'_mk (impl := impl.addLift challengeQueryImpl)
+        (hImplSupp := by
+          intro β q s''
+          cases q with | mk t f =>
+          cases t with
+          | inl i => exact hImplSupp (OracleQuery.mk i f) s''
+          | inr i =>
+            simp only [QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+              QueryImpl.addLift_def, QueryImpl.add_apply_inr]
+            have hq := support_challengeQueryImpl_run_eq (q := OracleQuery.mk i f) s''
+            rw [support_liftM]
+            simpa only [ChallengeIdx, Challenge, add_apply_inr, QueryImpl.liftTarget_apply,
+              StateT.run_map, StateT.run_monadLift, monadLift_self, bind_pure_comp, Functor.map_map,
+              support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
+              support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+              liftM_map] using hq)] at hf₂
+      simp only [Reduction.run] at hf₂
+      rw [OptionT.probFailure_mk_do_bindT_eq_zero_iff] at hf₂
+      obtain ⟨_, hV₂nf⟩ := hf₂
+      have hV₂f := hV₂nf (tr₂, s₃, w₃) (by simpa only [OptionT.support_liftM] using hP₂core)
+      rw [probFailure_lift_run_getM] at hV₂f
+      simpa only [bind_pure] using hV₂f
   · intro x hx
     rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
       (impl := impl.addLift challengeQueryImpl) (hImplSupp := by
@@ -304,5 +382,54 @@ theorem append_perfectCompleteness_message
           OptionT.mem_support_OptionT_pure_run_some_iff])
     simp only at key₂
     exact ⟨key₂.1, key₂.2⟩
+
+/-- **Discharge of the named residual (message-seam case).**
+`reductionAppendPerfectCompletenessResidual` (defined in `Append.lean` as the append-completeness
+conclusion, threaded as a hypothesis by `reduction_append_perfectCompleteness` and by the
+`BCS`/`Logup`/`Fri` consumers) is now a *theorem* under the natural message-seam side conditions:
+the proven `append_perfectCompleteness_message` delivers exactly its unfolded conclusion. No
+`sorry`, no new axioms. -/
+theorem reductionAppendPerfectCompletenessResidual_of_message
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₁.Challenge]ₒ).Fintype] [(oSpec + [pSpec₁.Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₂.Challenge]ₒ).Fintype] [(oSpec + [pSpec₂.Challenge]ₒ).Inhabited]
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β)) :
+    reductionAppendPerfectCompletenessResidual R₁ R₂ h₁ h₂ :=
+  append_perfectCompleteness_message R₁ R₂ h₁ h₂ hn hDir hDir₂ hInit hImplSupp
+
+/-- **Append perfect completeness, residual-free (message-seam case).** The public composition
+theorem with the assumed-conclusion hypothesis of `reduction_append_perfectCompleteness` *removed*
+and replaced by the genuine message-seam side conditions — proven, not gated. -/
+theorem reduction_append_perfectCompleteness_msg
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₁.Challenge]ₒ).Fintype] [(oSpec + [pSpec₁.Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₂.Challenge]ₒ).Fintype] [(oSpec + [pSpec₂.Challenge]ₒ).Inhabited]
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β)) :
+    (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ :=
+  reduction_append_perfectCompleteness R₁ R₂ h₁ h₂
+    (reductionAppendPerfectCompletenessResidual_of_message
+      R₁ R₂ h₁ h₂ hn hDir hDir₂ hInit hImplSupp)
 
 end Reduction
