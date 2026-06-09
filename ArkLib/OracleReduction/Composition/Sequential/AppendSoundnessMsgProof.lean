@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
+import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessSeamTransfer
 import ArkLib.OracleReduction.RunUnroll
 
 /-!
@@ -81,6 +82,72 @@ private theorem marg_het {ιₛ : Type} {spec : OracleSpec ιₛ} {α₁ α₂ �
   have hpe2 : (fun o : Option α₂ => Option.elim o False (fun a => q (g₂ a)))
       = (fun ob => Option.elim ob False q) ∘ (Option.map g₂) := by funext o; cases o <;> rfl
   rw [hpe1, hpe2, probEvent_comp, probEvent_comp, key]
+
+/-- **Lift coherence: `OracleComp`-first vs `OptionT`-first lift of a phase computation.** The seam
+factoring lifts the phase-1 prover's `Prover.run` *across `OracleComp`* (pSpec₁ → combined) and then
+into `OptionT`; the per-phase soundness game instead lifts it into `OptionT` first and then across.
+Both routes (`OracleComp pSpec₁ → OptionT combined`) coincide: each `OptionT.run` reduces to
+`some <$> liftM A`, which is definitionally `liftComp A`. This reconciles the goal's
+`liftM (liftM A : OracleComp combined)` with the `OptionT`-side form. -/
+private theorem lift_oc_optionT_coh {α : Type}
+    (A : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) α) :
+    (liftM (liftM A : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
+      : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α)
+    = (liftM (liftM A : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) α)
+      : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α) := by
+  apply OptionT.ext
+  simp only [liftM_OptionT_eq, OptionT.run_mk]
+  show OptionT.run (liftM (liftM A : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)) = _
+  rw [OptionT.run_monadLift]
+  simp only [monadLift_eq_self]
+  conv_rhs => rw [show (liftM A : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) α)
+      = OptionT.lift A from rfl]
+  simp only [OptionT.lift, OptionT.mk, simulateQ_map, OptionT.run, map_eq_pure_bind,
+    simulateQ_bind, simulateQ_pure]
+  rfl
+
+/-- **`(liftM g).run = liftM g.run` across the `pSpec₁` challenge seam.** The `OptionT`-lift of `g`
+(`oSpec+[pSpec₁.Challenge]ₒ → combined`) commutes with `OptionT.run`: both reduce to
+`liftComp = simulateQ (fun t => liftM (query t))` of the underlying `OracleComp`. Bridges the
+`OptionT`-level seam body to the `OracleComp`-level `evalDist_run'_challengeSeam_left`. -/
+private theorem liftM_optionT_run_eq_seam {α : Type}
+    (g : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) α) :
+    (liftM g : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α).run
+    = (liftM (g.run) : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option α)) := by
+  rw [liftM_OptionT_eq, OptionT.run]
+  rw [show (liftM g.run : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option α))
+      = OracleComp.liftComp g.run _ from (OracleComp.liftComp_eq_liftM _).symm,
+    OracleComp.liftComp_def]
+  rfl
+
+/-- **Phase-1 challenge-seam transfer, at `probEvent`.** Any event `P` on the appended phase-1 game
+(`liftM g` simulated under the *combined* challenge oracle) has the same probability as on `g`
+simulated under `pSpec₁`'s own challenge oracle. Lifts `evalDist_run'_challengeSeam_left` (a per-state
+`evalDist` equality on the `OracleComp` run) through the `init`-bind and `liftM`/`OptionT.run`
+coherence (`liftM_optionT_run_eq_seam`) to the full soundness game. -/
+private theorem probEvent_seam_transfer_left {α : Type}
+    (g : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) α)
+    (P : Option α → Prop) :
+    Pr[P | init >>= fun s => (simulateQ
+        (impl.addLift (challengeQueryImpl (pSpec := pSpec₁ ++ₚ pSpec₂)) :
+          QueryImpl _ (StateT σ ProbComp))
+        ((liftM g : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α)).run).run' s]
+    = Pr[P | init >>= fun s => (simulateQ
+        (impl.addLift (challengeQueryImpl (pSpec := pSpec₁)) :
+          QueryImpl _ (StateT σ ProbComp)) g.run).run' s] := by
+  have hed : evalDist (init >>= fun s => (simulateQ
+        (impl.addLift (challengeQueryImpl (pSpec := pSpec₁ ++ₚ pSpec₂)) :
+          QueryImpl _ (StateT σ ProbComp))
+        ((liftM g : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α)).run).run' s)
+      = evalDist (init >>= fun s => (simulateQ
+        (impl.addLift (challengeQueryImpl (pSpec := pSpec₁)) :
+          QueryImpl _ (StateT σ ProbComp)) g.run).run' s) := by
+    rw [evalDist_bind, evalDist_bind]
+    refine bind_congr fun s => ?_
+    rw [liftM_optionT_run_eq_seam]
+    exact OracleReduction.evalDist_run'_challengeSeam_left impl g.run s
+  unfold probEvent
+  rw [hed]
 
 /-- **Binary sequential-composition soundness, message-seam case.** Reduces the appended-verifier
 soundness experiment (over an arbitrary malicious prover) to the two per-phase soundness bounds via
@@ -166,8 +233,45 @@ theorem append_soundness_msg'
           (pure (x, s₂) : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) _))
       (Reduction.run stmtIn witIn { prover := prover.fstSound, verifier := V₁ })
       Prod.snd Prod.snd (· ∈ lang₂) body_eq)
-    trace_state
-    sorry
+    -- Prove `LHS = MID`. Refold the appended phase-1 game's body (run under the *combined* challenge
+    -- oracle) as `liftM X`, where `X` is the same phase-1 game over `pSpec₁`'s own challenge oracle.
+    -- The seam factoring lifts the `fst` prover's `Prover.run` *across `OracleComp`* first; reconcile
+    -- that with `X`'s `OptionT`-first lift via `lift_oc_optionT_coh`, then push the lawful `OptionT`
+    -- lift through the bind/pure and cross the `V₁`-leg seam with `OracleReduction.hcoh`.
+    have ho : (do
+        let x ← liftM (liftM (Prover.run stmtIn witIn prover.fst) : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
+        let s₂ ← liftM (run stmtIn x.1 V₁)
+        (pure (x, s₂) : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) _))
+      = liftM (liftM (prover.fst.run stmtIn witIn) >>= fun x =>
+          liftM (V₁.run stmtIn x.1) >>= fun s₂ =>
+            (pure (x, s₂) : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) _)) := by
+      rw [lift_oc_optionT_coh, liftM_bind]
+      refine bind_congr fun x => ?_
+      rw [liftM_bind, OracleReduction.hcoh (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂) (V₁.run stmtIn x.1)]
+      refine bind_congr fun s₂ => ?_
+      rw [liftM_pure]
+    -- Transport the body through `ho` at the `evalDist` level (a body `rw`/`simp` trips the
+    -- `FreeM.mapM` whnf blow-up), then transfer the combined game over `liftM X` to the
+    -- `pSpec₁`-oracle game over `X` via `probEvent_seam_transfer_left`.
+    refine Eq.trans ?_ (probEvent_seam_transfer_left (pSpec₂ := pSpec₂)
+      (liftM (prover.fst.run stmtIn witIn) >>= fun x =>
+        liftM (V₁.run stmtIn x.1) >>= fun s₂ =>
+          (pure (x, s₂) : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) _))
+      (fun o => o.elim False fun p => p.2 ∈ lang₂))
+    have hev : evalDist (init >>= fun s =>
+          (simulateQ pImpl (do
+            let x ← liftM (liftM (Prover.run stmtIn witIn prover.fst) : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
+            let s₂ ← liftM (run stmtIn x.1 V₁)
+            (pure (x, s₂) : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) _)).run).run' s)
+      = evalDist (init >>= fun s =>
+          (simulateQ pImpl (liftM (liftM (prover.fst.run stmtIn witIn) >>= fun x =>
+            liftM (V₁.run stmtIn x.1) >>= fun s₂ =>
+              (pure (x, s₂) : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) _)) : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) _).run).run' s) := by
+      rw [evalDist_bind, evalDist_bind]
+      refine bind_congr fun s => ?_
+      exact congrArg (fun (oa : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) _) =>
+        evalDist ((simulateQ pImpl oa.run).run' s)) ho
+    exact probEvent_congr' (fun _ _ => Iff.rfl) hev
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
     intro p s' _ h_pg
     have h2_bound := h₂ _ _ p.1.2.1 (Prover.sndSound prover) p.2 h_pg
