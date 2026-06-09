@@ -275,6 +275,8 @@ theorem averaging_witness :
   rw [hcv] at hcard
   exact hcard
 
+end
+
 end ArkLib.CodingTheory.Round11RSAveraging
 
 #print axioms ArkLib.CodingTheory.Round11RSAveraging.averaging_list_lower_bound

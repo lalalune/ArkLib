@@ -73,6 +73,8 @@ theorem linearIndependent_pow_le (ζ : S) {N : ℕ}
 are antipodal, `ζ^(j+N) = -ζ^j`.  Index the `2N` roots by pairs
 `(j, b) : Fin N × Bool`, the root at `(j,b)` being `(-1)^b · ζ^j`. -/
 
+variable {N : ℕ}
+
 /-- The value of the root indexed by `(j,b)`:
 `root(j,false) = ζ^j`, `root(j,true) = -ζ^j`. -/
 def root (ζ : S) (jb : Fin N × Bool) : S :=

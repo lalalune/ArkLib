@@ -70,6 +70,8 @@ a subset `A : Finset (Fin N × Bool)`.
 `A` is *antipodal* when, for every `j`, it contains `(j,false)` iff it contains
 `(j,true)` — i.e. the chosen set of roots is closed under negation `S = -S`. -/
 
+variable {N : ℕ}
+
 /-- The complex value of the root indexed by `(j,b)` under the antipodal pairing
 `root(j,false) = ζ^j`, `root(j,true) = -ζ^j`. -/
 def root (ζ : S) (jb : Fin N × Bool) : S :=
