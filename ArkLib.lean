@@ -198,6 +198,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightClearedObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightResummation
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.BCoeffVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBruno
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBrunoProof
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
@@ -437,10 +438,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.GK16Lemma12
 import ArkLib.Data.CodingTheory.ProximityGap.GK16RootCounting
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Wronskian
 import ArkLib.Data.CodingTheory.ProximityGap.GSCounting
+import ArkLib.Data.CodingTheory.ProximityGap.GSExactCountWall
 import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
 import ArkLib.Data.CodingTheory.ProximityGap.GSInterpolationExistence
 import ArkLib.Data.CodingTheory.ProximityGap.GSJohnsonWall
-import ArkLib.Data.CodingTheory.ProximityGap.GSExactCountWall
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
