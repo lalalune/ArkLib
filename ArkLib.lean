@@ -288,6 +288,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.CollinearProximates
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
 import ArkLib.Data.CodingTheory.ProximityGap.BadGammaAffineCount
+import ArkLib.Data.CodingTheory.ProximityGap.BallIntersectionSecondMomentLinear
 import ArkLib.Data.CodingTheory.ProximityGap.BallVolume
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
@@ -667,6 +668,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Round9SalieQuarticReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Round9SubgroupCharExpansion
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
+import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridgeOnLattice
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovFrobeniusReduction
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovHasseInterface
@@ -697,7 +699,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.BallIntersectionSecondMomentLinear
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1174,6 +1175,7 @@ import ArkLib.ProofSystem.Whir.MCAJohnsonHardRegime
 import ArkLib.ProofSystem.Whir.MCAJohnsonJointAgreement
 import ArkLib.ProofSystem.Whir.MCAJohnsonMutualExtract
 import ArkLib.ProofSystem.Whir.MCAJohnsonReduction
+import ArkLib.ProofSystem.Whir.MCAJohnsonSmallField
 import ArkLib.ProofSystem.Whir.MCAJohnsonTrivialRegime
 import ArkLib.ProofSystem.Whir.MCAJohnsonUniqueness
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
