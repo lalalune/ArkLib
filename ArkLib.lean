@@ -1130,6 +1130,7 @@ import ArkLib.ProofSystem.Logup.Security.SoundnessConverse
 import ArkLib.ProofSystem.Logup.Security.SubPhaseSplit
 import ArkLib.ProofSystem.Logup.Security.SumcheckCompleteness
 import ArkLib.ProofSystem.Logup.Security.SumcheckCompletenessClose
+import ArkLib.ProofSystem.Logup.Security.SumcheckCompletenessUncond
 import ArkLib.ProofSystem.Logup.Security.SumcheckLensProjComplete
 import ArkLib.ProofSystem.Logup.Security.SumcheckLensProjSound
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundness
