@@ -22,9 +22,9 @@ The observation is that the in-tree single-function existence theorem
 Guruswami–Sudan interpolant `Q(X, Y) ∈ K[X][Y]` of bounded `(1, k-1)`-weighted degree vanishing
 to multiplicity `≥ m` at every point `(ω_i, f₀ i + Z·f₁ i)`.
 
-This is the §3 generalisation of `[BCIKS20 §5]` from `F` to `K = F(Z)` (paper Step S2). No `sorry`,
-no `axiom`: the entire content is a single instantiation of the proven `gs_existence` at `RatFunc F`,
-together with the (classical) decidable-equality instance on `RatFunc F`.
+This is the §3 generalisation of `[BCIKS20 §5]` from `F` to `K = F(Z)` (paper Step S2). No
+`sorry`, no `axiom`: the entire content is a single instantiation of the proven `gs_existence`
+at `RatFunc F`, together with the (classical) decidable-equality instance on `RatFunc F`.
 
 The downstream deep steps S3–S6 (degree bounds over `K`, factorisation, discriminant
 non-vanishing, the Hensel lift producing the *unique affine pairs*) remain; this file supplies the
@@ -34,6 +34,10 @@ GS interpolant they all start from.
 open Polynomial Polynomial.Bivariate
 
 namespace GuruswamiSudan.OverRatFunc
+
+-- `RatFunc F` (a field of fractions) carries no computable `DecidableEq`; the GS `Conditions`
+-- structure and `hammingDist` require one, so we supply the classical instance file-locally.
+attribute [local instance] Classical.propDecidable
 
 variable {F : Type} [Field F]
 
