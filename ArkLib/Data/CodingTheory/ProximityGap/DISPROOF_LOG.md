@@ -1973,3 +1973,14 @@ combinatorial (n,k,a) quantity, empirically constant in q), and (ii) adversarial
 birthday by more than poly(n) (vote anti-concentration — where smooth-domain RS structure must
 enter). Either piece failing would localize the obstruction; both holding pins ε_line ≈ M²/q per
 line. Evidence, not proof; lower-bound side untested on adversarial lines.
+
+### O12‴ — the marginal layer is a TRANSVERSAL DESIGN; H3′ is the live budget-survives hypothesis (nubs, 2026-06-09)
+
+Exact dissection (seed-13, n=16, BabyBear): witness region lattice [pairwise 4,4,4; triple 2;
+outside 2]; ALL 16 marginal elements are near-uniform transversals (region profile {2,2,2,2,1} up
+to permutation), equidistant from the witness triple (5–6 agreements each, full domain), always
+touching the outside region. Realized 16 ≪ transversal shape space ⟹ strong algebraic culling.
+**H3′:** marginals ≤ region-lattice transversal count = poly(n) per configuration ⟹
+ℓ(θ) ≤ N₀-core × poly ⟹ the 2^{O(H(ρ)/η)} budget SURVIVES. Trajectory: H1 refuted → H2 refuted →
+H3′ live with exact single-configuration support. Next: second configuration + n=32 test, then the
+transversal-count proof attempt (finite algebra, Lean-able if it holds). Scripts: probe_h3.py.
