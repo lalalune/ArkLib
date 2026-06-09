@@ -794,6 +794,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructur
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
 import ArkLib.OracleReduction.FiatShamir.HVZKTransferReduction
+import ArkLib.OracleReduction.FiatShamir.ProverRunCharacterization
 import ArkLib.OracleReduction.FiatShamir.SingleSalt
 import ArkLib.OracleReduction.FiatShamir.StateRestorationTransport
 import ArkLib.OracleReduction.FiatShamir.TestDesugar
