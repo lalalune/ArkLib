@@ -44,7 +44,7 @@ theorem t0_residual_iff_uncleared_emb_eq_cleared_emb
       embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) := by
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) := by
   rw [restrictedPartitionMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
       H x₀ R hHyp hd hζ]
   have hW : liftToFunctionField (H := H) H.leadingCoeff ≠ 0 :=
@@ -54,7 +54,7 @@ theorem t0_residual_iff_uncleared_emb_eq_cleared_emb
           * liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) := by
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) := by
     rw [← hdeg]
     exact hasseEvalAtRoot_mul_W_pow_eq_embedding_cleared H x₀ R 1 0
   constructor
@@ -73,7 +73,7 @@ theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_uncleared_emb_eq_cleared_em
       embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0))) :
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree))) :
     RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
   (t0_residual_iff_uncleared_emb_eq_cleared_emb H x₀ R hHyp hd hζ hdeg).2 hgap
 
@@ -87,7 +87,7 @@ theorem uncleared_emb_eq_cleared_emb_of_partitionMatchAt_zero
     embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
       = embeddingOf𝒪Into𝕃 H
           (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) :=
+            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) :=
   (t0_residual_iff_uncleared_emb_eq_cleared_emb H x₀ R hHyp hd hζ hdeg).1 hpart
 
 /-- Variant of `t0_residual_iff_uncleared_emb_eq_cleared_emb` using the nonvanishing packaged in
@@ -101,7 +101,7 @@ theorem t0_residual_iff_uncleared_emb_eq_cleared_emb_of_hyp
       embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) :=
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) :=
   t0_residual_iff_uncleared_emb_eq_cleared_emb H x₀ R hHyp hd
     (ζ_ne_zero H x₀ R hHyp) hdeg
 
@@ -115,7 +115,7 @@ theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_uncleared_emb_eq_cleared_em
       embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0))) :
+              (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree))) :
     RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
   (t0_residual_iff_uncleared_emb_eq_cleared_emb_of_hyp H x₀ R hHyp hd hdeg).2 hgap
 
@@ -129,7 +129,7 @@ theorem uncleared_emb_eq_cleared_emb_of_partitionMatchAt_zero_of_hyp
     embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
       = embeddingOf𝒪Into𝕃 H
           (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) :=
+            (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree)) :=
   (t0_residual_iff_uncleared_emb_eq_cleared_emb_of_hyp H x₀ R hHyp hd hdeg).1 hpart
 
 end BCIKS20.HenselNumerator
