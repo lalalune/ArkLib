@@ -84,6 +84,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryBridge
 import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryHasse
 import ArkLib.Data.CodingTheory.GuruswamiSudan.FeasibilityArith
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDiscriminantOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorizationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
@@ -1365,6 +1366,7 @@ import ArkLib.ToMathlib.RSPhases
 import ArkLib.ToMathlib.RatFuncDegreeCalculus
 import ArkLib.ToMathlib.RestrictedSumset
 import ArkLib.ToMathlib.RestrictedSumsetGeneral
+import ArkLib.ToMathlib.ResultantDegreeBound
 import ArkLib.ToMathlib.RewindingExtractor
 import ArkLib.ToMathlib.SPMFBindComm
 import ArkLib.ToMathlib.STIRCombineDegree
