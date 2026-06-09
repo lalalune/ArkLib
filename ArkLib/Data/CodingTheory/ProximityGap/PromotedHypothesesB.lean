@@ -28,6 +28,9 @@ def H_matrix : Matrix (Fin 2) (Fin 4) F :=
 def C (x : Fin 4 → F) : Prop :=
   Matrix.mulVec H_matrix x = 0
 
+instance (x : Fin 4 → F) : Decidable (C x) :=
+  inferInstanceAs (Decidable (Matrix.mulVec H_matrix x = 0))
+
 -- The bundle is defined by u0 and u1
 def u0 : Fin 4 → F := ![0, 1, 0, 0]
 def u1 : Fin 4 → F := ![1, 0, 0, 0]
