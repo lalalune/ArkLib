@@ -177,3 +177,45 @@ end Logup
 #print axioms Logup.logup_seam_dir
 #print axioms Logup.logup_plainAppend_msg
 #print axioms Logup.logup_soundness_msgSeam
+
+namespace Logup
+
+section EmptyOracle
+
+variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)]
+  [SampleableType F]
+variable (n M : ℕ)
+variable (params : ProtocolParams M)
+variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+
+local instance instInhabitedFieldMsgSeamEmpty : Inhabited F := ⟨0⟩
+
+/-- **LogUp Protocol 2 soundness over the empty ambient oracle: residual surface exactly
+`{hOuter, hSumcheck}`.**
+
+At the canonical ambient specification `oSpec = []ₒ` (no shared oracles — the setting of the
+self-contained interactive protocol), the three honest-`impl` side conditions of
+`logup_soundness_msgSeam` are *vacuous* (`([]ₒ).Domain = PEmpty`), so the only remaining
+obligations are the two per-phase soundness facts and `0 < n`. -/
+theorem logup_soundness_msgSeam_emptyOracle (sumcheckSoundnessError : ℝ≥0)
+    (hn : 0 < n)
+    (hOuter :
+      (outerVerifier []ₒ F n M params).soundness init impl
+        (inputRelation F n M).language (midSoundnessProtocolLanguage F n M params)
+        (outerSoundnessError F n M params))
+    (hSumcheck :
+      (sumcheckVerifier []ₒ F n M params).soundness init impl
+        (midSoundnessProtocolLanguage F n M params) outputRelation.language
+        sumcheckSoundnessError) :
+    (logupVerifier []ₒ F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (logupSoundnessError F n M params sumcheckSoundnessError) :=
+  logup_soundness_msgSeam []ₒ F n M params init impl sumcheckSoundnessError hn
+    hOuter hSumcheck
+    (fun t => t.elim) (fun t => t.elim) (fun t => t.elim)
+
+end EmptyOracle
+
+end Logup
+
+#print axioms Logup.logup_soundness_msgSeam_emptyOracle
