@@ -2,9 +2,10 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessPr
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 
 /-!
-Scratch: empty-trailing-protocol perfect completeness keystone, mirroring
-`Reduction.append_perfectCompleteness_msg_proof` but using `Prover.append_run_empty`
-(which has the identical run shape) instead of `Prover.append_run_msg`.
+Scratch: empty-trailing-protocol perfect completeness keystone, the companion to
+`Reduction.append_perfectCompleteness_msg_proof`. Uses `Prover.append_run_empty` (the run
+factoring when `pSpec₂` is empty) and the same support-decomposition route; the verifier
+marginals are extracted through `OptionT.run_liftM_run`.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -32,6 +33,47 @@ theorem append_perfectCompleteness_empty_proof
   rw [perfectCompleteness_eq_prob_one]
   intro stmt wit hmem
   rw [probEvent_eq_one_iff]
+  -- The two per-phase perfect-completeness hypotheses, in support form (shared by both branches).
+  have h₁' : ∀ y ∈ support (OptionT.mk (R₁.run stmt wit)),
+      (y.2, y.1.2.2) ∈ rel₂ ∧ y.1.2.1 = y.2 := by
+    rw [perfectCompleteness_eq_prob_one] at h₁
+    have hh := h₁ stmt wit hmem; rw [probEvent_eq_one_iff] at hh
+    obtain ⟨_, hsupp⟩ := hh
+    intro y hy; have hy2 := hsupp y
+    rw [support_bind_simulateQ_run'_eq_mk init (impl.addLift challengeQueryImpl) _ hInit
+          (Prover.addLift_challenge_support_faithful impl hImplSupp)] at hy2
+    exact hy2 hy
+  have h₂' : ∀ s₂ w₂, (s₂, w₂) ∈ rel₂ → ∀ y ∈ support (OptionT.mk (R₂.run s₂ w₂)),
+      (y.2, y.1.2.2) ∈ rel₃ ∧ y.1.2.1 = y.2 := by
+    intro s₂ w₂ hmem₂
+    rw [perfectCompleteness_eq_prob_one] at h₂
+    have hh := h₂ s₂ w₂ hmem₂; rw [probEvent_eq_one_iff] at hh
+    obtain ⟨_, hsupp⟩ := hh
+    intro y hy; have hy2 := hsupp y
+    rw [support_bind_simulateQ_run'_eq_mk init (impl.addLift challengeQueryImpl) _ hInit
+          (Prover.addLift_challenge_support_faithful impl hImplSupp)] at hy2
+    exact hy2 hy
+  have h₁nf : none ∉ support (OptionT.run (R₁.run stmt wit)) := by
+    rw [perfectCompleteness_eq_prob_one] at h₁
+    have hh := h₁ stmt wit hmem; rw [probEvent_eq_one_iff] at hh
+    obtain ⟨hnf, _⟩ := hh
+    rw [OptionT.probFailure_eq, OptionT.run_mk] at hnf
+    simp only [probFailure_eq_zero, zero_add, probOutput_eq_zero_iff] at hnf
+    intro hc; apply hnf; rw [mem_support_bind_iff]
+    obtain ⟨s1, hs1⟩ := support_nonempty_of_neverFails init hInit
+    exact ⟨s1, hs1, by rwa [support_simulateQ_run'_eq (impl.addLift challengeQueryImpl) _ s1
+      (Prover.addLift_challenge_support_faithful impl hImplSupp)]⟩
+  have h₂nf : ∀ s₂ w₂, (s₂, w₂) ∈ rel₂ → none ∉ support (OptionT.run (R₂.run s₂ w₂)) := by
+    intro s₂ w₂ hm2
+    rw [perfectCompleteness_eq_prob_one] at h₂
+    have hh := h₂ s₂ w₂ hm2; rw [probEvent_eq_one_iff] at hh
+    obtain ⟨hnf, _⟩ := hh
+    rw [OptionT.probFailure_eq, OptionT.run_mk] at hnf
+    simp only [probFailure_eq_zero, zero_add, probOutput_eq_zero_iff] at hnf
+    intro hc; apply hnf; rw [mem_support_bind_iff]
+    obtain ⟨s1, hs1⟩ := support_nonempty_of_neverFails init hInit
+    exact ⟨s1, hs1, by rwa [support_simulateQ_run'_eq (impl.addLift challengeQueryImpl) _ s1
+      (Prover.addLift_challenge_support_faithful impl hImplSupp)]⟩
   refine ⟨?_, ?_⟩
   · -- NeverFails
     rw [OptionT.probFailure_eq, OptionT.run_mk]
@@ -42,36 +84,6 @@ theorem append_perfectCompleteness_empty_proof
     obtain ⟨s0, hs0, hmem0⟩ := hmem0
     rw [support_simulateQ_run'_eq (impl.addLift challengeQueryImpl) _ s0
         (Prover.addLift_challenge_support_faithful impl hImplSupp)] at hmem0
-    have h₁' : ∀ y ∈ support (OptionT.mk (R₁.run stmt wit)),
-        (y.2, y.1.2.2) ∈ rel₂ ∧ y.1.2.1 = y.2 := by
-      rw [perfectCompleteness_eq_prob_one] at h₁
-      have hh := h₁ stmt wit hmem; rw [probEvent_eq_one_iff] at hh
-      obtain ⟨_, hsupp⟩ := hh
-      intro y hy; have hy2 := hsupp y
-      rw [support_bind_simulateQ_run'_eq_mk init (impl.addLift challengeQueryImpl) _ hInit
-            (Prover.addLift_challenge_support_faithful impl hImplSupp)] at hy2
-      exact hy2 hy
-    have h₁nf : none ∉ support (OptionT.run (R₁.run stmt wit)) := by
-      rw [perfectCompleteness_eq_prob_one] at h₁
-      have hh := h₁ stmt wit hmem; rw [probEvent_eq_one_iff] at hh
-      obtain ⟨hnf, _⟩ := hh
-      rw [OptionT.probFailure_eq, OptionT.run_mk] at hnf
-      simp only [probFailure_eq_zero, zero_add, probOutput_eq_zero_iff] at hnf
-      intro hc; apply hnf; rw [mem_support_bind_iff]
-      obtain ⟨s1, hs1⟩ := support_nonempty_of_neverFails init hInit
-      exact ⟨s1, hs1, by rwa [support_simulateQ_run'_eq (impl.addLift challengeQueryImpl) _ s1
-        (Prover.addLift_challenge_support_faithful impl hImplSupp)]⟩
-    have h₂nf : ∀ s₂ w₂, (s₂, w₂) ∈ rel₂ → none ∉ support (OptionT.run (R₂.run s₂ w₂)) := by
-      intro s₂ w₂ hm2
-      rw [perfectCompleteness_eq_prob_one] at h₂
-      have hh := h₂ s₂ w₂ hm2; rw [probEvent_eq_one_iff] at hh
-      obtain ⟨hnf, _⟩ := hh
-      rw [OptionT.probFailure_eq, OptionT.run_mk] at hnf
-      simp only [probFailure_eq_zero, zero_add, probOutput_eq_zero_iff] at hnf
-      intro hc; apply hnf; rw [mem_support_bind_iff]
-      obtain ⟨s1, hs1⟩ := support_nonempty_of_neverFails init hInit
-      exact ⟨s1, hs1, by rwa [support_simulateQ_run'_eq (impl.addLift challengeQueryImpl) _ s1
-        (Prover.addLift_challenge_support_faithful impl hImplSupp)]⟩
     rw [Reduction.run, Reduction.append] at hmem0
     simp only [Prover.append_run_empty, Verifier.append_run,
       OptionT.run_bind, Option.elimM, bind_assoc, liftM_bind] at hmem0
@@ -87,73 +99,42 @@ theorem append_perfectCompleteness_empty_proof
     change some pr ∈ support (pure (some (tr₁ ++ₜ tr₂, s₃, w₃)) : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option _)) at hpr
     simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hpr
     subst hpr
-    obtain ⟨a₄, hV₁, hmem0⟩ := (mem_support_bind_iff _ _ _).mp hmem0
-    simp only [FullTranscript.append_fst] at hV₁
-    rcases a₄ with _ | vo₁
-    · simp only [support_map, Set.mem_image, reduceCtorEq, and_false, exists_false] at hV₁
     have hP₁' : (tr₁, s₂, w₂) ∈ support (R₁.prover.run stmt wit) := by
       change some (tr₁, s₂, w₂) ∈ support ((fun a => some a) <$> (liftM (Prover.run stmt wit R₁.prover)
         : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)) at hP₁
       rw [support_map, Set.mem_image] at hP₁
       obtain ⟨z, hz, hzy⟩ := hP₁; rw [Option.some.injEq] at hzy; subst hzy
       rwa [← liftComp_eq_liftM, mem_support_liftComp_iff] at hz
-    rcases vo₁ with _ | vs₂
-    · exact absurd (none_mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) hP₁'
-        (by rw [support_map, Set.mem_image] at hV₁
-            obtain ⟨z, hz, hzy⟩ := hV₁; rw [Option.some.injEq] at hzy; subst hzy
-            rwa [mem_support_liftComp_iff] at hz)) h₁nf
     have hP₂' : (tr₂, s₃, w₃) ∈ support (R₂.prover.run s₂ w₂) := by
       change some (tr₂, s₃, w₃) ∈ support ((fun a => some a) <$> (liftM (Prover.run s₂ w₂ R₂.prover)
         : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)) at hP₂
       rw [support_map, Set.mem_image] at hP₂
       obtain ⟨z, hz, hzy⟩ := hP₂; rw [Option.some.injEq] at hzy; subst hzy
       rwa [← liftComp_eq_liftM, mem_support_liftComp_iff] at hz
-    have hV₁' : some vs₂ ∈ support (R₁.verifier.run stmt tr₁).run := by
-      rw [support_map, Set.mem_image] at hV₁
-      obtain ⟨z, hz, hzy⟩ := hV₁; rw [Option.some.injEq] at hzy; subst hzy
-      rwa [mem_support_liftComp_iff] at hz
+    obtain ⟨a₄, hV₁, hmem0⟩ := (mem_support_bind_iff _ _ _).mp hmem0
+    simp only [FullTranscript.append_fst] at hV₁
+    rw [OptionT.run_liftM_run, support_map,
+      support_simulateQ_eq_OracleComp_of_superSpec _ _ (fun _ => rfl), Set.mem_image] at hV₁
+    obtain ⟨vo₁, hvo₁, rfl⟩ := hV₁
+    rcases vo₁ with _ | vs₂
+    · exact absurd (none_mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) hP₁' hvo₁) h₁nf
     obtain ⟨hrel₂, hvs₂⟩ := h₁' ((tr₁, s₂, w₂), vs₂)
       (by rw [OptionT.mem_support_iff]
-          exact mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) vs₂ hP₁' hV₁')
+          exact mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) vs₂ hP₁' hvo₁)
     simp only at hrel₂ hvs₂; subst hvs₂
     simp only [Option.elim_some, liftM_bind, bind_assoc] at hmem0
     obtain ⟨a₅, hV₂, hmem0⟩ := (mem_support_bind_iff _ _ _).mp hmem0
     simp only [FullTranscript.append_snd] at hV₂
-    rcases a₅ with _ | vo₂
-    · simp only [support_map, Set.mem_image, reduceCtorEq, and_false, exists_false] at hV₂
+    rw [OptionT.run_liftM_run, support_map,
+      support_simulateQ_eq_OracleComp_of_superSpec _ _ (fun _ => rfl), Set.mem_image] at hV₂
+    obtain ⟨vo₂, hvo₂, rfl⟩ := hV₂
     rcases vo₂ with _ | vs₃
-    · exact absurd (none_mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) hP₂'
-        (by rw [support_map, Set.mem_image] at hV₂
-            obtain ⟨z, hz, hzy⟩ := hV₂; rw [Option.some.injEq] at hzy; subst hzy
-            rwa [mem_support_liftComp_iff] at hz))
+    · exact absurd (none_mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) hP₂' hvo₂)
         (h₂nf s₂ w₂ hrel₂)
     simp only [Option.elim_some, Option.getM_some, pure_bind] at hmem0
     change none ∈ support (pure (some ((tr₁ ++ₜ tr₂, s₃, w₃), vs₃)) : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option _)) at hmem0
     simp at hmem0
   · intro x hx
-    have h₁' : ∀ y ∈ support (OptionT.mk (R₁.run stmt wit)),
-        (y.2, y.1.2.2) ∈ rel₂ ∧ y.1.2.1 = y.2 := by
-      rw [perfectCompleteness_eq_prob_one] at h₁
-      have hh := h₁ stmt wit hmem
-      rw [probEvent_eq_one_iff] at hh
-      obtain ⟨_, hsupp⟩ := hh
-      intro y hy
-      have hy2 := hsupp y
-      rw [support_bind_simulateQ_run'_eq_mk init (impl.addLift challengeQueryImpl) _ hInit
-            (Prover.addLift_challenge_support_faithful impl hImplSupp)] at hy2
-      exact hy2 hy
-    have h₂' : ∀ s₂ w₂, (s₂, w₂) ∈ rel₂ → ∀ y ∈ support (OptionT.mk (R₂.run s₂ w₂)),
-        (y.2, y.1.2.2) ∈ rel₃ ∧ y.1.2.1 = y.2 := by
-      intro s₂ w₂ hmem₂
-      rw [perfectCompleteness_eq_prob_one] at h₂
-      have hh := h₂ s₂ w₂ hmem₂
-      rw [probEvent_eq_one_iff] at hh
-      obtain ⟨_, hsupp⟩ := hh
-      intro y hy
-      have hy2 := hsupp y
-      rw [support_bind_simulateQ_run'_eq_mk init (impl.addLift challengeQueryImpl) _ hInit
-            (Prover.addLift_challenge_support_faithful impl hImplSupp)] at hy2
-      exact hy2 hy
     rw [support_bind_simulateQ_run'_eq_mk init (impl.addLift challengeQueryImpl) _ hInit
           (Prover.addLift_challenge_support_faithful impl hImplSupp)] at hx
     show (x.2, x.1.2.2) ∈ rel₃ ∧ x.1.2.1 = x.2
@@ -173,23 +154,6 @@ theorem append_perfectCompleteness_empty_proof
       : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option _)) at hpr
     simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hpr
     subst hpr
-    obtain ⟨a₄, hV₁, hx⟩ := (mem_support_bind_iff _ _ _).mp hx
-    rcases a₄ with _ | vo₁
-    · simp at hx
-    rcases vo₁ with _ | vs₂
-    · simp at hx
-    simp only [Option.elim_some, liftM_bind, bind_assoc] at hx
-    obtain ⟨a₅, hV₂, hx⟩ := (mem_support_bind_iff _ _ _).mp hx
-    rcases a₅ with _ | vo₂
-    · simp at hx
-    rcases vo₂ with _ | vs₃
-    · simp at hx
-    simp only [Option.elim_some, Option.getM_some, pure_bind] at hx
-    change some x ∈ support (pure (some ((tr₁ ++ₜ tr₂, s₃, w₃), vs₃))
-      : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option _)) at hx
-    simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
-    subst hx
-    simp only [FullTranscript.append_fst, FullTranscript.append_snd] at hV₁ hV₂
     have hP₁' : (tr₁, s₂, w₂) ∈ support (R₁.prover.run stmt wit) := by
       change some (tr₁, s₂, w₂) ∈ support ((fun a => some a) <$> (liftM (Prover.run stmt wit R₁.prover)
         : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)) at hP₁
@@ -202,22 +166,34 @@ theorem append_perfectCompleteness_empty_proof
       rw [support_map, Set.mem_image] at hP₂
       obtain ⟨z, hz, hzy⟩ := hP₂; rw [Option.some.injEq] at hzy; subst hzy
       rwa [← liftComp_eq_liftM, mem_support_liftComp_iff] at hz
-    have hV₁' : some vs₂ ∈ support (R₁.verifier.run stmt tr₁).run := by
-      rw [support_map, Set.mem_image] at hV₁
-      obtain ⟨z, hz, hzy⟩ := hV₁; rw [Option.some.injEq] at hzy; subst hzy
-      rwa [mem_support_liftComp_iff] at hz
-    have hV₂' : some vs₃ ∈ support (R₂.verifier.run vs₂ tr₂).run := by
-      rw [support_map, Set.mem_image] at hV₂
-      obtain ⟨z, hz, hzy⟩ := hV₂; rw [Option.some.injEq] at hzy; subst hzy
-      rwa [mem_support_liftComp_iff] at hz
+    obtain ⟨a₄, hV₁, hx⟩ := (mem_support_bind_iff _ _ _).mp hx
+    simp only [FullTranscript.append_fst] at hV₁
+    rw [OptionT.run_liftM_run, support_map,
+      support_simulateQ_eq_OracleComp_of_superSpec _ _ (fun _ => rfl), Set.mem_image] at hV₁
+    obtain ⟨vo₁, hvo₁, rfl⟩ := hV₁
+    rcases vo₁ with _ | vs₂
+    · simp at hx
     obtain ⟨hrel₂, hvs₂⟩ := h₁' ((tr₁, s₂, w₂), vs₂)
       (by rw [OptionT.mem_support_iff]
-          exact mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) vs₂ hP₁' hV₁')
+          exact mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) vs₂ hP₁' hvo₁)
     simp only at hrel₂ hvs₂
     subst hvs₂
+    simp only [Option.elim_some, liftM_bind, bind_assoc] at hx
+    obtain ⟨a₅, hV₂, hx⟩ := (mem_support_bind_iff _ _ _).mp hx
+    simp only [FullTranscript.append_snd] at hV₂
+    rw [OptionT.run_liftM_run, support_map,
+      support_simulateQ_eq_OracleComp_of_superSpec _ _ (fun _ => rfl), Set.mem_image] at hV₂
+    obtain ⟨vo₂, hvo₂, rfl⟩ := hV₂
+    rcases vo₂ with _ | vs₃
+    · simp at hx
+    simp only [Option.elim_some, Option.getM_some, pure_bind] at hx
+    change some x ∈ support (pure (some ((tr₁ ++ₜ tr₂, s₃, w₃), vs₃))
+      : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option _)) at hx
+    simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
+    subst hx
     obtain ⟨hrel₃, hvs₃⟩ := h₂' s₂ w₂ hrel₂ ((tr₂, s₃, w₃), vs₃)
       (by rw [OptionT.mem_support_iff]
-          exact mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) vs₃ hP₂' hV₂')
+          exact mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) vs₃ hP₂' hvo₂)
     simp only at hrel₃ hvs₃ ⊢
     exact ⟨hrel₃, hvs₃⟩
 

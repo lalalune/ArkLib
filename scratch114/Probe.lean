@@ -34,7 +34,6 @@ example
     rcases a₃ with _ | pr
     · trivial
     obtain ⟨a₄, hV₁, hmem0⟩ := (mem_support_bind_iff _ _ _).mp hmem0
-    simp only [FullTranscript.append_fst] at hV₁
     trace_state
     trivial
   trivial
