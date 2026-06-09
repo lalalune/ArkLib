@@ -28,6 +28,10 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
   lower/upper bound, how `securityGap` is computed, and the current 64/116 anchors.
 - [`honesty-audit.md`](honesty-audit.md) - playbook for finding unproven-but-presented-as-proven
   content: the laundering patterns the CI gates miss, how to detect them, and confirmed findings.
+- [`additive-energy-attack.md`](additive-energy-attack.md) - the machine-checked reduction chain
+  taking the Proximity Prize (#232) down to the additive energy of the smooth `2^k`-subgroup: file
+  map, the sharp `E=3|G|(|G|-1)` theorem, the prize-regime anti-concentration data, and the single
+  named open (Weil/sum-product) root.
 
 ## Maintenance Contract
 
