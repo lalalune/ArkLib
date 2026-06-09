@@ -1168,6 +1168,7 @@ import ArkLib.ToVCVio.Lemmas
 import ArkLib.ToVCVio.Oracle
 import ArkLib.ToVCVio.OracleComp.Coercions.SubSpec
 import ArkLib.ToVCVio.OracleComp.EvalDist
+import ArkLib.ToVCVio.OracleComp.RandomOracleEagerTableDep
 import ArkLib.ToVCVio.OracleComp.SimSemantics.SimulateQ
 import ArkLib.ToVCVio.OracleComp.SimSemantics.SubsingletonState
 import ArkLib.ToVCVio.SimOracle
