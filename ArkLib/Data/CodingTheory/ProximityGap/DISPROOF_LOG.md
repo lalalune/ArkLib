@@ -1707,3 +1707,36 @@ Johnson 2nd-moment no-go / Fisher past-Johnson finding map the upper-bound front
 sharply reduced to ONE object — the ball-intersection 2nd moment ∑_{c,c'}|B(c)∩B(c')| (sum_sq identity) —
 whose sharp upper bound for explicit smooth-domain RS is the genuine research kernel (MDS weight-enumerator
 2nd-moment ball-intersection, CS25/ABF26). Issue stays open — the asymptotic core is research-grade.
+
+### O11′ — EMPIRICAL RESOLUTION of the subgroup-sumset question + the S-two/KK25 reframing (nubs, 2026-06-09)
+
+The Loop46+ honest correction asked whether `|G^{(+ℓ)}|` for a 2-power multiplicative subgroup is
+sub-exponential (survive) or near-maximal (refute-pressure). **Probed: it is exponential.**
+Distinct half-subset sums (`ℓ = |G|/2`), uncapped fields, exact DP for |G| ≤ 16, sampled lower
+bound at |G| = 32 (q = 2013265921, 6M samples, seed 11; collision-corrected estimate):
+
+| |G| | distinct ℓ-sums | log₂ |
+|---|---|---|
+| 8 (exact) | 41 | 5.4 |
+| 16 (exact, q=786433) | 3 281 | 11.7 |
+| 32 (LB, q≈2.0e9) | ≥ 4 112 427 (≈5.6M corrected) | ≈22.4 |
+
+`log₂ ≈ 0.7·|G|` — exponential; the vanishing-power-sum structure costs only ~0.2 bits/element vs
+generic. So the power-sum/Newton sub-exponential hope is **empirically dead** (evidence, not proof;
+lower-bound direction — exactly what the attack side needs). Useful provable mini-lemma: for the
+full subgroup, `∑_{g∈G} g = 0` gives the complement symmetry `|G^{(+ℓ)}| = |G^{(+(|G|−ℓ))}|`,
+making all four prize rates' critical layers uniform.
+
+**Cross-reference that re-shapes the target (see #232 comment 2026-06-09):** the official ABF26
+challenge (2026/680, read in full) is a per-code determination (window k ≤ 2⁴⁰, |F| < 2²⁵⁶), and
+CGHLL26 = the S-two whitepaper (2026/532, App. A) states the believed answer: Conjecture 1
+(`ℓ(θ) ≤ c₁·2^{c₂·H(ρ)/η}` up to the **Elias radius** — exponential in 1/η, matching the KK25
+proven lower bound `2^{(H(ρ)+o(1))/η}` AND our smooth-domain probe shape) + Conjecture 2
+(line-decodability, threshold `a = ℓ·n + o(n)` ⟹ `ε_mca ≤ ℓ·n/|F|` via GG25 Thm 3.5).
+Conditional answer formula: `δ*_C = 1−ρ−Θ(H(ρ)/(log₂|F| − 128 − log₂ n))` (≈ capacity − 0.011 at
+ρ=1/2, n=2⁴⁰, |F|=2²⁵⁶). ⇒ The in-tree poly(1/η) prize surfaces are the wrong *sharp* shape
+(not contradicted — `(2^m)^{c₁}` absorbs `n^{Ω(1)}` at η ≳ 1/log n — but hopeless below
+η ≈ H/(c₁·log n)); the believed-true budget is `2^{O(H(ρ)/η)}`. **The open $1M core, sharply:
+prove `ℓ(θ) ≤ 2^{O(H(ρ)/η)}` for plain deterministic smooth-domain RS in (Johnson, Elias)** —
+known for random codes and random/folded RS (GG 2025/2054); the gap is what smoothness must
+supply in place of randomness. Next: dissect GG25/KK25's use of randomness.
