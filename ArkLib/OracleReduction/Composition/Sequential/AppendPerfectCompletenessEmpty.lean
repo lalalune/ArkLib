@@ -13,15 +13,17 @@ This file proves `Reduction.append_perfectCompleteness_empty_proof`, the `n = 0`
 `Reduction.append_perfectCompleteness_msg_proof`: perfect completeness of `R₁.append R₂` when the
 trailing protocol `pSpec₂` is empty (`ProtocolSpec 0`).
 
-The proof is *verbatim* the support-decomposition route used for the message seam, with the single
+The proof mirrors the support-decomposition route used for the message seam, with the single
 substitution `Prover.append_run_msg ⟶ Prover.append_run_empty` (which is unconditional for the empty
-trailing block — no seam-direction hypotheses `hn`/`hDir`/`hDir₂` are needed). Everything else — the
+trailing block — no seam-direction hypotheses `hn`/`hDir`/`hDir₂` are needed). `append_run_empty`
+produces the same `P₁ ⟶ P₂ ⟶ concat-transcript` run shape as `append_run_msg`, so the
 `probEvent_eq_one_iff` split, the support-faithfulness collapse of the `simulateQ`/`StateT`/`init`
-layers, the `Verifier.append_run` decomposition, and the per-phase reconstruction via `h₁`/`h₂` — is
-identical, because `append_run_empty` produces the same `P₁ ⟶ P₂ ⟶ concat-transcript` run shape as
-`append_run_msg`.
+layers, the `Verifier.append_run` decomposition, and the per-phase reconstruction via `h₁`/`h₂` all
+carry over. The only proof-local difference is that with `pSpec₂` empty the aggressive `simp`
+normalisation produces verifier-reject sub-goals of the shape `liftM (pure none) >>= …`, closed by
+`liftM_pure`/`failure_bind`/`OptionT.run_failure`.
 
-This is the empty-tail case of the `hAppend` keystone consumed by
+This is the empty-tail case of the binary `hAppend` keystone consumed by
 `Reduction.seqCompose_perfectCompleteness_of_append_msg` (it fires at the final induction step, where
 the trailing `seqCompose` is over zero remaining components). Together with the message-seam keystone
 it yields full multi-round sum-check perfect completeness.
@@ -115,7 +117,8 @@ theorem append_perfectCompleteness_empty_proof
     rcases a₄ with _ | vo₁
     · change none ∈ support (OracleComp.liftComp ((fun a => some a) <$>
         ((Verifier.run stmt tr₁ R₁.verifier).run)) (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) at hV₁
-      simp only [mem_support_liftComp_iff, support_map, Set.mem_image, reduceCtorEq, and_false, exists_false] at hV₁
+      rw [mem_support_liftComp_iff, support_map, Set.mem_image] at hV₁
+      obtain ⟨z, _, hz⟩ := hV₁; simp at hz
     have hP₁' : (tr₁, s₂, w₂) ∈ support (R₁.prover.run stmt wit) := by
       change some (tr₁, s₂, w₂) ∈ support ((fun a => some a) <$> (liftM (Prover.run stmt wit R₁.prover)
         : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)) at hP₁
@@ -149,7 +152,8 @@ theorem append_perfectCompleteness_empty_proof
     rcases a₅ with _ | vo₂
     · change none ∈ support (OracleComp.liftComp ((fun a => some a) <$>
         ((Verifier.run s₂ tr₂ R₂.verifier).run)) (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) at hV₂
-      simp only [mem_support_liftComp_iff, support_map, Set.mem_image, reduceCtorEq, and_false, exists_false] at hV₂
+      rw [mem_support_liftComp_iff, support_map, Set.mem_image] at hV₂
+      obtain ⟨z, _, hz⟩ := hV₂; simp at hz
     rcases vo₂ with _ | vs₃
     · exact absurd (none_mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) hP₂'
         (by change some none ∈ support (OracleComp.liftComp ((fun a => some a) <$>
@@ -207,15 +211,17 @@ theorem append_perfectCompleteness_empty_proof
     rcases a₄ with _ | vo₁
     · simp at hx
     rcases vo₁ with _ | vs₂
-    · simp only [monadLift_pure, pure_bind, Option.getM_none] at hx
-      trace_state
-      sorry
+    · simp only [Option.elim_none, Option.getM, liftM_pure, monadLift_pure, monadLift_eq_self,
+        pure_bind, failure_bind, bind_assoc, OptionT.run_failure, OptionT.support_failure_run, support_pure,
+        Set.mem_singleton_iff, reduceCtorEq] at hx
     simp only [Option.elim_some, liftM_bind, bind_assoc] at hx
     obtain ⟨a₅, hV₂, hx⟩ := (mem_support_bind_iff _ _ _).mp hx
     rcases a₅ with _ | vo₂
     · simp at hx
     rcases vo₂ with _ | vs₃
-    · simp at hx
+    · simp only [Option.elim_none, Option.getM, liftM_pure, monadLift_pure, monadLift_eq_self,
+        pure_bind, failure_bind, bind_assoc, OptionT.run_failure, OptionT.support_failure_run, support_pure,
+        Set.mem_singleton_iff, reduceCtorEq] at hx
     simp only [Option.elim_some, Option.getM_some, pure_bind] at hx
     change some x ∈ support (pure (some ((tr₁ ++ₜ tr₂, s₃, w₃), vs₃))
       : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option _)) at hx
