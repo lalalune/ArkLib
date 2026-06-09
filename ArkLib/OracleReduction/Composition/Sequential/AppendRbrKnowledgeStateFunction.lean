@@ -85,7 +85,20 @@ def KnowledgeStateFunction.append {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fi
       kSF₂.toFun ⟨roundIdx - m, by omega⟩
         (verify stmt₁ (by simp at h; simpa [min_eq_right_of_lt h] using tr.fst))
         (by simpa [h] using tr.snd) (cast (appendWitMid_gt h) witMid)
-  toFun_empty := by sorry
+  toFun_empty := by
+    intro stmtIn witMid
+    -- At round `0`, `(0 : Fin (m+n+1)).val = 0 ≤ m`, so `toFun 0 = kSF₁.toFun ⟨0,_⟩ … (.fst) …`.
+    have h0 : ((0 : Fin (m + n + 1)) : ℕ) ≤ m := by simp
+    simp only [dif_pos h0]
+    -- The witness-cast coherence: `cast (append.eqIn) witMid = cast E₁.eqIn (cast (appendWitMid_le …))`.
+    have hwit : cast (Extractor.RoundByRound.append E₁ E₂ verify).eqIn witMid
+        = cast E₁.eqIn (cast (appendWitMid_le h0) witMid) := by
+      rw [cast_cast]
+    rw [hwit]
+    -- Now reduce to `kSF₁.toFun_empty`, re-indexing `⟨0,_⟩ : Fin (m+1)` as `0` and `.fst = default`.
+    refine Iff.trans (kSF₁.toFun_empty stmtIn (cast (appendWitMid_le h0) witMid)) (Iff.of_eq ?_)
+    congr 1
+    funext i; exact i.elim0
   toFun_next := by sorry
   toFun_full := by sorry
 
