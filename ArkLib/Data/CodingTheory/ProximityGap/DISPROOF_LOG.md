@@ -2580,3 +2580,16 @@ for MDS/RS (A_w=0 for 0<w<d) it's EMPTY above the unique-decoding radius (14f) a
 in the interior (1−√ρ,1−ρ) — the RS object the prize turns on. Open: bound A_w for explicit
 smooth-domain RS in the interior. GOTCHA: ring/linear_combination fail on Fin n→F (Pi); use
 abel/add_right_cancel.
+
+### O45 / Round-22 — the constructive PTE family (expand-lift) + the two-phase explanation
+
+`PTEFamilyConstruction.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+P_A = expand_d(baseNodal A) = ∏(X^d − a). Lattice vanishing (coeff_expand): every coefficient at a
+non-multiple of d is ZERO ⟹ the full top window e_1..e_{d−1} vanishes for EVERY base set;
+liftedPoly_injective (expand_injective + root recovery); lifted support = power-map fiber
+{x : x^d ∈ A} ⊂ μ_n; pte_family: C(n/d, s) pairwise-distinct equal-window supports. THRESHOLD: the
+Conj-41 deficiency window (equal e_1..e_{w−c}) fires iff d ≥ w−c+1 ⟹ s ≤ w/(w−c+1): deployment
+(c = Θ(n)) → family O(1) (matches conjecture's M = O(1)); capacity (c = O(1)) → exponential
+(matches the proven c=2 phase). ONE construction = both phases of 2026/858's empirical diagram =
+the depth-collapse wall in deficiency language. OPEN CEILING: can non-lifted families beat
+C(n/d, s) in the deep window (non-cyclic deficiency at large p)? = the prize core, final form.
