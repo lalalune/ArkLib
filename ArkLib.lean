@@ -1047,6 +1047,7 @@ import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncond
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.SeqComposeRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
+import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundPlainRbr
 import ArkLib.ProofSystem.Sumcheck.Structured
 import ArkLib.ProofSystem.Sumcheck.Structured.Prismalinear
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
