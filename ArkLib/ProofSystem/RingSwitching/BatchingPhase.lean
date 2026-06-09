@@ -7,6 +7,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Basic
+import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
@@ -566,6 +567,92 @@ theorem batchingReduction_perfectCompleteness
     (init := init) (impl := impl) :=
   hBatching
 
+/-- **Batching perfect completeness — `batchingReduction_perfectCompleteness_residual` PROVEN.**
+The honest batching reduction is perfectly complete (given `NeverFail init`). The verifier-run
+collapse is the deterministic `oracleVerifier_verify_collapse`; the honest accept branch fires
+because `performCheckOriginalEvaluation_packMLE_iff` turns the relation's `original_claim = t(r)`
+into `performCheck = true`; and the honest output lies in `sumcheckRoundRelation 0` because the
+structural invariant holds by construction, the sumcheck-consistency conjunct is exactly
+`batching_consistency_honest` (the column-orientation keystone), and `initialCompatibility` is
+carried from the input relation. The monadic run-shape is the proven 2-message-round template
+`unroll_2_message_reduction_perfectCompleteness` (cf. `iteratedSumcheckOracleReduction_perfectCompleteness_proved`).
+
+Consumers carrying `NeverFail init` should call this directly (the `_residual` `Prop` is stated
+without `NeverFail`). -/
+set_option maxHeartbeats 1000000 in
+theorem batchingReduction_perfectCompleteness_proved [IsDomain L] [IsDomain K]
+    (hInit : NeverFail init) :
+    batchingReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := aOStmtIn) (init := init) (impl := impl) := by
+  classical
+  haveI : Nonempty L := ⟨0⟩
+  rw [batchingReduction_perfectCompleteness_residual,
+    OracleReduction.unroll_2_message_reduction_perfectCompleteness (oSpec := []ₒ)
+    (pSpec := pSpecBatching (κ := κ) (L := L) (K := K) (P := P)) (init := init) (impl := impl)
+    (hInit := hInit) (hDir0 := by rfl) (hDir1 := by rfl)
+    (hImplSupp := by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])]
+  intro stmtIn oStmtIn witIn h_relIn
+  obtain ⟨h_t'_eq, h_claim, h_compat⟩ := h_relIn
+  -- honest verifier collapses to `pure accept` (performCheck = true)
+  have hverify : ∀ r1 : Fin κ → L,
+      (oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)).toVerifier.verify (stmtIn, oStmtIn)
+          (FullTranscript.mk2 (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) r1)
+        = (pure (batchingAcceptStatement κ L K P ℓ ℓ' stmtIn
+              (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) r1, oStmtIn)
+            : OptionT (OracleComp []ₒ) _) := by
+    intro r1
+    have hcheck : performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmtIn.original_claim
+        stmtIn.t_eval_point
+        (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) = true := by
+      rw [h_t'_eq, performCheckOriginalEvaluation_packMLE_iff]; exact h_claim
+    simp only [OracleVerifier.toVerifier]
+    rw [oracleVerifier_verify_collapse]
+    simp only [FullTranscript.messages, FullTranscript.challenges, FullTranscript.mk2]
+    rw [if_pos hcheck]
+    simp only [pure_bind, batchingAcceptStatement, oracleVerifier]
+  -- relation membership of the honest accept output
+  have h_rel_out : ∀ r1 : Fin κ → L,
+      ((batchingAcceptStatement κ L K P ℓ ℓ' stmtIn
+          (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) r1, oStmtIn),
+        ({ t' := witIn.t',
+           H := projectToMidSumcheckPoly ℓ' witIn.t'
+             ((RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly
+               { t_eval_point := stmtIn.t_eval_point, original_claim := stmtIn.original_claim,
+                 s_hat := embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point,
+                 r_batching := r1 })
+             0 Fin.elim0 } : SumcheckWitness L ℓ' 0))
+        ∈ sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0 := by
+    intro r1
+    refine ⟨trivial, rfl, ?_, h_compat⟩
+    exact batching_consistency_honest (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
+      (h_l := h_l) (t' := witIn.t') (r := stmtIn.t_eval_point) (y := r1)
+  rw [probEvent_eq_one_iff]
+  dsimp only [batchingOracleReduction, oracleProver]
+  simp only [liftComp_pure, liftM_pure, pure_bind, bind_pure_comp, Function.comp, hverify,
+    liftComp_pure, _root_.map_pure]
+  refine ⟨?_, ?_⟩
+  · -- No failure: a uniform challenge sample followed by `pure`.
+    rw [probFailure_bind_eq_zero_iff]
+    refine ⟨?_, fun r1 _ => ?_⟩
+    · simp only [OptionT.probFailure_liftM, OracleComp.probFailure_liftComp,
+        HasEvalPMF.probFailure_eq_zero]
+    · rw [probFailure_map]
+      erw [OracleComp.liftComp_pure]
+      apply probFailure_pure
+  · -- Correctness: the honest output lies in the batching output relation.
+    intro x hx
+    simp only [OptionT.mem_support_iff, OptionT.run_bind, support_bind, Set.mem_iUnion,
+      OptionT.run_pure, support_pure, Set.mem_singleton_iff, exists_prop, OptionT.run_map,
+      OptionT.run_monadLift, support_map, support_liftM,
+      Set.mem_image, _root_.map_pure] at hx
+    obtain ⟨r1, -, x_1, hx1, rfl⟩ := hx
+    change x_1 ∈ _root_.support (pure _ : OptionT (OracleComp _) _) at hx1
+    simp only [OptionT.mem_support_iff, OptionT.run_pure, support_pure, Set.mem_preimage,
+      Set.mem_singleton_iff, Option.some.injEq] at hx1
+    subst hx1
+    exact ⟨h_rel_out r1, rfl, rfl⟩
+
 /-- Row-expansion form of `compute_s0` on the tensor sent by the honest embedding of an arbitrary
 large-field multilinear polynomial `t'`.
 
@@ -1120,4 +1207,5 @@ end RingSwitching
 #print axioms RingSwitching.BatchingPhase.compute_s0_eq_sum_A_func
 #print axioms RingSwitching.BatchingPhase.batching_consistency_of_multpoly
 #print axioms RingSwitching.BatchingPhase.batching_consistency_honest
+#print axioms RingSwitching.BatchingPhase.batchingReduction_perfectCompleteness_proved
 #print axioms RingSwitching.BatchingPhase.probability_bound_badBatchingEventProp_sharp
