@@ -17,6 +17,8 @@ import VCVio.OracleComp.SimSemantics.StateT.Basic
 
 open OracleSpec OracleComp
 
+universe u v
+
 /-- Simulating the random oracle leaves a mapped uniform `Fin` sample unchanged. -/
 lemma simulateQ_randomOracle_map_uniformFin {α : Type} (n : ℕ) (f : Fin (n + 1) → α) :
     ((simulateQ (unifSpec.randomOracle :
@@ -155,3 +157,23 @@ lemma StateT.run'_simulateQ_bind_map_eq_of_body
   rw [← StateT.run'_map_comm f]
   exact congrArg (fun mx : StateT σ ProbComp β => mx.run' s)
     (simulateQ_bind_map_eq_of_body impl oa body₁ body₂ f hBody)
+
+/-- **`simulateQ` fusion.** Simulating an `OracleComp spec₁` through an intermediate implementation
+`R : QueryImpl spec₁ (OracleComp spec₂)` and then simulating the result through
+`S : QueryImpl spec₂ m` equals simulating directly through the *composed* per-query handler
+`fun q => simulateQ S (R q)`. This is functoriality of `simulateQ` in its implementation argument —
+the universal-fold fusion law for the free monad `OracleComp`. It is the key step that lets a
+two-stage routed run (e.g. the appended `OracleVerifier.Append.verify`, which is
+`simulateQ router₁ … >>= simulateQ (router₂ …) …`) be re-expressed as a single direct simulation,
+collapsing the outer-oracle simulation through the routers. -/
+theorem simulateQ_simulateQ {ι₁ ι₂ : Type*}
+    {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    {m : Type u → Type v} [Monad m] [LawfulMonad m]
+    (R : QueryImpl spec₁ (OracleComp spec₂)) (S : QueryImpl spec₂ m)
+    {α : Type u} (c : OracleComp spec₁ α) :
+    simulateQ S (simulateQ R c) = simulateQ (fun q => simulateQ S (R q)) c := by
+  induction c using OracleComp.inductionOn with
+  | pure a => simp
+  | query_bind t oa ih =>
+    simp only [simulateQ_bind, simulateQ_spec_query]
+    exact bind_congr ih
