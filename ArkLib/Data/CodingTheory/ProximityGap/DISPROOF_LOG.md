@@ -2489,3 +2489,35 @@ verified, then formalized in `NormalRankSharpThreshold.lean` §Cyclic, axiom-cle
    subset families are the dictionary. Conj 41's triple landscape after O40+O41:
    sunflower-concentrated OR equal-esymm — both now theorem-level, with the quantitative
    count above them still the prize.
+
+### O41 — THE LOWER HALF CLOSES, per-prime, for the whole window: fixed-(s,r) instantiation of KKH ePrint 2026/782 Appendix A (nubs, 2026-06-09)
+
+**Citation correction first:** "KK25 (personal communications)" is PUBLISHED — Krachun–Kazanin–
+Haböck, *Failure of proximity gaps close to capacity*, ePrint **2026/782** (2026-04-20); update the
+program record everywhere. Its Lemma 1 (e₁-image ≥ 2^r·C(s/2,r) for p > s^{s/2}) is the published
+form of the subset-sum bound — O38's E1/E2 sharpen it (threshold (4min(r,m−r))^{m/4} vs s^{s/2};
+full signed count N₀ with EXACTNESS; rate-1/2 coverage where their r ≤ s/2 vanishes).
+**The main event (new note `QuotientPerPrimeInstantiation.md`):** running [2026/782 App. A]'s
+quotient construction (DEEP/[BGKS20] via [CS25]+[BCHKS25], value-spread via [BCIKS20] Lemma 3) at
+FIXED (s, r) instead of their asymptotic s = Θ(log n) — plus a one-degree shift r = ρs+1 that hits
+the prize's exact rate and improves the gap 2/s → 1/s — yields **Theorem Q**: for EVERY prime
+p ≡ 1 (mod n) and every 2-power s | n with ρs ∈ ℤ,
+    ε_mca(RS[F_p, H_n, ρn], 1 − ρ − 1/s) ≥ (½·min(C(s, ρs+1), p/(ρn)) − n)/p
+— threshold-free, per-prime. Breach of ε* = 2⁻¹²⁸ holds throughout [2^129, 2^{127+log₂C(s,ρs+1)}];
+with s ∈ {128, 256, 512} per rate this covers the ENTIRE window at every prize rate (table in the
+note: e.g. ρ=1/2: η=1/128 per-prime to 2^251.1, η=1/256 the rest). Optimizing s:
+**δ*_C < 1 − ρ − η for every dyadic η ≥ (H₂(ρ)+o(1))/(log₂p − 127)** — the LOWER HALF of the
+conjectured determination formula, per-prime, effective, for the whole window, from published
+machinery + a routine instantiation. Derivation re-verified step-by-step (list/agreement-A/
+value-spread/quotient degrees/far-side strictness incl. the m=1 edge; bad-z and case-boundary
+corrections negligible in-window). **Consequences:** O38-E3's windows are SUBSUMED (E1/E2
+exactness and the constructive count remain the finer per-image invariants; transition/onset
+structure O39 unaffected as facts about exactness); the cert(p)/class-group program is retired for
+the lower half; **the prize's remaining open content is purely the UPPER half** (descent lane
+O13–O13″ / Conjecture D): prove ε_mca ≤ ε* down from capacity to meet this floor.
+**Side data this cycle (probe_class_effect.py):** h=1 vs h=17 deficiency ladders at layer 5
+(m=32 exact through u=0.60, m=64 deficient only at u=0.40 of matched ratio) and the cofactor law —
+every observed cofactor is 2^a × (split primes ≡ 1 mod m); literature sweep verdicts: the
+descent-lane transversal/balanced-overlap marginal layer is APPARENTLY NEW (no name/theorem/prior
+description found, incl. ABF26); O38's stated priority claim was consistent with the public record
+but is now framed against 2026/782 as above.
