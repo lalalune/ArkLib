@@ -428,6 +428,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactCrossoverF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarTableSmoothInstances
 import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
+import ArkLib.Data.CodingTheory.ProximityGap.DescentKernelLemma
 import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
