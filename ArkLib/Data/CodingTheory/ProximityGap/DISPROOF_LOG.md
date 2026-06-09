@@ -2417,3 +2417,20 @@ c≥3) now has a machine-checked structural skeleton for triples — deficiency 
 ⟹ core-reduce ⟹ all-small-intersections core case. The remaining hard question is the
 CORE-REDUCED count (where the c=2 counterexamples live and where c≥3 is conjectured to
 behave differently) — sharper than before, still open.
+
+### O41 / Round-14d — per-line first moment + the three-moment capstone
+
+LineFirstMomentBound.lean (axiom-clean) closes the per-line decode chain with its missing first
+moment, via the one-vote-per-coordinate primitive (single-codeword form of round-14 = Hab25 L1):
+* `single_vote_card`: g i ≠ 0 ⟹ {γ : f i + γ·g i = c i} is a singleton (one vote/coordinate).
+* `sum_agree_single_eq`: ∑_γ |agree(f+γg, c)| = n (Fubini: each coordinate votes once).
+* `single_decode_card_mul_le`: #{γ : c ∈ Λ(γ,a)}·a ≤ n (Markov on per-point agreement).
+* `line_first_moment_bound`: (∑_γ |Λ(γ,a)|)·a ≤ |C|·n — FIELD-SIZE INDEPENDENT, the proven form of
+  the round-14 numeric probe (M ≈ poly(n), constant in q).
+
+CAPSTONE `heavyLineSet_card_explicit_bound`: first+second+heavy-set combined, 2a>n window, NO ∑_γ:
+  #{γ:|Λ(γ,a)|≥L}·L²·a·(2a−d) ≤ |C|·n·(2a−d) + a·(|C|²−|C|)·2(n−d).
+Per-line decode heaviness bounded by code parameters (n,d,a,|C|) alone. The per-line chain (rounds
+14/14b/14c/14d) is now self-contained and fully explicit. Open: the |C| (codeword count) is the
+trivial bound; the actual prize needs |C| → RS list size and the adversarial-line pair count past
+birthday — where smooth-domain RS structure must enter.
