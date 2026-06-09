@@ -5,6 +5,10 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.Polynomial.Trivariate
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
+import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
+import ArkLib.ToMathlib.BivariateDegreeToolkit
+
+set_option linter.style.longLine false
 
 /-!
 # GAP-NZ: the `Z`-specialization of the GS interpolant is nonzero for all but few parameters
@@ -111,5 +115,23 @@ theorem exists_goodZ_in {Q : F[Z][X][Y]} {d : ℕ} (hQ : Q ≠ 0) (hZ : ZdegLE Q
     intro z hz; rw [mem_filter]; exact ⟨mem_univ _, h z hz⟩
   have := le_trans (Finset.card_le_card hsub) (card_badZ_le hQ hZ)
   omega
+
+/-- **Per-parameter list-size bound (PATH 2 #2).** At a *good* parameter `z` (`eval_on_Z Q z ≠ 0`,
+ensured for all but `≤ d` parameters by `card_badZ_le`), any family `Ps` of candidate message
+polynomials whose linear factors `(Y - C p)` divide the `Z`-specialization `eval_on_Z Q z` numbers at
+most `D_Y Q` (the trivariate `Y`-degree).  This is the Guruswami–Sudan list-size bound
+(`GSFactorExtract.gs_list_size_le`) transported through `natDegreeY_eval_on_Z_le`: at a good `z` the
+close codewords are distinct `Y`-roots of `eval_on_Z Q z`, hence number `≤ natDegreeY (eval_on_Z Q z)
+≤ D_Y Q ≤ gsDpg/k = poly(n)`.
+
+Each close codeword's linear factor is supplied by the BCIKS20 §5 keystone
+`GSMultiplicityCore.Q_graph_factor_dvd_of_radius` (`(Y - C Pz) ∣ eval_on_Z Q z`), whose `hQz_ne`
+hypothesis is discharged here by `exists_eval_on_Z_ne_zero`. -/
+theorem perZ_listSize_le {Q : F[Z][X][Y]} {z : F} (hQz : eval_on_Z Q z ≠ 0)
+    (Ps : Finset (Polynomial F))
+    (hdvd : ∀ p ∈ Ps, (Polynomial.X - Polynomial.C p) ∣ eval_on_Z Q z) :
+    Ps.card ≤ Trivariate.D_Y Q := by
+  refine le_trans (GSFactorExtract.gs_list_size_le (eval_on_Z Q z) hQz Ps hdvd) ?_
+  exact ArkLib.BivariateDegreeToolkit.natDegreeY_eval_on_Z_le Q z
 
 end ProximityGap
