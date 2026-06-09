@@ -2145,3 +2145,23 @@ Round 15 (workflow stalled mid-round; recovered by hand + one Fable agent). On m
 Every formalizable rung done; the residual is exactly the open research core (an explicit certificate
 beating Johnson for smooth-domain RS). Issue stays open. WORKFLOW LESSON: agents can stall on a single
 simp-recursion for 10+ min — check in, take over, fix by hand (deterministic rw beats simp loops).
+
+### O32 — capstone gs_full_list_bound + the multiplicity ladder + the folding-transfer no-go
+
+Final entries of the rounds-8-15 arc (all own-hand work after the round-15 workflow stalled):
+* `GSFullListBound.lean` (main `80ad309ca`) — gs_full_list_bound: the assembled multiplicity-m GS
+  list bound (any field, any n distinct points, any m: n·C(m+1,2) < #gsSupport(D,k) ∧ D ≤ m·t ⟹
+  every t-agreement list ≤ (D−1)/(k−1)). THE MULTIPLICITY LADDER at n=50,k=2: m=1→t=10, m=2→t=9,
+  m=4→t=8 = the integer Johnson floor (√50≈7.07), instantiated over ZMod 53 with 50 explicit points.
+  Multiplicity climbs exactly to Johnson; the walls (O29/GSExactCountWall) prove no further.
+* `FoldingTransferNoGo.lean` (main `3183c68dc`) — §6 route 4 naive direction certified dead:
+  (d+1)·foldedAgree ≤ plainAgree is the only true direction; one corruption per orbit gives
+  plainAgree = N·d (fraction d/(d+1)) with foldedAgree = 0, so folded-capacity results say nothing
+  about plain-close words. The open part (transfer surviving per-orbit corruption) is isolated.
+
+**THE §6 ROUTE LEDGER (final):** 1 derandomization — gap as Props, OPEN; 2 list⇒MCA collapse —
+partial bridges + the proven list↛ε_mca correction; 3 syndrome lens — externally unvalidated;
+4 folding — naive dead (theorem), open part isolated; 5 two-sided interpolation — THE VERIFIED
+BRACKET δ* ∈ [1−√ρ, 1−ρ−c_ρ]: left end = Sudan→multiplicity-m→walls (every known certificate stops
+at Johnson), right end = averaging at prize scale. ~31 axiom-clean files rounds 8-15. The interior
+is the open research the prize elicits; every dead end is now a theorem rather than folklore.
