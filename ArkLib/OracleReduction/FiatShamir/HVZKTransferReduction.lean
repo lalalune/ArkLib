@@ -191,6 +191,82 @@ def canonicalFSCouplingKernel
           : OptionT ProbComp (FiatShamirProofTranscript (pSpec := pSpec)))
       = evalDist (msgProjFS <$> honestTranscriptDist init impl R stmt wit)
 
+/-- **Per-`oSpec`-state lazy-vs-eager coupling (the irreducible residual).**
+
+The smallest distributional identity to which `canonicalFSCouplingKernel` reduces, after the entirely
+structural layer (`init`/`OptionT`/`evalDist`/`.run'`/marginalization plumbing) has been stripped:
+holding the shared-oracle implementation `impl` over `oSpec` and a *fixed* `oSpec`-state `a` (drawn
+from `init`), the message-bundle marginal of the explicit Fiat-Shamir honest execution — simulated
+through the **lazy random oracle** on the Fiat-Shamir challenge oracle from the **empty cache**
+(`canonicalFSChallengeImpl`, started at `(a, ∅)`) — coincides with the message-bundle marginal of
+the *interactive* honest run, whose verifier draws each round's challenge **fresh-uniform** through
+`challengeQueryImpl` (started at `a`).
+
+This is exactly the content flagged in the docstring of `canonicalFSCouplingKernel`: across an honest
+run the per-round, transcript-indexed Fiat-Shamir query keys `⟨⟨i, _⟩, ⟨stmt, messagesUpTo i⟩⟩` are
+pairwise distinct (strictly growing message prefixes), so each is a cache miss answered by a fresh
+independent uniform draw — distributionally identical to the interactive fresh draws — and the cache
+makes the verifier's `deriveTranscriptFS` read back exactly those challenges, so the honest transcript
+never `none`s out and its message marginal coincides with the interactive one. It is TRUE; closing it
+requires the lazy-vs-eager equivalence `Reduction.fsChallenge_lazy_eq_eager` (lifted across the mixed
+`oSpec + fsChallengeOracle` simulation), the per-round peeling
+`Reduction.evalWithAnswerFn_processRound{,FS}`, and the pairwise-distinctness of the FS keys. -/
+def canonicalFSPerStateCoupling
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) : Prop :=
+  ∀ a : σ,
+    evalDist
+        (StateT.run'
+            ((Option.map (fun r : (FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) ×
+                  StmtOut => r.1.1)) <$>
+              (simulateQ (impl.addLift (canonicalFSChallengeImpl (StmtIn := StmtIn) (pSpec := pSpec)))
+                (R.fiatShamirHonestExecution stmt wit).run
+                : StateT (σ × (fsChallengeOracle StmtIn pSpec).QueryCache) ProbComp
+                    (Option ((FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) ×
+                      StmtOut))))
+            (a, (∅ : (fsChallengeOracle StmtIn pSpec).QueryCache)))
+      = evalDist
+          (Option.map (msgProjFS (pSpec := pSpec)) <$>
+            StateT.run'
+              (simulateQ (impl.addLift challengeQueryImpl)
+                ((Option.map (fun result : (FullTranscript pSpec × StmtOut × WitOut) × StmtOut =>
+                    result.1.1)) <$> (R.run stmt wit).run)
+                : StateT σ ProbComp (Option (FullTranscript pSpec))) a)
+
+set_option maxHeartbeats 1000000 in
+/-- **The canonical Fiat-Shamir HVZK coupling kernel holds, modulo the per-state coupling residual.**
+
+This discharges the entire *structural* layer of the kernel `canonicalFSCouplingKernel` — stripping
+the `init` bind, the `OptionT`/`evalDist`/`.run'` plumbing, and both message-bundle marginalizations
+(`(·.1.1)` on the FS side, `msgProjFS` on the interactive side) — sorry-free, reducing the kernel
+exactly to the per-`oSpec`-state lazy-vs-eager coupling `canonicalFSPerStateCoupling`. -/
+theorem canonicalFSCouplingKernel_of_perStateCoupling
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rel : Set (StmtIn × WitIn))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hCoupling : ∀ stmt wit, (stmt, wit) ∈ rel →
+      canonicalFSPerStateCoupling impl R stmt wit) :
+    canonicalFSCouplingKernel init impl rel R := by
+  intro stmt wit hmem
+  -- `evalDist` on `OptionT ProbComp` is determined by `evalDist` of the underlying `.run`.
+  have bridge : ∀ {β : Type} (mx my : OptionT ProbComp β),
+      evalDist mx.run = evalDist my.run → evalDist mx = evalDist my := by
+    intro β mx my h
+    rw [show (𝒟[mx] : SPMF β) = (HasEvalSPMF.toSPMF mx.run >>= fun y =>
+          match y with | some a => pure a | none => failure : SPMF β) from rfl,
+        show (𝒟[my] : SPMF β) = (HasEvalSPMF.toSPMF my.run >>= fun y =>
+          match y with | some a => pure a | none => failure : SPMF β) from rfl]
+    have hrun : (HasEvalSPMF.toSPMF mx.run : SPMF (Option β)) = HasEvalSPMF.toSPMF my.run := h
+    rw [hrun]
+  refine bridge _ _ ?_
+  rw [OptionT.run_map]
+  unfold honestTranscriptDist canonicalFSImpl
+  simp only [OptionT.run_mk, OptionT.run_map]
+  rw [map_bind, evalDist_bind, evalDist_bind]
+  refine congrArg _ (funext fun a => ?_)
+  exact hCoupling stmt wit hmem a
+
 attribute [-instance] Reduction.fiatShamirZKNoChallengeSampleable in
 set_option maxHeartbeats 1000000 in
 /-- **FS-side collapse of the canonical coupling.** The full canonical coupling identity (the
@@ -257,7 +333,25 @@ theorem fiatShamir_hvzkTransferResidual_canonical
   convert h using 3
   exact Subsingleton.elim _ _
 
+/-- **Canonical basic Fiat-Shamir HVZK transfer from the per-state lazy-vs-eager coupling.**
+
+Composes `canonicalFSCouplingKernel_of_perStateCoupling` (the sorry-free structural reduction of the
+coupling kernel) with `fiatShamir_hvzkTransferResidual_canonical`: given only the irreducible
+per-`oSpec`-state coupling residual `canonicalFSPerStateCoupling`, the basic Fiat-Shamir transform
+preserves perfect HVZK for the canonical lazy random-oracle challenge implementation. This is the
+form in which the whole HVZK transfer is reduced to the single coupling residual. -/
+theorem fiatShamir_hvzkTransferResidual_canonical_of_perStateCoupling
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rel : Set (StmtIn × WitIn))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hCoupling : ∀ stmt wit, (stmt, wit) ∈ rel →
+      canonicalFSPerStateCoupling impl R stmt wit) :
+    fiatShamir_hvzkTransferResidual init impl
+      (canonicalFSInit (StmtIn := StmtIn) (pSpec := pSpec) init)
+      (canonicalFSImpl (StmtIn := StmtIn) impl) rel R :=
+  fiatShamir_hvzkTransferResidual_canonical init impl rel R
+    (canonicalFSCouplingKernel_of_perStateCoupling init impl rel R hCoupling)
+
 end Canonical
 
 end Reduction
-
