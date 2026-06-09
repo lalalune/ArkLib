@@ -279,6 +279,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineMonic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineZLinearMonic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WPowerInjective
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Weight1FromZLinear
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20AppAProof
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
@@ -499,7 +500,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.JohnsonPerWord
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSecondMomentFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSimplexBound
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
+import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungAntipodalTightness
+import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalQ
 import ArkLib.Data.CodingTheory.ProximityGap.LineAgreementCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineBallIntersection
@@ -643,6 +646,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdPinRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdStrictRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdSubcapacityRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdTrappedRate12
+import ArkLib.Data.CodingTheory.ProximityGap.RSMDSListBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
@@ -668,6 +672,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupPowerHalvingGeneral
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticHalving
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuarticHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepCountFiniteFieldCounterexample
@@ -681,9 +686,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
-import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalGeneral
-import ArkLib.Data.CodingTheory.ProximityGap.RSMDSListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1128,6 +1130,7 @@ import ArkLib.ProofSystem.Sumcheck.Spec.SimpleRoundCoherent
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundBridge
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFaithful
+import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFlipImp
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundKnowFlip
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundPlainRbr
 import ArkLib.ProofSystem.Sumcheck.Structured
