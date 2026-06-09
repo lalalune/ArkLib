@@ -89,14 +89,14 @@ theorem reduction_perfectCompleteness (hInit : NeverFail init)
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
         = support (liftM q : OracleComp oSpec β)) :
     (reduction R deg D n oSpec).perfectCompleteness init impl
-      (relationRound R n deg D 0) (relationRound R n deg D (Fin.last n)) := by
-  haveI : ∀ j, Fintype ((SingleRound.pSpec R deg).Challenge j) := SingleRound.chalFintype
-  haveI : ∀ j, Inhabited ((SingleRound.pSpec R deg).Challenge j) := SingleRound.chalInhab
-  exact Reduction.seqCompose_perfectCompleteness_msg
+      (relationRound R n deg D 0) (relationRound R n deg D (Fin.last n)) :=
+  Reduction.seqCompose_pc_msg'
     (Stmt := fun i => StatementRound R n i × (∀ j, OracleStatement R n deg j))
     (Wit := fun _ => Unit)
     (R := SingleRound.reduction R n deg D oSpec)
     (rel := fun i => relationRound R n deg D i)
+    (hFin := fun _ => SingleRound.chalFintype)
+    (hInh := fun _ => SingleRound.chalInhab)
     (hValid := fun _ => ⟨by omega, SingleRound.pSpec_dir_zero⟩)
     hInit hImplSupp
     (fun i => SingleRound.reduction_perfectCompleteness i)
