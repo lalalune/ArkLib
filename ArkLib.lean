@@ -961,6 +961,7 @@ import ArkLib.OracleReduction.Completeness
 import ArkLib.OracleReduction.Composition.Parallel.Basic
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeam
+import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeamChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessHelper
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessNonPerfect
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
