@@ -616,7 +616,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CollisionOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetWall
-import ArkLib.Data.CodingTheory.ProximityGap.Round8_t1_full_concentration
 import ArkLib.Data.CodingTheory.ProximityGap.SatCheck2_tmp
 import ArkLib.Data.CodingTheory.ProximityGap.SatCheck_tmp
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
