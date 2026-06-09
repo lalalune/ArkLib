@@ -87,10 +87,12 @@ theorem spike_size_at_latticeJ (n : ℕ) (j : Fin (n + 1)) (hn : 0 < n)
     exact_mod_cast Nat.le_of_lt_succ j.isLt
   unfold mcaLatticePoint
   rw [show (n - (j.val + 1) + 1 : ℕ) = n - j.val from by omega]
-  -- (1 - j/n) · n = n - j
-  rw [tsub_mul, one_mul, div_mul_cancel₀ _ (ne_of_gt hn_pos)]
-  -- n - j ≤ n - j
-  exact le_refl ((n - j.val : ℕ) : ℝ≥0)
+  have key : ((1 - (j.val : ℝ≥0) / (n : ℝ≥0)) * (n : ℝ≥0)) = (n : ℝ≥0) - j.val := by
+    rw [tsub_mul, one_mul, div_mul_cancel₀ _ (ne_of_gt hn_pos)]
+  rw [key]
+  rw [← NNReal.coe_le_coe, NNReal.coe_sub hjn_le]
+  change (n : ℝ) - j.val ≤ ((n - j.val : ℕ) : ℝ)
+  rw [Nat.cast_sub (Nat.le_of_lt hjn)]
 
 /-- **The general spike-plant MCA lower bound at lattice index `j`.**
 

@@ -59,7 +59,7 @@ theorem mca_threshold_le_of_error_gt
   -- Let's prove by contradiction: suppose δ* > j/n.
   by_contra! h
   have hmono : epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) (mcaLatticePoint (Fintype.card ι) j) ≤ epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) δ_star :=
-    epsMCA_mono (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) (mcaLatticePoint (Fintype.card ι) j) δ_star (le_of_lt h)
+    epsMCA_mono (ReedSolomon.code domain k : Set (ι → F)) (le_of_lt h)
   have h_le : epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) (mcaLatticePoint (Fintype.card ι) j) ≤ (ε_star : ENNReal) :=
     le_trans hmono h_challenge
   exact lt_irrefl _ (lt_of_le_of_lt h_le h_gt)
