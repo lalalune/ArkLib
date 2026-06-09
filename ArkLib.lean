@@ -304,6 +304,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualAffineLineRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BruteForceSearch
+import ArkLib.Data.CodingTheory.ProximityGap.CAPairExtractionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterShell
@@ -715,7 +716,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.CAPairExtractionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1332,6 +1332,7 @@ import ArkLib.ToMathlib.MCAFirstMomentArithBricks
 import ArkLib.ToMathlib.MCAPrizeFourRateNumerics
 import ArkLib.ToMathlib.MatchingExtractor
 import ArkLib.ToMathlib.MatchingFactorLift
+import ArkLib.ToMathlib.MatchingGeometryProducers
 import ArkLib.ToMathlib.MpFinSupply
 import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
