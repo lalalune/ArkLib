@@ -340,6 +340,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeClaim62Loop48
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop41
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop43
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop44
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateFiniteFieldLiftLoop51
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateListDecEquivLoop47
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateMasterLoop45
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop39
@@ -754,6 +755,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessPr
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessMsgProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
+import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessSeamTransfer
 import ArkLib.OracleReduction.Composition.Sequential.ChallengeSeamBridge
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendChallenge
