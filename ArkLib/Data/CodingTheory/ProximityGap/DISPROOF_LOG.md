@@ -2391,3 +2391,29 @@ distance-uniform per-pair CONSTANT (the round-14 gain), not the past-Johnson-blo
 ball-intersection volume. This is the per-line object δ* is read from. Open: bound the per-line
 first moment M=∑_γ|Λ| uniformly (empirically field-independent ~poly(n), round-14 probe) and the
 pair count past birthday for ADVERSARIAL lines — where smooth-domain RS structure must enter.
+### O40 — Conjecture 41's triple case: DEFICIENT TRIPLES ARE SUNFLOWERS (new theorems, machine-checked)
+
+`NormalRankSharpThreshold.lean` §Triple (axiom-clean, 0 sorry, 0 warnings): the paper's
+k-wise landscape beyond pairs was EMPIRICAL ("deficient triples exist at c=2 from n=11,
+translate families; none found at c≥3"; "k-wise independence fails for common-core
+triples"). Now theorems:
+
+* `common_core_triple_relation` — the k-wise failure is a THEOREM at every window c ≥ 1:
+  Λ_{C∪{x₁}}·(x₂−x₃) + Λ_{C∪{x₂}}·(x₃−x₁) + Λ_{C∪{x₃}}·(x₁−x₂) = 0 — explicit, all
+  multipliers nonzero CONSTANTS. Pairwise independence (Thm 26) can never be promoted
+  to 3-wise without structural hypotheses.
+* `triple_relation_vanishing` — in ANY triple relation, P_i vanishes on (E_j∩E_k)∖E_i.
+* `triple_kernel_trivial_of_spread` — **the structure theorem**: pairwise threshold on
+  one pair + that pair's private intersection ≥ c points ⟹ trivial triple kernel.
+  CONTRAPOSITIVE: every rank-deficient triple must have |(E_j∩E_k)∖E_i| < c for all i —
+  pairwise intersections CONCENTRATE into the triple core. The sunflower shape of the
+  empirical c=2 translate families is FORCED, not incidental.
+* `relation_core_reduction` — sunflower relations descend exactly to the core-free
+  family: Conjecture 41's triple case REDUCES to core-reduced supports (all pairwise
+  intersections < c after reduction).
+
+Net for the open core: Conj 41 (count of simultaneously-deficient supports on a flat at
+c≥3) now has a machine-checked structural skeleton for triples — deficiency ⟹ sunflower
+⟹ core-reduce ⟹ all-small-intersections core case. The remaining hard question is the
+CORE-REDUCED count (where the c=2 counterexamples live and where c≥3 is conjectured to
+behave differently) — sharper than before, still open.

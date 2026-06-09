@@ -135,4 +135,113 @@ theorem normal_kernel_nontrivial [DecidableEq F] {E₁ E₂ : Finset F} {c : ℕ
         Finset.union_comm]
     linear_combination -key
 
+/-! ## The triple case of Conjecture 41: deficient triples are sunflowers
+
+The open prize core (2026/858 Conjecture 41) is a *quantitative* rank statement at
+`c ≥ 3` for many supports at once. The paper's evidence beyond pairs is empirical
+("rank-deficient triples exist at c = 2 from n = 11; none found at c ≥ 3"; "k-wise
+independence fails for common-core triples"). This section turns the k-wise landscape
+into theorems:
+
+* `common_core_triple_relation` — the empirical k-wise failure is a THEOREM: any three
+  supports sharing a `(w−1)`-core admit an explicit relation with all three multipliers
+  nonzero *constants* (so it lives in every window `c ≥ 1`).
+* `triple_relation_vanishing` + `triple_kernel_trivial_of_spread` — **deficient triples
+  are sunflowers**: in any nontrivial triple relation, `P_i` vanishes on
+  `(E_j ∩ E_k) ∖ E_i`; hence if one pair is at the pairwise threshold and its private
+  intersection `(E_j ∩ E_k) ∖ E_i` has `≥ c` points, the triple kernel is trivial.
+  Contrapositive: a rank-deficient triple must concentrate every pairwise intersection
+  to within `< c` of the triple core — the sunflower structure observed empirically at
+  `c = 2` (translate families) is *forced*.
+* `relation_core_reduction` — sunflower relations descend to the core-free family:
+  Conjecture 41's triple case reduces to core-reduced supports.
+-/
+
+section Triple
+
+lemma loc_eval_zero {E : Finset F} {x : F} (hx : x ∈ E) : (loc E).eval x = 0 := by
+  rw [loc, eval_prod]
+  exact Finset.prod_eq_zero hx (by simp)
+
+lemma loc_eval_ne_zero {E : Finset F} {x : F} (hx : x ∉ E) : (loc E).eval x ≠ 0 := by
+  rw [loc, eval_prod]
+  refine Finset.prod_ne_zero_iff.mpr fun a ha => ?_
+  simp only [eval_sub, eval_X, eval_C, sub_ne_zero]
+  exact fun hEq => hx (hEq ▸ ha)
+
+variable [DecidableEq F]
+
+/-- **The k-wise failure is a theorem** (any window `c ≥ 1`): three supports sharing a
+common core admit an explicit relation with *constant* multipliers
+`(x₂−x₃, x₃−x₁, x₁−x₂)` — all nonzero when the extension points are distinct. The
+`2c`-pairwise independence of `normal_kernel_trivial` can never be promoted to 3-wise
+without structural hypotheses. -/
+theorem common_core_triple_relation (Cs : Finset F) {x₁ x₂ x₃ : F}
+    (h₁ : x₁ ∉ Cs) (h₂ : x₂ ∉ Cs) (h₃ : x₃ ∉ Cs) :
+    loc (insert x₁ Cs) * C (x₂ - x₃) + loc (insert x₂ Cs) * C (x₃ - x₁)
+      + loc (insert x₃ Cs) * C (x₁ - x₂) = 0 := by
+  rw [loc, loc, loc, Finset.prod_insert h₁, Finset.prod_insert h₂, Finset.prod_insert h₃]
+  push_cast [C_sub]
+  ring
+
+omit [DecidableEq F] in
+/-- **Sunflower vanishing**: in any triple relation, the multiplier of `E₁` vanishes on
+the private pairwise intersection `(E₂ ∩ E₃) ∖ E₁`. -/
+theorem triple_relation_vanishing {E₁ E₂ E₃ : Finset F} {P₁ P₂ P₃ : F[X]}
+    (hrel : loc E₁ * P₁ + loc E₂ * P₂ + loc E₃ * P₃ = 0)
+    {x : F} (hx₂ : x ∈ E₂) (hx₃ : x ∈ E₃) (hx₁ : x ∉ E₁) :
+    P₁.eval x = 0 := by
+  have h := congrArg (Polynomial.eval x) hrel
+  simp only [eval_add, eval_mul, eval_zero] at h
+  rw [loc_eval_zero hx₂, loc_eval_zero hx₃, zero_mul, zero_mul, add_zero, add_zero] at h
+  exact (mul_eq_zero.mp h).resolve_left (loc_eval_ne_zero hx₁)
+
+/-- **Spread triples have trivial kernel — deficient triples are sunflowers.** If the
+pair `(E₂, E₃)` is at the pairwise-independence threshold and its private intersection
+`(E₂ ∩ E₃) ∖ E₁` carries at least `c` points, then the triple kernel is trivial.
+
+Contrapositive (the structure theorem for Conjecture 41's triple case): any
+rank-deficient triple must have `|(E_j ∩ E_k) ∖ E_i| < c` — the pairwise intersections
+concentrate into the triple core, i.e. the family is sunflower-like. This is the
+mechanism behind the paper's empirical c = 2 translate-family examples, now forced. -/
+theorem triple_kernel_trivial_of_spread {E₁ E₂ E₃ : Finset F} {c : ℕ}
+    (hth : c + (E₂ ∩ E₃).card ≤ E₂.card)
+    (hbig : c ≤ ((E₂ ∩ E₃) \ E₁).card)
+    {P₁ P₂ P₃ : F[X]} (h₁ : P₁.natDegree < c) (h₃ : P₃.natDegree < c)
+    (hrel : loc E₁ * P₁ + loc E₂ * P₂ + loc E₃ * P₃ = 0) :
+    P₁ = 0 ∧ P₂ = 0 ∧ P₃ = 0 := by
+  have hP₁ : P₁ = 0 := by
+    apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' P₁ ((E₂ ∩ E₃) \ E₁)
+    · intro x hx
+      rw [Finset.mem_sdiff, Finset.mem_inter] at hx
+      exact triple_relation_vanishing hrel hx.1.1 hx.1.2 hx.2
+    · omega
+  rw [hP₁, mul_zero, zero_add] at hrel
+  obtain ⟨hP₂, hP₃⟩ := normal_kernel_trivial hth h₃ hrel
+  exact ⟨hP₁, hP₂, hP₃⟩
+
+/-- **Core reduction**: relations of a family with common core `T` are exactly the
+relations of the core-free family — Conjecture 41's triple case reduces to core-reduced
+supports. -/
+theorem relation_core_reduction {T E₁ E₂ E₃ : Finset F}
+    (h₁ : T ⊆ E₁) (h₂ : T ⊆ E₂) (h₃ : T ⊆ E₃) (P₁ P₂ P₃ : F[X]) :
+    loc E₁ * P₁ + loc E₂ * P₂ + loc E₃ * P₃ = 0 ↔
+      loc (E₁ \ T) * P₁ + loc (E₂ \ T) * P₂ + loc (E₃ \ T) * P₃ = 0 := by
+  have hf : ∀ E : Finset F, T ⊆ E → loc E = loc T * loc (E \ T) := by
+    intro E hTE
+    rw [loc, loc, loc, ← Finset.prod_union Finset.disjoint_sdiff]
+    congr 1
+    exact (Finset.union_sdiff_of_subset hTE).symm
+  rw [hf E₁ h₁, hf E₂ h₂, hf E₃ h₃]
+  constructor
+  · intro h
+    have hT : loc T *
+        (loc (E₁ \ T) * P₁ + loc (E₂ \ T) * P₂ + loc (E₃ \ T) * P₃) = 0 := by
+      linear_combination h
+    exact (mul_eq_zero.mp hT).resolve_left (loc_ne_zero T)
+  · intro h
+    linear_combination loc T * h
+
+end Triple
+
 end NormalRank
