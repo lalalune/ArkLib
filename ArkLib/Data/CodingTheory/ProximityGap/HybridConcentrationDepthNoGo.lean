@@ -198,10 +198,10 @@ theorem prod_powersum_factor {A B : Finset F} {i : ℕ}
 primitive `h`-th root `ζ` (`h > t`, `g ≠ 0`) — so `pᵢ(A) = 0` for `1 ≤ i ≤ t` — and the product
 `A·B` is free, then `A·B` kills `p₁,…,p_t` for **any** `B`. The free factor `B` is the choice space.
 -/
-theorem prod_coset_powersum_zero [DecidableEq F] {F : Type*} [Field F] [DecidableEq F]
-    {ζ : F} {h : ℕ} (hζ : IsPrimitiveRoot ζ h) {g : F} (hg : g ≠ 0)
-    {B : Finset F}
-    (hinj : Set.InjOn (fun p : F × F => p.1 * p.2) (coset ζ h g ×ˢ B))
+theorem prod_coset_powersum_zero {K : Type*} [Field K] [DecidableEq K]
+    {ζ : K} {h : ℕ} (hζ : IsPrimitiveRoot ζ h) {g : K} (hg : g ≠ 0)
+    {B : Finset K}
+    (hinj : Set.InjOn (fun p : K × K => p.1 * p.2) (coset ζ h g ×ˢ B))
     {i : ℕ} (hi1 : 1 ≤ i) (hih : i < h) :
     ∑ x ∈ (coset ζ h g ×ˢ B).image (fun p => p.1 * p.2), x ^ i = 0 := by
   rw [prod_powersum_factor hinj, coset_finset_powersum_zero hζ hg hi1 hih, zero_mul]
