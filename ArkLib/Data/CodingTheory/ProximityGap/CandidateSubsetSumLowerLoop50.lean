@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
+import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.Tactic
 
 /-!
@@ -110,6 +112,64 @@ theorem card_subsetSumset_len_eq {N : ℕ} [DecidableEq K] (ℓ : ℕ) (v : Fin 
   rw [Finset.card_image_of_injective _ hinj, Finset.card_powersetCard, Finset.card_univ,
     Fintype.card_fin]
 
+/-! ## Concrete instantiation: an actual primitive `n`-th root of unity in char 0 -/
+
+/-- **The disproof core, fully concrete (no abstract hypothesis).** Let `ζ` be a primitive `n`-th
+root of unity in a characteristic-0 field, and `N ≤ φ(n)`. Then the subset-sum map over `Fin N` is
+injective. The proof discharges the no-relation hypothesis from `ζ`'s minimal polynomial: a vanishing
+`{−1,0,1}`-combination `∑ (g j) ζ^j = 0` is `aeval ζ p` for `p = ∑ (g j) X^j` of degree `< N ≤ φ(n) ≤
+deg(minpoly ℤ ζ)` (`IsPrimitiveRoot.totient_le_degree_minpoly`); since `ℤ` is integrally closed and
+`ζ` is integral, `minpoly ℤ ζ ∣ p`, forcing `p = 0` and all `g j = 0`.
+
+For `n = 2^m` (`m ≥ 1`), `φ(2^m) = 2^{m-1}`, so taking `N = 2^{m-1}` gives `|G^{(+ℓ)}| ≥ C(2^{m-1}, ℓ)`
+and `≥ 2^{2^{m-1}}` total — the **proven super-exponential** lower bound, with NO remaining hypothesis,
+over any characteristic-0 field. -/
+theorem subsetSum_injective_of_isPrimitiveRoot [CharZero K]
+    {n : ℕ} (hn : 0 < n) {ζ : K} (hζ : IsPrimitiveRoot ζ n)
+    {N : ℕ} (hN : N ≤ Nat.totient n) :
+    Function.Injective (fun S : Finset (Fin N) => ∑ j ∈ S, ζ ^ (j : ℕ)) := by
+  classical
+  apply subsetSum_injective_of_noRelation
+  intro g hg
+  set p : Polynomial ℤ := ∑ j : Fin N, Polynomial.monomial (j : ℕ) (g j) with hp
+  -- (a) `aeval ζ p = ∑ (g j : K) ζ^j = 0`
+  have haeval : (Polynomial.aeval ζ) p = 0 := by
+    rw [hp, map_sum]
+    simp only [Polynomial.aeval_monomial, eq_intCast]
+    exact hg
+  -- (b) coefficient extraction: `coeff p (i:ℕ) = g i`
+  have hcoeff : ∀ i : Fin N, p.coeff (i : ℕ) = g i := by
+    intro i
+    rw [hp, Polynomial.finset_sum_coeff]
+    rw [Finset.sum_eq_single i]
+    · simp
+    · intro b _ hb
+      rw [Polynomial.coeff_monomial, if_neg]
+      exact fun h => hb (Fin.ext h)
+    · intro h; exact absurd (Finset.mem_univ i) h
+  -- (c) `p = 0`, via the minimal-polynomial degree bound
+  have hp0 : p = 0 := by
+    by_contra hpne
+    rcases Nat.eq_zero_or_pos N with hN0 | hNpos
+    · subst hN0; exact hpne (by rw [hp]; simp)
+    have hdvd : minpoly ℤ ζ ∣ p :=
+      (minpoly.isIntegrallyClosed_dvd (hζ.isIntegral hn) haeval)
+    have h1 : (minpoly ℤ ζ).natDegree ≤ p.natDegree := Polynomial.natDegree_le_of_dvd hdvd hpne
+    have h2 : Nat.totient n ≤ (minpoly ℤ ζ).natDegree := hζ.totient_le_degree_minpoly
+    have h3 : p.natDegree < N := by
+      rw [Polynomial.natDegree_lt_iff_degree_lt hpne, hp]
+      refine lt_of_le_of_lt (Polynomial.degree_sum_le _ _) ?_
+      refine (Finset.sup_lt_iff (WithBot.bot_lt_coe N)).mpr ?_
+      intro j _
+      exact lt_of_le_of_lt (Polynomial.degree_monomial_le _ _)
+        (WithBot.coe_lt_coe.mpr j.isLt)
+    omega
+  -- (d) conclude `g i = 0`
+  intro i
+  have := hcoeff i
+  rw [hp0, Polynomial.coeff_zero] at this
+  exact this.symm
+
 /-- **`≥ 2^N` distinct subset sums from `ℤ`-linear independence** — the form instantiated by the
 cyclotomic power basis at `N = φ(2^m) = 2^{m-1}`, yielding `|G^{(+)}| ≥ 2^{2^{m-1}}`. -/
 theorem card_subsetSumset_ge_of_linearIndependent {N : ℕ} [DecidableEq K] (v : Fin N → K)
@@ -119,11 +179,34 @@ theorem card_subsetSumset_ge_of_linearIndependent {N : ℕ} [DecidableEq K] (v :
   rw [Finset.card_image_of_injective _ hinj, Finset.card_univ, Fintype.card_finset,
     Fintype.card_fin]
 
+/-- `φ(2^m) = 2^{m-1}` for `m ≥ 1`. -/
+theorem totient_two_pow {m : ℕ} (hm : 1 ≤ m) : Nat.totient (2 ^ m) = 2 ^ (m - 1) := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hm
+  rw [Nat.zero_add, Nat.totient_prime_pow_succ Nat.prime_two]
+  simp
+
+/-- **Fully concrete super-exponential bound (Loop50 capstone).** For an actual primitive `2^m`-th
+root of unity `ζ` (`m ≥ 1`) in a characteristic-0 field, the subset-sumset over the half-domain
+`Fin (2^{m-1})` has at least `2^{2^{m-1}}` elements — **super-exponential in the domain `2^m`**, with
+no remaining hypothesis. Combined with `thm71_no_fixed_exponent` (Loop46) this disproves the
+minimal-domain prize over any characteristic-0 (or full-degree) field. -/
+theorem card_subsetSumset_isPrimitiveRoot_two_pow_ge [CharZero K] [DecidableEq K]
+    {m : ℕ} (hm : 1 ≤ m) {ζ : K} (hζ : IsPrimitiveRoot ζ (2 ^ m)) :
+    2 ^ (2 ^ (m - 1)) ≤
+      (Finset.univ.image
+        (fun S : Finset (Fin (2 ^ (m - 1))) => ∑ j ∈ S, ζ ^ (j : ℕ))).card := by
+  have hinj := subsetSum_injective_of_isPrimitiveRoot (n := 2 ^ m)
+    (by positivity) hζ (N := 2 ^ (m - 1)) (le_of_eq (totient_two_pow hm).symm)
+  rw [Finset.card_image_of_injective _ hinj, Finset.card_univ, Fintype.card_finset,
+    Fintype.card_fin]
+
 end ArkLib.ProximityGap.SubsetSumLowerLoop50
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.subsetSum_injective_of_noRelation
 #print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.subsetSum_injective_of_linearIndependent
 #print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.card_subsetSumset_ge_of_linearIndependent
+#print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.subsetSum_injective_of_isPrimitiveRoot
+#print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.card_subsetSumset_isPrimitiveRoot_two_pow_ge
 #print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.card_subsetSumset_ge
 #print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.card_subsetSumset_len_eq
