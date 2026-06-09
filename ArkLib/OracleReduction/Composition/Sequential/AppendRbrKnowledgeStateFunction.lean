@@ -63,6 +63,92 @@ theorem appendWitMid_gt {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→
   rw [Fin.append_right]; show Fin.tail WitMid₂ _ = _; unfold Fin.tail; congr 1
   ext; simp only [Fin.val_succ]; omega
 
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **Phase-1 projection of the composite `extractMid`.** For a round index `idx < m` (entirely in
+phase 1), the appended extractor's `extractMid` defers — heterogeneously, up to the witness/transcript
+type casts — to `E₁.extractMid ⟨idx,hi⟩` on the transcript's phase-1 truncation. -/
+theorem appendExtractMid_le {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+    (E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁)
+    (E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (idx : Fin (m+n)) (hi : (idx:ℕ) < m) (stmt₁ : Stmt₁)
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript idx.succ)
+    (h : (Fin.append (m:=m+1) WitMid₁ (Fin.tail WitMid₂) ∘ Fin.cast (by omega)) idx.succ)
+    (trf : pSpec₁.Transcript (⟨idx, hi⟩ : Fin m).succ) (htrf : HEq tr.fst trf)
+    (hin : WitMid₁ (⟨idx, hi⟩ : Fin m).succ) (hheq : HEq h hin) :
+    HEq ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid idx stmt₁ tr h)
+        (E₁.extractMid ⟨idx, hi⟩ stmt₁ trf hin) := by
+  unfold Extractor.RoundByRound.append
+  dsimp only [Fin.append, Fin.addCases, Fin.tail, Fin.castLT, Fin.cast]
+  rw [dif_pos hi]
+  simp only [id_eq]
+  refine HEq.trans (cast_heq _ _) ?_
+  refine dcongr_heq (HEq.trans (cast_heq _ _) hheq) (fun _ _ _ => rfl)
+    (fun _ _ => heq_of_eq (congr_heq HEq.rfl (HEq.trans (cast_heq _ _) htrf)))
+
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **Phase-2 (interior) projection of the composite `extractMid`.** For a round index `idx > m`
+(strictly inside phase 2), the appended extractor's `extractMid` defers — heterogeneously — to
+`E₂.extractMid ⟨idx-m,_⟩` on the `verify`-fed intermediate statement and the transcript's phase-2 tail. -/
+theorem appendExtractMid_gt {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+    (E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁)
+    (E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (idx : Fin (m+n)) (hi : m < (idx:ℕ)) (stmt₁ : Stmt₁)
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript idx.succ)
+    (h : (Fin.append (m:=m+1) WitMid₁ (Fin.tail WitMid₂) ∘ Fin.cast (by omega)) idx.succ)
+    (trf : pSpec₁.FullTranscript) (htrf : HEq tr.fst trf)
+    (trs : pSpec₂.Transcript (⟨(idx:ℕ)-m, by omega⟩ : Fin n).succ) (htrs : HEq tr.snd trs)
+    (hin : WitMid₂ (⟨(idx:ℕ)-m, by omega⟩ : Fin n).succ) (hheq : HEq h hin) :
+    HEq ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid idx stmt₁ tr h)
+        (E₂.extractMid ⟨(idx:ℕ)-m, by omega⟩ (verify stmt₁ trf) trs hin) := by
+  unfold Extractor.RoundByRound.append
+  dsimp only [Fin.append, Fin.addCases, Fin.tail, Fin.castLT, Fin.cast]
+  rw [dif_neg (show ¬ (idx:ℕ) < m from by omega)]
+  rw [dif_neg (show ¬ (idx:ℕ) = m from by omega)]
+  simp only [id_eq]
+  refine HEq.trans (cast_heq _ _) (HEq.trans (cast_heq _ _) ?_)
+  refine dcongr_heq (HEq.trans (HEq.trans (cast_heq _ _) (cast_heq _ _))
+      (HEq.trans (cast_heq _ _) hheq)) (fun _ _ _ => rfl) (fun _ _ => ?_)
+  refine heq_of_eq (congr_heq (heq_of_eq (congrArg (E₂.extractMid ⟨(idx:ℕ)-m, by omega⟩) ?_))
+    (HEq.trans (cast_heq _ _) htrs))
+  exact congrArg (verify stmt₁) (eq_of_heq (HEq.trans (cast_heq _ _) htrf))
+
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **Crossing projection of the composite `extractMid`.** At the seam round `idx = m`, the appended
+extractor peels one phase-2 round with `E₂.extractMid 0` (landing in `Wit₂` via `E₂.eqIn`) and crosses
+into phase 1 with `E₁.extractOut` on the `verify`-fed intermediate statement. -/
+theorem appendExtractMid_cross {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+    (E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁)
+    (E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (idx : Fin (m+n)) (hi : (idx:ℕ) = m) (hn : 0 < n) (stmt₁ : Stmt₁)
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript idx.succ)
+    (h : (Fin.append (m:=m+1) WitMid₁ (Fin.tail WitMid₂) ∘ Fin.cast (by omega)) idx.succ)
+    (trf : pSpec₁.FullTranscript) (htrf : HEq tr.fst trf)
+    (trs : pSpec₂.Transcript (⟨0, hn⟩ : Fin n).succ) (htrs : HEq tr.snd trs)
+    (hin : WitMid₂ (⟨0, hn⟩ : Fin n).succ) (hheq : HEq h hin) :
+    HEq ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid idx stmt₁ tr h)
+        (E₁.extractOut stmt₁ trf
+          (cast E₂.eqIn (E₂.extractMid ⟨0, hn⟩ (verify stmt₁ trf) trs hin))) := by
+  unfold Extractor.RoundByRound.append
+  dsimp only [Fin.append, Fin.addCases, Fin.tail, Fin.castLT, Fin.cast]
+  rw [dif_neg (show ¬ (idx:ℕ) < m from by omega)]
+  rw [dif_pos (show (idx:ℕ) = m from hi)]
+  simp only [id_eq]
+  refine HEq.trans (cast_heq _ _) (HEq.trans (cast_heq _ _) ?_)
+  refine dcongr_heq (a₁ := _) (a₂ := cast E₂.eqIn (E₂.extractMid ⟨0, hn⟩ (verify stmt₁ trf) trs hin))
+    ?hw (fun _ _ _ => rfl) (fun _ _ => ?hf)
+  case hw =>
+    refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+    refine dcongr_heq (HEq.trans (cast_heq _ _) (HEq.trans (cast_heq _ _)
+        (HEq.trans (cast_heq _ _) hheq))) (fun _ _ _ => rfl)
+      (fun _ _ => heq_of_eq (congr_heq (heq_of_eq (congrArg (E₂.extractMid ⟨0, hn⟩)
+        (congrArg (verify stmt₁) (eq_of_heq (HEq.trans (cast_heq _ _) htrf)))))
+        (HEq.trans (cast_heq _ _) htrs)))
+  case hf =>
+    exact heq_of_eq (congr_heq HEq.rfl (HEq.trans (cast_heq _ _) htrf))
+
 /-- The sequential composition of two **knowledge** state functions, witness-threaded analogue of
 `Verifier.StateFunction.append`. Built against the proven composite extractor
 `Extractor.RoundByRound.append E₁ E₂ verify`. -/
