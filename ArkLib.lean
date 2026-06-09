@@ -391,6 +391,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
+import ArkLib.Data.CodingTheory.ProximityGap.CosetExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.CosetWallDeepInteriorNoGo
@@ -626,6 +627,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.RSListSize
+import ArkLib.Data.CodingTheory.ProximityGap.RSListSizeDataPoint
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdConditionalPin
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdGapBracket
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdJohnsonGeneral
@@ -821,6 +823,7 @@ import ArkLib.Data.Polynomial.ClearDenomY
 import ArkLib.Data.Polynomial.DegreeLTDimension
 import ArkLib.Data.Polynomial.FoldingPolynomial
 import ArkLib.Data.Polynomial.Frobenius
+import ArkLib.Data.Polynomial.FunctionFieldZLinear
 import ArkLib.Data.Polynomial.GammaSubstObstruction
 import ArkLib.Data.Polynomial.HenselExistence
 import ArkLib.Data.Polynomial.HenselSeriesCoeff
