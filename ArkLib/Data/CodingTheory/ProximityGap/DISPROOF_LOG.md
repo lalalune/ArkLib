@@ -1788,3 +1788,13 @@ primes p ≈ 2^{1.2m} ≡ 1 mod m (inside the prize window for m ≤ 200), ZERO 
 the image equals the exact formula. Sketch (elementary; pending careful write-up); the per-prime
 statement is the residual P-A kernel. Char-0 formula is finite combinatorics + standard cyclotomic
 independence ⟹ Lean-formalizable brick (queued). Probes: probe_fibers.py in the research folder.
+
+### O30 / Round-14 — δ* bounded away from capacity by an ABSOLUTE constant at prize scale
+
+`DeltaStarConstantGapBelowCapacity.lean` (main-loop solo, ℕ-only, axiom-clean): the averaging bound
+beats ε*·|F| ≤ 2^128 for t ≤ ~2k/254, so δ* ≤ 1−ρ−ρ/127·(1±o(1)) for prize fields q ≤ 2^256. Engines:
+Pascal shift C(n,m)≤C(n+j,m+j) → central binomial 4^s ≤ 2s·C(2s,s) (rate 1/2 needs the SHIFT — naive
+monotonicity fails since 2(k+t)>n); crossover Lstar·q^t < C(n,k+t) under 258t+193≤2m / 254t+193≤2k.
+Witnesses at n=2^20 (t=4063 rate-1/2 → δ ≈ 0.49613; t=2063 rate-1/4), extreme-parameter strict
+instantiation proven outright. Prize-scale bracket now: δ* ∈ [1−√ρ, 1−ρ−ρ/127]. Remaining open side =
+past-Johnson list cap (research core).
