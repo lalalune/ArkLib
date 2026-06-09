@@ -1899,3 +1899,15 @@ ENRICHMENT RATIO** (max-list / structured-core; ≥ 6× at n=16): polynomial ⟹
 survives (count = N₀-type core × poly); exponential ⟹ Conj 1 itself is threatened. Next probes:
 ratio scaling at n=32; theory: are dense elements interpolation artifacts of witness agreement-set
 unions (their exactly-threshold agreement suggests so)? Scripts: probe_maxlist.py, probe_dissect.py.
+
+### O12′ — enrichment localizes BELOW the witness radius; zero at witness level (nubs, 2026-06-09)
+
+Follow-up to O12: at n=16 the max-fiber multi-witness word has exact list = its structured core
+(3/3) at the witness agreement level (≥10); the dense population (O12's 16 extra) exists only one
+notch below (≥9). So sparse-lift exhaustiveness HOLDS at each construction's own radius; the dense
+elements are marginal below-witness artifacts. New refined hypothesis **H2 (radius recursion)**:
+ℓ(θ) ≤ Σ_levels (structured cores at radii ≥ θ) + per-level marginals controlled one notch tighter
+— poly marginals ⟹ the 2^{O(H/η)} budget survives. Also: fiber-formula refinement verified
+(odd r: C(m/2−1,(r−1)/2) — 3, 35 exact). n=32 union-sampling needs witness/dense classification
+before its ratio is meaningful (17 found vs core 35, composition unclassified). Scripts:
+probe_enrichment.py.
