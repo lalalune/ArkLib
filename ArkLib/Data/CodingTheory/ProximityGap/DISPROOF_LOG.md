@@ -2192,3 +2192,17 @@ Lean at the single-level granularity — every beyond-rate list element (agreeme
 `a ≥ k = 2κ` ⟹ `2|B| + |O₁| ≥ 2κ`) is uniquely determined by its pattern. Conjecture D's
 remaining content is exactly the cross-level consistency-rarity count (C19's 4480 → 16 is
 the worked instance), unchanged but now with its bookkeeping machine-checked.
+
+### O36 / Round-19 — Conjecture-41 beachhead (clique structure + large-p transfer)
+
+Full §7+§8 read of 2026/858: Conj 41's UNIVERSAL obstruction at every c = the (w+1)-clique (all
+w-subsets of a (w+1)-set; their p=113 triangle / p=61 tetrahedron). `Conjecture41CliqueBeachhead`
+(main-loop solo, axiom-clean, strict-flags-verified): clique locators = Lagrange numerators
+(∏_{β∈W∖α}(X−β)); cliqueLocator_linearIndependent over ANY field (diagonal evaluation);
+clique_syndrome_kernel_trivial (c=1 rank statement — span F^{|W|} via independent + count=finrank,
+universal obstruction has NO c=1 kernel anywhere); det_map_zmod_ne_zero (exceptional primes confined
+to divisors of one ℤ-determinant — the effective Schwartz-Zippel threshold mechanism). OPEN: the
+γ-twisted [N|γN] rank at c≥3 for arbitrary families (= Conj 41 = the prize list core). Also from §8:
+the k-wise independence of error-locator normals is EMPIRICALLY FALSE at c=2 k≥3 (common-core triples
+have rank ≤ 2c < 3c) — the pairwise→k-wise promotion is structurally blocked; and the birthday-bound
+conjecture (max_γ M_γ ≤ C₁·C(n,w)/p uniform) is their remaining c=2 door.
