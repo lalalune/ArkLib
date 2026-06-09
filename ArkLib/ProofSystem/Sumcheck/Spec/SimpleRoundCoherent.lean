@@ -109,10 +109,10 @@ theorem simOStmt_run_simOracle (i : Fin n)
     simulateQ (simOracle oSpec oos)
         (((sumcheckOracleLens R n deg D oSpec i).simOStmt
           (show [Simple.OStmtIn R deg]ₒ.Domain from ⟨(), pt⟩)).run os)
-      = pure ((((univ.map D) ^ᶠ (n - 1)).toList).foldl
+      = pure ((((univ.map D) ^ᶠ (n - 1 - i)).toList).foldl
           (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y))
           (0 : R)) := by
-  have hstep : ∀ (acc : R) (y : Fin (n - 1) → R),
+  have hstep : ∀ (acc : R) (y : Fin (n - 1 - i) → R),
       simulateQ (simOracle oSpec oos)
           (do
             let resp ← (OracleComp.lift <| OracleSpec.query
@@ -124,7 +124,7 @@ theorem simOStmt_run_simOracle (i : Fin n)
     intro acc y
     rw [simulateQ_bind, simulateQ_simOracle_query_sumcheck, pure_bind, simulateQ_pure]
   show simulateQ (simOracle oSpec oos)
-      ((((univ.map D) ^ᶠ (n - 1)).toList).foldlM
+      ((((univ.map D) ^ᶠ (n - 1 - i)).toList).foldlM
         (fun (acc : R) y =>
           (do
             let resp ← (OracleComp.lift <| OracleSpec.query
@@ -154,7 +154,7 @@ explicit named hypothesis (no `sorry`). -/
 @[reducible] def simpleRound_liftContextCoherent (i : Fin n)
     (hRoundFaithful : ∀ (os : StatementRound R n i.castSucc)
         (oos : ∀ i, OracleStatement R n deg i) (pt : R),
-      (((univ.map D) ^ᶠ (n - 1)).toList).foldl
+      (((univ.map D) ^ᶠ (n - 1 - i)).toList).foldl
           (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y)) (0 : R)
         = OracleInterface.answer
             (((sumcheckOracleLens R n deg D oSpec i).toLens.proj (os, oos)).2 ()) pt) :
@@ -183,7 +183,7 @@ faithfulness `hRoundFaithful`. -/
 @[reducible] def coh_of
     (hRoundFaithful : ∀ (i : Fin n) (os : StatementRound R n i.castSucc)
         (oos : ∀ i, OracleStatement R n deg i) (pt : R),
-      (((univ.map D) ^ᶠ (n - 1)).toList).foldl
+      (((univ.map D) ^ᶠ (n - 1 - i)).toList).foldl
           (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y)) (0 : R)
         = OracleInterface.answer
             (((sumcheckOracleLens R n deg D oSpec i).toLens.proj (os, oos)).2 ()) pt) :

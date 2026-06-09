@@ -69,9 +69,9 @@ accumulating `acc + (oos ()).1.eval (sumPoint i pt os y)`, equals the `Finset.su
 of the same summand. Purely structural (`foldl_add_eq_sum` + `Finset.sum_to_list`). -/
 theorem foldl_sumPoint_eq_finsetSum (i : Fin n) (os : StatementRound R n i.castSucc)
     (oos : ∀ i, OracleStatement R n deg i) (pt : R) :
-    (((univ.map D) ^ᶠ (n - 1)).toList).foldl
+    (((univ.map D) ^ᶠ (n - 1 - i)).toList).foldl
         (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y)) (0 : R)
-      = ∑ y ∈ (univ.map D) ^ᶠ (n - 1), (oos ()).1.eval (sumPoint R n i pt os y) := by
+      = ∑ y ∈ (univ.map D) ^ᶠ (n - 1 - i), (oos ()).1.eval (sumPoint R n i pt os y) := by
   rw [foldl_add_eq_sum (fun y => (oos ()).1.eval (sumPoint R n i pt os y)), zero_add]
   rw [Finset.sum_map_toList]
 
@@ -133,7 +133,7 @@ an explicit named hypothesis rather than asserted — it is exactly the genuinel
 core that `SimpleRoundCoherent.lean` already factored out as `hRoundFaithful`. -/
 abbrev CubeFiber (i : Fin n) : Prop :=
   ∀ (os : StatementRound R n i.castSucc) (oos : ∀ i, OracleStatement R n deg i) (pt : R),
-    ∑ y ∈ (univ.map D) ^ᶠ (n - 1), (oos ()).1.eval (sumPoint R n i pt os y)
+    ∑ y ∈ (univ.map D) ^ᶠ (n - 1 - i), (oos ()).1.eval (sumPoint R n i pt os y)
       = Polynomial.eval pt
           ((((oStmtLens R n deg D i).toFunA (os, oos)).2 ()).val)
 
@@ -144,7 +144,7 @@ inner round univariate oracle answer — exactly the `hRoundFaithful` hypothesis
 `SimpleRoundCoherent.coh_of`. -/
 theorem roundFaithful_of_cubeFiber (i : Fin n) (hCubeFiber : CubeFiber (R := R) (deg := deg) (D := D) i)
     (os : StatementRound R n i.castSucc) (oos : ∀ i, OracleStatement R n deg i) (pt : R) :
-    (((univ.map D) ^ᶠ (n - 1)).toList).foldl
+    (((univ.map D) ^ᶠ (n - 1 - i)).toList).foldl
         (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y)) (0 : R)
       = OracleInterface.answer
           (((sumcheckOracleLens R n deg D oSpec i).toLens.proj (os, oos)).2 ()) pt := by
@@ -157,7 +157,7 @@ theorem coh_of_cubeFiber
     (hCubeFiber : ∀ i : Fin n, CubeFiber (R := R) (deg := deg) (D := D) i)
     (i : Fin n) (os : StatementRound R n i.castSucc)
     (oos : ∀ i, OracleStatement R n deg i) (pt : R) :
-    (((univ.map D) ^ᶠ (n - 1)).toList).foldl
+    (((univ.map D) ^ᶠ (n - 1 - i)).toList).foldl
         (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y)) (0 : R)
       = OracleInterface.answer
           (((sumcheckOracleLens R n deg D oSpec i).toLens.proj (os, oos)).2 ()) pt :=
