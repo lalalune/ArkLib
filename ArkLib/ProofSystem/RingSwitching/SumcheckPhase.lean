@@ -1468,7 +1468,7 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
       = compute_final_eq_value κ L K P ℓ ℓ' h_l stmtIn.ctx.t_eval_point stmtIn.challenges
           stmtIn.ctx.r_batching * witIn.t'.val.eval stmtIn.challenges :=
     finalSumcheck_check_of_relIn (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
-      (h_l := h_l) (aOStmtIn := aOStmtIn) stmtIn witIn h_struct h_consist
+      (h_l := h_l) stmtIn witIn h_struct h_consist
   -- Collapse the deterministic prover/verifier run to a `pure`.
   have hverify :
       (finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn).toVerifier.verify (stmtIn, oStmtIn)
@@ -1490,7 +1490,7 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
   rw [probEvent_eq_one_iff]
   dsimp only [finalSumcheckOracleReduction, finalSumcheckProver, FullTranscript.mk1]
   simp only [liftComp_pure, liftM_pure, pure_bind, bind_pure_comp, Function.comp, hverify,
-    _root_.map_pure, map_pure]
+    _root_.map_pure]
   refine ⟨?_, ?_⟩
   · -- No failure: the run is `pure`.
     rw [probFailure_map]
