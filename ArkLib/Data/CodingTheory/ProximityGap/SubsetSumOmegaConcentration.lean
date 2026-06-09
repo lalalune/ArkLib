@@ -3,11 +3,12 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring
 
 /-!
 # Round 8 (Issue #232, ABF26) — `⟨ω⟩`-symmetric subsets concentrate BOTH `∑x` and `∑x²` at `0`:
@@ -21,7 +22,7 @@ super-polynomial count `C(n/2, t)`. Round 7's honest residual: the **second** co
 
 ## What this round contributes — close the door on BOTH coordinates at once
 
-The Round-7 residual dissolves at one level up the root-of-unity tower. The pair-squares `{g² : g∈G}`
+The Round-7 residual dissolves one level up the root-of-unity tower. The pair-squares `{g² : g∈G}`
 are exactly the order-`n/2` subgroup `G²`, *also* negation-closed — so the *same* trick applies to the
 squares. Packaged multiplicatively, this is just **closure under the order-4 element** `ω` (`ω² = −1`,
 so `ω⁴ = 1`, `⟨ω⟩ = {1, ω, −1, −ω}`). The clean engine:
@@ -105,6 +106,7 @@ theorem omega_closed_psum_eq_zero {ω : F} {S : Finset F} {j : ℕ}
 
 variable {ω : F}
 
+omit [DecidableEq F] in
 /-- From `ω² = −1` and char `≠ 2`: `ω ≠ 0`. -/
 theorem omega_ne_zero (h2 : (2 : F) ≠ 0) (hω2 : ω ^ 2 = -1) : ω ≠ 0 := by
   rintro rfl
@@ -112,11 +114,13 @@ theorem omega_ne_zero (h2 : (2 : F) ≠ 0) (hω2 : ω ^ 2 = -1) : ω ≠ 0 := by
   rw [zero_pow (by norm_num : (2 : ℕ) ≠ 0)] at hω2
   linear_combination 2 * hω2
 
-/-- From `ω² = −1` and char `≠ 2`: `ω⁴ = 1`. -/
+omit [DecidableEq F] in
+/-- From `ω² = −1`: `ω⁴ = 1`. -/
 theorem omega_pow_four (hω2 : ω ^ 2 = -1) : ω ^ 4 = 1 := by
-  have : ω ^ 4 = (ω ^ 2) ^ 2 := by ring
-  rw [this, hω2]; ring
+  have h : ω ^ 4 = (ω ^ 2) ^ 2 := by ring
+  rw [h, hω2]; ring
 
+omit [DecidableEq F] in
 /-- From `ω² = −1` and char `≠ 2`: `ω ≠ 1` (else `1 = ω² = −1`, so `2 = 0`). -/
 theorem omega_ne_one (h2 : (2 : F) ≠ 0) (hω2 : ω ^ 2 = -1) : ω ≠ 1 := by
   rintro rfl
@@ -124,6 +128,7 @@ theorem omega_ne_one (h2 : (2 : F) ≠ 0) (hω2 : ω ^ 2 = -1) : ω ≠ 1 := by
   rw [one_pow] at hω2
   linear_combination hω2
 
+omit [DecidableEq F] in
 /-- From `ω² = −1` and char `≠ 2`: `ω² ≠ 1` (else `−1 = 1`, so `2 = 0`). -/
 theorem omega_sq_ne_one (h2 : (2 : F) ≠ 0) (hω2 : ω ^ 2 = -1) : ω ^ 2 ≠ 1 := by
   rw [hω2]; intro h; apply h2; linear_combination -h
@@ -136,21 +141,36 @@ For `P` inside a transversal `T` of the `⟨ω⟩`-orbits of a smooth subgroup `
 noncomputable def omega4Closure (ω : F) (P : Finset F) : Finset F :=
   P ∪ P.image (fun x => ω * x) ∪ P.image (fun x => ω ^ 2 * x) ∪ P.image (fun x => ω ^ 3 * x)
 
-/-- `omega4Closure ω P` is closed under multiplication by `ω` (using `ω⁴ = 1`): multiplying each
-translate by `ω` cyclically permutes `{P, ωP, ω²P, ω³P}` (the `ω³P` translate wraps to `ω⁴P = P`). -/
-theorem omega4Closure_image_eq (hω4 : ω ^ 4 = 1) (P : Finset F) :
+/-- The image of `omega4Closure ω P` under `(ω·)` is **contained in** `omega4Closure ω P`: multiplying
+each translate by `ω` lands in the next (the `ω³P` translate wraps to `ω⁴P = P` via `ω⁴ = 1`). -/
+theorem omega4Closure_image_subset (hω4 : ω ^ 4 = 1) (P : Finset F) :
+    (omega4Closure ω P).image (fun x => ω * x) ⊆ omega4Closure ω P := by
+  classical
+  intro a ha
+  rw [Finset.mem_image] at ha
+  obtain ⟨b, hb, rfl⟩ := ha
+  unfold omega4Closure at hb ⊢
+  simp only [Finset.mem_union, Finset.mem_image] at hb ⊢
+  have hmul : ω * ω ^ 3 = 1 := by
+    have h : ω * ω ^ 3 = ω ^ 4 := by ring
+    rw [h, hω4]
+  rcases hb with ((hbP | ⟨c, hc, rfl⟩) | ⟨c, hc, rfl⟩) | ⟨c, hc, rfl⟩
+  · exact Or.inl (Or.inl (Or.inr ⟨b, hbP, rfl⟩))
+  · exact Or.inl (Or.inr ⟨c, hc, by ring⟩)
+  · exact Or.inr ⟨c, hc, by ring⟩
+  · refine Or.inl (Or.inl (Or.inl ?_))
+    have hcc : ω * (ω ^ 3 * c) = c := by rw [← mul_assoc, hmul, one_mul]
+    rw [hcc]; exact hc
+
+/-- `omega4Closure ω P` is closed under multiplication by `ω` (using `ω⁴ = 1`, `ω ≠ 0`). Proof: the
+image under `(ω·)` is a subset (`omega4Closure_image_subset`) of the same cardinality (`(ω·)` is
+injective), hence equal. -/
+theorem omega4Closure_image_eq (hω4 : ω ^ 4 = 1) (hω0 : ω ≠ 0) (P : Finset F) :
     (omega4Closure ω P).image (fun x => ω * x) = omega4Closure ω P := by
   classical
-  unfold omega4Closure
-  simp only [Finset.image_union, Finset.image_image, Function.comp_def]
-  have c1 : (fun x : F => ω * (ω * x)) = fun x => ω ^ 2 * x := by funext x; ring
-  have c2 : (fun x : F => ω * (ω ^ 2 * x)) = fun x => ω ^ 3 * x := by funext x; ring
-  have c3 : (fun x : F => ω * (ω ^ 3 * x)) = fun x => x := by
-    funext x
-    have hmul : ω * ω ^ 3 = 1 := by rw [← pow_succ']; exact hω4
-    rw [← mul_assoc, hmul, one_mul]
-  rw [c1, c2, c3, Finset.image_id']
-  ext a; simp only [Finset.mem_union]; tauto
+  have hinj : Function.Injective (fun x : F => ω * x) := fun a b h => mul_left_cancel₀ hω0 h
+  exact Finset.eq_of_subset_of_card_le (omega4Closure_image_subset hω4 P)
+    (le_of_eq (Finset.card_image_of_injective _ hinj).symm)
 
 /-! ## 4. The headline coordinate vanishings: `∑x = 0` and `∑x² = 0` for every `⟨ω⟩`-closed set. -/
 
@@ -158,7 +178,8 @@ theorem omega4Closure_image_eq (hω4 : ω ^ 4 = 1) (P : Finset F) :
 theorem omega4Closure_sum_eq_zero (h2 : (2 : F) ≠ 0) (hω2 : ω ^ 2 = -1) (P : Finset F) :
     ∑ x ∈ omega4Closure ω P, x = 0 := by
   have h := omega_closed_psum_eq_zero (j := 1) (omega_ne_zero h2 hω2)
-    (by rw [pow_one]; exact omega_ne_one h2 hω2) (omega4Closure_image_eq (omega_pow_four hω2) P)
+    (by rw [pow_one]; exact omega_ne_one h2 hω2)
+    (omega4Closure_image_eq (omega_pow_four hω2) (omega_ne_zero h2 hω2) P)
   simpa using h
 
 /-- **The second coordinate vanishes (`p₂ = 0`, hence `e₂ = 0`):**
@@ -167,67 +188,57 @@ order-4 closure forces the sum of squares to the single target `0`, with no `/q`
 theorem omega4Closure_sumsq_eq_zero (h2 : (2 : F) ≠ 0) (hω2 : ω ^ 2 = -1) (P : Finset F) :
     ∑ x ∈ omega4Closure ω P, x ^ 2 = 0 :=
   omega_closed_psum_eq_zero (j := 2) (omega_ne_zero h2 hω2) (omega_sq_ne_one h2 hω2)
-    (omega4Closure_image_eq (omega_pow_four hω2) P)
+    (omega4Closure_image_eq (omega_pow_four hω2) (omega_ne_zero h2 hω2) P)
 
 /-! ## 5. The free-action hypothesis, the cardinality `4|T|`, and injectivity. -/
 
-/-- **The free-action hypothesis on a transversal `T`.** The four `⟨ω⟩`-translates `ω^i·T`
-(`i < 4`) are "independent": `ω^i·x = ω^j·y` with `x, y ∈ T` forces `i = j` and `x = y`. For the real
-smooth subgroup `G` with `T` a transversal of the `⟨ω⟩`-orbits this is the freeness of the `⟨ω⟩`
-action; we take it as an explicit hypothesis so the construction is field-agnostic. -/
+/-- **The free-action hypothesis on a transversal `T`.** The four `⟨ω⟩`-translates
+`T, ωT, ω²T, ω³T` are pairwise disjoint. For the real smooth subgroup `G` with `T` a transversal of
+the `⟨ω⟩`-orbits this is freeness of the `⟨ω⟩` action; we take it as an explicit, field-agnostic,
+`Decidable` hypothesis (checkable by `decide` on concrete fields). -/
 def OmegaFree (ω : F) (T : Finset F) : Prop :=
-  ∀ i j : Fin 4, ∀ x ∈ T, ∀ y ∈ T, ω ^ (i : ℕ) * x = ω ^ (j : ℕ) * y → i = j ∧ x = y
+  Disjoint T (T.image (fun x => ω * x)) ∧
+  Disjoint T (T.image (fun x => ω ^ 2 * x)) ∧
+  Disjoint T (T.image (fun x => ω ^ 3 * x)) ∧
+  Disjoint (T.image (fun x => ω * x)) (T.image (fun x => ω ^ 2 * x)) ∧
+  Disjoint (T.image (fun x => ω * x)) (T.image (fun x => ω ^ 3 * x)) ∧
+  Disjoint (T.image (fun x => ω ^ 2 * x)) (T.image (fun x => ω ^ 3 * x))
 
-/-- Under `OmegaFree`, the four translates `P, ωP, ω²P, ω³P` (for `P ⊆ T`) are pairwise disjoint and
-each has card `|P|`, so `omega4Closure ω P` has card `4|P|`. -/
-theorem omega4_card_eq (hfree : OmegaFree ω T) {P : Finset F} (hP : P ⊆ T) :
+/-- Under `OmegaFree`, `omega4Closure ω P` has card `4|P|` for `P ⊆ T` (four disjoint translates,
+each of card `|P|` since `(ω^i·)` is injective). -/
+theorem omega4_card_eq (hω0 : ω ≠ 0) (hfree : OmegaFree ω T) {P : Finset F} (hP : P ⊆ T) :
     (omega4Closure ω P).card = 4 * P.card := by
   classical
-  -- the four translate functions, restricted to P, are injective
-  have hinj : ∀ i : Fin 4, Set.InjOn (fun x : F => ω ^ (i : ℕ) * x) P := by
-    intro i a ha b hb h
-    exact (hfree i i a (hP ha) b (hP hb) h).2
-  -- pairwise disjointness from freeness (i ≠ j)
-  have hdisj : ∀ i j : Fin 4, i ≠ j →
-      Disjoint (P.image (fun x => ω ^ (i : ℕ) * x)) (P.image (fun x => ω ^ (j : ℕ) * x)) := by
-    intro i j hij
-    rw [Finset.disjoint_left]
-    rintro z hz hz'
-    rw [Finset.mem_image] at hz hz'
-    obtain ⟨a, ha, rfl⟩ := hz
-    obtain ⟨b, hb, hab⟩ := hz'
-    exact hij (hfree i j a (hP ha) b (hP hb) hab.symm).1
-  -- rewrite omega4Closure in terms of the four explicit translates
-  have hP0 : (omega4Closure ω P)
-      = P.image (fun x => ω ^ (0 : ℕ) * x) ∪ P.image (fun x => ω ^ (1 : ℕ) * x)
-        ∪ P.image (fun x => ω ^ (2 : ℕ) * x) ∪ P.image (fun x => ω ^ (3 : ℕ) * x) := by
-    unfold omega4Closure
-    congr 1
-    · congr 1
-      · congr 1
-        · rw [show (fun x : F => ω ^ (0:ℕ) * x) = (fun x => x) by funext x; simp]
-          exact (Finset.image_id').symm
-        · rw [show (fun x : F => ω ^ (1:ℕ) * x) = (fun x => ω * x) by funext x; rw [pow_one]]
-  -- card of the four-fold disjoint union
-  have c0 : (P.image (fun x => ω ^ (0 : ℕ) * x)).card = P.card :=
-    Finset.card_image_of_injOn (hinj 0)
-  have c1 : (P.image (fun x => ω ^ (1 : ℕ) * x)).card = P.card :=
-    Finset.card_image_of_injOn (hinj 1)
-  have c2 : (P.image (fun x => ω ^ (2 : ℕ) * x)).card = P.card :=
-    Finset.card_image_of_injOn (hinj 2)
-  have c3 : (P.image (fun x => ω ^ (3 : ℕ) * x)).card = P.card :=
-    Finset.card_image_of_injOn (hinj 3)
-  rw [hP0]
-  rw [Finset.card_union_of_disjoint, Finset.card_union_of_disjoint,
-      Finset.card_union_of_disjoint, c0, c1, c2, c3]
-  · ring
-  · exact hdisj 2 3 (by decide)
-  · -- (A0 ∪ A1) disjoint A2
-    rw [Finset.disjoint_union_left]
-    exact ⟨hdisj 0 2 (by decide), hdisj 1 2 (by decide)⟩
-  · -- (A0 ∪ A1 ∪ A2) disjoint A3
-    rw [Finset.disjoint_union_left, Finset.disjoint_union_left]
-    exact ⟨⟨hdisj 0 3 (by decide), hdisj 1 3 (by decide)⟩, hdisj 2 3 (by decide)⟩
+  obtain ⟨d01, d02, d03, d12, d13, d23⟩ := hfree
+  have imgP : ∀ {a b : F}, Disjoint (T.image (fun x => a * x)) (T.image (fun x => b * x)) →
+      Disjoint (P.image (fun x => a * x)) (P.image (fun x => b * x)) := fun h =>
+    Finset.disjoint_of_subset_left (Finset.image_subset_image hP)
+      (Finset.disjoint_of_subset_right (Finset.image_subset_image hP) h)
+  have leftP : ∀ {b : F}, Disjoint T (T.image (fun x => b * x)) →
+      Disjoint P (P.image (fun x => b * x)) := fun h =>
+    Finset.disjoint_of_subset_left hP
+      (Finset.disjoint_of_subset_right (Finset.image_subset_image hP) h)
+  have r01 : Disjoint P (P.image (fun x => ω * x)) := leftP d01
+  have r02 : Disjoint P (P.image (fun x => ω ^ 2 * x)) := leftP d02
+  have r03 : Disjoint P (P.image (fun x => ω ^ 3 * x)) := leftP d03
+  have r12 := imgP d12
+  have r13 := imgP d13
+  have r23 := imgP d23
+  have inj1 : (P.image (fun x => ω * x)).card = P.card :=
+    Finset.card_image_of_injOn (fun a _ b _ h => mul_left_cancel₀ hω0 h)
+  have inj2 : (P.image (fun x => ω ^ 2 * x)).card = P.card :=
+    Finset.card_image_of_injOn (fun a _ b _ h => mul_left_cancel₀ (pow_ne_zero 2 hω0) h)
+  have inj3 : (P.image (fun x => ω ^ 3 * x)).card = P.card :=
+    Finset.card_image_of_injOn (fun a _ b _ h => mul_left_cancel₀ (pow_ne_zero 3 hω0) h)
+  have hMid : Disjoint (P ∪ P.image (fun x => ω * x)) (P.image (fun x => ω ^ 2 * x)) := by
+    rw [Finset.disjoint_union_left]; exact ⟨r02, r12⟩
+  have hOuter : Disjoint ((P ∪ P.image (fun x => ω * x)) ∪ P.image (fun x => ω ^ 2 * x))
+      (P.image (fun x => ω ^ 3 * x)) := by
+    rw [Finset.disjoint_union_left, Finset.disjoint_union_left]; exact ⟨⟨r03, r13⟩, r23⟩
+  unfold omega4Closure
+  rw [Finset.card_union_of_disjoint hOuter, Finset.card_union_of_disjoint hMid,
+      Finset.card_union_of_disjoint r01, inj1, inj2, inj3]
+  ring
 
 /-- Under `OmegaFree`, intersecting `omega4Closure ω P` with the transversal `T` recovers `P`
 (the `ωP, ω²P, ω³P` translates are disjoint from `T`). Hence `omega4Closure ω ·` is injective on
@@ -235,27 +246,23 @@ subsets of `T`. -/
 theorem omega4Closure_injOn (hfree : OmegaFree ω T) :
     Set.InjOn (omega4Closure ω) {P | P ⊆ T} := by
   classical
+  obtain ⟨d01, d02, d03, _, _, _⟩ := hfree
   have hrecover : ∀ P : Finset F, P ⊆ T → (omega4Closure ω P) ∩ T = P := by
     intro P hP
-    apply Finset.Subset.antisymm
-    · -- ⊆ : an element of the closure that is also in T must come from the P (i=0) translate
-      intro z hz
-      rw [Finset.mem_inter] at hz
-      obtain ⟨hzc, hzT⟩ := hz
-      unfold omega4Closure at hzc
-      simp only [Finset.mem_union, Finset.mem_image] at hzc
-      rcases hzc with ((hz0 | ⟨a, ha, rfl⟩) | ⟨a, ha, rfl⟩) | ⟨a, ha, rfl⟩
-      · exact hz0
-      · exact absurd (hfree 1 0 a (hP ha) z hzT (by rw [pow_one]; ring)).1 (by decide)
-      · exact absurd (hfree 2 0 a (hP ha) z hzT (by ring)).1 (by decide)
-      · exact absurd (hfree 3 0 a (hP ha) z hzT (by ring)).1 (by decide)
-    · -- ⊇ : P ⊆ closure ∩ T
-      intro z hz
-      rw [Finset.mem_inter]
-      refine ⟨?_, hP hz⟩
-      unfold omega4Closure
-      simp only [Finset.mem_union, Finset.mem_image]
-      exact Or.inl (Or.inl (Or.inl hz))
+    unfold omega4Closure
+    rw [Finset.union_inter_distrib_right, Finset.union_inter_distrib_right,
+        Finset.union_inter_distrib_right]
+    have hPT : P ∩ T = P := Finset.inter_eq_left.mpr hP
+    have hA1 : (P.image (fun x => ω * x)) ∩ T = ∅ := by
+      rw [← Finset.disjoint_iff_inter_eq_empty]
+      exact Finset.disjoint_of_subset_left (Finset.image_subset_image hP) d01.symm
+    have hA2 : (P.image (fun x => ω ^ 2 * x)) ∩ T = ∅ := by
+      rw [← Finset.disjoint_iff_inter_eq_empty]
+      exact Finset.disjoint_of_subset_left (Finset.image_subset_image hP) d02.symm
+    have hA3 : (P.image (fun x => ω ^ 3 * x)) ∩ T = ∅ := by
+      rw [← Finset.disjoint_iff_inter_eq_empty]
+      exact Finset.disjoint_of_subset_left (Finset.image_subset_image hP) d03.symm
+    rw [hPT, hA1, hA2, hA3, Finset.union_empty, Finset.union_empty, Finset.union_empty]
   intro P₁ hP₁ P₂ hP₂ heq
   simp only [Set.mem_setOf_eq] at hP₁ hP₂
   have e₁ := hrecover P₁ hP₁
@@ -283,25 +290,21 @@ theorem card_ge_choose_two_zero (h2 : (2 : F) ≠ 0) (hω2 : ω ^ 2 = -1)
   classical
   rw [← Finset.card_powersetCard s T]
   apply Finset.card_le_card_of_injOn (fun U => omega4Closure ω U)
-  · -- maps `s`-subsets of `T` into the target filter
-    intro U hU
+  · intro U hU
     rw [Finset.mem_coe, Finset.mem_powersetCard] at hU
     obtain ⟨hUsub, hUcard⟩ := hU
     rw [Finset.mem_coe, Finset.mem_filter, Finset.mem_powersetCard]
     refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
-    · -- omega4Closure ω U ⊆ omega4Closure ω T  (monotone)
-      unfold omega4Closure
+    · unfold omega4Closure
       exact Finset.union_subset_union
         (Finset.union_subset_union
           (Finset.union_subset_union hUsub (Finset.image_subset_image hUsub))
           (Finset.image_subset_image hUsub))
         (Finset.image_subset_image hUsub)
-    · -- card = 4s
-      rw [omega4_card_eq hfree hUsub, hUcard]
+    · rw [omega4_card_eq (omega_ne_zero h2 hω2) hfree hUsub, hUcard]
     · exact omega4Closure_sum_eq_zero h2 hω2 U
     · exact omega4Closure_sumsq_eq_zero h2 hω2 U
-  · -- injective on `s`-subsets of `T`
-    intro U₁ hU₁ U₂ hU₂ heq
+  · intro U₁ hU₁ U₂ hU₂ heq
     rw [Finset.mem_coe, Finset.mem_powersetCard] at hU₁ hU₂
     exact omega4Closure_injOn hfree (Set.mem_setOf_eq ▸ hU₁.1) (Set.mem_setOf_eq ▸ hU₂.1) heq
 
@@ -327,6 +330,18 @@ theorem nonvacuous_zmod5 :
 theorem nonvacuous_zmod5_card :
     (omega4Closure (2 : ZMod 5) {1}).card = 4 := by decide
 
+/-- **Non-vacuity of the count bound.** Over `ZMod 5`, `T = {1}` is a transversal of the single
+`⟨2⟩`-orbit, `OmegaFree 2 {1}` holds, and `card_ge_choose_two_zero` at `s = 1` gives the genuine,
+non-zero lower bound `C(1, 1) = 1 ≤ #{ size-4 subsets with ∑x = 0 ∧ ∑x² = 0 }`. -/
+theorem nonvacuous_count_zmod5 :
+    1 ≤ (((omega4Closure (2 : ZMod 5) {1}).powersetCard (4 * 1)).filter
+        (fun S => (∑ x ∈ S, x) = 0 ∧ (∑ x ∈ S, x ^ 2) = 0)).card := by
+  have hfree : OmegaFree (2 : ZMod 5) {1} := by
+    refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩ <;> decide
+  have h := card_ge_choose_two_zero (F := ZMod 5) (by decide) (by decide) hfree 1
+  have hc : (({1} : Finset (ZMod 5)).card).choose 1 = 1 := by decide
+  rw [hc] at h; exact h
+
 end ArkLib.CodingTheory.Round8OmegaConcentration
 
 /-! ## Axiom audit -/
@@ -338,4 +353,4 @@ end ArkLib.CodingTheory.Round8OmegaConcentration
 #print axioms ArkLib.CodingTheory.Round8OmegaConcentration.omega4Closure_injOn
 #print axioms ArkLib.CodingTheory.Round8OmegaConcentration.card_ge_choose_two_zero
 #print axioms ArkLib.CodingTheory.Round8OmegaConcentration.nonvacuous_zmod5
-#print axioms ArkLib.CodingTheory.Round8OmegaConcentration.nonvacuous_zmod5_card
+#print axioms ArkLib.CodingTheory.Round8OmegaConcentration.nonvacuous_count_zmod5
