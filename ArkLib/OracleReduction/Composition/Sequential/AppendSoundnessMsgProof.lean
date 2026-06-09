@@ -99,11 +99,10 @@ theorem append_soundness_msg'
     (ε₁ : ℝ≥0∞) (ε₂ : ℝ≥0∞) ?_ ?_
   · -- Phase-1 bound: `V₁.soundness ε₁` on the phase-1 soundness prover `prover.fstSound`.
     have h1_bound := h₁ _ _ witIn (Prover.fstSound prover) stmtIn hstmtIn
-    rw [probEvent_optionT_mk_eq_elim] at h1_bound
-    rw [OptionTStateT.probEvent_run_eq_run'_fst pImpl init
+    refine le_of_eq_of_le (OptionTStateT.probEvent_run_eq_run'_fst pImpl init
         (liftM (liftM (prover.fst.run stmtIn witIn)) >>= fun x =>
           liftM (V₁.run stmtIn x.1) >>= fun s₂ => pure (x, s₂))
-        (fun o => ¬ Option.elim o True fun p => p.2 ∉ lang₂)]
+        (fun o => ¬ Option.elim o True fun p => p.2 ∉ lang₂)) ?_
     trace_state
     sorry
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
