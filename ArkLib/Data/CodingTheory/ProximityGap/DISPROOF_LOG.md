@@ -1672,3 +1672,21 @@ Third thrash-safe multi-agent round. All 4 verified+axiom-clean+non-vacuous. On 
 
 **Net.** Asymptotic open core (sharp list UPPER bound past Johnson) unmoved — now better-understood as to
 why (Fisher too weak, Johnson's sharper poly bound stops exactly at 1-√ρ). Issue stays open.
+
+### O27 / Round-12 — UNCONDITIONAL tightness completion + MDS list-bound kernel
+
+Completion round (3/4 angles; 4th rsdeltastarbound left incomplete, overlaps Round-11). On main `3fbb036e3`:
+* `LamLeungUnconditionalGeneral` — antipodal_unconditional: e_1=0 fiber tightness FULLY UNCONDITIONAL
+  for general N=2^{m-1} over any CharZero field. totient_two_pow (φ(2^m)=2^{m-1}) +
+  natDegree_minpoly_primitiveRoot (cyclotomic degree) + linearIndependent_pow_primitiveRoot. Discharges
+  the cyclotomic-indep hypothesis IN GENERAL (Round 11 had only N=2/Q(i)); instantiated at m=3 (8th roots,
+  N=4) with non-vacuity.
+* `JointT2Unconditional` — joint_t2_unconditional: joint (e_1,e_2)=0 fiber = order-4 ω-symmetric subsets,
+  UNCONDITIONAL over ℂ (general k), cyclotomic indep at BOTH levels G and G². Completes Round-10 conditional
+  joint-t2; Round-8 C(n/4,s) lower bound is now a genuine EQUALITY over ℂ.
+* `RSMDSListBound` — rs_list_leading_bound: MDS weight-enumerator/information-set RS list bound
+  (rs_codeword_weight_ge = MDS dist n-k+1; rs_vanish_card_le; listAt⊆biUnion) + concrete ZMod 7 instance.
+  First brick of the genuine asymptotic list-bound machinery (the route the open core needs).
+
+**Net.** Rounds 8-12: lower-bound/fiber/concrete side COMPREHENSIVE + now UNCONDITIONAL; MDS kernel started.
+Asymptotic open core (sharp list upper bound past Johnson) unmoved — research-grade. Issue stays open.
