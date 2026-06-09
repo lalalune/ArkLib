@@ -507,6 +507,36 @@ lemma router1_collapse (oStmt : ∀ i, OStmt₁ i) (tr : FullTranscript (pSpec�
   · rfl
   · exact simulateQ_emitMessageInl oStmt tr i q
 
+/-- Simulating `emitMessageInr i q` (the `pSpec₂`-message router) under the combined `simOracle2`
+answers it from the *second* sub-transcript's message `tr.snd.messages i`. -/
+theorem simulateQ_emitMessageInr (oStmt : ∀ i, OStmt₁ i)
+    (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂)) (i : pSpec₂.MessageIdx) (q : (Oₘ₂ i).Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitMessageInr i q)
+      = pure ((Oₘ₂ i).answer (tr.snd.messages i) q) := by
+  rw [emitMessageInr, emitMessageQuery_simulateQ]
+  congr 1 <;> exact eq_of_heq ((eqRec_heq _ _).trans (messages_snd_heq tr i).symm)
+
+/-- Simulating `emitOStmtQueryInl` under the combined `simOracle2` answers from `oStmt k`. -/
+theorem emitOStmtQueryInl_simulateQ (oStmt : ∀ i, OStmt₁ i)
+    (msgs : ∀ j, (pSpec₁ ++ₚ pSpec₂).Message j)
+    {T : Type} (O : OracleInterface T) (k : ιₛ₁) (hSt : OStmt₁ k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₛ₁ k)) (q : O.Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs) (emitOStmtQueryInl O k hSt hO q)
+      = pure (O.answer (hSt ▸ oStmt k) q) := by
+  subst hSt; subst hO
+  simp only [emitOStmtQueryInl, simulateQ_query]
+  rfl
+
+/-- Simulating `emitOStmtQueryInr` under the combined `simOracle2` answers from `tr.fst.messages k`. -/
+theorem emitOStmtQueryInr_simulateQ (oStmt : ∀ i, OStmt₁ i)
+    (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂))
+    {T : Type} (O : OracleInterface T) (k : pSpec₁.MessageIdx) (hSt : pSpec₁.Message k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₘ₁ k)) (q : O.Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitOStmtQueryInr O k hSt hO q)
+      = pure (O.answer (hSt ▸ tr.fst.messages k) q) := by
+  subst hSt; subst hO
+  exact simulateQ_emitMessageInl oStmt tr k q
+
 /-- **V₂-side router collapse.** Running `V₂`'s queries through `router₂ V₁` and then the combined
 `simOracle2` is the same as running them through `V₂`'s own `simOracle2` over the oracle statements
 `oStmt₂'` that `V₁` reconstructs (its `toVerifier` output oracle statements) and the *second*
