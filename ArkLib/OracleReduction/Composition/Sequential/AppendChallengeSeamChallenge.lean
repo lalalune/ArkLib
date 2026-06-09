@@ -219,3 +219,23 @@ theorem append_completeness_challenge_via_seamFactor
     hStage1Bridge hStage2Bridge hTot
 
 end Reduction
+
+namespace Reduction
+
+/-- **State-fixed `simulateQ` bind decomposition (`run'` level).** For a state-preserving handler, the
+`run'`-distribution of a simulated bind factors as the bind of the factors' `run'`-distributions
+(both run from the same fixed state `s`). The `run'`-level companion of `simulateQ_run_bind_state_fixed`,
+used to thread per-stage `evalDist` equalities (e.g. the seam commute) through the surrounding run. -/
+theorem StateT_run'_simulateQ_bind_state_fixed {ιₒ : Type} {spec : OracleSpec ιₒ} {σ : Type}
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {α β : Type} (a : OracleComp spec α) (k : α → OracleComp spec β) (s : σ) :
+    StateT.run' (simulateQ so (a >>= k)) s
+      = StateT.run' (simulateQ so a) s >>= fun x => StateT.run' (simulateQ so (k x)) s := by
+  rw [StateT.run'_eq, simulateQ_run_bind_state_fixed so hso a k s, map_bind]
+  conv_rhs => rw [StateT.run'_eq, bind_map_left]
+  refine bind_congr fun p => ?_
+  rw [StateT.run'_eq]
+
+end Reduction
