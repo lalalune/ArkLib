@@ -7,6 +7,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reabsorb
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WPowerInjective
 
 /-!
 # Quantitative extraction / base-case API for the carved P2 core (BCIKS20 A.4, issue #139)
@@ -64,6 +65,83 @@ namespace BCIKS20.HenselNumerator
 
 variable {F : Type} [Field F]
 variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+
+/-! ### Previously-undefined order-zero extraction lemmas, now supplied (axiom-clean). -/
+
+/-- `coeffHom x₀ H` is injective. -/
+theorem coeffHom_injective (x₀ : F) : Function.Injective (coeffHom x₀ H) := by
+  have h1 : Function.Injective (Polynomial.coeToPowerSeries.ringHom (R := 𝕃 H)) := by
+    intro a b hab
+    apply Polynomial.coe_injective (𝕃 H)
+    simpa [Polynomial.coeToPowerSeries.ringHom] using hab
+  have h2 : Function.Injective ⇑(Polynomial.mapRingHom (liftToFunctionField (H := H))) := by
+    rw [Polynomial.coe_mapRingHom]
+    exact Polynomial.map_injective _ (BCIKS20.WPow.liftToFunctionField_injective (H := H))
+  have h3 : Function.Injective
+      ⇑(Polynomial.taylorAlgHom (R := F[X]) (Polynomial.C x₀)).toRingHom := by
+    intro a b hab
+    apply Polynomial.taylor_injective (Polynomial.C x₀)
+    have h : ∀ q : F[X][Y], (Polynomial.taylorAlgHom (R := F[X]) (Polynomial.C x₀)).toRingHom q
+        = Polynomial.taylor (Polynomial.C x₀) q := fun q => by simp [Polynomial.taylorAlgHom_apply]
+    rw [h, h] at hab; exact hab
+  rw [coeffHom, RingHom.coe_comp, RingHom.coe_comp]
+  exact h1.comp (h2.comp h3)
+
+/-- `(Q x₀ R H).natDegree = R.natDegree`. -/
+theorem Q_natDegree_eq (x₀ : F) (R : F[X][X][Y]) : (Q x₀ R H).natDegree = R.natDegree := by
+  rw [Q, Polynomial.natDegree_map_eq_of_injective (coeffHom_injective H x₀)]
+
+/-- **Order-zero partition power-sum = cleared root evaluation.** -/
+theorem restrictedFaaDiBrunoPartitionZeroPowerSum_eq_hasseEvalAtRoot
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp = hasseEvalAtRoot H x₀ R 1 0 := by
+  rw [hasseEvalAtRoot_eq_taylorSum]
+  unfold restrictedFaaDiBrunoPartitionZeroPowerSum
+  rw [coeff_zero_βHenselAssembled]
+  simp only [hasseDerivY_zero, Nat.add_zero, Nat.choose_zero_right, one_smul]
+  have hpdeg :
+      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).natDegree ≤ (Q x₀ R H).natDegree := by
+    rw [Q_natDegree_eq (H := H) x₀ R]
+    have h1 : Bivariate.natDegreeY (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R))
+        ≤ Bivariate.natDegreeY R :=
+      (evalX_natDegreeY_le (Polynomial.C x₀) _).trans (hasseDerivX_natDegreeY_le 1 R)
+    simpa [Bivariate.natDegreeY] using h1
+  have hsub : Finset.range ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).natDegree + 1)
+      ⊆ Finset.range ((Q x₀ R H).natDegree + 1) := fun i hi =>
+    Finset.mem_range.mpr (lt_of_lt_of_le (Finset.mem_range.mp hi) (Nat.add_le_add_right hpdeg 1))
+  refine (Finset.sum_subset hsub ?_).symm
+  intro i _hi hnotin
+  simp only [Finset.mem_range, not_lt] at hnotin
+  rw [Polynomial.coeff_eq_zero_of_natDegree_lt (by omega), map_zero, zero_mul]
+
+/-- **Order-zero recursion-side single B-coefficient = uncleared Hasse coeff over `W^natDegree`.** -/
+theorem restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0) :
+    restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp
+      = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
+  unfold restrictedMatchRecursionPartitionFormZeroSingleBCoeff
+  have hB : B_coeff H x₀ R 1 (Nat.Partition.indiscrete 0) = hasseCoeffRepr𝒪 H x₀ R 1 0 := by
+    rw [B_coeff]
+    have hsig : sigmaLambda (Nat.Partition.indiscrete (0 : ℕ)) = 0 := by
+      simp [sigmaLambda, Nat.Partition.indiscrete]
+    have hpre : prefactor R.natDegree 1 (Nat.Partition.indiscrete (0 : ℕ)) = 1 := by
+      rw [prefactor_eq_countPerms]; simp [Nat.Partition.indiscrete]
+    rw [hsig, hpre, one_smul]
+  rw [hB, ClaimA2.embeddingOf𝒪Into𝕃_ξ]
+  have hWd : (liftToFunctionField (H := H) H.leadingCoeff) ^ 2
+      * (liftToFunctionField (H := H) H.leadingCoeff) ^ (R.natDegree - 2)
+      = (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
+    rw [← pow_add]; congr 1; omega
+  rw [show (liftToFunctionField (H := H) H.leadingCoeff) ^ 2
+        * ((liftToFunctionField (H := H) H.leadingCoeff) ^ (R.natDegree - 2) * ClaimA2.ζ R x₀ H)
+      = ((liftToFunctionField (H := H) H.leadingCoeff) ^ 2
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (R.natDegree - 2))
+        * ClaimA2.ζ R x₀ H by ring, hWd]
+  rw [mul_div_assoc']
+  rw [mul_comm ((liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree) (ClaimA2.ζ R x₀ H)]
+  rw [mul_div_mul_left _ _ hζ]
 
 /-- **Quantitative coefficient extraction from the carved P2 core (consequence, axiom-clean).**
 Given `RestrictedFaaDiBrunoMatchAt t` and the genuine separability non-vanishing `ζ ≠ 0`, the

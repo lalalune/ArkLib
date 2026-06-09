@@ -73,7 +73,7 @@ through the `liftContext` onto `ℱ`:
 instance firstSumcheckLensComplete :
     (firstSumcheckContextLens pp).toContext.IsComplete
       (firstSumcheckRelIn pp)
-      (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) 0)
+      (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1)))
       (firstSumcheckRelOut pp)
       (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (Fin.last pp.ℓ_m))
       ((Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).toReduction.compatContext
@@ -103,7 +103,7 @@ theorem firstSumcheck_perfectCompleteness
     (h_inner :
       (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).perfectCompleteness
         init impl
-        (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) 0)
+        (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1)))
         (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (Fin.last pp.ℓ_m))) :
     (firstSumcheckReduction pp oSpec).perfectCompleteness init impl
       (firstSumcheckRelIn (R := R) pp) (firstSumcheckRelOut (R := R) pp) := by
@@ -113,9 +113,31 @@ theorem firstSumcheck_perfectCompleteness
     (lens := firstSumcheckContextLens pp)
     (stmtLens := firstSumcheckOracleLens pp oSpec)
     (outerRelIn := firstSumcheckRelIn (R := R) pp)
-    (innerRelIn := Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) 0)
+    (innerRelIn := Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1)))
     (outerRelOut := firstSumcheckRelOut (R := R) pp)
     (innerRelOut := Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (Fin.last pp.ℓ_m))
     rfl h_inner
+
+
+theorem firstSumcheck_rbrKnowledgeSoundness
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    (rbrKnowledgeError : (Sumcheck.Spec.pSpec R 3 pp.ℓ_m).ChallengeIdx → ℝ≥0)
+    (h_inner :
+      (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier.rbrKnowledgeSoundness
+        init impl
+        (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1)))
+        (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (Fin.last pp.ℓ_m))
+        rbrKnowledgeError) :
+    (firstSumcheckReduction pp oSpec).verifier.rbrKnowledgeSoundness init impl
+      (firstSumcheckRelIn (R := R) pp) (firstSumcheckRelOut (R := R) pp) rbrKnowledgeError := by
+  haveI := firstSumcheckCoherent (R := R) pp oSpec
+  exact OracleVerifier.liftContext_rbr_knowledgeSoundness
+    (V := (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier)
+    (stmtLens := firstSumcheckOracleLens pp oSpec)
+    (outerRelIn := firstSumcheckRelIn (R := R) pp)
+    (innerRelIn := Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1)))
+    (outerRelOut := firstSumcheckRelOut (R := R) pp)
+    (innerRelOut := Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (Fin.last pp.ℓ_m))
+    h_inner
 
 end Spartan.Spec

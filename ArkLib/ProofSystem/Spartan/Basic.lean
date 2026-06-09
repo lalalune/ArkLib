@@ -117,6 +117,14 @@ def oracleReduction.firstMessage :
   SendSingleWitness.oracleReduction oSpec
     (Statement R pp) (OracleStatement R pp) (Witness R pp)
 
+
+
+
+instance instFirstMessageVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (oracleReduction.firstMessage R pp oSpec).verifier := by
+  change OracleVerifier.Append.AppendCoherent (SendSingleWitness.oracleVerifier oSpec _ _ _)
+  exact @SendSingleWitness.instOracleVerifierAppendCoherent _ oSpec (Statement R pp) _ (OracleStatement R pp) inferInstance (Witness R pp) inferInstance
+
 /-!
   ## First challenge
   We invoke the protocol `RandomQuery` on the "virtual" polynomial:
@@ -306,18 +314,23 @@ def oracleReduction.firstChallenge :
     (firstChallengeContextLens R pp)
     (firstChallengeOracleLens R pp oSpec)
 
-/-!
-  ## First sum-check
-  We invoke the sum-check protocol the "virtual" polynomial:
-    `ℱ(X) = eq ⸨τ, X⸩ * (A ⸨X⸩ * B ⸨X⸩ - C ⸨X⸩)`
--/
 
--- def firstSumCheckVirtualPolynomial (𝕩 : FirstMessageStatement R pp)
---     (oStmt : ∀ i, FirstMessageOracleStatement R pp i) : MvPolynomial (Fin pp.ℓ_n) R :=
---   letI 𝕫 := R1CS.𝕫 𝕩 (oStmt (.inr 0))
---   ∑ x : Fin (2 ^ pp.ℓ_n),
---     (eqPolynomial (finFunctionFinEquiv.symm x : Fin pp.ℓ_n → R)) *
---       C ((oStmt (.inl .A) *ᵥ 𝕫) x * (oStmt (.inl .B) *ᵥ 𝕫) x - (oStmt (.inl .C) *ᵥ 𝕫) x)
+
+
+
+
+
+
+
+
+instance instFirstChallengeVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (oracleReduction.firstChallenge R pp oSpec).verifier where
+  hCohInl i k h := by
+    dsimp [oracleReduction.firstChallenge, firstChallengeOracleLens, OracleReduction.liftContext, OracleVerifier.liftContext, RandomQuery.oracleReduction, OracleVerifier.embed] at h
+    cases i <;> cases h <;> rfl
+  hCohInr i k h := by
+    dsimp [oracleReduction.firstChallenge, firstChallengeOracleLens, OracleReduction.liftContext, OracleVerifier.liftContext, RandomQuery.oracleReduction, OracleVerifier.embed] at h
+    cases i <;> cases h <;> rfl
 
 /-- Unfolds to `r_x : Fin ℓ_m → R` -/
 @[simp]
@@ -484,19 +497,11 @@ noncomputable def oracleReduction.sendEvalClaim :
 instance instSendEvalClaimVerifierAppendCoherent :
     OracleVerifier.Append.AppendCoherent (sendEvalClaimVerifier R pp oSpec) where
   hCohInl i k h := by
-    rcases i with i | i
-    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
-      cases h
-    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
-      obtain rfl := Sum.inl.inj h
-      rfl
+    dsimp [sendEvalClaimVerifier] at h
+    cases i <;> cases h <;> rfl
   hCohInr i k h := by
-    rcases i with i | i
-    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
-      obtain rfl := Sum.inr.inj h
-      rfl
-    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
-      cases h
+    dsimp [sendEvalClaimVerifier] at h
+    cases i <;> cases h <;> rfl
 
 /-!
   ## Random linear combination challenges
