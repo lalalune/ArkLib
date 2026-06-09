@@ -798,6 +798,20 @@ private theorem probEvent_stateT_bind_fst_mono_hetero
   exact Verifier.StateFunction.probEvent_bind_mono_heteroEvent
     (fun a ha => h a.1 a.2 ha)
 
+/-- Fused-predicate (no projection) variant of the StateT peel: compare two `StateT` computations
+sharing a prefix `mx`, with hetero events on the full (value, state) pairs. -/
+private theorem probEvent_stateT_bind_mono_hetero
+    {σ α β₁ β₂ : Type}
+    (mx : StateT σ ProbComp α) (my : α → StateT σ ProbComp β₁)
+    (mz : α → StateT σ ProbComp β₂)
+    (p : β₁ × σ → Prop) (q : β₂ × σ → Prop) (s : σ)
+    (h : ∀ a s', (a, s') ∈ support (mx.run s) →
+      Pr[ p | (my a).run s'] ≤ Pr[ q | (mz a).run s']) :
+    Pr[ p | (mx >>= my).run s] ≤ Pr[ q | (mx >>= mz).run s] := by
+  rw [StateT.run_bind, StateT.run_bind]
+  exact Verifier.StateFunction.probEvent_bind_mono_heteroEvent
+    (fun a ha => h a.1 a.2 ha)
+
 /-- Explicit one-message Fiat-Shamir adversary execution after the empty transformed challenge
 oracle has been collapsed. The payload retains the proof transcript and prover output context so
 it can be compared directly with the state-restoration adapter. -/
@@ -3280,6 +3294,7 @@ private theorem fiatShamirKS_goalLift_eq_liftComp
   dsimp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift]
   cases t <;> rfl
 
+set_option maxHeartbeats 0 in
 set_option linter.flexible false in
 /-- Canonical coupled state-restoration knowledge soundness implies basic Fiat-Shamir knowledge
 soundness when both games use the same sampled cached Fiat-Shamir challenge table. -/
@@ -3321,32 +3336,60 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     fiatShamir_liftM_rightAssoc_to_append_eq_direct,
     fiatShamir_liftM_base_optionT_to_append_eq_direct] at h_eq ⊢
   rw [h_eq]
-  -- Both distributions now share the send/output/transcript prefix; the goal aborts on verifier
-  -- failure (OptionT) while `h` records `Option StmtOut` and still runs the extractor.  These have
-  -- equal bad-event probability since the event is false in the failure branch.
-  refine le_of_eq_of_le ?_ h
-  -- Peel the shared total send/output/transcript prefix, then reconcile the aborting verifier leaf
-  -- against the `Option`-recording state-restoration leaf.
-  rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
-  refine tsum_congr (fun s => ?_)
-  congr 1
-  -- Normalise both `StateT.run'`-projections and the aborting (left) block's total-prefix lifts to a
-  -- plain `simulateQ` bind chain, leaving the verifier abort as an `Option.elimM` leaf.
-  simp only [Verifier.run, OracleComp.liftComp_eq_liftM] at *
+  refine le_trans ?_ h
   simp only [StateT.run', OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk,
     optionT_monadLift_run, liftM_eq_monadLift, monadLift_self, simulateQ_map,
-    simulateQ_pure, simulateQ_option_elimM, OptionT.run_pure,
-    stateT_option_elimM_some_map_eq, bind_assoc, pure_bind, simulateQ_bind]
-  -- Remaining: distribute `simulateQ` over the state-restoration verifier block on the right, peel
-  -- the shared total send/output/transcript prefix, and finish at the leaf with
-  -- `probEvent_knowledgePayload_option_eq_stateRestoration`.
-  -- The tail below was committed mid-edit with goal-display `⋯` placeholders and did not
-  -- elaborate (failed instance synthesis at the pasted `show` term), breaking every full
-  -- build of this module. Restored to an honest `sorry`; the distribute-RHS / peel-prefix /
-  -- leaf plan above still stands, with the extractor leaf needing the `(liftM e).run =
-  -- some <$> …` collapse (cf. `OptionT.run_liftM_run`, `simulateQ_optionT_bind_mk_some_run`)
-  -- before `probEvent_knowledgePayload_option_eq_stateRestoration` applies.
-  sorry
+    simulateQ_pure, simulateQ_option_elimM, OptionT.run_pure, Verifier.run,
+    OracleComp.liftComp_eq_liftM,
+    stateT_option_elimM_some_map_eq, bind_assoc, pure_bind, simulateQ_bind,
+    StateT.run_bind, StateT.run_map, Functor.map_map, Function.comp]
+  refine Verifier.StateFunction.probEvent_bind_mono_heteroEvent (fun table _ => ?_)
+  simp [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_option_elimM,
+    fiatShamirCoupledQueryImpl, ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl',
+    probEvent_map, map_bind, Functor.map_map, Function.comp,
+    StateT.run_bind, StateT.run_map, liftM_eq_monadLift, Option.elimM,
+    bind_assoc, pure_bind]
+  conv_rhs => erw [simulateQ_bind]
+  refine probEvent_stateT_bind_mono_hetero _ _ _ _ _ _ (fun x s' _ => ?_)
+  conv_rhs => erw [simulateQ_bind]
+  refine probEvent_stateT_bind_mono_hetero _ _ _ _ _ _ (fun x1 s2 _ => ?_)
+  conv_rhs => erw [simulateQ_bind]
+  refine probEvent_stateT_bind_mono_hetero _ _ _ _ _ _ (fun tr s3 _ => ?_)
+  conv_rhs => erw [simulateQ_bind]
+  refine probEvent_stateT_bind_mono_hetero _ _ _ _ _ _ (fun o s4 _ => ?_)
+  cases o with
+  | none =>
+      refine le_trans (le_of_eq ?_) (zero_le _)
+      simp [probEvent_pure]
+  | some stmtOut =>
+      conv_rhs => erw [simulateQ_map]
+      simp only [Option.elim_some]
+      have h1 : (monadLift (srExtractor stmtIn x1.2 tr default default) :
+          OptionT (OracleComp (oSpec + ProtocolSpec.srChallengeOracle StmtIn pSpec)) WitIn).run
+        = OracleComp.liftComp
+            ((srExtractor stmtIn x1.2 tr default default) >>= fun a => pure (some a))
+            (oSpec + ProtocolSpec.srChallengeOracle StmtIn pSpec) := rfl
+      erw [h1]
+      have h2 : (monadLift (srExtractor stmtIn x1.2 tr default default) :
+          OracleComp (oSpec + ProtocolSpec.srChallengeOracle StmtIn pSpec) WitIn)
+        = OracleComp.liftComp (srExtractor stmtIn x1.2 tr default default)
+            (oSpec + ProtocolSpec.srChallengeOracle StmtIn pSpec) := rfl
+      erw [h2]
+      simp only [OracleComp.liftComp_bind, OracleComp.liftComp_pure,
+        QueryImpl.simulateQ_add_liftComp_left, simulateQ_bind, simulateQ_pure,
+        bind_assoc, pure_bind, Option.elim_some]
+      refine le_of_eq ?_
+      conv_lhs => erw [simulateQ_bind]
+      simp only [simulateQ_pure, bind_assoc, pure_bind, Option.elim_some,
+        map_eq_bind_pure_comp, Function.comp]
+      rw [StateT.run_bind, StateT.run_bind]
+      simp only [probEvent_bind_eq_tsum]
+      refine tsum_congr fun y => ?_
+      congr 1
+      conv_lhs => erw [simulateQ_pure]
+      classical
+      simp [StateT.run_pure, StateT.run_bind, probEvent_pure,
+        Option.elim_some, pure_bind, and_comm]
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side
 -- Fiat-Shamir challenges.  Re-deriving the transcript after verifier execution is not sound for an
