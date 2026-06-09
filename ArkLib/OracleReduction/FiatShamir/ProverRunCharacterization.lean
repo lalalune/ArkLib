@@ -168,6 +168,29 @@ theorem evalWithAnswerFn_processRoundFS
   rw [evalWithAnswerFn_bind]
   rfl
 
+/-- Interactive analogue of `evalWithAnswerFn_processRoundFS`: running the interactive prover one
+round against a fixed answer table peels the previous-round result and processes round `i` (the
+`V_to_P` branch reads the challenge from the table). -/
+theorem evalWithAnswerFn_processRound
+    (P : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) (i : Fin n)
+    (cur : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+      (pSpec.Transcript i.castSucc × P.PrvState i.castSucc))
+    (g : (q : (oSpec + [pSpec.Challenge]ₒ).Domain) → (oSpec + [pSpec.Challenge]ₒ).Range q) :
+    evalWithAnswerFn (QueryImpl.ofFn g) (P.processRound i cur) =
+      (let r := evalWithAnswerFn (QueryImpl.ofFn g) cur
+       evalWithAnswerFn (QueryImpl.ofFn g)
+        (match hd : pSpec.dir i with
+        | .V_to_P => do
+            let challenge ← pSpec.getChallenge ⟨i, hd⟩
+            letI newState := (← P.receiveChallenge ⟨i, hd⟩ r.2) challenge
+            return ⟨r.1.concat challenge, newState⟩
+        | .P_to_V => do
+            let ⟨msg, newState⟩ ← P.sendMessage ⟨i, hd⟩ r.2
+            return ⟨r.1.concat msg, newState⟩)) := by
+  unfold Prover.processRound
+  rw [evalWithAnswerFn_bind]
+  rfl
+
 end Reduction
 
 #print axioms Reduction.dir_eq_PtoV_of_isEmpty_challengeIdx
