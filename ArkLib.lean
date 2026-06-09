@@ -342,6 +342,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeClaim62Loop48
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop41
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop43
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop44
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateFiniteFieldDisproofLoop53
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFiniteFieldLiftLoop51
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateListDecEquivLoop47
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateMasterLoop45
@@ -954,6 +955,7 @@ import ArkLib.ProofSystem.Stir.ProximityBound
 import ArkLib.ProofSystem.Stir.ProximityGap
 import ArkLib.ProofSystem.Stir.ProximityGapProof
 import ArkLib.ProofSystem.Stir.Quotienting
+import ArkLib.ProofSystem.Stir.RoundCompleteness
 import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
