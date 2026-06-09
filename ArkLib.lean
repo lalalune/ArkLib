@@ -509,6 +509,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonClustering
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeOverflowSharp
+import ArkLib.Data.CodingTheory.ProximityGap.MCALineReduction
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMasterBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMiddleBand
