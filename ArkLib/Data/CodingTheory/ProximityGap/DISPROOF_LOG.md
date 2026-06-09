@@ -2101,3 +2101,14 @@ consistency-rarity** (cyclotomic identity counting; C19's exhaustive 4480→16 i
 instance). This is the mechanism-level answer to "what randomness supplies that smoothness must
 replace": the d²=z parametrization supplies unconditional kernel rigidity. Lean brick queued
 (pure degree counting).
+
+### O14′ — exactness/circularity: single-level descent consistency IS the list count (nubs, 2026-06-09)
+
+Exact derivation (research 05-LOG Entry 19): the twisted consistency data of a (B,O,σ) pattern
+assembles to ρ(d) = −(Ã−w)(d)/Π_B(d²), and consistency ⟺ ∃ deg<k codeword agreeing with w on
+D ∪ s⁻¹(B) — a tautological bijection with level-0 list elements. **The descent route is exact,
+hence circular as a single-level upper bound** — eliminating the one-level shortcut permanently.
+Conjecture D's genuine content: the cross-level paired induction (list + correlated-agreement
+bounds simultaneously down the tower; pattern entropy vs cyclotomic rarity). Proven structure
+retained: Lemma K uniqueness, the pattern⟷element bijection, C19's arithmetic-rarity instance.
+This is the precise missing fact of the upper half, stated as sharply as it can be.
