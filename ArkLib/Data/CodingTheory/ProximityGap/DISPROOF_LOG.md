@@ -3104,3 +3104,27 @@ machine-checked tower inventory now: base case (O50 Lam–Leung), generic d-to-1
 coset converse (O46), lossless transfer (O45). Remaining glue per rung: the single Newton
 identity p_d = ±d·e_d under vanishing lower e's (char 0) — Mathlib's MvPolynomial
 NewtonIdentities instantiation, queued.
+
+### O53 — THE FULL TOWER THEOREM MACHINE-CHECKED, UNCONDITIONAL (the O48 induction complete in Lean)
+
+`LamLeungTwoPow.full_tower` (axiom-clean, 0 sorry, 0 warnings): **in characteristic zero,
+a finite set of 2^M-th roots of unity whose power sums vanish in the window 1 ≤ j < 2^s
+(s ≤ M) is closed under multiplication by every 2^s-th root of unity — a union of
+μ_{2^s}-cosets.** Hypothesis-free, full induction on s. The Newton glue proved UNNECESSARY:
+in power-sum form the rung condition transfers through the fiber structure directly —
+`pow_fiber_sum` (every fiber of x ↦ x^{2^s} on a μ_{2^s}-closed set is a full coset, so
+p_{2^s}(S) = 2^s • Σ_image, then char 0 divides), Lam–Leung one level down (O50) makes the
+image antipodal, `TopLine.mul_root_closure` (O52) climbs the rung, and `mu_double_closure`
+upgrades ω-closure to full μ_{2^{s+1}}-closure. (The power-sum window is exactly the
+syndrome of the all-ones error on S — the coding-side reading is native.)
+
+**Status of the tower chain: COMPLETE AND UNCONDITIONAL IN LEAN.** Base case (O50), every
+rung (O52+O53), descent sums (O53), coset converse (O46), lossless syndrome transfer (O45)
+— so the deep-interior fiber bound `≤ 2^{n/2^s} = 2^{O(1/η)}` (the KK25/S-two budget) at
+power-sum windows is now a fully machine-checked consequence over char-0 fields, and over
+F_p above the O49 effective threshold. Two minimal single-module rebuilds of
+TopDirectionLineCount were the only builds used.
+
+Remaining #232 queue: effective-transfer Lean brick (norms machinery); O51 class-chart
+program (Aliev–Smyth + componentwise tower); S-two Conjecture 1 proper (low-window/all
+received words) — the recognized live open conjecture of the field.

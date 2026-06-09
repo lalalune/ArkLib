@@ -222,4 +222,169 @@ theorem t2_resolution_unconditional {m : ℕ} {ζ : F} (hζ : IsPrimitiveRoot ζ
     rw [this]
     exact hS x hx
 
+/-! ## The FULL tower theorem, unconditional, machine-checked
+
+The complete O48 induction — with no Newton identities (the rung condition transfers
+through the fiber structure in power-sum form: `∑_{x∈S} x^d = d·∑_{image} y`): in
+characteristic zero, a finite set of `2^M`-th roots of unity whose power sums `p_j`
+vanish for `1 ≤ j < 2^s` is closed under multiplication by every `2^s`-th root of
+unity — **a union of `μ_{2^s}`-cosets**. (Power-sum and elementary-symmetric vanishing
+define the same fiber in characteristic zero; the power-sum window is also exactly the
+syndrome of the all-ones error on `S`.) At window scale `t = 2^s − 1 = Θ(ηn)` this pins
+the fiber to coset unions, count `≤ 2^{n/2^s} = 2^{O(1/η)}` — the KK25/S-two budget. -/
+
+section FullTower
+
+omit [CharZero F] in
+/-- Closure under `μ_d` plus closure under one `ω` with `ω^d = −1` gives closure under
+all of `μ_{2d}`. -/
+lemma mu_double_closure {S : Finset F} {d : ℕ} (hd : 0 < d) {ω : F} (hω : ω ^ d = -1)
+    (hμ : ∀ x ∈ S, ∀ h : F, h ^ d = 1 → h * x ∈ S)
+    (hωS : ∀ x ∈ S, ω * x ∈ S) :
+    ∀ x ∈ S, ∀ h : F, h ^ (2 * d) = 1 → h * x ∈ S := by
+  intro x hx h hh
+  have hω0 : ω ≠ 0 := by
+    intro h0
+    rw [h0, zero_pow hd.ne'] at hω
+    exact one_ne_zero (α := F) (by linear_combination hω)
+  have hsq : (h ^ d - 1) * (h ^ d + 1) = 0 := by
+    have h2 : (h ^ d) ^ 2 = 1 := by
+      rw [← pow_mul, show d * 2 = 2 * d by ring]
+      exact hh
+    linear_combination h2
+  rcases mul_eq_zero.mp hsq with h1 | h1
+  · exact hμ x hx h (by linear_combination h1)
+  · have hroot : (h * ω⁻¹) ^ d = 1 := by
+      rw [mul_pow, inv_pow, hω]
+      have hhd : h ^ d = -1 := by linear_combination h1
+      rw [hhd]
+      field_simp
+    have hassoc : h * x = (h * ω⁻¹) * (ω * x) := by
+      field_simp
+    rw [hassoc]
+    exact hμ _ (hωS x hx) _ hroot
+
+omit [CharZero F] in
+/-- **The descent sum at level `d`**: closure under the full `μ_d` makes every fiber of
+`x ↦ x^d` on `S` a full coset of size `d`, so `∑_{x∈S} x^d = d • ∑_{image} y`. -/
+lemma pow_fiber_sum [DecidableEq F] {S : Finset F} {d : ℕ} {ξ : F} (hξ : IsPrimitiveRoot ξ d)
+    (hd : 0 < d) (h0 : (0 : F) ∉ S)
+    (hμ : ∀ x ∈ S, ∀ h : F, h ^ d = 1 → h * x ∈ S) :
+    ∑ x ∈ S, x ^ d = d • ∑ y ∈ S.image (· ^ d), y := by
+  classical
+  haveI : NeZero d := ⟨hd.ne'⟩
+  have hmaps : ∀ x ∈ S, x ^ d ∈ S.image (· ^ d) :=
+    fun x hx => Finset.mem_image.mpr ⟨x, hx, rfl⟩
+  rw [← Finset.sum_fiberwise_of_maps_to hmaps (fun x => x ^ d), Finset.smul_sum]
+  refine Finset.sum_congr rfl fun y hy => ?_
+  obtain ⟨x₀, hx₀, rfl⟩ := Finset.mem_image.mp hy
+  have hx₀0 : x₀ ≠ 0 := fun h => h0 (h ▸ hx₀)
+  have hfib : S.filter (fun x => x ^ d = x₀ ^ d)
+      = (Finset.range d).image (fun i => ξ ^ i * x₀) := by
+    apply Finset.Subset.antisymm
+    · intro x hx
+      obtain ⟨hxS, hxd⟩ := Finset.mem_filter.mp hx
+      have hq : (x / x₀) ^ d = 1 := by
+        rw [div_pow, hxd, div_self (pow_ne_zero d hx₀0)]
+      obtain ⟨i, hi, hqi⟩ := hξ.eq_pow_of_pow_eq_one hq
+      refine Finset.mem_image.mpr ⟨i, Finset.mem_range.mpr hi, ?_⟩
+      rw [hqi]
+      field_simp
+    · intro x hx
+      obtain ⟨i, _, rfl⟩ := Finset.mem_image.mp hx
+      have hξi : (ξ ^ i) ^ d = 1 := by
+        rw [← pow_mul, mul_comm i d, pow_mul, hξ.pow_eq_one, one_pow]
+      refine Finset.mem_filter.mpr ⟨hμ x₀ hx₀ _ hξi, ?_⟩
+      rw [mul_pow, hξi, one_mul]
+  have hcard : (S.filter (fun x => x ^ d = x₀ ^ d)).card = d := by
+    rw [hfib, Finset.card_image_of_injOn, Finset.card_range]
+    intro i hi j hj hij
+    have hpow : ξ ^ i = ξ ^ j := mul_right_cancel₀ hx₀0 hij
+    exact hξ.pow_inj (Finset.mem_range.mp hi) (Finset.mem_range.mp hj) hpow
+  rw [Finset.sum_congr rfl (fun x hx => (Finset.mem_filter.mp hx).2),
+    Finset.sum_const, hcard]
+
+/-- **THE FULL TOWER THEOREM** (unconditional, characteristic zero): a finite set of
+`2^M`-th roots of unity whose power sums vanish in the window `1 ≤ j < 2^s` (`s ≤ M`)
+is closed under multiplication by every `2^s`-th root of unity — a union of
+`μ_{2^s}`-cosets. The complete machine-checked O48 exhaustiveness theorem. -/
+theorem full_tower {M : ℕ} {ζ : F} (hζ : IsPrimitiveRoot ζ (2 ^ M))
+    {S : Finset F} (hS : ∀ x ∈ S, x ^ (2 ^ M) = 1) :
+    ∀ s, s ≤ M → (∀ j, 1 ≤ j → j < 2 ^ s → ∑ x ∈ S, x ^ j = 0) →
+      ∀ x ∈ S, ∀ h : F, h ^ (2 ^ s) = 1 → h * x ∈ S := by
+  classical
+  have h0S : (0 : F) ∉ S := by
+    intro h0
+    have h1 := hS 0 h0
+    rw [zero_pow (by positivity)] at h1
+    exact one_ne_zero (α := F) h1.symm
+  intro s
+  induction s with
+  | zero =>
+    intro _ _ x hx h hh
+    rw [pow_zero, pow_one] at hh
+    rw [hh, one_mul]
+    exact hx
+  | succ s ih =>
+    intro hsM hp x hx h hh
+    have hdpos : (0 : ℕ) < 2 ^ s := by positivity
+    -- closure under μ_{2^s} from the inductive hypothesis
+    have hμ : ∀ x ∈ S, ∀ h : F, h ^ (2 ^ s) = 1 → h * x ∈ S :=
+      ih (by omega) (fun j hj1 hj2 => hp j hj1 (by
+        have : (2 : ℕ) ^ s < 2 ^ (s + 1) := Nat.pow_lt_pow_right (by norm_num) (by omega)
+        omega))
+    -- the primitive 2^s-th root
+    have hξ : IsPrimitiveRoot (ζ ^ (2 ^ (M - s))) (2 ^ s) := by
+      refine hζ.pow (by positivity) ?_
+      rw [← pow_add]
+      congr 1
+      omega
+    -- the half-root: ω^(2^s) = −1
+    have hM1 : M = (M - 1) + 1 := by omega
+    have hω : (ζ ^ (2 ^ (M - s - 1))) ^ (2 ^ s) = -1 := by
+      rw [← pow_mul]
+      have e1 : 2 ^ (M - s - 1) * 2 ^ s = 2 ^ (M - 1) := by
+        rw [← pow_add]
+        congr 1
+        omega
+      rw [e1]
+      exact pow_half_eq_neg_one (m := M - 1) (hM1 ▸ hζ)
+    -- the image sum vanishes: p_{2^s}(S) = 2^s • Σ_image = 0, char 0
+    have himg0 : ∑ y ∈ S.image (· ^ (2 ^ s)), y = 0 := by
+      have hsum := pow_fiber_sum hξ hdpos h0S hμ
+      have hp0 := hp (2 ^ s) Nat.one_le_two_pow (by
+        exact Nat.pow_lt_pow_right (by norm_num) (by omega))
+      rw [hp0] at hsum
+      have hcast : ((2 ^ s : ℕ) : F) ≠ 0 := Nat.cast_ne_zero.mpr hdpos.ne'
+      rw [nsmul_eq_mul] at hsum
+      rcases mul_eq_zero.mp hsum.symm with hbad | hgood
+      · exact absurd hbad hcast
+      · exact hgood
+    -- the image is antipodally closed: Lam–Leung one level down
+    have hζ2 : IsPrimitiveRoot (ζ ^ (2 ^ s)) (2 ^ ((M - s - 1) + 1)) := by
+      refine hζ.pow (by positivity) ?_
+      rw [← pow_add]
+      congr 1
+      omega
+    have hsq : ∀ y ∈ S.image (· ^ (2 ^ s)), -y ∈ S.image (· ^ (2 ^ s)) := by
+      refine vanishing_sum_antipodal (m := M - s - 1) hζ2 ?_ himg0
+      intro y hy
+      obtain ⟨x', hx', rfl⟩ := Finset.mem_image.mp hy
+      rw [← pow_mul]
+      have e2 : 2 ^ s * 2 ^ ((M - s - 1) + 1) = 2 ^ M := by
+        rw [← pow_add]
+        congr 1
+        omega
+      rw [e2]
+      exact hS x' hx'
+    -- the rung: closure under ω, then under all of μ_{2^{s+1}}
+    have hωS : ∀ x ∈ S, (ζ ^ (2 ^ (M - s - 1))) * x ∈ S :=
+      TopLine.mul_root_closure hdpos hω hμ hsq
+    have hfinal := mu_double_closure hdpos hω hμ hωS x hx h (by
+      rw [show 2 * 2 ^ s = 2 ^ (s + 1) by ring]
+      exact hh)
+    exact hfinal
+
+end FullTower
+
 end LamLeungTwoPow
