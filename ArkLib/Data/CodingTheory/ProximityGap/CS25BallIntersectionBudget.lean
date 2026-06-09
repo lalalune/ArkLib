@@ -38,6 +38,56 @@ set_option linter.unusedSectionVars false
 variable {ι : Type*} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type*} [Fintype F] [DecidableEq F] [AddCommGroup F]
 
+/-- The off-`p`-support weight of `w`, `#{i : p i ∧ w i ≠ 0}`, is the Hamming norm of `w` restricted
+to the subtype `{i // p i}`. -/
+theorem offWt_eq_hammingNorm_proj (p : ι → Prop) [DecidablePred p] (w : ι → F) :
+    (univ.filter (fun i => p i ∧ w i ≠ 0)).card
+      = hammingNorm (fun i : {x // p x} => w i.val) := by
+  classical
+  rw [hammingNorm]
+  refine Finset.card_bij' (fun i hi => (⟨i, (Finset.mem_filter.mp hi).2.1⟩ : {x // p x}))
+    (fun j _ => j.val) ?_ ?_ ?_ ?_
+  · intro i hi
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hi ⊢
+    exact hi.2
+  · intro j hj
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hj ⊢
+    exact ⟨j.property, hj⟩
+  · intro i _; rfl
+  · intro j _; rfl
+
+/-- **Product split of the off-support–budgeted set.** The set of words whose off-`p`-support weight
+is `≤ B` factors as a Hamming ball of radius `B` in the `{p}` coordinates times the *unconstrained*
+`{¬p}` coordinates.  (The off-support constraint only sees the `{p}` coordinates.) -/
+theorem card_offWt_le (p : ι → Prop) [DecidablePred p] (B : ℕ) :
+    (univ.filter (fun w : ι → F =>
+        (univ.filter (fun i => p i ∧ w i ≠ 0)).card ≤ B)).card
+      = (univ.filter (fun x : {i // p i} → F => hammingNorm x ≤ B)).card
+        * (Fintype.card ({i // ¬ p i} → F)) := by
+  classical
+  simp_rw [offWt_eq_hammingNorm_proj p]
+  set T := Equiv.piEquivPiSubtypeProd p (fun _ : ι => F) with hT
+  rw [show (Fintype.card ({i // ¬ p i} → F)) = (univ : Finset ({i // ¬ p i} → F)).card from
+    (Finset.card_univ).symm, ← Finset.card_product]
+  refine Finset.card_bij' (fun w _ => T w) (fun xy _ => T.symm xy) ?_ ?_ ?_ ?_
+  · intro w hw
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hw
+    rw [Finset.mem_product]
+    refine ⟨?_, Finset.mem_univ _⟩
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, hT, Equiv.piEquivPiSubtypeProd_apply]
+    exact hw
+  · intro xy hxy
+    rw [Finset.mem_product] at hxy
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hxy ⊢
+    rw [hT]
+    simp only [Equiv.piEquivPiSubtypeProd_symm_apply]
+    have : (fun i : {x // p x} => if h : p i.val then xy.1 ⟨i.val, h⟩ else xy.2 ⟨i.val, h⟩)
+        = xy.1 := by
+      funext i; rw [dif_pos i.property]
+    rw [this]; exact hxy.1
+  · intro w _; exact T.symm_apply_apply w
+  · intro xy _; exact T.apply_symm_apply xy
+
 /-- **Off-support weight budget (pointwise).** For any `w, e`, twice the weight of `w` *off* the
 support of `e` plus the weight of `e` is at most `wt(w) + Δ₀(w,e)`.  Coordinatewise: off `supp(e)`,
 both `wt(w)` and `Δ₀(w,e)` see the same coordinate (so it is counted twice on the left exactly when
@@ -95,5 +145,28 @@ theorem jointCoverCount_le_offSupport_card (δ : ℝ≥0) (e : ι → F) :
   refine ⟨Finset.mem_univ _, ?_⟩
   have := offSupport_budget_of_mem_jointCover δ e w hw0 hwe
   omega
+
+/-- **Explicit ball-intersection decay bound.** The `δ`-ball intersection `I(e) = jointCoverCount δ 0 e`
+of `B(0,δ)` with `B(e,δ)` is bounded by a Hamming ball of radius `B' = (2r − wt(e))/2` in the
+`n − wt(e)` coordinates *off* `supp(e)`, times `q^{wt(e)}` for the unconstrained on-support
+coordinates:
+
+  `I(e) ≤ V_{n − wt(e)}(⌊(2r − wt(e))/2⌋) · q^{wt(e)}`,    `r = ⌊δ·n⌋`,  `q = |F|`.
+
+This is the quantitative ball-intersection decay: as `wt(e) → 2r` the radius `B' → 0`, so the ball
+factor collapses to `1` and `I(e) ≤ q^{wt(e)}`.  Combined with the weight-enumerator collapse
+(`CS25BallIntersectionWeightInvariant.sum_jointCoverCount_eq_weight_enumerator`) and the MDS weight
+enumerator `A_d` bound, this bounds the CS25 second-moment off-diagonal `∑_{e ≠ 0} I(e)`. -/
+theorem jointCoverCount_le_ballVolume_mul (δ : ℝ≥0) (e : ι → F) :
+    jointCoverCount δ 0 e
+      ≤ (univ.filter (fun x : {i // e i = 0} → F =>
+            hammingNorm x ≤ (2 * ⌊(δ : ℝ) * (Fintype.card ι : ℝ)⌋₊ - hammingNorm e) / 2)).card
+        * (Fintype.card F) ^ (hammingNorm e) := by
+  have hcard : Fintype.card ({i // ¬ (e i = 0)} → F) = (Fintype.card F) ^ (hammingNorm e) := by
+    rw [Fintype.card_fun, Fintype.card_subtype]; rfl
+  calc jointCoverCount δ 0 e
+      ≤ _ := jointCoverCount_le_offSupport_card δ e
+    _ = _ := card_offWt_le (fun i => e i = 0) _
+    _ = _ := by rw [hcard]
 
 end ArkLib.CS25
