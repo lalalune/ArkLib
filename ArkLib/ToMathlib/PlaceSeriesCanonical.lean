@@ -109,6 +109,7 @@ omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 theorem W_O_eq_one_of_monic (hlc : H.leadingCoeff = 1) : W_𝒪 H = 1 := by
   rw [W_𝒪, hlc, Polynomial.C_1, map_one]
 
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 /-- For monic `H`, the per-place `W`-reading is `1` (a ring hom sends `1` to `1`). -/
 theorem pi_z_W_eq_one_of_monic (hlc : H.leadingCoeff = 1)
     {z : F} (root : rationalRoot (H_tilde' H) z) :
