@@ -3128,3 +3128,53 @@ TopDirectionLineCount were the only builds used.
 Remaining #232 queue: effective-transfer Lean brick (norms machinery); O51 class-chart
 program (Aliev–Smyth + componentwise tower); S-two Conjecture 1 proper (low-window/all
 received words) — the recognized live open conjecture of the field.
+
+### O55 / Round-29 — ITERATED 2^k-LIFT, NO ORACLES: independence DISCHARGED (ℤ-form) + the de-oracled level iteration; AUDIT: the R23/R24/R25 `hindep` was vacuous as stated
+
+`RigidityIterated2kLift.lean` (main-loop solo, axiom-clean, 0 sorry, strict-verified). Convergence
+placement: completes the named remaining item of Round-28 (`RigidityFullWindow.lean`, "hclosure
+de-oracling — μ-enumeration bridge") and complements O50 (`LamLeungTwoPow`, single-set) / O52
+(generic rung) / O54 (second-seat tower): everything here is the DISJOINT-PAIR (equal-window)
+engine, which is what the Conj-41 list application needs; the single-set forms drop out at B = ∅.
+
+* **AUDIT FINDING (machine-checked, `fValued_hindep_unsatisfiable`):** the `hindep` hypothesis of
+  R23/R24/R25 (`∀ g : Fin N → F, (∑ j, g j * ζ^j) = 0 → ∀ j, g j = 0`) quantifies over
+  **F-valued** coefficients — UNSATISFIABLE for `N ≥ 2` (`g = (ζ, −1, 0, …)` sums to zero), so
+  every theorem consuming it was vacuously true and inapplicable as stated (this includes the
+  Round-28 `full_window_rigidity` if its closure oracle is fed from R25 as-is). The proof
+  skeletons are sound (every instantiation is integer-cast); the fix is the ℤ-valued form.
+  Treat the F-form statements in `RigidityBaseCasePairs`/`RigidityTriplesSunflower`/
+  `RigidityGeneralT1` as deprecated surfaces; consume the ℤ-forms here (`HalfBasisIndepZ`,
+  `bridgeZ`, `disjoint_equal_sum_antipodal_int`).
+* **THE DISCHARGE (`halfBasisIndepZ_of_primitiveRoot`):** `HalfBasisIndepZ ζ 2^{m−1}` holds for
+  EVERY primitive `2^m`-th root of unity in a characteristic-0 field
+  (`cyclotomic_eq_minpoly_rat` + `natDegree_cyclotomic` + `totient_prime_pow` +
+  `linearIndependent_pow`). Same cyclotomic content as O53's `pattern_sum_injective`, packaged
+  as the exact form the rigidity chain consumes. The chain is now NON-VACUOUS and
+  hypothesis-free: char 0 + primitivity suffice.
+* **The encoding bridge (`antipodallyClosed_of_disjoint_equal_sum`):** field-level `t = 1`
+  closure — disjoint `A, B ⊆ ±ζ^{<N}` with equal sums are BOTH `AntipodallyClosed` (R26's
+  predicate); `sval` injectivity from ℤ-independence does the signed-point ↔ field-element
+  plumbing. THIS IS THE R28 "μ-enumeration bridge" de-oracling. Scale descent: `isSignedPow_sq`
+  (`μ_{2^m} → μ_{2^{m−1}}`, upper range folded by `ζ^{2^{m−1}} = −1`) + `IsPrimitiveRoot.pow`;
+  assembly: `closure_step` (the general `mul_i_closure`, char-free).
+* **`iterated_2k_lift` (THE THEOREM, no oracles):** `A, B ⊆ μ_{2^m}` disjoint with equal
+  `p_1..p_t`, `1 ≤ k ≤ m`, `2^{k−1} ≤ t` ⟹ both closed under EVERY `2^k`-th root of unity
+  (R22 `2^k`-lift structure). Induction on `k` over the R26 engine; maximal `k` gives exactly
+  O48's `d = smallest 2-power > t`. + `coset_closure_of_equal_window` (generator form),
+  `antipodal_closure_unconditional` (non-vacuity witness).
+* **Single-set corollaries (`B = ∅`, §7):** `vanishing_sum_antipodal` (= O50's theorem via the
+  pair engine — convergent route) and `vanishing_window_coset_closure` — the O48 TOWER
+  THEOREM's forward inclusion in power-sum form at ALL `t` in one statement. SAME-HOUR
+  TRIPLE CONVERGENCE: the second seat's `full_tower` (LamLeungTwoPow, its O53 entry) landed
+  the same single-set statement minutes earlier by the rung-by-rung route — independent
+  cross-verification; what is unique here is the PAIR (equal-window) engine those single-set
+  forms drop out of, which is the form the Conj-41 list application consumes.
+
+REMAINING (sharpened, honest): (a) the Newton e-window ⟺ p-window bridge over `CharZero`
+(connects R27's nodal output + O44/O45 esymm fibers + the O54 packaging to this power-sum
+engine); (b) the counting corollary (`μ_{2^k}`-coset-closed ⟹ `≤ 2^{n/2^k}` sets — the
+KK25/S-two `2^{O(1/η)}` budget); (c) the Conj-41/δ* composition through R20/R21 + R19;
+(d) effective char-0 → `F_p` height threshold beyond O49's resolution where it applies;
+(e) the MCA quantifier (unit syndromes → all received words). (d)/(e) genuinely open research;
+the prize core (δ* inside `(1−√ρ, 1−ρ)`) remains 100% open.

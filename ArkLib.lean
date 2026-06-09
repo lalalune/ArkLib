@@ -726,6 +726,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityBaseCasePairs
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityFullWindow
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityGeneralT1
+import ArkLib.Data.CodingTheory.ProximityGap.RigidityIterated2kLift
 import ArkLib.Data.CodingTheory.ProximityGap.RigiditySunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityWindowHalving
