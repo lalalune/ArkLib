@@ -1836,7 +1836,7 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ Pro
 -- `OracleReduction.seqCompose`) against the keystone conclusion, whose `OracleReduction`-level
 -- `perfectCompleteness` unfolds through `.toReduction` of the full ring-switching seqCompose — this
 -- defeq is `whnf`-heavy (slow but terminating), hence the raised heartbeat budget.
-set_option maxHeartbeats 16000000 in
+set_option maxHeartbeats 40000000 in
 /-- **Sumcheck-loop perfect completeness (issue #29, phase 1).** The `seqCompose` of the `ℓ'`
 per-round oracle reductions (`sumcheckLoopOracleReduction = OracleReduction.seqCompose …
 iteratedSumcheckOracleReduction`) is perfectly complete from `0` to `Fin.last ℓ'`.
