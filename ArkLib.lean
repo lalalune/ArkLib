@@ -489,6 +489,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
+import ArkLib.Data.CodingTheory.ProximityGap.HasseWeilBoundInstances
 import ArkLib.Data.CodingTheory.ProximityGap.HybridConcentrationDepthNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorListCountBridge
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorThresholdBracket
@@ -1145,6 +1146,7 @@ import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundBridge
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFaithful
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFlipImp
+import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFlipImpClose
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundKnowFlip
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundPlainRbr
 import ArkLib.ProofSystem.Sumcheck.Structured
