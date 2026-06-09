@@ -2724,7 +2724,7 @@ lower bound at agreement k+t — the reduction is lossless and formal. The δ* p
 missing ingredient is now ONLY the integer/combinatorial fiber question past Johnson
 (formulation (ii) in its purest form); every reduction step around it is machine-checked.
 
-### O48 / Round-24 — w=3 rigidity DERIVED (sunflower theorem); mechanization in progress
+### O48 / Round-24 — w=3 rigidity: NOW FULLY MECHANIZED (see update below)
 
 **The mathematics (derived, hand-verified branch-by-branch; NOT yet machine-checked — WIP at
 /tmp/r24_triples_WIP_SAVED.lean with bridges compiling):**
@@ -2777,3 +2777,14 @@ between t ≈ √n (now CLOSED, constructively) and t = Θ(n) (open) is the exac
 The open core after O46: field-independent zero-fiber bounds at t = Θ(n) on 2-power
 smooth domains — every other parameter regime of the reduction now has a machine-checked
 constructive answer.
+
+### O48-update / Round-24 COMPLETE — w=3 sunflower rigidity MACHINE-CHECKED
+
+`RigidityTriplesSunflower.lean` (on main, axiom-clean, 0 warnings, strict-verified): bridge6/bridge4
++ collapse4_impossible + disjoint_triples_impossible — disjoint equal-sum triples of 2N-th roots are
+IMPOSSIBLE (CharZero + half-basis independence); with R23 pair_rigidity ⟹ the SUNFLOWER
+classification (fleet O40 proven as char-0 theorem). STEP 2: w=2 ✅ w=3 ✅ w≥4 open. THE BASH
+TECHNIQUE THAT WORKED (after simp_all looped): (first | rw [if_pos e_i] | rw [if_neg e_i]) at hg
+per condition → rcases signs → simp only [Bool.false_eq_true, if_true, if_false] at hg → first-list
+with SINGLE-LINE alternatives: omega | exact Or.inl ⟨e1, rfl⟩ | exact absurd rfl (hab e1.symm) | …;
+trim never-executed alternatives flagged by the linter. 2048 branches verified in ~3 min.
