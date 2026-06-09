@@ -1379,6 +1379,7 @@ import ArkLib.ToMathlib.LinearizedRecursionStep
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.LinearizedSupportStep
 import ArkLib.ToMathlib.List.Basic
+import ArkLib.ToMathlib.LocalizationEmbedding
 import ArkLib.ToMathlib.LocalizedPlaceEvaluation
 import ArkLib.ToMathlib.LogupFractionalSum
 import ArkLib.ToMathlib.MCAFirstMomentArithBricks
