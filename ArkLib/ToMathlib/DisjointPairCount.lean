@@ -75,6 +75,52 @@ theorem disjoint_pair_count (m2 s : ℕ) :
     rw [hS', hT']
 
 
+/-! ## The assembled N₀ pattern count -/
+
+
+/-- Admissibility of a support size `s` for total pick-count `r` over `m2` pairs. -/
+def AdmissibleSupport (m2 r s : ℕ) : Prop :=
+  s ≤ r ∧ (r - s) % 2 = 0 ∧ r - s ≤ 2 * (m2 - s)
+
+instance (m2 r s : ℕ) : Decidable (AdmissibleSupport m2 r s) := by
+  unfold AdmissibleSupport; infer_instance
+
+/-- **The assembled N₀ count**: disjoint signed-support pairs with admissible support size
+number `Σ_s C(m2,s)·2^s` over admissible `s` — the characteristic-0 subset-sum image count. -/
+theorem n0_pattern_count (m2 r : ℕ) :
+    (((univ : Finset (Finset (Fin m2))) ×ˢ (univ : Finset (Finset (Fin m2)))).filter
+      (fun pn => Disjoint pn.1 pn.2 ∧ AdmissibleSupport m2 r (pn.1.card + pn.2.card))).card
+      = ∑ s ∈ Finset.range (r + 1),
+          if AdmissibleSupport m2 r s then m2.choose s * 2 ^ s else 0 := by
+  classical
+  rw [Finset.card_eq_sum_card_fiberwise
+    (f := fun pn : Finset (Fin m2) × Finset (Fin m2) => pn.1.card + pn.2.card)
+    (t := Finset.range (r + 1))
+    (fun pn hpn => Finset.mem_range.mpr
+      (Nat.lt_succ_of_le (Finset.mem_filter.mp hpn).2.2.1))]
+  refine Finset.sum_congr rfl (fun s hs => ?_)
+  by_cases hadm : AdmissibleSupport m2 r s
+  · rw [if_pos hadm, ← disjoint_pair_count m2 s]
+    congr 1
+    ext pn
+    constructor
+    · intro h
+      have h1 := Finset.mem_filter.mp h
+      have h2 := Finset.mem_filter.mp h1.1
+      exact Finset.mem_filter.mpr ⟨h2.1, h2.2.1, h1.2⟩
+    · intro h
+      have h1 := Finset.mem_filter.mp h
+      exact Finset.mem_filter.mpr
+        ⟨Finset.mem_filter.mpr ⟨h1.1, h1.2.1, h1.2.2 ▸ hadm⟩, h1.2.2⟩
+  · rw [if_neg hadm, Finset.card_eq_zero, Finset.eq_empty_iff_forall_notMem]
+    intro pn hmem
+    have h1 := Finset.mem_filter.mp hmem
+    have h2 := Finset.mem_filter.mp h1.1
+    exact hadm (h1.2 ▸ h2.2.2)
+
+
 end ArkLib.SmoothDomain
 
 #print axioms ArkLib.SmoothDomain.disjoint_pair_count
+
+#print axioms ArkLib.SmoothDomain.n0_pattern_count
