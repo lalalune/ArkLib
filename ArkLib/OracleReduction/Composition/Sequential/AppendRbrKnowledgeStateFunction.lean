@@ -1148,17 +1148,40 @@ by `rbrKnowledgeError₂ i₂`.
 Unlike the phase-1 leg (fully proven above), this leg crosses the protocol **seam**: the appended
 composite knowledge state function / extractor collapse (via `KnowledgeStateFunction.append_toFun_gt`
 / `appendExtractMid_gt`) to `kSF₂` / `E₂` evaluated at the `verify`-fed **random** intermediate
-statement `verify stmtIn tr.fst` determined by the realized phase-1 transcript.  Discharging it
-requires the run-level seam factoring `Prover.run_seam_factor` (splitting the malicious prover into
-`Prover.fst` / `Prover.snd` at the seam), the right challenge-seam transfer
-`OracleReduction.evalDist_run'_challengeSeam_right`, and a `probEvent_bind` averaging over the random
-phase-1 transcript that feeds each realized `verify stmtIn tr.fst` into `hBound₂`.
+statement `verify stmtIn tr.fst` determined by the realized phase-1 transcript.
 
-This residual *is* dischargeable in principle (unlike the plain-soundness phase-2
-`appendRbrSoundnessPhase2Residual`): `hBound₂` quantifies over **all** input statements (no
-`∉ langIn` restriction; `RoundByRound.lean:839`), so the random seam statement is controlled.  It is
-isolated here as an explicit typed hypothesis — keeping the construction `sorry`-free — exactly as the
-proven soundness keystone isolates its (irreducible) phase-2 residual. -/
+**Available brick.** The run-level half of the reduction is now proven, axiom-clean, in
+`SeamDecompositionRunPartial.lean`: `Prover.snd_runToRound_natAdd_seam` (the `natAdd` analogue of the
+phase-1 partial `Prover.merge_runToRound_castLE`) factors the appended partial run
+`prover.runToRound (natAdd m i₂.castSucc)` as `(Prover.fst prover)`'s full run (the seam output,
+threaded into `Prover.snd`'s `input`) followed by `(Prover.snd prover)`'s **own** partial
+`runToRound i₂.castSucc`, with the phase-1 transcript prefixed via `Transcript.appendRight`.  Combined
+with the right challenge-seam transfer `OracleReduction.evalDist_run'_challengeSeam_right` and a
+`probEvent_bind` averaging over the realized phase-1 transcript, this reduces the appended phase-2 game
+to a per-realization inner `kSF₂` / `E₂` flip bound.
+
+**Why it is not yet unconditional (the precise remaining obstructions).** Discharging this leg fully
+from `hBound₂` is blocked by three genuine gaps, beyond the "the seam statement is controlled" point:
+
+* **(message seam)** `snd_runToRound_natAdd_seam` (like `run_seam_factor`) requires the seam round
+  (`pSpec₂` round 0) to be a prover **message** (`pSpec₂.dir 0 = .P_to_V`); this keystone carries no
+  such hypothesis, so the general-seam case is open.
+* **(carried prover state)** `hBound₂` quantifies over `pSpec₂`-provers that **restart** from
+  `input (stmt₂, wit₂)`, whereas `Prover.snd prover` resumes from `prover`'s realized **internal seam
+  state** (arbitrary, history-dependent).  This is reparable per realization via an "amnesiac
+  re-injection" `pSpec₂`-prover hardcoding the realized seam state (legitimate, since `hBound₂` is
+  over *all* provers), but that recast is not yet built.
+* **(oracle `σ`-state threading)** the appended phase-2 oracle queries run from the `σ`-state
+  **mutated by phase 1**, whereas `hBound₂`'s game re-samples `init` afresh; `hBound₂` bounds the
+  `init`-averaged inner game, not the threaded pointwise one.  This closes when `Subsingleton σ` /
+  `init` is a point mass (the transparent / stateless-oracle BCS instances), but not for general
+  `init`.
+
+The "all input statements" quantification of `rbrKnowledgeSoundness` (no `∉ langIn`;
+`RoundByRound.lean:839`) does resolve the *statement* control that the plain-soundness phase-2
+(`appendRbrSoundnessPhase2Residual`) lacks — but the state-carrying obstructions above remain.  The
+leg is therefore isolated here as an explicit typed hypothesis (keeping the construction `sorry`-free),
+exactly as the soundness keystone isolates its phase-2 residual. -/
 def appendRbrKnowledgeSoundnessPhase2Residual {WitMid₁ : Fin (m+1)→Type}
     {WitMid₂ : Fin (n+1)→Type}
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
