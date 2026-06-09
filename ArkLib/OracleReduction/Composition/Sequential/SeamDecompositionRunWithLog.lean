@@ -114,4 +114,33 @@ theorem map_runWithLog_body_eq_run_body
       let challenge ← liftComp (pSpec.getChallenge i) _
       pure (transcript, challenge))
 
+open scoped ENNReal in
+/-- **Log-free reduction of a round-by-round knowledge per-round experiment** for *any* log-blind
+event `Q` on `(transcript, challenge)`.  The log-carrying `runWithLogToRound` experiment has the same
+event-probability as the log-free `runToRound` game.  Generic over the protocol/prover; specialises to
+both the appended composite (over `pSpec₁ ++ₚ pSpec₂`) and the inner protocols. -/
+theorem rbrKnowledge_logfree_reduce
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (i : pSpec.ChallengeIdx) (stmt : StmtIn) (wit : WitIn) (init : ProbComp σ)
+    (Q : pSpec.Transcript i.1.castSucc × pSpec.Challenge i → Prop) :
+    Pr[fun ⟨transcript, challenge, _proveQueryLog⟩ => Q (transcript, challenge)
+      | do
+        (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+          (do
+            let ⟨⟨transcript, _⟩, proveQueryLog⟩ ← prover.runWithLogToRound i.1.castSucc stmt wit
+            let challenge ← liftComp (pSpec.getChallenge i) _
+            return (transcript, challenge, proveQueryLog))).run' (← init)]
+      = Pr[Q
+        | do
+          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+            (do
+              let ⟨transcript, _⟩ ← prover.runToRound i.1.castSucc stmt wit
+              let challenge ← liftComp (pSpec.getChallenge i) _
+              return (transcript, challenge))).run' (← init)] := by
+  rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
+  refine tsum_congr fun s => ?_
+  congr 1
+  rw [← map_runWithLog_body_eq_run_body impl prover i stmt wit s, probEvent_map]
+  rfl
+
 end OracleReduction

@@ -719,6 +719,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityBaseCasePairs
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityGeneralT1
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
+import ArkLib.Data.CodingTheory.ProximityGap.RigidityWindowHalving
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CollisionOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetConcentration
@@ -762,7 +763,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.RigidityWindowHalving
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1002,6 +1002,7 @@ import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeOracleCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposePerfectCompletenessThreaded
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
+import ArkLib.OracleReduction.ContinueFromToSupport
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
@@ -1041,7 +1042,6 @@ import ArkLib.OracleReduction.LiftContext.Reduction
 import ArkLib.OracleReduction.OracleInterface
 import ArkLib.OracleReduction.Prelude
 import ArkLib.OracleReduction.ProbOneBindCompose
-import ArkLib.OracleReduction.ContinueFromToSupport
 import ArkLib.OracleReduction.ProcessRoundSupport
 import ArkLib.OracleReduction.ProtocolSpec.Basic
 import ArkLib.OracleReduction.ProtocolSpec.Cast
