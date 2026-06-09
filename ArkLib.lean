@@ -346,6 +346,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateMasterLoop45
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop39
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop40
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop42
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateResultantLiftLoop52
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop27
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop28
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop29
