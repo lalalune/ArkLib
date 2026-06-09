@@ -286,4 +286,76 @@ theorem conj41_violation_witness :
 
 end Witness
 
+/-! ## The point-fiber theorem: killing the `q^t` pigeonhole denominator
+
+The in-tree interior list lower bounds (Round 5: `/q` at `t = 1`; Round 6: `/q²` at
+`t = 2`; "q^t denominator unkilled" was the named open residual) lose their field
+independence to a pigeonhole over symmetric-function targets. The point version of the
+decoupling removes the loss entirely: compatibility of a weight-`w` support at the
+**unit syndrome** `unitVec (w−1)` is *exactly* the vanishing of the first `c` elementary
+symmetric functions. Hence the syndrome-side list count at that single received word
+EQUALS the zero-fiber count — no averaging, no `/q^c`:
+
+* any field-independent lower bound on `#{E : |E| = w, e₁(E) = ⋯ = e_c(E) = 0}`
+  transports verbatim into an interior list-type lower bound at codimension excess
+  `c = t` (agreement `k + t`);
+* the open core of #232 (formulation (ii) = the fiber count past Johnson) is now the
+  *only* missing ingredient of the chain — the reduction itself is lossless and formal.
+
+Kernel-checked non-vacuity (`zero_fiber_instance`): over `ZMod 13`, `w = 3, c = 2`, the
+zero fiber is `{1,3,9}, {2,5,6}, {4,10,12}, {7,8,11}` — count `4`, strictly above the
+pigeonhole average `C(13,3)/13² ≈ 1.69`: per-point concentration, field-independent
+mechanism. -/
+
+section PointFiber
+
+/-- **The point-fiber theorem**: compatibility at the unit syndrome `unitVec (w−1)` is
+exactly the vanishing of the first `c` elementary symmetric functions of the support.
+The syndrome-side list count at this received word *equals* the `e₁ = ⋯ = e_c = 0`
+fiber count — the `q^t` pigeonhole denominator of the averaging route is gone. -/
+theorem point_compat_iff_esymm_zero {N c : ℕ} {E : Finset F}
+    (hw : E.card + c = N) (hc : 0 < c) (hcw : c ≤ E.card) :
+    CompatC (unitVec (E.card - 1)) N c E ↔
+      ∀ i ∈ Finset.Icc 1 c, E.val.esymm i = 0 := by
+  constructor
+  · intro h i hi
+    rw [Finset.mem_Icc] at hi
+    have hr := h (i - 1) (by omega)
+    rw [syndr_unitVec (by omega) (by omega), loc_coeff_esymm E (by omega)] at hr
+    have hcardi : E.card - (E.card - 1 - (i - 1)) = i := by omega
+    rw [hcardi] at hr
+    rcases mul_eq_zero.mp hr with hbad | hgood
+    · exact absurd hbad (pow_ne_zero _ (neg_ne_zero.mpr one_ne_zero))
+    · exact hgood
+  · intro h r hr
+    rw [syndr_unitVec (by omega) (by omega), loc_coeff_esymm E (by omega)]
+    have hcardr : E.card - (E.card - 1 - r) = r + 1 := by omega
+    rw [hcardr, h (r + 1) (Finset.mem_Icc.mpr (by omega)), mul_zero]
+
+open Classical in
+/-- The filter form: over any domain, the compatible supports at the unit syndrome are
+exactly the zero-fiber supports — the lossless (ii) ⟷ (iii) transfer, as a Finset
+identity. -/
+theorem zero_fiber_filter_eq [DecidableEq F] {N c w : ℕ}
+    (hw : w + c = N) (hc : 0 < c) (hcw : c ≤ w) (D₀ : Finset F) :
+    (D₀.powersetCard w).filter (fun E => CompatC (unitVec (w - 1)) N c E)
+      = (D₀.powersetCard w).filter (fun E => ∀ i ∈ Finset.Icc 1 c, E.val.esymm i = 0) := by
+  refine Finset.filter_congr fun E hE => ?_
+  have hcard : E.card = w := (Finset.mem_powersetCard.mp hE).2
+  rw [← hcard] at hw hcw ⊢
+  exact point_compat_iff_esymm_zero hw hc hcw
+
+instance : Fact (Nat.Prime 13) := ⟨by norm_num⟩
+
+/-- Kernel-checked non-vacuity: the zero fiber over `ZMod 13` at `w = 3, c = 2` has
+exactly 4 supports — strictly above the `C(13,3)/13² ≈ 1.69` pigeonhole average. The
+point-list at the unit syndrome therefore has exactly 4 codewords at agreement `k + 2`,
+by `zero_fiber_filter_eq`, with no field-size loss. -/
+theorem zero_fiber_instance :
+    ((((Finset.univ : Finset (ZMod 13)).powersetCard 3)).filter
+      (fun E => E.val.esymm 1 = 0 ∧ E.val.esymm 2 = 0)).card = 4 := by
+  decide
+
+end PointFiber
+
 end TopLine

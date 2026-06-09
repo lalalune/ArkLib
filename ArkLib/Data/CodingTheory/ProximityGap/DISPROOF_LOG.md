@@ -2701,3 +2701,25 @@ which doubles the search); step 2 of the theorem (w = antipode z) follows ALGEBR
 via sval_injective — no second bash. PATHWAY: 1✅ 2(base ✅, w≥3 open = Conway-Jones/Mann) 3✅ 4✅.
 The integer-bridge technique is the demonstrated route for the w≥3 windows (3-term, 4-term vanishing
 sums at 2-power orders are classified by the same basis-reduction; w=3 base case = 6-term sums).
+### O45 — the q^t pigeonhole denominator KILLED: point-fiber theorem (lossless (ii)→list transfer)
+
+Direct advance on the in-tree δ* reduction chain. Rounds 5/6 left the named residual
+"q^t denominator unkilled": the interior list lower bounds lost field independence to a
+pigeonhole over symmetric-function targets (/q at t=1, /q² at t=2), and the round-6
+no-go showed AVERAGING can never remove it. The point version of the O44 decoupling
+removes it by CONCENTRATION — choose the received word, not the average:
+
+* `point_compat_iff_esymm_zero` (TopDirectionLineCount.lean, axiom-clean): compatibility
+  of a weight-w support at the UNIT syndrome `unitVec (w−1)` ⟺ e₁(E) = ⋯ = e_c(E) = 0.
+* `zero_fiber_filter_eq`: the compatible supports at that single received word are
+  EXACTLY the zero-fiber supports, as a Finset identity — the syndrome-side list count
+  EQUALS the fiber count. No averaging, no /q^c, any field, any domain.
+* `zero_fiber_instance` (kernel decide): over ZMod 13 at w=3, c=2 the zero fiber is
+  {1,3,9}, {2,5,6}, {4,10,12}, {7,8,11} — count 4 > pigeonhole average C(13,3)/13² ≈ 1.69.
+  Per-point concentration, machine-checked.
+
+Consequence for the open core: ANY field-independent lower bound on the zero fiber
+#{E : |E| = w, e₁ = ⋯ = e_t = 0} now transports VERBATIM into an interior list-type
+lower bound at agreement k+t — the reduction is lossless and formal. The δ* program's
+missing ingredient is now ONLY the integer/combinatorial fiber question past Johnson
+(formulation (ii) in its purest form); every reduction step around it is machine-checked.
