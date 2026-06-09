@@ -2490,7 +2490,7 @@ verified, then formalized in `NormalRankSharpThreshold.lean` §Cyclic, axiom-cle
    sunflower-concentrated OR equal-esymm — both now theorem-level, with the quantitative
    count above them still the prize.
 
-### O41 — THE LOWER HALF CLOSES, per-prime, for the whole window: fixed-(s,r) instantiation of KKH ePrint 2026/782 Appendix A (nubs, 2026-06-09)
+### O44 — THE LOWER HALF CLOSES, per-prime, for the whole window: fixed-(s,r) instantiation of KKH ePrint 2026/782 Appendix A (nubs, 2026-06-09)
 
 **Citation correction first:** "KK25 (personal communications)" is PUBLISHED — Krachun–Kazanin–
 Haböck, *Failure of proximity gaps close to capacity*, ePrint **2026/782** (2026-04-20); update the
