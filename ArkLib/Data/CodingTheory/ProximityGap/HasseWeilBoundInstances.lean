@@ -71,6 +71,37 @@ theorem weil_genus2_F7 : ((affineCount 7 (quintic 7) : ℤ) - 7) ^ 2 ≤ 16 * 7 
 /-- Genus-2 Weil bound over `𝔽₁₁`. -/
 theorem weil_genus2_F11 : ((affineCount 11 (quintic 11) : ℤ) - 11) ^ 2 ≤ 16 * 11 := by decide
 
+/-! ### The multiplicative Weil **character-sum** bound `(∑ₓ χ(f x))² ≤ (deg f − 1)²·p`.
+
+This is the exact object #232's open core concerns: the Weil bound on a *character sum*
+`|∑ₓ χ(f x)| ≤ (deg f − 1)√p`. Here `χ` is the quadratic character `χ(a) = a^((p−1)/2) ∈ {0, ±1}`
+(written computably as `qc`), so the bound is the integer inequality `(∑ₓ χ(f x))² ≤ (deg f − 1)²·p`,
+closed by `decide`. (The open #232 input is the *subgroup-restricted, deep-interior* analogue for
+growing `q`; these are the complete-sum, fixed-`q` instances — true and proven, not the asymptotic
+prize.) -/
+
+/-- The computable quadratic character `χ : 𝔽_p → ℤ`, `χ(a) = a^((p−1)/2) ∈ {0, ±1}`. -/
+def qc (p : ℕ) [NeZero p] (a : ZMod p) : ℤ :=
+  if a = 0 then 0 else if a ^ ((p - 1) / 2) = 1 then 1 else -1
+
+/-- The complete quadratic character sum `∑ₓ χ(f x)`. -/
+def charSum (p : ℕ) [NeZero p] (f : ZMod p → ZMod p) : ℤ := ∑ x : ZMod p, qc p (f x)
+
+/-- Weil character-sum bound, cubic (`deg = 3`) over `𝔽₇`: `(∑ₓ χ(f x))² ≤ 2²·7`. -/
+theorem weilchar_cubic_F7 : (charSum 7 (cubic 7)) ^ 2 ≤ 2 ^ 2 * 7 := by decide
+
+/-- Weil character-sum bound, cubic over `𝔽₁₁`. -/
+theorem weilchar_cubic_F11 : (charSum 11 (cubic 11)) ^ 2 ≤ 2 ^ 2 * 11 := by decide
+
+/-- Weil character-sum bound, cubic over `𝔽₁₃`. -/
+theorem weilchar_cubic_F13 : (charSum 13 (cubic 13)) ^ 2 ≤ 2 ^ 2 * 13 := by decide
+
+/-- Weil character-sum bound, quintic (`deg = 5`) over `𝔽₇`: `(∑ₓ χ(f x))² ≤ 4²·7`. -/
+theorem weilchar_quintic_F7 : (charSum 7 (quintic 7)) ^ 2 ≤ 4 ^ 2 * 7 := by decide
+
+/-- Weil character-sum bound, quintic over `𝔽₁₁`. -/
+theorem weilchar_quintic_F11 : (charSum 11 (quintic 11)) ^ 2 ≤ 4 ^ 2 * 11 := by decide
+
 end ArkLib.CodingTheory.HasseWeilInstances
 
 /-! ## Axiom audit -/
@@ -83,4 +114,9 @@ open ArkLib.CodingTheory.HasseWeilInstances
 #print axioms hasse_F17
 #print axioms weil_genus2_F7
 #print axioms weil_genus2_F11
+#print axioms weilchar_cubic_F7
+#print axioms weilchar_cubic_F11
+#print axioms weilchar_cubic_F13
+#print axioms weilchar_quintic_F7
+#print axioms weilchar_quintic_F11
 end AxiomAudit

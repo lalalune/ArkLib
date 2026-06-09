@@ -83,6 +83,7 @@ The witness `witMid` is taken from the plain event's second conjunct; the plain 
 conjunct `¬ ∃ w, kSF i.castSucc … w` kills *every* witness in the `i.castSucc` slot, in particular
 `extractor.extractMid … witMid`. -/
 theorem toStateFunctionFlip_imp_knowledgeFlip
+    {StmtOut : Type}
     {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
     {verifier : Verifier oSpec StmtIn StmtOut pSpec} {WitMid : Fin (n + 1) → Type}
     {extractor : Extractor.RoundByRound oSpec StmtIn WitIn WitOut pSpec WitMid}
@@ -242,6 +243,7 @@ theorem rbrSoundness_of_knowledgeFlip
 oracle verifier `V` once the per-round, all-prover-witness-type knowledge-flip bound `hKnowFlip` is
 supplied for a chosen knowledge state function `kSF`. -/
 theorem oracleVerifier_rbrSoundness_of_knowledgeFlip
+    {StmtOut : Type}
     {ιₛᵢ : Type} {OStmtIn : ιₛᵢ → Type} {ιₛₒ : Type} {OStmtOut : ιₛₒ → Type}
     [(oSpec + [pSpec.Challenge]ₒ).Fintype] [(oSpec + [pSpec.Challenge]ₒ).Inhabited]
     {relIn : Set ((StmtIn × ∀ i, OStmtIn i) × WitIn)}
