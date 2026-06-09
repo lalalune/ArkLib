@@ -1054,6 +1054,7 @@ import ArkLib.ProofSystem.Fri.Spec.Soundness
 import ArkLib.ProofSystem.Logup.Common
 import ArkLib.ProofSystem.Logup.LogupGrandSumIdentity
 import ArkLib.ProofSystem.Logup.Protocol
+import ArkLib.ProofSystem.Logup.SZTotalDegree
 import ArkLib.ProofSystem.Logup.Security.BridgeAndAppendResiduals
 import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.ProofSystem.Logup.Security.Issue13Status
