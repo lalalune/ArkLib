@@ -944,3 +944,37 @@ The *forward* direction of the equivalence (the prize is **as hard as** RS list-
 up to `1−ρ−η` — a classical, wide-open problem. The prize is neither closed nor mintable; it is now
 *provably exactly as hard as* that problem. Both O11 (disproof side, §7 sumset) and O10/O12 (the
 list-decoding core) remain open.
+
+### O13 / Loop48 — BCHKS Claim 6.2 (the rational-function bridge) formalized; the Loop47 black box discharged
+
+Loop47 left one opaque input: `hMany_bridge : q ≤ 2·D·bad`, attributed to **BCHKS Claim 6.2** (the
+bridge `f(x)=c(x)/(x−α)`, `g(x)=−1/(x−α)`, so `f+z·g=(c(x)−z)/(x−α)`). Loop48 formalizes its
+algebraic heart sorry-free, axiom-clean, in `CandidateBridgeClaim62Loop48.lean`, splitting the black
+box into a *proven* algebraic half and a *proven* combinatorial half — leaving only the genuine
+distance/genericity input explicit.
+
+* **Algebraic core (`bridge_isCodeword`, `bridge_quotient_natDegree_lt`).** At `z = c.eval α`, the
+  bridge function is an *honest polynomial*: `(X − α) ∣ (c − c(α))` (Mathlib
+  `X_sub_C_dvd_sub_C_eval`), and for non-constant `c` the quotient `(c−z)/(X−α)` has
+  `natDegree = deg c − 1 < deg c` — a codeword of the *once-punctured* RS code. This is the precise
+  sense in which "the line `{f+z·g}` meets the code at `z = c(α)`": it lands on a lower-degree
+  codeword. So **every realized value `c(α)` is a bad combining scalar**.
+* **Counting / injectivity (`card_values_le_badScalars`, `realized_values_are_bad`,
+  `bad_ge_distinct_values`).** The value→scalar map is the identity on values, hence trivially
+  injective; combined with the bridge membership it gives `B := #(realized values) ≤ #badSet = bad`.
+  The old assumption `bad ≥ B` is now a *theorem*.
+* **Many-values arithmetic (`manyValues_arith`).** From the in-tree `manyValues_of_pairwise_agree`
+  output `L·q ≤ B·(q + L·A)` (point set = scalar field, `|ι| = q`; `A = k−1`; `L > q` codewords =
+  list-decoding failure) and `A+1 ≤ 2D`, a clean nat cancellation yields `q ≤ 2·D·B`. Sorry-free.
+* **Capstone (`prize_false_of_listDecoding_failure_full`).** Chaining the two proven halves with the
+  prize bound `bad ≤ D^{c₁}` and a large field `2·D^{c₁+1} < q` refutes any `q`-independent prize
+  triple. **No opaque arithmetic remains** — the inputs are exactly the honest external facts:
+  list-decoding fails at the prize radius (`> q` codewords pairwise agreeing on `≤ A` points), the
+  bridge points are bad (the line is far elsewhere — the defining proximity-gap distance input), and
+  the field is large relative to the fixed domain `D`.
+
+**Net.** Loop47's "list-decoding failure ⟹ prize false" is now driven by a *verified* Claim 6.2,
+not a cited black box. The equivalence "prize ⟺ RS list-decoding to `1−ρ−η` with `q`-independent
+lists" stands on machine-checked algebra on both directions' combinatorial cores. What is left is
+genuinely the classical list-decoding question itself (O10/O12) and the §7 sumset disproof route
+(O11) — both still OPEN. The prize remains OPEN; its *reduction infrastructure* is now sorry-free.
