@@ -567,6 +567,7 @@ theorem batchingReduction_perfectCompleteness
     (init := init) (impl := impl) :=
   hBatching
 
+set_option maxHeartbeats 1000000 in
 /-- **Batching perfect completeness — `batchingReduction_perfectCompleteness_residual` PROVEN.**
 The honest batching reduction is perfectly complete (given `NeverFail init`). The verifier-run
 collapse is the deterministic `oracleVerifier_verify_collapse`; the honest accept branch fires
@@ -579,7 +580,6 @@ carried from the input relation. The monadic run-shape is the proven 2-message-r
 
 Consumers carrying `NeverFail init` should call this directly (the `_residual` `Prop` is stated
 without `NeverFail`). -/
-set_option maxHeartbeats 1000000 in
 theorem batchingReduction_perfectCompleteness_proved [IsDomain L] [IsDomain K]
     (hInit : NeverFail init) :
     batchingReduction_perfectCompleteness_residual
