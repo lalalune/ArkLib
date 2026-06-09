@@ -50,6 +50,40 @@ theorem toMessagesUpTo_concat {n : ℕ} {pSpec : ProtocolSpec n} {m : Fin n}
   | last => intro _; simp [Fin.snoc_last, Fin.dconcat_last]
   | cast k => intro _; simp [Fin.snoc_castSucc, Fin.dconcat_castSucc]
 
+namespace MessagesUpTo
+
+/-- When the protocol has no challenge rounds, the Fiat-Shamir partial transcript derivation never
+queries the challenge oracle: it is a pure assembly of the messages into a transcript. -/
+theorem deriveTranscriptSRAux_noChallenge {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type}
+    {oSpec : OracleSpec ι} {StmtIn : Type} [IsEmpty pSpec.ChallengeIdx]
+    (stmt : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k) (j : Fin (k + 1)) :
+    ∃ t, deriveTranscriptSRAux (oSpec := oSpec) stmt k messages j = pure t := by
+  induction j using Fin.induction with
+  | zero =>
+    refine ⟨fun i => i.elim0, ?_⟩
+    simp only [deriveTranscriptSRAux, Fin.induction_zero]
+  | succ i ih =>
+    obtain ⟨t, ht⟩ := ih
+    simp only [deriveTranscriptSRAux] at ht ⊢
+    rw [Fin.induction_succ, ht, pure_bind]
+    split
+    · next hd => exact (IsEmpty.false (⟨i.castLE (by omega), hd⟩ : pSpec.ChallengeIdx)).elim
+    · next _ => exact ⟨_, rfl⟩
+
+end MessagesUpTo
+
+namespace Messages
+
+/-- When the protocol has no challenge rounds, the Fiat-Shamir full-transcript derivation is a pure
+assembly of the messages into a transcript (no challenge oracle query). -/
+theorem deriveTranscriptFS_noChallenge {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type}
+    {oSpec : OracleSpec ι} {StmtIn : Type} [IsEmpty pSpec.ChallengeIdx]
+    (stmt : StmtIn) (messages : pSpec.Messages) :
+    ∃ t, Messages.deriveTranscriptFS (oSpec := oSpec) stmt messages = pure t :=
+  MessagesUpTo.deriveTranscriptSRAux_noChallenge stmt (Fin.last n) messages (Fin.last n)
+
+end Messages
+
 end ProtocolSpec
 
 namespace Reduction
