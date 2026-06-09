@@ -770,6 +770,7 @@ theorem batchingReduction_perfectCompleteness_proved [IsDomain L] [IsDomain K]
     exact ⟨h_rel_out r1, rfl, rfl⟩
 
 
+
 /-- Mismatch polynomial from column-decomposition difference `msg0 - s_bar`. The batching verifier
 target `compute_s0` reads `decomposeColumns`, so the soundness mismatch test uses the same
 (faithful, by `decomposeColumns_spec`) column decomposition. -/
