@@ -148,6 +148,36 @@ theorem two_pow_dvd_one_add_two_pow_pow (m j : ℕ) (hm : 1 ≤ m) :
     rw [key, show m + (j + 1) = (m + j) + 1 from by ring, pow_succ]
     exact mul_dvd_mul ih h2
 
+/-- **Exact 2-adic valuation.** `(1+2^m)^{2^j} ≡ 1 + 2^{m+j} (mod 2^{m+j+1})` for `m ≥ 2`:
+the term `2^{m+j}` is exactly the next bit, giving both `2^{m+j} ∣ ((1+2^m)^{2^j}-1)` and its
+sharpness (`2^{m+j+1} ∤`). Proven by an explicit-witness `(A-1)(A+1)` induction. -/
+theorem one_add_two_pow_pow_exact (m j : ℕ) (hm : 2 ≤ m) :
+    ∃ c, (1 + 2 ^ m) ^ (2 ^ j) = 1 + 2 ^ (m + j) + 2 ^ (m + j + 1) * c := by
+  induction j with
+  | zero => exact ⟨0, by ring⟩
+  | succ j ih =>
+    obtain ⟨c, hc⟩ := ih
+    obtain ⟨d, hd⟩ : ∃ d, m + j = d + 2 := ⟨m + j - 2, by omega⟩
+    refine ⟨c + 2 ^ d * (1 + 2 * c) ^ 2, ?_⟩
+    have e : (1 + 2 ^ m) ^ 2 ^ (j + 1) = ((1 + 2 ^ m) ^ 2 ^ j) ^ 2 := by rw [pow_succ, pow_mul]
+    rw [e, hc, hd, show m + (j + 1) = d + 3 from by omega, show d + 2 + 1 = d + 3 from by ring]
+    simp only [pow_add]; ring
+
+/-- **Order does not divide a half-step.** For `k = 2^κ` with `2k ∣ 2^α`, the 2-adic order of
+`4k+1` does NOT divide `2^α/(4k)`: `(4k+1)^{2^α/(4k)} ≢ 1 (mod 2^{α+1})`. With the order-divides
+fact, this pins the order to exactly `2^α/(2k)`. -/
+theorem four_mul_add_one_pow_half_ord_mod (α k κ : ℕ) (hk : k = 2 ^ κ) (hκ : κ + 2 ≤ α) :
+    (4 * k + 1) ^ (2 ^ (α - κ - 2)) % 2 ^ (α + 1) ≠ 1 := by
+  subst hk
+  obtain ⟨c, hc⟩ := one_add_two_pow_pow_exact (κ + 2) (α - κ - 2) (by omega)
+  have hbase : (4 * 2 ^ κ + 1 : ℕ) = 1 + 2 ^ (κ + 2) := by rw [pow_add]; ring
+  rw [hbase, hc]
+  have hE1 : (2 : ℕ) ^ (α + 1) = 2 ^ ((κ + 2) + (α - κ - 2) + 1) := by congr 1; omega
+  have hEpos : 1 < (2 : ℕ) ^ ((κ + 2) + (α - κ - 2)) := Nat.one_lt_pow (by omega) (by norm_num)
+  rw [hE1, Nat.add_mul_mod_self_left,
+    Nat.mod_eq_of_lt (by rw [pow_succ]; omega)]
+  omega
+
 /-- **Order divides.** For `k = 2^κ` with `2k ∣ 2^α`, the 2-adic order of `4k+1` divides
 `2^α/(2k)`: `2^{α+1} ∣ (4k+1)^{2^α/(2k)} - 1`. This is exactly the wrap-around fact that makes
 `Hexp` closed under multiplication by `4k+1` mod `2^{α+1}`. -/
