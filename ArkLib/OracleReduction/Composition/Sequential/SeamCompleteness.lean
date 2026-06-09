@@ -71,4 +71,57 @@ theorem probComp_seam_completeness
 
 end OracleReduction
 
+namespace OptionTStateT
+
+variable {ι : Type} {spec : OracleSpec ι} {σ : Type}
+
+/-- **Two-phase seam *completeness* with the snd↔V₁ reorder built in.** The completeness twin of
+`OptionTStateT.probComp_seam_swap_union_le` (the soundness reorder-union bound in `RunUnroll.lean`).
+
+The appended *honest* reduction run executes both prover phases first (`FST`, then `SND`) and then
+both verifier phases (`W1 = V₁`, then `W2 = V₂`): the natural order `FST → SND → W1 → W2`. To apply
+the two-stage completeness union bound `OracleReduction.probComp_seam_completeness` (whose stages are
+`(FST→W1) ; (SND→W2) = R₁.run ; R₂.run`) the `SND` prover stage and the `W1` verifier stage must be
+swapped. Under a state-preserving oracle implementation (`hso`) the two stages are distributionally
+independent, so `OptionTStateT.seam_swap_evalDist_eq` performs that reorder as a bare `evalDist`
+equality (predicate-independent, hence valid for completeness just as for soundness). This lemma
+chains that reorder with `probComp_seam_completeness`, in the *completeness* failure convention
+(`none` is bad; predicates `¬ Option.elim · False ·`). The result is the additive error `e₁ + e₂`.
+
+The side-condition `hB` (the `SND` prover phase never fails) holds for any prover run, which is a
+plain `OracleComp` with no `OptionT` failure. -/
+theorem probComp_seam_swap_completeness
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (pg : C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 False (fun p : A × C => pg p.2)
+          | init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
+    (h₂ : ∀ (p : A × C) (s' : σ),
+          (some p, s') ∈ support (init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p.2 →
+          Pr[fun o => ¬ Option.elim o False qg
+            | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
+    Pr[fun o => ¬ Option.elim o False qg
+        | init >>= fun s => (simulateQ so
+            (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+              W2 x a s₂).run).run' s] ≤ e₁ + e₂ := by
+  have key := seam_swap_evalDist_eq init so hso FST SND W1 W2 hB
+  have hmain := OracleReduction.probComp_seam_completeness init so
+    (liftM FST >>= fun x => W1 x >>= fun s₂ => (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+    (fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2)
+    (fun p : A × C => pg p.2) qg e₁ e₂ h₁ h₂
+  unfold probEvent at hmain ⊢
+  rw [key]; exact hmain
+
+end OptionTStateT
+
 #print axioms OracleReduction.probComp_seam_completeness
+#print axioms OptionTStateT.probComp_seam_swap_completeness
