@@ -154,7 +154,7 @@ variable [DecidableEq F]
 /-- The "interpolating vanisher" of a subset `A` of the subgroup, indexed by `Fin n`:
 `gPoly ω A = ∏_{j∈A} (X − ω^j)`. It is the monic degree-`|A|` polynomial vanishing **exactly** on
 `{ω^j : j ∈ A}`. -/
-noncomputable def gPoly (ω : F) (A : Finset (Fin n)) : F[X] :=
+noncomputable def gPoly {n : ℕ} (ω : F) (A : Finset (Fin n)) : F[X] :=
   ∏ j ∈ A, (X - C (ω ^ (j : ℕ)))
 
 omit [DecidableEq F] in

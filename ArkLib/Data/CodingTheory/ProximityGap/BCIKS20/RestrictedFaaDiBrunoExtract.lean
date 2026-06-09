@@ -278,6 +278,59 @@ theorem coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree_div_�
   rw [← hneg]
   field_simp [hζ]
 
+/-- **Order-zero carved P2 core ⟺ the uncleared-Hasse/`W^natDegree` equation (axiom-clean).**
+This is the central order-zero connector: the carved core `RestrictedFaaDiBrunoMatchAt … 0` (which
+unfolds to `restrictedFaaDiBrunoSum … 0 = -(ζ · coeff 1 βHenselAssembled)`) is exactly the equation
+`hasseEvalAtRoot … 1 0 = embed(hasseCoeffRepr𝒪 … 1 0) / W ^ R.natDegree`, by reabsorbing the LHS
+(`restrictedFaaDiBrunoSum_zero_eq_hasseEvalAtRoot`) and the RHS
+(`neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree`). -/
+theorem restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (_hζ : ClaimA2.ζ R x₀ H ≠ 0) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      hasseEvalAtRoot H x₀ R 1 0
+        = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+            / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
+  unfold RestrictedFaaDiBrunoMatchAt
+  rw [restrictedFaaDiBrunoSum_zero_eq_hasseEvalAtRoot H x₀ R hHyp,
+    neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd]
+
+/-- **Build the normalized partition order-zero residual from the uncleared-Hasse/`W^natDegree`
+equation.**  Composes the order-zero match⟺equation connector with the proven
+`match ⟺ partitionMatch` normalization (`restrictedMatchAt_iff_partitionMatchAt`). -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
+    (hzero : hasseEvalAtRoot H x₀ R 1 0 =
+        embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).mp
+    ((restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd hζ).mpr hzero)
+
+/-- **Project the uncleared-Hasse/`W^natDegree` equation from the normalized partition order-zero
+residual.** -/
+theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    hasseEvalAtRoot H x₀ R 1 0 =
+      embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+        / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
+  (restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd hζ).mp
+    ((restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).mpr hpart)
+
+/-- **Project the uncleared-Hasse/`W^natDegree` equation directly from the carved order-zero P2
+core** (the `RestrictedFaaDiBrunoMatchAt`-sided sibling of the partition-match projection). -/
+theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    hasseEvalAtRoot H x₀ R 1 0 =
+      embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+        / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
+  (restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd hζ).mp hmatch
+
 /-- **Order-zero Taylor/W-divisor target.** The fixed order-zero P2 obstruction after all proven
 normalizations: the root-side shifted Hasse-Taylor sum with powers `(T/W)^i` equals the un-cleared
 shifted Hasse-Taylor sum with powers `T^i`, divided by the global factor `W ^ R.natDegree`. -/

@@ -1,7 +1,7 @@
 import Mathlib.Tactic
-import Mathlib.Data.Polynomial.Basic
-import Mathlib.Data.Polynomial.Eval
-import Mathlib.Data.Polynomial.Roots
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.Algebra.Polynomial.Roots
 import ArkLib.Data.Polynomial.Multivariate.Interpolation
 import ArkLib.Data.Polynomial.Multivariate.HasseDerivative
 
