@@ -1885,3 +1885,17 @@ the per-line second moment at a=4 (98%) — co-occurrence is NOT rare; the pair 
 is what controls it. **Next lever:** assemble per-line ∑_γ|Λ(γ,a)|² ≤ M + Σ_pairs 2(n−w)/(2a−w)
 over line-list pairs (M = per-line first moment via the same one-vote count ≤ n/a per codeword),
 then close the loop against the per-line list bound the prize formula needs.
+
+### O12 — naive exhaustiveness REFUTED: dense secondary list elements past Johnson (nubs, 2026-06-09)
+
+Max-list hunt past Johnson (n=16, k=8, agree ≥ 9 = radius 7/16 where johnsonDenom < 0, BabyBear,
+noise-free, reproducible seed 13): hill-climbing along the KK line found λ with an e₁-fiber giving
+THREE simultaneous sparse-lift witnesses (agreement 10) — and an exact list of **19**, the other
+**16 elements DENSE** (full support 0..7, not X²-shaped), at exactly-threshold agreement 9. So the
+sparse-lift structured families do NOT exhaust beyond-Johnson lists: multi-witness words carry a
+derived dense population. Random starts stay at list ≈ 0 — big lists remain reachable only from
+structure. **The upper-bound (P-B / S-two Conj 1 / off-diagonal) question is now quantified as the
+ENRICHMENT RATIO** (max-list / structured-core; ≥ 6× at n=16): polynomial ⟹ the 2^{O(H/η)} budget
+survives (count = N₀-type core × poly); exponential ⟹ Conj 1 itself is threatened. Next probes:
+ratio scaling at n=32; theory: are dense elements interpolation artifacts of witness agreement-set
+unions (their exactly-threshold agreement suggests so)? Scripts: probe_maxlist.py, probe_dissect.py.
