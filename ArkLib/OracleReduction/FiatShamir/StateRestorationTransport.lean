@@ -2978,6 +2978,15 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
           pure (stmtIn, extractedWitIn, stmtOut, ctxOut.2) :
             OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
               (StmtIn × WitIn × StmtOut × WitOut)).run) := by
+  have hWQ : ∀ (proverResult : (Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
+        StmtOut × WitOut)),
+      (simulateQ loggingOracle
+        (Verifier.run stmtIn proverResult.1 V.fiatShamir)).run =
+      OracleComp.withQueryLog ((V.fiatShamir).verify stmtIn proverResult.1).run := by
+    intro proverResult
+    rfl
+  unfold Reduction.runWithLog
+  trace_state
   sorry
 
 /-- Re-fold the unfolded one-message Fiat-Shamir protocol spec (exposed by `dsimp` of the reducible

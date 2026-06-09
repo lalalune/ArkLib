@@ -67,14 +67,6 @@ theorem append_soundness_msg'
   simp only [liftM_bind, bind_assoc, map_eq_pure_bind, liftM_map, bind_map_left,
     OptionT.liftM_run_getM_bind, liftM_pure, pure_bind,
     FullTranscript.append_fst, FullTranscript.append_snd]
-  -- Reorder `snd` past `V₁` (state-preserving ⇒ independent).
-  simp only [seam_swap_probEvent_eq init pImpl (addLift_state_preserving impl himplSP)
-        (liftM (prover.fst.run stmtIn witIn))
-        (fun x => liftM (prover.snd.run x.2.1 x.2.2))
-        (fun x => liftM (V₁.run stmtIn x.1))
-        (fun x a s₂ => liftM (V₂.run s₂ a.1) >>= fun s₃ =>
-          (pure ((x.1 ++ₜ a.1, a.2.1, a.2.2), s₃) : OptionT (OracleComp _) _))
-        (fun x s' => simulateQ_run_neverFail _ (addLift_neverFail impl himplNF) _ s')]
   -- Bridge the bad-event predicate to the union-bound `¬·∈lang` form.
   rw [show (fun o : Option ((FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × WitOut) × Stmt₃) =>
         o.elim False fun x => x.2 ∈ lang₃)
@@ -82,18 +74,19 @@ theorem append_soundness_msg'
         funext o; cases o with
         | none => simp
         | some d => simp only [Option.elim_some, not_not]]
-  -- Two-stage union bound: `stmtOut ∈ lang₃` factors through `stmt₂ ∈ lang₂`, giving `ε₁ + ε₂`.
-  refine probComp_seam_union_le init pImpl
-    (liftM (prover.fst.run stmtIn witIn) >>= fun x =>
-      liftM (V₁.run stmtIn x.1) >>= fun s₂ =>
-        (pure (x, s₂) : OptionT (OracleComp _) _))
-    (fun p => liftM (prover.snd.run p.1.2.1 p.1.2.2) >>= fun a =>
-      liftM (V₂.run p.2 a.1) >>= fun s₃ =>
-        (pure ((p.1.1 ++ₜ a.1, a.2.1, a.2.2), s₃) : OptionT (OracleComp _) _))
-    (fun p => p.2 ∉ lang₂) (fun d => d.2 ∉ lang₃) (ε₁ : ℝ≥0∞) (ε₂ : ℝ≥0∞) ?_ ?_
+  -- Reorder (`snd` past `V₁`) + two-stage union bound: `stmtOut ∈ lang₃` factors through
+  -- `stmt₂ ∈ lang₂`, giving `ε₁ + ε₂`. The goal is in `probComp_seam_swap_union_le`'s natural
+  -- order, so all seam pieces are supplied explicitly (first-order; no HO-inference blowup).
+  refine probComp_seam_swap_union_le init pImpl (addLift_state_preserving impl himplSP)
+    (liftM (prover.fst.run stmtIn witIn))
+    (fun x => liftM (prover.snd.run x.2.1 x.2.2))
+    _ _
+    (fun x s' => simulateQ_run_neverFail _ (addLift_neverFail impl himplNF) _ s')
+    (fun s₂ => s₂ ∉ lang₂) (fun d : _ × Stmt₃ => d.2 ∉ lang₃) (ε₁ : ℝ≥0∞) (ε₂ : ℝ≥0∞) ?_ ?_
   · -- Phase-1 bound: `V₁.soundness ε₁` on the phase-1 soundness prover `prover.fstSound`.
-    sorry
+    exact h₁ _ _ witIn (Prover.fstSound prover) stmtIn hstmtIn pImpl
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
-    sorry
+    intro p s' hp
+    exact h₂ _ _ p.1.2.1 (Prover.sndSound prover) p.2 hp pImpl
 
 end Verifier
