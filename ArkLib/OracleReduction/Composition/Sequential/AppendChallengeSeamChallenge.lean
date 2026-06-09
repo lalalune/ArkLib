@@ -87,10 +87,19 @@ theorem append_game_factor_challenge
   simp only [gameOf]
   rw [evalDist_bind, evalDist_bind]
   refine bind_congr fun s => ?_
-  -- The seam-challenge swap under simulation. The appended run's seam `getChallenge` sits before the
-  -- `P₁.output` replay; `evalDist_simulateQ_swap_prefix` (state-preserving) commutes them to the
-  -- natural order, matching the bare `Prover.append_run_evalDist_challenge` reorder lifted through
-  -- `simulateQ`.
+  -- Reconcile the verifier/`getM` structure of the appended `Reduction.run` syntactically
+  -- (seam-agnostic, exactly the non-prover part of `append_run_natural_msg`). This brings the goal to
+  -- `𝒟[simulateQ so (P_app.run ≫ V₁(tr₁) ≫ V₂(tr₂))] = 𝒟[simulateQ so (P₁ ≫ P₂ ≫ V₁ ≫ V₂)]` — the
+  -- verifiers already match (both read `tr₁ = proverResult.1.fst`, `tr₂ = proverResult.1.snd`), so the
+  -- ONLY remaining difference is the **prover reorder** `P_app.run ~ P₁;P₂`.
+  simp only [Reduction.run, Reduction.append, Verifier.append, Verifier.run, liftM_bind,
+    bind_assoc, OptionT.liftM_run_getM_bind, liftM_pure, pure_bind, FullTranscript.append_fst,
+    FullTranscript.append_snd]
+  -- Remaining residual (narrowed): the simulated prover reorder — the appended prover run
+  -- `(R₁.prover.append R₂.prover).run` samples the seam `getChallenge` before consuming `P₁.output`,
+  -- equalling the sequential `P₁;P₂` run in distribution under the state-preserving honest impl
+  -- (`Prover.append_run_evalDist_challenge` mirrored at the `simulateQ` level via the unroll
+  -- `append_continueFromTo_seam_start_challenge_split` + `evalDist_simulateQ_swap_prefix`).
   sorry
 
 /-- **Challenge-seam append completeness (`hGameFactor` discharged via the seam-challenge swap).**
