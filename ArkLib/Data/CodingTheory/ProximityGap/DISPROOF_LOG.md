@@ -2880,3 +2880,17 @@ queued); general-t induction recorded here. REMAINING ANALYTIC GAP (stated exact
 effective height threshold for the char-0 ⟹ F_p transfer at given (n, w) — the same
 effective-Schwartz–Zippel question as 2026/858's p₀, now attached to a TRUE theorem; and
 extending from unit syndromes to all received words (the MCA quantifier).
+
+### O50 / Round-26 — the WINDOW-HALVING ENGINE (full-window rigidity = two verified components)
+
+`RigidityWindowHalving.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+odd_psum_vanish (odd power sums ≡ 0 on antipodally-closed sets — R8 engine at ω=−1; odd window
+conditions AUTOMATIC) + squares_fiber/even_psum_halves (squaring exactly 2-to-1; p_{2l}(A) =
+2·p_l(A²) — even conditions descend EXACTLY) + squares_disjoint + window_halving_step (THE ENGINE:
+disjoint antipodally-closed equal-p_1..p_t ⟹ squares disjoint equal-p_1..p_{⌊t/2⌋}; scale μ_{2N}→μ_N,
+independence inherited by {ζ^{2j}}). WITH R25: full-window rigidity (disjoint case) = iterate
+R25+engine ⌈log₂(t+1)⌉ times ⟹ 2^k-lift structure ⟹ FLOOR (R22) = CEILING. REMAINING ASSEMBLY (not
+new math): (i) the level-iteration statement (re-encoding bookkeeping), (ii) the sunflower-core
+reduction (non-disjoint: divide by common locator factor, top-window agreement passes to cofactors),
+(iii) the final composition into Conj-41/δ*. Power-sum ≡ e-window over CharZero by Newton (Mathlib
+has NewtonIdentities for the formal bridge when needed).
