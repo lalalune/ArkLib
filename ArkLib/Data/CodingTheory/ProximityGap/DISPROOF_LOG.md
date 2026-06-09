@@ -1654,3 +1654,21 @@ deep-interior δ* problem is hard over finite fields and easy in char 0 — now 
 counterexample. The honest open core: the *true* sum-product additive-energy bound for `2^k`-subgroups
 over `F_q` (which determines whether the §7/averaging attack is defeated), NOT the char-0 value. 51
 verified bricks rounds 1–9; this one corrects the record.
+
+### O26 / Round-11 — 4 bricks: unconditional tightness/Q, δ* table, Fisher past Johnson, RS averaging LB
+
+Third thrash-safe multi-agent round. All 4 verified+axiom-clean+non-vacuous. On main `7865357ce`:
+* `LamLeungUnconditionalQ` — DISCHARGES the cyclotomic-indep hypothesis: linearIndependent_pow_le
+  (N≤deg minpoly ⟹ {ζ^j} indep) + antipodal_of_sum_zero + UNCONDITIONAL ℚ(i) instance antipodal_Qi.
+  General N=2^{m-1} needs only the cyclotomic degree φ(2N)=N (Mathlib has, not yet assembled).
+* `DeltaStarTableSmoothInstances` — 3 NEW exact interior crossovers (ZMod17 k=3 δ*=11/16; ZMod41 order-8
+  δ*=5/8; ZMod97 order-8 δ*=5/8), maximality proven STRUCTURALLY (antitone, all a≥a*).
+* `FisherPastJohnsonCap` — polynomial-method cap F.card·C(t,a+1)≤C(n,a+1) valid PAST Johnson (n=16,t=4,
+  a=1: Johnson denom t²-an=0 vacuous, Fisher=20). HONEST FINDING: for RS, |Λ|≤C(n,k)/C((1-δ)n,k); at
+  Johnson ≈(n/k)^{k/2} which for prize k≤2^40 ≫ ε*|F| — so Fisher is valid-but-too-weak past Johnson,
+  does NOT push δ* up. Concrete reason the upper-bound-past-Johnson is hard (simple caps too lossy).
+* `AveragingListLowerBoundRS` — averaging LB maxList≥C(n,k+t)/q^t as a genuine theorem (pigeonhole +
+  injective S↦codeword), discharges BestProvableBracket's hypothesis.
+
+**Net.** Asymptotic open core (sharp list UPPER bound past Johnson) unmoved — now better-understood as to
+why (Fisher too weak, Johnson's sharper poly bound stops exactly at 1-√ρ). Issue stays open.
