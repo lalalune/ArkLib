@@ -765,6 +765,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
+import ArkLib.Data.CodingTheory.ProximityGap.RigidityFullWindow
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
