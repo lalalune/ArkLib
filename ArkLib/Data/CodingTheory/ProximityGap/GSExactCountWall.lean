@@ -14,6 +14,8 @@ open Finset
 
 namespace GSExactWall
 
+variable {c D : ℕ}
+
 /-- The exact `(1,c)`-weighted-degree monomial count (with `c = k − 1`):
 `gsCount c D = #{(i,j) : i + c·j < D} = ∑_{j<D} (D − c·j)` (truncated subtraction;
 terms with `c·j ≥ D` vanish). This matches the `gsSupport` cardinality used by the
@@ -23,7 +25,7 @@ def gsCount (c D : ℕ) : ℕ := ∑ j ∈ Finset.range D, (D - c * j)
 /-- The number of genuinely contributing indices: `q = ⌈D/c⌉ = (D + c − 1)/c`. -/
 def qIdx (c D : ℕ) : ℕ := (D + c - 1) / c
 
-theorem qIdx_le (hc : 0 < c) (D : ℕ) : c * qIdx c D ≤ D + c - 1 := by
+theorem qIdx_le (hc : 0 < c) : c * qIdx c D ≤ D + c - 1 := by
   rw [qIdx, Nat.mul_comm]
   exact Nat.div_mul_le_self _ _
 
