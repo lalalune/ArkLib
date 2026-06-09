@@ -435,6 +435,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FisherJohnsonCrossover
 import ArkLib.Data.CodingTheory.ProximityGap.FisherPastJohnsonCap
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
+import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Admissible
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Claim16Transport
 import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
@@ -445,12 +446,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.GK16Wronskian
 import ArkLib.Data.CodingTheory.ProximityGap.GSCounting
 import ArkLib.Data.CodingTheory.ProximityGap.GSExactCountWall
 import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
+import ArkLib.Data.CodingTheory.ProximityGap.GSFullListBound
+import ArkLib.Data.CodingTheory.ProximityGap.GSHasseMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.GSInterpolationExistence
 import ArkLib.Data.CodingTheory.ProximityGap.GSJohnsonWall
-import ArkLib.Data.CodingTheory.ProximityGap.GSHasseMultiplicity
-import ArkLib.Data.CodingTheory.ProximityGap.GSFullListBound
-import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
-import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
@@ -585,6 +584,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LogUpAppendProof
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountGrandChallenge
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountRatio
+import ArkLib.Data.CodingTheory.ProximityGap.MCABadScalarSpreadBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MCABracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCAConjectureRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarBracket
@@ -655,6 +655,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesA
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesB
@@ -728,7 +729,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.MCABadScalarSpreadBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1255,6 +1255,7 @@ import ArkLib.ToMathlib.BetaToCurveCoeffPolys
 import ArkLib.ToMathlib.BetaToCurveCoeffPolysOffcentre
 import ArkLib.ToMathlib.BetaWeightCollapse
 import ArkLib.ToMathlib.BetaWeightInduction
+import ArkLib.ToMathlib.BetaWeightInductionExcl
 import ArkLib.ToMathlib.BigOperators.Fin
 import ArkLib.ToMathlib.BivariateDegreeToolkit
 import ArkLib.ToMathlib.BoundaryDischarge
