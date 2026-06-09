@@ -342,6 +342,76 @@ theorem nonvacuous_count_zmod5 :
   have hc : (({1} : Finset (ZMod 5)).card).choose 1 = 1 := by decide
   rw [hc] at h; exact h
 
+/-! ## 8. General order-`d`: closure under a primitive `d`-th root of unity vanishes `p_1,…,p_{d−1}`
+(the depth-collapse engine; over the smooth `2^k`-domain only `d = 2^r` is available). -/
+
+/-- The **`⟨ω⟩`-coset closure** for a general order-`d` root: `⋃_{i<d} ω^i·P`, the union of the `d`
+translates `P, ωP, …, ω^{d−1}P`. (For `d = 4` this is the orbit closure used in §§3–6.) -/
+noncomputable def cosetClosure (ω : F) (d : ℕ) (P : Finset F) : Finset F :=
+  (Finset.range d).biUnion (fun i => P.image (fun x => ω ^ i * x))
+
+/-- The image of `cosetClosure ω d P` under `(ω·)` is contained in it (translate `i` maps to
+translate `i+1`, and translate `d−1` wraps to `0` via `ω^d = 1`). -/
+theorem cosetClosure_image_subset (hωd : ω ^ d = 1) (P : Finset F) :
+    (cosetClosure ω d P).image (fun x => ω * x) ⊆ cosetClosure ω d P := by
+  classical
+  intro a ha
+  rw [Finset.mem_image] at ha
+  obtain ⟨b, hb, rfl⟩ := ha
+  rw [cosetClosure, Finset.mem_biUnion] at hb ⊢
+  obtain ⟨i, hi, hbi⟩ := hb
+  rw [Finset.mem_image] at hbi
+  obtain ⟨p, hp, rfl⟩ := hbi
+  rw [Finset.mem_range] at hi
+  by_cases hlt : i + 1 < d
+  · refine ⟨i + 1, Finset.mem_range.mpr hlt, ?_⟩
+    rw [Finset.mem_image]
+    exact ⟨p, hp, by rw [pow_succ]; ring⟩
+  · have hid : i + 1 = d := by omega
+    refine ⟨0, Finset.mem_range.mpr (by omega), ?_⟩
+    rw [Finset.mem_image]
+    refine ⟨p, hp, ?_⟩
+    have hstep : ω * (ω ^ i * p) = ω ^ (i + 1) * p := by rw [pow_succ]; ring
+    rw [pow_zero, one_mul, hstep, hid, hωd, one_mul]
+
+/-- `cosetClosure ω d P` is closed under `(ω·)` (subset of equal card, `(ω·)` injective for `ω ≠ 0`). -/
+theorem cosetClosure_image_eq (hωd : ω ^ d = 1) (hω0 : ω ≠ 0) (P : Finset F) :
+    (cosetClosure ω d P).image (fun x => ω * x) = cosetClosure ω d P :=
+  Finset.eq_of_subset_of_card_le (cosetClosure_image_subset hωd P)
+    (le_of_eq (Finset.card_image_of_injective _ (fun _ _ h => mul_left_cancel₀ hω0 h)).symm)
+
+/-- **The general depth-collapse engine.** For `ω` with `ω^d = 1`, `ω ≠ 0`, and any exponent `j` with
+`ω^j ≠ 1`, the `j`-th power sum of `cosetClosure ω d P` vanishes. -/
+theorem cosetClosure_psum_eq_zero (hωd : ω ^ d = 1) (hω0 : ω ≠ 0) {j : ℕ} (hωj : ω ^ j ≠ 1)
+    (P : Finset F) : ∑ x ∈ cosetClosure ω d P, x ^ j = 0 :=
+  omega_closed_psum_eq_zero hω0 hωj (cosetClosure_image_eq hωd hω0 P)
+
+/-- **Closure under a primitive `d`-th root vanishes the first `d−1` power sums** `p_1, …, p_{d−1}`
+(hence, in large-enough characteristic, `e_1 = … = e_{d−1} = 0` by Newton's identities): a
+`cosetClosure` lands in the single joint fiber `(e_1,…,e_{d−1}) = 0`.
+
+**The depth-collapse, now a theorem.** Over the smooth `2^k`-domain `G` the only available roots of
+unity have 2-power order, so killing the first `t` symmetric functions forces `d = 2^r ≥ t+1`, orbits
+of size `2^r`, and a transversal of only `n/2^r` elements — the concentrated count `C(n/2^r, s)`
+collapses to `O(1)` as `t → √(kn) − k` (the deep interior). That is precisely why single-target
+symmetry concentration is **capacity-only** and cannot pin `δ*` past the gap interior. -/
+theorem cosetClosure_psum_eq_zero_of_lt (hωd : ω ^ d = 1) (hω0 : ω ≠ 0)
+    (hprim : ∀ i, 0 < i → i < d → ω ^ i ≠ 1) (P : Finset F) {j : ℕ} (hj0 : 0 < j) (hjd : j < d) :
+    ∑ x ∈ cosetClosure ω d P, x ^ j = 0 :=
+  cosetClosure_psum_eq_zero hωd hω0 (hprim j hj0 hjd) P
+
+/-- **Non-vacuity (`d = 4` over `ZMod 5`):** the primitive order-4 root `2` makes `cosetClosure 2 4
+{1} = {1,2,3,4}` vanish `p_1, p_2, p_3` simultaneously (`∑x = ∑x² = ∑x³ = 0` in `ZMod 5`) — the first
+three power sums concentrated at `0` by a single `d = 4` closure. -/
+theorem nonvacuous_coset_zmod5 :
+    (∑ x ∈ cosetClosure (2 : ZMod 5) 4 {1}, x ^ 1) = 0 ∧
+    (∑ x ∈ cosetClosure (2 : ZMod 5) 4 {1}, x ^ 2) = 0 ∧
+    (∑ x ∈ cosetClosure (2 : ZMod 5) 4 {1}, x ^ 3) = 0 := by
+  refine ⟨?_, ?_, ?_⟩
+  · exact cosetClosure_psum_eq_zero (by decide) (by decide) (by decide) {1}
+  · exact cosetClosure_psum_eq_zero (by decide) (by decide) (by decide) {1}
+  · exact cosetClosure_psum_eq_zero (by decide) (by decide) (by decide) {1}
+
 end ArkLib.CodingTheory.Round8OmegaConcentration
 
 /-! ## Axiom audit -/
@@ -354,3 +424,7 @@ end ArkLib.CodingTheory.Round8OmegaConcentration
 #print axioms ArkLib.CodingTheory.Round8OmegaConcentration.card_ge_choose_two_zero
 #print axioms ArkLib.CodingTheory.Round8OmegaConcentration.nonvacuous_zmod5
 #print axioms ArkLib.CodingTheory.Round8OmegaConcentration.nonvacuous_count_zmod5
+#print axioms ArkLib.CodingTheory.Round8OmegaConcentration.cosetClosure_image_eq
+#print axioms ArkLib.CodingTheory.Round8OmegaConcentration.cosetClosure_psum_eq_zero
+#print axioms ArkLib.CodingTheory.Round8OmegaConcentration.cosetClosure_psum_eq_zero_of_lt
+#print axioms ArkLib.CodingTheory.Round8OmegaConcentration.nonvacuous_coset_zmod5
