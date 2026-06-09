@@ -517,6 +517,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
