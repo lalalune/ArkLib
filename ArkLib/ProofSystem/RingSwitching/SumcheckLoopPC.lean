@@ -65,22 +65,6 @@ theorem sumcheckLoopOracleReduction_perfectCompleteness [IsDomain L]
   -- so its `ChallengeIdx` proof is absurd. We supply `SampleableType`/`Fintype`/`Inhabited`
   -- explicitly (via the explicit-args keystone form), avoiding the `(fun _ => p) i`-redex instance
   -- mismatch for the literal per-round protocol `fun _ => pSpecSumcheckRound L`.
-  have hSamp : ∀ (_ : Fin ℓ'), ∀ j, SampleableType ((pSpecSumcheckRound L).Challenge j) :=
-    fun _ j => inferInstance
-  have hFin : ∀ (_ : Fin ℓ'), ∀ j, Fintype ((pSpecSumcheckRound L).Challenge j) := fun _ j => by
-    rcases j with ⟨⟨v, hv⟩, hj⟩
-    interval_cases v
-    · exact absurd hj (by simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound])
-    · simpa only [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound,
-        ProtocolSpec.Challenge, Matrix.cons_val_one, Matrix.cons_val_fin_one] using
-        (inferInstance : Fintype L)
-  have hInh : ∀ (_ : Fin ℓ'), ∀ j, Inhabited ((pSpecSumcheckRound L).Challenge j) := fun _ j => by
-    rcases j with ⟨⟨v, hv⟩, hj⟩
-    interval_cases v
-    · exact absurd hj (by simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound])
-    · simpa only [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound,
-        ProtocolSpec.Challenge, Matrix.cons_val_one, Matrix.cons_val_fin_one] using
-        (⟨(0 : L)⟩ : Inhabited L)
   -- Pre-align the goal to the delegate's exact conclusion shape (`seqCompose … |>.perfectCompleteness
   -- … (rel 0) (rel (Fin.last ℓ'))`): `sumcheckLoopOracleReduction` is `@[reducible]` so this `show`
   -- is a single delta step, and `(fun i => …) 0` is a β step — pinning every implicit of
@@ -95,7 +79,7 @@ theorem sumcheckLoopOracleReduction_perfectCompleteness [IsDomain L]
     (relIn := (fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i) 0)
     (relOut := (fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i) (Fin.last ℓ'))
     (init := init) (impl := impl)
-  exact OracleReduction.seqCompose_pc_oracle_msg'
+  have H := OracleReduction.seqCompose_pc_oracle_msg' (init := init) (impl := impl)
     (Stmt := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P))
     (OStmt := fun _ => aOStmtIn.OStmtIn)
     -- `Oₛ`/`Oₘ` supplied explicitly with β-reduced target types: instance *search* against the
@@ -107,11 +91,26 @@ theorem sumcheckLoopOracleReduction_perfectCompleteness [IsDomain L]
     (coh := fun i => instIteratedSumcheckOracleReductionAppendCoherent
       (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn) i)
     (rel := fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i)
-    hSamp hFin hInh
+    (fun _ _ => inferInstance)
+    (fun _ j => by
+      rcases j with ⟨⟨v, hv⟩, hj⟩
+      interval_cases v
+      · exact absurd hj (by simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound])
+      · simpa only [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound,
+          ProtocolSpec.Challenge, Matrix.cons_val_one, Matrix.cons_val_fin_one] using
+          (inferInstance : Fintype L))
+    (fun _ j => by
+      rcases j with ⟨⟨v, hv⟩, hj⟩
+      interval_cases v
+      · exact absurd hj (by simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound])
+      · simpa only [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound,
+          ProtocolSpec.Challenge, Matrix.cons_val_one, Matrix.cons_val_fin_one] using
+          (⟨(0 : L)⟩ : Inhabited L))
     (fun _ => ⟨by norm_num, rfl⟩)
     hInit
     (by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])
     (fun i => iteratedSumcheckOracleReduction_perfectCompleteness_proved
       (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
       (aOStmtIn := aOStmtIn) (init := init) (impl := impl) hInit i)
+  exact H
 end RingSwitching.SumcheckPhase
