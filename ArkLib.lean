@@ -436,7 +436,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.FisherPastJohnsonCap
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
-import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Admissible
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Claim16Transport
 import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
@@ -749,6 +748,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityFalseGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityListDecodingFalse
 import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
+import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap._mca_research_loop
 import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
@@ -1314,6 +1314,7 @@ import ArkLib.ToMathlib.GKL24BadWitnessCard
 import ArkLib.ToMathlib.GKL24FirstMomentProb
 import ArkLib.ToMathlib.GSFactorData
 import ArkLib.ToMathlib.GammaFromBeta
+import ArkLib.ToMathlib.GradedHteleArith
 import ArkLib.ToMathlib.GreedyDisjointCover
 import ArkLib.ToMathlib.HPzBridge
 import ArkLib.ToMathlib.HasseDerivNumeratorConcrete
