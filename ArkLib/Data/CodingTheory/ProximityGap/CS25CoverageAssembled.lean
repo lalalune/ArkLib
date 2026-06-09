@@ -48,8 +48,12 @@ theorem rs_close_count_ge_qEntropy (hq : 2 ≤ Fintype.card F) (domain : ι ↪ 
           * (Finset.univ.filter
               (fun w : ι → F => closeCount (rsCodeFinset domain deg) r w ≠ 0)).card := by
   have hcov := rs_covered_fraction_entropy hq domain deg r hr0 hrn hpos
+  have hcap' : ((2 * r : ℕ) : ℝ) / (Fintype.card ι : ℝ)
+      ≤ 1 - 1 / ((Fintype.card F + 1 : ℕ) : ℝ) := by
+    rw [Nat.cast_mul, Nat.cast_ofNat]; exact hcap
   have hnear := rs_near_count_le_qEntropy (Fintype.card F) (Fintype.card ι) deg (2 * r)
-    (by omega) hdeg (by omega) (by omega) hcap
+    (by omega) hdeg (by omega) (by omega) hcap'
+  simp only [Nat.cast_mul, Nat.cast_ofNat] at hnear
   refine hcov.trans ?_
   -- (n+1)·#close·∑A_d ≤ (n+1)·#close·((n+1)·(q+1)^{nH'}) = (n+1)²·(q+1)^{nH'}·#close
   have hfac : (0 : ℝ) ≤ ((Fintype.card ι : ℝ) + 1)

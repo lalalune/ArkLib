@@ -137,4 +137,35 @@ theorem not_alphaGenuineRegularWeightLe (x₀ : F) (R : F[X][X][Y])
   obtain ⟨a, ha, -⟩ := h 0
   exact αGenuine_zero_not_regular H x₀ R hHyp hd hlc ⟨a, ha⟩
 
+/-- The `𝒪`-divisibility base invariant `DivWeightLe_zero` is also **false** for non-monic `H`.
+The obstruction is the same un-cleared base coefficient: the already-proved zero-case
+divisibility-to-alpha bridge would turn a `DivWeightLe_zero` witness into an impossible regular
+preimage of `αGenuine 0 = T / W`. -/
+theorem not_DivWeightLe_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hd : 2 ≤ H.natDegree) (hlc : ¬ IsUnit H.leadingCoeff)
+    (D : ℕ) :
+    ¬ AlphaWeight.DivWeightLe_zero H x₀ R hHyp (by omega) D := by
+  intro hdiv0
+  exact not_alphaGenuineRegularWeightLe_zero H x₀ R hHyp hd hlc D
+    (AlphaWeight.AlphaGenuineRegularWeightLe_zero.of_divWeight_zero H x₀ R hHyp (by omega) D hdiv0)
+
+/-- The full all-orders `DivWeightLe` invariant is **false** for non-monic `H`: its zero case
+would imply the impossible zero-case divisibility invariant. -/
+theorem not_DivWeightLe (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hd : 2 ≤ H.natDegree) (hlc : ¬ IsUnit H.leadingCoeff)
+    (D : ℕ) :
+    ¬ AlphaWeight.DivWeightLe H x₀ R hHyp (by omega) D := by
+  intro hdiv
+  exact not_DivWeightLe_zero H x₀ R hHyp hd hlc D
+    (AlphaWeight.DivWeightLe.zero H x₀ R hHyp (by omega) D hdiv)
+
 end BCIKS20.AlphaWeightClearedObstruction
+
+#print axioms BCIKS20.AlphaWeightClearedObstruction.liftBivariate_eq_zero_of_natDegree_lt
+#print axioms BCIKS20.AlphaWeightClearedObstruction.αGenuine_zero_not_regular
+set_option linter.style.longLine false in
+#print axioms BCIKS20.AlphaWeightClearedObstruction.not_alphaGenuineRegularWeightLe_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.AlphaWeightClearedObstruction.not_alphaGenuineRegularWeightLe
+#print axioms BCIKS20.AlphaWeightClearedObstruction.not_DivWeightLe_zero
+#print axioms BCIKS20.AlphaWeightClearedObstruction.not_DivWeightLe

@@ -8,7 +8,7 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.NNReal.Basic
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
-import ArkLib.Data.Probability.Instances
+import ArkLib.Data.Probability.Notation
 
 /-!
 # Issue #14 scratch: Batched FRI Joint Proximity
@@ -31,7 +31,7 @@ open scoped ProbabilityTheory BigOperators ENNReal
 
 /-- **Random Linear Combination (RLC).**
 Computes the RLC of a list of functions given a list of random coefficients. -/
-def randomLinearCombination {ι F : Type} [Field F] [Fintype F] [Fintype ι] {m : ℕ}
+def randomLinearCombination {ι F : Type} {m : ℕ} [Field F] [Fintype F] [Fintype ι]
     (funcs : Fin m → (ι → F)) (alphas : Fin m → F) : ι → F :=
   fun x => ∑ i : Fin m, alphas i * funcs i x
 

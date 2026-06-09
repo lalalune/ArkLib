@@ -91,6 +91,48 @@ open ListDecodable ProximityGap Code
 
 section ListImpliesMCA
 
+/-- The Johnson-lift radius from ABF26 T5.1 is bounded by the original list-decoding radius
+under the standard slack guard `0 < η ≤ δ < 1`.
+
+If `J(δ, η) = 1 - sqrt (1 - δ + η)`, then `J(δ, η) ≤ δ`. The conclusion is stated with the
+same `toNNReal` truncation used by `linear_listSize_to_epsMCA_gcxk25`. -/
+theorem johnson_lift_toNNReal_le
+    (δ η : ℝ) (hη_pos : 0 < η) (hη_le_δ : η ≤ δ) (hδ_lt : δ < 1) :
+    (((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal : ℝ)) ≤ δ := by
+  set x : ℝ := δ - η with hx
+  have hx0 : 0 ≤ x := by
+    rw [hx]
+    linarith
+  have hx1 : x ≤ 1 := by
+    rw [hx]
+    linarith
+  have hx_le_delta : x ≤ δ := by
+    rw [hx]
+    linarith [le_of_lt hη_pos]
+  have hmain : 1 - Real.sqrt (1 - x) ≤ x := by
+    have hy0 : 0 ≤ 1 - x := by
+      linarith
+    have hy1 : 1 - x ≤ 1 := by
+      linarith
+    have hsq_le : (1 - x) ^ 2 ≤ 1 - x := by
+      nlinarith [mul_nonneg hy0 (sub_nonneg.mpr hy1)]
+    have hsqrt_ge : 1 - x ≤ Real.sqrt (1 - x) :=
+      Real.le_sqrt_of_sq_le hsq_le
+    linarith
+  have hrpow : (1 - δ + η) ^ ((1 : ℝ) / 2) = Real.sqrt (1 - x) := by
+    rw [show 1 - δ + η = 1 - x by rw [hx]; ring]
+    rw [← Real.sqrt_eq_rpow]
+  have hnonneg_radius : 0 ≤ 1 - (1 - δ + η) ^ ((1 : ℝ) / 2) := by
+    rw [hrpow]
+    have hsqrt_le_one : Real.sqrt (1 - x) ≤ 1 := by
+      rw [Real.sqrt_le_one]
+      linarith
+    linarith
+  rw [Real.toNNReal_of_nonneg hnonneg_radius]
+  simp only [NNReal.coe_mk]
+  rw [hrpow]
+  exact le_trans hmain hx_le_delta
+
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
@@ -443,31 +485,6 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_univ
                 (Fintype.card ι : ℝ))) /
           Fintype.card F) :=
   ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta_univ C
-    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
-
-/-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — sharp in-tree first-moment count `b = δ·n + 1`.**
-The no-carrier consumer for the sharp disjoint-charging per-codeword count. Taking the carrier to be
-all codewords gives
-
-  `ε_mca(C, 1 − √(1 − δ + η)) ≤
-    ENNReal.ofReal ((|F|^n · (δ_mca · n + 1)) / |F|)`,
-
-where `δ_mca = 1 − √(1 − δ + η)` is the Johnson-lifted MCA radius. This is the strongest
-unconditional in-tree first-moment relaxation currently at the ABF26 T5.1 boundary: it realizes
-GCXK25/GKL24's first-moment `|Bad¹| ≤ δ·n` content in tree (via the disjoint agree-domain charging
-of `ProximityGap.epsMCA_le_ofReal_of_listFactor_delta_add_one_univ`) up to the unavoidable additive
-`+1` per codeword from the degenerate single-witness case — no external hypothesis, no explicit
-carrier. -/
-theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_delta_add_one_univ
-    (C : LinearCode ι F) (δ η : ℝ) :
-    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
-        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
-      ENNReal.ofReal
-        (((Fintype.card (ι → F) : ℝ) *
-            (((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal : ℝ) *
-                (Fintype.card ι : ℝ) + 1)) /
-          Fintype.card F) :=
-  ProximityGap.epsMCA_le_ofReal_of_listFactor_delta_add_one_univ C
     ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
 
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — canonical in-tree first-moment relaxation.**
@@ -1445,6 +1462,7 @@ end CodingTheory
 wrappers.  These entries cover the checked plumbing from per-stack/probability residuals, GKL24
 first-moment residuals, BCHKS25 all-but-one witnesses, and BGKS20 all-but-one witnesses into the
 public propositions. -/
+#print axioms CodingTheory.johnson_lift_toNNReal_le
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
@@ -1455,7 +1473,6 @@ public propositions. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_univ
-#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_delta_add_one_univ
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_univ
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals_prop

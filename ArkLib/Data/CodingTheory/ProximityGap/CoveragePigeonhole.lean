@@ -113,68 +113,15 @@ theorem sq_sum_card_le_card_mul_sum_inter {κ ι : Type*} [Fintype κ] [Fintype 
   have hcs := sq_sum_le_card_mul_sum_sq (s := (Finset.univ : Finset ι)) (f := deg)
   rwa [Finset.card_univ] at hcs
 
-/-- **Joint-pair existence** (GG25 multi-γ extraction).  If the agreement mass is large enough
-— precisely `(card κ)²·t·|ι| + |ι|·∑|S i| < (∑|S i|)²` — then some two *distinct* sets share
-strictly more than `t` coordinates.  This is the joint pair the repaired ABF26 T4.21
-line-decoding argument extracts (issue #140), obtained from the Cauchy–Schwarz mass bound by
-averaging off the diagonal. -/
-theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι]
-    (S : κ → Finset ι) (t : ℕ)
-    (hbig : (Fintype.card κ) ^ 2 * t * Fintype.card ι + Fintype.card ι * (∑ i, (S i).card)
-            < (∑ i, (S i).card) ^ 2) :
-    ∃ i j, i ≠ j ∧ t < (S i ∩ S j).card := by
-  classical
-  by_contra hcon
-  push_neg at hcon
-  have hterm : ∀ i j, (S i ∩ S j).card ≤ (if i = j then (S i).card else t) := by
-    intro i j
-    by_cases h : i = j
-    · subst h; simp [Finset.inter_self]
-    · simp only [h, if_false]; exact hcon i j h
-  have hinner : ∀ i, (∑ j, (if i = j then (S i).card else t))
-      ≤ (S i).card + Fintype.card κ * t := by
-    intro i
-    rw [Finset.sum_ite]
-    simp only [Finset.sum_const, smul_eq_mul]
-    have h1 : (Finset.univ.filter (fun j => i = j)).card = 1 := by
-      rw [Finset.card_eq_one]
-      exact ⟨i, by ext j; simp [eq_comm]⟩
-    have h2 : (Finset.univ.filter (fun j => ¬ i = j)).card ≤ Fintype.card κ := by
-      refine le_trans (Finset.card_filter_le _ _) ?_
-      rw [Finset.card_univ]
-    rw [h1, one_mul]
-    exact Nat.add_le_add_left (Nat.mul_le_mul h2 (le_refl t)) _
-  have hbound : (∑ i, ∑ j, (S i ∩ S j).card)
-      ≤ ∑ i, ((S i).card + Fintype.card κ * t) := by
-    apply Finset.sum_le_sum
-    intro i _
-    exact le_trans (Finset.sum_le_sum (fun j _ => hterm i j)) (hinner i)
-  have heq2 : (∑ i, ((S i).card + Fintype.card κ * t))
-      = (∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t) := by
-    rw [Finset.sum_add_distrib]
-    congr 1
-    rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
-  rw [heq2] at hbound
-  have hmass := sq_sum_card_le_card_mul_sum_inter S
-  have hchain : (∑ i, (S i).card) ^ 2
-      ≤ Fintype.card ι * ((∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t)) :=
-    le_trans hmass (Nat.mul_le_mul le_rfl hbound)
-  have heq : Fintype.card ι * ((∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t))
-      = (Fintype.card κ) ^ 2 * t * Fintype.card ι + Fintype.card ι * (∑ i, (S i).card) := by
-    ring
-  rw [heq] at hchain
-  omega
-
 /-- **Second-moment (Johnson-type) list-size bound.**  If each of the `card κ` agreement sets
 covers at least `a` of the `|ι|` coordinates and every two *distinct* sets share at most `b`
 coordinates, then
 `card κ · a² ≤ |ι|² + card κ · |ι| · b`.
 In list-decoding terms (sets = agreement supports of codewords with a received word, `a` =
-agreement radius, `b` = pairwise agreement = `|ι| − dist`), this bounds the list size: when
-`a² > |ι| · b` it gives `(list size) ≤ |ι|²/(a² − |ι|·b)`, the second-moment / Johnson list
-bound — the combinatorial engine behind the list-decoding inputs of #138/#140/#141. -/
+agreement radius, `b` = pairwise agreement = `|ι| − dist`), this is the combinatorial Johnson
+list-size engine. -/
 theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι]
-    [DecidableEq κ] [Nonempty κ] (S : κ → Finset ι) (a b : ℕ)
+    [Nonempty κ] (S : κ → Finset ι) (a b : ℕ)
     (hlo : ∀ i, a ≤ (S i).card)
     (hpair : ∀ i j, i ≠ j → (S i ∩ S j).card ≤ b) :
     Fintype.card κ * a ^ 2 ≤ (Fintype.card ι) ^ 2 + Fintype.card κ * Fintype.card ι * b := by
@@ -202,7 +149,8 @@ theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [D
       have h1 : (Finset.univ.filter (fun j => i = j)).card = 1 := by
         rw [Finset.card_eq_one]; exact ⟨i, by ext j; simp [eq_comm]⟩
       have h2 : (Finset.univ.filter (fun j => ¬ i = j)).card ≤ Fintype.card κ := by
-        refine le_trans (Finset.card_filter_le _ _) ?_; rw [Finset.card_univ]
+        refine le_trans (Finset.card_filter_le _ _) ?_
+        rw [Finset.card_univ]
       rw [h1, one_mul]
       exact Nat.add_le_add_left (Nat.mul_le_mul h2 (le_refl b)) _
     refine le_trans (Finset.sum_le_sum (fun i _ =>
@@ -215,30 +163,95 @@ theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [D
       ≤ Fintype.card ι *
           (Fintype.card κ * Fintype.card ι + Fintype.card κ * (Fintype.card κ * b)) :=
     le_trans (Nat.pow_le_pow_left hlb 2) (le_trans hmass (Nat.mul_le_mul le_rfl hub))
-  have e1 : (Fintype.card κ * a) ^ 2 = Fintype.card κ * (Fintype.card κ * a ^ 2) := by ring
+  have e1 : (Fintype.card κ * a) ^ 2 = Fintype.card κ * (Fintype.card κ * a ^ 2) := by
+    ring
   have e2 : Fintype.card ι *
         (Fintype.card κ * Fintype.card ι + Fintype.card κ * (Fintype.card κ * b))
-      = Fintype.card κ * ((Fintype.card ι) ^ 2 + Fintype.card κ * Fintype.card ι * b) := by ring
+      = Fintype.card κ * ((Fintype.card ι) ^ 2 + Fintype.card κ * Fintype.card ι * b) := by
+    ring
   rw [e1, e2] at key
-  exact Nat.le_of_mul_le_mul_left key Fintype.card_pos
+  have hpos : 0 < Fintype.card κ := Fintype.card_pos_iff.mpr inferInstance
+  exact Nat.le_of_mul_le_mul_left key hpos
 
-/-- **Explicit list-size cap** (division-free Johnson bound).  Under the second-moment
-hypotheses, if additionally `|ι| · b ≤ a²` then `card κ · (a² − |ι|·b) ≤ |ι|²`.  Dividing,
-this is the familiar `(list size) ≤ |ι|² / (a² − |ι|·b)` — an explicit upper bound on the
-number of codewords with pairwise agreement `≤ b` each agreeing with a received word on `≥ a`
-coordinates, the list-decoding count the prize bounds (#141/#232). -/
-theorem card_mul_sub_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι]
-    [DecidableEq κ] [Nonempty κ] (S : κ → Finset ι) (a b : ℕ)
+/-- **Subtracted Johnson-list denominator form.**  If each of the `card κ` agreement sets covers
+at least `a` coordinates, pairwise intersections of distinct sets have size at most `b`, and the
+Johnson denominator is nonnegative (`|ι|·b ≤ a²`), then
+
+`card κ · (a² - |ι|·b) ≤ |ι|²`.
+
+This is the consumer-facing algebraic form of `card_mul_sq_le_of_agreement`; downstream list-size
+bounds can divide by the positive denominator when the inequality is strict. -/
+theorem card_mul_sub_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι]
+    [DecidableEq ι] [Nonempty κ] (S : κ → Finset ι) (a b : ℕ)
     (hlo : ∀ i, a ≤ (S i).card)
     (hpair : ∀ i j, i ≠ j → (S i ∩ S j).card ≤ b)
     (hgap : Fintype.card ι * b ≤ a ^ 2) :
     Fintype.card κ * (a ^ 2 - Fintype.card ι * b) ≤ (Fintype.card ι) ^ 2 := by
-  have h := card_mul_sq_le_of_agreement S a b hlo hpair
-  have hd : Fintype.card κ * (a ^ 2 - Fintype.card ι * b)
-        + Fintype.card κ * (Fintype.card ι * b) = Fintype.card κ * a ^ 2 := by
+  have key := card_mul_sq_le_of_agreement S a b hlo hpair
+  have htail :
+      Fintype.card κ * Fintype.card ι * b = Fintype.card κ * (Fintype.card ι * b) := by
+    ring
+  rw [htail] at key
+  have hsplit : Fintype.card κ * a ^ 2 =
+      Fintype.card κ * (a ^ 2 - Fintype.card ι * b)
+        + Fintype.card κ * (Fintype.card ι * b) := by
     rw [← Nat.mul_add, Nat.sub_add_cancel hgap]
-  have hassoc : Fintype.card κ * (Fintype.card ι * b)
-      = Fintype.card κ * Fintype.card ι * b := by ring
+  rw [hsplit] at key
+  exact Nat.le_of_add_le_add_right key
+
+/-- **Joint-pair existence** (GG25 multi-γ extraction).  If the agreement mass is large enough
+— precisely `(card κ)²·t·|ι| + |ι|·∑|S i| < (∑|S i|)²` — then some two *distinct* sets share
+strictly more than `t` coordinates.  This is the joint pair the repaired ABF26 T4.21
+line-decoding argument extracts (issue #140), obtained from the Cauchy–Schwarz mass bound by
+averaging off the diagonal. -/
+theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι] [DecidableEq κ]
+    (S : κ → Finset ι) (t : ℕ)
+    (hbig : (Fintype.card κ) ^ 2 * t * Fintype.card ι + Fintype.card ι * (∑ i, (S i).card)
+            < (∑ i, (S i).card) ^ 2) :
+    ∃ i j, i ≠ j ∧ t < (S i ∩ S j).card := by
+  classical
+  by_contra hcon
+  push_neg at hcon
+  have hterm : ∀ i j, (S i ∩ S j).card ≤ (if i = j then (S i).card else t) := by
+    intro i j
+    by_cases h : i = j
+    · subst h; simp [Finset.inter_self]
+    · simp only [h, if_false]; exact hcon i j h
+  have hinner : ∀ i, (∑ j, (if i = j then (S i).card else t))
+      ≤ (S i).card + Fintype.card κ * t := by
+    intro i
+    rw [Finset.sum_ite]
+    simp only [Finset.sum_const, smul_eq_mul]
+    have h1 : (Finset.univ.filter (fun j => i = j)).card = 1 := by
+      rw [Finset.card_eq_one]
+      exact ⟨i, by ext j; simp [eq_comm]⟩
+    have h2 : (Finset.univ.filter (fun j => ¬ i = j)).card ≤ Fintype.card κ := by
+      refine le_trans (Finset.card_filter_le _ _) ?_
+      rw [Finset.card_univ]
+    rw [h1, one_mul]
+    exact add_le_add_right (Nat.mul_le_mul h2 (le_refl t)) _
+  have hbound : (∑ i, ∑ j, (S i ∩ S j).card)
+      ≤ ∑ i, ((S i).card + Fintype.card κ * t) := by
+    apply Finset.sum_le_sum
+    intro i _
+    exact le_trans (Finset.sum_le_sum (fun j _ => hterm i j)) (hinner i)
+  have heq2 : (∑ i, ((S i).card + Fintype.card κ * t))
+      = (∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t) := by
+    rw [Finset.sum_add_distrib]
+    congr 1
+    rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+  rw [heq2] at hbound
+  have hmass := sq_sum_card_le_card_mul_sum_inter S
+  have hchain : (∑ i, (S i).card) ^ 2
+      ≤ Fintype.card ι * ((∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t)) :=
+    le_trans hmass (Nat.mul_le_mul le_rfl hbound)
+  have heq : Fintype.card ι * ((∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t))
+      = (Fintype.card κ) ^ 2 * t * Fintype.card ι + Fintype.card ι * (∑ i, (S i).card) := by
+    ring
+  rw [heq] at hchain
   omega
 
 end ArkLib.Coverage
+
+#print axioms ArkLib.Coverage.card_mul_sq_le_of_agreement
+#print axioms ArkLib.Coverage.card_mul_sub_le_of_agreement

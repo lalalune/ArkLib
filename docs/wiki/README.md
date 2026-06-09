@@ -26,6 +26,8 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
 - [`proximity-prize-leaderboard.md`](proximity-prize-leaderboard.md) - the machine-checked
   "bits of security" leaderboard for the ABF26 §6 toy protocol: how to submit a provable
   lower/upper bound, how `securityGap` is computed, and the current 64/116 anchors.
+- [`honesty-audit.md`](honesty-audit.md) - playbook for finding unproven-but-presented-as-proven
+  content: the laundering patterns the CI gates miss, how to detect them, and confirmed findings.
 
 ## Maintenance Contract
 

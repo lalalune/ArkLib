@@ -46,4 +46,26 @@ theorem vanishesToOrder_toPoly_iff (k D m : ℕ) (c : CoeffSpace (F := F) k D) (
   refine forall_congr' (fun i => forall_congr' (fun j => ?_))
   rw [hasseCoeff_eq]
 
+/-- A nonzero coefficient vector gives a nonzero bivariate polynomial. -/
+theorem toPoly_ne_zero (k D : ℕ) {c : CoeffSpace (F := F) k D} (hc : c ≠ 0) :
+    toPoly k D c ≠ 0 := by
+  obtain ⟨st, hst⟩ := Function.ne_iff.mp hc
+  intro h
+  apply hst
+  rw [← toPoly_coeff k D c st, h]
+  simp
+
+/-- **GS interpolant existence in the `F[X][Y]` form.** When the feasibility bound holds, there is
+a *nonzero* bivariate polynomial `Q` vanishing to order `m` at every interpolation point — the
+directly usable payoff of the dictionary (the abstract `CoeffSpace` existence transported to an
+honest `Polynomial`-side interpolant via `toPoly`). -/
+theorem exists_bivariate_vanishing (k D m n : ℕ) (xs ys : Fin n → F)
+    (hfeas : n * (m * (m + 1) / 2) < (monoIdx k D).card) :
+    ∃ Q : Polynomial (Polynomial F), Q ≠ 0 ∧
+      ∀ i : Fin n, ArkLib.GS.vanishesToOrder m Q (xs i) (ys i) := by
+  obtain ⟨c, hc0, hcv⟩ := exists_ne_zero_vanishesToOrder k D m n xs ys hfeas
+  refine ⟨toPoly k D c, toPoly_ne_zero k D hc0, fun i => ?_⟩
+  rw [vanishesToOrder_toPoly_iff]
+  exact hcv i
+
 end GSMultInterp

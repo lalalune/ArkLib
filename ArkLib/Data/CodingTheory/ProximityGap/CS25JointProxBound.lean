@@ -278,9 +278,9 @@ theorem card_jointProximity_le_card_stacks_of_subband [Nonempty ι] (C : Set (ι
   rw [← Nat.cast_le (α := ℝ), card_wordStack_eq, Nat.cast_pow,
     ← Real.rpow_natCast (Fintype.card (κ → A) : ℝ) (Fintype.card ι)]
   refine (card_jointProximity_le_qEntropy (κ := κ) C δ hq hδcap).trans ?_
-  have hcard : (((Fintype.card ↥C) ^ (Fintype.card κ) : ℕ) : ℝ)
+  have hcard : ((Fintype.card ↥C : ℝ)) ^ (Fintype.card κ)
       = (Fintype.card (κ → A) : ℝ) ^ (k : ℝ) := by
-    rw [hrate, Nat.cast_pow, Real.rpow_natCast]
+    rw [← Nat.cast_pow, hrate, Nat.cast_pow, Real.rpow_natCast]
   rw [hcard]
   exact pow_succ_rpow_entropy_le hQ1 k (Fintype.card ι) _ hsub
 
@@ -318,9 +318,9 @@ theorem card_jointProximity_le_pow_of_subband [Nonempty ι] (C : Set (ι → A))
   rw [← Nat.cast_le (α := ℝ), Nat.cast_pow,
     ← Real.rpow_natCast (Fintype.card (κ → A) : ℝ) m]
   refine (card_jointProximity_le_qEntropy (κ := κ) C δ hq hδcap).trans ?_
-  have hcard : (((Fintype.card ↥C) ^ (Fintype.card κ) : ℕ) : ℝ)
+  have hcard : ((Fintype.card ↥C : ℝ)) ^ (Fintype.card κ)
       = (Fintype.card (κ → A) : ℝ) ^ (k : ℝ) := by
-    rw [hrate, Nat.cast_pow, Real.rpow_natCast]
+    rw [← Nat.cast_pow, hrate, Nat.cast_pow, Real.rpow_natCast]
   rw [hcard]
   exact pow_succ_rpow_entropy_le' hQ1 k (Fintype.card ι) m _ hsub
 

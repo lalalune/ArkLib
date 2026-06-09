@@ -32,7 +32,6 @@
 /.venv/
 /.vscode/
 __pycache__/
-*.pyc
 
 # Root-level agent scratch & one-off build artifacts — keep local, never commit to main
 # (issue #110/#60 build hygiene). Root-anchored so real modules under ArkLib/
@@ -40,8 +39,6 @@ __pycache__/
 /scratch/
 /scratch*.lean
 /scratch*.py
-# Root-level one-off `#check`/signature probes (e.g. check_sig.lean) — never commit.
-/check_*.lean
 # Agent scratch tree under ArkLib/ — throwaway proof probes, never committed and
 # excluded from the ArkLib.lean umbrella (keeps update-lib.sh / check-imports.sh green).
 /ArkLib/Scratch/

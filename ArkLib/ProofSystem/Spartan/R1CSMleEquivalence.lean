@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.MvPolynomial.Multilinear
 import ArkLib.ProofSystem.ConstraintSystem.R1CS
+import ArkLib.ProofSystem.Spartan.Basic
 
 /-!
 # Spartan R1CS-to-sumcheck MLE equivalences (issue #114)
@@ -224,6 +225,46 @@ theorem r1cs_relation_iff_mle'_residual_zero {k : ℕ} {sz : R1CS.Size} (hm : sz
     have := h (Fin.cast hm i)
     simpa [r1csResidual, Fin.cast_cast] using this
 
+open Matrix in
+/-- **The in-tree zero-check virtual polynomial is the MLE of the R1CS row residual.**
+
+`Spartan.Spec.zeroCheckVirtualPolynomial` is the concrete polynomial used by Spartan's
+`firstChallenge` virtual-oracle surface. This theorem identifies it with `MLE'` of the same row
+residual used by `r1cs_relation_iff_mle'_residual_zero`, reindexing the Boolean cube through
+`finFunctionFinEquiv`. -/
+theorem zeroCheckVirtualPolynomial_eq_mle'_r1csResidual
+    {S : Type} [CommRing S]
+    (pp : Spartan.PublicParams)
+    (stmt : Spartan.Spec.Statement.AfterFirstMessage S pp)
+    (oStmt : ∀ i, Spartan.Spec.OracleStatement.AfterFirstMessage S pp i) :
+    Spartan.Spec.zeroCheckVirtualPolynomial S pp stmt oStmt =
+      MLE' (fun i : Fin (2 ^ pp.ℓ_m) =>
+        r1csResidual stmt (fun idx => oStmt (.inl idx)) (oStmt (.inr 0)) i) := by
+  simp only [Spartan.Spec.zeroCheckVirtualPolynomial, MLE', MLE, r1csResidual,
+    Function.comp_apply]
+  exact Fintype.sum_equiv finFunctionFinEquiv.symm _ _ (by
+    intro x
+    simp)
+
+open Matrix in
+/-- **The actual Spartan zero-check polynomial vanishes exactly on satisfying R1CS instances.**
+
+This is the first-phase reduction identity stated over the real `zeroCheckVirtualPolynomial`
+surface in `Spartan.Basic`: for the matrices and witness threaded through
+`OracleStatement.AfterFirstMessage`, the R1CS relation holds iff the virtual zero-check polynomial
+is zero. -/
+theorem r1cs_relation_iff_zeroCheckVirtualPolynomial_zero
+    {S : Type} [CommRing S]
+    (pp : Spartan.PublicParams)
+    (stmt : Spartan.Spec.Statement.AfterFirstMessage S pp)
+    (oStmt : ∀ i, Spartan.Spec.OracleStatement.AfterFirstMessage S pp i) :
+    R1CS.relation S pp.toSizeR1CS stmt (fun idx => oStmt (.inl idx)) (oStmt (.inr 0))
+      ↔ Spartan.Spec.zeroCheckVirtualPolynomial S pp stmt oStmt = 0 := by
+  rw [zeroCheckVirtualPolynomial_eq_mle'_r1csResidual]
+  simpa using
+    (r1cs_relation_iff_mle'_residual_zero (R := S) (k := pp.ℓ_m)
+      (sz := pp.toSizeR1CS) rfl stmt (fun idx => oStmt (.inl idx)) (oStmt (.inr 0)))
+
 /-! ## 2. The matrix-vector / MLE scaled-sum decomposition (second sum-check input)
 
 `v_idx = MLE(M *ᵥ 𝕫)(r_x)` decomposes as `∑_j 𝕫 j · MLE(col_j)(r_x)`. This is the
@@ -391,6 +432,8 @@ theorem final_check_consistency {m n : ℕ}
 #print axioms r1cs_relation_iff_forall_row
 #print axioms r1cs_relation_iff_forall_residual
 #print axioms r1cs_relation_iff_mle'_residual_zero
+#print axioms zeroCheckVirtualPolynomial_eq_mle'_r1csResidual
+#print axioms r1cs_relation_iff_zeroCheckVirtualPolynomial_zero
 #print axioms mulVec_MLE_eval_eq_scaled_sum
 #print axioms MLE_hypercubeSum
 #print axioms MLE_hypercubeSum_weighted

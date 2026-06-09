@@ -35,6 +35,9 @@ import ArkLib.Data.Misc.Basic
 -/
 
 set_option maxHeartbeats 400000
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
+set_option linter.unusedInstances false
 namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial

@@ -51,7 +51,13 @@ namespace CodingTheory.Bridge
 open scoped NNReal BigOperators
 open ProximityGap Code
 
-section AllButOne
+-- `AllButOne` is a *namespace* (not a plain section) so these declarations land at
+-- `CodingTheory.Bridge.AllButOne.*`. This avoids a fully-qualified-name collision with the
+-- specialized (alphabet `A := F`) `nearCertainBadLine_of_allButOne` /
+-- `epsCA_ge_one_sub_inv_of_allButOne` in `NearCertainBadLineProof.lean`; both files are pulled
+-- into the `ArkLib.lean` umbrella, where duplicate FQNs are a hard error. This file's versions are
+-- the more general arbitrary-alphabet `A` form.
+namespace AllButOne
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -108,6 +114,6 @@ end CodingTheory.Bridge
 
 /-! ### Axiom audit (issue #22 BGKS20 all-but-one producer surface) -/
 
-#print axioms CodingTheory.Bridge.card_univ_erase_ge
-#print axioms CodingTheory.Bridge.nearCertainBadLine_of_allButOne
-#print axioms CodingTheory.Bridge.epsCA_ge_one_sub_inv_of_allButOne
+#print axioms CodingTheory.Bridge.AllButOne.card_univ_erase_ge
+#print axioms CodingTheory.Bridge.AllButOne.nearCertainBadLine_of_allButOne
+#print axioms CodingTheory.Bridge.AllButOne.epsCA_ge_one_sub_inv_of_allButOne

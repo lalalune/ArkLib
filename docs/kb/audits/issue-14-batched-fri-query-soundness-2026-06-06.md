@@ -22,8 +22,11 @@ The remaining proof is not a local simplification of the declaration. The
 basic query-round analysis is now present in two proved forms: the finite
 counting/density route in `Security.lean` and the PMF probability/detection
 route in `ArkLib/ToMathlib/FriQueryRoundProb.lean` plus
-`QueryRoundProbability.lean`. The missing bridge is now narrower and
-protocol-specific:
+`QueryRoundProbability.lean`. `QueryRoundProbability.lean` also proves that
+the concrete `Fri.Spec.QueryRound.pSpec` challenge oracle, when run under the
+default `challengeQueryImpl`, samples the verifier's length-`l` query tuple
+from the uniform product PMF over `(ω.subdomain 0).toFinset`. The missing
+bridge is now narrower and protocol-specific:
 
 1. Express the Batched FRI query verifier's acceptance event through
    `OracleReduction.run` for the composed batching + FRI reduction.
@@ -98,9 +101,10 @@ Current source exposes both sides of that frontier as named parts:
   transport for the `ω.subdomain 0` to `ω` Reed-Solomon domain change used
   between Claim 8.2 and Claim 8.3.
 - `QueryRoundProbability.lean` provides the probability-space Claim 8.2 route
-  from the proved PMF bound, including the detection complement.  The RS
-  affine-line and RS-curve wrappers route BCIKS20 CA predicates and their
-  probability triggers through the same concrete `Code.jointProximity`
+  from the proved PMF bound, including the detection complement, and proves the
+  concrete query-round challenge distribution equals the uniform product PMF.
+  The RS affine-line and RS-curve wrappers route BCIKS20 CA predicates and
+  their probability triggers through the same concrete `Code.jointProximity`
   surface; they do not derive those triggers from the protocol transcript.
 - `QueryRoundRSCurveSoundness.lean` is now the single companion module for the
   full-domain RS-curve probability and density routes, preserving the public
@@ -219,6 +223,7 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
 
 This audit does not close the mathematical residual. It confirms that the
 current source no longer hides Claim 8.2 behind a vacuous `True` theorem, has
-proved the standalone query-round counting/probability bounds, and records the
-exact protocol-specific theorem infrastructure still needed to replace the
+proved the standalone query-round counting/probability bounds, proves the
+concrete query-round challenge sampler is the uniform product PMF, and records
+the exact protocol-specific theorem infrastructure still needed to replace the
 named residual with a proof body.

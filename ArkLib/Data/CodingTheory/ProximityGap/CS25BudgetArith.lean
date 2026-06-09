@@ -24,7 +24,7 @@ and `n ≥ 2`, the breakdown count budget `q^{n+1}·#{far} + #{jointProx} < q^{2
 theorem count_budget_lt (q n f j : ℕ) (hq : 2 ≤ q) (hn : 2 ≤ n)
     (hf : f ≤ q ^ (n - 2)) (hj : j ≤ q ^ (2 * n - 2)) :
     q ^ (n + 1) * f + j < q ^ (2 * n) := by
-  have hpos : 0 < q ^ (2 * n - 2) := Nat.pos_pow_of_pos _ (by omega)
+  have hpos : 0 < q ^ (2 * n - 2) := pow_pos (by omega) _
   have hqlt : q + 1 < q ^ 2 := by nlinarith [hq]
   calc q ^ (n + 1) * f + j
       ≤ q ^ (n + 1) * q ^ (n - 2) + q ^ (2 * n - 2) := by
@@ -33,7 +33,7 @@ theorem count_budget_lt (q n f j : ℕ) (hq : 2 ≤ q) (hn : 2 ≤ n)
     _ = q ^ (2 * n - 2) * q + q ^ (2 * n - 2) := by
         rw [show 2 * n - 1 = (2 * n - 2) + 1 by omega, pow_succ]
     _ = q ^ (2 * n - 2) * (q + 1) := by ring
-    _ < q ^ (2 * n - 2) * q ^ 2 := by exact Nat.mul_lt_mul_left hpos hqlt
+    _ < q ^ (2 * n - 2) * q ^ 2 := by exact mul_lt_mul_of_pos_left hqlt hpos
     _ = q ^ (2 * n) := by rw [← pow_add]; congr 1; omega
 
 end ProximityGap

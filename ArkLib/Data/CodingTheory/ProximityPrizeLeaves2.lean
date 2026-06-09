@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.CodeGeometry
 import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
@@ -75,24 +76,9 @@ namespace CodingTheory
 
 open Real
 
-/-- **Base-change bridge for the `q`-ary entropy** (re-proven locally so that this file
-is self-contained). For `q ≥ 2`, ArkLib's `qEntropy` (base-`q` logs `Real.logb q`) times
-`Real.log q` equals Mathlib's `Real.qaryEntropy` (natural logs).
-
-The hypothesis `2 ≤ q` is necessary: for `q ∈ {0, 1}` we have `Real.log q = 0`, so the
-LHS collapses to `0` while `qaryEntropy q x` is generally nonzero. -/
-theorem qEntropy_mul_log_eq_qaryEntropy {q : ℕ} (hq : 2 ≤ q) (x : ℝ) :
-    qEntropy q x * Real.log q = Real.qaryEntropy q x := by
-  have hq1 : (1 : ℝ) < (q : ℝ) := by exact_mod_cast hq
-  have hlog : Real.log q ≠ 0 :=
-    Real.log_ne_zero_of_pos_of_ne_one (by linarith) (by
-      intro h; rw [h] at hq1; exact lt_irrefl _ hq1)
-  unfold qEntropy Real.qaryEntropy Real.binEntropy
-  rw [Real.logb, Real.logb, Real.logb]
-  push_cast
-  rw [Real.log_inv, Real.log_inv]
-  field_simp
-  ring
+-- dedup-audit(#257): `qEntropy_mul_log_eq_qaryEntropy` removed here to resolve the
+-- duplicate fully-qualified name (umbrella-build clash). Canonical copy lives in
+-- `ProximityPrizeLeaves.lean` and is re-exported via the import added above.
 
 /-- **Entropy rewrite for the C3.8 volume bound.** For `q ≥ 2` and `n : ℕ`, the real
 power `q ^ (n · H_q(δ))` (where `H_q = qEntropy q` is ArkLib's base-`q` entropy and `^`

@@ -153,7 +153,7 @@ single-query detection of a `δ`-far word — into a `t`-round rejection guarant
 joint-acceptance probability of a far word. -/
 theorem accProb_antitone (δ : ℝ≥0∞) {t₁ t₂ : ℕ} (h : t₁ ≤ t₂) :
     (1 - δ) ^ t₂ ≤ (1 - δ) ^ t₁ :=
-  pow_le_pow_right_of_le_one (by simp) tsub_le_self h
+  pow_le_pow_of_le_one (by simp) tsub_le_self h
 
 /-- The per-round detection lower bound `1 - (1 - δ) ^ t` is monotone in the number of queries
 `t`: more queries can only increase the rejection guarantee. -/
@@ -165,13 +165,15 @@ theorem detectBound_monotone (δ : ℝ≥0∞) {t₁ t₂ : ℕ} (h : t₁ ≤ t
 probability `≥ 1 - (1 - δ) ^ 1 = δ`. -/
 theorem detectBound_one (δ : ℝ≥0∞) (hδ : δ ≤ 1) :
     (1 : ℝ≥0∞) - (1 - δ) ^ 1 = δ := by
-  rw [pow_one, tsub_tsub_cancel_of_le hδ]
+  rw [pow_one, ENNReal.sub_sub_cancel ENNReal.one_ne_top hδ]
 
 /-- For at least one query, the `t`-round detection lower bound dominates the single-query
 rejection probability `δ`. -/
 theorem detectBound_ge_delta (δ : ℝ≥0∞) (hδ : δ ≤ 1) {t : ℕ} (ht : 1 ≤ t) :
-    δ ≤ (1 : ℝ≥0∞) - (1 - δ) ^ t :=
-  (detectBound_one δ hδ).symm ▸ detectBound_monotone δ ht
+    δ ≤ (1 : ℝ≥0∞) - (1 - δ) ^ t := by
+  calc
+    δ = (1 : ℝ≥0∞) - (1 - δ) ^ 1 := (detectBound_one δ hδ).symm
+    _ ≤ (1 : ℝ≥0∞) - (1 - δ) ^ t := detectBound_monotone δ ht
 
 omit [DecidableEq ι] in
 /-- **A query round rejects a far word with probability ≥ the proximity bound.** If a proximity
@@ -183,11 +185,11 @@ This is the arithmetic bridge from the single-round RS affine-line proximity rej
 amplified `t`-round query phase: increasing the query count never decreases the guarantee. -/
 theorem prob_someQueryOut_ge_proximity
     (G : Finset ι) (δ ε : ℝ≥0∞) (t : ℕ) [Nonempty ι]
-    (hδ : δ ≤ 1) (hε : ε ≤ δ) (ht : 1 ≤ t)
+    (h_detection : ε ≤ (1 : ℝ≥0∞) - (1 - δ) ^ t)
     (h_density : (G.card : ℝ≥0∞) / Fintype.card ι ≤ 1 - δ) :
     ε ≤ (PMF.uniformOfFintype (Fin t → ι)).toOuterMeasure
           {q : Fin t → ι | ¬ (∀ j, q j ∈ G)} :=
-  le_trans (le_trans hε (detectBound_ge_delta δ hδ ht)) (prob_someQueryOut_ge G δ t h_density)
+  le_trans h_detection (prob_someQueryOut_ge G δ t h_density)
 
 /-! ### Axiom audit (issue #14 query-round probability brick) -/
 

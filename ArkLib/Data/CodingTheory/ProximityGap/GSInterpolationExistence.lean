@@ -3,6 +3,7 @@ Copyright (c) 2024-2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+-- dedup-audit(#257): multIdx/mem_multIdx/card_multIdx are intentional local re-derivations; the MvPolynomial interpolant packaging is unique. Do not delete. #257 A3.
 
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas

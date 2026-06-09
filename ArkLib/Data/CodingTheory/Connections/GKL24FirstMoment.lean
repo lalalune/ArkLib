@@ -619,201 +619,6 @@ theorem mcaBadWitness_card_le_two_delta_mul_card
       _ ≤ 2 * (δ : ℝ) * (Fintype.card ι : ℝ) := hsupp
       _ ≤ max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ)) := le_max_right _ _
 
-/-! ### Disjoint agree-domain charging: the sharp per-codeword count `b = δ·n + 1`
-
-The pairwise sharpening above (`b = max 1 (2δn)`) only compares *two* bad combining points. The
-genuinely sharp first-moment count — matching GCXK25's `b = δ·n` up to an unavoidable additive `1`
-— comes from a *disjoint charging* argument over **all** bad points witnessed by a fixed `w`:
-
-Fix `w` and the stack `(u₀,u₁)`. For each bad `γ` pick a witness set `S_γ` with `|S_γ| ≥ (1-δ)n`
-on which `w = u₀ + γ•u₁`. On `secondSupport u₁ = {i : u₁ i ≠ 0}`, the line equation solves uniquely
-for `γ`, so the *supp-restricted* witness sets `{S_γ ∩ supp}` are **pairwise disjoint** across
-distinct bad `γ`. Hence (with `m = |mcaBadWitness w|`, `s = |supp|`):
-
-  `m · (s − δn) ≤ ∑_γ |S_γ ∩ supp| = |⋃_γ (S_γ ∩ supp)| ≤ s`,
-
-using `|S_γ ∩ supp| ≥ |S_γ| − |zeros| ≥ (1-δ)n − (n − s) = s − δn`. Combined with the determinacy
-count `m ≤ s`, an elementary optimization (`(m-1)(s-m) ≥ 0` plus the charging inequality) yields the
-sharp `m ≤ δn + 1`. This is the in-tree discharge of the first-moment `|Bad¹| ≤ p·n` content (the
-`+1` is the genuine degenerate single-witness slack, not a loss in the charging). -/
-
-/-- A chosen witness set for a bad combining point `γ`: some `S` with `|S| ≥ (1-δ)n`,
-`w = u₀ + γ•u₁` on `S`, and `¬ pairJointAgreesOn`. Picked by `Classical.choice` from the
-`mcaBadWitness` membership; the value off `mcaBadWitness w` is `∅` (irrelevant). -/
-noncomputable def chosenWitnessSet (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F)
-    (γ : F) : Finset ι := by
-  classical
-  exact
-    if h : (∃ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
-        (∀ i ∈ S, w i = u₀ i + γ • u₁ i) ∧
-        ¬ pairJointAgreesOn (MC : Set (ι → F)) S u₀ u₁) then h.choose else ∅
-
-/-- The chosen witness set of a bad `γ` has at least `(1-δ)n` coordinates. -/
-theorem chosenWitnessSet_card_ge (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F)
-    {γ : F} (h : γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w) :
-    ((chosenWitnessSet MC δ u₀ u₁ w γ).card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι := by
-  classical
-  rw [mcaBadWitness, Finset.mem_filter] at h
-  unfold chosenWitnessSet
-  rw [dif_pos h.2]
-  exact h.2.choose_spec.1
-
-/-- The chosen witness set of a bad `γ` carries the line `w = u₀ + γ•u₁`. -/
-theorem chosenWitnessSet_line (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F)
-    {γ : F} (h : γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w) :
-    ∀ i ∈ chosenWitnessSet MC δ u₀ u₁ w γ, w i = u₀ i + γ • u₁ i := by
-  classical
-  rw [mcaBadWitness, Finset.mem_filter] at h
-  unfold chosenWitnessSet
-  rw [dif_pos h.2]
-  exact h.2.choose_spec.2.1
-
-/-- **Disjointness of the supp-restricted witness sets.** For distinct bad `γ ≠ γ'`, the sets
-`chosenWitnessSet γ ∩ secondSupport u₁` are disjoint: a common coordinate `i` would force
-`γ = (w i − u₀ i)·(u₁ i)⁻¹ = γ'`. -/
-theorem chosenWitnessSet_inter_secondSupport_pairwiseDisjoint
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F) :
-    ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w : Finset F) : Set F).PairwiseDisjoint
-      (fun γ => chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁) := by
-  classical
-  intro γ hγ γ' hγ' hne
-  simp only [Finset.mem_coe] at hγ hγ'
-  rw [Function.onFun, Finset.disjoint_left]
-  intro i hi hi'
-  rw [Finset.mem_inter] at hi hi'
-  have hu1 : u₁ i ≠ 0 := by
-    have := hi.2; rw [secondSupport, Finset.mem_filter] at this; exact this.2
-  have hl : w i = u₀ i + γ • u₁ i := chosenWitnessSet_line MC δ u₀ u₁ w hγ i hi.1
-  have hl' : w i = u₀ i + γ' • u₁ i := chosenWitnessSet_line MC δ u₀ u₁ w hγ' i hi'.1
-  apply hne
-  have heq : γ • u₁ i = γ' • u₁ i := by
-    have := hl.symm.trans hl'
-    simpa using add_left_cancel this
-  rw [smul_eq_mul, smul_eq_mul] at heq
-  exact mul_right_cancel₀ hu1 heq
-
-/-- Each chosen witness set, restricted to `secondSupport u₁`, has at least `s − δn` coordinates
-(`s = |secondSupport u₁|`), since it omits at most the `|zeros| = n − s` vanishing coordinates. -/
-theorem chosenWitnessSet_inter_secondSupport_card_ge
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F)
-    {γ : F} (h : γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w) :
-    ((secondSupport u₁).card : ℝ) - (δ : ℝ) * (Fintype.card ι : ℝ) ≤
-      ((chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁).card : ℝ) := by
-  classical
-  set S := chosenWitnessSet MC δ u₀ u₁ w γ with hS
-  have hScard_nn : ((S.card : ℝ≥0) : ℝ) ≥ (((1 - δ) * Fintype.card ι : ℝ≥0) : ℝ) := by
-    have := chosenWitnessSet_card_ge MC δ u₀ u₁ w h
-    exact_mod_cast this
-  have hScard : (1 - (δ : ℝ)) * (Fintype.card ι : ℝ) ≤ (S.card : ℝ) := by
-    have h2 : ((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ) ≤ (S.card : ℝ) := by
-      push_cast at hScard_nn ⊢; convert hScard_nn using 2
-    calc (1 - (δ : ℝ)) * (Fintype.card ι : ℝ)
-        ≤ ((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ) := by
-          refine mul_le_mul_of_nonneg_right ?_ (by positivity)
-          rw [show ((1 - δ : ℝ≥0) : ℝ) = max (1 - (δ : ℝ)) 0 by rw [NNReal.coe_sub_def]; simp]
-          exact le_max_left _ _
-      _ ≤ (S.card : ℝ) := h2
-  have hsplit : (S ∩ secondSupport u₁).card + (S \ secondSupport u₁).card = S.card :=
-    Finset.card_inter_add_card_sdiff S (secondSupport u₁)
-  have hsub : S \ secondSupport u₁ ⊆ secondZeros u₁ := by
-    intro i hi
-    rw [Finset.mem_sdiff] at hi
-    rw [secondZeros, Finset.mem_filter]
-    refine ⟨Finset.mem_univ _, ?_⟩
-    by_contra hc
-    exact hi.2 (by rw [secondSupport, Finset.mem_filter]; exact ⟨Finset.mem_univ _, hc⟩)
-  have hzeros : (S \ secondSupport u₁).card ≤ (secondZeros u₁).card := Finset.card_le_card hsub
-  have hpart : ((secondSupport u₁).card : ℝ) + ((secondZeros u₁).card : ℝ) =
-      (Fintype.card ι : ℝ) := by exact_mod_cast secondSupport_card_add_secondZeros_card u₁
-  have hsplitR : ((S ∩ secondSupport u₁).card : ℝ) + ((S \ secondSupport u₁).card : ℝ) =
-      (S.card : ℝ) := by exact_mod_cast hsplit
-  have hzerosR : ((S \ secondSupport u₁).card : ℝ) ≤ ((secondZeros u₁).card : ℝ) := by
-    exact_mod_cast hzeros
-  nlinarith [hScard, hsplitR, hzerosR, hpart]
-
-/-- **Disjoint charging sum.** The supp-restricted chosen witness sets are pairwise disjoint and
-each lies inside `secondSupport u₁`, so their cardinalities sum to at most `|secondSupport u₁|`. -/
-theorem sum_chosenWitnessSet_inter_secondSupport_le
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F) :
-    ∑ γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w,
-        ((chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁).card : ℝ) ≤
-      ((secondSupport u₁).card : ℝ) := by
-  classical
-  have hdisj := chosenWitnessSet_inter_secondSupport_pairwiseDisjoint MC δ u₀ u₁ w
-  set W := mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w with hW
-  have hbi : (W.biUnion (fun γ => chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁)).card =
-      ∑ γ ∈ W, (chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁).card :=
-    Finset.card_biUnion hdisj
-  have hsubset : (W.biUnion (fun γ => chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁)) ⊆
-      secondSupport u₁ := by
-    intro i hi
-    rw [Finset.mem_biUnion] at hi
-    obtain ⟨γ, _, hi2⟩ := hi
-    exact (Finset.mem_inter.mp hi2).2
-  have hle : (∑ γ ∈ W, (chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁).card)
-      ≤ (secondSupport u₁).card := by
-    rw [← hbi]; exact Finset.card_le_card hsubset
-  calc ∑ γ ∈ W, ((chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁).card : ℝ)
-      = ((∑ γ ∈ W, (chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁).card : ℕ) : ℝ) := by
-        push_cast; ring
-    _ ≤ ((secondSupport u₁).card : ℝ) := by exact_mod_cast hle
-
-/-- **Charging inequality `|W| · (s − δn) ≤ s`** (`W = mcaBadWitness w`, `s = |secondSupport u₁|`).
-Combines `Finset.card_nsmul_le_sum` (each supp-restricted witness set has `≥ s − δn` coordinates)
-with the disjoint charging sum (`≤ s`). -/
-theorem mcaBadWitness_card_mul_secondSupport_sub_le
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F) :
-    ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) *
-        (((secondSupport u₁).card : ℝ) - (δ : ℝ) * (Fintype.card ι : ℝ)) ≤
-      ((secondSupport u₁).card : ℝ) := by
-  classical
-  set W := mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w with hW
-  have hlb : W.card • (((secondSupport u₁).card : ℝ) - (δ : ℝ) * (Fintype.card ι : ℝ)) ≤
-      ∑ γ ∈ W, ((chosenWitnessSet MC δ u₀ u₁ w γ ∩ secondSupport u₁).card : ℝ) := by
-    refine Finset.card_nsmul_le_sum W _ _ ?_
-    intro γ hγ
-    rw [hW] at hγ
-    exact chosenWitnessSet_inter_secondSupport_card_ge MC δ u₀ u₁ w hγ
-  have hsum := sum_chosenWitnessSet_inter_secondSupport_le MC δ u₀ u₁ w
-  rw [← hW] at hsum
-  have hcast : (W.card : ℝ) * (((secondSupport u₁).card : ℝ) - (δ : ℝ) * (Fintype.card ι : ℝ)) =
-      W.card • (((secondSupport u₁).card : ℝ) - (δ : ℝ) * (Fintype.card ι : ℝ)) := by
-    rw [nsmul_eq_mul]
-  rw [hcast]
-  exact le_trans hlb hsum
-
-/-- **Sharp per-codeword first-moment count `b = δ·n + 1`.** For a `Submodule` code `MC` and a
-fixed codeword `w ∈ MC`,
-
-  `|mcaBadWitness w| ≤ δ·n + 1`.
-
-This is the in-tree discharge of GCXK25's first-moment per-codeword count `|Bad¹| ≤ p·n`: it
-combines the determinacy bound `|W| ≤ |secondSupport u₁|` with the disjoint-charging inequality
-`|W|·(s − δn) ≤ s` via the elementary optimization `(m-1)(s-m) ≥ 0`. It strictly improves the
-pairwise `b = max 1 (2δn)` of `mcaBadWitness_card_le_two_delta_mul_card`; the additive `+1` is the
-genuine slack from the degenerate single-witness case (`δ·n` exactly is unattainable when a single
-`γ` is witnessed, since then `m = 1`). -/
-theorem mcaBadWitness_card_le_delta_mul_card_add_one
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ w : ι → F)
-    (hw : w ∈ (MC : Set (ι → F))) :
-    ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) ≤
-      (δ : ℝ) * (Fintype.card ι : ℝ) + 1 := by
-  classical
-  set m := ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) with hm
-  set s := ((secondSupport u₁).card : ℝ) with hs
-  set d := (δ : ℝ) * (Fintype.card ι : ℝ) with hd
-  have hms : m ≤ s := by
-    rw [hm, hs]; exact_mod_cast mcaBadWitness_card_le_support MC δ u₀ u₁ w hw
-  have hcharge : m * (s - d) ≤ s := mcaBadWitness_card_mul_secondSupport_sub_le MC δ u₀ u₁ w
-  have hd0 : 0 ≤ d := by rw [hd]; positivity
-  have hm0 : 0 ≤ m := by rw [hm]; positivity
-  rcases le_or_gt m 1 with hle | hgt
-  · linarith
-  · have hsm : s ≥ m := hms
-    have hprod : 0 ≤ (m - 1) * (s - m) := by
-      apply mul_nonneg <;> linarith
-    nlinarith [hcharge, hprod, hgt, hsm]
-
 end
 
 section Compose
@@ -905,23 +710,6 @@ theorem mcaBad_card_le_listFactor_mul_two_delta_card
   intro w hw
   exact mcaBadWitness_card_le_two_delta_mul_card MC δ u₀ u₁ w (hTsub w hw)
 
-/-- **Sharp in-tree per-stack count `|mcaBad u| ≤ B_T · (δ·n + 1)`.** Composes the sharp
-disjoint-charging per-codeword count (`mcaBadWitness_card_le_delta_mul_card_add_one`) with the
-union-bound brick. This is the in-tree per-stack realization of GCXK25's `B_T · δ · n` first-moment
-bound up to the additive `+1` per codeword — strictly sharper than the `B_T · max 1 (2δn)` of
-`mcaBad_card_le_listFactor_mul_two_delta_card`, with no external hypothesis. -/
-theorem mcaBad_card_le_listFactor_mul_delta_add_one_card
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ : ι → F)
-    (T : Finset (ι → F)) (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T)
-    (hTsub : ∀ w ∈ T, w ∈ (MC : Set (ι → F)))
-    {B_T : ℝ} (hb_card : (T.card : ℝ) ≤ B_T) :
-    ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ) ≤
-      B_T * ((δ : ℝ) * (Fintype.card ι : ℝ) + 1) := by
-  refine mcaBad_card_le_listFactor_mul_perCodeword (MC : Set (ι → F)) δ u₀ u₁ T hT
-    (by positivity) hb_card ?_
-  intro w hw
-  exact mcaBadWitness_card_le_delta_mul_card_add_one MC δ u₀ u₁ w (hTsub w hw)
-
 /-- **Sharpened in-tree `ε_mca` bound.** With carrier `T` containing exactly the codewords of `MC`
 of size `≤ B_T`,
 
@@ -957,47 +745,6 @@ theorem epsMCA_le_ofReal_of_listFactor_two_delta_univ
   classical
   let T : Finset (ι → F) := Finset.univ.filter (fun w : ι → F => w ∈ (MC : Set (ι → F)))
   refine epsMCA_le_ofReal_of_listFactor_two_delta MC δ T ?_ ?_ ?_
-  · intro w hw
-    simpa [T, hw]
-  · intro w hw
-    simpa [T] using hw
-  · exact_mod_cast Finset.card_filter_le Finset.univ (fun w : ι → F => w ∈ (MC : Set (ι → F)))
-
-/-- **Sharp in-tree `ε_mca` bound `≤ (B_T·(δ·n + 1))/|F|`.** With carrier `T` containing exactly
-the codewords of `MC` of size `≤ B_T`, the sharp disjoint-charging per-codeword count gives
-
-  `ε_mca(MC, δ) ≤ ENNReal.ofReal ((B_T · (δ·n + 1)) / |F|)`.
-
-This is the fully in-tree (`sorry`-free, axiom-clean) realization of GCXK25's first-moment
-`ε_mca ≤ (B_T·δ·n)/|F|` up to the per-codeword additive `+1`; it strictly sharpens
-`epsMCA_le_ofReal_of_listFactor_two_delta` (factor `≈2` → additive `+1`). -/
-theorem epsMCA_le_ofReal_of_listFactor_delta_add_one
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ}
-    (T : Finset (ι → F))
-    (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T) (hTsub : ∀ w ∈ T, w ∈ (MC : Set (ι → F)))
-    (hcard : (T.card : ℝ) ≤ B_T) :
-    epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
-      ENNReal.ofReal
-        ((B_T * ((δ : ℝ) * (Fintype.card ι : ℝ) + 1)) / Fintype.card F) := by
-  refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
-  intro u
-  exact mcaBad_card_le_listFactor_mul_delta_add_one_card MC δ (u 0) (u 1) T hT hTsub hcard
-
-/-- **No-carrier sharp in-tree `ε_mca` bound.** Taking the carrier to be all codewords of `MC`,
-the sharp disjoint-charging per-codeword count gives
-
-  `ε_mca(MC, δ) ≤ ENNReal.ofReal ((|F|^n · (δ·n + 1)) / |F|)`.
-
-The canonical no-carrier version of `epsMCA_le_ofReal_of_listFactor_delta_add_one`. -/
-theorem epsMCA_le_ofReal_of_listFactor_delta_add_one_univ
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) :
-    epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
-      ENNReal.ofReal
-        (((Fintype.card (ι → F) : ℝ) *
-            ((δ : ℝ) * (Fintype.card ι : ℝ) + 1)) / Fintype.card F) := by
-  classical
-  let T : Finset (ι → F) := Finset.univ.filter (fun w : ι → F => w ∈ (MC : Set (ι → F)))
-  refine epsMCA_le_ofReal_of_listFactor_delta_add_one MC δ T ?_ ?_ ?_
   · intro w hw
     simpa [T, hw]
   · intro w hw
@@ -1493,29 +1240,6 @@ theorem epsMCA_le_ofReal_of_gkl24_petal_witnessCover_residual
   intro u
   exact mcaBad_card_le_of_gkl24_petal_witnessCover_residual MC δ hp0 hres u
 
-/-- **Sharp in-tree GKL24 first-moment residual instance `b = δ·n + 1`.** Taking `T` to be the
-finite set of all codewords of `MC`, the sharp disjoint-charging per-codeword count discharges the
-residual with carrier size `|F|^n` and per-codeword count `δ·n + 1`. This is the in-tree realization
-of GCXK25's first-moment `b = δ·n` up to the additive `+1`; it strictly sharpens
-`GKL24FirstMomentResidual_inTree_two_delta_card`. Feeding it through
-`mcaBad_card_le_of_gkl24_residual` / `epsMCA_le_ofReal_of_gkl24_residual` recovers the
-`B_T·(δ·n+1)` first-moment summand of ABF26 T5.1 with no external hypothesis. -/
-theorem GKL24FirstMomentResidual_inTree_delta_add_one_card
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) :
-    GKL24FirstMomentResidual MC δ
-      (Fintype.card (ι → F) : ℝ)
-      ((δ : ℝ) * (Fintype.card ι : ℝ) + 1) := by
-  classical
-  intro u
-  refine ⟨Finset.univ.filter (fun w : ι → F => w ∈ (MC : Set (ι → F))), ?_, ?_, ?_⟩
-  · intro w hw
-    rw [Finset.mem_filter]
-    exact ⟨Finset.mem_univ _, hw⟩
-  · exact_mod_cast Finset.card_filter_le Finset.univ (fun w : ι → F => w ∈ (MC : Set (ι → F)))
-  · intro w hw
-    rw [Finset.mem_filter] at hw
-    exact mcaBadWitness_card_le_delta_mul_card_add_one MC δ (u 0) (u 1) w hw.2
-
 /-- **Per-stack bad-`γ` count from the GKL24 first-moment residual.**
 Given `GKL24FirstMomentResidual MC δ B_T b`, every concrete stack `u` has at most `B_T · b`
 bad combining scalars:
@@ -1734,11 +1458,3 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.mcaBad_card_le_listFactor_mul_two_delta_card
 #print axioms ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta
 #print axioms ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta_univ
--- Sharp disjoint-charging first-moment count `b = δ·n + 1` (the GCXK25 `|Bad¹| ≤ δ·n` content).
-#print axioms ProximityGap.chosenWitnessSet_inter_secondSupport_pairwiseDisjoint
-#print axioms ProximityGap.mcaBadWitness_card_mul_secondSupport_sub_le
-#print axioms ProximityGap.mcaBadWitness_card_le_delta_mul_card_add_one
-#print axioms ProximityGap.mcaBad_card_le_listFactor_mul_delta_add_one_card
-#print axioms ProximityGap.epsMCA_le_ofReal_of_listFactor_delta_add_one
-#print axioms ProximityGap.epsMCA_le_ofReal_of_listFactor_delta_add_one_univ
-#print axioms ProximityGap.GKL24FirstMomentResidual_inTree_delta_add_one_card

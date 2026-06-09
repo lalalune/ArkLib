@@ -8,6 +8,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
+import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
 
 /-!
 # Guruswami–Sudan-degree-exposed mutual-correlated-agreement (MCAGS)
@@ -544,6 +545,19 @@ def epsMCAgs_prizeBound_conjecture
             ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L
         ≤ ENNReal.ofReal
             (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)
+
+/-- **Conditional Reduction to Explicit Polynomial List-Size Kernel.**
+Proves that the open prize conjecture follows directly from the explicit uniform polynomial
+list-size conjecture and its associated degree/coverage reduction facts. By providing the
+reduction explicitly, we wire the GS interpolation/degree-budget facts into the tracker
+without implying the prize is unconditionally solved. -/
+theorem epsMCAgs_prizeBound_of_uniform_listSize
+    (domain : ι ↪ F) (m : ℕ)
+    (h_reduction : (∀ ρ η : ℝ≥0, ProximityGap.Issue141.UniformPolyListSizeConjecture ρ η) → epsMCAgs_prizeBound_conjecture domain m)
+    (h_listSize : ∀ ρ η : ℝ≥0, ProximityGap.Issue141.UniformPolyListSizeConjecture ρ η) :
+    epsMCAgs_prizeBound_conjecture domain m :=
+  h_reduction h_listSize
+
 /-- **The genuine uniform open prize form.** 
 The beyond-UDR Guruswami-Sudan mass bound, stated with universal constants 
 across all domains, rates, and parameters. -/
@@ -582,3 +596,4 @@ end ProximityGap
 #print axioms ProximityGap.MCAGS.epsMCAgs_prizeBound_conjecture
 #print axioms ProximityGap.MCAGS.uniformEpsMCAgsPrizeBoundConjecture
 #print axioms ProximityGap.MCAGS.epsMCAgs_prizeBound_conjecture_of_uniform
+#print axioms ProximityGap.MCAGS.epsMCAgs_prizeBound_of_uniform_listSize

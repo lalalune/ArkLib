@@ -87,7 +87,7 @@ added on top of this file's definitions. Each is in scope for Phase 1 of the pla
 -- The definitions and proofs below all take the variables `ι`, `F`, `A` from a single section
 -- (PMF forces them into `Type 0`). Several theorems use `Fintype`/`DecidableEq` instances at
 -- proof-time but not in their types; suppressing the noisy `unused...InType` linter warnings
--- file-wide here, matching the idiom used in `ReedSolomon/FftDomain.lean` and similar files.
+-- file-wide here, matching the idiom used in `Domain/CosetFftDomain/Subdomain.lean` and similar.
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false

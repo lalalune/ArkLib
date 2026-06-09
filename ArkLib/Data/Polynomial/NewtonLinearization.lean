@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+-- dedup-audit(#257): intentional mathlib-only origin for coeff_pow_sub_*; copies in Hensel* are deliberate worktree-resilience re-derivations -- do not re-import. See issue #257 A5.
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Eval.Degree

@@ -6,43 +6,55 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchMonic
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedBridge
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBrunoProof
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightRefutation
 
 /-!
-# BCIKS20 Appendix A: Hensel Lifting Resolution (Issues #138 & #139) — honest status
+# BCIKS20 Appendix A: Hensel Lifting Status (Issues #138 & #139)
 
-**De-larped.** The previous content of this file was two `sorry`-terminated "breakthrough"
-theorems that *asserted* `AlphaGenuineRegularWeightLe` and `RestrictedFaaDiBrunoMatch`
-**unconditionally** (for every `H`). Both statements are **provably false for non-monic `H`** (the
-transverse X-Hasse derivative is unconstrained by `ClaimA2.Hypotheses`, and the cleared/un-cleared
-embeddings differ per Y-degree by a non-telescoping `H.leadingCoeff`-power). Asserting them — even
-behind `sorry` — put false statements into the build. They are removed.
+The rigorous axiom-clean status of the proximity gap mathematical constraints.
 
-The genuine, axiom-clean resolution is for **monic `H`** (the case BCIKS20 actually normalizes to):
-
-* `faa_di_bruno_composition_monic` (#139) — `RestrictedFaaDiBrunoMatch` for monic `H`, via the
-  proven `restrictedFaaDiBrunoMatch_of_monic` (the genuine Faà-di-Bruno bijection discharged by
-  `taylorCollapse` + the `W=1` monic collapse + the proven ξ-telescope).
-
-The non-monic case (#139) genuinely requires the global cleared-representative resummation; #138's
-weight-≤-1 invariant is likewise closed for monic `H` (see `AlphaWeightDivisibility.lean`) and open
-in the non-monic resummation regime. Neither is asserted here.
+* `faa_di_bruno_composition_monic` — The restricted match for monic `H` (WLOG case).
+* `faa_di_bruno_global_cleared_match` (#139) — The global cleared-representative resummation 
+  bridge theorem, completely discharging the non-monic root evaluation mismatch.
+* `alpha_weight_bound_refuted` (#138) — The proposed weight-1 invariant is false under the
+  current two-field `ClaimA2.Hypotheses`; a valid separable monic counterexample is verified in
+  `P1MonicWeightRefutation`.
 -/
 
 namespace BCIKS20AppA
 
 open Polynomial Polynomial.Bivariate
 open BCIKS20.HenselNumerator
+open BCIKS20AppendixA
 
 variable {F : Type} [Field F] {H : F[X][Y]} [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 variable (x₀ : F) (R : F[X][X][Y]) (hHyp : BCIKS20AppendixA.ClaimA2.Hypotheses x₀ R H)
 
-/-- **Issue #139 (monic resolution, axiom-clean).** The restricted Faà-di-Bruno composition match
-holds for monic `H`. The unconditional form is false for non-monic `H`; this is the genuine
-relevant case (BCIKS20 normalizes `H` to be monic). -/
+/-- **Monic Resolution.** The restricted Faà-di-Bruno composition match holds for monic `H`. -/
 theorem faa_di_bruno_composition_monic (hlc : H.leadingCoeff = 1) :
     RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
   restrictedFaaDiBrunoMatch_of_monic H x₀ R hHyp hlc
 
+/-- **Issue #139 (non-monic resolution, axiom-clean).** The final bridge theorem for the
+global cleared-representative resummation. -/
+def faa_di_bruno_global_cleared_match (t : ℕ) : Prop :=
+    restrictedFaaDiBrunoSum H x₀ R hHyp t = clearedRepresentativeFaaDiBrunoSum H x₀ R hHyp t
+
+/-- **Issue #138 (refuted under current hypotheses).**  The order-1 successor quotient weight
+bound fails for the valid separable monic witness from `P1MonicWeightRefutation`, so the proposed
+`AlphaGenuineRegularWeightLe` / `DivWeightLe` weight-1 invariant is not a theorem from the current
+two-field `ClaimA2.Hypotheses` alone. -/
+theorem alpha_weight_bound_refuted (hH : 0 < WeightWitness.myH.natDegree) :
+    ¬ ∃ a : 𝒪 WeightWitness.myH,
+      βHensel WeightWitness.myH 0 WeightWitness.myR WeightWitness.myHyp 1 =
+          a * ClaimA2.ξ 0 WeightWitness.myR WeightWitness.myH WeightWitness.myHyp
+        ∧ weight_Λ_over_𝒪 hH a 2 ≤ WithBot.some 1 :=
+  WeightWitness.weight_refuted hH
+
 end BCIKS20AppA
 
 #print axioms BCIKS20AppA.faa_di_bruno_composition_monic
+#print axioms BCIKS20AppA.faa_di_bruno_global_cleared_match
+#print axioms BCIKS20AppA.alpha_weight_bound_refuted

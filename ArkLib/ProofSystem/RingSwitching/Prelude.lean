@@ -900,6 +900,29 @@ lemma embedded_MLP_eval_eq_sum' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l
     rw [show ((w : Fin ℓ' → L₀)) = (fun i => ((w i : Fin 2) : L₀)) from rfl, hpt]
 
 omit [CharP L₀ 2] in
+/-- **Generic row extraction for an embedded large-field multilinear polynomial.**
+
+For arbitrary `t' : L⦃≤1⦄[X Fin ℓ']`, the row coordinates of
+`embedded_MLP_eval t' r` extract the basis coordinates of the `t'` value at each Boolean suffix,
+weighted by the suffix equality factor. This is the raw orientation lemma behind
+`decompose_rows_packMLE'`; specializing to `t' = packMLE P.basis t` and using
+`packMLE_repr_eval` recovers the small-field evaluation form. -/
+lemma decomposeRows_embedded_MLP_eval' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+    (h_l : ℓ = ℓ' + κ₀) (t' : MultilinearPoly L₀ ℓ') (r : Fin ℓ → L₀)
+    (u : Fin κ₀ → Fin 2) :
+    P.decomposeRows
+        (embedded_MLP_eval κ₀ L₀ K₀ P ℓ ℓ' h_l t' r) u
+      = ∑ w : Fin ℓ' → Fin 2,
+          P.basis.repr
+              (eval (fun i => (if w i == 1 then (1 : L₀) else 0)) t'.val) u •
+            (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
+              (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)) := by
+  rw [embedded_MLP_eval_eq_sum', P.decomposeRows_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [P.decomposeRows_φ₀_mul_φ₁]
+
+omit [CharP L₀ 2] in
 /-- **Generic row recovery of `t`-evaluations** over an abstract `P` whose basis is `P.basis`.
 The row components of `ŝ = embedded_MLP_eval (packMLE P.basis t) r` carry the suffix-`eq`-weighted
 evaluations of `t`. Routes through `embedded_MLP_eval_eq_sum'`, the generic row additivity
@@ -1845,5 +1868,9 @@ theorem probEvent_badAgreement_degree_two_le {L : Type} [CommRing L] [IsDomain L
 #print axioms RingSwitching.probEvent_badAgreement_degree_two_le
 
 end SchwartzZippelRootBound
+
+/-! ### Axiom audit (issue #29 batching row-orientation frontier) -/
+
+#print axioms RingSwitching.decomposeRows_embedded_MLP_eval'
 
 end RingSwitching

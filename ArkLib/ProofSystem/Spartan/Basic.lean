@@ -293,13 +293,13 @@ noncomputable def firstChallengeContextLens :
       (OracleStatement.AfterFirstMessage R pp) (OracleStatement.AfterFirstChallenge R pp)
       (RandomQuery.OStmtIn (MvPolynomial (Fin pp.ℓ_m) R))
       (RandomQuery.OStmtOut (MvPolynomial (Fin pp.ℓ_m) R))
-      (Witness R pp) Unit RandomQuery.WitIn RandomQuery.WitOut where
+      Unit Unit RandomQuery.WitIn RandomQuery.WitOut where
   stmt := firstChallengeStmtLens R pp
   wit := ⟨fun _ => (), fun _ _ => ()⟩
 
 def oracleReduction.firstChallenge :
     OracleReduction oSpec
-      (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp) (Witness R pp)
+      (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp) Unit
       (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
       ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ :=
   (RandomQuery.oracleReduction oSpec (MvPolynomial (Fin pp.ℓ_m) R)).liftContext
@@ -427,7 +427,7 @@ as the single `P_to_V` message. Mirrors `SendClaim.oracleProver`, but the messag
 from the input oracles rather than being an input oracle itself. -/
 noncomputable def sendEvalClaimProver :
     OracleProver oSpec
-      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) (Witness R pp)
+      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) Unit
       (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp) Unit
       ⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ where
   PrvState := fun _ =>
@@ -475,11 +475,28 @@ output-oracle interface above. The prover forwards `A, B, C, 𝕨` and sends the
 inputs. -/
 noncomputable def oracleReduction.sendEvalClaim :
     OracleReduction oSpec
-      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) (Witness R pp)
+      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) Unit
       (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp) Unit
       ⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ where
   prover := sendEvalClaimProver R pp oSpec
   verifier := sendEvalClaimVerifier R pp oSpec
+
+instance instSendEvalClaimVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (sendEvalClaimVerifier R pp oSpec) where
+  hCohInl i k h := by
+    rcases i with i | i
+    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
+      cases h
+    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
+      obtain rfl := Sum.inl.inj h
+      rfl
+  hCohInr i k h := by
+    rcases i with i | i
+    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
+      obtain rfl := Sum.inr.inj h
+      rfl
+    · simp only [sendEvalClaimVerifier, Function.Embedding.coeFn_mk] at h
+      cases h
 
 /-!
   ## Random linear combination challenges
@@ -558,6 +575,16 @@ def oracleReduction.linearCombination :
       ⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩ where
   prover := linearCombinationProver R pp oSpec
   verifier := linearCombinationVerifier R pp oSpec
+
+instance instLinearCombinationVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (linearCombinationVerifier R pp oSpec) where
+  hCohInl i k h := by
+    simp only [linearCombinationVerifier, Function.Embedding.inl_apply] at h
+    obtain rfl := Sum.inl.inj h
+    rfl
+  hCohInr i k h := by
+    simp only [linearCombinationVerifier, Function.Embedding.inl_apply] at h
+    cases h
 
 /-!
   ## Second sum-check
