@@ -207,7 +207,9 @@ theorem append_perfectCompleteness_empty_proof
     rcases a₄ with _ | vo₁
     · simp at hx
     rcases vo₁ with _ | vs₂
-    · simp at hx
+    · simp only [monadLift_pure, pure_bind, Option.getM_none] at hx
+      trace_state
+      sorry
     simp only [Option.elim_some, liftM_bind, bind_assoc] at hx
     obtain ⟨a₅, hV₂, hx⟩ := (mem_support_bind_iff _ _ _).mp hx
     rcases a₅ with _ | vo₂
