@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.GeomSum
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # General-`t` coset concentration of power-sum statistics on the smooth domain (Issue #232)
@@ -209,6 +210,43 @@ theorem cosetUnion_superpoly_moment_depth {h m t : ℕ} (hm : 2 ≤ m) (ht : t <
     2 * (t + 1) ≤ m * h := by
   calc 2 * (t + 1) ≤ 2 * h := by omega
     _ ≤ m * h := Nat.mul_le_mul_right h hm
+
+/-! ## Concrete tightness + anti-concentration witness (`μ_8 ⊂ ZMod 17`)
+
+The order-8 subgroup of `(ZMod 17)ˣ` is `μ_8 = ⟨2⟩ = {1,2,4,8,9,13,15,16}`; its order-4 subgroup
+`μ_4 = {1,4,13,16}` has two cosets in `μ_8`. At `a = 4`, `exists_many_vanishing_powersum_subsets`
+(with `h = 4`, `m = 1`) predicts `≥ C(8/4, 1) = C(2,1) = 2` four-subsets with `∑x = ∑x² = 0` — the
+two `μ_4`-cosets. The following `decide`-checked facts show the bound is **exactly tight** here and
+that the `(∑x, ∑x²)` statistic is otherwise maximally spread:
+
+* `N2_G8_zero_eq_two` — there are **exactly** `2` four-subsets of `μ_8` with `∑x = ∑x² = 0`, i.e. the
+  coset construction captures *all* of the concentration at the origin (`N2(0,0) = 2 = C(2,1)`).
+* `G8_support_eq_69` — the `C(8,4) = 70` four-subsets realize `69` distinct `(∑x, ∑x²)` values, so
+  there is **exactly one** colliding pair (the two `μ_4`-cosets at the origin); equivalently the
+  collision count is `70 + 2 = 72`, barely above the diagonal floor `C(8,4) = 70` and far below the
+  total-concentration ceiling `70² = 4900`. The statistic is nearly maximally **anti-concentrated** —
+  a concrete data point on the side of the fleet's dichotomy where the prize bound *survives*. -/
+namespace Witness
+
+/-- The order-8 multiplicative subgroup `μ_8 = ⟨2⟩` of `(ZMod 17)ˣ`. -/
+def G8 : Finset (ZMod 17) := {1, 2, 4, 8, 16, 15, 13, 9}
+
+theorem G8_card : G8.card = 8 := by decide
+
+/-- **Tightness of the coset concentration bound at `μ_8`, `a = 4`.** Exactly the two `μ_4`-cosets
+have `(∑x, ∑x²) = (0,0)`, matching the predicted `C(8/4, 4/4) = 2`. -/
+theorem N2_G8_zero_eq_two :
+    ((G8.powersetCard 4).filter
+      (fun S => (∑ x ∈ S, x) = 0 ∧ (∑ x ∈ S, x ^ 2) = 0)).card = 2 := by decide
+
+/-- **Anti-concentration witness.** The `70` four-subsets of `μ_8` realize `69` distinct
+`(∑x, ∑x²)` statistics — a single collision (the two cosets), so the statistic is maximally spread
+apart from the coset coincidence. -/
+theorem G8_support_eq_69 :
+    ((G8.powersetCard 4).image
+      (fun S => ((∑ x ∈ S, x), (∑ x ∈ S, x ^ 2)))).card = 69 := by decide
+
+end Witness
 
 end ArkLib.ProximityGap.CosetConcentration
 
