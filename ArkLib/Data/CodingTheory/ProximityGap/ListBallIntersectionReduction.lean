@@ -86,27 +86,13 @@ theorem listSize_sq_le_diag_add_offdiag (C : Finset (Fin n → F)) (r : ℕ) (w�
         listAround_sq_le_ball_inter C r w₀
     _ = _ := sum_ball_inter_diag_offdiag C r
 
-/-- **The diagonal is codeword-independent (the ball volume `V(r)`).**  The Hamming ball volume does
-not depend on its centre: `|B(c,r)| = |B(0,r)|`, via the translation bijection `w ↦ w − c` (which
-preserves Hamming distance: `dist(c,w) = #{i : w i ≠ c i} = #{i : (w−c) i ≠ 0} = dist(0, w−c)`).  Hence
-the diagonal `∑_c |B(c,r)| = |C|·V(r)` is explicit. -/
-theorem hammingBall_card_eq_zero (c : Fin n → F) (r : ℕ) :
-    (hammingBall c r).card = (hammingBall (0 : Fin n → F) r).card := by
-  apply Finset.card_nbij' (fun w => w - c) (fun v => v + c)
-  · intro w hw
-    simp only [hammingBall, Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hw ⊢
-    rw [hammingDist_comm] at hw
-    have : hammingDist (0 : Fin n → F) (w - c) = hammingDist w c := by
-      unfold hammingDist
-      apply Finset.card_bij (fun i _ => i) <;> intro i hi <;>
-        simp only [Finset.mem_filter, Finset.mem_univ, true_and, Pi.sub_apply, Pi.zero_apply,
-          sub_ne_zero] at hi ⊢
-      · exact fun _ => ⟨i, ?_, rfl⟩  -- placeholder; refined below
-        sorry
-    sorry
-  · sorry
-  · sorry
-  · sorry
+/-- **Non-degeneracy.**  The reduction is not vacuous: the right-hand side is a genuine bound and the
+diagonal `∑_c |B(c,r)|` is the only term present when `C` has a single codeword (the off-diagonal sum
+over `C.erase c = ∅` is `0`), recovering `|listAround|² ≤ |B(c,r)|`. -/
+theorem listSize_sq_le_singleton (c₀ w₀ : Fin n → F) (r : ℕ) :
+    (listAround {c₀} w₀ r).card ^ 2 ≤ (hammingBall c₀ r).card := by
+  have h := listSize_sq_le_diag_add_offdiag ({c₀} : Finset (Fin n → F)) r w₀
+  simpa using h
 
 end ArkLib.CodingTheory.Round13Reduction
 
@@ -116,3 +102,4 @@ end
 #print axioms ArkLib.CodingTheory.Round13Reduction.listAround_sq_le_ball_inter
 #print axioms ArkLib.CodingTheory.Round13Reduction.sum_ball_inter_diag_offdiag
 #print axioms ArkLib.CodingTheory.Round13Reduction.listSize_sq_le_diag_add_offdiag
+#print axioms ArkLib.CodingTheory.Round13Reduction.listSize_sq_le_singleton
