@@ -922,6 +922,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessMs
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracle
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKeystone
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeStateFunction
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDistChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendSeamBridges
@@ -1121,6 +1122,7 @@ import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
+import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
 import ArkLib.ProofSystem.Spartan.FirstChallengeComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckComplete
