@@ -189,11 +189,11 @@ namespace Reduction
 section Completeness
 
 local instance fiatShamirProverOnly : ProtocolSpec.ProverOnly
-    ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ where
+    ⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ where
   prover_first' := by simp
 
 abbrev FiatShamirProtocolSpec : ProtocolSpec 1 :=
-  ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩
+  ⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩
 
 local instance fiatShamirChallengeOracleInterface :
     ∀ i : (FiatShamirProtocolSpec (pSpec := pSpec)).ChallengeIdx,
@@ -230,6 +230,63 @@ theorem fiatShamir_sendMessage_eq_raw
           R.prover.runToRoundFS (Fin.last n) stmtIn state
         return ⟨messages, state⟩ := by
   rfl
+
+omit [VCVCompatible StmtIn] [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- Specializing the generic single-prover-message run theorem to the basic Fiat-Shamir transform
+exposes the outer run shell: transformed prover input, one transformed proof-message send,
+transcript assembly, transformed verifier run, and final `OptionT` verdict extraction. -/
+theorem fiatShamir_run_eq_oneMessage
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    R.fiatShamir.run stmtIn witIn =
+      (have state := R.fiatShamir.prover.input (stmtIn, witIn)
+      do
+        let ⟨msg, state⟩ ←
+          (liftM
+            (m := OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+            (n := OptionT (OracleComp
+              ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)))
+            (self := instMonadLiftTOfMonadLift
+              (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+              (OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)))
+              (OptionT (OracleComp
+                ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                  [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))))
+            (R.fiatShamir.prover.sendMessage ⟨0, by simp⟩ state))
+        let ctxOut ←
+          (liftM
+            (m := OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+            (n := OptionT (OracleComp
+              ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)))
+            (self := instMonadLiftTOfMonadLift
+              (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+              (OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)))
+              (OptionT (OracleComp
+                ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                  [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))))
+            (R.fiatShamir.prover.output state))
+        have transcript : (FiatShamirProtocolSpec (pSpec := pSpec)).FullTranscript :=
+          fun i => match i with | ⟨0, _⟩ => msg
+        let stmtOut ←
+          (liftM
+            (m := OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+            (n := OptionT (OracleComp
+              ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)))
+            (self := instMonadLiftTOfMonadLift
+              (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+              (OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)))
+              (OptionT (OracleComp
+                ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                  [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))))
+            (R.fiatShamir.verifier.verify stmtIn transcript).run)
+        return (⟨transcript, ctxOut⟩, ← stmtOut.getM)) := by
+  simpa only using
+    (Reduction.run_of_prover_first
+      (pSpec := FiatShamirProtocolSpec (pSpec := pSpec))
+      stmtIn witIn R.fiatShamir)
 
 /-- The transformed basic Fiat-Shamir run is the lifted explicit honest execution. -/
 def fiatShamir_run_eq_honestExecution
@@ -781,6 +838,7 @@ theorem fiatShamir_completeness_of_perfect_runEq_mono_relations_error
 #print axioms Reduction.FiatShamirProofTranscript
 #print axioms Reduction.fiatShamirHonestExecution
 #print axioms Reduction.fiatShamir_sendMessage_eq_raw
+#print axioms Reduction.fiatShamir_run_eq_oneMessage
 #print axioms Reduction.fiatShamir_run_eq_honestExecution
 #print axioms Reduction.fiatShamir_completeness_unroll
 #print axioms Reduction.fiatShamir_completeness_unroll_of_runCollapse
