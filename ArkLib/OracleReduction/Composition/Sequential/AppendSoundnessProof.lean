@@ -61,6 +61,24 @@ completeness proof's `hImplSupp`.
 open OracleComp OracleSpec ProtocolSpec OptionTStateT
 open scoped ENNReal
 
+universe u v
+
+/-- **`OptionT.mk` event = `Option.elim`-bad event on the underlying computation.** Bridges the
+soundness goal `Pr[p | OptionT.mk M]` (a `probEvent` over `OptionT m`) to the `ProbComp (Option _)`
+form `Pr[fun o => Option.elim o False p | M]` consumed by `probComp_seam_union_le` (whose bad-event
+predicate is `¬ Option.elim · True qg = Option.elim · False (¬qg)`). `none` (failure) does not
+satisfy `p`, matching the soundness convention. -/
+lemma probEvent_optionT_mk_eq_elim {m : Type u → Type v} [Monad m] [HasEvalSPMF m] {α : Type u}
+    (M : m (Option α)) (p : α → Prop) :
+    Pr[p | (OptionT.mk M : OptionT m α)] = Pr[fun o => Option.elim o False p | M] := by
+  classical
+  rw [probEvent_eq_tsum_indicator, probEvent_eq_tsum_indicator, tsum_option _ ENNReal.summable]
+  simp only [Set.indicator_apply, Set.mem_setOf_eq, Option.elim_none, Option.elim_some,
+    if_false, zero_add]
+  refine tsum_congr fun a => ?_
+  simp only [OptionT.probOutput_eq, OptionT.run_mk]
+  split_ifs <;> rfl
+
 namespace OptionTStateT
 
 variable {ι : Type} {spec : OracleSpec ι} {σ : Type}
