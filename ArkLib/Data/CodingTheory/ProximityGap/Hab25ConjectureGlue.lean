@@ -179,7 +179,6 @@ theorem johnsonBoundReal_le_errStar_real
     rw [hpow, div_div, mul_comm ((Fintype.card F₀ : ℝ)) (u ^ 7)]
   rw [hρP32, hsr, ← hs2, hsplit]
   gcongr
-  exact hcore
 
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
