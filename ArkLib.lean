@@ -231,6 +231,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAllCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicIntegrality
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicReduction
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightExplicit
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightHolds
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWfreeCleared
