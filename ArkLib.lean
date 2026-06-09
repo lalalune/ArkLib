@@ -84,6 +84,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryBridge
 import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryHasse
 import ArkLib.Data.CodingTheory.GuruswamiSudan.FeasibilityArith
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSAffinePair
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDecodedSeparationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDiscriminantOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorDegreeOverRatFunc
@@ -1273,6 +1274,7 @@ import ArkLib.ToMathlib.BoundaryDischarge
 import ArkLib.ToMathlib.Bridge2BCHKS25
 import ArkLib.ToMathlib.Bridge2BGKS20
 import ArkLib.ToMathlib.Bridge2GCXK25
+import ArkLib.ToMathlib.BridgeDataMulForm
 import ArkLib.ToMathlib.BridgeListDecodingCA
 import ArkLib.ToMathlib.CS25Claim3
 import ArkLib.ToMathlib.CS25Claim3Counting
