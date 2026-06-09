@@ -282,6 +282,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BadGammaAffineCount
 import ArkLib.Data.CodingTheory.ProximityGap.BallVolume
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
+import ArkLib.Data.CodingTheory.ProximityGap.BestProvableBracket
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardLatticeSlice
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
@@ -398,6 +399,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
+import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactCrossoverF17
 import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
@@ -483,7 +485,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.JohnsonFourthMomentNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonListBound
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonPerWord
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSecondMomentFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSimplexBound
+import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungAntipodalTightness
 import ArkLib.Data.CodingTheory.ProximityGap.LineAgreementCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineBallIntersection
@@ -636,6 +640,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Round9SubgroupCharExpansion
 import ArkLib.Data.CodingTheory.ProximityGap.SatCheck2_tmp
 import ArkLib.Data.CodingTheory.ProximityGap.SatCheck_tmp
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
+import ArkLib.Data.CodingTheory.ProximityGap.StepanovHasseInterface
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovPointCountEngine
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
@@ -652,10 +657,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.BestProvableBracket
-import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactCrossoverF17
-import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSecondMomentFrontier
-import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
