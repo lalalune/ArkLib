@@ -1936,3 +1936,17 @@ R15 research survey (19 sourced findings, posted to #232): Mathlib PR #38606 = L
 Johnson/Weil-beyond-deg-1 absent everywhere. EXTERNAL COMPETITION: iotexproject/rs-proximity-gaps
 (ePrints 2026/861, 2026/858, May 2026) CLAIMS FRI soundness ABOVE Johnson at deployed parameters —
 their Lean is only the RVW13 halving lemma (window-dressing); paper math under adversarial deep-read.
+
+**O30 addendum (round-14b, same session).** `LineSecondMomentBound.lean` (axiom-clean) assembles
+the round: (1) supp/offSupp partition; (2) UNIFORM pair bound — in the `2a > n` regime (δ < 1/2,
+the whole ρ=1/2 prize window) the pair bound is monotone in w via `(w−d)(2a−n) ≥ 0`, so every
+pair at distance ≥ d obeys the single bound `B·(2a−d) ≤ 2(n−d)` (≤ 1 on the RS[8,4]/F₁₇ witness);
+(3) the per-line second-moment identity `∑_γ|Λ(γ)|² = ∑_γ|Λ(γ)| + ∑_{C.offDiag}|badSet|` (the line
+counterpart of the O28 kernel identity) and the assembled bound
+`(∑|Λ|²)·(2a−d) ≤ (∑|Λ|)·(2a−d) + (|C|²−|C|)·2(n−d)`. The off-diagonal is now distance-uniform per
+pair instead of the past-Johnson-blowing ball-intersection volume. The remaining open content is
+the PAIR COUNT: `|C|²−|C|` is the trivial bound; the scan shows the true number of co-occurring
+pairs on a line is tiny, and a diameter argument (all of Λ(γ) pairwise agree on ≥ 2a−n coords,
+so for RS with 2a−n ≥ k the list is a singleton — the unique-decoding collapse) shows where RS
+structure must enter past that. The co-occurring-pair count for explicit smooth-domain RS in
+(Johnson, capacity) is the sharpened open kernel.
