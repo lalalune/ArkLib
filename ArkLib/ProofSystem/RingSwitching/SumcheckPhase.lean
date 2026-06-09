@@ -1430,10 +1430,10 @@ private lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
   erw [OptionT.run_bind_lift]
   erw [pure_bind]
   rw [answer_instDefault']
-  simp only [guard_eq, apply_ite, map_pure, bind_pure_comp]
+  simp only [guard_eq, apply_ite, _root_.map_pure, bind_pure_comp]
   by_cases hc : stmt.sumcheck_target
       = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
-          stmt.ctx.r_batching * (FullTranscript.messages tr ⟨0, rfl⟩)
+          stmt.ctx.r_batching * (FullTranscript.messages tr ⟨0, rfl⟩ : L)
   · simp only [hc, if_true, reduceIte]
     erw [simulateQ_pure]
     rfl
