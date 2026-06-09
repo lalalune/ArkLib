@@ -1210,6 +1210,7 @@ import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.ErrorAccumulation
 import ArkLib.ProofSystem.Stir.ErrorBoundBridge
 import ArkLib.ProofSystem.Stir.MainThm
+import ArkLib.ProofSystem.Stir.MultiRoundSpec
 import ArkLib.ProofSystem.Stir.OutOfDomSmpl
 import ArkLib.ProofSystem.Stir.ProximityBound
 import ArkLib.ProofSystem.Stir.ProximityGap
