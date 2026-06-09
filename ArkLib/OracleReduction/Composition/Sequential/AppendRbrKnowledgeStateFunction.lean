@@ -224,6 +224,120 @@ theorem concat_fst_heq_phase1 {roundIdx : Fin (m + n)} (hlt : (roundIdx : ℕ) <
       refine HEq.trans ?_ (cast_heq _ _).symm
       congr 1
 
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **Phase-1 prefix is invariant under a phase-2 concat.** For a phase-2 round (`m ≤ roundIdx`),
+concatenating a phase-2 message `msg` onto the transcript leaves the phase-1 truncation `fst`
+unchanged (heterogeneously). Mirrors the `hfstHeq` computation in `StateFunction.append.toFun_next`
+(`Append.lean:1407–1430`). -/
+theorem concat_fst_heq_phase2 {roundIdx : Fin (m + n)} (hge : m ≤ (roundIdx : ℕ))
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript roundIdx.castSucc)
+    (msg : (pSpec₁ ++ₚ pSpec₂).Type roundIdx) :
+    HEq (Transcript.concat msg tr).fst tr.fst := by
+  have hcard : min ((roundIdx : Fin (m + n)).succ : ℕ) m
+      = min ((roundIdx : Fin (m + n)).castSucc : ℕ) m := by
+    simp only [Fin.val_succ, Fin.val_castSucc]; omega
+  apply Function.hfunext
+  · congr 1
+  · intro a a' haa'
+    have hav : (a : ℕ) = (a' : ℕ) := by
+      have := Fin.heq_ext_iff hcard |>.mp haa'; omega
+    simp only [Transcript.concat, Transcript.fst]
+    obtain ⟨av, hav_lt⟩ := a
+    simp only [Fin.val_succ] at hav hav_lt ⊢
+    rw [show min ((roundIdx : ℕ) + 1) m = m from by omega] at hav_lt
+    refine HEq.trans (cast_heq _ _) ?_
+    refine HEq.trans ?_ (cast_heq _ _).symm
+    simp only [Fin.snoc]
+    rw [dif_pos (show av < roundIdx from by omega)]
+    refine HEq.trans (cast_heq _ _) ?_
+    congr 1
+    ext; simp only [Fin.val_castLT]; omega
+
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **The phase-2 transcript-tail seam.** For a phase-2 round (`m ≤ roundIdx`), concatenating a
+phase-2 message `msg` and taking the appended-spec transcript's phase-2 tail is heterogeneously
+equal to first taking the tail and then concatenating the recast message. The `.snd` analogue of
+`concat_fst_heq_phase1`; mirrors the inline computation in `StateFunction.append.toFun_next`
+(`Append.lean:1544–1583`). -/
+theorem concat_snd_heq_phase2 {roundIdx : Fin (m + n)} (hge : m ≤ (roundIdx : ℕ))
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript roundIdx.castSucc)
+    (msg : (pSpec₁ ++ₚ pSpec₂).Type roundIdx)
+    (hmsgty₂ : (pSpec₁ ++ₚ pSpec₂).Type roundIdx = pSpec₂.Type ⟨(roundIdx : ℕ) - m, by omega⟩) :
+    HEq (Transcript.concat msg tr).snd
+        (Transcript.concat (cast hmsgty₂ msg)
+          (by simpa using tr.snd :
+            pSpec₂.Transcript (⟨(roundIdx : ℕ) - m, by omega⟩ : Fin n).castSucc)) := by
+  have hsndcard : ((roundIdx : ℕ) - m) + 1 = ((roundIdx : Fin (m + n)).succ : ℕ) - m := by
+    simp only [Fin.val_succ]; omega
+  symm
+  apply Function.hfunext
+  · congr 1
+  · intro a a' haa'
+    have haa : (a : ℕ) = (a' : ℕ) := by
+      have := Fin.heq_ext_iff hsndcard |>.mp haa'; omega
+    simp only [Transcript.concat]
+    obtain ⟨av, hav_lt⟩ := a
+    simp only [Fin.val_mk] at haa hav_lt ⊢
+    -- the RHS `(concat msg tr).snd` always lands in the `else` branch (its index `> m`)
+    rw [show (Transcript.concat msg tr).snd (⟨(a' : ℕ), a'.isLt⟩ : Fin _)
+          = (Transcript.concat msg tr).snd a' from by congr]
+    unfold Transcript.snd
+    rw [dif_neg (show ¬ (roundIdx : Fin (m + n)).succ ≤ m from by
+          simp only [Fin.val_succ]; omega)]
+    -- the LHS `Fin.snoc ((tr.snd cast)) msg₂`: split on whether `av` is the last position
+    simp only [Fin.snoc]
+    by_cases hlast : av = (roundIdx : ℕ) - m
+    · rw [dif_neg (show ¬ av < (roundIdx : ℕ) - m from by omega),
+          dif_neg (show ¬ m + (a' : ℕ) < (roundIdx : ℕ) from by omega)]
+      -- both sides are `msg` (the new message), up to casts
+      refine HEq.trans (cast_heq _ _) ?_
+      refine HEq.trans (cast_heq _ _) ?_
+      exact HEq.trans (cast_heq _ _).symm (cast_heq _ _).symm
+    · -- earlier position: both read the original `tr.snd` at the same underlying index
+      have hlt2 : av < (roundIdx : ℕ) - m := by omega
+      rw [dif_pos (show av < (roundIdx : ℕ) - m from hlt2)]
+      rw [dif_neg (show ¬ (roundIdx : Fin (m + n)).castSucc ≤ m from by
+            simp only [Fin.val_castSucc]; omega)]
+      rw [dif_pos (show m + (a' : ℕ) < (roundIdx : ℕ) from by omega)]
+      refine HEq.trans (cast_heq _ _) ?_
+      refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+      congr 1
+      ext; simp only [Fin.val_castLT]; omega
+
+/-- **Membership lifts to positive probability for a deterministic verifier.** If the first verifier
+is `V₁ = pure ∘ verify` with a reachable initial state (`∃ s, s ∈ support init`), and the
+intermediate statement/witness pair `(verify stmt₁ trFst, witOut)` lies in `rel₂`, then the
+`Pr[(·, witOut) ∈ rel₂ | …] > 0` hypothesis of `kSF₁.toFun_full` is met: the deterministic run
+outputs `verify stmt₁ trFst`, which witnesses the positive probability. The positive-probability dual
+of `StateFunction.verify_not_mem_lang_of_toFun_full_neg`; shared by the crossing case of
+`toFun_next` and by `toFun_full`. -/
+theorem run_pos_of_mem_rel
+    {V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁} {rel₂ : Set (Stmt₂ × Wit₂)}
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    (hInit : ∃ s, s ∈ support init)
+    (stmt₁ : Stmt₁) (trFst : pSpec₁.FullTranscript) (witOut : Wit₂)
+    (hMem : (verify stmt₁ trFst, witOut) ∈ rel₂) :
+    Pr[fun stmtOut => (stmtOut, witOut) ∈ rel₂
+      | OptionT.mk do (simulateQ impl (V₁.run stmt₁ trFst)).run' (← init)] > 0 := by
+  rw [gt_iff_lt, probEvent_pos_iff]
+  obtain ⟨s, hs⟩ := hInit
+  refine ⟨verify stmt₁ trFst, ?_, hMem⟩
+  rw [OptionT.mem_support_iff]
+  simp only [OptionT.run_mk, support_bind, Set.mem_iUnion]
+  refine ⟨s, hs, ?_⟩
+  have hrun : (V₁.run stmt₁ trFst) = (pure (verify stmt₁ trFst) : OptionT (OracleComp oSpec) Stmt₂) := by
+    subst hVerify; rfl
+  rw [hrun]
+  change some (verify stmt₁ trFst) ∈ _root_.support
+    (StateT.run' (simulateQ impl (pure (some (verify stmt₁ trFst)) :
+      OracleComp oSpec (Option Stmt₂))) s)
+  rw [simulateQ_pure]
+  change some (verify stmt₁ trFst) ∈ _root_.support
+    (Prod.fst <$> (pure (some (verify stmt₁ trFst)) : StateT σ ProbComp _).run s)
+  rw [StateT.run_pure]
+  simp [map_pure]
+
 /-- The sequential composition of two **knowledge** state functions, witness-threaded analogue of
 `Verifier.StateFunction.append`. Built against the proven composite extractor
 `Extractor.RoundByRound.append E₁ E₂ verify`. -/
