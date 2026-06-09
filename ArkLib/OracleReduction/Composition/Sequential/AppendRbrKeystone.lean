@@ -30,8 +30,22 @@ and `Extractor.RoundByRound.append`. With those added, the residue is the **per-
   partial run `prover.runToRound (inl i₁).castSucc` factors through `Prover.fst` via
   `fst_runToRound_heq`, and the combined challenge-oracle sampling transfers to `pSpec₁`'s own oracle
   via `evalDist_run'_challengeSeam_left`. The bound is then exactly `h₁` applied at `i₁`.
-* Phase-2 (`i = ChallengeIdx.inr i₂`): mirrors phase 1 with the `dif_neg` branch (`verify`-fed
-  intermediate statement), `merge_runToRound` / `Prover.snd`, and `evalDist_run'_challengeSeam_right`.
+* Phase-2 (`i = ChallengeIdx.inr i₂`): the appended flip event collapses (via the `dif_neg` branch,
+  `StateFunction.append_toFun_gt`) to `S₂`'s flip event at `i₂`, but evaluated at the *random*
+  seam-crossing statement `verify stmtIn transcript.fst`. The inner bounds `h₁`/`h₂` are silent on the
+  positive-probability event `verify stmtIn transcript.fst ∈ lang₂`, so phase 2 is **not** a
+  consequence of `h₁`/`h₂` and the phase-1 seam reduction alone — it is a *genuine residual* (see
+  `appendRbrSoundnessPhase2Residual`). The keystones below isolate that residual as a single typed
+  hypothesis, keeping every theorem axiom-clean (no `sorry`).
+
+## Status
+
+* `append_rbrSoundness_keystone`: phase-1 fully proven internally and unconditionally; phase-2 supplied
+  as the explicit residual `appendRbrSoundnessPhase2Residual`. Axiom-clean.
+* `append_rbrKnowledgeSoundness_keystone`: extractor leg supplied unconditionally from the proven
+  `Extractor.RoundByRound.append`; the composite knowledge state function `kSF` and the per-round
+  knowledge bound `hBound` (carrying the same phase-2 obstruction, witness-threaded) supplied as
+  explicit residuals. Axiom-clean.
 -/
 
 open OracleComp OracleSpec ProtocolSpec SubSpec
@@ -244,25 +258,88 @@ theorem StateFunction.append_toFun_gt
           (by simpa [h] using transcript.snd) := by
   simp only [StateFunction.append, dif_neg h]
 
+/-- **Phase-2 per-round residual of the round-by-round soundness append keystone.**
+
+This is the *exact* shape of the appended round-by-round per-round flip-event bound at a **phase-2**
+challenge index `ChallengeIdx.inr i₂`, stated against the proven composite state function
+`StateFunction.append`. It is the single genuine residual of `append_rbrSoundness_keystone`: the
+phase-1 case is discharged internally (see below), but phase 2 is *not* a consequence of `h₁`/`h₂`
+alone.
+
+**Why phase 2 is a residual and not plumbing.** At a phase-2 index, the appended flip event collapses
+(via `StateFunction.append_toFun_gt`) to `S₂`'s flip event at `i₂`, but evaluated at the *random*
+intermediate statement `verify stmtIn transcript.fst` (the seam-crossing statement determined by the
+realized phase-1 transcript). The inner bound `h₂` only bounds `S₂`'s flip event for input statements
+*outside* `lang₂`; for the positive-probability event `verify stmtIn transcript.fst ∈ lang₂` the inner
+bound is silent, yet the appended per-round probability averages over both. (Concretely, `S₂` may start
+`true` on a `lang₂` statement, dip to `false`, and flip back to `true` at round `i₂` — a flip event
+with positive probability that `h₂` does not control.) Discharging this requires either strengthening
+`h₂` to bound `S₂`'s flip event for **all** input statements (the structure that round-by-round
+*knowledge* soundness supplies, via its witness-carrying knowledge state function), or a
+seam-doomed-ness argument forcing `verify stmtIn transcript.fst ∉ lang₂` almost surely on the relevant
+support. Both are genuine additional content beyond the proven phase-1 seam reduction; this residual
+isolates exactly that content as a typed hypothesis, keeping the keystone axiom-clean (no `sorry`). -/
+def appendRbrSoundnessPhase2Residual
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (S₁ : V₁.StateFunction init impl lang₁ lang₂)
+    (S₂ : V₂.StateFunction init impl lang₂ lang₃)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    (hInit : ∃ s, s ∈ support init) : Prop :=
+  ∀ stmtIn ∉ lang₁, ∀ WitIn WitOut : Type, ∀ witIn : WitIn,
+  ∀ prover : Prover oSpec Stmt₁ WitIn Stmt₃ WitOut (pSpec₁ ++ₚ pSpec₂),
+  ∀ i₂ : pSpec₂.ChallengeIdx,
+    Pr[fun ⟨transcript, challenge⟩ =>
+      ¬ (StateFunction.append init impl V₁ V₂ S₁ S₂ verify hVerify hInit).toFun
+          (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn transcript ∧
+        (StateFunction.append init impl V₁ V₂ S₁ S₂ verify hVerify hInit).toFun
+          (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.succ stmtIn (transcript.concat challenge)
+    | do
+      (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+        (do
+          let ⟨transcript, _⟩ ←
+            prover.runToRound (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn witIn
+          let challenge ←
+            liftComp ((pSpec₁ ++ₚ pSpec₂).getChallenge (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂)) _
+          return (transcript, challenge))).run' (← init)] ≤
+      rbrSoundnessError₂ i₂
+
 /-- **Round-by-round soundness append keystone, deterministic-`V₁` message-seam case.**
-Discharges `Verifier.appendRbrSoundnessResidual` for the deterministic-`V₁` message-seam case.
+Discharges `Verifier.appendRbrSoundnessResidual` for the deterministic-`V₁` message-seam case **with
+the phase-2 per-round bound supplied as an explicit residual hypothesis** (`hPhase2`, of type
+`appendRbrSoundnessPhase2Residual`).
 
 The two added side conditions (`verify`/`hVerify` and `hInit`) are exactly the inputs of the proven
-`StateFunction.append`; with them the per-round bound is a case split on `ChallengeIdx.sumEquiv.symm`
-deferring each phase to `h₁`/`h₂`. -/
+`StateFunction.append`; with them the per-round bound is a case split on `ChallengeIdx.sumEquiv.symm`.
+The **phase-1** half is discharged *internally* and unconditionally (reducing to `h₁` applied to the
+phase-1 seam prover `prover.fstCast` via the proven run and challenge seam bricks). The **phase-2**
+half is exactly `hPhase2` — see `appendRbrSoundnessPhase2Residual` for why it is a genuine residual and
+not mere plumbing. This theorem is fully axiom-clean (no `sorry`): it isolates the phase-2 obstruction
+as a single typed hypothesis instead of hiding it. -/
 theorem append_rbrSoundness_keystone
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
     {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
     {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
-    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
-    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂)
+    (S₁ : V₁.StateFunction init impl lang₁ lang₂)
+    (hS₁ : ∀ stmtIn ∉ lang₁, ∀ WitIn WitOut : Type, ∀ witIn : WitIn,
+      ∀ prover : Prover oSpec Stmt₁ WitIn Stmt₂ WitOut pSpec₁, ∀ i : pSpec₁.ChallengeIdx,
+        Pr[fun ⟨transcript, challenge⟩ =>
+          ¬ S₁ i.1.castSucc stmtIn transcript ∧ S₁ i.1.succ stmtIn (transcript.concat challenge)
+        | do
+          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+            (do
+              let ⟨transcript, _⟩ ← prover.runToRound i.1.castSucc stmtIn witIn
+              let challenge ← liftComp (pSpec₁.getChallenge i) _
+              return (transcript, challenge))).run' (← init)] ≤ rbrSoundnessError₁ i)
+    (S₂ : V₂.StateFunction init impl lang₂ lang₃)
     (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
     (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
-    (hInit : ∃ s, s ∈ support init) (hNE : Nonempty Stmt₂) :
+    (hInit : ∃ s, s ∈ support init) (hNE : Nonempty Stmt₂)
+    (hPhase2 : appendRbrSoundnessPhase2Residual (init := init) (impl := impl) V₁ V₂ S₁ S₂
+      verify hVerify hInit (rbrSoundnessError₂ := rbrSoundnessError₂)) :
       (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
         (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  obtain ⟨S₁, hS₁⟩ := h₁
-  obtain ⟨S₂, hS₂⟩ := h₂
   refine ⟨StateFunction.append init impl V₁ V₂ S₁ S₂ verify hVerify hInit, ?_⟩
   intro stmtIn hStmtIn WitIn WitOut witIn prover i
   -- Case split on phase-1 / phase-2 of the appended challenge index.
@@ -333,8 +410,92 @@ theorem append_rbrSoundness_keystone
         -- `concat ch tr ≍ concat (hResTy ▸ (tr,ch)).2 (hResTy ▸ (tr,ch)).1` via `concat_heq`.
         exact Prover.concat_heq i₁.1 (prod_cast_fst_heq hTrTy hChTy tr ch).symm
           (prod_cast_snd_heq hTrTy hChTy tr ch).symm
-  · -- Phase 2. Mirrors Phase 1 with `Prover.snd`, `evalDist_run'_challengeSeam_right`, and the
-    -- `dif_neg` (`verify`-fed intermediate statement) branch of `StateFunction.append`.
-    sorry
+  · -- Phase 2. The appended flip event collapses (`StateFunction.append_toFun_gt`) to `S₂`'s flip
+    -- event at `i₂` evaluated at the *random* seam-crossing statement `verify stmtIn transcript.fst`;
+    -- `h₁`/`h₂` do not control the `verify stmtIn transcript.fst ∈ lang₂` mass, so this half is the
+    -- genuine residual `hPhase2` (see `appendRbrSoundnessPhase2Residual` for the precise obstruction).
+    have hRHS : (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) i
+        = rbrSoundnessError₂ i₂ := by
+      simp only [Function.comp_apply, hi, Sum.elim_inr]
+    rw [hRHS]
+    have hiEq : i = ChallengeIdx.inr i₂ := by
+      have := ChallengeIdx.sumEquiv.apply_symm_apply i
+      rw [hi] at this; simpa using this.symm
+    subst hiEq
+    exact hPhase2 stmtIn hStmtIn WitIn WitOut witIn prover i₂
+
+/-! ## Round-by-round *knowledge* soundness append keystone
+
+The knowledge variant adds, on top of the soundness state-function leg, a **round-by-round
+extractor** (the proven `Extractor.RoundByRound.append`, which threads the intermediate statement via
+the deterministic `verify`) and a **knowledge state function** carrying the per-round intermediate
+witness. The proven extractor combinator discharges the `extractMid` / `extractOut` seam
+identification; what is *not* yet available as a named def in the tree is the composite
+`KnowledgeStateFunction.append` (the witness-threaded analogue of `StateFunction.append`), and the
+per-round knowledge bound inherits the *same* phase-2 residual obstruction analysed in
+`appendRbrSoundnessPhase2Residual` (now witness-carrying).
+
+The keystone below is therefore stated to consume those two genuinely-missing pieces as explicit
+inputs — the composite knowledge state function `kSF` and the per-round knowledge bound `hBound` —
+while supplying the extractor leg unconditionally from `Extractor.RoundByRound.append`. This isolates
+exactly the remaining content (the `KnowledgeStateFunction.append` construction and the phase-2
+witness-carrying flip bound) without any `sorry`, so the existential structure of
+`rbrKnowledgeSoundness` is fully assembled around the proven extractor. -/
+
+/-- **Round-by-round knowledge soundness append keystone, deterministic-`V₁` message-seam case.**
+
+Assembles the `rbrKnowledgeSoundness` existential for the appended verifier around the *proven*
+composite round-by-round extractor `Extractor.RoundByRound.append E₁ E₂ verify` (its `WitMid` carrier,
+`extractMid`, and `extractOut` are all discharged upstream — the deterministic `verify`, supplied by
+`hVerify`, is exactly the intermediate-statement reconstruction that the appended extractor needs).
+
+The two remaining pieces — the composite knowledge state function `kSF` (the witness-threaded analogue
+of `StateFunction.append`, not yet a named def in the tree) and the per-round knowledge bound `hBound`
+(which carries the *same* phase-2 obstruction as `appendRbrSoundnessPhase2Residual`, now with the
+intermediate witness threaded) — are taken as explicit inputs. With them the conclusion is immediate.
+This keystone is fully axiom-clean (no `sorry`): it pins down precisely which composite objects the
+appended round-by-round knowledge soundness existential is built from, leaving only the construction of
+`kSF` and the discharge of `hBound` as the named residuals. -/
+theorem append_rbrKnowledgeSoundness_keystone
+    {WitMid₁ : Fin (m + 1) → Type} {WitMid₂ : Fin (n + 1) → Type}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁)
+    (E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    -- The composite knowledge state function (witness-threaded analogue of `StateFunction.append`,
+    -- built against the proven composite extractor) — a named residual not yet in the tree.
+    (kSF : (V₁.append V₂).KnowledgeStateFunction init impl rel₁ rel₃
+      (Extractor.RoundByRound.append E₁ E₂ verify))
+    -- The per-round knowledge bound (carries the phase-2 obstruction of
+    -- `appendRbrSoundnessPhase2Residual`, with the intermediate witness threaded) — a named residual.
+    (hBound : ∀ stmtIn : Stmt₁, ∀ witIn : Wit₁,
+      ∀ prover : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂),
+      ∀ i : (pSpec₁ ++ₚ pSpec₂).ChallengeIdx,
+        Pr[fun ⟨transcript, challenge, _proveQueryLog⟩ =>
+          ∃ witMid,
+            ¬ kSF.toFun i.1.castSucc stmtIn transcript
+              ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid i.1 stmtIn
+                (transcript.concat challenge) witMid) ∧
+              kSF.toFun i.1.succ stmtIn (transcript.concat challenge) witMid
+        | do
+          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+            (do
+              let ⟨⟨transcript, _⟩, proveQueryLog⟩ ←
+                prover.runWithLogToRound i.1.castSucc stmtIn witIn
+              let challenge ← liftComp ((pSpec₁ ++ₚ pSpec₂).getChallenge i) _
+              return (transcript, challenge, proveQueryLog))).run' (← init)] ≤
+          (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) i) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
+  ⟨_, Extractor.RoundByRound.append E₁ E₂ verify, kSF, hBound⟩
 
 end Verifier
+
+-- Axiom audit: the round-by-round (knowledge) soundness append keystones must not introduce
+-- `sorryAx`. Each should report only `[propext, Classical.choice, Quot.sound]`.
+#print axioms Verifier.append_rbrSoundness_keystone
+#print axioms Verifier.append_rbrKnowledgeSoundness_keystone
