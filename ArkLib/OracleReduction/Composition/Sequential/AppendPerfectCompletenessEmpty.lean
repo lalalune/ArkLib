@@ -115,7 +115,7 @@ theorem append_perfectCompleteness_empty_proof
     rcases a₄ with _ | vo₁
     · change none ∈ support (OracleComp.liftComp ((fun a => some a) <$>
         ((Verifier.run stmt tr₁ R₁.verifier).run)) (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) at hV₁
-      simp [mem_support_liftComp_iff, support_map] at hV₁
+      simp only [mem_support_liftComp_iff, support_map, Set.mem_image, reduceCtorEq, and_false, exists_false] at hV₁
     have hP₁' : (tr₁, s₂, w₂) ∈ support (R₁.prover.run stmt wit) := by
       change some (tr₁, s₂, w₂) ∈ support ((fun a => some a) <$> (liftM (Prover.run stmt wit R₁.prover)
         : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)) at hP₁
@@ -149,7 +149,7 @@ theorem append_perfectCompleteness_empty_proof
     rcases a₅ with _ | vo₂
     · change none ∈ support (OracleComp.liftComp ((fun a => some a) <$>
         ((Verifier.run s₂ tr₂ R₂.verifier).run)) (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) at hV₂
-      simp [mem_support_liftComp_iff, support_map] at hV₂
+      simp only [mem_support_liftComp_iff, support_map, Set.mem_image, reduceCtorEq, and_false, exists_false] at hV₂
     rcases vo₂ with _ | vs₃
     · exact absurd (none_mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) hP₂'
         (by change some none ∈ support (OracleComp.liftComp ((fun a => some a) <$>
