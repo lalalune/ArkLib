@@ -7,6 +7,8 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.Algebra.Polynomial.Eval.Degree
 
 /-!
 # The descent trichotomy — value-level converse-FRI fold (issue #232)
@@ -92,6 +94,45 @@ theorem agree_exactly_plus_iff (h2 : (2 : F) ≠ 0) {y : F} (hy : y ≠ 0) (ce c
     · rcases mul_eq_zero.mp h0 with h0' | h0'
       · exact absurd h0' hy
       · exact sub_eq_zero.mp h0'
+
+
+/-! ## Polynomial-level form (the recomposed candidate `c_e(X²) + X·c_o(X²)`) -/
+
+open Polynomial
+
+/-- Level-0 evaluation of the recomposed polynomial at `±y` in terms of the components. -/
+theorem eval_recompose (c_e c_o : F[X]) (y : F) :
+    (c_e.comp (X ^ 2) + X * c_o.comp (X ^ 2)).eval y
+      = c_e.eval (y ^ 2) + y * c_o.eval (y ^ 2) := by
+  simp [eval_add, eval_mul, eval_comp, eval_pow, eval_X]
+
+/-- **Polynomial-level descent: both-agreement.** The recomposed polynomial agrees with the word
+at both `±y` iff the components hit the word's even/odd components at `z = y²`. -/
+theorem poly_agree_both_iff (h2 : (2 : F) ≠ 0) {y : F} (hy : y ≠ 0)
+    (c_e c_o : F[X]) (we wo : F) :
+    ((c_e.comp (X ^ 2) + X * c_o.comp (X ^ 2)).eval y = we + y * wo ∧
+     (c_e.comp (X ^ 2) + X * c_o.comp (X ^ 2)).eval (-y) = we - y * wo) ↔
+    (c_e.eval (y ^ 2) = we ∧ c_o.eval (y ^ 2) = wo) := by
+  rw [eval_recompose, eval_recompose]
+  rw [show ((-y) ^ 2 : F) = y ^ 2 by ring]
+  rw [show (c_e.eval (y ^ 2) + -y * c_o.eval (y ^ 2) = we - y * wo)
+        ↔ (c_e.eval (y ^ 2) - y * c_o.eval (y ^ 2) = we - y * wo) by
+      constructor <;> intro h <;> linear_combination h]
+  exact agree_both_iff h2 hy _ _ we wo
+
+/-- **Polynomial-level descent: exactly-one-sided agreement** at `+y`. -/
+theorem poly_agree_exactly_plus_iff (h2 : (2 : F) ≠ 0) {y : F} (hy : y ≠ 0)
+    (c_e c_o : F[X]) (we wo : F) :
+    ((c_e.comp (X ^ 2) + X * c_o.comp (X ^ 2)).eval y = we + y * wo ∧
+     (c_e.comp (X ^ 2) + X * c_o.comp (X ^ 2)).eval (-y) ≠ we - y * wo) ↔
+    (c_e.eval (y ^ 2) - we = -(y * (c_o.eval (y ^ 2) - wo)) ∧ c_o.eval (y ^ 2) ≠ wo) := by
+  rw [eval_recompose, eval_recompose]
+  rw [show ((-y) ^ 2 : F) = y ^ 2 by ring]
+  have hiff : (c_e.eval (y ^ 2) + -y * c_o.eval (y ^ 2) ≠ we - y * wo)
+      ↔ (c_e.eval (y ^ 2) - y * c_o.eval (y ^ 2) ≠ we - y * wo) :=
+    not_congr (by constructor <;> intro h <;> linear_combination h)
+  rw [hiff]
+  exact agree_exactly_plus_iff h2 hy _ _ we wo
 
 
 end ArkLib.SmoothDomain
