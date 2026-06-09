@@ -58,16 +58,10 @@ theorem mca_threshold_le_of_error_gt
   -- Actually, h_challenge_max says: for all δ > δ*, error(δ) > ε*.
   -- Let's prove by contradiction: suppose δ* > j/n.
   by_contra! h
-  -- Wait, epsMCA is monotonically increasing with δ.
-  -- The definition in GrandChallenges doesn't explicitly enforce monotonicity, but `epsMCA_mono` exists.
-  -- However, since `δ_star` is the MAXIMAL point satisfying the bound, if `δ_star > j/n`,
-  -- and `epsMCA(j/n) > ε*`, that contradicts monotonicity.
-  -- Let's use `epsMCA_mono`.
-  have hmono := epsMCA_mono (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) (mcaLatticePoint (Fintype.card ι) j) δ_star (le_of_lt h)
-  -- So epsMCA(j/n) ≤ epsMCA(δ_star) ≤ ε*.
+  have hmono : epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) (mcaLatticePoint (Fintype.card ι) j) ≤ epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) δ_star :=
+    epsMCA_mono (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) (mcaLatticePoint (Fintype.card ι) j) δ_star (le_of_lt h)
   have h_le : epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) (mcaLatticePoint (Fintype.card ι) j) ≤ (ε_star : ENNReal) :=
     le_trans hmono h_challenge
-  -- But we are given epsMCA(j/n) > ε*. Contradiction.
   exact lt_irrefl _ (lt_of_le_of_lt h_le h_gt)
 
 /-- **The Upper Bracket for the Proximity Prize Threshold.**
