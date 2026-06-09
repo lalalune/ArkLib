@@ -940,6 +940,7 @@ import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.ErrorAccumulation
+import ArkLib.ProofSystem.Stir.ErrorBoundBridge
 import ArkLib.ProofSystem.Stir.MainThm
 import ArkLib.ProofSystem.Stir.OutOfDomSmpl
 import ArkLib.ProofSystem.Stir.ProximityBound
