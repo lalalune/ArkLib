@@ -1563,3 +1563,28 @@ pin) genuinely still needs Weil's bound. It is the strongest analytic statement 
 sum reachable from Mathlib's current toolkit (character orthogonality), and it closes the *average*-case
 side of SEAM B. 45+ verified bricks rounds 1–9. Deep-interior δ* and the worst-case Gauss bound remain
 OPEN (Weil-on-curves not in Mathlib).
+
+### O24 / Round-9 — multi-agent verified assault (6 angles, all axiom-clean); 4 bricks integrated
+
+Deployed a 6-angle multi-agent workflow. Enabler: `lake env lean <file>` is READ-ONLY on the olean
+cache (type-checks in memory, never writes oleans), so many agents verify concurrently with NO
+`lake build` thrash. All 6 landed verified+axiom-clean; 4 integrated (collapse/Johnson overlap
+`Round8CosetWall`/`JohnsonBound`):
+
+* `DeltaStarConcretePinF17.lean` — concrete TWO-SIDED δ* pin on a smooth subgroup: `F=ZMod 17`,
+  `G={x:x^16=1}=Fˣ` (n=16=2^4, `G_eq_roots_of_unity` proven), `k=2`, interior `δ=13/16` (`a=3`,
+  interiorness `2<3 ∧ 9<32` in integer AND real form). `5 ≤ |Λ| ≤ 120` (exact 19): lower = 5 explicit
+  lines on disjoint 3-blocks; upper = ∀-cap via `line_unique` (k=2 Vandermonde) → `C(16,2)`. δ* IS
+  two-sidedly pinnable inside the gap for a prize-faithful instance.
+* `LamLeungAntipodalTightness.lean` — FIRST upper bound on the `e_1=0` fiber: conditional on cyclotomic
+  indep `hindep`, `∑ζ^a=0 ⟹ A` antipodal-invariant (regroup `∑ζ^a=∑_{j<N}([j∈A]-[j+N∈A])ζ^j` via
+  `ζ^{j+N}=-ζ^j`+`sum_nbij'`). `hindep` holds over ℂ, FAILS in finite fields = the q-dependent extras.
+* `AveragingFiberConservation.lean` — conservation `∑fiber=C(n,a)`, 2nd-moment `∑fiber²=#collisions`,
+  averaging LB `C(n,a)≤q^t·maxFiber`, anti-concentration hypothesis as a Prop (general Φ, subsumes
+  n2Count): `antiConcentrated ⟺ maxFiber pinned to average` — the precise hypothesis pinning δ*=δ_avg.
+* `DeltaStarAveragingBracket.lean` — `averaging_crossover`: `C(n,k+t)≤q^t·L ∧ E·q^{t+1}<C(n,k+t) ⟹
+  E·q<L` (δ* ≤ 1-(k+t)/n upper bracket) + non-vacuity.
+
+**Net.** Open core (list UPPER bound past Johnson; q-dependent concentration) unmoved — research-grade.
+Round 9 = the state-of-the-art *bracket* machinery + a concrete two-sided pin + first fiber tightness.
+All on main (`0e39a4435`), axiom-clean, 0 sorry. Issue stays open.
