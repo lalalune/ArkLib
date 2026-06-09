@@ -523,6 +523,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
+import ArkLib.Data.CodingTheory.ProximityGap.MCAUDR2Bound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUDRBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUniformCover
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUpToCapacityFalse
