@@ -2999,3 +2999,29 @@ axiom-clean, 0 sorry, 0 warnings):
 
 (Build note: one minimal single-module `lake build` of TopDirectionLineCount was required
 for the cross-file import — 5s, no thrash.)
+
+### O51 — the ZERO FIBER DOMINATES: probe + the Aliev–Smyth route to all class syndromes
+
+Extending from ē = 0 toward the full class-syndrome chart (= ALL top-window syndromes, by
+the O42 h-parametrization):
+
+* **Probe (exhaustive, μ₁₆/F₂₅₇, w = 8, t = 3, all 12457 nonempty classes):** the maximum
+  fiber over ALL (ē₁,ē₂,ē₃) is the ZERO fiber (6 = the tower count C(4,2)); every nonzero
+  class has fiber ≤ 2; mean 1.03. The structural (coset) solutions live exclusively at
+  ē = 0 — the tower theorem captures the worst case.
+* **Scaling orbits:** x ↦ λx maps fiber(ē₁,…,ē_t) bijectively to fiber(λē₁, λ²ē₂, …, λ^tē_t)
+  — fibers are constant on weighted-projective orbits; the zero fiber is the unique fixed
+  point, consistent with it being extremal.
+* **The uniform tool (Aliev–Smyth Thm 1.1, ~/Desktop/math/0704.1747):** the number of
+  maximal torsion cosets on a hypersurface H(f) ⊆ G_m^n of degree d is ≤ c₁(n)·d^{c₂(n)}
+  with EXPLICIT c₁, c₂ (and Rémond's (k+1)^{3(k+1)²} for general subvarieties). Every
+  fiber member is a torsion point on V(e₁−ē₁, …, e_t−ē_t) ⊆ G_m^w, so the ISOLATED part
+  of every fiber is bounded by an explicit constant in (w, t), UNIFORMLY in ē and
+  field-independently. The positive-dimensional torsion cosets of V are exactly the
+  mixed "coset ∪ leftover" families — whose μ_n-points are counted by the SAME tower/
+  descent analysis componentwise. **Program for full top-window coverage: A-S coset
+  classification (uniform, effective) + per-coset tower count (machine-checked pieces
+  O46–O50) ⟹ every class syndrome has list ≤ explicit(w,t) + tower count.** The probe
+  says the truth is even cleaner (nonzero fibers ≤ 2 at the tested scale).
+* Remaining beyond that: syndromes engaging the LOW window (received words at smaller
+  distance scales) — the genuinely-all-words quantifier = S-two Conjecture 1 proper.
