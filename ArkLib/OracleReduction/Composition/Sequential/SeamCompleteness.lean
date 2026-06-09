@@ -99,15 +99,15 @@ theorem probComp_seam_swap_completeness
     (FST : OracleComp spec A) (SND : A → OracleComp spec B)
     (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
     (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
-    (pg : C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
-    (h₁ : Pr[fun r => ¬ Option.elim r.1 False (fun p : A × C => pg p.2)
+    (pg : A × C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 False pg
           | init >>= fun s => (simulateQ so
               (liftM FST >>= fun x => W1 x >>= fun s₂ =>
                 (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
     (h₂ : ∀ (p : A × C) (s' : σ),
           (some p, s') ∈ support (init >>= fun s => (simulateQ so
               (liftM FST >>= fun x => W1 x >>= fun s₂ =>
-                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p.2 →
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p →
           Pr[fun o => ¬ Option.elim o False qg
             | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
     Pr[fun o => ¬ Option.elim o False qg
@@ -118,7 +118,7 @@ theorem probComp_seam_swap_completeness
   have hmain := OracleReduction.probComp_seam_completeness init so
     (liftM FST >>= fun x => W1 x >>= fun s₂ => (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
     (fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2)
-    (fun p : A × C => pg p.2) qg e₁ e₂ h₁ h₂
+    pg qg e₁ e₂ h₁ h₂
   unfold probEvent at hmain ⊢
   rw [key]; exact hmain
 
@@ -148,15 +148,15 @@ theorem probComp_seam_swap_completeness_PABk
     (FST : OracleComp spec A) (SND : A → OracleComp spec B)
     (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
     (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
-    (pg : C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
-    (h₁ : Pr[fun r => ¬ Option.elim r.1 False (fun p : A × C => pg p.2)
+    (pg : A × C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 False pg
           | init >>= fun s => (simulateQ so
               (liftM FST >>= fun x => W1 x >>= fun s₂ =>
                 (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
     (h₂ : ∀ (p : A × C) (s' : σ),
           (some p, s') ∈ support (init >>= fun s => (simulateQ so
               (liftM FST >>= fun x => W1 x >>= fun s₂ =>
-                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p.2 →
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p →
           Pr[fun o => ¬ Option.elim o False qg
             | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
     Pr[fun o => ¬ Option.elim o False qg
