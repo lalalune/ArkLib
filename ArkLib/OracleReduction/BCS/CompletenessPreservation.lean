@@ -30,6 +30,18 @@ variable {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
     {CommitmentType : pSpec.MessageIdx → Type}
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
+/-- **Challenge sampleability transfers across the `BCSTransform` defeq.** `pSpec.BCSTransform`
+is definitionally the append `renameMessage ++ₚ BCSOpeningPhase`, so its per-round challenge
+sampleability is exactly the append's — but synthesis won't cross that defeq on its own. Registering
+it as an instance lets `perfectCompleteness` (and any caller) synthesize the requirement directly in
+the signature, rather than only inside a proof body. -/
+instance BCSTransform_challenge_sampleable {e : pSpec.MessageIdx ≃ Fin m}
+    [∀ i, SampleableType ((pSpec.renameMessage CommitmentType).Challenge i)]
+    [∀ i, SampleableType ((pSpec.BCSOpeningPhase pSpecCom e).Challenge i)] :
+    ∀ i, SampleableType ((pSpec.BCSTransform pSpecCom CommitmentType e).Challenge i) :=
+  fun i => inferInstanceAs (SampleableType
+    (((pSpec.renameMessage CommitmentType) ++ₚ (pSpec.BCSOpeningPhase pSpecCom e)).Challenge i))
+
 /-- **The BCS transform preserves perfect completeness.** If the interaction phase and the opening
 phase are each perfectly complete (for the intermediate relation `relMid`), then the BCS-compiled
 reduction `OracleReduction.BCSTransform e interaction opening` is perfectly complete. Proven by
@@ -64,11 +76,6 @@ theorem BCSTransform_perfectCompleteness
     [(oSpec + [(pSpec.BCSOpeningPhase pSpecCom e).Challenge]ₒ).Fintype]
     [(oSpec + [(pSpec.BCSOpeningPhase pSpecCom e).Challenge]ₒ).Inhabited] :
     (OracleReduction.BCSTransform e interaction opening).perfectCompleteness init impl relIn relOut := by
-  -- The BCS-transformed spec is, definitionally, the append of the two phase specs; bridge the
-  -- `SampleableType` instance across that defeq so `perfectCompleteness` synthesizes it.
-  haveI : ∀ i, SampleableType ((pSpec.BCSTransform pSpecCom CommitmentType e).Challenge i) :=
-    fun i => inferInstanceAs (SampleableType
-      (((pSpec.renameMessage CommitmentType) ++ₚ (pSpec.BCSOpeningPhase pSpecCom e)).Challenge i))
   unfold OracleReduction.BCSTransform
   exact Reduction.append_perfectCompleteness_msg_proof interaction opening h_int h_open hn hDir hDir₂
     hInit hImplSupp
