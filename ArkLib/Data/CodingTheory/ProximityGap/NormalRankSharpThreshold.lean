@@ -315,4 +315,49 @@ theorem cyclic_deficiency {E₁ E₂ E₃ : Finset F} {c : ℕ} (hc : 0 < c)
 
 end Cyclic
 
+/-! ## Equal-window image collapse: why PTE families break the rank dichotomy for every γ
+
+For supports in one equal-`e₁..e_{w−c}` class, every combination `Σ Λᵢ·Pᵢ` (deg `Pᵢ < c`)
+decomposes as `Λ₁·Q + R` with `deg Q < c` and `deg R ≤ 2c−2` — a space of dimension
+`3c−1`, independent of the family size `m`. Hence BOTH blocks of the Conjecture-41
+twisted matrix `[N | γᵢN]` map into a `(6c−2)`-dimensional space, and for `mc > 6c−2`
+(i.e. `m ≥ 6` at any `c ≥ 2`) the twisted kernel is nontrivial **for every assignment of
+`γᵢ`'s** — machine-verified numerically: rank exactly `16 = 6c−2` at `m = 6, c = 3`,
+all 60/60 random γ-assignments, with the kernel spanned by the *class syndrome*
+`s = (0,…,0, h₀, h₁, …, h_{c})` (complete homogeneous symmetric functions of the class;
+Newton's e/h convolution makes every class member compatible). Consequently the
+point-level list size at a class syndrome equals the `e₁..e_c` fiber count — the
+multi-symmetric concentration quantity (formulation (ii) of the open core) and the rank
+quantity (formulation (iii)) are the SAME number at class syndromes, with all error
+values nonzero. Conjecture 41 as stated survives only through its degeneracy escape
+clause, which is load-bearing on exactly these class syndromes. -/
+
+section EqualWindow
+
+/-- **Equal-window image collapse**: with all locators agreeing above degree `c` with
+`Λ 0` (equal `e₁..e_{w−c}`), any combination with degree-`< c` multipliers lies in
+`Λ 0·{deg < c} + {deg ≤ 2c−2}` — a `(3c−1)`-dimensional space independent of the family
+size. -/
+theorem equal_window_image {m : ℕ} (Λ P : Fin (m + 1) → F[X]) {c : ℕ}
+    (hΛ : ∀ i, (Λ i - Λ 0).natDegree < c) (hP : ∀ i, (P i).natDegree < c) :
+    ∃ Q R : F[X], Q.natDegree < c ∧ (R = 0 ∨ R.natDegree ≤ 2 * c - 2) ∧
+      ∑ i, Λ i * P i = Λ 0 * Q + R := by
+  have hc : 0 < c := lt_of_le_of_lt (Nat.zero_le _) (hP 0)
+  refine ⟨∑ i, P i, ∑ i, (Λ i - Λ 0) * P i, ?_, ?_, ?_⟩
+  · have hQ : (∑ i, P i).natDegree ≤ c - 1 :=
+      natDegree_sum_le_of_forall_le _ _ fun i _ => by
+        have := hP i; omega
+    omega
+  · by_cases hR : (∑ i, (Λ i - Λ 0) * P i) = 0
+    · exact Or.inl hR
+    · refine Or.inr (natDegree_sum_le_of_forall_le _ _ fun i _ => ?_)
+      refine le_trans natDegree_mul_le ?_
+      have h1 := hΛ i
+      have h2 := hP i
+      omega
+  · rw [Finset.mul_sum, ← Finset.sum_add_distrib]
+    exact Finset.sum_congr rfl fun i _ => by ring
+
+end EqualWindow
+
 end NormalRank

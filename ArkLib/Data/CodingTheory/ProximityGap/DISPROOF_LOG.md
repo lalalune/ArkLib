@@ -2534,3 +2534,35 @@ p ⊆ divisors of one ℤ-det). CONVERGENCE: fleet O40/O41 — deficient triples
 non-sunflower mechanism is CYCLIC/PTE (equal e₁..e_{w−c}) = EXACTLY the rounds-4-8 multi-symmetric
 concentration object (N_t equal-esymm counts on μ_n). The c≥3 rank lemma and the t≥2 concentration
 are the SAME combinatorics — PTE solutions inside the smooth domain — approached from the two ends.
+### O42 — the twisted (Conjecture-41) object vs PTE families: rank dichotomy BROKEN for every γ, escape clause load-bearing, and the (ii)⟷(iii) WELD at class syndromes
+
+Continuation of O41: tested equal-esymm families against the ACTUAL Conjecture-41 matrix
+A = [N_{Eᵢ} | γᵢ·N_{Eᵢ}] (distinct γᵢ). Findings (exact ℚ arithmetic + one new Lean brick):
+
+1. **Rank dichotomy broken for EVERY γ-assignment at m ≥ 6.** `equal_window_image`
+   (NEW, machine-checked): for an equal-e₁..e_{w−c} family, every Σ ΛᵢPᵢ (deg Pᵢ < c)
+   decomposes as Λ₀·Q + R with deg Q < c, deg R ≤ 2c−2 — a (3c−1)-dim space independent
+   of m. Both blocks of A land there ⟹ rank(A) ≤ 6c−2 < min(mc, 2D) whenever mc > 6c−2
+   (m ≥ 6 at any c ≥ 2), for EVERY γ. Verified numerically: rank exactly 16 = 6c−2 at
+   m=6, c=3, all 60/60 random γ-assignments (mixed-class control: 32/40 full rank).
+2. **Conjecture 41 SURVIVES — via its escape clause, which is load-bearing.** The kernel
+   of A is spanned by (v,0),(0,v) with v THE CLASS SYNDROME: v = (0,…,0,h₀,h₁,…,h_c)
+   where h_j are the COMPLETE HOMOGENEOUS symmetric functions of the class parameters
+   (verified: h₂ = e₁²−e₂ = 2936, h₃ = e₁³−2e₁e₂+e₃ = 99774 at the witness class).
+   Newton's e/h convolution ⟹ ⟨X^r Λ_E, v⟩ = 0 for r < c ⟺ e₁..e_c(E) = class values.
+   All kernel lines are the degenerate scaling family through v, so the escape clause
+   (⟨n₀(Eᵢ), s₂⟩ = 0 on ker A) fires at every support. The conjecture's dichotomy holds
+   here ONLY because of the clause — any sharpening that drops it is FALSE for all
+   m ≥ 6 PTE families, at every prime, every γ.
+3. **The weld (formulations (ii) ⟷ (iii)).** At the class syndrome v, compatibility IS
+   membership in the esymm class, and the error values are ALL NONZERO (verified at all
+   6 witness supports — genuine M_true mass, not a Remark-31 artifact). So the
+   point-level list size at v EQUALS the e₁..e_c fiber count: the multi-symmetric
+   concentration quantity (open-core formulation (ii)) and the rank/list quantity
+   (formulation (iii)) are THE SAME NUMBER at class syndromes. The prize question "how
+   large can the esymm fiber be, field-independently" is literally "how large is M at a
+   class syndrome".
+
+Queued next bricks: (a) finrank-pigeonhole formalization of the twisted-kernel existence
+(via equal_window_image + Polynomial.degreeLT dimension count); (b) the class-syndrome
+h-sequence construction + Newton-convolution compatibility characterization in Lean.
