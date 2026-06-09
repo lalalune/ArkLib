@@ -172,6 +172,7 @@ import ArkLib.Data.CodingTheory.PolishchukSpielman.PolishchukSpielman
 import ArkLib.Data.CodingTheory.PolishchukSpielman.Resultant
 import ArkLib.Data.CodingTheory.Prelims
 import ArkLib.Data.CodingTheory.ProximityGap
+import ArkLib.Data.CodingTheory.ProximityGap.A2Injective
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyRepBound
@@ -1119,6 +1120,7 @@ import ArkLib.ProofSystem.Sumcheck.Spec.SeqComposeRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.SimpleRoundCoherent
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundBridge
+import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFaithful
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundKnowFlip
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundPlainRbr
 import ArkLib.ProofSystem.Sumcheck.Structured
