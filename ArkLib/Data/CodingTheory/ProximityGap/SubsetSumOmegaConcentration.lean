@@ -105,6 +105,7 @@ theorem omega_closed_psum_eq_zero {ω : F} {S : Finset F} {j : ℕ}
 /-! ## 2. The order-4 root of unity and its basic arithmetic (`ω² = −1`). -/
 
 variable {ω : F}
+variable {T : Finset F}
 
 omit [DecidableEq F] in
 /-- From `ω² = −1` and char `≠ 2`: `ω ≠ 0`. -/
@@ -349,6 +350,8 @@ theorem nonvacuous_count_zmod5 :
 translates `P, ωP, …, ω^{d−1}P`. (For `d = 4` this is the orbit closure used in §§3–6.) -/
 noncomputable def cosetClosure (ω : F) (d : ℕ) (P : Finset F) : Finset F :=
   (Finset.range d).biUnion (fun i => P.image (fun x => ω ^ i * x))
+
+variable {d : ℕ}
 
 /-- The image of `cosetClosure ω d P` under `(ω·)` is contained in it (translate `i` maps to
 translate `i+1`, and translate `d−1` wraps to `0` via `ω^d = 1`). -/
