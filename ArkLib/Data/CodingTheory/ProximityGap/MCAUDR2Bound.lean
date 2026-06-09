@@ -268,4 +268,54 @@ theorem badCount_listcover_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F
         Finset.sum_le_sum (fun j _ => le_trans (UDRwire.badGamma_le (e₀ j) (e₁ j)) (hsupp j))
     _ = L * (Fintype.card ι - t) := by rw [Finset.sum_const, card_univ, Fintype.card_fin, smul_eq_mul]
 
+
+open Classical in
+/-- **Conditional Johnson/capacity MCA bound from an explicit `L`-curve list cover.** If for every
+received line `(u 0, u 1)` there are `L` codeword-pairs `(v₀ j, v₁ j)` with `v₁ j = u 1` on a set
+`S₀ j` of size `≥ t`, such that *every* codeword agreeing with the line on a set of size `≥ (1-δ)n`
+lies on one of the `L` curves, then `ε_mca(C, δ) ≤ L·(n-t)/q`.
+
+No minimum-distance / unique-decoding hypothesis: the cover is the GS list-decoding output, so this
+reaches any radius where the list cover exists (Johnson, capacity).  The cover is exactly the
+content of the in-tree `RSCurveListSizeResidual` (the trivariate Guruswami–Sudan list-size bound). -/
+theorem epsMCA_le_of_listCover (C : Submodule F (ι → F)) (δ : ℝ≥0) (t L : ℕ)
+    (hcover : ∀ u : Code.WordStack F (Fin 2) ι,
+      ∃ (v₀ v₁ : Fin L → ι → F) (S₀ : Fin L → Finset ι),
+        (∀ j, v₀ j ∈ C) ∧ (∀ j, v₁ j ∈ C) ∧ (∀ j, t ≤ (S₀ j).card) ∧
+        (∀ j, ∀ i ∈ S₀ j, v₁ j i = (u 1) i) ∧
+        (∀ w ∈ C, ∀ γ : F, (∃ S : Finset ι, ((1 - δ) * (Fintype.card ι : ℝ≥0) ≤ (S.card : ℝ≥0))
+            ∧ (∀ i ∈ S, w i = (u 0) i + γ • (u 1) i)) →
+          ∃ j, w = v₀ j + γ • v₁ j)) :
+    epsMCA (F := F) (A := F) (C : Set (ι → F)) δ
+      ≤ ((L * (Fintype.card ι - t) : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+  apply epsMCA_le_of_badCount_le (F := F) (A := F) (C : Set (ι → F)) δ (L * (Fintype.card ι - t))
+  intro u
+  obtain ⟨v₀, v₁, S₀, hv₀, hv₁, hS₀, hv₁S, hlist⟩ := hcover u
+  set G : Finset F :=
+    univ.filter (fun γ : F => mcaEvent (C : Set (ι → F)) δ (u 0) (u 1) γ) with hGdef
+  set S : F → Finset ι := fun γ =>
+    if h : mcaEvent (C : Set (ι → F)) δ (u 0) (u 1) γ then h.choose else ∅ with hSdef
+  set w : F → ι → F := fun γ =>
+    if h : mcaEvent (C : Set (ι → F)) δ (u 0) (u 1) γ
+      then (h.choose_spec.2.1).choose else 0 with hwdef
+  have hwC : ∀ γ ∈ G, w γ ∈ C := by
+    intro γ hγ; rw [hGdef, mem_filter] at hγ; have h := hγ.2
+    simp only [hwdef, dif_pos h]; exact (h.choose_spec.2.1).choose_spec.1
+  have hwS : ∀ γ ∈ G, ∀ i ∈ S γ, w γ i = (u 0) i + γ • (u 1) i := by
+    intro γ hγ i hi; rw [hGdef, mem_filter] at hγ; have h := hγ.2
+    simp only [hwdef, dif_pos h]; simp only [hSdef, dif_pos h] at hi
+    exact (h.choose_spec.2.1).choose_spec.2 i hi
+  have hno : ∀ γ ∈ G, ¬ pairJointAgreesOn (C : Set (ι → F)) (S γ) (u 0) (u 1) := by
+    intro γ hγ; rw [hGdef, mem_filter] at hγ; have h := hγ.2
+    simp only [hSdef, dif_pos h]; exact h.choose_spec.2.2
+  have hScard : ∀ γ ∈ G, (1 - δ) * (Fintype.card ι : ℝ≥0) ≤ ((S γ).card : ℝ≥0) := by
+    intro γ hγ; rw [hGdef, mem_filter] at hγ; have h := hγ.2
+    simp only [hSdef, dif_pos h]; exact h.choose_spec.1
+  have hcov : ∀ γ ∈ G, ∃ j, w γ = v₀ j + γ • v₁ j := by
+    intro γ hγ
+    exact hlist (w γ) (hwC γ hγ) γ ⟨S γ, hScard γ hγ, hwS γ hγ⟩
+  rw [hGdef] at *
+  exact badCount_listcover_le C (u 0) (u 1) t L v₀ v₁ hv₀ hv₁ S₀ hS₀ hv₁S
+    _ S w hwS hno hcov
+
 end ProximityGap.UDR2
