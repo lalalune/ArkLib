@@ -1132,3 +1132,16 @@ asymptotic smooth-domain RS list-decoding to `1−ρ−η` with `q`-independent 
 conjecture (the §7 route provably does *not* refute it; `thm71_within_prize` shows large domains
 absorb §7). O6 (which domain regime the prize claims) is a wording question, not mathematics. The
 prize's full closure turns on the large-domain forward conjecture, which remains open.
+
+### O11 CLOSED (Loop53, `badCount_exceeds_prize_numerator`)
+
+The realizability question Loop46's `thm71_refutes_prize` explicitly deferred — *"whether `a > num` is
+realizable at a smooth subgroup; see O11"* — is now a **theorem**. At the minimal domain (`ρ = 2^{-r}`,
+`η = 2^{1-m}`, domain `2^m`) the prize numerator `(2^m)^{c₁}/(ρ^{c₂}η^{c₃}) = 2^{m c₁}·2^{r c₂}·2^{(m-1)c₃}`
+is `2^{O(m)}`, while the *realized* §7 bad count — the subset-sumset of `2^m`-th roots of unity in `F_p`
+(Loop53) — is `≥ 2^{2^{m-1}}`, doubly-exponential. So `num < a` holds over a genuine finite field for
+**every** fixed prize triple `(c₁,c₂,c₃)` and prize rate `ρ = 2^{-r}`, and `thm71_refutes_prize` then
+gives `(1/q)·num < a/q` — the §7 MCA contribution beats the prize RHS in the actual `ε_mca` quantity.
+**The §7/minimal-domain disproof thread is fully closed** (O11 was its last open node), with no
+realizability gap. The actual prize (pin `δ*` for *large* smooth domains, where §7 is absorbed) and O6
+(which domain regime the prize claims) remain — the genuine open research and the wording question.
