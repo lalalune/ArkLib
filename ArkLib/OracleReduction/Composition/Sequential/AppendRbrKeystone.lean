@@ -139,7 +139,7 @@ on the transcript and `range_challenge_append_inl` on the challenge) to `liftCom
 experiment body of `prover.fst` over `pSpec₁`'s own challenge oracle, lifted into the combined oracle.
 This packages the run-level seam-factoring `fst_runToRound_heq` with the challenge-seam reduction
 `append_getChallenge_left`. -/
-private theorem phase1_body_heq
+theorem phase1_body_heq
     (prover : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
     (stmtIn : Stmt₁) (witIn : Wit₁) (i₁ : pSpec₁.ChallengeIdx) :
     HEq

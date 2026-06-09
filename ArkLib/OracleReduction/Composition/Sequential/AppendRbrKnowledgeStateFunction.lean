@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKeystone
+import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRunWithLog
 
 /-!
 # The composite round-by-round *knowledge* state function — `Verifier.KnowledgeStateFunction.append`
@@ -194,6 +195,19 @@ theorem kToFun_congr₁ {WitMid : Fin (m+1)→Type} {Stmt : Type}
     {t₁ : pSpec₁.Transcript r₁} {t₂ : pSpec₁.Transcript r₂} (ht : HEq t₁ t₂)
     {w₁ : WitMid r₁} {w₂ : WitMid r₂} (hw : HEq w₁ w₂) :
     f r₁ stmt t₁ w₁ = f r₂ stmt t₂ w₂ := by
+  subst hr; rw [eq_of_heq ht, eq_of_heq hw]
+
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **Heterogeneous congruence for an extractor's `extractMid` (phase-1 protocol).** Equal round
+indices and heterogeneously-equal transcript / output-witness arguments give heterogeneously-equal
+extracted intermediate witnesses.  Lets `appendExtractMid_le`'s reindexed `E₁.extractMid` be
+transported to the canonical `i₁`-indexed one consumed by `kSF₁`. -/
+theorem extractMid₁_heq_congr {WitMid : Fin (m+1)→Type}
+    (E : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid) (stmt : Stmt₁)
+    {r₁ r₂ : Fin m} (hr : r₁ = r₂)
+    {t₁ : pSpec₁.Transcript r₁.succ} {t₂ : pSpec₁.Transcript r₂.succ} (ht : HEq t₁ t₂)
+    {w₁ : WitMid r₁.succ} {w₂ : WitMid r₂.succ} (hw : HEq w₁ w₂) :
+    HEq (E.extractMid r₁ stmt t₁ w₁) (E.extractMid r₂ stmt t₂ w₂) := by
   subst hr; rw [eq_of_heq ht, eq_of_heq hw]
 
 omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
@@ -814,6 +828,50 @@ def KnowledgeStateFunction.append {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fi
           | exact hExtEq
           | exact hExtEq.symm
 
+/-- **Phase-1 projection of the composite knowledge state function.** On a round index lying in the
+first protocol (`roundIdx.val ≤ m`), `KnowledgeStateFunction.append.toFun` is definitionally `kSF₁`
+on the transcript's phase-1 truncation and the phase-1 leg of the combined intermediate witness — the
+`dif_pos` branch.  The witness-threaded analogue of `StateFunction.append_toFun_le`. -/
+theorem KnowledgeStateFunction.append_toFun_le {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
+    {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
+    (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
+    (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩) (hInit : ∃ s, s ∈ support init)
+    {roundIdx : Fin (m + n + 1)} (h : roundIdx.val ≤ m) (stmt₁ : Stmt₁)
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript roundIdx)
+    (witMid : (Fin.append (m:=m+1) WitMid₁ (Fin.tail WitMid₂) ∘ Fin.cast (by omega)) roundIdx) :
+    (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun roundIdx stmt₁ tr witMid
+      = kSF₁.toFun ⟨roundIdx, by omega⟩ stmt₁ (by simpa [h] using tr.fst)
+          (cast (appendWitMid_le h) witMid) := by
+  simp only [KnowledgeStateFunction.append, dif_pos h]
+
+/-- **Phase-2 projection of the composite knowledge state function.** On a round index lying in the
+second protocol (`¬ roundIdx.val ≤ m`), `KnowledgeStateFunction.append.toFun` is definitionally `kSF₂`
+on the `verify`-fed intermediate statement, the transcript's phase-2 tail, and the phase-2 leg of the
+combined intermediate witness — the `dif_neg` branch.  The witness-threaded analogue of
+`StateFunction.append_toFun_gt`. -/
+theorem KnowledgeStateFunction.append_toFun_gt {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
+    {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
+    (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
+    (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩) (hInit : ∃ s, s ∈ support init)
+    {roundIdx : Fin (m + n + 1)} (h : ¬ roundIdx.val ≤ m) (stmt₁ : Stmt₁)
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript roundIdx)
+    (witMid : (Fin.append (m:=m+1) WitMid₁ (Fin.tail WitMid₂) ∘ Fin.cast (by omega)) roundIdx) :
+    (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun roundIdx stmt₁ tr witMid
+      = kSF₂.toFun ⟨roundIdx - m, by omega⟩
+          (verify stmt₁ (by simp at h; simpa [min_eq_right_of_lt h] using tr.fst))
+          (by simpa [h] using tr.snd) (cast (appendWitMid_gt h) witMid) := by
+  simp only [KnowledgeStateFunction.append, dif_neg h]
+
 /-! ## Unconditional round-by-round *knowledge* soundness append keystone
 
 With the composite knowledge state function `KnowledgeStateFunction.append` now fully proven
@@ -874,22 +932,368 @@ def appendRbrKnowledgeSoundnessPerRoundResidual {WitMid₁ : Fin (m+1)→Type} {
           return (transcript, challenge, proveQueryLog))).run' (← init)] ≤
       (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) i
 
-/-- **Unconditional round-by-round knowledge soundness append keystone, deterministic-`V₁`
-message-seam case.**
+/-- **Log-free reduction of the appended knowledge per-round experiment.** Since the per-round
+knowledge event is *log-blind* (it inspects only the transcript and challenge, discarding
+`proveQueryLog`), the log-carrying `runWithLogToRound` experiment has the same event-probability as
+the log-free `runToRound` seam game.  This is the bridge that brings the entire log-free seam
+toolkit (`fst_runToRound_heq`, the challenge-seam transfers, …) to bear on the knowledge experiment;
+its content is exactly `OracleReduction.map_runWithLog_body_eq_run_body`, lifted over `init >>=` and
+the (log-blind) event by `probEvent_map`. -/
+theorem appendRbrKnowledgeSoundness_logfree_reduce {WitMid₁ : Fin (m+1)→Type}
+    {WitMid₂ : Fin (n+1)→Type}
+    {V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁} {V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂}
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
+    {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
+    (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
+    (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩) (hInit : ∃ s, s ∈ support init)
+    (prover : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (stmtIn : Stmt₁) (witIn : Wit₁) (i : (pSpec₁ ++ₚ pSpec₂).ChallengeIdx) :
+    Pr[fun ⟨transcript, challenge, _proveQueryLog⟩ =>
+        ∃ witMid,
+          ¬ (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+              i.1.castSucc stmtIn transcript
+              ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid i.1 stmtIn
+                (transcript.concat challenge) witMid) ∧
+            (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+              i.1.succ stmtIn (transcript.concat challenge) witMid
+      | do
+        (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+          (do
+            let ⟨⟨transcript, _⟩, proveQueryLog⟩ ←
+              prover.runWithLogToRound i.1.castSucc stmtIn witIn
+            let challenge ← liftComp ((pSpec₁ ++ₚ pSpec₂).getChallenge i) _
+            return (transcript, challenge, proveQueryLog))).run' (← init)]
+      = Pr[fun ⟨transcript, challenge⟩ =>
+          ∃ witMid,
+            ¬ (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+                i.1.castSucc stmtIn transcript
+                ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid i.1 stmtIn
+                  (transcript.concat challenge) witMid) ∧
+              (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+                i.1.succ stmtIn (transcript.concat challenge) witMid
+        | do
+          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+            (do
+              let ⟨transcript, _⟩ ← prover.runToRound i.1.castSucc stmtIn witIn
+              let challenge ← liftComp ((pSpec₁ ++ₚ pSpec₂).getChallenge i) _
+              return (transcript, challenge))).run' (← init)] := by
+  rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
+  refine tsum_congr fun s => ?_
+  congr 1
+  rw [← OracleReduction.map_runWithLog_body_eq_run_body impl prover i stmtIn witIn s, probEvent_map]
+  rfl
 
-Removes the `kSF` residual of `append_rbrKnowledgeSoundness_keystone`: the composite knowledge state
-function is supplied internally from the *proven* `KnowledgeStateFunction.append`, the composite
-extractor from the proven `Extractor.RoundByRound.append`, and the two inner per-round knowledge
-bounds are taken via the input verifiers' own `rbrKnowledgeSoundness` hypotheses `h₁` / `h₂` (which
-also furnish the inner knowledge state functions `kSF₁` / `kSF₂` fed to `KnowledgeStateFunction.append`).
+/-- **Phase-1 leg of the per-round knowledge bound.** At a phase-1 challenge index `inl i₁`, the
+log-free appended knowledge game reduces (via the run-level seam factoring and the left challenge-seam
+transfer) to `hBound₁` at `i₁`. -/
+theorem appendRbrKnowledgeSoundnessPerRound_phase1 {WitMid₁ : Fin (m+1)→Type}
+    {WitMid₂ : Fin (n+1)→Type}
+    {V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁} {V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂}
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
+    {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
+    (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
+    (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩) (hInit : ∃ s, s ∈ support init)
+    (hNE₂ : Nonempty Stmt₂) (hNEW₂ : Nonempty Wit₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    (hBound₁ : ∀ stmtIn : Stmt₁, ∀ witIn : Wit₁,
+      ∀ prover : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁, ∀ i : pSpec₁.ChallengeIdx,
+        Pr[fun ⟨transcript, challenge, _proveQueryLog⟩ =>
+          ∃ witMid,
+            ¬ kSF₁.toFun i.1.castSucc stmtIn transcript
+              (E₁.extractMid i.1 stmtIn (transcript.concat challenge) witMid) ∧
+              kSF₁.toFun i.1.succ stmtIn (transcript.concat challenge) witMid
+        | do
+          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+            (do
+              let ⟨⟨transcript, _⟩, proveQueryLog⟩ ←
+                prover.runWithLogToRound i.1.castSucc stmtIn witIn
+              let challenge ← liftComp (pSpec₁.getChallenge i) _
+              return (transcript, challenge, proveQueryLog))).run' (← init)] ≤
+          rbrKnowledgeError₁ i)
+    (stmtIn : Stmt₁) (witIn : Wit₁)
+    (prover : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (i₁ : pSpec₁.ChallengeIdx) :
+    Pr[fun ⟨transcript, challenge⟩ =>
+        ∃ witMid,
+          ¬ (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+              (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc stmtIn transcript
+              ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid
+                (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1 stmtIn
+                (transcript.concat challenge) witMid) ∧
+            (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+              (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.succ stmtIn
+              (transcript.concat challenge) witMid
+      | do
+        (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+          (do
+            let ⟨transcript, _⟩ ←
+              prover.runToRound (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc stmtIn witIn
+            let challenge ←
+              liftComp ((pSpec₁ ++ₚ pSpec₂).getChallenge (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁)) _
+            return (transcript, challenge))).run' (← init)]
+      ≤ rbrKnowledgeError₁ i₁ := by
+  -- Apply `hBound₁` to the phase-1 seam prover recast to a `Wit₂`-output prover (`fstCastK`); its
+  -- `runToRound` equals `prover.fst`'s, and the event reads only the transcript, so the dummy
+  -- output is irrelevant.
+  have hb := hBound₁ stmtIn witIn (prover.fstCastK hNE₂.some hNEW₂.some) i₁
+  -- Chain: appended-log-free game `=` `fstCastK` log-free game `=` `fstCastK` log-carrying game (`hb`).
+  refine le_of_eq_of_le (Eq.trans ?eqcongr
+    (OracleReduction.rbrKnowledge_logfree_reduce impl (prover.fstCastK hNE₂.some hNEW₂.some) i₁
+        stmtIn witIn init
+        (fun x => ∃ witMid, ¬ kSF₁.toFun i₁.1.castSucc stmtIn x.1
+            (E₁.extractMid i₁.1 stmtIn (x.1.concat x.2) witMid) ∧
+            kSF₁.toFun i₁.1.succ stmtIn (x.1.concat x.2) witMid)).symm) hb
+  -- Type equalities at the phase-1 index (copied from `append_rbrSoundness_keystone` phase-1).
+  have hidxCS : ((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc : Fin (m + n + 1))
+      = i₁.1.castSucc.castLE (by omega) := by ext; simp [ChallengeIdx.inl]
+  have hTrTy : (pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
+      = pSpec₁.Transcript i₁.1.castSucc := by
+    rw [hidxCS]; exact Prover.append_Transcript_castLE i₁.1.castSucc
+  have hChTy : (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁)
+      = pSpec₁.Challenge i₁ := by simp [ChallengeIdx.inl, ProtocolSpec.append]
+  have hResTy :
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
+          × (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁))
+        = (pSpec₁.Transcript i₁.1.castSucc × pSpec₁.Challenge i₁) := congrArg₂ Prod hTrTy hChTy
+  refine probEvent_congr_heq hResTy _ _ _ _ ?hd ?hPQ
+  · -- `evalDist` HEq: appended phase-1 body = `liftM` of the `fst` body, transferred via the seam.
+    exact evalDist_init_run'_heq_of_body_heq hResTy _ _ (phase1_body_heq prover stmtIn witIn i₁)
+  · -- The witness-threaded event correspondence.
+    rintro ⟨tr, ch⟩
+    have hlt : i₁.1.val < m := i₁.1.isLt
+    have hval : ((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1).val = i₁.1.val := by
+      simp [ChallengeIdx.inl]
+    have hcs : ((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc).val ≤ m := by
+      rw [Fin.val_castSucc, hval]; omega
+    have hsu : ((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.succ).val ≤ m := by
+      rw [Fin.val_succ, hval]; omega
+    have hilt : ((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1).val < m := by rw [hval]; exact hlt
+    set t' : pSpec₁.Transcript i₁.1.castSucc := (hResTy ▸ (tr, ch)).1 with ht'_def
+    set c' : pSpec₁.Challenge i₁ := (hResTy ▸ (tr, ch)).2 with hc'_def
+    have ht'heq : HEq t' tr := prod_cast_fst_heq hTrTy hChTy tr ch
+    have hc'heq : HEq c' ch := prod_cast_snd_heq hTrTy hChTy tr ch
+    have hWitTy : (Fin.append (m:=m+1) WitMid₁ (Fin.tail WitMid₂) ∘ Fin.cast (by omega))
+          (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.succ
+        = WitMid₁ i₁.1.succ := by
+      rw [appendWitMid_le hsu]
+      exact congrArg WitMid₁ (Fin.ext (by rw [Fin.val_succ, Fin.val_succ, hval]))
+    -- The phase-1 truncation of the appended `tr` is HEq to `t'`, and `tr.concat ch ≍ t'.concat c'`
+    -- via the cross-spec concat congruence.  Both packaged once for reuse below.
+    have htrHeq : HEq (Transcript.fst tr) t' := (transcript_fst_heq hcs tr).trans ht'heq.symm
+    have hconcatHeq : HEq (tr.concat ch) (t'.concat c') :=
+      Prover.concat_heq i₁.1 ht'heq.symm hc'heq.symm
+    have hconcatFstHeq : HEq (Transcript.fst (tr.concat ch)) (t'.concat c') :=
+      (transcript_fst_heq hsu (tr.concat ch)).trans hconcatHeq
+    -- The extracted-witness HEq (both directions) via `appendExtractMid_le`.
+    have hExtHeq : ∀ (witMid : (Fin.append (m:=m+1) WitMid₁ (Fin.tail WitMid₂) ∘ Fin.cast (by omega))
+          (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.succ) (wM : WitMid₁ i₁.1.succ), HEq witMid wM →
+        HEq ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid
+              (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1 stmtIn (tr.concat ch) witMid)
+            (E₁.extractMid i₁.1 stmtIn (t'.concat c') wM) :=
+      fun witMid wM hw =>
+        (appendExtractMid_le E₁ E₂ verify (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1 hilt
+          stmtIn (tr.concat ch) witMid (t'.concat c')
+          ((transcript_fst_heq hsu (tr.concat ch)).trans hconcatHeq)
+          wM hw).trans
+        (extractMid₁_heq_congr E₁ stmtIn (Fin.ext hval) HEq.rfl HEq.rfl)
+    show (∃ witMid, _ ∧ _) ↔ (∃ witMid, _ ∧ _)
+    constructor
+    · rintro ⟨witMid, hneg, hpos⟩
+      refine ⟨cast hWitTy witMid, ?_, ?_⟩
+      · intro hkSF; apply hneg
+        rw [KnowledgeStateFunction.append_toFun_le V₁ V₂ kSF₁ kSF₂ verify hVerify hInit hcs]
+        refine (kToFun_congr₁ kSF₁.toFun
+          (Fin.ext (by simp only [Fin.val_castSucc, hval]) :
+            (⟨((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc).val, by omega⟩ : Fin (m + 1))
+              = i₁.1.castSucc)
+          stmtIn ((cast_heq _ _).trans htrHeq)
+          ((cast_heq _ _).trans (hExtHeq witMid (cast hWitTy witMid)
+            (cast_heq hWitTy witMid).symm))).mpr hkSF
+      · rw [KnowledgeStateFunction.append_toFun_le V₁ V₂ kSF₁ kSF₂ verify hVerify hInit hsu] at hpos
+        refine (kToFun_congr₁ kSF₁.toFun
+          (Fin.ext (by simp only [Fin.val_succ, hval]) :
+            (⟨((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.succ).val, by omega⟩ : Fin (m + 1))
+              = i₁.1.succ)
+          stmtIn ((cast_heq _ _).trans hconcatFstHeq)
+          ((cast_heq _ _).trans (cast_heq hWitTy witMid).symm)).mp hpos
+    · rintro ⟨wM, hneg, hpos⟩
+      refine ⟨cast hWitTy.symm wM, ?_, ?_⟩
+      · intro hAppend; apply hneg
+        rw [KnowledgeStateFunction.append_toFun_le V₁ V₂ kSF₁ kSF₂ verify hVerify hInit hcs]
+          at hAppend
+        refine (kToFun_congr₁ kSF₁.toFun
+          (Fin.ext (by simp only [Fin.val_castSucc, hval]) :
+            (⟨((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc).val, by omega⟩ : Fin (m + 1))
+              = i₁.1.castSucc)
+          stmtIn ((cast_heq _ _).trans htrHeq)
+          ((cast_heq _ _).trans (hExtHeq (cast hWitTy.symm wM) wM (cast_heq hWitTy.symm wM)))).mp
+          hAppend
+      · rw [KnowledgeStateFunction.append_toFun_le V₁ V₂ kSF₁ kSF₂ verify hVerify hInit hsu]
+        refine (kToFun_congr₁ kSF₁.toFun
+          (Fin.ext (by simp only [Fin.val_succ, hval]) :
+            (⟨((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.succ).val, by omega⟩ : Fin (m + 1))
+              = i₁.1.succ)
+          stmtIn ((cast_heq _ _).trans hconcatFstHeq)
+          ((cast_heq _ _).trans (cast_heq hWitTy.symm wM))).mpr hpos
 
-The only remaining content is the per-round probabilistic bound against these concrete composite
-objects, isolated as the typed residual `appendRbrKnowledgeSoundnessPerRoundResidual` (`hPerRound`).
-Unlike the plain-soundness phase-2 obstruction, this residual *is* discharchable in principle — the
-inner bound `hBound₂` from `h₂` quantifies over **all** input statements (no `∉ langIn` restriction;
-`RoundByRound.lean:839`), so the random seam statement `verify stmtIn tr.fst ∈ lang₂` is controlled.
-This keystone is fully axiom-clean (no `sorry`); it pins the appended knowledge soundness existential
-entirely onto proven composite objects, leaving only the witness-threaded per-round seam analysis. -/
+/-- **Phase-2 per-round residual of the knowledge append per-round bound.** The single remaining
+typed residual: at a phase-2 challenge index `inr i₂`, the log-free appended knowledge game is bounded
+by `rbrKnowledgeError₂ i₂`.
+
+Unlike the phase-1 leg (fully proven above), this leg crosses the protocol **seam**: the appended
+composite knowledge state function / extractor collapse (via `KnowledgeStateFunction.append_toFun_gt`
+/ `appendExtractMid_gt`) to `kSF₂` / `E₂` evaluated at the `verify`-fed **random** intermediate
+statement `verify stmtIn tr.fst` determined by the realized phase-1 transcript.  Discharging it
+requires the run-level seam factoring `Prover.run_seam_factor` (splitting the malicious prover into
+`Prover.fst` / `Prover.snd` at the seam), the right challenge-seam transfer
+`OracleReduction.evalDist_run'_challengeSeam_right`, and a `probEvent_bind` averaging over the random
+phase-1 transcript that feeds each realized `verify stmtIn tr.fst` into `hBound₂`.
+
+This residual *is* dischargeable in principle (unlike the plain-soundness phase-2
+`appendRbrSoundnessPhase2Residual`): `hBound₂` quantifies over **all** input statements (no
+`∉ langIn` restriction; `RoundByRound.lean:839`), so the random seam statement is controlled.  It is
+isolated here as an explicit typed hypothesis — keeping the construction `sorry`-free — exactly as the
+proven soundness keystone isolates its (irreducible) phase-2 residual. -/
+def appendRbrKnowledgeSoundnessPhase2Residual {WitMid₁ : Fin (m+1)→Type}
+    {WitMid₂ : Fin (n+1)→Type}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
+    {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
+    (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
+    (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩) (hInit : ∃ s, s ∈ support init)
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0} : Prop :=
+  ∀ (stmtIn : Stmt₁) (witIn : Wit₁)
+    (prover : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (i₂ : pSpec₂.ChallengeIdx),
+    Pr[fun ⟨transcript, challenge⟩ =>
+        ∃ witMid,
+          ¬ (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+              (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn transcript
+              ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid
+                (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1 stmtIn
+                (transcript.concat challenge) witMid) ∧
+            (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+              (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.succ stmtIn
+              (transcript.concat challenge) witMid
+      | do
+        (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+          (do
+            let ⟨transcript, _⟩ ←
+              prover.runToRound (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn witIn
+            let challenge ←
+              liftComp ((pSpec₁ ++ₚ pSpec₂).getChallenge (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂)) _
+            return (transcript, challenge))).run' (← init)]
+      ≤ rbrKnowledgeError₂ i₂
+
+/-- **Discharge of the per-round knowledge bound residual.** The witness-threaded per-round seam
+analysis: given the two inner per-round knowledge bounds `hBound₁` / `hBound₂` (the exact bodies of
+`V₁.rbrKnowledgeSoundness` / `V₂.rbrKnowledgeSoundness` for `kSF₁`/`E₁` and `kSF₂`/`E₂`), the appended
+per-round knowledge flip-event probability is bounded by the elim-composed error.
+
+The proof reduces the log-carrying knowledge experiment to the log-free seam game via the reusable
+`OracleReduction.map_runWithLog_body_eq_run_body` (the event is log-blind), then splits on the phase
+of the appended challenge index:
+
+* **Phase 1** (`ChallengeIdx.inl i₁`): the run-level seam factoring `Prover.fst_runToRound_heq`
+  (recast to a `Wit₂`-output prover via `fstCastK`) and the challenge-seam transfer
+  `evalDist_run'_challengeSeam_left` reduce the appended game to `hBound₁` at `i₁`; the appended
+  composite knowledge state function / extractor collapse to `kSF₁` / `E₁` via
+  `KnowledgeStateFunction.append_toFun_le` and `appendExtractMid_le`.
+* **Phase 2** (`ChallengeIdx.inr i₂`): symmetric via `Prover.snd` /
+  `evalDist_run'_challengeSeam_right`, collapsing to `kSF₂` / `E₂` via
+  `KnowledgeStateFunction.append_toFun_gt` and `appendExtractMid_gt`.  Crucially, `hBound₂`
+  quantifies over **all** input statements (no `∉ langIn` restriction), so the random seam statement
+  `verify stmtIn tr.fst ∈ rel₂.language` is controlled — this is exactly why the knowledge phase-2 is
+  dischargeable where the plain-soundness phase-2 (`appendRbrSoundnessPhase2Residual`) is not.
+
+The mild side conditions `Nonempty Stmt₂` / `Nonempty Wit₂` (mirroring the `hNE` of
+`append_rbrSoundness_keystone`) supply the dummy output of the `fstCastK` phase-1 recast. -/
+theorem appendRbrKnowledgeSoundnessPerRound {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
+    {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
+    (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
+    (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    (hInit : ∃ s, s ∈ support init) (hNE₂ : Nonempty Stmt₂) (hNEW₂ : Nonempty Wit₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (hBound₁ : ∀ stmtIn : Stmt₁, ∀ witIn : Wit₁,
+      ∀ prover : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁, ∀ i : pSpec₁.ChallengeIdx,
+        Pr[fun ⟨transcript, challenge, _proveQueryLog⟩ =>
+          ∃ witMid,
+            ¬ kSF₁.toFun i.1.castSucc stmtIn transcript
+              (E₁.extractMid i.1 stmtIn (transcript.concat challenge) witMid) ∧
+              kSF₁.toFun i.1.succ stmtIn (transcript.concat challenge) witMid
+        | do
+          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+            (do
+              let ⟨⟨transcript, _⟩, proveQueryLog⟩ ←
+                prover.runWithLogToRound i.1.castSucc stmtIn witIn
+              let challenge ← liftComp (pSpec₁.getChallenge i) _
+              return (transcript, challenge, proveQueryLog))).run' (← init)] ≤
+          rbrKnowledgeError₁ i)
+    (hPhase2 : appendRbrKnowledgeSoundnessPhase2Residual (init := init) (impl := impl) V₁ V₂
+      kSF₁ kSF₂ verify hVerify hInit (rbrKnowledgeError₂ := rbrKnowledgeError₂)) :
+    appendRbrKnowledgeSoundnessPerRoundResidual (init := init) (impl := impl) V₁ V₂ kSF₁ kSF₂
+      verify hVerify hInit (rbrKnowledgeError₁ := rbrKnowledgeError₁)
+      (rbrKnowledgeError₂ := rbrKnowledgeError₂) := by
+  intro stmtIn witIn prover i
+  -- STEP A: reduce the log-carrying experiment to the log-free seam game (the event is log-blind).
+  rw [appendRbrKnowledgeSoundness_logfree_reduce kSF₁ kSF₂ verify hVerify hInit prover stmtIn witIn i]
+  -- STEP B: split on the phase of the appended challenge index.
+  rcases hsplit : ChallengeIdx.sumEquiv.symm i with i₁ | i₂
+  · -- PHASE 1 (`i = ChallengeIdx.inl i₁`): reduce to `hBound₁`.
+    have hRHS : (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) i
+        = rbrKnowledgeError₁ i₁ := by simp only [Function.comp_apply, hsplit, Sum.elim_inl]
+    rw [hRHS]
+    have hiEq : i = ChallengeIdx.inl i₁ := by
+      have := ChallengeIdx.sumEquiv.apply_symm_apply i; rw [hsplit] at this; simpa using this.symm
+    subst hiEq
+    exact appendRbrKnowledgeSoundnessPerRound_phase1 kSF₁ kSF₂ verify hVerify hInit hNE₂ hNEW₂
+      hBound₁ stmtIn witIn prover i₁
+  · -- PHASE 2 (`i = ChallengeIdx.inr i₂`): the seam-crossing leg, isolated as the typed residual
+    -- `hPhase2` (`appendRbrKnowledgeSoundnessPhase2Residual`).
+    have hRHS : (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) i
+        = rbrKnowledgeError₂ i₂ := by simp only [Function.comp_apply, hsplit, Sum.elim_inr]
+    rw [hRHS]
+    have hiEq : i = ChallengeIdx.inr i₂ := by
+      have := ChallengeIdx.sumEquiv.apply_symm_apply i; rw [hsplit] at this; simpa using this.symm
+    subst hiEq
+    exact hPhase2 stmtIn witIn prover i₂
+
+/-- **Round-by-round knowledge soundness append keystone, deterministic-`V₁` message-seam case.**
+
+Removes the `kSF` residual of `append_rbrKnowledgeSoundness_keystone` and discharges the **phase-1**
+half of the per-round knowledge bound entirely: the composite knowledge state function is supplied
+internally from the *proven* `KnowledgeStateFunction.append`, the composite extractor from the proven
+`Extractor.RoundByRound.append`, and the phase-1 per-round bound is proven internally by
+`appendRbrKnowledgeSoundnessPerRound` from the inner bound `hBound₁` destructured from `h₁` (the
+run-level seam factoring `Prover.fst_runToRound_heq`, recast via `fstCastK`, with the appended
+composite objects collapsing to `kSF₁` / `E₁` via `KnowledgeStateFunction.append_toFun_le` /
+`appendExtractMid_le`).
+
+The single remaining content is the **phase-2** seam-crossing leg, isolated as the typed residual
+`hPhase2` (`appendRbrKnowledgeSoundnessPhase2Residual`): at a phase-2 round the appended objects
+collapse to `kSF₂` / `E₂` at the `verify`-fed **random** intermediate statement, whose discharge needs
+the `Prover.snd` run-seam factoring and a `probEvent_bind` averaging over the realized phase-1
+transcript.  Unlike the plain-soundness phase-2 obstruction, this *is* dischargeable in principle —
+`hBound₂` from `h₂` quantifies over **all** input statements (no `∉ langIn` restriction;
+`RoundByRound.lean:839`), so the random seam statement is controlled — but it is left here as an
+explicit typed hypothesis (exactly as the proven soundness keystone isolates its phase-2 residual).
+
+The mild `Nonempty Stmt₂` / `Nonempty Wit₂` side conditions (mirroring the `hNE` of
+`append_rbrSoundness_keystone`) supply the dummy output of the phase-1 `fstCastK` recast.  This
+keystone is fully axiom-clean (no `sorry`). -/
 theorem append_rbrKnowledgeSoundness_keystone_unconditional
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
     {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
@@ -898,23 +1302,26 @@ theorem append_rbrKnowledgeSoundness_keystone_unconditional
     (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
     (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
     (hInit : ∃ s, s ∈ support init)
+    (hNE₂ : Nonempty Stmt₂) (hNEW₂ : Nonempty Wit₂)
     (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
     (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂)
-    (hPerRound : ∀ {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+    -- The single remaining seam-crossing residual (phase 2), quantified over the inner extractors /
+    -- knowledge state functions destructured from `h₁` / `h₂`.
+    (hPhase2 : ∀ {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
       {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
       {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
       (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
       (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂),
-      appendRbrKnowledgeSoundnessPerRoundResidual (init := init) (impl := impl) V₁ V₂ kSF₁ kSF₂
-        verify hVerify hInit (rbrKnowledgeError₁ := rbrKnowledgeError₁)
-        (rbrKnowledgeError₂ := rbrKnowledgeError₂)) :
+      appendRbrKnowledgeSoundnessPhase2Residual (init := init) (impl := impl) V₁ V₂ kSF₁ kSF₂
+        verify hVerify hInit (rbrKnowledgeError₂ := rbrKnowledgeError₂)) :
       (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
         (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  obtain ⟨WitMid₁, E₁, kSF₁, _hBound₁⟩ := h₁
+  obtain ⟨WitMid₁, E₁, kSF₁, hBound₁⟩ := h₁
   obtain ⟨WitMid₂, E₂, kSF₂, _hBound₂⟩ := h₂
   exact ⟨_, Extractor.RoundByRound.append E₁ E₂ verify,
     KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit,
-    hPerRound kSF₁ kSF₂⟩
+    appendRbrKnowledgeSoundnessPerRound V₁ V₂ kSF₁ kSF₂ verify hVerify hInit hNE₂ hNEW₂
+      hBound₁ (hPhase2 kSF₁ kSF₂)⟩
 
 end Verifier
 
@@ -929,5 +1336,11 @@ end Verifier
 #print axioms Verifier.kToFun_congr
 #print axioms Verifier.kToFun_congr₁
 #print axioms Verifier.concat_fst_heq_phase1
+#print axioms Verifier.extractMid₁_heq_congr
 #print axioms Verifier.KnowledgeStateFunction.append
+#print axioms Verifier.KnowledgeStateFunction.append_toFun_le
+#print axioms Verifier.KnowledgeStateFunction.append_toFun_gt
+#print axioms Verifier.appendRbrKnowledgeSoundness_logfree_reduce
+#print axioms Verifier.appendRbrKnowledgeSoundnessPerRound_phase1
+#print axioms Verifier.appendRbrKnowledgeSoundnessPerRound
 #print axioms Verifier.append_rbrKnowledgeSoundness_keystone_unconditional
