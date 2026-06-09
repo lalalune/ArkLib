@@ -1044,8 +1044,13 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Soundness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructures
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
+import ArkLib.OracleReduction.FiatShamir.HVZKCoupling
+import ArkLib.OracleReduction.FiatShamir.HVZKCouplingFoundations
+import ArkLib.OracleReduction.FiatShamir.HVZKCouplingStep
 import ArkLib.OracleReduction.FiatShamir.HVZKKernelClose
 import ArkLib.OracleReduction.FiatShamir.HVZKKernelInfra
+import ArkLib.OracleReduction.FiatShamir.HVZKLazyImpl
+import ArkLib.OracleReduction.FiatShamir.HVZKLazyVerifier
 import ArkLib.OracleReduction.FiatShamir.HVZKNoChallenge
 import ArkLib.OracleReduction.FiatShamir.HVZKTransferReduction
 import ArkLib.OracleReduction.FiatShamir.ProverRunCharacterization
