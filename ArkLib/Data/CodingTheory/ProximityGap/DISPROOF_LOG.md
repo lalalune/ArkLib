@@ -1860,3 +1860,28 @@ whole-space moment diagonal-dominated (SecondMomentReductionLimit), Fisher too w
 stops exactly at Johnson (O29). Remaining: does ANY other explicit algebraic certificate beat Johnson
 for smooth-domain RS — the genuine $1M core. Fleet concurrently landed the constant-gap-below-capacity
 averaging bracket: verified two-sided δ* ∈ [1−√ρ, 1−ρ−c_ρ] at prize scale. Issue stays open.
+
+### O30 / Round-14 — the per-line pair co-occurrence bound (line-restricted second-moment kernel)
+
+The O28/O29 chain is a GLOBAL average over q^n centers and provably cannot pin the interior
+threshold (Markov: on F₁₇ n=16 k=3 the exact series gives bad-center count ≈ 3·10¹⁹ at the verified
+crossover — consistent, 537× sharper than the crude V(r) control, but hopeless). The proximity-gap
+quantity lives on LINES, so the kernel was restricted to a line (LinePairCooccurrenceBound.lean,
+axiom-clean): on {f+γg} with g nowhere zero, any two words at distance w co-occur in the
+agreement-≥a lists ≤ 2(n−w)/(2a−w) times (integer form B·2a ≤ B·w + 2(n−w)), and NEVER when
+2a > 2n−w. One-vote-per-coordinate double counting (same primitive as Hab25Core Lemma 1, new
+combination: codeword-pair co-occurrence = the off-diagonal of the per-line second moment).
+
+**Sharp on the rate-1/2 smooth instance** RS[8,4]/F₁₇ (order-8 domain ⟨2⟩, a=5, δ=3/8 strictly
+interior): predicts cooc ≤1 for w∈{5,6}, =0 for w∈{7,8}; an 80-line/4181-pair exhaustive scan
+matched EXACTLY (every w∈{5,6} pair co-occurred exactly once, w∈{7,8} never), zero violations.
+At ρ=1/2 every pair in the prize window satisfies 2a>w — never vacuous. At ρ<1/3 (e.g. the n=16
+k=3 table instance, w≥14>2a) the 2a>w regime is empty — the bound's home is exactly rate ≥ 1/3.
+
+**Honest findings from the same scan.** (1) The DeltaStarTableSmoothInstances F₁₇ n=16 k=3
+crossover (a*=5, B=10) is the HARD-WORD crossover, not the global per-code δ*: a line point with
+list 15 ≥ a=5 exists (worse center than the table's witness word). (2) Off-diagonal mass dominates
+the per-line second moment at a=4 (98%) — co-occurrence is NOT rare; the pair bound, not scarcity,
+is what controls it. **Next lever:** assemble per-line ∑_γ|Λ(γ,a)|² ≤ M + Σ_pairs 2(n−w)/(2a−w)
+over line-list pairs (M = per-line first moment via the same one-vote count ≤ n/a per codeword),
+then close the loop against the per-line list bound the prize formula needs.
