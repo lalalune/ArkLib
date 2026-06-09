@@ -40,10 +40,12 @@ arithmetic heart of "Johnson radius `<` capacity": with `r = ρ` the code rate, 
 parameter and `ρ` the capacity parameter. -/
 theorem self_lt_sqrt_of_pos_of_lt_one {r : ℝ≥0} (hpos : 0 < r) (hlt : r < 1) :
     r < NNReal.sqrt r := by
-  rw [NNReal.lt_sqrt]
-  calc r ^ 2 = r * r := sq r
-    _ < r * 1 := by exact mul_lt_mul_of_pos_left hlt hpos
-    _ = r := mul_one r
+  calc r = NNReal.sqrt (r ^ 2) := (NNReal.sqrt_sq r).symm
+    _ < NNReal.sqrt r := by
+        rw [NNReal.sqrt_lt_sqrt]
+        calc r ^ 2 = r * r := sq r
+          _ < r * 1 := mul_lt_mul_of_pos_left hlt hpos
+          _ = r := mul_one r
 
 variable {ι : Type} [Fintype ι] [Nonempty ι]
 variable {F : Type} [Field F]
@@ -63,9 +65,10 @@ theorem johnson_radius_lt_capacity (deg : ℕ) (domain : ι ↪ F)
   have key : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)
       < ReedSolomon.sqrtRate deg domain :=
     self_lt_sqrt_of_pos_of_lt_one hpos hlt
-  have hcast : ((LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) : ℝ)
-      < (ReedSolomon.sqrtRate deg domain : ℝ) := by exact_mod_cast key
-  push_cast at hcast ⊢
+  have hr : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ)
+      < (ReedSolomon.sqrtRate deg domain : ℝ) := by
+    have h := NNReal.coe_lt_coe.mpr key
+    simpa using h
   linarith
 
 end ProximityGap
