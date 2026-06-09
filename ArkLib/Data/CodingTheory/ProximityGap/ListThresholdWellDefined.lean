@@ -140,6 +140,54 @@ theorem nonvacuous_zmod3 :
         fun c => 0 ≤ agree c w).card) (Finset.mem_univ _)
     omega
 
+
+/-! ## `δ*` as a first-class object: `aStar`, with the crossing characterizations.
+
+`aStar C B hB` is THE threshold the prize asks to determine (in agreement form;
+`δ* = 1 − aStar/n`).  The two iffs below are the **bracket API**: any verified list bound
+`maxList C a₀ ≤ B` pins `aStar ≤ a₀`, and any verified violation `B < maxList C a₁` pins
+`a₁ < aStar`. -/
+
+/-- The budget set is nonempty (it contains `n`). -/
+theorem maxList_budget_ex (C : Finset (Fin n → F)) (B : ℕ) (hB : 1 ≤ B) :
+    ∃ a, maxList C a ≤ B :=
+  ⟨n, le_trans (maxList_top_le_one C) hB⟩
+
+/-- **The threshold, as a named object:** the minimal agreement demand meeting the budget. -/
+noncomputable def aStar (C : Finset (Fin n → F)) (B : ℕ) (hB : 1 ≤ B) : ℕ :=
+  Nat.find (maxList_budget_ex C B hB)
+
+/-- The threshold meets the budget. -/
+theorem aStar_spec (C : Finset (Fin n → F)) (B : ℕ) (hB : 1 ≤ B) :
+    maxList C (aStar C B hB) ≤ B :=
+  Nat.find_spec (maxList_budget_ex C B hB)
+
+/-- **Crossing characterization, upper form:** `aStar ≤ a ↔ maxList C a ≤ B`.
+Any verified list bound at agreement `a` pins the threshold from above. -/
+theorem aStar_le_iff (C : Finset (Fin n → F)) (B : ℕ) (hB : 1 ≤ B) (a : ℕ) :
+    aStar C B hB ≤ a ↔ maxList C a ≤ B := by
+  constructor
+  · intro h
+    exact budget_holds_above C B _ a (aStar_spec C B hB) h
+  · intro h
+    unfold aStar
+    exact Nat.find_le h
+
+/-- **Crossing characterization, lower form:** `a < aStar ↔ B < maxList C a`.
+Any verified budget violation at agreement `a` pins the threshold strictly from below. -/
+theorem lt_aStar_iff (C : Finset (Fin n → F)) (B : ℕ) (hB : 1 ≤ B) (a : ℕ) :
+    a < aStar C B hB ↔ B < maxList C a := by
+  rw [← not_le, ← not_le, ← aStar_le_iff C B hB a]
+
+/-- **The bracket combinator:** a list bound at `a₁` and a violation at `a₀` confine the
+threshold to the half-open window `(a₀, a₁]` — the form in which all in-tree two-sided results
+(prize-scale Johnson instance above, averaging violation below) translate into statements about
+the prize's `δ*` itself. -/
+theorem aStar_mem_window (C : Finset (Fin n → F)) (B : ℕ) (hB : 1 ≤ B) {a₀ a₁ : ℕ}
+    (hupper : maxList C a₁ ≤ B) (hlower : B < maxList C a₀) :
+    a₀ < aStar C B hB ∧ aStar C B hB ≤ a₁ :=
+  ⟨(lt_aStar_iff C B hB a₀).mpr hlower, (aStar_le_iff C B hB a₁).mpr hupper⟩
+
 end ArkLib.CodingTheory.ListThresholdWellDefined
 
 /-! ## Axiom audit -/
@@ -148,3 +196,6 @@ end ArkLib.CodingTheory.ListThresholdWellDefined
 #print axioms ArkLib.CodingTheory.ListThresholdWellDefined.threshold_exists_unique
 #print axioms ArkLib.CodingTheory.ListThresholdWellDefined.budget_holds_above
 #print axioms ArkLib.CodingTheory.ListThresholdWellDefined.nonvacuous_zmod3
+#print axioms ArkLib.CodingTheory.ListThresholdWellDefined.aStar_le_iff
+#print axioms ArkLib.CodingTheory.ListThresholdWellDefined.lt_aStar_iff
+#print axioms ArkLib.CodingTheory.ListThresholdWellDefined.aStar_mem_window
