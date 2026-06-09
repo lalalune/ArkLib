@@ -1690,3 +1690,20 @@ Completion round (3/4 angles; 4th rsdeltastarbound left incomplete, overlaps Rou
 
 **Net.** Rounds 8-12: lower-bound/fiber/concrete side COMPREHENSIVE + now UNCONDITIONAL; MDS kernel started.
 Asymptotic open core (sharp list upper bound past Johnson) unmoved — research-grade. Issue stays open.
+
+### O28 / Round-13 — the #82-kernel identity (2nd moment = ball-intersection)
+
+Asymptotic-kernel round; 1 brick landed (other 2 angles cut short by session usage limit). On main `61cf5eea5`:
+* `ListAroundBallIntersectionKernel.lean` — sum_sq_listAround_eq_ball_inter: ∑_w |listAround(w)|² =
+  ∑_{c,c'} |B(c,r)∩B(c',r)|, the genuine object controlling general-center list sizes. Plus
+  listAround_codeword_eq_singleton (codeword-centered list trivial for r<d — localizing why the weight
+  enumerator only handles the codeword-centered case) and sum_listAround_card (first moment). By
+  Cauchy-Schwarz/Paley-Zygmund a uniform bound on the RHS ball-intersection 2nd moment gives the sharp
+  list control past Johnson. The SHARP RHS bound for explicit RS is the open prize kernel (CS25/#82).
+
+**SESSION SUMMARY (Rounds 8-13, ~21 verified axiom-clean files on main).** The lower-bound/fiber/concrete
+side of #232 is comprehensively + UNCONDITIONALLY machine-checked; the averaging/bracket machinery and the
+Johnson 2nd-moment no-go / Fisher past-Johnson finding map the upper-bound frontier; the open core is now
+sharply reduced to ONE object — the ball-intersection 2nd moment ∑_{c,c'}|B(c)∩B(c')| (sum_sq identity) —
+whose sharp upper bound for explicit smooth-domain RS is the genuine research kernel (MDS weight-enumerator
+2nd-moment ball-intersection, CS25/ABF26). Issue stays open — the asymptotic core is research-grade.
