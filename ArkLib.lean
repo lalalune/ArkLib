@@ -187,6 +187,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.A2Injective
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyBridge
+import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyChar0
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFermat
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFullGroupClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyKernel
