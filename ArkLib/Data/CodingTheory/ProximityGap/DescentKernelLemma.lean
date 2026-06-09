@@ -117,6 +117,48 @@ lemma glue_natDegree_lt {κ : ℕ} {e f : F[X]}
   rw [h1] at hg
   omega
 
+/-- **Existence of the descent decomposition**: every polynomial of degree `< 2κ` is the
+glue of an even part and an odd part of degree `< κ` — so the rigidity theorems below
+apply to every candidate list element. (Uniqueness follows from
+`eq_zero_of_glue_eq_zero` applied to a difference of decompositions.) -/
+theorem exists_glue_decomposition {κ : ℕ} {c : F[X]}
+    (hc : c.natDegree < 2 * κ) :
+    ∃ e f : F[X], e.natDegree < κ ∧ f.natDegree < κ ∧ c = glue e f := by
+  refine ⟨∑ j ∈ Finset.range κ, Polynomial.monomial j (c.coeff (2 * j)),
+          ∑ j ∈ Finset.range κ, Polynomial.monomial j (c.coeff (2 * j + 1)), ?_, ?_, ?_⟩
+  · exact lt_of_le_of_lt (natDegree_sum_le_of_forall_le _ _ fun j hj =>
+      le_trans (natDegree_monomial_le _) (by
+        simp only [Finset.mem_range] at hj
+        omega))
+      (by omega : κ - 1 < κ)
+  · exact lt_of_le_of_lt (natDegree_sum_le_of_forall_le _ _ fun j hj =>
+      le_trans (natDegree_monomial_le _) (by
+        simp only [Finset.mem_range] at hj
+        omega))
+      (by omega : κ - 1 < κ)
+  · ext n
+    have hcoeff : ∀ (g : ℕ → F) (m : ℕ),
+        (∑ j ∈ Finset.range κ, Polynomial.monomial j (g j)).coeff m
+          = if m < κ then g m else 0 := by
+      intro g m
+      rw [Polynomial.finset_sum_coeff]
+      simp only [Polynomial.coeff_monomial]
+      rw [Finset.sum_ite_eq' (Finset.range κ) m g]
+      simp [Finset.mem_range]
+    rcases Nat.even_or_odd n with ⟨m, hm⟩ | ⟨m, hm⟩
+    · have hn : n = 2 * m := by omega
+      rw [hn, glue_coeff_even, hcoeff]
+      by_cases hmκ : m < κ
+      · simp [hmκ]
+      · simp only [hmκ, if_false]
+        exact coeff_eq_zero_of_natDegree_lt (by omega)
+    · have hn : n = 2 * m + 1 := by omega
+      rw [hn, glue_coeff_odd, hcoeff]
+      by_cases hmκ : m < κ
+      · simp [hmκ]
+      · simp only [hmκ, if_false]
+        exact coeff_eq_zero_of_natDegree_lt (by omega)
+
 /-- Both-sided agreement of the glued polynomial at the pair `{d, -d}` is exactly the
 two-constraint system on `(e(z), f(z))` at `z = d²`. -/
 lemma both_agreement_iff (e f : F[X]) (w : F → F) {z d : F} (hd : d ^ 2 = z) :
