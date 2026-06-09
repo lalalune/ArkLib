@@ -167,7 +167,47 @@ theorem exists_finiteField_subsetSumset_large {m : ℕ} (hm : 1 ≤ m) :
   rw [Finset.card_image_of_injective _ hinj, Finset.card_univ, Fintype.card_finset,
     Fintype.card_fin]
 
+/-- **Super-exponential beats any fixed power**: for every `c`, some `m ≥ 1` has `m·c < 2^{m-1}`.
+Witness `m = 2^{c+1} + 1`: `(B+1)·c < B·(c+1) ≤ 2^{c+1}·2^c = 2^{2c+1} ≤ 2^{2^{c+1}}` with `B = 2^{c+1}`. -/
+theorem exists_m_gap (c : ℕ) : ∃ m, 1 ≤ m ∧ m * c < 2 ^ (m - 1) := by
+  refine ⟨2 ^ (c + 1) + 1, Nat.le_add_left 1 _, ?_⟩
+  rw [Nat.add_sub_cancel]
+  set B := 2 ^ (c + 1) with hB
+  have hc1 : c + 1 ≤ 2 ^ c := Nat.lt_two_pow_self
+  have hcB : c < B := by
+    have h2 : (2 : ℕ) ^ c ≤ 2 ^ (c + 1) := Nat.pow_le_pow_right (by norm_num) (Nat.le_succ c)
+    omega
+  calc (B + 1) * c < B * (c + 1) := by rw [add_one_mul, Nat.mul_succ]; omega
+    _ ≤ 2 ^ (c + 1) * 2 ^ c := by rw [hB]; gcongr
+    _ = 2 ^ (2 * c + 1) := by rw [← pow_add]; congr 1; ring
+    _ ≤ 2 ^ B := by
+        rw [hB]
+        refine Nat.pow_le_pow_right (by norm_num) ?_
+        have h2 : 2 * (c + 1) ≤ 2 ^ (c + 1) := by
+          calc 2 * (c + 1) ≤ 2 * 2 ^ c := by omega
+            _ = 2 ^ (c + 1) := by rw [pow_succ]; ring
+        omega
+
+/-- **End-to-end disproof: the §7 bad count exceeds any fixed prize bound `(domain)^{c₁}` over a
+genuine finite field.** For every fixed prize exponent `c₁` there is a prime `p`, a primitive `2^m`-th
+root `ζ ∈ F_p`, with the subset-sumset (the §7 bad-scalar count) over the minimal domain `D = 2^m`
+satisfying `D^{c₁} < bad`. Since `c₁` is arbitrary and `D` is the (fixed-by-gap) domain, **no fixed
+`q`-independent prize exponent survives**: the §7 minimal-domain prize-as-stated is refuted over a real
+finite field. This wires `exists_finiteField_subsetSumset_large` into the `no_fixed_exponent` form. -/
+theorem prize_exponent_refuted_finiteField (c₁ : ℕ) :
+    ∃ (m p : ℕ), 1 ≤ m ∧ p.Prime ∧ ∃ ζ : ZMod p, IsPrimitiveRoot ζ (2 ^ m) ∧
+      (2 ^ m) ^ c₁ <
+        (Finset.univ.image
+          (fun S : Finset (Fin (2 ^ (m - 1))) => ∑ j ∈ S, ζ ^ (j : ℕ))).card := by
+  obtain ⟨m, hm1, hgap⟩ := exists_m_gap c₁
+  obtain ⟨p, hpp, ζ, hζ, hcard⟩ := exists_finiteField_subsetSumset_large hm1
+  refine ⟨m, p, hm1, hpp, ζ, hζ, lt_of_lt_of_le ?_ hcard⟩
+  -- `(2^m)^c₁ = 2^(m·c₁) < 2^(2^(m-1))`
+  rw [← pow_mul]
+  exact Nat.pow_lt_pow_right (by norm_num) hgap
+
 end ArkLib.ProximityGap.FiniteFieldDisproofLoop53
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.FiniteFieldDisproofLoop53.exists_finiteField_subsetSumset_large
+#print axioms ArkLib.ProximityGap.FiniteFieldDisproofLoop53.prize_exponent_refuted_finiteField

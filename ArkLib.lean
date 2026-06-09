@@ -772,6 +772,7 @@ import ArkLib.OracleReduction.Composition.Sequential.SeamCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompleteness
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposePerfectCompletenessThreaded
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
