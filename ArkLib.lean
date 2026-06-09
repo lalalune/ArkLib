@@ -657,6 +657,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeScaleJohnsonInstance
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeScaleBracketFull
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesA
