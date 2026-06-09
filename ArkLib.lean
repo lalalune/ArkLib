@@ -100,6 +100,7 @@ import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.HammingBallVolumeBasics
 import ArkLib.Data.CodingTheory.HammingBound
 import ArkLib.Data.CodingTheory.HammingBoundRate
+import ArkLib.Data.CodingTheory.InterleavedArityMono
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.InterleavedFinOneEq
 import ArkLib.Data.CodingTheory.InterleavedLambdaGe
@@ -641,6 +642,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeManyTargets
+import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumQuarticDescent
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumSecondMomentCollision
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumSquaringBijection
