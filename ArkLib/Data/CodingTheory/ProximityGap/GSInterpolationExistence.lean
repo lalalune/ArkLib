@@ -1,346 +1,234 @@
 /-
-Copyright (c) 2024-2026 ArkLib Contributors. All rights reserved.
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
--- dedup-audit(#257): multIdx/mem_multIdx/card_multIdx are intentional local re-derivations; the MvPolynomial interpolant packaging is unique. Do not delete. #257 A3.
+/-
+Round 14, Angle B — Guruswami–Sudan interpolation FRONT END via dimension counting.
+Self-contained over Mathlib only (no ArkLib imports).
 
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Intervals
+PROVED here:
+* `exists_ne_zero_map_eq_zero_of_finrank_lt` : if `finrank W < finrank V` then every linear
+  map `V →ₗ[F] W` sends some nonzero vector to zero (rank–nullity existence brick).
+* `gsSupport_card` : the weighted-degree monomial support `{(i,j) | i + (k-1)·j < D}`,
+  realized as a concrete Finset, has cardinality exactly `∑_{j<D} (D - (k-1)·j)`.
+* `sudan_interpolation_exists` : multiplicity-1 (Sudan) interpolation existence — for any
+  `n` points `(α s, w s)` in `F²` with `n <` the monomial count, there is a NONZERO
+  bivariate `Q ∈ F[X][Y]` all of whose monomials `X^i·Y^j` satisfy `i + (k-1)·j < D`,
+  vanishing at every point. No distinctness of the points is needed.
+* `gs_instance_ZMod5` : a fully concrete witness over `ZMod 5` (`k = 2`, `D = 3`,
+  `n = 5 < 6` monomials), so every hypothesis above is exhibited by a concrete inhabitant.
 
-/-!
-# Guruswami–Sudan bivariate interpolation: EXISTENCE via dimension count
-
-The interpolation step of the Guruswami–Sudan list decoder (and the related
-proximity-gap arguments of ABF26 T4.21 / GG25 / BCIKS20 §5) requires a *nonzero*
-bivariate polynomial `Q(X, Y)` of bounded `(1, k)`-weighted degree (`< D`) that
-satisfies a prescribed list of homogeneous *linear* conditions — typically
-"vanish to multiplicity `m` at each of `n` interpolation points". Each scalar
-condition is an `F`-linear functional on the coefficient vector of `Q`.
-
-This file isolates the **tractable part-1**: the pure-linear-algebra *existence*
-result. We do **not** touch the (open) root-bound / agreement-count chain that
-turns such a `Q` into a list-decoding guarantee.
-
-## What is proved
-
-The mathematical content is the *underdetermined homogeneous system* fact:
-a linear map `F^{#monomials} → F^{#constraints}` with strictly more monomials
-than constraints has a nonzero kernel vector (rank–nullity, via
-`LinearMap.ker_ne_bot_of_finrank_lt`). Three layers, increasing in concreteness:
-
-* `exists_ne_zero_forall_functional_eq_zero` — **abstract** existence: for *any*
-  finite family of `F`-linear functionals `φ : κ → (V →ₗ[F] F)` on a
-  finite-dimensional space `V`, if `Fintype.card κ < finrank F V` there is a
-  nonzero `v : V` annihilated by every `φ i`. This is the reusable kernel.
-
-* `exists_ne_zero_coeff_of_card_lt` — the same, specialized to the GS
-  **coefficient space** `CoeffBox k D → F` indexed by the weighted-degree
-  monomial box `monoBox k D = {(a, b) : a + k·b < D}`, with an arbitrary finite
-  family of constraint functionals; the hypothesis is the *interpolation
-  feasibility bound* `#constraints < #monomials`.
-
-* `exists_ne_zero_bivariate_interpolant` — the same packaged as a genuine
-  **nonzero bivariate `MvPolynomial (Fin 2) F`** whose support lies inside the
-  weighted-degree box and which satisfies every constraint, where each
-  constraint is presented as an `F`-linear functional of the box coefficients
-  (the generic shape of "vanish to order `m` at `(xᵢ, yᵢ)`"). A worked example,
-  `exists_ne_zero_bivariate_interpolant_multiplicity`, instantiates the
-  constraint count as `n · (m·(m+1)/2)`, the standard GS multiplicity budget.
-
-All statements are universe-polymorphic over an arbitrary field `F` and use only
-Mathlib (`LinearMap.pi`, `LinearMap.ker_ne_bot_of_finrank_lt`,
-`Module.finrank_pi`). Every result is axiom-clean
-(`propext, Classical.choice, Quot.sound`).
+NOT proved (honest scope): multiplicity-`m ≥ 2` Hasse-derivative vanishing constraints,
+the root-extraction step `(Y - f(X)) ∣ Q` for high-agreement codewords, the resulting
+list-size bound, and any decoding-radius improvement past the Johnson radius. This file is
+exactly the linear-algebra front end of the GS route, verified end to end.
 -/
+import Mathlib
 
-namespace GSInterpExistence
+set_option maxHeartbeats 800000
 
-open Finset
+open Polynomial
 
-/-! ## Abstract underdetermined-system existence -/
+namespace GSInterp
+
+/-! ### 1. Rank–nullity existence brick -/
+
+theorem exists_ne_zero_map_eq_zero_of_finrank_lt
+    {F V W : Type*} [Field F] [AddCommGroup V] [Module F V]
+    [AddCommGroup W] [Module F W] [FiniteDimensional F W]
+    (L : V →ₗ[F] W) (h : Module.finrank F W < Module.finrank F V) :
+    ∃ v : V, v ≠ 0 ∧ L v = 0 := by
+  by_contra hcon
+  push Not at hcon
+  have hinj : Function.Injective L := by
+    rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+    intro v hv
+    by_contra hne
+    exact hcon v hne hv
+  exact absurd (LinearMap.finrank_le_finrank_of_injective hinj) (not_le.mpr h)
+
+/-! ### 2. The weighted-degree monomial support and its exact count -/
+
+/-- Monomial support of the GS interpolation space: pairs `(i, j)` with
+`i + (k-1)·j < D`, organized as rows indexed by the `Y`-degree `j`. -/
+def gsSupport (D k : ℕ) : Finset (ℕ × ℕ) :=
+  (Finset.range D).biUnion fun j => (Finset.range (D - (k - 1) * j)).image fun i => (i, j)
+
+lemma gsSupport_weight_lt {D k : ℕ} {p : ℕ × ℕ} (hp : p ∈ gsSupport D k) :
+    p.1 + (k - 1) * p.2 < D := by
+  simp only [gsSupport, Finset.mem_biUnion, Finset.mem_range, Finset.mem_image] at hp
+  obtain ⟨j', hj', i', hi', heq⟩ := hp
+  have h1 : p.1 = i' := by rw [← heq]
+  have h2 : p.2 = j' := by rw [← heq]
+  rw [h1, h2]
+  omega
+
+lemma mem_gsSupport {D k : ℕ} (hk : 2 ≤ k) {p : ℕ × ℕ} :
+    p ∈ gsSupport D k ↔ p.1 + (k - 1) * p.2 < D := by
+  refine ⟨gsSupport_weight_lt, fun h => ?_⟩
+  have hj : p.2 ≤ (k - 1) * p.2 := Nat.le_mul_of_pos_left p.2 (by omega)
+  simp only [gsSupport, Finset.mem_biUnion, Finset.mem_range, Finset.mem_image]
+  exact ⟨p.2, by omega, p.1, by omega, Prod.mk.eta⟩
+
+/-- Exact count of the monomial support: `∑_{j<D} (D - (k-1)·j)`. -/
+lemma gsSupport_card (D k : ℕ) :
+    (gsSupport D k).card = ∑ j ∈ Finset.range D, (D - (k - 1) * j) := by
+  have hdisj : ∀ j₁ ∈ Finset.range D, ∀ j₂ ∈ Finset.range D, j₁ ≠ j₂ →
+      Disjoint ((Finset.range (D - (k - 1) * j₁)).image fun i => (i, j₁))
+        ((Finset.range (D - (k - 1) * j₂)).image fun i => (i, j₂)) := by
+    intro j₁ _ j₂ _ hne
+    rw [Finset.disjoint_left]
+    rintro p hp₁ hp₂
+    simp only [Finset.mem_image, Finset.mem_range] at hp₁ hp₂
+    obtain ⟨i₁, _, rfl⟩ := hp₁
+    obtain ⟨i₂, _, heq⟩ := hp₂
+    exact hne (congrArg Prod.snd heq).symm
+  rw [gsSupport, Finset.card_biUnion hdisj]
+  refine Finset.sum_congr rfl fun j _ => ?_
+  rw [Finset.card_image_of_injective _ fun a b hab => congrArg Prod.fst hab,
+    Finset.card_range]
+
+/-! ### 3. Bivariate polynomial from a coefficient vector, and its coefficients/values -/
 
 variable {F : Type*} [Field F]
 
-/-- **Abstract underdetermined-system existence** (mirrors
-`BCKHS25.exists_ne_zero_map_eq_zero` and `GSMultInterp.exists_ne_zero_map_eq_zero`):
-a linear map between finite-dimensional spaces with strictly larger domain has a
-nonzero kernel vector. -/
-theorem exists_ne_zero_map_eq_zero {V W : Type*}
-    [AddCommGroup V] [Module F V] [AddCommGroup W] [Module F W]
-    [FiniteDimensional F V] [FiniteDimensional F W]
-    (Φ : V →ₗ[F] W) (h : Module.finrank F W < Module.finrank F V) :
-    ∃ v : V, v ≠ 0 ∧ Φ v = 0 := by
-  have hk := LinearMap.ker_ne_bot_of_finrank_lt (f := Φ) h
-  rcases Submodule.ne_bot_iff _ |>.mp hk with ⟨v, hvmem, hv0⟩
-  exact ⟨v, hv0, hvmem⟩
+/-- The bivariate polynomial (element of `F[X][Y]`, outer variable `Y`) with coefficient
+`c' (i, j)` on the monomial `X^i·Y^j`, for `(i, j)` ranging over `S`. -/
+noncomputable def coeffPoly (S : Finset (ℕ × ℕ)) (c' : ℕ × ℕ → F) :
+    Polynomial (Polynomial F) :=
+  ∑ p ∈ S, Polynomial.monomial p.2 (Polynomial.monomial p.1 (c' p))
 
-/-- **Abstract GS interpolation existence (linear-functional form).**
+lemma coeffPoly_coeff (S : Finset (ℕ × ℕ)) (c' : ℕ × ℕ → F) (i j : ℕ) :
+    ((coeffPoly S c').coeff j).coeff i = if (i, j) ∈ S then c' (i, j) else 0 := by
+  unfold coeffPoly
+  rw [Polynomial.finset_sum_coeff, Polynomial.finset_sum_coeff]
+  have step : ∀ p ∈ S,
+      ((Polynomial.monomial p.2 (Polynomial.monomial p.1 (c' p))).coeff j).coeff i
+        = if p = (i, j) then c' p else 0 := by
+    intro p _
+    rcases eq_or_ne p.2 j with h2 | h2
+    · rw [Polynomial.coeff_monomial, if_pos h2, Polynomial.coeff_monomial]
+      rcases eq_or_ne p.1 i with h1 | h1
+      · rw [if_pos h1, if_pos (by rw [← h1, ← h2])]
+      · rw [if_neg h1, if_neg fun hpe => h1 (by rw [hpe])]
+    · rw [Polynomial.coeff_monomial, if_neg h2, Polynomial.coeff_zero,
+        if_neg fun hpe => h2 (by rw [hpe])]
+  rw [Finset.sum_congr rfl step, Finset.sum_ite_eq' S (i, j) fun p => c' p]
 
-Let `V` be a finite-dimensional `F`-vector space (the *coefficient space* of the
-interpolating polynomial) and let `φ : κ → (V →ₗ[F] F)` be a finite family of
-`F`-linear functionals (the *interpolation constraints*: each scalar
-vanishing/multiplicity condition is one such functional). If there are strictly
-fewer constraints than dimensions,
+lemma coeffPoly_evalEval (S : Finset (ℕ × ℕ)) (c' : ℕ × ℕ → F) (a b : F) :
+    ((coeffPoly S c').eval (Polynomial.C b)).eval a
+      = ∑ p ∈ S, c' p * (a ^ p.1 * b ^ p.2) := by
+  unfold coeffPoly
+  rw [Polynomial.eval_finset_sum, Polynomial.eval_finset_sum]
+  refine Finset.sum_congr rfl fun p _ => ?_
+  simp only [Polynomial.eval_monomial, Polynomial.eval_mul, Polynomial.eval_pow,
+    Polynomial.eval_C]
+  ring
 
-  `Fintype.card κ < Module.finrank F V`,
+/-! ### 4. The evaluation linear map (coefficient vectors → values at the n points) -/
 
-then there is a **nonzero** `v : V` annihilated by *every* constraint,
-`∀ i, φ i v = 0`.
+/-- The linear map sending a coefficient vector supported on `S` to the values of the
+associated bivariate polynomial at the `n` points `(α s, w s)`. -/
+noncomputable def evalAtPoints (S : Finset (ℕ × ℕ)) {n : ℕ} (α w : Fin n → F) :
+    (↥S → F) →ₗ[F] (Fin n → F) where
+  toFun c s := ∑ p ∈ S.attach, c p * (α s ^ (p : ℕ × ℕ).1 * w s ^ (p : ℕ × ℕ).2)
+  map_add' c d := by
+    funext s
+    simp [add_mul, Finset.sum_add_distrib]
+  map_smul' a c := by
+    funext s
+    simp [Finset.mul_sum, mul_assoc]
 
-This is the clean kernel of the GS interpolation existence step: a homogeneous
-linear system with more unknowns (`finrank V`) than equations (`#κ`) has a
-nonzero solution. -/
-theorem exists_ne_zero_forall_functional_eq_zero {V : Type*}
-    [AddCommGroup V] [Module F V] [FiniteDimensional F V]
-    {κ : Type*} [Fintype κ] (φ : κ → (V →ₗ[F] F))
-    (hcount : Fintype.card κ < Module.finrank F V) :
-    ∃ v : V, v ≠ 0 ∧ ∀ i, φ i v = 0 := by
-  classical
-  -- Bundle the family of functionals into one map `V →ₗ[F] (κ → F)`.
-  set Φ : V →ₗ[F] (κ → F) := LinearMap.pi φ with hΦ
-  -- `finrank (κ → F) = #κ < finrank V`.
-  have hfr : Module.finrank F (κ → F) < Module.finrank F V := by
-    rw [Module.finrank_pi]; exact hcount
-  obtain ⟨v, hv0, hker⟩ := exists_ne_zero_map_eq_zero Φ hfr
-  refine ⟨v, hv0, fun i => ?_⟩
-  have := congrFun hker i
-  rwa [hΦ, LinearMap.pi_apply] at this
+lemma evalAtPoints_apply (S : Finset (ℕ × ℕ)) {n : ℕ} (α w : Fin n → F)
+    (c : ↥S → F) (s : Fin n) :
+    evalAtPoints S α w c s
+      = ∑ p ∈ S.attach, c p * (α s ^ (p : ℕ × ℕ).1 * w s ^ (p : ℕ × ℕ).2) := rfl
 
-/-! ## The Guruswami–Sudan weighted-degree monomial box -/
+/-! ### 5. The Sudan (multiplicity-1) interpolation existence theorem -/
 
-/-- The monomial index set of the `(1, k)`-weighted-degree-`< D` space: all
-`(a, b) ∈ ℕ × ℕ` with `a + k·b < D` (here `a` is the `X`-exponent and `b` the
-`Y`-exponent). Its cardinality is the number of available monomials, the
-right-hand side of the GS interpolation feasibility bound. -/
-def monoBox (k D : ℕ) : Finset (ℕ × ℕ) :=
-  (Finset.range D ×ˢ Finset.range D).filter (fun ab => ab.1 + k * ab.2 < D)
+theorem sudan_interpolation_exists (k D n : ℕ) (α w : Fin n → F)
+    (hcount : n < (gsSupport D k).card) :
+    ∃ Q : Polynomial (Polynomial F), Q ≠ 0 ∧
+      (∀ i j : ℕ, (Q.coeff j).coeff i ≠ 0 → i + (k - 1) * j < D) ∧
+      ∀ s : Fin n, ((Q.eval (Polynomial.C (w s))).eval (α s)) = 0 := by
+  have hrank : Module.finrank F (Fin n → F)
+      < Module.finrank F (↥(gsSupport D k) → F) := by
+    rw [Module.finrank_pi, Module.finrank_pi, Fintype.card_coe, Fintype.card_fin]
+    exact hcount
+  obtain ⟨c, hc0, hLc⟩ :=
+    exists_ne_zero_map_eq_zero_of_finrank_lt (evalAtPoints (gsSupport D k) α w) hrank
+  set c' : ℕ × ℕ → F := fun p => if h : p ∈ gsSupport D k then c ⟨p, h⟩ else 0 with hc'
+  refine ⟨coeffPoly (gsSupport D k) c', ?_, ?_, ?_⟩
+  · -- nonzero
+    obtain ⟨q, hq⟩ : ∃ q : ↥(gsSupport D k), c q ≠ 0 := by
+      by_contra hall
+      push Not at hall
+      exact hc0 (funext hall)
+    intro h0
+    apply hq
+    have h1 := coeffPoly_coeff (gsSupport D k) c' (q : ℕ × ℕ).1 (q : ℕ × ℕ).2
+    rw [h0] at h1
+    simp only [Polynomial.coeff_zero, Prod.mk.eta] at h1
+    rw [if_pos q.2] at h1
+    have h2 : c' (q : ℕ × ℕ) = c q := by
+      rw [hc']
+      exact dif_pos q.2
+    rw [h2] at h1
+    exact h1.symm
+  · -- weighted-degree bound on every monomial
+    intro i j hne
+    rw [coeffPoly_coeff] at hne
+    by_cases hmem : (i, j) ∈ gsSupport D k
+    · exact gsSupport_weight_lt hmem
+    · exact absurd (if_neg hmem) hne
+  · -- vanishing at all n points
+    intro s
+    rw [coeffPoly_evalEval]
+    have hL := congrFun hLc s
+    rw [evalAtPoints_apply, Pi.zero_apply] at hL
+    refine Eq.trans ?_ hL
+    have hsum : ∑ p ∈ gsSupport D k, c' p * (α s ^ p.1 * w s ^ p.2)
+        = ∑ p ∈ (gsSupport D k).attach,
+            c' (p : ℕ × ℕ) * (α s ^ (p : ℕ × ℕ).1 * w s ^ (p : ℕ × ℕ).2) :=
+      (Finset.sum_attach _ _).symm
+    rw [hsum]
+    refine Finset.sum_congr rfl fun p _ => ?_
+    have h2 : c' (p : ℕ × ℕ) = c p := by
+      rw [hc']
+      exact dif_pos p.2
+    rw [h2]
 
-lemma mem_monoBox {k D : ℕ} {ab : ℕ × ℕ} :
-    ab ∈ monoBox k D ↔ ab.1 < D ∧ ab.2 < D ∧ ab.1 + k * ab.2 < D := by
-  classical
-  simp only [monoBox, Finset.mem_filter, Finset.mem_product, Finset.mem_range]
-  tauto
+/-- Convenience form: the count hypothesis stated directly via the closed sum. -/
+theorem sudan_interpolation_exists_of_sum (k D n : ℕ) (α w : Fin n → F)
+    (hcount : n < ∑ j ∈ Finset.range D, (D - (k - 1) * j)) :
+    ∃ Q : Polynomial (Polynomial F), Q ≠ 0 ∧
+      (∀ i j : ℕ, (Q.coeff j).coeff i ≠ 0 → i + (k - 1) * j < D) ∧
+      ∀ s : Fin n, ((Q.eval (Polynomial.C (w s))).eval (α s)) = 0 :=
+  sudan_interpolation_exists k D n α w (by rw [gsSupport_card]; exact hcount)
 
-/-- For positive weight `k ≥ 1`, the box bounds are automatic: membership reduces
-to the genuine weighted-degree condition `a + k·b < D`. -/
-lemma mem_monoBox_of_pos {k D : ℕ} (hk : 0 < k) {ab : ℕ × ℕ} :
-    ab ∈ monoBox k D ↔ ab.1 + k * ab.2 < D := by
-  rw [mem_monoBox]
-  constructor
-  · rintro ⟨_, _, h⟩; exact h
-  · intro h
-    have hb : ab.2 < D := lt_of_le_of_lt (Nat.le_mul_of_pos_left ab.2 hk) (by omega)
-    exact ⟨by omega, hb, h⟩
+/-! ### 6. Concrete instance: every hypothesis has a concrete inhabitant -/
 
-/-- The coefficient space of a bivariate polynomial of `(1, k)`-weighted degree
-`< D`: one field entry per monomial in `monoBox k D`. -/
-abbrev CoeffBox (k D : ℕ) := {ab : ℕ × ℕ // ab ∈ monoBox k D} → F
+lemma gsSupport_card_three_two : (gsSupport 3 2).card = 6 := by
+  rw [gsSupport_card]
+  decide
 
-/-- The number of monomials available equals the cardinality of the box; this is
-the dimension of the coefficient space. -/
-lemma finrank_coeffBox (k D : ℕ) :
-    Module.finrank F (CoeffBox (F := F) k D) = (monoBox k D).card := by
-  classical
-  simp only [CoeffBox, Module.finrank_pi, Fintype.card_coe]
+/-- Concrete witness over `ZMod 5` (`k = 2`, `D = 3`, `n = 5` points on the parabola
+`w = α²`): since `5 < 6 = #gsSupport 3 2`, a nonzero `Q` of `(1,1)`-weighted degree `< 3`
+vanishing at all five points exists. -/
+theorem gs_instance_ZMod5 :
+    ∃ Q : Polynomial (Polynomial (ZMod 5)), Q ≠ 0 ∧
+      (∀ i j : ℕ, (Q.coeff j).coeff i ≠ 0 → i + (2 - 1) * j < 3) ∧
+      ∀ s : Fin 5, ((Q.eval (Polynomial.C ((s.val : ZMod 5) ^ 2))).eval
+        (s.val : ZMod 5)) = 0 := by
+  haveI : Fact (Nat.Prime 5) := ⟨by norm_num⟩
+  exact sudan_interpolation_exists 2 3 5 (fun s => (s.val : ZMod 5))
+    (fun s => (s.val : ZMod 5) ^ 2) (by rw [gsSupport_card_three_two]; norm_num)
 
-/-- **GS bivariate interpolation existence (coefficient-vector form).**
+end GSInterp
 
-For the GS weighted-degree box `monoBox k D` and *any* finite family of
-constraint functionals `φ : κ → (CoeffBox k D → F)` (e.g. order-`m` vanishing at
-each of `n` points), if the number of constraints is strictly below the number
-of available monomials,
-
-  `Fintype.card κ < (monoBox k D).card`,
-
-then there is a **nonzero** coefficient vector `c : CoeffBox k D` satisfying every
-constraint, `∀ i, φ i c = 0`. -/
-theorem exists_ne_zero_coeff_of_card_lt (k D : ℕ)
-    {κ : Type*} [Fintype κ] (φ : κ → (CoeffBox (F := F) k D →ₗ[F] F))
-    (hcount : Fintype.card κ < (monoBox k D).card) :
-    ∃ c : CoeffBox (F := F) k D, c ≠ 0 ∧ ∀ i, φ i c = 0 := by
-  refine exists_ne_zero_forall_functional_eq_zero φ ?_
-  rw [finrank_coeffBox]; exact hcount
-
-/-! ## Packaging as a genuine nonzero bivariate `MvPolynomial`
-
-We promote a kernel coefficient vector to an honest `MvPolynomial (Fin 2) F`
-supported on the weighted-degree box. Variable `0` is `X` (weight `1`) and
-variable `1` is `Y` (weight `k`). -/
-
-open MvPolynomial in
-/-- The `(σ →₀ ℕ)` exponent of the monomial `X^a · Y^b` over `Fin 2`. -/
-noncomputable def boxExp (ab : ℕ × ℕ) : Fin 2 →₀ ℕ :=
-  Finsupp.single 0 ab.1 + Finsupp.single 1 ab.2
-
-lemma boxExp_injective : Function.Injective boxExp := by
-  intro ab cd h
-  have h0 : ab.1 = cd.1 := by
-    have := congrArg (fun f => f 0) h
-    simpa [boxExp, Finsupp.add_apply, Finsupp.single_apply] using this
-  have h1 : ab.2 = cd.2 := by
-    have := congrArg (fun f => f 1) h
-    simpa [boxExp, Finsupp.add_apply, Finsupp.single_apply] using this
-  exact Prod.ext h0 h1
-
-open MvPolynomial in
-/-- The bivariate polynomial assembled from a box coefficient vector `c`:
-`∑_{(a,b) ∈ box} c (a,b) · X^a · Y^b`, as an `MvPolynomial (Fin 2) F`. -/
-noncomputable def toMvPoly {k D : ℕ} (c : CoeffBox (F := F) k D) :
-    MvPolynomial (Fin 2) F :=
-  ∑ ab : {ab : ℕ × ℕ // ab ∈ monoBox k D}, MvPolynomial.monomial (boxExp ab.1) (c ab)
-
-open MvPolynomial in
-/-- The coefficient of `toMvPoly c` at the box exponent `boxExp ab` is exactly
-`c ab`: the assembly is faithful on the monomial box. -/
-lemma coeff_toMvPoly {k D : ℕ} (c : CoeffBox (F := F) k D)
-    (ab : {ab : ℕ × ℕ // ab ∈ monoBox k D}) :
-    MvPolynomial.coeff (boxExp ab.1) (toMvPoly c) = c ab := by
-  classical
-  rw [toMvPoly, MvPolynomial.coeff_sum]
-  rw [Finset.sum_eq_single ab]
-  · rw [MvPolynomial.coeff_monomial, if_pos rfl]
-  · intro b _ hb
-    rw [MvPolynomial.coeff_monomial, if_neg]
-    intro hcontra
-    exact hb (Subtype.ext (boxExp_injective hcontra))
-  · intro h
-    exact absurd (Finset.mem_univ ab) h
-
-open MvPolynomial in
-/-- A nonzero box coefficient vector yields a nonzero bivariate polynomial. -/
-lemma toMvPoly_ne_zero {k D : ℕ} {c : CoeffBox (F := F) k D} (hc : c ≠ 0) :
-    toMvPoly c ≠ 0 := by
-  classical
-  obtain ⟨ab, hab⟩ := Function.ne_iff.mp hc
-  intro hzero
-  apply hab
-  have := coeff_toMvPoly c ab
-  rw [hzero] at this
-  simpa using this.symm
-
-open MvPolynomial in
-/-- The support of `toMvPoly c` lies inside the weighted-degree box: every
-monomial of the assembled polynomial is a genuine `X^a · Y^b` with
-`a + k·b < D` (after the box bounds). -/
-lemma toMvPoly_supported {k D : ℕ} (c : CoeffBox (F := F) k D)
-    {d : Fin 2 →₀ ℕ} (hd : d ∈ (toMvPoly c).support) :
-    ∃ ab : {ab : ℕ × ℕ // ab ∈ monoBox k D}, d = boxExp ab.1 := by
-  classical
-  rw [MvPolynomial.mem_support_iff] at hd
-  rw [toMvPoly, MvPolynomial.coeff_sum] at hd
-  -- some summand is nonzero, hence `d` is its box exponent
-  by_contra hcon
-  simp only [not_exists] at hcon
-  apply hd
-  apply Finset.sum_eq_zero
-  intro ab _
-  rw [MvPolynomial.coeff_monomial, if_neg]
-  intro hcontra
-  exact hcon ab hcontra.symm
-
-open MvPolynomial in
-/-- **Guruswami–Sudan bivariate interpolation — EXISTENCE (polynomial form).**
-
-Given the GS weighted-degree box `monoBox k D` and a finite family of *linear
-interpolation constraints* presented as functionals `ψ` on the box coefficients
-(`ψ i` reads off a constraint of the form `∑_{(a,b)} L (a,b) · c (a,b)`, the
-generic shape of an order-`m` Hasse/derivative vanishing condition at a point),
-if the number of constraints is strictly below the number of monomials,
-
-  `Fintype.card κ < (monoBox k D).card`,
-
-then there **exists a nonzero bivariate polynomial** `Q : MvPolynomial (Fin 2) F`
-of `(1, k)`-weighted degree `< D` — its support lies inside `monoBox k D` — whose
-box coefficients satisfy every constraint.
-
-The constraint `ψ i` is satisfied by `Q` in the precise sense that the linear
-functional applied to the coefficient-restriction of `Q` to the box vanishes;
-since the assembly is faithful (`coeff_toMvPoly`), this is exactly "the
-interpolation conditions hold for `Q`". -/
-theorem exists_ne_zero_bivariate_interpolant (k D : ℕ)
-    {κ : Type*} [Fintype κ] (ψ : κ → (CoeffBox (F := F) k D →ₗ[F] F))
-    (hcount : Fintype.card κ < (monoBox k D).card) :
-    ∃ Q : MvPolynomial (Fin 2) F, Q ≠ 0 ∧
-      (∀ d ∈ Q.support, ∃ ab : {ab : ℕ × ℕ // ab ∈ monoBox k D}, d = boxExp ab.1) ∧
-      ∃ c : CoeffBox (F := F) k D,
-        (∀ ab, MvPolynomial.coeff (boxExp ab.1) Q = c ab) ∧ (∀ i, ψ i c = 0) := by
-  obtain ⟨c, hc0, hψ⟩ := exists_ne_zero_coeff_of_card_lt k D ψ hcount
-  refine ⟨toMvPoly c, toMvPoly_ne_zero hc0, ?_, c, ?_, hψ⟩
-  · intro d hd; exact toMvPoly_supported c hd
-  · intro ab; exact coeff_toMvPoly c ab
-
-/-! ## The standard multiplicity constraint count `n · m(m+1)/2`
-
-A worked instantiation of the constraint type `κ`: the order-`m` vanishing at
-each of `n` interpolation points contributes `m·(m+1)/2` scalar conditions per
-point (one per `(a, b)` with `a + b < m`), so `κ` has cardinality
-`n · m(m+1)/2`. This is the exact GS / Sudan multiplicity budget. -/
-
-/-- The multiplicity-`m` constraint index set at a single point: all `(a, b)`
-with `a + b < m`. -/
-def multIdx (m : ℕ) : Finset (ℕ × ℕ) :=
-  (Finset.range m).biUnion (fun s => Finset.antidiagonal s)
-
-@[simp] lemma mem_multIdx {m : ℕ} {ab : ℕ × ℕ} : ab ∈ multIdx m ↔ ab.1 + ab.2 < m := by
-  classical
-  simp only [multIdx, Finset.mem_biUnion, Finset.mem_range, Finset.mem_antidiagonal]
-  constructor
-  · rintro ⟨s, hs, hab⟩; omega
-  · intro h; exact ⟨ab.1 + ab.2, h, rfl⟩
-
-/-- **The number of multiplicity-`m` constraints per point is `m·(m+1)/2`.** -/
-theorem card_multIdx (m : ℕ) : (multIdx m).card = m * (m + 1) / 2 := by
-  classical
-  have hdisj : (↑(Finset.range m) : Set ℕ).PairwiseDisjoint
-      (fun s => Finset.antidiagonal s) := by
-    intro s _ t _ hst
-    apply Finset.disjoint_left.mpr
-    intro ab hs ht
-    rw [Finset.mem_antidiagonal] at hs ht
-    exact hst (by omega)
-  rw [multIdx, Finset.card_biUnion hdisj]
-  simp only [Finset.Nat.card_antidiagonal]
-  have hshift : ∑ s ∈ Finset.range m, (s + 1) = ∑ s ∈ Finset.range (m + 1), s := by
-    rw [Finset.sum_range_succ']
-    simp
-  rw [hshift, Finset.sum_range_id]
-  rw [Nat.add_sub_cancel, Nat.mul_comm]
-
-/-- The multiplicity constraint type for `n` points at multiplicity `m`: a point
-index `Fin n` together with a low-order Hasse index `(a, b)` with `a + b < m`.
-Its cardinality is `n · m(m+1)/2`. -/
-abbrev MultConstraint (n m : ℕ) := Fin n × {ab : ℕ × ℕ // ab ∈ multIdx m}
-
-lemma card_multConstraint (n m : ℕ) :
-    Fintype.card (MultConstraint n m) = n * (m * (m + 1) / 2) := by
-  classical
-  simp only [MultConstraint, Fintype.card_prod, Fintype.card_fin, Fintype.card_coe, card_multIdx]
-
-open MvPolynomial in
-/-- **Guruswami–Sudan bivariate interpolation — EXISTENCE with multiplicity
-budget.** Specializing the constraint type to the GS multiplicity index
-`MultConstraint n m` (order-`m` vanishing at each of `n` points), the existence
-of a nonzero interpolating bivariate polynomial holds under the classical
-feasibility bound
-
-  `n · (m·(m+1)/2)  <  (monoBox k D).card`.
-
-Here `ψ` is the genuine family of order-`m` Hasse/derivative-evaluation
-functionals at the points; the theorem is agnostic to its exact entries — it only
-needs the count — and so directly underlies ABF26 T4.21 / GG25 / BCIKS20 §5. -/
-theorem exists_ne_zero_bivariate_interpolant_multiplicity (k D m n : ℕ)
-    (ψ : MultConstraint n m → (CoeffBox (F := F) k D →ₗ[F] F))
-    (hcount : n * (m * (m + 1) / 2) < (monoBox k D).card) :
-    ∃ Q : MvPolynomial (Fin 2) F, Q ≠ 0 ∧
-      (∀ d ∈ Q.support, ∃ ab : {ab : ℕ × ℕ // ab ∈ monoBox k D}, d = boxExp ab.1) ∧
-      ∃ c : CoeffBox (F := F) k D,
-        (∀ ab, MvPolynomial.coeff (boxExp ab.1) Q = c ab) ∧ (∀ i, ψ i c = 0) := by
-  refine exists_ne_zero_bivariate_interpolant k D ψ ?_
-  rw [card_multConstraint]; exact hcount
-
-end GSInterpExistence
+#print axioms GSInterp.exists_ne_zero_map_eq_zero_of_finrank_lt
+#print axioms GSInterp.gsSupport_card
+#print axioms GSInterp.sudan_interpolation_exists
+#print axioms GSInterp.sudan_interpolation_exists_of_sum
+#print axioms GSInterp.gs_instance_ZMod5

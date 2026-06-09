@@ -437,6 +437,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
 import ArkLib.Data.CodingTheory.ProximityGap.GSRootOrderStep
+import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
+import ArkLib.Data.CodingTheory.ProximityGap.GSJohnsonWall
+import ArkLib.Data.CodingTheory.ProximityGap.GSPipelineAssembly
+import ArkLib.Data.CodingTheory.ProximityGap.GSYDegreeListCap
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
