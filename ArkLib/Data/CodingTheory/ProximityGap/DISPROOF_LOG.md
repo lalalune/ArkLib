@@ -2723,3 +2723,25 @@ Consequence for the open core: ANY field-independent lower bound on the zero fib
 lower bound at agreement k+t — the reduction is lossless and formal. The δ* program's
 missing ingredient is now ONLY the integer/combinatorial fiber question past Johnson
 (formulation (ii) in its purest form); every reduction step around it is machine-checked.
+
+### O48 / Round-24 — w=3 rigidity DERIVED (sunflower theorem); mechanization in progress
+
+**The mathematics (derived, hand-verified branch-by-branch; NOT yet machine-checked — WIP at
+/tmp/r24_triples_WIP_SAVED.lean with bridges compiling):**
+* THEOREM (disjoint triples impossible): over CharZero with the half basis independent, two
+  signed-disjoint triples of 2N-th roots cannot have equal sums. PROOF: 6-term integer bridge ⟹
+  per-index ℤ-equations; coefficient at a's index: partners are b/c antipodal-to-a (within; cross-
+  side partners = equality, excluded by disjointness; ±1±1±1-type sums never 0 in ℤ) ⟹ WLOG
+  b = −a ⟹ collapse to c = d+e+f; coefficient at c's index: c=d/e/f excluded, one-partner sign
+  patterns ±2/0 with parity contradictions, two/three-partner patterns force repeated points —
+  ALL branches die ⟹ False.
+* COROLLARY (w=3 SUNFLOWER classification): distinct equal-sum triples share exactly one vertex y,
+  and the residual pairs are disjoint equal-sum ⟹ (R23 pair_rigidity) both antipodal:
+  {x,−x,y} & {z,−z,y}. **Proves the fleet's empirical O40 ("deficient triples are sunflowers") as
+  a char-0 theorem**, and REFINES the rigidity structure class: at odd w the R22 lifts (d|w) are
+  unavailable — the correct class is sunflower/partial-lift (core + d=2 lift petals).
+* MECHANIZATION STATUS: bridge6/bridge4 + sval lemmas COMPILE (R23-style); the two case bashes
+  (collapse4: 8×16 branches; partner-extraction: 32×64) need branch surgery — split_ifs-then-omega
+  with point-equality discharge; the multi-alternative `first` chains break parsing across lines
+  (keep alternatives single-line); simp_all hits maxRecDepth at 8000 on the 6-point bash.
+  Technique recorded; finishing is mechanical.
