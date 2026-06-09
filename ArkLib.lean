@@ -1149,6 +1149,7 @@ import ArkLib.ProofSystem.Logup.Security.OuterRun
 import ArkLib.ProofSystem.Logup.Security.OuterRunSamplesChallenge
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessReal
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessSharp
+import ArkLib.ProofSystem.Logup.Security.OuterVerifierSupport
 import ArkLib.ProofSystem.Logup.Security.RbrToSoundBridge
 import ArkLib.ProofSystem.Logup.Security.Soundness
 import ArkLib.ProofSystem.Logup.Security.SoundnessConverse
