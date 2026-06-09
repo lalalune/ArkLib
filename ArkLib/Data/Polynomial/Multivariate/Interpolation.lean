@@ -1,7 +1,7 @@
-import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.Variables
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Variables
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 namespace ArkLib.Data.Polynomial.Multivariate
 
