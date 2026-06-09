@@ -1305,3 +1305,21 @@ needs ALL `t` symmetric functions to align — coinciding only at `t=1` (δ just
 to deep interior `t≥2` needs the count of subsets with `t` simultaneous symmetric-function constraints
 super-poly, which remains OPEN. 21 verified bricks across rounds 1–4. The open core is untouched but
 its precise obstruction — sum-count vs full-symmetric-count — is now machine-checked.
+
+**Update (O20 cleanup + sharpened residual).** Build-integrity fix: a concurrent regen had wired the
+6 `Round4_*` module names into `ArkLib.lean` while 2 were renamed away and one (`Round4_newton_vieta_upper`,
+319 lines) was the pre-truncation BROKEN version — a clean umbrella build would fail. Resolved by
+removing all `Round4_*` (content preserved byte-identically in the descriptively-named bricks; newton
+kept as the fixed 278-line `SubsetSumPigeonholeFiber`) and regenerating `ArkLib.lean` from tracked files.
+The umbrella is now consistent.
+
+The round-4 synthesis sharpens the residual one notch further: the zero-sum/±pairing inflation
+(`SubsetSumZeroInflation`) raises the subset SIZE by an **even** amount `2t` while preserving the sum
+(`e_1`), but the unique increment where controlling `e_1` alone suffices for the degree drop is `t = 1`
+— an **odd** increment the even-only pairing inflation structurally cannot reach. So the disproof-side
+residual is precisely: **a field-independent super-polynomial lower bound on the count of `(k+t)`-subsets
+of the smooth `2^k`-subgroup with `e_1, …, e_t` *jointly* prescribed (the full degree-drop family), at an
+ODD interior increment** — an additive-combinatorial / Weil-cancellation question on a multiplicative
+subgroup, with no Mathlib handle and untouched by any of the 21 verified bricks. Two upper-side attack
+families (additive-character orthogonality; Newton/Vieta symmetric functions) are now machine-checked
+DEAD ENDS for this count.
