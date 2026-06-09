@@ -1299,6 +1299,7 @@ import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 import ArkLib.ToMathlib.CountingAgreementBricks
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
+import ArkLib.ToMathlib.DescentTrichotomy
 import ArkLib.ToMathlib.DiscriminantBadSet
 import ArkLib.ToMathlib.DiscriminantSeparable
 import ArkLib.ToMathlib.DiscriminantSeparableConverse
