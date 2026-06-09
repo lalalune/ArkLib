@@ -1323,3 +1323,41 @@ ODD interior increment** — an additive-combinatorial / Weil-cancellation quest
 subgroup, with no Mathlib handle and untouched by any of the 21 verified bricks. Two upper-side attack
 families (additive-character orthogonality; Newton/Vieta symmetric functions) are now machine-checked
 DEAD ENDS for this count.
+
+### O21 / Round-5 — the FIRST unconditional general-n interior list lower bound + the exact t=2 condition
+
+Round 5 welded the round-4 conditional halves into a genuinely **unconditional** theorem and set up the
+open t=2 question precisely. 4 axiom-clean bricks (all `lake build`-clean). The open core (deep-interior
+δ*, the t≥2 multi-symmetric count) is untouched, but this is the strongest verified interior result yet.
+
+* `ListInteriorUnconditionalT1.lean` — **`exists_interior_list_ge_unconditional`: the first UNCONDITIONAL
+  general-n interior list lower bound in the corpus.** Hypotheses ONLY `0<k`, `k≤n`, `0<q=|F|`, and the
+  interiorness `(k+1)² < k·n` — NO `DegDropFamily`, NO count hypothesis. Conclusion: `∃ g` of degree
+  `k+1` with `C(n,k+1) ≤ q · #{v ∈ RS code : agree(v, g∘D) ≥ k+1}`, i.e. some received word's list at the
+  strictly-interior radius `δ = 1−(k+1)/n` is `≥ C(n,k+1)/q`. Welds the two previously-conditional round-4
+  halves: the degree-drop family is built internally (`windowDegDropFamily`, via `degDrop_t1_iff_window_sum`
+  + `pSt_natDegree_lt_interior`) and the count `C(n,k+1)/q` supplied by an internal fiberwise pigeonhole.
+  Non-vacuity machine-checked at `k=50,n=104`. **Honest caveat (in docstring): `δ=1−(k+1)/n` is the t=1
+  sliver just inside the CAPACITY endpoint, NOT deep interior; the `/q` factor means it beats trivial only
+  for `C(n,k+1)>q` (n large vs |F|), so NOT q-independent — a worst-case lower bound, not a prize
+  counterexample. Does NOT pin δ*.** First unconditional general-n interior brick nonetheless.
+* `ListInteriorDeltaStarUpperPin.lean` — `strict_overflow`/`concrete_overflow_nonvacuous`: the
+  field-independent binomial overflow `C(2^20, 2^19) > 2^{-128}·q²` for all `q ≤ 2^128` (via Mathlib
+  `four_pow_le_two_mul_self_mul_centralBinom`), a hypothesis-free closed proposition with ~2^256 slack.
+  The actual δ*-upper-pin `delta_star_upper_pin_of_family` honestly carries the `DegDropFamily` +
+  overflow hypotheses (the open ingredient), NOT smuggled. Even granting the family, reaches only
+  `δ* < 1−(k+1)/n = 1−ρ−1/n` (top of the band, near capacity).
+* `ListInteriorT2TwoSymmetric.lean` — `degDrop_t2_iff_two_symmetric`: **the exact t=2 degree-drop
+  criterion** — both top coeffs of `p_S` vanish IFF `e_1(D_S) = c_1 ∧ e_2(D_S) = c_2` *jointly* (the
+  first genuinely-multi-constraint case, the open direction), with the Vieta `X^{k+1}/X^k` identities
+  and the `e_2 = ∑_{2-subsets}∏` formula machine-checked + a bridge to the RS interior list. Slice-rank
+  verdict (honest NO-GO): the t=2 joint fiber sits inside the e_1 fiber (`twoSymmetric_card_le_subsetSumCount`),
+  so the pigeonhole floor survives, but Croot–Lev–Pach needs ADDITIVE tensor structure a multiplicative
+  subgroup lacks — slice-rank cannot force the t=2 count below `C(n,k+2)/|F|` by symmetry alone.
+* `SubsetSumPigeonholeManyTargets.lean` — sharpens the t=1 pigeonhole from "∃ one big target" toward
+  "many targets" via the second moment `∑_target N²` and the Newton/Vieta symmetries.
+
+**Net.** 25 verified bricks across rounds 1–5. New this round: the first UNCONDITIONAL general-n interior
+list lower bound (near-capacity, not q-independent — honest) and the exact t=2 joint-symmetric condition
+(setting up the open direction). The deep-interior δ* and the t≥2 super-poly multi-esymm count remain
+open; slice-rank is now a machine-checked dead end for the symmetry-only approach to t=2.
