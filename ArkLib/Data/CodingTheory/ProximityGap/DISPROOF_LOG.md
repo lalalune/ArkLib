@@ -2688,3 +2688,16 @@ kernel-checked counterexample instance to the per-line bound of Conjecture 41's 
 form. The remaining open object of #232 is unchanged and explicitly bounded: the
 field-independent fiber-size question itself (= δ* in the gap), now reachable from BOTH
 formulations through one machine-checked dictionary.
+
+### O47 / Round-23 — rigidity base case PROVEN (equal-sum pairs are antipodal)
+
+`RigidityBaseCasePairs.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified): the first
+verified case of O46 Step 2. THE INTEGER BRIDGE (gZ_eq_zero): equal-sum equations force INTEGER
+coefficients to vanish (independence + Int.cast_injective) — case analysis drops into ℤ/omega.
+pair_rigidity: a+b = c+d, pairs disjoint ⟹ both antipodal — the (w=2,t=1) linear-window rigidity,
+matching the R22 floor exactly (only equal-e₁ pairs in μ_{2N} = the d=2 lifts). LEAN TECHNIQUE: the
+8-index-branch × 16-sign bash needs maxHeartbeats 1000000 + single-chain combinator (no `first`,
+which doubles the search); step 2 of the theorem (w = antipode z) follows ALGEBRAICALLY from step 1
+via sval_injective — no second bash. PATHWAY: 1✅ 2(base ✅, w≥3 open = Conway-Jones/Mann) 3✅ 4✅.
+The integer-bridge technique is the demonstrated route for the w≥3 windows (3-term, 4-term vanishing
+sums at 2-power orders are classified by the same basis-reduction; w=3 base case = 6-term sums).
