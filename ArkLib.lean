@@ -1281,6 +1281,7 @@ import ArkLib.ProofSystem.Whir.MCAJohnsonReduction
 import ArkLib.ProofSystem.Whir.MCAJohnsonSmallField
 import ArkLib.ProofSystem.Whir.MCAJohnsonTrivialRegime
 import ArkLib.ProofSystem.Whir.MCAJohnsonUniqueness
+import ArkLib.ProofSystem.Whir.MCAPairSeam
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
 import ArkLib.ProofSystem.Whir.OutofDomainSmpl
 import ArkLib.ProofSystem.Whir.Protocol
