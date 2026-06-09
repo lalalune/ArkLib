@@ -2907,3 +2907,15 @@ families in μ_{2N} = SUNFLOWERS (core + 2^k-lift petals), all sizes, all linear
 independence dischargeable (R12). REMAINING PLUMBING: level-iteration statement + Conj-41/δ*
 composition. KEY FORMULATION LESSON: state window agreement as (P₁−P₂).degree < d — products,
 cofactors, and shifts become one-line degree_mul arithmetic (vs coefficient-indexed agony).
+
+### O52 / Round-28 — FULL-WINDOW RIGIDITY (level iteration; Step-2 disjoint capstone)
+
+`RigidityFullWindow.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified, first-compile
+EXIT 0): LiftStructured k (iterated-antipodal = R22 2^k-lift root structure) + full_window_rigidity
+— disjoint Good sets with equal p_1..p_{2^k−1} are LiftStructured k (induction: closure oracle from
+p₁ per level [= R25 through the signed-point encoding — the ONE remaining de-oracling]; halving
+engine drops windows with EXACT alignment 2l ≤ 2^{k+1}−1 ⟺ l ≤ 2^k−1; Good descends through
+squares). COMPLETE STEP-2 CHAIN (every component verified): core division (R27) → closure (R25) +
+halving (R26) iterated (R28) → 2^k-lift petals (R22): equal-window families in μ_{2N} = SUNFLOWERS
+with lift petals, all sizes/windows, char 0. REMAINING ASSEMBLY: hclosure de-oracling
+(μ-enumeration bridge) + the Conj-41/δ* composition through R20/21 + R19.
