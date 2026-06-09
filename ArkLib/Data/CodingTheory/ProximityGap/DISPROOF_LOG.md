@@ -2566,3 +2566,17 @@ A = [N_{Eᵢ} | γᵢ·N_{Eᵢ}] (distinct γᵢ). Findings (exact ℚ arithmeti
 Queued next bricks: (a) finrank-pigeonhole formalization of the twisted-kernel existence
 (via equal_window_image + Polynomial.degreeLT dimension count); (b) the class-syndrome
 h-sequence construction + Newton-convolution compatibility characterization in Lean.
+
+### O44 / Round-14g — linear-code collapse of the per-line close-pair count (→ weight enumerator)
+
+LineClosePairsLinear.lean (axiom-clean, on main `LinePairCooccurrence.closePairs_card_linear`)
+bridges the abstract per-line chain (rounds 14–14f) to RS structure. For a subtraction-closed
+(linear) code, translation invariance collapses the close-pair count to the weight-enumerator
+slice: `|closePairs C a| = |C|·|weightSlice C (2(n−a))|` (weightSlice = nonzero codewords of weight
+≤ 2(n−a)), via the bijection (c,c')↦(c,c'−c) + supp_eq_supp_sub. Plus
+line_second_moment_bound_weightSlice (off-diagonal = |C|·|weightSlice|·2(n−d)). Per-line companion
+of O29's ball-intersection linear collapse. |weightSlice(2(n−a))| = the w≤2(n−a) slice of ∑_w A_w;
+for MDS/RS (A_w=0 for 0<w<d) it's EMPTY above the unique-decoding radius (14f) and nonzero exactly
+in the interior (1−√ρ,1−ρ) — the RS object the prize turns on. Open: bound A_w for explicit
+smooth-domain RS in the interior. GOTCHA: ring/linear_combination fail on Fin n→F (Pi); use
+abel/add_right_cancel.
