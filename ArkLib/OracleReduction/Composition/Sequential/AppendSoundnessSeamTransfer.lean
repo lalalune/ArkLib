@@ -59,6 +59,25 @@ theorem simulateQ_lift_trans {γ : Type} (X : OracleComp oSpec γ) :
       OracleQuery.input_query, OracleQuery.cont_query, id_map]
     exact bind_congr fun a => ih a
 
+/-- **`OptionT`-level lift transitivity through the `pSpec₁` challenge seam.** Lifting an
+`OptionT (OracleComp oSpec)` computation `oa` directly into the *combined* challenge oracle equals
+first lifting it into `pSpec₁`'s own challenge oracle and then into the combined one.
+
+This discharges the VCVio `MonadLift`/`OptionT` instance heterogeneity at the `OptionT` level: the
+direct lift (`oSpec → combined`) and the two-step lift (`oSpec → pSpec₁ → combined`) build
+*propositionally-equal-but-not-defeq* `MonadLift` instances, so plain `rfl` leaves a goal differing
+only by instance. Unfolding both lifts to their `simulateQ (fun t => liftM (query t))` normal form
+(via `OptionT.run_mk`) and refolding the composed handler with `QueryImpl.simulateQ_compose` reduces
+the two sides to the same `simulateQ`-of-`simulateQ` term, closed by `congr 1`. It is the `OptionT`
+companion of `simulateQ_lift_trans`. -/
+theorem hcoh {α : Type} (oa : OptionT (OracleComp oSpec) α) :
+    (liftM oa : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α)
+    = liftM (liftM oa : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) α) := by
+  apply OptionT.ext
+  simp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift, OptionT.run_mk]
+  rw [← QueryImpl.simulateQ_compose, ← QueryImpl.simulateQ_compose]
+  congr 1
+
 /-- **Challenge-seam transfer (left half), at `run'`/`evalDist`.** Simulating a `pSpec₁`-side
 computation `oa`, lifted into the *combined* challenge oracle, and projecting the value (`run'`),
 has the same distribution as simulating `oa` directly under `pSpec₁`'s challenge oracle. Immediate

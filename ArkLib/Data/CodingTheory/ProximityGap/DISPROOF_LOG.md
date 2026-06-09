@@ -1221,3 +1221,42 @@ k-dimensional/root-count constraint, fully realizable in the smooth subgroup. Th
 asset is the **two-sided F7 interior pin** — a concrete verified δ* data point, both bounds, the first
 in-repo demonstration that δ* CAN be pinned (for a tiny explicit instance) even though the general
 technique is open.
+
+### O19 / Round-3 assault — verified δ* TABLE (4 two-sided interior pins incl. a real smooth subgroup) + crossover + §7 3^N upper bound
+
+Third multi-agent round built a **verified δ* table** of explicit two-sided interior list-size pins. 6
+axiom-clean bricks (all `lake build`-clean, `[propext, Classical.choice, Quot.sound]`). The general-n
+technique still did NOT move past the wall — but the table is genuine certified supporting data, and
+includes the first prize-faithful (smooth-subgroup) and first k=3 pins.
+
+**The δ* table (two-sided interior pins, lower = explicit witness list, upper = field-blind Fisher/poly-method cap):**
+| field / domain | n | k | ρ | interior δ | bracket | file |
+|---|---|---|---|---|---|---|
+| F₇ full | 7 | 2 | 2/7 | 4/7 | **[6,7]** | `ListInteriorTwoSidedF7` (round 2) |
+| F₁₁ full | 11 | 2 | 2/11 | 8/11 | **[15,18]** | `ListInteriorPinF11` |
+| **F₁₇ ⟨2⟩ order-8 subgroup** | 8 | 2 | 1/4 | 5/8 | **[7,9]** | `ListInteriorPinF17Subgroup` |
+| F₁₁ full | 11 | 3 | 3/11 | 6/11 | **[7,16]** | `ListInteriorPinF11K3` |
+
+* `ListInteriorPinF17Subgroup` — **first pin on a genuine smooth domain.** `smooth_domain_eq_roots_of_unity`
+  proves the evaluation domain image is *exactly* `{x : x⁸=1}` (the order-8 multiplicative subgroup of
+  F₁₇ — the actual FRI/STARK setting), not the full field. Two-sided [7,9] at δ=5/8.
+* `ListInteriorPinGeneral` — the parametric **upper-cap** theorem `two_sided_interior_pin` (|L| ≤
+  C(n,k)/C(a,k) for arbitrary injective domain, lower bound taken as a per-instance hypothesis) +
+  `interior_iff_real`: the clean ℕ↔ℝ equivalence proving `Interior n k a := (k<a ∧ a²<nk)` is *exactly*
+  `1−√(k/n) < (n−a)/n < 1−k/n` (genuine `Real.lt_sqrt` squaring) — removes all `Real.sqrt` reasoning
+  downstream. Plus a 5-row decide-checked upper-cap table (one-sided rows: n=13/16/31 etc.).
+* `FisherJohnsonCrossover` — `crossover_iff`: Fisher cap `C(n,k)/C(a,k)` vs 2nd-moment Johnson reduce to
+  one integer cross-product `C(n,k)·d ⋚ C(a,k)·n²`; **neither dominates** (witnesses both sides). Tells
+  you which tool is sharper in which part of the gap.
+* `SubgroupSumsetThreePowUpper` — `subsetSumset_full_le_three_pow`: the §7 full-subgroup subset-sumset
+  is `≤ 3^N` (via the ζ^N=−1 collapse factoring every full-subgroup sum through a `{−1,0,1}`-cube
+  `Fin N → Fin 3`). Capstone `subsetSumset_full_two_sided`: `2^{2^{m-1}} ≤ |G⁽⁺⁾| ≤ min(3^{2^{m-1}}, p)`.
+  An honest UPPER bound on the §7 count — but both edges doubly-exponential, so only the field cap `p`
+  (Loop53) forces survival; does not by itself pin δ*.
+
+**Verdict (honest, unchanged).** Every upper bound is the SAME field-blind `≤k−1` incidence cap (holds
+for any injective `D`, cannot separate smooth from generic domains) — the convergent wall. Lower bounds
+are explicit single-instance witnesses. The general-n lower bound past the `≤k−1` ceiling (= the open
+super-poly smooth-domain subset-sum count) was NOT supplied. The table PINS δ* for explicit tiny
+instances (incl. a real subgroup) but does NOT pin δ* for general smooth-domain RS. 15 verified bricks
+total across rounds 1–3. Open core untouched; boundary maximally mapped.
