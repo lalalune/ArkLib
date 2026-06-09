@@ -1315,6 +1315,7 @@ import ArkLib.ToMathlib.DiscriminantSeparable
 import ArkLib.ToMathlib.DiscriminantSeparableConverse
 import ArkLib.ToMathlib.DisjointPairCount
 import ArkLib.ToMathlib.EliasVolumeCertificates
+import ArkLib.ToMathlib.EmbeddingCoefficientCommutation
 import ArkLib.ToMathlib.ExtractedIssueBricks
 import ArkLib.ToMathlib.FaaDiBrunoMatchProof
 import ArkLib.ToMathlib.FinSumMvPolyBricks
