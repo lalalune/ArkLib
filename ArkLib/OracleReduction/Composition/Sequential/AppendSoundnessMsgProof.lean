@@ -51,6 +51,37 @@ variable {ι : Type} {oSpec : OracleSpec ι} {Stmt₁ Stmt₂ Stmt₃ : Type}
   [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
+/-- **Heterogeneous marginalization congruence.** Like `probEvent_simQ_run'_congr_marginal` but the two
+computations may have *different* value types `α₁`, `α₂`, projected to a common `β` by `g₁`/`g₂`. Needed
+because the phase-1 seam body (`P.fst`'s output `state × Unit`) and `Reduction.run {fstSound}` (output
+`Stmt₂ × state`) differ in type, yet share the verifier-output (`Prod.snd`) marginal. Same proof as the
+homogeneous version (free-monad/`simulateQ_map`/`StateT.run_map`), just with `g₁`/`g₂`. -/
+private theorem marg_het {ιₛ : Type} {spec : OracleSpec ιₛ} {α₁ α₂ β : Type}
+    (so : QueryImpl spec (StateT σ ProbComp)) (init : ProbComp σ)
+    (X : OptionT (OracleComp spec) α₁) (Y : OptionT (OracleComp spec) α₂)
+    (g₁ : α₁ → β) (g₂ : α₂ → β) (q : β → Prop) (h : (g₁ <$> X) = (g₂ <$> Y)) :
+    Pr[fun o => Option.elim o False (fun a => q (g₁ a)) |
+        init >>= fun s => (simulateQ so X.run).run' s]
+    = Pr[fun o => Option.elim o False (fun a => q (g₂ a)) |
+        init >>= fun s => (simulateQ so Y.run).run' s] := by
+  have h' : Option.map g₁ <$> X.run = Option.map g₂ <$> Y.run := by
+    have := congrArg OptionT.run h; simpa only [OptionT.run_map] using this
+  have h'' : (Option.map g₁ <$> simulateQ so X.run) = (Option.map g₂ <$> simulateQ so Y.run) := by
+    rw [← simulateQ_map, ← simulateQ_map, h']
+  have key : (Option.map g₁ <$> (init >>= fun s => (simulateQ so X.run).run' s))
+           = (Option.map g₂ <$> (init >>= fun s => (simulateQ so Y.run).run' s)) := by
+    simp only [map_bind, StateT.run'_eq]
+    refine bind_congr (fun s => ?_)
+    have h3 := congrFun (congrArg StateT.run h'') s
+    simp only [StateT.run_map] at h3
+    have h4 := congrArg (fun z => Prod.fst <$> z) h3
+    simp only [Functor.map_map, Function.comp] at h4 ⊢; exact h4
+  have hpe1 : (fun o : Option α₁ => Option.elim o False (fun a => q (g₁ a)))
+      = (fun ob => Option.elim ob False q) ∘ (Option.map g₁) := by funext o; cases o <;> rfl
+  have hpe2 : (fun o : Option α₂ => Option.elim o False (fun a => q (g₂ a)))
+      = (fun ob => Option.elim ob False q) ∘ (Option.map g₂) := by funext o; cases o <;> rfl
+  rw [hpe1, hpe2, probEvent_comp, probEvent_comp, key]
+
 /-- **Binary sequential-composition soundness, message-seam case.** Reduces the appended-verifier
 soundness experiment (over an arbitrary malicious prover) to the two per-phase soundness bounds via
 the verified seam toolkit. The remaining two goals are exactly `V₁.soundness ε₁` on the phase-1 seam
@@ -127,6 +158,15 @@ theorem append_soundness_msg'
         (pure : Stmt₂ → OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) Stmt₂)
       simp only [bind_pure] at hgm
       exact hgm.symm
+    -- marg (using body_eq) reduces MID = RHS; remaining `?_` is the oracle bridge LHS = MID.
+    refine Eq.trans ?_ (marg_het
+      (impl.addLift (challengeQueryImpl (pSpec := pSpec₁))) init
+      (liftM (prover.fst.run stmtIn witIn) >>= fun x =>
+        liftM (V₁.run stmtIn x.1) >>= fun s₂ =>
+          (pure (x, s₂) : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) _))
+      (Reduction.run stmtIn witIn { prover := prover.fstSound, verifier := V₁ })
+      Prod.snd Prod.snd (· ∈ lang₂) body_eq)
+    trace_state
     sorry
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
     intro p s' _ h_pg
