@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import Mathlib.RingTheory.Polynomial.Resultant.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.Data.ZMod.Basic
+import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.NumberTheory.LSeries.PrimesInAP
 import Mathlib.Tactic
 
@@ -149,6 +150,23 @@ theorem diff_coprime_cyclotomic_rat {m : ℕ} (hm : 1 ≤ m) (g : Polynomial ℤ
   rw [natDegree_cyclotomic, totient_two_pow' hm] at hdeg_le
   rw [natDegree_map_eq_of_injective hinj g] at hdeg_le
   omega
+
+/-- **A primitive `2^m`-th root of unity exists in `F_p` when `2^m ∣ p − 1`.** The unit group
+`(ZMod p)ˣ` is cyclic of order `p − 1`; since `2^m ∣ p − 1`, `IsCyclic.card_orderOf_eq_totient` gives
+`φ(2^m) = 2^{m-1} > 0` units of order exactly `2^m`, any of which is a primitive `2^m`-th root. -/
+theorem exists_primitiveRoot_zmod {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
+    (hdvd : 2 ^ m ∣ p - 1) :
+    ∃ ζ : ZMod p, IsPrimitiveRoot ζ (2 ^ m) := by
+  classical
+  have hd : 2 ^ m ∣ Fintype.card (ZMod p)ˣ := by rw [ZMod.card_units p]; exact hdvd
+  have hcnt : (Finset.univ.filter (fun u : (ZMod p)ˣ => orderOf u = 2 ^ m)).card
+      = Nat.totient (2 ^ m) := IsCyclic.card_orderOf_eq_totient hd
+  have hpos : 0 < (Finset.univ.filter (fun u : (ZMod p)ˣ => orderOf u = 2 ^ m)).card := by
+    rw [hcnt, totient_two_pow' hm]; positivity
+  obtain ⟨u, hu⟩ := Finset.card_pos.mp hpos
+  rw [Finset.mem_filter] at hu
+  exact ⟨(u : ZMod p),
+    IsPrimitiveRoot.coe_units_iff.mpr (IsPrimitiveRoot.iff_orderOf.mpr hu.2)⟩
 
 /-- **Consolidation: a prime `≡ 1 (mod q)` at which no member of a finite family shares a root with
 `h`.** Given polynomials `gs i`, each coprime to `h` over `ℚ`, the product `R = ∏ Res_ℤ(gs i, h)` is a
