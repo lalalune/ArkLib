@@ -550,6 +550,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSimplexBound
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungAntipodalTightness
+import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPow
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalQ
 import ArkLib.Data.CodingTheory.ProximityGap.LineAgreementCount
@@ -1362,6 +1363,7 @@ import ArkLib.ToMathlib.CurveFamilyHensel
 import ArkLib.ToMathlib.CurveFamilyLines
 import ArkLib.ToMathlib.CurveFamilyZLinear
 import ArkLib.ToMathlib.CurveHenselDatumProducers
+import ArkLib.ToMathlib.CyclotomicPatternInjectivity
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
 import ArkLib.ToMathlib.DescentTrichotomy
 import ArkLib.ToMathlib.DiscriminantBadSet
@@ -1456,6 +1458,7 @@ import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
 import ArkLib.ToMathlib.MvPolynomial.Equiv
 import ArkLib.ToMathlib.NearCertainBadLineProof
+import ArkLib.ToMathlib.OddCharacterOrthogonality
 import ArkLib.ToMathlib.OffcentreKeystoneAssembly
 import ArkLib.ToMathlib.OracleCompEvalDistBindComm
 import ArkLib.ToMathlib.OracleZKTransferBricks
@@ -1498,6 +1501,7 @@ import ArkLib.ToMathlib.SignedGradedSupply
 import ArkLib.ToMathlib.SpartanBricks
 import ArkLib.ToMathlib.SpartanRBRProof
 import ArkLib.ToMathlib.SqSumCardSupport
+import ArkLib.ToMathlib.SqrtPairPowerSum
 import ArkLib.ToMathlib.StraightlineRewindingBridge
 import ArkLib.ToMathlib.SubmoduleCardRatio
 import ArkLib.ToMathlib.SubsetSumsetSymmetry
