@@ -122,6 +122,50 @@ theorem probComp_seam_swap_completeness
   unfold probEvent at hmain ⊢
   rw [key]; exact hmain
 
+/-- The `seam_swap` natural-order `OptionT` run, unfolded to the plain-`OracleComp` `Option.elim`
+chain (`OptionT.run_bind` + `lift_run_elim`). This is the shape a concrete appended-reduction run
+arrives in after the message-seam unfolding (`Prover.append_run_msg` + `Verifier.append_run`). -/
+theorem seam_natural_run_eq {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D) :
+    ((liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ => W2 x a s₂
+        : OptionT (OracleComp spec) D).run)
+      = FST >>= fun x => SND x >>= fun a => (W1 x).run >>= fun o₁ =>
+          o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run) := by
+  simp only [OptionT.run_bind, Option.elimM, lift_run_elim]
+
+/-- **`P/A/B/k`-form swap completeness.** `probComp_seam_swap_completeness` with the natural-order
+chain pre-unfolded (via `seam_natural_run_eq`) into the plain `FST → SND → W1 → W2` `Option.elim`
+shape. This is the form that `apply`s directly against a concrete simulated appended-reduction run
+(provers `FST=P₁`, `SND=P₂` first, then verifiers `W1=V₁`, `W2=V₂`+assemble) once it has been
+normalized by the message-seam unfolding, with no need to spell out the (deeply nested) `W1`/`W2`
+by hand — they are inferred by unification. -/
+theorem probComp_seam_swap_completeness_PABk
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (pg : C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 False (fun p : A × C => pg p.2)
+          | init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
+    (h₂ : ∀ (p : A × C) (s' : σ),
+          (some p, s') ∈ support (init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p.2 →
+          Pr[fun o => ¬ Option.elim o False qg
+            | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
+    Pr[fun o => ¬ Option.elim o False qg
+        | init >>= fun s => (simulateQ so
+            (FST >>= fun x => SND x >>= fun a => (W1 x).run >>= fun o₁ =>
+              o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run))).run' s] ≤ e₁ + e₂ := by
+  have key := probComp_seam_swap_completeness init so hso FST SND W1 W2 hB pg qg e₁ e₂ h₁ h₂
+  rwa [seam_natural_run_eq] at key
+
 end OptionTStateT
 
 namespace OracleReduction
