@@ -50,6 +50,8 @@ def msgProjFS (t : FullTranscript pSpec) :
     FullTranscript (FiatShamirProtocolSpec (pSpec := pSpec)) :=
   fun | ⟨0, _⟩ => t.messages
 
+attribute [-instance] Reduction.fiatShamirZKNoChallengeSampleable in
+set_option maxHeartbeats 1000000 in
 /-- **FS-side collapse of the honest transcript distribution.**
 
 The honest Fiat-Shamir transcript distribution of the *transformed* reduction `R.fiatShamir` equals
@@ -117,3 +119,4 @@ end Reduction
 #print axioms Reduction.msgProjFS
 #print axioms Reduction.honestTranscriptDist_fiatShamir_eq_honestExecution
 #print axioms Reduction.fiatShamir_hvzkTransfer_of_coupling
+#print axioms Reduction.honestTranscriptDist_fiatShamir_eq_honestExecution

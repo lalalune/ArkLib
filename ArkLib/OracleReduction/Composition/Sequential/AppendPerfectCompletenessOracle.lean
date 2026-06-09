@@ -96,7 +96,7 @@ theorem append_perfectCompleteness_msg_proof
     [(oSpec + [pSpec₁.Challenge]ₒ).Fintype] [(oSpec + [pSpec₁.Challenge]ₒ).Inhabited]
     [(oSpec + [pSpec₂.Challenge]ₒ).Fintype] [(oSpec + [pSpec₂.Challenge]ₒ).Inhabited] :
     (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
-  show Reduction.perfectCompleteness init impl rel₁ rel₃ (R₁.append R₂).toReduction
+  change Reduction.perfectCompleteness init impl rel₁ rel₃ (R₁.append R₂).toReduction
   rw [show (R₁.append R₂).toReduction = R₁.toReduction.append R₂.toReduction from hBridge]
   exact Reduction.append_perfectCompleteness_msg_proof
     R₁.toReduction R₂.toReduction h₁ h₂ hn hDir hDir₂ hInit hImplSupp
