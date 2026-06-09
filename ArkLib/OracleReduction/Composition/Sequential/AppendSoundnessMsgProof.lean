@@ -99,11 +99,14 @@ theorem append_soundness_msg'
     (ε₁ : ℝ≥0∞) (ε₂ : ℝ≥0∞) ?_ ?_
   · -- Phase-1 bound: `V₁.soundness ε₁` on the phase-1 soundness prover `prover.fstSound`.
     have h1_bound := h₁ _ _ witIn (Prover.fstSound prover) stmtIn hstmtIn
-    refine le_of_eq_of_le (OptionTStateT.probEvent_run_eq_run'_fst pImpl init
-        (liftM (liftM (prover.fst.run stmtIn witIn)) >>= fun x =>
-          liftM (V₁.run stmtIn x.1) >>= fun s₂ => pure (x, s₂))
-        (fun o => ¬ Option.elim o True fun p => p.2 ∉ lang₂)) ?_
-    trace_state
+    -- Avoid the `FreeM.mapM` whnf blow-up: do NOT pass the abstract prover-run do-body explicitly.
+    -- `rw` with the predicate's pair type ascribed lets `X` be inferred by structural unification.
+    rw [OptionTStateT.probEvent_run_eq_run'_fst (P :=
+      fun (o : Option (_ × Stmt₂)) => ¬ Option.elim o True fun p => p.2 ∉ lang₂)]
+    refine le_of_eq_of_le ?_ h1_bound
+    -- Remaining: the clean bridge+marg equality (no whnf): predicate-convert + probEvent_optionT_mk +
+    -- evalDist_challengeSeam_bridge_left (combined→pSpec₁ oracle) + probEvent_simQ_run_congr_marginal
+    -- (marginalize fstSound dummy output via Prod.snd) + fstSound_runToRound.
     sorry
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
     intro p s' _ h_pg
