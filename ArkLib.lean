@@ -92,6 +92,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparabilityCharZero
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparableContraction
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparableCoreDescent
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MonomialCount
