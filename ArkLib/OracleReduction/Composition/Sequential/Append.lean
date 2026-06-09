@@ -537,6 +537,48 @@ theorem emitOStmtQueryInr_simulateQ (oStmt : ∀ i, OStmt₁ i)
   subst hSt; subst hO
   exact simulateQ_emitMessageInl oStmt tr k q
 
+/-- Simulating `emitOStmt₂Query V₁ i q` (route `V₁`'s output oracle statement `OStmt₂ i`) under the
+combined `simOracle2` answers from the reconstructed oracle statement `mkVerifierOStmtOut … i`. -/
+theorem simulateQ_emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (oStmt : ∀ i, OStmt₁ i) (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂))
+    (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitOStmt₂Query V₁ i q)
+      = pure ((Oₛ₂ i).answer (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst i) q) := by
+  unfold emitOStmt₂Query mkVerifierOStmtOut
+  cases h : V₁.embed i with
+  | inl k =>
+    rw [emitOStmtQueryInl_simulateQ]
+    trace_state
+    sorry
+  | inr k =>
+    rw [emitOStmtQueryInr_simulateQ]
+    sorry
+
+/-- Simulating `emitOStmtQueryInl` (route `V₂`'s output-oracle query to an *input* oracle statement
+`OStmt₁ k`) answers it from `oStmt k`. -/
+theorem emitOStmtQueryInl_simulateQ (oStmt : ∀ i, OStmt₁ i)
+    (msgs : ∀ j, (pSpec₁ ++ₚ pSpec₂).Message j)
+    {T : Type} (O : OracleInterface T) (k : ιₛ₁) (hSt : OStmt₁ k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₛ₁ k)) (q : O.Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs) (emitOStmtQueryInl O k hSt hO q)
+      = pure (O.answer (hSt ▸ oStmt k) q) := by
+  subst hSt; subst hO
+  simp only [emitOStmtQueryInl, simulateQ_query]
+  rfl
+
+/-- Simulating `emitOStmtQueryInr` (route `V₂`'s output-oracle query to a `pSpec₁`-message) answers
+it from the first sub-transcript's message `tr.fst.messages k`. -/
+theorem emitOStmtQueryInr_simulateQ (oStmt : ∀ i, OStmt₁ i)
+    (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂))
+    {T : Type} (O : OracleInterface T) (k : pSpec₁.MessageIdx) (hSt : pSpec₁.Message k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₘ₁ k)) (q : O.Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitOStmtQueryInr O k hSt hO q)
+      = pure (O.answer (hSt ▸ tr.fst.messages k) q) := by
+  subst hSt; subst hO
+  simp only [emitOStmtQueryInr]
+  exact simulateQ_emitMessageInl oStmt tr k q
+
 /-- **V₂-side router collapse.** Running `V₂`'s queries through `router₂ V₁` and then the combined
 `simOracle2` is the same as running them through `V₂`'s own `simOracle2` over the oracle statements
 `oStmt₂'` that `V₁` reconstructs (its `toVerifier` output oracle statements) and the *second*
