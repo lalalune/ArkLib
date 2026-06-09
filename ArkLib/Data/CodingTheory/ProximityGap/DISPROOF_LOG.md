@@ -2077,3 +2077,15 @@ beyond-rate list element is an ηn-fold cyclotomic degeneracy; ℓ(θ) = the deg
 2^{O(H(ρ)/η)} budget. C19 = the first proven degeneracy count (16, exact). The open core is now
 ONE precisely-stated conjecture with a rigorous reduction, a proven base instance, and verified
 self-similarity — falsification target included (any level with super-N₀ degeneracies).
+
+### O34 / Round-18 — the prize-scale two-sided bracket (flagship)
+
+`TwoSidedBracketPrizeScale.lean` (main-loop solo, axiom-clean): two_sided_bracket_n2_20 = both sides
+at n=2^20 rate 1/2, all prize fields, in ONE self-contained statement. Johnson side: johnson_list_cap
+L·(a²−nJ) ≤ n·a (truncated double count + pair sum + ℕ Cauchy-Schwarz; instance a=750000 → L ≤ 61).
+Capacity side: capacity_crossover (R14) 2^128·q^4063 < C(2^20, 2^19+4063). NET: δ* ∈ [0.2848, 0.49613)
+— sharpest self-contained machine-checked prize-scale bracket. Johnson side → 0.2929 needs mult-2 GS
+(known math); past Johnson = the open core (3 equivalent formulations, O33). LEAN GOTCHAS: rw with a
+repeated filter-card pattern rewrites ALL instances at once (don't list it twice);
+sq_sum_le_card_mul_sum_sq works over ℕ directly (Semiring+LinearOrder+IsStrictOrderedRing);
+Finset.sum_ite_mem + univ_inter for indicator sums; push_neg deprecated → push Not.
