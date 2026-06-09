@@ -623,6 +623,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CollisionOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetWall
+import ArkLib.Data.CodingTheory.ProximityGap.Round9SalieQuarticReduction
+import ArkLib.Data.CodingTheory.ProximityGap.Round9SubgroupCharExpansion
 import ArkLib.Data.CodingTheory.ProximityGap.SatCheck2_tmp
 import ArkLib.Data.CodingTheory.ProximityGap.SatCheck_tmp
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
@@ -1077,6 +1079,7 @@ import ArkLib.ProofSystem.Sumcheck.Spec.SeqComposeRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.SimpleRoundCoherent
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundBridge
+import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundKnowFlip
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundPlainRbr
 import ArkLib.ProofSystem.Sumcheck.Structured
 import ArkLib.ProofSystem.Sumcheck.Structured.Prismalinear
