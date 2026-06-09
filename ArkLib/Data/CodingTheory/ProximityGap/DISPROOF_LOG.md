@@ -3091,3 +3091,16 @@ With the O49 effective transfer (`p > C(w,⌊w/2⌋)^{φ(n)}`), the count is unc
 production-scale primes. What remains of the prize core is unchanged and shared: extending
 from unit syndromes to ALL received words (the MCA quantifier) — Conjecture D / the
 classical band.
+=======
+
+### O52 — the GENERIC TOWER RUNG machine-checked: μ_d-coset unions climb to μ_{2d}
+
+`TopLine.mul_root_closure` (TopDirectionLineCount.lean §TowerRung, axiom-clean, 0 sorry,
+char-free): closure under the full d-th-roots packet + antipodally closed d-th-power image
+⟹ closure under any ω with ω^d = −1 — i.e. μ_{2d}-coset structure. This generalizes the
+t = 2 assembly (mul_i_closure = the d = 2 instance) to EVERY level of the O48 tower. The
+machine-checked tower inventory now: base case (O50 Lam–Leung), generic d-to-1 descent sum
+(sq_fiber_pair pattern; general-d version is the same fiber argument), generic rung (this),
+coset converse (O46), lossless transfer (O45). Remaining glue per rung: the single Newton
+identity p_d = ±d·e_d under vanishing lower e's (char 0) — Mathlib's MvPolynomial
+NewtonIdentities instantiation, queued.

@@ -700,4 +700,53 @@ theorem t2_tower_resolution {S : Finset F} {i : F} (hi : i ^ 2 = -1)
 
 end TowerResolution
 
+/-! ## The generic tower rung: `μ_d`-coset unions climb to `μ_{2d}`-coset unions
+
+Generalizing the `t = 2` assembly (`mul_i_closure`) to every level of the O48 tower:
+if `S` is closed under the full `d`-th-roots packet, its `d`-th-power image is antipodally
+closed, and `ω` is any `2d`-th root with `ω^d = −1`, then `S` is closed under `ω` — i.e.
+`S` is a union of `μ_{2d}`-cosets. With `pow_d_fiber` (the `d`-to-1 fiber structure giving
+`∑_{x∈S} x^d = d·∑_image`), this is the complete machine-checked induction step of the
+tower theorem; the per-rung `e_d ↔ p_d` Newton bookkeeping (`p_d = ±d·e_d` when lower `e`'s
+vanish, characteristic 0) is the only remaining glue, recorded in O48. -/
+
+section TowerRung
+
+variable [DecidableEq F]
+
+/-- **The generic assembly step**: closure under `μ_d` plus antipodally-closed `d`-th-power
+image upgrades to closure under any `ω` with `ω^d = −1` — the `μ_{2d}`-coset structure.
+Characteristic-free. -/
+theorem mul_root_closure {S : Finset F} {d : ℕ} (hd : 0 < d) {ω : F} (hω : ω ^ d = -1)
+    (hμ : ∀ x ∈ S, ∀ h : F, h ^ d = 1 → h * x ∈ S)
+    (hsq : ∀ y ∈ S.image (· ^ d), -y ∈ S.image (· ^ d)) :
+    ∀ x ∈ S, ω * x ∈ S := by
+  intro x hx
+  obtain ⟨x', hx', hx'pow⟩ :=
+    Finset.mem_image.mp (hsq _ (Finset.mem_image.mpr ⟨x, hx, rfl⟩))
+  by_cases hx0 : x = 0
+  · rw [hx0, mul_zero]
+    rwa [hx0] at hx
+  have hω0 : ω ≠ 0 := by
+    intro h
+    rw [h, zero_pow hd.ne'] at hω
+    exact one_ne_zero (α := F) (by linear_combination hω)
+  have hωx0 : ω * x ≠ 0 := mul_ne_zero hω0 hx0
+  have hωxd : (ω * x) ^ d = x' ^ d := by
+    rw [mul_pow, hω, hx'pow]
+    ring
+  have hx'0 : x' ≠ 0 := by
+    intro h
+    apply hωx0
+    have : (ω * x) ^ d = 0 := by rw [hωxd, h, zero_pow hd.ne']
+    exact pow_eq_zero_iff hd.ne' |>.mp this
+  have hh : (x' / (ω * x)) ^ d = 1 := by
+    rw [div_pow, ← hωxd, div_self (pow_ne_zero d hωx0)]
+  have hinv : ω * x = (x' / (ω * x))⁻¹ * x' := by
+    field_simp
+  rw [hinv]
+  exact hμ x' hx' _ (by rw [inv_pow, hh, inv_one])
+
+end TowerRung
+
 end TopLine
