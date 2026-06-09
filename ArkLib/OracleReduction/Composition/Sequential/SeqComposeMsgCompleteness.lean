@@ -219,4 +219,30 @@ theorem seqCompose_perfectCompleteness_msg {m : ℕ}
   intro S₁ W₁ S₂ W₂ S₃ W₃ k₁ k₂ p₁ p₂ _ _ _ _ _ _ R₁ R₂ r₁ r₂ r₃ hv h₁ h₂
   exact binary_append_valid_pc R₁ R₂ hInit hImplSupp hv h₁ h₂
 
+set_option maxHeartbeats 1000000 in
+/-- **Explicit-instance form of `seqCompose_perfectCompleteness_msg`.** Takes the per-round challenge
+`Fintype`/`Inhabited` as *explicit* arguments `hFin`/`hInh` (rather than instance-implicit), which is
+the robust calling convention for concrete protocols whose per-round protocol is a literal `fun _ => p`
+(there the instance search would otherwise fail to match the `(fun _ => p) i` redex against an
+instance stated on the reduced `p`). Used by `Sumcheck.Spec.reduction_perfectCompleteness`. -/
+theorem seqCompose_pc_msg' {m : ℕ}
+    (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    [∀ i, ∀ j, SampleableType ((pSpec i).Challenge j)]
+    (R : (i : Fin m) →
+      Reduction oSpec (Stmt i.castSucc) (Wit i.castSucc) (Stmt i.succ) (Wit i.succ) (pSpec i))
+    (rel : (i : Fin (m + 1)) → Set (Stmt i × Wit i))
+    (hFin : ∀ i, ∀ j, Fintype ((pSpec i).Challenge j))
+    (hInh : ∀ i, ∀ j, Inhabited ((pSpec i).Challenge j))
+    (hValid : ∀ i, ∃ h : 0 < n i, (pSpec i).dir ⟨0, h⟩ = .P_to_V)
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    (h : ∀ i, (R i).perfectCompleteness init impl (rel i.castSucc) (rel i.succ)) :
+    (seqCompose Stmt Wit R).perfectCompleteness init impl (rel 0) (rel (Fin.last m)) := by
+  haveI : ∀ i, ∀ j, Fintype ((pSpec i).Challenge j) := hFin
+  haveI : ∀ i, ∀ j, Inhabited ((pSpec i).Challenge j) := hInh
+  exact seqCompose_perfectCompleteness_msg Stmt Wit R rel hValid hInit hImplSupp h
+
 end Reduction
