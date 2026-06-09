@@ -657,8 +657,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
-import ArkLib.Data.CodingTheory.ProximityGap.PrizeScaleJohnsonInstance
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeScaleBracketFull
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeScaleJohnsonInstance
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesA
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesB
@@ -1261,6 +1261,7 @@ import ArkLib.ToMathlib.BetaToCurveCoeffPolys
 import ArkLib.ToMathlib.BetaToCurveCoeffPolysOffcentre
 import ArkLib.ToMathlib.BetaWeightCollapse
 import ArkLib.ToMathlib.BetaWeightGradedAssembly
+import ArkLib.ToMathlib.BetaWeightGradedSupply
 import ArkLib.ToMathlib.BetaWeightInduction
 import ArkLib.ToMathlib.BetaWeightInductionExcl
 import ArkLib.ToMathlib.BigOperators.Fin
