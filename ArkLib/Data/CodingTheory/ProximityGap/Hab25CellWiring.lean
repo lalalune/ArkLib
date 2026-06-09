@@ -5,14 +5,13 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Claim1
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
-import ArkLib.Data.CodingTheory.ProximityGap.Hab25NumericEdge
 
 /-!
 # Hab25 §3 — end-to-end wiring: per-stack Claim-1 cells ⟹ the Johnson numeric residual
 
 This file closes the wiring between the proven Claim-1 dichotomy (`Hab25Claim1.lean`) and
-the proven numeric chain (`Hab25NumericEdge.lean` / `Hab25JohnsonArith.lean`), at the
-**sharp** per-stack count `|E_u| ≤ ℓ·n` (the integer-sharp bound the in-tree
+the proven numeric chain (`Hab25JohnsonNumericBridge.lean` / `Hab25JohnsonArith.lean`), at
+the **sharp** per-stack count `|E_u| ≤ ℓ·n` (the integer-sharp bound the in-tree
 `johnsonBoundReal` closed form is calibrated to — sharper than the paper's headline
 `(ℓ⁷/3)(ρn)²`, which it implies):
 
@@ -85,7 +84,9 @@ with `≤ L` cells (`L` within the GS list-size shape `(m+½)/√ρ₊`, e.g. `L
 the per-cell capture-above-`n` hypothesis ([BCI⁺20 Claim 5.7 + Steps 5–7 + App. C]), the
 previously-atomic `JohnsonNumericBound` follows with no further obligations: the per-stack
 count is `≤ L·n` (`bad_card_le_of_claim1_cells`), and `L·n/|F| ≤ johnsonBoundReal` is the
-proven closed-form arithmetic (`list_shape_le_budget` + `nat_mul_card_div_le_johnsonBoundReal`). -/
+proven closed-form arithmetic (`list_shape_le_budget` +
+`nat_mul_card_div_le_johnsonBoundReal`), entering through the in-tree S11 bridge
+`JohnsonNumericBound.of_card_le_nat`. -/
 theorem johnsonNumericBound_of_claim1_cells
     (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0) (L : ℕ)
     (hk : k ≤ Fintype.card ι₀)
@@ -105,13 +106,14 @@ theorem johnsonNumericBound_of_claim1_cells
               AffineCaptured domain k δ u γ (a, b)) :
     JohnsonNumericBound domain k η δ := by
   classical
-  refine johnsonNumericBound_of_count domain k η δ (L * Fintype.card ι₀) ?_ ?_
+  refine JohnsonNumericBound.of_card_le_nat domain k η δ (L * Fintype.card ι₀) ?_ ?_
+  · -- the closed-form arithmetic: `L·n/|F| ≤ johnsonBoundReal`
+    have h := nat_mul_card_div_le_johnsonBoundReal domain k η δ L
+      (le_trans hL (list_shape_le_budget η Fintype.card_pos hk))
+    exact_mod_cast h
   · intro u
     obtain ⟨Idx, _, Index, Ecell, hLcard, hcover, hsteps57⟩ := hdata u
     exact bad_card_le_of_claim1_cells domain k δ u Index Ecell L hLcard hcover hsteps57
-  · -- the closed-form arithmetic: `L·n/|F| ≤ johnsonBoundReal`
-    exact nat_mul_card_div_le_johnsonBoundReal domain k η δ L
-      (le_trans hL (list_shape_le_budget η Fintype.card_pos hk))
 
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
