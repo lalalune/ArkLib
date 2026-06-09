@@ -120,6 +120,22 @@ lemma evalDist_uniformSample_bind_update_map_dep {α : Type} (t : ι) (ψ : (∀
     simp [bind_pure_comp]
   rw [hL, hR, evalDist_map, evalDist_map, evalDist_uniformSample_bind_update_dep t]
 
+/-- **Reading a uniform dependent table at one coordinate is a fresh uniform sample.** Drawing a
+uniform full table `g : ∀ i, R i` and post-processing its value `g t` at a fixed coordinate `t` has
+the same distribution as drawing `g t` fresh. This is the per-coordinate marginal-projection form of
+the marginalization lemma — the building block for peeling one challenge out of a pre-sampled
+challenge table (the read is replaced by a fresh sample independent of the rest of `g`). -/
+lemma evalDist_uniformTable_read_eq_uniform {α : Type} (t : ι) (F : R t → α) :
+    𝒟[do let g ← $ᵗ (∀ i, R i); pure (F (g t))] = 𝒟[do let u ← $ᵗ (R t); pure (F u)] := by
+  rw [← evalDist_uniformSample_bind_update_map_dep t (fun g => F (g t))]
+  simp only [Function.update_self]
+  refine evalDist_ext fun x => ?_
+  rw [probOutput_bind_eq_tsum, probOutput_bind_eq_tsum]
+  refine tsum_congr fun u => ?_
+  congr 1
+  rw [probOutput_bind_const]
+  simp
+
 end Marginalization
 
 section EagerTable
