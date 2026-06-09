@@ -164,13 +164,15 @@ instance instFintypePSpecFinalSumcheckChallenge :
     ([(pSpecFinalSumcheck (L:=L)).Challenge]ₒ).Fintype := by
   refine { fintype_B := ?_ }
   rintro ⟨⟨i, hi⟩, q⟩
-  exact absurd hi (by fin_cases i; decide)
+  obtain rfl : i = 0 := Subsingleton.elim i 0
+  simp [pSpecFinalSumcheck] at hi
 
 instance instInhabitedPSpecFinalSumcheckChallenge :
     ([(pSpecFinalSumcheck (L:=L)).Challenge]ₒ).Inhabited := by
   refine { inhabited_B := ?_ }
   rintro ⟨⟨i, hi⟩, q⟩
-  exact absurd hi (by fin_cases i; decide)
+  obtain rfl : i = 0 := Subsingleton.elim i 0
+  simp [pSpecFinalSumcheck] at hi
 
 /-- The challenge oracle of the batching phase (round 1, type `Fin κ → L`). -/
 instance instOracleInterfaceChallengePSpecBatching :
