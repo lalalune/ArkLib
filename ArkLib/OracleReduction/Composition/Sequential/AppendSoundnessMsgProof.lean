@@ -109,9 +109,17 @@ theorem append_soundness_msg'
           ¬ Option.elim o True (fun p => p.2 ∉ lang₂))
         = (fun o => Option.elim o False (fun p => p.2 ∈ lang₂)) from by
           funext o; cases o with | none => simp | some d => simp only [Option.elim_some, not_not]]
-    -- Narrowed to the bridge+marg core: LHS over pImpl[combined] on the lifted phase-1 body,
-    -- RHS over pImpl[pSpec₁] on Reduction.run {fstSound}. Close via evalDist_challengeSeam_bridge_left
-    -- (oracle) then probEvent_simQ_run'_congr_marginal with g := Prod.snd (output marginal).
+    have body_eq : (Prod.snd <$> (liftM (prover.fst.run stmtIn witIn) >>= fun x =>
+          liftM (V₁.run stmtIn x.1) >>= fun s₂ =>
+            (pure (x, s₂) : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) _)))
+        = (Prod.snd <$> (Reduction.run stmtIn witIn
+            { prover := prover.fstSound, verifier := V₁ } :
+            OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) _)) := by
+      unfold Reduction.run Prover.run Verifier.run
+      simp only [Prover.fstSound_runToRound]
+      simp only [Prover.fstSound, Prover.fst, map_bind, map_pure, bind_assoc, bind_pure_comp,
+        bind_map_left, Functor.map_map, liftM_bind, liftM_pure, liftM_map, pure_bind, id_map,
+        id_map', id_eq, OptionT.liftM_run_getM_bind, Function.comp_def]
     sorry
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
     intro p s' _ h_pg
