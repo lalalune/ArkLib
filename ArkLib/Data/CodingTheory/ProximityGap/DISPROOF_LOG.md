@@ -2125,3 +2125,23 @@ smooth. The middle band for 2-power multiplicative domains is open BOTH ways. Co
 classical question; our proven smooth-domain machinery (N₀/Lift/C19/Descent/Kernel/circularity)
 is the new equipment. This is the sharpest honest statement of where the $1M sits — and why no
 formalization shortcut exists: the missing fact is a famous open problem, now with named footholds.
+
+### O31 / Round-15 — the GS ladder complete: Sudan end-to-end, multiplicity-m machine, both walls
+
+Round 15 (workflow stalled mid-round; recovered by hand + one Fable agent). On main `3767f758b`:
+* `SudanListBound` — the §7 Table-1 deliverable: end-to-end m=1 list bound |L| ≤ (D−1)/(k−1) for
+  general RS under explicit hyps n < Σ_{j<D}(D−(k−1)j) ∧ D ≤ t; ZMod 13 instance + genuine
+  2-element-list witness.
+* `GSExactCountWall` (own grind) — exact-count upper bound 2c·gsCount ≤ (D+c)² (Gauss over ℤ + AM–GM,
+  u=cq ∈ [D,D+c−1]) ⟹ wall √(n·c·m·(m+1)) < t·m+c. Concrete: n=100,c=25,m=1 feasible t=60,
+  infeasible t=59 (D²-form: 72; Johnson: 50). BOTH GS accountings stop above Johnson.
+* `GSHasseMultiplicity` (Fable agent + 1-line simp-recursion fix) — the FULL multiplicity-m machine:
+  hasse_interpolation_exists (order-m shifted-coefficient vanishing, n·C(m+1,2) constraint count),
+  pow_X_sub_C_dvd_eval_of_hasseVanish ((X−a)^m ∣ Q(X,f(X)) via inner-shift ring hom),
+  factor_of_order_agreement (m·agree ≥ D ⟹ (Y−f)∣Q), gs_decoder_pipeline (one Q factors every
+  m·agree ≥ D codeword). ZMod 5 instances.
+
+**Net.** The GS route is now FULLY machine-checked: Sudan → multiplicity-m → walls → open interior.
+Every formalizable rung done; the residual is exactly the open research core (an explicit certificate
+beating Johnson for smooth-domain RS). Issue stays open. WORKFLOW LESSON: agents can stall on a single
+simp-recursion for 10+ min — check in, take over, fix by hand (deterministic rw beats simp loops).
