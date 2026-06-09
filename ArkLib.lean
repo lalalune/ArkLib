@@ -1274,6 +1274,7 @@ import ArkLib.ToMathlib.AGL24RandomRSProof
 import ArkLib.ToMathlib.AHIVRowSpanBridge
 import ArkLib.ToMathlib.AlphaWeightProof
 import ArkLib.ToMathlib.AppendHelpers
+import ArkLib.ToMathlib.AssembledRootDescent
 import ArkLib.ToMathlib.AveragingExistence
 import ArkLib.ToMathlib.AxiomSweep
 import ArkLib.ToMathlib.BCGM25MCAPreservation
