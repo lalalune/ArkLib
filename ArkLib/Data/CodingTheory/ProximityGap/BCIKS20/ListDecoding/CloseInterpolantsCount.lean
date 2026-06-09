@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.EvalOnZNonzero
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
+import ArkLib.ToMathlib.BivariateDegreeToolkit
 
 set_option linter.style.longLine false
 
@@ -80,5 +81,28 @@ theorem close_interpolants_card_lt_explicit [DecidableEq (RatFunc F)] [Decidable
     (Ps.card : ℝ) < D_X ((k + 1 : ℚ) / n) n m / k := by
   refine lt_of_le_of_lt ?_ h_gs.Q_D_Y
   exact_mod_cast close_interpolants_card_le k h_gs hQz_ne Ps hdeg A hA hcount
+
+/-- **Per-parameter list bound from the single Johnson budget.** At a good `z`, if every close
+interpolant `p ∈ Ps` agrees with the line on a set `A p` of size `≥ e₀`, and the *single* Johnson
+budget `natWeightedDegree Q 1 k < m·e₀` holds, then `Ps.card ≤ D_Y Q`.  The per-`p` count condition of
+`close_interpolants_card_le` is discharged from the single budget via
+`natWeightedDegree_one_k_eval_on_Z_le` (the `Z`-specialization does not increase the `(1,k)`-weighted
+degree).  This is the directly-applicable form: the Johnson budget is a field of `ModifiedGuruswami`
+(`Q_deg`), and `e₀ = n − ⌈δ·n⌉` is the `δ`-closeness agreement floor. -/
+theorem close_interpolants_card_le_johnson [DecidableEq (RatFunc F)] [DecidableEq (Polynomial F)]
+    (k : ℕ) {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (Ps : Finset (Polynomial F)) (hdeg : ∀ p ∈ Ps, p.natDegree ≤ k)
+    (A : Polynomial F → Finset (Fin n))
+    (hA : ∀ p ∈ Ps, ∀ i ∈ A p, (u₀ + z • u₁) i = p.eval (ωs i))
+    {e₀ : ℕ} (hAcard : ∀ p ∈ Ps, e₀ ≤ (A p).card)
+    (hJohnson : Bivariate.natWeightedDegree Q 1 k < m * e₀) :
+    Ps.card ≤ Trivariate.D_Y Q := by
+  refine close_interpolants_card_le k h_gs hQz_ne Ps hdeg A hA (fun p hp => ?_)
+  calc Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k
+      ≤ Bivariate.natWeightedDegree Q 1 k :=
+        ArkLib.BivariateDegreeToolkit.natWeightedDegree_one_k_eval_on_Z_le Q z k
+    _ < m * e₀ := hJohnson
+    _ ≤ m * (A p).card := Nat.mul_le_mul_left m (hAcard p hp)
 
 end ProximityGap
