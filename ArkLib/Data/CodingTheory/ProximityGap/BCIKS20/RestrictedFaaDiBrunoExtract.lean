@@ -91,58 +91,6 @@ theorem coeffHom_injective (x₀ : F) : Function.Injective (coeffHom x₀ H) := 
 theorem Q_natDegree_eq (x₀ : F) (R : F[X][X][Y]) : (Q x₀ R H).natDegree = R.natDegree := by
   rw [Q, Polynomial.natDegree_map_eq_of_injective (coeffHom_injective H x₀)]
 
-/-- **Order-zero partition power-sum = cleared root evaluation.** -/
-theorem restrictedFaaDiBrunoPartitionZeroPowerSum_eq_hasseEvalAtRoot
-    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
-    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp = hasseEvalAtRoot H x₀ R 1 0 := by
-  rw [hasseEvalAtRoot_eq_taylorSum]
-  unfold restrictedFaaDiBrunoPartitionZeroPowerSum
-  rw [coeff_zero_βHenselAssembled]
-  simp only [hasseDerivY_zero, Nat.add_zero, Nat.choose_zero_right, one_smul]
-  have hpdeg :
-      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).natDegree ≤ (Q x₀ R H).natDegree := by
-    rw [Q_natDegree_eq (H := H) x₀ R]
-    have h1 : Bivariate.natDegreeY (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R))
-        ≤ Bivariate.natDegreeY R :=
-      (evalX_natDegreeY_le (Polynomial.C x₀) _).trans (hasseDerivX_natDegreeY_le 1 R)
-    simpa [Bivariate.natDegreeY] using h1
-  have hsub : Finset.range ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).natDegree + 1)
-      ⊆ Finset.range ((Q x₀ R H).natDegree + 1) := fun i hi =>
-    Finset.mem_range.mpr (lt_of_lt_of_le (Finset.mem_range.mp hi) (Nat.add_le_add_right hpdeg 1))
-  refine (Finset.sum_subset hsub ?_).symm
-  intro i _hi hnotin
-  simp only [Finset.mem_range, not_lt] at hnotin
-  rw [Polynomial.coeff_eq_zero_of_natDegree_lt (by omega), map_zero, zero_mul]
-
-/-- **Order-zero recursion-side single B-coefficient = uncleared Hasse coeff over `W^natDegree`.** -/
-theorem restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_W_natDegree
-    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0) :
-    restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp
-      = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
-          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
-  unfold restrictedMatchRecursionPartitionFormZeroSingleBCoeff
-  have hB : B_coeff H x₀ R 1 (Nat.Partition.indiscrete 0) = hasseCoeffRepr𝒪 H x₀ R 1 0 := by
-    rw [B_coeff]
-    have hsig : sigmaLambda (Nat.Partition.indiscrete (0 : ℕ)) = 0 := by
-      simp [sigmaLambda, Nat.Partition.indiscrete]
-    have hpre : prefactor R.natDegree 1 (Nat.Partition.indiscrete (0 : ℕ)) = 1 := by
-      rw [prefactor_eq_countPerms]; simp [Nat.Partition.indiscrete]
-    rw [hsig, hpre, one_smul]
-  rw [hB, ClaimA2.embeddingOf𝒪Into𝕃_ξ]
-  have hWd : (liftToFunctionField (H := H) H.leadingCoeff) ^ 2
-      * (liftToFunctionField (H := H) H.leadingCoeff) ^ (R.natDegree - 2)
-      = (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
-    rw [← pow_add]; congr 1; omega
-  rw [show (liftToFunctionField (H := H) H.leadingCoeff) ^ 2
-        * ((liftToFunctionField (H := H) H.leadingCoeff) ^ (R.natDegree - 2) * ClaimA2.ζ R x₀ H)
-      = ((liftToFunctionField (H := H) H.leadingCoeff) ^ 2
-          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (R.natDegree - 2))
-        * ClaimA2.ζ R x₀ H by ring, hWd]
-  rw [mul_div_assoc']
-  rw [mul_comm ((liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree) (ClaimA2.ζ R x₀ H)]
-  rw [mul_div_mul_left _ _ hζ]
-
 /-- **Quantitative coefficient extraction from the carved P2 core (consequence, axiom-clean).**
 Given `RestrictedFaaDiBrunoMatchAt t` and the genuine separability non-vanishing `ζ ≠ 0`, the
 `(t+1)` coefficient of `βHenselAssembled` is `−restrictedFaaDiBrunoSum t / ζ`.
@@ -277,74 +225,6 @@ theorem coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree_div_�
   have hζ : ClaimA2.ζ R x₀ H ≠ 0 := ζ_ne_zero H x₀ R hHyp
   rw [← hneg]
   field_simp [hζ]
-
-/-- **Order-zero carved P2 core ⟺ the uncleared-Hasse/`W^natDegree` equation (axiom-clean).**
-This is the central order-zero connector: the carved core `RestrictedFaaDiBrunoMatchAt … 0` (which
-unfolds to `restrictedFaaDiBrunoSum … 0 = -(ζ · coeff 1 βHenselAssembled)`) is exactly the equation
-`hasseEvalAtRoot … 1 0 = embed(hasseCoeffRepr𝒪 … 1 0) / W ^ R.natDegree`, by reabsorbing the LHS
-(`restrictedFaaDiBrunoSum_zero_eq_hasseEvalAtRoot`) and the RHS
-(`neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree`). -/
-theorem restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
-    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hd : 2 ≤ R.natDegree) (_hζ : ClaimA2.ζ R x₀ H ≠ 0) :
-    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
-      hasseEvalAtRoot H x₀ R 1 0
-        = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
-            / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
-  unfold RestrictedFaaDiBrunoMatchAt
-  rw [restrictedFaaDiBrunoSum_zero_eq_hasseEvalAtRoot H x₀ R hHyp,
-    neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd]
-
-/-- **Build the normalized partition order-zero residual from the uncleared-Hasse/`W^natDegree`
-equation.**  Composes the order-zero match⟺equation connector with the proven
-`match ⟺ partitionMatch` normalization (`restrictedMatchAt_iff_partitionMatchAt`). -/
-theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
-    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
-    (hzero : hasseEvalAtRoot H x₀ R 1 0 =
-        embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
-          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree) :
-    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
-  (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).mp
-    ((restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd hζ).mpr hzero)
-
-/-- **Project the uncleared-Hasse/`W^natDegree` equation from the normalized partition order-zero
-residual.** -/
-theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_partitionMatchAt_zero
-    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
-    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
-    hasseEvalAtRoot H x₀ R 1 0 =
-      embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
-        / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
-  (restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd hζ).mp
-    ((restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).mpr hpart)
-
-/-- **Normalized partition order-zero residual ⟺ the uncleared-Hasse/`W^natDegree` equation.**
-The partition-sided bundling of the two directional projections above; the `P2ClearedGap`-level
-form of the central order-zero connector. -/
-theorem restrictedPartitionMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
-    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0) :
-    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
-      hasseEvalAtRoot H x₀ R 1 0
-        = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
-            / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
-  ⟨hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_partitionMatchAt_zero
-      H x₀ R hHyp hd hζ,
-    RestrictedFaaDiBrunoPartitionMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
-      H x₀ R hHyp hd hζ⟩
-
-/-- **Project the uncleared-Hasse/`W^natDegree` equation directly from the carved order-zero P2
-core** (the `RestrictedFaaDiBrunoMatchAt`-sided sibling of the partition-match projection). -/
-theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_restrictedMatchAt_zero
-    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
-    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
-    hasseEvalAtRoot H x₀ R 1 0 =
-      embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
-        / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
-  (restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd hζ).mp hmatch
 
 /-- **Order-zero Taylor/W-divisor target.** The fixed order-zero P2 obstruction after all proven
 normalizations: the root-side shifted Hasse-Taylor sum with powers `(T/W)^i` equals the un-cleared
@@ -896,7 +776,9 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
     (htarget : HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R i1 m e) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m)
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m
+            (Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))))
           : 𝒪 H)
       * liftToFunctionField (H := H) H.leadingCoeff ^ e
       =
@@ -904,7 +786,7 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
           ^ Bivariate.natDegreeY
               (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
         * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m) := by
-  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared_uniform
     (H := H) (x₀ := x₀) (R := R) (i1 := i1) (m := m), htarget]
   rw [mul_assoc,
     div_mul_cancel₀ _ (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H)))]
@@ -919,7 +801,9 @@ theorem embeddingCleared_eq_uncleared_of_wDivTarget_exactDegree
         (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m)
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m
+            (Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))))
           : 𝒪 H)
       =
       embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m) := by
@@ -944,7 +828,9 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_restrictedMatchAt_zer
     (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0) : 𝒪 H)
+          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0
+            (Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))))) : 𝒪 H)
       * liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
       =
       liftToFunctionField (H := H) H.leadingCoeff
@@ -963,7 +849,9 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_partitionMatchAt_zero
     (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0) : 𝒪 H)
+          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0
+            (Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))))) : 𝒪 H)
       * liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
       =
       liftToFunctionField (H := H) H.leadingCoeff
@@ -983,13 +871,15 @@ theorem embeddingCleared_eq_Wpow_mul_uncleared_of_target (x₀ : F) (R : F[X][X]
     (htarget : HasseCoeffRepr𝒪UnclearedEval₂Target H x₀ R i1 m) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m)
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m
+            (Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))))
           : 𝒪 H)
       = liftToFunctionField (H := H) H.leadingCoeff
             ^ Bivariate.natDegreeY
                 (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
           * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m) := by
-  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared_uniform
     (H := H) (x₀ := x₀) (R := R) (i1 := i1) (m := m),
     (HasseCoeffRepr𝒪UnclearedMatchesRoot.of_eval₂Target H x₀ R i1 m htarget)]
 
