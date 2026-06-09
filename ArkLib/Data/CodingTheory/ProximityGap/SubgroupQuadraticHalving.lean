@@ -219,6 +219,43 @@ theorem nonvacuity_zmod5 :
     interval_cases mm <;> decide
   rw [IsPrimitiveRoot.iff_orderOf, hord]
 
+/-- **Iterated halving.** For `char ≠ 2`, `m > 0`, and a primitive `(2^j · m)`-th root `ζ`, the
+`2^j`-th power map collapses the sum `2^j`-to-1 onto `μ_m`:
+`∑_{x∈μ_{2^j·m}} f(x^{2^j}) = 2^j • ∑_{y∈μ_m} f(y)`. Iterating `sum_comp_sq_eq_two_smul` via
+`x^{2^{j+1}} = (x²)^{2^j}` and `ζ² ` primitive `(2^j·m)`-th. So every power-of-2 power sum over the
+smooth domain reduces to a LINEAR Gauss period over a half-iterated subgroup — relevant to the
+`(∑x^{2^j})` coordinates of general-`t` statistics. Axiom-clean, Weil-free. -/
+theorem sum_comp_pow_two_iterate {M : Type*} [AddCommMonoid M] (h2 : (2 : F) ≠ 0)
+    {m : ℕ} (hm : 0 < m) (f : F → M) :
+    ∀ (j : ℕ) {ζ : F}, IsPrimitiveRoot ζ (2 ^ j * m) →
+      ∑ x ∈ nthRootsFinset (2 ^ j * m) (1 : F), f (x ^ (2 ^ j))
+        = (2 ^ j) • ∑ y ∈ nthRootsFinset m (1 : F), f y := by
+  intro j
+  induction j with
+  | zero =>
+    intro ζ hζ
+    simp only [pow_zero, one_mul, pow_one, one_smul]
+  | succ j ih =>
+    intro ζ hζ
+    have hsplit : 2 ^ (j + 1) * m = 2 * (2 ^ j * m) := by ring
+    -- ζ is a primitive (2 * (2^j m))-th root; ζ² is a primitive (2^j m)-th root
+    have hζ' : IsPrimitiveRoot ζ (2 * (2 ^ j * m)) := by rw [← hsplit]; exact hζ
+    have hζ2 : IsPrimitiveRoot (ζ ^ 2) (2 ^ j * m) :=
+      hζ'.pow (by positivity) (by rw [mul_comm])
+    -- apply single halving to g(u) = f(u^{2^j})
+    have key := sum_comp_sq_eq_two_smul (m := 2 ^ j * m) (by positivity) h2 hζ'
+      (fun u => f (u ^ (2 ^ j)))
+    -- rewrite the outer index 2^{j+1}m = 2*(2^j m) and the exponent (x²)^{2^j}=x^{2^{j+1}}
+    rw [hsplit]
+    calc ∑ x ∈ nthRootsFinset (2 * (2 ^ j * m)) (1 : F), f (x ^ (2 ^ (j + 1)))
+        = ∑ x ∈ nthRootsFinset (2 * (2 ^ j * m)) (1 : F), f ((x ^ 2) ^ (2 ^ j)) := by
+          refine Finset.sum_congr rfl (fun x _ => ?_)
+          rw [← pow_mul]; congr 1; rw [pow_succ]; ring
+      _ = 2 • ∑ y ∈ nthRootsFinset (2 ^ j * m) (1 : F), f (y ^ (2 ^ j)) := key
+      _ = 2 • ((2 ^ j) • ∑ y ∈ nthRootsFinset m (1 : F), f y) := by rw [ih hζ2]
+      _ = (2 ^ (j + 1)) • ∑ y ∈ nthRootsFinset m (1 : F), f y := by
+          rw [smul_smul]; congr 1; rw [pow_succ]; ring
+
 end ArkLib.ProximityGap.Round9SubgroupQuadraticHalving
 
 /-! ## Axiom audit -/
@@ -228,3 +265,4 @@ end ArkLib.ProximityGap.Round9SubgroupQuadraticHalving
 #print axioms ArkLib.ProximityGap.Round9SubgroupQuadraticHalving.norm_gaussSum_sq_subgroup
 #print axioms ArkLib.ProximityGap.Round9SubgroupQuadraticHalving.secondMoment_gaussSum_sq_eq
 #print axioms ArkLib.ProximityGap.Round9SubgroupQuadraticHalving.nonvacuity_zmod5
+#print axioms ArkLib.ProximityGap.Round9SubgroupQuadraticHalving.sum_comp_pow_two_iterate
