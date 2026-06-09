@@ -383,4 +383,53 @@ theorem append_perfectCompleteness_message
     simp only at key₂
     exact ⟨key₂.1, key₂.2⟩
 
+/-- **Discharge of the named residual (message-seam case).**
+`reductionAppendPerfectCompletenessResidual` (defined in `Append.lean` as the append-completeness
+conclusion, threaded as a hypothesis by `reduction_append_perfectCompleteness` and by the
+`BCS`/`Logup`/`Fri` consumers) is now a *theorem* under the natural message-seam side conditions:
+the proven `append_perfectCompleteness_message` delivers exactly its unfolded conclusion. No
+`sorry`, no new axioms. -/
+theorem reductionAppendPerfectCompletenessResidual_of_message
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₁.Challenge]ₒ).Fintype] [(oSpec + [pSpec₁.Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₂.Challenge]ₒ).Fintype] [(oSpec + [pSpec₂.Challenge]ₒ).Inhabited]
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β)) :
+    reductionAppendPerfectCompletenessResidual R₁ R₂ h₁ h₂ :=
+  append_perfectCompleteness_message R₁ R₂ h₁ h₂ hn hDir hDir₂ hInit hImplSupp
+
+/-- **Append perfect completeness, residual-free (message-seam case).** The public composition
+theorem with the assumed-conclusion hypothesis of `reduction_append_perfectCompleteness` *removed*
+and replaced by the genuine message-seam side conditions — proven, not gated. -/
+theorem reduction_append_perfectCompleteness_msg
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₁.Challenge]ₒ).Fintype] [(oSpec + [pSpec₁.Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₂.Challenge]ₒ).Fintype] [(oSpec + [pSpec₂.Challenge]ₒ).Inhabited]
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β)) :
+    (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ :=
+  reduction_append_perfectCompleteness R₁ R₂ h₁ h₂
+    (reductionAppendPerfectCompletenessResidual_of_message
+      R₁ R₂ h₁ h₂ hn hDir hDir₂ hInit hImplSupp)
+
 end Reduction
