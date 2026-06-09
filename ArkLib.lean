@@ -596,6 +596,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MatchingDomainUniqueness
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumCompleteSquare
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionLocalFactor
+import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionMultigrade
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSpectral
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSubgroupData
