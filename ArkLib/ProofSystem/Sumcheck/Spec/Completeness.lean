@@ -4,16 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.ProofSystem.Sumcheck.Spec.General
-import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompletenessExplicit
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompleteness
 
 /-!
 # Full multi-round sum-check perfect completeness
 
 `Sumcheck.Spec.reduction_perfectCompleteness` assembles the multi-round sum-check perfect
-completeness from the per-round `SingleRound.reduction_perfectCompleteness` via the explicit-instance
-n-ary keystone `Reduction.seqCompose_pc_msg'`. The per-round challenge `Fintype`/`Inhabited` are built
-deterministically (`SingleRound.chalFintype`/`chalInhab`) from `[Fintype R]`/`[Inhabited R]`,
-side-stepping the fragile challenge-spec instance synthesis.
+completeness from the per-round `SingleRound.reduction_perfectCompleteness` through the
+fully-discharged message-seam n-ary keystone `Reduction.seqCompose_perfectCompleteness_msg`.
+
+The per-round challenge spec `Fintype`/`Inhabited` (each challenge is a field element) are built
+explicitly from `[Fintype R]`/`[Inhabited R]` (`SingleRound.chalFintype`/`chalInhab`), since the
+base-case singleton/empty challenge instances are not otherwise available.
 
 This is the `h_inner` consumed by the Spartan sum-check phase completeness theorems.
 -/
@@ -22,12 +24,25 @@ open ProtocolSpec OracleComp OracleSpec Polynomial
 open scoped NNReal
 
 namespace Sumcheck.Spec.SingleRound
-open Reduction.ChalInst
 
-/-- Challenge `Fintype` base case for a `P_to_V` singleton (vacuous: no challenge round). -/
+/-- Explicit `Fintype` for the challenge family of a concatenation, from the two factors'. -/
+def appendChalFintype {m n} (p₁ : ProtocolSpec m) (p₂ : ProtocolSpec n)
+    (h₁ : ∀ i, Fintype (p₁.Challenge i)) (h₂ : ∀ i, Fintype (p₂.Challenge i)) :
+    ∀ i, Fintype ((p₁ ++ₚ p₂).Challenge i) :=
+  fun ⟨i, h⟩ => Fin.fappend₂ (A := Direction) (B := Type)
+    (F := fun dir type => (h : dir = .V_to_P) → Fintype type)
+    (α₁ := p₁.dir) (β₁ := p₂.dir) (α₂ := p₁.Type) (β₂ := p₂.Type)
+    (fun i h => h₁ ⟨i, h⟩) (fun i h => h₂ ⟨i, h⟩) i h
+def appendChalInhab {m n} (p₁ : ProtocolSpec m) (p₂ : ProtocolSpec n)
+    (h₁ : ∀ i, Inhabited (p₁.Challenge i)) (h₂ : ∀ i, Inhabited (p₂.Challenge i)) :
+    ∀ i, Inhabited ((p₁ ++ₚ p₂).Challenge i) :=
+  fun ⟨i, h⟩ => Fin.fappend₂ (A := Direction) (B := Type)
+    (F := fun dir type => (h : dir = .V_to_P) → Inhabited type)
+    (α₁ := p₁.dir) (β₁ := p₂.dir) (α₂ := p₁.Type) (β₂ := p₂.Type)
+    (fun i h => h₁ ⟨i, h⟩) (fun i h => h₂ ⟨i, h⟩) i h
+
 def chalBaseFintypeP {Msg : Type} : ∀ i, Fintype (Challenge ⟨!v[.P_to_V], !v[Msg]⟩ i) :=
   fun i => isEmptyElim i
-/-- Challenge `Fintype` base case for a `V_to_P` singleton (the unique challenge of type `Chal`). -/
 def chalBaseFintypeV {Chal : Type} [Fintype Chal] :
     ∀ i, Fintype (Challenge ⟨!v[.V_to_P], !v[Chal]⟩ i) :=
   fun i => Unique.uniq inferInstance i ▸ (inferInstanceAs (Fintype Chal))
@@ -39,8 +54,7 @@ def chalBaseInhabV {Chal : Type} [Inhabited Chal] :
   fun i => Unique.uniq inferInstance i ▸ (inferInstanceAs (Inhabited Chal))
 def chalBaseInhabE : ∀ i, Inhabited (Challenge (!p[] : ProtocolSpec 0) i) := fun ⟨i, _⟩ => Fin.elim0 i
 
-/-- The per-round sum-check challenge spec is finite when the ring is (each challenge is a field
-element). Constructed explicitly to avoid the fragile `∀ i, Fintype (Challenge i)` synthesis. -/
+/-- The per-round sum-check challenge spec is finite when the ring is. -/
 def chalFintype {R : Type} [CommSemiring R] [Fintype R] {deg : ℕ} :
     ∀ i, Fintype ((pSpec R deg).Challenge i) :=
   appendChalFintype _ _
@@ -68,21 +82,21 @@ variable {R : Type} [CommSemiring R] [SampleableType R] [DecidableEq R] [Fintype
 
 set_option maxHeartbeats 1000000 in
 /-- **Full multi-round sum-check perfect completeness (`Reduction` level).** Assembled from the
-per-round `SingleRound.reduction_perfectCompleteness` through the explicit-instance message-seam
-n-ary keystone. -/
+per-round `SingleRound.reduction_perfectCompleteness` through the fully-discharged message-seam
+n-ary keystone `Reduction.seqCompose_perfectCompleteness_msg`. -/
 theorem reduction_perfectCompleteness (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
         = support (liftM q : OracleComp oSpec β)) :
     (reduction R deg D n oSpec).perfectCompleteness init impl
-      (relationRound R n deg D 0) (relationRound R n deg D (Fin.last n)) :=
-  Reduction.seqCompose_pc_msg'
+      (relationRound R n deg D 0) (relationRound R n deg D (Fin.last n)) := by
+  haveI : ∀ j, Fintype ((SingleRound.pSpec R deg).Challenge j) := SingleRound.chalFintype
+  haveI : ∀ j, Inhabited ((SingleRound.pSpec R deg).Challenge j) := SingleRound.chalInhab
+  exact Reduction.seqCompose_perfectCompleteness_msg
     (Stmt := fun i => StatementRound R n i × (∀ j, OracleStatement R n deg j))
     (Wit := fun _ => Unit)
     (R := SingleRound.reduction R n deg D oSpec)
     (rel := fun i => relationRound R n deg D i)
-    (hFin := fun _ => SingleRound.chalFintype)
-    (hInh := fun _ => SingleRound.chalInhab)
     (hValid := fun _ => ⟨by omega, SingleRound.pSpec_dir_zero⟩)
     hInit hImplSupp
     (fun i => SingleRound.reduction_perfectCompleteness i)
