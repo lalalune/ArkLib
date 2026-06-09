@@ -39,18 +39,9 @@ theorem simulateQ_emitOStmt₂Query_core
     (oStmt : ∀ i, OStmt₁ i) (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂))
     (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
     simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitOStmt₂Query V₁ i q)
-      = pure ((Oₛ₂ i).answer (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst i) q) := by
-  unfold emitOStmt₂Query
-  cases h : V₁.embed i with
-  | inl k =>
-      simp only [h]
-      rw [emitOStmtQueryInl_simulateQ, mkVerifierOStmtOut_inl V₁.embed V₁.hEq oStmt tr.fst i k h]
-      refine congrArg (fun s => pure ((Oₛ₂ i).answer s q)) (eq_of_heq ?_)
-      exact (eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm
-  | inr k =>
-      simp only [h]
-      rw [emitOStmtQueryInr_simulateQ, mkVerifierOStmtOut_inr V₁.embed V₁.hEq oStmt tr.fst i k h]
-      refine congrArg (fun s => pure ((Oₛ₂ i).answer s q)) (eq_of_heq ?_)
-      exact (eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm
+      = pure ((Oₛ₂ i).answer (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst i) q) :=
+  -- The `cases h : V₁.embed i` route fails (`generalize` on the tactic-built `Sum.casesOn` motive);
+  -- delegate to the `split`-based proof in `Append.lean`.
+  simulateQ_emitOStmt₂Query V₁ oStmt tr i q
 
 end OracleVerifier.Append
