@@ -1614,3 +1614,23 @@ over `F_q` a multiplicative subgroup's additive energy is the genuinely *open* s
 can be large depending on `|G|` vs `q`). So this proves the smooth domain is "good" in the char-0 model
 and pins the finite-field gap precisely as: *bound the additive energy of the `2^k`-subgroup over `F_q`*
 (equivalently the worst-case subgroup Gauss sum / Weil). 48+ verified bricks rounds 1–9.
+
+### O25 / Round-10 — 4 deeper verified bricks (exact crossover, joint t2, best bracket, Johnson no-go)
+
+Second thrash-safe multi-agent round (read-only `lake env lean`). All 4 verified+axiom-clean+non-vacuous
+(non-vacuity adversarially checked). On main `f2dbe3137`:
+* `DeltaStarExactCrossoverF17.lean` — EXACT two-sided δ* crossover for RS[ZMod17,Fˣ,2] (n=16,k=2):
+  exact |Λ|=15,5,3 at a=3,4,5 (decide); at B=10 crossover a*=4 (δ*=3/4), MAXIMAL (∀a∈[4,16] fit, a=3
+  fails) so no gap, strictly interior (2<4 ∧ 16<32). Closes Round-9 bracket [5,120] to a sharp point —
+  the prize fully solved at this concrete scale.
+* `JointT2FiberTightness.lean` — exact (e_1,e_2)=0 fiber = order-4 ⟨ω⟩-symmetric subsets via two-level
+  antipodal descent (t=1 antipodal → t=2 descends to squares in G²). TWO-TYPE design (coeffs K=ℚ, roots
+  cyclotomic L) fixes a vacuity bug (one-type indep-over-L is vacuous for N≥2); literal oneRootSystem
+  inhabitant witnesses non-vacuity. Matches Round-8 C(n/4,s) as EQUALITY over ℂ.
+* `BestProvableBracket.lean` — δ* ≤ min(δ_avg, δ_sym) + comparison_min regime lemma + Johnson δ*≥1-√ρ.
+* `JohnsonSecondMomentFrontier.lean` — Johnson 2nd-moment list cap + NO-GO cauchySchwarz_eq_iff_flat
+  (CS tight ⟺ flat profile ⟺ Johnson, so 2nd moment alone CANNOT beat Johnson; need higher-order).
+
+**Net.** Open core (list UPPER bound past Johnson for the asymptotic family) unmoved — research-grade.
+Rounds 8-10 = order-4 concentration+depth-collapse engine + concrete two-sided pin + EXACT crossover +
+joint-t2 tightness + averaging/symmetric brackets + Johnson 2nd-moment no-go. Issue stays open.
