@@ -2339,3 +2339,24 @@ question is whether class-equidistribution (Chebotarev over the Hilbert class fi
 plus log-unit volume bounds give per-prime or explicit-density exactness in (2^225, 2^256).
 Next probes: m=64 (h = 17) collision census at feasible p — does the 17-fold class constraint
 visibly thin the relation set vs the h = 1 baseline?
+
+### O38 — the sharp rank threshold for error-locator normals (2026/858 Thm 26 + Rem 27) LANDED
+
+`NormalRankSharpThreshold.lean` (axiom-clean, 0 sorry, 0 warnings, any field): the algebraic
+dichotomy the §7.2 second-moment/Poisson-dispersion machinery rests on, in kernel form:
+
+* `normal_kernel_trivial` (= their Thm 26): `c + |E₁∩E₂| ≤ |E₁|` ⟹ any degree-`<c` relation
+  `Λ_{E₁}P + Λ_{E₂}Q = 0` is trivial — and NO degree bound on `P` is needed (statement is
+  stronger than the paper's). Proof is SIMPLER than their gcd route: `A₁ = Λ_{E₁∖E₂}` is
+  coprime to `Λ_{E₂}` outright (disjoint root sets), so `A₁ ∣ Q`, killed by
+  `deg A₁ = w₁−j ≥ c > deg Q`. No common-factor cancellation step at all.
+* `normal_kernel_nontrivial` (= their Rem 27, sharpness): past the threshold both sides,
+  the explicit relation `Λ_{E₁}(−Λ_{E₂∖E₁}) + Λ_{E₂}Λ_{E₁∖E₂} = 0` (both cross-products
+  = `Λ_{E₁∪E₂}`) lives in the `<c` window and is nontrivial — the shared-core rank
+  deficiency is REAL, exactly the mechanism Conjecture 41 must control.
+
+Together with O36 (clique beachhead), O37 (c=2 elimination + min-packaging refutation), the
+§7 backbone of 2026/858 is now machine-checked: pairwise independence engine (this), c=2
+worst case (O37, corrected), universal clique obstruction (O36) — the open core is Conj 41's
+QUANTITATIVE rank statement (how many supports can be simultaneously deficient on a flat),
+one step above everything verified here.

@@ -660,6 +660,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
+import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
@@ -1114,6 +1115,7 @@ import ArkLib.ProofSystem.Logup.Security.Issue13Status
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessClose
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessHonest
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncond
+import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncondSumcheck
 import ArkLib.ProofSystem.Logup.Security.LogupHonestSupport
 import ArkLib.ProofSystem.Logup.Security.LogupInitImplFacts
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessClose
