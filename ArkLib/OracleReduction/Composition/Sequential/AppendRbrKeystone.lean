@@ -83,19 +83,19 @@ private theorem phase1_body_heq
       = pSpec₁.Transcript i₁.1.castSucc := by
     rw [hidxCS]; exact Prover.append_Transcript_castLE i₁.1.castSucc
   have hStTy : prover.PrvState (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
-      = prover.fst.PrvState i₁.1.castSucc := by rw [hidxCS]
+      = prover.fst.PrvState i₁.1.castSucc := by rw [hidxCS]; rfl
   have hChTy : (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁)
       = pSpec₁.Challenge i₁ := by
     show (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl i₁) = pSpec₁.Challenge i₁
     simp [ChallengeIdx.inl, ProtocolSpec.append]
-  have hValTy : (pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
-        × prover.PrvState (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
-      = pSpec₁.Transcript i₁.1.castSucc × prover.fst.PrvState i₁.1.castSucc :=
-    congrArg₂ Prod hTrTy hStTy
-  have hResTy : (pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
-        × (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁)
-      = pSpec₁.Transcript i₁.1.castSucc × pSpec₁.Challenge i₁ :=
-    congrArg₂ Prod hTrTy hChTy
+  have hValTy : ((pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
+        × prover.PrvState (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc)
+      = (pSpec₁.Transcript i₁.1.castSucc × prover.fst.PrvState i₁.1.castSucc) := by
+    rw [hTrTy, hStTy]
+  have hResTy : ((pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
+        × (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁))
+      = (pSpec₁.Transcript i₁.1.castSucc × pSpec₁.Challenge i₁) := by
+    rw [hTrTy, hChTy]
   -- Distribute `liftComp` over the RHS bind/pure.
   rw [OracleComp.liftComp_bind]
   refine Prover.bind_heq_congr hValTy hResTy ?_ ?_
@@ -109,7 +109,8 @@ private theorem phase1_body_heq
     · -- the challenge query HEq: `append_getChallenge_left`, both sides lifted into the combined
       -- oracle.
       have hChTy' : (pSpec₁ ++ₚ pSpec₂).Challenge (⟨i₁.1.castLE (by omega), hChalDir⟩) =
-          pSpec₁.Challenge i₁ := by rw [← hChTy]; congr 1; apply Subtype.ext; rw [hidxChal]
+          pSpec₁.Challenge i₁ := by
+        rw [← hChTy]; congr 1 <;> (apply Subtype.ext; rw [hidxChal])
       have hgc := Prover.append_getChallenge_left (pSpec₂ := pSpec₂) i₁.1 hChalDir i₁.2
       rw [show (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁) = ⟨i₁.1.castLE (by omega), hChalDir⟩ from by
             apply Subtype.ext; rw [hidxChal]]
@@ -123,10 +124,20 @@ private theorem phase1_body_heq
       rw [show (liftM (pSpec₁.getChallenge i₁) : OracleComp [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ _)
             = OracleComp.liftComp (pSpec₁.getChallenge i₁) [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ from
           (OracleComp.liftComp_eq_liftM _).symm]
-      rw [Prover.liftComp_liftComp (midSpec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
-            (fun t => rfl) (pSpec₁.getChallenge i₁),
-          Prover.liftComp_liftComp (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
-            (fun t => rfl) (pSpec₁.getChallenge i₁)]
+      rw [show OracleComp.liftComp (OracleComp.liftComp (pSpec₁.getChallenge i₁)
+                [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              = OracleComp.liftComp (pSpec₁.getChallenge i₁)
+                  (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            from Prover.liftComp_liftComp (midSpec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                (fun t => rfl) (pSpec₁.getChallenge i₁),
+          show OracleComp.liftComp (OracleComp.liftComp (pSpec₁.getChallenge i₁)
+                (oSpec + [pSpec₁.Challenge]ₒ)) (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              = OracleComp.liftComp (pSpec₁.getChallenge i₁)
+                  (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            from Prover.liftComp_liftComp (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+                (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                (fun t => rfl) (pSpec₁.getChallenge i₁)]
     · -- the final `pure (transcript, challenge)` continuations.
       rintro cA cB hc
       refine Prover.pure_heq_pure (by rw [hTrTy, hChTy]) ?_
