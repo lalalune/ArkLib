@@ -40,7 +40,7 @@ theorem qIdx_le_D (hc : 0 < c) (hD : 0 < D) : qIdx c D ≤ D := by
   have hq : D + 1 ≤ qIdx c D := by omega
   have h3 : c * (D + 1) ≤ c * qIdx c D := Nat.mul_le_mul_left c hq
   have h4 : D ≤ c * D := Nat.le_mul_of_pos_left D hc
-  have h1 := qIdx_le hc D
+  have h1 := qIdx_le (D := D) hc
   rw [Nat.mul_add, Nat.mul_one] at h3
   omega
 
@@ -73,7 +73,7 @@ theorem two_c_gsCount_le (hc : 0 < c) (hD : 0 < D) :
     rw [Finset.mem_range] at hj
     have hj' : j + 1 ≤ q := by omega
     have h1 : c * (j + 1) ≤ c * q := Nat.mul_le_mul_left c hj'
-    have h2 := qIdx_le hc D
+    have h2 := qIdx_le (D := D) hc
     rw [← hq] at h2
     rw [Nat.mul_add, Nat.mul_one] at h1
     omega
@@ -108,7 +108,7 @@ theorem two_c_gsCount_le (hc : 0 < c) (hD : 0 < D) :
     rw [← hq] at h
     exact_mod_cast h
   have hu_le : (c * q : ℤ) ≤ (D : ℤ) + c - 1 := by
-    have h := qIdx_le hc D
+    have h := qIdx_le (D := D) hc
     rw [← hq] at h
     have h' : ((c * q : ℕ) : ℤ) ≤ ((D + c - 1 : ℕ) : ℤ) := Nat.cast_le.mpr h
     have hDc : 1 ≤ D + c := by omega
