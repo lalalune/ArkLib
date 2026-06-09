@@ -1394,6 +1394,7 @@ import ArkLib.ToMathlib.GKL24FirstMomentProb
 import ArkLib.ToMathlib.GSFactorData
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.GenuineMonicCapstone
+import ArkLib.ToMathlib.GenuineTruncationFin
 import ArkLib.ToMathlib.GradedHteleArith
 import ArkLib.ToMathlib.GreedyDisjointCover
 import ArkLib.ToMathlib.HPzBridge
