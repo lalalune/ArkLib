@@ -1,34 +1,38 @@
 /-
-Copyright (c) 2024-2026 ArkLib Contributors. All rights reserved.
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-
 import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.OracleReduction.Completeness
-import ArkLib.ToVCVio.Oracle
-import ArkLib.ToVCVio.Simulation
 
 /-!
-# Perfect completeness of the STIR fold-round object
+# Issue #301 — perfect completeness of the STIR fold round
 
-`RoundProtocol.lean` defines the real STIR fold-round `OracleReduction` (`stirRoundReduction`) and
-states its completeness as an open obligation (`stirRoundReduction_completeness`). This file
-discharges that obligation: the honest prover combines its single codeword at its own degree, which
-by `combine_single_self` equals the input oracle; the no-guard verifier forwards it and always
-accepts, so the output relation reduces to the input relation.
+Discharges the stated obligation `StirIOP.Round.stirRoundReduction_completeness`
+(`RoundProtocol.lean`, previously deferred pending heterogeneous round-peeling infrastructure):
 
-The proof mirrors `WhirIOP.FoldRound.foldOracleReduction_perfectCompleteness` (the structurally
-identical `[V_to_P, P_to_V]` fold round), replicating the direction-swapped 2-message unroll lemma
-`unroll_2_message_VP`. It is completely independent of the BCIKS20 proximity-gap residuals.
+* `unroll_2_message_VP` — the generic `[V_to_P, P_to_V]` 2-message unroll lemma (the missing
+  round-peeling piece), specialised from the in-tree
+  `OracleReduction.unroll_n_message_reduction_perfectCompleteness`.
+* `stirRoundReduction_perfectCompleteness` — the honest prover combines its single codeword at
+  its own degree, which by `combine_single_self` is the input oracle itself; the verifier
+  forwards it and accepts, so the output relation reduces to the input relation.
+* `stirRoundReduction_completeness_proved` — the stated `def : Prop` obligation, discharged.
+* `Reduction.completenessFromRun_mono_error` + `stirRoundReduction_completeness_any_error` —
+  generic error monotonicity and the any-`ε` corollary.
+
+Axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 -/
-
 
 open OracleSpec OracleComp ProtocolSpec STIR ReedSolomon NNReal OracleReduction
 
-namespace StirIOP
+namespace StirIOP.Round
 
-namespace Round
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+variable {ι : Type} [Fintype ι] [DecidableEq ι]
+
+noncomputable section
 
 set_option linter.unusedTactic false
 set_option linter.unreachableTactic false
@@ -36,9 +40,7 @@ set_option linter.unnecessarySeqFocus false
 set_option linter.unusedSimpArgs false
 set_option linter.unusedSectionVars false
 
-noncomputable section
-
-/-! ### `[V_to_P, P_to_V]` unroll lemma (general; mirrors `WhirIOP.FoldRound.unroll_2_message_VP`) -/
+/-! ### `[V_to_P, P_to_V]` unroll lemma (heterogeneous `processRound` round-peeling) -/
 section UnrollVP
 
 variable {ιₒ : Type} {oSpec : OracleSpec ιₒ} [oSpec.Fintype] [oSpec.Inhabited]
@@ -107,8 +109,7 @@ theorem unroll_2_message_VP
 
 end UnrollVP
 
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
-variable {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+variable [Nonempty ι]
 
 /-- The empty oracle spec is vacuously inhabited (its query index type is empty). -/
 instance : []ₒ.Inhabited where
@@ -142,6 +143,7 @@ instance : [(pSpec ι F).Challenge]ₒ.Inhabited where
     simpa [pSpec, challengeOracleInterface, ProtocolSpec.Challenge, ProtocolSpec.«Type»,
       OracleInterface.Response, OracleInterface.toOC] using (⟨(0 : F)⟩ : Inhabited F)
 
+
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
 
 open scoped Classical in
@@ -163,7 +165,7 @@ theorem stirRoundReduction_perfectCompleteness (φ : ι ↪ F) (deg : ℕ) (δ :
     Prod.mk.eta, bind_assoc, map_pure, liftComp_pure, liftM_pure]
   rw [probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
-  · -- SAFETY
+  · -- SAFETY: the run never fails
     rw [probFailure_bind_eq_zero_iff]
     refine ⟨?_, fun α _hα => ?_⟩
     · simp only [probFailure_map, OptionT.probFailure_liftM, OptionT.probFailure_lift,
@@ -178,7 +180,7 @@ theorem stirRoundReduction_perfectCompleteness (φ : ι ↪ F) (deg : ℕ) (δ :
       simp only [support_pure, Set.mem_singleton_iff] at hx
       subst hx
       simp only [Option.map_some, reduceCtorEq, not_false_eq_true]
-  · -- CORRECTNESS
+  · -- CORRECTNESS: every output in the support satisfies the relation + agreement
     intro x hx
     simp only [support_bind, Set.mem_iUnion, exists_prop] at hx
     obtain ⟨α, _hα, hx⟩ := hx
@@ -189,20 +191,50 @@ theorem stirRoundReduction_perfectCompleteness (φ : ι ↪ F) (deg : ℕ) (δ :
       Set.mem_singleton_iff, Option.some.injEq, exists_eq_left, exists_eq_right] at hx
     subst hx
     refine ⟨?_, trivial, by funext u; rfl⟩
-    -- output oracle = combine = oStmtIn (), so relOut reduces to h_relIn
     have hc : Combine.combine φ deg α (fun _ : Fin 1 => oStmtIn ()) (fun _ : Fin 1 => deg)
         = oStmtIn () := combine_single_self φ deg α (oStmtIn ())
     simpa [hc] using h_relIn
 
-/-- The `stirRoundReduction_completeness` obligation (RoundProtocol.lean) is discharged: the STIR
-fold-round object is perfectly complete whenever the shared randomness never fails. -/
+/-- The stated `stirRoundReduction_completeness` obligation is discharged: the STIR fold-round
+object is (perfectly) complete whenever the shared randomness never fails. -/
 theorem stirRoundReduction_completeness_proved (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
     (hInit : NeverFail init) :
     stirRoundReduction_completeness init impl φ deg δ :=
   stirRoundReduction_perfectCompleteness init impl φ deg δ hInit
 
+/-- General error-monotonicity of `Reduction.completenessFromRun`: completeness with error `ε₁`
+implies completeness with any larger error `ε₂` (the acceptance threshold `1 - ε` only drops). -/
+theorem _root_.Reduction.completenessFromRun_mono_error
+    {StmtIn WitIn StmtOut WitOut : Type}
+    {ιᵣ : Type} {runSpec : OracleSpec ιᵣ} {σᵣ : Type} {Trace : Type}
+    (runInit : ProbComp σᵣ)
+    (runImpl : QueryImpl runSpec (StateT σᵣ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (run : (stmtIn : StmtIn) → (witIn : WitIn) →
+      OptionT (OracleComp runSpec) ((Trace × StmtOut × WitOut) × StmtOut))
+    {ε₁ ε₂ : ℝ≥0} (hle : ε₁ ≤ ε₂)
+    (h : Reduction.completenessFromRun runInit runImpl relIn relOut run ε₁) :
+    Reduction.completenessFromRun runInit runImpl relIn relOut run ε₂ := by
+  intro stmtIn witIn hIn
+  refine le_trans ?_ (h stmtIn witIn hIn)
+  exact tsub_le_tsub_left (by exact_mod_cast hle) 1
+
+/-- **Strengthening**: the STIR fold-round object satisfies completeness with *every*
+completeness error `ε` (not just `0`), as a corollary of its perfect completeness. -/
+theorem stirRoundReduction_completeness_any_error (φ : ι ↪ F) (deg : ℕ) (δ ε : ℝ≥0)
+    (hInit : NeverFail init) :
+    (stirRoundReduction φ deg).completeness init impl
+      (stirRoundInputRel φ deg δ) (stirRoundOutputRel φ deg δ) ε :=
+  Reduction.completenessFromRun_mono_error _ _ _ _ _ (zero_le ε)
+    (stirRoundReduction_perfectCompleteness init impl φ deg δ hInit)
+
+
 end
 
-end Round
+end StirIOP.Round
 
-end StirIOP
+#print axioms StirIOP.Round.unroll_2_message_VP
+#print axioms StirIOP.Round.stirRoundReduction_perfectCompleteness
+#print axioms StirIOP.Round.stirRoundReduction_completeness_proved
+#print axioms Reduction.completenessFromRun_mono_error
+#print axioms StirIOP.Round.stirRoundReduction_completeness_any_error

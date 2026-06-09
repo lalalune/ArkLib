@@ -1157,7 +1157,7 @@ theorem oracleReduction_perfectCompleteness :
           rfl
 
 /-- Trivial round-by-round extractor (all witnesses are `Unit`). -/
-private def simpleRbrExtractor : Extractor.RoundByRound oSpec
+def simpleRbrExtractor : Extractor.RoundByRound oSpec
     (StmtIn R × (∀ i, OStmtIn R deg i)) Unit Unit (pSpec R deg) (fun _ => Unit) where
   eqIn := rfl
   extractMid := fun _ _ _ _ => ()
@@ -1166,8 +1166,12 @@ private def simpleRbrExtractor : Extractor.RoundByRound oSpec
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
 /-- The transcript-independent knowledge state function for the oracle verifier: its guard
-checks the ORACLE's `D`-sum, which is precisely the input relation. -/
-private def simpleKnowledgeStateFunction :
+checks the ORACLE's `D`-sum, which is precisely the input relation.
+
+De-privatized (#13) so the downstream plain round-by-round soundness weakening can read off its
+transcript-independence by `Iff.rfl`: its `toFun` ignores the message index, transcript, and
+mid-witness, so the per-round knowledge-flip event is identically `False`. -/
+def simpleKnowledgeStateFunction :
     ((oracleVerifier R deg D oSpec).toVerifier).KnowledgeStateFunction init impl
       (inputRelation R deg D) (outputRelation R deg)
       (simpleRbrExtractor R deg oSpec) where
@@ -1293,10 +1297,11 @@ prior `challenges` (for the `j < i` slots) and the summation index `y` (for the 
 the `∑ x ∈ (univ.map D) ^ᶠ (n - i), poly ⸨X ⦃i⦄, challenges, x⸩` shape of `oStmtLens.toFunA`, so the
 routing answers the inner univariate query exactly by the value `toFunA` would expose. -/
 def sumPoint (i : Fin n) (pt : R) (stmtIn : StatementRound R n i.castSucc)
-    (y : Fin (n - 1) → R) : Fin n → R :=
+    (y : Fin (n - 1 - i) → R) : Fin n → R :=
   let h : n = n - 1 + 1 := by have := i.isLt; omega
   ((Fin.cast h i).insertNth pt
-    (fun k => if hk : (k : ℕ) < (i : ℕ) then stmtIn.challenges ⟨k, by simpa using hk⟩ else y k))
+    (fun k => if hk : (k : ℕ) < (i : ℕ) then stmtIn.challenges ⟨k, by simpa using hk⟩
+      else y ⟨(k : ℕ) - (i : ℕ), by have := k.isLt; omega⟩))
     ∘ Fin.cast h
 
 /-- The concrete sum-check **oracle-routing lens** instantiating the new
@@ -1328,7 +1333,7 @@ noncomputable def sumcheckOracleLens (i : Fin n) :
   simOStmt := fun q =>
     match q with
     | ⟨(), pt⟩ => ReaderT.mk fun stmtIn =>
-      (((univ.map D) ^ᶠ (n - 1)).toList).foldlM
+      (((univ.map D) ^ᶠ (n - 1 - i)).toList).foldlM
         (fun (acc : R) y => do
           let resp ← (OracleComp.lift <| OracleSpec.query
             (spec := [OracleStatement R n deg]ₒ)

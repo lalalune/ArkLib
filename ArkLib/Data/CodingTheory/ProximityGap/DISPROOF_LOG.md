@@ -1260,3 +1260,1431 @@ are explicit single-instance witnesses. The general-n lower bound past the `≤k
 super-poly smooth-domain subset-sum count) was NOT supplied. The table PINS δ* for explicit tiny
 instances (incl. a real subgroup) but does NOT pin δ* for general smooth-domain RS. 15 verified bricks
 total across rounds 1–3. Open core untouched; boundary maximally mapped.
+
+### O20 / Round-4 — focused assault on THE reduced question (subgroup subset-sum count N(t,target))
+
+Round 4 attacked the single open question rounds 1–3 converged on: the count
+`N(a,target) = #{a-subsets of the 2^k-subgroup G summing to target}`, whose super-poly-at-bounded-|F|
+growth at `a = k+t` (t≥1, interior) is what pinning δ* requires. 6 axiom-clean bricks (all `lake
+build`-clean). **The open core did NOT move** — but the reduction is now formalized down to the exact
+count, with the count→list bridge and both the easy bounds machine-checked. Honest framing throughout.
+
+* `InteriorListCountBridge.lean` — **the key new brick: the count→interior-list BRIDGE.**
+  `interior_list_ge_of_count`/`interior_list_card_ge_family`: the construction `p_S = g − c·∏_{i∈S}(X−Dᵢ)`
+  with `deg g = k+t`, `|S| = k+t` drops one degree automatically (`pSt_natDegree_lt_interior`); the
+  *further* drop to `deg < k` (a real codeword) is the symmetric-function condition packaged as
+  `DegDropFamily`. Given a family of size `M` with that property, the RS list at the INTERIOR radius
+  `δ = 1−(k+t)/n` has `≥ M` codewords (injectivity `pSt_codeword_injOn` verified). **This is the first
+  machine-checked bridge from the count to the list INSIDE the gap** (rounds 1–3 only had the `t=0`
+  capacity endpoint). It does NOT prove the count is large — that is the open question, isolated as the
+  `DegDropFamily` hypothesis.
+* `SubsetSumPigeonholeFiber.lean` — `max_fiber_interior_ge`: `∑_target N(k+t,target) = C(n,k+t)`
+  (`sum_subsetSumCount_eq_choose`) ⟹ by pigeonhole `∃ target, q·N(k+t,target) ≥ C(n,k+t)`. A genuine
+  lower bound on the MAX-target count. Plus the Newton/Vieta SYMMETRIES (`subsetSumCount_symmetry_group`:
+  `N(a,target) = N(a,−target) = N(n−a,target)` from negation-closure + vanishing sum). **Honest caveat:
+  this bounds the SUM-only count (one symmetric function); the list bridge needs the FULL degree-drop
+  (all `t` symmetric functions) — they coincide only at `t=1`, so this does not by itself give a deep-gap
+  list bound.**
+* `SubsetSumZeroInflation.lean` — `N_lower_inflation`: disjoint zero-sum ±pairs inflate the count:
+  `N(|S₀|+2t, target) ≥ C(#pairs, t)`, field-INDEPENDENT (counts subsets, not field elements — not
+  Loop53-capped). **Honest caveat: inflates SIZE preserving SUM only; same one-symmetric-function gap —
+  does not feed the bridge for t≥2.** A correct, non-vacuous lower bound on the sum-count.
+* `SubsetSumCharacterSum.lean` — the exact Gauss/character-sum formula for `N` (`subsetSumCount_eq_charSum`:
+  `q·N = ∑_ψ ψ(−target)·∏_{x∈G}(1+z ψ(x))|coeff`), main-term + error split, error norm bound. The
+  analytic handle on `N`.
+* `SubsetSumEsymmVanishing.lean` — `esymm_nthRoots_eq_zero`: `e_j(G) = 0` for `0<j<n` (G = n-th roots
+  of unity, `∏(Y−x) = Y^n−1`), the symmetric-function grounding all other angles rest on; `subgroup_sum_eq_zero`.
+* `SubsetSumPairingInflate.lean` — the ±pairing generating-function recursion (`sum_inflate`,
+  `inflate_injective`): the per-pair {skip,both,+g,−g} structure, the combinatorial backbone of inflation.
+
+**Verdict.** The reduced question is now fully formalized: the BRIDGE (count⟹list, new), the exact
+character-sum formula, the e_j-vanishing grounding, and two correct lower bounds on the SUM-count
+(pigeonhole `C(n,k+t)/q`, inflation `C(2^{k-1},t)`). The unbridgeable gap is sharp and now PROVEN in
+structure: every available lower bound controls only the SUM (one symmetric function), while the list
+needs ALL `t` symmetric functions to align — coinciding only at `t=1` (δ just below capacity). Moving
+to deep interior `t≥2` needs the count of subsets with `t` simultaneous symmetric-function constraints
+super-poly, which remains OPEN. 21 verified bricks across rounds 1–4. The open core is untouched but
+its precise obstruction — sum-count vs full-symmetric-count — is now machine-checked.
+
+**Update (O20 cleanup + sharpened residual).** Build-integrity fix: a concurrent regen had wired the
+6 `Round4_*` module names into `ArkLib.lean` while 2 were renamed away and one (`Round4_newton_vieta_upper`,
+319 lines) was the pre-truncation BROKEN version — a clean umbrella build would fail. Resolved by
+removing all `Round4_*` (content preserved byte-identically in the descriptively-named bricks; newton
+kept as the fixed 278-line `SubsetSumPigeonholeFiber`) and regenerating `ArkLib.lean` from tracked files.
+The umbrella is now consistent.
+
+The round-4 synthesis sharpens the residual one notch further: the zero-sum/±pairing inflation
+(`SubsetSumZeroInflation`) raises the subset SIZE by an **even** amount `2t` while preserving the sum
+(`e_1`), but the unique increment where controlling `e_1` alone suffices for the degree drop is `t = 1`
+— an **odd** increment the even-only pairing inflation structurally cannot reach. So the disproof-side
+residual is precisely: **a field-independent super-polynomial lower bound on the count of `(k+t)`-subsets
+of the smooth `2^k`-subgroup with `e_1, …, e_t` *jointly* prescribed (the full degree-drop family), at an
+ODD interior increment** — an additive-combinatorial / Weil-cancellation question on a multiplicative
+subgroup, with no Mathlib handle and untouched by any of the 21 verified bricks. Two upper-side attack
+families (additive-character orthogonality; Newton/Vieta symmetric functions) are now machine-checked
+DEAD ENDS for this count.
+
+### O21 / Round-5 — the FIRST unconditional general-n interior list lower bound + the exact t=2 condition
+
+Round 5 welded the round-4 conditional halves into a genuinely **unconditional** theorem and set up the
+open t=2 question precisely. 4 axiom-clean bricks (all `lake build`-clean). The open core (deep-interior
+δ*, the t≥2 multi-symmetric count) is untouched, but this is the strongest verified interior result yet.
+
+* `ListInteriorUnconditionalT1.lean` — **`exists_interior_list_ge_unconditional`: the first UNCONDITIONAL
+  general-n interior list lower bound in the corpus.** Hypotheses ONLY `0<k`, `k≤n`, `0<q=|F|`, and the
+  interiorness `(k+1)² < k·n` — NO `DegDropFamily`, NO count hypothesis. Conclusion: `∃ g` of degree
+  `k+1` with `C(n,k+1) ≤ q · #{v ∈ RS code : agree(v, g∘D) ≥ k+1}`, i.e. some received word's list at the
+  strictly-interior radius `δ = 1−(k+1)/n` is `≥ C(n,k+1)/q`. Welds the two previously-conditional round-4
+  halves: the degree-drop family is built internally (`windowDegDropFamily`, via `degDrop_t1_iff_window_sum`
+  + `pSt_natDegree_lt_interior`) and the count `C(n,k+1)/q` supplied by an internal fiberwise pigeonhole.
+  Non-vacuity machine-checked at `k=50,n=104`. **Honest caveat (in docstring): `δ=1−(k+1)/n` is the t=1
+  sliver just inside the CAPACITY endpoint, NOT deep interior; the `/q` factor means it beats trivial only
+  for `C(n,k+1)>q` (n large vs |F|), so NOT q-independent — a worst-case lower bound, not a prize
+  counterexample. Does NOT pin δ*.** First unconditional general-n interior brick nonetheless.
+* `ListInteriorDeltaStarUpperPin.lean` — `strict_overflow`/`concrete_overflow_nonvacuous`: the
+  field-independent binomial overflow `C(2^20, 2^19) > 2^{-128}·q²` for all `q ≤ 2^128` (via Mathlib
+  `four_pow_le_two_mul_self_mul_centralBinom`), a hypothesis-free closed proposition with ~2^256 slack.
+  The actual δ*-upper-pin `delta_star_upper_pin_of_family` honestly carries the `DegDropFamily` +
+  overflow hypotheses (the open ingredient), NOT smuggled. Even granting the family, reaches only
+  `δ* < 1−(k+1)/n = 1−ρ−1/n` (top of the band, near capacity).
+* `ListInteriorT2TwoSymmetric.lean` — `degDrop_t2_iff_two_symmetric`: **the exact t=2 degree-drop
+  criterion** — both top coeffs of `p_S` vanish IFF `e_1(D_S) = c_1 ∧ e_2(D_S) = c_2` *jointly* (the
+  first genuinely-multi-constraint case, the open direction), with the Vieta `X^{k+1}/X^k` identities
+  and the `e_2 = ∑_{2-subsets}∏` formula machine-checked + a bridge to the RS interior list. Slice-rank
+  verdict (honest NO-GO): the t=2 joint fiber sits inside the e_1 fiber (`twoSymmetric_card_le_subsetSumCount`),
+  so the pigeonhole floor survives, but Croot–Lev–Pach needs ADDITIVE tensor structure a multiplicative
+  subgroup lacks — slice-rank cannot force the t=2 count below `C(n,k+2)/|F|` by symmetry alone.
+* `SubsetSumPigeonholeManyTargets.lean` — sharpens the t=1 pigeonhole from "∃ one big target" toward
+  "many targets" via the second moment `∑_target N²` and the Newton/Vieta symmetries.
+
+**Net.** 25 verified bricks across rounds 1–5. New this round: the first UNCONDITIONAL general-n interior
+list lower bound (near-capacity, not q-independent — honest) and the exact t=2 joint-symmetric condition
+(setting up the open direction). The deep-interior δ* and the t≥2 super-poly multi-esymm count remain
+open; slice-rank is now a machine-checked dead end for the symmetry-only approach to t=2.
+
+### O22 / Round-6 — t=2 reached (deeper unconditional bound), exact e_2-reduction, q-independence NO-GO
+
+Round 6 used MULTIPLICATIVE methods (slice-rank being a proven dead end) to reach t=2 and map the next
+walls. 6 axiom-clean bricks (all `lake build`-clean). **Deep-interior δ* still OPEN**, but this is the
+deepest verified interior progress yet, with two genuinely new structural results.
+
+* `ListInteriorUnconditionalT2.lean` — **`exists_interior_list_ge_unconditional_t2`: the first
+  unconditional general-n interior list LB at agreement `k+2` (one step DEEPER than round-5's t=1).**
+  Hyps ONLY `0<k, k≤n, 0<q, (k+2)²<kn` ⟹ `∃ g` deg `k+2` with `C(n,k+2) ≤ q²·#{codewords agreeing
+  ≥k+2}` at `δ=1−(k+2)/n`. Discharged via an honest F×F **double pigeonhole** over BOTH symmetric
+  targets `(c₁,c₂)`, with `g = X^k(X²−c₁X+c₂)` realizing them and `degDrop_t2_iff_two_symmetric` (a real
+  biconditional needing both top coeffs to vanish). Honest: `/q²` (weaker than t=1's `/q`), still near
+  capacity. Non-vacuity machine-checked at `k=50,n=220` (δ=0.764 inside (0.523,0.773)).
+* `SubsetSumE2PowerSumReduction.lean` — **`twoSymmetric_count_eq_e1_psum2_count`: the exact t=2
+  reduction.** Via the Newton identity `e_1² = p_2 + 2e_2` (`sq_window_sum_eq`, char-free), the joint
+  `{e_1=c₁ ∧ e_2=c₂}` count **literally equals** the `{e_1=c₁ ∧ p_2=c₁²−2c₂}` (sum, sum-of-squares)
+  count (hypothesis `(2:F)≠0`, automatic for smooth `2^k`-domains since `q` is odd). **Re-poses the
+  slice-rank-hostile pair-product `e_2` as the single-coordinate statistic `x↦x²` — the precise object a
+  2-D Gauss/Weil character sum estimates, opening the multiplicative route.** Honest: exhibits the Weil
+  target, does NOT yet bound it; the symmetry no-go survives (max fiber ≥ C(n,a)/q), magnitude as open
+  as before — only the coordinates changed.
+* `SubsetSumE2PairingInflate.lean` — `twoSymmCount_ge_squareSubsetSum` (+ `esymm2_inflate`,
+  `esymm2_union`, new): the ±pairing doubling shifts `e_2` by exactly `−∑g_i²` per pair while FIXING
+  `e_1`, reducing the t=2 lower bound to a t=1-shaped subset-sum count on the squares `{g_i²}` — collapses
+  the 2nd constraint to 1-D but lands on the same open worst-case-spread question one level down.
+* `StepanovPointCountEngine.lean` — `stepanov_card_mul_mult_le_natDegree` (+ `stepanov_sharp`): the
+  multiplicity-weighted Stepanov inequality `|V|·M ≤ deg Ψ`, a reusable tight point-counting engine.
+  Honest no-go: Stepanov counts F-points that are roots of a UNIVARIATE auxiliary; the t=2 count is over
+  (k+2)-subsets (symmetric-product points), so no univariate Ψ has them as roots — inapplicable to the
+  joint count.
+* `ListInteriorQDependenceNoGo.lean` — **`uniform_subsetSumCount_lb_le_choose`: a SHARP q-independence
+  NO-GO.** The averaging/pigeonhole method driving every round-1..6 interior bound INHERENTLY loses a
+  factor of q: any target-uniform (⟹ construction-agnostic ⟹ q-independent) lower bound `f` obeys
+  `q·f ≤ C(n,a)` (forced ≤ the average, via `∑_target N = C(n,a)`); lifted to the RS list
+  (`uniform_interior_list_lb_carries_q`). Removing `/q` is equivalent to the count CONCENTRATING on O(1)
+  targets — a non-averaging input the order-≤4 symmetry group cannot supply. **This explains why the only
+  q-independent bound (field-independent C(n,k)) lives at the EXCLUDED capacity endpoint, and pinpoints
+  *concentration* as the open door.**
+* `ListMCAWiringNoGo.lean` — `collapse_mca_bound_ge_of_list_lb` + `degenerate_stack_no_mcaEvent`:
+  connects the list track to the §5 collapse (`interiorList_eq_lineWitness`: the degenerate stack `(w,0)`
+  makes the line-witness count EXACTLY the interior-list filter, so the list LB lower-bounds the
+  collapse's uniform-L). **Honest: the tempting "list-large ⟹ ε_mca-large" is FALSE and proven false —
+  the witnessing stack fires ZERO mcaEvents, so the coupling is list ⟹ collapse-L (an INPUT to an UPPER
+  bound on ε_mca), NOT a lower bound on ε_mca. Future ε_mca lower bounds must go through bad-scalar
+  spread (distinct γ), not list-against-one-word.**
+
+**Net.** 31 verified bricks across rounds 1–6. New this round: t=2 reached unconditionally (deeper than
+the t=1 sliver, /q²), the exact `e_2`↔`(e_1,p_2)` reduction (multiplicative route opened, Weil target
+exhibited), a sharp q-independence no-go (averaging loses q; concentration is the open door), and the
+honest list↛ε_mca finding. Deep-interior δ* and the magnitude of the t≥2 count remain OPEN; the next
+genuine step is a Weil/Gauss bound on the (sum, sum-of-squares) count, for which Mathlib lacks the
+machinery.
+
+### O23 / Round-7 — prize dichotomy reduced to ONE scalar (M2), quadratic Gauss sum landed, concentration cracked on coordinate 1
+
+Round 7 attacked the round-6 seams (the (sum,sum-of-squares) count N2, concentration, Weil). No
+breakthrough — deep-interior δ* and N2 q-independence stay OPEN — but the **most precise cartography
+yet**: the entire prize dichotomy is reduced to one uncomputed scalar, the missing Weil input is
+supplied, and concentration cracked on the first of two coordinates. 6 axiom-clean bricks (all `lake
+build`-clean).
+
+* `SubsetSumSecondMomentCollision.lean` + `SubsetSumPaleyZygmundDichotomy.lean` — **the prize dichotomy
+  reduced to ONE scalar.** `N2_secondMoment_eq_collisionCount`: `∑_{c₁,c₂} N2(a;c₁,c₂)² = collisionCount`
+  (= #pairs of a-subsets with equal (∑x,∑x²)), exact. `support_card_ge_choose_sq_div_secondMoment` +
+  Paley–Zygmund: integer Cauchy-Schwarz `C(n,a)² ≤ |support|·M2` and the two-sided sandwich
+  `C(n,a) ≤ collisionCount ≤ C(n,a)²`. **Net: small M2 (≈C²/q²) ⟺ N2 anti-concentrated ⟺ prize survives
+  the averaging attack; large M2 (≳C²) ⟺ concentration possible.** The whole prize-deciding question is
+  now the single uncomputed magnitude `M2 = collisionCount`.
+* `QuadraticGaussSumMagnitude.lean` — **`norm_sum_addChar_bsq`: the quadratic Gauss sum, exact `‖∑_{x∈F}
+  ψ(b x²)‖ = √q`** (b≠0, char≠2), via Mathlib `gaussSum_sq`. The ONE Weil-type cancellation Mathlib
+  proves — the missing analytic ingredient rounds 1–6 never had (round 4 stopped at a cancellation-free
+  triangle envelope). Honest limit (`subgroup_quadratic_sum_is_partial`): this is the FULL-FIELD sum;
+  N2's generating function is a PRODUCT over the SUBGROUP (a partial Gauss sum needing Weil-on-curves,
+  which Mathlib lacks). The bridge full-field→subgroup is exactly the open gap.
+* `SubsetSumNegSymmConcentration.lean` — **`negSymm_card_ge_choose`: concentration CRACKED on coordinate
+  1.** Negation-symmetric subsets (`S = −S`) FORCE `e_1 = ∑x = 0` (the single known target —
+  concentrated!), with a q-independent, field-independent, super-poly count `C(n/2, t)` — beating every
+  prior round's `/q` averaging floor *on that coordinate*. Honest delimiter (`negClosure_psum2_eq_two_mul`):
+  the SECOND coordinate `p_2 = 2∑g²` still spreads freely (the 3 negation-symmetric e₁=0 subsets land on
+  3 distinct p₂), so the joint N2 stays small. The residual is now exactly the `p_2` spread on
+  negation-symmetric families.
+* `ListInteriorUnconditionalGeneralT.lean` — **`exists_interior_list_ge_unconditional_t`: the general-t
+  unconditional interior bound, subsuming rounds 5–6.** For ANY t with `(k+t)²<kn`: `∃ g` deg k+t with
+  `C(n,k+t) ≤ q^t·#{codewords agreeing ≥k+t}` at `δ=1−(k+t)/n`, via a coordinate-free top-t-coefficient-
+  vector pigeonhole (no Vieta/Newton bookkeeping). **Reaches DEEP interior — t up to ~√(kn)−k, a constant
+  fraction of k** (non-vacuous at k=100,t=40,n=400). Honest: `/q^t` (strictly worse per added depth);
+  confirms the `q^t` wall is structural to pigeonhole/averaging (matches `ListInteriorQDependenceNoGo`).
+* `ListInteriorT3ThreeSymmetric.lean` — `degDrop_t3_iff_three_symmetric` (exact t=3 condition) +
+  `cube_window_sum_eq` (Newton `e_1³=p_3+3e_1e_2−3e_3`, new) + `threeSymmetric_count_eq_moment_count`
+  (recoordinatize to the 3-D moment fiber `(∑x,∑x²,∑x³)`). The general-t `(e_1..e_t)⟺(p_1..p_t)` pattern.
+
+**Net.** 37 verified bricks across rounds 1–7. New: the prize dichotomy reduced to one scalar M2
+(small⟹survives, large⟹concentration), the quadratic Gauss sum (√q, the Weil input), concentration on
+coordinate 1 (q-independent super-poly, residual = p_2 spread), the general-t unconditional bound
+(constant-fraction-of-k depth, /q^t), the exact t=3 condition. The open prize is now a single magnitude:
+**compute/bound M2 = collisionCount of the (∑x,∑x²) count on the smooth 2^k-subgroup** — needs the
+subgroup-restricted (partial) quadratic Gauss sum, i.e. Weil-on-curves, which Mathlib does not have.
+
+### O23 / Round-8 — order-4 `⟨ω⟩`-closure concentrates BOTH `∑x` and `∑x²` at `0` (Round-7 residual closed)
+
+Round 7 (`SubsetSumNegSymmConcentration`) concentrated the FIRST coordinate `e_1 = ∑x` at the single
+target `0` (negation-symmetric `S = P ∪ −P`, `q`-independent count `C(n/2,t)`) and left the SECOND
+coordinate honestly open: `∑x² = 2∑_{g∈P} g²` *spreads* with the pair-squares `{g²}`. Round 8 closes
+that residual. The key observation: the pair-squares `{g² : g∈G}` are exactly the order-`n/2` subgroup
+`G²`, *itself* negation-closed — so the same trick recurses one level up. Packaged multiplicatively,
+both levels at once is just **closure under the order-4 element** `ω` (`ω² = −1`, `⟨ω⟩ = {1,ω,−1,−ω}`).
+
+`SubsetSumOmegaConcentration.lean` (9 lemmas, all `sorry`-free, axiom-clean `[propext,
+Classical.choice, Quot.sound]`, `lake env lean`-verified):
+
+* `omega_closed_psum_eq_zero` — **the engine.** `S.image (ω·) = S`, `ω ≠ 0`, `ω^j ≠ 1` ⟹
+  `∑_{x∈S} x^j = 0`. Proof: reindex `∑x^j = ∑(ωx)^j = ω^j∑x^j`, so `(1−ω^j)∑ = 0`. A SINGLE uniform
+  statement vanishing every power sum with `ω^j ≠ 1` — for `ω` a primitive `N`-th root it kills `p_j`
+  for all `N ∤ j`.
+* For order-4 `ω` (`ω²=−1`, char `≠2`): `ω¹=ω≠1` and `ω²=−1≠1`, so the engine gives `∑x = 0` AND
+  `∑x² = 0` for *every* `⟨ω⟩`-closed set (`omega4Closure_sum_eq_zero`, `omega4Closure_sumsq_eq_zero`).
+  Hence `e_1 = 0` and `e_2 = (e_1²−p_2)/2 = 0`: **both** symmetric functions pinned to the single
+  target `(0,0)` — the `N2(·;0,0)` fiber Round 7 could only pin on its first coordinate.
+* `omega4Closure` (`P ∪ ωP ∪ ω²P ∪ ω³P`) + `omega4Closure_image_eq` (`ω`-closed via
+  forward-subset-of-equal-card) feed the engine. `omega4_card_eq` (= `4|P|` under the free-action
+  `OmegaFree`) + `omega4Closure_injOn` give the count.
+* `card_ge_choose_two_zero` — **the headline.** Under `OmegaFree ω T` (the four `⟨ω⟩`-translates of the
+  transversal `T` pairwise disjoint), `U ↦ omega4Closure ω U` injects the `s`-subsets of `T` into the
+  size-`4s` subsets with `∑x = ∑x² = 0`, so
+
+    `C(|T|, s)  ≤  #{ S : |S| = 4s, ∑x = 0 ∧ ∑x² = 0 }  =  n2Count (omega4Closure ω T) (4s) 0 0`
+
+  (the RHS filter is *definitionally* Round-7's `n2Count G (4s) 0 0`). With `|T| = n/4` this is
+  `C(n/4, s)`: **`q`-independent** and super-polynomial — Round 7's residual coordinate `p_2`, now
+  concentrated at one target with no `/q` loss. (Complementary to the fleet's
+  `Round8_t1_full_concentration`, which handles only the `t=1` first coordinate.)
+* Non-vacuity over `ZMod 5` (`ω=2`, `2²=4=−1`, orbit `{1,2,3,4}`, `∑=∑²=0`) — genuine, not `0=0`.
+
+**The depth-collapse WALL (why this is NOT a prize counterexample, honestly).** The engine generalizes:
+closure under a primitive `2^r`-th root of unity kills `p_1,…,p_{2^r−1}`, hence `e_1,…,e_{2^r−1}`. So
+pinning the first `t` symmetric functions needs `r = ⌈log₂(t+1)⌉`. But the `⟨ω_r⟩`-orbits have size
+`2^r`, so the transversal has only `n/2^r` elements and the concentrated count is `C(n/2^r, s)`.
+Reaching the **deep interior** (agreement `≈ √(kn)`, near Johnson) forces `2^r ≈ t ≈ √(kn)−k`, i.e.
+`r ≈ m`, which **collapses** the transversal to `n/2^r = O(1)` and the count to a *constant*. This is
+the same wall, now sharp and structural: *concentration on a single target requires a symmetry group
+fixing it, and a larger symmetry (more constraints killed) partitions the ground set into bigger
+orbits and fewer free choices.* Concentration therefore works near CAPACITY (constant `t`) but cannot
+pin `δ*` in the deep interior — exactly ABF26's "no known technique past Johnson for explicit RS". The
+order-4 construction is the first verified concentration of the FULL `t=2` joint fiber; the deep
+interior remains the genuine open core.
+
+**Net.** 40 verified bricks across rounds 1–8. New this round: the order-4 `⟨ω⟩` engine vanishing all
+`ω^j ≠ 1` power sums; both-coordinate concentration of the `t=2` joint count `N2(·;0,0)` (Round-7
+residual closed); the sharp depth-collapse articulation of why single-target concentration is
+capacity-only. The deep-interior `δ*` is unmoved and unmovable by symmetry alone (proven wall).
+
+### O25 / Round-9 — the coset route's deep-interior NO-GO, as one explicit theorem
+
+The round-8 coset / vanishing-power-sum construction (`Round8CosetWall.lean`,
+`CosetPowerSumConcentration.lean`: closure under a primitive `N`-th root kills `p_1,…,p_{N-1}` ⟹ via
+Newton `e_1,…,e_{N-1}=0` ⟹ a depth-`(N-1)` degree-drop family, q-independent, count `C(M,r)`,
+`M=n/N` cosets, union size `a=r·N`) is the natural deepening of round-8's negation-symmetry. Round 9
+welds its scattered budget inequalities into **one explicit no-go** (`CosetWallDeepInteriorNoGo.lean`,
+axiom-clean):
+
+* `coset_count_le_card_of_deep_interior`: at constant-fraction-or-deeper interior (`t ≥ k`, agreement
+  `a=k+t ≥ 2k`, radius `δ ≤ 1−2ρ`), the budget forces `r ≤ 1` (`budget_forces_r_le_one`), so the count
+  `C(M,r) ≤ M` — **linear** in the number of cosets, NOT super-polynomial.
+* `coset_within_prize_of_deep_interior`: in prize coordinates, a coset list of size `L ≤ C(M,r) ≤ M`
+  with `M ≤ thresh` (the prize's `ε*·q` budget) stays `L ≤ thresh` — **within** the prize. Since
+  `M = n/N ≤ n ≤ 2^40` while the prize threshold `ε*·q` is astronomically larger for the relevant
+  fields, **no coset / vanishing-power-sum construction disproves the prize in the deep interior.**
+* `near_capacity_superpoly`: the contrast — near capacity (`2r ≤ M`) the SAME count is `≥ 2^r`,
+  super-poly. So the deep-interior collapse to `≤ M` is a genuine **phase transition** in the
+  construction's power at `δ = 1−2ρ`, not a vacuous bound.
+
+**Net.** This closes one entire algebraic attack family (coset/vanishing-power-sum, the natural
+deepening of the round-5..8 unconditional and q-independent bounds) at deep interior: its super-poly
+count provably degrades to linear past `δ = 1−2ρ`, matching the [ABF26] "no known technique" assessment
+for the deep interior. The two genuinely open routes remain: the subgroup-restricted quadratic Gauss
+sum (SEAM B = Weil-on-curves, Mathlib lacks) and any NON-algebraic construction (outside the coset/
+pigeonhole/symmetry families now all walled). Deep-interior δ* remains OPEN. 44+ bricks.
+
+### O26 / Round-9b — the subgroup Gauss-sum SECOND MOMENT, exactly, with NO Weil bound (Parseval)
+
+Rounds 7–8 showed the prize-deciding magnitude needs the **subgroup-restricted** Gauss sum
+`η_b = ∑_{y∈G} ψ(b·y)`, and that a per-frequency `√q` bound needs Weil-on-curves (Mathlib lacks).
+`SubgroupGaussSumSecondMoment.lean` (axiom-clean) supplies the one piece that **is** fully provable
+elementarily — the *second moment* over all frequencies, via additive-character orthogonality
+(Parseval), **no Weil**:
+
+* `subgroup_gaussSum_secondMoment`: `∑_{b∈F} ‖∑_{y∈G} ψ(b·y)‖² = q·|G|`, exact. Proof: expand
+  `‖η_b‖² = η_b·conj(η_b)` (`RCLike.mul_conj`) into a double sum over `(y,y')∈G×G`, conj via
+  `starComp_apply`/`inv_apply`, swap sums, and collapse each pair by `AddChar.sum_mulShift`
+  (`∑_b ψ(b·c) = q·[c=0]`) to the diagonal `y=y'`.
+* `subgroup_gaussSum_l2_average`: hence the **average** of `‖η_b‖²` over the `q` frequencies is exactly
+  `|G|`. So the *typical* subgroup Gauss sum has size `√|G|`, **not** `√q` (since `|G|≤q`) — the
+  average-case cancellation that the collision-count second moment `M2` runs on.
+* `exists_frequency_gaussSum_sq_ge`: pigeonhole — some frequency attains `‖η_b‖²≥|G|`.
+
+**Honest scope.** This controls the subgroup Gauss sum in `L²`/average — exactly the regime that decides
+*average*-case anti-concentration of `M2` — while the **per-frequency worst case** (the deep-interior δ*
+pin) genuinely still needs Weil's bound. It is the strongest analytic statement about the subgroup Gauss
+sum reachable from Mathlib's current toolkit (character orthogonality), and it closes the *average*-case
+side of SEAM B. 45+ verified bricks rounds 1–9. Deep-interior δ* and the worst-case Gauss bound remain
+OPEN (Weil-on-curves not in Mathlib).
+
+### O24 / Round-9 — multi-agent verified assault (6 angles, all axiom-clean); 4 bricks integrated
+
+Deployed a 6-angle multi-agent workflow. Enabler: `lake env lean <file>` is READ-ONLY on the olean
+cache (type-checks in memory, never writes oleans), so many agents verify concurrently with NO
+`lake build` thrash. All 6 landed verified+axiom-clean; 4 integrated (collapse/Johnson overlap
+`Round8CosetWall`/`JohnsonBound`):
+
+* `DeltaStarConcretePinF17.lean` — concrete TWO-SIDED δ* pin on a smooth subgroup: `F=ZMod 17`,
+  `G={x:x^16=1}=Fˣ` (n=16=2^4, `G_eq_roots_of_unity` proven), `k=2`, interior `δ=13/16` (`a=3`,
+  interiorness `2<3 ∧ 9<32` in integer AND real form). `5 ≤ |Λ| ≤ 120` (exact 19): lower = 5 explicit
+  lines on disjoint 3-blocks; upper = ∀-cap via `line_unique` (k=2 Vandermonde) → `C(16,2)`. δ* IS
+  two-sidedly pinnable inside the gap for a prize-faithful instance.
+* `LamLeungAntipodalTightness.lean` — FIRST upper bound on the `e_1=0` fiber: conditional on cyclotomic
+  indep `hindep`, `∑ζ^a=0 ⟹ A` antipodal-invariant (regroup `∑ζ^a=∑_{j<N}([j∈A]-[j+N∈A])ζ^j` via
+  `ζ^{j+N}=-ζ^j`+`sum_nbij'`). `hindep` holds over ℂ, FAILS in finite fields = the q-dependent extras.
+* `AveragingFiberConservation.lean` — conservation `∑fiber=C(n,a)`, 2nd-moment `∑fiber²=#collisions`,
+  averaging LB `C(n,a)≤q^t·maxFiber`, anti-concentration hypothesis as a Prop (general Φ, subsumes
+  n2Count): `antiConcentrated ⟺ maxFiber pinned to average` — the precise hypothesis pinning δ*=δ_avg.
+* `DeltaStarAveragingBracket.lean` — `averaging_crossover`: `C(n,k+t)≤q^t·L ∧ E·q^{t+1}<C(n,k+t) ⟹
+  E·q<L` (δ* ≤ 1-(k+t)/n upper bracket) + non-vacuity.
+
+**Net.** Open core (list UPPER bound past Johnson; q-dependent concentration) unmoved — research-grade.
+Round 9 = the state-of-the-art *bracket* machinery + a concrete two-sided pin + first fiber tightness.
+All on main (`0e39a4435`), axiom-clean, 0 sorry. Issue stays open.
+
+### O28 / Round-9d — roots of unity have MINIMAL additive energy `E ≤ 3|S|²` (characteristic 0)
+
+The fourth-moment identity (O27) reduced the deep-interior question to the additive energy `E(G)` of the
+smooth subgroup. `RootsOfUnityAdditiveEnergy.lean` (axiom-clean) proves the structural fact that, **in
+characteristic 0**, that energy is *minimal*:
+
+* `unitCircle_reps_le_two`: for `s ≠ 0` and any finite `S` on the complex unit circle (`y·conj y = 1`,
+  e.g. the `n`-th roots of unity), the number of representations `#{y∈S : s−y∈S}` is `≤ 2`. Mechanism:
+  a unit-circle `y` with `s−y` also on the circle satisfies the **quadratic**
+  `conj(s)·y² − (s·conj s)·y + s = 0` (from `y·conj y = 1` and `(s−y)·conj(s−y) = 1`, pure ℂ-conjugate
+  algebra via `linear_combination`), and a nonzero quadratic has `≤ 2` roots (`Polynomial.card_roots'`).
+* `unitCircle_additiveEnergy_le`: hence `E(S) = ∑_{a,b∈S} #{y∈S:(a+b)−y∈S} ≤ 3·|S|²` — the **diagonal**
+  `a+b=0` contributes `≤|S|` pairs (each `≤|S|`), the rest `≤|S|²` pairs (each `≤2`).
+
+**Why it matters.** Minimal additive energy `E(S)=Θ(|S|²)` is exactly maximal *anti-concentration* of the
+subset-sum count — the regime where the §7/averaging attack is **defeated**. Combined with the
+fourth-moment bridge (`∑_b ‖η_b‖⁴ = q·E`), this is the **clean characteristic-0 resolution**: the smooth
+(roots-of-unity) domain provably has the *minimal* additive energy, so it resists the attack — in char 0.
+
+**Honest scope.** The Proximity Prize lives over a *finite field* `F_q`. The `≤2`-representations
+argument uses complex conjugation (`conj y = y⁻¹` on the unit circle), which has **no `F_q` analogue** —
+over `F_q` a multiplicative subgroup's additive energy is the genuinely *open* sum-product quantity (it
+can be large depending on `|G|` vs `q`). So this proves the smooth domain is "good" in the char-0 model
+and pins the finite-field gap precisely as: *bound the additive energy of the `2^k`-subgroup over `F_q`*
+(equivalently the worst-case subgroup Gauss sum / Weil). 48+ verified bricks rounds 1–9.
+
+### O25 / Round-10 — 4 deeper verified bricks (exact crossover, joint t2, best bracket, Johnson no-go)
+
+Second thrash-safe multi-agent round (read-only `lake env lean`). All 4 verified+axiom-clean+non-vacuous
+(non-vacuity adversarially checked). On main `f2dbe3137`:
+* `DeltaStarExactCrossoverF17.lean` — EXACT two-sided δ* crossover for RS[ZMod17,Fˣ,2] (n=16,k=2):
+  exact |Λ|=15,5,3 at a=3,4,5 (decide); at B=10 crossover a*=4 (δ*=3/4), MAXIMAL (∀a∈[4,16] fit, a=3
+  fails) so no gap, strictly interior (2<4 ∧ 16<32). Closes Round-9 bracket [5,120] to a sharp point —
+  the prize fully solved at this concrete scale.
+* `JointT2FiberTightness.lean` — exact (e_1,e_2)=0 fiber = order-4 ⟨ω⟩-symmetric subsets via two-level
+  antipodal descent (t=1 antipodal → t=2 descends to squares in G²). TWO-TYPE design (coeffs K=ℚ, roots
+  cyclotomic L) fixes a vacuity bug (one-type indep-over-L is vacuous for N≥2); literal oneRootSystem
+  inhabitant witnesses non-vacuity. Matches Round-8 C(n/4,s) as EQUALITY over ℂ.
+* `BestProvableBracket.lean` — δ* ≤ min(δ_avg, δ_sym) + comparison_min regime lemma + Johnson δ*≥1-√ρ.
+* `JohnsonSecondMomentFrontier.lean` — Johnson 2nd-moment list cap + NO-GO cauchySchwarz_eq_iff_flat
+  (CS tight ⟺ flat profile ⟺ Johnson, so 2nd moment alone CANNOT beat Johnson; need higher-order).
+
+**Net.** Open core (list UPPER bound past Johnson for the asymptotic family) unmoved — research-grade.
+Rounds 8-10 = order-4 concentration+depth-collapse engine + concrete two-sided pin + EXACT crossover +
+joint-t2 tightness + averaging/symmetric brackets + Johnson 2nd-moment no-go. Issue stays open.
+
+### O30 / Round-9f — CORRECTION: the char-0 minimal-energy bound does NOT transfer to `F_q` (verified counterexample)
+
+Honest correction to the O28–O29 framing. The reduction `repCount ≤ 2 ⟹ E ≤ 3|G|²` (O29) is correct,
+but its hypothesis — proven in char 0 (O28) via complex conjugation — is **FALSE over `F_q`**.
+`SubgroupRepCountFiniteFieldCounterexample.lean` (axiom-clean, kernel `decide`) exhibits it:
+
+* Over `F₁₇` (`8 ∣ 16 = |F₁₇ˣ|`), the `8`-th roots of unity are `G = {1,2,4,8,9,13,15,16} = {±1,±2,±4,±8}`.
+* `repCount_F17_eighthRoots_eq_three`: `#{c∈G : c+1∈G} = 3` — the consecutive pairs `(1,2),(8,9),(15,16)`
+  are all inside `G`. So `char0_repBound_fails_over_finite_field`: `∃ t≠0, repCount G t > 2`.
+
+**Why this matters (the real correction).** The char-0 quadratic argument (a nonzero sum has ≤2
+unit-circle representations) uses `conj c = c⁻¹`, which has no `F_q` analogue — and indeed over `F_q` the
+`2^k`-subgroup has **additive coincidences** (consecutive elements) absent in char 0. So the smooth domain
+does **NOT** have minimal additive energy over `F_q`; the true `F_q` additive energy is strictly larger
+than the char-0 `3|G|²` and is the genuine open **sum-product** quantity. This is exactly why the
+deep-interior δ* problem is hard over finite fields and easy in char 0 — now demonstrated by a verified
+counterexample. The honest open core: the *true* sum-product additive-energy bound for `2^k`-subgroups
+over `F_q` (which determines whether the §7/averaging attack is defeated), NOT the char-0 value. 51
+verified bricks rounds 1–9; this one corrects the record.
+
+### O26 / Round-11 — 4 bricks: unconditional tightness/Q, δ* table, Fisher past Johnson, RS averaging LB
+
+Third thrash-safe multi-agent round. All 4 verified+axiom-clean+non-vacuous. On main `7865357ce`:
+* `LamLeungUnconditionalQ` — DISCHARGES the cyclotomic-indep hypothesis: linearIndependent_pow_le
+  (N≤deg minpoly ⟹ {ζ^j} indep) + antipodal_of_sum_zero + UNCONDITIONAL ℚ(i) instance antipodal_Qi.
+  General N=2^{m-1} needs only the cyclotomic degree φ(2N)=N (Mathlib has, not yet assembled).
+* `DeltaStarTableSmoothInstances` — 3 NEW exact interior crossovers (ZMod17 k=3 δ*=11/16; ZMod41 order-8
+  δ*=5/8; ZMod97 order-8 δ*=5/8), maximality proven STRUCTURALLY (antitone, all a≥a*).
+* `FisherPastJohnsonCap` — polynomial-method cap F.card·C(t,a+1)≤C(n,a+1) valid PAST Johnson (n=16,t=4,
+  a=1: Johnson denom t²-an=0 vacuous, Fisher=20). HONEST FINDING: for RS, |Λ|≤C(n,k)/C((1-δ)n,k); at
+  Johnson ≈(n/k)^{k/2} which for prize k≤2^40 ≫ ε*|F| — so Fisher is valid-but-too-weak past Johnson,
+  does NOT push δ* up. Concrete reason the upper-bound-past-Johnson is hard (simple caps too lossy).
+* `AveragingListLowerBoundRS` — averaging LB maxList≥C(n,k+t)/q^t as a genuine theorem (pigeonhole +
+  injective S↦codeword), discharges BestProvableBracket's hypothesis.
+
+**Net.** Asymptotic open core (sharp list UPPER bound past Johnson) unmoved — now better-understood as to
+why (Fisher too weak, Johnson's sharper poly bound stops exactly at 1-√ρ). Issue stays open.
+
+### O27 / Round-12 — UNCONDITIONAL tightness completion + MDS list-bound kernel
+
+Completion round (3/4 angles; 4th rsdeltastarbound left incomplete, overlaps Round-11). On main `3fbb036e3`:
+* `LamLeungUnconditionalGeneral` — antipodal_unconditional: e_1=0 fiber tightness FULLY UNCONDITIONAL
+  for general N=2^{m-1} over any CharZero field. totient_two_pow (φ(2^m)=2^{m-1}) +
+  natDegree_minpoly_primitiveRoot (cyclotomic degree) + linearIndependent_pow_primitiveRoot. Discharges
+  the cyclotomic-indep hypothesis IN GENERAL (Round 11 had only N=2/Q(i)); instantiated at m=3 (8th roots,
+  N=4) with non-vacuity.
+* `JointT2Unconditional` — joint_t2_unconditional: joint (e_1,e_2)=0 fiber = order-4 ω-symmetric subsets,
+  UNCONDITIONAL over ℂ (general k), cyclotomic indep at BOTH levels G and G². Completes Round-10 conditional
+  joint-t2; Round-8 C(n/4,s) lower bound is now a genuine EQUALITY over ℂ.
+* `RSMDSListBound` — rs_list_leading_bound: MDS weight-enumerator/information-set RS list bound
+  (rs_codeword_weight_ge = MDS dist n-k+1; rs_vanish_card_le; listAt⊆biUnion) + concrete ZMod 7 instance.
+  First brick of the genuine asymptotic list-bound machinery (the route the open core needs).
+
+**Net.** Rounds 8-12: lower-bound/fiber/concrete side COMPREHENSIVE + now UNCONDITIONAL; MDS kernel started.
+Asymptotic open core (sharp list upper bound past Johnson) unmoved — research-grade. Issue stays open.
+
+### O28 / Round-13 — the #82-kernel identity (2nd moment = ball-intersection)
+
+Asymptotic-kernel round; 1 brick landed (other 2 angles cut short by session usage limit). On main `61cf5eea5`:
+* `ListAroundBallIntersectionKernel.lean` — sum_sq_listAround_eq_ball_inter: ∑_w |listAround(w)|² =
+  ∑_{c,c'} |B(c,r)∩B(c',r)|, the genuine object controlling general-center list sizes. Plus
+  listAround_codeword_eq_singleton (codeword-centered list trivial for r<d — localizing why the weight
+  enumerator only handles the codeword-centered case) and sum_listAround_card (first moment). By
+  Cauchy-Schwarz/Paley-Zygmund a uniform bound on the RHS ball-intersection 2nd moment gives the sharp
+  list control past Johnson. The SHARP RHS bound for explicit RS is the open prize kernel (CS25/#82).
+
+**SESSION SUMMARY (Rounds 8-13, ~21 verified axiom-clean files on main).** The lower-bound/fiber/concrete
+side of #232 is comprehensively + UNCONDITIONALLY machine-checked; the averaging/bracket machinery and the
+Johnson 2nd-moment no-go / Fisher past-Johnson finding map the upper-bound frontier; the open core is now
+sharply reduced to ONE object — the ball-intersection 2nd moment ∑_{c,c'}|B(c)∩B(c')| (sum_sq identity) —
+whose sharp upper bound for explicit smooth-domain RS is the genuine research kernel (MDS weight-enumerator
+2nd-moment ball-intersection, CS25/ABF26). Issue stays open — the asymptotic core is research-grade.
+
+### O11′ — EMPIRICAL RESOLUTION of the subgroup-sumset question + the S-two/KK25 reframing (nubs, 2026-06-09)
+
+The Loop46+ honest correction asked whether `|G^{(+ℓ)}|` for a 2-power multiplicative subgroup is
+sub-exponential (survive) or near-maximal (refute-pressure). **Probed: it is exponential.**
+Distinct half-subset sums (`ℓ = |G|/2`), uncapped fields, exact DP for |G| ≤ 16, sampled lower
+bound at |G| = 32 (q = 2013265921, 6M samples, seed 11; collision-corrected estimate):
+
+| |G| | distinct ℓ-sums | log₂ |
+|---|---|---|
+| 8 (exact) | 41 | 5.4 |
+| 16 (exact, q=786433) | 3 281 | 11.7 |
+| 32 (LB, q≈2.0e9) | ≥ 4 112 427 (≈5.6M corrected) | ≈22.4 |
+
+`log₂ ≈ 0.7·|G|` — exponential; the vanishing-power-sum structure costs only ~0.2 bits/element vs
+generic. So the power-sum/Newton sub-exponential hope is **empirically dead** (evidence, not proof;
+lower-bound direction — exactly what the attack side needs). Useful provable mini-lemma: for the
+full subgroup, `∑_{g∈G} g = 0` gives the complement symmetry `|G^{(+ℓ)}| = |G^{(+(|G|−ℓ))}|`,
+making all four prize rates' critical layers uniform.
+
+**Cross-reference that re-shapes the target (see #232 comment 2026-06-09):** the official ABF26
+challenge (2026/680, read in full) is a per-code determination (window k ≤ 2⁴⁰, |F| < 2²⁵⁶), and
+CGHLL26 = the S-two whitepaper (2026/532, App. A) states the believed answer: Conjecture 1
+(`ℓ(θ) ≤ c₁·2^{c₂·H(ρ)/η}` up to the **Elias radius** — exponential in 1/η, matching the KK25
+proven lower bound `2^{(H(ρ)+o(1))/η}` AND our smooth-domain probe shape) + Conjecture 2
+(line-decodability, threshold `a = ℓ·n + o(n)` ⟹ `ε_mca ≤ ℓ·n/|F|` via GG25 Thm 3.5).
+Conditional answer formula: `δ*_C = 1−ρ−Θ(H(ρ)/(log₂|F| − 128 − log₂ n))` (≈ capacity − 0.011 at
+ρ=1/2, n=2⁴⁰, |F|=2²⁵⁶). ⇒ The in-tree poly(1/η) prize surfaces are the wrong *sharp* shape
+(not contradicted — `(2^m)^{c₁}` absorbs `n^{Ω(1)}` at η ≳ 1/log n — but hopeless below
+η ≈ H/(c₁·log n)); the believed-true budget is `2^{O(H(ρ)/η)}`. **The open $1M core, sharply:
+prove `ℓ(θ) ≤ 2^{O(H(ρ)/η)}` for plain deterministic smooth-domain RS in (Johnson, Elias)** —
+known for random codes and random/folded RS (GG 2025/2054); the gap is what smoothness must
+supply in place of randomness. Next: dissect GG25/KK25's use of randomness.
+
+### O29 / Round-13b (main-loop, no agents) — the linear-code collapse of the ball-intersection 2nd moment
+
+After the agent session limit, proved directly (BallIntersectionSecondMomentLinear.lean, axiom-clean):
+for a subtraction-closed (linear) code C, ∑_{c,c'∈C}|B(c,r)∩B(c',r)| = |C|·∑_{e∈C}|B(0,r)∩B(e,r)|
+(translation invariance Δ(x−z,y−z)=Δ(x,y) via hammingDist_comp + reindex c'↦c'−c), and the triangle
+cutoff wt(e)>2r ⟹ B(0,r)∩B(e,r)=∅. Combined with the #82-kernel identity (O28), the full chain is:
+
+   ∑_w |Λ(w,r)|²  =  ∑_{c,c'∈C}|B(c)∩B(c')|  =  |C| · ∑_{e∈C, wt(e)≤2r} |B(0,r)∩B(e,r)|.
+
+So the open core is now reduced to the cleanest possible object: the OFF-DIAGONAL sum
+∑_{e∈C, wt(e)≤2r}|B(0,r)∩B(e,r)| = (MDS weight enumerator A_w, w≤2r) × (ball-intersection volumes
+I(w,r)=|B(0,r)∩B(e,r)|). The sharp bound on THIS is exactly the CS25/#82 research kernel (the crude
+I≤V(r) bound is provably too weak past Johnson — H(2δ)>H(δ) blowup). Multi-paper, not session-achievable.
+GOTCHA: hammingBall is a def ⟹ membership lemmas don't auto-fire (simp shows raw Quot.lift); add a
+`@[simp] mem_hammingBall` lemma and destructure with `Finset.mem_inter.mp`/`mem_hammingBall.mp`, not simp.
+
+### O11″ — the KK mechanism reproduced LIVE at moderate p (nubs, 2026-06-09)
+
+Small-scale, noise-free end-to-end reproduction (p=2013265921 ≈ 2³¹, smooth H of order 16, inner
+subgroup G of order 8, rate 1/2, radius 0.375 ∈ (Johnson, capacity), agreement ≥ 10, noise floor
+≈ C(16,10)/p ≈ 5·10⁻⁶): on the lifted line `X¹⁰ + λX⁸`, every 5-subset S ⊂ G yields the witness
+u_S(X²) (deg 6 < k=8) agreeing on exactly 10/16 — and the bad-scalar set is exactly {−e₁(S)}:
+**40 distinct bad λ = |G^{(+5)}| (the subgroup subset-sumset), 10/10 structured λ confirmed bad by
+exhaustive list search, 0/25 random λ bad.** So (i) the KK lower-bound mechanism operates ~10⁴⁰×
+below its rigorous p > φ(m)^{φ(m)} requirement — the moderate-p extension (the prize-window
+question) is empirically TRUE and awaits proof (collision-counting / Stepanov / character sums on
+e₁ over r-subsets); (ii) the identity {bad-scalar count} = {subset-sumset size} is the live bridge
+between the off-diagonal kernel (`fa6d16534`), the O11′ sumset probes, and KK25; (iii) exhaustive
+search at this scale found ONLY structured bad scalars — supporting the exhaustiveness hypothesis
+(H1: structured families are the whole list past Johnson), the upper-bound route's best hope.
+Reproduction: /home/nubs/proximity-research/probe_kk_live.py (seed 9).
+
+### O11‴ — EXACT char-0 subgroup-sumset formula (data-confirmed) + averaged moderate-p route (nubs, 2026-06-09)
+
+Fiber statistics of e₁ on r-subsets of the order-m (2-power) subgroup are p-INDEPENDENT at moderate
+p (identical at 786433 and 2013265921): all collisions are characteristic-0, and the only
+small-coefficient 2-power cyclotomic relation is the pairing ζ^{j+m/2} = −ζ^j. Hence (derived, and
+EXACTLY matching data):
+  image(m,r) = Σ_{s≤r, s≡r(2), r−s≤2(m/2−s)} C(m/2,s)·2^s   (m=16,r=8: 3281 ✓; m=8,r=4: 41 ✓)
+  maxfiber(m,r) = C(m/2,⌊r/2⌋)                              (70 = C(8,4) ✓; 6 = C(4,2) ✓)
+Asymptotics ~3^{m/2} = 2^{0.79m} — replaces the H(ρ) heuristics with sharp constants in the
+bad-scalar counts (O11″ lift). Moderate-p rigor: a modular collision forces p | N(α) with
+0<|N(α)|≤m^{m/2}; counting (α,p) pairs + Dirichlet gives an AVERAGED theorem-shape — for most
+primes p ≈ 2^{1.2m} ≡ 1 mod m (inside the prize window for m ≤ 200), ZERO modular collisions, so
+the image equals the exact formula. Sketch (elementary; pending careful write-up); the per-prime
+statement is the residual P-A kernel. Char-0 formula is finite combinatorics + standard cyclotomic
+independence ⟹ Lean-formalizable brick (queued). Probes: probe_fibers.py in the research folder.
+
+### O30 / Round-14 — δ* bounded away from capacity by an ABSOLUTE constant at prize scale
+
+`DeltaStarConstantGapBelowCapacity.lean` (main-loop solo, ℕ-only, axiom-clean): the averaging bound
+beats ε*·|F| ≤ 2^128 for t ≤ ~2k/254, so δ* ≤ 1−ρ−ρ/127·(1±o(1)) for prize fields q ≤ 2^256. Engines:
+Pascal shift C(n,m)≤C(n+j,m+j) → central binomial 4^s ≤ 2s·C(2s,s) (rate 1/2 needs the SHIFT — naive
+monotonicity fails since 2(k+t)>n); crossover Lstar·q^t < C(n,k+t) under 258t+193≤2m / 254t+193≤2k.
+Witnesses at n=2^20 (t=4063 rate-1/2 → δ ≈ 0.49613; t=2063 rate-1/4), extreme-parameter strict
+instantiation proven outright. Prize-scale bracket now: δ* ∈ [1−√ρ, 1−ρ−ρ/127]. Remaining open side =
+past-Johnson list cap (research core).
+
+### O11⁗ — averaged P-A WRITTEN UP: exact images at moderate primes, window-level numbers (nubs, 2026-06-09)
+
+Full careful write-up at `/home/nubs/proximity-research/06-AVERAGED-PA.md` (Theorems A–D + Corollary E):
+**A** exact char-0 image/fiber formulas (triple data-verified). **B** any modular collision forces
+p | N(α), 0<|N(α)|≤m^{m/2} (coeffs ≤2 in the half-basis). **C** pair counting: ≤ 5^{m/2}·(m/2)log_P m
+collision-bearing primes in [P,2P]. **D** for P ≥ 5^{m/2}·m²·φ(n)·polylog, all but O(1/m) of primes
+p ≡ 1 mod n in [P,2P] give image EXACTLY N₀(m,r) ≈ 3^{m/2}, all r simultaneously. **E (window
+numbers):** m=128, n=2⁴⁰, p ≈ 2²⁰³ < 2²⁵⁶: most such primes give ≈ 2^{101} bad scalars at the KK
+radius (η ≈ 1/64) ≫ the breach threshold 2^{203−128} = 2^{75} ⟹ **δ\*_C < 1−ρ−1/64 for most such
+codes** — consistent with (and below) the S-two-conditional crossover η* ≈ 1/35. Honest caveats in
+the note: "most primes" not per-prime (the residual P-A kernel — a specific production prime could
+differ); Siegel–Walfisz ineffectivity for the finite window (effective Lemma C, analytic denominator);
+the general-(n,m,r) lift bookkeeping + far-ness side to be written out. This is the LOWER half only;
+P-B (the 2^{O(H/η)} upper bound past Johnson) remains the open core.
+
+### O11⁗⁺ — Lift Lemma completed: the averaged lower half is a full elementary chain (nubs, 2026-06-09)
+
+The lift bookkeeping + far-ness of O11⁗ are now closed (06-AVERAGED-PA.md, Lift Lemma): for dyadic
+gap η = 1/m′ (m′ | n, ρm′ ∈ ℤ), r = ρm′+1, line (u₀,u₁) = (x^{rc}, x^{(r−1)c}), c = n/m′:
+(i) far-ness is a ONE-LINE degree count — (r−1)c = ρm′c = k exactly, so x^{(r−1)c} − ĉ₁ is nonzero
+of degree k ⟹ ≤ k < (1−δ)n agreements ⟹ the pair is automatically MCA-far at δ = 1−ρ−η;
+(ii) each r-subset Ŝ of the m′-subgroup gives the codeword witness u_Ŝ(X^c) (deg k−c < k) agreeing
+with u₀ − e₁(Ŝ)u₁ on exactly rc = (1−δ)n points ⟹ #bad λ ≥ image_p(e₁);
+(iii) with Thm D: for most primes p ≡ 1 mod n, image_p = N₀(m′, ρm′+1) EXACTLY ⟹
+ε_mca(C, 1−ρ−η) ≥ N₀/p = 2^{(log₂3)/(2η) − O(log 1/η)}/p.
+**Net: the lower half of the Grand MCA determination — for most primes, any dyadic gap, sharp
+constants — is a complete elementary chain** (cyclotomic basis count → norm/pair counting →
+Dirichlet average → lift). Honest residuals, named: per-prime exactness (a specific production
+prime could collide) + the analytic denominator (SW/GRH on the concrete window). The upper half
+(2^{O(H/η)} list bound past Johnson = the believed-true core) remains THE open problem (P-B).
+
+### O11⁗⁺⁺ — per-prime exactness VERIFIED at production primes (nubs, 2026-06-09)
+
+The O11⁗ "most primes" caveat is now closed for the primes that matter, by finite verification
+(exhaustive DP = proof per triple): **BabyBear 15·2²⁷+1, KoalaBear 127·2²⁴+1, Goldilocks
+2⁶⁴−2³²+1 all have e₁-image EXACTLY N₀ at m=8 (41) and m=16 (3281), and pass the m=32 MITM
+zero-fiber spot-check (12870 = C(16,8)) — zero modular collisions.** So the Lift-Lemma bad-scalar
+lower bounds are exact verified facts at the production SNARK fields for the verified m. Open:
+asymptotic per-prime (all m at a fixed p); the analytic-denominator caveat; and P-B (the upper
+half) — unchanged. Scripts: probe_production.py, probe_m32_fiber.py in the research folder.
+
+### O29 / Round-14 — the GS-algebraic route end-to-end + THE JOHNSON WALL as a theorem
+
+5-agent GS round (all landed) + own-token root-order brick. On main `85d8a1157` (6 files, axiom-clean):
+* The COMPLETE GS pipeline: `GSInterpolationExistence` (Sudan m=1 front end, rank-nullity + exact
+  monomial count Σ_{j<D}(D−(k−1)j), ZMod 5 instance) → `GSRootOrderStep` (weighted-degree transfer +
+  factor_of_agreement: ≥D agreement ⟹ (Y−f)∣Q) → `GSYDegreeListCap` (|S| ≤ deg_Y Q via RatFunc roots,
+  cap attained with equality) → `GSPipelineAssembly` (composed, fired on a concrete instance).
+* `GSJohnsonWall` (HEADLINE): gsFeasible_iff — the GS parameter system is feasible IFF t·m > DGS =
+  ⌊√(n(k−1)m(m+1))⌋+1; the JOHNSON WALL gs_johnson_wall: t² > n(k−1) for EVERY multiplicity m (sharp
+  t²m > n(k−1)(m+1); real √(n(k−1)(1+1/m)) < t → Johnson as m→∞, never reached). Feasible witness
+  (16,2,3,5,14) just above; INFEASIBLE at t=4=Johnson. The standard GS certificate provably cannot
+  go below Johnson at any multiplicity.
+* `DerandomizationFrontier`: the explicit-vs-random gap as named Props (NOT asserted) + the correct
+  absolute-agreement puncturing monotonicity (naive relative version FALSE) + endpoints.
+
+**Net.** The open core is isolated on ALL sides by verified no-gos: moments = Johnson (O25/O28-adjacent),
+whole-space moment diagonal-dominated (SecondMomentReductionLimit), Fisher too weak (O26), and now GS
+stops exactly at Johnson (O29). Remaining: does ANY other explicit algebraic certificate beat Johnson
+for smooth-domain RS — the genuine $1M core. Fleet concurrently landed the constant-gap-below-capacity
+averaging bracket: verified two-sided δ* ∈ [1−√ρ, 1−ρ−c_ρ] at prize scale. Issue stays open.
+
+### O30 / Round-14 — the per-line pair co-occurrence bound (line-restricted second-moment kernel)
+
+The O28/O29 chain is a GLOBAL average over q^n centers and provably cannot pin the interior
+threshold (Markov: on F₁₇ n=16 k=3 the exact series gives bad-center count ≈ 3·10¹⁹ at the verified
+crossover — consistent, 537× sharper than the crude V(r) control, but hopeless). The proximity-gap
+quantity lives on LINES, so the kernel was restricted to a line (LinePairCooccurrenceBound.lean,
+axiom-clean): on {f+γg} with g nowhere zero, any two words at distance w co-occur in the
+agreement-≥a lists ≤ 2(n−w)/(2a−w) times (integer form B·2a ≤ B·w + 2(n−w)), and NEVER when
+2a > 2n−w. One-vote-per-coordinate double counting (same primitive as Hab25Core Lemma 1, new
+combination: codeword-pair co-occurrence = the off-diagonal of the per-line second moment).
+
+**Sharp on the rate-1/2 smooth instance** RS[8,4]/F₁₇ (order-8 domain ⟨2⟩, a=5, δ=3/8 strictly
+interior): predicts cooc ≤1 for w∈{5,6}, =0 for w∈{7,8}; an 80-line/4181-pair exhaustive scan
+matched EXACTLY (every w∈{5,6} pair co-occurred exactly once, w∈{7,8} never), zero violations.
+At ρ=1/2 every pair in the prize window satisfies 2a>w — never vacuous. At ρ<1/3 (e.g. the n=16
+k=3 table instance, w≥14>2a) the 2a>w regime is empty — the bound's home is exactly rate ≥ 1/3.
+
+**Honest findings from the same scan.** (1) The DeltaStarTableSmoothInstances F₁₇ n=16 k=3
+crossover (a*=5, B=10) is the HARD-WORD crossover, not the global per-code δ*: a line point with
+list 15 ≥ a=5 exists (worse center than the table's witness word). (2) Off-diagonal mass dominates
+the per-line second moment at a=4 (98%) — co-occurrence is NOT rare; the pair bound, not scarcity,
+is what controls it. **Next lever:** assemble per-line ∑_γ|Λ(γ,a)|² ≤ M + Σ_pairs 2(n−w)/(2a−w)
+over line-list pairs (M = per-line first moment via the same one-vote count ≤ n/a per codeword),
+then close the loop against the per-line list bound the prize formula needs.
+
+### O12 — naive exhaustiveness REFUTED: dense secondary list elements past Johnson (nubs, 2026-06-09)
+
+Max-list hunt past Johnson (n=16, k=8, agree ≥ 9 = radius 7/16 where johnsonDenom < 0, BabyBear,
+noise-free, reproducible seed 13): hill-climbing along the KK line found λ with an e₁-fiber giving
+THREE simultaneous sparse-lift witnesses (agreement 10) — and an exact list of **19**, the other
+**16 elements DENSE** (full support 0..7, not X²-shaped), at exactly-threshold agreement 9. So the
+sparse-lift structured families do NOT exhaust beyond-Johnson lists: multi-witness words carry a
+derived dense population. Random starts stay at list ≈ 0 — big lists remain reachable only from
+structure. **The upper-bound (P-B / S-two Conj 1 / off-diagonal) question is now quantified as the
+ENRICHMENT RATIO** (max-list / structured-core; ≥ 6× at n=16): polynomial ⟹ the 2^{O(H/η)} budget
+survives (count = N₀-type core × poly); exponential ⟹ Conj 1 itself is threatened. Next probes:
+ratio scaling at n=32; theory: are dense elements interpolation artifacts of witness agreement-set
+unions (their exactly-threshold agreement suggests so)? Scripts: probe_maxlist.py, probe_dissect.py.
+
+### O12′ — enrichment localizes BELOW the witness radius; zero at witness level (nubs, 2026-06-09)
+
+Follow-up to O12: at n=16 the max-fiber multi-witness word has exact list = its structured core
+(3/3) at the witness agreement level (≥10); the dense population (O12's 16 extra) exists only one
+notch below (≥9). So sparse-lift exhaustiveness HOLDS at each construction's own radius; the dense
+elements are marginal below-witness artifacts. New refined hypothesis **H2 (radius recursion)**:
+ℓ(θ) ≤ Σ_levels (structured cores at radii ≥ θ) + per-level marginals controlled one notch tighter
+— poly marginals ⟹ the 2^{O(H/η)} budget survives. Also: fiber-formula refinement verified
+(odd r: C(m/2−1,(r−1)/2) — 3, 35 exact). n=32 union-sampling needs witness/dense classification
+before its ratio is meaningful (17 found vs core 35, composition unclassified). Scripts:
+probe_enrichment.py.
+
+### O31 / Rounds 14–16 (main-loop solo) — constant gap + averaging closure + smooth self-similarity
+
+Three new verified theorems (all axiom-clean, 0 sorry/warnings, on main):
+* `DeltaStarConstantGapBelowCapacity` (R14): δ* ≤ 1−ρ−ρ/127·(1±o(1)) at prize scale — the averaging
+  bound beats ε*·|F| ≤ 2^128 for t ≤ ~2k/254 (rate-1/2 needs the Pascal SHIFT C(2m,m+t) ≥
+  centralBinom(m−t); rates <1/2 use monotone C(n,k+t) ≥ centralBinom(k+t)). Witnesses n=2^20
+  (t=4063 → δ≈0.49613); extreme-parameter strict instantiation proven outright. Prize-scale bracket
+  now δ* ∈ [1−√ρ, 1−ρ−ρ/127].
+* `AveragingReachNoGo` (R14b): matching no-go — for q ≥ 2^255, C(n,k+t)·2^128 ≤ q^{t+1} once
+  t ≥ (n−127)/255 (C(n,a) ≤ 2^n). The averaging method's reach at max fields is pinned to
+  t/n ∈ [~1/258, ~1/255] — a ~1% window; the route is CLOSED as a method (R14 essentially optimal).
+* `SmoothDomainSelfSimilarity` (R16): NEW structural theorem SPECIFIC to smooth domains — for s | n,
+  Polynomial.expand lifts the scale-s list INTO the scale-n list at the SAME rate and SAME relative
+  radius (selfsimilar_list_le; power map x↦x^e has uniform e-fibers on μ_n; agreement multiplies
+  exactly by e). Consequences: prize-family worst-case list at fixed (ρ,δ) is MONOTONE in m for
+  n=2^m (small-scale δ*-table data lifts to prize scale); any future beyond-Johnson cap must respect
+  all divisor scales simultaneously. Honest: rate/radius-preserving ⟹ transfers data within the gap
+  but cannot alone decide δ*.
+
+R15 research survey (19 sourced findings, posted to #232): Mathlib PR #38606 = Lam-Leung prep
+(upstream is formalizing vanishing sums); PR #38014 = first linear-code PR; Krawtchouk/MacWilliams/
+Johnson/Weil-beyond-deg-1 absent everywhere. EXTERNAL COMPETITION: iotexproject/rs-proximity-gaps
+(ePrints 2026/861, 2026/858, May 2026) CLAIMS FRI soundness ABOVE Johnson at deployed parameters —
+their Lean is only the RVW13 halving lemma (window-dressing); paper math under adversarial deep-read.
+
+**O30 addendum (round-14b, same session).** `LineSecondMomentBound.lean` (axiom-clean) assembles
+the round: (1) supp/offSupp partition; (2) UNIFORM pair bound — in the `2a > n` regime (δ < 1/2,
+the whole ρ=1/2 prize window) the pair bound is monotone in w via `(w−d)(2a−n) ≥ 0`, so every
+pair at distance ≥ d obeys the single bound `B·(2a−d) ≤ 2(n−d)` (≤ 1 on the RS[8,4]/F₁₇ witness);
+(3) the per-line second-moment identity `∑_γ|Λ(γ)|² = ∑_γ|Λ(γ)| + ∑_{C.offDiag}|badSet|` (the line
+counterpart of the O28 kernel identity) and the assembled bound
+`(∑|Λ|²)·(2a−d) ≤ (∑|Λ|)·(2a−d) + (|C|²−|C|)·2(n−d)`. The off-diagonal is now distance-uniform per
+pair instead of the past-Johnson-blowing ball-intersection volume. The remaining open content is
+the PAIR COUNT: `|C|²−|C|` is the trivial bound; the scan shows the true number of co-occurring
+pairs on a line is tiny, and a diameter argument (all of Λ(γ) pairwise agree on ≥ 2a−n coords,
+so for RS with 2a−n ≥ k the list is a singleton — the unique-decoding collapse) shows where RS
+structure must enter past that. The co-occurring-pair count for explicit smooth-domain RS in
+(Johnson, capacity) is the sharpened open kernel.
+
+### O12″ — H2-decomposition refuted: the marginal layer is balanced-overlap (nubs, 2026-06-09)
+
+Follow-up to O12/O12′ (seed-13 reproducible, n=16, BabyBear): the dense below-witness population is
+NOT union-decomposable — 0/16 agreement sets lie inside the witness union (|∪|=14/16); instead every
+dense element intersects EACH of the 3 witness sets in exactly 5–6 of its 9 points ((6,5,5)×8,
+(6,6,6)×4, (5,5,5)×4) and uses outside points. Verdicts: H1-naive and H2-decomposition both
+eliminated by explicit example; surviving facts: zero enrichment AT witness radius, and the
+marginal layer is rigidly balanced-overlap with full coefficient support. The correct upper-bound
+mechanism must engage the witnesses' mutual algebra, not agreement-set combinatorics. Next: targeted
+literature check (deep-hole / balanced-overlap phenomena in list decoding) + the witnesses' pairwise
+agreement algebra. Scripts: probe_h2.py.
+
+**O30 probe (pair-count field scaling, nubs).** Rate-1/2 order-8 smooth instances, n=8 k=4 a=5,
+30 random lines each: per-line list mass M = ∑_γ|Λ(γ)| is FIELD-SIZE INDEPENDENT (48.1 / 51.8 /
+52.9 at q = 17 / 41 / 73), while co-occurring pairs per line match the birthday estimate M²/2q
+exactly (predicted 73 / 30 / 17, observed 53.7 / 23.2 / 15.3). So on random lines the off-diagonal
+is purely birthday-random: per-line 2nd moment ≈ M + O(M²/q) — exactly the poly/|F| shape the prize
+needs. The reduced conjecture: (i) M ≤ poly(n) uniformly over lines (M is the line-list mass, a
+combinatorial (n,k,a) quantity, empirically constant in q), and (ii) adversarial lines cannot beat
+birthday by more than poly(n) (vote anti-concentration — where smooth-domain RS structure must
+enter). Either piece failing would localize the obstruction; both holding pins ε_line ≈ M²/q per
+line. Evidence, not proof; lower-bound side untested on adversarial lines.
+
+### O12‴ — the marginal layer is a TRANSVERSAL DESIGN; H3′ is the live budget-survives hypothesis (nubs, 2026-06-09)
+
+Exact dissection (seed-13, n=16, BabyBear): witness region lattice [pairwise 4,4,4; triple 2;
+outside 2]; ALL 16 marginal elements are near-uniform transversals (region profile {2,2,2,2,1} up
+to permutation), equidistant from the witness triple (5–6 agreements each, full domain), always
+touching the outside region. Realized 16 ≪ transversal shape space ⟹ strong algebraic culling.
+**H3′:** marginals ≤ region-lattice transversal count = poly(n) per configuration ⟹
+ℓ(θ) ≤ N₀-core × poly ⟹ the 2^{O(H(ρ)/η)} budget SURVIVES. Trajectory: H1 refuted → H2 refuted →
+H3′ live with exact single-configuration support. Next: second configuration + n=32 test, then the
+transversal-count proof attempt (finite algebra, Lean-able if it holds). Scripts: probe_h3.py.
+
+### O12⁗ — the fiber-3 marginal design replicates EXACTLY; C19 is theorem-shaped (nubs, 2026-06-09)
+
+Second, fully deterministic fiber-3 configuration (max-fiber λ, no randomness) reproduces O12‴'s
+structure EXACTLY: list 19 = 3 + 16, region lattice [4,4,4,2,2], 16/16 dense = {2,2,2,2,1}
+transversals, witness-agreement multiplicities (6,5,5)×8/(6,6,6)×4/(5,5,5)×4 — all
+configuration-independent. **Conjecture C19:** every fiber-3 λ of the (16, 8, 5) smooth
+construction has agree-≥9 list EXACTLY 19 with this design. Finite ⟹ provable ⟹ Lean-able; its
+proof would deliver the first proven marginal-layer count past Johnson on a smooth domain and
+validate the region/transversal mechanism as the upper-bound technique. The P-B program now has a
+concrete mechanism candidate instead of a mystery. Scripts: probe_h3_cfg2.py.
+
+### O32 / Rounds 15–17 — Sudan end-to-end + θ-optimization + external-claim deep-read + CA engine
+
+* `SudanListBoundFull` (R15 harvest): the COMPLETE Sudan (m=1) list bound, end to end self-contained
+  (interpolation existence via rank-nullity + (Y−Cf) ∣ Q factor extraction + Y-degree cap):
+  n < Σ_{j<D}(D−(k−1)j), D ≤ t ⟹ list ≤ (D−1)/(k−1). Radius 1−√(2ρ) (NOT Johnson; mult ≥ 2 = GS
+  proper still open in-tree). First complete algebraic list-decoding bound in the corpus.
+* `SecondMomentThetaOptimization` (R15 harvest): the missing downstream of the ORPHANED MGF kernel
+  rs_sum_jointCoverCount_mgf_le — θ-optimization over ℝ: interior optimum θ*=2ra/(b(n−2r)), entropy
+  form at θ=r/n, and S ≤ (n/r)^{2r}(exp((q−1)r) + exp((q²+q−1)r)/q^{n−k}).
+* DEEP-READ VERDICT (ePrint 2026/858/861, "FRI soundness above Johnson"): protocol-level threshold
+  halving — RVW13 half-threshold CA (≤1 bad γ at conclusion δ/2) + BCIKS distance locking after
+  round 1; ~2× queries; the OPEN-ZONE equal-threshold CA/MCA (the prize quantity) explicitly "Not
+  solved here" (their claim map). Their Thm 7: equal-threshold bad-γ count ≤ C(n,k+1) (field-indep);
+  tightness (Prop 9) needs |F| > C(n,w)² ≫ 2^256 — does NOT fit prize fields. Their Conjecture 41
+  (M ≤ ⌊(2D−1)/c⌋ at codim excess c ≥ 3, ⟹ M=O(1) at Johnson) = the live prize-shaped list
+  conjecture, UNPROVEN (empirics to n=40).
+* `CAPairExtractionEngine` (R17): their verified kernel formalized — pair_of_two_bad (two bad γ's
+  solve for the codeword pair), bad_card_le_one (RVW13 half-threshold ≤1 bad γ), bad_card_le_choose
+  (equal-threshold ≤ C(n,k+1), field-independent). All axiom-clean.
+
+### O33 — §7 phase-diagram convergence analysis (2026/858 deep-read, part 2)
+
+Full §7 read. The codimension-excess phase diagram (D = n−k, c = D−w, list radius w):
+* c ≥ w (unique decoding): M ≤ 1 — in-tree in equivalent forms.
+* incidence bound (c < w): M ≤ C(n,d)/C(w,d), d = w−c — **this is EXACTLY our in-tree
+  FisherPastJohnsonCap k-uniform bound (round 11)**: independent convergence on the same theorem,
+  including the same honest finding (valid past Johnson, too lossy at prize scale).
+* c = 2: their Möbius/core bound M ≤ min(p, 2C(n,w−1)) is PROVEN (Berlekamp error-locator + degree-2
+  elimination per (w−1)-core — formalizable, companion-note-sized); the EXPONENTIAL worst case
+  0.66·1.36^n is EMPIRICAL ONLY (R²-fit to n=24, no theorem; their §8 open item). Their peak prime
+  p ≈ √C(n,w) sits exactly at the averaging floor — the empirical 1.36^n is far ABOVE the floor,
+  i.e. unproven worst-case CONCENTRATION (matches our round-6/7 concentration-door cartography).
+* c ≥ 3: Conjecture 41 (rank lemma: M ≤ ⌊(2D−1)/c⌋, linear) — predicts M = O(1) at Johnson; the
+  deployment regime c = Θ(n). UNPROVEN (exhaustive to n=15, empirics to n=40; rank-deficient
+  triples DO exist at c=2 from n=11 — translate families with a divisibility criterion — and none
+  found at c ≥ 3). **Conjecture 41 ≈ the prize's Grand List Challenge**, reformulated as a ℚ-rank
+  statement on integer constraint matrices from elementary-symmetric coefficients of point subsets.
+
+Net: the external race converged on our cartography (incidence cap, concentration door, near-capacity
+exponential); the live open kernel is now THREE equivalent formulations — (i) sharp ball-intersection
+2nd moment (our O28/O29), (ii) the t≥2 multi-esymm concentration (our O20-O22), (iii) their c≥3 rank
+lemma (Conj 41). All the same wall, none proven. Issue stays open.
+
+### O13 — C19 PROVEN at configuration; the mechanism is a 2-adic even/odd DESCENT (nubs, 2026-06-09)
+
+Complete finite verification chain (deterministic scripts probe_c19_{skeleton,count}.py):
+even/odd reduction (111/111 machine checks; witnesses `BBBBB000`, dense exactly `BBB11100`) →
+c_o = γΠ_B / c_e = I₃(v)+αΠ_B → 3×2 consistency systems → exhaustive 4480-selection enumeration →
+**EXACTLY 16 consistent = the dense count, from first principles.** With the standard
+rotation/Galois equivariance transport, C19 (every fiber-3 λ of the (16,8,5) smooth construction
+has agree-≥9 list EXACTLY 19 = 3 + 16 with the transversal design) is **proven** — the first exact
+beyond-Johnson list structure on a smooth domain. **Mechanism:** the proof is ONE step of a 2-adic
+tower descent (n → n/2 via even/odd parts, agreement → per-z both/one-sided patterns, counting →
+explicit cyclotomic linear algebra). The general P-B upper-bound attack is now concrete: iterate
+the descent; the 2^{O(H/η)} budget should emerge as a product of per-level pattern counts. This is
+the first mechanism-level candidate for the open core that has a PROVEN base case. Next: general
+descent recursion + n=32 two-step test + equivariance write-up + Lean brick (fully finite).
+
+### O13′ — descent self-similarity verified at n=32: the converse-FRI recursion is real (nubs, 2026-06-09)
+
+All 17 sampled n=32 list elements descend (even/odd = the FRI fold) to pure-B level-1 patterns with
+verified conditions — exactly lifts of level-1 list elements of the descended word, which is the
+same line construction one level down. Recursion: ℓ₀ = ℓ₁(c_o=0 branch) + Σ mixed-pattern branches,
+each mixed branch a C19-style finite consistency count. The 2^{O(H/η)} budget = product of
+per-level branch counts over the tower. PROGRAM: (1) converse-FRI descent lemma (rigorous, easy);
+(2) per-level branch-count bound (the remaining heart — C19 proved one full level exactly);
+(3) marginal-layer sampler at n=32 (needs ≥3-witness unions + outside, per the n=16 anatomy).
+First mechanism-level program for the open core with a fully proven base level. Scripts:
+probe_descent32.py.
+
+### O13″ — Descent Lemma formalized; the prize upper half ⟺ DEGENERACY COUNTING (Conjecture D) (nubs, 2026-06-09)
+
+`07-DESCENT.md` (research folder): the converse-FRI Descent Lemma in full rigor — c(y) =
+c_e(y²)+y·c_o(y²); per-z trichotomy B (joint pair-agreement, 2 constraints) / one-sided (one
+σ-twisted affine relation) / none; agree = 2#B+#1; pure branch = exact lift of the level-1 list
+(self-similar, verified n=32). **Overdetermination identity: constraints − unknowns ≥ ηn** — every
+beyond-rate list element is an ηn-fold cyclotomic degeneracy; ℓ(θ) = the degeneracy count.
+**Conjecture D:** per-level degeneracies ≤ poly·N₀-type subgroup counts ⟹ telescoping to the
+2^{O(H(ρ)/η)} budget. C19 = the first proven degeneracy count (16, exact). The open core is now
+ONE precisely-stated conjecture with a rigorous reduction, a proven base instance, and verified
+self-similarity — falsification target included (any level with super-N₀ degeneracies).
+
+### O34 / Round-18 — the prize-scale two-sided bracket (flagship)
+
+`TwoSidedBracketPrizeScale.lean` (main-loop solo, axiom-clean): two_sided_bracket_n2_20 = both sides
+at n=2^20 rate 1/2, all prize fields, in ONE self-contained statement. Johnson side: johnson_list_cap
+L·(a²−nJ) ≤ n·a (truncated double count + pair sum + ℕ Cauchy-Schwarz; instance a=750000 → L ≤ 61).
+Capacity side: capacity_crossover (R14) 2^128·q^4063 < C(2^20, 2^19+4063). NET: δ* ∈ [0.2848, 0.49613)
+— sharpest self-contained machine-checked prize-scale bracket. Johnson side → 0.2929 needs mult-2 GS
+(known math); past Johnson = the open core (3 equivalent formulations, O33). LEAN GOTCHAS: rw with a
+repeated filter-card pattern rewrites ALL instances at once (don't list it twice);
+sq_sum_le_card_mul_sum_sq works over ℕ directly (Semiring+LinearOrder+IsStrictOrderedRing);
+Finset.sum_ite_mem + univ_inter for indicator sums; push_neg deprecated → push Not.
+
+### O14 — KERNEL LEMMA proven: smoothness kills σ-twisted kernels; D ⟹ consistency-rarity only (nubs, 2026-06-09)
+
+**Lemma K (3-line proof, in research-folder 05-LOG Entry 18):** deg<κ pairs (e,f) with
+e(z) = −σ_z y_z f(z) on |O| ≥ 2κ tower points are zero — substitute z = d²: e(d²)+d·f(d²) has
+degree ≤ 2κ−1 but ≥ 2κ distinct roots σ_z y_z. Unconditional (no genericity). Consequences:
+per-pattern solutions ≤ 1 in the overdetermined regime forced by the ηn-overdetermination identity;
+hence ℓ(θ) = #consistent (B,O,σ) patterns — **Conjecture D is now purely inhomogeneous
+consistency-rarity** (cyclotomic identity counting; C19's exhaustive 4480→16 is the worked
+instance). This is the mechanism-level answer to "what randomness supplies that smoothness must
+replace": the d²=z parametrization supplies unconditional kernel rigidity. Lean brick queued
+(pure degree counting).
+
+### O14′ — exactness/circularity: single-level descent consistency IS the list count (nubs, 2026-06-09)
+
+Exact derivation (research 05-LOG Entry 19): the twisted consistency data of a (B,O,σ) pattern
+assembles to ρ(d) = −(Ã−w)(d)/Π_B(d²), and consistency ⟺ ∃ deg<k codeword agreeing with w on
+D ∪ s⁻¹(B) — a tautological bijection with level-0 list elements. **The descent route is exact,
+hence circular as a single-level upper bound** — eliminating the one-level shortcut permanently.
+Conjecture D's genuine content: the cross-level paired induction (list + correlated-agreement
+bounds simultaneously down the tower; pattern entropy vs cyclotomic rarity). Proven structure
+retained: Lemma K uniqueness, the pattern⟷element bijection, C19's arithmetic-rarity instance.
+This is the precise missing fact of the upper half, stated as sharply as it can be.
+
+### O15 — definitive framing: prize upper half ⟺ classical beyond-Johnson RS list decoding (nubs, 2026-06-09)
+
+Both bridge directions are now formal and cited: BCIKS 2055 Thm 1.9 (gaps beyond LDR_{F,D,q} are
+impossible with soundness < 1/(2n) — "list decoding beyond Johnson is a prerequisite") and GG25
+Thm 3.5 (line-decodability ⟹ MCA). **So the Grand MCA upper half ⟺ poly list-decodability of
+smooth-domain RS past Johnson — the classical open problem since GS99.** Anchors: JH01/BSKR06
+negatives are subspace/subfield-domain; KK25 negatives live at the capacity edge only (2^{O(1/η)}
+is constant-in-n at fixed η); random-domain positives (RW13…AGL24) don't cover deterministic
+smooth. The middle band for 2-power multiplicative domains is open BOTH ways. Conjecture D = that
+classical question; our proven smooth-domain machinery (N₀/Lift/C19/Descent/Kernel/circularity)
+is the new equipment. This is the sharpest honest statement of where the $1M sits — and why no
+formalization shortcut exists: the missing fact is a famous open problem, now with named footholds.
+
+### O31 / Round-15 — the GS ladder complete: Sudan end-to-end, multiplicity-m machine, both walls
+
+Round 15 (workflow stalled mid-round; recovered by hand + one Fable agent). On main `3767f758b`:
+* `SudanListBound` — the §7 Table-1 deliverable: end-to-end m=1 list bound |L| ≤ (D−1)/(k−1) for
+  general RS under explicit hyps n < Σ_{j<D}(D−(k−1)j) ∧ D ≤ t; ZMod 13 instance + genuine
+  2-element-list witness.
+* `GSExactCountWall` (own grind) — exact-count upper bound 2c·gsCount ≤ (D+c)² (Gauss over ℤ + AM–GM,
+  u=cq ∈ [D,D+c−1]) ⟹ wall √(n·c·m·(m+1)) < t·m+c. Concrete: n=100,c=25,m=1 feasible t=60,
+  infeasible t=59 (D²-form: 72; Johnson: 50). BOTH GS accountings stop above Johnson.
+* `GSHasseMultiplicity` (Fable agent + 1-line simp-recursion fix) — the FULL multiplicity-m machine:
+  hasse_interpolation_exists (order-m shifted-coefficient vanishing, n·C(m+1,2) constraint count),
+  pow_X_sub_C_dvd_eval_of_hasseVanish ((X−a)^m ∣ Q(X,f(X)) via inner-shift ring hom),
+  factor_of_order_agreement (m·agree ≥ D ⟹ (Y−f)∣Q), gs_decoder_pipeline (one Q factors every
+  m·agree ≥ D codeword). ZMod 5 instances.
+
+**Net.** The GS route is now FULLY machine-checked: Sudan → multiplicity-m → walls → open interior.
+Every formalizable rung done; the residual is exactly the open research core (an explicit certificate
+beating Johnson for smooth-domain RS). Issue stays open. WORKFLOW LESSON: agents can stall on a single
+simp-recursion for 10+ min — check in, take over, fix by hand (deterministic rw beats simp loops).
+
+### O32 — capstone gs_full_list_bound + the multiplicity ladder + the folding-transfer no-go
+
+Final entries of the rounds-8-15 arc (all own-hand work after the round-15 workflow stalled):
+* `GSFullListBound.lean` (main `80ad309ca`) — gs_full_list_bound: the assembled multiplicity-m GS
+  list bound (any field, any n distinct points, any m: n·C(m+1,2) < #gsSupport(D,k) ∧ D ≤ m·t ⟹
+  every t-agreement list ≤ (D−1)/(k−1)). THE MULTIPLICITY LADDER at n=50,k=2: m=1→t=10, m=2→t=9,
+  m=4→t=8 = the integer Johnson floor (√50≈7.07), instantiated over ZMod 53 with 50 explicit points.
+  Multiplicity climbs exactly to Johnson; the walls (O29/GSExactCountWall) prove no further.
+* `FoldingTransferNoGo.lean` (main `3183c68dc`) — §6 route 4 naive direction certified dead:
+  (d+1)·foldedAgree ≤ plainAgree is the only true direction; one corruption per orbit gives
+  plainAgree = N·d (fraction d/(d+1)) with foldedAgree = 0, so folded-capacity results say nothing
+  about plain-close words. The open part (transfer surviving per-orbit corruption) is isolated.
+
+**THE §6 ROUTE LEDGER (final):** 1 derandomization — gap as Props, OPEN; 2 list⇒MCA collapse —
+partial bridges + the proven list↛ε_mca correction; 3 syndrome lens — externally unvalidated;
+4 folding — naive dead (theorem), open part isolated; 5 two-sided interpolation — THE VERIFIED
+BRACKET δ* ∈ [1−√ρ, 1−ρ−c_ρ]: left end = Sudan→multiplicity-m→walls (every known certificate stops
+at Johnson), right end = averaging at prize scale. ~31 axiom-clean files rounds 8-15. The interior
+is the open research the prize elicits; every dead end is now a theorem rather than folklore.
+
+### O35 — Lemma K + pattern rigidity LANDED as Lean bricks (`DescentKernelLemma.lean`)
+
+The queued formalization work of O13″/O14 is discharged — `DescentKernelLemma.lean`
+(axiom-clean `[propext, Classical.choice, Quot.sound]`, 0 sorry, 0 warnings,
+characteristic-free over any integral domain where applicable):
+
+* `glue e f = expand 2 e + X·expand 2 f` API: coefficient extraction (even/odd supports
+  disjoint — **no characteristic assumption**, unlike the FRI `NonBinaryField` machinery),
+  evaluation `glue(d) = e(d²) + d·f(d²)`, degree bound `< 2κ`, injectivity, and
+  `exists_glue_decomposition` (every deg-`< 2κ` polynomial is a glue with parts `< κ`).
+* `kernel_rigidity` = **Lemma K** (O14): deg-`< κ` pairs `(e,f)` with
+  `e(z) + r_z·f(z) = 0` on `≥ 2κ` square-rooted points vanish identically. Smoothness
+  (the `d² = z` parametrization) supplies unconditional kernel rigidity.
+* `solution_unique`: per-pattern solutions ≤ 1 for the inhomogeneous one-sided system.
+* `pattern_rigidity` — the **sharp weighted form**: a `(B, O₁, σ)` pattern with
+  `2|B| + |O₁| ≥ 2κ` pins `(e,f)` uniquely (roots harvested at BOTH `±y_z` for `z ∈ B`,
+  at `σ_z` for `z ∈ O₁`; total `2|B| + |O₁|` distinct roots of the glued difference).
+* `agreement_count` — the O13″ identity `#agreements = 2|B| + |O₁|` on a ±-paired domain
+  (filter-biUnion + per-pair indicator split), plus the per-`z` trichotomy bridges
+  `both_agreement_iff` / `one_sided_agreement_iff`.
+
+Net: the descent program's reduction "`ℓ(θ)` = #(consistent patterns)" is now rigorous in
+Lean at the single-level granularity — every beyond-rate list element (agreement
+`a ≥ k = 2κ` ⟹ `2|B| + |O₁| ≥ 2κ`) is uniquely determined by its pattern. Conjecture D's
+remaining content is exactly the cross-level consistency-rarity count (C19's 4480 → 16 is
+the worked instance), unchanged but now with its bookkeeping machine-checked.
+
+### O36 / Round-19 — Conjecture-41 beachhead (clique structure + large-p transfer)
+
+Full §7+§8 read of 2026/858: Conj 41's UNIVERSAL obstruction at every c = the (w+1)-clique (all
+w-subsets of a (w+1)-set; their p=113 triangle / p=61 tetrahedron). `Conjecture41CliqueBeachhead`
+(main-loop solo, axiom-clean, strict-flags-verified): clique locators = Lagrange numerators
+(∏_{β∈W∖α}(X−β)); cliqueLocator_linearIndependent over ANY field (diagonal evaluation);
+clique_syndrome_kernel_trivial (c=1 rank statement — span F^{|W|} via independent + count=finrank,
+universal obstruction has NO c=1 kernel anywhere); det_map_zmod_ne_zero (exceptional primes confined
+to divisors of one ℤ-determinant — the effective Schwartz-Zippel threshold mechanism). OPEN: the
+γ-twisted [N|γN] rank at c≥3 for arbitrary families (= Conj 41 = the prize list core). Also from §8:
+the k-wise independence of error-locator normals is EMPIRICALLY FALSE at c=2 k≥3 (common-core triples
+have rank ≤ 2c < 3c) — the pairwise→k-wise promotion is structurally blocked; and the birthday-bound
+conjecture (max_γ M_γ ≤ C₁·C(n,w)/p uniform) is their remaining c=2 door.
+### O37 — the c=2 core-elimination bound LANDED (`C2CoreEliminationBound.lean`) + an honest proviso found in 2026/858 Thm 38
+
+The O33-flagged "formalizable, companion-note-sized" c=2 worst-case bound of ePrint
+2026/858 §7.5 is now machine-checked (axiom-clean, 0 sorry, 0 warnings, any field):
+
+* `syndr_insert` — the shift identity engine of their Lemma 37: adjoining a point to a
+  core acts LINEARLY on every shifted syndrome functional ⟹ the c=2 compatibility system
+  is bilinear in (extension point, line parameter).
+* `coreQuad` + `coreQuad_eval_eq_zero` — the degree-≤2 elimination resultant per
+  (w−1)-core; every compatible extension point is a root (their Thm 38 elimination).
+* `gamma_unique` — division-free Möbius-image well-definedness: a nondegenerate core
+  admits ≤ 1 compatible γ per extension point.
+* `c2_core_bound` — #{γ : ∃ E compatible} ≤ 2·C(n, w−1), p-independent.
+* **HONEST FINDING (de-laundering):** the paper packages the result as
+  `M_compat ≤ min(p, 2·C(n,w−1))` with the degenerate case handled by "≤ p trivially" —
+  but `min` claims BOTH components, and a degenerate support (all four window functionals
+  vanish) makes EVERY γ ∈ F_p compatible, so the 2·C(n,w−1) component genuinely needs a
+  nondegeneracy proviso. `coreQuad_eq_zero_of_degenerate` (not stated in the paper) pins
+  the minimal such hypothesis: a degenerate support kills the quadratic of every one of
+  its cores, so "every support has ≥ 1 core with nonzero quadratic" (our `hq`) is exactly
+  the right granularity. `c2_min_bound` is the honest min-form under `hq`;
+  `c2_card_bound` is what survives without it.
+
+Net: the verified codimension ladder now reads c≥w (unique decoding) → incidence/Fisher
+cap → GS walls at Johnson → **c=2 core-elimination (this)** → c≥3 = Conjecture 41 ≈ the
+prize's open core, starting exactly one codimension above what is now machine-checked.
+
+### O37 / Round-20 — clique double-block kernel = twisted evaluation pencil (NEW theorem)
+
+`Conjecture41CliqueKernelStructure.lean` (main-loop solo, axiom-clean, strict-verified): DUALITY
+⟨Λ_{E_α}X^r, ev_β⟩ = β^r·Λ_{E_α}(β) (locators/vertex-evaluations dual system under the coefficient
+pairing); clique_kernel_mem — the twisted evaluation pencil (s₁,s₂) = (−Σγ(β)b(β)ev_β, Σb(β)ev_β)
+satisfies ALL (w+1)c kernel conditions of [N|γN] at EVERY c over EVERY field;
+evalSyndrome_family_injective — pencil dim = w+1 exactly. CONSEQUENCE: the universal obstruction is
+UNCONDITIONALLY rank-deficient (rank ≤ 2D−(w+1) always) — Conj 41's full-rank branch ALWAYS fails on
+cliques; the conjecture = its degeneracy branch = "the twisted pencil contains no nondegenerate
+syndrome at p > p₀". Pencil syndromes = syndromes of errors supported on W (Remark-31 false
+positives). PAPER-MATH derived (docstring, queued): partial fractions ⟹ single-block relation module
+= {((x−α)v_α) : Σv_α = 0, deg v_α < c−1}, rank N_clique = D, full kernel count. NEXT: (a) pencil =
+WHOLE kernel formalization, (b) the degeneracy analysis (the Vandermonde solution V_{E_α}^{-1}s₂ of a
+pencil syndrome — when all-nonzero) = the sharp remaining core of Conj 41 for cliques.
+
+### O38 — effective per-prime exactness: AM–GM norm threshold closes the P-A residuals above T(m,r) (nubs, 2026-06-09)
+
+New note `EffectivePerPrimeExactness.md` + deterministic probes `scripts/probes/probe_norm_threshold.py`
++ `probe_e1_saturation.py` (all checks PASS, exit 0; survived a 4-lens adversarial review panel —
+algebraic-NT/combinatorics/prize-fidelity/numerics — whose one major, a false `≤4·min(s,s′)`
+intermediate step in the E2 support-bound proof, was corrected pre-push with the statement intact
+and exhaustively verified tight; every figure independently reproduced, incl. a Goldilocks MITM
+re-implementation with a different reduction algorithm, bit-identical). **Theorem E1:** for nonzero α = Σ_{j<m/2} c_j ζ_m^j (m = 2^k):
+Σ_{i∈(ℤ/m)^×} |σ_i(α)|² = (m/2)·Σ_j c_j² (odd-character orthogonality), hence by AM–GM
+|N_{K/ℚ}(α)| ≤ (Σ_j c_j²)^{m/4}. **Corollary E2:** a layer-r collision of the e₁-image on
+r-subsets of the order-m subgroup forces p ≤ T(m,r) := (4·min(r, m−r))^{m/4} — so every prime
+p ≡ 1 (mod m) with p > T(m,r) has image EXACTLY N₀(m,r), char-0 fibers included; all-layers
+threshold T_all(m) = (2m)^{m/4}; support-graded version: p > (4t)^{m/4} forces collision support
+> t. Replaces the m^{m/2} sup-norm bound and KK25's φ(m)^{φ(m)} prime requirement (m=64:
+2^111.3 vs 2^192 / 2^160 — and KK's unsigned subset count C(φ(m),r) VANISHES at ρ=1/2 where
+r = m/2+1 > φ(m), while N₀ keeps the full signed count). **Corollary E3** (composed with the
+verified Lift Lemma): for EVERY prime T(m', ρm'+1) < p < 2^128·N₀(m', ρm'+1), p ≡ 1 (mod n),
+m' | n: ε_mca(RS[F_p, H_n, ρn], 1−ρ−1/m') ≥ N₀(m', ρm'+1)/p > 2^−128 — per-prime, effective,
+NO averaging, NO Siegel–Walfisz/GRH. With the δ*-existence floor (unconditional |F| > 2^128 via
+the verified ε_mca ≥ 1/|F| up-to-capacity bound; |F| ≥ 2^129 given the 2/|F| δ=0 row + monotone
+ε_mca): **δ*_C < 1 − ρ − 1/64 for ALL smooth prime fields in
+[2^129, ≈2^145–2^177] at all four prize rates**; thin η=1/128 windows are even nonempty at
+ρ=1/8 (2^194.8, 2^195.3) and ρ=1/16 (2^165.4, 2^171.7). **Verified predictions:** Goldilocks
+m=32 full image EXACT by MITM enumeration (21,523,360 at r=17; 21,523,361 at r=16). **New
+data + two corrections:** BabyBear m=32 r=17 is genuinely DEFICIENT — exact image 21,477,408
+= 99.787% of N₀ (45,952 lost): the old sampled ≈5.6M estimate was a coupon-collector artifact
+(~4× low), and the zero-fiber spot-check missed the deficiency, so production-31-bit full-image
+exactness stops at m=16. Empirical m=32 onset ∈ (2^30.9, 2^34] vs proven T ≈ 2^47.26 (~2^13–16
+loose, same shape as the exhaustive m∈{8,16} onset scans: largest deficient primes 17 / 205,553
+vs T = 144–256 / 614,656). **Open after this:** η=1/128 per-prime windows at ρ ∈ {1/2, 1/4}
+— and PROVABLY not openable by norm-size arguments: `probe_e1_saturation.py` exhibits an explicit
+admissible layer-65 difference c (support 62, Σc²=248) with log₂|N(c)| ≈ 252.4, within 2.15 bits of
+E1 — any size bound must exceed 2^252.4 ≫ the 2^228.4 ceiling, so the window needs p ∤ N(α)
+ARITHMETIC (splitting/divisibility) or a new construction, not better inequalities (E1 is
+essentially tight on the difference set). The transition zone N₀ ≲ p < T (lattice statistics of
+𝔭 ∩ {−2..2}^{m/2}); P-B untouched (descent lane O13–O13″).
+
+### O37 addendum — the literal Thm 38 `min` packaging is REFUTED (machine-checked counterexample)
+
+The O37 proviso is not caution — it is necessary. `C2CoreEliminationBound.lean` §DegenerateLine
+(axiom-clean, 0 sorry, 0 warnings) upgrades the paper's own Remark-31 evaluation-syndrome device
+to a LINE: take `s₁ = s_α, s₂ = s_β` (evaluation syndromes) with `{α, β} ⊆ E`. Both window
+functionals of `Λ_E` and `X·Λ_E` are `x^r·Λ_E(x)` at a root of `Λ_E`, so they vanish at both
+line endpoints ⟹ EVERY `γ ∈ F` is compatible:
+
+* `compat_evalSynd_line` — the degeneracy construction (any field, char-free).
+* `degenerate_line_full` — the compatible-γ set is all of `F`.
+* `thm38_min_bound_fails` — `M_compat ≤ min(p, 2·C(n, w−1))` FAILS whenever
+  `|F| > 2·C(n, w−1)` — i.e. for every prize-relevant field size.
+* `thm38_refutation_instance` — concrete witness over `ZMod 11` (n=3, w=2, N=4:
+  count 11 > 6 = the claimed bound).
+
+Honest scope: the refutation targets `M_compat` exactly as the theorem prints it
+(`M_true ≤ M_compat ≤ min(...)`); for `M_true` the same supports contribute nothing (the
+Vandermonde solution is supported on `{α,β}`), so their headline `M_true` claims survive —
+what's broken is the middle inequality's packaging, fixed by the O37 nondegeneracy proviso
+(`c2_min_bound`). The Möbius/core method itself is sound and is now machine-checked in its
+corrected form.
+
+### O39 — transition-zone collisions are ideal-theoretic: short generators of (1−ζ)^j·𝔭; class-group obstruction appears exactly at the prize's η (nubs, 2026-06-09)
+
+`probe_transition_structure.py` (deterministic, exit 0): exhaustive collision extraction at the three
+boundary primes of O38's transition zone, testing E2(c)'s falsifiable support-floor predictions.
+**Data:** onset(16,9) p=205,553: 16 lost values = 8 distinct relations (±), ALL full-support 8/8
+(floor predicted ≥6), each with N(α) = 2p EXACTLY, each colliding exactly 2 pattern pairs.
+onset(16,5) p=43,793: same shape — 8 relations, all support-6 (floor ≥4), N = 2p. BabyBear(32,17):
+45,952 lost (matches O38 bit-exactly), only 32 distinct relations, supports {12: ×16, 14: ×16}
+(floor ≥4 — observed min 12), sampled cofactors all N = 8p = N((1−ζ)³)·p; per-relation pair
+multiplicities (2,592 at support 12) far under the proven 2^t·3^{m/2−t} cap. All checks PASS.
+**Structure:** every observed cofactor is a pure 2-power — forced, since 2 is totally ramified in
+ℚ(ζ_{2^k}) (unique norm-2 prime (1−ζ)) and every other prime ideal has norm ≥ 17. So transition
+collisions are precisely **box-short generators of the near-prime ideals (1−ζ)^j·𝔭** — the
+collision question below T(m,r) is an ideal-theoretic short-generator question, not a generic
+lattice-point question (the naive Gaussian/Fourier count predicts ≈76 relations at BabyBear and a
+diffuse support profile; reality: 32 relations in two rigid support classes — 2.4× off and
+structurally wrong).
+**The new direction this opens for the η=1/128 residual (O38 §5: "needs p ∤ N(α) arithmetic"):**
+a collision at p forces (α) = 𝔞·𝔭 with N(𝔞) ≤ (Σc²)^{m/4}/p, i.e. (i) 𝔭's ideal class must lie in
+{[𝔞]⁻¹ : N𝔞 ≤ budget}, and (ii) the principal ideal 𝔞𝔭 must admit a generator inside the {−2..2}
+difference box — the Cramer–Ducas–Peikert–Regev short-generator regime (log-unit lattice). Class
+numbers (verified, Washington/Wikipedia table): h(ℚ(ζ₁₆)) = h(ℚ(ζ₃₂)) = 1 — the probed/production
+regimes are class-trivial, every 𝔞𝔭 is principal, and collisions appear exactly when short
+generators exist (observed). But h(ℚ(ζ₆₄)) = 17 and **h(ℚ(ζ₁₂₈)) = 359,057** (h⁺ = 1): at the
+prize's η = 1/64 and 1/128 the class group is nontrivial-to-large, so the relation ideal must land
+in a constrained class AND beat the log-unit sparsity — a 1/h-flavored rarity plus CDPR-type
+geometry that norm-SIZE arguments (provably exhausted, O38 §5) cannot see. Honest status: a
+research direction with verified calibration data at h = 1, NOT a theorem; the quantitative
+question is whether class-equidistribution (Chebotarev over the Hilbert class field of ℚ(ζ₁₂₈))
+plus log-unit volume bounds give per-prime or explicit-density exactness in (2^225, 2^256).
+Next probes: m=64 (h = 17) collision census at feasible p — does the 17-fold class constraint
+visibly thin the relation set vs the h = 1 baseline?
+
+### O38 — the sharp rank threshold for error-locator normals (2026/858 Thm 26 + Rem 27) LANDED
+
+`NormalRankSharpThreshold.lean` (axiom-clean, 0 sorry, 0 warnings, any field): the algebraic
+dichotomy the §7.2 second-moment/Poisson-dispersion machinery rests on, in kernel form:
+
+* `normal_kernel_trivial` (= their Thm 26): `c + |E₁∩E₂| ≤ |E₁|` ⟹ any degree-`<c` relation
+  `Λ_{E₁}P + Λ_{E₂}Q = 0` is trivial — and NO degree bound on `P` is needed (statement is
+  stronger than the paper's). Proof is SIMPLER than their gcd route: `A₁ = Λ_{E₁∖E₂}` is
+  coprime to `Λ_{E₂}` outright (disjoint root sets), so `A₁ ∣ Q`, killed by
+  `deg A₁ = w₁−j ≥ c > deg Q`. No common-factor cancellation step at all.
+* `normal_kernel_nontrivial` (= their Rem 27, sharpness): past the threshold both sides,
+  the explicit relation `Λ_{E₁}(−Λ_{E₂∖E₁}) + Λ_{E₂}Λ_{E₁∖E₂} = 0` (both cross-products
+  = `Λ_{E₁∪E₂}`) lives in the `<c` window and is nontrivial — the shared-core rank
+  deficiency is REAL, exactly the mechanism Conjecture 41 must control.
+
+Together with O36 (clique beachhead), O37 (c=2 elimination + min-packaging refutation), the
+§7 backbone of 2026/858 is now machine-checked: pairwise independence engine (this), c=2
+worst case (O37, corrected), universal clique obstruction (O36) — the open core is Conj 41's
+QUANTITATIVE rank statement (how many supports can be simultaneously deficient on a flat),
+one step above everything verified here.
+
+### O39 — O38 independently re-verified; four descent-program Lean bricks landed (nubs, 2026-06-09)
+
+(1) **O38 verification:** independently re-ran both O38 probes on a fresh checkout —
+`probe_norm_threshold.py` + `probe_e1_saturation.py`: **ALL PASS, zero failures (240.9s)**; the
+E1 odd-character orthogonality identity also checks by hand. The effective per-prime exactness
+(AM–GM threshold T(m,r)) stands verified from two seats. (2) **Lean bricks now on main** (all
+axiom-clean `[propext, Classical.choice, Quot.sound]`, leaf files): `TwistedKernel.lean` (kernel
+rigidity — Lemma K), `SubsetSumsetSymmetry.lean` (complement symmetry, any AddCommGroup),
+`MonomialAgreementBound.lean` (Lift-Lemma far-ness count), `DescentTrichotomy.lean` (value-level
+converse-FRI fold: unique even/odd components + both/one-sided agreement iffs). The descent
+program's rigorous ingredients are now formalized API. Remaining formalization queue: the N₀
+pattern-count combinatorics (medium), C19 (needs the symbolic/equivariance route — `decide` at
+p≈2³¹ infeasible and `native_decide` is forbidden by the repo gate; honest path is the cyclotomic
+consistency argument, future work).
+
+### O39 / Round-14c — the per-line heavy-decode-set bound (second-moment method)
+
+Solo orthogonal line (per-line second-moment, rounds 14/14b/14c), distinct from the swarm's
+Johnson/list-decoding/clique combinatorics. LineHeavySetBound.lean (axiom-clean): the per-line
+quantitative "few bad points" side of the proximity-gap dichotomy.
+* `heavyLineSet_card_mul_sq_le`: `#{γ : |Λ(γ,a)| ≥ L}·L² ≤ ∑_γ|Λ(γ,a)|²` (Markov on squares over
+  the line — clean Finset sum_le_sum on the heavy subset).
+* `heavyLineSet_card_bound`: composing with the proven `line_second_moment_bound` (2a>n regime =
+  the whole ρ=1/2 prize window): `#{γ:|Λ(γ,a)|≥L}·L²·(2a−d) ≤ (∑_γ|Λ|)·(2a−d) + (|C|²−|C|)·2(n−d)`.
+
+So heavily-decoding line points fall off as 1/L² against a second moment whose off-diagonal is a
+distance-uniform per-pair CONSTANT (the round-14 gain), not the past-Johnson-blowing
+ball-intersection volume. This is the per-line object δ* is read from. Open: bound the per-line
+first moment M=∑_γ|Λ| uniformly (empirically field-independent ~poly(n), round-14 probe) and the
+pair count past birthday for ADVERSARIAL lines — where smooth-domain RS structure must enter.
+### O40 — Conjecture 41's triple case: DEFICIENT TRIPLES ARE SUNFLOWERS (new theorems, machine-checked)
+
+`NormalRankSharpThreshold.lean` §Triple (axiom-clean, 0 sorry, 0 warnings): the paper's
+k-wise landscape beyond pairs was EMPIRICAL ("deficient triples exist at c=2 from n=11,
+translate families; none found at c≥3"; "k-wise independence fails for common-core
+triples"). Now theorems:
+
+* `common_core_triple_relation` — the k-wise failure is a THEOREM at every window c ≥ 1:
+  Λ_{C∪{x₁}}·(x₂−x₃) + Λ_{C∪{x₂}}·(x₃−x₁) + Λ_{C∪{x₃}}·(x₁−x₂) = 0 — explicit, all
+  multipliers nonzero CONSTANTS. Pairwise independence (Thm 26) can never be promoted
+  to 3-wise without structural hypotheses.
+* `triple_relation_vanishing` — in ANY triple relation, P_i vanishes on (E_j∩E_k)∖E_i.
+* `triple_kernel_trivial_of_spread` — **the structure theorem**: pairwise threshold on
+  one pair + that pair's private intersection ≥ c points ⟹ trivial triple kernel.
+  CONTRAPOSITIVE: every rank-deficient triple must have |(E_j∩E_k)∖E_i| < c for all i —
+  pairwise intersections CONCENTRATE into the triple core. The sunflower shape of the
+  empirical c=2 translate families is FORCED, not incidental.
+* `relation_core_reduction` — sunflower relations descend exactly to the core-free
+  family: Conjecture 41's triple case REDUCES to core-reduced supports (all pairwise
+  intersections < c after reduction).
+
+Net for the open core: Conj 41 (count of simultaneously-deficient supports on a flat at
+c≥3) now has a machine-checked structural skeleton for triples — deficiency ⟹ sunflower
+⟹ core-reduce ⟹ all-small-intersections core case. The remaining hard question is the
+CORE-REDUCED count (where the c=2 counterexamples live and where c≥3 is conjectured to
+behave differently) — sharper than before, still open.
+
+### O41 / Round-14d — per-line first moment + the three-moment capstone
+
+LineFirstMomentBound.lean (axiom-clean) closes the per-line decode chain with its missing first
+moment, via the one-vote-per-coordinate primitive (single-codeword form of round-14 = Hab25 L1):
+* `single_vote_card`: g i ≠ 0 ⟹ {γ : f i + γ·g i = c i} is a singleton (one vote/coordinate).
+* `sum_agree_single_eq`: ∑_γ |agree(f+γg, c)| = n (Fubini: each coordinate votes once).
+* `single_decode_card_mul_le`: #{γ : c ∈ Λ(γ,a)}·a ≤ n (Markov on per-point agreement).
+* `line_first_moment_bound`: (∑_γ |Λ(γ,a)|)·a ≤ |C|·n — FIELD-SIZE INDEPENDENT, the proven form of
+  the round-14 numeric probe (M ≈ poly(n), constant in q).
+
+CAPSTONE `heavyLineSet_card_explicit_bound`: first+second+heavy-set combined, 2a>n window, NO ∑_γ:
+  #{γ:|Λ(γ,a)|≥L}·L²·a·(2a−d) ≤ |C|·n·(2a−d) + a·(|C|²−|C|)·2(n−d).
+Per-line decode heaviness bounded by code parameters (n,d,a,|C|) alone. The per-line chain (rounds
+14/14b/14c/14d) is now self-contained and fully explicit. Open: the |C| (codeword count) is the
+trivial bound; the actual prize needs |C| → RS list size and the adversarial-line pair count past
+birthday — where smooth-domain RS structure must enter.
+
+### O42 / Round-14e — close-pair-restricted per-line second moment (RS weight slice)
+
+LineSecondMomentSharp.lean (axiom-clean) sharpens 14b's off-diagonal from the trivial |C|²−|C| to
+|closePairs| (codeword pairs at distance ≤ 2(n−a)). Key dovetail: by the proven badSet_eq_empty,
+FAR pairs (w > 2(n−a)) contribute 0 (no line point decodes both); and in the 2a>n prize window every
+CLOSE pair (w ≤ 2(n−a) = 2n−2a < 2a ⟺ n<2a) automatically obeys the uniform-bound hypothesis 2a>w —
+so the two round-14 regime facts meet with no gap.
+* badSet_empty_of_far, offDiag_badSet_sum_eq_close, line_second_moment_bound_sharp:
+  (∑|Λ|²)·(2a−d) ≤ (∑|Λ|)·(2a−d) + |closePairs|·2(n−d); closePairs_card_le (≤ |C|²−|C|).
+|closePairs| = the w≤2(n−a) slice of the MDS/RS weight enumerator (tiny for high-distance codes) —
+the genuine RS object where smooth-domain structure must enter the prize. Per-line chain rounds
+14/14b/14c/14d/14e now: pair-cooc → first/second moment → heavy-set → close-pair sharpening.
+
+### O43 / Round-14f — per-line unique decoding above the unique-decoding radius (capstone)
+
+LineUniqueDecode.lean (axiom-clean) — the per-line chain's capstone. When 2(n−a) < d (the code's
+min distance), closePairs=∅ ⟹ off-diagonal of the per-line second moment vanishes ⟹ ∑_γ|Λ|²=∑_γ|Λ|
+(line_sq_sum_eq); termwise |Λ|≤|Λ|² over ℕ forces |Λ(γ)|²=|Λ(γ)| ⟹ |Λ(γ)|∈{0,1}. So EVERY line
+point decodes to ≤1 codeword — per-line unique decoding, NO linearity/RS needed.
+* closePairs_empty_of_minDist, line_uniqueDecode_of_minDist, lineList_subsingleton_of_minDist.
+For RS (MDS, d=n−k+1): hypothesis 2(n−a)<n−k+1 ⟺ a>(n+k−1)/2 = the classical half-min-distance
+radius, now PER LINE. Per-line chain (rounds 14–14f) complete: pair-cooc → first/second moment →
+heavy-set → close-pair sharpening → unique-decode capstone, all axiom-clean. The interior δ*
+window (Johnson, capacity) is BELOW this radius — the open prize is the gap between a>(n+k−1)/2
+(here, trivial) and the Johnson/capacity interior, where |closePairs|>0 and RS structure enters.
+### O41 — falsify-first on Conj 41's triple case: the CYCLIC/PTE deficiency mechanism (new theorem + verified ℚ witness)
+
+Executed the probe O40 isolated (search the core-reduced zone). Findings (exact-arithmetic
+verified, then formalized in `NormalRankSharpThreshold.lean` §Cyclic, axiom-clean):
+
+1. **Empirical dichotomy at the square case w = 2c (probe, 1500 random spread triples, ℚ):**
+   among pairwise-spread triples, untwisted point-level deficiency occurred EXACTLY when the
+   triple intersection was nonempty (231/231 deficient with T ≠ ∅; 1269/1269 full rank with
+   T = ∅ in the random ensemble). Mechanism for T ≠ ∅: all 3c normals are multiples of
+   (X−t) — the trivial evaluation-syndrome collapse (M_true = 0 artifact; same device as the
+   O37-addendum refutation). So the plain-rank "12% deficiency" of the first probe was
+   entirely this artifact — consistent with 2026/858's Remark 31/36 data.
+2. **But the clean "T = ∅ ⟹ full rank" conjecture is FALSE — the cyclic/PTE mechanism:**
+   `cyclic_deficiency` (new theorem): three pairwise-distinct supports with equal
+   e₁,…,e_{w−c} (locator coefficients agreeing above degree c) admit the explicit relation
+   Λ₁(Λ₂−Λ₃) + Λ₂(Λ₃−Λ₁) + Λ₃(Λ₁−Λ₂) = 0 with all multipliers deg < c and ≠ 0.
+   Verified ℚ-witness at c = 3, w = 6: E₁={0,1,5,8,12,21}, E₂={0,2,3,10,11,21},
+   E₃={1,2,3,6,15,20} — equal e₁=47, e₂=767, e₃=5317, pairwise intersections (2,1,2),
+   triple intersection EMPTY, kernel dim 1 over ℚ (two independent exact computations).
+3. **Consequences for the open core:** (i) integer-coefficient relations survive mod every
+   large p ⟹ NO effective characteristic threshold p₀ alone removes c ≥ 3 point-level rank
+   coincidences — any Conjecture-41-style lemma must absorb equal-esymm families via its
+   degeneracy escape clause or the γ-twist (the twisted [N|γN] object with distinct γᵢ is
+   NOT directly refuted; that remains the live conjecture). (ii) The mechanism WELDS
+   open-core formulation (iii) (rank lemma) to formulation (ii) (multi-symmetric
+   concentration): deficiency at codim c is DRIVEN by e₁..e_{w−c} coincidences — PTE-type
+   subset families are the dictionary. Conj 41's triple landscape after O40+O41:
+   sunflower-concentrated OR equal-esymm — both now theorem-level, with the quantitative
+   count above them still the prize.
+
+### O44 — THE LOWER HALF CLOSES, per-prime, for the whole window: fixed-(s,r) instantiation of KKH ePrint 2026/782 Appendix A (nubs, 2026-06-09)
+
+**Citation correction first:** "KK25 (personal communications)" is PUBLISHED — Krachun–Kazanin–
+Haböck, *Failure of proximity gaps close to capacity*, ePrint **2026/782** (2026-04-20); update the
+program record everywhere. Its Lemma 1 (e₁-image ≥ 2^r·C(s/2,r) for p > s^{s/2}) is the published
+form of the subset-sum bound — O38's E1/E2 sharpen it (threshold (4min(r,m−r))^{m/4} vs s^{s/2};
+full signed count N₀ with EXACTNESS; rate-1/2 coverage where their r ≤ s/2 vanishes).
+**The main event (new note `QuotientPerPrimeInstantiation.md`):** running [2026/782 App. A]'s
+quotient construction (DEEP/[BGKS20] via [CS25]+[BCHKS25], value-spread via [BCIKS20] Lemma 3) at
+FIXED (s, r) instead of their asymptotic s = Θ(log n) — plus a one-degree shift r = ρs+1 that hits
+the prize's exact rate and improves the gap 2/s → 1/s — yields **Theorem Q**: for EVERY prime
+p ≡ 1 (mod n) and every 2-power s | n with ρs ∈ ℤ,
+    ε_mca(RS[F_p, H_n, ρn], 1 − ρ − 1/s) ≥ (½·min(C(s, ρs+1), p/(ρn)) − n)/p
+— threshold-free, per-prime. Breach of ε* = 2⁻¹²⁸ holds throughout [2^129, 2^{127+log₂C(s,ρs+1)}];
+with s ∈ {128, 256, 512} per rate this covers the ENTIRE window at every prize rate (table in the
+note: e.g. ρ=1/2: η=1/128 per-prime to 2^251.1, η=1/256 the rest). Optimizing s:
+**δ*_C < 1 − ρ − η for every dyadic η ≥ (H₂(ρ)+o(1))/(log₂p − 127)** — the LOWER HALF of the
+conjectured determination formula, per-prime, effective, for the whole window, from published
+machinery + a routine instantiation. Derivation re-verified step-by-step (list/agreement-A/
+value-spread/quotient degrees/far-side strictness incl. the m=1 edge; bad-z and case-boundary
+corrections negligible in-window). **Consequences:** O38-E3's windows are SUBSUMED (E1/E2
+exactness and the constructive count remain the finer per-image invariants; transition/onset
+structure O39 unaffected as facts about exactness); the cert(p)/class-group program is retired for
+the lower half; **the prize's remaining open content is purely the UPPER half** (descent lane
+O13–O13″ / Conjecture D): prove ε_mca ≤ ε* down from capacity to meet this floor.
+**Side data this cycle (probe_class_effect.py):** h=1 vs h=17 deficiency ladders at layer 5
+(m=32 exact through u=0.60, m=64 deficient only at u=0.40 of matched ratio) and the cofactor law —
+every observed cofactor is 2^a × (split primes ≡ 1 mod m); literature sweep verdicts: the
+descent-lane transversal/balanced-overlap marginal layer is APPARENTLY NEW (no name/theorem/prior
+description found, incl. ABF26); O38's stated priority claim was consistent with the public record
+but is now framed against 2026/782 as above.
+||||||| parent of cc8699f9a (docs(#232): DISPROOF_LOG O44 — round-21 relation module + PTE convergence)
+### O44 / Round-21 — clique relation module (row side) + the PTE convergence
+
+`Conjecture41CliqueRelationModule.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+nodal identity (X−α)Λ_{E_α} = Λ_W; relation_eval_zero (dependencies vanish at own nodes);
+relation_factor_sum (u_α = (X−α)v_α, Σv = 0 — nodal collapse in the domain F[X]);
+relation_factor_sum_twisted (double block: both Σv = 0 AND Σγv = 0); vCoeff_natDegree_lt (degree
+budget). WITH R20: rank [N|γN]_clique = D+c−1, ker = the twisted evaluation pencil EXACTLY (dim w+1).
+Conj 41 on its universal obstruction = the explicit pencil-degeneracy question (R19: exceptional
+p ⊆ divisors of one ℤ-det). CONVERGENCE: fleet O40/O41 — deficient triples are SUNFLOWERS; the
+non-sunflower mechanism is CYCLIC/PTE (equal e₁..e_{w−c}) = EXACTLY the rounds-4-8 multi-symmetric
+concentration object (N_t equal-esymm counts on μ_n). The c≥3 rank lemma and the t≥2 concentration
+are the SAME combinatorics — PTE solutions inside the smooth domain — approached from the two ends.
+### O42 — the twisted (Conjecture-41) object vs PTE families: rank dichotomy BROKEN for every γ, escape clause load-bearing, and the (ii)⟷(iii) WELD at class syndromes
+
+Continuation of O41: tested equal-esymm families against the ACTUAL Conjecture-41 matrix
+A = [N_{Eᵢ} | γᵢ·N_{Eᵢ}] (distinct γᵢ). Findings (exact ℚ arithmetic + one new Lean brick):
+
+1. **Rank dichotomy broken for EVERY γ-assignment at m ≥ 6.** `equal_window_image`
+   (NEW, machine-checked): for an equal-e₁..e_{w−c} family, every Σ ΛᵢPᵢ (deg Pᵢ < c)
+   decomposes as Λ₀·Q + R with deg Q < c, deg R ≤ 2c−2 — a (3c−1)-dim space independent
+   of m. Both blocks of A land there ⟹ rank(A) ≤ 6c−2 < min(mc, 2D) whenever mc > 6c−2
+   (m ≥ 6 at any c ≥ 2), for EVERY γ. Verified numerically: rank exactly 16 = 6c−2 at
+   m=6, c=3, all 60/60 random γ-assignments (mixed-class control: 32/40 full rank).
+2. **Conjecture 41 SURVIVES — via its escape clause, which is load-bearing.** The kernel
+   of A is spanned by (v,0),(0,v) with v THE CLASS SYNDROME: v = (0,…,0,h₀,h₁,…,h_c)
+   where h_j are the COMPLETE HOMOGENEOUS symmetric functions of the class parameters
+   (verified: h₂ = e₁²−e₂ = 2936, h₃ = e₁³−2e₁e₂+e₃ = 99774 at the witness class).
+   Newton's e/h convolution ⟹ ⟨X^r Λ_E, v⟩ = 0 for r < c ⟺ e₁..e_c(E) = class values.
+   All kernel lines are the degenerate scaling family through v, so the escape clause
+   (⟨n₀(Eᵢ), s₂⟩ = 0 on ker A) fires at every support. The conjecture's dichotomy holds
+   here ONLY because of the clause — any sharpening that drops it is FALSE for all
+   m ≥ 6 PTE families, at every prime, every γ.
+3. **The weld (formulations (ii) ⟷ (iii)).** At the class syndrome v, compatibility IS
+   membership in the esymm class, and the error values are ALL NONZERO (verified at all
+   6 witness supports — genuine M_true mass, not a Remark-31 artifact). So the
+   point-level list size at v EQUALS the e₁..e_c fiber count: the multi-symmetric
+   concentration quantity (open-core formulation (ii)) and the rank/list quantity
+   (formulation (iii)) are THE SAME NUMBER at class syndromes. The prize question "how
+   large can the esymm fiber be, field-independently" is literally "how large is M at a
+   class syndrome".
+
+Queued next bricks: (a) finrank-pigeonhole formalization of the twisted-kernel existence
+(via equal_window_image + Polynomial.degreeLT dimension count); (b) the class-syndrome
+h-sequence construction + Newton-convolution compatibility characterization in Lean.
+
+### O44 / Round-14g — linear-code collapse of the per-line close-pair count (→ weight enumerator)
+
+LineClosePairsLinear.lean (axiom-clean, on main `LinePairCooccurrence.closePairs_card_linear`)
+bridges the abstract per-line chain (rounds 14–14f) to RS structure. For a subtraction-closed
+(linear) code, translation invariance collapses the close-pair count to the weight-enumerator
+slice: `|closePairs C a| = |C|·|weightSlice C (2(n−a))|` (weightSlice = nonzero codewords of weight
+≤ 2(n−a)), via the bijection (c,c')↦(c,c'−c) + supp_eq_supp_sub. Plus
+line_second_moment_bound_weightSlice (off-diagonal = |C|·|weightSlice|·2(n−d)). Per-line companion
+of O29's ball-intersection linear collapse. |weightSlice(2(n−a))| = the w≤2(n−a) slice of ∑_w A_w;
+for MDS/RS (A_w=0 for 0<w<d) it's EMPTY above the unique-decoding radius (14f) and nonzero exactly
+in the interior (1−√ρ,1−ρ) — the RS object the prize turns on. Open: bound A_w for explicit
+smooth-domain RS in the interior. GOTCHA: ring/linear_combination fail on Fin n→F (Pi); use
+abel/add_right_cancel.
+
+### O45 / Round-22 — the constructive PTE family (expand-lift) + the two-phase explanation
+
+`PTEFamilyConstruction.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+P_A = expand_d(baseNodal A) = ∏(X^d − a). Lattice vanishing (coeff_expand): every coefficient at a
+non-multiple of d is ZERO ⟹ the full top window e_1..e_{d−1} vanishes for EVERY base set;
+liftedPoly_injective (expand_injective + root recovery); lifted support = power-map fiber
+{x : x^d ∈ A} ⊂ μ_n; pte_family: C(n/d, s) pairwise-distinct equal-window supports. THRESHOLD: the
+Conj-41 deficiency window (equal e_1..e_{w−c}) fires iff d ≥ w−c+1 ⟹ s ≤ w/(w−c+1): deployment
+(c = Θ(n)) → family O(1) (matches conjecture's M = O(1)); capacity (c = O(1)) → exponential
+(matches the proven c=2 phase). ONE construction = both phases of 2026/858's empirical diagram =
+the depth-collapse wall in deficiency language. OPEN CEILING: can non-lifted families beat
+C(n/d, s) in the deep window (non-cyclic deficiency at large p)? = the prize core, final form.
+### O43 — REFUTATION (verified): the "Equivalently, M_true ≤ ⌊(2D−1)/c⌋" form of Conjecture 41 is FALSE at every sufficiently large prime
+
+Closing the O42 arc: the class-syndrome dictionary turns formulation-(ii) fiber pigeonhole
+into a Conjecture-41 attack, and it lands. Construction (all integer data; exact-arithmetic
+verified at p = 1009 and p = 7919; integrality ⟹ every sufficiently large p):
+
+* Parameters: n = 14 (domain L = {0,…,13}), k = 5, D = n−k = 9, c = 3, w = D−c = 6;
+  Conjecture-41 bound ⌊(2D−1)/c⌋ = 5.
+* The integer (e₁,e₂) = (39, 589) fiber of 6-subsets of L has 10 supports spreading over
+  9 distinct e₃ values {4269, 4281, 4293, 4305, 4329, 4353, 4365, 4377, 4389}.
+* The syndrome LINE in the e₃-direction: s₁ = classSyndrome(39, 589, 4269) =
+  (0,0,0,0,0, h₀,h₁,h₂,h₃), s₂ = (0,…,0,1) (top unit vector; (s₁,s₂) independent). By the
+  Newton e/h convolution, s(γ) = s₁ + γ·s₂ is the class syndrome of (39, 589, 4269+γ), so
+  each of the 9 fiber e₃-values gives a distinct γ with a compatible support — and the
+  Vandermonde error values are ALL NONZERO at every one of them (verified): **M_true = 9 > 5
+  at p = 1009, p = 7919, and every large p**. No threshold p₀(n,k,c) of ANY size rescues
+  the "equivalently" sentence.
+* WHY the dichotomy form survives: on this line the escape clause fires TRIVIALLY —
+  s₂ = e_{D−1} pairs to zero with every Λ_E (degree w < D−1). So the clause excludes far
+  more than degenerate configurations, and **the two printed forms of Conjecture 41 are
+  inequivalent**; the M_true ≤ ⌊(2D−1)/c⌋ prediction is false as stated and must be
+  restated (e.g., restricted to lines with s₂ engaging the low syndrome window).
+* SCALING (probe, n = 14, lines through realized classes): violations persist at p = 31,
+  53, 71, 101, 151, 211 (max hits 10–19 ≫ 5) — structure, not birthday chance; the
+  mechanism is the integer fiber spread, which GROWS with n. At deployment-shaped
+  parameters the e₃-spread of (e₁,e₂)-fibers is astronomically large: adversarial
+  class-syndrome lines carry list mass far above any O(n/c) envelope. This is a LOWER-bound
+  brick for the disproof side of the prize loop: worst-case line list counts at c ≥ 3 are
+  governed by multi-symmetric fiber spreads (formulation (ii)), not by rank genericity.
+
+Caveats kept honest: this refutes the printed equivalence/Mtrue-prediction of Conjecture 41,
+NOT the paper's FRI soundness theorem (which doesn't depend on it), and NOT the dichotomy
+form (whose escape clause, however, is now shown to do unintended exclusion work). Queued
+Lean bricks: class-syndrome construction + Newton-convolution compatibility (the e/h
+identity is Mathlib-adjacent), then the fiber-line M_true lower bound as a formal theorem.
+
+### O46 — THE RIGIDITY PATHWAY: a complete conditional architecture for the list core
+
+Four steps; three VERIFIED: (1✅ R22) constructive floor — lift families realize the deficiency
+window iff d ≥ w−c+1, O(1) at deployment/exponential at capacity; (2 OPEN = the residue) char-0
+LINEAR-WINDOW RIGIDITY: families of w-subsets of μ_n pairwise sharing e_1..e_t, t = Θ(n), over ℂ
+are lift-structured — Mann/Conway–Jones-type; at n=2^m the in-tree power-basis independence (R12)
+reduces small cases to finite sign/index combinatorics; base case (w=2,t=1) = equal-sum pairs are
+antipodal-only, formalizable NOW from in-tree machinery; (3✅ R19) large-p transfer via integer
+certificates (det_map_zmod_ne_zero); (4✅ R20+R21) clique rank structure (kernel = twisted pencil;
+deficiency = PTE). CONSEQUENCE: steps 2+3+4+1 ⟹ Conj 41's M = O(1) at Johnson at deployment ⟹ the
+Grand List Challenge answer. The $1M list core = ONE precisely-stated char-0 conjecture with a
+machine-checked skeleton around it. NEXT (Jun-11 agents + solo): (a) the (w=2,t=1) base case from
+R12 independence, (b) Mann's theorem partial formalization, (c) the general-family (non-clique)
+reduction to cliques/sunflowers (fleet O40).
+
+### O43 — the descent program's formalized surface is COMPLETE for the proven-on-paper layer (nubs, 2026-06-09)
+
+Seven bricks on main, all axiom-clean `[propext, Classical.choice, Quot.sound]`, leaf-file style:
+`TwistedKernel` (Lemma K rigidity) · `SubsetSumsetSymmetry` (complement symmetry) ·
+`MonomialAgreementBound` (Lift far-ness) · `DescentTrichotomy` (+ polynomial-level recomposed-
+candidate iffs — the full converse-FRI fold trichotomy) · `DisjointPairCount` (+ `AdmissibleSupport`
++ `n0_pattern_count` — the complete Theorem-A combinatorial count Σ_s C(m2,s)·2^s). Together: every
+elementary proven piece of the O11–O14 program is now Lean API. Remaining formalization (honest):
+the cyclotomic bijection (pattern count ⟷ actual subset sums in ℤ[ζ_m] — needs 2-power cyclotomic
+basis machinery; deep), C19 (symbolic/equivariance route only — native_decide forbidden), and the
+O38 AM–GM threshold (E1 orthogonality — Parseval over odd characters; medium, queued). The open
+research core (paired tower induction ⟺ classical beyond-Johnson) is unchanged.
+### O44 — O43 FULLY FORMALIZED: TopDirectionLineCount.lean — decoupling theorem + machine-checked Conjecture-41 violation witness (0 sorry, axiom-clean END TO END)
+
+The queued O43 Lean bricks are DONE, and the formalization SIMPLIFIED the math — no
+Newton/h-machinery needed. `TopDirectionLineCount.lean` (all axiom-clean
+`[propext, Classical.choice, Quot.sound]`, 0 sorry, 0 warnings):
+
+* `top_line_compat_iff` — **the decoupling theorem**: on a top-unit-direction line, the
+  codim-c compatibility of a weight-w support (w+c = N) ⟺ (c−1) γ-FREE window equations
+  + the explicit assignment γ = −⟨X^{c−1}Λ_E, s₁⟩ (because ⟨X^rΛ_E, u_top⟩ = [r = c−1]
+  by monicity/degree). Line compatibility = fiber membership + a value map.
+* `compat_gamma_count` / `conj41_count_lower_bound` — M_compat(s₁, u_top) ≥ #distinct
+  last-window values over the γ-free fiber; >⌊(2N−1)/c⌋ distinct values ⟹ the
+  Conjecture-41 bound is exceeded.
+* `loc_coeff_esymm` — the Vieta bridge: locator coefficients = signed elementary
+  symmetric functions (the formal (ii)⟷(iii) dictionary).
+* `escape_clause_trivial` — ⟨Λ_E, u_top⟩ = 0 for every short support, by degree: the
+  formal content of the two-printed-forms inequivalence.
+* **`conj41_violation_witness`** — the END-TO-END machine-checked violation: over
+  ZMod 17 (D = 9, c = 3, w = 6, domain = the whole field, s₁ = unitVec 5, where the
+  γ-free system is literally e₁(E) = 0 ∧ e₂(E) = 0 and γ = e₃(E)): the six explicit
+  supports {0,6,8,11,12,14}, {0,3,10,11,13,14}, {0,5,8,9,13,16}, {0,2,3,7,10,12},
+  {0,1,2,3,13,15}, {0,2,4,6,9,13} realize six distinct γ-values {1,…,6}, so the
+  compatible-parameter count on ONE line is > 5 = ⌊(2D−1)/c⌋. All esymm side conditions
+  discharged by kernel `decide`. (The full e₁ = e₂ = 0 fiber at p = 17 actually spreads
+  over 16 distinct e₃ values — more than three times the conjectured bound.)
+
+With O44 the entire O40–O43 arc is formal: sunflower structure, cyclic/PTE mechanism,
+equal-window collapse, decoupling, count lower bound, escape-clause triviality, and a
+kernel-checked counterexample instance to the per-line bound of Conjecture 41's M_true
+form. The remaining open object of #232 is unchanged and explicitly bounded: the
+field-independent fiber-size question itself (= δ* in the gap), now reachable from BOTH
+formulations through one machine-checked dictionary.

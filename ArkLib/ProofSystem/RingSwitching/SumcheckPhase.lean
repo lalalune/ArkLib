@@ -8,6 +8,7 @@ import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposeOracleCompleteness
 import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Probability.Notation
 import ArkLib.OracleReduction.Security.RoundByRound
@@ -1198,6 +1199,8 @@ section FinalSumcheckStep
 ## Final Sumcheck Step
 -/
 
+variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
+
 /-- `pSpecFinalSumcheck L` is a single prover-to-verifier message (no challenge). -/
 instance : ProverOnly (pSpecFinalSumcheck L) where
   prover_first' := rfl
@@ -1397,6 +1400,113 @@ private lemma finalSumcheck_check_of_relIn [IsDomain L] [IsDomain K]
   exact finalSumcheck_cube0_sum_eq
     (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
     stmt witIn.t'
+
+/-- **Final-sumcheck verifier-run collapse (defect-#21 guard form).** Under the message-oracle
+simulation `simulateQ (simOracle2 …)`, the 1-message `finalSumcheckVerifier` reduces to a single
+deterministic `if`: on the step-9 check passing it `pure`s the forwarded MLP-eval statement
+`{t_eval_point := challenges, original_claim := s'}` (`s'` the prover's message), and on a failed
+check it emits `failure` (defect-#21) — so the reject branch has *no* support element. This is the
+1-message analog of `iteratedSumcheckOracleVerifier_verify_collapse`. -/
+private lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ'))
+    (oStmt : ∀ j, aOStmtIn.OStmtIn j)
+    (tr : FullTranscript (pSpecFinalSumcheck L)) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt (FullTranscript.messages tr))
+        ((finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn).verify stmt
+          (FullTranscript.challenges tr))
+      = (if stmt.sumcheck_target
+            = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
+                stmt.ctx.r_batching * (show L from FullTranscript.messages tr ⟨0, rfl⟩) then
+           pure ({ t_eval_point := stmt.challenges,
+                   original_claim := (FullTranscript.messages tr ⟨0, rfl⟩ : L) }
+                 : MLPEvalStatement L ℓ')
+         else failure
+         : OptionT (OracleComp []ₒ) _) := by
+  simp only [finalSumcheckVerifier]
+  rw [simulateQ_optionT_bind]
+  erw [simulateQ_simOracle2_query]
+  refine OptionT.ext ?_
+  dsimp only [Sigma.fst, Sigma.snd]
+  erw [OptionT.run_bind_lift]
+  erw [pure_bind]
+  rw [answer_instDefault']
+  simp only [guard_eq, apply_ite, _root_.map_pure, bind_pure_comp]
+  by_cases hc : stmt.sumcheck_target
+      = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
+          stmt.ctx.r_batching * (show L from FullTranscript.messages tr ⟨0, rfl⟩)
+  · simp only [hc, if_true, reduceIte]
+    erw [simulateQ_pure]
+    rfl
+  · simp only [hc, if_false, reduceIte]
+    rw [map_optionT_failure', simulateQ_optionT_failure']
+
+set_option maxHeartbeats 1000000 in
+/-- **Final-sumcheck perfect completeness — proven.** The single-message final sumcheck reduction is
+perfectly complete: from the round-`(Fin.last ℓ')` relation (`masterKStateProp`, which supplies the
+witness structural invariant + sumcheck consistency + initial compatibility) the verifier's step-9
+check passes (`finalSumcheck_check_of_relIn`) and the honest output lands in `aOStmtIn.toRelInput`
+(MLP-eval relation `original_claim = t'(challenges)` + forwarded compatibility). -/
+theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
+    (hInit : NeverFail init) :
+    OracleReduction.perfectCompleteness
+      (oracleReduction := finalSumcheckOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
+      (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
+      (relOut := aOStmtIn.toRelInput)
+      (init := init) (impl := impl) := by
+  classical
+  rw [OracleReduction.unroll_1_message_reduction_perfectCompleteness_P_to_V
+    (hInit := hInit) (hDir0 := by rfl)
+    (hImplSupp := by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])]
+  intro stmtIn oStmtIn witIn h_relIn
+  -- Unpack relIn = masterKStateProp into the structural invariant + consistency facts.
+  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
+    Set.mem_setOf_eq] at h_relIn
+  obtain ⟨-, h_struct, h_consist, h_compat⟩ := h_relIn
+  -- `s'` is the prover's single message: `witIn.t'(challenges)`. The verifier check passes.
+  have h_msg_eval : witIn.t'.val.eval stmtIn.challenges = witIn.t'.val.eval stmtIn.challenges := rfl
+  have h_check : stmtIn.sumcheck_target
+      = compute_final_eq_value κ L K P ℓ ℓ' h_l stmtIn.ctx.t_eval_point stmtIn.challenges
+          stmtIn.ctx.r_batching * witIn.t'.val.eval stmtIn.challenges :=
+    finalSumcheck_check_of_relIn (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
+      (h_l := h_l) stmtIn witIn h_struct h_consist
+  -- Collapse the deterministic prover/verifier run to a `pure`.
+  have hverify :
+      (finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn).toVerifier.verify (stmtIn, oStmtIn)
+          (FullTranscript.mk1 (witIn.t'.val.eval stmtIn.challenges))
+        = (pure
+            (⟨{ t_eval_point := stmtIn.challenges,
+                original_claim := witIn.t'.val.eval stmtIn.challenges }, oStmtIn⟩ :
+              MLPEvalStatement L ℓ' × (∀ j, aOStmtIn.OStmtIn j))
+            : OptionT (OracleComp []ₒ) _) := by
+    simp only [OracleVerifier.toVerifier]
+    erw [finalSumcheckVerifier_verify_collapse (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
+      (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) stmtIn oStmtIn
+      (FullTranscript.mk1 (witIn.t'.val.eval stmtIn.challenges))]
+    rw [if_pos (show _ by exact h_check)]
+    rfl
+  rw [probEvent_eq_one_iff]
+  dsimp only [finalSumcheckOracleReduction, finalSumcheckProver, FullTranscript.mk1]
+  simp only [liftComp_pure, liftM_pure, pure_bind, bind_pure_comp, Function.comp, hverify,
+    _root_.map_pure]
+  refine ⟨?_, ?_⟩
+  · -- No failure: the run is `pure`.
+    rw [probFailure_map]
+    erw [OracleComp.liftComp_pure]
+    apply probFailure_pure
+  · -- Correctness: the honest output lies in `toRelInput`.
+    intro x hx
+    simp only [OptionT.mem_support_iff, OptionT.run_map, support_map, support_liftM,
+      Set.mem_image, _root_.map_pure, OptionT.run_pure, support_pure,
+      Set.mem_singleton_iff] at hx
+    obtain ⟨x_1, hx1, rfl⟩ := hx
+    change x_1 ∈ _root_.support (pure _ : OptionT (OracleComp _) _) at hx1
+    simp only [OptionT.mem_support_iff, OptionT.run_pure, support_pure, Set.mem_preimage,
+      Set.mem_singleton_iff, Option.some.injEq] at hx1
+    subst hx1
+    refine ⟨?_, rfl, rfl⟩
+    -- `toRelInput`: MLPEvalRelation (original_claim = t'(point)) + initialCompatibility.
+    simp only [AbstractOStmtIn.toRelInput, MLPEvalRelation, Set.mem_setOf_eq]
+    exact ⟨rfl, h_compat⟩
 
 /-- RBR knowledge error for the final sumcheck step -/
 def finalSumcheckRbrKnowledgeError : ℝ≥0 := (1 : ℝ≥0) / (Fintype.card L)

@@ -157,6 +157,25 @@ instance instInhabitedPSpecSumcheckRoundChallenge :
   change Inhabited L
   exact ⟨0⟩
 
+/-- The (empty) challenge oracle of the final sumcheck step is finite: its single round is a
+`P_to_V` message, so there is no challenge index and the query type is empty. Needed by the
+1-message-round completeness `unroll`. -/
+instance instFintypePSpecFinalSumcheckChallenge :
+    ([(pSpecFinalSumcheck (L:=L)).Challenge]ₒ).Fintype := by
+  refine { fintype_B := ?_ }
+  rintro ⟨⟨i, hi⟩, q⟩
+  exact absurd hi (by
+    obtain rfl : i = 0 := by omega
+    simp [pSpecFinalSumcheck])
+
+instance instInhabitedPSpecFinalSumcheckChallenge :
+    ([(pSpecFinalSumcheck (L:=L)).Challenge]ₒ).Inhabited := by
+  refine { inhabited_B := ?_ }
+  rintro ⟨⟨i, hi⟩, q⟩
+  exact absurd hi (by
+    obtain rfl : i = 0 := by omega
+    simp [pSpecFinalSumcheck])
+
 /-- The challenge oracle of the batching phase (round 1, type `Fin κ → L`). -/
 instance instOracleInterfaceChallengePSpecBatching :
     ∀ j, OracleInterface ((pSpecBatching κ L K P).Challenge j) :=

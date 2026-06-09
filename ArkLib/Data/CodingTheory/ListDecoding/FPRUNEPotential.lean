@@ -145,4 +145,42 @@ theorem fprune_one_step
     _ ≤ ((J.card : ℝ) * (1 - η') * η) / W := key
     _ = (J.card : ℝ) * ((1 - η') * η / W) := by ring
 
+/-- **FPRUNE expectation lower bound from the recursion data alone (Lemma 3.4 + 3.5 assembled).**
+This packages the two proven halves so that the *only* remaining per-level input is the
+**expectation-factoring law** `hfactor` — the statement that the FPRUNE expectation `E r` is at
+least the design-weighted combination `∑_j c_j · E(d_j)` of its one-step children (the recursion
+law of the FPRUNE PMF). Given that law and the FPRUNE "good"-coordinate branching at each
+dimension (`J`, `d`, with `d_j+η ≤ (1-η')(r+η)`), the potential lower bound `η/(r+η) ≤ E r`
+follows for every dimension `r`.
+
+With `0 < η'` the good predicate forces `d_j < r` (each good coordinate strictly drops the
+dimension), so the strong induction of `fprune_potential_bound` applies; the per-step potential
+inequality is exactly `fprune_one_step`. This isolates the genuine final gap of the
+subspace-design list-decoding bound to constructing the FPRUNE PMF and verifying `hfactor`. -/
+theorem fprune_expectation_lower_of_branch
+    (E : ℕ → ℝ) (η η' : ℝ) (hη : 0 < η) (hη'0 : 0 < η') (hη'1 : η' ≤ 1)
+    (base : η / ((0 : ℕ) + η) ≤ E 0)
+    (branch : ∀ (r : ℕ), 0 < r → ∃ (J : Finset ι) (d : ι → ℕ), J.Nonempty ∧
+        (∀ j ∈ J, (d j : ℝ) + η ≤ (1 - η') * ((r : ℝ) + η)) ∧
+        (∑ j ∈ J, ((((d j : ℝ) + η) * (1 - η')) / (∑ k ∈ J, ((d k : ℝ) + η))) * E (d j)
+          ≤ E r)) :
+    ∀ r, η / ((r : ℕ) + η) ≤ E r := by
+  refine fprune_expectation_lower (ι := ι) E η hη base (fun r hr => ?_)
+  obtain ⟨J, d, hJ, hgood, hfactor⟩ := branch r hr
+  have hrη : (0 : ℝ) < (r : ℝ) + η := add_pos_of_nonneg_of_pos (Nat.cast_nonneg _) hη
+  have hWpos : 0 < ∑ k ∈ J, ((d k : ℝ) + η) :=
+    Finset.sum_pos (fun k _ => add_pos_of_nonneg_of_pos (Nat.cast_nonneg _) hη) hJ
+  refine ⟨J, fun j => (((d j : ℝ) + η) * (1 - η')) / (∑ k ∈ J, ((d k : ℝ) + η)), d,
+    ?_, ?_, hfactor, ?_⟩
+  · -- `c j ≥ 0`
+    intro j _
+    exact div_nonneg (mul_nonneg (add_nonneg (Nat.cast_nonneg _) hη.le) (by linarith)) hWpos.le
+  · -- `d j < r` (strict dimension drop, using `0 < η'`)
+    intro j hj
+    have hgj := hgood j hj
+    have hlt : (d j : ℝ) < (r : ℝ) := by nlinarith [hgj, mul_pos hη'0 hrη]
+    exact_mod_cast hlt
+  · -- the one-step potential inequality is `fprune_one_step`
+    exact fprune_one_step η η' hη (by linarith) r J d hJ hgood
+
 end CodingTheory.ListDecoding
