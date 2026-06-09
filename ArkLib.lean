@@ -1080,6 +1080,7 @@ import ArkLib.ToMathlib.BKR06BareT312
 import ArkLib.ToMathlib.BKR06Close
 import ArkLib.ToMathlib.BKR06CloseBridge
 import ArkLib.ToMathlib.BKR06EndToEnd
+import ArkLib.ToMathlib.BKR06FamilyDischarge
 import ArkLib.ToMathlib.BKR06FiberCount
 import ArkLib.ToMathlib.BKR06Injection
 import ArkLib.ToMathlib.BKR06Pigeonhole
