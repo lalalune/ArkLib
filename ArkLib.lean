@@ -660,6 +660,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StepanovPointCountEngine
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovVanisherExistence
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilSubstrate
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyF17
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyTowerF17
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
