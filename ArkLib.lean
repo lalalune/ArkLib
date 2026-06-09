@@ -715,6 +715,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityBaseCasePairs
+import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CollisionOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetConcentration
@@ -757,7 +758,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1406,6 +1406,7 @@ import ArkLib.ToMathlib.LinearizedRecursionStep
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.LinearizedSupportStep
 import ArkLib.ToMathlib.List.Basic
+import ArkLib.ToMathlib.LocalHenselSeries
 import ArkLib.ToMathlib.LocalizationEmbedding
 import ArkLib.ToMathlib.LocalizedPlaceEvaluation
 import ArkLib.ToMathlib.LogupFractionalSum
