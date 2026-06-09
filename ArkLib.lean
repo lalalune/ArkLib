@@ -1110,6 +1110,7 @@ import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncond
 import ArkLib.ProofSystem.Logup.Security.LogupHonestSupport
 import ArkLib.ProofSystem.Logup.Security.LogupInitImplFacts
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessClose
+import ArkLib.ProofSystem.Logup.Security.LogupSoundnessMsgSeam
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessUncond
 import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
 import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
