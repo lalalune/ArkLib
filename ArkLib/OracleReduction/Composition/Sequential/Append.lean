@@ -346,14 +346,15 @@ condition `AppendCoherent V₁` (the same kind of side condition resolved by
 def emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
     (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
-    OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) ((Oₛ₂ i).Response q) := by
-  -- Case on how `V₁.embed` derives `OStmt₂ i`.
-  cases h : V₁.embed i with
-  | inl k =>
-      exact emitOStmtQueryInl (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
+    OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) ((Oₛ₂ i).Response q) :=
+  -- Case on how `V₁.embed` derives `OStmt₂ i` (term-mode `match` so the per-case reduction is a
+  -- splittable matcher, not a `Sum.rec`).
+  match h : V₁.embed i with
+  | .inl k =>
+      emitOStmtQueryInl (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
         (Oₛ₂ i) k (hEqInl V₁ i k h) (coh.hCohInl i k h) q
-  | inr k =>
-      exact emitOStmtQueryInr (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
+  | .inr k =>
+      emitOStmtQueryInr (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
         (Oₛ₂ i) k (hEqInr V₁ i k h) (coh.hCohInr i k h) q
 
 /-- Router carrying `V₂`'s oracle context into the appended-spec oracle context: `oSpec` passes
@@ -545,17 +546,16 @@ theorem simulateQ_emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt�
     (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
     simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitOStmt₂Query V₁ i q)
       = pure ((Oₛ₂ i).answer (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst i) q) := by
-  cases h : V₁.embed i with
-  | inl k =>
-    simp only [emitOStmt₂Query, h]
+  unfold emitOStmt₂Query
+  split
+  · next k h =>
     rw [emitOStmtQueryInl_simulateQ, mkVerifierOStmtOut_inl V₁.embed V₁.hEq oStmt tr.fst i k h]
-    congr 1
-    exact eq_of_heq ((eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm)
-  | inr k =>
-    simp only [emitOStmt₂Query, h]
+    congr 2
+    exact (eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm
+  · next k h =>
     rw [emitOStmtQueryInr_simulateQ, mkVerifierOStmtOut_inr V₁.embed V₁.hEq oStmt tr.fst i k h]
-    congr 1
-    exact eq_of_heq ((eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm)
+    congr 2
+    exact (eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm
 
 /-- **V₂-side router collapse.** Running `V₂`'s queries through `router₂ V₁` and then the combined
 `simOracle2` is the same as running them through `V₂`'s own `simOracle2` over the oracle statements
