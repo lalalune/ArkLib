@@ -46,7 +46,7 @@ open Polynomial
 
 namespace Lagrange
 
-variable {F K : Type*} [Field F] [Field K] [DecidableEq F] [DecidableEq K]
+variable {F K : Type*} [Field F] [Field K]
 
 theorem map_basisDivisor (φ : F →+* K) (x y : F) :
     (basisDivisor x y).map φ = basisDivisor (φ x) (φ y) := by
@@ -83,17 +83,17 @@ vanishes only trivially. (Transport along the injective `F[Z] → F(Z)`.) -/
 lemma affine_scalar_eq_zero {x y : F}
     (h : algebraMap F (RatFunc F) x + RatFunc.X * algebraMap F (RatFunc F) y = 0) :
     x = 0 ∧ y = 0 := by
-  have hx : algebraMap F (RatFunc F) x =
-      algebraMap F[X] (RatFunc F) (Polynomial.C x) := by
-    rw [← RatFunc.algebraMap_C]
-  have hy : algebraMap F (RatFunc F) y =
-      algebraMap F[X] (RatFunc F) (Polynomial.C y) := by
-    rw [← RatFunc.algebraMap_C]
+  have hC : ∀ z : F, algebraMap F (RatFunc F) z =
+      algebraMap F[X] (RatFunc F) (Polynomial.C z) := by
+    intro z
+    rw [IsScalarTower.algebraMap_apply F F[X] (RatFunc F), Polynomial.algebraMap_eq]
   have hX : (RatFunc.X : RatFunc F) = algebraMap F[X] (RatFunc F) Polynomial.X :=
-    (RatFunc.algebraMap_X).symm
-  rw [hx, hy, hX, ← map_mul, ← map_add] at h
+    RatFunc.algebraMap_X.symm
+  have h' : algebraMap F[X] (RatFunc F) (Polynomial.C x + Polynomial.X * Polynomial.C y) = 0 := by
+    rw [map_add, map_mul, ← hC, ← hC, ← hX]
+    exact h
   have h0 : (Polynomial.C x + Polynomial.X * Polynomial.C y : F[X]) = 0 :=
-    RatFunc.algebraMap_injective (by simpa using h)
+    RatFunc.algebraMap_injective F (by rw [map_zero]; exact h')
   constructor
   · have := congrArg (fun q : F[X] => q.coeff 0) h0
     simpa using this
@@ -109,28 +109,20 @@ theorem affine_pair_unique {a b a' b' : F[X]}
         Polynomial.C RatFunc.X * b'.map (algebraMap F (RatFunc F))) :
     a = a' ∧ b = b' := by
   have hcoeff : ∀ j : ℕ,
-      algebraMap F (RatFunc F) ((a - a').coeff j) +
-        RatFunc.X * algebraMap F (RatFunc F) ((b - b').coeff j) = 0 := by
-    intro j
-    have := congrArg (fun q : (RatFunc F)[X] => q.coeff j) h
-    simp only [Polynomial.coeff_add, Polynomial.coeff_C_mul, Polynomial.coeff_map] at this
-    have h' : algebraMap F (RatFunc F) (a.coeff j - a'.coeff j) +
+      algebraMap F (RatFunc F) (a.coeff j - a'.coeff j) +
         RatFunc.X * algebraMap F (RatFunc F) (b.coeff j - b'.coeff j) = 0 := by
-      rw [map_sub, map_sub]
-      ring_nf
-      linear_combination this
-    simpa using h'
+    intro j
+    have hj := congrArg (fun q : (RatFunc F)[X] => q.coeff j) h
+    simp only [Polynomial.coeff_add, Polynomial.coeff_C_mul, Polynomial.coeff_map] at hj
+    rw [map_sub, map_sub]
+    linear_combination hj
   constructor
   · ext j
-    have := (affine_scalar_eq_zero (hcoeff j)).1
-    have h2 : (a - a').coeff j = 0 := this
-    rw [Polynomial.coeff_sub, sub_eq_zero] at h2
-    exact h2
+    have h2 := (affine_scalar_eq_zero (hcoeff j)).1
+    exact sub_eq_zero.mp h2
   · ext j
-    have := (affine_scalar_eq_zero (hcoeff j)).2
-    have h2 : (b - b').coeff j = 0 := this
-    rw [Polynomial.coeff_sub, sub_eq_zero] at h2
-    exact h2
+    have h2 := (affine_scalar_eq_zero (hcoeff j)).2
+    exact sub_eq_zero.mp h2
 
 /-! ## The affine-pair extraction (S6 deep kernel) -/
 
@@ -164,7 +156,7 @@ theorem affine_pair_of_agreement {n k : ℕ} (ωs : Fin n ↪ F) (f₀ f₁ : Fi
     exact hA i (hSA hi)
   -- the fold values are an affine combination of the `F`-rational value vectors
   have hvals : (fun i => genericFold f₀ f₁ i) =
-      (φ ∘ f₀) + RatFunc.X • (φ ∘ f₁) := by
+      (⇑φ ∘ f₀) + (RatFunc.X : RatFunc F) • (⇑φ ∘ f₁) := by
     funext i
     simp [genericFold, hφ, Pi.add_apply, Pi.smul_apply, smul_eq_mul]
   refine ⟨Lagrange.interpolate S v f₀, Lagrange.interpolate S v f₁, ?_, ?_, ?_⟩
@@ -172,9 +164,18 @@ theorem affine_pair_of_agreement {n k : ℕ} (ωs : Fin n ↪ F) (f₀ f₁ : Fi
     exact_mod_cast Lagrange.degree_interpolate_lt _ hinjF
   · rw [← hScard]
     exact_mod_cast Lagrange.degree_interpolate_lt _ hinjF
-  · rw [hp, hvals, map_add, LinearMap.map_smul,
-      Lagrange.map_interpolate φ S v f₀, Lagrange.map_interpolate φ S v f₁,
-      Polynomial.smul_eq_C_mul]
+  · calc p = Lagrange.interpolate S (⇑φ ∘ v) (fun i => genericFold f₀ f₁ i) := hp
+      _ = Lagrange.interpolate S (⇑φ ∘ v)
+            ((⇑φ ∘ f₀) + (RatFunc.X : RatFunc F) • (⇑φ ∘ f₁)) := by rw [hvals]
+      _ = Lagrange.interpolate S (⇑φ ∘ v) (⇑φ ∘ f₀) +
+            (RatFunc.X : RatFunc F) • Lagrange.interpolate S (⇑φ ∘ v) (⇑φ ∘ f₁) := by
+          rw [map_add, LinearMap.map_smul]
+      _ = (Lagrange.interpolate S v f₀).map φ +
+            (RatFunc.X : RatFunc F) • (Lagrange.interpolate S v f₁).map φ := by
+          rw [Lagrange.map_interpolate φ S v f₀, Lagrange.map_interpolate φ S v f₁]
+      _ = (Lagrange.interpolate S v f₀).map φ +
+            Polynomial.C RatFunc.X * (Lagrange.interpolate S v f₁).map φ := by
+          rw [Polynomial.smul_eq_C_mul]
 
 /-- **The affine pair in Hamming-distance form** — the shape the GS list-decoder produces.
 
@@ -202,7 +203,7 @@ theorem affine_pair_of_hammingDist {n k : ℕ} (ωs : Fin n ↪ F) (f₀ f₁ : 
       (Finset.univ.filter
         (fun i => ¬ p.eval (liftedDomain ωs i) = genericFold f₀ f₁ i)).card =
       n := by
-    rw [hA, Finset.filter_card_add_filter_neg_card_eq_card, Finset.card_univ,
+    rw [hA, Finset.card_filter_add_card_filter_not, Finset.card_univ,
       Fintype.card_fin]
   have hdist' : (Finset.univ.filter
       (fun i => ¬ p.eval (liftedDomain ωs i) = genericFold f₀ f₁ i)).card ≤
