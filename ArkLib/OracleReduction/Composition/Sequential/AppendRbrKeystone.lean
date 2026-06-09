@@ -47,6 +47,20 @@ variable {ι : Type} {oSpec : OracleSpec ι} {Stmt₁ Wit₁ Stmt₂ Wit₂ Stmt
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
   {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
 
+/-- **At a phase-1-only round index, the transcript truncation is the identity.** For `k ≤ m`,
+the appended-spec transcript `tr` keeps all its rounds under the phase-1 truncation, so
+`Transcript.fst tr` is heterogeneously equal to `tr` (only per-round value types differ). -/
+theorem transcript_fst_heq {k : Fin (m + n + 1)} (hk : (k : ℕ) ≤ m)
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript k) :
+    HEq (ProtocolSpec.Transcript.fst tr) tr := by
+  refine Function.hfunext (congrArg Fin (Nat.min_eq_left hk)) (fun a a' ha => ?_)
+  have hval : a.val = a'.val := by
+    have := (Fin.heq_ext_iff (Nat.min_eq_left hk)).mp ha
+    omega
+  have hidx : (⟨a.val, by omega⟩ : Fin (k : ℕ)) = a' := Fin.ext hval
+  unfold ProtocolSpec.Transcript.fst
+  exact HEq.trans (cast_heq _ _) (hidx ▸ HEq.rfl)
+
 /-- **Phase-1 per-round experiment body HEq.** The appended rbr experiment body at a phase-1
 challenge index `inl i₁` — the appended prover's partial run `runToRound (inl i₁).castSucc` followed
 by sampling the appended `getChallenge (inl i₁)` under the *combined* challenge oracle — is
