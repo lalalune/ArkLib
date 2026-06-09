@@ -636,6 +636,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SatCheck_tmp
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovPointCountEngine
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuarticHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSpectrumNoImprovement

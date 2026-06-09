@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.BCS.CompletenessPreservation
 import ArkLib.OracleReduction.BCS.AppendSoundnessMsg
+import ArkLib.OracleReduction.Composition.Sequential.ChallengeOracleFintype
 import ArkLib.CommitmentScheme.Transparent
 
 /-!
@@ -445,4 +446,138 @@ theorem hSeamDir :
         Fin (1 + Fin.vsum (fun j => (nCom (Data := Data)) ((e (Data := Data)).symm j))))
       = .P_to_V := rfl
 
+/-! ## The compiled BCS instance and the two headline results -/
+
+/-- Every challenge type of the renamed interaction spec is `Fintype` (vacuously: no challenges). -/
+instance instFintypeInteractionChallenge :
+    ∀ i, Fintype (((srcPSpec (Data := Data)).renameMessage
+      (CommitmentType (Data := Data))).Challenge i) :=
+  fun i => (instIsEmptyInteractionChallenge (Data := Data)).false i |>.elim
+
+instance instInhabitedInteractionChallenge :
+    ∀ i, Inhabited (((srcPSpec (Data := Data)).renameMessage
+      (CommitmentType (Data := Data))).Challenge i) :=
+  fun i => (instIsEmptyInteractionChallenge (Data := Data)).false i |>.elim
+
+/-- Every challenge type of the opening phase is `Fintype` (vacuously: no challenges). -/
+instance instFintypeOpeningChallenge :
+    ∀ i, Fintype (((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+      (e (Data := Data))).Challenge i) :=
+  fun i => (instIsEmptyOpeningChallenge (Data := Data)).false i |>.elim
+
+instance instInhabitedOpeningChallenge :
+    ∀ i, Inhabited (((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+      (e (Data := Data))).Challenge i) :=
+  fun i => (instIsEmptyOpeningChallenge (Data := Data)).false i |>.elim
+
+/-- `SampleableType` for the fully BCS-transformed spec's challenges: definitionally the append of the
+two phases' challenges, both of which are vacuously sampleable (no verifier challenges anywhere). -/
+instance instSampleableBCSTransform :
+    ∀ i, SampleableType (((srcPSpec (Data := Data)).BCSTransform (pSpecCom (Data := Data))
+      (CommitmentType (Data := Data)) (e (Data := Data))).Challenge i) :=
+  fun i => inferInstanceAs (SampleableType
+    ((((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data))) ++ₚ
+      ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+        (e (Data := Data)))).Challenge i))
+
+/-- The BCS-compiled phases of the transparent end-to-end instance: the "commit and forward"
+interaction phase and the transparent opening phase. The two realization `Prop` fields are set to
+`True` (the keystones below only carry them; they are not used to derive completeness or soundness).
+-/
+def phases :
+    OracleReduction.BCSCompiledPhases (oSpec := oSpec) (pSpec := srcPSpec (Data := Data))
+      (pSpecCom := pSpecCom (Data := Data))
+      (StmtIn := OpeningStmt (Data := Data)) (WitIn := OpeningWit (Data := Data))
+      (StmtOut := Bool) (WitOut := Unit)
+      (StmtMid := OpeningStmt (Data := Data)) (WitMid := OpeningWit (Data := Data))
+      (CommitmentType (Data := Data)) (e (Data := Data)) where
+  interaction := interactionRed
+  opening := openingRed
+  interaction_realizes_oracle_messages := True
+  opening_realizes_query_log := True
+
+section Final
+
+variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+
+/-- **Headline (a): perfect completeness of the compiled transparent BCS protocol.**
+
+The BCS transform of the "commit and forward" interaction phase and the transparent opening phase is
+perfectly complete (input relation `relMid`, output relation `acceptRejectRel`), instantiating the
+general keystone `OracleReduction.BCSTransform_perfectCompleteness`. The per-phase perfect
+completeness is `interactionRed_perfectCompleteness` / `openingRed_perfectCompleteness`; the
+structural seam facts are `hn_pos` / `hSeamDir` / `hOpeningFirstDir`. `hInit` / `hImplSupp` are the
+honest-implementation side conditions (held by any honest interactive `impl`). -/
+theorem transparentBCS_perfectCompleteness
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β)) :
+    (OracleReduction.BCSTransform (e (Data := Data)) (interactionRed (oSpec := oSpec) (Data := Data))
+        (openingRed (oSpec := oSpec) (Data := Data))).perfectCompleteness init impl
+      (relMid (Data := Data)) acceptRejectRel := by
+  -- All challenge-augmented oracle specs are finite/inhabited: every challenge family is empty.
+  haveI : (oSpec + [(((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data))) ++ₚ
+      ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+        (e (Data := Data)))).Challenge]ₒ).Fintype :=
+    ProtocolSpec.appendCombinedOracle_fintype oSpec _ _
+  haveI : (oSpec + [(((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data))) ++ₚ
+      ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+        (e (Data := Data)))).Challenge]ₒ).Inhabited :=
+    ProtocolSpec.appendCombinedOracle_inhabited oSpec _ _
+  haveI : (oSpec + [((srcPSpec (Data := Data)).renameMessage
+      (CommitmentType (Data := Data))).Challenge]ₒ).Fintype :=
+    haveI := ProtocolSpec.challengeOracle_fintype ((srcPSpec (Data := Data)).renameMessage
+      (CommitmentType (Data := Data))); inferInstance
+  haveI : (oSpec + [((srcPSpec (Data := Data)).renameMessage
+      (CommitmentType (Data := Data))).Challenge]ₒ).Inhabited :=
+    haveI := ProtocolSpec.challengeOracle_inhabited ((srcPSpec (Data := Data)).renameMessage
+      (CommitmentType (Data := Data))); inferInstance
+  haveI : (oSpec + [((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+      (e (Data := Data))).Challenge]ₒ).Fintype :=
+    haveI := ProtocolSpec.challengeOracle_fintype ((srcPSpec (Data := Data)).BCSOpeningPhase
+      (pSpecCom (Data := Data)) (e (Data := Data))); inferInstance
+  haveI : (oSpec + [((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+      (e (Data := Data))).Challenge]ₒ).Inhabited :=
+    haveI := ProtocolSpec.challengeOracle_inhabited ((srcPSpec (Data := Data)).BCSOpeningPhase
+      (pSpecCom (Data := Data)) (e (Data := Data))); inferInstance
+  exact OracleReduction.BCSTransform_perfectCompleteness (e (Data := Data))
+    (interactionRed (oSpec := oSpec) (Data := Data)) (openingRed (oSpec := oSpec) (Data := Data))
+    (relIn := relMid (Data := Data)) (relMid := relMid (Data := Data)) (relOut := acceptRejectRel)
+    interactionRed_perfectCompleteness openingRed_perfectCompleteness
+    (hn_pos (Data := Data)) (hSeamDir (Data := Data)) (hOpeningFirstDir (Data := Data))
+    hInit hImplSupp
+
+/-- **Headline (b): soundness of the compiled transparent BCS protocol.**
+
+The compiled BCS verifier is sound with error `0 + 0 = 0` (input language `langMid`, output language
+`langOut`), instantiating the unconditional message-seam keystone
+`OracleReduction.BCSCompiledPhases.toReduction_soundness_of_append_msg`. The per-phase soundness is
+`interactionRed_soundness` / `openingRed_soundness`; the structural seam facts are `hn_pos` /
+`hSeamDir` / `hOpeningFirstDir`. `himplSP` / `himplNF` / `himplVB` are the honest-implementation side
+conditions (held by any honest interactive `impl`). -/
+theorem transparentBCS_soundness [Inhabited Data] [Inhabited O.Query]
+    [∀ q, Inhabited (O.Response q)]
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    @Verifier.soundness _ oSpec (OpeningStmt (Data := Data)) Bool
+      (1 + Fin.vsum (fun j => (nCom (Data := Data)) ((e (Data := Data)).symm j)))
+      ((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data)) ++ₚ
+        (srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data)) (e (Data := Data)))
+      (fun i => ProtocolSpec.instSampleableTypeChallengeAppend i)
+      σ init impl (langMid (Data := Data)) langOut
+      (phases (oSpec := oSpec) (Data := Data)).toReduction.verifier (0 + 0) :=
+  OracleReduction.BCSCompiledPhases.toReduction_soundness_of_append_msg
+    (phases (oSpec := oSpec) (Data := Data))
+    (langIn := langMid (Data := Data)) (langMid := langMid (Data := Data)) (langOut := langOut)
+    interactionRed_soundness openingRed_soundness
+    (hn_pos (Data := Data)) (hSeamDir (Data := Data)) (hOpeningFirstDir (Data := Data))
+    himplSP himplNF himplVB
+
+end Final
+
 end BCSTransparentEndToEnd
+
