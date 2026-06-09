@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionBound
 
+set_option linter.style.longLine false
+
 /-!
 # CS25 #82, deliverable 2 (b): the off-support weight budget for ball intersections
 
@@ -17,11 +19,11 @@ support of `e` budgeted by
 
 As `wt(e)` grows toward `2r`, the off-support budget `(2r − wt(e))/2` shrinks to `0`, forcing `w` to
 live almost entirely on `supp(e)`.  This is the structural mechanism behind the CS25 second-moment
-off-diagonal estimate (cf. `CS25BallIntersectionWeightInvariant` for the weight-enumerator collapse).
+off-diagonal estimate (see `CS25BallIntersectionWeightInvariant` for the weight collapse).
 
 ## Main results
 
-* `two_mul_offSupport_add_hammingNorm_le` — the pointwise budget `2·offWt(w) + wt(e) ≤ wt(w)+Δ₀(w,e)`.
+* `two_mul_offSupport_add_hammingNorm_le` — pointwise `2·offWt(w)+wt(e) ≤ wt(w)+Δ₀(w,e)`.
 * `offSupport_budget_of_mem_jointCover` — its specialization to joint-cover members: `≤ 2r`.
 * `jointCoverCount_le_offSupport_card` — the resulting `jointCoverCount` upper bound by the
   off-support–budgeted set, the entry point to the explicit `q^{wt e}·V_{n−wt e}` decay bound.
@@ -34,6 +36,8 @@ namespace ArkLib.CS25
 open Code Finset
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
 
 variable {ι : Type*} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type*} [Fintype F] [DecidableEq F] [AddCommGroup F]
@@ -146,7 +150,8 @@ theorem jointCoverCount_le_offSupport_card (δ : ℝ≥0) (e : ι → F) :
   have := offSupport_budget_of_mem_jointCover δ e w hw0 hwe
   omega
 
-/-- **Explicit ball-intersection decay bound.** The `δ`-ball intersection `I(e) = jointCoverCount δ 0 e`
+/-- **Explicit ball-intersection decay bound.** The `δ`-ball intersection
+`I(e) = jointCoverCount δ 0 e`
 of `B(0,δ)` with `B(e,δ)` is bounded by a Hamming ball of radius `B' = (2r − wt(e))/2` in the
 `n − wt(e)` coordinates *off* `supp(e)`, times `q^{wt(e)}` for the unconstrained on-support
 coordinates:

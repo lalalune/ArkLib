@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersection
 
+set_option linter.style.longLine false
+
 /-!
 # CS25 #82, deliverable 2: weight-invariance of the ball-intersection count
 
@@ -12,7 +14,7 @@ The joint `δ`-cover count `I(e) := jointCoverCount δ 0 e = |B(0,δ) ∩ B(e,δ
 Hamming weight of `e`**, not on `e` itself.  This is the keystone that turns the second-moment
 off-diagonal sum into the classical *weight-enumerator* form
 
-  `∑_{e ∈ C} I(e) = ∑_d A_d · I_d`,   `A_d = #{e ∈ C : wt(e) = d}`,   `I_d = I(any weight-d vector)`,
+  `∑_{e ∈ C} I(e) = ∑_d A_d · I_d`,   `A_d = #{e ∈ C : wt(e) = d}`,   `I_d = I(weight-d rep)`,
 
 complementing the list-size route (`CS25SecondMomentListSize`) and feeding the MDS weight enumerator
 `A_d` bounds (`RSWeightEnumerator`).
@@ -40,6 +42,8 @@ namespace ArkLib.CS25
 open Code Finset
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 variable {F : Type*} [Fintype F] [DecidableEq F] [Field F]
@@ -110,15 +114,15 @@ theorem exists_monomial_of_hammingNorm_eq (e e' : ι → F) (hwt : hammingNorm e
     rwa [Equiv.apply_symm_apply] at this
   refine ⟨σ, fun i => if e' i ≠ 0 then e' i * (e (σ.symm i))⁻¹ else 1, ?_, ?_⟩
   · intro i
-    show (if e' i ≠ 0 then e' i * (e (σ.symm i))⁻¹ else 1) ≠ 0
+    change (if e' i ≠ 0 then e' i * (e (σ.symm i))⁻¹ else 1) ≠ 0
     by_cases h : e' i ≠ 0
     · rw [if_pos h]; exact mul_ne_zero h (inv_ne_zero ((hkey i).mp h))
     · rw [if_neg h]; exact one_ne_zero
   · funext i
     by_cases h : e' i ≠ 0
-    · show (if e' i ≠ 0 then e' i * (e (σ.symm i))⁻¹ else 1) * e (σ.symm i) = e' i
+    · change (if e' i ≠ 0 then e' i * (e (σ.symm i))⁻¹ else 1) * e (σ.symm i) = e' i
       rw [if_pos h, mul_assoc, inv_mul_cancel₀ ((hkey i).mp h), mul_one]
-    · show (if e' i ≠ 0 then e' i * (e (σ.symm i))⁻¹ else 1) * e (σ.symm i) = e' i
+    · change (if e' i ≠ 0 then e' i * (e (σ.symm i))⁻¹ else 1) * e (σ.symm i) = e' i
       rw [if_neg h, one_mul]
       have he0 : e (σ.symm i) = 0 := not_not.mp (fun hc => h ((hkey i).mpr hc))
       rw [he0, not_not.mp h]
