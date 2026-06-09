@@ -2053,3 +2053,15 @@ explicit cyclotomic linear algebra). The general P-B upper-bound attack is now c
 the descent; the 2^{O(H/η)} budget should emerge as a product of per-level pattern counts. This is
 the first mechanism-level candidate for the open core that has a PROVEN base case. Next: general
 descent recursion + n=32 two-step test + equivariance write-up + Lean brick (fully finite).
+
+### O13′ — descent self-similarity verified at n=32: the converse-FRI recursion is real (nubs, 2026-06-09)
+
+All 17 sampled n=32 list elements descend (even/odd = the FRI fold) to pure-B level-1 patterns with
+verified conditions — exactly lifts of level-1 list elements of the descended word, which is the
+same line construction one level down. Recursion: ℓ₀ = ℓ₁(c_o=0 branch) + Σ mixed-pattern branches,
+each mixed branch a C19-style finite consistency count. The 2^{O(H/η)} budget = product of
+per-level branch counts over the tower. PROGRAM: (1) converse-FRI descent lemma (rigorous, easy);
+(2) per-level branch-count bound (the remaining heart — C19 proved one full level exactly);
+(3) marginal-layer sampler at n=32 (needs ≥3-witness unions + outside, per the n=16 anatomy).
+First mechanism-level program for the open core with a fully proven base level. Scripts:
+probe_descent32.py.
