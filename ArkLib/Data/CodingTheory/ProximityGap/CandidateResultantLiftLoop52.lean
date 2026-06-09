@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.RingTheory.Polynomial.Resultant.Basic
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.LSeries.PrimesInAP
 import Mathlib.Tactic
@@ -124,6 +125,31 @@ theorem exists_prime_eq_one_mod_not_dvd {q : ℕ} (hq : 2 ≤ q) (R : ℤ) (hR :
   have hle : p ≤ R.natAbs := Nat.le_of_dvd hpos hpdvd
   omega
 
+private theorem totient_two_pow' {m : ℕ} (hm : 1 ≤ m) : Nat.totient (2 ^ m) = 2 ^ (m - 1) := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hm
+  rw [Nat.zero_add, Nat.totient_prime_pow_succ Nat.prime_two]; simp
+
+/-- **A low-degree nonzero integer polynomial is coprime to `Φ_{2^m}` over `ℚ`.** Since
+`cyclotomic (2^m) ℚ` is irreducible of degree `φ(2^m) = 2^{m-1}` and `g ≠ 0` has degree `< 2^{m-1}`,
+`Φ` cannot divide `g`, so they are coprime. This supplies the `hcop` hypothesis of
+`exists_good_prime_no_common_resultant` for every difference `g = f_S − f_T` (`deg < 2^{m-1}`). -/
+theorem diff_coprime_cyclotomic_rat {m : ℕ} (hm : 1 ≤ m) (g : Polynomial ℤ)
+    (hdeg : g.natDegree < 2 ^ (m - 1)) (hg0 : g ≠ 0) :
+    IsCoprime (g.map (Int.castRingHom ℚ))
+      ((cyclotomic (2 ^ m) ℤ).map (Int.castRingHom ℚ)) := by
+  rw [Polynomial.map_cyclotomic_int]
+  have hirr : Irreducible (cyclotomic (2 ^ m) ℚ) := cyclotomic.irreducible_rat (by positivity)
+  rw [isCoprime_comm, hirr.coprime_iff_not_dvd]
+  intro hdvd
+  have hinj : Function.Injective (Int.castRingHom ℚ) := Int.cast_injective
+  have hgmap0 : g.map (Int.castRingHom ℚ) ≠ 0 := by
+    simpa [Polynomial.map_eq_zero_iff hinj] using hg0
+  have hdeg_le : (cyclotomic (2 ^ m) ℚ).natDegree ≤ (g.map (Int.castRingHom ℚ)).natDegree :=
+    Polynomial.natDegree_le_of_dvd hdvd hgmap0
+  rw [natDegree_cyclotomic, totient_two_pow' hm] at hdeg_le
+  rw [natDegree_map_eq_of_injective hinj g] at hdeg_le
+  omega
+
 /-- **Consolidation: a prime `≡ 1 (mod q)` at which no member of a finite family shares a root with
 `h`.** Given polynomials `gs i`, each coprime to `h` over `ℚ`, the product `R = ∏ Res_ℤ(gs i, h)` is a
 nonzero integer; a Dirichlet prime `p ≡ 1 (mod q)` with `p ∤ R` then satisfies `p ∤ Res_ℤ(gs i, h)`
@@ -146,6 +172,7 @@ theorem exists_good_prime_no_common_resultant {ι : Type*} [Fintype ι]
 end ArkLib.ProximityGap.ResultantLiftLoop52
 
 /-! ## Axiom audit -/
+#print axioms ArkLib.ProximityGap.ResultantLiftLoop52.diff_coprime_cyclotomic_rat
 #print axioms ArkLib.ProximityGap.ResultantLiftLoop52.exists_good_prime_no_common_resultant
 #print axioms ArkLib.ProximityGap.ResultantLiftLoop52.prime_dvd_resultant_of_common_root
 #print axioms ArkLib.ProximityGap.ResultantLiftLoop52.resultant_int_ne_zero_of_isCoprime_rat
