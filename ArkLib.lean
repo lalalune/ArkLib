@@ -689,6 +689,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
+import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaJohnson
