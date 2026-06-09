@@ -442,7 +442,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
 import ArkLib.Data.CodingTheory.ProximityGap.GSPipelineAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.GSRootOrderStep
-import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.GSYDegreeListCap
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
@@ -724,6 +723,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumSecondMomentCollision
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumSquaringBijection
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumZeroInflation
+import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.UDRBadCount
@@ -1181,6 +1181,7 @@ import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.FoldRound
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.KeystoneReduction
+import ArkLib.ProofSystem.Whir.KeystoneSmallField
 import ArkLib.ProofSystem.Whir.MCAAffineLineGenerator
 import ArkLib.ProofSystem.Whir.MCAConjectureStatus
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveExtract
