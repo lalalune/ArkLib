@@ -72,10 +72,12 @@ noncomputable def AlphaWeightZeroResummationTarget (x₀ : F) (R : F[X][X][Y])
 theorem DivWeightLe_zero_resummed (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
     (hD : D ≤ H.natDegree) :
-    ∃ (a : 𝒪 H), AlphaWeightZeroResummationTarget x₀ R hHyp = a * W𝒪 H ∧ AlphaGenuineRegularWeightLe a D 1 := by
+    ∃ (a : 𝒪 H), AlphaWeightZeroResummationTarget H x₀ R hHyp = a * W𝒪 H
+      ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 := by
   use βHensel H x₀ R hHyp 0
   constructor
-  · rw [AlphaWeightZeroResummationTarget, mul_comm]
+  · rw [AlphaWeightZeroResummationTarget]
+    exact mul_comm (W𝒪 H) (βHensel H x₀ R hHyp 0)
   · exact βHensel_zero_weight_le_one H x₀ R hHyp hH hd hD
 
 end BCIKS20.HenselNumerator.AlphaWeight

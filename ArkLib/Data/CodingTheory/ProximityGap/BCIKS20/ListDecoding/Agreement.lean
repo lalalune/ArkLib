@@ -389,6 +389,48 @@ theorem Q_vanishes_on_close_codeword_graph [DecidableEq (Polynomial F)]
   rw [hQz, hP] at this ⊢; exact this
 
 omit [DecidableEq (RatFunc F)] in
+/-- **Generalized graph-vanishing keystone for an arbitrary close interpolant.**
+
+Identical to `Q_vanishes_on_close_codeword_graph`, but for an *arbitrary* degree-`≤ k` polynomial `P`
+that agrees with the line `u₀ + z•u₁` on a set `A` with `natWeightedDegree < m·|A|` — not only the
+canonical `Pz hS`.  The proof is `P`-independent: `Q`'s multiplicity `m` is at the *line* graph
+points `(ωs i, (u₀+z•u₁) i)`, and only `hA`/`hdeg` mention `P`.
+
+This is the entry point to per-parameter interpolant **uniqueness** (the `hunique` obligation of the
+§6 wiring) above the unique-decoding radius: every `δ`-close degree-`≤ k` interpolant is a `Y`-root of
+`eval_on_Z Q z`, hence a linear factor of it, so any two such interpolants coincide on the
+Guruswami–Sudan matching domain (see `RSDistinct.degreeLT_eq_of_match_common_on_domain`).  The
+`hQz_ne` non-degeneracy is discharged generically by `ProximityGap.card_badZ_le`
+(`EvalOnZNonzero.lean`). -/
+theorem Q_vanishes_on_close_codeword_graph_gen [DecidableEq (Polynomial F)]
+    {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (P : F[X]) (hPdeg : P.natDegree ≤ k)
+    (A : Finset (Fin n))
+    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = P.eval (ωs i))
+    (hcount : Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * A.card) :
+    (Trivariate.eval_on_Z Q z).eval P = 0 := by
+  set Qz := Trivariate.eval_on_Z Q z with hQz
+  have hroots : ∀ i ∈ A, (m : Option ℕ) ≤
+      Bivariate.rootMultiplicity Qz (ωs i) ((u₀ + z • u₁) i) := by
+    intro i hi
+    have hmi0 := h_gs.Q_multiplicity i
+    have hmi : (m : Option ℕ) ≤ Bivariate.rootMultiplicity Q
+        (Polynomial.C (ωs i)) (Polynomial.C (u₀ i) + Polynomial.X * Polynomial.C (u₁ i)) := by
+      convert ge_iff_le.mp hmi0 using 2
+    have hne' : Q.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) ≠ 0 := hQz_ne
+    have htr := gapB_transport_mult Q z (ωs i) (u₀ i) (u₁ i) m hne' hmi
+    have hpt : (u₀ + z • u₁) i = u₀ i + z * u₁ i := by
+      simp [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+    rw [hpt, hQz]; exact htr
+  have hdeg : (Qz.eval P).natDegree ≤ Bivariate.natWeightedDegree Qz 1 k := by
+    have hPdeg' : P.natDegree ≤ (k + 1) - 1 := by omega
+    simpa using GuruswamiSudan.degree_eval_le_weightedDegree Qz P (k + 1) hPdeg'
+  have := gapB_vanish_of_orderM_and_count ωs Qz P (u₀ + z • u₁) m
+    (Bivariate.natWeightedDegree Qz 1 k) A hroots hA hdeg hcount
+  rw [hQz] at this ⊢; exact this
+
+omit [DecidableEq (RatFunc F)] in
 /-- *Keystone, restated for the `pg_eval_on_Z` accessor consumed by `Extraction.lean`.*  The
 Gap-B keystone produces graph-vanishing phrased with `Trivariate.eval_on_Z`; the entire
 Claim-5.7 extraction toolbox (`pg_exists_R_of_Q_eval_zero`, `pg_exists_pair_for_z`,

@@ -1145,3 +1145,79 @@ gives `(1/q)·num < a/q` — the §7 MCA contribution beats the prize RHS in the
 **The §7/minimal-domain disproof thread is fully closed** (O11 was its last open node), with no
 realizability gap. The actual prize (pin `δ*` for *large* smooth domains, where §7 is absorbed) and O6
 (which domain regime the prize claims) remain — the genuine open research and the wording question.
+
+### O17 / Ultracode assault — 8-angle verified attack on δ* pinning: open core did NOT move, boundary mapped
+
+An exhaustive parallel multi-agent assault (8 independent angles, each writing+verifying real Lean,
+adversarially gated) attacked the open prize core (pin δ* / a list bound past Johnson for explicit
+smooth-domain RS). **Honest headline: the open core did not move** — zero angles pushed a verified
+list bound into the gap interior `(1−√ρ, 1−ρ)` for general smooth-domain RS. δ* remains unpinned. But
+the assault produced **5 verified axiom-clean new bricks** (kept) and a **precise map of the wall**.
+
+**Kept bricks** (all `lake build`-clean, axiom-clean `[propext, Classical.choice, Quot.sound]`):
+* `ListInteriorDataPointF7.lean` — `interior_list_lower_bound` + `four_sevenths_strictly_interior`:
+  the **first explicit verified interior data point** — RS[F₇, n=7, k=2], an explicit word with 6
+  distinct degree-`<2` codewords all agreeing on `≥3/7` coords (δ=4/7), *proven strictly inside*
+  `(1−√(2/7), 5/7)`. One-sided (lower bound); the matching upper bound (list = exactly 6) is **not**
+  Lean-provable here (7⁷ too big for `decide`, `native_decide` forbidden, Johnson≤24/Fisher≤7 loose).
+* `ListCapacityFieldIndependent.lean` — `list_card_ge_choose_at_capacity`: a `C(n,k)`-size,
+  **field-INDEPENDENT** list at the capacity edge via root-set interpolation `p_S = g − c·∏_{i∈S}(X−Dᵢ)`.
+  Strictly stronger than the field-capped `subsetSumset_card_le_field` (Loop53) — no `|F|` cap.
+* `JohnsonFourthMomentNoGo.lean` — `fourth_moment_cannot_beat_johnson_from_S4`: a **proven no-go** —
+  the degree-4 moment chain `(n·S₂)² ≤ n³·S₄` is Johnson-squared with zero slack on the extremal
+  profile, so the 4th moment provably cannot beat Johnson. (No 4th-moment material existed in-tree.)
+* `SubgroupSpectrumNoImprovement.lean` — `rs_codeword_syndrome` (the RS/BCH dual-code vanishing-
+  high-frequency-spectrum identity) + `subgroup_agreement_set_arbitrary`: the vanishing-power-sum /
+  cyclic structure of the smooth domain **does not** beat Johnson — `g_A = ∏_{j∈A}(X−ωʲ)` realizes
+  *any* `≤k−1` agreement set inside the subgroup, adding no placement information.
+* `MCAListCollapseFullSupport.lean` — `epsMCA_le_of_uniform_badCount_full_support`: lifts the
+  general-δ list⇒MCA packing to a uniform `ε_mca ≤ n/t·(…)/|F|` over full-support firing stacks
+  (the §5 collapse, full-support regime; non-full-support `z>0` is the genuine open boundary).
+
+**The convergent obstruction (the real insight).** Every angle collapses onto the *same* wall: the
+"`≤ k−1` freely-placed agreement positions" ceiling that makes Johnson tight is **fully realizable
+inside the smooth domain**, and the only way past it — a non-codeword target on which `>k−1`
+codewords agree, equivalently a **super-polynomial smooth-domain subset-sum / incidence count** — is
+exactly the open ABF26 content. **Three independent angles (subgroup-spectrum, sum-product/dilation,
+capacity-edge interpolation) reduce to this one smooth-domain subset-sum question.** Each standard
+technique (higher moments, Guruswami–Sudan multiplicity, dilation/sum-product, cyclic-BCH duality,
+root-set interpolation) was pushed to its wall and the wall proven, often as an explicit no-go.
+
+**Methodological catch (durable learning).** Bare `lean <file>` / `lake env lean <file>` defaults
+`autoImplicit = true`; the project sets `autoImplicit = false` (`lakefile.toml`). A file with an
+unbound variable can pass `lake env lean` yet **fail `lake build` and be `sorryAx`-tainted**. One
+assault file (`SubgroupSpectrumNoImprovement`) was sorryAx-tainted this way; a one-line `{n : ℕ}`
+binder fix made it axiom-clean. **Always confirm with `lake build <Module>`, not bare `lean`.** (All
+Loop48–53 files were re-confirmed clean under `lake build`.)
+
+### O18 / Round-2 assault — two-sided F7 interior pin + advanced-angle cartography (4 verified bricks)
+
+A second multi-agent round (5 advanced angles the first didn't try). Open core STILL did not move, but 4
+more axiom-clean bricks landed (all `lake build`-clean, `[propext, Classical.choice, Quot.sound]`):
+
+* `ListInteriorTwoSidedF7.lean` — `interior_list_two_sided` + the reusable `pairPacking_card_le`
+  (general Fisher: `|L|·C(a,2) ≤ C(|ground|,2)` for `a`-subsets pairwise meeting in `≤1`). **The first
+  TWO-SIDED interior list-size pin in the repo**: RS[F₇,7,2] at δ=4/7 (strictly inside the gap) has list
+  size *provably in [6,7]* — a verified lower bound (∃ a 6-codeword list) AND a matching upper bound
+  (∀ such list ≤ 7). Upgrades the round-1 one-sided F7 data point to near-tight.
+* `ListIncidencePolyMethod.lean` — `poly_method_subset_incidence_bound`: the **k-uniform** Fisher
+  generalization `|L|·C(a,k) ≤ C(n,k)` via pairwise-disjoint "owned k-sets" (distinct deg-`<k` codewords
+  own disjoint k-subsets of their agreement set). Sharper than the 2nd-moment bound when `a` is close to
+  `k`; the clean polynomial-method form of the agreement ceiling.
+* `ListRecoveryInterleavedGap.lean` — `deltaStar_collapse_bracket` + `gap_present_in_interleaved`: the
+  ABF26 §5 single-code ↔ m-interleaved relationship — `IsGood C δ B ⟹ IsGood C^{≡m} δ B^m` (forward) and
+  `IsGood C^{≡m} δ B ⟹ IsGood C δ B` (backward), and the Johnson→capacity gap is *inherited* by the
+  interleaved code. Shows the two Grand Challenges do NOT collapse to the same constant bound (the `B^m`
+  blowup), a real §5 contribution.
+* `SubgroupCharacterSumNoGo.lean` — `weil_recovers_root_count_not_better`: a **proven no-go** — the
+  character-sum / Weil expansion of the subgroup agreement count recovers *exactly* the root count
+  (`= k−1` realizable for any agreement set), so Weil gives nothing past Johnson. Plus the clean
+  orthogonality/agreement-split character-sum identities.
+
+**Verdict unchanged + sharpened.** Two independent advanced techniques (polynomial method, character
+sums/Weil) join round 1's list in hitting the SAME wall: the `≤k−1` agreement ceiling is exactly the
+k-dimensional/root-count constraint, fully realizable in the smooth subgroup. The reduced open core
+(super-poly smooth-domain subset-sum past Johnson within `|F|<2^256`) did not move. The new genuine
+asset is the **two-sided F7 interior pin** — a concrete verified δ* data point, both bounds, the first
+in-repo demonstration that δ* CAN be pinned (for a tiny explicit instance) even though the general
+technique is open.

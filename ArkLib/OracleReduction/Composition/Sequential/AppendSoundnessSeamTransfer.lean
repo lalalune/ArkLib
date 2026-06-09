@@ -34,6 +34,31 @@ variable {ι : Type} {oSpec : OracleSpec ι} {σ : Type}
   [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
   (impl : QueryImpl oSpec (StateT σ ProbComp))
 
+/-- **`simulateQ`-form lift transitivity through the `pSpec₁` seam.** The `simulateQ`-with-explicit-
+handler form of `oracleComp_liftComp_trans`: simulating `X` under the direct `oSpec → combined`
+challenge-oracle lift equals simulating it under the composed `oSpec → pSpec₁ → combined` lift.
+
+This is the key to crossing the VCVio `MonadLift`/`OptionT` instance heterogeneity: stating the
+transitivity with the *literal handler* `fun t => liftM (query t)` (rather than `liftM`/`liftComp`,
+whose reconstructed `MonadLift` instances diverge between the goal and the lemma) makes it match the
+`simulateQ` form the seam refold actually produces. The per-query coherence (`oSpec` queries route
+identically either way) closes by `rfl` inside the `OracleComp` induction. -/
+theorem simulateQ_lift_trans {γ : Type} (X : OracleComp oSpec γ) :
+    simulateQ ((fun t => liftM (OracleSpec.query t)) :
+        QueryImpl oSpec (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))) X
+    = simulateQ ((fun t => liftM (OracleSpec.query t)) :
+        QueryImpl (oSpec + [pSpec₁.Challenge]ₒ)
+          (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)))
+        (simulateQ ((fun t => liftM (OracleSpec.query t)) :
+          QueryImpl oSpec (OracleComp (oSpec + [pSpec₁.Challenge]ₒ))) X) := by
+  rw [← QueryImpl.simulateQ_compose]
+  induction X using OracleComp.inductionOn with
+  | pure x => simp only [simulateQ_pure]
+  | query_bind t k ih =>
+    simp only [simulateQ_bind, simulateQ_query, QueryImpl.apply_compose,
+      OracleQuery.input_query, OracleQuery.cont_query, id_map]
+    exact bind_congr fun a => ih a
+
 /-- **Challenge-seam transfer (left half), at `run'`/`evalDist`.** Simulating a `pSpec₁`-side
 computation `oa`, lifted into the *combined* challenge oracle, and projecting the value (`run'`),
 has the same distribution as simulating `oa` directly under `pSpec₁`'s challenge oracle. Immediate

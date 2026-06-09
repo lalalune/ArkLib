@@ -19,8 +19,10 @@ noncomputable def clearedRepresentativeFaaDiBrunoSum (x₀ : F) (R : F[X][X][Y])
       lam.parts.countPerms
         • (embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-              (hasseCoeffRepr𝒪_cleared H x₀ R ab.1 lam.parts.card R.natDegree))
-            / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree
+              (hasseCoeffRepr𝒪_cleared H x₀ R ab.1 lam.parts.card))
+            / (liftToFunctionField (H := H) H.leadingCoeff) ^
+                Bivariate.natDegreeY (Bivariate.evalX (Polynomial.C x₀)
+                  (hasseDerivX ab.1 (hasseDerivY lam.parts.card R)))
             * (lam.parts.map
                 (fun j => PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod)
 

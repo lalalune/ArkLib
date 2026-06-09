@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reabsorb
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoExtract
 
 /-!
 # BCIKS20 Appendix A.4 — order-zero P2 obstruction as a cleared/uncleared gap
@@ -55,8 +55,8 @@ theorem t0_residual_iff_uncleared_emb_eq_cleared_emb
         = embeddingOf𝒪Into𝕃 H
             (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
               (hasseCoeffRepr𝒪_cleared H x₀ R 1 0)) := by
-    rw [← hdeg]
-    exact hasseEvalAtRoot_mul_W_pow_eq_embedding_cleared H x₀ R 1 0
+    rw [← hdeg, embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared H x₀ R 1 0]
+    ring
   constructor
   · intro h
     rw [← hbridge, h, div_mul_cancel₀ _ (pow_ne_zero _ hW)]
