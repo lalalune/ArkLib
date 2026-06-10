@@ -235,6 +235,17 @@ theorem tsum_uniform_mem_le {C : Type} [Fintype C] [Nonempty C] [SampleableType 
         rw [Finset.sum_ite_mem, Finset.univ_inter, Finset.sum_const, nsmul_eq_mul]
     _ = _ := by rw [div_eq_mul_inv]
 
+
+/-- Instance-free finite-support tsum bound: if `g` vanishes off `mem` and is pointwise at most
+`q`, its tsum is at most `|mem| · q`. -/
+theorem tsum_le_card_mul_of_support_subset {C : Type} (mem : Finset C) (g : C → ℝ≥0∞)
+    (q : ℝ≥0∞) (hg : ∀ c, c ∉ mem → g c = 0) (hgle : ∀ c, g c ≤ q) :
+    (∑' c : C, g c) ≤ (mem.card : ℝ≥0∞) * q := by
+  classical
+  calc (∑' c : C, g c) = ∑ c ∈ mem, g c := tsum_eq_sum hg
+    _ ≤ ∑ _c ∈ mem, q := Finset.sum_le_sum (fun c _ => hgle c)
+    _ = (mem.card : ℝ≥0∞) * q := by rw [Finset.sum_const, nsmul_eq_mul]
+
 end Flips
 
 
@@ -292,14 +303,13 @@ theorem outerVerifier_rbrSoundness_mid :
       (inferInstance : DecidableEq F)
     haveI : Fintype ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩) :=
       (inferInstance : Fintype F)
-    haveI : Nonempty ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩) :=
-      (inferInstance : Nonempty F)
-    refine le_trans (tsum_uniform_mem_le
-      (C := (outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩)
-      (mem := Finset.univ.filter (fun c => (show F from c) ∈
-        outerBadChallenges params stmtIn.2
+    simp only [probOutput_uniformSample]
+    refine le_trans (tsum_le_card_mul_of_support_subset
+      (Finset.univ.filter (fun c : (outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩ =>
+        (show F from c) ∈ outerBadChallenges params stmtIn.2
           (show MultilinearOracle F n from t ⟨0, by norm_num⟩)))
-      _ ?hg ?hgle) ?_
+      _ ((Fintype.card ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩) : ℝ≥0∞))⁻¹
+      ?hg ?hgle) ?_
     case hg =>
       intro c hc
       rw [mul_eq_zero]
@@ -317,7 +327,10 @@ theorem outerVerifier_rbrSoundness_mid :
       · exact hc (Finset.mem_filter.mpr ⟨Finset.mem_univ _, hmem⟩)
     case hgle =>
       intro c
-      exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (le_of_eq (mul_one _))
+      calc (Fintype.card ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩) : ℝ≥0∞)⁻¹
+            * _ ≤ (Fintype.card ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩) : ℝ≥0∞)⁻¹
+            * 1 := by gcongr; exact probEvent_le_one
+        _ = _ := mul_one _
     · -- card bound: |bad| ≤ (M+1)·2ⁿ − 1; identify card C = card F
       have hcardC : Fintype.card ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩)
           = Fintype.card F := Fintype.card_congr (Equiv.cast rfl)
@@ -328,7 +341,7 @@ theorem outerVerifier_rbrSoundness_mid :
         refine le_trans (Finset.card_le_card_of_injOn (fun c => show F from c)
           (fun c hc => (Finset.mem_filter.mp hc).2) (fun a _ b _ h => h)) ?_
         exact outerBadChallenges_card_le params stmtIn.1 stmtIn.2 hBad _
-      rw [hcardC]
+      rw [hcardC, ← div_eq_mul_inv]
       rw [ENNReal.coe_div (by exact_mod_cast Fintype.card_ne_zero), ENNReal.coe_natCast,
         ENNReal.coe_natCast]
       gcongr
@@ -431,7 +444,8 @@ theorem outerVerifier_rbrSoundness_mid :
           · exact absurd h3 (by norm_num)
         case hgle3 =>
           intro c
-          exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (le_of_eq (mul_one _))
+          refine le_trans (mul_le_mul' le_rfl probEvent_le_one) ?_
+      simp
         · -- the counting bound: card·q ≤ (n+1)·q^(n+K) ⟹ card/q^(n+K) ≤ (n+1)/q
           have hcardC : Fintype.card
               ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩)
