@@ -28,21 +28,25 @@ prover but a *forwarding shell* verifier (`verify := pure true`). This file buil
     polynomial, sent in the clear in STIR) and checked for membership in `RS[F, φ, deg]`.
 * `stirCheckingIOP` — the checking IOPP: the landed honest `stirMultiRoundProver` together with
   the checking verifier.
-* `stirCheckingIOP_perfectCompleteness` — PROVEN (axiom-clean), for symbolic `M`: the honest
-  prover's run satisfies a support invariant (every message it sends is the packed genuine fold,
-  which equals the packed input codeword), so all consistency checks pass, and the final
-  low-degree check passes because the perfect-completeness relation `stirRelation deg φ 0` forces
-  the input codeword to lie in the code.
-* `stirCheckingRbrSoundnessResidual` + `stirCheckingCABridgeResidual` — the soundness side,
-  HONESTLY split: the rbr knowledge soundness of the checking verifier is the named open
-  residual; the bridge residual states that it follows from the EXISTING Johnson-CA residuals
+* `stirMultiRoundProver_runToRound_invariant` — PROVEN: on the support of every honest-prover
+  run prefix, the carried context is the input context and every transcript message is the
+  honest packed fold of the input codeword (= the packed input codeword itself, by
+  `combine_single_self`).
+* `stirCheckingIOP_perfectCompleteness` — PROVEN (axiom-clean), for symbolic `M`: by the
+  invariant all consistency checks compare equal values, and the final low-degree check passes
+  because the `δ = 0` relation `stirRelation deg φ 0` forces the input codeword into the code
+  (`mem_of_relDistFromCode_le_zero`).
+* `stirCheckingRbrSoundnessResidual` + `stirCheckingCABridge` — the soundness side, HONESTLY
+  split: the rbr knowledge soundness of the checking verifier is the named open residual; the
+  bridge residual states that it follows from the EXISTING Johnson-CA residuals
   (`ProximityGap.StrictCoeffPolysResidual`, the §5/Johnson-regime correlated-agreement
   extraction) plus the per-round accounting keystone
   (`ArkLib.ProofSystem.Stir.ErrorAccumulation.PerRoundProximityGap`). NEITHER is proven here —
   the bridge is the genuine open protocol-soundness math of #301.
-* `stir_rbr_soundness_of_checking_CA` / `stir_main_of_checking_CA` — the headline existentials
-  discharged through the landed `…_of_secure_vectorIOP` front doors, with the completeness leg
-  PROVEN (this file) and the soundness leg consumed via (CA residuals + bridge residual).
+* `stir_rbr_soundness_of_checkingIOP_CA` / `stir_main_of_checkingIOP_CA` — the headline
+  existentials discharged through the landed `…_of_secure_vectorIOP` front doors, with the
+  completeness leg PROVEN (this file) and the soundness leg consumed via
+  (CA residuals + bridge residual).
 
 HONESTY NOTES:
 * The checking verifier's checks are *real* (they constrain the prover's messages: a prover whose
@@ -489,6 +493,44 @@ theorem checkingBool_honest (f : ι → F) (hmem : f ∈ ReedSolomon.code φ deg
     rw [hfun]
     exact hmem
 
+/-! #### Non-vacuousness: the checks genuinely constrain the prover -/
+
+variable {M : ℕ} {φ : ι ↪ F} {deg : ℕ}
+
+open scoped Classical in
+/-- An accepting decision **forces the round-0 fold-query check**: the first folded oracle must
+agree with the input codeword at the sampled point (so `verify = pure true` is genuinely false
+for the checking verifier, unlike the forwarding shell). -/
+theorem checkingBool_true_implies_fold_check
+    (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpec M ι).toProtocolSpec F).Message j)
+    (chals : ((stirMultiVSpec M ι).toProtocolSpec F).Challenges)
+    (h : checkingBool M φ deg oStmt msgs chals = true) :
+    inputAns oStmt (queryPoint φ (chalFE chals (outChalIdx M 0)))
+      = msgAns msgs (msgIdx M 0)
+          (msgPos M (msgIdx M 0) (queryPoint φ (chalFE chals (outChalIdx M 0)))) := by
+  unfold checkingBool at h
+  simp only [Bool.and_eq_true, decide_eq_true_eq] at h
+  exact h.1.1
+
+open scoped Classical in
+/-- An accepting decision **forces the final low-degree check**: the function read off the
+final prover message must be a Reed-Solomon codeword. -/
+theorem checkingBool_true_implies_final_in_code
+    (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpec M ι).toProtocolSpec F).Message j)
+    (chals : ((stirMultiVSpec M ι).toProtocolSpec F).Challenges)
+    (h : checkingBool M φ deg oStmt msgs chals = true) :
+    (fun x : ι =>
+      (((List.finRange (Fintype.card ι)).map (fun k =>
+        msgAns msgs (msgIdx M (Fin.last M))
+          (Fin.cast (stirMultiVSpec_length_msg (msgIdx M (Fin.last M))) k))).getD
+        ((Fintype.equivFin ι x : Fin (Fintype.card ι)) : ℕ) 0))
+      ∈ ReedSolomon.code φ deg := by
+  unfold checkingBool at h
+  simp only [Bool.and_eq_true, decide_eq_true_eq] at h
+  exact h.2
+
 end HonestChecks
 
 /-! ### Completeness of the checking IOP -/
@@ -516,6 +558,15 @@ theorem simulateQ_lift_checkingComp (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
   rw [simulateQ_bind, simulateQ_checkingComp]
   simp
 
+/-- Running the spec-lifted `OptionT` `pure` is the `pure` of `some` (the underlying collapse
+consumed by both the safety and correctness branches of the completeness proof). -/
+theorem OptionT_run_liftComp_pure {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    [MonadLiftT (OracleQuery spec₁) (OracleQuery spec₂)] {α : Type} (xv : α) :
+    OptionT.run (liftComp (pure xv : OptionT (OracleComp spec₁) α) spec₂)
+      = (pure (some xv) : OracleComp spec₂ (Option α)) := by
+  show liftComp (pure (some xv) : OracleComp spec₁ (Option α)) spec₂ = _
+  rw [liftComp_pure]
+
 /-- **Pure form of the checking verifier's non-oracle run**: `toVerifier.verify` is the `pure`
 of the decision bit (paired with the empty output-oracle family), for every transcript. -/
 theorem checkingVerifier_toVerifier_verify (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
@@ -525,11 +576,7 @@ theorem checkingVerifier_toVerifier_verify (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
       = pure (checkingBool M φ deg stmtIn.2 tr.messages tr.challenges,
           fun i : Empty => i.elim) := by
   dsimp only [OracleVerifier.toVerifier, stirCheckingVerifier]
-  rw [simulateQ_lift_checkingComp, pure_bind]
-  congr 1
-  refine Prod.ext rfl ?_
-  funext i
-  exact i.elim
+  erw [simulateQ_lift_checkingComp, pure_bind]
 
 set_option maxHeartbeats 1600000 in
 /-- **Perfect completeness of the checking (M+1)-round STIR Vector IOPP**, for arbitrary
@@ -548,12 +595,13 @@ theorem stirCheckingIOP_perfectCompleteness (M : ℕ) (φ : ι ↪ F) (deg : ℕ
   intro stmtIn oStmtIn witIn h_relIn
   -- the δ = 0 input relation is genuine code membership
   have hmem : oStmtIn () ∈ ReedSolomon.code φ deg := by
-    refine mem_of_relDistFromCode_le_zero ⟨0, Submodule.zero_mem _⟩ ?_
-    simpa [stirRelation] using h_relIn
+    have h0 : Code.relDistFromCode (oStmtIn ()) (ReedSolomon.code φ deg)
+        ≤ ((0 : ℝ≥0) : ENNReal) := h_relIn
+    exact mem_of_relDistFromCode_le_zero ⟨0, Submodule.zero_mem _⟩ (by simpa using h0)
   dsimp only [stirCheckingIOP, stirMultiRoundProver]
   simp only [checkingVerifier_toVerifier_verify]
   simp only [Fin.isValue, bind_pure_comp, pure_bind, bind_map_left, liftM_bind, liftM_map,
-    Prod.mk.eta, bind_assoc, map_pure, liftComp_pure, liftM_pure]
+    Prod.mk.eta, bind_assoc, _root_.map_pure, liftComp_pure, liftM_pure]
   rw [probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   · -- SAFETY: the run never fails (the prefix is plain `OracleComp`; the rest is pure)
@@ -561,7 +609,10 @@ theorem stirCheckingIOP_perfectCompleteness (M : ℕ) (φ : ι ↪ F) (deg : ℕ
     refine ⟨?_, fun α _hα => ?_⟩
     · simp only [probFailure_map, OptionT.probFailure_liftM, OptionT.probFailure_lift,
         _root_.probFailure_liftComp, HasEvalPMF.probFailure_eq_zero]
-    · simp only [probFailure_map, probFailure_pure]
+    · rw [probFailure_map, OptionT.probFailure_liftComp_of_OracleComp_Option]
+      simp only [OptionT.run_pure, HasEvalPMF.probFailure_eq_zero, zero_add,
+        probOutput_eq_zero_iff, support_pure, Set.mem_singleton_iff, reduceCtorEq,
+        not_false_eq_true]
   · -- CORRECTNESS: every output in the support satisfies the relation + agreement
     intro x hx
     simp only [support_bind, Set.mem_iUnion, exists_prop] at hx
@@ -577,7 +628,9 @@ theorem stirCheckingIOP_perfectCompleteness (M : ℕ) (φ : ι ↪ F) (deg : ℕ
         α.1 j
         = Vector.cast (stirMultiVSpec_length_msg j) (packFiniteFunction ι (oStmtIn ())) := by
       intro j
-      have hdir : ((j.1 : Fin (3 * M + 3)) : ℕ) % 3 = 1 := stirVSpec_dir_eq_msg_iff.mp j.2
+      have hdir : ((j.1 : Fin (3 * M + 3)) : ℕ) % 3 = 1 :=
+        (stirVSpec_dir_eq_msg_iff (M := M) (msgLen := fun _ => Fintype.card ι)
+          (chalLen := 1)).mp j.2
       exact hinv.2 j.1.val j.1.isLt hdir
     have hbool : checkingBool M φ deg oStmtIn
         (FullTranscript.messages (pSpec := (stirMultiVSpec M ι).toProtocolSpec F) α.1)
@@ -585,22 +638,216 @@ theorem stirCheckingIOP_perfectCompleteness (M : ℕ) (φ : ι ↪ F) (deg : ℕ
         = true :=
       checkingBool_honest M φ deg (oStmtIn ()) hmem oStmtIn rfl _ hmsgs _
     rw [OptionT.mem_support_iff] at hx
-    simp only [OptionT.run_map, OptionT.run_monadLift, OptionT.run_pure, _root_.map_pure,
-      Function.comp_apply, Option.map_some, support_map, support_pure, Set.mem_image,
-      Set.mem_singleton_iff, Option.some.injEq, exists_eq_left, exists_eq_right] at hx
+    simp only [OptionT.run_map, support_map, Set.mem_image] at hx
+    erw [OptionT_run_liftComp_pure] at hx
+    simp only [support_pure, Set.mem_singleton_iff, exists_eq_left, Option.map_some,
+      Option.some.injEq] at hx
     subst hx
     have hfn : ∀ (f g : ∀ _ : Empty, Unit), f = g := fun _ _ => funext fun i => i.elim
     refine ⟨?_, ?_, hfn _ _⟩
     · simp only [acceptRejectOracleRel, Set.mem_singleton_iff, Prod.mk.injEq, hbool]
-      exact ⟨⟨rfl, hfn _ _⟩, rfl⟩
-    · rw [hbool]
+    · show (true : Bool) = checkingBool M φ deg oStmtIn _ _
+      rw [hbool]
 
 end Completeness
 
+/-! ### Soundness: the honestly-named residuals (Johnson-CA-gated) -/
+
+section Soundness
+
+open VectorIOP ArkLib.ProofSystem.Stir.ErrorAccumulation
+
+variable [Nonempty ι]
+
+/-- **The named open residual (soundness leg for the CHECKING verifier)**: round-by-round
+knowledge soundness of `stirCheckingVerifier` with respect to the δ-far soundness relation.
+Unlike the shell-verifier residual (`stirMultiRoundRbrSoundnessResidual`, which is
+likely-false since the shell accepts everything), this is the genuine open obligation of
+#301: the checking verifier rejects provers caught inconsistent at the sampled points or
+whose final message is not a codeword, and bounding its flip probability is exactly the
+per-round proximity-gap analysis. NOT proven here; consumed as a hypothesis. -/
+def stirCheckingRbrSoundnessResidual (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0) : Prop :=
+  OracleProof.rbrKnowledgeSoundness (pure ()) isEmptyElim
+    (stirRelation deg φ δ) (stirCheckingIOP M φ deg).verifier ε_rbr
+
+/-- **The CA bridge residual**: the implication from the EXISTING Johnson-regime
+correlated-agreement residuals to rbr knowledge soundness of the checking verifier —
+
+* `ProximityGap.StrictCoeffPolysResidual` (`BCIKS20/Curves.lean`): the strict Johnson §5
+  list-decoding extraction behind the BCIKS20 correlated-agreement theorem (the in-tree
+  producer for `Combine.combine_theorem` / `STIR.proximity_gap` in the `1 − √ρ` regime),
+  consumed at every positive batching width `k`;
+* `ArkLib.ProofSystem.Stir.ErrorAccumulation.PerRoundProximityGap`: the named keystone
+  equating the accounting per-round errors with the BCIKS20 proximity-gap error bounds.
+
+This implication (CA ⟹ per-round flip-probability bounds for the fold/out/shift/fin checks
+⟹ rbr soundness) is the genuine open protocol-soundness mathematics of #301. It is isolated
+here as a named `Prop` and consumed as a hypothesis below — NOT fabricated. -/
+def stirCheckingCABridge (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (e ProxGapBound : Fin (M + 1) → ℝ≥0) : Prop :=
+  (∀ k : ℕ, 0 < k →
+    ProximityGap.StrictCoeffPolysResidual (ι := ι) (F := F)
+      (k := k) (deg := deg) (domain := φ) (δ := δ)) →
+  PerRoundProximityGap e ProxGapBound →
+  stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr
+
+/-- rbr knowledge soundness of the checking verifier, from the named CA residuals through the
+named bridge (modus ponens; the open content lives entirely in the named hypotheses). -/
+theorem stirCheckingRbrSoundness_of_CA (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (e ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M φ deg δ ε_rbr e ProxGapBound)
+    (hCA : ∀ k : ℕ, 0 < k →
+      ProximityGap.StrictCoeffPolysResidual (ι := ι) (F := F)
+        (k := k) (deg := deg) (domain := φ) (δ := δ))
+    (hPR : PerRoundProximityGap e ProxGapBound) :
+    stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
+  hBridge hCA hPR
+
+/-- **The checking IOPP is `IsSecureWithGap`**, with the completeness leg PROVEN
+(`stirCheckingIOP_perfectCompleteness`) and the soundness leg consumed as the named
+checking-verifier residual. -/
+theorem stirCheckingIOP_isSecureWithGap (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (hSound : stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr) :
+    IsSecureWithGap (stirRelation deg φ 0) (stirRelation deg φ δ) ε_rbr
+      (stirCheckingIOP M φ deg) where
+  is_complete := stirCheckingIOP_perfectCompleteness M φ deg
+  is_rbr_knowledge_sound := hSound
+
+/-- `IsSecureWithGap` for the checking IOPP from the named CA residuals + bridge. -/
+theorem stirCheckingIOP_isSecureWithGap_of_CA (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (e ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M φ deg δ ε_rbr e ProxGapBound)
+    (hCA : ∀ k : ℕ, 0 < k →
+      ProximityGap.StrictCoeffPolysResidual (ι := ι) (F := F)
+        (k := k) (deg := deg) (domain := φ) (δ := δ))
+    (hPR : PerRoundProximityGap e ProxGapBound) :
+    IsSecureWithGap (stirRelation deg φ 0) (stirRelation deg φ δ) ε_rbr
+      (stirCheckingIOP M φ deg) :=
+  stirCheckingIOP_isSecureWithGap M φ deg δ ε_rbr
+    (stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr e ProxGapBound hBridge hCA hPR)
+
+end Soundness
+
 end MultiRound
+
+section CheckingFrontDoors
+
+open MultiRound VectorIOP LinearCode ReedSolomon STIR NNReal Finset
+open ArkLib.ProofSystem.Stir.ErrorAccumulation
+
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+
+/-- **Lemma 5.4 through the CHECKING IOPP**: `stir_rbr_soundness` discharged with
+`π := stirCheckingIOP` via the landed `stir_rbr_soundness_of_secure_vectorIOP` wiring. The
+completeness leg is PROVEN; the soundness leg is consumed via the named CA residuals
+(`StrictCoeffPolysResidual` + `PerRoundProximityGap`) through the named bridge
+(`stirCheckingCABridge`); the per-round error legs (`hfold`/`hrest`) are free-parameter
+constraints of the statement. -/
+theorem stir_rbr_soundness_of_checkingIOP_CA
+    {M : ℕ} (ι : Fin (M + 1) → Type) [∀ i : Fin (M + 1), Fintype (ι i)]
+    {s : ℕ} {P : Params ι F}
+    [h_nonempty : ∀ i : Fin (M + 1), Nonempty (ι i)]
+    {hParams : ParamConditions ι P} {Dist : Distances M}
+    {Codes : CodeParams ι P Dist}
+    (hδ₀ : Dist.δ 0 < (1 - Bstar (rate (code (P.φ 0) P.deg))))
+    (hδᵢ : ∀ {j : Fin (M + 1)}, j ≠ 0 →
+        Dist.δ j < (1 - rate (code (P.φ j) (degree ι P j))
+          - 1 / Fintype.card (ι j) : ℝ) ∧
+        Dist.δ j < (1 - Bstar (rate (code (P.φ j) (degree ι P j)))))
+    (ε_fold : ℝ≥0) (ε_out : Fin M → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (e ProxGapBound : Fin (M + 1) → ℝ≥0)
+    -- the named open CA-bridge residual for the checking verifier
+    (hBridge : stirCheckingCABridge M (P.φ 0) (degree ι P 0) (Dist.δ 0)
+      (fun _ => ({ε_fold} ∪ {ε_fin} ∪ univ.image ε_out ∪ univ.image ε_shift).max' (by simp))
+      e ProxGapBound)
+    -- the EXISTING named Johnson-CA residual (BCIKS20 §5 strict extraction)
+    (hCA : ∀ k : ℕ, 0 < k →
+      ProximityGap.StrictCoeffPolysResidual (ι := ι 0) (F := F)
+        (k := k) (deg := degree ι P 0) (domain := P.φ 0) (δ := Dist.δ 0))
+    -- the EXISTING named per-round accounting keystone
+    (hPR : PerRoundProximityGap e ProxGapBound)
+    (hfold : ε_fold ≤ proximityError F (P.deg / P.foldingParam 0)
+      (rate (code (P.φ 0) P.deg)) (Dist.δ 0) (P.repeatParam 0))
+    (hrest : ∀ j : Fin M,
+        (ε_out j ≤ ((Dist.l j.succ : ℝ) ^ 2 / 2) *
+          ((degree ι P j.succ : ℝ) / (Fintype.card F - Fintype.card (ι j.succ))) ^ s)
+        ∧
+        (ε_shift j ≤
+          (1 - Dist.δ j.castSucc) ^ (P.repeatParam j.castSucc) +
+           proximityError F (degree ι P j.succ) (rate (code (P.φ j.succ) (degree ι P j.succ)))
+            (Dist.δ j.succ) (P.repeatParam j.castSucc) + s +
+           proximityError F ((degree ι P j.succ) / P.foldingParam j.succ)
+            (rate (code (P.φ j.succ) (degree ι P j.succ)))
+            (Dist.δ j.succ) (P.repeatParam j.succ))
+        ∧
+        ε_fin ≤ (1 - Dist.δ (Fin.last M)) ^ (P.repeatParam (Fin.last M))) :
+    stir_rbr_soundness (s := s) (hParams := hParams) (Codes := Codes)
+      ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin :=
+  stir_rbr_soundness_of_secure_vectorIOP (hParams := hParams) (Codes := Codes)
+    ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
+    (stirCheckingIOP M (P.φ 0) (degree ι P 0))
+    (stirCheckingIOP_isSecureWithGap_of_CA M (P.φ 0) (degree ι P 0) (Dist.δ 0) _
+      e ProxGapBound hBridge hCA hPR)
+    hfold hrest
+
+/-- **Theorem 5.1 through the CHECKING IOPP**: `stir_main` discharged with
+`π := stirCheckingIOP` via the landed `stir_main_of_secure_vectorIOP` wiring. The
+completeness leg is PROVEN; the soundness leg is consumed via the named CA residuals through
+the named bridge; the rbr error bound (`hε`) and the complexity claims (`hM`/`hLen`/`hQin`/
+`hQpf`) are free-parameter constraints of the statement. -/
+theorem stir_main_of_checkingIOP_CA
+    {M : ℕ} (secpar : ℕ)
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    {φ : ι ↪ F} {degree : ℕ} [hsmooth : Smooth φ]
+    {k proofLen qNumtoInput qNumtoProofstr : ℕ}
+    (hk : ∃ p, k = 2 ^ p) (hkGe : k ≥ 4)
+    (δ : ℝ≥0) (hδub : δ < 1 - 1.05 * Real.sqrt (degree / Fintype.card ι))
+    (hF : Fintype.card F ≤
+          secpar * 2 ^ secpar * degree ^ 2 * (Fintype.card ι) ^ (7 / 2) /
+            Real.log (1 / rate (code φ degree)))
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (e ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M φ degree δ ε_rbr e ProxGapBound)
+    (hCA : ∀ k' : ℕ, 0 < k' →
+      ProximityGap.StrictCoeffPolysResidual (ι := ι) (F := F)
+        (k := k') (deg := degree) (domain := φ) (δ := δ))
+    (hPR : PerRoundProximityGap e ProxGapBound)
+    (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
+    (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
+    (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
+    (hQin : qNumtoInput = secpar / (- Real.log (1 - δ)))
+    (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
+      (cₖ k) * ((Real.log degree) +
+        secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
+    stir_main (M := M) (proofLen := proofLen) (qNumtoInput := qNumtoInput)
+      (qNumtoProofstr := qNumtoProofstr) secpar hk hkGe δ hδub hF :=
+  stir_main_of_secure_vectorIOP secpar hk hkGe δ hδub hF ε_rbr
+    (stirCheckingIOP M φ degree)
+    (stirCheckingIOP_isSecureWithGap_of_CA M φ degree δ ε_rbr
+      e ProxGapBound hBridge hCA hPR)
+    hε hM hLen hQin hQpf
+
+end CheckingFrontDoors
 
 end StirIOP
 
 #print axioms StirIOP.MultiRound.simulateQ_checkingComp
+#print axioms StirIOP.MultiRound.stirCheckingVerifier
 #print axioms StirIOP.MultiRound.stirCheckingIOP
 #print axioms StirIOP.MultiRound.stirMultiRoundProver_runToRound_invariant
+#print axioms StirIOP.MultiRound.mem_of_relDistFromCode_le_zero
+#print axioms StirIOP.MultiRound.checkingBool_honest
+#print axioms StirIOP.MultiRound.checkingBool_true_implies_fold_check
+#print axioms StirIOP.MultiRound.checkingBool_true_implies_final_in_code
+#print axioms StirIOP.MultiRound.checkingVerifier_toVerifier_verify
+#print axioms StirIOP.MultiRound.stirCheckingIOP_perfectCompleteness
+#print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_CA
+#print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap
+#print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_of_CA
+#print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_CA
+#print axioms StirIOP.stir_main_of_checkingIOP_CA
