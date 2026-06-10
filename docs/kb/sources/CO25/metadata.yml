@@ -1,0 +1,5 @@
+bibkey: CO25
+source_kind: eprint
+canonical_url: https://eprint.iacr.org/2025/536
+committed_artifacts: []
+notes: "Chiesa--Orru duplex-sponge Fiat-Shamir paper; source for ArkLib DSFS construction and key-lemma residual framework."

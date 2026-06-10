@@ -30,6 +30,9 @@ Current audit pages:
   - FRI/STIR soundness and proximity-gap residual surfaces.
 - [`issue-25-oracle-reduction-residuals-2026-06-06.md`](issue-25-oracle-reduction-residuals-2026-06-06.md)
   - OracleReduction sequential-composition and Fiat-Shamir residual surfaces.
+- [`issue-314-fiat-shamir-closeout-2026-06-10.md`](issue-314-fiat-shamir-closeout-2026-06-10.md)
+  - DSFS grant closeout classification: executable/spec in scope, CO25 Lemma 5.1 residuals
+    post-grant security hardening.
 - [`issue-33-binius-branch-harvest-2026-06-06.md`](issue-33-binius-branch-harvest-2026-06-06.md)
   - Binius branch-harvest note for stale `origin/CompBinius` and related proof branches.
 - [`issue-60-toolchain-branch-harvest-2026-06-06.md`](issue-60-toolchain-branch-harvest-2026-06-06.md)

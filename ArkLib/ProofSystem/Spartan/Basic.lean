@@ -305,14 +305,42 @@ noncomputable def firstChallengeContextLens :
   stmt := firstChallengeStmtLens R pp
   wit := ⟨fun _ => (), fun _ _ => ()⟩
 
+/-- Direct prover for the first-challenge phase. It is behaviorally the `RandomQuery` lift through
+`firstChallengeContextLens`: receive the verifier's random point and record it in the output
+statement, carrying the oracle family through unchanged. -/
+def firstChallengeProver :
+    OracleProver oSpec
+      (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp) Unit
+      (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
+      ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ where
+  PrvState
+  | 0 => Statement.AfterFirstMessage R pp ×
+      (∀ i, OracleStatement.AfterFirstMessage R pp i)
+  | 1 => (Statement.AfterFirstMessage R pp ×
+      (∀ i, OracleStatement.AfterFirstMessage R pp i)) × FirstChallenge R pp
+  input := fun x => x.1
+  sendMessage | ⟨0, h⟩ => nomatch h
+  receiveChallenge | ⟨0, _⟩ => fun st => pure fun q => (st, q)
+  output := fun ⟨st, q⟩ => pure (((q, st.1), st.2), ())
+
+/-- Direct verifier for the first-challenge phase: return the sampled point paired with the input
+statement, and route all output oracle statements from the input. -/
+def firstChallengeVerifier :
+    OracleVerifier oSpec
+      (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp)
+      (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp)
+      ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ where
+  verify := fun stmt chal => pure (chal ⟨0, rfl⟩, stmt)
+  embed := Function.Embedding.inl
+  hEq := by intro i; rfl
+
 def oracleReduction.firstChallenge :
     OracleReduction oSpec
       (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp) Unit
       (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
       ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ :=
-  (RandomQuery.oracleReduction oSpec (MvPolynomial (Fin pp.ℓ_m) R)).liftContext
-    (firstChallengeContextLens R pp)
-    (firstChallengeOracleLens R pp oSpec)
+  { prover := firstChallengeProver (R := R) pp oSpec
+    verifier := firstChallengeVerifier (R := R) pp oSpec }
 
 
 
@@ -326,10 +354,10 @@ def oracleReduction.firstChallenge :
 instance instFirstChallengeVerifierAppendCoherent :
     OracleVerifier.Append.AppendCoherent (oracleReduction.firstChallenge R pp oSpec).verifier where
   hCohInl i k h := by
-    dsimp [oracleReduction.firstChallenge, firstChallengeOracleLens, OracleReduction.liftContext, OracleVerifier.liftContext, RandomQuery.oracleReduction, OracleVerifier.embed] at h
+    dsimp [oracleReduction.firstChallenge, firstChallengeVerifier] at h
     cases i <;> cases h <;> rfl
   hCohInr i k h := by
-    dsimp [oracleReduction.firstChallenge, firstChallengeOracleLens, OracleReduction.liftContext, OracleVerifier.liftContext, RandomQuery.oracleReduction, OracleVerifier.embed] at h
+    dsimp [oracleReduction.firstChallenge, firstChallengeVerifier] at h
     cases i <;> cases h <;> rfl
 
 /-- Unfolds to `r_x : Fin ℓ_m → R` -/

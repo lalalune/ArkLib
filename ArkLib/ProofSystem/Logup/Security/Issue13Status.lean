@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessMsgSeam
+import ArkLib.ProofSystem.Logup.Security.LogupSoundnessPointwise
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessWired
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessSharp
 import ArkLib.ProofSystem.Logup.Security.SumcheckCompletenessUncond
@@ -52,6 +53,10 @@ hypotheses, not hidden `sorryAx` placeholders.
 * `Logup.issue13_soundness_msgSeam_wiredRoundAppend` — the same soundness close with the inner
   multi-round sumcheck RBR fact further reduced to per-round RBR soundness plus the binary append-RBR
   keystone.
+
+* `Logup.issue13_soundness_pointwiseSumcheck` — soundness over the historical zero-claim
+  `midLanguage` with the embedded sumcheck and append seam discharged pointwise; its only protocol
+  soundness input is outer soundness into `midLanguage`.
 
 * `Logup.issue13_sumcheckSoundnessResidual_projClosed` — the historical embedded-sumcheck
   `SumcheckSoundnessResidual` with the lens projection algebra closed at the canonical round-0
@@ -168,6 +173,31 @@ theorem issue13_soundness_msgSeam (sumcheckSoundnessError : ℝ≥0)
       (logupSoundnessError F n M params sumcheckSoundnessError) :=
   logup_soundness_msgSeam oSpec F n M params init impl sumcheckSoundnessError hn
     hOuter hSumcheck himplSP himplNF himplVB
+
+/-- **Issue #13 — pointwise sumcheck-and-append close over `midLanguage`.**
+
+This route uses the proved pointwise rejection theorem for the LogUp-lifted sumcheck verifier:
+outside `midLanguage`, the verifier fails outright.  Consequently the embedded-sumcheck soundness
+half has error `0` and the message-seam append theorem discharges the composition.  The remaining
+protocol soundness input is exactly the outer verifier's soundness into `midLanguage`; this is the
+historical zero-claim language, not the sharp support-cleared outer language. -/
+theorem issue13_soundness_pointwiseSumcheck [oSpec.Fintype] [oSpec.Inhabited]
+    (sumcheckSoundnessError : ℝ≥0) (hn : 0 < n)
+    (hOuter :
+      (outerVerifier oSpec F n M params).soundness init impl
+        (inputRelation F n M).language (midLanguage F n M params)
+        (outerSoundnessError F n M params))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (logupSoundnessError F n M params sumcheckSoundnessError) :=
+  logup_soundness_pointwiseSumcheck oSpec F n M params
+    (init := init) (impl := impl) sumcheckSoundnessError hn hOuter
+    himplSP himplNF himplVB
 
 /-- **Issue #13 — soundness with the message seam and embedded-sumcheck marginal bridge wired.**
 
@@ -490,6 +520,7 @@ end Logup
 #print axioms Logup.issue13_soundness
 #print axioms Logup.issue13_soundness_of_residual
 #print axioms Logup.issue13_soundness_msgSeam
+#print axioms Logup.issue13_soundness_pointwiseSumcheck
 #print axioms Logup.issue13_soundness_msgSeam_wiredSumcheck
 #print axioms Logup.issue13_sumcheckSoundnessResidual_projClosed
 #print axioms Logup.issue13_soundness_msgSeam_anyMid_wiredRoundAppend

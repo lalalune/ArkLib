@@ -72,6 +72,19 @@ discharging `stir_main` / `stir_rbr_soundness`.
   `stir_rbr_soundness_of_checkingIOP_card_le_e7`, and
   `stir_main_of_checkingIOP_card_le_e7` discharge the BCIKS residual family under
   `|F| <= deg^2 * 10^7`.
+- The #304 large-sector route is wired:
+  `strictCoeffPolysResidual_all_of_large`,
+  `stirCheckingRbrSoundness_of_large`,
+  `stirCheckingIOP_isSecureWithGap_of_large`,
+  `stir_rbr_soundness_of_checkingIOP_large`, and
+  `stir_main_of_checkingIOP_large` consume the honest large-good-set
+  `StrictCoeffPolysResidualLarge` family plus the same checking bridge.
+- `ArkLib.ProofSystem.Stir.ErrorAccumulation.PerRoundProximityGap.refl` is the named
+  reflexive keystone used when front doors choose accounting errors equal to the proximity-gap
+  bounds.
+- `stir_main` now states input-query complexity as
+  `(qNumtoInput : ℝ) >= secpar / (- Real.log (1 - δ))`; the multi-round and checking front
+  doors are aligned with this inequality form rather than the older exact equality.
 
 ## Honest Blockers
 
@@ -92,12 +105,23 @@ Targeted checks used while avoiding a full rebuild:
     warnings and standard axiom prints for `stir_main` / `stir_rbr_soundness`.
 - `lake build ArkLib.ProofSystem.Stir.RbrFrontDoor`
 - `lake build ArkLib.ProofSystem.Stir.MultiRoundAssembly`
+- `lake env lean ArkLib/ProofSystem/Stir/ErrorAccumulation.lean`
+  - Passed after adding `PerRoundProximityGap.refl`.
+- `lake build ArkLib.ProofSystem.Stir.ErrorAccumulation`
+  - Passed, making the new accounting lemma visible to downstream imports.
+- `lake env lean --stdin` importing `ErrorAccumulation` and printing axioms for
+  `PerRoundProximityGap.refl`
+  - Passed; only `[propext, Classical.choice, Quot.sound]`.
+- `lake env lean ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean`
+  - Passed after aligning `hQin` with the inequality form.
 - `lake env lean ArkLib/ProofSystem/Stir/CheckingVerifier.lean`
   - Last run after adding verifier-support acceptance lemmas: passed, and all newly printed
     axioms are only `[propext, Classical.choice, Quot.sound]`.
   - Re-run after adding the exact support/acceptance equivalence: passed with the same axiom
     footprint.
   - Re-run after adding `checkingBool_eq_true_iff`: passed with the same axiom footprint.
+  - Re-run after `PerRoundProximityGap.refl`, inequality `hQin` alignment, and the large-sector
+    route: passed; all printed checking front doors use only standard axioms.
 
 ## Cleanup Notes
 
