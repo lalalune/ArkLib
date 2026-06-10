@@ -774,6 +774,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PTEFamilyConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.PacketCombinationDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.PackingClassCSP
+import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeAllRatesJohnsonInstances
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
