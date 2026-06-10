@@ -11,6 +11,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionVacuo
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import ArkLib.ToVCVio.Simulation
 
+set_option linter.style.longFile 1700
+
 /-!
 # Issue #301 (STIR): the CHECKING multi-round verifier
 
@@ -1422,7 +1424,7 @@ theorem stir_main_of_checkingIOP_card_le
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) = secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1453,7 +1455,7 @@ theorem stir_main_of_checkingIOP_card_le_e7
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) = secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1487,7 +1489,7 @@ theorem stir_main_of_checkingIOP_large
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) = secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
