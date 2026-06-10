@@ -54,7 +54,7 @@ non-constant separation, so no producer can ever discharge it in the real regime
 
 set_option linter.style.longLine false
 
-open Polynomial
+open Polynomial Polynomial.Bivariate
 
 namespace BCIKS20AppendixA
 
@@ -74,10 +74,9 @@ theorem isUnit_sub_of_separable_mul_X_sub_C {a b : A}
       = (X - C b) + (X - C a) := by
     rw [Polynomial.derivative_mul, Polynomial.derivative_X_sub_C, one_mul, mul_one]
   have hev := congrArg (Polynomial.eval a) huw
-  rw [Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_mul, hd,
-    Polynomial.eval_mul, Polynomial.eval_add] at hev
-  simp only [Polynomial.eval_sub, Polynomial.eval_X, Polynomial.eval_C, sub_self,
-    mul_zero, zero_mul, Polynomial.eval_one, zero_add, add_zero] at hev
+  simp only [hd, Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_sub,
+    Polynomial.eval_X, Polynomial.eval_C, Polynomial.eval_one, sub_self, mul_zero,
+    zero_mul, zero_add, add_zero] at hev
   exact isUnit_of_mul_eq_one _ _ ((mul_comm _ _).trans hev)
 
 /-- **The exact boundary**: a pair-of-sections product is separable **iff** the separation is a
