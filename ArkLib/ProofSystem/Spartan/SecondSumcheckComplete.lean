@@ -35,11 +35,17 @@ The outer input relation `secondSumcheckRelIn` therefore pins that carried targe
 -/
 
 open MvPolynomial OracleComp Sumcheck
+open scoped NNReal
 
 namespace Spartan.Spec
 
 variable {R : Type} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R]
   (pp : Spartan.PublicParams) {ι : Type} (oSpec : OracleSpec ι)
+
+/-- `StatementRound` is inhabited over a ring: zero target, zero challenges. Needed by the
+`liftContext` round-by-round knowledge-soundness transfer machinery. -/
+local instance {n : ℕ} {i : Fin (n + 1)} : Inhabited (Sumcheck.Spec.StatementRound R n i) :=
+  ⟨⟨0, fun _ => 0⟩⟩
 
 /-- **Outer input relation of the second sum-check phase.** Two conjuncts:
 * the R1CS instance is satisfied (public input `𝕩 = stmt.2.2.2`, matrices `A,B,C` and witness `𝕨`
@@ -131,14 +137,18 @@ theorem secondSumcheck_rbrKnowledgeSoundness
         rbrKnowledgeError) :
     (secondSumcheckReduction pp oSpec).verifier.rbrKnowledgeSoundness init impl
       (secondSumcheckRelIn (R := R) pp) (secondSumcheckRelOut (R := R) pp) rbrKnowledgeError := by
-  haveI := secondSumcheckCoherent (R := R) pp oSpec
-  exact OracleVerifier.liftContext_rbr_knowledgeSoundness
-    (V := (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier)
-    (stmtLens := secondSumcheckOracleLens pp oSpec)
-    (outerRelIn := secondSumcheckRelIn (R := R) pp)
-    (innerRelIn := Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (0 : Fin (pp.ℓ_n + 1)))
-    (outerRelOut := secondSumcheckRelOut (R := R) pp)
-    (innerRelOut := Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (Fin.last pp.ℓ_n))
-    h_inner
+  -- NOTE: honest `sorry`. The intended route `OracleVerifier.liftContext_rbr_knowledgeSoundness`
+  -- needs two instances that cannot be honestly provided today:
+  -- (1) `Extractor.Lens.IsKnowledgeSound (secondSumcheckRelIn pp) ... (secondSumcheckRelOut pp)`:
+  --     its `lift_knowledgeSound` field demands that membership in the *inner* round-0 sum-check
+  --     relation (cube-sum of the virtual polynomial ℳ equals the carried target) implies the
+  --     *outer* relation `secondSumcheckRelIn` (R1CS satisfiability ∧ target = RLC). With `Unit`
+  --     witnesses this is a bare relation implication, and it is FALSE: a cube-sum identity for ℳ
+  --     does not imply the R1CS instance is satisfied. Closing this requires refactoring the outer
+  --     relations / witness content carried by the lens, not a missing-lemma fix.
+  -- (2) `LiftContextRBRKnowledgeSound ... V h`: its single field `lifted` is definitionally THIS
+  --     goal, so supplying it as an instance hypothesis would be vacuous (anti-vacuity rule).
+  -- The completeness theorems above are fully proven and unaffected.
+  sorry
 
 end Spartan.Spec
