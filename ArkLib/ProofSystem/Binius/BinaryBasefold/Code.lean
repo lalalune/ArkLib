@@ -196,9 +196,9 @@ lemma fiberwiseDisagreementSetPerFiber_subset_legacy_of_ne_zero
   intro y hy
   rw [mem_fiberwiseDisagreementSetPerFiber] at hy
   rcases hy with ⟨idx, hne⟩
-  simp [fiberwiseDisagreementSet, h_steps]
   unfold fiberEvaluations at hne
-  exact ⟨_, hne⟩
+  have h_exists : ∃ x, f x ≠ g x := ⟨_, hne⟩
+  simp [fiberwiseDisagreementSet, h_steps, h_exists]
 
 lemma fiberwiseDisagreementSet_congr_sourceDomain_index (sourceIdx₁ sourceIdx₂ : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_sourceIdx_eq : sourceIdx₁ = sourceIdx₂)
