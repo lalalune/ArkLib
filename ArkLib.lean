@@ -1220,6 +1220,7 @@ import ArkLib.OracleReduction.FiatShamir.TestDesugar
 import ArkLib.OracleReduction.FiatShamir.ZKResidualBridge
 import ArkLib.OracleReduction.FiatShamir.ZKTransport
 import ArkLib.OracleReduction.FiatShamirRunCollapseProof
+import ArkLib.OracleReduction.FullPredKSF
 import ArkLib.OracleReduction.LiftContext.Coherence
 import ArkLib.OracleReduction.LiftContext.HonestKnowledgeLens
 import ArkLib.OracleReduction.LiftContext.Lens
