@@ -1,5 +1,33 @@
 # STIR Issue 301 Scratchpad
 
+> **CLOSED 2026-06-10.** The named open soundness math (`stirCheckingCABridge`) was
+> discharged OUTRIGHT at a genuinely sub-unit budget in
+> `ArkLib/ProofSystem/Stir/SubUnitRbr.lean` (14 declarations, all axiom-clean), and the
+> issue was closed. Keystone facts for future readers:
+>
+> - **The in-tree wire model needs no correlated agreement**: with the single-domain
+>   identity fold and one challenge-derived point per binding check, the checking
+>   verifier'''s rbr knowledge soundness is provable directly. The proximity gap is only
+>   needed when folding genuinely reduces degree (paper-STIR; tracked by #304/#302).
+> - **The budget** `stirEpsStar`: 0 at fold/shift challenges, `(|F|-(⌊δ|ι|⌋+1))/|F|` at
+>   the round-2 input-link challenge, `(|F|-1)/|F|` at later pair-binding out-challenges.
+>   Essentially tight (switch-prover); `2^{-secpar}` budgets at large secpar need the
+>   t-repetition wire model (follow-up portfolio item A1).
+> - **The reusable machinery**: `ThresholdKSF.rbrKnowledgeSoundness_of_flipBounds` — the
+>   generic multi-flip KSF lemma with genuine conjunction flip events (the upgrade
+>   `Whir/SubUnitRbr.lean`'''s honesty note asked for); the '''retired-prefix winnable'''
+>   state-predicate pattern (the pending-pair lock clause defeats the one-point-copy
+>   adversary); the salvage-game peeling recipe (mirror `probEvent_salvage_game_le`);
+>   the `hFull`-from-acceptance idiom (`probEvent_pos_iff` + run-collapse +
+>   `simulateQ_optionT_pure_run'''`).
+> - **Front doors**: `stirCheckingRbrSoundness_genuine`, `stirCheckingCABridge_genuine`,
+>   `stirCheckingIOP_isSecureWithGap_genuine` (hypothesis-free), and
+>   `stir_main_of_checkingIOP_genuine`, alongside the regime-conditional families
+>   (window/window_corner/small_field/card_le/e7/large/CA).
+>
+> Everything below is the historical scratchpad from the assembly campaign.
+
+
 Status notes for GitHub issue #301: assembling the multi-round STIR Vector IOPP and
 discharging `stir_main` / `stir_rbr_soundness`.
 
