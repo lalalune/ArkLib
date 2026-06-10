@@ -340,6 +340,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CAPairExtractionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.CRTDoubleSlice
 import ArkLib.Data.CodingTheory.ProximityGap.CRTExponentGridSum
 import ArkLib.Data.CodingTheory.ProximityGap.CRTPacketMinpoly
+import ArkLib.Data.CodingTheory.ProximityGap.CRTSubsetSumFiberSlice
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterShell
@@ -457,6 +458,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIndicatorDisjointness
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreeIff
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
