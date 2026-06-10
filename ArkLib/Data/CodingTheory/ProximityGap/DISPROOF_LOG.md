@@ -4579,3 +4579,85 @@ Probe-falsified first (`scripts/probes/probe_weighted_window_law.py`, exact ℤ[
 **O105 addendum — the next provable gate past the refutation, named (dimension-checked):** what survives at squarefree `pqr` is the ℚ/ℤ-classification WITHOUT positivity: `Σ W_{ijk}·ξ^i·η^j·θ^k = 0 ⟺ W_{ijk} = A(j,k) + B(i,k) + C(i,j)` (each component constant in one coordinate; ℚ-valued — O105 kills the ℕ-form). Dimension check passes: `pqr − φ(pqr) = pq+pr+qr−p−q−r+1` = dim of the sum of the three fiber-function spaces. Route, gated on ONE new lemma: (i) generalize `CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet` from prime-power base roots to ANY coprime base — `minpoly ℚ⟮ζ_m⟯ ζ_r = Φ_r` for `Coprime m r` (same totient-tower pinch, `Nat.totient_mul` replaces the prime-power split); (ii) the K-coefficient slice at Φ_r forces the θ-fibers' 2-var sums equal; (iii) the ℚ-valued 2-var classification is O100's modular equation with NO shift needed (negatives allowed: `a_i := W_{i0}−W_{00}`, `b_j := W_{0j}`); (iv) integrate the per-pair differences into the three-component form. Past that, the ℕ-content at 3+ primes (Lam–Leung's actual span theorem) remains research — the refutation shows it cannot factor through packets.
 
 **Shared-index hazard (same day, fixed in 17bae3b3e):** bare `git commit` commits the WHOLE index — in this multi-session repo it carried a concurrent lane's staged deletion (`AppendRbrKnowledgeSeamZero.lean`, a landed #114 achievement) into my O105 commit. Restored from 387ba340c. **Future commits: always `git commit -- <my files>` with explicit pathspec.**
+### O110 — THE FIRST REASSEMBLY: the window-{1,q} trichotomy (the windowed law's shape, proven)
+
+`DeBruijnTwoPrime.two_prime_window_trichotomy` + `packetUnion_dichotomy_spectrum`
+(axiom-clean, 0 sorry; my lane — the dichotomy export strengthens the spectral
+construction with: every x ∈ S is μ_p-closed in S or x^q ∈ spectrum):
+
+**With window {1, q}, every element of a two-prime vanishing set is μ_p-, μ_{q²}-, or
+μ_{pq}-covered inside S** — the d-coset reassembly over the divisors d ∈ {p, q², pq}
+exceeding q: EXACTLY the O70-verified law shape at t = q, now a theorem. Wiring:
+decomposition (O77) + dichotomy–spectrum export + spectrum vanishes (transfer e=1 +
+window, char 0) + COVER (O76) applied to the spectrum one level down + the upward rung
+(O83) at A = p and A = q converting spectrum-level row/column coverage of x^q into
+μ_{pq}/μ_{q²} closure at x.
+
+The reassembly engine is PROVEN at its first nontrivial window. The general-t law =
+iterating this wiring through the O81 chain (each deeper window kills one more divisor
+level and the rung multiplies the reassembled coset order) — every constituent
+machine-checked; remaining = the general-t induction bookkeeping. Ops note: two
+working-tree wipes beaten this pass by commit-before-compile + /tmp content blocks.
+
+### O106 — THE COPRIME GATE OPENS: `minpoly ℚ(ζ_m) ζ_r = Φ_r` for ANY coprime m, r — the O105-addendum lemma is a theorem
+
+`CoprimePacketMinpoly.lean` (Mathlib-only, axiom-clean ×2, 0 sorry, 0 warnings, first-shot compile): `minpoly_adjoin_coprime_eq_cyclotomic` — coprime cyclotomic extensions never split each other's cyclotomics, at FULL generality (any `0 < m`, `0 < r` coprime; the prime-power hypothesis of `CRTPacketMinpoly` was never load-bearing — its totient-tower pinch runs verbatim on `Nat.totient_mul hco`). Plus `minpoly_adjoin_coprime_prime_eq_geom`: the `Σ_{t<r} X^(t·1)` slice-engine shape at prime `r`. The pqr ℚ-classification route of the O105 addendum is now pure composition: slice at base `m = pq`, reduce fiber differences to the 2-var ℚ-classification, integrate.
+
+### O111 — the WINDOW FIBER-COUNT LAW pinned at set level: F_n(t) ≅ F_m(t)^(n/m) with the exact block-trace bijection (probe layer; nubs, 2026-06-10)
+
+O107's named next (ii) executed at the probe layer (`scripts/probes/probe_fiber_count_law.py` + `probe_window_fiber_threads.py`, both exit 0, pure coset combinatorics — by O106 the fiber family needs no roots of unity):
+
+* **The exact bijection shape, pinned:** with `Dmin` = the divisibility-minimal divisors of `n` exceeding `t`, `m = lcm(Dmin)` (`m ∣ n`), `g = n/m`: block `c < g` is the residue class `{e : e ≡ c mod g}`, the trace is `T_c(S) = {e/g : e ∈ S, e ≡ c}` ⊆ `[0, m)`, and `S ∈ F_n(t) ⟺ ∀ c < g, T_c(S) ∈ F_m(t)` — bijectively, hence `|F_n(t)| = |F_m(t)|^(n/m)`. Verified at every `(n, t)` for `n ∈ {12, 18, 24, 36}` (all `t < n`), reproducing O70's counts (`|F_36(t)|`: 10⁶, 22³, 1036, 100, 22, 10, 4, 2) and the classical cross-check `F_24(1) = F_6(1)^4 = 10⁴`.
+* **The key structural lemma behind it (the Lean target):** the trace of a `μ_d`-coset (a full residue class mod `n/d`) on a block is empty or a full `μ_{gcd(d,m)}`-coset at level `m`, and `gcd(d,m) > t` because every divisor of `n` exceeding `t` is a multiple of some element of `Dmin`, all of which divide `m`. Both directions of the bijection ride on this + the O106 classification.
+* Named remaining: the Lean brick (`WindowFiberCount.lean` — the bijection on the O106 predicate + the cardinality corollary; the per-block lift/trace lemmas are now exactly specified by the probe's checked identities `key/tbl/trace/count/lift/cosetTrace`, all green at 25+ (n,t) points).
+
+### O107 — THE THREE-PRIME ℚ-CLASSIFICATION IS A THEOREM: the first classification result past the two-prime wall
+
+The O105-addendum target executed through the O106 gate, in two bricks (both axiom-clean, 0 sorry):
+
+* `RatWeightedSquarefreeGrid.lean` (O107a, ×3) — the 2-var classification at ℚ-weights: `Σ W ij·ξ^i·η^j = 0 ⟺ ∃ a b : ℕ→ℚ, W ij = a i + b j`, with DIRECT integration (`a i = W i0 − W 00`, `b j = W 0j` — no argmin; negatives free). The fiber-difference engine.
+* `ThreePrimeRatClassification.lean` (O107b, ×1) — **the headline**: for distinct primes p, q, r and primitive roots ξ, η, θ (char 0), `Σ_{i<p,j<q,k<r} W ijk·ξ^i·η^j·θ^k = 0 ⟺ ∃ A B C : ℕ→ℕ→ℚ, W ijk = A(j,k) + B(i,k) + C(i,j)` — the weight cube splits into three fiber functions, each constant in one coordinate. Dimension check: `pq+pr+qr−p−q−r+1 = pqr − φ(pqr)` ✓. Route: the θ-fiber coefficients live in `K = ℚ⟮ξ·η⟯` (CRT exponents embed ξ, η as generator powers — `(ξη)^{e₁} = ξ` via the O102 `pow_mod_eq` digit reductions); O106 `minpoly_adjoin_coprime_prime_eq_geom` at the COMPOSITE base `m = pq` feeds `slice_of_packet_minpoly` ⟹ all θ-fibers equal; fiber differences classified by O107a; integration `A jk := v_k j, B ik := u_k i, C ij := W ij0`; converse = three coordinate-wise geometric deaths.
+
+**Significance**: this is the first machine-checked CLASSIFICATION of vanishing weighted root-of-unity sums at a three-prime modulus — the exact ℚ-linear structure that survives the O105 refutation of the ℕ-packet form. The remaining ℕ-content at 3+ primes is precisely the GAP between this ℚ-classification and nonnegativity: Lam–Leung's span theorem says only the TOTAL escapes into ℕp+ℕq+ℕr, not the components — that positivity analysis (Lam–Leung's main induction) is the genuinely open formalization target, now with its linear half done. The general-n ℚ-classification (arbitrary squarefree, k primes — k-component fiber splits) is the natural next assembly (the O106 gate is already fully general in m).
+
+### O108 — the ℤ-refinement: Rédei–de Bruijn–Schoenberg at three primes — the positivity boundary is now sharp from BOTH sides
+
+`ThreePrimeIntClassification.lean` (axiom-clean ×2, first-shot compile): `three_prime_int_classification` — for INTEGER weights at squarefree `pqr`, the three fiber components can always be chosen INTEGER-valued, via the explicit gauge normalization `C' = W ··0`, `B' = W ·0· − W ·00`, `A' = W 0·· − W 0·0 − W 00· + W 000` (correctness = one linarith over eight instances of the O107 ℚ-split, cast back by injectivity). This is the ℤ-span theorem for vanishing sums (Rédei 1954 / de Bruijn 1953 / Schoenberg 1964 — the lattice of vanishing sums is packet-spanned over ℤ) at three-prime moduli, grid form. Plus `nat_weights_int_components`: every vanishing ℕ-multiplicity sum has ℤ-components.
+
+**The three-prime positivity boundary is now machine-checked from both sides**: components exist over ℤ (this), provably not over ℕ (O105) — the defect between them is precisely the content of Lam–Leung's span induction, which is the sole remaining open item of the classification program (together with the general-k arity induction of the O107 pattern, the 3+-prime window law, O99's incidence slack, and δ*). The session ledger O97→O108 stands at twelve generations, 42 axiom-clean theorems.
+
+### O112 — THE WINDOWED MASS-SPAN LAW: the t-general total-mass spectrum of the BCH-window code, with a kernel-checked mass GAP theorem (fable lane, 2026-06-10)
+
+The quantitative consumer of O108's weighted windowed law, generalizing O104 (t = 1 span) and O107 (0/1 spectrum) simultaneously. `WindowMassSpan.lean` (5 theorems + gap example, all axiom-clean `[propext, Classical.choice, Quot.sound]`, 0 sorry, 0 warnings):
+
+* `mass_of_combination` — **the mass formula**: an ℕ-combination of `μ_d`-coset indicators (`d ∣ n`, `d > t`) has total mass `Σ_d c_d·d` (each unit of `μ_d`-multiplicity contributes exactly `d`; `sum_mod_fiber` per divisor).
+* `window_mass_span_two_prime` — **the windowed span law**: at `n = p^a·q^b` (char 0), any window-`t`-vanishing `w : ℕ → ℕ` has `Σ_{e<n} w_e ∈ ℕ-span{d : d ∣ n, t < d}`.
+* `window_min_mass_two_prime` — **the sharp minimum**: positive mass ⟹ mass ≥ the least divisor of `n` exceeding `t` (the all-multiplicities upgrade of O107's 0/1 minimum-weight law).
+* `window_mass_sharp` — **sharpness at every divisor, any modulus**: the canonical `μ_{d₀}`-coset indicator vanishes on the window and has mass exactly `d₀` (no two-prime hypothesis — pure converse).
+* `window_mass_in_prime_span` — **the O104 upgrade**: for EVERY window length `t ≥ 1`, mass ∈ `ℕ·p + ℕ·q` (each divisor `> t ≥ 1` is a multiple of `p` or `q`; O104 is the `t = 1` case).
+* **Teeth — the mass GAP at O107's BCH-beating instance** (`n = 72 = 2³·3²`, `t = 9`, divisors > 9 = `{12,18,24,36,72}`): every window-9-vanishing multiplicity vector with mass < 24 has mass ∈ `{0, 12, 18}` — kernel-checked (`decide` on the divisor filter + `omega` on the 5-term span), i.e. masses 1–11, 13–17, 19–23 are all IMPOSSIBLE at every multiplicity, where BCH-type reasoning gives only "≥ 10".
+
+**Falsify-first** (`scripts/probes/probe_window_mass_span.py`, exact ℤ[x]/Φ_n, exit 0): exhaustive over `{0,1,2}^12` (531,441 vectors), `{0,1}^18`, `{0,1}^20` at every window length — span membership, sharp minima, and full gap structure all confirmed. **New structural finding from the probe**: at 0/1 weights the mass spectrum is STRICTLY smaller than the ℕ-span — genuine PACKING OBSTRUCTIONS exist (e.g. `n = 18`, `t = 1`: mass `17 = 9+3+3+2` is in the span but unrealizable — the `μ_9`-coset fills a full parity class and both `μ_2`-cosets straddle parities). So the three spectra now separate cleanly: 0/1 spectrum (disjoint-packing sums, O107) ⊊ weighted spectrum (= full ℕ-span within mass room, this brick) ⊆ divisor span. The 0/1 packing geometry — which divisor multisets pack disjointly — is a new named open surface (combinatorial, finite per `n`).
+
+Also landed: `probe_window_fiber_threads.py` (cited by O111's ledger entry; analytic ℤ[x]/Φ_n ground truth at n = 12, 18 for the block-trace bijection + combinatorial fiber at n = 20, 24, 36 — cross-validates `probe_fiber_count_law.py` from an independent implementation).
+
+**Where the open core moves:** the mass/weight-distribution side of the two-prime windowed program is now closed at all multiplicities with explicit gap structure. Remaining named opens on this front: (i) the 0/1 packing characterization (which divisor multisets are realizable disjointly — the O107↔O112 separation); (ii) the per-mass COUNT (how many vanishing w per mass — the weighted analogue of O111's fiber-count law); (iii) 3+-prime windowed laws (blocked on the level interface; ℤ-side now open via O108's ℤ-classification).
+
+### O109 — the general-arity program: the converse half PROVED at every modulus; the forward peel fully designed and gated
+
+**Landed (`GeneralPacketCombination.lean`, axiom-clean ×2):** `packet_combination_vanishes` + `rat_packet_combination_vanishes` — at EVERY `n` (no squarefree hypothesis, ℕ- and ℚ-weights): `w e = Σ_{p ∈ primeFactors n} A p (e % (n/p)) ⟹ Σ_{e<n} w_e·ζ^e = 0` — every prime-fiber component carries its prime's full geometric sum. The general-arity classification's easy half, at maximal generality (the ℚ form re-runs the O101 regroup at base `n/p` inline since `packet_part_eq_zero` is ℕ-cast).
+
+**Gated (the forward at squarefree n, the arity induction — design complete, dimension- and route-checked, NOT claimed):** strong induction on n. Base n = 1 trivial; n = p (prime): rigidity (`vanishing_combination_const`) ⟺ constant component. Step: p := n.minFac, m := n/p (squarefree ⟹ Coprime p m, m < n): (i) CRT transport e ↔ (e%p, e%m) with section (e₁i + e₂f) % n exactly as O102 — the coordinate-root primitivity arguments generalize (Coprime e₂ m from e₂ ≡ 1 [MOD m] via gcd-mod, then `Nat.Coprime.coprime_dvd_left`); (ii) the p-fiber coefficients live in ℚ⟮ζ^p-side gen⟯ and the O106 gate at (m, p) — ALREADY GENERAL in m — forces all p-fibers equal via `slice_of_packet_minpoly`; (iii) fiber differences vanish at level m ⟹ IH components B^i_q; (iv) decode: A_p(y) := W(0-fiber, y), and for q ∣ m: A_q(y) := B^{y%p}_q(y % (m/q)) — well-defined by `(e%(n/q))%p = e%p` and `(e%(n/q))%(m/q) = e%(m/q)` (both `Nat.mod_mod_of_dvd`). Every ingredient is landed; the residual work is the strong-induction plumbing (~350 lines of the O102/O107 patterns merged). k = 2 (O102) and k = 3 (O107, via the grid) are its proved instances.
+
+**The ℕ-side at general arity remains genuinely open** (Lam–Leung positivity; the O105/O108 boundary shows components are ℤ-not-ℕ already at k = 3).
+
+### O113 — the MULTISET ANTIPODAL UPGRADE: 2-power Lam–Leung in counting form — vanishing multiset sums over μ_{2^k} ⟺ count z = count (−z) (the O108 named Lean follow-up; nubs, 2026-06-10)
+
+`LamLeungMultisetAntipodal.lean` (axiom-clean ×3, 0 sorry, 0 warnings): the O108 census layer's consumable form of 2-power Lam–Leung, upgrading the in-tree set-form lemmas (`LamLeungUnconditionalGeneral.antipodal_of_sum_zero`) to genuine multisets.
+
+* `count_antipodal_of_sum_eq_zero` — **the forward direction**: for char-0 `L` and a finite multiset `M` of `2^k`-th roots of unity, `M.sum = 0 ⟹ M.count z = M.count (−z)` for EVERY `z : L`. Route: `rootsOfUnity (2^k) L` is finite cyclic (Mathlib instances) of order `2^j` with `j ≥ 1` forced by `−1` (order 2 divides the generator's order — `orderOf_neg_one` at `ringChar = 0`); the generator `ζ` is primitive `2^j`-th; every element of `M` is `ζ^e` (zpowers reduced mod the order via `zpow_mod_orderOf`); the counting function on `ZMod (2^j)` then satisfies O96 `debruijn_prime_power_weighted` at `p = 2`, whose half-period shift is negation (`ζ^(2^(j−1)) = −1` by the square-roots-of-1 dichotomy + order pinch). Off-orbit `z` are handled honestly: `count z = 0 = count (−z)` (the orbit is negation-closed).
+* `sum_eq_zero_of_count_antipodal` — the converse, no root-of-unity structure: antipodal balance + `0 ∉ M` kill the sum by the fixed-point-free pairing `z ↦ −z` (`Finset.sum_involution`; `−a = a ⟹ a = 0` in char 0).
+* `multiset_antipodal_iff` — the iff in the exact O108-layer hypothesis shape (`∀ z ∈ M, z^(2^k) = 1`).
+* Teeth at ℂ, genuine multiplicity: `{I, I, −I, −I}` vanishes (multiplicity 2 per antipode); `{1, I}` refuted via the count law at `z = 1`.
+
+**Where it lands:** the O108 antipodal-balance engine (the 14-term μ₃₂ multiset reduction) now has its Lean-side foundation; the C1379/672 derivation's "multiset upgrade" gap is closed. Load-bearing transport recorded: `orderOf_units` + `orderOf_injective subtype` move orders across `G ≤ Lˣ → L`; `ZMod.val_add` + torsion give the `pow_val_add` digit identity.

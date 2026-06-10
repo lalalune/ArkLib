@@ -138,3 +138,48 @@ Targeted checks used while avoiding a full rebuild:
 - The tail `stir_rbr_soundness` inequalities are indexed by `j : Fin M`, where `j.succ`
   corresponds to paper round `i = j + 1`. Do not guard these obligations with `j.val != 0`;
   that would accidentally skip the first shifted round.
+
+## 2026-06-10 protocol-object campaign (session summary)
+
+Landed inventory (all axiom-clean, on `main`):
+
+- Completeness track COMPLETE for the function-payload chain: per-block
+  (`BlockCompleteness.lean`, `Round3Completeness.lean` — includes the generic `[P,V,V]`
+  3-message unroll + `FullTranscript.mk3`), phase (`BlocksCompleteness.lean`, n-ary engine),
+  tail seam (`TailCompleteness.lean`), full chain (`ChainCompleteness.lean`:
+  `stirFullReduction_perfectCompleteness`).
+- Vector wire format: block kit (`VectorBridge.lean`), chain-composable mid variants
+  (`VectorBridgeMid.lean`), assembled chain + `2(M+1)+2` budget (`VectorChain.lean`),
+  and the packaging bridge (`VSpecBridge.lean`: `VectorSpec.vsAppend`/`vsSeqCompose` +
+  `toProtocolSpec` commutation + `stirChainVSpec_toProtocolSpec`).
+- Soundness track: init-block RBR at error 0 (`InitRbrSoundness.lean`), chain RBR composition
+  through the first seam for a generic tail (`InitAppendRbr.lean`), block RBR budgets + THE
+  FOLD SEAM consuming the residual-free Lemma 4.13 (`BlockRbrBudgets.lean`:
+  `stirFold_seam_all_close`), and `combine_theorem` unconditional/errStar forms
+  (`Combine.lean`). Front door: `RbrFrontDoor.lean` reduces Lemma 5.4 to
+  (π over `stirVSpec`, `IsSecureWithGap`, budget bounds).
+
+### Composition-at-concrete-specs recipe (hard-won; follow it)
+
+1. Oracle-level append/seqCompose security keystones DIVERGE in whnf at concrete compound
+   specs. Step down: `unfold OracleReduction.perfectCompleteness` (equation lemmas, never
+   `show`/`change` defeq), rewrite with `appendToReductionResidual_proof`, apply the
+   `Reduction`-level keystone via `have`-then-`exact`.
+2. Compound-head instances are MISSED by search: register by name; for data-carrying classes
+   (`SampleableType`!) use thin `@[reducible]` aliases `fun i => globalInst i` so both sides
+   elaborate to the same canonical term — a Prop mentioning a data-carrying instance depends
+   on the instance term (see `InitAppendRbr.lean`'s explicit-`@` conclusion).
+3. Seam-direction lemmas: `(p₁ ++ₚ p₂).dir = Fin.vappend …` as an `rfl`-`have` then `rw`;
+   boundary index via `Fin.natAdd m ⟨0,_⟩` + `Fin.append_right`; inside `seqCompose` via
+   `Fin.castAdd` + `Fin.embedSum` in MK-FORM (literals do not iota-match) +
+   `seqCompose_dir` + `Fin.vflatten_embedSum`.
+4. Combined-oracle seam instances: `haveI`s from `ChallengeOracleFintype` helpers
+   (`appendCombinedOracle_fintype`, `seqComposeCombinedOracle_fintype`, …).
+
+### Known open packaging detail
+
+`OracleReduction.cast` of the vector chain onto `(stirChainVSpec).toProtocolSpec F` needs the
+pointwise interface-equality side condition `hOₘ` between the append-derived message
+interfaces (`instOracleInterfaceMessageAppend` route) and the `toProtocolSpec` ones
+(`instOracleInterfaceMessageToProtocolSpec`); both reduce to `instVector` per slot but not
+definitionally — needs the index-case lemma (castAdd/natAdd split). Staged in scratch.

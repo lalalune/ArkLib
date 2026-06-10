@@ -1578,8 +1578,9 @@ results. The genuine statements about the actual assembled composition
 * **Round-by-round knowledge soundness (assembled, conditional):**
   `Bricks.composedRbrKnowledgeSoundnessResidual_of_leaves`
   (`ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean`) — the seven-seam keystone
-  fold at `Rc := composedPIOP_Rc`, reducing the obligation to the eight per-phase rbr-KS leaves,
-  the seven verifier determinism witnesses, and the two challenge-seam `hSeamZero` residuals.
+  fold at `Rc := composedPIOP_Rc`, reducing the obligation to the eight per-phase rbr-KS leaves
+  and the seven verifier determinism witnesses (the former challenge-seam `hSeamZero` residuals
+  are discharged by `appendRbrKnowledgeSeamZero_proven`).
 
 Hold the `spartan_piop_*` names until the rbr layer's remaining inputs are discharged and the
 headline statements are instantiable. -/

@@ -93,10 +93,35 @@ front door `RS_correlatedAgreement_affineLines_johnson_of_curveFamilyData_strict
 `friPerRound_epsCA_le_roundError_of_curveFamilyData`, STIR
 `stir_perRound_foldBudget_of_curveFamilyData` — each replacing a vacuous small-field route).
 
-**The open core**: the per-`(u, P)` producer of `CurveFamilyData` itself — the BCIKS20 §5
-statement that every good decoded family lies on a polynomial curve — i.e. discharging the
-`FaithfulFrontierData` residual fields from the GS/counting machinery. Unlike the refuted
-surfaces, this hypothesis is satisfiable in the deployed regime.
+**The section-factor closure (2026-06-10, `GSSurfaceKeystone.lean`)**: the per-`(u, P)`
+producer of `CurveFamilyData` is now PROVEN from a GS-construction-level interface.  The
+route works at the section divisor `H := T − v(Z)` (the fiber-linear factor every
+curve-carrying branch collapses to, by `BranchCollapse.lean`):
+
+- `SectionFactor.lean` — `section_dvd_of_factorization`: GS factorization + per-place curve
+  membership + counting budget force `(T − v) ∣ Hᵢ` for some irreducible factor (the §6
+  pigeonhole composed with the polynomial-root bound);
+- `SectionBaseRational.lean` — at fiber-linear factors every `𝒪`-class is structurally
+  base-rational (canonical representative is fiber-constant);
+- `SectionXiUnit.lean` — `SectionXiOrder` is PROVEN there: the `ξ`-representative is a unit
+  (separability evaluated at the section), so the A.4 `+1`-order bookkeeping is unnecessary
+  exactly where the §5 argument routes the proof;
+- `GSSurfaceKeystone.lean` — the assembly: explicit curve coefficients (exact division),
+  explicit total root (`rootSection v z := v.eval z`), `π_z(ξ) ≠ 0` at every place (unit
+  content — no discriminant avoidance), and the front door
+  `correlatedAgreement_affine_curves_of_GS_surface`:
+  `δ_ε_correlatedAgreementCurves` at every `δ < 1 − √ρ` from a per-`(u, P)` `GSSurfaceData`
+  producer.  All axiom-clean.
+
+**The open core (current)**: producing `GSSurfaceData` per `(u, P)` from the in-tree GS
+existence chain (`modified_guruswami_has_a_solution`, `pg_Rset`, the graph route).  The named
+supplies still open there: `SurfaceSeparabilitySupply` (trivariate `R.Separable`; only the
+linear case is producible), the per-`z` GS cargo (`hdvdP`/`hcong` — the
+`dvd_specialization_of_close` lane), the tail-window conditions feeding `htail`, and the
+degree bounds `hdegc`.  The closed-radius boundary branch is settled negatively:
+`BoundaryCardResidual` is machine-refuted as stated
+(`BoundaryCardResidualRefutation.lean`), so the strict front door is the maximal honest
+keystone.
 
 ## 3. Working conventions that proved load-bearing
 
