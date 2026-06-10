@@ -87,7 +87,7 @@ private lemma claimB1_bound_to_real {M s c : ℕ} (hc : 1 ≤ c) (hM : 1 ≤ M)
     rw [hMe, ENNReal.add_sub_cancel_right ENNReal.one_ne_top]
   set D : ENNReal := 1 + ((M : ENNReal) - 1) * (c : ENNReal)⁻¹ with hD
   have hD0 : D ≠ 0 := by
-    rw [hD]; exact (add_pos_of_pos_of_nonneg one_pos (zero_le _)).ne'
+    rw [hD]; exact (add_pos_of_pos_of_nonneg one_pos zero_le).ne'
   have hDt : D ≠ ⊤ := by
     rw [hD, hMc]
     exact ENNReal.add_ne_top.mpr ⟨ENNReal.one_ne_top,

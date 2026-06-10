@@ -251,7 +251,7 @@ theorem epsCA_antitone_δ_int
     intro h_jp
     exact le_trans h_jp (by exact_mod_cast h)
   by_cases hjp' : jointProximity (C := C) (u := u) δ_int'
-  · rw [if_pos hjp']; exact zero_le _
+  · rw [if_pos hjp']; exact zero_le
   · -- Contrapositive of `h_jp_mono`: `¬jointProximity_δ_int' → ¬jointProximity_δ_int`.
     have hjp : ¬ jointProximity (C := C) (u := u) δ_int := fun h_jp ↦ hjp' (h_jp_mono h_jp)
     rw [if_neg hjp', if_neg hjp]
@@ -276,7 +276,7 @@ theorem epsMCA_mono
   intro γ h_event
   obtain ⟨S, hS_card, hline, hpair⟩ := h_event
   -- The size clause `(1 - δ')·n ≤ (1 - δ)·n ≤ |S|` survives; `hline`/`hpair` are δ-free.
-  exact ⟨S, le_trans (mul_le_mul_of_nonneg_right (tsub_le_tsub_left h 1) (zero_le _)) hS_card,
+  exact ⟨S, le_trans (mul_le_mul_of_nonneg_right (tsub_le_tsub_left h 1) (zero_le)) hS_card,
     hline, hpair⟩
 
 /-! ## Helpers toward ABF26 Fact 4.5
@@ -340,7 +340,7 @@ theorem epsPG_le_epsCA (MC : Submodule F (ι → A)) (δ : ℝ≥0) :
   · by_cases h_all : ∀ γ : F, δᵣ(u 0 + γ • u 1, (MC : Set (ι → A))) ≤ δ
     · -- `epsPG` picks 0; `epsCA` picks Pr ≥ 0.
       rw [if_pos h_all, if_neg hjp]
-      exact zero_le _
+      exact zero_le
     · -- Both pick the same `Pr_γ[line δ-close]` (same expression inside the `Pr`).
       rw [if_neg h_all, if_neg hjp]
 
@@ -360,7 +360,7 @@ theorem epsCA_le_epsMCA (MC : Submodule F (ι → A)) (δ : ℝ≥0) :
   apply iSup_mono
   intro u
   by_cases hjp : jointProximity (C := (MC : Set (ι → A))) (u := u) δ
-  · rw [if_pos hjp]; exact zero_le _
+  · rw [if_pos hjp]; exact zero_le
   · rw [if_neg hjp]
     -- Probability monotonicity: `Pr_γ[line close] ≤ Pr_γ[mcaEvent]` because, in the
     -- `¬jointProximity` regime, "line δ-close to MC" implies `mcaEvent`. The implication
@@ -458,7 +458,7 @@ theorem δ_ε_correlatedAgreementAffineLines_iff_epsCA_le
   · intro h_pred
     refine iSup_le fun u ↦ ?_
     by_cases hjp : jointProximity (C := C) (u := u) δ
-    · rw [if_pos hjp]; exact zero_le _
+    · rw [if_pos hjp]; exact zero_le
     · rw [if_neg hjp]
       have h_not_ja : ¬ jointAgreement (C := C) (W := u) δ := by
         rw [jointAgreement_iff_jointProximity]; exact hjp
@@ -487,7 +487,7 @@ theorem δ_ε_correlatedAgreementCurves_iff_epsCA_curves_le {k : ℕ}
   · intro h_pred
     refine iSup_le fun u ↦ ?_
     by_cases hjp : jointProximity (C := C) (u := u) δ
-    · rw [if_pos hjp]; exact zero_le _
+    · rw [if_pos hjp]; exact zero_le
     · rw [if_neg hjp]
       have h_not_ja : ¬ jointAgreement (C := C) (W := u) δ := by
         rw [jointAgreement_iff_jointProximity]; exact hjp
@@ -528,7 +528,7 @@ theorem Pr_exists_Fin_le_sum {α : Type} (D : PMF α) {t : ℕ} (f : Fin t → �
   -- Pointwise bound: `D r * I[∃ k, f k r] ≤ D r * ∑ k, I[f k r]`.
   apply ENNReal.tsum_le_tsum
   intro r
-  apply mul_le_mul_of_nonneg_left _ (zero_le _)
+  apply mul_le_mul_of_nonneg_left _ (zero_le)
   by_cases h : ∃ k, f k r
   · rw [if_pos h]
     obtain ⟨k₀, hk₀⟩ := h
@@ -536,9 +536,9 @@ theorem Pr_exists_Fin_le_sum {α : Type} (D : PMF α) {t : ℕ} (f : Fin t → �
         = if f k₀ r then 1 else 0 := by rw [if_pos hk₀]
       _ ≤ ∑ k : Fin t, if f k r then (1 : ENNReal) else 0 :=
           Finset.single_le_sum (f := fun k ↦ if f k r then (1 : ENNReal) else 0)
-            (fun _ _ ↦ zero_le _) (Finset.mem_univ k₀)
+            (fun _ _ ↦ zero_le) (Finset.mem_univ k₀)
   · rw [if_neg h]
-    exact zero_le _
+    exact zero_le
 
 /-- **ABF26 Lemma 4.6.** In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca`
 coincide: `ε_mca(C, δ) = ε_ca(C, δ)`.
@@ -694,7 +694,7 @@ theorem δ_ε_correlatedAgreementAffineSpaces_iff_epsCA_affineSpaces_le {k : ℕ
   · intro h_pred
     refine iSup_le fun u ↦ ?_
     by_cases hjp : jointProximity (C := C) (u := u) δ
-    · rw [if_pos hjp]; exact zero_le _
+    · rw [if_pos hjp]; exact zero_le
     · rw [if_neg hjp]
       have h_not_ja : ¬ jointAgreement (C := C) (W := u) δ := by
         rw [jointAgreement_iff_jointProximity]; exact hjp

@@ -195,8 +195,8 @@ theorem epsCA_le_winningSetSoundness {k : ℕ} [Nonempty ι] {C : Set (ι → F)
     (enc : (Fin k → F) →ₗ[F] (ι → F)) (henc_inj : Function.Injective enc)
     (henc_range : Set.range enc = C) :
     epsCA (F := F) (A := F) C δ δ ≤ (winningSetSoundness enc δ : ENNReal) := by
-  rcases eq_or_lt_of_le (zero_le (epsCA (F := F) (A := F) C δ δ)) with h | hca
-  · rw [← h]; exact zero_le _
+  rcases eq_or_lt_of_le (zero_le (a := epsCA (F := F) (A := F) C δ δ)) with h | hca
+  · rw [← h]; exact zero_le
   obtain ⟨v, μ₁, μ₂, f₁, f₂, hviol, hbound⟩ :=
     simplified_iop_soundness_ca_lb C δ hδpos hδlt enc henc_inj henc_range hca
   set x : ViolatingInstance enc δ := ⟨v, μ₁, μ₂, f₁, f₂, hviol⟩ with hx
