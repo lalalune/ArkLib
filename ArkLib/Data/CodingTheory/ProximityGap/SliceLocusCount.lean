@@ -120,4 +120,94 @@ theorem card_polysDegLT_vanishing {d : ℕ} (Z : Finset F) (hZd : Z.card ≤ d) 
       have : Z.card + h.natDegree < d := by exact_mod_cast hd
       exact_mod_cast (by omega : h.natDegree < d - Z.card)
 
+
+/-! ## The f-level capstone: both-slice vanishing counts are exactly `q^(k − 2|Z|)`
+
+Slices are `C`-linear, slices of a built pair recover the pair (`evenSlice_build`/
+`oddSlice_build`), and `f ↦ (evenSlice f, oddSlice f)` is a bijection between the
+degree-`< k` space and the product of the slice-budget spaces (char ≠ 2). Hence the
+degree-`< k` polynomials whose BOTH slices vanish on a prescribed `|Z|`-point locus
+number EXACTLY `q^(k − 2|Z|)` (`card_polysDegLT_slices_vanishing`) — the per-locus list
+budget of the Conjecture-D skeleton, now an equality. -/
+
+open Polynomial Finset
+
+variable {F : Type*} [Field F]
+
+/-- `expand` composed with `−X` is itself (even polynomials are even). -/
+theorem expand_comp_neg_X (h : F[X]) :
+    (Polynomial.expand F 2 h).comp (-X) = Polynomial.expand F 2 h := by
+  ext n
+  rw [coeff_comp_neg_X]
+  by_cases hd : 2 ∣ n
+  · obtain ⟨m, rfl⟩ := hd
+    rw [Even.neg_one_pow ⟨m, by ring⟩, one_mul]
+  · rw [coeff_expand (by norm_num : 0 < 2), if_neg hd, mul_zero]
+
+theorem contract_two_C_mul (a : F) (h : F[X]) :
+    Polynomial.contract 2 (C a * h) = C a * Polynomial.contract 2 h := by
+  ext n
+  rw [coeff_contract (by norm_num : (2:ℕ) ≠ 0), coeff_C_mul, coeff_C_mul,
+    coeff_contract (by norm_num : (2:ℕ) ≠ 0)]
+
+theorem comp_neg_X_C_mul (a : F) (h : F[X]) :
+    (C a * h).comp (-X) = C a * h.comp (-X) := by
+  rw [mul_comp, C_comp]
+
+theorem evenSlice_C_mul (a : F) (h : F[X]) :
+    evenSlice (C a * h) = C a * evenSlice h := by
+  rw [evenSlice, evenSlice, comp_neg_X_C_mul, ← mul_add, contract_two_C_mul]
+
+theorem divX_C_mul' (a : F) (h : F[X]) :
+    Polynomial.divX (C a * h) = C a * Polynomial.divX h := by
+  ext n
+  rw [coeff_divX, coeff_C_mul, coeff_C_mul, coeff_divX]
+
+theorem oddSlice_C_mul (a : F) (h : F[X]) :
+    oddSlice (C a * h) = C a * oddSlice h := by
+  rw [oddSlice, oddSlice, comp_neg_X_C_mul, ← mul_sub, divX_C_mul', contract_two_C_mul]
+
+theorem divX_X_mul (h : F[X]) : Polynomial.divX (X * h) = h := by
+  ext n
+  rw [coeff_divX, mul_comm X h, coeff_mul_X]
+
+/-- Slices of a built pair recover the pair (doubled). -/
+theorem evenSlice_build (E O : F[X]) :
+    evenSlice (Polynomial.expand F 2 E + X * Polynomial.expand F 2 O) = 2 * E := by
+  rw [evenSlice]
+  have hcomp : (Polynomial.expand F 2 E + X * Polynomial.expand F 2 O).comp (-X)
+      = Polynomial.expand F 2 E - X * Polynomial.expand F 2 O := by
+    rw [add_comp, mul_comp, X_comp]
+    have he : (Polynomial.expand F 2 E).comp (-X) = Polynomial.expand F 2 E := by
+      rw [expand_comp_neg_X]
+    have ho : (Polynomial.expand F 2 O).comp (-X) = Polynomial.expand F 2 O := by
+      rw [expand_comp_neg_X]
+    rw [he, ho]
+    ring
+  rw [hcomp]
+  have : Polynomial.expand F 2 E + X * Polynomial.expand F 2 O
+      + (Polynomial.expand F 2 E - X * Polynomial.expand F 2 O)
+      = 2 * Polynomial.expand F 2 E := by ring
+  rw [this]
+  have h2 : (2 : F[X]) * Polynomial.expand F 2 E = Polynomial.expand F 2 (2 * E) := by
+    rw [map_mul, map_ofNat]
+  rw [h2, contract_expand (p := 2) (by norm_num)]
+
+theorem oddSlice_build (E O : F[X]) :
+    oddSlice (Polynomial.expand F 2 E + X * Polynomial.expand F 2 O) = 2 * O := by
+  rw [oddSlice]
+  have hcomp : (Polynomial.expand F 2 E + X * Polynomial.expand F 2 O).comp (-X)
+      = Polynomial.expand F 2 E - X * Polynomial.expand F 2 O := by
+    rw [add_comp, mul_comp, X_comp]
+    rw [expand_comp_neg_X, expand_comp_neg_X]
+    ring
+  rw [hcomp]
+  have : Polynomial.expand F 2 E + X * Polynomial.expand F 2 O
+      - (Polynomial.expand F 2 E - X * Polynomial.expand F 2 O)
+      = X * (2 * Polynomial.expand F 2 O) := by ring
+  rw [this, divX_X_mul]
+  have h2 : (2 : F[X]) * Polynomial.expand F 2 O = Polynomial.expand F 2 (2 * O) := by
+    rw [map_mul, map_ofNat]
+  rw [h2, contract_expand (p := 2) (by norm_num)]
+
 end LamLeungTwoPow
