@@ -8,7 +8,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 import ArkLib.Data.MvPolynomial.MultilinearComputational
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1900
 
 /-!
 # Binius binary Basefold: oracle bookkeeping
@@ -1140,6 +1140,51 @@ lemma getFoldingChallenges_proof_irrel (i : Fin (ℓ + 1)) (challenges : Fin i �
   funext cId
   unfold getFoldingChallenges
   congr 1
+
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
+  [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L]
+  β hβ_lin_indep h_β₀_eq_1 [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 in
+/-- Splitting the full final-round fold-order challenge vector at the last oracle block recovers
+the prefix challenge slice followed by the final block challenge slice. -/
+lemma getFoldingChallenges_append_finalBlock
+    (challenges : Fin (Fin.last ℓ) → L) :
+    Fin.append
+      (getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ℓ - ϑ)
+        (i := Fin.last ℓ) challenges 0 (h := by
+          simp only [zero_add, Fin.val_last]
+          omega))
+      (getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ)
+        (i := Fin.last ℓ) challenges (ℓ - ϑ) (h := by
+          simp only [Fin.val_last]
+          have h_le : ϑ ≤ ℓ := Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) hdiv.out
+          omega)) =
+    fun cIdx : Fin ((ℓ - ϑ) + ϑ) =>
+      foldOrderChallenges (ℓ := ℓ) (L := L) (i := Fin.last ℓ) challenges
+        ⟨cIdx.val, by
+          simp only [Fin.val_last]
+          have h_le : ϑ ≤ ℓ := Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) hdiv.out
+          omega⟩ := by
+  funext cIdx
+  by_cases h : cIdx.val < ℓ - ϑ
+  · have hcIdx : cIdx = Fin.castAdd ϑ ⟨cIdx.val, h⟩ := by
+      apply Fin.ext
+      simp
+    rw [hcIdx, Fin.append_left]
+    dsimp only [getFoldingChallenges]
+    congr 1
+    apply Fin.ext
+    simp
+  · have h_le : ℓ - ϑ ≤ cIdx.val := Nat.le_of_not_gt h
+    let j : Fin ϑ := ⟨cIdx.val - (ℓ - ϑ), by
+      have hϑ : ϑ ≤ ℓ := Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) hdiv.out
+      omega⟩
+    have hcIdx : cIdx = Fin.natAdd (ℓ - ϑ) j := by
+      apply Fin.ext
+      simp only [j, Fin.val_natAdd]
+      omega
+    rw [hcIdx, Fin.append_right]
+    dsimp only [getFoldingChallenges]
+    congr 1
 
 omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
   [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] hdiv in
