@@ -31,6 +31,10 @@ open scoped NNReal
 open ReedSolomon Code BerlekampWelch
 open Finset AdditiveNTT Polynomial MvPolynomial Nat Matrix
 
+/-- Binary expansion of an index as a challenge vector. -/
+def bitsOfIndex {L : Type} [Field L] {n : ℕ} (k : Fin (2 ^ n)) : Fin n → L :=
+  fun j => if Nat.getBit j.val k.val = 1 then 1 else 0
+
 /-- Statement challenges are stored in the structured-sumcheck order: the newest challenge is at
 index `0`. The folding operators consume challenges in chronological fold order, so this helper
 exposes the fold-order view of a statement challenge vector. -/
@@ -1322,7 +1326,8 @@ challenges chronologically from level `0` upward, so this definition reverses th
 before passing it to `iterated_fold`. -/
 def getMidCodewords {i : Fin (ℓ + 1)} (t : L⦃≤ 1⦄[X Fin ℓ]) -- original polynomial t
     (challenges : Fin i → L) : (sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by omega⟩) → L) :=
-  let P₀ : L⦃< 2^ℓ⦄[X] := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
+  let P₀ : L⦃< 2^ℓ⦄[X] :=
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval (bitsOfIndex ω))
   let f₀ : (sDomain 𝔽q β h_ℓ_add_R_rate 0) → L := fun x => P₀.val.eval x.val
   iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := 0)
@@ -1355,7 +1360,8 @@ def sumcheckConsistencyProp {k : ℕ} (sumcheckTarget : L) (H : MultiquadraticPo
     evaluated on the initial domain S^(0), must be close within unique decoding radius to f^(0) -/
 def firstOracleWitnessConsistencyProp (t : MultilinearPoly L ℓ)
     (f₀ : sDomain 𝔽q β h_ℓ_add_R_rate 0 → L) : Prop :=
-  let P₀ : L⦃< 2 ^ ℓ⦄[X] := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
+  let P₀ : L⦃< 2 ^ ℓ⦄[X] :=
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval (bitsOfIndex ω))
   -- The constraint: P_0 evaluated on S^(0) is close within unique decoding radius to f^(0)
   -- API migration: `BBF_CodeDistance` now lives in `Code.lean` keyed on `𝔽q β (h_ℓ_add_R_rate)`
   -- and a `Fin r` index (no explicit `ℓ 𝓡`).
