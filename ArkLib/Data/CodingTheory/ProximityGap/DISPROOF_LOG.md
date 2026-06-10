@@ -3466,3 +3466,50 @@ and the sub-witness union is ALSO 10,936 — union size is line-independent here
 max-list differ. Moral for the per-line moment chain (rounds-14 work, lekt9 + swarm): the union
 count and the max-list-size factor must be carried TOGETHER; neither alone determines Pr_γ[bad].
 This is level-1 branch-count-distribution data for the surviving open core (O59/O61/O67 framing).
+
+### O69 — the branch-count distribution ANSWERED IN SHAPE: maximal aliveness on minimal-weight words; two bricks + the weight–gcd tradeoff (nubs, 2026-06-10)
+
+Ultracode panel (3 prover lanes + adversarial audits, every artifact re-compiled and
+re-run from a second seat) on O59's open core — "how many branches can stay window-alive
+at each depth." Deliverables, all landed:
+
+**Bricks (axiom-clean, independently audited VALID):**
+- `ArkLib/ToMathlib/IteratedFoldConservation.lean` — `iterated_fold_conservation`: if ALL
+  `2^ℓ` depth-`ℓ` branch values (`branchVal`, the verified iteration of
+  `foldVal`/`foldValOdd`) vanish at a point, the error vanishes on the entire iterated
+  fiber; + `exists_alive_branch`, `all_branches_dead_iff`, `iterFiber_card_le`. The
+  depth-`ℓ` fiber system is information-preserving — mass cannot vanish at ANY depth.
+- `ArkLib/ToMathlib/WindowDualRS.lean` — **the full dual-RS bridge, BOTH directions,
+  general n** (not just 2-powers; char ∤ n): `window_iff_exists_low_degree` — power sums
+  `∑ v(ζ^i)(ζ^i)^j` vanish for `1 ≤ j < t` ⟺ `v` agrees on `μ_n` with a polynomial of
+  `natDegree ≤ n − t`. The window IS the RS code, formally; the in-tree gap (only the
+  forward direction existed, `rs_codeword_syndrome`) is closed. The j = 0 exclusion is
+  load-bearing and was numerically audit-checked.
+- `FoldPolynomialSlices.lean` extended: `weight_ge_live_image` — the depth-1
+  **weight–dead-locus tradeoff**: #{squared points where some slice survives} ≤ weight.
+  Iterated form (corollary of `iterated_fold_conservation` + the slice law): at EVERY
+  depth `ℓ`, the alive slices share a common μ-root locus of size `≥ n/2^ℓ − w` — low
+  weight forces shared root structure (locators), with the C19/coset families extremal.
+  Probe: 3000 trials × depths 1–3, ALL PASS (`probe_fold_slices.py` companion data).
+
+**The census (`scripts/probes/probe_branch_census.py`, 95,623 exact-F_p samples across
+(n,p,t) ∈ {16,32}×{97,193,257,7681}×{2,3,4,8}, exhaustive on all minimal-weight families
+that fit; audit re-ran byte-identical + out-of-model spot-checks):**
+- **The conditioned question resolves OPPOSITE to the list-decoding intuition: minimal
+  weight (w = t) codeword differences generically have MAXIMAL alive-branch counts
+  (`2^ℓ` at every depth, every config).** The branch tree never thins on list-relevant
+  words; "bound the alive count" is a dead route for the all-words question.
+- C2 (0/95,623 violations): alive(ℓ) ≤ alive(ℓ+1) ≤ 2·alive(ℓ) — monotone doubling
+  (provable from the slice law + conservation).
+- C3 (0/95,623): alive(ℓ) = 1 forces `2^ℓ | n − w` — single-branch survival forces
+  coset-compatible weight (the O46/O47 structures are the ONLY way to stay narrow).
+- Sampling honestly stratified toward structured `f` (the right bias for falsifying
+  universal claims; frontier minima are existence data, not uniform statistics).
+
+**Where the open core now sits (sharpened):** branch COUNTS carry no list information —
+the constraint on low-weight words is slice STRUCTURE: by the tradeoff above their
+slices must share large root loci at every depth simultaneously. The all-words question
+(S-two Conj 1 / Conjecture D) is exactly: count low-degree `f` whose 2-adic coefficient
+slices are simultaneously root-coherent at every depth. C19's 3 + 16 anatomy is the
+worked instance. The conservation + dual-RS + slice bricks make every term in that
+sentence formal.
