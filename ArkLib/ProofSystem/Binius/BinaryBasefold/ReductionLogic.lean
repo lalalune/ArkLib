@@ -586,7 +586,9 @@ theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
     {idx : ιₛₒ} {msgIdx : pSpec.MessageIdx}
     (h : embed idx = Sum.inr msgIdx) (x : pSpec.Message msgIdx) :
     HEq ((hTypes idx ▸ h ▸ x : OStmtOut idx)) x := by
-  exact (cast_heq (hTypes idx).symm (h ▸ x)).trans (eqRec_heq h.symm x)
+  refine (eqRec_heq (φ := fun T : Type => T) (hTypes idx).symm (h ▸ x)).trans ?_
+  rw [eqRec_eq_cast]
+  exact cast_heq _ x
 
 omit [CharP L 2] [SampleableType L] in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
