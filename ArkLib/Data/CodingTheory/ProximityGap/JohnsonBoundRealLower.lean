@@ -1,0 +1,104 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
+
+/-!
+# The Johnson numeric bound dominates the unique-decoding error
+
+`johnsonBoundReal` (the [Hab25] Theorem 2 numeric form) is at least `n/q`: the
+unique-decoding MCA error `|ι|/|F|` (`epsMCA_rs_udr_le_full`) never exceeds the
+Johnson-range budget.  This is the arithmetic half of the first *unconditional*
+instance of `JohnsonNumericBound` — below the unique-decoding radius the numeric
+edge holds outright, since the in-tree UD bound is stronger than the Johnson budget.
+
+The slack is large: with `m ≥ 3` the leading coefficient is
+`2·(m+1/2)⁵/(3·ρ₊^{3/2}) ≥ 2·3.5⁵/12 > 87`, so the budget exceeds `n/q` by two
+orders of magnitude; the proof only needs `1 ≤` that coefficient.
+
+## References
+
+* [Hab25] U. Haböck, *A note on mutual correlated agreement for Reed–Solomon codes*,
+  ePrint 2025/2110.
+-/
+
+namespace CodingTheory
+
+open scoped NNReal
+
+variable {ι : Type} [Fintype ι] [Nonempty ι]
+variable {F : Type} [Field F] [Fintype F]
+
+/-- The standalone real-arithmetic core: the [Hab25] numeric formula dominates `n/q`
+whenever `1 ≤ n`, `0 < ρ ≤ 2`, `3 ≤ m`, and the remaining quantities are nonnegative. -/
+theorem hab25_formula_ge_n_div_q
+    {n q ρ m d : ℝ} (hn : 1 ≤ n) (hq : 0 < q)
+    (hρ0 : 0 < ρ) (hρ2 : ρ ≤ 2) (hm : 3 ≤ m) (hd : 0 ≤ d) :
+    n / q ≤ ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * d * ρ)
+        / (3 * ρ ^ ((3 : ℝ) / 2)) * n
+      + (m + 1/2) / ρ ^ ((1 : ℝ) / 2)) / q := by
+  have hm0 : (0 : ℝ) ≤ m + 1/2 := by linarith
+  have hrpow32 : (0 : ℝ) < ρ ^ ((3 : ℝ) / 2) := Real.rpow_pos_of_pos hρ0 _
+  have hrpow12 : (0 : ℝ) < ρ ^ ((1 : ℝ) / 2) := Real.rpow_pos_of_pos hρ0 _
+  -- the second summand is nonnegative
+  have hsecond : (0 : ℝ) ≤ (m + 1/2) / ρ ^ ((1 : ℝ) / 2) :=
+    div_nonneg hm0 hrpow12.le
+  -- the leading coefficient is at least 1: `3·ρ^{3/2} ≤ 12 ≤ 2·(m+1/2)^5`
+  have hρ32_le : ρ ^ ((3 : ℝ) / 2) ≤ 4 := by
+    calc ρ ^ ((3 : ℝ) / 2) ≤ 2 ^ ((3 : ℝ) / 2) :=
+          Real.rpow_le_rpow hρ0.le hρ2 (by norm_num)
+      _ ≤ 2 ^ ((2 : ℝ)) :=
+          Real.rpow_le_rpow_of_exponent_le (by norm_num) (by norm_num)
+      _ = 4 := by
+          rw [show ((2 : ℝ) : ℝ) = ((2 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]
+          norm_num
+  have hpow5 : (3.5 : ℝ) ^ 5 ≤ (m + 1/2) ^ 5 := by
+    have h35 : (3.5 : ℝ) ≤ m + 1/2 := by linarith
+    exact pow_le_pow_left₀ (by norm_num) h35 5
+  have hcoeff : (1 : ℝ) ≤ (2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * d * ρ)
+      / (3 * ρ ^ ((3 : ℝ) / 2)) := by
+    rw [le_div_iff₀ (by positivity)]
+    have hcross : (0 : ℝ) ≤ 3 * (m + 1/2) * d * ρ := by positivity
+    nlinarith [hpow5, hρ32_le]
+  -- conclude: `n ≤ coeff·n + second`
+  have hnum : n ≤ (2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * d * ρ)
+      / (3 * ρ ^ ((3 : ℝ) / 2)) * n + (m + 1/2) / ρ ^ ((1 : ℝ) / 2) := by
+    have h1 : n = 1 * n := (one_mul n).symm
+    nlinarith [mul_le_mul_of_nonneg_right hcoeff (by linarith : (0:ℝ) ≤ n)]
+  gcongr
+
+/-- **The Johnson budget dominates the unique-decoding error.**  `johnsonBoundReal` is at
+least `|ι|/|F|`, the unconditional below-UD MCA error (`epsMCA_rs_udr_le_full`).  This is
+the arithmetic half of the unconditional UD-window instance of `JohnsonNumericBound`. -/
+theorem card_div_card_le_johnsonBoundReal
+    (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) (hk : k ≤ Fintype.card ι) :
+    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)
+      ≤ CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ := by
+  have hn : (1 : ℝ) ≤ (Fintype.card ι : ℝ) := by
+    exact_mod_cast Nat.one_le_iff_ne_zero.mpr Fintype.card_ne_zero
+  have hq : (0 : ℝ) < (Fintype.card F : ℝ) := by
+    exact_mod_cast Fintype.card_pos
+  have hρ0 : (0 : ℝ) < (k : ℝ) / (Fintype.card ι : ℝ) + 1 / (Fintype.card ι : ℝ) := by
+    have : (0 : ℝ) < 1 / (Fintype.card ι : ℝ) := by positivity
+    have hk0 : (0 : ℝ) ≤ (k : ℝ) / (Fintype.card ι : ℝ) := by positivity
+    linarith
+  have hρ2 : (k : ℝ) / (Fintype.card ι : ℝ) + 1 / (Fintype.card ι : ℝ) ≤ 2 := by
+    have h1 : (k : ℝ) / (Fintype.card ι : ℝ) ≤ 1 := by
+      rw [div_le_one (by linarith)]
+      exact_mod_cast hk
+    have h2 : 1 / (Fintype.card ι : ℝ) ≤ 1 := by
+      rw [div_le_one (by linarith)]; exact hn
+    linarith
+  have hm : (3 : ℝ) ≤
+      max (⌈(((k : ℝ) / (Fintype.card ι : ℝ) + 1 / (Fintype.card ι : ℝ))
+        ^ ((1 : ℝ) / 2)) / (2 * (η : ℝ))⌉ : ℝ) 3 := le_max_right _ _
+  have hd : (0 : ℝ) ≤ (δ : ℝ) := δ.coe_nonneg
+  exact hab25_formula_ge_n_div_q hn hq hρ0 hρ2 hm hd
+
+end CodingTheory
+
+/-! ## Axiom audit -/
+#print axioms CodingTheory.hab25_formula_ge_n_div_q
+#print axioms CodingTheory.card_div_card_le_johnsonBoundReal
