@@ -4210,3 +4210,29 @@ out in μ_{p^(a+1)} — the prime-power level where Lam–Leung (O66) takes over
 THE DESCENT HALF OF THE WINDOWED TWO-PRIME LAW IS COMPLETE. Remaining for the full law:
 the upward reconstruction (spectrum structure ⟹ coset structure of S — the d-coset
 reassembly the O70 law describes) and the symmetric p-side chain.
+
+### O94 — the per-locus structure theorem: low-weight errors live in locator-divisible slice spaces (nubs, 2026-06-10)
+
+`FoldPolynomialSlices.lean` extended (six new theorems, axiom-clean, 0 warnings —
+pushed-diff verified against this claim):
+
+- `recompose_slices` (char-free): `expand 2 (evenSlice f) + X·expand 2 (oddSlice f) = 2·f`
+  — a polynomial is recovered from its two coefficient slices (via
+  `expand_evenSlice/expand_oddSlice`: the expand∘contract round-trips).
+- `natDegree_evenSlice_le` / `natDegree_oddSlice_le`: slices halve degree — the
+  dimension budgets.
+- `loc_dvd_iff`: vanishing on a finite point set ⟺ divisibility by its locator
+  (coprime linear factors).
+- `weight_ge_live_image` — the level-1 weight–dead-locus tradeoff, NOW actually landed
+  (the O69→O70 record correction is closed with the artifact itself).
+- `low_weight_slice_structure` — **the skeleton**: every polynomial error determines a
+  dead locus Z with `|Z| ≥ |D²| − w`, BOTH slices divisible by `loc Z`, and the
+  locator-divisible slices recompose to `2·f`.
+
+**What this pins formally:** the list-relevant f's of weight w are parameterized, per
+locus Z, by slice pairs `(he, ho)` in degree-truncated spaces of total dimension
+`≤ deg f − 2|Z| + O(1)` — the per-locus linear space whose union-over-loci versus the
+weight filter IS the surviving counting question (O70's frontier). Iterating down the
+tower multiplies the constraints: each level divides out another locator. Next named
+step: the union/incidence count — how many loci can a single f serve, and the
+finite-field cardinality corollary `#{f : slices vanish on Z} = q^{max(0, k−2|Z|)}`.
