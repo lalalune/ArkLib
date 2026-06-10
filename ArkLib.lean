@@ -1681,6 +1681,7 @@ import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
 import ArkLib.ToMathlib.MvPolynomial.Equiv
 import ArkLib.ToMathlib.NearCertainBadLineProof
+import ArkLib.ToMathlib.NewtonTailEntry
 import ArkLib.ToMathlib.NonmonicWeightCollapse
 import ArkLib.ToMathlib.OddCharacterOrthogonality
 import ArkLib.ToMathlib.OffcentreFaithfulBundle
