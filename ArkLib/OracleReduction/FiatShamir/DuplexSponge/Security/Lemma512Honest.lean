@@ -1103,6 +1103,52 @@ theorem e_time_p_honest_raw_forward_capacity_witness_of_not_E
     simpa [outIdx] using hsucc
   simpa [outIdx, hnextEq] using hcap
 
+/-- Predicate form of the raw permutation-timing witness: off `E`, `E_time_p_honest`
+produces a concrete input-capacity-before-forward-output shape in the raw trace. -/
+theorem e_time_p_honest_raw_hasInputCapacityBeforeForwardOutput_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hTime : DuplexSpongeFS.KeyLemmaFoundations.E_time_p_honest tr state S) :
+    HasInputCapacityBeforeForwardOutput tr := by
+  obtain ⟨p, _hp, curIdx, nextIdx, hcur, hnext, _hsucc, hlt, hcurPerm, hnextPerm, hcap⟩ :=
+    e_time_p_honest_raw_forward_capacity_witness_of_not_E
+      (tr := tr) h (state := state) (S := S) hTime
+  have hcurLt : (p.2.2 curIdx).val < tr.length :=
+    (List.getElem?_eq_some_iff.mp hcurPerm).1
+  have hnextLt : (p.2.2 nextIdx).val < tr.length :=
+    (List.getElem?_eq_some_iff.mp hnextPerm).1
+  let jCur : Fin tr.length := ⟨(p.2.2 curIdx).val, hcurLt⟩
+  let jPrev : Fin tr.length := ⟨(p.2.2 nextIdx).val, hnextLt⟩
+  have hcurGet : tr[jCur] =
+      (⟨Sum.inr (Sum.inl p.1.inputState[curIdx]),
+        p.1.outputState[curIdx.val]'hcur⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+    have hget := hcurPerm
+    rw [List.getElem?_eq_getElem jCur.isLt] at hget
+    exact Option.some.inj hget
+  have hprevGet : tr[jPrev] =
+      (⟨Sum.inr (Sum.inl p.1.inputState[nextIdx]),
+        p.1.outputState[nextIdx.val]'hnext⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+    have hget := hnextPerm
+    rw [List.getElem?_eq_getElem jPrev.isLt] at hget
+    exact Option.some.inj hget
+  refine ⟨jCur, p.1.inputState[curIdx], p.1.outputState[curIdx.val]'hcur, hcurGet,
+    jPrev, ?_, p.1.inputState[nextIdx], p.1.outputState[nextIdx.val]'hnext,
+    hprevGet, hcap.symm⟩
+  exact hlt
+
+/-- Broad predicate form of the raw permutation-timing witness, aligned with the
+preservation-friendly base endpoint. -/
+theorem e_time_p_honest_raw_hasForwardCapacityBeforeForwardOutput_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hTime : DuplexSpongeFS.KeyLemmaFoundations.E_time_p_honest tr state S) :
+    HasForwardCapacityBeforeForwardOutput tr :=
+  hasForwardCapacityBeforeForwardOutput_of_input tr
+    (e_time_p_honest_raw_hasInputCapacityBeforeForwardOutput_of_not_E
+      (tr := tr) h (state := state) (S := S) hTime)
+
 /-- Off `E`, an honest hash-ordering witness gives concrete raw trace entries: the anchoring
 hash query and the first forward permutation query, with the permutation entry earlier in the
 trace. This is the raw-trace payload needed before the dedup collision step of M2c. -/
@@ -1298,6 +1344,10 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_p_next_outputState_bound
 #print axioms DuplexSpongeFS.Sponge316.e_time_p_honest_raw_adjacent_forward_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_p_honest_raw_forward_capacity_witness_of_not_E
+#print axioms
+  DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasInputCapacityBeforeForwardOutput_of_not_E
+#print axioms
+  DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasForwardCapacityBeforeForwardOutput_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_capacity_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E
