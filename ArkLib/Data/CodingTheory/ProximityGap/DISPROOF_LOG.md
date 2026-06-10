@@ -4661,3 +4661,18 @@ Also landed: `probe_window_fiber_threads.py` (cited by O111's ledger entry; anal
 * Teeth at ℂ, genuine multiplicity: `{I, I, −I, −I}` vanishes (multiplicity 2 per antipode); `{1, I}` refuted via the count law at `z = 1`.
 
 **Where it lands:** the O108 antipodal-balance engine (the 14-term μ₃₂ multiset reduction) now has its Lean-side foundation; the C1379/672 derivation's "multiset upgrade" gap is closed. Load-bearing transport recorded: `orderOf_units` + `orderOf_injective subtype` move orders across `G ≤ Lˣ → L`; `ZMod.val_add` + torsion give the `pow_val_add` digit identity.
+
+### O114 — THE THREE-PRIME ℤ-GRID THEOREM: vanishing ℤ-weighted sums at squarefree pqr are EXACTLY the three-slab grids W(i,j,k) = α(j,k) + β(i,k) + γ(i,j) — Schoenberg/Rédei relation structure machine-checked, with the O105 witness constructively decomposed (W2-C harvest; nubs, 2026-06-10)
+
+Two bricks (both exit 0, 0 sorry, 0 warnings, axiom-clean; probes `probe_three_prime_grid.py` + `probe_lam_leung_span_pqr.py` both exit 0, exact ℤ[x]/Φ arithmetic):
+
+* `IntegerThreadSplit.lean` (axiom-clean ×4) — **the ℤ-coefficient thread-split iff**: for `p² ∣ n`, a ℤ-weighted power sum vanishes at `ζ` iff all `p` thread sums vanish at `ζ^p` — the O101 engine ported to `w : ℕ → ℤ` (the K-linear-independence core was always coefficient-agnostic); `int_sum_eq_thread_sum` regroup + both directions + the iff. The descent engine for ℤ-classifications at non-squarefree moduli.
+* `DeBruijnThreePrimeIntGrid.lean` (axiom-clean ×7 + one axiom-FREE witness) —
+  - `minpoly_adjoin_coprime_prime` — the coprime-tower minpoly gate instantiated for the triple-grid setting;
+  - `int_grid_two_prime` — the two-prime ℤ-grid base (`W(i,j) = α_i + β_j`, ℤ coefficients — the ℤ-shadow of O100);
+  - `int_grid_three_prime` — **the headline**: for distinct primes `p, q, r` and primitive roots `ξ, η, θ` (char 0), `Σ W(i,j,k)·ξ^i·η^j·θ^k = 0 ⟺ ∃ α β γ : ℤ-slabs, W(i,j,k) = α(j,k) + β(i,k) + γ(i,j)` — the relation module of squarefree three-prime roots of unity is exactly the three prime-fiber slabs (Schoenberg/Rédei structure, first formalization per the O91/O94 searches);
+  - `int_total_three_prime` — the total identity `ΣW = qr·Σα + pr·Σβ + pq·Σγ`;
+  - `witness_decomposes` (NO axioms — fully constructive) + `witness_no_nat_decomposition` — the O105 witness `S = {5,6,12,18,24,25}` at `n = 30` DECOMPOSED with explicit ℤ-slabs (negative entries necessary) and machine-checked to admit NO ℕ-slab decomposition: the ℤ/ℕ separation at three primes is now witnessed from both sides in one file.
+* **The Stage-4 obstruction, charted honestly** (`probe_lam_leung_span_pqr.py`): the Lam–Leung ℕ-span theorem at `pqr` (total ∈ ℕp+ℕq+ℕr — TRUE, exhaustively confirmed on small boxes) does NOT follow from the grid + min-shift: on the O105 witness the slice evaluation `c` is NONZERO (the hard LL branch) and the per-(j,k) min-shift is identically 0 — no naive reduction exists. The witness total realizes `6 = 3 + 3` NOT via the slice split `4 + 2`: LL positivity is a genuinely global argument (their induction on cyclotomic structure), the named open formalization target past this brick.
+
+**Where the open core moves:** the ℤ-side of vanishing-sums theory at three primes is CLOSED at squarefree level (grid = slabs), with the ℕ-side separation pinned constructively. Named next: (i) ℤ-classification at general `p^a·q^b·r^c` (IntegerThreadSplit descent + this base — assembly-shaped); (ii) LL ℕ-span at `pqr` (research — global positivity); (iii) wiring the slab decomposition into the 3+-prime window-law level interface named by O106.
