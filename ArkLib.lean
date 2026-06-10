@@ -1529,6 +1529,7 @@ import ArkLib.ToMathlib.ExtractedIssueBricks
 import ArkLib.ToMathlib.FaaDiBrunoMatchProof
 import ArkLib.ToMathlib.FaithfulCurveExtraction
 import ArkLib.ToMathlib.FaithfulFrontierComposition
+import ArkLib.ToMathlib.FaithfulFrontierWitness
 import ArkLib.ToMathlib.FactorPigeonhole
 import ArkLib.ToMathlib.FinSumMvPolyBricks
 import ArkLib.ToMathlib.FiniteSeriesToPoly
