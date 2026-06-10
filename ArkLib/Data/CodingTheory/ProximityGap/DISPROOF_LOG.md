@@ -4965,3 +4965,18 @@ at any exponent divisible by p). Freshness of both insertions by the respective 
 arguments. This is the equation the O118 valuation induction consumes; next bricks:
 the symmetric q∤e' T-transfer conjunct (mirror), then the valuation-induction window
 inheritance, then the puncture-free J(t) re-run = THE COMPLETE O70 LAW.
+
+### O120 — the bilateral export COMPLETE: mirror T-transfer added (O118 brick 2)
+
+`packetUnion_bilateral_export` extended to its full five-conjunct form (axiom-clean,
+0 sorry, first-try compile): both orbit properties + the clean R-transfer (p ∤ e) +
+THE MIXED IDENTITY (p ∣ e) + the mirror clean T-transfer (q ∤ e):
+
+    Σ_S y^{p·e} = p·Σ_T τ^e    (q ∤ e)
+
+— the q-packets die at exponent p·e by the twisted packet sum (ω_q^{pe} primitive via
+Coprime.mul_left), the p-packets contribute through their common p-th power. The export
+is now SYMMETRIC: one decomposition, two spectra, all four transfer regimes accounted
+(clean×2, mixed×1, plus the trivial e=0). Next brick: the valuation-induction window
+inheritance — FullWindow U μ := (∀ e, 1 ≤ e → μ·e ≤ t → Σ_U u^e = 0) descends to both
+children, by strong induction on v_p of the exponent using the mixed identity.
