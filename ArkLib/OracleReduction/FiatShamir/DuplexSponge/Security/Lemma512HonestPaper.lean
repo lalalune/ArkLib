@@ -679,6 +679,42 @@ def Lemma5_16HonestResidualPaper (StmtIn U : Type) [SpongeUnit U] [SpongeSize] :
     ¬ BadEventDSPaper.E tr → ¬ E_time_honest tr state S
 
 
+/-! ## Hash-anchored collision machinery (paper semantics) — toward the 5.16 hash half -/
+
+/-- A hash slot that is the first occurrence of its concrete entry is not paper-redundant
+(the hash certificate coincides across semantics). -/
+theorem not_redundantEntryDSPaper_hash_of_no_prior
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (idx : Fin tr.length)
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (hidx : tr[idx] =
+      (⟨Sum.inl stmt, capSeg⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)))
+    (hfirst : ∀ j : Fin tr.length, j.val < idx.val →
+      tr[j] ≠
+        (⟨Sum.inl stmt, capSeg⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U))) :
+    ¬ tr.redundantEntryDSPaper idx := by
+  intro hred
+  unfold OracleSpec.QueryLog.redundantEntryDSPaper at hred
+  rw [hidx] at hred
+  obtain ⟨j, hjlt, hj⟩ := hred
+  exact hfirst j hjlt hj
+
+/-- ℕ-indexed first-hash collision shape, paper semantics: the hash anchor is first-occurrence,
+and an earlier **permutation entry in either direction** shares the anchor capacity on either
+side of its pair. Generalizes `HasFirstHashFwdCapNat` — under paper certificates the permutation
+witness can re-anchor across directions during dedup. -/
+def HasFirstHashPermCapNatPaper (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (stmt : StmtIn) (capSeg : Vector U SpongeSize.C) : Prop :=
+  ∃ jh jp : ℕ, jp < jh ∧
+    tr[jh]? = some (hashEntryP stmt capSeg) ∧
+    (∀ k, k < jh → tr[k]? ≠ some (hashEntryP stmt capSeg)) ∧
+    ∃ sIn sOut : CanonicalSpongeState U,
+      (tr[jp]? = some (forwardEntryP sIn sOut) ∨
+        tr[jp]? = some (inverseEntryP sOut sIn)) ∧
+      (sOut.capacitySegment = capSeg ∨ sIn.capacitySegment = capSeg)
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -694,3 +730,4 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_removeRedundant_of_first
 #print axioms DuplexSpongeFS.Sponge316.e_p_of_hasFirstPermCapacityBeforeForwardOutputPaper
 #print axioms DuplexSpongeFS.Sponge316.e_of_hasFirstPermCapacityBeforeForwardOutputPaper
+#print axioms DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_hash_of_no_prior
