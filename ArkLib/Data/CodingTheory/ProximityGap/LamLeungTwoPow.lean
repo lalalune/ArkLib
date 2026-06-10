@@ -1882,4 +1882,71 @@ theorem full_tower_sparse {m k : ℕ} (hk : k ≤ m) {ζ : F}
 
 end SparseTower
 
+/-! ## The sparse budget: tower_count under 2-power-only syndromes
+
+`tower_count`'s recovery-injection bound with `full_tower_sparse` supplying the closure:
+the same `2^{#classes}` budget from only `k+1` syndrome conditions — the exponentially
+lighter verifier obligation, as a counting theorem. -/
+
+section SparseBudget
+
+theorem sparse_tower_count [DecidableEq F] {m : ℕ} {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1)))
+    {k : ℕ} (hk : k ≤ m) {D₀ : Finset F} (hD₀ : ∀ x ∈ D₀, x ^ (2 ^ (m + 1)) = 1)
+    (w : ℕ) :
+    ((D₀.powersetCard w).filter (fun S =>
+        ∀ j, j ≤ k → ∑ x ∈ S, x ^ (2 ^ j) = 0)).card
+      ≤ 2 ^ (D₀.image (· ^ (2 ^ (k + 1)))).card := by
+  classical
+  rw [← Finset.card_powerset]
+  apply Finset.card_le_card_of_injOn (fun S => S.image (· ^ (2 ^ (k + 1))))
+  · intro S hS
+    have hS2 := Finset.mem_coe.mp hS
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at hS2
+    simp only [Finset.mem_coe, Finset.mem_powerset]
+    intro y hy
+    obtain ⟨x, hx, rfl⟩ := Finset.mem_image.mp hy
+    exact Finset.mem_image.mpr ⟨x, hS2.1.1 hx, rfl⟩
+  · intro S hSm S' hSm' himg
+    have hmem := Finset.mem_coe.mp hSm
+    have hmem' := Finset.mem_coe.mp hSm'
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at hmem hmem'
+    obtain ⟨⟨hSD, _⟩, hPS⟩ := hmem
+    obtain ⟨⟨hSD', _⟩, hPS'⟩ := hmem'
+    have hclos : ∀ x ∈ S, ∀ h : F, h ^ (2 ^ (k + 1)) = 1 → h * x ∈ S :=
+      full_tower_sparse hk hζ (fun x hx => hD₀ x (hSD hx)) hPS
+    have hclos' : ∀ x ∈ S', ∀ h : F, h ^ (2 ^ (k + 1)) = 1 → h * x ∈ S' :=
+      full_tower_sparse hk hζ (fun x hx => hD₀ x (hSD' hx)) hPS'
+    have hrec : ∀ (T : Finset F), T ⊆ D₀ →
+        (∀ x ∈ T, ∀ h : F, h ^ (2 ^ (k + 1)) = 1 → h * x ∈ T) →
+        (∀ x ∈ T, x ≠ 0) →
+        T = D₀.filter (fun x => x ^ (2 ^ (k + 1)) ∈ T.image (· ^ (2 ^ (k + 1)))) := by
+      intro T hTD hTclos hT0
+      apply Finset.Subset.antisymm
+      · intro x hx
+        exact Finset.mem_filter.mpr ⟨hTD hx, Finset.mem_image.mpr ⟨x, hx, rfl⟩⟩
+      · intro x hx
+        obtain ⟨hxD, hxim⟩ := Finset.mem_filter.mp hx
+        obtain ⟨x₀, hx₀, hpow⟩ := Finset.mem_image.mp hxim
+        have hx₀0 : x₀ ≠ 0 := hT0 x₀ hx₀
+        have hx00 : x₀ ^ (2 ^ (k + 1)) ≠ 0 := pow_ne_zero _ hx₀0
+        have hq : (x / x₀) ^ (2 ^ (k + 1)) = 1 := by
+          rw [div_pow, ← hpow, div_self hx00]
+        have := hTclos x₀ hx₀ (x / x₀) hq
+        rwa [div_mul_cancel₀ x hx₀0] at this
+    have hT0S : ∀ x ∈ S, x ≠ 0 := by
+      intro x hx h0
+      have := hD₀ x (hSD hx)
+      rw [h0, zero_pow (by positivity : (0:ℕ) < 2 ^ (m + 1)).ne'] at this
+      exact one_ne_zero (α := F) this.symm
+    have hT0S' : ∀ x ∈ S', x ≠ 0 := by
+      intro x hx h0
+      have := hD₀ x (hSD' hx)
+      rw [h0, zero_pow (by positivity : (0:ℕ) < 2 ^ (m + 1)).ne'] at this
+      exact one_ne_zero (α := F) this.symm
+    simp only [] at himg
+    rw [hrec S hSD hclos hT0S, hrec S' hSD' hclos' hT0S', himg]
+
+end SparseBudget
+
 end LamLeungTwoPow
