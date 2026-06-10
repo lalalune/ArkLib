@@ -577,20 +577,16 @@ theorem fun_heq_cast_arg {α β : Type u} {γ : Type v} (hαβ : α = β)
   subst hαβ
   rfl
 
-universe uιᵢ uιₒ in
 theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
-    {ιₛᵢ : Type uιᵢ} {ιₛₒ : Type uιₒ}
-    {OStmtIn : ιₛᵢ → Type*} {OStmtOut : ιₛₒ → Type*}
+    {ιₛᵢ ιₛₒ : Type}
+    {OStmtIn : ιₛᵢ → Type} {OStmtOut : ιₛₒ → Type}
     (embed : ιₛₒ ↪ ιₛᵢ ⊕ pSpec.MessageIdx)
-    (hEq : ∀ i, OStmtOut i = match embed i with
-      | Sum.inl j => OStmtIn j
-      | Sum.inr j => pSpec.Message j)
+    (hTypes : hEq (OracleIn := OStmtIn) (OracleOut := OStmtOut)
+      (pSpec := pSpec) (embed := embed))
     {idx : ιₛₒ} {msgIdx : pSpec.MessageIdx}
     (h : embed idx = Sum.inr msgIdx) (x : pSpec.Message msgIdx) :
-    HEq ((hEq idx ▸ h ▸ x : OStmtOut idx)) x := by
-  cases h
-  cases hEq idx
-  rfl
+    HEq ((hTypes idx ▸ h ▸ x : OStmtOut idx)) x := by
+  exact (cast_heq (hTypes idx).symm (h ▸ x)).trans (eqRec_heq h.symm x)
 
 omit [CharP L 2] [SampleableType L] in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
@@ -664,9 +660,11 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     refine HEq.trans (heq_of_eq h_transcript_eq.symm) ?_
     symm
     exact verifier_inr_transport_heq
+      (OStmtIn := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc)
+      (OStmtOut := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ)
       (embed := (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed)
-      (hEq := (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (hTypes := (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq)
       (idx := j) (msgIdx := ⟨0, rfl⟩) h_embed (transcript.messages ⟨0, rfl⟩)
 
