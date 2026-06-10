@@ -1255,6 +1255,7 @@ import ArkLib.ProofSystem.Plonk.Basic
 import ArkLib.ProofSystem.Plonk.Composition
 import ArkLib.ProofSystem.Plonk.PermutationCheck
 import ArkLib.ProofSystem.RingSwitching.BatchingPhase
+import ArkLib.ProofSystem.RingSwitching.BatchingDeterminism
 import ArkLib.ProofSystem.RingSwitching.General
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Profile
@@ -1288,6 +1289,7 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckSimOStmt
 import ArkLib.ProofSystem.Spartan.SpartanRBRProof
 import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
+import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
