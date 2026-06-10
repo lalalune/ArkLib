@@ -181,6 +181,83 @@ def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtI
       else
         ⟨trace.length, Nat.lt_succ_self trace.length⟩) -- last pair
 
+/-- The hash component of `BacktrackSequence.Index` points to the recorded hash query. -/
+theorem BacktrackSequence.index_hash_getElem?
+    (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state) :
+    trace[(BacktrackSequence.Index trace state seq).1.val]? =
+      some (⟨.inl seq.stmt,
+        Vector.drop (seq.inputState[0]'(by
+          rw [seq.inputState_length_eq_outputState_length_succ]
+          exact Nat.succ_pos _)) SpongeSize.R⟩ : duplexSpongeTraceEntry) := by
+  classical
+  dsimp [BacktrackSequence.Index, firstOccurrenceIndex]
+  let entry : duplexSpongeTraceEntry :=
+    ⟨.inl seq.stmt,
+      Vector.drop (seq.inputState[0]'(by
+        rw [seq.inputState_length_eq_outputState_length_succ]
+        exact Nat.succ_pos _)) SpongeSize.R⟩
+  have hlt : trace.findIdx (fun x => decide (x = entry)) < trace.length :=
+    List.findIdx_lt_length_of_exists ⟨entry, seq.hash_in_trace, decide_eq_true rfl⟩
+  have hpred :
+      decide (trace.get ⟨trace.findIdx (fun x => decide (x = entry)), hlt⟩ = entry) = true :=
+    List.findIdx_getElem (xs := trace) (p := fun x => decide (x = entry)) (w := hlt)
+  have hget : trace.get ⟨trace.findIdx (fun x => decide (x = entry)), hlt⟩ = entry :=
+    of_decide_eq_true hpred
+  simpa [entry] using congrArg some hget
+
+/-- Each nonterminal permutation component of `BacktrackSequence.Index` points to a recorded
+forward or inverse permutation query for that chain step. -/
+theorem BacktrackSequence.index_perm_getElem?_of_lt
+    (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state)
+    (pairIdx : Fin seq.inputState.length) (hpair : pairIdx.val < seq.outputState.length) :
+    trace[((BacktrackSequence.Index trace state seq).2 pairIdx).val]? =
+        some (⟨.inr (.inl seq.inputState[pairIdx]), seq.outputState[⟨pairIdx.val, hpair⟩]⟩ :
+          duplexSpongeTraceEntry) ∨
+      trace[((BacktrackSequence.Index trace state seq).2 pairIdx).val]? =
+        some (⟨.inr (.inr seq.outputState[⟨pairIdx.val, hpair⟩]), seq.inputState[pairIdx]⟩ :
+          duplexSpongeTraceEntry) := by
+  classical
+  let outputIdx : Fin seq.outputState.length := ⟨pairIdx.val, hpair⟩
+  let entryA : duplexSpongeTraceEntry :=
+    ⟨.inr (.inl seq.inputState[pairIdx]), seq.outputState[outputIdx]⟩
+  let entryB : duplexSpongeTraceEntry :=
+    ⟨.inr (.inr seq.outputState[outputIdx]), seq.inputState[pairIdx]⟩
+  have hEntry : entryA ∈ trace ∨ entryB ∈ trace := by
+    simpa [entryA, entryB, outputIdx] using seq.permute_or_inv_in_trace (i := outputIdx)
+  have hlt : trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)) < trace.length :=
+    List.findIdx_lt_length_of_exists (by
+      rcases hEntry with hA | hB
+      · exact ⟨entryA, hA, decide_eq_true (Or.inl rfl)⟩
+      · exact ⟨entryB, hB, decide_eq_true (Or.inr rfl)⟩)
+  have hpred :
+      decide
+        (trace.get ⟨trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)), hlt⟩ =
+            entryA ∨
+          trace.get ⟨trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)), hlt⟩ =
+            entryB) = true :=
+    List.findIdx_getElem (xs := trace) (p := fun x => decide (x = entryA ∨ x = entryB))
+      (w := hlt)
+  have hcase :
+      trace.get ⟨trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)), hlt⟩ =
+          entryA ∨
+        trace.get ⟨trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)), hlt⟩ =
+          entryB :=
+    of_decide_eq_true hpred
+  have hidx :
+      ((BacktrackSequence.Index trace state seq).2 pairIdx).val =
+        trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)) := by
+    dsimp [BacktrackSequence.Index, firstOccurrenceOfEither, entryA, entryB, outputIdx]
+    simp [hpair]
+  rcases hcase with hA | hB
+  · left
+    rw [hidx]
+    simpa [entryA] using congrArg some hA
+  · right
+    rw [hidx]
+    simpa [entryB] using congrArg some hB
+
 /-- The backtracking sequence family $S_{\mathrm{BT}}(\mathrm{tr}, s)$ (CO25, Definition 5.3).
 This represents the set of all maximal backtracking sequences starting from some statement and
 terminating at the target state $s$, where maximality prevents one sequence from being a strict

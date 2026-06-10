@@ -405,21 +405,9 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
           foldStepLogic, verifierStmtOut]
         constructor
         · rw [h_H_In]
-          apply Subtype.ext
-          dsimp only [projectToNextSumcheckPoly]
-          change
-            RingSwitching.fixFirstVariablesOfMQP (ℓ - ↑i.castSucc)
-                ⟨1, by have := i.isLt; simp only [Fin.val_castSucc]; omega⟩
-                (projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := witIn.t)
-                  (m := mp.multpoly stmtIn.ctx) (i := i.castSucc)
-                  (challenges := stmtIn.challenges)).val
-                (fun _ => r_i') =
-              (projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := witIn.t)
-                (m := mp.multpoly stmtIn.ctx) (i := i.succ)
-                (challenges := Fin.cons r_i' stmtIn.challenges)).val
-          exact RingSwitching.fixFirstVariablesOfMQP_projectToMid_succ (L := L) (ℓ := ℓ)
-            (t := witIn.t) (m := mp.multpoly stmtIn.ctx) (i := i)
-            (challenges := stmtIn.challenges) (r' := r_i')
+          exact Sumcheck.Structured.projectToNextSumcheckPoly_eq_projectToMidSumcheckPoly_succ
+            (L := L) (ℓ := ℓ) (t := witIn.t) (m := mp.multpoly stmtIn.ctx) (i := i)
+            (challenges := stmtIn.challenges) (r_i' := r_i')
         · conv_lhs =>
             rw [h_f_In]
             rw [←getMidCodewords_succ]
