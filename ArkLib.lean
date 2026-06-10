@@ -1549,6 +1549,7 @@ import ArkLib.ProofSystem.Stir.ProximityGapProof
 import ArkLib.ProofSystem.Stir.ProximityGapSmallField
 import ArkLib.ProofSystem.Stir.Quotienting
 import ArkLib.ProofSystem.Stir.RbrFrontDoor
+import ArkLib.ProofSystem.Stir.RealBudgetRbr
 import ArkLib.ProofSystem.Stir.Round3Block
 import ArkLib.ProofSystem.Stir.Round3Completeness
 import ArkLib.ProofSystem.Stir.Round3Compose
