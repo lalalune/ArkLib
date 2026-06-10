@@ -1930,6 +1930,7 @@ import ArkLib.ToMathlib.SectionNewtonCleared
 import ArkLib.ToMathlib.SectionNewtonFunctorial
 import ArkLib.ToMathlib.SectionNewtonGamma
 import ArkLib.ToMathlib.SectionNewtonGradingSupply
+import ArkLib.ToMathlib.SectionNewtonPlaceReading
 import ArkLib.ToMathlib.SectionNewtonXiSupply
 import ArkLib.ToMathlib.SectionXiDivisibility
 import ArkLib.ToMathlib.SectionXiUnit
