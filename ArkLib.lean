@@ -575,6 +575,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Claim1
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ConjectureGlue
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ErrStarArith
@@ -1079,6 +1080,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDe
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDetEmpty
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeOracleLift
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2ReconcileProof
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeSeamZero
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeStateFunction
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrSoundnessPhase2Proof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRightPartialProjections
