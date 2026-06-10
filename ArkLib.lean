@@ -451,6 +451,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.FisherJohnsonCrossover
 import ArkLib.Data.CodingTheory.ProximityGap.FisherPastJohnsonCap
+import ArkLib.Data.CodingTheory.ProximityGap.FoldPolynomialSlices
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
