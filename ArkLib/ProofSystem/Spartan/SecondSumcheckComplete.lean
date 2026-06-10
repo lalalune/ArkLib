@@ -184,8 +184,8 @@ def secondSumcheckHonestRelOut :
   Extractor.Lens.Honest.transportedRelOut
     (secondSumcheckOracleLens pp oSpec).toLens
     (Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (Fin.last pp.ℓ_n))
-    (((Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier.toVerifier)
-      .compatStatement (secondSumcheckOracleLens pp oSpec).toLens)
+    ((Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier.toVerifier
+      |>.compatStatement (secondSumcheckOracleLens pp oSpec).toLens)
 
 /-- **Second sum-check phase round-by-round knowledge soundness (issue #114).** The Spartan lift of
 the generic sum-check verifier is rbr knowledge sound on the honest pullback/transported claim
@@ -200,8 +200,8 @@ theorem secondSumcheck_rbrKnowledgeSoundness_honest
       (secondSumcheckHonestRelOut (R := R) pp oSpec)
       (fun _ => (2 : ℝ≥0) / (Fintype.card R)) := by
   haveI := secondSumcheckCoherent (R := R) pp oSpec
-  change (((Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier)
-    .liftContext (secondSumcheckOracleLens pp oSpec)).rbrKnowledgeSoundness init impl
+  change ((Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier
+    |>.liftContext (secondSumcheckOracleLens pp oSpec)).rbrKnowledgeSoundness init impl
       (secondSumcheckHonestRelIn (R := R) pp oSpec)
       (secondSumcheckHonestRelOut (R := R) pp oSpec)
       (fun _ => (2 : ℝ≥0) / (Fintype.card R))
@@ -216,8 +216,8 @@ theorem secondSumcheck_rbrKnowledgeSoundness_honest
       (innerRelOut :=
         Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (Fin.last pp.ℓ_n))
       (compatStmt :=
-        ((Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier.toVerifier)
-          .compatStatement (secondSumcheckOracleLens pp oSpec).toLens))
+        (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier.toVerifier
+          |>.compatStatement (secondSumcheckOracleLens pp oSpec).toLens))
     (h := Sumcheck.Spec.oracleVerifier_rbrKnowledgeSoundness
       (R := R) (deg := 2) (D := boolEmbedding R) (n := pp.ℓ_n)
       (oSpec := oSpec) (init := init) (impl := impl) hInit hInitNF)
