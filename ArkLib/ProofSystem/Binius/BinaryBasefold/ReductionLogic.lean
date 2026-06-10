@@ -429,7 +429,6 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
         have h_oracleIdx_eq : (OracleFrontierIndex.mkFromStmtIdx i.castSucc).val
           = (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i).val := by rfl
         have h_challenges_eq :
-<<<<<<< Updated upstream
             Fin.rtake (m := (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i).val)
               (v := verifierStmtOut.challenges)
               (h := by simp only [Fin.val_fin_le, OracleFrontierIndex.val_le_i]) =
@@ -451,20 +450,6 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
           (oStmt := oStmtIn)
         rw! (castMode := .all) [h_challenges_eq']
         exact h_oracle_folding_In
-=======
-            olderStmtChallenges (ℓ := ℓ) (stmtIdx := i.succ) (oracleIdx := i.castSucc)
-              (by simp only [Fin.val_succ, Fin.val_castSucc]; omega)
-              verifierStmtOut.challenges = stmtIn.challenges := by
-          dsimp only [foldStepLogic, Fin.isValue, MessageIdx, Fin.is_lt, Fin.eta,
-            Lean.Elab.WF.paramLet, Matrix.cons_val_zero, Fin.zero_eta, Matrix.cons_val_one,
-            Fin.mk_one, Fin.val_succ, verifierStmtOut, step]
-          simp only [olderStmtChallenges_cons_castSucc]
-        have h_tail_challenges_eq : Fin.tail verifierStmtOut.challenges = stmtIn.challenges := by
-          simpa [olderStmtChallenges_succ_castSucc] using h_challenges_eq
-        rw! (castMode := .all) [h_oracleIdx_eq] at h_oracle_folding_In
-        simp at h_oracle_folding_In ⊢
-        simpa [h_tail_challenges_eq] using h_oracle_folding_In
->>>>>>> Stashed changes
 
   -- Prove the four required facts
   refine ⟨?_, ?_, ?_, ?_⟩
@@ -643,7 +628,6 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       simp only [commitStepLogic, commitStepLogic_embed, Function.Embedding.coeFn_mk,
         commitStepLogic_embedFn, hj, dif_pos]
     rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
-<<<<<<< Updated upstream
     simp only [hj, dif_pos, eqRec_eq_cast, cast_cast]
     apply eq_of_heq
     refine HEq.trans ?_ (cast_heq _ (oStmtIn ⟨j.val, hj⟩)).symm
@@ -653,10 +637,6 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       rfl
     cases hidx
     rfl
-=======
-    simp only [hj, dif_pos]
-    simpa [eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
->>>>>>> Stashed changes
   · -- New oracle case: embed j = Sum.inr 0
     have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
@@ -666,14 +646,6 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       rfl
     rw [OracleVerifier.mkVerifierOStmtOut_inr _ _ _ _ _ _ h_embed]
     simp only [hj, dif_neg, not_false_eq_true]
-<<<<<<< Updated upstream
-=======
-    rw [← h_transcript_eq]
-    funext x
-    have h_msg0 : transcript.messages ⟨0, rfl⟩ = transcript 0 := by rfl
-    rw [h_msg0]
-    simpa [eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast, cast_fun_eq_fun_cast_arg]
->>>>>>> Stashed changes
     have h_j_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
       have h_lt := j.isLt
       conv_rhs at h_lt => rw [h_count_succ]
@@ -690,23 +662,22 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     refine HEq.trans (fun_heq_cast_arg h_domain_succ newOracle) ?_
     refine HEq.trans (heq_of_eq h_transcript_eq.symm) ?_
     symm
-    let msgCast :
-        (match (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j with
-          | Sum.inl j => (OracleStatement 𝔽q β (ϑ := ϑ)
-              (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc) j
-          | Sum.inr j => (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Message j) :=
-      cast (by rw [h_embed]) (transcript.messages ⟨0, rfl⟩)
-    have h_msgCast_heq : HEq msgCast (transcript.messages ⟨0, rfl⟩) := by
-      dsimp only [msgCast]
-      exact cast_heq _ (transcript.messages ⟨0, rfl⟩)
-    change HEq
-      ((((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j).symm ▸
-        msgCast) : OracleStatement 𝔽q β (ϑ := ϑ)
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ j)
-      (transcript.messages ⟨0, rfl⟩)
-    exact (cast_heq _ msgCast).trans h_msgCast_heq
+    have h_msg_type :
+        (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Type
+            (↑(⟨0, rfl⟩ :
+              (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).MessageIdx)) =
+          (match (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+              (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j with
+            | Sum.inl j => (OracleStatement 𝔽q β (ϑ := ϑ)
+                (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc) j
+            | Sum.inr j => (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Message j) := by
+      rw [h_embed]
+    convert ((cast_heq
+        (((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j).symm)
+        (cast h_msg_type (transcript.messages ⟨0, rfl⟩))).trans
+        (cast_heq h_msg_type (transcript.messages ⟨0, rfl⟩))) using 1
+    · rfl
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
@@ -1430,12 +1401,7 @@ lemma finalSumcheckStep_verifierCheck_passed
   rw [←h_H_eval_at_zero_eq_mul]
   exact h_sumcheck_cons
 
-<<<<<<< Updated upstream
 /- Final sumcheck step logic is strongly complete.
-=======
-/-
-Final sumcheck step logic is strongly complete.
->>>>>>> Stashed changes
 **Key Proof Obligations:**
 1. **Verifier Check**: Show that `stmtIn.sumcheck_target = eq_tilde_eval * c`
    where `c = wit.f ⟨0, ...⟩`
