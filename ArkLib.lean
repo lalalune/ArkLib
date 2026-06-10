@@ -102,6 +102,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparableCoreDescent
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSpecializedConditions
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSquarefreePart
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
+import ArkLib.Data.CodingTheory.GuruswamiSudan.Hab25FactorWeld
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MonomialCount
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MultiplicityInterpolation
