@@ -53,6 +53,48 @@ private lemma mem_of_getElem?' {α : Type _} {l : List α} {i : ℕ} {a : α}
   obtain ⟨hlt, rfl⟩ := List.getElem?_eq_some_iff.mp h
   exact List.getElem_mem hlt
 
+omit [SpongeSize] in
+private lemma get_eraseIdx_before {α : Type _} (l : List α) (idx k : Fin l.length)
+    (h : k.val < idx.val) :
+    (l.eraseIdx idx.val).get ⟨k.val, by
+      have hlen := List.length_eraseIdx_add_one idx.isLt
+      omega⟩ = l.get k := by
+  have hkeep : (l.eraseIdx idx.val)[k.val]? = l[k.val]? :=
+    List.getElem?_eraseIdx_of_lt h
+  have hnew : (l.eraseIdx idx.val)[k.val]? =
+      some ((l.eraseIdx idx.val).get ⟨k.val, by
+        have hlen := List.length_eraseIdx_add_one idx.isLt
+        omega⟩) := by
+    exact List.getElem?_eq_getElem (l := l.eraseIdx idx.val) (i := k.val) (by
+      have hlen := List.length_eraseIdx_add_one idx.isLt
+      omega)
+  have hold : l[k.val]? = some l[k] := by
+    simpa only [List.get_eq_getElem] using List.getElem?_eq_getElem (l := l) k.isLt
+  rw [hnew, hold] at hkeep
+  exact Option.some.inj hkeep
+
+omit [SpongeSize] in
+private lemma get_eraseIdx_after {α : Type _} (l : List α) (idx k : Fin l.length)
+    (h : idx.val < k.val) :
+    (l.eraseIdx idx.val).get ⟨k.val - 1, by
+      have hlen := List.length_eraseIdx_add_one idx.isLt
+      omega⟩ = l.get k := by
+  have hkeep : (l.eraseIdx idx.val)[k.val - 1]? = l[(k.val - 1) + 1]? :=
+    List.getElem?_eraseIdx_of_ge (l := l) (i := idx.val) (j := k.val - 1) (by omega)
+  have hnew : (l.eraseIdx idx.val)[k.val - 1]? =
+      some ((l.eraseIdx idx.val).get ⟨k.val - 1, by
+        have hlen := List.length_eraseIdx_add_one idx.isLt
+        omega⟩) := by
+    exact List.getElem?_eq_getElem (l := l.eraseIdx idx.val) (i := k.val - 1) (by
+      have hlen := List.length_eraseIdx_add_one idx.isLt
+      omega)
+  have hold : l[(k.val - 1) + 1]? = some l[k] := by
+    have hk : k.val - 1 + 1 = k.val := by omega
+    rw [hk]
+    simpa only [List.get_eq_getElem] using List.getElem?_eq_getElem (l := l) k.isLt
+  rw [hnew, hold] at hkeep
+  exact Option.some.inj hkeep
+
 /-- The trace contains a concrete hash entry. -/
 def HasHashEntry (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (stmt : StmtIn) (capSeg : Vector U SpongeSize.C) : Prop :=
