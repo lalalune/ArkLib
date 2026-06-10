@@ -914,4 +914,86 @@ theorem unit_syndrome_list_budget {M s : ℕ} {ζ : F} (hζ : IsPrimitiveRoot ζ
 
 end Capstone
 
+/-! ## The converse: closure forces window vanishing — the tower is an IFF
+
+`full_tower`'s converse, making the O48 exhaustiveness a genuine characterization:
+a `μ_d`-closed set has vanishing power sums at every index not divisible by `d`
+(`closed_pow_sum_vanish`), via the classical geometric-series fact that a full
+root-of-unity packet sums to zero at non-multiple exponents (`subgroup_pow_sum`). -/
+
+section TowerConverse
+
+variable [DecidableEq F]
+
+omit [CharZero F] [DecidableEq F] in
+/-- A full `d`-th-roots packet sums to zero at any exponent not divisible by `d`. -/
+lemma subgroup_pow_sum {d : ℕ} {ξ : F} (hξ : IsPrimitiveRoot ξ d) (_hd : 0 < d)
+    {j : ℕ} (hj : ¬ d ∣ j) :
+    ∑ i ∈ Finset.range d, (ξ ^ i) ^ j = 0 := by
+  have hξj : ξ ^ j ≠ 1 := by
+    intro h
+    exact hj (hξ.dvd_of_pow_eq_one j h)
+  have hgeom : (ξ ^ j - 1) * ∑ i ∈ Finset.range d, (ξ ^ j) ^ i = (ξ ^ j) ^ d - 1 := by
+    rw [mul_comm]
+    exact geom_sum_mul (ξ ^ j) d
+  have htop : (ξ ^ j) ^ d = 1 := by
+    rw [← pow_mul, mul_comm j d, pow_mul, hξ.pow_eq_one, one_pow]
+  rw [htop, sub_self] at hgeom
+  have hsum : ∑ i ∈ Finset.range d, (ξ ^ j) ^ i = 0 := by
+    rcases mul_eq_zero.mp hgeom with h | h
+    · exact absurd (by linear_combination h) hξj
+    · exact h
+  calc ∑ i ∈ Finset.range d, (ξ ^ i) ^ j
+      = ∑ i ∈ Finset.range d, (ξ ^ j) ^ i := by
+        refine Finset.sum_congr rfl fun i _ => ?_
+        rw [← pow_mul, ← pow_mul, mul_comm]
+    _ = 0 := hsum
+
+omit [CharZero F] in
+/-- **The converse of the tower theorem**: a `μ_d`-closed set (with the full packet
+present, via a primitive `d`-th root) has vanishing power sums at every index `j` with
+`d ∤ j`. With `full_tower`, closure under `μ_{2^s}` is EXACTLY power-window vanishing. -/
+theorem closed_pow_sum_vanish {S : Finset F} {d : ℕ} {ξ : F}
+    (hξ : IsPrimitiveRoot ξ d) (hd : 0 < d) (h0 : (0 : F) ∉ S)
+    -- (NeZero needed for discrete logs in the fiber identification)
+    (hμ : ∀ x ∈ S, ∀ h : F, h ^ d = 1 → h * x ∈ S)
+    {j : ℕ} (hj : ¬ d ∣ j) :
+    ∑ x ∈ S, x ^ j = 0 := by
+  classical
+  haveI : NeZero d := ⟨hd.ne'⟩
+  -- group the sum by d-th-power fibers: each is a full coset x₀·μ_d
+  have hmaps : ∀ x ∈ S, x ^ d ∈ S.image (· ^ d) :=
+    fun x hx => Finset.mem_image.mpr ⟨x, hx, rfl⟩
+  rw [← Finset.sum_fiberwise_of_maps_to hmaps (fun x => x ^ j)]
+  refine Finset.sum_eq_zero fun y hy => ?_
+  obtain ⟨x₀, hx₀, rfl⟩ := Finset.mem_image.mp hy
+  have hx₀0 : x₀ ≠ 0 := fun h => h0 (h ▸ hx₀)
+  have hfib : S.filter (fun x => x ^ d = x₀ ^ d)
+      = (Finset.range d).image (fun i => ξ ^ i * x₀) := by
+    apply Finset.Subset.antisymm
+    · intro x hx
+      obtain ⟨hxS, hxd⟩ := Finset.mem_filter.mp hx
+      have hq : (x / x₀) ^ d = 1 := by
+        rw [div_pow, hxd, div_self (pow_ne_zero d hx₀0)]
+      obtain ⟨i, hi, hqi⟩ := hξ.eq_pow_of_pow_eq_one (k := d) (ξ := x / x₀) hq
+      refine Finset.mem_image.mpr ⟨i, Finset.mem_range.mpr hi, ?_⟩
+      rw [hqi]
+      field_simp
+    · intro x hx
+      obtain ⟨i, _, rfl⟩ := Finset.mem_image.mp hx
+      have hξi : (ξ ^ i) ^ d = 1 := by
+        rw [← pow_mul, mul_comm i d, pow_mul, hξ.pow_eq_one, one_pow]
+      refine Finset.mem_filter.mpr ⟨hμ x₀ hx₀ _ hξi, ?_⟩
+      rw [mul_pow, hξi, one_mul]
+  rw [hfib, Finset.sum_image (fun a ha b hb hab => by
+    have : ξ ^ a = ξ ^ b := mul_right_cancel₀ hx₀0 hab
+    exact hξ.pow_inj (Finset.mem_range.mp ha) (Finset.mem_range.mp hb) this)]
+  calc ∑ i ∈ Finset.range d, (ξ ^ i * x₀) ^ j
+      = (∑ i ∈ Finset.range d, (ξ ^ i) ^ j) * x₀ ^ j := by
+        rw [Finset.sum_mul]
+        exact Finset.sum_congr rfl fun i _ => by rw [mul_pow]
+    _ = 0 := by rw [subgroup_pow_sum hξ hd hj, zero_mul]
+
+end TowerConverse
+
 end LamLeungTwoPow

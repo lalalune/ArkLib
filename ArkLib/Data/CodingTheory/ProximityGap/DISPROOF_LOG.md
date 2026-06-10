@@ -3312,3 +3312,18 @@ holds above the O49 effective threshold. The #232 deep-interior unit-syndrome qu
 is, with this, CLOSED in formal form; the open remainder is the all-words quantifier
 (branch-count distribution = S-two Conjecture 1), with its formal toolkit (O56–O59)
 assembled and its no-go routes recorded.
+
+### O62 — the tower CONVERSE: closure forces window vanishing — exhaustiveness is an IFF
+
+`LamLeungTwoPow.lean` §TowerConverse (axiom-clean, 0 sorry, char-free):
+
+* `subgroup_pow_sum` — a full d-th-roots packet sums to zero at every exponent d ∤ j
+  (geometric series, primitive-root division).
+* `closed_pow_sum_vanish` — a μ_d-closed set has Σ x^j = 0 for all d ∤ j (fiberwise:
+  each squaring... d-power fiber is a full coset, whose j-sum carries the packet sum).
+
+With full_tower (O53): **closure under μ_{2^s} ⟺ vanishing power-sum window j < 2^s**
+(char 0; ⟸ needs char 0, ⟹ char-free) — the O48 exhaustiveness as a genuine
+characterization, both directions machine-checked. The tower theory is COMPLETE as
+stated: structure (O53), converse (O62), count (O55), bridge (O60), transfer (O45/O49),
+capstone (O61).
