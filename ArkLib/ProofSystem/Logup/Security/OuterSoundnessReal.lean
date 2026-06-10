@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ProofSystem.Logup.Security.SoundnessConverse
 import ArkLib.ProofSystem.Logup.Security.OuterRun
+import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.MarginalBound
 import Mathlib.Algebra.Polynomial.Roots
@@ -354,6 +355,109 @@ theorem OuterRunSamplesChallenge_holds_of_getChallenge_run
     rw [hmass]
     exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (by rw [mul_one])
 
+/-- The result type of the outer LogUp oracle-reduction run: the prover transcript and output
+pair, paired with the verifier's recomputed output statement pair. -/
+abbrev outerRunResult {ι : Type} (oSpec : OracleSpec ι) (params : ProtocolParams M) :=
+  (((outerPSpec F n params).FullTranscript ×
+      (StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)) × Unit) ×
+    StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i))
+
+set_option maxHeartbeats 1000000 in
+/-- **Unconditional discharge of `OuterRunSamplesChallenge` for the real outer run.**
+
+The conditional `OuterRunSamplesChallenge_holds_of_getChallenge_run` discharges the residual
+*assuming* the simulated run is already in the canonical *challenge-first* shape
+`liftM (getChallenge ⟨1, rfl⟩) >>= k`.  This theorem discharges that run-shape hypothesis outright
+for the **actual** outer oracle reduction `outerOracleReduction`: the prover's round-by-round run
+closed form (`outerProver_run_closed_form`) places the round-1 `x`-challenge draw at the head once
+the pure round-0 multiplicity message is collapsed (`pure_bind`), so the whole simulated run *is*
+in challenge-first shape.  Feeding the challenge-coherence decomposition
+(`ChallengeCoherence.probEvent_run'_simulateQ_addLift_getChallenge_bind`) and the uniform-marginal
+transport (`tsum_uniform_challenge_mem_le_prob_uniform`), with the verifier-collapse support fact
+proven internally (a surviving run carries `xChallenge = the drawn challenge` by
+`outerVerifier_run_accept_eq_pure` + the readback `outerProver_transcript_challenge_readback`, so
+acceptance into the genuine claim language forces the drawn challenge into
+`midSoundnessLanguage oStmt`), gives the full `OuterRunSamplesChallenge` inequality with the real
+run's bad-accept probability plugged in.  This is the protocol-level outer-run-marginal that the
+conditional theorem assumed, now closed unconditionally for the honest outer reduction. -/
+theorem OuterRunSamplesChallenge_holds
+    [Fact ((-1 : F) ≠ 1)] [SampleableType F] [Inhabited F]
+    {ι : Type} (oSpec : OracleSpec ι) (params : ProtocolParams M)
+    {σ : Type} (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ)
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (witIn : WitIn F n M params) :
+    OuterRunSamplesChallenge stmt oStmt
+      (Pr[(fun o : Option (outerRunResult oSpec params) =>
+            o.elim False (fun result => result.2.1.xChallenge ∈ midSoundnessLanguage oStmt))
+          | ((simulateQ (QueryImpl.addLift impl ProtocolSpec.challengeQueryImpl :
+              QueryImpl (oSpec + [(outerPSpec F n params).Challenge]ₒ) (StateT σ ProbComp))
+              (((outerOracleReduction oSpec F n M params).toReduction.run
+                  (stmt, oStmt) witIn).run)).run' s)]) := by
+  classical
+  haveI hfinC : Fintype ((outerPSpec F n params).Challenge ⟨1, rfl⟩) :=
+    (inferInstance : Fintype F)
+  -- Unfold the residual, place the simulated run in challenge-first shape via the prover-run closed
+  -- form (the pure round-0 message collapses, exposing the round-1 `x`-challenge at the head).
+  unfold OuterRunSamplesChallenge
+  rw [outerReduction_run_closed_form, optionT_lift_bind_run, outerProver_run_closed_form]
+  simp only [outerProver, bind_pure_comp, pure_bind, map_pure, bind_assoc, liftM_pure]
+  -- Challenge-coherence: the run's event probability is the uniform average over the drawn `x` of the
+  -- tail's event probability.
+  rw [ChallengeCoherence.probEvent_run'_simulateQ_addLift_getChallenge_bind]
+  -- Uniform-marginal transport: out-of-language terms vanish (verifier-collapse), each mass `≤ |F|⁻¹`.
+  refine tsum_uniform_challenge_mem_le_prob_uniform (midSoundnessLanguage oStmt)
+    (C := (outerPSpec F n params).Challenge ⟨1, rfl⟩) rfl
+    _
+    (fun c => (show F from c) ∈ midSoundnessLanguage oStmt)
+    (fun c => Iff.rfl) ?hg ?hgle
+  case hgle =>
+    intro c
+    have hmass : Pr[= c | (@uniformSample ((outerPSpec F n params).Challenge ⟨1, rfl⟩)
+        (instOuterPSpecChallengeSampleable ⟨1, rfl⟩))] = (Fintype.card F : ℝ≥0∞)⁻¹ := by
+      rw [probOutput_uniformSample]
+      congr 1
+      exact congrArg Nat.cast (Fintype.card_congr (Equiv.cast (rfl : _ = F)))
+    rw [hmass]
+    exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (by rw [mul_one])
+  case hg =>
+    -- Verifier-collapse support fact: for a drawn challenge `c ∉ midSoundnessLanguage oStmt`, the
+    -- tail run has acceptance probability `0`, because every surviving run carries `xChallenge = c`.
+    intro c hc
+    rw [mul_eq_zero]
+    right
+    rw [probEvent_eq_zero_iff]
+    intro o ho hbad
+    cases o with
+    | none => exact hbad
+    | some result =>
+      -- Chase the support down to the verifier run on the closed-form transcript (round-1 = `c`).
+      have hsub := _root_.support_simulateQ_run'_subset (impl.addLift challengeQueryImpl) _ s ho
+      rw [support_bind] at hsub
+      simp only [Set.mem_iUnion, exists_prop] at hsub
+      obtain ⟨tr, htr, hverif⟩ := hsub
+      rw [support_map] at htr
+      obtain ⟨batch, _, rfl⟩ := htr
+      -- The transcript carries `c` as its round-1 challenge.
+      have hreadback := (outerProver_transcript_challenge_readback F n M params
+          (m₀ := honestMultiplicity oStmt) (x := c)
+          (m₂ := honestHelpers params oStmt c) (batch := batch)).1
+      by_cases hacc : outerVerifyAccepts F n M oStmt c
+      · -- Accept: the verifier returns a pure `some` whose `xChallenge` is `chalX … = c`.
+        rw [optionT_run_bind, outerVerifier_run_accept_eq_pure oSpec F n M params (stmt, oStmt) _
+            (hreadback.symm ▸ hacc)] at hverif
+        simp only [liftM_pure, OptionT.run_pure, pure_bind, Option.getM] at hverif
+        rw [← bind_pure_comp, optionT_run_bind, OptionT.run_pure, pure_bind] at hverif
+        simp only [OptionT.run_pure, support_pure, Set.mem_singleton_iff] at hverif
+        obtain rfl := Option.some.inj hverif
+        simp only [Option.elim_some] at hbad
+        exact hc (hreadback ▸ hbad)
+      · -- Reject: the verifier fails, so no `some` output survives — `hverif` is absurd.
+        rw [optionT_run_bind, outerVerifier_run_reject_eq_none oSpec F n M params (stmt, oStmt) _
+            (hreadback.symm ▸ hacc)] at hverif
+        simp only [liftM_pure, OptionT.run_pure, pure_bind, Option.getM] at hverif
+        rw [← bind_pure_comp, failure_bind, OptionT.run_failure, support_pure] at hverif
+        simp only [Set.mem_singleton_iff, reduceCtorEq] at hverif
+
 /-- **Protocol-level corrected outer soundness, modulo the run-unfolding residual.** Given the named
 run-unfolding bridge `OuterRunSamplesChallenge` (the after-outer challenge is the uniformly sampled
 outer challenge and acceptance is the check-vanishing event), the outer phase maps a bad lookup into
@@ -380,3 +484,4 @@ end Logup
 #print axioms Logup.outerSoundnessResidual_real_of_runUnfolding
 #print axioms Logup.tsum_uniform_challenge_mem_le_prob_uniform
 #print axioms Logup.OuterRunSamplesChallenge_holds_of_getChallenge_run
+#print axioms Logup.OuterRunSamplesChallenge_holds
