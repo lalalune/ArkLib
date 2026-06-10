@@ -765,6 +765,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Round9SubgroupCharExpansion
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
+import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothDomainSelfSimilarity
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothFiberCount
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
