@@ -1120,6 +1120,35 @@ lemma getFoldingChallenges_proof_irrel (i : Fin (ℓ + 1)) (challenges : Fin i �
 
 omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
   [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] hdiv in
+lemma getFoldingChallenges_tail_castSucc_eq_of_le (i : Fin ℓ)
+    (challenges : Fin i.succ → L) (k : ℕ)
+    (h_old : k + ϑ ≤ ↑i.castSucc) (h_new : k + ϑ ≤ ↑i.succ) :
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i.castSucc
+      (Fin.tail challenges) k (h := h_old) =
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i.succ
+      challenges k (h := h_new) := by
+  unfold getFoldingChallenges
+  funext cId
+  let idxOld : Fin i.castSucc := ⟨k + cId.val, by
+    have hc : cId.val < ϑ := cId.isLt
+    omega⟩
+  let idxNew : Fin i.succ := ⟨k + cId.val, by
+    have hc : cId.val < ϑ := cId.isLt
+    simp only [Fin.val_succ]
+    omega⟩
+  change foldOrderChallenges (ℓ := ℓ) (Fin.tail challenges) idxOld =
+    foldOrderChallenges (ℓ := ℓ) challenges idxNew
+  have hidx : idxNew = idxOld.castSucc := by
+    apply Fin.ext
+    rfl
+  rw [hidx]
+  unfold foldOrderChallenges
+  have hrev : idxOld.castSucc.rev = idxOld.rev.succ := Fin.rev_castSucc idxOld
+  exact (show Fin.tail challenges idxOld.rev = challenges idxOld.rev.succ from rfl).trans
+    (congrArg challenges hrev).symm
+
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
+  [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] hdiv in
 lemma getFoldingChallenges_older_castSucc_eq (i : Fin ℓ)
     (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) (challenges : Fin i.succ → L)
     (h_old : ↑j * ϑ + ϑ ≤ ↑i.castSucc)

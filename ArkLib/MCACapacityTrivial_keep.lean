@@ -6,7 +6,8 @@ Docstring claims this up-to-capacity MCA conjecture is "DISPROVEN ... unprovable
 holds for the GENUINE conjecture (a meaningful, sub-1, capacity-tight bound). But the FORMALIZED
 statement `∃ c₁ c₂ : ℕ, ∀ f η δ, Pr[…] ≤ ofReal(((parℓ-1)^{c₂}(2^m)^{c₂})/(η^{c₁}ρ^{c₁+c₂}|F|))`
 has UNBOUNDED `∃ c₁ c₂` and no `< 1` requirement. With `c₁=0, c₂=|F|` the RHS `≥ 1` (since
-`0<ρ≤1` and `((parℓ-1)2^m)^{|F|} ≥ 2^{|F|} ≥ |F|`), so `Pr ≤ 1 ≤ RHS` vacuously. NOT in build. -/
+`0<ρ≤1` and `((parℓ-1)2^m)^{|F|} ≥ 2^{|F|} ≥ |F|`), so `Pr ≤ 1 ≤ RHS` vacuously.
+(Status correction 2026-06-10: this file IS in the build — imported by `ArkLib.lean`.) -/
 
 open scoped NNReal ENNReal
 open MutualCorrAgreement ProbabilityTheory ReedSolomon Generator

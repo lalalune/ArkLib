@@ -2806,7 +2806,7 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
       rw [← hkg, hx₀]
       have hdecomp : p ^ a * k + s = p ^ (a + 1) * (k / p) + ((k % p) * p ^ a + s) := by
         calc p ^ a * k + s
-            = p ^ a * (p * (k / p) + k % p) + s := by rw [← (Nat.div_add_mod k p)]
+            = p ^ a * (p * (k / p) + k % p) + s := by rw [Nat.div_add_mod]
         _ = (p ^ a * p) * (k / p) + ((k % p) * p ^ a + s) := by ring
         _ = p ^ (a + 1) * (k / p) + ((k % p) * p ^ a + s) := by rw [← pow_succ]
       calc (ζp ^ (p ^ a)) ^ k * (ζp ^ s * ζq ^ (j * q ^ b + t))
@@ -2956,7 +2956,7 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
       rw [← hkg, hz₀]
       have hdecomp : q ^ b * k + t = q ^ (b + 1) * (k / q) + ((k % q) * q ^ b + t) := by
         calc q ^ b * k + t
-            = q ^ b * (q * (k / q) + k % q) + t := by rw [← (Nat.div_add_mod k q)]
+            = q ^ b * (q * (k / q) + k % q) + t := by rw [Nat.div_add_mod]
         _ = (q ^ b * q) * (k / q) + ((k % q) * q ^ b + t) := by ring
         _ = q ^ (b + 1) * (k / q) + ((k % q) * q ^ b + t) := by rw [← pow_succ]
       calc (ζq ^ (q ^ b)) ^ k * (ζp ^ (i * p ^ a + s) * ζq ^ t)

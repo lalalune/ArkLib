@@ -62,8 +62,9 @@ survive folding except with probability at most `steps / |L|`, and the union bou
 `steps * |S_next| / |L|`.
 
 The old inline proof below relied on stale quotient-map witness extraction and the pre-bit-reversal
-matrix-form evaluator. Exposing the branch as a typeclass obligation matches the residual style
-used by the adjacent Binius soundness files while preserving the theorem statement. -/
+matrix-form evaluator. The live statement uses the honest per-fiber disagreement surface from
+`foldingBadEvent`; exposing the branch as a typeclass obligation matches the residual style used
+by the adjacent Binius soundness files while preserving the DP24 case split. -/
 class Prop421Case1FiberwiseCloseResidual : Prop where
   holds : ∀ (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
@@ -81,8 +82,10 @@ class Prop421Case1FiberwiseCloseResidual : Prop where
           steps h_destIdx h_destIdx_le f_i r_challenges
         let folded_f_bar_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩
           steps h_destIdx h_destIdx_le f_bar_i r_challenges
-        ¬ (fiberwiseDisagreementSet 𝔽q β (i := ⟨i, by omega⟩) steps h_destIdx h_destIdx_le f_i f_bar_i ⊆
-           disagreementSet 𝔽q β (i := destIdx) (destIdx := destIdx) (h_destIdx := rfl) (f := folded_f_i) (g := folded_f_bar_i))
+        ¬ (fiberwiseDisagreementSetPerFiber 𝔽q β
+            (i := ⟨i, by omega⟩) steps h_destIdx h_destIdx_le f_i f_bar_i ⊆
+           disagreementSet 𝔽q β (i := destIdx) (destIdx := destIdx)
+             (h_destIdx := rfl) (f := folded_f_i) (g := folded_f_bar_i))
     ] ≤ ((steps * domain_size) / Fintype.card L)
 
 variable [Prop421Case1FiberwiseCloseResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
@@ -107,8 +110,10 @@ lemma prop_4_21_case_1_fiberwise_close (i : Fin ℓ) (steps : ℕ) [NeZero steps
           steps h_destIdx h_destIdx_le f_i r_challenges
         let folded_f_bar_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩
           steps h_destIdx h_destIdx_le f_bar_i r_challenges
-        ¬ (fiberwiseDisagreementSet 𝔽q β (i := ⟨i, by omega⟩) steps h_destIdx h_destIdx_le f_i f_bar_i ⊆
-           disagreementSet 𝔽q β (i := destIdx) (destIdx := destIdx) (h_destIdx := rfl) (f := folded_f_i) (g := folded_f_bar_i))
+        ¬ (fiberwiseDisagreementSetPerFiber 𝔽q β
+            (i := ⟨i, by omega⟩) steps h_destIdx h_destIdx_le f_i f_bar_i ⊆
+           disagreementSet 𝔽q β (i := destIdx) (destIdx := destIdx)
+             (h_destIdx := rfl) (f := folded_f_i) (g := folded_f_bar_i))
     ] ≤ ((steps * domain_size) / Fintype.card L) := by
   exact Prop421Case1FiberwiseCloseResidual.holds (𝔽q := 𝔽q) (β := β)
     i steps h_destIdx h_destIdx_le f_i h_close

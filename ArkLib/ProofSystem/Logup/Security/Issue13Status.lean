@@ -201,7 +201,14 @@ theorem issue13_soundness (sumcheckSoundnessError : ℝ≥0)
 /-- **Issue #13 — bundled-residual front door for soundness.**
 
 Packages the three remaining soundness obligations into one existential `Prop` and re-derives the
-headline. A re-export of `logup_soundness_uncond_of_residual`. -/
+headline. A re-export of `logup_soundness_uncond_of_residual`.
+
+**DEPRECATED / VACUOUSLY CONDITIONAL (audit 2026-06-10).** The bundled hypothesis
+`LogupSoundnessUncondResidual` is uninstantiable in the typical (small-support, large-field)
+regime: its `hOuter` conjunct at `midSoundnessProtocolLanguage` with the paper error is refuted
+by `prob_midSoundnessLanguage_ge_compl_support` (`OuterSoundnessSharp.lean`).  Live routes:
+`logup_soundness_end_to_end` (`OuterMaliciousSoundness.lean`) and
+`outerVerifier_soundness_sharp` (`OuterRbrSoundness.lean`). -/
 theorem issue13_soundness_of_residual (sumcheckSoundnessError : ℝ≥0)
     (h : LogupSoundnessUncondResidual oSpec F n M params init impl sumcheckSoundnessError) :
     (logupVerifier oSpec F n M params).soundness init impl
