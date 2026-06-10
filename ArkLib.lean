@@ -1268,6 +1268,7 @@ import ArkLib.ProofSystem.RingSwitching.Profile
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.ProofSystem.RingSwitching.SumcheckLoopPC
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
+import ArkLib.ProofSystem.RingSwitching.SumcheckDeterminism
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.ComposedCompleteness
@@ -1292,6 +1293,7 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
 import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
 import ArkLib.ProofSystem.Spartan.SecondSumcheckSimOStmt
+import ArkLib.ProofSystem.Spartan.SendEvalClaimComplete
 import ArkLib.ProofSystem.Spartan.SpartanRBRProof
 import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
