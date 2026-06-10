@@ -1049,6 +1049,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessPr
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKeystone
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallengeBody
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallengeOracleLift
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeEmpty
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDet
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDetEmpty
@@ -1313,6 +1314,7 @@ import ArkLib.ProofSystem.Spartan.ComposedCompletenessLeaves
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessProven
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessTwoLeaves
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessWithClaimFinal
+import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeSoundness
 import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.FinalCheckLeafComplete
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
