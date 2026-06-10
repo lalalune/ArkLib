@@ -1572,8 +1572,8 @@ results. The genuine statements about the actual assembled composition
 (`Bricks.composedPIOP_Rc`, `ArkLib/ProofSystem/Spartan/Composition.lean`) are:
 
 * **Perfect completeness (PROVEN, no leaf hypotheses):**
-  `Bricks.composedCompletenessResidual_proven_114c`
-  (`ArkLib/ProofSystem/Spartan/ComposedCompletenessProven.lean`) — only the standard
+  `Bricks.composedCompletenessResidual_proven`
+  (`ArkLib/ProofSystem/Spartan/ComposedCompletenessFinal.lean`) — only the standard
   honest-implementation side conditions on `init`/`impl` remain as inputs.
 * **Round-by-round knowledge soundness (assembled, conditional):**
   `Bricks.composedRbrKnowledgeSoundnessResidual_of_leaves`
