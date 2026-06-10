@@ -159,17 +159,18 @@ theorem epsMCAgs_prizeBound_conjecture_holds
     exact ENNReal.ofReal_le_ofReal hbound
   exact le_trans (epsMCAgs_le_one _ _ _) hofr
 
-/-- **The honest open GS-exposed prize (Issue #141).** The *uniform* GS-exposed Grand Challenge 1
-bound: one universal constant triple `(c₁, c₂, c₃)` such that for **every** prize rate `j`, gap
-`η`, radius `δ ≤ 1 - ρ - η`, interleaving exponent `m`, evaluation domain, and GS list family,
-the GS-exposed MCA error is within `epsMCAgsPrizeBound`. The constants are quantified *before* the
-data, exactly as `mcaConjecture` does for the abstract error — this is the quantifier order that
-makes the statement the open prize rather than the per-input theorem
-`epsMCAgs_prizeBound_conjecture_holds`.
+/-- **CLOSED AS STATED — this formalization does not capture the open prize.** The constants are
+quantified before the per-rate data, but the evaluation domain (hence the field `F`) is fixed
+*before* the existential, so this is character-for-character the per-domain
+`epsMCAgs_prizeBound_conjecture domain m` — proven outright by fixed-field inflation
+(`epsMCAgs_prizeBound_conjecture_holds`, `GrandChallenge141UniformResolved.lean`; discharge
+recorded as `epsMCAgsPrizeUniformConjecture_holds_as_stated`,
+`GrandChallenge141UniformVacuity.lean`): take `c₁ = c₂ = 0`, `c₃ = n` with `(15/16)^n ≤ 1/|F|`.
 
-This is a named `Prop`, deliberately **unproved**: its proof is the beyond-UDR Guruswami–Sudan
-list-decoder mass bound. Downstream developments must take it as an explicit hypothesis. Do not
-launder it into a theorem by assuming an equivalent packaged form. Tracking: Issue #141. -/
+The genuinely open prize is the **field-universal** form `epsMCAgsPrizeUniversalConjecture`
+(`GrandChallenge141PrizeReduction.lean`), whose constants precede the field and cannot absorb
+`q = |F|`; its open core is the beyond-UDR Guruswami–Sudan list-decoder mass bound
+(`UniversalGSListMassBound`). Tracking: Issue #141. -/
 def epsMCAgsPrizeUniformConjecture
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]

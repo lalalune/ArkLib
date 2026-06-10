@@ -442,51 +442,51 @@ private theorem composedPSpec_dir_seam
 /-! ### Challenge-family `Fintype`/`Inhabited` instances, bottom-up -/
 
 /-- Per-round challenge finiteness for the degree-`deg` sum-check round spec. -/
-@[reducible] private def sumcheckChalF (deg n : ℕ) :
+@[reducible] def sumcheckChalF (deg n : ℕ) :
     ∀ j, Fintype ((Sumcheck.Spec.pSpec R deg n).Challenge j) :=
   @ProtocolSpec.seqComposeChallenge_fintype n (fun _ => 2)
     (fun _ : Fin n => Sumcheck.Spec.SingleRound.pSpec R deg)
     (fun _ => Sumcheck.Spec.SingleRound.chalFintype)
 
-@[reducible] private def sumcheckChalI (deg n : ℕ) :
+@[reducible] def sumcheckChalI (deg n : ℕ) :
     ∀ j, Inhabited ((Sumcheck.Spec.pSpec R deg n).Challenge j) :=
   @ProtocolSpec.seqComposeChallenge_inhabited n (fun _ => 2)
     (fun _ : Fin n => Sumcheck.Spec.SingleRound.pSpec R deg)
     (fun _ => Sumcheck.Spec.SingleRound.chalInhab)
 
-@[reducible] private def c6F : ∀ j, Fintype ((sfx6 (R := R) pp).Challenge j) :=
+@[reducible] def c6F : ∀ j, Fintype ((sfx6 (R := R) pp).Challenge j) :=
   appendChalFintype _ _ (sumcheckChalF 2 pp.ℓ_n) chalBaseFintypeE
-@[reducible] private def c6I : ∀ j, Inhabited ((sfx6 (R := R) pp).Challenge j) :=
+@[reducible] def c6I : ∀ j, Inhabited ((sfx6 (R := R) pp).Challenge j) :=
   appendChalInhab _ _ (sumcheckChalI 2 pp.ℓ_n) chalBaseInhabE
 
-@[reducible] private def c5F : ∀ j, Fintype ((sfx5 (R := R) pp).Challenge j) :=
+@[reducible] def c5F : ∀ j, Fintype ((sfx5 (R := R) pp).Challenge j) :=
   appendChalFintype _ _ chalBaseFintypeE (c6F pp)
-@[reducible] private def c5I : ∀ j, Inhabited ((sfx5 (R := R) pp).Challenge j) :=
+@[reducible] def c5I : ∀ j, Inhabited ((sfx5 (R := R) pp).Challenge j) :=
   appendChalInhab _ _ chalBaseInhabE (c6I pp)
 
-@[reducible] private def c4F : ∀ j, Fintype ((sfx4 (R := R) pp).Challenge j) :=
+@[reducible] def c4F : ∀ j, Fintype ((sfx4 (R := R) pp).Challenge j) :=
   appendChalFintype _ _ chalBaseFintypeV (c5F pp)
-@[reducible] private def c4I : ∀ j, Inhabited ((sfx4 (R := R) pp).Challenge j) :=
+@[reducible] def c4I : ∀ j, Inhabited ((sfx4 (R := R) pp).Challenge j) :=
   appendChalInhab _ _ chalBaseInhabV (c5I pp)
 
-@[reducible] private def c3F : ∀ j, Fintype ((sfx3 (R := R) pp).Challenge j) :=
+@[reducible] def c3F : ∀ j, Fintype ((sfx3 (R := R) pp).Challenge j) :=
   appendChalFintype _ _ chalBaseFintypeP (c4F pp)
-@[reducible] private def c3I : ∀ j, Inhabited ((sfx3 (R := R) pp).Challenge j) :=
+@[reducible] def c3I : ∀ j, Inhabited ((sfx3 (R := R) pp).Challenge j) :=
   appendChalInhab _ _ chalBaseInhabP (c4I pp)
 
-@[reducible] private def c2F : ∀ j, Fintype ((sfx2 (R := R) pp).Challenge j) :=
+@[reducible] def c2F : ∀ j, Fintype ((sfx2 (R := R) pp).Challenge j) :=
   appendChalFintype _ _ (sumcheckChalF 3 pp.ℓ_m) (c3F pp)
-@[reducible] private def c2I : ∀ j, Inhabited ((sfx2 (R := R) pp).Challenge j) :=
+@[reducible] def c2I : ∀ j, Inhabited ((sfx2 (R := R) pp).Challenge j) :=
   appendChalInhab _ _ (sumcheckChalI 3 pp.ℓ_m) (c3I pp)
 
-@[reducible] private def c1F : ∀ j, Fintype ((sfx1 (R := R) pp).Challenge j) :=
+@[reducible] def c1F : ∀ j, Fintype ((sfx1 (R := R) pp).Challenge j) :=
   appendChalFintype _ _ chalBaseFintypeV (c2F pp)
-@[reducible] private def c1I : ∀ j, Inhabited ((sfx1 (R := R) pp).Challenge j) :=
+@[reducible] def c1I : ∀ j, Inhabited ((sfx1 (R := R) pp).Challenge j) :=
   appendChalInhab _ _ chalBaseInhabV (c2I pp)
 
-@[reducible] private def c0F : ∀ j, Fintype ((composedPSpec (R := R) pp).Challenge j) :=
+@[reducible] def c0F : ∀ j, Fintype ((composedPSpec (R := R) pp).Challenge j) :=
   appendChalFintype _ _ chalBaseFintypeP (c1F pp)
-@[reducible] private def c0I : ∀ j, Inhabited ((composedPSpec (R := R) pp).Challenge j) :=
+@[reducible] def c0I : ∀ j, Inhabited ((composedPSpec (R := R) pp).Challenge j) :=
   appendChalInhab _ _ chalBaseInhabP (c1I pp)
 
 /-! ### The seven-seam assembly -/

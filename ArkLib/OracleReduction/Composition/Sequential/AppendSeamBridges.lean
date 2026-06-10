@@ -31,18 +31,16 @@ challenge-seam transfer reconciles distributionally with `gameOf Rᵢ`.
 
 ## What is proven here (no `sorry`)
 
-* `appendStage₁_run_eq_liftM` / `appendStage₂_run_eq_liftM` — the `OptionT.run` of the phase-`i`
-  stage body equals `liftM` of the `OptionT.run` of `Rᵢ.run` (across the challenge seam). The
-  `OracleComp`-first vs `OptionT`-first lift mismatch is reconciled at the `OptionT.run`
-  (plain-`OracleComp`) level by `liftComp`/`simulateQ` normalization.
-* `Reduction.appendStage1Bridge` / `Reduction.appendStage2Bridge` — the discharged
-  `hStage1Bridge` / `hStage2Bridge` (the latter under the named transcript-merge marginal hypothesis
-  `hStage2Marginal`, isolating the irreducible bad-event relabel on the merged transcript).
-* `Reduction.append_game_neverFail` — the discharged `hTot` (via `simulateQ_run_neverFail`).
-* `Reduction.append_completeness_msg` — the message-seam non-perfect append completeness with the
-  three challenge-seam residuals discharged: from the component completenesses `h₁`/`h₂` and the
-  honest-implementation side conditions, the appended reduction is complete with additive error
-  `e₁ + e₂` (modulo the single named transcript-merge marginal `hStage2Marginal`).
+This module contains only the `OptionT`/`liftM` *coherence layer* (8 lemmas, ending at
+`appendStage₁_run_eq_liftM`): the `OptionT.run` of the phase-1 stage body equals `liftM` of
+the `OptionT.run` of `R₁.run` across the challenge seam, with the `OracleComp`-first vs
+`OptionT`-first lift mismatch reconciled at the `OptionT.run` (plain-`OracleComp`) level by
+`liftComp`/`simulateQ` normalization.
+
+The downstream bridge theorems — `Reduction.appendStage1Bridge`, `appendStage2Bridge`,
+`append_game_neverFail`, and `append_completeness_msg` (and the `appendStage₂` analogue of the
+run-equality) — live in **`AppendSeamBridges3.lean`**, proven axiom-clean there. An earlier
+revision of this docstring claimed them here; they were never in this file's body.
 -/
 
 open OracleComp OracleSpec ProtocolSpec OptionTStateT

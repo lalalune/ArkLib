@@ -463,6 +463,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetWallDeepInteriorNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.CountingGapConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
+import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRCoefficients
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
@@ -473,6 +474,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIntRelations
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnPrimePower
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreeIff
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreePQ
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnThreePrimeIntGrid
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTowerWiring
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrimeAssembly
@@ -572,6 +574,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLatticePrizeSpec
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AffineCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25BranchDichotomy
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25BranchPinning
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernel
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellWiring
@@ -593,6 +597,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4FiberReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4Seam
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25LinearFactorCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
@@ -602,6 +607,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseMultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWeilBoundInstances
 import ArkLib.Data.CodingTheory.ProximityGap.HybridConcentrationDepthNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.IntegerThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorListCountBridge
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorThresholdBracket
 import ArkLib.Data.CodingTheory.ProximityGap.InterleavedListMCACollapse
@@ -623,6 +629,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungAntipodalTightness
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungMultisetAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSpanTwoPrime
+import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSquarefreeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPow
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalQ
@@ -794,6 +801,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdStrictRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdSubcapacityRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdTrappedRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSMDSListBound
+import ArkLib.Data.CodingTheory.ProximityGap.RatSquarefreeClassification
 import ArkLib.Data.CodingTheory.ProximityGap.RatWeightedSquarefreeGrid
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
@@ -884,6 +892,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedPrimePowerPacket
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
+import ArkLib.Data.CodingTheory.ProximityGap.WindowFiberCount
 import ArkLib.Data.CodingTheory.ProximityGap.WindowMassSpan
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
@@ -1226,6 +1235,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Code
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.CoreInteractionPhase
+import ArkLib.ProofSystem.Binius.BinaryBasefold.FoldDetDischarge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.FoldDetSplit
 import ArkLib.ProofSystem.Binius.BinaryBasefold.General
 import ArkLib.ProofSystem.Binius.BinaryBasefold.MultilinearWeightRecursion
@@ -1316,6 +1326,7 @@ import ArkLib.ProofSystem.Logup.Security.OuterMarginalBound
 import ArkLib.ProofSystem.Logup.Security.OuterRbrSoundness
 import ArkLib.ProofSystem.Logup.Security.OuterRestSupport
 import ArkLib.ProofSystem.Logup.Security.OuterRun
+import ArkLib.ProofSystem.Logup.Security.OuterRunDecomposition
 import ArkLib.ProofSystem.Logup.Security.OuterRunSamplesChallenge
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessReal
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessSharp
@@ -1402,6 +1413,7 @@ import ArkLib.ProofSystem.Stir.BlockRbrBudgets
 import ArkLib.ProofSystem.Stir.BlocksCompleteness
 import ArkLib.ProofSystem.Stir.ChainCompleteness
 import ArkLib.ProofSystem.Stir.ChainProof
+import ArkLib.ProofSystem.Stir.ChainVSpecCount
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.Complexity
@@ -1433,6 +1445,7 @@ import ArkLib.ProofSystem.Stir.VSpecBridge
 import ArkLib.ProofSystem.Stir.VectorBridge
 import ArkLib.ProofSystem.Stir.VectorBridgeMid
 import ArkLib.ProofSystem.Stir.VectorChain
+import ArkLib.ProofSystem.Stir.VectorChainCompleteness
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.Completeness
@@ -1499,6 +1512,7 @@ import ArkLib.ProofSystem.Whir.ProtocolSoundness
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
 import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
+import ArkLib.ProofSystem.Whir.SchwartzZippelCore
 import ArkLib.ProofSystem.Whir.ThresholdKSF
 import ArkLib.ProofSystem.Whir.WhirVectorIOPProof
 import ArkLib.ProofSystem.ZkVMBoundary
@@ -1629,7 +1643,9 @@ import ArkLib.ToMathlib.GKL24FirstMomentProb
 import ArkLib.ToMathlib.GSFactorData
 import ArkLib.ToMathlib.GSGradedBundle
 import ArkLib.ToMathlib.GSLineInputSupply
+import ArkLib.ToMathlib.GSSurfaceDegSupply
 import ArkLib.ToMathlib.GSSurfaceEntry
+import ArkLib.ToMathlib.GSSurfaceHtailPigeonhole
 import ArkLib.ToMathlib.GSSurfaceKeystone
 import ArkLib.ToMathlib.GSSurfaceSupply
 import ArkLib.ToMathlib.GSSurfaceTailSupply
@@ -1692,6 +1708,7 @@ import ArkLib.ToMathlib.MatchingFactorLift
 import ArkLib.ToMathlib.MatchingGeometryProducers
 import ArkLib.ToMathlib.MatchingGeometryProducersOn
 import ArkLib.ToMathlib.MatchingPointFromLocalSeries
+import ArkLib.ToMathlib.MonicIrreducibleFactorization
 import ArkLib.ToMathlib.MonomialAgreementBound
 import ArkLib.ToMathlib.MpFinFromLocalSeries
 import ArkLib.ToMathlib.MpFinSupply
@@ -1711,6 +1728,7 @@ import ArkLib.ToMathlib.OrderZeroAgreementSupply
 import ArkLib.ToMathlib.PartitionRecursion
 import ArkLib.ToMathlib.PerPlaceSeparabilitySupply
 import ArkLib.ToMathlib.PerZProximateRoot
+import ArkLib.ToMathlib.PigeonholeFactorSupply
 import ArkLib.ToMathlib.PigeonholeTruncationCapstone
 import ArkLib.ToMathlib.PlaceGeometryFromLocalSeries
 import ArkLib.ToMathlib.PlaceGeometrySupply
@@ -1750,6 +1768,7 @@ import ArkLib.ToMathlib.Section5GlobalAssembler
 import ArkLib.ToMathlib.Section5StrictDataFinOn
 import ArkLib.ToMathlib.SectionBaseRational
 import ArkLib.ToMathlib.SectionFactor
+import ArkLib.ToMathlib.SectionFromSurface
 import ArkLib.ToMathlib.SectionXiDivisibility
 import ArkLib.ToMathlib.SectionXiUnit
 import ArkLib.ToMathlib.SeparableLowDegree

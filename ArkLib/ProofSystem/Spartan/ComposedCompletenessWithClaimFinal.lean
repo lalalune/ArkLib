@@ -41,6 +41,22 @@ variable {R : Type 0} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [Inh
   {ι : Type} (oSpec : OracleSpec ι) [oSpec.Fintype] [oSpec.Inhabited]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
+/-- `AppendCoherent` for the composed 8-fold verifier. `composedPIOP_Rc` is a plain `def`
+(non-reducible), so the chaining instance `AppendCoherent.oracleReductionAppend` cannot fire
+on it directly; expose it via `inferInstanceAs` on the syntactic fold (defeq at default
+transparency), where the chain fires from the declared leaf instances. -/
+instance instComposedPIOPRcVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (composedPIOP_Rc (R := R) pp oSpec).verifier :=
+  inferInstanceAs (OracleVerifier.Append.AppendCoherent
+    ((oracleReduction.firstMessage R pp oSpec).append <|
+      (oracleReduction.firstChallenge R pp oSpec).append <|
+      (firstSumcheckReduction pp oSpec).append <|
+      (oracleReduction.sendEvalClaim R pp oSpec).append <|
+      (oracleReduction.linearCombination R pp oSpec).append <|
+      (prependRLCTarget pp oSpec).append <|
+      (secondSumcheckReduction pp oSpec).append <|
+      (finalCheck R pp oSpec)).verifier)
+
 /-- **Target-carrying composed Spartan PIOP perfect completeness, fully discharged
 (issue #114)**, at the outer-append composition `(composedPIOP_Rc …).append (prependClaim …)`:
 the proven 8-fold completeness apex followed by the proven 0-round claim-slot adapter, glued
@@ -63,6 +79,17 @@ theorem composedCompletenessWithClaimResidual_proven
   have h_claim := prependClaim_perfectCompleteness (R := R) (pp := pp) (oSpec := oSpec)
     (init := init) (impl := impl) (finalCheckRelOut R pp)
   unfold composedCompletenessWithClaimResidual
+  -- the per-index and bundled challenge-oracle instances for the empty-seam keystone
+  haveI : ∀ j, Fintype ((composedPSpec (R := R) pp).Challenge j) := c0F pp
+  haveI : ∀ j, Inhabited ((composedPSpec (R := R) pp).Challenge j) := c0I pp
+  haveI := ProtocolSpec.challengeOracle_fintype (composedPSpec (R := R) pp)
+  haveI := ProtocolSpec.challengeOracle_inhabited (composedPSpec (R := R) pp)
+  haveI := ProtocolSpec.challengeOracle_fintype
+    ((composedPSpec (R := R) pp) ++ₚ (!p[] : ProtocolSpec 0))
+  haveI := ProtocolSpec.challengeOracle_inhabited
+    ((composedPSpec (R := R) pp) ++ₚ (!p[] : ProtocolSpec 0))
+  haveI := ProtocolSpec.challengeOracle_fintype (!p[] : ProtocolSpec 0)
+  haveI := ProtocolSpec.challengeOracle_inhabited (!p[] : ProtocolSpec 0)
   have h := OracleReduction.append_perfectCompleteness_keystone_empty_114
     (composedPIOP_Rc pp oSpec) (prependClaim pp oSpec) h_base h_claim hInit hImplSupp
   exact Reduction.completeness_relOut_mono init impl
