@@ -306,6 +306,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoXiTeles
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineMonic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineZLinearMonic
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineZLinearQuadratic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
