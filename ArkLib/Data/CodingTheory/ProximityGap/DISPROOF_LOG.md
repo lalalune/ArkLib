@@ -3441,3 +3441,28 @@ N.G. de Bruijn, "On the factorisation of cyclic groups", Indag. Math. 15 (1953) 
 de Bruijn: group-ring ℤ[ℤ_n] ideal structure, or the elementary double-slice argument
 (apply O66's packet_mul_coeff at BOTH primes via CRT exponent coordinates) — the latter
 is the in-framework candidate.
+
+### O68 — Theorem Q is now ONE in-tree kernel-checked theorem; the deep line censused exactly (nubs, 2026-06-10)
+
+**`TheoremQAssembly.theoremQ_epsMCA_lower` (axiom-clean, 0 sorry, 0 warnings):** the per-prime
+lower half of the determination as a single `epsMCA` statement — for any finite field with a full
+n-th-root domain (n = s·m), 2 ≤ r ≤ s, k = (r−1)m, (1−δ)n ≤ rm, q > n+k: ∃ B with
+C(s,r)·(q−n) ≤ B·((q−n)+C(s,r)·k) and ε_mca(evalCode H k, δ) ≥ B/q. Composes the three verified
+bricks (ValueSpreadSecondMoment + QuotientDeepCore + SmoothFiberCount) into MCALowerBound's
+framework; B ≳ ½min(C(s,r), (q−n)/k) beats 2⁻¹²⁸·q on [2¹²⁹, 2¹²⁷·C(s,r)) — every prime, every
+2-power gap, the whole window. Statement-fidelity reviewed against `QuotientPerPrimeInstantiation.md`
+(faithful; strengthens it in four sound directions — any finite field, r ≤ s, any admissible δ, no
+2-power hypothesis — and the closed form is strictly sharper at the top window edge). The LOWER
+HALF of #232 is now machine-checked end to end: nothing in it rests on prose.
+
+**Deep-line census (`probe_qline_census.py`, hardened + independently re-verified with a different
+algorithm/generator; degeneracy certificate explicit — 0 SB=0 subsets ⟹ provably exhaustive at
+radius ≥ k+1):** at (n,m,r) = (16,2,5), BabyBear, z=5: the Theorem-Q deep line realizes the FULL
+C(8,5) = 56 bad scalars (vs the monomial line's N₀(8,5) = 40 — measured at this z; no genericity
+claim), per-γ lists at the witness radius are ALL singletons with union exactly {q_S}; one notch
+below, per-γ ≤ 2 (5,440 size-2 + 56 size-1) with union 10,936. The re-verifier's monomial-side
+census: floor lists {1:32, 3:8} (e₁ triple-collisions — NOT singletons), 4,248 sub-witness γ's,
+and the sub-witness union is ALSO 10,936 — union size is line-independent here while γ-counts and
+max-list differ. Moral for the per-line moment chain (rounds-14 work, lekt9 + swarm): the union
+count and the max-list-size factor must be carried TOGETHER; neither alone determines Pr_γ[bad].
+This is level-1 branch-count-distribution data for the surviving open core (O59/O61/O67 framing).
