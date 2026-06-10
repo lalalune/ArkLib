@@ -8,7 +8,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.ToyProblem.Definitions
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
-import ArkLib.ToVCVio.SimulateQ
+import ArkLib.ToVCVio.OracleComp.SimSemantics.SimulateQ
 
 /-!
 # Toy problem oracle reduction (ABF26 Construction 6.2)
@@ -453,11 +453,11 @@ closed. The proof below unfolds `OracleReduction.perfectCompleteness` through
 The two original framework blockers are now both addressed at the lemma level:
 
   1. **`simulateQ_forIn`.** Closed by `simulateQ_list_forIn`
-     (`ArkLib/ToVCVio/SimulateQ.lean`), which commutes `simulateQ` past the
+     (`ArkLib/ToVCVio/OracleComp/SimSemantics/SimulateQ.lean`), which commutes `simulateQ` past the
      verifier's spot-check `forIn (List.finRange t) …`.
   2. **A `simulateQ`/`SubSpec` query-resolution simp set.** Closed by
      `simulateQ_addLift_add_liftM_left` / `_right`
-     (`ArkLib/ToVCVio/SimulateQ.lean`): these route the `queryG`/`queryF`
+     (`ArkLib/ToVCVio/OracleComp/SimSemantics/SimulateQ.lean`): these route the `queryG`/`queryF`
      double-`liftM`'d queries through the `simOracle2` layer to the correct
      inner oracle in one rewrite, so the verifier body resolves to a query-free
      `guard`/`forIn` computation.
