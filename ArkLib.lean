@@ -1723,6 +1723,7 @@ import ArkLib.ToMathlib.TwistedKernel
 import ArkLib.ToMathlib.UMSubspaceDesignProof
 import ArkLib.ToMathlib.UniformTranslationAverage
 import ArkLib.ToMathlib.WeightLambdaCalculus
+import ArkLib.ToMathlib.XiOrderInterp
 import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.WindowDualRS
 import ArkLib.ToMathlib.XDegreeBudgetProbe
