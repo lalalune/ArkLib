@@ -325,6 +325,29 @@ theorem jbt_hash_getElem?
   simpa using DuplexSpongeFS.Backtrack.BacktrackSequence.index_hash_getElem?
     (trace := tr) (state := state) (seq := seq)
 
+/-- A `J_BT` hash-index payload is the first occurrence of its hash anchor: no strictly earlier
+raw trace slot contains the same hash entry. -/
+theorem jbt_hash_no_prior
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (p : Sigma fun seq : DuplexSpongeFS.Backtrack.BacktrackSequence tr state =>
+      DuplexSpongeFS.Backtrack.BacktrackIndexList tr seq)
+    (hp : p ∈ DuplexSpongeFS.Backtrack.J_BT S)
+    (j : Fin tr.length) (hj : j.val < p.2.1.val) :
+    tr.get j ≠
+      (⟨Sum.inl p.1.stmt,
+        Vector.drop (p.1.inputState[0]'(by
+          rw [p.1.inputState_length_eq_outputState_length_succ]
+          exact Nat.succ_pos _)) SpongeSize.R⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  classical
+  unfold DuplexSpongeFS.Backtrack.J_BT at hp
+  rw [Finset.mem_image] at hp
+  obtain ⟨seq, _hseq, hp_eq⟩ := hp
+  subst p
+  simpa using DuplexSpongeFS.Backtrack.BacktrackSequence.index_hash_no_prior
+    (trace := tr) (state := state) (seq := seq) (j := j) hj
+
 /-- Off `E`, a nonterminal `J_BT` permutation-index payload points to the forward
 permutation query for that chain step. -/
 theorem jbt_perm_forward_getElem?_of_not_E
@@ -462,6 +485,7 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.not_inv_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.forward_getElem?_of_not_E_of_perm_or_inv
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
+#print axioms DuplexSpongeFS.Sponge316.jbt_hash_no_prior
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_first_perm_forward_getElem?_of_not_E

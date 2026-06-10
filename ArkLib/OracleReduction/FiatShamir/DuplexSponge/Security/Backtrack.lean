@@ -208,6 +208,33 @@ theorem BacktrackSequence.index_hash_getElem?
   rw [List.getElem?_eq_getElem hlt]
   simpa [entry] using congrArg some hget
 
+/-- The hash component of `BacktrackSequence.Index` is the first occurrence of the sequence's
+hash anchor: no strictly earlier trace slot contains the same hash entry. -/
+theorem BacktrackSequence.index_hash_no_prior
+    (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state)
+    (j : Fin trace.length) (hj : j.val < (BacktrackSequence.Index trace state seq).1.val) :
+    trace.get j ≠
+      (⟨.inl seq.stmt,
+        Vector.drop (seq.inputState[0]'(by
+          rw [seq.inputState_length_eq_outputState_length_succ]
+          exact Nat.succ_pos _)) SpongeSize.R⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  classical
+  dsimp [BacktrackSequence.Index, firstOccurrenceIndex] at hj ⊢
+  let entry : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+    ⟨.inl seq.stmt,
+      Vector.drop (seq.inputState[0]'(by
+        rw [seq.inputState_length_eq_outputState_length_succ]
+        exact Nat.succ_pos _)) SpongeSize.R⟩
+  have hlt : trace.findIdx (fun x => decide (x = entry)) < trace.length :=
+    List.findIdx_lt_length_of_exists ⟨entry, seq.hash_in_trace, decide_eq_true rfl⟩
+  have hfirst :=
+    (List.findIdx_eq (p := fun x => decide (x = entry)) (xs := trace) hlt).mp rfl
+  intro hentry
+  have hfalse := hfirst.2 j.val hj
+  simp [entry, hentry] at hfalse
+
 /-- Each nonterminal permutation component of `BacktrackSequence.Index` points to a recorded
 forward or inverse permutation query for that chain step. -/
 theorem BacktrackSequence.index_perm_getElem?_of_lt
