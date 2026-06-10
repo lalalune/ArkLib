@@ -123,12 +123,13 @@ theorem firstSumcheck_perfectCompleteness
 
 /-- `StatementRound` is inhabited over a ring: zero target, zero challenges (needed by the
 pullback rbr-soundness transport). -/
-local instance {n : ℕ} {i : Fin (n + 1)} : Inhabited (Sumcheck.Spec.StatementRound R n i) :=
+local instance instInhabitedStatementRoundFirstSC {n : ℕ} {i : Fin (n + 1)} :
+    Inhabited (Sumcheck.Spec.StatementRound R n i) :=
   ⟨⟨0, fun _ => 0⟩⟩
 
 /-- The sum-check oracle statement (a degree-restricted polynomial) is inhabited: the zero
 polynomial. -/
-noncomputable local instance {n deg : ℕ} {i : Unit} :
+noncomputable local instance instInhabitedOracleStatementFirstSC {n deg : ℕ} {i : Unit} :
     Inhabited (Sumcheck.Spec.OracleStatement R n deg i) :=
   ⟨⟨0, by simp [MvPolynomial.mem_restrictDegree]⟩⟩
 
