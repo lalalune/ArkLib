@@ -1262,6 +1262,7 @@ import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
 import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
+import ArkLib.ProofSystem.Stir.BlockCompleteness
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.ErrorAccumulation
 import ArkLib.ProofSystem.Stir.ErrorBoundBridge
