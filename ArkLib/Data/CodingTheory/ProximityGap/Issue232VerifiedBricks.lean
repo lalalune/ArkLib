@@ -214,6 +214,23 @@ theorem interleave_radius_lt_capacity (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) (m 
   rw [Real.rpow_one] at hpow
   linarith
 
+/-- **Exact finite-interleaving capacity gap.** The amount by which the finite
+`m`-interleaved GS radius falls short of capacity is just the difference between the
+finite exponent and the capacity exponent:
+`(1−ρ) − (1−ρ^{m/(m+1)}) = ρ^{m/(m+1)} − ρ`.  This is the residual that must be closed
+by genuinely beyond-finite-GS ideas. -/
+theorem interleave_capacity_gap_eq (ρ : ℝ) (m : ℕ) :
+    (1 - ρ) - (1 - ρ ^ ((m : ℝ)/(m+1)))
+      = ρ ^ ((m : ℝ)/(m+1)) - ρ := by
+  ring
+
+/-- **The finite-interleaving capacity gap is positive.** For every finite level `m` and every
+rate `ρ ∈ (0,1)`, finite GS interleaving leaves a nonzero distance to capacity. -/
+theorem interleave_capacity_gap_pos (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) (m : ℕ) :
+    0 < (1 - ρ) - (1 - ρ ^ ((m : ℝ)/(m+1))) := by
+  have hlt := interleave_radius_lt_capacity ρ h0 h1 m
+  linarith
+
 /-- The interleaved GS radius is **strictly increasing** in the interleaving level `m`
 (rate `ρ ∈ (0,1)`): `1 − ρ^{m/(m+1)} < 1 − ρ^{(m+1)/(m+2)}`. The radii form a strictly increasing
 sequence converging up to capacity. -/
@@ -226,6 +243,15 @@ theorem interleave_radius_strictMono (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) (m :
     linarith [key ▸ hpos]
   have hpow : ρ ^ (((m:ℝ)+1)/(m+2)) < ρ ^ ((m : ℝ)/(m+1)) :=
     Real.rpow_lt_rpow_of_exponent_gt h0 h1 hexp
+  linarith
+
+/-- **The finite-interleaving capacity gap strictly decreases with the interleaving level.**
+Interleaving improves the GS radius monotonically, but by `interleave_capacity_gap_pos` every
+finite level still leaves a positive residual gap to capacity. -/
+theorem interleave_capacity_gap_strict_decrease (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) (m : ℕ) :
+    (1 - ρ) - (1 - ρ ^ (((m:ℝ)+1)/(m+2)))
+      < (1 - ρ) - (1 - ρ ^ ((m : ℝ)/(m+1))) := by
+  have hlt := interleave_radius_strictMono ρ h0 h1 m
   linarith
 
 /-- For every positive interleaving level `m ≥ 1`, the interleaved GS radius is **at least the
