@@ -638,6 +638,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSecondMomentFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSimplexBound
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26BadLineConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungAntipodalTightness
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungMultisetAntipodal
@@ -966,7 +967,6 @@ import ArkLib.Data.CodingTheory.RandomLinearCodePairwiseProb
 import ArkLib.Data.CodingTheory.RandomLinearCodeParallelProb
 import ArkLib.Data.CodingTheory.RandomLinearCodeRankEquidist
 import ArkLib.Data.CodingTheory.ReedSolomon
-import ArkLib.Data.CodingTheory.RootCountingEngine
 import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleDischarge
 import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleSubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon.FRSGeomSubspaceDesign
@@ -974,6 +974,7 @@ import ArkLib.Data.CodingTheory.ReedSolomon.Folded
 import ArkLib.Data.CodingTheory.ReedSolomon.Interleaved
 import ArkLib.Data.CodingTheory.ReedSolomon.Multilinear
 import ArkLib.Data.CodingTheory.ReedSolomon.Multiplicity
+import ArkLib.Data.CodingTheory.RootCountingEngine
 import ArkLib.Data.CodingTheory.SingletonBound
 import ArkLib.Data.CodingTheory.SingletonBoundRate
 import ArkLib.Data.CodingTheory.SubspaceDesign
@@ -1270,8 +1271,10 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.General
 import ArkLib.ProofSystem.Binius.BinaryBasefold.MultilinearWeightRecursion
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Prelude
 import ArkLib.ProofSystem.Binius.BinaryBasefold.QueryPhase
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.FinalOracleBridge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IncrementalHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldAdvances
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldToLevel
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidLastEval
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidSucc
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToNextSumEq
@@ -1737,6 +1740,7 @@ import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.L46GSWitnessRS
 import ArkLib.ToMathlib.LatticeFrontierReduction
 import ArkLib.ToMathlib.LineDecodingCoverageProof
+import ArkLib.ToMathlib.LinearCentreCertificates
 import ArkLib.ToMathlib.LinearizedHomogeneous
 import ArkLib.ToMathlib.LinearizedKernel
 import ArkLib.ToMathlib.LinearizedPattern
@@ -1752,7 +1756,6 @@ import ArkLib.ToMathlib.LocalSeriesCorrected
 import ArkLib.ToMathlib.LocalizationEmbedding
 import ArkLib.ToMathlib.LocalizedPlaceEvaluation
 import ArkLib.ToMathlib.LogupFractionalSum
-import ArkLib.ToMathlib.LinearCentreCertificates
 import ArkLib.ToMathlib.MCAFirstMomentArithBricks
 import ArkLib.ToMathlib.MCAPrizeFourRateNumerics
 import ArkLib.ToMathlib.MatchingExtractor
