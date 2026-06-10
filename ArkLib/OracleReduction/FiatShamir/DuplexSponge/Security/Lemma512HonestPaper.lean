@@ -292,6 +292,39 @@ theorem hasPermCapacityBeforeForwardOutputPaper_of_first
   exact ⟨jCur, stateIn, stateOut, hcur, jPrev, hlt, prevIn, prevOut, hprev, hcap⟩
 
 
+/-- A forward slot whose pair has no prior copy in either direction is not paper-redundant:
+the first-occurrence guard defeats both certificate disjuncts of `redundantEntryDSPaper`. -/
+theorem not_redundantEntryDSPaper_forward_of_no_prior
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (idx : Fin tr.length)
+    {stateIn stateOut : CanonicalSpongeState U}
+    (hidx : tr[idx] = forwardEntryP stateIn stateOut)
+    (hfirst : ∀ j : Fin tr.length, j.val < idx.val →
+      tr[j] ≠ forwardEntryP stateIn stateOut ∧
+        tr[j] ≠ inverseEntryP stateOut stateIn) :
+    ¬ tr.redundantEntryDSPaper idx := by
+  intro hred
+  unfold OracleSpec.QueryLog.redundantEntryDSPaper at hred
+  rw [hidx] at hred
+  obtain ⟨j, hjlt, hcase⟩ := hred
+  rcases hcase with hsame | hinv
+  · exact (hfirst j hjlt).1 hsame
+  · exact (hfirst j hjlt).2 hinv
+
+/-- The paper first-occurrence collision shape carries the nonredundancy proof for its forward
+anchor. -/
+theorem hasFirstPermCapacityBeforeForwardOutputPaper_current_not_redundant
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasFirstPermCapacityBeforeForwardOutputPaper tr) :
+    ∃ jCur : Fin tr.length,
+      ∃ stateIn stateOut : CanonicalSpongeState U,
+        tr[jCur] = forwardEntryP stateIn stateOut ∧
+        ¬ tr.redundantEntryDSPaper jCur := by
+  obtain ⟨jCur, stateIn, stateOut, hcur, hfirst,
+    _jPrev, _hlt, _prevIn, _prevOut, _hprev, _hcap⟩ := h
+  exact ⟨jCur, stateIn, stateOut, hcur,
+    not_redundantEntryDSPaper_forward_of_no_prior tr jCur hcur hfirst⟩
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -302,3 +335,5 @@ end DuplexSpongeFS.Sponge316
 #print axioms OracleSpec.QueryLog.redundantPaper_inverse_capacity_prior
 #print axioms DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem
 #print axioms DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_of_first
+#print axioms DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_forward_of_no_prior
+#print axioms DuplexSpongeFS.Sponge316.hasFirstPermCapacityBeforeForwardOutputPaper_current_not_redundant
