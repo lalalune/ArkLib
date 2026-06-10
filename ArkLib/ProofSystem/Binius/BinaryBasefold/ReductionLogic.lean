@@ -611,6 +611,42 @@ class CommitStepSnocOracleVerifierOutputResidual : Prop where
         (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript
 
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+/-- Old-oracle branch of the commit-step `snoc_oracle`/verifier-output agreement.
+For old frontier indices, both constructions route to the same input oracle. -/
+lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_old
+    (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
+    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
+      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (domainIdx := ⟨i.val + 1, by omega⟩))
+    (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
+    (hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc) :
+    snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j =
+      OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
+        (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
+  dsimp only [snoc_oracle]
+  simp only [hCR, ↓reduceDIte]
+  have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
+      Sum.inl ⟨j.val, hj⟩ := by
+    simp only [commitStepLogic, commitStepLogic_embed, Function.Embedding.coeFn_mk,
+      commitStepLogic_embedFn, hj, dif_pos]
+  rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
+  simp only [hj, dif_pos, eqRec_eq_cast, cast_cast]
+  apply eq_of_heq
+  refine HEq.trans ?_ (cast_heq _ (oStmtIn ⟨j.val, hj⟩)).symm
+  have hidx : (⟨j.val, by omega⟩ :
+      Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) = ⟨j.val, hj⟩ := by
+    ext
+    rfl
+  cases hidx
+  rfl
+
 variable [CommitStepSnocOracleVerifierOutputResidual 𝔽q β
   (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (mp := mp)]
 
