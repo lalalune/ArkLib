@@ -85,6 +85,33 @@ theorem append_rbrKnowledgeSoundness_subsingleton [Subsingleton σ]
   exact Verifier.append_rbrKnowledgeSoundness_keystone_subsingleton_unconditional
     V₁.toVerifier V₂.toVerifier verify hVerify hInit hInitNF hNE₂ hNEW₂ hn hDir hDir₂ h₁ h₂
 
+/-- **Generic determinism witness from a `simulateQ` collapse.** If an oracle verifier's `verify`,
+simulated against the transcript-message oracle, collapses to `pure (v (stmt, oStmt) tr)` for every
+input (the shape of the RingSwitching `*_verify_collapse` lemmas), then its compiled `toVerifier` is
+literally the pure verifier on `v` paired with the deterministic `oStmtOut` routing — the exact
+`hVerify` input of the rbr (knowledge) soundness append keystones. -/
+theorem toVerifier_eq_pure_of_collapse
+    {ιₛᵢ ιₛₒ : Type} {StmtIn StmtOut : Type}
+    {OStmtIn : ιₛᵢ → Type} [Oₛᵢ : ∀ i, OracleInterface (OStmtIn i)]
+    {OStmtOut : ιₛₒ → Type}
+    {n' : ℕ} {pSpec : ProtocolSpec n'} [Oₘ : ∀ i, OracleInterface (pSpec.Message i)]
+    (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec)
+    (v : (StmtIn × ∀ i, OStmtIn i) → pSpec.FullTranscript → StmtOut)
+    (hcollapse : ∀ (stmt : StmtIn) (oStmt : ∀ i, OStmtIn i) (tr : pSpec.FullTranscript),
+      simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages)
+          (V.verify stmt tr.challenges)
+        = (pure (v (stmt, oStmt) tr) : OptionT (OracleComp oSpec) StmtOut)) :
+    V.toVerifier = ⟨fun p tr => pure (v p tr,
+      fun i => match h : V.embed i with
+        | Sum.inl j => (V.hEq i ▸ h ▸ p.2 j : OStmtOut i)
+        | Sum.inr j => (V.hEq i ▸ h ▸ tr.messages j : OStmtOut i))⟩ := by
+  unfold OracleVerifier.toVerifier
+  congr 1
+  funext p tr
+  obtain ⟨stmt, oStmt⟩ := p
+  simp only [hcollapse stmt oStmt tr, pure_bind]
+  rfl
+
 end OracleVerifier
 
 namespace Verifier
