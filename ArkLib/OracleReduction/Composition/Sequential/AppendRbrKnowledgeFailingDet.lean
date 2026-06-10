@@ -276,10 +276,112 @@ theorem append_rbrKnowledgeSoundness_failingDet_subsingleton
     (failingDet_optionized_rbrKnowledgeSoundness verify? h₁)
     (optionLift_rbrKnowledgeSoundness V₂ h₂)
 
+section Composition
+
+variable {Stmt₃ : Type} {n : ℕ} {pSpec₂ : ProtocolSpec n}
+
+/-- **Failing-deterministic verifiers compose.** The append of two failing-deterministic verifiers
+is failing-deterministic, with the composed partial verdict given by `Option.bind`: run `v₁?` on the
+first half; on success feed the intermediate statement to `v₂?` on the second half. Together with
+`append_pure_pure` (and the mixed variants below) this builds the failing-determinism witnesses for
+all *composite* RingSwitching verifiers (`sumcheckLoop`, `coreInteraction`, `batchingCore`). -/
+theorem append_failingDet_failingDet
+    (v₁? : Stmt₁ → pSpec₁.FullTranscript → Option Stmt₂)
+    (v₂? : Stmt₂ → pSpec₂.FullTranscript → Option Stmt₃) :
+    Verifier.append
+        (⟨fun s tr => OptionT.mk (pure (v₁? s tr))⟩ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+        (⟨fun s tr => OptionT.mk (pure (v₂? s tr))⟩ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+      = ⟨fun s tr => OptionT.mk (pure ((v₁? s tr.fst).bind (fun s₂ => v₂? s₂ tr.snd)))⟩ := by
+  unfold Verifier.append
+  congr 1
+  funext s tr
+  refine OptionT.ext ?_
+  simp only [OptionT.run_bind, OptionT.run_mk, Option.elimM, pure_bind]
+  cases h : v₁? s tr.fst with
+  | none => simp
+  | some s₂ => simpa using (by cases h₂ : v₂? s₂ tr.snd <;> rfl :
+      ((v₂? s₂ tr.snd).elim (pure none) fun x => pure (some x) :
+        OracleComp oSpec (Option Stmt₃)) = pure (v₂? s₂ tr.snd))
+
+/-- **Total-deterministic left, failing-deterministic right.** The mixed composition: a total left
+verdict feeds the failing right verdict directly. (The RingSwitching `batchingCore` seam: batching
+is total, `coreInteraction` fails.) -/
+theorem append_pure_failingDet
+    (v₁ : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (v₂? : Stmt₂ → pSpec₂.FullTranscript → Option Stmt₃) :
+    Verifier.append
+        (⟨fun s tr => pure (v₁ s tr)⟩ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+        (⟨fun s tr => OptionT.mk (pure (v₂? s tr))⟩ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+      = ⟨fun s tr => OptionT.mk (pure (v₂? (v₁ s tr.fst) tr.snd))⟩ := by
+  unfold Verifier.append
+  congr 1
+  funext s tr
+  refine OptionT.ext ?_
+  simp only [OptionT.run_bind, OptionT.run_pure, OptionT.run_mk, Option.elimM, pure_bind,
+    Option.elim_some]
+  cases h : v₂? (v₁ s tr.fst) tr.snd <;> simp
+
+/-- **Failing-deterministic left, total-deterministic right.** -/
+theorem append_failingDet_pure
+    (v₁? : Stmt₁ → pSpec₁.FullTranscript → Option Stmt₂)
+    (v₂ : Stmt₂ → pSpec₂.FullTranscript → Stmt₃) :
+    Verifier.append
+        (⟨fun s tr => OptionT.mk (pure (v₁? s tr))⟩ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+        (⟨fun s tr => pure (v₂ s tr)⟩ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+      = ⟨fun s tr => OptionT.mk (pure ((v₁? s tr.fst).map (fun s₂ => v₂ s₂ tr.snd)))⟩ := by
+  unfold Verifier.append
+  congr 1
+  funext s tr
+  refine OptionT.ext ?_
+  simp only [OptionT.run_bind, OptionT.run_mk, Option.elimM, pure_bind]
+  cases h : v₁? s tr.fst <;> simp
+
+end Composition
+
 end Verifier
+
+namespace OracleVerifier
+
+variable {ι : Type} {oSpec : OracleSpec ι}
+
+/-- **Failing-determinism witness from an `Option`-valued `simulateQ` collapse.** The failing
+analogue of `toVerifier_eq_pure_of_collapse`: if an oracle verifier's `verify`, simulated against
+the transcript-message oracle, collapses to `OptionT.mk (pure (v? (stmt, oStmt) tr))` (the shape of
+the RingSwitching round/finalSumcheck `*_verify_collapse` lemmas, with `v? = if check then some …
+else none`), then its compiled `toVerifier` is failing-deterministic with the `Option.map`-ped
+verdict (the deterministic `oStmtOut` routing rides along on success). -/
+theorem toVerifier_eq_failingDet_of_collapse
+    {ιₛᵢ ιₛₒ : Type} {StmtIn StmtOut : Type}
+    {OStmtIn : ιₛᵢ → Type} [Oₛᵢ : ∀ i, OracleInterface (OStmtIn i)]
+    {OStmtOut : ιₛₒ → Type}
+    {n' : ℕ} {pSpec : ProtocolSpec n'} [Oₘ : ∀ i, OracleInterface (pSpec.Message i)]
+    (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec)
+    (v? : (StmtIn × ∀ i, OStmtIn i) → pSpec.FullTranscript → Option StmtOut)
+    (hcollapse : ∀ (stmt : StmtIn) (oStmt : ∀ i, OStmtIn i) (tr : pSpec.FullTranscript),
+      simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages)
+          (V.verify stmt tr.challenges)
+        = (OptionT.mk (pure (v? (stmt, oStmt) tr)) : OptionT (OracleComp oSpec) StmtOut)) :
+    V.toVerifier = ⟨fun p tr => OptionT.mk (pure ((v? p tr).map (fun s => (s,
+      fun i => match h : V.embed i with
+        | Sum.inl j => (V.hEq i ▸ h ▸ p.2 j : OStmtOut i)
+        | Sum.inr j => (V.hEq i ▸ h ▸ tr.messages j : OStmtOut i)))))⟩ := by
+  unfold OracleVerifier.toVerifier
+  congr 1
+  funext p tr
+  obtain ⟨stmt, oStmt⟩ := p
+  simp only [hcollapse stmt oStmt tr]
+  refine OptionT.ext ?_
+  simp only [OptionT.run_bind, OptionT.run_mk, Option.elimM, pure_bind]
+  cases h : v? (stmt, oStmt) tr <;> simp <;> rfl
+
+end OracleVerifier
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms Verifier.append_failingDet_eq_optionized
 #print axioms Verifier.optionLift_rbrKnowledgeSoundness
 #print axioms Verifier.failingDet_optionized_rbrKnowledgeSoundness
 #print axioms Verifier.append_rbrKnowledgeSoundness_failingDet_subsingleton
+#print axioms Verifier.append_failingDet_failingDet
+#print axioms Verifier.append_pure_failingDet
+#print axioms Verifier.append_failingDet_pure
+#print axioms OracleVerifier.toVerifier_eq_failingDet_of_collapse
