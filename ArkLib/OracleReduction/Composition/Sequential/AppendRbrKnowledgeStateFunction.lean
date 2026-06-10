@@ -5,6 +5,9 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKeystone
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRunWithLog
+import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRunPartial
+import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
+import ArkLib.ToVCVio.OracleComp.SimSemantics.SubsingletonState
 
 /-!
 # The composite round-by-round *knowledge* state function — `Verifier.KnowledgeStateFunction.append`

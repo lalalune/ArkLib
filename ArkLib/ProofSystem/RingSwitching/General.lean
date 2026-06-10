@@ -9,6 +9,9 @@ import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.OracleReduction.Composition.Sequential.AppendToVerifierKeystone
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompleteness
+import ArkLib.ProofSystem.RingSwitching.SumcheckLoopPC
 
 /-!
 # Full Ring-Switching Protocol
@@ -314,4 +317,181 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
 
 end SecurityProperties
 end
+/-! ## End-to-end perfect completeness (issue #29)
+
+The hypothesis-free (beyond `NeverFail` + `IsDomain` + the abstract opening's seam facts) forms,
+assembled from the proven append keystone and the component perfect-completeness theorems. -/
+
+noncomputable section EndToEndCompleteness
+
+open OracleReduction RingSwitching.SumcheckPhase RingSwitching.BatchingPhase ProtocolSpec
+
+variable (κ : ℕ) [NeZero κ]
+variable (L : Type) [CommRing L] [Nontrivial L] [Fintype L] [DecidableEq L] [SampleableType L]
+variable (K : Type) [CommRing K] [Fintype K] [DecidableEq K]
+variable [Algebra K L]
+variable (P : RingSwitchingProfile K L κ)
+variable (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+variable (h_l : ℓ = ℓ' + κ)
+variable (mlIOPCS : MLIOPCS L ℓ')
+-- The opening's challenge instances: not derivable from the abstract `MLIOPCS`; supplied as
+-- instance hypotheses (true of every concrete scheme). NOTE: deliberately *no*
+-- `[∀ i, SampleableType (mlIOPCS.pSpec.Challenge i)]` binder here — the structure field instance
+-- (`Spec.lean`) covers it, and a duplicate binder-instance makes the keystone defeq grind through
+-- the run semantics (two distinct instance terms for the same class).
+variable [∀ i, Fintype (mlIOPCS.pSpec.Challenge i)] [∀ i, Inhabited (mlIOPCS.pSpec.Challenge i)]
+variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
+
+set_option maxHeartbeats 1000000 in
+/-- Seam 1 (loop ⋈ final): core-interaction perfect completeness from `NeverFail` alone. -/
+theorem coreInteractionOracleReduction_perfectCompleteness' [IsDomain L] [IsDomain K]
+    (hInit : NeverFail init) :
+    OracleReduction.perfectCompleteness
+      (oracleReduction := coreInteractionOracleReduction κ L K P ℓ ℓ' h_l
+        mlIOPCS.toAbstractOStmtIn)
+      (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn 0)
+      (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
+      (init := init) (impl := impl) := by
+  have hLoop := sumcheckLoopOracleReduction_perfectCompleteness κ L K P ℓ ℓ' h_l
+    mlIOPCS.toAbstractOStmtIn (init := init) (impl := impl) hInit
+  have hFinal := finalSumcheckOracleReduction_perfectCompleteness κ L K P ℓ ℓ' h_l
+    mlIOPCS.toAbstractOStmtIn (init := init) (impl := impl) hInit
+  have H := append_perfectCompleteness_keystone (init := init) (impl := impl)
+    (R₁ := sumcheckLoopOracleReduction κ L K P ℓ ℓ' mlIOPCS.toAbstractOStmtIn)
+    (R₂ := finalSumcheckOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+    hLoop hFinal Nat.one_pos
+    (by
+      rw [show (⟨Fin.vsum (fun _ : Fin ℓ' => 2), by omega⟩ :
+            Fin (Fin.vsum (fun _ : Fin ℓ' => 2) + 1))
+          = Fin.natAdd (Fin.vsum (fun _ : Fin ℓ' => 2)) (⟨0, Nat.one_pos⟩ : Fin 1) from by
+        ext; simp]
+      rw [Prover.append_dir_natAdd]
+      rfl)
+    (by rfl) hInit
+    (by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])
+  exact H
+
+/-- The sumcheck loop opens with a `P_to_V` message (the round-0 prover polynomial): the loop's
+direction at index `0`. From `seqCompose_appendValid` (each round opens `P_to_V`), discarding the
+empty case via `NeZero ℓ'`. -/
+private theorem sumcheckLoop_dir_zero (hpos : 0 < Fin.vsum (fun _ : Fin ℓ' => 2)) :
+    (pSpecSumcheckLoop L ℓ').dir ⟨0, hpos⟩ = .P_to_V := by
+  rcases seqCompose_appendValid (pSpec := fun _ : Fin ℓ' => pSpecSumcheckRound L)
+      (fun _ => ⟨by norm_num, rfl⟩) with hzero | ⟨h, hdir⟩
+  · omega
+  · exact hdir
+
+set_option maxHeartbeats 1000000 in
+/-- Seam 2 (batching ⋈ core): batching-core perfect completeness from `NeverFail` alone. -/
+theorem batchingCoreReduction_perfectCompleteness' [IsDomain L] [IsDomain K]
+    (hInit : NeverFail init) :
+    OracleReduction.perfectCompleteness
+      (oracleReduction := batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS)
+      (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+      (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
+      (init := init) (impl := impl) := by
+  have hvsum : 0 < Fin.vsum (fun _ : Fin ℓ' => 2) := by
+    have : (0 : ℕ) < ℓ' := Nat.pos_of_ne_zero (NeZero.ne ℓ')
+    rcases ℓ' with - | k
+    · omega
+    · rw [Fin.vsum_succ]; omega
+  haveI : ∀ j, Fintype ((pSpecSumcheckLoop L ℓ').Challenge j) :=
+    @seqComposeChallenge_fintype ℓ' _ (fun _ : Fin ℓ' => pSpecSumcheckRound L)
+      (fun _ _ => inferInstance)
+  haveI : ∀ j, Inhabited ((pSpecSumcheckLoop L ℓ').Challenge j) :=
+    @seqComposeChallenge_inhabited ℓ' _ (fun _ : Fin ℓ' => pSpecSumcheckRound L)
+      (fun _ _ => inferInstance)
+  haveI := appendCombinedOracle_fintype ([]ₒ : OracleSpec PEmpty)
+    (pSpecBatching κ L K P) (pSpecCoreInteraction L ℓ')
+  haveI := appendCombinedOracle_inhabited ([]ₒ : OracleSpec PEmpty)
+    (pSpecBatching κ L K P) (pSpecCoreInteraction L ℓ')
+  have hBatching := batchingReduction_perfectCompleteness
+    (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+    (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl)
+    (batchingReduction_perfectCompleteness_proved κ L K P ℓ ℓ' h_l
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl) hInit)
+  have hCore := coreInteractionOracleReduction_perfectCompleteness' κ L K P ℓ ℓ' h_l mlIOPCS
+    (init := init) (impl := impl) hInit
+  have H := append_perfectCompleteness_keystone (init := init) (impl := impl)
+    (R₁ := BatchingPhase.batchingOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+    (R₂ := coreInteractionOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+    hBatching hCore (by omega)
+    (by
+      rw [show (⟨2, by omega⟩ : Fin (2 + (Fin.vsum (fun _ : Fin ℓ' => 2) + 1)))
+          = Fin.natAdd 2 (⟨0, by omega⟩ : Fin (Fin.vsum (fun _ : Fin ℓ' => 2) + 1)) from by
+        ext; simp]
+      rw [Prover.append_dir_natAdd]
+      rw [show (⟨0, by omega⟩ : Fin (Fin.vsum (fun _ : Fin ℓ' => 2) + 1))
+          = Fin.castLE (by omega) (⟨0, hvsum⟩ : Fin (Fin.vsum (fun _ : Fin ℓ' => 2))) from by
+        ext; simp]
+      rw [Prover.append_dir_castLE]
+      exact sumcheckLoop_dir_zero L ℓ' hvsum)
+    (by
+      rw [show (⟨0, by omega⟩ : Fin (Fin.vsum (fun _ : Fin ℓ' => 2) + 1))
+          = Fin.castLE (by omega) (⟨0, hvsum⟩ : Fin (Fin.vsum (fun _ : Fin ℓ' => 2))) from by
+        ext; simp]
+      rw [Prover.append_dir_castLE]
+      exact sumcheckLoop_dir_zero L ℓ' hvsum)
+    hInit
+    (by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])
+  exact H
+
+set_option maxHeartbeats 1000000 in
+/-- **Issue #29 capstone: end-to-end RingSwitching perfect completeness.** Hypotheses reduced to
+`IsDomain` + `NeverFail init` + the abstract MLIOPCS opening's message-seam facts (the opening has
+at least one round, opens with a prover message, and its challenges are finite/inhabited — true of
+every concrete instantiation; the abstract `MLIOPCS` carries no such constraints). Every internal
+residual — per-round, batching, final-sumcheck, loop seqCompose, and the three append seams — is
+discharged by proven theorems (the append keystone + the component perfect completenesses). -/
+theorem fullOracleReduction_perfectCompleteness' [IsDomain L] [IsDomain K]
+    (hInit : NeverFail init)
+    (hMlnPos : 0 < mlIOPCS.numRounds)
+    (hMlnDir : mlIOPCS.pSpec.dir ⟨0, hMlnPos⟩ = .P_to_V) :
+    OracleReduction.perfectCompleteness
+      (oracleReduction := fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS)
+      (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+      (relOut := acceptRejectOracleRel)
+      (init := init) (impl := impl) := by
+  haveI : ∀ j, Fintype ((pSpecSumcheckLoop L ℓ').Challenge j) :=
+    @seqComposeChallenge_fintype ℓ' _ (fun _ : Fin ℓ' => pSpecSumcheckRound L)
+      (fun _ _ => inferInstance)
+  haveI : ∀ j, Inhabited ((pSpecSumcheckLoop L ℓ').Challenge j) :=
+    @seqComposeChallenge_inhabited ℓ' _ (fun _ : Fin ℓ' => pSpecSumcheckRound L)
+      (fun _ _ => inferInstance)
+  haveI : ∀ j, Fintype ((pSpecLargeFieldReduction κ L K P ℓ').Challenge j) :=
+    appendChallenge_fintype (pSpecBatching κ L K P) (pSpecCoreInteraction L ℓ')
+  haveI : ∀ j, Inhabited ((pSpecLargeFieldReduction κ L K P ℓ').Challenge j) :=
+    appendChallenge_inhabited (pSpecBatching κ L K P) (pSpecCoreInteraction L ℓ')
+  haveI : ∀ i : Empty, OracleInterface ((fun _ : Empty => Unit) i) := fun i => i.elim
+  haveI := appendCombinedOracle_fintype ([]ₒ : OracleSpec PEmpty)
+    (pSpecLargeFieldReduction κ L K P ℓ') (mlIOPCS.pSpec)
+  haveI := appendCombinedOracle_inhabited ([]ₒ : OracleSpec PEmpty)
+    (pSpecLargeFieldReduction κ L K P ℓ') (mlIOPCS.pSpec)
+  have hBatchingCore := batchingCoreReduction_perfectCompleteness' κ L K P ℓ ℓ' h_l mlIOPCS
+    (init := init) (impl := impl) hInit
+  -- Ground the opening's completeness first: instantiating the structure field's implicit ∀s
+  -- against the keystone's rel-metavariables is a unification storm; pin everything explicitly.
+  have hOpen : OracleReduction.perfectCompleteness
+      (oracleReduction := mlIOPCS.oracleReduction)
+      (relIn := mlIOPCS.toAbstractOStmtIn.toRelInput)
+      (relOut := acceptRejectOracleRel)
+      (init := init) (impl := impl) := mlIOPCS.perfectCompleteness
+  have H := append_perfectCompleteness_keystone.{0, 1} (init := init) (impl := impl)
+    (R₁ := batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS)
+    (R₂ := mlIOPCS.oracleReduction)
+    (Oₛ₃ := fun i => nomatch i)
+    hBatchingCore hOpen hMlnPos
+    (by
+      rw [show (⟨2 + (Fin.vsum (fun _ : Fin ℓ' => 2) + 1), by omega⟩ :
+            Fin (2 + (Fin.vsum (fun _ : Fin ℓ' => 2) + 1) + mlIOPCS.numRounds))
+          = Fin.natAdd (2 + (Fin.vsum (fun _ : Fin ℓ' => 2) + 1)) (⟨0, hMlnPos⟩ :
+              Fin mlIOPCS.numRounds) from by ext; simp]
+      rw [Prover.append_dir_natAdd]
+      exact hMlnDir)
+    hMlnDir hInit
+    (by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])
+  exact H
+
+end EndToEndCompleteness
+
 end RingSwitching.FullRingSwitching
