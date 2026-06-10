@@ -1577,6 +1577,7 @@ import ArkLib.ToMathlib.HenselMatchingPolySupply
 import ArkLib.ToMathlib.HenselUniqueness
 import ArkLib.ToMathlib.HliftDvd
 import ArkLib.ToMathlib.HvanishSupply
+import ArkLib.ToMathlib.IncidenceBound
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.InterpolantInputSupply
 import ArkLib.ToMathlib.IsSquareNatCast
