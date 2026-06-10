@@ -816,7 +816,8 @@ lemma strictOracleFoldingConsistency_commitStep
   let verifierOStmtOut := OracleVerifier.mkVerifierOStmtOut step.embed step.hEq
     oStmtIn transcript
   let P₀ : L⦃< 2 ^ ℓ⦄[X] :=
-    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => witIn.t.val.eval (bitsOfIndex ω))
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+      (fun ω => witIn.t.val.eval (statementOrderBitsOfIndex ω))
   let f₀ := polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (domainIdx := 0) (P := P₀)
 

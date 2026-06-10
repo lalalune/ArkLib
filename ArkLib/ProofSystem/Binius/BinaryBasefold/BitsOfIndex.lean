@@ -23,6 +23,11 @@ theorem bitsOfIndex_apply {n : ℕ} (k : Fin (2 ^ n)) (j : Fin n) :
     bitsOfIndex (L := L) k j = if Nat.getBit j.val k.val = 1 then 1 else 0 :=
   rfl
 
+/-- Coordinate form of `statementOrderBitsOfIndex`. -/
+theorem statementOrderBitsOfIndex_apply {n : ℕ} (k : Fin (2 ^ n)) (j : Fin n) :
+    statementOrderBitsOfIndex (L := L) k j = bitsOfIndex (L := L) k (Fin.rev j) :=
+  rfl
+
 /-- If the corresponding natural-number bit is `1`, then `bitsOfIndex` returns `1`. -/
 theorem bitsOfIndex_apply_of_getBit_eq_one {n : ℕ}
     (k : Fin (2 ^ n)) (j : Fin n) (h : Nat.getBit j.val k.val = 1) :
@@ -69,7 +74,9 @@ theorem bitsOfIndex_apply_eq_zero_iff {n : ℕ}
     exact bitsOfIndex_apply_of_getBit_ne_one (L := L) k j h
 
 #print axioms bitsOfIndex
+#print axioms statementOrderBitsOfIndex
 #print axioms bitsOfIndex_apply
+#print axioms statementOrderBitsOfIndex_apply
 #print axioms bitsOfIndex_apply_of_getBit_eq_one
 #print axioms bitsOfIndex_apply_of_getBit_ne_one
 #print axioms bitsOfIndex_apply_eq_zero_or_one

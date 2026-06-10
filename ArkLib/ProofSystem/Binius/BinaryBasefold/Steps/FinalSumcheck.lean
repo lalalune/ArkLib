@@ -1351,7 +1351,7 @@ lemma extracted_t_poly_eval_eq_final_constant
   rcases h_final_consistency with ⟨h_oracle_cons, h_final_cons⟩
   let P₀ : L⦃< 2^ℓ⦄[X] :=
     polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
-      (fun ω => tpoly.val.eval (bitsOfIndex ω))
+      (fun ω => tpoly.val.eval (statementOrderBitsOfIndex ω))
   let f₀ : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := (0 : Fin r)) :=
     polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := 0) (P := P₀)
   have h_pair :

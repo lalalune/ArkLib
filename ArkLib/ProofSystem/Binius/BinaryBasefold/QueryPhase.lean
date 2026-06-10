@@ -688,7 +688,7 @@ lemma query_phase_step_preserves_fold
     have h_f_mid_eq_iterated_fold := h_strictOracleFoldingConsistency k_oracle_idx
     conv_lhs => rw [h_f_mid_eq_iterated_fold]
     let P₀: L[X]_(2 ^ ℓ) := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
-      (fun ω => t.eval (bitsOfIndex ω))
+      (fun ω => t.eval (statementOrderBitsOfIndex ω))
     let f₀ := polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := 0) (P := P₀)
     conv_lhs => dsimp only [midIdx]
     conv_lhs => simp only [cast_eq, Fin.val_last]; rw [←fun_eta_expansion]
@@ -1026,7 +1026,7 @@ lemma query_phase_final_fold_eq_constant
     (h_destIdx_le := by simp only; omega) (h_steps_eq_steps' := by
       dsimp only [lastOraclePositionIndex]; omega)]
   let P₀: L[X]_(2 ^ ℓ) := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
-    (fun ω => t.eval (bitsOfIndex ω))
+    (fun ω => t.eval (statementOrderBitsOfIndex ω))
   let f₀ := polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := 0) (P := P₀)
   set destIdx' : Fin r := ⟨(getLastOracleDomainIndex ℓ ϑ (Fin.last ℓ)).val + ϑ, by
     rw [getLastOracleDomainIndex]; simp only; omega⟩ with h_destIdx'

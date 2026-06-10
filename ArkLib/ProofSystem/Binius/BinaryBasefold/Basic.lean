@@ -35,6 +35,14 @@ open Finset AdditiveNTT Polynomial MvPolynomial Nat Matrix
 def bitsOfIndex {L : Type} [Field L] {n : ℕ} (k : Fin (2 ^ n)) : Fin n → L :=
   fun j => if Nat.getBit j.val k.val = 1 then 1 else 0
 
+/-- Binary expansion of an index in statement-variable order.
+
+The fold recursion consumes challenges in chronological order, while structured-sumcheck statements
+store them newest-first. This helper converts a fold-order binary index into the corresponding
+statement-order Boolean evaluation point. -/
+def statementOrderBitsOfIndex {L : Type} [Field L] {n : ℕ} (k : Fin (2 ^ n)) : Fin n → L :=
+  fun j => bitsOfIndex (L := L) k (Fin.rev j)
+
 /-- Statement challenges are stored in the structured-sumcheck order: the newest challenge is at
 index `0`. The folding operators consume challenges in chronological fold order, so this helper
 exposes the fold-order view of a statement challenge vector. -/
@@ -1327,7 +1335,8 @@ before passing it to `iterated_fold`. -/
 def getMidCodewords {i : Fin (ℓ + 1)} (t : L⦃≤ 1⦄[X Fin ℓ]) -- original polynomial t
     (challenges : Fin i → L) : (sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by omega⟩) → L) :=
   let P₀ : L⦃< 2^ℓ⦄[X] :=
-    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval (bitsOfIndex ω))
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+      (fun ω => t.val.eval (statementOrderBitsOfIndex ω))
   let f₀ : (sDomain 𝔽q β h_ℓ_add_R_rate 0) → L := fun x => P₀.val.eval x.val
   iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := 0)
@@ -1361,7 +1370,8 @@ def sumcheckConsistencyProp {k : ℕ} (sumcheckTarget : L) (H : MultiquadraticPo
 def firstOracleWitnessConsistencyProp (t : MultilinearPoly L ℓ)
     (f₀ : sDomain 𝔽q β h_ℓ_add_R_rate 0 → L) : Prop :=
   let P₀ : L⦃< 2 ^ ℓ⦄[X] :=
-    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval (bitsOfIndex ω))
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+      (fun ω => t.val.eval (statementOrderBitsOfIndex ω))
   -- The constraint: P_0 evaluated on S^(0) is close within unique decoding radius to f^(0)
   -- API migration: `BBF_CodeDistance` now lives in `Code.lean` keyed on `𝔽q β (h_ℓ_add_R_rate)`
   -- and a `Fin r` index (no explicit `ℓ 𝓡`).

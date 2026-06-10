@@ -739,7 +739,8 @@ def strictOracleFoldingConsistencyProp (t : MultilinearPoly L ℓ) (i : Fin (ℓ
   -- `polynomialFromNovelCoeffsF₂` evaluated on `S⁽⁰⁾`. This keeps `f₀` definitionally the same as
   -- `getMidCodewords`'s base function and drops the (mid-refactor) CompPoly dependency here.
   let P₀ : L⦃< 2 ^ ℓ⦄[X] :=
-    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval (bitsOfIndex ω))
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+      (fun ω => t.val.eval (statementOrderBitsOfIndex ω))
   let f₀ : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 :=
     fun y => P₀.val.eval y.val
   ∀ (j : Fin (toOutCodewordsCount ℓ ϑ i)),
