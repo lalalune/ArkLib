@@ -661,14 +661,12 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     refine HEq.trans (fun_heq_cast_arg h_domain_succ newOracle) ?_
     refine HEq.trans (heq_of_eq h_transcript_eq.symm) ?_
     symm
-    exact verifier_inr_transport_heq
-      (OStmtIn := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc)
-      (OStmtOut := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ)
-      (embed := (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed)
-      (hTypes := (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq)
-      (idx := j) (msgIdx := ⟨0, rfl⟩) h_embed (transcript.messages ⟨0, rfl⟩)
+    refine (eqRec_heq (φ := fun T : Type => T)
+      (((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j).symm)
+      (h_embed ▸ transcript.messages ⟨0, rfl⟩)).trans ?_
+    rw [eqRec_eq_cast]
+    exact cast_heq _ (transcript.messages ⟨0, rfl⟩)
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
