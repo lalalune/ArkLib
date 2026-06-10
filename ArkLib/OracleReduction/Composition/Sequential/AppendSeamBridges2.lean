@@ -123,8 +123,9 @@ private theorem lift_oc_optionT_coh_right' {α : Type}
 
 /-- **`OptionT`-level lift transitivity through the `pSpec₂` challenge seam.** The `pSpec₂` analogue
 of `OracleReduction.hcoh`: lifting an `OptionT (OracleComp oSpec)` computation directly into the
-*combined* challenge oracle equals first lifting it into `pSpec₂`'s own challenge oracle then across.
-Same `OptionT.ext`/`simulateQ_compose` normalization (the intermediate oracle is arbitrary). -/
+*combined* challenge oracle equals first lifting it into `pSpec₂`'s own challenge oracle, then
+across. Same `OptionT.ext`/`simulateQ_compose` normalization (the intermediate oracle is
+arbitrary). -/
 private theorem hcoh_right' {α : Type} (oa : OptionT (OracleComp oSpec) α) :
     (liftM oa : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α)
     = liftM (liftM oa : OptionT (OracleComp (oSpec + [pSpec₂.Challenge]ₒ)) α) := by
