@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ToMathlib.NewtonTailEntry
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.Algebra.Polynomial.Roots
 
 /-!
 # The cleared Newton filtration (#304, #138 — the elementary `(A.4)` exponent)
@@ -237,8 +238,7 @@ theorem powTop_cleared {t G : ℕ}
         · -- the seed-corner: `p.1 = 0`, recurse on the top coefficient
           have hp10 : p.1 = 0 := by omega
           have hp2eq : p.2 = t + 1 := by omega
-          subst hp10
-          rw [hp2eq]
+          rw [hp10, hp2eq]
           have hterm := (hγ 0 (Nat.zero_le t)).mul ih
           have hexp : (2 * 0 - 1) + 2 * t = 2 * t := by omega
           rw [hexp] at hterm
@@ -279,14 +279,14 @@ theorem gamma_cleared {DZ : ℕ}
         have := Cleared.of_algebraMap (ξ := ξ) v
         simpa [clearedBudget] using this
     | succ t =>
-        set G := clearedBudget QA.natDegree v.natDegree DZ ξ.natDegree t with hG
-        set X := G + 2 * t * ξ.natDegree with hX
-        have hγ : ∀ j ≤ t, Cleared ξ (coeff j (γ QA (𝔞 v))) (2 * j - 1) G :=
+        have hγ : ∀ j ≤ t, Cleared ξ (coeff j (γ QA (𝔞 v))) (2 * j - 1)
+            (clearedBudget QA.natDegree v.natDegree DZ ξ.natDegree t) :=
           fun j hj => (ih j (by omega)).mono
             (clearedBudget_mono QA.natDegree v.natDegree DZ ξ.natDegree hj)
         -- the inner sum clears at `2t` with budget `DZ + d·X + 2t·dξ`
         have hsum : Cleared ξ (coeff (t + 1) (Polynomial.eval (S QA (𝔞 v) t) QA)) (2 * t)
-            (DZ + QA.natDegree * X + 2 * t * ξ.natDegree) := by
+            (DZ + QA.natDegree * (clearedBudget QA.natDegree v.natDegree DZ ξ.natDegree t
+              + 2 * t * ξ.natDegree) + 2 * t * ξ.natDegree) := by
           rw [coeff_eval_eq_sum_range]
           apply Cleared.sum
           intro i hi
@@ -309,13 +309,19 @@ theorem gamma_cleared {DZ : ℕ}
             have hexp : 0 + 2 * t = 2 * t := by omega
             rw [hexp] at hterm
             refine hterm.mono ?_
-            have hiX : i * X ≤ QA.natDegree * X := Nat.mul_le_mul_right _ hile
+            have hiX : i * (clearedBudget QA.natDegree v.natDegree DZ ξ.natDegree t
+                + 2 * t * ξ.natDegree)
+              ≤ QA.natDegree * (clearedBudget QA.natDegree v.natDegree DZ ξ.natDegree t
+                + 2 * t * ξ.natDegree) := Nat.mul_le_mul_right _ hile
             omega
           · -- generic coefficient `p.2 ≤ t`
             have hterm := hcoeffQ.mul (pow_cleared ξ QA v hγ i p.2 hp2)
             have hexp : 0 + (2 * p.2 - 1) ≤ 2 * t := by omega
             refine hterm.padTo hexp ?_
-            have hiX : i * X ≤ QA.natDegree * X := Nat.mul_le_mul_right _ hile
+            have hiX : i * (clearedBudget QA.natDegree v.natDegree DZ ξ.natDegree t
+                + 2 * t * ξ.natDegree)
+              ≤ QA.natDegree * (clearedBudget QA.natDegree v.natDegree DZ ξ.natDegree t
+                + 2 * t * ξ.natDegree) := Nat.mul_le_mul_right _ hile
             have hpadcost : (2 * t - (0 + (2 * p.2 - 1))) ≤ 2 * t := by omega
             have hcost : (2 * t - (0 + (2 * p.2 - 1))) * ξ.natDegree
                 ≤ 2 * t * ξ.natDegree := Nat.mul_le_mul_right _ hpadcost
@@ -323,14 +329,11 @@ theorem gamma_cleared {DZ : ℕ}
         -- the recursion step spends the unit
         have hrec := coeff_γ_succ_eq QA (𝔞 v) t
         rw [hresp] at hrec
-        rw [hrec]
+        rw [hrec, neg_mul]
         have hfinal := (hsum.inverse_xi_mul).neg
         have he : 2 * t + 1 = 2 * (t + 1) - 1 := by omega
         rw [he] at hfinal
         refine hfinal.mono ?_
-        rw [hG] at *
-        show DZ + QA.natDegree * X + 2 * t * ξ.natDegree
-          ≤ clearedBudget QA.natDegree v.natDegree DZ ξ.natDegree (t + 1)
         rw [clearedBudget]
         exact le_max_right _ _
 
@@ -361,6 +364,7 @@ theorem coeff_gamma_eq_zero_of_eval_vanish {DZ : ℕ}
       𝔞 N = (𝔞 ξ) ^ (2 * t - 1) * coeff t (γ QA (𝔞 v)) →
       ∀ z ∈ M, N.eval z = 0) :
     coeff t (γ QA (𝔞 v)) = 0 := by
+  classical
   obtain ⟨N, hdeg, hmap, hexit⟩ := exists_numerator ξ QA v hQdeg hresp t
   refine hexit ?_
   by_contra hN0
@@ -368,7 +372,7 @@ theorem coeff_gamma_eq_zero_of_eval_vanish {DZ : ℕ}
     have hsub : M ⊆ N.roots.toFinset := by
       intro z hz
       rw [Multiset.mem_toFinset, Polynomial.mem_roots hN0]
-      exact ⟨hN0, hvan N hdeg hmap z hz⟩
+      exact hvan N hdeg hmap z hz
     calc M.card ≤ N.roots.toFinset.card := Finset.card_le_card hsub
       _ ≤ Multiset.card N.roots := N.roots.toFinset_card_le
       _ ≤ N.natDegree := N.card_roots'
