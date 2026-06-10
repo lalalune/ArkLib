@@ -4272,3 +4272,22 @@ O93 closed with exactly two named residuals: the lift lemma + the strong inducti
 * Teeth at ℂ, n = 2²·3: converse PRODUCES 1 + ζ₁₂⁶ = 0 from a decide-checked one-packet decomposition; forward converts hypothetical vanishing of {0} into a card contradiction (packets need ≥ 2 elements inside a singleton) — the iff discriminates.
 
 **Where the open core moves:** the three-step de Bruijn ledger (O73 → O87 → O90 → O92 → O93 → here) is CLOSED at two primes — vanishing 0/1 sums of p^a·q^b-th roots of unity are completely classified in-tree, the first formalization of this theorem in any proof assistant (per the O91 search). What remains beyond it is genuinely new mathematics, not assembly: (i) THREE-plus prime moduli (de Bruijn's conjecture territory — false in general by Lam–Leung; the honest target is the Lam–Leung ℕ-span theorem |S| ∈ ℕp + ℕq + …, whose two-prime case is now a corollary of this brick via `IsPacket.card_eq`); (ii) the t > 1 window law (O70) at composite n, which no literature covers; (iii) wiring this classification into the M31-domain capstone consumers (the original #232 motivation: Mersenne-31 has n = 2^a·3^b-style smooth subgroups — the two-prime case is exactly the M31 smooth-subgroup regime).
+
+### O95 — the per-locus count is exact: q^(d−|Z|) (nubs, 2026-06-10)
+
+`ArkLib/Data/CodingTheory/ProximityGap/SliceLocusCount.lean` (axiom-clean): the
+counting companion to O94's structure theorem.
+
+- `polysDegLT`/`card_polysDegLT`: the degree-`<d` space as a concrete Finset of size
+  `q^d` (coefficient-tuple enumeration).
+- `card_polysDegLT_vanishing`: **polynomials of degree `<d` vanishing on a prescribed
+  `|Z|`-point locus number EXACTLY `q^(d−|Z|)`** — `(loc Z * ·)` is a bijection from
+  the space one locus-size down; `loc_dvd_iff` gives surjectivity, monicity injectivity.
+
+The Conjecture-D skeleton is now numerically explicit: per locus, slice pairs of a
+degree-`<k` error range over exactly `q^(k−2|Z|)` candidates; with O94's
+`|Z| ≥ |D²| − w` the per-locus budget at list-relevant weight is
+`q^(k − 2(n/2 − w)) = q^(k − n + 2w)`. The surviving open content, sharply: the
+union-over-loci/incidence structure versus the weight filter (how many loci, how much
+overlap, what fraction of each per-locus space meets weight ≤ w). Queued capstone: the
+f-level product count via `recompose_slices`.
