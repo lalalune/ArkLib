@@ -100,8 +100,26 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     -- zero-step fold is the definitional transport of `getMidCodewords i.castSucc`.
     funext z
     rw [iterated_fold_zero_steps]
-    rw [hinit]
-    rfl
+    let P₀ : L⦃< 2^ℓ⦄[X] :=
+      polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
+    let f₀ : (sDomain 𝔽q β h_ℓ_add_R_rate 0) → L := fun x => P₀.val.eval x.val
+    change
+      iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := 0) (steps := i.val) (destIdx := ⟨i.val, by omega⟩)
+          (h_destIdx := by simp only [Fin.val_zero, Nat.zero_add])
+          (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
+          (f := f₀) (r_challenges := Fin.init (Fin.cons r_i' challenges ∘ Fin.rev)) z =
+        iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := 0) (steps := i.val) (destIdx := ⟨i.val, by omega⟩)
+          (h_destIdx := by simp only [Fin.val_zero, Nat.zero_add])
+          (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
+          (f := f₀) (r_challenges := challenges ∘ Fin.rev) z
+    exact congrArg (fun rc =>
+      iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := 0) (steps := i.val) (destIdx := ⟨i.val, by omega⟩)
+        (h_destIdx := by simp only [Fin.val_zero, Nat.zero_add])
+        (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
+        (f := f₀) (r_challenges := rc) z) hinit
   · -- Challenge: `snoc challenges r_i' (last _) = r_i'` (the right side beta-reduces).
     exact hlast
 
