@@ -661,22 +661,12 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     refine HEq.trans (fun_heq_cast_arg h_domain_succ newOracle) ?_
     refine HEq.trans (heq_of_eq h_transcript_eq.symm) ?_
     symm
-    let stepc := commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR
-    let msgIdx : (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).MessageIdx :=
-      ⟨0, rfl⟩
-    have h_transport :
-        HEq ((stepc.hEq j ▸ h_embed ▸ transcript.messages msgIdx :
-          OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j))
-          (transcript.messages msgIdx) := by
-      exact @verifier_inr_transport_heq 1
-        (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
-        (Fin (toOutCodewordsCount ℓ ϑ i.castSucc))
-        (Fin (toOutCodewordsCount ℓ ϑ i.succ))
-        (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc)
-        (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ)
-        stepc.embed stepc.hEq j msgIdx h_embed (transcript.messages msgIdx)
-    exact h_transport
+    refine (eqRec_heq (φ := fun T : Type => T)
+      (((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j).symm)
+      (h_embed ▸ transcript.messages ⟨0, rfl⟩)).trans ?_
+    rw [eqRec_eq_cast]
+    apply cast_heq
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
