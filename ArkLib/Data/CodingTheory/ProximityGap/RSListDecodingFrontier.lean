@@ -35,17 +35,21 @@ namespace ProximityGap
 open scoped NNReal
 
 /-- **A positive rate below `1` is strictly below its own square root.**  For `r ∈ (0,1)`,
-`r = r·r·(1/r) `… concretely `r² = r·r < r·1 = r`, so by `NNReal.lt_sqrt`, `r < √r`.  This is the
+`r = r·r·(1/r) `… concretely `r² = r·r < r·1 = r`, so by monotonicity of `NNReal.sqrt`,
+`r < √r`.  This is the
 arithmetic heart of "Johnson radius `<` capacity": with `r = ρ` the code rate, `√ρ` is the Johnson
 parameter and `ρ` the capacity parameter. -/
 theorem self_lt_sqrt_of_pos_of_lt_one {r : ℝ≥0} (hpos : 0 < r) (hlt : r < 1) :
     r < NNReal.sqrt r := by
-  rw [NNReal.lt_sqrt]
-  calc r ^ 2 = r * r := sq r
-    _ < r * 1 := by exact mul_lt_mul_of_pos_left hlt hpos
-    _ = r := mul_one r
+  have hsqr : r ^ 2 < r := by
+    calc r ^ 2 = r * r := by rw [pow_two]
+      _ < r * 1 := by exact mul_lt_mul_of_pos_left hlt hpos
+      _ = r := mul_one r
+  have hsqrt : NNReal.sqrt (r ^ 2) < NNReal.sqrt r :=
+    (NNReal.sqrt_lt_sqrt).2 hsqr
+  simpa [NNReal.sqrt_sq] using hsqrt
 
-variable {ι : Type} [Fintype ι] [Nonempty ι]
+variable {ι : Type} [Fintype ι]
 variable {F : Type} [Field F]
 
 /-- **The Johnson radius is strictly below the list-decoding capacity radius.**
@@ -65,8 +69,7 @@ theorem johnson_radius_lt_capacity (deg : ℕ) (domain : ι ↪ F)
     self_lt_sqrt_of_pos_of_lt_one hpos hlt
   have hcast : ((LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) : ℝ)
       < (ReedSolomon.sqrtRate deg domain : ℝ) := by exact_mod_cast key
-  push_cast at hcast ⊢
-  linarith
+  exact sub_lt_sub_left hcast 1
 
 end ProximityGap
 
