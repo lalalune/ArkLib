@@ -1040,6 +1040,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOr
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracleChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKeystone
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallengeBody
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeEmpty
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDet
@@ -1077,6 +1078,7 @@ import ArkLib.OracleReduction.Composition.Sequential.SeqComposeFailingDet
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeOracleCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposePerfectCompletenessThreaded
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposeRbrKnowledgeProof
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.ContinueFromToSupport
 import ArkLib.OracleReduction.Equiv
@@ -1269,6 +1271,7 @@ import ArkLib.ProofSystem.Logup.Security.SumcheckLensProjSound
 import ArkLib.ProofSystem.Logup.Security.SumcheckRejectionCore
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundness
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessLift
+import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessPointwise
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessProjClosed
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessWired
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckBridge
@@ -1293,6 +1296,7 @@ import ArkLib.ProofSystem.Spartan.ComposedCompleteness
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessFinal
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessLeaves
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessProven
+import ArkLib.ProofSystem.Spartan.ComposedCompletenessTwoLeaves
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessWithClaimFinal
 import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.FinalCheckLeafComplete
