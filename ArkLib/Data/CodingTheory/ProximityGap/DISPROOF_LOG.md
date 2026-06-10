@@ -3947,3 +3947,16 @@ axiom-clean, 0 sorry — the file's two 'sorry' grep hits are docstring prose):
 The O70-verified law now has its formal skeleton; what separates conditional from
 unconditional is finishing O71's double-slice into the full packet decomposition (finite
 bookkeeping on the doubly-sliced pattern).
+
+### O74 — the COMPLETE ℚ-kernel at 2-power level: vanishing ⟺ antipodal symmetry
+
+`LamLeungTwoPow.vanishing_iff_antipodal_coeffs` + `nonvanishing_of_unpaired`
+(axiom-clean, 0 sorry; the killed branch-count lane's task trail, taken over and proven
+by the main loop): a ℚ-coefficient combination of 2^(m+1)-th roots vanishes IFF its
+coefficient function is antipodally symmetric (c(e) = c(e + 2^m)) — necessity = the O68
+slice theorem at p = 2, sufficiency = ζ^{2^m} = −1 pairing. Corollary: any combination
+with an unpaired support point is NONZERO — the sparse-nonvanishing rigidity that forces
+branch data in the descent tree (no asymmetric configuration silently vanishes; the
+ℚ-relations available to a branch are EXACTLY the antipodal symmetrizations). This is the
+complete linear-algebra description of the 2-power relation module — the branch-entropy
+accounting now has rigid leaf data.
