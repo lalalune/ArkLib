@@ -122,6 +122,59 @@ theorem rbrKnowledgeSoundness_indicator (verifier : Verifier oSpec StmtIn StmtOu
     · rw [if_neg (by simp; omega)] at hne
       exact hne trivial
 
+/-- **Bounded-flip RBR knowledge soundness for the threshold state function**: like
+`rbrKnowledgeSoundness_indicator`, but the budget at the threshold challenge round `c` is an
+explicit hypothesis `hFlip` bounding the flip-event probability (the event that the partial
+transcript's predicate is false before `c` yet true after the challenge — for the WHIR checked
+verifier this is the Schwartz–Zippel salvage event, bounded by `maxLen/|F|` via
+`probEvent_salvage_le`). All other challenge rounds keep budget `0`. -/
+theorem rbrKnowledgeSoundness_of_flipBound (verifier : Verifier oSpec StmtIn StmtOut pSpec)
+    (relIn : Set (StmtIn × Unit)) (relOut : Set (StmtOut × WitOut))
+    (pred : (m : Fin (n + 1)) → StmtIn → Transcript m pSpec → Prop)
+    (c : pSpec.ChallengeIdx) (ε : ℝ≥0)
+    (hEmpty : ∀ stmtIn (w : Unit), (stmtIn, w) ∈ relIn ↔ pred 0 stmtIn default)
+    (hConcat : ∀ (m : Fin n), m.val ≤ c.1.val →
+      ∀ stmtIn (tr : Transcript m.castSucc pSpec) (msg : pSpec.Type m),
+        pred m.succ stmtIn (tr.concat msg) → pred m.castSucc stmtIn tr)
+    (hFlip : ∀ stmtIn witIn
+      (prover : Prover oSpec StmtIn Unit StmtOut WitOut pSpec),
+      Pr[fun x : pSpec.Transcript c.1.castSucc × pSpec.Challenge c ×
+          (oSpec + [pSpec.Challenge]ₒ).QueryLog =>
+          ¬ pred c.1.castSucc stmtIn x.1
+        | do
+          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+            (do
+              let ⟨⟨transcript, _⟩, proveQueryLog⟩ ←
+                prover.runWithLogToRound c.1.castSucc stmtIn witIn
+              let challenge ← liftComp (pSpec.getChallenge c) _
+              return (transcript, challenge, proveQueryLog))).run' (← init)] ≤ (ε : ℝ≥0∞)) :
+    verifier.rbrKnowledgeSoundness init impl relIn relOut
+      (fun i => if i = c then ε else 0) := by
+  classical
+  refine ⟨fun _ => Unit, unitExtractor,
+    thresholdKSF init impl verifier relIn relOut pred c hEmpty hConcat, ?_⟩
+  intro stmtIn witIn prover i
+  by_cases hic : i = c
+  · subst hic
+    simp only [if_pos rfl]
+    refine le_trans (probEvent_mono ?_) (hFlip stmtIn witIn prover)
+    rintro ⟨tr, ch, log⟩ _ ⟨w, hne, _⟩
+    simp only [thresholdKSF] at hne
+    rw [if_pos (by simp)] at hne
+    exact hne
+  · simp only [if_neg hic, ENNReal.coe_zero, nonpos_iff_eq_zero]
+    rw [probEvent_eq_zero_iff]
+    rintro ⟨tr, ch, log⟩ _ ⟨w, hne, hsucc⟩
+    simp only [thresholdKSF] at hne hsucc
+    rcases lt_trichotomy i.1.val c.1.val with hlt | heq | hgt
+    · refine hne ?_
+      rw [if_pos (by simpa using hlt.le)]
+      rw [if_pos (by simp; omega)] at hsucc
+      exact hConcat i.1 hlt.le stmtIn tr ch hsucc
+    · exact hic (Subtype.ext (Fin.ext heq))
+    · rw [if_neg (by simp; omega)] at hne
+      exact hne trivial
+
 end ThresholdKSF
 
 /-! ## WHIR instantiation -/
@@ -437,6 +490,7 @@ end
 
 #print axioms ThresholdKSF.thresholdKSF
 #print axioms ThresholdKSF.rbrKnowledgeSoundness_indicator
+#print axioms ThresholdKSF.rbrKnowledgeSoundness_of_flipBound
 #print axioms Whir302RBR.length_mainFoldedOracleMessageIdx
 #print axioms Whir302RBR.transcriptFoldedOracle_concat
 #print axioms Whir302RBR.whirFoldedClosePred_zero
