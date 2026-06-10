@@ -37,7 +37,6 @@ import ArkLib.Data.Misc.Basic
 set_option maxHeartbeats 400000
 set_option linter.unusedDecidableInType false
 set_option linter.unusedFintypeInType false
-set_option linter.unusedInstances false
 namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
@@ -404,10 +403,14 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
         dsimp only [Fin.val_succ, proverWitOut, proverOutput, step,
           foldStepLogic, verifierStmtOut]
         constructor
-        · conv_lhs =>
-            rw [h_H_In]
-            rw [←Sumcheck.Structured.projectToMidSumcheckPoly_succ]
-          rfl
+        · rw [h_H_In]
+          apply Subtype.ext
+          dsimp only [projectToNextSumcheckPoly]
+          simpa only [Fin.val_castSucc] using
+            (RingSwitching.fixFirstVariablesOfMQP_projectToMid_succ (L := L) (ℓ := ℓ)
+              (t := witIn.t) (m := mp.multpoly stmtIn.ctx) (i := i)
+              (challenges := stmtIn.challenges)
+              (r' := transcript.challenges ⟨⟨1, by omega⟩, by rfl⟩))
         · conv_lhs =>
             rw [h_f_In]
             rw [←getMidCodewords_succ]
@@ -415,11 +418,16 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
       · -- Component 2: strictOracleFoldingConsistencyProp
         have h_oracleIdx_eq : (OracleFrontierIndex.mkFromStmtIdx i.castSucc).val
           = (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i).val := by rfl
-        have h_challenges_eq : Fin.init verifierStmtOut.challenges = stmtIn.challenges := by
+        have h_challenges_eq :
+            Fin.rtake (m := (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i).val)
+              (v := verifierStmtOut.challenges)
+              (h := by simp only [Fin.val_fin_le, OracleFrontierIndex.val_le_i]) =
+                stmtIn.challenges := by
+          ext j
           dsimp only [foldStepLogic, Fin.isValue, MessageIdx, Fin.is_lt, Fin.eta,
             Lean.Elab.WF.paramLet, Matrix.cons_val_zero, Fin.zero_eta, Matrix.cons_val_one,
             Fin.mk_one, Fin.val_succ, verifierStmtOut, step]
-          simp only [Fin.isValue, Fin.init_snoc]
+          simp [Fin.rtake, Fin.natAdd, Fin.cons, Fin.val_castSucc]
         rw! (castMode := .all) [h_oracleIdx_eq] at h_oracle_folding_In
         simp at h_oracle_folding_In ⊢
         rw [h_challenges_eq]
@@ -589,7 +597,9 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
         commitStepLogic_embedFn, hj, dif_pos]
     rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
     simp only [hj, dif_pos]
-    simpa [eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
+    simpa [commitStepLogic, commitStepHEq, commitStepLogic_embed,
+      commitStepLogic_embedFn, Function.Embedding.coeFn_mk, hj,
+      eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
   · -- New oracle case: embed j = Sum.inr 0
     have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j = Sum.inr ⟨0, rfl⟩ := by
@@ -603,7 +613,9 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     have h_msg0: transcript.messages ⟨0, rfl⟩ = transcript 0 := by rfl
     rw [h_msg0]
     -- ⊢ transcript 0 (cast ⋯ x) = cast ⋯ (transcript 0) x
-    simpa [eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast, cast_fun_eq_fun_cast_arg]
+    simpa [commitStepLogic, commitStepHEq, commitStepLogic_embed,
+      commitStepLogic_embedFn, Function.Embedding.coeFn_mk, hj,
+      eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast, cast_fun_eq_fun_cast_arg]
     have h_j_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
       have h_lt := j.isLt
       conv_rhs at h_lt => rw [h_count_succ]
@@ -648,7 +660,7 @@ lemma commitStep_j_is_last (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
   conv_rhs at hj => rw [h_count_succ]
   omega
 
-omit [CharP L 2] [SampleableType L] in
+omit [SampleableType L] in
 lemma strictOracleFoldingConsistency_commitStep
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (stmtIn : Statement (L := L) Context i.succ)

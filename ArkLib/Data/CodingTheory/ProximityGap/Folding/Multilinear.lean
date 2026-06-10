@@ -27,7 +27,7 @@ open MvPolynomial LinearMvExtension
 
 variable {F : Type} [Field F] [DecidableEq F]
 variable {n : ℕ}
-variable {domain : ReedSolomon.SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))}
+variable {domain : SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))}
 variable {k : ℕ} {x : F}
 
 lemma foldWord_eq_evalOnPoints_powAlgHom [NeZero n] {α : F}

@@ -1070,26 +1070,99 @@ lemma distFromCode_fin1_eq [DecidableEq (Fin 1 → A)] (u : ι → Fin 1 → A) 
 
 end Fin1Interleaving
 
-/-- **Residual: single-step fold equals multilinearCombine on the corresponding
-preTensorCombine stack.** The direct proof is a specialization of
-`iterated_fold_eq_multilinearCombine_preTensorCombine`, but the current single-step boundary
-requires fragile `Fin ℓ` coercions. -/
-class FoldEqMultilinearPreTensorStep1Residual : Prop where
-  holds : ∀ (i : Fin ℓ) {destIdx : Fin r}
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
+/-- One fold is affine in its challenge between the two binary challenge rows. -/
+lemma fold_affine_binary_rows
+    (i : Fin ℓ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-    (r_new : L),
-    let U := preTensorCombine_WordStack 𝔽q β i 1
-      (destIdx := destIdx) (h_destIdx := h_destIdx)
-      (h_destIdx_le := h_destIdx_le) f_i
+    (r_new : L) :
     fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
-      (destIdx := destIdx) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i r_new
-    = multilinearCombine (F := L) U (fun (_ : Fin 1) => r_new)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) f_i r_new =
+    affineLineEvaluation (F := L)
+      (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+        (destIdx := destIdx) (h_destIdx := h_destIdx)
+        (h_destIdx_le := h_destIdx_le) f_i 0)
+      (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+        (destIdx := destIdx) (h_destIdx := h_destIdx)
+        (h_destIdx_le := h_destIdx_le) f_i 1)
+      r_new := by
+  have h_destIdx_eq :
+      destIdx =
+        (⟨i.val + 1, by
+          have hle : i.val + 1 ≤ ℓ := Nat.succ_le_of_lt i.isLt
+          have hlt : i.val + 1 < ℓ + 𝓡 :=
+            Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
+          exact Nat.lt_trans hlt h_ℓ_add_R_rate⟩ : Fin r) :=
+    Fin.eq_of_val_eq h_destIdx
+  subst h_destIdx_eq
+  funext y
+  unfold affineLineEvaluation
+  simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+  unfold fold
+  simp only [cast_eq]
+  unfold fold_legacy
+  simp only
+  ring_nf
 
-variable [FoldEqMultilinearPreTensorStep1Residual (r := r) (L := L) (𝔽q := 𝔽q)
-  (β := β) (ℓ := ℓ) (𝓡 := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+omit [SampleableType L] in
+/-- The binary row `0` of one-step `preTensorCombine` is the fold at challenge `0`. -/
+lemma iterated_fold_one_bits_zero
+    (i : Fin ℓ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ 1
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)
+      (r_challenges := bitsOfIndex (L := L) (0 : Fin (2 ^ 1))) =
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) f_i 0 := by
+  have hfirst := iterated_fold_first (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := ⟨i, by omega⟩) (midIdx := destIdx) (destIdx := destIdx) (steps := 0)
+    (h_midIdx := h_destIdx) (h_destIdx := by simpa using h_destIdx)
+    (h_destIdx_le := h_destIdx_le) (f := f_i)
+    (r_challenges := bitsOfIndex (L := L) (0 : Fin (2 ^ 1)))
+  rw [hfirst]
+  funext y
+  rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := destIdx) (h_destIdx := rfl) (h_destIdx_le := h_destIdx_le)]
+  have hbit : bitsOfIndex (L := L) (0 : Fin (2 ^ 1)) (0 : Fin 1) = 0 := by
+    rw [bitsOfIndex_apply_of_getBit_ne_one]
+    decide
+  rw [hbit]
+  simp only [eq_mp_eq_cast, cast_eq]
 
-/-- Single-step fold equals multilinearCombine on the corresponding preTensorCombine stack. -/
+omit [SampleableType L] in
+/-- The binary row `1` of one-step `preTensorCombine` is the fold at challenge `1`. -/
+lemma iterated_fold_one_bits_one
+    (i : Fin ℓ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ 1
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)
+      (r_challenges := bitsOfIndex (L := L) (1 : Fin (2 ^ 1))) =
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) f_i 1 := by
+  have hfirst := iterated_fold_first (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := ⟨i, by omega⟩) (midIdx := destIdx) (destIdx := destIdx) (steps := 0)
+    (h_midIdx := h_destIdx) (h_destIdx := by simpa using h_destIdx)
+    (h_destIdx_le := h_destIdx_le) (f := f_i)
+    (r_challenges := bitsOfIndex (L := L) (1 : Fin (2 ^ 1)))
+  rw [hfirst]
+  funext y
+  rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := destIdx) (h_destIdx := rfl) (h_destIdx_le := h_destIdx_le)]
+  have hbit : bitsOfIndex (L := L) (1 : Fin (2 ^ 1)) (0 : Fin 1) = 1 := by
+    rw [bitsOfIndex_apply_of_getBit_eq_one]
+    decide
+  rw [hbit]
+  simp only [eq_mp_eq_cast, cast_eq]
+
+/-- Single-step fold equals `multilinearCombine` on the corresponding `preTensorCombine` stack. -/
 lemma fold_eq_multilinearCombine_preTensorCombine_step1
     (i : Fin ℓ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
@@ -1099,10 +1172,32 @@ lemma fold_eq_multilinearCombine_preTensorCombine_step1
       (destIdx := destIdx) (h_destIdx := h_destIdx)
       (h_destIdx_le := h_destIdx_le) f_i
     fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
-      (destIdx := destIdx) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i r_new
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f_i r_new
     = multilinearCombine (F := L) U (fun (_ : Fin 1) => r_new) := by
-  exact FoldEqMultilinearPreTensorStep1Residual.holds (𝔽q := 𝔽q) (β := β)
-    i h_destIdx h_destIdx_le f_i r_new
+  rw [fold_affine_binary_rows (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+    (f_i := f_i) (r_new := r_new)]
+  funext y
+  unfold affineLineEvaluation multilinearCombine preTensorCombine_WordStack
+  simp only [Nat.reducePow, Fin.sum_univ_two, Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+  have hweight0 :
+      multilinearWeight (F := L) (fun (_ : Fin 1) => r_new) (0 : Fin 2) = 1 - r_new := by
+    unfold multilinearWeight
+    rw [Fin.prod_univ_one]
+    simp [Nat.testBit]
+  have hweight1 :
+      multilinearWeight (F := L) (fun (_ : Fin 1) => r_new) (1 : Fin 2) = r_new := by
+    unfold multilinearWeight
+    rw [Fin.prod_univ_one]
+    simp [Nat.testBit]
+  rw [hweight0, hweight1]
+  rw [congrFun (iterated_fold_one_bits_zero (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i)) y]
+  rw [congrFun (iterated_fold_one_bits_one (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i)) y]
 
 /-- **Residual: fiberwise closeness lifts to interleaved-word proximity (Lemma 4.22).**
 
@@ -1406,7 +1501,6 @@ lemma prop_4_21_2_incremental_bad_event_probability
 #print axioms prop_4_21_2_case_1_fiberwise_close_incremental
 #print axioms FoldPreTensorCombineAffineSplitResidual
 #print axioms fold_preTensorCombine_eq_affineLineEvaluation_split
-#print axioms FoldEqMultilinearPreTensorStep1Residual
 #print axioms fold_eq_multilinearCombine_preTensorCombine_step1
 #print axioms PreTensorCombineJointProximityResidual
 #print axioms preTensorCombine_jointProximityNat_of_fiberwiseClose

@@ -184,6 +184,28 @@ theorem not_inv_getElem?_of_not_E
     False :=
   not_hasInvEntry_of_not_E tr h ⟨sOut, sIn, mem_of_getElem?' hentry⟩
 
+/-- Off `E`, a trace slot known to be either the forward or inverse entry for one sponge step
+must be the forward entry. This is the local eliminator for `firstOccurrenceOfEither`. -/
+theorem forward_getElem?_of_not_E_of_perm_or_inv
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    {i : ℕ} {sIn sOut : CanonicalSpongeState U}
+    (hentry :
+      tr[i]? =
+        some (⟨Sum.inr (Sum.inl sIn), sOut⟩ :
+          (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+            (duplexSpongeChallengeOracle StmtIn U).Range t) ∨
+      tr[i]? =
+        some (⟨Sum.inr (Sum.inr sOut), sIn⟩ :
+          (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+            (duplexSpongeChallengeOracle StmtIn U).Range t)) :
+    tr[i]? =
+      some (⟨Sum.inr (Sum.inl sIn), sOut⟩ :
+        (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+          (duplexSpongeChallengeOracle StmtIn U).Range t) := by
+  rcases hentry with hforward | hinv
+  · exact hforward
+  · exact False.elim (not_inv_getElem?_of_not_E tr h hinv)
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -199,4 +221,5 @@ end DuplexSpongeFS.Sponge316
 
 #print axioms DuplexSpongeFS.Sponge316.hasInvEntry_implies_E
 #print axioms DuplexSpongeFS.Sponge316.not_inv_getElem?_of_not_E
+#print axioms DuplexSpongeFS.Sponge316.forward_getElem?_of_not_E_of_perm_or_inv
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest
