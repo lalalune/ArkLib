@@ -57,7 +57,7 @@ theorem composedCompletenessResidual_of_two_leaves
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
     composedCompletenessResidual R pp oSpec (composedPIOP_Rc pp oSpec) init impl :=
-  composedCompletenessResidual_of_five_leaves.{0} pp oSpec hm hn h₂
+  composedCompletenessResidual_of_five_leaves.{0, 0, 0} pp oSpec hm hn h₂
     (sendEvalClaim_perfectCompleteness R pp oSpec init impl
       (firstSumcheckRelOutBF (R := R) pp))
     (linearCombination_perfectCompleteness_sendEvalClaimBF pp oSpec)
