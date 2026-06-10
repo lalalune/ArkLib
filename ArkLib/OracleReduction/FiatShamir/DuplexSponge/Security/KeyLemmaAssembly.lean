@@ -108,11 +108,12 @@ theorem keyLemmaEager_of_hybSteps
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
     (Salt : Type) [SaltCodec U δ Salt]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (h01 : Hyb01StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h12 : Hyb12StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h23 : Hyb23StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
       (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h34 : Hyb34StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
@@ -141,11 +142,12 @@ theorem keyLemmaEager_of_steps_strictSplit
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
     (Salt : Type) [SaltCodec U δ Salt]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (h01 : Hyb01StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h12 : Hyb12StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h23 : Hyb23StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
       (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (εA εB : ℕ → ℕ → ℕ → ℕ → ℝ)

@@ -475,7 +475,7 @@ noncomputable def Hyb3 [SampleableType U]
   𝒟[hybGameEager (T_H := T_H) (T_P := T_P) δ
       (OracleDistribution.uniform (fsChallengeOracle (StmtIn × Salt) pSpec))
       (d2sCodecBridgeImplMemo (StmtIn := StmtIn) (δ := δ) (Salt := Salt))
-      (hyb3Line4SaltErase (δ := δ) Salt) oImpl V P]
+      (hyb3Line4SaltErase Salt) oImpl V P]
 
 /-- CO25 §5.8 `Hyb₄`: the eager basic-FS game with `f ← 𝒟_IP` (uniform, the same distribution
 as `Hyb₃`) against a basic-FS prover `P'`. **Definitionally** the left-hand side of
@@ -710,6 +710,7 @@ def Hyb01StepResidual [SampleableType U]
     [SampleableType (StmtIn → Vector U SpongeSize.C)]
     [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
+    (Salt : Type) [SaltCodec U δ Salt]
     [SampleableType (OracleFamily (gSpec (U := U) StmtIn pSpec δ))]
     (oImpl : QueryImpl oSpec ProbComp) : Prop :=
   ∀ (V : Verifier oSpec StmtIn StmtOut pSpec)
@@ -720,7 +721,7 @@ def Hyb01StepResidual [SampleableType U]
     IsQueryBoundP P (fun j => dsQueryFlavor j = .hash) tₕ →
     IsQueryBoundP P (fun j => dsQueryFlavor j = .perm) tₚ →
     IsQueryBoundP P (fun j => dsQueryFlavor j = .permInv) tₚᵢ →
-    SPMF.tvDist (Hyb0 T_H T_P δ oImpl V P) (Hyb1 T_H T_P δ oImpl V P)
+    SPMF.tvDist (Hyb0 T_H T_P δ oImpl V P) (Hyb1 T_H T_P δ Salt oImpl V P)
       ≤ claim5_21Bound U tₕ tₚ tₚᵢ L
 
 /-- CO25 Claim 5.22 residual (Eq. 53) — `Δ(Hyb₁, Hyb₂) ≤ θ★ · maxᵢ ε_cdc,i + Σᵢ ε_cdc,i`:
@@ -730,6 +731,7 @@ the verifier side. Open: requires `Codec.decode_isBiased` pushed through the sim
 def Hyb12StepResidual [SampleableType U]
     [∀ i, Fintype (pSpec.Challenge i)] [∀ i, DecidableEq (pSpec.Challenge i)]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
+    (Salt : Type) [SaltCodec U δ Salt]
     [SampleableType (OracleFamily (gSpec (U := U) StmtIn pSpec δ))]
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
     (oImpl : QueryImpl oSpec ProbComp) : Prop :=
@@ -741,7 +743,7 @@ def Hyb12StepResidual [SampleableType U]
     IsQueryBoundP P (fun j => dsQueryFlavor j = .hash) tₕ →
     IsQueryBoundP P (fun j => dsQueryFlavor j = .perm) tₚ →
     IsQueryBoundP P (fun j => dsQueryFlavor j = .permInv) tₚᵢ →
-    SPMF.tvDist (Hyb1 T_H T_P δ oImpl V P) (Hyb2 T_H T_P δ oImpl V P)
+    SPMF.tvDist (Hyb1 T_H T_P δ Salt oImpl V P) (Hyb2 T_H T_P δ Salt oImpl V P)
       ≤ claim5_22Bound (pSpec := pSpec) tₕ tₚ tₚᵢ codec.decodingBias
 
 /-- CO25 Claim 5.23 residual — `Δ(Hyb₂, Hyb₃) = 0`: the two hybrids differ only in the query
@@ -754,12 +756,12 @@ def Hyb23StepResidual [SampleableType U]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
     (Salt : Type) [SaltCodec U δ Salt]
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
-    [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp) : Prop :=
   ∀ (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
       (StmtIn × pSpec.Messages)),
-    SPMF.tvDist (Hyb2 T_H T_P δ oImpl V P) (Hyb3 T_H T_P δ Salt oImpl V P) = 0
+    SPMF.tvDist (Hyb2 T_H T_P δ Salt oImpl V P) (Hyb3 T_H T_P δ Salt oImpl V P) = 0
 
 /-- CO25 Claim 5.24 residual (Eq. 55) —
 `Δ(Hyb₃, Hyb₄) ≤ 7L(2tₕ+2+2tₚ+L+2tₚᵢ)/(2|Σ|^c) − 5(L+1)/|Σ|^c`: `Hyb₃` and `Hyb₄` use the
@@ -773,6 +775,7 @@ def Hyb34StepResidual [SampleableType U]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
     (Salt : Type) [SaltCodec U δ Salt]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
     (oImpl : QueryImpl oSpec ProbComp) : Prop :=
   ∀ (V : Verifier oSpec StmtIn StmtOut pSpec)
@@ -814,11 +817,12 @@ theorem keyLemmaEager_of_steps
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
     (Salt : Type) [SaltCodec U δ Salt]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (h01 : Hyb01StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h12 : Hyb12StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h23 : Hyb23StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
       (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h34 : Hyb34StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
@@ -842,7 +846,8 @@ theorem keyLemmaEager_of_steps
   · -- the total-variation bound, assembled across the ladder
     have hchain :=
       tvDist_chain4
-        (Hyb0 T_H T_P δ oImpl V P) (Hyb1 T_H T_P δ oImpl V P) (Hyb2 T_H T_P δ oImpl V P)
+        (Hyb0 T_H T_P δ oImpl V P) (Hyb1 T_H T_P δ Salt oImpl V P)
+        (Hyb2 T_H T_P δ Salt oImpl V P)
         (Hyb3 T_H T_P δ Salt oImpl V P)
         (Hyb4 oImpl V
           (eagerSimulatedProver (T_H := T_H) (T_P := T_P) (δ' := δ) (Salt' := Salt) P))
