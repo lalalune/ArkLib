@@ -3542,3 +3542,33 @@ Guruswami–Sudan counting addresses.  The genuinely open per-`(u, P)` content (
 reading, tail vanishing, GS cargo) is untouched — but its demanded domain just shrank to
 where the paper's argument actually lives.
 
+### O71 — the literal pair-case Johnson conjecture is now ONE hypothesis away: per-δ `JohnsonNumericBound` ⟹ `mca_johnson_bound_CONJECTURE` at ℓ = 2 (verbatim, in-tree)
+
+`MCAConjecturePairReduction.lean` (axiom-clean, 0 sorry, 0 warnings) closes the last
+wiring gap in the #302 Johnson MCA chain that `Hab25WhirBridge` had left open: the bridge
+targeted an *abstract* `(BStar, errStar)` and still carried the closed-form comparison
+`ofReal (johnsonBoundReal) ≤ errStar δ` as a hypothesis, while `Hab25ConjectureGlue`
+proved exactly that comparison for the *literal* conjecture error — nobody had composed
+them into the verbatim statement. Now:
+
+* `mca_johnson_bound_CONJECTURE_pair_of_johnsonNumericBound` — per-δ
+  `JohnsonNumericBound φ (2^m) (μ δ).toNNReal δ` on the admissible range (η := μ(δ) =
+  min(1−√ρ−δ, √ρ/20)) yields `mca_johnson_bound_CONJECTURE α φ m (Fin 2) exp` VERBATIM:
+  `BStar = √ρ`, the conjecture's exact `errStar = 2^{2m}/(|F|·(2μ)⁷)`, no comparison or
+  plumbing hypotheses left (the `(card (Fin 2) − 1) = 1` factor and the
+  `rate = 2^m/n` identification, `rate_genRSC_pair`, absorbed in-proof);
+* `mca_johnson_bound_CONJECTURE_pair_of_claim1_cells` — the verbatim conjecture from
+  per-δ per-stack Claim-1 cell data alone (≤ L cells in the per-δ GS list shape with the
+  capture-above-n dichotomy). The SOLE remaining input to the literal ℓ = 2 conjecture is
+  now exactly the BCIKS20 Steps 5–7 Λ/β_t capture kernel (#138/#139 stream).
+
+Falsify-first probe (`probe_conjecture_pair_wiring.py`): the comparison orientation
+re-verified numerically before wiring — 1320 grid points across m ∈ [2,12], blowups 2–32,
+q ∈ {M31, 2⁶⁴−59, 2¹²⁸−159, 2¹⁶+1}, six δ-slices of the Johnson window: 0 violations,
+worst ratio 1.8·10⁻³ (the two-orders-of-magnitude slack of the c9121746d analysis,
+re-measured). Next-cheapest wiring identified for a future pass: feed this single-hypothesis
+pair-MCA into the WHIR RBR keystone's `RoundKeystoneData`/`perRoundProximityGap_of_correlatedAgreement`
+chain (needs the per-round stack ↔ pair-generator identification); NOT wireable today:
+#301 rbr soundness (forwarding-shell verifier — residual likely false as stated; needs the
+checking verifier + #304 core) and the ℓ-ary (parℓ > 2) seam extension (mechanical per
+Hab25 but new formalization, not plumbing).
