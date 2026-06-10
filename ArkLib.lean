@@ -1334,6 +1334,7 @@ import ArkLib.ToMathlib.BetaMatchingVanishes
 import ArkLib.ToMathlib.BetaMatchingVanishesOn
 import ArkLib.ToMathlib.BetaRecGenuineBridge
 import ArkLib.ToMathlib.BetaRecursion
+import ArkLib.ToMathlib.BetaTailDegreeVanishing
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
 import ArkLib.ToMathlib.BetaToCurveCoeffPolysOffcentre
 import ArkLib.ToMathlib.BetaWeightCollapse
