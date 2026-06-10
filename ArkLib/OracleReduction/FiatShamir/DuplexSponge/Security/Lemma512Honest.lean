@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
 
+set_option linter.style.longFile 1700
+
 /-!
 # #316 — Duplex-Sponge Fiat-Shamir: discharge of the M2a honest bad-event residual
 `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
@@ -529,6 +531,293 @@ theorem hasForwardCapacityBeforeHash_removeRedundant_of_first
     (h : HasFirstHashForwardCapacityBeforeHash tr stmt capSeg) :
     HasForwardCapacityBeforeHash (removeRedundantEntryDS tr).1 stmt capSeg :=
   firstNat_removeRedundant tr.length tr le_rfl (firstNat_of_first h)
+
+/-- Strengthened permutation-ordering collision shape: the later forward permutation entry is
+the first occurrence of its concrete forward pair up to the same-direction reversal that
+`redundantEntryDS` uses for forward slots, and a strictly earlier forward entry shares the later
+entry's output capacity on either side. -/
+def HasFirstForwardCapacityBeforeForwardOutput
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) : Prop :=
+  ∃ jCur : Fin tr.length,
+    ∃ stateIn stateOut : CanonicalSpongeState U,
+      tr[jCur] = forwardEntry stateIn stateOut ∧
+      (∀ j : Fin tr.length, j.val < jCur.val →
+        tr[j] ≠ forwardEntry stateIn stateOut ∧
+          tr[j] ≠ forwardEntry stateOut stateIn) ∧
+      ∃ jPrev : Fin tr.length, jPrev < jCur ∧
+        ∃ prevIn prevOut : CanonicalSpongeState U,
+          tr[jPrev] = forwardEntry prevIn prevOut ∧
+          (prevOut.capacitySegment = stateOut.capacitySegment ∨
+            prevIn.capacitySegment = stateOut.capacitySegment)
+
+/-- Forgetting the first-occurrence guard leaves the broad forward-before-forward-output shape. -/
+theorem hasForwardCapacityBeforeForwardOutput_of_first
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasFirstForwardCapacityBeforeForwardOutput tr) :
+    HasForwardCapacityBeforeForwardOutput tr := by
+  obtain ⟨jCur, stateIn, stateOut, hcur, _hfirst,
+    jPrev, hlt, prevIn, prevOut, hprev, hcap⟩ := h
+  exact ⟨jCur, stateIn, stateOut, by simpa [forwardEntry] using hcur,
+    jPrev, hlt, prevIn, prevOut, by simpa [forwardEntry] using hprev, hcap⟩
+
+/-- A forward slot with no earlier same-or-reversed forward entry is not redundant under the
+duplex-sponge dedup predicate. -/
+theorem not_redundantEntryDS_forward_of_no_prior
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (idx : Fin tr.length)
+    {stateIn stateOut : CanonicalSpongeState U}
+    (hidx : tr[idx] = forwardEntry stateIn stateOut)
+    (hfirst : ∀ j : Fin tr.length, j.val < idx.val →
+      tr[j] ≠ forwardEntry stateIn stateOut ∧
+        tr[j] ≠ forwardEntry stateOut stateIn) :
+    ¬ tr.redundantEntryDS idx := by
+  intro hred
+  unfold redundantEntryDS at hred
+  rw [hidx] at hred
+  obtain ⟨j, hjlt, hcase⟩ := hred
+  rcases hcase with hsame | hrev
+  · exact (hfirst j hjlt).1 hsame
+  · exact (hfirst j hjlt).2 hrev
+
+/-- The strong permutation-ordering predicate carries the nonredundancy proof needed for its
+later forward anchor. -/
+theorem hasFirstForwardCapacityBeforeForwardOutput_current_not_redundant
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasFirstForwardCapacityBeforeForwardOutput tr) :
+    ∃ jCur : Fin tr.length,
+      ∃ stateIn stateOut : CanonicalSpongeState U,
+        tr[jCur] = forwardEntry stateIn stateOut ∧
+        ¬ tr.redundantEntryDS jCur := by
+  obtain ⟨jCur, stateIn, stateOut, hcur, hfirst,
+    _jPrev, _hlt, _prevIn, _prevOut, _hprev, _hcap⟩ := h
+  exact ⟨jCur, stateIn, stateOut, hcur,
+    not_redundantEntryDS_forward_of_no_prior tr jCur hcur hfirst⟩
+
+/-- Natural-index form of `HasFirstForwardCapacityBeforeForwardOutput`, used for the recursive
+`eraseIdx` proof where indices may shift left. -/
+private def HasFirstForwardCapacityBeforeForwardOutputNat
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) : Prop :=
+  ∃ iCur iPrev : ℕ,
+    ∃ curIn curOut prevIn prevOut : CanonicalSpongeState U,
+      iPrev < iCur ∧
+      tr[iCur]? = some (forwardEntry curIn curOut) ∧
+      tr[iPrev]? = some (forwardEntry prevIn prevOut) ∧
+      (prevOut.capacitySegment = curOut.capacitySegment ∨
+        prevIn.capacitySegment = curOut.capacitySegment) ∧
+      ∀ j, j < iCur →
+        tr[j]? ≠ some (forwardEntry curIn curOut) ∧
+          tr[j]? ≠ some (forwardEntry curOut curIn)
+
+/-- Convert the public finite-index first-forward witness into the private natural-index form. -/
+private lemma firstForwardNat_of_first
+    {tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (h : HasFirstForwardCapacityBeforeForwardOutput tr) :
+    HasFirstForwardCapacityBeforeForwardOutputNat tr := by
+  obtain ⟨jCur, curIn, curOut, hcur, hfirst,
+    jPrev, hlt, prevIn, prevOut, hprev, hcap⟩ := h
+  have hcur? : tr[jCur.val]? = some (forwardEntry curIn curOut) := by
+    rw [List.getElem?_eq_getElem jCur.isLt]
+    simpa only [List.get_eq_getElem] using congrArg some hcur
+  have hprev? : tr[jPrev.val]? = some (forwardEntry prevIn prevOut) := by
+    rw [List.getElem?_eq_getElem jPrev.isLt]
+    simpa only [List.get_eq_getElem] using congrArg some hprev
+  have hfirstNat : ∀ j, j < jCur.val →
+      tr[j]? ≠ some (forwardEntry curIn curOut) ∧
+        tr[j]? ≠ some (forwardEntry curOut curIn) := by
+    intro j hj
+    have hjlen : j < tr.length := lt_trans hj jCur.isLt
+    constructor
+    · intro hsome
+      have hraw : tr.get ⟨j, hjlen⟩ = forwardEntry curIn curOut := by
+        rw [List.getElem?_eq_getElem hjlen] at hsome
+        exact Option.some.inj hsome
+      exact (hfirst ⟨j, hjlen⟩ hj).1 hraw
+    · intro hsome
+      have hraw : tr.get ⟨j, hjlen⟩ = forwardEntry curOut curIn := by
+        rw [List.getElem?_eq_getElem hjlen] at hsome
+        exact Option.some.inj hsome
+      exact (hfirst ⟨j, hjlen⟩ hj).2 hraw
+  exact ⟨jCur.val, jPrev.val, curIn, curOut, prevIn, prevOut, hlt,
+    hcur?, hprev?, hcap, hfirstNat⟩
+
+/-- Convert the private natural-index witness back to the public broad base-trace shape. -/
+private lemma hasForwardCapacityBeforeForwardOutput_of_firstForwardNat
+    {tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (h : HasFirstForwardCapacityBeforeForwardOutputNat tr) :
+    HasForwardCapacityBeforeForwardOutput tr := by
+  obtain ⟨iCur, iPrev, curIn, curOut, prevIn, prevOut,
+    hlt, hcur, hprev, hcap, _hfirst⟩ := h
+  obtain ⟨hCurLt, hCurEq⟩ := List.getElem?_eq_some_iff.mp hcur
+  obtain ⟨hPrevLt, hPrevEq⟩ := List.getElem?_eq_some_iff.mp hprev
+  refine ⟨⟨iCur, hCurLt⟩, curIn, curOut, ?_,
+    ⟨iPrev, hPrevLt⟩, hlt, prevIn, prevOut, ?_, hcap⟩
+  · simpa [forwardEntry] using hCurEq
+  · simpa [forwardEntry] using hPrevEq
+
+/-- **One-step preservation**: erasing one redundant entry preserves the strengthened
+forward-before-first-forward-output shape. -/
+private lemma firstForwardNat_eraseIdx
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (idx : Fin tr.length) (hred : tr.redundantEntryDS idx)
+    (hP : HasFirstForwardCapacityBeforeForwardOutputNat tr) :
+    HasFirstForwardCapacityBeforeForwardOutputNat (tr.eraseIdx idx.val) := by
+  classical
+  obtain ⟨iCur, iPrev, curIn, curOut, prevIn, prevOut,
+    hlt, hcur, hprev, hcap, hfirst⟩ := hP
+  by_cases hEraseCur : idx.val = iCur
+  · have hidx? : tr[idx.val]? = some (forwardEntry curIn curOut) := by
+      simpa [hEraseCur] using hcur
+    have hidxVal : tr[idx] = forwardEntry curIn curOut := by
+      rw [List.getElem?_eq_getElem idx.isLt] at hidx?
+      exact Option.some.inj hidx?
+    have hred' :
+        ∃ j' : Fin tr.length, j' < idx ∧
+          (tr[j'] = forwardEntry curIn curOut ∨
+            tr[j'] = forwardEntry curOut curIn) := by
+      unfold redundantEntryDS at hred
+      rw [hidxVal] at hred
+      simpa [forwardEntry] using hred
+    obtain ⟨j', hj', hcase⟩ := hred'
+    have hjCur : j'.val < iCur := by omega
+    rcases hcase with hsame | hrev
+    · have hsome : tr[j'.val]? = some (forwardEntry curIn curOut) := by
+        rw [List.getElem?_eq_getElem j'.isLt]
+        simpa only [List.get_eq_getElem] using congrArg some hsame
+      exact False.elim ((hfirst j'.val hjCur).1 hsome)
+    · have hsome : tr[j'.val]? = some (forwardEntry curOut curIn) := by
+        rw [List.getElem?_eq_getElem j'.isLt]
+        simpa only [List.get_eq_getElem] using congrArg some hrev
+      exact False.elim ((hfirst j'.val hjCur).2 hsome)
+  · let iCur' := if idx.val < iCur then iCur - 1 else iCur
+    have hcur' : (tr.eraseIdx idx.val)[iCur']? = some (forwardEntry curIn curOut) := by
+      by_cases hidxCur : idx.val < iCur
+      · have hge : idx.val ≤ iCur - 1 := by omega
+        simp only [iCur', hidxCur, ↓reduceIte]
+        rw [List.getElem?_eraseIdx_of_ge hge, show iCur - 1 + 1 = iCur by omega, hcur]
+      · have hCurIdx : iCur < idx.val := by omega
+        simp only [iCur', hidxCur, ↓reduceIte]
+        rw [List.getElem?_eraseIdx_of_lt hCurIdx, hcur]
+    have hfirst' : ∀ j, j < iCur' →
+        (tr.eraseIdx idx.val)[j]? ≠ some (forwardEntry curIn curOut) ∧
+          (tr.eraseIdx idx.val)[j]? ≠ some (forwardEntry curOut curIn) := by
+      intro j hj
+      constructor
+      · intro hsome
+        by_cases hidxCur : idx.val < iCur
+        · by_cases hjIdx : j < idx.val
+          · have hraw : tr[j]? = some (forwardEntry curIn curOut) := by
+              rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+              exact hsome
+            exact (hfirst j (by simp [iCur', hidxCur] at hj; omega)).1 hraw
+          · have hraw : tr[j + 1]? = some (forwardEntry curIn curOut) := by
+              have hge : idx.val ≤ j := by omega
+              rw [List.getElem?_eraseIdx_of_ge hge] at hsome
+              exact hsome
+            exact (hfirst (j + 1) (by simp [iCur', hidxCur] at hj; omega)).1 hraw
+        · have hCurIdx : iCur < idx.val := by omega
+          have hjIdx : j < idx.val := by simp [iCur', hidxCur] at hj; omega
+          have hraw : tr[j]? = some (forwardEntry curIn curOut) := by
+            rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+            exact hsome
+          exact (hfirst j (by simpa [iCur', hidxCur] using hj)).1 hraw
+      · intro hsome
+        by_cases hidxCur : idx.val < iCur
+        · by_cases hjIdx : j < idx.val
+          · have hraw : tr[j]? = some (forwardEntry curOut curIn) := by
+              rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+              exact hsome
+            exact (hfirst j (by simp [iCur', hidxCur] at hj; omega)).2 hraw
+          · have hraw : tr[j + 1]? = some (forwardEntry curOut curIn) := by
+              have hge : idx.val ≤ j := by omega
+              rw [List.getElem?_eraseIdx_of_ge hge] at hsome
+              exact hsome
+            exact (hfirst (j + 1) (by simp [iCur', hidxCur] at hj; omega)).2 hraw
+        · have hCurIdx : iCur < idx.val := by omega
+          have hjIdx : j < idx.val := by simp [iCur', hidxCur] at hj; omega
+          have hraw : tr[j]? = some (forwardEntry curOut curIn) := by
+            rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+            exact hsome
+          exact (hfirst j (by simpa [iCur', hidxCur] using hj)).2 hraw
+    by_cases hErasePrev : idx.val = iPrev
+    · have hidx? : tr[idx.val]? = some (forwardEntry prevIn prevOut) := by
+        simpa [hErasePrev] using hprev
+      have hidxVal : tr[idx] = forwardEntry prevIn prevOut := by
+        rw [List.getElem?_eq_getElem idx.isLt] at hidx?
+        exact Option.some.inj hidx?
+      obtain ⟨j', hj', stateIn', stateOut', hentry, hcap'⟩ :=
+        redundant_forward_capacity_prior
+          (tr := tr) (idx := idx) (capSeg := curOut.capacitySegment)
+          (stateIn := prevIn) (stateOut := prevOut)
+          (by simpa [forwardEntry] using hidxVal) hred hcap
+      have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
+        List.getElem?_eraseIdx_of_lt (by exact hj')
+      have hprev' : (tr.eraseIdx idx.val)[j'.val]? =
+          some (forwardEntry stateIn' stateOut') := by
+        rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+        simpa [forwardEntry, List.get_eq_getElem] using congrArg some hentry
+      refine ⟨iCur', j'.val, curIn, curOut, stateIn', stateOut',
+        ?_, hcur', hprev', hcap', hfirst'⟩
+      by_cases hidxCur : idx.val < iCur
+      · simp [iCur', hidxCur]
+        omega
+      · simp [iCur', hidxCur]
+        omega
+    · let iPrev' := if idx.val < iPrev then iPrev - 1 else iPrev
+      have hprev' : (tr.eraseIdx idx.val)[iPrev']? = some (forwardEntry prevIn prevOut) := by
+        by_cases hidxPrev : idx.val < iPrev
+        · have hge : idx.val ≤ iPrev - 1 := by omega
+          simp only [iPrev', hidxPrev, ↓reduceIte]
+          rw [List.getElem?_eraseIdx_of_ge hge, show iPrev - 1 + 1 = iPrev by omega, hprev]
+        · have hPrevIdx : iPrev < idx.val := by omega
+          simp only [iPrev', hidxPrev, ↓reduceIte]
+          rw [List.getElem?_eraseIdx_of_lt hPrevIdx, hprev]
+      have hlt' : iPrev' < iCur' := by
+        by_cases hidxCur : idx.val < iCur
+        · by_cases hidxPrev : idx.val < iPrev
+          · simp [iCur', iPrev', hidxCur, hidxPrev]
+            omega
+          · simp [iCur', iPrev', hidxCur, hidxPrev]
+            omega
+        · have hidxPrev : ¬ idx.val < iPrev := by omega
+          simp [iCur', iPrev', hidxCur, hidxPrev]
+          omega
+      exact ⟨iCur', iPrev', curIn, curOut, prevIn, prevOut,
+        hlt', hcur', hprev', hcap, hfirst'⟩
+
+/-- **Fixpoint preservation**: dedup preserves the first-forward output-capacity collision shape
+as the broad base-trace shape used by `capacitySegmentDupPerm`. -/
+private lemma firstForwardNat_removeRedundant :
+    ∀ (N : ℕ) (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)), tr.length ≤ N →
+      HasFirstForwardCapacityBeforeForwardOutputNat tr →
+        HasForwardCapacityBeforeForwardOutput (removeRedundantEntryDS tr).1 := by
+  intro N
+  induction N with
+  | zero =>
+      intro tr hlen hP
+      obtain ⟨iCur, _iPrev, _curIn, _curOut, _prevIn, _prevOut,
+        _hlt, hcur, _hprev, _hcap, _hfirst⟩ := hP
+      have hlen0 : tr.length = 0 := Nat.le_zero.mp hlen
+      rw [List.length_eq_zero_iff.mp hlen0] at hcur
+      simp [forwardEntry] at hcur
+  | succ N ih =>
+      intro tr hlen hP
+      rw [removeRedundantEntryDS]
+      split
+      · rename_i hex
+        refine ih _ ?_ (firstForwardNat_eraseIdx tr (Classical.choose hex)
+          (Classical.choose_spec hex) hP)
+        have hlt := (Classical.choose hex).isLt
+        have hsucc := List.length_eraseIdx_add_one hlt
+        omega
+      · exact hasForwardCapacityBeforeForwardOutput_of_firstForwardNat hP
+
+/-- Public dedup bridge for the M2c permutation-timing path: the strengthened raw
+first-forward witness survives `removeRedundantEntryDS` as the broad base-trace
+`HasForwardCapacityBeforeForwardOutput` shape. -/
+theorem hasForwardCapacityBeforeForwardOutput_removeRedundant_of_first
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasFirstForwardCapacityBeforeForwardOutput tr) :
+    HasForwardCapacityBeforeForwardOutput (removeRedundantEntryDS tr).1 :=
+  firstForwardNat_removeRedundant tr.length tr le_rfl (firstForwardNat_of_first h)
 
 /-- Inversion of `redundantEntryDS` at an inverse-permutation slot: the redundancy
 certificate is an earlier inverse entry (same or reversed). -/
@@ -1332,6 +1621,10 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_no_prior
 #print axioms DuplexSpongeFS.Sponge316.hasFirstHashForwardCapacityBeforeHash_hash_not_redundant
+set_option linter.style.longLine false in
+#print axioms DuplexSpongeFS.Sponge316.hasFirstForwardCapacityBeforeForwardOutput_current_not_redundant
+set_option linter.style.longLine false in
+#print axioms DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeForwardOutput_removeRedundant_of_first
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_not_redundant
 #print axioms DuplexSpongeFS.Sponge316.E_of_base_hash_after_forward_capacity
 #print axioms DuplexSpongeFS.Sponge316.E_of_base_hasForwardCapacityBeforeHash
