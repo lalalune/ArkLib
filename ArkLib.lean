@@ -574,6 +574,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLatticePrizeSpec
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AffineCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25BranchDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25BranchPinning
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernel
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
