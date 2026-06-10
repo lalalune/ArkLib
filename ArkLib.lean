@@ -96,6 +96,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorizationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegerRepresentative
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegralFactorAssignment
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantSloped
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantSlopedCurve
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeCurve
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeGraded
@@ -232,8 +233,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightResummation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.BCoeffVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510AffinePair
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Agreement
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Capture
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510EndToEnd
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Kill
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510SliceAffine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Supply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Weld
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim57Pigeonhole
@@ -622,6 +625,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonCountWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonDichotomy
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonEllBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4FiberReduction
@@ -652,6 +656,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue232VerifiedBricks
 import ArkLib.Data.CodingTheory.ProximityGap.Issue244Refutation
 import ArkLib.Data.CodingTheory.ProximityGap.IteratedSliceRootCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonBoundRealLower
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonCapacityBound
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonFourthMomentNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonInvariant
@@ -914,6 +919,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumSecondMomentCollision
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumSquaringBijection
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumZeroInflation
+import ArkLib.Data.CodingTheory.ProximityGap.SubspaceAvoidance
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQAssembly
@@ -1338,6 +1344,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Assembly
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixAlignCore
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Commit
@@ -1458,6 +1465,7 @@ import ArkLib.ProofSystem.Spartan.ComposedCompletenessWithClaimFinal
 import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeFinal
 import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeSoundness
 import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeWithClaimFinal
+import ArkLib.ProofSystem.Spartan.ComposedTightRbrKnowledge
 import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.FinalCheckLeafComplete
 import ArkLib.ProofSystem.Spartan.FinalCheckRbrKnowledgeLeaf
@@ -1489,6 +1497,7 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
 import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
 import ArkLib.ProofSystem.Spartan.SecondSumcheckSimOStmt
+import ArkLib.ProofSystem.Spartan.SecondSumcheckWithTarget
 import ArkLib.ProofSystem.Spartan.SendEvalClaimComplete
 import ArkLib.ProofSystem.Spartan.ShortPhaseKnowledgeLeaves
 import ArkLib.ProofSystem.Spartan.ShortPhaseRbrKnowledgeLeaves
@@ -1501,8 +1510,13 @@ import ArkLib.ProofSystem.Spartan.SumcheckDeterminismWitnesses
 import ArkLib.ProofSystem.Spartan.SumcheckKnowledgeLeaves
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckRbrKSResidualAnalysis
+import ArkLib.ProofSystem.Spartan.TightComposedFull
+import ArkLib.ProofSystem.Spartan.TightConjoinedSecondLeaf
+import ArkLib.ProofSystem.Spartan.TightDeterminismWitnesses
+import ArkLib.ProofSystem.Spartan.TightFinalLeaf
 import ArkLib.ProofSystem.Spartan.TightMidLeaves
 import ArkLib.ProofSystem.Spartan.TightRLCKernel
+import ArkLib.ProofSystem.Spartan.TightSeamBridge
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
 import ArkLib.ProofSystem.Stir.BlockRbrBudgets
@@ -1673,6 +1687,7 @@ import ArkLib.ToMathlib.BetaWeightInduction
 import ArkLib.ToMathlib.BetaWeightInductionExcl
 import ArkLib.ToMathlib.BigOperators.Fin
 import ArkLib.ToMathlib.BivariateDegreeToolkit
+import ArkLib.ToMathlib.BivariateGradedDvd
 import ArkLib.ToMathlib.BoundaryDischarge
 import ArkLib.ToMathlib.BoundaryHalfState
 import ArkLib.ToMathlib.BranchCertificates
@@ -1799,6 +1814,7 @@ import ArkLib.ToMathlib.IncidenceBound
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.InterpolantInputSupply
 import ArkLib.ToMathlib.InterpolatedRepresentative
+import ArkLib.ToMathlib.InterpolatedRepresentativeWiring
 import ArkLib.ToMathlib.IsSquareNatCast
 import ArkLib.ToMathlib.IteratedFoldConservation
 import ArkLib.ToMathlib.KK25NearCapacityProof
@@ -1930,6 +1946,7 @@ import ArkLib.ToMathlib.TailDegProducer
 import ArkLib.ToMathlib.ToyProblemRewinding
 import ArkLib.ToMathlib.ToyProblemViolation
 import ArkLib.ToMathlib.ToyStep4
+import ArkLib.ToMathlib.TrivariateSeparabilityCharacterization
 import ArkLib.ToMathlib.TruncatedLocalRoot
 import ArkLib.ToMathlib.TwistedKernel
 import ArkLib.ToMathlib.UMSubspaceDesignProof
