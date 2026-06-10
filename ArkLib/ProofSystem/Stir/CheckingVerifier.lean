@@ -1096,6 +1096,125 @@ theorem stirCheckingRbrSoundness_of_large [DecidableEq ι]
     (strictCoeffPolysResidual_all_of_large φ deg δ hLarge)
     (PerRoundProximityGap.refl ProxGapBound)
 
+/-- **Vacuity gate for the checking rbr-soundness residual**: rbr knowledge soundness of the
+checking verifier holds outright for ANY error budget that allots ≥ 1 to the round-0 (fold)
+challenge. The knowledge state function is the canonical "δ-close at the root" function —
+false on the empty transcript for δ-far inputs and true afterwards; the only false→true
+crossing happens at the round-0 challenge (round 0 is a verifier challenge since prover
+messages sit at rounds `3j + 1` by `stirVSpec_dir_eq_msg_iff`), where the unit budget absorbs
+the whole probability mass (`probEvent_le_one`). All other challenge rounds have crossing
+probability `0`. HONESTY: this is the vacuous-budget regime — it carries no security content
+for budgets below 1, where the genuine open bridge (`stirCheckingCABridge`) remains the open
+math of #301. -/
+theorem stirCheckingRbrSoundness_of_one_le_first
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (h1 : ∀ i : (stirMultiVSpec M ι).ChallengeIdx, (i.1 : ℕ) = 0 → 1 ≤ ε_rbr i) :
+    stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr := by
+  refine ⟨fun _ => Unit,
+    { eqIn := rfl
+      extractMid := fun _ _ _ _ => ()
+      extractOut := fun _ _ _ => () },
+    { toFun := fun m stmtIn _ _ => (m : ℕ) = 0 → (stmtIn, ()) ∈ stirRelation deg φ δ
+      toFun_empty := fun stmtIn witMid => by
+        constructor
+        · intro h _; exact h
+        · intro h; exact h (by simp)
+      toFun_next := fun m hdir stmtIn tr msg witMid h => by
+        intro hc0
+        exfalso
+        rw [show ((stirMultiVSpec M ι).toProtocolSpec F).dir m = (stirMultiVSpec M ι).dir m
+          from rfl, stirVSpec_dir_eq_msg_iff] at hdir
+        have hm0 : (m : ℕ) = 0 := by simpa using hc0
+        omega
+      toFun_full := fun stmtIn tr witOut _ => by
+        intro hlast
+        exfalso
+        simp only [Fin.val_last] at hlast
+        omega }, ?_⟩
+  intro stmtIn witIn prover i
+  by_cases h0 : (i.1 : ℕ) = 0
+  · refine le_trans probEvent_le_one ?_
+    exact_mod_cast h1 i h0
+  · refine le_trans (le_of_eq (probEvent_eq_zero ?_)) (zero_le _)
+    rintro ⟨tr, chal, lg⟩ _ hp
+    obtain ⟨w, hno, -⟩ := hp
+    exact hno fun hc => absurd (by simpa using hc) h0
+
+/-- **The STIR proximity error is ≥ 1 in the small-field regime** `|F| ≤ (m−1)·|ι|` (the
+regime where `STIR.proximity_gap_of_card_le` is unconditional), in the unique-decoding branch
+`δ ≤ (1 − ρ)/2`: there `err⋆ = (m−1)·d/(ρ·|F|)`, and `ρ·|F| ≤ (d/|ι|)·(m−1)·|ι| = (m−1)·d`
+since `ρ·|ι| = min d |ι| ≤ d` (`rateOfLinearCode_eq_min_div`). -/
+theorem one_le_proximityError_of_card_le {deg m : ℕ} [NeZero deg] (φ : ι ↪ F) (δ : ℝ≥0)
+    (hδ : δ ≤ (1 - (LinearCode.rate (code φ deg) : ℝ≥0)) / 2)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((m : ℝ≥0) - 1) * (Fintype.card ι : ℝ≥0)) :
+    1 ≤ proximityError F deg (LinearCode.rate (code φ deg)) δ m := by
+  have hcardι : (0 : ℝ≥0) < (Fintype.card ι : ℝ≥0) := by
+    exact_mod_cast Fintype.card_pos
+  have hcardF : (0 : ℝ≥0) < (Fintype.card F : ℝ≥0) := by
+    exact_mod_cast Fintype.card_pos
+  -- the rate in ℝ≥0: `min deg |ι| / |ι|`
+  have hrate : (LinearCode.rate (code φ deg) : ℝ≥0)
+      = ((min deg (Fintype.card ι) : ℕ) : ℝ≥0) / ((Fintype.card ι : ℕ) : ℝ≥0) := by
+    rw [ReedSolomon.rateOfLinearCode_eq_min_div]
+    push_cast
+    norm_num
+  have hρpos : (0 : ℝ≥0) < (LinearCode.rate (code φ deg) : ℝ≥0) := by
+    rw [hrate]
+    apply div_pos _ hcardι
+    have : 0 < min deg (Fintype.card ι) :=
+      lt_min (Nat.pos_of_ne_zero (NeZero.ne deg)) Fintype.card_pos
+    exact_mod_cast this
+  -- the key product bound: `ρ · |ι| ≤ deg`
+  have hρι : (LinearCode.rate (code φ deg) : ℝ≥0) * (Fintype.card ι : ℝ≥0) ≤ (deg : ℝ≥0) := by
+    rw [hrate, div_mul_cancel₀ _ (ne_of_gt hcardι)]
+    exact_mod_cast min_le_left _ _
+  -- hence `ρ · |F| ≤ (m−1)·deg`
+  have hkey : (LinearCode.rate (code φ deg) : ℝ≥0) * (Fintype.card F : ℝ≥0)
+      ≤ ((m : ℝ≥0) - 1) * (deg : ℝ≥0) := by
+    calc (LinearCode.rate (code φ deg) : ℝ≥0) * (Fintype.card F : ℝ≥0)
+        ≤ (LinearCode.rate (code φ deg) : ℝ≥0)
+            * (((m : ℝ≥0) - 1) * (Fintype.card ι : ℝ≥0)) := by
+          exact mul_le_mul_right hq _
+      _ = ((m : ℝ≥0) - 1) * ((LinearCode.rate (code φ deg) : ℝ≥0)
+            * (Fintype.card ι : ℝ≥0)) := by ring
+      _ ≤ ((m : ℝ≥0) - 1) * (deg : ℝ≥0) := mul_le_mul_right hρι _
+  rw [proximityError, if_pos hδ]
+  rw [le_div_iff₀ (mul_pos hρpos hcardF)]
+  simpa using hkey
+
+/-- **Small-field discharge of the checking rbr-soundness residual** (#301 Part B): in the
+regime `|F| ≤ (m−1)·|ι|` (where `STIR.proximity_gap_of_card_le` is unconditional) and the
+unique-decoding branch `δ ≤ (1−ρ)/2`, the rbr knowledge soundness of the checking verifier
+holds for any budget dominating the prescribed STIR proximity error `err⋆(deg, ρ, δ, m)` at
+the fold challenge — with NO correlated-agreement residuals and NO bridge hypothesis: the
+regime forces `err⋆ ≥ 1`, which absorbs the fold-challenge crossing probability outright. -/
+theorem stirCheckingRbrSoundness_of_small_field
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0) {m : ℕ}
+    (hδ : δ ≤ (1 - (LinearCode.rate (code φ deg) : ℝ≥0)) / 2)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((m : ℝ≥0) - 1) * (Fintype.card ι : ℝ≥0))
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (hε : ∀ i : (stirMultiVSpec M ι).ChallengeIdx, (i.1 : ℕ) = 0 →
+      proximityError F deg (LinearCode.rate (code φ deg)) δ m ≤ ε_rbr i) :
+    stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
+  stirCheckingRbrSoundness_of_one_le_first M φ deg δ ε_rbr
+    (fun i hi => le_trans (one_le_proximityError_of_card_le φ δ hδ hq) (hε i hi))
+
+/-- **The protocol-level CA bridge residual is DISCHARGED in the small-field regime**: its
+conclusion (`stirCheckingRbrSoundnessResidual`) holds outright there, so the implication is
+trivially true. In the general (large-field, sub-1 budget) regime the bridge remains the
+genuine open math of #301. -/
+theorem stirCheckingCABridge_of_small_field
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0) {m : ℕ}
+    (hδ : δ ≤ (1 - (LinearCode.rate (code φ deg) : ℝ≥0)) / 2)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((m : ℝ≥0) - 1) * (Fintype.card ι : ℝ≥0))
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (hε : ∀ i : (stirMultiVSpec M ι).ChallengeIdx, (i.1 : ℕ) = 0 →
+      proximityError F deg (LinearCode.rate (code φ deg)) δ m ≤ ε_rbr i)
+    (e ProxGapBound : Fin (M + 1) → ℝ≥0) :
+    stirCheckingCABridge M φ deg δ ε_rbr e ProxGapBound :=
+  fun _ _ => stirCheckingRbrSoundness_of_small_field M φ deg δ hδ hq ε_rbr hε
+
 /-- **The checking IOPP is `IsSecureWithGap`**, with the completeness leg PROVEN
 (`stirCheckingIOP_perfectCompleteness`) and the soundness leg consumed as the named
 checking-verifier residual. -/
@@ -1162,6 +1281,23 @@ theorem stirCheckingIOP_isSecureWithGap_of_large [DecidableEq ι]
       (stirCheckingIOP M φ deg) :=
   stirCheckingIOP_isSecureWithGap M φ deg δ ε_rbr
     (stirCheckingRbrSoundness_of_large M φ deg δ ε_rbr ProxGapBound hBridge hLarge)
+
+/-- **`IsSecureWithGap` for the checking IOPP in the small-field regime `|F| ≤ (m−1)·|ι|`,
+with NO residual hypotheses** (#301 Part B): completeness is the landed
+`stirCheckingIOP_perfectCompleteness`; soundness is the small-field discharge
+(`stirCheckingRbrSoundness_of_small_field`) — no CA family, no bridge, no per-round-gap
+keystone. -/
+theorem stirCheckingIOP_isSecureWithGap_small_field
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0) {m : ℕ}
+    (hδ : δ ≤ (1 - (LinearCode.rate (code φ deg) : ℝ≥0)) / 2)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((m : ℝ≥0) - 1) * (Fintype.card ι : ℝ≥0))
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (hε : ∀ i : (stirMultiVSpec M ι).ChallengeIdx, (i.1 : ℕ) = 0 →
+      proximityError F deg (LinearCode.rate (code φ deg)) δ m ≤ ε_rbr i) :
+    IsSecureWithGap (stirRelation deg φ 0) (stirRelation deg φ δ) ε_rbr
+      (stirCheckingIOP M φ deg) :=
+  stirCheckingIOP_isSecureWithGap M φ deg δ ε_rbr
+    (stirCheckingRbrSoundness_of_small_field M φ deg δ hδ hq ε_rbr hε)
 
 end Soundness
 
@@ -1499,6 +1635,47 @@ theorem stir_main_of_checkingIOP_large
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_large φ degree δ hLarge)
     (PerRoundProximityGap.refl ProxGapBound)
+    hε hM hLen hQin hQpf
+
+/-- **Theorem 5.1 through the CHECKING IOPP, small-field UNCONDITIONAL soundness discharge**
+(#301 Part B): `stir_main` discharged through `π := stirCheckingIOP` in the regime
+`|F| ≤ (m−1)·|ι|` and the unique-decoding branch `δ ≤ (1−ρ)/2`, with NO
+correlated-agreement residual, NO checking bridge, and NO per-round-gap keystone: the
+soundness leg is PROVEN outright (the regime forces the prescribed `err⋆ ≥ 1`, the same
+vacuity that makes `STIR.proximity_gap_of_card_le` unconditional). The remaining hypotheses
+(`hε`/`hM`/`hLen`/`hQin`/`hQpf`) are exactly `stir_main`'s own free-parameter legs.
+HONESTY: in this regime `hε` together with `hεlb` pins `secpar = 0`, since
+`ε_rbr ≥ err⋆ ≥ 1 > 2^{-secpar}` for `secpar > 0` — the faithful formal statement that STIR
+offers no security over a field this small. The general (large-field) regime stays
+conditional on the #304 capture-kernel stream through the named bridge. -/
+theorem stir_main_of_checkingIOP_small_field
+    {M : ℕ} (secpar : ℕ)
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    {φ : ι ↪ F} {degree : ℕ} [hsmooth : Smooth φ] [NeZero degree]
+    {k proofLen qNumtoInput qNumtoProofstr : ℕ}
+    (hk : ∃ p, k = 2 ^ p) (hkGe : k ≥ 4)
+    (δ : ℝ≥0) (hδub : δ < 1 - 1.05 * Real.sqrt (degree / Fintype.card ι))
+    (hF : Fintype.card F ≤
+          secpar * 2 ^ secpar * degree ^ 2 * (Fintype.card ι) ^ (7 / 2) /
+            Real.log (1 / rate (code φ degree)))
+    {m : ℕ}
+    (hδudr : δ ≤ (1 - (LinearCode.rate (code φ degree) : ℝ≥0)) / 2)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((m : ℝ≥0) - 1) * (Fintype.card ι : ℝ≥0))
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (hεlb : ∀ i : (stirMultiVSpec M ι).ChallengeIdx, (i.1 : ℕ) = 0 →
+      proximityError F degree (LinearCode.rate (code φ degree)) δ m ≤ ε_rbr i)
+    (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
+    (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
+    (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
+      (cₖ k) * ((Real.log degree) +
+        secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
+    stir_main (M := M) (proofLen := proofLen) (qNumtoInput := qNumtoInput)
+      (qNumtoProofstr := qNumtoProofstr) secpar hk hkGe δ hδub hF :=
+  stir_main_of_secure_vectorIOP secpar hk hkGe δ hδub hF ε_rbr
+    (stirCheckingIOP M φ degree)
+    (stirCheckingIOP_isSecureWithGap_small_field M φ degree δ hδudr hq ε_rbr hεlb)
     hε hM hLen hQin hQpf
 
 end CheckingFrontDoors

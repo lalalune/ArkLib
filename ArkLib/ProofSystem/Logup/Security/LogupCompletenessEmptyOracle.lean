@@ -10,8 +10,9 @@ import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncond
 
 The most-unconditional completeness keystone `logup_completeness_uncond`
 (`Security/LogupCompletenessUncond.lean`) reduces full LogUp completeness to the named residual
-surface `{hInit, hHonest, hPerRound, hImplSupp, hAppend}`. One of those, `hImplSupp`, is a side
-condition purely on the ambient oracle implementation `impl`:
+surface `{hInit, hPerRound, hImplSupp, hAppend}` (the historical fifth member, the honest-support
+hypothesis `hHonest`, was unsatisfiable and has been removed tree-wide; issue #13, dmvt audit).
+One of those, `hImplSupp`, is a side condition purely on the ambient oracle implementation `impl`:
 
   `hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s) = support (liftM q)`.
@@ -23,7 +24,7 @@ the empty type `PEmpty`, so there are no queries to constrain.
 
 This file packages that observation into `logup_completeness_emptyOracle`, dropping `hImplSupp` from
 the residual surface at `[]ₒ`. The remaining obligations are the genuinely-deep completeness facts
-`{hInit, hHonest, hPerRound, hAppend}` — exactly the surface minus the trivial `impl` side condition.
+`{hInit, hPerRound, hAppend}` — exactly the surface minus the trivial `impl` side condition.
 
 No `sorry`/`sorryAx`/`admit`. The axiom audit at the bottom confirms axiom-cleanliness.
 -/
@@ -62,21 +63,10 @@ theorem emptyOracle_hImplSupp (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
 
 At `oSpec = []ₒ` the support-faithfulness side condition `hImplSupp` of `logup_completeness_uncond`
 is vacuous (no queries), so it is supplied here automatically. The residual surface shrinks to the
-four genuinely-deep completeness facts `{hInit, hHonest, hPerRound, hAppend}`. This mirrors
+genuinely-deep completeness facts `{hInit, hPerRound, hAppend}`. This mirrors
 `logup_soundness_msgSeam_emptyOracle` on the soundness side. -/
 theorem logup_completeness_emptyOracle
     (hInit : NeverFail init)
-    (hHonest :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        ∃ (stmtIn₀ : StmtIn F n M) (oStmtIn₀ : ∀ i, OStmtIn F n M i),
-          (((stmtIn₀, oStmtIn₀), ()) ∈ inputRelation F n M) ∧
-          (∀ u : Hypercube n,
-            stmtIn.1.xChallenge + evalOnHypercube (tableOracle oStmtIn₀) u ≠ 0) ∧
-          stmtIn.2 =
-            (fun
-              | .input i => oStmtIn₀ i
-              | .multiplicity => honestMultiplicity oStmtIn₀
-              | .helpers => honestHelpers params oStmtIn₀ stmtIn.1.xChallenge))
     (hPerRound : ∀ i,
       (Sumcheck.Spec.SingleRound.oracleReduction F n (logupSumcheckDegree M params)
           (signDomain F (Fact.out : (-1 : F) ≠ 1)) []ₒ i).toReduction =
@@ -85,11 +75,11 @@ theorem logup_completeness_emptyOracle
     (hAppend :
       AppendCompletenessResidual []ₒ F n M params init impl
         (outerCompletenessResidual_of_neverFail []ₒ F n M params init impl hInit)
-        (sumcheckCompletenessResidual_of_honest_perRound []ₒ F n M params init impl
-          hHonest hPerRound hInit (emptyOracle_hImplSupp impl))) :
+        (sumcheckCompletenessResidual_of_perRound []ₒ F n M params init impl
+          hPerRound hInit (emptyOracle_hImplSupp impl))) :
     (logupOracleReduction []ₒ F n M params).completeness init impl
       (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
-  logup_completeness_uncond []ₒ F n M params init impl hInit hHonest hPerRound
+  logup_completeness_uncond []ₒ F n M params init impl hInit hPerRound
     (emptyOracle_hImplSupp impl) hAppend
 
 end CompletenessEmptyOracle

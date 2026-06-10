@@ -11,9 +11,9 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendToVerifierKeystone
 /-!
 # LogUp Protocol 2 — most-unconditional completeness (issue #13, keystone K-compFull)
 
-This file assembles the **most-unconditional** LogUp Protocol 2 completeness statement currently
-attainable, by discharging the inner multi-round sum-check oracle completeness `hInner` with the
-**now-proven** binary verifier-fusion keystone
+This file assembles the **most-unconditional** LogUp Protocol 2 completeness statement attainable
+through the *per-round bridge* route, by discharging the inner multi-round sum-check oracle
+completeness `hInner` with the **now-proven** binary verifier-fusion keystone
 `OracleReduction.oracleVerifier_append_toVerifier` (in
 `Composition/Sequential/AppendToVerifierKeystone.lean`, sorry-free), threaded through the existing
 reduction chain.
@@ -34,15 +34,16 @@ reduction chain.
    single-round bridge `hPerRound`
    (`(SingleRound.oracleReduction i).toReduction = SingleRound.reduction i`, a `liftContext`
    commutation fact orthogonal to the seqCompose fusion). Feeding that bridge into
-   `Sumcheck.Spec.oracleReduction_perfectCompleteness` (which discharges everything else via the
-   proven `reduction_perfectCompleteness`) yields the inner perfect completeness `hInner` for
-   `logupConcreteSumcheckOracleReduction` between `innerSumcheckRelIn` and `innerSumcheckRelOut`.
+   `Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge` (which discharges everything else
+   via the proven `reduction_perfectCompleteness`) yields the inner perfect completeness `hInner`
+   for `logupConcreteSumcheckOracleReduction` between `innerSumcheckRelIn` and
+   `innerSumcheckRelOut`.
 
-3. **Embedded sum-check phase completeness.** With `hInner` discharged and the honest-support data
-   `hHonest` (which discharges the `proj_complete` algebraic obligation `SumcheckLensProjComplete`
-   on the honest-prover support via the proven `SumcheckLensProjComplete_holds_of_honest`),
-   `Logup.sumcheckCompletenessResidual_of_honest` yields `SumcheckCompletenessResidual` — the
-   embedded sum-check phase is perfectly complete on the honest support.
+3. **Embedded sum-check phase completeness — no honest-support hypothesis.** With `hInner`
+   discharged, the `proj_complete` algebraic obligation is the **theorem**
+   `SumcheckLensProjComplete_unconditional`: the corrected claim-true `midRelation`
+   (`{p | logupOuterSumcheckClaim … = 0}`) makes the membership premise *be* the zero-sum claim, so
+   `Logup.sumcheckCompletenessResidual_of_inner` yields `SumcheckCompletenessResidual` outright.
 
 4. **End-to-end completeness.** Feeding the outer half (proven in-tree from `NeverFail init`), the
    discharged sum-check half, and the append-composition brick `hAppend` into
@@ -50,26 +51,34 @@ reduction chain.
 
 ## Residual surface (`logup_completeness_uncond`)
 
-The smallest honest residual set after this brick:
+The smallest honest residual set on this route:
 
 * `hInit : NeverFail init` — the standard completeness initialization assumption.
-* `hHonest` — the honest-support condition: every projected outer transcript arises from a genuine
-  `inputRelation` input with the honest oracles and a pole-free verifier challenge. This is exactly
-  what completeness asserts on the honest run; it is threaded, not assumed away.
 * `hPerRound` — the per-round single-round `liftContext`-commutation bridge for the inner sum-check.
+  (NOTE: the CubeFiber route — `sumcheckCompletenessResidual_unconditional` in
+  `SumcheckCompletenessUncond.lean`, consumed by `logup_completeness_final` — avoids even this,
+  and `OracleCompletenessThreaded.lean` documents why the bridge route should be considered
+  superseded: the analogous unbounded-round `toReduction = reduction` equation is false in general.)
 * `hImplSupp` — the standard oracle-implementation support-faithfulness condition (shared by every
   `*_perfectCompleteness` brick in-tree).
-* `hAppend` — the non-perfect outer⊕sumcheck append-composition completeness (the only genuinely
-  non-perfect residual: it must carry the non-zero outer error `logupCompletenessError F n` through
-  the message seam; the *perfect* special case below discharges its analogue outright).
+* `hAppend` — the non-perfect outer⊕sumcheck append-composition completeness (dischargeable via
+  `appendCompletenessResidual_wired` in `LogupCompletenessWired.lean`).
 
-## The perfect special case (`logup_completeness_uncond_perfect`) — zero append residual
+## Removed (issue #13, dmvt audit)
 
-When `logupCompletenessError F n = 0`, both component errors are `0`, the seam is a message seam,
-and the proven oracle-level keystone discharges the append residual with **no** `hAppend`. We feed
-the discharged `hSumcheck` into the already-zero-residual `Logup.logup_completeness_full_perfect`,
-leaving only `hInit`, `hHonest`, `hPerRound`, `hImplSupp`, and the structural message-seam direction
-facts (all proven elsewhere or `rfl`).
+* The honest-support hypothesis `hHonest` formerly threaded through every theorem here was
+  **unsatisfiable**: it quantified over *all* after-outer statements
+  `stmtIn : StmtAfterOuter × (∀ i, OStmtAfterOuter)` and demanded an honest preimage with
+  `stmtIn.2 = (honest-form map)` and pole-freeness for `stmtIn.1.xChallenge`. A `stmtIn` whose
+  `.multiplicity` component is corrupted has no such preimage (the `.input`-slot equations force
+  the preimage oracles, which pin `honestMultiplicity`), and an adversarial `xChallenge` falsifies
+  pole-freeness. Every consumer was therefore uninstantiable. With the claim-true `midRelation`,
+  the hypothesis is simply unnecessary: the embedded sum-check completeness needs only the
+  zero-claim that `midRelation` membership already supplies.
+* `logup_completeness_uncond_perfect` hypothesized `logupCompletenessError F n = 0`, which is
+  impossible (`logupCompletenessError_ne_zero`: the error is `2^n / |F| > 0` over any finite
+  field), so the theorem was vacuous. The genuine non-perfect composition lives in
+  `LogupCompletenessWired.lean`.
 
 No `sorry`/`sorryAx`/`admit`: every step is a real proof or an explicitly named hypothesis. The
 axiom audit at the bottom confirms axiom-cleanliness (`propext`, `Classical.choice`, `Quot.sound`).
@@ -113,10 +122,10 @@ theorem binaryVerifierFusion_holds : OracleVerifier.BinaryVerifierFusion oSpec :
 `logupConcreteSumcheckOracleReduction oSpec F n M params Fact.out` is *definitionally*
 `Sumcheck.Spec.oracleReduction F (logupSumcheckDegree M params) (signDomain F Fact.out) n oSpec`, and
 `innerSumcheckRelIn` / `innerSumcheckRelOut` are *definitionally* `relationRound … 0` /
-`relationRound … (Fin.last n)`. So `Sumcheck.Spec.oracleReduction_perfectCompleteness` applies on the
-nose, once its `hBridge` (`oracleReductionToReductionResidual`) is supplied. We supply that bridge
-from the proven binary fusion (`binaryVerifierFusion_holds`) plus the per-round bridge `hPerRound`,
-via the proven `Sumcheck.Spec.oracleReductionToReductionResidual_of_binary`. -/
+`relationRound … (Fin.last n)`. So `Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge`
+applies on the nose, once its `hBridge` (`oracleReductionToReductionResidual`) is supplied. We supply
+that bridge from the proven binary fusion (`binaryVerifierFusion_holds`) plus the per-round bridge
+`hPerRound`, via the proven `Sumcheck.Spec.oracleReductionToReductionResidual_of_binary`. -/
 
 /-- **Inner multi-round sum-check oracle perfect completeness, modulo the per-round bridge.**
 The only residual is `hPerRound`, the single-round `liftContext`-commutation fact; the deep
@@ -144,30 +153,20 @@ theorem inner_sumcheck_perfectCompleteness_of_perRound
   -- `logupConcreteSumcheckOracleReduction`, `innerSumcheckRelIn/Out` are definitionally the generic
   -- Sumcheck oracle reduction and its round-`0`/round-`last` relations; apply the oracle-level
   -- completeness keystone (which discharges everything else via `reduction_perfectCompleteness`).
-  exact Sumcheck.Spec.oracleReduction_perfectCompleteness
+  exact Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge
     (R := F) (deg := logupSumcheckDegree M params)
     (D := signDomain F (Fact.out : (-1 : F) ≠ 1)) (n := n) (oSpec := oSpec)
     hBridge hInit hImplSupp
 
-/-! ### Step 3: embedded sum-check phase completeness on the honest support -/
+/-! ### Step 3: embedded sum-check phase completeness — no honest-support hypothesis -/
 
-/-- **`SumcheckCompletenessResidual` discharged on the honest support, modulo the per-round bridge.**
+/-- **`SumcheckCompletenessResidual` discharged, modulo the per-round bridge.**
 Chains `inner_sumcheck_perfectCompleteness_of_perRound` (the inner oracle completeness) with the
-proven `sumcheckCompletenessResidual_of_honest` (which discharges the `proj_complete` algebraic
-obligation on the honest-prover support from `hHonest`). The only residuals are `hHonest`,
-`hPerRound`, `hInit`, `hImplSupp`. -/
-theorem sumcheckCompletenessResidual_of_honest_perRound
-    (hHonest :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        ∃ (stmtIn₀ : StmtIn F n M) (oStmtIn₀ : ∀ i, OStmtIn F n M i),
-          (((stmtIn₀, oStmtIn₀), ()) ∈ inputRelation F n M) ∧
-          (∀ u : Hypercube n,
-            stmtIn.1.xChallenge + evalOnHypercube (tableOracle oStmtIn₀) u ≠ 0) ∧
-          stmtIn.2 =
-            (fun
-              | .input i => oStmtIn₀ i
-              | .multiplicity => honestMultiplicity oStmtIn₀
-              | .helpers => honestHelpers params oStmtIn₀ stmtIn.1.xChallenge))
+proven `sumcheckCompletenessResidual_of_inner`, whose `proj_complete` obligation is the theorem
+`SumcheckLensProjComplete_unconditional` (the claim-true `midRelation` membership *is* the zero-sum
+claim). The only residuals are `hPerRound`, `hInit`, `hImplSupp` — **no** honest-support
+hypothesis (the historical `hHonest` was unsatisfiable; see the module docstring). -/
+theorem sumcheckCompletenessResidual_of_perRound
     (hPerRound : ∀ i,
       (Sumcheck.Spec.SingleRound.oracleReduction F n (logupSumcheckDegree M params)
           (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i).toReduction =
@@ -178,39 +177,31 @@ theorem sumcheckCompletenessResidual_of_honest_perRound
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
         = support (liftM q : OracleComp oSpec β)) :
     SumcheckCompletenessResidual oSpec F n M params init impl :=
-  sumcheckCompletenessResidual_of_honest F n M params oSpec init impl hHonest
+  sumcheckCompletenessResidual_of_inner F n M params oSpec init impl
     (inner_sumcheck_perfectCompleteness_of_perRound oSpec F n M params init impl
       hPerRound hInit hImplSupp)
 
 /-! ### Step 4: end-to-end most-unconditional completeness -/
 
-/-- **Most-unconditional LogUp Protocol 2 completeness (issue #13, keystone K-compFull).**
+/-- **Most-unconditional LogUp Protocol 2 completeness via the per-round bridge (issue #13,
+keystone K-compFull).**
 
 The full LogUp oracle reduction is complete with error `logupCompletenessError F n`. The **outer**
 pole-rejection half is proven in-tree from `NeverFail init`, and the **embedded sum-check** half is
-now discharged on the honest support modulo the per-round bridge (the deep unbounded-round verifier
-fusion having been closed by the proven binary keystone). The smallest honest residual set:
+discharged modulo the per-round bridge (the deep unbounded-round verifier fusion having been closed
+by the proven binary keystone, and the `proj_complete` obligation being the theorem
+`SumcheckLensProjComplete_unconditional`). The smallest honest residual set:
 
 * `hInit : NeverFail init` — standard completeness initialization;
-* `hHonest` — the honest-support condition (genuine inputs, honest oracles, pole-free challenge);
 * `hPerRound` — the per-round single-round `liftContext`-commutation bridge;
 * `hImplSupp` — the standard oracle-implementation support-faithfulness condition;
 * `hAppend` — the non-perfect outer⊕sumcheck append-composition completeness.
 
-The conclusion is exactly the headline LogUp completeness statement, with no `sorry`. -/
+The conclusion is exactly the headline LogUp completeness statement, with no `sorry`. For the
+bridge-free, fully-instantiable headline see `logup_completeness_final`
+(`LogupCompletenessFinal.lean`). -/
 theorem logup_completeness_uncond
     (hInit : NeverFail init)
-    (hHonest :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        ∃ (stmtIn₀ : StmtIn F n M) (oStmtIn₀ : ∀ i, OStmtIn F n M i),
-          (((stmtIn₀, oStmtIn₀), ()) ∈ inputRelation F n M) ∧
-          (∀ u : Hypercube n,
-            stmtIn.1.xChallenge + evalOnHypercube (tableOracle oStmtIn₀) u ≠ 0) ∧
-          stmtIn.2 =
-            (fun
-              | .input i => oStmtIn₀ i
-              | .multiplicity => honestMultiplicity oStmtIn₀
-              | .helpers => honestHelpers params oStmtIn₀ stmtIn.1.xChallenge))
     (hPerRound : ∀ i,
       (Sumcheck.Spec.SingleRound.oracleReduction F n (logupSumcheckDegree M params)
           (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i).toReduction =
@@ -222,85 +213,14 @@ theorem logup_completeness_uncond
     (hAppend :
       AppendCompletenessResidual oSpec F n M params init impl
         (outerCompletenessResidual_of_neverFail oSpec F n M params init impl hInit)
-        (sumcheckCompletenessResidual_of_honest_perRound oSpec F n M params init impl
-          hHonest hPerRound hInit hImplSupp)) :
+        (sumcheckCompletenessResidual_of_perRound oSpec F n M params init impl
+          hPerRound hInit hImplSupp)) :
     (logupOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
   logup_completeness_full oSpec F n M params init impl hInit
-    (sumcheckCompletenessResidual_of_honest_perRound oSpec F n M params init impl
-      hHonest hPerRound hInit hImplSupp)
+    (sumcheckCompletenessResidual_of_perRound oSpec F n M params init impl
+      hPerRound hInit hImplSupp)
     hAppend
-
-/-! ### The perfect special case: zero append residual
-
-When `logupCompletenessError F n = 0`, the proven oracle-level keystone discharges the append
-composition outright, so `hAppend` is *not* needed. We feed the discharged sum-check half into the
-already-zero-residual `logup_completeness_full_perfect`. -/
-
-noncomputable local instance instPSpecChallengeOIUncond :
-    ∀ i, OracleInterface ((pSpec F n M params).Challenge i) :=
-  ProtocolSpec.challengeOracleInterface
-
-noncomputable local instance instOuterChallengeOIUncond :
-    ∀ i, OracleInterface ((outerPSpec F n params).Challenge i) :=
-  ProtocolSpec.challengeOracleInterface
-
-noncomputable local instance instSumcheckChallengeOIUncond :
-    ∀ i, OracleInterface ((logupSumcheckPSpec F n M params).Challenge i) :=
-  ProtocolSpec.challengeOracleInterface
-
-/-- **Most-unconditional LogUp completeness in the perfect special case — no append residual.**
-
-When `logupCompletenessError F n = 0`, the append composition is discharged by the proven keystone
-(`logup_completeness_full_perfect`), so the only remaining inputs are the discharged embedded
-sum-check half and the structural message-seam direction facts. The residual surface is `hInit`,
-`hHonest`, `hPerRound`, `hImplSupp`, the message-seam direction facts (`hn`, `hDir`, `hDir₂`), and
-the proven verifier-fusion bridge `hBridge` — with **no** non-perfect append residual. -/
-theorem logup_completeness_uncond_perfect
-    (hErr : logupCompletenessError F n = 0)
-    (hInit : NeverFail init)
-    (hHonest :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        ∃ (stmtIn₀ : StmtIn F n M) (oStmtIn₀ : ∀ i, OStmtIn F n M i),
-          (((stmtIn₀, oStmtIn₀), ()) ∈ inputRelation F n M) ∧
-          (∀ u : Hypercube n,
-            stmtIn.1.xChallenge + evalOnHypercube (tableOracle oStmtIn₀) u ≠ 0) ∧
-          stmtIn.2 =
-            (fun
-              | .input i => oStmtIn₀ i
-              | .multiplicity => honestMultiplicity oStmtIn₀
-              | .helpers => honestHelpers params oStmtIn₀ stmtIn.1.xChallenge))
-    (hPerRound : ∀ i,
-      (Sumcheck.Spec.SingleRound.oracleReduction F n (logupSumcheckDegree M params)
-          (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i).toReduction =
-        Sumcheck.Spec.SingleRound.reduction F n (logupSumcheckDegree M params)
-          (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i)
-    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
-      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
-        = support (liftM q : OracleComp oSpec β))
-    (hn : 0 < Fin.vsum (fun _ : Fin n => 2))
-    (hDir :
-      (pSpec F n M params).dir (⟨4, by
-        change 4 < 4 + Fin.vsum (fun _ : Fin n => 2); omega⟩ :
-          Fin (4 + Fin.vsum (fun _ : Fin n => 2))) = .P_to_V)
-    (hDir₂ : (logupSumcheckPSpec F n M params).dir (⟨0, hn⟩ :
-        Fin (Fin.vsum (fun _ : Fin n => 2))) = .P_to_V)
-    (hBridge :
-      OracleReduction.appendToReductionResidual
-        (outerOracleReduction oSpec F n M params)
-        (sumcheckOracleReduction oSpec F n M params))
-    [(oSpec + [(pSpec F n M params).Challenge]ₒ).Fintype]
-    [(oSpec + [(pSpec F n M params).Challenge]ₒ).Inhabited]
-    [(oSpec + [(outerPSpec F n params).Challenge]ₒ).Fintype]
-    [(oSpec + [(outerPSpec F n params).Challenge]ₒ).Inhabited]
-    [(oSpec + [(logupSumcheckPSpec F n M params).Challenge]ₒ).Fintype]
-    [(oSpec + [(logupSumcheckPSpec F n M params).Challenge]ₒ).Inhabited] :
-    (logupOracleReduction oSpec F n M params).completeness init impl
-      (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
-  logup_completeness_full_perfect oSpec F n M params init impl hErr hInit
-    (sumcheckCompletenessResidual_of_honest_perRound oSpec F n M params init impl
-      hHonest hPerRound hInit hImplSupp)
-    hn hDir hDir₂ hImplSupp hBridge
 
 end Uncond
 
@@ -309,6 +229,5 @@ end Logup
 /- Axiom audit for the most-unconditional LogUp completeness keystone. -/
 #print axioms Logup.binaryVerifierFusion_holds
 #print axioms Logup.inner_sumcheck_perfectCompleteness_of_perRound
-#print axioms Logup.sumcheckCompletenessResidual_of_honest_perRound
+#print axioms Logup.sumcheckCompletenessResidual_of_perRound
 #print axioms Logup.logup_completeness_uncond
-#print axioms Logup.logup_completeness_uncond_perfect

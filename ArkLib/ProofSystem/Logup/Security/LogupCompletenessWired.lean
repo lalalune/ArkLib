@@ -52,19 +52,20 @@ non-perfect analogue here.
   hypotheses: the embedded-sumcheck completeness (`hSumcheck`, blocked upstream by the missing
   generic `Sumcheck.Spec` completeness) and the honest-implementation side conditions
   (`hInit`/`himplSP`/`himplNF`/`himplVB`, vacuous when `oSpec = []ₒ`, supplied by every honest
-  interactive implementation). The message-seam direction facts are the same structural ones the
-  in-tree perfect case (`appendCompletenessResidual_of_perfect`) already takes.
+  interactive implementation). The message-seam direction facts are structural
+  (discharged from `0 < n` by `LogupSoundnessMsgSeam.lean`).
 
 * `Logup.logup_completeness_wired` — the **end-to-end** LogUp completeness, with the outer half
   discharged in-tree by `outerCompletenessResidual_of_neverFail` and the append half discharged by
   `appendCompletenessResidual_wired`. The **only** remaining input is the embedded-sumcheck
   completeness `hSumcheck`.
 
-This strictly improves on `LogupCompletenessClose.lean`: there, the `AppendCompletenessResidual` was
-discharged **only** in the perfect special case `logupCompletenessError F n = 0`
-(`appendCompletenessResidual_of_perfect`). Here it is discharged for the **general non-zero error**
-`logupCompletenessError F n`, carrying the outer pole-rejection error through the composition — which
-is exactly the wall that file flagged as remaining.
+This strictly improves on `LogupCompletenessClose.lean`: there, the `AppendCompletenessResidual`
+remained an explicit hypothesis (its historical "perfect special case" discharge was vacuous —
+`logupCompletenessError F n = 0` is impossible by `logupCompletenessError_ne_zero` — and has been
+deleted). Here it is discharged for the **actual non-zero error** `logupCompletenessError F n`,
+carrying the outer pole-rejection error through the composition — which is exactly the wall that
+file flagged as remaining.
 
 The axiom audit at the bottom confirms axiom-cleanliness (`propext`, `Classical.choice`, `Quot.sound`;
 no `sorryAx`).
@@ -165,10 +166,10 @@ variable [oSpec.Fintype] [oSpec.Inhabited]
 
 /-- **LogUp `AppendCompletenessResidual` discharged for the general (non-zero) error.**
 
-This is the strengthening of `appendCompletenessResidual_of_perfect`: that lemma discharged the
-append residual **only** in the perfect special case `logupCompletenessError F n = 0`. Here the
-residual is discharged for the **actual** LogUp error `logupCompletenessError F n` (= `|Hypercube n| /
-|F|`, non-zero over a finite field), carrying the outer pole-rejection error through the composition.
+Here the residual is discharged for the **actual** LogUp error `logupCompletenessError F n`
+(= `|Hypercube n| / |F|`, non-zero over a finite field — `logupCompletenessError_ne_zero`, which is
+why the historical perfect-special-case lemma was vacuous and is gone), carrying the outer
+pole-rejection error through the composition.
 
 The proof feeds the in-tree outer completeness (`outerCompletenessResidual_of_neverFail`, error
 `logupCompletenessError F n`) and the embedded-sumcheck completeness `hSumcheck` (error `0`) into the
@@ -229,8 +230,8 @@ completeness `hSumcheck` (blocked upstream by the missing generic `Sumcheck.Spec
 `IsComplete` instance) plus the honest-implementation side conditions every interactive
 implementation satisfies.
 
-This is strictly stronger than `logup_completeness_full_perfect`, which closed the same end-to-end
-statement only in the perfect special case `logupCompletenessError F n = 0`. -/
+This carries the genuine non-zero error end-to-end (the historical perfect-special-case variant
+hypothesized the impossible `logupCompletenessError F n = 0` and has been deleted). -/
 theorem logup_completeness_wired
     (hInit : NeverFail init)
     (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl)

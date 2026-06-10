@@ -25,8 +25,9 @@ parts of those blockers:
   `logup_soundness_msgSeam`;
 * the completeness append blocker is discharged for the general non-perfect outer error by
   `logup_completeness_wired`;
-* the embedded-sumcheck completeness inner theorem is wired by
-  `sumcheckCompletenessResidual_holds_uncondInner`;
+* the embedded-sumcheck completeness is fully discharged by
+  `sumcheckCompletenessResidual_unconditional` (no honest-support hypothesis: the historical
+  globally-quantified `hHonest` was unsatisfiable and has been removed — issue #13, dmvt audit);
 * the embedded-sumcheck soundness marginal bridge is wired by
   `sumcheckVerifier_soundness_forLang_wired`, including the corrected intermediate language used by
   the final soundness close.
@@ -457,9 +458,8 @@ remaining obligations:
 
 * `h : SubPhaseCompletenessResidual …` — the two sub-phase completeness facts: the outer phase is
   complete with error `logupCompletenessError F n`, and the embedded sumcheck phase is *perfectly*
-  complete. The sibling cone `logup_completeness_uncond` further reduces these to the five named
-  hypotheses `{hInit, hHonest, hPerRound, hImplSupp, hAppend}`, with the deep unbounded-round
-  verifier fusion already discharged by the proven binary keystone.
+  complete. This bundle is itself a theorem under `{hInit, hImplSupp}`
+  (`subPhaseCompletenessResidual_unconditional`, `SumcheckCompletenessUncond.lean`).
 * `hAppendCompleteness : … .appendCompletenessResidual …` — the sequential-composition
   completeness fact carried as the explicit residual hypothesis by the `append_completeness` API.
 
@@ -476,23 +476,16 @@ theorem issue13_completeness
 /-- **Issue #13 — LogUp Protocol 2 completeness with append and embedded sumcheck wired.**
 
 The outer pole-rejection half is discharged by `outerCompletenessResidual_of_neverFail`; the
-embedded-sumcheck half is supplied by `sumcheckCompletenessResidual_holds_uncondInner`; and the
-general non-perfect append composition is discharged by `logup_completeness_wired`.  The only
-remaining assumptions are the honest-run support condition, standard initialization/support facts,
-and the honest-`impl` side conditions required by the message-seam completeness keystone. -/
+embedded-sumcheck half is supplied by the unconditional
+`sumcheckCompletenessResidual_unconditional` (no honest-support hypothesis — the historical
+globally-quantified `hHonest` was unsatisfiable and has been removed; issue #13, dmvt audit); and
+the general non-perfect append composition is discharged by `logup_completeness_wired`. The only
+remaining assumptions are the non-degeneracy `0 < n`, standard initialization/support facts, and
+the honest-`impl` side conditions required by the message-seam completeness keystone — all of which
+are *satisfiable* (see `logup_completeness_final_instantiable`,
+`LogupCompletenessFinal.lean`, for a concrete `ZMod 5` instantiation). -/
 theorem issue13_completeness_wired [oSpec.Fintype] [oSpec.Inhabited]
     (hInit : NeverFail init)
-    (hHonest :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        ∃ (stmtIn₀ : StmtIn F n M) (oStmtIn₀ : ∀ i, OStmtIn F n M i),
-          (((stmtIn₀, oStmtIn₀), ()) ∈ inputRelation F n M) ∧
-          (∀ u : Hypercube n,
-            stmtIn.1.xChallenge + evalOnHypercube (tableOracle oStmtIn₀) u ≠ 0) ∧
-          stmtIn.2 =
-            (fun
-              | .input i => oStmtIn₀ i
-              | .multiplicity => honestMultiplicity oStmtIn₀
-              | .helpers => honestHelpers params oStmtIn₀ stmtIn.1.xChallenge))
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
         = support (liftM q : OracleComp oSpec β))
@@ -505,8 +498,7 @@ theorem issue13_completeness_wired [oSpec.Fintype] [oSpec.Inhabited]
     (logupOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
   logup_completeness_wired oSpec F n M params init impl hInit
-    (sumcheckCompletenessResidual_holds_uncondInner oSpec F n M params init impl
-      hHonest hInit hImplSupp)
+    (sumcheckCompletenessResidual_unconditional oSpec F n M params init impl hInit hImplSupp)
     (logupSumcheck_length_pos n hn)
     (by simpa [pSpec] using (logup_seam_dir F n M params hn))
     (logupSumcheckPSpec_first_dir F n M params hn)

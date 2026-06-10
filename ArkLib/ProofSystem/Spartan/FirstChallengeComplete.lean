@@ -27,9 +27,9 @@ phase's completeness is **unconditional**: it takes no `h_inner` hypothesis.
   is exactly `zeroCheckVirtualPolynomial_eq_zero_of_satisfied`: an R1CS-satisfying instance makes the
   zero-check polynomial `𝒢` vanish, so the two `RandomQuery` virtual oracles `(𝒢, 0)` agree
   (`RandomQuery.relIn`). Its `lift_complete` is the R1CS pass-through.
-* `firstChallenge_perfectCompleteness` — a direct run proof for the one-round challenge adapter:
-  the verifier samples `τ`, the prover records it, and the statement/oracles/witness are carried
-  through unchanged.
+* `firstChallenge_perfectCompleteness` — `OracleReduction.liftContext_perfectCompleteness` applied to
+  `RandomQuery.oracleReduction_completeness`, the coherence instance `firstChallenge_liftContextCoherent`
+  (#433), and `firstChallengeLensComplete`.
 -/
 
 open MvPolynomial OracleComp
@@ -83,27 +83,35 @@ instance firstChallengeLensComplete :
     simp only [firstChallengeRelIn, Set.mem_setOf_eq] at hRelIn
     simpa only [firstChallengeRelOut, Set.mem_setOf_eq] using hRelIn
 
-set_option maxHeartbeats 0 in
 /-- **`firstChallenge` phase perfect completeness (issue #114), unconditional.** The Spartan
 `firstChallenge` oracle reduction is perfectly complete from `firstChallengeRelIn` to
 `firstChallengeRelOut`.
 
-The protocol implementation is behaviorally the old `RandomQuery` lift, but the concrete reduction
-is now the direct `firstChallengeProver`/`firstChallengeVerifier` pair. Proving completeness against
-that run avoids the heavy deep-lens normalization while preserving the same semantic endpoints. -/
+The transfer is `OracleReduction.liftContext_perfectCompleteness` applied to the (closed, unconditional)
+inner `RandomQuery.oracleReduction_completeness`, the coherence instance
+`firstChallenge_liftContextCoherent` (#433), and `firstChallengeLensComplete`, with `hStmt = rfl`.
+The lift defeq is heavy (deep lens normalization): unlimited heartbeats, verified to terminate. -/
+set_option maxHeartbeats 0 in
 theorem firstChallenge_perfectCompleteness
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)} :
     (oracleReduction.firstChallenge R pp oSpec).perfectCompleteness init impl
       (firstChallengeRelIn (R := R) pp) (firstChallengeRelOut (R := R) pp) := by
+  haveI : SampleableType (OracleInterface.Query (MvPolynomial (Fin pp.ℓ_m) R)) :=
+    inferInstanceAs (SampleableType (Fin pp.ℓ_m → R))
   simp only [OracleReduction.perfectCompleteness, oracleReduction.firstChallenge,
-    firstChallengeRelIn, firstChallengeRelOut]
+    firstChallengeRelIn, firstChallengeRelOut, OracleReduction.liftContext]
   simp only [Reduction.perfectCompleteness_eq_prob_one]
   intro ⟨stmt, oStmt⟩ wit hRelIn
   simp only [OracleReduction.toReduction, Reduction.run, Prover.run_of_verifier_first,
-    firstChallengeProver, firstChallengeVerifier, OracleVerifier.toVerifier, Verifier.run]
+    OracleProver.liftContext, Prover.liftContext, RandomQuery.oracleReduction,
+    RandomQuery.oracleProver, OracleVerifier.liftContext, RandomQuery.oracleVerifier,
+    OracleVerifier.toVerifier, Verifier.run, Verifier.liftContext]
   simp_rw [show (pure : _ → OptionT (OracleComp _) _) = fun x => (pure (some x) :
     OracleComp _ _) from rfl]
-  try simp only [← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+  simp only [firstChallengeContextLens, firstChallengeStmtLens, firstChallengeOracleLens,
+    RandomQuery.pSpec, RandomQuery.StmtIn, RandomQuery.WitIn, RandomQuery.StmtOut,
+    RandomQuery.WitOut, RandomQuery.OStmtIn, RandomQuery.OStmtOut,
+    ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
     pure_bind, bind_assoc]
   erw [simulateQ_bind]
   erw [simulateQ_bind]
