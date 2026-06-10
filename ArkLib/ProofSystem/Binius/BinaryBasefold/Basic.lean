@@ -986,23 +986,18 @@ def snoc_oracle {i : Fin ℓ} {destIdx : Fin r}
           exact Nat.lt_of_le_of_ne hi_succ_le_ℓ hi_succ_ne_ℓ
         rw [toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hi]
         rfl
-      by
-        simp only [OracleStatement]
-        simp_rw [h_commit_round]
-        have h_idx : destIdx = ⟨j.val * ϑ, by omega⟩ := by
+      have h_domain :
+          ↥(sDomain 𝔽q β h_ℓ_add_R_rate destIdx) =
+            ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.succ.val, by omega⟩) := by
+        have h_fin : destIdx = (⟨i.succ.val, by omega⟩ : Fin r) := by
           apply Fin.eq_of_val_eq
           rw [h_destIdx]
-          exact h_commit_round.symm
-        have h_domain :
-            ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.succ.val, by omega⟩) =
-              ↥(sDomain 𝔽q β h_ℓ_add_R_rate destIdx) := by
-          have h_fin : (⟨i.succ.val, by omega⟩ : Fin r) = destIdx := by
-            apply Fin.eq_of_val_eq
-            rw [h_destIdx]
-            simp only [Fin.val_mk]
-            omega
-          exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
-        exact fun y => newOracleFn (cast h_domain y)
+          rfl
+        exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
+      cast (by
+        simp only [OracleFunction, OracleStatement]
+        simp_rw [h_commit_round]
+        exact congrArg (fun D : Type => D → L) h_domain) newOracleFn
     else by
       simp only [OracleStatement]
       have h := toOutCodewordsCount_succ_eq ℓ ϑ i
@@ -1033,6 +1028,22 @@ def snoc_oracle {i : Fin ℓ} {destIdx : Fin r}
           rw [h_count_eq]
           exact j.isLt
         linarith -- hj_lt and hj
+
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
+lemma snoc_oracle_new_heq_of_commit {i : Fin ℓ} {destIdx : Fin r}
+    (h_destIdx : destIdx = ⟨i.val + 1, by omega⟩)
+    (hCR : isCommitmentRound ℓ ϑ i)
+    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
+      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
+    (hj : ¬ j.val < toOutCodewordsCount ℓ ϑ i.castSucc) :
+    HEq (snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      h_destIdx oStmtIn newOracleFn j) newOracleFn := by
+  subst h_destIdx
+  unfold snoc_oracle
+  simp only [hCR, hj, ↓reduceDIte]
+  exact cast_heq _ newOracleFn
 
 def take_snoc_oracle (i : Fin ℓ)
     (oStmtIn : (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) →
