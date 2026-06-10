@@ -149,8 +149,10 @@ theorem linearCombination_perfectCompleteness_of
 
 /-! ## The h₅ seam weld for the canonical chain -/
 
+omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
 /-- **Seam weld (h₅ → h₆).** On the canonical relation chain of
-`composedCompletenessResidual_of_five_leaves` — `relE := sendEvalClaimRelOut … (firstSumcheckRelOutBF …)`,
+`composedCompletenessResidual_of_five_leaves` — with
+`relE := sendEvalClaimRelOut … (firstSumcheckRelOutBF …)`,
 the output the proven `sendEvalClaim_perfectCompleteness` emits from the consumer-pinned
 `firstSumcheckRelOutBF` — the natural pushforward output relation of the `linearCombination`
 phase refines `prependRLCTargetRelIn`, the input relation of the proven honest RLC-target
@@ -164,6 +166,7 @@ theorem linearCombinationRelOutOf_sendEvalClaimBF_subset_prependRLCTargetRelIn :
   rintro x ⟨hR1CS, hHonest⟩
   exact ⟨hR1CS, fun idx => congrFun hHonest idx⟩
 
+omit [DecidableEq R] [SampleableType R] in
 /-- **Consumer-endpoint form of the `linearCombination` leaf completeness** (`h₅` of
 `composedCompletenessResidual_of_five_leaves`): perfectly complete from
 `sendEvalClaimRelOut … (firstSumcheckRelOutBF …)` (the proven `sendEvalClaim` leaf output at the
