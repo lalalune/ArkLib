@@ -62,25 +62,36 @@ theorem Q₀_map :
     Q₀ (Q.map (PowerSeries.map φ : R⟦X⟧ →+* R'⟦X⟧)) = (Q₀ Q).map φ := by
   unfold Q₀
   rw [Polynomial.map_map, Polynomial.map_map]
-  congr 1
-  ext f : 1
-  exact PowerSeries.constantCoeff_map φ f
+  have hcomp : (constantCoeff (R := R')).comp (PowerSeries.map φ)
+      = φ.comp (constantCoeff (R := R)) :=
+    RingHom.ext fun f => by
+      rw [RingHom.comp_apply, RingHom.comp_apply,
+        ← PowerSeries.coeff_zero_eq_constantCoeff_apply,
+        ← PowerSeries.coeff_zero_eq_constantCoeff_apply, PowerSeries.coeff_map]
+  rw [hcomp]
 
 /-- The derivative response commutes: the target response is the `φ`-image of the source's. -/
 theorem eval_derivative_Q₀_map :
     Polynomial.eval (φ c) (Polynomial.derivative
         (Q₀ (Q.map (PowerSeries.map φ : R⟦X⟧ →+* R'⟦X⟧))))
       = φ (Polynomial.eval c (Polynomial.derivative (Q₀ Q))) := by
-  rw [Q₀_map, ← Polynomial.derivative_map, Polynomial.eval_map, Polynomial.eval₂_hom]
+  rw [Q₀_map, Polynomial.derivative_map, Polynomial.eval_map, Polynomial.eval₂_hom]
 
 /-- Polynomial evaluation over power series commutes with coefficient maps. -/
 theorem map_eval_powerSeries (γ : R⟦X⟧) :
     (PowerSeries.map φ) (Polynomial.eval γ Q)
       = Polynomial.eval ((PowerSeries.map φ) γ)
           (Q.map (PowerSeries.map φ : R⟦X⟧ →+* R'⟦X⟧)) := by
-  rw [Polynomial.eval_map, ← Polynomial.eval₂_id_eq_eval]
-  · exact (Polynomial.hom_eval₂ Q (RingHom.id _) (PowerSeries.map φ) γ).trans
-      (by rw [RingHom.comp_id])
+  rw [Polynomial.eval_map]
+  have h := Polynomial.hom_eval₂ Q (RingHom.id _) (PowerSeries.map φ : R⟦X⟧ →+* R'⟦X⟧) γ
+  rwa [RingHom.comp_id, Polynomial.eval₂_id] at h
+
+/-- `PowerSeries.map` carries monomials to monomials. -/
+theorem map_monomial' (n : ℕ) (a : R) :
+    (PowerSeries.map φ) (PowerSeries.monomial n a) = PowerSeries.monomial n (φ a) := by
+  ext m
+  rw [PowerSeries.coeff_map, PowerSeries.coeff_monomial, PowerSeries.coeff_monomial,
+    apply_ite φ, map_zero]
 
 variable (hu : IsUnit (Polynomial.eval c (Polynomial.derivative (Q₀ Q))))
 
@@ -93,7 +104,7 @@ theorem map_S (t : ℕ) :
   induction t with
   | zero => rw [S, S, PowerSeries.map_C]
   | succ t ih =>
-      rw [S, S, map_add, PowerSeries.map_monomial, ih]
+      rw [S, S, map_add, map_monomial', ih]
       congr 2
       rw [map_mul, map_neg, ringInverse_map φ hu, eval_derivative_Q₀_map,
         ← PowerSeries.coeff_map, map_eval_powerSeries, ih]
@@ -141,6 +152,7 @@ end ProximityPrize.HenselSeriesCoeff
 #print axioms ProximityPrize.HenselSeriesCoeff.Q₀_map
 #print axioms ProximityPrize.HenselSeriesCoeff.eval_derivative_Q₀_map
 #print axioms ProximityPrize.HenselSeriesCoeff.map_eval_powerSeries
+#print axioms ProximityPrize.HenselSeriesCoeff.map_monomial'
 #print axioms ProximityPrize.HenselSeriesCoeff.map_S
 #print axioms ProximityPrize.HenselSeriesCoeff.map_γ
 #print axioms ProximityPrize.HenselSeriesCoeff.coeff_map_γ
