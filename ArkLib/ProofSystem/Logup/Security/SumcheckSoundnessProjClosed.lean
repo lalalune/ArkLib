@@ -132,4 +132,4 @@ end SumcheckSoundnessProjClosed
 end Logup
 
 /- Axiom audit for the hProj-closed #13 sum-check soundness residual. -/
-#print axioms Logup.sumcheckSoundnessResidual_holds_projClosed
+

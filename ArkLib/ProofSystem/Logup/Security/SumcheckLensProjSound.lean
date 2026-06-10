@@ -62,7 +62,7 @@ variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)
 variable (n M : ℕ)
 variable (params : ProtocolParams M)
 
-local instance : Inhabited F := ⟨0⟩
+local instance instInhabitedFieldSumcheckLensProjSound : Inhabited F := ⟨0⟩
 
 /-- **Bijection between the `{±1}`-domain product Finset and the Boolean hypercube.** A copy of the
 in-tree (private) `sum_piFinset_map_univ_eq_sum_hypercube`, kept here so this file can re-derive the
