@@ -200,8 +200,399 @@ noncomputable def outerMidStateFunction :
 
 end MalSoundSF
 
+section Flips
+
+variable {ι : Type} (oSpec : OracleSpec ι)
+variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)]
+  [SampleableType F]
+variable (n M : ℕ) (params : ProtocolParams M)
+variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+
+local instance instInhabitedFieldFlips : Inhabited F := ⟨0⟩
+
+/-- Generic uniform-draw membership bound over any fintype challenge: a tsum of uniform masses
+weighted by event probabilities supported inside a finite set is at most `#mem / #C`. -/
+theorem tsum_uniform_mem_le {C : Type} [Fintype C] [Nonempty C] [SampleableType C]
+    [DecidableEq C]
+    (mem : Finset C) (g : C → ℝ≥0∞)
+    (hg : ∀ c, c ∉ mem → g c = 0) (hgle : ∀ c, g c ≤ Pr[= c | ($ᵗ C)]) :
+    (∑' c : C, g c) ≤ (mem.card : ℝ≥0∞) / (Fintype.card C : ℝ≥0∞) := by
+  classical
+  have hmass : ∀ c : C, Pr[= c | ($ᵗ C)] = (Fintype.card C : ℝ≥0∞)⁻¹ := by
+    intro c
+    rw [probOutput_uniformSample]
+  calc (∑' c : C, g c)
+      ≤ ∑' c : C, (if c ∈ mem then (Fintype.card C : ℝ≥0∞)⁻¹ else 0) := by
+        refine ENNReal.tsum_le_tsum (fun c => ?_)
+        by_cases hc : c ∈ mem
+        · rw [if_pos hc]
+          exact le_trans (hgle c) (le_of_eq (hmass c))
+        · rw [if_neg hc, hg c hc]
+    _ = ∑ c : C, (if c ∈ mem then (Fintype.card C : ℝ≥0∞)⁻¹ else 0) := tsum_fintype _
+    _ = (mem.card : ℝ≥0∞) * (Fintype.card C : ℝ≥0∞)⁻¹ := by
+        rw [Finset.sum_ite_mem, Finset.univ_inter, Finset.sum_const, nsmul_eq_mul]
+    _ = _ := by rw [div_eq_mul_inv]
+
+end Flips
+
+
+
+#print axioms Logup.tsum_uniform_mem_le
+
+
+
+section RbrMain
+
+variable {ι : Type} (oSpec : OracleSpec ι)
+variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)]
+  [SampleableType F]
+variable (n M : ℕ) (params : ProtocolParams M)
+variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+
+local instance instInhabitedFieldRbrMain : Inhabited F := ⟨0⟩
+
+/-- The per-round RBR error of the claim-based outer state: the bad-challenge mass at round 1,
+the `(z, λ)` Schwartz–Zippel mass at round 3. -/
+noncomputable def outerMidRbrError : (outerPSpec F n params).ChallengeIdx → ℝ≥0 :=
+  fun i => if i.1.val = 1
+    then (((M + 1) * 2 ^ n - 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0)
+    else ((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0)
+
+/-- **Outer RBR soundness at `midLanguage`.** -/
+theorem outerVerifier_rbrSoundness_mid :
+    ((outerVerifier oSpec F n M params).toVerifier).rbrSoundness init impl
+      (inputRelation F n M).language (midLanguage F n M params)
+      (outerMidRbrError F n M params) := by
+  classical
+  refine ⟨outerMidStateFunction oSpec F n M params init impl, ?_⟩
+  intro stmtIn hStmtIn WitIn WitOut witIn prover i
+  have hBad : ¬ (((stmtIn.1, stmtIn.2), ()) ∈ inputRelation F n M) := by
+    intro h
+    exact hStmtIn ((Set.mem_language_iff _ _).mpr ⟨(), h⟩)
+  rcases i with ⟨⟨iv, hiv⟩, hdir⟩
+  interval_cases iv
+  · exact absurd hdir (by exact fun h => by cases h)
+  · -- round 1: the bad-challenge flip
+    have herr : outerMidRbrError F n M params ⟨⟨1, hiv⟩, hdir⟩
+        = (((M + 1) * 2 ^ n - 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+      unfold outerMidRbrError; norm_num
+    rw [herr]
+    refine le_trans (probEvent_bind_le_of_forall_support init _ _ _ (fun s _ => ?_)) le_rfl
+    rw [simulateQ_bind, StateT.run'_bind_lib]
+    refine probEvent_bind_le_of_forall_support _ _ _ _ (fun rk _ => ?_)
+    obtain ⟨⟨t, pst⟩, s'⟩ := rk
+    rw [liftComp_eq_liftM]
+    rw [ChallengeCoherence.probEvent_run'_simulateQ_addLift_getChallenge_bind impl s'
+      ⟨⟨1, hiv⟩, hdir⟩ (fun c => pure (t, c)) _]
+    haveI : SampleableType ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩) :=
+      (inferInstance : SampleableType F)
+    haveI : DecidableEq ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩) :=
+      (inferInstance : DecidableEq F)
+    haveI : Fintype ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩) :=
+      (inferInstance : Fintype F)
+    haveI : Nonempty ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩) :=
+      (inferInstance : Nonempty F)
+    refine le_trans (tsum_uniform_mem_le
+      (C := (outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩)
+      (mem := Finset.univ.filter (fun c => (show F from c) ∈
+        outerBadChallenges params stmtIn.2
+          (show MultilinearOracle F n from t ⟨0, by norm_num⟩)))
+      _ ?hg ?hgle) ?_
+    case hg =>
+      intro c hc
+      rw [mul_eq_zero]
+      right
+      rw [simulateQ_pure]
+      refine probEvent_eq_zero ?_
+      rintro x hx ⟨hno, hyes⟩
+      simp only [StateT.run'_eq, StateT.run_pure, _root_.map_pure, support_pure,
+        Set.mem_singleton_iff] at hx
+      subst hx
+      unfold outerMidStateFunction outerMidState at hyes
+      rcases hyes with h | ⟨h, -⟩ | ⟨-, -, hmem⟩
+      · exact hStmtIn h
+      · exact absurd h (by norm_num)
+      · exact hc (Finset.mem_filter.mpr ⟨Finset.mem_univ _, hmem⟩)
+    case hgle =>
+      intro c
+      exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (by rw [mul_one])
+    · -- card bound: |bad| ≤ (M+1)·2ⁿ − 1; identify card C = card F
+      have hcardC : Fintype.card ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩)
+          = Fintype.card F := Fintype.card_congr (Equiv.cast rfl)
+      have hfle : (Finset.univ.filter (fun c : (outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩ =>
+          (show F from c) ∈ outerBadChallenges params stmtIn.2
+            (show MultilinearOracle F n from t ⟨0, by norm_num⟩))).card
+          ≤ (M + 1) * 2 ^ n - 1 := by
+        refine le_trans (Finset.card_le_card_of_injOn (fun c => show F from c)
+          (fun c hc => (Finset.mem_filter.mp hc).2) (fun a _ b _ h => h)) ?_
+        exact outerBadChallenges_card_le params stmtIn.1 stmtIn.2 hBad _
+      rw [hcardC]
+      rw [ENNReal.coe_div (by exact_mod_cast Fintype.card_ne_zero), ENNReal.coe_natCast,
+        ENNReal.coe_natCast]
+      gcongr
+      exact_mod_cast hfle
+  · exact absurd hdir (by exact fun h => by cases h)
+  · -- round 3: the (z, λ) Schwartz–Zippel flip
+    have herr : outerMidRbrError F n M params ⟨⟨3, hiv⟩, hdir⟩
+        = ((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+      unfold outerMidRbrError; norm_num
+    rw [herr]
+    refine le_trans (probEvent_bind_le_of_forall_support init _ _ _ (fun s _ => ?_)) le_rfl
+    rw [simulateQ_bind, StateT.run'_bind_lib]
+    refine probEvent_bind_le_of_forall_support _ _ _ _ (fun rk _ => ?_)
+    obtain ⟨⟨t, pst⟩, s'⟩ := rk
+    rw [liftComp_eq_liftM]
+    rw [ChallengeCoherence.probEvent_run'_simulateQ_addLift_getChallenge_bind impl s'
+      ⟨⟨3, hiv⟩, hdir⟩ (fun c => pure (t, c)) _]
+    haveI : SampleableType ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) :=
+      (inferInstance : SampleableType (BatchingChallenge F n params.numGroups))
+    haveI : DecidableEq ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) :=
+      (inferInstance : DecidableEq (BatchingChallenge F n params.numGroups))
+    haveI : Fintype ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) :=
+      (inferInstance : Fintype (BatchingChallenge F n params.numGroups))
+    haveI : Nonempty ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) :=
+      (inferInstance : Nonempty (BatchingChallenge F n params.numGroups))
+    -- name the prefix data
+    set mult : MultilinearOracle F n := show MultilinearOracle F n from t ⟨0, by norm_num⟩
+      with hmult
+    set x : F := show F from t ⟨1, by norm_num⟩ with hxdef
+    set helpers : HelperMessages F n params.numGroups :=
+      show HelperMessages F n params.numGroups from t ⟨2, by norm_num⟩ with hhelp
+    by_cases hguard : ∀ u : Hypercube n,
+        x + evalOnHypercube (tableOracle stmtIn.2) u ≠ 0
+    case neg =>
+      -- the pole guard fails: the final state cannot hold, the flip event is empty
+      refine le_trans (le_of_eq ?_) (zero_le _)
+      rw [ENNReal.tsum_eq_zero]
+      intro c
+      rw [mul_eq_zero]
+      right
+      rw [simulateQ_pure]
+      refine probEvent_eq_zero ?_
+      rintro y hy ⟨hno, hyes⟩
+      simp only [StateT.run'_eq, StateT.run_pure, _root_.map_pure, support_pure,
+        Set.mem_singleton_iff] at hy
+      subst hy
+      unfold outerMidStateFunction outerMidState at hyes
+      rcases hyes with h | ⟨-, hg, -⟩ | ⟨-, h3, -⟩
+      · exact hStmtIn h
+      · exact hguard hg
+      · exact absurd h3 (by norm_num)
+    case pos =>
+      by_cases hxbad : x ∈ outerBadChallenges params stmtIn.2 mult
+      case pos =>
+        -- the state at round 3 is already true: no flip possible
+        refine le_trans (le_of_eq ?_) (zero_le _)
+        rw [ENNReal.tsum_eq_zero]
+        intro c
+        rw [mul_eq_zero]
+        right
+        rw [simulateQ_pure]
+        refine probEvent_eq_zero ?_
+        rintro y hy ⟨hno, -⟩
+        simp only [StateT.run'_eq, StateT.run_pure, _root_.map_pure, support_pure,
+          Set.mem_singleton_iff] at hy
+        subst hy
+        refine hno ?_
+        unfold outerMidStateFunction outerMidState
+        exact Or.inr (Or.inr ⟨by norm_num, by norm_num, hxbad⟩)
+      case neg =>
+        -- the genuine SZ flip: the claim is not identically zero, count its zero set
+        have hNot := claim_not_identicallyZero params stmtIn.1 stmtIn.2 hBad mult x
+          hguard hxbad helpers
+        have hcount := card_filter_claimZero_mul_card_le (F := F)
+          (Fact.out : (-1 : F) ≠ 1) (canonicalGroups params) stmtIn.2 mult helpers x hNot
+        refine le_trans (tsum_uniform_mem_le
+          (C := (outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩)
+          (mem := Finset.univ.filter
+            (fun c : (outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩ =>
+              (∑ u : Hypercube n, qOnHypercube (canonicalGroups params) stmtIn.2 mult helpers
+                x (show BatchingChallenge F n params.numGroups from c).1
+                (show BatchingChallenge F n params.numGroups from c).2 u) = 0))
+          _ ?hg3 ?hgle3) ?_
+        case hg3 =>
+          intro c hc
+          rw [mul_eq_zero]
+          right
+          rw [simulateQ_pure]
+          refine probEvent_eq_zero ?_
+          rintro y hy ⟨hno, hyes⟩
+          simp only [StateT.run'_eq, StateT.run_pure, _root_.map_pure, support_pure,
+            Set.mem_singleton_iff] at hy
+          subst hy
+          simp only [outerMidStateFunction] at hyes
+          unfold outerMidState at hyes
+          rcases hyes with h | ⟨-, -, hclaim⟩ | ⟨-, h3, -⟩
+          · exact hStmtIn h
+          · refine hc (Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩)
+            exact hclaim
+          · exact absurd h3 (by norm_num)
+        case hgle3 =>
+          intro c
+          exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (by rw [mul_one])
+        · -- the counting bound: card·q ≤ (n+1)·q^(n+K) ⟹ card/q^(n+K) ≤ (n+1)/q
+          have hcardC : Fintype.card
+              ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩)
+              = Fintype.card F ^ (n + params.numGroups) := by
+            calc Fintype.card ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩)
+                = Fintype.card ((Fin n → F) × (Fin params.numGroups → F)) :=
+                  Fintype.card_congr (Equiv.cast rfl)
+              _ = Fintype.card F ^ (n + params.numGroups) := by
+                  rw [Fintype.card_prod, Fintype.card_fun, Fintype.card_fun,
+                    Fintype.card_fin, Fintype.card_fin, ← pow_add]
+          rw [hcardC]
+          rw [ENNReal.coe_div (by exact_mod_cast Fintype.card_ne_zero), ENNReal.coe_natCast,
+            ENNReal.coe_natCast]
+          have hq0 : (0 : ℝ≥0) < (Fintype.card F : ℝ≥0) := by
+            exact_mod_cast Fintype.card_pos
+          have hnn : ((Finset.univ.filter _).card : ℝ≥0)
+              / ((Fintype.card F : ℝ≥0) ^ (n + params.numGroups))
+              ≤ ((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+            rw [div_le_div_iff₀ (by positivity) hq0]
+            have hcfle : (Finset.univ.filter
+              (fun c : (outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩ =>
+                (∑ u : Hypercube n, qOnHypercube (canonicalGroups params) stmtIn.2 mult helpers
+                  x (show BatchingChallenge F n params.numGroups from c).1
+                  (show BatchingChallenge F n params.numGroups from c).2 u) = 0)).card
+              ≤ (Finset.univ.filter
+                (fun p : (Fin n → F) × (Fin params.numGroups → F) =>
+                  (∑ u : Hypercube n, qOnHypercube (canonicalGroups params) stmtIn.2 mult helpers
+                    x p.1 p.2 u) = 0)).card := by
+            refine Finset.card_le_card_of_injOn
+              (fun c => show BatchingChallenge F n params.numGroups from c)
+              (fun c hc => Finset.mem_filter.mpr
+                ⟨Finset.mem_univ _, (Finset.mem_filter.mp hc).2⟩)
+              (fun a _ b _ h => h)
+          calc ((Finset.univ.filter _).card : ℝ≥0) * (Fintype.card F : ℝ≥0)
+                = (((Finset.univ.filter _).card * Fintype.card F : ℕ) : ℝ≥0) := by push_cast; ring
+              _ ≤ (((n + 1) * Fintype.card F ^ (n + params.numGroups) : ℕ) : ℝ≥0) := by
+                  exact_mod_cast le_trans (Nat.mul_le_mul_right _ hcfle) hcount
+              _ = ((n + 1 : ℕ) : ℝ≥0) * ((Fintype.card F : ℝ≥0) ^ (n + params.numGroups)) := by
+                  push_cast; ring
+          calc ((Finset.univ.filter _).card : ℝ≥0∞) / ((Fintype.card F : ℝ≥0∞) ^ (n + params.numGroups))
+              = (((Finset.univ.filter _).card : ℝ≥0)
+                  / ((Fintype.card F : ℝ≥0) ^ (n + params.numGroups)) : ℝ≥0) := by
+                rw [ENNReal.coe_div (by positivity), ENNReal.coe_pow, ENNReal.coe_natCast,
+                  ENNReal.coe_natCast]
+            _ ≤ (((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) := by
+                exact_mod_cast hnn
+            _ = ((n + 1 : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+                rw [ENNReal.coe_div (by exact_mod_cast Fintype.card_ne_zero),
+                  ENNReal.coe_natCast, ENNReal.coe_natCast]
+
+end RbrMain
+
+
+
+
+
+
+
+section MidCapstone
+
+variable {ι : Type} (oSpec : OracleSpec ι)
+variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)]
+  [SampleableType F]
+variable (n M : ℕ) (params : ProtocolParams M)
+variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+
+local instance instInhabitedFieldMidCap : Inhabited F := ⟨0⟩
+
+omit [Field F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)] [SampleableType F] in
+/-- The total claim-based RBR error: the bad-challenge mass plus the `(z,λ)` SZ mass. -/
+theorem sum_outerMidRbrError [Field F] :
+    ∑ i : (outerPSpec F n params).ChallengeIdx, outerMidRbrError F n M params i
+      = (((M + 1) * 2 ^ n - 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0)
+        + ((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+  classical
+  have hsub : ∑ i ∈ Finset.univ.filter
+        (fun i : Fin 4 => (outerPSpec F n params).dir i = Direction.V_to_P),
+        (if i.val = 1
+          then (((M + 1) * 2 ^ n - 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0)
+          else ((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0))
+      = ∑ i : (outerPSpec F n params).ChallengeIdx, outerMidRbrError F n M params i := by
+    refine Finset.sum_subtype _ (fun x => ?_) _
+    simp [ProtocolSpec.ChallengeIdx]
+  have hfilter : Finset.univ.filter
+      (fun i : Fin 4 => (outerPSpec F n params).dir i = Direction.V_to_P)
+      = ({⟨1, by norm_num⟩, ⟨3, by norm_num⟩} : Finset (Fin 4)) := by
+    ext i
+    fin_cases i
+    · exact iff_of_false (fun h => nomatch (Finset.mem_filter.mp h).2) (by decide)
+    · exact iff_of_true (Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩) (by decide)
+    · exact iff_of_false (fun h => nomatch (Finset.mem_filter.mp h).2) (by decide)
+    · exact iff_of_true (Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩) (by decide)
+  rw [← hsub, hfilter, Finset.sum_insert (by decide), Finset.sum_singleton]
+  norm_num
+
+/-- **`hOuter@midLanguage` DISCHARGED.** The outer LogUp verifier is sound from the input
+language into `midLanguage` with the paper-shaped `outerSoundnessError`, for any
+state-preserving, non-failing, value-blind implementation, over a field larger than the
+hypercube and with at least as many groups as variables. -/
+theorem outerVerifier_soundness_mid
+    (hpole : 2 ^ n < Fintype.card F) (hnK : n ≤ params.numGroups)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (outerVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language (midLanguage F n M params)
+      (outerSoundnessError F n M params) := by
+  show ((outerVerifier oSpec F n M params).toVerifier).soundness init impl
+    (inputRelation F n M).language (midLanguage F n M params)
+    (outerSoundnessError F n M params)
+  have hRbr := outerVerifier_rbrSoundness_mid oSpec F n M params init impl
+  have hbr : Verifier.MarginalBridge init impl
+      (inputRelation F n M).language (midLanguage F n M params)
+      ((outerVerifier oSpec F n M params).toVerifier)
+      (outerMidRbrError F n M params) :=
+    Verifier.marginalBridge_holds himplSP himplNF himplVB
+  have h := Verifier.rbrSoundness_imp_soundness_of_marginal init impl hRbr hbr
+  have hle : (∑ i : (outerPSpec F n params).ChallengeIdx, outerMidRbrError F n M params i)
+      ≤ outerSoundnessError F n M params := by
+    rw [sum_outerMidRbrError]
+    unfold outerSoundnessError
+    rw [card_hypercube]
+    have h2n : (0 : ℝ≥0) < ((Fintype.card F - 2 ^ n : ℕ) : ℝ≥0) := by
+      exact_mod_cast Nat.sub_pos_of_lt hpole
+    refine add_le_add ?_ ?_
+    · gcongr
+      · exact_mod_cast Nat.sub_le _ _
+    · gcongr
+      exact_mod_cast Nat.succ_le_succ hnK
+  exact Verifier.soundness.mono_error init impl h hle
+
+/-- **Issue #13 LogUp soundness — END-TO-END.** The full LogUp verifier is sound with the
+paper error, with every protocol obligation discharged; only standard runtime side
+conditions on the shared-oracle implementation remain as hypotheses. -/
+theorem logup_soundness_end_to_end (sumcheckSoundnessError : ℝ≥0) (hn : 0 < n)
+    (hpole : 2 ^ n < Fintype.card F) (hnK : n ≤ params.numGroups)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (logupSoundnessError F n M params sumcheckSoundnessError) :=
+  logup_soundness_pointwiseSumcheck oSpec F n M params init impl sumcheckSoundnessError hn
+    (outerVerifier_soundness_mid oSpec F n M params init impl hpole hnK
+      himplSP himplNF himplVB)
+    himplSP himplNF himplVB
+
+end MidCapstone
+
+
+
+
 end Logup
 
 #print axioms Logup.outer_toVerifier_verify_support_full
 #print axioms Logup.outer_accept_mem_midLanguage_iff
 #print axioms Logup.outerMidStateFunction
+#print axioms Logup.tsum_uniform_mem_le
+#print axioms Logup.outerVerifier_rbrSoundness_mid
+#print axioms Logup.sum_outerMidRbrError
+#print axioms Logup.outerVerifier_soundness_mid
+#print axioms Logup.logup_soundness_end_to_end
