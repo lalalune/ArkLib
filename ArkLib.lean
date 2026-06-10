@@ -1230,6 +1230,7 @@ import ArkLib.OracleReduction.Security.EchoHVZK
 import ArkLib.OracleReduction.Security.Implications
 import ArkLib.OracleReduction.Security.OracleDistribution
 import ArkLib.OracleReduction.Security.OracleZeroKnowledge
+import ArkLib.OracleReduction.Security.RbrKnowledgeConjoin
 import ArkLib.OracleReduction.Security.Rewinding
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.OracleReduction.Security.SpecialSoundness
