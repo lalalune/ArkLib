@@ -439,10 +439,17 @@ theorem exists_curve_cell_production_total {n k m L : ℕ} [NeZero n] (domain : 
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit — all kernel-clean. -/
-#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.McaDecodeCurve.mcaEventCurve
-#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_mcaDecodeCurve_of_mcaEventCurve
-#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaDecodeCurve_hammingDist_le
-#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaDecodeCurve_matching_dvd
-#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_curve_cell_production
-#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.bad_card_le_of_curve_cell_production
-#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_curve_cell_production_total
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms McaDecodeCurve.mcaEventCurve
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms exists_mcaDecodeCurve_of_mcaEventCurve
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms mcaDecodeCurve_hammingDist_le
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms mcaDecodeCurve_matching_dvd
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms exists_curve_cell_production
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms bad_card_le_of_curve_cell_production
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms exists_curve_cell_production_total
