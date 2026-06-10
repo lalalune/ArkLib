@@ -152,15 +152,16 @@ theorem composedCompletenessResidual_proven_114c
   -- h₄: parametric sendEvalClaim leaf at the bridge-free first-sum-check output
   have h₄ := sendEvalClaim_perfectCompleteness R pp oSpec init impl
     (firstSumcheckRelOutBF (R := R) pp)
-  -- h₅: parametric linearCombination leaf at the honesty-carrying relation
-  have h₅ := linearCombination_perfectCompleteness_of (R := R) (pp := pp) (oSpec := oSpec)
-    (init := init) (impl := impl)
-    (sendEvalClaimRelOut R pp (firstSumcheckRelOutBF (R := R) pp))
-  exact composedCompletenessResidual_of_five_leaves pp oSpec hm hn
+  -- h₅ (the parametric linearCombination leaf) is inlined below with explicit universe pins:
+  -- a standalone `have` (and unpinned levels) leave universe metavariables in the declaration.
+  exact composedCompletenessResidual_of_five_leaves.{0, 0, 0} pp oSpec hm hn
     (firstChallenge_perfectCompleteness_leaf_114c pp oSpec)
-    h₄ h₅
+    h₄
+    (linearCombination_perfectCompleteness_of.{0} (R := R) (pp := pp) (oSpec := oSpec)
+      (init := init) (impl := impl)
+      (sendEvalClaimRelOut R pp (firstSumcheckRelOutBF (R := R) pp)))
     (prependRLCTarget_perfectCompleteness_leaf_114c pp oSpec)
-    (finalCheck_perfectCompleteness_leaf_114c pp oSpec)
+    (finalCheck_perfectCompleteness_leaf_114c.{0} pp oSpec)
     hInit hImplSupp himplSP himplNF
 
 end Spartan.Spec.Bricks
