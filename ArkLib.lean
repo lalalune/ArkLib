@@ -1226,11 +1226,17 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundatio
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaHybrids
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Honest
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512HonestPaper
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514ForkFalse
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516HashHalf
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58EagerFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEvents
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEventsCoincidence
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEventsEngine
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ProverTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunCollapse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.SimulatorBudgets
