@@ -275,7 +275,7 @@ theorem pg_RsetDescended_comp_getD_dvd_Q
           ((irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose.getD i 0)))
       ∣ Q := by
   classical
-  obtain ⟨hlen1, hlen2, he, _hsep, _hirr, _hpos, hfact⟩ :=
+  obtain ⟨hlen1, hlen2, he, _hsep, _hirr, _hpos, hfact, _hfpos⟩ :=
     (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose_spec.choose_spec
   exact comp_getD_dvd_of_factorization Q
     (irreducible_factorization_of_gs_solution h_gs).choose

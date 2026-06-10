@@ -1243,6 +1243,7 @@ import ArkLib.OracleReduction.Security.Implications
 import ArkLib.OracleReduction.Security.OracleDistribution
 import ArkLib.OracleReduction.Security.OracleZeroKnowledge
 import ArkLib.OracleReduction.Security.RbrKnowledgeConjoin
+import ArkLib.OracleReduction.Security.RbrKnowledgeTruncate
 import ArkLib.OracleReduction.Security.Rewinding
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.OracleReduction.Security.SpecialSoundness
@@ -1421,6 +1422,7 @@ import ArkLib.ProofSystem.Spartan.ComposedCompletenessFinal
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessLeaves
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessTwoLeaves
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessWithClaimFinal
+import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeFinal
 import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeSoundness
 import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.FinalCheckLeafComplete
