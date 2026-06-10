@@ -1463,7 +1463,9 @@ import ArkLib.ToMathlib.HenselDatumProducer
 import ArkLib.ToMathlib.HenselMatchingPolySupply
 import ArkLib.ToMathlib.HenselUniqueness
 import ArkLib.ToMathlib.HliftDvd
+import ArkLib.ToMathlib.HvanishSupply
 import ArkLib.ToMathlib.IngredientCBridge
+import ArkLib.ToMathlib.InterpolantInputSupply
 import ArkLib.ToMathlib.IsSquareNatCast
 import ArkLib.ToMathlib.IteratedFoldConservation
 import ArkLib.ToMathlib.KK25NearCapacityProof
@@ -1507,9 +1509,11 @@ import ArkLib.ToMathlib.MultiplicityDatum
 import ArkLib.ToMathlib.MvPolynomial.Equiv
 import ArkLib.ToMathlib.NearCertainBadLineProof
 import ArkLib.ToMathlib.OddCharacterOrthogonality
+import ArkLib.ToMathlib.OffcentreFaithfulBundle
 import ArkLib.ToMathlib.OffcentreKeystoneAssembly
 import ArkLib.ToMathlib.OracleCompEvalDistBindComm
 import ArkLib.ToMathlib.OracleZKTransferBricks
+import ArkLib.ToMathlib.OrderZeroAgreementSupply
 import ArkLib.ToMathlib.PartitionRecursion
 import ArkLib.ToMathlib.PerPlaceSeparabilitySupply
 import ArkLib.ToMathlib.PlaceGeometryFromLocalSeries
