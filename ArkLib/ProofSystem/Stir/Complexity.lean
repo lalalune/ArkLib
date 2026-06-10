@@ -1,5 +1,4 @@
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 
@@ -12,5 +11,8 @@ theorem M_bound (degree k M : ℕ) (h : M = 0) (hd : degree ≥ 2) (hk : k ≥ 2
   use 1
   simp [h]
   norm_num
+  exact div_nonneg
+    (Real.log_nonneg (by exact_mod_cast Nat.one_le_of_lt hd))
+    (Real.log_nonneg (by exact_mod_cast Nat.one_le_of_lt hk))
 
 end ArkLib.ProofSystem.Stir
