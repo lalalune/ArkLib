@@ -966,6 +966,7 @@ import ArkLib.Data.CodingTheory.RandomLinearCodePairwiseProb
 import ArkLib.Data.CodingTheory.RandomLinearCodeParallelProb
 import ArkLib.Data.CodingTheory.RandomLinearCodeRankEquidist
 import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.CodingTheory.RootCountingEngine
 import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleDischarge
 import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleSubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon.FRSGeomSubspaceDesign
