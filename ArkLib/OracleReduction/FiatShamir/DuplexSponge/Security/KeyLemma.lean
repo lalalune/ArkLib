@@ -126,7 +126,11 @@ noncomputable def ηStar (U : Type) [SpongeUnit U] [Fintype U]
   -- Original: `7 * t ^ 2 + 28 * (L + 1) * t + 14 * (L + 1) ^ 2 - 3 * t - 13 * (L + 1)`
   let firstTermNumerator : ℝ≥0 :=
     7 * tTotal ^2 + (28 * L + 25) * tTotal + (14 * L + 1) * (L + 1)
-  let firstTermDenominator : ℝ≥0 := 2 * ((Fintype.card U) ^ (SpongeSize.C + 1))
+  -- Denominator exponent: `C` (CO25 Eq. 5, `2·|Σ|^c`). Brick F0a (issue #314): an earlier
+  -- transcription wrote `C + 1`, a strictly stronger claim than Claims 5.21–5.24 can deliver
+  -- (see `ηStar_le_ηStarPaper` / `claimSum_le_ηStarPaper` in `KeyLemmaFoundations`); fixed to
+  -- the paper exponent so `KeyLemmaResidual` matches the §5.8 hybrid-chain output.
+  let firstTermDenominator : ℝ≥0 := 2 * ((Fintype.card U) ^ SpongeSize.C)
   -- Second term in Equation (5)
   let secondTerm : ℝ≥0 := θStar tₕ tₚ tₚᵢ * (iSup εcodec)
   -- Third term in Equation (5)

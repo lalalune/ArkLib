@@ -22,12 +22,11 @@ stable statement surface.
 ## Proven bricks (no `sorry`, axiom-clean)
 
 - `tvDist_chain4` (F2): four-step TV triangle chain for the `Hyb₀ … Hyb₄` ladder (§5.8).
-- `ηStar_le_ηStarPaper` / `claimSum_le_ηStarPaper` (F1): the in-tree `ηStar` (denominator
-  exponent `C+1`) is **stronger** than the paper bound `ηStarPaper` (exponent `C`, Eq. 5),
-  and the three nonzero per-step claim bounds (Claims 5.21/5.22/5.24; Claim 5.23's step is
-  exactly `0`) sum to at most `ηStarPaper`. Together these certify that the hybrid chain can
-  only deliver the `C`-exponent bound — the `C+1` claim in `KeyLemma.ηStar` needs the
-  one-token upstream fix before `KeyLemmaResidual` can be provable.
+- `ηStar_le_ηStarPaper` / `claimSum_le_ηStarPaper` (F1): after the executed F0a fix the
+  in-tree `ηStar` carries the paper exponent `C` (Eq. 5) and coincides with `ηStarPaper`;
+  the three nonzero per-step claim bounds (Claims 5.21/5.22/5.24; Claim 5.23's step is
+  exactly `0`) sum to at most `ηStarPaper`, so the §5.8 chain's numerics now close against
+  `KeyLemma.ηStar` directly.
 - `isQueryBoundP_simulateQ_stateT_optionT_of_step` /
   `isQueryBoundP_simulateQ_stateT2_optionT_of_step` (F3): predicate-targeted query-budget
   transfer through the §5.4 simulator monad stacks `StateT σ (OptionT (OracleComp _))` and
@@ -182,12 +181,10 @@ end DeAbort
 
 /-! ## F1 — `ηStar` numerics (CO25 Eq. 5 / Claims 5.21, 5.22, 5.24 bounds)
 
-**Statement-fidelity note**: the in-tree `ηStar` (KeyLemma.lean) has denominator
-`2·|U|^(C+1)`, while the May-18 blueprint, the per-claim bounds below, and CO25 Eq. 5 use
-`2·|U|^C`. `ηStarPaper` is the `C`-exponent bound the hybrid chain delivers;
-`ηStar_le_ηStarPaper` records that the in-tree bound is strictly stronger (hence the
-in-tree `KeyLemmaResidual` claims more than Claims 5.21–5.24 can prove); the upstream
-one-token fix is brick F0a. -/
+**Statement-fidelity note**: brick F0a is EXECUTED — the in-tree `ηStar` (KeyLemma.lean)
+now has the paper denominator `2·|U|^C` (CO25 Eq. 5), matching the May-18 blueprint and the
+per-claim bounds below. `ηStarPaper` and `ηStar` now coincide; `ηStar_le_ηStarPaper` is kept
+in inequality form for downstream stability. -/
 
 section EtaStarNumerics
 
@@ -223,26 +220,15 @@ noncomputable def ηStarPaper (U : Type) [SpongeUnit U] [Fintype U] [SpongeSize]
     / (2 * (Fintype.card U : ℝ) ^ SpongeSize.C)
     + (θStar tₕ tₚ tₚᵢ : ℝ) * ((⨆ i, εcodec i : ℝ≥0) : ℝ) + ((∑ i, εcodec i : ℝ≥0) : ℝ)
 
-/-- F1a — the in-tree `ηStar` (exponent `C+1`) is ≤ the paper bound (exponent `C`); i.e. the
-residual as stated claims something **stronger** than Claims 5.21–5.24 deliver. Records the
-exponent gap. -/
+/-- F1a — after the F0a exponent fix the in-tree `ηStar` coincides with the paper bound
+(both exponent `C`, CO25 Eq. 5); the inequality form is kept for downstream stability. -/
 lemma ηStar_le_ηStarPaper (U : Type) [SpongeUnit U] [SpongeSize] [Fintype U]
     (tₕ tₚ tₚᵢ L : ℕ) (εcodec : pSpec.ChallengeIdx → ℝ≥0) :
     ((ηStar (pSpec := pSpec) U tₕ tₚ tₚᵢ L εcodec : ℝ≥0) : ℝ)
       ≤ ηStarPaper (pSpec := pSpec) U tₕ tₚ tₚᵢ L εcodec := by
-  have hU : Nonempty U := ⟨0⟩
-  have hcard1 : (1 : ℝ) ≤ (Fintype.card U : ℝ) := by exact_mod_cast Fintype.card_pos
-  have hc0 : (0 : ℝ) < (Fintype.card U : ℝ) := lt_of_lt_of_le zero_lt_one hcard1
   simp only [ηStar, ηStarPaper]
   push_cast
-  have hpow : (Fintype.card U : ℝ) ^ SpongeSize.C
-      ≤ (Fintype.card U : ℝ) ^ (SpongeSize.C + 1) :=
-    pow_le_pow_right₀ hcard1 (Nat.le_succ _)
-  refine add_le_add (add_le_add ?_ le_rfl) le_rfl
-  refine div_le_div_of_nonneg_left ?_ ?_ ?_
-  · positivity
-  · exact mul_pos two_pos (pow_pos hc0 _)
-  · nlinarith [pow_pos hc0 SpongeSize.C]
+  exact le_rfl
 
 /-- F1b — numeric assembly (CO25 §5.8): the three nonzero per-step bounds sum to at most
 `ηStarPaper` (Claim 5.23's step is exactly `0`). The slack is `(14t + 7)/(2|U|^C) ≥ 0`. -/
