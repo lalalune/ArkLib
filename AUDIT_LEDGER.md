@@ -4,6 +4,15 @@ Source code is clean of `sorry`/`admit`/`axiom`/`native_decide` (all grep hits a
 text; verified by `scripts/audit_ledger.py`). All remaining debt is named-Prop shaped.
 Raw classification data: `audit/triage-2026-06-10.json`.
 
+## Session updates (2026-06-10, orchestrator inline work — between triage and wave 1 relaunch)
+
+- **[RESOLVED] epsMCAgsPrizeUniformConjecture** — proven as stated (`epsMCAgsPrizeUniformConjecture_holds_as_stated`, `GrandChallenge141UniformVacuity.lean`, axiom-clean, commit 8c0f1d42a); docstrings de-laundered (ba2a433fa). Open content relocated honestly to `epsMCAgsPrizeUniversalConjecture`/`UniversalGSListMassBound`.
+- **[RESOLVED] red-on-main: GrandChallenge141PrizeMath.lean** — 3 call sites repaired after the MCAGS 8-arg→2-arg refactor; 8-arg theorem renamed `epsMCAgs_prizeBound_perInput_holds` (name clash with UniformResolved removed); LowOutput green (8c0f1d42a).
+- **[RESOLVED] Spartan "bit-rot" was phantom** — `FirstChallengeComplete`, `ComposedCompletenessFinal` (apex `composedCompletenessResidual_proven` axiom-clean, 0 sorryAx), `ComposedCompletenessWithClaimFinal`, `ComposedCompletenessTwoLeaves` all verified green after clean olean builds. Parallel session additionally discharged `hSeamZero` and verified `composedPIOP_Rc_rbrKnowledgeSoundness_of_leaves`. Spartan remaining: 6 short-phase rbr-KS leaves + of_leaves instantiation + D1 pair.
+- **[RESOLVED] doc de-laundering** (ba2a433fa): `epsMCAgs_prizeBound_conjecture_of_uniform` (consumes a refuted hypothesis — now says so), `whirVectorIOP_rbrKnowledgeSoundness_dummy` (not a #302 resolution — trivial-budget demo).
+- **[RESOLVED earlier] 3 false-axiom HonestAxioms.lean files deleted** — project has zero axiom declarations.
+- Wave 1 (10 agents) relaunches 6:48am after the subagent session-limit reset.
+
 **Totals (families):** proven 118 · provable 73 · open-research 20 · dead 20
 
 - **proven** — the named residual is discharged in-tree (discharger cited; existence grep-verified)

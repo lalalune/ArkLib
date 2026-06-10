@@ -1039,47 +1039,6 @@ private lemma bitsOfIndex_odd_tail {steps : ℕ} (j : Fin (2 ^ steps)) :
   have h_succ : (↑k.succ : ℕ) = k.val + 1 := by simp [Fin.succ]
   rw [h_succ, h_getBit]
 
-/-- **Residual: `iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
-
-For any challenge vector `r_chal`, the `steps`-fold of `f_i` equals the multilinear combination
-(weights `multilinearWeight r_chal`) of the rows of `preTensorCombine_WordStack`, whose `rowIdx`-th
-row is `iterated_fold f_i (bitsOfIndex rowIdx)` — i.e. the multilinear tensor decomposition of
-`iterated_fold` over the binary challenge basis.
-
-The natural proof peels the first fold step (`iterated_fold_first`) and factors the first challenge
-out of `multilinearCombine` (`multilinearCombine_recursive_form_first`); the residual obligation is
-the *affine interpolation of `fold` in its challenge* that identifies the even/odd split of
-`preTensorCombine f` with `preTensorCombine (fold f (r 0))`. The matrix-form bridge that would close
-it is a port-debt gap shared with `Soundness/Proposition4_21` (its `h_fold_eq_combine` unfolds
-through the now-`iterated_fold`-delegating `localized_fold_matrix_form`, whose raw matrix evaluator
-`single_point_localized_fold_matrix_form` no longer reduces — see the Prelude note on the
-`challengeTensorProduct`/`challengeTensorExpansion` bit-reversal). Exposed here as an explicit
-typeclass hypothesis in the convention of `FoldPreservesBBFCodeMembershipResidual`. -/
-class PreTensorCombineMultilinearResidual : Prop where
-  holds : ∀ (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-    (r_chal : Fin steps → L),
-    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
-      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) (r_challenges := r_chal) =
-    multilinearCombine (F := L)
-      (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i) r_chal
-
-variable [PreTensorCombineMultilinearResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-
-/-- **`iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
-Reduction to the explicit `PreTensorCombineMultilinearResidual` hypothesis. -/
-lemma iterated_fold_eq_multilinearCombine_preTensorCombine
-    (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-    (r_chal : Fin steps → L) :
-    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
-      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) (r_challenges := r_chal) =
-    multilinearCombine (F := L)
-      (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i) r_chal :=
-  PreTensorCombineMultilinearResidual.holds i steps h_destIdx h_destIdx_le f_i r_chal
-
 /-- Even/odd split preserves non-closeness (bridge lemma for Binius first-step fold flow).
 If `U` is not close to `C^⋈(Fin (2^(s+1)))`, then the even/odd split pair is not
 jointly close to `C^⋈(Fin (2^s))`. -/
@@ -1526,6 +1485,106 @@ lemma fold_eq_multilinearCombine_preTensorCombine_step1
   rw [← preTensorCombine_step1_row_zero 𝔽q β i h_destIdx h_destIdx_le f_i y,
     ← preTensorCombine_step1_row_one 𝔽q β i h_destIdx h_destIdx_le f_i y]
   simp [multilinearCombine, multilinearWeight]
+
+set_option maxHeartbeats 8000000 in
+/-- **`iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
+
+For any challenge vector `r_chal`, the `steps`-fold of `f_i` equals the multilinear combination
+of the rows of `preTensorCombine_WordStack`. The proof peels the first fold step, factors the
+first multilinear challenge with the even/odd split, and recurses on the tail challenges. -/
+lemma iterated_fold_eq_multilinearCombine_preTensorCombine
+    (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (r_chal : Fin steps → L) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)
+      (r_challenges := r_chal) =
+    multilinearCombine (F := L)
+      (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i) r_chal := by
+  induction steps generalizing i destIdx with
+  | zero =>
+      funext y
+      rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)]
+      unfold multilinearCombine preTensorCombine_WordStack multilinearWeight
+      simp
+      rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)]
+      rfl
+  | succ n ih =>
+      by_cases hn : n = 0
+      · subst hn
+        have hr : r_chal = fun _ : Fin 1 => r_chal 0 := by
+          funext j
+          have hj : j = 0 := Fin.eq_of_val_eq (by omega)
+          rw [hj]
+        rw [hr]
+        rw [← fold_eq_multilinearCombine_preTensorCombine_step1 𝔽q β
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+          (f_i := f_i) (r_new := r_chal 0)]
+        rw [iterated_fold_first 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := ⟨i, by omega⟩) (midIdx := destIdx) (destIdx := destIdx)
+          (steps := 0) (h_midIdx := h_destIdx) (h_destIdx := by simpa using h_destIdx)
+          (h_destIdx_le := h_destIdx_le) (f := f_i)
+          (r_challenges := fun _ : Fin 1 => r_chal 0)]
+        funext y
+        rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := destIdx) (destIdx := destIdx) (h_destIdx := rfl)
+          (h_destIdx_le := h_destIdx_le)]
+        rfl
+      · haveI : NeZero n := ⟨hn⟩
+        have h_dest_le_nat : i.val + (n + 1) ≤ ℓ := by
+          rw [← h_destIdx]
+          exact h_destIdx_le
+        let midIdx_fin_ℓ : Fin ℓ := ⟨i.val + 1, by
+          have hn_pos : 0 < n := Nat.pos_of_ne_zero hn
+          omega⟩
+        let midIdx : Fin r := ⟨midIdx_fin_ℓ.val, by
+          exact lt_r_of_le_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (by change i.val + 1 ≤ ℓ; omega)⟩
+        let fold_1_f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx :=
+          fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (i := ⟨i, by omega⟩) (destIdx := midIdx)
+            (h_destIdx := by simp [midIdx, midIdx_fin_ℓ])
+            (h_destIdx_le := by change i.val + 1 ≤ ℓ; omega)
+            (f := f_i) (r_chal := r_chal 0)
+        rw [iterated_fold_first 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := ⟨i, by omega⟩) (midIdx := midIdx) (destIdx := destIdx)
+          (steps := n) (h_midIdx := by simp [midIdx, midIdx_fin_ℓ])
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)
+          (r_challenges := r_chal)]
+        have hih := ih (i := midIdx_fin_ℓ) (destIdx := destIdx)
+          (h_destIdx := by simp [midIdx_fin_ℓ]; omega)
+          (h_destIdx_le := h_destIdx_le)
+          (f_i := by exact fold_1_f) (r_chal := fun j : Fin n => r_chal j.succ)
+        rw [hih]
+        let U := preTensorCombine_WordStack 𝔽q β i (n + 1)
+          (destIdx := destIdx) (h_destIdx := h_destIdx)
+          (h_destIdx_le := h_destIdx_le) f_i
+        let U_even := (splitEvenOddRowWiseInterleavedWords (ϑ := n) U).1
+        let U_odd := (splitEvenOddRowWiseInterleavedWords (ϑ := n) U).2
+        let V := preTensorCombine_WordStack 𝔽q β midIdx_fin_ℓ n
+          (destIdx := destIdx) (h_destIdx := by simp [midIdx_fin_ℓ]; omega)
+          (h_destIdx_le := h_destIdx_le) (by exact fold_1_f)
+        have hsplit_interleaved := fold_preTensorCombine_eq_affineLineEvaluation_split
+          𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := i) (steps := n) (midIdx := midIdx) (destIdx := destIdx)
+          (h_midIdx := by simp [midIdx, midIdx_fin_ℓ])
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+          (f_i := f_i) (r_new := r_chal 0)
+        have hsplit :
+            V = affineLineEvaluation (F := L) U_even U_odd (r_chal 0) := by
+          funext rowIdx y
+          have h := congrFun (congrFun hsplit_interleaved y) rowIdx
+          simpa [V, U, U_even, U_odd, midIdx_fin_ℓ, fold_1_f, interleaveWordStack,
+            affineLineEvaluation, Matrix.transpose_apply, Pi.add_apply, Pi.smul_apply] using h
+        have hrec := multilinearCombine_recursive_form_first (L := L)
+          (A := L) (ι := sDomain 𝔽q β h_ℓ_add_R_rate destIdx)
+          (u := U) (r_challenges := r_chal)
+        rw [hrec]
+        rw [hsplit]
 
 /-- **Residual: fiberwise closeness lifts to interleaved-word proximity (Lemma 4.22).**
 
