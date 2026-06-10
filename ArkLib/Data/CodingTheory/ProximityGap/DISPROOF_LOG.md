@@ -4530,3 +4530,27 @@ Consumer (i) named by O106, executed. `DeBruijnWindowedLaw.lean` +121 lines (5 n
 **Why prize-adjacent:** the window code is the dual-side Vandermonde-window constraint system of RS on exactly the smooth domains the prize fixes; the law gives the complete combinatorics of which 0/1 supports can vanish against an initial window — exact-domain structure of the kind a derandomization attack on δ* must exploit (generic-field bounds like BCH are provably not tight here).
 
 **Named next:** (i) the WEIGHTED window spectrum — run the O106 induction with O103's weighted classification as the level interface; yields ALL codeword weights of the window code, i.e. the full weight distribution problem on smooth domains; (ii) the fiber-count law `F_n(t) ≅ F_{lcm(Dmin)}(t)^{n/lcm}` (O70's count structure); (iii) the window law at 3+ primes (blocked on the right level interface — packet form refuted by O105).
+
+### O108 — 672 DERIVED: the C1379 count is a char-0 THEOREM; the per-level law has two proven rungs with one engine (nubs, 2026-06-10)
+
+`scripts/probes/n32census/level2/DERIVED-672.md` (commit bc39fef9a; audited 0.94 incl. a fully
+independent rule-free brute-force char-0 enumeration in C: 672 at pattern (7,3), ZERO at every
+other pattern, 315 = 35·9 at (8,1) — three-way exact set equality with the derivation and the
+raw data). **The derivation:** the C1379 consistency equation reduces (e₁² = Σx² + 2e₂,
+machine-asserted 1344/1344) to ANTIPODAL BALANCE of the 14-term μ₃₂ multiset
+{x₁x₂, x₁x₃, x₂x₃} ⊎ B_z ⊎ O_z ⊎ {−z*} (2-power Lam–Leung in multiset form, immediate from
+ℤ[ζ₃₂] power-basis freeness — the in-tree set-form lemma's multiset upgrade is a named Lean
+follow-up). Six structural lemmas (parity-pure O; three distinct product axes, P|P forbidden;
+no product at −z*; **ξ ∉ μ₃₂ ⟹ agreement exactly 17, never 18**; σ-uniqueness per (B,O); free
+negation), then the counting engine: B-placement rule C(v,(7−h)/2) over the E1–E4 event
+taxonomy with closed-form u-triple censuses (ε=1: C(8,3) = 56 splits perfectly 7×8; ε=0:
+38 live + 18 dead). Node table: **672 = 368 + 304**; dual-B census **92 = 20+24+24+16+8** (five
+identified mechanisms) ⟹ 580 = 488+92, 488·2 + 92·4 = 1,344 ✓; z*-axis strata
+224+96+160+192 = 672 ✓; the witness count **35 = C(7,4) falls out of the same balance law** at
+pattern (8,1). **Effective characteristic transfer via the O38/E1 norm bound:** every
+non-solution sum has N(α) ≤ 196⁸ < 2^61 ⟹ the theorem holds verbatim at EVERY split prime
+p > 2^61 (the two verified primes below threshold are covered by their exhaustive censuses).
+Provenance graded honestly: the dual-B mechanism and |O| ≥ 5 exclusion are exact finite
+ℤ₁₆-enumerations (C19's own epistemic grade); everything else hand-derived + machine-asserted.
+**Consequence: the per-level branch-count law has two proven rungs with one visible engine —
+reduction → balance → taxonomy → placement — the shape Conjecture D's induction can consume.**
