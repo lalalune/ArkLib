@@ -68,8 +68,9 @@ variable {n : ℕ}
 theorem X_pow_sub_one_eq_X_pow_sub_C : (X ^ n - 1 : F[X]) = X ^ n - C 1 := by
   rw [map_one]
 
-/-- The degree of `X ^ n - 1` is `n` (for `0 < n`). -/
-theorem natDegree_X_pow_sub_one (hn : 0 < n) :
+/-- The degree of `X ^ n - 1` is `n` (stated with `0 < n` for API symmetry with the
+monic/splits lemmas below). -/
+theorem natDegree_X_pow_sub_one (_hn : 0 < n) :
     (X ^ n - 1 : F[X]).natDegree = n := by
   rw [X_pow_sub_one_eq_X_pow_sub_C, natDegree_X_pow_sub_C]
 
