@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib
 
-set_option linter.style.longFile 2700
+set_option linter.style.longFile 2900
 
 /-!
 # Issue #232 — the two-prime de Bruijn structure: the CRT double-slice theorems (O67–O68)
@@ -2350,5 +2350,199 @@ theorem packetUnion_full_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
       ring
 
 end FullExport
+
+/-! ## THE GENERAL-t WINDOWED LAW (q-direction): the full reassembly induction
+
+The capstone of the reassembly arc: with the `q`-power window of depth `m`, every
+element of a two-prime vanishing set is `μ_{q^c·p}`-covered for some `c ≤ m` or
+`μ_{q^{m+1}}`-covered — the complete `d`-coset reassembly in the `q`-direction, for
+EVERY window depth, by induction: each level of window kills one more `μ_{q^c}`-packet
+tier, the spectrum inherits the shallower window (full export), the inductive
+hypothesis reassembles the spectrum one level down, and the upward rung multiplies the
+recovered coset order by `q`. At the floor (`b = 0`) the spectrum lives in `μ_{p^{a+1}}`
+and the prime-power slice machinery closes it. This is the O70-verified law's
+`q`-direction in full generality — `m = 0` is de Bruijn (O77-cover form), `m = 1` is the
+trichotomy. -/
+
+section GeneralWindowedLaw
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The general-`t` windowed coset cover, `q`-direction**. -/
+theorem windowed_coset_cover_q {p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q)
+    {a : ℕ} {ζp : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1))) :
+    ∀ m : ℕ, ∀ b : ℕ, m ≤ b + 1 → ∀ ζq : F, IsPrimitiveRoot ζq (q ^ (b + 1)) →
+      ∀ S : Finset F, (∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1) →
+      (∀ c, c ≤ m → ∑ z ∈ S, z ^ (q ^ c) = 0) →
+      ∀ x ∈ S,
+        (∃ c, c ≤ m ∧ ∀ h : F, h ^ (q ^ c * p) = 1 → h * x ∈ S) ∨
+        (∀ h : F, h ^ (q ^ (m + 1)) = 1 → h * x ∈ S) := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  haveI : NeZero q := ⟨hq.pos.ne'⟩
+  have hqF0 : ((q : F)) ≠ 0 := by exact_mod_cast hq.pos.ne'
+  intro m
+  induction m with
+  | zero =>
+    intro b _ ζq hζq S hS hwin x hx
+    have hsum : ∑ z ∈ S, z = 0 := by
+      have := hwin 0 le_rfl
+      simpa using this
+    have hPU := two_prime_packet_decomposition hp hq hpq hζp hζq hS hsum
+    obtain ⟨R, hRorbit, hRdich, _⟩ :=
+      packetUnion_full_export hp hq hpq hζp hζq hPU
+    rcases hRdich x hx with hP | hR1
+    · exact Or.inl ⟨0, le_rfl, fun h hh => hP h (by simpa using hh)⟩
+    · refine Or.inr ?_
+      obtain ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hR1
+      have hx0 : x ≠ 0 := by
+        intro h0
+        have := hS x hx
+        rw [h0, zero_pow (Nat.mul_pos (pow_pos hp.pos _) (pow_pos hq.pos _)).ne']
+          at this
+        exact zero_ne_one this
+      have hw0 : w ≠ 0 := by
+        intro h0
+        rw [h0, zero_pow hq.pos.ne'] at hwq
+        exact pow_ne_zero q hx0 hwq.symm
+      intro h hh
+      have hhq : h ^ q = 1 := by
+        rw [← pow_one (q : ℕ)] at hh ⊢
+        simpa [pow_one] using hh
+      have hgx : ((h * x) / w) ^ q = 1 := by
+        rw [div_pow, mul_pow, hhq, one_mul, ← hwq, div_self (pow_ne_zero _ hw0)]
+      have := horbit ((h * x) / w) hgx
+      rwa [div_mul_cancel₀ (h * x) hw0] at this
+  | succ m IH =>
+    intro b hm1 ζq hζq S hS hwin x hx
+    have hsum : ∑ z ∈ S, z = 0 := by
+      have := hwin 0 (Nat.zero_le _)
+      simpa using this
+    have hPU := two_prime_packet_decomposition hp hq hpq hζp hζq hS hsum
+    obtain ⟨R, hRorbit, hRdich, hRtransfer⟩ :=
+      packetUnion_full_export hp hq hpq hζp hζq hPU
+    rcases hRdich x hx with hP | hR1
+    · exact Or.inl ⟨0, Nat.zero_le _, fun h hh => hP h (by simpa using hh)⟩
+    have hx0 : x ≠ 0 := by
+      intro h0
+      have := hS x hx
+      rw [h0, zero_pow (Nat.mul_pos (pow_pos hp.pos _) (pow_pos hq.pos _)).ne'] at this
+      exact zero_ne_one this
+    -- the spectrum's window, one level shallower
+    have hpqc : ∀ c : ℕ, ¬ p ∣ q ^ c := by
+      intro c hdvd
+      rcases Nat.Prime.dvd_of_dvd_pow hp hdvd with h
+      exact hpq ((Nat.prime_dvd_prime_iff_eq hp hq).mp h)
+    have hRwin : ∀ c, c ≤ m → ∑ r ∈ R, r ^ (q ^ c) = 0 := by
+      intro c hc
+      have htr := hRtransfer (q ^ c) (hpqc c)
+      have hSwin := hwin (c + 1) (by omega)
+      have hexp : q * q ^ c = q ^ (c + 1) := by rw [pow_succ']
+      rw [hexp] at htr
+      rw [hSwin] at htr
+      rcases mul_eq_zero.mp htr.symm with h | h
+      · exact absurd h hqF0
+      · exact h
+    -- the spectrum's torsion
+    rcases Nat.eq_zero_or_pos b with rfl | hbpos
+    · -- floor case: b = 0, so m = 0 and R ⊆ μ_{p^(a+1)} is μ_p-closed
+      have hm0 : m = 0 := by omega
+      subst hm0
+      have hRtor : ∀ r ∈ R, r ^ (p ^ (a + 1)) = 1 := by
+        intro r hr
+        obtain ⟨w, hwS, hwq, _⟩ := hRorbit r hr
+        have hw := hS w hwS
+        rw [← hwq, ← pow_mul]
+        calc w ^ (q * p ^ (a + 1)) = (w ^ (p ^ (a + 1) * q ^ (0 + 1))) := by
+              congr 1
+              ring
+          _ = 1 := hw
+      have hRsum0 : ∑ r ∈ R, r = 0 := by
+        have := hRwin 0 le_rfl
+        simpa using this
+      -- μ_p-closure of R at the prime-power floor
+      have hslices := mu_p_membership_slices (m := a) hp hζp hRtor hRsum0
+      have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+        hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+      have hRclosed : ∀ r ∈ R, ∀ g : F, g ^ p = 1 → g * r ∈ R := by
+        intro r hr g hg
+        obtain ⟨k, hk, hkg⟩ := hωp.eq_pow_of_pow_eq_one hg
+        obtain ⟨u, hu, hur⟩ := hζp.eq_pow_of_pow_eq_one (hRtor r hr)
+        obtain ⟨i, s, rfl, hs⟩ : ∃ i' s', u = i' * p ^ a + s' ∧ s' < p ^ a :=
+          ⟨u / p ^ a, u % p ^ a, (Nat.div_add_mod' u (p ^ a)).symm,
+            Nat.mod_lt _ (pow_pos hp.pos a)⟩
+        have hi : i < p := by
+          by_contra hge
+          push Not at hge
+          have h1 : p * p ^ a ≤ i * p ^ a := Nat.mul_le_mul_right _ hge
+          have h2 : i * p ^ a + s < p ^ (a + 1) := hu
+          rw [pow_succ'] at h2
+          omega
+        set i2 := (k + i) % p with hi2
+        have hi2p : i2 < p := Nat.mod_lt _ hp.pos
+        have hgr : g * r = ζp ^ (i2 * p ^ a + s) := by
+          rw [← hkg, ← hur, ← pow_mul, ← pow_add]
+          have hsplit : k + i = p * ((k + i) / p) + (k + i) % p :=
+            (Nat.div_add_mod _ p).symm
+          have hdecomp : p ^ a * k + (i * p ^ a + s)
+              = p ^ (a + 1) * ((k + i) / p) + (i2 * p ^ a + s) := by
+            calc p ^ a * k + (i * p ^ a + s) = (k + i) * p ^ a + s := by ring
+            _ = (p * ((k + i) / p) + (k + i) % p) * p ^ a + s := by rw [← hsplit]
+            _ = (p * p ^ a) * ((k + i) / p) + (((k + i) % p) * p ^ a + s) := by ring
+            _ = p ^ (a + 1) * ((k + i) / p) + (i2 * p ^ a + s) := by
+                rw [← pow_succ', hi2]
+          rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
+        rw [hgr]
+        exact (hslices s hs i2 hi2p i hi).mpr (by rwa [hur])
+      -- rung at A := p
+      refine Or.inl ⟨1, le_rfl, ?_⟩
+      have hcov := coset_lift (S := S) hq.pos hp.pos hx0 (fun g hg =>
+        let hgR := hRclosed _ hR1 g hg
+        let ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hgR
+        ⟨w, hwS, by rw [hwq], horbit⟩)
+      intro h hh
+      exact hcov h (by rwa [pow_one] at hh)
+    · -- descent case: b = b'' + 1
+      obtain ⟨b'', rfl⟩ : ∃ b'', b = b'' + 1 := ⟨b - 1, by omega⟩
+      have hRtor : ∀ r ∈ R, r ^ (p ^ (a + 1) * q ^ (b'' + 1)) = 1 := by
+        intro r hr
+        obtain ⟨w, hwS, hwq, _⟩ := hRorbit r hr
+        have hw := hS w hwS
+        rw [← hwq, ← pow_mul]
+        calc w ^ (q * (p ^ (a + 1) * q ^ (b'' + 1)))
+            = w ^ (p ^ (a + 1) * q ^ (b'' + 1 + 1)) := by
+              congr 1
+              rw [pow_succ]
+              ring
+          _ = 1 := hw
+      have hζq' : IsPrimitiveRoot (ζq ^ q) (q ^ (b'' + 1)) := by
+        refine hζq.pow (pow_pos hq.pos _) ?_
+        rw [pow_succ']
+      have hIH := IH (b'') (by omega) (ζq ^ q) hζq' R hRtor hRwin _ hR1
+      rcases hIH with ⟨c, hc, hcov⟩ | hcov
+      · -- rung at A := q^c · p
+        refine Or.inl ⟨c + 1, by omega, ?_⟩
+        have hlift := coset_lift (S := S) hq.pos
+          (Nat.mul_pos (pow_pos hq.pos c) hp.pos) hx0 (fun g hg =>
+            let hgR := hcov g hg
+            let ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hgR
+            ⟨w, hwS, by rw [hwq], horbit⟩)
+        intro h hh
+        refine hlift h ?_
+        rw [show q * (q ^ c * p) = q ^ (c + 1) * p from by rw [pow_succ']; ring]
+        exact hh
+      · -- rung at A := q^{m+1}
+        refine Or.inr ?_
+        have hlift := coset_lift (S := S) hq.pos (pow_pos hq.pos (m + 1)) hx0
+          (fun g hg =>
+            let hgR := hcov g hg
+            let ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hgR
+            ⟨w, hwS, by rw [hwq], horbit⟩)
+        intro h hh
+        refine hlift h ?_
+        rw [show q * q ^ (m + 1) = q ^ (m + 1 + 1) from by rw [pow_succ']]
+        exact hh
+
+end GeneralWindowedLaw
 
 end DeBruijnTwoPrime
