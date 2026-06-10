@@ -1424,6 +1424,7 @@ import ArkLib.ProofSystem.Stir.BlockRbrBudgets
 import ArkLib.ProofSystem.Stir.BlocksCompleteness
 import ArkLib.ProofSystem.Stir.ChainCompleteness
 import ArkLib.ProofSystem.Stir.ChainProof
+import ArkLib.ProofSystem.Stir.ChainRbrIndicator
 import ArkLib.ProofSystem.Stir.ChainVSpecCount
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 import ArkLib.ProofSystem.Stir.Combine
