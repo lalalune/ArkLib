@@ -3338,3 +3338,34 @@ capstone (O61).
 * `docs/wiki/tower-fiber-theory.md` — the stable map of the O35–O63 corpus (file table,
   one-paragraph theory, recurring Lean gotchas), per the repo guardrail that stable
   guidance must not live only in ephemeral notes.
+
+### O63 — FOLD BRANCHES ARE COEFFICIENT SLICES: the branch tree translated to plain coefficient combinatorics (nubs, 2026-06-10)
+
+New brick `ArkLib/Data/CodingTheory/ProximityGap/FoldPolynomialSlices.lean` (axiom-clean):
+for a polynomial error `e = f.eval` on a negation-closed domain (char ≠ 2, `0 ∉ D`),
+
+* `foldVal D f.eval (x₀²) = (evenSlice f).eval (x₀²)` and
+  `foldValOdd D f.eval (x₀²) = x₀² · (oddSlice f).eval (x₀²)` — the even/odd folds ARE
+  evaluations of the coefficient slices `evenSlice f = contract 2 (f + f∘(−X))` /
+  `oddSlice f = contract 2 (divX (f − f∘(−X)))`, up to the unit twist `y`;
+* `foldVal_ne_zero_iff` / `foldValOdd_ne_zero_iff` — branch aliveness = slice
+  nonvanishing (the twist drops out).
+
+Since every valued error interpolates to a unique polynomial of degree `< n`, this is a
+TRANSLATION of the whole O56–O59 branch-accounting: iterating, depth-`ℓ` branches =
+residue classes of coefficient exponents mod `2^ℓ` under the ceiling-halving digit code
+(odd fold maps exponent `e ↦ (e+1)/2` from the twist, even fold `e ↦ e/2` — the code is
+constant on classes mod `2^ℓ`), and a branch is alive iff its class holds a nonzero
+coefficient. Verified exhaustively: `scripts/probes/probe_fold_slices.py` (n = 16,
+p = 97, 500 random low-degree polys, depths 1–3, tree-vs-slices ALL MATCH; the naive
+`e mod 2^ℓ` indexing FAILS — the twist shift is real).
+
+**Consequence for the open core (O59's branch-count distribution):** it equals the joint
+distribution of (evaluation weight on μ_n, 2-adic spread of coefficient support) over
+polynomials of degree ≤ n − t. Window-vanishing = top-degree truncation (degree ≤ n − t);
+alive-branch count at depth ℓ = #nonzero coefficient classes mod 2^ℓ. The all-words list
+question, in one sentence: **how many low-degree polynomials can simultaneously have low
+evaluation weight and prescribed 2-adic coefficient spread** — a plain question about RS
+weight distributions stratified by the 2-adic exponent tree, with no fold machinery left
+in the statement. (The C19 anatomy lives here too: its 3 + 16 list elements are exactly
+coefficient-spread classes — the transversal degeneracies are spread patterns.)
