@@ -1068,6 +1068,7 @@ import ArkLib.OracleReduction.Composition.Sequential.SeamCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRunPartial
+import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRunPartialChallenge
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRunWithLog
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeFailingDet
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompleteness

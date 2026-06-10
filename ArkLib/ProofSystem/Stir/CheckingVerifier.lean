@@ -1064,7 +1064,7 @@ theorem stirCheckingRbrSoundness_of_card_le [DecidableEq ι]
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le φ deg δ hδ hq)
-    (fun _ => rfl)
+    (PerRoundProximityGap.refl ProxGapBound)
 
 /-- RBR knowledge soundness of the checking verifier in the sharp vacuous regime
 `|F| ≤ deg^2 * 10^7`, conditional only on the protocol-level CA bridge. -/
@@ -1077,7 +1077,7 @@ theorem stirCheckingRbrSoundness_of_card_le_e7 [DecidableEq ι]
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le_e7 φ deg δ hq)
-    (fun _ => rfl)
+    (PerRoundProximityGap.refl ProxGapBound)
 
 /-- RBR knowledge soundness of the checking verifier from the #304 large-sector residual family,
 conditional only on the protocol-level checking bridge. -/
@@ -1092,7 +1092,7 @@ theorem stirCheckingRbrSoundness_of_large [DecidableEq ι]
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_large φ deg δ hLarge)
-    (fun _ => rfl)
+    (PerRoundProximityGap.refl ProxGapBound)
 
 /-- **The checking IOPP is `IsSecureWithGap`**, with the completeness leg PROVEN
 (`stirCheckingIOP_perfectCompleteness`) and the soundness leg consumed as the named
@@ -1270,7 +1270,7 @@ theorem stir_rbr_soundness_of_checkingIOP_card_le
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le (P.φ 0) (degree ι P 0) (Dist.δ 0)
       hδsqrt hq)
-    (fun _ => rfl)
+    (PerRoundProximityGap.refl ProxGapBound)
     hfold hrest
 
 /-- **Lemma 5.4 through the CHECKING IOPP, sharp vacuous CA discharge**: as
@@ -1314,7 +1314,7 @@ theorem stir_rbr_soundness_of_checkingIOP_card_le_e7
     ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le_e7 (P.φ 0) (degree ι P 0) (Dist.δ 0) hq)
-    (fun _ => rfl)
+    (PerRoundProximityGap.refl ProxGapBound)
     hfold hrest
 
 /-- **Lemma 5.4 through the CHECKING IOPP, large-sector CA discharge**: as
@@ -1361,7 +1361,7 @@ theorem stir_rbr_soundness_of_checkingIOP_large
     ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_large (P.φ 0) (degree ι P 0) (Dist.δ 0) hLarge)
-    (fun _ => rfl)
+    (PerRoundProximityGap.refl ProxGapBound)
     hfold hrest
 
 /-- **Theorem 5.1 through the CHECKING IOPP**: `stir_main` discharged with
@@ -1431,7 +1431,7 @@ theorem stir_main_of_checkingIOP_card_le
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le φ degree δ hδsqrt hq)
-    (fun _ => rfl)
+    (PerRoundProximityGap.refl ProxGapBound)
     hε hM hLen hQin hQpf
 
 /-- **Theorem 5.1 through the CHECKING IOPP, sharp vacuous CA discharge**: as
@@ -1462,7 +1462,7 @@ theorem stir_main_of_checkingIOP_card_le_e7
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le_e7 φ degree δ hq)
-    (fun _ => rfl)
+    (PerRoundProximityGap.refl ProxGapBound)
     hε hM hLen hQin hQpf
 
 /-- **Theorem 5.1 through the CHECKING IOPP, large-sector CA discharge**: as
@@ -1496,7 +1496,7 @@ theorem stir_main_of_checkingIOP_large
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_large φ degree δ hLarge)
-    (fun _ => rfl)
+    (PerRoundProximityGap.refl ProxGapBound)
     hε hM hLen hQin hQpf
 
 end CheckingFrontDoors
@@ -1528,15 +1528,20 @@ end StirIOP
 #print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_CA
 #print axioms StirIOP.MultiRound.strictCoeffPolysResidual_all_of_card_le
 #print axioms StirIOP.MultiRound.strictCoeffPolysResidual_all_of_card_le_e7
+#print axioms StirIOP.MultiRound.strictCoeffPolysResidual_all_of_large
 #print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_card_le
 #print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_card_le_e7
+#print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_large
 #print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap
 #print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_of_CA
 #print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_of_card_le
 #print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_of_card_le_e7
+#print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_of_large
 #print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_CA
 #print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_card_le
 #print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_card_le_e7
+#print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_large
 #print axioms StirIOP.stir_main_of_checkingIOP_CA
 #print axioms StirIOP.stir_main_of_checkingIOP_card_le
 #print axioms StirIOP.stir_main_of_checkingIOP_card_le_e7
+#print axioms StirIOP.stir_main_of_checkingIOP_large
