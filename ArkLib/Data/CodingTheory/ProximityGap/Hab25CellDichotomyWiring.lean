@@ -7,6 +7,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSCellProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonCountWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AffineCapture
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeTight
 
 /-!
 # Cells to dichotomy bundles — the GS production wired into the Johnson endgame
@@ -251,6 +252,86 @@ theorem johnsonNumericBound_of_window_numeric
     (fun u => bad_card_le_numeric_of_window domain u δ T hk1 hkn hm hδ1 hδJ hwin hTn hT0)
     harith
 
+
+open Classical in
+/-- **The total cell production at the tight Z-degree budget** — `exists_cell_production`
+fed by the tight producer (`gs_existence_over_ratfunc_zDegree_card_div`): identical cell
+structure, degenerate budget improved to `n·|c|·(D/(k-1))` (linear in `n`), the constant
+the Johnson arithmetic can absorb. -/
+theorem exists_cell_production_total_div {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin 2) (Fin n)) (δ : ℝ≥0)
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m) :
+    ∃ (Q₀ : (F₀[X])[X][Y]) (Index : Finset (Option ((F₀[X])[X][Y])))
+      (Ecell : Option ((F₀[X])[X][Y]) → Finset F₀) (P : F₀ → F₀[X]),
+      Q₀ ≠ 0 ∧
+      Index.card ≤ (UniqueFactorizationMonoid.factors Q₀).toFinset.card + 1 ∧
+      (Finset.univ.filter (fun γ : F₀ =>
+        mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+          δ (u 0) (u 1) γ)) ⊆ Index.biUnion Ecell ∧
+      (∀ ij ∈ Index, ∀ γ ∈ Ecell ij,
+        ∃ d : McaDecode domain k δ u γ, d.P = P γ) ∧
+      none ∈ Index ∧
+      (Ecell none).card ≤
+        n * (GuruswamiSudan.constraintIndices m).card * (gs_degree_bound k n m / (k - 1)) ∧
+      (∀ R : (F₀[X])[X][Y], some R ∈ Index →
+        R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset ∧
+        ∀ γ ∈ Ecell (some R),
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+          (Polynomial.X - Polynomial.C (P γ)) ∣
+            R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) := by
+  obtain ⟨Q₀, h0, hcond, hcard⟩ :=
+    GuruswamiSudan.OverRatFunc.ZDegree.gs_existence_over_ratfunc_zDegree_card_div
+      (F := F₀) k m domain (u 0) (u 1) hk1 (NeZero.ne n) hm
+  have hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) =
+      Polynomial.C (Polynomial.C (algebraMap F₀[X] (RatFunc F₀) (1 : F₀[X]))) *
+        Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) := by
+    simp
+  obtain ⟨Index, Ecell, P, h1, h2, h3, h4, h5, h6⟩ :=
+    exists_cell_production domain u δ
+      (n * (GuruswamiSudan.constraintIndices m).card * (gs_degree_bound k n m / (k - 1)))
+      hcond hrep h0 hkn hm hδ1 hδJ (degenerate_card_bound_of_filter hcard)
+  exact ⟨Q₀, Index, Ecell, P, h0, h1, h2, h3, h4, h5, h6⟩
+
+open Classical in
+/-- **The dichotomy bundle on the window at the tight budget** — `T` need only dominate
+`n·|c|·(D/(k-1))` (and `1`), the scale the Johnson arithmetic absorbs. -/
+theorem exists_dichotomyData_of_window_div
+    {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (η δ : ℝ≥0) (hη : 0 < η) (hδr : InJohnsonRange domain k η δ)
+    (u : WordStack F₀ (Fin 2) (Fin n))
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hwin : 2 * Fintype.card (Fin n) + k
+      ≤ 3 * ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊)
+    (T : ℕ) (hT1 : 1 ≤ T)
+    (hT : n * (GuruswamiSudan.constraintIndices m).card
+      * (gs_degree_bound k n m / (k - 1)) ≤ T) :
+    ∃ A : Hab25JohnsonDichotomyData domain k η δ hη hδr,
+      A.Edis = Finset.univ.filter (fun γ : F₀ =>
+        mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀))) δ (u 0) (u 1) γ) ∧
+      A.T = T := by
+  obtain ⟨Q₀, Index, Ecell, P, hQ₀, hcard, hcover, hdecode, hnone, hnonecard, hfactor⟩ :=
+    exists_cell_production_total_div domain u δ hk1 hkn hm hδ1 hδJ
+  refine ⟨⟨Option ((F₀[X])[X][Y]), inferInstance, Index, Index.card, T,
+    le_refl _,
+    Finset.univ.filter (fun γ : F₀ =>
+      mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀))) δ (u 0) (u 1) γ),
+    Ecell, hcover, ?_⟩, rfl, rfl⟩
+  intro ij hij
+  match ij with
+  | none =>
+      exact Or.inl (le_trans hnonecard hT)
+  | some R =>
+      obtain ⟨hRfac, hRdata⟩ := hfactor R hij
+      have hRirr : Irreducible R :=
+        UniqueFactorizationMonoid.irreducible_of_factor R
+          (Multiset.mem_toFinset.mp hRfac)
+      exact cell_improvement_of_window (lt_trans Nat.zero_lt_one hk1) hwin hT1
+        R (Ecell (some R)) P hRirr
+        (fun γ hγ => hdecode (some R) hij γ hγ)
+        (fun γ hγ => (hRdata γ hγ).2)
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
@@ -261,3 +342,5 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.hK4_of_window
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.bad_card_le_numeric_of_window
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window_numeric
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_cell_production_total_div
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_dichotomyData_of_window_div
