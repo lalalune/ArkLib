@@ -81,27 +81,27 @@ soundness theorem.
 \subsubsection{Folding univariate functions}\label{sec:folding_uf}
 
 \begin{lemma}[Polynomial folding decomposition]\label{fact:poly_folding}
-\lean{Folding.exists_unique_bivariate,Folding.degree_bound_bivariate}
+\lean{Polynomial.FoldingPolynomial.folding_polynomial_is_unique,Polynomial.FoldingPolynomial.substitution_property_of_folding_polynomial,Polynomial.FoldingPolynomial.folding_polynomial_deg_y_bound,Polynomial.FoldingPolynomial.folding_polynomial_deg_x_bound}
     A univariate polynomial can be uniquely represented as a bivariate polynomial in
     $(q(Z),Z)$ with the expected degree bounds.  This is the algebraic basis for STIR folding.
 \end{lemma}
 
 \begin{definition}[Polynomial folding]\label{def:poly_folding}
-\lean{Folding.polyFold}
+\lean{Polynomial.FoldingPolynomial.polyFold}
 \uses{fact:poly_folding}
     Given $\hat f$, a folding parameter $k$, and a challenge $r$, \texttt{polyFold} evaluates the
     bivariate decomposition of $\hat f$ at $Y=r$.
 \end{definition}
 
 \begin{definition}[Function folding]\label{def:fn_folding}
-\lean{Folding.fold}
+\lean{ProximityGap.foldWord,ProximityGap.foldValue}
 \uses{def:poly_folding}
     The function fold interpolates the values on a $k$-fiber and evaluates the resulting
     degree-$<k$ polynomial at the verifier challenge.
 \end{definition}
 
 \begin{lemma}[Folding preserves distance]\label{lemma:folding}
-\lean{Folding.folding}
+\lean{ProximityGap.folding_preserves_distance}
 \uses{def:reed_solomon_code,def:fn_folding,def:distance_from_code,thm:proximity_gap}
     If a word is far from the Reed--Solomon code, then with probability controlled by the
     STIR proximity-gap error its fold remains far from the folded Reed--Solomon code.
