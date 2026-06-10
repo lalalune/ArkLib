@@ -4517,3 +4517,16 @@ The O104-pinned witness formalized. `ThreePrimePacketRefutation.lean` (axiom-cle
 **Record correction (honesty ledger):** the 2026-06-10 06:23Z issue comment "O83: the upward rung — coset_lift (pushed)" was a phantom at the time of writing — `git log --all -S coset_lift` showed no such symbol anywhere in history when checked at ~06:45Z; a concurrent lane later landed its own `coset_lift` with a different signature. Ledger entries should only say "pushed" with a commit hash.
 
 **Where the open core moves:** the windowed/dense-fiber program at two primes is CLOSED (this brick + O97's sparse tower + O94/O103 below it). Named next consumers: (i) the **0/1 codeword weight spectrum of dual-RS/BCH-window codes on smooth two-prime domains** — `{x ∈ {0,1}^n : Σ x_e ζ^{je} = 0, 1 ≤ j ≤ t}` is exactly the window fiber, so nonzero weights are sums of divisors of `n` exceeding `t`; minimum nonzero weight = least divisor `> t` (sharp, witnessed by any single coset) — a genuinely prize-adjacent surface (weight structure of RS-dual codewords on the deployed smooth domains); (ii) the fiber-count law `F_n(t) ≅ F_lcm(Dmin)(t)^(n/lcm)` (O70's count structure); (iii) the windowed law at 3+ primes (open, interface named).
+
+### O107 — the 0/1 WEIGHT SPECTRUM of the BCH-window (dual-RS) code on smooth two-prime domains: exact, sharp, strictly past BCH between divisors
+
+Consumer (i) named by O106, executed. `DeBruijnWindowedLaw.lean` +121 lines (5 new theorems, all axiom-clean, 0 sorry, 0 warnings, pushed dedd402ce):
+
+* `IsWindowCosetUnion.card_eq_sum` — **the weight spectrum**: every window-`t`-vanishing weight is a sum of divisors of `n` exceeding `t` (the multiset of coset sizes; `card_biUnion` over the decomposition).
+* `IsWindowCosetUnion.le_card_of_nonempty` + `window_min_weight_sharp` — **the exact minimum weight**: nonempty window-vanishing sets have `≥ d₀` elements for `d₀` = any lower bound on divisors `> t`, and every divisor `> t` is achieved (base-0 canonical coset). So the minimum 0/1-codeword weight of the cyclic code with zeros `ζ,…,ζ^t` on a two-prime-smooth domain is EXACTLY the least divisor of `n` exceeding `t`.
+* `window_weight_spectrum_two_prime` / `window_min_weight_two_prime` — instantiations through O106's iff.
+* Kernel-checked BCH-beating instance: `n = 72 = 2³·3²`, `t = 9` ⟹ min 0/1 weight `≥ 12` (interval_cases + decide over the divisor list), vs. designed-distance bound `10`.
+
+**Why prize-adjacent:** the window code is the dual-side Vandermonde-window constraint system of RS on exactly the smooth domains the prize fixes; the law gives the complete combinatorics of which 0/1 supports can vanish against an initial window — exact-domain structure of the kind a derandomization attack on δ* must exploit (generic-field bounds like BCH are provably not tight here).
+
+**Named next:** (i) the WEIGHTED window spectrum — run the O106 induction with O103's weighted classification as the level interface; yields ALL codeword weights of the window code, i.e. the full weight distribution problem on smooth domains; (ii) the fiber-count law `F_n(t) ≅ F_{lcm(Dmin)}(t)^{n/lcm}` (O70's count structure); (iii) the window law at 3+ primes (blocked on the right level interface — packet form refuted by O105).
