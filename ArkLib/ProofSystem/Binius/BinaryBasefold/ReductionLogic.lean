@@ -694,23 +694,6 @@ private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply
         apply Fin.eq_of_val_eq
         exact h_j_mul
       exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
-<<<<<<< Updated upstream
-    apply eq_of_heq
-    refine HEq.trans (cast_heq _ (fun y => newOracle (cast _ y))) ?_
-    refine HEq.trans (fun_heq_cast_arg h_domain_succ newOracle) ?_
-    refine HEq.trans (heq_of_eq h_transcript_eq.symm) ?_
-    symm
-    have h_transport :
-        HEq ((((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j) ▸ h_embed ▸
-            transcript.messages ⟨0, rfl⟩ :
-              OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j))
-          (transcript.messages ⟨0, rfl⟩) := by
-      exact @commitStep_inr_transport_heq r _ L _ _ _ 𝔽q _ _ _ _ _ _
-        β _ _ ℓ 𝓡 ϑ _ _ _ h_ℓ_add_R_rate 𝓑 _ Context mp
-        i hCR transcript j h_embed
-    exact h_transport
-=======
     rw [h_transcript_eq]
     funext y
     dsimp only [commitStepLogic, commitStepHEq, commitStepLogic_embed, commitStepLogic_embedFn,
@@ -737,7 +720,6 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
   exact snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR oStmtIn newOracle transcript
     h_transcript_eq j
->>>>>>> Stashed changes
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
