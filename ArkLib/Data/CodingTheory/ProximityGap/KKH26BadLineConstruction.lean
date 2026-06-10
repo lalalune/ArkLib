@@ -395,6 +395,38 @@ theorem kkh26_badline_farWord {p : ℕ} [Fact p.Prime] {g : ZMod p} {n m r : ℕ
   have h1 : r - 2 < r - 1 := by omega
   exact Nat.mul_lt_mul_of_lt_of_le h1 le_rfl (by omega)
 
+/-! ### Correlated-agreement failure -/
+
+/-- **Correlated agreement fails on the bad line ([KKH26] Theorem 1, CA form).**  Any joint
+agreement witness for the line `{u₀ + λ·u₁}` — a set `S ⊆ H` on which both `u₀` and `u₁`
+(equivalently, two line points, equivalently `u₁` and any line point) simultaneously match
+codewords — forces the direction word `u₁ = X^{(r−1)m}` to agree with a degree-≤`(r−2)m`
+polynomial on all of `S`.  No such `S` of size ≥ `r·m` exists.  Combined with
+`kkh26_badline_closePoints` (≥ `2^r·(s/2).choose r` individually `(r·m)`-agreement-close
+points), this is the quantitative failure of correlated agreement — and hence of mutual
+correlated agreement, via `ε_pg ≤ ε_ca ≤ ε_mca` — at distance `1 − r/s`:
+the per-point count is exponential in `s` at `r = Θ(s)`, while the joint-witness count is
+zero. -/
+theorem kkh26_ca_failure {p : ℕ} [Fact p.Prime] {g : ZMod p} {n m r : ℕ}
+    (hm : 1 ≤ m) (hr2 : 2 ≤ r)
+    (S : Finset (ZMod p)) (hSH : S ⊆ (Finset.range n).image (fun i => g ^ i))
+    (hScard : r * m ≤ S.card)
+    (q : Polynomial (ZMod p)) (hq : q.natDegree ≤ (r - 2) * m) :
+    ¬ (∀ x ∈ S, x ^ ((r - 1) * m) = q.eval x) := by
+  classical
+  intro hagree
+  have hsub : S ⊆ ((Finset.range n).image (fun i => g ^ i)).filter
+      (fun x => x ^ ((r - 1) * m) = q.eval x) := by
+    intro x hx
+    exact Finset.mem_filter.mpr ⟨hSH hx, hagree x hx⟩
+  have h1 : r * m ≤ (r - 1) * m :=
+    le_trans hScard (le_trans (Finset.card_le_card hsub)
+      (kkh26_badline_farWord (g := g) (n := n) hm hr2 q hq))
+  have h2 : (r - 1) * m < r * m := by
+    have : r - 1 < r := by omega
+    exact Nat.mul_lt_mul_of_lt_of_le this le_rfl (by omega)
+  omega
+
 end ArkLib.ProximityGap.KKH26
 
 /-! ## Axiom audit -/
@@ -403,3 +435,4 @@ end ArkLib.ProximityGap.KKH26
 #print axioms ArkLib.ProximityGap.KKH26.farword_agreement_le
 #print axioms ArkLib.ProximityGap.KKH26.kkh26_badline_closePoints
 #print axioms ArkLib.ProximityGap.KKH26.kkh26_badline_farWord
+#print axioms ArkLib.ProximityGap.KKH26.kkh26_ca_failure
