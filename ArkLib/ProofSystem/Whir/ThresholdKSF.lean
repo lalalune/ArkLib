@@ -369,8 +369,9 @@ theorem whirVectorIOP_rbrKnowledgeSoundness_indicator_folded
 
 end Wiring
 
-/-! ## Completeness leg (replicated from `Whir/ProtocolCompleteness.lean`, which is not in the
-current build graph) and the `IsSecureWithGap` package with the indicator budget. -/
+/-! ## Completeness leg (replicated from `Whir/ProtocolCompleteness.lean`; that file IS in the
+build graph — imported by `ArkLib.lean` — the replica here just keeps this file self-contained)
+and the `IsSecureWithGap` package with the indicator budget. -/
 
 section Completeness
 

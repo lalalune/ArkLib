@@ -724,8 +724,9 @@ remaining content — exhibiting the per-round events `Q i` and discharging each
 (`params.h i`), together with the strictness of the final `<` — is exactly what the
 inductive lemmas `folding_preserves_listdecoding_base` (L4.21) /
 `…_bound` (L4.22) / `…_base_ne_subset` (L4.23) supply, and is not derivable from the
-loose `indexPowT` data available here. The capstone Theorem 4.20 below therefore remains
-`sorry` (its honest closure is a multi-step ABF26 §4 formalization, not a leaf proof);
+loose `indexPowT` data available here. The capstone Theorem 4.20 below therefore remains a
+statement-only `def : Prop` (`folding_listdecoding_if_genMutualCorrAgreement` — no `sorry`
+exists; its honest closure is a multi-step ABF26 §4 formalization, not a leaf proof);
 this lemma is integrated as honest partial progress on its probabilistic accounting. -/
 theorem Pr_le_finset_sum_of_implies {α : Type} (D : PMF.{0} α) {β : Type} [DecidableEq β]
     (P : α → Prop) (Q : β → α → Prop) (s : Finset β)

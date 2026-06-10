@@ -184,10 +184,13 @@ variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ Pro
 
 open scoped NNReal
 
-/-- **Completeness of the real STIR fold-round object** (statement; proof owed).
+/-- **Completeness of the real STIR fold-round object** (statement; proof DISCHARGED).
 
   This is the completeness statement *rewritten against the genuine `stirRoundReduction` object*
-  defined above — not against a nonexistent protocol.  The proof is `sorry`, but it is now an
+  defined above — not against a nonexistent protocol.  (Status correction 2026-06-10: the proof
+  is no longer owed — it is discharged, axiom-clean, by
+  `stirRoundReduction_completeness_proved` in `Stir/RoundCompleteness.lean`; the WIP notes below
+  are kept as the historical proof-plan record.)  This is an
   honest obligation about a real, sorry-free protocol object whose prover message is the actual
   STIR `Combine.combine` operation.
 
