@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.BigOperators.Field
 
 /-!
 # The per-multiplicity cleared grand-sum numerator (issue #13, piece α1′ — abstract core)
@@ -171,9 +172,54 @@ theorem perMNumerator_roots_card_le [Fintype F] (A : Finset F) (cv : ColIdx → 
     _ ≤ (perMNumerator A cv tv m).natDegree := Polynomial.card_roots' _
     _ ≤ A.card - 1 := hdeg
 
+/-- One pole fraction over the common denominator: `(x + b)⁻¹ = ∏_{a ∈ A∖b}(x+a) / ∏_{a∈A}(x+a)`
+for `b ∈ A` and a pole-free `x`. -/
+theorem inv_eq_eraseProd_div (A : Finset F) (b x : F) (hb : b ∈ A)
+    (hx : ∀ a ∈ A, x + a ≠ 0) :
+    (x + b)⁻¹ = (∏ a ∈ A.erase b, (x + a)) / ∏ a ∈ A, (x + a) := by
+  have hfull : (∏ a ∈ A, (x + a)) ≠ 0 := Finset.prod_ne_zero_iff.mpr hx
+  rw [eq_div_iff hfull, ← Finset.mul_prod_erase A _ hb]
+  rw [← mul_assoc, inv_mul_cancel₀ (hx b hb), one_mul]
+
+/-- **The fraction-sum value bridge** (α-bridge, abstract half): at a pole-free `x`, the
+partial-fraction total `∑ 1/(x + cv idx) − ∑ m r/(x + tv r)` equals the per-multiplicity cleared
+numerator over the common denominator. The consistent-helpers LogUp claim is (up to global sign)
+exactly this total, so its zero set at pole-free challenges is the root set of `perMNumerator`. -/
+theorem fracSum_eq_perMNumerator_div (A : Finset F) (cv : ColIdx → F) (tv : Row → F)
+    (m : Row → F) (x : F)
+    (hx : ∀ a ∈ A, x + a ≠ 0) (hcv : ∀ idx, cv idx ∈ A) (htv : ∀ r, tv r ∈ A) :
+    (∑ idx : ColIdx, (x + cv idx)⁻¹) - (∑ r : Row, m r * (x + tv r)⁻¹)
+      = (perMNumerator A cv tv m).eval x / ∏ a ∈ A, (x + a) := by
+  classical
+  have hcols : (∑ idx : ColIdx, (x + cv idx)⁻¹)
+      = (∑ idx : ColIdx, ∏ a ∈ A.erase (cv idx), (x + a)) / ∏ a ∈ A, (x + a) := by
+    rw [Finset.sum_div]
+    refine Finset.sum_congr rfl (fun idx _ => ?_)
+    exact inv_eq_eraseProd_div A (cv idx) x (hcv idx) hx
+  have htbl : (∑ r : Row, m r * (x + tv r)⁻¹)
+      = (∑ r : Row, m r * ∏ a ∈ A.erase (tv r), (x + a)) / ∏ a ∈ A, (x + a) := by
+    rw [Finset.sum_div]
+    refine Finset.sum_congr rfl (fun r _ => ?_)
+    rw [inv_eq_eraseProd_div A (tv r) x (htv r) hx, mul_div_assoc]
+  rw [hcols, htbl, div_sub_div_same]
+  congr 1
+  unfold perMNumerator
+  rw [Polynomial.eval_sub, Polynomial.eval_finset_sum, Polynomial.eval_finset_sum]
+  congr 1
+  · refine Finset.sum_congr rfl (fun idx _ => ?_)
+    rw [Polynomial.eval_prod]
+    refine Finset.prod_congr rfl (fun a _ => ?_)
+    simp
+  · refine Finset.sum_congr rfl (fun r _ => ?_)
+    rw [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_prod]
+    congr 1
+    refine Finset.prod_congr rfl (fun a _ => ?_)
+    simp
+
 end Logup
 
 /- Axiom audit. -/
 #print axioms Logup.perMNumerator_ne_zero
 #print axioms Logup.perMNumerator_natDegree_le
 #print axioms Logup.perMNumerator_roots_card_le
+#print axioms Logup.fracSum_eq_perMNumerator_div
