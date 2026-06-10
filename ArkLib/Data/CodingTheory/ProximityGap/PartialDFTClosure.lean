@@ -210,6 +210,40 @@ theorem partial_dft_mu_p_closed [DecidableEq L] {n p : ℕ} (hp : p.Prime)
   rw [hgy]
   exact hiter k e he hy
 
+/-- **Exponent-set form of the partial-DFT law**: under the dense window
+`p ∤ j`, the discrete logarithm support is invariant under the canonical
+`μ_p` shift `e ↦ e + n/p`.  This packages the field-surface closure theorem in
+the exact exponent language used by the window/interpolation files. -/
+theorem partial_dft_expSet_step_closed [DecidableEq L] {n p : ℕ} (hp : p.Prime)
+    (hpn : p ∣ n) (hn : 0 < n)
+    {ζ : L} (hζ : IsPrimitiveRoot ζ n)
+    {T : Finset L} (hT : ∀ y ∈ T, y ^ n = 1)
+    (hwin : ∀ j, 1 ≤ j → j < n → ¬ p ∣ j → ∑ y ∈ T, y ^ j = 0) :
+    ∀ e ∈ expSet n ζ T, (e + n / p) % n ∈ expSet n ζ T := by
+  intro e he
+  have hcl := partial_dft_mu_p_closed hp hpn hn hζ hT hwin
+  have heT : ζ ^ e ∈ T := (mem_expSet.mp he).2
+  have hroot : (ζ ^ (n / p)) ^ p = 1 := by
+    rw [← pow_mul, Nat.div_mul_cancel hpn, hζ.pow_eq_one]
+  have hmem : ζ ^ (n / p) * ζ ^ e ∈ T := hcl (ζ ^ e) heT (ζ ^ (n / p)) hroot
+  refine mem_expSet.mpr ⟨Nat.mod_lt _ hn, ?_⟩
+  convert hmem using 1
+  rw [DeBruijnWeightedSquarefreeExp.pow_mod_eq hζ, pow_add, mul_comm]
+
+/-- The concrete `n = 30`, `p = 2` tooth: if all odd power sums below `30`
+vanish, then the subset is antipodally closed. -/
+theorem odd_window_antipodal_closed_30 {ζ : L}
+    (hζ : IsPrimitiveRoot ζ 30)
+    {T : Finset L} (hT : ∀ y ∈ T, y ^ 30 = 1)
+    (hwin : ∀ j, 1 ≤ j → j < 30 → ¬ 2 ∣ j → ∑ y ∈ T, y ^ j = 0) :
+    ∀ y ∈ T, -y ∈ T := by
+  classical
+  have hcl := partial_dft_mu_p_closed Nat.prime_two (by norm_num : 2 ∣ 30)
+    (by norm_num : 0 < 30) hζ hT hwin
+  intro y hy
+  have hroot : (-1 : L) ^ 2 = 1 := by norm_num
+  simpa using hcl y hy (-1 : L) hroot
+
 /-- **The dense window EXACTLY characterizes `μ_p`-closure** at every modulus
 (`0 ∉ T` for the converse): the iff packaging with O97's converse. -/
 theorem partial_dft_iff [DecidableEq L] {n p : ℕ} (hp : p.Prime)
@@ -228,4 +262,6 @@ end PartialDFTClosure
 
 #print axioms PartialDFTClosure.dft_point_mass
 #print axioms PartialDFTClosure.partial_dft_mu_p_closed
+#print axioms PartialDFTClosure.partial_dft_expSet_step_closed
+#print axioms PartialDFTClosure.odd_window_antipodal_closed_30
 #print axioms PartialDFTClosure.partial_dft_iff
