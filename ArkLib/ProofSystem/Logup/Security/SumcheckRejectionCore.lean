@@ -58,7 +58,35 @@ theorem verifier_run_failure_of_badSum
 
 end SingleRound.Simple
 
+/-- **The round lens carries the round relation exactly (statement side).** The projected Simple
+statement satisfies `Simple.inputRelation` **iff** the outer round statement satisfies
+`relationRound i.castSucc`: both sides reduce to a sum-equals-target claim, and the two sums agree
+by the (now public) `sumcheck_round_split` splitting identity — the same identity behind the lens
+*completeness* (`oCtxLens_complete.proj_complete`); soundness reads it right-to-left. -/
+theorem simpleProj_mem_iff (n : ℕ) (i : Fin n)
+    (stmt : StatementRound R n i.castSucc) (oStmt : ∀ j, OracleStatement R n deg j) :
+    (((oStmtLens R n deg D i).proj (stmt, oStmt)), ()) ∈ Simple.inputRelation R deg D
+      ↔ ((stmt, oStmt), ()) ∈ relationRound R n deg D i.castSucc := by
+  induction n with
+  | zero => exact Fin.elim0 i
+  | succ n' _ih =>
+    simp only [relationRound, Simple.inputRelation, Set.mem_setOf_eq]
+    unfold oStmtLens
+    simp only []
+    constructor
+    · intro h
+      rw [← h]
+      simp_rw [Polynomial.eval_finset_sum]
+      simp_rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
+      exact (sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)).symm
+    · intro h
+      rw [← h]
+      simp_rw [Polynomial.eval_finset_sum]
+      simp_rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
+      exact sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)
+
 end Sumcheck.Spec
 
 /- Axiom audit. -/
 #print axioms Sumcheck.Spec.SingleRound.Simple.verifier_run_failure_of_badSum
+#print axioms Sumcheck.Spec.simpleProj_mem_iff
