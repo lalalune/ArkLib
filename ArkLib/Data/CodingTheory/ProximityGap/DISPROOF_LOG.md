@@ -5055,3 +5055,21 @@ With O117 (coverage), O123 (determination), and the O70 tables (exact counts), t
 below-p regime of the two-prime mixed-radix theory now has the full arc: law, set form,
 and budget mechanism — all machine-checked. The above-p regime keeps its two candidate
 engines (O122); the bilateral identities stand ready.
+
+### O124 — COVERAGE MONOTONICITY + the upgrade question pinned (the above-p gap, exact)
+
+`coverage_mono` (axiom-clean, 5 lines): μ_d-coverage implies μ_{d'}-coverage for every
+d' ∣ d — the laws' certificates form a DIVISOR IDEAL at each element.
+
+THE SHARPENED GAP (analysis): windowed_coset_cover_q's existential (∃ c ≤ m,
+μ_{q^c·p}-cov) certifies SOME point of the ideal, not its maximum; the all-t law asks
+that the ideal reach above t. By monotonicity, alive coverage implies all the small
+coverages the directional laws can certify — so the laws as proven are CONSISTENT with
+the all-t law but don't yet force it. THE MISSING ENGINE, exactly: the UPGRADE —
+certified small coverage (q^c·p ≤ t) + full window ⟹ alive coverage. Mapped candidate:
+the contracted-fold route — x's small coset C collapses under the d₀-power map; the
+VALUED fold machinery (general-radix folds, O65) tracks the contracted set with
+multiplicities; the upgrade = the law at the contracted level lifted by the rung. This
+re-enters the valued theory — the same frontier as the branch-count program — revealing
+the two remaining objects are CLOSER KIN than they appeared: both are valued-fold
+structure questions. One frontier, not two.
