@@ -58,7 +58,6 @@ theorem sendEvalClaimRelOutBF_eq_concrete :
             (fun idx => x.1.2 (.inr (.inl idx))) (x.1.2 (.inr (.inr 0)))
           ∧ x.1.2 (.inl 0) = evalClaimValue R pp x.1.1 (fun j => x.1.2 (.inr j)) } := rfl
 
-set_option maxHeartbeats 1000000 in
 /-- **The `sendEvalClaim` leaf is perfectly complete (pinned, #114).** From the bridge-free first
 sum-check output relation `firstSumcheckRelOutBF`, the 1-message `P_to_V` phase
 `oracleReduction.sendEvalClaim` lands in `sendEvalClaimRelOutBF`: the honest prover forwards the
