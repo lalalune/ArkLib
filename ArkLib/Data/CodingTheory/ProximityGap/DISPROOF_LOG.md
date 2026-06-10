@@ -4905,3 +4905,20 @@ unconditionally. With the floor-division arithmetic (window t transfers to windo
 one level down; the rung multiplies d' > ⌊t/q⌋ into q·d' > t), ALL ingredients of the
 full mixed-window law are now machine-checked; remaining = the strong-induction
 assembly J(t) itself.
+
+### O117 — THE DIVISOR-FORM LAW BELOW p: the complete O70 form on half the parameter space
+
+`DeBruijnTwoPrime.windowed_coset_cover_below_p` (axiom-clean, 0 sorry; my lane): for
+window t < p (and t < q^{m+1}, m ≤ b), with ONLY the q-power window hypothesis:
+
+    ∀ x ∈ S, ∃ d ∣ p^{a+1}·q^{b+1}, d > t, x's full μ_d-coset ⊆ S
+
+— the EXACT O70/divisor form of the mixed-radix law ("window t ⟹ union of μ_d-cosets,
+d | n, d > t"), as a theorem, in the regime where one prime exceeds the window. The
+q-direction law's left case clears the window for free (q^c·p ≥ p > t); the right case
+by window-depth choice. On domains n = 2^a·p^b or q^a·p with one large prime — and in
+all regimes t < min over the larger prime — the verified law is now FULLY formal.
+
+Remaining for the all-t form: the bigraded assembly (both primes ≤ t), where the
+transfer's p∤e puncture requires the two-dimensional spectrum analysis — mapped, with
+first_peel_export (O116) resolving its stall case.
