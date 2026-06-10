@@ -149,6 +149,128 @@ theorem candidate_between_johnson_and_capacity (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ
   have := radius_mono_in_exponent ρ h0 h1 (2/3 : ℝ) 1 (by norm_num)
   rwa [rpow_one] at this
 
+/-- **Strict Johnson–capacity separation.** For a rate `ρ ∈ (0,1)`, the RS Johnson radius
+`1 − √ρ` is *strictly* below capacity `1 − ρ`: the proximity-gap interval `(1−√ρ, 1−ρ)` in which
+the true threshold `δ*` must live is genuinely non-degenerate (the non-strict version is
+`johnson_radius_le_capacity`). -/
+theorem johnson_radius_lt_capacity (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) :
+    1 - Real.sqrt ρ < 1 - ρ := by
+  have hsqrt_pos : 0 < Real.sqrt ρ := Real.sqrt_pos.mpr h0
+  have hsqrt_lt_one : Real.sqrt ρ < 1 := by
+    rw [show (1:ℝ) = Real.sqrt 1 by simp]
+    exact Real.sqrt_lt_sqrt (le_of_lt h0) h1
+  have hsq : Real.sqrt ρ * Real.sqrt ρ = ρ := Real.mul_self_sqrt (le_of_lt h0)
+  have hlt : ρ < Real.sqrt ρ := by
+    calc ρ = Real.sqrt ρ * Real.sqrt ρ := hsq.symm
+    _ < Real.sqrt ρ * 1 := mul_lt_mul_of_pos_left hsqrt_lt_one hsqrt_pos
+    _ = Real.sqrt ρ := mul_one _
+  linarith
+
+/-- **Proximity-gap width, exact form.** The width of the Johnson–capacity interval is
+`(1−ρ) − (1−√ρ) = √ρ − ρ = √ρ·(1−√ρ)`. -/
+theorem proximity_gap_width_eq (ρ : ℝ) (h0 : 0 ≤ ρ) :
+    (1 - ρ) - (1 - Real.sqrt ρ) = Real.sqrt ρ * (1 - Real.sqrt ρ) := by
+  have hsq : Real.sqrt ρ * Real.sqrt ρ = ρ := Real.mul_self_sqrt h0
+  ring_nf
+  nlinarith [hsq]
+
+/-- **Sharp maximum of the proximity-gap width.** For every rate `ρ ∈ [0,1]` the width
+`√ρ − ρ` of the Johnson–capacity gap is at most `1/4`. So the Johnson bound can underestimate the
+list-decoding radius by at most a quarter of the block length. The proof is the algebraic identity
+`1/4 − (√ρ − ρ) = (√ρ − 1/2)² ≥ 0`. -/
+theorem proximity_gap_width_le_quarter (ρ : ℝ) (h0 : 0 ≤ ρ) :
+    Real.sqrt ρ - ρ ≤ 1/4 := by
+  have hsq : Real.sqrt ρ * Real.sqrt ρ = ρ := Real.mul_self_sqrt h0
+  nlinarith [sq_nonneg (Real.sqrt ρ - 1/2), hsq]
+
+/-- The gap-width maximum `1/4` is attained **exactly** at rate `ρ = 1/4` (where Johnson radius
+`= 1/2` and capacity `= 3/4`). Together with `proximity_gap_width_le_quarter` this pins the worst
+case of the Johnson underestimate to a single rate. -/
+theorem proximity_gap_width_eq_quarter_iff (ρ : ℝ) (h0 : 0 ≤ ρ) :
+    Real.sqrt ρ - ρ = 1/4 ↔ ρ = 1/4 := by
+  have hsq : Real.sqrt ρ * Real.sqrt ρ = ρ := Real.mul_self_sqrt h0
+  constructor
+  · intro h
+    have hzero : (Real.sqrt ρ - 1/2)^2 = 0 := by nlinarith [hsq, h]
+    have hhalf : Real.sqrt ρ = 1/2 := by
+      have := pow_eq_zero_iff (n := 2) (by norm_num) |>.mp hzero
+      linarith
+    rw [← hsq, hhalf]; norm_num
+  · intro h
+    subst h
+    rw [show (1/4 : ℝ) = (1/2)^2 by norm_num, Real.sqrt_sq (by norm_num)]
+    norm_num
+
+/-- The `m`-interleaved Guruswami–Sudan radius `1 − ρ^{m/(m+1)}` is **strictly below capacity**
+`1 − ρ` for every finite interleaving level `m` (rate `ρ ∈ (0,1)`). No finite amount of
+interleaving closes the Johnson→capacity gap — only the `m → ∞` limit reaches capacity, so the
+exact threshold `δ*` is not attained by any finite GS interleaving. -/
+theorem interleave_radius_lt_capacity (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) (m : ℕ) :
+    1 - ρ ^ ((m : ℝ)/(m+1)) < 1 - ρ := by
+  have hexp : (m : ℝ)/(m+1) < 1 := by
+    rw [div_lt_one (by positivity)]; linarith [(Nat.cast_nonneg m : (0:ℝ) ≤ m)]
+  have hpow : ρ ^ (1:ℝ) < ρ ^ ((m : ℝ)/(m+1)) :=
+    Real.rpow_lt_rpow_of_exponent_gt h0 h1 hexp
+  rw [Real.rpow_one] at hpow
+  linarith
+
+/-- **Exact finite-interleaving capacity gap.** The amount by which the finite
+`m`-interleaved GS radius falls short of capacity is just the difference between the
+finite exponent and the capacity exponent:
+`(1−ρ) − (1−ρ^{m/(m+1)}) = ρ^{m/(m+1)} − ρ`.  This is the residual that must be closed
+by genuinely beyond-finite-GS ideas. -/
+theorem interleave_capacity_gap_eq (ρ : ℝ) (m : ℕ) :
+    (1 - ρ) - (1 - ρ ^ ((m : ℝ)/(m+1)))
+      = ρ ^ ((m : ℝ)/(m+1)) - ρ := by
+  ring
+
+/-- **The finite-interleaving capacity gap is positive.** For every finite level `m` and every
+rate `ρ ∈ (0,1)`, finite GS interleaving leaves a nonzero distance to capacity. -/
+theorem interleave_capacity_gap_pos (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) (m : ℕ) :
+    0 < (1 - ρ) - (1 - ρ ^ ((m : ℝ)/(m+1))) := by
+  have hlt := interleave_radius_lt_capacity ρ h0 h1 m
+  linarith
+
+/-- The interleaved GS radius is **strictly increasing** in the interleaving level `m`
+(rate `ρ ∈ (0,1)`): `1 − ρ^{m/(m+1)} < 1 − ρ^{(m+1)/(m+2)}`. The radii form a strictly increasing
+sequence converging up to capacity. -/
+theorem interleave_radius_strictMono (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) (m : ℕ) :
+    1 - ρ ^ ((m : ℝ)/(m+1)) < 1 - ρ ^ (((m:ℝ)+1)/(m+2)) := by
+  have hexp : (m : ℝ)/(m+1) < ((m:ℝ)+1)/(m+2) := by
+    have key : ((m:ℝ)+1)/((m:ℝ)+2) - (m:ℝ)/(m+1) = 1/(((m:ℝ)+2)*((m:ℝ)+1)) := by
+      field_simp; ring
+    have hpos : 0 < 1/(((m:ℝ)+2)*((m:ℝ)+1)) := by positivity
+    linarith [key ▸ hpos]
+  have hpow : ρ ^ (((m:ℝ)+1)/(m+2)) < ρ ^ ((m : ℝ)/(m+1)) :=
+    Real.rpow_lt_rpow_of_exponent_gt h0 h1 hexp
+  linarith
+
+/-- **The finite-interleaving capacity gap strictly decreases with the interleaving level.**
+Interleaving improves the GS radius monotonically, but by `interleave_capacity_gap_pos` every
+finite level still leaves a positive residual gap to capacity. -/
+theorem interleave_capacity_gap_strict_decrease (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) (m : ℕ) :
+    (1 - ρ) - (1 - ρ ^ (((m:ℝ)+1)/(m+2)))
+      < (1 - ρ) - (1 - ρ ^ ((m : ℝ)/(m+1))) := by
+  have hlt := interleave_radius_strictMono ρ h0 h1 m
+  linarith
+
+/-- For every positive interleaving level `m ≥ 1`, the interleaved GS radius is **at least the
+Johnson radius** `1 − ρ^{1/2}` (rate `ρ ∈ (0,1]`): interleaving only ever improves on Johnson, and
+the `m = 1` level equals Johnson exactly. Combined with `interleave_radius_lt_capacity`, every
+finite level lands in the half-open gap `[1−√ρ, 1−ρ)`. -/
+theorem interleave_radius_ge_johnson (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ ≤ 1) (m : ℕ) (hm : 1 ≤ m) :
+    1 - ρ ^ ((1:ℝ)/2) ≤ 1 - ρ ^ ((m : ℝ)/(m+1)) := by
+  have hexp : (1:ℝ)/2 ≤ (m : ℝ)/(m+1) := by
+    have hm1 : (1:ℝ) ≤ (m:ℝ) := by exact_mod_cast hm
+    have key : (m:ℝ)/((m:ℝ)+1) - (1:ℝ)/2 = ((m:ℝ)-1)/(2*((m:ℝ)+1)) := by
+      field_simp; ring
+    have hge : (0:ℝ) ≤ ((m:ℝ)-1)/(2*((m:ℝ)+1)) :=
+      div_nonneg (by linarith) (by positivity)
+    linarith [key ▸ hge]
+  have hpow : ρ ^ ((m : ℝ)/(m+1)) ≤ ρ ^ ((1:ℝ)/2) :=
+    Real.rpow_le_rpow_of_exponent_ge h0 h1 hexp
+  linarith
+
 end Threshold
 
 /-! ## List-decoding engine -/

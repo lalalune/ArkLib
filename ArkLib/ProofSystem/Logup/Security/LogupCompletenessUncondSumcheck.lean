@@ -14,7 +14,15 @@ import ArkLib.ProofSystem.Logup.Security.LogupCompletenessClose
 proven `CubeFiber` / unconditional multi-round oracle completeness — modulo only the honest-support
 condition. So the end-to-end completeness reduces to: the honest-support condition `hHonest`, the
 standard data facts `hInit`/`hImplSupp`, and the genuine deep residual `hAppend` (the non-perfect
-outer⊕sum-check append composition — the #433 challenge-seam core). -/
+outer⊕sum-check append composition — the #433 challenge-seam core).
+
+**Update (corrected claim-true `midRelation`):** `hHonest` is gone. With
+`midRelation = {p | logupOuterSumcheckClaim … = 0}`, the sum-check half is the fully unconditional
+`sumcheckCompletenessResidual_unconditional`, so the headline reduces to `{hInit, hImplSupp,
+hAppend}` (`logup_completeness_unconditional_append` below), and — in the perfect special case
+`logupCompletenessError F n = 0`, where the proven message-seam keystone discharges the append —
+to `{hErr, hInit, hImplSupp}` plus structural seam facts, with **no** append residual
+(`logup_completeness_perfect_unconditional`). -/
 
 open OracleComp OracleSpec ProtocolSpec
 namespace Logup

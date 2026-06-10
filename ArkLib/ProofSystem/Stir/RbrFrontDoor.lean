@@ -49,7 +49,7 @@ theorem stir_rbr_soundness_of_stirVSpec_secure_gap
         π)
     (h_fold : ε_fold ≤ proximityError F (P.deg / P.foldingParam 0)
         (rate (code (P.φ 0) P.deg)) (Dist.δ 0) (P.repeatParam 0))
-    (h_tail : ∀ {j : Fin M} (_hⱼ : j.val ≠ 0),
+    (h_tail : ∀ j : Fin M,
         ε_out j ≤ ((Dist.l j.succ : ℝ) ^ 2 / 2) *
           ((degree ι P j.succ : ℝ) / (Fintype.card F - Fintype.card (ι j.succ))) ^ s
         ∧
@@ -66,7 +66,7 @@ theorem stir_rbr_soundness_of_stirVSpec_secure_gap
       (hParams := hParams) (Dist := Dist) (Codes := Codes)
       hδ₀ @hδᵢ ε_fold ε_out ε_shift ε_fin :=
   ⟨3 * M + 3, stirVSpec M msgLen chalLen, stirVSpec_card_challengeIdx,
-    π, hSecure, h_fold, @h_tail⟩
+    π, hSecure, h_fold, h_tail⟩
 
 end StirIOP
 

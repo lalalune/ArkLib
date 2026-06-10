@@ -80,6 +80,26 @@ $\forall i \in [0, (\parl-1)]$, $\exists u \in \code, \forall x \in S$, $f_i(x)=
       \end{enumerate}
 \end{theorem}
 
+\begin{remark}[WHIR MCA Lean status]\label{rem:whir_mca_status}
+\lean{MutualCorrAgreement.mca_johnson_bound_CONJECTURE,MutualCorrAgreement.hasMutualCorrAgreement_genRSC_pair_of_epsMCA_le,MutualCorrAgreement.hasMutualCorrAgreement_genRSC_of_epsMCACurve_le,Whir302B.hasMutualCorrAgreement_genRSC_of_epsMCAP_le,MutualCorrAgreement.mca_johnson_bound_CONJECTURE_pair_of_johnsonNumericBound,CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_affine_capture}
+The Johnson-radius statement above is the live WHIR MCA target.  The
+capacity-shaped declaration is retained in Lean as a historical \texttt{Prop}
+surface and should not be read as an active theorem backlog item for WHIR
+round-by-round soundness.  Current Lean has closed much of the plumbing around
+the Johnson target: the affine-line pair-generator seam, the curve and
+parameter-sampling seams for higher arity, the bridge from a
+\texttt{JohnsonNumericBound} to the pair-case MCA conjecture, and the
+affine-capture route from per-stack capture lists to the Johnson numeric bound.
+
+The remaining Johnson proof content is now isolated to the
+affine-capture/generic-to-scalar decoding kernel, also called the
+\texttt{MutualDisagreeCover} or \texttt{hdata} node in the issue audit.  In
+concrete terms, all bad scalar-close Reed-Solomon codewords must be shown to
+come from the bounded list of generic \(\field(Z)\)-linear factors, rather than
+from higher-degree factors after specialization.  The active tracker is
+\href{https://github.com/lalalune/ArkLib/issues/302}{WHIR issue \#302}.
+\end{remark}
+
 \subsubsection{Mutual correlated agreement preserves list decoding}
 
 \begin{lemma}\label{lemma: mutual_corrAgr_listdecoding}
@@ -287,4 +307,25 @@ $\forall i \in [0, (\parl-1)]$, $\exists u \in \code, \forall x \in S$, $f_i(x)=
 \end{itemize}
 \end{theorem}
 
+\begin{remark}[WHIR RBR Lean status]\label{rem:whir_rbr_status}
+\lean{whirVectorIOP,whirVectorIOP_isSecureWithGap_holds,Whir302.whirVectorIOP_perfectCompleteness_holds,Whir302.whirVectorIOP_isSecureWithGap_of_rbr,WhirIOP.Construction.whir_rbr_soundness_of_secure_gap,WhirIOP.Construction.whir_rbr_soundness_of_whirVectorSpec_secure_gap,WhirIOPP.whir_vector_iop_breakthrough}
+The theorem above is the WHIR round-by-round soundness target.  The current
+Lean tree has more structure than the original blueprint text: a paper-transcript
+\texttt{VectorIOP} scaffold, the WHIR \texttt{VectorSpec} challenge budget,
+proved perfect completeness for the present pure-true placeholder verifier, and
+front-door theorems that introduce the \texttt{whir\_rbr\_soundness}
+existential from a supplied \texttt{IsSecureWithGap} proof and the paper budget
+inequalities.
+
+Those front doors are conditional.  The proof is not closed for the real WHIR
+security theorem merely because the existential assembly and the placeholder
+completeness route exist.  The dummy verifier gives only the trivial
+\(\varepsilon_{\mathrm{rbr}}=1\) soundness surface; the intended RBR theorem
+still requires the actual protocol soundness clause.  Current issue \#302
+reduces that clause through the WHIR budget accounting and MCA seams to the
+single affine-capture/Johnson MCA kernel described in
+Remark~\ref{rem:whir_mca_status}.  Thus the blueprint should be read as:
+protocol/spec/completeness and seam plumbing are largely present, while the
+Johnson MCA capture kernel remains a genuine mathematical residual.
+\end{remark}
 

@@ -37,22 +37,21 @@ and the target-carrying variant adds a trailing `prependClaim` to land in
   so only the per-phase leaf instances are needed; those already exist for the six real phases
   (`instFirstMessageVerifierAppendCoherent`, …, `instSecondSumcheckVerifierAppendCoherent`). The
   composite `AppendCoherent` for any nested right operand is supplied automatically by
-  `OracleVerifier.Append.AppendCoherent.oracleReductionAppend`. The new `prependTarget` /
+  `OracleVerifier.Append.AppendCoherent.oracleReductionAppend`. The new `prependRLCTarget` /
   `prependClaim` adapters carry their own immediate `inl`-shaped instances.
 
-The only new ingredient is the 0-round (`!p[]`) statement adapter `prependTarget`, bridging
-`linearCombination`'s output statement `AfterLinearCombination` to `secondSumcheck`'s input
-statement `R × AfterLinearCombination` (the leading `R` is the second sum-check's claimed target).
-`prependClaim` is its terminal analogue, prepending the final target slot to land in
+The only new ingredient is the 0-round (`!p[]`) honest statement adapter `prependRLCTarget`, bridging
+`linearCombination`'s output statement `AfterLinearCombination` to `secondSumcheck`'s input statement
+`R × AfterLinearCombination` (the leading `R` is the second sum-check's claimed target).  It reads the
+bundled evaluation-claim oracle and carries the random linear combination required by the second
+sum-check relation. `prependClaim` is its terminal analogue, prepending the final target slot to land in
 `FinalClaimStatement`.
 
 ## Honesty
 
-No `sorry`/`axiom`. `composedPIOPResidual` is purely a *typed-existence* statement; the honest
-target value is threaded by the separately-named *completeness* layer
-(`composedCompletenessResidual`), where the prover/verifier evaluate the bundled eval-claim oracle.
-Here the adapters record the typed target slot whose value the completeness layer pins; the
-discharge is the assembled reduction term, axiom-clean by construction.
+No `sorry`/`axiom`. `composedPIOPResidual` is purely a *typed-existence* statement, and the assembled
+reduction uses the honest RLC-target adapter so the same term is suitable for the composed
+perfect-completeness layer.
 -/
 
 open OracleComp OracleInterface ProtocolSpec Function
@@ -144,9 +143,85 @@ def prependTarget :
 
 instance instPrependTargetVerifierAppendCoherent :
     OracleVerifier.Append.AppendCoherent (prependTarget (R := R) pp oSpec).verifier :=
-  inferInstanceAs (OracleVerifier.Append.AppendCoherent
-    (prependSlotVerifier (R := R) oSpec
-      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp)))
+    inferInstanceAs (OracleVerifier.Append.AppendCoherent
+      (prependSlotVerifier (R := R) oSpec
+        (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp)))
+
+/-! ### Honest RLC-target adapter -/
+
+/-- The 0-round honest RLC-target oracle prover: emits the RLC
+`∑ idx, r idx * v idx`, reading the bundled eval-claim oracle `.inl 0`. -/
+noncomputable def prependRLCTargetProver :
+    OracleProver oSpec
+      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
+      (R × Statement.AfterLinearCombination R pp)
+      (OracleStatement.AfterLinearCombination R pp) Unit !p[] where
+  PrvState := fun _ =>
+    Statement.AfterLinearCombination R pp ×
+      (∀ i, OracleStatement.AfterLinearCombination R pp i)
+  input := Prod.fst
+  sendMessage := fun i => nomatch i
+  receiveChallenge := fun i => nomatch i
+  output := fun st =>
+    pure (((∑ idx, st.1.1 idx * st.2 (.inl 0) idx, st.1), st.2), ())
+
+/-- Direct combined-spec query of the bundled claim oracle `.inl 0` at index `idx`. -/
+noncomputable def queryClaimDirect (idx : R1CS.MatrixIdx) :
+    OracleComp (oSpec + ([OracleStatement.AfterLinearCombination R pp]ₒ
+      + [(!p[] : ProtocolSpec 0).Message]ₒ)) R :=
+  (OracleComp.lift <| OracleSpec.query
+    (spec := oSpec + ([OracleStatement.AfterLinearCombination R pp]ₒ
+      + [(!p[] : ProtocolSpec 0).Message]ₒ))
+    (show (oSpec + ([OracleStatement.AfterLinearCombination R pp]ₒ
+      + [(!p[] : ProtocolSpec 0).Message]ₒ)).Domain from
+        Sum.inr (Sum.inl ⟨.inl 0, ⟨idx, ()⟩⟩)) :
+    OracleComp _ R)
+
+/-- One RLC-verifier query step: query the claim oracle, return `(idx, value)`. -/
+noncomputable def rlcStep (idx : R1CS.MatrixIdx) :
+    OptionT (OracleComp (oSpec + ([OracleStatement.AfterLinearCombination R pp]ₒ
+      + [(!p[] : ProtocolSpec 0).Message]ₒ))) (R1CS.MatrixIdx × R) := do
+  let v ← liftM (queryClaimDirect pp oSpec idx)
+  pure (idx, v)
+
+/-- The honest RLC-target verifier: queries the bundled claim oracle for each matrix index and
+emits `(∑ idx, r idx * v idx, stmt)`. -/
+noncomputable def prependRLCTargetVerifier :
+    OracleVerifier oSpec
+      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp)
+      (R × Statement.AfterLinearCombination R pp)
+      (OracleStatement.AfterLinearCombination R pp) !p[] where
+  verify := fun stmt _ => do
+    let claims ← (liftM ((Finset.univ : Finset R1CS.MatrixIdx).toList.mapM (rlcStep pp oSpec)) :
+      OptionT (OracleComp _) (List (R1CS.MatrixIdx × R)))
+    let rlc : R := (claims.map (fun p => stmt.1 p.1 * p.2)).sum
+    pure (rlc, stmt)
+  embed := Embedding.inl
+  hEq := by intro i; simp
+
+/-- The honest RLC-target oracle reduction between `linearCombination` and the second sum-check. -/
+noncomputable def prependRLCTarget :
+    OracleReduction oSpec
+      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
+      (R × Statement.AfterLinearCombination R pp)
+      (OracleStatement.AfterLinearCombination R pp) Unit !p[] where
+  prover := prependRLCTargetProver pp oSpec
+  verifier := prependRLCTargetVerifier pp oSpec
+
+instance instPrependRLCTargetVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (prependRLCTargetVerifier (R := R) pp oSpec) where
+  hCohInl i k h := by
+    simp only [prependRLCTargetVerifier, Function.Embedding.inl_apply] at h
+    obtain rfl := Sum.inl.inj h
+    rfl
+  hCohInr i k h := by
+    simp only [prependRLCTargetVerifier, Function.Embedding.inl_apply] at h
+    cases h
+
+instance instPrependRLCTargetReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (prependRLCTarget (R := R) pp oSpec).verifier :=
+  inferInstanceAs
+    (OracleVerifier.Append.AppendCoherent (prependRLCTargetVerifier (R := R) pp oSpec))
 
 /-- **`prependClaim`**: the terminal target-slot adapter after `finalCheck`, bridging `FinalStatement`
 to the target-carrying `FinalClaimStatement = R × FinalStatement`. -/
@@ -196,8 +271,8 @@ instance instFinalCheckVerifierAppendCoherent :
 
 /-! ### The composed Spartan oracle reduction
 
-Right-associated iterated `OracleReduction.append` over the seven phases (plus the `prependTarget`
-empty adapter, and — for the target-carrying variant — the trailing `prependClaim`). Every left
+  Right-associated iterated `OracleReduction.append` over the seven phases (plus the `prependRLCTarget`
+  empty adapter, and — for the target-carrying variant — the trailing `prependClaim`). Every left
 operand is a leaf phase, so the required `AppendCoherent` instances are exactly the per-phase leaves;
 the nested right composites get theirs automatically from `AppendCoherent.oracleReductionAppend`.
 
@@ -228,7 +303,7 @@ instance : ∀ i, SampleableType ((sfx6 (R := R) pp).Challenge i) :=
   instSampleableTypeChallengeAppend (pSpec₁ := Sumcheck.Spec.pSpec R 2 pp.ℓ_n)
     (pSpec₂ := (!p[] : ProtocolSpec 0))
 
-/-- suffix `[prependTarget ▷ …]` (= `!p[] ++ₚ sfx6`). -/
+/-- suffix `[prependRLCTarget ▷ …]` (= `!p[] ++ₚ sfx6`). -/
 abbrev sfx5 := (!p[] : ProtocolSpec 0) ++ₚ sfx6 (R := R) pp
 instance : ∀ i, OracleInterface ((sfx5 (R := R) pp).Message i) :=
   instOracleInterfaceMessageAppend (pSpec₁ := (!p[] : ProtocolSpec 0)) (pSpec₂ := sfx6 (R := R) pp)
@@ -296,12 +371,12 @@ def composedPIOP_Rc :
       (composedPSpec (R := R) pp) :=
   (oracleReduction.firstMessage R pp oSpec).append <|
   (oracleReduction.firstChallenge R pp oSpec).append <|
-  (firstSumcheckReduction pp oSpec).append <|
-  (oracleReduction.sendEvalClaim R pp oSpec).append <|
-  (oracleReduction.linearCombination R pp oSpec).append <|
-  (prependTarget pp oSpec).append <|
-  (secondSumcheckReduction pp oSpec).append <|
-  (finalCheck R pp oSpec)
+    (firstSumcheckReduction pp oSpec).append <|
+    (oracleReduction.sendEvalClaim R pp oSpec).append <|
+    (oracleReduction.linearCombination R pp oSpec).append <|
+    (prependRLCTarget pp oSpec).append <|
+    (secondSumcheckReduction pp oSpec).append <|
+    (finalCheck R pp oSpec)
 
 /-- suffix `[finalCheck ▷ prependClaim]` (= `!p[] ++ₚ !p[]`), the terminal of the with-claim fold. -/
 abbrev sfxC7 := (!p[] : ProtocolSpec 0) ++ₚ (!p[] : ProtocolSpec 0)
@@ -319,7 +394,7 @@ instance : ∀ i, OracleInterface ((sfxC6 (R := R) pp).Message i) :=
 instance : ∀ i, SampleableType ((sfxC6 (R := R) pp).Challenge i) :=
   instSampleableTypeChallengeAppend (pSpec₁ := Sumcheck.Spec.pSpec R 2 pp.ℓ_n) (pSpec₂ := sfxC7)
 
-/-- suffix `[prependTarget ▷ …]` (= `!p[] ++ₚ sfxC6`). -/
+/-- suffix `[prependRLCTarget ▷ …]` (= `!p[] ++ₚ sfxC6`). -/
 abbrev sfxC5 := (!p[] : ProtocolSpec 0) ++ₚ sfxC6 (R := R) pp
 instance : ∀ i, OracleInterface ((sfxC5 (R := R) pp).Message i) :=
   instOracleInterfaceMessageAppend (pSpec₁ := (!p[] : ProtocolSpec 0)) (pSpec₂ := sfxC6 (R := R) pp)
@@ -389,11 +464,11 @@ def composedPIOPWithClaim_Rc :
       (composedPSpecWithClaim (R := R) pp) :=
   (oracleReduction.firstMessage R pp oSpec).append <|
   (oracleReduction.firstChallenge R pp oSpec).append <|
-  (firstSumcheckReduction pp oSpec).append <|
-  (oracleReduction.sendEvalClaim R pp oSpec).append <|
-  (oracleReduction.linearCombination R pp oSpec).append <|
-  (prependTarget pp oSpec).append <|
-  (secondSumcheckReduction pp oSpec).append <|
+    (firstSumcheckReduction pp oSpec).append <|
+    (oracleReduction.sendEvalClaim R pp oSpec).append <|
+    (oracleReduction.linearCombination R pp oSpec).append <|
+    (prependRLCTarget pp oSpec).append <|
+    (secondSumcheckReduction pp oSpec).append <|
   (finalCheck R pp oSpec).append <|
   (prependClaim pp oSpec)
 

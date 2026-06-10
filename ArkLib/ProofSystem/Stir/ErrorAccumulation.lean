@@ -307,6 +307,12 @@ black box, with the adapter showing `e i` *is* the keystone's `errorBound`. -/
 def PerRoundProximityGap {n : ℕ} (e ProxGapBound : Fin n → ℝ≥0) : Prop :=
   ∀ i, e i = ProxGapBound i
 
+/-- Reflexive instance of the per-round proximity-gap keystone. This is the named form of the
+common front-door specialization where the accounting errors are chosen to be the proximity-gap
+bounds themselves. -/
+theorem PerRoundProximityGap.refl {n : ℕ} (e : Fin n → ℝ≥0) : PerRoundProximityGap e e :=
+  fun _ => rfl
+
 /-- **Adapter: accounting bound from the keystone.**
     Given the named keystone (`PerRoundProximityGap`) and a uniform bound `ε` on the
     keystone's per-round proximity-gap errors, the *accounting* fold budget is ≤ `n·ε`.

@@ -23,7 +23,7 @@ variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ Pro
 
 /-- `F` is inhabited (by `0`), needed to synthesize the outer-phase challenge `SampleableType`
 instances used when naming the sub-verifier obligations. -/
-local instance : Inhabited F := ⟨0⟩
+local instance instInhabitedFieldSumcheckSoundness : Inhabited F := ⟨0⟩
 
 /-- **The embedded sum-check soundness residual for LogUp**, discharged modulo the round-by-round
 soundness inputs.

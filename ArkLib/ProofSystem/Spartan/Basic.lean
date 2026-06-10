@@ -305,14 +305,42 @@ noncomputable def firstChallengeContextLens :
   stmt := firstChallengeStmtLens R pp
   wit := ⟨fun _ => (), fun _ _ => ()⟩
 
+/-- Direct prover for the first-challenge phase. It is behaviorally the `RandomQuery` lift through
+`firstChallengeContextLens`: receive the verifier's random point and record it in the output
+statement, carrying the oracle family through unchanged. -/
+def firstChallengeProver :
+    OracleProver oSpec
+      (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp) Unit
+      (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
+      ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ where
+  PrvState
+  | 0 => Statement.AfterFirstMessage R pp ×
+      (∀ i, OracleStatement.AfterFirstMessage R pp i)
+  | 1 => (Statement.AfterFirstMessage R pp ×
+      (∀ i, OracleStatement.AfterFirstMessage R pp i)) × FirstChallenge R pp
+  input := fun x => x.1
+  sendMessage | ⟨0, h⟩ => nomatch h
+  receiveChallenge | ⟨0, _⟩ => fun st => pure fun q => (st, q)
+  output := fun ⟨st, q⟩ => pure (((q, st.1), st.2), ())
+
+/-- Direct verifier for the first-challenge phase: return the sampled point paired with the input
+statement, and route all output oracle statements from the input. -/
+def firstChallengeVerifier :
+    OracleVerifier oSpec
+      (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp)
+      (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp)
+      ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ where
+  verify := fun stmt chal => pure (chal ⟨0, rfl⟩, stmt)
+  embed := Function.Embedding.inl
+  hEq := by intro i; rfl
+
 def oracleReduction.firstChallenge :
     OracleReduction oSpec
       (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp) Unit
       (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
       ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ :=
-  (RandomQuery.oracleReduction oSpec (MvPolynomial (Fin pp.ℓ_m) R)).liftContext
-    (firstChallengeContextLens R pp)
-    (firstChallengeOracleLens R pp oSpec)
+  { prover := firstChallengeProver (R := R) pp oSpec
+    verifier := firstChallengeVerifier (R := R) pp oSpec }
 
 
 
@@ -326,10 +354,10 @@ def oracleReduction.firstChallenge :
 instance instFirstChallengeVerifierAppendCoherent :
     OracleVerifier.Append.AppendCoherent (oracleReduction.firstChallenge R pp oSpec).verifier where
   hCohInl i k h := by
-    dsimp [oracleReduction.firstChallenge, firstChallengeOracleLens, OracleReduction.liftContext, OracleVerifier.liftContext, RandomQuery.oracleReduction, OracleVerifier.embed] at h
+    dsimp [oracleReduction.firstChallenge, firstChallengeVerifier] at h
     cases i <;> cases h <;> rfl
   hCohInr i k h := by
-    dsimp [oracleReduction.firstChallenge, firstChallengeOracleLens, OracleReduction.liftContext, OracleVerifier.liftContext, RandomQuery.oracleReduction, OracleVerifier.embed] at h
+    dsimp [oracleReduction.firstChallenge, firstChallengeVerifier] at h
     cases i <;> cases h <;> rfl
 
 /-- Unfolds to `r_x : Fin ℓ_m → R` -/
@@ -652,6 +680,93 @@ end Construction
 
 section Security
 
+open MvPolynomial
+
+/-!
+## Zero-check completeness (first sum-check phase)
+
+The first phase of Spartan reduces R1CS satisfiability to a zero-check on the virtual polynomial
+`𝒢(Z) = ∑ₓ eq(Z, x) · (A𝕫(x)·B𝕫(x) − C𝕫(x))`.  The two lemmas below discharge the genuine
+mathematical content of that reduction (independently of the interactive machinery):
+
+* `zeroCheckVirtualPolynomial_eval_boolPoint`: evaluating `𝒢` at a boolean point `w` recovers the
+  pointwise R1CS residual `(A𝕫·B𝕫 − C𝕫)(w)` at row `w`.
+* `relation_iff_zeroCheck_vanishes`: the R1CS relation holds **iff** `𝒢` vanishes at *every* boolean
+  point — i.e. the zero-check the first sum-check verifies is sound and complete for R1CS.
+-/
+
+/-- The R1CS pointwise residual `(A𝕫·B𝕫 − C𝕫)(w)` at row index `w`, for the combined vector
+`𝕫 = 𝕩 ‖ 𝕨`. -/
+def r1csResidualAt
+    (𝕩 : Statement.AfterFirstMessage R pp)
+    (oStmt : ∀ i, OracleStatement.AfterFirstMessage R pp i)
+    (w : Fin (2 ^ pp.ℓ_m)) : R :=
+  letI 𝕫 := R1CS.𝕫 𝕩 (oStmt (.inr 0))
+  (Matrix.mulVec (oStmt (.inl .A)) 𝕫) w *
+    (Matrix.mulVec (oStmt (.inl .B)) 𝕫) w -
+    (Matrix.mulVec (oStmt (.inl .C)) 𝕫) w
+
+omit [IsDomain R] [Fintype R] in
+/-- **Zero-check completeness identity.** Evaluating the zero-check virtual polynomial at a boolean
+point `boolPoint w` recovers exactly the R1CS pointwise residual at row `w`. This is the core
+algebraic fact behind the first sum-check phase: the zero-check polynomial is the multilinear
+encoding of the R1CS row residual. -/
+theorem zeroCheckVirtualPolynomial_eval_boolPoint
+    (𝕩 : Statement.AfterFirstMessage R pp)
+    (oStmt : ∀ i, OracleStatement.AfterFirstMessage R pp i)
+    (w : Fin (2 ^ pp.ℓ_m)) :
+    MvPolynomial.eval (boolPoint R w) (zeroCheckVirtualPolynomial R pp 𝕩 oStmt)
+      = r1csResidualAt R pp 𝕩 oStmt w := by
+  unfold zeroCheckVirtualPolynomial r1csResidualAt boolPoint
+  rw [map_sum]
+  rw [Finset.sum_eq_single w]
+  · rw [eval_mul, eval_C]
+    have h1 : MvPolynomial.eval
+        (fun j => ((finFunctionFinEquiv.symm w j : Fin 2) : R))
+        (eqPolynomial (fun j => ((finFunctionFinEquiv.symm w j : Fin 2) : R))) = 1 := by
+      have := eqPolynomial_eval_zeroOne (R := R)
+        (finFunctionFinEquiv.symm w) (finFunctionFinEquiv.symm w)
+      simpa using this
+    rw [h1, one_mul]
+  · intro x _ hxw
+    rw [eval_mul, eval_C]
+    have hne : (finFunctionFinEquiv.symm w) ≠ (finFunctionFinEquiv.symm x) := by
+      intro h
+      exact hxw (finFunctionFinEquiv.symm.injective h.symm)
+    have h0 : MvPolynomial.eval
+        (fun j => ((finFunctionFinEquiv.symm w j : Fin 2) : R))
+        (eqPolynomial (fun j => ((finFunctionFinEquiv.symm x j : Fin 2) : R))) = 0 := by
+      have := eqPolynomial_eval_zeroOne (R := R)
+        (finFunctionFinEquiv.symm x) (finFunctionFinEquiv.symm w)
+      rw [if_neg hne] at this
+      simpa using this
+    rw [h0, zero_mul]
+  · intro hw; exact absurd (Finset.mem_univ w) hw
+
+omit [Fintype R] in
+/-- **R1CS relation ⟺ zero-check polynomial vanishes on the boolean cube.** The R1CS relation for
+`(𝕩, A, B, C, 𝕨)` holds iff the zero-check virtual polynomial `𝒢` evaluates to `0` at every boolean
+point.  This is exactly the statement the first sum-check phase reduces (soundness + completeness of
+the zero-check). -/
+theorem relation_iff_zeroCheck_vanishes
+    (𝕩 : Statement.AfterFirstMessage R pp)
+    (oStmt : ∀ i, OracleStatement.AfterFirstMessage R pp i) :
+    R1CS.relation R pp.toSizeR1CS 𝕩 (fun idx => oStmt (.inl idx)) (oStmt (.inr 0))
+      ↔ ∀ w : Fin (2 ^ pp.ℓ_m),
+          MvPolynomial.eval (boolPoint R w) (zeroCheckVirtualPolynomial R pp 𝕩 oStmt) = 0 := by
+  simp only [zeroCheckVirtualPolynomial_eval_boolPoint, r1csResidualAt]
+  unfold R1CS.relation
+  constructor
+  · intro h w
+    have hw := congrFun h w
+    simp only [Pi.mul_apply] at hw
+    rw [hw]; ring
+  · intro h
+    funext w
+    have hw := h w
+    simp only [Pi.mul_apply]
+    rw [sub_eq_zero] at hw
+    exact hw
 
 end Security
 

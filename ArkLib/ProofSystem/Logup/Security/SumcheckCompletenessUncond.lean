@@ -16,10 +16,17 @@ sum-check ORACLE perfect completeness). Both are now discharged:
   multi-round oracle completeness, whose only residual (the per-round lens coherence) is the proven
   `CubeFiber`. `logupConcreteSumcheckOracleReduction = Sumcheck.Spec.oracleReduction …` and
   `innerSumcheckRelIn/Out = relationRound 0/last`, all definitionally, so it plugs in on the nose.
-* `hProj` ← `SumcheckLensProjComplete_holds_of_honest` (RA) on the honest-prover support.
+* `hProj` ← `SumcheckLensProjComplete_holds_of_honest` (RA) on the honest-prover support, or —
+  with the corrected claim-true `midRelation` (issue #13) — **unconditionally** via
+  `SumcheckLensProjComplete_unconditional` (the `midRelation` premise *is* the zero-sum claim).
 
-So `SumcheckCompletenessResidual` holds modulo only the honest-support condition `hHonest` and the
-standard data facts `hInit`/`hImplSupp`. -/
+So `SumcheckCompletenessResidual` holds modulo only the standard data facts `hInit`/`hImplSupp`
+(`sumcheckCompletenessResidual_unconditional` below); the historical honest-support form
+(`sumcheckCompletenessResidual_holds_uncondInner`) is retained for callers that thread `hHonest`
+explicitly. Consequently the **entire** bundled sub-phase completeness residual
+`SubPhaseCompletenessResidual` (outer ∧ sumcheck) is a theorem under `hInit`/`hImplSupp`
+(`subPhaseCompletenessResidual_unconditional`): the outer half is the in-tree
+`outerOracleReduction_completeness`, the sumcheck half is the unconditional form here. -/
 
 open OracleComp OracleSpec ProtocolSpec
 namespace Logup
@@ -54,5 +61,42 @@ theorem sumcheckCompletenessResidual_holds_uncondInner
     (SumcheckLensProjComplete_holds_of_honest F n M params hHonest)
     (Sumcheck.Spec.oracleReduction_perfectCompleteness_unconditional hInit hImplSupp)
 
+/-- **`SumcheckCompletenessResidual` — UNCONDITIONAL (issue #13).** With the corrected claim-true
+`midRelation` (`{p | logupOuterSumcheckClaim … = 0}`), the `proj_complete` obligation is the theorem
+`SumcheckLensProjComplete_unconditional` — no honest-support hypothesis `hHonest` — and the inner
+multi-round sum-check oracle completeness is the proven CubeFiber keystone
+(`Sumcheck.Spec.oracleReduction_perfectCompleteness_unconditional`, no per-round bridge `hPerRound`).
+The embedded LogUp sum-check phase is therefore perfectly complete from `midRelation` to
+`outputRelation` given only the standard data facts `hInit`/`hImplSupp`. -/
+theorem sumcheckCompletenessResidual_unconditional
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β)) :
+    SumcheckCompletenessResidual oSpec F n M params init impl :=
+  sumcheckCompletenessResidual_holds oSpec F n M params init impl
+    (SumcheckLensProjComplete_unconditional F n M params)
+    (Sumcheck.Spec.oracleReduction_perfectCompleteness_unconditional hInit hImplSupp)
+
+/-- **`SubPhaseCompletenessResidual` — fully discharged (issue #13).** Both halves of the original
+bundled LogUp sub-phase completeness residual are now theorems under the standard data facts:
+the **outer** half is `outerOracleReduction_completeness` (pole bound + per-state agreement + the
+grand-sum membership in the claim-true `midRelation`), and the **sumcheck** half is
+`sumcheckCompletenessResidual_unconditional` above. The remaining completeness wall of issue #13 is
+purely the non-perfect append-composition brick (`AppendCompletenessResidual`). -/
+theorem subPhaseCompletenessResidual_unconditional
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β)) :
+    SubPhaseCompletenessResidual oSpec F n M params init impl :=
+  subPhaseCompletenessResidual_of_sumcheck oSpec F n M params init impl hInit
+    (sumcheckCompletenessResidual_unconditional oSpec F n M params init impl hInit hImplSupp)
+
 end
 end Logup
+
+/- Axiom audit: the unconditional #13 sub-phase completeness surface. -/
+#print axioms Logup.sumcheckCompletenessResidual_holds_uncondInner
+#print axioms Logup.sumcheckCompletenessResidual_unconditional
+#print axioms Logup.subPhaseCompletenessResidual_unconditional

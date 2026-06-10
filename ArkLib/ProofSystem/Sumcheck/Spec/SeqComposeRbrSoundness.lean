@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.General
+import ArkLib.OracleReduction.Composition.Sequential.AppendToVerifierKeystone
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleRbrSoundness
-import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncond
+import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundCohWired
+import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFlipImpClose
 
 /-!
 # Discharging the two sum-check RBR soundness keystones (issue #13, residual `K-rbr`)
@@ -324,6 +326,83 @@ end
 
 end ArkLib.SeqComposeRbrSoundness
 
+namespace OracleVerifier
+
+open OracleComp OracleSpec ProtocolSpec
+
+variable {ι : Type} {oSpec : OracleSpec ι}
+
+set_option linter.unusedVariables false in
+/-- RBR-local copy of the binary verifier-fusion law.
+
+This is intentionally named separately from the completeness-side `BinaryVerifierFusion`, so the RBR
+assembly can use the lower-level append verifier-fusion keystone without importing the sumcheck
+oracle-completeness modules that define overlapping theorem names. -/
+def BinaryVerifierFusionForRbr (oSpec : OracleSpec ι) : Prop :=
+  ∀ {Stmt₁ : Type} {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type} [Oₛ₁ : ∀ i, OracleInterface.{0, 0} (OStmt₁ i)]
+    {Stmt₂ : Type} {ιₛ₂ : Type} {OStmt₂ : ιₛ₂ → Type} [Oₛ₂ : ∀ i, OracleInterface.{0, 0} (OStmt₂ i)]
+    {Stmt₃ : Type} {ιₛ₃ : Type} {OStmt₃ : ιₛ₃ → Type} [Oₛ₃ : ∀ i, OracleInterface.{0, 0} (OStmt₃ i)]
+    {p q : ℕ} {pSpec₁ : ProtocolSpec p} {pSpec₂ : ProtocolSpec q}
+    [Oₘ₁ : ∀ i, OracleInterface.{0, 0} (pSpec₁.Message i)]
+    [Oₘ₂ : ∀ i, OracleInterface.{0, 0} (pSpec₂.Message i)]
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [c₁ : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂),
+    (OracleVerifier.append (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁ V₂).toVerifier
+      = Verifier.append V₁.toVerifier V₂.toVerifier
+
+/-- The RBR-local binary verifier-fusion law follows from the proven append verifier-fusion
+keystone. -/
+theorem binaryVerifierFusionForRbr_holds (oSpec : OracleSpec ι) :
+    BinaryVerifierFusionForRbr oSpec := by
+  intro Stmt₁ ιₛ₁ OStmt₁ Oₛ₁ Stmt₂ ιₛ₂ OStmt₂ Oₛ₂ Stmt₃ ιₛ₃ OStmt₃ Oₛ₃
+    p q pSpec₁ pSpec₂ Oₘ₁ Oₘ₂ V₁ c₁ V₂
+  exact OracleReduction.oracleVerifier_append_toVerifier
+    (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁ V₂
+
+/-- The unbounded-round verifier fusion used by the RBR seqCompose assembly, derived from the
+RBR-local binary fusion law. -/
+theorem seqCompose_toVerifier_of_binary_for_rbr (hBinaryFusion : BinaryVerifierFusionForRbr oSpec)
+    {m : ℕ}
+    (Stmt : Fin (m + 1) → Type)
+    {ιₛ : Fin (m + 1) → Type} (OStmt : (i : Fin (m + 1)) → ιₛ i → Type)
+    (Oₛ : ∀ i, ∀ j, OracleInterface.{0, 0} (OStmt i j))
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    (Oₘ : ∀ i, ∀ j, OracleInterface.{0, 0} ((pSpec i).Message j))
+    (V : (i : Fin m) →
+      OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ)
+        (pSpec i))
+    (coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)) :
+    (OracleVerifier.seqCompose (Oₛ := Oₛ) (Oₘ := Oₘ) Stmt OStmt V (coh := coh)).toVerifier =
+      Verifier.seqCompose (fun i => Stmt i × (∀ j, OStmt i j)) (fun i => (V i).toVerifier) := by
+  induction m with
+  | zero =>
+    show (OracleVerifier.seqCompose Stmt OStmt V).toVerifier = Verifier.id
+    rw [OracleVerifier.seqCompose_zero Stmt OStmt V]
+    exact OracleVerifier.id_toVerifier
+  | succ m ih =>
+    letI tailCoh :
+        ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := (fun i => Oₛ (Fin.succ i)) i.castSucc)
+          (Oₛ₂ := (fun i => Oₛ (Fin.succ i)) i.succ) (Oₘ₁ := (fun i => Oₘ (Fin.succ i)) i)
+          (V (Fin.succ i)) := fun i => coh i.succ
+    letI headCoh :
+        OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ 1) (Oₘ₁ := Oₘ 0) (V 0) :=
+      coh 0
+    have ihTail := ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (fun i => Oₛ (Fin.succ i))
+      (fun i => Oₘ (Fin.succ i)) (fun i => V (Fin.succ i)) tailCoh
+    have hHead := hBinaryFusion (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ 1) (Oₛ₃ := Oₛ (Fin.last (m + 1)))
+      (Oₘ₁ := Oₘ 0)
+      (V 0) (c₁ := headCoh)
+      (OracleVerifier.seqCompose (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i))
+        (Oₛ := fun i => Oₛ (Fin.succ i)) (Oₘ := fun i => Oₘ (Fin.succ i))
+        (fun i => V (Fin.succ i)) (coh := tailCoh))
+    rw [OracleVerifier.seqCompose_succ Stmt OStmt (Oₛ := Oₛ) (Oₘ := Oₘ) V (coh := coh),
+        Verifier.seqCompose_succ (fun i => Stmt i × (∀ j, OStmt i j)) (fun i => (V i).toVerifier)]
+    exact hHead.trans (congrArg (Verifier.append (V 0).toVerifier) ihTail)
+
+end OracleVerifier
+
 /-! ## Discharging `hSeqCompose` for the concrete sum-check oracle verifier
 
 We now specialize the generic `seqCompose_rbrSoundness_of_append` keystone to the concrete sum-check
@@ -347,6 +426,63 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
   {n : ℕ} {deg : ℕ} {m : ℕ} {D : Fin m ↪ R}
   {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+
+omit [oSpec.Fintype] in
+/-- **Canonical lifted per-round plain RBR soundness for sum-check.**
+
+This closes the `hRound` hypothesis for the canonical relation chain
+`relationRound i.castSucc → relationRound i.succ`: the simple single-round plain RBR theorem is
+lifted through the sum-check oracle lens, using the proven per-round `LiftContextCoherent` instance
+and the knowledge-sound-lens-to-plain-sound-lens bridge. -/
+theorem singleRound_oracleVerifier_rbrSoundness_canonical
+    [(oSpec + [(SingleRound.pSpec R deg).Challenge]ₒ'challengeOracleInterface).Fintype]
+    [(oSpec + [(SingleRound.pSpec R deg).Challenge]ₒ'challengeOracleInterface).Inhabited]
+    (i : Fin n)
+    (rbrError : (SingleRound.pSpec R deg).ChallengeIdx → ℝ≥0) :
+    (SingleRound.oracleVerifier R n deg D oSpec i).rbrSoundness init impl
+      (relationRound R n deg D i.castSucc).language
+      (relationRound R n deg D i.succ).language rbrError := by
+  letI : Inhabited (SingleRound.Simple.StmtOut R) := ⟨(0, 0)⟩
+  letI : OracleVerifier.LiftContextCoherent (SingleRound.sumcheckOracleLens R n deg D oSpec i)
+      (SingleRound.Simple.oracleVerifier R deg D oSpec) := by
+    change OracleVerifier.LiftContextCoherent (SingleRound.sumcheckOracleLens R n deg D oSpec i)
+      (SingleRound.Simple.oracleReduction R deg D oSpec).verifier
+    exact SingleRound.coh_proven_inst (R := R) (n := n) (deg := deg) (D := D)
+      (oSpec := oSpec) i
+  letI : Extractor.Lens.IsKnowledgeSound
+      (relationRound R n deg D i.castSucc)
+      (SingleRound.Simple.inputRelation R deg D)
+      (relationRound R n deg D i.succ)
+      (SingleRound.Simple.outputRelation R deg)
+      ((SingleRound.Simple.oracleVerifier R deg D oSpec).toVerifier.compatStatement
+        (SingleRound.oStmtLens R n deg D i))
+      (fun _ _ => True)
+      (SingleRound.extractorLens R n deg D i) :=
+    SingleRound.extractorLens_rbr_knowledge_soundness (R := R) (n := n) (deg := deg)
+      (D := D) (oSpec := oSpec) i
+  have hLensSound :
+      OracleStatement.Lens.IsSound
+        (relationRound R n deg D i.castSucc).language
+        (relationRound R n deg D i.succ).language
+        (SingleRound.Simple.inputRelation R deg D).language
+        (SingleRound.Simple.outputRelation R deg).language
+        (Verifier.compatStatement (SingleRound.sumcheckOracleLens R n deg D oSpec i).toLens
+          (SingleRound.Simple.oracleVerifier R deg D oSpec).toVerifier)
+        (SingleRound.sumcheckOracleLens R n deg D oSpec i).toLens := by
+    change (SingleRound.extractorLens R n deg D i).stmt.IsSound
+      (relationRound R n deg D i.castSucc).language
+      (relationRound R n deg D i.succ).language
+      (SingleRound.Simple.inputRelation R deg D).language
+      (SingleRound.Simple.outputRelation R deg).language
+      (Verifier.compatStatement (SingleRound.oStmtLens R n deg D i)
+        (SingleRound.Simple.oracleVerifier R deg D oSpec).toVerifier)
+    infer_instance
+  exact OracleVerifier.liftContext_rbr_soundness
+    (V := SingleRound.Simple.oracleVerifier R deg D oSpec)
+    (lens := SingleRound.sumcheckOracleLens R n deg D oSpec i)
+    (lensSound := hLensSound)
+    (h := SingleRound.Simple.oracleVerifier_rbrSoundness (R := R) (deg := deg) (D := D)
+      (oSpec := oSpec) init impl rbrError)
 
 omit [oSpec.Fintype] in
 /-- **`hSeqCompose` discharged for the concrete sum-check oracle verifier.**
@@ -393,7 +529,8 @@ theorem oracleVerifier_seqCompose_rbrSoundness
       (oracleVerifier R deg D n oSpec).toVerifier =
         Verifier.seqCompose (fun i => StatementRound R n i × (∀ j, OracleStatement R n deg j))
           (fun i => (SingleRound.oracleVerifier R n deg D oSpec i).toVerifier) :=
-    OracleVerifier.seqCompose_toVerifier_of_binary (binaryVerifierFusion_proof oSpec)
+    OracleVerifier.seqCompose_toVerifier_of_binary_for_rbr
+      (OracleVerifier.binaryVerifierFusionForRbr_holds oSpec)
       (Stmt := StatementRound R n) (OStmt := fun _ => OracleStatement R n deg)
       (Oₛ := fun _ _ => inferInstance)
       (Oₘ := fun _ _ => inferInstance)
@@ -440,6 +577,42 @@ theorem oracleVerifier_rbrSoundness_of_round_append
   oracleVerifier_rbrSoundness lang rbrSoundnessError hRound
     (oracleVerifier_seqCompose_rbrSoundness lang rbrSoundnessError hRound hAppend)
 
+omit [oSpec.Fintype] in
+/-- **Canonical multi-round sum-check RBR with per-round `hRound` closed.**
+
+This is the canonical relation-chain specialization of
+`oracleVerifier_rbrSoundness_of_round_append`.  It discharges every per-round RBR hypothesis via
+`singleRound_oracleVerifier_rbrSoundness_canonical`, leaving only the binary plain-RBR append
+keystone.  The final language is the final sum-check relation `relationRound (Fin.last n)`, not
+`Set.univ`; callers that require a different terminal language need a separate language transport
+argument. -/
+theorem oracleVerifier_rbrSoundness_of_canonical_round_append
+    [(oSpec + [(SingleRound.pSpec R deg).Challenge]ₒ'challengeOracleInterface).Fintype]
+    [(oSpec + [(SingleRound.pSpec R deg).Challenge]ₒ'challengeOracleInterface).Inhabited]
+    (rbrSoundnessError : ∀ _ : Fin n, (SingleRound.pSpec R deg).ChallengeIdx → ℝ≥0)
+    (hAppend : ∀ {S₁ S₂ S₃ : Type} {k₁ k₂ : ℕ}
+        {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
+        [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
+        (V₁ : Verifier oSpec S₁ S₂ p₁) (V₂ : Verifier oSpec S₂ S₃ p₂)
+        {l₁ : Set S₁} {l₂ : Set S₂} {l₃ : Set S₃}
+        {e₁ : p₁.ChallengeIdx → ℝ≥0} {e₂ : p₂.ChallengeIdx → ℝ≥0},
+        V₁.rbrSoundness init impl l₁ l₂ e₁ → V₂.rbrSoundness init impl l₂ l₃ e₂ →
+        (V₁.append V₂).rbrSoundness init impl l₁ l₃
+          (Sum.elim e₁ e₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+    (oracleVerifier R deg D n oSpec).rbrSoundness init impl
+      (relationRound R n deg D 0).language
+      (relationRound R n deg D (Fin.last n)).language
+      (fun combinedIdx =>
+        letI ij := ProtocolSpec.seqComposeChallengeIdxToSigma combinedIdx
+        rbrSoundnessError ij.1 ij.2) :=
+  oracleVerifier_rbrSoundness_of_round_append
+    (lang := fun i => (relationRound R n deg D i).language)
+    rbrSoundnessError
+    (fun i => singleRound_oracleVerifier_rbrSoundness_canonical (R := R) (n := n)
+      (deg := deg) (D := D) (oSpec := oSpec) (init := init) (impl := impl) i
+      (rbrSoundnessError i))
+    hAppend
+
 end
 
 end Sumcheck.Spec
@@ -447,8 +620,10 @@ end Sumcheck.Spec
 #print axioms ArkLib.SeqComposeRbrSoundness.seqComposeError_eq_append
 #print axioms ArkLib.SeqComposeRbrSoundness.seqCompose_rbrSoundness_of_append
 #print axioms ArkLib.SeqComposeRbrSoundness.rbrKnowledgeSoundness_imp_rbrSoundness
+#print axioms Sumcheck.Spec.singleRound_oracleVerifier_rbrSoundness_canonical
 #print axioms Sumcheck.Spec.oracleVerifier_seqCompose_rbrSoundness
 #print axioms Sumcheck.Spec.oracleVerifier_rbrSoundness_of_round_append
+#print axioms Sumcheck.Spec.oracleVerifier_rbrSoundness_of_canonical_round_append
 
 #print axioms ArkLib.SeqComposeRbrSoundness.seqComposeError_eq_append
 #print axioms ArkLib.SeqComposeRbrSoundness.seqCompose_rbrSoundness_of_append

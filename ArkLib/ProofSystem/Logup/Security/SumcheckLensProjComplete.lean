@@ -67,7 +67,7 @@ variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)
 variable (n M : ℕ)
 variable (params : ProtocolParams M)
 
-local instance : Inhabited F := ⟨0⟩
+local instance instInhabitedFieldSumcheckLensProjComplete : Inhabited F := ⟨0⟩
 
 omit [Fintype F] [DecidableEq F] in
 /-- **Key defeq.** The lens projection of an outer transcript `stmtIn = (stmt, oStmt)`, paired with

@@ -69,7 +69,7 @@ variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ Pro
 
 /-- `F` is inhabited (by `0`), needed to synthesize the outer-phase challenge `SampleableType`
 instances (`instOuterPSpecChallengeSampleable`) used when naming `outerVerifier.soundness`. -/
-local instance : Inhabited F := ⟨0⟩
+local instance instInhabitedFieldLogupSoundness : Inhabited F := ⟨0⟩
 
 /-- The two LogUp algebraic-check soundness terms for the outer phase: the pole/grand-sum check
 error of Protocol 2. This is the `soundnessError₁` summand of `logupSoundnessError`. -/

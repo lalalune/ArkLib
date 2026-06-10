@@ -247,8 +247,8 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
 /-- **Lemma 5.4 general wiring**: any secure-with-gap vector IOP over the STIR multi-round
 shape `stirMultiVSpec M (ι 0)` (whose challenge count is `2M + 2` by the landed
 `stirVSpec_card_challengeIdx`) discharges the `stir_rbr_soundness` existential, given the
-per-round error-bound legs. A future *checking* verifier with genuine soundness slots in
-here directly. -/
+per-round error-bound legs. `CheckingVerifier.lean` supplies the checking-verifier
+instantiation of this general wiring, conditional on its named soundness bridge. -/
 theorem stir_rbr_soundness_of_secure_vectorIOP
     {M : ℕ} (ι : Fin (M + 1) → Type) [∀ i : Fin (M + 1), Fintype (ι i)]
     {s : ℕ} {P : Params ι F}
@@ -269,7 +269,7 @@ theorem stir_rbr_soundness_of_secure_vectorIOP
       π)
     (hfold : ε_fold ≤ proximityError F (P.deg / P.foldingParam 0)
       (rate (code (P.φ 0) P.deg)) (Dist.δ 0) (P.repeatParam 0))
-    (hrest : ∀ {j : Fin M} (_ : j.val ≠ 0),
+    (hrest : ∀ j : Fin M,
         (ε_out j ≤ ((Dist.l j.succ : ℝ) ^ 2 / 2) *
           ((degree ι P j.succ : ℝ) / (Fintype.card F - Fintype.card (ι j.succ))) ^ s)
         ∧
@@ -285,7 +285,7 @@ theorem stir_rbr_soundness_of_secure_vectorIOP
     stir_rbr_soundness (s := s) (hParams := hParams) (Codes := Codes)
       ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin :=
   ⟨3 * M + 3, stirMultiVSpec M (ι 0), stirVSpec_card_challengeIdx, π, hSecure,
-    hfold, fun {_} hj => hrest hj⟩
+    hfold, hrest⟩
 
 /-- **Lemma 5.4 front door (#301, mechanical track)**: `stir_rbr_soundness` instantiated with
 the assembled multi-round object. The existential witnesses are fully constructed —
@@ -312,7 +312,7 @@ theorem stir_rbr_soundness_of_residuals
     -- the open per-round error-bound legs (free-parameter constraints)
     (hfold : ε_fold ≤ proximityError F (P.deg / P.foldingParam 0)
       (rate (code (P.φ 0) P.deg)) (Dist.δ 0) (P.repeatParam 0))
-    (hrest : ∀ {j : Fin M} (_ : j.val ≠ 0),
+    (hrest : ∀ j : Fin M,
         (ε_out j ≤ ((Dist.l j.succ : ℝ) ^ 2 / 2) *
           ((degree ι P j.succ : ℝ) / (Fintype.card F - Fintype.card (ι j.succ))) ^ s)
         ∧
@@ -353,7 +353,7 @@ theorem stir_main_of_secure_vectorIOP
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : qNumtoInput = secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -386,7 +386,7 @@ theorem stir_main_of_residuals
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : qNumtoInput = secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :

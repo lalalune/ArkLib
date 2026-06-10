@@ -420,7 +420,7 @@ theorem BoundaryCardQuantizationResiduals.ofStrictInterior_zero
     BoundaryCardQuantizationResiduals (k := 0) (deg := deg) (domain := domain) (δ := δ) :=
   ⟨hStrict, boundaryCardLatticeResidual_zero⟩
 
-omit [DecidableEq ι] in
+omit [Nonempty ι] [DecidableEq ι] in
 /-- Projection of the strict-interior, non-lattice side of the boundary quantization package. -/
 theorem BoundaryCardQuantizationResiduals.strictInterior {k deg : ℕ} {domain : ι ↪ F}
     {δ : ℝ≥0}
@@ -428,7 +428,7 @@ theorem BoundaryCardQuantizationResiduals.strictInterior {k deg : ℕ} {domain :
     BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
   h.1
 
-omit [DecidableEq ι] in
+omit [Nonempty ι] [DecidableEq ι] in
 /-- Projection of the exact `1/n`-lattice endpoint side of the boundary quantization package. -/
 theorem BoundaryCardQuantizationResiduals.lattice {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (h : BoundaryCardQuantizationResiduals (k := k) (deg := deg) (domain := domain) (δ := δ)) :
@@ -578,7 +578,7 @@ theorem BoundaryCardQuantizationResiduals.toBoundaryProbabilityResidual {k deg :
 
 /-! ## Characterising the lattice case: the boundary is a `1/n`-point iff `√ρ · n ∈ ℕ` -/
 
-omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- **The boundary lattice condition is `√ρ · n ∈ ℕ`.**  At the boundary `δ = 1 − √ρ` (with
 `√ρ ≤ 1`, which always holds for a Reed–Solomon code), `δ · n = n − √ρ · n`, so `δ · n` is an
 integer *iff* `√ρ · n` is.  Since `√ρ · n = n·√(deg/n) = √(deg · n)` (for `deg ≤ n`), the
@@ -719,7 +719,7 @@ theorem sqrtRate_mul_card_complement_mem_iff_mem {deg : ℕ} {domain : ι ↪ F}
       rw [← hcast, Nat.sub_sub_self hmle_nat]
     · exact_mod_cast Nat.sub_le (Fintype.card ι) m
 
-omit [DecidableEq ι] [Fintype F] in
+omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- **Perfect-square characterization of the boundary floor-lattice condition.**  At the exact
 Johnson boundary `δ = 1 - sqrtRate`, in the Reed-Solomon range `deg ≤ |ι|`, the endpoint is a
 `1/|ι|` lattice point iff `deg · |ι|` is a Nat square. -/
@@ -733,7 +733,7 @@ theorem boundary_lattice_iff_isSquare_deg_mul_card {deg : ℕ} {domain : ι ↪ 
     sqrtRate_mul_card_complement_mem_iff_mem (domain := domain) hsqrt_le,
     sqrtRate_mul_card_mem_iff_isSquare_deg_mul_card (domain := domain) hdeg]
 
-omit [DecidableEq ι] [Fintype F] in
+omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- **Non-square endpoint is genuinely non-lattice.**  At the exact Johnson boundary, if
 `deg · |ι|` is not a Nat square, then `δ · |ι|` cannot be an integer; equivalently the floor lies
 strictly below the real value. -/
@@ -889,11 +889,12 @@ theorem correlatedAgreement_affine_curves_of_lattice_data {k deg : ℕ} {domain 
     (deg := deg) (domain := domain) (δ := δ)
     hStrictCoeff hStrict hData.toLatticeResidual hδ
 
+omit [DecidableEq ι] in
 /-- [BCIKS20] Theorem 1.5 using the packaged boundary quantization residuals.  This is equivalent
 to `correlatedAgreement_affine_curves_of_lattice_residual`, but makes the exact remaining boundary
 surface a single reusable input. -/
 theorem correlatedAgreement_affine_curves_of_quantization_residuals {k deg : ℕ} {domain : ι ↪ F}
-    {δ : ℝ≥0} [NeZero deg] [DecidableEq ι]
+    {δ : ℝ≥0} [NeZero deg]
     (hStrictCoeff :
       ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hBoundary :

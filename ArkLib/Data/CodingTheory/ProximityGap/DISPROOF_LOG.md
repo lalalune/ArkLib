@@ -3091,7 +3091,6 @@ With the O49 effective transfer (`p > C(w,⌊w/2⌋)^{φ(n)}`), the count is unc
 production-scale primes. What remains of the prize core is unchanged and shared: extending
 from unit syndromes to ALL received words (the MCA quantifier) — Conjecture D / the
 classical band.
-=======
 
 ### O52 — the GENERIC TOWER RUNG machine-checked: μ_d-coset unions climb to μ_{2d}
 
@@ -3716,3 +3715,665 @@ the two-prime (de Bruijn) CRT double-slice induction needs, whose slice differen
 {−1,0,1} coefficients. The mixed-radix third pillar now has its core mechanism formal;
 what remains of de Bruijn is the CRT bookkeeping (apply this at prime 1 with coefficients
 in prime 2's field, then descend).
+### O78 — #304's two reduced cores fused into ONE Prop consumed by ONE theorem: `BCIKS20RemainingCore` ⟹ Theorem 1.5 (nubs, 2026-06-10)
+
+O70 left the strict branch as `StrictCoeffPolysResidualLarge` + `BoundaryProbabilityResidual`; O76/O78 left the boundary as the corrected floor-matched threshold route. This pass welds them: the corrected boundary obligation REDUCES to the same large-sector residual at the working radius, because at any strict radius the §6.2 boundary residual is vacuous (`¬ δ' < 1 − √ρ` unreachable) — so the entire #304 debt is one obligation kind at (at most) two radii per floor cell.
+
+**Bricks (`BCIKS20/RemainingCore.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):**
+* `BCIKS20RemainingCore k deg domain δ δ'` (line 84) — **the one named Prop**: `StrictCoeffPolysResidualLarge(δ) ∧ StrictCoeffPolysResidualLarge(δ')`.
+* `correlatedAgreement_of_remainingCore` (line 149) — **the wiring theorem**: `δ' < 1 − √ρ` + `⌊δ'n⌋ = ⌊δn⌋` + the core ⟹ `δ_ε_correlatedAgreementCurves` at δ with `ε = max (errorBound δ) (errorBound δ')`. Strict interior: conjunct 1 through the O70 front door at the literal `errorBound δ` (boundary residual discharged by vacuity, `correlatedAgreementCurves_strict_of_remainingCore`). Closed boundary (`errorBound δ = 0`): conjunct 2 through the front door at δ' + the O76 floor transport, max realized by the honest `errorBound δ' > 0` (`correlatedAgreementCurves_floorMatched_of_remainingCore`). Glue: `correlatedAgreementCurves_mono_eps` (CA is antitone in ε).
+* `remainingCore_boundary_witness` + `correlatedAgreementCurves_boundary_witness` — the core is SATISFIABLE at the O76 closed-boundary instance (ZMod 5, n=4, deg=2, k=1, δ' = 1/4; rate = 1/2 kernel-checked via `rateOfLinearCode_eq_div'`), and the pipeline then exports an UNCONDITIONAL in-tree closed-boundary CA at threshold `max(0, 4/5)` — true content, exhaustively pre-verified by the O78 floor-cell probe (390,625 stacks, fired 60,625, 0 violations). Honest caveat in-file: at toy q both conjuncts hold vacuously (δ not strictly interior; `(1−ρ)/2 = 1/4` exactly) — the witness certifies consistency, not large-q content.
+
+**Probe (`probe_remaining_core_wiring.py`, exact arithmetic, exit 0):** 8,255 grid points, 0 violations — every one of the 8,113 non-lattice boundaries admits the canonical floor-matched strict `δ' = ⌊δn⌋/n` with `errorBound δ' > 0` (24,040 Johnson-window + 8,412 UDR instantiations over q ∈ {5, 97, BabyBear, M61}); `errorBound(boundary) = 0` always (the refuted-shape ε never exported); the 142 lattice points admit NO strict floor-matched radius and stay honestly behind `BoundaryCardLatticeData`; O76 witness reproduced to the digit.
+
+**Where #304 now sits:** the issue can be re-scoped verbatim as "remaining = `BCIKS20RemainingCore` (RemainingCore.lean:84), consumed by `correlatedAgreement_of_remainingCore` (line 149), plus the square-lattice endpoint branch behind `BoundaryCardLatticeData`". Producers target a single obligation kind — `StrictCoeffPolysResidualLarge` at one radius per floor cell — and every discharge flows to Theorem 1.5 with zero plumbing left.
+### O79 — the Steps 5–7 capture kernel gets its statement and its first proven sub-obligation: capture IS affine decodability, and the Hensel-stream output shape now reaches the Claim-1 consumer
+
+O71/Hab25Claim1 pinned the #302 chain's single deep input to the per-cell `hsteps57` hypothesis of `claim1_dichotomy` (capture-above-threshold by one degree-`< k` affine pair), but nothing in-tree PRODUCED `AffineCaptured` — the #304/#138/#139 Hensel stream (HPzBridge/HenselDatum, MatchingExtractor, Claims 5.8/5.9) terminates on a different surface: per-`z` decoded-polynomial identities `P z = v₀ + z·v₁`. This pass builds the seam and the kernel's canonical form.
+
+**Bricks (`Hab25CaptureKernel.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):**
+- `McaDecode` + `McaDecode.mcaEvent` / `exists_mcaDecode_of_mcaEvent` — the polynomial-side destructuring of one `mcaEvent` witness (witness set `S`, degree-`< k` decoded polynomial `P` agreeing with the fold on `S`, the ¬pairJointAgreesOn clause verbatim), FAITHFUL in both directions via `ReedSolomon.mem_code_iff_exists_polynomial`.
+- `McaDecode.affineCaptured` — **the capture bridge** (first sub-obligation): a decode whose polynomial is the specialization `a + γ·b` yields `AffineCaptured domain k δ u γ (a,b)` verbatim.
+- `affineCaptured_iff_exists_mcaDecode` — **the canonical form**: under the degree bounds, affine capture ⟺ the specialization `a + γ·b` is itself an mcaEvent decode of `γ`. The `hsteps57` residual is now stated on the surface the §5 machinery natively produces.
+- `hsteps57_of_decode_family_pinning` / `cell_card_le_of_decode_family_pinning` — the kernel consumer-shaped and composed with the proven dichotomy: per-cell decode family **K1** (`∀ γ ∈ Ecell, ∃ d : McaDecode, d.P = P γ` — production lane: the PROVEN `MatchingExtractor.matchingFactor_dvd_of_orderM_and_count` + GS interpolation; the planned degree-budget root-count brick turned out already in-tree and was composed, not re-proved) plus affine pinning **K4** (`T < |Ecell| → ∃ v₀ v₁ (deg < k), ∀ γ ∈ Ecell, P γ = v₀ + γ·v₁`) give the literal `hsteps57`, hence `|Ecell| ≤ T`. K2 (matching factor) and K3 (cell assignment, `gsFactorIndex`) were already in-tree.
+
+**Falsify-first probe (`probe_capture_kernel_bridge.py`, exit 0):** decode equivalence exhaustive over GF(3) n=3 (2,187 pairs) + 1,000 planted/random GF(5) n=4 stacks (5,000 checks), 0 mismatches; `AffineCaptured` clauses verbatim on 1,678 pinned-cell members, 0 failures; all 839 maximal affine cells obey `|cell| ≤ n`. **Negative control:** in every one of the 839 multi-scalar bad sets the maximal affine cell was a STRICT subset (bad sets up to 4 with unrelated decodes) — the pinning hypothesis is substantive, not auto-true, even at toy q.
+
+**Where the open core sits:** the kernel is now exactly K4's antecedent-to-witness step — `T < |Ecell|` must PRODUCE the affine pencil (BCIKS20 Claim 5.7 pigeonhole incidence + Claims 5.8/5.9 Hensel-branch degree/Z-linearity + Appendix C), per cell of the GS factor decomposition. The #138/#139 HenselNumerator stream's open cores are this statement; everything from its output shape down to `mca_johnson_bound_CONJECTURE` at `parℓ = Fin 2` is machine-checked wiring.
+### O79 — de Bruijn capstone step (2) LANDED: the CRT exponent bijection turns subset sums of μ_n into coprime-grid double sums, composed with the O73 engine (and the predecessor's orphan repaired)
+
+O73's "what remains" list left step (2) — the exponent bijection μ_{p^a} × μ_{q^b} ≃ μ_n converting subset sums of μ_n into the grid double sums `crt_fiber_slice` consumes — as ZMod.chineseRemainder bookkeeping. It is now a theorem, with one normalization surprise and one swarm-hygiene catch.
+
+**Normalization (falsified-first, `probe_crt_exponent_bijection.py`, 82,405 checks / 0 violations, exhaustive over all 2^n subsets at n = 12, 15; non-coprime control N=4,M=6 fails as expected):** the brief's Bezout identity ζ^e = ζ^{e_p·u·q^b + e_q·v·p^a} is the INVERSE direction and is never needed. The formalized direction is the forward grid map g(j,c) = j·M + c·N mod n — `ζ^{g(j,c)} = ξ^j·η^c` is trivial exponent arithmetic, bijectivity is injectivity (mod-N/mod-M reduction + coprime unit cancellation) + cardinality.
+
+**Bricks (`CRTExponentGridSum.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):**
+* `gridMap_inj` / `gridMap_surj` / `pow_gridMap` — the CRT bijection [0,N)×[0,M) ≃ ZMod(N·M) and the intertwining ζ^{g(j,c).val} = (ζ^M)^j·(ζ^N)^c.
+* `subset_sum_eq_grid_double_sum` — **the deliverable**: Σ_{e∈S} ζ^e.val = Σ_{(j,c)∈gridSet S} (ζ^M)^j·(ζ^N)^c for any S : Finset (ZMod (N·M)), 0/1 indicator weights (bare Finset.sum over the CRT preimage), over any Monoid+AddCommMonoid — primitivity not needed for the identity.
+* `fiber_slice_of_vanishing_subset_sum` — the composition with `crt_fiber_slice`: vanishing subset sums of μ_n exponents have μ_q-shift invariant K-valued fiber sums over their CRT grid set, under the packet-minpoly hypothesis at the second prime. Step (2) is discharged AND typed against the step-(0) engine; steps (1) (packet minpoly over ℚ(ζ_{p^a})) and (3) (disjoint-packet positivity — the genuinely de Bruijn part) remain the open frontier.
+* Non-vacuity kernel-checked at a genuine two-prime point (N=2, M=3, ζ=3 ∈ ZMod 7 primitive 6th root, S={0,1,3}, sum value 3 ≠ 0 by `decide`) and at a nonempty vanishing sum (N=1, q=2, ζ=−1, S=μ₂ full).
+
+**Swarm-hygiene catch (the O72-addendum lesson, again, in the other direction):** the rate-limited predecessor lane committed the probe ("orphaned by rate-limit, verified green", 72656ea65) and left `CRTExponentBijection.lean` UNTRACKED in the working tree — its 6 main theorems elaborate axiom-clean, but its non-vacuity example FAILS (7 unsolved-goals errors: positional `by norm_num` arguments elaborated against unassigned metavariables for N, q, Q'), so the file as a whole does not pass the runnable-witness gate. The fix is elaboration-order, not math: pin N, q, Q', i, i', s by name. `CRTExponentGridSum.lean` supersedes the orphan, which should be dropped, not committed. Lesson: a file whose #print axioms lines succeed can still be red — read the whole compiler output, not the axiom tail.
+### O79 — de Bruijn step (1) CLOSED: the packet minimal polynomial over the coprime cyclotomic extension is a theorem, and the CRT fiber-slice goes unconditional (nubs, 2026-06-10)
+
+O73 (CRTDoubleSlice) left the engine `slice_of_packet_minpoly` carrying its load-bearing hypothesis — `minpoly K η = Σ_{t<p} X^{tq}` over `K = ℚ(ζ_{p^a})` — as named residual (1). Discharged.
+
+**Bricks (`CRTPacketMinpoly.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):**
+* `minpoly_adjoin_primitiveRoot_eq_packet` — for distinct primes `p ≠ q`, `b ≥ 1`, primitive roots `ξ` (order `p^a`), `η` (order `q^b`) in ANY char-0 field: `minpoly ℚ⟮ξ⟯ η = Σ_{t<q} X^(t·q^(b-1))` — `Φ_{q^b}` stays irreducible over the coprime cyclotomic extension, in packet form. Engine: `minpoly ∣ Φ_{q^b}` pinched against the totient tower bound `φ(p^a)·φ(q^b) = φ(p^aq^b) = [ℚ(ξη):ℚ] ≤ φ(p^a)·[ℚ⟮ξ⟯⟮η⟯:ℚ⟮ξ⟯]` (`cyclotomic_eq_minpoly_rat` + `adjoin.finrank` + `Module.finrank_mul_finrank` + a hand-rolled ℚ-linear embedding `ℚ⟮ξη⟯ ↪ ℚ⟮ξ⟯⟮η⟯`; the coprime-order product is primitive via `Commute.orderOf_mul_eq_mul_orderOf_of_coprime`), closed by `eq_of_monic_of_dvd_of_natDegree_le` + `cyclotomic_prime_pow_eq_geom_sum`. The brief's worked case is an in-file one-liner: `minpoly ℚ(i) ζ₃ = 1 + X + X²`.
+* `crt_fiber_slice_coprimePrimePowers` — **the headline**: `crt_fiber_slice` at `K = ℚ⟮ξ⟯` with the hypothesis GONE. A vanishing double sum `Σ_{(j,c)∈I} ξ^j·η^c = 0` over the coprime grid `range(p^a) ×ˢ range(q^b)` has μ_q-shift invariant fiber sums `Σ_j [(j, i·q^(b-1)+s) ∈ I]·ξ^j` — unconditionally, for any two primitive roots in any char-0 field (ℂ instantiation witnessed in-file).
+
+**Falsify-first probe (`probe_crt_packet_minpoly.py`, exact, no floats, exit 0):** 24/24 — packet form at 9 prime powers; the claim's equivalent tower equality as FULL RANK of the φ(n)×φ(n) CRT power matrix over `ℚ[x]/Φ_n` at 10 coprime pairs up to (27,4)/(25,3); 5 overlap controls all rank-deficient. Honest boundary measured: (6,4) with gcd 2 is still full-rank (`φ(6)φ(4) = φ(12)` — linearly disjoint quadratics), so the obstruction is totient multiplicativity, not gcd per se — the theorem's prime-power coprimality is sufficient, not tight.
+
+**Where the de Bruijn frontier moves:** a parallel lane's `CRTExponentGridSum.lean` (step (2), `fiber_slice_of_vanishing_subset_sum`) carries exactly this minpoly statement as its open `hmin` hypothesis — composing the two (one `rw` of `ζ^(q·Q')` into ξ-form) yields the full two-prime subset-sum fiber slice with no hypothesis; deliberately not built this pass to avoid depending on an unlanded sibling file. After that splice, the only genuinely de Bruijn content left is residual (3): indicator fiber sums force DISJOINT rotated packets (positivity).
+### O84 — O77's extraction residual DISCHARGED on δ < d/(3n): the bracket is unconditional there, the bracket window forces r = s, and the (d−1)/2n mechanism is refuted in between
+
+O77 reduced the Theorem-Q upper half to one residual: the affine-root extraction (per stack a pair (e₀,e₁), wt(e₁) ≤ W, every mcaEvent-bad γ a root of e₀+γe₁ at a support coord), with the docstring asserting it "provably true in unique decoding δ < (d−1)/2n". This pass proves it — on the honest window — and measures exactly where the asserted mechanism dies.
+
+**Bricks (`TheoremQUDExtraction.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):**
+- `exists_affine_pair` — **the extraction, per stack, on 3(n−t) < d** (t = ⌈(1−δ)n⌉₊): with two distinct bad scalars, the affine solve c₁ = (γ₁−γ₂)⁻¹(w₁−w₂), c₀ = w₁−γ₁c₁ of their closeness codewords gives e = u − c vanishing on S₁∩S₂ (wt(e₁) ≤ 2(n−t)); for ANY further bad γ the discrepancy codeword d_γ = w_γ−(c₀+γc₁) has wt ≤ (n−t)+2(n−t) < d, so d_γ = 0 — the decoding law is affine in γ — and ¬pairJointAgreesOn pins a coordinate where e₀+γe₁ = 0 with e₁ ≠ 0. (≤ 1 bad scalar: indicator pair, weight 1. W = 2(n−t)+1.)
+- `epsMCA_le_of_uniqueDecoding` — the engine fired with the residual DISCHARGED: ε_mca(C,δ) ≤ (2(n−t)+1)/q for any F-linearly-closed C of min distance ≥ d on 3(n−t) < d. **The library's THIRD upper window, δ < d/(3n) — strictly wider than O78's unconditional d/(4n)**, same O(δn)/q shape; `evalCode_min_weight` + `evalCode_lin_closed` instantiate the Theorem-Q family (d = n−k+1 by root counting).
+- `theoremQ_epsMCA_two_sided_uniqueDecoding` — **the bracket with NO extraction hypothesis**: B/q ≤ ε_mca(evalCode H ((r−1)m), δ) ≤ (2(n−t)+1)/q under Theorem-Q hypotheses + the window.
+- `window_forces_r_eq_s` — **where the bracket lives**: the lower window (1−δ)n ≤ rm and the upper window 3(n−t) < n−(r−1)m+1 are jointly satisfiable ONLY at r = s. At the O68 point (16,2,8,5) the intersection is EMPTY (lower t ≤ 10, upper t ≥ 14) — the two-sided statement is honest but vacuous in the list-decoding regime, exactly the Johnson-to-capacity gap restated. At r = s the bracket is real: C(s,s)=1 forces B ≥ 1, so 1/q ≤ ε_mca ≤ (2(n−t)+1)/q; hypothesis spine witnessed satisfiable at ZMod 13, H = {1,5,8,12}, (n,s,m,r) = (4,2,2,2), δ = 0 (`theoremQ_ud_window_satisfiable` + the headline fired in-file).
+
+**Falsify-first probe (`probe_ud_affine_extraction.py`, exact GF(97) + Berlekamp–Welch, exit 0):** C1 in-window (RS(16,8), e ≤ 2): 80 stacks, 69 multi-bad, 0 violations (affine law, root property, count ≤ 2(n−t)+1 — bound observed). C2 the hunt (e ∈ {3,4}, i.e. (d/(3n), (d−1)/(2n)]): a g-planting construction (error pair arranged so a third bad scalar decodes to line+g, g a weight-d codeword) **breaks the affine decoding law in 24/24 planted stacks at each e** — O77's docstring mechanism (unique nearest codewords are affine in γ throughout unique decoding) is FALSE strictly past d/(3n). But badCount never exceeded 2(n−t)+1 (max 3 ≪ W), so the extraction STATEMENT — equivalent, via the indicator pair, to the per-stack badCount bound — remains open there; only the codeword-subtraction proof route is closed. C3: r = s instance (97,12,4,3,4), t = 11, δ = 1/12: deep-quotient line carries exactly 1 bad scalar (lower-consistent), 20 stress stacks ≤ 2 (upper-consistent).
+
+**Where the open core sits:** the unconditional upper floor moved from d/(4n) (O78) to d/(3n); the unpinned window is now (d/(3n), δ_wit], with three recorded approaches on one surface (O77 conditional d/(2n) — mechanism now refuted, statement open; O78 unconditional d/(4n); this unconditional d/(3n)). Closing (d/(3n), (d−1)/(2n)] needs a badCount bound that survives non-affine decoding laws — the probe says the count stays small even where the law breaks, so the gap is a counting question, not a structure question.
+### O85 — the "zero plumbing" claim made a theorem: the general-L interleaved conversion lands on the epsMCA surface (and the natural-radius hypothesis shape with it)
+
+Duplicate-guard note first: this lane's assigned brick (the mcaEvent↔mcaBadSet bridge + the unconditional δ < d/(4n) window) had ALREADY landed as `EpsMCAInterleavedUD.lean` (commit 7b84d23e7, the O78 entry); it was cold-verified (exit 0, axiom-clean ×7) and not redone — grep the tree, not the log. What the O78 record still owed was its own closing sentence: "any future interleaved-list bound L(2δ) … converts to ε_mca ≤ (1+2δn·L)/q with zero plumbing left" was a REMARK — only the L = 1 slice was a theorem, and the general conversion lived solely on the exact-count surface.
+
+**Bricks (`EpsMCAInterleavedList.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):**
+* `epsMCA_le_of_interleavedList_card_le` — **the general-L conversion**: PairClosed C (every F-linear code), uniform interleaved list bound L at the collapse floor 2t−n (t = ⌈(1−δ)n⌉₊) ⟹ ε_mca(C,δ) ≤ (1+(n−(2t−n))·L)/|F| — in δ-units (1+2δn·L)/q, the [GCXK25]-shaped conversion of ABF26 §5 stated on the prize surface. O78's window is the L=1 slice; the proof is the bridge + the O74 collapse + `epsMCA_le_of_badCount_le`, three rewrites total.
+* `epsMCA_le_of_interleavedList_card_le_doubledRadius` — the same conclusion from a list bound at the **natural radius** ⌈(1−2δ)n⌉₊ — the hypothesis an actual Λ(C^{≡2},2δ) ≤ L statement provides — via two new bricks: `interleavedList_card_anti` (the m=2 interleaved list is antitone in the agreement floor) and `ceil_doubled_radius_le` (**the floor bridge**: ⌈(1−2δ)n⌉₊ ≤ 2⌈(1−δ)n⌉₊ − n for EVERY δ; ℝ≥0 truncation absorbs δ ≥ 1/2).
+* `epsMCA_le_interleaved_trivial` + `interleavedList_card_le_sq` — non-vacuity with teeth: every linear code at every δ satisfies the conversion with the trivial L = |C|², so the general theorem is satisfiable far beyond the unique-decoding window (weak, but no window hypothesis at all).
+
+**Falsify-first probe (`probe_epsmca_interleaved_list.py`, exit 0):** floor bridge exact-rational (ℝ≥0/ℕ truncation semantics), 9,420 (n,δ) points, 0 failures; exhaustive F₃ over 3 codes × 8 δ = 110,808 (stack,δ) checks of bridge + antitonicity + the composed natural-radius bound, 0 failures, SATURATED in 8,424 cases; bad counts controlled by full 2^n subset enumeration (7,200 controls, 0 mismatches). Honesty (C3): the L(a₀) ≥ 2 regime occurs 82,035 times in the sweep yet the bad count never strictly exceeds the L=1 form at q=3 — O74's factor-free refinement (#bad ≤ 1 + #Λ₂) remains open and unrefuted; this conversion transports exactly the proven collapse, no more.
+
+**Where this sits:** the upper-half pipeline for #232 is now hypothesis-shaped end to end — any future interleaved (m=2) list bound for explicit smooth-domain RS at radius 2δ, Johnson-type or otherwise, converts to a two-sided-comparable ε_mca ≤ (1+2δn·L)/q in one application with no floor bookkeeping left. The open core is unchanged: produce L(2δ) beyond unique decoding (the gap (d/(4n), δ*] where the O68 lower bound C(s,r)/q lives), or settle O74's factor-free refinement.
+### O86 — the LATTICE leaf of the corrected boundary route: quantitative-threshold-alone REFUTED at a lattice endpoint; the leaf PROVEN down to the single §5 extraction residual
+
+O76/O78 left the corrected boundary route fully plumbed off the lattice (floor-matched strict radius + §5 threshold + floor-cell monotonicity) with two named inputs open, one being the genuinely-square lattice branch behind `BoundaryCardLatticeData` (three inputs: two Johnson cardinality bounds + the §5 coefficient-polynomial extraction). At a lattice endpoint the corrected route's machinery is provably unavailable: no floor-matched strict sub-radius exists (`not_exists_lt_floor_eq_of_lattice`) and `errorBound(1−√ρ) = 0` makes the §5-form threshold vacuous — the in-tree threshold→cardinality conversion (`goodCoeffsCurve_card_bounds_of_prob_threshold`) has side conditions requiring `k ≤ k·errorBound·q = 0`. This pass settles what the honest lattice hypothesis is.
+
+**REFUTED (probe witness): the field-quantitative threshold alone does not suffice.** `probe_boundary_lattice_threshold.py` (exact, exit 0; 4 lattice endpoints deg·n square, 2,424 stacks, threshold fired on 355): over GF(11), n=8, deg=2, k=1 (deg·n = 16 = 4², δ·n = 4 integral), the stack u₀=(4,6,1,0,9,2,0,8), u₁=(4,10,0,4,2,7,9,3) has |good| = 10 > 9 = (n+1)k yet NO jointAgreement — and its per-z decoding lists admit a choice P with no coefficient polynomial B (exhaustive). So `Pr > k·(n+1)/q` cannot replace the refuted nonemptiness hypothesis on its own; the §5 extraction is load-bearing. Tightness: the no-jointAgreement maximum |good| EXCEEDS (n+1)k at that point (10 > 9) and saturates it exactly at q=11/n=9/deg=1 (10 = 10). The composite (threshold + extraction) survived all 4 points, 0 violations.
+
+**PROVEN (`BoundaryLatticeThresholdLeaf.lean`, axiom-clean, 0 sorry, 0 warnings): the lattice leaf reduces to the extraction alone.**
+* `card_gt_of_prob_gt_latticeThreshold` — `Pr[curve δ-close] > k·(n+1)/|F|` ⟹ `|good| > (n+1)·k`, unconditionally in δ: the positive replacement for the boundary-degenerate errorBound conversion (`latticeThresholdEps = (n+1)/|F| > 0` vs `errorBound(1−√ρ) = 0`).
+* `jointAgreement_of_latticeThreshold_of_coeffPolys` — per stack: quantitative threshold + §5 extraction ⟹ `jointAgreement`, at every radius including the exact lattice endpoint, via the in-tree assembly bridge; both `BoundaryCardLatticeData` cardinality inputs are discharged by the threshold.
+* `LatticeCoeffPolyExtraction` / `BoundaryCardLatticeThresholdResidual` — the extraction-only residual surface and the corrected lattice-leaf surface (the refuted `BoundaryCardLatticeResidual` with nonemptiness replaced by the quantitative threshold); `boundaryCardLatticeThresholdResidual_of_extraction` closes the latter from the former. Consumer shape: `correlatedAgreementCurves_of_latticeExtraction` yields `δ_ε_correlatedAgreementCurves` with `ε = (n+1)/|F|`.
+* Witness namespace: the whole spine fires end-to-end at the genuine lattice endpoint ZMod 11 / Fin 8 / deg 2 — `sqrtRate·8 = √16 = 4` exact, `⌊δn⌋ = δn` (`latticeW`), zero stack has `Pr = 1 > 9/11` and forced extraction (a `natDegree < 2` polynomial vanishing on ≥ 4 of 8 distinct evaluation points is 0); satisfiability certified, no unsatisfiable-hypothesis leaf. (Bookkeeping: the brief's other suggested piece — floor-cell threshold monotonicity — was already landed by a parallel lane as O78/`BoundaryThresholdFloorCell.lean`; duplicate guard caught it before writing.)
+
+**Where the open core sits:** both leaves of the boundary quantization split now rest on exactly one kind of input each — the strict-interior §5 producer per floor cell (non-lattice, O78) and `LatticeCoeffPolyExtraction` at the endpoint (lattice, this entry). Both are the BCIKS20 §5 list-decoding extraction content; the boundary plumbing is complete and the extraction is provably not droppable on either branch.
+
+### O85 — census C3 PROVEN at every radix: single-class words are fiber-aligned (nubs, 2026-06-10)
+
+(Record note first: O70's bookkeeping correction is confirmed from this seat — my O69
+commit `2dcc9cfd9` did NOT contain the announced `weight_ge_live_image`; a landing-loop
+error dropped the working-tree edit (branch snapshot taken before commit). The content
+was independently supplied at every depth by O70's `live_card_le_weight`. Thanks to the
+cold audit; loop fixed — snapshots now taken post-staging, pushed diffs verified against
+claims.)
+
+New brick `ArkLib/Data/CodingTheory/ProximityGap/SingleClassWeight.lean` (axiom-clean):
+the census C3 rigidity (0/95,623 violations in O69's data) is now a theorem, and it
+holds at EVERY radix `m ∣ n`, not just 2-powers:
+
+* `single_class_weight`: on a full `n`-th-root domain (`|H| = n = s·m`, `0 ∉ H`), a
+  single-coefficient-class word `f = X^r·g(X^m)` has EXACT weight
+  `n − m·#{slice zeros in the image domain}` — its zero set is a union of full `m`-power
+  fibers (`SmoothFiberCount.preimage_card_eq` does the counting). Single-class = fiber-aligned.
+* `dvd_sub_weight_of_single_class`: hence `m ∣ n − w`.
+
+Contrapositive, in branch language: at any weight with `2^ℓ ∤ n − w`, the depth-`ℓ`
+fold tree provably keeps ≥ 2 alive branches — narrowness in the coefficient tree exists
+ONLY at coset-compatible weights (the O46/O47 boundary), at every level and every radix.
+Together with O70's root-coherence theorem the structural story is: low weight forces
+slices to share roots; fiber-misaligned weight forbids slice concentration. The
+surviving frontier is unchanged and now sharply framed: the per-locus COUNT — bound
+#{f : deg f < k, all 2^ℓ slices vanishing on a common locus Z}; for fixed Z the slices
+live in root-forced subspaces of total dimension k − 2^ℓ·|Z| (the linear-algebra brick
+queued next), and the open content is the union over loci versus the weight filter.
+
+### O69 — CLASS-CHART BOUNDS: the scaling-orbit theorem formalized + the A–S decomposition + a kernel-checked orbit pin (ClassChartBounds.lean)
+
+The provable parts of the O51 program, axiom-clean ([propext, Classical.choice, Quot.sound], 0 sorry):
+
+* **The weighted-scaling fiber bijection as a CARD equality** (`psumFiber_scaling_card`): for λ ≠ 0,
+  S ↦ λ·S bijects the (a₁,…,a_t)-power-sum fiber over D₀ onto the (λa₁,…,λ^t a_t)-fiber over λ·D₀;
+  on scaling-invariant domains fiber cardinality is a weighted-projective orbit invariant
+  (`psumFiber_orbit_card`), the zero class is the fixed point (`zero_fiber_scaling_mem`), and any
+  uniform bound need only be certified on an orbit transversal (`psumFiber_card_le_of_orbit_rep`).
+* **The conditional Aliev–Smyth uniform bound** (`nonzero_fiber_card_le`): with the named hypotheses
+  `ASIsolatedBound` (A–S Thm 1.1, arXiv:0704.1747, isolated torsion points of V(p−a) ⊆ 𝔾_m^w; constant
+  abstract) and `CosetFamilyBound` (per-coset tower count, O46–O50), every nonzero-class fiber is
+  ≤ C + B uniformly — the isolated ⊔ coset-family decomposition is machine-checked, and transfers
+  along whole orbits (`nonzero_fiber_card_le_orbit`).
+* **Kernel instance with an honest correction**: at ZMod 13, w = 3, t = 2 the strict probe dichotomy
+  ("nonzero ⟹ ≤ 2") is FALSE — but the failure is structured: zero fiber = 4 (`zero_psum_fiber_F13`),
+  all nonzero ≤ 4 (`nonzero_fiber_card_le_four_F13`), and the 12 maximal nonzero classes are EXACTLY
+  ONE weighted orbit {(5λ,4λ²)} (`nonzero_fiber_le_two_or_rep_orbit_F13`); the part-1 theorem then pins
+  the whole orbit from the single decided representative (`orbit_of_rep_card_F13`). Fiber card really
+  is an orbit invariant, visible in the kernel. advancesOpenCore=false (A–S itself stays a hypothesis).
+
+### O70 — MIXED-RADIX TOWER LAW CONFIRMED EXHAUSTIVELY at n=12,18,24,36: 86/86 (n,t) fibers set-equal to the divisor-coset prediction (numeric lane). Probes (/tmp/mixed_tower_probe.py, /tmp/mixed_tower_debruijn_check.py; tables /tmp/mixed_tower_results.txt, /tmp/mixed_tower_tables.json) over F_p, p=1000000009 ≡ 1 mod 72 (cross-checked p=2000000089; char-0 conclusive by the Z[zeta] sandwich): for every t=1..n-1, the window fiber {S ⊆ mu_n : e_1=..=e_t=0} EQUALS the disjoint unions of rotated mu_d-cosets, d|n, d>t (generated by the divisibility-minimal divisors > t — up to 3 generators, e.g. Dmin(36,3)={4,6,9}). Pure size-kill law (mu_d dies iff d ≤ t), plateaus between consecutive divisors, totals e.g. |F_36(t)|: 10^6, 22^3, 1036, 100, 22, 10, 4, 2. de Bruijn upgraded from O67's sampling to EXHAUSTIVE censuses: all 10^4 (n=24, full 2^24) and all 10^6 (n=36, complete MITM census) vanishing subset sums decompose into disjoint prime packets; independent backtracking decomposer agrees. Count structure: naive size-multiset formula REFUTED (mu_4-coset = CRT column meets every mu_9-coset = CRT row ⟹ zero weight-13 members at (36,3)); exact law F_n(t) ≅ F_lcm(Dmin)(t)^(n/lcm) verified 25/25 — the numerical shadow of the O68 double-slice/CRT induction, fixing the formalization route for the two-prime full_tower analogue. Bonus: O49 threshold visible (F_13, n=12: 316 vs 100 fiber members). Newton e-window == p-window checked directly at n=12,18 all t.
+
+### O70 addendum — finite GS interleaving leaves a formal residual gap to capacity (small verified threshold-geometry brick)
+
+`Issue232VerifiedBricks.lean` now records the exact finite-interleaving capacity residual:
+
+* `interleave_capacity_gap_eq`:
+  `(1 - ρ) - (1 - ρ^(m/(m+1))) = ρ^(m/(m+1)) - ρ`.
+* `interleave_capacity_gap_pos`: for every finite `m` and every rate `0 < ρ < 1`, that residual is strictly positive.
+* `interleave_capacity_gap_strict_decrease`: the residual strictly decreases when `m` is incremented, matching the already-proved strict monotonicity of the finite GS radii.
+
+Interpretation: finite GS interleaving really does climb from Johnson toward capacity, but the kernel now explicitly sees the positive leftover at every finite level. The missing #232 breakthrough remains a beyond-finite-GS idea or a separate counting theorem in the residual band; no threshold `δ*` is claimed.
+
+### O71 — TWO-PRIME DE BRUIJN DOUBLE-SLICE, UNCONDITIONAL (DeBruijnTwoPrime.lean)
+
+Workflow lane completed + main-loop audited (compiles, every theorem
+[propext, Classical.choice, Quot.sound], 0 sorry). The lane EXCEEDED its T2 target:
+the linear-disjointness step is DISCHARGED, not hypothesized —
+
+* `minpoly_adjoin_primitiveRoot_eq_packet` / `minpoly_qadjoin_eq_cyclotomic`:
+  Φ_{p^(a+1)} remains the minimal polynomial of ζ_p over ℚ(ζ_q) for q ≠ p — coprime
+  cyclotomic linear disjointness as a theorem.
+* `vanishing_coeff_slices_over`: the O68 slice engine over an arbitrary coefficient
+  field K (with the packet-minimality input) — the K-coefficient generalization.
+* `two_prime_qside_slices` (UNCONDITIONAL): for S ⊆ μ_{p^(a+1)·q^b} with vanishing sum,
+  the ℚ(ζ_q)-grouped coefficients are constant along μ_p-coset directions.
+* `two_prime_deBruijn_double_slice` (UNCONDITIONAL HEADLINE): the membership difference
+  pattern between μ_p-coset-related rows is constant along μ_q-coset directions — the
+  full CRT double-slice structure of two-prime vanishing subset sums, machine-checked.
+
+This is the de Bruijn third pillar's hard core: what remains for the full packet
+decomposition is finite bookkeeping on the doubly-sliced pattern (the O70 law gives the
+exact target statement).
+
+### O72 — THE EFFECTIVE TRANSFER IN LEAN (EffectiveTransfer.lean): the O49 chain complete
+
+Workflow lane completed + main-loop audited (compiles, all 14 theorems axiom-clean,
+0 sorry). The full norm-bound transfer machinery, formal:
+
+* `norm_embedding_sum_le` / `abs_norm_le` / `intNorm_abs_le`: a sum of B roots of unity
+  has every embedding of absolute value ≤ B, hence |ℤ-norm| ≤ B^{finrank}.
+* `intNorm_ne_zero`, `dvd_intNorm_of_eq_zero` (Galois case), `reduction_ne_zero`:
+  a nonzero algebraic integer with |norm| < p cannot die under any reduction 𝓞_K → ZMod p.
+* `coe_esymm`, `esymm_reduction_ne_zero`, and the headline
+  `esymm_eq_zero_iff` / `esymm_eq_zero_iff_cyclotomicField`: for p beyond the explicit
+  binomial-norm threshold, e_j of a lifted subset vanishes mod p IFF it vanishes in
+  characteristic zero — THE O49 EFFECTIVE TRANSFER AS A LEAN THEOREM. With O53/O55/O61:
+  the tower theory's F_p instances are now unconditional above an explicit, formal bound.
+
+### O87 — THE n=32 CENSUS: ℓ₃₂(w,18) = 35 — the structured core EXACTLY exhausts the beyond-Johnson list; Conjecture D maximally confirmed at the canonical word (nubs, 2026-06-10)
+
+`scripts/probes/n32census/` (kernel + postpass + RESULTS.md, commit 655d2dd21): the descent
+program's named decisive computation (07-DESCENT; claimed #232 c-4666108014), executed as a full
+C(32,17) = 565,722,720 finite-difference functional sweep over the canonical max-fiber word on
+X¹⁸ + λX¹⁶ (BabyBear, ρ = 1/2, a = 18 = witness level, radius 0.4375 ≫ Johnson 0.293, η = 1/16).
+**Result: ℓ₃₂(w,18) = 35 EXACTLY = the constructed u_S(X²) witness family, 35/35 — ZERO dense
+enrichment at the witness level at n=32 scale** (Entry-11's n=16 finding holds one scale up);
+agreement histogram {18: 35}; cross-foots exact (630 emissions = 35·C(18,17); per-chunk swept
+counts = C(31−i₀,16), total = C(32,17)). One notch below: **ℓ₃₂(w,17) = 35 + 1,344 = 1,379**
+(pass-accounting + the audit's DIRECT independent enumeration: 1,344 distinct, one subset each,
+disjoint, all full-support — 0 all-even forced by parity). Notch-enrichment 39.4 vs n=16's 6.33 —
+polynomial-consistent (H3′). First O63 2-adic spread chart of a real beyond-Johnson list: all 35
+in depth-1 class (0); depth-3 splits {4 mod-8 classes ×32, 2 classes ×3}. Thresholds: 35 ≪
+32·3280 = 104,960 (D-falsification line) and = 0.05% of the c=1 budget 2¹⁶ — **D is NOT
+falsified; it is maximally confirmed here.** Rigor gates: n=16 calibration reproduced C19's
+19 = 3+16 bit-exactly BEFORE n=32 was believed; the max-fiber λ tie-class is rigorously the
+μ₁₆-orbit of g₀^((p−1)/4) (x ↦ ux isomorphism ⟹ count tie-independent; a second tie value run
+end-to-end gave the identical 35); adversarial audit with a from-scratch independent kernel
+(different algorithm) re-verified every element and reproduced the coverage hashes. For the
+branch-count distribution (O59/O61/O63): this is the first complete level-2 data point — the
+distribution at the canonical word is maximally concentrated on the structured classes.
+
+### O73 — THE CONDITIONAL TWO-PRIME TOWER (MixedRadixTower.lean): the mixed-radix skeleton complete
+
+Workflow lane (taken over and audited by the main loop; compiles, all theorems
+axiom-clean, 0 sorry — the file's two 'sorry' grep hits are docstring prose):
+
+* `mu_mul_closure`, `pow_fiber_coset/card/sum_pow`, `descended_window` — the radix-d
+  descent toolkit at every exponent (windows descend through the d-th-power map, char 0).
+* `mixed_rung_conditional` + `prime_climb_conditional` — one rung and the stacked
+  prime-power climb, conditional on the packet base case at each level (named hypotheses).
+* `coprime_mu_closure_combine` — THE COPRIME WELD: closure under μ_A and μ_B for coprime
+  A, B gives closure under μ_{AB} (CRT at the closure level).
+* `two_prime_tower_conditional` — the headline: on n = p^a·q^b-torsion domains, window
+  vanishing forces μ_d-closure for the divisor-coset structure, conditional on de Bruijn
+  base hypotheses — standing to O71's double-slice brick exactly as t2_tower_resolution
+  stood to the Lam–Leung brick before O50 discharged it.
+* `base_case_level_one`, `base_case_window_ge_level`, `window_forces_empty` — base-case
+  hypotheses discharged unconditionally in the degenerate regimes.
+
+The O70-verified law now has its formal skeleton; what separates conditional from
+unconditional is finishing O71's double-slice into the full packet decomposition (finite
+bookkeeping on the doubly-sliced pattern).
+
+### O74 — the COMPLETE ℚ-kernel at 2-power level: vanishing ⟺ antipodal symmetry
+
+`LamLeungTwoPow.vanishing_iff_antipodal_coeffs` + `nonvanishing_of_unpaired`
+(axiom-clean, 0 sorry; the killed branch-count lane's task trail, taken over and proven
+by the main loop): a ℚ-coefficient combination of 2^(m+1)-th roots vanishes IFF its
+coefficient function is antipodally symmetric (c(e) = c(e + 2^m)) — necessity = the O68
+slice theorem at p = 2, sufficiency = ζ^{2^m} = −1 pairing. Corollary: any combination
+with an unpaired support point is NONZERO — the sparse-nonvanishing rigidity that forces
+branch data in the descent tree (no asymmetric configuration silently vanishes; the
+ℚ-relations available to a branch are EXACTLY the antipodal symmetrizations). This is the
+complete linear-algebra description of the 2-power relation module — the branch-entropy
+accounting now has rigid leaf data.
+### O87 — de Bruijn step (3) FIRST DISJOINTNESS BRICK LANDED: the squarefree two-prime case is a theorem (pure type), and the prime-power scope boundary is measured exactly
+
+O73/O79 left exactly one genuinely de Bruijn input open: indicator fiber sums force DISJOINT rotated full prime packets. This pass closes it in full at the squarefree level n = p·q — the level where the in-tree invariance engine says ALL fibers are equal — and measures where the statement honestly stops.
+
+**Falsify-first probe (`probe_indicator_packet_disjointness.py`, exact ℤ[x]/Φ_n arithmetic, exit 0):** the headline EXHAUSTIVELY at n = 6, 10, 15 (all 2^n subsets; 10/34/38 vanishing, 0 violations; both pure types occur; 54 non-vanishing violators at n = 6 — hypothesis load-bearing). The verbatim prime-power extension is **REFUTED**: 24/100 vanishing subsets at n = 12 and 432/1000 at n = 18 violate BOTH coset closures (mixtures, e.g. mask 0x193 = {0,6}∪{1,5,9}), so a = b = 1 is the honest scope — the headline is deliberately NOT stated at prime powers. C6 measures the a ≥ 2 recursion seed: every CRT column indicator difference is divisible by Φ_{p^a} (100% at 12 and 18), while the naive dichotomy fails 168/486 times there — the next brick is the packet-combination form, not the dichotomy. O67's mixed-decomposition census re-verified (100/100, 1000/1000).
+
+**Bricks (`DeBruijnIndicatorDisjointness.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):**
+* `coeffs_all_eq_of_vanishing_prime` — vanishing ℚ-weighted sums of p-th roots have ALL coefficients equal (the m = 0 slice of O73's `weighted_vanishing_slice_rat`, instantiated not re-proven).
+* `equal_indicator_sums_dichotomy` — **the step-(3) engine at a prime**: two 0/1 subset sums of μ_p agree iff the sets are EQUAL or one is full and the other empty (the indicator difference takes values in {−1,0,1} and all values are equal; with p prime there is no room between).
+* `vanishing_indicator_empty_or_full` — the brief's named candidate verbatim: a vanishing 0/1 sum of μ_p has empty or full support — every nonzero fiber is exactly one full μ_p-packet.
+* `gridMap_snd_succ` / `gridMap_fst_succ` — cyclic CRT coordinate shifts realize +p / +q on exponents (no Bezout, pure Nat.mod_add_div bookkeeping).
+* `debruijn_squarefree_two_prime` — **the headline**: vanishing indicator sum over ZMod(p·q) ⟹ S closed under +p (disjoint rotated full μ_q-packets) OR closed under +q (μ_p-packets). Composes `subset_sum_eq_grid_double_sum` (O79 step 2) + `crt_fiber_slice_coprimePrimePowers` at a = b = 1 (O79 step 1: all fibers equal) + the dichotomy: all fiber sets equal ⟹ +p-closure; any two differ ⟹ one is empty ⟹ every fiber sum is 0 ⟹ every fiber empty-or-full ⟹ +q-closure. PURE type — sharper than de Bruijn's ℕ-combination statement restricted to indicators (every μ_p-coset meets every μ_q-coset, so mixtures cannot be disjoint at the squarefree level; the probe confirms the count: 6+2+2 = 10 at n = 6, exactly the coset-union census).
+* Non-vacuity with teeth: fired end-to-end at ℂ, n = 2·3, S = {0,3} (ζ⁰+ζ³ = 0 genuinely vanishing), with `decide` witnesses pinning the disjunction to the right branch AND kernel-checking the left branch fails — the conclusion discriminates.
+
+**Where the open core moves:** the three-step de Bruijn ledger (O73's residuals) is now (1) CLOSED, (2) CLOSED, (3) CLOSED at a·b = 1. What remains for the full two-prime theorem (and the M31-domain capstone) is the prime-power case a·b > 1: replace the dichotomy by the C6-verified packet-combination form (column differences = ℤ-combinations of rotated Φ_{p^a}-packets — a one-divisibility Lean statement, deg < p^a forces quotient deg < p^{a-1}) and recurse down the q-adic digits; the probe's mixture census (24/100, 432/1000) is the target's exact shape.
+### O88 — K4's depth-0 layer PROVEN: the capture-kernel affine pinning holds antecedent-free on the unique-decoding window, and the Hensel frontier is pinned to exactly 3(n−t) > d−1
+
+O79 (Hab25CaptureKernel) left the Steps 5–7 kernel as K1 ∧ K4 with K4 — `T < |Ecell| → ∃ v₀ v₁ (natDegree < k), ∀ γ ∈ Ecell, P γ = v₀ + C γ·v₁` — named as the genuinely deep input (Claim 5.7 pigeonhole + Claims 5.8/5.9 Hensel branch degree/Z-linearity + Appendix C), with zero in-tree consumers since. This pass restates the demand, maps the Hensel lanes against it, and proves the first honest sub-piece: the **base case of the Hensel induction** — the depth-0 layer where no lifting over `F⟦X⟧` is needed.
+
+**The lane inventory (what exists vs what K4 needs):** `HPzBridge.decoded_eq_specialization_of_hensel` + `CurveFamilyHensel.CurveHenselDatum` produce per-`z` identities `P z = ∑_t (z−x₀)^t • c_t` for the *coefficient* stack (`Fin (k+1)`), conditional on per-`z` root data (matching polynomial over `F⟦X⟧`, common mod-`X` approximation, unit derivative); `MatchingExtractor.matchingFactor_dvd_of_orderM_and_count` (proven) feeds K1. The delta to K4 is threefold: (i) the antecedent-to-witness pigeonhole (`T < |Ecell|` must *produce* the pencil — Claim 5.7), (ii) degree-1-in-`γ` (the curve must collapse to a pencil — Claim 5.9 Z-linearity), (iii) the inseparable shell (App C). None of it is needed at depth 0.
+
+**Bricks (`Hab25CaptureKernelUD.lean`, axiom-clean [propext, Classical.choice, Quot.sound] ×7, 0 sorry, 0 warnings):**
+- `mcaDecode_P_eq_of_window` — **the uniqueness half**: on `n + k ≤ 2t` (t = ⌈(1−δ)n⌉₊, i.e. 2(n−t) ≤ d−1), any two `McaDecode` witnesses of the same `(u, γ)` carry the SAME polynomial — two witness sets share ≥ 2t−n ≥ k points and the difference has degree < k. The per-γ decode family is forced; any two affine pinnings of a cell coincide (`decode_family_eq_on_of_window`).
+- `exists_pencil_of_decode_family_window` — **K4 on the window, antecedent-free**: on `2n + k ≤ 3t` (⟺ 3(n−t) ≤ d−1), any decode family on any cell with ≥ 2 scalars is affinely pinned. Constructive: `v₁ = C(γ₁−γ₂)⁻¹·(P γ₁ − P γ₂)`, `v₀ = P γ₁ − C γ₁·v₁` interpolates the stack rows on S₁∩S₂; any third member's decode agrees with the specialization on the triple intersection (≥ 3t−2n ≥ k points), forcing equality by root count. The O84 mechanism (`TheoremQUDExtraction.exists_affine_pair`, codeword side, Theorem-Q evalCode) re-proven on the kernel's own `McaDecode` polynomial surface — different consumer, same window.
+- `hsteps57_of_window` + `cell_card_le_of_decode_family_window` — the composition through the O79 seam: K1 alone yields the literal `hsteps57` of `claim1_dichotomy` and the unconditional cell bound `|Ecell| ≤ T` (T ≥ n) on the window. `window3_implies_window2` (the 3-window forces decode uniqueness) and `k4_ud_window_satisfiable` (9 ≤ 12 at Fin 4, δ = 0, k = 1) close the satisfiability leaf.
+
+**Falsify-first probe (`probe_k4_ud_window.py`, exact, exit 0):** exhaustive GF(5) n=4 k=1 t=3 — all 390,625 stacks, 48,000 multi-scalar bad sets in-window, ALL decode choices per scalar enumerated: 0 uniqueness violations, 0 pencil failures, 0 pencil-choice mismatches; planted+random GF(7) n=6 k=2 t=5: 400 multi-scalar cells, 0 violations. **Negative control (the window is load-bearing):** at t=4 (3(n−t) = 6 > d−1 = 4), 59/600 planted stacks break the constructed pencil — consistent with O84's C2 refutation of the affine decoding law past d/(3n), now measured on the decode-polynomial surface.
+
+**Where the open core moves:** K4 is no longer monolithic — its statement now has a proven floor (3(n−t) ≤ d−1, no Hensel content needed) and a pinned frontier: the regime `3(n−t) > d−1` per GS cell, where the pencil must come from the genuine lift (per-cell branch polynomials over `F⟦X⟧` with Claim 5.8's Λ-weight degree bound, Claim 5.9's Z-linearity cutting the `CurveHenselDatum` curve to degree 1, App C's inseparable shell). The named next sub-obligation: convert one `CurveHenselDatum` (Fin (k+1) coefficient stack) output into the Fin-2 pencil shape of K4 past the window — the Z-linearity step is the seam, and `ZLinearRatFuncDegreeOne`/`CurveFamilyZLinear` are the in-tree anchors it must land on.
+### O89 — the O84 counting question ANSWERED in shape: badCount ≤ 2(n−t)+1 is REFUTED at the top of the gap (exhaustive truth = 2(n−t)+2, and ~n at e = 1), while the strict interior survives and is named in-tree
+
+O84 closed the extraction on 3(n−t) < d and left the window (d/(3n), (d−1)/(2n)] as "a counting question, not a structure question", with the natural conjecture badCount ≤ 2(n−t)+1 open (its hunt never saw more than 3). This pass answers the shape of the question. The structural key: two bad scalars whose decodes share an affine codeword family pin that family (O84's subtraction); two DISTINCT (e+1)-support families differ by an m=2-interleaved codeword of column weight ≤ 2(e+1), so they can coexist iff 2(e+1) ≥ d — i.e. exactly on the top slice of the gap, where each family carries up to e+1 Möbius-distinct cancellation scalars.
+
+**REFUTED (probe witness, `probe_counting_gap.py`, exact GF(p), exit 0): the natural conjecture fails on the top slice 2(n−t) = d−1.** The multi-family construction (e := h restricted to T₁ for codeword pairs h_j vanishing off T₁ ∪ T_j, kernel-solved consistency, ratios a Möbius image hence distinct) yields, machine-verified by exact bad-set computation: badCount 6 > 5 at RS(6,2)/GF(7), δ = 1/3; **10 > 9 at RS(16,8)/GF(97), δ = 1/4 — the very O84 hunt code, inside the δ-window at its included right endpoint**; 10 > 9 at RS(12,4)/GF(13); and **12 > 3 at RS(12,10)/GF(13) (e = 1, d = 3)** — twelve of thirteen scalars bad on one stack (so ε_mca(RS(12,10), 1/12) ≥ 12/13: at e = 1 the consistency kernel has dimension 3−e = 2 per extra family and the family count is unbounded, connecting to the #39 radius-one badRatios extremal target). **No closed form in (n−t) alone can bound the gap**; the governing quantity is the interleaved list size Λ₂(2δ) — the proven O74/O85 ceiling 1 + 2(n−t)·Λ₂ held on every measured stack.
+
+**Exhaustive ground truth (the true max, not a lower bound):** over ALL coset-pair stacks of RS(6,2) and RS(7,3) over GF(7) (23,200 affine classes each; orbit coverage asserted, 6 invariance spot-checks vs raw bad-set, BW vs exhaustive decoder identical), the top-slice maximum is **exactly 2(n−t)+2 = 6** (attained by 20 resp. 140 classes; never 7 = q). Histograms recorded.
+
+**SURVIVES (0/1,263): the strict interior 2(n−t)+2 ≤ d.** Adversarial hunts (g-planting, 2-g nesting, two-cancel, random, structured-collapse shapes) at (97,16,8) e=3, (13,12,4) e=3, (13,12,2) e=4, the even-d top (13,9,4) e=2, plus a non-MDS (non-GRS) [8,3,5]₇ attack-search control: max observed 5, **0 violations of 2(n−t)+1**. The violation mechanism is provably rigid there: the multifamily consistency kernel is 1-dimensional (proportional rows ⟹ constant ratio ⟹ one scalar per family), printed by the probe each time it blocks.
+
+**Bricks (`CountingGapConjecture.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):** `GapCountingBoundFullWindow` — the natural conjecture named as the falsified surface (probe-cited, never to be assumed); `InteriorCountingBound` — the surviving conjecture on 2(n−t)+2 ≤ d; `interiorCountingBound_of_gapCountingBoundFullWindow` (refuted ⟹ surviving monotonicity); `epsMCA_le_of_interiorCountingBound` — the consumer: the surviving conjecture gives ε_mca ≤ (2(n−t)+1)/|F| on its window via `epsMCA_le_of_badCount_le`, extending O84's proven shape from 3(n−t) < d to the full strict interior; `gap_trichotomy` + `top_slice_iff_odd` — the UD side splits exactly into {proven O84} ⊔ {surviving interior} ⊔ {refuted odd-d top}, and the refuted slice exists iff d is odd; `interior_window_extends_proven` — the conjecture window strictly extends the proven one (e=3, d=9).
+
+**Where the open core sits:** the gap of O84 is now split. Below the unique-decoding radius (2(n−t) ≤ d−2) the honest open conjecture is `InteriorCountingBound` — unrefuted by 1,263 adversarial stacks, and the only known violation mechanism is provably unavailable. AT the radius (d odd) the bound is dead: the truth is 2(n−t)+2 exactly at the two exhaustible points, ~n at e=1, and in general coupled to Λ₂(2δ) (O85's conversion is the right shape). Closing `InteriorCountingBound` needs a per-line argument that a single decode family plus stragglers stays ≤ 2(n−t)+1 without the affine law — the probe says the wall is real but thin.
+
+### O75 — branch-entropy probe: generic words carry O(1) deep-interior lists (unfalsified)
+
+Falsify-first probe (docs/kb/mixed-tower-probes/branch_entropy_probe.py; n = 16, k = 3
+over F₉₇, full 97³ codeword enumeration, 60 trials per agreement level mixing planted-
+error and uniform-random received words): at agreements a = 5, 6, 7 (all BEYOND the
+Johnson agreement √48 ≈ 6.9 at a = 5, 6), the maximum observed list is 3, 1, 1 — and the
+support-descent size sequences are pairing-free (11→7→4→2→1: generic halving, no
+antipodal structure). Conclusion: generic and planted words carry O(1) deep-interior
+lists; ALL observed list mass concentrates at the structured (class-syndrome/coset)
+words already characterized by the tower theory — consistent with, and unfalsifying,
+the branch-entropy accounting in which rigid leaf data (O74) plus tree-shape counting
+bounds the list. The worst case is provably NOT found by sampling; it is the structured
+chart, which is exactly where O45–O74 live.
+
+### O76 — THE PACKET COVER: de Bruijn's hard direction, unconditional (two_prime_packet_cover)
+
+`DeBruijnTwoPrime.two_prime_packet_cover` (axiom-clean, 0 sorry, by hand from O71's
+double-slice): **every member of a vanishing subset of μ_{p^(a+1)·q^(b+1)} has its full
+μ_p-fiber in S or its full μ_q-fiber in S.** Proof: if the p-fiber misses a point, the
+double-slice forces the membership difference row ≡ 1 along the entire q-direction, so
+the q-fiber is full — pure case analysis on O71.
+
+This is the necessary half of de Bruijn's 1953 theorem at the subset level, now formal
+and hypothesis-free. Honest scope: cover is necessary, NOT sufficient (overlapping
+packets break the vanishing sum); the exact O70 law is the disjoint-decomposition
+refinement — the remaining finite combinatorial step between cover and the full
+characterization (and thence the discharge of O73's base hypotheses).
+
+### O77 — DE BRUIJN 1953, COMPLETE: the full two-prime packet decomposition machine-checked
+
+`DeBruijnTwoPrime.two_prime_packet_decomposition` (axiom-clean, 0 sorry, by hand):
+**a finite subset of μ_{p^(a+1)·q^(b+1)} (p ≠ q primes, characteristic zero) with
+vanishing sum IS a disjoint union of full μ_p- and μ_q-packets** — the `PacketUnion`
+inductive built packet-by-packet, each peel disjoint from the rest by construction.
+
+Proof: peeling induction over the O76 cover — a full prime packet sums to zero
+(`prime_packet_sum_zero`, geometric series), so removing the packet supplied by the
+cover dichotomy preserves the vanishing sum and strictly drops cardinality; strong
+induction finishes. Plumbing: CRT box coordinates (box_pair_surj/inj), the
+nonlinear-cancellation index arithmetic, and the new-Mathlib card_sdiff intersection
+form.
+
+This completes the de Bruijn third pillar END TO END: O68 engine → O71 double-slice
+(linear disjointness proven) → O76 cover → O77 decomposition. The t = 1 instance of the
+O70 mixed-radix law is now an unconditional theorem; connecting PacketUnion to O73's
+closure-hypothesis format (mechanical) makes the first rung of the mixed tower
+unconditional. The mixed-radix program's three pillars are all formal.
+### O90 — O87's recursion seed PROVEN IN FULL: packet divisibility below p^a IS a bounded-coefficient combination of rotated Φ_{p^a}-packets (and conversely), the a ≥ 2 de Bruijn descent engine
+
+O87 left the prime-power continuation as one named brick: column indicator differences of CRT fibers at a prime power, divisible by Φ_{p^a} (C6: 100% at n = 12, 18, where the naive dichotomy fails 168/486), should be ℤ-combinations of rotated Φ_{p^a}-packets — with the degree bound on the quotient named as the smallest honest piece. This pass proves the WHOLE brick, both directions, over any nontrivial integral domain, with no primality needed on the packet side.
+
+**Falsify-first probe (`probe_packet_quotient_coeffs.py`, exact integer arithmetic, exit 0):** exhaustive over all vanishing subsets at n = 12 (600 ordered column pairs) and n = 18 (2000 pairs): every difference divisible (O87 C6 re-verified), every quotient has deg < Q = p^(a−1), every quotient coefficient in {−1,0,1}, the quotient IS the bottom coefficient slice of d, and the rotated-packet combination reconstructs exactly. **The exact coefficient structure answered (the brief's question):** the realized quotients exhaust the FULL {−1,0,1}^Q cube (9/9 at 12, 27/27 at 18) — no further restriction exists. **Finding (a wrong control corrected mid-probe):** the bottom-slice identity R[s] = d[s], s < Q, holds for ANY quotient — the convolution against the packet's sparse support never reaches down — so the degree bound's only job is to make the bottom slice the WHOLE quotient; without deg d < p^a the shifts-<Q combination fails (d = Φ·X^Q). Exact census: the divisible {−1,0,1}-vectors of length p^a are EXACTLY {Φ·R : R ∈ {−1,0,1}^Q}, count 3^Q (9 of 81 at p^a = 4; 27 of 19683 at p^a = 9) — the bijection the Lean brick states, with non-divisible vectors witnessing divisibility load-bearing.
+
+**Bricks (`PacketCombinationDivisibility.lean`, axiom-clean [propext, Classical.choice, Quot.sound] ×11, 0 sorry, 0 warnings):**
+* `quotient_natDegree_lt` — **the named degree bound**: d = packet·R, d ≠ 0, natDegree d < p·q ⟹ natDegree R < q (pure degree bookkeeping off natDegree packet = (p−1)·q, no monic machinery — domain + leading-coefficient count).
+* `packet_mul_coeff` + `quotient_coeff_eq_bottom` — the generic-ring slice convolution (LamLeungTwoPow's ℚ-only lemma re-proven over any CommRing) and its i = 0 instance: the quotient is the bottom slice.
+* `packet_dvd_combination` — **the headline**: packet ∣ d, deg d < p·q ⟹ d = Σ_{s<q} C(d.coeff s)·X^s·packet — combination coefficients are literally coefficients of d, so ANY coefficient bound transfers verbatim; `indicator_diff_packet_combination` instantiates at {−1,0,1} (the O87-named statement).
+* `packet_dvd_of_slice_replication` + `packet_dvd_iff_slice_replication` — **the converse and the recursion-usable iff**: below degree p·q, packet divisibility ⟺ p-fold slice replication d.coeff(t·q+s) = d.coeff s — the form the a ≥ 2 descent consumes (column data at level a becomes slice data at level a−1).
+* `cyclotomic_prime_pow_eq_packet`, `cyclotomic_dvd_combination`, `indicator_diff_cyclotomic_combination` — the bricks restated verbatim on Φ_{p^(a+1)} via `cyclotomic_prime_pow_eq_geom_sum`, landing exactly on the C6 surface.
+* Non-vacuity with teeth: fired end-to-end at ℚ on the probe's own realized quotient (1,−1) (d = 1−X+X²−X³, the {0,2}-vs-{1,3} column difference) and on the rotated packet X+X³; `¬ packet ℚ 2 2 ∣ (1+X)` proven through the iff — the conclusion discriminates.
+
+**Where the open core moves:** the three-step de Bruijn ledger now has its prime-power engine: O87's column differences at level a are, by this brick, bounded combinations whose coefficients are bottom-slice indicator data — i.e. the iff converts Φ_{p^a}-divisibility into p-fold slice replication, exactly the descent from q-adic digit a to a−1. What remains for the full two-prime theorem (and the M31-domain capstone) is the WIRING: run the recursion down the digits inside `MixedRadixTower`'s conditional rungs (replace the level-a base hypotheses by this brick + induction) and assemble mixed disjoint packets at composite levels — bookkeeping plus the O67-verified mixed-decomposition census as the target shape, no new divisibility content needed at a single prime power.
+### O91 — de Bruijn: the O79 splice LANDED + the squarefree classification completed to an EQUIVALENCE (sufficiency engine at every modulus)
+
+Two complement bricks around the O87 disjointness landing, both queued by the in-tree ledger and neither stated anywhere on main: the O79 step-(1) entry's deferred splice ("composing the two yields the full two-prime subset-sum fiber slice with no hypothesis; deliberately not built this pass to avoid depending on an unlanded sibling file" — both siblings have since landed), and the SUFFICIENCY half of de Bruijn step (3) (O87 proved vanishing ⟹ closure; the packet cover proved per-element necessity; nothing proved closure ⟹ vanishing).
+
+**Brick 1 (`CRTSubsetSumFiberSlice.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings): the splice.**
+* `vanishing_subset_sum_fiber_slice` — **the unconditional two-prime subset-sum fiber slice at general `p^a·q^b`**: distinct primes `p ≠ q`, `0 < b`, `ζ` a primitive `(p^a·q^b)`-th root in ANY characteristic-zero field, `S ⊆ ZMod (p^a·q^b)` with `∑_{e∈S} ζ^e = 0` ⟹ the CRT-grid fiber sums `∑_{j<p^a} [(j, i·q^{b−1}+s) ∈ gridSet S]·(ζ^{q^b})^j` are independent of `i < q`. Steps (0)+(1)+(2) composed (`subset_sum_eq_grid_double_sum` + `crt_fiber_slice_coprimePrimePowers`); only the primitive root and the vanishing sum remain. (The O87 lane inlined this composition at `a = b = 1`; the general exponent-surface statement was still missing — it is the input shape for the `a·b > 1` packet-combination recursion named open by O87.) Non-vacuity at a NONEMPTY vanishing sum (`n = 6`, `S = {1,4}`, `ζ + ζ⁴ = 0` over `ℂ`).
+
+**Brick 2 (`DeBruijnSquarefreeIff.lean`, axiom-clean, 0 sorry, 0 warnings): the equivalence.**
+* `sum_pow_val_eq_zero_of_addClosed` — **the shift engine, any modulus**: a subset of `ZMod n` closed under translation by `d` has vanishing sum against any `n`-th root `ζ` with `ζ^{d.val} ≠ 1` (translation is a bijection of S onto itself ⟹ the sum absorbs a factor `ζ^{d.val}`). Consumes nothing about `n`'s factorization — the sufficiency mechanism at EVERY level of the de Bruijn program.
+* `vanishing_of_addClosed_packet` — prime-power instantiation: in `ZMod (p^a·q^b)`, closure under the packet step `+p^a·q^{b−1}` (a union of rotated full μ_q-packets) forces vanishing. The converse of the landed `two_prime_packet_cover` necessity, at the same generality.
+* `debruijn_squarefree_two_prime_iff` — **the capstone equivalence at squarefree `n = p·q`**: `∑_{e∈S} ζ^e = 0 ⟺ S` is `+p`-closed or `+q`-closed. Forward = O87's `debruijn_squarefree_two_prime`; backward = the shift engine at `d = p, q` (`ζ^p ≠ 1 ≠ ζ^q` by primitivity). De Bruijn 1953 for `{0,1}` coefficients at squarefree two-prime `n` is now a two-sided theorem.
+* Witnesses with teeth: `ζ + ζ⁴ = 0` over `ℂ` falls out of a kernel-`decide`d `+3`-closure check on `{1,4} ⊆ ZMod 6` (no root-of-unity manipulation), and the forward direction fires end-to-end on the same nonempty set.
+
+**Falsify-first probe (`scripts/probes/probe_debruijn_squarefree.py`, exact ℤ[x]/Φ_n arithmetic — vanishing tested by exact division by the cyclotomic, fiber sums reduced in ℤ[x]/Φ_{p^a} — exit 0):** the equivalence EXHAUSTIVE over all 2^n subsets at n = 6, 10, 15 (10/34/38 vanishing sets, 0 mismatches), 30,000 sampled + adversarial (pure-with-one-point-toggled — the toggles never vanish, so sufficiency has teeth) at n = 21, 35 (5,000 vanishing each, 0 mismatches). The splice exhaustive at n = 12, 18, 15, 20 and sampled+planted at n = 36, 0 violations, with teeth: 1,047,420 of the 2^20 non-vanishing subsets at n = 20 violate the invariance. CONTROL re-confirmed: at non-squarefree n = 12 the set {0,6} ∪ {1,5,9} vanishes but satisfies NEITHER closure — squarefree-ness is load-bearing in the iff exactly as O87 measured.
+
+**Literature note (this session's sweep, June 2026):** no public Lean/Isabelle/mathlib formalization of de Bruijn 1953 or Lam–Leung exists (GitHub code search + web) — the in-tree ledger (O66→O91) appears to be the first machine-checked de Bruijn-type theory of vanishing sums of roots of unity. (Adjacent: arXiv 2008.11268, updated Dec 2025, classifies minimal vanishing sums to weight ≤ 21 — weight-bounded, not subset-shaped.)
+
+**Where the de Bruijn frontier sits now:** with O77 (the full `PacketUnion` decomposition on the value surface) and O90 (the packet-combination descent engine) landed in parallel, the necessity side of de Bruijn is complete at every `p^a·q^b`; these two bricks supply the EXPONENT-surface (`ZMod`) statements the consumers use — the general-`(a,b)` fiber slice and the squarefree two-sided equivalence — plus the factorization-free sufficiency engine (the O76 cover entry records that cover alone does NOT imply vanishing; shift-closure does). Remaining mechanical step, named by O77: wire `PacketUnion` into O73's (`MixedRadixTower`) closure-hypothesis format to make the conditional tower's first rung unconditional.
+
+### O91 — de Bruijn: the O79 splice LANDED + the squarefree classification completed to an EQUIVALENCE (sufficiency engine at every modulus)
+
+Two complement bricks around the O87 disjointness landing, both queued by the in-tree ledger and neither stated anywhere on main: the O79 step-(1) entry's deferred splice ("composing the two yields the full two-prime subset-sum fiber slice with no hypothesis; deliberately not built this pass to avoid depending on an unlanded sibling file" — both siblings have since landed), and the SUFFICIENCY half of de Bruijn step (3) (O87 proved vanishing ⟹ closure; the packet cover proved per-element necessity; nothing proved closure ⟹ vanishing).
+
+**Brick 1 (`CRTSubsetSumFiberSlice.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings): the splice.**
+* `vanishing_subset_sum_fiber_slice` — **the unconditional two-prime subset-sum fiber slice at general `p^a·q^b`**: distinct primes `p ≠ q`, `0 < b`, `ζ` a primitive `(p^a·q^b)`-th root in ANY characteristic-zero field, `S ⊆ ZMod (p^a·q^b)` with `∑_{e∈S} ζ^e = 0` ⟹ the CRT-grid fiber sums `∑_{j<p^a} [(j, i·q^{b−1}+s) ∈ gridSet S]·(ζ^{q^b})^j` are independent of `i < q`. Steps (0)+(1)+(2) composed (`subset_sum_eq_grid_double_sum` + `crt_fiber_slice_coprimePrimePowers`); only the primitive root and the vanishing sum remain. (The O87 lane inlined this composition at `a = b = 1`; the general exponent-surface statement was still missing — it is the input shape for the `a·b > 1` packet-combination recursion named open by O87.) Non-vacuity at a NONEMPTY vanishing sum (`n = 6`, `S = {1,4}`, `ζ + ζ⁴ = 0` over `ℂ`).
+
+**Brick 2 (`DeBruijnSquarefreeIff.lean`, axiom-clean, 0 sorry, 0 warnings): the equivalence.**
+* `sum_pow_val_eq_zero_of_addClosed` — **the shift engine, any modulus**: a subset of `ZMod n` closed under translation by `d` has vanishing sum against any `n`-th root `ζ` with `ζ^{d.val} ≠ 1` (translation is a bijection of S onto itself ⟹ the sum absorbs a factor `ζ^{d.val}`). Consumes nothing about `n`'s factorization — the sufficiency mechanism at EVERY level of the de Bruijn program.
+* `vanishing_of_addClosed_packet` — prime-power instantiation: in `ZMod (p^a·q^b)`, closure under the packet step `+p^a·q^{b−1}` (a union of rotated full μ_q-packets) forces vanishing. The converse of the landed `two_prime_packet_cover` necessity, at the same generality.
+* `debruijn_squarefree_two_prime_iff` — **the capstone equivalence at squarefree `n = p·q`**: `∑_{e∈S} ζ^e = 0 ⟺ S` is `+p`-closed or `+q`-closed. Forward = O87's `debruijn_squarefree_two_prime`; backward = the shift engine at `d = p, q` (`ζ^p ≠ 1 ≠ ζ^q` by primitivity). De Bruijn 1953 for `{0,1}` coefficients at squarefree two-prime `n` is now a two-sided theorem.
+* Witnesses with teeth: `ζ + ζ⁴ = 0` over `ℂ` falls out of a kernel-`decide`d `+3`-closure check on `{1,4} ⊆ ZMod 6` (no root-of-unity manipulation), and the forward direction fires end-to-end on the same nonempty set.
+
+**Falsify-first probe (`scripts/probes/probe_debruijn_squarefree.py`, exact ℤ[x]/Φ_n arithmetic — vanishing tested by exact division by the cyclotomic, fiber sums reduced in ℤ[x]/Φ_{p^a} — exit 0):** the equivalence EXHAUSTIVE over all 2^n subsets at n = 6, 10, 15 (10/34/38 vanishing sets, 0 mismatches), 30,000 sampled + adversarial (pure-with-one-point-toggled — the toggles never vanish, so sufficiency has teeth) at n = 21, 35 (5,000 vanishing each, 0 mismatches). The splice exhaustive at n = 12, 18, 15, 20 and sampled+planted at n = 36, 0 violations, with teeth: 1,047,420 of the 2^20 non-vanishing subsets at n = 20 violate the invariance. CONTROL re-confirmed: at non-squarefree n = 12 the set {0,6} ∪ {1,5,9} vanishes but satisfies NEITHER closure — squarefree-ness is load-bearing in the iff exactly as O87 measured.
+
+**Literature note (this session's sweep, June 2026):** no public Lean/Isabelle/mathlib formalization of de Bruijn 1953 or Lam–Leung exists (GitHub code search + web) — the in-tree ledger (O66→O91) appears to be the first machine-checked de Bruijn-type theory of vanishing sums of roots of unity. (Adjacent: arXiv 2008.11268, updated Dec 2025, classifies minimal vanishing sums to weight ≤ 21 — weight-bounded, not subset-shaped.)
+
+**Where the de Bruijn frontier sits now:** with O77 (the full `PacketUnion` decomposition on the value surface) and O90 (the packet-combination descent engine) landed in parallel, the necessity side of de Bruijn is complete at every `p^a·q^b`; these two bricks supply the EXPONENT-surface (`ZMod`) statements the consumers use — the general-`(a,b)` fiber slice and the squarefree two-sided equivalence — plus the factorization-free sufficiency engine (the O76 cover entry records that cover alone does NOT imply vanishing; shift-closure does). Remaining mechanical step, named by O77: wire `PacketUnion` into O73's (`MixedRadixTower`) closure-hypothesis format to make the conditional tower's first rung unconditional.
+### O91 — de Bruijn: the O79 splice LANDED + the squarefree classification completed to an EQUIVALENCE (sufficiency engine at every modulus)
+
+Two complement bricks around the O87 disjointness landing, both queued by the in-tree ledger and neither stated anywhere on main: the O79 step-(1) entry's deferred splice ("composing the two yields the full two-prime subset-sum fiber slice with no hypothesis; deliberately not built this pass to avoid depending on an unlanded sibling file" — both siblings have since landed), and the SUFFICIENCY half of de Bruijn step (3) (O87 proved vanishing ⟹ closure; the packet cover proved per-element necessity; nothing proved closure ⟹ vanishing).
+
+**Brick 1 (`CRTSubsetSumFiberSlice.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings): the splice.**
+* `vanishing_subset_sum_fiber_slice` — **the unconditional two-prime subset-sum fiber slice at general `p^a·q^b`**: distinct primes `p ≠ q`, `0 < b`, `ζ` a primitive `(p^a·q^b)`-th root in ANY characteristic-zero field, `S ⊆ ZMod (p^a·q^b)` with `∑_{e∈S} ζ^e = 0` ⟹ the CRT-grid fiber sums `∑_{j<p^a} [(j, i·q^{b−1}+s) ∈ gridSet S]·(ζ^{q^b})^j` are independent of `i < q`. Steps (0)+(1)+(2) composed (`subset_sum_eq_grid_double_sum` + `crt_fiber_slice_coprimePrimePowers`); only the primitive root and the vanishing sum remain. (The O87 lane inlined this composition at `a = b = 1`; the general exponent-surface statement was still missing — it is the input shape for the `a·b > 1` packet-combination recursion named open by O87.) Non-vacuity at a NONEMPTY vanishing sum (`n = 6`, `S = {1,4}`, `ζ + ζ⁴ = 0` over `ℂ`).
+
+**Brick 2 (`DeBruijnSquarefreeIff.lean`, axiom-clean, 0 sorry, 0 warnings): the equivalence.**
+* `sum_pow_val_eq_zero_of_addClosed` — **the shift engine, any modulus**: a subset of `ZMod n` closed under translation by `d` has vanishing sum against any `n`-th root `ζ` with `ζ^{d.val} ≠ 1` (translation is a bijection of S onto itself ⟹ the sum absorbs a factor `ζ^{d.val}`). Consumes nothing about `n`'s factorization — the sufficiency mechanism at EVERY level of the de Bruijn program.
+* `vanishing_of_addClosed_packet` — prime-power instantiation: in `ZMod (p^a·q^b)`, closure under the packet step `+p^a·q^{b−1}` (a union of rotated full μ_q-packets) forces vanishing. The converse of the landed `two_prime_packet_cover` necessity, at the same generality.
+* `debruijn_squarefree_two_prime_iff` — **the capstone equivalence at squarefree `n = p·q`**: `∑_{e∈S} ζ^e = 0 ⟺ S` is `+p`-closed or `+q`-closed. Forward = O87's `debruijn_squarefree_two_prime`; backward = the shift engine at `d = p, q` (`ζ^p ≠ 1 ≠ ζ^q` by primitivity). De Bruijn 1953 for `{0,1}` coefficients at squarefree two-prime `n` is now a two-sided theorem.
+* Witnesses with teeth: `ζ + ζ⁴ = 0` over `ℂ` falls out of a kernel-`decide`d `+3`-closure check on `{1,4} ⊆ ZMod 6` (no root-of-unity manipulation), and the forward direction fires end-to-end on the same nonempty set.
+
+**Falsify-first probe (`scripts/probes/probe_debruijn_squarefree.py`, exact ℤ[x]/Φ_n arithmetic — vanishing tested by exact division by the cyclotomic, fiber sums reduced in ℤ[x]/Φ_{p^a} — exit 0):** the equivalence EXHAUSTIVE over all 2^n subsets at n = 6, 10, 15 (10/34/38 vanishing sets, 0 mismatches), 30,000 sampled + adversarial (pure-with-one-point-toggled — the toggles never vanish, so sufficiency has teeth) at n = 21, 35 (5,000 vanishing each, 0 mismatches). The splice exhaustive at n = 12, 18, 15, 20 and sampled+planted at n = 36, 0 violations, with teeth: 1,047,420 of the 2^20 non-vanishing subsets at n = 20 violate the invariance. CONTROL re-confirmed: at non-squarefree n = 12 the set {0,6} ∪ {1,5,9} vanishes but satisfies NEITHER closure — squarefree-ness is load-bearing in the iff exactly as O87 measured.
+
+**Literature note (this session's sweep, June 2026):** no public Lean/Isabelle/mathlib formalization of de Bruijn 1953 or Lam–Leung exists (GitHub code search + web) — the in-tree ledger (O66→O91) appears to be the first machine-checked de Bruijn-type theory of vanishing sums of roots of unity. (Adjacent: arXiv 2008.11268, updated Dec 2025, classifies minimal vanishing sums to weight ≤ 21 — weight-bounded, not subset-shaped.)
+
+**Where the de Bruijn frontier sits now:** with O77 (the full `PacketUnion` decomposition on the value surface) and O90 (the packet-combination descent engine) landed in parallel, the necessity side of de Bruijn is complete at every `p^a·q^b`; these two bricks supply the EXPONENT-surface (`ZMod`) statements the consumers use — the general-`(a,b)` fiber slice and the squarefree two-sided equivalence — plus the factorization-free sufficiency engine (the O76 cover entry records that cover alone does NOT imply vanishing; shift-closure does). Remaining mechanical step, named by O77: wire `PacketUnion` into O73's (`MixedRadixTower`) closure-hypothesis format to make the conditional tower's first rung unconditional.
+
+### O79 — THE Q-POWER DESCENT: the q-packet spectrum drops one level (the windowed engine)
+
+`DeBruijnTwoPrime.packetUnion_qpow_descent` (axiom-clean, 0 sorry): on any PacketUnion,
+Σ_{y∈S} y^q = q · Σ_{r∈R} r where R is a COLLISION-FREE spectrum (each r the common
+q-th power of a full μ_q-orbit inside S). μ_p-packets die at exponent q (the twisted
+packet sum, ω_p^q still primitive — pow_of_coprime); μ_q-packets each contribute q·z^q
+(rep power is j-independent: ζq^{q^{b+1}} = 1); collisions are impossible by the ORBIT
+ARGUMENT (equal q-th powers differ by a q-th root of unity, which would place the new
+rep inside an old packet — contradicting peel disjointness).
+
+Consequence (char 0): a window condition at exponent q forces Σ_R r = 0 — the spectrum
+R is a vanishing subset of μ_{p^(a+1)·q^b}, ONE q-LEVEL DOWN, and the de Bruijn
+decomposition applies again. This is the recursion engine of the windowed two-prime law
+(O70): windows kill μ_q-packets level by level, exactly as the verified law predicts.
+The remaining assembly: iterate the descent b+1 times and stack with the p-side climb —
+mechanical given this engine + O77/O78.
+
+### O91 — the squarefree pq classification goes TWO-SIDED: the iff, the packet-union representation, and the cardinality law (sibling to O87)
+
+O87 closed step (3) at `a·b = 1` in forward shift-closure form. This pass lands the COMPLEMENT — the full equivalence and the representation API (`DeBruijnSquarefreePQ.lean`, axiom-clean `[propext, Classical.choice, Quot.sound]`, 0 sorry):
+
+* `vanishing_combination_const` / `subset_sum_rigidity` — the rigidity engine in trichotomy form: a vanishing ℚ-combination of `1,ξ,…,ξ^{p−1}` has all coefficients equal (`minpoly.dvd` + degree pinch against `Φ_p`, coefficient extraction through `C·X^j`), hence two subsets of `μ_p` with equal sums are EQUAL or `{∅, μ_p}` — stated with both degenerate witnesses explicit, the form the fiber case-split consumes directly.
+* `grid_vanishing_iff_pure` — **the classification as an IFF on the CRT grid**: for `I ⊆ [0,p) ×ˢ [0,q)`, the double sum vanishes ⟺ `I = A ×ˢ [0,q)` or `I = [0,p) ×ˢ T`. Forward = O83 fiber-slice invariance at `a = b = 1` + rigidity; CONVERSE = the geometric-sum factorization (`IsPrimitiveRoot.geom_sum_eq_zero`), which O87 did not state.
+* `vanishing_subset_sum_iff_pure_packets` / `vanishing_subset_sum_iff_packet_union` — the headline iffs through the O82 bijection, the latter in exponent space: `S` vanishes ⟺ `S` IS the `gridMap`-image of a pure product — a disjoint union of rotated `μ_q`-packets or of rotated `μ_p`-packets. Transport lemmas `image_gridMap_gridSet` (reconstruction: `gridMap '' gridSet S = S`) and `gridSet_image_gridMap` (`gridSet (gridMap '' J) = J` for grid subsets `J`) make the two surfaces interchangeable for downstream consumers.
+* `card_of_vanishing_subset_sum` — **Lam–Leung at `pq` with structure**: `q ∣ |S| ∨ p ∣ |S|`, the witnessing multiple counting whole packets.
+
+Falsified first (`scripts/probes/probe_debruijn_squarefree_pq.py`, exact `ℤ[x]/Φ_n`, exit 0): rigidity exhaustive at `p ∈ {3,5,7,11,13}` (all `2^p` subsets, the ONLY collision is `∅` vs full); the iff exhaustive at `n = 6` (10 vanishing = `2² + 2³ − 2`, all pure) and `n = 15` (all `2^15`; 38 = `2³ + 2⁵ − 2`); `n = 35`: all `2⁵ + 2⁷` pure forms vanish + 200k random + 2k single-toggle adversarial non-pure subsets all non-vanishing. The census counts matching `2^p + 2^q − 2` exactly is the converse made visible.
+
+**Literature pin (research lane, full annotated report posted to #232):** the forward `pq` content is de Bruijn 1953 §3, modern proof = Lam–Leung J. Algebra 224 (2000) Thm 3.3 (the double-slice argument the in-tree engine reproduces) with Cor 3.4 the minimality classification; the `p^a q^b` multiset-disjointness phrasing is Malikiosis arXiv:2005.05800 Thm 5.2. **No formalization of any of this theory exists outside this tree** (mathlib4, Isabelle/AFP, Coq searched 2026-06-09). The O70 `t > 1` window law is NOT in the literature (closest: Kumar–Senthil Kumar single-ℓ power sums, arXiv:1503.07281, weights only) — it is an original observation; recommended proof route = peeling lemma + p-power compression. **Load-bearing warning** (Kiss–Łaba–Marshall–Somlai arXiv:2507.11672, Thm 1.3/Prop 8.2): prescribed cyclotomic divisibility at an ARBITRARY scale set does NOT force packet structure even at two primes (counterexample at `M = 2⁹3⁶`, 7 scales, beats every fibered configuration) — any window-law proof MUST use the downward-closedness of `{g : g ≤ t}` (the BCH/consecutive-zeros structure); the generalization from windows to arbitrary divisor prescriptions is FALSE.
+### O92 — de Bruijn WIRING step 1 LANDED: the single-prime-power theorem is an iff (one-shot O90, no recursion), and the two-prime recursion shape is pinned exactly — the remaining wall is THREAD-SPLIT
+
+O90 closed with "what remains is WIRING: run the recursion down the digits". This pass executes the wiring probe and ships the first wiring deliverable, with one structural finding: at a PURE prime power the recursion is unnecessary — divisibility of the degree-< p^(a+1) indicator polynomial by Φ_{p^(a+1)} = packet p p^a already pins every digit via ONE application of O90's `packet_dvd_iff_slice_replication`.
+
+**Falsify-first probe (`probe_prime_power_descent.py`, exact integer arithmetic mod Φ_n, exit 0, 30/30):** (A) the single-prime-power iff EXHAUSTIVELY at n = 4, 8, 9, 16 (vanishing ⟺ +p^a-closed; counts exactly 2^(p^a)) and sampled at 27, 25 (20000 non-closed masks all non-vanishing). (B) the brief's task (a): the full two-prime digit-descent recursion at n = 12, 18 — thread-split at the squared prime (e = r + p·e'), recurse to the squarefree base n = 6, apply the O87 dichotomy, lift packets (x ↦ r + p·x) — decomposes ALL 100/1000 vanishing subsets (O87's exhaustive census; 99/999 nonempty = O67) into disjoint genuine packets; mixture counts 24/432 reproduce O87; thread-split holds as an exhaustive IFF over all 2^12/2^18 masks (vanish ⟺ all p threads vanish at n/p); and the disjoint-packet-union family generated directly EQUALS the vanishing family — de Bruijn's ℕ-combination statement as a set identity, third witness.
+
+**New brick `DeBruijnPrimePower.lean` (axiom-clean, 0 sorry, witnesses fired at ℂ with teeth):**
+* `indicatorPoly` + coefficient/degree/aeval lemmas — the subset-sum → polynomial bridge; `indicatorPoly_coeff_mem`: coefficients in {0,1}.
+* `cyclotomic_dvd_indicatorPoly_of_vanishing` — vanishing at ζ_n ⟹ Φ_n ∣ indicatorPoly S over ℚ (`cyclotomic_eq_minpoly_rat` + `minpoly.dvd`), stated at EVERY n — the reusable entry point for composite-level wiring.
+* `closed_add_pow_of_vanishing` / `vanishing_of_closed_add_pow` / `debruijn_prime_power` — **the headline iff**: Σ_{e∈S} ζ^e = 0 ⟺ S closed under e ↦ e + p^a ⟺ S is a disjoint union of rotated full μ_p-packets (Lam–Leung single-prime case, sharpened to indicators: the ℕ-combination is a disjoint union). Forward = O90 slice replication + ZMod digit bookkeeping; converse = shift-reindexing (T = ζ^(p^a)·T, ζ^(p^a) ≠ 1).
+* `vanishing_indicator_eq_packet_combination` — the literal de Bruijn ℕ-combination: indicatorPoly S = Σ_{s<p^a} C(coeff s)·X^s·Φ_{p^(a+1)}, coefficients {0,1} — O90's `cyclotomic_dvd_combination` fired at a genuine vanishing source.
+* Teeth: 1 + i ≠ 0 DERIVED from the headline (hypothetical vanishing of the non-closed {0,1} at n = 4 contradicts decidable non-closure).
+
+**Where the open core moves (HOLD, wall named):** the full two-prime assembly (n = p^a q^b ⟹ S = S_p ⊔ S_q with S_p +n/p-closed, S_q +n/q-closed) is induction + this base + O87's squarefree dichotomy, EXCEPT one missing analytic brick: **THREAD-SPLIT** — for p² ∣ n, a vanishing sum at ζ_n splits into p vanishing thread sums at ζ_n^p (ℚ(ζ_{n/p})-linear independence of 1, ζ, …, ζ^{p-1}, i.e. minpoly ℚ⟮ζ^p⟯ ζ = X^p − ζ^p). The probe verifies it as an exhaustive IFF at 12, 18; no in-tree brick proves it. The path is concrete and CRTPacketMinpoly-shaped: divisibility by the monic binomial + tower degree bound via `Nat.totient_mul_of_prime_of_dvd` (φ(n) = p·φ(n/p) for p² ∣ n) + `linearIndependent_pow` (Mathlib RingTheory/PowerBasis.lean:415) for the coefficient extraction; then the lift bookkeeping (packets lift to packets, both types, as the probe's decomposer executes). That single brick + induction completes Theorem de Bruijn 1953 two-prime in-tree.
+
+### O80 — THE SPECTRAL SYNDROME TRANSFER: the full window descends in one theorem
+
+`DeBruijnTwoPrime.packetUnion_spectral_transfer` (axiom-clean, 0 sorry): ONE spectrum R
+carries the ENTIRE syndrome window — for EVERY exponent e with p ∤ e,
+
+    Σ_{y∈S} y^{q·e} = q · Σ_{r∈R} r^e.
+
+Supersedes O79 (its e = 1 case): μ_p-packets die at every exponent q·e with p ∤ e
+(ω_p^{qe} primitive via Coprime.mul_left of the two coprimalities), μ_q-packets each
+contribute q·(z^q)^e with the SAME spectrum point for all e, and the orbit argument
+keeps R collision-free. Consequence: a window of S at {q·e : e ≤ w, p ∤ e} is a window
+of R at {e ≤ w, p ∤ e} one q-level down — THE complete recursion step of the windowed
+two-prime law. The full windowed law is now: iterate (b+1 times), apply the prime-power
+endpoint (O66), and stack the p-side climb — every ingredient machine-checked.
+### O93 — THREAD-SPLIT LANDED: the O92 wall is a theorem — vanishing at ζ_n with p² ∣ n splits into p vanishing thread sums at ζ_n^p (an iff), via minpoly ℚ(ζ^p) ζ = X^p − ζ^p
+
+O92 closed with one named analytic wall for the full two-prime de Bruijn assembly: THREAD-SPLIT — for p² ∣ n, a vanishing sum at ζ_n splits thread-by-thread at ζ_n^p (ℚ(ζ_{n/p})-linear independence of 1, ζ, …, ζ^{p−1}), probe-verified as an exhaustive iff at n = 12, 18 but proved nowhere in-tree. This pass proves it, both directions, after extending the measurement to the brief's points.
+
+**Falsify-first probe (`probe_thread_split.py`, exact integer arithmetic mod Φ_n, exit 0, 13/13):** the iff EXHAUSTIVELY over ALL masks at n = 20 (2²·5) and n = 28 (2²·7) — since thread decomposition is a bijection masks ↔ thread-tuples, the set identity vanishing-family = thread-product-family IS the exhaustive iff; counts confirm the product law |van(n)| = |van(n/p)|^p exactly (1156 = 34² at 20, 16900 = 130² at 28). Sampled with teeth at n = 50 (p = 5) and bonus odd-p² point n = 45 (p = 3): 2000 planted all-threads-vanishing masks all vanish, 20000 random masks satisfy the iff pointwise, and 2000 single-bit toggles of planted masks are non-vanishing with the toggled thread exactly the bad thread — both sides of the iff flip together, one-sided failure never observed.
+
+**New brick `ThreadSplit.lean` (axiom-clean, 0 sorry, witnesses fired at ℂ with teeth):**
+* `minpoly_adjoin_pow_prime_eq_binomial` — **the engine**: for n = p·m with p ∣ m, minpoly ℚ⟮ζ^p⟯ ζ = X^p − C(gen ℚ (ζ^p)). Degree pinch exactly as O92 named it: ≤ p from divisibility by the monic binomial (`minpoly.dvd` + `monic_X_pow_sub_C`); ≥ p from the totient tower bound p·φ(m) = φ(p·m) = [ℚ(ζ):ℚ] ≤ [ℚ⟮ζ^p⟯⟮ζ⟯:ℚ] = φ(m)·[ℚ⟮ζ^p⟯⟮ζ⟯:ℚ⟮ζ^p⟯] (`Nat.totient_mul_of_prime_of_dvd` — the LOAD-BEARING use of p² ∣ n; at p ∤ m the true degree is p−1 — plus `Module.finrank_mul_finrank` and the ℚ-linear embedding ℚ⟮ζ⟯ ↪ ℚ⟮ζ^p⟯⟮ζ⟯), closed by `eq_of_monic_of_dvd_of_natDegree_le` — the CRTPacketMinpoly pattern executed at the NON-coprime tower step the coprime brick cannot reach. `natDegree_minpoly_adjoin_pow_prime`: [ℚ(ζ_n):ℚ(ζ_{n/p})] = p, extracted.
+* `sum_eq_thread_sum` — the digit-decomposition identity Σ_{e∈S} ζ^e = Σ_{r<p} ζ^r·Σ_{e'<m}[r+p·e'∈S](ζ^p)^{e'} over ANY commutative ring (`sum_nbij'` on e ↦ (e % p, e / p)).
+* `thread_vanishing_of_vanishing` — **the headline**: the thread sums are coefficients in K = ℚ⟮ζ^p⟯; the engine pins (minpoly K ζ).natDegree = p, `linearIndependent_pow` (Mathlib RingTheory/PowerBasis, exactly as O92 predicted) gives K-independence of 1, ζ, …, ζ^{p−1}, and `Fintype.linearIndependent_iff` kills every thread.
+* `vanishing_of_thread_vanishing` / `thread_split_iff` — the trivial converse (pure linearity, any CommRing, no primality or primitivity) and the iff in the probe's exact shape.
+* Teeth: 1 + ζ₁₂ ≠ 0 DERIVED from the forward direction (the r = 0 thread of a hypothetical vanishing {0,1}-sum evaluates to 1); ζ₁₂ + ζ₁₂⁷ = 0 PRODUCED by the converse from its two vanishing threads (1 + ζ₁₂⁶ killed by `eq_neg_one_of_two_right`).
+
+**Where the open core moves (the wall is now bookkeeping, named):** every analytic ingredient of de Bruijn 1953 two-prime is in-tree — O92's prime-power base (`debruijn_prime_power`), O87's squarefree dichotomy (`debruijn_squarefree_two_prime_iff`), and this brick's digit descent. What remains is the ASSEMBLY induction the probe's decomposer already executes numerically: recurse `thread_split_iff` down the digits of n = p^a·q^b to the squarefree base p·q, apply the dichotomy there, and lift packets through e ↦ r + p·e' (lifted packets stay genuine rotated full packets, both types — the probe's B2 check at 12, 18). One brick: the lift lemma + the strong induction wrapper, statement shape pinned by O92's layer-B census (disjoint-packet-union family = vanishing family). No new divisibility or independence content is needed anywhere in the chain.
+
+### O81 — THE ITERATED SPECTRAL TRANSFER: the full descent chain assembled
+
+`DeBruijnTwoPrime.iterated_spectral_transfer` (axiom-clean, 0 sorry): given the q-power
+window Σ_S y^{q^c} = 0 (1 ≤ c ≤ b), for EVERY depth m ≤ b+1 the m-th spectrum R_m
+exists at level μ_{p^(a+1)·q^(b+1−m)} — every element a q^m-th power of an S element —
+carrying the whole window with factor q^m:
+
+    (q : F)^m · Σ_{r∈R_m} r^e = Σ_{y∈S} y^{q^m·e}   for every p ∤ e.
+
+Induction stacking O77 (decompose at each level — vanishing from the previous transfer
+at e = 1 + the window; char-0 division by q^m) and O80 (one more transfer); level
+bookkeeping via b+1−m = (b−m)+1 and ζq^{q^m} primitivity. At m = b+1 the chain bottoms
+out in μ_{p^(a+1)} — the prime-power level where Lam–Leung (O66) takes over.
+
+THE DESCENT HALF OF THE WINDOWED TWO-PRIME LAW IS COMPLETE. Remaining for the full law:
+the upward reconstruction (spectrum structure ⟹ coset structure of S — the d-coset
+reassembly the O70 law describes) and the symmetric p-side chain.
+
+### O94 — the per-locus structure theorem: low-weight errors live in locator-divisible slice spaces (nubs, 2026-06-10)
+
+`FoldPolynomialSlices.lean` extended (six new theorems, axiom-clean, 0 warnings —
+pushed-diff verified against this claim):
+
+- `recompose_slices` (char-free): `expand 2 (evenSlice f) + X·expand 2 (oddSlice f) = 2·f`
+  — a polynomial is recovered from its two coefficient slices (via
+  `expand_evenSlice/expand_oddSlice`: the expand∘contract round-trips).
+- `natDegree_evenSlice_le` / `natDegree_oddSlice_le`: slices halve degree — the
+  dimension budgets.
+- `loc_dvd_iff`: vanishing on a finite point set ⟺ divisibility by its locator
+  (coprime linear factors).
+- `weight_ge_live_image` — the level-1 weight–dead-locus tradeoff, NOW actually landed
+  (the O69→O70 record correction is closed with the artifact itself).
+- `low_weight_slice_structure` — **the skeleton**: every polynomial error determines a
+  dead locus Z with `|Z| ≥ |D²| − w`, BOTH slices divisible by `loc Z`, and the
+  locator-divisible slices recompose to `2·f`.
+
+**What this pins formally:** the list-relevant f's of weight w are parameterized, per
+locus Z, by slice pairs `(he, ho)` in degree-truncated spaces of total dimension
+`≤ deg f − 2|Z| + O(1)` — the per-locus linear space whose union-over-loci versus the
+weight filter IS the surviving counting question (O70's frontier). Iterating down the
+tower multiplies the constraints: each level divides out another locator. Next named
+step: the union/incidence count — how many loci can a single f serve, and the
+finite-field cardinality corollary `#{f : slices vanish on Z} = q^{max(0, k−2|Z|)}`.
+
+### O82 — THE SYMMETRIC P-SIDE CHAIN + THE CHAIN ENDPOINT (both halves meet Lam–Leung)
+
+Two theorems (axiom-clean, 0 sorry):
+
+* `iterated_spectral_transfer_p` — the p-side descent chain as a role-swap instantiation
+  of O81 (the decomposition object is symmetric; only the torsion exponent needs
+  mul_comm). Both prime directions of the windowed law now have complete descent chains.
+* `deep_spectrum_mu_p_closed` — THE CHAIN ENDPOINT: with the full q-power window
+  (through q^(b+1)), the deepest spectrum R_{b+1} is a vanishing subset of the PURE
+  prime-power level μ_{p^(a+1)}, and it is CLOSED under every p-th root of unity —
+  the O81 chain welded to the prime-power membership-slice machinery
+  (mu_p_membership_slices + the box/wrap bookkeeping). The descent now lands on a
+  STRUCTURED object: a μ_p-closed vanishing set, i.e. a union of μ_p-cosets (full_tower
+  shape) at the bottom of the two-prime tower.
+
+The windowed law's remaining open half is now exactly ONE move: upward reconstruction
+(lift the endpoint/spectrum structure back through the chain to the d-coset reassembly
+of S that the O70-verified law describes).
+### O94 — DE BRUIJN 1953 TWO-PRIME LANDED IN FULL: the final assembly is a theorem — Σ_{e∈S} ζ^e = 0 at n = p^a·q^b IFF S is a disjoint union of rotated full prime packets (the iff, both directions, axiom-clean)
+
+O93 closed with exactly two named residuals: the lift lemma + the strong induction wrapper. This pass ships both and the headline they were for — Theorem de Bruijn 1953 (two-prime case, indicator form, sharpened to disjoint unions) as ONE in-tree statement.
+
+**Falsify-first probe (`probe_debruijn_two_prime_assembly.py`, exact ℤ[x]/Φ_n meet-in-the-middle over the FULL 2^n mask space, exit 0, 20/20):** the headline iff as a set identity — the disjoint-canonical-packet-union family EQUALS the vanishing family — EXHAUSTIVELY at n = 12, 18, 20, 28 (counts 100/1000/1156/16900, matching O87/O67/O93 censuses); the recursion executed on every vanishing mask with the EXACT lift index map asserted at every lift of every level (the brief's "careful" item, pinned: canonical packets {s + t·(m/d) : t < d} with base s < m/d lift through e ↦ r + u·e to base r + u·s < u·(m/d) = (u·m)/d — canonical form survives descent, NO mod-n arithmetic exists anywhere in the development); mixture witnesses at every composite point (both packet types in one decomposition — pure type genuinely fails past squarefree, so the mixed statement is the honest one); toggle/singleton controls flip both sides together.
+
+**Bricks (`DeBruijnTwoPrimeAssembly.lean`, axiom-clean [propext, Classical.choice, Quot.sound] ×7, 0 sorry, 0 warnings, 553 lines):**
+* `IsPacket` / `IsPacketUnion` — the canonical packet predicate (base < step = n/d, d teeth) and the disjoint-union decomposition; `IsPacket.card_eq` (packets have exactly d elements, the teeth engine).
+* `packet_sum_eq_zero` / `sum_eq_zero_of_isPacketUnion` — **the converse, generic**: any packet dies against any primitive n-th root (ζ^r·Σ_{t<d}(ζ^{n/d})^t, `geom_sum_eq_zero`), hence any disjoint union does (`Finset.sum_biUnion`). No two-prime structure needed.
+* `isPacket_lift` — **the lift lemma (O93 residual 1)**: the image of a canonical d-packet at level m under e ↦ r + u·e (r < u) is a canonical d-packet at level u·m — `Finset.image_image` + `Nat.mul_div_assoc`, the probe's index map verbatim.
+* `isPacketUnion_of_closure` — **the squarefree seam**: S ⊆ [0, w·k) closed under e ↦ (e+k) % n IS a disjoint union of canonical step-k packets, one per residue of S mod k (the orbit argument: iterate closure j = w + t − e/k times to wrap exactly once).
+* `isPacketUnion_of_threads` — **the induction step**: if every thread T_r = {e' < m : r + u·e' ∈ S} decomposes at level m, S decomposes at level u·m — lift each thread's packets (lift lemma), cross-thread disjointness by residues mod u (`Nat.add_mul_mod_self_left`), non-dependent choice via guarded ∃.
+* `isPacketUnion_of_sum_eq_zero` — **the strong induction wrapper (O93 residual 2)**: nested induction (p-digits to a = 1, then q-digits to b = 1); each descent = O93 `thread_vanishing_of_vanishing` + IH at ζ^u + thread assembly; the base = O87 `debruijn_squarefree_two_prime` pulled through the ℕ↔ZMod bridges (`sum_image_cast`, `closure_nat_of_closure_zmod`) into the closure seam.
+* `debruijn_two_prime` — **the headline iff**, exactly the brief's target shape (O92 layer-B census as a theorem).
+* Teeth at ℂ, n = 2²·3: converse PRODUCES 1 + ζ₁₂⁶ = 0 from a decide-checked one-packet decomposition; forward converts hypothetical vanishing of {0} into a card contradiction (packets need ≥ 2 elements inside a singleton) — the iff discriminates.
+
+**Where the open core moves:** the three-step de Bruijn ledger (O73 → O87 → O90 → O92 → O93 → here) is CLOSED at two primes — vanishing 0/1 sums of p^a·q^b-th roots of unity are completely classified in-tree, the first formalization of this theorem in any proof assistant (per the O91 search). What remains beyond it is genuinely new mathematics, not assembly: (i) THREE-plus prime moduli (de Bruijn's conjecture territory — false in general by Lam–Leung; the honest target is the Lam–Leung ℕ-span theorem |S| ∈ ℕp + ℕq + …, whose two-prime case is now a corollary of this brick via `IsPacket.card_eq`); (ii) the t > 1 window law (O70) at composite n, which no literature covers; (iii) wiring this classification into the M31-domain capstone consumers (the original #232 motivation: Mersenne-31 has n = 2^a·3^b-style smooth subgroups — the two-prime case is exactly the M31 smooth-subgroup regime).
+
+### O95 — the per-locus count is exact: q^(d−|Z|) (nubs, 2026-06-10)
+
+`ArkLib/Data/CodingTheory/ProximityGap/SliceLocusCount.lean` (axiom-clean): the
+counting companion to O94's structure theorem.
+
+- `polysDegLT`/`card_polysDegLT`: the degree-`<d` space as a concrete Finset of size
+  `q^d` (coefficient-tuple enumeration).
+- `card_polysDegLT_vanishing`: **polynomials of degree `<d` vanishing on a prescribed
+  `|Z|`-point locus number EXACTLY `q^(d−|Z|)`** — `(loc Z * ·)` is a bijection from
+  the space one locus-size down; `loc_dvd_iff` gives surjectivity, monicity injectivity.
+
+The Conjecture-D skeleton is now numerically explicit: per locus, slice pairs of a
+degree-`<k` error range over exactly `q^(k−2|Z|)` candidates; with O94's
+`|Z| ≥ |D²| − w` the per-locus budget at list-relevant weight is
+`q^(k − 2(n/2 − w)) = q^(k − n + 2w)`. The surviving open content, sharply: the
+union-over-loci/incidence structure versus the weight filter (how many loci, how much
+overlap, what fraction of each per-locus space meets weight ≤ w). Queued capstone: the
+f-level product count via `recompose_slices`.
+
+### O96 — the per-locus budget is an EQUALITY: #{f : deg < k, both slices vanish on Z} = q^(k−2|Z|) (nubs, 2026-06-10)
+
+`SliceLocusCount.lean` extended with the f-level capstone (axiom-clean, 0 warnings):
+
+- Slice C-linearity (`evenSlice_C_mul`/`oddSlice_C_mul`), the build identities
+  (`evenSlice_build`/`oddSlice_build`: slices of
+  `expand 2 E + X·expand 2 O` are `2E`/`2O`), `expand_comp_neg_X`, sharp odd
+  degree budget (`natDegree_oddSlice_le'` ≤ (deg−1)/2), zero-slice lemmas.
+- `card_polysDegLT_slices_vanishing` — **the count**: `f ↦ (evenSlice f, oddSlice f)`
+  is an explicit bijection (two-sided inverse via `recompose_slices` and the build
+  identities, char ≠ 2) from the both-slices-vanish-on-Z space onto the product of
+  per-slice locus spaces, so the per-locus budget of the O94 skeleton is EXACTLY
+  `q^((k+1)/2 − |Z|) · q^(k/2 − |Z|) = q^(k − 2|Z|)`.
+
+Status of the counting program: structure (O94) + per-slice count (O95) + f-level
+count (this) are all equalities; combined with O70's forced locus size `|Z| ≥ n/2 − w`,
+each list-relevant error sits in an explicitly counted space of size
+`q^(k − n + 2w)` per locus at level 1. The surviving open content of the all-words
+question is purely the LOCUS INCIDENCE: how the per-locus spaces overlap across the
+$\binom{n/2}{·}$ loci and how the weight filter cuts them — and its iteration down
+the tower. Every other term in the Conjecture-D sentence is now a theorem with an
+exact constant.
+### O95 — THE O94 CLASSIFICATION LANDS ON THE TOWER SURFACE: the t=1 stratum of the mixed-radix law unconditional in tower language + the M31 smooth domain (nubs, 2026-06-10)
+
+**Inventory (the consumers, measured exactly).** The 2-power capstone chain is O53 `full_tower` (power-sum window `j < 2^s` ⟹ `μ_{2^s}`-closure) feeding O61 `unit_syndrome_list_budget`. Its two-prime analogue is the O70 divisor-coset law (window `t` ⟹ disjoint rotated `μ_d`-cosets, `d ∣ n`, `d > t`), whose closure consequence at `t ≥ q^b` is exactly the `hBasep/hBaseq` family of `MixedRadixTower.two_prime_tower_conditional` (O73). VERDICT on dischargeability: `debruijn_two_prime` is the `t = 1` stratum ONLY — and at `t = 1` uniform `μ_p`-closure is FALSE (rotated `μ_q`-packet), so NO `hBase` instance at a genuinely two-prime level is dischargeable from it; the discharge demands the `t > 1` window law, which O94 itself names as open mathematics (item ii). What IS dischargeable — and was not in tree — is the entire `t = 1` layer in the tower's own field-surface closure language.
+
+**Falsify-first probe (`scripts/probes/probe_debruijn_tower_wiring.py`, exact ℤ[x]/Φ_n, exit 0, cold re-executed):** the two target shapes hold on ALL 1,001,100 vanishing subsets — exhaustive `n = 12` (100), `n = 18` (1000), FULL MITM census `n = 36` (1,000,000; the O70 count reproduced): pointwise dichotomy failures 0/0/0, cardinality-law failures 0/0/0. Both negative controls live: vanishing-but-not-`μ_2`-closed = 36/488/737,856 (>0 at every level — the wall is real), dichotomy-without-vanishing = 384/9648 (the corollary is one-way, not an iff — the statement does not over-claim).
+
+**Bricks (`DeBruijnTowerWiring.lean`, new file, 350 lines, exit 0, 0 sorry, 0 warnings, axiom-clean [propext, Classical.choice, Quot.sound] ×7):**
+* `expSet` + `mem/image/sum/card_expSet` — the `Finset F` ⟷ `Finset ℕ` discrete-log bridge: `T ⊆ μ_n` is the injective image of its exponent set (`eq_pow_of_pow_eq_one` + `pow_inj`), sums and cardinalities transport.
+* `packet_absorb` — the absorption engine: a canonical exponent `d`-packet inside `T` absorbs the full field coset `μ_d·y` (the O94 lift map run in reverse; wraparound killed by `ζ^n = 1`).
+* `vanishing_packet_dichotomy` — **the headline**: char 0, `T ⊆ μ_{p^a·q^b}`, `Σ_{y∈T} y = 0` ⟹ every `y ∈ T` carries its FULL `μ_p`-coset or its FULL `μ_q`-coset inside `T` — in exactly the closure language (`∀ g, g^p = 1 → g*y ∈ T`) of `mixed_rung_conditional`. The sharp `t = 1` two-prime analogue of `full_tower`'s first rung.
+* `vanishing_card_two_prime` — **Lam–Leung at two primes on the field surface**: `|T| ∈ ℕp + ℕq` (O94's corollary promise cashed in-tree via `IsPacket.card_eq` + `card_biUnion`).
+* `rung_base_dichotomy` — the dichotomy instantiated at every level `n/p^k` (`k < a`) in `prime_climb_conditional`'s own indexing: the climb's base layer is now unconditionally classified at every height (q-side symmetric).
+* `m31_smooth_dichotomy` / `m31_smooth_card` — **the M31 landing**: `|F_{2^31−1}^×| = 2^31−2 = 2·3²·7·11·31·151·331`, so the two-prime-smooth multiplicative domain is `μ_18`, `18 = 2^1·3^2` — both theorems specialized there. (Census check: the in-tree M31 surface `MCAJohnsonEnvelope` (`31 ≤ M`, `n ≤ 2^M`) is the 2-adic circle side `2^31 = q+1` — pure 2-power, already covered by O53/O61; the multiplicative side is what this file covers.)
+* Teeth at ℂ: the dichotomy FIRED on `{1, −1} ⊆ μ_18`; **negative control kernel-checked**: `{1, 5, 9}` at `n = 12` vanishes (O94 converse on a one-packet decomposition) yet `(1+6) % 12 = 7 ∉ {1,5,9}` (decide) — sum vanishing can NEVER discharge `hBase(w = 2)`.
+
+**Where the open core moves:** the M31-domain capstone now has its base layer welded — what separates `two_prime_tower_conditional` from unconditional is ONE named statement, the `t > 1` window law (O70's exhaustively verified `F_n(t)` divisor-coset law: window `1..t` ⟹ components `d > t`, hence `μ_p`-closure at `t ≥ q^b`). That is genuinely new mathematics (no literature; the weighted/multiplicity de Bruijn theory is the visible route: window exponents `j` with `gcd(j,n) > 1` produce ℕ-weighted vanishing sums at lower levels, needing the Lam–Leung ℕ-span theorem rather than the indicator form). Honest next bricks: (i) the weighted prime-power packet theorem (the ℕ-coefficient generalization of O66 `packet_mul_coeff` — assembly-adjacent); (ii) the `β = 1` windowed law at level `p^α·q` window `q+1` as the first genuinely two-prime rung; (iii) with (ii), `prime_climb_conditional` goes unconditional on `n = 2^a·3` — the first unconditional mixed-radix tower instance.
+
+### O96-erratum — the capstone section was dropped from the O96 commit by a merge error; restored (nubs, 2026-06-10)
+
+The O96 commit (`feat: f-level per-locus count`) landed only the helper layer — a
+namespace-surgery bug excluded the capstone block (`C_inv_two_mul_two`, zero-slice and
+membership lemmas, `build_mem`, and `card_polysDegLT_slices_vanishing` itself). The
+post-push diff verification caught it within minutes. This commit restores the full
+section (compiles clean, all axiom-clean); the O96 entry's mathematical description is
+accurate for the NOW-present content.
+
+### O97 — the level-1 union bound: the incidence template, machine-checked (nubs, 2026-06-10)
+
+`SliceLocusCount.lean`: `low_weight_count_le` — for a negation-closed domain (char ≠ 2,
+`0 ∉ D`), with `s = |D²| − w`, `2s ≤ k`:
+
+    #{f : deg f < k, weight ≤ w}  ≤  C(|D²|, s) · q^(k − 2s).
+
+Proof = the now-complete level-1 pipeline composed end-to-end: every low-weight `f`
+forces a dead locus of size ≥ s (O94 structure theorem), it contains a size-s sub-locus
+(subsets of dead loci are dead), and each per-locus space counts exactly `q^(k−2s)`
+(O96 capstone); union over `C(|D²|, s)` loci.
+
+HONEST SCOPE: as a pure number this is classically subsumed (RS is MDS; weight
+distributions are exact via MacWilliams) — and the classical exactness does NOT resolve
+the list question (lists are cliques around an arbitrary word, not balls at 0), so
+neither does this bound alone. Its value: (1) the first machine-checked
+weight-distribution-type bound through the slice route, (2) the TEMPLATE every tower
+level instantiates — the iterated version's gain must come from cross-level interaction
+of the loci (the genuinely open incidence), and now every ingredient of that sentence is
+a formal object in-tree. Level-1 story complete: structure (O94) + per-slice count (O95)
++ f-level equality (O96) + union bound (this). Next frontier, named precisely: the
+incidence/clique structure — pairwise difference loci of LIST configurations (around a
+word, not 0) and the cross-level locus interaction down the tower.
+### O96 — THE WEIGHTED PRIME-POWER PACKET THEOREM (O95's named brick (i)): the ℕ-coefficient de Bruijn/Lam–Leung classification at p^(a+1) is a theorem — and the O90 engine needed ZERO new divisibility content
+
+O95 closed naming the route to the t > 1 window law through the weighted theory, brick (i) being "the weighted prime-power packet theorem (assembly-adjacent)". The brief's CHECK-FIRST question is answered YES and machine-checked: O90's `packet_dvd_iff_slice_replication` never assumed {0,1} coefficients — the indicator restriction in O92 was an instantiation, not a hypothesis — so the ℕ-weighted theorem at a prime power is the same engine run on a weight polynomial.
+
+**Falsify-first probe (`scripts/probes/probe_weighted_packets.py`, exact ℤ[X] mod Φ_n, exit 0, cold re-executed):** (A) the weighted iff (vanish ⟺ p^a-periodic weight), the ℕ-combination reconstruction, and the weight law p ∣ |w| EXHAUSTIVELY at n = 4 (weights ≤ 3; 16 vanishing), 8 (≤ 2; 81), 9 (≤ 2; 27) — vanishing counts are EXACTLY (W+1)^(p^a), the pure replication freedom — plus 2000 planted replicated weights at n = 27 (all vanish) with single-increment toggles (all non-vanishing). Negative control alive at every level: p ∣ |w| WITHOUT vanishing exists — the weight law is one-way. (B) **the brief's two-prime question answered in shape**: at n = 12, ALL 2025 vanishing weight vectors (entries ≤ 2, exhaustive over 3^12 = 531441 masks) ARE ℕ-combinations of rotated full prime packets — the packet-combination form does NOT fail under weighted mixtures (1272 genuine mixtures, 768 forcing a combination coefficient ≥ 2 — outside the indicator theory, still decomposable); weight law |w| ∈ ℕ2+ℕ3 violations 0; n = 18 planted ℕ-combinations all vanish + re-decompose, toggles all non-vanishing. Census echo: 2025 = 45², the thread-split product law |van₁₂| = |van₆|² reproduced on the weighted surface.
+
+**Bricks (`WeightedPrimePowerPacket.lean`, new file, 419 lines, exit 0, 0 sorry, 0 warnings, axiom-clean [propext, Classical.choice, Quot.sound] ×10):**
+* `weightPoly` + coeff/degree/aeval lemmas — the weight-function → polynomial bridge (`indicatorPoly` is the special case w = 1_S); `cyclotomic_dvd_weightPoly_of_vanishing` — the O92 entry point, coefficient-agnostic, stated at EVERY n for composite-level weighted wiring.
+* `weight_replicated_of_vanishing` / `vanishing_of_weight_replicated` / `debruijn_prime_power_weighted` — **the headline iff**: Σ_e w(e)·ζ^e = 0 at n = p^(a+1) ⟺ w(e + p^a) = w(e) for ALL e — the weight function is p^a-periodic, i.e. the sum is an ℕ-combination of rotated full μ_p-packets with multiplicities w(s). Forward = one-shot O90 slice replication on `weightPoly` (digit bookkeeping verbatim from O92); converse = shift-reindexing of the full Fintype sum (`Equiv.sum_comp`).
+* `vanishing_weight_eq_packet_combination` — **the literal Lam–Leung ℕ-span structure**: weightPoly w = Σ_{s<p^a} C(w s)·X^s·Φ_{p^(a+1)}, combination coefficients literally the weights — nonnegative, no sign correction.
+* `total_weight_eq_p_mul` / `prime_dvd_total_weight` — **the Lam–Leung weight law at a prime power, exact form**: Σ_e w(e) = p·Σ_{s<p^a} w(s), hence |w| ∈ ℕp — evaluation of the combination at X = 1 via `eval_one_cyclotomic_prime_pow` (Φ_{p^(a+1)}(1) = p), no combinatorial bijection needed.
+* Teeth at ℂ on GENUINELY weighted data (weights ≥ 2, outside the indicator theory): converse PRODUCES 2 + 2ζ₄² = 0 from the decidably 2-periodic weight (2,0,2,0); forward REFUTES vanishing of (2,0,1,0) (2 ≠ 1 from weighted structure alone); the weight law REFUTES vanishing of the odd-total weight (0,1,0,0) (2 ∤ 1) — all three conclusions discriminate.
+
+**Where the open core moves (the (c) verdict, honest):** the two-prime weighted STRUCTURE law survives the probe intact (de Bruijn 1953's full ℕ-statement, not just the indicator case — no weighted-mixture counterexample exists at n = 12 exhaustively), so the in-tree target is real, but its assembly is NOT free: (1) weighted THREAD-SPLIT transports — O93's engine (`minpoly_adjoin_pow_prime_eq_binomial`, `natDegree_minpoly_adjoin_pow_prime`) is coefficient-free and the K-linear-independence argument accepts weighted thread sums verbatim; only the consumer statement is indicator-bound (bookkeeping). (2) The genuine wall is the **weighted SQUAREFREE base at n = pq**: periodicity fails there (the probe's 1272 mixtures), so the statement is ℕ-cone membership — every ℕ-point of the packet lattice kernel is an ℕ-combination of the p+q rotated packets — de Bruijn's Lemma-1 cone argument, no in-tree analogue (O87's dichotomy is its indicator shadow). With (1)+(2), this pass's prime-power base completes the weighted two-prime theorem by the O94 induction shape, and O95's brick (ii) (the β = 1 windowed law at p^α·q, window q+1) becomes consumable.

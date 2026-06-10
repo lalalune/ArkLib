@@ -67,8 +67,9 @@ variable (params : ProtocolParams M)
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
 
 /-- `F` is inhabited (by `0`); mirrors the local instance used elsewhere in the LogUp
-completeness development. -/
-local instance : Inhabited F := ⟨0⟩
+completeness development.  The explicit name avoids environment-merge clashes when this module is
+co-imported with the soundness close. -/
+local instance instInhabitedFieldSumcheckCompletenessClose : Inhabited F := ⟨0⟩
 
 /-- The inner round-`0` sum-check relation for LogUp's embedded sum-check (degree
 `logupSumcheckDegree`, sign domain). The input relation of `logupConcreteSumcheckOracleReduction`. -/

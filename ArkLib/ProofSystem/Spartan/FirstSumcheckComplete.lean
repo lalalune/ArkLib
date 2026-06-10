@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.ProofSystem.Spartan.FirstSumcheckReduction
 import ArkLib.ProofSystem.Spartan.FirstSumcheckRelComplete
+import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 
 /-!
 # The Spartan first sum-check phase preserves completeness (issue #114)
@@ -120,25 +121,54 @@ theorem firstSumcheck_perfectCompleteness
     rfl h_inner
 
 
-theorem firstSumcheck_rbrKnowledgeSoundness
+/-- `StatementRound` is inhabited over a ring: zero target, zero challenges (needed by the
+pullback rbr-soundness transport). -/
+local instance instInhabitedStatementRoundFirstSC {n : ℕ} {i : Fin (n + 1)} :
+    Inhabited (Sumcheck.Spec.StatementRound R n i) :=
+  ⟨⟨0, fun _ => 0⟩⟩
+
+/-- The sum-check oracle statement (a degree-restricted polynomial) is inhabited: the zero
+polynomial. -/
+noncomputable local instance instInhabitedOracleStatementFirstSC {n deg : ℕ} {i : Unit} :
+    Inhabited (Sumcheck.Spec.OracleStatement R n deg i) :=
+  ⟨⟨0, by simp [MvPolynomial.mem_restrictDegree]⟩⟩
+
+/-- **First sum-check phase round-by-round soundness (issue #114) — honest pullback transport.**
+
+The lifted first sum-check phase inherits the inner sum-check's rbr soundness, with the *pullback*
+input language (the inner sum-check claim `∑_cube ℱ = target`, read through the lens projection)
+and the canonically *transported* output language, at the same per-round errors.
+
+DESIGN NOTE (replaces the previously-sorried `firstSumcheck_rbrKnowledgeSoundness`): the
+knowledge-soundness route via `Extractor.Lens.IsKnowledgeSound` with the R1CS-carrying
+`firstSumcheckRelIn` is **provably unusable** — its `lift_knowledgeSound` field demands the FALSE
+implication "inner cube-sum claim ⟹ R1CS satisfiability" (with `Unit` witnesses this is a bare
+relation implication, and a τ-masked cube-sum identity at a *fixed* τ does not imply the R1CS
+instance is satisfied). The honest phase-local security statement is this *soundness* transport on
+the claim languages; the R1CS content enters the composed chain at the `FirstChallenge`
+(τ-sampling) phase boundary, whose round-by-round error carries the Schwartz–Zippel content, and —
+with `Unit` witnesses throughout — composed knowledge soundness for Spartan coincides with composed
+soundness over the claim-language chain. -/
+theorem firstSumcheck_rbrSoundness
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
-    (rbrKnowledgeError : (Sumcheck.Spec.pSpec R 3 pp.ℓ_m).ChallengeIdx → ℝ≥0)
+    (innerLangIn : Set (Sumcheck.Spec.StatementRound R pp.ℓ_m 0 ×
+      ∀ i, Sumcheck.Spec.OracleStatement R pp.ℓ_m 3 i))
+    (innerLangOut : Set (Sumcheck.Spec.StatementRound R pp.ℓ_m (Fin.last pp.ℓ_m) ×
+      ∀ i, Sumcheck.Spec.OracleStatement R pp.ℓ_m 3 i))
+    (rbrSoundnessError : (Sumcheck.Spec.pSpec R 3 pp.ℓ_m).ChallengeIdx → ℝ≥0)
     (h_inner :
-      (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier.rbrKnowledgeSoundness
-        init impl
-        (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1)))
-        (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (Fin.last pp.ℓ_m))
-        rbrKnowledgeError) :
-    (firstSumcheckReduction pp oSpec).verifier.rbrKnowledgeSoundness init impl
-      (firstSumcheckRelIn (R := R) pp) (firstSumcheckRelOut (R := R) pp) rbrKnowledgeError := by
-  -- NOTE: honest `sorry`. Same obstruction as `secondSumcheck_rbrKnowledgeSoundness`
-  -- (see SecondSumcheckComplete.lean): the route via
-  -- `OracleVerifier.liftContext_rbr_knowledgeSoundness` requires an
-  -- `Extractor.Lens.IsKnowledgeSound` instance whose `lift_knowledgeSound` field is a bare
-  -- relation implication (inner round-0 cube-sum ⇒ outer R1CS satisfiability) that is FALSE with
-  -- `Unit` witnesses, plus a `LiftContextRBRKnowledgeSound` instance whose sole field is
-  -- definitionally this goal (vacuity trap). Needs a relation/lens refactor, not a lemma.
-  -- The completeness theorems above are fully proven and unaffected.
-  sorry
+      (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier.rbrSoundness
+        init impl innerLangIn innerLangOut rbrSoundnessError) :
+    (firstSumcheckReduction pp oSpec).verifier.rbrSoundness init impl
+      ((firstSumcheckOracleLens pp oSpec).toLens.proj ⁻¹' innerLangIn)
+      ((firstSumcheckOracleLens pp oSpec).toLens.transportedLangOut innerLangOut
+        ((Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R)
+            pp.ℓ_m oSpec).verifier.toVerifier.compatStatement
+          (firstSumcheckOracleLens pp oSpec).toLens))
+      rbrSoundnessError := by
+  haveI := firstSumcheckCoherent (R := R) pp oSpec
+  exact OracleVerifier.liftContext_rbrSoundness_pullback
+    (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier
+    (subset_refl _) h_inner
 
 end Spartan.Spec

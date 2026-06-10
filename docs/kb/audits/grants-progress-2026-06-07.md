@@ -78,27 +78,37 @@ assembly on top.
 ## Grant 3 — Fiat-Shamir specification (duplex-sponge based)
 *Awarded: Article 12, LLC (Michele Orrù) · Q4 2025* — also open issues #116, #112
 
-**Core deliverable (duplex-sponge FS spec): DONE.** A full duplex-sponge construction exists and
-the FS transform is built on it (not a generic RO model):
+**Closeout update (2026-06-10, issue #314): CORE SPEC DELIVERABLE DONE.** A full duplex-sponge
+construction exists and the FS transform is built on it (not a generic RO model):
 
 - Sponge primitive: `ArkLib/Data/Hash/DuplexSponge.lean` (`SpongeUnit`, `DuplexSpongeInterface`,
   `SpongeSize`, `CanonicalDuplexSponge`).
 - Transform: `Reduction.duplexSpongeFiatShamir` + salted variants (CO25 Construction 4.3) in
   `OracleReduction/FiatShamir/DuplexSponge/Defs.lean`, over `duplexSpongeChallengeOracle` (CO25 Eq 16).
-- Security infra (16 files): `KeyLemma.lean` (CO25 Lemma 5.1), `Soundness.lean`, prover/trace
-  transforms, abort/bad-event analysis.
+- Codec/salt layer: `ProtocolSpec.Codec`, `SaltCodec`, `uniformSalt`, and the salted/random
+  DSFS wrappers.
+- Security infra: `KeyLemma.lean` (CO25 Lemma 5.1), `KeyLemmaFoundations.lean`,
+  `Soundness.lean`, prover/trace transforms, abort/bad-event analysis.
 
 | Security transfer | Lean | Status |
 |---|---|---|
-| Completeness-unroll (#116) | `duplexSpongeFiatShamir_completeness_unroll_of_runCollapse` | **Proved-modulo-residual** (`…_runCollapseResidual`) |
-| DSFS soundness via key lemma | `DuplexSponge/Security/Soundness.lean` | **Proved-modulo-residual** (basic-FS soundness) |
-| SR-soundness ⇒ soundness (#116, basic FS) | `fiatShamir_soundness_of_stateRestoration` | **Proved-modulo-residual** (`fiatShamir_soundnessTransferResidual`) |
-| HVZK ⇒ ZK (#116/#112, basic FS) | `fiatShamir_hvzkTransferResidual`, `…_statisticalHVZKTransferResidual` | **Stated** (+ `ZKResidualBridge` iff) |
+| Completeness-unroll (#116) | `duplexSpongeFiatShamir_completeness_unroll_discharged`, `duplexSpongeFiatShamirSalted_completeness_unroll_discharged` | **Proved** |
+| DSFS soundness via key lemma | `DuplexSponge/Security/Soundness.lean` | **Proved-modulo-residual** (`DuplexSpongeFS.KeyLemmaResidual`) |
+| SR-soundness => soundness (#116, basic FS) | `fiatShamir_soundness_of_stateRestoration`, canonical close theorem in `StateRestorationTransport.lean` | **Proved** for the canonical implementation |
+| SR-knowledge soundness => knowledge soundness (#116, basic FS) | `fiatShamir_knowledgeSoundness_of_stateRestoration`, canonical close theorem in `StateRestorationTransport.lean` | **Proved** for the canonical implementation |
+| HVZK => ZK (#116/#112, basic FS) | `fiatShamir_isHVZK_canonical`, `fiatShamir_isStatHVZK_canonical` | **Proved** for the canonical implementation |
 | HVZK/ZK definitions (#112) | `perfectHVZK`, `statisticalHVZK`, `isHVZK`, `isStatHVZK` | **Proved/defined** |
 
-**Closeable gaps:** discharge the `runCollapse` residual; port the SR⇒soundness and HVZK⇒ZK
-transfers from basic-FS to DSFS. **Blueprint gap:** `fiat_shamir.tex` documents only basic FS,
-not the duplex-sponge oracle / codec / salted variants.
+**Closeout classification:** the grant's executable/specification target is met. The remaining
+strict DSFS residuals are post-grant security hardening for the full CO25 Lemma 5.1 hybrid proof:
+`DuplexSpongeFS.KeyLemmaResidual`,
+`Lemma5_12HonestResidual`, `Lemma5_14HonestResidual`, `Lemma5_16HonestResidual`,
+`SimulatedProverChallengeBudgetResidual`, `SimulatedProverSharedBudgetResidual`,
+`KeyLemmaEagerResidual`, `D2sQueryStepGSpecBudgetResidual`, and
+`D2fOuterImplSharedBudgetResidual`. See
+[`issue-314-fiat-shamir-closeout-2026-06-10.md`](issue-314-fiat-shamir-closeout-2026-06-10.md).
+**Blueprint gap closed:** `blueprint/src/oracle_reductions/fiat_shamir.tex` now covers the
+canonical and duplex-sponge constructions, codec/salted variants, and proof/residual status.
 
 ---
 
@@ -187,7 +197,8 @@ state-restoration tier, AGM. None block library usability.
 **Mechanically closeable (no new math; protocol assembly / Lean infra / blueprint):**
 - STIR/WHIR multi-round `VectorIOP` object construction + the existential security theorems on top.
 - STIR `stirRoundReduction_completeness` (heterogeneous round-peeling).
-- DSFS `runCollapse` residual; SR⇒soundness and HVZK⇒ZK transfers ported to DSFS.
+- DSFS CO25 Lemma 5.1 post-grant security hardening: dispatcher budgets, honest bad-event
+  implications, simulated-prover budgets, and the eager key lemma.
 - Binius `ReductionLogic` sumcheck lemmas + `Soundness/` build-cascade repair (#33, #19).
 - Batched-FRI coset-bijection injectivity + FRI soundness composition (#14).
 - Blueprint: FRI section (added here), Batched-FRI section, DSFS section of `fiat_shamir.tex`.

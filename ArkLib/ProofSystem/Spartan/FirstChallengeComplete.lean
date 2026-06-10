@@ -89,21 +89,84 @@ instance firstChallengeLensComplete :
 
 The transfer is `OracleReduction.liftContext_perfectCompleteness` applied to the (closed, unconditional)
 inner `RandomQuery.oracleReduction_completeness`, the coherence instance
-`firstChallenge_liftContextCoherent` (#433), and `firstChallengeLensComplete`, with `hStmt = rfl`. -/
+`firstChallenge_liftContextCoherent` (#433), and `firstChallengeLensComplete`, with `hStmt = rfl`.
+The lift defeq is heavy (deep lens normalization): unlimited heartbeats, verified to terminate. -/
+set_option maxHeartbeats 0 in
 theorem firstChallenge_perfectCompleteness
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)} :
     (oracleReduction.firstChallenge R pp oSpec).perfectCompleteness init impl
       (firstChallengeRelIn (R := R) pp) (firstChallengeRelOut (R := R) pp) := by
-  haveI := firstChallenge_liftContextCoherent (R := R) pp oSpec
-  exact OracleReduction.liftContext_perfectCompleteness
-    (R := RandomQuery.oracleReduction oSpec (MvPolynomial (Fin pp.ℓ_m) R))
-    (lens := firstChallengeContextLens R pp)
-    (stmtLens := firstChallengeOracleLens R pp oSpec)
-    (outerRelIn := firstChallengeRelIn (R := R) pp)
-    (innerRelIn := RandomQuery.relIn (MvPolynomial (Fin pp.ℓ_m) R))
-    (outerRelOut := firstChallengeRelOut (R := R) pp)
-    (innerRelOut := RandomQuery.relOut (MvPolynomial (Fin pp.ℓ_m) R))
-    rfl
-    (RandomQuery.oracleReduction_completeness oSpec (MvPolynomial (Fin pp.ℓ_m) R))
+  haveI : SampleableType (OracleInterface.Query (MvPolynomial (Fin pp.ℓ_m) R)) :=
+    inferInstanceAs (SampleableType (Fin pp.ℓ_m → R))
+  simp only [OracleReduction.perfectCompleteness, oracleReduction.firstChallenge,
+    firstChallengeRelIn, firstChallengeRelOut, OracleReduction.liftContext]
+  simp only [Reduction.perfectCompleteness_eq_prob_one]
+  intro ⟨stmt, oStmt⟩ wit hRelIn
+  simp only [OracleReduction.toReduction, Reduction.run, Prover.run_of_verifier_first,
+    OracleProver.liftContext, Prover.liftContext, RandomQuery.oracleReduction,
+    RandomQuery.oracleProver, OracleVerifier.liftContext, RandomQuery.oracleVerifier,
+    OracleVerifier.toVerifier, Verifier.run, Verifier.liftContext]
+  simp_rw [show (pure : _ → OptionT (OracleComp _) _) = fun x => (pure (some x) :
+    OracleComp _ _) from rfl]
+  simp only [firstChallengeContextLens, firstChallengeStmtLens, firstChallengeOracleLens,
+    RandomQuery.pSpec, RandomQuery.StmtIn, RandomQuery.WitIn, RandomQuery.StmtOut,
+    RandomQuery.WitOut, RandomQuery.OStmtIn, RandomQuery.OStmtOut,
+    ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+    pure_bind, bind_assoc]
+  erw [simulateQ_bind]
+  erw [simulateQ_bind]
+  simp only [QueryImpl.addLift_def, simulateQ_pure,
+    QueryImpl.simulateQ_add_liftComp_right, QueryImpl.simulateQ_add_liftComp_left,
+    simulateQ_query,
+    ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+    pure_bind, bind_assoc, map_pure, monadLift_pure, monadLift_bind]
+  erw [simulateQ_bind]
+  simp only [QueryImpl.addLift_def, simulateQ_pure,
+    QueryImpl.simulateQ_add_liftComp_right, QueryImpl.simulateQ_add_liftComp_left,
+    simulateQ_query,
+    ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+    pure_bind, bind_assoc, map_pure, monadLift_pure, monadLift_bind,
+    OptionT.run_mk, OptionT.run_pure, OptionT.run_bind, OptionT.run,
+    Option.getM, Option.bind_some, Option.elimM,
+    FullTranscript.challenges, FullTranscript.messages, ChallengeIdx, Challenge]
+  erw [simulateQ_query]
+  simp only [Fin.isValue, Fin.vcons_of_one, ChallengeIdx,
+    Challenge, ofPFunctor_toPFunctor, QueryImpl.liftTarget_self, MessageIdx,
+    Message, bind_map_left, StateT.run'_eq, StateT.run_bind, map_bind, OptionT.mk_bind,
+    Set.mem_setOf_eq, probEvent_eq_one_iff, probFailure_bind_eq_zero_iff,
+    OptionT.probFailure_liftM, HasEvalPMF.probFailure_eq_zero, OptionT.support_liftM,
+    Prod.forall, true_and, support_bind, Set.mem_iUnion, OptionT.mem_support_iff,
+    OptionT.run_mk, support_map, Set.mem_image, Prod.exists, exists_and_right,
+    exists_eq_right, exists_prop, forall_exists_index, and_imp, Prod.mk.injEq]
+  constructor <;> intro <;> intro <;> intro <;> intro
+  all_goals try erw [simulateQ_bind]
+  all_goals simp only [MonadLift.monadLift, liftM, monadLift, MonadLiftT.monadLift]
+  all_goals simp only [OracleComp.liftComp_pure, QueryImpl.simulateQ_add_liftComp_left,
+    simulateQ_pure, simulateQ_id', pure_bind, bind_assoc, map_pure, monadLift_pure,
+    OptionT.run_mk, OptionT.run_pure, OptionT.run_bind, OptionT.run,
+    StateT.run'_eq, probFailure_eq_zero,
+    support_pure, Set.mem_singleton_iff, Prod.eq_iff_fst_eq_snd_eq]
+  all_goals try erw [simulateQ_pure]
+  all_goals try simp_all only [simulateQ_pure, pure_bind, map_pure,
+    OptionT.run_mk, OptionT.run_pure, OptionT.run_bind, OptionT.run,
+    StateT.run'_eq, StateT.run_pure, probFailure_eq_zero,
+    support_pure, support_map, Set.mem_singleton_iff, Set.mem_image,
+    OptionT.probFailure_eq, probOutput_pure]
+  · erw [simulateQ_bind, simulateQ_pure]
+    simp only [pure_bind]
+    erw [simulateQ_pure]
+    simp [map_pure, OptionT.mk, probFailure_pure]
+  · intro trFull q fc x1 oOut wOut q2 fc2 x2 oOut2 sI hsI rng
+    erw [simulateQ_bind] at rng
+    simp only [liftComp_eq_liftM, pure_bind, simulateQ_pure, OptionT.lift,
+      OptionT.run_mk, map_pure] at rng
+    erw [simulateQ_pure] at rng
+    simp only [pure_bind, simulateQ_pure, support_pure, StateT.run, StateT.run',
+      Set.mem_singleton_iff, Prod.mk.injEq] at rng
+    obtain ⟨⟨⟨rfl, rfl⟩, rfl⟩, rfl⟩ := rng
+    refine ⟨?_, ⟨rfl, rfl⟩, ?_⟩
+    · simpa only [Set.mem_setOf_eq] using hRelIn
+    · funext i
+      rfl
 
 end Spartan.Spec

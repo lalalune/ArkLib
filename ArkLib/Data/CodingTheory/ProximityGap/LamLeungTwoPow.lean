@@ -1498,4 +1498,47 @@ theorem vanishing_coeff_slices {p m : ℕ} (hp : p.Prime) {ζ : F}
 
 end CoefficientSlices
 
+/-! ## The complete ℚ-kernel at 2-power level: vanishing ⟺ antipodal symmetry
+
+The coefficient-slice theorem (O68) upgraded to a full characterization at `p = 2`:
+a ℚ-coefficient combination of `2^(m+1)`-th roots of unity vanishes **iff** its
+coefficient function is antipodally symmetric (`c(e) = c(e + 2^m)`). Necessity is the
+slice theorem; sufficiency is `ζ^(2^m) = −1` pairing terms to zero. Corollary: any
+combination with an UNPAIRED support point is nonzero — the sparse-nonvanishing bound
+that forces branch data in the descent tree (a branch whose window pins it to an
+asymmetric configuration is impossible; leaf data is rigid). -/
+
+section KernelCharacterization
+
+/-- **The complete 2-power kernel characterization**: vanishing ⟺ antipodal coefficient
+symmetry. -/
+theorem vanishing_iff_antipodal_coeffs {m : ℕ} {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1))) (c : ℕ → ℚ) :
+    (∑ e ∈ Finset.range (2 ^ (m + 1)), (c e : F) * ζ ^ e = 0) ↔
+    (∀ s < 2 ^ m, c s = c (s + 2 ^ m)) := by
+  constructor
+  · intro hsum s hs
+    have h01 := vanishing_coeff_slices Nat.prime_two hζ c hsum s hs 0 (by norm_num) 1
+      (by norm_num)
+    simpa [Nat.add_comm] using h01
+  · intro hsym
+    have hhalf : ζ ^ (2 ^ m) = -1 := pow_half_eq_neg_one hζ
+    have h2 : (2 : ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+    rw [h2, Finset.sum_range_add, ← Finset.sum_add_distrib]
+    refine Finset.sum_eq_zero fun s hs => ?_
+    have hsm := hsym s (Finset.mem_range.mp hs)
+    rw [show (2 : ℕ) ^ m + s = s + 2 ^ m from by ring, ← hsm, pow_add, hhalf]
+    ring
+
+/-- **The sparse nonvanishing bound**: a combination with an unpaired support point is
+nonzero — branch data in the descent tree is rigid. -/
+theorem nonvanishing_of_unpaired {m : ℕ} {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1))) (c : ℕ → ℚ)
+    {s : ℕ} (hs : s < 2 ^ m) (hne : c s ≠ c (s + 2 ^ m)) :
+    ∑ e ∈ Finset.range (2 ^ (m + 1)), (c e : F) * ζ ^ e ≠ 0 := by
+  intro h
+  exact hne ((vanishing_iff_antipodal_coeffs hζ c).mp h s hs)
+
+end KernelCharacterization
+
 end LamLeungTwoPow

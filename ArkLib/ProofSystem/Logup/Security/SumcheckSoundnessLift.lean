@@ -86,7 +86,7 @@ variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ Pro
 
 /-- `F` is inhabited (by `0`); mirrors the local instance used in the LogUp completeness
 development. -/
-local instance : Inhabited F := ⟨0⟩
+local instance instInhabitedFieldSumcheckSoundnessLift : Inhabited F := ⟨0⟩
 
 /-- The inner sum-check *output* statement type `Sumcheck.Spec.StatementRound F n (.last n)` is
 inhabited by the zero target and zero challenge vector. Needed for `liftContext_rbr_soundness`. -/

@@ -962,7 +962,7 @@ theorem reduction_perfectCompleteness :
 /-- Closed form of the simulated oracle-verifier `verify`: the inner `simOracle2`
 simulation collapses to a guard on the ORACLE's `D`-sum followed by the oracle's
 evaluation at the challenge. -/
-private lemma simulateQ_oracleVerify_eq
+lemma simulateQ_oracleVerify_eq
     (target : StmtIn R) (oStmt : ∀ i, OStmtIn R deg i)
     (chal : ∀ i, (pSpec R deg).Challenge i)
     (msgs : ∀ i, (pSpec R deg).Message i) :
@@ -1011,7 +1011,7 @@ private lemma simulateQ_oracleVerify_eq
     rfl
 
 /-- Bridge: the vector `D`-evaluation sum equals the `Finset` sum over `univ.map D`. -/
-private lemma vector_finRange_map_sum_eq (g : Fin m → R) :
+lemma vector_finRange_map_sum_eq (g : Fin m → R) :
     ((Vector.finRange m).map g).sum = ∑ i : Fin m, g i := by
   rw [← Vector.sum_toList, Vector.toList_map, Fin.sum_univ_def]
   have h : (Vector.finRange m).toList = List.finRange m := by
@@ -1464,7 +1464,7 @@ private lemma append_cons_eq_insertNth {n' : ℕ} {α : Type} (i : Fin (n' + 1))
 
 /-- The sum-check round split: the `(n'+1-i)`-fold sum factors as a sum over the first coordinate
 of a sum over the remaining `(n'-i)` coordinates, with the inserted-variable evaluation. -/
-private lemma sumcheck_round_split {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i : Fin (n' + 1))
+lemma sumcheck_round_split {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i : Fin (n' + 1))
     (c : Fin (i : ℕ) → R) (p : MvPolynomial (Fin (n' + 1)) R)
     (hc1 : n' + 1 = (i : ℕ) + ((n' + 1) - i))
     (hc2 : n' = (i : ℕ) + (n' - i))

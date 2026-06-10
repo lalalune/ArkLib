@@ -595,7 +595,7 @@ passing it `pure`s the accept statement (next-round target `h_i(r')`, challenges
 `BatchingPhase.oracleVerifier_verify_collapse`; the message query collapses via
 `simulateQ_simOracle2_query` (+ `answer_instDefault'`), then `guard_eq`/`apply_ite` exposes the
 `if`. `msgs ⟨0,_⟩` is the round univariate `h_i`, `chals ⟨1,_⟩` is the verifier challenge `r'`. -/
-private lemma iteratedSumcheckOracleVerifier_verify_collapse (i : Fin ℓ')
+lemma iteratedSumcheckOracleVerifier_verify_collapse (i : Fin ℓ')
     (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (tr : FullTranscript (pSpecSumcheckRound L)) :
@@ -1407,7 +1407,7 @@ deterministic `if`: on the step-9 check passing it `pure`s the forwarded MLP-eva
 `{t_eval_point := challenges, original_claim := s'}` (`s'` the prover's message), and on a failed
 check it emits `failure` (defect-#21) — so the reject branch has *no* support element. This is the
 1-message analog of `iteratedSumcheckOracleVerifier_verify_collapse`. -/
-private lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
+lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
     (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ'))
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (tr : FullTranscript (pSpecFinalSumcheck L)) :

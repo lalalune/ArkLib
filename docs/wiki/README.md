@@ -34,6 +34,8 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
   taking the Proximity Prize (#232) down to the additive energy of the smooth `2^k`-subgroup: file
   map, the sharp `E=3|G|(|G|-1)` theorem, the prize-regime anti-concentration data, and the single
   named open (Weil/sum-product) root.
+- [`stir-issue-301.md`](stir-issue-301.md) - STIR #301 scratchpad: source trail, local theorem
+  map, proof status, and the honest residuals for `stir_main` / `stir_rbr_soundness`.
 
 ## Maintenance Contract
 
