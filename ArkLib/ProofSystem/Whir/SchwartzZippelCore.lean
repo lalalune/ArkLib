@@ -32,7 +32,7 @@ theorem listPoly_eval (cs : List F) (x : F) :
   | cons c cs ih =>
       simp [listPoly, Whir302Checked.listEval, List.foldr_cons] at ih ⊢
       rw [← ih]
-      simp [listPoly, Whir302Checked.listEval]
+      simp
 
 theorem listPoly_cons (c : F) (cs : List F) :
     listPoly (c :: cs) = Polynomial.C c + Polynomial.X * listPoly cs := rfl
