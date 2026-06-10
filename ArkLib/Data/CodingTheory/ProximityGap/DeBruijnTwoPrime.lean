@@ -3052,6 +3052,7 @@ section BelowPBudget
 
 variable [DecidableEq F] [CharZero F]
 
+open Classical in
 /-- **The set-form law below `p`**: a windowed set equals the union of the alive full
 cosets it contains. -/
 theorem windowed_eq_union_alive_below_p {p q : ℕ} (hp : p.Prime) (hq : q.Prime)
