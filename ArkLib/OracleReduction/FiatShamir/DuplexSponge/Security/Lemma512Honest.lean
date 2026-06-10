@@ -171,6 +171,19 @@ theorem not_hasInvEntry_of_not_E
     ¬ HasInvEntry tr :=
   fun hinv => h (hasInvEntry_implies_E tr hinv)
 
+/-- Index form of `not_hasInvEntry_of_not_E`: off `E`, no trace slot can be an inverse
+permutation entry. This is the form consumed by the `J_BT` first-occurrence payloads in the
+honest backtrack timing/fork analyses. -/
+theorem not_inv_getElem?_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    {i : ℕ} {sOut sIn : CanonicalSpongeState U}
+    (hentry : tr[i]? =
+      some (⟨Sum.inr (Sum.inr sOut), sIn⟩ :
+        (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+          (duplexSpongeChallengeOracle StmtIn U).Range t)) :
+    False :=
+  not_hasInvEntry_of_not_E tr h ⟨sOut, sIn, mem_of_getElem?' hentry⟩
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -185,4 +198,5 @@ theorem lemma5_12_honest :
 end DuplexSpongeFS.Sponge316
 
 #print axioms DuplexSpongeFS.Sponge316.hasInvEntry_implies_E
+#print axioms DuplexSpongeFS.Sponge316.not_inv_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest
