@@ -320,77 +320,7 @@ namespace Spartan.Spec.Bricks
 variable {R : Type} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R]
   (pp : Spartan.PublicParams) {ι : Type} (oSpec : OracleSpec ι)
 
-/-! ## D1: honest RLC-target adapter `prependRLCTarget` (Spartan #114) -/
-
-/-- The 0-round honest **RLC-target** oracle prover: emits the honest RLC
-`∑ idx, r idx · v_idx` (reading the bundled eval-claim oracle `.inl 0` and the LC coefficients
-`stmt.1`). Honest replacement for `prependSlotProver` (whose carried target is `0`). -/
-noncomputable def prependRLCTargetProver :
-    OracleProver oSpec
-      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
-      (R × Statement.AfterLinearCombination R pp)
-      (OracleStatement.AfterLinearCombination R pp) Unit !p[] where
-  PrvState := fun _ =>
-    Statement.AfterLinearCombination R pp ×
-      (∀ i, OracleStatement.AfterLinearCombination R pp i)
-  input := Prod.fst
-  sendMessage := fun i => nomatch i
-  receiveChallenge := fun i => nomatch i
-  output := fun st =>
-    pure (((∑ idx, st.1.1 idx * st.2 (.inl 0) idx, st.1), st.2), ())
-
-/-- Direct combined-spec query of the bundled claim oracle `.inl 0` at index `idx`. -/
-noncomputable def queryClaimDirect (idx : R1CS.MatrixIdx) :
-    OracleComp (oSpec + ([OracleStatement.AfterLinearCombination R pp]ₒ
-      + [(!p[] : ProtocolSpec 0).Message]ₒ)) R :=
-  (OracleComp.lift <| OracleSpec.query
-    (spec := oSpec + ([OracleStatement.AfterLinearCombination R pp]ₒ
-      + [(!p[] : ProtocolSpec 0).Message]ₒ))
-    (show (oSpec + ([OracleStatement.AfterLinearCombination R pp]ₒ
-      + [(!p[] : ProtocolSpec 0).Message]ₒ)).Domain from
-        Sum.inr (Sum.inl ⟨.inl 0, ⟨idx, ()⟩⟩)) :
-    OracleComp _ R)
-
-/-- The per-index step of the RLC verifier: query the claim oracle, return `(idx, v)`. -/
-noncomputable def rlcStep (idx : R1CS.MatrixIdx) :
-    OptionT (OracleComp (oSpec + ([OracleStatement.AfterLinearCombination R pp]ₒ
-      + [(!p[] : ProtocolSpec 0).Message]ₒ))) (R1CS.MatrixIdx × R) := do
-  let v ← liftM (queryClaimDirect pp oSpec idx)
-  pure (idx, v)
-
-/-- The honest RLC-target verifier: queries the bundled claim oracle for each matrix index and
-emits `(∑ idx, r idx · v_idx, stmt)`. -/
-noncomputable def prependRLCTargetVerifier :
-    OracleVerifier oSpec
-      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp)
-      (R × Statement.AfterLinearCombination R pp)
-      (OracleStatement.AfterLinearCombination R pp) !p[] where
-  verify := fun stmt _ => do
-    let claims ← (liftM ((Finset.univ : Finset R1CS.MatrixIdx).toList.mapM (rlcStep pp oSpec)) :
-      OptionT (OracleComp _) (List (R1CS.MatrixIdx × R)))
-    let rlc : R := (claims.map (fun p => stmt.1 p.1 * p.2)).sum
-    pure (rlc, stmt)
-  embed := Embedding.inl
-  hEq := by intro i; simp
-
-/-- The honest RLC-target oracle reduction (drop-in replacement for `prependTarget`). -/
-noncomputable def prependRLCTarget :
-    OracleReduction oSpec
-      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
-      (R × Statement.AfterLinearCombination R pp)
-      (OracleStatement.AfterLinearCombination R pp) Unit !p[] where
-  prover := prependRLCTargetProver pp oSpec
-  verifier := prependRLCTargetVerifier pp oSpec
-
-instance instPrependRLCTargetVerifierAppendCoherent :
-    OracleVerifier.Append.AppendCoherent (prependRLCTargetVerifier (R := R) pp oSpec) where
-  hCohInl i k h := by
-    simp only [prependRLCTargetVerifier, Function.Embedding.inl_apply] at h
-    obtain rfl := Sum.inl.inj h
-    rfl
-  hCohInr i k h := by
-    simp only [prependRLCTargetVerifier, Function.Embedding.inl_apply] at h
-    cases h
+/-! ## D1: honest RLC-target adapter relations (Spartan #114) -/
 
 /-! ### Output relation and the D1 inclusion fix -/
 
@@ -494,3 +424,81 @@ theorem simulateQ_prependRLCTargetVerifier
 #print axioms simulateQ_prependRLCTargetVerifier
 
 end Spartan.Spec.Bricks
+
+
+/-! ### finalCheck (the terminal `CheckClaim` phase) -/
+
+namespace Bricks2
+
+open Spartan.Spec Spartan.Spec.Bricks
+
+variable {R : Type} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R]
+  [VCVCompatible R]
+  (pp : Spartan.PublicParams)
+  {ι : Type} (oSpec : OracleSpec ι) [oSpec.Fintype] [oSpec.Inhabited]
+
+/-- The 0-round `finalCheck` run collapses to `pure`: the prover is deterministic and the
+verifier's `finalPredicate` queries are eliminated by the honest `simOracle2` (its result is
+discarded by `CheckClaim`'s `let _ ←`). -/
+theorem finalCheck_run (stmt : FinalStatement R pp) (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    (finalCheck R pp oSpec).toReduction.run (stmt, oStmt) () =
+      (pure (((default : (!p[] : ProtocolSpec 0).FullTranscript), (stmt, oStmt), ()),
+        (stmt, oStmt)) : OptionT (OracleComp oSpec) _) := by
+  simp only [finalCheck, CheckClaim.oracleReduction, CheckClaim.oracleProver,
+    CheckClaim.oracleVerifier, OracleReduction.toReduction, Reduction.run, Prover.run,
+    Verifier.run, OracleVerifier.toVerifier]
+  unfold finalPredicate
+  simp only [← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_bind, OracleComp.liftComp_map,
+    OracleComp.liftComp_pure, simulateQ_bind, simulateQ_map, simulateQ_pure, pure_bind,
+    bind_pure_comp, map_pure, simulateQ_simOracle2_lift_liftComp_query_T1,
+    map_bind, bind_assoc, liftM_pure, Option.map_some, Option.getM, Option.bind_some]
+  rfl
+
+/-- **`finalCheck` is perfectly complete** (0-round; the output relation is full). The relation-
+freeness on the output side matches `finalCheckRelOut = Set.univ`-style consumers: the only content
+is totality (the predicate's queries are simulated honestly and its result discarded) and
+prover/verifier statement agreement. -/
+theorem finalCheck_perfectCompleteness {σ : Type} {init : ProbComp σ}
+    {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    (rel : Set (((FinalStatement R pp) × (∀ i, FinalOracleStatement R pp i)) × Unit)) :
+    (finalCheck R pp oSpec).perfectCompleteness init impl rel Set.univ := by
+  unfold OracleReduction.perfectCompleteness
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, Reduction.completenessFromRun,
+    ENNReal.coe_zero, tsub_zero]
+  intro ⟨stmt, oStmt⟩ ⟨⟩ hIn
+  simp only [finalCheck_run]
+  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  · rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _
+    change none ∈ _root_.support (StateT.run' (simulateQ _
+        (pure (some (((default : (!p[] : ProtocolSpec 0).FullTranscript),
+          (stmt, oStmt), ()), (stmt, oStmt))) : OracleComp _ _)) s) → False
+    rw [simulateQ_pure]
+    change none ∈ _root_.support (Prod.fst <$>
+      (pure (some (((default : (!p[] : ProtocolSpec 0).FullTranscript),
+        (stmt, oStmt), ()), (stmt, oStmt))) :
+        StateT σ ProbComp _).run s) → False
+    rw [StateT.run_pure]; simp [map_pure]
+  · intro x hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    change some x ∈ _root_.support (StateT.run' (simulateQ _
+        (pure (some (((default : (!p[] : ProtocolSpec 0).FullTranscript),
+          (stmt, oStmt), ()), (stmt, oStmt))) : OracleComp _ _)) s) at hx
+    rw [simulateQ_pure] at hx
+    change some x ∈ _root_.support (Prod.fst <$>
+      (pure (some (((default : (!p[] : ProtocolSpec 0).FullTranscript),
+        (stmt, oStmt), ()), (stmt, oStmt))) :
+        StateT σ ProbComp _).run s) at hx
+    rw [StateT.run_pure] at hx
+    simp only [_root_.map_pure, _root_.support_pure, Set.mem_singleton_iff,
+      Option.some.injEq, Prod.mk.injEq] at hx
+    cases hx
+    exact ⟨Set.mem_univ _, rfl⟩
+
+end Bricks2
