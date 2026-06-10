@@ -478,6 +478,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedCardTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedSquarefree
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedSquarefreeExp
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedTwoPrime
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWindowedLaw
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
