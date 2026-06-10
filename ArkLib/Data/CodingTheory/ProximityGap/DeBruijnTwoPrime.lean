@@ -685,4 +685,52 @@ theorem mu_p_membership_slices {p m : ℕ} (hp : p.Prime) {ζ : F}
 
 end NonVacuity
 
+/-! ## The packet cover: de Bruijn's hard direction
+
+From the unconditional double-slice, the structural dichotomy falls by case analysis:
+**every element of a vanishing two-prime subset lies in a full `μ_p`-packet inside `S`
+or a full `μ_q`-packet inside `S`.** If `x`'s `p`-fiber misses some point, the
+difference row is constantly `1` along the `q`-direction — so `x`'s whole `q`-fiber is
+present. This is the necessary half of de Bruijn's theorem (the O70-verified law adds
+the disjoint-decomposition refinement: cover alone does not imply vanishing, since
+overlapping packets break the sum — recorded honestly). -/
+
+section PacketCover
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The two-prime packet cover** (de Bruijn's hard direction, unconditional): every
+member of a vanishing subset of `μ_{p^(a+1)·q^(b+1)}` has its full `μ_p`-fiber in `S`
+or its full `μ_q`-fiber in `S`. -/
+theorem two_prime_packet_cover {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hsum : ∑ z ∈ S, z = 0) :
+    ∀ s < p ^ a, ∀ i < p, ∀ t < q ^ b, ∀ j < q,
+      ζp ^ (i * p ^ a + s) * ζq ^ (j * q ^ b + t) ∈ S →
+      (∀ i'' < p, ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t) ∈ S) ∨
+      (∀ j'' < q, ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t) ∈ S) := by
+  intro s hs i hi t ht j hj hx
+  by_cases hall : ∀ i'' < p, ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t) ∈ S
+  · exact Or.inl hall
+  · right
+    push Not at hall
+    obtain ⟨i', hi', hx'⟩ := hall
+    intro j'' hj''
+    have hds := two_prime_deBruijn_double_slice hp hq hpq hζp hζq hS hsum
+      s hs i hi i' hi' t ht j hj j'' hj''
+    rw [if_pos hx, if_neg hx'] at hds
+    by_cases h1 : ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t) ∈ S
+    · exact h1
+    · exfalso
+      rw [if_neg h1] at hds
+      by_cases h2 : ζp ^ (i' * p ^ a + s) * ζq ^ (j'' * q ^ b + t) ∈ S
+      · rw [if_pos h2] at hds
+        norm_num at hds
+      · rw [if_neg h2] at hds
+        norm_num at hds
+
+end PacketCover
+
 end DeBruijnTwoPrime

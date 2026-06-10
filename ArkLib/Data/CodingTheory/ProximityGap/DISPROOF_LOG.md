@@ -4015,3 +4015,17 @@ words already characterized by the tower theory — consistent with, and unfalsi
 the branch-entropy accounting in which rigid leaf data (O74) plus tree-shape counting
 bounds the list. The worst case is provably NOT found by sampling; it is the structured
 chart, which is exactly where O45–O74 live.
+
+### O76 — THE PACKET COVER: de Bruijn's hard direction, unconditional (two_prime_packet_cover)
+
+`DeBruijnTwoPrime.two_prime_packet_cover` (axiom-clean, 0 sorry, by hand from O71's
+double-slice): **every member of a vanishing subset of μ_{p^(a+1)·q^(b+1)} has its full
+μ_p-fiber in S or its full μ_q-fiber in S.** Proof: if the p-fiber misses a point, the
+double-slice forces the membership difference row ≡ 1 along the entire q-direction, so
+the q-fiber is full — pure case analysis on O71.
+
+This is the necessary half of de Bruijn's 1953 theorem at the subset level, now formal
+and hypothesis-free. Honest scope: cover is necessary, NOT sufficient (overlapping
+packets break the vanishing sum); the exact O70 law is the disjoint-decomposition
+refinement — the remaining finite combinatorial step between cover and the full
+characterization (and thence the discharge of O73's base hypotheses).
