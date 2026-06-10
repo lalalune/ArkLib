@@ -1447,6 +1447,7 @@ import ArkLib.ProofSystem.Stir.ChainVSpecCount
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.Complexity
+import ArkLib.ProofSystem.Stir.ComplexityLegs
 import ArkLib.ProofSystem.Stir.ErrorAccumulation
 import ArkLib.ProofSystem.Stir.ErrorBoundBridge
 import ArkLib.ProofSystem.Stir.FullChain
