@@ -474,6 +474,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTowerWiring
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrimeAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedSquarefree
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedSquarefreeExp
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
@@ -1536,6 +1537,7 @@ import ArkLib.ToMathlib.Claim510Conditional
 import ArkLib.ToMathlib.Claim511
 import ArkLib.ToMathlib.Claim57Supply
 import ArkLib.ToMathlib.Claim59Conditional
+import ArkLib.ToMathlib.ClosedBoundaryFaithfulFloorCell
 import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.CoeffHomDescent
 import ArkLib.ToMathlib.ConditionDiscProduct
