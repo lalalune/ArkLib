@@ -1398,6 +1398,7 @@ import ArkLib.ProofSystem.Stir.RoundVectorCompleteness
 import ArkLib.ProofSystem.Stir.TailCompleteness
 import ArkLib.ProofSystem.Stir.VectorBridge
 import ArkLib.ProofSystem.Stir.VectorBridgeMid
+import ArkLib.ProofSystem.Stir.VectorChain
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.Completeness
