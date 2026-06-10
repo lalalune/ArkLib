@@ -21,9 +21,10 @@ probability is at least `1 - err`.  Proof: `probEvent_compl` gives
 `Pr[p] + Pr[¬p] = 1 - Pr[⊥]`; with `Pr[¬p] = 0` this is `Pr[p] = 1 - Pr[⊥] ≥ 1 - err`.
 
 This is the *probability core* of the outer LogUp completeness obligation
-(`OuterCompletenessRunResidual`): because `midRelation = Set.univ` and the honest prover/verifier
-agree on every accepting transcript, the completeness predicate `prvStmtOut = stmtOut` holds on
-every successful run (so its complement has probability `0`), and the run's failure event is exactly
+(`OuterCompletenessRunResidual`): the honest prover/verifier agree on every accepting transcript
+and the honest after-outer statement satisfies the claim-true `midRelation` (the grand-sum
+identity), so the completeness predicate holds on every successful run (its complement has
+probability `0`), and the run's failure event is exactly
 the table-pole event bounded by `probEvent_pole_le` / `probEvent_outerVerify_reject_le`.  With this
 lemma, the remaining content of `OuterCompletenessRunResidual` is exactly those two run-level
 facts (`Pr[¬p] = 0` and `probFailure ≤ logupCompletenessError`), with all probability arithmetic
@@ -496,8 +497,8 @@ theorem probFailure_outerCompletenessRunComp_le_of_perStateNone
 set_option maxHeartbeats 3200000 in
 /-- **Outer-completeness complement-zero reduced to the per-(initial-state) agreement (axiom-clean).**
 
-The completeness predicate (`midRelation = Set.univ`, so `(stmtOut, witOut) ∈ midRelation ∧
-prvStmtOut = stmtOut` collapses to `prvStmtOut = stmtOut`) has complement probability `0` on the
+The completeness predicate `(stmtOut, witOut) ∈ midRelation ∧ prvStmtOut = stmtOut` (with the
+corrected claim-true `midRelation`) has complement probability `0` on the
 standard outer run, *given* the per-initial-state fact that its complement is `0` on the simulated
 reduction run.
 
@@ -693,14 +694,45 @@ theorem outer_perState_none_le
     apply mul_le_of_le_one_right'
     exact probEvent_le_one
 
+/-- **The honest after-outer statement is in the (corrected, claim-true) `midRelation`.**
+
+The intermediate statement produced by the honest outer phase — the input oracles retained, the
+honest multiplicity and helper oracles attached, and any challenges `x`/`batch` — satisfies the
+zero LogUp outer sumcheck claim `logupOuterSumcheckClaim … = 0`, *given* the input relation (the
+lookup is valid) and pole-freeness of `x` (exactly the verifier's acceptance predicate
+`outerVerifyAccepts`, the event whose complement is the `logupCompletenessError` pole bound).
+
+This is the grand-sum identity content (`honest_helper_sum_zero_of_inputRelation_all` /
+`grandSum_identity`) threaded through `LogupSumcheckBridge.of_honest`; it is the new membership
+obligation of the completeness predicate after `midRelation` was corrected from `Set.univ` to the
+claim-true relation (issue #13). -/
+theorem honest_after_outer_mem_midRelation
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (hRel : ((stmtIn, ()) ∈ inputRelation F n M))
+    (x : F) (batch : BatchingChallenge F n params.numGroups)
+    (hacc : outerVerifyAccepts F n M stmtIn.2 x) (wit : Unit) :
+    ((show StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i) from
+      ({ xChallenge := x, zChallenge := batch.1, batchingScalars := batch.2 },
+       fun
+        | .input i => stmtIn.2 i
+        | .multiplicity => honestMultiplicity stmtIn.2
+        | .helpers => honestHelpers params stmtIn.2 x)), wit) ∈ midRelation F n M params :=
+  (LogupSumcheckBridge.of_honest F n M params
+    stmtIn.1 stmtIn.2
+    { xChallenge := x, zChallenge := batch.1, batchingScalars := batch.2 }
+    hRel hacc).claimZero
+
 set_option maxHeartbeats 3200000 in
 /-- **Per-(initial-state) agreement for the simulated outer run.** On every *successful* simulated
-outer run the honest prover's output statement equals the verifier's recomputed one, so the
-completeness predicate's complement has probability `0`.  Discharges the `hAgree` obligation of
+outer run the honest prover's output statement equals the verifier's recomputed one **and**
+satisfies the claim-true `midRelation` (via the grand-sum identity, from the input relation and
+the acceptance predicate), so the completeness predicate's complement has probability `0`.
+Discharges the `hAgree` obligation of
 `probEvent_outerCompletenessRunComp_compl_eq_zero_of_perState`. -/
 theorem outer_perState_agree
     (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
     (witIn : WitIn F n M params)
+    (hRel : (stmtIn, witIn) ∈ inputRelation F n M)
     (s : σ) :
     Pr[fun ⟨⟨_, (prvStmtOut, witOut)⟩, stmtOut⟩ =>
         ¬ ((stmtOut, witOut) ∈ midRelation F n M params ∧ prvStmtOut = stmtOut) |
@@ -724,7 +756,9 @@ theorem outer_perState_agree
     obtain ⟨batch, _, rfl⟩ := hi_1
     by_cases hacc : outerVerifyAccepts F n M stmtIn.2 i
     · -- Accept: the verifier collapses to its recomputed output, which the readback agreement
-      -- (`outerProver_output_pair_eq_verifier_recompute`) shows equals the prover's output statement.
+      -- (`outerProver_output_pair_eq_verifier_recompute`) shows equals the prover's output
+      -- statement; that honest statement satisfies the claim-true `midRelation` by the grand-sum
+      -- identity (`honest_after_outer_mem_midRelation`, from `hRel` + the acceptance `hacc`).
       have hx := (outerProver_transcript_challenge_readback
           (m₀ := honestMultiplicity stmtIn.2) (x := i)
           (m₂ := honestHelpers params stmtIn.2 i) (batch := batch)).1
@@ -737,16 +771,17 @@ theorem outer_perState_agree
       rw [← bind_pure_comp, optionT_run_bind, OptionT.run_pure, pure_bind] at hverif
       simp only [OptionT.run_pure, support_pure, Set.mem_singleton_iff] at hverif
       obtain rfl := Option.some.inj hverif
-      refine hbad ⟨Set.mem_univ _, ?_⟩
       have hm := (outerProver_transcript_message_readback
           (m₀ := honestMultiplicity stmtIn.2) (x := i)
           (m₂ := honestHelpers params stmtIn.2 i) (batch := batch)).1
       have hh := (outerProver_transcript_message_readback
           (m₀ := honestMultiplicity stmtIn.2) (x := i)
           (m₂ := honestHelpers params stmtIn.2 i) (batch := batch)).2
-      exact outerProver_output_pair_eq_verifier_recompute (oSpec := oSpec)
+      have hpair := outerProver_output_pair_eq_verifier_recompute (oSpec := oSpec)
         (oStmt := stmtIn.2) (x := i) (batch := batch)
         (hx := hx) (hb := hb) (hm := hm) (hh := hh)
+      refine hbad ⟨?_, hpair⟩
+      exact hpair ▸ honest_after_outer_mem_midRelation F n M params stmtIn hRel i batch hacc _
     · -- Reject: the verifier fails, so the run has no successful (`some`) output — `hverif` is absurd.
       have hx := (outerProver_transcript_challenge_readback
           (m₀ := honestMultiplicity stmtIn.2) (x := i)
@@ -778,9 +813,9 @@ complement-zero via `outer_perState_agree` (every successful run agrees) and the
 theorem outer_completenessRunFactsResidual :
     OuterCompletenessRunFactsResidual oSpec F n M params init impl := by
   intro _
-  refine ⟨fun stmtIn witIn _ => ?_, fun stmtIn witIn _ => ?_⟩
+  refine ⟨fun stmtIn witIn hRel => ?_, fun stmtIn witIn _ => ?_⟩
   · exact probEvent_outerCompletenessRunComp_compl_eq_zero_of_perState oSpec F n M params init impl
-      stmtIn witIn (fun s => outer_perState_agree oSpec F n M params impl stmtIn witIn s)
+      stmtIn witIn (fun s => outer_perState_agree oSpec F n M params impl stmtIn witIn hRel s)
   · exact outer_completenessRun_failure_le oSpec F n M params init impl stmtIn witIn
 
 /-- **Outer LogUp completeness — fully proved (no residual).** The honest outer LogUp oracle
@@ -835,6 +870,7 @@ end Logup
 #print axioms Logup.probEvent_outerVerify_reject_challenge_le
 #print axioms Logup.outerVerifier_run_accept_eq_pure
 #print axioms Logup.outer_perState_none_le
+#print axioms Logup.honest_after_outer_mem_midRelation
 #print axioms Logup.outer_perState_agree
 #print axioms Logup.outer_completenessRun_failure_le
 #print axioms Logup.outer_completenessRunFactsResidual

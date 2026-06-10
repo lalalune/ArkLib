@@ -42,11 +42,11 @@ The transfer consumes three ingredients:
   `lift_complete` half is *trivial* because the outer output relation `outputRelation` is
   `Set.univ` (the full LogUp protocol returns only success/failure, so every lifted output
   statement is in-relation). Its `proj_complete` half — an outer `midRelation` statement projects
-  into the round-`0` sum-check relation `relationRound … 0` — is **not** unconditional:
-  `midRelation = Set.univ`, so it asserts that the LogUp grand-sum claim vanishes on the hypercube
-  for *every* outer transcript. This is precisely the honest algebraic content discharged by
-  `logupSumcheckRelationInput_of_rowsAgree` only on honest transcripts; it is therefore taken as
-  the named hypothesis `hProj` (the genuine residual gap).
+  into the round-`0` sum-check relation `relationRound … 0` — is taken as the named hypothesis
+  `hProj`; with the corrected claim-true `midRelation` (issue #13) it is discharged
+  unconditionally by `SumcheckLensProjComplete_unconditional`
+  (`Security/SumcheckLensProjComplete.lean`), since the `midRelation` premise *is* the zero-sum
+  claim that `logupSumcheckRelationInput_of_rowsAgree` consumes.
 
 No `sorry`/`admit`. The two genuine upstream gaps are the named hypotheses `hInner` and
 `hProj`; everything mechanical (the lift, the coherence threading, the trivial `lift_complete`)
@@ -89,10 +89,10 @@ abbrev innerSumcheckRelOut :
 /-- **The `proj_complete` half of `OracleContext.Lens.IsComplete` for the LogUp sum-check lens.**
 
 Every outer `midRelation` statement-witness pair projects (under `logupSumcheckContextLens`) into
-the round-`0` sum-check relation `innerSumcheckRelIn`. Because `midRelation = Set.univ`, this is
-the genuine algebraic obligation that the LogUp grand-sum claim vanishes on the hypercube — the
-honest-transcript content of `logupSumcheckRelationInput_of_rowsAgree`. Left as a named hypothesis;
-a later brick discharges it on the honest-prover support.
+the round-`0` sum-check relation `innerSumcheckRelIn`. With the corrected claim-true `midRelation`
+(issue #13) the premise *is* the zero-sum claim, so this holds unconditionally — discharged by
+`SumcheckLensProjComplete_unconditional` in `Security/SumcheckLensProjComplete.lean` via
+`logupSumcheckRelationInput_of_rowsAgree`.
 
 Stated directly with `lens.stmt.proj` / `lens.wit.proj` (the exact fields the `IsComplete`
 `proj_complete` obligation uses), universe-pinned to `0` to match `sumcheckOracleReduction`. -/

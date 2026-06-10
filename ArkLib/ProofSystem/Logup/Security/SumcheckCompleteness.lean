@@ -30,10 +30,12 @@ support modulo the named single-round bridge.
 
 This is a real proof — not a `sorry` — that the LogUp embedded sum-check phase is perfectly complete
 (error `0`) from `midRelation` to `outputRelation`, obtained by delegating to the axiom-clean
-`sumcheckCompletenessResidual_of_honest_perRound`. The bare unconditional form (residual from `hInit`
-alone) is *not provable*: because `midRelation = Set.univ` carries no constraint, completeness must be
-witnessed on the honest-prover support, and the inner multi-round sum-check needs its per-round
-`liftContext`-commutation bridge. Those are exposed here as the precisely-typed named hypotheses
+`sumcheckCompletenessResidual_of_honest_perRound`. NOTE (issue #13): with the corrected claim-true
+`midRelation`, the honest-support hypothesis `hHonest` is no longer needed — see
+`sumcheckCompletenessResidual_of_inner` (`Security/SumcheckLensProjComplete.lean`), which needs
+only the inner completeness; this historical form is retained for callers that thread `hHonest`.
+The inner multi-round sum-check still needs its per-round `liftContext`-commutation bridge. The
+hypotheses are exposed as the precisely-typed named
 `hHonest`, `hPerRound`, `hImplSupp` rather than hidden inside a content-free `sorry`:
 
 * `hHonest` — the honest-support data: every projected outer transcript comes from an underlying
