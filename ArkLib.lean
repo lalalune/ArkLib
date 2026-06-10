@@ -1790,6 +1790,7 @@ import ArkLib.ToMathlib.Section5StrictDataFinOn
 import ArkLib.ToMathlib.SectionBaseRational
 import ArkLib.ToMathlib.SectionFactor
 import ArkLib.ToMathlib.SectionFromSurface
+import ArkLib.ToMathlib.SectionGlobalLift
 import ArkLib.ToMathlib.SectionXiDivisibility
 import ArkLib.ToMathlib.SectionXiUnit
 import ArkLib.ToMathlib.SeparableLowDegree
