@@ -4192,3 +4192,21 @@ O92 closed with one named analytic wall for the full two-prime de Bruijn assembl
 * Teeth: 1 + ζ₁₂ ≠ 0 DERIVED from the forward direction (the r = 0 thread of a hypothetical vanishing {0,1}-sum evaluates to 1); ζ₁₂ + ζ₁₂⁷ = 0 PRODUCED by the converse from its two vanishing threads (1 + ζ₁₂⁶ killed by `eq_neg_one_of_two_right`).
 
 **Where the open core moves (the wall is now bookkeeping, named):** every analytic ingredient of de Bruijn 1953 two-prime is in-tree — O92's prime-power base (`debruijn_prime_power`), O87's squarefree dichotomy (`debruijn_squarefree_two_prime_iff`), and this brick's digit descent. What remains is the ASSEMBLY induction the probe's decomposer already executes numerically: recurse `thread_split_iff` down the digits of n = p^a·q^b to the squarefree base p·q, apply the dichotomy there, and lift packets through e ↦ r + p·e' (lifted packets stay genuine rotated full packets, both types — the probe's B2 check at 12, 18). One brick: the lift lemma + the strong induction wrapper, statement shape pinned by O92's layer-B census (disjoint-packet-union family = vanishing family). No new divisibility or independence content is needed anywhere in the chain.
+
+### O81 — THE ITERATED SPECTRAL TRANSFER: the full descent chain assembled
+
+`DeBruijnTwoPrime.iterated_spectral_transfer` (axiom-clean, 0 sorry): given the q-power
+window Σ_S y^{q^c} = 0 (1 ≤ c ≤ b), for EVERY depth m ≤ b+1 the m-th spectrum R_m
+exists at level μ_{p^(a+1)·q^(b+1−m)} — every element a q^m-th power of an S element —
+carrying the whole window with factor q^m:
+
+    (q : F)^m · Σ_{r∈R_m} r^e = Σ_{y∈S} y^{q^m·e}   for every p ∤ e.
+
+Induction stacking O77 (decompose at each level — vanishing from the previous transfer
+at e = 1 + the window; char-0 division by q^m) and O80 (one more transfer); level
+bookkeeping via b+1−m = (b−m)+1 and ζq^{q^m} primitivity. At m = b+1 the chain bottoms
+out in μ_{p^(a+1)} — the prime-power level where Lam–Leung (O66) takes over.
+
+THE DESCENT HALF OF THE WINDOWED TWO-PRIME LAW IS COMPLETE. Remaining for the full law:
+the upward reconstruction (spectrum structure ⟹ coset structure of S — the d-coset
+reassembly the O70 law describes) and the symmetric p-side chain.
