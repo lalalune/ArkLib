@@ -5,17 +5,22 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracle
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessChallenge
+import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessEmpty
+import ArkLib.OracleReduction.Composition.Sequential.AppendToVerifierKeystone
 
 /-!
-# Oracle-level challenge-seam append perfect completeness
+# Oracle-level challenge-seam and empty-seam append perfect completeness
 
-The `V_to_P`-seam (challenge) analogue of `OracleReduction.append_perfectCompleteness_msg_proof`.
-Identical structure: an `OracleReduction`'s perfect completeness is the perfect completeness of its
-`toReduction`; the verifier-fusion bridge `appendToReductionResidual` rewrites
+The `V_to_P`-seam (challenge) and empty-seam (`n = 0`) analogues of
+`OracleReduction.append_perfectCompleteness_msg_proof`. Identical structure: an `OracleReduction`'s
+perfect completeness is the perfect completeness of its `toReduction`; the verifier-fusion bridge
+`appendToReductionResidual_proof` (proven *unconditionally*) rewrites
 `(R₁.append R₂).toReduction = R₁.toReduction.append R₂.toReduction`; the underlying Reduction-level
-result is now `Reduction.append_perfectCompleteness_challenge` (proven for the challenge seam from the
-three per-phase relabel bridges). The only difference from the message case is the seam direction and
-the honest-implementation side conditions (`himplSP`/`himplNF`/`hInit` instead of `hImplSupp`).
+result is `Reduction.append_perfectCompleteness_challenge` / `_empty_proof`. These give the
+oracle-level seam keystones for the two remaining seam directions of the Spartan composed PIOP
+(`composedPIOP_Rc`): challenge seams (`firstMessage▷…`, `sendEvalClaim▷…`) and empty seams
+(`…▷finalCheck`, `…▷prependClaim`). The message seams use the existing
+`append_perfectCompleteness_msg_proof`.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -43,10 +48,9 @@ variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
     {rel₃ : Set ((Stmt₃ × ∀ i, OStmt₃ i) × Wit₃)}
 
 /-- **Oracle-level challenge-seam append perfect completeness.** The `V_to_P` analogue of
-`append_perfectCompleteness_msg_proof`: from perfectly-complete oracle reductions `R₁`, `R₂` over a
-challenge seam, plus the verifier-fusion bridge `appendToReductionResidual`, the appended oracle
-reduction is perfectly complete. Reduces to `Reduction.append_perfectCompleteness_challenge` through
-the `toReduction` view exactly as the message case does. -/
+`append_perfectCompleteness_msg_proof`, with the verifier-fusion bridge supplied inline by the
+unconditional `appendToReductionResidual_proof`. Reduces to
+`Reduction.append_perfectCompleteness_challenge`. -/
 theorem append_perfectCompleteness_challenge
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
@@ -60,14 +64,14 @@ theorem append_perfectCompleteness_challenge
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
     (hInit : NeverFail init)
-    (hBridge : appendToReductionResidual R₁ R₂)
     [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
     [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
     [(oSpec + [pSpec₁.Challenge]ₒ).Fintype] [(oSpec + [pSpec₁.Challenge]ₒ).Inhabited]
     [(oSpec + [pSpec₂.Challenge]ₒ).Fintype] [(oSpec + [pSpec₂.Challenge]ₒ).Inhabited] :
     (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
   change Reduction.perfectCompleteness init impl rel₁ rel₃ (R₁.append R₂).toReduction
-  rw [show (R₁.append R₂).toReduction = R₁.toReduction.append R₂.toReduction from hBridge]
+  rw [show (R₁.append R₂).toReduction = R₁.toReduction.append R₂.toReduction from
+    appendToReductionResidual_proof R₁ R₂]
   exact Reduction.append_perfectCompleteness_challenge
     R₁.toReduction R₂.toReduction h₁ h₂ hn hDir hDir₂ himplSP himplNF hInit
 
