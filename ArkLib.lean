@@ -1124,6 +1124,7 @@ import ArkLib.OracleReduction.Composition.Sequential.SeqComposePerfectCompletene
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeRbrKnowledgeProof
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.ContinueFromToSupport
+import ArkLib.OracleReduction.DecisionTail
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
@@ -1397,6 +1398,7 @@ import ArkLib.ProofSystem.Stir.BlockCompleteness
 import ArkLib.ProofSystem.Stir.BlockRbrBudgets
 import ArkLib.ProofSystem.Stir.BlocksCompleteness
 import ArkLib.ProofSystem.Stir.ChainCompleteness
+import ArkLib.ProofSystem.Stir.ChainProof
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.Complexity
