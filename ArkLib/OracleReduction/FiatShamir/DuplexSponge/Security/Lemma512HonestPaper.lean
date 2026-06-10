@@ -643,6 +643,42 @@ theorem e_of_hasFirstPermCapacityBeforeForwardOutputPaper
   Or.inl (Or.inr (Or.inl (e_p_of_hasFirstPermCapacityBeforeForwardOutputPaper tr h)))
 
 
+/-! ## The honest residuals, re-stated against paper semantics
+
+The legacy `Lemma5_14HonestResidual` / `Lemma5_16HonestResidual` are REFUTED as stated
+(machine-checked countermodels exploiting the legacy dedup's certificate deviation). These are
+the same confinement statements against the **paper-faithful** combined event
+`BadEventDSPaper.E` — correctly stated, honestly OPEN named Props awaiting discharge against
+the repaired semantics. The honest events themselves (`E_inv_honest`/`E_fork_honest`/
+`E_time_honest`) are dedup-independent and unchanged. -/
+
+open DuplexSpongeFS.KeyLemmaFoundations in
+/-- CO25 Lemma 5.12 (honest form), **paper semantics**: off the paper combined bad event, no
+BackTrack chain step is anchored by an inverse-permutation entry. -/
+def Lemma5_12HonestResidualPaper (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
+  ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),
+    ¬ BadEventDSPaper.E tr → ¬ E_inv_honest tr state S
+
+open DuplexSpongeFS.KeyLemmaFoundations in
+/-- CO25 Lemma 5.14 (honest form), **paper semantics**: off the paper combined bad event, the
+backtrack family has at most one maximal sequence. Replaces the refuted legacy form. -/
+def Lemma5_14HonestResidualPaper (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
+  ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),
+    ¬ BadEventDSPaper.E tr → ¬ E_fork_honest tr state S
+
+open DuplexSpongeFS.KeyLemmaFoundations in
+/-- CO25 Lemma 5.16 (honest form), **paper semantics**: off the paper combined bad event, all
+chain queries appear in trace order. Replaces the refuted legacy form; the `E_{time,h}` half's
+legacy proof (`Lemma516HashHalf.lean`) is a transfer candidate since the hash-arm certificates
+coincide across semantics. -/
+def Lemma5_16HonestResidualPaper (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
+  ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),
+    ¬ BadEventDSPaper.E tr → ¬ E_time_honest tr state S
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
