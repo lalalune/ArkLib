@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib
 
-set_option linter.style.longFile 2900
+set_option linter.style.longFile 3000
 
 /-!
 # Issue #232 — the two-prime de Bruijn structure: the CRT double-slice theorems (O67–O68)
@@ -2691,5 +2691,40 @@ theorem first_peel_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
     ring
 
 end FirstPeel
+
+/-! ## The full divisor-form law below `p`: window `t < p` ⟹ `μ_d`-covered, `d ∣ n`, `d > t`
+
+In the regime `t < p` the `q`-direction law alone already yields the complete
+O70/divisor form: the left case's coset order `q^c·p ≥ p` clears the window for free,
+and the right case's `q^{m+1}` clears it by the window-depth choice. This is the full
+mixed-radix law on the half of the parameter space where one prime exceeds the window —
+hypothesis: only the `q`-power window, conclusion: a genuine divisor of `n` above `t`
+whose full coset covers each element. -/
+
+section BelowP
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The divisor-form windowed law below `p`**. -/
+theorem windowed_coset_cover_below_p {p q : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {a b m t : ℕ} (hm : m ≤ b) (htp : t < p) (htq : t < q ^ (m + 1))
+    {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hwin : ∀ c, c ≤ m → ∑ z ∈ S, z ^ (q ^ c) = 0) :
+    ∀ x ∈ S, ∃ d : ℕ, d ∣ p ^ (a + 1) * q ^ (b + 1) ∧ t < d ∧
+      (∀ h : F, h ^ d = 1 → h * x ∈ S) := by
+  intro x hx
+  rcases windowed_coset_cover_q hp hq hpq hζp m b (by omega) ζq hζq S hS hwin x hx
+    with ⟨c, hc, hcov⟩ | hcov
+  · refine ⟨q ^ c * p, ?_, ?_, hcov⟩
+    · rw [mul_comm (q ^ c) p]
+      exact Nat.mul_dvd_mul (dvd_pow_self p (by omega)) (pow_dvd_pow q (by omega))
+    · calc t < p := htp
+      _ ≤ q ^ c * p := Nat.le_mul_of_pos_left p (pow_pos hq.pos c)
+  · refine ⟨q ^ (m + 1), ?_, htq, hcov⟩
+    exact Dvd.dvd.mul_left (pow_dvd_pow q (by omega)) _
+
+end BelowP
 
 end DeBruijnTwoPrime
