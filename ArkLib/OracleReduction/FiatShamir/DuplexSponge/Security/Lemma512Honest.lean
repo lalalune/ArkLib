@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2000
 
 /-!
 # #316 — Duplex-Sponge Fiat-Shamir: discharge of the M2a honest bad-event residual
@@ -1605,6 +1605,25 @@ theorem not_e_time_p_honest_of_not_E_of_no_redundant_forward_anchor
     (fun hrev => hNoRed
       (hasRedundantForwardAnchor_of_prior_reverse (tr := tr) h (state := state) (S := S) hrev))
 
+/-- A deduplicated trace has no redundant nonterminal `J_BT` forward anchors. -/
+theorem no_redundant_forward_anchor_of_noRedundantEntryDS
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hNoRed : tr.NoRedundantEntryDS) :
+    ¬ HasRedundantForwardAnchor tr state S := by
+  rintro ⟨p, _hp, pairIdx, _hpair, hidx, hred⟩
+  exact hNoRed ⟨(p.2.2 pairIdx).val, hidx⟩ hred
+
+/-- Permutation-timing closure for traces already satisfying `NoRedundantEntryDS`. -/
+theorem not_e_time_p_honest_of_not_E_of_noRedundantEntryDS
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hNoRed : tr.NoRedundantEntryDS) :
+    ¬ DuplexSpongeFS.KeyLemmaFoundations.E_time_p_honest tr state S :=
+  not_e_time_p_honest_of_not_E_of_no_redundant_forward_anchor
+    (tr := tr) h (state := state) (S := S)
+    (no_redundant_forward_anchor_of_noRedundantEntryDS tr state S hNoRed)
+
 /-- Off `E`, an honest hash-ordering witness gives concrete raw trace entries: the anchoring
 hash query and the first forward permutation query, with the permutation entry earlier in the
 trace. This is the raw-trace payload needed before the dedup collision step of M2c. -/
@@ -1798,6 +1817,21 @@ theorem lemma5_16_honest_of_no_redundant_forward_anchor
   · exact not_e_time_p_honest_of_not_E_of_no_redundant_forward_anchor
       tr hE state S (hNoRed tr state S hE) hPerm
 
+/-- Conditional full M2c assembly for traces that are already deduplicated. This is the direct
+target if the residual is routed over `removeRedundantEntryDS tr` rather than the raw trace. -/
+theorem lemma5_16_honest_of_noRedundantEntryDS
+    (hNoRed :
+      ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)),
+        ¬ BadEventDS.E tr → tr.NoRedundantEntryDS) :
+    DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual StmtIn U := by
+  unfold DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual
+  intro tr state S hE hTime
+  unfold DuplexSpongeFS.KeyLemmaFoundations.E_time_honest at hTime
+  rcases hTime with hHash | hPerm
+  · exact not_e_time_h_honest_of_not_E tr hE state S hHash
+  · exact not_e_time_p_honest_of_not_E_of_noRedundantEntryDS
+      tr hE state S (hNoRed tr hE) hPerm
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -1855,6 +1889,10 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms
   DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_no_redundant_forward_anchor
+set_option linter.style.longLine false in
+#print axioms DuplexSpongeFS.Sponge316.no_redundant_forward_anchor_of_noRedundantEntryDS
+set_option linter.style.longLine false in
+#print axioms DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_noRedundantEntryDS
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_capacity_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E
@@ -1866,6 +1904,8 @@ namespace DuplexSpongeFS.Sponge316
 #print axioms lemma5_16_honest_of_no_prior_reverse
 set_option linter.style.longLine false in
 #print axioms lemma5_16_honest_of_no_redundant_forward_anchor
+set_option linter.style.longLine false in
+#print axioms lemma5_16_honest_of_noRedundantEntryDS
 end DuplexSpongeFS.Sponge316
 
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest
