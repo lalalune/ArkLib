@@ -131,11 +131,16 @@ per-input form holds with explicit constants `c₁ = c₂ = 0`, `c₃ = n` for a
 This is **not** a proof of the prize: it shows the per-input packaging does not capture it. The
 open prize is the *uniform* form `epsMCAgsPrizeUniformConjecture` (one constant triple for all
 inputs), mirroring `mcaConjecture`. Tracking: Issue #141. -/
-theorem epsMCAgs_prizeBound_conjecture_holds
+theorem epsMCAgs_prizeBound_perInput_holds
     (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))
     (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) :
-    epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ := by
+    ∃ c₁ c₂ c₃ : ℝ,
+      epsMCAgs (F := F)
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) ) δ L
+      ≤ ENNReal.ofReal
+          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃) := by
   have hηlt1 : (η : ℝ) < 1 := eta_lt_one_of_prize j η δ hδ
   have hqpos : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
   -- pick `n` with `η^n < 1/q`
@@ -195,7 +200,12 @@ theorem epsMCAgs_prizeBound_conjecture_of_uniformConjecture
     (j : Fin 4) (η δ : ℝ≥0) (hη : 0 < η)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))
     (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) :
-    epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ := by
+    ∃ c₁ c₂ c₃ : ℝ,
+      epsMCAgs (F := F)
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) ) δ L
+      ≤ ENNReal.ofReal
+          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃) := by
   rcases hUniform with ⟨c₁, c₂, c₃, hbound⟩
   exact ⟨c₁, c₂, c₃, hbound j η δ hη hδ L⟩
 
@@ -1502,7 +1512,12 @@ theorem epsMCAgs_prizeBound_of_listSize_clears
     (hclear : ((ℓ : ENNReal) / (Fintype.card F : ENNReal)) ≤
       ENNReal.ofReal
         (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)) :
-    epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ :=
+    ∃ c₁' c₂' c₃' : ℝ,
+      epsMCAgs (F := F)
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) ) δ L
+      ≤ ENNReal.ofReal
+          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁' c₂' c₃') :=
   ⟨c₁, c₂, c₃,
     le_trans
       (epsMCAgs_le_listSize_div_of_pivotCovering
@@ -1515,7 +1530,7 @@ end Reduction
 
 #print axioms epsMCAgs_le_one
 #print axioms epsMCA_le_one
-#print axioms epsMCAgs_prizeBound_conjecture_holds
+#print axioms epsMCAgs_prizeBound_perInput_holds
 #print axioms epsMCAgs_prizeBound_conjecture_of_uniformConjecture
 #print axioms exists_uniform_epsMCAgsMassBound_of_uniformConjecture
 #print axioms epsMCAgsPrizeUniformConjecture_of_uniform_epsMCAgsMassBound
