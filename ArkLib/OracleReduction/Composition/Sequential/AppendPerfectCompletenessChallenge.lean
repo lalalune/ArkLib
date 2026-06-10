@@ -132,4 +132,30 @@ theorem challenge_hStage2Bridge_perfect
   · exact absurd h (probOutput_ne_zero_of_mem_support hs')
   · exact h
 
+/-- **Challenge-seam append perfect completeness.** The `V_to_P`-seam analogue of
+`append_perfectCompleteness_message`: from perfectly-complete components `R₁`, `R₂`, the appended
+reduction `R₁.append R₂` is perfectly complete. Routes through the proven challenge-seam completeness
+keystone `append_completeness_challenge_via_seamFactor` at zero error, discharging its three per-phase
+relabel residuals with the three proven bridges `challenge_hStage1Bridge` / `challenge_hStage2Bridge_
+perfect` / `challenge_hTot`. -/
+theorem append_perfectCompleteness_challenge
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (hInit : NeverFail init) :
+    (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
+  have key := append_completeness_challenge_via_seamFactor R₁ R₂ h₁ h₂ hn hDir hDir₂ himplSP himplNF
+    (fun stmt wit _ => challenge_hStage1Bridge R₁ R₂ stmt wit)
+    (fun stmt wit hmem a s' hsupp hgood =>
+      challenge_hStage2Bridge_perfect R₁ R₂ h₂ himplSP stmt wit hmem a s' hsupp hgood)
+    (fun stmt wit _ => challenge_hTot R₁ R₂ himplNF hInit stmt wit)
+  simpa [perfectCompleteness] using key
+
 end Reduction
