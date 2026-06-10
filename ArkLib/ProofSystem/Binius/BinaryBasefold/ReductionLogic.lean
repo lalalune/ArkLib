@@ -9,7 +9,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidLastEval
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidSucc
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToNextSumEq
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldAdvances
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldToLevel
 import ArkLib.ToVCVio.Oracle
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.OracleReduction.Completeness
@@ -1229,6 +1229,43 @@ lemma finalSumcheckStep_verifierCheck_passed_of_finalCodeword
             rw [h_final_codeword]
   dsimp [finalSumcheckStepLogic, FullTranscript.mk1] at h_eq ⊢
   exact h_eq
+
+omit [SampleableType L] in
+/-- The final folded codeword value sent by the honest prover is the multilinear polynomial
+evaluation at the statement challenges. -/
+lemma finalSumcheckStep_final_codeword_eq_eval
+    (stmtIn : Statement (SumcheckBaseContext L ℓ) (Fin.last ℓ))
+    (witIn : Witness 𝔽q β (Fin.last ℓ))
+    (h_wit_struct : witnessStructuralInvariant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (mp := BBF_SumcheckMultiplierParam) (stmt := stmtIn) (wit := witIn)) :
+    witIn.f ⟨0, by simp only [zero_mem]⟩ = witIn.t.val.eval stmtIn.challenges := by
+  rw [h_wit_struct.2]
+  exact getMidCodewords_last_apply_eq_eval 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (t := witIn.t) (challenges := stmtIn.challenges)
+    (y := ⟨0, by simp only [Fin.val_last, zero_mem]⟩)
+
+omit [SampleableType L] in
+/-- The final sumcheck verifier check follows directly from sumcheck consistency and witness
+structure. -/
+lemma finalSumcheckStep_verifierCheck_passed
+    (stmtIn : Statement (SumcheckBaseContext L ℓ) (Fin.last ℓ))
+    (witIn : Witness 𝔽q β (Fin.last ℓ))
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β ϑ (Fin.last ℓ) j)
+    (challenges : (pSpecFinalSumcheckStep (L := L)).Challenges)
+    (h_sumcheck_cons : sumcheckConsistencyProp (𝓑 := 𝓑) stmtIn.sumcheck_target witIn.H)
+    (h_wit_struct : witnessStructuralInvariant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (mp := BBF_SumcheckMultiplierParam) (stmt := stmtIn) (wit := witIn)) :
+    (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (𝓑 := 𝓑)).verifierCheck stmtIn
+        ((finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (𝓑 := 𝓑)).honestProverTranscript stmtIn witIn oStmtIn challenges) := by
+  exact finalSumcheckStep_verifierCheck_passed_of_finalCodeword 𝔽q β
+    (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
+    (stmtIn := stmtIn) (witIn := witIn) (oStmtIn := oStmtIn) (challenges := challenges)
+    (h_sumcheck_cons := h_sumcheck_cons) (h_wit_struct := h_wit_struct)
+    (h_final_codeword := finalSumcheckStep_final_codeword_eq_eval 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtIn := stmtIn) (witIn := witIn)
+      (h_wit_struct := h_wit_struct))
 
 /-
 The two direct final-step helper proofs below are stale after the challenge-order migration and have
