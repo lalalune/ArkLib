@@ -139,6 +139,29 @@ The numerator `|Hypercube n|` is exactly the pole count bounded by `card_poleSet
 noncomputable def logupCompletenessError (F : Type) [Fintype F] (n : ℕ) : ℝ≥0 :=
   (Fintype.card (Hypercube n) : ℝ≥0) / (Fintype.card F)
 
+omit [DecidableEq F] [Fact ((-1 : F) ≠ 1)] [SampleableType F] in
+/-- **The LogUp completeness error is never zero** (issue #13, dmvt audit defect 2):
+`logupCompletenessError F n = |Hypercube n| / |F| = 2^n / |F|`, and both numerator and
+denominator are positive for a finite field `F`. Consequently any statement hypothesizing
+`logupCompletenessError F n = 0` (the historical "perfect special case" lemmas) is **vacuous**;
+those lemmas have been removed rather than restated. -/
+theorem logupCompletenessError_ne_zero :
+    logupCompletenessError F n ≠ 0 := by
+  have hne : Nonempty F := ⟨0⟩
+  have h1 : (Fintype.card (Hypercube n) : ℝ≥0) ≠ 0 := by
+    exact_mod_cast Fintype.card_ne_zero (α := Hypercube n)
+  have h2 : (Fintype.card F : ℝ≥0) ≠ 0 := by
+    exact_mod_cast Fintype.card_ne_zero (α := F)
+  simp only [logupCompletenessError, ne_eq, div_eq_zero_iff, h1, h2, or_self,
+    not_false_eq_true]
+
+omit [DecidableEq F] [Fact ((-1 : F) ≠ 1)] [SampleableType F] in
+/-- The LogUp completeness error is strictly positive (`ℝ≥0` form of
+`logupCompletenessError_ne_zero`). -/
+theorem logupCompletenessError_pos :
+    0 < logupCompletenessError F n :=
+  pos_iff_ne_zero.mpr (logupCompletenessError_ne_zero F n)
+
 /-- Paper-shaped form of `probEvent_pole_le`: the outer-phase pole event is bounded by the
 same `logupCompletenessError` constant consumed by `OuterCompletenessResidual`.
 

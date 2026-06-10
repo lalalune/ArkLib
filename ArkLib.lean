@@ -1529,6 +1529,8 @@ import ArkLib.ToMathlib.ExtractedIssueBricks
 import ArkLib.ToMathlib.FaaDiBrunoMatchProof
 import ArkLib.ToMathlib.FaithfulCurveExtraction
 import ArkLib.ToMathlib.FaithfulFrontierComposition
+import ArkLib.ToMathlib.FaithfulFrontierWitness
+import ArkLib.ToMathlib.FactorPigeonhole
 import ArkLib.ToMathlib.FinSumMvPolyBricks
 import ArkLib.ToMathlib.FiniteSeriesToPoly
 import ArkLib.ToMathlib.Finset.Basic
@@ -1577,6 +1579,7 @@ import ArkLib.ToMathlib.HenselMatchingPolySupply
 import ArkLib.ToMathlib.HenselUniqueness
 import ArkLib.ToMathlib.HliftDvd
 import ArkLib.ToMathlib.HvanishSupply
+import ArkLib.ToMathlib.IncidenceBound
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.InterpolantInputSupply
 import ArkLib.ToMathlib.IsSquareNatCast

@@ -50,9 +50,15 @@ not available in-tree. So this brick:
   explicit, clearly-named `Prop` hypotheses — the two genuine residual gaps, each closable by a later
   brick;
 * additionally **sharpens** the append residual, reducing it through the proven verifier-fusion
-  bridge `appendToReductionResidual` to a Reduction-level append-completeness statement, and shows
-  that in the **perfect special case** (`logupCompletenessError F n = 0`) the keystone discharges it
-  end-to-end with *no* residual at all.
+  bridge `appendToReductionResidual` to a Reduction-level append-completeness statement.
+
+**Removed (issue #13, dmvt audit defect 2):** the historical "perfect special case" lemmas
+(`appendCompletenessResidual_of_perfect` / `logup_completeness_full_perfect`) hypothesized
+`logupCompletenessError F n = 0`, which is **impossible** — the error is `2^n / |F| > 0` for every
+finite field (`logupCompletenessError_ne_zero`, `Security/Completeness.lean`) — so both lemmas were
+vacuous. The genuinely non-perfect append composition is discharged by
+`OracleReduction.append_completeness_msg_proof` (`LogupCompletenessWired.lean`), which carries the
+non-zero outer error through the message seam for real.
 
 No `sorry`/`sorryAx`: every step is a real proof or an explicitly named hypothesis. The axiom audit
 at the bottom confirms `logup_completeness_full` is axiom-clean (`propext`, `Classical.choice`,
@@ -155,127 +161,15 @@ theorem appendCompletenessResidual_iff_toReduction
   -- After the bridge rewrite both sides are the same `Reduction.completeness` statement.
   exact Iff.rfl
 
-/-! ### The perfect special case: keystone discharges the append residual with no residual
+/-! ### Note: no "perfect special case"
 
-When `logupCompletenessError F n = 0` (e.g. an infinite/empty hypercube row count relative to `|F|`),
-both component errors are `0`, the seam is a message seam, and the proven oracle-level keystone
-`OracleReduction.append_perfectCompleteness_msg_proof` discharges the append residual outright. This
-exhibits the append composition as a *genuine* (not vacuous) fact: the remaining wall is purely the
-arithmetic of carrying a non-zero outer error through the same composition.
-
-The lemmas below need the base oracle-spec finiteness/inhabitedness assumptions `[oSpec.Fintype]`,
-`[oSpec.Inhabited]` that the keystone consumes, plus the default challenge oracle interfaces for the
-three protocol specs (so the `[·]ₒ` combined-spec instance binders elaborate). -/
-
-variable [oSpec.Fintype] [oSpec.Inhabited]
-
-/-- Default challenge oracle interface for the full LogUp transcript challenges. -/
-noncomputable local instance instPSpecChallengeOI :
-    ∀ i, OracleInterface ((pSpec F n M params).Challenge i) :=
-  ProtocolSpec.challengeOracleInterface
-
-/-- Default challenge oracle interface for the outer-phase challenges. -/
-noncomputable local instance instOuterChallengeOI :
-    ∀ i, OracleInterface ((outerPSpec F n params).Challenge i) :=
-  ProtocolSpec.challengeOracleInterface
-
-/-- Default challenge oracle interface for the embedded-sumcheck challenges. -/
-noncomputable local instance instSumcheckChallengeOI :
-    ∀ i, OracleInterface ((logupSumcheckPSpec F n M params).Challenge i) :=
-  ProtocolSpec.challengeOracleInterface
-
-/-- In the perfect special case `logupCompletenessError F n = 0`, the embedded-sumcheck completeness
-is `0` and the outer completeness is `0`, so both sub-phases are perfectly complete; the
-message-seam keystone then yields the append residual end-to-end. The seam direction facts and the
-verifier-fusion bridge are taken as explicit hypotheses (the message seam is structural; the bridge
-is the proven `appendToReductionResidual`). -/
-theorem appendCompletenessResidual_of_perfect
-    (hErr : logupCompletenessError F n = 0)
-    (hInit : NeverFail init)
-    (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl)
-    (hn : 0 < Fin.vsum (fun _ : Fin n => 2))
-    (hDir :
-      (pSpec F n M params).dir (⟨4, by
-        change 4 < 4 + Fin.vsum (fun _ : Fin n => 2); omega⟩ :
-          Fin (4 + Fin.vsum (fun _ : Fin n => 2))) = .P_to_V)
-    (hDir₂ : (logupSumcheckPSpec F n M params).dir (⟨0, hn⟩ :
-        Fin (Fin.vsum (fun _ : Fin n => 2))) = .P_to_V)
-    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
-      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
-        = support (liftM q : OracleComp oSpec β))
-    (hBridge :
-      OracleReduction.appendToReductionResidual
-        (outerOracleReduction oSpec F n M params)
-        (sumcheckOracleReduction oSpec F n M params))
-    [(oSpec + [(pSpec F n M params).Challenge]ₒ).Fintype]
-    [(oSpec + [(pSpec F n M params).Challenge]ₒ).Inhabited]
-    [(oSpec + [(outerPSpec F n params).Challenge]ₒ).Fintype]
-    [(oSpec + [(outerPSpec F n params).Challenge]ₒ).Inhabited]
-    [(oSpec + [(logupSumcheckPSpec F n M params).Challenge]ₒ).Fintype]
-    [(oSpec + [(logupSumcheckPSpec F n M params).Challenge]ₒ).Inhabited] :
-    AppendCompletenessResidual oSpec F n M params init impl
-      (outerCompletenessResidual_of_neverFail oSpec F n M params init impl hInit) hSumcheck := by
-  -- Outer completeness with error `logupCompletenessError F n = 0` is perfect completeness.
-  have hOuterPerfect :
-      (outerOracleReduction oSpec F n M params).perfectCompleteness init impl
-        (inputRelation F n M) (midRelation F n M params) := by
-    have h := outerCompletenessResidual_of_neverFail oSpec F n M params init impl hInit
-    unfold OuterCompletenessResidual at h
-    rw [hErr] at h
-    exact h
-  -- Sumcheck completeness with error `0` is perfect completeness (by definition).
-  have hSumPerfect :
-      (sumcheckOracleReduction oSpec F n M params).perfectCompleteness init impl
-        (midRelation F n M params) outputRelation := hSumcheck
-  -- Apply the proven oracle-level message-seam keystone to get perfect append completeness.
-  have hAppPerfect :
-      (OracleReduction.append (outerOracleReduction oSpec F n M params)
-          (sumcheckOracleReduction oSpec F n M params)).perfectCompleteness init impl
-        (inputRelation F n M) outputRelation :=
-    OracleReduction.append_perfectCompleteness_msg_proof
-      (outerOracleReduction oSpec F n M params)
-      (sumcheckOracleReduction oSpec F n M params)
-      hOuterPerfect hSumPerfect hn hDir hDir₂ hInit hImplSupp hBridge
-  -- `AppendCompletenessResidual` at error `logupCompletenessError F n + 0 = 0` is exactly that
-  -- perfect append completeness.
-  unfold AppendCompletenessResidual OracleReduction.appendCompletenessResidual
-  rw [hErr, add_zero]
-  exact hAppPerfect
-
-/-- **End-to-end LogUp completeness in the perfect special case — fully closed (no residual).**
-When `logupCompletenessError F n = 0`, the append residual is discharged by the proven keystone via
-`appendCompletenessResidual_of_perfect`, so the only remaining input is the embedded sumcheck
-completeness. This is the strongest unconditional statement available without an in-tree non-perfect
-append-completeness theorem. -/
-theorem logup_completeness_full_perfect
-    (hErr : logupCompletenessError F n = 0)
-    (hInit : NeverFail init)
-    (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl)
-    (hn : 0 < Fin.vsum (fun _ : Fin n => 2))
-    (hDir :
-      (pSpec F n M params).dir (⟨4, by
-        change 4 < 4 + Fin.vsum (fun _ : Fin n => 2); omega⟩ :
-          Fin (4 + Fin.vsum (fun _ : Fin n => 2))) = .P_to_V)
-    (hDir₂ : (logupSumcheckPSpec F n M params).dir (⟨0, hn⟩ :
-        Fin (Fin.vsum (fun _ : Fin n => 2))) = .P_to_V)
-    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
-      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
-        = support (liftM q : OracleComp oSpec β))
-    (hBridge :
-      OracleReduction.appendToReductionResidual
-        (outerOracleReduction oSpec F n M params)
-        (sumcheckOracleReduction oSpec F n M params))
-    [(oSpec + [(pSpec F n M params).Challenge]ₒ).Fintype]
-    [(oSpec + [(pSpec F n M params).Challenge]ₒ).Inhabited]
-    [(oSpec + [(outerPSpec F n params).Challenge]ₒ).Fintype]
-    [(oSpec + [(outerPSpec F n params).Challenge]ₒ).Inhabited]
-    [(oSpec + [(logupSumcheckPSpec F n M params).Challenge]ₒ).Fintype]
-    [(oSpec + [(logupSumcheckPSpec F n M params).Challenge]ₒ).Inhabited] :
-    (logupOracleReduction oSpec F n M params).completeness init impl
-      (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
-  logup_completeness_full oSpec F n M params init impl hInit hSumcheck
-    (appendCompletenessResidual_of_perfect oSpec F n M params init impl
-      hErr hInit hSumcheck hn hDir hDir₂ hImplSupp hBridge)
+This file historically also exposed `appendCompletenessResidual_of_perfect` and
+`logup_completeness_full_perfect`, gated on `hErr : logupCompletenessError F n = 0`. That premise
+is **unsatisfiable** (`logupCompletenessError_ne_zero`: the error is `2^n / |F| > 0` over any
+finite field), so both lemmas were vacuous and have been deleted (issue #13, dmvt audit defect 2).
+The genuine non-perfect append composition — carrying the non-zero outer error through the message
+seam — is proven in `LogupCompletenessWired.lean`
+(`OracleReduction.append_completeness_msg_proof` / `Logup.appendCompletenessResidual_wired`). -/
 
 end Close
 
@@ -285,5 +179,3 @@ end Logup
 #print axioms Logup.logup_completeness_full
 #print axioms Logup.logup_completeness_full_of_outer
 #print axioms Logup.appendCompletenessResidual_iff_toReduction
-#print axioms Logup.appendCompletenessResidual_of_perfect
-#print axioms Logup.logup_completeness_full_perfect

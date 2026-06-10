@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegralFactorAssignment
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSpecializedConditions
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernel
 
@@ -72,6 +73,28 @@ lemma exists_integral_factor_assignment_multiset
   exact ⟨R, Multiset.mem_toFinset.mp hR, hd⟩
 
 end MultisetBridge
+
+section FilterCardBridge
+
+variable {F₁ : Type} [Field F₁] [Fintype F₁]
+
+/-- Instance-free form of the degenerate-set cardinality bound: any finset of scalars that
+all collapse the interpolant is small. Stated in an instance-poor section so the `filter`
+hypothesis elaborates with the same Classical instances as the `ZDegree` producer
+(`gs_existence_over_ratfunc_zDegree_card`); the ∀-form conclusion carries no instances at
+all and is safe to consume in the instance-rich capture-kernel context. -/
+lemma degenerate_card_bound_of_filter {Q₀ : (F₁[X])[X][Y]} {T : ℕ}
+    (hcard : (Finset.univ.filter (fun z : F₁ =>
+      Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0)).card ≤ T) :
+    ∀ S : Finset F₁,
+      (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
+      S.card ≤ T := by
+  intro S hS
+  refine le_trans (Finset.card_le_card ?_) hcard
+  intro z hz
+  exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hS z hz⟩
+
+end FilterCardBridge
 
 variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
 
@@ -194,8 +217,9 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
     (hQ₀0 : Q₀ ≠ 0)
     (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
     (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
-    (hbadz : (Finset.univ.filter (fun z : F₀ =>
-      Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0)).card ≤ T) :
+    (hbadz : ∀ S : Finset F₀,
+      (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
+      S.card ≤ T) :
     ∃ (Index : Finset (Option ((F₀[X])[X][Y])))
       (Ecell : Option ((F₀[X])[X][Y]) → Finset F₀) (P : F₀ → F₀[X]),
       Index.card ≤ (UniqueFactorizationMonoid.factors Q₀).toFinset.card + 1 ∧
@@ -287,12 +311,10 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
     simp only [hIndex]
     exact Finset.mem_insert_self _ _
   · -- the degenerate cell is small: its members specialize `Q₀` to zero
-    refine le_trans (Finset.card_le_card ?_) hbadz
+    refine hbadz (Ecell none) ?_
     intro γ hγ
     have hγ' : γ ∈ bad.filter (fun γ' => assign γ' = none) := hγ
     obtain ⟨hγbad, hass⟩ := Finset.mem_filter.mp hγ'
-    rw [Finset.mem_filter]
-    refine ⟨Finset.mem_univ _, ?_⟩
     by_contra hz
     obtain ⟨R, _, hEq, _⟩ := hassignpos γ ⟨hγbad, hz⟩
     rw [hass] at hEq
@@ -328,8 +350,9 @@ theorem bad_card_le_of_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n 
     (hQ₀0 : Q₀ ≠ 0)
     (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
     (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
-    (hbadz : (Finset.univ.filter (fun z : F₀ =>
-      Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0)).card ≤ T)
+    (hbadz : ∀ S : Finset F₀,
+      (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
+      S.card ≤ T)
     (hK4 : ∀ (E : Finset F₀) (P : F₀ → F₀[X]) (R : (F₀[X])[X][Y]),
       R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset →
       (∀ γ ∈ E, ∃ d : McaDecode domain k δ u γ, d.P = P γ) →
@@ -361,6 +384,46 @@ theorem bad_card_le_of_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n 
     _ ≤ ((UniqueFactorizationMonoid.factors Q₀).toFinset.card + 1) * T :=
         Nat.mul_le_mul_right T hcardI
 
+/-- **The total cell production** — no interpolant hypotheses left. The `ZDegree` producer
+(`gs_existence_over_ratfunc_zDegree_card`, unit (2)) supplies the integer GS interpolant,
+its `Conditions`, and the explicit degenerate-set budget
+`T = n·|constraintIndices m|·gs_degree_bound k n m`; the cell production consumes them.
+What remains of the Johnson MCA chain after this theorem is exactly K4 beyond the
+unique-decoding window, fed the (cell, family, factor) triples produced here. -/
+theorem exists_cell_production_total {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin 2) (Fin n)) (δ : ℝ≥0)
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m) :
+    ∃ (Q₀ : (F₀[X])[X][Y]) (Index : Finset (Option ((F₀[X])[X][Y])))
+      (Ecell : Option ((F₀[X])[X][Y]) → Finset F₀) (P : F₀ → F₀[X]),
+      Q₀ ≠ 0 ∧
+      Index.card ≤ (UniqueFactorizationMonoid.factors Q₀).toFinset.card + 1 ∧
+      (Finset.univ.filter (fun γ : F₀ =>
+        _root_.ProximityGap.mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+          δ (u 0) (u 1) γ)) ⊆ Index.biUnion Ecell ∧
+      (∀ ij ∈ Index, ∀ γ ∈ Ecell ij,
+        ∃ d : McaDecode domain k δ u γ, d.P = P γ) ∧
+      none ∈ Index ∧
+      (Ecell none).card ≤
+        n * (GuruswamiSudan.constraintIndices m).card * gs_degree_bound k n m ∧
+      (∀ ij ∈ Index, ij ≠ none →
+        ∃ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+          ∀ γ ∈ Ecell ij,
+            (Polynomial.X - Polynomial.C (P γ)) ∣
+              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) := by
+  obtain ⟨Q₀, h0, hcond, hcard⟩ :=
+    GuruswamiSudan.OverRatFunc.ZDegree.gs_existence_over_ratfunc_zDegree_card
+      (F := F₀) k m domain (u 0) (u 1) hk1 (NeZero.ne n) hm
+  have hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) =
+      Polynomial.C (Polynomial.C (algebraMap F₀[X] (RatFunc F₀) (1 : F₀[X]))) *
+        Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) := by
+    simp
+  obtain ⟨Index, Ecell, P, h1, h2, h3, h4, h5, h6⟩ :=
+    exists_cell_production domain u δ
+      (n * (GuruswamiSudan.constraintIndices m).card * gs_degree_bound k n m)
+      hcond hrep h0 hkn hm hδ1 hδJ (degenerate_card_bound_of_filter hcard)
+  exact ⟨Q₀, Index, Ecell, P, h0, h1, h2, h3, h4, h5, h6⟩
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -369,3 +432,4 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaDecode_matching_dvd
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_cell_production
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.bad_card_le_of_cell_production
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_cell_production_total
