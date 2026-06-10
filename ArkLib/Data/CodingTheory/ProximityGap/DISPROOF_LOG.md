@@ -3803,3 +3803,32 @@ O76/O78 left the corrected boundary route fully plumbed off the lattice (floor-m
 * Witness namespace: the whole spine fires end-to-end at the genuine lattice endpoint ZMod 11 / Fin 8 / deg 2 — `sqrtRate·8 = √16 = 4` exact, `⌊δn⌋ = δn` (`latticeW`), zero stack has `Pr = 1 > 9/11` and forced extraction (a `natDegree < 2` polynomial vanishing on ≥ 4 of 8 distinct evaluation points is 0); satisfiability certified, no unsatisfiable-hypothesis leaf. (Bookkeeping: the brief's other suggested piece — floor-cell threshold monotonicity — was already landed by a parallel lane as O78/`BoundaryThresholdFloorCell.lean`; duplicate guard caught it before writing.)
 
 **Where the open core sits:** both leaves of the boundary quantization split now rest on exactly one kind of input each — the strict-interior §5 producer per floor cell (non-lattice, O78) and `LatticeCoeffPolyExtraction` at the endpoint (lattice, this entry). Both are the BCIKS20 §5 list-decoding extraction content; the boundary plumbing is complete and the extraction is provably not droppable on either branch.
+
+### O85 — census C3 PROVEN at every radix: single-class words are fiber-aligned (nubs, 2026-06-10)
+
+(Record note first: O70's bookkeeping correction is confirmed from this seat — my O69
+commit `2dcc9cfd9` did NOT contain the announced `weight_ge_live_image`; a landing-loop
+error dropped the working-tree edit (branch snapshot taken before commit). The content
+was independently supplied at every depth by O70's `live_card_le_weight`. Thanks to the
+cold audit; loop fixed — snapshots now taken post-staging, pushed diffs verified against
+claims.)
+
+New brick `ArkLib/Data/CodingTheory/ProximityGap/SingleClassWeight.lean` (axiom-clean):
+the census C3 rigidity (0/95,623 violations in O69's data) is now a theorem, and it
+holds at EVERY radix `m ∣ n`, not just 2-powers:
+
+* `single_class_weight`: on a full `n`-th-root domain (`|H| = n = s·m`, `0 ∉ H`), a
+  single-coefficient-class word `f = X^r·g(X^m)` has EXACT weight
+  `n − m·#{slice zeros in the image domain}` — its zero set is a union of full `m`-power
+  fibers (`SmoothFiberCount.preimage_card_eq` does the counting). Single-class = fiber-aligned.
+* `dvd_sub_weight_of_single_class`: hence `m ∣ n − w`.
+
+Contrapositive, in branch language: at any weight with `2^ℓ ∤ n − w`, the depth-`ℓ`
+fold tree provably keeps ≥ 2 alive branches — narrowness in the coefficient tree exists
+ONLY at coset-compatible weights (the O46/O47 boundary), at every level and every radix.
+Together with O70's root-coherence theorem the structural story is: low weight forces
+slices to share roots; fiber-misaligned weight forbids slice concentration. The
+surviving frontier is unchanged and now sharply framed: the per-locus COUNT — bound
+#{f : deg f < k, all 2^ℓ slices vanishing on a common locus Z}; for fixed Z the slices
+live in root-forced subspaces of total dimension k − 2^ℓ·|Z| (the linear-algebra brick
+queued next), and the open content is the union over loci versus the weight filter.
