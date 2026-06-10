@@ -48,3 +48,20 @@ If blueprint output matters and `leanblueprint` is missing:
 ```bash
 python3 -m pip install leanblueprint
 ```
+
+### Building the blueprint locally without TeX
+
+`leanblueprint web` (plasTeX) resolves every `\input` through the external `kpsewhich`
+binary. On a machine without a TeX distribution the build "succeeds" but every chapter is an
+empty ~5KB shell (18 `File not found` warnings) — a vacuous gate. Two fixes:
+
+- Install TeX (what CI does via the `texlive-full` container; `leanblueprint pdf` also needs it).
+- Or shim `kpsewhich` with a script that searches `$TEXINPUTS` then the cwd, trying
+  `name`, `name.tex`, `name.sty`; put it on `PATH` before running `leanblueprint web`.
+  With the shim the local web build produces full chapters (`chap-proof_systems.html` ≈ 300KB,
+  not ≈ 5KB) and the genuine content warnings (missing bib keys, unsupported macros) become
+  visible. `pip install pygraphviz` needs `brew install graphviz` headers
+  (`CFLAGS=-I$(brew --prefix graphviz)/include LDFLAGS=-L$(brew --prefix graphviz)/lib`).
+
+Sanity probe after any blueprint build: `wc -c blueprint/web/chap-*.html` — chapters in the
+single-digit-KB range mean the inputs did not resolve and the build was vacuous.
