@@ -167,6 +167,13 @@ Per-hypothesis discipline: constraints → new direction → why nobody has done
 - **Hypothesis**: over smooth domains, `BoundaryCardResidual` reduces to a windowed-coset count
   bounded by the O123 alive-trace injection — discharging §6.2 for all FRI/STIR/WHIR
   instantiations (which are smooth) without the general-field argument.
+- **CORRECTED 2026-06-10 (larp-check fired on our own tree)**: `BoundaryCardResidual` is
+  ALREADY REFUTED in-tree (`not_boundaryCardResidual` + two counterexample families,
+  axiom-clean; the def survives only as a documented-false assumption surface). The boundary
+  is not open — it is false; the strict chain avoids it. A3 must be retargeted at the §5
+  strict-interior object (`StrictCanonicalCoeffPolysResidual` / the `RS_goodCoeffsCurve`
+  counting) — whether THAT bad set is power-sum-expressible over smooth domains is the
+  corrected open question.
 - **Proof plan**: shape-confirmation; then the window dictionary (`O111` is at modulus n with
   arbitrary Z-weights — the boundary weights are the coefficient extractions); then O123.
 
