@@ -572,6 +572,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4Seam
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
