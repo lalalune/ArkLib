@@ -291,6 +291,48 @@ theorem gs_existence_over_ratfunc_zDegree {n : ℕ} (k m : ℕ) (ωs : Fin n ↪
     · rw [dif_neg h]
       simp
 
+/-- **Quantitative collapse bound** (the roots-counting corollary). If every
+`F[Z]`-coefficient of a nonzero `Q₀ : F[Z][X][Y]` has `natDegree ≤ B`, then the degenerate
+set `{z : Q₀|_{Z:=z} = 0}` has at most `B` elements: any fixed nonzero coefficient of `Q₀`
+vanishes at every such `z` (two levels of `Polynomial.coeff_map`), and a nonzero polynomial
+of `natDegree ≤ B` has at most `B` roots. Quantitative companion of
+`GuruswamiSudan.OverRatFunc.specialization_collapse_finite`. -/
+theorem card_specialization_collapse_le [Fintype F] {Q₀ : (F[X])[X][Y]} (hQ₀ : Q₀ ≠ 0)
+    {B : ℕ} (hdeg : ∀ b a : ℕ, ((Q₀.coeff b).coeff a).natDegree ≤ B) :
+    (Finset.univ.filter (fun z : F =>
+      Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0)).card ≤ B := by
+  obtain ⟨i, hi⟩ := Polynomial.support_nonempty.mpr hQ₀
+  have hi' : Q₀.coeff i ≠ 0 := Polynomial.mem_support_iff.mp hi
+  obtain ⟨j, hj⟩ := Polynomial.support_nonempty.mpr hi'
+  have hj' : (Q₀.coeff i).coeff j ≠ 0 := Polynomial.mem_support_iff.mp hj
+  refine (Polynomial.card_le_degree_of_subset_roots ?_).trans (hdeg i j)
+  intro z hz
+  rw [Finset.mem_val, Finset.mem_filter] at hz
+  have h1 : ((Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z))).coeff i).coeff j
+      = 0 := by
+    rw [hz.2]
+    simp
+  rw [Polynomial.coeff_map, Polynomial.coe_mapRingHom, Polynomial.coeff_map,
+    Polynomial.coe_evalRingHom] at h1
+  exact (Polynomial.mem_roots hj').mpr h1
+
+/-- **The `hbadz` producer (#302, unit (2) endgame).** The integer GS interpolant of
+`gs_existence_over_ratfunc_zDegree` has a degenerate set of cardinality at most the
+explicit Z-degree budget `n·|constraintIndices m|·gs_degree_bound k n m` — exactly the
+`hbadz` input consumed by `exists_cell_production` / `bad_card_le_of_cell_production` in
+`GSCellProduction.lean`. -/
+theorem gs_existence_over_ratfunc_zDegree_card [Fintype F] {n : ℕ} (k m : ℕ)
+    (ωs : Fin n ↪ F) (f₀ f₁ : Fin n → F) (hk : 1 < k) (hn : n ≠ 0) (hm : 1 ≤ m) :
+    ∃ Q₀ : (F[X])[X][Y],
+      Q₀ ≠ 0 ∧
+      Conditions k m (gs_degree_bound k n m) (liftedDomain ωs) (genericFold f₀ f₁)
+        (Q₀.map (Polynomial.mapRingHom (algebraMap F[X] K))) ∧
+      (Finset.univ.filter (fun z : F =>
+        Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0)).card ≤
+        n * (constraintIndices m).card * gs_degree_bound k n m := by
+  obtain ⟨Q₀, h0, hcond, hdeg⟩ := gs_existence_over_ratfunc_zDegree k m ωs f₀ f₁ hk hn hm
+  exact ⟨Q₀, h0, hcond, card_specialization_collapse_le h0 hdeg⟩
+
 end GuruswamiSudan.OverRatFunc.ZDegree
 
 -- Axiom audit anchors: every result is axiom-clean `[propext, Classical.choice, Quot.sound]`.
@@ -299,3 +341,5 @@ end GuruswamiSudan.OverRatFunc.ZDegree
 #print axioms GuruswamiSudan.OverRatFunc.ZDegree.coeffsToPoly_eq_sum
 #print axioms GuruswamiSudan.OverRatFunc.ZDegree.constraintMap_eq_mulVec
 #print axioms GuruswamiSudan.OverRatFunc.ZDegree.gs_existence_over_ratfunc_zDegree
+#print axioms GuruswamiSudan.OverRatFunc.ZDegree.card_specialization_collapse_le
+#print axioms GuruswamiSudan.OverRatFunc.ZDegree.gs_existence_over_ratfunc_zDegree_card
