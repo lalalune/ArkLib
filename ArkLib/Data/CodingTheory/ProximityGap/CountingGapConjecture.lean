@@ -57,6 +57,10 @@ This file records that split as named statements:
 * `gap_trichotomy` / `top_slice_iff_odd` — the e-units bookkeeping: the UD side splits
   exactly into O84's proven window, the surviving interior, and the refuted odd-`d` top
   slice.
+* `interior_or_top_slice` / `even_ud_window_is_interior` — convenience forms used to
+  route future attempts away from the refuted odd endpoint: any full-window point that is
+  not literally top-slice is already in the surviving interior, and every even-`d`
+  endpoint is automatically interior.
 
 Provenance: axiom-clean (`[propext, Classical.choice, Quot.sound]`), zero `sorry`.
 References: [ABF26] Def 4.3 / Grand Challenge 1; O74/O78/O84/O85 in
@@ -158,6 +162,21 @@ theorem top_slice_iff_odd (d : ℕ) : (∃ e, 2 * e + 1 = d) ↔ Odd d := by
   · rintro ⟨e, he⟩
     exact ⟨e, by omega⟩
 
+/-- On the full unique-decoding-side window, the only way to miss the surviving interior
+is to be exactly on the refuted top slice `2e+1 = d`.  This is the routing lemma for
+future proof attempts: once the top-slice obstruction is excluded, target
+`InteriorCountingBound`. -/
+theorem interior_or_top_slice (e d : ℕ) (hud : 2 * e + 1 ≤ d) :
+    2 * e + 2 ≤ d ∨ 2 * e + 1 = d := by
+  omega
+
+/-- If the minimum-distance parameter `d` is even, the refuted top slice cannot occur;
+therefore the full unique-decoding-side window is already in the surviving interior. -/
+theorem even_ud_window_is_interior (e d : ℕ) (hd : Even d) (hud : 2 * e + 1 ≤ d) :
+    2 * e + 2 ≤ d := by
+  rcases hd with ⟨r, rfl⟩
+  omega
+
 /-- The surviving conjecture window strictly extends O84's proven window: e.g. `e = 3`,
 `d = 9` (the probe's interior point at RS(16,8)/GF(97), `δ = 3/16`) satisfies
 `2e + 2 ≤ d` but not `3e < d`. -/
@@ -168,6 +187,8 @@ theorem interior_window_extends_proven : ∃ e d : ℕ, 2 * e + 2 ≤ d ∧ ¬ 3
 #print axioms epsMCA_le_of_interiorCountingBound
 #print axioms gap_trichotomy
 #print axioms top_slice_iff_odd
+#print axioms interior_or_top_slice
+#print axioms even_ud_window_is_interior
 #print axioms interior_window_extends_proven
 
 end ArkLib.ProximityGap.CountingGap
