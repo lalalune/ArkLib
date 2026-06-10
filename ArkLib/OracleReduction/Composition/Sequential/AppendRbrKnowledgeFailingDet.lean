@@ -374,6 +374,57 @@ theorem toVerifier_eq_failingDet_of_collapse
   simp only [OptionT.run_bind, OptionT.run_mk, Option.elimM, pure_bind]
   cases h : v? (stmt, oStmt) tr <;> simp <;> rfl
 
+variable {Stmt₁ : Type} {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type}
+    [Oₛ₁ : ∀ i, OracleInterface (OStmt₁ i)]
+    {Wit₁ : Type}
+    {Stmt₂ : Type} {ιₛ₂ : Type} {OStmt₂ : ιₛ₂ → Type}
+    [Oₛ₂ : ∀ i, OracleInterface (OStmt₂ i)]
+    {Wit₂ : Type}
+    {Stmt₃ : Type} {ιₛ₃ : Type} {OStmt₃ : ιₛ₃ → Type}
+    [Oₛ₃ : ∀ i, OracleInterface (OStmt₃ i)]
+    {Wit₃ : Type}
+    {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+    [Oₘ₁ : ∀ i, OracleInterface (pSpec₁.Message i)]
+    [Oₘ₂ : ∀ i, OracleInterface (pSpec₂.Message i)]
+    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel₁ : Set ((Stmt₁ × ∀ i, OStmt₁ i) × Wit₁)}
+    {rel₂ : Set ((Stmt₂ × ∀ i, OStmt₂ i) × Wit₂)}
+    {rel₃ : Set ((Stmt₃ × ∀ i, OStmt₃ i) × Wit₃)}
+
+/-- **OracleVerifier-level failing-deterministic rbr knowledge-soundness append keystone
+(`Subsingleton σ`, message seam).** The OracleVerifier companion of
+`Verifier.append_rbrKnowledgeSoundness_failingDet_subsingleton`: discharges the
+`OracleVerifier.appendRbrKnowledgeSoundnessResidual` for seams whose left verifier compiles to a
+*failing*-deterministic `toVerifier` (the RingSwitching sumcheck-side shape, witnesses supplied by
+`toVerifier_eq_failingDet_of_collapse` + the composition combinators). One-shot from
+`oracleVerifier_append_toVerifier` + the Protocol-level failing-det capstone. -/
+theorem append_rbrKnowledgeSoundness_failingDet_subsingleton
+    [Subsingleton σ] [Inhabited (Stmt₂ × ∀ i, OStmt₂ i)]
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (verify? : (Stmt₁ × ∀ i, OStmt₁ i) → pSpec₁.FullTranscript →
+      Option (Stmt₂ × ∀ i, OStmt₂ i))
+    (hVerify : V₁.toVerifier = ⟨fun p tr => OptionT.mk (pure (verify? p tr))⟩)
+    (hInit : ∃ s, s ∈ support init) (hInitNF : Pr[⊥ | init] = 0)
+    (hNEW₂ : Nonempty Wit₂)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+      (OracleVerifier.append (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁ V₂).rbrKnowledgeSoundness
+        init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  unfold OracleVerifier.rbrKnowledgeSoundness at h₁ h₂ ⊢
+  rw [OracleReduction.oracleVerifier_append_toVerifier, hVerify]
+  rw [hVerify] at h₁
+  exact Verifier.append_rbrKnowledgeSoundness_failingDet_subsingleton verify? V₂.toVerifier
+    hInit hInitNF hNEW₂ hn hDir hDir₂ h₁ h₂
+
 end OracleVerifier
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -385,3 +436,4 @@ end OracleVerifier
 #print axioms Verifier.append_pure_failingDet
 #print axioms Verifier.append_failingDet_pure
 #print axioms OracleVerifier.toVerifier_eq_failingDet_of_collapse
+#print axioms OracleVerifier.append_rbrKnowledgeSoundness_failingDet_subsingleton
