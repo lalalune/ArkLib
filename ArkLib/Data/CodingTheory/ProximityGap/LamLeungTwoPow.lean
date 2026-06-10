@@ -1824,10 +1824,12 @@ theorem full_tower_sparse {m k : ℕ} (hk : k ≤ m) {ζ : F}
   haveI : NeZero ((2:ℕ) ^ (k + 1)) := ⟨(pow_pos two_pos _).ne'⟩
   -- depth-0 rigidity: the indicator is invariant mod 2^(m−k)
   have hrig := contracted_multiplicity_invariant (m := m) (s := 0) (k := k)
-    (by omega) hζ hS (fun j hj => by
-      have := hwin j hj
-      rwa [Nat.zero_add] at this)
-  simp only [pow_zero, pow_one] at hrig
+    (by omega) hζ hS (fun j hj => by rw [Nat.zero_add]; exact hwin j hj)
+  have hfid : ∀ f : ℕ, S.filter (fun x => x ^ 2 ^ 0 = (ζ ^ 2 ^ 0) ^ f)
+      = S.filter (fun y => y = ζ ^ f) := by
+    intro f
+    refine Finset.filter_congr fun y _ => ?_
+    norm_num
   -- the μ_{2^(k+1)}-roots are powers of ζ^(2^(m−k))
   have hωk : IsPrimitiveRoot (ζ ^ (2 ^ (m - k))) (2 ^ (k + 1)) := by
     refine hζ.pow (pow_pos two_pos _) ?_
@@ -1842,14 +1844,16 @@ theorem full_tower_sparse {m k : ℕ} (hk : k ≤ m) {ζ : F}
   have he2lt : e2 < 2 ^ (m + 1) := Nat.mod_lt _ (pow_pos two_pos _)
   have hhx : h * x = ζ ^ e2 := by
     rw [← hig, ← hex, ← pow_mul, ← pow_add]
-    rw [show i * 2 ^ (m - k) + e = e + i * 2 ^ (m - k) from by ring]
+    rw [show 2 ^ (m - k) * i + e = e + i * 2 ^ (m - k) from by ring]
     conv_lhs => rw [← Nat.div_add_mod (e + i * 2 ^ (m - k)) (2 ^ (m + 1))]
     rw [pow_add, pow_mul, hζ.pow_eq_one, one_pow, one_mul, he2]
   have hdvd : (2:ℕ) ^ (m - k) ∣ 2 ^ (m + 1) := pow_dvd_pow 2 (by omega)
   have hres : e2 % 2 ^ (m - k) = e % 2 ^ (m - k) := by
     rw [he2, Nat.mod_mod_of_dvd _ hdvd, Nat.add_mul_mod_self_right]
   -- indicator invariance: the filter cards at e2 and e agree
-  have hcards := hrig e2 e he2lt he hres
+  have hcards := hrig e2 e (by simpa using he2lt) (by simpa using he)
+    (by simpa using hres)
+  rw [hfid, hfid] at hcards
   -- the filter at exponent f is {ζ^f} ∩ S: card 1 iff ζ^f ∈ S
   have hcard_mem : ∀ f, f < 2 ^ (m + 1) →
       ((S.filter (fun y => y = ζ ^ f)).card = 1 ↔ ζ ^ f ∈ S) := by
