@@ -4492,3 +4492,13 @@ The post-O103 residue named the ℕ-span theorem as the honest span target (the 
 * `sum_mod_fiber` — `Σ_{e<m·u} f(e%m) = u·Σ_{s<m} f s`, extracted from O101 `weighted_sum_eq_thread_sum` at `ζ = 1` over ℚ and cast back — zero new summation machinery.
 
 **The three-prime wall, witness pinned (numeric, exact ℤ[x]/Φ₃₀, this pass):** the classical set `S = {5, 6, 12, 18, 24, 25} ⊆ [0, 30)` (= μ₅\{1} ∪ {ζ₆, ζ₆⁵} in exponent form, from subtracting the μ₃ relation from the μ₅ relation and absorbing signs via ζ₂) VANISHES at `n = 30 = 2·3·5` yet contains NO full μ₂-, μ₃-, or μ₅-packet — so a 0/1 packet decomposition is impossible and **de Bruijn's packet conjecture fails at three primes** exactly as Lam–Leung record. The refutation brick is now precisely gated for formalization: vanishing = two geometric-sum relations (assembly); non-decomposability = the finite no-full-packet check (decide). What is genuinely open past two primes is the POSITIVE ℕ-span theorem `|w| ∈ ℕp₁ + … + ℕp_k` (Lam–Leung's main theorem, requiring induction on cyclotomic structure, not packet combinatorics) — research, not assembly.
+
+### O105 — DE BRUIJN'S PACKET CONJECTURE FORMALLY REFUTED AT THREE PRIMES: the two-prime classification is provably sharp
+
+The O104-pinned witness formalized. `ThreePrimePacketRefutation.lean` (axiom-clean ×3, 0 sorry, 0 warnings, Mathlib-only):
+
+* `three_prime_witness_vanishes` — `ζ₃₀⁵ + ζ₃₀⁶ + ζ₃₀¹² + ζ₃₀¹⁸ + ζ₃₀²⁴ + ζ₃₀²⁵ = 0`: one `linear_combination h5 − h3 + (ζ⁵+ζ¹⁰)·h15` over the three cyclotomic relations (μ₅ geometric, μ₃ geometric, `ζ¹⁵ = −1` from the square-root-of-1 dichotomy).
+* `three_prime_witness_not_packet_combination` — no `A B C : ℕ → ℕ` realize the indicator as `A(e%15) + B(e%10) + C(e%6)` on [0,30): four instances (e = 5, 20, 15, 11) and omega.
+* `debruijn_packet_conjecture_fails_three_primes` — the combined refutation: the O94/O103 packet classification GENUINELY FAILS at the first three-prime modulus, exactly as de Bruijn conjectured-and-was-refuted (Lam–Leung §5). The two-prime theorems are sharp, machine-checked from both sides.
+
+**Net frontier after O97–O105 (one session):** the two-prime de Bruijn theory is COMPLETE AND SHARP — indicator classification (O94), window law/unconditional tower (O97), consumers (O98), weighted classification both surfaces (O100/O102/O103), span law (O104), and the three-prime impossibility (O105). The remaining open items on this lane are now PURE research with no assembly component anywhere: the Lam–Leung ℕ-span at 3+ primes (the positive theorem surviving the refutation — needs induction on cyclotomic structure, not packets), the window law at 3+ primes, O99's incidence slack, and δ*. The refutation closes the last item that was provable.
