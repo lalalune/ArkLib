@@ -1,8 +1,8 @@
 {
  "summary": {
-  "total": 100,
-  "open": 33,
-  "discharged": 67,
+  "total": 102,
+  "open": 29,
+  "discharged": 73,
   "by_top_dir": {
    "Data": {
     "total": 21,
@@ -10,19 +10,19 @@
     "discharged": 13
    },
    "OracleReduction": {
-    "total": 38,
-    "open": 13,
-    "discharged": 25
+    "total": 39,
+    "open": 11,
+    "discharged": 28
    },
    "ProofSystem": {
-    "total": 21,
+    "total": 22,
     "open": 8,
-    "discharged": 13
+    "discharged": 14
    },
    "ToMathlib": {
     "total": 20,
-    "open": 4,
-    "discharged": 16
+    "open": 2,
+    "discharged": 18
    }
   }
  },
@@ -257,6 +257,14 @@
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
      "line": 142,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.strictCoeffPolysResidual_of_strictCoeffPolysResidualExc_zero",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean",
+     "line": 186,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -950,8 +958,17 @@
    "fq_name": "Reduction.reductionAppendCompletenessResidual",
    "file": "ArkLib/OracleReduction/Composition/Sequential/Append.lean",
    "line": 901,
-   "providers": [],
-   "status": "open"
+   "providers": [
+    {
+     "name": "Reduction.reductionAppendCompletenessResidual_msg",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischarges.lean",
+     "line": 54,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "reductionAppendPerfectCompletenessResidual",
@@ -1025,8 +1042,17 @@
    "fq_name": "Verifier.appendRbrKnowledgeSoundnessResidual",
    "file": "ArkLib/OracleReduction/Composition/Sequential/Append.lean",
    "line": 1047,
-   "providers": [],
-   "status": "open"
+   "providers": [
+    {
+     "name": "Verifier.appendRbrKnowledgeSoundnessResidual_msg_subsingleton",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischarges.lean",
+     "line": 93,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "appendCompletenessResidual",
@@ -1050,8 +1076,17 @@
    "fq_name": "OracleReduction.appendPerfectCompletenessResidual",
    "file": "ArkLib/OracleReduction/Composition/Sequential/Append.lean",
    "line": 1116,
-   "providers": [],
-   "status": "open"
+   "providers": [
+    {
+     "name": "OracleReduction.appendPerfectCompletenessResidual_msg",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischarges.lean",
+     "line": 138,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "appendSoundnessResidual",
@@ -1463,7 +1498,15 @@
    "name": "Lemma5_8EagerBirthdayResidual",
    "fq_name": "DuplexSpongeFS.BirthdayBound.Lemma5_8EagerBirthdayResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBound.lean",
-   "line": 461,
+   "line": 470,
+   "providers": [],
+   "status": "open"
+  },
+  {
+   "name": "Lemma5_8EagerPaperResidual",
+   "fq_name": "DuplexSpongeFS.BirthdayBoundPaper.Lemma5_8EagerPaperResidual",
+   "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean",
+   "line": 91,
    "providers": [],
    "status": "open"
   },
@@ -1505,7 +1548,7 @@
    "name": "KeyLemmaResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemma.lean",
-   "line": 241,
+   "line": 245,
    "providers": [],
    "status": "open"
   },
@@ -1513,7 +1556,7 @@
    "name": "Lemma5_12HonestResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 644,
+   "line": 630,
    "providers": [
     {
      "name": "DuplexSpongeFS.Sponge316.lemma5_12_honest",
@@ -1530,7 +1573,7 @@
    "name": "Lemma5_14HonestResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.Lemma5_14HonestResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 656,
+   "line": 647,
    "providers": [],
    "status": "open"
   },
@@ -1538,7 +1581,7 @@
    "name": "Lemma5_16HonestResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 672,
+   "line": 663,
    "providers": [
     {
      "name": "DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_prior_reverse",
@@ -1571,7 +1614,7 @@
    "name": "SimulatedProverChallengeBudgetResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.SimulatedProverChallengeBudgetResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 938,
+   "line": 929,
    "providers": [
     {
      "name": "DuplexSpongeFS.SimulatorBudgets.simulatedProverChallengeBudget",
@@ -1588,7 +1631,7 @@
    "name": "SimulatedProverSharedBudgetResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.SimulatedProverSharedBudgetResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 955,
+   "line": 946,
    "providers": [
     {
      "name": "DuplexSpongeFS.SimulatorBudgets.simulatedProverSharedBudget",
@@ -1605,7 +1648,7 @@
    "name": "KeyLemmaEagerResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaEagerResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 975,
+   "line": 966,
    "providers": [
     {
      "name": "DuplexSpongeFS.KeyLemmaAssembly.keyLemmaEager_of_hybSteps",
@@ -1624,7 +1667,7 @@
      "name": "DuplexSpongeFS.KeyLemmaAssembly.keyLemmaEager_of_steps_strictSplit",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaAssembly.lean",
-     "line": 133,
+     "line": 134,
      "conditional_on_residuals": [
       "Hyb01StepResidual",
       "Hyb12StepResidual",
@@ -1636,7 +1679,7 @@
      "name": "DuplexSpongeFS.KeyLemmaHybrids.keyLemmaEager_of_steps",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean",
-     "line": 806,
+     "line": 810,
      "conditional_on_residuals": [
       "Hyb01StepResidual",
       "Hyb12StepResidual",
@@ -1654,7 +1697,7 @@
    "name": "D2sQueryStepGSpecBudgetResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.D2sQueryStepGSpecBudgetResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 1015,
+   "line": 1006,
    "providers": [
     {
      "name": "DuplexSpongeFS.SimulatorBudgets.d2sQueryStepGSpecBudget",
@@ -1671,7 +1714,7 @@
    "name": "D2fOuterImplSharedBudgetResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.D2fOuterImplSharedBudgetResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 1031,
+   "line": 1022,
    "providers": [
     {
      "name": "DuplexSpongeFS.SimulatorBudgets.d2fOuterImplSharedBudget",
@@ -1696,7 +1739,7 @@
    "name": "Hyb12StepResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaHybrids.Hyb12StepResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean",
-   "line": 730,
+   "line": 731,
    "providers": [],
    "status": "open"
   },
@@ -1704,7 +1747,7 @@
    "name": "Hyb23StepResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaHybrids.Hyb23StepResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean",
-   "line": 752,
+   "line": 754,
    "providers": [],
    "status": "open"
   },
@@ -1712,13 +1755,13 @@
    "name": "Hyb34StepResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaHybrids.Hyb34StepResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean",
-   "line": 771,
+   "line": 773,
    "providers": [
     {
      "name": "DuplexSpongeFS.VerifierReplay.hyb34Step_of_strictSplit",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/VerifierReplay.lean",
-     "line": 873,
+     "line": 934,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -2188,6 +2231,14 @@
      "ambiguous_name_match": false
     },
     {
+     "name": "StirIOP.MultiRound.stirCheckingRbrSoundness_genuine",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Stir/SubUnitRbr.lean",
+     "line": 874,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "StirIOP.MultiRound.stirCheckingRbrSoundness_of_window",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Stir/WindowCAFeed.lean",
@@ -2205,6 +2256,23 @@
    "line": 224,
    "providers": [],
    "status": "open"
+  },
+  {
+   "name": "stirCheckingRepRbrSoundnessResidual",
+   "fq_name": "StirIOP.MultiRound.stirCheckingRepRbrSoundnessResidual",
+   "file": "ArkLib/ProofSystem/Stir/RepWire.lean",
+   "line": 1417,
+   "providers": [
+    {
+     "name": "StirIOP.MultiRound.stirCheckingRepRbrSoundness_genuine",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Stir/RepWire.lean",
+     "line": 1424,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "K4GradedFactorCellResidual",
@@ -2280,8 +2348,17 @@
    "fq_name": "Fri.Spec.Completeness.foldRoundPerfectCompletenessResidual",
    "file": "ArkLib/ToMathlib/FriComplete.lean",
    "line": 106,
-   "providers": [],
-   "status": "open"
+   "providers": [
+    {
+     "name": "Fri.Spec.Completeness.foldRoundPerfectCompletenessResidual_holds",
+     "kind": "theorem",
+     "file": "ArkLib/ToMathlib/FriCompletePerRound.lean",
+     "line": 137,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "finalFoldRoundPerfectCompletenessResidual",
@@ -2677,6 +2754,14 @@
    "line": 1254,
    "providers": [
     {
+     "name": "Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimResidual_proven",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeWithClaimFinal.lean",
+     "line": 212,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "Spartan.Spec.spartan_rbr_knowledge_soundness_with_claim",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Spartan/SpartanRBRWithClaimProof.lean",
@@ -2702,6 +2787,14 @@
    "line": 1267,
    "providers": [
     {
+     "name": "Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimValueRelResidual_proven",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeWithClaimFinal.lean",
+     "line": 240,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval",
      "kind": "theorem",
      "file": "ArkLib/ToMathlib/SpartanBricks.lean",
@@ -2722,7 +2815,7 @@
      "ambiguous_name_match": false
     }
    ],
-   "status": "open"
+   "status": "discharged"
   },
   {
    "name": "composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual",
@@ -2730,6 +2823,14 @@
    "file": "ArkLib/ToMathlib/SpartanBricks.lean",
    "line": 1280,
    "providers": [
+    {
+     "name": "Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_proven",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeWithClaimFinal.lean",
+     "line": 268,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
     {
      "name": "Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel",
      "kind": "theorem",
@@ -2785,6 +2886,14 @@
    "kind": "def",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
    "line": 96,
+   "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "StrictCoeffPolysResidualExc",
+   "fq_name": "ProximityGap.StrictCoeffPolysResidualExc",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean",
+   "line": 155,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -2897,6 +3006,30 @@
    "kind": "def",
    "file": "ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDist.lean",
    "line": 53,
+   "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "Lemma5_12HonestResidualPaper",
+   "fq_name": "DuplexSpongeFS.Sponge316.Lemma5_12HonestResidualPaper",
+   "kind": "def",
+   "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean",
+   "line": 658,
+   "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "Lemma5_14HonestResidualPaper",
+   "fq_name": "DuplexSpongeFS.Sponge316.Lemma5_14HonestResidualPaper",
+   "kind": "def",
+   "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean",
+   "line": 666,
+   "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "Lemma5_16HonestResidualPaper",
+   "fq_name": "DuplexSpongeFS.Sponge316.Lemma5_16HonestResidualPaper",
+   "kind": "def",
+   "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean",
+   "line": 676,
    "reason": "name does not end in `Residual`"
   },
   {
