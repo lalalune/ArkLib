@@ -1696,6 +1696,7 @@ import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.Section5StrictDataFinOn
 import ArkLib.ToMathlib.SectionBaseRational
 import ArkLib.ToMathlib.SectionFactor
+import ArkLib.ToMathlib.SectionXiDivisibility
 import ArkLib.ToMathlib.SeparableLowDegree
 import ArkLib.ToMathlib.SiegelInterpolation
 import ArkLib.ToMathlib.SignedGradedSupply
