@@ -103,6 +103,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSpecializedConditions
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSquarefreePart
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Hab25FactorWeld
+import ArkLib.Data.CodingTheory.GuruswamiSudan.Hab25SeparableSupply
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MonomialCount
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MultiplicityInterpolation
@@ -458,6 +459,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIndicatorDisjointness
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnPrimePower
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreeIff
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreePQ
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrime
@@ -1010,7 +1012,6 @@ import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
 import ArkLib.MCACapacityTrivial_keep
 import ArkLib.MCAGSRefutationCore_keep
-import ArkLib.MCAJohnsonSmallField_keep
 import ArkLib.OracleReduction.BCS.AppendSoundnessMsg
 import ArkLib.OracleReduction.BCS.BCSCompilerProof
 import ArkLib.OracleReduction.BCS.Basic
@@ -1035,6 +1036,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOr
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracleChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKeystone
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeEmpty
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDet
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeOracleLift
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2ReconcileProof
@@ -1277,8 +1279,10 @@ import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.ComposedCompleteness
+import ArkLib.ProofSystem.Spartan.ComposedCompletenessFinal
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessLeaves
 import ArkLib.ProofSystem.Spartan.Composition
+import ArkLib.ProofSystem.Spartan.FinalCheckLeafComplete
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
 import ArkLib.ProofSystem.Spartan.FirstChallengeComplete
 import ArkLib.ProofSystem.Spartan.FirstChallengeLeaf
@@ -1293,6 +1297,7 @@ import ArkLib.ProofSystem.Spartan.FirstSumcheckRelComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckRowSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckZeroEval
 import ArkLib.ProofSystem.Spartan.LinearCombinationComplete
+import ArkLib.ProofSystem.Spartan.PhaseCompletenessLeaves
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
 import ArkLib.ProofSystem.Spartan.SecondSumcheckBridgeFree
 import ArkLib.ProofSystem.Spartan.SecondSumcheckComplete
@@ -1656,5 +1661,4 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
-import ArkLib.t3
 import ArkLib.whir113keystone
