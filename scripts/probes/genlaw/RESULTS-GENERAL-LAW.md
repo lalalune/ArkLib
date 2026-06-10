@@ -84,9 +84,15 @@ finish — residual risk explicitly noted). s=16 re-swept independently to r = 1
 (DERIVED-672's completeness independently re-established).
 
 **Level-4 anchors (s = 64, n = 128)**, computed with the audit's corrected sweeper:
-N₃(64) = 244,593,584,640 (34,280 classes); N₅(64) = 141,450,979,280 (2,212,000 classes).
-So marginal(64) ≥ 2·386,044,563,920 — a **lower bound only**: the N₅/N₃ ratio grows
-(0 → 0 → 0.13 → 0.58), the r ≥ 7 tail at s = 64 is unswept and plausibly active.
+N₃(64) = 244,593,584,640 (34,280 classes); N₅(64) = 141,450,979,280 (2,212,000 classes);
+**N₇(64) = 1,586,840,480 (3,300,096 classes)** — measured 2026-06-10 (4-way sweep,
+~4×10¹⁰ configs; kernel calibrated on 99,512 / 0 / 672 and the 4-way split validated to
+sum exactly 99,512 on s=32 r=5; raw logs `s64r7_sweep.txt`). **The turn-on is now a
+recurring phenomenon, not a one-off:** active strata {3} at s=8,16 → {3,5} at s=32 →
+{3,5,7} at s=64 (consistent with r_max = 2j−5 for s = 2^j, j ≥ 4 — pattern-extrapolated,
+NOT derived; predicts r_max = 9 at s=128). So marginal(64) ≥ 2·387,631,404,400 =
+775,262,808,800 — still a **lower bound only**: the r ≥ 9 tail at s = 64 is unswept
+(~7.05×10¹² configs at r=9, r=13@s=32-scale compute).
 
 ## 5. Honest caveats (what would move the numbers)
 
