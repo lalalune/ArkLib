@@ -98,6 +98,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegralFactorAssignment
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSPerScalarCapture
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparabilityCharZero
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparableContraction
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparableCoreDescent
