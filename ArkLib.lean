@@ -459,6 +459,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIndicatorDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreeIff
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreePQ
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
@@ -1268,9 +1269,9 @@ import ArkLib.ProofSystem.RingSwitching.General
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Profile
 import ArkLib.ProofSystem.RingSwitching.Spec
+import ArkLib.ProofSystem.RingSwitching.SumcheckDeterminism
 import ArkLib.ProofSystem.RingSwitching.SumcheckLoopPC
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
-import ArkLib.ProofSystem.RingSwitching.SumcheckDeterminism
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.ComposedCompleteness
