@@ -24,7 +24,7 @@ Two bricks of the pointwise-rejection route to the LogUp embedded sum-check soun
 No `sorry`; axiom audit at the bottom.
 -/
 
-open OracleComp OracleSpec ProtocolSpec Finset
+open Polynomial MvPolynomial OracleComp OracleSpec ProtocolSpec Finset
 open scoped NNReal ENNReal
 
 namespace Sumcheck.Spec
@@ -58,6 +58,8 @@ theorem verifier_run_failure_of_badSum
 
 end SingleRound.Simple
 
+namespace SingleRound
+
 /-- **The round lens carries the round relation exactly (statement side).** The projected Simple
 statement satisfies `Simple.inputRelation` **iff** the outer round statement satisfies
 `relationRound i.castSucc`: both sides reduce to a sum-equals-target claim, and the two sums agree
@@ -78,15 +80,19 @@ theorem simpleProj_mem_iff (n : ℕ) (i : Fin n)
       rw [← h]
       simp_rw [Polynomial.eval_finset_sum]
       simp_rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
+      rw [Finset.sum_map]
       exact (sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)).symm
     · intro h
       rw [← h]
       simp_rw [Polynomial.eval_finset_sum]
       simp_rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
+      rw [Finset.sum_map]
       exact sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)
+
+end SingleRound
 
 end Sumcheck.Spec
 
 /- Axiom audit. -/
 #print axioms Sumcheck.Spec.SingleRound.Simple.verifier_run_failure_of_badSum
-#print axioms Sumcheck.Spec.simpleProj_mem_iff
+#print axioms Sumcheck.Spec.SingleRound.simpleProj_mem_iff
