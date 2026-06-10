@@ -1531,6 +1531,7 @@ import ArkLib.ToMathlib.GK16Structural
 import ArkLib.ToMathlib.GKL24BadWitnessCard
 import ArkLib.ToMathlib.GKL24FirstMomentProb
 import ArkLib.ToMathlib.GSFactorData
+import ArkLib.ToMathlib.GSLineInputSupply
 import ArkLib.ToMathlib.GSGradedBundle
 import ArkLib.ToMathlib.GammaCoeffRecursion
 import ArkLib.ToMathlib.GammaFromBeta
