@@ -1267,6 +1267,24 @@ lemma finalSumcheckStep_verifierCheck_passed
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtIn := stmtIn) (witIn := witIn)
       (h_wit_struct := h_wit_struct))
 
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+/-- The oracle-folding part of the final relation output is exactly the synchronized final-round
+input consistency. The remaining relation-out obligation is the final constant fold. -/
+lemma finalSumcheckStep_strictOracleFoldingConsistency_out
+    (stmtIn : Statement (SumcheckBaseContext L ℓ) (Fin.last ℓ))
+    (witIn : Witness 𝔽q β (Fin.last ℓ))
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β ϑ (Fin.last ℓ) j)
+    (h_strictOracleWitConsistency_In : strictOracleWitnessConsistency 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := SumcheckBaseContext L ℓ)
+      (mp := BBF_SumcheckMultiplierParam) (stmtIdx := Fin.last ℓ)
+      (oracleIdx := OracleFrontierIndex.mkFromStmtIdx (Fin.last ℓ)) (stmt := stmtIn)
+      (wit := witIn) (oStmt := oStmtIn)) :
+    strictOracleFoldingConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (t := witIn.t) (i := Fin.last ℓ) (challenges := stmtIn.challenges)
+      (oStmt := oStmtIn) := by
+  simpa [strictOracleWitnessConsistency, olderStmtChallenges_self] using
+    h_strictOracleWitConsistency_In.2
+
 /-
 The two direct final-step helper proofs below are stale after the challenge-order migration and have
 no live callers. The public final-step completeness theorem is the explicit
