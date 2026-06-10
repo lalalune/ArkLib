@@ -635,10 +635,20 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       have h_lt := j.isLt
       conv_rhs at h_lt => rw [h_count_succ]
       omega
+    have h_commit_round : j.val * ϑ = i.val + 1 := by
+      rw [h_j_eq]
+      exact toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR
+    have h_domain :
+        ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨j.val * ϑ, by omega⟩) =
+          ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, by omega⟩) := by
+      have h_fin : (⟨j.val * ϑ, by omega⟩ : Fin r) = ⟨i.val + 1, by omega⟩ := by
+        apply Fin.eq_of_val_eq
+        exact h_commit_round
+      exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
     simp only [eqRec_eq_cast, cast_cast]
     funext x
-    rw [h_transcript_eq]
-    rfl
+    cases h_domain
+    exact (congrFun h_transcript_eq x).symm
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 

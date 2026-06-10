@@ -370,6 +370,33 @@ theorem jbt_perm_forward_getElem?_of_not_E
     (DuplexSpongeFS.Backtrack.BacktrackSequence.index_perm_getElem?_of_lt
       (trace := tr) (state := state) (seq := seq) (pairIdx := pairIdx) (hpair := hpair))
 
+/-- A nonterminal `J_BT` permutation-index payload is the first occurrence of either recorded
+permutation direction for that chain step: no strictly earlier raw trace slot contains the same
+forward entry or the corresponding inverse entry. -/
+theorem jbt_perm_no_prior_of_lt
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (p : Sigma fun seq : DuplexSpongeFS.Backtrack.BacktrackSequence tr state =>
+      DuplexSpongeFS.Backtrack.BacktrackIndexList tr seq)
+    (hp : p ∈ DuplexSpongeFS.Backtrack.J_BT S)
+    (pairIdx : Fin p.1.inputState.length) (hpair : pairIdx.val < p.1.outputState.length)
+    (j : Fin tr.length) (hj : j.val < (p.2.2 pairIdx).val) :
+    tr.get j ≠
+        (⟨Sum.inr (Sum.inl p.1.inputState[pairIdx]),
+          p.1.outputState[pairIdx.val]'hpair⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+      tr.get j ≠
+        (⟨Sum.inr (Sum.inr (p.1.outputState[pairIdx.val]'hpair)), p.1.inputState[pairIdx]⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  classical
+  unfold DuplexSpongeFS.Backtrack.J_BT at hp
+  rw [Finset.mem_image] at hp
+  obtain ⟨seq, _hseq, hp_eq⟩ := hp
+  subst p
+  simpa using DuplexSpongeFS.Backtrack.BacktrackSequence.index_perm_no_prior_of_lt
+    (trace := tr) (state := state) (seq := seq) (pairIdx := pairIdx) (hpair := hpair)
+    (j := j) hj
+
 /-- A `J_BT` payload witnessing the hash-after-first-permutation timing condition cannot be
 the empty chain: in the empty case the first-chain index is the sentinel `tr.length`, while the
 hash index is a genuine trace index. -/
@@ -487,6 +514,7 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_no_prior
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem?_of_not_E
+#print axioms DuplexSpongeFS.Sponge316.jbt_perm_no_prior_of_lt
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_first_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E
