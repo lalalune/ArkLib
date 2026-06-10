@@ -3238,3 +3238,22 @@ mass cannot vanish entirely; it can only MOVE between the even and odd branches.
 the formal seed of the branch-accounting that the C19/descent lane tracks, and the next
 provable target: per-level branch-mass conservation ⟹ a window-vs-weight tradeoff for
 ALL valued errors.
+
+### O58 — BRANCH-MASS CONSERVATION: the first unconditional ALL-WORDS descent theorem
+
+`LamLeungTwoPow.lean` §BranchMass (axiom-clean, 0 sorry):
+
+* `fold_mass_conservation` — at any squared point, the even and odd folds cannot BOTH
+  vanish unless the error vanishes on the whole fiber (char ≠ 2, 0 ∉ S): the 2×2 fiber
+  system (v(x)+v(−x), (v(x)−v(−x))x) is nonsingular.
+* `branch_mass_inequality` — hence for EVERY genuine valued error,
+  |S| ≤ 2·(|supp fold_even| + |supp fold_odd|): every fiber feeds at least one branch,
+  weight descends with at most factor-2 loss per level, split between the two branches.
+
+This is UNCONDITIONAL over all received words — no no-cancellation hypothesis, no
+structure on v. The all-words list question is now formally branch-accounting over the
+2-adic tower with a machine-checked conservation law: window-vanishing mass cannot be
+destroyed by the fold, only routed. Combined with the per-branch window halving (O56/O57
+fold identities), the program's remaining open content is the per-level BRANCH-COUNT
+distribution (how many branches can stay heavy how deep) — the C19/descent lane's
+quantitative question, now with its conservation backbone in Lean.

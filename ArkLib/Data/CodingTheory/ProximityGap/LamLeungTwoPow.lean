@@ -599,4 +599,127 @@ theorem sq_image_card (S : Finset F) :
 
 end ValuedDescent
 
+/-! ## Branch-mass conservation: the first unconditional all-words descent inequality
+
+The O57 observation as theorems: at any squared point, the even and odd folds cannot both
+vanish unless the error is zero on the whole fiber (`fold_mass_conservation`) — so for a
+genuine error every fiber feeds at least one branch, and the total folded weight is at
+least half the original weight (`branch_mass_inequality`):
+
+    `|S| ≤ 2·(|supp(fold_even)| + |supp(fold_odd)|)`.
+
+This is an UNCONDITIONAL statement about ALL valued errors — the first all-words descent
+inequality of the program: window-vanishing mass descends with at most a factor-2 weight
+loss per level, split between the two branches. Iterated, the all-words list question
+becomes branch-accounting over the tower (the C19/descent object), now with its
+conservation law machine-checked. -/
+
+section BranchMass
+
+variable [DecidableEq F]
+
+omit [CharZero F] in
+/-- **Fold-mass conservation at a fiber**: both folds vanishing at `y` forces the error
+to vanish on the entire fiber (characteristic ≠ 2, `0 ∉ S`). -/
+theorem fold_mass_conservation {S : Finset F} {v : F → F} (h2 : (2 : F) ≠ 0)
+    (h0 : (0 : F) ∉ S) {y : F}
+    (heven : foldVal S v y = 0) (hodd : foldValOdd S v y = 0) :
+    ∀ x ∈ S.filter (fun x => x ^ 2 = y), v x = 0 := by
+  intro x₀ hx₀
+  obtain ⟨hx₀S, hx₀y⟩ := Finset.mem_filter.mp hx₀
+  have hx₀0 : x₀ ≠ 0 := fun h => h0 (h ▸ hx₀S)
+  -- the fiber is contained in {x₀, −x₀}
+  have hsub : S.filter (fun x => x ^ 2 = y) ⊆ {x₀, -x₀} := by
+    intro x hx
+    have hxy : x ^ 2 = y := (Finset.mem_filter.mp hx).2
+    have hfac : (x - x₀) * (x + x₀) = 0 := by linear_combination hxy - hx₀y
+    rcases mul_eq_zero.mp hfac with h | h
+    · exact Finset.mem_insert.mpr (Or.inl (by linear_combination h))
+    · exact Finset.mem_insert.mpr (Or.inr (Finset.mem_singleton.mpr
+        (by linear_combination h)))
+  by_cases hneg : -x₀ ∈ S.filter (fun x => x ^ 2 = y)
+  · -- full pair: solve the 2×2 system
+    have hne : x₀ ≠ -x₀ := by
+      intro h
+      apply hx₀0
+      have h2x : (2 : F) * x₀ = 0 := by linear_combination h
+      rcases mul_eq_zero.mp h2x with h' | h'
+      · exact absurd h' h2
+      · exact h'
+    have hfib : S.filter (fun x => x ^ 2 = y) = {x₀, -x₀} :=
+      Finset.Subset.antisymm hsub (by
+        intro x hx
+        rcases Finset.mem_insert.mp hx with rfl | hx
+        · exact hx₀
+        · rw [Finset.mem_singleton.mp hx]
+          exact hneg)
+    have heven' : v x₀ + v (-x₀) = 0 := by
+      have := heven
+      rw [foldVal, hfib, Finset.sum_pair hne] at this
+      linear_combination this
+    have hodd' : v x₀ * x₀ + v (-x₀) * (-x₀) = 0 := by
+      have := hodd
+      rw [foldValOdd, hfib, Finset.sum_pair hne] at this
+      linear_combination this
+    -- v(x₀)·x₀ − v(−x₀)·x₀ = 0 and v(x₀) + v(−x₀) = 0 ⟹ 2·v(x₀)·x₀ = 0
+    have h2v : (2 : F) * (v x₀ * x₀) = 0 := by linear_combination hodd' + x₀ * heven'
+    rcases mul_eq_zero.mp h2v with h | h
+    · exact absurd h h2
+    · rcases mul_eq_zero.mp h with h' | h'
+      · exact h'
+      · exact absurd h' hx₀0
+  · -- singleton fiber: the even fold IS v x₀
+    have hfib : S.filter (fun x => x ^ 2 = y) = {x₀} := by
+      apply Finset.Subset.antisymm
+      · intro x hx
+        rcases Finset.mem_insert.mp (hsub hx) with rfl | hx'
+        · exact Finset.mem_singleton.mpr rfl
+        · rw [Finset.mem_singleton.mp hx'] at hx
+          exact absurd hx hneg
+      · intro x hx
+        rw [Finset.mem_singleton.mp hx]
+        exact hx₀
+    have := heven
+    rw [foldVal, hfib, Finset.sum_singleton] at this
+    exact this
+
+omit [CharZero F] in
+/-- **The branch-mass inequality** (unconditional, all valued errors): if `v` is nonzero
+on `S`, then every squared point carries mass in at least one branch, so
+`|S| ≤ 2·(|supp fold_even| + |supp fold_odd|)` — weight descends with at most factor-2
+loss per level, split between the branches. -/
+theorem branch_mass_inequality {S : Finset F} {v : F → F} (h2 : (2 : F) ≠ 0)
+    (h0 : (0 : F) ∉ S) (hv : ∀ x ∈ S, v x ≠ 0) :
+    S.card ≤ 2 * (((S.image (· ^ 2)).filter (fun y => foldVal S v y ≠ 0)).card
+      + ((S.image (· ^ 2)).filter (fun y => foldValOdd S v y ≠ 0)).card) := by
+  have hsplit : S.image (· ^ 2)
+      = ((S.image (· ^ 2)).filter (fun y => foldVal S v y ≠ 0))
+        ∪ ((S.image (· ^ 2)).filter (fun y => foldValOdd S v y ≠ 0)) := by
+    apply Finset.Subset.antisymm
+    · intro y hy
+      by_cases he : foldVal S v y ≠ 0
+      · exact Finset.mem_union_left _ (Finset.mem_filter.mpr ⟨hy, he⟩)
+      · push Not at he
+        rw [Finset.mem_union]
+        right
+        refine Finset.mem_filter.mpr ⟨hy, ?_⟩
+        intro ho
+        obtain ⟨x, hx, rfl⟩ := Finset.mem_image.mp hy
+        exact hv x hx (fold_mass_conservation h2 h0 he ho x
+          (Finset.mem_filter.mpr ⟨hx, rfl⟩))
+    · intro y hy
+      rcases Finset.mem_union.mp hy with h | h
+      · exact (Finset.mem_filter.mp h).1
+      · exact (Finset.mem_filter.mp h).1
+  calc S.card ≤ 2 * (S.image (· ^ 2)).card := sq_image_card S
+    _ ≤ 2 * (((S.image (· ^ 2)).filter (fun y => foldVal S v y ≠ 0)).card
+        + ((S.image (· ^ 2)).filter (fun y => foldValOdd S v y ≠ 0)).card) := by
+        have := Finset.card_union_le
+          ((S.image (· ^ 2)).filter (fun y => foldVal S v y ≠ 0))
+          ((S.image (· ^ 2)).filter (fun y => foldValOdd S v y ≠ 0))
+        rw [← hsplit] at this
+        omega
+
+end BranchMass
+
 end LamLeungTwoPow
