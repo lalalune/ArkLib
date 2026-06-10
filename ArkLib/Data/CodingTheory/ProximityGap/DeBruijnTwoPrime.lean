@@ -2811,7 +2811,7 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
         _ = p ^ (a + 1) * (k / p) + ((k % p) * p ^ a + s) := by rw [← pow_succ]
       calc (ζp ^ (p ^ a)) ^ k * (ζp ^ s * ζq ^ (j * q ^ b + t))
           = ζp ^ (p ^ a * k + s) * ζq ^ (j * q ^ b + t) := by
-            rw [← pow_mul, ← pow_add]
+            rw [← pow_mul, pow_add]
             ring
         _ = ζp ^ ((k % p) * p ^ a + s) * ζq ^ (j * q ^ b + t) := by
             rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
@@ -2961,10 +2961,10 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
         _ = q ^ (b + 1) * (k / q) + ((k % q) * q ^ b + t) := by rw [← pow_succ]
       calc (ζq ^ (q ^ b)) ^ k * (ζp ^ (i * p ^ a + s) * ζq ^ t)
           = ζp ^ (i * p ^ a + s) * ζq ^ (q ^ b * k + t) := by
-            rw [← pow_mul, ← pow_add]
+            rw [← pow_mul, pow_add]
             ring
         _ = ζp ^ (i * p ^ a + s) * ζq ^ ((k % q) * q ^ b + t) := by
-            rw [hdecomp, pow_add, pow_mul, hζq.pow_eq_one, one_pow, one_mul]
+            rw [hdecomp, pow_add (a := ζq), pow_mul (a := ζq), hζq.pow_eq_one, one_pow, one_mul]
     have hfresh : z₀ ^ q ∉ R := by
       intro hmem
       obtain ⟨w, hwS, hwq, horbit⟩ := hRorb (z₀ ^ q) hmem
