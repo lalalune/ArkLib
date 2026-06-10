@@ -62,7 +62,7 @@ abbrev oracleReductionToReductionResidual (R : Type) [CommSemiring R] [Sampleabl
 `oracleReduction.toReduction`; the named bridge `hBridge` rewrites that to `reduction`, and the
 proven `reduction_perfectCompleteness` closes the goal. The `hInit`/`hImplSupp` hypotheses are
 exactly those of `reduction_perfectCompleteness`. -/
-theorem oracleReduction_perfectCompleteness
+theorem oracleReduction_perfectCompleteness_of_bridge
     (hBridge : oracleReductionToReductionResidual R deg D n oSpec)
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
@@ -80,9 +80,9 @@ theorem oracleReduction_perfectCompleteness
   -- Discharge with the already-proven reduction-level completeness.
   exact reduction_perfectCompleteness hInit hImplSupp
 
-/-- Restatement of `oracleReduction_perfectCompleteness` directly against the bare bridge equation
-`oracleReduction.toReduction = reduction`, so a consumer holding the seqCompose verifier-fusion
-lemma can apply it with no `abbrev` indirection. -/
+/-- Restatement of `oracleReduction_perfectCompleteness_of_bridge` directly against the bare bridge
+equation `oracleReduction.toReduction = reduction`, so a consumer holding the seqCompose
+verifier-fusion lemma can apply it with no `abbrev` indirection. -/
 theorem oracleReduction_perfectCompleteness_of_toReduction_eq
     (hBridge : (oracleReduction R deg D n oSpec).toReduction = reduction R deg D n oSpec)
     (hInit : NeverFail init)
@@ -91,9 +91,9 @@ theorem oracleReduction_perfectCompleteness_of_toReduction_eq
         = support (liftM q : OracleComp oSpec β)) :
     (oracleReduction R deg D n oSpec).perfectCompleteness init impl
       (relationRound R n deg D 0) (relationRound R n deg D (Fin.last n)) :=
-  oracleReduction_perfectCompleteness hBridge hInit hImplSupp
+  oracleReduction_perfectCompleteness_of_bridge hBridge hInit hImplSupp
 
 end Sumcheck.Spec
 
-#print axioms Sumcheck.Spec.oracleReduction_perfectCompleteness
+#print axioms Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge
 #print axioms Sumcheck.Spec.oracleReduction_perfectCompleteness_of_toReduction_eq

@@ -18,8 +18,7 @@ completeness onto the proven bridge-free inner completeness
 hypotheses are the irreducible execution-model side conditions `hInit`/`hImplSupp` — **no `hBridge`**.
 
 **Why a separate module (and why it routes around `SecondSumcheckComplete`).** Two reasons stack:
-(1) the bridge-gated and bridge-free inner completeness theorems share the identical name
-`Sumcheck.Spec.oracleReduction_perfectCompleteness`, so a single file cannot import both; and
+(1) this keeps the bridge-free dependency chain isolated from the older bridge-gated theorem; and
 (2) `SecondSumcheckComplete.lean` (which holds the second-sum-check relations / lens-completeness /
 transfer) currently fails to build — its `secondSumcheck_rbrKnowledgeSoundness` theorem is missing an
 `Extractor.Lens.IsKnowledgeSound` instance and an `open scoped NNReal` (so `ℝ≥0` mis-parses), which

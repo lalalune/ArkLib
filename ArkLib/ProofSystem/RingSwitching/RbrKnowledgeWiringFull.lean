@@ -49,8 +49,13 @@ variable (P : RingSwitchingProfile K L κ)
 variable (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
 variable (h_l : ℓ = ℓ' + κ)
 variable (mlIOPCS : MLIOPCS L ℓ')
-variable [∀ i, SampleableType (mlIOPCS.pSpec.Challenge i)]
 variable {σ : Type} (init : ProbComp σ) {impl : QueryImpl []ₒ (StateT σ ProbComp)}
+
+/-- The MLIOPCS structure carries its own challenge-sampling data (`O_challenges`); expose it as
+the instance, so that the full-protocol statements and the keystone applications instantiate at
+the *same* (structure-field) instance as the `MLIOPCS.rbrKnowledgeSoundness` field's statement. -/
+local instance instMLIOPCSChallengeSampleable :
+    ∀ i, SampleableType (mlIOPCS.pSpec.Challenge i) := mlIOPCS.O_challenges
 
 /-- **rbr knowledge soundness of the batching-core composite (batching `++` core interaction),
 wired** — the total-deterministic message-seam keystone at the batching determinism witness, with
@@ -67,6 +72,7 @@ theorem batchingCore_rbrKnowledgeSoundness_wired [IsDomain L] [IsDomain K] [Subs
       (relOut := mlIOPCS.toRelInput)
       (rbrKnowledgeError := batchingCoreRbrKnowledgeError κ L K P ℓ') := by
   have hKey := OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
+    (init := init) (impl := impl)
     (V₁ := BatchingPhase.oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn := mlIOPCS.toAbstractOStmtIn))
     (V₂ := SumcheckPhase.coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (verify := _)
@@ -122,6 +128,7 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness_wired [IsDomain L] [IsDomain K]
       (rbrKnowledgeError := fun i => fullRbrKnowledgeError κ L K P ℓ' mlIOPCS i) := by
   obtain ⟨v?, hVerify⟩ := batchingCore_toVerifier_isFailingDet κ L K P ℓ ℓ' h_l mlIOPCS
   have hKey := OracleVerifier.append_rbrKnowledgeSoundness_failingDet_subsingleton
+    (init := init) (impl := impl)
     (V₁ := batchingCoreVerifier κ L K P ℓ ℓ' h_l mlIOPCS)
     (V₂ := mlIOPCS.oracleReduction.verifier)
     (Oₛ₃ := fun _ => OracleInterface.instDefault)

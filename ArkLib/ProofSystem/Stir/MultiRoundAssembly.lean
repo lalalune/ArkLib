@@ -353,7 +353,7 @@ theorem stir_main_of_secure_vectorIOP
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (-Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -386,7 +386,7 @@ theorem stir_main_of_residuals
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (-Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :

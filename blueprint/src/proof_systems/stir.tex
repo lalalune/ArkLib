@@ -164,14 +164,14 @@ round-by-round bridge residuals.
 \subsection{Protocol assembly}\label{sec:stir_protocol_assembly}
 
 \begin{definition}[Single-round and block reductions]\label{def:stir_round_reductions}
-\lean{StirIOP.RoundProtocol.stirRoundReduction,StirIOP.Round3.stirRound3Reduction,StirIOP.stirFullReduction}
+\lean{StirIOP.Round.stirRoundReduction,StirIOP.Round3.stirRound3Reduction,StirIOP.Round3.stirFullReduction}
 \uses{def:combine,def:stir_params}
     The implementation starts from a single STIR round, groups the paper's round shape into
     three-message blocks, and assembles block chains into a full reduction.
 \end{definition}
 
 \begin{theorem}[Round completeness]\label{thm:stir_round_completeness}
-\lean{StirIOP.stirRoundReduction_perfectCompleteness,StirIOP.stirRoundVectorReduction_perfectCompleteness}
+\lean{StirIOP.Round.stirRoundReduction_perfectCompleteness,StirIOP.Round.stirRoundVectorReduction_perfectCompleteness}
 \uses{def:stir_round_reductions}
     The single-round oracle reduction and its vectorized version are perfectly complete.
 \end{theorem}

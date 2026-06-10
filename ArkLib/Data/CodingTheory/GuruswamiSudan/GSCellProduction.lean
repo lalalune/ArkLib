@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegralFactorAssignment
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSpecializedConditions
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernel
 
@@ -72,6 +73,28 @@ lemma exists_integral_factor_assignment_multiset
   exact ⟨R, Multiset.mem_toFinset.mp hR, hd⟩
 
 end MultisetBridge
+
+section FilterCardBridge
+
+variable {F₁ : Type} [Field F₁] [Fintype F₁]
+
+/-- Instance-free form of the degenerate-set cardinality bound: any finset of scalars that
+all collapse the interpolant is small. Stated in an instance-poor section so the `filter`
+hypothesis elaborates with the same Classical instances as the `ZDegree` producer
+(`gs_existence_over_ratfunc_zDegree_card`); the ∀-form conclusion carries no instances at
+all and is safe to consume in the instance-rich capture-kernel context. -/
+lemma degenerate_card_bound_of_filter {Q₀ : (F₁[X])[X][Y]} {T : ℕ}
+    (hcard : (Finset.univ.filter (fun z : F₁ =>
+      Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0)).card ≤ T) :
+    ∀ S : Finset F₁,
+      (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
+      S.card ≤ T := by
+  intro S hS
+  refine le_trans (Finset.card_le_card ?_) hcard
+  intro z hz
+  exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hS z hz⟩
+
+end FilterCardBridge
 
 variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
 
@@ -194,8 +217,9 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
     (hQ₀0 : Q₀ ≠ 0)
     (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
     (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
-    (hbadz : (Finset.univ.filter (fun z : F₀ =>
-      Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0)).card ≤ T) :
+    (hbadz : ∀ S : Finset F₀,
+      (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
+      S.card ≤ T) :
     ∃ (Index : Finset (Option ((F₀[X])[X][Y])))
       (Ecell : Option ((F₀[X])[X][Y]) → Finset F₀) (P : F₀ → F₀[X]),
       Index.card ≤ (UniqueFactorizationMonoid.factors Q₀).toFinset.card + 1 ∧
@@ -205,11 +229,12 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
       (∀ ij ∈ Index, ∀ γ ∈ Ecell ij,
         ∃ d : McaDecode domain k δ u γ, d.P = P γ) ∧
       none ∈ Index ∧ (Ecell none).card ≤ T ∧
-      (∀ ij ∈ Index, ij ≠ none →
-        ∃ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
-          ∀ γ ∈ Ecell ij,
-            (Polynomial.X - Polynomial.C (P γ)) ∣
-              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) := by
+      (∀ R : (F₀[X])[X][Y], some R ∈ Index →
+        R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset ∧
+        ∀ γ ∈ Ecell (some R),
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+          (Polynomial.X - Polynomial.C (P γ)) ∣
+            R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) := by
   classical
   set bad : Finset F₀ := Finset.univ.filter (fun γ : F₀ =>
     _root_.ProximityGap.mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
@@ -287,30 +312,29 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
     simp only [hIndex]
     exact Finset.mem_insert_self _ _
   · -- the degenerate cell is small: its members specialize `Q₀` to zero
-    refine le_trans (Finset.card_le_card ?_) hbadz
+    refine hbadz (Ecell none) ?_
     intro γ hγ
     have hγ' : γ ∈ bad.filter (fun γ' => assign γ' = none) := hγ
     obtain ⟨hγbad, hass⟩ := Finset.mem_filter.mp hγ'
-    rw [Finset.mem_filter]
-    refine ⟨Finset.mem_univ _, ?_⟩
     by_contra hz
     obtain ⟨R, _, hEq, _⟩ := hassignpos γ ⟨hγbad, hz⟩
     rw [hass] at hEq
     exact absurd hEq.symm (Option.some_ne_none _)
-  · -- every factor cell carries one irreducible factor of `Q₀`
-    intro ij hij hne
-    simp only [hIndex, Finset.mem_insert] at hij
-    rcases hij with h | h
-    · exact absurd h hne
-    · obtain ⟨R, hR, rfl⟩ := Finset.mem_image.mp h
-      refine ⟨R, hR, ?_⟩
+  · -- every factor cell carries its irreducible factor of `Q₀`, nondegenerately
+    intro R hRIndex
+    simp only [hIndex, Finset.mem_insert] at hRIndex
+    rcases hRIndex with h | h
+    · exact absurd h (Option.some_ne_none R)
+    · obtain ⟨R', hR', hEq⟩ := Finset.mem_image.mp h
+      obtain rfl : R' = R := Option.some.inj hEq
+      refine ⟨hR', ?_⟩
       intro γ hγ
-      have hγ' : γ ∈ bad.filter (fun γ' => assign γ' = some R) := hγ
+      have hγ' : γ ∈ bad.filter (fun γ' => assign γ' = some R') := hγ
       obtain ⟨hγbad, hass⟩ := Finset.mem_filter.mp hγ'
       by_cases hz : Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0
-      · obtain ⟨R', hR', hEq, hdvd⟩ := hassignpos γ ⟨hγbad, hz⟩
-        rw [hass] at hEq
-        rwa [← Option.some.inj hEq] at hdvd
+      · obtain ⟨R'', hR'', hEq2, hdvd⟩ := hassignpos γ ⟨hγbad, hz⟩
+        rw [hass] at hEq2
+        exact ⟨hz, by rwa [← Option.some.inj hEq2] at hdvd⟩
       · rw [hassignneg γ (fun hc => hz hc.2)] at hass
         exact absurd hass.symm (Option.some_ne_none _)
 
@@ -328,8 +352,9 @@ theorem bad_card_le_of_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n 
     (hQ₀0 : Q₀ ≠ 0)
     (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
     (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
-    (hbadz : (Finset.univ.filter (fun z : F₀ =>
-      Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0)).card ≤ T)
+    (hbadz : ∀ S : Finset F₀,
+      (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
+      S.card ≤ T)
     (hK4 : ∀ (E : Finset F₀) (P : F₀ → F₀[X]) (R : (F₀[X])[X][Y]),
       R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset →
       (∀ γ ∈ E, ∃ d : McaDecode domain k δ u γ, d.P = P γ) →
@@ -345,11 +370,11 @@ theorem bad_card_le_of_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n 
     exists_cell_production domain u δ T hQ hrep hQ₀0 hkn hm hδ1 hδJ hbadz
   have hcell : ∀ ij ∈ Index, (Ecell ij).card ≤ T := by
     intro ij hij
-    by_cases hne : ij = none
-    · subst hne
-      exact hbadcell
-    · obtain ⟨R, hR, hdvd⟩ := hfactor ij hij hne
-      exact hK4 (Ecell ij) P R hR (hdec ij hij) hdvd
+    cases ij with
+    | none => exact hbadcell
+    | some R =>
+      obtain ⟨hRmem, hsurf⟩ := hfactor R hij
+      exact hK4 (Ecell (some R)) P R hRmem (hdec _ hij) (fun γ hγ => (hsurf γ hγ).2)
   calc (Finset.univ.filter (fun γ : F₀ =>
         _root_.ProximityGap.mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
           δ (u 0) (u 1) γ)).card
@@ -361,6 +386,208 @@ theorem bad_card_le_of_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n 
     _ ≤ ((UniqueFactorizationMonoid.factors Q₀).toFinset.card + 1) * T :=
         Nat.mul_le_mul_right T hcardI
 
+/-- **The total cell production** — no interpolant hypotheses left. The `ZDegree` producer
+(`gs_existence_over_ratfunc_zDegree_card`, unit (2)) supplies the integer GS interpolant,
+its `Conditions`, and the explicit degenerate-set budget
+`T = n·|constraintIndices m|·gs_degree_bound k n m`; the cell production consumes them.
+What remains of the Johnson MCA chain after this theorem is exactly K4 beyond the
+unique-decoding window, fed the (cell, family, factor) triples produced here. -/
+theorem exists_cell_production_total {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin 2) (Fin n)) (δ : ℝ≥0)
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m) :
+    ∃ (Q₀ : (F₀[X])[X][Y]) (Index : Finset (Option ((F₀[X])[X][Y])))
+      (Ecell : Option ((F₀[X])[X][Y]) → Finset F₀) (P : F₀ → F₀[X]),
+      Q₀ ≠ 0 ∧
+      Index.card ≤ (UniqueFactorizationMonoid.factors Q₀).toFinset.card + 1 ∧
+      (Finset.univ.filter (fun γ : F₀ =>
+        _root_.ProximityGap.mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+          δ (u 0) (u 1) γ)) ⊆ Index.biUnion Ecell ∧
+      (∀ ij ∈ Index, ∀ γ ∈ Ecell ij,
+        ∃ d : McaDecode domain k δ u γ, d.P = P γ) ∧
+      none ∈ Index ∧
+      (Ecell none).card ≤
+        n * (GuruswamiSudan.constraintIndices m).card * gs_degree_bound k n m ∧
+      (∀ R : (F₀[X])[X][Y], some R ∈ Index →
+        R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset ∧
+        ∀ γ ∈ Ecell (some R),
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+          (Polynomial.X - Polynomial.C (P γ)) ∣
+            R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) := by
+  obtain ⟨Q₀, h0, hcond, hcard⟩ :=
+    GuruswamiSudan.OverRatFunc.ZDegree.gs_existence_over_ratfunc_zDegree_card
+      (F := F₀) k m domain (u 0) (u 1) hk1 (NeZero.ne n) hm
+  have hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) =
+      Polynomial.C (Polynomial.C (algebraMap F₀[X] (RatFunc F₀) (1 : F₀[X]))) *
+        Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) := by
+    simp
+  obtain ⟨Index, Ecell, P, h1, h2, h3, h4, h5, h6⟩ :=
+    exists_cell_production domain u δ
+      (n * (GuruswamiSudan.constraintIndices m).card * gs_degree_bound k n m)
+      hcond hrep h0 hkn hm hδ1 hδJ (degenerate_card_bound_of_filter hcard)
+  exact ⟨Q₀, Index, Ecell, P, h0, h1, h2, h3, h4, h5, h6⟩
+
+/-- **Distinct positive-degree irreducible factors are at most the degree**: degrees add
+along the UFD factorization, every factor counted is distinct, of degree `≥ 1`, and
+appears at least once. -/
+lemma card_posDegree_factors_le {R : Type} [CommRing R] [IsDomain R]
+    [UniqueFactorizationMonoid R] [DecidableEq (Polynomial R)]
+    {p : Polynomial R} (hp : p ≠ 0) :
+    ((UniqueFactorizationMonoid.factors p).toFinset.filter
+      (fun q => 1 ≤ q.natDegree)).card ≤ p.natDegree := by
+  classical
+  obtain ⟨u, hu⟩ := UniqueFactorizationMonoid.factors_prod (a := p) hp
+  have h0 : (0 : Polynomial R) ∉ UniqueFactorizationMonoid.factors p := fun h =>
+    (UniqueFactorizationMonoid.prime_of_factor 0 h).ne_zero rfl
+  have hsum : ((UniqueFactorizationMonoid.factors p).map Polynomial.natDegree).sum =
+      ((UniqueFactorizationMonoid.factors p).prod).natDegree :=
+    (Polynomial.natDegree_multiset_prod _ h0).symm
+  have hdegp : ((UniqueFactorizationMonoid.factors p).prod).natDegree ≤ p.natDegree := by
+    have hud : ((u : Polynomial R)).natDegree = 0 :=
+      Polynomial.natDegree_eq_zero_of_isUnit u.isUnit
+    have hprod0 : (UniqueFactorizationMonoid.factors p).prod ≠ 0 := by
+      intro h
+      rw [h, zero_mul] at hu
+      exact hp hu.symm
+    have hmul : ((UniqueFactorizationMonoid.factors p).prod *
+        (u : Polynomial R)).natDegree = p.natDegree := by rw [hu]
+    rw [Polynomial.natDegree_mul hprod0 (Units.ne_zero u), hud, add_zero] at hmul
+    exact le_of_eq hmul
+  refine le_trans ?_ (le_trans (le_of_eq hsum) hdegp)
+  rw [Finset.sum_multiset_map_count]
+  calc ((UniqueFactorizationMonoid.factors p).toFinset.filter
+        (fun q => 1 ≤ q.natDegree)).card
+      = ∑ q ∈ (UniqueFactorizationMonoid.factors p).toFinset.filter
+          (fun q => 1 ≤ q.natDegree), 1 := by
+        rw [Finset.card_eq_sum_ones]
+    _ ≤ ∑ q ∈ (UniqueFactorizationMonoid.factors p).toFinset.filter
+          (fun q => 1 ≤ q.natDegree), q.natDegree :=
+        Finset.sum_le_sum fun q hq => (Finset.mem_filter.mp hq).2
+    _ ≤ ∑ q ∈ (UniqueFactorizationMonoid.factors p).toFinset, q.natDegree :=
+        Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+    _ ≤ ∑ q ∈ (UniqueFactorizationMonoid.factors p).toFinset,
+          (UniqueFactorizationMonoid.factors p).count q • q.natDegree := by
+        refine Finset.sum_le_sum fun q hq => ?_
+        have h1 : 1 ≤ (UniqueFactorizationMonoid.factors p).count q :=
+          Multiset.one_le_count_iff_mem.mpr (Multiset.mem_toFinset.mp hq)
+        simpa [smul_eq_mul] using Nat.mul_le_mul_right q.natDegree h1
+
+/-- **The per-stack numeric count, modulo K4 only.** Composing the total cell production
+with (i) the `Y`-degree bound `deg_Y Q₀ ≤ D/(k−1)` extracted from the GS `Conditions`,
+(ii) the positive-degree factor count, and (iii) a K4 pinning input for decoded cells on
+single specialized irreducible factors: every stack has at most
+`(gs_degree_bound k n m / (k−1) + 1) · T` bad scalars. This is the Hab25 Theorem-2 union
+bound `|E| ≤ ℓ·n` shape, with the sole remaining input the K4 capture
+(BCIKS20 Steps 5–7; proven on the unique-decoding window). -/
+theorem bad_card_le_numeric {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin 2) (Fin n)) (δ : ℝ≥0) (T : ℕ)
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hT0 : n * (GuruswamiSudan.constraintIndices m).card * gs_degree_bound k n m ≤ T)
+    (hK4 : ∀ (E : Finset F₀) (P : F₀ → F₀[X]) (R : (F₀[X])[X][Y]),
+      Irreducible R →
+      (∀ γ ∈ E, ∃ d : McaDecode domain k δ u γ, d.P = P γ) →
+      (∀ γ ∈ E, (Polynomial.X - Polynomial.C (P γ)) ∣
+        R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+      E.card ≤ T) :
+    (Finset.univ.filter (fun γ : F₀ =>
+      _root_.ProximityGap.mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+        δ (u 0) (u 1) γ)).card ≤
+      (gs_degree_bound k n m / (k - 1) + 1) * T := by
+  classical
+  -- the producer, with its `Conditions` retained for the Y-degree bound
+  obtain ⟨Q₀, h0, hcond, hcard⟩ :=
+    GuruswamiSudan.OverRatFunc.ZDegree.gs_existence_over_ratfunc_zDegree_card
+      (F := F₀) k m domain (u 0) (u 1) hk1 (NeZero.ne n) hm
+  have hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) =
+      Polynomial.C (Polynomial.C (algebraMap F₀[X] (RatFunc F₀) (1 : F₀[X]))) *
+        Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) := by
+    simp
+  obtain ⟨Index, Ecell, P, hIdxCard, hcover, hdec, hnone, hbadcell, hfactor⟩ :=
+    exists_cell_production domain u δ
+      (n * (GuruswamiSudan.constraintIndices m).card * gs_degree_bound k n m)
+      hcond hrep h0 hkn hm hδ1 hδJ (degenerate_card_bound_of_filter hcard)
+  -- (i) the Y-degree of the integer interpolant
+  have hnat : natWeightedDegree
+      (Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀)))) 1 (k - 1) ≤
+      gs_degree_bound k n m := by
+    have h := hcond.Q_deg
+    rw [weightedDegree_eq_natWeightedDegree] at h
+    exact_mod_cast h
+  have hdegK : (Q₀.map (Polynomial.mapRingHom
+      (algebraMap F₀[X] (RatFunc F₀)))).natDegree ≤ gs_degree_bound k n m / (k - 1) :=
+    GuruswamiSudan.natDegree_le_of_natWeightedDegree (by omega) hnat
+  have hmapinj : Function.Injective
+      (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) := by
+    rw [Polynomial.coe_mapRingHom]
+    exact Polynomial.map_injective _ (IsFractionRing.injective F₀[X] (RatFunc F₀))
+  have hdegQ₀ : Q₀.natDegree ≤ gs_degree_bound k n m / (k - 1) := by
+    rwa [Polynomial.natDegree_map_eq_of_injective hmapinj Q₀] at hdegK
+  -- (ii) the nonempty cells inject into {none} ∪ positive-degree factors
+  set posF : Finset ((F₀[X])[X][Y]) :=
+    (UniqueFactorizationMonoid.factors Q₀).toFinset.filter
+      (fun q => 1 ≤ q.natDegree) with hposF
+  set Index' : Finset (Option ((F₀[X])[X][Y])) :=
+    Index.filter (fun ij => (Ecell ij).Nonempty) with hIndex'
+  have hsub' : Index' ⊆ insert none (posF.image some) := by
+    intro ij hij
+    obtain ⟨hijIdx, hne⟩ := Finset.mem_filter.mp hij
+    cases ij with
+    | none => exact Finset.mem_insert_self _ _
+    | some R =>
+      refine Finset.mem_insert_of_mem (Finset.mem_image_of_mem _ ?_)
+      obtain ⟨hRmem, hsurf⟩ := hfactor R hijIdx
+      obtain ⟨γ, hγ⟩ := hne
+      obtain ⟨hz, hdvd⟩ := hsurf γ hγ
+      have hRdvd : R ∣ Q₀ :=
+        UniqueFactorizationMonoid.dvd_of_mem_factors (Multiset.mem_toFinset.mp hRmem)
+      have hRγ0 : R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 := by
+        intro hzero
+        apply hz
+        obtain ⟨c, hc⟩ := hRdvd
+        rw [hc, Polynomial.map_mul, hzero, zero_mul]
+      have h1le : 1 ≤ (R.map (Polynomial.mapRingHom
+          (Polynomial.evalRingHom γ))).natDegree := by
+        have hd := Polynomial.natDegree_le_of_dvd hdvd hRγ0
+        simpa using hd
+      exact Finset.mem_filter.mpr
+        ⟨hRmem, le_trans h1le (Polynomial.natDegree_map_le)⟩
+  have hIdx'card : Index'.card ≤ gs_degree_bound k n m / (k - 1) + 1 := by
+    refine le_trans (Finset.card_le_card hsub') ?_
+    refine le_trans (Finset.card_insert_le _ _) ?_
+    have h1 := Finset.card_image_le (s := posF) (f := Option.some)
+    have h2 : posF.card ≤ Q₀.natDegree := card_posDegree_factors_le h0
+    omega
+  -- (iii) every nonempty cell obeys the `T` bound
+  have hcellT : ∀ ij ∈ Index', (Ecell ij).card ≤ T := by
+    intro ij hij
+    obtain ⟨hijIdx, _⟩ := Finset.mem_filter.mp hij
+    cases ij with
+    | none => exact le_trans hbadcell hT0
+    | some R =>
+      obtain ⟨hRmem, hsurf⟩ := hfactor R hijIdx
+      have hirr : Irreducible R :=
+        UniqueFactorizationMonoid.irreducible_of_factor R (Multiset.mem_toFinset.mp hRmem)
+      exact hK4 _ P R hirr (hdec _ hijIdx) (fun γ hγ => (hsurf γ hγ).2)
+  -- assemble through the nonempty cells only
+  have hcover' : (Finset.univ.filter (fun γ : F₀ =>
+      _root_.ProximityGap.mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+        δ (u 0) (u 1) γ)) ⊆ Index'.biUnion Ecell := by
+    intro γ hγ
+    obtain ⟨ij, hij, hγcell⟩ := Finset.mem_biUnion.mp (hcover hγ)
+    exact Finset.mem_biUnion.mpr
+      ⟨ij, Finset.mem_filter.mpr ⟨hij, ⟨γ, hγcell⟩⟩, hγcell⟩
+  calc (Finset.univ.filter (fun γ : F₀ =>
+        _root_.ProximityGap.mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+          δ (u 0) (u 1) γ)).card
+      ≤ (Index'.biUnion Ecell).card := Finset.card_le_card hcover'
+    _ ≤ ∑ ij ∈ Index', (Ecell ij).card := Finset.card_biUnion_le
+    _ ≤ Index'.card * T := by
+        have h := Finset.sum_le_card_nsmul Index' (fun ij => (Ecell ij).card) T hcellT
+        simpa [smul_eq_mul] using h
+    _ ≤ (gs_degree_bound k n m / (k - 1) + 1) * T :=
+        Nat.mul_le_mul_right T hIdx'card
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -369,3 +596,6 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaDecode_matching_dvd
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_cell_production
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.bad_card_le_of_cell_production
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_cell_production_total
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.card_posDegree_factors_le
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.bad_card_le_numeric

@@ -10,8 +10,8 @@ import ArkLib.OracleReduction.Composition.Sequential.SeqComposeOracleCompletenes
 # Full multi-round sum-check perfect completeness (**oracle** level), via the proven
 verifier-fusion threading keystone — without the false `toReduction = reduction` bridge
 
-`OracleCompleteness.lean` proves `Sumcheck.Spec.oracleReduction_perfectCompleteness` only *modulo*
-the documented-**false** bridge
+`OracleCompleteness.lean` proves `Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge`
+only *modulo* the documented-**false** bridge
 
   `oracleReductionToReductionResidual R deg D n oSpec`
       i.e. `(oracleReduction R deg D n oSpec).toReduction = reduction R deg D n oSpec`.

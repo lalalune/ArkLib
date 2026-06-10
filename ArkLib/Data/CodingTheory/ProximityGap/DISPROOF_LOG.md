@@ -4377,3 +4377,44 @@ O95 closed naming the route to the t > 1 window law through the weighted theory,
 * Teeth at ℂ on GENUINELY weighted data (weights ≥ 2, outside the indicator theory): converse PRODUCES 2 + 2ζ₄² = 0 from the decidably 2-periodic weight (2,0,2,0); forward REFUTES vanishing of (2,0,1,0) (2 ≠ 1 from weighted structure alone); the weight law REFUTES vanishing of the odd-total weight (0,1,0,0) (2 ∤ 1) — all three conclusions discriminate.
 
 **Where the open core moves (the (c) verdict, honest):** the two-prime weighted STRUCTURE law survives the probe intact (de Bruijn 1953's full ℕ-statement, not just the indicator case — no weighted-mixture counterexample exists at n = 12 exhaustively), so the in-tree target is real, but its assembly is NOT free: (1) weighted THREAD-SPLIT transports — O93's engine (`minpoly_adjoin_pow_prime_eq_binomial`, `natDegree_minpoly_adjoin_pow_prime`) is coefficient-free and the K-linear-independence argument accepts weighted thread sums verbatim; only the consumer statement is indicator-bound (bookkeeping). (2) The genuine wall is the **weighted SQUAREFREE base at n = pq**: periodicity fails there (the probe's 1272 mixtures), so the statement is ℕ-cone membership — every ℕ-point of the packet lattice kernel is an ℕ-combination of the p+q rotated packets — de Bruijn's Lemma-1 cone argument, no in-tree analogue (O87's dichotomy is its indicator shadow). With (1)+(2), this pass's prime-power base completes the weighted two-prime theorem by the O94 induction shape, and O95's brick (ii) (the β = 1 windowed law at p^α·q, window q+1) becomes consumable.
+
+### O98 — C1379: the level-2 marginal layer is ONE cyclotomic equation; the deep line at n=32 (nubs, 2026-06-10)
+
+`scripts/probes/n32census/level2/` (commit 75e4822b2; adversarially audited, sound 0.95). **(A) The
+1,344 agree-17 layer of the O87 census, completely charted** — and reproduced index-identically by a
+full fresh sweep at a second prime p₂ = 3·2³⁰+1 (the same literal agreement sets ⟹ ONE ℤ[ζ₃₂]
+configuration reduced at split primes): every dense element factors as
+Π_B(X²−z_b)·(X−x₁)(X−x₂)(X−x₃)(X−ξ), ξ = −Σxᵢ forced, (|B|,|O|) = (7,3) universal; consistency =
+the single scalar equation e₂(x⃗) − e₁(x⃗)² = λ + e₁(B) (0/1344 failures). 1,344 = 2·672 via free
+negation (parity-forced); B-census 580 = 488(×2) + 92(×4) — the SAME {2,4} multiplicity menu as
+C19's level-1 census. 35 = C(7,4) is now STRUCTURAL (e₁(S) = −λ ⟹ z* ∈ S + O50 antipodal pairs).
+O63 spread: witnesses minimal, dense layer MAXIMAL (every branch alive, depths 1–3). The n=16
+union-containment invariant does NOT lift; the level-2 invariant is the 19-type lattice profile.
+**Conjecture C1379** (C19-at-level-2, char-0): ℓ(w,18) = 35, ℓ(w,17) = 1,379 with this fixed
+index-level anatomy for all but finitely many split characteristics; named remaining analytic step:
+derive 672 from the equation. Falsifiers: any further split prime's 4-minute sweep; a non-max-fiber λ.
+**(B) Deep line at n=32** (calibrated bit-for-bit vs O68 first): the FULL C(16,9) = 11,440 bad
+scalars (injective scalar map at this z; vs monomial N₀ = 3,280 — the O68 gap widens 1.4×→3.49×),
+ALL singleton floor lists, union = {q_S} exactly; degeneracy impossible a priori (S_A ≡ 1 + w⁹S_B);
+a = 17 = k+1 proven line-trivial and exactly counted (263,802,303 γ's; cross-foot to C(32,17)
+exact). **Level-2 moral for the branch-count distribution: maximal concentration at the witness
+floor on both families; the first marginal layer is a finite explicit consistency equation with the
+same {2,4} multiplicities at both proven levels.**
+### O97 — THE TWO-PRIME WINDOW LAW IS A THEOREM: the mixed-radix tower goes UNCONDITIONAL (the O95 separation closed)
+
+O95 closed with: "what separates `two_prime_tower_conditional` from unconditional is ONE named statement, the `t > 1` window law … genuinely new mathematics (no literature; the weighted/multiplicity de Bruijn theory is the visible route)". This pass proves that statement at EVERY two-prime modulus `n = p^a·q^b` — and the visible route was not needed: induction on the `q`-exponent over the landed O94 classification suffices. The conditional tower (O73) is now an unconditional theorem at exact two-prime levels.
+
+**Falsify-first probe (`scripts/probes/probe_two_prime_window_law.py`, exact ℤ[x]/Φ_n, exit 0):** the rung EXHAUSTIVELY over the full `2^n` mask space at `n = 12, 18, 20, 24` and the full MITM census at the deep point `n = 36` (`a = b = 2`): every subset vanishing on the SPARSE window `{q^c : c ≤ b}` is `μ_p`-closed — candidates 64/512/1024/4096/262144 (= exactly `2^(n/p)`, the unions of `μ_p`-cosets — the iff made visible), 0 violators, both orientations. Sharpness: dropping the top exponent `q^b` admits the rotated `μ_{q^b}`-coset violator at every point (the sparse window is minimal in length). Capstone interval window `W = max(p^(a-1)(q^b+1), q^(b-1)(p^a+1))` forces empty/full at every point; sharp interval thresholds recorded (slack 2/1/2/4/2 — within one of sharp at `n = 18`).
+
+**Bricks (`TwoPrimeWindowLaw.lean`, new file, 9 theorems, 0 sorry, 0 warnings, axiom-clean [propext, Classical.choice, Quot.sound] ×9):**
+* `window_mu_p_closed` — **THE RUNG**: char 0, `T ⊆ μ_{p^a·q^b}` (`a ≥ 1`, `b ≥ 0`), power sums vanishing at the `b+1` exponents `{1, q, …, q^b}` ⟹ `T` is `μ_p`-closed. Induction on `b`: the `c = 0` sum + O94 `debruijn_two_prime` decompose the exponent set; at exponent `q^(c+1)` every `μ_p`-packet dies (`packet_sum_pow_coprime`: twisted geometric sum at a coprime power is still full) and every `μ_q`-packet collapses to `q·ρ^(q^c)` for its spectrum point `ρ = ζ^(q·base)` (`qpacket_sum_pow`); canonical bases `< n/q` make the spectrum COLLISION-FREE (`q·base < n` pins the discrete log — no choice needed: the spectrum value is `(q)⁻¹·Σ_{e∈P}(ζ^q)^e`, a total function of the packet); the spectrum is a vanishing subset of `μ_{p^a·q^(b-1)}` inheriting the window one level down; the floor `b = 0` is Lam–Leung at prime powers (O66). Closure lifts back: `g^q ∈ μ_p` moves spectrum points and the moved packet absorbs `g·y` via O95 `packet_absorb`.
+* `pow_sum_eq_zero_of_mu_p_closed` + `window_iff_mu_p_closed` — the cheap converse (fibers of `x ↦ x^p` are full cosets, twisted geometric sums die) makes the sparse window an EXACT characterization of `μ_p`-closure.
+* `base_discharge` — the rung in the exact `hBase` hypothesis shape of the O73 climb, at every level `(p^a·q^b)/p^k`, window `q^b + 1`.
+* `two_prime_partial_climb` — interval window `j < p^(t-1)·(q^b+1)` ⟹ `μ_{p^t}`-closure (`t ≤ a`): the rung-resolved O70 divisor-coset law along one prime.
+* `two_prime_tower_window` — **THE UNCONDITIONAL TOWER**: interval window `j < max(p^(a-1)(q^b+1), q^(b-1)(p^a+1))` ⟹ closure under the FULL `μ_{p^a·q^b}`; every `hBasep`/`hBaseq` of `two_prime_tower_conditional` discharged (q-side = the same rung with the primes swapped).
+* `two_prime_window_empty_or_full` — the endpoint: at exact level the master window collapses every subset to `∅` or all of `μ_n` (the `d = n` stratum of the O70 law).
+* `m31_smooth_window_law` — the M31 landing: on `μ_18` window `j < 10` forces full `μ_18`-closure (sharp: the rotated `μ_9`-coset survives `j < 9` — probe C2).
+* `two_pow_three_window_law` — O95 item (iii) cashed: on `μ_{2^a·3}` window `j < 2^(a+1)` forces full closure — the named "first unconditional mixed-radix tower instance", now for all `a` and in fact all `p^a·q^b`.
+* Teeth at ℂ: the rung FIRED on `T = {1, −1} ⊆ μ_12` from the sparse window `{1, 3}` (nonempty, hypotheses jointly satisfiable, conclusion lands).
+
+**Where the open core moves:** the O70 windowed divisor-coset law — exhaustively verified numerically in O70, named open mathematics in O95 — is now a THEOREM at every two-prime modulus, including both M31 smooth regimes (the 2-power side was O53/O61; the multiplicative `μ_18` side is this brick). The window thresholds match O70's verified table exactly at the rung level (sparse window minimal; interval capstone within slack ≤ 4 of sharp, the slack being pure climb-plumbing overshoot). What remains beyond is genuinely new mathematics, not assembly: (i) THREE-plus prime moduli and cofactors `n = p^a·q^b·m` (the de Bruijn classification itself is open there — Lam–Leung ℕ-span territory, see O94 item (i)); (ii) the weighted/ℕ-multiplicity prime-power packet theorem (O95 item (i), assembly-adjacent, the entry point for (i)); (iii) wiring the unconditional tower into the syndrome/list-budget consumers (O61-style) on the M31 multiplicative domain — bookkeeping, queued.

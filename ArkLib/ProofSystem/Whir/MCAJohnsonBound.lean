@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.ProofSystem.Whir.MCAConjecturePairReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RemainingCore
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.LocalSeriesProducer
 
 /-!
 # Final Johnson MCA Bound Discharge

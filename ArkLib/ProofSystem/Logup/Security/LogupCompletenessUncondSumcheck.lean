@@ -10,19 +10,19 @@ import ArkLib.ProofSystem.Logup.Security.LogupCompletenessClose
 
 `logup_completeness_full` (brick C) assembles the headline LogUp completeness from `hInit`,
 `hSumcheck` (`SumcheckCompletenessResidual`), and `hAppend` (the outer⊕sum-check append). The
-`hSumcheck` half is now supplied by `sumcheckCompletenessResidual_holds_uncondInner` — i.e. by the
-proven `CubeFiber` / unconditional multi-round oracle completeness — modulo only the honest-support
-condition. So the end-to-end completeness reduces to: the honest-support condition `hHonest`, the
-standard data facts `hInit`/`hImplSupp`, and the genuine deep residual `hAppend` (the non-perfect
-outer⊕sum-check append composition — the #433 challenge-seam core).
+`hSumcheck` half is supplied by the fully unconditional
+`sumcheckCompletenessResidual_unconditional` — the proven `CubeFiber` multi-round oracle
+completeness plus the claim-true `midRelation` (`{p | logupOuterSumcheckClaim … = 0}`), under
+which the `proj_complete` obligation is a theorem. So the end-to-end completeness reduces to
+`{hInit, hImplSupp, hAppend}` (`logup_completeness_uncondSumcheck` below); `hAppend` is in turn
+discharged for the genuine non-zero error by `appendCompletenessResidual_wired`
+(`LogupCompletenessWired.lean`), giving the headline `logup_completeness_final`.
 
-**Update (corrected claim-true `midRelation`):** `hHonest` is gone. With
-`midRelation = {p | logupOuterSumcheckClaim … = 0}`, the sum-check half is the fully unconditional
-`sumcheckCompletenessResidual_unconditional`, so the headline reduces to `{hInit, hImplSupp,
-hAppend}` (`logup_completeness_unconditional_append` below), and — in the perfect special case
-`logupCompletenessError F n = 0`, where the proven message-seam keystone discharges the append —
-to `{hErr, hInit, hImplSupp}` plus structural seam facts, with **no** append residual
-(`logup_completeness_perfect_unconditional`). -/
+**De-larped (issue #13, dmvt audit):** this theorem previously consumed the honest-support
+hypothesis `hHonest`, which was unsatisfiable (statements with corrupted `.multiplicity` oracles
+have no honest preimage); it is gone. The historical perfect special case
+(`logupCompletenessError F n = 0`) was vacuous (`logupCompletenessError_ne_zero`) and no such
+variant is stated. -/
 
 open OracleComp OracleSpec ProtocolSpec
 namespace Logup
@@ -33,22 +33,11 @@ variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Inhabited F] [Samplea
 variable (n M : ℕ) (params : ProtocolParams M)
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
 
-/-- **End-to-end LogUp completeness, sum-check half internalized via the proven `CubeFiber`.**
-Reduced to: the honest-support condition `hHonest`, the standard data facts `hInit`/`hImplSupp`, and
-the genuine deep append residual `hAppend`. The embedded-sum-check completeness is no longer a free
-residual. -/
+/-- **End-to-end LogUp completeness, sum-check half internalized — no honest-support hypothesis.**
+Reduced to the standard data facts `hInit`/`hImplSupp` and the genuine deep append residual
+`hAppend`. The embedded-sum-check completeness is the unconditional
+`sumcheckCompletenessResidual_unconditional` (no `hHonest`, no per-round bridge). -/
 theorem logup_completeness_uncondSumcheck
-    (hHonest :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        ∃ (stmtIn₀ : StmtIn F n M) (oStmtIn₀ : ∀ i, OStmtIn F n M i),
-          (((stmtIn₀, oStmtIn₀), ()) ∈ inputRelation F n M) ∧
-          (∀ u : Hypercube n,
-            stmtIn.1.xChallenge + evalOnHypercube (tableOracle oStmtIn₀) u ≠ 0) ∧
-          stmtIn.2 =
-            (fun
-              | .input i => oStmtIn₀ i
-              | .multiplicity => honestMultiplicity oStmtIn₀
-              | .helpers => honestHelpers params oStmtIn₀ stmtIn.1.xChallenge))
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
@@ -56,14 +45,16 @@ theorem logup_completeness_uncondSumcheck
     (hAppend :
       AppendCompletenessResidual oSpec F n M params init impl
         (outerCompletenessResidual_of_neverFail oSpec F n M params init impl hInit)
-        (sumcheckCompletenessResidual_holds_uncondInner oSpec F n M params init impl
-          hHonest hInit hImplSupp)) :
+        (sumcheckCompletenessResidual_unconditional oSpec F n M params init impl
+          hInit hImplSupp)) :
     (logupOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
   logup_completeness_full oSpec F n M params init impl hInit
-    (sumcheckCompletenessResidual_holds_uncondInner oSpec F n M params init impl
-      hHonest hInit hImplSupp)
+    (sumcheckCompletenessResidual_unconditional oSpec F n M params init impl hInit hImplSupp)
     hAppend
 
 end
 end Logup
+
+/- Axiom audit. -/
+#print axioms Logup.logup_completeness_uncondSumcheck

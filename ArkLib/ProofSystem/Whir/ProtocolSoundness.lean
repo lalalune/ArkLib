@@ -9,6 +9,7 @@ import ArkLib.ProofSystem.Whir.ProtocolCompleteness
 import ArkLib.ProofSystem.Whir.WhirVectorIOPProof
 import ArkLib.ProofSystem.Whir.MCAConjecturePairReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RemainingCore
+import ArkLib.Data.CodingTheory.ProximityGap.Errors
 
 /-!
 # WHIR Vector IOP Soundness and the Johnson MCA Bound (Issue #302)
@@ -21,6 +22,37 @@ The concrete Vector IOP in `Protocol.lean` currently uses a dummy verifier (`pur
 Thus, its soundness error is 1. The genuine security relies on the real Vector IOP logic
 which is parameterised in `WhirVectorIOPProof.lean`.
 -/
+
+namespace ProximityGap
+
+open scoped NNReal
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+/-- **Issue #302/#304 corrected-core keystone export.**  The unified BCIKS20 remaining core
+(`StrictCoeffPolysResidualLarge` at the target and floor-matched working radii) yields the
+numeric per-round curve-CA quantity consumed by WHIR/STIR accounting:
+`epsCA_curves C k δ δ ≤ k * max(errorBound δ, errorBound δ')`.
+
+The theorem remains conditional on `BCIKS20RemainingCore`; this lemma is only the
+predicate-to-numeric bridge, using `correlatedAgreement_of_remainingCore` plus the in-tree
+`δ_ε_correlatedAgreementCurves_iff_epsCA_curves_le`. -/
+theorem keystone_curves_bound_of_remainingCore {k deg : ℕ} [NeZero deg]
+    {domain : ι ↪ F} {δ δ' : ℝ≥0}
+    (hδ' : δ' < 1 - ReedSolomon.sqrtRate deg domain)
+    (hfloor : Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι))
+    (hCore : BCIKS20RemainingCore k deg domain δ δ') :
+    epsCA_curves (F := F) (ReedSolomon.code domain deg : Set (ι → F)) k δ δ ≤
+      ((k * max (errorBound δ deg domain) (errorBound δ' deg domain) : ℝ≥0) : ENNReal) :=
+  (δ_ε_correlatedAgreementCurves_iff_epsCA_curves_le (F := F) (k := k)
+    (C := (ReedSolomon.code domain deg : Set (ι → F))) δ
+    (max (errorBound δ deg domain) (errorBound δ' deg domain))).mp
+    (correlatedAgreement_of_remainingCore hδ' hfloor hCore)
+
+#print axioms ProximityGap.keystone_curves_bound_of_remainingCore
+
+end ProximityGap
 
 namespace WhirIOP
 

@@ -17,11 +17,13 @@ lift `OracleVerifier.append_rbrKnowledgeSoundness_subsingleton`
 `toVerifier`-level, and `OracleReduction.oracleVerifier_append_toVerifier` identifies the appended
 oracle verifier's `toVerifier` with `Verifier.append` of the components' `toVerifier`s.
 
-The challenge keystone's two named residuals (`hSeamZero` — the per-round flip bound at the seam
-challenge itself, `i₂ = 0`; `hReconcile` — the phase-2 inner seam reconciliation at a `V_to_P`
-seam) are packaged here as the named `Prop`s `Verifier.appendRbrKnowledgeSeamZeroResidual` /
-`Verifier.appendRbrKnowledgeSeamReconcileResidual` (definitionally the keystone's hypotheses), so
-that fold-level assemblies (e.g. the composed Spartan PIOP) can thread them per challenge seam.
+The challenge keystone's single remaining named residual (`hSeamZero` — the per-round flip bound
+at the seam challenge itself, `i₂ = 0`) is packaged here as the named `Prop`
+`Verifier.appendRbrKnowledgeSeamZeroResidual` (definitionally the keystone's hypothesis), so that
+fold-level assemblies (e.g. the composed Spartan PIOP) can thread it per challenge seam. The
+former second residual (`hReconcile` — the phase-2 inner seam reconciliation) is **discharged**:
+`appendRbrKnowledgePhase2SeamReconcile_proof_pos` proves it under `Subsingleton σ`, and the
+keystone consumes that proof inline, so no reconcile hypothesis remains.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -75,25 +77,6 @@ abbrev appendRbrKnowledgeSeamZeroResidual
                 (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
               return (transcript, challenge))).run' (← init)] ≤ rbrKnowledgeError₂ i₂
 
-/-- **Named challenge-seam residual 2 (`hReconcile`).** The phase-2 inner seam reconciliation
-(`appendRbrKnowledgePhase2SeamReconcile`), quantified over the destructured inner knowledge state
-functions / extractors. Definitionally the `hReconcile` hypothesis of
-`Verifier.append_rbrKnowledgeSoundness_keystone_subsingleton_challenge`. (At a message seam this
-is *proven* — `appendRbrKnowledgePhase2SeamReconcile_proof`; at a challenge seam it is open.) -/
-abbrev appendRbrKnowledgeSeamReconcileResidual
-    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
-    (rel₁ : Set (Stmt₁ × Wit₁)) (rel₂ : Set (Stmt₂ × Wit₂)) (rel₃ : Set (Stmt₃ × Wit₃))
-    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
-    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
-    (hInit : ∃ s, s ∈ support init) : Prop :=
-  ∀ {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
-    {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
-    {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
-    (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
-    (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂),
-    appendRbrKnowledgePhase2SeamReconcile (init := init) (impl := impl) V₁ V₂ kSF₁ kSF₂
-      verify hVerify hInit
-
 end Verifier
 
 namespace OracleVerifier
@@ -120,11 +103,13 @@ variable {ι : Type} {oSpec : OracleSpec ι}
 /-- **OracleVerifier-level challenge-seam rbr knowledge-soundness append keystone
 (deterministic-`V₁`, `Subsingleton σ`).** The `V_to_P`-seam companion of
 `OracleVerifier.append_rbrKnowledgeSoundness_subsingleton`: discharges the appended oracle
-verifier's rbr knowledge soundness from the per-phase bounds and the two named challenge-seam
-residuals (`hSeamZero`/`hReconcile`), instantiated at the components' compiled (`toVerifier`)
-forms. Proof: `OracleVerifier.rbrKnowledgeSoundness` is definitionally `toVerifier`-level;
-rewrite the appended `toVerifier` via the proven `oracleVerifier_append_toVerifier` and apply
-the Protocol-level challenge keystone. -/
+verifier's rbr knowledge soundness from the per-phase bounds and the **single** named
+challenge-seam residual (`hSeamZero`; the former `hReconcile` is discharged by
+`appendRbrKnowledgePhase2SeamReconcile_proof_pos` inside the Protocol-level keystone),
+instantiated at the components' compiled (`toVerifier`) forms. Proof:
+`OracleVerifier.rbrKnowledgeSoundness` is definitionally `toVerifier`-level; rewrite the appended
+`toVerifier` via the proven `oracleVerifier_append_toVerifier` and apply the Protocol-level
+challenge keystone. -/
 theorem append_rbrKnowledgeSoundness_subsingleton_challenge [Subsingleton σ]
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
@@ -141,9 +126,7 @@ theorem append_rbrKnowledgeSoundness_subsingleton_challenge [Subsingleton σ]
     (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
     (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂)
     (hSeamZero : Verifier.appendRbrKnowledgeSeamZeroResidual (init := init) (impl := impl)
-      V₁.toVerifier V₂.toVerifier rel₁ rel₂ rel₃ verify hVerify hInit rbrKnowledgeError₂)
-    (hReconcile : Verifier.appendRbrKnowledgeSeamReconcileResidual (init := init) (impl := impl)
-      V₁.toVerifier V₂.toVerifier rel₁ rel₂ rel₃ verify hVerify hInit) :
+      V₁.toVerifier V₂.toVerifier rel₁ rel₂ rel₃ verify hVerify hInit rbrKnowledgeError₂) :
       (OracleVerifier.append (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁ V₂).rbrKnowledgeSoundness
         init impl rel₁ rel₃
         (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
@@ -151,7 +134,7 @@ theorem append_rbrKnowledgeSoundness_subsingleton_challenge [Subsingleton σ]
   rw [OracleReduction.oracleVerifier_append_toVerifier]
   exact Verifier.append_rbrKnowledgeSoundness_keystone_subsingleton_challenge
     V₁.toVerifier V₂.toVerifier verify hVerify hInit hInitNF hNE₂ hNEW₂ hn hDir hDir₂ h₁ h₂
-    hSeamZero hReconcile
+    hSeamZero
 
 end OracleVerifier
 

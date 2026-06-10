@@ -32,15 +32,17 @@ can supply, turning them from free hypotheses into proven facts:
 ## Instantiation into the LogUp statements
 
 For any `σ` and any `init : ProbComp σ` that is a `pure` return, instantiate
-`Logup.logup_completeness_uncond` (and the perfect variant) with
+`Logup.logup_completeness_uncond` (or the headline `logup_completeness_final`) with
 
 * `init := pure x`, `hInit := neverFail_pure_init x`;
 * `impl := canonicalQueryImpl oSpec σ`, `hImplSupp := canonicalQueryImpl_implSupp oSpec σ`.
 
 Both lemmas are stated generically over `oSpec` (with the `oSpec.Fintype` / `oSpec.Inhabited`
 instances already present throughout the LogUp completeness development), so they apply verbatim to
-the LogUp shared-oracle spec. The remaining LogUp residuals (`hHonest`, `hPerRound`, `hAppend`) are
-genuinely-deep protocol facts and are *not* touched here.
+the LogUp shared-oracle spec. The remaining residuals of the per-round-bridge route (`hPerRound`,
+`hAppend`) are genuinely-deep protocol facts and are *not* touched here; the headline
+`logup_completeness_final` route needs neither. A concrete end-to-end instantiation is
+`logup_completeness_final_instantiable` (`LogupCompletenessFinal.lean`).
 
 No `sorry` / `sorryAx` / `admit`: each fact is a real proof. The axiom audit at the bottom confirms
 axiom-cleanliness (`propext`, `Classical.choice`, `Quot.sound`).

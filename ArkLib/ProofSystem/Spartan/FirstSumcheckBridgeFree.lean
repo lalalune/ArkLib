@@ -11,9 +11,10 @@ import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncondCorrect
 # Spartan first sum-check phase completeness, fully bridge-free (#114)
 
 `SpartanSumcheckUnconditional.firstSumcheck_perfectCompleteness_unconditional` discharges the inner
-multi-round sum-check completeness from `Sumcheck.Spec.oracleReduction_perfectCompleteness`, which is
-the **bridge-gated** version (`OracleCompleteness.lean`): it still threads the explicit
-verifier-fusion residual `hBridge : oracleReductionToReductionResidual`.
+multi-round sum-check completeness from
+`Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge`, the **bridge-gated** version
+(`OracleCompleteness.lean`): it still threads the explicit verifier-fusion residual
+`hBridge : oracleReductionToReductionResidual`.
 
 The bridge-free unconditional inner completeness
 `Sumcheck.Spec.oracleReduction_perfectCompleteness_unconditional`
@@ -23,14 +24,12 @@ discharged internally by the proven `CubeFiber`. This module re-points Spartan's
 phase onto it, yielding `firstSumcheck_perfectCompleteness_bridgeFree` with **no `hBridge`
 obligation** — the first sum-check completeness deliverable of #114 made unconditional.
 
-**Why a separate module.** The bridge-gated and bridge-free inner theorems share the *identical*
-fully-qualified name `Sumcheck.Spec.oracleReduction_perfectCompleteness` (in `OracleCompleteness` and,
-via `OracleCompletenessThreaded`, in the chain `OracleCompletenessUncondCorrect` imports), so a single
-file cannot import both — `SpartanSumcheckUnconditional` already imports the gated one. This module
-therefore imports **only** the clean lens/relation chain (`FirstSumcheckReduction`,
-`FirstSumcheckRelComplete`) plus `OracleCompletenessUncondCorrect`, never the gated `OracleCompleteness`,
-and restates the relations / lens-completeness instance / transfer under fresh `BF` names (exactly as
-`SpartanSumcheckUnconditional` restates them to avoid mid-refactor deps).
+**Why a separate module.** This module imports **only** the clean lens/relation chain
+(`FirstSumcheckReduction`, `FirstSumcheckRelComplete`) plus `OracleCompletenessUncondCorrect`, never
+the bridge-gated `OracleCompleteness`, and restates the relations / lens-completeness instance /
+transfer under fresh `BF` names (exactly as `SpartanSumcheckUnconditional` restates them to avoid
+mid-refactor deps). The old short-name collision between the bridge-gated and threaded sum-check
+theorems has been removed; the separation here is now just dependency hygiene.
 -/
 
 open MvPolynomial OracleComp OracleSpec Sumcheck

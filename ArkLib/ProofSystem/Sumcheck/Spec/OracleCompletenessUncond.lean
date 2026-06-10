@@ -9,7 +9,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendToVerifierKeystone
 /-!
 # Discharging the seqCompose verifier-fusion `hBridge` of multi-round sum-check (#13)
 
-`Sumcheck.Spec.oracleReduction_perfectCompleteness` (in `OracleCompleteness.lean`) proves the full
+`Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge` (in `OracleCompleteness.lean`) proves the full
 multi-round sum-check perfect completeness at the **oracle** reduction level *modulo* the single
 named bridge
 
@@ -90,7 +90,7 @@ theorem oracleReductionToReductionResidual_of_perRound
 
 /-- **Full multi-round sum-check perfect completeness (oracle level) — no `hBridge`.**
 
-The seqCompose verifier-fusion bridge `hBridge` of `oracleReduction_perfectCompleteness` is now
+The seqCompose verifier-fusion bridge `hBridge` of `oracleReduction_perfectCompleteness_of_bridge` is now
 discharged internally from the per-round single-round bridge `hPerRound` (via the proven binary
 verifier-fusion `OracleReduction.oracleVerifier_append_toVerifier` lifted along the seqCompose
 induction `seqCompose_toVerifier_of_binary`). The remaining hypotheses are exactly:
@@ -111,7 +111,7 @@ theorem oracleReduction_perfectCompleteness_uncond
         = support (liftM q : OracleComp oSpec β)) :
     (oracleReduction R deg D n oSpec).perfectCompleteness init impl
       (relationRound R n deg D 0) (relationRound R n deg D (Fin.last n)) :=
-  oracleReduction_perfectCompleteness
+  oracleReduction_perfectCompleteness_of_bridge
     (oracleReductionToReductionResidual_of_perRound hPerRound) hInit hImplSupp
 
 end Sumcheck.Spec

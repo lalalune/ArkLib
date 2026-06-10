@@ -5,8 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ProofSystem.Logup.Security.SumcheckRejectionCore
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundCohWired
-import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncond
-import ArkLib.ProofSystem.Logup.Security.BridgeAndAppendResiduals
+import ArkLib.ProofSystem.Sumcheck.Spec.SeqComposeRbrSoundness
 
 /-!
 # Pointwise rejection of the composed sum-check verifier (issue #13, pieces C+D)
@@ -99,7 +98,8 @@ theorem composedSumcheck_run_failure {n' : ℕ}
       = Verifier.seqCompose
           (fun j => StatementRound R (n' + 1) j × (∀ k, OracleStatement R (n' + 1) deg k))
           (fun j => (SingleRound.oracleVerifier R (n' + 1) deg D oSpec j).toVerifier) from
-    OracleVerifier.seqCompose_toVerifier_of_binary (Sumcheck.Spec.binaryVerifierFusion_proof oSpec) _ _ _ _ _ _]
+    OracleVerifier.seqCompose_toVerifier_of_binary_for_rbr
+      (OracleVerifier.binaryVerifierFusionForRbr_holds oSpec) _ _ _ _ _ _]
   -- Head unfold: the composed verify runs round `0` first; it fails; the bind short-circuits.
   show ((SingleRound.oracleVerifier R (n' + 1) deg D oSpec 0).toVerifier.verify
       (stmt, oStmt) _) >>= _ = _

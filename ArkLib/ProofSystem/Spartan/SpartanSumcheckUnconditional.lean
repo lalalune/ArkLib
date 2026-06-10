@@ -15,7 +15,8 @@ import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompleteness
 **generic multi-round sum-check oracle reduction** through the Spartan `liftContext`, but it takes
 that inner completeness `h_inner` as a *hypothesis*. This module re-derives the transfer (with its
 input/output relations and the lens-completeness instance, copied from `FirstSumcheckComplete`) and
-discharges `h_inner` from the now-available `Sumcheck.Spec.oracleReduction_perfectCompleteness`,
+discharges `h_inner` from the bridge-gated
+`Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge`,
 yielding `firstSumcheck_perfectCompleteness_unconditional`.
 
 This file imports only the **clean** First sum-check dependency files
@@ -26,7 +27,7 @@ the relations and lens-completeness instance are therefore restated here under f
 
 ## What is and is not unconditional
 
-`Sumcheck.Spec.oracleReduction_perfectCompleteness` is itself stated modulo a single explicit,
+`Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge` is stated modulo a single explicit,
 clearly-named residual: the verifier-side fusion bridge
 
   `hBridge : (oracleReduction R deg D n oSpec).toReduction = reduction R deg D n oSpec`
@@ -113,7 +114,8 @@ theorem firstSumcheck_perfectCompleteness'
 
 /-- **First sum-check phase perfect completeness, with the inner completeness discharged (#114).**
 The inner multi-round sum-check oracle perfect completeness `h_inner` is supplied by
-`Sumcheck.Spec.oracleReduction_perfectCompleteness` specialized at `deg = 3`, `D = boolEmbedding R`,
+`Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge` specialized at `deg = 3`,
+`D = boolEmbedding R`,
 `n = pp.ℓ_m`. It remains stated modulo the single explicit verifier-fusion bridge `hBridge`
 (`oracleReductionToReductionResidual`) plus the execution-model side conditions
 `hInit`/`hImplSupp`, exactly those of the inner oracle completeness; no sum-check
@@ -129,6 +131,6 @@ theorem firstSumcheck_perfectCompleteness_unconditional
     (firstSumcheckReduction pp oSpec).perfectCompleteness init impl
       (firstSumcheckRelIn' (R := R) pp) (firstSumcheckRelOut' (R := R) pp) :=
   firstSumcheck_perfectCompleteness' pp oSpec
-    (Sumcheck.Spec.oracleReduction_perfectCompleteness hBridge hInit hImplSupp)
+    (Sumcheck.Spec.oracleReduction_perfectCompleteness_of_bridge hBridge hInit hImplSupp)
 
 end Spartan.Spec

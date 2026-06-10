@@ -21,15 +21,12 @@ open Polynomial Polynomial.Bivariate
 attribute [local instance] Classical.propDecidable
 
 /-- Wiring of the separable specialization hypothesis (`hnosq`) using `Hab25SeparableSupply`. -/
-theorem exists_specialized_factor_assignment_charZero [CharZero F]
+theorem exists_specialized_factor_assignment_charZero {F : Type*} [Field F] [CharZero F]
     {Q : (RatFunc F)[X][Y]} {d : F[X]} {Q₀ : (F[X])[X][Y]}
     (hd : d ≠ 0) (hQ0 : Q ≠ 0)
     (hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F[X] (RatFunc F))) =
       Polynomial.C (Polynomial.C (algebraMap F[X] (RatFunc F) d)) * Q)
-    {e : F[X]} {W₀ : (F[X])[X][Y]} (he : e ≠ 0)
-    (hrep_rad : W₀.map (Polynomial.mapRingHom (algebraMap F[X] (RatFunc F))) =
-      Polynomial.C (Polynomial.C (algebraMap F[X] (RatFunc F) e)) * radical Q)
-    (hdeg : 0 < W₀.natDegree) (hdiscr : W₀.discr ≠ 0) :
+    (hdeg : 0 < Q₀.natDegree) (hdiscr : Q₀.discr ≠ 0) :
     ∃ (rep : (RatFunc F)[X][Y] → (F[X])[X][Y]) (bad : F[X]), bad ≠ 0 ∧
       (∀ R ∈ (UniqueFactorizationMonoid.factors Q).toFinset,
         ∃ dR : F[X], dR ≠ 0 ∧
@@ -66,13 +63,6 @@ theorem exists_specialized_factor_assignment_charZero [CharZero F]
   · intro z hz q R hR hqR hrepR R' hR' hrepR'
     have hbad' : bad'.eval z ≠ 0 := right_ne_zero_of_mul hz
     have hg : g.eval z ≠ 0 := left_ne_zero_of_mul hz
-    have hnosq : ∀ r : F[X], ¬ ((Polynomial.X - Polynomial.C r) ^ 2 ∣
-        Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z))) := by
-      intro r hr
-      have hrad : (Polynomial.X - Polynomial.C r) ^ 2 ∣
-          W₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) := by
-        exact radical_rep_good_specialization_charZero hQ0 he hrep_rad hr
-      exact hg_nosq z hg r hrad
-    exact h3 z hbad' hnosq q R hR hqR hrepR R' hR' hrepR'
+    exact h3 z hbad' (hg_nosq z hg) q R hR hqR hrepR R' hR' hrepR'
 
 end GuruswamiSudan.OverRatFunc
