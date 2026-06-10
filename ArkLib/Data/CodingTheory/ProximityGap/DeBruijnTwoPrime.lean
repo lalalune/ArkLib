@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2300
 
 /-!
 # Issue #232 — the two-prime de Bruijn structure: the CRT double-slice theorems (O67–O68)
@@ -1985,5 +1985,150 @@ theorem packetUnion_dichotomy_spectrum {p q a b : ℕ} (hp : p.Prime) (hq : q.Pr
       ring
 
 end DichotomySpectrum
+
+/-! ## THE FIRST REASSEMBLY: the window-{1,q} trichotomy
+
+The wiring of decomposition (O77), the dichotomy–spectrum export, the cover (O76), and
+the upward rung (O83): with window `{1, q}`, every element of a two-prime vanishing set
+is `μ_p`-, `μ_{q²}`-, or `μ_{pq}`-covered inside `S` — the `d`-coset reassembly over the
+divisors `d ∈ {p, q², pq}` exceeding `q`, exactly the shape of the exhaustively-verified
+mixed-radix law at `t = q`: the window kills bare `μ_q`-packets, and their mass can
+reappear only inside the two larger coset types, reconstructed here by lifting the
+spectrum-level cover through the power map. -/
+
+section Trichotomy
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The window-`{1,q}` trichotomy**: every element is `μ_p`-, `μ_{q²}`-, or
+`μ_{pq}`-covered. -/
+theorem two_prime_window_trichotomy {p q a b' : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b' + 2)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b' + 2)) = 1)
+    (hsum : ∑ z ∈ S, z = 0) (hsumq : ∑ z ∈ S, z ^ q = 0) :
+    ∀ x ∈ S,
+      (∀ h : F, h ^ p = 1 → h * x ∈ S) ∨
+      (∀ h : F, h ^ (q * q) = 1 → h * x ∈ S) ∨
+      (∀ h : F, h ^ (q * p) = 1 → h * x ∈ S) := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  haveI : NeZero q := ⟨hq.pos.ne'⟩
+  have hζqb : IsPrimitiveRoot ζq (q ^ ((b' + 1) + 1)) := hζq
+  have hSb : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ ((b' + 1) + 1)) = 1 := hS
+  have hPU := two_prime_packet_decomposition hp hq hpq hζp hζqb hSb hsum
+  obtain ⟨R, hRorbit, hRdich, hRsum⟩ :=
+    packetUnion_dichotomy_spectrum hp hq hpq hζp hζqb hPU
+  have hRsum0 : ∑ r ∈ R, r = 0 := by
+    have hq0 : ((q : F)) ≠ 0 := by exact_mod_cast hq.pos.ne'
+    have := hRsum.symm.trans hsumq
+    rcases mul_eq_zero.mp this with h | h
+    · exact absurd h hq0
+    · exact h
+  have hRtor : ∀ r ∈ R, r ^ (p ^ (a + 1) * q ^ (b' + 1)) = 1 := by
+    intro r hr
+    obtain ⟨w, hwS, hwq, _⟩ := hRorbit r hr
+    rw [← hwq, ← pow_mul]
+    calc w ^ (q * (p ^ (a + 1) * q ^ (b' + 1)))
+        = w ^ (p ^ (a + 1) * q ^ (b' + 2)) := by
+          congr 1
+          rw [pow_succ]
+          ring
+      _ = 1 := hS w hwS
+  have hζq' : IsPrimitiveRoot (ζq ^ q) (q ^ (b' + 1)) := by
+    refine hζq.pow (pow_pos hq.pos _) ?_
+    rw [pow_succ']
+  have hcover := two_prime_packet_cover (a := a) (b := b') hp hq hpq hζp hζq'
+    hRtor hRsum0
+  intro x hx
+  rcases hRdich x hx with hP | hR1
+  · exact Or.inl hP
+  have hx0 : x ≠ 0 := by
+    intro h0
+    have := hS x hx
+    rw [h0, zero_pow (Nat.mul_pos (pow_pos hp.pos _) (pow_pos hq.pos _)).ne'] at this
+    exact zero_ne_one this
+  have hcop' : Nat.Coprime (p ^ (a + 1)) (q ^ (b' + 1)) :=
+    Nat.Coprime.pow _ _ ((Nat.coprime_primes hp hq).mpr hpq)
+  obtain ⟨u, hu, v, hv, huv⟩ := box_pair_surj hζp hζq' hcop'
+    (pow_pos hp.pos _) (pow_pos hq.pos _) (hRtor _ hR1)
+  obtain ⟨i, s, rfl, hs⟩ : ∃ i' s', u = i' * p ^ a + s' ∧ s' < p ^ a :=
+    ⟨u / p ^ a, u % p ^ a, (Nat.div_add_mod' u (p ^ a)).symm,
+      Nat.mod_lt _ (pow_pos hp.pos a)⟩
+  obtain ⟨j, t, rfl, ht⟩ : ∃ j' t', v = j' * q ^ b' + t' ∧ t' < q ^ b' :=
+    ⟨v / q ^ b', v % q ^ b', (Nat.div_add_mod' v (q ^ b')).symm,
+      Nat.mod_lt _ (pow_pos hq.pos b')⟩
+  have hi : i < p := by
+    by_contra hge
+    push Not at hge
+    have h1 : p * p ^ a ≤ i * p ^ a := Nat.mul_le_mul_right _ hge
+    have h2 : i * p ^ a + s < p ^ (a + 1) := hu
+    rw [pow_succ'] at h2
+    omega
+  have hj : j < q := by
+    by_contra hge
+    push Not at hge
+    have h1 : q * q ^ b' ≤ j * q ^ b' := Nat.mul_le_mul_right _ hge
+    have h2 : j * q ^ b' + t < q ^ (b' + 1) := hv
+    rw [pow_succ'] at h2
+    omega
+  have hxqmem : ζp ^ (i * p ^ a + s) * (ζq ^ q) ^ (j * q ^ b' + t) ∈ R := by
+    rwa [huv]
+  rcases hcover s hs i hi t ht j hj hxqmem with hProw | hQcol
+  · -- μ_p-row of x^q ⊆ R ⟹ μ_{q·p}-closure of x
+    refine Or.inr (Or.inr ?_)
+    have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+      hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+    refine coset_lift hq.pos hp.pos hx0 ?_
+    intro g hg
+    obtain ⟨k, hk, hkg⟩ := hωp.eq_pow_of_pow_eq_one hg
+    have hrow := hProw ((k + i) % p) (Nat.mod_lt _ hp.pos)
+    have hgz : g * ζp ^ (i * p ^ a + s) = ζp ^ (((k + i) % p) * p ^ a + s) := by
+      rw [← hkg, ← pow_mul, ← pow_add]
+      have hsplit : k + i = p * ((k + i) / p) + (k + i) % p := (Nat.div_add_mod _ p).symm
+      have hdecomp : p ^ a * k + (i * p ^ a + s)
+          = p ^ (a + 1) * ((k + i) / p) + (((k + i) % p) * p ^ a + s) := by
+        calc p ^ a * k + (i * p ^ a + s) = (k + i) * p ^ a + s := by ring
+        _ = (p * ((k + i) / p) + (k + i) % p) * p ^ a + s := by rw [← hsplit]
+        _ = (p * p ^ a) * ((k + i) / p) + (((k + i) % p) * p ^ a + s) := by ring
+        _ = p ^ (a + 1) * ((k + i) / p) + (((k + i) % p) * p ^ a + s) := by
+            rw [← pow_succ']
+      rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
+    have hgxq : g * x ^ q
+        = ζp ^ (((k + i) % p) * p ^ a + s) * (ζq ^ q) ^ (j * q ^ b' + t) := by
+      rw [← huv, ← mul_assoc, hgz]
+    obtain ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hrow
+    exact ⟨w, hwS, by rw [hwq, hgxq], horbit⟩
+  · -- μ_q-column of x^q ⊆ R ⟹ μ_{q·q}-closure of x
+    refine Or.inr (Or.inl ?_)
+    have hωq' : IsPrimitiveRoot ((ζq ^ q) ^ (q ^ b')) q :=
+      hζq'.pow (pow_pos hq.pos _) (by rw [pow_succ])
+    refine coset_lift hq.pos hq.pos hx0 ?_
+    intro g hg
+    obtain ⟨k, hk, hkg⟩ := hωq'.eq_pow_of_pow_eq_one hg
+    have hcol := hQcol ((k + j) % q) (Nat.mod_lt _ hq.pos)
+    have hgz : g * (ζq ^ q) ^ (j * q ^ b' + t)
+        = (ζq ^ q) ^ (((k + j) % q) * q ^ b' + t) := by
+      rw [← hkg, ← pow_mul, ← pow_add]
+      have hsplit : k + j = q * ((k + j) / q) + (k + j) % q := (Nat.div_add_mod _ q).symm
+      have hdecomp : q ^ b' * k + (j * q ^ b' + t)
+          = q ^ (b' + 1) * ((k + j) / q) + (((k + j) % q) * q ^ b' + t) := by
+        calc q ^ b' * k + (j * q ^ b' + t) = (k + j) * q ^ b' + t := by ring
+        _ = (q * ((k + j) / q) + (k + j) % q) * q ^ b' + t := by rw [← hsplit]
+        _ = (q * q ^ b') * ((k + j) / q) + (((k + j) % q) * q ^ b' + t) := by ring
+        _ = q ^ (b' + 1) * ((k + j) / q) + (((k + j) % q) * q ^ b' + t) := by
+            rw [← pow_succ']
+      rw [hdecomp, pow_add, pow_mul, hζq'.pow_eq_one, one_pow, one_mul]
+    have hgxq : g * x ^ q
+        = ζp ^ (i * p ^ a + s) * (ζq ^ q) ^ (((k + j) % q) * q ^ b' + t) := by
+      rw [← huv]
+      calc g * (ζp ^ (i * p ^ a + s) * (ζq ^ q) ^ (j * q ^ b' + t))
+          = ζp ^ (i * p ^ a + s) * (g * (ζq ^ q) ^ (j * q ^ b' + t)) := by ring
+        _ = ζp ^ (i * p ^ a + s) * (ζq ^ q) ^ (((k + j) % q) * q ^ b' + t) := by
+            rw [hgz]
+    obtain ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hcol
+    exact ⟨w, hwS, by rw [hwq, hgxq], horbit⟩
+
+end Trichotomy
 
 end DeBruijnTwoPrime
