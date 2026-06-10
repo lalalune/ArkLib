@@ -53,17 +53,15 @@ theorem fiber_specialization_commute (R : (F₀[X])[X][Y]) (x₀ γ : F₀) :
     (R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))).map
         (Polynomial.evalRingHom x₀) =
       (fiberAt x₀ R).map (Polynomial.evalRingHom γ) := by
-  rw [fiberAt, Polynomial.coe_mapRingHom, Polynomial.map_map, Polynomial.map_map]
-  congr 1
-  ext q : 1
-  · simp
-  · simp only [RingHom.comp_apply, Polynomial.coe_mapRingHom, Polynomial.coe_evalRingHom]
-    rw [Polynomial.eval_map]
-    have h := Polynomial.hom_eval₂ q (RingHom.id F₀[X])
-      (Polynomial.evalRingHom γ) (Polynomial.C x₀ : F₀[X])
-    simp only [RingHom.comp_id, Polynomial.coe_evalRingHom, Polynomial.eval_C] at h
-    rw [show Polynomial.eval (Polynomial.C x₀) q = Polynomial.eval₂ (RingHom.id F₀[X])
-        (Polynomial.C x₀) q from (Polynomial.eval₂_id _ _).symm, h]
+  have hcomp : (Polynomial.evalRingHom x₀).comp
+      (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) =
+      (Polynomial.evalRingHom γ).comp
+        (Polynomial.evalRingHom (Polynomial.C x₀ : F₀[X])) := by
+    apply Polynomial.ringHom_ext
+    · intro a
+      simp
+    · simp
+  rw [fiberAt, Polynomial.coe_mapRingHom, Polynomial.map_map, Polynomial.map_map, hcomp]
 
 /-- **Each cell scalar's fiber value is a root of the specialized fiber curve**: from
 `(Y − C (P γ)) ∣ R|_{Z:=γ}`, the value `P γ(x₀)` satisfies
@@ -112,7 +110,7 @@ theorem exists_factor_root {G : F₀[X][Y]} (hG : G ≠ 0) (γ y : F₀)
     rw [hu]; exact hevG
   rw [map_mul] at hprod
   have hevu : ev (u : F₀[X][Y]) = c := by
-    rw [← hc, hev]
+    rw [hc, hev]
     simp
   rw [hevu] at hprod
   have hprod0 : ev ((UniqueFactorizationMonoid.factors G).prod) = 0 := by
@@ -120,11 +118,12 @@ theorem exists_factor_root {G : F₀[X][Y]} (hG : G ≠ 0) (γ y : F₀)
     · exact h
     · exact absurd h hc0
   rw [← Multiset.prod_hom _ ev] at hprod0
-  obtain ⟨b, hbmem, hb0⟩ := Multiset.prod_eq_zero_iff.mp hprod0
-  obtain ⟨H, hHmem, rfl⟩ := Multiset.mem_map.mp hbmem
+  have h0mem : (0 : F₀) ∈ (UniqueFactorizationMonoid.factors G).map ev :=
+    Multiset.prod_eq_zero_iff.mp hprod0
+  obtain ⟨H, hHmem, hH0⟩ := Multiset.mem_map.mp h0mem
   refine ⟨H, hHmem, ?_⟩
-  rw [hev] at hb0
-  simpa using hb0
+  rw [hev] at hH0
+  simpa using hH0
 
 /-- **The x₀-fiber component pigeonhole (BCIKS20 Claim 5.7, counting half).** The cell
 splits along the irreducible components of the fiber curve `R(x₀, Y, Z)` plus one
@@ -213,7 +212,11 @@ theorem exists_fiber_component_pigeonhole
         (∑ ij ∈ Index, (Ecl ij).card) *
           ((UniqueFactorizationMonoid.factors G).card + 2) :=
       Nat.mul_le_mul_right _ hsum
-    omega
+    have hchain : E.card * ((UniqueFactorizationMonoid.factors G).card + 2) <
+        ((UniqueFactorizationMonoid.factors G).card + 2) * E.card :=
+      lt_of_le_of_lt h3 (lt_of_lt_of_le h1 h2)
+    rw [Nat.mul_comm] at hchain
+    exact absurd hchain (lt_irrefl _)
   obtain ⟨ij, hijIdx, hijcard⟩ := hpigeon
   -- the majority class is nonempty (the cell is not)
   have hEpos : 0 < E.card := Finset.card_pos.mpr (Finset.nonempty_iff_ne_empty.mpr hE0)
@@ -243,8 +246,8 @@ theorem exists_fiber_component_pigeonhole
       exact absurd hass₀.symm (Option.some_ne_none _)
     obtain ⟨H', hH'mem, hEq, _⟩ := hpos γ₀ hγ₀E h0
     rw [hass₀] at hEq
-    obtain rfl : H' = H := Option.some.inj hEq
-    refine ⟨H', hH'mem, ?_⟩
+    obtain rfl : H = H' := Option.some.inj hEq
+    refine ⟨H, hH'mem, ?_⟩
     intro γ hγ
     obtain ⟨hγE, hass⟩ := Finset.mem_filter.mp hγ
     have h0γ : G.map (Polynomial.evalRingHom γ) ≠ 0 := by
