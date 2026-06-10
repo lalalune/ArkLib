@@ -52,7 +52,7 @@ variable {ι : Type} {oSpec : OracleSpec ι} {Stmt₁ Stmt₂ Stmt₃ : Type}
   [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
-private theorem marg_het_state {ιₛ : Type} {spec : OracleSpec ιₛ} {α₁ α₂ β : Type}
+theorem marg_het_state {ιₛ : Type} {spec : OracleSpec ιₛ} {α₁ α₂ β : Type}
     (so : QueryImpl spec (StateT σ ProbComp)) (s' : σ)
     (X : OptionT (OracleComp spec) α₁) (Y : OptionT (OracleComp spec) α₂)
     (g₁ : α₁ → β) (g₂ : α₂ → β) (q : β → Prop) (h : (g₁ <$> X) = (g₂ <$> Y)) :
@@ -82,7 +82,7 @@ computations may have *different* value types `α₁`, `α₂`, projected to a c
 because the phase-1 seam body (`P.fst`'s output `state × Unit`) and `Reduction.run {fstSound}` (output
 `Stmt₂ × state`) differ in type, yet share the verifier-output (`Prod.snd`) marginal. Same proof as the
 homogeneous version (free-monad/`simulateQ_map`/`StateT.run_map`), just with `g₁`/`g₂`. -/
-private theorem marg_het {ιₛ : Type} {spec : OracleSpec ιₛ} {α₁ α₂ β : Type}
+theorem marg_het {ιₛ : Type} {spec : OracleSpec ιₛ} {α₁ α₂ β : Type}
     (so : QueryImpl spec (StateT σ ProbComp)) (init : ProbComp σ)
     (X : OptionT (OracleComp spec) α₁) (Y : OptionT (OracleComp spec) α₂)
     (g₁ : α₁ → β) (g₂ : α₂ → β) (q : β → Prop) (h : (g₁ <$> X) = (g₂ <$> Y)) :
@@ -114,7 +114,7 @@ into `OptionT`; the per-phase soundness game instead lifts it into `OptionT` fir
 Both routes (`OracleComp pSpec₁ → OptionT combined`) coincide: each `OptionT.run` reduces to
 `some <$> liftM A`, which is definitionally `liftComp A`. This reconciles the goal's
 `liftM (liftM A : OracleComp combined)` with the `OptionT`-side form. -/
-private theorem lift_oc_optionT_coh {α : Type}
+theorem lift_oc_optionT_coh {α : Type}
     (A : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) α) :
     (liftM (liftM A : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
       : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α)
@@ -135,7 +135,7 @@ private theorem lift_oc_optionT_coh {α : Type}
 (`oSpec+[pSpec₁.Challenge]ₒ → combined`) commutes with `OptionT.run`: both reduce to
 `liftComp = simulateQ (fun t => liftM (query t))` of the underlying `OracleComp`. Bridges the
 `OptionT`-level seam body to the `OracleComp`-level `evalDist_run'_challengeSeam_left`. -/
-private theorem liftM_optionT_run_eq_seam {α : Type}
+theorem liftM_optionT_run_eq_seam {α : Type}
     (g : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) α) :
     (liftM g : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α).run
     = (liftM (g.run) : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option α)) := by
@@ -150,7 +150,7 @@ private theorem liftM_optionT_run_eq_seam {α : Type}
 simulated under `pSpec₁`'s own challenge oracle. Lifts `evalDist_run'_challengeSeam_left` (a per-state
 `evalDist` equality on the `OracleComp` run) through the `init`-bind and `liftM`/`OptionT.run`
 coherence (`liftM_optionT_run_eq_seam`) to the full soundness game. -/
-private theorem probEvent_seam_transfer_left {α : Type}
+theorem probEvent_seam_transfer_left {α : Type}
     (g : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) α)
     (P : Option α → Prop) :
     Pr[P | init >>= fun s => (simulateQ
@@ -174,7 +174,7 @@ private theorem probEvent_seam_transfer_left {α : Type}
   unfold probEvent
   rw [hed]
 
-private theorem lift_oc_optionT_coh_right {α : Type}
+theorem lift_oc_optionT_coh_right {α : Type}
     (A : OracleComp (oSpec + [pSpec₂.Challenge]ₒ) α) :
     (liftM (liftM A : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
       : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α)
@@ -191,7 +191,7 @@ private theorem lift_oc_optionT_coh_right {α : Type}
     simulateQ_bind, simulateQ_pure]
   rfl
 
-private theorem liftM_optionT_run_eq_seam_right {α : Type}
+theorem liftM_optionT_run_eq_seam_right {α : Type}
     (g : OptionT (OracleComp (oSpec + [pSpec₂.Challenge]ₒ)) α) :
     (liftM g : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α).run
     = (liftM (g.run) : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option α)) := by
@@ -201,7 +201,7 @@ private theorem liftM_optionT_run_eq_seam_right {α : Type}
     OracleComp.liftComp_def]
   rfl
 
-private theorem probEvent_seam_transfer_right {α : Type}
+theorem probEvent_seam_transfer_right {α : Type}
     (g : OptionT (OracleComp (oSpec + [pSpec₂.Challenge]ₒ)) α)
     (P : Option α → Prop) (s' : σ) :
     Pr[P | (simulateQ

@@ -1132,6 +1132,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDistChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendSeamBridges
 import ArkLib.OracleReduction.Composition.Sequential.AppendSeamBridges2
 import ArkLib.OracleReduction.Composition.Sequential.AppendSeamBridges3
+import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessChallengeProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessMsgProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessSeamTransfer
