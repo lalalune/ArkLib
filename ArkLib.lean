@@ -1052,6 +1052,7 @@ import ArkLib.OracleReduction.FiatShamir.HVZKKernelInfra
 import ArkLib.OracleReduction.FiatShamir.HVZKLazyImpl
 import ArkLib.OracleReduction.FiatShamir.HVZKLazyVerifier
 import ArkLib.OracleReduction.FiatShamir.HVZKNoChallenge
+import ArkLib.OracleReduction.FiatShamir.HVZKPerStateClose
 import ArkLib.OracleReduction.FiatShamir.HVZKTransferReduction
 import ArkLib.OracleReduction.FiatShamir.ProverRunCharacterization
 import ArkLib.OracleReduction.FiatShamir.SingleSalt
