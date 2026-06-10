@@ -4767,3 +4767,12 @@ The window-law residue redteamed at the statement level. `ThreePrimeWindowObstru
 * `card_level_two_profile` — **the headline**: the joint (level-1 `Z₁`, level-2 `{v² : v ∈ V_e}/{v² : v ∈ V_o}`) per-profile count equals the asymmetric count at the merged sets — an exact q-power; dimensions multiply iff the merged unions are disjoint, each overlap refunds one dimension (the censused refund, now structural).
 
 **Where this leaves Conjecture D:** with O109 (level 1 = classical MDS), O115 (tower budgets never beat level 1), and this brick (the exact per-profile law at level 2), the counting side of the fold tower is CLOSED — all that survives is the incidence/inclusion–exclusion channel over locus overlaps and the anticorrelation structure, both genuinely open.
+
+### O111 — THE ℤ-WINDOWED LAW AT EVERY MODULUS: the windowed program escapes the two-prime cage — the windowed-law lattice is COMPLETE
+
+Probe-falsified first (`probe_int_windowed_law.py`, exact ℤ[x]/Φ_n + Smith normal form, exit 0: 15 (n,t) pairs at n = 12, 30, 36, 60, 105 — the d > t coset lattice kills the window, has rank = the ℚ-kernel dimension of the window system, and is saturated). `DeBruijnIntWindowedLaw.lean` (5 theorems, axiom-clean, 0 sorry, 0 warnings, pushed c22d87f25):
+
+* `int_windowed_law` — **the headline iff at EVERY n**: `(∀ j ∈ [1,t], Σ_{e<n} w_e ζ^{je} = 0) ⟺ w ∈ ℤ-span{μ_d-coset indicators : d ∣ n, d > t}`. The O106/O108 two-prime cage was the ℕ-level interface (REAL for ℕ by O105); over ℤ the level classifier at every modulus is O110, and the O108 induction (kill + resonance + fiberwise fold) runs unchanged — kill/resonance transported to ℤ by pos/neg splits against the O108 ℕ-lemmas.
+* The windowed-law LATTICE is complete and fully machine-checked, refutations included: {0/1, ℕ, ℤ} × {t = 1, all t} × {two-prime, every n}: O94/O103/O109a (t=1 two-prime), O106/O108 (all-t two-prime), O105 refutations (ℕ-rows at 3 primes), O110/O111 (ℤ-rows at every n). No open cells.
+
+**Where the open core moves:** exactly ONE genuinely-open item remains on the de Bruijn lane — the Lam–Leung ℕ-span (total weight ∈ ℕp₁+⋯+ℕp_k at 3+ primes), the nonnegativity refinement strictly between the refuted ℕ-cone and the proven ℤ-module. Everything else on this lane is theorem or counterexample. Prize-adjacent consumers of O111: window-code ℤ-codeword structure on ARBITRARY smooth domains (incl. 3-smooth M31-adjacent and beyond), and the t-general fiber analysis feeding the mixed-radix capstones.
