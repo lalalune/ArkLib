@@ -40,7 +40,7 @@ All declarations are axiom-clean (`[propext, Classical.choice, Quot.sound]`), ze
 8. `Spartan.Spec.Bricks.composedCompletenessResidual_of_five_leaves` — sharpened: `firstMessage`
    (SendSingleWitness) + both sum-checks (bridge-free) discharged; **five** named leaf obligations
    remain (`firstChallenge` [in-tree proof exists, module build-broken], `sendEvalClaim`,
-   `linearCombination`, `prependTarget`-honest-target [the genuine gap], `finalCheck`).
+   `linearCombination`, `prependRLCTarget`-honest-target [the genuine gap], `finalCheck`).
 -/
 
 open OracleComp OracleSpec ProtocolSpec OptionTStateT
@@ -273,8 +273,17 @@ open Sumcheck.Spec.SingleRound (appendChalFintype appendChalInhab chalBaseFintyp
 
 noncomputable section
 
-variable {R : Type} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [Inhabited R]
+variable {R : Type 0} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [Inhabited R]
   [SampleableType R] (pp : PublicParams)
+
+/-- The honest RLC-target adapter pinned to the concrete oracle-interface universe used by the
+current append-completeness keystones. -/
+private abbrev prependRLCTargetPC {ι : Type} (oSpec : OracleSpec ι) :
+    OracleReduction.{0, 0} oSpec
+      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
+      (R × Statement.AfterLinearCombination R pp)
+      (OracleStatement.AfterLinearCombination R pp) Unit !p[] :=
+  prependRLCTarget pp oSpec
 
 /-! ### Direction facts -/
 
@@ -306,7 +315,7 @@ private theorem sfx6_dir_zero (hn : 0 < pp.ℓ_n)
   exact sumcheckPSpec_dir_zero 2 pp.ℓ_n hv
 
 /-- `sfx5 = !p[] ++ₚ sfx6` opens `P_to_V`. (Also the seam-direction fact for the
-`prependTarget ▷ …` append, whose combined spec is literally `sfx5` at seam index `0`.) -/
+`prependRLCTarget ▷ …` append, whose combined spec is literally `sfx5` at seam index `0`.) -/
 private theorem sfx5_dir_zero (hn : 0 < pp.ℓ_n)
     (h : 0 < 0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)) :
     (sfx5 (R := R) pp).dir ⟨0, h⟩ = .P_to_V := by
@@ -529,16 +538,16 @@ private theorem step8
   exact OracleReduction.append_perfectCompleteness_keystone_empty_114
     (secondSumcheckReduction pp oSpec) (finalCheck R pp oSpec) h₇ h₈ hInit hImplSupp
 
-/-- Seam 6 (`prependTarget ▷ …`, message seam through the 0-round left adapter). -/
+/-- Seam 6 (`prependRLCTarget ▷ …`, message seam through the 0-round left adapter). -/
 private theorem step7 (hn : 0 < pp.ℓ_n)
-    (h₆ : (prependTarget pp oSpec).perfectCompleteness init impl relF relG)
+    (h₆ : (prependRLCTargetPC pp oSpec).perfectCompleteness init impl relF relG)
     (hRest : ((secondSumcheckReduction pp oSpec).append
       (finalCheck R pp oSpec)).perfectCompleteness init impl relG relI)
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
         = support (liftM q : OracleComp oSpec β)) :
-    ((prependTarget pp oSpec).append ((secondSumcheckReduction pp oSpec).append
+    ((prependRLCTargetPC pp oSpec).append ((secondSumcheckReduction pp oSpec).append
       (finalCheck R pp oSpec))).perfectCompleteness init impl relF relI := by
   have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos hn
   haveI : ∀ j, Fintype ((sfx6 (R := R) pp).Challenge j) := c6F pp
@@ -552,7 +561,7 @@ private theorem step7 (hn : 0 < pp.ℓ_n)
   haveI := ProtocolSpec.challengeOracle_fintype (!p[] : ProtocolSpec 0)
   haveI := ProtocolSpec.challengeOracle_inhabited (!p[] : ProtocolSpec 0)
   exact OracleReduction.append_perfectCompleteness_keystone
-    (prependTarget pp oSpec)
+    (prependRLCTargetPC pp oSpec)
     ((secondSumcheckReduction pp oSpec).append (finalCheck R pp oSpec))
     h₆ hRest (by omega) (sfx5_dir_zero pp hn (by omega)) (sfx6_dir_zero pp hn (by omega))
     hInit hImplSupp
@@ -561,13 +570,13 @@ private theorem step7 (hn : 0 < pp.ℓ_n)
 sum-check's leading message through the 0-round adapter). -/
 private theorem step6 (hn : 0 < pp.ℓ_n)
     (h₅ : (oracleReduction.linearCombination R pp oSpec).perfectCompleteness init impl relE relF)
-    (hRest : ((prependTarget pp oSpec).append ((secondSumcheckReduction pp oSpec).append
+    (hRest : ((prependRLCTargetPC pp oSpec).append ((secondSumcheckReduction pp oSpec).append
       (finalCheck R pp oSpec))).perfectCompleteness init impl relF relI)
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
         = support (liftM q : OracleComp oSpec β)) :
-    ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+    ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
       ((secondSumcheckReduction pp oSpec).append (finalCheck R pp oSpec)))).perfectCompleteness
       init impl relE relI := by
   have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos hn
@@ -593,7 +602,7 @@ private theorem step6 (hn : 0 < pp.ℓ_n)
     (⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩ : ProtocolSpec 1)
   exact OracleReduction.append_perfectCompleteness_keystone
     (oracleReduction.linearCombination R pp oSpec)
-    ((prependTarget pp oSpec).append
+    ((prependRLCTargetPC pp oSpec).append
       ((secondSumcheckReduction pp oSpec).append (finalCheck R pp oSpec)))
     h₅ hRest (by omega) (sfx4_dir_seam pp hn (by omega)) (sfx5_dir_zero pp hn (by omega))
     hInit hImplSupp
@@ -603,19 +612,19 @@ linear-combination `V_to_P` challenge). -/
 private theorem step5
     (h₄ : (oracleReduction.sendEvalClaim R pp oSpec).perfectCompleteness init impl relD relE)
     (hRest : ((oracleReduction.linearCombination R pp oSpec).append
-      ((prependTarget pp oSpec).append ((secondSumcheckReduction pp oSpec).append
+      ((prependRLCTargetPC pp oSpec).append ((secondSumcheckReduction pp oSpec).append
         (finalCheck R pp oSpec)))).perfectCompleteness init impl relE relI)
     (hInit : NeverFail init)
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
     ((oracleReduction.sendEvalClaim R pp oSpec).append
-      ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+      ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
         ((secondSumcheckReduction pp oSpec).append
           (finalCheck R pp oSpec))))).perfectCompleteness init impl relD relI := by
   exact OracleReduction.append_perfectCompleteness_keystone_challenge_114
     (oracleReduction.sendEvalClaim R pp oSpec)
-    ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+    ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
       ((secondSumcheckReduction pp oSpec).append (finalCheck R pp oSpec))))
     h₄ hRest (by omega) (sfx3_dir_seam pp (by omega)) (sfx4_dir_zero pp (by omega))
     hInit himplSP himplNF
@@ -625,7 +634,7 @@ eval-claim `P_to_V` message). -/
 private theorem step4
     (h₃ : (firstSumcheckReduction pp oSpec).perfectCompleteness init impl relC relD)
     (hRest : ((oracleReduction.sendEvalClaim R pp oSpec).append
-      ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+      ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
         ((secondSumcheckReduction pp oSpec).append
           (finalCheck R pp oSpec))))).perfectCompleteness init impl relD relI)
     (hInit : NeverFail init)
@@ -633,7 +642,7 @@ private theorem step4
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
         = support (liftM q : OracleComp oSpec β)) :
     ((firstSumcheckReduction pp oSpec).append ((oracleReduction.sendEvalClaim R pp oSpec).append
-      ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+      ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
         ((secondSumcheckReduction pp oSpec).append
           (finalCheck R pp oSpec)))))).perfectCompleteness init impl relC relI := by
   haveI : ∀ j, Fintype ((Sumcheck.Spec.pSpec R 3 pp.ℓ_m).Challenge j) := sumcheckChalF 3 pp.ℓ_m
@@ -653,7 +662,7 @@ private theorem step4
   exact OracleReduction.append_perfectCompleteness_keystone
     (firstSumcheckReduction pp oSpec)
     ((oracleReduction.sendEvalClaim R pp oSpec).append
-      ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+      ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
         ((secondSumcheckReduction pp oSpec).append (finalCheck R pp oSpec)))))
     h₃ hRest (by omega) (sfx2_dir_seam pp (by omega)) (sfx3_dir_zero pp (by omega))
     hInit hImplSupp
@@ -664,7 +673,7 @@ private theorem step3 (hm : 0 < pp.ℓ_m)
     (h₂ : (oracleReduction.firstChallenge R pp oSpec).perfectCompleteness init impl relB relC)
     (hRest : ((firstSumcheckReduction pp oSpec).append
       ((oracleReduction.sendEvalClaim R pp oSpec).append
-        ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+        ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
           ((secondSumcheckReduction pp oSpec).append
             (finalCheck R pp oSpec)))))).perfectCompleteness init impl relC relI)
     (hInit : NeverFail init)
@@ -673,7 +682,7 @@ private theorem step3 (hm : 0 < pp.ℓ_m)
         = support (liftM q : OracleComp oSpec β)) :
     ((oracleReduction.firstChallenge R pp oSpec).append ((firstSumcheckReduction pp oSpec).append
       ((oracleReduction.sendEvalClaim R pp oSpec).append
-        ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+        ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
           ((secondSumcheckReduction pp oSpec).append
             (finalCheck R pp oSpec))))))).perfectCompleteness init impl relB relI := by
   haveI : ∀ j, Fintype ((sfx2 (R := R) pp).Challenge j) := c2F pp
@@ -700,7 +709,7 @@ private theorem step3 (hm : 0 < pp.ℓ_m)
     (oracleReduction.firstChallenge R pp oSpec)
     ((firstSumcheckReduction pp oSpec).append
       ((oracleReduction.sendEvalClaim R pp oSpec).append
-        ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+        ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
           ((secondSumcheckReduction pp oSpec).append (finalCheck R pp oSpec))))))
     h₂ hRest (by omega) (sfx1_dir_seam pp hm (by omega)) (sfx2_dir_zero pp hm (by omega))
     hInit hImplSupp
@@ -717,7 +726,7 @@ theorem composedPIOP_Rc_perfectCompleteness_of_leaves
     (h₃ : (firstSumcheckReduction pp oSpec).perfectCompleteness init impl relC relD)
     (h₄ : (oracleReduction.sendEvalClaim R pp oSpec).perfectCompleteness init impl relD relE)
     (h₅ : (oracleReduction.linearCombination R pp oSpec).perfectCompleteness init impl relE relF)
-    (h₆ : (prependTarget pp oSpec).perfectCompleteness init impl relF relG)
+    (h₆ : (prependRLCTargetPC pp oSpec).perfectCompleteness init impl relF relG)
     (h₇ : (secondSumcheckReduction pp oSpec).perfectCompleteness init impl relG relH)
     (h₈ : (finalCheck R pp oSpec).perfectCompleteness init impl relH relI)
     (hInit : NeverFail init)
@@ -738,7 +747,7 @@ theorem composedPIOP_Rc_perfectCompleteness_of_leaves
     (oracleReduction.firstMessage R pp oSpec)
     ((oracleReduction.firstChallenge R pp oSpec).append ((firstSumcheckReduction pp oSpec).append
       ((oracleReduction.sendEvalClaim R pp oSpec).append
-        ((oracleReduction.linearCombination R pp oSpec).append ((prependTarget pp oSpec).append
+        ((oracleReduction.linearCombination R pp oSpec).append ((prependRLCTargetPC pp oSpec).append
           ((secondSumcheckReduction pp oSpec).append (finalCheck R pp oSpec)))))))
     h₁ hS3 (by omega) (composedPSpec_dir_seam pp (by omega)) (sfx1_dir_zero pp (by omega))
     hInit himplSP himplNF
@@ -755,7 +764,7 @@ theorem composedCompletenessResidual_of_leaves
     (h₃ : (firstSumcheckReduction pp oSpec).perfectCompleteness init impl relC relD)
     (h₄ : (oracleReduction.sendEvalClaim R pp oSpec).perfectCompleteness init impl relD relE)
     (h₅ : (oracleReduction.linearCombination R pp oSpec).perfectCompleteness init impl relE relF)
-    (h₆ : (prependTarget pp oSpec).perfectCompleteness init impl relF relG)
+    (h₆ : (prependRLCTargetPC pp oSpec).perfectCompleteness init impl relF relG)
     (h₇ : (secondSumcheckReduction pp oSpec).perfectCompleteness init impl relG relH)
     (h₈ : (finalCheck R pp oSpec).perfectCompleteness init impl relH (finalCheckRelOut R pp))
     (hInit : NeverFail init)
@@ -790,7 +799,7 @@ concrete in-tree chain (`firstMessageRelOut` → `firstSumcheckRelInBF` →
 * `h₂` — `firstChallenge` (an in-tree proof `firstChallenge_perfectCompleteness` exists but its
   module `FirstChallengeComplete.lean` is currently build-broken on `main`, pre-existing);
 * `h₄`/`h₅` — `sendEvalClaim` / `linearCombination` (pure forwarding phases, unproven);
-* `h₆` — `prependTarget` into `secondSumcheckRelInBF`: **the honest-target obligation**. The
+* `h₆` — `prependRLCTarget` into `secondSumcheckRelInBF`: **the honest-target obligation**. The
   existence-only adapter emits target `0`, while `secondSumcheckRelInBF` pins the target to the
   honest linear-combination value, so this hypothesis demands the honest-target adapter (or a
   `relF` strengthening) — the known genuine remaining gap of #114's completeness layer;
@@ -802,7 +811,7 @@ theorem composedCompletenessResidual_of_five_leaves
     (h₄ : (oracleReduction.sendEvalClaim R pp oSpec).perfectCompleteness init impl
       (firstSumcheckRelOutBF (R := R) pp) relE)
     (h₅ : (oracleReduction.linearCombination R pp oSpec).perfectCompleteness init impl relE relF)
-    (h₆ : (prependTarget pp oSpec).perfectCompleteness init impl relF
+    (h₆ : (prependRLCTargetPC pp oSpec).perfectCompleteness init impl relF
       (secondSumcheckRelInBF (R := R) pp))
     (h₈ : (finalCheck R pp oSpec).perfectCompleteness init impl
       (secondSumcheckRelOutBF (R := R) pp) (finalCheckRelOut R pp))

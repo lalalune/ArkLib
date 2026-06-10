@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.SecondSumcheckComplete
+import ArkLib.ProofSystem.Spartan.SecondSumcheckBridgeFree
 
 /-!
 # Spartan composed-completeness leaves (#114)
@@ -336,6 +337,17 @@ def prependRLCTargetRelOut :
             evalClaimValue R pp x.1.1.2.2 (fun i => x.1.2 (.inr i)) idx)
         ∧ x.1.1.1 = ∑ idx, x.1.1.2.1 idx * x.1.2 (.inl 0) idx }
 
+/-- Input relation for the honest RLC-target adapter: the R1CS instance is still satisfied and the
+bundled claim oracle `.inl 0` stores the honest `evalClaimValue`. The adapter adds exactly the RLC
+target required by `prependRLCTargetRelOut`. -/
+def prependRLCTargetRelIn :
+    Set ((Statement.AfterLinearCombination R pp ×
+        (∀ i, OracleStatement.AfterLinearCombination R pp i)) × Unit) :=
+  { x | R1CS.relation R pp.toSizeR1CS x.1.1.2.2.2
+          (fun idx => x.1.2 (.inr (.inl idx))) (x.1.2 (.inr (.inr 0)))
+        ∧ (∀ idx, x.1.2 (.inl 0) idx =
+            evalClaimValue R pp x.1.1.2 (fun i => x.1.2 (.inr i)) idx) }
+
 omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
 /-- **D1 key inclusion: the honest RLC-target output relation refines `secondSumcheckRelIn`.**
 The stored-RLC carried target (`∑ r idx · oStmt(.inl 0) idx`) equals the `evalClaimValue`-RLC
@@ -416,12 +428,126 @@ theorem simulateQ_prependRLCTargetVerifier
     ← Finset.sum_map_toList Finset.univ (fun idx => stmt.1 idx * oStmt (.inl 0) idx)]
   rfl
 
+omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
+/-- The honest RLC-target prover's run is deterministic: default (empty) transcript, RLC-prepended
+statement, oracles carried through, unit witness. Definitional (`Fin.induction` base case of
+`runToRound` at the 0-round spec). -/
+theorem prependRLCTargetProver_run
+    (stmt : Statement.AfterLinearCombination R pp)
+    (oStmt : ∀ i, OracleStatement.AfterLinearCombination R pp i) :
+    (prependRLCTargetProver (R := R) pp oSpec).run (stmt, oStmt) () =
+      pure ((default : (!p[] : ProtocolSpec 0).FullTranscript),
+        ((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt), ()) := rfl
+
+omit [IsDomain R] [SampleableType R] in
+/-- The honest RLC-target adapter has a deterministic 0-round run. -/
+theorem prependRLCTarget_run
+    (stmt : Statement.AfterLinearCombination R pp)
+    (oStmt : ∀ i, OracleStatement.AfterLinearCombination R pp i) :
+    (prependRLCTarget (R := R) pp oSpec).toReduction.run (stmt, oStmt) () =
+      (pure (((default : (!p[] : ProtocolSpec 0).FullTranscript),
+          (((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt), ())),
+        ((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt)) :
+        OptionT (OracleComp _) _) := by
+  simp only [prependRLCTarget, OracleReduction.toReduction, Reduction.run,
+    Verifier.run, OracleVerifier.toVerifier]
+  rw [prependRLCTargetProver_run]
+  simp only [liftM_pure, pure_bind]
+  rw [simulateQ_prependRLCTargetVerifier]
+  rfl
+
+/-- **The honest RLC-target adapter is perfectly complete.** From an input where the bundled
+eval-claim oracle is honest, the 0-round adapter carries exactly the random linear combination
+of the stored claims and preserves the oracle family. -/
+theorem prependRLCTarget_perfectCompleteness {σ : Type} {init : ProbComp σ}
+    {impl : QueryImpl oSpec (StateT σ ProbComp)} :
+    (prependRLCTarget (R := R) pp oSpec).perfectCompleteness init impl
+      (prependRLCTargetRelIn (R := R) pp) (prependRLCTargetRelOut (R := R) pp) := by
+  unfold OracleReduction.perfectCompleteness
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, Reduction.completenessFromRun,
+    ENNReal.coe_zero, tsub_zero]
+  intro ⟨stmt, oStmt⟩ ⟨⟩ hIn
+  simp only [prependRLCTarget_run]
+  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  · rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _
+    change none ∈ _root_.support (StateT.run' (simulateQ _
+        (pure (some (((default : (!p[] : ProtocolSpec 0).FullTranscript),
+          (((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt), ())),
+          ((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt))) :
+          OracleComp _ _)) s) → False
+    rw [simulateQ_pure]
+    change none ∈ _root_.support (Prod.fst <$>
+      (pure (some (((default : (!p[] : ProtocolSpec 0).FullTranscript),
+        (((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt), ())),
+        ((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt))) :
+        StateT σ ProbComp _).run s) → False
+    rw [StateT.run_pure]; simp [map_pure]
+  · intro x hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    change some x ∈ _root_.support (StateT.run' (simulateQ _
+        (pure (some (((default : (!p[] : ProtocolSpec 0).FullTranscript),
+          (((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt), ())),
+          ((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt))) :
+          OracleComp _ _)) s) at hx
+    rw [simulateQ_pure] at hx
+    change some x ∈ _root_.support (Prod.fst <$>
+      (pure (some (((default : (!p[] : ProtocolSpec 0).FullTranscript),
+        (((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt), ())),
+        ((∑ idx, stmt.1 idx * oStmt (.inl 0) idx, stmt), oStmt))) :
+        StateT σ ProbComp _).run s) at hx
+    rw [StateT.run_pure] at hx
+    simp only [_root_.map_pure, _root_.support_pure, Set.mem_singleton_iff,
+      Option.some.injEq, Prod.mk.injEq] at hx
+    cases hx
+    obtain ⟨hR1CS, hEval⟩ := hIn
+    refine ⟨?_, rfl⟩
+    exact ⟨hR1CS, hEval, rfl⟩
+
+omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
+/-- The honest RLC-target output relation refines the **bridge-free** second-sum-check input
+relation `secondSumcheckRelInBF` — the exact `relG` endpoint demanded by the composed-PC
+consumer (`composedCompletenessResidual_of_five_leaves`, hypothesis `h₆`). Twin of
+`prependRLCTargetRelOut_subset_secondSumcheckRelIn` for the `BF` restatement. -/
+theorem prependRLCTargetRelOut_subset_secondSumcheckRelInBF :
+    prependRLCTargetRelOut (R := R) pp ⊆ secondSumcheckRelInBF (R := R) pp := by
+  rintro x ⟨hR1CS, hEval, ht⟩
+  refine ⟨hR1CS, ?_⟩
+  rw [ht]
+  refine Finset.sum_congr rfl fun idx _ => ?_
+  rw [hEval idx]
+
+/-- **Consumer-endpoint form of the honest RLC-target adapter completeness**: perfectly complete
+from `prependRLCTargetRelIn` into `secondSumcheckRelInBF`. This discharges hypothesis `h₆` of
+`composedCompletenessResidual_of_five_leaves` (with `relF := prependRLCTargetRelIn`): the output
+relation is exactly the bridge-free second-sum-check input relation pinned by the consumer. -/
+theorem prependRLCTarget_perfectCompleteness_secondSumcheckRelInBF {σ : Type}
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)} :
+    (prependRLCTarget (R := R) pp oSpec).perfectCompleteness init impl
+      (prependRLCTargetRelIn (R := R) pp) (secondSumcheckRelInBF (R := R) pp) := by
+  have h := prependRLCTarget_perfectCompleteness (R := R) pp oSpec
+    (σ := σ) (init := init) (impl := impl)
+  unfold OracleReduction.perfectCompleteness Reduction.perfectCompleteness at h ⊢
+  exact Reduction.completeness_relOut_mono init impl
+    (prependRLCTargetRelOut_subset_secondSumcheckRelInBF pp) h
+
 #print axioms prependRLCTargetProver
 #print axioms prependRLCTargetVerifier
 #print axioms prependRLCTarget
 #print axioms instPrependRLCTargetVerifierAppendCoherent
 #print axioms prependRLCTargetRelOut_subset_secondSumcheckRelIn
 #print axioms simulateQ_prependRLCTargetVerifier
+#print axioms prependRLCTargetProver_run
+#print axioms prependRLCTarget_run
+#print axioms prependRLCTarget_perfectCompleteness
+#print axioms prependRLCTargetRelOut_subset_secondSumcheckRelInBF
+#print axioms prependRLCTarget_perfectCompleteness_secondSumcheckRelInBF
 
 end Spartan.Spec.Bricks
 
