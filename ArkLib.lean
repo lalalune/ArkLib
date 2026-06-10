@@ -720,6 +720,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PTEFamilyConstruction
+import ArkLib.Data.CodingTheory.ProximityGap.PacketCombinationDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeAllRatesJohnsonInstances
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
@@ -1029,8 +1030,8 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOr
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracleChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKeystone
-import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeOracleLift
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDet
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeOracleLift
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2ReconcileProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeStateFunction
 import ArkLib.OracleReduction.Composition.Sequential.AppendRightPartialProjections
@@ -1248,6 +1249,7 @@ import ArkLib.ProofSystem.Logup.Security.SumcheckLensProjComplete
 import ArkLib.ProofSystem.Logup.Security.SumcheckLensProjSound
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundness
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessLift
+import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessProjClosed
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessWired
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckBridge
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckLiftCoherent
@@ -1255,8 +1257,8 @@ import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckPolynomial
 import ArkLib.ProofSystem.Plonk.Basic
 import ArkLib.ProofSystem.Plonk.Composition
 import ArkLib.ProofSystem.Plonk.PermutationCheck
-import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.ProofSystem.RingSwitching.BatchingDeterminism
+import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.ProofSystem.RingSwitching.General
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Profile
@@ -1290,8 +1292,8 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckSimOStmt
 import ArkLib.ProofSystem.Spartan.SpartanRBRProof
 import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
-import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
+import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
 import ArkLib.ProofSystem.Stir.CheckingVerifier
