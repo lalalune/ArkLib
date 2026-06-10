@@ -88,7 +88,7 @@ lemma mcaDecode_hammingDist_le {n k : ℕ} [NeZero n] {domain : Fin n ↪ F₀} 
       (fun i => d.P.eval (domain i)) ≤ n - d.S.card := by
     rw [hammingDist]
     refine le_trans (Finset.card_le_card hsub) ?_
-    rw [Finset.card_sdiff (Finset.subset_univ _), Finset.card_univ, Fintype.card_fin]
+    rw [Finset.card_sdiff, Finset.inter_univ, Finset.card_univ, Fintype.card_fin]
   -- the witness set is large, in real form
   have hScard : ((1 : ℝ) - (δ : ℝ)) * n ≤ (d.S.card : ℝ) := by
     have hco := NNReal.coe_le_coe.mpr d.hcard.le
@@ -143,9 +143,14 @@ theorem mcaDecode_matching_dvd {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
           (fun i => d.P.eval (domain i)) : ℝ)
         ≤ (δ : ℝ) * n := hle
       _ < gs_johnson k n m * n := mul_lt_mul_of_pos_right hδJ hnR
-  -- the in-tree GS list decoder
-  have hdvd := scalar_fold_decoded_divides_specialization domain (u 0) (u 1)
-    hQ hrep γ hz hkn hm p hdist
+  -- the in-tree GS list decoder (its `hammingDist` was elaborated with Classical
+  -- decidability — `convert` discharges the `Subsingleton Decidable` instance gap)
+  have hdvd : Polynomial.X - Polynomial.C (ReedSolomon.codewordToPoly p) ∣
+      Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) := by
+    refine scalar_fold_decoded_divides_specialization domain (u 0) (u 1)
+      hQ hrep γ hz hkn hm p ?_
+    convert hdist using 3
+    congr!
   rwa [hround] at hdvd
 
 /-- **K1 production — the per-stack cells, decode families, and the K4 input surface.**
