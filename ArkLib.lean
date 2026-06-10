@@ -1612,6 +1612,7 @@ import ArkLib.ToMathlib.EliasVolumeCertificates
 import ArkLib.ToMathlib.EmbeddingCoefficientCommutation
 import ArkLib.ToMathlib.ExtractedIssueBricks
 import ArkLib.ToMathlib.FaaDiBrunoMatchProof
+import ArkLib.ToMathlib.FactorAssignmentPigeonhole
 import ArkLib.ToMathlib.FactorPigeonhole
 import ArkLib.ToMathlib.FaithfulCurveExtraction
 import ArkLib.ToMathlib.FaithfulFrontierComposition
