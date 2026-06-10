@@ -843,6 +843,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUpperReduction
 import ArkLib.Data.CodingTheory.ProximityGap.ThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
+import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.TwoSidedBracketPrizeScale
 import ArkLib.Data.CodingTheory.ProximityGap.UDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
@@ -1183,6 +1184,7 @@ import ArkLib.ProofSystem.BatchedFri.Security
 import ArkLib.ProofSystem.BatchedFri.Spec.General
 import ArkLib.ProofSystem.BatchedFri.Spec.SingleRound
 import ArkLib.ProofSystem.Binius.BBFSmallFieldIOPCS
+import ArkLib.ProofSystem.Binius.BinaryBasefold.BaseFoldDetBrick
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Code
@@ -1611,6 +1613,7 @@ import ArkLib.ToMathlib.LinearizedSupportStep
 import ArkLib.ToMathlib.List.Basic
 import ArkLib.ToMathlib.LocalHenselSeries
 import ArkLib.ToMathlib.LocalSeriesBaseRationalReading
+import ArkLib.ToMathlib.LocalSeriesCorrected
 import ArkLib.ToMathlib.LocalizationEmbedding
 import ArkLib.ToMathlib.LocalizedPlaceEvaluation
 import ArkLib.ToMathlib.LogupFractionalSum
@@ -1685,11 +1688,11 @@ import ArkLib.ToMathlib.SubspacePolyLinearized
 import ArkLib.ToMathlib.SubstFieldCaveat
 import ArkLib.ToMathlib.SumSubMeanSq
 import ArkLib.ToMathlib.SupportSqBound
+import ArkLib.ToMathlib.TAffinePlaceReading
 import ArkLib.ToMathlib.TailDegProducer
 import ArkLib.ToMathlib.ToyProblemRewinding
 import ArkLib.ToMathlib.ToyProblemViolation
 import ArkLib.ToMathlib.ToyStep4
-import ArkLib.ToMathlib.TAffinePlaceReading
 import ArkLib.ToMathlib.TruncatedLocalRoot
 import ArkLib.ToMathlib.TwistedKernel
 import ArkLib.ToMathlib.UMSubspaceDesignProof
