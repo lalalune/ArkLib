@@ -266,9 +266,9 @@ variable {outerLangIn : Set (OuterStmtIn × (∀ i, OuterOStmtIn i))}
     {innerLangOut : Set (InnerStmtOut × (∀ i, InnerOStmtOut i))}
     [Inhabited InnerStmtOut] [∀ i, Inhabited (InnerOStmtOut i)]
 
-/-
-/-- Lifting the reduction preserves soundness, assuming the lens satisfies its soundness
-  conditions.
+/-- Lifting the oracle verifier preserves soundness, assuming the lens satisfies its soundness
+  conditions and the oracle-routing lens is coherent with its value-level lens
+  (`LiftContextCoherent`, #433).
 
   STATEMENT REPAIR (2026-06-04): `lens` is now an `OracleStatement.OracleLens`; the value-level
   soundness condition is stated on `lens.toLens`, and the verifier-conversion commute requires the
@@ -283,10 +283,9 @@ theorem liftContext_soundness
       (V.toVerifier.compatStatement lens.toLens)]
     (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
       (V.liftContext lens).soundness init impl outerLangIn outerLangOut soundnessError := by
-	  unfold OracleVerifier.soundness at h ⊢
-	  rw [liftContext_toVerifier_comm]
-	  exact V.toVerifier.liftContext_soundness h (lens := lens.toLens)
--/
+  unfold OracleVerifier.soundness at h ⊢
+  rw [liftContext_toVerifier_comm]
+  exact V.toVerifier.liftContext_soundness h (lens := lens.toLens)
 
 /-
 theorem liftContext_knowledgeSoundness [Inhabited InnerWitIn]
