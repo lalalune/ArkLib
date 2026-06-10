@@ -5,7 +5,7 @@ second-moment front; companion to QuotientPerPrimeInstantiation.md / DISPROOF_LO
 
 Question (decides which moment binds in the per-line three-moment chain): on the deep line
   u0(x) = x^{r m}/(x^m - w),   u1(x) = 1/(x^m - w),   w = z^m,  z^n != 1,
-over the smooth domain H = mu_n (n = s*m, rate rho = (r-1)/s wait — here k = (r-1)m), do the
+over the smooth domain H = mu_n (n = s*m, code dimension k = (r-1)m), do the
 per-gamma lists stay tiny (singletons?), and is the UNION list over all gamma in F_p exactly
 the structured family {q_S : S an r-subset of G} plus the known sub-witness marginal layer?
 
@@ -75,36 +75,6 @@ def interp_eval(pts, vals, xs):
     return out
 
 
-def poly_coeffs_from_vals(pts, vals):
-    """Newton -> monomial coefficients of the deg<=K-1 interpolant (exact)."""
-    n = len(pts)
-    dd = list(vals)
-    coef = []
-    for j in range(n):
-        coef.append(dd[0])
-        nd = []
-        for i in range(len(dd) - 1):
-            nd.append((dd[i + 1] - dd[i]) * inv((pts[i + j + 1] - pts[i]) % P) % P)
-        dd = nd
-        if not dd:
-            break
-    # expand Newton form
-    out = [0] * n
-    acc = [1] + [0] * (n - 1)
-    for j in range(n):
-        for d in range(n):
-            out[d] = (out[d] + coef[j] * acc[d]) % P
-        # acc *= (X - pts[j])
-        na = [0] * n
-        for d in range(n - 1):
-            na[d + 1] = (na[d + 1] + acc[d]) % P
-            na[d] = (na[d] - pts[j] * acc[d]) % P
-        if j < n - 1:
-            na[0] %= P
-            acc = [v % P for v in na]
-    return tuple(v % P for v in out)
-
-
 def main():
     g = order_gen(N)
     H = [pow(g, i, P) for i in range(N)]
@@ -132,8 +102,13 @@ def main():
                       for x in H)
         structured[lam] = structured.get(lam, set()) | {qvals}
     n0 = len(structured)
-    print(f"constructed bad scalars: {n0} (predicted N0({S_SUB},{R}) = "
-          f"{sum(math.comb(S_SUB // 2, s) * 2 ** s for s in range(R % 2, min(R, S_SUB - R) + 1, 2))})")
+    n0_monomial = sum(math.comb(S_SUB // 2, s) * 2 ** s
+                      for s in range(R % 2, min(R, S_SUB - R) + 1, 2))
+    print(f"deep-line constructed bad scalars: {n0} (C({S_SUB},{R}) = {math.comb(S_SUB, R)}; "
+          f"the MONOMIAL line's count at the same parameters is N0({S_SUB},{R}) = {n0_monomial})")
+    check("deep line realizes the full C(s,r) scalar count (> monomial N0)",
+          n0 == math.comb(S_SUB, R) and n0 > n0_monomial,
+          f"{n0} vs N0 = {n0_monomial}  [measured at this z only — no genericity claim]")
 
     # ---- the census: every (k+1)-subset of an agreement set certifies (gamma, interpolant)
     # directly, so one pass over C(n, k+1) subsets is exhaustive and cheap.
@@ -141,6 +116,7 @@ def main():
         idx = list(range(N))
         per_gamma = {}
         union = set()
+        degenerate = []
         for T in itertools.combinations(idx, K + 1):
             lam = []
             for i in T:
@@ -152,7 +128,8 @@ def main():
             SA = sum(l * u0[i] % P for l, i in zip(lam, T)) % P
             SB = sum(l * u1[i] % P for l, i in zip(lam, T)) % P
             if SB == 0:
-                continue  # u1 is far: no all-gamma-degenerate subsets occur
+                degenerate.append((T, SA))
+                continue
             gam = (-SA) * inv(SB) % P
             y = [(u0[i] + gam * u1[i]) % P for i in range(N)]
             pts = [H[i] for i in T[:K]]
@@ -162,6 +139,9 @@ def main():
             if agree >= a_thresh:
                 per_gamma.setdefault(gam, set()).add(ev)
                 union.add(ev)
+        check(f"no degenerate (SA=SB=0 or SB=0) consistency subsets at thresh {a_thresh}",
+              not degenerate, f"count = {len(degenerate)} (a degenerate subset would mean an "
+              f"every-gamma layer the census cannot see)")
         return per_gamma, union
 
     print(f"\n== census at witness radius a = {A_WIT} (delta = {1 - A_WIT / N}) ==")
