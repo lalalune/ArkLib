@@ -80,7 +80,11 @@ theorem foldPhase_perfectCompleteness
       (reductionFold k s d (ω := ω)) :=
   hResidual
 
-/-- **Brick D residual — composed FRI reduction.** -/
+/-- **Brick D residual — composed FRI reduction.**
+
+NOTE: this residual is **discharged** by `reductionPerfectCompletenessResidual_holds` below
+(via the proven challenge-seam append keystone); it is kept as a named `def` only for
+backwards compatibility of statements that quantify over it. -/
 def reductionPerfectCompletenessResidual
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
     (hInit : NeverFail init) (δ : ℝ≥0)
@@ -105,9 +109,41 @@ def reductionPerfectCompletenessResidual
     ((reductionFold k s d (ω := ω)).append
       (QueryRound.queryOracleReduction.{0} s d dom_size_cond l))
 
+set_option maxHeartbeats 1000000 in
+/-- **Brick D residual — DISCHARGED.** The composed-reduction residual
+`reductionPerfectCompletenessResidual` holds outright given the two phase facts: the composition
+seam is the query round's leading `V_to_P` challenge, handled by the proven challenge-seam append
+keystone (`Reduction.append_perfectCompleteness_challenge` + the proven verifier-fusion bridge
+`OracleReduction.appendToReductionResidual_proof`), packaged as
+`reduction_perfectCompleteness_of_phases`. No composition-level hypothesis remains. -/
+theorem reductionPerfectCompletenessResidual_holds
+    (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
+    (hInit : NeverFail init) (δ : ℝ≥0)
+    [hFoldChallenge : ∀ i,
+      SampleableType ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F).Challenge i)]
+    [hQueryChallenge : ∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
+    (hFold : OracleReduction.perfectCompleteness init impl
+      (inputRelation k s d dom_size_cond δ)
+      (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
+      (reductionFold k s d (ω := ω)))
+    (hQuery : OracleReduction.perfectCompleteness init impl
+      (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
+      (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
+      (QueryRound.queryOracleReduction.{0} s d dom_size_cond l)) :
+    reductionPerfectCompletenessResidual
+      (hFoldChallenge := hFoldChallenge) (hQueryChallenge := hQueryChallenge)
+      init impl dom_size_cond l hInit δ hFold hQuery := by
+  unfold reductionPerfectCompletenessResidual
+  exact reduction_perfectCompleteness_of_phases init impl dom_size_cond l hInit hFold hQuery
+
+set_option maxHeartbeats 1000000 in
 /-- **Brick D — composed FRI reduction perfect completeness.**
 The honest FRI protocol is perfectly complete, reducing the proximity of the initial oracle
-to the proximity of the final polynomial and the passing of the query checks. -/
+to the proximity of the final polynomial and the passing of the query checks.
+
+The composition layer is **fully proven** (`reduction_perfectCompleteness_of_phases`, challenge-seam
+append keystone); the only remaining hypotheses are the still-open *per-phase* residuals
+(`hFoldRes`, `hQueryRes` and the per-round inputs they consume). -/
 theorem reduction_perfectCompleteness
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
     (hInit : NeverFail init) (δ : ℝ≥0)
@@ -122,12 +158,7 @@ theorem reduction_perfectCompleteness
     (hFoldRes : foldPhasePerfectCompletenessResidual
       (hFoldChallenge := hFoldChallenge) init impl dom_size_cond hInit δ hRounds hFinal)
     (hQueryRes : queryRoundPerfectCompletenessResidual (k := k)
-      (hQueryChallenge := hQueryChallenge) init impl dom_size_cond l hInit δ)
-    (hResidual : reductionPerfectCompletenessResidual
-      (hFoldChallenge := hFoldChallenge) (hQueryChallenge := hQueryChallenge)
-      init impl dom_size_cond l hInit δ
-      (foldPhase_perfectCompleteness init impl dom_size_cond hInit δ hRounds hFinal hFoldRes)
-      (queryRound_perfectCompleteness init impl dom_size_cond l hInit δ hQueryRes)) :
+      (hQueryChallenge := hQueryChallenge) init impl dom_size_cond l hInit δ) :
     letI : ∀ i, SampleableType
         (((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F) ++ₚ
           QueryRound.pSpec l (ω := ω)).Challenge i) :=
@@ -137,10 +168,11 @@ theorem reduction_perfectCompleteness
       (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
       ((reductionFold k s d (ω := ω)).append
         (QueryRound.queryOracleReduction.{0} s d dom_size_cond l)) := by
-  unfold reductionPerfectCompletenessResidual at hResidual
-  exact reduction_perfectCompleteness_of_phases init impl dom_size_cond l
+  exact reduction_perfectCompleteness_of_phases init impl dom_size_cond l hInit
     (foldPhase_perfectCompleteness init impl dom_size_cond hInit δ hRounds hFinal hFoldRes)
     (queryRound_perfectCompleteness init impl dom_size_cond l hInit δ hQueryRes)
-    hResidual
+
+#print axioms reductionPerfectCompletenessResidual_holds
+#print axioms reduction_perfectCompleteness
 
 end Fri.Spec.Completeness
