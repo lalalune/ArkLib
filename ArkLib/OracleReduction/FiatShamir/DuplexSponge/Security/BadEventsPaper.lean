@@ -110,6 +110,254 @@ theorem redundantEntryDSPaper_iff_of_hash
   rcases v with ⟨stmt, state⟩
   rfl
 
+
+namespace BadEventDSPaper
+
+variable (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (state : CanonicalSpongeState U)
+
+/-!
+We define the main simulator failure conditions (the "bad events" of CO25 Section 5.6):
+1. **Capacity collision** ($E_{\text{dup}}$): Duplicate occurrences of capacity segments in the
+   reduced trace.
+2. **Permutation inconsistency** ($E_{\text{func}}$): Conflicting evaluations of the permutation
+   oracle, where the same input yields different outputs or the forward and inverse permutation
+   directions conflict.
+-/
+
+def capacitySegmentDupHash : Prop :=
+  let ⟨baseTrace, _⟩ := removeRedundantEntryDSPaper trace
+  ∃ j : Fin baseTrace.length, ∃ capSeg : Vector U SpongeSize.C,
+    ∃ stmt : StmtIn, baseTrace[j] = ⟨.inl stmt, capSeg⟩ ∧
+      ∃ j' < j,
+        ∃ stmt', baseTrace[j'] = ⟨.inl stmt', capSeg⟩ ∨
+        (∃ stateIn1 stateOut1, baseTrace[j'] = ⟨.inr <|.inl stateIn1, stateOut1⟩
+          ∧ stateOut1.capacitySegment = capSeg) ∨
+        (∃ stateOut2 stateIn2, baseTrace[j'] = ⟨.inr <|.inr stateOut2, stateIn2⟩
+          ∧ stateIn2.capacitySegment = capSeg) ∨
+        (∃ stateIn3 stateOut3, baseTrace[j'] = ⟨.inr <|.inl stateIn3, stateOut3⟩
+          ∧ stateIn3.capacitySegment = capSeg) ∨
+        (∃ stateOut4 stateIn4, baseTrace[j'] = ⟨.inr <|.inr stateOut4, stateIn4⟩
+          ∧ stateOut4.capacitySegment = capSeg)
+
+alias E_h := capacitySegmentDupHash
+
+def capacitySegmentDupPerm : Prop :=
+  let ⟨baseTrace, _⟩ := removeRedundantEntryDSPaper trace
+  ∃ j : Fin baseTrace.length, ∃ capSeg : Vector U SpongeSize.C,
+    (∃ stateIn stateOut, baseTrace[j] = ⟨.inr <|.inl stateIn, stateOut⟩ ∧
+      stateOut.capacitySegment = capSeg) ∧
+      (
+        (∃ j' < j, ∃ stmt', baseTrace[j'] = ⟨.inl stmt', capSeg⟩) ∨
+        (∃ j' < j, ∃ stateIn1 stateOut1, baseTrace[j'] = ⟨.inr <|.inl stateIn1, stateOut1⟩ ∧
+          stateOut1.capacitySegment = capSeg) ∨
+        (∃ j' ≤ j, ∃ stateOut2 stateIn2, baseTrace[j'] = ⟨.inr <|.inr stateOut2, stateIn2⟩ ∧
+          stateIn2.capacitySegment = capSeg) ∨
+        (∃ j' ≤ j, ∃ stateIn3 stateOut3, baseTrace[j'] = ⟨.inr <|.inl stateIn3, stateOut3⟩ ∧
+          stateIn3.capacitySegment = capSeg) ∨
+        (∃ j' ≤ j, ∃ stateOut4 stateIn4, baseTrace[j'] = ⟨.inr <|.inr stateOut4, stateIn4⟩ ∧
+          stateOut4.capacitySegment = capSeg)
+      )
+
+alias E_p := capacitySegmentDupPerm
+
+def capacitySegmentDupPermInv : Prop :=
+  let ⟨baseTrace, _⟩ := removeRedundantEntryDSPaper trace
+  ∃ j : Fin baseTrace.length, ∃ capSeg : Vector U SpongeSize.C,
+    (∃ stateOut stateIn, baseTrace[j] = ⟨.inr <|.inr stateOut, stateIn⟩ ∧
+      stateIn.capacitySegment = capSeg) ∧
+      (
+        (∃ j' < j, ∃ stmt', baseTrace[j'] = ⟨.inl stmt', capSeg⟩) ∨
+        (∃ j' < j, ∃ stateIn1 stateOut1, baseTrace[j'] = ⟨.inr <|.inl stateIn1, stateOut1⟩ ∧
+          stateOut1.capacitySegment = capSeg) ∨
+        (∃ j' < j, ∃ stateIn2 stateOut2, baseTrace[j'] = ⟨.inr <|.inr stateOut2, stateIn2⟩ ∧
+          CanonicalSpongeState.capacitySegment stateIn2 = capSeg) ∨
+        (∃ j' ≤ j, ∃ stateIn3 stateOut3, baseTrace[j'] = ⟨.inr <|.inl stateIn3, stateOut3⟩ ∧
+          stateIn3.capacitySegment = capSeg) ∨
+        (∃ j' ≤ j, ∃ stateIn4 stateOut4, baseTrace[j'] = ⟨.inr <|.inr stateOut4, stateIn4⟩ ∧
+          CanonicalSpongeState.capacitySegment stateIn4 = capSeg)
+      )
+
+alias E_pinv := capacitySegmentDupPermInv
+
+/-- The combined capacity segment collision event. This occurs if there is any capacity segment
+collision in the hash query, forward permutation query, or inverse permutation query logs. -/
+def capacitySegmentDup : Prop :=
+  capacitySegmentDupHash trace ∨ capacitySegmentDupPerm trace ∨ capacitySegmentDupPermInv trace
+
+alias E_dup := capacitySegmentDup
+
+/- The same query to `p` leads to different answers, or there are inconsistent queries across `p`
+and `p⁻¹` -/
+def notFunction : Prop :=
+  let ⟨baseTrace, _⟩ := removeRedundantEntryDSPaper trace
+  ∃ j : Fin baseTrace.length, ∃ stateIn _stateOut : CanonicalSpongeState U,
+    baseTrace[j] = ⟨.inr <|.inl stateIn, _stateOut⟩ ∧
+      ∃ j' < j,
+        ∃ stateOut1 : CanonicalSpongeState U, baseTrace[j'] = ⟨.inr <|.inl stateIn, stateOut1⟩ ∨
+        ∃ stateOut2 : CanonicalSpongeState U, baseTrace[j'] = ⟨.inr <|.inr stateOut2, stateIn⟩
+
+alias E_func := notFunction
+
+def combined : Prop :=
+  capacitySegmentDup trace ∨ notFunction trace
+
+alias E := combined
+
+/-- The combined bad event only depends on the deduplicated base trace. -/
+theorem E_removeRedundantEntryDSPaper_iff :
+    E (removeRedundantEntryDSPaper trace).1 ↔ E trace := by
+  let base := removeRedundantEntryDSPaper trace
+  have hbase : removeRedundantEntryDSPaper base.1 = base := removeRedundantEntryDSPaper_eq_self base
+  constructor
+  · intro h
+    unfold E combined capacitySegmentDup capacitySegmentDupHash
+      capacitySegmentDupPerm capacitySegmentDupPermInv notFunction at h ⊢
+    dsimp only at h ⊢
+    rw [hbase] at h
+    simpa [base] using h
+  · intro h
+    unfold E combined capacitySegmentDup capacitySegmentDupHash
+      capacitySegmentDupPerm capacitySegmentDupPermInv notFunction at h ⊢
+    dsimp only at h ⊢
+    rw [hbase]
+    simpa [base] using h
+
+/-!
+We define supplementary collision events (forward-forward, backward-backward, and mixed collisions)
+and show that they are bounded by the combined collision event $E$.
+-/
+
+def collisionFwdFwd : Prop :=
+  let ⟨baseTrace, _⟩ := removeRedundantEntryDSPaper trace
+  ∃ stateIn stateIn' stateOut,
+    ⟨.inr <|.inl stateIn, stateOut⟩ ∈ baseTrace ∧
+    ⟨.inr <|.inl stateIn', stateOut⟩ ∈ baseTrace ∧
+    stateIn ≠ stateIn'
+
+alias E_col_p := collisionFwdFwd
+
+def collisionBwdBwd : Prop :=
+  let ⟨baseTrace, _⟩ := removeRedundantEntryDSPaper trace
+  ∃ stateOut stateOut' stateIn,
+    ⟨.inr <| .inr stateOut, stateIn⟩ ∈ baseTrace ∧
+    ⟨.inr <| .inr stateOut', stateIn⟩ ∈ baseTrace ∧
+    stateOut ≠ stateOut'
+
+alias E_col_pinv := collisionBwdBwd
+
+def collisionFwdBwd : Prop :=
+  let ⟨baseTrace, _⟩ := removeRedundantEntryDSPaper trace
+  ∃ stateIn stateOut stateOut',
+    ⟨.inr <| .inl stateOut, stateIn⟩ ∈ baseTrace ∧
+    ⟨.inr <| .inr stateOut', stateIn⟩ ∈ baseTrace ∧
+    stateOut ≠ stateOut'
+
+alias E_col_p_pinv := collisionFwdBwd
+
+def collisionBwdFwd : Prop :=
+  let ⟨baseTrace, _⟩ := removeRedundantEntryDSPaper trace
+  ∃ stateIn stateOut stateOut',
+    ⟨.inr <| .inr stateOut, stateIn⟩ ∈ baseTrace ∧
+    ⟨.inr <| .inl stateOut', stateIn⟩ ∈ baseTrace ∧
+    stateOut ≠ stateOut'
+
+alias E_col_pinv_p := collisionBwdFwd
+
+def collisionPerm : Prop :=
+  collisionFwdFwd trace ∨ collisionBwdBwd trace ∨ collisionFwdBwd trace ∨ collisionBwdFwd trace
+
+alias E_prp := collisionPerm
+
+lemma not_collisionPerm_of_not_combined (h : ¬ E trace) : ¬ E_prp trace := by
+  intro hprp
+  apply h; clear h
+  rcases hprp with hff | hbb | hfb | hbf
+  · -- collisionFwdFwd → E
+    obtain ⟨sI, sI', sO, hm1, hm2, hne⟩ := hff
+    rw [List.mem_iff_get] at hm1 hm2
+    obtain ⟨⟨i, hi⟩, hgi⟩ := hm1
+    obtain ⟨⟨j, hj⟩, hgj⟩ := hm2
+    simp only [List.get_eq_getElem] at hgi hgj
+    have hij : i ≠ j := by
+      intro heq; subst heq; rw [hgi] at hgj
+      exact hne (congrArg (fun x => match x with | ⟨.inr (.inl s), _⟩ => s | _ => sI) hgj)
+    left; right; left
+    rcases Nat.lt_or_gt_of_ne hij with h_lt | h_lt
+    · exact ⟨⟨j, hj⟩, sO.capacitySegment, ⟨sI', sO, hgj, rfl⟩,
+        Or.inr (Or.inl ⟨⟨i, hi⟩, h_lt, sI, sO, hgi, rfl⟩)⟩
+    · exact ⟨⟨i, hi⟩, sO.capacitySegment, ⟨sI, sO, hgi, rfl⟩,
+        Or.inr (Or.inl ⟨⟨j, hj⟩, h_lt, sI', sO, hgj, rfl⟩)⟩
+  · -- collisionBwdBwd → E
+    obtain ⟨sO, sO', sI, hm1, hm2, hne⟩ := hbb
+    rw [List.mem_iff_get] at hm1 hm2
+    obtain ⟨⟨i, hi⟩, hgi⟩ := hm1
+    obtain ⟨⟨j, hj⟩, hgj⟩ := hm2
+    simp only [List.get_eq_getElem] at hgi hgj
+    have hij : i ≠ j := by
+      intro heq; subst heq; rw [hgi] at hgj
+      exact hne (congrArg (fun x => match x with | ⟨.inr (.inr s), _⟩ => s | _ => sO) hgj)
+    left; right; right
+    unfold capacitySegmentDupPermInv
+    rcases Nat.lt_or_gt_of_ne hij with h_lt | h_lt
+    · refine ⟨⟨j, hj⟩, sI.capacitySegment, ⟨sO', sI, hgj, rfl⟩, ?_⟩
+      right; right; left
+      exact ⟨⟨i, hi⟩, h_lt, sI, sO, hgi, rfl⟩
+    · refine ⟨⟨i, hi⟩, sI.capacitySegment, ⟨sO, sI, hgi, rfl⟩, ?_⟩
+      right; right; left
+      exact ⟨⟨j, hj⟩, h_lt, sI, sO', hgj, rfl⟩
+  · -- collisionFwdBwd → E
+    obtain ⟨sI, sO, sO', hm1, hm2, hne⟩ := hfb
+    rw [List.mem_iff_get] at hm1 hm2
+    obtain ⟨⟨i, hi⟩, hgi⟩ := hm1
+    obtain ⟨⟨j, hj⟩, hgj⟩ := hm2
+    simp only [List.get_eq_getElem] at hgi hgj
+    have hij : i ≠ j := by
+      intro heq; subst heq; rw [hgi] at hgj
+      exact absurd (congrArg Sigma.fst hgj) (by simp)
+    rcases Nat.lt_or_gt_of_ne hij with h_lt | h_lt
+    · -- forward at i, backward at j, i < j: use capacitySegmentDupPermInv at j
+      left; right; right
+      unfold capacitySegmentDupPermInv
+      refine ⟨⟨j, hj⟩, CanonicalSpongeState.capacitySegment sI, ⟨sO', sI, hgj, rfl⟩, ?_⟩
+      right; left
+      exact ⟨⟨i, hi⟩, h_lt, sO, sI, hgi, rfl⟩
+    · -- forward at i, backward at j, j < i: use capacitySegmentDupPerm at i
+      left; right; left
+      unfold capacitySegmentDupPerm
+      refine ⟨⟨i, hi⟩, CanonicalSpongeState.capacitySegment sI, ⟨sO, sI, hgi, rfl⟩, ?_⟩
+      right; right; left
+      exact ⟨⟨j, hj⟩, Nat.le_of_lt h_lt, sO', sI, hgj, rfl⟩
+  · -- collisionBwdFwd → E
+    obtain ⟨sI, sO, sO', hm1, hm2, hne⟩ := hbf
+    rw [List.mem_iff_get] at hm1 hm2
+    obtain ⟨⟨i, hi⟩, hgi⟩ := hm1
+    obtain ⟨⟨j, hj⟩, hgj⟩ := hm2
+    simp only [List.get_eq_getElem] at hgi hgj
+    have hij : i ≠ j := by
+      intro heq; subst heq; rw [hgi] at hgj
+      exact absurd (congrArg Sigma.fst hgj) (by simp)
+    rcases Nat.lt_or_gt_of_ne hij with h_lt | h_lt
+    · -- backward at i, forward at j, i < j: use capacitySegmentDupPerm at j
+      left; right; left
+      unfold capacitySegmentDupPerm
+      refine ⟨⟨j, hj⟩, CanonicalSpongeState.capacitySegment sI, ⟨sO', sI, hgj, rfl⟩, ?_⟩
+      right; right; left
+      exact ⟨⟨i, hi⟩, Nat.le_of_lt h_lt, sO, sI, hgi, rfl⟩
+    · -- backward at i, forward at j, j < i: use capacitySegmentDupPermInv at i
+      left; right; right
+      unfold capacitySegmentDupPermInv
+      refine ⟨⟨i, hi⟩, CanonicalSpongeState.capacitySegment sI, ⟨sO, sI, hgi, rfl⟩, ?_⟩
+      right; left
+      exact ⟨⟨j, hj⟩, h_lt, sO', sI, hgj, rfl⟩
+
+/-- CO25 Lemma 5.10, current trace-event form. If the combined bad event `E(tr)` does
+not occur, then the permutation-consistency event `E_prp(tr)` does not occur. -/
+theorem lemma_5_10 (h : ¬ E trace) : ¬ E_prp trace :=
+  not_collisionPerm_of_not_combined (trace := trace) h
+
+
+end BadEventDSPaper
+
 end DuplexSpongeFS
 
 end QueryLog
@@ -122,3 +370,5 @@ end OracleSpec
 #print axioms OracleSpec.QueryLog.removeRedundantEntryDSPaper_eq_self_of_noRedundantEntryDSPaper
 #print axioms OracleSpec.QueryLog.removeRedundantEntryDSPaper_eq_self
 #print axioms OracleSpec.QueryLog.redundantEntryDSPaper_iff_of_hash
+#print axioms OracleSpec.QueryLog.BadEventDSPaper.E_removeRedundantEntryDSPaper_iff
+#print axioms OracleSpec.QueryLog.BadEventDSPaper.lemma_5_10
