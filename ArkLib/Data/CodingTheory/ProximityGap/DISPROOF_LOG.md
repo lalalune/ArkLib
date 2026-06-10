@@ -4339,3 +4339,27 @@ membership lemmas, `build_mem`, and `card_polysDegLT_slices_vanishing` itself). 
 post-push diff verification caught it within minutes. This commit restores the full
 section (compiles clean, all axiom-clean); the O96 entry's mathematical description is
 accurate for the NOW-present content.
+
+### O97 — the level-1 union bound: the incidence template, machine-checked (nubs, 2026-06-10)
+
+`SliceLocusCount.lean`: `low_weight_count_le` — for a negation-closed domain (char ≠ 2,
+`0 ∉ D`), with `s = |D²| − w`, `2s ≤ k`:
+
+    #{f : deg f < k, weight ≤ w}  ≤  C(|D²|, s) · q^(k − 2s).
+
+Proof = the now-complete level-1 pipeline composed end-to-end: every low-weight `f`
+forces a dead locus of size ≥ s (O94 structure theorem), it contains a size-s sub-locus
+(subsets of dead loci are dead), and each per-locus space counts exactly `q^(k−2s)`
+(O96 capstone); union over `C(|D²|, s)` loci.
+
+HONEST SCOPE: as a pure number this is classically subsumed (RS is MDS; weight
+distributions are exact via MacWilliams) — and the classical exactness does NOT resolve
+the list question (lists are cliques around an arbitrary word, not balls at 0), so
+neither does this bound alone. Its value: (1) the first machine-checked
+weight-distribution-type bound through the slice route, (2) the TEMPLATE every tower
+level instantiates — the iterated version's gain must come from cross-level interaction
+of the loci (the genuinely open incidence), and now every ingredient of that sentence is
+a formal object in-tree. Level-1 story complete: structure (O94) + per-slice count (O95)
++ f-level equality (O96) + union bound (this). Next frontier, named precisely: the
+incidence/clique structure — pairwise difference loci of LIST configurations (around a
+word, not 0) and the cross-level locus interaction down the tower.
