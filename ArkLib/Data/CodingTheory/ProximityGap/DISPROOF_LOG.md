@@ -4878,3 +4878,9 @@ machine-checked theorem. Remaining for the complete two-sided law: the symmetric
 p-direction (role swap, mechanical) and mixed windows (both prime directions
 simultaneously — the joint induction); then O73's base hypotheses discharge and the
 mixed tower goes fully unconditional on M31-style domains.
+
+### O115 — RÉDEI–DE BRUIJN–SCHOENBERG AT EVERY SQUAREFREE MODULUS: the ℤ-classification completes the coefficient trilogy
+
+`IntSquarefreeClassification.lean` (axiom-clean): `int_squarefree_classification` — for INTEGER weights at every squarefree `n` (arbitrary arity): `Σ_{e<n} w_e·ζ^e = 0 ⟺ ∃ A : ℕ → ℕ → ℤ, w e = Σ_{p ∈ primeFactors n} A p (e % (n/p))` — Schoenberg's theorem (the vanishing lattice is packet-spanned over ℤ) at full squarefree generality. The O109 strong induction reruns with ℤ-weights and is SIMPLER there: fiber differences stay ℤ, so the IH applies with no rational detour (the construction was always manifestly integral — `A p y = w(section(0,y))` + IH decode); only the K-coefficient transport changes (`map_intCast` for `map_ratCast`). Converse = the ℤ-cast packet regroup.
+
+**The coefficient trilogy at squarefree moduli is COMPLETE**: ℚ-components always (O109), ℤ-components always (this), ℕ-components exactly up to two distinct primes (O103 positive / O105 impossible at three) — every coefficient ring's classification settled at every squarefree modulus, with the ℕ/ℤ defect at ≥3 primes being precisely the content of Lam–Leung's positivity induction for the total weight. The surviving open items on the lane are unchanged: the sparse-window interpolation (bracketed O112/O114), Lam–Leung's positivity finish (published proof, all scaffolding now in place), O99 incidence, δ*.
