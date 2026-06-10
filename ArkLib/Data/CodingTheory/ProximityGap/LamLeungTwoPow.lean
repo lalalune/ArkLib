@@ -1092,4 +1092,84 @@ theorem conj41_mtrue_witness :
 
 end MTrueWitness
 
+/-! ## The general-radix fold: the complete `d`-ary syndrome decomposition
+
+The O56/O57 even/odd fold is the `d = 2` case of a complete `d`-ary decomposition: for
+every residue `r < d`, the syndrome coordinates `p_{dj+r}` of a valued error are the
+syndrome coordinates of the `r`-twisted fold `(fold_r v)(y) = ∑_{x^d=y} v(x)·x^r` one
+level down the `d`-th-power map. This extends the entire descent toolkit beyond 2-adic
+towers to MIXED-RADIX smooth domains — in particular toward the Mersenne-31/Circle-STARK
+domains of S-two's own deployment, whose tower is not 2-power. -/
+
+section GeneralRadixFold
+
+variable [DecidableEq F]
+
+/-- The `r`-twisted fold values at radix `d`. -/
+def foldValTw (S : Finset F) (v : F → F) (d r : ℕ) (y : F) : F :=
+  ∑ x ∈ S.filter (fun x => x ^ d = y), v x * x ^ r
+
+omit [CharZero F] in
+/-- **The complete `d`-ary syndrome fold**: `p_{dj+r}(v, S) = p_j(fold_r v, S^d)` for
+every residue `r < d` (in fact for every `r`). -/
+theorem syndrome_fold_general (S : Finset F) (v : F → F) (d j r : ℕ) :
+    ∑ x ∈ S, v x * x ^ (d * j + r)
+      = ∑ y ∈ S.image (· ^ d), foldValTw S v d r y * y ^ j := by
+  have hmaps : ∀ x ∈ S, x ^ d ∈ S.image (· ^ d) :=
+    fun x hx => Finset.mem_image.mpr ⟨x, hx, rfl⟩
+  rw [← Finset.sum_fiberwise_of_maps_to hmaps (fun x => v x * x ^ (d * j + r))]
+  refine Finset.sum_congr rfl fun y _ => ?_
+  rw [foldValTw, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun x hx => ?_
+  have hxy : x ^ d = y := (Finset.mem_filter.mp hx).2
+  rw [pow_add, pow_mul, hxy]
+  ring
+
+omit [CharZero F] in
+/-- Radix-`d` mass conservation seed: ALL `d` twisted folds vanishing at a point forces
+the error to vanish on the whole fiber — the `d×d` fiber system (a Vandermonde in the
+fiber points, weighted by values) is nonsingular. Generalizes
+`fold_mass_conservation` (`d = 2`). -/
+theorem fold_mass_conservation_general {S : Finset F} {v : F → F} {d : ℕ} {y : F}
+    (hall : ∀ r < d, foldValTw S v d r y = 0)
+    (hfibcard : (S.filter (fun x => x ^ d = y)).card ≤ d) :
+    ∀ x ∈ S.filter (fun x => x ^ d = y), v x = 0 := by
+  classical
+  -- the twisted folds are the power sums of the fiber error; window length d ≥ fiber size
+  set T := S.filter (fun x => x ^ d = y) with hT
+  by_cases hTe : T = ∅
+  · intro x hx
+    rw [hTe] at hx
+    exact absurd hx (Finset.notMem_empty x)
+  -- apply window_forces_weight to the fiber error: its power sums ARE the twisted folds
+  intro x₀ hx₀
+  by_contra hv0
+  -- restrict to the sub-support where v ≠ 0
+  set T' := T.filter (fun x => v x ≠ 0) with hT'
+  have hT'sub : T' ⊆ T := Finset.filter_subset _ _
+  have hx₀' : x₀ ∈ T' := Finset.mem_filter.mpr ⟨hx₀, hv0⟩
+  have hpw : ∀ r < d, ∑ x ∈ T', v x * x ^ r = 0 := by
+    intro r hr
+    have hfull := hall r hr
+    rw [foldValTw, ← hT] at hfull
+    have hsplit : ∑ x ∈ T', v x * x ^ r
+        + ∑ x ∈ T.filter (fun x => ¬ v x ≠ 0), v x * x ^ r
+        = ∑ x ∈ T, v x * x ^ r :=
+      Finset.sum_filter_add_sum_filter_not T (fun x => v x ≠ 0) _
+    have hzero : ∑ x ∈ T.filter (fun x => ¬ v x ≠ 0), v x * x ^ r = 0 :=
+      Finset.sum_eq_zero fun x hx => by
+        have hxv := (Finset.mem_filter.mp hx).2
+        push Not at hxv
+        rw [hxv, zero_mul]
+    rw [hzero, add_zero] at hsplit
+    rw [hsplit]
+    exact hfull
+  have hT'0 : ∀ x ∈ T', v x ≠ 0 := fun x hx => (Finset.mem_filter.mp hx).2
+  have hT'card : T'.card ≤ d := le_trans (Finset.card_le_card hT'sub) hfibcard
+  have := window_forces_weight hT'0 hT'card hpw
+  rw [this] at hx₀'
+  exact absurd hx₀' (Finset.notMem_empty x₀)
+
+end GeneralRadixFold
+
 end LamLeungTwoPow

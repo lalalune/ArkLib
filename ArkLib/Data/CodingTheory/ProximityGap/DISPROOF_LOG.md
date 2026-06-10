@@ -3384,3 +3384,21 @@ sentence, fully kernel-verified (closing the last queued refinement of the O43/O
 refutation arc). The session's refutation of the printed conjecture is complete at every
 level of fidelity: rank form (structural, every γ), M_compat form (counting), M_true form
 (genuine codeword-list mass).
+
+### O65 — the GENERAL-RADIX fold: the descent toolkit extends to mixed-radix smooth towers
+
+`LamLeungTwoPow.lean` §GeneralRadixFold (axiom-clean, 0 sorry, char-free):
+
+* `syndrome_fold_general` — the complete d-ary syndrome decomposition:
+  p_{dj+r}(v,S) = p_j(fold_r v, S^d) for every residue r, where
+  (fold_r v)(y) = Σ_{x^d=y} v(x)·x^r. The O56/O57 even/odd fold is the d = 2 case.
+* `fold_mass_conservation_general` — ALL d twisted folds vanishing at a fiber forces
+  v = 0 on the fiber (via window_forces_weight applied to the fiber error: the twisted
+  folds ARE the fiber's power-sum window, length d ≥ fiber size). Generalizes O58's 2×2
+  nonsingularity to every radix.
+
+Consequence: the entire descent program (fold identities + mass conservation + the
+window-weight tradeoff) now applies to ARBITRARY smooth towers — mixed-radix n = ∏ dᵢ —
+not just 2-power domains. In particular the Mersenne-31/Circle-STARK domains of S-two's
+own deployment (whose tower is not 2-adic) are now in scope of the formal toolkit; the
+branch-accounting question generalizes verbatim with d-ary branching.
