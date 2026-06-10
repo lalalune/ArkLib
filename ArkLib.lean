@@ -230,6 +230,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightClearedObstructi
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightResummation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.BCoeffVanishing
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Agreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Kill
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Supply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Weld
@@ -627,6 +628,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25RichCoordinateGate
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25SlackWeld
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25SlackWeldFence
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniqueRichFactor
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
@@ -1101,6 +1103,7 @@ import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.MarginalBound
 import ArkLib.Data.Probability.Notation
 import ArkLib.Data.Probability.PrUnionBound
+import ArkLib.Data.Probability.ProductMarginal
 import ArkLib.Data.Probability.RandomSubsetInclusion
 import ArkLib.Data.Probability.RandomSubsetInclusionExists
 import ArkLib.Data.Probability.TensorSchwartzZippel
@@ -1501,7 +1504,7 @@ import ArkLib.ProofSystem.Stir.ChainProof
 import ArkLib.ProofSystem.Stir.ChainRbrIndicator
 import ArkLib.ProofSystem.Stir.ChainVSpecCount
 import ArkLib.ProofSystem.Stir.CheckedFinalBlock
-import ArkLib.ProofSystem.Stir.CheckingDirectPred
+import ArkLib.ProofSystem.Stir.CheckingRbrTightnessCore
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.Complexity
@@ -1570,6 +1573,7 @@ import ArkLib.ProofSystem.ToyProblem.SoundnessBounds
 import ArkLib.ProofSystem.ToyProblem.Spec.General
 import ArkLib.ProofSystem.ToyProblem.Spec.SimplifiedIOR
 import ArkLib.ProofSystem.Whir.BlockRelDistance
+import ArkLib.ProofSystem.Whir.ChallengeCardPin
 import ArkLib.ProofSystem.Whir.CheckedVerifier
 import ArkLib.ProofSystem.Whir.FoldRound
 import ArkLib.ProofSystem.Whir.Folding
@@ -1610,7 +1614,6 @@ import ArkLib.ProofSystem.Whir.ProtocolCompleteness
 import ArkLib.ProofSystem.Whir.ProtocolSoundness
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
-import ArkLib.ProofSystem.Whir.ChallengeCardPin
 import ArkLib.ProofSystem.Whir.RBRSoundnessCheckedBridge
 import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
 import ArkLib.ProofSystem.Whir.SchwartzZippelCore
