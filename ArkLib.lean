@@ -96,6 +96,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorizationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegerRepresentative
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegralFactorAssignment
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegree
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeCurve
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeGraded
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
