@@ -1780,18 +1780,25 @@ theorem contracted_multiplicity_invariant {m s k : ℕ} (hsk : s + k ≤ m) {ζ 
     have hSwin := hwin j hj
     rw [show (2:ℕ) ^ (s + j) = 2 ^ s * 2 ^ j from by rw [pow_add]] at hSwin
     rw [hSwin] at hfib
-    rw [← hfib]
-    refine Finset.sum_congr rfl fun e _ => ?_
-    simp only [hc]
-    push_cast
-    rw [← pow_mul, ← pow_mul, mul_comm e (2 ^ j)]
+    have halign : ∀ e ∈ Finset.range (2 ^ (m' + 1)),
+        (c e : F) * (ζ ^ (2 ^ s)) ^ (2 ^ j * e)
+          = ((S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)).card : F)
+            * ((ζ ^ (2 ^ s)) ^ e) ^ (2 ^ j) := by
+      intro e _
+      simp only [hc]
+      push_cast
+      rw [← pow_mul]
+      congr 1
+      ring
+    rw [Finset.sum_congr rfl halign]
+    exact hfib.symm
   have hζ'' : IsPrimitiveRoot (ζ ^ (2 ^ s)) (2 ^ (m' + 1)) := hm' ▸ hζ'
   have hinv := windowed_coeff_congr_invariant (k := k) (m := m') (by omega) hζ'' c hcwin
   intro e e' he he' hmod
-  have hres := hinv e e' (by rw [← hm']; exact he) (by rw [← hm']; exact he') ?_
-  · exact_mod_cast hres
-  · rw [show m' - k = m - s - k from by omega]
-    exact hmod
+  have hres := hinv e e' (by rw [← hm']; exact he) (by rw [← hm']; exact he')
+    (by rw [show m' - k = m - s - k from by omega]; exact hmod)
+  simp only [hc] at hres
+  exact_mod_cast hres
 
 end MultiplicityRigidity
 
