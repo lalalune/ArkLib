@@ -880,6 +880,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeIntClassification
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimePacketRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeRatClassification
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
+import ArkLib.Data.CodingTheory.ProximityGap.TwoGenPackingCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeSyndromeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeWindowLaw
