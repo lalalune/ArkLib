@@ -1559,49 +1559,30 @@ theorem composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness
     composedRbrKnowledgeSoundnessWithClaimResidual R pp oSpec Rc init impl rbrKnowledgeError :=
   hks
 
-/-! ### End-to-end Spartan PIOP security theorems
+/-! ### End-to-end Spartan PIOP security: where the genuine theorems live
 
-These bundle the two security guarantees of the Spartan PIOP (#114) into single statements,
-parameterized on the assembled composed reduction `Rc`. They are the headline theorems of issue
-#114; the only remaining open obligation is the *assembly* of `Rc` and the supply of its two
-security hypotheses (the per-phase append keystones), which are library-wide composition residuals,
-not Spartan-specific. -/
+An earlier revision declared two theorems here named `spartan_piop_perfect_completeness` /
+`spartan_piop_rbr_knowledge_soundness`, documented as "the headline theorems of issue #114". As
+the external audit (2026-06-10) observed, each took an *arbitrary* `Rc` **plus its own security
+property as a hypothesis** and merely repackaged it into the residual `Prop` — i.e. they were
+exact duplicates of `composedCompletenessResidual_of_perfectCompleteness` /
+`composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness` above, converters rather than
+end-to-end results. They have been **retired** so converter names cannot masquerade as headline
+results. The genuine statements about the actual assembled composition
+(`Bricks.composedPIOP_Rc`, `ArkLib/ProofSystem/Spartan/Composition.lean`) are:
 
-/-- **Spartan PIOP perfect completeness (end-to-end).** The assembled composed Spartan oracle
-reduction `Rc`, run on a never-failing sampling state, reduces a satisfied R1CS instance
-(`spartanRelIn`) to the terminal Spartan check (`finalCheckRelOut`) with probability `1` — i.e. with
-*perfect* completeness and total error `0`. Stated in `composedCompletenessResidual` form so that any
-assembly of `Rc` from the per-phase perfectly-complete leaves (each error `0`, combined additively
-to `0`) discharges it. -/
-theorem spartan_piop_perfect_completeness
-    {N : ℕ} {pSpecC : ProtocolSpec N}
-    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
-    (Rc : OracleReduction oSpec
-      (Statement R pp) (OracleStatement R pp) (Witness R pp)
-      (FinalStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
-    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-    (hc : Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)) :
-    composedCompletenessResidual R pp oSpec Rc init impl :=
-  composedCompletenessResidual_of_perfectCompleteness R pp oSpec Rc init impl hc
+* **Perfect completeness (PROVEN, no leaf hypotheses):**
+  `Bricks.composedCompletenessResidual_proven_114c`
+  (`ArkLib/ProofSystem/Spartan/ComposedCompletenessProven.lean`) — only the standard
+  honest-implementation side conditions on `init`/`impl` remain as inputs.
+* **Round-by-round knowledge soundness (assembled, conditional):**
+  `Bricks.composedRbrKnowledgeSoundnessResidual_of_leaves`
+  (`ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean`) — the seven-seam keystone
+  fold at `Rc := composedPIOP_Rc`, reducing the obligation to the eight per-phase rbr-KS leaves,
+  the seven verifier determinism witnesses, and the two challenge-seam `hSeamZero` residuals.
 
-/-- **Spartan PIOP round-by-round knowledge soundness (end-to-end).** The assembled composed Spartan
-oracle reduction `Rc` is round-by-round knowledge sound from `spartanRelIn` to `finalCheckRelOut`
-with the stated per-round error. For the seven-phase composition the error is `2/|R|` on the two
-sum-check phases' rounds and `0` elsewhere (combined through `ChallengeIdx.sumEquiv`), so a knowledge
-extractor exists that, except with that round-by-round probability, recovers an R1CS witness. -/
-theorem spartan_piop_rbr_knowledge_soundness
-    {N : ℕ} {pSpecC : ProtocolSpec N}
-    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
-    (Rc : OracleReduction oSpec
-      (Statement R pp) (OracleStatement R pp) (Witness R pp)
-      (FinalStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
-    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
-    (hks : Rc.verifier.rbrKnowledgeSoundness init impl
-      (spartanRelIn R pp) (finalCheckRelOut R pp) rbrKnowledgeError) :
-    composedRbrKnowledgeSoundnessResidual R pp oSpec Rc init impl rbrKnowledgeError :=
-  composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness
-    R pp oSpec Rc init impl rbrKnowledgeError hks
+Hold the `spartan_piop_*` names until the rbr layer's remaining inputs are discharged and the
+headline statements are instantiable. -/
 
 #print axioms composedPIOPResidual_of_reduction
 #print axioms composedPIOPWithClaimResidual_of_reduction
@@ -1609,8 +1590,6 @@ theorem spartan_piop_rbr_knowledge_soundness
 #print axioms composedCompletenessWithClaimResidual_of_perfectCompleteness
 #print axioms composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness
 #print axioms composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness
-#print axioms spartan_piop_perfect_completeness
-#print axioms spartan_piop_rbr_knowledge_soundness
 
 end Bricks
 

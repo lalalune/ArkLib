@@ -16,17 +16,21 @@ sum-check ORACLE perfect completeness). Both are now discharged:
   multi-round oracle completeness, whose only residual (the per-round lens coherence) is the proven
   `CubeFiber`. `logupConcreteSumcheckOracleReduction = Sumcheck.Spec.oracleReduction …` and
   `innerSumcheckRelIn/Out = relationRound 0/last`, all definitionally, so it plugs in on the nose.
-* `hProj` ← `SumcheckLensProjComplete_holds_of_honest` (RA) on the honest-prover support, or —
-  with the corrected claim-true `midRelation` (issue #13) — **unconditionally** via
+* `hProj` ← with the corrected claim-true `midRelation` (issue #13), **unconditionally** via
   `SumcheckLensProjComplete_unconditional` (the `midRelation` premise *is* the zero-sum claim).
 
 So `SumcheckCompletenessResidual` holds modulo only the standard data facts `hInit`/`hImplSupp`
-(`sumcheckCompletenessResidual_unconditional` below); the historical honest-support form
-(`sumcheckCompletenessResidual_holds_uncondInner`) is retained for callers that thread `hHonest`
-explicitly. Consequently the **entire** bundled sub-phase completeness residual
-`SubPhaseCompletenessResidual` (outer ∧ sumcheck) is a theorem under `hInit`/`hImplSupp`
-(`subPhaseCompletenessResidual_unconditional`): the outer half is the in-tree
-`outerOracleReduction_completeness`, the sumcheck half is the unconditional form here. -/
+(`sumcheckCompletenessResidual_unconditional` below). Consequently the **entire** bundled sub-phase
+completeness residual `SubPhaseCompletenessResidual` (outer ∧ sumcheck) is a theorem under
+`hInit`/`hImplSupp` (`subPhaseCompletenessResidual_unconditional`): the outer half is the in-tree
+`outerOracleReduction_completeness`, the sumcheck half is the unconditional form here.
+
+**Removed (issue #13, dmvt audit):** the historical honest-support form
+`sumcheckCompletenessResidual_holds_uncondInner` consumed the globally-quantified `hHonest`
+package, which is **unsatisfiable** (an after-outer statement with a corrupted `.multiplicity`
+oracle has no honest preimage, and an adversarial `xChallenge` falsifies pole-freeness), so every
+consumer of that form was uninstantiable. It is strictly superseded by
+`sumcheckCompletenessResidual_unconditional`. -/
 
 open OracleComp OracleSpec ProtocolSpec
 namespace Logup
@@ -36,30 +40,6 @@ variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Inhabited F] [Samplea
   [Fact ((-1 : F) ≠ 1)]
 variable (n M : ℕ) (params : ProtocolParams M)
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-
-/-- **`SumcheckCompletenessResidual`, with `hInner` discharged via the proven `CubeFiber`.** Reduced
-to only the honest-support condition `hHonest` (what completeness asserts on the honest run) plus the
-standard data facts. The inner multi-round sum-check oracle completeness is no longer a residual. -/
-theorem sumcheckCompletenessResidual_holds_uncondInner
-    (hHonest :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        ∃ (stmtIn₀ : StmtIn F n M) (oStmtIn₀ : ∀ i, OStmtIn F n M i),
-          (((stmtIn₀, oStmtIn₀), ()) ∈ inputRelation F n M) ∧
-          (∀ u : Hypercube n,
-            stmtIn.1.xChallenge + evalOnHypercube (tableOracle oStmtIn₀) u ≠ 0) ∧
-          stmtIn.2 =
-            (fun
-              | .input i => oStmtIn₀ i
-              | .multiplicity => honestMultiplicity oStmtIn₀
-              | .helpers => honestHelpers params oStmtIn₀ stmtIn.1.xChallenge))
-    (hInit : NeverFail init)
-    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
-      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
-        = support (liftM q : OracleComp oSpec β)) :
-    SumcheckCompletenessResidual oSpec F n M params init impl :=
-  sumcheckCompletenessResidual_holds oSpec F n M params init impl
-    (SumcheckLensProjComplete_holds_of_honest F n M params hHonest)
-    (Sumcheck.Spec.oracleReduction_perfectCompleteness_unconditional hInit hImplSupp)
 
 /-- **`SumcheckCompletenessResidual` — UNCONDITIONAL (issue #13).** With the corrected claim-true
 `midRelation` (`{p | logupOuterSumcheckClaim … = 0}`), the `proj_complete` obligation is the theorem
@@ -97,6 +77,5 @@ end
 end Logup
 
 /- Axiom audit: the unconditional #13 sub-phase completeness surface. -/
-#print axioms Logup.sumcheckCompletenessResidual_holds_uncondInner
 #print axioms Logup.sumcheckCompletenessResidual_unconditional
 #print axioms Logup.subPhaseCompletenessResidual_unconditional
