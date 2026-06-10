@@ -325,8 +325,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineMonic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineZLinearMonic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineZLinearQuadratic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.SliceSeparabilityBoundary
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysExceptional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysExceptional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ThresholdInterface
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
@@ -621,7 +621,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4Seam
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25LinearFactorCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25RichCoordinateGate
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25SlackWeld
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniqueRichFactor
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
@@ -1307,6 +1309,8 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.BadBlocks
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.FoldDistance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Incremental
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Bridge
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Discharge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
@@ -1448,6 +1452,8 @@ import ArkLib.ProofSystem.Spartan.FirstSumcheckRowSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckWithTarget
 import ArkLib.ProofSystem.Spartan.FirstSumcheckZeroEval
 import ArkLib.ProofSystem.Spartan.LinearCombinationComplete
+import ArkLib.ProofSystem.Spartan.LinearCombinationTightLeaf
+import ArkLib.ProofSystem.Spartan.MidChainWithTarget
 import ArkLib.ProofSystem.Spartan.PhaseCompletenessLeaves
 import ArkLib.ProofSystem.Spartan.PrependRLCDeterminism
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
@@ -1470,6 +1476,7 @@ import ArkLib.ProofSystem.Spartan.SumcheckDeterminismWitnesses
 import ArkLib.ProofSystem.Spartan.SumcheckKnowledgeLeaves
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckRbrKSResidualAnalysis
+import ArkLib.ProofSystem.Spartan.TightRLCKernel
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
 import ArkLib.ProofSystem.Stir.BlockRbrBudgets
@@ -1508,6 +1515,7 @@ import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Stir.RoundVector
 import ArkLib.ProofSystem.Stir.RoundVectorCompleteness
 import ArkLib.ProofSystem.Stir.SpotCheckBound
+import ArkLib.ProofSystem.Stir.SubUnitRbr
 import ArkLib.ProofSystem.Stir.TailCompleteness
 import ArkLib.ProofSystem.Stir.VSpecBridge
 import ArkLib.ProofSystem.Stir.VectorBridge
@@ -1591,6 +1599,7 @@ import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
 import ArkLib.ProofSystem.Whir.SchwartzZippelCore
 import ArkLib.ProofSystem.Whir.SubUnitRbr
 import ArkLib.ProofSystem.Whir.ThresholdKSF
+import ArkLib.ProofSystem.Whir.ThresholdKSFMulti
 import ArkLib.ProofSystem.Whir.WhirVectorIOPProof
 import ArkLib.ProofSystem.ZkVMBoundary
 import ArkLib.ResidualAxioms
