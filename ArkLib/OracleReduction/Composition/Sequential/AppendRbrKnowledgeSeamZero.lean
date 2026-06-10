@@ -9,8 +9,36 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2Rec
 /-!
 # The seam-challenge (`i₂ = 0`) flip bound — discharge of `hSeamZero` (#114 rbr chain)
 
-The `i₂ = 0` (seam-challenge) flip bound for the appended knowledge experiment, discharging
-the challenge-seam keystone residual `hSeamZero` (`appendRbrKnowledgeSeamZeroResidual`).
+This file proves the **last named residual of the challenge-seam rbr knowledge-soundness append
+keystone**: the per-round flip bound at the seam challenge itself (`i₂ = 0`, which exists only at
+a `V_to_P` seam). Two theorems:
+
+* `appendRbrKnowledgePhase2SeamReconcileZero_le` — the **zero-reconcile** (containment form):
+  the `i₂ = 0` instance of the phase-2 seam reconciliation. The run side (STEPS A–C: body
+  recombination, right challenge-oracle-seam transfer, `wrap`-map collapse) is identical to the
+  proven positive-index reconcile `appendRbrKnowledgePhase2SeamReconcile_proof_pos`; the event
+  side replaces the two-sided gt-collapse with a one-sided **containment** through the *semantic
+  seam glue*. At the boundary the composite knowledge state function's value is `kSF₁`-at-last
+  (the `dif_pos` branch) while the inner game's is `kSF₂`-at-`0`; the glue
+  `¬ kSF₁-last → ¬ kSF₂-0(verify ·)` is the contrapositive of the chain
+  `kSF₂.toFun_empty` → `run_pos_of_mem_rel` → `kSF₁.toFun_full` (truth propagated backwards
+  across the seam through the deterministic `V₁ = pure ∘ verify`), with the appended extractor's
+  crossing coherence `appendExtractMid_cross` identifying the two extracted witnesses. Since the
+  flip event only needs an *inequality*, the containment (`probEvent_mono''`) suffices — no
+  reverse implication is needed (and none holds in general: `kSF₁.toFun_full` is one-directional).
+
+* `appendRbrKnowledgeSeamZero_proven` — the **`hSeamZero` discharge**: the appended experiment's
+  seam-challenge flip probability is `≤ rbrKnowledgeError₂ i₂`, from the inner per-round bound
+  `hBound₂` alone. The experiment factors through the proven seam-challenge zero body factoring
+  `phase2_body_heq_challenge_zero` (at the seam challenge the appended run is `fst`'s full partial
+  run with no right block), then the `Subsingleton σ` bind split + amnesiac re-injection of
+  `hBound₂` (verbatim the positive-index branch of
+  `appendRbrKnowledgeSoundnessPhase2_subsingleton_challenge`), and closes with the containment
+  zero-reconcile.
+
+With these, `Verifier.append_rbrKnowledgeSoundness_keystone_subsingleton_challenge`
+(`AppendRbrKnowledgeChallenge.lean`) is **residual-free**, completing the rbr knowledge-soundness
+append keystone triple (message / empty / challenge seams) in the `Subsingleton σ` regime.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
