@@ -1044,6 +1044,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Soundness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructures
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
+import ArkLib.OracleReduction.FiatShamir.HVZKCanonicalClose
 import ArkLib.OracleReduction.FiatShamir.HVZKCoupling
 import ArkLib.OracleReduction.FiatShamir.HVZKCouplingFoundations
 import ArkLib.OracleReduction.FiatShamir.HVZKCouplingStep
