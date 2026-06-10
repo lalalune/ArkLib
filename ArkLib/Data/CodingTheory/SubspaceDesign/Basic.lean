@@ -1,6 +1,6 @@
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.LinearAlgebra.Basic
 
 /-!
 # Subspace Designs
@@ -31,8 +31,8 @@ variable {F V : Type*} [Field F] [AddCommGroup V] [Module F V]
 variable {ι : Type*} [Fintype ι] (H : ι → Submodule F V)
 
 /-- The intersection multiplicity of a subspace `W` with a family of subspaces `H`. -/
-def intersectionMultiplicity (W : Submodule F V) : ℕ :=
-  ∑ i, Module.finrank F (H i ⊓ W)
+noncomputable def intersectionMultiplicity (W : Submodule F V) : ℕ :=
+  ∑ i, Module.finrank F ↥(H i ⊓ W)
 
 /-- The definition of a strong `τ`-subspace design. 
 A family `H` of subspaces is an `(s, τ)`-strong subspace design if for every 
@@ -52,16 +52,17 @@ lemma intersectionMultiplicity_mono [FiniteDimensional F V] {W₁ W₂ : Submodu
 -- Key geometric lemma: Dimension of intersection bound
 lemma finrank_inf_le_finrank_inf_add_finrank_sub [FiniteDimensional F V]
     {W W' : Submodule F V} (h : W' ≤ W) (H_i : Submodule F V) :
-    Module.finrank F (H_i ⊓ W) ≤ Module.finrank F (H_i ⊓ W') + (Module.finrank F W - Module.finrank F W') := by
-  have eq1 : Module.finrank F ((H_i ⊓ W) ⊔ W') + Module.finrank F ((H_i ⊓ W) ⊓ W') =
-      Module.finrank F (H_i ⊓ W) + Module.finrank F W' :=
+    Module.finrank F ↥(H_i ⊓ W) ≤
+      Module.finrank F ↥(H_i ⊓ W') + (Module.finrank F W - Module.finrank F W') := by
+  have eq1 : Module.finrank F ↥((H_i ⊓ W) ⊔ W') + Module.finrank F ↥((H_i ⊓ W) ⊓ W') =
+      Module.finrank F ↥(H_i ⊓ W) + Module.finrank F W' :=
     Submodule.finrank_sup_add_finrank_inf_eq (H_i ⊓ W) W'
   have eq2 : (H_i ⊓ W) ⊓ W' = H_i ⊓ W' := by
     ext x
     simp only [mem_inf]
     tauto
   rw [eq2] at eq1
-  have le1 : Module.finrank F ((H_i ⊓ W) ⊔ W') ≤ Module.finrank F W := by
+  have le1 : Module.finrank F ↥((H_i ⊓ W) ⊔ W') ≤ Module.finrank F W := by
     apply Submodule.finrank_mono
     rw [sup_le_iff]
     exact ⟨inf_le_right, h⟩
@@ -71,15 +72,19 @@ lemma finrank_inf_le_finrank_inf_add_finrank_sub [FiniteDimensional F V]
 -- Bounding intersection multiplicity for larger spaces
 lemma intersectionMultiplicity_bound [FiniteDimensional F V]
     {W W' : Submodule F V} (h : W' ≤ W) :
-    intersectionMultiplicity H W ≤ intersectionMultiplicity H W' + Fintype.card ι * (Module.finrank F W - Module.finrank F W') := by
+    intersectionMultiplicity H W ≤
+      intersectionMultiplicity H W' +
+        Fintype.card ι * (Module.finrank F W - Module.finrank F W') := by
   unfold intersectionMultiplicity
   calc
-    (∑ i : ι, Module.finrank F (H i ⊓ W))
-      ≤ ∑ i : ι, (Module.finrank F (H i ⊓ W') + (Module.finrank F W - Module.finrank F W')) := by
+    (∑ i : ι, Module.finrank F ↥(H i ⊓ W))
+      ≤ ∑ i : ι, (Module.finrank F ↥(H i ⊓ W') + (Module.finrank F W - Module.finrank F W')) := by
         apply Finset.sum_le_sum
         intro i _
         exact finrank_inf_le_finrank_inf_add_finrank_sub h (H i)
-    _ = (∑ i : ι, Module.finrank F (H i ⊓ W')) + ∑ i : ι, (Module.finrank F W - Module.finrank F W') := by
+    _ = (∑ i : ι, Module.finrank F ↥(H i ⊓ W')) +
+          ∑ i : ι, (Module.finrank F W - Module.finrank F W') := by
         exact Finset.sum_add_distrib
-    _ = (∑ i : ι, Module.finrank F (H i ⊓ W')) + Fintype.card ι * (Module.finrank F W - Module.finrank F W') := by
+    _ = (∑ i : ι, Module.finrank F ↥(H i ⊓ W')) +
+          Fintype.card ι * (Module.finrank F W - Module.finrank F W') := by
         simp
