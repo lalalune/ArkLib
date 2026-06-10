@@ -1035,4 +1035,61 @@ theorem two_sided_unit_syndrome_budget {M s : ℕ} {ζ : F}
 
 end TwoSided
 
+/-! ## The M_true upgrade of the Conjecture-41 violation witness
+
+O44's kernel-checked witness showed the COMPATIBILITY count on one line exceeds the
+Conjecture-41 bound. This section upgrades it to the `M_true` quantity the conjecture's
+"equivalently" sentence actually speaks about: at each of the six line parameters there
+is a **genuine weight-6 error** — explicit support AND explicit all-nonzero values —
+satisfying the FULL 9-coordinate syndrome system of the line `s(γ) = unitVec 5 + γ·e₈`.
+Hence `M_true(s₁, s₂) ≥ 6 > 5 = ⌊(2D−1)/c⌋` over `ZMod 17`, every condition discharged
+by kernel `decide`. -/
+
+section MTrueWitness
+
+set_option maxRecDepth 100000
+set_option maxHeartbeats 3200000
+
+/-- The line syndrome of the O44 witness: `s(γ)_j = [j = 5] + γ·[j = 8]`. -/
+def O44Syndrome (γ : ZMod 17) (j : ℕ) : ZMod 17 :=
+  (if j = 5 then 1 else 0) + γ * (if j = 8 then 1 else 0)
+
+/-- **The `M_true` violation witness**: six distinct line parameters, each carrying a
+genuine all-nonzero weight-6 error solving the full syndrome system. -/
+theorem conj41_mtrue_witness :
+    ∀ γ ∈ ({1, 2, 3, 4, 5, 6} : Finset (ZMod 17)),
+      ∃ (E : Finset (ZMod 17)) (v : ZMod 17 → ZMod 17),
+        E ∈ (Finset.univ : Finset (ZMod 17)).powersetCard 6 ∧
+        (∀ x ∈ E, v x ≠ 0) ∧
+        (∀ j < 9, ∑ x ∈ E, v x * x ^ j = O44Syndrome γ j) := by
+  intro γ hγ
+  simp only [Finset.mem_insert, Finset.mem_singleton] at hγ
+  rcases hγ with rfl | rfl | rfl | rfl | rfl | rfl
+  · exact ⟨{0, 6, 8, 11, 12, 14},
+      fun x => if x = 0 then 9 else if x = 6 then 5 else if x = 8 then 13
+        else if x = 11 then 9 else if x = 12 then 9 else 6,
+      by decide, by decide, by decide⟩
+  · exact ⟨{0, 3, 10, 11, 13, 14},
+      fun x => if x = 0 then 1 else if x = 3 then 1 else if x = 10 then 12
+        else if x = 11 then 1 else if x = 13 then 9 else 10,
+      by decide, by decide, by decide⟩
+  · exact ⟨{0, 5, 8, 9, 13, 16},
+      fun x => if x = 0 then 7 else if x = 5 then 12 else if x = 8 then 2
+        else if x = 9 then 7 else if x = 13 then 16 else 7,
+      by decide, by decide, by decide⟩
+  · exact ⟨{0, 2, 3, 7, 10, 12},
+      fun x => if x = 0 then 2 else if x = 2 then 1 else if x = 3 then 2
+        else if x = 7 then 2 else if x = 10 then 3 else 7,
+      by decide, by decide, by decide⟩
+  · exact ⟨{0, 1, 2, 3, 13, 15},
+      fun x => if x = 0 then 6 else if x = 1 then 4 else if x = 2 then 6
+        else if x = 3 then 3 else if x = 13 then 6 else 9,
+      by decide, by decide, by decide⟩
+  · exact ⟨{0, 2, 4, 6, 9, 13},
+      fun x => if x = 0 then 14 else if x = 2 then 15 else if x = 4 then 14
+        else if x = 6 then 7 else if x = 9 then 14 else 4,
+      by decide, by decide, by decide⟩
+
+end MTrueWitness
+
 end LamLeungTwoPow

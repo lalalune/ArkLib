@@ -3369,3 +3369,18 @@ evaluation weight and prescribed 2-adic coefficient spread** — a plain questio
 weight distributions stratified by the 2-adic exponent tree, with no fold machinery left
 in the statement. (The C19 anatomy lives here too: its 3 + 16 list elements are exactly
 coefficient-spread classes — the transversal degeneracies are spread patterns.)
+### O64 — the M_TRUE upgrade of the Conjecture-41 violation: genuine errors, kernel-checked
+
+`LamLeungTwoPow.conj41_mtrue_witness` (axiom-clean, 0 sorry; kernel decide with raised
+heartbeats): at each of the six line parameters γ ∈ {1,…,6} of the O44 witness line
+s(γ) = unitVec 5 + γ·e₈ over ZMod 17, an EXPLICIT weight-6 error — support AND
+all-nonzero values — satisfies the FULL 9-coordinate syndrome system (e.g. γ = 1:
+E = {0,6,8,11,12,14}, v = (9,5,13,9,9,6)). Hence
+
+    M_true(s₁, s₂) ≥ 6 > 5 = ⌊(2D−1)/c⌋   over ZMod 17 —
+
+the violation now holds at the exact M_true quantity of Conjecture 41's "equivalently"
+sentence, fully kernel-verified (closing the last queued refinement of the O43/O44
+refutation arc). The session's refutation of the printed conjecture is complete at every
+level of fidelity: rank form (structural, every γ), M_compat form (counting), M_true form
+(genuine codeword-list mass).
