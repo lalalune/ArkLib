@@ -996,6 +996,7 @@ import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeam
 import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeamChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessHelper
+import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessMsgKeystone
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessNonPerfect
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessChallenge
@@ -1187,6 +1188,7 @@ import ArkLib.ProofSystem.Logup.Security.Issue13Status
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessClose
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessEmptyOracle
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessHonest
+import ArkLib.ProofSystem.Logup.Security.LogupCompletenessMsgSeam
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncond
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncondSumcheck
 import ArkLib.ProofSystem.Logup.Security.LogupHonestSupport

@@ -121,7 +121,7 @@ theorem appendCompletenessResidual_msgSeam
     (hOuter : OuterCompletenessResidual oSpec F n M params init impl)
     (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl) :
     AppendCompletenessResidual oSpec F n M params init impl hOuter hSumcheck :=
-  OracleReduction.appendCompletenessResidual_msg
+  OracleReduction.appendCompletenessResidual_msg.{0, 0}
     (outerOracleReduction oSpec F n M params)
     (sumcheckOracleReduction oSpec F n M params)
     hOuter hSumcheck
