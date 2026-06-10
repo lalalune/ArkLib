@@ -60,6 +60,23 @@ def HasHashEntry (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
       (duplexSpongeChallengeOracle StmtIn U).Range t) ∈ tr
 
+/-- The trace contains a hash entry with a strictly earlier forward permutation entry sharing the
+hash capacity on either the forward output or forward input side. This is the concrete collision
+shape used by `capacitySegmentDupHash`. -/
+def HasForwardCapacityBeforeHash
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (stmt : StmtIn) (capSeg : Vector U SpongeSize.C) : Prop :=
+  ∃ jHash : Fin tr.length,
+    tr[jHash] =
+      (⟨Sum.inl stmt, capSeg⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+    ∃ jPerm : Fin tr.length, jPerm < jHash ∧
+      ∃ stateIn stateOut : CanonicalSpongeState U,
+        tr[jPerm] =
+          (⟨Sum.inr (Sum.inl stateIn), stateOut⟩ :
+            OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+        (stateOut.capacitySegment = capSeg ∨ stateIn.capacitySegment = capSeg)
+
 /-- Inversion of `redundantEntryDS` at a hash slot: the redundancy certificate is an earlier
 copy of the same hash entry. -/
 private lemma redundantEntryDS_hash_inversion
@@ -414,6 +431,18 @@ theorem E_of_base_hash_after_forward_capacity
   · exact ⟨jHash, capSeg, stmt, hhash, jPerm, hlt, stmt,
       Or.inr (Or.inr (Or.inr (Or.inl ⟨stateIn, stateOut, hperm, hIn⟩)))⟩
 
+/-- Predicate form of `E_of_base_hash_after_forward_capacity`: once the deduplicated base trace
+has the forward-before-hash capacity shape, the combined bad event fires. -/
+theorem E_of_base_hasForwardCapacityBeforeHash
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h :
+      HasForwardCapacityBeforeHash (removeRedundantEntryDS tr).1 stmt capSeg) :
+    BadEventDS.E tr := by
+  obtain ⟨jHash, hhash, jPerm, hlt, stateIn, stateOut, hperm, hcap⟩ := h
+  exact E_of_base_hash_after_forward_capacity
+    (tr := tr) (jHash := jHash) (jPerm := jPerm) hlt hhash hperm hcap
+
 /-- Off `E`, a nonterminal `J_BT` permutation-index payload points to the forward
 permutation query for that chain step. -/
 theorem jbt_perm_forward_getElem?_of_not_E
@@ -595,6 +624,37 @@ theorem e_time_h_honest_raw_forward_capacity_witness_of_not_E
       subst val
       rfl
 
+/-- Predicate form of the raw timing witness: off `E`, `E_time_h_honest` produces a concrete
+forward-before-hash capacity collision shape in the raw trace. -/
+theorem e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hTime : DuplexSpongeFS.KeyLemmaFoundations.E_time_h_honest tr state S) :
+    ∃ stmt capSeg, HasForwardCapacityBeforeHash tr stmt capSeg := by
+  obtain ⟨p, _hp, pairIdx, hpair, _hidx0, hlt, hhash, hperm, hcap⟩ :=
+    e_time_h_honest_raw_forward_capacity_witness_of_not_E
+      (tr := tr) h (state := state) (S := S) hTime
+  let capSeg : Vector U SpongeSize.C :=
+    Vector.drop (p.1.inputState[0]'(by
+      rw [p.1.inputState_length_eq_outputState_length_succ]
+      exact Nat.succ_pos _)) SpongeSize.R
+  let jPerm : Fin tr.length := ⟨(p.2.2 pairIdx).val, lt_trans hlt p.2.1.isLt⟩
+  have hhash_get : tr[p.2.1] =
+      (⟨Sum.inl p.1.stmt, capSeg⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+    have hget := hhash
+    rw [List.getElem?_eq_getElem p.2.1.isLt] at hget
+    exact Option.some.inj hget
+  have hperm_get : tr[jPerm] =
+      (⟨Sum.inr (Sum.inl p.1.inputState[pairIdx]),
+        p.1.outputState[pairIdx.val]'hpair⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+    have hget := hperm
+    rw [List.getElem?_eq_getElem jPerm.isLt] at hget
+    exact Option.some.inj hget
+  refine ⟨p.1.stmt, capSeg, p.2.1, hhash_get, jPerm, hlt,
+    p.1.inputState[pairIdx], p.1.outputState[pairIdx.val]'hpair, hperm_get, Or.inr hcap⟩
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -616,10 +676,12 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_no_prior
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_not_redundant
 #print axioms DuplexSpongeFS.Sponge316.E_of_base_hash_after_forward_capacity
+#print axioms DuplexSpongeFS.Sponge316.E_of_base_hasForwardCapacityBeforeHash
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_no_prior_of_lt
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_first_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_capacity_witness_of_not_E
+#print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest
