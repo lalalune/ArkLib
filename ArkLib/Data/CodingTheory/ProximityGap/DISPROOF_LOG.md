@@ -5093,3 +5093,23 @@ on the branch-count program's objects; (ii) the contracted-fold upgrade at full-
 contractions (two-prime side) now has its target lemma. The window {2^j} is SPARSE
 (only k+1 exponents for a 2^{m−k}-resolution conclusion — exponentially fewer than the
 full window): the valued law is stronger than its subset shadow.
+
+### O126 — CONTRACTED MULTIPLICITY RIGIDITY: the first formal constraint on the branch objects
+
+Two theorems (axiom-clean, 0 sorry; my lane):
+
+* `contraction_fiber_sum` — power sums of S at 2^s-scaled exponents equal the
+  multiplicity-weighted power sums of the 2^s-contraction (the fiber filters partition
+  S; per-fiber terms are constant).
+* `contracted_multiplicity_invariant` — **for a set with the scaled 2-power window, the
+  contraction's fiber-count function is invariant on exponent classes mod 2^(m−s−k)** —
+  O125 applied to the integer multiplicity vector that the contraction lays over the
+  domain.
+
+THE MEANING: at every depth s of the 2-adic tower, a windowed set's fold-multiplicity
+profile is COSET-CONSTANT — the branch-count program's central objects (how mass
+distributes over contracted domains) now carry a machine-checked rigidity law. The
+program's two doors now have: the valued law (O125), the multiplicity rigidity (O126),
+the all-words fold/mass/window laws (O56–O59), and the complete subset theory — the
+branch-count question is surrounded on every side by formal structure, with the count
+distribution itself the remaining open core.
