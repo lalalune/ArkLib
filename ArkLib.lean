@@ -1518,6 +1518,7 @@ import ArkLib.ToMathlib.CurveFamilyRoundConsumers
 import ArkLib.ToMathlib.CurveFamilyZLinear
 import ArkLib.ToMathlib.CurveHenselDatumProducers
 import ArkLib.ToMathlib.CurveHenselSupply
+import ArkLib.ToMathlib.CurvePlaceReadingSupply
 import ArkLib.ToMathlib.CurveSeriesTruncReading
 import ArkLib.ToMathlib.CyclotomicPatternInjectivity
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
