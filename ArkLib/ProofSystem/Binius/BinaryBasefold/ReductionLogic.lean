@@ -598,7 +598,7 @@ theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
   exact cast_heq _ x
 
 set_option maxHeartbeats 5000000 in
-omit [CharP L 2] [SampleableType L] in
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 theorem commitStep_inr_transport_heq
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
@@ -617,7 +617,8 @@ theorem commitStep_inr_transport_heq
     (h_embed ▸ transcript.messages ⟨0, rfl⟩)).trans ?_
   simp
 
-omit [CharP L 2] [SampleableType L] in
+set_option maxHeartbeats 5000000 in
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
 
 This proves that when we add a new oracle via `snoc_oracle`, the result matches what the verifier
@@ -698,7 +699,7 @@ private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply
     funext y
     dsimp only [commitStepLogic, commitStepHEq, commitStepLogic_embed, commitStepLogic_embedFn,
       Function.Embedding.coeFn_mk, OracleStatement, pSpecCommit, Message]
-    simp only [hj, dif_neg, not_false_eq_true, eqRec_eq_cast, cast_cast]
+    simp only [eqRec_eq_cast, cast_cast]
     simpa using (cast_fun_cast_arg_apply (hαβ := h_domain_j) (f := newOracle) y)
 
 omit [CharP L 2] [SampleableType L] in
