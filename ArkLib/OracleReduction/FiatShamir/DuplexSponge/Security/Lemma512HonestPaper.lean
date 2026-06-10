@@ -612,6 +612,37 @@ theorem hasPermCapacityBeforeForwardOutputPaper_removeRedundant_of_first
   firstPermNatPaper_removeRedundant tr.length tr le_rfl (firstPermNatPaper_of_first h)
 
 
+/-- **The reshaped keystone (paper semantics)**: a raw first-occurrence permutation-capacity
+collision forces the paper capacity-collision event `E_p` — every direction/side combination of
+the transported prior witness lands in one of `capacitySegmentDupPerm`'s disjuncts. -/
+theorem e_p_of_hasFirstPermCapacityBeforeForwardOutputPaper
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasFirstPermCapacityBeforeForwardOutputPaper tr) :
+    BadEventDSPaper.E_p tr := by
+  have hbase := hasPermCapacityBeforeForwardOutputPaper_removeRedundant_of_first tr h
+  obtain ⟨jCur, curIn, curOut, hcur, jPrev, hlt, prevIn, prevOut, hprev, hcap⟩ := hbase
+  unfold BadEventDSPaper.E_p BadEventDSPaper.capacitySegmentDupPerm
+  refine ⟨jCur, curOut.capacitySegment, ⟨curIn, curOut, hcur, rfl⟩, ?_⟩
+  rcases hprev with hf | hi
+  · rcases hcap with hout | hin
+    · -- prior forward, output side: disjunct 2
+      exact Or.inr (Or.inl ⟨jPrev, hlt, prevIn, prevOut, hf, hout⟩)
+    · -- prior forward, input side: disjunct 4
+      exact Or.inr (Or.inr (Or.inr (Or.inl ⟨jPrev, le_of_lt hlt, prevIn, prevOut, hf, hin⟩)))
+  · rcases hcap with hout | hin
+    · -- prior inverse, output side: disjunct 5
+      exact Or.inr (Or.inr (Or.inr (Or.inr ⟨jPrev, le_of_lt hlt, prevOut, prevIn, hi, hout⟩)))
+    · -- prior inverse, input side: disjunct 3
+      exact Or.inr (Or.inr (Or.inl ⟨jPrev, le_of_lt hlt, prevOut, prevIn, hi, hin⟩))
+
+/-- The reshaped keystone, composed into the combined paper bad event `E`. -/
+theorem e_of_hasFirstPermCapacityBeforeForwardOutputPaper
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasFirstPermCapacityBeforeForwardOutputPaper tr) :
+    BadEventDSPaper.E tr :=
+  Or.inl (Or.inr (Or.inl (e_p_of_hasFirstPermCapacityBeforeForwardOutputPaper tr h)))
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -625,3 +656,5 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_forward_of_no_prior
 #print axioms DuplexSpongeFS.Sponge316.hasFirstPermCapacityBeforeForwardOutputPaper_current_not_redundant
 #print axioms DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_removeRedundant_of_first
+#print axioms DuplexSpongeFS.Sponge316.e_p_of_hasFirstPermCapacityBeforeForwardOutputPaper
+#print axioms DuplexSpongeFS.Sponge316.e_of_hasFirstPermCapacityBeforeForwardOutputPaper
