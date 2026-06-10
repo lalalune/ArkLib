@@ -104,10 +104,11 @@ def WholeZkVMEndToEndClaim (I : WholeZkVMInterfaces) (A : WholeZkVMAssumptions I
     exists validTrace : I.VmTrace,
       A.vmExecutionValid publicInput validTrace
 
-/-- The template is a Prop-level checklist, not a proved zkVM theorem. A concrete
-project closes this by replacing each field with an actual theorem. -/
-def WholeZkVMResidual (I : WholeZkVMInterfaces) : Prop :=
-  exists A : WholeZkVMAssumptions I, WholeZkVMEndToEndClaim I A
+-- `WholeZkVMResidual` (∃ A, WholeZkVMEndToEndClaim I A) was deleted in the proof-debt grind:
+-- zero in-tree consumers, and VACUOUS as a Prop — the claim's conclusion
+-- (∃ validTrace, vmExecutionValid publicInput validTrace) is directly witnessed by its own
+-- hypotheses (trace, A.vmExecutionValid publicInput trace), so any degenerate `A` satisfies it.
+-- The interface structures above remain as the documentation template.
 
 end ZkVMBoundary
 end ArkLib
