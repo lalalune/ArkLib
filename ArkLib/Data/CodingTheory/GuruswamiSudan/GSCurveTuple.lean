@@ -217,6 +217,45 @@ theorem curve_tuple_of_hammingDist {n k L : ℕ} (ωs : Fin n ↪ F) (f : Fin L 
     exact ⟨hi.1, fun hne => hi.2 hne.symm⟩
   omega
 
+/-! ## The ℓ-ary S2 chain: GS existence and divisibility for the curve fold
+
+The in-tree GS engine (`gs_existence` / `gs_divisibility`) is **fold-agnostic**: it is
+stated over an arbitrary field with an arbitrary received word.  The `L`-ary analogues of
+`gs_existence_over_ratfunc` / `gs_divisibility_over_ratfunc` are therefore one-line
+instantiations at `K = RatFunc F` with received word the curve fold `∑ⱼ Zʲ·fⱼ`. -/
+
+open Polynomial.Bivariate in
+/-- **Hab25 §3 S2, ℓ-ary — GS interpolation over `K = F(Z)` for the curve fold.**  A
+nonzero GS interpolant `Q ∈ K[X][Y]` of bounded `(1, k−1)`-weighted degree vanishing to
+multiplicity `≥ m` at every lifted point `(ω_i, ∑ⱼ Zʲ·fⱼ i)` — the `L`-ary
+`gs_existence_over_ratfunc`, by the fold-agnostic engine `GuruswamiSudan.gs_existence`. -/
+theorem gs_existence_curve {n L : ℕ} (k m : ℕ) (ωs : Fin n ↪ F) (f : Fin L → Fin n → F)
+    (hk : 1 < k) (hn : n ≠ 0) (hm : 1 ≤ m) :
+    ∃ Q : (RatFunc F)[X][Y],
+      GuruswamiSudan.Conditions k m (gs_degree_bound k n m)
+        (liftedDomain ωs) (curveFold f) Q := by
+  classical
+  exact GuruswamiSudan.gs_existence (m := m) k n (liftedDomain ωs) (curveFold f) hk hn hm
+
+open Polynomial.Bivariate in
+/-- **`K = F(Z)`-level divisibility for the curve fold (ℓ-ary S1 at the generic level).**
+Every degree-`< k` codeword polynomial over `K` within the GS Johnson radius of the
+`L`-ary curve fold divides the curve interpolant — the `L`-ary
+`gs_divisibility_over_ratfunc`. -/
+theorem gs_divisibility_curve {n L : ℕ} (k m : ℕ) (ωs : Fin n ↪ F) (f : Fin L → Fin n → F)
+    (hk : k + 1 ≤ n) (hm : 1 ≤ m)
+    (p : ReedSolomon.code (liftedDomain ωs) k)
+    {Q : (RatFunc F)[X][Y]}
+    (hQ : GuruswamiSudan.Conditions k m (gs_degree_bound k n m)
+      (liftedDomain ωs) (curveFold f) Q)
+    (h_dist :
+      (hammingDist (curveFold f)
+          (fun i => (ReedSolomon.codewordToPoly p).eval ((liftedDomain ωs) i)) : ℝ) / n <
+        gs_johnson k n m) :
+    X - C (ReedSolomon.codewordToPoly p) ∣ Q := by
+  classical
+  exact GuruswamiSudan.gs_divisibility (m := m) hk hm p hQ h_dist
+
 end GuruswamiSudan.OverRatFunc
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -225,3 +264,5 @@ end GuruswamiSudan.OverRatFunc
 #print axioms GuruswamiSudan.OverRatFunc.curve_tuple_unique
 #print axioms GuruswamiSudan.OverRatFunc.curve_tuple_of_agreement
 #print axioms GuruswamiSudan.OverRatFunc.curve_tuple_of_hammingDist
+#print axioms GuruswamiSudan.OverRatFunc.gs_existence_curve
+#print axioms GuruswamiSudan.OverRatFunc.gs_divisibility_curve
