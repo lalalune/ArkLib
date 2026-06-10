@@ -80,6 +80,6 @@ theorem firstMessage_perfectCompleteness (hInit : NeverFail init) :
     (oSpec := oSpec) (Statement := Statement R pp) (OStatement := OracleStatement R pp)
     (Witness := Witness R pp) (init := init) (impl := impl)
     (oRelIn := Bricks.spartanRelIn R pp) hInit
-  exact Reduction.completeness_relOut_mono (fun x hx => hx) h
+  exact Reduction.completeness_relOut_mono init impl (fun x hx => hx) h
 
 end Spartan.Spec
