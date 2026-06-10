@@ -8,6 +8,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IncrementalHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDistance
 import CompPoly.Fields.Binary.Tower.Prelude
 
 /-!
@@ -1169,23 +1170,19 @@ lemma not_jointProximityNat_of_not_jointProximityNat_evenOdd_split
         exact hRes₁'
 
 set_option maxHeartbeats 8000000 in
--- This theorem expands nested `preTensorCombine`, `interleaveWordStack`, and fold definitions.
-/-- **One fold step on preTensorCombine = affine line evaluation on even/odd split.**
-Given `f_i : S^i → L` and its preTensorCombine WordStack `U` of height `2^(steps+1)`,
-using the **even/odd split** (LSB-first, see `splitEvenOddRowWiseInterleavedWords`):
-`U_even[j] = U[2j]`, `U_odd[j] = U[2j+1]`. Folding dimension `i` first gives:
-```
-⋈|preTensorCombine(i+1, steps, destIdx, fold(f_i, r_new))
-  = affineLineEvaluation(⋈|U_even, ⋈|U_odd, r_new)
-``` -/
-lemma fold_preTensorCombine_eq_affineLineEvaluation_split
+-- The pointwise split bridge expands nested folds and binary-row preTensorCombine definitions.
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+-- Pointwise row helper for the split bridge. Keeping this separate avoids a huge proof term for
+-- the public row-stack equality.
+private lemma fold_preTensorCombine_eq_affineLineEvaluation_split_apply
     (i : Fin ℓ) (steps : ℕ) [NeZero steps] {midIdx destIdx : Fin r}
     (h_midIdx : midIdx.val = i.val + 1)
     (h_destIdx : destIdx.val = i.val + (steps + 1))
     (h_destIdx_le : destIdx ≤ ℓ)
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       ⟨i, by omega⟩)
-    (r_new : L) :
+    (r_new : L) (rowIdx : Fin (2 ^ steps))
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx) :
     let h_midIdx_lt_ℓ : midIdx.val < ℓ := by
       have := NeZero.pos steps; omega
     let U := preTensorCombine_WordStack (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
@@ -1204,13 +1201,10 @@ lemma fold_preTensorCombine_eq_affineLineEvaluation_split
       (destIdx := destIdx)
       (h_destIdx := by simp [midIdx_fin_ℓ]; omega)
       (h_destIdx_le := h_destIdx_le) (by exact fold_1_f)
-    interleaveWordStack V =
-      affineLineEvaluation (F := L)
-        (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new := by
+    V rowIdx y = affineLineEvaluation (F := L) U_even U_odd r_new rowIdx y := by
   dsimp only
-  funext y rowIdx
-  unfold interleaveWordStack affineLineEvaluation preTensorCombine_WordStack
-  simp only [Matrix.transpose_apply, Pi.add_apply, Pi.smul_apply]
+  unfold affineLineEvaluation preTensorCombine_WordStack
+  simp only [Pi.add_apply, Pi.smul_apply]
   rw [splitEvenOddRowWiseInterleavedWords_fst_apply
     (u := fun rowIdx : Fin (2 ^ (steps + 1)) =>
       iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -1250,24 +1244,32 @@ lemma fold_preTensorCombine_eq_affineLineEvaluation_split
     (i := ⟨i, by omega⟩) (destIdx := midIdx)
     (h_destIdx := h_midIdx) (h_destIdx_le := by omega)
     (f := f_i) (r_new := r_new)]
-  rw [iterated_fold_linear_combination (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
-    𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := midIdx) (steps := steps) (destIdx := destIdx)
-    (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
-    (f₀ := fold (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+  conv_lhs =>
+    rw [iterated_fold_linear_combination (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
       𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨i, by omega⟩) (destIdx := midIdx)
-      (h_destIdx := h_midIdx) (h_destIdx_le := by omega) (f := f_i) (r_chal := 0))
-    (f₁ := fold (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
-      𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨i, by omega⟩) (destIdx := midIdx)
-      (h_destIdx := h_midIdx) (h_destIdx_le := by omega) (f := f_i) (r_chal := 1))
-    (a := 1 - r_new) (b := r_new) (r_chal := bitsOfIndex (L := L) rowIdx)]
-  simp [smul_eq_mul]
+      (i := midIdx) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+      (f₀ := fold (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+        𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (destIdx := midIdx)
+        (h_destIdx := h_midIdx) (h_destIdx_le := by omega) (f := f_i) (r_chal := 0))
+      (f₁ := fold (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+        𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (destIdx := midIdx)
+        (h_destIdx := h_midIdx) (h_destIdx_le := by omega) (f := f_i) (r_chal := 1))
+      (a := 1 - r_new) (b := r_new) (r_chal := bitsOfIndex (L := L) rowIdx)]
+  simp only [smul_eq_mul]
 
-omit [SampleableType L] in
-/-- Row-stack form of `fold_preTensorCombine_eq_affineLineEvaluation_split`. -/
-lemma fold_preTensorCombine_eq_affineLineEvaluation_split_rows
+-- This theorem expands nested `preTensorCombine` and fold definitions.
+/-- **One fold step on preTensorCombine = affine line evaluation on even/odd split.**
+Given `f_i : S^i → L` and its preTensorCombine WordStack `U` of height `2^(steps+1)`,
+using the **even/odd split** (LSB-first, see `splitEvenOddRowWiseInterleavedWords`):
+`U_even[j] = U[2j]`, `U_odd[j] = U[2j+1]`. Folding dimension `i` first gives:
+```
+preTensorCombine(i+1, steps, destIdx, fold(f_i, r_new))
+  = affineLineEvaluation(U_even, U_odd, r_new)
+``` -/
+lemma fold_preTensorCombine_eq_affineLineEvaluation_split
     (i : Fin ℓ) (steps : ℕ) [NeZero steps] {midIdx destIdx : Fin r}
     (h_midIdx : midIdx.val = i.val + 1)
     (h_destIdx : destIdx.val = i.val + (steps + 1))
@@ -1295,16 +1297,41 @@ lemma fold_preTensorCombine_eq_affineLineEvaluation_split_rows
       (h_destIdx_le := h_destIdx_le) (by exact fold_1_f)
     V = affineLineEvaluation (F := L) U_even U_odd r_new := by
   dsimp only
-  have h_interleaved := fold_preTensorCombine_eq_affineLineEvaluation_split
-    (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
-    𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := i) (steps := steps) (midIdx := midIdx) (destIdx := destIdx)
-    (h_midIdx := h_midIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-    (f_i := f_i) (r_new := r_new)
   funext rowIdx y
-  have hpoint := congrFun (congrFun h_interleaved y) rowIdx
-  simpa [interleaveWordStack, affineLineEvaluation, Matrix.transpose_apply,
-    Pi.add_apply, Pi.smul_apply] using hpoint
+  exact
+    fold_preTensorCombine_eq_affineLineEvaluation_split_apply
+      (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+      𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (midIdx := midIdx) (destIdx := destIdx)
+      (h_midIdx := h_midIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f_i := f_i) (r_new := r_new) rowIdx y
+
+omit r 𝔽q β γ_repetitions [NeZero r] [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 [SampleableType L] hdiv in
+lemma interleaveWordStack_affineLineEvaluation
+    {A : Type*} [AddCommMonoid A] [Module L A]
+    {κ ι : Type*} (U₀ U₁ : WordStack (A := A) κ ι) (r : L) :
+    interleaveWordStack (affineLineEvaluation (F := L) U₀ U₁ r) =
+      affineLineEvaluation (F := L)
+        (interleaveWordStack U₀) (interleaveWordStack U₁) r := by
+  ext y row
+  rfl
+
+omit r 𝔽q β γ_repetitions [NeZero r] [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 [SampleableType L] hdiv in
+lemma affineLineEvaluation_interleave_splitEvenOdd_fin1_eq_multilinearCombine
+    {A : Type*} [AddCommMonoid A] [Module L A] {ι : Type*}
+    (U : WordStack (A := A) (Fin (2 ^ 1)) ι) (r : L) :
+    (fun y => affineLineEvaluation (F := L)
+        (interleaveWordStack (splitEvenOddRowWiseInterleavedWords (ϑ := 0) U).1)
+        (interleaveWordStack (splitEvenOddRowWiseInterleavedWords (ϑ := 0) U).2)
+        r y (0 : Fin (2 ^ 0))) =
+      multilinearCombine (F := L) U (fun (_ : Fin 1) => r) := by
+  ext y
+  simp [splitEvenOddRowWiseInterleavedWords, affineLineEvaluation, interleaveWordStack,
+    multilinearCombine, multilinearWeight, smul_eq_mul]
 
 section Fin1Interleaving
 variable {A : Type*} [DecidableEq A] {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -1543,6 +1570,7 @@ lemma fold_eq_multilinearCombine_preTensorCombine_step1
   simp [multilinearCombine, multilinearWeight]
 
 set_option maxHeartbeats 8000000 in
+-- This induction peels nested folds and rewrites the even/odd stack bridge; the proof term is large.
 /-- **`iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
 
 For any challenge vector `r_chal`, the `steps`-fold of `f_i` equals the multilinear combination
@@ -1591,11 +1619,11 @@ lemma iterated_fold_eq_multilinearCombine_preTensorCombine
           (h_destIdx_le := h_destIdx_le)]
         rfl
       · haveI : NeZero n := ⟨hn⟩
-        have h_dest_le_nat : i.val + (n + 1) ≤ ℓ := by
-          rw [← h_destIdx]
-          exact h_destIdx_le
         let midIdx_fin_ℓ : Fin ℓ := ⟨i.val + 1, by
           have hn_pos : 0 < n := Nat.pos_of_ne_zero hn
+          have h_dest_le_nat : i.val + (n + 1) ≤ ℓ := by
+            rw [← h_destIdx]
+            exact h_destIdx_le
           omega⟩
         let midIdx : Fin r := ⟨midIdx_fin_ℓ.val, by
           exact lt_r_of_le_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -1627,7 +1655,7 @@ lemma iterated_fold_eq_multilinearCombine_preTensorCombine
         have hsplit :
             V = affineLineEvaluation (F := L) U_even U_odd (r_chal 0) := by
           simpa [V, U, U_even, U_odd, midIdx_fin_ℓ, fold_1_f] using
-            fold_preTensorCombine_eq_affineLineEvaluation_split_rows
+            fold_preTensorCombine_eq_affineLineEvaluation_split
               (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
               𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
               (i := i) (steps := n) (midIdx := midIdx) (destIdx := destIdx)
@@ -1642,54 +1670,6 @@ lemma iterated_fold_eq_multilinearCombine_preTensorCombine
           multilinearCombine (F := L) (affineLineEvaluation U_even U_odd (r_chal 0))
             (fun j : Fin n => r_chal j.succ)
         rw [hsplit]
-
-/-- **Residual: fiberwise closeness lifts to interleaved-word proximity (Lemma 4.22).**
-
-If `f_i` is fiberwise close to `BBF_Code i` (`2 · Δ₀(f_i, C^{(i)}) < d_{i+steps}`, i.e. within the
-unique decoding radius), then its `preTensorCombine` interleaved word is within the unique decoding
-radius of the interleaved destination code. This is the close-branch dual of the far-branch
-`lemma_4_21_interleaved_word_UDR_far`.
-
-The natural proof decodes `f_i` to its UDR codeword `g ∈ C^{(i)}`, observes that
-`⋈|preTensorCombine g` is an interleaved codeword (`preTensorCombine_is_interleavedCodeword_of_codeword`),
-and bounds the interleaved Hamming distance `Δ₀(⋈|preTensorCombine f_i, ⋈|preTensorCombine g)` by
-`Δ₀(f_i, g) ≤ UDR` via the fiber-projection structure of the fold. The fiber-projection distance
-step is the remaining port-debt; exposed here as a typeclass hypothesis in the convention of
-`FoldPreservesBBFCodeMembershipResidual`. -/
-class PreTensorCombineJointProximityResidual : Prop where
-  holds : ∀ (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-    (_h_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := by
-        simpa using h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)),
-    jointProximityNat
-      (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
-        Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))
-      (u := preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i)
-      (Code.uniqueDecodingRadius (C := (BBF_Code 𝔽q β
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
-          Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L))))
-
-variable [PreTensorCombineJointProximityResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-
-/-- **Fiberwise closeness lifts to interleaved-word proximity (Lemma 4.22).**
-Reduction to the explicit `PreTensorCombineJointProximityResidual` hypothesis. -/
-lemma preTensorCombine_jointProximityNat_of_fiberwiseClose
-    (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-    (h_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := by
-        simpa using h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)) :
-    jointProximityNat
-      (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
-        Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))
-      (u := preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i)
-      (Code.uniqueDecodingRadius (C := (BBF_Code 𝔽q β
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
-          Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))) :=
-  PreTensorCombineJointProximityResidual.holds i steps h_destIdx h_destIdx_le f_i h_close
 
 /- COMMENTED OUT: `fiberwiseClose_fold_implies_affineLineEval_close`.
 This intermediate bridge does not elaborate against the current `fiberwiseClose` surface: its
@@ -1816,6 +1796,143 @@ lemma fiberwiseClose_fold_implies_affineLineEval_close
     exact h_joint
 -/
 
+/-- Positive-step close-to-affine-line bridge for the incremental far case.
+
+After one fresh fold from `i` to `midIdx`, fiberwise closeness of the remaining `s`-step
+pre-tensor stack implies that the affine line through the even/odd split of the original
+`s+1` stack is within the destination unique decoding radius. -/
+lemma fiberwiseClose_fold_implies_affineLineEval_close_pos
+    (i : Fin ℓ) (s : ℕ) [NeZero s]
+    {midIdx destIdx : Fin r}
+    (h_midIdx : midIdx.val = i.val + 1)
+    (h_destIdx : destIdx.val = i.val + (s + 1))
+    (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (r_new : L)
+    (h_fw_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := midIdx) (steps := s) (destIdx := destIdx)
+      (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+      (f := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (destIdx := midIdx) (h_destIdx := h_midIdx)
+        (h_destIdx_le := by omega) f_i r_new)) :
+    let U := preTensorCombine_WordStack 𝔽q β i (s + 1)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) f_i
+    let U_even := (splitEvenOddRowWiseInterleavedWords (ϑ := s) U).1
+    let U_odd := (splitEvenOddRowWiseInterleavedWords (ϑ := s) U).2
+    let C_dest : Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L) :=
+      BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
+    Δ₀(affineLineEvaluation (F := L)
+      (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new,
+      (C_dest ^⋈ (Fin (2 ^ s)))) ≤
+    Code.uniqueDecodingRadius (C := C_dest) := by
+  classical
+  intro U U_even U_odd C_dest
+  have h_midIdx_lt_ℓ : midIdx.val < ℓ := by
+    have hs_pos : 0 < s := Nat.pos_of_neZero s
+    omega
+  let midIdx_ℓ : Fin ℓ := ⟨midIdx.val, h_midIdx_lt_ℓ⟩
+  let fold_1_f :=
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (destIdx := midIdx) (h_destIdx := h_midIdx)
+      (h_destIdx_le := by omega) f_i r_new
+  have h_joint := preTensorCombine_jointProximityNat_of_fiberwiseClose 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := midIdx_ℓ) (steps := s) (destIdx := destIdx)
+    (h_destIdx := by simp only [midIdx_ℓ]; omega)
+    (h_destIdx_le := h_destIdx_le)
+    (f_i := fold_1_f)
+    (h_close := by simpa [fold_1_f] using h_fw_close)
+  have h_eq := fold_preTensorCombine_eq_affineLineEvaluation_split 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (steps := s) (midIdx := midIdx) (destIdx := destIdx)
+    (h_midIdx := h_midIdx) (h_destIdx := h_destIdx)
+    (h_destIdx_le := h_destIdx_le)
+    (f_i := f_i) (r_new := r_new)
+  have h_eq' :
+      interleaveWordStack
+          (preTensorCombine_WordStack 𝔽q β
+            (i := midIdx_ℓ) (steps := s) (destIdx := destIdx)
+            (h_destIdx := by simp only [midIdx_ℓ]; omega)
+            (h_destIdx_le := h_destIdx_le) fold_1_f) =
+        affineLineEvaluation (F := L)
+        (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new := by
+    have h_eq0 := congrArg interleaveWordStack h_eq
+    rw [interleaveWordStack_affineLineEvaluation] at h_eq0
+    simp only [U, U_even, U_odd, fold_1_f, midIdx_ℓ] at h_eq0 ⊢
+    exact h_eq0
+  unfold jointProximityNat at h_joint
+  rw [← h_eq']
+  simpa [C_dest, midIdx_ℓ, fold_1_f] using h_joint
+
+set_option maxHeartbeats 8000000 in
+/-- Final-step close-to-affine-line bridge for the incremental far case.
+
+When no remaining pre-tensor steps are left, the affine line has one interleaved row. A UDR-close
+single folded word is therefore exactly a close `Fin 1` interleaved word. -/
+lemma UDRClose_fold_implies_affineLineEval_close_zero
+    (i : Fin ℓ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1)
+    (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (r_new : L)
+    (h_udr_close : UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := destIdx) (h_i := h_destIdx_le)
+      (f := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (destIdx := destIdx)
+        (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f_i r_new)) :
+    let U := preTensorCombine_WordStack 𝔽q β i 1
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) f_i
+    let U_even := (splitEvenOddRowWiseInterleavedWords (ϑ := 0) U).1
+    let U_odd := (splitEvenOddRowWiseInterleavedWords (ϑ := 0) U).2
+    let C_dest : Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L) :=
+      BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
+    Δ₀(affineLineEvaluation (F := L)
+      (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new,
+      (C_dest ^⋈ (Fin (2 ^ 0)))) ≤
+    Code.uniqueDecodingRadius (C := C_dest) := by
+  classical
+  intro U U_even U_odd C_dest
+  change Δ₀(affineLineEvaluation (F := L)
+      (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new,
+      interleavedCodeSet (κ := Fin 1) C_dest) ≤
+    Code.uniqueDecodingRadius (C := C_dest)
+  rw [distFromCode_fin1_eq]
+  have h_fold_eq_mc :
+      fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := ⟨i, by omega⟩) (destIdx := destIdx)
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f_i r_new =
+        multilinearCombine (F := L) U (fun (_ : Fin 1) => r_new) := by
+    have h :=
+      fold_eq_multilinearCombine_preTensorCombine_step1 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (destIdx := destIdx) (h_destIdx := h_destIdx)
+        (h_destIdx_le := h_destIdx_le) (f_i := f_i) (r_new := r_new)
+    simpa [U] using h
+  have h_affine_eq_mc :
+      (fun y => affineLineEvaluation
+          (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new y
+          (0 : Fin (2 ^ 0))) =
+        multilinearCombine (F := L) U (fun (_ : Fin 1) => r_new) := by
+    simpa [U_even, U_odd] using
+      affineLineEvaluation_interleave_splitEvenOdd_fin1_eq_multilinearCombine
+        (L := L) (U := U) (r := r_new)
+  have h_affine_eq_fold :
+      (fun y => affineLineEvaluation
+          (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new y
+          (0 : Fin (2 ^ 0))) =
+        fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := ⟨i, by omega⟩) (destIdx := destIdx)
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f_i r_new := by
+    rw [h_affine_eq_mc, ← h_fold_eq_mc]
+  rw [h_affine_eq_fold]
+  exact (UDRClose_iff_within_UDR_radius 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx h_destIdx_le
+    (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f_i r_new)).1 h_udr_close
+
 /-
 #### **Case 2: FiberwiseFar (Incremental)**
 
@@ -1844,7 +1961,7 @@ The argument builds `U := preTensorCombine(midIdx_i, ϑ-k, …, fold_k_f)`, uses
 (`lemma_4_21_interleaved_word_UDR_far`) and the even/odd split non-closeness
 (`not_jointProximityNat_of_not_jointProximityNat_evenOdd_split`), the fold↔affine-line bridge
 (`fold_preTensorCombine_eq_affineLineEvaluation_split`), the close→proximity lift (Lemma 4.22,
-`PreTensorCombineJointProximityResidual`), and the DG25 RS interleaved affine proximity gap
+`preTensorCombine_jointProximityNat_of_fiberwiseClose`), and the DG25 RS interleaved affine proximity gap
 (`affineProximityGap_RS_interleaved_contrapositive`). The remaining gap is the `s = 0` boundary of
 the close→affine-line bridge `fiberwiseClose_fold_implies_affineLineEval_close`, where the post-split
 `fiberwiseClose` `[NeZero steps]` requirement is incompatible with the `ϑ - (k+1) = 0` step count.
@@ -1943,7 +2060,6 @@ lemma prop_4_21_2_incremental_bad_event_probability
 #print axioms prop_4_21_2_case_1_fiberwise_close_incremental
 #print axioms fold_preTensorCombine_eq_affineLineEvaluation_split
 #print axioms fold_eq_multilinearCombine_preTensorCombine_step1
-#print axioms PreTensorCombineJointProximityResidual
 #print axioms preTensorCombine_jointProximityNat_of_fiberwiseClose
 #print axioms Prop4212Case2Residual
 #print axioms prop_4_21_2_case_2_fiberwise_far_incremental
