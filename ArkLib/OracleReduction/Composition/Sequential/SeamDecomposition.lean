@@ -138,4 +138,25 @@ def fstCast {Stmt₂ : Type} (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pS
     (k : Fin (m + 1)) (stmt : Stmt₁) (wit : Wit₁) :
     (Prover.fstCast P c).runToRound k stmt wit = (Prover.fst P).runToRound k stmt wit := rfl
 
+/-- **Phase-1 seam prover recast with an arbitrary output witness type.** The witness-carrying
+generalisation of `fstCast`: identical rounds to `Prover.fst P`, but emitting a fixed dummy claim
+`c : Stmt₂` *and* a fixed dummy output witness `w : Wit₂`.  Needed for the round-by-round *knowledge*
+seam, where the inner per-round bound quantifies over `pSpec₁`-provers whose output witness has the
+intermediate type `Wit₂` (not the trivial `Unit` of `fstCast`).  As with `fstCast`, the recast leaves
+`runToRound` unchanged (`fstCastK_runToRound`). -/
+def fstCastK {Stmt₂ Wit₂ : Type} (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (c : Stmt₂) (w : Wit₂) :
+    Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁ where
+  PrvState := (Prover.fst P).PrvState
+  input := (Prover.fst P).input
+  sendMessage := (Prover.fst P).sendMessage
+  receiveChallenge := (Prover.fst P).receiveChallenge
+  output := fun _ => pure (c, w)
+
+/-- `Prover.fstCastK P c w` runs the *same rounds* as `Prover.fst P`, hence the same `runToRound`. -/
+@[simp] theorem fstCastK_runToRound {Stmt₂ Wit₂ : Type}
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (c : Stmt₂) (w : Wit₂)
+    (k : Fin (m + 1)) (stmt : Stmt₁) (wit : Wit₁) :
+    (Prover.fstCastK P c w).runToRound k stmt wit = (Prover.fst P).runToRound k stmt wit := rfl
+
 end Prover

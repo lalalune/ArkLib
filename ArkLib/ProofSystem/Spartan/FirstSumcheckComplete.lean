@@ -36,6 +36,7 @@ assembles the **completeness transfer** for that lift:
 -/
 
 open MvPolynomial OracleComp Sumcheck
+open scoped NNReal
 
 namespace Spartan.Spec
 
@@ -130,14 +131,14 @@ theorem firstSumcheck_rbrKnowledgeSoundness
         rbrKnowledgeError) :
     (firstSumcheckReduction pp oSpec).verifier.rbrKnowledgeSoundness init impl
       (firstSumcheckRelIn (R := R) pp) (firstSumcheckRelOut (R := R) pp) rbrKnowledgeError := by
-  haveI := firstSumcheckCoherent (R := R) pp oSpec
-  exact OracleVerifier.liftContext_rbr_knowledgeSoundness
-    (V := (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier)
-    (stmtLens := firstSumcheckOracleLens pp oSpec)
-    (outerRelIn := firstSumcheckRelIn (R := R) pp)
-    (innerRelIn := Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1)))
-    (outerRelOut := firstSumcheckRelOut (R := R) pp)
-    (innerRelOut := Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (Fin.last pp.ℓ_m))
-    h_inner
+  -- NOTE: honest `sorry`. Same obstruction as `secondSumcheck_rbrKnowledgeSoundness`
+  -- (see SecondSumcheckComplete.lean): the route via
+  -- `OracleVerifier.liftContext_rbr_knowledgeSoundness` requires an
+  -- `Extractor.Lens.IsKnowledgeSound` instance whose `lift_knowledgeSound` field is a bare
+  -- relation implication (inner round-0 cube-sum ⇒ outer R1CS satisfiability) that is FALSE with
+  -- `Unit` witnesses, plus a `LiftContextRBRKnowledgeSound` instance whose sole field is
+  -- definitionally this goal (vacuity trap). Needs a relation/lens refactor, not a lemma.
+  -- The completeness theorems above are fully proven and unaffected.
+  sorry
 
 end Spartan.Spec

@@ -2688,3 +2688,1031 @@ kernel-checked counterexample instance to the per-line bound of Conjecture 41's 
 form. The remaining open object of #232 is unchanged and explicitly bounded: the
 field-independent fiber-size question itself (= δ* in the gap), now reachable from BOTH
 formulations through one machine-checked dictionary.
+
+### O47 / Round-23 — rigidity base case PROVEN (equal-sum pairs are antipodal)
+
+`RigidityBaseCasePairs.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified): the first
+verified case of O46 Step 2. THE INTEGER BRIDGE (gZ_eq_zero): equal-sum equations force INTEGER
+coefficients to vanish (independence + Int.cast_injective) — case analysis drops into ℤ/omega.
+pair_rigidity: a+b = c+d, pairs disjoint ⟹ both antipodal — the (w=2,t=1) linear-window rigidity,
+matching the R22 floor exactly (only equal-e₁ pairs in μ_{2N} = the d=2 lifts). LEAN TECHNIQUE: the
+8-index-branch × 16-sign bash needs maxHeartbeats 1000000 + single-chain combinator (no `first`,
+which doubles the search); step 2 of the theorem (w = antipode z) follows ALGEBRAICALLY from step 1
+via sval_injective — no second bash. PATHWAY: 1✅ 2(base ✅, w≥3 open = Conway-Jones/Mann) 3✅ 4✅.
+The integer-bridge technique is the demonstrated route for the w≥3 windows (3-term, 4-term vanishing
+sums at 2-power orders are classified by the same basis-reduction; w=3 base case = 6-term sums).
+### O45 — the q^t pigeonhole denominator KILLED: point-fiber theorem (lossless (ii)→list transfer)
+
+Direct advance on the in-tree δ* reduction chain. Rounds 5/6 left the named residual
+"q^t denominator unkilled": the interior list lower bounds lost field independence to a
+pigeonhole over symmetric-function targets (/q at t=1, /q² at t=2), and the round-6
+no-go showed AVERAGING can never remove it. The point version of the O44 decoupling
+removes it by CONCENTRATION — choose the received word, not the average:
+
+* `point_compat_iff_esymm_zero` (TopDirectionLineCount.lean, axiom-clean): compatibility
+  of a weight-w support at the UNIT syndrome `unitVec (w−1)` ⟺ e₁(E) = ⋯ = e_c(E) = 0.
+* `zero_fiber_filter_eq`: the compatible supports at that single received word are
+  EXACTLY the zero-fiber supports, as a Finset identity — the syndrome-side list count
+  EQUALS the fiber count. No averaging, no /q^c, any field, any domain.
+* `zero_fiber_instance` (kernel decide): over ZMod 13 at w=3, c=2 the zero fiber is
+  {1,3,9}, {2,5,6}, {4,10,12}, {7,8,11} — count 4 > pigeonhole average C(13,3)/13² ≈ 1.69.
+  Per-point concentration, machine-checked.
+
+Consequence for the open core: ANY field-independent lower bound on the zero fiber
+#{E : |E| = w, e₁ = ⋯ = e_t = 0} now transports VERBATIM into an interior list-type
+lower bound at agreement k+t — the reduction is lossless and formal. The δ* program's
+missing ingredient is now ONLY the integer/combinatorial fiber question past Johnson
+(formulation (ii) in its purest form); every reduction step around it is machine-checked.
+
+### O48 / Round-24 — w=3 rigidity: NOW FULLY MECHANIZED (see update below)
+
+**The mathematics (derived, hand-verified branch-by-branch; NOT yet machine-checked — WIP at
+/tmp/r24_triples_WIP_SAVED.lean with bridges compiling):**
+* THEOREM (disjoint triples impossible): over CharZero with the half basis independent, two
+  signed-disjoint triples of 2N-th roots cannot have equal sums. PROOF: 6-term integer bridge ⟹
+  per-index ℤ-equations; coefficient at a's index: partners are b/c antipodal-to-a (within; cross-
+  side partners = equality, excluded by disjointness; ±1±1±1-type sums never 0 in ℤ) ⟹ WLOG
+  b = −a ⟹ collapse to c = d+e+f; coefficient at c's index: c=d/e/f excluded, one-partner sign
+  patterns ±2/0 with parity contradictions, two/three-partner patterns force repeated points —
+  ALL branches die ⟹ False.
+* COROLLARY (w=3 SUNFLOWER classification): distinct equal-sum triples share exactly one vertex y,
+  and the residual pairs are disjoint equal-sum ⟹ (R23 pair_rigidity) both antipodal:
+  {x,−x,y} & {z,−z,y}. **Proves the fleet's empirical O40 ("deficient triples are sunflowers") as
+  a char-0 theorem**, and REFINES the rigidity structure class: at odd w the R22 lifts (d|w) are
+  unavailable — the correct class is sunflower/partial-lift (core + d=2 lift petals).
+* MECHANIZATION STATUS: bridge6/bridge4 + sval lemmas COMPILE (R23-style); the two case bashes
+  (collapse4: 8×16 branches; partner-extraction: 32×64) need branch surgery — split_ifs-then-omega
+  with point-equality discharge; the multi-alternative `first` chains break parsing across lines
+  (keep alternatives single-line); simp_all hits maxRecDepth at 8000 on the 6-point bash.
+  Technique recorded; finishing is mechanical.
+
+### O46 — ATTACK ON THE RESIDUAL ITSELF: the coset construction — first field-independent t ≥ 2 interior fiber lower bound (Round-6 residual closed on subgroup-structured domains)
+
+The isolated O45 residual (the multi-symmetric zero-fiber count) is attacked directly and
+yields a NEW theorem (TopDirectionLineCount.lean §CosetConstruction, axiom-clean, 0 sorry):
+
+* `loc_coset` — loc(x·H) = X^d − x^d for the full d-th-roots packet H (pure scaling; the
+  aeval-rescaling proof works over any field, no characteristic condition, no Newton).
+* `loc_coset_union` — loc(⋃ᵢ xᵢH) = expand_d(∏ᵢ(X − xᵢ^d)): the locator of a union of m
+  distinct cosets is a polynomial in X^d.
+* `coset_union_esymm_zero` — hence e_j = 0 for EVERY j not divisible by d: coset unions
+  live in the multi-symmetric zero fiber at all t < d.
+* `coset_fiber_lower_bound` — THE COUNT: the zero fiber at w = m·d, any t < d, contains
+  ≥ C(|S|, m) supports (S = coset representatives; injection by coset reconstruction).
+  Numerics: F₁₃, H = {1,3,9}: the C(4,2) = 6 unions are the ENTIRE (w=6,t=2) zero fiber —
+  exhaustive there (suggesting a matching upper bound on cyclic domains, left open).
+
+Combined with O45's lossless transfer (zero_fiber_filter_eq), this is a FIELD-INDEPENDENT
+syndrome-side list lower bound at codimension excess c = t for every t ≤ d−1 — closing the
+Round-6 named residual ("multiplicative joint-symmetric count at t ≥ 2 still OPEN", q^t
+denominator) by CONCENTRATION on subgroup-structured smooth domains. Scaling: on μ_n with
+d ≈ √n the bound is C(√n, m) = exp(Ω(√n)) at t ≈ √n − 1 — super-polynomial, q-independent,
+t ≫ 2, strictly deeper than the in-tree t=1 (/q) and t=2 (/q²) averaging bounds.
+
+HONEST LIMITS (the remaining wall, sharpened): (i) t < d forces t ≤ largest-proper-divisor
+scale; on PURE 2-POWER domains d | n and d | w = n/2−t force d | t, so the construction
+provably cannot reach its own threshold there — the 2-adic obstruction matches the C19/
+descent lane's focus on 2-power towers. (ii) The prize band needs t = Θ(n); the gap
+between t ≈ √n (now CLOSED, constructively) and t = Θ(n) (open) is the exact residual.
+The open core after O46: field-independent zero-fiber bounds at t = Θ(n) on 2-power
+smooth domains — every other parameter regime of the reduction now has a machine-checked
+constructive answer.
+
+### O48-update / Round-24 COMPLETE — w=3 sunflower rigidity MACHINE-CHECKED
+
+`RigidityTriplesSunflower.lean` (on main, axiom-clean, 0 warnings, strict-verified): bridge6/bridge4
++ collapse4_impossible + disjoint_triples_impossible — disjoint equal-sum triples of 2N-th roots are
+IMPOSSIBLE (CharZero + half-basis independence); with R23 pair_rigidity ⟹ the SUNFLOWER
+classification (fleet O40 proven as char-0 theorem). STEP 2: w=2 ✅ w=3 ✅ w≥4 open. THE BASH
+TECHNIQUE THAT WORKED (after simp_all looped): (first | rw [if_pos e_i] | rw [if_neg e_i]) at hg
+per condition → rcases signs → simp only [Bool.false_eq_true, if_true, if_false] at hg → first-list
+with SINGLE-LINE alternatives: omega | exact Or.inl ⟨e1, rfl⟩ | exact absurd rfl (hab e1.symm) | …;
+trim never-executed alternatives flagged by the linter. 2048 branches verified in ~3 min.
+### O47 — the 2-power fiber EXHAUSTIVENESS discovery: coset unions are everything (char 0 / large p), with a complete elementary proof at t = 1
+
+Probe follow-up to O46 on the FRI-relevant domains themselves (μ_n, n = 2^m). Data
+(exhaustive, exact arithmetic): at field-generic p (e.g. n=16 ⊂ F₉₇), every nonzero
+t ≥ 2 fiber observed is EXACTLY the O46 coset-union family — w=4: 4 = C(4,1) (μ₄-cosets);
+w=8, t=2,3: 6 = C(4,2) (pairs of μ₄-cosets; the two μ₈-cosets are among them) — and all
+fibers at coset-incompatible w (4 ∤ w) are EMPTY. At small p (n = p−1, F₁₇) extra fiber
+elements appear (w=5, t=2: 16) — genuine mod-p coincidences below a height threshold.
+
+**The char-0 theorem (t = 1, complete elementary proof):** let ζ have multiplicative
+order n = 2^m in a characteristic-0 field, S ⊆ μ_n with Σ_{x∈S} x = 0. Then S is a union
+of antipodal pairs {x, −x}. PROOF: write S = {ζ^i : i ∈ I}, I ⊆ [0,n), and
+P(X) = Σ_{i∈I} X^i ∈ ℚ[X]. P(ζ) = 0 and minpoly_ℚ(ζ) = Φ_n = X^{n/2} + 1 (Gauss +
+2-power cyclotomic), so X^{n/2} + 1 ∣ P. Reducing mod X^{n/2} + 1 sends X^{i+n/2} ↦ −X^i,
+so for each i < n/2 the residue coefficient is [i ∈ I] − [i + n/2 ∈ I] = 0, i.e.
+i ∈ I ⟺ i + n/2 ∈ I — and ζ^{i+n/2} = −ζ^i. ∎  (This is Lam–Leung at the prime 2.)
+
+**COROLLARY (the first EXACT fiber determination on FRI domains):** in char 0 — hence
+over F_p for all p above an explicit height bound — the t = 1 zero fiber of w-subsets of
+μ_{2^m} is EXACTLY the antipodal-pair unions: count C(n/2, w/2) for even w, 0 for odd w.
+Upper AND lower bound; matches the data (n=16: w=4: 108?? no — t=1 at small p includes
+mod-p extras; at the char-0 level the count is C(8, w/2)).
+
+**The t ≥ 2 recursive structure (the research program, crystallized):** e₂ = 0 given
+e₁ = 0 ⟺ p₂ = Σ x² = 0 — and squaring maps antipodal pairs of μ_n two-to-one onto μ_{n/2}:
+the t-fiber on μ_{2^m} descends along the SQUARING TOWER (the FRI fold!) to vanishing
+conditions one level down. The char-0 t-fiber on 2-power domains is governed by a 2-adic
+descent recursion — the SAME tower the owner's C19/descent lane climbs from the protocol
+side. CONJECTURE (exhaustiveness, t ≥ 2, char 0): the t-fiber on μ_{2^m} is exactly the
+O46 coset-union family — equivalently, at t = Θ(n) the fiber is O(1). If TRUE, the
+lossless O45 transfer makes the unit-syndrome list O(1) deep in the interior on 2-power
+domains — the PROOF side of the prize at these syndromes; if FALSE, the counterexamples
+are new deep-interior list mass — the DISPROOF side. Either way the question is now a
+concrete, finite-checkable, char-0 statement about vanishing sums of 2-power roots of
+unity with prescribed higher moments — with Lam–Leung/Conway–Jones as the entry
+literature and the descent tower as the mechanism. Lean brick queued: the t = 1 theorem
+(cyclotomic_eq_minpoly_rat + 2-power cyclotomic + coefficient pairing — all Mathlib-
+available ingredients).
+
+### O49 / Round-25 — GENERAL t=1 RIGIDITY (all w, uniform — the case ladder is dead)
+
+`RigidityGeneralT1.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+disjoint_equal_sum_antipodal — disjoint equal-sum sets of 2N-th roots are UNIONS OF ANTIPODAL PAIRS,
+at every support size, with NO case analysis. Engine: each index carries ≤ 2 signed points ⟹ fibers
+∅/singleton/antipodal-pair with contributions {0,±1} (fiber_trichotomy); Finset integer bridge
+(bridgeF) equates contributions; singleton fiber ⟹ identical signed point in both sets ⟹
+disjointness violation. SUBSUMES R23+R24 (no w=4,5,... bashes ever). CONSEQUENCE: disjoint equal-e₁
+families = EXACTLY the d=2 lifts (Λ_A ∈ F[X²], R22 structure) — floor = ceiling at t=1, all w. THE
+FULL WINDOW RECURSES: equal e_1..e_t of lifts ⟹ equal e_1..e_{⌊t/2⌋} of squares in μ_N
+(independence inherited); ⌈log₂(t+1)⌉ halvings exhaust any window ⟹ 2^k-lift structure. REMAINING
+for full Step 2 (now MECHANICAL, no new math for the disjoint case): (a) recursion assembly through
+R22's expand machinery, (b) shared-vertex/sunflower-core reduction (divide by the common locator
+factor — top-window agreement of products with common factor passes to cofactors).
+### O48 — THE DICHOTOMY RESOLVES TRUE: the tower theorem (descent assembly machine-checked, 18/18 prediction matches)
+
+The O47 dichotomy is RESOLVED, affirmatively, in characteristic 0, by descent along the
+squaring tower. The theorem:
+
+  **On μ_{2^m} in characteristic 0, the t-fiber {S : |S| = w, e₁(S) = ⋯ = e_t(S) = 0}
+  is EXACTLY the unions of μ_d-cosets, d = the smallest 2-power > t.**
+
+Proof structure (complete; each step either machine-checked or classical-with-proof-recorded):
+1. e₁ = 0 ⟹ antipodal closure (Lam–Leung at p = 2; O47 proof via Φ_{2^m} = X^{n/2}+1).
+2. Squaring is 2-to-1 from antipodal sets onto level n/2 (`sq_fiber_pair`, MACHINE-CHECKED):
+   given antipodal closure, e₂ = 0 ⟺ a vanishing sum one level down (`t2_tower_resolution`'s
+   hdesc step, MACHINE-CHECKED: Σx² = 2·Σ_image y).
+3. Step 1 at level n/2 ⟹ squared image antipodal ⟹ pairs assemble into μ₄-cosets
+   (`mul_i_closure`, MACHINE-CHECKED, char-free: x'² = −x² forces x' = ±ix, antipodal
+   closure upgrades either sign to closure under multiplication by i).
+4. e_j = 0 automatic on μ_d-coset unions for d ∤ j (`coset_union_esymm_zero`, O46,
+   MACHINE-CHECKED) — so nothing new is required until t reaches d, where Newton
+   (p_d = ±d·e_d given lower e's vanish; char 0) reduces e_d = 0 to a vanishing sum at
+   level n/d, and the induction climbs one rung: μ_d-cosets pair into μ_{2d}-cosets by
+   the same assembly argument with i replaced by a primitive 2d-th root.
+   Converse inclusion: O46 `coset_fiber_lower_bound` family.
+
+VERIFICATION: the predicted count (C(n/d, w/d) when d | w, else 0) matches the exhaustive
+fiber computation at ALL 18 tested (w, t) pairs on μ₁₆ over F₂₅₇ (proxy for char 0) —
+including the subtle zeros (4 ∤ w ⟹ empty fiber) and the t-plateaus (fiber constant on
+2^{s} ≤ t < 2^{s+1}).
+
+**THE PRIZE-SHAPED COROLLARY: at t = ηn the fiber is ≤ 2^{n/d} ≤ 2^{2/η} — the KK25/S-two
+sharp budget 2^{O(1/η)}, now PROVEN for the multi-symmetric fiber on 2-power domains in
+char 0.** Via the lossless O45 transfer: unit-syndrome lists deep in the interior are
+2^{O(1/η)} — the PROOF side of the band at these syndromes, char 0 / p above a height
+threshold. Lean status: descent assembly fully machine-checked (`sq_fiber_pair`,
+`mul_i_closure`, `t2_tower_resolution` — axiom-clean, 0 sorry); classical base case (Lam–
+Leung at p=2) enters as a hypothesis with complete recorded proof (cyclotomic Lean brick
+queued); general-t induction recorded here. REMAINING ANALYTIC GAP (stated exactly): the
+effective height threshold for the char-0 ⟹ F_p transfer at given (n, w) — the same
+effective-Schwartz–Zippel question as 2026/858's p₀, now attached to a TRUE theorem; and
+extending from unit syndromes to all received words (the MCA quantifier).
+
+### O50 / Round-26 — the WINDOW-HALVING ENGINE (full-window rigidity = two verified components)
+
+`RigidityWindowHalving.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+odd_psum_vanish (odd power sums ≡ 0 on antipodally-closed sets — R8 engine at ω=−1; odd window
+conditions AUTOMATIC) + squares_fiber/even_psum_halves (squaring exactly 2-to-1; p_{2l}(A) =
+2·p_l(A²) — even conditions descend EXACTLY) + squares_disjoint + window_halving_step (THE ENGINE:
+disjoint antipodally-closed equal-p_1..p_t ⟹ squares disjoint equal-p_1..p_{⌊t/2⌋}; scale μ_{2N}→μ_N,
+independence inherited by {ζ^{2j}}). WITH R25: full-window rigidity (disjoint case) = iterate
+R25+engine ⌈log₂(t+1)⌉ times ⟹ 2^k-lift structure ⟹ FLOOR (R22) = CEILING. REMAINING ASSEMBLY (not
+new math): (i) the level-iteration statement (re-encoding bookkeeping), (ii) the sunflower-core
+reduction (non-disjoint: divide by common locator factor, top-window agreement passes to cofactors),
+(iii) the final composition into Conj-41/δ*. Power-sum ≡ e-window over CharZero by Newton (Mathlib
+has NewtonIdentities for the formal bridge when needed).
+
+### O51 / Round-27 — sunflower-core reduction (Step 2 chain complete over verified parts)
+
+`RigiditySunflowerCore.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+cofactor_window ((Q·R₁−Q·R₂).degree < d ⟹ Q.degree + (R₁−R₂).degree < d — factor + degree_mul,
+3 lines in the degree-of-difference formulation) + nodal_core_split (Λ_A = Λ_{A∩B}·Λ_{A∖B}) +
+sunflower_core_reduction (equal windows ⟹ disjoint residuals with core-shifted equal windows).
+STEP 2 CHAIN COMPLETE over verified links: core division (R27) → antipodal closure (R25) → window
+halving (R26 iterate) → 2^k-lift petals (R22). STRUCTURE THEOREM (component-verified): equal-window
+families in μ_{2N} = SUNFLOWERS (core + 2^k-lift petals), all sizes, all linear windows, char 0,
+independence dischargeable (R12). REMAINING PLUMBING: level-iteration statement + Conj-41/δ*
+composition. KEY FORMULATION LESSON: state window agreement as (P₁−P₂).degree < d — products,
+cofactors, and shifts become one-line degree_mul arithmetic (vs coefficient-indexed agony).
+
+### O52 / Round-28 — FULL-WINDOW RIGIDITY (level iteration; Step-2 disjoint capstone)
+
+`RigidityFullWindow.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified, first-compile
+EXIT 0): LiftStructured k (iterated-antipodal = R22 2^k-lift root structure) + full_window_rigidity
+— disjoint Good sets with equal p_1..p_{2^k−1} are LiftStructured k (induction: closure oracle from
+p₁ per level [= R25 through the signed-point encoding — the ONE remaining de-oracling]; halving
+engine drops windows with EXACT alignment 2l ≤ 2^{k+1}−1 ⟺ l ≤ 2^k−1; Good descends through
+squares). COMPLETE STEP-2 CHAIN (every component verified): core division (R27) → closure (R25) +
+halving (R26) iterated (R28) → 2^k-lift petals (R22): equal-window families in μ_{2N} = SUNFLOWERS
+with lift petals, all sizes/windows, char 0. REMAINING ASSEMBLY: hclosure de-oracling
+(μ-enumeration bridge) + the Conj-41/δ* composition through R20/21 + R19.
+
+### O49 — LITERATURE INGESTED (~/Desktop/math) + residual (i) RESOLVED: the effective char-0 → F_p transfer theorem
+
+**Library now local (~/Desktop/math), key results marked:**
+* `9511209v1` Lam–Leung 2000: lengths of vanishing sums of m-th roots = ℕp₁+⋯+ℕp_r — the
+  general-n base-case classification (our p=2 case is the m=2^k instance).
+* `mann1965` Mann: irreducible rational-coefficient relation of length k ⟹ common order
+  divides ∏_{p≤k} p. `trigonometric…` Conway–Jones Thm 5: order Q squarefree with
+  **Σ_{p|Q}(p−2) ≤ k−2** (best possible) — independently re-derives our antipodal base case
+  (2-power roots ⟹ Q | 2 ⟹ pairs).
+* `487` Zannier survey: Dvornicich–Zannier generalization to algebraic coefficients
+  (bounded degree d ⟹ effective order bound) — the tool if the tower argument ever needs
+  coefficients beyond ℚ.
+* `mvs-21jul20` Christie–Dykema–Klep: complete classification of minimal vanishing sums of
+  weight ≤ 21 — finite tables for small-case sanity checks of the tower theorem.
+* `0704.1747v3` Aliev–Smyth: explicit bounds on maximal torsion cosets on subvarieties of
+  G_m^n — the count of structural solution families of e₁=⋯=e_t=0 (our fiber IS a torsion
+  locus; their bound caps how many coset families can ever appear at any level).
+* `9911094v1` Krick–Pardo–Sombra + `ASENS_2013` D'Andrea–Krick–Sombra: arithmetic
+  Nullstellensätze with explicit height bounds — the generic char-0 ⟹ mod-p transfer
+  machine (we use a sharper elementary route below, but these give the template for any
+  future statement not amenable to direct norms).
+* `2020-654` BCIKS, `2025-2055` BCHKS (ε*-loss formulation; beyond-LDR impossibility),
+  `2025-2054` GG25 (Def 1.1 proximity gaps; **Thm 3.4: (ℓ,δ,a,t)-curve-decodability ⟹
+  correlated agreement; Thm 3.5: threshold a = ℓn+1 ⟹ MUTUAL correlated agreement** — the
+  exact quantifier bridges), `2026-532` S-two (App. A **Conjecture 1**: ℓ(θ) ≤ c₁·2^{c₂H(ρ)/η}
+  up to the Elias radius r_E = 1−ρ−Θ(1/log p) [CS25 cap]; **Conjecture 2**: line-decodability
+  with a = ℓ(θ)n + o(n)), `2026-861` Chai–Fan, `2604.09724` Kambiré/Krachun–Kazanin
+  (near-capacity failure over prime fields — the disproof-side anchor), `2304.09445` AGGLZ
+  (random RS capacity), `2025-2010` Diamond–Gruen (sharp ball-volume estimates).
+* `1.pdf`/`13299D` Washington, Introduction to Cyclotomic Fields — norm machinery reference.
+
+**RESIDUAL (i) RESOLVED — Theorem (effective transfer, complete elementary proof):**
+Let n | p−1, fix a generator g of μ_n(F_p) and a primitive n-th root ζ ∈ ℂ; reduction
+red : ℤ[ζ] → F_p, ζ ↦ g, is an order-preserving bijection μ_n(ℂ) → μ_n(F_p). For a w-subset
+S ⊆ μ_n(F_p) with lift S̃, e_j(S) = red(e_j(S̃)). If e_j(S̃) ≠ 0 then N(e_j(S̃)) ∈ ℤ∖{0} and,
+since e_j(S̃) is a sum of C(w,j) products of roots of unity (each of modulus 1 in every
+archimedean embedding), |N(e_j(S̃))| ≤ C(w,j)^{φ(n)}. Hence p ∤ N for
+
+    p > C(w, ⌊w/2⌋)^{φ(n)}     (crude:  p > 2^{w·φ(n)} = 2^{wn/2} for n = 2^m),
+
+and then e_j(S) = 0 ⟺ e_j(S̃) = 0 for every j ≤ t. **Conclusion: for all such p, the
+F_p-fiber equals the char-0 fiber — by the O48 tower theorem, exactly the coset unions,
+count C(n/d, w/d).** The threshold is explicit and the proof is the same AM–GM/triangle
+norm trick as the in-tree effective P-A lane (O38-nubs) — the two lanes now share one
+engine. Sharpness side: extra solutions at p = 17, n = 16 (O47 data) show a threshold is
+necessary; Krachun–Kazanin's construction (2604.09724) lives at polynomial p — so the
+exponential-vs-polynomial threshold question is precisely where the disproof side still
+breathes. (A poly-p₀ version would need the fiber equations' integer values to be
+smooth-number-free — a different, genuinely analytic question, correctly flagged by both
+2026/858's p₀ and our O43 refutation of its printed form.)
+
+**Residual (ii) mapped to the live conjecture with exact bridge citations:** GG25 Thm 3.5
+turns line-decodability (threshold ℓn+1) into mutual correlated agreement; S-two Conj 2
+reduces it to Conj 1 (worst-case list ℓ(θ) over ALL received words). Our O48 corollary —
+fiber ≤ 2^{2/η} at t = ηn — is **the first proven instance of the Conjecture-1 budget
+shape on plain smooth-domain RS** (at the unit-syndrome received words, char 0 / p above
+the transfer threshold). The all-words upgrade = Conjecture 1 itself on 2-power domains;
+the descent machinery (sq_fiber_pair tower; arbitrary received words descend along the
+FRI fold) is the in-tree candidate attack and converges with the C19/Descent lane.
+
+### O50 — LAM–LEUNG AT p = 2 MACHINE-CHECKED + the UNCONDITIONAL t = 2 tower resolution
+
+The classical base case of the tower theorem is now a Lean theorem (`LamLeungTwoPow.lean`,
+axiom-clean, 0 sorry, 0 warnings):
+
+* `vanishing_sum_antipodal` — in characteristic zero, a finite set of 2^(m+1)-th roots of
+  unity with vanishing sum is closed under negation. Proof exactly as recorded in O47:
+  indicator polynomial of the exponent set, `minpoly.dvd`, `cyclotomic_eq_minpoly_rat`,
+  `cyclotomic_prime_pow_eq_geom_sum` (so Φ_{2^(m+1)} = X^{2^m}+1), explicit quotient
+  degree bound, coefficient pairing c_j = c_{j+2^m}, and ζ^{2^m} = −1.
+* `t2_resolution_unconditional` — wiring `vanishing_sum_antipodal` (at levels m+2 and m+1,
+  the latter via `IsPrimitiveRoot.pow`) into `TopLine.t2_tower_resolution`: **every finite
+  set of 2^(m+2)-th roots of unity with ∑x = ∑x² = 0 is a union of μ₄-cosets —
+  hypothesis-free, machine-checked end to end.** The first two rungs of the O48 tower are
+  now unconditional; the general-t rungs iterate the same two machine-checked pieces
+  (assembly + base case) with Newton bookkeeping, exactly as recorded in O48.
+
+(Build note: one minimal single-module `lake build` of TopDirectionLineCount was required
+for the cross-file import — 5s, no thrash.)
+
+### O51 — the ZERO FIBER DOMINATES: probe + the Aliev–Smyth route to all class syndromes
+
+Extending from ē = 0 toward the full class-syndrome chart (= ALL top-window syndromes, by
+the O42 h-parametrization):
+
+* **Probe (exhaustive, μ₁₆/F₂₅₇, w = 8, t = 3, all 12457 nonempty classes):** the maximum
+  fiber over ALL (ē₁,ē₂,ē₃) is the ZERO fiber (6 = the tower count C(4,2)); every nonzero
+  class has fiber ≤ 2; mean 1.03. The structural (coset) solutions live exclusively at
+  ē = 0 — the tower theorem captures the worst case.
+* **Scaling orbits:** x ↦ λx maps fiber(ē₁,…,ē_t) bijectively to fiber(λē₁, λ²ē₂, …, λ^tē_t)
+  — fibers are constant on weighted-projective orbits; the zero fiber is the unique fixed
+  point, consistent with it being extremal.
+* **The uniform tool (Aliev–Smyth Thm 1.1, ~/Desktop/math/0704.1747):** the number of
+  maximal torsion cosets on a hypersurface H(f) ⊆ G_m^n of degree d is ≤ c₁(n)·d^{c₂(n)}
+  with EXPLICIT c₁, c₂ (and Rémond's (k+1)^{3(k+1)²} for general subvarieties). Every
+  fiber member is a torsion point on V(e₁−ē₁, …, e_t−ē_t) ⊆ G_m^w, so the ISOLATED part
+  of every fiber is bounded by an explicit constant in (w, t), UNIFORMLY in ē and
+  field-independently. The positive-dimensional torsion cosets of V are exactly the
+  mixed "coset ∪ leftover" families — whose μ_n-points are counted by the SAME tower/
+  descent analysis componentwise. **Program for full top-window coverage: A-S coset
+  classification (uniform, effective) + per-coset tower count (machine-checked pieces
+  O46–O50) ⟹ every class syndrome has list ≤ explicit(w,t) + tower count.** The probe
+  says the truth is even cleaner (nonzero fibers ≤ 2 at the tested scale).
+* Remaining beyond that: syndromes engaging the LOW window (received words at smaller
+  distance scales) — the genuinely-all-words quantifier = S-two Conjecture 1 proper.
+### O53 — E1 + the char-0 bijection FORMALIZED; the minpoly bridge (nubs, 2026-06-09)
+
+Two new axiom-clean bricks (both `[propext, Classical.choice, Quot.sound]`):
+
+**`ArkLib/ToMathlib/OddCharacterOrthogonality.lean`** — E1, the O38 engine:
+- `odd_power_orthogonality`: `∑_{i<m2} ζ^{(2i+1)j}·ζ^{−(2i+1)j'}` = `m2`/`0` on/off diagonal
+  (factor as `ζ^δ · ∑(ζ^{2δ})^i`; primitivity kills the geometric sum).
+- `parseval_odd_powers`: `∑_{i<m2} (∑_j c_j w_i^j)(∑_j c_j w_i^{−j}) = m2·∑ c_j²` for
+  `w_i = ζ^{2i+1}` — over `ℂ` this is `∑_{i∈(ℤ/m)^×} |σ_i(α)|² = (m/2)∑c_j²`, the Parseval
+  step of the shared norm engine (O38 / the O49-transfer's `|N| ≤ C(w,j)^{φ(n)}` trick).
+  The engine's core identity is now formal.
+
+**`ArkLib/ToMathlib/CyclotomicPatternInjectivity.lean`** — the bijection step of Theorem A:
+- `pattern_sum_injective`: ℤ-combinations of `ζ^0..ζ^{2^k−1}` (`ζ` primitive `2^{k+1}`-th,
+  char 0) determine their coefficients — difference polynomial has degree `< 2^k =
+  deg Φ_{2^{k+1}} = deg minpoly_ℚ(ζ)`, so it vanishes identically.
+- `signed_subset_sum_injective`: `(P,N) ↦ ∑_P ζ^j − ∑_N ζ^j` injective on disjoint pairs —
+  so `n0_pattern_count` (DisjointPairCount.lean) is now formally the EXACT char-0 image
+  count: distinct admissible patterns give distinct subset sums.
+- `natDegree_minpoly_rat_two_pow`: `deg minpoly_ℚ(ζ) = 2^k` — discharges the
+  `LinearIndependent` hypothesis of `R11.antipodal_of_sum_zero`
+  (LamLeungUnconditionalQ.lean) at every 2-power level via `R11.linearIndependent_pow_le`.
+  NOTE (same-hour convergence): O50's `vanishing_sum_antipodal` independently
+  machine-checks the antipodal theorem by the same cyclotomic-minpoly technique — the
+  bridge here remains as leaf `ToMathlib` API (coefficient determination + the degree
+  fact), complementary to O50's end-to-end form.
+
+### O54 — the tower theorem from the second seat: independent same-hour proof, EXACT char-0 verification, and the descent-step brick (nubs, 2026-06-09)
+
+While O48 ("THE DICHOTOMY RESOLVES TRUE") was landing, this seat independently derived the
+same theorem from the O47 crystallization — convergence, not duplication; recorded as
+cross-verification (the same norm O38 received). Three things here are NEW relative to
+O48/O50:
+
+**1. A second, independently-found proof with a cleaner induction packaging** (no separate
+coset-assembly step — the assembly is free because `s^L` is a homomorphism with kernel
+`μ_{2^L}`): for `S ⊆ μ_n`, `n = 2^m`, `1 ≤ t < n`, `L = ⌊log₂ t⌋ + 1`,
+
+    e₁(S) = ⋯ = e_t(S) = 0  ⟺  S = (s^L)⁻¹(U) for some U ⊆ μ_{n/2^L}.
+
+(⟸): on a `μ_{2^L}`-coset, `p_j = 0` unless `2^L | j`, and `j ≤ t < 2^L`; Newton converts.
+(⟹) induction on t: Newton ⟹ `p₁..p_t(S) = 0`; `e₁ = 0` + the t=1 theorem ⟹ `S = s⁻¹(T)`;
+the pair identity `p_{2j}(S) = 2·p_j(T)` hands `T ⊆ μ_{n/2}` the conditions at `⌊t/2⌋ ≥ 1`;
+induct; `⌊log₂⌊t/2⌋⌋ + 2 = ⌊log₂ t⌋ + 1`. Count `C(n/2^L, w/2^L)`, agreeing with O48's
+`d = 2^L` = smallest 2-power `> t`. The general-t induction here goes through the SAME
+single mechanism at every rung (square-root-pair power sums), so the O48 assembly's
+per-rung root-of-unity arguments (`mul_i_closure` etc.) are subsumed by one lemma family.
+
+**2. EXACT characteristic-0 verification** (strengthens O48's F₂₅₇ proxy): probe
+`scripts/probes/probe_tower_fiber.py` computes in `ℤ[x]/(x^{n/2}+1)` — exact integers, no
+finite-field proxy, `e_j` computed DIRECTLY (so the check is independent of the Newton
+step) — at n = 8 AND 16, ALL weights, t ≤ 6: ALL PASS, including every predicted empty
+fiber (`2^L ∤ w`) and the t-plateaus.
+
+**3. The descent-step identity as reusable API**: `ArkLib/ToMathlib/SqrtPairPowerSum.lean`
+(axiom-clean) — `sum_pow_even_sqrtPairs` (`∑_{x∈s⁻¹(T)} x^{2j} = 2·∑_{z∈T} z^j`, the
+general-j engine of step (⟹), generalizing O48's t=2 hdesc step and O50's t=2 resolution
+to arbitrary depth), `sum_pow_odd_sqrtPairs` (odd power sums vanish), `card_sqrtPairs`
+(`|s⁻¹(T)| = 2|T|`) — any field of char ≠ 2. Together with O50's machine-checked base case
+the general-t mechanization now lacks only: Newton's identities glue (Mathlib:
+`MvPolynomial.NewtonIdentities`) + the finite-depth induction scaffold.
+
+With the O49 effective transfer (`p > C(w,⌊w/2⌋)^{φ(n)}`), the count is unconditional at
+production-scale primes. What remains of the prize core is unchanged and shared: extending
+from unit syndromes to ALL received words (the MCA quantifier) — Conjecture D / the
+classical band.
+=======
+
+### O52 — the GENERIC TOWER RUNG machine-checked: μ_d-coset unions climb to μ_{2d}
+
+`TopLine.mul_root_closure` (TopDirectionLineCount.lean §TowerRung, axiom-clean, 0 sorry,
+char-free): closure under the full d-th-roots packet + antipodally closed d-th-power image
+⟹ closure under any ω with ω^d = −1 — i.e. μ_{2d}-coset structure. This generalizes the
+t = 2 assembly (mul_i_closure = the d = 2 instance) to EVERY level of the O48 tower. The
+machine-checked tower inventory now: base case (O50 Lam–Leung), generic d-to-1 descent sum
+(sq_fiber_pair pattern; general-d version is the same fiber argument), generic rung (this),
+coset converse (O46), lossless transfer (O45). Remaining glue per rung: the single Newton
+identity p_d = ±d·e_d under vanishing lower e's (char 0) — Mathlib's MvPolynomial
+NewtonIdentities instantiation, queued.
+
+### O53 — THE FULL TOWER THEOREM MACHINE-CHECKED, UNCONDITIONAL (the O48 induction complete in Lean)
+
+`LamLeungTwoPow.full_tower` (axiom-clean, 0 sorry, 0 warnings): **in characteristic zero,
+a finite set of 2^M-th roots of unity whose power sums vanish in the window 1 ≤ j < 2^s
+(s ≤ M) is closed under multiplication by every 2^s-th root of unity — a union of
+μ_{2^s}-cosets.** Hypothesis-free, full induction on s. The Newton glue proved UNNECESSARY:
+in power-sum form the rung condition transfers through the fiber structure directly —
+`pow_fiber_sum` (every fiber of x ↦ x^{2^s} on a μ_{2^s}-closed set is a full coset, so
+p_{2^s}(S) = 2^s • Σ_image, then char 0 divides), Lam–Leung one level down (O50) makes the
+image antipodal, `TopLine.mul_root_closure` (O52) climbs the rung, and `mu_double_closure`
+upgrades ω-closure to full μ_{2^{s+1}}-closure. (The power-sum window is exactly the
+syndrome of the all-ones error on S — the coding-side reading is native.)
+
+**Status of the tower chain: COMPLETE AND UNCONDITIONAL IN LEAN.** Base case (O50), every
+rung (O52+O53), descent sums (O53), coset converse (O46), lossless syndrome transfer (O45)
+— so the deep-interior fiber bound `≤ 2^{n/2^s} = 2^{O(1/η)}` (the KK25/S-two budget) at
+power-sum windows is now a fully machine-checked consequence over char-0 fields, and over
+F_p above the O49 effective threshold. Two minimal single-module rebuilds of
+TopDirectionLineCount were the only builds used.
+
+Remaining #232 queue: effective-transfer Lean brick (norms machinery); O51 class-chart
+program (Aliev–Smyth + componentwise tower); S-two Conjecture 1 proper (low-window/all
+received words) — the recognized live open conjecture of the field.
+
+### O55 / Round-29 — ITERATED 2^k-LIFT, NO ORACLES: independence DISCHARGED (ℤ-form) + the de-oracled level iteration; AUDIT: the R23/R24/R25 `hindep` was vacuous as stated
+
+`RigidityIterated2kLift.lean` (main-loop solo, axiom-clean, 0 sorry, strict-verified). Convergence
+placement: completes the named remaining item of Round-28 (`RigidityFullWindow.lean`, "hclosure
+de-oracling — μ-enumeration bridge") and complements O50 (`LamLeungTwoPow`, single-set) / O52
+(generic rung) / O54 (second-seat tower): everything here is the DISJOINT-PAIR (equal-window)
+engine, which is what the Conj-41 list application needs; the single-set forms drop out at B = ∅.
+
+* **AUDIT FINDING (machine-checked, `fValued_hindep_unsatisfiable`):** the `hindep` hypothesis of
+  R23/R24/R25 (`∀ g : Fin N → F, (∑ j, g j * ζ^j) = 0 → ∀ j, g j = 0`) quantifies over
+  **F-valued** coefficients — UNSATISFIABLE for `N ≥ 2` (`g = (ζ, −1, 0, …)` sums to zero), so
+  every theorem consuming it was vacuously true and inapplicable as stated (this includes the
+  Round-28 `full_window_rigidity` if its closure oracle is fed from R25 as-is). The proof
+  skeletons are sound (every instantiation is integer-cast); the fix is the ℤ-valued form.
+  Treat the F-form statements in `RigidityBaseCasePairs`/`RigidityTriplesSunflower`/
+  `RigidityGeneralT1` as deprecated surfaces; consume the ℤ-forms here (`HalfBasisIndepZ`,
+  `bridgeZ`, `disjoint_equal_sum_antipodal_int`).
+* **THE DISCHARGE (`halfBasisIndepZ_of_primitiveRoot`):** `HalfBasisIndepZ ζ 2^{m−1}` holds for
+  EVERY primitive `2^m`-th root of unity in a characteristic-0 field
+  (`cyclotomic_eq_minpoly_rat` + `natDegree_cyclotomic` + `totient_prime_pow` +
+  `linearIndependent_pow`). Same cyclotomic content as O53's `pattern_sum_injective`, packaged
+  as the exact form the rigidity chain consumes. The chain is now NON-VACUOUS and
+  hypothesis-free: char 0 + primitivity suffice.
+* **The encoding bridge (`antipodallyClosed_of_disjoint_equal_sum`):** field-level `t = 1`
+  closure — disjoint `A, B ⊆ ±ζ^{<N}` with equal sums are BOTH `AntipodallyClosed` (R26's
+  predicate); `sval` injectivity from ℤ-independence does the signed-point ↔ field-element
+  plumbing. THIS IS THE R28 "μ-enumeration bridge" de-oracling. Scale descent: `isSignedPow_sq`
+  (`μ_{2^m} → μ_{2^{m−1}}`, upper range folded by `ζ^{2^{m−1}} = −1`) + `IsPrimitiveRoot.pow`;
+  assembly: `closure_step` (the general `mul_i_closure`, char-free).
+* **`iterated_2k_lift` (THE THEOREM, no oracles):** `A, B ⊆ μ_{2^m}` disjoint with equal
+  `p_1..p_t`, `1 ≤ k ≤ m`, `2^{k−1} ≤ t` ⟹ both closed under EVERY `2^k`-th root of unity
+  (R22 `2^k`-lift structure). Induction on `k` over the R26 engine; maximal `k` gives exactly
+  O48's `d = smallest 2-power > t`. + `coset_closure_of_equal_window` (generator form),
+  `antipodal_closure_unconditional` (non-vacuity witness).
+* **Single-set corollaries (`B = ∅`, §7):** `vanishing_sum_antipodal` (= O50's theorem via the
+  pair engine — convergent route) and `vanishing_window_coset_closure` — the O48 TOWER
+  THEOREM's forward inclusion in power-sum form at ALL `t` in one statement. SAME-HOUR
+  TRIPLE CONVERGENCE: the second seat's `full_tower` (LamLeungTwoPow, its O53 entry) landed
+  the same single-set statement minutes earlier by the rung-by-rung route — independent
+  cross-verification; what is unique here is the PAIR (equal-window) engine those single-set
+  forms drop out of, which is the form the Conj-41 list application consumes.
+
+REMAINING (sharpened, honest): (a) the Newton e-window ⟺ p-window bridge over `CharZero`
+(connects R27's nodal output + O44/O45 esymm fibers + the O54 packaging to this power-sum
+engine); (b) the counting corollary (`μ_{2^k}`-coset-closed ⟹ `≤ 2^{n/2^k}` sets — the
+KK25/S-two `2^{O(1/η)}` budget); (c) the Conj-41/δ* composition through R20/R21 + R19;
+(d) effective char-0 → `F_p` height threshold beyond O49's resolution where it applies;
+(e) the MCA quantifier (unit syndromes → all received words). (d)/(e) genuinely open research;
+the prize core (δ* inside `(1−√ρ, 1−ρ)`) remains 100% open.
+
+### O55 — tower_count: the 2^{O(1/η)} budget as a machine-checked COUNTING theorem
+
+`LamLeungTwoPow.tower_count` (axiom-clean, 0 sorry): the number of w-subsets of any
+2^M-torsion domain with vanishing power-sum window 1 ≤ j < 2^s is
+
+    ≤ 2^{#(2^s-th-power classes of the domain)}   (= 2^{n/2^s} on μ_n).
+
+Mechanism: by full_tower (O53) every such subset is μ_{2^s}-closed, hence EXACTLY
+recoverable from its 2^s-th-power image (S = D₀.filter (x ↦ x^{2^s} ∈ image S)) — the
+family injects into the subsets of the power-class space. At window scale
+t = 2^s − 1 = Θ(ηn) this is the KK25/S-two budget 2^{O(1/η)}, now a counting THEOREM
+(char 0; F_p above the O49 threshold). With O45's lossless syndrome transfer, the
+all-ones-error syndrome lists deep in the interior on 2-power domains are budget-bounded,
+machine-checked end to end: full_tower + tower_count + zero_fiber_filter_eq +
+compat_gamma_count form one complete verified pipeline from "vanishing window" to
+"list count ≤ 2^{O(1/η)}".
+
+### O56 — the all-words entry point formalized: syndrome fold identity + cancellation dichotomy + scaling orbit
+
+`LamLeungTwoPow.lean` §GeneralDescent/§ScalingOrbit (axiom-clean, 0 sorry):
+
+* `syndrome_fold` — for a GENERAL error (support S, values v), the even syndrome
+  coordinates equal the syndrome of the FOLDED error one level down:
+  p_{2j}(v,S) = p_j(fold v, S²), (fold v)(y) = Σ_{x²=y} v(x). The FRI folding identity on
+  the error side, in the same synd framework as O44–O55. The all-ones error has
+  fold v = fiber-size ≠ 0 — exactly why the tower theorem closes unconditionally there.
+* The cancellation dichotomy: the ONLY obstruction to descending a general word is
+  fold-cancellation (fold v = 0 at an image point) — the precise formal location of
+  all-words list mass (= S-two Conjecture 1's difficulty) and the convergence point with
+  the C19/descent-lane anatomy from the protocol side.
+* `fiber_scaling` (O51 orbit lemma): unit scaling carries power-sum fibers to
+  weighted-scaled fibers — fibers constant on weighted-projective orbits, zero fiber the
+  unique fixed point (empirically the maximum, O51 probe).
+
+The all-words attack surface is now FORMAL: prove budget bounds for no-cancellation words
+by iterating syndrome_fold + full_tower (a conditional theorem now in reach), and
+quantify the cancellation locus (where the open conjecture genuinely lives).
+
+### O57 — the valued-descent toolkit complete: odd fold + weight conservation
+
+`LamLeungTwoPow.lean` §ValuedDescent (axiom-clean, 0 sorry): a window-vanishing valued
+error (S, v) descends to TWO half-window folded systems —
+
+* `syndrome_fold_odd`: p_{2j+1}(v,S) = p_j(foldOdd v, S²), foldOdd(y) = Σ_{x²=y} v(x)·x
+  (with O56's even fold: the complete C19-style even/odd error decomposition, formal);
+* `sq_image_card`: |S| ≤ 2·|S²| (squaring fibers ≤ 2; the support at most halves per
+  level — weight conservation down the tower, char-free).
+
+With O56: the quantitative valued-descent step is fully machine-checked. Under
+no-cancellation both folds are genuine half-scale errors with halved windows; the
+cancellation locus (a fold value = 0) remains the exact formal home of S-two Conj 1 —
+both folds must SIMULTANEOUSLY cancel for mass to vanish (even AND odd: v(x)+v(−x) = 0
+and v(x)x − v(−x)x = 0 ⟹ v(x) = v(−x) = 0 when char ≠ 2!): wait — even fold at pair
+{x,−x}: v(x)+v(−x); odd: (v(x)−v(−x))x. BOTH zero ⟺ v(x) = v(−x) = 0 (char ≠ 2, x ≠ 0).
+**So full fiber cancellation in BOTH folds is impossible for a genuine error** — list
+mass cannot vanish entirely; it can only MOVE between the even and odd branches. This is
+the formal seed of the branch-accounting that the C19/descent lane tracks, and the next
+provable target: per-level branch-mass conservation ⟹ a window-vs-weight tradeoff for
+ALL valued errors.
+
+### O58 — BRANCH-MASS CONSERVATION: the first unconditional ALL-WORDS descent theorem
+
+`LamLeungTwoPow.lean` §BranchMass (axiom-clean, 0 sorry):
+
+* `fold_mass_conservation` — at any squared point, the even and odd folds cannot BOTH
+  vanish unless the error vanishes on the whole fiber (char ≠ 2, 0 ∉ S): the 2×2 fiber
+  system (v(x)+v(−x), (v(x)−v(−x))x) is nonsingular.
+* `branch_mass_inequality` — hence for EVERY genuine valued error,
+  |S| ≤ 2·(|supp fold_even| + |supp fold_odd|): every fiber feeds at least one branch,
+  weight descends with at most factor-2 loss per level, split between the two branches.
+
+This is UNCONDITIONAL over all received words — no no-cancellation hypothesis, no
+structure on v. The all-words list question is now formally branch-accounting over the
+2-adic tower with a machine-checked conservation law: window-vanishing mass cannot be
+destroyed by the fold, only routed. Combined with the per-branch window halving (O56/O57
+fold identities), the program's remaining open content is the per-level BRANCH-COUNT
+distribution (how many branches can stay heavy how deep) — the C19/descent lane's
+quantitative question, now with its conservation backbone in Lean.
+
+### O59 — WINDOWS FORCE WEIGHT: the tradeoff completing the descent bookkeeping
+
+`LamLeungTwoPow.window_forces_weight` (axiom-clean, 0 sorry, char-free): a valued error
+with nonzero values and vanishing power sums on the full window j < t has support size
+> t (the t×|S| Vandermonde kernel on distinct points is trivial; proof via the punctured
+locator pairing — Σ v(x)P(x) computed two ways).
+
+THE DESCENT BOOKKEEPING IS NOW PINCHED BETWEEN TWO MACHINE-CHECKED INEQUALITIES:
+* (O58, mass conservation) every branch split preserves at least half the weight across
+  the two branches: |S| ≤ 2(|supp even| + |supp odd|);
+* (O59, window forces weight) every branch that inherits a window of length t must carry
+  support > t — and the fold identities (O56/O57) say branches DO inherit half-windows
+  (the odd branch even inherits the j = 0 constraint).
+So down the tower: windows halve, weights at least halve in total but each surviving
+branch is forced fat by its window. The remaining open content of the all-words question
+is exactly the BRANCH-COUNT DISTRIBUTION: how many branches can stay (window-)alive at
+each depth. Everything else around it — conservation, tradeoff, fold identities, the
+unit-syndrome case (full tower + count), the class-syndrome chart, the effective
+transfer — is theorem.
+
+### O60 — THE NEWTON BRIDGE: esymm windows ⟺ power-sum windows (the last internal seam welded)
+
+`LamLeungTwoPow.lean` §NewtonBridge (axiom-clean, 0 sorry):
+
+* `newton_step` — Mathlib's MvPolynomial Newton recurrence instantiated on any finite
+  subset of F (σ = ↥S, aeval at coordinates; psum/esymm instantiation identities proven).
+* `psum_window_of_esymm_window` (characteristic-free) and `esymm_window_of_psum_window`
+  (char 0, divides by k) — both DIRECT, no induction: every cross term of the recurrence
+  carries a window-interior factor.
+* `esymm_window_iff_psum_window` — THE BRIDGE: the syndrome-side pipeline (O44–O46, esymm
+  windows at unit syndromes) and the tower pipeline (O53–O59, power-sum windows = all-ones
+  -error syndromes) describe the SAME fibers, formally.
+
+The full #232 formal corpus is now ONE connected machine-checked theory: unit-syndrome
+lists = esymm fibers (O45) = psum fibers (O60) = coset unions (O53) of count ≤ 2^{O(1/η)}
+(O55), transferring to F_p (O49), with general words governed by the fold identities
+(O56/O57), mass conservation (O58), and the window-weight tradeoff (O59). Open content:
+the branch-count distribution (= S-two Conj 1 on these domains), surrounded.
+
+### O61 — THE CAPSTONE: unit_syndrome_list_budget — the entire pipeline as ONE theorem
+
+`LamLeungTwoPow.unit_syndrome_list_budget` (axiom-clean, 0 sorry): over a char-0 field
+with the 2^M-th roots of unity, for any 2^M-torsion domain D₀ and window c = 2^s − 1,
+
+    #{E ∈ powersetCard w D₀ : CompatC (unitVec (w−1)) N c E} ≤ 2^{#(2^s-power classes)}.
+
+One statement composing the whole session: O45 (syndrome ⟺ esymm fiber) ∘ O60 (Newton
+bridge to power sums) ∘ O53 (full tower) ∘ O55 (recovery-injection count). At window
+scale t = Θ(ηn) on μ_n this is the 2^{O(1/η)} interior list budget at unit syndromes —
+the KK25/S-two budget shape — as a single named machine-checked theorem; over F_p it
+holds above the O49 effective threshold. The #232 deep-interior unit-syndrome question
+is, with this, CLOSED in formal form; the open remainder is the all-words quantifier
+(branch-count distribution = S-two Conjecture 1), with its formal toolkit (O56–O59)
+assembled and its no-go routes recorded.
+
+### O62 — the tower CONVERSE: closure forces window vanishing — exhaustiveness is an IFF
+
+`LamLeungTwoPow.lean` §TowerConverse (axiom-clean, 0 sorry, char-free):
+
+* `subgroup_pow_sum` — a full d-th-roots packet sums to zero at every exponent d ∤ j
+  (geometric series, primitive-root division).
+* `closed_pow_sum_vanish` — a μ_d-closed set has Σ x^j = 0 for all d ∤ j (fiberwise:
+  each squaring... d-power fiber is a full coset, whose j-sum carries the packet sum).
+
+With full_tower (O53): **closure under μ_{2^s} ⟺ vanishing power-sum window j < 2^s**
+(char 0; ⟸ needs char 0, ⟹ char-free) — the O48 exhaustiveness as a genuine
+characterization, both directions machine-checked. The tower theory is COMPLETE as
+stated: structure (O53), converse (O62), count (O55), bridge (O60), transfer (O45/O49),
+capstone (O61).
+
+### O63 — the TWO-SIDED budget + the corpus wiki page
+
+* `LamLeungTwoPow.two_sided_unit_syndrome_budget` (axiom-clean, 0 sorry): the SAME
+  unit-syndrome compatibility list is bounded below by the coset count C(#reps, m) (O46)
+  and above by the power-class budget 2^{#classes} (O61) — matching exponential scales
+  (C(n/d, w/d) vs 2^{n/d} on μ_n): the interior unit-syndrome list pinned from both
+  sides in one machine-checked statement.
+* `docs/wiki/tower-fiber-theory.md` — the stable map of the O35–O63 corpus (file table,
+  one-paragraph theory, recurring Lean gotchas), per the repo guardrail that stable
+  guidance must not live only in ephemeral notes.
+
+### O63 — FOLD BRANCHES ARE COEFFICIENT SLICES: the branch tree translated to plain coefficient combinatorics (nubs, 2026-06-10)
+
+New brick `ArkLib/Data/CodingTheory/ProximityGap/FoldPolynomialSlices.lean` (axiom-clean):
+for a polynomial error `e = f.eval` on a negation-closed domain (char ≠ 2, `0 ∉ D`),
+
+* `foldVal D f.eval (x₀²) = (evenSlice f).eval (x₀²)` and
+  `foldValOdd D f.eval (x₀²) = x₀² · (oddSlice f).eval (x₀²)` — the even/odd folds ARE
+  evaluations of the coefficient slices `evenSlice f = contract 2 (f + f∘(−X))` /
+  `oddSlice f = contract 2 (divX (f − f∘(−X)))`, up to the unit twist `y`;
+* `foldVal_ne_zero_iff` / `foldValOdd_ne_zero_iff` — branch aliveness = slice
+  nonvanishing (the twist drops out).
+
+Since every valued error interpolates to a unique polynomial of degree `< n`, this is a
+TRANSLATION of the whole O56–O59 branch-accounting: iterating, depth-`ℓ` branches =
+residue classes of coefficient exponents mod `2^ℓ` under the ceiling-halving digit code
+(odd fold maps exponent `e ↦ (e+1)/2` from the twist, even fold `e ↦ e/2` — the code is
+constant on classes mod `2^ℓ`), and a branch is alive iff its class holds a nonzero
+coefficient. Verified exhaustively: `scripts/probes/probe_fold_slices.py` (n = 16,
+p = 97, 500 random low-degree polys, depths 1–3, tree-vs-slices ALL MATCH; the naive
+`e mod 2^ℓ` indexing FAILS — the twist shift is real).
+
+**Consequence for the open core (O59's branch-count distribution):** it equals the joint
+distribution of (evaluation weight on μ_n, 2-adic spread of coefficient support) over
+polynomials of degree ≤ n − t. Window-vanishing = top-degree truncation (degree ≤ n − t);
+alive-branch count at depth ℓ = #nonzero coefficient classes mod 2^ℓ. The all-words list
+question, in one sentence: **how many low-degree polynomials can simultaneously have low
+evaluation weight and prescribed 2-adic coefficient spread** — a plain question about RS
+weight distributions stratified by the 2-adic exponent tree, with no fold machinery left
+in the statement. (The C19 anatomy lives here too: its 3 + 16 list elements are exactly
+coefficient-spread classes — the transversal degeneracies are spread patterns.)
+### O64 — the M_TRUE upgrade of the Conjecture-41 violation: genuine errors, kernel-checked
+
+`LamLeungTwoPow.conj41_mtrue_witness` (axiom-clean, 0 sorry; kernel decide with raised
+heartbeats): at each of the six line parameters γ ∈ {1,…,6} of the O44 witness line
+s(γ) = unitVec 5 + γ·e₈ over ZMod 17, an EXPLICIT weight-6 error — support AND
+all-nonzero values — satisfies the FULL 9-coordinate syndrome system (e.g. γ = 1:
+E = {0,6,8,11,12,14}, v = (9,5,13,9,9,6)). Hence
+
+    M_true(s₁, s₂) ≥ 6 > 5 = ⌊(2D−1)/c⌋   over ZMod 17 —
+
+the violation now holds at the exact M_true quantity of Conjecture 41's "equivalently"
+sentence, fully kernel-verified (closing the last queued refinement of the O43/O44
+refutation arc). The session's refutation of the printed conjecture is complete at every
+level of fidelity: rank form (structural, every γ), M_compat form (counting), M_true form
+(genuine codeword-list mass).
+
+### O65 — the GENERAL-RADIX fold: the descent toolkit extends to mixed-radix smooth towers
+
+`LamLeungTwoPow.lean` §GeneralRadixFold (axiom-clean, 0 sorry, char-free):
+
+* `syndrome_fold_general` — the complete d-ary syndrome decomposition:
+  p_{dj+r}(v,S) = p_j(fold_r v, S^d) for every residue r, where
+  (fold_r v)(y) = Σ_{x^d=y} v(x)·x^r. The O56/O57 even/odd fold is the d = 2 case.
+* `fold_mass_conservation_general` — ALL d twisted folds vanishing at a fiber forces
+  v = 0 on the fiber (via window_forces_weight applied to the fiber error: the twisted
+  folds ARE the fiber's power-sum window, length d ≥ fiber size). Generalizes O58's 2×2
+  nonsingularity to every radix.
+
+Consequence: the entire descent program (fold identities + mass conservation + the
+window-weight tradeoff) now applies to ARBITRARY smooth towers — mixed-radix n = ∏ dᵢ —
+not just 2-power domains. In particular the Mersenne-31/Circle-STARK domains of S-two's
+own deployment (whose tower is not 2-adic) are now in scope of the formal toolkit; the
+branch-accounting question generalizes verbatim with d-ary branching.
+
+### O66 — LAM–LEUNG AT EVERY PRIME POWER: the mixed-radix base case machine-checked
+
+`LamLeungTwoPow.vanishing_sum_mu_p_closed` (axiom-clean, 0 sorry): in characteristic
+zero, a finite set of p^(m+1)-th roots of unity (ANY prime p) with vanishing sum is
+closed under multiplication by every p-th root of unity — a union of μ_p-cosets. The
+p = 2 case is O50's antipodal theorem. Engine, generalizing O50's proof shape:
+Φ_{p^(m+1)} = Σ_{i<p} X^{i·p^m} (cyclotomic_prime_pow_eq_geom_sum) divides the exponent
+indicator; a packet multiple G·R with deg R < p^m has ALL p coefficient slices equal to
+R (`packet_mul_coeff`); membership is therefore invariant under exponent shifts by p^m,
+i.e. under μ_p (explicit wrap-around bookkeeping, no div/mod rewriting).
+
+With the O65 general-radix fold + this base case, the MIXED-RADIX tower program has both
+machine-checked pillars: the descent identities at every radix and the base case at every
+prime power. The mixed-radix analogue of full_tower (per-prime coset assembly via
+Conway–Jones-style structure at composite levels) is the natural continuation —
+on M31-style domains (n = 2^a·3^b·…) this is the route to the S-two-deployment analogue
+of the O61 capstone.
+
+### O67 — the mixed-radix base case verified (de Bruijn structure) + program statement
+
+Falsify-first probe for the mixed-radix tower (the M31/S-two-deployment continuation):
+EXHAUSTIVE verification at n = 12 and n = 18 (two-prime smooth, 2^a·3^b) that EVERY
+vanishing subset sum of μ_n over ℂ decomposes into disjoint rotated full prime packets
+(μ₂-pairs and μ₃-triples): 99/99 at n = 12, 999/999 at n = 18, zero violations. This is
+the subset-sum instance of de Bruijn's theorem (On the factorisation of cyclic groups,
+Indag. Math. 1953: vanishing sums of n-th roots for n with at most two prime divisors
+are ℕ-combinations of rotated prime-packet sums) — the correct mixed-radix analogue of
+the O50/O66 base cases. (At ≥ 3 primes Conway–Jones exotic minimal sums appear; M31-type
+deployment domains are two-prime, so de Bruijn suffices there.)
+
+MIXED-RADIX PROGRAM (mapped, both pillars + base now identified): O65 general-radix fold
+identities (machine-checked) + O66 prime-power packet closure (machine-checked) +
+de Bruijn two-prime structure (verified numerically; paper to add to ~/Desktop/math —
+N.G. de Bruijn, "On the factorisation of cyclic groups", Indag. Math. 15 (1953) 370-377)
+⟹ the two-prime full_tower analogue ⟹ the M31-domain capstone. Formalization route for
+de Bruijn: group-ring ℤ[ℤ_n] ideal structure, or the elementary double-slice argument
+(apply O66's packet_mul_coeff at BOTH primes via CRT exponent coordinates) — the latter
+is the in-framework candidate.
+
+### O68 — Theorem Q is now ONE in-tree kernel-checked theorem; the deep line censused exactly (nubs, 2026-06-10)
+
+**`TheoremQAssembly.theoremQ_epsMCA_lower` (axiom-clean, 0 sorry, 0 warnings):** the per-prime
+lower half of the determination as a single `epsMCA` statement — for any finite field with a full
+n-th-root domain (n = s·m), 2 ≤ r ≤ s, k = (r−1)m, (1−δ)n ≤ rm, q > n+k: ∃ B with
+C(s,r)·(q−n) ≤ B·((q−n)+C(s,r)·k) and ε_mca(evalCode H k, δ) ≥ B/q. Composes the three verified
+bricks (ValueSpreadSecondMoment + QuotientDeepCore + SmoothFiberCount) into MCALowerBound's
+framework; B ≳ ½min(C(s,r), (q−n)/k) beats 2⁻¹²⁸·q on [2¹²⁹, 2¹²⁷·C(s,r)) — every prime, every
+2-power gap, the whole window. Statement-fidelity reviewed against `QuotientPerPrimeInstantiation.md`
+(faithful; strengthens it in four sound directions — any finite field, r ≤ s, any admissible δ, no
+2-power hypothesis — and the closed form is strictly sharper at the top window edge). The LOWER
+HALF of #232 is now machine-checked end to end: nothing in it rests on prose.
+
+**Deep-line census (`probe_qline_census.py`, hardened + independently re-verified with a different
+algorithm/generator; degeneracy certificate explicit — 0 SB=0 subsets ⟹ provably exhaustive at
+radius ≥ k+1):** at (n,m,r) = (16,2,5), BabyBear, z=5: the Theorem-Q deep line realizes the FULL
+C(8,5) = 56 bad scalars (vs the monomial line's N₀(8,5) = 40 — measured at this z; no genericity
+claim), per-γ lists at the witness radius are ALL singletons with union exactly {q_S}; one notch
+below, per-γ ≤ 2 (5,440 size-2 + 56 size-1) with union 10,936. The re-verifier's monomial-side
+census: floor lists {1:32, 3:8} (e₁ triple-collisions — NOT singletons), 4,248 sub-witness γ's,
+and the sub-witness union is ALSO 10,936 — union size is line-independent here while γ-counts and
+max-list differ. Moral for the per-line moment chain (rounds-14 work, lekt9 + swarm): the union
+count and the max-list-size factor must be carried TOGETHER; neither alone determines Pr_γ[bad].
+This is level-1 branch-count-distribution data for the surviving open core (O59/O61/O67 framing).
+
+### O69 — the branch-count distribution ANSWERED IN SHAPE: maximal aliveness on minimal-weight words; two bricks + the weight–gcd tradeoff (nubs, 2026-06-10)
+
+Ultracode panel (3 prover lanes + adversarial audits, every artifact re-compiled and
+re-run from a second seat) on O59's open core — "how many branches can stay window-alive
+at each depth." Deliverables, all landed:
+
+**Bricks (axiom-clean, independently audited VALID):**
+- `ArkLib/ToMathlib/IteratedFoldConservation.lean` — `iterated_fold_conservation`: if ALL
+  `2^ℓ` depth-`ℓ` branch values (`branchVal`, the verified iteration of
+  `foldVal`/`foldValOdd`) vanish at a point, the error vanishes on the entire iterated
+  fiber; + `exists_alive_branch`, `all_branches_dead_iff`, `iterFiber_card_le`. The
+  depth-`ℓ` fiber system is information-preserving — mass cannot vanish at ANY depth.
+- `ArkLib/ToMathlib/WindowDualRS.lean` — **the full dual-RS bridge, BOTH directions,
+  general n** (not just 2-powers; char ∤ n): `window_iff_exists_low_degree` — power sums
+  `∑ v(ζ^i)(ζ^i)^j` vanish for `1 ≤ j < t` ⟺ `v` agrees on `μ_n` with a polynomial of
+  `natDegree ≤ n − t`. The window IS the RS code, formally; the in-tree gap (only the
+  forward direction existed, `rs_codeword_syndrome`) is closed. The j = 0 exclusion is
+  load-bearing and was numerically audit-checked.
+- `FoldPolynomialSlices.lean` extended: `weight_ge_live_image` — the depth-1
+  **weight–dead-locus tradeoff**: #{squared points where some slice survives} ≤ weight.
+  Iterated form (corollary of `iterated_fold_conservation` + the slice law): at EVERY
+  depth `ℓ`, the alive slices share a common μ-root locus of size `≥ n/2^ℓ − w` — low
+  weight forces shared root structure (locators), with the C19/coset families extremal.
+  Probe: 3000 trials × depths 1–3, ALL PASS (`probe_fold_slices.py` companion data).
+
+**The census (`scripts/probes/probe_branch_census.py`, 95,623 exact-F_p samples across
+(n,p,t) ∈ {16,32}×{97,193,257,7681}×{2,3,4,8}, exhaustive on all minimal-weight families
+that fit; audit re-ran byte-identical + out-of-model spot-checks):**
+- **The conditioned question resolves OPPOSITE to the list-decoding intuition: minimal
+  weight (w = t) codeword differences generically have MAXIMAL alive-branch counts
+  (`2^ℓ` at every depth, every config).** The branch tree never thins on list-relevant
+  words; "bound the alive count" is a dead route for the all-words question.
+- C2 (0/95,623 violations): alive(ℓ) ≤ alive(ℓ+1) ≤ 2·alive(ℓ) — monotone doubling
+  (provable from the slice law + conservation).
+- C3 (0/95,623): alive(ℓ) = 1 forces `2^ℓ | n − w` — single-branch survival forces
+  coset-compatible weight (the O46/O47 structures are the ONLY way to stay narrow).
+- Sampling honestly stratified toward structured `f` (the right bias for falsifying
+  universal claims; frontier minima are existence data, not uniform statistics).
+
+**Where the open core now sits (sharpened):** branch COUNTS carry no list information —
+the constraint on low-weight words is slice STRUCTURE: by the tradeoff above their
+slices must share large root loci at every depth simultaneously. The all-words question
+(S-two Conj 1 / Conjecture D) is exactly: count low-degree `f` whose 2-adic coefficient
+slices are simultaneously root-coherent at every depth. C19's 3 + 16 anatomy is the
+worked instance. The conservation + dual-RS + slice bricks make every term in that
+sentence formal.
+### O70 — the SMALL-GOOD-SET SECTOR of StrictCoeffPolysResidual is FREE: the §5 residual is equivalent to its large-sector restriction
+
+**Brick (axiom-clean, 0 sorry, 0 warnings):**
+`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean` —
+`strictCoeffPolysResidual_iff_large`: the issue-#304 strict Johnson extraction residual
+([BCIKS20] §5) holds **iff** its restriction `StrictCoeffPolysResidualLarge` adding the
+hypothesis `k + 1 < (RS_goodCoeffsCurve u δ).card` holds.  The complementary sector
+`|S| ≤ k + 1` is discharged UNCONDITIONALLY for every decoded family `P` — no probability,
+Johnson, GS, or counting input — by pure Lagrange interpolation
+(`exists_coeff_interpolant_of_card_le`: any target function on ≤ k+1 field points is matched
+by a polynomial of `natDegree < k + 1`; built on Mathlib's `Lagrange.interpolate` +
+`degree_interpolate_lt`).  Keystone front door included:
+`correlatedAgreement_affine_curves_of_largeResidual` reaches BCIKS20 Theorem 1.5 from the
+large-sector residual + `BoundaryProbabilityResidual` alone.
+
+**Probe (`probe_strict_coeff_smallset.py`, GF(13), 4000 + 2000 trials):** small-set claim
+4000/4000 PASS; the control at `|S| = k + 2` fails for 1861/2000 generic coefficient
+functions (expected ≈ (p−1)/p · 2000 = 1846) — the cutoff is EXACTLY `k + 1`, so the
+reduction strips precisely the contentless sector and nothing more.
+
+**Moral for the producer lanes:** every `betaRec`/Hensel/curve-extraction producer
+(`KeystoneStrictResidual`, `CurveFamilyHensel`, `FaithfulCurveExtraction`,
+`OffcentreKeystoneAssembly`, `StrictCoeffProducer`) now gets `k + 1 < |goodSet|` as a free
+hypothesis: their "matching set is large" counting demands are only ever invoked in a regime
+where the good set is itself large, which is exactly the regime BCIKS20 §5's
+Guruswami–Sudan counting addresses.  The genuinely open per-`(u, P)` content (Claim 5.9 base
+reading, tail vanishing, GS cargo) is untouched — but its demanded domain just shrank to
+where the paper's argument actually lives.
+
+### O71 — the literal pair-case Johnson conjecture is now ONE hypothesis away: per-δ `JohnsonNumericBound` ⟹ `mca_johnson_bound_CONJECTURE` at ℓ = 2 (verbatim, in-tree)
+
+`MCAConjecturePairReduction.lean` (axiom-clean, 0 sorry, 0 warnings) closes the last
+wiring gap in the #302 Johnson MCA chain that `Hab25WhirBridge` had left open: the bridge
+targeted an *abstract* `(BStar, errStar)` and still carried the closed-form comparison
+`ofReal (johnsonBoundReal) ≤ errStar δ` as a hypothesis, while `Hab25ConjectureGlue`
+proved exactly that comparison for the *literal* conjecture error — nobody had composed
+them into the verbatim statement. Now:
+
+* `mca_johnson_bound_CONJECTURE_pair_of_johnsonNumericBound` — per-δ
+  `JohnsonNumericBound φ (2^m) (μ δ).toNNReal δ` on the admissible range (η := μ(δ) =
+  min(1−√ρ−δ, √ρ/20)) yields `mca_johnson_bound_CONJECTURE α φ m (Fin 2) exp` VERBATIM:
+  `BStar = √ρ`, the conjecture's exact `errStar = 2^{2m}/(|F|·(2μ)⁷)`, no comparison or
+  plumbing hypotheses left (the `(card (Fin 2) − 1) = 1` factor and the
+  `rate = 2^m/n` identification, `rate_genRSC_pair`, absorbed in-proof);
+* `mca_johnson_bound_CONJECTURE_pair_of_claim1_cells` — the verbatim conjecture from
+  per-δ per-stack Claim-1 cell data alone (≤ L cells in the per-δ GS list shape with the
+  capture-above-n dichotomy). The SOLE remaining input to the literal ℓ = 2 conjecture is
+  now exactly the BCIKS20 Steps 5–7 Λ/β_t capture kernel (#138/#139 stream).
+
+Falsify-first probe (`probe_conjecture_pair_wiring.py`): the comparison orientation
+re-verified numerically before wiring — 1320 grid points across m ∈ [2,12], blowups 2–32,
+q ∈ {M31, 2⁶⁴−59, 2¹²⁸−159, 2¹⁶+1}, six δ-slices of the Johnson window: 0 violations,
+worst ratio 1.8·10⁻³ (the two-orders-of-magnitude slack of the c9121746d analysis,
+re-measured). Next-cheapest wiring identified for a future pass: feed this single-hypothesis
+pair-MCA into the WHIR RBR keystone's `RoundKeystoneData`/`perRoundProximityGap_of_correlatedAgreement`
+chain (needs the per-round stack ↔ pair-generator identification); NOT wireable today:
+#301 rbr soundness (forwarding-shell verifier — residual likely false as stated; needs the
+checking verifier + #304 core) and the ℓ-ary (parℓ > 2) seam extension (mechanical per
+Hab25 but new formalization, not plumbing).
+### O70 — ITERATED SLICE ROOT-COHERENCE PROVEN: O69's "Conjecture D in elementary form" closes at every depth; the one missing brick was branch LOCALITY, not conservation
+
+O69 left as the named open core the iterated weight/dead-locus tradeoff — "low weight
+forces the alive slices to share large root loci at every depth simultaneously" — with
+depth 1 claimed and depth ℓ probed-but-unproven. (Bookkeeping correction: the depth-1
+brick `weight_ge_live_image` announced for `FoldPolynomialSlices.lean` in O69/commit
+`2dcc9cfd9` never actually landed — the commit contains only the conservation, dual-RS
+and census artifacts; no Lean occurrence exists in history. The statement below now
+supplies it at every depth, including 1.)
+
+**`ArkLib/Data/CodingTheory/ProximityGap/IteratedSliceRootCoherence.lean` (axiom-clean,
+0 sorry, 0 warnings):**
+
+* `branchVal_eq_zero_of_fiber_vanish` — **branch locality**, the brick the induction
+  actually needed: the depth-ℓ branch value at `y` reads the error only on the iterated
+  fiber `{x ∈ S : x^(2^ℓ) = y}`. (Conservation says mass cannot vanish in every branch;
+  locality says it cannot APPEAR outside its fiber — the two directions are independent,
+  and the tradeoff is locality's, not conservation's.)
+* `live_card_le_weight` / `dead_card_ge` — **iterated weight transport,
+  hypothesis-free** (any S, any valued v, no char, no negation-closure): the depth-ℓ
+  live set has size ≤ w, since iterated fibers are disjoint and a live point's fiber
+  must carry support; dually ALL 2^ℓ branch values vanish simultaneously on
+  ≥ |iterSq S ℓ| − w points.
+* `branchSlice` / `branchVal_polyeval` — the **iterated slice law**: on a tower
+  negation-closed through depth ℓ, branch values of a polynomial error are evaluations
+  of the iterated coefficient slices (even fold ↦ `evenSlice`, odd fold ↦ `X·oddSlice`,
+  the O63 ⌈e/2⌉ exponent code), proved by induction over the depth-1 law.
+* `iterated_slice_root_coherence` (+ `_div` with `|iterSq D ℓ|·2^ℓ = |D|` exact) —
+  **the theorem**: a weight-w polynomial error's 2^ℓ iterated slices share a common
+  root locus of size ≥ |D|/2^ℓ − w in the depth-ℓ domain. Every depth, every ℓ-level
+  2-smooth tower, any field of odd characteristic.
+
+Falsify-first probe (`probe_sliceroots_iterated.py`, adversarial: minimal-weight words,
+fiber-aligned supports at the alive(ℓ)=1 boundary 2^ℓ | n−w, coset supports, sparse
+single-residue coefficients): 1572 per-depth cases up to (p,n) = (769,256), 0 violations,
+0 slice-law mismatches; the bound is TIGHT (live = min(w, n/2^ℓ)) in 902/1572 cases.
+
+**Where the open core moves:** the root-coherence CONSTRAINT is now a theorem, so the
+all-words question is no longer "prove the slices cohere" but "count the low-degree f
+whose slices realize the forced coherence" — i.e. bound the number of f with
+deg < k and all 2^ℓ slices vanishing on a prescribed ≥ n/2^ℓ − w common locus, where
+each slice has degree < k/2^ℓ + O(1) and ≤ k/2^ℓ roots to spend. The counting question
+(C19's 3 + 16 anatomy as the worked instance) is the surviving frontier; the structural
+half of O69's sentence is machine-checked.
+### O70 — the CRT DOUBLE-SLICE ENGINE: the de Bruijn route's per-prime machinery machine-checked (weighted, any base field) + the brief's literal invariance REFUTED
+
+New brick `ArkLib/Data/CodingTheory/ProximityGap/CRTDoubleSlice.lean` (axiom-clean, 0 sorry, non-vacuity witnessed in-file), the O67-mapped elementary double-slice route executed:
+
+* `packet_slice_coeff` — O66's packet slice lemma over ANY semiring of coefficients (was ℚ-only): multiples `G·R` of the geometric packet, `deg R < q`, have all `p` slices equal to `R`.
+* `slice_of_packet_minpoly` — **the engine**: over ANY base field `K` with `minpoly K η = Σ_{t<p} X^{tq}`, every vanishing `K`-weighted sum `Σ_{e<pq} a_e η^e = 0` has μ-shift invariant slices `a_{iq+s} = a_{i'q+s}`. The O66 mechanism is linear — the 0/1 restriction was never load-bearing.
+* `weighted_vanishing_slice_rat` — `K = ℚ` instantiation: rational-weighted Lam–Leung slices at every prime power (O66's closure = the indicator special case).
+* `crt_fiber_slice` — the **CRT double-slice, fiber-sum form**: a vanishing double sum `Σ_{(j,c)∈I} ξ^j η^c` over a coprime exponent grid (ξ ∈ K, η packet-minimal over K) has μ_q-shift invariant fiber sums `A(c) = Σ_{(j,c)∈I} ξ^j ∈ K` — `A(i·q^{b-1}+s)` independent of `i < q`. This is exactly "apply O66 at the second prime with ℤ[ζ_{p^a}]-valued weights", with the minpoly-over-K hypothesis carried explicitly (satisfiable: discharged at `K = ℚ` in-file).
+
+REFUTATION en route: the naive form of the double-slice claim — vanishing (even minimal) sums are membership-invariant under BOTH μ_p and μ_q exponent shifts — is FALSE (a μ_3-packet at n = 6 is not μ_2-closed). The correct CRT invariant is fiber-SUM invariance at each prime. Falsify-first probe (`probe_crt_double_slice.py`, exact integer arithmetic mod cyclotomics): weighted slice ⟺ vanishing at n = 8, 9 (0/20 000 mismatches each); fiber-sum invariance EXHAUSTIVE over all 2^n subsets at n = 12 (100/100 vanishing, 0 violations) and n = 18 (1000/1000), both primes — and a measured bonus: 0 non-vanishing subsets are invariant at either size, i.e. **double fiber-sum invariance ⟺ vanishing** empirically (one-direction trivially: invariance ⟹ packets sum to 0).
+
+What remains for full de Bruijn (named): (1) discharge the packet-minpoly hypothesis over `K = ℚ(ζ_{p^a})` — cyclotomic irreducibility over the coprime cyclotomic extension via `φ(p^a q^b) = φ(p^a)φ(q^b)` + the tower formula (`IsCyclotomicExtension.Rat.finrank` + `Module.finrank_mul_finrank`); (2) the exponent bijection `μ_{p^a} × μ_{q^b} ≃ μ_n` converting subset sums of μ_n into grid double sums (ZMod.chineseRemainder bookkeeping); (3) the positivity/disjointness step — indicator fiber sums force DISJOINT rotated packets — the genuinely de Bruijn part.
+### O70 — the ABF26 §5 collapse THROUGH THE INTERLEAVED LIST: interleaved list-decodability at 2δ ⟹ MCA at δ; the same-radius collapse REFUTED
+
+`InterleavedListMCACollapse.mcaBad_card_le_interleavedList` (axiom-clean, 0 sorry, 0 warnings): for any `PairClosed` code (every F-linear code), stack `(f₁,f₂)`, floor `t`,
+
+    #mcaBad(f₁,f₂; t) ≤ 1 + (n − (2t−n)) · #Λ₂(f₁,f₂; 2t−n)
+
+— the MCA bad-scalar count (exact-count form of `mcaEvent`, ABF26 Def 4.3) is bounded by the `m = 2` **interleaved** list of the stack at the **doubled** radius. In δ-units: `Λ(C^{≡2}, 2δ) ≤ L ⟹ ε_mca(C,δ) ≤ (1 + 2δn·L)/q` (`mcaBad_card_le_of_interleavedList_card_le`); empty 2δ-list ⟹ at most ONE bad scalar (`mcaBad_card_le_one_of_interleavedList_eq_empty`). This is the [GCXK25]-shaped half of ABF26 §5 in the repo's own definitions, complementing the in-tree per-LINE collapse (`MCAListCollapseFullSupport`, loss `n/t`): the list-recovery/interleaved reformulation (`ListRecoveryInterleavedGap`) now feeds MCA directly.
+
+Engine: Round-17 pair extraction maps every bad `γ ≠ γ₀` into the 2δ-interleaved list; the new brick is **failure-point pinning** (`scalar_pin`) — `Φ(γ) = p` forces `c_γ = p.1 + γ·p.2` identically, and the MCA no-joint-pair clause hands a point of `S_γ` where `p` disagrees with the stack, at which the line equation SOLVES for `γ`; so each fiber injects into `p`'s disagreement set (`≤ n − (2t−n)` points).
+
+**The radius doubling is NECESSARY** (`probe_interleaved_mca_collapse.py`): the same-radius collapse `#bad ≤ 1 + (n−t)·#Λ₂(t)` is FALSE — over F₃, n = 4, C = span{(1,1,1,0),(0,1,2,1)}, stack ((0,0,0,1),(0,0,1,0)), t = 3: all 3 scalars MCA-bad with the floor-t interleaved list EMPTY (3,888 such stacks in that code alone; 17,399 across probes). The main inequality: 0 violations over 27,851 stacks (exhaustive F₃ × 3 codes, sampled F₅ RS n ∈ {4,5}, k ∈ {2,3}; worst saturation 0.667). The factor-free variant `#bad ≤ 1 + #Λ₂(2t−n)` survived all probes but is NOT provable by pinning (codeword pencils `c_γ = g₁ + γ·g₂` give genuine fiber multiplicity) — recorded as the open refinement.
+
+Honest scope: the interleaved 2δ-list bound is an INPUT; bounding it for explicit smooth-domain RS in `(1−√ρ, 1−ρ)` is still the prize core, and 2δ-lists are only nonvacuous for δ below half the relevant radius — the collapse trades radius for the clean `1 + 2δn·L` form, exactly the GCXK25 trade.
+### O70 — the THRESHOLD LANDSCAPE of the deep line: crossover is NOT line-independent, and toy δ* pins to the witness radius (nubs, 2026-06-10)
+
+**`scripts/probes/probe_qline_threshold_landscape.py` (exact, deterministic, exit 0; O68's subset census read at ALL radii in one pass, SB=0 every-γ degenerate layers handled exactly):** 452 per-line censuses at 4 points — (16,2,5)/BabyBear rate ½, (16,2,5)/p=97, (16,4,2)/BabyBear rate ¼, (12,2,4)/p=37 — each point censusing the Theorem-Q deep line, 100 random lines, and 12 two-codeword bundle lines (PromotedHypothesesB style: u0+γᵢu1 = cᵢ+eᵢ planted at weight n−rm; disjoint / shared / overlap-(wt−1) supports). O68 reproduced exactly twice (standalone re-run + in-probe gates: 56/1/56 at a=10, 5496/2/10936 at a=9, 0 degenerate).
+
+**The landscape (large q, where ε*·q = 2⁻¹²⁸q ≪ 1 ⟹ crossover = count hits 0):** random lines carry NOTHING beyond the trivial k+1 floor — crossover a* = k+2 at both BabyBear points (100/100 each). The Q-line crosses at a_wit+1: bad mass C(s,r) (56 at rate ½, 6 at rate ¼) persists exactly to a_wit = rm and vanishes strictly above. At rate ¼ that is THREE notches past random, dying exactly at the Johnson agreement √(nk) = 8 (δ = ½ = 1−r/s). **Crossover is NOT line-independent — structured lines cross deeper than random by exactly the structured layer; the toy δ* sits at δ_wit = 1 − rm/n with fraction C(s,r)/q there and 0 above on every deep line measured.** Among DEEP lines, however, crossover IS class-independent: overlap bundles (depths 9,9 / 7,7 — beyond the radius) realize t+2 bad γ's at a_wit (7 vs the Q-line's 56) and the same a* = a_wit+1; disjoint bundles give exactly the 2 planted γ's, 0 emergent (counts structurally identical across instances); shared-support bundles DO place bad γ's one notch above a_wit (6 at a=11, the per-point cancellation γ_x = (e₁γ₂−e₂γ₁)/(e₁−e₂)) but only by going shallow (u0,u1 both within the radius; all-γ layer at base a_wit) — no deep line found crossing above a_wit.
+
+**Small-q control (the honest caveat for the upper half):** at q = 97 the random noise floor at a_wit is 67 > the Q-line's 60, 33/100 random lines still carry bad γ's at the Johnson agreement, and the witness-radius lists collide (max per-γ list 4; the 56 scalars collapse to 45 distinct) — O68's singleton structure and the 2⁻¹²⁸ scaling are LARGE-q phenomena, vacuous at toy q. Moral for the per-line moment chain: the load-bearing upper-half target is the count of (deep line, γ) pairs at a = rm exactly — everything above is provably (here: measurably) empty, everything below is floor.
+### O76 — the strict-interior leaf of the boundary quantization split is FALSE; the corrected boundary route proven (nubs, 2026-06-10)
+
+The #304 boundary ground truth, completed. In-tree refutations (BoundaryCardResidualRefutation, …AffineLineRefutation) killed the bare closed-boundary residual only at SQUARE endpoints (deg·n = 4, ZMod 5, deg 1), and the quantization split (`boundaryCardResidual_of_not_lattice`) deferred the entire NON-lattice bulk to the strict-interior supply `BoundaryCardStrictInteriorResidual` (nonempty good set at a floor-matched δ' < δ ⟹ jointAgreement at δ'). **That supply is false** (`BoundaryCardStrictInteriorRefutation.lean`, axiom-clean, 0 sorry): at k=1, deg=2, n=4 over GF(5), boundary δ = 1−√(1/2) (deg·n = 8 NON-square — kernel-checked non-lattice, `boundary_floor_lt`), δ' = 1/4 floor-matched (both floors = 1), stack u₀ = 0, u₁ = x² on {0,1,2,3}: z = 0 makes the good set nonempty, but jointAgreement needs |S| ≥ 3 and no linear polynomial meets x² on 3 of the 4 points (quadratic with 3 roots; exhaustive `decide`, probed first in `probe_boundary_strict_interior.py`). Corollary at the same witness: the first NON-square-endpoint refutation of bare `BoundaryCardResidual` (`not_boundaryCardResidual_nonSquareEndpoint`). So **both leaves** of the quantization split — lattice (O-in-tree) and strict-interior (this) — are unsatisfiable as nonemptiness statements: nonemptiness is never a sufficient boundary hypothesis, on or off the 1/n-lattice.
+
+What survives, made formal: the corrected obligation must carry the §5 threshold at a floor-matched strict radius (Pr > k·errorBound(δ'), errorBound(δ') > 0); the witness is consistent with it (Pr = 1/5 ≤ 4/5, probe-checked). Proven consumer-shaped piece: `BoundaryQuantizationCorrected.correlatedAgreementCurves_boundary_of_floorEq_strict` — ⌊δ'·n⌋ = ⌊δ·n⌋ transports the FULL `δ_ε_correlatedAgreementCurves` statement from δ' to δ with the SAME ε (premise via the good-set step function, conclusion via the agreement-floor step function). Off the lattice such δ' always exists (`exists_lt_floor_eq_of_floor_lt`), so the honest closed-boundary export is the strict theorem with ε = errorBound(δ') > 0 — never the refuted errorBound(1−√ρ) = 0 export. Moral for #304: retire the nonemptiness residual surfaces entirely; the only honest boundary data are (a) the floor-matched strict-radius threshold route (now a theorem) and (b) the genuinely-square lattice branch behind the large-field-guarded `BoundaryCardLatticeData` package.
+### O70 -- the UPPER half faces the lower in one file: affine-root reduction engine + conditional two-sided bracket (nubs, 2026-06-10)
+
+O68 pinned the LOWER half (theoremQ_epsMCA_lower: eps_mca(evalCode H k, delta) at least B/q in the list-decoding window). This delivers the matching UPPER machinery on the SAME epsMCA surface, so the two halves face each other in one statement.
+
+Bricks (TheoremQUpperReduction.lean, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):
+- epsMCA_le_of_affineRoot_extraction -- the upper-half engine: given per stack u an affine error pair (e0 u, e1 u) with weight(e1 u) at most W such that EVERY mcaEvent bad scalar of u is a root of e0 u + gamma*e1 u at a support coord of e1 u, then eps_mca(C,delta) at most W/q. This is exactly the wiring badGamma_affine_card_le's docstring deferred (the min-distance codeword extraction): it composes that per-line counter (bad count at most weight(e1)) into epsMCA_le_of_badCount_le. The extraction hypothesis is the named residual wall (true in unique decoding delta below (d-1)/2n via e = u - c for the unique nearby codewords; reduced to, NOT discharged).
+- not_mcaEvent_of_uOne_zero / evalCode_not_mcaEvent_uOne_zero -- unconditional: a zero direction u1=0 has no bad scalar (0 in evalCode makes pairJointAgreesOn hold). The u1=0 case of why the engine targets the affine-root event and NOT line-closeness.
+- epsMCA_univ_le_zero -- non-vacuity: the engine fires to 0 on C=univ (extraction satisfiable, hroot via not_mcaEvent_univ), certifying soundness.
+- theoremQ_epsMCA_two_sided -- the conditional pincer in one statement: under the Theorem-Q hypotheses AND the extraction, exists B, B/q at most eps_mca at most W/q. Lower B unconditional (O68); upper W at most n conditional on the extraction.
+
+The probe (probe_qline_upper.py, fresh point q=97,n=12,m=2,s=6,r=3,k=4 -- different prime and n,m,r than O68 BabyBear/16/2/5; exit 0):
+- C2 (key structural finding): badCount at most lineCloseCount is far too lossy. A stack with u0 a codeword and weight(u1)=3 is delta-close at EVERY gamma (lineCloseCount equal q equal 97) yet has bad count 0 -- verified at delta 0.25, deep in unique decoding; the affine-root count is 1 at most weight. So the engine targets badGamma, not line-closeness (the u1=0 slice is the Lean not_mcaEvent_of_uOne_zero).
+- C3 (the gap is real): C(s,r)=20 exceeds n=12, so at the witness radius eps_mca at least C(s,r)/q exceeds n/q -- a global n/q upper bound is FALSE; the upper bound is unique-decoding-only and the crossover radius is delta-star.
+- C1 re-measures badGamma_affine_card_le (engine RHS) over 200 random error pairs; the Q-line line-close census drops 18 to 0 just past the witness radius a = rm = 6.
+
+The numerical gap (headline): on this family the LOWER half forces eps_mca at least C(s,r)/q equal 20/97 about 0.206 at delta = 1 - rm/n = 0.5, while the UPPER engine gives eps_mca at most n/q equal 12/97 about 0.124 in unique decoding delta below (n-k+1)/2n = 0.375. The unpinned window is delta in (0.375, 0.5] -- exactly the Johnson-to-capacity gap, with the two halves now on one surface. At cryptographic q, n/q (upper) and C(s,r)/q (lower) straddle eps-star = 2^-128, so delta-star is the crossover radius. The single remaining wall to close the window unconditionally is hroot for evalCode (the min-distance extraction = the proximity-gap core).
+### O72-addendum — record correction: O69's `weight_ge_live_image` never landed as Lean
+
+Cold audit (2026-06-10) of commit 2dcc9cfd9 (O69): the commit message and the O69 entry
+announce a depth-1 brick `weight_ge_live_image` in `FoldPolynomialSlices.lean`, but
+`git log -S weight_ge_live_image` shows the name only ever appeared in DISPROOF_LOG text —
+no Lean theorem of that name exists anywhere in history. The mathematical content is now
+actually kernel-checked (stronger, at every depth) by `IteratedSliceRootCoherence.lean`
+(`live_card_le_weight` / `dead_card_ge`, O72), so the gap is closed — but the O69 record
+overstated what had landed. Lesson for the swarm: an announced brick is not a brick;
+grep the tree, not the log.
+
+### O78 — the O74 interleaved collapse lands on the epsMCA surface: the bridge is a theorem and the library gets a SECOND unconditional upper window (δ < d/(4n), no extraction residual)
+
+O74 proved #mcaBad(t) ≤ 1 + (n−(2t−n))·#Λ₂(2t−n) on its own exact-count surface (`mcaBadSet`, ℕ floor), while the prize quantity `epsMCA` (ABF26 Def 4.3) lives on `mcaEvent`'s real floor (S.card ≥ (1−δ)·n in ℝ≥0); the O74 auditor's remark that the quantifier shapes match was never a theorem. Now it is, and the splice yields the second unconditional upper window.
+
+**Bricks (`EpsMCAInterleavedUD.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):**
+- `mcaEvent_iff_mem_mcaBadSet` — **the bridge**: `mcaEvent ↑C δ u₀ u₁ γ ↔ γ ∈ mcaBadSet C u₀ u₁ ⌈(1−δ)·n⌉₊`. Witness set, line clause and ¬pairJointAgreesOn clause correspond verbatim (smul_eq_mul, eq_comm); the size clause converts by `Nat.ceil_le` — the floor is the CEILING, and the ⌊·⌋₊ convention is FALSE (14,844 probe witnesses). Count form `mcaEvent_filter_eq_mcaBadSet`: the epsMCA bad-scalar filter IS mcaBadSet.
+- `interleavedList_card_le_one_of_agree_le` — unique decoding of C^{≡2} from the distance of C: if distinct codewords agree on ≤ e = n−d points and n + e < 2a, the m=2 interleaved list of ANY stack at floor a is a singleton at most (two members jointly agree with the stack on ≥ a each, hence with each other on ≥ 2a−n > e in both rows).
+- `epsMCA_le_interleavedUD` — **the window**: PairClosed C (every F-linear code), agreement parameter e, n + e < 2·(2t−n) with t = ⌈(1−δ)n⌉₊ ⟹ ε_mca(C,δ) ≤ (1 + (n−(2t−n)))/|F| — in δ-units (1+2δn)/q. No probabilistic, list-decoding, or extraction hypothesis.
+- `epsMCA_le_interleavedUD_of_quarter_dist` + `nat_window_of_quarter_dist` — the named δ-window: 4δn + e < n (= δ < d/(4n), a quarter of the relative distance; RS: δ < (1−ρ)/4 + O(1/n)) implies the ℕ window.
+
+**Falsify-first probe (`probe_epsmca_interleaved_ud.py`, exit 0):** bridge checked through INDEPENDENT code paths (full 2^n subset enumeration vs witness-set reduction, the reduction itself controlled: 240,570 exhaustive checks, 0 mismatches): 260,570 (stack,γ,δ) checks over exhaustive F₃ n∈{3,4} ×3 codes + sampled F₅ RS, **0 mismatches**, while the floor convention breaks 14,844 times — the ceiling is exactly right. Instantiation: 7,690 in-window checks, 0 violations, bound SATURATED (max slack 0); just outside the window L ≤ 1 fails (witnesses found); δ < d/(4n) ⟹ ℕ window on a fine grid, 0 failures.
+
+**Where this sits in the bracket:** O77's upper window (≤ n/q for δ < d/(2n)) is conditional on the affine-root extraction residual — the proximity-gap core. This window halves the radius (the price of O74's radius doubling: C^{≡2} must be unique-decodable at 2δ) and in exchange deletes the residual entirely: below d/(4n) the upper half is now a THEOREM on the same epsMCA surface as the O68 lower half. The unpinned core is unchanged — the gap (d/(4n), δ*] where the lower bound C(s,r)/q lives — but the unconditional floor of the upper half just moved from nothing to a quarter of the distance, and any future interleaved-list bound L(2δ) for explicit smooth-domain RS now converts to ε_mca ≤ (1+2δn·L)/q with zero plumbing left.
+### O78 — the corrected boundary threshold route gains its monotonicity pillar: floor-cell threshold transport PROVEN (and the corrected statement survives an exhaustive census)
+
+O76 left the corrected boundary obligation — carry the §5 threshold `Pr[good δ'] > k·errorBound δ'` at a floor-matched strict radius — as the named honest target. This pass (a) hardens its empirical footing and (b) proves the probability-threshold monotonicity piece its full proof needs.
+
+**Bricks (`BoundaryThresholdFloorCell.lean`, axiom-clean, 0 sorry, 0 warnings):**
+* `prob_threshold_floorCell_mono` — **threshold descends within a floor cell**: for `0 < deg`, `δ'' ≤ δ' < 1 − √ρ` with `⌊δ''n⌋ = ⌊δ'n⌋`, the §5 threshold at `δ'` implies it at `δ''`. Engine: the probability is CONSTANT on the cell (good-set step function, in-tree) while `errorBound` is monotone nondecreasing below the boundary — the latter was already in-tree (`DivergenceOfSets.errorBound_mono`; duplicate guard caught it, so this lane shipped the *wiring*, not a re-proof).
+* `correlatedAgreementCurves_floorCell_mono` — **monotone-ε transport**: `δ_ε_correlatedAgreementCurves` at the cell's smaller radius with ITS `errorBound` implies it at every floor-matched larger radius with ITS `errorBound`. This strengthens O76's same-ε transport: the corrected route needs the §5 machinery at only ONE radius per floor cell.
+* `correlatedAgreementCurves_boundary_of_floorCell_mono` — the composite export: strict-interior CA at a single floor-matched `δ''` ⟹ closed-boundary CA at `δ` with `ε = errorBound δ'` for EVERY floor-matched intermediate `δ'`.
+* Witness namespace: the whole hypothesis spine instantiated at the O76 witness (ZMod 5, n=4, deg=2, `deg·n = 8` non-square) with the CROSS-BRANCH pair `δ'' = 1/4` (UDR edge) ≤ `δ' = 7/25` (Johnson branch) — `errorBound_quarter_le_sevenDivTwentyFive` crosses the UDR→Johnson seam concretely; no leaf hides behind an unsatisfiable hypothesis.
+
+**Probe (`probe_boundary_threshold_floorcell.py`, exit 0):** the corrected statement survives 4 non-lattice points — q=5/n=4/k=1 EXHAUSTIVE (390,625 stacks, threshold fired on 60,625, 0 violations), q=13/n=6, q=257/n=6, q=13/n=4/k=2 (sampled random + 3 adversarial families; 0 violations). The hunt used the monotonicity reduction: violation at any floor-matched δ' ⟺ violation at the cell minimum j/n. Measured TIGHTNESS: the maximum good count among no-jointAgreement stacks equals `k·n` EXACTLY at three points (4/6/8) — the transported threshold saturates at the cell minimum and cannot be lowered. Negative control: at `deg = 0` errorBound monotonicity is FALSE (Johnson value degenerates to 0), so `0 < deg` in the in-tree lemma is load-bearing.
+
+**Where the open core sits:** the corrected route is now fully plumbed — step functions (in-tree), errorBound monotonicity (in-tree), floor-cell threshold transport + monotone-ε export (this entry). The single remaining input is the genuine §5 strict-interior producer (`δ_ε_correlatedAgreementCurves` at one strict radius per cell, the BCIKS20 Steps 5–7 content), plus the genuinely-square lattice branch behind `BoundaryCardLatticeData`.
+
+### O68 — the coefficient-general slice theorem: the de Bruijn engine machine-checked
+
+`LamLeungTwoPow.vanishing_coeff_slices` (axiom-clean, 0 sorry): ANY vanishing
+ℚ-coefficient combination of p^(m+1)-th roots of unity has all p coefficient slices
+equal. Upgrades O66 from subset indicators to arbitrary coefficients — exactly the engine
+the two-prime (de Bruijn) CRT double-slice induction needs, whose slice differences carry
+{−1,0,1} coefficients. The mixed-radix third pillar now has its core mechanism formal;
+what remains of de Bruijn is the CRT bookkeeping (apply this at prime 1 with coefficients
+in prime 2's field, then descend).

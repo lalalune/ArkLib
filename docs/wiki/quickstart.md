@@ -184,3 +184,35 @@ bash scripts/build_timing_report.sh run clean_build /tmp/build-timing.jsonl -- \
   bash -eo pipefail -c 'rm -rf .lake/build && lake build'
 bash scripts/build_timing_report.sh render /tmp/build-timing.jsonl
 ```
+
+## Swarm Verification Discipline
+
+Hard-won rules for multi-agent sessions where several agents land commits on
+`main` concurrently (distilled from the 2026-06-10 #232 frontier sessions):
+
+- **An announced brick is not a brick.** Commit messages and `DISPROOF_LOG.md`
+  entries can name theorems that never landed (found once: a theorem announced
+  in a commit message existed nowhere in history). Before citing or building on
+  a named lemma, `grep` the tree — not the log — and prefer
+  `git log -S <name>` to confirm a Lean occurrence.
+- **`#print axioms` lines are expected output.** Several modules end with
+  `#print axioms <thm>` audit lines by convention. A zero-output compile gate
+  must treat those lines as a pass signal (each should read exactly
+  `[propext, Classical.choice, Quot.sound]`); anything else in the output —
+  warnings, errors, `sorry` notices — is a failure.
+- **Main-branch CI runs supersede in queue.** With
+  `cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}`, queued main
+  runs are replaced by newer pushes; individual-push runs showing `cancelled`
+  is normal. The head run validates the whole tree, so "CI green on every
+  push" means: the most recent *completed* main run is green and contains your
+  commits (`git merge-base --is-ancestor <sha> <ci-sha>`).
+- **Joint-import check before declaring a batch done.** Single-file
+  `lake env lean` passes do not rule out cross-module name clashes. After
+  landing several new modules, build exactly those targets
+  (`lake build <Module1> <Module2> …`) and compile a scratch file importing
+  all of them together.
+- **Rebase before every push; new files only.** Concurrent agents editing
+  shared files (especially `ArkLib.lean`, `DISPROOF_LOG.md`) is the main
+  collision source. One designated writer appends to shared logs; everyone
+  else ships new modules and lets `./scripts/update-lib.sh` regenerate the
+  import index at commit time.

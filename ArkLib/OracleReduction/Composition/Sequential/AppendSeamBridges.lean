@@ -139,7 +139,7 @@ theorem monadLift_run_eq_double_liftM_left {α : Type} (V : OptionT (OracleComp 
     = (liftM (liftM V : OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) α)
         : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α).run := by
   simp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift, OptionT.run_mk]
-  rw [← QueryImpl.simulateQ_compose, ← QueryImpl.simulateQ_compose]
+  rw [← QueryImpl.simulateQ_compose]
   congr 1
 
 /-- **`OptionT`-level lift transitivity through the `pSpec₂` challenge seam.** The `pSpec₂` analogue
@@ -151,8 +151,6 @@ theorem hcoh_right {α : Type} (oa : OptionT (OracleComp oSpec) α) :
     = liftM (liftM oa : OptionT (OracleComp (oSpec + [pSpec₂.Challenge]ₒ)) α) := by
   apply OptionT.ext
   simp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift, OptionT.run_mk]
-  rw [← QueryImpl.simulateQ_compose, ← QueryImpl.simulateQ_compose]
-  congr 1
 
 /-- **Verifier-leg `OptionT`-lift coherence across the `pSpec₂` seam, at `.run`.** The `pSpec₂`
 analogue of `monadLift_run_eq_double_liftM_left`. -/
@@ -162,7 +160,7 @@ theorem monadLift_run_eq_double_liftM_right {α : Type} (V : OptionT (OracleComp
     = (liftM (liftM V : OptionT (OracleComp (oSpec + [pSpec₂.Challenge]ₒ)) α)
         : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α).run := by
   simp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift, OptionT.run_mk]
-  rw [← QueryImpl.simulateQ_compose, ← QueryImpl.simulateQ_compose]
+  rw [← QueryImpl.simulateQ_compose]
   congr 1
 
 /-- **The `OptionT.run` of the phase-1 stage body equals `liftM` of `R₁.run`'s `OptionT.run`.**
