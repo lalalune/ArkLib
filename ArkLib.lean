@@ -1501,6 +1501,7 @@ import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.CheckedVerifier
 import ArkLib.ProofSystem.Whir.FoldRound
 import ArkLib.ProofSystem.Whir.Folding
+import ArkLib.ProofSystem.Whir.GenMutualCorrParamsUDR
 import ArkLib.ProofSystem.Whir.Hab25WhirBridge
 import ArkLib.ProofSystem.Whir.Hab25WindowMCA
 import ArkLib.ProofSystem.Whir.KeystoneReduction
