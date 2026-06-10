@@ -5012,3 +5012,24 @@ Falsify-first applied to my own O118 route before formalizing it:
   valid and useful (the identities are true; only universal window inheritance dies).
   Corrected next brick: the adapted-decomposition spectrum-window lemma — what window
   does the FIRST-PEELED spectrum inherit along the peeled element's chain?
+
+### O122 — ADAPTED INHERITANCE CONFIRMED (349/349): the corrected road is empirically sound
+
+Probes (docs/kb/mixed-tower-probes/adapted_probe.py, adapted36.py): for EVERY windowed S
+and every μ_q-orbit-closed element x, SOME completion of the x-first-peeled
+decomposition has a spectrum with the FULL inherited window — 36/36 exhaustive at
+n = 12 (t ∈ {4,6}); 313/313 on structured sets at n = 36 (t ∈ {4,6,9}, sampled
+completions). Together with O121: spectrum windows are decomposition-dependent, but a
+GOOD decomposition always exists along any chosen element's chain — decomposition
+choice (first_peel, O116) is the right resource, confirmed.
+
+THE REMAINING FORMAL ENGINE (honest status): proving good-completion existence from the
+window alone still meets the both-dead-cosets stall (peeling a DEAD coset damages the
+window at its multiples; alive-coset coverage is the law itself — circularity). Two
+candidate engines, both mapped: (a) the per-element induction where the proven
+q/p-direction laws supply alive peels for their right-case elements and the stall set
+shrinks by a structure argument; (b) the locator-polynomial route — the law as a
+gap-divisor factorization theorem for X^n − 1 (top-coefficient gap t ⟹ factorization
+into X^d − γ factors, d > t) — classical in flavor, possibly cleaner. Both are genuine
+formalization arcs. The bilateral export + mixed identity (O119/O120) and all earlier
+theorems stand.
