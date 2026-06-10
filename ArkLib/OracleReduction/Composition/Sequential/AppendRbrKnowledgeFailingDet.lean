@@ -70,7 +70,101 @@ theorem append_failingDet_eq_optionized
   | none => simp [optionLift]
   | some s₂ => simp [optionLift]
 
+/-- The optionized intermediate relation: `(s?, w)` is related iff `s?` is `some s` with `(s, w)`
+in the underlying relation. The `none` (failed-crossing) statement is related to nothing — it is
+*doomed*, which is what makes the `optionLift` transports sound. -/
+def optionRel {Stmt₂ Wit₂ : Type} (r : Set (Stmt₂ × Wit₂)) : Set (Option Stmt₂ × Wit₂) :=
+  {p | ∃ s, p.1 = some s ∧ (s, p.2) ∈ r}
+
+@[simp] theorem mem_optionRel_some {Stmt₂ Wit₂ : Type} {r : Set (Stmt₂ × Wit₂)}
+    {s : Stmt₂} {w : Wit₂} : ((some s, w) ∈ optionRel r) ↔ (s, w) ∈ r := by
+  simp [optionRel]
+
+@[simp] theorem not_mem_optionRel_none {Stmt₂ Wit₂ : Type} {r : Set (Stmt₂ × Wit₂)}
+    {w : Wit₂} : ((none, w) ∈ optionRel r) ↔ False := by
+  simp [optionRel]
+
+variable {Wit₂ Wit₃ : Type} {σ : Type} {init : ProbComp σ}
+    {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    [∀ i, SampleableType (pSpec₂.Challenge i)]
+
+/-- **Statement-precomposition of a prover.** Reindexes a prover over `Option Stmt₂`-statements to a
+prover over `Stmt₂` by wrapping the input statement in `some`; all rounds and the output are
+untouched, so all partial runs agree definitionally. -/
+def _root_.Prover.someStmt {Stmt₃' Wit₃' : Type}
+    (P : Prover oSpec (Option Stmt₂) Wit₂ Stmt₃' Wit₃' pSpec₂) :
+    Prover oSpec Stmt₂ Wit₂ Stmt₃' Wit₃' pSpec₂ where
+  PrvState := P.PrvState
+  input := fun ctx => P.input (some ctx.1, ctx.2)
+  sendMessage := P.sendMessage
+  receiveChallenge := P.receiveChallenge
+  output := P.output
+
+@[simp] theorem _root_.Prover.someStmt_runWithLogToRound {Stmt₃' Wit₃' : Type}
+    (P : Prover oSpec (Option Stmt₂) Wit₂ Stmt₃' Wit₃' pSpec₂)
+    (i : Fin (n + 1)) (s : Stmt₂) (w : Wit₂) :
+    (P.someStmt).runWithLogToRound i s w = P.runWithLogToRound i (some s) w := rfl
+
+/-- **`optionLift` preserves round-by-round knowledge soundness** (with the optionized input
+relation). The knowledge state function sends `none`-statement states to `False` (the failed
+crossing is doomed); the extractor reads the `some`-component (with an `Inhabited` default on the
+irrelevant `none` leg); the per-round bound at a `none` statement is the probability of an
+event with a `False` conjunct, and at `some s` defers to the inner bound via statement
+precomposition. -/
+theorem optionLift_rbrKnowledgeSoundness [Inhabited Stmt₂]
+    (V : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {err : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h : V.rbrKnowledgeSoundness init impl rel₂ rel₃ err) :
+    (V.optionLift).rbrKnowledgeSoundness init impl (optionRel rel₂) rel₃ err := by
+  obtain ⟨WitMid, E, kSF, hBound⟩ := h
+  refine ⟨WitMid,
+    { eqIn := E.eqIn
+      extractMid := fun m s? tr w => E.extractMid m (s?.getD default) tr w
+      extractOut := fun s? tr w => E.extractOut (s?.getD default) tr w },
+    { toFun := fun m s? tr w => match s? with
+        | some s => kSF.toFun m s tr w
+        | none => False
+      toFun_empty := fun s? w => by
+        cases s? with
+        | some s => simpa using kSF.toFun_empty s w
+        | none => simp
+      toFun_next := fun m hDir s? tr msg w hnext => by
+        cases s? with
+        | some s => exact kSF.toFun_next m hDir s tr msg w hnext
+        | none => exact hnext.elim
+      toFun_full := fun s? tr w hPos => by
+        cases s? with
+        | some s => exact kSF.toFun_full s tr w hPos
+        | none =>
+          -- `optionLift.run none = failure`: the run always yields `none`, so the acceptance
+          -- probability is `0`, contradicting `hPos`.
+          exfalso
+          rw [gt_iff_lt, probEvent_pos_iff] at hPos
+          obtain ⟨x, hx, -⟩ := hPos
+          rw [OptionT.mem_support_iff] at hx
+          simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+          obtain ⟨s, -, hmem⟩ := hx
+          -- the simulated `failure` run is definitionally the constant-`none` computation
+          rw [show ((simulateQ impl ((V.optionLift).run (none : Option Stmt₂) tr)).run' s :
+                ProbComp (Option Stmt₃))
+              = pure none from rfl] at hmem
+          simp at hmem },
+    ?_⟩
+  intro s? w P i
+  cases s? with
+  | none =>
+    -- the flip event's second conjunct is `False` at a `none` statement: probability `0`.
+    refine le_trans (le_of_eq (probEvent_eq_zero ?_)) (zero_le _)
+    rintro ⟨tr, ch, log⟩ _
+    rintro ⟨wm, -, hsucc⟩
+    exact hsucc
+  | some s =>
+    -- precompose the prover and defer to the inner per-round bound at `s`.
+    simpa using hBound s w P.someStmt i
+
 end Verifier
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms Verifier.append_failingDet_eq_optionized
+#print axioms Verifier.optionLift_rbrKnowledgeSoundness
