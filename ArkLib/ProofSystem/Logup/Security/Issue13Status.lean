@@ -80,6 +80,17 @@ hypotheses, not hidden `sorryAx` placeholders.
   completeness, and the general non-perfect append blocker closed; it takes the honest support and
   honest-implementation assumptions that describe the actual honest run.
 
+**Regime warning (audit 2026-06-10).** The conditional entry points whose `hOuter` slot is typed
+at `midSoundnessProtocolLanguage` with the paper error — `issue13_soundness`,
+`issue13_soundness_of_residual`, `issue13_soundness_msgSeam`,
+`issue13_soundness_msgSeam_wiredSumcheck`, `issue13_soundness_msgSeam_wiredRoundAppend` — are
+**vacuously conditional in the typical (small-support, large-field) regime**: that `hOuter` is
+refuted there by `prob_midSoundnessLanguage_ge_compl_support` (`OuterSoundnessSharp.lean`).  They
+are kept as historical composition bricks only.  The live, discharged routes are
+`issue13_soundness_end_to_end` (= `logup_soundness_end_to_end`, `OuterMaliciousSoundness.lean`,
+over `midLanguage`) and `outerVerifier_soundness_sharp` (`OuterRbrSoundness.lean`, over the sharp
+language).
+
 No `sorry`/`sorryAx`/`admit`: every step is a real proof or an explicitly named hypothesis. The
 axiom audit at the bottom confirms axiom-cleanliness (`propext`, `Classical.choice`,
 `Quot.sound`).
@@ -177,7 +188,12 @@ closed. The smallest honest residual set:
 * `hPlainAppend` — the **plain-verifier** append-soundness residual (malicious-prover seam
   decomposition + union bound, oracle routing already discharged).
 
-This is a straight re-export of `logup_soundness_uncond`. -/
+This is a straight re-export of `logup_soundness_uncond`.
+
+**VACUOUSLY CONDITIONAL in the typical regime (audit 2026-06-10).** The `hOuter` slot at
+`midSoundnessProtocolLanguage` with the paper error is refuted in the typical (small-support,
+large-field) regime by `prob_midSoundnessLanguage_ge_compl_support` (`OuterSoundnessSharp.lean`);
+kept as a historical composition brick.  Live discharged route: `issue13_soundness_end_to_end`. -/
 theorem issue13_soundness (sumcheckSoundnessError : ℝ≥0)
     (hOuter :
       (outerVerifier oSpec F n M params).soundness init impl
@@ -342,176 +358,176 @@ theorem issue13_sumcheckSoundnessResidual_projClosed [oSpec.Fintype]
   sumcheckSoundnessResidual_holds_projClosed oSpec F n M params init impl
     sumcheckSoundnessError hError hInnerRbr himplSP himplNF himplVB
 
-  /-- **Issue #13 — language-generic message-seam soundness with inner sumcheck RBR assembled.**
+/-- **Issue #13 — language-generic message-seam soundness with inner sumcheck RBR assembled.**
 
-  This is the most reusable soundness composition theorem in this status module.  It accepts any
-  intermediate language `langMid`, an outer soundness proof into that language, and derives the
-  embedded-sumcheck soundness from:
+This is the most reusable soundness composition theorem in this status module.  It accepts any
+intermediate language `langMid`, an outer soundness proof into that language, and derives the
+embedded-sumcheck soundness from:
 
-  * projection soundness for `langMid`;
-  * per-round RBR soundness of the generic single-round sumcheck verifier;
-  * the binary `Verifier.append` RBR keystone that assembles those rounds; and
-  * the usual union-bound/error and honest-`impl` side conditions.
+* projection soundness for `langMid`;
+* per-round RBR soundness of the generic single-round sumcheck verifier;
+* the binary `Verifier.append` RBR keystone that assembles those rounds; and
+* the usual union-bound/error and honest-`impl` side conditions.
 
-  The conclusion has additive error `outerError + sumcheckSoundnessError`, exactly matching the
-  language-generic message-seam composition theorem. -/
-  theorem issue13_soundness_msgSeam_anyMid_wiredRoundAppend [oSpec.Fintype]
-      (langMid : Set (StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)))
-      (outerError sumcheckSoundnessError : ℝ≥0)
-      (lang : (i : Fin (n + 1)) →
-        Set (Sumcheck.Spec.StatementRound F n i ×
-          (∀ j, Sumcheck.Spec.OracleStatement F n (logupSumcheckDegree M params) j)))
-      (rbrSoundnessError :
-        ∀ _ : Fin n,
-          (Sumcheck.Spec.SingleRound.pSpec F (logupSumcheckDegree M params)).ChallengeIdx → ℝ≥0)
-      (hn : 0 < n)
-      (hOuter :
-        (outerVerifier oSpec F n M params).soundness init impl
-          (inputRelation F n M).language langMid outerError)
-      (hLast : lang (Fin.last n) = Set.univ)
-      (hError : sumcheckSoundnessError =
-        ∑ i : (logupSumcheckPSpec F n M params).ChallengeIdx,
-          (fun combinedIdx =>
-            letI ij := ProtocolSpec.seqComposeChallengeIdxToSigma combinedIdx
-            rbrSoundnessError ij.1 ij.2) i)
-      (hProj : SumcheckLensProjSoundFor oSpec F n M params langMid (lang 0))
-      (hRound : ∀ i : Fin n,
-        (Sumcheck.Spec.SingleRound.oracleVerifier F n (logupSumcheckDegree M params)
-            (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i).rbrSoundness init impl
-          (lang i.castSucc) (lang i.succ) (rbrSoundnessError i))
-      (hAppend : ∀ {S₁ S₂ S₃ : Type} {k₁ k₂ : ℕ}
-          {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
-          [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
-          (V₁ : Verifier oSpec S₁ S₂ p₁) (V₂ : Verifier oSpec S₂ S₃ p₂)
-          {l₁ : Set S₁} {l₂ : Set S₂} {l₃ : Set S₃}
-          {e₁ : p₁.ChallengeIdx → ℝ≥0} {e₂ : p₂.ChallengeIdx → ℝ≥0},
-          V₁.rbrSoundness init impl l₁ l₂ e₁ → V₂.rbrSoundness init impl l₂ l₃ e₂ →
-          (V₁.append V₂).rbrSoundness init impl l₁ l₃
-            (Sum.elim e₁ e₂ ∘ ChallengeIdx.sumEquiv.symm))
-      (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
-        x ∈ support ((impl t).run s) → x.2 = s)
-      (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
-      (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
-        evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
-      (logupVerifier oSpec F n M params).soundness init impl
-        (inputRelation F n M).language outputRelation.language
-        (outerError + sumcheckSoundnessError) :=
-    logup_soundness_msgSeam_anyMid oSpec F n M params init impl langMid outerError
-      sumcheckSoundnessError hn hOuter
-      (sumcheckVerifier_soundness_forLang_wired_roundAppend oSpec F n M params init impl langMid
-        sumcheckSoundnessError lang rbrSoundnessError hLast hError hProj hRound hAppend
-        himplSP himplNF himplVB)
-      himplSP himplNF himplVB
+The conclusion has additive error `outerError + sumcheckSoundnessError`, exactly matching the
+language-generic message-seam composition theorem. -/
+theorem issue13_soundness_msgSeam_anyMid_wiredRoundAppend [oSpec.Fintype]
+    (langMid : Set (StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)))
+    (outerError sumcheckSoundnessError : ℝ≥0)
+    (lang : (i : Fin (n + 1)) →
+      Set (Sumcheck.Spec.StatementRound F n i ×
+        (∀ j, Sumcheck.Spec.OracleStatement F n (logupSumcheckDegree M params) j)))
+    (rbrSoundnessError :
+      ∀ _ : Fin n,
+        (Sumcheck.Spec.SingleRound.pSpec F (logupSumcheckDegree M params)).ChallengeIdx → ℝ≥0)
+    (hn : 0 < n)
+    (hOuter :
+      (outerVerifier oSpec F n M params).soundness init impl
+        (inputRelation F n M).language langMid outerError)
+    (hLast : lang (Fin.last n) = Set.univ)
+    (hError : sumcheckSoundnessError =
+      ∑ i : (logupSumcheckPSpec F n M params).ChallengeIdx,
+        (fun combinedIdx =>
+          letI ij := ProtocolSpec.seqComposeChallengeIdxToSigma combinedIdx
+          rbrSoundnessError ij.1 ij.2) i)
+    (hProj : SumcheckLensProjSoundFor oSpec F n M params langMid (lang 0))
+    (hRound : ∀ i : Fin n,
+      (Sumcheck.Spec.SingleRound.oracleVerifier F n (logupSumcheckDegree M params)
+          (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i).rbrSoundness init impl
+        (lang i.castSucc) (lang i.succ) (rbrSoundnessError i))
+    (hAppend : ∀ {S₁ S₂ S₃ : Type} {k₁ k₂ : ℕ}
+        {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
+        [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
+        (V₁ : Verifier oSpec S₁ S₂ p₁) (V₂ : Verifier oSpec S₂ S₃ p₂)
+        {l₁ : Set S₁} {l₂ : Set S₂} {l₃ : Set S₃}
+        {e₁ : p₁.ChallengeIdx → ℝ≥0} {e₂ : p₂.ChallengeIdx → ℝ≥0},
+        V₁.rbrSoundness init impl l₁ l₂ e₁ → V₂.rbrSoundness init impl l₂ l₃ e₂ →
+        (V₁.append V₂).rbrSoundness init impl l₁ l₃
+          (Sum.elim e₁ e₂ ∘ ChallengeIdx.sumEquiv.symm))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (outerError + sumcheckSoundnessError) :=
+  logup_soundness_msgSeam_anyMid oSpec F n M params init impl langMid outerError
+    sumcheckSoundnessError hn hOuter
+    (sumcheckVerifier_soundness_forLang_wired_roundAppend oSpec F n M params init impl langMid
+      sumcheckSoundnessError lang rbrSoundnessError hLast hError hProj hRound hAppend
+      himplSP himplNF himplVB)
+    himplSP himplNF himplVB
 
-  /-- **Issue #13 — paper-shaped soundness with inner multi-round RBR reduced to per-round facts.**
+/-- **Issue #13 — paper-shaped soundness with inner multi-round RBR reduced to per-round facts.**
 
-  This specializes `issue13_soundness_msgSeam_anyMid_wiredRoundAppend` to the current
-  `midSoundnessProtocolLanguage` and paper-shaped outer error.  Compared with
-  `issue13_soundness_msgSeam_wiredSumcheck`, it no longer assumes the opaque inner multi-round RBR
-  fact directly. -/
-  theorem issue13_soundness_msgSeam_wiredRoundAppend [oSpec.Fintype]
-      (sumcheckSoundnessError : ℝ≥0)
-      (lang : (i : Fin (n + 1)) →
-        Set (Sumcheck.Spec.StatementRound F n i ×
-          (∀ j, Sumcheck.Spec.OracleStatement F n (logupSumcheckDegree M params) j)))
-      (rbrSoundnessError :
-        ∀ _ : Fin n,
-          (Sumcheck.Spec.SingleRound.pSpec F (logupSumcheckDegree M params)).ChallengeIdx → ℝ≥0)
-      (hn : 0 < n)
-      (hOuter :
-        (outerVerifier oSpec F n M params).soundness init impl
-          (inputRelation F n M).language (midSoundnessProtocolLanguage F n M params)
-          (outerSoundnessError F n M params))
-      (hLast : lang (Fin.last n) = Set.univ)
-      (hError : sumcheckSoundnessError =
-        ∑ i : (logupSumcheckPSpec F n M params).ChallengeIdx,
-          (fun combinedIdx =>
-            letI ij := ProtocolSpec.seqComposeChallengeIdxToSigma combinedIdx
-            rbrSoundnessError ij.1 ij.2) i)
-      (hProj :
-        SumcheckLensProjSoundFor oSpec F n M params
-          (midSoundnessProtocolLanguage F n M params) (lang 0))
-      (hRound : ∀ i : Fin n,
-        (Sumcheck.Spec.SingleRound.oracleVerifier F n (logupSumcheckDegree M params)
-            (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i).rbrSoundness init impl
-          (lang i.castSucc) (lang i.succ) (rbrSoundnessError i))
-      (hAppend : ∀ {S₁ S₂ S₃ : Type} {k₁ k₂ : ℕ}
-          {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
-          [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
-          (V₁ : Verifier oSpec S₁ S₂ p₁) (V₂ : Verifier oSpec S₂ S₃ p₂)
-          {l₁ : Set S₁} {l₂ : Set S₂} {l₃ : Set S₃}
-          {e₁ : p₁.ChallengeIdx → ℝ≥0} {e₂ : p₂.ChallengeIdx → ℝ≥0},
-          V₁.rbrSoundness init impl l₁ l₂ e₁ → V₂.rbrSoundness init impl l₂ l₃ e₂ →
-          (V₁.append V₂).rbrSoundness init impl l₁ l₃
-            (Sum.elim e₁ e₂ ∘ ChallengeIdx.sumEquiv.symm))
-      (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
-        x ∈ support ((impl t).run s) → x.2 = s)
-      (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
-      (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
-        evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
-      (logupVerifier oSpec F n M params).soundness init impl
-        (inputRelation F n M).language outputRelation.language
-        (logupSoundnessError F n M params sumcheckSoundnessError) :=
-    issue13_soundness_msgSeam_anyMid_wiredRoundAppend oSpec F n M params init impl
-      (midSoundnessProtocolLanguage F n M params) (outerSoundnessError F n M params)
-      sumcheckSoundnessError lang rbrSoundnessError hn hOuter hLast hError hProj hRound hAppend
-      himplSP himplNF himplVB
+This specializes `issue13_soundness_msgSeam_anyMid_wiredRoundAppend` to the current
+`midSoundnessProtocolLanguage` and paper-shaped outer error.  Compared with
+`issue13_soundness_msgSeam_wiredSumcheck`, it no longer assumes the opaque inner multi-round RBR
+fact directly. -/
+theorem issue13_soundness_msgSeam_wiredRoundAppend [oSpec.Fintype]
+    (sumcheckSoundnessError : ℝ≥0)
+    (lang : (i : Fin (n + 1)) →
+      Set (Sumcheck.Spec.StatementRound F n i ×
+        (∀ j, Sumcheck.Spec.OracleStatement F n (logupSumcheckDegree M params) j)))
+    (rbrSoundnessError :
+      ∀ _ : Fin n,
+        (Sumcheck.Spec.SingleRound.pSpec F (logupSumcheckDegree M params)).ChallengeIdx → ℝ≥0)
+    (hn : 0 < n)
+    (hOuter :
+      (outerVerifier oSpec F n M params).soundness init impl
+        (inputRelation F n M).language (midSoundnessProtocolLanguage F n M params)
+        (outerSoundnessError F n M params))
+    (hLast : lang (Fin.last n) = Set.univ)
+    (hError : sumcheckSoundnessError =
+      ∑ i : (logupSumcheckPSpec F n M params).ChallengeIdx,
+        (fun combinedIdx =>
+          letI ij := ProtocolSpec.seqComposeChallengeIdxToSigma combinedIdx
+          rbrSoundnessError ij.1 ij.2) i)
+    (hProj :
+      SumcheckLensProjSoundFor oSpec F n M params
+        (midSoundnessProtocolLanguage F n M params) (lang 0))
+    (hRound : ∀ i : Fin n,
+      (Sumcheck.Spec.SingleRound.oracleVerifier F n (logupSumcheckDegree M params)
+          (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i).rbrSoundness init impl
+        (lang i.castSucc) (lang i.succ) (rbrSoundnessError i))
+    (hAppend : ∀ {S₁ S₂ S₃ : Type} {k₁ k₂ : ℕ}
+        {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
+        [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
+        (V₁ : Verifier oSpec S₁ S₂ p₁) (V₂ : Verifier oSpec S₂ S₃ p₂)
+        {l₁ : Set S₁} {l₂ : Set S₂} {l₃ : Set S₃}
+        {e₁ : p₁.ChallengeIdx → ℝ≥0} {e₂ : p₂.ChallengeIdx → ℝ≥0},
+        V₁.rbrSoundness init impl l₁ l₂ e₁ → V₂.rbrSoundness init impl l₂ l₃ e₂ →
+        (V₁.append V₂).rbrSoundness init impl l₁ l₃
+          (Sum.elim e₁ e₂ ∘ ChallengeIdx.sumEquiv.symm))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (logupSoundnessError F n M params sumcheckSoundnessError) :=
+  issue13_soundness_msgSeam_anyMid_wiredRoundAppend oSpec F n M params init impl
+    (midSoundnessProtocolLanguage F n M params) (outerSoundnessError F n M params)
+    sumcheckSoundnessError lang rbrSoundnessError hn hOuter hLast hError hProj hRound hAppend
+    himplSP himplNF himplVB
 
-  /-- **Issue #13 — sharp-language soundness route with inner multi-round RBR reduced.**
+/-- **Issue #13 — sharp-language soundness route with inner multi-round RBR reduced.**
 
-  This version uses the support-cleared sharp outer language from `OuterSoundnessSharp.lean`, the
-  language for which the paper-sized Schwartz–Zippel outer bound is proved.  The remaining hypotheses
-  state the two protocol-level compatibility facts not hidden by the algebra: outer soundness into the
-  sharp language, and projection soundness of the embedded sumcheck from that same sharp language. -/
-  theorem issue13_soundness_msgSeam_sharp_wiredRoundAppend [oSpec.Fintype]
-      (sumcheckSoundnessError : ℝ≥0)
-      (lang : (i : Fin (n + 1)) →
-        Set (Sumcheck.Spec.StatementRound F n i ×
-          (∀ j, Sumcheck.Spec.OracleStatement F n (logupSumcheckDegree M params) j)))
-      (rbrSoundnessError :
-        ∀ _ : Fin n,
-          (Sumcheck.Spec.SingleRound.pSpec F (logupSumcheckDegree M params)).ChallengeIdx → ℝ≥0)
-      (hn : 0 < n)
-      (hOuter :
-        (outerVerifier oSpec F n M params).soundness init impl
-          (inputRelation F n M).language (midSoundnessProtocolLanguageSharp F n M params)
-          (outerSoundnessError F n M params))
-      (hLast : lang (Fin.last n) = Set.univ)
-      (hError : sumcheckSoundnessError =
-        ∑ i : (logupSumcheckPSpec F n M params).ChallengeIdx,
-          (fun combinedIdx =>
-            letI ij := ProtocolSpec.seqComposeChallengeIdxToSigma combinedIdx
-            rbrSoundnessError ij.1 ij.2) i)
-      (hProj :
-        SumcheckLensProjSoundFor oSpec F n M params
-          (midSoundnessProtocolLanguageSharp F n M params) (lang 0))
-      (hRound : ∀ i : Fin n,
-        (Sumcheck.Spec.SingleRound.oracleVerifier F n (logupSumcheckDegree M params)
-            (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i).rbrSoundness init impl
-          (lang i.castSucc) (lang i.succ) (rbrSoundnessError i))
-      (hAppend : ∀ {S₁ S₂ S₃ : Type} {k₁ k₂ : ℕ}
-          {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
-          [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
-          (V₁ : Verifier oSpec S₁ S₂ p₁) (V₂ : Verifier oSpec S₂ S₃ p₂)
-          {l₁ : Set S₁} {l₂ : Set S₂} {l₃ : Set S₃}
-          {e₁ : p₁.ChallengeIdx → ℝ≥0} {e₂ : p₂.ChallengeIdx → ℝ≥0},
-          V₁.rbrSoundness init impl l₁ l₂ e₁ → V₂.rbrSoundness init impl l₂ l₃ e₂ →
-          (V₁.append V₂).rbrSoundness init impl l₁ l₃
-            (Sum.elim e₁ e₂ ∘ ChallengeIdx.sumEquiv.symm))
-      (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
-        x ∈ support ((impl t).run s) → x.2 = s)
-      (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
-      (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
-        evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
-      (logupVerifier oSpec F n M params).soundness init impl
-        (inputRelation F n M).language outputRelation.language
-        (logupSoundnessError F n M params sumcheckSoundnessError) :=
-    issue13_soundness_msgSeam_anyMid_wiredRoundAppend oSpec F n M params init impl
-      (midSoundnessProtocolLanguageSharp F n M params) (outerSoundnessError F n M params)
-      sumcheckSoundnessError lang rbrSoundnessError hn hOuter hLast hError hProj hRound hAppend
-      himplSP himplNF himplVB
+This version uses the support-cleared sharp outer language from `OuterSoundnessSharp.lean`, the
+language for which the paper-sized Schwartz–Zippel outer bound is proved.  The remaining hypotheses
+state the two protocol-level compatibility facts not hidden by the algebra: outer soundness into the
+sharp language, and projection soundness of the embedded sumcheck from that same sharp language. -/
+theorem issue13_soundness_msgSeam_sharp_wiredRoundAppend [oSpec.Fintype]
+    (sumcheckSoundnessError : ℝ≥0)
+    (lang : (i : Fin (n + 1)) →
+      Set (Sumcheck.Spec.StatementRound F n i ×
+        (∀ j, Sumcheck.Spec.OracleStatement F n (logupSumcheckDegree M params) j)))
+    (rbrSoundnessError :
+      ∀ _ : Fin n,
+        (Sumcheck.Spec.SingleRound.pSpec F (logupSumcheckDegree M params)).ChallengeIdx → ℝ≥0)
+    (hn : 0 < n)
+    (hOuter :
+      (outerVerifier oSpec F n M params).soundness init impl
+        (inputRelation F n M).language (midSoundnessProtocolLanguageSharp F n M params)
+        (outerSoundnessError F n M params))
+    (hLast : lang (Fin.last n) = Set.univ)
+    (hError : sumcheckSoundnessError =
+      ∑ i : (logupSumcheckPSpec F n M params).ChallengeIdx,
+        (fun combinedIdx =>
+          letI ij := ProtocolSpec.seqComposeChallengeIdxToSigma combinedIdx
+          rbrSoundnessError ij.1 ij.2) i)
+    (hProj :
+      SumcheckLensProjSoundFor oSpec F n M params
+        (midSoundnessProtocolLanguageSharp F n M params) (lang 0))
+    (hRound : ∀ i : Fin n,
+      (Sumcheck.Spec.SingleRound.oracleVerifier F n (logupSumcheckDegree M params)
+          (signDomain F (Fact.out : (-1 : F) ≠ 1)) oSpec i).rbrSoundness init impl
+        (lang i.castSucc) (lang i.succ) (rbrSoundnessError i))
+    (hAppend : ∀ {S₁ S₂ S₃ : Type} {k₁ k₂ : ℕ}
+        {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
+        [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
+        (V₁ : Verifier oSpec S₁ S₂ p₁) (V₂ : Verifier oSpec S₂ S₃ p₂)
+        {l₁ : Set S₁} {l₂ : Set S₂} {l₃ : Set S₃}
+        {e₁ : p₁.ChallengeIdx → ℝ≥0} {e₂ : p₂.ChallengeIdx → ℝ≥0},
+        V₁.rbrSoundness init impl l₁ l₂ e₁ → V₂.rbrSoundness init impl l₂ l₃ e₂ →
+        (V₁.append V₂).rbrSoundness init impl l₁ l₃
+          (Sum.elim e₁ e₂ ∘ ChallengeIdx.sumEquiv.symm))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (logupSoundnessError F n M params sumcheckSoundnessError) :=
+  issue13_soundness_msgSeam_anyMid_wiredRoundAppend oSpec F n M params init impl
+    (midSoundnessProtocolLanguageSharp F n M params) (outerSoundnessError F n M params)
+    sumcheckSoundnessError lang rbrSoundnessError hn hOuter hLast hError hProj hRound hAppend
+    himplSP himplNF himplVB
 
-  /-! ### Issue #13 completeness
+/-! ### Issue #13 completeness
 
 The historical `issue13_completeness` front door is retained for callers that already package the
 original `SubPhaseCompletenessResidual`.  The stronger `issue13_completeness_wired` below uses the
