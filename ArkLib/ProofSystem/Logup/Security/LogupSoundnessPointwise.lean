@@ -83,12 +83,15 @@ theorem logup_soundness_pointwiseSumcheck (sumcheckSoundnessError : ℝ≥0) (hn
       (logupSumcheckPSpec_first_dir F n M params hn)
       himplSP himplNF himplVB
   -- The oracle-level append residual (proven oracle-routing fusion) and the final assembly.
+  have hOracle : OracleVerifier.appendSoundnessResidual (init := init) (impl := impl)
+      (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
+      hOuter hSumcheck :=
+    OracleVerifier.oracleAppendSoundnessResidual_of_plain
+      (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
+      hOuter hSumcheck hPlainAppend
   exact OracleVerifier.append_soundness.{0, 0}
     (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
-    hOuter hSumcheck
-    (OracleVerifier.oracleAppendSoundnessResidual_of_plain
-      (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
-      hOuter hSumcheck hPlainAppend)
+    hOuter hSumcheck hOracle
 
 end
 
