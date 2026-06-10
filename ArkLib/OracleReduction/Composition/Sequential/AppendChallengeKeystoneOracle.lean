@@ -53,7 +53,6 @@ variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
     {rel₂ : Set ((Stmt₂ × ∀ i, OStmt₂ i) × Wit₂)}
     {rel₃ : Set ((Stmt₃ × ∀ i, OStmt₃ i) × Wit₃)}
 
-omit Oₛ₃ in
 /-- **Oracle-level append perfect completeness — UNCONDITIONAL (challenge seam).** Perfect
 completeness of `R₁.append R₂` for oracle reductions whose seam round is a verifier challenge
 (`V_to_P`), from the two component perfect-completenesses, the seam direction facts, and the
