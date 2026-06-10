@@ -240,9 +240,24 @@ protocol's challenge spaces.
     \texttt{Lemma516TimePFalse.lean}). The previously recorded discharge of the honest
     inverse-entry implication (M2a, \lean{DuplexSpongeFS.Sponge316.lemma5_12_honest}) is an
     artifact of B1: the combined event fires on any trace containing an inverse entry, so
-    the implication is trivially true over the deviant event. The CO25-faithful repaired
-    event together with re-proofs of the M2 block over it is the active repair lane
-    (issue~\#314).
+    the implication is trivially true over the deviant event.
+
+    \textbf{The repaired surface (wave 4--5, 2026-06-10).} The CO25-faithful event
+    \lean{DuplexSpongeFS.Paper.EPaper} (\texttt{PaperBadEvents.lean}: Def.~5.5
+    opposite-direction dedup certificates and the Eq.~26 input-capacity anchor) now lives
+    alongside the deviant one, and the \emph{entire} M2 block is machine-checked over it
+    with no side conditions: \lean{DuplexSpongeFS.Paper.lemma512Paper} (Lemma~5.12),
+    \lean{DuplexSpongeFS.Paper.lemma514Paper} (Lemma~5.14, fork uniqueness via the
+    Claim~5.19 end-aligned induction), and \lean{DuplexSpongeFS.Paper.lemma516Paper}
+    (Lemma~5.16, both timing halves — including the half that is provably false over the
+    deviant event). The \S5.6 $\to$ \S5.8 channel is re-keyed accordingly:
+    \lean{DuplexSpongeFS.BirthdayBoundPaper.probEvent_honestBad_le_probEvent_EPaper}
+    dominates all honest bad events by $\Pr[\mathsf{EPaper}]$ with no residual
+    hypotheses, and
+    \lean{DuplexSpongeFS.BirthdayBoundPaper.honestBad_birthday_of_paperResidual} closes
+    the birthday bound from the single live probability residual
+    $\mathsf{Lemma5\_8EagerPaperResidual}$ (the repaired Lemma~5.8 core, which — unlike
+    its refuted predecessor — survives the single-inverse-query countermodel).
 
     \textbf{Hybrid ladder.} The CO25 \S5.8 ladder is formalized on the eager surface with
     the \texttt{tr}$_i$ memo present in every hybrid (CO25 \S5.4 D2SQuery Item~3) and the
@@ -259,10 +274,13 @@ protocol's challenge spaces.
     \mathsf{Hyb12StepResidual},\quad
     \mathsf{Hyb23StepResidual},\quad
     \mathsf{Hyb34StepResidual},\\
-    \mathsf{Lemma5\_14HonestResidual},\quad
-    \mathsf{Lemma5\_8EagerBirthdayResidual}.
+    \mathsf{Lemma5\_8EagerPaperResidual}.
     \end{gathered}
     \]
+    (The deviant-event interfaces $\mathsf{Lemma5\_14HonestResidual}$,
+    $\mathsf{Lemma5\_16HonestResidual}$, and $\mathsf{Lemma5\_8EagerBirthdayResidual}$
+    remain in-tree only as refuted/superseded historical records; nothing on the active
+    path consumes them.)
     \textbf{Scope decision ($\delta$).} The unsalted eager endpoint matches CO25 only at
     salt size $\delta = 0$: for $\delta \ge 1$ a salt-grinding prover separates the salted
     $\mathrm{Hyb}_3$ from the salt-erasing $\mathrm{Hyb}_4$ witness by more than the
