@@ -5113,3 +5113,19 @@ program's two doors now have: the valued law (O125), the multiplicity rigidity (
 the all-words fold/mass/window laws (O56–O59), and the complete subset theory — the
 branch-count question is surrounded on every side by formal structure, with the count
 distribution itself the remaining open core.
+
+### O127 — THE SPARSE TOWER THEOREM: full_tower from exponentially fewer conditions
+
+`LamLeungTwoPow.full_tower_sparse` (axiom-clean, 0 sorry; my lane): the 2-POWER window
+{2^0, …, 2^k} ALONE (k+1 conditions) forces μ_{2^(k+1)}-closure — the same conclusion
+full_tower drew from the full window [1, 2^(k+1)) (2^(k+1) − 1 conditions). Proof: O126
+at depth s = 0 (the indicator is its own multiplicity vector; rigidity makes it
+invariant mod 2^(m−k); the μ_{2^(k+1)}-roots are exactly the ζ^{2^(m−k)}-powers, and
+invariance transfers membership along them).
+
+SIGNIFICANCE: (i) the session's first pillar strengthened exponentially in hypothesis
+by its newest theorem — the valued door immediately repaid the subset theory; (ii) for
+the LIST/BUDGET applications, sparse windows mean the unit-syndrome budget (O61) holds
+under 2-power-only syndrome conditions — a much weaker verifier obligation; (iii) the
+non-2-power window exponents are REDUNDANT for the fiber structure at 2-power domains —
+a fact the O70 tables hinted at (plateaus) and is now a theorem.
