@@ -79,6 +79,7 @@ theorem natDegree_eq_one_of_X_sub_C_dvd_irreducible {v : F[X]}
       Polynomial.natDegree_X_sub_C v
     rw [hc, Polynomial.natDegree_mul hX0 hc0, hXdeg, hcdeg]
 
+omit [Fact (0 < H.natDegree)] in
 /-- **The centre fold always divides the cofactor (`d_H ≥ 2`).**  The prime linear factor
 `(Y − C v)` divides `H · G`; dividing the irreducible `H` is excluded by degree, so it
 divides `G`. -/
@@ -96,6 +97,7 @@ theorem centreFold_dvd_G {x₀ : F} {R : F[X][X][Y]} {w G : F[X][Y]}
   · exact absurd (natDegree_eq_one_of_X_sub_C_dvd_irreducible hH) (by omega)
   · exact hG
 
+omit [Fact (0 < H.natDegree)] in
 /-- **F7 core: branch separation is false at every place (`d_H ≥ 2`).**
 `G(z, w(x₀,z)) = 0` for every `z`. -/
 theorem branchSep_eq_zero {x₀ : F} {R : F[X][X][Y]} {w G : F[X][Y]}
@@ -107,6 +109,7 @@ theorem branchSep_eq_zero {x₀ : F} {R : F[X][X][Y]} {w G : F[X][Y]}
     Polynomial.dvd_iff_isRoot.mp (centreFold_dvd_G hd2 hsplit hdvd)
   rw [← BranchCertificates.branchCert_eval G w x₀ z, hG, Polynomial.eval_zero]
 
+omit [Fact (0 < H.natDegree)] in
 /-- **F7 (certificate form): the `BranchCertificates` certificate is identically zero for
 `d_H ≥ 2`** — the `hbr` hypothesis of `gammaGenuine_eq_trunc_global[_corrected]` is
 unsatisfiable. -/
@@ -117,6 +120,7 @@ theorem branchCert_eq_zero {x₀ : F} {R : F[X][X][Y]} {w G : F[X][Y]}
     G.eval (w.eval (Polynomial.C x₀)) = 0 :=
   Polynomial.dvd_iff_isRoot.mp (centreFold_dvd_G hd2 hsplit hdvd)
 
+omit [Fact (0 < H.natDegree)] in
 /-- **F7 (matching-set form): any matching set carrying the branch-separation family is empty
 (`d_H ≥ 2`)** — the decoded-roots capstones (`mpFin_of_decoded_roots`,
 `hvanish_of_decoded_roots`, `gammaGenuine_eq_trunc_of_decoded_roots[_corrected]`) are

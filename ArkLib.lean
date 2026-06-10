@@ -1479,6 +1479,7 @@ import ArkLib.ToMathlib.BivariateDegreeToolkit
 import ArkLib.ToMathlib.BoundaryDischarge
 import ArkLib.ToMathlib.BoundaryHalfState
 import ArkLib.ToMathlib.BranchCertificates
+import ArkLib.ToMathlib.BranchSeparationUnsat
 import ArkLib.ToMathlib.Bridge2BCHKS25
 import ArkLib.ToMathlib.Bridge2BGKS20
 import ArkLib.ToMathlib.Bridge2GCXK25
