@@ -332,6 +332,149 @@ theorem exists_dichotomyData_of_window_div
         (fun γ hγ => hdecode (some R) hij γ hγ)
         (fun γ hγ => (hRdata γ hγ).2)
 
+
+open Classical in
+/-- **The tight uniform numeric count on the window.**  Every stack's bad scalars number
+at most `(D/(k-1) + 1) · T` with `T` at the tight degenerate budget: the factor cells are
+small by the window pencil (`hK4_of_window`), the degenerate cell by the tight Z-degree
+budget, and the live index is bounded by the interpolant's `Y`-degree `D/(k-1)` (positive-
+degree distinct factors, `card_posDegree_factors_le`) plus one. -/
+theorem badCount_le_numeric_tight_of_window
+    {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin 2) (Fin n)) (δ : ℝ≥0) (T : ℕ)
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hwin : 2 * Fintype.card (Fin n) + k
+      ≤ 3 * ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊)
+    (hTn : n ≤ T)
+    (hT : n * (GuruswamiSudan.constraintIndices m).card
+      * (gs_degree_bound k n m / (k - 1)) ≤ T) :
+    (Finset.univ.filter (fun γ : F₀ =>
+      mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+        δ (u 0) (u 1) γ)).card
+      ≤ (gs_degree_bound k n m / (k - 1) + 1) * T := by
+  classical
+  obtain ⟨Q₀, h0, hcond, hcard⟩ :=
+    GuruswamiSudan.OverRatFunc.ZDegree.gs_existence_over_ratfunc_zDegree_card_div
+      (F := F₀) k m domain (u 0) (u 1) hk1 (NeZero.ne n) hm
+  have hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) =
+      Polynomial.C (Polynomial.C (algebraMap F₀[X] (RatFunc F₀) (1 : F₀[X]))) *
+        Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) := by
+    simp
+  obtain ⟨Index, Ecell, P, hIdx, hcover, hdec, hnone, hnonecard, hfactor⟩ :=
+    exists_cell_production domain u δ
+      (n * (GuruswamiSudan.constraintIndices m).card * (gs_degree_bound k n m / (k - 1)))
+      hcond hrep h0 hkn hm hδ1 hδJ (degenerate_card_bound_of_filter hcard)
+  -- the interpolant's Y-degree is at most `D/(k-1)`
+  have hφinj : Function.Injective
+      (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) :=
+    Polynomial.map_injective _ (IsFractionRing.injective F₀[X] (RatFunc F₀))
+  have hydeg : Q₀.natDegree ≤ gs_degree_bound k n m / (k - 1) := by
+    have hnat : Polynomial.Bivariate.natWeightedDegree
+        (Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀)))) 1 (k - 1)
+        ≤ gs_degree_bound k n m := by
+      have h := hcond.Q_deg
+      rw [Polynomial.Bivariate.weightedDegree_eq_natWeightedDegree] at h
+      exact_mod_cast h
+    have h1 := GuruswamiSudan.natDegree_le_of_natWeightedDegree (by omega) hnat
+    rwa [Polynomial.natDegree_map_eq_of_injective hφinj] at h1
+  -- the live index: degenerate cell plus nonempty factor cells
+  set Index' : Finset (Option ((F₀[X])[X][Y])) :=
+    Index.filter (fun ij => ij = none ∨ (Ecell ij).Nonempty) with hI'
+  have hcover' : (Finset.univ.filter (fun γ : F₀ =>
+      mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+        δ (u 0) (u 1) γ)) ⊆ Index'.biUnion Ecell := by
+    intro γ hγ
+    obtain ⟨ij, hij, hγcell⟩ := Finset.mem_biUnion.mp (hcover hγ)
+    exact Finset.mem_biUnion.mpr
+      ⟨ij, Finset.mem_filter.mpr ⟨hij, Or.inr ⟨γ, hγcell⟩⟩, hγcell⟩
+  have hI'card : Index'.card ≤ gs_degree_bound k n m / (k - 1) + 1 := by
+    have hsub : Index' ⊆ insert none
+        (((UniqueFactorizationMonoid.factors Q₀).toFinset.filter
+          (fun q => 1 ≤ q.natDegree)).image some) := by
+      intro ij hij
+      obtain ⟨hijIdx, hcase⟩ := Finset.mem_filter.mp hij
+      match ij with
+      | none => exact Finset.mem_insert_self _ _
+      | some R =>
+        rcases hcase with h | hne
+        · exact absurd h (by simp)
+        · refine Finset.mem_insert_of_mem (Finset.mem_image.mpr ⟨R, ?_, rfl⟩)
+          obtain ⟨hRfac, hRdata⟩ := hfactor R hijIdx
+          refine Finset.mem_filter.mpr ⟨hRfac, ?_⟩
+          obtain ⟨γ, hγ⟩ := hne
+          obtain ⟨hQγ, hdvdγ⟩ := hRdata γ hγ
+          have hRdvd : R ∣ Q₀ :=
+            UniqueFactorizationMonoid.dvd_of_mem_factors (Multiset.mem_toFinset.mp hRfac)
+          have hRγ0 : R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 := by
+            intro habs
+            obtain ⟨S, hS⟩ := hRdvd
+            apply hQγ
+            rw [hS, Polynomial.map_mul, habs, zero_mul]
+          have h1 := Polynomial.natDegree_le_of_dvd hdvdγ hRγ0
+          rw [Polynomial.natDegree_X_sub_C] at h1
+          exact le_trans h1 (Polynomial.natDegree_map_le)
+    calc Index'.card
+        ≤ (insert none
+            (((UniqueFactorizationMonoid.factors Q₀).toFinset.filter
+              (fun q => 1 ≤ q.natDegree)).image some)).card :=
+          Finset.card_le_card hsub
+      _ ≤ (((UniqueFactorizationMonoid.factors Q₀).toFinset.filter
+              (fun q => 1 ≤ q.natDegree)).image some).card + 1 :=
+          Finset.card_insert_le _ _
+      _ ≤ ((UniqueFactorizationMonoid.factors Q₀).toFinset.filter
+              (fun q => 1 ≤ q.natDegree)).card + 1 :=
+          Nat.add_le_add_right Finset.card_image_le 1
+      _ ≤ Q₀.natDegree + 1 := Nat.add_le_add_right (card_posDegree_factors_le h0) 1
+      _ ≤ gs_degree_bound k n m / (k - 1) + 1 := Nat.add_le_add_right hydeg 1
+  -- every live cell is small
+  have hcell : ∀ ij ∈ Index', (Ecell ij).card ≤ T := by
+    intro ij hij
+    have hijIdx := (Finset.mem_filter.mp hij).1
+    match ij with
+    | none => exact le_trans hnonecard hT
+    | some R =>
+        obtain ⟨hRfac, hRdata⟩ := hfactor R hijIdx
+        have hRirr : Irreducible R :=
+          UniqueFactorizationMonoid.irreducible_of_factor R
+            (Multiset.mem_toFinset.mp hRfac)
+        exact hK4_of_window (lt_trans Nat.zero_lt_one hk1) hwin hTn
+          (Ecell (some R)) P R hRirr
+          (fun γ hγ => hdec (some R) hijIdx γ hγ)
+          (fun γ hγ => (hRdata γ hγ).2)
+  calc (Finset.univ.filter (fun γ : F₀ =>
+        mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+          δ (u 0) (u 1) γ)).card
+      ≤ (Index'.biUnion Ecell).card := Finset.card_le_card hcover'
+    _ ≤ ∑ ij ∈ Index', (Ecell ij).card := Finset.card_biUnion_le
+    _ ≤ ∑ _ij ∈ Index', T := Finset.sum_le_sum hcell
+    _ = Index'.card * T := by rw [Finset.sum_const, smul_eq_mul]
+    _ ≤ (gs_degree_bound k n m / (k - 1) + 1) * T := Nat.mul_le_mul_right T hI'card
+
+open Classical in
+/-- **The tight window numeric edge.**  `JohnsonNumericBound` through the complete GS
+machinery at the satisfiable budget `B = (D/(k-1)+1)·T` with `T` at the tight degenerate
+scale — the day-25 sweep places `B/|F|` inside `johnsonBoundReal` at every scale. -/
+theorem johnsonNumericBound_of_window_numeric_tight
+    {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (η δ : ℝ≥0) (T : ℕ)
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hwin : 2 * Fintype.card (Fin n) + k
+      ≤ 3 * ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊)
+    (hTn : n ≤ T)
+    (hT : n * (GuruswamiSudan.constraintIndices m).card
+      * (gs_degree_bound k n m / (k - 1)) ≤ T)
+    (harith : (((gs_degree_bound k n m / (k - 1) + 1) * T : ℕ) : ℝ≥0∞)
+        / (Fintype.card F₀ : ℝ≥0∞)
+      ≤ ENNReal.ofReal (johnsonBoundReal domain k η δ)) :
+    JohnsonNumericBound domain k η δ :=
+  johnsonNumericBound_of_badCount_le domain k η δ
+    ((gs_degree_bound k n m / (k - 1) + 1) * T)
+    (fun u => badCount_le_numeric_tight_of_window domain u δ T hk1 hkn hm hδ1 hδJ
+      hwin hTn hT)
+    harith
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
@@ -344,3 +487,5 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window_numeric
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_cell_production_total_div
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_dichotomyData_of_window_div
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.badCount_le_numeric_tight_of_window
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window_numeric_tight
