@@ -1296,14 +1296,6 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.BadBlocks
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.FoldDistance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Incremental
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorClosest
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorCodeDistance
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDisagreement
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDistance
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFiber
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorHamming
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorUDR
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorWitness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
