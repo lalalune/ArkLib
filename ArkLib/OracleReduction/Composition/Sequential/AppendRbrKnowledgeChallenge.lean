@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallengeBody
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2ReconcileProof
-import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallengeZero
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeSeamZero
 
 /-!
 # Challenge-seam rbr knowledge-soundness append keystone (`Subsingleton σ`) — RESIDUAL-FREE
@@ -17,7 +17,7 @@ the message-seam discharge through the challenge-seam body factoring `phase2_bod
 the proven inner reconciliation `appendRbrKnowledgePhase2SeamReconcile_proof_pos`; at the seam
 challenge itself (`i₂ = 0`, which exists only at a challenge seam) the per-round flip bound is
 discharged by the proven `appendRbrKnowledgeSeamZero_proven`
-(`AppendRbrKnowledgeChallengeZero.lean` — zero body factoring + semantic seam glue). The keystone
+(`AppendRbrKnowledgeSeamZero.lean` — zero body factoring + semantic seam glue). The keystone
 therefore carries **no named residual**. Together with the message keystone and the residual-free
 empty-seam keystone (`AppendRbrKnowledgeEmpty.lean`), every seam direction of an appended
 reduction has a residual-free rbr knowledge-soundness keystone in the `Subsingleton σ` regime.
@@ -401,7 +401,7 @@ theorem appendRbrKnowledgeSoundnessPhase2_subsingleton_challenge [Subsingleton �
   rcases Nat.eq_zero_or_pos ((i₂.1 : Fin n) : ℕ) with hz | hpos
   · -- The seam-challenge case (`i₂ = 0`, only possible at a `V_to_P` seam): the per-round flip
     -- bound at the seam challenge itself — discharged by the proven zero body factoring +
-    -- semantic seam glue (`AppendRbrKnowledgeChallengeZero.lean`).
+    -- semantic seam glue (`AppendRbrKnowledgeSeamZero.lean`).
     exact appendRbrKnowledgeSeamZero_proven V₁ V₂ kSF₁ kSF₂ verify hVerify hInit hNEW₂ hInitNF
       hn hDir hDir₂ hBound₂ stmtIn witIn prover i₂ hz
   · -- Abbreviations for the appended phase-2 per-round event `E` and the seam-factored experiment body.
@@ -526,7 +526,7 @@ the phase-2 discharge routes through the challenge-seam body factoring
 (`phase2_body_heq_challenge`, built on the syntactic split-prover seam commutation), with the
 inner seam reconciliation discharged by `appendRbrKnowledgePhase2SeamReconcile_proof_pos` and the
 seam-challenge case (`i₂ = 0`, which exists only at a challenge seam) discharged by
-`appendRbrKnowledgeSeamZero_proven` (`AppendRbrKnowledgeChallengeZero.lean`). No named residual
+`appendRbrKnowledgeSeamZero_proven` (`AppendRbrKnowledgeSeamZero.lean`). No named residual
 remains: the keystone needs only the two per-phase rbr knowledge-soundness hypotheses and the
 determinism/side conditions. -/
 theorem append_rbrKnowledgeSoundness_keystone_subsingleton_challenge [Subsingleton σ]

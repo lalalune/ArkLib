@@ -21,7 +21,7 @@ oracle verifier's `toVerifier` with `Verifier.append` of the components' `toVeri
 in-library: `hReconcile` (the phase-2 inner seam reconciliation) by
 `appendRbrKnowledgePhase2SeamReconcile_proof_pos`, and `hSeamZero` (the per-round flip bound at
 the seam challenge itself, `i₂ = 0`) by `appendRbrKnowledgeSeamZero_proven`
-(`AppendRbrKnowledgeChallengeZero.lean`). The former named `Prop`
+(`AppendRbrKnowledgeSeamZero.lean`). The former named `Prop`
 `Verifier.appendRbrKnowledgeSeamZeroResidual` that fold-level assemblies used to thread per
 challenge seam is deleted: no keystone requires it anymore.
 -/
