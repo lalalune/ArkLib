@@ -940,6 +940,85 @@ theorem e_of_hasFirstHashPermCapNatPaper
   Or.inl (Or.inl (e_h_of_hasFirstHashPermCapNatPaper tr h))
 
 
+/-! ## The 5.16 hash half, paper semantics — DISCHARGED
+
+The legacy chain forced the chain witness to be a *forward* entry via the inverse-exclusion
+keystone ("no raw inverse off `E`") — which is exactly what is **false** under paper semantics
+(an inverse whose pair was earlier queried forward is legitimate). The direction-agnostic shape
+redesign makes that keystone unnecessary: the chain-recording lemma yields a perm-**or**-inverse
+witness, the generalized shape absorbs it, and the production is entirely semantics-free. -/
+
+/-- Off the **paper** combined bad event, an honest hash-timing witness yields the
+direction-agnostic first-hash collision shape in the raw trace — no inverse-exclusion needed. -/
+theorem e_time_h_honest_raw_hasFirstHashPermCapNatPaper
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hTime : DuplexSpongeFS.KeyLemmaFoundations.E_time_h_honest tr state S) :
+    ∃ stmt capSeg, HasFirstHashPermCapNatPaper tr stmt capSeg := by
+  classical
+  unfold DuplexSpongeFS.KeyLemmaFoundations.E_time_h_honest at hTime
+  obtain ⟨p, hp, hgt⟩ := hTime
+  let pairIdx : Fin p.1.inputState.length := ⟨0, by
+    rw [p.1.inputState_length_eq_outputState_length_succ]
+    exact Nat.succ_pos _⟩
+  have hpair : pairIdx.val < p.1.outputState.length := by
+    simpa [pairIdx] using jbt_time_h_outputState_nonempty tr state S p hp hgt
+  -- the recorded permutation entry, in either direction (semantics-free recording fact)
+  have hperm :
+      tr[(p.2.2 pairIdx).val]? =
+        some (⟨Sum.inr (Sum.inl p.1.inputState[pairIdx]),
+          p.1.outputState[pairIdx.val]'hpair⟩ :
+          (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+            (duplexSpongeChallengeOracle StmtIn U).Range t) ∨
+      tr[(p.2.2 pairIdx).val]? =
+        some (⟨Sum.inr (Sum.inr (p.1.outputState[pairIdx.val]'hpair)),
+          p.1.inputState[pairIdx]⟩ :
+          (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+            (duplexSpongeChallengeOracle StmtIn U).Range t) := by
+    have hp' := hp
+    unfold DuplexSpongeFS.Backtrack.J_BT at hp'
+    rw [Finset.mem_image] at hp'
+    obtain ⟨seq, _hseq, hp_eq⟩ := hp'
+    subst p
+    simpa using DuplexSpongeFS.Backtrack.BacktrackSequence.index_perm_getElem?_of_lt
+      (trace := tr) (state := state) (seq := seq) (pairIdx := pairIdx) (hpair := hpair)
+  let capSeg : Vector U SpongeSize.C :=
+    Vector.drop (p.1.inputState[0]'(by
+      rw [p.1.inputState_length_eq_outputState_length_succ]
+      exact Nat.succ_pos _)) SpongeSize.R
+  have hhash : tr[p.2.1.val]? = some (hashEntryP p.1.stmt capSeg) := by
+    simpa [hashEntryP, capSeg] using jbt_hash_getElem? tr state S p hp
+  have hfirst : ∀ k, k < p.2.1.val → tr[k]? ≠ some (hashEntryP p.1.stmt capSeg) := by
+    intro k hk hbad
+    have hklen : k < tr.length := by
+      by_contra hge
+      rw [List.getElem?_eq_none (by omega)] at hbad
+      simp at hbad
+    rw [List.getElem?_eq_getElem hklen] at hbad
+    exact jbt_hash_no_prior tr state S p hp ⟨k, hklen⟩ hk
+      (by simpa [hashEntryP, capSeg] using Option.some.inj hbad)
+  have hcapEq : (p.1.inputState[pairIdx]).capacitySegment = capSeg := rfl
+  refine ⟨p.1.stmt, capSeg, p.2.1.val, (p.2.2 pairIdx).val, hgt, hhash, hfirst,
+    p.1.inputState[pairIdx], p.1.outputState[pairIdx.val]'hpair, ?_, Or.inr hcapEq⟩
+  rcases hperm with hf | hi
+  · exact Or.inl (by simpa [forwardEntryP] using hf)
+  · exact Or.inr (by simpa [inverseEntryP] using hi)
+
+open DuplexSpongeFS.KeyLemmaFoundations in
+/-- **CO25 Lemma 5.16, hash half, paper semantics — DISCHARGED**: off the paper combined bad
+event, no backtrack payload's anchoring hash query appears after its first chain permutation
+query. The first discharged half of `Lemma5_16HonestResidualPaper`. -/
+theorem lemma5_16_paper_hash_half
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hE : ¬ BadEventDSPaper.E tr) :
+    ¬ E_time_h_honest tr state S := by
+  intro hTime
+  obtain ⟨stmt, capSeg, hshape⟩ :=
+    e_time_h_honest_raw_hasFirstHashPermCapNatPaper tr state S hTime
+  exact hE (e_of_hasFirstHashPermCapNatPaper tr hshape)
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -957,3 +1036,4 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.e_of_hasFirstPermCapacityBeforeForwardOutputPaper
 #print axioms DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_hash_of_no_prior
 #print axioms DuplexSpongeFS.Sponge316.e_of_hasFirstHashPermCapNatPaper
+#print axioms DuplexSpongeFS.Sponge316.lemma5_16_paper_hash_half
