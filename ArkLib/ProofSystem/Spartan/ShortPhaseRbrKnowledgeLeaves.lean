@@ -361,7 +361,7 @@ theorem firstChallenge_toVerifier_closed :
 
 /-- The closed-form output map of the compiled `sendEvalClaim` verifier: forward the statement,
 route the bundled claim oracle from the message, pass the remaining oracles through. -/
-def sendEvalClaimVerify
+def sendEvalClaimRouteMap
     (p : Statement.AfterFirstSumcheck R pp × ∀ i, OracleStatement.AfterFirstSumcheck R pp i)
     (m : ∀ i, EvalClaim R i) :
     Statement.AfterSendEvalClaim R pp × ∀ i, OracleStatement.AfterSendEvalClaim R pp i :=
@@ -374,7 +374,7 @@ omit [IsDomain R] [Fintype R] [DecidableEq R] [Inhabited R] in
 bundled claim oracle from the message, and passes the remaining oracles through. -/
 theorem sendEvalClaim_toVerifier_closed :
     (oracleReduction.sendEvalClaim R pp oSpec).verifier.toVerifier
-      = ⟨fun p tr => pure (sendEvalClaimVerify (R := R) pp p (tr.messages ⟨0, rfl⟩))⟩ := by
+      = ⟨fun p tr => pure (sendEvalClaimRouteMap (R := R) pp p (tr.messages ⟨0, rfl⟩))⟩ := by
   rw [OracleVerifier.toVerifier_eq_pure_of_collapse
     (oracleReduction.sendEvalClaim R pp oSpec).verifier (fun p _ => p.1)
     (fun _ _ _ => by
@@ -383,7 +383,7 @@ theorem sendEvalClaim_toVerifier_closed :
   congr 1
   funext p tr
   congr 1
-  unfold sendEvalClaimVerify
+  unfold sendEvalClaimRouteMap
   congr 1
   funext i
   cases i with
@@ -409,7 +409,7 @@ theorem linearCombination_toVerifier_closed :
 
 /-- **Leaf `h₁`.** The `firstMessage` (`SendSingleWitness`) phase is perfectly rbr
 knowledge-sound from `spartanRelIn` to `relB`. -/
-theorem firstMessage_rbrKnowledgeSoundness_leaf :
+theorem firstMessage_rbrKnowledgeSoundness_spartanRelIn :
     (oracleReduction.firstMessage R pp oSpec).verifier.rbrKnowledgeSoundness init impl
       (spartanRelIn R pp) (firstMessageRbrRelB (R := R) pp) 0 :=
   SendSingleWitness.oracleReduction_rbr_knowledge_soundness (oSpec := oSpec)
@@ -553,7 +553,7 @@ omit [Inhabited R] in
 /-- **Leaf `h₂` (the Schwartz–Zippel leaf).** The `firstChallenge` phase is rbr knowledge-sound
 from `relB` (R1CS satisfiability of the sent witness) to the first sum-check's honest input
 relation, with per-round error `ℓ_m / |R|`. -/
-theorem firstChallenge_rbrKnowledgeSoundness_leaf (hm : 0 < pp.ℓ_m) :
+theorem firstChallenge_rbrKnowledgeSoundness_schwartzZippel (hm : 0 < pp.ℓ_m) :
     (oracleReduction.firstChallenge R pp oSpec).verifier.rbrKnowledgeSoundness init impl
       (firstMessageRbrRelB (R := R) pp)
       (Spartan.Spec.firstSumcheckRbrRelIn (R := R) pp oSpec)
@@ -619,7 +619,7 @@ theorem linearCombination_rbrKnowledgeSoundness_leaf :
 
 /-- **Leaf `h₆`.** The zero-round `prependRLCTarget` adapter is perfectly rbr knowledge-sound
 from the pullback relation `relF` to the second sum-check's honest input relation. -/
-theorem prependRLCTarget_rbrKnowledgeSoundness_leaf :
+theorem prependRLCTarget_rbrKnowledgeSoundness_pullbackLeaf :
     (prependRLCTarget (R := R) pp oSpec).verifier.rbrKnowledgeSoundness init impl
       (prependRLCTargetRbrRelF (R := R) pp oSpec)
       (Spartan.Spec.secondSumcheckRbrRelIn (R := R) pp oSpec) 0 := by
@@ -665,11 +665,11 @@ theorem composedRbrKnowledgeSoundnessPreserving_unconditional [Subsingleton σ]
         (fun _ => (2 : ℝ≥0) / (Fintype.card R))
         (0 : (!p[] : ProtocolSpec 0).ChallengeIdx → ℝ≥0)) :=
   composedRbrKnowledgeSoundnessPreserving_of_nonsumcheck_leaves pp oSpec hm hn
-    (firstMessage_rbrKnowledgeSoundness_leaf pp oSpec)
-    (firstChallenge_rbrKnowledgeSoundness_leaf pp oSpec hm)
+    (firstMessage_rbrKnowledgeSoundness_spartanRelIn pp oSpec)
+    (firstChallenge_rbrKnowledgeSoundness_schwartzZippel pp oSpec hm)
     (sendEvalClaim_rbrKnowledgeSoundness_leaf pp oSpec)
     (linearCombination_rbrKnowledgeSoundness_leaf pp oSpec)
-    (prependRLCTarget_rbrKnowledgeSoundness_leaf pp oSpec)
+    (prependRLCTarget_rbrKnowledgeSoundness_pullbackLeaf pp oSpec)
     hInit hInitNF hNE_B hNE_C hNE_E hNE_F hNE_G
 
 end
@@ -680,9 +680,9 @@ end Spartan.Spec.Bricks
 #print axioms Verifier.rbrKnowledgeSoundness_zeroRound_pure
 #print axioms Verifier.rbrKnowledgeSoundness_singleMessage_pure
 #print axioms Verifier.rbrKnowledgeSoundness_singleChallenge_pure
-#print axioms Spartan.Spec.Bricks.firstMessage_rbrKnowledgeSoundness_leaf
-#print axioms Spartan.Spec.Bricks.firstChallenge_rbrKnowledgeSoundness_leaf
+#print axioms Spartan.Spec.Bricks.firstMessage_rbrKnowledgeSoundness_spartanRelIn
+#print axioms Spartan.Spec.Bricks.firstChallenge_rbrKnowledgeSoundness_schwartzZippel
 #print axioms Spartan.Spec.Bricks.sendEvalClaim_rbrKnowledgeSoundness_leaf
 #print axioms Spartan.Spec.Bricks.linearCombination_rbrKnowledgeSoundness_leaf
-#print axioms Spartan.Spec.Bricks.prependRLCTarget_rbrKnowledgeSoundness_leaf
+#print axioms Spartan.Spec.Bricks.prependRLCTarget_rbrKnowledgeSoundness_pullbackLeaf
 #print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessPreserving_unconditional
