@@ -700,8 +700,15 @@ private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply
     refine HEq.trans (fun_heq_cast_arg h_domain_succ newOracle) ?_
     refine HEq.trans (heq_of_eq h_transcript_eq.symm) ?_
     symm
-    let h_transport := commitStep_inr_transport_heq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (𝓑 := 𝓑) (mp := mp) i hCR transcript j h_embed
+    have h_transport :
+        HEq ((((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j) ▸ h_embed ▸
+            transcript.messages ⟨0, rfl⟩ :
+              OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j))
+          (transcript.messages ⟨0, rfl⟩) := by
+      exact @commitStep_inr_transport_heq r _ L _ _ _ 𝔽q _ _ _ _ _ _
+        β _ _ ℓ 𝓡 ϑ _ _ _ h_ℓ_add_R_rate 𝓑 _ Context mp
+        i hCR transcript j h_embed
     exact h_transport
 =======
     rw [h_transcript_eq]

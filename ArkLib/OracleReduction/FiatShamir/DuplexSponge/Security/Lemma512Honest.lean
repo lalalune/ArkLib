@@ -1624,6 +1624,18 @@ theorem not_e_time_p_honest_of_not_E_of_noRedundantEntryDS
     (tr := tr) h (state := state) (S := S)
     (no_redundant_forward_anchor_of_noRedundantEntryDS tr state S hNoRed)
 
+/-- Full timing closure for a fixed trace that is already deduplicated. -/
+theorem not_e_time_honest_of_not_E_of_noRedundantEntryDS
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hNoRed : tr.NoRedundantEntryDS) :
+    ¬ DuplexSpongeFS.KeyLemmaFoundations.E_time_honest tr state S := by
+  intro hTime
+  unfold DuplexSpongeFS.KeyLemmaFoundations.E_time_honest at hTime
+  rcases hTime with hHash | hPerm
+  · exact not_e_time_h_honest_of_not_E tr h state S hHash
+  · exact not_e_time_p_honest_of_not_E_of_noRedundantEntryDS tr h state S hNoRed hPerm
+
 /-- Off `E`, an honest hash-ordering witness gives concrete raw trace entries: the anchoring
 hash query and the first forward permutation query, with the permutation entry earlier in the
 trace. This is the raw-trace payload needed before the dedup collision step of M2c. -/
