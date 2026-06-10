@@ -1629,6 +1629,7 @@ import ArkLib.ToMathlib.GSLineInputSupply
 import ArkLib.ToMathlib.GSSurfaceEntry
 import ArkLib.ToMathlib.GSSurfaceKeystone
 import ArkLib.ToMathlib.GSSurfaceSupply
+import ArkLib.ToMathlib.GSSurfaceTailSupply
 import ArkLib.ToMathlib.GammaCoeffRecursion
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.GenuineMonicCapstone
