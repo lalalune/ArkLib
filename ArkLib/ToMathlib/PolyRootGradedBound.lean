@@ -167,11 +167,10 @@ theorem coeff_natDegree_le_of_eval_monic_graded {B : Type*} [CommRing B] [IsDoma
   classical
   -- transport along the swap
   have hswaproot : Polynomial.eval (polySwap g) (P.map (polySwap : B[X][Y] →+* B[X][Y])) = 0 := by
-    rw [Polynomial.eval_map,
-      show Polynomial.eval₂ (polySwap : B[X][Y] →+* B[X][Y]) (polySwap g) P
-        = polySwap (Polynomial.eval₂ (RingHom.id _) g P) from
-      (Polynomial.hom_eval₂ P (RingHom.id _) polySwap (polySwap g) ▸ by rw [RingHom.comp_id]),
-      Polynomial.eval₂_id, hroot, map_zero]
+    have h := Polynomial.hom_eval₂ P (RingHom.id _) (polySwap : B[X][Y] →+* B[X][Y]) g
+    rw [RingHom.comp_id, Polynomial.eval₂_id, hroot, map_zero] at h
+    rw [Polynomial.eval_map]
+    exact h.symm
   have hswapmonic : (P.map (polySwap : B[X][Y] →+* B[X][Y])).Monic :=
     hmonic.map _
   have hswapdeg : (P.map (polySwap : B[X][Y] →+* B[X][Y])).natDegree = P.natDegree :=
@@ -218,7 +217,7 @@ theorem exists_map_eq_of_eval_monic_eq_zero {R S : Type*} [CommRing R] [IsDomain
   have hlift : ∀ i, γ.coeff i ∈ Set.range (algebraMap R S) := fun i => by
     obtain ⟨y, hy⟩ := IsIntegrallyClosed.isIntegral_iff.mp (hcoeff i)
     exact ⟨y, hy⟩
-  obtain ⟨g, hg⟩ := Polynomial.mem_lifts.mp ((Polynomial.lifts_iff_coeff_lifts γ).mpr hlift)
+  obtain ⟨g, hg⟩ := (Polynomial.mem_lifts γ).mp ((Polynomial.lifts_iff_coeff_lifts γ).mpr hlift)
   exact ⟨g, hg⟩
 
 /-! ## The grand capstone: integral coefficients of sharply bounded inner degree -/

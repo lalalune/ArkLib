@@ -72,12 +72,13 @@ theorem isUnit_sub_of_separable_mul_X_sub_C {a b : A}
   obtain ⟨u, w, huw⟩ := h
   have hd : Polynomial.derivative ((X - C a) * (X - C b) : A[X])
       = (X - C b) + (X - C a) := by
-    rw [Polynomial.derivative_mul, Polynomial.derivative_X_sub_C, one_mul, mul_one]
+    rw [Polynomial.derivative_mul, Polynomial.derivative_X_sub_C,
+      Polynomial.derivative_X_sub_C, one_mul, mul_one]
   have hev := congrArg (Polynomial.eval a) huw
   simp only [hd, Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_sub,
     Polynomial.eval_X, Polynomial.eval_C, Polynomial.eval_one, sub_self, mul_zero,
     zero_mul, zero_add, add_zero] at hev
-  exact isUnit_of_mul_eq_one _ _ ((mul_comm _ _).trans hev)
+  exact IsUnit.of_mul_eq_one _ ((mul_comm _ _).trans hev)
 
 /-- **The exact boundary**: a pair-of-sections product is separable **iff** the separation is a
 unit.  (Forward: Bézout evaluation; backward: each linear factor is separable and the unit
@@ -118,7 +119,7 @@ theorem not_separable_section_pair :
     ¬ ((X - C (0 : F[X])) * (X - C (Polynomial.X : F[X])) : F[X][Y]).Separable := by
   intro h
   have hu := isUnit_sub_of_separable_mul_X_sub_C h
-  rw [zero_sub, isUnit_neg_iff] at hu
+  rw [zero_sub, IsUnit.neg_iff] at hu
   exact Polynomial.not_isUnit_X hu
 
 end Witness

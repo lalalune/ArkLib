@@ -323,6 +323,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineMonic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineZLinearMonic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineZLinearQuadratic
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.SliceSeparabilityBoundary
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ThresholdInterface
@@ -1815,6 +1816,7 @@ import ArkLib.ToMathlib.PlaceGeometryFromLocalSeries
 import ArkLib.ToMathlib.PlaceGeometrySupply
 import ArkLib.ToMathlib.PlaceSeriesCanonical
 import ArkLib.ToMathlib.PlonkSpartanAlgebra
+import ArkLib.ToMathlib.PolyRootGradedBound
 import ArkLib.ToMathlib.Polynomial.DegreeLT
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.HasseDerivEval
