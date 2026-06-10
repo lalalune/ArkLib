@@ -722,4 +722,65 @@ theorem branch_mass_inequality {S : Finset F} {v : F → F} (h2 : (2 : F) ≠ 0)
 
 end BranchMass
 
+/-! ## The window-vs-weight tradeoff: windows force weight, unconditionally
+
+The complement to branch-mass conservation (O58): a genuine valued error whose power
+sums vanish on the full initial window `j < t` must have support size `> t` — the
+`t × |S|` Vandermonde system on distinct points has trivial kernel. Combined with O58
+and the fold identities (O56/O57), the descent bookkeeping is complete: every branch
+of the tower keeps a window, hence keeps weight, hence the branch tree stays wide —
+the quantitative branch-accounting question is now pinched between two machine-checked
+inequalities. -/
+
+section WindowWeight
+
+variable [DecidableEq F]
+
+omit [CharZero F] in
+/-- **Windows force weight**: a valued error with nonzero values and vanishing power
+sums on the window `j < t` has support size `> t` (or is empty). Equivalently: the
+Vandermonde kernel on distinct points is trivial in the tall regime. -/
+theorem window_forces_weight {S : Finset F} {v : F → F} {t : ℕ}
+    (hv : ∀ x ∈ S, v x ≠ 0) (hw : S.card ≤ t)
+    (hp : ∀ j < t, ∑ x ∈ S, v x * x ^ j = 0) :
+    S = ∅ := by
+  by_contra hne
+  obtain ⟨x₀, hx₀⟩ := Finset.nonempty_iff_ne_empty.mpr hne
+  -- the punctured locator P = ∏_{x' ∈ S \ {x₀}} (X − x'), degree |S| − 1 < t
+  set P : F[X] := TopLine.loc (S.erase x₀) with hP
+  have hcard1 : 1 ≤ S.card := Finset.card_pos.mpr ⟨x₀, hx₀⟩
+  have hdegP : P.natDegree < t := by
+    rw [hP, TopLine.loc_natDegree, Finset.card_erase_of_mem hx₀]
+    omega
+  -- pairing the window against P's coefficients kills everything but x₀
+  have hpair : ∑ x ∈ S, v x * P.eval x = 0 := by
+    have hev : ∀ x ∈ S, P.eval x = ∑ j ∈ Finset.range t, P.coeff j * x ^ j := by
+      intro x _
+      exact Polynomial.eval_eq_sum_range' hdegP x
+    rw [Finset.sum_congr rfl (fun x hx => by rw [hev x hx])]
+    rw [Finset.sum_congr rfl (fun x _ => Finset.mul_sum _ _ _)]
+    rw [Finset.sum_comm]
+    rw [Finset.sum_congr rfl (fun j hj => ?_), Finset.sum_const_zero]
+    have hpj := hp j (Finset.mem_range.mp hj)
+    calc ∑ x ∈ S, v x * (P.coeff j * x ^ j)
+        = P.coeff j * ∑ x ∈ S, v x * x ^ j := by
+          rw [Finset.mul_sum]
+          exact Finset.sum_congr rfl fun x _ => by ring
+      _ = 0 := by rw [hpj, mul_zero]
+  -- but the sum is v x₀ · P(x₀), with both factors nonzero
+  have hkill : ∀ x ∈ S, x ≠ x₀ → v x * P.eval x = 0 := by
+    intro x hx hxne
+    have : P.eval x = 0 := TopLine.loc_eval_zero (Finset.mem_erase.mpr ⟨hxne, hx⟩)
+    rw [this, mul_zero]
+  rw [← Finset.add_sum_erase _ _ hx₀] at hpair
+  rw [Finset.sum_eq_zero (fun x hx => hkill x (Finset.mem_of_mem_erase hx)
+    (Finset.ne_of_mem_erase hx)), add_zero] at hpair
+  have hP0 : P.eval x₀ ≠ 0 :=
+    TopLine.loc_eval_ne_zero (Finset.notMem_erase x₀ S)
+  rcases mul_eq_zero.mp hpair with h | h
+  · exact hv x₀ hx₀ h
+  · exact hP0 h
+
+end WindowWeight
+
 end LamLeungTwoPow

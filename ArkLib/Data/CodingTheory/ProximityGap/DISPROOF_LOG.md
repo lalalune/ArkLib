@@ -3257,3 +3257,23 @@ destroyed by the fold, only routed. Combined with the per-branch window halving 
 fold identities), the program's remaining open content is the per-level BRANCH-COUNT
 distribution (how many branches can stay heavy how deep) — the C19/descent lane's
 quantitative question, now with its conservation backbone in Lean.
+
+### O59 — WINDOWS FORCE WEIGHT: the tradeoff completing the descent bookkeeping
+
+`LamLeungTwoPow.window_forces_weight` (axiom-clean, 0 sorry, char-free): a valued error
+with nonzero values and vanishing power sums on the full window j < t has support size
+> t (the t×|S| Vandermonde kernel on distinct points is trivial; proof via the punctured
+locator pairing — Σ v(x)P(x) computed two ways).
+
+THE DESCENT BOOKKEEPING IS NOW PINCHED BETWEEN TWO MACHINE-CHECKED INEQUALITIES:
+* (O58, mass conservation) every branch split preserves at least half the weight across
+  the two branches: |S| ≤ 2(|supp even| + |supp odd|);
+* (O59, window forces weight) every branch that inherits a window of length t must carry
+  support > t — and the fold identities (O56/O57) say branches DO inherit half-windows
+  (the odd branch even inherits the j = 0 constraint).
+So down the tower: windows halve, weights at least halve in total but each surviving
+branch is forced fat by its window. The remaining open content of the all-words question
+is exactly the BRANCH-COUNT DISTRIBUTION: how many branches can stay (window-)alive at
+each depth. Everything else around it — conservation, tradeoff, fold identities, the
+unit-syndrome case (full tower + count), the class-syndrome chart, the effective
+transfer — is theorem.
