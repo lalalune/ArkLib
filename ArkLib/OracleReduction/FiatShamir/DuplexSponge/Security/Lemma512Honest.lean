@@ -136,6 +136,34 @@ def HasInputCapacityBeforeForwardOutput
               OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
           prevIn.capacitySegment = stateOut.capacitySegment
 
+/-- The trace contains a forward permutation entry whose output capacity matches either side of a
+strictly earlier forward permutation entry. This is the preservation-friendly base-trace shape for
+the permutation-ordering half of M2c: if a redundant earlier forward entry is replaced by a
+reversed forward witness, the matching capacity can move from input side to output side. -/
+def HasForwardCapacityBeforeForwardOutput
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) : Prop :=
+  ∃ jCur : Fin tr.length,
+    ∃ stateIn stateOut : CanonicalSpongeState U,
+      tr[jCur] =
+        (⟨Sum.inr (Sum.inl stateIn), stateOut⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+      ∃ jPrev : Fin tr.length, jPrev < jCur ∧
+        ∃ prevIn prevOut : CanonicalSpongeState U,
+          tr[jPrev] =
+            (⟨Sum.inr (Sum.inl prevIn), prevOut⟩ :
+              OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+          (prevOut.capacitySegment = stateOut.capacitySegment ∨
+            prevIn.capacitySegment = stateOut.capacitySegment)
+
+/-- The input-side-only permutation-ordering shape is a special case of the broader
+preservation-friendly shape. -/
+theorem hasForwardCapacityBeforeForwardOutput_of_input
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasInputCapacityBeforeForwardOutput tr) :
+    HasForwardCapacityBeforeForwardOutput tr := by
+  obtain ⟨jCur, stateIn, stateOut, hcur, jPrev, hlt, prevIn, prevOut, hprev, hcap⟩ := h
+  exact ⟨jCur, stateIn, stateOut, hcur, jPrev, hlt, prevIn, prevOut, hprev, Or.inr hcap⟩
+
 /-- Strengthened raw collision shape: the hash entry is the first occurrence of its concrete hash
 anchor, and a strictly earlier forward entry shares the hash capacity. This is the preservation
 shape needed for `removeRedundantEntryDS`. -/
@@ -808,6 +836,26 @@ theorem E_of_base_hasInputCapacityBeforeForwardOutput
     Or.inr (Or.inr (Or.inr (Or.inl
       ⟨jPrev, Nat.le_of_lt hlt, prevIn, prevOut, hprev, hcap⟩)))⟩
 
+/-- If the deduplicated trace has the broader base permutation-ordering capacity shape, the
+combined bad event fires through `capacitySegmentDupPerm`. -/
+theorem E_of_base_hasForwardCapacityBeforeForwardOutput
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasForwardCapacityBeforeForwardOutput (removeRedundantEntryDS tr).1) :
+    BadEventDS.E tr := by
+  obtain ⟨jCur, stateIn, stateOut, hcur, jPrev, hlt, prevIn, prevOut, hprev, hcap⟩ := h
+  left
+  right
+  left
+  unfold capacitySegmentDupPerm
+  rcases hcap with hOut | hIn
+  · exact ⟨jCur, stateOut.capacitySegment,
+      ⟨stateIn, stateOut, hcur, rfl⟩,
+      Or.inr (Or.inl ⟨jPrev, hlt, prevIn, prevOut, hprev, hOut⟩)⟩
+  · exact ⟨jCur, stateOut.capacitySegment,
+      ⟨stateIn, stateOut, hcur, rfl⟩,
+      Or.inr (Or.inr (Or.inr (Or.inl
+        ⟨jPrev, Nat.le_of_lt hlt, prevIn, prevOut, hprev, hIn⟩)))⟩
+
 /-- Off `E`, a nonterminal `J_BT` permutation-index payload points to the forward
 permutation query for that chain step. -/
 theorem jbt_perm_forward_getElem?_of_not_E
@@ -1242,6 +1290,7 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.E_of_base_hash_after_forward_capacity
 #print axioms DuplexSpongeFS.Sponge316.E_of_base_hasForwardCapacityBeforeHash
 #print axioms DuplexSpongeFS.Sponge316.E_of_base_hasInputCapacityBeforeForwardOutput
+#print axioms DuplexSpongeFS.Sponge316.E_of_base_hasForwardCapacityBeforeForwardOutput
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_no_prior_of_lt
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty
