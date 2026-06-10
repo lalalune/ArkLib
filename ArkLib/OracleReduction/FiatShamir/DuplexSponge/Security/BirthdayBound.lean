@@ -457,7 +457,16 @@ among fresh i.i.d. uniform answers and (ii) landings in adaptively-chosen sets, 
 3. *Budget split*: the per-flavor budgets `tₕ/tₚ/tₚᵢ` of the Key-Lemma surface must be
    recombined into the total trace length (`IsTotalQueryBound`), including the verifier's
    `+1` hash query and `≤ L` permutation queries (CO25 Lemma 5.8 is applied at
-   `T = tₕ + 1 + tₚ + L + tₚᵢ` — see `lemma5_8Bound_eq_claim5_21Bound`). -/
+   `T = tₕ + 1 + tₚ + L + tₚᵢ` — see `lemma5_8Bound_eq_claim5_21Bound`).
+
+**Audit (2026-06-10): REFUTED as stated** —
+`Sponge314.K1.lemma5_8EagerBirthdayResidual_false` (Lemma58EagerFalse.lean) exhibits a
+single-inverse-query countermodel with `Pr[E] = 1 > lemma5_8Bound U 1`. Root cause is the
+B1 defect of `capacitySegmentDupPermInv` (BadEvents.lean): its 5th disjunct anchors on the
+**answer** capacity at `j' ≤ j` and self-fires at `j' = j`, so `E` holds on any trace with
+a `p⁻¹` entry (`Sponge316.hasInvEntry_implies_E`); CO25 Eq. 26 anchors on the **input**
+capacity. The CO25-faithful repaired event and re-statement are the active #314 wave-4
+work; the steps 1–3 above describe the proof plan against the *repaired* event. -/
 def Lemma5_8EagerBirthdayResidual : Prop :=
   ∀ {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ),
     IsTotalQueryBound P T →

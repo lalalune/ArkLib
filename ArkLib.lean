@@ -99,6 +99,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantSloped
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeCurve
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeGraded
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSLargeCharSeparable
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSPerScalarCapture
@@ -473,6 +474,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBound
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRCoefficients
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
+import ArkLib.Data.CodingTheory.ProximityGap.DG25.Contrapositive
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
@@ -601,10 +603,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveNumericCount
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ErrStarArith
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25FactorBudgetSupply
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25FiberPigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25FiberSupply
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25FoldFiberCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25GradedNumericEdge
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25HeavyPoints
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
@@ -616,6 +620,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4Seam
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25LinearFactorCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25SlackWeld
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniqueRichFactor
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
@@ -1088,8 +1094,10 @@ import ArkLib.Data.Probability.IndexedMarginalBound
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.MarginalBound
 import ArkLib.Data.Probability.Notation
+import ArkLib.Data.Probability.PrUnionBound
 import ArkLib.Data.Probability.RandomSubsetInclusion
 import ArkLib.Data.Probability.RandomSubsetInclusionExists
+import ArkLib.Data.Probability.TensorSchwartzZippel
 import ArkLib.Data.Probability.UniformPushforward
 import ArkLib.Data.Probability.UniformSubset
 import ArkLib.Data.RingTheory.TowerOfAlgebra
@@ -1116,6 +1124,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessHelper
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessMsgKeystone
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessNonPerfect
 import ArkLib.OracleReduction.Composition.Sequential.AppendEmptyKeystoneOracle
+import ArkLib.OracleReduction.Composition.Sequential.AppendKnowledgeOracleTransport
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessEmpty
@@ -1195,6 +1204,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Honest
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514ForkFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516HashHalf
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFalse
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58EagerFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ProverTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunCollapse
@@ -1435,6 +1445,7 @@ import ArkLib.ProofSystem.Spartan.FirstSumcheckMulVec
 import ArkLib.ProofSystem.Spartan.FirstSumcheckReduction
 import ArkLib.ProofSystem.Spartan.FirstSumcheckRelComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckRowSum
+import ArkLib.ProofSystem.Spartan.FirstSumcheckWithTarget
 import ArkLib.ProofSystem.Spartan.FirstSumcheckZeroEval
 import ArkLib.ProofSystem.Spartan.LinearCombinationComplete
 import ArkLib.ProofSystem.Spartan.PhaseCompletenessLeaves
@@ -1459,6 +1470,7 @@ import ArkLib.ProofSystem.Spartan.SumcheckDeterminismWitnesses
 import ArkLib.ProofSystem.Spartan.SumcheckKnowledgeLeaves
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckRbrKSResidualAnalysis
+import ArkLib.ProofSystem.Spartan.TightRLCKernel
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
 import ArkLib.ProofSystem.Stir.BlockRbrBudgets
@@ -1745,6 +1757,7 @@ import ArkLib.ToMathlib.HvanishSupply
 import ArkLib.ToMathlib.IncidenceBound
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.InterpolantInputSupply
+import ArkLib.ToMathlib.InterpolatedRepresentative
 import ArkLib.ToMathlib.IsSquareNatCast
 import ArkLib.ToMathlib.IteratedFoldConservation
 import ArkLib.ToMathlib.KK25NearCapacityProof
@@ -1850,6 +1863,9 @@ import ArkLib.ToMathlib.SectionBaseRational
 import ArkLib.ToMathlib.SectionFactor
 import ArkLib.ToMathlib.SectionFromSurface
 import ArkLib.ToMathlib.SectionGlobalLift
+import ArkLib.ToMathlib.SectionNewtonGamma
+import ArkLib.ToMathlib.SectionNewtonGradingSupply
+import ArkLib.ToMathlib.SectionNewtonXiSupply
 import ArkLib.ToMathlib.SectionXiDivisibility
 import ArkLib.ToMathlib.SectionXiUnit
 import ArkLib.ToMathlib.SeparableLowDegree
