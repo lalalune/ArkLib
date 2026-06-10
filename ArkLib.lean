@@ -230,7 +230,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightClearedObstructi
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightResummation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.BCoeffVanishing
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510AffinePair
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Agreement
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510EndToEnd
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Kill
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Supply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Weld
@@ -1458,6 +1460,7 @@ import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeWithClaimFinal
 import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.FinalCheckLeafComplete
 import ArkLib.ProofSystem.Spartan.FinalCheckRbrKnowledgeLeaf
+import ArkLib.ProofSystem.Spartan.FinalCheckWithClaimLeaf
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
 import ArkLib.ProofSystem.Spartan.FirstChallengeComplete
 import ArkLib.ProofSystem.Spartan.FirstChallengeLeaf
@@ -1497,6 +1500,7 @@ import ArkLib.ProofSystem.Spartan.SumcheckDeterminismWitnesses
 import ArkLib.ProofSystem.Spartan.SumcheckKnowledgeLeaves
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckRbrKSResidualAnalysis
+import ArkLib.ProofSystem.Spartan.TightMidLeaves
 import ArkLib.ProofSystem.Spartan.TightRLCKernel
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
@@ -1539,6 +1543,7 @@ import ArkLib.ProofSystem.Stir.RoundVector
 import ArkLib.ProofSystem.Stir.RoundVectorCompleteness
 import ArkLib.ProofSystem.Stir.SpotCheckBound
 import ArkLib.ProofSystem.Stir.SubUnitRbr
+import ArkLib.ProofSystem.Stir.SwitchAttack
 import ArkLib.ProofSystem.Stir.TailCompleteness
 import ArkLib.ProofSystem.Stir.VSpecBridge
 import ArkLib.ProofSystem.Stir.VectorBridge
@@ -1897,6 +1902,7 @@ import ArkLib.ToMathlib.SectionBaseRational
 import ArkLib.ToMathlib.SectionFactor
 import ArkLib.ToMathlib.SectionFromSurface
 import ArkLib.ToMathlib.SectionGlobalLift
+import ArkLib.ToMathlib.SectionNewtonFunctorial
 import ArkLib.ToMathlib.SectionNewtonGamma
 import ArkLib.ToMathlib.SectionNewtonGradingSupply
 import ArkLib.ToMathlib.SectionNewtonXiSupply
