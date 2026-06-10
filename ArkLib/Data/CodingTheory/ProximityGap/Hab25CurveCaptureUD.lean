@@ -141,8 +141,7 @@ lemma lagrange_monomial_reproduction {L : ℕ} (ν : Fin L → F₀)
   have heval := congrArg (Polynomial.eval γ) h
   rw [Lagrange.interpolate_apply, Polynomial.eval_pow, Polynomial.eval_X,
     Polynomial.eval_finset_sum] at heval
-  rw [← heval]
-  refine Finset.sum_congr rfl fun t _ => ?_
+  refine Eq.trans (Finset.sum_congr rfl fun t _ => ?_) heval.symm
   rw [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_pow, Polynomial.eval_X]
   ring
 
@@ -175,8 +174,11 @@ theorem exists_curve_tuple_of_decode_family_window {n L : ℕ} [NeZero n]
     fun t => hdec (ν t) (hνmem t)
   choose dν hdν using hnode
   set V : Fin L → F₀[X] := fun t => P (ν t) with hV
-  have hVdeg : ∀ t, (V t).natDegree < k := fun t =>
-    natDegree_lt_of_degree_lt_of_pos hk ((hdν t) ▸ (dν t).hdeg)
+  have hVdeg : ∀ t, (V t).natDegree < k := by
+    intro t
+    have h := (dν t).hdeg
+    rw [hdν t] at h
+    exact natDegree_lt_of_degree_lt_of_pos hk h
   refine ⟨lagrangeCurve ν V, lagrangeCurve_natDegree_lt hk ν hVdeg, ?_⟩
   -- every cell member is forced onto the curve
   intro γ hγ
@@ -186,14 +188,14 @@ theorem exists_curve_tuple_of_decode_family_window {n L : ℕ} [NeZero n]
   -- the `(L+1)`-fold intersection is large
   have hWcard : k ≤ W.card := by
     have hsumle := sum_card_le_inf_card_add (fun t => (dν t).S) d.S Finset.univ
-    rw [Finset.card_univ, Fintype.card_fin] at hsumle
-    have hfloor : ∀ t : Fin L, t₀ ≤ (dν t).S.card := fun t => (dν t).floor_le_card
+    rw [Finset.card_univ, Fintype.card_fin, ← hW] at hsumle
     have hfloorγ : t₀ ≤ d.S.card := d.floor_le_card
     have hsumge : L * t₀ ≤ ∑ t : Fin L, (dν t).S.card := by
       have h := Finset.card_nsmul_le_sum Finset.univ
-        (fun t : Fin L => (dν t).S.card) t₀ (fun t _ => hfloor t)
+        (fun t : Fin L => (dν t).S.card) t₀ (fun t _ => (dν t).floor_le_card)
       rw [Finset.card_univ, Fintype.card_fin, smul_eq_mul] at h
       exact h
+    have hexp : (L + 1) * t₀ = L * t₀ + t₀ := by ring
     omega
   -- the curve matches the fold on the intersection
   have hvan : ∀ i ∈ W,

@@ -577,6 +577,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25Claim1
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ConjectureGlue
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCapture
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCaptureUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveNumericCount
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25DegreeBudget
