@@ -101,7 +101,39 @@ theorem epsMCACurve_rs_udr_le (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ F
     simp only [hSdef, dif_pos h]
     exact h.choose_spec.2.2
 
+/-- **Full-agreement edge case.** When every witness set is everything (`t = n`), at most
+`L − 1` scalars can be bad: `L` of them would interpolate a joint codeword stack agreeing
+everywhere, contradicting the no-joint-agreement clause. -/
+theorem curveBadCount_full_le (C : Submodule F (ι → F)) (L : ℕ) (hL : 2 ≤ L)
+    (u : Fin L → ι → F)
+    (G : Finset F) (S : F → Finset ι) (w : F → ι → F)
+    (hSt : ∀ γ ∈ G, S γ = Finset.univ)
+    (hwC : ∀ γ ∈ G, w γ ∈ C)
+    (hwS : ∀ γ ∈ G, ∀ i ∈ S γ, w γ i = ∑ k : Fin L, γ ^ (k : ℕ) * u k i)
+    (hno : ∀ γ ∈ G, ¬ ProximityGap.stackJointAgreesOn (C : Set (ι → F)) (S γ) u) :
+    G.card ≤ L - 1 := by
+  classical
+  by_contra hcon
+  push Not at hcon
+  have hG : L ≤ G.card := by omega
+  obtain ⟨nodes, hsub, hnodes⟩ := Finset.exists_subset_card_eq hG
+  obtain ⟨c, hcC, hcAgree⟩ := exists_curve_coeffs C L nodes hnodes w
+    (fun γ hγ => hwC γ (hsub hγ))
+  -- every coordinate is in every witness set, so the coefficients are the data rows everywhere
+  have hcAll : ∀ (i : ι) (k : Fin L), c k i = u k i := by
+    intro i k
+    refine hcAgree i (fun k => u k i) (fun γ hγ => ?_) k
+    have := hwS γ (hsub hγ) i (by rw [hSt γ (hsub hγ)]; exact Finset.mem_univ i)
+    exact this
+  -- hence the data stack is a joint codeword stack — contradiction at any bad scalar
+  have hGne : G.Nonempty := by
+    rw [← Finset.card_pos]; omega
+  obtain ⟨γ, hγ⟩ := hGne
+  refine hno γ hγ ⟨c, hcC, fun i _ k => hcAll i k⟩
+
+
 end ArkLib.ProximityGap.CurveUDR
 
 #print axioms ArkLib.ProximityGap.CurveUDR.epsMCACurve_le_of_badCount_le
 #print axioms ArkLib.ProximityGap.CurveUDR.epsMCACurve_rs_udr_le
+#print axioms ArkLib.ProximityGap.CurveUDR.curveBadCount_full_le

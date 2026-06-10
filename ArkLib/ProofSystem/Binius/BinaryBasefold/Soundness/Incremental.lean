@@ -1092,7 +1092,7 @@ lemma fold_affine_binary_rows
       destIdx =
         (⟨i.val + 1, by
           have hle : i.val + 1 ≤ ℓ := Nat.succ_le_of_lt i.isLt
-          have hlt : i.val + 1 < ℓ + 𝓡 :=
+          have hlt : sourceIdx.val + 1 < ℓ + 𝓡 :=
             Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
           exact Nat.lt_trans hlt h_ℓ_add_R_rate⟩ : Fin r) :=
     Fin.eq_of_val_eq h_destIdx
@@ -1104,6 +1104,73 @@ lemma fold_affine_binary_rows
   simp only [cast_eq]
   unfold fold_legacy
   simp only
+  ring_nf
+
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
+/-- One fold is additive in the oracle function being folded. -/
+lemma fold_add_input
+    {sourceIdx destIdx : Fin r}
+    (h_destIdx : destIdx.val = sourceIdx.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) sourceIdx)
+    (g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) sourceIdx)
+    (r_new : L) :
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := sourceIdx)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) (f + g) r_new =
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := sourceIdx)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) f r_new +
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := sourceIdx)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) g r_new := by
+  have h_destIdx_eq :
+      destIdx =
+        (⟨sourceIdx.val + 1, by
+          have hle : sourceIdx.val + 1 ≤ ℓ := by
+            rw [← h_destIdx]
+            exact h_destIdx_le
+          have hlt : sourceIdx.val + 1 < ℓ + 𝓡 :=
+            Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
+          exact Nat.lt_trans hlt h_ℓ_add_R_rate⟩ : Fin r) :=
+    Fin.eq_of_val_eq h_destIdx
+  subst h_destIdx_eq
+  funext y
+  unfold fold
+  simp only [Pi.add_apply, cast_eq]
+  unfold fold_legacy
+  simp only [Pi.add_apply]
+  ring_nf
+
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
+/-- One fold commutes with scalar multiplication of the oracle function being folded. -/
+lemma fold_smul_input
+    {sourceIdx destIdx : Fin r}
+    (h_destIdx : destIdx.val = sourceIdx.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (c : L)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) sourceIdx)
+    (r_new : L) :
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := sourceIdx)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) (c • f) r_new =
+    c • fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := sourceIdx)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) f r_new := by
+  have h_destIdx_eq :
+      destIdx =
+        (⟨sourceIdx.val + 1, by
+          have hle : sourceIdx.val + 1 ≤ ℓ := by
+            rw [← h_destIdx]
+            exact h_destIdx_le
+          have hlt : i.val + 1 < ℓ + 𝓡 :=
+            Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
+          exact Nat.lt_trans hlt h_ℓ_add_R_rate⟩ : Fin r) :=
+    Fin.eq_of_val_eq h_destIdx
+  subst h_destIdx_eq
+  funext y
+  unfold fold
+  simp only [Pi.smul_apply, cast_eq]
+  unfold fold_legacy
+  simp only [Pi.smul_apply, smul_eq_mul]
   ring_nf
 
 omit [SampleableType L] in

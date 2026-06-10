@@ -189,10 +189,11 @@ theorem BacktrackSequence.index_hash_getElem?
       some (⟨.inl seq.stmt,
         Vector.drop (seq.inputState[0]'(by
           rw [seq.inputState_length_eq_outputState_length_succ]
-          exact Nat.succ_pos _)) SpongeSize.R⟩ : duplexSpongeTraceEntry) := by
+          exact Nat.succ_pos _)) SpongeSize.R⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
   classical
   dsimp [BacktrackSequence.Index, firstOccurrenceIndex]
-  let entry : duplexSpongeTraceEntry :=
+  let entry : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
     ⟨.inl seq.stmt,
       Vector.drop (seq.inputState[0]'(by
         rw [seq.inputState_length_eq_outputState_length_succ]
@@ -204,6 +205,7 @@ theorem BacktrackSequence.index_hash_getElem?
     List.findIdx_getElem (xs := trace) (p := fun x => decide (x = entry)) (w := hlt)
   have hget : trace.get ⟨trace.findIdx (fun x => decide (x = entry)), hlt⟩ = entry :=
     of_decide_eq_true hpred
+  rw [List.getElem?_eq_getElem hlt]
   simpa [entry] using congrArg some hget
 
 /-- Each nonterminal permutation component of `BacktrackSequence.Index` points to a recorded
@@ -215,15 +217,15 @@ theorem BacktrackSequence.index_perm_getElem?_of_lt
     GetElem?.getElem? trace ((BacktrackSequence.Index trace state seq).2 pairIdx).val =
         some (⟨.inr (.inl seq.inputState[pairIdx]),
           seq.outputState[pairIdx.val]'hpair⟩ :
-          duplexSpongeTraceEntry) ∨
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∨
       GetElem?.getElem? trace ((BacktrackSequence.Index trace state seq).2 pairIdx).val =
         some (⟨.inr (.inr (seq.outputState[pairIdx.val]'hpair)), seq.inputState[pairIdx]⟩ :
-          duplexSpongeTraceEntry) := by
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
   classical
   let outputIdx : Fin seq.outputState.length := ⟨pairIdx.val, hpair⟩
-  let entryA : duplexSpongeTraceEntry :=
+  let entryA : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
     ⟨.inr (.inl seq.inputState[pairIdx]), seq.outputState[outputIdx]⟩
-  let entryB : duplexSpongeTraceEntry :=
+  let entryB : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
     ⟨.inr (.inr seq.outputState[outputIdx]), seq.inputState[pairIdx]⟩
   have hEntry : entryA ∈ trace ∨ entryB ∈ trace := by
     simpa [entryA, entryB, outputIdx] using seq.permute_or_inv_in_trace (i := outputIdx)
@@ -254,9 +256,11 @@ theorem BacktrackSequence.index_perm_getElem?_of_lt
   rcases hcase with hA | hB
   · left
     rw [hidx]
+    rw [List.getElem?_eq_getElem hlt]
     simpa [entryA] using congrArg some hA
   · right
     rw [hidx]
+    rw [List.getElem?_eq_getElem hlt]
     simpa [entryB] using congrArg some hB
 
 /-- The backtracking sequence family $S_{\mathrm{BT}}(\mathrm{tr}, s)$ (CO25, Definition 5.3).
