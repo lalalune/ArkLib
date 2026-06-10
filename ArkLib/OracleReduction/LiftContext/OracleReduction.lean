@@ -324,30 +324,16 @@ theorem liftContext_rbr_soundness
   rw [liftContext_toVerifier_comm]
   exact V.toVerifier.liftContext_rbr_soundness h (lens := lens.toLens)
 
-class LiftContextRBRKnowledgeSound [Inhabited InnerWitIn]
-    {rbrKnowledgeError : pSpec.ChallengeIdx → ℝ≥0}
-    {stmtLens : OracleStatement.OracleLens oSpec OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
-                                OuterOStmtIn OuterOStmtOut InnerOStmtIn InnerOStmtOut pSpec}
-    {witLens : Witness.InvLens (OuterStmtIn × ∀ i, OuterOStmtIn i)
-                            OuterWitIn OuterWitOut InnerWitIn InnerWitOut}
-    (V : OracleVerifier oSpec InnerStmtIn InnerOStmtIn InnerStmtOut InnerOStmtOut pSpec)
-    [coh : OracleVerifier.LiftContextCoherent stmtLens V]
-    [lensKS : Extractor.Lens.IsKnowledgeSound
-      outerRelIn innerRelIn outerRelOut innerRelOut
-      (V.toVerifier.compatStatement stmtLens.toLens) (fun _ _ => True) ⟨stmtLens.toLens, witLens⟩]
-    (h : V.rbrKnowledgeSoundness init impl innerRelIn innerRelOut rbrKnowledgeError) :
-    Prop where
-  /-- Explicit side condition for RBR knowledge-soundness transport across an oracle-routing lift.
+/-- Lifting the oracle verifier preserves round-by-round knowledge soundness, assuming the lens
+  satisfies its knowledge-soundness conditions and the oracle-routing lens is coherent with its
+  value-level lens (`LiftContextCoherent`, #433).
 
-  The plain verifier API currently provides `liftContext_knowledgeSoundness` and
-  `liftContext_rbr_soundness`, but not a corresponding
-  `liftContext_rbr_knowledgeSoundness` lemma. Instances of this class must supply the missing
-  round-by-round extractor transport for concrete lenses rather than relying on a nonexistent
-  generic theorem. -/
-  lifted :
-      (V.liftContext stmtLens).rbrKnowledgeSoundness init impl outerRelIn outerRelOut
-        rbrKnowledgeError
-
+  HISTORY (2026-06-09): this used to be gated behind a `LiftContextRBRKnowledgeSound` class whose
+  sole field *was* this conclusion, on the (then-correct, since-stale) grounds that the plain
+  verifier API lacked a `liftContext_rbr_knowledgeSoundness` lemma. That lemma now exists and is
+  fully proven (`Verifier.liftContext_rbr_knowledgeSoundness`, LiftContext/Reduction.lean), so the
+  oracle version follows generically by the same unfold-and-commute argument as
+  `liftContext_rbr_soundness`, and the class is gone. -/
 theorem liftContext_rbr_knowledgeSoundness [Inhabited InnerWitIn]
     {rbrKnowledgeError : pSpec.ChallengeIdx → ℝ≥0}
     {stmtLens : OracleStatement.OracleLens oSpec OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
@@ -359,14 +345,13 @@ theorem liftContext_rbr_knowledgeSoundness [Inhabited InnerWitIn]
     [lensKS : Extractor.Lens.IsKnowledgeSound
       outerRelIn innerRelIn outerRelOut innerRelOut
       (V.toVerifier.compatStatement stmtLens.toLens) (fun _ _ => True) ⟨stmtLens.toLens, witLens⟩]
-    (h : V.rbrKnowledgeSoundness init impl innerRelIn innerRelOut rbrKnowledgeError)
-    [rbrLift : LiftContextRBRKnowledgeSound
-      (outerRelIn := outerRelIn) (innerRelIn := innerRelIn)
-      (outerRelOut := outerRelOut) (innerRelOut := innerRelOut)
-      (stmtLens := stmtLens) (witLens := witLens) V h] :
+    (h : V.rbrKnowledgeSoundness init impl innerRelIn innerRelOut rbrKnowledgeError) :
       (V.liftContext stmtLens).rbrKnowledgeSoundness init impl outerRelIn outerRelOut
-        rbrKnowledgeError :=
-  rbrLift.lifted
+        rbrKnowledgeError := by
+  unfold OracleVerifier.rbrKnowledgeSoundness at h ⊢
+  rw [liftContext_toVerifier_comm]
+  exact V.toVerifier.liftContext_rbr_knowledgeSoundness h
+    (stmtLens := stmtLens.toLens) (witLens := witLens)
 
 end OracleVerifier
 
