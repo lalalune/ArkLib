@@ -200,6 +200,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyKernel
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyParity
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyRepBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultant
+import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultantProduct
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySixDvd
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyThreeDvd
@@ -785,6 +786,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
+import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusCount
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothDomainSelfSimilarity
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothFiberCount
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
@@ -1531,8 +1533,8 @@ import ArkLib.ToMathlib.GK16Structural
 import ArkLib.ToMathlib.GKL24BadWitnessCard
 import ArkLib.ToMathlib.GKL24FirstMomentProb
 import ArkLib.ToMathlib.GSFactorData
-import ArkLib.ToMathlib.GSLineInputSupply
 import ArkLib.ToMathlib.GSGradedBundle
+import ArkLib.ToMathlib.GSLineInputSupply
 import ArkLib.ToMathlib.GammaCoeffRecursion
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.GenuineMonicCapstone
