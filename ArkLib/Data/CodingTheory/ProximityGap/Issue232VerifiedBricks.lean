@@ -149,6 +149,58 @@ theorem candidate_between_johnson_and_capacity (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ
   have := radius_mono_in_exponent ρ h0 h1 (2/3 : ℝ) 1 (by norm_num)
   rwa [rpow_one] at this
 
+/-- **Strict Johnson–capacity separation.** For a rate `ρ ∈ (0,1)`, the RS Johnson radius
+`1 − √ρ` is *strictly* below capacity `1 − ρ`: the proximity-gap interval `(1−√ρ, 1−ρ)` in which
+the true threshold `δ*` must live is genuinely non-degenerate (the non-strict version is
+`johnson_radius_le_capacity`). -/
+theorem johnson_radius_lt_capacity (ρ : ℝ) (h0 : 0 < ρ) (h1 : ρ < 1) :
+    1 - Real.sqrt ρ < 1 - ρ := by
+  have hsqrt_pos : 0 < Real.sqrt ρ := Real.sqrt_pos.mpr h0
+  have hsqrt_lt_one : Real.sqrt ρ < 1 := by
+    rw [show (1:ℝ) = Real.sqrt 1 by simp]
+    exact Real.sqrt_lt_sqrt (le_of_lt h0) h1
+  have hsq : Real.sqrt ρ * Real.sqrt ρ = ρ := Real.mul_self_sqrt (le_of_lt h0)
+  have hlt : ρ < Real.sqrt ρ := by
+    calc ρ = Real.sqrt ρ * Real.sqrt ρ := hsq.symm
+    _ < Real.sqrt ρ * 1 := mul_lt_mul_of_pos_left hsqrt_lt_one hsqrt_pos
+    _ = Real.sqrt ρ := mul_one _
+  linarith
+
+/-- **Proximity-gap width, exact form.** The width of the Johnson–capacity interval is
+`(1−ρ) − (1−√ρ) = √ρ − ρ = √ρ·(1−√ρ)`. -/
+theorem proximity_gap_width_eq (ρ : ℝ) (h0 : 0 ≤ ρ) :
+    (1 - ρ) - (1 - Real.sqrt ρ) = Real.sqrt ρ * (1 - Real.sqrt ρ) := by
+  have hsq : Real.sqrt ρ * Real.sqrt ρ = ρ := Real.mul_self_sqrt h0
+  ring_nf
+  nlinarith [hsq]
+
+/-- **Sharp maximum of the proximity-gap width.** For every rate `ρ ∈ [0,1]` the width
+`√ρ − ρ` of the Johnson–capacity gap is at most `1/4`. So the Johnson bound can underestimate the
+list-decoding radius by at most a quarter of the block length. The proof is the algebraic identity
+`1/4 − (√ρ − ρ) = (√ρ − 1/2)² ≥ 0`. -/
+theorem proximity_gap_width_le_quarter (ρ : ℝ) (h0 : 0 ≤ ρ) :
+    Real.sqrt ρ - ρ ≤ 1/4 := by
+  have hsq : Real.sqrt ρ * Real.sqrt ρ = ρ := Real.mul_self_sqrt h0
+  nlinarith [sq_nonneg (Real.sqrt ρ - 1/2), hsq]
+
+/-- The gap-width maximum `1/4` is attained **exactly** at rate `ρ = 1/4` (where Johnson radius
+`= 1/2` and capacity `= 3/4`). Together with `proximity_gap_width_le_quarter` this pins the worst
+case of the Johnson underestimate to a single rate. -/
+theorem proximity_gap_width_eq_quarter_iff (ρ : ℝ) (h0 : 0 ≤ ρ) :
+    Real.sqrt ρ - ρ = 1/4 ↔ ρ = 1/4 := by
+  have hsq : Real.sqrt ρ * Real.sqrt ρ = ρ := Real.mul_self_sqrt h0
+  constructor
+  · intro h
+    have hzero : (Real.sqrt ρ - 1/2)^2 = 0 := by nlinarith [hsq, h]
+    have hhalf : Real.sqrt ρ = 1/2 := by
+      have := pow_eq_zero_iff (n := 2) (by norm_num) |>.mp hzero
+      linarith
+    rw [← hsq, hhalf]; norm_num
+  · intro h
+    subst h
+    rw [show (1/4 : ℝ) = (1/2)^2 by norm_num, Real.sqrt_sq (by norm_num)]
+    norm_num
+
 end Threshold
 
 /-! ## List-decoding engine -/
