@@ -2621,12 +2621,12 @@ theorem first_peel_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
       obtain ⟨k, hk, rfl⟩ := Finset.mem_image.mp hy
       refine hPdef ▸ Finset.mem_filter.mpr ⟨?_, (ζq ^ (q ^ b)) ^ k, ?_, rfl⟩
       · refine hxorb _ ?_
-        rw [← pow_mul, mul_comm (q ^ b * k) q]
-        rw [show q * (q ^ b * k) = q ^ (b + 1) * k from by rw [pow_succ']; ring]
-        rw [pow_mul, hζq.pow_eq_one, one_pow]
-      · rw [← pow_mul, mul_comm (q ^ b) k, ← pow_mul]
-        rw [show k * q ^ b * q = q ^ (b + 1) * k from by rw [pow_succ']; ring]
-        rw [pow_mul, hζq.pow_eq_one, one_pow]
+        rw [← pow_mul, ← pow_mul,
+          show q ^ b * (k * q) = q ^ (b + 1) * k from by rw [pow_succ']; ring,
+          pow_mul, hζq.pow_eq_one, one_pow]
+      · rw [← pow_mul, ← pow_mul,
+          show q ^ b * (k * q) = q ^ (b + 1) * k from by rw [pow_succ']; ring,
+          pow_mul, hζq.pow_eq_one, one_pow]
   have hPcommon : ∀ y ∈ P, y ^ q = x ^ q := by
     intro y hy
     obtain ⟨-, g, hg, rfl⟩ := Finset.mem_filter.mp (hPdef ▸ hy)
