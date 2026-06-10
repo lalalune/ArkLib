@@ -112,3 +112,4 @@ end Verifier
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
 #print axioms Verifier.append_pure_pure
+#print axioms OracleVerifier.toVerifier_eq_pure_of_collapse
