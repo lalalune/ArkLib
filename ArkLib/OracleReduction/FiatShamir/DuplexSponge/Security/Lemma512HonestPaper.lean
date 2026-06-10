@@ -397,6 +397,221 @@ private lemma hasPermCapacityBeforeForwardOutputPaper_of_firstPermNat
       ⟨iPrev, hPrevLt⟩, hlt, prevIn, prevOut, Or.inr hPrevEq, hcap⟩
 
 
+/-- **One-step preservation (paper semantics)**: erasing one paper-redundant entry preserves the
+first-perm-capacity collision shape. The erase-current case is impossible (the guard defeats both
+paper certificates); the erase-prev case re-anchors through the direction-disjunctive capacity
+priors; all other erasures shift indices. -/
+private lemma firstPermNatPaper_eraseIdx
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (idx : Fin tr.length) (hred : tr.redundantEntryDSPaper idx)
+    (hP : HasFirstPermCapacityBeforeForwardOutputPaperNat tr) :
+    HasFirstPermCapacityBeforeForwardOutputPaperNat (tr.eraseIdx idx.val) := by
+  classical
+  obtain ⟨iCur, iPrev, curIn, curOut, prevIn, prevOut,
+    hlt, hcur, hprev, hcap, hfirst⟩ := hP
+  by_cases hEraseCur : idx.val = iCur
+  · have hidx? : tr[idx.val]? = some (forwardEntryP curIn curOut) := by
+      simpa [hEraseCur] using hcur
+    have hidxVal : tr[idx] = forwardEntryP curIn curOut := by
+      rw [List.getElem?_eq_getElem idx.isLt] at hidx?
+      exact Option.some.inj hidx?
+    have hred' :
+        ∃ j' : Fin tr.length, j' < idx ∧
+          (tr[j'] = forwardEntryP curIn curOut ∨
+            tr[j'] = inverseEntryP curOut curIn) := by
+      unfold OracleSpec.QueryLog.redundantEntryDSPaper at hred
+      rw [hidxVal] at hred
+      simpa [forwardEntryP, inverseEntryP] using hred
+    obtain ⟨j', hj', hcase⟩ := hred'
+    have hjCur : j'.val < iCur := by omega
+    rcases hcase with hsame | hinv
+    · have hsome : tr[j'.val]? = some (forwardEntryP curIn curOut) := by
+        rw [List.getElem?_eq_getElem j'.isLt]
+        simpa only [List.get_eq_getElem] using congrArg some hsame
+      exact False.elim ((hfirst j'.val hjCur).1 hsome)
+    · have hsome : tr[j'.val]? = some (inverseEntryP curOut curIn) := by
+        rw [List.getElem?_eq_getElem j'.isLt]
+        simpa only [List.get_eq_getElem] using congrArg some hinv
+      exact False.elim ((hfirst j'.val hjCur).2 hsome)
+  · let iCur' := if idx.val < iCur then iCur - 1 else iCur
+    have hcur' : (tr.eraseIdx idx.val)[iCur']? = some (forwardEntryP curIn curOut) := by
+      by_cases hidxCur : idx.val < iCur
+      · have hge : idx.val ≤ iCur - 1 := by omega
+        simp only [iCur', hidxCur, ↓reduceIte]
+        rw [List.getElem?_eraseIdx_of_ge hge, show iCur - 1 + 1 = iCur by omega, hcur]
+      · have hCurIdx : iCur < idx.val := by omega
+        simp only [iCur', hidxCur, ↓reduceIte]
+        rw [List.getElem?_eraseIdx_of_lt hCurIdx, hcur]
+    have hfirst' : ∀ j, j < iCur' →
+        (tr.eraseIdx idx.val)[j]? ≠ some (forwardEntryP curIn curOut) ∧
+          (tr.eraseIdx idx.val)[j]? ≠ some (inverseEntryP curOut curIn) := by
+      intro j hj
+      constructor
+      · intro hsome
+        by_cases hidxCur : idx.val < iCur
+        · by_cases hjIdx : j < idx.val
+          · have hraw : tr[j]? = some (forwardEntryP curIn curOut) := by
+              rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+              exact hsome
+            exact (hfirst j (by simp [iCur', hidxCur] at hj; omega)).1 hraw
+          · have hraw : tr[j + 1]? = some (forwardEntryP curIn curOut) := by
+              have hge : idx.val ≤ j := by omega
+              rw [List.getElem?_eraseIdx_of_ge hge] at hsome
+              exact hsome
+            exact (hfirst (j + 1) (by simp [iCur', hidxCur] at hj; omega)).1 hraw
+        · have hCurIdx : iCur < idx.val := by omega
+          have hjIdx : j < idx.val := by simp [iCur', hidxCur] at hj; omega
+          have hraw : tr[j]? = some (forwardEntryP curIn curOut) := by
+            rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+            exact hsome
+          exact (hfirst j (by simpa [iCur', hidxCur] using hj)).1 hraw
+      · intro hsome
+        by_cases hidxCur : idx.val < iCur
+        · by_cases hjIdx : j < idx.val
+          · have hraw : tr[j]? = some (inverseEntryP curOut curIn) := by
+              rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+              exact hsome
+            exact (hfirst j (by simp [iCur', hidxCur] at hj; omega)).2 hraw
+          · have hraw : tr[j + 1]? = some (inverseEntryP curOut curIn) := by
+              have hge : idx.val ≤ j := by omega
+              rw [List.getElem?_eraseIdx_of_ge hge] at hsome
+              exact hsome
+            exact (hfirst (j + 1) (by simp [iCur', hidxCur] at hj; omega)).2 hraw
+        · have hCurIdx : iCur < idx.val := by omega
+          have hjIdx : j < idx.val := by simp [iCur', hidxCur] at hj; omega
+          have hraw : tr[j]? = some (inverseEntryP curOut curIn) := by
+            rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+            exact hsome
+          exact (hfirst j (by simpa [iCur', hidxCur] using hj)).2 hraw
+    by_cases hErasePrev : idx.val = iPrev
+    · -- the erased entry IS the prior witness: re-anchor through its paper certificate,
+      -- in whichever direction the witness held
+      rcases hprev with hprevF | hprevI
+      · have hidx? : tr[idx.val]? = some (forwardEntryP prevIn prevOut) := by
+          simpa [hErasePrev] using hprevF
+        have hidxVal : tr[idx] = forwardEntryP prevIn prevOut := by
+          rw [List.getElem?_eq_getElem idx.isLt] at hidx?
+          exact Option.some.inj hidx?
+        obtain ⟨j', hj', stateIn', stateOut', hentry, hcap'⟩ :=
+          redundantPaper_forward_capacity_prior
+            (tr := tr) (idx := idx) (capSeg := curOut.capacitySegment)
+            (stateIn := prevIn) (stateOut := prevOut)
+            (by simpa [forwardEntryP] using hidxVal) hred hcap
+        have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
+          List.getElem?_eraseIdx_of_lt (by exact hj')
+        have hprev' : (tr.eraseIdx idx.val)[j'.val]? = some (forwardEntryP stateIn' stateOut') ∨
+            (tr.eraseIdx idx.val)[j'.val]? = some (inverseEntryP stateOut' stateIn') := by
+          rcases hentry with hf | hi
+          · exact Or.inl (by
+              rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+              simpa [forwardEntryP, List.get_eq_getElem] using congrArg some hf)
+          · exact Or.inr (by
+              rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+              simpa [inverseEntryP, List.get_eq_getElem] using congrArg some hi)
+        refine ⟨iCur', j'.val, curIn, curOut, stateIn', stateOut',
+          ?_, hcur', hprev', hcap', hfirst'⟩
+        by_cases hidxCur : idx.val < iCur
+        · simp [iCur', hidxCur]
+          omega
+        · simp [iCur', hidxCur]
+          omega
+      · have hidx? : tr[idx.val]? = some (inverseEntryP prevOut prevIn) := by
+          simpa [hErasePrev] using hprevI
+        have hidxVal : tr[idx] = inverseEntryP prevOut prevIn := by
+          rw [List.getElem?_eq_getElem idx.isLt] at hidx?
+          exact Option.some.inj hidx?
+        obtain ⟨j', hj', stateIn', stateOut', hentry, hcap'⟩ :=
+          redundantPaper_inverse_capacity_prior
+            (tr := tr) (idx := idx) (capSeg := curOut.capacitySegment)
+            (stateOut := prevOut) (stateIn := prevIn)
+            (by simpa [inverseEntryP] using hidxVal) hred hcap
+        have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
+          List.getElem?_eraseIdx_of_lt (by exact hj')
+        have hprev' : (tr.eraseIdx idx.val)[j'.val]? = some (forwardEntryP stateIn' stateOut') ∨
+            (tr.eraseIdx idx.val)[j'.val]? = some (inverseEntryP stateOut' stateIn') := by
+          rcases hentry with hf | hi
+          · exact Or.inl (by
+              rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+              simpa [forwardEntryP, List.get_eq_getElem] using congrArg some hf)
+          · exact Or.inr (by
+              rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+              simpa [inverseEntryP, List.get_eq_getElem] using congrArg some hi)
+        refine ⟨iCur', j'.val, curIn, curOut, stateIn', stateOut',
+          ?_, hcur', hprev', hcap', hfirst'⟩
+        by_cases hidxCur : idx.val < iCur
+        · simp [iCur', hidxCur]
+          omega
+        · simp [iCur', hidxCur]
+          omega
+    · -- the erased entry is neither witness: shift indices, preserving the prior's direction
+      let iPrev' := if idx.val < iPrev then iPrev - 1 else iPrev
+      have hprev' : (tr.eraseIdx idx.val)[iPrev']? = some (forwardEntryP prevIn prevOut) ∨
+          (tr.eraseIdx idx.val)[iPrev']? = some (inverseEntryP prevOut prevIn) := by
+        by_cases hidxPrev : idx.val < iPrev
+        · have hge : idx.val ≤ iPrev - 1 := by omega
+          rcases hprev with hf | hi
+          · exact Or.inl (by
+              simp only [iPrev', hidxPrev, ↓reduceIte]
+              rw [List.getElem?_eraseIdx_of_ge hge, show iPrev - 1 + 1 = iPrev by omega, hf])
+          · exact Or.inr (by
+              simp only [iPrev', hidxPrev, ↓reduceIte]
+              rw [List.getElem?_eraseIdx_of_ge hge, show iPrev - 1 + 1 = iPrev by omega, hi])
+        · have hPrevIdx : iPrev < idx.val := by omega
+          rcases hprev with hf | hi
+          · exact Or.inl (by
+              simp only [iPrev', hidxPrev, ↓reduceIte]
+              rw [List.getElem?_eraseIdx_of_lt hPrevIdx, hf])
+          · exact Or.inr (by
+              simp only [iPrev', hidxPrev, ↓reduceIte]
+              rw [List.getElem?_eraseIdx_of_lt hPrevIdx, hi])
+      have hlt' : iPrev' < iCur' := by
+        by_cases hidxCur : idx.val < iCur
+        · by_cases hidxPrev : idx.val < iPrev
+          · simp [iCur', iPrev', hidxCur, hidxPrev]
+            omega
+          · simp [iCur', iPrev', hidxCur, hidxPrev]
+            omega
+        · have hidxPrev : ¬ idx.val < iPrev := by omega
+          simp [iCur', iPrev', hidxCur, hidxPrev]
+          omega
+      exact ⟨iCur', iPrev', curIn, curOut, prevIn, prevOut,
+        hlt', hcur', hprev', hcap, hfirst'⟩
+
+/-- **Fixpoint preservation (paper semantics)**: dedup preserves the first-perm collision shape
+as the broad base-trace shape. -/
+private lemma firstPermNatPaper_removeRedundant :
+    ∀ (N : ℕ) (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)), tr.length ≤ N →
+      HasFirstPermCapacityBeforeForwardOutputPaperNat tr →
+        HasPermCapacityBeforeForwardOutputPaper (removeRedundantEntryDSPaper tr).1 := by
+  intro N
+  induction N with
+  | zero =>
+      intro tr hlen hP
+      obtain ⟨iCur, _iPrev, _cI, _cO, _pI, _pO, _hlt, hcur, _⟩ := hP
+      have hlen0 : tr.length = 0 := Nat.le_zero.mp hlen
+      rw [List.length_eq_zero_iff.mp hlen0] at hcur
+      simp at hcur
+  | succ N ih =>
+      intro tr hlen hP
+      rw [removeRedundantEntryDSPaper]
+      split
+      · rename_i hex
+        refine ih _ ?_ (firstPermNatPaper_eraseIdx tr (Classical.choose hex)
+          (Classical.choose_spec hex) hP)
+        have hlt := (Classical.choose hex).isLt
+        have hsucc := List.length_eraseIdx_add_one hlt
+        omega
+      · exact hasPermCapacityBeforeForwardOutputPaper_of_firstPermNat hP
+
+/-- **Public dedup bridge (paper semantics)**: a raw first-occurrence perm-capacity collision
+survives `removeRedundantEntryDSPaper` as the broad base-trace shape. -/
+theorem hasPermCapacityBeforeForwardOutputPaper_removeRedundant_of_first
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasFirstPermCapacityBeforeForwardOutputPaper tr) :
+    HasPermCapacityBeforeForwardOutputPaper (removeRedundantEntryDSPaper tr).1 :=
+  firstPermNatPaper_removeRedundant tr.length tr le_rfl (firstPermNatPaper_of_first h)
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -409,3 +624,4 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_of_first
 #print axioms DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_forward_of_no_prior
 #print axioms DuplexSpongeFS.Sponge316.hasFirstPermCapacityBeforeForwardOutputPaper_current_not_redundant
+#print axioms DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_removeRedundant_of_first
