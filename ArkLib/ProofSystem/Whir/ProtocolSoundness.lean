@@ -58,9 +58,12 @@ namespace WhirIOP
 
 open MutualCorrAgreement WhirIOP.Construction
 
-/-- **Issue #302 resolution:** The dummy WHIR Vector IOP possesses round-by-round knowledge
-soundness with the trivial gap `εRbr = 1`. The genuine `whir_vector_iop_breakthrough`
-requires the real verifier construction. -/
+/-- **Trivial-budget demo only — NOT an issue #302 resolution.** The *always-accepting skeleton*
+WHIR Vector IOP trivially satisfies rbr knowledge soundness at the all-one budget `εRbr = 1`
+(any pure-`true` verifier does). This carries no security content; it is superseded by the
+`ThresholdKSF` indicator knowledge-state-function work (which does the genuine extractor/state
+function construction at sub-one budgets). The real WHIR theorem requires the genuine verifier
+and its genuine RBR bound. -/
 theorem whirVectorIOP_rbrKnowledgeSoundness_dummy
     {F : Type} [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
     {M : ℕ} {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
