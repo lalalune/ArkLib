@@ -1559,6 +1559,7 @@ import ArkLib.ToMathlib.WeightLambdaCalculus
 import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.WindowDualRS
 import ArkLib.ToMathlib.ZKConcreteSimulatorProof
+import ArkLib.ToMathlib.ZLinearClosureAudit
 import ArkLib.ToMathlib.ZKDefA
 import ArkLib.ToMathlib.ZKTransferBricks
 import ArkLib.ToVCVio.EvalDist.Defs.Support
