@@ -1318,6 +1318,7 @@ import ArkLib.ProofSystem.Logup.Security.OuterMarginalBound
 import ArkLib.ProofSystem.Logup.Security.OuterRbrSoundness
 import ArkLib.ProofSystem.Logup.Security.OuterRestSupport
 import ArkLib.ProofSystem.Logup.Security.OuterRun
+import ArkLib.ProofSystem.Logup.Security.OuterRunDecomposition
 import ArkLib.ProofSystem.Logup.Security.OuterRunSamplesChallenge
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessReal
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessSharp
