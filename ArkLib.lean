@@ -262,6 +262,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Claim57JointAg
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.CloseInterpolantsCount
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.CurvesBridge
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.DescendedAgreement
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.DescendedDegreeSum
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.DescendedRset
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.EvalOnZNonzero
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Extraction
@@ -1292,6 +1293,14 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.BadBlocks
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.FoldDistance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Incremental
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorClosest
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorCodeDistance
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDisagreement
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDistance
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFiber
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorHamming
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorUDR
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorWitness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
@@ -1531,6 +1540,7 @@ import ArkLib.ProofSystem.Whir.CheckedVerifier
 import ArkLib.ProofSystem.Whir.FoldRound
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.FoldingGenMutualCorrParamsUDR
+import ArkLib.ProofSystem.Whir.FoldingListDecodingReduction
 import ArkLib.ProofSystem.Whir.GenMutualCorrParamsUDR
 import ArkLib.ProofSystem.Whir.Hab25WhirBridge
 import ArkLib.ProofSystem.Whir.Hab25WindowMCA
