@@ -75,4 +75,31 @@ theorem append_perfectCompleteness_challenge
   exact Reduction.append_perfectCompleteness_challenge
     R₁.toReduction R₂.toReduction h₁ h₂ hn hDir hDir₂ himplSP himplNF hInit
 
+/-- **Oracle-level empty-seam append perfect completeness.** The `n = 0` analogue: appending a
+0-round oracle reduction `R₂` (empty trailing protocol) preserves perfect completeness. Reduces to
+`Reduction.append_perfectCompleteness_empty_proof`. -/
+theorem append_perfectCompleteness_empty
+    {pSpecE : ProtocolSpec 0}
+    [OₘE : ∀ i, OracleInterface (pSpecE.Message i)]
+    [∀ i, SampleableType (pSpecE.Challenge i)]
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpecE)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    [(oSpec + [(pSpec₁ ++ₚ pSpecE).Challenge]ₒ).Fintype]
+    [(oSpec + [(pSpec₁ ++ₚ pSpecE).Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₁.Challenge]ₒ).Fintype] [(oSpec + [pSpec₁.Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpecE.Challenge]ₒ).Fintype] [(oSpec + [pSpecE.Challenge]ₒ).Inhabited] :
+    (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
+  change Reduction.perfectCompleteness init impl rel₁ rel₃ (R₁.append R₂).toReduction
+  rw [show (R₁.append R₂).toReduction = R₁.toReduction.append R₂.toReduction from
+    appendToReductionResidual_proof R₁ R₂]
+  exact Reduction.append_perfectCompleteness_empty_proof
+    R₁.toReduction R₂.toReduction h₁ h₂ hInit hImplSupp
+
 end OracleReduction
