@@ -52,6 +52,27 @@ open scoped NNReal ENNReal
 
 attribute [local instance] Classical.propDecidable
 
+section MultisetBridge
+
+variable {F₁ : Type} [Field F₁]
+
+/-- Multiset-membership form of the integral factor assignment — no `toFinset`, hence no
+`DecidableEq` instance in the statement. The GS files carry no `[DecidableEq F]`, so their
+`toFinset` uses the Classical instance; consuming it in the instance-rich capture-kernel
+context sends the unifier into whnf blowup. Crossing at the (instance-free) multiset level
+avoids this. -/
+lemma exists_integral_factor_assignment_multiset
+    {Q₀ : (F₁[X])[X][Y]} (hQ₀ : Q₀ ≠ 0) (z : F₁) (q : F₁[X])
+    (hq : (Polynomial.X - Polynomial.C q) ∣
+      Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z))) :
+    ∃ R, R ∈ UniqueFactorizationMonoid.factors Q₀ ∧
+      (Polynomial.X - Polynomial.C q) ∣
+        R.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) := by
+  obtain ⟨R, hR, hd⟩ := exists_integral_factor_assignment hQ₀ z q hq
+  exact ⟨R, Multiset.mem_toFinset.mp hR, hd⟩
+
+end MultisetBridge
+
 variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
 
 /-- **Lagrange roundtrip**: the Reed–Solomon codeword of a degree-`< k` polynomial decodes
@@ -215,7 +236,9 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
         Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) := by
       rw [← hd]
       exact mcaDecode_matching_dvd domain hQ hrep hkn hm hδ1 hδJ d hz
-    exact exists_integral_factor_assignment hQ₀0 γ (P γ) hdvd
+    obtain ⟨R, hRmem, hRd⟩ :=
+      exists_integral_factor_assignment_multiset hQ₀0 γ (P γ) hdvd
+    exact ⟨R, Multiset.mem_toFinset.mpr hRmem, hRd⟩
   -- the cells: `none` is the degenerate cell, `some R` the factor cells
   have hex2 : ∀ γ : F₀, ∃ ij : Option ((F₀[X])[X][Y]),
       ((γ ∈ bad ∧ Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0) →
@@ -273,7 +296,7 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
     by_contra hz
     obtain ⟨R, _, hEq, _⟩ := hassignpos γ ⟨hγbad, hz⟩
     rw [hass] at hEq
-    exact Option.noConfusion hEq
+    exact absurd hEq.symm (Option.some_ne_none _)
   · -- every factor cell carries one irreducible factor of `Q₀`
     intro ij hij hne
     simp only [hIndex, Finset.mem_insert] at hij
@@ -287,9 +310,9 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
       by_cases hz : Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0
       · obtain ⟨R', hR', hEq, hdvd⟩ := hassignpos γ ⟨hγbad, hz⟩
         rw [hass] at hEq
-        rwa [Option.some.inj hEq] at hdvd
+        rwa [← Option.some.inj hEq] at hdvd
       · rw [hassignneg γ (fun hc => hz hc.2)] at hass
-        exact Option.noConfusion hass
+        exact absurd hass.symm (Option.some_ne_none _)
 
 /-- **The K1-complete count**: composing the cell production with a per-cell K4 pinning
 input (any decode-family cell whose members' matching factors all divide one specialized
