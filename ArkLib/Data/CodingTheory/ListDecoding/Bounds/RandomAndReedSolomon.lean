@@ -370,6 +370,103 @@ theorem random_linear_lambda_lower_glmrsw22_of_first_moment_residual
     (random_linear_lambda_lower_glmrsw22_random_generator_matrix_of_first_moment_residual
       q hq_pp δ hδ_pos hδ_lt ε hε_pos hε_lt h)
 
+/-! ### The combinatorial-witness layer: the residual without its probability space
+
+`randomLinearLambdaLowerFirstMomentResidual` is a probability statement (`Pr > 0` over uniform
+generator matrices), but in-tree it is *equivalent* to a purely combinatorial existence: one
+generator matrix `G`, one centre `y`, and one finite set `S` of codewords of `C(G)` within
+relative radius `δ` of `y` with `|S| > ⌊H_q(δ)/(1 − H_q(δ) − ρ) − ε⌋`, alongside the rate bound.
+The two theorems below prove both directions, so the genuinely external GLMRSW22 content is
+re-surfaced one layer deeper: a finite counting construction with **no probability left in the
+statement** (the paper's §4 construction produces exactly such `(G, y, S)`). -/
+
+/-- **Combinatorial witness for the GLMRSW22 first-moment residual.**  A generator matrix `G`
+meeting the rate target together with an explicit centre `y` and a finite codeword set `S` inside
+the relative-`δ` ball at `y` beating the floor bound.  Equivalent to the probabilistic residual
+(`randomLinearLambdaLowerFirstMomentResidual`) by the two theorems below — but stated with no
+probability space. -/
+def RandomLinearLambdaLowerCombinatorialWitness
+    (F : Type) [Field F] [Fintype F] [DecidableEq F]
+    (ι : Type) [Fintype ι] (q k : ℕ) (δ ε ρ : ℝ) : Prop :=
+  ∃ (G : Matrix (Fin k) ι F) (y : ι → F) (S : Finset (ι → F)),
+    (LinearCode.dim (randomLinearCodeOfGeneratorMatrix G) : ℝ) / Fintype.card ι ≥ ρ ∧
+    (∀ c ∈ S, c ∈ closeCodewordsRel
+        (((randomLinearCodeOfGeneratorMatrix G : LinearCode ι F) : Set (ι → F))) y δ) ∧
+    Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) < S.card
+
+/-- A combinatorial witness yields the per-matrix event: the explicit ball population forces
+`Λ(C(G), δ)` above the floor bound. -/
+theorem randomLinearLambdaLowerEvent_of_combinatorial
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type} [Fintype ι] {q k : ℕ} {δ ε ρ : ℝ}
+    {G : Matrix (Fin k) ι F} {y : ι → F} {S : Finset (ι → F)}
+    (hrate : (LinearCode.dim (randomLinearCodeOfGeneratorMatrix G) : ℝ) / Fintype.card ι ≥ ρ)
+    (hclose : ∀ c ∈ S, c ∈ closeCodewordsRel
+        (((randomLinearCodeOfGeneratorMatrix G : LinearCode ι F) : Set (ι → F))) y δ)
+    (hcard : Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) < S.card) :
+    randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G := by
+  classical
+  refine ⟨hrate, ?_⟩
+  set C : Set (ι → F) :=
+    ((randomLinearCodeOfGeneratorMatrix G : LinearCode ι F) : Set (ι → F)) with hC
+  -- `S` populates the point list at `y`, so `|S| ≤ |Λ(C, δ, y)| ≤ Λ(C, δ)`.
+  have hsub : (S : Set (ι → F)) ⊆ closeCodewordsRel C y δ := fun c hc =>
+    hclose c (by exact_mod_cast hc)
+  have hScard : (S.card : ℕ) ≤ (closeCodewordsRel C y δ).ncard := by
+    calc S.card = (S : Set (ι → F)).ncard := (Set.ncard_coe_finset S).symm
+      _ ≤ (closeCodewordsRel C y δ).ncard := Set.ncard_le_ncard hsub (Set.toFinite _)
+  have hpoint : ((closeCodewordsRel C y δ).ncard : ℕ∞) ≤ Lambda C δ :=
+    le_iSup (fun f : ι → F => ((closeCodewordsRel C f δ).ncard : ℕ∞)) y
+  have hENat : ((Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) : ℕ) : ℕ∞)
+      < Lambda C δ :=
+    lt_of_lt_of_le (by exact_mod_cast lt_of_lt_of_le hcard hScard) hpoint
+  calc ((Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) : ℕ) : ENNReal)
+      = (((Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) : ℕ) : ℕ∞) : ENNReal) := by
+        simp
+    _ < (Lambda C δ : ENNReal) := by exact_mod_cast hENat
+
+/-- **The residual from the combinatorial witness.**  The probabilistic first-moment residual
+follows from the purely combinatorial `(G, y, S)` existence — no probability estimate needed
+beyond full support of the uniform generator-matrix distribution. -/
+theorem randomLinearLambdaLowerFirstMomentResidual_of_combinatorialWitness
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type} [Fintype ι] {q k : ℕ} {δ ε ρ : ℝ}
+    (h : RandomLinearLambdaLowerCombinatorialWitness F ι q k δ ε ρ) :
+    randomLinearLambdaLowerFirstMomentResidual F ι q k δ ε ρ := by
+  obtain ⟨G, y, S, hrate, hclose, hcard⟩ := h
+  exact randomLinearLambdaLowerFirstMomentResidual_of_exists_event
+    (randomLinearLambdaLowerEvent_of_combinatorial hrate hclose hcard)
+
+/-- **Converse: the residual yields a combinatorial witness.**  Hence the witness is a faithful
+(equivalent) re-surfacing of the residual, not a strengthening: positive probability extracts a
+good matrix, and `Λ(C, δ) > ⌊…⌋` extracts a centre and a finite list beating the floor. -/
+theorem combinatorialWitness_of_randomLinearLambdaLowerFirstMomentResidual
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type} [Fintype ι] {q k : ℕ} {δ ε ρ : ℝ}
+    (h : randomLinearLambdaLowerFirstMomentResidual F ι q k δ ε ρ) :
+    RandomLinearLambdaLowerCombinatorialWitness F ι q k δ ε ρ := by
+  classical
+  obtain ⟨G, hrate, hLam⟩ := exists_randomLinearLambdaLowerEvent_of_probability_pos h
+  set C : Set (ι → F) :=
+    ((randomLinearCodeOfGeneratorMatrix G : LinearCode ι F) : Set (ι → F)) with hC
+  -- transport the strict bound from `ENNReal` back to `ℕ∞`
+  have hENat : ((Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) : ℕ) : ℕ∞)
+      < Lambda C δ := by
+    by_contra hle
+    push Not at hle
+    exact absurd (lt_of_lt_of_le hLam (by exact_mod_cast hle)) (lt_irrefl _)
+  -- the supremum beats the floor, so some centre's point list does
+  obtain ⟨y, hy⟩ := lt_iSup_iff.mp hENat
+  refine ⟨G, y, (Set.toFinite (closeCodewordsRel C y δ)).toFinset, hrate, ?_, ?_⟩
+  · intro c hc
+    exact (Set.Finite.mem_toFinset _).mp hc
+  · have hcard : (Set.toFinite (closeCodewordsRel C y δ)).toFinset.card
+        = (closeCodewordsRel C y δ).ncard :=
+      (Set.ncard_eq_toFinset_card _ (Set.toFinite _)).symm
+    exact_mod_cast hcard ▸ (by exact_mod_cast hy :
+      Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε)
+        < (closeCodewordsRel C y δ).ncard)
+
 end RandomLinear
 
 section ReedSolomonBounds
@@ -776,3 +873,8 @@ theorem rs_lambda_high_rate_jh01
 end ReedSolomonBounds
 
 end CodingTheory
+
+/-! ## Axiom audit (combinatorial-witness layer) -/
+#print axioms CodingTheory.randomLinearLambdaLowerEvent_of_combinatorial
+#print axioms CodingTheory.randomLinearLambdaLowerFirstMomentResidual_of_combinatorialWitness
+#print axioms CodingTheory.combinatorialWitness_of_randomLinearLambdaLowerFirstMomentResidual
