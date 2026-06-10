@@ -1501,6 +1501,7 @@ import ArkLib.ToMathlib.BranchCertificates
 import ArkLib.ToMathlib.BranchCollapse
 import ArkLib.ToMathlib.BranchSeparationUnsat
 import ArkLib.ToMathlib.BranchValuePigeonhole
+import ArkLib.ToMathlib.CentreVanishingSupply
 import ArkLib.ToMathlib.Bridge2BCHKS25
 import ArkLib.ToMathlib.Bridge2BGKS20
 import ArkLib.ToMathlib.Bridge2GCXK25
