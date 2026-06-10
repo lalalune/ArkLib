@@ -1737,6 +1737,7 @@ import ArkLib.ToMathlib.MatchingGeometryProducers
 import ArkLib.ToMathlib.MatchingGeometryProducersOn
 import ArkLib.ToMathlib.MatchingPointFromLocalSeries
 import ArkLib.ToMathlib.MonicIrreducibleFactorization
+import ArkLib.ToMathlib.MonicResidualBoundary
 import ArkLib.ToMathlib.MonomialAgreementBound
 import ArkLib.ToMathlib.MpFinFromLocalSeries
 import ArkLib.ToMathlib.MpFinSupply
