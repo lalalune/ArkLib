@@ -312,6 +312,40 @@ theorem jbt_time_h_first_perm_forward_getElem?_of_not_E
     (tr := tr) h (state := state) (S := S) (p := p) (hp := hp)
     (pairIdx := pairIdx) (hpair := hpair)
 
+/-- Off `E`, an honest hash-ordering witness gives concrete raw trace entries: the anchoring
+hash query and the first forward permutation query, with the permutation entry earlier in the
+trace. This is the raw-trace payload needed before the dedup collision step of M2c. -/
+theorem e_time_h_honest_raw_forward_witness_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hTime : DuplexSpongeFS.KeyLemmaFoundations.E_time_h_honest tr state S) :
+    ∃ p ∈ DuplexSpongeFS.Backtrack.J_BT S,
+    ∃ (pairIdx : Fin p.1.inputState.length) (hpair : pairIdx.val < p.1.outputState.length),
+      pairIdx.val = 0 ∧
+      (p.2.2 pairIdx).val < p.2.1.val ∧
+      GetElem?.getElem? tr p.2.1.val =
+        some (⟨Sum.inl p.1.stmt,
+          Vector.drop (p.1.inputState[0]'(by
+            rw [p.1.inputState_length_eq_outputState_length_succ]
+            exact Nat.succ_pos _)) SpongeSize.R⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+      GetElem?.getElem? tr (p.2.2 pairIdx).val =
+        some (⟨Sum.inr (Sum.inl p.1.inputState[pairIdx]),
+          p.1.outputState[pairIdx.val]'hpair⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  unfold DuplexSpongeFS.KeyLemmaFoundations.E_time_h_honest at hTime
+  obtain ⟨p, hp, hgt⟩ := hTime
+  obtain ⟨pairIdx, hpair, hidx0, hperm⟩ :=
+    jbt_time_h_first_perm_forward_getElem?_of_not_E
+      (tr := tr) h (state := state) (S := S) (p := p) (hp := hp) hgt
+  refine ⟨p, hp, pairIdx, hpair, hidx0, ?_, jbt_hash_getElem? tr state S p hp, hperm⟩
+  have hpairIdx :
+      pairIdx = ⟨0, by
+        have := p.1.inputState_length_eq_outputState_length_succ
+        omega⟩ := Fin.ext hidx0
+  rw [hpairIdx]
+  omega
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -332,4 +366,5 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_first_perm_forward_getElem?_of_not_E
+#print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest
