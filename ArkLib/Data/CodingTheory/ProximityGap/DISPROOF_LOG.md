@@ -5179,3 +5179,32 @@ family, the conceptual "why" of char-0 nonvanishing (free roots of N = P²−YQ�
 μ₁₆), and the iff-direction Galois stability (sketched, empirically exact). Honest
 scope: one word, one radius pair; the theorem covers all split primes for THIS
 configuration.
+
+### O124 — THE MULTISET (ℕ) WINDOW LAW: trichotomy resolved by probe + CJ counterexample
+
+Hypothesis A4 (docs/wiki/open-math-hypotheses-2026-06.md) asked whether the windowed coset law
+lifts from Z-weights to ℕ-weights (multisets): window 1..t vanishing ⟹ ℕ-union of full
+γ·μ_d cosets, d | n, d > t. Resolution (probes: /tmp/hypA4_probe.py, /tmp/hypA4_cj.py):
+
+* **GENERAL n: FALSE.** The Conway–Jones (5:6)-type minimal sum at n = 30 — multiset
+  {ζ₃₀^25, ζ₃₀^5, ζ₃₀^6, ζ₃₀^12, ζ₃₀^18, ζ₃₀^24} (= −ζ₃ − ζ₃² + ζ₅ + ζ₅² + ζ₅³ + ζ₅⁴) —
+  has p₁ = 0, is MINIMAL (no vanishing subsum, verified exhaustively), and is NOT
+  ℕ-decomposable into full cosets (verified by backtracking). The Z-law (O111) survives
+  because Z-decompositions may use negative coefficients; the ℕ-gap is exactly the
+  Lam–Leung positivity kernel (O116). **A4-general ≡ K5: same problem.**
+* **PRIME POWERS n = p^k: TRUE in all probes** (n = 8: t = 1,2,3, 49+5+5 windowed multisets,
+  0 counterexamples; n = 9: t = 1,2, 7+7, 0). Proof skeleton mapped: the tower power basis
+  1, ζ, …, ζ^{p−1} over ℚ(ζ_{p^{k−1}}) (X^p − ζ_{p^{k−1}} minimal) forces per-fiber p_m
+  vanishing for p ∤ m; the p | m window equations are cross-fiber mixed and force
+  RECOMBINATION of pulled-back small cosets into full larger cosets (e.g. at n = 8, t = 2:
+  two antipodal pairs {j, j+4} ∪ {j+2, j+6} recombine into the full γμ₄). This is the
+  adapted-decomposition phenomenon (O122) in its clean single-prime form — no dead-coset
+  stall at prime powers. **FRI/STIR-relevant: smooth domains are exactly μ_{2^k}.**
+* **TWO PRIMES p^a q^b: TRUE in probes** (n = 12: t = 1,2, 88+16, 0 counterexamples) — open,
+  and by the above identification it IS the O116 minimal-sum kernel restricted to two primes,
+  where Conway–Jones minimal sums are exactly the scaled full-coset relations (no exotic
+  minimal sums below three primes — consistent with the in-tree two-prime completeness).
+
+Corrected A4 (the formalization target): **the prime-power multiset window law**, with the
+two-prime case conditional on K5 and the 3-prime case FALSE as stated (needs the Lam–Leung
+weight-bound correction). The A3 boundary-counting bridge only needs the prime-power case.

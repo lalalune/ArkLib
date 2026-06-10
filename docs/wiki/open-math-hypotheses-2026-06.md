@@ -186,6 +186,10 @@ Per-hypothesis discipline: constraints → new direction → why nobody has done
 - **Novel**: the theorem itself — new elementary number theory if true.
 - **Hypothesis**: (ℚ form) any monic `g ∣ X^n − 1` with `e_i(g) = 0` for `1 ≤ i ≤ t` factors
   as `∏ (X^{d_j} − γ_j)` with `d_j ∣ n`, `d_j > t`, `γ_j ∈ μ_{n/d_j}`.
+- **RESOLVED 2026-06-10 (probe + counterexample; DISPROOF_LOG O124)**: general n FALSE
+  (Conway–Jones (5:6) minimal sum at n = 30); prime powers TRUE in all probes with the proof
+  skeleton mapped (tower basis + cross-fiber recombination); two primes = K5's kernel exactly.
+  Corrected target: the prime-power multiset window law (the A3-relevant case).
 - **Proof plan**: induction on deg g: the smallest j with e_j ≠ 0 must be a multiple of some
   d > t by the μ_n constraint (sub-hypothesis: the minimal support gap of a μ_n-product is a
   divisor); peel the corresponding binomial via the O116 minimal-sum machinery.
