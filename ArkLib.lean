@@ -854,6 +854,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TheoremQAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUDExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUpperReduction
 import ArkLib.Data.CodingTheory.ProximityGap.ThreadSplit
+import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimePacketRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeSyndromeBudget
@@ -1075,7 +1076,6 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDe
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDetEmpty
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeOracleLift
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2ReconcileProof
-import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeSeamZero
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeStateFunction
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrSoundnessPhase2Proof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRightPartialProjections
