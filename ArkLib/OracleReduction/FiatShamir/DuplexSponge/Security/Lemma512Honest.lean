@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1800
 
 /-!
 # #316 — Duplex-Sponge Fiat-Shamir: discharge of the M2a honest bad-event residual
@@ -1438,6 +1438,85 @@ theorem e_time_p_honest_raw_hasForwardCapacityBeforeForwardOutput_of_not_E
     (e_time_p_honest_raw_hasInputCapacityBeforeForwardOutput_of_not_E
       (tr := tr) h (state := state) (S := S) hTime)
 
+/-- A raw obstruction to the first-forward transport guard: a `J_BT` permutation anchor has a
+strictly earlier same-direction reversed forward entry. This is exactly the shape that can make
+the later forward anchor redundant under the in-tree `redundantEntryDS` definition while escaping
+the existing `J_BT` forward-or-inverse first-occurrence lemma. -/
+def HasPriorReversedForwardAnchor
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state) : Prop :=
+  ∃ p ∈ DuplexSpongeFS.Backtrack.J_BT S,
+    ∃ (pairIdx : Fin p.1.inputState.length) (hpair : pairIdx.val < p.1.outputState.length),
+      ∃ j : Fin tr.length, j.val < (p.2.2 pairIdx).val ∧
+        tr[j] = forwardEntry (p.1.outputState[pairIdx.val]'hpair) (p.1.inputState[pairIdx])
+
+/-- Off `E`, an honest permutation-ordering witness either gives the strengthened raw
+first-forward predicate needed by the dedup transport, or it exhibits the precise prior reversed
+forward obstruction not covered by `jbt_perm_no_prior_of_lt`. -/
+theorem e_time_p_honest_raw_hasFirstForwardCapacityBeforeForwardOutput_or_prior_reverse_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hTime : DuplexSpongeFS.KeyLemmaFoundations.E_time_p_honest tr state S) :
+    HasFirstForwardCapacityBeforeForwardOutput tr ∨
+      HasPriorReversedForwardAnchor tr state S := by
+  obtain ⟨p, hp, curIdx, nextIdx, hcur, hnext, hsucc, hlt,
+    hcurPerm, hnextPerm, hcap⟩ :=
+    e_time_p_honest_raw_forward_capacity_witness_of_not_E
+      (tr := tr) h (state := state) (S := S) hTime
+  by_cases hrev :
+      ∃ j : Fin tr.length, j.val < (p.2.2 curIdx).val ∧
+        tr[j] = forwardEntry (p.1.outputState[curIdx.val]'hcur) (p.1.inputState[curIdx])
+  · right
+    obtain ⟨j, hj, hentry⟩ := hrev
+    exact ⟨p, hp, curIdx, hcur, j, hj, hentry⟩
+  · left
+    have hcurLt : (p.2.2 curIdx).val < tr.length :=
+      (List.getElem?_eq_some_iff.mp hcurPerm).1
+    have hnextLt : (p.2.2 nextIdx).val < tr.length :=
+      (List.getElem?_eq_some_iff.mp hnextPerm).1
+    let jCur : Fin tr.length := ⟨(p.2.2 curIdx).val, hcurLt⟩
+    let jPrev : Fin tr.length := ⟨(p.2.2 nextIdx).val, hnextLt⟩
+    have hcurGet : tr[jCur] =
+        forwardEntry (p.1.inputState[curIdx]) (p.1.outputState[curIdx.val]'hcur) := by
+      have hget := hcurPerm
+      rw [List.getElem?_eq_getElem jCur.isLt] at hget
+      simpa [forwardEntry] using Option.some.inj hget
+    have hprevGet : tr[jPrev] =
+        forwardEntry (p.1.inputState[nextIdx]) (p.1.outputState[nextIdx.val]'hnext) := by
+      have hget := hnextPerm
+      rw [List.getElem?_eq_getElem jPrev.isLt] at hget
+      simpa [forwardEntry] using Option.some.inj hget
+    have hfirst : ∀ j : Fin tr.length, j.val < jCur.val →
+        tr[j] ≠ forwardEntry (p.1.inputState[curIdx]) (p.1.outputState[curIdx.val]'hcur) ∧
+          tr[j] ≠ forwardEntry (p.1.outputState[curIdx.val]'hcur) (p.1.inputState[curIdx]) := by
+      intro j hj
+      constructor
+      · have hno := jbt_perm_no_prior_of_lt
+          (tr := tr) (state := state) (S := S) (p := p) hp
+          (pairIdx := curIdx) (hpair := hcur) j (by simpa [jCur] using hj)
+        simpa [forwardEntry] using hno.1
+      · intro hentry
+        exact hrev ⟨j, by simpa [jCur] using hj, hentry⟩
+    exact ⟨jCur, p.1.inputState[curIdx], p.1.outputState[curIdx.val]'hcur,
+      hcurGet, hfirst, jPrev, hlt, p.1.inputState[nextIdx],
+      p.1.outputState[nextIdx.val]'hnext, hprevGet, Or.inr hcap.symm⟩
+
+/-- Conditional permutation-timing half of M2c: after excluding the explicit prior reversed
+forward obstruction, the honest permutation-ordering event cannot occur off the combined bad
+event. -/
+theorem not_e_time_p_honest_of_not_E_of_no_prior_reverse
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hNoRev : ¬ HasPriorReversedForwardAnchor tr state S) :
+    ¬ DuplexSpongeFS.KeyLemmaFoundations.E_time_p_honest tr state S := by
+  intro hTime
+  obtain hfirst | hrev :=
+    e_time_p_honest_raw_hasFirstForwardCapacityBeforeForwardOutput_or_prior_reverse_of_not_E
+      (tr := tr) h (state := state) (S := S) hTime
+  · exact h (E_of_base_hasForwardCapacityBeforeForwardOutput (tr := tr)
+      (hasForwardCapacityBeforeForwardOutput_removeRedundant_of_first tr hfirst))
+  · exact hNoRev hrev
+
 /-- Off `E`, an honest hash-ordering witness gives concrete raw trace entries: the anchoring
 hash query and the first forward permutation query, with the permutation entry earlier in the
 trace. This is the raw-trace payload needed before the dedup collision step of M2c. -/
@@ -1641,6 +1720,11 @@ set_option linter.style.longLine false in
   DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasInputCapacityBeforeForwardOutput_of_not_E
 #print axioms
   DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasForwardCapacityBeforeForwardOutput_of_not_E
+set_option linter.style.longLine false in
+#print axioms
+  DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasFirstForwardCapacityBeforeForwardOutput_or_prior_reverse_of_not_E
+set_option linter.style.longLine false in
+#print axioms DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_no_prior_reverse
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_capacity_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E
