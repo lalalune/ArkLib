@@ -1385,6 +1385,7 @@ import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckRbrKSResidualAnalysis
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
+import ArkLib.ProofSystem.Stir.BlockRbrBudgets
 import ArkLib.ProofSystem.Stir.BlocksCompleteness
 import ArkLib.ProofSystem.Stir.ChainCompleteness
 import ArkLib.ProofSystem.Stir.CheckingVerifier
