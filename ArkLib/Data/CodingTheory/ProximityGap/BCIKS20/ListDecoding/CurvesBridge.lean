@@ -9,7 +9,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.PzFamilyUD
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.ToMathlib.Section5ConcreteJohnson
 /-!
@@ -1729,35 +1728,6 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_PzFamily
     (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_
   exact section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords
     (F := F) (n := n) (m := m) (k := k) hk (ωs := ωs) δ hDx hYZ hsubset hunique
-
-/-- Strict square-root-radius degree-one correlated-agreement capstone in the
-unique-decoding window.  This discharges the `PzFamily` uniqueness input of
-`correlatedAgreement_affine_lines_of_strict_exists_PzFamily` by the root-counting
-window theorem `PzFamily_unique_of_window`. -/
-theorem correlatedAgreement_affine_lines_of_strict_exists_PzFamily_of_window
-    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
-    (δ : ℚ≥0)
-    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
-    (hwin :
-      n + (k + 1) ≤
-        2 * (n - Nat.floor (Real.toNNReal ((δ : ℚ) : ℝ) * (n : ℝ≥0))))
-    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
-    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
-      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
-    (hsubset : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
-      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n),
-        coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ ⊆
-          matching_set_at_x k (δ : ℚ) h_gs x) :
-    δ_ε_correlatedAgreementCurves (k := 1) (A := F) (F := F) (ι := Fin n)
-      (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
-      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
-  classical
-  refine correlatedAgreement_affine_lines_of_strict_exists_PzFamily
-    (F := F) (n := n) (m := m) (k := k) hk (ωs := ωs) δ hδ hDx hYZ hsubset ?_
-  intro u₀ u₁ P hP
-  exact _root_.ProximityGap.PzFamily_unique_of_window
-    (F := F) (n := n) (k := k) (δ := (δ : ℚ)) (u₀ := u₀) (u₁ := u₁)
-    (ωs := ωs) (P := P) δ.2 hwin hP
 
 end BCIKS20ProximityGapSection5To6Bridge
 
