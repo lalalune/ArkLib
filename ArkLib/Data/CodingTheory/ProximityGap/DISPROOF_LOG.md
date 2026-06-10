@@ -3296,3 +3296,19 @@ lists = esymm fibers (O45) = psum fibers (O60) = coset unions (O53) of count ≤
 (O55), transferring to F_p (O49), with general words governed by the fold identities
 (O56/O57), mass conservation (O58), and the window-weight tradeoff (O59). Open content:
 the branch-count distribution (= S-two Conj 1 on these domains), surrounded.
+
+### O61 — THE CAPSTONE: unit_syndrome_list_budget — the entire pipeline as ONE theorem
+
+`LamLeungTwoPow.unit_syndrome_list_budget` (axiom-clean, 0 sorry): over a char-0 field
+with the 2^M-th roots of unity, for any 2^M-torsion domain D₀ and window c = 2^s − 1,
+
+    #{E ∈ powersetCard w D₀ : CompatC (unitVec (w−1)) N c E} ≤ 2^{#(2^s-power classes)}.
+
+One statement composing the whole session: O45 (syndrome ⟺ esymm fiber) ∘ O60 (Newton
+bridge to power sums) ∘ O53 (full tower) ∘ O55 (recovery-injection count). At window
+scale t = Θ(ηn) on μ_n this is the 2^{O(1/η)} interior list budget at unit syndromes —
+the KK25/S-two budget shape — as a single named machine-checked theorem; over F_p it
+holds above the O49 effective threshold. The #232 deep-interior unit-syndrome question
+is, with this, CLOSED in formal form; the open remainder is the all-words quantifier
+(branch-count distribution = S-two Conjecture 1), with its formal toolkit (O56–O59)
+assembled and its no-go routes recorded.

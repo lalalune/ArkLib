@@ -874,4 +874,44 @@ theorem esymm_window_iff_psum_window {S : Finset F} {t : ℕ} :
 
 end NewtonBridge
 
+/-! ## THE CAPSTONE: the unit-syndrome interior list budget, as one theorem
+
+The whole pipeline composed into a single statement: over a characteristic-zero field
+containing the `2^M`-th roots of unity, the codimension-`c` syndrome-compatibility list
+at the unit syndrome — with window `c = 2^s − 1` — over any `2^M`-torsion domain has at
+most `2^{#(2^s\-th\-power classes)}` members: **the `2^{O(1/η)}` budget for interior
+unit-syndrome lists, end to end** (O45 syndrome transfer ∘ O60 Newton bridge ∘ O53 tower
+∘ O55 count). Over `F_p` the same holds above the O49 effective threshold. -/
+
+section Capstone
+
+variable [DecidableEq F]
+
+open Classical in
+/-- **The unit-syndrome interior list budget.** -/
+theorem unit_syndrome_list_budget {M s : ℕ} {ζ : F} (hζ : IsPrimitiveRoot ζ (2 ^ M))
+    (hsM : s ≤ M) {D₀ : Finset F} (hD₀ : ∀ x ∈ D₀, x ^ (2 ^ M) = 1)
+    {w N : ℕ} (hw : w + (2 ^ s - 1) = N) (hs0 : 0 < s) (hcw : 2 ^ s - 1 ≤ w) :
+    ((D₀.powersetCard w).filter (fun E =>
+        TopLine.CompatC (TopLine.unitVec (w - 1)) N (2 ^ s - 1) E)).card
+      ≤ 2 ^ (D₀.image (· ^ (2 ^ s))).card := by
+  have hc0 : 0 < 2 ^ s - 1 := by
+    have : (2:ℕ) ^ 1 ≤ 2 ^ s := Nat.pow_le_pow_right (by norm_num) hs0
+    omega
+  -- step 1: compatibility = esymm window (O45)
+  rw [TopLine.zero_fiber_filter_eq hw hc0 hcw D₀]
+  -- step 2: esymm window = psum window (O60 Newton bridge), then count (O55)
+  refine le_trans (le_of_eq ?_) (tower_count hζ hsM hD₀ w)
+  congr 1
+  refine Finset.filter_congr fun E _ => ?_
+  constructor
+  · intro he j hj1 hj2
+    exact psum_window_of_esymm_window he j (Finset.mem_Icc.mpr ⟨hj1, by omega⟩)
+  · intro hp
+    refine esymm_window_of_psum_window (fun j hj => ?_)
+    obtain ⟨h1, h2⟩ := Finset.mem_Icc.mp hj
+    exact hp j h1 (by omega)
+
+end Capstone
+
 end LamLeungTwoPow
