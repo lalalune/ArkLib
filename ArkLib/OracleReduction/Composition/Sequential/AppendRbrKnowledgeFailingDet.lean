@@ -163,8 +163,84 @@ theorem optionLift_rbrKnowledgeSoundness [Inhabited Stmt₂]
     -- precompose the prover and defer to the inner per-round bound at `s`.
     simpa using hBound s w P.someStmt i
 
+/-- **Output-statement adaptation of a prover.** Replaces the prover's output statement type
+(discarding the statement to `default`); the interaction rounds are untouched, so all partial runs
+agree definitionally. The rbr per-round flip events never read the prover's output, so this is a
+free adaptation for the per-round bounds. -/
+def _root_.Prover.defaultOutputStmt {Stmt₁ Wit₁ StmtA StmtB Wit' : Type} [Inhabited StmtB]
+    (P : Prover oSpec Stmt₁ Wit₁ StmtA Wit' pSpec₁) :
+    Prover oSpec Stmt₁ Wit₁ StmtB Wit' pSpec₁ where
+  PrvState := P.PrvState
+  input := P.input
+  sendMessage := P.sendMessage
+  receiveChallenge := P.receiveChallenge
+  output := fun st => (fun ow => (default, ow.2)) <$> P.output st
+
+@[simp] theorem _root_.Prover.defaultOutputStmt_runWithLogToRound
+    {Stmt₁ Wit₁ StmtA StmtB Wit' : Type} [Inhabited StmtB]
+    (P : Prover oSpec Stmt₁ Wit₁ StmtA Wit' pSpec₁)
+    (i : Fin (m + 1)) (s : Stmt₁) (w : Wit₁) :
+    (P.defaultOutputStmt (StmtB := StmtB)).runWithLogToRound i s w
+      = P.runWithLogToRound i s w := rfl
+
+/-- **The h₁ transport of the optionization reduction.** A *failing*-deterministic verifier's rbr
+knowledge soundness transfers to its *total*-deterministic optionization (output statement
+`Option Stmt₂`, relation `optionRel rel₂`): the knowledge state function and extractor are
+unchanged (they are input-statement-indexed), `toFun_full` transfers because the two runs hit
+their respective output relations with the same probability (`verify? = some s₂ ∧ (s₂, w) ∈ rel₂`
+in both cases), and the per-round bounds transfer by output-statement adaptation of the prover. -/
+theorem failingDet_optionized_rbrKnowledgeSoundness [Inhabited Stmt₂]
+    {Wit₁ : Type}
+    (verify? : Stmt₁ → pSpec₁.FullTranscript → Option Stmt₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)}
+    {err₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    [∀ i, SampleableType (pSpec₁.Challenge i)]
+    (h₁ : Verifier.rbrKnowledgeSoundness init impl rel₁ rel₂
+      (⟨fun s tr => OptionT.mk (pure (verify? s tr))⟩ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) err₁) :
+    Verifier.rbrKnowledgeSoundness init impl rel₁ (optionRel rel₂)
+      (⟨fun s tr => pure (verify? s tr)⟩ : Verifier oSpec Stmt₁ (Option Stmt₂) pSpec₁) err₁ := by
+  obtain ⟨WitMid, E, kSF, hBound⟩ := h₁
+  refine ⟨WitMid, E,
+    { toFun := kSF.toFun
+      toFun_empty := kSF.toFun_empty
+      toFun_next := kSF.toFun_next
+      toFun_full := fun s tr w hPos => by
+        refine kSF.toFun_full s tr w ?_
+        -- positivity transfers: both runs hit their output relations exactly when
+        -- `verify? s tr = some s₂` with `(s₂, w) ∈ rel₂`.
+        rw [gt_iff_lt, probEvent_pos_iff] at hPos ⊢
+        obtain ⟨x?, hx, hrel⟩ := hPos
+        obtain ⟨s₂, hsome, hs₂⟩ := hrel
+        -- the total run always outputs `verify? s tr`; membership pins `x? = verify? s tr`.
+        rw [OptionT.mem_support_iff] at hx
+        simp only [Verifier.run, OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+        obtain ⟨st, hst, hmem⟩ := hx
+        rw [show ((simulateQ impl
+              ((⟨fun s tr => pure (verify? s tr)⟩ :
+                Verifier oSpec Stmt₁ (Option Stmt₂) pSpec₁).run s tr)).run' st :
+              ProbComp (Option (Option Stmt₂)))
+            = pure (some (verify? s tr)) from rfl] at hmem
+        simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hmem
+        subst hmem
+        -- now exhibit `s₂` in the failing run's support
+        refine ⟨s₂, ?_, hs₂⟩
+        rw [OptionT.mem_support_iff]
+        simp only [Verifier.run, OptionT.run_mk, support_bind, Set.mem_iUnion]
+        refine ⟨st, hst, ?_⟩
+        rw [show ((simulateQ impl
+              ((⟨fun s tr => OptionT.mk (pure (verify? s tr))⟩ :
+                Verifier oSpec Stmt₁ Stmt₂ pSpec₁).run s tr)).run' st :
+              ProbComp (Option Stmt₂))
+            = pure (verify? s tr) from rfl]
+        simp only [support_pure, Set.mem_singleton_iff]
+        first | exact hsome.symm | exact hsome },
+    ?_⟩
+  intro s w P i
+  simpa using hBound s w (P.defaultOutputStmt (StmtB := Stmt₂)) i
+
 end Verifier
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms Verifier.append_failingDet_eq_optionized
 #print axioms Verifier.optionLift_rbrKnowledgeSoundness
+#print axioms Verifier.failingDet_optionized_rbrKnowledgeSoundness
