@@ -1155,6 +1155,80 @@ def finalSumcheckStepLogic :
   ⟩
   hEq := fun oracleIdx => by simp only [Fin.eta]
 
+omit [Fintype L] [DecidableEq L] [CharP L 2] [SampleableType L] [NeZero ℓ] in
+/-- At `Fin.last ℓ`, sumcheck consistency is the single empty-variable evaluation. -/
+lemma sumcheckConsistency_at_last_simplifies
+    (target : L) (H : L⦃≤ 2⦄[X Fin (ℓ - Fin.last ℓ)])
+    (h_cons : sumcheckConsistencyProp (𝓑 := 𝓑) target H) :
+    target = H.val.eval (fun _ => (0 : L)) := by
+  simp only [Fin.val_last] at H h_cons ⊢
+  simp only [sumcheckConsistencyProp] at h_cons
+  haveI : IsEmpty (Fin 0) := Fin.isEmpty
+  rw [Finset.sum_eq_single (a := fun _ => 0)
+    (h₀ := fun b _ hb_ne => by
+      exfalso
+      apply hb_ne
+      funext i
+      simp only [tsub_self] at i
+      exact i.elim0)
+    (h₁ := fun h_not_mem => by
+      exfalso
+      apply h_not_mem
+      simp only [Fintype.mem_piFinset]
+      intro i
+      simp only [tsub_self] at i
+      exact i.elim0)] at h_cons
+  exact h_cons
+
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+/-- The final sumcheck verifier check follows from sumcheck consistency, witness structure, and the
+final codeword evaluation identity. -/
+lemma finalSumcheckStep_verifierCheck_passed_of_finalCodeword
+    (stmtIn : Statement (SumcheckBaseContext L ℓ) (Fin.last ℓ))
+    (witIn : Witness 𝔽q β (Fin.last ℓ))
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β ϑ (Fin.last ℓ) j)
+    (challenges : (pSpecFinalSumcheckStep (L := L)).Challenges)
+    (h_sumcheck_cons : sumcheckConsistencyProp (𝓑 := 𝓑) stmtIn.sumcheck_target witIn.H)
+    (h_wit_struct : witnessStructuralInvariant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (mp := BBF_SumcheckMultiplierParam) (stmt := stmtIn) (wit := witIn))
+    (h_final_codeword :
+      witIn.f ⟨0, by simp only [zero_mem]⟩ = witIn.t.val.eval stmtIn.challenges) :
+    (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (𝓑 := 𝓑)).verifierCheck stmtIn
+        ((finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (𝓑 := 𝓑)).honestProverTranscript stmtIn witIn oStmtIn challenges) := by
+  have h_target_eq_H_eval :
+      stmtIn.sumcheck_target = witIn.H.val.eval (fun _ => (0 : L)) :=
+    sumcheckConsistency_at_last_simplifies (L := L) (ℓ := ℓ) (𝓑 := 𝓑)
+      stmtIn.sumcheck_target witIn.H h_sumcheck_cons
+  have h_proj_eval :
+      (projectToMidSumcheckPoly ℓ witIn.t
+        (m := (BBF_SumcheckMultiplierParam (L := L) (ℓ := ℓ)).multpoly stmtIn.ctx)
+        (Fin.last ℓ) stmtIn.challenges).val.eval (fun _ => (0 : L)) =
+      ((BBF_SumcheckMultiplierParam (L := L) (ℓ := ℓ)).multpoly stmtIn.ctx).val.eval
+        stmtIn.challenges * witIn.t.val.eval stmtIn.challenges := by
+    apply Sumcheck.Structured.projectToMidSumcheckPoly_at_last_eval
+  have h_eq : stmtIn.sumcheck_target =
+      eqTilde stmtIn.ctx.t_eval_point stmtIn.challenges *
+        witIn.f ⟨0, by simp only [zero_mem]⟩ := by
+    calc
+      stmtIn.sumcheck_target
+          = witIn.H.val.eval (fun _ => (0 : L)) := h_target_eq_H_eval
+      _ = (projectToMidSumcheckPoly ℓ witIn.t
+            (m := (BBF_SumcheckMultiplierParam (L := L) (ℓ := ℓ)).multpoly stmtIn.ctx)
+            (Fin.last ℓ) stmtIn.challenges).val.eval (fun _ => (0 : L)) := by
+            rw [h_wit_struct.1]
+      _ = ((BBF_SumcheckMultiplierParam (L := L) (ℓ := ℓ)).multpoly stmtIn.ctx).val.eval
+            stmtIn.challenges * witIn.t.val.eval stmtIn.challenges := h_proj_eval
+      _ = eqTilde stmtIn.ctx.t_eval_point stmtIn.challenges *
+            witIn.t.val.eval stmtIn.challenges := by
+            rfl
+      _ = eqTilde stmtIn.ctx.t_eval_point stmtIn.challenges *
+            witIn.f ⟨0, by simp only [zero_mem]⟩ := by
+            rw [h_final_codeword]
+  dsimp [finalSumcheckStepLogic, FullTranscript.mk1] at h_eq ⊢
+  exact h_eq
+
 /-
 The two direct final-step helper proofs below are stale after the challenge-order migration and have
 no live callers. The public final-step completeness theorem is the explicit
@@ -1568,6 +1642,7 @@ class FinalSumcheckStepLogicCompleteResidual : Prop where
 variable [FinalSumcheckStepLogicCompleteResidual 𝔽q β
   (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)]
 
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 lemma finalSumcheckStep_is_logic_complete :
     (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (𝓑 := 𝓑)).IsStronglyComplete := by
