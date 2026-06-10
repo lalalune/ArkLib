@@ -4790,7 +4790,7 @@ O116's named next (a) executed. `TwoGenPackingCapacity.lean` (8 theorems + 2 tee
 
 **Where the packing surface moves:** the two-generator case of the 0/1 mass realizability problem is CLOSED as an iff. The full problem (arbitrary divisor multisets) is now a hypergraph-allocation question over the class structure: each divisor `d` sees `[0,n)` as `G_d`-classes through its base set, multisets interact pairwise through `gcd` lattices — the k-generator law needs simultaneous class allocation (Berger–Felzenbaum–Fraenkel disjoint-covering-systems territory; the pairwise condition is provably insufficient in general DCS theory, worth a probe at small n). Named next: (a) probe whether pairwise capacity suffices at two-prime n for 3 generators (suspect NO — find the witness); (b) the per-mass fiber count.
 
-### O119 — the COSET AGREEMENT-SPECTRUM MOMENTS: mean and second moment are domain-independent CLOSED FORMS (verified exactly), so δ*'s domain-dependence lives strictly in the upper tail — and smooth vs random domains are indistinguishable at toy scale (nubs, 2026-06-10)
+### O120 — the COSET AGREEMENT-SPECTRUM MOMENTS: mean and second moment are domain-independent CLOSED FORMS (verified exactly), so δ*'s domain-dependence lives strictly in the upper tail — and smooth vs random domains are indistinguishable at toy scale (nubs, 2026-06-10; renumbered from O119 — raced the fable lane's packing-capacity O119)
 
 `scripts/probes/probe_coset_agreement_moments.py` (exit 0, exact arithmetic): the incidence lane's reframing after O109/O115/O118 closed the counting side. For the agreement spectrum `a_j(u) = #{p ∈ RS : |{x ∈ D : p(x) = u(x)}| = j}` (list size = upper partial sums):
 
