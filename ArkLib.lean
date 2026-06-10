@@ -1506,6 +1506,7 @@ import ArkLib.ToMathlib.CurveSeriesTruncReading
 import ArkLib.ToMathlib.CyclotomicPatternInjectivity
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
 import ArkLib.ToMathlib.DecodedProximateRoot
+import ArkLib.ToMathlib.DecodedRootSupply
 import ArkLib.ToMathlib.DescentTrichotomy
 import ArkLib.ToMathlib.DiscriminantBadSet
 import ArkLib.ToMathlib.DiscriminantSeparable
