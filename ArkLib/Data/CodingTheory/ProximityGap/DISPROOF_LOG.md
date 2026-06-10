@@ -4980,3 +4980,14 @@ is now SYMMETRIC: one decomposition, two spectra, all four transfer regimes acco
 (clean×2, mixed×1, plus the trivial e=0). Next brick: the valuation-induction window
 inheritance — FullWindow U μ := (∀ e, 1 ≤ e → μ·e ≤ t → Σ_U u^e = 0) descends to both
 children, by strong induction on v_p of the exponent using the mixed identity.
+
+### O123 — THE SUBDIVISION ENGINE: canonical cosets split into canonical sub-cosets — the natural-DCS splitting rung at full generality, both tree directions now machine-checked (fable lane, 2026-06-10)
+
+The constructive engine of the packing tree program (O122's named next). `PackingSubdivision.lean` (4 lemmas + kernel-checked teeth, axiom-clean ×4 — `step_identity` is even pure-`[propext]` — 0 sorry, 0 warnings):
+
+* `step_identity` — the modulus bookkeeping `n/(d/u) = u·(n/d)` for `u ∣ d ∣ n`.
+* `cosetOf_subdivide` — **the splitting identity**: `cosetOf n d r = ⋃_{i<u} cosetOf n (d/u) (r + i·(n/d))` — a canonical `μ_d`-coset is the union of `u` canonical `μ_{d/u}`-cosets, for ANY `u ∣ d` (digit split `j = j%u + u·(j/u)`).
+* `subdivide_parts_disjoint` + `isPacket_subdivide` — the parts are pairwise disjoint and the split is an `IsPacket`-family statement: a `μ_d`-packet is a disjoint union of exactly `u` canonical `μ_{d/u}`-packets.
+* Tooth: `cosetOf 12 6 1 = ⋃_{i<3} cosetOf 12 2 (1+2i)` and `= {1,3,5,7,9,11}`, kernel-checked.
+
+**Both directions of the natural-DCS splitting tree are now theorems**: O106's `isPacket_merge` (a packet of fattened bases merges into one bigger coset) is the upward rung; this is the downward rung. Consequence: any TREE-REALIZABLE modulus multiset (recursive prime splitting from the root) yields an explicit packing by iterating `cosetOf_subdivide` — the constructive half of the candidate exact `k`-generator law (`probe_packing_tree_law.py`: packable ⟺ the completed multiset `{n/d × a_d} ∪ {n}^{n−vol}` is tree-realizable; Berger–Felzenbaum–Fraenkel naturality is the necessity side, the genuinely open research half).
