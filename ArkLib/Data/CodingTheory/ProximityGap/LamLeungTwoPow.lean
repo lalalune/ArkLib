@@ -1685,4 +1685,114 @@ theorem windowed_coeff_congr_invariant {k : ℕ} :
 
 end ValuedWindowedLaw
 
+/-! ## Contracted multiplicity rigidity: the branch program's first formal constraint
+
+The O125 valued law applied to fold multiplicities: for a windowed subset of
+`μ_{2^(m+1)}`, the fiber-count function of the `2^s`-power contraction is an INTEGER
+vector inheriting the window at scaled exponents — hence coset-constant by the valued
+law. Branch-weight profiles of windowed sets down the 2-adic tower are RIGID: at every
+depth, the multiplicity a windowed set lays over the contracted domain is invariant on
+`μ`-coset classes. This is the first machine-checked structural constraint the program
+places on the branch-count objects themselves. -/
+
+section MultiplicityRigidity
+
+variable [DecidableEq F]
+
+/-- The fiber-sum identity: a power sum of `S` at a `2^s`-multiple exponent is the
+multiplicity-weighted power sum of the contraction. -/
+lemma contraction_fiber_sum {m s : ℕ} (hsm : s ≤ m) {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (2 ^ (m + 1)) = 1) (j : ℕ) :
+    ∑ z ∈ S, z ^ (2 ^ s * j)
+      = ∑ e ∈ Finset.range (2 ^ (m + 1 - s)),
+          ((S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)).card : F)
+            * ((ζ ^ (2 ^ s)) ^ e) ^ j := by
+  classical
+  have hζ' : IsPrimitiveRoot (ζ ^ (2 ^ s)) (2 ^ (m + 1 - s)) := by
+    refine hζ.pow (pow_pos two_pos _) ?_
+    rw [← pow_add]
+    congr 1
+    omega
+  haveI : NeZero ((2:ℕ) ^ (m + 1 - s)) := ⟨(pow_pos two_pos _).ne'⟩
+  -- the filters partition S
+  have hcover : S = (Finset.range (2 ^ (m + 1 - s))).biUnion
+      (fun e => S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)) := by
+    apply Finset.Subset.antisymm
+    · intro x hx
+      have hxc : (x ^ (2 ^ s)) ^ (2 ^ (m + 1 - s)) = 1 := by
+        rw [← pow_mul, ← pow_add, show s + (m + 1 - s) = m + 1 from by omega]
+        exact hS x hx
+      obtain ⟨e, he, hxe⟩ := hζ'.eq_pow_of_pow_eq_one hxc
+      exact Finset.mem_biUnion.mpr ⟨e, Finset.mem_range.mpr he,
+        Finset.mem_filter.mpr ⟨hx, hxe.symm⟩⟩
+    · intro x hx
+      obtain ⟨e, _, hxf⟩ := Finset.mem_biUnion.mp hx
+      exact (Finset.mem_filter.mp hxf).1
+  have hdisj : ∀ e₁ ∈ Finset.range (2 ^ (m + 1 - s)),
+      ∀ e₂ ∈ Finset.range (2 ^ (m + 1 - s)), e₁ ≠ e₂ →
+      Disjoint (S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e₁))
+        (S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e₂)) := by
+    intro e₁ he₁ e₂ he₂ hne
+    rw [Finset.disjoint_left]
+    intro x hx₁ hx₂
+    have h₁ := (Finset.mem_filter.mp hx₁).2
+    have h₂ := (Finset.mem_filter.mp hx₂).2
+    exact hne (hζ'.pow_inj (Finset.mem_range.mp he₁) (Finset.mem_range.mp he₂)
+      (h₁ ▸ h₂ ▸ rfl))
+  conv_lhs => rw [hcover]
+  rw [Finset.sum_biUnion hdisj]
+  refine Finset.sum_congr rfl fun e _ => ?_
+  have hconst : ∀ x ∈ S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e),
+      x ^ (2 ^ s * j) = ((ζ ^ (2 ^ s)) ^ e) ^ j := by
+    intro x hx
+    rw [pow_mul, (Finset.mem_filter.mp hx).2]
+  rw [Finset.sum_congr rfl hconst, Finset.sum_const, nsmul_eq_mul]
+
+/-- **Contracted multiplicity rigidity**: for a set with the scaled 2-power window, the
+contraction's fiber-count function is invariant on exponent classes modulo
+`2^(m−s−k)`. -/
+theorem contracted_multiplicity_invariant {m s k : ℕ} (hsk : s + k ≤ m) {ζ : F}
+    [CharZero F]
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (2 ^ (m + 1)) = 1)
+    (hwin : ∀ j, j ≤ k → ∑ z ∈ S, z ^ (2 ^ (s + j)) = 0) :
+    ∀ e e', e < 2 ^ (m + 1 - s) → e' < 2 ^ (m + 1 - s) →
+      e % 2 ^ (m - s - k) = e' % 2 ^ (m - s - k) →
+      (S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)).card
+        = (S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e')).card := by
+  classical
+  have hζ' : IsPrimitiveRoot (ζ ^ (2 ^ s)) (2 ^ (m + 1 - s)) := by
+    refine hζ.pow (pow_pos two_pos _) ?_
+    rw [← pow_add]
+    congr 1
+    omega
+  obtain ⟨m', hm'⟩ : ∃ m', m + 1 - s = m' + 1 := ⟨m - s, by omega⟩
+  set c : ℕ → ℚ := fun e =>
+    ((S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)).card : ℚ) with hc
+  have hcwin : ∀ j, j ≤ k →
+      ∑ e ∈ Finset.range (2 ^ (m' + 1)), (c e : F) * (ζ ^ (2 ^ s)) ^ (2 ^ j * e)
+        = 0 := by
+    intro j hj
+    have hfib := contraction_fiber_sum (le_trans (by omega : s ≤ s + k) (by omega))
+      hζ hS (2 ^ j)
+    rw [hm'] at hfib
+    have hSwin := hwin j hj
+    rw [show (2:ℕ) ^ (s + j) = 2 ^ s * 2 ^ j from by rw [pow_add]] at hSwin
+    rw [hSwin] at hfib
+    rw [← hfib]
+    refine Finset.sum_congr rfl fun e _ => ?_
+    simp only [hc]
+    push_cast
+    rw [← pow_mul, ← pow_mul, mul_comm e (2 ^ j)]
+  have hζ'' : IsPrimitiveRoot (ζ ^ (2 ^ s)) (2 ^ (m' + 1)) := hm' ▸ hζ'
+  have hinv := windowed_coeff_congr_invariant (k := k) (m := m') (by omega) hζ'' c hcwin
+  intro e e' he he' hmod
+  have hres := hinv e e' (by rw [← hm']; exact he) (by rw [← hm']; exact he') ?_
+  · exact_mod_cast hres
+  · rw [show m' - k = m - s - k from by omega]
+    exact hmod
+
+end MultiplicityRigidity
+
 end LamLeungTwoPow

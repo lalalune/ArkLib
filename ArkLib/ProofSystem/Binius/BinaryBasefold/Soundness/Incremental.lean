@@ -1265,6 +1265,47 @@ lemma fold_preTensorCombine_eq_affineLineEvaluation_split
     (a := 1 - r_new) (b := r_new) (r_chal := bitsOfIndex (L := L) rowIdx)]
   simp [smul_eq_mul]
 
+omit [SampleableType L] in
+/-- Row-stack form of `fold_preTensorCombine_eq_affineLineEvaluation_split`. -/
+lemma fold_preTensorCombine_eq_affineLineEvaluation_split_rows
+    (i : Fin ℓ) (steps : ℕ) [NeZero steps] {midIdx destIdx : Fin r}
+    (h_midIdx : midIdx.val = i.val + 1)
+    (h_destIdx : destIdx.val = i.val + (steps + 1))
+    (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      ⟨i, by omega⟩)
+    (r_new : L) :
+    let h_midIdx_lt_ℓ : midIdx.val < ℓ := by
+      have := NeZero.pos steps; omega
+    let U := preTensorCombine_WordStack (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+      𝔽q β i (steps + 1)
+      (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) f_i
+    let U_even := (splitEvenOddRowWiseInterleavedWords (ϑ := steps) U).1
+    let U_odd := (splitEvenOddRowWiseInterleavedWords (ϑ := steps) U).2
+    let fold_1_f := fold (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+      𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      ⟨i, by omega⟩ (destIdx := midIdx) (h_destIdx := h_midIdx)
+      (h_destIdx_le := by omega) f_i r_new
+    let midIdx_fin_ℓ : Fin ℓ := ⟨midIdx.val, h_midIdx_lt_ℓ⟩
+    let V := preTensorCombine_WordStack (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+      𝔽q β midIdx_fin_ℓ steps
+      (destIdx := destIdx)
+      (h_destIdx := by simp [midIdx_fin_ℓ]; omega)
+      (h_destIdx_le := h_destIdx_le) (by exact fold_1_f)
+    V = affineLineEvaluation (F := L) U_even U_odd r_new := by
+  dsimp only
+  have h_interleaved := fold_preTensorCombine_eq_affineLineEvaluation_split
+    (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+    𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (steps := steps) (midIdx := midIdx) (destIdx := destIdx)
+    (h_midIdx := h_midIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+    (f_i := f_i) (r_new := r_new)
+  funext rowIdx y
+  have hpoint := congrFun (congrFun h_interleaved y) rowIdx
+  simpa [interleaveWordStack, affineLineEvaluation, Matrix.transpose_apply,
+    Pi.add_apply, Pi.smul_apply] using hpoint
+
 section Fin1Interleaving
 variable {A : Type*} [DecidableEq A] {ι : Type*} [Fintype ι] [DecidableEq ι]
 
@@ -1583,18 +1624,16 @@ lemma iterated_fold_eq_multilinearCombine_preTensorCombine
         let V := preTensorCombine_WordStack 𝔽q β midIdx_fin_ℓ n
           (destIdx := destIdx) (h_destIdx := by simp [midIdx_fin_ℓ]; omega)
           (h_destIdx_le := h_destIdx_le) (by exact fold_1_f)
-        have hsplit_interleaved := fold_preTensorCombine_eq_affineLineEvaluation_split
-          𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (i := i) (steps := n) (midIdx := midIdx) (destIdx := destIdx)
-          (h_midIdx := by simp [midIdx, midIdx_fin_ℓ])
-          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-          (f_i := f_i) (r_new := r_chal 0)
         have hsplit :
             V = affineLineEvaluation (F := L) U_even U_odd (r_chal 0) := by
-          funext rowIdx y
-          have h := congrFun (congrFun hsplit_interleaved y) rowIdx
-          simpa [V, U, U_even, U_odd, midIdx_fin_ℓ, fold_1_f, interleaveWordStack,
-            affineLineEvaluation, Matrix.transpose_apply, Pi.add_apply, Pi.smul_apply] using h
+          simpa [V, U, U_even, U_odd, midIdx_fin_ℓ, fold_1_f] using
+            fold_preTensorCombine_eq_affineLineEvaluation_split_rows
+              (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+              𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+              (i := i) (steps := n) (midIdx := midIdx) (destIdx := destIdx)
+              (h_midIdx := by simp [midIdx, midIdx_fin_ℓ])
+              (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+              (f_i := f_i) (r_new := r_chal 0)
         have hrec := multilinearCombine_recursive_form_first (L := L)
           (A := L) (ι := sDomain 𝔽q β h_ℓ_add_R_rate destIdx)
           (u := U) (r_challenges := r_chal)

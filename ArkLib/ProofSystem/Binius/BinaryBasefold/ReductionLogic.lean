@@ -577,6 +577,13 @@ theorem fun_heq_cast_arg {α β : Type u} {γ : Type v} (hαβ : α = β)
   subst hαβ
   rfl
 
+theorem cast_fun_cast_arg_apply {α β : Type u} {γ : Type v} {hαβ : α = β}
+    {hfun : (α → γ) = (β → γ)} (f : β → γ) (x : β) :
+    cast hfun (fun y : α => f (cast hαβ y)) x = f x := by
+  subst hαβ
+  cases hfun
+  rfl
+
 theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
     {ιₛᵢ ιₛₒ : Type}
     {OStmtIn : ιₛᵢ → Type} {OStmtOut : ιₛₒ → Type}
@@ -590,6 +597,7 @@ theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
   rw [eqRec_eq_cast]
   exact cast_heq _ x
 
+set_option maxHeartbeats 5000000 in
 omit [CharP L 2] [SampleableType L] in
 theorem commitStep_inr_transport_heq
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
@@ -620,26 +628,26 @@ The key insight:
 - For index `j = toOutCodewordsCount ℓ ϑ i.castSucc`: embed maps to `Sum.inr 0`
   (new oracle from message)
 -/
-lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
+private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
       OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
     (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := ⟨i.val + 1, by omega⟩))
     (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
-    (h_transcript_eq : transcript.messages ⟨0, rfl⟩ = newOracle) :
-    snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle =
+    (h_transcript_eq : transcript.messages ⟨0, rfl⟩ = newOracle)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ)) :
+    snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j =
     OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
       (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript := by
-  funext j
+        (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
   dsimp only [snoc_oracle]
   simp only [hCR, ↓reduceDIte]
-  have h_count_succ : toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
+  have h_count_succ :
+      toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
     simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
-
   by_cases hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc
-  · -- Old oracle case: embed j = Sum.inl
+  · -- Old oracle case: embed j = Sum.inl.
     have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
         Sum.inl ⟨j.val, hj⟩ := by
@@ -655,7 +663,7 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       rfl
     cases hidx
     rfl
-  · -- New oracle case: embed j = Sum.inr 0
+  · -- New oracle case: embed j = Sum.inr 0.
     have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
         Sum.inr ⟨0, rfl⟩ := by
@@ -668,13 +676,25 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       have h_lt := j.isLt
       conv_rhs at h_lt => rw [h_count_succ]
       omega
-    have h_domain_succ :
-        ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.succ.val, by omega⟩) =
-          ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, by omega⟩) := by
-      have h_fin : (⟨i.succ.val, by omega⟩ : Fin r) = ⟨i.val + 1, by omega⟩ := by
+    have h_j_mul : j.val * ϑ = i.val + 1 := by
+      rw [h_j_eq]
+      exact toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR
+    have h_i_succ_lt_r : i.val + 1 < r := by
+      have hRpos : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+      have hi_le : i.val + 1 ≤ ℓ := Nat.succ_le_of_lt i.isLt
+      omega
+    have h_j_mul_lt_r : j.val * ϑ < r := by
+      rw [h_j_mul]
+      exact h_i_succ_lt_r
+    have h_domain_j :
+        ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨j.val * ϑ, h_j_mul_lt_r⟩) =
+          ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, h_i_succ_lt_r⟩) := by
+      have h_fin : (⟨j.val * ϑ, h_j_mul_lt_r⟩ : Fin r) =
+          ⟨i.val + 1, h_i_succ_lt_r⟩ := by
         apply Fin.eq_of_val_eq
-        rfl
+        exact h_j_mul
       exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
+<<<<<<< Updated upstream
     apply eq_of_heq
     refine HEq.trans (cast_heq _ (fun y => newOracle (cast _ y))) ?_
     refine HEq.trans (fun_heq_cast_arg h_domain_succ newOracle) ?_
@@ -683,6 +703,34 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     let h_transport := commitStep_inr_transport_heq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (𝓑 := 𝓑) (mp := mp) i hCR transcript j h_embed
     exact h_transport
+=======
+    rw [h_transcript_eq]
+    funext y
+    dsimp only [commitStepLogic, commitStepHEq, commitStepLogic_embed, commitStepLogic_embedFn,
+      Function.Embedding.coeFn_mk, OracleStatement, pSpecCommit, Message]
+    simp only [hj, dif_neg, not_false_eq_true, eqRec_eq_cast, cast_cast]
+    simpa using (cast_fun_cast_arg_apply (hαβ := h_domain_j) (f := newOracle) y)
+
+omit [CharP L 2] [SampleableType L] in
+lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
+    (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
+    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
+      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (domainIdx := ⟨i.val + 1, by omega⟩))
+    (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
+    (h_transcript_eq : transcript.messages ⟨0, rfl⟩ = newOracle) :
+    snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle =
+    OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
+      (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript := by
+  funext j
+  exact snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR oStmtIn newOracle transcript
+    h_transcript_eq j
+>>>>>>> Stashed changes
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
@@ -724,9 +772,7 @@ lemma strictOracleFoldingConsistency_commitStep
     (challenges : (pSpecCommit 𝔽q β i).Challenges)
     (h_wit_struct_In : witnessStructuralInvariant 𝔽q β (mp := mp) stmtIn witIn)
     (h_oracle_folding_In : strictOracleFoldingConsistencyProp 𝔽q β (t := witIn.t) (i := i.castSucc)
-      (challenges := Fin.rtake (m := i)
-        (v := stmtIn.challenges) (h := by
-          simp only [Fin.val_succ, le_add_iff_nonneg_right, zero_le]))
+      (challenges := Fin.tail stmtIn.challenges)
       (oStmt := oStmtIn)) :
     let step := (commitStepLogic 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (mp := mp) i (hCR := hCR))
@@ -736,8 +782,7 @@ lemma strictOracleFoldingConsistency_commitStep
       oStmtIn transcript
     strictOracleFoldingConsistencyProp 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := i.succ)
-      (challenges := Fin.rtake (m := i.val + 1)
-        (v := verifierStmtOut.challenges) (h := by simp only [Fin.val_succ, le_refl]))
+      (challenges := verifierStmtOut.challenges)
       (oStmt := verifierOStmtOut) (t := witIn.t)
     := by
   -- Key observations:
@@ -798,7 +843,26 @@ lemma strictOracleFoldingConsistency_commitStep
     -- Show that iterated_fold with challenges from i.castSucc equals iterated_fold with
     -- challenges from i.succ
     -- when j * ϑ < i.val (which holds since j < toOutCodewordsCount i.castSucc)
-    rfl
+    have h_old_steps_bound : j.val * ϑ ≤ i.val := by
+      have hle := toCodewordsCount_mul_ϑ_le_i ℓ ϑ i.castSucc ⟨j.val, hj⟩
+      simpa only [Fin.val_castSucc, i.isLt, ↓reduceIte] using hle
+    have h_chal_tail :
+        getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := j.val * ϑ) i.castSucc
+            (Fin.tail stmtIn.challenges) 0 (h := by
+              simpa only [zero_add, Fin.val_castSucc] using h_old_steps_bound) =
+          getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := j.val * ϑ) i.succ
+            stmtIn.challenges 0 (h := by
+              simp only [zero_add, Fin.val_succ]
+              omega) := by
+      simpa only [zero_add] using
+        (getFoldingChallenges_tail_castSucc_eq_of_le (r := r) (𝓡 := 𝓡)
+          (ϑ := j.val * ϑ) i stmtIn.challenges 0
+          (by simpa only [zero_add, Fin.val_castSucc] using h_old_steps_bound)
+          (by
+            simp only [zero_add, Fin.val_succ]
+            omega))
+    rw [← h_challenges_eq]
+    rw [h_chal_tail]
   · -- Case B: New oracle (j = toOutCodewordsCount i.castSucc)
     rw [h_OStmtOut_eq]
     dsimp only [snoc_oracle]
