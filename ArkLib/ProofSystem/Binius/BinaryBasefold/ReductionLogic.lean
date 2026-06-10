@@ -11,6 +11,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidSucc
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToNextSumEq
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.FinalOracleBridge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldToLevel
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.FinalConstantWeld
 import ArkLib.ToVCVio.Oracle
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.OracleReduction.Completeness
@@ -1686,25 +1687,73 @@ lemma finalSumcheckStep_verifierCheck_passed
 2. **Relation Out**: Show that the output satisfies `finalSumcheckRelOut`
   - This involves showing `finalFoldingStateProp` holds for the output
 -/
-/-- **Residual: final sumcheck step logic strong completeness.**
-
-The direct proof below is stale around the generated oracle-output equality for the final
-sumcheck step. Downstream reductions still need the statement, so expose the remaining proof debt
-as an explicit typeclass obligation rather than a hidden hole. -/
-class FinalSumcheckStepLogicCompleteResidual : Prop where
-  holds :
-    (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (𝓑 := 𝓑)).IsStronglyComplete
-
-variable [FinalSumcheckStepLogicCompleteResidual 𝔽q β
-  (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)]
-
-omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+set_option maxHeartbeats 4000000 in
+/-- **The final sumcheck step logic is strongly complete** (direct proof; discharges the former
+`FinalSumcheckStepLogicCompleteResidual`, issue #327). The four obligations: the verifier check
+(`finalSumcheckStep_verifierCheck_passed`), the relation out (oracle-folding consistency via
+`finalSumcheckStep_strictOracleFoldingConsistency_out` plus the final-constant weld
+`getLastOracle_finalFold_eq_eval'` against `finalSumcheckStep_final_codeword_eq_eval`), and the
+two prover/verifier output agreements (definitional). -/
 lemma finalSumcheckStep_is_logic_complete :
     (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (𝓑 := 𝓑)).IsStronglyComplete := by
-  exact FinalSumcheckStepLogicCompleteResidual.holds (𝔽q := 𝔽q) (β := β)
-    (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
+  intro stmtIn witIn oStmtIn challenges h_relIn
+  simp only [finalSumcheckStepLogic, strictRoundRelation, strictRoundRelationProp,
+    Set.mem_setOf_eq] at h_relIn
+  obtain ⟨h_sumcheck_cons, h_strictOWC⟩ := h_relIn
+  have h_wit_struct := h_strictOWC.1
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · -- 1. verifier check
+    exact finalSumcheckStep_verifierCheck_passed 𝔽q β (𝓑 := 𝓑) (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtIn := stmtIn) (witIn := witIn)
+      (oStmtIn := oStmtIn) (challenges := challenges)
+      (h_sumcheck_cons := h_sumcheck_cons) (h_wit_struct := h_wit_struct)
+  · -- 2. relation out
+    simp only [finalSumcheckStepLogic, strictFinalSumcheckRelOut,
+      strictFinalSumcheckRelOutProp, Set.mem_setOf_eq]
+    refine ⟨witIn.t, ?_, ?_⟩
+    · -- component 1: oracle-folding consistency at the output
+      exact finalSumcheckStep_strictOracleFoldingConsistency_out 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtIn := stmtIn) (witIn := witIn)
+        (oStmtIn := oStmtIn) h_strictOWC
+    · -- component 2: the final-constant consistency
+      funext x
+      have h_oracle_out := finalSumcheckStep_strictOracleFoldingConsistency_out 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtIn := stmtIn) (witIn := witIn)
+        (oStmtIn := oStmtIn) h_strictOWC
+      have h_k : (getLastOracleDomainIndex ℓ ϑ (Fin.last ℓ)).val = ℓ - ϑ := by
+        dsimp only [getLastOracleDomainIndex]
+        rw [getLastOraclePositionIndex_last, Nat.sub_mul, Nat.one_mul,
+          Nat.div_mul_cancel (hdiv.out)]
+      have hϑℓ : ϑ ≤ ℓ := Nat.le_of_dvd (Nat.pos_of_neZero ℓ) hdiv.out
+      have h_k' : (getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)) * ϑ = ℓ - ϑ := by
+        rw [getLastOraclePositionIndex_last, Nat.sub_mul, Nat.one_mul,
+          Nat.div_mul_cancel (hdiv.out)]
+      have h_final := getLastOracle_finalFold_eq_eval' 𝔽q β (t := witIn.t)
+        (challenges := stmtIn.challenges) (oStmt := oStmtIn) h_oracle_out
+        (curIdx := ⟨(getLastOracleDomainIndex ℓ ϑ (Fin.last ℓ)).val, by omega⟩)
+        (destIdx := ⟨(getLastOracleDomainIndex ℓ ϑ (Fin.last ℓ)).val + ϑ, by omega⟩)
+        (hcur := h_k) (hdest := rfl)
+        (hdest_le := by
+          simp only [Fin.mk_le_mk]
+          omega)
+        (h_destIdx_oracle := rfl)
+        (hpos := by omega)
+        (rchal := getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ)
+          (i := Fin.last ℓ) stmtIn.challenges
+          (getLastOracleDomainIndex ℓ ϑ (Fin.last ℓ)).val (h := by
+            simp only [Fin.val_last]
+            omega))
+        (hrchal := rfl)
+        (y := x)
+      have h_codeword := finalSumcheckStep_final_codeword_eq_eval 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtIn := stmtIn) (witIn := witIn)
+        h_wit_struct
+      exact h_final.trans h_codeword.symm
+  · -- 3. statements agree
+    rfl
+  · -- 4. oracle statements agree
+    rfl
 /-
   intro stmtIn witIn oStmtIn challenges h_relIn
   let step := (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)

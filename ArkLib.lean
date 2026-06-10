@@ -230,8 +230,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightClearedObstructi
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightResummation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.BCoeffVanishing
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Kill
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Supply
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Weld
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim57Pigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim59
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim59Vandermonde
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBruno
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBrunoProof
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
@@ -1294,6 +1298,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.General
 import ArkLib.ProofSystem.Binius.BinaryBasefold.MultilinearWeightRecursion
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Prelude
 import ArkLib.ProofSystem.Binius.BinaryBasefold.QueryPhase
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.FinalConstantWeld
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.FinalOracleBridge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IncrementalHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldAdvances
@@ -1308,9 +1313,8 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.BadBlocks
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.FoldDistance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Incremental
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.IncrementalCase1
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Bridge
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Discharge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorClosest
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorCodeDistance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDisagreement
@@ -1319,6 +1323,9 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFiber
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorHamming
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorUDR
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorWitness
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Bridge
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Discharge
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Assembly
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
@@ -1494,6 +1501,7 @@ import ArkLib.ProofSystem.Stir.ChainProof
 import ArkLib.ProofSystem.Stir.ChainRbrIndicator
 import ArkLib.ProofSystem.Stir.ChainVSpecCount
 import ArkLib.ProofSystem.Stir.CheckedFinalBlock
+import ArkLib.ProofSystem.Stir.CheckingDirectPred
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.Complexity
