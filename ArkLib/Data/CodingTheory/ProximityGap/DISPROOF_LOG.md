@@ -4801,3 +4801,13 @@ O116's named next (a) executed. `TwoGenPackingCapacity.lean` (8 theorems + 2 tee
 * **Named Lean target (clean, domain-independent):** the M1 double-counting identity as a `Finset.card` theorem — `Σ_u a_j(u) = q^k·C(n,j)·(q−1)^(n−j)` — the first moment of the list-size law, formalizable with `card_polysDegLT`-style enumeration + a product bijection (codeword × agreement-pattern × off-pattern values). M2 is the second target once the distance distribution is in-tree.
 
 **Where the open core moves:** the incidence lane's honest frontier is now: (i) tail bounds for `a_j(u)` beyond variance (Chebyshev via M2 gives the first nontrivial max-bound — worth extracting); (ii) the third-moment/triple-correlation structure where domain-dependence could first appear (triples of codewords vs u — relates to the code's TRIPLE distance enumerator, where smooth structure could matter); (iii) δ* itself.
+
+### O112 — LAM–LEUNG ℕ-SPAN REDUCED TO SQUAREFREE LEVELS: the de Bruijn lane's last open wall pinned to squarefree k ≥ 3 (first case n = 30)
+
+`DeBruijnLamLeungReduction.lean` (axiom-clean ×2, 0 sorry, 0 warnings, pushed 8c01f2671):
+
+* `lam_leung_reduction_to_squarefree` — span law at every squarefree divisor level ⟹ span law at `n`. Strong induction; at non-squarefree levels r² ∣ n fires O101's weighted thread split (threads vanish INDIVIDUALLY with ℕ-weights at n/r, same prime set); `total_eq_thread_totals` (O101 regrouping at ζ = 1) adds the thread totals; memberships in the span monoid add.
+* Combined in-tree status of Lam–Leung: prime powers (O96) ✓, two-prime (O104) ✓, any n given its radical (O112) ✓ — open EXACTLY at squarefree k ≥ 3.
+* **Why the residual is genuinely hard, machine-checked context:** at squarefree n = m·r the coprime split (O109b) yields equal thread sums; thread-difference totals lie in ℤp₁+⋯+ℤp_{k−1} (O110), which for k−1 ≥ 2 is ALL of ℤ — the ℤ-classification carries no ℕ-cone congruence. Lam–Leung's own route is group-ring/augmentation-ideal induction: research-grade, not assembly.
+
+**Session net (this lane, 2026-06-10): O106 → O112.** The windowed-law lattice {0/1, ℕ, ℤ} × {t = 1, all t} × {two-prime, every n} is COMPLETE (theorems + refutations, no open cells); ℤ-relation theory of roots of unity closed at every modulus (first Rédei–de Bruijn–Schoenberg formalization); the single named open residual is the squarefree-k≥3 ℕ-span.
