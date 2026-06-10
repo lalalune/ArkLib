@@ -81,6 +81,8 @@ theorem duplexSpongeFiatShamir_runCollapse
 
 omit [∀ i, SampleableType (pSpec.Challenge i)] in
 set_option maxHeartbeats 1600000 in
+-- The salted normalization repeats the unsalted two-stage `simp` with the extra salt-sampling
+-- leg, so the heartbeat budget is raised further.
 /-- **The salted DSFS run-collapse residual holds.** Salted analogue of
 `Reduction.duplexSpongeFiatShamir_runCollapse`; the extra salt-sampling leg lifts through the
 same `OptionT` bridge. This discharges
