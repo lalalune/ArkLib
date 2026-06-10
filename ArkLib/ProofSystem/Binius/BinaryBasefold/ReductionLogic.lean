@@ -663,18 +663,20 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     let msgCast :
         (match (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
             (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j with
-          | Sum.inl k => OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-              ϑ i.castSucc k
-          | Sum.inr k => (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Message k) :=
-      h_embed ▸ transcript.messages ⟨0, rfl⟩
+          | Sum.inl j => (OracleStatement 𝔽q β (ϑ := ϑ)
+              (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc) j
+          | Sum.inr j => (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Message j) :=
+      cast (by rw [h_embed]) (transcript.messages ⟨0, rfl⟩)
     have h_msgCast_heq : HEq msgCast (transcript.messages ⟨0, rfl⟩) := by
       dsimp only [msgCast]
-      exact eqRec_heq h_embed.symm (transcript.messages ⟨0, rfl⟩)
-    refine HEq.trans
-      (eqRec_heq ((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j)
-        .symm msgCast) ?_
-    exact h_msgCast_heq
+      exact cast_heq _ (transcript.messages ⟨0, rfl⟩)
+    change HEq
+      ((((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j).symm ▸
+        msgCast) : OracleStatement 𝔽q β (ϑ := ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ j)
+      (transcript.messages ⟨0, rfl⟩)
+    exact (cast_heq _ msgCast).trans h_msgCast_heq
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
