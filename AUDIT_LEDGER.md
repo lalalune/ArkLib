@@ -13,6 +13,8 @@ Raw classification data: `audit/triage-2026-06-10.json`.
 - **[RESOLVED earlier] 3 false-axiom HonestAxioms.lean files deleted** — project has zero axiom declarations.
 - Wave 1 (10 agents) relaunches 6:48am after the subagent session-limit reset.
 
+**Live count (regenerated 06:00 6/10):** residual-named surfaces 449 → 435 (−14: inline deletions, #328 vacuity-trap class removal, PrizeMath renames, wave-tagged landings incl. 684f50ec2 GenMutualCorrParams instance). Invariants re-verified: sorry=0, native_decide=0, axiom=0.
+
 **Totals (families):** proven 118 · provable 73 · open-research 20 · dead 20
 
 - **proven** — the named residual is discharged in-tree (discharger cited; existence grep-verified)
