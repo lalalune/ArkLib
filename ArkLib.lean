@@ -629,6 +629,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungAntipodalTightness
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungMultisetAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSpanTwoPrime
+import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSquarefreeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPow
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalQ
@@ -1764,8 +1765,8 @@ import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.Section5GlobalAssembler
 import ArkLib.ToMathlib.Section5StrictDataFinOn
 import ArkLib.ToMathlib.SectionBaseRational
-import ArkLib.ToMathlib.SectionFromSurface
 import ArkLib.ToMathlib.SectionFactor
+import ArkLib.ToMathlib.SectionFromSurface
 import ArkLib.ToMathlib.SectionXiDivisibility
 import ArkLib.ToMathlib.SectionXiUnit
 import ArkLib.ToMathlib.SeparableLowDegree
