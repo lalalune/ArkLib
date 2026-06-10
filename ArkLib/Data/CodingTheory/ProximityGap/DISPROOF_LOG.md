@@ -3402,3 +3402,21 @@ window-weight tradeoff) now applies to ARBITRARY smooth towers — mixed-radix n
 not just 2-power domains. In particular the Mersenne-31/Circle-STARK domains of S-two's
 own deployment (whose tower is not 2-adic) are now in scope of the formal toolkit; the
 branch-accounting question generalizes verbatim with d-ary branching.
+
+### O66 — LAM–LEUNG AT EVERY PRIME POWER: the mixed-radix base case machine-checked
+
+`LamLeungTwoPow.vanishing_sum_mu_p_closed` (axiom-clean, 0 sorry): in characteristic
+zero, a finite set of p^(m+1)-th roots of unity (ANY prime p) with vanishing sum is
+closed under multiplication by every p-th root of unity — a union of μ_p-cosets. The
+p = 2 case is O50's antipodal theorem. Engine, generalizing O50's proof shape:
+Φ_{p^(m+1)} = Σ_{i<p} X^{i·p^m} (cyclotomic_prime_pow_eq_geom_sum) divides the exponent
+indicator; a packet multiple G·R with deg R < p^m has ALL p coefficient slices equal to
+R (`packet_mul_coeff`); membership is therefore invariant under exponent shifts by p^m,
+i.e. under μ_p (explicit wrap-around bookkeeping, no div/mod rewriting).
+
+With the O65 general-radix fold + this base case, the MIXED-RADIX tower program has both
+machine-checked pillars: the descent identities at every radix and the base case at every
+prime power. The mixed-radix analogue of full_tower (per-prime coset assembly via
+Conway–Jones-style structure at composite levels) is the natural continuation —
+on M31-style domains (n = 2^a·3^b·…) this is the route to the S-two-deployment analogue
+of the O61 capstone.

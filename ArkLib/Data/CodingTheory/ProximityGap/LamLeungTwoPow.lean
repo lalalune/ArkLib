@@ -1172,4 +1172,225 @@ theorem fold_mass_conservation_general {S : Finset F} {v : F → F} {d : ℕ} {y
 
 end GeneralRadixFold
 
+/-! ## Lam–Leung at every prime power: the mixed-radix base case
+
+The general-prime version of `vanishing_sum_antipodal` (which is the `p = 2` instance):
+in characteristic zero, a finite set of `p^(m+1)`-th roots of unity with vanishing sum is
+closed under multiplication by every `p`-th root of unity — a union of `μ_p`-cosets.
+Engine: `Φ_{p^(m+1)} = Σ_{i<p} X^{i·p^m}` (Gauss + the prime-power cyclotomic formula)
+divides the exponent-indicator polynomial, and a multiple `G·R` of the geometric packet
+with `deg R < p^m` has ALL `p` of its `p^m`-length coefficient slices equal to `R` —
+so membership is invariant under exponent shifts by `p^m`, i.e. under `μ_p`. This is the
+base case for mixed-radix smooth towers (the O65 general-radix fold supplies the
+matching descent identities). -/
+
+section PrimePowerBase
+
+omit [CharZero F] in
+/-- Slices of a geometric-packet multiple: if `deg R < q` then
+`(Σ_{i<p} X^{iq} · R).coeff (iq + s) = R.coeff s` for `i < p`, `s < q`. -/
+lemma packet_mul_coeff {p q : ℕ} (_hq : 0 < q) {R : ℚ[X]} (hR : R.natDegree < q)
+    {i s : ℕ} (hi : i < p) (hs : s < q) :
+    ((∑ i ∈ Finset.range p, (Polynomial.X : ℚ[X]) ^ (i * q)) * R).coeff (i * q + s)
+      = R.coeff s := by
+  rw [Finset.sum_mul, Polynomial.finset_sum_coeff]
+  rw [Finset.sum_eq_single i]
+  · rw [show i * q + s = s + i * q from by ring, Polynomial.coeff_X_pow_mul]
+  · intro j hj hji
+    rw [Polynomial.coeff_X_pow_mul']
+    rcases lt_or_ge (i * q + s) (j * q) with hlt | hge
+    · rw [if_neg (by omega)]
+    · rw [if_pos hge]
+      apply Polynomial.coeff_eq_zero_of_natDegree_lt
+      -- i*q + s − j*q ≥ q when j < i (since s < q and (i−j) ≥ 1)
+      rcases lt_or_ge j i with hji' | hji'
+      · have : i * q + s - j * q ≥ q := by
+          have h1 : (j + 1) * q ≤ i * q := Nat.mul_le_mul_right q (by omega)
+          have h2 : j * q + q ≤ i * q := by
+            calc j * q + q = (j + 1) * q := by ring
+            _ ≤ i * q := h1
+          omega
+        omega
+      · -- j > i: j*q > i*q + s, contradiction with hge
+        have hj1 : i + 1 ≤ j := by omega
+        have : i * q + q ≤ j * q := by
+          calc i * q + q = (i + 1) * q := by ring
+          _ ≤ j * q := Nat.mul_le_mul_right q hj1
+        omega
+  · intro hnotin
+    exact absurd (Finset.mem_range.mpr hi) hnotin
+
+/-- **Lam–Leung at prime powers**: in characteristic zero, a finite set of `p^(m+1)`-th
+roots of unity with vanishing sum is closed under multiplication by every `p`-th root of
+unity. (`p = 2` recovers `vanishing_sum_antipodal`.) -/
+theorem vanishing_sum_mu_p_closed {p m : ℕ} (hp : p.Prime) {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (p ^ (m + 1)))
+    {S : Finset F} (hS : ∀ x ∈ S, x ^ (p ^ (m + 1)) = 1)
+    (hsum : ∑ x ∈ S, x = 0) :
+    ∀ x ∈ S, ∀ h : F, h ^ p = 1 → h * x ∈ S := by
+  classical
+  set n := p ^ (m + 1) with hn
+  set q := p ^ m with hq
+  have hppos : 0 < p := hp.pos
+  have hqpos : 0 < q := by positivity
+  have hnq : n = p * q := by rw [hn, hq]; ring
+  have hnpos : 0 < n := by rw [hn]; positivity
+  haveI : NeZero n := ⟨hnpos.ne'⟩
+  haveI : NeZero p := ⟨hppos.ne'⟩
+  -- exponent set and indicator polynomial (as in the p = 2 case)
+  set I : Finset ℕ := (Finset.range n).filter (fun i => ζ ^ i ∈ S) with hI
+  set P : ℚ[X] := ∑ i ∈ I, X ^ i with hP
+  have hPcoeff : ∀ j, P.coeff j = if j ∈ I then 1 else 0 := by
+    intro j
+    rw [hP, Polynomial.finset_sum_coeff]
+    rw [Finset.sum_congr rfl (fun i _ => Polynomial.coeff_X_pow i j)]
+    rw [Finset.sum_ite_eq I j (fun _ => (1 : ℚ))]
+  have hPζ : Polynomial.aeval ζ P = 0 := by
+    rw [hP, map_sum]
+    have hterm : ∀ i ∈ I, Polynomial.aeval ζ ((X : ℚ[X]) ^ i) = ζ ^ i := by
+      intro i _
+      simp
+    rw [Finset.sum_congr rfl hterm, ← hsum]
+    apply Finset.sum_bij (fun i _ => ζ ^ i)
+    · intro i hi
+      exact (Finset.mem_filter.mp hi).2
+    · intro i hi j hj hij
+      exact hζ.pow_inj (Finset.mem_range.mp (Finset.mem_filter.mp hi).1)
+        (Finset.mem_range.mp (Finset.mem_filter.mp hj).1) hij
+    · intro x hx
+      obtain ⟨i, hi, hxi⟩ := hζ.eq_pow_of_pow_eq_one (hS x hx)
+      exact ⟨i, Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hi, hxi.symm ▸ hx⟩, hxi⟩
+    · intro i _
+      rfl
+  -- the cyclotomic packet divides P
+  have hdvd : (∑ i ∈ Finset.range p, (X : ℚ[X]) ^ (i * q)) ∣ P := by
+    have hmin := minpoly.dvd ℚ ζ hPζ
+    rw [← Polynomial.cyclotomic_eq_minpoly_rat hζ (by positivity)] at hmin
+    have hcyc : Polynomial.cyclotomic (p ^ (m + 1)) ℚ
+        = ∑ i ∈ Finset.range p, (X : ℚ[X]) ^ (i * q) := by
+      rw [Polynomial.cyclotomic_prime_pow_eq_geom_sum hp]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [← pow_mul, hq, mul_comm]
+    rwa [hn, hcyc] at hmin
+  -- slice equality: P.coeff (i·q + s) is independent of i < p
+  have hslice : ∀ s < q, ∀ i < p, ∀ i' < p,
+      P.coeff (i * q + s) = P.coeff (i' * q + s) := by
+    obtain ⟨R, hR⟩ := hdvd
+    by_cases hP0 : P = 0
+    · intro s _ i _ i' _
+      simp [hP0]
+    have hG : (∑ i ∈ Finset.range p, (X : ℚ[X]) ^ (i * q)) ≠ 0 := by
+      intro h
+      have := congrArg (fun Q : ℚ[X] => Q.coeff 0) h
+      simp only [Polynomial.finset_sum_coeff] at this
+      rw [Finset.sum_eq_single 0 (fun j _ hj => by
+        rw [Polynomial.coeff_X_pow]
+        rw [if_neg (by
+          intro h0
+          rcases Nat.mul_eq_zero.mp h0.symm with h | h
+          · exact hj h
+          · omega)]) (fun h0 => absurd (Finset.mem_range.mpr hppos) h0)] at this
+      simp at this
+    have hR0 : R ≠ 0 := fun h => hP0 (by rw [hR, h, mul_zero])
+    have hdegG : (∑ i ∈ Finset.range p, (X : ℚ[X]) ^ (i * q)).natDegree ≤ (p - 1) * q := by
+      refine Polynomial.natDegree_sum_le_of_forall_le _ _ fun i hi => ?_
+      rw [Polynomial.natDegree_X_pow]
+      have := Finset.mem_range.mp hi
+      exact Nat.mul_le_mul_right q (by omega)
+    have hdegP : P.natDegree < n := by
+      rw [hP]
+      have hle : (∑ i ∈ I, (X : ℚ[X]) ^ i).natDegree ≤ n - 1 :=
+        Polynomial.natDegree_sum_le_of_forall_le _ _ fun i hi => by
+          rw [Polynomial.natDegree_X_pow]
+          have := Finset.mem_range.mp (Finset.mem_filter.mp (hI ▸ hi)).1
+          omega
+      omega
+    have hdegR : R.natDegree < q := by
+      have hmul := Polynomial.natDegree_mul hG hR0
+      rw [← hR] at hmul
+      -- natDegree G = (p−1)q exactly? we only need: natDegree R < q
+      -- from P = G·R: natDegree P = natDegree G + natDegree R ≥ ... need LOWER bound on G:
+      -- G has coeff 1 at (p−1)q, so natDegree G ≥ (p−1)q
+      have hGlow : (p - 1) * q ≤ (∑ i ∈ Finset.range p, (X : ℚ[X]) ^ (i * q)).natDegree := by
+        apply Polynomial.le_natDegree_of_ne_zero
+        rw [Polynomial.finset_sum_coeff]
+        rw [Finset.sum_eq_single (p - 1) (fun j hj hjne => by
+          rw [Polynomial.coeff_X_pow, if_neg (fun h => hjne (by
+            have := Nat.eq_of_mul_eq_mul_right hqpos h
+            omega))]) (fun h0 => absurd (Finset.mem_range.mpr (by omega)) h0)]
+        rw [Polynomial.coeff_X_pow, if_pos rfl]
+        norm_num
+      have hcount : (p - 1) * q + q = n := by
+        rw [hnq]
+        have : 1 ≤ p := hppos
+        calc (p - 1) * q + q = ((p - 1) + 1) * q := by ring
+        _ = p * q := by congr 1; omega
+      omega
+    intro s hs i hi i' hi'
+    rw [hR, packet_mul_coeff hqpos hdegR hi hs, packet_mul_coeff hqpos hdegR hi' hs]
+  -- conclusion: membership is q-shift invariant; μ_p = powers of ζ^q
+  have hmem : ∀ s < q, ∀ i < p, ∀ i' < p, (ζ ^ (i * q + s) ∈ S ↔ ζ ^ (i' * q + s) ∈ S) := by
+    intro s hs i hi i' hi'
+    have := hslice s hs i hi i' hi'
+    rw [hPcoeff, hPcoeff] at this
+    have hiI : (i * q + s ∈ I) ↔ (i' * q + s ∈ I) := by
+      by_cases h1 : i * q + s ∈ I <;> by_cases h2 : i' * q + s ∈ I <;>
+        simp [h1, h2] at this ⊢
+    rw [hI] at hiI
+    simp only [Finset.mem_filter, Finset.mem_range] at hiI
+    have hb1 : i * q + s < n := by
+      rw [hnq]
+      have : (i + 1) * q ≤ p * q := Nat.mul_le_mul_right q (by omega)
+      have : i * q + q ≤ p * q := by
+        calc i * q + q = (i + 1) * q := by ring
+        _ ≤ p * q := this
+      omega
+    have hb2 : i' * q + s < n := by
+      rw [hnq]
+      have h' : (i' + 1) * q ≤ p * q := Nat.mul_le_mul_right q (by omega)
+      have : i' * q + q ≤ p * q := by
+        calc i' * q + q = (i' + 1) * q := by ring
+        _ ≤ p * q := h'
+      omega
+    constructor
+    · intro hx
+      exact (hiI.mp ⟨hb1, hx⟩).2
+    · intro hx
+      exact (hiI.mpr ⟨hb2, hx⟩).2
+  -- assemble: h with h^p = 1 is (ζ^q)^k; shift the coset index
+  intro x hx h hh
+  obtain ⟨e, he, rfl⟩ := hζ.eq_pow_of_pow_eq_one (hS x hx)
+  have hζq : IsPrimitiveRoot (ζ ^ q) p := by
+    refine hζ.pow hnpos ?_
+    rw [hn, hq]
+    ring
+  obtain ⟨k, hk, hkq⟩ := hζq.eq_pow_of_pow_eq_one hh
+  -- write e = i·q + s with i < p, s < q
+  obtain ⟨i, s, rfl, hs⟩ : ∃ i s, e = i * q + s ∧ s < q :=
+    ⟨e / q, e % q, by rw [mul_comm]; exact (Nat.div_add_mod e q).symm, Nat.mod_lt _ hqpos⟩
+  have hi : i < p := by
+    by_contra hge
+    push Not at hge
+    have : p * q ≤ i * q := Nat.mul_le_mul_right q hge
+    rw [hnq] at he
+    omega
+  set i2 := (k + i) % p with hi2def
+  have hi2p : i2 < p := Nat.mod_lt _ hppos
+  have hxmem : ζ ^ (i2 * q + s) ∈ S := (hmem s hs i hi i2 hi2p).mp hx
+  have hfinal : h * ζ ^ (i * q + s) = ζ ^ (i2 * q + s) := by
+    rw [← hkq, ← pow_mul, ← pow_add]
+    have hdecomp : q * k + (i * q + s) = n * ((k + i) / p) + (i2 * q + s) := by
+      calc q * k + (i * q + s) = (k + i) * q + s := by ring
+      _ = (p * ((k + i) / p) + i2) * q + s := by
+          rw [hi2def]
+          congr 2
+          exact (Nat.div_add_mod (k + i) p).symm
+      _ = (p * q) * ((k + i) / p) + (i2 * q + s) := by ring
+      _ = n * ((k + i) / p) + (i2 * q + s) := by rw [hnq]
+    rw [hdecomp, pow_add, pow_mul, hζ.pow_eq_one, one_pow, one_mul]
+  rw [hfinal]
+  exact hxmem
+
+end PrimePowerBase
+
 end LamLeungTwoPow
