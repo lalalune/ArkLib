@@ -4064,3 +4064,21 @@ O87 left the prime-power continuation as one named brick: column indicator diffe
 * Non-vacuity with teeth: fired end-to-end at ℚ on the probe's own realized quotient (1,−1) (d = 1−X+X²−X³, the {0,2}-vs-{1,3} column difference) and on the rotated packet X+X³; `¬ packet ℚ 2 2 ∣ (1+X)` proven through the iff — the conclusion discriminates.
 
 **Where the open core moves:** the three-step de Bruijn ledger now has its prime-power engine: O87's column differences at level a are, by this brick, bounded combinations whose coefficients are bottom-slice indicator data — i.e. the iff converts Φ_{p^a}-divisibility into p-fold slice replication, exactly the descent from q-adic digit a to a−1. What remains for the full two-prime theorem (and the M31-domain capstone) is the WIRING: run the recursion down the digits inside `MixedRadixTower`'s conditional rungs (replace the level-a base hypotheses by this brick + induction) and assemble mixed disjoint packets at composite levels — bookkeeping plus the O67-verified mixed-decomposition census as the target shape, no new divisibility content needed at a single prime power.
+
+### O78 — DE BRUIJN AS AN IFF + the small-sector closure (the O73 bridge begins)
+
+Three theorems (axiom-clean, 0 sorry), completing the decomposition into a genuine
+characterization and starting the O73 discharge:
+
+* `packetUnion_sum_zero` (converse; drafted by a killed relaunch lane, finished by the
+  main loop — two pow_mul orientations + hterm patterns repaired): every PacketUnion has
+  vanishing sum. With O77: **vanishing ⟺ disjoint-packet decomposition** — de Bruijn
+  two-prime, both directions, hypothesis-free.
+* `packetUnion_mu_p_closed_of_card_lt`: a PacketUnion of cardinality < q contains no
+  μ_q-packet (its q ≤ card collision), so it is μ_p-closed — induction over the
+  derivation, with the p-th-root wrap handled by exponent decomposition.
+* `small_vanishing_mu_p_closed`: O77 ∘ pure-p forcing — UNCONDITIONAL: any vanishing
+  subset of μ_{p^(a+1)q^(b+1)} with |S| < q is μ_p-closed. This is the first
+  unconditional sector of O73's base hypothesis at genuinely two-prime levels (the
+  sum-only hypothesis is FALSE in general — rotated μ_q-packets — so sectoral discharge
+  is the correct shape; the windowed sectors are the remaining induction).

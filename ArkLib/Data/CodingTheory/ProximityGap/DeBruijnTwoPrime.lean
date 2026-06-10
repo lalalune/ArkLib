@@ -788,6 +788,93 @@ lemma coord_bound {i r s B : ℕ} (hi : i < r) (hs : s < B) : i * B + s < r * B 
   have h2 : i * B + B = (i + 1) * B := by ring
   omega
 
+/-- **Packet-union sufficiency**: every `PacketUnion` certificate has vanishing total
+sum.  Thus the inductive decomposition object is not just a shape witness; it is the
+converse half of de Bruijn's vanishing theorem. -/
+theorem packetUnion_sum_zero {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hU : PacketUnion p q a b ζp ζq S) :
+    ∑ z ∈ S, z = 0 := by
+  classical
+  have hζp0 : ζp ≠ 0 := prim_ne_zero hζp (pow_pos hp.pos _)
+  have hζq0 : ζq ≠ 0 := prim_ne_zero hζq (pow_pos hq.pos _)
+  have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+    hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+  have hωq : IsPrimitiveRoot (ζq ^ (q ^ b)) q :=
+    hζq.pow (pow_pos hq.pos _) (by rw [pow_succ])
+  induction hU with
+  | empty =>
+      simp
+  | addP s j t hU hdisj ih =>
+      rename_i S₀
+      set P : Finset F := (Finset.range p).image
+        (fun i'' => ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) with hPdef
+      have hdis : Disjoint S₀ P := by
+        rw [Finset.disjoint_left]
+        intro y hyS hyP
+        obtain ⟨i'', hi'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hyP)
+        exact hdisj i'' (Finset.mem_range.mp hi'') hyS
+      have hinj : ∀ x1 ∈ Finset.range p, ∀ x2 ∈ Finset.range p,
+          ζp ^ (x1 * p ^ a + s) * ζq ^ (j * q ^ b + t)
+            = ζp ^ (x2 * p ^ a + s) * ζq ^ (j * q ^ b + t) → x1 = x2 := by
+        intro x1 hx1 x2 hx2 hxe
+        have hconst0 : ζq ^ (j * q ^ b + t) ≠ 0 := pow_ne_zero _ hζq0
+        have hs0 : ζp ^ s ≠ 0 := pow_ne_zero _ hζp0
+        have hpow : ζp ^ (x1 * p ^ a) = ζp ^ (x2 * p ^ a) := by
+          have hcancel := mul_right_cancel₀ hconst0 hxe
+          rw [pow_add, pow_add] at hcancel
+          exact mul_right_cancel₀ hs0 hcancel
+        have hpow' : (ζp ^ (p ^ a)) ^ x1 = (ζp ^ (p ^ a)) ^ x2 := by
+          rw [← pow_mul, ← pow_mul, Nat.mul_comm (p ^ a) x1, Nat.mul_comm (p ^ a) x2]
+          exact hpow
+        exact hωp.pow_inj (Finset.mem_range.mp hx1) (Finset.mem_range.mp hx2) hpow'
+      have hPsum : ∑ y ∈ P, y = 0 := by
+        rw [hPdef, Finset.sum_image hinj]
+        have hterm : ∀ i'' ∈ Finset.range p,
+            ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)
+              = (ζp ^ (p ^ a)) ^ i'' * (ζp ^ s * ζq ^ (j * q ^ b + t)) := by
+          intro i'' _
+          rw [pow_add, ← pow_mul, Nat.mul_comm (p ^ a) i'']
+          ring
+        rw [Finset.sum_congr rfl hterm]
+        exact prime_packet_sum_zero hp hωp _
+      rw [Finset.sum_union hdis, ih, hPsum, add_zero]
+  | addQ s i t hU hdisj ih =>
+      rename_i S₀
+      set P : Finset F := (Finset.range q).image
+        (fun j'' => ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) with hPdef
+      have hdis : Disjoint S₀ P := by
+        rw [Finset.disjoint_left]
+        intro y hyS hyP
+        obtain ⟨j'', hj'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hyP)
+        exact hdisj j'' (Finset.mem_range.mp hj'') hyS
+      have hinj : ∀ x1 ∈ Finset.range q, ∀ x2 ∈ Finset.range q,
+          ζp ^ (i * p ^ a + s) * ζq ^ (x1 * q ^ b + t)
+            = ζp ^ (i * p ^ a + s) * ζq ^ (x2 * q ^ b + t) → x1 = x2 := by
+        intro x1 hx1 x2 hx2 hxe
+        have hconst0 : ζp ^ (i * p ^ a + s) ≠ 0 := pow_ne_zero _ hζp0
+        have ht0 : ζq ^ t ≠ 0 := pow_ne_zero _ hζq0
+        have hpow : ζq ^ (x1 * q ^ b) = ζq ^ (x2 * q ^ b) := by
+          have hcancel := mul_left_cancel₀ hconst0 hxe
+          rw [pow_add, pow_add] at hcancel
+          exact mul_right_cancel₀ ht0 hcancel
+        have hpow' : (ζq ^ (q ^ b)) ^ x1 = (ζq ^ (q ^ b)) ^ x2 := by
+          rw [← pow_mul, ← pow_mul, Nat.mul_comm (q ^ b) x1, Nat.mul_comm (q ^ b) x2]
+          exact hpow
+        exact hωq.pow_inj (Finset.mem_range.mp hx1) (Finset.mem_range.mp hx2) hpow'
+      have hPsum : ∑ y ∈ P, y = 0 := by
+        rw [hPdef, Finset.sum_image hinj]
+        have hterm : ∀ j'' ∈ Finset.range q,
+            ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)
+              = (ζq ^ (q ^ b)) ^ j'' * (ζp ^ (i * p ^ a + s) * ζq ^ t) := by
+          intro j'' _
+          rw [pow_add (a := ζq), ← pow_mul, Nat.mul_comm (q ^ b) j'']
+          ring
+        rw [Finset.sum_congr rfl hterm]
+        exact prime_packet_sum_zero hq hωq _
+      rw [Finset.sum_union hdis, ih, hPsum, add_zero]
+
 variable [CharZero F]
 
 /-- **THE FULL TWO-PRIME DE BRUIJN DECOMPOSITION** (unconditional, characteristic zero):
@@ -949,6 +1036,118 @@ theorem two_prime_packet_decomposition {p q a b : ℕ} (hp : p.Prime) (hq : q.Pr
       have hassemble := PacketUnion.addQ (S := T \ P) s i t hIH hnotmem
       rwa [← hPdef, Finset.sdiff_union_of_subset hPsub] at hassemble
 
+/-- **Two-prime de Bruijn iff, certificate form**: for subsets of
+`μ_{p^(a+1)·q^(b+1)}`, vanishing is equivalent to possessing a `PacketUnion`
+decomposition into disjoint full prime packets. -/
+theorem two_prime_packet_decomposition_iff {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1) :
+    (∑ z ∈ S, z = 0) ↔ PacketUnion p q a b ζp ζq S := by
+  constructor
+  · exact two_prime_packet_decomposition hp hq hpq hζp hζq hS
+  · exact packetUnion_sum_zero hp hq hζp hζq
+
 end FullDecomposition
+
+/-! ## Structural corollary: small vanishing sets are `μ_p`-closed
+
+The bridge from `PacketUnion` toward the O73 base-hypothesis format. The sum-only
+closure hypothesis is FALSE at genuinely two-prime levels (a rotated `μ_q`-packet is a
+vanishing set that is not `μ_p`-closed — exactly what the decomposition predicts), so
+the discharge is necessarily sectoral. Here: the cardinality sector `|T| < q`, where no
+`μ_q`-packet fits, the decomposition is forced pure-`p`, and `μ_p`-closure follows —
+with O77, an UNCONDITIONAL closure theorem for small vanishing sets
+(`small_vanishing_mu_p_closed`). The windowed sectors are the remaining induction. -/
+
+section StructuralCorollaries
+
+variable [DecidableEq F]
+
+/-- **Pure-`p` forcing in the small sector**: a `PacketUnion` of cardinality `< q`
+contains no `μ_q`-packet, hence is closed under every `p`-th root of unity. -/
+theorem packetUnion_mu_p_closed_of_card_lt {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {T : Finset F} (hPU : PacketUnion p q a b ζp ζq T) (hcard : T.card < q) :
+    ∀ x ∈ T, ∀ g : F, g ^ p = 1 → g * x ∈ T := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+    hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+  have hωq : IsPrimitiveRoot (ζq ^ (q ^ b)) q :=
+    hζq.pow (pow_pos hq.pos _) (by rw [pow_succ])
+  revert hcard
+  induction hPU with
+  | empty =>
+    intro _ x hx
+    exact absurd hx (Finset.notMem_empty x)
+  | @addP S s j t hsub hnot IH =>
+    intro hcard x hx g hg
+    have hScard : S.card < q :=
+      lt_of_le_of_lt (Finset.card_le_card Finset.subset_union_left) hcard
+    rcases Finset.mem_union.mp hx with hxS | hxP
+    · exact Finset.mem_union_left _ (IH hScard x hxS g hg)
+    · obtain ⟨i'', hi'', rfl⟩ := Finset.mem_image.mp hxP
+      obtain ⟨k, hk, hkg⟩ := hωp.eq_pow_of_pow_eq_one hg
+      refine Finset.mem_union_right _ (Finset.mem_image.mpr
+        ⟨(k + i'') % p, Finset.mem_range.mpr (Nat.mod_lt _ hp.pos), ?_⟩)
+      have hgz : g * ζp ^ (i'' * p ^ a + s)
+          = ζp ^ (((k + i'') % p) * p ^ a + s) := by
+        rw [← hkg, ← pow_mul, ← pow_add]
+        have hdecomp : p ^ a * k + (i'' * p ^ a + s)
+            = p ^ (a + 1) * ((k + i'') / p) + (((k + i'') % p) * p ^ a + s) := by
+          have hsplit : k + i'' = p * ((k + i'') / p) + (k + i'') % p :=
+            (Nat.div_add_mod _ p).symm
+          calc p ^ a * k + (i'' * p ^ a + s) = (k + i'') * p ^ a + s := by ring
+          _ = (p * ((k + i'') / p) + (k + i'') % p) * p ^ a + s := by rw [← hsplit]
+          _ = (p * p ^ a) * ((k + i'') / p) + (((k + i'') % p) * p ^ a + s) := by ring
+          _ = p ^ (a + 1) * ((k + i'') / p) + (((k + i'') % p) * p ^ a + s) := by
+              rw [← pow_succ']
+        rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
+      rw [← mul_assoc, hgz]
+  | @addQ S s i t hsub hnot IH =>
+    intro hcard
+    exfalso
+    set P : Finset F := (Finset.range q).image
+      (fun j'' => ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) with hPdef
+    have hPcard : P.card = q := by
+      rw [hPdef, Finset.card_image_of_injOn, Finset.card_range]
+      intro x1 hx1 x2 hx2 hxe
+      have hx1q := Finset.mem_range.mp (Finset.mem_coe.mp hx1)
+      have hx2q := Finset.mem_range.mp (Finset.mem_coe.mp hx2)
+      have hzp0 : ζp ^ (i * p ^ a + s) ≠ 0 :=
+        pow_ne_zero _ (prim_ne_zero hζp (pow_pos hp.pos _))
+      have hzt0 : ζq ^ t ≠ 0 := pow_ne_zero _ (prim_ne_zero hζq (pow_pos hq.pos _))
+      have hcancel : ζq ^ (x1 * q ^ b) = ζq ^ (x2 * q ^ b) := by
+        have h1 : ζq ^ (x1 * q ^ b + t) = ζq ^ (x2 * q ^ b + t) :=
+          mul_left_cancel₀ hzp0 hxe
+        rw [pow_add, pow_add] at h1
+        exact mul_right_cancel₀ hzt0 h1
+      have hω : (ζq ^ (q ^ b)) ^ x1 = (ζq ^ (q ^ b)) ^ x2 := by
+        rw [← pow_mul, ← pow_mul, mul_comm (q ^ b) x1, mul_comm (q ^ b) x2]
+        exact hcancel
+      exact hωq.pow_inj hx1q hx2q hω
+    have hPsub : P ⊆ S ∪ P := Finset.subset_union_right
+    have : q ≤ (S ∪ P).card := by
+      rw [← hPcard]
+      exact Finset.card_le_card hPsub
+    omega
+
+variable [CharZero F]
+
+/-- **Unconditional small-sector closure**: a vanishing subset of
+`μ_{p^(a+1)·q^(b+1)}` with fewer than `q` elements is closed under every `p`-th root of
+unity — O77 + pure-`p` forcing, no hypotheses. -/
+theorem small_vanishing_mu_p_closed {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hsum : ∑ z ∈ S, z = 0) (hcard : S.card < q) :
+    ∀ x ∈ S, ∀ g : F, g ^ p = 1 → g * x ∈ S :=
+  packetUnion_mu_p_closed_of_card_lt hp hq hζp hζq
+    (two_prime_packet_decomposition hp hq hpq hζp hζq hS hsum) hcard
+
+end StructuralCorollaries
 
 end DeBruijnTwoPrime
