@@ -271,8 +271,9 @@ protocol's challenge spaces.
     $\delta = 0$; the $\delta > 0$ statement requires a salted re-key of the
     $\mathrm{Hyb}_4$ endpoint, recorded as post-grant hardening. The legacy
     \(\mathsf{DuplexSpongeFS.KeyLemmaResidual}\) remains on the older i.i.d.-oracle
-    statement surface with an over-strong \(\eta^\star\) exponent and is superseded by the
-    eager surface; it is kept only as a named historical interface.
+    statement surface and is superseded by the eager surface; its \(\eta^\star\)
+    denominator exponent was aligned to CO25 Eq.~5 by brick F0a (2026-06-10), so it is kept
+    only as a named historical interface, no longer numerically over-strong.
     \lean{DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaStatementEager}
     \lean{DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaEagerResidual}
     \lean{DuplexSpongeFS.KeyLemmaHybrids.Hyb01StepResidual}
