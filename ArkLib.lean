@@ -1446,6 +1446,7 @@ import ArkLib.ProofSystem.Whir.ProtocolSoundness
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
 import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
+import ArkLib.ProofSystem.Whir.ThresholdKSF
 import ArkLib.ProofSystem.Whir.WhirVectorIOPProof
 import ArkLib.ProofSystem.ZkVMBoundary
 import ArkLib.ResidualAxioms
