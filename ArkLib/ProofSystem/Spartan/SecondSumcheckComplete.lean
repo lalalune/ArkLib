@@ -8,6 +8,8 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
+import ArkLib.OracleReduction.LiftContext.HonestKnowledgeLens
+import ArkLib.ProofSystem.Sumcheck.Spec.RbrKnowledgeSoundnessOracle
 
 /-!
 # The Spartan second sum-check phase preserves completeness (issue #114)
@@ -163,5 +165,61 @@ theorem secondSumcheck_rbrSoundness
   exact OracleVerifier.liftContext_rbrSoundness_pullback
     (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier
     (subset_refl _) h_inner
+
+/-- The honest pullback input relation used by the second sum-check rbr knowledge transfer. It
+says that the projected inner sum-check round-`0` claim holds, including the carried target. -/
+def secondSumcheckHonestRelIn :
+    Set ((((R × Statement.AfterLinearCombination R pp) ×
+        (∀ i, OracleStatement.AfterLinearCombination R pp i)) × Unit)) :=
+  Extractor.Lens.Honest.pullbackRelIn
+    (secondSumcheckOracleLens pp oSpec).toLens
+    (Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (0 : Fin (pp.ℓ_n + 1)))
+
+/-- The honest transported output relation used by the second sum-check rbr knowledge transfer. It
+is the canonical outer relation induced by the inner final sum-check relation and the second
+sum-check lens. -/
+def secondSumcheckHonestRelOut :
+    Set (((Statement.AfterSecondSumcheck R pp ×
+        (∀ i, OracleStatement.AfterSecondSumcheck R pp i)) × Unit)) :=
+  Extractor.Lens.Honest.transportedRelOut
+    (secondSumcheckOracleLens pp oSpec).toLens
+    (Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (Fin.last pp.ℓ_n))
+    (((Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier.toVerifier)
+      .compatStatement (secondSumcheckOracleLens pp oSpec).toLens)
+
+/-- **Second sum-check phase round-by-round knowledge soundness (issue #114).** The Spartan lift of
+the generic sum-check verifier is rbr knowledge sound on the honest pullback/transported claim
+relations. As with the first sum-check, this intentionally targets the transported sum-check claim
+language, not the false R1CS-carrying implication. -/
+theorem secondSumcheck_rbrKnowledgeSoundness_honest
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    [Inhabited R] [Subsingleton σ]
+    (hInit : ∃ s, s ∈ support init) (hInitNF : Pr[⊥ | init] = 0) :
+    (secondSumcheckReduction pp oSpec).verifier.rbrKnowledgeSoundness init impl
+      (secondSumcheckHonestRelIn (R := R) pp oSpec)
+      (secondSumcheckHonestRelOut (R := R) pp oSpec)
+      (fun _ => (2 : ℝ≥0) / (Fintype.card R)) := by
+  haveI := secondSumcheckCoherent (R := R) pp oSpec
+  change (((Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier)
+    .liftContext (secondSumcheckOracleLens pp oSpec)).rbrKnowledgeSoundness init impl
+      (secondSumcheckHonestRelIn (R := R) pp oSpec)
+      (secondSumcheckHonestRelOut (R := R) pp oSpec)
+      (fun _ => (2 : ℝ≥0) / (Fintype.card R))
+  exact OracleVerifier.liftContext_rbr_knowledgeSoundness
+    (V := (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier)
+    (stmtLens := secondSumcheckOracleLens pp oSpec)
+    (witLens := Witness.InvLens.trivial)
+    (lensKS := Extractor.Lens.Honest.honestLensKS
+      (stmtLens := (secondSumcheckOracleLens pp oSpec).toLens)
+      (innerRelIn :=
+        Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (0 : Fin (pp.ℓ_n + 1)))
+      (innerRelOut :=
+        Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (Fin.last pp.ℓ_n))
+      (compatStmt :=
+        ((Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier.toVerifier)
+          .compatStatement (secondSumcheckOracleLens pp oSpec).toLens))
+    (h := Sumcheck.Spec.oracleVerifier_rbrKnowledgeSoundness
+      (R := R) (deg := 2) (D := boolEmbedding R) (n := pp.ℓ_n)
+      (oSpec := oSpec) (init := init) (impl := impl) hInit hInitNF)
 
 end Spartan.Spec

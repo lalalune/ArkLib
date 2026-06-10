@@ -1,5 +1,5 @@
 {
-  "count": 52,
+  "count": 53,
   "entries": {
     "ACFY24": {
       "authors": [
@@ -375,6 +375,27 @@
       "key": "CGKY25",
       "title": "On the Fiat-Shamir Security of Succinct Arguments from Functional Commitments",
       "url": "https://eprint.iacr.org/2025/902",
+      "venue": "",
+      "year": "2025"
+    },
+    "CO25": {
+      "authors": [
+        "Chiesa, Alessandro",
+        "Orr{\\`u}, Michele"
+      ],
+      "authors_text": "Chiesa, Alessandro and Orr{\\`u}, Michele",
+      "doi": "",
+      "entry_type": "misc",
+      "fields": {
+        "author": "Chiesa, Alessandro and Orr{\\`u}, Michele",
+        "howpublished": "Cryptology {ePrint} Archive, Paper 2025/536",
+        "title": "A Fiat--Shamir Transformation From Duplex Sponges",
+        "url": "https://eprint.iacr.org/2025/536",
+        "year": "2025"
+      },
+      "key": "CO25",
+      "title": "A Fiat--Shamir Transformation From Duplex Sponges",
+      "url": "https://eprint.iacr.org/2025/536",
       "venue": "",
       "year": "2025"
     },

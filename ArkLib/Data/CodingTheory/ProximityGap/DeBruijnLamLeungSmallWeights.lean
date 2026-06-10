@@ -215,6 +215,18 @@ private lemma sum_eq_pair {s : Finset ℕ} {a b : ℕ} (ha : a ∈ s) (hb : b �
         (Finset.ne_of_mem_erase hp)
   rw [hz, add_zero]
 
+/-- Splitting a sum over a finset into three distinguished members. -/
+private lemma sum_eq_triple {s : Finset ℕ} {a b c : ℕ} (ha : a ∈ s)
+    (hb : b ∈ s) (hc : c ∈ s) (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c)
+    (f : ℕ → ℕ) (hf : ∀ p ∈ s, p ≠ a → p ≠ b → p ≠ c → f p = 0) :
+    ∑ p ∈ s, f p = f a + (f b + f c) := by
+  rw [← Finset.add_sum_erase s f ha]
+  congr 1
+  exact sum_eq_pair (Finset.mem_erase.mpr ⟨hab.symm, hb⟩)
+    (Finset.mem_erase.mpr ⟨hac.symm, hc⟩) hbc f
+    (fun p hp hpb hpc =>
+      hf p (Finset.mem_of_mem_erase hp) (Finset.ne_of_mem_erase hp) hpb hpc)
+
 /-- Weight-3 vanishing combinations force `3 ∣ n` (the ℕ-weighted corollary). -/
 lemma three_dvd_of_weight_three [CharZero L] {n : ℕ} (hn : 0 < n) {ζ : L}
     (hζ : ζ ^ n = 1) (w : ℕ → ℕ)
@@ -342,3 +354,326 @@ end DeBruijnLamLeungSmallWeights
 #print axioms DeBruijnLamLeungSmallWeights.three_dvd_of_weight_three
 #print axioms DeBruijnLamLeungSmallWeights.lam_leung_of_six_dvd
 #print axioms DeBruijnLamLeungSmallWeights.lam_leung_of_ten_dvd
+
+namespace DeBruijnLamLeungSmallWeights
+
+open Finset IntermediateField
+
+variable {L : Type*} [Field L]
+
+/-! ## Weight 4: the Conway–Jones quadruple classification (appended; O114)
+
+A vanishing sum of four roots of unity is two antipodal pairs — so weight 4
+forces `2 ∣ n`.  ℂ-side mechanism: conjugating `1 + a + b + c = 0` and clearing
+denominators gives `e₂ + e₃ = 0` for the elementary symmetric functions of
+`a, b, c`, so their cubic factors as `(T + 1)(T² + e₂)` — every branch of the
+case analysis produces `−1 ∈ μ_n`.  Consequence: `lam_leung_of_105_dvd` — the
+span law at every `n` divisible by `105 = 3·5·7` (gaps `{1, 2, 4}` all killed),
+including `n = 105`, the FIRST odd three-prime Lam–Leung level. -/
+
+namespace WeightFour
+
+open IntermediateField
+
+variable {L : Type*} [Field L]
+
+/-- The ℂ-side core: four unit `n`-torsion points summing to zero force
+`2 ∣ n`. -/
+private lemma two_dvd_of_complex {n : ℕ} (hn : 0 < n) {a b c : ℂ}
+    (ha : a ^ n = 1) (hb : b ^ n = 1) (hc : c ^ n = 1)
+    (habc : 1 + a + b + c = 0) : 2 ∣ n := by
+  have neg_one_case : ∀ x : ℂ, x ^ n = 1 → x = -1 → 2 ∣ n := by
+    intro x hx hx1
+    rw [hx1] at hx
+    rcases Nat.even_or_odd n with he | ho
+    · exact he.two_dvd
+    · rw [ho.neg_one_pow] at hx
+      norm_num at hx
+  -- norms and conj = inv
+  have hkey : ∀ x : ℂ, x ^ n = 1 → x ≠ 0 ∧ (starRingEnd ℂ) x = x⁻¹ := by
+    intro x hx
+    have hnx : ‖x‖ = 1 := Complex.norm_eq_one_of_pow_eq_one hx hn.ne'
+    have hx0 : x ≠ 0 := by
+      intro h0
+      rw [h0] at hnx
+      simp at hnx
+    exact ⟨hx0, (Complex.inv_eq_conj hnx).symm⟩
+  obtain ⟨ha0, hca⟩ := hkey a ha
+  obtain ⟨hb0, hcb⟩ := hkey b hb
+  obtain ⟨hc0, hcc⟩ := hkey c hc
+  -- the conjugate relation, cleared: abc + (bc + ac + ab) = 0
+  have hconj : 1 + a⁻¹ + b⁻¹ + c⁻¹ = 0 := by
+    have h := congrArg (starRingEnd ℂ) habc
+    rw [map_add, map_add, map_add, map_one, map_zero, hca, hcb, hcc] at h
+    exact h
+  have hcleared : a * b * c + (b * c + a * c + a * b) = 0 := by
+    have h := congrArg (· * (a * b * c)) hconj
+    simp only [add_mul, zero_mul, one_mul] at h
+    calc a * b * c + (b * c + a * c + a * b)
+        = 1 * (a * b * c) + (a⁻¹ * (a * b * c) + b⁻¹ * (a * b * c)
+            + c⁻¹ * (a * b * c)) := by
+          field_simp
+      _ = 0 := by linear_combination h
+  -- the factored cubic at T = a: (a + 1)(a² + e₂) = 0
+  set e₂ : ℂ := a * b + a * c + b * c with he₂
+  have hsum : a + b + c = -1 := by linear_combination habc
+  have hcubic : ∀ x : ℂ, (x - a) * (x - b) * (x - c)
+      = (x + 1) * (x ^ 2 + e₂) := by
+    intro x
+    have he₃ : a * b * c = -e₂ := by
+      rw [he₂]
+      linear_combination hcleared
+    calc (x - a) * (x - b) * (x - c)
+        = x ^ 3 - (a + b + c) * x ^ 2 + (a * b + a * c + b * c) * x
+            - a * b * c := by ring
+      _ = x ^ 3 + x ^ 2 + e₂ * x + e₂ := by
+          rw [hsum, he₂, he₃]
+          ring
+      _ = (x + 1) * (x ^ 2 + e₂) := by ring
+  have hfa : (a + 1) * (a ^ 2 + e₂) = 0 := by
+    have h := hcubic a
+    simp at h
+    exact mul_eq_zero.mpr h
+  have hfb : (b + 1) * (b ^ 2 + e₂) = 0 := by
+    have h := hcubic b
+    have h2 : (b - a) * (b - b) * (b - c) = 0 := by
+      simp
+    rw [h2] at h
+    linear_combination -h
+  have hfc : (c + 1) * (c ^ 2 + e₂) = 0 := by
+    have h := hcubic c
+    have h2 : (c - a) * (c - b) * (c - c) = 0 := by
+      simp
+    rw [h2] at h
+    linear_combination -h
+  -- case analysis: every branch yields some root equal to −1
+  rcases mul_eq_zero.mp hfa with h1 | h1
+  · exact neg_one_case a ha (by linear_combination h1)
+  rcases mul_eq_zero.mp hfb with h2 | h2
+  · exact neg_one_case b hb (by linear_combination h2)
+  rcases mul_eq_zero.mp hfc with h3 | h3
+  · exact neg_one_case c hc (by linear_combination h3)
+  -- all three squares equal −e₂: pairwise ratios are ±1
+  have hab : (b - a) * (b + a) = 0 := by linear_combination h2 - h1
+  rcases mul_eq_zero.mp hab with h4 | h4
+  · -- b = a: compare with c
+    have hba : b = a := by linear_combination h4
+    have hac : (c - a) * (c + a) = 0 := by linear_combination h3 - h1
+    rcases mul_eq_zero.mp hac with h5 | h5
+    · -- c = a too: 1 + 3a = 0 contradicts ‖a‖ = 1
+      have hcaeq : c = a := by linear_combination h5
+      have h13 : 1 + 3 * a = 0 := by
+        rw [hba, hcaeq] at habc
+        linear_combination habc
+      have hna : ‖a‖ = 1 :=
+        Complex.norm_eq_one_of_pow_eq_one ha hn.ne'
+      have ha3 : a = -(1 / 3) := by linear_combination (1 / 3 : ℂ) * h13
+      rw [ha3] at hna
+      norm_num at hna
+    · -- c = −a: then 1 + b = ... wait b = a: 1 + 2a + c = 0, c = −a → 1 + a = 0
+      have hcnega : c = -a := by linear_combination h5
+      have h1a : 1 + a = 0 := by
+        rw [hba, hcnega] at habc
+        linear_combination habc
+      exact neg_one_case a ha (by linear_combination h1a)
+  · -- b = −a: then 1 + c = 0
+    have hbnega : b = -a := by linear_combination h4
+    have h1c : 1 + c = 0 := by
+      rw [hbnega] at habc
+      linear_combination habc
+    exact neg_one_case c hc (by linear_combination h1c)
+
+end WeightFour
+
+/-- **Weight 4 forces `2 ∣ n`** (the Conway–Jones quadruple classification):
+four `n`-th roots of unity in a characteristic-zero field summing to zero split
+into two antipodal pairs.  Embed `ℚ(u)(v)` into `ℂ` and factor the conjugate-
+cleared cubic as `(T+1)(T² + e₂)`. -/
+theorem two_dvd_of_quadruple_sum_eq_zero [CharZero L] {n : ℕ} (hn : 0 < n)
+    {x y z t : L} (hx : x ^ n = 1) (hy : y ^ n = 1) (hz : z ^ n = 1)
+    (ht : t ^ n = 1) (hxyzt : x + y + z + t = 0) : 2 ∣ n := by
+  classical
+  have hx0 : x ≠ 0 := by
+    intro h0
+    rw [h0, zero_pow hn.ne'] at hx
+    exact zero_ne_one hx
+  set u : L := y * x⁻¹ with hu
+  set v : L := z * x⁻¹ with hv
+  set w : L := t * x⁻¹ with hw
+  have hun : u ^ n = 1 := by
+    rw [hu, mul_pow, hy, inv_pow, hx, inv_one, one_mul]
+  have hvn : v ^ n = 1 := by
+    rw [hv, mul_pow, hz, inv_pow, hx, inv_one, one_mul]
+  have hwn : w ^ n = 1 := by
+    rw [hw, mul_pow, ht, inv_pow, hx, inv_one, one_mul]
+  have hrel : 1 + u + v + w = 0 := by
+    have h := congrArg (· * x⁻¹) hxyzt
+    simp only [add_mul, zero_mul] at h
+    rw [hu, hv, hw, mul_inv_cancel₀ hx0] at h
+    linear_combination h
+  -- the two-generator number field and its complex embedding
+  have hintu : IsIntegral ℚ u := isIntegral_of_pow_eq_one hn hun
+  have hintv : IsIntegral ℚ⟮u⟯ v :=
+    ⟨Polynomial.X ^ n - 1,
+      by simpa using Polynomial.monic_X_pow_sub_C (1 : ℚ⟮u⟯) hn.ne',
+      by simp [hvn]⟩
+  haveI : FiniteDimensional ℚ ℚ⟮u⟯ :=
+    IntermediateField.adjoin.finiteDimensional hintu
+  haveI : FiniteDimensional ℚ⟮u⟯ ℚ⟮u⟯⟮v⟯ :=
+    IntermediateField.adjoin.finiteDimensional hintv
+  haveI : FiniteDimensional ℚ ℚ⟮u⟯⟮v⟯ := Module.Finite.trans ℚ⟮u⟯ ℚ⟮u⟯⟮v⟯
+  haveI : Algebra.IsAlgebraic ℚ ℚ⟮u⟯⟮v⟯ :=
+    Algebra.IsAlgebraic.of_finite ℚ ℚ⟮u⟯⟮v⟯
+  -- u and v live inside the tower field
+  have huE : u ∈ ℚ⟮u⟯⟮v⟯ := by
+    have h := ℚ⟮u⟯⟮v⟯.algebraMap_mem ⟨u, mem_adjoin_simple_self ℚ u⟩
+    simpa using h
+  have hvE : v ∈ ℚ⟮u⟯⟮v⟯ := mem_adjoin_simple_self ℚ⟮u⟯ v
+  set A : ℚ⟮u⟯⟮v⟯ := ⟨u, huE⟩ with hA
+  set B : ℚ⟮u⟯⟮v⟯ := ⟨v, hvE⟩ with hB
+  have hinj : Function.Injective (algebraMap ℚ⟮u⟯⟮v⟯ L) :=
+    (algebraMap ℚ⟮u⟯⟮v⟯ L).injective
+  have hAcoe : algebraMap ℚ⟮u⟯⟮v⟯ L A = u := rfl
+  have hBcoe : algebraMap ℚ⟮u⟯⟮v⟯ L B = v := rfl
+  have hAn : A ^ n = 1 := by
+    apply hinj
+    rw [map_pow, map_one, hAcoe]
+    exact hun
+  have hBn : B ^ n = 1 := by
+    apply hinj
+    rw [map_pow, map_one, hBcoe]
+    exact hvn
+  have hCn : (-1 - A - B) ^ n = 1 := by
+    apply hinj
+    rw [map_pow, map_one, map_sub, map_sub, map_neg, map_one, hAcoe, hBcoe]
+    have hweq : -1 - u - v = w := by linear_combination -hrel
+    rw [hweq]
+    exact hwn
+  let φ : ℚ⟮u⟯⟮v⟯ →ₐ[ℚ] ℂ := IsAlgClosed.lift
+  refine WeightFour.two_dvd_of_complex hn (a := φ A) (b := φ B)
+    (c := φ (-1 - A - B)) ?_ ?_ ?_ ?_
+  · rw [← map_pow, hAn, map_one]
+  · rw [← map_pow, hBn, map_one]
+  · rw [← map_pow, hCn, map_one]
+  · rw [map_sub, map_sub, map_neg, map_one]
+    ring
+
+/-- Weight-4 vanishing ℕ-combinations force `2 ∣ n`. -/
+lemma two_dvd_of_weight_four [CharZero L] {n : ℕ} (hn : 0 < n) {ζ : L}
+    (hζ : ζ ^ n = 1) (w : ℕ → ℕ)
+    (htot : ∑ e ∈ Finset.range n, w e = 4)
+    (hsum : ∑ e ∈ Finset.range n, (w e : L) * ζ ^ e = 0) : 2 ∣ n := by
+  have hcard : Multiset.card (expMultiset n w) = 4 := by
+    rw [expMultiset_card, htot]
+  obtain ⟨a, b, c, d, habcd⟩ := Multiset.card_eq_four.mp hcard
+  have h := expMultiset_sum n w ζ
+  rw [habcd] at h
+  simp at h
+  rw [hsum] at h
+  have hpow : ∀ e : ℕ, (ζ ^ e) ^ n = 1 := fun e => by
+    rw [← pow_mul, mul_comm, pow_mul, hζ, one_pow]
+  refine two_dvd_of_quadruple_sum_eq_zero hn (hpow a) (hpow b) (hpow c)
+    (hpow d) ?_
+  linear_combination h
+
+/-- **LAM–LEUNG AT `105 ∣ n`** (O114): the span law holds at every level
+divisible by `105 = 3·5·7` — the semigroup `ℕ3 + ℕ5 + ℕ7` misses only
+`{1, 2, 4}`; weight 1 never vanishes, weights 2 and 4 force `2 ∣ n` (in which
+case they lie in the span anyway).  Covers `n = 105`, **the first odd
+three-prime Lam–Leung level**, and `n = 315, 1155 = 3·5·7·11 (k = 4), …` -/
+theorem lam_leung_of_105_dvd [CharZero L] {n : ℕ} (h105 : 105 ∣ n) (hn : 0 < n)
+    {ζ : L} (hζ : IsPrimitiveRoot ζ n) (w : ℕ → ℕ)
+    (hsum : ∑ e ∈ Finset.range n, (w e : L) * ζ ^ e = 0) :
+    ∃ c : ℕ → ℕ, ∑ e ∈ Finset.range n, w e
+      = ∑ p ∈ n.primeFactors, c p * p := by
+  classical
+  have h3n : 3 ∣ n := dvd_trans (by norm_num) h105
+  have h5n : 5 ∣ n := dvd_trans (by norm_num) h105
+  have h7n : 7 ∣ n := dvd_trans (by norm_num) h105
+  have h3m : 3 ∈ n.primeFactors :=
+    Nat.mem_primeFactors.mpr ⟨Nat.prime_three, h3n, hn.ne'⟩
+  have h5m : 5 ∈ n.primeFactors :=
+    Nat.mem_primeFactors.mpr ⟨by norm_num, h5n, hn.ne'⟩
+  set T := ∑ e ∈ Finset.range n, w e with hT
+  -- the even-weight escape: if 2 ∣ n, pair 2 with 3 as in the 6 ∣ n law
+  by_cases h2n : 2 ∣ n
+  · have h2m : 2 ∈ n.primeFactors :=
+      Nat.mem_primeFactors.mpr ⟨Nat.prime_two, h2n, hn.ne'⟩
+    rcases Nat.eq_zero_or_pos T with hT0 | hTpos
+    · exact ⟨0, by simp [hT0]⟩
+    rcases Nat.lt_or_ge T 2 with hT1 | hT2
+    · have hT1' : T = 1 := by omega
+      exact absurd (no_weight_one hζ.pow_eq_one hn w (hT ▸ hT1') hsum) not_false
+    refine ⟨fun p => if p = 2 then (T - (if T % 2 = 0 then 0 else 3)) / 2
+      else if p = 3 then (if T % 2 = 0 then 0 else 1) else 0, ?_⟩
+    dsimp only
+    rw [sum_eq_pair h2m h3m (by norm_num)
+      (fun p => (if p = 2 then (T - (if T % 2 = 0 then 0 else 3)) / 2
+        else if p = 3 then (if T % 2 = 0 then 0 else 1) else 0) * p)
+      (fun p _ hp2 hp3 => by
+        dsimp only
+        rw [if_neg hp2, if_neg hp3]
+        exact zero_mul p)]
+    rw [if_pos rfl, if_neg (by norm_num : (3 : ℕ) ≠ 2), if_pos rfl]
+    rcases Nat.even_or_odd T with he | ho
+    · have h2 : T % 2 = 0 := Nat.even_iff.mp he
+      rw [if_pos h2, if_pos h2]
+      omega
+    · have h2' : ¬ T % 2 = 0 := by
+        have := Nat.odd_iff.mp ho
+        omega
+      rw [if_neg h2', if_neg h2']
+      omega
+  · -- 2 ∤ n: weights 1, 2, 4 are all impossible; ℕ3 + ℕ5 + ℕ7 covers the rest
+    rcases Nat.eq_zero_or_pos T with hT0 | hTpos
+    · exact ⟨0, by simp [hT0]⟩
+    have hT1 : T ≠ 1 := fun h1 =>
+      absurd (no_weight_one hζ.pow_eq_one hn w (hT ▸ h1) hsum) not_false
+    have hT2 : T ≠ 2 := by
+      intro h2
+      have hcard : Multiset.card (expMultiset n w) = 2 := by
+        rw [expMultiset_card, ← hT, h2]
+      obtain ⟨a, b, hab⟩ := Multiset.card_eq_two.mp hcard
+      have h := expMultiset_sum n w ζ
+      rw [hab] at h
+      simp at h
+      rw [hsum] at h
+      have hpow : ∀ e : ℕ, (ζ ^ e) ^ n = 1 := fun e => by
+        rw [← pow_mul, mul_comm, pow_mul, hζ.pow_eq_one, one_pow]
+      exact h2n (two_dvd_of_pair_sum_eq_zero hn (hpow a) (hpow b)
+        (by linear_combination h))
+    have hT4 : T ≠ 4 := fun h4 =>
+      h2n (two_dvd_of_weight_four hn hζ.pow_eq_one w (hT ▸ h4) hsum)
+    have h7m : 7 ∈ n.primeFactors :=
+      Nat.mem_primeFactors.mpr ⟨by norm_num, h7n, hn.ne'⟩
+    -- T ∉ {0,1,2,4}: write T = 3x + 5y + 7z by residue mod 3
+    obtain ⟨x, y, z, hxyz⟩ : ∃ x y z : ℕ, T = 3 * x + 5 * y + 7 * z := by
+      rcases Nat.lt_or_ge T 3 with h | h
+      · omega
+      have h3cases : T % 3 = 0 ∨ T % 3 = 1 ∨ T % 3 = 2 := by omega
+      rcases h3cases with h0 | h1 | h2
+      · exact ⟨T / 3, 0, 0, by omega⟩
+      · -- T ≡ 1 mod 3, T ≥ 3, T ≠ 4 → T ≥ 7
+        exact ⟨(T - 7) / 3, 0, 1, by omega⟩
+      · -- T ≡ 2 mod 3, T ≥ 3 → T ≥ 5
+        exact ⟨(T - 5) / 3, 1, 0, by omega⟩
+    refine ⟨fun p => if p = 3 then x else if p = 5 then y
+      else if p = 7 then z else 0, ?_⟩
+    dsimp only
+    rw [sum_eq_triple h3m h5m h7m (by norm_num) (by norm_num) (by norm_num)
+      (fun p => (if p = 3 then x else if p = 5 then y
+        else if p = 7 then z else 0) * p)
+      (fun p _ hp3 hp5 hp7 => by
+        dsimp only
+        rw [if_neg hp3, if_neg hp5, if_neg hp7]
+        exact zero_mul p)]
+    rw [if_pos rfl, if_neg (by norm_num : (5 : ℕ) ≠ 3), if_pos rfl,
+      if_neg (by norm_num : (7 : ℕ) ≠ 3), if_neg (by norm_num : (7 : ℕ) ≠ 5),
+      if_pos rfl]
+    omega
+
+end DeBruijnLamLeungSmallWeights
+
+#print axioms DeBruijnLamLeungSmallWeights.two_dvd_of_quadruple_sum_eq_zero
+#print axioms DeBruijnLamLeungSmallWeights.two_dvd_of_weight_four
+#print axioms DeBruijnLamLeungSmallWeights.lam_leung_of_105_dvd

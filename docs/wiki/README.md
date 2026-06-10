@@ -36,8 +36,6 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
   named open (Weil/sum-product) root.
 - [`stir-issue-301.md`](stir-issue-301.md) - STIR #301 scratchpad: source trail, local theorem
   map, proof status, and the honest residuals for `stir_main` / `stir_rbr_soundness`.
-- [`issue-317-binius-residuals.md`](issue-317-binius-residuals.md) - Binius #317 scratchpad:
-  paper trail, local residual inventory, and targeted validation notes.
 
 ## Maintenance Contract
 
