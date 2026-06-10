@@ -95,6 +95,8 @@ section Probability
 open OracleComp OracleSpec ProbabilityTheory
 open scoped ENNReal NNReal
 
+universe v
+
 namespace Whir302SZ
 
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
