@@ -4377,3 +4377,26 @@ O95 closed naming the route to the t > 1 window law through the weighted theory,
 * Teeth at ℂ on GENUINELY weighted data (weights ≥ 2, outside the indicator theory): converse PRODUCES 2 + 2ζ₄² = 0 from the decidably 2-periodic weight (2,0,2,0); forward REFUTES vanishing of (2,0,1,0) (2 ≠ 1 from weighted structure alone); the weight law REFUTES vanishing of the odd-total weight (0,1,0,0) (2 ∤ 1) — all three conclusions discriminate.
 
 **Where the open core moves (the (c) verdict, honest):** the two-prime weighted STRUCTURE law survives the probe intact (de Bruijn 1953's full ℕ-statement, not just the indicator case — no weighted-mixture counterexample exists at n = 12 exhaustively), so the in-tree target is real, but its assembly is NOT free: (1) weighted THREAD-SPLIT transports — O93's engine (`minpoly_adjoin_pow_prime_eq_binomial`, `natDegree_minpoly_adjoin_pow_prime`) is coefficient-free and the K-linear-independence argument accepts weighted thread sums verbatim; only the consumer statement is indicator-bound (bookkeeping). (2) The genuine wall is the **weighted SQUAREFREE base at n = pq**: periodicity fails there (the probe's 1272 mixtures), so the statement is ℕ-cone membership — every ℕ-point of the packet lattice kernel is an ℕ-combination of the p+q rotated packets — de Bruijn's Lemma-1 cone argument, no in-tree analogue (O87's dichotomy is its indicator shadow). With (1)+(2), this pass's prime-power base completes the weighted two-prime theorem by the O94 induction shape, and O95's brick (ii) (the β = 1 windowed law at p^α·q, window q+1) becomes consumable.
+
+### O98 — C1379: the level-2 marginal layer is ONE cyclotomic equation; the deep line at n=32 (nubs, 2026-06-10)
+
+`scripts/probes/n32census/level2/` (commit 75e4822b2; adversarially audited, sound 0.95). **(A) The
+1,344 agree-17 layer of the O87 census, completely charted** — and reproduced index-identically by a
+full fresh sweep at a second prime p₂ = 3·2³⁰+1 (the same literal agreement sets ⟹ ONE ℤ[ζ₃₂]
+configuration reduced at split primes): every dense element factors as
+Π_B(X²−z_b)·(X−x₁)(X−x₂)(X−x₃)(X−ξ), ξ = −Σxᵢ forced, (|B|,|O|) = (7,3) universal; consistency =
+the single scalar equation e₂(x⃗) − e₁(x⃗)² = λ + e₁(B) (0/1344 failures). 1,344 = 2·672 via free
+negation (parity-forced); B-census 580 = 488(×2) + 92(×4) — the SAME {2,4} multiplicity menu as
+C19's level-1 census. 35 = C(7,4) is now STRUCTURAL (e₁(S) = −λ ⟹ z* ∈ S + O50 antipodal pairs).
+O63 spread: witnesses minimal, dense layer MAXIMAL (every branch alive, depths 1–3). The n=16
+union-containment invariant does NOT lift; the level-2 invariant is the 19-type lattice profile.
+**Conjecture C1379** (C19-at-level-2, char-0): ℓ(w,18) = 35, ℓ(w,17) = 1,379 with this fixed
+index-level anatomy for all but finitely many split characteristics; named remaining analytic step:
+derive 672 from the equation. Falsifiers: any further split prime's 4-minute sweep; a non-max-fiber λ.
+**(B) Deep line at n=32** (calibrated bit-for-bit vs O68 first): the FULL C(16,9) = 11,440 bad
+scalars (injective scalar map at this z; vs monomial N₀ = 3,280 — the O68 gap widens 1.4×→3.49×),
+ALL singleton floor lists, union = {q_S} exactly; degeneracy impossible a priori (S_A ≡ 1 + w⁹S_B);
+a = 17 = k+1 proven line-trivial and exactly counted (263,802,303 γ's; cross-foot to C(32,17)
+exact). **Level-2 moral for the branch-count distribution: maximal concentration at the witness
+floor on both families; the first marginal layer is a finite explicit consistency equation with the
+same {2,4} multiplicities at both proven levels.**
