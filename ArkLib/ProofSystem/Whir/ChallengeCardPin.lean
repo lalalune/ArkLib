@@ -100,6 +100,74 @@ theorem M_eq_zero_of_paramsSum_eq_one (P : Params ιs F)
         Finset.sum_le_sum (fun i _ => (hpos i).out)
   omega
 
+
+/-- **The bridge at its honest gate**: `whir_rbr_soundness_of_checkedVectorIOP_rbr` with the
+challenge-cardinality pin replaced by its exact characterization `∑ foldingParam = 1` (the
+unit-fold instance — see `whirPaper_challengeCard_eq_iff`). Hypotheses are verbatim those of the
+bridge; only the structural gate is restated in its true form. The sole remaining gate is
+`hSound` (the genuine open soundness mathematics). -/
+theorem whir_rbr_soundness_of_checkedVectorIOP_rbr_unitFold
+    {d dstar : ℕ}
+    {P : Params ιs F} {S : ∀ i : Fin (M + 1), Finset (ιs i)}
+    {hParams : ParamConditions ιs P} {h : GenMutualCorrParams ιs P S}
+    {m_0 : ℕ} (hm_0 : m_0 = P.varCount 0) {σ₀ : F}
+    {wPoly₀ : MvPolynomial (Fin (m_0 + 1)) F} {δ : ℝ≥0}
+    [ReedSolomon.Smooth (P.φ 0)] [Nonempty (ιs 0)]
+    [∀ i : Fin (M + 1), Fact (0 < P.foldingParam i)]
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0)
+    (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (h_fold_0 :
+        let maxDeg := (Finset.univ : Finset (Fin m_0)).sup (fun i => wPoly₀.degreeOf (Fin.succ i))
+        let dstar := 1 + (wPoly₀.degreeOf 0) + maxDeg
+        let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
+          Fintype (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst1 0
+        let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
+          Nonempty (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst2 0
+        ∀ j : Fin ((P.foldingParam 0) + 1),
+          let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
+        ∀ j : Fin (P.foldingParam 0),
+          ε_fold 0 j ≤ ((dstar * (h.dist 0 j.castSucc)) / Fintype.card F) + (errStar_0 j.succ))
+    (h_out :
+        ∀ i : Fin (M + 1),
+          ε_out i ≤
+            2^(P.varCount i) * (h.dist i 0)^2 / (2 * Fintype.card F))
+    (h_shift :
+        ∀ i : Fin M,
+          ε_shift i ≤ (1 - (h.δ i.castSucc))^(P.repeatParam i.castSucc)
+            + ((h.dist i.succ 0) * (P.repeatParam i.castSucc) + 1) / Fintype.card F)
+    (h_fold_i :
+        let maxDeg := (Finset.univ : Finset (Fin m_0)).sup (fun i => wPoly₀.degreeOf (Fin.succ i))
+        let dstar := 1 + (wPoly₀.degreeOf 0) + maxDeg
+        let d := max dstar 3
+        let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+          Fintype (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst1
+        let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+          Nonempty (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst2
+        ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+          let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
+        ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
+          ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ)
+    (h_fin :
+        ε_fin ≤ (1 - h.δ (Fin.last M))^(P.repeatParam (Fin.last M)))
+    (d' : ℕ)
+    (hSum : (∑ i, P.foldingParam i) = 1)
+    (hSound : OracleProof.rbrKnowledgeSoundness (pure ()) isEmptyElim
+      (whirRelation m_0 (P.φ 0) (h.δ 0))
+      (paperTranscriptOracleVerifier P d' (whirVerifyChecked P d'))
+      (fun _ =>
+        (Finset.univ.image
+            (fun i => (Finset.univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i))
+          ∪ {ε_fin} ∪ Finset.univ.image ε_out ∪ Finset.univ.image ε_shift).max'
+          (by simp))) :
+    whir_rbr_soundness (F := F) (M := M) ιs (d := d) (dstar := dstar)
+      (P := P) (S := S) (hParams := hParams) (h := h)
+      hm_0 (σ₀ := σ₀) (wPoly₀ := wPoly₀) (δ := δ)
+      ε_fold ε_out ε_shift ε_fin h_fold_0 h_out h_shift h_fold_i h_fin :=
+  whir_rbr_soundness_of_checkedVectorIOP_rbr hm_0
+    ε_fold ε_out ε_shift ε_fin h_fold_0 h_out h_shift h_fold_i h_fin d'
+    ((whirPaper_challengeCard_eq_iff P d').mpr hSum) hSound
+
 end Whir302Checked
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -107,3 +175,4 @@ end Whir302Checked
 #print axioms Whir302Checked.card_challengeIdx_whirPaperTranscriptVectorSpec
 #print axioms Whir302Checked.whirPaper_challengeCard_eq_iff
 #print axioms Whir302Checked.M_eq_zero_of_paramsSum_eq_one
+#print axioms Whir302Checked.whir_rbr_soundness_of_checkedVectorIOP_rbr_unitFold
