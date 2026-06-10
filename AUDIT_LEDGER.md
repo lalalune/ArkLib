@@ -13,6 +13,50 @@ Raw classification data: `audit/triage-2026-06-10.json`.
 - **[RESOLVED earlier] 3 false-axiom HonestAxioms.lean files deleted** — project has zero axiom declarations.
 - Wave 1 (10 agents) relaunches 6:48am after the subagent session-limit reset.
 
+## Wave-1 dead-item sweep (2026-06-10, all 20 status=dead items processed)
+
+- **[DELETED] ~27-theorem `*_of_uniformConjecture` pyramid** (`GrandChallenge141PrizeMath.lean`,
+  1573→259 lines) + **`GrandChallenge141PrizeMathLowOutput.lean`** (whole file, 10 theorems) —
+  conditional on the trivially-true `epsMCAgsPrizeUniformConjecture`; zero external consumers
+  re-verified by per-name grep before deletion. Kept: `epsMCAgs_le_one`, `epsMCA_le_one`,
+  `prizeRates_pos`, `eta_lt_one_of_prize`, `epsMCAgs_prizeBound_perInput_holds`, the documented
+  def, `epsMCAgs_prizeBound_of_listSize_clears`.
+- **[DELETED] `OracleReduction/Security/Issue112Kernels.lean`** (`ZKConcreteSimulatorKernel`,
+  `oracleReductionPublicRun`, `ZKConcretePublicView`) — self-described #112 scratch, zero consumers.
+- **[DELETED] `VectorIOR.IsSecure` + `VectorIOP.IsSecure`** (`OracleReduction/VectorIOR.lean`) —
+  zero instances, zero consumers; `IsSecureWithGap` kept (consumed by STIR MultiRoundAssembly).
+- **[DOCUMENTED REFUTED] `BoundaryCardResidual`/`BoundaryProbabilityResidual`** (BCIKS20
+  `Curves.lean`) and **`BoundaryCardStrictInteriorResidual`/`BoundaryCardQuantizationResiduals`**
+  (`BoundaryCardResidual.lean`) — docstrings now lead with REFUTED + the refuting theorems.
+  (`BoundaryCardLatticeResidual`/`LatticeData` already carried their notes.)
+- **[DOCUMENTED REFUTED] `uniformEpsMCAgsPrizeBoundConjecture`** (`MCAGS.lean`) — def docstring now
+  leads with REFUTED (`not_uniformEpsMCAgsPrizeBoundConjecture`); the bridge consumer's warning was
+  already landed (ba2a433fa).
+- **[DOCUMENTED] `mca_capacity_bound_CONJECTURE`** (`Whir/MutualCorrAgreement.lean`) — audit
+  addendum: doubly dead (genuine claim refuted in literature; formalized Prop vacuously true via
+  `mca_capacity_bound_CONJECTURE_trivially_true`). Stale "NOT in build" notes fixed in
+  `MCACapacityTrivial_keep.lean` and `Whir/MCAJohnsonSmallField.lean`.
+- **[DOCUMENTED LIKELY-FALSE] `stirMultiRoundRbrSoundnessResidual`** (`Stir/MultiRoundAssembly.lean`)
+  — shell-verifier warning (previously only in `CheckingVerifier.lean`) now on the def itself.
+- **[DOC REFRESHED] `STIR.proximity_gap`** (`Stir/ProximityGap.lean`) — STATUS block was stale: the
+  free-`GenFun` statement defect is REPAIRED in place (`_hGen` monomial pin), and the proved routes
+  are `proximity_gap_of_residuals` / `proximity_gap_of_card_le`.
+- **[DOCUMENTED SUPERSEDED] `oracleReductionToReductionResidual`(+`_of_perRound`)**
+  (`Sumcheck/Spec/OracleCompleteness{,Uncond}.lean`) — suspected-false bridge; live apex is
+  `oracleReduction_perfectCompleteness_unconditional`. NOT deleted: still consumed by the legacy
+  conditional chain (Logup `BridgeAndAppendResiduals`, `SpartanSumcheckUnconditional`, etc.).
+- **[DOCUMENTED DEPRECATED] `issue13_soundness_of_residual`** (`Issue13Status.lean`) — consumes the
+  refuted-in-typical-regime `LogupSoundnessUncondResidual`; def-side notes on
+  `LogupSoundnessFullResidual`/`LogupSoundnessUncondResidual` were already landed.
+- **[ALREADY RESOLVED upstream] `whirVectorIOP_rbrKnowledgeSoundness_dummy`** — discharged by
+  `whirVectorIOP_rbrKnowledgeSoundness_dummy_holds` via the indicator KSF; **`WholeZkVMResidual`**
+  — already deleted with honest tombstone comment; **GrandChallenge1BruteForce Hyp\*** — header
+  already declares them bare refutation targets (refuted in `GrandChallenge1RefutationProofs.lean`).
+- **[LEDGER FIX] `ListDecoding/Bounds.lean:1461/1519/1543` entries are STALE** — decls live in
+  `Bounds/RandomAndReedSolomon.lean:142,200,224` after the Bounds/ split; **and**
+  `sumcheckCompletenessResidual_of_honest_perRound` no longer exists (deleted as unsatisfiable;
+  replaced by `sumcheckCompletenessResidual_of_perRound`). Treat those rows as resolved.
+
 **Live count (regenerated 06:00 6/10):** residual-named surfaces 449 → 435 (−14: inline deletions, #328 vacuity-trap class removal, PrizeMath renames, wave-tagged landings incl. 684f50ec2 GenMutualCorrParams instance). Invariants re-verified: sorry=0, native_decide=0, axiom=0.
 
 **Totals (families):** proven 118 · provable 73 · open-research 20 · dead 20

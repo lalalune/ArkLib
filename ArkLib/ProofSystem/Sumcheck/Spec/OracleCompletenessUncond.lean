@@ -81,7 +81,16 @@ set_option linter.unusedSectionVars false in
 `oracleReductionToReductionResidual_of_binary` reduces the bridge `hBridge` to the two ingredients
 `hBinaryFusion` and `hPerRound`. The first is now discharged unconditionally
 (`binaryVerifierFusion_proof`), so the whole bridge follows from the single-round
-`liftContext`-commutation fact `hPerRound`. -/
+`liftContext`-commutation fact `hPerRound`.
+
+**LEGACY (audit 2026-06-10).** The target Prop `oracleReductionToReductionResidual` is
+superseded and suspected false as stated (its per-round input `hPerRound` is the documented
+suspected-false single-round `oracleReduction_eq_reduction`; see the note on the residual def
+in `OracleCompleteness.lean`).  The binary-fusion half proven here is genuine
+(`binaryVerifierFusion_proof` via `oracleVerifier_append_toVerifier`), but nothing on the live
+path consumes this implication — the bridge-free apex is
+`oracleReduction_perfectCompleteness_unconditional` (`OracleCompletenessUncondCorrect.lean`).
+Kept as a historical reduction record. -/
 theorem oracleReductionToReductionResidual_of_perRound
     (hPerRound : ∀ i, (SingleRound.oracleReduction R n deg D oSpec i).toReduction =
       SingleRound.reduction R n deg D oSpec i) :
