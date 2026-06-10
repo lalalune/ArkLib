@@ -1312,6 +1312,7 @@ import ArkLib.ProofSystem.Whir.KeystoneSmallField
 import ArkLib.ProofSystem.Whir.MCAAffineLineGenerator
 import ArkLib.ProofSystem.Whir.MCAConjecturePairReduction
 import ArkLib.ProofSystem.Whir.MCAConjectureStatus
+import ArkLib.ProofSystem.Whir.MCACurveSeam
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveExtract
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveJoint
 import ArkLib.ProofSystem.Whir.MCAJohnsonEnvelope
