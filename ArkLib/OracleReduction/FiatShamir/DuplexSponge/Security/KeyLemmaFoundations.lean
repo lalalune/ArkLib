@@ -649,10 +649,15 @@ def Lemma5_12HonestResidual (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop
 /-- M2b residual — CO25 Lemma 5.14 (honest form): off `E` the backtrack family has at most
 one maximal sequence, `¬E(tr) → ¬E_fork(tr, s)`.
 
-**Audit status (2026-06-10)**: OPEN, and at risk from the `redundantEntryDS` deviation
-from CO25 Def. 5.5 (same-direction swapped certificates instead of opposite-direction) —
-the sibling `Lemma5_16HonestResidual` is REFUTED as stated for exactly this reason
-(`Lemma516TimePFalse.lean`). Repair `redundantEntryDS` before attempting a discharge. -/
+**Audit status (2026-06-10): REFUTED as stated** —
+`DuplexSpongeFS.Sponge316.ForkCounter.lemma5_14HonestResidual_false`
+(`Lemma514ForkFalse.lean`, axiom-clean) exhibits a 5-entry trace with two
+alternating-pair loop chains to the same state, so `E_fork_honest` fires while `E` is
+absent, exploiting the same `redundantEntryDS` deviation from CO25 Def. 5.5
+(same-direction swapped certificates instead of the paper's opposite-direction `p⁻¹` one)
+that refutes the sibling `Lemma5_16HonestResidual` (`Lemma516TimePFalse.lean`).
+Do NOT add this residual as a hypothesis expecting a future discharge; repair
+`redundantEntryDS` first. -/
 def Lemma5_14HonestResidual (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
   ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),

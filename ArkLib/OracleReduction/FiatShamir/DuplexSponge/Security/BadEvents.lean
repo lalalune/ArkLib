@@ -17,6 +17,17 @@ These bad events capture conditions under which the simulator deviates from the 
 such as capacity segment collisions or inconsistent query evaluations. We establish the logical
 implications between these events (e.g., that the combined bad event $E$ bounds other failure modes
 like permutation inconsistency or out-of-order execution).
+
+**Placeholder-honesty note (audit 2026-06-10)**: the per-state events `inv`, `fork`,
+`outOfOrderHash`, and `outOfOrderPerm` defined near the end of this file are literally
+`E trace ∧ state = 0` — placeholders that make the trace-event forms `lemma_5_12` /
+`lemma_5_14` / `lemma_5_16` in this file trivially true. They are NOT the genuine
+CO25 §5.6 events. The honest per-state versions (`E_inv_honest`, `E_fork_honest`,
+`E_time_honest`) live in `KeyLemmaFoundations.lean`, where the corresponding honest
+residuals are tracked: 5.12 is discharged (`Lemma512Honest.lean`), while 5.14 and 5.16
+are REFUTED as stated (`Lemma514ForkFalse.lean`, `Lemma516TimePFalse.lean`) due to the
+`redundantEntryDS` deviation from CO25 Def. 5.5; only the `E_{time,h}` half is proven
+(`Lemma516HashHalf.lean`). Do not cite the trivial forms here as discharging CO25 §5.6.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
