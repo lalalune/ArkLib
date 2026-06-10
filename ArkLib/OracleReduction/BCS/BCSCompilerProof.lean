@@ -6,20 +6,31 @@ Authors: Master Cryptographer
 import ArkLib.OracleReduction.BCS.Basic
 
 /-!
-# BCS Compiler Preservation (Issue #62)
+# BCS Compiler Preservation residual checkpoint (Issue #62)
 
-This file records the residual checkpoint for the `bcs_compiler_preservation_residual`
-mathematics.  The actual preservation theorem still has to establish that the compiled
-frontier is ready from concrete phase/security hypotheses; this standalone surface only
-passes through that exact residual once supplied.
+This file records the *named-residual checkpoint* for the generic BCS compiler preservation
+obligation. **The theorem below carries zero mathematical content**: it is the identity on its
+own hypothesis (`hReady ↦ hReady`), kept only so the remaining obligation has a stable,
+greppable name. The actual preservation theorem still has to establish
+`BCSCompilerFrontierReady` from concrete phase/security hypotheses (commitment
+binding/extractability + the query-log realization of the two phases); that work is open and
+tracked by `BCSSecurityFrontier` in `ArkLib.OracleReduction.BCS.Basic`.
+
+The parts of the #62 compiler obligation that *are* genuine theorems live elsewhere:
+* completeness composition — `OracleReduction.BCSTransform_perfectCompleteness`
+  (`ArkLib.OracleReduction.BCS.CompletenessPreservation`), unconditional;
+* soundness composition — `OracleReduction.BCSCompiledPhases.toReduction_soundness_of_append_msg`
+  (`ArkLib.OracleReduction.BCS.AppendSoundnessMsg`), unconditional for the message seam.
 -/
 
 namespace BCSCompiler
 
 open scoped NNReal ProbabilityTheory
 
-/-- **Issue #62 checkpoint:** the BCS compiler preservation residual, made explicit. -/
-theorem bcs_compiler_preservation_breakthrough
+/-- **Issue #62 named-residual checkpoint (no content).** This is literally the identity on the
+hypothesis `hReady`; it proves nothing. It exists only to keep the open
+`BCSCompilerFrontierReady` obligation named and visible. Do not cite this as a result. -/
+theorem bcs_compiler_preservation_residual_passthrough
     {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
     [∀ i, OracleInterface (pSpec.Message i)]
     {m : ℕ} {nCom : pSpec.MessageIdx → ℕ} {pSpecCom : ∀ i, ProtocolSpec (nCom i)}
@@ -37,6 +48,6 @@ theorem bcs_compiler_preservation_breakthrough
     OracleReduction.BCSCompilerFrontierReady phases frontier :=
   hReady
 
-#print axioms BCSCompiler.bcs_compiler_preservation_breakthrough
+#print axioms BCSCompiler.bcs_compiler_preservation_residual_passthrough
 
 end BCSCompiler

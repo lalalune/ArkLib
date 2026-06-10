@@ -167,63 +167,13 @@ lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K]
       hRounds hCoreInteractionAppendPerfectCompleteness)
     (hResidual := hBatchingCoreAppendPerfectCompleteness)
 
-/-- Perfect completeness for the full ring-switching reduction, conditional on the explicit
-phase-level and append residuals. The old loop-level completeness hypothesis is kept in the API for
-downstream specializations, but the current generic core wrapper consumes the named round residual
-and the core append residual directly. -/
-theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
-    (hInit : NeverFail init)
-    (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
-      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
-    (hCoreSeqComposePerfectCompleteness :
-      (SumcheckPhase.sumcheckLoopOracleReduction κ L K P ℓ ℓ'
-        mlIOPCS.toAbstractOStmtIn).perfectCompleteness
-        (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn 0)
-        (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l
-          mlIOPCS.toAbstractOStmtIn (Fin.last ℓ'))
-        (init := init)
-        (impl := impl))
-    (hCoreInteractionAppendPerfectCompleteness :
-      (SumcheckPhase.coreInteractionOracleReduction κ L K P ℓ ℓ' h_l
-        mlIOPCS.toAbstractOStmtIn).perfectCompleteness
-        (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
-        (OStmtIn := mlIOPCS.toAbstractOStmtIn.OStmtIn)
-        (StmtOut := MLPEvalStatement L ℓ')
-        (OStmtOut := mlIOPCS.toAbstractOStmtIn.OStmtIn)
-        (WitIn := SumcheckWitness L ℓ' 0)
-        (WitOut := WitMLP L ℓ')
-        (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn 0)
-        (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
-        (init := init)
-        (impl := impl))
-    (hBatchingCoreAppendPerfectCompleteness :
-      (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
-        (pSpec := pSpecLargeFieldReduction κ L K P ℓ')
-        (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l
-          mlIOPCS.toAbstractOStmtIn)
-        (relOut := mlIOPCS.toRelInput)
-        (init := init)
-        (impl := impl))
-    (hFullAppendPerfectCompleteness :
-      (fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
-        (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l
-          mlIOPCS.toAbstractOStmtIn)
-        (relOut := acceptRejectOracleRel)
-        (init := init)
-        (impl := impl)) :
-  (fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
-    (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
-    (relOut := acceptRejectOracleRel)
-    (init := init)
-    (impl := impl)
-     := by
-  have _ := hInit
-  have _ := hCoreSeqComposePerfectCompleteness
-  have _ := hRounds
-  have _ := hCoreInteractionAppendPerfectCompleteness
-  have _ := hBatchingCoreAppendPerfectCompleteness
-  exact hFullAppendPerfectCompleteness
+-- The unconditional perfect completeness theorem `fullOracleReduction_perfectCompleteness` is
+-- proven in the `EndToEndCompleteness` section below (it delegates to the genuine end-to-end
+-- capstone `fullOracleReduction_perfectCompleteness'`). It is stated there because its proof
+-- depends on the `NeverFail`-only per-phase bricks and the append keystone assembled in that
+-- section. All five former append/phase residual hypotheses are now discharged internally; only
+-- `NeverFail init` plus the two abstract-opening message-seam facts (which the abstract `MLIOPCS`
+-- structure does not carry) survive.
 
 def batchingCoreRbrKnowledgeError
     (i : (pSpecBatching κ L K P ++ₚ pSpecCoreInteraction L ℓ').ChallengeIdx) : ℝ≥0 :=
@@ -491,6 +441,28 @@ theorem fullOracleReduction_perfectCompleteness' [IsDomain L] [IsDomain K]
     hMlnDir hInit
     (by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])
   exact H
+
+/-- **Issue #29: end-to-end RingSwitching perfect completeness (unconditional core).** The former
+five append/phase residual hypotheses (`hRounds`, `hCoreSeqComposePerfectCompleteness`,
+`hCoreInteractionAppendPerfectCompleteness`, `hBatchingCoreAppendPerfectCompleteness`,
+`hFullAppendPerfectCompleteness`) are all discharged internally: this delegates directly to the
+genuine capstone `fullOracleReduction_perfectCompleteness'`, whose every internal residual
+(per-round, batching, final-sumcheck, loop seqCompose, and the three append seams) is closed by
+proven theorems (the append keystone + the component perfect completenesses) and the structure
+field `mlIOPCS.perfectCompleteness`. Only `NeverFail init` plus the two abstract-opening
+message-seam facts survive — and those are genuine: the abstract `MLIOPCS` structure carries no
+constraint that its opening has a positive number of rounds (`hMlnPos`) or opens with a prover
+message (`hMlnDir`); both hold in every concrete instantiation. -/
+theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
+    (hInit : NeverFail init)
+    (hMlnPos : 0 < mlIOPCS.numRounds)
+    (hMlnDir : mlIOPCS.pSpec.dir ⟨0, hMlnPos⟩ = .P_to_V) :
+    OracleReduction.perfectCompleteness
+      (oracleReduction := fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS)
+      (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+      (relOut := acceptRejectOracleRel)
+      (init := init) (impl := impl) :=
+  fullOracleReduction_perfectCompleteness' κ L K P ℓ ℓ' h_l mlIOPCS hInit hMlnPos hMlnDir
 
 end EndToEndCompleteness
 

@@ -152,10 +152,30 @@ theorem probEvent_pole_le_logupCompletenessError (oStmt : ∀ i, OStmtIn F n M i
       ≤ (logupCompletenessError F n : ℝ≥0∞) := by
   simpa [logupCompletenessError] using (probEvent_pole_le F n M oStmt)
 
-/-- The trivial intermediate relation threaded between the outer LogUp phase and the embedded
-sumcheck (the outer phase carries no witness obligation into the sumcheck). -/
+/-- The intermediate relation threaded between the outer LogUp phase and the embedded sumcheck:
+the set of intermediate statement-witness pairs whose embedded-sumcheck claim
+`logupOuterSumcheckClaim` is true (i.e. zero). This is the completeness twin of the soundness-side
+`midLanguage` (`Security/Soundness.lean`): the honest outer phase delivers exactly the zero-claim
+that the embedded sumcheck then verifies (`grandSum_identity` /
+`honest_helper_sum_zero_of_inputRelation_all`), and completeness of the embedded sumcheck is only
+demanded on claim-true intermediate statements.
+
+(Historical note, issue #13: this was previously `Set.univ`, which made the embedded-sumcheck
+completeness obligation `SumcheckCompletenessResidual` demand success from *every* intermediate
+statement — including junk oracles whose round-`0` claim is nonzero, where the inner sumcheck
+verifier rejects. That made the residual unsatisfiable. The corrected relation matches the
+soundness-side `midLanguage` fix.) -/
 def midRelation : Set ((StmtAfterOuter F n M params ×
-    (∀ i, OStmtAfterOuter F n M params i)) × Unit) := Set.univ
+    (∀ i, OStmtAfterOuter F n M params i)) × Unit) :=
+  { p | logupOuterSumcheckClaim F n M params p.1.1 p.1.2 = 0 }
+
+set_option linter.unusedSectionVars false in
+/-- Membership in `midRelation` is exactly the zero LogUp outer sumcheck claim (definitional). -/
+@[simp] theorem mem_midRelation_iff
+    (p : (StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)) × Unit) :
+    p ∈ midRelation F n M params ↔
+      logupOuterSumcheckClaim F n M params p.1.1 p.1.2 = 0 :=
+  Iff.rfl
 
 /-- The full LogUp oracle reduction is, definitionally, the sequential composition of the outer
 phase and the embedded sumcheck phase. This is the structural fact driving the completeness proof

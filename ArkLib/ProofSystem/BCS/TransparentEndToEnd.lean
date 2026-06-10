@@ -471,8 +471,8 @@ instance instInhabitedOpeningChallenge :
       (e (Data := Data))).Challenge i) :=
   fun i => (instIsEmptyOpeningChallenge (Data := Data)).false i |>.elim
 
-/-- `SampleableType` for the fully BCS-transformed spec's challenges: definitionally the append of the
-two phases' challenges, both of which are vacuously sampleable (no verifier challenges anywhere). -/
+/-- `SampleableType` for the fully BCS-transformed spec's challenges: definitionally the append
+of the two phases' challenges, both vacuously sampleable (no verifier challenges anywhere). -/
 instance instSampleableBCSTransform :
     ∀ i, SampleableType (((srcPSpec (Data := Data)).BCSTransform (pSpecCom (Data := Data))
       (CommitmentType (Data := Data)) (e (Data := Data))).Challenge i) :=
@@ -556,8 +556,8 @@ The compiled BCS verifier is sound with error `0 + 0 = 0` (input language `langM
 `langOut`), instantiating the unconditional message-seam keystone
 `OracleReduction.BCSCompiledPhases.toReduction_soundness_of_append_msg`. The per-phase soundness is
 `interactionRed_soundness` / `openingRed_soundness`; the structural seam facts are `hn_pos` /
-`hSeamDir` / `hOpeningFirstDir`. `himplSP` / `himplNF` / `himplVB` are the honest-implementation side
-conditions (held by any honest interactive `impl`). -/
+`hSeamDir` / `hOpeningFirstDir`. `himplSP` / `himplNF` / `himplVB` are the honest-implementation
+side conditions (held by any honest interactive `impl`). -/
 theorem transparentBCS_soundness [Inhabited Data] [Inhabited O.Query]
     [∀ q, Inhabited (O.Response q)]
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
