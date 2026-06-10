@@ -881,6 +881,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedPrimePowerPacket
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
+import ArkLib.Data.CodingTheory.ProximityGap.WindowMassSpan
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap._mca_research_loop
