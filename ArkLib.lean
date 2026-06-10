@@ -605,6 +605,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25GradedNumericEdge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonEllBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4FiberReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4Seam
@@ -1454,6 +1455,7 @@ import ArkLib.ProofSystem.Stir.MainThm
 import ArkLib.ProofSystem.Stir.MultiRound
 import ArkLib.ProofSystem.Stir.MultiRoundAssembly
 import ArkLib.ProofSystem.Stir.MultiRoundSpec
+import ArkLib.ProofSystem.Stir.NumericLegs
 import ArkLib.ProofSystem.Stir.OutOfDomSmpl
 import ArkLib.ProofSystem.Stir.ProximityBound
 import ArkLib.ProofSystem.Stir.ProximityGap
