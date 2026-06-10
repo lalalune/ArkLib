@@ -209,12 +209,20 @@ protocol's challenge spaces.
     transformation infrastructure, run-collapse completeness bridge, and the canonical
     Fiat-Shamir transfer theorems are machine checked.
 
+    The first honest bad-event implication from the CO25 M2 backtracking analysis is also
+    discharged.  ArkLib proves that, off the combined bad event $E$, no backtrack chain step is
+    anchored by an inverse-permutation entry; the proof factors through concrete trace-index
+    payloads for the $J_{\mathrm{BT}}$ hash and permutation indices
+    (\texttt{jbt\_hash\_getElem?} and
+    \texttt{jbt\_perm\_forward\_getElem?\_of\_not\_E}).
+    \lean{DuplexSpongeFS.Sponge316.lemma5_12_honest}
+
     The full CO25 Lemma 5.1 hybrid proof for DSFS remains an explicit post-grant security
-    hardening assumption, not a hidden proof hole. The strict residual surface is:
+    hardening assumption, not a hidden proof hole. After the M2a discharge, the strict residual
+    surface is:
     \[
     \begin{gathered}
     \mathsf{DuplexSpongeFS.KeyLemmaResidual},\\
-    \mathsf{Lemma5\_12HonestResidual},\quad
     \mathsf{Lemma5\_14HonestResidual},\quad
     \mathsf{Lemma5\_16HonestResidual},\\
     \mathsf{SimulatedProverChallengeBudgetResidual},\quad
@@ -225,9 +233,9 @@ protocol's challenge spaces.
     \end{gathered}
     \]
     These residuals express the remaining CO25 Section 5 hybrid-game proof obligations:
-    dispatcher query budgets, honest bad-event implications, simulated-prover budgets, and the
-    final eager-oracle key lemma. They are deliberately exposed as named propositions consumed by
-    downstream DSFS soundness reductions.
+    dispatcher query budgets, the M2b/M2c honest backtrack implications, simulated-prover
+    budgets, and the final eager-oracle key lemma. They are deliberately exposed as named
+    propositions consumed by downstream DSFS soundness reductions.
     \lean{DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaStatementEager}
     \lean{DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaEagerResidual}
     \lean{DuplexSpongeFS.KeyLemmaFoundations.D2sQueryStepGSpecBudgetResidual}
