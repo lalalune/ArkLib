@@ -238,9 +238,48 @@ theorem failingDet_optionized_rbrKnowledgeSoundness [Inhabited Stmt₂]
   intro s w P i
   simpa using hBound s w (P.defaultOutputStmt (StmtB := Stmt₂)) i
 
+/-- **The failing-deterministic rbr knowledge-soundness append keystone (`Subsingleton σ`,
+message seam).** The capstone of the optionization reduction: appending a *failing*-deterministic
+left verifier (the shape of the RingSwitching round/finalSumcheck verifiers, `else failure`) to
+`V₂` is round-by-round knowledge sound with the additive `Sum.elim` error — **no residual
+hypotheses** beyond the per-phase bounds, the failing-determinism shape itself, and the stateless
+regime's side conditions.
+
+Proof: rewrite the seam by `append_failingDet_eq_optionized` into the total-deterministic seam over
+`Option Stmt₂` (where the determinism witness is `rfl` and `Nonempty (Option Stmt₂)` is free via
+`none`), transport `h₁`/`h₂` by `failingDet_optionized_rbrKnowledgeSoundness` /
+`optionLift_rbrKnowledgeSoundness`, and apply the unconditional total-deterministic keystone. -/
+theorem append_rbrKnowledgeSoundness_failingDet_subsingleton
+    [Subsingleton σ] [Inhabited Stmt₂]
+    {Stmt₃ Wit₁ Wit₃ : Type} {n : ℕ} {pSpec₂ : ProtocolSpec n}
+    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    (verify? : Stmt₁ → pSpec₁.FullTranscript → Option Stmt₂)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {err₁ : pSpec₁.ChallengeIdx → ℝ≥0} {err₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (hInit : ∃ s, s ∈ support init) (hInitNF : Pr[⊥ | init] = 0)
+    (hNEW₂ : Nonempty Wit₂)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (h₁ : Verifier.rbrKnowledgeSoundness init impl rel₁ rel₂
+      (⟨fun s tr => OptionT.mk (pure (verify? s tr))⟩ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) err₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ err₂) :
+    (Verifier.append
+        (⟨fun s tr => OptionT.mk (pure (verify? s tr))⟩ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+        V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+      (Sum.elim err₁ err₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  rw [append_failingDet_eq_optionized]
+  exact append_rbrKnowledgeSoundness_keystone_subsingleton_unconditional
+    (⟨fun s tr => pure (verify? s tr)⟩ : Verifier oSpec Stmt₁ (Option Stmt₂) pSpec₁)
+    V₂.optionLift verify? rfl hInit hInitNF ⟨none⟩ hNEW₂ hn hDir hDir₂
+    (failingDet_optionized_rbrKnowledgeSoundness verify? h₁)
+    (optionLift_rbrKnowledgeSoundness V₂ h₂)
+
 end Verifier
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms Verifier.append_failingDet_eq_optionized
 #print axioms Verifier.optionLift_rbrKnowledgeSoundness
 #print axioms Verifier.failingDet_optionized_rbrKnowledgeSoundness
+#print axioms Verifier.append_rbrKnowledgeSoundness_failingDet_subsingleton
