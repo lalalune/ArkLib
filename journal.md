@@ -76,3 +76,12 @@ campaign on this repository. Maintained alongside the work; newest entries last.
   is produced per heavy cell by the fiber-section globalizer, whose per-fiber input is
   the cell's own divisibility data. The corrected chain uses only landed pieces; next
   build is the per-cell surface application.
+
+- Entry 7: the four global structural inputs turned out three-quarters supplied
+  in-tree (the slice split from the bundle, the decoded surface with its degree bound
+  and divisibility from any close codeword below the GS Johnson radius), and the one
+  genuinely open core named by issue #304 — separability of the centre slice over the
+  polynomial base — is circumvented by the sliced composition, which consumes only
+  per-specialization separability supplied by a discriminant cover. The final interior
+  assembly is a wide but fully-supplied composition; an isolated build agent is
+  attempting it end-to-end.
