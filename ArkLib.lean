@@ -698,6 +698,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.IteratedSliceRootCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.J1Cap
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26CurveInterpolationRegime
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26CurveNonCovering
+import ArkLib.Data.CodingTheory.ProximityGap.Jo26DeviationKernels
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26InterleavingBound
