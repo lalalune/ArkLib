@@ -1058,3 +1058,30 @@ degree route trivial (`≤ n−1`). Every elementary handle on `M` is closed or 
 character sum / incidence), absent from Mathlib. The unification (a) is the one positive new artifact:
 the open core sits at the confluence of the additive (BGK) and the Möbius (pencil-energy) structure.
 No fabrication.
+## 34. #357 §5 K1 (fold-transport): SURVIVES cheap falsifier — KKH26 bad line is NOT fold-invariant
+
+K1 (issue #357 §5, "in progress / immediately actionable"): the KKH26 bad line is *not* fold-invariant,
+so one fold step strictly shrinks the bad family ⟹ a μ-dependent ceiling strictly inside the current
+bound. Cheap pre-registered falsifier (would KILL K1 if the bad line were fold-invariant).
+
+**Result (`scripts/probes/probe_k1_fold.py`, exact, 8/8 instances): K1 SURVIVES.** The bad line for an
+`r`-subset `S ⊆ G_μ` (`G_μ` = `2^μ`-th roots of unity, bad scalar `−ΣS`) under the fold `x↦x²` maps
+`S ↦ S²`; since `G_μ` contains `2^{μ-1}` antipodal pairs `{a,−a}` with `a²=(−a)²`, any `S` containing
+an antipodal pair collapses to `<r` elements ⟹ **no longer a valid `r`-subset bad line ⟹ that bad
+line dies**. `killed > 0` in every case → fold STRICTLY shrinks the bad family. Exact survivor law:
+
+  fold-survivors `= C(2^{μ-1}, r)·2^r`  (antipodal-free `r`-subsets: choose `r` of the `2^{μ-1}` pairs,
+  one element each) — verified, e.g. `p=97,s=16,r=4`: `C(8,4)·2⁴ = 1120` = measured survivors (of
+  `C(16,4)=1820`; `700` killed).
+
+**Consequence:** K1's premise (fold non-invariance / strict shrinkage) is CONFIRMED, and the survivor
+count is the §2.9 antipodal-balance rung-law form `C(2^{μ-1},r)·2^r`. So fold-transport is a live
+candidate for a μ-dependent ceiling improvement, and it factors through the antipodal-pair census —
+unifying K1 with the rung law (§2.9) and the Möbius/antipodal `σ`-involution structure (§33–34, the
+BGK ↔ pencil-energy unification: `σ_b` fixed points are square roots, exactly the antipodal collapse).
+The mutually-falsifying partner (K4 zero-slack census) is the next check; K1 is NOT dead.
+
+**Honest scope:** the cheap falsifier is passed (premise confirmed); turning strict shrinkage into a
+*proven strictly-better ceiling* requires the level-(μ-1) survivor count vs native construction and a
+bracket instantiation — the next concrete step, not yet a δ* edge-move. No fabrication; pre-registered
+probe, exact arithmetic, result recorded per the §7 disproof discipline.
