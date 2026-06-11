@@ -880,6 +880,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAGeneralLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
 import ArkLib.Data.CodingTheory.ProximityGap.MCAHalfDistanceGeneralRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGeneralStaircaseRefuted
+import ArkLib.Data.CodingTheory.ProximityGap.MCAStaircaseMaster
 import ArkLib.Data.CodingTheory.ProximityGap.MCAHalfDistanceStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonClustering
