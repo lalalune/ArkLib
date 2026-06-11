@@ -2136,6 +2136,7 @@ import ArkLib.ToMathlib.SectionNewtonGSData
 import ArkLib.ToMathlib.SectionNewtonGamma
 import ArkLib.ToMathlib.SectionNewtonGradingSupply
 import ArkLib.ToMathlib.SectionNewtonPlaceReading
+import ArkLib.ToMathlib.SectionNewtonReadback
 import ArkLib.ToMathlib.SectionNewtonRecentre
 import ArkLib.ToMathlib.SectionNewtonWindow
 import ArkLib.ToMathlib.SectionNewtonWindowSharp
