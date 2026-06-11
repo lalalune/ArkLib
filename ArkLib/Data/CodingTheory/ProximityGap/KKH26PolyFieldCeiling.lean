@@ -127,7 +127,7 @@ private lemma exists_orderOf_eq_of_modEq {p : ℕ} [Fact p.Prime] {n : ℕ} (hn 
   have hdvd : n ∣ p - 1 := (Nat.modEq_iff_dvd' (by omega)).mp hmod.symm
   obtain ⟨u, hu⟩ := IsCyclic.exists_generator (α := (ZMod p)ˣ)
   have hord : orderOf u = p - 1 := by
-    rw [orderOf_eq_card_of_forall_mem_zpowers hu, ZMod.card_units]
+    rw [orderOf_eq_card_of_forall_mem_zpowers hu, Nat.card_eq_fintype_card, ZMod.card_units]
   have hdvd' : n ∣ orderOf u := hord ▸ hdvd
   have hne : orderOf u ≠ 0 := by omega
   refine ⟨((u ^ (orderOf u / n) : (ZMod p)ˣ) : ZMod p), ?_⟩
