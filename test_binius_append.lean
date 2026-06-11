@@ -1,7 +1,0 @@
-import ArkLib.ProofSystem.Binius.BinaryBasefold.CoreInteractionPhase
-import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessTotal
-
-open OracleComp OracleSpec ProtocolSpec
-open Binius.BinaryBasefold
-
-#check OracleReduction.append_perfectCompleteness_total
