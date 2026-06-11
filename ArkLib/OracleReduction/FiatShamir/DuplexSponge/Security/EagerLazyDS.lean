@@ -972,6 +972,25 @@ theorem lazyDSImpl_step_size [Fintype StmtIn]
       subst hus
       simp [dsCacheSize]
 
+/-! ## The cache-level bad event (4D work-order (i)) -/
+
+/-- The capacity-slot list of a joint cache: every cached hash answer, and both component
+capacities of every permutation pair (an entry's own input/output capacities are distinct
+slots — their coincidence is CO25's no-loop event). -/
+noncomputable def slotList [Fintype StmtIn] (s : DSCache StmtIn U) :
+    List (Vector U SpongeSize.C) := by
+  classical
+  exact ((Finset.univ.filter (fun q : StmtIn => (s.1 q).isSome)).toList.filterMap s.1) ++
+    s.2.flatMap (fun p => [p.1.capacitySegment, p.2.capacitySegment])
+
+/-- **The cache-level bad event**: a capacity coincidence among distinct slots (the `E_dup`
+mirror — a duplicate in the slot list), or a key–value full-state chain between distinct
+roles of the permutation cache (the `E_func` mirror; equal keys are already impossible by
+memoization). -/
+noncomputable def badDS [Fintype StmtIn] (s : DSCache StmtIn U) : Prop :=
+  ¬ (slotList s).Nodup ∨
+    ∃ p₁ ∈ s.2, ∃ p₂ ∈ s.2, p₁.1 = p₂.2
+
 end Connectors
 
 end DuplexSpongeFS.EagerLazyDS
