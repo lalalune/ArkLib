@@ -40,6 +40,7 @@ import ArkLib.Data.Classes.Serde
 import ArkLib.Data.Classes.Slice
 import ArkLib.Data.CodingTheory.AGL24AgreementForcing
 import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
+import ArkLib.Data.CodingTheory.AGL24AppendixAssembly
 import ArkLib.Data.CodingTheory.AGL24ConditionalAssembly
 import ArkLib.Data.CodingTheory.AGL24DeletionRobustness
 import ArkLib.Data.CodingTheory.AGL24DetDegree
@@ -111,6 +112,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryHasse
 import ArkLib.Data.CodingTheory.GuruswamiSudan.FeasibilityArith
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSAffinePair
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSCellProduction
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSCurveInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSCurveTuple
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDecodedSeparationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDiscriminantOverRatFunc
@@ -122,7 +124,6 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegralFactorAssignment
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantSloped
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantSlopedCurve
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantSlopedCurveCapped
-import ArkLib.Data.CodingTheory.GuruswamiSudan.GSCurveInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeCurve
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeGraded
@@ -669,9 +670,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25Claim1
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ConjectureGlue
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CoordinateUpgradeWeld
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveBudgetDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCaptureUD
-import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveBudgetDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellGivenFamily
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellStrictExtraction
