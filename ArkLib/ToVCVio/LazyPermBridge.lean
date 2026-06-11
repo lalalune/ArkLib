@@ -329,6 +329,22 @@ theorem lazyPermImpl_run_map_flavored {α : Type}
           rw [pure_bind, pure_bind]
           exact ih p.1 c
 
+/-- Single-step form of the forgetting bridge, for consumption outside this file (the
+defeq `show`-trick exposures of the flavored arms do not transport across files). -/
+theorem lazyPermImpl_step_map_flavored (t : X ⊕ X) (c : List ((X × X) × Bool)) :
+    (lazyPermImpl t).run (c.map Prod.fst)
+      = (fun (p : X × List ((X × X) × Bool)) => (p.1, p.2.map Prod.fst)) <$>
+          (lazyPermImplFlavored t).run c := by
+  have h := lazyPermImpl_run_map_flavored (liftM (((X ⊕ X) →ₒ X).query t)) c
+  rwa [show (simulateQ lazyPermImpl (liftM (((X ⊕ X) →ₒ X).query t))).run (c.map Prod.fst)
+      = (lazyPermImpl t).run (c.map Prod.fst) from by
+    refine congrArg (fun z => StateT.run z (c.map Prod.fst)) ?_
+    simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, id_map],
+    show (simulateQ lazyPermImplFlavored (liftM (((X ⊕ X) →ₒ X).query t))).run c
+      = (lazyPermImplFlavored t).run c from by
+    refine congrArg (fun z => StateT.run z c) ?_
+    simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, id_map]] at h
+
 /-! ## The permutation overlay (`tableExtending` analogue)
 
 `permExtending c π` corrects `π` to agree with every cached pair by **pre-composition**

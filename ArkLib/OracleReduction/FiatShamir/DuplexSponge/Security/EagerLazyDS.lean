@@ -1047,6 +1047,117 @@ theorem card_capacityFiber [Fintype U] [DecidableEq U] (c : Vector U SpongeSize.
 
 end Connectors
 
+/-! ## The flavored combined oracle and its forgetting bridge
+
+The birthday accounting's bad event must anchor on the *sampled* (answer) side of each
+permutation-cache pair; the bare pair list cannot recover which side was sampled. The
+flavored combined implementation threads the direction-tagged permutation cache of
+`LazyPermBridge.lazyPermImplFlavored`; the forgetting bridge transports any statement
+about the plain run to the flavored run (state and all), so the accounting can be done
+entirely on the flavored side. -/
+
+/-- The joint state with direction-tagged permutation cache. -/
+abbrev DSCacheF (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Type :=
+  (StmtIn →ₒ Vector U SpongeSize.C).QueryCache ×
+    List ((CanonicalSpongeState U × CanonicalSpongeState U) × Bool)
+
+/-- The combined lazy oracle with direction-tagged permutation cache: identical sampling
+to `lazyDSImpl`, with each fresh permutation pair recorded with its creation direction. -/
+noncomputable def lazyDSImplFlavored :
+    QueryImpl (duplexSpongeChallengeOracle StmtIn U)
+      (StateT (DSCacheF StmtIn U) ProbComp) :=
+  fun t s =>
+    match t with
+    | .inl q =>
+        (fun (p : Vector U SpongeSize.C × _) => (p.1, (p.2, s.2))) <$>
+          (((StmtIn →ₒ Vector U SpongeSize.C).randomOracle q).run s.1)
+    | .inr (.inl sIn) =>
+        (fun (p : CanonicalSpongeState U × _) => (p.1, (s.1, p.2))) <$>
+          ((lazyPermImplFlavored (.inl sIn :
+            CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run s.2)
+    | .inr (.inr sOut) =>
+        (fun (p : CanonicalSpongeState U × _) => (p.1, (s.1, p.2))) <$>
+          ((lazyPermImplFlavored (.inr sOut :
+            CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run s.2)
+
+/-- **The combined forgetting bridge**: the plain combined run at the tag-projected cache
+is the tag projection of the flavored combined run. -/
+theorem lazyDSImpl_run_map_flavored {α : Type}
+    (oa : OracleComp (duplexSpongeChallengeOracle StmtIn U) α)
+    (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (cp : List ((CanonicalSpongeState U × CanonicalSpongeState U) × Bool)) :
+    (simulateQ lazyDSImpl oa).run (ch, cp.map Prod.fst)
+      = (fun (p : α × DSCacheF StmtIn U) => (p.1, (p.2.1, p.2.2.map Prod.fst))) <$>
+          (simulateQ lazyDSImplFlavored oa).run (ch, cp) := by
+  induction oa using OracleComp.inductionOn generalizing ch cp with
+  | pure a =>
+      rw [simulateQ_pure, simulateQ_pure, StateT.run_pure, StateT.run_pure, map_pure]
+  | query_bind t k ih =>
+      rw [simulateQ_bind, simulateQ_bind, StateT.run_bind, StateT.run_bind]
+      rw [show (simulateQ lazyDSImpl
+            (liftM ((duplexSpongeChallengeOracle StmtIn U).query t))).run
+              (ch, cp.map Prod.fst)
+          = (lazyDSImpl t).run (ch, cp.map Prod.fst) from by
+        refine congrArg (fun z => StateT.run z (ch, cp.map Prod.fst)) ?_
+        simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, id_map]]
+      rw [show (simulateQ lazyDSImplFlavored
+            (liftM ((duplexSpongeChallengeOracle StmtIn U).query t))).run (ch, cp)
+          = (lazyDSImplFlavored t).run (ch, cp) from by
+        refine congrArg (fun z => StateT.run z (ch, cp)) ?_
+        simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, id_map]]
+      rcases t with q | sIn | sOut
+      · -- hash arm: the same caching oracle on both sides
+        rw [show (lazyDSImpl
+              ((.inl q : (duplexSpongeChallengeOracle StmtIn U).Domain))).run
+                (ch, cp.map Prod.fst)
+            = (fun (p : Vector U SpongeSize.C × _) => (p.1, (p.2, cp.map Prod.fst))) <$>
+                (((StmtIn →ₒ Vector U SpongeSize.C).randomOracle q).run ch) from rfl,
+          show (lazyDSImplFlavored
+              ((.inl q : (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+            = (fun (p : Vector U SpongeSize.C × _) => (p.1, (p.2, cp))) <$>
+                (((StmtIn →ₒ Vector U SpongeSize.C).randomOracle q).run ch) from rfl]
+        simp only [map_bind]
+        refine Eq.trans (bind_map_left _ _ _) ?_
+        refine Eq.trans ?_ (Eq.symm (bind_map_left _ _ _))
+        refine congrArg _ (funext fun p => ?_)
+        exact ih p.1 p.2 cp
+      · -- forward permutation arm: route through the single-step forgetting bridge
+        rw [show (lazyDSImpl ((.inr (.inl sIn) :
+              (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp.map Prod.fst)
+            = (fun (p : CanonicalSpongeState U × _) => (p.1, (ch, p.2))) <$>
+                ((lazyPermImpl (.inl sIn :
+                  CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run
+                  (cp.map Prod.fst)) from rfl,
+          show (lazyDSImplFlavored ((.inr (.inl sIn) :
+              (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+            = (fun (p : CanonicalSpongeState U × _) => (p.1, (ch, p.2))) <$>
+                ((lazyPermImplFlavored (.inl sIn :
+                  CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+          lazyPermImpl_step_map_flavored (.inl sIn) cp, Functor.map_map]
+        simp only [map_bind]
+        refine Eq.trans (bind_map_left _ _ _) ?_
+        refine Eq.trans ?_ (Eq.symm (bind_map_left _ _ _))
+        refine congrArg _ (funext fun w => ?_)
+        exact ih w.1 ch w.2
+      · -- inverse permutation arm
+        rw [show (lazyDSImpl ((.inr (.inr sOut) :
+              (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp.map Prod.fst)
+            = (fun (p : CanonicalSpongeState U × _) => (p.1, (ch, p.2))) <$>
+                ((lazyPermImpl (.inr sOut :
+                  CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run
+                  (cp.map Prod.fst)) from rfl,
+          show (lazyDSImplFlavored ((.inr (.inr sOut) :
+              (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+            = (fun (p : CanonicalSpongeState U × _) => (p.1, (ch, p.2))) <$>
+                ((lazyPermImplFlavored (.inr sOut :
+                  CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+          lazyPermImpl_step_map_flavored (.inr sOut) cp, Functor.map_map]
+        simp only [map_bind]
+        refine Eq.trans (bind_map_left _ _ _) ?_
+        refine Eq.trans ?_ (Eq.symm (bind_map_left _ _ _))
+        refine congrArg _ (funext fun w => ?_)
+        exact ih w.1 ch w.2
+
 end DuplexSpongeFS.EagerLazyDS
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_uniformSample_swap
@@ -1058,3 +1169,4 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImpl_cache_nodup
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImpl_step_size
 #print axioms DuplexSpongeFS.EagerLazyDS.card_capacityFiber
+#print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImpl_run_map_flavored
