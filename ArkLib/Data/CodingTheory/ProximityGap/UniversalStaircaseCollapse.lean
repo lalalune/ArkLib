@@ -335,6 +335,73 @@ theorem epsMCA_le_j_div_card (C : Submodule F (ι → A))
   refine ENNReal.div_le_div_right ?_ _
   exact_mod_cast badScalars_card_le C hC3 hδ (u 0) (u 1)
 
+
+open Classical in
+/-- **THE EXACT STAIRCASE.**  `ε_mca(C, δ) = j/|F|` on the `j`-th granularity band
+(`j−1 ≤ δ·n < j`), for every linear code with no nonzero codeword of weight
+`≤ 3(j−1)` and of weight `≤ j` (both hold at distance `≥ 3j−2` for `j ≥ 2`). -/
+theorem epsMCA_eq_j_div_card (C : Submodule F (ι → A))
+    (hC3 : NoWeightLE C (3 * (j - 1))) (hCj : NoWeightLE C j)
+    {δ : ℝ≥0} (hδlo : ((j - 1 : ℕ) : ℝ≥0) ≤ δ * Fintype.card ι)
+    (hδhi : δ * (Fintype.card ι : ℝ≥0) < j)
+    (hj1 : 1 ≤ j) (hjn : j ≤ Fintype.card ι) (hjF : j ≤ Fintype.card F)
+    [Nontrivial A] :
+    epsMCA (F := F) (A := A) (C : Set (ι → A)) δ
+      = (j : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+  refine le_antisymm (epsMCA_le_j_div_card C hC3 hδhi) ?_
+  obtain ⟨p⟩ : Nonempty (Fin j ↪ ι) :=
+    Function.Embedding.nonempty_of_card_le (by simpa using hjn)
+  obtain ⟨a⟩ : Nonempty (Fin j ↪ F) :=
+    Function.Embedding.nonempty_of_card_le (by simpa using hjF)
+  obtain ⟨b, hb⟩ := exists_ne (0 : A)
+  exact epsMCA_ge_j_div_card C hCj hδlo hj1 hjn p a hb
+
+open Classical in
+/-- **THE GRANULARITY LADDER CLOSED FORM.**  For every linear code with no nonzero
+codeword of weight `≤ max(3(j−1), j+1)` and every threshold
+`ε* ∈ [j/|F|, (j+1)/|F|)`:
+
+  `mcaDeltaStar C ε* = j / n`.
+
+The first closed-form δ* theorem over a family of codes and thresholds: the good
+side is the universal collapse (every radius with `δ·n < j` has mass `≤ j/q ≤ ε*`),
+the bad side is the universal spike floor at `j+1` (`mcaDeltaStar_le_granularity`).
+Both machine-checked exact pins (`mcaDeltaStar_C542_eq_quarter`,
+`mcaDeltaStar_C84_eq_quarter`) are instances. -/
+theorem mcaDeltaStar_eq_granularity (C : Submodule F (ι → A))
+    (hC3 : NoWeightLE C (3 * (j - 1))) (hCj1 : NoWeightLE C (j + 1))
+    (hj1 : 1 ≤ j) (hj1n : j + 1 ≤ Fintype.card ι) (hj1F : j + 1 ≤ Fintype.card F)
+    [Nontrivial A] {εstar : ℝ≥0∞}
+    (hlo : (j : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ εstar)
+    (hhi : εstar < ((j + 1 : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) :
+    MCAThresholdLedger.mcaDeltaStar (F := F) (A := A) (C : Set (ι → A)) εstar
+      = (j : ℝ≥0) / (Fintype.card ι : ℝ≥0) := by
+  have hn0 : (Fintype.card ι : ℝ≥0) ≠ 0 := by
+    simp [Fintype.card_ne_zero]
+  refine le_antisymm ?_ ?_
+  · -- bad side: the spike floor at j+1
+    have h := mcaDeltaStar_le_granularity (j := j + 1) C hCj1 (by omega) hj1n hj1F
+      (by simpa using hhi)
+    simpa using h
+  · -- good side: the collapse on every radius below j/n
+    by_contra h
+    push Not at h
+    obtain ⟨c, hc1, hc2⟩ := exists_between h
+    have hcn : c * (Fintype.card ι : ℝ≥0) < j := by
+      have h2 := hc2
+      rwa [lt_div_iff₀ (lt_of_le_of_ne (zero_le _) (Ne.symm hn0))] at h2
+    have hc1' : c ≤ 1 := by
+      calc c ≤ (j : ℝ≥0) / (Fintype.card ι : ℝ≥0) := le_of_lt hc2
+        _ ≤ 1 := by
+            rw [div_le_one (lt_of_le_of_ne (zero_le _) (Ne.symm hn0))]
+            exact_mod_cast le_trans (by omega : j ≤ j + 1) hj1n
+    have hgood : c ∈ MCAThresholdLedger.mcaGoodRadii (F := F) (A := A)
+        (C : Set (ι → A)) εstar :=
+      ⟨hc1', le_trans (epsMCA_le_j_div_card C hC3 hcn) hlo⟩
+    have hle := MCAThresholdLedger.le_mcaDeltaStar_of_good (F := F) (A := A)
+      (C : Set (ι → A)) εstar hgood.1 hgood.2
+    exact absurd hle (not_le.mpr hc1)
+
 end Collapse
 
 end ProximityGap.SpikeFloor
@@ -342,3 +409,5 @@ end ProximityGap.SpikeFloor
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.SpikeFloor.badScalars_card_le
 #print axioms ProximityGap.SpikeFloor.epsMCA_le_j_div_card
+#print axioms ProximityGap.SpikeFloor.epsMCA_eq_j_div_card
+#print axioms ProximityGap.SpikeFloor.mcaDeltaStar_eq_granularity
