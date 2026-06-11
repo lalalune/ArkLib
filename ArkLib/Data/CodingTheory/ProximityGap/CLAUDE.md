@@ -118,8 +118,8 @@ leave the dependent residual as an explicit named hypothesis — never guess the
   (tier-b), e.g. `Lemma5_8EagerBirthdayResidual`, the `*_REFUTED` bricks. Do not "prove" them.
 - **The open core (δ*, B4) stays an explicit named `Prop`/hypothesis** until literature lands.
   Naming an obligation and proving it elsewhere (`*_holds`/`*_of_*`) is the project's modularity
-  convention — see `/docs/wiki/residual-census.md` (37 discharged / 25 reduced / 41 deep-open;
-  most "residuals" are NOT incomplete).
+  convention — see the generated `/docs/wiki/residual-census.md` ledger before treating a
+  `*Residual` name as incomplete.
 
 ## 7. Common pitfalls (each has cost a real debugging session)
 
