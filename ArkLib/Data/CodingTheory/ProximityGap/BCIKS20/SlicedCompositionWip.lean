@@ -1,7 +1,48 @@
--- WIP parked from Claim510SlicedComposition.lean (referenced nonexistent Claim510SliceAffine
--- module + sorry-holes in statements; broke the module chain). Original author: resume here.
--- The two coefficient lemmas it needed (embed_aPre_eq_alphaGenuine_sliced,
--- aPre_eq_groundAffine_of_paperZ_linear_sliced) are now PROVEN in the main file.
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.SlicedComposition
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.SliceAffine
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Improve
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellDichotomyWiring
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Kill
+
+/-!
+# The sliced composition, resumed (#357 Johnson endgame; #302/#348)
+
+Resurrection of the parked `SlicedCompositionWip`: the per-slice pencil identity, the
+sliced affine capture, the sliced improve disjunct, and the master sliced composition
+(the `gammaGenuine` truncation + agreement supply + weight supply welded into the
+improve disjunct).  Both parking reasons are gone — `Claim510SliceAffine` exists
+(`SliceAffine.lean`) and the two coefficient lemmas are proven in
+`SlicedComposition.lean` (`taylor_coeff_eq_affine_of_heavy_sliced` et al.).
+
+The terminal theorem (`improve_disjunct_master_sliced`-shaped, bottom of file) is the
+**per-cell improving-pair production with separability demanded only per specialized
+place** — the sliced weakening of the global-separability route, which is exactly the
+shape the `himpr` discharge (`Hab25CellPencilJohnson`) consumes on factor cells whose
+global separability is unavailable.
+-/
+
+set_option linter.unusedSectionVars false
+set_option synthInstance.maxHeartbeats 800000
+set_option maxHeartbeats 1600000
+
+open Polynomial Polynomial.Bivariate PowerSeries
+open scoped NNReal ENNReal
+open BCIKS20AppendixA BCIKS20AppendixA.ClaimA2
+open BCIKS20.HenselNumerator
+open ArkLib ArkLib.DecodedProximateRoot
+open BCIKS20.Claim510SlicedComposition
+
+namespace BCIKS20.Claim510SlicedCompositionResumed
+
+variable {F : Type} [Field F]
+variable {H : F[X][Y]} [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+variable [Fintype F] [DecidableEq F]
+
 
 /-- **Sliced pencil identity.**  The decoded slice equals the fixed affine pencil at one
 place, with separability supplied only for that specialized place. -/
@@ -100,7 +141,7 @@ theorem improve_disjunct_of_heavy_sliced {x₀ : F} {R : F[X][X][Y]}
         = v₀ j + z * v₁ j)
     {W : ℕ}
     (hweight : ∀ j, weight_Λ_over_𝒪 (Fact.out (p := 0 < H.natDegree))
-        (BCIKS20.Claim510Supply.killTarget H x₀ R hHyp n (e j) (v₀ j) (v₁ j)) D
+        (BCIKS20.Claim510Kill.killTarget H x₀ R hHyp n (e j) (v₀ j) (v₁ j)) D
           ≤ (W : WithBot ℕ))
     (hcardNodes : ∀ j, W * H.natDegree < (nodeSet j).card)
     {w : F[X][Y]} (hwn : w.natDegree < n)
@@ -118,8 +159,8 @@ theorem improve_disjunct_of_heavy_sliced {x₀ : F} {R : F[X][X][Y]}
           ¬ _root_.ProximityGap.pairJointAgreesOn
             ((ReedSolomon.code domain k : Set (ι₀ → F))) S (u 0) (u 1)) :
     ∃ d₀ d₁ : ι₀ → F, ∀ z ∈ Efactor,
-      ∃ x ∈ _root_.ProximityGap.disagreeSet d₀ d₁,
-        _root_.ProximityGap.affineGap d₀ d₁ z x = 0 := by
+      ∃ x ∈ CodingTheory.ProximityGap.Hab25Core.disagreeSet d₀ d₁,
+        CodingTheory.ProximityGap.Hab25Core.affineGap d₀ d₁ z x = 0 := by
   classical
   obtain ⟨a, b, hab⟩ :=
     BCIKS20.Claim510Improve.paperZ_linear_of_heavy_agreement hHyp hlc htail e he v₀ v₁
@@ -197,8 +238,8 @@ theorem improve_disjunct_of_decoded_fold_sliced {x₀ : F} {R : F[X][X][Y]}
         ¬ _root_.ProximityGap.pairJointAgreesOn
           ((ReedSolomon.code domain k : Set (ι₀ → F))) S (u 0) (u 1)) :
     ∃ d₀ d₁ : ι₀ → F, ∀ z ∈ Efactor,
-      ∃ x ∈ _root_.ProximityGap.disagreeSet d₀ d₁,
-        _root_.ProximityGap.affineGap d₀ d₁ z x = 0 := by
+      ∃ x ∈ CodingTheory.ProximityGap.Hab25Core.disagreeSet d₀ d₁,
+        CodingTheory.ProximityGap.Hab25Core.affineGap d₀ d₁ z x = 0 := by
   have hlc : H.leadingCoeff = 1 := hmonic.leadingCoeff
   have hξ : ξ x₀ R H hHyp ≠ 0 :=
     BCIKS20.Claim510AgreementSupply.xi_ne_zero_of_monic hHyp hlc
@@ -223,3 +264,12 @@ theorem improve_disjunct_of_decoded_fold_sliced {x₀ : F} {R : F[X][X][Y]}
         BCIKS20.Claim510AgreementSupply.pi_z_xi_ne_zero_of_monic hHyp hlc z (root z),
         hsepz, hbasez, S, hScard, hSagree, hSnoJoint⟩)
 
+
+
+end BCIKS20.Claim510SlicedCompositionResumed
+
+-- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
+#print axioms BCIKS20.Claim510SlicedCompositionResumed.slice_eq_affinePencil_of_heavy_sliced
+#print axioms BCIKS20.Claim510SlicedCompositionResumed.affineCaptured_of_pencil_proximity_sliced
+#print axioms BCIKS20.Claim510SlicedCompositionResumed.improve_disjunct_of_heavy_sliced
+#print axioms BCIKS20.Claim510SlicedCompositionResumed.improve_disjunct_of_decoded_fold_sliced
