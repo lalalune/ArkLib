@@ -318,7 +318,7 @@ set_option maxHeartbeats 1200000 in
 /-- Source Hamming distance is bounded by the number of bad quotient fibers times the fiber
 size. Local port of the (currently commented-out) `Code.lean` lemma onto the per-fiber
 disagreement surface. -/
-lemma hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps
+lemma hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps_farLift
     (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
@@ -482,7 +482,7 @@ lemma pairUDRClose_of_pairFiberwiseClose_farLift
     h_destIdx h_destIdx_le f g
   have h_le : 2 * Δ₀(f, g) ≤ 2 * (d_fw * 2 ^ steps) := by
     apply Nat.mul_le_mul_left
-    exact hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps 𝔽q β
+    exact hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps_farLift 𝔽q β
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f g
   set d_cur := BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := (⟨i, by omega⟩ : Fin r))
@@ -522,7 +522,7 @@ set_option maxHeartbeats 1200000 in
 seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 /-- **Lemma 4.22, far direction (contrapositive form).** Joint proximity of the pre-tensor
 stack at unique decoding radius forces fiberwise closeness of the source word. -/
-lemma fiberwiseClose_of_jointProximityNat
+lemma fiberwiseClose_of_jointProximityNat_farLift
     (hBridge : ∀ (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
       (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
       (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
@@ -688,7 +688,7 @@ lemma prop421Case2_probability_bound_of_bridge
   prop421Case2_probability_bound_of_bridges 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) hBridge
     (fun i steps _ _destIdx h_destIdx h_destIdx_le f_i h_far hJP =>
-      h_far (fiberwiseClose_of_jointProximityNat 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      h_far (fiberwiseClose_of_jointProximityNat_farLift 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         hBridge i steps h_destIdx h_destIdx_le f_i hJP))
     i steps h_destIdx h_destIdx_le f_i h_far
 
@@ -698,5 +698,5 @@ end Binius.BinaryBasefold
 
 #print axioms Binius.BinaryBasefold.exists_lift_of_binary_rows
 #print axioms Binius.BinaryBasefold.fiberEvaluations_eq_of_binary_rows_eq
-#print axioms Binius.BinaryBasefold.fiberwiseClose_of_jointProximityNat
+#print axioms Binius.BinaryBasefold.fiberwiseClose_of_jointProximityNat_farLift
 #print axioms Binius.BinaryBasefold.prop421Case2_probability_bound_of_bridge
