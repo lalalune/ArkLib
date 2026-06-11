@@ -1092,6 +1092,60 @@ theorem anchoredFrom_of_split (c : DSCache StmtIn U)
       refine Or.inr (ih (stepCache c e₁) ?_)
       rwa [List.foldl_cons] at hcol
 
+/-! ## Base permutation-entry anchoring producers (final assembly workhorses) -/
+
+lemma find?_fst_none_of_not_hasFwdKey {c : DSCache StmtIn U} {a : CanonicalSpongeState U}
+    (h : ¬ hasFwdKey c a) : c.2.find? (fun w => w.1 = a) = none := by
+  rw [List.find?_eq_none]
+  intro w hw
+  simp only [decide_eq_true_eq]
+  intro hwa
+  exact h ⟨w, hw, hwa⟩
+
+lemma find?_snd_none_of_not_hasInvKey {c : DSCache StmtIn U} {b : CanonicalSpongeState U}
+    (h : ¬ hasInvKey c b) : c.2.find? (fun w => w.2 = b) = none := by
+  rw [List.find?_eq_none]
+  intro w hw
+  simp only [decide_eq_true_eq]
+  intro hwb
+  exact h ⟨w, hw, hwb⟩
+
+open DuplexSpongeFS.Paper in
+/-- **Forward-arm anchoring producer.** If a forward base entry `⟨inr (inl a), b⟩` has its
+answer capacity in the slot list of its raw prefix fold (or equal to its query capacity),
+the whole consistent log is anchored. -/
+theorem base_fwd_anchored
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) log)
+    (f : ℕ ↪o ℕ)
+    (hf : ∀ ix, (removeRedundantEntryDSPaper log).1[ix]? = log[f ix]?)
+    (hfo : ∀ ix p (e ep : DSEntry StmtIn U),
+      (removeRedundantEntryDSPaper log).1[ix]? = some e → log[p]? = some ep →
+      p < f ix → ¬ sameClass e ep)
+    (j : ℕ) (hj : j < (removeRedundantEntryDSPaper log).1.length)
+    (a b : CanonicalSpongeState U)
+    (hbj : (removeRedundantEntryDSPaper log).1[j] = (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U))
+    (hcap : b.capacitySegment ∈ slotList ((log.take (f j)).foldl stepCache ((∅, []) : DSCache StmtIn U))
+        ∨ b.capacitySegment = a.capacitySegment) :
+    AnchoredFrom ((∅, []) : DSCache StmtIn U) log := by
+  obtain ⟨hpj, hsplit, hbjf, _hearlier⟩ := base_raw_split log f hf j hj
+  set L₁ := log.take (f j) with hL₁
+  set L₂ := log.drop (f j + 1) with hL₂
+  have he : log[f j] = (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U) := by rw [hbjf, hbj]
+  have hcons' : ConsistentFrom ((∅, []) : DSCache StmtIn U) (L₁ ++ log[f j] :: L₂) := by
+    rw [← hsplit]; exact hcons
+  have hnr : ∀ e' ∈ L₁, ¬ sameClass (log[f j]) e' := by
+    intro e' he''; rw [hbjf]; exact base_no_earlier_sameClass log f hf hfo j hj e' he''
+  have hfresh : ¬ hasFwdKey (L₁.foldl stepCache ((∅, []) : DSCache StmtIn U)) a :=
+    fwd_entry_fresh L₁ (log[f j]) L₂ a b he hcons' hnr
+  -- the collision at the split point
+  have hcol : collisionStep (log[f j]).1 (L₁.foldl stepCache ((∅, []) : DSCache StmtIn U))
+      (log[f j]).2 := by
+    rw [he]
+    refine ⟨find?_fst_none_of_not_hasFwdKey hfresh, hcap⟩
+  have := anchoredFrom_of_split ((∅, []) : DSCache StmtIn U) L₁ (log[f j]) L₂ hcol
+  rwa [← hsplit] at this
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1183,6 +1237,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundant_firstOcc
 #print axioms DuplexSpongeFS.EagerLazyDS.base_no_earlier_sameClass
 #print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_split
+#print axioms DuplexSpongeFS.EagerLazyDS.base_fwd_anchored
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
