@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.Tactic
+import ArkLib.Data.CodingTheory.ProximityGap.CRTDoubleSlice
 
 /-!
 # Issue #232 — the packet-combination divisibility brick (O87's prime-power recursion seed)
@@ -126,33 +127,14 @@ theorem quotient_natDegree_lt [IsDomain A] {p q : ℕ} (hq : 0 < q) {d R : A[X]}
   exact Nat.lt_of_add_lt_add_left h2
 
 /-- Slices of a packet multiple (generic-ring form of
-`LamLeungTwoPow.packet_mul_coeff`): if `natDegree R < q` then
+`CRTDoubleSlice.packet_slice_coeff`): if `natDegree R < q` then
 `(packet p q · R).coeff (i·q + s) = R.coeff s` for `i < p`, `s < q`. -/
 lemma packet_mul_coeff {p q : ℕ} {R : A[X]} (hR : R.natDegree < q)
     {i s : ℕ} (hi : i < p) (hs : s < q) :
     (packet A p q * R).coeff (i * q + s) = R.coeff s := by
-  rw [packet, Finset.sum_mul, finset_sum_coeff]
-  rw [Finset.sum_eq_single i]
-  · rw [show i * q + s = s + i * q from by ring, coeff_X_pow_mul]
-  · intro j _ hji
-    rw [coeff_X_pow_mul']
-    rcases lt_or_ge (i * q + s) (j * q) with hlt | hge
-    · rw [if_neg (by omega)]
-    · rw [if_pos hge]
-      apply coeff_eq_zero_of_natDegree_lt
-      rcases lt_or_ge j i with hji' | hji'
-      · have h2 : j * q + q ≤ i * q := by
-          calc j * q + q = (j + 1) * q := by ring
-          _ ≤ i * q := Nat.mul_le_mul_right q (by omega)
-        have : i * q + s - j * q ≥ q := by omega
-        omega
-      · have hj1 : i + 1 ≤ j := by omega
-        have : i * q + q ≤ j * q := by
-          calc i * q + q = (i + 1) * q := by ring
-          _ ≤ j * q := Nat.mul_le_mul_right q hj1
-        omega
-  · intro hnotin
-    exact absurd (Finset.mem_range.mpr hi) hnotin
+  unfold packet
+  exact CRTDoubleSlice.packet_slice_coeff (K := A) (p := p) (q := q) (R := R)
+    hR hi hs
 
 /-- **The bottom-slice identity**: the quotient of a packet multiple is read off the
 multiple's bottom coefficient slice (`i = 0` of `packet_mul_coeff`) — the convolution
