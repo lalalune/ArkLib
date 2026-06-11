@@ -865,6 +865,113 @@ theorem lazyDSImpl_cache_nodup {α : Type}
           subst hp
           exact ih w.1 ch cp hkeys hvals x hxp
 
+/-! ## The cache size measure and step growth (engine hypotheses, 4D work-order (ii)) -/
+
+/-- The joint cache size: cached hash points plus permutation pairs. The `size` measure of
+the accumulator engine. -/
+noncomputable def dsCacheSize [Fintype StmtIn] (s : DSCache StmtIn U) : ℕ := by
+  classical
+  exact (Finset.univ.filter (fun q : StmtIn => (s.1 q).isSome)).card + s.2.length
+
+/-- Caching one hash point grows the cached-point count by at most one. -/
+private lemma cacheQuery_card_le [Fintype StmtIn]
+    (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache) (q : StmtIn)
+    (u : Vector U SpongeSize.C) :
+    (Finset.univ.filter (fun q' : StmtIn => ((ch.cacheQuery q u) q').isSome)).card
+      ≤ (Finset.univ.filter (fun q' : StmtIn => (ch q').isSome)).card + 1 := by
+  classical
+  have hsub : (Finset.univ.filter (fun q' : StmtIn => ((ch.cacheQuery q u) q').isSome))
+      ⊆ insert q (Finset.univ.filter (fun q' : StmtIn => (ch q').isSome)) := by
+    intro x hx
+    rcases eq_or_ne x q with rfl | hxq
+    · exact Finset.mem_insert_self _ _
+    · refine Finset.mem_insert_of_mem (Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩)
+      have := (Finset.mem_filter.mp hx).2
+      rwa [OracleSpec.QueryCache.cacheQuery_of_ne _ _ hxq] at this
+  calc (Finset.univ.filter (fun q' : StmtIn => ((ch.cacheQuery q u) q').isSome)).card
+      ≤ (insert q (Finset.univ.filter (fun q' : StmtIn => (ch q').isSome))).card :=
+        Finset.card_le_card hsub
+    _ ≤ _ := Finset.card_insert_le _ _
+
+/-- **Step growth bound (the engine's `hstep_size`, unconditionally)**: one lazy step grows
+the joint cache size by at most one. -/
+theorem lazyDSImpl_step_size [Fintype StmtIn]
+    (t : (duplexSpongeChallengeOracle StmtIn U).Domain) (s : DSCache StmtIn U) :
+    ∀ us ∈ support ((lazyDSImpl t).run s), dsCacheSize us.2 ≤ dsCacheSize s + 1 := by
+  classical
+  obtain ⟨ch, cp⟩ := s
+  intro us hus
+  rcases t with q | sIn | sOut
+  · rcases hcq : ch q with _ | u
+    · rw [show (lazyDSImpl ((.inl q :
+            (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+          = (fun (w : Vector U SpongeSize.C × _) => (w.1, (w.2, cp))) <$>
+              (((StmtIn →ₒ Vector U SpongeSize.C).randomOracle q).run ch) from rfl,
+        QueryImpl.withCaching_run_none _ hcq, Functor.map_map] at hus
+      have hus' : us ∈ support ((fun a => (a, (ch.cacheQuery q a, cp))) <$>
+          ($ᵗ (Vector U SpongeSize.C))) := hus
+      simp only [support_map, Set.mem_image] at hus'
+      obtain ⟨u, _, rfl⟩ := hus'
+      show (Finset.univ.filter (fun q' : StmtIn => ((ch.cacheQuery q u) q').isSome)).card
+          + cp.length ≤ _
+      have := cacheQuery_card_le ch q u
+      simp only [dsCacheSize]
+      omega
+    · rw [show (lazyDSImpl ((.inl q :
+            (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+          = (fun (w : Vector U SpongeSize.C × _) => (w.1, (w.2, cp))) <$>
+              (((StmtIn →ₒ Vector U SpongeSize.C).randomOracle q).run ch) from rfl,
+        QueryImpl.withCaching_run_some _ hcq, map_pure] at hus
+      simp only [support_pure, Set.mem_singleton_iff] at hus
+      subst hus
+      simp [dsCacheSize]
+  · rcases hc : cp.find? (fun w => w.1 = sIn) with _ | w
+    · rw [show (lazyDSImpl ((.inr (.inl sIn) :
+            (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+          = (fun (w : CanonicalSpongeState U × _) => (w.1, (ch, w.2))) <$>
+              ((LazyPermBridge.lazyPermImpl (.inl sIn :
+                CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+        LazyPermBridge.lazyPermImpl_run_inl_none cp hc, Functor.map_map] at hus
+      have hus' : us ∈ support ((fun b => (b, (ch, cp.concat (sIn, b)))) <$>
+          LazyPermBridge.sampleUnused (LazyPermBridge.unusedValuesList cp)) := hus
+      simp only [support_map, Set.mem_image] at hus'
+      obtain ⟨b, _, rfl⟩ := hus'
+      simp only [dsCacheSize, List.concat_eq_append, List.length_append,
+        List.length_cons, List.length_nil]
+      omega
+    · rw [show (lazyDSImpl ((.inr (.inl sIn) :
+            (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+          = (fun (w : CanonicalSpongeState U × _) => (w.1, (ch, w.2))) <$>
+              ((LazyPermBridge.lazyPermImpl (.inl sIn :
+                CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+        LazyPermBridge.lazyPermImpl_run_inl_some cp hc, map_pure] at hus
+      simp only [support_pure, Set.mem_singleton_iff] at hus
+      subst hus
+      simp [dsCacheSize]
+  · rcases hc : cp.find? (fun w => w.2 = sOut) with _ | w
+    · rw [show (lazyDSImpl ((.inr (.inr sOut) :
+            (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+          = (fun (w : CanonicalSpongeState U × _) => (w.1, (ch, w.2))) <$>
+              ((LazyPermBridge.lazyPermImpl (.inr sOut :
+                CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+        LazyPermBridge.lazyPermImpl_run_inr_none cp hc, Functor.map_map] at hus
+      have hus' : us ∈ support ((fun a => (a, (ch, cp.concat (a, sOut)))) <$>
+          LazyPermBridge.sampleUnused (LazyPermBridge.unusedKeysList cp)) := hus
+      simp only [support_map, Set.mem_image] at hus'
+      obtain ⟨a, _, rfl⟩ := hus'
+      simp only [dsCacheSize, List.concat_eq_append, List.length_append,
+        List.length_cons, List.length_nil]
+      omega
+    · rw [show (lazyDSImpl ((.inr (.inr sOut) :
+            (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+          = (fun (w : CanonicalSpongeState U × _) => (w.1, (ch, w.2))) <$>
+              ((LazyPermBridge.lazyPermImpl (.inr sOut :
+                CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+        LazyPermBridge.lazyPermImpl_run_inr_some cp hc, map_pure] at hus
+      simp only [support_pure, Set.mem_singleton_iff] at hus
+      subst hus
+      simp [dsCacheSize]
+
 end Connectors
 
 end DuplexSpongeFS.EagerLazyDS
@@ -876,3 +983,4 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_DDS_eq_lazyDSImpl
 #print axioms DuplexSpongeFS.EagerLazyDS.probEvent_DDS_eq_lazyDSImpl
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImpl_cache_nodup
+#print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImpl_step_size
