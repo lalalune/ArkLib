@@ -174,3 +174,16 @@ for p in (17, 97, 113, 257, 337, 449, 577, 7681, 12289):
 #  I : (1+z, z), (zP+(zP^2)^-1, P^-1), (zP^2-P^-1, -zP)
 #  II: (1+z, z), (z^2 P+(z^2 P^2)^-1, P^-1), (z^4 P^2-(zP)^-1, -z^3 P)
 # and the ansatz sweep (alpha,beta,delta,eps,phi in -2..5, all signs) finds ONLY these two.
+
+# C8 (appended): THE MATCHING-PATTERN CENSUS — the exactness converse's case list.
+# Of the 10395 perfect matchings of the 12 determinant terms, EXACTLY 14 simple
+# (multiplicity-free) patterns occur among balanced configurations, IDENTICAL at
+# n = 16 and n = 32, perfectly stratified:
+#   1 vertical   M1:  (01)(23)(45)(67)(89)(10 11)
+#   1 horizontal M4:  (02)(13)(48)(59)(6 10)(7 11)
+#   4 family     M2,M3,M5,M12
+#   8 second     M6-M11,M13,M14   [= the 8 Galois-orbit count at n=16]
+# plus exactly 3 multiplicity-collision profiles (2,2,1^8), (2^4,1^4), (2^6) —
+# the degenerate fibers. The exactness converse = prove each matching's 6-equation
+# linear system forces its stratum's known form + handle the 3 collision profiles.
+# Scale-uniform: the case list does not grow with n.
