@@ -1654,6 +1654,20 @@ theorem probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction
     rw [hflag]
     exact Or.inr (hred xs.1.2 hcons hEP)
 
+open DuplexSpongeFS.Paper in
+/-- **CO25 Lemma 5.8, unconditional (eager lazy carrier).** For any `T`-query adversary, the
+probability that the logged trace of the eager lazy carrier exhibits the paper bad event
+`EPaper`, in real form, is at most `(7T² − 3T)/(2|U|^C)` — with NO remaining hypothesis, the
+dedup reduction `EPaperReduction` now being a theorem (`ePaperReduction_holds`). -/
+theorem probEvent_EPaper_toReal_le_lemma5_8Bound
+    {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
+    (hT : IsTotalQueryBound P T) :
+    (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) => EPaper z.2 |
+        (simulateQ lazyDSImpl ((simulateQ loggingOracle P).run)).run'
+          ((∅, ([] : List (CanonicalSpongeState U × CanonicalSpongeState U))))]).toReal
+      ≤ DuplexSpongeFS.BirthdayBound.lemma5_8Bound U T :=
+  probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction ePaperReduction_holds P T hT
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -1709,6 +1723,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_E_pinv
 #print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_E_func
 #print axioms DuplexSpongeFS.EagerLazyDS.ePaperReduction_holds
+#print axioms DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
