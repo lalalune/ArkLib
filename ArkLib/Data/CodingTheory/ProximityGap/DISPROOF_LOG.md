@@ -5780,3 +5780,23 @@ extremal-family census at production fields IS the KKH26 fiber census, the in-tr
 is family-optimal, and the upper-bracket side of δ* equals the fiber-census threshold.
 This is the N1 structure conjecture made exact — and it is now a finite, probeable,
 formalizable classification problem at each (n, a, c).
+
+### O142 — the norm spectrum at rate 1/4, and a CORRECTION to the O139 reading: the depth-1 row is eventually clean at BOTH rates (2026-06-11, #357)
+
+`probe_o142_rate_quarter_spectrum.py` (exact, asserts green). O139 read the (16,4) depth-1
+row (a = 6, δ = 0.625) as "field-dependent, ~n at large p" because all four scanned primes
+were nonzero. The O141 norm principle says that was a scan-range coincidence, and the
+extended scan confirms it:
+
+* char-0 layer at (16,4) depth 1: **EMPTY** (same as rate 1/2);
+* `S(16,4) = {17, 97, 113, 193, 241, 257, 337, 353, 433, 593, 673, 881, 1201, 1601, 2593,
+  2833, 4049}`, max norm `4097 = 2¹² + 1` — O139's four primes all lie in S;
+* per-prime validation, all 39 primes ≡ 1 (mod 16) up to 2161: nonzero ⟺ `p ∈ S(16,4)`,
+  zero mismatches. For `p > 4049` the row is clean **forever**.
+
+**Unified picture (O140+O141+O142).** At both measured rates the candidate-extremal
+family's entire window-interior contribution below `capacity − 1/n` is: (depth 1) a finite
+explicit prime set with Fermat-flavored maxima (`4097 = 2¹²+1`, `18433`), (depth ≥ 2)
+nothing, at any prime. The mid-window δ* question for this family is purely the arithmetic
+of cyclotomic norms of subset power sums — and the `max_A |N(e_j(A))|` growth in `n` is
+the quantity that prices everything (Mahler-measure / lacunary thread, #357 §5).
