@@ -957,3 +957,39 @@ the gcd-degree reduction is circular (honest retraction of its advancing-value).
 `E(G) ≪ |G|^{5/2}` requires the Stepanov auxiliary-multiplicity construction, which has no clean
 single-brick on-ramp beyond the in-tree `exists_highMult_vanisher`. No fabrication; circularity caught
 by self-red-team per the honesty discipline (cf. §19).
+## 30. SIBLING-CORROBORATED SYNTHESIS: open core = BGK additive energy (Bourgain, NOT Weil/Stepanov)
+
+Surveying the broader #232 substrate (siblings) corroborates and SHARPENS my reduction, and corrects
+the §29 Stepanov redirect:
+
+**(a) Same open core, independently reached.** `AdditiveEnergyKernel.tripleZero_eq_card_mul_bgk`
+(axiom-clean) pins the open prize core to the **Bourgain–Glibichuk–Konyagin additive-energy quantity**
+`M = bgkCount n = #{u ∈ μ_n : −(1+u) ∈ μ_n} = |μ_n ∩ −(1+μ_n)|`, with `tripleZero n = |μ_n|·M`. This is
+exactly my `N`/representation reduction (`AddEnergyMulHomogeneous`: `E(G)=|G|·N`,
+`N=#{z₁+z₂=z₃+1}`) — the same BGK quantity, rebuilt independently. **The prize is open iff `M` is not
+controlled**, in the regime `|μ| = 2^k ≪ √q`.
+
+**(b) Both standard tools are PROVEN insufficient (the §23/§29 picture, now complete).**
+- WEIL: in `|μ| ≪ √q`, "full Weil gives no cancellation (Bourgain territory)" — confirms §23
+  (Weil recovers only Johnson, here gives nothing).
+- STEPANOV: `StepanovPointCountEngine.stepanov_does_not_bound_e1_fiber` — a sibling PROVED Stepanov
+  does NOT bound the relevant joint fiber count. **This CORRECTS my §29 redirect:** the Stepanov
+  auxiliary-multiplicity construction is also insufficient for the BGK quantity, not just the gcd
+  route. (My Stepanov-engine bricks remain valid infrastructure, but Stepanov is not the tool that
+  closes this.)
+
+**(c) The genuine tool is Bourgain's sum-product method.** Controlling `M = #{u∈μ_n : −(1+u)∈μ_n}` for
+a `2^k` multiplicative subgroup in the `≪√q` regime is a **Bourgain–Glibichuk–Konyagin sum-product
+estimate** (incidence/Plünnecke/multiplicative-energy interplay), genuinely beyond both Weil and
+Stepanov, and NOT in Mathlib. The conditional consumers are in place:
+`AdditiveEnergyRepBound.additiveEnergy_le_of_repBound` (energy ≤ (1+M)|G|² from a rep bound `M`) and
+`MomentCollisionWeilConditional.collision_le_of_offDiagonal_bound` (a per-character bound ⟹ the M2
+anti-concentration the prize needs) — both reduce the prize to bounding `M`, the open Bourgain input.
+
+**Honest status (sharpest, multi-agent-corroborated):** the deployed δ* open core = the BGK additive
+energy `M` of `μ_{2^k}` in the `≪√q` (Bourgain) regime; PROVEN insufficient for both Weil (§23) and
+Stepanov (sibling); requires Bourgain sum-product, absent from Mathlib. My independent reduction
+(energy API + homogeneity + `N`-count) agrees exactly with the sibling `AdditiveEnergyKernel` BGK
+identity. This is the genuine, named, multi-agent-confirmed open frontier — not fabricable, and the
+deployed pin is blocked precisely on formalizing (or the literature supplying a Mathlib-ready form of)
+the Bourgain estimate for `M`. No fabrication; §29 Stepanov-sufficiency expectation corrected.
