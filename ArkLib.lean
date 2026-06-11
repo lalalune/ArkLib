@@ -1706,6 +1706,7 @@ import ArkLib.ProofSystem.Stir.ProximityGap
 import ArkLib.ProofSystem.Stir.ProximityGapProof
 import ArkLib.ProofSystem.Stir.ProximityGapSmallField
 import ArkLib.ProofSystem.Stir.Quotienting
+import ArkLib.ProofSystem.Stir.RbrBudgetMono
 import ArkLib.ProofSystem.Stir.RbrFrontDoor
 import ArkLib.ProofSystem.Stir.RealBudgetRbr
 import ArkLib.ProofSystem.Stir.RepWire
@@ -1811,6 +1812,13 @@ import ArkLib.ProofSystem.Whir.ThresholdKSFMulti
 import ArkLib.ProofSystem.Whir.WhirVectorIOPProof
 import ArkLib.ProofSystem.ZkVMBoundary
 import ArkLib.ResidualAxioms
+import ArkLib.Scratch.HBoundArith
+import ArkLib.Scratch.Issue13Attempt
+import ArkLib.Scratch.JR_degree_attempt
+import ArkLib.Scratch.JR_target
+import ArkLib.Scratch.P2BijectionImage
+import ArkLib.Scratch.P2BijectionPieces
+import ArkLib.Scratch.P2BijectionSum
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.AGL23CountingProof
@@ -1941,6 +1949,7 @@ import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
 import ArkLib.ToMathlib.GGR11TreeConstruction
 import ArkLib.ToMathlib.GHSZ02Cor20
+import ArkLib.ToMathlib.GHSZ02LargeNProof
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness
