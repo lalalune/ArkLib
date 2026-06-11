@@ -839,6 +839,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoRS
 import ArkLib.Data.CodingTheory.ProximityGap.MCABracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCAConjectureRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCACurveEvent
+import ArkLib.Data.CodingTheory.ProximityGap.MCADeadWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarBracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarExactPoint

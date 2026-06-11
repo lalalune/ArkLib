@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2267 files, 29045 declarations
+- `ArkLib` — 2269 files, 29057 declarations
 
 ## Same short-name across multiple files (1228 groups)
 
@@ -2949,12 +2949,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `lagrangeCurve` (2 declarations, 2 files)
 
 - `def CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.lagrangeCurve` [ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCaptureUD.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCaptureUD.lean#L82) — The Lagrange curve tuple through the values `V` at the nodes `ν`: `a_j = ∑_t (ℓ_t).coeff j · V t`.
-- `def ProximityGap.lagrangeCurve` [ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean:44](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean#L44) — The Lagrange coefficient stack through the values of `f` on `B`: the `j`-th curve coefficient is `∑_
+- `def ProximityGap.lagrangeCurve` [ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean:48](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean#L48) — The Lagrange coefficient stack through the values of `f` on `B`: the `j`-th curve coefficient is `∑_
 
 ### `lagrangeCurve_eval` (2 declarations, 2 files)
 
 - `lemma CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.lagrangeCurve_eval` [ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCaptureUD.lean:97](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCaptureUD.lean#L97) — **The curve identity**: `∑_j C(γʲ)·a_j = ∑_t C(ℓ_t(γ))·V t`.
-- `theorem ProximityGap.lagrangeCurve_eval` [ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean#L60) — **The interpolation identity.** For `β ∈ B` with `#B ≤ ℓ + 1`, the degree-`≤ ℓ` curve with the Lagra
+- `theorem ProximityGap.lagrangeCurve_eval` [ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean:64](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean#L64) — **The interpolation identity.** For `β ∈ B` with `#B ≤ ℓ + 1`, the degree-`≤ ℓ` curve with the Lagra
 
 ### `lambda_le_ggr11_of_Lambda_top` (2 declarations, 2 files)
 
