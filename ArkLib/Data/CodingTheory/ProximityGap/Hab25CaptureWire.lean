@@ -287,6 +287,36 @@ theorem johnsonNumericBound_of_surface
   johnsonNumericBound_of_pencil_coherence ωs δq η hδq0 hη hδr hk2n hreg
     (pencil_coherence_of_surface hsurface)
 
+
+open Classical in
+/-- **The small branch.**  Bad scalars inject into the close-proximity index, so the bad
+count is at most the close count. -/
+theorem badCount_le_close_card
+    {n k : ℕ} [NeZero n] (ωs : Fin n ↪ F) (δq : ℚ) (δ : ℝ≥0)
+    (hδle : (δ : ℝ) ≤ (δq : ℝ)) (u : WordStack F (Fin 2) (Fin n)) :
+    (hab25McaBadScalars ωs (k + 1) δ u).card
+      ≤ (_root_.ProximityGap.coeffs_of_close_proximity
+          (F := F) k ωs δq (u 0) (u 1)).card :=
+  Finset.card_le_card
+    (hab25McaBadScalars_subset_coeffs_of_close_proximity ωs δ δq hδle u)
+
+open Classical in
+/-- **The large branch.**  If one affine pair captures every bad scalar, the bad count is
+at most `n`: capture converts to improvement at the pair's difference words, and improving
+sets number at most `n`. -/
+theorem badCount_le_card_of_one_pair_capture
+    {n k : ℕ} [NeZero n] (ωs : Fin n ↪ F) (δ : ℝ≥0)
+    (u : WordStack F (Fin 2) (Fin n)) {A₀ A₁ : F[X]}
+    (hdeg₀ : A₀.natDegree < k + 1) (hdeg₁ : A₁.natDegree < k + 1)
+    (hcap : ∀ γ ∈ hab25McaBadScalars ωs (k + 1) δ u,
+      AffineCaptured ωs (k + 1) δ u γ (A₀, A₁)) :
+    (hab25McaBadScalars ωs (k + 1) δ u).card ≤ Fintype.card (Fin n) := by
+  refine factorImprove_card_le_n
+    (fun i => A₀.eval (ωs i) - u 0 i) (fun i => A₁.eval (ωs i) - u 1 i)
+    (hab25McaBadScalars ωs (k + 1) δ u) ?_
+  intro γ hγ
+  exact affineCaptured_improve hdeg₀ hdeg₁ (hcap γ hγ)
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
@@ -296,3 +326,5 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_pencil_coherence
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.pencil_coherence_of_surface
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_surface
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.badCount_le_close_card
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.badCount_le_card_of_one_pair_capture
