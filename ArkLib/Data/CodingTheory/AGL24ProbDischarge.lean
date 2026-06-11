@@ -163,7 +163,8 @@ theorem rimFailureProb_of_symbolic {k : ℕ}
       = ((t * k * (k - 1) : ℕ) : ENNReal)
         * (((Fintype.card F) ^ (Fintype.card ι) : ℕ) : ENNReal)
         / ((Fintype.card F : ℕ) : ENNReal) from by
-    rw [div_mul_eq_mul_div]]
+    rw [div_eq_mul_inv, div_eq_mul_inv]
+    ring]
   rw [ENNReal.le_div_iff_mul_le (Or.inl hD0) (Or.inl hDtop)]
   exact_mod_cast hnat
 
