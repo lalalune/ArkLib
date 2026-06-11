@@ -3,9 +3,10 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.CRTPacketMinpoly
 import Mathlib
 
-set_option linter.style.longFile 3400
+set_option linter.style.longFile 3100
 
 /-!
 # Issue #232 — the two-prime de Bruijn structure: the CRT double-slice theorems (O67–O68)
@@ -42,9 +43,7 @@ T2/T3 tiers:
 
 * `minpoly_qadjoin_eq_cyclotomic` — **the linear-disjointness DISCHARGE**: `Φ_{p^(a+1)}`
   IS the minimal polynomial of `ζ_p` over `ℚ⟮ζ_q⟯` (`q ≠ p` primes, `ζ_q` of order
-  `q^b`).  Engine: `minpoly ∣ Φ` pinched against the totient tower-degree bound (the
-  packet form `minpoly_adjoin_primitiveRoot_eq_packet`, copied with provenance from the
-  parallel step-(1) lane `CRTPacketMinpoly.lean`).
+  `q^b`).  Engine: the shared packet minimal-polynomial theorem in `CRTPacketMinpoly`.
 
 * `two_prime_qside_slices` / `two_prime_deBruijn_double_slice` — the headline two-prime
   instantiations with `K := ℚ⟮ζ_q⟯`, now **unconditional**: no hypotheses beyond
@@ -62,13 +61,10 @@ extraction (disjoint rotated full packets) needs an induction with packet subtra
 on top of these slice relations (the genuinely de Bruijn positivity step, residual (3)
 of the O67 program); the slice relations themselves are now hypothesis-free.
 
-Engine provenance: `packet_mul_coeff` and the body of `vanishing_coeff_slices_over` are
-the `K`-generalizations of `LamLeungTwoPow.packet_mul_coeff` and
-`LamLeungTwoPow.vanishing_coeff_slices`
-(`ArkLib/Data/CodingTheory/ProximityGap/LamLeungTwoPow.lean`), and
-`minpoly_adjoin_primitiveRoot_eq_packet` is copied from `CRTPacketMinpoly.lean` —
-both copied with provenance since those files' `.olean`s are outside this file's
-import budget; dedup is flagged for the next maintenance pass.
+Engine provenance: the packet coefficient calculation and weighted slice engine live in
+`CRTDoubleSlice`; the coprime cyclotomic minimal-polynomial discharge lives in
+`CRTPacketMinpoly`.  This file keeps the de Bruijn-facing theorem names as stable wrappers
+around those shared engines.
 -/
 
 namespace DeBruijnTwoPrime
@@ -94,30 +90,8 @@ lemma packet_mul_coeff {K : Type*} [Field K] {p q : ℕ} (_hq : 0 < q) {R : K[X]
     (hR : R.natDegree < q) {i s : ℕ} (hi : i < p) (hs : s < q) :
     ((∑ i ∈ Finset.range p, (Polynomial.X : K[X]) ^ (i * q)) * R).coeff (i * q + s)
       = R.coeff s := by
-  rw [Finset.sum_mul, Polynomial.finset_sum_coeff]
-  rw [Finset.sum_eq_single i]
-  · rw [show i * q + s = s + i * q from by ring, Polynomial.coeff_X_pow_mul]
-  · intro j hj hji
-    rw [Polynomial.coeff_X_pow_mul']
-    rcases lt_or_ge (i * q + s) (j * q) with hlt | hge
-    · rw [if_neg (by omega)]
-    · rw [if_pos hge]
-      apply Polynomial.coeff_eq_zero_of_natDegree_lt
-      rcases lt_or_ge j i with hji' | hji'
-      · have : i * q + s - j * q ≥ q := by
-          have h1 : (j + 1) * q ≤ i * q := Nat.mul_le_mul_right q (by omega)
-          have h2 : j * q + q ≤ i * q := by
-            calc j * q + q = (j + 1) * q := by ring
-            _ ≤ i * q := h1
-          omega
-        omega
-      · have hj1 : i + 1 ≤ j := by omega
-        have : i * q + q ≤ j * q := by
-          calc i * q + q = (i + 1) * q := by ring
-          _ ≤ j * q := Nat.mul_le_mul_right q hj1
-        omega
-  · intro hnotin
-    exact absurd (Finset.mem_range.mpr hi) hnotin
+  exact CRTDoubleSlice.packet_slice_coeff (K := K) (p := p) (q := q) (R := R)
+    hR hi hs
 
 /-- **The K-coefficient prime-power slice theorem** (the linear-disjointness slice
 engine): if `Φ_{p^(m+1)}` is still the minimal polynomial of the primitive `p^(m+1)`-th
@@ -134,90 +108,17 @@ theorem vanishing_coeff_slices_over (K : Type*) [Field K] [Algebra K F]
     (hsum : ∑ e ∈ Finset.range (p ^ (m + 1)), algebraMap K F (c e) * ζ ^ e = 0) :
     ∀ s < p ^ m, ∀ i < p, ∀ i' < p, c (i * p ^ m + s) = c (i' * p ^ m + s) := by
   classical
-  set n := p ^ (m + 1) with hn
-  set q := p ^ m with hq
-  have hppos : 0 < p := hp.pos
-  have hqpos : 0 < q := by positivity
-  have hnq : n = p * q := by rw [hn, hq]; ring
-  have hnpos : 0 < n := by rw [hn]; positivity
-  set P : K[X] := ∑ e ∈ Finset.range n, Polynomial.C (c e) * X ^ e with hP
-  have hPcoeff : ∀ j < n, P.coeff j = c j := by
-    intro j hj
-    rw [hP, Polynomial.finset_sum_coeff]
-    rw [Finset.sum_congr rfl (fun e _ => by
-      rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow])]
-    rw [Finset.sum_eq_single j (fun e _ hej => by
-      rw [if_neg (fun h => hej h.symm), mul_zero]) (fun h =>
-      absurd (Finset.mem_range.mpr hj) h)]
-    rw [if_pos rfl, mul_one]
-  have hPζ : Polynomial.aeval ζ P = 0 := by
-    rw [hP, map_sum]
-    rw [Finset.sum_congr rfl (fun e _ => by
-      rw [map_mul, Polynomial.aeval_C, map_pow, Polynomial.aeval_X])]
-    exact hsum
-  have hdvd : (∑ i ∈ Finset.range p, (X : K[X]) ^ (i * q)) ∣ P := by
-    have hmin' := minpoly.dvd K ζ hPζ
-    rw [hmin] at hmin'
-    have hcyc : Polynomial.cyclotomic n K
-        = ∑ i ∈ Finset.range p, (X : K[X]) ^ (i * q) := by
-      rw [hn, Polynomial.cyclotomic_prime_pow_eq_geom_sum hp]
-      refine Finset.sum_congr rfl fun i _ => ?_
-      rw [← pow_mul, hq, mul_comm]
-    rwa [hcyc] at hmin'
   intro s hs i hi i' hi'
-  have hb : ∀ j < p, j * q + s < n := by
-    intro j hj
-    rw [hnq]
-    have h1 : (j + 1) * q ≤ p * q := Nat.mul_le_mul_right q (by omega)
-    have : j * q + q ≤ p * q := by
-      calc j * q + q = (j + 1) * q := by ring
-      _ ≤ p * q := h1
-    omega
-  rw [← hPcoeff _ (hb i hi), ← hPcoeff _ (hb i' hi')]
-  obtain ⟨R, hR⟩ := hdvd
-  by_cases hP0 : P = 0
-  · simp [hP0]
-  have hR0 : R ≠ 0 := fun h => hP0 (by rw [hR, h, mul_zero])
-  have hG : (∑ i ∈ Finset.range p, (X : K[X]) ^ (i * q)) ≠ 0 := by
-    intro h
-    have := congrArg (fun Q : K[X] => Q.coeff 0) h
-    simp only [Polynomial.finset_sum_coeff] at this
-    rw [Finset.sum_eq_single 0 (fun j _ hj => by
-      rw [Polynomial.coeff_X_pow]
-      rw [if_neg (by
-        intro h0
-        rcases Nat.mul_eq_zero.mp h0.symm with h | h
-        · exact hj h
-        · omega)]) (fun h0 => absurd (Finset.mem_range.mpr hppos) h0)] at this
-    simp at this
-  have hdegP : P.natDegree < n := by
-    rw [hP]
-    have hle : (∑ e ∈ Finset.range n, Polynomial.C (c e) * (X : K[X]) ^ e).natDegree
-        ≤ n - 1 :=
-      Polynomial.natDegree_sum_le_of_forall_le _ _ fun e he => by
-        refine le_trans (Polynomial.natDegree_C_mul_le _ _) ?_
-        rw [Polynomial.natDegree_X_pow]
-        have := Finset.mem_range.mp he
-        omega
-    omega
-  have hdegR : R.natDegree < q := by
-    have hmul := Polynomial.natDegree_mul hG hR0
-    rw [← hR] at hmul
-    have hGlow : (p - 1) * q ≤ (∑ i ∈ Finset.range p, (X : K[X]) ^ (i * q)).natDegree := by
-      apply Polynomial.le_natDegree_of_ne_zero
-      rw [Polynomial.finset_sum_coeff]
-      rw [Finset.sum_eq_single (p - 1) (fun j hj hjne => by
-        rw [Polynomial.coeff_X_pow, if_neg (fun h => hjne (by
-          have := Nat.eq_of_mul_eq_mul_right hqpos h
-          omega))]) (fun h0 => absurd (Finset.mem_range.mpr (by omega)) h0)]
-      rw [Polynomial.coeff_X_pow, if_pos rfl]
-      exact one_ne_zero
-    have hcount : (p - 1) * q + q = n := by
-      rw [hnq]
-      calc (p - 1) * q + q = ((p - 1) + 1) * q := by ring
-      _ = p * q := by congr 1; omega
-    omega
-  rw [hR, packet_mul_coeff hqpos hdegR hi hs, packet_mul_coeff hqpos hdegR hi' hs]
+  have hpacket :
+      minpoly K ζ = ∑ t ∈ Finset.range p, (X : K[X]) ^ (t * p ^ m) := by
+    rw [hmin, Polynomial.cyclotomic_prime_pow_eq_geom_sum hp]
+    refine Finset.sum_congr rfl fun t _ => ?_
+    rw [mul_comm t (p ^ m), pow_mul]
+  have hpow : p * p ^ m = p ^ (m + 1) := by ring
+  have hsum' : ∑ e ∈ Finset.range (p * p ^ m), c e • ζ ^ e = 0 := by
+    rw [hpow]
+    simpa [Algebra.smul_def] using hsum
+  exact CRTDoubleSlice.slice_of_packet_minpoly hpacket hsum' hi hi' hs
 
 /-- The `K = ℚ` instance: the rational coefficient-slice theorem, with the
 linear-disjointness hypothesis discharged by `Polynomial.cyclotomic_eq_minpoly_rat`.
@@ -455,25 +356,13 @@ end QSideGrouping
 /-! ## Discharging the linear-disjointness hypothesis
 
 `Φ_{p^(a+1)}` stays the minimal polynomial of `ζ_p` over the coprime cyclotomic
-extension `ℚ(ζ_{q^b})`.  Engine: `minpoly ℚ⟮ζq⟯ ζp ∣ Φ_{p^(a+1)}` pinched against the
-totient tower bound `φ(q^b)·φ(p^(a+1)) = φ(q^b·p^(a+1)) = [ℚ(ζ_qζ_p):ℚ] ≤
-φ(q^b)·[ℚ⟮ζq⟯⟮ζp⟯:ℚ⟮ζq⟯]`, then monic divisor of matching degree.
-
-Provenance: `minpoly_adjoin_primitiveRoot_eq_packet` (and its integrality helper) is
-copied verbatim, modulo namespace, from
-`ArkLib/Data/CodingTheory/ProximityGap/CRTPacketMinpoly.lean` (the parallel de Bruijn
-step-(1) lane of this corpus), because this file's import budget is Mathlib-only;
-dedup to a shared home is flagged for the next maintenance pass. -/
+extension `ℚ(ζ_{q^b})`.  The totient-tower proof now lives once, in
+`CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet`; this section packages the
+same fact in the theorem names used by the de Bruijn double-slice layer. -/
 
 section LinearDisjointness
 
-open IntermediateField Module
-
-/-- Roots of unity are integral over any base field of the ambient field.
-(Provenance: `CRTPacketMinpoly.isIntegral_of_pow_eq_one`.) -/
-private lemma isIntegral_of_pow_eq_one {K L : Type*} [Field K] [Field L] [Algebra K L]
-    {x : L} {m : ℕ} (hm : 0 < m) (hx : x ^ m = 1) : IsIntegral K x :=
-  ⟨X ^ m - 1, by simpa using monic_X_pow_sub_C (1 : K) hm.ne', by simp [hx]⟩
+open IntermediateField
 
 /-- **The packet minimal polynomial over the coprime cyclotomic extension**: for
 distinct primes `p ≠ q`, `0 < b`, a primitive `p^a`-th root `ξ` and a primitive
@@ -486,89 +375,7 @@ theorem minpoly_adjoin_primitiveRoot_eq_packet
     (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q) (hb : 0 < b)
     {ξ η : L} (hξ : IsPrimitiveRoot ξ (p ^ a)) (hη : IsPrimitiveRoot η (q ^ b)) :
     minpoly ℚ⟮ξ⟯ η = ∑ t ∈ Finset.range q, (X : Polynomial ℚ⟮ξ⟯) ^ (t * q ^ (b - 1)) := by
-  classical
-  have hpa : 0 < p ^ a := pow_pos hp.pos a
-  have hqb : 0 < q ^ b := pow_pos hq.pos b
-  have hn : 0 < p ^ a * q ^ b := Nat.mul_pos hpa hqb
-  have hco : Nat.Coprime (p ^ a) (q ^ b) :=
-    Nat.Coprime.pow a b ((Nat.coprime_primes hp hq).mpr hpq)
-  -- integrality of the three roots involved
-  have hintξ : IsIntegral ℚ ξ := isIntegral_of_pow_eq_one hpa hξ.pow_eq_one
-  have hintηK : IsIntegral ℚ⟮ξ⟯ η := isIntegral_of_pow_eq_one hqb hη.pow_eq_one
-  -- `ξ * η` is a primitive `(p^a * q^b)`-th root of unity (coprime orders multiply)
-  have h1 : orderOf ξ = p ^ a := hξ.eq_orderOf.symm
-  have h2 : orderOf η = q ^ b := hη.eq_orderOf.symm
-  have horder : orderOf (ξ * η) = p ^ a * q ^ b := by
-    rw [(Commute.all ξ η).orderOf_mul_eq_mul_orderOf_of_coprime
-      (by rw [h1, h2]; exact hco), h1, h2]
-  have hζ : IsPrimitiveRoot (ξ * η) (p ^ a * q ^ b) :=
-    horder ▸ IsPrimitiveRoot.orderOf (ξ * η)
-  have hintζ : IsIntegral ℚ (ξ * η) := isIntegral_of_pow_eq_one hn hζ.pow_eq_one
-  -- absolute degrees over ℚ, via unconditional rationals-cyclotomic irreducibility
-  have hrkK : finrank ℚ ℚ⟮ξ⟯ = (p ^ a).totient := by
-    rw [IntermediateField.adjoin.finrank hintξ, ← cyclotomic_eq_minpoly_rat hξ hpa,
-      natDegree_cyclotomic]
-  have hrkZ : finrank ℚ ℚ⟮ξ * η⟯ = (p ^ a * q ^ b).totient := by
-    rw [IntermediateField.adjoin.finrank hintζ, ← cyclotomic_eq_minpoly_rat hζ hn,
-      natDegree_cyclotomic]
-  -- finite dimensionality up the tower
-  haveI : FiniteDimensional ℚ ℚ⟮ξ⟯ := IntermediateField.adjoin.finiteDimensional hintξ
-  haveI : FiniteDimensional ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := IntermediateField.adjoin.finiteDimensional hintηK
-  haveI : FiniteDimensional ℚ ℚ⟮ξ⟯⟮η⟯ := Module.Finite.trans ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯
-  -- `ξ * η` lives in `ℚ⟮ξ⟯⟮η⟯`
-  have hξE : ξ ∈ ℚ⟮ξ⟯⟮η⟯ := by
-    have h := ℚ⟮ξ⟯⟮η⟯.algebraMap_mem ⟨ξ, mem_adjoin_simple_self ℚ ξ⟩
-    simpa using h
-  have hηE : η ∈ ℚ⟮ξ⟯⟮η⟯ := mem_adjoin_simple_self ℚ⟮ξ⟯ η
-  have hsub : ∀ {x : L}, x ∈ ℚ⟮ξ * η⟯ → x ∈ ℚ⟮ξ⟯⟮η⟯ := by
-    intro x hx
-    have hle : ℚ⟮ξ * η⟯ ≤ (ℚ⟮ξ⟯⟮η⟯).restrictScalars ℚ := by
-      rw [adjoin_le_iff]
-      intro y hy
-      rw [Set.mem_singleton_iff] at hy
-      subst hy
-      -- membership in `restrictScalars` is definitionally membership (`Iff.rfl`)
-      exact mul_mem hξE hηE
-    exact hle hx
-  -- ℚ-linear embedding `ℚ⟮ξ * η⟯ ↪ ℚ⟮ξ⟯⟮η⟯` gives the degree lower bound
-  let f : ℚ⟮ξ * η⟯ →ₗ[ℚ] ℚ⟮ξ⟯⟮η⟯ :=
-    { toFun := fun x => ⟨x.1, hsub x.2⟩
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl }
-  have hinj : Function.Injective f := fun x y hxy => by
-    have h1 := congrArg Subtype.val hxy
-    exact Subtype.ext h1
-  have hle : finrank ℚ ℚ⟮ξ * η⟯ ≤ finrank ℚ ℚ⟮ξ⟯⟮η⟯ :=
-    LinearMap.finrank_le_finrank_of_injective hinj
-  have htower : finrank ℚ ℚ⟮ξ⟯ * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ = finrank ℚ ℚ⟮ξ⟯⟮η⟯ :=
-    Module.finrank_mul_finrank ℚ ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯
-  -- the totient tower bound: `φ(q^b) ≤ natDegree (minpoly ℚ⟮ξ⟯ η)`
-  have hdeg_ge : (q ^ b).totient ≤ (minpoly ℚ⟮ξ⟯ η).natDegree := by
-    have hmul : (p ^ a).totient * (q ^ b).totient
-        ≤ (p ^ a).totient * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := by
-      calc (p ^ a).totient * (q ^ b).totient
-          = (p ^ a * q ^ b).totient := (Nat.totient_mul hco).symm
-        _ = finrank ℚ ℚ⟮ξ * η⟯ := hrkZ.symm
-        _ ≤ finrank ℚ ℚ⟮ξ⟯⟮η⟯ := hle
-        _ = finrank ℚ ℚ⟮ξ⟯ * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := htower.symm
-        _ = (p ^ a).totient * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := by rw [hrkK]
-    have h2 : (q ^ b).totient ≤ finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ :=
-      Nat.le_of_mul_le_mul_left hmul (Nat.totient_pos.mpr hpa)
-    rwa [IntermediateField.adjoin.finrank hintηK] at h2
-  -- divisibility: `minpoly ℚ⟮ξ⟯ η ∣ Φ_{q^b}` over `ℚ⟮ξ⟯`
-  have hdvd : minpoly ℚ⟮ξ⟯ η ∣ cyclotomic (q ^ b) ℚ⟮ξ⟯ := by
-    apply minpoly.dvd
-    rw [aeval_def, ← eval_map, map_cyclotomic]
-    exact hη.isRoot_cyclotomic hqb
-  -- monic divisor of matching degree: the minimal polynomial IS the cyclotomic
-  have heq : cyclotomic (q ^ b) ℚ⟮ξ⟯ = minpoly ℚ⟮ξ⟯ η :=
-    Polynomial.eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic hintηK)
-      (cyclotomic.monic _ _) hdvd (by rwa [natDegree_cyclotomic])
-  -- and at a prime power the cyclotomic is the geometric packet
-  obtain ⟨b', rfl⟩ : ∃ b', b = b' + 1 := ⟨b - 1, (Nat.succ_pred_eq_of_pos hb).symm⟩
-  rw [← heq, cyclotomic_prime_pow_eq_geom_sum hq]
-  refine Finset.sum_congr rfl fun t _ => ?_
-  rw [Nat.add_sub_cancel, mul_comm t (q ^ b'), pow_mul]
+  exact CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet hp hq hpq hb hξ hη
 
 /-- **The `hdisj` discharge in the headline's shape**: `Φ_{p^(a+1)}` IS the minimal
 polynomial of `ζ_p` over `ℚ⟮ζ_q⟯` for any primitive `q^b`-th root `ζ_q`, `q ≠ p` —
