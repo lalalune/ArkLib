@@ -73,6 +73,7 @@ private lemma findSome?_eq_some_of_unique {α β : Type _} {l : List α} {f : α
     {a : α} {b : β} (hmem : a ∈ l) (hfa : f a = some b)
     (huniq : ∀ x ∈ l, x ≠ a → f x = none) :
     l.findSome? f = some b := by
+  classical
   induction l with
   | nil => simp at hmem
   | cons x xs ih =>
@@ -103,7 +104,7 @@ lemma lookupEncodedMessageAlphaHat?_toList
   rw [findSome?_filterMap]
   refine findSome?_eq_some_of_unique
     (Finset.mem_toList.mpr (Finset.mem_univ j)) ?_ ?_
-  · simp only [dif_pos hj, Option.bind_some, dif_pos rfl]
+  · simp only [dif_pos hj, Option.bind_some, dif_pos trivial]
   · intro x _ hxj
     by_cases hxlt : x.1.1 < k.1
     · simp only [dif_pos hxlt, Option.bind_some, dif_neg hxj]
@@ -147,22 +148,34 @@ def messagesUpToAt {k : Fin (n + 1)} (mb : pSpec.MessagesUpTo k)
 lemma messagesUpToAt_concat_of_lt {k : Fin n} (mb : pSpec.MessagesUpTo k.castSucc)
     (hdir : pSpec.dir k = .P_to_V) (msg : pSpec.Message ⟨k, hdir⟩)
     (j : pSpec.MessageIdx) (hj : j.1.1 < k.succ.1) (hlt : j.1.1 < k.1) :
-    messagesUpToAt (MessagesUpTo.concat mb hdir msg) j hj = messagesUpToAt mb j hlt :=
-  congrFun (Fin.dconcat_castSucc (fun i hi => mb ⟨i, hi⟩) (fun _ => msg) ⟨j.1.1, hlt⟩) j.2
+    messagesUpToAt (MessagesUpTo.concat mb hdir msg) j hj = messagesUpToAt mb j hlt := by
+  show Fin.dconcat
+      (motive := fun i : Fin (k.1 + 1) =>
+        pSpec.dir (i.castLE (by omega)) = .P_to_V → pSpec.«Type» (i.castLE (by omega)))
+      (fun i hi => mb ⟨i, hi⟩) _ (Fin.castSucc ⟨j.1.1, hlt⟩) j.2 = _
+  rw [Fin.dconcat_castSucc]
 
 /-- `concat` writes the new message at the last position. -/
 lemma messagesUpToAt_concat_self {k : Fin n} (mb : pSpec.MessagesUpTo k.castSucc)
     (hdir : pSpec.dir k = .P_to_V) (msg : pSpec.Message ⟨k, hdir⟩)
     (hk : (⟨k, hdir⟩ : pSpec.MessageIdx).1.1 < k.succ.1) :
-    messagesUpToAt (MessagesUpTo.concat mb hdir msg) ⟨k, hdir⟩ hk = msg :=
-  congrFun (Fin.dconcat_last (fun i hi => mb ⟨i, hi⟩) (fun _ => msg)) hdir
+    messagesUpToAt (MessagesUpTo.concat mb hdir msg) ⟨k, hdir⟩ hk = msg := by
+  show Fin.dconcat
+      (motive := fun i : Fin (k.1 + 1) =>
+        pSpec.dir (i.castLE (by omega)) = .P_to_V → pSpec.«Type» (i.castLE (by omega)))
+      (fun i hi => mb ⟨i, hi⟩) _ (Fin.last k.1) hdir = _
+  rw [Fin.dconcat_last]
 
 /-- `extend` (challenge round) does not disturb message entries. -/
 lemma messagesUpToAt_extend {k : Fin n} (mb : pSpec.MessagesUpTo k.castSucc)
     (hdir : pSpec.dir k = .V_to_P)
     (j : pSpec.MessageIdx) (hj : j.1.1 < k.succ.1) (hlt : j.1.1 < k.1) :
-    messagesUpToAt (MessagesUpTo.extend mb hdir) j hj = messagesUpToAt mb j hlt :=
-  congrFun (Fin.dconcat_castSucc (fun i hi => mb ⟨i, hi⟩) _ ⟨j.1.1, hlt⟩) j.2
+    messagesUpToAt (MessagesUpTo.extend mb hdir) j hj = messagesUpToAt mb j hlt := by
+  show Fin.dconcat
+      (motive := fun i : Fin (k.1 + 1) =>
+        pSpec.dir (i.castLE (by omega)) = .P_to_V → pSpec.«Type» (i.castLE (by omega)))
+      (fun i hi => mb ⟨i, hi⟩) _ (Fin.castSucc ⟨j.1.1, hlt⟩) j.2 = _
+  rw [Fin.dconcat_castSucc]
 
 /-- A message index strictly before `k.succ` whose round is not the challenge round `k`
 is strictly before `k`. -/
@@ -241,7 +254,9 @@ lemma decodeMessagesPrefixStepPhiInv_pToV
             | some msg => some (MessagesUpTo.concat mb hdir msg) := by
   unfold decodeMessagesPrefixStepPhiInv
   split
-  · rfl
+  · rename_i heq
+    cases Subsingleton.elim hdir heq
+    rfl
   · rename_i heq
     rw [hdir] at heq
     simp at heq
@@ -263,16 +278,18 @@ lemma decodePrefixBuild_isSome_of_inImage
   | succ j ih =>
     intro hk
     have hjle : (j.castSucc).1 ≤ i.1.castSucc.1 := by
-      simp only [Fin.coe_castSucc]
+      simp only [Fin.coe_castSucc, Fin.val_succ] at hk ⊢
       omega
     obtain ⟨mb, hmb⟩ := Option.isSome_iff_exists.mp (ih hjle)
     rw [decodePrefixBuild_succ, hmb]
+    dsimp only
     cases hdir : pSpec.dir j with
     | V_to_P =>
         rw [decodeMessagesPrefixStepPhiInv_vToP (hdir := hdir)]
         rfl
     | P_to_V =>
         have hjlt : (⟨j, hdir⟩ : pSpec.MessageIdx).1.1 < i.1.castSucc.1 := by
+          show j.1 < (i.1.castSucc).1
           simp only [Fin.val_succ] at hk
           omega
         rw [decodeMessagesPrefixStepPhiInv_pToV (hdir := hdir),
@@ -355,8 +372,7 @@ lemma decodePrefixBuild_serialize_eq
   | succ j₀ ih =>
     intro hk mb hbuild j hjk hj
     have hj₀le : (j₀.castSucc).1 ≤ i.1.castSucc.1 := by
-      simp only [Fin.coe_castSucc]
-      simp only [Fin.val_succ] at hk
+      simp only [Fin.coe_castSucc, Fin.val_succ] at hk ⊢
       omega
     rw [decodePrefixBuild_succ] at hbuild
     cases hprev : decodePrefixBuild (pSpec := pSpec) (U := U)
@@ -364,6 +380,7 @@ lemma decodePrefixBuild_serialize_eq
     | none => rw [hprev] at hbuild; simp at hbuild
     | some mb₀ =>
       rw [hprev] at hbuild
+      dsimp only at hbuild
       cases hdir : pSpec.dir j₀ with
       | V_to_P =>
         rw [decodeMessagesPrefixStepPhiInv_vToP (hdir := hdir)] at hbuild
@@ -376,6 +393,7 @@ lemma decodePrefixBuild_serialize_eq
       | P_to_V =>
         rw [decodeMessagesPrefixStepPhiInv_pToV (hdir := hdir)] at hbuild
         have hj₀lt : (⟨j₀, hdir⟩ : pSpec.MessageIdx).1.1 < i.1.castSucc.1 := by
+          show j₀.1 < (i.1.castSucc).1
           simp only [Fin.val_succ] at hk
           omega
         rw [lookupEncodedMessageAlphaHat?_toList em ⟨j₀, hdir⟩ hj₀lt] at hbuild
