@@ -5709,3 +5709,35 @@ O138 adjacent-pair extremality conjecture holds at small n while the KKH26 m > 1
 shapes dominate asymptotically, the two families must CROSS OVER in n; locating that
 crossover is a concrete probe-able question that directly shapes δ*. (Also note the
 rate-1/2 small-field artifact is weaker: two constraints already kill p = 17.)
+
+### O141 — the COMPLETE prime spectrum of mid-window badness via cyclotomic norm divisibility: the (16,8) adjacent-pair family is mid-window-bad at EXACTLY 17 primes, and clean at every other field FOREVER (2026-06-11, #357)
+
+`probe_o141_norm_divisibility_spectrum.py` (exact, asserts green). Three verdicts that
+together close the (16,8) window profile of the candidate-extremal family for ALL p:
+
+1. **The char-0 layer is EMPTY at depth 1**: no 10-subset of μ₁₆ has `e₂(A) = 0` in
+   `ℤ[ζ₁₆]` (exact arithmetic mod `Φ₁₆`, all 8008 subsets). Every per-prime qualifying
+   subset of O140's erratic depth-1 row is a pure characteristic-p surplus — the O134
+   `p | N(α)` mechanism is not a small correction here, it is the ENTIRE mid-window story.
+2. **The finite spectrum**: p qualifies at depth 1 only if `p | N(e₂(A))` for some A; the
+   complete set of such primes ≡ 1 (mod 16) is
+   `S(16,8) = {17, 97, 113, 193, 257, 337, 433, 449, 881, 1217, 1249, 1553, 2113, 2161,
+   3121, 7489, 18433}` (largest norm 18433). Validated: depth-1 census nonzero ⟺ p ∈ S for
+   all 25 primes ≤ 1297; for every p > 18433 the row is empty — no scan needed, ever.
+3. **Depth ≥ 2 dead at every prime**: a = 11, 12 census = 0 at all lucky primes
+   (257…18433), completing O140's universal death.
+
+**The first exact, all-fields, δ-resolved window profile of any candidate-extremal family:**
+- `δ ∈ [cap−1/n, cap) = [.4375, .5)`: bad at every p (saturation / t=1 sliver);
+- `δ ∈ [cap−2/n, cap−1/n) = [.375, .4375)`: bad at exactly the 17 primes of `S(16,8)`;
+- `δ ∈ (Johnson, cap−2/n)`: empty at EVERY prime.
+
+**Consequences for δ\*.** (a) If the O138 adjacent-pair extremality conjecture holds at
+(16,8), then for all p ∉ S(16,8) the true δ\* at this instance is `≥ cap − 2/n` — the
+window interior is CLEAN and δ\* is pinned within `2/n` of capacity at toy scale; the
+entire δ\*-relevant question collapses to (i) extremality and (ii) the norm spectrum.
+(b) Whether a deployed prime is mid-window-"unlucky" is a finite norm-divisibility
+computation — a new computable invariant of `(n, k, p)`. (c) The asymptotics of
+`max_A |N(e_j(A))|` in n (Lehmer/Mahler-measure territory) now directly prices how the
+exceptional-prime set grows — the lacunary-resultant thread of #357 §5 acquires a second,
+sharper target.
