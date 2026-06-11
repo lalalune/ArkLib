@@ -14,6 +14,7 @@ A.3 — Frank's orientation theorem, the appendix's deep combinatorial input) in
 zero pattern. The counting layer above the orientation is elementary and is proven here:
 
 * `HeadOrientation` — an orientation assigns each hyperedge a head among its vertices;
+  `HeadOrientation.updateHead` changes one edge head while preserving membership;
   `inDegree` counts heads;
 * `card_induced_le_card_heads` — edges induced by a vertex set have their heads inside it
   (the Case-2 count of (A.3));
@@ -37,6 +38,34 @@ variable {ι V : Type*} [Fintype ι] [DecidableEq ι] [Fintype V] [DecidableEq V
 structure HeadOrientation (e : ι → Finset V) where
   head : ι → V
   head_mem : ∀ i, (e i).Nonempty → head i ∈ e i
+
+omit [Fintype ι] [DecidableEq ι] [Fintype V] [DecidableEq V] in
+/-- Update one edge head to a chosen vertex of that edge. -/
+noncomputable def HeadOrientation.updateHead {e : ι → Finset V} (O : HeadOrientation e)
+    (i₀ : ι) (v : V) (hv : v ∈ e i₀) : HeadOrientation e := by
+  letI : DecidableEq ι := Classical.decEq ι
+  exact
+    { head := fun i => if i = i₀ then v else O.head i
+      head_mem := by
+        intro i hne
+        by_cases hi : i = i₀
+        · subst hi
+          simpa using hv
+        · simp [hi, O.head_mem i hne] }
+
+omit [Fintype ι] [DecidableEq ι] [Fintype V] [DecidableEq V] in
+@[simp] theorem HeadOrientation.updateHead_head_self {e : ι → Finset V}
+    (O : HeadOrientation e) (i₀ : ι) (v : V) (hv : v ∈ e i₀) :
+    (O.updateHead i₀ v hv).head i₀ = v := by
+  letI : DecidableEq ι := Classical.decEq ι
+  simp [HeadOrientation.updateHead]
+
+omit [Fintype ι] [DecidableEq ι] [Fintype V] [DecidableEq V] in
+@[simp] theorem HeadOrientation.updateHead_head_of_ne {e : ι → Finset V}
+    (O : HeadOrientation e) {i₀ j : ι} (v : V) (hv : v ∈ e i₀) (hji : j ≠ i₀) :
+    (O.updateHead i₀ v hv).head j = O.head j := by
+  letI : DecidableEq ι := Classical.decEq ι
+  simp [HeadOrientation.updateHead, hji]
 
 /-- The in-degree of a vertex: the number of edges oriented into it. -/
 def HeadOrientation.inDegree {e : ι → Finset V} (O : HeadOrientation e) (j : V) : ℕ :=
@@ -89,5 +118,6 @@ end AGL24
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms AGL24.HeadOrientation.sum_inDegree
+#print axioms AGL24.HeadOrientation.updateHead
 #print axioms AGL24.card_induced_le_card_heads
 #print axioms AGL24.card_induced_le_card_heads_sub

@@ -26,7 +26,9 @@ brick 21's vertex-degree bound as the `T = {j}` case.)
 * `edgeCrosses_inter_union_indicator_le` and `borderEdges_card_inter_add_union_le` — the
   submodularity brick for the border count;
 * `exists_border_head_outside_of_deficient_cut` — a deficient cut has an unclaimed border
-  edge whose head is outside the cut.
+  edge whose head is outside the cut;
+* `exists_updateHead_decreases_positive_deficiency_cut` — updating such an edge into the
+  cut strictly decreases that cut's positive deficiency.
 -/
 
 open Finset
@@ -103,6 +105,47 @@ theorem cutDeficiency_eq_zero_of_le {ι : Type*} [Fintype ι] {e : ι → Finset
     (h : k ≤ (headBorderEdges O T).card) :
     cutDeficiency O T k = 0 := by
   rw [cutDeficiency, Nat.sub_eq_zero_of_le h]
+
+omit [Fintype V] in
+theorem mem_headBorderEdges_updateHead_iff {ι : Type*} [Fintype ι] {e : ι → Finset V}
+    (O : HeadOrientation e) (T : Finset V) {i₀ : ι} {v : V}
+    (hv : v ∈ e i₀) (hvT : v ∈ T) (hnotSub : ¬ e i₀ ⊆ T) (j : ι) :
+    j ∈ headBorderEdges (O.updateHead i₀ v hv) T ↔
+      j = i₀ ∨ j ∈ headBorderEdges O T := by
+  classical
+  by_cases hji : j = i₀
+  · subst hji
+    rw [mem_headBorderEdges]
+    simp [HeadOrientation.updateHead, hnotSub, hvT]
+  · simp [headBorderEdges, hji]
+
+omit [Fintype V] in
+theorem headBorderEdges_card_updateHead_eq_succ {ι : Type*} [Fintype ι]
+    {e : ι → Finset V} (O : HeadOrientation e) (T : Finset V) {i₀ : ι} {v : V}
+    (hv : v ∈ e i₀) (hvT : v ∈ T) (hnotSub : ¬ e i₀ ⊆ T)
+    (hhead : O.head i₀ ∉ T) :
+    (headBorderEdges (O.updateHead i₀ v hv) T).card =
+      (headBorderEdges O T).card + 1 := by
+  classical
+  have hnotMem : i₀ ∉ headBorderEdges O T := by
+    rw [mem_headBorderEdges]
+    exact fun h => hhead h.1
+  have hset : headBorderEdges (O.updateHead i₀ v hv) T =
+      insert i₀ (headBorderEdges O T) := by
+    ext j
+    rw [mem_headBorderEdges_updateHead_iff O T hv hvT hnotSub j]
+    simp [Finset.mem_insert]
+  rw [hset, Finset.card_insert_of_notMem hnotMem]
+
+omit [Fintype V] in
+theorem cutDeficiency_updateHead_lt {ι : Type*} [Fintype ι]
+    {e : ι → Finset V} (O : HeadOrientation e) (T : Finset V) {i₀ : ι} {v : V}
+    {k : ℕ} (hv : v ∈ e i₀) (hvT : v ∈ T) (hnotSub : ¬ e i₀ ⊆ T)
+    (hhead : O.head i₀ ∉ T) (hdef : (headBorderEdges O T).card < k) :
+    cutDeficiency (O.updateHead i₀ v hv) T k < cutDeficiency O T k := by
+  have hcard := headBorderEdges_card_updateHead_eq_succ O T hv hvT hnotSub hhead
+  rw [cutDeficiency, cutDeficiency, hcard]
+  omega
 
 omit [Fintype V] in
 theorem edgeCrosses_iff_exists_in_out (E T : Finset V) :
@@ -381,9 +424,42 @@ theorem exists_border_head_outside_of_positive_deficiency {ι : Type*} [Fintype 
   exact exists_border_head_outside_of_deficient_cut O T hT hTne hwpc
     ((cutDeficiency_pos_iff O T k).mp hdef)
 
+omit [Fintype V] in
+theorem exists_updateHead_decreases_cutDeficiency_of_border_head_outside
+    {ι : Type*} [Fintype ι] {k : ℕ} {e : ι → Finset V}
+    (O : HeadOrientation e) (T : Finset V) {i₀ : ι}
+    (hitouch : (e i₀ ∩ T).Nonempty) (hnotSub : ¬ e i₀ ⊆ T)
+    (hhead : O.head i₀ ∉ T) (hdef : (headBorderEdges O T).card < k) :
+    ∃ O' : HeadOrientation e,
+      (headBorderEdges O' T).card = (headBorderEdges O T).card + 1 ∧
+        cutDeficiency O' T k < cutDeficiency O T k := by
+  obtain ⟨v, hv⟩ := hitouch
+  rw [Finset.mem_inter] at hv
+  exact ⟨O.updateHead i₀ v hv.1,
+    headBorderEdges_card_updateHead_eq_succ O T hv.1 hv.2 hnotSub hhead,
+    cutDeficiency_updateHead_lt O T hv.1 hv.2 hnotSub hhead hdef⟩
+
+/-- Positive-deficiency local reorientation step for a single cut. This is only the F3
+one-cut decrease brick; it does not assert that other cuts remain nondeficient or prove
+termination. -/
+theorem exists_updateHead_decreases_positive_deficiency_cut {ι : Type*} [Fintype ι]
+    {k : ℕ} {e : ι → Finset V} (O : HeadOrientation e) (T : Finset V)
+    (hT : T.Nonempty) (hTne : T ≠ Finset.univ)
+    (hwpc : WeaklyPartitionConnected k (Finset.univ : Finset V) e)
+    (hdef : 0 < cutDeficiency O T k) :
+    ∃ O' : HeadOrientation e,
+      (headBorderEdges O' T).card = (headBorderEdges O T).card + 1 ∧
+        cutDeficiency O' T k < cutDeficiency O T k := by
+  have hlt : (headBorderEdges O T).card < k := (cutDeficiency_pos_iff O T k).mp hdef
+  obtain ⟨i, hitouch, hnotSub, hhead⟩ :=
+    exists_border_head_outside_of_deficient_cut O T hT hTne hwpc hlt
+  exact exists_updateHead_decreases_cutDeficiency_of_border_head_outside
+    O T hitouch hnotSub hhead hlt
+
 end AGL24
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms AGL24.wpc_border_ge
 #print axioms AGL24.borderEdges_card_inter_add_union_le
 #print axioms AGL24.exists_border_head_outside_of_positive_deficiency
+#print axioms AGL24.exists_updateHead_decreases_positive_deficiency_cut
