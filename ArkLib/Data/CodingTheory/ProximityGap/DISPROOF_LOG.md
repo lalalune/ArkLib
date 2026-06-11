@@ -5709,34 +5709,3 @@ O138 adjacent-pair extremality conjecture holds at small n while the KKH26 m > 1
 shapes dominate asymptotically, the two families must CROSS OVER in n; locating that
 crossover is a concrete probe-able question that directly shapes δ*. (Also note the
 rate-1/2 small-field artifact is weaker: two constraints already kill p = 17.)
-
-### O140 — the death point GROWS with n: at n = 32 the adjacent-pair family survives three constraints where n = 16 died; the census runs ~100× above the random heuristic (2026-06-11, #357)
-
-`probe_o140_death_radius_n32.py` (exact, exhaustive over C(32,a) subsets): rate 1/4
-(n = 32, k = 8), constrained-census qualifying counts:
-
-| a | constraints | p = 97 | p = 193 | n = 16 comparison |
-|---|---|---|---|---|
-| 10 | e₂ = 0 (c = 2) | 662,608 | 334,832 | alive (16–80) |
-| 11 | e₂ = e₃ = 0 (c = 3) | 15,104 | 3,232 | **DEAD at n = 16** |
-
-Verdicts:
-* **Constant-constraint death REFUTED:** n = 16 died at c = 3 (p ≥ 97); n = 32 is alive at
-  c = 3 with thousands of qualifying subsets. The death constraint count c*(n) grows with
-  n, so the family's reach does NOT collapse to capacity − O(1/n): the conjecturally
-  extremal family pushes **deeper into the window as n grows** — the qualitative shape a
-  genuine interior δ* requires.
-* **Massive structured surplus:** the random heuristic C(n,a)/p^{c−1} predicts ≈ 6.9k at
-  (a = 10, p = 97) and ≈ 141 at (a = 11, p = 97); actual counts are ~100× larger at both —
-  the vanishing-power-sum system over subgroup subsets is far from generic (the same
-  structured-surplus mechanism as the O134 per-prime halo, now measured at the census
-  level inside the window).
-* Counts decay with p at fixed (n, a) (factor ≈ 2 and ≈ 4.7 from p = 97 to 193) — a
-  field-dependent halo over a (possibly field-independent) core; separating core from halo
-  is the next analytic question.
-
-Open: the exact death point at n = 32 (a = 12 needs C(32,12) ≈ 226M with two-stage
-early-abort, or a MITM count); the scaling law c*(n) (linear? logarithmic?) — c*(n)/n
-determines this family's asymptotic window reach, i.e. a direct lower-bound trace on the
-δ*-relevant census. The formalized law (`badScalar_iff_constrainedSubsetSum`, landed) makes
-every one of these counts a theorem-grade census the moment it is computed.
