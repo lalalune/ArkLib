@@ -36,6 +36,8 @@ data point ever computed** (9 instances, 14+ field-combos, 3 red-team cycles).
 | bracket | `CensusLowerBound.lean` (sibling) | `census_le_epsMCA` — census is an unconditional `ε_mca` lower bound |
 | pin | `CensusConditionalPin.lean` + `CensusLowerBound.lean` (sibling) | `mcaDeltaStar_eq_of_censusCrossing'` — δ* = census crossing, conditional on `CensusUpperExtremal`; non-vacuously instantiated at F₅ |
 | staircase | sibling universal-band files | `ε_mca·q` exact on the first two bands for every code (the double-spike mechanism) |
+| staircase | `BandCollapse.lean` | `badScalar_card_le_band` / `epsMCA_le_band` — **the band collapse** (O153): ≤ `j+1` bad scalars on band `j` for distance `> 3j`; the rigid relation `w_γ = w_{γ₁} + (γ−γ₁)v` + injection + pinch |
+| staircase | `BandExactness.lean` | `epsMCA_band_exact` — **the exact staircase**: `ε_mca(RS, j/n) = (j+1)/q` exactly at every in-hypothesis band (collapse + spike LB + `rs_nonzero_wt_lower`) |
 
 ## The empirical layer (DISPROOF_LOG O135–O152; probes in `scripts/probes/`)
 
@@ -60,9 +62,11 @@ data point ever computed** (9 instances, 14+ field-combos, 3 red-team cycles).
 **δ*(production smooth RS, ε* = 2⁻¹²⁸) = 1 − a_c/n**, where `a_c` is the true-census
 crossing. Machine-checked end-to-end except for:
 
-1. **Sup-extremality** (the corrected `CensusUpperExtremal`: nothing beats
-   max(staircase, census)). Exact at 9 instances; 3 red-team survivals; equivalent in its
-   regime to beyond-Johnson list-decoding bounds (the CS25 coupling) — this is THE wall.
+1. **Census-band sup-extremality** (the corrected `CensusUpperExtremal`, now needed ONLY in
+   the census-dominance regime: the staircase regime is exact by theorem
+   (`epsMCA_band_exact`) up to a third of the distance). Exact at 9 instances; 3 red-team
+   survivals; equivalent in its regime to beyond-Johnson list-decoding bounds (the CS25
+   coupling) — this is THE wall.
 2. **The true subset-sum count at s ≥ 256** (the certified layer stops at n = 128
    post-Parseval; deeper needs Thorner–Zaman (`KKH26PolyFieldCeiling`) or
    lacunary-resultant progress).
