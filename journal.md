@@ -69,3 +69,13 @@ campaign on this repository. Maintained alongside the work; newest entries last.
   activate the surface production's largeness conditions and close by the one-pair
   capture. Remaining: the dichotomy assembly, the residual-bundle input check, and the
   final statement.
+
+- Entry 4: consistency probe on the weld's three numeric conditions found the window
+  nearly empty as composed: the cover and threshold inequalities at a shared degree
+  parameter force the matching threshold to 1 and pin the close-count exactly (with a
+  divisibility constraint), while the smallness condition caps it by a constant. The
+  surface route as currently wired covers only a thin family of stacks. Re-planning:
+  examine the complement weld variant, or generalize the weld to decouple the two
+  degree parameters (the paper's threshold scales with the close-count). The probe ran
+  before the top assembly was built on the vacuous window — methodology item 3 doing
+  its job.
