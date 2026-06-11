@@ -5511,3 +5511,38 @@ elements — their excess over generic is the true smooth-domain signal). Incide
 decisive at the level of EXACT anatomy (G1 menu law, the S∩B lattice) — but as input to
 weight-filter arguments, not unions. Batch: G1 ✓ A1 ✓ A2 ✓ G5 ✗(refuted-informative);
 G2+G3, A3 pending capacity.
+
+### O135 — THE r=5 FALSIFIER FINALS: the mod-p surplus SCALES with pattern complexity — +33,453 (33.6%) at BabyBear, +16,941 (17.0%) at p₂, vs r=3's 1.4×10⁻⁵; first observed feasible-class inflation (nubs, 2026-06-11)
+
+O134's r=5 scan completed (full dossier `scripts/probes/genlaw/falsifier/RESULTS.md`):
+exhaustive per-class MITM over ALL 3,222,016 pattern-(14,5) (O,mask) classes at both
+production primes. Crossfoots exact (char-0 Σ = 99,512; 11,808 feasible classes; per-class
+char-0 == audit DP at both primes).
+
+* **BabyBear: mod-p marginal r=5 count = 132,965 = char-0 + 33,453** (4,242 spurious
+  classes, 33.6% relative). **p₂: 116,453 = +16,941** (2,409 classes, 17.0%). Compare r=3:
+  +11/+54 (~10⁻⁵). The (14,5) α-lattice is rich enough that p | N(α) is statistically
+  GENERIC at ~2³¹-size primes — the surplus sits at the uniform-heuristic scale. The
+  forecastable char-0 core survives unchanged; the per-prime halo is now the dominant
+  correction at r ≥ 5 and grows with r.
+* **Locality law (new):** at BabyBear, ALL 33,453 spurious solutions land on
+  char-0-INFEASIBLE classes — the 11,808 feasible class counts transfer EXACTLY. At p₂,
+  exactly ONE feasible class inflates (+1) — the first observed mod-p inflation of a
+  feasible class, so feasible-class exactness is itself prime-specific, not a law.
+* **Verification:** 25-class full-brute samples per prime, 50/50 mitm == brute and
+  genuine_bal == char0; 447 explicit spurious configs (238 BB + 209 p₂) all reconstructed
+  by raw polynomial arithmetic (monic deg-34, coeff(X³³) = 0, coeff(X³²) = λ, agreement
+  EXACTLY 33); α-spectrum: unique α per sampled class (no cross-class sharing, unlike r=3
+  at p₂), L1 norms 12–20, α(ζ) ≡ 0 mod p verified for all. ξ ∈ μ₆₄ never occurs mod p
+  (both strata, both primes).
+* **Consequence for the per-prime bad list at n=64, BabyBear:** witness 6,435 (exact mod p
+  for the in-S/out-S anatomy... per the O129 incidence caveat) + marginal ≥ r=3 764,555 +
+  r=5 132,965; odd r ≥ 7 mod-p strata UNKNOWN (char-0 zero no longer implies mod-p zero —
+  at this surplus scale the r=7 pattern (13,7) plausibly carries a pure-spurious mod-p
+  stratum; named open).
+
+**Where the open core moves:** per-prime census theory at n ≥ 64 = char-0 structure + a
+quantitatively measured generic halo (uniform-heuristic scale, locality on infeasible
+classes at large primes, breaking at smaller ones). The named opens: the halo's exact
+first moment (is the uniform heuristic a theorem on average over α?), the r=7 mod-p
+stratum, and the witness-layer surplus.

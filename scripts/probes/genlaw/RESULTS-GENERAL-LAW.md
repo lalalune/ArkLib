@@ -112,9 +112,15 @@ NOT derived; predicts r_max = 9 at s=128). So marginal(64) ≥ 2·387,631,404,40
    controls (p=97 at n=32, p=193 at n=64) show massive spuriousness at the uniform
    heuristic, as expected. So the n=64 forecast numbers are exact in char-0 and **per-prime
    lower bounds with a measured tiny surplus** at the production primes; the surplus is
-   prime-specific, not structural. The r=5-stratum scan and the witness-layer surplus
-   question are in flight; odd r ≥ 7 patterns remain unscanned mod p (r = 1 is excluded
-   mod p by the same prime-independent ξ ∈ μ₆₄ argument as char-0).
+   prime-specific, not structural. **The r=5 scan (complete, both primes) shows the
+   surplus scales with pattern complexity: BabyBear 132,965 = 99,512 + 33,453 (33.6%
+   relative), p₂ 116,453 = +16,941 (17.0%)** — at (14,5) the α-lattice is rich enough
+   that p | N(α) is generic at ~2³¹ primes; the char-0 core carries a large generic
+   mod-p halo (all of it on char-0-infeasible classes at BabyBear; at p₂ exactly one
+   feasible class inflates by 1). 50/50 brute==MITM samples; 447 spurious configs
+   reconstructed end-to-end (`falsifier/`). The witness-layer surplus question and odd
+   r ≥ 7 remain unscanned mod p (r = 1 is excluded mod p by the same prime-independent
+   ξ ∈ μ₆₄ argument as char-0).
 3. Census closed forms beyond the verified families are fits (m = 4, 8, 16), not proofs;
    ε₀ censuses are irregular through m = 4 — use the O(m³) per-s enumeration.
 4. The r=5 taxonomy (E5 + placement) is **charted, not derived**; taxonomy completeness for

@@ -17,8 +17,8 @@ p2 (3·2^30+1):
 |---|---|---|---|---|---|
 | r=3 (15,3), 19,840 classes × C(29,15) | BabyBear | 764,544 | **764,555** | **+11** | 2 (both char-0-infeasible) |
 | r=3 (15,3) | p2 | 764,544 | **764,598** | **+54** | 10 (all char-0-infeasible) |
-| r=5 (14,5), 3,222,016 classes × C(27,14) | BabyBear | 99,512 | *(scan in flight)* | *(pending)* | *(pending)* |
-| r=5 (14,5) | p2 | 99,512 | *(scan in flight)* | *(pending)* | *(pending)* |
+| r=5 (14,5), 3,222,016 classes × C(27,14) | BabyBear | 99,512 | **132,965** | **+33,453** | 4,242 |
+| r=5 (14,5) | p2 | 99,512 | **116,453** | **+16,941** | 2,409 |
 
 Every r=3 spurious config (all 65) was triple-checked: (i) MITM count == full
 direct brute force over all C(29,15) = 77,558,760 B-subsets of the exact flagged
@@ -96,14 +96,30 @@ distinct, p2: 5 distinct at r=3), each below the norm-transfer threshold.
 
 ## The n=64 r=5 stratum
 
-PENDING — the full both-prime r=5 scan (3,222,016 classes × C(27,14) MITM) is
-running at the time of this commit; interim 1/64-slice at BabyBear: +519 excess over
-64 spurious classes, extrapolating ≈33k ≈ the uniform heuristic 32k. Final numbers,
-the 25-class brute samples, and the α-spectrum land in a follow-up commit.
+**The surplus scales dramatically with pattern complexity.** Full both-prime scan of all
+3,222,016 (O,mask) classes (crossfoots exact: char-0 Σ = 99,512, 11,808 feasible classes,
+per-class char-0 == audit DP at both primes):
+
+- **BabyBear: mod-p = 132,965 = char-0 + 33,453** (33.6% relative; 4,242 spurious classes)
+- **p₂: mod-p = 116,453 = char-0 + 16,941** (17.0% relative; 2,409 classes)
+
+vs r=3's +11/+54 (1.4×10⁻⁵ relative). The r=5 surplus sits at the uniform-heuristic scale:
+the (14,5) pattern's α-lattice is rich enough that p | N(α) is statistically generic at
+~2³¹-size primes — the structural char-0 core keeps a large generic mod-p halo. Locality:
+at BabyBear every spurious solution lands on a char-0-INFEASIBLE class (0 excess on the
+11,808 feasible ones); at p₂, exactly ONE feasible class carries excess 1 — the first
+observed mod-p inflation of a feasible class count.
+
+Verification (`r5_finals_extract.txt`, `brute_r5_*.txt`, `alpha_r5_report.txt`): 25-class
+full-brute samples per prime — 50/50 mitm == brute, genuine_bal == char0; 447 explicit
+spurious configs (238 BB + 209 p₂) ALL reconstructed by raw polynomial arithmetic as
+monic deg-34, coeff(X³³)=0, coeff(X³²)=λ, agreement exactly 33; α-spectrum: every sampled
+class has a UNIQUE α (no sharing, unlike r=3 at p₂), L1 norms 12–20, all α(ζ) ≡ 0 mod p
+verified. xiH = 0 at both primes.
 
 ## L4 mod p (ξ slipping into μ₆₄)
 
-At both production primes, across all 19,840 r=3 classes: ξ ∈ μ₆₄ never occurs (xiH=0); r=5 pending the full scan.
+At both production primes, across all 19,840 r=3 AND all 3,222,016 r=5 classes: ξ ∈ μ₆₄ never occurs mod p (xiH=0 at both primes).
 classes have ξ ∈ μ₆₄ ∪ {0} mod p (r=3: zero at both primes). At p=97 (control)
 this happens constantly (672/2,240 classes), confirming the check is live.
 
