@@ -6192,3 +6192,28 @@ cleanest flat-numerator law in the programme; with `census_le_epsMCA` it gives
 `ε_mca ≥ n/p` at `δ = 9/16` (mid-window!) for every field — and under the corrected
 (excess) extremality it is exact there. The take-over family is rigid in the strongest
 sense: its MCA badness is a single characteristic-zero orbit, invisible to field choice.
+
+### O149 — the halo mechanism verified at the norm level: the exotic subset's norms are EXACTLY 2²·193² — monogamous halo membership; the halo bound becomes a divisor-counting question (2026-06-11, #357, surface (ii))
+
+`probe_o149_halo_norm_mechanism.py` (exact ℤ[ζ₃₂] arithmetic mod Φ₃₂): the p = 193 exotic
+halo subset `A = (0,1,3,8,11,18,20,21)` (O145) has
+
+  `N(α_A) = N(β_A) = 148996 = 2² · 193²`
+
+(α = Σζ^i, β = Σζ^{3i} — the two gap-band constraint sums). Consequences:
+
+* **Monogamy:** 193 is the only odd prime dividing either norm — this subset can join the
+  halo at p = 193 and at NO other prime. The O145 observation (each prime's halo is its
+  own) has its mechanism: halo membership at p ⟺ p | N(α_S) AND p | N(β_S).
+* **Joint vanishing explained:** both constraint norms share the prime — the apparent
+  coincidence that one subset satisfies BOTH band constraints mod 193 is a single
+  algebraic event (likely one prime ideal of ℤ[ζ] above 193 dividing both elements).
+* **Tiny norms:** 148996 ≈ 2^17.2 versus the worst-case bound a^φ(32) = 8^16 = 2^48 —
+  the same real-vs-worst-case gap measured at the resultant level (O129/Parseval), now at
+  the halo level. Per-subset halo-prime counts are ≤ Ω(N) ≤ ~17/log₂(p) ≈ 2 at p ≈ 200.
+* **The halo surface, recast:** `halo(p) = #{S non-fiber : p | N(α_S), p | N(β_S)}` — the
+  one-orbit law is a joint norm-divisibility multiplicity statement, attackable by the
+  O134 α-spectrum correction theory (which counts exactly such divisibilities) and by
+  averaging: `Σ_p halo(p) ≤ Σ_S Ω(N(α_S))` gives a PROVABLE average-halo bound from the
+  norm bound alone. Formalization route: Mathlib cyclotomic-field norms; the finite
+  per-instance certificates (like this one) are exact-arithmetic checkable today.
