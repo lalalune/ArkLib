@@ -3,26 +3,31 @@
   "total": 103,
   "open": 20,
   "discharged": 83,
+  "refuted": 0,
   "by_top_dir": {
    "Data": {
     "total": 27,
     "open": 9,
-    "discharged": 18
+    "discharged": 18,
+    "refuted": 0
    },
    "OracleReduction": {
     "total": 39,
     "open": 7,
-    "discharged": 32
+    "discharged": 32,
+    "refuted": 0
    },
    "ProofSystem": {
     "total": 17,
     "open": 3,
-    "discharged": 14
+    "discharged": 14,
+    "refuted": 0
    },
    "ToMathlib": {
     "total": 20,
     "open": 1,
-    "discharged": 19
+    "discharged": 19,
+    "refuted": 0
    }
   }
  },
@@ -639,6 +644,32 @@
      "ambiguous_name_match": false
     }
    ],
+   "refutations": [
+    {
+     "name": "ArkLib.BoundaryCardResidualAffineLineRefutation.not_boundaryCardResidual_affineLine",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualAffineLineRefutation.lean",
+     "line": 118,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ArkLib.BoundaryCardResidualRefutation.not_boundaryCardResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean",
+     "line": 246,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ArkLib.BoundaryCardStrictInteriorRefutation.not_boundaryCardResidual_nonSquareEndpoint",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardStrictInteriorRefutation.lean",
+     "line": 311,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
    "status": "discharged"
   },
   {
@@ -764,6 +795,16 @@
      "kind": "theorem",
      "file": "ArkLib/ToMathlib/CurveFamilyRoundConsumers.lean",
      "line": 95,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "refutations": [
+    {
+     "name": "ArkLib.BoundaryCardResidualRefutation.not_boundaryProbabilityResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean",
+     "line": 274,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -950,6 +991,40 @@
      "ambiguous_name_match": false
     }
    ],
+   "refutations": [
+    {
+     "name": "BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutation.lean",
+     "line": 309,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_false_of_constant_of_leadingCoeff_pow_ne_one",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutation.lean",
+     "line": 321,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic_of_evalX_eq",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutation.lean",
+     "line": 335,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "BCIKS20.HenselNumerator.Witness.faaDiBrunoSuccSumZeroResidual_false",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutationWitness.lean",
+     "line": 168,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
    "status": "discharged"
   },
   {
@@ -1108,6 +1183,16 @@
      "ambiguous_name_match": false
     }
    ],
+   "refutations": [
+    {
+     "name": "ArkLib.BoundaryCardStrictInteriorRefutation.not_boundaryCardStrictInteriorResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardStrictInteriorRefutation.lean",
+     "line": 299,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
    "status": "discharged"
   },
   {
@@ -1161,6 +1246,16 @@
      "kind": "theorem",
      "file": "ArkLib/ToMathlib/BoundaryDischarge.lean",
      "line": 343,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "refutations": [
+    {
+     "name": "ArkLib.BoundaryCardResidualRefutation.not_boundaryCardLatticeResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean",
+     "line": 252,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -2017,6 +2112,24 @@
      "ambiguous_name_match": false
     }
    ],
+   "refutations": [
+    {
+     "name": "DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean",
+     "line": 502,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean",
+     "line": 502,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
    "status": "discharged"
   },
   {
@@ -2171,6 +2284,16 @@
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/VerifierReplay.lean",
      "line": 934,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "refutations": [
+    {
+     "name": "DuplexSpongeFS.Hyb34LogShapeFalse.hyb34StepResidual_logShape_false",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean",
+     "line": 679,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
