@@ -177,8 +177,40 @@ theorem ofReal_johnsonBoundReal_le_production (domain : Fin n ↪ F) (η δ : �
         · rw [ENNReal.ofReal_natCast]
         · rw [ENNReal.ofReal_natCast]
 
+open BCIKS20.CellPencilJohnson CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+/-- **THE PRODUCTION JOHNSON REACH, END TO END.**  Conditional on exactly the named
+`CellPackageSupply` residual: for every production-shaped instance (rate `≥ 1/2`,
+`m`-quantity capped by `M`, field large enough that `(4(M+1)⁵ + 2(M+1))·n/q ≤ ε*` —
+at `ε* = 2^{−128}`, `M = 64`, `n ≤ 2^{30}`: every `q ≥ 2^{192}`), every Johnson-range
+radius is below the threshold:  `δ ≤ mcaDeltaStar(RS, ε*)`. -/
+theorem production_johnson_reach
+    (hsupply : ∀ (n k m : ℕ) (_ : NeZero n) (F₀ : Type) (_ : Field F₀) (_ : Fintype F₀)
+      (_ : DecidableEq F₀) (domain : Fin n ↪ F₀) (δ : ℝ≥0),
+      2 ≤ k → k + 1 ≤ n → 12 ≤ m → δ ≤ 1 →
+      CellPackageSupply domain k δ
+        (max (n * (GuruswamiSudan.constraintIndices m).card
+          * (gs_degree_bound k n m / (k - 1))) n))
+    {n k m M : ℕ} [NeZero n] {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
+    (domain : Fin n ↪ F₀) (η δ : ℝ≥0)
+    (hk2 : 2 ≤ k) (hkn : k + 1 ≤ n) (hm12 : 12 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < _root_.gs_johnson k n m)
+    (hM3 : 3 ≤ M)
+    (hmle : (m : ℝ) ≤
+      max (⌈((((k : ℝ) / n + 1 / n)) ^ ((1 : ℝ) / 2)) / (2 * (η : ℝ))⌉ : ℝ) 3)
+    (hmM : (max (⌈((((k : ℝ) / Fintype.card (Fin n)
+        + 1 / Fintype.card (Fin n))) ^ ((1 : ℝ) / 2)) / (2 * (η : ℝ))⌉ : ℝ) 3 ≤ M))
+    (hρ : (1 / 2 : ℝ) ≤ (k : ℝ) / Fintype.card (Fin n) + 1 / Fintype.card (Fin n))
+    {εstar : ℝ≥0∞}
+    (hq : (((4 * (M + 1) ^ 5 + 2 * (M + 1)) * n : ℕ) : ℝ≥0∞)
+      / (Fintype.card F₀ : ℝ≥0∞) ≤ εstar) :
+    δ ≤ ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := F₀) (A := F₀)
+        ((ReedSolomon.code domain k : Set (Fin n → F₀))) εstar :=
+  production_good_johnson_of_packageSupply hsupply domain η δ hk2 hkn hm12 hδ1 hδJ
+    hmle (ofReal_johnsonBoundReal_le_production domain η δ hM3 (by omega) hmM hρ hδ1 hq)
+
 end ProximityGap.ProductionRegime
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.ProductionRegime.johnsonBoundReal_le_production
 #print axioms ProximityGap.ProductionRegime.ofReal_johnsonBoundReal_le_production
+#print axioms ProximityGap.ProductionRegime.production_johnson_reach
