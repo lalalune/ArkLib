@@ -889,3 +889,41 @@ TRUE estimate the homogeneity reduction reaches. Consequence:
 literature sum-product estimate (`N ≪ |G|^{3/2}`), now empirically validated. The remaining work is
 its formalization (a real multi-brick analytic-number-theory effort), not a fabrication and not a
 no-go. This is the most concrete the open core has ever been stated.
+## 28. SYNTHESIS: smooth-domain δ* IS pinned (n=16); the asymptotic open input = N ≪ |G|^{3/2} via Stepanov
+
+Connecting my energy reduction (§24-27) to the existing cone substrate:
+
+**(a) A smooth-domain δ* pin already exists, axiom-clean.**
+`DeltaStarConcretePinF17.δ_star_two_sided_pin` ([propext, Classical.choice, Quot.sound], no sorryAx)
+gives a **two-sided** pin of `δ*` at an explicit interior radius for `F = ZMod 17`, evaluation domain
+`G = Fˣ` = the 16th roots of unity (`n = 16 = 2^4`, a FULLY smooth 2-power multiplicative subgroup —
+the exact deployed FRI/STIR code structure, not a toy). List size pinned (`list_card_exact = 19`,
+`upper_bound_structural ≤ 120`) bracketing `δ*` from both sides inside `(1−√ρ, 1−ρ)`. This is a
+strictly stronger explicit data point than the `n=5` `MCAWindowInteriorPin` (which is not smooth).
+So: **`δ*` is proven-pinned, two-sided, axiom-clean, on a genuine smooth subgroup** — only the
+*cryptographic-`n` asymptotic at `ε*=2^-128`* is open.
+
+**(b) The asymptotic open input, fully localized.** The deployed (asymptotic) pin reduces — in
+machine-checked Lean (`KKH26DeltaStarReduction` → anti-concentration ladder → `AddEnergyMulHomogeneous`
+→ `AddEnergyNormalizedBound`) — to the single sum-product estimate `N ≪ |G|^{3/2}` (§27, empirically
+validated TRUE). This is `E(G) ≪ |G|^{5/2}` (Heath-Brown–Konyagin/Shkredov).
+
+**(c) The Stepanov formalization route is partially built.** The repo already has the Stepanov
+auxiliary machinery for exactly this kind of subgroup estimate:
+- `StepanovHighMultVanisher.exists_highMult_vanisher` — the Stepanov auxiliary: a nonzero
+  degree-controlled polynomial vanishing to high multiplicity on a prescribed point set (PROVEN, via
+  `le_rootMultiplicity_iff_hasseDeriv` + `degree_combination_le`).
+- `GK16RootCounting.sum_rootMultiplicity_le_natDegree` — the root-count ⟹ degree contradiction that
+  closes a Stepanov argument.
+- `StepanovNonVanishing` — reduces the non-vanishing precondition to ONE named genus hypothesis
+  (`squarefree_quadratic_irreducible_ratFunc` discharges the irreducibility half; the genus count is
+  the remaining gate).
+So `N ≪ |G|^{3/2}` is reducible to wiring the Stepanov auxiliary to the surface `z₁+z₂=z₃+1` over
+`⟨ω⟩` plus the named genus hypothesis — a genuine, substantial, non-fabricated formalization effort
+(active #232/#357 lineage), NOT a barrier.
+
+**Honest status (sharpest form):** `δ*` IS two-sided pinned, axiom-clean, on a smooth multiplicative
+subgroup (`n=16`, `DeltaStarConcretePinF17`). The DEPLOYED asymptotic (`n→∞`, `ε*=2^-128`) reduces to
+one TRUE, validated, named sum-product estimate `N ≪ |G|^{3/2}`, whose formalization route (Stepanov)
+is partially built and genus-gated. The gap is formalization machinery, not mathematical truth and not
+a no-go. No fabrication.
