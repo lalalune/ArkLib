@@ -240,6 +240,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510AgreementSupply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Arith
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Bundle
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Capture
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510CellPinning
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510EndToEnd
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Improve
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Kill
@@ -544,7 +545,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.GG25ExactPreservation
 import ArkLib.Data.CodingTheory.ProximityGap.GG25MarkedCurve
 import ArkLib.Data.CodingTheory.ProximityGap.GG25NonCovering
 import ArkLib.Data.CodingTheory.ProximityGap.GG25SmallWitness
-import ArkLib.Data.CodingTheory.ProximityGap.GG25WeightedTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Admissible
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Claim16Transport
 import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
