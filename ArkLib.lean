@@ -1556,6 +1556,7 @@ import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.ProofSystem.Logup.Security.ConsistentClaimCore
 import ArkLib.ProofSystem.Logup.Security.LogupBatchingBinding
 import ArkLib.ProofSystem.Logup.Security.LogupClaimBatchAffine
+import ArkLib.ProofSystem.Logup.Security.LogupAppendCompletenessUncond
 import ArkLib.ProofSystem.Logup.Security.LogupClearedGrandSum
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessClose
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessEmptyOracle
