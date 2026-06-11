@@ -183,6 +183,16 @@ lemma probEvent_sampleUnused_le_card {xs : List X} (h : xs ≠ []) (hnd : xs.Nod
     exact of_decide_eq_true (List.mem_filter.mp hmem).2
   exact_mod_cast hcount
 
+/-- **The per-step landing bound, full-uniform arm (4D-3 hash atom)**: a uniform draw from
+the whole type hits a target set with probability at most `|target| / |type|`. -/
+lemma probEvent_uniformSample_le_card {Y : Type} [Fintype Y] [Nonempty Y] [SampleableType Y]
+    [DecidableEq Y] (S : Finset Y) :
+    Pr[ (· ∈ S) | $ᵗ Y] ≤ (S.card : ℝ≥0∞) / Fintype.card Y := by
+  classical
+  rw [probEvent_uniformSample]
+  refine ENNReal.div_le_div_right ?_ _
+  exact_mod_cast Finset.card_le_card (fun x hx => (Finset.mem_filter.mp hx).2)
+
 /-! ## Step exposures (public, for cross-file consumers) -/
 
 lemma lazyPermImpl_run_inl_none (cp : List (X × X)) {a : X}
