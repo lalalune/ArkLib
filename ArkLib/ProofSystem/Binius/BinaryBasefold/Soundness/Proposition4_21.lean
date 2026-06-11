@@ -9,7 +9,6 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.FoldDetDischarge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Discharge
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Probability
 
 /-!
 ## Binary Basefold Soundness Proposition 4.21
@@ -391,7 +390,25 @@ lemma prop_4_21_case_1_fiberwise_close (i : Fin ℓ) (steps : ℕ) [NeZero steps
       conv_rhs => rw [mul_div_assoc]
 -/
 
+/-- Residual interface for Proposition 4.21, Case 2 (fiberwise-far branch).  The in-tree
+instance is assembled in `Soundness/Prop421Case2Assembly.lean` from the proven fold/pre-tensor
+bridge and the Lemma 4.22 far-lift. -/
+class Prop421Case2FiberwiseFarResidual : Prop where
+  holds : ∀ (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (h_far : ¬fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) (f := f_i)),
+    let next_domain_size := Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx)
+    Pr_{ let r ←$ᵖ (Fin steps → L) }[
+      let f_next := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
+        h_destIdx h_destIdx_le f_i r
+      UDRClose 𝔽q β destIdx h_destIdx_le f_next
+    ] ≤ ((steps * next_domain_size) / Fintype.card L)
+
 lemma prop_4_21_case_2_fiberwise_far (i : Fin ℓ) (steps : ℕ) [NeZero steps]
+    [Prop421Case2FiberwiseFarResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
     {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
     (h_far : ¬fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩) (steps := steps)
@@ -402,7 +419,8 @@ lemma prop_4_21_case_2_fiberwise_far (i : Fin ℓ) (steps : ℕ) [NeZero steps]
         h_destIdx h_destIdx_le f_i r
       UDRClose 𝔽q β destIdx h_destIdx_le f_next
     ] ≤ ((steps * next_domain_size) / Fintype.card L) := by
-  exact prop421Case2_probability_bound 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  exact Prop421Case2FiberwiseFarResidual.holds
+    (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     i steps h_destIdx h_destIdx_le f_i h_far
 
 /-!
@@ -422,6 +440,7 @@ Proof strategy:
   μ(`d(fold(f⁽ⁱ⁾, rᵢ', ..., rᵢ₊steps₋₁'), C⁽ⁱ⁺steps⁾) < dᵢ₊steps / 2`) ≤ steps · |S⁽ⁱ⁺steps⁾| / |L|
 -/
 lemma prop_4_21_bad_event_probability (i : Fin ℓ) (steps : ℕ) [NeZero steps]
+    [Prop421Case2FiberwiseFarResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
     {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
     let domain_size := Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx)

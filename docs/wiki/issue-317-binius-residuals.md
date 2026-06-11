@@ -24,14 +24,19 @@ Issue: <https://github.com/lalalune/ArkLib/issues/317>
 ## Local Residual Inventory
 
 The issue body names the Binius proof-system residuals that should become in-tree theorems or
-honest smaller residuals. Current local classes are:
+honest smaller residuals. Current local residual surfaces are:
 
 - `Prop421Case1FiberwiseCloseResidual` and `Prop421Case2FiberwiseFarResidual` in
-  `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean`.
-- `Prop4212Case1Residual` and `Prop4212Case2Residual` in
-  `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Incremental.lean`.
+  `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean`; both have in-tree
+  instances.
+- The old `Prop4212Case1Residual` and `Prop4212Case2Residual` classes are gone from
+  `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Incremental.lean`; the current API exposes
+  direct theorems `prop_4_21_2_case_1_fiberwise_close_incremental`,
+  `prop_4_21_2_case_2_fiberwise_far_incremental`, and
+  `prop_4_21_2_incremental_bad_event_probability`.
 - `PreviousSuffixFiberAlignmentResidual` in
-  `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean`.
+  `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean`; it has an in-tree
+  instance in `Soundness/SuffixFiberAlignment.lean`.
 - `ExtractMLPCorrectnessResidual` in `ArkLib/ProofSystem/Binius/BinaryBasefold/Relations.lean`.
 - `FinalSumcheckStepLogicCompleteResidual` in
   `ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean`.
@@ -113,23 +118,23 @@ or `PreTensorCombineJointProximityResidual` class remains in the current working
 
 ## Open Math/Definition Notes
 
-- `Prop4212Case1Residual` has an in-tree instance in `Soundness/Incremental.lean`, backed by
-  `Soundness/IncrementalCase1.lean`.
+- `Prop4212Case1Residual` and `Prop4212Case2Residual` have been removed from
+  `Soundness/Incremental.lean`. Their content is now direct theorem surface:
+  `prop_4_21_2_case_1_fiberwise_close_incremental`,
+  `prop_4_21_2_case_2_fiberwise_far_incremental`, and
+  `prop_4_21_2_incremental_bad_event_probability`. The case-2 proof uses the one-step
+  affine/interleaved proximity gap via `case2_one_step_far_positive_probability` and
+  `case2_one_step_far_final_probability`.
 - `Prop421Case1FiberwiseCloseResidual` is discharged in
   `Soundness/Prop421Case1Discharge.lean`, and `Soundness.lean` now re-exports that module.
-- `Prop421Case2FiberwiseFarResidual` has a new attempted discharge path:
+- `Prop421Case2FiberwiseFarResidual` has a discharge path:
   `Soundness/PreTensorFar.lean` now packages the Lemma 4.22 contrapositive
   (`not_jointProximityNat_of_not_fiberwiseClose`), and `Soundness/Prop421Case2Assembly.lean`
   installs `instProp421Case2FiberwiseFarResidual` from the proven fold/pre-tensor bridge plus the
-  far-lift. This is mathematically the intended DG25 route, but it has not yet completed a focused
-  Lean build in the saturated local environment.
-- `Prop4212Case2Residual` remains the incremental fiberwise-far case; the missing bridge is the
-  one-step DG25 affine/interleaved proximity gap instantiated against the Binary Basefold suffix
-  stack. `Incremental.lean` already has both the positive remaining-step bridge
-  `fiberwiseClose_fold_implies_affineLineEval_close_pos` and the final-boundary bridge
-  `UDRClose_fold_implies_affineLineEval_close_zero`; the remaining assembly is to derive far of
-  the current suffix from `¬E_k`, split the suffix pre-tensor stack, and map `E_{k+1}` into the
-  affine-line close event before applying the existing RS interleaved affine gap.
+  far-lift. A local `lake build
+  ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Assembly:olean` attempt on
+  2026-06-11 replayed dependencies for 900 seconds and timed out before producing a target
+  diagnostic in the saturated local environment.
 - `PreviousSuffixFiberAlignmentResidual`, `ExtractMLPCorrectnessResidual`, and
   `FinalSumcheckStepLogicCompleteResidual` remain theorem-scope surfaces in the current tree. For
   `ExtractMLPCorrectnessResidual`, do not try to instantiate the old iff: use the corrected

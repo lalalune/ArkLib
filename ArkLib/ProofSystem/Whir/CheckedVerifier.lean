@@ -63,6 +63,41 @@ noncomputable def askMsg (P : Params ιs F) (d : ℕ)
     (⟨j, k⟩ : (Σ i, OracleInterface.Query
       (((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message i))))
 
+/-- Query the public WHIR input oracle at an outer-domain point. -/
+noncomputable def askInput (P : Params ιs F) (d : ℕ) (x : ιs 0) :
+    OracleComp ([]ₒ + ([OracleStatement (ιs 0) F]ₒ +
+      [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)) F :=
+  liftM (OracleSpec.query
+    (spec := [OracleStatement (ιs 0) F]ₒ)
+    (⟨(), x⟩ : (Σ u, OracleInterface.Query (OracleStatement (ιs 0) F u))))
+
+/-- Payload length of the folded-oracle message slot `i` is the cardinality of the next
+paper evaluation domain. -/
+omit [Field F] [DecidableEq F] [SampleableType F] in
+lemma length_mainFoldedOracleMessageIdx (P : Params ιs F) (d : ℕ) (i : Fin M) :
+    (whirPaperTranscriptVectorSpec P d).length (mainFoldedOracleMessageIdx P d i).1
+      = Fintype.card (ιs i.succ) := by
+  show paperTranscriptSlotLength P d
+    ((Fintype.equivFin (PaperTranscriptSlot P)).symm
+      (paperTranscriptSlotIndex (.mainFoldedOracle i))) = _
+  rw [paperTranscriptSlotIndex_symm_apply]
+  rfl
+
+/-- The vector position in a packed folded-oracle message corresponding to a paper-domain point. -/
+noncomputable def foldedOracleQueryIndex (P : Params ιs F) (d : ℕ)
+    (i : Fin M) (x : ιs i.succ) :
+    Fin ((whirPaperTranscriptVectorSpec P d).length (mainFoldedOracleMessageIdx P d i).1) :=
+  ⟨(Fintype.equivFin (ιs i.succ) x).1, by
+    rw [length_mainFoldedOracleMessageIdx]
+    exact (Fintype.equivFin (ιs i.succ) x).isLt⟩
+
+/-- Query a folded-oracle prover message at a named paper-domain point. -/
+noncomputable def askFoldedOracle (P : Params ιs F) (d : ℕ)
+    (i : Fin M) (x : ιs i.succ) :
+    OracleComp ([]ₒ + ([OracleStatement (ιs 0) F]ₒ +
+      [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)) F :=
+  askMsg P d (mainFoldedOracleMessageIdx P d i) (foldedOracleQueryIndex P d i x)
+
 /-- Monadic map over a list with definitional `nil`/`cons` equations (avoiding `List.mapM`'s
 tail-recursive loop), so that `simulateQ` collapse is a one-line induction. -/
 def askList {ιq : Type} {spec : OracleSpec ιq} {β γ : Type}
@@ -93,6 +128,16 @@ noncomputable def msgAns (P : Params ιs F) (d : ℕ)
     (j : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).MessageIdx)
     (k : Fin ((whirPaperTranscriptVectorSpec P d).length j.1)) : F :=
   OracleInterface.answer (msgs j) k
+
+/-- The honest answer of the public input oracle. -/
+noncomputable def inputAns (oStmt : ∀ i, OracleStatement (ιs 0) F i) (x : ιs 0) : F :=
+  OracleInterface.answer (oStmt ()) x
+
+/-- The honest answer of a folded-oracle message at a named paper-domain point. -/
+noncomputable def foldedOracleAns (P : Params ιs F) (d : ℕ)
+    (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j)
+    (i : Fin M) (x : ιs i.succ) : F :=
+  msgAns P d msgs (mainFoldedOracleMessageIdx P d i) (foldedOracleQueryIndex P d i x)
 
 /-- Read a full prover message (all vector positions, in enumeration order). -/
 noncomputable def readMsg (P : Params ιs F) (d : ℕ)
@@ -233,6 +278,24 @@ theorem simulateQ_askMsg (P : Params ιs F) (d : ℕ)
     (k : Fin ((whirPaperTranscriptVectorSpec P d).length j.1)) :
     simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs) (askMsg P d j k)
       = (pure (msgAns P d msgs j k) : OracleComp []ₒ F) := rfl
+
+/-- `simulateQ` collapse for an input-oracle query. -/
+theorem simulateQ_askInput (P : Params ιs F) (d : ℕ)
+    (oStmt : ∀ i, OracleStatement (ιs 0) F i)
+    (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j)
+    (x : ιs 0) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs) (askInput P d x)
+      = (pure (inputAns oStmt x) : OracleComp []ₒ F) := rfl
+
+/-- `simulateQ` collapse for a named folded-oracle query. -/
+theorem simulateQ_askFoldedOracle (P : Params ιs F) (d : ℕ)
+    (oStmt : ∀ i, OracleStatement (ιs 0) F i)
+    (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j)
+    (i : Fin M) (x : ιs i.succ) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs) (askFoldedOracle P d i x)
+      = (pure (foldedOracleAns P d msgs i x) : OracleComp []ₒ F) :=
+  simulateQ_askMsg P d oStmt msgs (mainFoldedOracleMessageIdx P d i)
+    (foldedOracleQueryIndex P d i x)
 
 /-- `simulateQ` collapse for a full message read. -/
 theorem simulateQ_readMsg (P : Params ιs F) (d : ℕ)
@@ -679,6 +742,10 @@ theorem whirCheckedVectorIOP_isSecureWithGap_of_rbr (P : Params ιs F) (d : ℕ)
 end Whir302Checked
 
 #print axioms Whir302Checked.simulateQ_whirCheckingComp
+#print axioms Whir302Checked.simulateQ_askInput
+#print axioms Whir302Checked.simulateQ_askFoldedOracle
+#print axioms Whir302Checked.length_mainFoldedOracleMessageIdx
+#print axioms Whir302Checked.foldedOracleQueryIndex
 #print axioms Whir302Checked.whirCheckingBool_honest
 #print axioms Whir302Checked.whirCheckingBool_true_implies_final_sum
 #print axioms Whir302Checked.whirCheckingBool_true_implies_initial_step

@@ -10,7 +10,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.IncrementalCase1
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IncrementalHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDistance
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2FarLift
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFar
 import CompPoly.Fields.Binary.Tower.Prelude
 
 /-!
@@ -51,6 +51,41 @@ variable [SampleableType L]
 variable [hdiv : Fact (ϑ ∣ ℓ)]
 
 open scoped NNReal ProbabilityTheory
+
+omit [SampleableType L] [Fact (ϑ ∣ ℓ)] in
+/-- Joint proximity of the full pre-tensor stack implies `fiberwiseClose`.
+
+This is the direct contrapositive of `not_jointProximityNat_of_not_fiberwiseClose`; the
+`hBridge` argument is retained for the older incremental call sites that used the former
+case-2 far-lift helper. -/
+lemma fiberwiseClose_of_jointProximityNat
+    (hBridge : ∀ (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
+      (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+      (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+      (r_chal : Fin steps → L),
+      iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)
+          (r_challenges := r_chal)
+        = multilinearCombine (F := L)
+            (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i) r_chal)
+    (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
+    jointProximityNat
+        (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+          Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))
+        (u := preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i)
+        (Code.uniqueDecodingRadius
+          (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+            Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))) →
+      fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := h_destIdx)
+        (h_destIdx_le := h_destIdx_le) (f := f_i) := by
+  intro h_joint
+  by_contra h_far
+  exact (not_jointProximityNat_of_not_fiberwiseClose 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f_i h_far)
+    h_joint
 
 section Prelims
 
