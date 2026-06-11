@@ -377,7 +377,7 @@ theorem curveUDWindow_all_of_floor_eq_zero {deg n : ℕ} {δ : ℝ≥0}
 /-- The full positive-width strict residual family in the zero-error corner — the exact
 `hCA` shape of the STIR checking bridge (`stirCheckingCABridge`), produced genuinely (no
 small-field vacuity): every instance routes through `unifiedProducer_of_window`. -/
-theorem strictCoeffPolysResidual_all_of_floor_eq_zero {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+theorem strictCoeffPolys_all_of_floor_eq_zero {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hdeg : 0 < deg)
     (hfloor : Nat.floor (δ * (Fintype.card ι : ℝ≥0)) = 0)
     (hdeg_le : deg ≤ Fintype.card ι) :
@@ -402,4 +402,4 @@ end ArkLib
 #print axioms ArkLib.UnifiedProducerWindowGlue.strictCoeffPolysResidual_of_window
 #print axioms ArkLib.UnifiedProducerWindowGlue.correlatedAgreement_affine_curves_of_window
 #print axioms ArkLib.UnifiedProducerWindowGlue.curveUDWindow_all_of_floor_eq_zero
-#print axioms ArkLib.UnifiedProducerWindowGlue.strictCoeffPolysResidual_all_of_floor_eq_zero
+#print axioms ArkLib.UnifiedProducerWindowGlue.strictCoeffPolys_all_of_floor_eq_zero

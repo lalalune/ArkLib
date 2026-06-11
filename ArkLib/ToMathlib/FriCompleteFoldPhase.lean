@@ -220,16 +220,16 @@ set_option maxHeartbeats 4000000 in
 /-- **Brick D — folding-phase perfect completeness (residual DISCHARGED).** The hypotheses of
 the residual are themselves the discharged per-round residual theorems, so this instance is
 fully unconditional (given `hInit`). -/
-theorem foldPhasePerfectCompletenessResidual_holds
+theorem foldPhasePerfectCompletenessStatement_holds
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n)
     (hInit : NeverFail init) (δ : ℝ≥0) :
-    foldPhasePerfectCompletenessResidual (k := k) (s := s) (d := d) (ω := ω) init impl
+    foldPhasePerfectCompletenessStatement (k := k) (s := s) (d := d) (ω := ω) init impl
       dom_size_cond hInit δ
       (fun i => foldRoundPerfectCompletenessResidual_holds init impl hInit i
         (round_bound dom_size_cond) δ)
       (finalFoldRoundPerfectCompletenessResidual_holds init impl hInit
         (round_bound dom_size_cond) δ) := by
-  unfold foldPhasePerfectCompletenessResidual
+  unfold foldPhasePerfectCompletenessStatement
   rw [generalInputRelation_eq_foldChainRel]
   exact reductionFold_perfectCompleteness init impl dom_size_cond hInit δ
 
@@ -240,4 +240,4 @@ end Fri.Spec.Completeness
 #print axioms OracleReduction.perfectCompleteness_mono_relOut
 #print axioms Fri.Spec.Completeness.seqComposeFoldRounds_perfectCompleteness
 #print axioms Fri.Spec.Completeness.reductionFold_perfectCompleteness
-#print axioms Fri.Spec.Completeness.foldPhasePerfectCompletenessResidual_holds
+#print axioms Fri.Spec.Completeness.foldPhasePerfectCompletenessStatement_holds

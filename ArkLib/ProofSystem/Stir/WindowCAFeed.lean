@@ -17,7 +17,7 @@ small-field discharges (`|F| ≤ |ι|`, `|F| ≤ deg²·10⁷`) — regimes that
 (the budgets exceed total probability mass).  This file feeds the family from
 `UnifiedProducerWindowGlue` instead:
 
-* `strictCoeffPolysResidual_all_of_window` — the family from a per-width window family
+* `strictCoeffPolys_all_of_window` — the family from a per-width window family
   hypothesis;
 * `stirCheckingRbrSoundness_of_window` / `stir_main_of_checkingIOP_window` — the rbr-soundness
   and Theorem-5.1 front doors with the `hCA` leg discharged by the window glue, mirrors of
@@ -59,7 +59,7 @@ omit [SampleableType F] in
 /-- The full positive-width strict residual family from a per-width window family: every
 instance routes through `unifiedProducer_of_window` (genuine Lagrange pinning, no
 small-field vacuity). -/
-theorem strictCoeffPolysResidual_all_of_window
+theorem strictCoeffPolys_all_of_window
     (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0) (hdeg : 0 < deg)
     (hwin : ∀ k' : ℕ, 0 < k' →
       ArkLib.UnifiedProducerWindowGlue.curveUDWindow k' deg (Fintype.card ι) δ) :
@@ -81,7 +81,7 @@ theorem stirCheckingRbrSoundness_of_window
       ArkLib.UnifiedProducerWindowGlue.curveUDWindow k' deg (Fintype.card ι) δ) :
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_window φ deg δ hdeg hwin)
+    (strictCoeffPolys_all_of_window φ deg δ hdeg hwin)
     (PerRoundProximityGap.refl ProxGapBound)
 
 /-- **Theorem 5.1 through the CHECKING IOPP, window CA discharge**: as
@@ -115,7 +115,7 @@ theorem stir_main_of_checkingIOP_window
       (qNumtoProofstr := qNumtoProofstr) secpar hk hkGe δ hδub hF :=
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_window φ degree δ hdeg hwin)
+    (strictCoeffPolys_all_of_window φ degree δ hdeg hwin)
     (PerRoundProximityGap.refl ProxGapBound)
     hε hM hLen hQin hQpf
 
@@ -150,7 +150,7 @@ theorem stir_main_of_checkingIOP_window_corner
       (qNumtoProofstr := qNumtoProofstr) secpar hk hkGe δ hδub hF :=
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
-    (ArkLib.UnifiedProducerWindowGlue.strictCoeffPolysResidual_all_of_floor_eq_zero
+    (ArkLib.UnifiedProducerWindowGlue.strictCoeffPolys_all_of_floor_eq_zero
       (Nat.pos_of_ne_zero (NeZero.ne degree)) hfloor hdeg_le)
     (PerRoundProximityGap.refl ProxGapBound)
     hε hM hLen hQin hQpf
@@ -161,7 +161,7 @@ end StirIOP
 
 /-! ## Axiom audit — every declaration must rest only on
 `[propext, Classical.choice, Quot.sound]`, with no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms StirIOP.MultiRound.strictCoeffPolysResidual_all_of_window
+#print axioms StirIOP.MultiRound.strictCoeffPolys_all_of_window
 #print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_window
 #print axioms StirIOP.MultiRound.stir_main_of_checkingIOP_window
 #print axioms StirIOP.MultiRound.stir_main_of_checkingIOP_window_corner

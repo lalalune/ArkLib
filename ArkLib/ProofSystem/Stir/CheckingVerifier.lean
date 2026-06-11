@@ -51,12 +51,12 @@ prover but a *forwarding shell* verifier (`verify := pure true`). This file buil
   existentials discharged through the landed `…_of_secure_vectorIOP` front doors, with the
   completeness leg PROVEN (this file) and the soundness leg consumed via
   (CA residuals + bridge residual).
-* `strictCoeffPolysResidual_all_of_card_le` plus
+* `strictCoeffPolys_all_of_card_le` plus
   `stir_rbr_soundness_of_checkingIOP_card_le` / `stir_main_of_checkingIOP_card_le` — the
   small-field route: `|F| ≤ |ι|` discharges the full positive-width
   `StrictCoeffPolysResidual` family via the in-tree vacuous-regime BCIKS theorem, leaving only
   the protocol-level checking bridge.
-* `strictCoeffPolysResidual_all_of_large` plus the `…_large` front doors — the #304-aligned
+* `strictCoeffPolys_all_of_large` plus the `…_large` front doors — the #304-aligned
   route: STIR may consume the honest large-sector residual family
   (`StrictCoeffPolysLargeResidual`) directly; the small-good-set sector is discharged by the
   landed Lagrange interpolation reduction.
@@ -1006,7 +1006,7 @@ omit [SampleableType F] in
 the vacuous small-field regime `|F| ≤ |ι|`. For any positive curve width `k`, this implies
 `|F| ≤ k * |ι|`, so the existing BCIKS20 small-field theorem
 `strictCoeffPolysResidual_of_card_le` applies. -/
-theorem strictCoeffPolysResidual_all_of_card_le [DecidableEq ι]
+theorem strictCoeffPolys_all_of_card_le [DecidableEq ι]
     (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0)
     (hδ : δ < 1 - ReedSolomon.sqrtRate deg φ)
     (hq : (Fintype.card F : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0)) :
@@ -1024,11 +1024,11 @@ theorem strictCoeffPolysResidual_all_of_card_le [DecidableEq ι]
   exact le_trans hq (by simpa [one_mul, mul_comm] using hmul)
 
 omit [SampleableType F] in
-/-- The sharp vacuous-regime counterpart of `strictCoeffPolysResidual_all_of_card_le`: if
+/-- The sharp vacuous-regime counterpart of `strictCoeffPolys_all_of_card_le`: if
 `|F| ≤ deg^2 * 10^7`, then for every positive curve width `k` we have
 `|F| ≤ k * deg^2 * 10^7`, so `strictCoeffPolysResidual_of_card_le_e7` discharges the full
 positive-width strict coefficient-polynomial residual family. -/
-theorem strictCoeffPolysResidual_all_of_card_le_e7 [DecidableEq ι]
+theorem strictCoeffPolys_all_of_card_le_e7 [DecidableEq ι]
     (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0)
     (hq : (Fintype.card F : ℝ≥0) ≤ ((deg ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0)) :
     ∀ k : ℕ, 0 < k →
@@ -1050,7 +1050,7 @@ omit [SampleableType F] in
 residual is available, then the full strict coefficient-polynomial residual family needed by
 the checking bridge is available.  The small-good-set sector is exactly the Lagrange
 interpolation case proven in `StrictCoeffLargeReduction`. -/
-theorem strictCoeffPolysResidual_all_of_large [DecidableEq ι]
+theorem strictCoeffPolys_all_of_large [DecidableEq ι]
     (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
     (hLarge : ∀ k : ℕ, 0 < k →
       ProximityGap.StrictCoeffPolysLargeResidual (ι := ι) (F := F)
@@ -1063,7 +1063,7 @@ theorem strictCoeffPolysResidual_all_of_large [DecidableEq ι]
 
 /-- RBR knowledge soundness of the checking verifier in the small-field regime, conditional only
 on the protocol-level CA bridge. The BCIKS20 strict-coefficient residual family is discharged by
-`strictCoeffPolysResidual_all_of_card_le`; the per-round equality keystone is reflexive by choosing
+`strictCoeffPolys_all_of_card_le`; the per-round equality keystone is reflexive by choosing
 the accounting errors to be the proximity-gap bounds. -/
 theorem stirCheckingRbrSoundness_of_card_le [DecidableEq ι]
     (M : ℕ) (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0)
@@ -1074,7 +1074,7 @@ theorem stirCheckingRbrSoundness_of_card_le [DecidableEq ι]
     (hq : (Fintype.card F : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0)) :
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_card_le φ deg δ hδ hq)
+    (strictCoeffPolys_all_of_card_le φ deg δ hδ hq)
     (PerRoundProximityGap.refl ProxGapBound)
 
 /-- RBR knowledge soundness of the checking verifier in the sharp vacuous regime
@@ -1087,7 +1087,7 @@ theorem stirCheckingRbrSoundness_of_card_le_e7 [DecidableEq ι]
     (hq : (Fintype.card F : ℝ≥0) ≤ ((deg ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0)) :
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_card_le_e7 φ deg δ hq)
+    (strictCoeffPolys_all_of_card_le_e7 φ deg δ hq)
     (PerRoundProximityGap.refl ProxGapBound)
 
 /-- RBR knowledge soundness of the checking verifier from the #304 large-sector residual family,
@@ -1102,7 +1102,7 @@ theorem stirCheckingRbrSoundness_of_large [DecidableEq ι]
         (k := k) (deg := deg) (domain := φ) (δ := δ)) :
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_large φ deg δ hLarge)
+    (strictCoeffPolys_all_of_large φ deg δ hLarge)
     (PerRoundProximityGap.refl ProxGapBound)
 
 /-- **Vacuity gate for the checking rbr-soundness residual**: rbr knowledge soundness of the
@@ -1374,7 +1374,7 @@ theorem stir_rbr_soundness_of_checkingIOP_CA
 
 /-- **Lemma 5.4 through the CHECKING IOPP, small-field CA discharge**: the same checking front
 door as `stir_rbr_soundness_of_checkingIOP_CA`, but the BCIKS20 strict-coefficient residual family
-is discharged by `strictCoeffPolysResidual_all_of_card_le` under `|F| ≤ |ι₀|`. The remaining
+is discharged by `strictCoeffPolys_all_of_card_le` under `|F| ≤ |ι₀|`. The remaining
 soundness hypothesis is the protocol-level checking bridge. -/
 theorem stir_rbr_soundness_of_checkingIOP_card_le
     {M : ℕ} (ι : Fin (M + 1) → Type) [∀ i : Fin (M + 1), Fintype (ι i)]
@@ -1415,7 +1415,7 @@ theorem stir_rbr_soundness_of_checkingIOP_card_le
   stir_rbr_soundness_of_checkingIOP_CA (hParams := hParams) (Codes := Codes)
     ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
     ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_card_le (P.φ 0) (degree ι P 0) (Dist.δ 0)
+    (strictCoeffPolys_all_of_card_le (P.φ 0) (degree ι P 0) (Dist.δ 0)
       hδsqrt hq)
     (PerRoundProximityGap.refl ProxGapBound)
     hfold hrest
@@ -1460,7 +1460,7 @@ theorem stir_rbr_soundness_of_checkingIOP_card_le_e7
   stir_rbr_soundness_of_checkingIOP_CA (hParams := hParams) (Codes := Codes)
     ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
     ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_card_le_e7 (P.φ 0) (degree ι P 0) (Dist.δ 0) hq)
+    (strictCoeffPolys_all_of_card_le_e7 (P.φ 0) (degree ι P 0) (Dist.δ 0) hq)
     (PerRoundProximityGap.refl ProxGapBound)
     hfold hrest
 
@@ -1507,7 +1507,7 @@ theorem stir_rbr_soundness_of_checkingIOP_large
   stir_rbr_soundness_of_checkingIOP_CA (hParams := hParams) (Codes := Codes)
     ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
     ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_large (P.φ 0) (degree ι P 0) (Dist.δ 0) hLarge)
+    (strictCoeffPolys_all_of_large (P.φ 0) (degree ι P 0) (Dist.δ 0) hLarge)
     (PerRoundProximityGap.refl ProxGapBound)
     hfold hrest
 
@@ -1629,7 +1629,7 @@ theorem stir_main_of_checkingIOP_card_le
       (qNumtoProofstr := qNumtoProofstr) secpar hk hkGe δ hδub hF :=
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_card_le φ degree δ hδsqrt hq)
+    (strictCoeffPolys_all_of_card_le φ degree δ hδsqrt hq)
     (PerRoundProximityGap.refl ProxGapBound)
     hε hM hLen hQin hQpf
 
@@ -1660,7 +1660,7 @@ theorem stir_main_of_checkingIOP_card_le_e7
       (qNumtoProofstr := qNumtoProofstr) secpar hk hkGe δ hδub hF :=
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_card_le_e7 φ degree δ hq)
+    (strictCoeffPolys_all_of_card_le_e7 φ degree δ hq)
     (PerRoundProximityGap.refl ProxGapBound)
     hε hM hLen hQin hQpf
 
@@ -1694,7 +1694,7 @@ theorem stir_main_of_checkingIOP_large
       (qNumtoProofstr := qNumtoProofstr) secpar hk hkGe δ hδub hF :=
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
-    (strictCoeffPolysResidual_all_of_large φ degree δ hLarge)
+    (strictCoeffPolys_all_of_large φ degree δ hLarge)
     (PerRoundProximityGap.refl ProxGapBound)
     hε hM hLen hQin hQpf
 
@@ -1766,9 +1766,9 @@ end StirIOP
 #print axioms StirIOP.MultiRound.checkingVerifier_acceptance_implies_final_in_code
 #print axioms StirIOP.MultiRound.stirCheckingIOP_perfectCompleteness
 #print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_CA
-#print axioms StirIOP.MultiRound.strictCoeffPolysResidual_all_of_card_le
-#print axioms StirIOP.MultiRound.strictCoeffPolysResidual_all_of_card_le_e7
-#print axioms StirIOP.MultiRound.strictCoeffPolysResidual_all_of_large
+#print axioms StirIOP.MultiRound.strictCoeffPolys_all_of_card_le
+#print axioms StirIOP.MultiRound.strictCoeffPolys_all_of_card_le_e7
+#print axioms StirIOP.MultiRound.strictCoeffPolys_all_of_large
 #print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_card_le
 #print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_card_le_e7
 #print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_large

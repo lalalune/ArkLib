@@ -62,7 +62,10 @@ equality is not expected to hold).  The live, bridge-FREE apex is
 bridge anywhere; Spartan consumers are routed around this Prop by `FirstSumcheckBridgeFree` /
 `SecondSumcheckBridgeFree`.  Remaining consumers of this Prop form a legacy conditional chain
 (`OracleCompletenessUncond`, `SingleRoundBridge`, `SpartanSumcheckUnconditional`, Logup's
-`BridgeAndAppendResiduals`); do not build new work on it. -/
+`BridgeAndAppendResiduals`); do not build new work on it.
+
+Ledger status (#351): legacy surface, superseded; the live apex is bridge-free (#114).
+Kept only for the conditional chain above; build nothing new on it. -/
 abbrev oracleReductionToReductionResidual (R : Type) [CommSemiring R] [SampleableType R]
     [DecidableEq R] (deg : ℕ) {m : ℕ} (D : Fin m ↪ R) (n : ℕ) {ι : Type} (oSpec : OracleSpec ι) :
     Prop :=

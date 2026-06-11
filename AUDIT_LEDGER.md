@@ -8,17 +8,18 @@ documented as open research with the paper trail.
 |---|---|---|---|---|
 | MCACapacityTrivial_keep | 0 | 0 | 0 | 1 |
 | MCAGSRefutationCore_keep | 0 | 0 | 0 | 1 |
-| ToMathlib | 0 | 0 | 0 | 95 |
-| ProofSystem/Fri | 0 | 0 | 0 | 4 |
+| ToMathlib | 0 | 0 | 0 | 93 |
+| ProofSystem/Fri | 0 | 0 | 0 | 1 |
 | ProofSystem/Logup | 0 | 0 | 0 | 51 |
 | ProofSystem/Whir | 0 | 0 | 0 | 25 |
-| ProofSystem/Stir | 0 | 0 | 0 | 8 |
+| ProofSystem/Stir | 0 | 0 | 0 | 3 |
 | ProofSystem/Spartan | 0 | 0 | 0 | 16 |
-| ProofSystem/Sumcheck | 0 | 0 | 0 | 2 |
+| ProofSystem/Sumcheck | 0 | 0 | 0 | 1 |
+| ProofSystem/Binius | 0 | 0 | 0 | 1 |
 | Data/CodingTheory | 0 | 0 | 0 | 181 |
 | OracleReduction/Composition | 0 | 0 | 0 | 46 |
-| OracleReduction/FiatShamir | 0 | 0 | 0 | 57 |
-| **TOTAL** | **0** | **0** | **0** | **487** |
+| OracleReduction/FiatShamir | 0 | 0 | 0 | 58 |
+| **TOTAL** | **0** | **0** | **0** | **478** |
 
 
 ## Data/CodingTheory
@@ -297,8 +298,9 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean:152` theorem **lemma5_8EagerPaperResidual_of_lazy**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Completeness.lean:200` def **duplexSpongeFiatShamir_runCollapseResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Completeness.lean:212` def **duplexSpongeFiatShamirSalted_runCollapseResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean:649` def **Hyb4ChallengeEntryResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean:685` theorem **hyb34StepResidual_logShape_false**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean:492` def **Hyb3StrictVLogChallengeFreeResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean:612` def **Hyb4ChallengeEntryResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean:648` theorem **hyb34StepResidual_logShape_false**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemma.lean:245` def **KeyLemmaResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:630` def **Lemma5_12HonestResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:647` def **Lemma5_14HonestResidual**
@@ -327,13 +329,15 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:502` theorem **lemma5_16HonestResidual_false**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:147` theorem **lemma5_8EagerBirthdayResidual_false**
 
+## ProofSystem/Binius
+
+### residual-named declarations
+- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean:396` class **Prop421Case2FiberwiseFarResidual**
+
 ## ProofSystem/Fri
 
 ### residual-named declarations
 - `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:49` def **queryRoundPerfectCompletenessResidual**
-- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:72` def **foldPhasePerfectCompletenessResidual**
-- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:108` def **reductionPerfectCompletenessResidual**
-- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:139` theorem **reductionPerfectCompletenessResidual_holds**
 
 ## ProofSystem/Logup
 
@@ -414,19 +418,13 @@ documented as open research with the paper trail.
 
 ### residual-named declarations
 - `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:964` def **stirCheckingRbrSoundnessResidual**
-- `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:1009` theorem **strictCoeffPolysResidual_all_of_card_le**
-- `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:1031` theorem **strictCoeffPolysResidual_all_of_card_le_e7**
-- `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:1053` theorem **strictCoeffPolysResidual_all_of_large**
 - `ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean:224` def **stirMultiRoundRbrSoundnessResidual**
-- `ArkLib/ProofSystem/Stir/MultiRoundSpecT.lean:357` def **stirCheckingRbrSoundnessResidualT**
-- `ArkLib/ProofSystem/Stir/RepWire.lean:1417` def **stirCheckingRepRbrSoundnessResidual**
-- `ArkLib/ProofSystem/Stir/WindowCAFeed.lean:62` theorem **strictCoeffPolysResidual_all_of_window**
+- `ArkLib/ProofSystem/Stir/MultiRoundSpecT.lean:360` def **stirCheckingRbrSoundnessResidualT**
 
 ## ProofSystem/Sumcheck
 
 ### residual-named declarations
-- `ArkLib/ProofSystem/Sumcheck/Spec/OracleCompleteness.lean:66` abbrev **oracleReductionToReductionResidual**
-- `ArkLib/ProofSystem/Sumcheck/Spec/OracleCompletenessUncond.lean:94` theorem **oracleReductionToReductionResidual_of_perRound**
+- `ArkLib/ProofSystem/Sumcheck/Spec/OracleCompleteness.lean:69` abbrev **oracleReductionToReductionResidual**
 
 ## ProofSystem/Whir
 
@@ -489,7 +487,6 @@ documented as open research with the paper trail.
 - `ArkLib/ToMathlib/FriComplete.lean:106` def **foldRoundPerfectCompletenessResidual**
 - `ArkLib/ToMathlib/FriComplete.lean:131` def **finalFoldRoundPerfectCompletenessResidual**
 - `ArkLib/ToMathlib/FriCompleteFinalRound.lean:125` theorem **finalFoldRoundPerfectCompletenessResidual_holds**
-- `ArkLib/ToMathlib/FriCompleteFoldPhase.lean:223` theorem **foldPhasePerfectCompletenessResidual_holds**
 - `ArkLib/ToMathlib/FriCompletePerRound.lean:137` theorem **foldRoundPerfectCompletenessResidual_holds**
 - `ArkLib/ToMathlib/FriCompleteQueryRound.lean:178` def **queryRoundChainDeliveryResidual**
 - `ArkLib/ToMathlib/GSGradedBundle.lean:283` structure **MonicHighYResidual**
@@ -554,4 +551,3 @@ documented as open research with the paper trail.
 - `ArkLib/ToMathlib/UnifiedExtractionTarget.lean:96` theorem **strictCoeffPolysResidualLarge_of_producer**
 - `ArkLib/ToMathlib/UnifiedProducerWindowGlue.lean:325` theorem **strictCoeffPolysResidualLarge_of_window**
 - `ArkLib/ToMathlib/UnifiedProducerWindowGlue.lean:335` theorem **strictCoeffPolysResidual_of_window**
-- `ArkLib/ToMathlib/UnifiedProducerWindowGlue.lean:380` theorem **strictCoeffPolysResidual_all_of_floor_eq_zero**

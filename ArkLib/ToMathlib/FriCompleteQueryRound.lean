@@ -170,7 +170,7 @@ output.  Its proof is the per-round algebraic content (folding consistency ⟹ e
 `roundConsistencyCheck` guard passes at every sample point), i.e. the genuine FRI
 verification mathematics, isolated with no relation/check mismatch: unlike the original
 (suspected-false) query residual, honest runs satisfy this by design.  Route available
-in-tree: the proven `foldPhasePerfectCompletenessResidual_holds` gives the base-relation
+in-tree: the proven `foldPhasePerfectCompletenessStatement_holds` gives the base-relation
 half; the checker-acceptance half strengthens it on the honest-run support (the
 `Reduction.perfectCompleteness_strengthen_support` pattern of
 `Sumcheck/Spec/PinnedCompleteness.lean`). -/

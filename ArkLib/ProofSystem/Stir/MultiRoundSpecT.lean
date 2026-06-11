@@ -353,7 +353,10 @@ noncomputable def stirCheckingIOPT (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (t : �
 /-- The t-repetition rbr knowledge-soundness residual — the A1 soundness target, to be
 discharged by the door-die predicate with PRODUCT flip bounds
 (`((|F|−D)/|F|)ᵗ` at the binding challenges via
-`TightnessCore.pass_count_ge` × `ProductMarginal.probEvent_uniform_vector_bind_le`). -/
+`TightnessCore.pass_count_ge` × `ProductMarginal.probEvent_uniform_vector_bind_le`).
+
+Ledger status (#351): the genuine open soundness target of #301 at repetition parameter t
+(#335 A1); consumed as a hypothesis, never fabricated. -/
 noncomputable def stirCheckingRbrSoundnessResidualT
     (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (t : ℕ) (δ : ℝ≥0)
     (ε_rbr : ((stirMultiVSpecT M ι t).toProtocolSpec F).ChallengeIdx → ℝ≥0) : Prop :=
