@@ -48,3 +48,15 @@ campaign on this repository. Maintained alongside the work; newest entries last.
 - Entry 1: gate armed on all 12 open issues + this journal. Scouting the
   residual-Prop discharge issues (#337, #338, #339) for mechanical closure;
   composition attempt for the #302 surface-factor production running in parallel.
+
+- Entry 2: surface-factor production landed (the global section divisor with full
+  decoded-family coherence, 8 declarations) via an isolated long-running build agent;
+  its conclusion makes the lane's decode a single affine pencil on the whole close
+  set. The Z-affine decomposition and the capture wire (reverse counting + per-scalar
+  capture) now connect that conclusion to the capture funnel with a one-pair list.
+  Hard lesson: `lake env lean` elaborates with default options and masked a missing
+  binder that strict `lake build` (autoImplicit := false) rejects — new rule: every
+  new file is strict-built before commit. Remaining for the #302 numeric edge: the
+  per-stack assembly (production × decomposition × wire) and the production's four
+  parameterized inputs (residual bundle instance, Claim-5.11 numerics, factor
+  Z-budget descent, one counting comparison).
