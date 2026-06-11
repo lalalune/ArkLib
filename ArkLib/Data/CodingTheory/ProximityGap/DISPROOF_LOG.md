@@ -6332,3 +6332,12 @@ threshold; the landed b=3 deep-core proof generalizes along it. The m-tupled wit
 maximally non-MDS (parallel matroid classes of size b−1) — the matroid-invariance lane
 (N4.1) is now the structural frontier: the RS/MDS threshold (d ≥ 2b conjectured, directed-
 search-supported) vs the general 3b−2 differ exactly by parallel-class capacity.
+
+### Staircase collapse threshold (#357 rounds 16-18) — 3j−2 PROVEN; 2j conjectured sharp
+`UniversalStaircaseCollapse.lean` proves ≤ j bad scalars on the first j bands for
+d ≥ 3j−2 (triple-union chaining). Sharpness data: j=2: d=3 jumps, d=4=2j collapses
+(PROVEN trichotomy, sibling); j=3: d=5 < 2j breaks (B ≥ 6, widened sweep), d=6=2j
+holds at template scale (B = 3, sparse sweep (17,8,3)). CONJECTURE: true threshold
+d ≥ 2j; the 3(j−1) in the proof is an artifact of chaining through triples — a
+2j-route needs a different identification argument (the j=2 proof avoids chaining
+entirely). Template caveat: d=6 B=3 is wt≤2-restricted; heavier stacks unswept.
