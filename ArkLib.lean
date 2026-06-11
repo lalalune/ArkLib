@@ -1218,6 +1218,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
 import ArkLib.Data.CodingTheory.ProximityGap.VerifiedBricks
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedPrimePowerPacket
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
+import ArkLib.Data.CodingTheory.ProximityGap.WideCircuitTrichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.WindowFiberCount
 import ArkLib.Data.CodingTheory.ProximityGap.WindowMassSpan
