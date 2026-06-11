@@ -79,7 +79,7 @@ crossed = old[old.index('## Crossed off this campaign'):old.index('## Scan false
     if '## Scan false-positives' in old else \
     old[old.index('## Crossed off this campaign'):old.index('## Props WITH')]
 
-closed, openp, docstate = [], [], []
+closed, openp, docstate, routes = [], [], [], []
 for f, l, k, n in sorted(props, key=lambda e: (e[0], e[1])):
     base = n.split('.')[-1]
     if base in FALSE_POSITIVES:
@@ -89,6 +89,10 @@ for f, l, k, n in sorted(props, key=lambda e: (e[0], e[1])):
         closed.append((f, l, k, n, d))
     elif base in DOCUMENTED_END_STATE:
         docstate.append((f, l, k, n, DOCUMENTED_END_STATE[base]))
+    elif base.startswith('of') or '_of_' in base or '.of' in n:
+        # conditional-constructor supply routes (X.ofInTree, *_of_* …): discharge ROUTES,
+        # not debt items (see preamble).
+        routes.append((f, l, k, n))
     else:
         openp.append((f, l, k, n))
 
@@ -114,6 +118,9 @@ for f, l, k, n, why in docstate:
 out.write('\n## Props WITH in-source discharger/refutation (%d)\n\n' % len(closed))
 for f, l, k, n, d in closed:
     out.write('- `%s` <- `%s` (`%s:%d`)\n' % (n, d[0], f, l))
+out.write('\n## Conditional-constructor supply routes — not debt items (%d)\n\n' % len(routes))
+for f, l, k, n in routes:
+    out.write('- %s `%s` — `%s:%d`\n' % (k, n, f, l))
 out.write('\n## Props WITHOUT discharger — live surface (%d)\n\n' % len(openp))
 for f, l, k, n in openp:
     out.write('- %s `%s` — `%s:%d`\n' % (k, n, f, l))
