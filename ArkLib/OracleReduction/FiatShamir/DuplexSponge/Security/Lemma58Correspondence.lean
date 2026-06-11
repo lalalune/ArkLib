@@ -1312,9 +1312,9 @@ theorem mem_slotList_of_hash_cached (c : DSCache StmtIn U)
 open DuplexSpongeFS.Paper in
 /-- The inner split of `take (f j)` at an earlier position `f j'`. -/
 private theorem take_inner_split
-    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (e : DSEntry StmtIn U)
     (fj fj' : ℕ) (hlt : fj' < fj) (hfj : fj ≤ log.length)
-    (hval : log[fj']'(by omega) = (e : DSEntry StmtIn U)) :
+    (hval : log[fj']'(by omega) = e) :
     log.take fj = log.take fj' ++ e :: (log.take fj).drop (fj' + 1) := by
   have hk : fj' < (log.take fj).length := by rw [List.length_take]; omega
   conv_lhs => rw [← List.take_append_drop fj' (log.take fj)]
@@ -1358,7 +1358,7 @@ theorem base_earlier_fwd_slots
     exact le_of_lt hb.1
   have hsplit_inner : log.take (f j)
       = log.take (f j') ++ (⟨.inr (.inl a'), b'⟩ : DSEntry StmtIn U) :: (log.take (f j)).drop (f j' + 1) :=
-    take_inner_split log (f j) (f j') hfjj hfjlen (by rw [he'])
+    take_inner_split log _ (f j) (f j') hfjj hfjlen (by rw [he'])
   rw [hsplit_inner]
   exact fresh_fwd_inserts ((∅, []) : DSCache StmtIn U) (log.take (f j')) a' b'
     ((log.take (f j)).drop (f j' + 1)) hfresh
@@ -1416,7 +1416,7 @@ theorem base_earlier_inv_slots
     rw [hf j] at hb; rw [List.getElem?_eq_some_iff] at hb; exact le_of_lt hb.1
   have hsplit_inner : log.take (f j)
       = log.take (f j') ++ (⟨.inr (.inr b'), a'⟩ : DSEntry StmtIn U) :: (log.take (f j)).drop (f j' + 1) :=
-    take_inner_split log (f j) (f j') hfjj hfjlen (by rw [he'])
+    take_inner_split log _ (f j) (f j') hfjj hfjlen (by rw [he'])
   rw [hsplit_inner]
   exact fresh_inv_inserts ((∅, []) : DSCache StmtIn U) (log.take (f j')) a' b'
     ((log.take (f j)).drop (f j' + 1)) hfresh
@@ -1452,7 +1452,7 @@ theorem base_earlier_hash_slot
     rw [hf j] at hb; rw [List.getElem?_eq_some_iff] at hb; exact le_of_lt hb.1
   have hsplit_inner : log.take (f j)
       = log.take (f j') ++ (⟨.inl q', u'⟩ : DSEntry StmtIn U) :: (log.take (f j)).drop (f j' + 1) :=
-    take_inner_split log (f j) (f j') hfjj hfjlen (by rw [he'])
+    take_inner_split log _ (f j) (f j') hfjj hfjlen (by rw [he'])
   rw [hsplit_inner]
   exact mem_slotList_of_hash_cached _ (fresh_hash_inserts ((∅, []) : DSCache StmtIn U)
     (log.take (f j')) q' u' ((log.take (f j)).drop (f j' + 1)) hfresh)
