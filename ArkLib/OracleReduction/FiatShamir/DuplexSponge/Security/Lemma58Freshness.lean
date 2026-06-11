@@ -239,6 +239,44 @@ theorem key_cached_after_step_permInv (c : DSCache StmtIn U)
     exact List.find?_isSome.mpr ⟨(a, sOut), hmem, by simp⟩
   · rw [stepCache_noop_permInv (by rw [hf]; rfl) a, hf]; exact Option.isSome_some
 
+/-! ## Cross-key caching under consistency (step-1 item (iii) core; the trap-corrected
+statements — the pure-cache versions are FALSE at forward/inverse hits, where the cached
+pair's other component may differ; `entryConsistent` pins it). -/
+
+/-- After a consistent forward step, the **inverse** key is cached: fresh creates `(a, b)`
+(serving the `w.2 = b` lookup); a hit pins `b` to the found pair's value by consistency. -/
+theorem swapKey_cached_after_consistent_perm {c : DSCache StmtIn U}
+    {a b : CanonicalSpongeState U}
+    (hc : entryConsistent c (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U)) :
+    ((stepCache c ⟨.inr (.inl a), b⟩).2.find?
+      (fun w : CanonicalSpongeState U × CanonicalSpongeState U => w.2 = b)).isSome := by
+  rcases hf : c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.1 = a) with _ | w
+  · -- fresh: the created pair (a, b) serves the inverse lookup
+    have hmem := stepCache_caches_fresh_perm c (b := b) hf
+    exact List.find?_isSome.mpr ⟨(a, b), hmem, by simp⟩
+  · -- hit: consistency pins b = w.2; the found pair serves the inverse lookup
+    have hb : b = w.2 := hc w hf
+    have hwmem : w ∈ c.2 := List.mem_of_find?_eq_some hf
+    rw [stepCache_noop_perm (by rw [hf]; rfl) b]
+    exact List.find?_isSome.mpr ⟨w, hwmem, by simp [hb]⟩
+
+/-- After a consistent inverse step, the **forward** key is cached: fresh creates `(a, b)`
+(serving the `w.1 = a` lookup); a hit pins `a` to the found pair's key by consistency. -/
+theorem swapKey_cached_after_consistent_permInv {c : DSCache StmtIn U}
+    {b a : CanonicalSpongeState U}
+    (hc : entryConsistent c (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U)) :
+    ((stepCache c ⟨.inr (.inr b), a⟩).2.find?
+      (fun w : CanonicalSpongeState U × CanonicalSpongeState U => w.1 = a)).isSome := by
+  rcases hf : c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.2 = b) with _ | w
+  · have hmem := stepCache_caches_fresh_permInv c (a := a) hf
+    exact List.find?_isSome.mpr ⟨(a, b), hmem, by simp⟩
+  · have ha : a = w.1 := hc w hf
+    have hwmem : w ∈ c.2 := List.mem_of_find?_eq_some hf
+    rw [stepCache_noop_permInv (by rw [hf]; rfl) a]
+    exact List.find?_isSome.mpr ⟨w, hwmem, by simp [ha]⟩
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -252,3 +290,5 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.key_cached_after_step_hash
 #print axioms DuplexSpongeFS.EagerLazyDS.key_cached_after_step_perm
 #print axioms DuplexSpongeFS.EagerLazyDS.key_cached_after_step_permInv
+#print axioms DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_perm
+#print axioms DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_permInv
