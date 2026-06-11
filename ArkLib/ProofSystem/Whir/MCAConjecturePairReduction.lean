@@ -126,7 +126,7 @@ theorem mca_johnson_bound_CONJECTURE_pair_of_johnsonNumericBound
     refine le_trans (hJNB δ hδ0 hδB) ?_
     rw [hrate, show ((Fintype.card (Fin 2) : ℝ) - 1) = 1 from by norm_num, one_mul]
     exact ENNReal.ofReal_le_ofReal
-      (johnsonBoundReal_le_errStar_real φ m hk δ hδ0 hδB)
+      (johnsonBoundReal_le_errStar_real φ m hk δ hδB)
   unfold mca_johnson_bound_CONJECTURE
   exact hmca
 

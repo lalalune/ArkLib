@@ -81,7 +81,7 @@ theorem hasMutualCorrAgreement_genRSC_pair_of_window
     (Nat.two_pow_pos m) hkn hwinδ
   -- the proven `johnsonBoundReal ≤ errStar` comparison at that `η`
   have hglue := Hab25JohnsonEndgame.johnsonBoundReal_le_errStar_real φ m
-    (by omega) δ h1 hδB
+    (by omega) δ hδB
   exact le_trans hJNB (ENNReal.ofReal_le_ofReal hglue)
 
 end MutualCorrAgreement
