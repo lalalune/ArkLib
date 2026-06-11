@@ -102,9 +102,62 @@ theorem shape1_collinear {m : ℕ} (hm : 1 ≤ m) {ζ : L}
   field_simp
   ring
 
+/-- **The shape-II seed identity** (pure field algebra): the three points
+`(1+ζ, ζ)`, `(ζ²P + (ζ²P²)⁻¹, P⁻¹)`, `(ζ⁴P² − (ζP)⁻¹, −ζ³P)` are collinear. Together
+with `seed_collinear_identity` these are the only two identities of their ansatz class
+(probe sweep), and their orbits + doubling **exhaust the second layer exactly** at
+`n = 16, 32` (0 missing, 0 extra). -/
+theorem seed_collinear_identity_II {ζ P : L} (hζ : ζ ≠ 0) (hP : P ≠ 0) :
+    (ζ ^ 2 * P + (ζ ^ 2 * P ^ 2)⁻¹ - (1 + ζ)) * (-(ζ ^ 3 * P) - ζ)
+      = (P⁻¹ - ζ) * (ζ ^ 4 * P ^ 2 - (ζ * P)⁻¹ - (1 + ζ)) := by
+  field_simp
+  ring
+
+/-- **THE UNIVERSAL SEED FAMILY (shape II).** At every smooth scale `n = 2^m`, `m ≥ 2`,
+and every `t + 1 < 2^(m−1)`: the exponent triple
+`{0, 1}, {t+2, n−(2t+2)}, {2t+4, 2^(m−1)−t−1}` of `Γ_n` satisfies the pencil
+collinearity equation. -/
+theorem shape2_collinear {m : ℕ} (hm : 1 ≤ m) {ζ : L}
+    (hζ : IsPrimitiveRoot ζ (2 ^ m)) {t : ℕ} (ht : t + 1 < 2 ^ (m - 1)) :
+    (ζ ^ (t + 2) + ζ ^ (2 ^ m - (2 * t + 2)) - (ζ ^ 0 + ζ ^ 1))
+        * (ζ ^ (2 * t + 4) * ζ ^ (2 ^ (m - 1) - (t + 1)) - ζ ^ 0 * ζ ^ 1)
+      = (ζ ^ (t + 2) * ζ ^ (2 ^ m - (2 * t + 2)) - ζ ^ 0 * ζ ^ 1)
+        * (ζ ^ (2 * t + 4) + ζ ^ (2 ^ (m - 1) - (t + 1)) - (ζ ^ 0 + ζ ^ 1)) := by
+  have hsplit : 2 ^ (m - 1) + 2 ^ (m - 1) = 2 ^ m := by
+    have h := pow_succ 2 (m - 1)
+    rw [Nat.sub_add_cancel hm] at h
+    omega
+  have hζ0 : ζ ≠ 0 := hζ.ne_zero (by positivity)
+  have hP0 : ζ ^ t ≠ 0 := pow_ne_zero t hζ0
+  have hhalf : ζ ^ 2 ^ (m - 1) = -1 := pow_half_eq_neg_one_field hm hζ
+  have h2t2 : 2 * t + 2 ≤ 2 ^ m := by omega
+  have ht2 : ζ ^ (t + 2) = ζ ^ t * ζ ^ 2 := by rw [pow_add]
+  have h2t4 : ζ ^ (2 * t + 4) = (ζ ^ t) ^ 2 * ζ ^ 4 := by
+    rw [← pow_mul, ← pow_add]
+    congr 1
+    omega
+  have he2 : ζ ^ (2 ^ m - (2 * t + 2)) = ((ζ ^ t) ^ 2 * ζ ^ 2)⁻¹ := by
+    have hprod : ζ ^ (2 ^ m - (2 * t + 2)) * ((ζ ^ t) ^ 2 * ζ ^ 2) = 1 := by
+      rw [← pow_mul, ← pow_add, ← pow_add,
+        show 2 ^ m - (2 * t + 2) + (t * 2 + 2) = 2 ^ m from by omega,
+        hζ.pow_eq_one]
+    exact eq_inv_of_mul_eq_one_left hprod
+  have he3 : ζ ^ (2 ^ (m - 1) - (t + 1)) = -(ζ ^ t * ζ)⁻¹ := by
+    have hprod : ζ ^ (2 ^ (m - 1) - (t + 1)) * (ζ ^ t * ζ) = -1 := by
+      rw [← pow_succ, ← pow_add, Nat.sub_add_cancel (le_of_lt ht), hhalf]
+    have hx : ζ ^ (2 ^ (m - 1) - (t + 1)) = -1 / (ζ ^ t * ζ) := by
+      rw [eq_div_iff (mul_ne_zero hP0 hζ0)]
+      exact hprod
+    rw [hx, neg_div, one_div]
+  rw [pow_zero, pow_one, ht2, h2t4, he2, he3]
+  field_simp
+  ring
+
 /-! ## Source audit -/
 
 #print axioms seed_collinear_identity
 #print axioms shape1_collinear
+#print axioms seed_collinear_identity_II
+#print axioms shape2_collinear
 
 end ArkLib.ProximityGap.SecondLayerSeedFamily

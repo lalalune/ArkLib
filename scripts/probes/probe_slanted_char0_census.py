@@ -165,3 +165,12 @@ for p in (17, 97, 113, 257, 337, 449, 577, 7681, 12289):
 #         corrupts even the vertical stratum: 5344 vs C(32,3)=4960)
 # family closed form (chord law): family(n) = n(n-4)^2/8 -> 16, 288, 3136, 28800
 # sporadic = slanted - family -> 0, 256, 3584, 35840 = 2^(m+4) * {1, 7, 35}
+
+# C7 (appended): EXHAUSTION VERIFIED — the second layer at n=16, 32 equals EXACTLY
+# (rotation+Galois orbits of shape-I  {0,1},{t+1,n-(2t+1)},{2t+1,h-t}
+#  union shape-II                     {0,1},{t+2,n-(2t+2)},{2t+4,h-t-1})
+# union doubling(second_layer(n/2)):  0 missing, 0 extra at both scales.
+# Both shapes are PURE RATIONAL IDENTITIES (verified over random Fractions):
+#  I : (1+z, z), (zP+(zP^2)^-1, P^-1), (zP^2-P^-1, -zP)
+#  II: (1+z, z), (z^2 P+(z^2 P^2)^-1, P^-1), (z^4 P^2-(zP)^-1, -z^3 P)
+# and the ansatz sweep (alpha,beta,delta,eps,phi in -2..5, all signs) finds ONLY these two.
