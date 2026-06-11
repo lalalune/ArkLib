@@ -2020,6 +2020,7 @@ import ArkLib.ToMathlib.ZKTransferBricks
 import ArkLib.ToMathlib.ZLinearClosureAudit
 import ArkLib.ToMathlib.ZLinearRatFuncDegreeOne
 import ArkLib.ToVCVio.EvalDist.Defs.Support
+import ArkLib.ToVCVio.LazyPermMarginal
 import ArkLib.ToVCVio.EvalDist.Instances.OptionT
 import ArkLib.ToVCVio.Lemmas
 import ArkLib.ToVCVio.Oracle
