@@ -246,7 +246,8 @@ theorem badCount_udr_le_jointAgreement (C : Submodule F (ι → F)) (u₀ u₁ :
   calc G.card
       ≤ (G.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0)).card :=
         card_le_card hGsub
-    _ ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := UDR.badGammaOn_le G e₀ e₁
+    _ ≤ (univ.filter (fun i => e₁ i ≠ 0)).card :=
+        _root_.ProximityGap.UDR.badGammaOn_le G e₀ e₁
     _ ≤ Fintype.card ι - t := hsupp
 
 omit [DecidableEq ι] in
