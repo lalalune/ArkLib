@@ -1530,6 +1530,7 @@ import ArkLib.ProofSystem.Logup.Security.BridgeAndAppendResiduals
 import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.ProofSystem.Logup.Security.ConsistentClaimCore
 import ArkLib.ProofSystem.Logup.Security.Issue13Status
+import ArkLib.ProofSystem.Logup.Security.LogupAppendCompletenessUncond
 import ArkLib.ProofSystem.Logup.Security.LogupBatchingBinding
 import ArkLib.ProofSystem.Logup.Security.LogupClaimBatchAffine
 import ArkLib.ProofSystem.Logup.Security.LogupClearedGrandSum
