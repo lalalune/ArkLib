@@ -29,7 +29,7 @@ between small field K and large field L, including embeddings `φ₀ : L → L �
 3. **Security Definitions**: Relations & Kstate for security analysis
 -/
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2100
 
 noncomputable section
 
@@ -291,6 +291,7 @@ of `aOStmtIn`. -/
 def AbstractOStmtIn.strictVariant (aOStmtIn : AbstractOStmtIn L ℓ') : AbstractOStmtIn L ℓ' :=
   { aOStmtIn with initialCompatibility := aOStmtIn.strictInitialCompatibility }
 
+omit [Fintype L] [DecidableEq L] [NeZero ℓ'] in
 @[simp]
 lemma AbstractOStmtIn.strictVariant_toRelInput (aOStmtIn : AbstractOStmtIn L ℓ') :
     aOStmtIn.strictVariant.toRelInput = aOStmtIn.toStrictRelInput := rfl
