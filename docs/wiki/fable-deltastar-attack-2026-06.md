@@ -1032,3 +1032,29 @@ elementary recursion `M_k ≲ M_{k-1}` ⟹ `M` provably small. **REFUTED** (`pro
 structure of `μ_{2^k}` does NOT linearize the additive constraint `1+u∈μ` — confirming (yet again)
 that the genuine tool is the Bourgain sum-product estimate, not an elementary 2^k-tower descent. The
 open core stands; no fabrication, hypothesis refuted per the prove-or-refute discipline.
+## 33. CONNECTION: BGK M ↔ Möbius pencil energy (§N1); elementary handles all give no sub-√n bound
+
+Continuing prove-or-refute on the open core `M = #{u∈μ_n : 1+u∈μ_n}` (after §32 refuted tower-descent):
+
+**(a) Symmetry structure — a genuine unification.** `sol := {u∈μ_n : 1+u∈μ_n}` is invariant under TWO
+involutions:
+- `ι: u ↦ u⁻¹` — since `1+u⁻¹ = (1+u)/u ∈ μ_n` (group closure, `1+u,u∈μ_n`);
+- `τ: u ↦ −(1+u)` — since `1−(1+u) = −u ∈ μ_n` (and `−(1+u)∈μ_n` as `1+u,−1∈μ_n`).
+`ι, τ` generate a Möbius / PSL₂-type action on `μ_n` — **the SAME `σ_b` involution family as
+`MobiusPencilEnergy` (§N1 / the original Möbius pencil-energy brick)**. So the BGK additive-energy
+quantity `M` (the open core, §30) and the Möbius pencil energy `E₂` are governed by the *same*
+additive-multiplicative symmetry of the smooth subgroup — a real unification of the two independent
+lines (§N1 domain-separation ↔ §30 BGK core). NOVEL CONNECTION (paperworthy).
+
+**(b) But the symmetries do NOT bound M from above.** Invariance under `ι, τ` constrains `sol` to be a
+union of `⟨ι,τ⟩`-orbits (so `M` is a multiple of orbit sizes — LOWER-bound *shape*), not an upper
+bound. The degree handle `u^n=1 ∧ (1+u)^n=1 ⟹ (1+u)^n=u^n` (degree `n−1`) gives only `M ≤ n−1`. No
+elementary route reaches `M ≪ √n`.
+
+**Net (prove-or-refute tally on the open core):** tower-descent REFUTED (§32); symmetry route gives a
+paperworthy unification (BGK M ↔ Möbius pencil energy) but only orbit structure, not an upper bound;
+degree route trivial (`≤ n−1`). Every elementary handle on `M` is closed or non-advancing — the
+`M ≪ √n` upper bound genuinely requires the Bourgain sum-product machinery (cancellation in the
+character sum / incidence), absent from Mathlib. The unification (a) is the one positive new artifact:
+the open core sits at the confluence of the additive (BGK) and the Möbius (pencil-energy) structure.
+No fabrication.
