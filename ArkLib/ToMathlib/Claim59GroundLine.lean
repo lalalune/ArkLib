@@ -140,9 +140,10 @@ theorem claim59_groundLine (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypothese
       (by
         intro y hy
         obtain ⟨x, hx, rfl⟩ := Finset.mem_image.mp (hs ▸ hy)
-        show (gammaTruncPoly H x₀ R hHyp k).eval (fieldTo𝕃 (x - x₀)) = _
-        rw [eval_gammaTruncPoly, hcoord x hx, sub_add_cancel]
-        rfl)
+        show (gammaTruncPoly H x₀ R hHyp k).eval (fieldTo𝕃 (x - x₀))
+          = fieldTo𝕃 (u₀ (x - x₀ + x₀))
+            + liftToFunctionField (H := H) Polynomial.X * fieldTo𝕃 (u₁ (x - x₀ + x₀))
+        rw [eval_gammaTruncPoly, hcoord x hx, sub_add_cancel])
   refine ⟨v₀, v₁, hv₀, hv₁, fun t => ?_⟩
   by_cases htk : t ≤ k
   · -- coefficient reading of the interpolation identity.

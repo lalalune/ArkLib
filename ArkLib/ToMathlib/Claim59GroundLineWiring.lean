@@ -391,11 +391,13 @@ theorem coordinate_supply_of_claim511
   · intro x hx
     obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
     have hex : ∃ j : α, ωs j = ωs i := ⟨i, rfl⟩
-    rw [dif_pos hex, ωs.injective hex.choose_spec]
+    have hch : hex.choose = i := ωs.injective hex.choose_spec
+    simp only [dif_pos hex, hch]
     exact hDbig i hi
   · intro i _
     have hex : ∃ j : α, ωs j = ωs i := ⟨i, rfl⟩
-    rw [dif_pos hex, ωs.injective hex.choose_spec]
+    have hch : hex.choose = i := ωs.injective hex.choose_spec
+    simp only [dif_pos hex, hch]
 
 end ArkLib.Claim59GroundLineWiring
 
