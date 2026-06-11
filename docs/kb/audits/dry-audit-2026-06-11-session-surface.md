@@ -33,11 +33,9 @@ consolidation, and its status.
 6. **Thm 5.7's inline properness block** — **DONE** (second pass): the lemma now lives in
    `GG25ExactPreservation.lean` and both 5.7 and 5.8 consume it; the ~40-line inline clone is
    deleted. Both files rebuild axiom-clean.
-7. **`relationRound_last_iff` (deg-3, `TightMidLeaves.lean:97`) vs
-   `relationRound_last_iff_deg` (deg-generic, `TightFinalLeaf.lean:55`)** — the generic lives
-   *later* in the import chain; dedup requires moving the generic into `TightMidLeaves` (or a
-   shared brick file) and restating the deg-3 form as a corollary. Known since the #329
-   closeout (catalogued there).
+7. **`relationRound_last_iff` deg-3 vs deg-generic** — **DONE** (third pass): the generic
+   moved into `TightMidLeaves.lean`; the deg-3 form is a one-line corollary; duplicate proof
+   deleted; full downstream cone rebuilds clean.
 8. **The `sfx*` direction facts and `vsum_two_pos`/`sumcheckPSpec_dir_zero` are cloned 3×**
    (`ComposedCompleteness.lean`, `TightComposedFull.lean` (primed), and the textual-transform
    regenerated `TightComposedCompleteness.lean`) — all `private`, so consolidation = a shared
