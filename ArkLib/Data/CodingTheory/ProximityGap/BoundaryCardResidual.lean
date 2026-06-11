@@ -202,9 +202,9 @@ is nonempty.  This is the non-lattice input consumed by `boundaryCardResidual_of
 the exact lattice endpoint is tracked separately by `BoundaryCardLatticeResidual`.
 
 **REFUTED — false in general** (axiom-clean, in-tree):
-`BoundaryCardStrictInteriorRefutation.not_boundaryCardStrictInteriorResidual`.  Retained only
+`BoundaryCardStrictInteriorRefutation.not_boundaryCardStrictInteriorFalseAsStated`.  Retained only
 as an explicit assumption surface for older adapters; do not try to discharge it. -/
-def BoundaryCardStrictInteriorResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
+def BoundaryCardStrictInteriorFalseAsStated {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
     δ' < δ →
     Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
@@ -415,7 +415,7 @@ supply for non-lattice boundary levels, plus the genuine lattice endpoint residu
 `BoundaryCardResidualRefutation.not_boundaryCardQuantizationResiduals` (each conjunct is also
 separately refuted).  Retained only as an explicit assumption surface for older adapters. -/
 def BoundaryCardQuantizationResiduals {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
-  BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ) ∧
+  BoundaryCardStrictInteriorFalseAsStated (k := k) (deg := deg) (domain := domain) (δ := δ) ∧
   BoundaryCardLatticeResidual (k := k) (deg := deg) (domain := domain) (δ := δ)
 
 omit [Nonempty ι] [DecidableEq ι] in
@@ -424,7 +424,7 @@ strict-interior producer alone assembles the full quantization residual package.
 theorem BoundaryCardQuantizationResiduals.ofStrictInterior_zero
     {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hStrict :
-      BoundaryCardStrictInteriorResidual (k := 0) (deg := deg) (domain := domain) (δ := δ)) :
+      BoundaryCardStrictInteriorFalseAsStated (k := 0) (deg := deg) (domain := domain) (δ := δ)) :
     BoundaryCardQuantizationResiduals (k := 0) (deg := deg) (domain := domain) (δ := δ) :=
   ⟨hStrict, boundaryCardLatticeResidual_zero⟩
 
@@ -433,7 +433,7 @@ omit [Nonempty ι] [DecidableEq ι] in
 theorem BoundaryCardQuantizationResiduals.strictInterior {k deg : ℕ} {domain : ι ↪ F}
     {δ : ℝ≥0}
     (h : BoundaryCardQuantizationResiduals (k := k) (deg := deg) (domain := domain) (δ := δ)) :
-    BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+    BoundaryCardStrictInteriorFalseAsStated (k := k) (deg := deg) (domain := domain) (δ := δ) :=
   h.1
 
 omit [Nonempty ι] [DecidableEq ι] in
@@ -509,7 +509,7 @@ smaller concrete lattice-data package need not first lower it manually to
 theorem BoundaryCardQuantizationResiduals.ofLatticeData {k deg : ℕ} {domain : ι ↪ F}
     {δ : ℝ≥0} [NeZero deg]
     (hStrict :
-      BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+      BoundaryCardStrictInteriorFalseAsStated (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hData : BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     BoundaryCardQuantizationResiduals (k := k) (deg := deg) (domain := domain) (δ := δ) :=
   ⟨hStrict, hData.toLatticeResidual⟩
@@ -772,7 +772,7 @@ theorem boundaryCardResidual_of_not_isSquare_deg_mul_card {k deg : ℕ} {domain 
     (hdeg : deg ≤ Fintype.card ι)
     (hNotSquare : ¬ IsSquare (deg * Fintype.card ι))
     (hStrict :
-      BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+      BoundaryCardStrictInteriorFalseAsStated (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
   boundaryCardResidual_of_not_lattice (deg := deg) (domain := domain)
     (boundary_not_lattice_of_not_isSquare_deg_mul_card
@@ -790,7 +790,7 @@ theorem boundaryProbabilityResidual_of_not_isSquare_deg_mul_card {k deg : ℕ}
     (hdeg : deg ≤ Fintype.card ι)
     (hNotSquare : ¬ IsSquare (deg * Fintype.card ι))
     (hStrict :
-      BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+      BoundaryCardStrictInteriorFalseAsStated (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     ProximityGap.BoundaryProbabilityResidual
       (k := k) (deg := deg) (domain := domain) (δ := δ) := by
   exact ProximityGap.boundaryProbabilityResidual_of_boundaryCardResidual
@@ -887,7 +887,7 @@ theorem correlatedAgreement_affine_curves_of_lattice_data {k deg : ℕ} {domain 
     (hStrictCoeff :
       ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hStrict :
-      BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+      BoundaryCardStrictInteriorFalseAsStated (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hData : BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
@@ -924,7 +924,7 @@ theorem correlatedAgreement_affine_curves_of_not_isSquare_deg_mul_card {k deg : 
     (hStrictCoeff :
       ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hStrict :
-      BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+      BoundaryCardStrictInteriorFalseAsStated (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
     (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
     (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
@@ -1070,7 +1070,7 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.exists_lt_floor_eq_of_floor_lt
 #print axioms ArkLib.BoundaryCardResidual.floor_lt_of_lt_of_lattice
 #print axioms ArkLib.BoundaryCardResidual.not_exists_lt_floor_eq_of_lattice
-#print axioms ArkLib.BoundaryCardResidual.BoundaryCardStrictInteriorResidual
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardStrictInteriorFalseAsStated
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData

@@ -14,16 +14,16 @@ always check this census before treating a `*Residual` name as open proof debt.
 
 ## Summary
 
-- **Total strict residuals:** 100
+- **Total strict residuals:** 98
 - **Open:** 55
 - **Discharged:** 43
-- **Refuted:** 2
+- **Refuted:** 0
 - **Residual-like near misses:** 44 (see `scripts/residual_census.json`)
 
 | top-level directory | total | open | discharged | refuted |
 |---|---:|---:|---:|---:|
-| `Data` | 25 | 17 | 7 | 1 |
-| `OracleReduction` | 39 | 22 | 16 | 1 |
+| `Data` | 24 | 17 | 7 | 0 |
+| `OracleReduction` | 38 | 22 | 16 | 0 |
 | `ProofSystem` | 16 | 8 | 8 | 0 |
 | `ToMathlib` | 20 | 8 | 12 | 0 |
 
@@ -87,8 +87,7 @@ always check this census before treating a `*Residual` name as open proof debt.
 
 ## Refuted Residuals
 
-- `ArkLib.BoundaryCardResidual.BoundaryCardStrictInteriorResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:207` — refuted by `ArkLib.BoundaryCardStrictInteriorRefutation.not_boundaryCardStrictInteriorResidual` (ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardStrictInteriorRefutation.lean:299)
-- `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:668` — refuted by `DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false` (ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:502), `DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false` (ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:502)
+None.
 
 ## Discharged Residuals
 

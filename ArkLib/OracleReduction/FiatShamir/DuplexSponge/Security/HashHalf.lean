@@ -31,7 +31,7 @@ the remaining dedup-collision step:
    `capacitySegmentDupHash`, i.e. `E`, via `E_of_base_hasForwardCapacityBeforeHash`).
 
 **Scope note (honesty)**: this is the `E_{time,h}` *half* of the in-tree
-`Lemma5_16HonestResidual` only. The `E_{time,p}` half (out-of-order *permutation*
+`Lemma5_16HonestFalseAsStated` only. The `E_{time,p}` half (out-of-order *permutation*
 queries) is NOT proven here, and appears to be **false as currently stated**: the in-tree
 `redundantEntryDS` treats a forward entry `(p, x, y)` as redundant given an earlier
 *same-direction swapped* entry `(p, y, x)` (CO25 Def. 5.5 instead uses the
@@ -229,7 +229,7 @@ theorem E_of_hasFirstHashForwardCapacityBeforeHash
 
 /-- **M2c, hash half** — CO25 Lemma 5.16, `E_{time,h}` side: off the combined bad event
 `E`, no backtrack payload's anchoring hash query appears after its first chain permutation
-query. (The `E_{time,p}` side of `Lemma5_16HonestResidual` is *not* covered; see the
+query. (The `E_{time,p}` side of `Lemma5_16HonestFalseAsStated` is *not* covered; see the
 module docstring.) -/
 theorem lemma5_16_honest_hash_half
     (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))

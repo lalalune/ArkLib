@@ -645,7 +645,7 @@ theorem e_of_hasFirstPermCapacityBeforeForwardOutputPaper
 
 /-! ## The honest residuals, re-stated against paper semantics
 
-The legacy `Lemma5_14HonestFalseStatement` / `Lemma5_16HonestResidual` are REFUTED as stated
+The legacy `Lemma5_14HonestFalseStatement` / `Lemma5_16HonestFalseAsStated` are REFUTED as stated
 (machine-checked countermodels exploiting the legacy dedup's certificate deviation). These are
 the same confinement statements against the **paper-faithful** combined event
 `BadEventDSPaper.E` — correctly stated, honestly OPEN named Props awaiting discharge against

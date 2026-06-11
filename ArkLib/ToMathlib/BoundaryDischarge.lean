@@ -359,7 +359,7 @@ lattice branch.  This is the data-facing counterpart of
 `BoundaryCardResidual.BoundaryCardQuantizationResiduals`, whose lattice component is already the
 wider `BoundaryCardLatticeResidual`. -/
 def BoundaryCardQuantizationData {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
-  BoundaryCardResidual.BoundaryCardStrictInteriorResidual
+  BoundaryCardResidual.BoundaryCardStrictInteriorFalseAsStated
       (k := k) (deg := deg) (domain := domain) (δ := δ) ∧
     BoundaryCardResidual.BoundaryCardLatticeData
       (k := k) (deg := deg) (domain := domain) (δ := δ)
@@ -370,7 +370,7 @@ therefore assembles the full concrete quantization data package. -/
 theorem BoundaryCardQuantizationData.ofStrictInterior_zero {deg : ℕ} {domain : ι ↪ F}
     {δ : ℝ≥0}
     (hStrict :
-      BoundaryCardResidual.BoundaryCardStrictInteriorResidual
+      BoundaryCardResidual.BoundaryCardStrictInteriorFalseAsStated
         (k := 0) (deg := deg) (domain := domain) (δ := δ)) :
     BoundaryCardQuantizationData (k := 0) (deg := deg) (domain := domain) (δ := δ) :=
   ⟨hStrict, BoundaryCardResidual.boundaryCardLatticeData_zero⟩
@@ -380,7 +380,7 @@ omit [DecidableEq ι] in
 theorem BoundaryCardQuantizationData.strictInterior {k deg : ℕ} {domain : ι ↪ F}
     {δ : ℝ≥0}
     (h : BoundaryCardQuantizationData (k := k) (deg := deg) (domain := domain) (δ := δ)) :
-    BoundaryCardResidual.BoundaryCardStrictInteriorResidual
+    BoundaryCardResidual.BoundaryCardStrictInteriorFalseAsStated
       (k := k) (deg := deg) (domain := domain) (δ := δ) :=
   h.1
 

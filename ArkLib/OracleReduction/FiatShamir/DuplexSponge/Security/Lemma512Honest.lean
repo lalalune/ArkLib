@@ -1822,14 +1822,14 @@ theorem not_e_time_honest_removeRedundantEntryDS_of_not_E_raw
     (fun hE => h ((BadEventDS.E_removeRedundantEntryDS_iff tr).mp hE))
 
 /-- Conditional full M2c assembly: a global exclusion of the prior reversed-forward obstruction
-is enough to discharge `Lemma5_16HonestResidual`. -/
+is enough to discharge `Lemma5_16HonestFalseAsStated`. -/
 theorem lemma5_16_honest_of_no_prior_reverse
     (hNoRev :
       ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
         (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state),
         ¬ BadEventDS.E tr → ¬ HasPriorReversedForwardAnchor tr state S) :
-    DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual StmtIn U := by
-  unfold DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual
+    DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestFalseAsStated StmtIn U := by
+  unfold DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestFalseAsStated
   intro tr state S hE hTime
   unfold DuplexSpongeFS.KeyLemmaFoundations.E_time_honest at hTime
   rcases hTime with hHash | hPerm
@@ -1838,14 +1838,14 @@ theorem lemma5_16_honest_of_no_prior_reverse
       tr hE state S (hNoRev tr state S hE) hPerm
 
 /-- Conditional full M2c assembly, phrased at the stronger dedup-invariant boundary: excluding
-redundant nonterminal `J_BT` forward anchors is enough to discharge `Lemma5_16HonestResidual`. -/
+redundant nonterminal `J_BT` forward anchors is enough to discharge `Lemma5_16HonestFalseAsStated`. -/
 theorem lemma5_16_honest_of_no_redundant_forward_anchor
     (hNoRed :
       ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
         (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state),
         ¬ BadEventDS.E tr → ¬ HasRedundantForwardAnchor tr state S) :
-    DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual StmtIn U := by
-  unfold DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual
+    DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestFalseAsStated StmtIn U := by
+  unfold DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestFalseAsStated
   intro tr state S hE hTime
   unfold DuplexSpongeFS.KeyLemmaFoundations.E_time_honest at hTime
   rcases hTime with hHash | hPerm
@@ -1859,8 +1859,8 @@ theorem lemma5_16_honest_of_noRedundantEntryDS
     (hNoRed :
       ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)),
         ¬ BadEventDS.E tr → tr.NoRedundantEntryDS) :
-    DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual StmtIn U := by
-  unfold DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual
+    DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestFalseAsStated StmtIn U := by
+  unfold DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestFalseAsStated
   intro tr state S hE hTime
   exact not_e_time_honest_of_not_E_of_noRedundantEntryDS tr hE state S (hNoRed tr hE) hTime
 

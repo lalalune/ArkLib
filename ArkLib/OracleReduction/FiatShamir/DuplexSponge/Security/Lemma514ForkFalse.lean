@@ -10,7 +10,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFals
 # `Lemma5_14HonestFalseStatement` is FALSE as stated: a machine-checked fork countermodel
 
 This file settles the audit question for the M2b residual (CO25 Lemma 5.14, honest form):
-like its sibling `Lemma5_16HonestResidual` (refuted in `Lemma516TimePFalse.lean`), the
+like its sibling `Lemma5_16HonestFalseAsStated` (refuted in `Lemma516TimePFalse.lean`), the
 in-tree statement is **false**, for exactly the same root cause — the same-direction
 swapped certificate in `redundantEntryDS` (deviation from CO25 Definition 5.5).
 
@@ -590,7 +590,7 @@ theorem not_E_trcF : ¬ BadEventDS.E trcF := by
 same state while the combined bad event `E` is absent — the fork event
 `E_fork_honest` fires off `E`. Statement repair of `redundantEntryDS`
 (opposite-direction certificates, CO25 Def. 5.5) is required before the full
-Lemma 5.14 can be discharged, exactly as for the refuted `Lemma5_16HonestResidual`. -/
+Lemma 5.14 can be discharged, exactly as for the refuted `Lemma5_16HonestFalseAsStated`. -/
 theorem lemma5_14HonestFalseStatement_false :
     ¬ DuplexSpongeFS.KeyLemmaFoundations.Lemma5_14HonestFalseStatement Unit UInt8 := by
   intro h

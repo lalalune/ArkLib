@@ -7,7 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516HashHalf
 
 /-!
-# #316 — `Lemma5_16HonestResidual` is FALSE as stated: a machine-checked countermodel
+# #316 — `Lemma5_16HonestFalseAsStated` is FALSE as stated: a machine-checked countermodel
 
 The in-tree `redundantEntryDS` (BadEvents.lean) deviates from CO25 Definition 5.5: it
 accepts a **same-direction swapped** forward entry `(p, y, x)` as a redundancy certificate
@@ -17,7 +17,7 @@ directions (an "alternating" chain segment), and the dedup'd trace then keeps on
 orientation of that pair — carrying the chain-link capacity on its **query** side, where
 none of the `capacitySegmentDup*` anchors (which all anchor on **answer**-side capacities)
 can fire. This lets the out-of-order-permutation event `E_time_p_honest` occur while the
-combined bad event `E` does not, refuting `Lemma5_16HonestResidual` as stated.
+combined bad event `E` does not, refuting `Lemma5_16HonestFalseAsStated` as stated.
 
 ## The countermodel
 
@@ -494,13 +494,13 @@ theorem not_E_trc : ¬ BadEventDS.E trc := by
           decide
         · exact absurd (congrArg Sigma.fst h) (by simp)
 
-/-- **The in-tree `Lemma5_16HonestResidual` is FALSE** (at `StmtIn := Unit`,
+/-- **The in-tree `Lemma5_16HonestFalseAsStated` is FALSE** (at `StmtIn := Unit`,
 `U := UInt8`, sponge width 2 / rate 1): the countermodel trace realizes
 `E_time_p_honest` while the combined bad event `E` is absent. Statement repair of
 `redundantEntryDS` (opposite-direction certificates, CO25 Def. 5.5) is required before
 the full Lemma 5.16 can be discharged. -/
-theorem lemma5_16HonestResidual_false :
-    ¬ DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual Unit UInt8 := by
+theorem lemma5_16HonestFalseAsStated_false :
+    ¬ DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestFalseAsStated Unit UInt8 := by
   intro h
   exact h trc sT famC not_E_trc (Or.inr e_time_p_holds)
 
@@ -508,4 +508,4 @@ end DuplexSpongeFS.Sponge316.TimePCounter
 
 #print axioms DuplexSpongeFS.Sponge316.TimePCounter.e_time_p_holds
 #print axioms DuplexSpongeFS.Sponge316.TimePCounter.not_E_trc
-#print axioms DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false
+#print axioms DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestFalseAsStated_false

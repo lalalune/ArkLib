@@ -66,7 +66,7 @@ stable statement surface.
 - `SimulatedProverChallengeBudgetResidual` (M1c), `SimulatedProverSharedBudgetResidual` (M1d):
   the budget conjuncts of Lemma 5.1 for the `d2sAlgo` witness, both proven in
   `SimulatorBudgets`.
-- `Lemma5_12HonestResidual` / `Lemma5_16HonestResidual` (M2 residuals): legacy-event
+- `Lemma5_12HonestResidual` / `Lemma5_16HonestFalseAsStated` (M2 residuals): legacy-event
   `¬E ⇒ ¬E_inv / ¬E_time` with the honest definitions. M2a is proven by
   `Sponge316.lemma5_12_honest`; the paper-faithful repaired M2 surfaces live in
   `HonestConsistencyPaper`.
@@ -646,7 +646,7 @@ the legacy event `E`: off `E` the backtrack family has at most one maximal seque
 alternating-pair loop chains to the same state, so `E_fork_honest` fires while `E` is
 absent, exploiting the same `redundantEntryDS` deviation from CO25 Def. 5.5
 (same-direction swapped certificates instead of the paper's opposite-direction `p⁻¹` one)
-that refutes the sibling `Lemma5_16HonestResidual` (`Lemma516TimePFalse.lean`).
+that refutes the sibling `Lemma5_16HonestFalseAsStated` (`Lemma516TimePFalse.lean`).
 Do NOT add this statement as a hypothesis expecting a future discharge; use the paper-faithful
 `Lemma5_14HonestResidualPaper` surface instead. -/
 def Lemma5_14HonestFalseStatement (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
@@ -658,14 +658,14 @@ def Lemma5_14HonestFalseStatement (StmtIn U : Type) [SpongeUnit U] [SpongeSize] 
 order, `¬E(tr) → ¬E_time(tr, s)`.
 
 **Audit status (2026-06-10): REFUTED as stated** —
-`DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false`
+`DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestFalseAsStated_false`
 (`Lemma516TimePFalse.lean`, axiom-clean) exhibits a 4-entry trace where `E_time_p_honest`
 fires while `E` is absent, exploiting the `redundantEntryDS` deviation from CO25 Def. 5.5
 (same-direction swapped certificate instead of the paper's opposite-direction `p⁻¹` one).
 The TRUE `E_{time,h}` half is proven in `Lemma516HashHalf.lean`
 (`lemma5_16_honest_hash_half`). Do NOT add this residual as a hypothesis expecting a
 future discharge; repair `redundantEntryDS` first. -/
-def Lemma5_16HonestResidual (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
+def Lemma5_16HonestFalseAsStated (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
   ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),
     ¬ E tr → ¬ E_time_honest tr state S

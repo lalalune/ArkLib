@@ -50,7 +50,7 @@ complementary shapes that the CO25 §5.6 analysis needs and VCVio lacks:
   space `|U|^C`, are dominated by the real-valued CO25 bounds.
 - `probEvent_honestBad_le_probEvent_E` (R1e): **modulo the M2 statement interfaces**
   (`Lemma5_12HonestResidual`, the refuted legacy `Lemma5_14HonestFalseStatement`, and
-  `Lemma5_16HonestResidual`), the honest CO25 bad events
+  `Lemma5_16HonestFalseAsStated`), the honest CO25 bad events
   `E_inv/E_fork/E_time` over `Backtrack.S_BT` are dominated — for *any* trace
   distribution — by the single trace event `E` (CO25 §5.6), reducing their probability
   bound to Lemma 5.8.
@@ -365,7 +365,7 @@ This channels all three §5.6 bad events into the one event that Lemma 5.8 bound
 theorem probEvent_honestBad_le_probEvent_E
     (h12 : Lemma5_12HonestResidual StmtIn U)
     (h14 : Lemma5_14HonestFalseStatement StmtIn U)
-    (h16 : Lemma5_16HonestResidual StmtIn U)
+    (h16 : Lemma5_16HonestFalseAsStated StmtIn U)
     {β : Type} (game : ProbComp β)
     (tr : β → QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (st : β → CanonicalSpongeState U) :
@@ -383,7 +383,7 @@ theorem probEvent_honestBad_le_probEvent_E
 
 /-- R1e, deduped timing route — **honest timing events over the deduplicated base trace are
 dominated by raw `E`**. This is the usable replacement boundary for the refuted raw
-`Lemma5_16HonestResidual`: once the timing event is stated on `(removeRedundantEntryDS tr).1`,
+`Lemma5_16HonestFalseAsStated`: once the timing event is stated on `(removeRedundantEntryDS tr).1`,
 the fixed-trace M2c closure from `Sponge316` applies under the original raw `¬ E tr`
 hypothesis because `E` itself is defined over the same deduplicated base trace. -/
 theorem probEvent_dedupTimeHonest_le_probEvent_E
@@ -493,7 +493,7 @@ residuals and the bad-event side of the Hyb₀₁ step is numerically closed. -/
 theorem honestBad_birthday_of_residuals
     (h12 : Lemma5_12HonestResidual StmtIn U)
     (h14 : Lemma5_14HonestFalseStatement StmtIn U)
-    (h16 : Lemma5_16HonestResidual StmtIn U)
+    (h16 : Lemma5_16HonestFalseAsStated StmtIn U)
     (h58 : Lemma5_8EagerBirthdayFalseStatement StmtIn U)
     {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
     (hT : IsTotalQueryBound P T) (st₀ : CanonicalSpongeState U) :
@@ -512,7 +512,7 @@ theorem honestBad_birthday_of_residuals
 
 /-- R1 assembly, deduped timing lane — assuming the eager birthday residual for raw `E`, the
 probability of an honest timing event over the deduplicated logged trace is bounded by
-`lemma5_8Bound`. This avoids consuming the refuted raw `Lemma5_16HonestResidual`. -/
+`lemma5_8Bound`. This avoids consuming the refuted raw `Lemma5_16HonestFalseAsStated`. -/
 theorem dedupTimeHonest_birthday_of_residual
     (h58 : Lemma5_8EagerBirthdayFalseStatement StmtIn U)
     {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)

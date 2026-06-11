@@ -1,21 +1,21 @@
 {
  "summary": {
-  "total": 100,
+  "total": 98,
   "open": 55,
   "discharged": 43,
-  "refuted": 2,
+  "refuted": 0,
   "by_top_dir": {
    "Data": {
-    "total": 25,
+    "total": 24,
     "open": 17,
     "discharged": 7,
-    "refuted": 1
+    "refuted": 0
    },
    "OracleReduction": {
-    "total": 39,
+    "total": 38,
     "open": 22,
     "discharged": 16,
-    "refuted": 1
+    "refuted": 0
    },
    "ProofSystem": {
     "total": 16,
@@ -649,9 +649,7 @@
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean",
      "line": 768,
-     "conditional_on_residuals": [
-      "BoundaryCardStrictInteriorResidual"
-     ],
+     "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hNotSquare",
       "hStrict",
@@ -872,9 +870,7 @@
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean",
      "line": 785,
-     "conditional_on_residuals": [
-      "BoundaryCardStrictInteriorResidual"
-     ],
+     "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hNotSquare",
       "hStrict",
@@ -1467,48 +1463,6 @@
     }
    ],
    "status": "open"
-  },
-  {
-   "name": "BoundaryCardStrictInteriorResidual",
-   "fq_name": "ArkLib.BoundaryCardResidual.BoundaryCardStrictInteriorResidual",
-   "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean",
-   "line": 207,
-   "providers": [
-    {
-     "name": "ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.strictInterior",
-     "kind": "theorem",
-     "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean",
-     "line": 433,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [
-      "h"
-     ],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.strictInterior",
-     "kind": "theorem",
-     "file": "ArkLib/ToMathlib/BoundaryDischarge.lean",
-     "line": 380,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [
-      "h"
-     ],
-     "ambiguous_name_match": false
-    }
-   ],
-   "refutations": [
-    {
-     "name": "ArkLib.BoundaryCardStrictInteriorRefutation.not_boundaryCardStrictInteriorResidual",
-     "kind": "theorem",
-     "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardStrictInteriorRefutation.lean",
-     "line": 299,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [],
-     "ambiguous_name_match": false
-    }
-   ],
-   "status": "refuted"
   },
   {
    "name": "BoundaryCardLatticeResidual",
@@ -2669,101 +2623,6 @@
     }
    ],
    "status": "discharged"
-  },
-  {
-   "name": "Lemma5_16HonestResidual",
-   "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual",
-   "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 668,
-   "providers": [
-    {
-     "name": "DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_prior_reverse",
-     "kind": "theorem",
-     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean",
-     "line": 1826,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [
-      "hNoRev"
-     ],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_redundant_forward_anchor",
-     "kind": "theorem",
-     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean",
-     "line": 1842,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [
-      "hNoRed"
-     ],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "DuplexSpongeFS.Sponge316.lemma5_16_honest_of_noRedundantEntryDS",
-     "kind": "theorem",
-     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean",
-     "line": 1858,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [
-      "hNoRed"
-     ],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_prior_reverse",
-     "kind": "theorem",
-     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean",
-     "line": 1826,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [
-      "hNoRev"
-     ],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_redundant_forward_anchor",
-     "kind": "theorem",
-     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean",
-     "line": 1842,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [
-      "hNoRed"
-     ],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "DuplexSpongeFS.Sponge316.lemma5_16_honest_of_noRedundantEntryDS",
-     "kind": "theorem",
-     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean",
-     "line": 1858,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [
-      "hNoRed"
-     ],
-     "ambiguous_name_match": false
-    }
-   ],
-   "refutations": [
-    {
-     "name": "DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false",
-     "kind": "theorem",
-     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean",
-     "line": 502,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false",
-     "kind": "theorem",
-     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean",
-     "line": 502,
-     "conditional_on_residuals": [],
-     "extra_explicit_binders": [],
-     "ambiguous_name_match": false
-    }
-   ],
-   "status": "refuted"
   },
   {
    "name": "SimulatedProverChallengeBudgetResidual",

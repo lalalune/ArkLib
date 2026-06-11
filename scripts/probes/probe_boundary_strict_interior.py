@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Probe: refute BoundaryCardStrictInteriorResidual at a NON-LATTICE Johnson endpoint.
+"""Probe: refute BoundaryCardStrictInteriorFalseAsStated at a NON-LATTICE Johnson endpoint.
 
 Issue #304 / #232 boundary assembly ground truth.  The in-tree refutations
 (BoundaryCardResidualRefutation, ...AffineLineRefutation) kill the bare
 closed-boundary residual only at SQUARE endpoints (deg*n a perfect square,
 ZMod 5, deg=1).  The non-lattice branch of the quantization split
 (boundaryCardResidual_of_not_lattice) defers to the strict-interior supply
-`BoundaryCardStrictInteriorResidual`:
+`BoundaryCardStrictInteriorFalseAsStated`:
 
   forall u, forall delta' < delta with floor(delta'*n) = floor(delta*n),
     good set at delta' nonempty  ==>  jointAgreement at delta'.
@@ -106,7 +106,7 @@ assert pr_good <= k * eps, \
 print("corrected threshold statement SURVIVES the witness "
       f"(Pr {pr_good} <= k*eps {k*eps})")
 
-print("\nPROBE VERDICT: BoundaryCardStrictInteriorResidual is FALSE at the "
+print("\nPROBE VERDICT: BoundaryCardStrictInteriorFalseAsStated is FALSE at the "
       "non-lattice endpoint (k=1, deg=2, n=4, GF(5)); "
       "bare BoundaryCardResidual is FALSE there too (same-floor transport); "
       "threshold-corrected statement consistent.")

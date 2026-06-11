@@ -57,7 +57,7 @@ Refuted / superseded residuals **off the active path**:
 5. `BirthdayBound.Lemma5_8EagerBirthdayFalseStatement` is false over the deviant in-tree event
    (`Lemma58EagerFalse.lean`). Its paper-faithful replacement is
    `BirthdayBoundPaper.Lemma5_8EagerPaperResidual`.
-6. `KeyLemmaFoundations.Lemma5_14HonestFalseStatement` / `Lemma5_16HonestResidual` are false over
+6. `KeyLemmaFoundations.Lemma5_14HonestFalseStatement` / `Lemma5_16HonestFalseAsStated` are false over
    the deviant in-tree event (`Lemma514ForkFalse.lean`, `Lemma516TimePFalse.lean`). The
    CO25-faithful M2 block is proved over `Paper.EPaper` by `lemma512Paper`,
    `lemma514Paper`, and `lemma516Paper`, and `BirthdayBoundPaper` consumes those theorems

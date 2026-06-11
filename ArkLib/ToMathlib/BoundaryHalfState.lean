@@ -227,7 +227,7 @@ statement holds with the explicit error `ε = max (errorBound (⌊δ·n⌋/n)) (
 
 Both inputs are honest named open obligations (BCIKS20 §5 Steps 5–7 content); the refuted
 nonemptiness surfaces (`BoundaryCardResidual`, `BoundaryCardLatticeResidual`,
-`BoundaryCardStrictInteriorResidual`) appear nowhere, and the export error is strictly
+`BoundaryCardStrictInteriorFalseAsStated`) appear nowhere, and the export error is strictly
 positive (`johnsonClosed_eps_pos`) — never the vacuous `errorBound (1 − √ρ) = 0`. -/
 theorem correlatedAgreementCurves_johnsonClosed_of_leaves
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
