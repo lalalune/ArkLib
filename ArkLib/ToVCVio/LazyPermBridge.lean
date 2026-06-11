@@ -142,6 +142,16 @@ theorem evalDist_sampleUnused_run (xs : List X) (hnd : xs.Nodup) (hxs : xs ≠ [
         simp
 
 
+/-- The fresh sample lands in the list (nonempty case). -/
+lemma support_sampleUnused {xs : List X} (h : xs ≠ []) :
+    support (sampleUnused xs) ⊆ {x | x ∈ xs} := by
+  rcases xs with _ | ⟨y, ys⟩
+  · exact absurd rfl h
+  · intro x hx
+    simp only [sampleUnused, support_map] at hx
+    obtain ⟨i, _, rfl⟩ := hx
+    exact List.getElem_mem _
+
 /-! ## Step exposures (public, for cross-file consumers) -/
 
 lemma lazyPermImpl_run_inl_none (cp : List (X × X)) {a : X}
