@@ -140,9 +140,12 @@ theorem queryLog_entries_not_p_of_isQueryBoundP_zero
       simp only [simulateQ_pure] at hmem
       have hlog : log = [] := by
         revert hmem
-        simp [WriterT.run, Prod.ext_iff]
-        intro _ h2
-        exact h2.symm
+        simp only [WriterT.run, Prod.ext_iff]
+        first
+          | (intro h2; exact h2.2.symm)
+          | (intro _ h2; exact h2.symm)
+          | (intro h2; exact h2.2)
+          | simp_all
       subst hlog
       simp
   | query_bind t mx ih =>
@@ -464,12 +467,13 @@ stays all-left. Stated against the literal `filterMap` body of `hyb3Line4SaltEra
 private lemma saltErase_isLeft_of_isLeft
     (l : QueryLog (oSpec + fsChallengeOracle (StmtIn × Salt) pSpec))
     (hl : ∀ e ∈ l, e.1.isLeft = true) :
-    ∀ e' ∈ (l.filterMap fun entry =>
+    ∀ e' ∈ (l.filterMap (fun entry =>
         match entry with
         | ⟨.inl q, r⟩ => some ⟨.inl q, r⟩
         | ⟨.inr ⟨roundIdx, ((stmt, _salt), messagesBefore)⟩, challenge⟩ =>
-            some ⟨.inr ⟨roundIdx, (stmt, messagesBefore)⟩, challenge⟩),
-      (e'.1 : ι ⊕ _).isLeft = true := by
+            some ⟨.inr ⟨roundIdx, (stmt, messagesBefore)⟩, challenge⟩) :
+        QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)),
+      e'.1.isLeft = true := by
   intro e' he'
   obtain ⟨e, he, hfe⟩ := List.mem_filterMap.mp he'
   match e with
