@@ -5546,3 +5546,28 @@ quantitatively measured generic halo (uniform-heuristic scale, locality on infea
 classes at large primes, breaking at smaller ones). The named opens: the halo's exact
 first moment (is the uniform heuristic a theorem on average over α?), the r=7 mod-p
 stratum, and the witness-layer surplus.
+
+### O137 — KKH26 IS EXTREMAL at the exact-pin instance: the worst-case stacks are exactly the twisted-monomial orbit of the KKH26 stack (2026-06-11, #357 — the exact-point and ceiling campaigns meet)
+
+Probe `probe_o137_kkh26_extremal.py` (exact): at RS[F₅,(1,2,4,3),2], δ = 1/4, the KKH26
+monomial-pair stack `(X³, X²)` (the r = 3 shape: code degree r−2 = 1) has bad-γ set exactly
+`{1,2,3,4}` — count 4 = the proven worst case (`DeltaStarExactPinF5.lean`), and exactly the
+census law's prediction `−{3-subset sums of (1,2,4,3)}` (`KKH26CensusLaw.lean`). Since the
+extremal stacks form a SINGLE orbit of the twisted-monomial group (O135), the worst case
+*is* the orbit of the KKH26 stack:
+
+  **ε_mca(C, 1/4) is ATTAINED by the KKH26 family — the ceiling family is extremal, not
+  just a lower-bound family — at the first exactly-solved instance.**
+
+Care: the r = 2 shape `(X², X)` fires ZERO bad γ here because its direction row `X` is a
+codeword (deg < k) — when `u₁ ∈ C` every closeness witness extends to a joint pair, so
+`mcaEvent` never fires. The KKH26 validity constraint (direction strictly outside the code)
+is what instance-matching must respect.
+
+**Conjecture (extremality of the monomial orbit):** at every smooth instance and matching
+radius, the sup in `ε_mca` is attained on the twisted-monomial orbit of the KKH26 stack —
+equivalently `ε_mca(C, 1 − r·m/n) = (#distinct fiber-subset sums)/|F|` exactly. If true,
+the upper-bracket question for this radius family is *computable* from the subset-sum
+census alone. Next falsifiers: (i) the n = 8 rung (orbit-reduced decide via the landed
+descent engine); (ii) the (12,6) flat numerator 12 across p ∈ {13,37,61} vs the census of
+the matching (r, m) shape.
