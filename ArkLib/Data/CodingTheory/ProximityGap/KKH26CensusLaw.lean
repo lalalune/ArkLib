@@ -58,6 +58,7 @@ def lineAgreeSet (H : Finset F) (r : ℕ) (lam : F) (q : Polynomial F) : Finset 
 noncomputable def linePoly (r : ℕ) (lam : F) (q : Polynomial F) : Polynomial F :=
   X ^ r + C lam * X ^ (r - 1) - q
 
+omit [DecidableEq F] in
 theorem linePoly_tail_natDegree_le {r : ℕ} (hr2 : 2 ≤ r) (lam : F)
     {q : Polynomial F} (hq : q.natDegree ≤ r - 2) :
     (C lam * X ^ (r - 1) - q).natDegree ≤ r - 1 := by
@@ -65,8 +66,9 @@ theorem linePoly_tail_natDegree_le {r : ℕ} (hr2 : 2 ≤ r) (lam : F)
   refine max_le ?_ (le_trans hq (by omega))
   calc (C lam * X ^ (r - 1)).natDegree ≤ (C lam).natDegree + (X ^ (r - 1)).natDegree :=
         natDegree_mul_le
-    _ ≤ r - 1 := by simp [natDegree_C, natDegree_X_pow]
+    _ ≤ r - 1 := by simp [natDegree_C]
 
+omit [DecidableEq F] in
 /-- `linePoly` is monic of degree exactly `r`. -/
 theorem linePoly_monic {r : ℕ} (hr2 : 2 ≤ r) (lam : F)
     {q : Polynomial F} (hq : q.natDegree ≤ r - 2) :
@@ -180,7 +182,7 @@ theorem subsetSum_of_badScalar {H : Finset F} {r : ℕ} (hr2 : 2 ≤ r) {lam : F
       coeff_eq_zero_of_natDegree_lt (by omega : q.natDegree < r - 1)
     have hxr : (X ^ r : Polynomial F).coeff (r - 1) = 0 := by
       rw [coeff_X_pow]
-      simp [show ¬ r = r - 1 by omega, show ¬ r - 1 = r by omega]
+      simp [show ¬ r - 1 = r by omega]
     have hxr1 : (X ^ (r - 1) : Polynomial F).coeff (r - 1) = 1 := by
       rw [coeff_X_pow]
       simp

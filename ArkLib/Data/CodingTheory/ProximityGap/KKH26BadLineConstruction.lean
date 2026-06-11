@@ -308,7 +308,7 @@ This is the elementary Vieta half of the exact census law probed in #357/R2: eve
 scalar for the monomial pair must be a negative `r`-subset sum.  The converse is the existing
 gap-expansion construction (`gap_expansion` with `m = 1`), while distinctness of those sums is
 the KKH26/resultant/de Bruijn content. -/
-theorem monomial_line_scalar_eq_neg_sum_of_agreement {F : Type*} [Field F] [DecidableEq F]
+theorem monomial_line_scalar_eq_neg_sum_of_agreement {F : Type*} [Field F]
     {r : ℕ} (hr2 : 2 ≤ r) {T : Finset F} (hTcard : T.card = r)
     {lam : F} {q : Polynomial F} (hq : q.natDegree ≤ r - 2)
     (hagree : ∀ x ∈ T, x ^ r + lam * x ^ (r - 1) = q.eval x) :
@@ -341,7 +341,7 @@ theorem monomial_line_scalar_eq_neg_sum_of_agreement {F : Type*} [Field F] [Deci
     refine roots_eq_of_natDegree_le_card_of_ne_zero hroots_on_T ?_ hPmonic.ne_zero
     rw [hPnat, hTcard]
   have hroots_card : P.roots.card = P.natDegree := by
-    simpa [hroots, hTcard, hPnat]
+    simp [hroots, hTcard, hPnat]
   have hprod_multiset : (P.roots.map fun a => X - C a).prod = P :=
     prod_multiset_X_sub_C_of_monic_of_roots_card_eq hPmonic hroots_card
   have hprod : (∏ x ∈ T, (X - C x) : Polynomial F) = P := by
@@ -353,7 +353,7 @@ theorem monomial_line_scalar_eq_neg_sum_of_agreement {F : Type*} [Field F] [Deci
     exact monic_prod_of_monic _ _ fun x _ => monic_X_sub_C x
   have hRdeg : R.natDegree = r := by
     rw [hR, natDegree_prod_of_monic _ _ fun x _ => monic_X_sub_C x]
-    simp [natDegree_X_sub_C, hTcard]
+    simp [hTcard]
   have hcoeffR : R.coeff (r - 1) = -∑ x ∈ T, x := by
     have h1 : R.nextCoeff = -∑ x ∈ T, x := by
       rw [hR]
