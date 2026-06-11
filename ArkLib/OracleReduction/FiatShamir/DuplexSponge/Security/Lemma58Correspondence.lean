@@ -883,6 +883,55 @@ theorem inv_entry_fresh (L₁ : List (DSEntry StmtIn U)) (e : DSEntry StmtIn U)
   obtain ⟨e', he', hcl⟩ := inv_hit_sameClass_mem L₁ a b hc hhit
   exact hnr e' he' (by rw [he]; exact hcl)
 
+/-! ## Raw split at a base-trace position (assembly step s1→s2 bridge) -/
+
+/-- A list splits at any in-range position into prefix, element, suffix. -/
+theorem list_split_at {α : Type*} (l : List α) (p : ℕ) (hp : p < l.length) :
+    l = l.take p ++ l[p] :: l.drop (p + 1) := by
+  conv_lhs => rw [← List.take_append_drop p l]
+  congr 1
+  rw [List.drop_eq_getElem_cons hp]
+
+/-- An earlier-indexed element lies in the prefix `take p`. -/
+theorem getElem_mem_take {α : Type*} (l : List α) {p q : ℕ} (hq : q < p)
+    (hp : p < l.length) : l[q]'(by omega) ∈ l.take p := by
+  have hqt : q < (l.take p).length := by rw [List.length_take]; omega
+  have h := List.getElem_mem hqt
+  rwa [List.getElem_take] at h
+
+/-- **Raw split at a base position.** For a base-trace index `j`, writing `pⱼ = f j` for the
+order embedding, the raw log splits as `L₁ ++ baseTrace[j] :: L₂` with `|L₁| = pⱼ`, and every
+earlier base entry `baseTrace[j']` (`j' < j`) lies in the prefix `L₁`. -/
+theorem base_raw_split
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (f : ℕ ↪o ℕ)
+    (hf : ∀ ix : ℕ, (DuplexSpongeFS.Paper.removeRedundantEntryDSPaper log).1[ix]? = log[f ix]?)
+    (j : ℕ) (hj : j < (DuplexSpongeFS.Paper.removeRedundantEntryDSPaper log).1.length) :
+    ∃ (hpj : f j < log.length),
+      log = log.take (f j) ++ log[f j] :: log.drop (f j + 1) ∧
+      log[f j] = (DuplexSpongeFS.Paper.removeRedundantEntryDSPaper log).1[j] ∧
+      ∀ j' < j, ∀ (hj' : j' < (DuplexSpongeFS.Paper.removeRedundantEntryDSPaper log).1.length),
+        (DuplexSpongeFS.Paper.removeRedundantEntryDSPaper log).1[j'] ∈ log.take (f j) := by
+  classical
+  set base := (DuplexSpongeFS.Paper.removeRedundantEntryDSPaper log).1 with hbase
+  -- f j < log.length because base[j]? = log[f j]? is `some`
+  have hfj : log[f j]? = some base[j] := by rw [← hf j, List.getElem?_eq_getElem hj]
+  have hpj : f j < log.length := by
+    rw [List.getElem?_eq_some_iff] at hfj; exact hfj.1
+  refine ⟨hpj, list_split_at log (f j) hpj, ?_, ?_⟩
+  · have := List.getElem?_eq_getElem hpj
+    rw [hfj] at this; exact (Option.some_inj.mp this).symm
+  · intro j' hj'j hj'
+    -- f j' < f j by strict monotonicity, and base[j'] = log[f j']
+    have hmono : f j' < f j := f.strictMono hj'j
+    have hfj' : log[f j']? = some base[j'] := by rw [← hf j', List.getElem?_eq_getElem hj']
+    have hfj'len : f j' < log.length := by
+      rw [List.getElem?_eq_some_iff] at hfj'; exact hfj'.1
+    have hbe : log[f j']'hfj'len = base[j'] := by
+      have := List.getElem?_eq_getElem hfj'len; rw [hfj'] at this; exact (Option.some_inj.mp this).symm
+    rw [← hbe]
+    exact getElem_mem_take log hmono hpj
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -968,6 +1017,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundant_orderEmbedding
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_entry_fresh
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_entry_fresh
+#print axioms DuplexSpongeFS.EagerLazyDS.base_raw_split
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
