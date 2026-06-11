@@ -1307,6 +1307,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFals
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58CacheProvenance
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Correspondence
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58EagerFalse
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Extraction
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Freshness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.LiftCoherence
