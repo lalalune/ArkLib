@@ -76,6 +76,8 @@ open CodingTheory.ProximityGap.Hab25Core.Hab25Johnson
 open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 open scoped Polynomial
 
+attribute [local instance] Classical.propDecidable
+
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
          {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 
@@ -130,7 +132,7 @@ theorem mca_johnson_bound_CONJECTURE_pair_of_johnsonNumericBound
   unfold mca_johnson_bound_CONJECTURE
   exact hmca
 
-open Classical in
+omit [DecidableEq ι] in
 /-- **The literal pair-case Johnson conjecture from per-stack Claim-1 cell data alone.**
 For every admissible `δ` and word stack, suppose the bad scalars decompose into `≤ L`
 cells satisfying the capture-above-`n` dichotomy (the BCIKS20 Steps 5–7 output — the
@@ -150,8 +152,7 @@ theorem mca_johnson_bound_CONJECTURE_pair_of_claim1_cells
     (hdata : ∀ δ : ℝ≥0, 0 < δ →
       (δ : ℝ) < 1 - Real.sqrt ((2 ^ m : ℝ) / (Fintype.card ι : ℝ)) →
       ∀ u : Code.WordStack F (Fin 2) ι,
-        ∃ (Idx : Type) (_ : DecidableEq Idx) (Index : Finset Idx)
-          (Ecell : Idx → Finset F),
+        ∃ (Idx : Type) (Index : Finset Idx) (Ecell : Idx → Finset F),
           Index.card ≤ L ∧
           (Finset.univ.filter
             (fun γ : F => _root_.ProximityGap.mcaEvent (F := F)
@@ -162,6 +163,7 @@ theorem mca_johnson_bound_CONJECTURE_pair_of_claim1_cells
               ∀ γ ∈ Ecell ij,
                 AffineCaptured φ (2 ^ m) δ u γ (a, b)) :
     mca_johnson_bound_CONJECTURE α φ m (Fin 2) exp := by
+  classical
   refine mca_johnson_bound_CONJECTURE_pair_of_johnsonNumericBound α φ m exp
     hexp0 hexp1 hk ?_
   intro δ hδ0 hδB
@@ -208,7 +210,7 @@ theorem mca_johnson_bound_CONJECTURE_pair_of_decode_family_pinning
   obtain ⟨Idx, hIdx, Index, Ecell, Pcell, hcard, hcover, hdec, hpin⟩ :=
     hdata δ hδ0 hδB u
   letI : DecidableEq Idx := hIdx
-  refine ⟨Idx, inferInstance, Index, Ecell, hcard, hcover, ?_⟩
+  refine ⟨Idx, Index, Ecell, hcard, hcover, ?_⟩
   intro ij hij hlarge
   exact hsteps57_of_decode_family_pinning (domain := φ) (k := 2 ^ m)
     (δ := δ) (u := u) (Ecell ij) (Fintype.card ι) (Pcell ij)
@@ -254,7 +256,7 @@ theorem mca_johnson_bound_CONJECTURE_pair_of_decode_family_window
   obtain ⟨Idx, hIdx, Index, Ecell, Pcell, hcard, hcover, hdec⟩ :=
     hdata δ hδ0 hδB u
   letI : DecidableEq Idx := hIdx
-  refine ⟨Idx, inferInstance, Index, Ecell, hcard, hcover, ?_⟩
+  refine ⟨Idx, Index, Ecell, hcard, hcover, ?_⟩
   intro ij hij hlarge
   have hkpos : 0 < 2 ^ m := by positivity
   exact hsteps57_of_window (domain := φ) (k := 2 ^ m) (δ := δ) (u := u)

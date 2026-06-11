@@ -41,6 +41,7 @@ attribute [local instance] Classical.propDecidable
 variable {ι₀ : Type} [Fintype ι₀] [Nonempty ι₀] [DecidableEq ι₀]
 variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
 
+omit [DecidableEq ι₀] [DecidableEq F₀] in
 /-- **The unconditional bad-scalar count on the unique-decoding window**: every word
 stack has at most `n` bad scalars. The whole bad set is one decoded cell (decode family
 by choice), and depth-0 K4 + the Claim-1 dichotomy bound it. -/
@@ -65,6 +66,7 @@ theorem badScalars_card_le_of_window (domain : ι₀ ↪ F₀) {k : ℕ} (δ : �
   exact cell_card_le_of_decode_family_window hk bad (Fintype.card ι₀) P le_rfl
     (fun γ hγ => hPdec γ hγ) hwin
 
+omit [DecidableEq ι₀] [DecidableEq F₀] in
 /-- **The `JohnsonNumericBound` residual holds outright on the window**: the uniform
 count `n` from `badScalars_card_le_of_window`, fed through the S11 counting seam, leaves
 only the numeric comparison `n / |F| ≤ johnsonBoundReal`. -/
@@ -96,6 +98,7 @@ lemma hab25_ell_budget_ge_one {n k : ℕ} (hn : 0 < n) (hkn : k + 1 ≤ n) (η :
   rw [le_div_iff₀ (by positivity)]
   nlinarith
 
+omit [DecidableEq ι₀] [DecidableEq F₀] in
 /-- **The numeric comparison holds outright**: `n / |F| ≤ johnsonBoundReal` whenever
 `k + 1 ≤ n` — the `L = 1` case of the closed-form numeric edge. -/
 theorem card_div_le_johnsonBoundReal (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0)
@@ -105,6 +108,7 @@ theorem card_div_le_johnsonBoundReal (domain : ι₀ ↪ F₀) (k : ℕ) (η δ 
     (by simpa using hab25_ell_budget_ge_one Fintype.card_pos hkn η)
   simpa using h
 
+omit [DecidableEq ι₀] [DecidableEq F₀] in
 /-- **The `JohnsonNumericBound` residual, fully discharged on the window**: only the
 window inequality and `k + 1 ≤ n` remain — no numeric side condition. -/
 theorem johnsonNumericBound_of_window' (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0)
