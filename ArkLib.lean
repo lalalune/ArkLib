@@ -1252,7 +1252,6 @@ import ArkLib.OracleReduction.DecisionTail
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
-import ArkLib.OracleReduction.FiatShamir.RunEqHonestExecution
 import ArkLib.OracleReduction.FiatShamir.BasicCompleteness
 import ArkLib.OracleReduction.FiatShamir.ChallengeOracleSampling
 import ArkLib.OracleReduction.FiatShamir.CompletenessUnroll
@@ -1311,6 +1310,7 @@ import ArkLib.OracleReduction.FiatShamir.HVZKNoChallenge
 import ArkLib.OracleReduction.FiatShamir.HVZKPerStateClose
 import ArkLib.OracleReduction.FiatShamir.HVZKTransferReduction
 import ArkLib.OracleReduction.FiatShamir.ProverRunCharacterization
+import ArkLib.OracleReduction.FiatShamir.RunEqHonestExecution
 import ArkLib.OracleReduction.FiatShamir.SingleSalt
 import ArkLib.OracleReduction.FiatShamir.StateRestorationTransport
 import ArkLib.OracleReduction.FiatShamir.TestDesugar

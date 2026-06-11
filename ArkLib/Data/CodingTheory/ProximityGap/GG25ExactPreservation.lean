@@ -253,12 +253,8 @@ theorem markedCurveDecodable_interleaved_of_choose_le
     · rw [dif_pos hγ]
       exact hproper hγ.choose.val hγ.choose.property
     · rw [dif_neg hγ]
-      intro hbot
-      have h1 : ((fun _ => 1 : Fin s → F)) ∈ (⊤ : Submodule F (Fin s → F)) := trivial
-      rw [← hbot] at h1
-      have h2 : (fun _ => 1 : Fin s → F) = 0 := h1
-      have := congrFun h2 ⟨0, by omega⟩
-      simp at this
+      haveI : Nonempty (Fin s) := ⟨⟨0, hs⟩⟩
+      exact bot_ne_top
   obtain ⟨lam, _, hlamK⟩ := exists_nonzero_notMem_of_proper_family hs K hKproper
   obtain ⟨B, hB, hlamB⟩ := hcover lam
   refine hlamK (e ⟨B, hB⟩) ?_

@@ -123,12 +123,8 @@ theorem uniformObstruction_of_seedIndexed
   -- Choose one witness per bad seed; transport along the embedding; junk to ⊥ off-range.
   choose T hT hTne using hwitness
   have hbot : (⊥ : Submodule F (Fin s → F)) ≠ ⊤ := by
-    intro h
-    have h1 : ((fun _ => 1 : Fin s → F)) ∈ (⊤ : Submodule F (Fin s → F)) := trivial
-    rw [← h] at h1
-    have : (fun _ => 1 : Fin s → F) = 0 := h1
-    have := congrFun this ⟨0, by omega⟩
-    simp at this
+    haveI : Nonempty (Fin s) := ⟨⟨0, hs⟩⟩
+    exact bot_ne_top
   refine ⟨fun γ =>
     if h : ∃ ω, e ω = γ ∧ mcaEventG ((C : Set (ι → A))^⋈ (Fin s)) δ U (G ω)
     then jointStackSubmodule C (T h.choose h.choose_spec.2) U

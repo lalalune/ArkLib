@@ -69,6 +69,13 @@ Which leaves are reusable as-is, and where the seams needed work:
   eliminated.
 * `composedTightRbrError_unconditional_le` — the no-`1`-slot certificate: every per-round error
   of the headline error vector is `≤ max(ℓ_m, 3)/|R|`.
+
+**Scope note (DRY audit 2026-06-11, item 10):** this 6-phase chain is a strict ancestor of the
+full 8-phase apex — `TightComposedFull.lean` (`composedTightFull_rbrKnowledgeSoundness`) and
+the paired chain `TightApexPure.lean` (`composedTightPure_rbrKnowledgeSoundness` +
+`composedTightPure_perfectCompleteness`). Its endpoint (`tightRelG`) is interior to the full
+chain. New consumers should target the apex; this file remains as the documented shorter
+assembly pattern.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
