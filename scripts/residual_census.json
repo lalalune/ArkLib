@@ -1,8 +1,8 @@
 {
  "summary": {
-  "total": 105,
+  "total": 104,
   "open": 27,
-  "discharged": 78,
+  "discharged": 77,
   "by_top_dir": {
    "Data": {
     "total": 21,
@@ -20,9 +20,9 @@
     "discharged": 16
    },
    "ToMathlib": {
-    "total": 21,
+    "total": 20,
     "open": 2,
-    "discharged": 19
+    "discharged": 18
    }
   }
  },
@@ -2425,13 +2425,13 @@
    "name": "K4GradedFactorCellResidual",
    "fq_name": "MutualCorrAgreement.K4GradedFactorCellResidual",
    "file": "ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean",
-   "line": 39,
+   "line": 46,
    "providers": [
     {
      "name": "MutualCorrAgreement.K4GradedFactorCellResidual_of_component",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean",
-     "line": 74,
+     "line": 87,
      "conditional_on_residuals": [
       "K4ComponentResidual"
      ],
@@ -2444,26 +2444,9 @@
    "name": "K4ComponentResidual",
    "fq_name": "MutualCorrAgreement.K4ComponentResidual",
    "file": "ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean",
-   "line": 51,
+   "line": 64,
    "providers": [],
    "status": "open"
-  },
-  {
-   "name": "randomRSListDecodingFirstMomentResidual",
-   "fq_name": "CodingTheory.randomRSListDecodingFirstMomentResidual",
-   "file": "ArkLib/ToMathlib/AGL24RandomRSProof.lean",
-   "line": 78,
-   "providers": [
-    {
-     "name": "CodingTheory.randomRSListDecodingFirstMomentResidual_of_badCount",
-     "kind": "theorem",
-     "file": "ArkLib/ToMathlib/AGL24RandomRSProof.lean",
-     "line": 178,
-     "conditional_on_residuals": [],
-     "ambiguous_name_match": false
-    }
-   ],
-   "status": "discharged"
   },
   {
    "name": "DeepHoleProbResidual",

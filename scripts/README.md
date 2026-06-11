@@ -12,6 +12,11 @@ This directory contains various utility scripts for the ArkLib project.
 - **`check-imports.sh`** - Check if ArkLib.lean is up to date with all imports
 - **`check-warning-log.py`** - Fail on scoped warning classes found in a captured build log
 - **`check-docs-integrity.py`** - Check docs links and the `CLAUDE.md` symlink
+- **`audit_ledger.py`** - Generate `AUDIT_LEDGER.md`: hard proof holes plus strict
+  residual/conjecture `Prop` surfaces. Residual counts come from `residual_census.py`, so provider
+  theorem names do not inflate the proof-debt column.
+- **`residual_census.py`** - Strict census of `def <Name>Residual ... : Prop` surfaces with
+  open/discharged provider status and residual-like near misses in JSON.
 - **`proximity_prize_cleanroom_audit.py`** - Optional post-build clean-room audit for
   proximity-prize final declarations: checks blessed axioms and rejects residual or
   goal-equivalent `Prop` assumptions in active manifest targets
