@@ -40,6 +40,11 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
   lift patterns from the Spartan tight rbr-KS campaign: why dropped lift data forces per-round
   error 1, the oracle-pinning keystone's two consumption directions, the kernel-leaf shape, the
   conjoin-at-unchanged-error recipe, guarded-terminal honesty, and the assembly mechanics.
+- [`append-residuals-and-elaboration-patterns.md`](append-residuals-and-elaboration-patterns.md) -
+  the #340 append-residual→discharge map (including the documented straightline-KS phase-1
+  obstruction — do not attempt the direct extractor composition) and recurring elaboration
+  walls: Pi-sum defeq bridges, the probe-bisection method, junk-completion for covering
+  lemmas, and fold-generalization gotchas.
 
 ## Maintenance Contract
 

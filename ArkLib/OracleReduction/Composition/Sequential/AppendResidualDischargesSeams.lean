@@ -7,6 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDet
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDetEmpty
+import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessTotal
 
 /-!
 # Seam-variant discharges of `Verifier.appendRbrKnowledgeSoundnessResidual` (issue #340)
@@ -123,7 +124,41 @@ end FailingDet
 
 end Verifier
 
+namespace Reduction
+
+variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
+  {Stmt₁ Stmt₂ Stmt₃ Wit₁ Wit₂ Wit₃ : Type}
+  {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+  [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+  {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+  {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+
+/-- **Error-ful discharge of `reductionAppendCompletenessResidual`** (the statement-match
+verification of issue #340): `append_completeness_total_pos` concludes exactly the residual's
+body, so the named residual holds — seam-agnostically — for every nonempty trailing protocol,
+under the standard honest-implementation side conditions. (The `n = 0` error-ful case stays
+honestly open per that theorem's docstring; the perfect-completeness `n = 0` case is covered
+by the existing `AppendPerfectCompletenessTotal` discharges.) -/
+theorem reductionAppendCompletenessResidual_total_pos
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    {e₁ e₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ e₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ e₂)
+    (hn : 0 < n)
+    (hInit : NeverFail init)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    reductionAppendCompletenessResidual R₁ R₂ h₁ h₂ :=
+  append_completeness_total_pos R₁ R₂ h₁ h₂ hn hInit himplSP himplNF himplVB
+
+end Reduction
+
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms Verifier.appendRbrKnowledgeSoundnessResidual_challenge_subsingleton
 #print axioms Verifier.appendRbrKnowledgeSoundnessResidual_failingDet_subsingleton
 #print axioms Verifier.appendRbrKnowledgeSoundnessResidual_failingDet_empty
+#print axioms Reduction.reductionAppendCompletenessResidual_total_pos
