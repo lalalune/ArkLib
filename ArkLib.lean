@@ -38,7 +38,6 @@ import ArkLib.Data.Classes.HasSize
 import ArkLib.Data.Classes.Initialize
 import ArkLib.Data.Classes.Serde
 import ArkLib.Data.Classes.Slice
-import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
 import ArkLib.Data.CodingTheory.AGL24WeakPartition
 import ArkLib.Data.CodingTheory.AsymptoticGVBound
 import ArkLib.Data.CodingTheory.Basic.CosetFarCount
@@ -634,6 +633,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureWire
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellDichotomyWiring
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellPackageAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellPencilJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellSelectionFree
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellTailFree
