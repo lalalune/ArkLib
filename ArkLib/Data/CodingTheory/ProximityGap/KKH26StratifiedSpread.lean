@@ -234,7 +234,7 @@ lemma exists_realizing_subset {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
     omega
   -- choose `j` antipodal classes fresh from the sign-free support `U`
   have hjle : j ≤ (range (2 ^ (m - 1)) \ U).card := by
-    rw [Finset.card_sdiff hU, card_range, hc]; omega
+    rw [Finset.card_sdiff_of_subset hU, card_range, hc]; omega
   obtain ⟨W, hWsub, hWcard⟩ := Finset.exists_subset_card_eq hjle
   have hWfacts : ∀ w ∈ W, w < 2 ^ (m - 1) ∧ w ∉ U := by
     intro w hw
@@ -243,7 +243,7 @@ lemma exists_realizing_subset {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
     exact h
   have hUlt : ∀ a ∈ U, a < 2 ^ (m - 1) := fun a ha => mem_range.mp (hU ha)
   have hinj_add : Function.Injective (fun i : ℕ => i + 2 ^ (m - 1)) :=
-    fun a b h => by omega
+    fun a b h => by simpa using h
   -- the exponent set: sign-free part `T ∪ (U∖T + s/2)` plus pairs `W ∪ (W + s/2)`
   set B : Finset ℕ := (U \ T).image (fun i => i + 2 ^ (m - 1)) with hBdef
   set D : Finset ℕ := W.image (fun i => i + 2 ^ (m - 1)) with hDdef
