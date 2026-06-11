@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessClose
+import ArkLib.ProofSystem.Logup.Security.SumcheckCompletenessUncond
 import ArkLib.OracleReduction.Composition.Sequential.AppendSeamBridges3
 import ArkLib.OracleReduction.Composition.Sequential.AppendToVerifierKeystone
 
@@ -253,6 +254,42 @@ theorem logup_completeness_wired
     (appendCompletenessResidual_wired oSpec F n M params init impl hInit hSumcheck
       hn hDir hDir₂ himplSP himplNF himplVB)
 
+set_option maxHeartbeats 1000000 in
+/-- **`LogupCompletenessBrickResidual` — fully discharged** (for `0 < n`, the nontrivial case):
+the outer half is `outerCompletenessResidual_of_neverFail`, the sumcheck half is
+`sumcheckCompletenessResidual_unconditional`, and the append brick is
+`appendCompletenessResidual_wired` with the two seam-direction facts proven concretely (the
+embedded sumcheck is message-leading: `Sumcheck.Spec.pSpec` is a `seqCompose` of
+`[P_to_V, V_to_P]` rounds). -/
+theorem logupCompletenessBrickResidual_holds
+    [oSpec.Fintype] [oSpec.Inhabited]
+    (hn : 0 < n) (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    LogupCompletenessBrickResidual oSpec F n M params init impl := by
+  have hSum := sumcheckCompletenessResidual_unconditional oSpec F n M params init impl
+    hInit hImplSupp
+  obtain ⟨hpos, hdir⟩ := (ProtocolSpec.seqCompose_appendValid
+    (pSpec := fun _ : Fin n =>
+      Sumcheck.Spec.SingleRound.pSpec F (logupSumcheckDegree M params))
+    (fun _ => ⟨by omega, rfl⟩)).resolve_left (by
+      obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'
+      rw [Fin.vsum_succ]; omega)
+  refine ⟨outerCompletenessResidual_of_neverFail oSpec F n M params init impl hInit, hSum,
+    appendCompletenessResidual_wired oSpec F n M params init impl hInit hSum hpos ?_ hdir
+      himplSP himplNF himplVB⟩
+  rw [show (⟨4, by change 4 < 4 + Fin.vsum (fun _ : Fin n => 2); omega⟩ :
+        Fin (4 + Fin.vsum (fun _ : Fin n => 2)))
+      = Fin.natAdd 4 ⟨0, hpos⟩ from by ext; simp]
+  rw [Prover.append_dir_natAdd]
+  exact hdir
+
 end Wired
 
 end Logup
@@ -261,3 +298,4 @@ end Logup
 #print axioms OracleReduction.append_completeness_msg_proof
 #print axioms Logup.appendCompletenessResidual_wired
 #print axioms Logup.logup_completeness_wired
+#print axioms Logup.logupCompletenessBrickResidual_holds
