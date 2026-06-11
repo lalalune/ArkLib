@@ -1,0 +1,126 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.CodingTheory.ProximityGap.MCADualPencilLaw
+
+/-!
+# The structured incidence census (#357 round 8): horizontal and vertical circuit families
+
+The pencil criterion (`dependent_iff_collinear`) reduces the wide circuits of the window's
+collision matroid to collinear triples of pair-points `(e, m) = (sum, product)`. Two line
+families are *structural* — they exist for symmetry reasons and account for the bulk of
+the smooth-domain census (`24` of `μ₈`'s `40`):
+
+* `dependent_of_equal_products` — **horizontal lines**: three disjoint pairs with equal
+  products have dependent duals (their points share the `m`-coordinate — collinear for
+  free). Over `μ_n` the product of `{ζ^i, ζ^j}` is `ζ^{i+j}`: every *exponent-sum class*
+  is a horizontal family (`equal_products_of_exponent_sum`), giving the `20` horizontal
+  circuits of `μ₈` — at every scale `n`, a closed-form census.
+* `dependent_of_equal_sums` — **vertical lines**: three disjoint pairs with equal sums
+  have dependent duals. Over `μ_n` (n even) the antipodal pairs `{x, −x}` all have sum
+  `0` (`antipodal_pair_sum_zero`), giving the `4` vertical circuits of `μ₈`.
+
+Both corollaries hold for **every** evaluation domain and **every** scale — the
+production-scale structured census is closed-form. What remains open (the round-8(b)
+target, where the genuinely new arithmetic lives) is the *slanted* family: cross-class
+collinearities of the configuration `{(ζ^i + ζ^j, ζ^{i+j})}` — sections of Dickson-type
+curves (`m = ζ^s` fixed ⟹ `e = ζ^j + ζ^{s−j}`).
+
+Axiom-clean (`propext`, `Classical.choice`, `Quot.sound`); no `sorry`.
+
+## References
+
+- Issue #357 (round-7 pencil-law comment); `MCADualPencilLaw.lean`.
+-/
+
+set_option linter.unusedSectionVars false
+
+open scoped NNReal ENNReal
+
+namespace ProximityGap.MCAIncidenceCensus
+
+open ProximityGap.MCADualPencilLaw
+
+variable {ι : Type} [Fintype ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable (domain : ι ↪ F) {a a' b b' c c' : ι}
+
+/-- **The horizontal family.** Three disjoint pairs with equal products carry a wide
+circuit: their `(e,m)`-points share the `m`-coordinate, hence are collinear. -/
+theorem dependent_of_equal_products (h6 : Distinct6 a a' b b' c c')
+    (h1 : domain a * domain a' = domain b * domain b')
+    (h2 : domain a * domain a' = domain c * domain c') :
+    ∃ α β γ : F, ¬(α = 0 ∧ β = 0 ∧ γ = 0) ∧
+      ∀ i, α * dualVec domain {a, a', b, b'} i + β * dualVec domain {a, a', c, c'} i
+        + γ * dualVec domain {b, b', c, c'} i = 0 := by
+  rw [dependent_iff_collinear domain h6]
+  rw [← h1, ← h2]
+  ring
+
+/-- **The vertical family.** Three disjoint pairs with equal sums carry a wide circuit:
+their `(e,m)`-points share the `e`-coordinate. -/
+theorem dependent_of_equal_sums (h6 : Distinct6 a a' b b' c c')
+    (h1 : domain a + domain a' = domain b + domain b')
+    (h2 : domain a + domain a' = domain c + domain c') :
+    ∃ α β γ : F, ¬(α = 0 ∧ β = 0 ∧ γ = 0) ∧
+      ∀ i, α * dualVec domain {a, a', b, b'} i + β * dualVec domain {a, a', c, c'} i
+        + γ * dualVec domain {b, b', c, c'} i = 0 := by
+  rw [dependent_iff_collinear domain h6]
+  rw [← h1, ← h2]
+  ring
+
+/-- **The μ_n horizontal supply**: root-of-unity pairs in one exponent-sum class share
+their product — `ζ^i · ζ^j = ζ^{i+j}` depends only on `i + j`. -/
+theorem equal_products_of_exponent_sum {ζ : F} {i j i' j' : ℕ}
+    (hsum : i + j = i' + j') :
+    (ζ ^ i) * (ζ ^ j) = (ζ ^ i') * (ζ ^ j') := by
+  rw [← pow_add, ← pow_add, hsum]
+
+/-- The exponent-sum classes wrap modulo the order: `ζ^i·ζ^j = ζ^{i'}·ζ^{j'}` whenever
+`i + j ≡ i' + j' (mod n)` for `ζ^n = 1`. -/
+theorem equal_products_of_exponent_sum_mod {ζ : F} {n i j i' j' : ℕ}
+    (hζ : ζ ^ n = 1) (hmod : (i + j) % n = (i' + j') % n) :
+    (ζ ^ i) * (ζ ^ j) = (ζ ^ i') * (ζ ^ j') := by
+  rw [← pow_add, ← pow_add]
+  rcases Nat.eq_zero_or_pos n with rfl | hn
+  · simp at hmod
+    rw [hmod]
+  · calc ζ ^ (i + j) = ζ ^ (n * ((i + j) / n) + (i + j) % n) := by
+          rw [Nat.div_add_mod]
+      _ = (ζ ^ n) ^ ((i + j) / n) * ζ ^ ((i + j) % n) := by
+          rw [pow_add, pow_mul]
+      _ = ζ ^ ((i' + j') % n) := by rw [hζ, one_pow, one_mul, hmod]
+      _ = (ζ ^ n) ^ ((i' + j') / n) * ζ ^ ((i' + j') % n) := by
+          rw [hζ, one_pow, one_mul]
+      _ = ζ ^ (i' + j') := by rw [← pow_mul, ← pow_add, Nat.div_add_mod]
+
+/-- **The μ_n vertical (antipodal) supply**: antipodal pairs `{x, −x}` all have sum
+zero. -/
+theorem antipodal_pair_sum_zero (x y : F) (hx : y = -x) : x + y = 0 := by
+  rw [hx]
+  ring
+
+/-- **The structured-census package for smooth domains**: any three disjoint antipodal
+pairs of any domain are a wide circuit (vertical family at `e = 0`). -/
+theorem dependent_of_antipodal_triple (h6 : Distinct6 a a' b b' c c')
+    (h1 : domain a' = -domain a) (h2 : domain b' = -domain b)
+    (h3 : domain c' = -domain c) :
+    ∃ α β γ : F, ¬(α = 0 ∧ β = 0 ∧ γ = 0) ∧
+      ∀ i, α * dualVec domain {a, a', b, b'} i + β * dualVec domain {a, a', c, c'} i
+        + γ * dualVec domain {b, b', c, c'} i = 0 := by
+  apply dependent_of_equal_sums domain h6
+  · rw [antipodal_pair_sum_zero (domain a) (domain a') h1,
+      antipodal_pair_sum_zero (domain b) (domain b') h2]
+  · rw [antipodal_pair_sum_zero (domain a) (domain a') h1,
+      antipodal_pair_sum_zero (domain c) (domain c') h3]
+
+/-! ## Source audit -/
+
+#print axioms dependent_of_equal_products
+#print axioms dependent_of_equal_sums
+#print axioms equal_products_of_exponent_sum_mod
+#print axioms dependent_of_antipodal_triple
+
+end ProximityGap.MCAIncidenceCensus
