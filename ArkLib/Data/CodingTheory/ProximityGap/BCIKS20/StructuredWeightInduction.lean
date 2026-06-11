@@ -319,9 +319,34 @@ theorem harith_of_reduced {i1 k m δ degW Lξ nB : ℕ}
             omega
         _ = 1 + (k + 2) * degW + (2 * k + 1) * Lξ := by ring
 
+/-- **The closing inequality at the top boundary** `i1 = k + 1` (the empty partition,
+`m = 0` — the only case with no parts, since partitions of positive numbers have parts):
+the per-term reduces to `nB ≤ Lξ` with room to spare. -/
+theorem harith_of_reduced_top {k degW Lξ nB : ℕ} (hnB : nB ≤ Lξ) :
+    ((k + 1) + 0 - 1) * degW + (2 * (k + 1) + 0 - 2) * Lξ + nB
+        + (0 + ((k + 1 - (k + 1)) + 0) * degW + (2 * (k + 1 - (k + 1)) - 0) * Lξ)
+      ≤ 1 + (k + 2) * degW + (2 * (k + 1) - 1) * Lξ := by
+  have h1 : (k + 1) + 0 - 1 = k := by omega
+  have h2 : 2 * (k + 1) + 0 - 2 = 2 * k := by omega
+  have h3 : k + 1 - (k + 1) = 0 := by omega
+  rw [h1, h2, h3]
+  have htgt : 2 * (k + 1) - 1 = 2 * k + 1 := by omega
+  rw [htgt]
+  have hW : k * degW ≤ (k + 2) * degW := Nat.mul_le_mul_right _ (by omega)
+  have hL : (2 * k + 1) * Lξ = 2 * k * Lξ + Lξ := by ring
+  calc k * degW + 2 * k * Lξ + nB + (0 + 0 * degW + 0 * Lξ)
+      = k * degW + 2 * k * Lξ + nB := by ring_nf
+    _ ≤ (k + 2) * degW + 2 * k * Lξ + Lξ := by
+        have := hW
+        have := hnB
+        omega
+    _ ≤ 1 + (k + 2) * degW + (2 * k * Lξ + Lξ) := by omega
+    _ = 1 + (k + 2) * degW + (2 * k + 1) * Lξ := by rw [← hL]
+
 /-! ## Source audit -/
 
 #print axioms harith_of_reduced
+#print axioms harith_of_reduced_top
 #print axioms nsmul_coe_withBot
 #print axioms structuredSuccTermBound_of_budgets
 #print axioms βHensel_weight_bound_zero_structured
