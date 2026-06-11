@@ -6144,29 +6144,84 @@ two-family prediction `max(staircase = n−a+1, census(a))`:
   surface. The two named open surfaces are exactly: (i) two-family-max extremality,
   (ii) the per-prime halo bound. Everything else in the chain is machine-checked.
 
-### THE HALF-DISTANCE STAIRCASE LAW (#357 round 3 opening) — band-3 data: collapse confirmed at d ≥ 2b, boundary explosion to n EXHAUSTIVELY verified; the "(12,6) flat numerator" mystery identified as the half-distance boundary
+### O148 — G2-3: the production crossing, priced exactly — under PROVEN census counts the fiber census never reaches ε*·q at |F| < 2^256; the entire numeric uncertainty of δ*(production) is the true subset-sum count at fold scales s ∈ [64, 256] (2026-06-11, #357)
 
-Band-3 probe (sampled + one exhaustive numpy verification): (11,6,2) d=5: max bad = 6 = n
-**EXHAUSTIVE** (not C(n,2)=15 — the window bound is loose by a factor n−1 here, the law is
-sharp); (13,6,2) d=5: 6 = n; (11,7,2) d=6: 3; (13,8,2) d=7: 3; (17,8,4) & (13,8,4) d=5:
-≥ 7 (sampled; exact value at (8,4)-boundary unresolved). Combined with band 2 (d=3 → n
-field-indep; d ≥ 4 → 2) and the historical (12,6) δ=0.25 datum (band 4, d = 7 = 2·4−1 →
-flat numerator 12 = n at every field):
+Assembly of the profile law (O147) with the in-tree census-size certificates:
 
-**THE LAW (conjectured; proven for b ≤ 2; 5 boundary + 6 collapse data rows):**
-for band b (δ·n ∈ [b−1, b)): ε_mca = b/|F| (the linear/spike staircase) while d ≥ 2b;
-at the boundary band d = 2b−1 it explodes to ~n/|F|. In radius terms: **the MCA staircase
-is exactly linear up to half the minimum distance — the unique-decoding radius — and the
-first break is AT the UD boundary with the flat-numerator-n jump.** The old (12,6)
-flat-numerator mystery (O-series; "numerator exactly n at every field") is identified: it
-is the d = 2b−1 boundary case, not an anomaly. Pre-registered "band-3 = 3 for d ≥ 5"
-REFUTED at d = 5 (boundary explodes); refined boundary d ≥ 2b = 6 confirmed.
+* **The crossing calculus.** Under the profile law, δ*(production) = 1 − a_c/n where a_c is
+  the largest agreement with census(a) > ε*·q ≈ 2^128. The census at fold scale s = n/m,
+  row r (radius δ = 1 − r/s, validity r ≤ ρs + 2) has PROVEN size ≥ stratified
+  `Σ_j 2^{r−2j}·C(s/2, r−2j)` — but distinctness is certified only under the prime
+  threshold: `p > s^{s/2}` (resultant route) or the Parseval-halved threshold (s = 64 rows
+  open unconditionally at |F| < 2^256; s = 128 closed — the in-tree reach table).
+* **The pricing.** At |F| < 2^256 the certified scales are s ≤ 64 (unconditional) where the
+  maximal certified census is ≈ 2^{s/2 + s/2} = 2^64 ≪ 2^128: **the certified fiber census
+  never crosses ε*·q at production parameters.** The deep rows (s ≥ 128, census up to
+  2^{s(H₂+ρ)} ≥ 2^128 at s ≈ 256) need either the TZ external (polynomial-field route,
+  `kkh26_mcaDeltaStar_le_of_TZ`, in-tree) or genuinely larger certified counts.
+* **The localized uncertainty.** The production δ* under the profile law therefore sits in
+  the bracket: floor = the proven Johnson-side MCA theorems (1 − √ρ, unconditional);
+  ceiling = capacity − 2/s* where s* is the largest fold scale whose TRUE distinct-sum
+  count crosses 2^128 at |F| < 2^256. Everything in between is decided by ONE number per
+  rate: **the true (not resultant-certified) distinct subset-sum count of μ_{s} strata at
+  s ∈ [64, 256]** — a finite question per scale, sharply localized, attackable by the
+  lacunary-resultant / certified-computation routes already inventoried (#357 §5) and by
+  the O134 per-prime correction theory.
+* **Two regimes of the answer (conditional on the two named surfaces):** if the true counts
+  match the char-0/stratified forecasts (no large-prime collapse — the genlaw/falsifier
+  evidence supports this up to measured surpluses), then s* ≈ 256 and
+  **δ*(ρ, 2^{−128}) = 1 − ρ − Θ(1/s*) = capacity − c(ρ)** with c(ρ) ≈ 2/s* a CONSTANT
+  (not Θ(1/log n)) for all n ≥ s*·m — strictly stronger than the published KKH26 phrasing,
+  whose 1/log n came from the prime-threshold coupling, not from the census itself. If the
+  true counts collapse at large p below 2^128, δ* recedes toward the floor accordingly. The
+  prize question, under the profile law, IS this count.
 
-Mechanism map: collapse rows = the c*-elimination (band-2 proven in `MCABandTwoCollapse`;
-band-b needs multi-relation elimination — 4 scalars give a 2-dim relation space, open);
-boundary rows = core-free overlapping puncture families ((b−1)-subsets of a common b-set
-evade the c*-extension: P₂\(P₁∪P₃) = ∅) PLUS weight-(2b−1) codeword corrections (the d=3
-cocycle family generalized). Open: (i) band-b collapse theorem for d ≥ 2b (multi-c*
-elimination); (ii) the boundary-row exact value at general (n,k) (n vs n−1 at (8,4));
-(iii) what happens BEYOND the UD radius (b > (d+1)/2) — the bands between UD and Johnson
-are the next unexplored strip, and the first strip where the prize window's behavior begins.
+### O148 — THE TAKE-OVER ROW IS COMPLETELY PINNED: census = 16 = n at EVERY prime, zero surplus (2026-06-11, #357)
+
+`probe_o148_takeover_row_pinned.py` (exact). Completing O147: surplus at the take-over
+row ((X⁹,X⁸) @ a = 7, (16,4)) can only occur at primes dividing a band-minor cyclotomic
+norm; the candidate set is `{17, 97, 113, 193, 241, 257, 337, 353, 401, 433, 449, 577,
+641, 977, 1489, 6833}` (16 primes, max 6833; float-embedded norms — exact-integer
+recomputation is the named follow-up). Per-prime verification at **all 16 candidates**
+plus clean controls (1009, 1361): pinned census = **16 = n and line-subsets = 16 at every
+single prime**. The rank-match never completes — the surplus layer of this row is EMPTY.
+
+**Net law: `census_MCA((X⁹,X⁸) @ a=7, p) = n` for every prime `p ≡ 1 (mod 16)`** — one
+rotation orbit of `−ζ⁴` (O147), no exceptions, no exceptional primes. The strongest and
+cleanest flat-numerator law in the programme; with `census_le_epsMCA` it gives
+`ε_mca ≥ n/p` at `δ = 9/16` (mid-window!) for every field — and under the corrected
+(excess) extremality it is exact there. The take-over family is rigid in the strongest
+sense: its MCA badness is a single characteristic-zero orbit, invisible to field choice.
+
+### O149 — the halo mechanism verified at the norm level: the exotic subset's norms are EXACTLY 2²·193² — monogamous halo membership; the halo bound becomes a divisor-counting question (2026-06-11, #357, surface (ii))
+
+`probe_o149_halo_norm_mechanism.py` (exact ℤ[ζ₃₂] arithmetic mod Φ₃₂): the p = 193 exotic
+halo subset `A = (0,1,3,8,11,18,20,21)` (O145) has
+
+  `N(α_A) = N(β_A) = 148996 = 2² · 193²`
+
+(α = Σζ^i, β = Σζ^{3i} — the two gap-band constraint sums). Consequences:
+
+* **Monogamy:** 193 is the only odd prime dividing either norm — this subset can join the
+  halo at p = 193 and at NO other prime. The O145 observation (each prime's halo is its
+  own) has its mechanism: halo membership at p ⟺ p | N(α_S) AND p | N(β_S).
+* **Joint vanishing explained:** both constraint norms share the prime — the apparent
+  coincidence that one subset satisfies BOTH band constraints mod 193 is a single
+  algebraic event (likely one prime ideal of ℤ[ζ] above 193 dividing both elements).
+* **Tiny norms:** 148996 ≈ 2^17.2 versus the worst-case bound a^φ(32) = 8^16 = 2^48 —
+  the same real-vs-worst-case gap measured at the resultant level (O129/Parseval), now at
+  the halo level. Per-subset halo-prime counts are ≤ Ω(N) ≤ ~17/log₂(p) ≈ 2 at p ≈ 200.
+* **The halo surface, recast:** `halo(p) = #{S non-fiber : p | N(α_S), p | N(β_S)}` — the
+  one-orbit law is a joint norm-divisibility multiplicity statement, attackable by the
+  O134 α-spectrum correction theory (which counts exactly such divisibilities) and by
+  averaging: `Σ_p halo(p) ≤ Σ_S Ω(N(α_S))` gives a PROVABLE average-halo bound from the
+  norm bound alone. Formalization route: Mathlib cyclotomic-field norms; the finite
+  per-instance certificates (like this one) are exact-arithmetic checkable today.
+
+## CORRECTION to the domain-blindness entry (2026-06-11)
+The "δ* domain-independent" reading was over-stated: exact probes reach only the SATURATED band
+[UD,~Johnson) where bad count = n (saturation ceiling) for all domains — the easy regime. The
+INTERIOR (Johnson,capacity), where δ* lives and KKH26 is domain-specific, is exact-infeasible at
+low rate. So: domain-blind in the saturated band (proved by enumeration of all 252/120 subsets);
+interior separation OPEN, not killed. N1 (specific E₂ law) stays refuted; N1' (extremal pencil /
+M3 third moment) REVIVED as the live domain-aware thread.

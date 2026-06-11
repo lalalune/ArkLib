@@ -214,3 +214,36 @@ at larger `n` (the `t₂ ≈ n/2` regime needs `n ≫ k`). The finding is "domai
 strengthening it to all scales, or finding the first `n` where a domain *does* differ, is the
 decisive follow-up probe (feasible up to `n ≈ 8` with the optimized engine + better S-pruning).
 
+## 8. CORRECTION (research integrity) — domain-blindness is SATURATED-BAND only
+
+The §7 "domain-blindness" claim was **over-stated** and is here corrected. The exact probes
+reach only the *saturated low band* `δ ∈ [UD, ~Johnson)` where the worst-line bad count equals
+`n` (the domain size) for **every** domain — but `n` is the *saturation ceiling* of that band, so
+equal-across-domains there is the easy regime, not evidence about the interior. The **interior**
+`δ ∈ (Johnson, capacity)` — where δ\* actually lives, where the bad count *grows* past `n` toward
+the KKH26 blow-up, and where the KKH26 construction is **domain-specific** (smooth subgroup) — is
+**exact-computation-infeasible at low rate** (the window with a wide Johnson–capacity gap requires
+`m = n−k` large, hence `p^{2m}` syndrome pairs blow up; this is the same wall the dossier documents).
+
+**Consequence for the slate:** N1 (the *specific* energy law `δ*=F(E₂/n²)`) stays REFUTED — E₂
+varies in the saturated band while the count does not, so ε_mca is not a function of E₂, period.
+**But the general domain-separation idea (N1′: an EXTREMAL pencil / M3 third-moment invariant) is
+NOT killed** — it would act in the interior, which the probes never saw. The random-RS-beats-smooth
+results *require* interior domain-dependence, so separation there is expected, not excluded. The
+honest status: **domain-blind in the saturated band (proved by enumeration); interior separation
+OPEN and unprobeable by exact methods** — exactly the 25-year wall, restated.
+
+This *revives N1′ and the M3 third-moment thread* as the live domain-aware direction, and confirms
+the domain-blind hypotheses (R2 ceiling-tightness, S1 transfer-fixpoint, the unification bet) as the
+parallel track that sidesteps the interior-computation wall. The exact-pin combinator
+(`MCAExactPin.lean`) and the pencil-energy substrate (`MobiusPencilEnergy.lean`) stand regardless —
+both are correct, reusable, and route into whichever hypothesis survives.
+
+### S1 (transfer fixpoint) — naive form DEAD
+The in-tree threshold-halving map (`ProofLoop42.threshold_halving_into_unique_decoding`) is
+`δ ↦ δ/2` (lands in unique decoding). Its only fixpoint is `δ = 0` (trivial) — the iteration
+collapses to the floor in O(log) steps, never banding the interior window. Confirms the dossier's
+"exits the window in O(1) steps". S1 survives only in a *nontrivial* reformulation (a rate-coupled
+or ε-coupled map with an interior attractor), which is not the 858 map. Parked unless a non-collapsing
+transfer is found.
+
