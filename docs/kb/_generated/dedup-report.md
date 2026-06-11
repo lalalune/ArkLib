@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2264 files, 29020 declarations
+- `ArkLib` — 2267 files, 29045 declarations
 
-## Same short-name across multiple files (1227 groups)
+## Same short-name across multiple files (1228 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -3285,6 +3285,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.RemainingCoreWitness.not_johnson_at_quarter` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RemainingCore.lean:201](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RemainingCore.lean#L201) — At the canonical floor-matched radius `δ' = 1/4` the Johnson-side hypothesis `(1 − ρ)/2 < δ'` fails
 - `theorem ArkLib.ClosedBoundaryFaithfulFloorCellWitness.not_johnson_at_quarter` [ArkLib/ToMathlib/ClosedBoundaryFaithfulFloorCell.lean:363](../../../ArkLib/ToMathlib/ClosedBoundaryFaithfulFloorCell.lean#L363) — At the cell radius `δ'' = 1/4` the Johnson-side hypothesis fails *exactly*: `(1 − ρ)/2 = (1 − 1/2)/2
+
+### `not_stackJointAgreesOn_of_not_jointAgreement` (2 declarations, 2 files)
+
+- `theorem CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.not_stackJointAgreesOn_of_not_jointAgreement` [ArkLib/Data/CodingTheory/ProximityGap/Hab25ShareGoodSetWeld.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25ShareGoodSetWeld.lean#L49) — **A large witness set cannot support a joint codeword stack when `jointAgreement` fails**: a stack a
+- `theorem ProximityGap.not_stackJointAgreesOn_of_not_jointAgreement` [ArkLib/Data/CodingTheory/ProximityGap/StackJointAgreement.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/StackJointAgreement.lean#L96) — Contrapositive form of `jointAgreement_iff_exists_stackJointAgreesOn`: if `jointAgreement` fails glo
 
 ### `not_uniformEpsMCAgsPrizeBoundConjecture` (2 declarations, 2 files)
 

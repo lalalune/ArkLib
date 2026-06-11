@@ -21,6 +21,10 @@ preserves it.
 * `inBorder_submodular` — `in(T∪S) + in(T∩S) ≤ in(T) + in(S)` (per-edge case analysis:
   the only nontrivial case is a head in `T∩S` with the edge inside `T∪S` but not `T∩S`,
   where the right side picks up the crossing of whichever of `T, S` the edge escapes).
+* `cutDeficiency_supermodular_of_deficient` packages the positive-part arithmetic for
+  deficient cuts.
+* `cutDeficiency_union_or_inter_pos` is the boolean uncrossing corollary used by later
+  Frank termination arguments.
 -/
 
 open Finset
@@ -62,7 +66,44 @@ theorem inBorder_submodular {e : ι → Finset V} (O : HeadOrientation e) (T S :
     have hm2 : O.head i ∈ S → O.head i ∈ T ∪ S := fun h => Finset.mem_union_right _ h
     simp_all [Finset.mem_union, Finset.mem_inter, Finset.subset_inter_iff])
 
+omit [DecidableEq ι] [Fintype V] in
+/-- `inBorder_submodular` restated in the canonical `headBorderEdges.card` API from
+`AGL24CutSupply`. -/
+theorem headBorderEdges_card_union_add_inter_le {e : ι → Finset V}
+    (O : HeadOrientation e) (T S : Finset V) :
+    (headBorderEdges O (T ∪ S)).card + (headBorderEdges O (T ∩ S)).card
+      ≤ (headBorderEdges O T).card + (headBorderEdges O S).card := by
+  simpa [inBorder_eq_card_headBorderEdges] using inBorder_submodular O T S
+
+omit [DecidableEq ι] [Fintype V] in
+/-- Positive-deficiency form of `headBorderEdges_card_union_add_inter_le`: on two deficient
+cuts, the positive-part cut deficiency is supermodular across union/intersection. This is
+the arithmetic uncrossing package consumed by later Frank termination arguments. -/
+theorem cutDeficiency_supermodular_of_deficient {e : ι → Finset V}
+    (O : HeadOrientation e) (T S : Finset V) {k : ℕ}
+    (hT : (headBorderEdges O T).card < k) (hS : (headBorderEdges O S).card < k) :
+    cutDeficiency O T k + cutDeficiency O S k
+      ≤ cutDeficiency O (T ∪ S) k + cutDeficiency O (T ∩ S) k := by
+  have hsub := headBorderEdges_card_union_add_inter_le O T S
+  unfold cutDeficiency
+  omega
+
+omit [DecidableEq ι] [Fintype V] in
+/-- If two cuts have positive deficiency, then at least one of their union/intersection is
+still deficient. This is the boolean uncrossing corollary of deficiency supermodularity. -/
+theorem cutDeficiency_union_or_inter_pos {e : ι → Finset V}
+    (O : HeadOrientation e) (T S : Finset V) {k : ℕ}
+    (hT : 0 < cutDeficiency O T k) (hS : 0 < cutDeficiency O S k) :
+    0 < cutDeficiency O (T ∪ S) k ∨ 0 < cutDeficiency O (T ∩ S) k := by
+  have hsuper := cutDeficiency_supermodular_of_deficient O T S
+    ((cutDeficiency_pos_iff O T k).mp hT)
+    ((cutDeficiency_pos_iff O S k).mp hS)
+  omega
+
 end AGL24
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms AGL24.inBorder_submodular
+#print axioms AGL24.headBorderEdges_card_union_add_inter_le
+#print axioms AGL24.cutDeficiency_supermodular_of_deficient
+#print axioms AGL24.cutDeficiency_union_or_inter_pos
