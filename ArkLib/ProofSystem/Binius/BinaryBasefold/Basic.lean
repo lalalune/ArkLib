@@ -865,6 +865,23 @@ lemma OracleStatement.oracle_heq_congr {i : Fin (ℓ + 1)}
   subst h_j
   rfl
 
+/-- **Cast-lambda HEq congruence.** A domain-cast precomposition of an oracle at position `j`
+is heterogeneously equal to the oracle at a propositionally equal position `j'`. This matches
+the `getFirstOracle`-style goals where the cast is baked into a lambda. -/
+lemma OracleStatement.oracle_cast_lambda_heq {i : Fin (ℓ + 1)}
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)
+    {j j' : Fin (toOutCodewordsCount ℓ ϑ (i := i))} (h_j : j = j')
+    {D : Type}
+    (hdom : D = ((sDomain 𝔽q β h_ℓ_add_R_rate)
+        ⟨j * ϑ, by have := toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i j; omega⟩ : Type))
+    (hD : D = ((sDomain 𝔽q β h_ℓ_add_R_rate)
+        ⟨j' * ϑ, by have := toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i j'; omega⟩ : Type)) :
+    HEq (fun y : D => oStmtIn j (cast hdom y)) (oStmtIn j') := by
+  subst h_j
+  subst hdom
+  refine heq_of_eq (funext fun y => ?_)
+  rw [cast_eq]
+
 def mapOStmtOutRelayStep (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
     ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j := fun j => by
@@ -1110,12 +1127,17 @@ lemma take_snoc_oracle_eq_oStmtIn (i : Fin ℓ)
 def getFirstOracle {i : Fin (ℓ + 1)}
     (oStmt : (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)) :
     sDomain 𝔽q β h_ℓ_add_R_rate 0 → L := by
-  let rawf₀ := oStmt ⟨0, by
+  let h_pos : 0 < toOutCodewordsCount ℓ ϑ i := by
     letI := instNeZeroNatToOutCodewordsCount ℓ ϑ i
     exact pos_of_neZero (toOutCodewordsCount ℓ ϑ i)
-  ⟩
-  simp only [OracleStatement, zero_mul, Fin.mk_zero'] at rawf₀
-  exact rawf₀
+  let rawf₀ : sDomain 𝔽q β h_ℓ_add_R_rate ⟨(0 : ℕ) * ϑ, by omega⟩ → L :=
+    oStmt ⟨0, h_pos⟩
+  intro y
+  have h_idx : (⟨(0 : ℕ) * ϑ, by omega⟩ : Fin r) = 0 := by
+    ext
+    simp only [zero_mul, Fin.val_zero]
+  exact rawf₀ (cast
+    (congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_idx.symm) y)
 
 omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
 /-- The first oracle is preserved when appending a new oracle.

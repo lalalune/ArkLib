@@ -453,6 +453,3 @@ lemma not_jointProximityNat_of_not_fiberwiseClose
 
 end
 end Binius.BinaryBasefold
-
-#print axioms Binius.BinaryBasefold.pair_fiberwiseDistance_le_interleaved_hammingDist
-#print axioms Binius.BinaryBasefold.fiberwiseDistance_le_of_jointProximityNat
