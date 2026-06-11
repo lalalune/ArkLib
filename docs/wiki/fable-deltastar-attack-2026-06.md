@@ -265,3 +265,37 @@ codes. No technique does this (it is the beyond-Johnson list-decoding count in d
 high-rate family pin is the proof-of-concept that the bracket-meet machinery works whenever a sharp
 ceiling is available; the low-rate sharp ceiling is the genuine open core.
 
+## 10. NEW CONNECTION (probe-verified, paperworthy): bad count = distinct subset sums
+
+**`scripts/probes/probe_jump_subsetsum.py` (exact, 8/8 instances):** for the explicit stack
+`u0 = eval x^{k+1}`, `u1 = eval x^k`, the MCA **bad-scalar count at the jump radius `1−(k+1)/n`
+equals the number of DISTINCT `(k+1)`-subset sums of the evaluation domain `D` (mod `p`)** —
+exactly, every case. Mechanism (divided differences): the bad scalar for a `(k+1)`-subset `S` is
+`γ_S = −x^{k+1}[S] = −h_1(S) = −Σ_{x∈S} x` (the order-`k` divided difference of `x^{k+1}` is the
+complete symmetric `h_1` = the subset sum). Distinct bad scalars ⟺ distinct subset sums.
+
+**Why this is paperworthy (the additive-combinatorics connection, dossier's most-promising
+never-implemented direction, now concrete):**
+- The MCA threshold's bad count is an **additive-combinatorial invariant** of the domain — the
+  `(k+1)`-fold *sumset/subset-sum* statistic, not just MDS distance data. This is the first exact
+  bridge from `ε_mca` to additive combinatorics (Sidon sets, additive energy).
+- **Domain dependence localized at the jump:** smooth subgroups have additive structure ⟹
+  subset-sum *collisions* ⟹ FEWER distinct sums ⟹ **fewer bad scalars than a Sidon/generic domain**.
+  (Reconciles with the saturated-band domain-blindness: blindness held below the jump where the
+  count saturates at `n`; at the jump the count is the subset-sum count, which IS domain-dependent.)
+- **Unconditional discharge of `ExtremalWitnessLayer`** (hence the family interior pin) for any
+  **Sidon-mod-`p` domain** with `C(n,k+1) ≤ p`: there all `(k+1)`-subset sums are distinct, so the
+  bad count `= C(n,k+1)`, attaining the LYM ceiling. This turns the conditional high-rate family pin
+  UNCONDITIONAL over Sidon domains — a genuine new unconditional interior `δ*` family.
+- **The smooth-domain subtlety:** subgroups are NOT additively Sidon (e.g. `D={1,2,3,4,5}`:
+  `{1,2,5}` and `{1,3,4}` both sum to 8), so this `x^k/x^{k+1}` stack is *sub-extremal* on smooth
+  domains (the sibling's cleverer stack still attains `C(n,k+1)` there). But the FORMULA holds for
+  the stack regardless, and the *connection* — `ε_mca` jump count ↔ subset-sum count — is the
+  insight: **pinning `δ*` for smooth domains is governed by the subgroup's subset-sum spectrum.**
+
+**Next:** formalize `bad_count_jump = #distinct (k+1)-subset sums` (the divided-difference γ_S
+formula + the count), giving the unconditional Sidon-domain family pin; and pursue the smooth-domain
+subset-sum spectrum (a multiplicative subgroup's additive subset-sum structure — a clean, studied
+object) as the route to the *smooth* `δ*`. This is the additive-combinatorial inverse-theorem bet
+made concrete and exact.
+
