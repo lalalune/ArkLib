@@ -161,9 +161,39 @@ theorem probEvent_take_simulated_runToRound_le {σ : Type} [Subsingleton σ]
 
 end Backbone
 
+section UnionBound
+
+variable {α : Type} {m : Type → Type v} [Monad m] [HasEvalSPMF m]
+
+/-- **The finite union bound**: the probability that some event in a finite family holds
+is at most the sum of the individual probabilities (`probEvent_or_le`, iterated). -/
+lemma probEvent_exists_finset_le_sum {κ : Type*} (T : Finset κ)
+    (mx : m α) (E : κ → α → Prop) :
+    Pr[fun x => ∃ i ∈ T, E i x | mx] ≤ ∑ i ∈ T, Pr[E i | mx] := by
+  letI : DecidableEq κ := Classical.decEq κ
+  induction T using Finset.induction_on with
+  | empty =>
+      rw [Finset.sum_empty, probEvent_eq_zero ?_]
+      intro x _ hx
+      obtain ⟨i, hi, -⟩ := hx
+      exact absurd hi (Finset.notMem_empty i)
+  | @insert a S haS ih =>
+      rw [Finset.sum_insert haS]
+      refine le_trans (le_trans (probEvent_mono ?_)
+        (probEvent_or_le mx (E a) (fun x => ∃ i ∈ S, E i x))) ?_
+      · intro x _ hx
+        obtain ⟨i, hi, hEi⟩ := hx
+        rcases Finset.mem_insert.mp hi with rfl | hiT
+        · exact Or.inl hEi
+        · exact Or.inr ⟨i, hiT, hEi⟩
+      · exact add_le_add le_rfl ih
+
+end UnionBound
+
 end Prover
 
 /-! ## Axiom audit — all kernel-clean. -/
 #print axioms Prover.probEvent_bind_le_probEvent_of_fiber
 #print axioms Prover.continueFromTo_entry_eq
 #print axioms Prover.probEvent_take_simulated_runToRound_le
+#print axioms Prover.probEvent_exists_finset_le_sum
