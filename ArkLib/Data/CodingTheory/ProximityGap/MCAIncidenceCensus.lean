@@ -116,11 +116,32 @@ theorem dependent_of_antipodal_triple (h6 : Distinct6 a a' b b' c c')
   · rw [antipodal_pair_sum_zero (domain a) (domain a') h1,
       antipodal_pair_sum_zero (domain c) (domain c') h3]
 
+/-- **The slanted family (the μ_n-specific lines).** One antipodal pair `{w, −w}` and two
+difference-`d` root-of-unity pairs `{ζ^i, ζ^{i+d}}`, `{ζ^j, ζ^{j+d}}` are a wide circuit
+whenever the **exponent relation** `w² = ζ^{i+j+d}` holds (over `μ_n`: `2k ≡ i+j+d
+(mod n)` for `w = ±ζ^k`): the collinearity determinant telescopes to zero by pure
+exponent arithmetic. These are the `16` slanted circuits of `μ₈` (probe-classified:
+every slanted line passes through exactly one vertical-axis point), completing the
+`20 + 4 + 16 = 40` census. -/
+theorem dependent_of_slanted (h6 : Distinct6 a a' b b' c c') {ζ w : F} {i j d : ℕ}
+    (hva : domain a = w) (hva' : domain a' = -w)
+    (hvb : domain b = ζ ^ i) (hvb' : domain b' = ζ ^ (i + d))
+    (hvc : domain c = ζ ^ j) (hvc' : domain c' = ζ ^ (j + d))
+    (hw : w * w = ζ ^ (i + j + d)) :
+    ∃ α β γ : F, ¬(α = 0 ∧ β = 0 ∧ γ = 0) ∧
+      ∀ i', α * dualVec domain {a, a', b, b'} i'
+        + β * dualVec domain {a, a', c, c'} i'
+        + γ * dualVec domain {b, b', c, c'} i' = 0 := by
+  rw [dependent_iff_collinear domain h6]
+  rw [hva, hva', hvb, hvb', hvc, hvc']
+  linear_combination (ζ ^ i * ζ ^ d + ζ ^ i - ζ ^ j * ζ ^ d - ζ ^ j) * hw
+
 /-! ## Source audit -/
 
 #print axioms dependent_of_equal_products
 #print axioms dependent_of_equal_sums
 #print axioms equal_products_of_exponent_sum_mod
 #print axioms dependent_of_antipodal_triple
+#print axioms dependent_of_slanted
 
 end ProximityGap.MCAIncidenceCensus
