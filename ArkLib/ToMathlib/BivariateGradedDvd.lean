@@ -115,3 +115,59 @@ end Polynomial.Bivariate
 /-! ## Axiom audit -/
 #print axioms Polynomial.Bivariate.natDegree_swap
 #print axioms Polynomial.Bivariate.degreeX_coeff_le_of_dvd
+
+namespace Polynomial.Bivariate
+
+open Polynomial
+
+section InnerDegree
+
+variable {F : Type} [Field F]
+
+/-- **Innermost-degree budgets descend to divisors.**  If every double coefficient of
+`Q : F[X][X][Y]` has innermost degree at most `B`, so does every double coefficient of any
+divisor `R ∣ Q`: the innermost weight `sup_j degreeX (coeff j)` transports through the
+per-coefficient swap into `degreeX` over the base `F[X]`, which is superadditive on
+products over a domain. -/
+theorem coeff_coeff_natDegree_le_of_dvd {Q R : F[X][X][Y]} {B : ℕ}
+    (hQ : Q ≠ 0) (hdvd : R ∣ Q)
+    (hB : ∀ j i : ℕ, ((Q.coeff j).coeff i).natDegree ≤ B) :
+    ∀ j i : ℕ, ((R.coeff j).coeff i).natDegree ≤ B := by
+  classical
+  obtain ⟨S, rfl⟩ := hdvd
+  have hR : R ≠ 0 := left_ne_zero_of_mul hQ
+  have hS : S ≠ 0 := right_ne_zero_of_mul hQ
+  set σ : F[X][X] →+* F[X][X] :=
+    ((Bivariate.swap (R := F)).toAlgHom : F[X][X] →ₐ[F] F[X][X]).toRingHom with hσdef
+  have hσapp : ∀ g : F[X][X], σ g = Bivariate.swap (R := F) g := fun _ => rfl
+  have hσinj : Function.Injective σ := by
+    intro a b hab
+    exact (Bivariate.swap (R := F)).injective (by rw [← hσapp, ← hσapp]; exact hab)
+  have hσdeg : ∀ g : F[X][X], (σ g).natDegree = degreeX g := by
+    intro g; rw [hσapp]; exact natDegree_swap g
+  have hmapne : ∀ P : F[X][X][Y], P ≠ 0 → P.map σ ≠ 0 := fun P hP => by
+    rwa [Ne, Polynomial.map_eq_zero_iff hσinj]
+  -- the transported budget on `Q = R·S`
+  have hQbound : degreeX ((R * S).map σ) ≤ B := by
+    refine Finset.sup_le fun j hj => ?_
+    rw [Polynomial.coeff_map, hσdeg]
+    exact Finset.sup_le fun i _ => hB j i
+  intro j i
+  by_cases hcj : R.coeff j = 0
+  · rw [hcj]
+    simp
+  calc ((R.coeff j).coeff i).natDegree
+      ≤ degreeX (R.coeff j) := coeff_natDegree_le_degreeX _ i
+    _ = ((R.map σ).coeff j).natDegree := by rw [Polynomial.coeff_map, hσdeg]
+    _ ≤ degreeX (R.map σ) := coeff_natDegree_le_degreeX _ j
+    _ ≤ degreeX (R.map σ) + degreeX (S.map σ) := Nat.le_add_right _ _
+    _ ≤ degreeX ((R.map σ) * (S.map σ)) :=
+        degreeX_mul_ge _ _ (hmapne R hR) (hmapne S hS)
+    _ = degreeX ((R * S).map σ) := by rw [Polynomial.map_mul]
+    _ ≤ B := hQbound
+
+end InnerDegree
+
+end Polynomial.Bivariate
+
+#print axioms Polynomial.Bivariate.coeff_coeff_natDegree_le_of_dvd
