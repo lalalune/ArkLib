@@ -932,6 +932,26 @@ theorem base_raw_split
     rw [← hbe]
     exact getElem_mem_take log hmono hpj
 
+/-! ## First-occurrence property of NoRedundant logs (assembly step w1, base case)
+
+NOTE: an arbitrary sublist order embedding need not map a base entry to its FIRST occurrence
+in the raw log (a repeated value can embed at a later position), so `base_raw_split` with the
+existential embedding does not by itself give "no earlier same-class". The correct route uses
+that a `NoRedundant` list has the first-occurrence property at every position, plus the fact
+(the remaining recursion lemma) that the dedup output's positions in the raw log are first
+occurrences. This brick supplies the first half. -/
+
+open DuplexSpongeFS.Paper in
+/-- In a `NoRedundant` log, no earlier entry is the same class as a later one (raw `ℕ`
+positions). The first-occurrence property, directly from the redundancy characterization. -/
+theorem noRedundant_raw_no_earlier_sameClass
+    {log : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (h : NoRedundantEntryDSPaper log) {p q : ℕ} (hq : q < p) (hp : p < log.length) :
+    ¬ sameClass (log[p]) (log[q]'(by omega)) := by
+  intro hcl
+  refine h ⟨p, hp⟩ ((redundantEntryDSPaper_iff_sameClass log ⟨p, hp⟩).mpr ?_)
+  exact ⟨⟨q, by omega⟩, hq, hcl⟩
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1018,6 +1038,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_entry_fresh
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_entry_fresh
 #print axioms DuplexSpongeFS.EagerLazyDS.base_raw_split
+#print axioms DuplexSpongeFS.EagerLazyDS.noRedundant_raw_no_earlier_sameClass
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
