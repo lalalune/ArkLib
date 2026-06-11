@@ -870,8 +870,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEventAgreeWitness
+import ArkLib.Data.CodingTheory.ProximityGap.MCAExactComputationKit
 import ArkLib.Data.CodingTheory.ProximityGap.MCAExactPin
 import ArkLib.Data.CodingTheory.ProximityGap.MCAExactProfile
+import ArkLib.Data.CodingTheory.ProximityGap.MCAExplicitTransversal
 import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAFullLayerSupply
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
@@ -1056,6 +1058,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridgeOnLattice
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothWindowSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
+import ArkLib.Data.CodingTheory.ProximityGap.SparseCoverComputable
 import ArkLib.Data.CodingTheory.ProximityGap.SparseDeviationExtremality
 import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.StackJointAgreement
