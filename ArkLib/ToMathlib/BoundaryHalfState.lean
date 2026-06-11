@@ -14,7 +14,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdLeaf
 This file is the missing glue between the four corrected-boundary bricks of issue #304:
 
 * **O70** (`StrictCoeffLargeReduction.lean`) — the §5 strict-Johnson front door
-  `correlatedAgreement_affine_curves_strict_of_largeResidual` from the *large-sector* residual
+  `correlatedAgreement_affine_curves_of_largeResidual` from the *large-sector* residual
   `StrictCoeffPolysResidualLarge` (boundary residual vacuous at strict radii);
 * **O76** (`BoundaryCardStrictInteriorRefutation.lean`) — both *nonemptiness* leaves of the
   boundary quantization split are refuted; the corrected same-`ε` floor transport
@@ -203,10 +203,10 @@ theorem correlatedAgreementCurves_boundary_of_largeResidual_cellMin
       Nat.floor (boundaryCellRadius (Fintype.card ι) δ * Fintype.card ι)
         = Nat.floor (δ' * Fintype.card ι) :=
     (floor_boundaryCellRadius_mul hn δ).trans hfloor'.symm
-  have hcellCA := ProximityGap.correlatedAgreement_affine_curves_strict_of_largeResidual
+  have hcellCA := ProximityGap.correlatedAgreement_affine_curves_of_largeResidual
     (k := k) (deg := deg) (domain := domain)
     (δ := boundaryCellRadius (Fintype.card ι) δ)
-    hcell_lt hLarge
+    hLarge (fun _hk _u _hprob _hJ hnot => absurd hcell_lt hnot) hcell_lt.le
   exact ArkLib.BoundaryThresholdFloorCell.correlatedAgreementCurves_boundary_of_floorCell_mono
     (deg := deg) (domain := domain) hdeg hcell_le hδ' hfloor'' hfloor' hcellCA
 

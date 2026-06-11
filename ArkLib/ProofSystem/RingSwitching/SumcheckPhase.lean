@@ -937,8 +937,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
   unfold iteratedSumcheckKStateProp at h_kState_before_false h_kState_after_true
   simp only [Fin.isValue, Fin.castSucc_one, Fin.succ_one_eq_two, Nat.reduceAdd] at h_kState_before_false h_kState_after_true
   simp only [Transcript.concat] at h_kState_before_false h_kState_after_true
-  unfold masterKStateProp masterKStateCore witnessStructuralInvariant at h_kState_before_false
-    h_kState_after_true
+  unfold masterKStateProp masterKStateCore witnessStructuralInvariant at h_kState_before_false h_kState_after_true
   simp only [iteratedSumcheckRbrExtractor, Fin.isValue] at h_kState_before_false h_kState_after_true
   have h_explicit_after :
       (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmtOStmtIn.1.sumcheck_target := by
@@ -1000,7 +999,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
     apply h_kState_before_false
     have h_poly_eq_subtype : h_i = h_star_extracted := Subtype.ext h_eq
     have h_round0_cons := h_round0_cons_of_eq h_eq
-    exact ⟨⟨h_explicit_after, h_poly_eq_subtype⟩, h_round0_cons, h_compat_after⟩
+    exact ⟨⟨h_explicit_after, h_poly_eq_subtype⟩, trivial, h_round0_cons, h_compat_after⟩
   have h_bad_extracted : badSumcheckEventProp (L := L) r_i' h_i h_star_extracted := by
     exact ⟨h_poly_ne, h_star_eval_r_i.symm⟩
   refine ⟨witMid, h_compat_after, ?_⟩
@@ -1662,6 +1661,8 @@ noncomputable def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] 
         exact hcheck
       · -- `final_eval`: `(MvPolynomial.eval challenges) witOut.t = c`, i.e. `hEval.symm`.
         exact hEval.symm
+      · -- The terminal structural invariant is definitionally trivial after `extractOut`.
+        trivial
       · -- `sumcheckConsistencyProp`:
         -- `sumcheck_target = ∑_{0-cube} (projectToMidSumcheckPoly …).eval`.
         -- The 0-cube sum equals `compute_final_eq_value · witOut.t(challenges)` by the shared
@@ -1698,7 +1699,7 @@ noncomputable def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] 
       rw [show (failure : OptionT (StateT σ ProbComp) (MLPEvalStatement L ℓ'
             × (∀ j, aOStmtIn.OStmtIn j))) = (pure none : StateT σ ProbComp _) from rfl] at hx
       rw [StateT.run'_eq, StateT.run_pure] at hx
-      simp only [map_pure, support_pure, Set.mem_singleton_iff] at hx
+      simp only [_root_.map_pure, support_pure, Set.mem_singleton_iff] at hx
       exact absurd hx (by simp)
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/

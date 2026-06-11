@@ -5,7 +5,6 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ToMathlib.DecodedProximateRoot
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim58TailWiring
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Improve
 
 /-!
 # Seam B: the per-place agreement supply (#302) — the LAST open input of hlin
@@ -200,11 +199,6 @@ theorem xi_ne_zero_of_monic {x₀ : F} {R : F[X][X][Y]}
 
 variable [Fintype F] [DecidableEq F]
 
-variable {ι₀ : Type} [Fintype ι₀] [Nonempty ι₀] [DecidableEq ι₀]
-
-open CodingTheory.ProximityGap.Hab25Core
-open _root_.ProximityGap Code
-
 /-- **THE GRAND COMPOSITION — hlin from GS-side data only.**  `H.natDegree = 1` from:
 the GS surface factor `(Y′ − C w) ∣ R` (degree `< n`), the base-point geometry on the
 truncation and heavy sets, `R.Separable`, the §6 discriminant counting, the graded degree
@@ -269,79 +263,6 @@ theorem natDegree_eq_one_of_decoded_fold {x₀ : F} {R : F[X][X][Y]}
   exact BCIKS20.Claim510Supply.natDegree_eq_one_of_heavy_agreement H x₀ R hHyp hlc
     htail e he u₀ u₁ hD matchingSet hagree hweight hcard
 
-/-- **Decoded-fold heavy branch to the dichotomy improve disjunct.**  This is the
-collapse-free sibling of `natDegree_eq_one_of_decoded_fold`: from the same GS-side decoded
-fold package, plus the per-scalar proximity witnesses for one factor cell, it produces the
-exact `PerPairFactorData.hdichotomy` improve payload.  The only caller-supplied
-per-scalar root data is the base-point reading; the `π_z(ξ) ≠ 0` legs are discharged by
-monicity of `H`. -/
-theorem improve_disjunct_of_decoded_fold {x₀ : F} {R : F[X][X][Y]}
-    (hHyp : Hypotheses x₀ R H)
-    {D n : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree)
-    (hmonic : H.Monic) (hd2 : 2 ≤ Bivariate.natDegreeY R)
-    (hdHD : H.natDegree ≤ D)
-    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
-    (hRgrade : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
-    {Ppoly : F[X][Y]}
-    (hrepG : polyToPowerSeries𝕃 H Ppoly
-      = ProximityPrize.BCIKS20.GammaGenuine.gammaGenuine x₀ R H hHyp)
-    (root : (z : F) → rationalRoot (H_tilde' H) z)
-    {w : F[X][Y]} (hdeg : w.natDegree < n)
-    (hdvd : (Polynomial.X - Polynomial.C w) ∣ R)
-    (hR : R.Separable)
-    -- the truncation lane: the §6 discriminant cover with base-point geometry
-    {truncSet : Finset F}
-    (hbaseT : ∀ z ∈ truncSet, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
-    {disc : F[X]} (hdisc : disc ≠ 0)
-    (hcover : ∀ z : F, disc.eval z ≠ 0 → z ∈ truncSet)
-    (hbig : gradedCardBudget (Bivariate.natDegreeY R) D H.natDegree Ppoly.natDegree
-        + disc.natDegree < Fintype.card F)
-    -- the heavy-node agreement lane
-    (e : Fin n → F) (he : Function.Injective e) (u₀ u₁ : Fin n → F)
-    (matchingSet : Fin n → Finset F)
-    (hbaseA : ∀ j, ∀ z ∈ matchingSet j, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
-    (hsepZ : ∀ j, ∀ z ∈ matchingSet j,
-      ((R.map (coeffHom_loc x₀ hHyp)).map
-        (PowerSeries.map (π_hat_z hHyp z (root z)
-          (pi_z_xi_ne_zero_of_monic hHyp hmonic.leadingCoeff z (root z))))).Separable)
-    (hfold : ∀ j, ∀ z ∈ matchingSet j,
-      (w.eval (Polynomial.C (e j) + Polynomial.C x₀)).eval z = u₀ j + z * u₁ j)
-    -- the numerics for the heavy-node budget
-    {xw : ℕ}
-    (hξw : weight_Λ_over_𝒪 hH (ξ x₀ R H hHyp) D ≤ (WithBot.some xw : WithBot ℕ))
-    (hcard : ∀ j, BCIKS20.Claim510Supply.killBudget n D H.natDegree
-        (Bivariate.natDegreeY R) xw * H.natDegree < (matchingSet j).card)
-    -- the target RS context and one factor cell's per-scalar proximity witnesses
-    (domain : ι₀ ↪ F) (k : ℕ) (hnk : n ≤ k) (δ : ℝ≥0)
-    (u : Code.WordStack F (Fin 2) ι₀) (Efactor : Finset F)
-    (hper : ∀ z ∈ Efactor, ∃ root : rationalRoot (H_tilde' H) z,
-      (w.eval (Polynomial.C x₀)).eval z = root.1 ∧
-      ∃ S : Finset ι₀, ((S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι₀) ∧
-        (∀ i ∈ S, (w.eval (Polynomial.C (domain i))).eval z = u 0 i + z • u 1 i) ∧
-        ¬ _root_.ProximityGap.pairJointAgreesOn
-          ((ReedSolomon.code domain k : Set (ι₀ → F))) S (u 0) (u 1)) :
-    ∃ d₀ d₁ : ι₀ → F, ∀ z ∈ Efactor,
-      ∃ x ∈ disagreeSet d₀ d₁, affineGap d₀ d₁ z x = 0 := by
-  have hlc : H.leadingCoeff = 1 := hmonic.leadingCoeff
-  have hξ : ξ x₀ R H hHyp ≠ 0 := xi_ne_zero_of_monic hHyp hlc
-  have htail : ∀ t, n ≤ t → αGenuine H x₀ R hHyp t = 0 :=
-    BCIKS20.Claim59Lagrange.alphaGenuine_tail_zero_of_trunc H hHyp
-      (ArkLib.DecodedProximateRoot.gammaGenuine_eq_trunc_of_decoded hHyp hξ hD hH hmonic
-        hd2 hdHD hD_Rx0 hRgrade hrepG root
-        (fun z _ => pi_z_xi_ne_zero_of_monic hHyp hlc z (root z))
-        hdeg hdvd hbaseT hR hdisc hcover hbig)
-  have hagree := hagree_of_decoded hHyp hξ hlc e u₀ u₁ matchingSet root
-    (fun z => pi_z_xi_ne_zero_of_monic hHyp hlc z (root z))
-    hdeg hdvd hbaseA hsepZ hfold
-  have hweight := fun j => BCIKS20.Claim510Supply.weight_killTarget_le H x₀ R hHyp hD hH
-    hmonic hd2 hdHD hD_Rx0 hRgrade hξw n (e j) (u₀ j) (u₁ j)
-  exact BCIKS20.Claim510Improve.improve_disjunct_of_heavy hHyp hξ hlc htail e he
-    u₀ u₁ hD matchingSet hagree hweight hcard hdeg hdvd hR domain k hnk δ u Efactor
-    (fun z hz => by
-      obtain ⟨rz, hbasez, S, hScard, hSagree, hSnoJoint⟩ := hper z hz
-      exact ⟨rz, pi_z_xi_ne_zero_of_monic hHyp hlc z rz, hbasez, S, hScard, hSagree,
-        hSnoJoint⟩)
-
 /-- **hlin, GS-side contradiction form**: no `Y`-degree ≥ 2 monic branch admits the
 decoded-fold package. -/
 theorem false_of_decoded_fold_of_two_le {x₀ : F} {R : F[X][X][Y]}
@@ -392,5 +313,4 @@ end BCIKS20.Claim510AgreementSupply
 #print axioms BCIKS20.Claim510AgreementSupply.aPre_sum_eq_decode_eval
 #print axioms BCIKS20.Claim510AgreementSupply.hagree_of_decoded
 #print axioms BCIKS20.Claim510AgreementSupply.natDegree_eq_one_of_decoded_fold
-#print axioms BCIKS20.Claim510AgreementSupply.improve_disjunct_of_decoded_fold
 #print axioms BCIKS20.Claim510AgreementSupply.false_of_decoded_fold_of_two_le

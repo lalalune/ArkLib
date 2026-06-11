@@ -117,21 +117,6 @@ lemma extractSuffixFromChallenge_congr_destIdx
   subst h_idx_eq
   rw [cast_eq]
 
-lemma extractSuffixFromChallenge_val
-    (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by omega⟩)
-    (destIdx : Fin r) (h_destIdx_le : destIdx ≤ ℓ) :
-    (extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (v := v) (destIdx := destIdx) (h_destIdx_le := h_destIdx_le)).val =
-    (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate
-      (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := destIdx.val)
-      (h_bound := by
-        show 0 + destIdx.val ≤ ℓ
-        rw [Nat.zero_add]
-        exact h_destIdx_le)
-      (x := v)).val := by
-  unfold extractSuffixFromChallenge
-  exact val_of_cast_sDomain 𝔽q β _ _ _ _
-
 set_option maxHeartbeats 2000000 in
 omit [SampleableType L] h_β₀_eq_1 in
 /-- **First Oracle Equals Polynomial Oracle Function**:
@@ -585,60 +570,13 @@ lemma previousSuffix_eq_getFiberPoint_extractMiddleFinMask
         (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v := v)
           (i := ⟨j.val * ϑ, k_mul_ϑ_lt_ℓ (k := j)⟩)
           (steps := ϑ)) := by
-  classical
   rw [getFiberPoint_eq_qMap_total_fiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) j v]
-  apply Subtype.ext
-  let i : Fin ℓ := ⟨j.val * ϑ, k_mul_ϑ_lt_ℓ (k := j)⟩
-  let destIdx : Fin r := ⟨j.val * ϑ + ϑ, by
-    have h_le := k_succ_mul_ϑ_le_ℓ_₂ (k := j)
-    have h𝓡 := Nat.pos_of_neZero 𝓡
-    omega⟩
-  let y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx :=
-    getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := j) (v := v)
-  have hy : y.val =
-      (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate
-        (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := i.val + ϑ)
-        (h_bound := by
-          show 0 + (i.val + ϑ) ≤ ℓ
-          have h_le := k_succ_mul_ϑ_le_ℓ_₂ (k := j)
-          simp [i]
-          exact h_le)
-        (x := v)).val := by
-    simp only [y, getChallengeSuffix, i]
-    exact extractSuffixFromChallenge_val 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) v destIdx
-      (by
-        change j.val * ϑ + ϑ ≤ ℓ
-        exact k_succ_mul_ϑ_le_ℓ_₂ (k := j))
-  have hcore :=
-    iteratedQuotientMap_val_eq_qMap_total_fiber_extractMiddleFinMask 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := i) (steps := ϑ)
-      (h_bound := by
-        change j.val * ϑ + ϑ ≤ ℓ
-        exact k_succ_mul_ϑ_le_ℓ_₂ (k := j))
-      (v := v) (y := y) hy
-  have hleft :
-      (extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (v := v)
-        (destIdx := ⟨j.val * ϑ, by
-          exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-            (h := k_mul_ϑ_lt_ℓ (k := j))⟩)
-        (h_destIdx_le := Nat.le_of_lt (k_mul_ϑ_lt_ℓ (k := j)))).val =
-      (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate
-        (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := i.val)
-        (h_bound := by
-          show 0 + i.val ≤ ℓ
-          simp [i]
-          exact Nat.le_of_lt (k_mul_ϑ_lt_ℓ (k := j)))
-        (x := v)).val := by
-    exact extractSuffixFromChallenge_val 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) v
-      ⟨j.val * ϑ, by
-        exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (h := k_mul_ϑ_lt_ℓ (k := j))⟩
-      (Nat.le_of_lt (k_mul_ϑ_lt_ℓ (k := j)))
-  exact hleft.trans hcore
+  exact cast_iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask_core 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := j.val * ϑ) (steps := ϑ)
+    (h_i_lt_ℓ := k_mul_ϑ_lt_ℓ (k := j))
+    (h_le := k_succ_mul_ϑ_le_ℓ_₂ (k := j))
+    (v := v)
 
 set_option maxHeartbeats 800000 in
 -- The dependent index alignment in `getNextOracle` can take substantial elaboration.

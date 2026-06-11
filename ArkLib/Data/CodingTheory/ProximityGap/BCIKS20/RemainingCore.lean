@@ -107,8 +107,9 @@ theorem correlatedAgreementCurves_strict_of_remainingCore {k deg : ℕ} [NeZero 
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := (ReedSolomon.code domain deg : Set (ι → F))) (δ := δ)
       (ε := errorBound δ deg domain) :=
-  correlatedAgreement_affine_curves_strict_of_largeResidual (k := k) (deg := deg)
-    (domain := domain) (δ := δ) hδ hCore.1
+  correlatedAgreement_affine_curves_of_largeResidual (k := k) (deg := deg)
+    (domain := domain) (δ := δ) hCore.1
+    (fun _hk _u _hprob _hJ hnot => absurd hδ hnot) hδ.le
 
 /-- **Corrected-boundary branch.**  The second conjunct of `BCIKS20RemainingCore` at a
 floor-matched radius `δ'` strictly below the Johnson boundary yields the correlated-agreement
@@ -127,8 +128,9 @@ theorem correlatedAgreementCurves_floorMatched_of_remainingCore {k deg : ℕ} [N
       (ε := errorBound δ' deg domain) :=
   ArkLib.BoundaryQuantizationCorrected.correlatedAgreementCurves_boundary_of_floorEq_strict
     (k := k) (deg := deg) (domain := domain) hfloor
-    (correlatedAgreement_affine_curves_strict_of_largeResidual (k := k) (deg := deg)
-      (domain := domain) (δ := δ') hδ' hCore.2)
+    (correlatedAgreement_affine_curves_of_largeResidual (k := k) (deg := deg)
+      (domain := domain) (δ := δ') hCore.2
+      (fun _hk _u _hprob _hJ hnot => absurd hδ' hnot) hδ'.le)
 
 /-- **The wiring theorem: `BCIKS20RemainingCore` ⟹ Theorem 1.5.**  The one named Prop yields
 the [BCIKS20] correlated-agreement keystone at the target radius `δ` with

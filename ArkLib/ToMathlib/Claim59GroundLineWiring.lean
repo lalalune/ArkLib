@@ -7,7 +7,6 @@ import ArkLib.ToMathlib.Claim59GroundLine
 import ArkLib.ToMathlib.InterpolatedRepresentativeWiring
 import ArkLib.ToMathlib.InterpolatedRepresentativeSliced
 import ArkLib.ToMathlib.GenuineMonicCapstone
-import ArkLib.ToMathlib.Claim511
 
 /-!
 # Claim 5.9 (ground line): the per-place package from the matching lane's native currency
@@ -354,48 +353,6 @@ theorem claim59_concrete (hlc : H.leadingCoeff = 1)
     (fun t htk => budget_dominates_term hdA htk)
     (budget_dominates_section hdA hA1 k)
     xs hxs u₀ u₁ Sx hsepOn hS hcard htail
-
-/-! ## The Claim 5.11 coordinate supply
-
-The capstones consume `k+1` field coordinates with counted matching sets.  Claim 5.11's
-kernel-clean double-counting core (`ArkLib.Claim511`) produces exactly that over an abstract
-coordinate type; this adapter transports it along the RS domain embedding `ωs : α ↪ F`,
-yielding the `(xs, Sx, hcard)` triple in the capstones' shape. -/
-
-/-- **The coordinate supply (Claim 5.11 → capstone inputs).**  From the double-counting
-inputs — per-`z` nonmatching bound `E`, threshold-largeness of the close set `S`, the slack
-inequality, and the coordinate bridge — produce `k+1` *field* coordinates `xs` and a
-matching-set assignment `Sx` with `N·d_H < |Sx x|` at every `x ∈ xs`, with `Sx` reading off
-the given per-coordinate matching sets along the embedding. -/
-theorem coordinate_supply_of_claim511
-    {α β : Type} [Fintype α] [DecidableEq α] [DecidableEq β] (ωs : α ↪ F)
-    {S : Finset β} {nonmatching : β → Finset α} (matchSet : α → Finset β)
-    {E t k thr : ℕ}
-    (hbad : ∀ z ∈ S, (nonmatching z).card ≤ E)
-    (hthreshold : thr + t ≤ S.card)
-    (hsmall : E * S.card < (Fintype.card α - k) * t)
-    (hbridge : ∀ x : α,
-      thr < (S.filter (fun z => x ∉ nonmatching z)).card →
-      thr < (matchSet x).card) :
-    ∃ xs : Finset F, xs.card = k + 1 ∧ ∃ Sx : F → Finset β,
-      (∀ x ∈ xs, thr < (Sx x).card) ∧
-      (∀ i : α, ωs i ∈ xs → Sx (ωs i) = matchSet i) := by
-  classical
-  obtain ⟨Dtop, hDcard, hDbig⟩ :=
-    ArkLib.Claim511.exists_points_with_large_matching_subset_abstract
-      (S := S) (nonmatching := nonmatching) (matchSet := matchSet)
-      (E := E) (t := t) (k := k) (threshold := thr) hbad hthreshold hsmall hbridge
-  refine ⟨Dtop.image ωs,
-    by rw [Finset.card_image_of_injective _ ωs.injective, hDcard],
-    fun x => if h : ∃ i : α, ωs i = x then matchSet h.choose else ∅, ?_, ?_⟩
-  · intro x hx
-    obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
-    have hex : ∃ j : α, ωs j = ωs i := ⟨i, rfl⟩
-    rw [dif_pos hex, ωs.injective hex.choose_spec]
-    exact hDbig i hi
-  · intro i _
-    have hex : ∃ j : α, ωs j = ωs i := ⟨i, rfl⟩
-    rw [dif_pos hex, ωs.injective hex.choose_spec]
 
 end ArkLib.Claim59GroundLineWiring
 

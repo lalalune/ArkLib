@@ -34,10 +34,8 @@ Main results:
 * `strictCoeffPolys_of_card_le` — the coefficient-family form demanded by the residual.
 * `StrictCoeffPolysResidualLarge` — the residual restricted to `k + 1 < S.card`.
 * `strictCoeffPolysResidual_iff_large` — the equivalence (the reduction, both directions).
-* `correlatedAgreement_affine_curves_of_largeResidual` — the keystone front door consuming the
-  large-sector residual plus the boundary residual.
-* `correlatedAgreement_affine_curves_strict_of_largeResidual` — the strict-interior front door,
-  where the documented-false boundary residual is unreachable and is not an assumption.
+* `correlatedAgreement_affine_curves_of_largeResidual` — the keystone front door consuming only
+  the large-sector residual.
 
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon
@@ -161,22 +159,6 @@ theorem correlatedAgreement_affine_curves_of_largeResidual {k deg : ℕ}
   correlatedAgreement_affine_curves (k := k) (deg := deg) (domain := domain) (δ := δ)
     (strictCoeffPolysResidual_of_large hLarge) hBoundary hδ
 
-/-- **Strict-interior large-sector front door.**  If `δ < 1 − sqrtRate`, the boundary branch in
-`correlatedAgreement_affine_curves_of_largeResidual` is unreachable, so the large-sector residual
-alone gives the curve correlated-agreement theorem. -/
-theorem correlatedAgreement_affine_curves_strict_of_largeResidual {k deg : ℕ}
-    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
-    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
-    (hLarge :
-      StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain) (δ := δ)) :
-    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  correlatedAgreement_affine_curves_of_largeResidual (k := k) (deg := deg)
-    (domain := domain) (δ := δ) hLarge
-    (fun _hk _u _hprob _hJ hnot => absurd hδ hnot) hδ.le
-
 end Residual
 
 end ProximityGap
-
-#print axioms ProximityGap.correlatedAgreement_affine_curves_strict_of_largeResidual

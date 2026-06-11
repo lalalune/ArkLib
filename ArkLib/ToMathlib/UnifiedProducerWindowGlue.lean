@@ -354,8 +354,10 @@ theorem correlatedAgreement_affine_curves_of_window
     (hwin : curveUDWindow k deg (Fintype.card ι) δ) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  ProximityGap.correlatedAgreement_affine_curves_strict_of_largeResidual hδ
-    (strictCoeffPolysResidualLarge_of_window (Nat.pos_of_ne_zero (NeZero.ne deg)) hwin)
+  correlatedAgreement_affine_curves_of_strict_coeff_polys hδ
+    (fun hk u hprob hJ P hP =>
+      strictCoeffPolysResidual_of_window (Nat.pos_of_ne_zero (NeZero.ne deg)) hwin
+        hk u hprob hJ hδ P hP)
 
 /-! ## §6 — the zero-error corner: the window at every width -/
 

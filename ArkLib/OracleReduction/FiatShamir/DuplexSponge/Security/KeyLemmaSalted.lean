@@ -153,7 +153,6 @@ lemma canonicalizeChallengeLog_idem (log : QueryLog (spec₁ + spec₂)) :
     canonicalizeChallengeLog (spec₁ := spec₁) (spec₂ := spec₂)
         (canonicalizeChallengeLog log)
       = canonicalizeChallengeLog log := by
-  letI : DecidableEq ι₂ := Classical.decEq ι₂
   unfold canonicalizeChallengeLog
   exact canonicalizeChallengeLogAux_idem log []
 
@@ -170,24 +169,18 @@ lemma projectLeftQueryLog_canonicalizeChallengeLogAux [DecidableEq ι₂]
   | cons e rest ih =>
       intro seen
       obtain ⟨q, r⟩ := e
-      simp only [projectLeftQueryLog] at ih ⊢
       cases q with
-      | inl q =>
-          simp only [canonicalizeChallengeLogAux, List.filterMap_cons]
-          rw [ih seen]
+      | inl q => simp [canonicalizeChallengeLogAux, projectLeftQueryLog, ih seen]
       | inr q =>
           by_cases hq : q ∈ seen
-          · simp only [canonicalizeChallengeLogAux, if_pos hq, List.filterMap_cons]
-            rw [ih seen]
-          · simp only [canonicalizeChallengeLogAux, if_neg hq, List.filterMap_cons]
-            rw [ih (q :: seen)]
+          · simp [canonicalizeChallengeLogAux, projectLeftQueryLog, hq, ih seen]
+          · simp [canonicalizeChallengeLogAux, projectLeftQueryLog, hq, ih (q :: seen)]
 
 /-- Shared-`oSpec` entries pass through canonicalization verbatim and in place: the
 left-summand projection of a canonicalized log equals that of the original log. -/
 lemma projectLeftQueryLog_canonicalizeChallengeLog (log : QueryLog (spec₁ + spec₂)) :
     projectLeftQueryLog (canonicalizeChallengeLog (spec₁ := spec₁) (spec₂ := spec₂) log)
       = projectLeftQueryLog log := by
-  letI : DecidableEq ι₂ := Classical.decEq ι₂
   unfold canonicalizeChallengeLog
   exact projectLeftQueryLog_canonicalizeChallengeLogAux log []
 
@@ -686,7 +679,6 @@ statement the salted §5.8 hybrid chain proves; it supersedes the unsalted
 `KeyLemmaStatementEager` endpoints (see the module docstring for why the unsalted surface
 is refutable as a chain target). -/
 def KeyLemmaStatementEagerSalted [SampleableType U]
-    [DecidableEq ι]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
     (Salt : Type) [SaltCodec U δ Salt] [VCVCompatible Salt]
     (Df : OracleDistribution (fsChallengeOracle (StmtIn × Salt) pSpec))
@@ -714,7 +706,6 @@ reduces this to the four salted step residuals. The bridge back to the unsalted
 def KeyLemmaEagerSaltedResidual [SampleableType U]
     [SampleableType (StmtIn → Vector U SpongeSize.C)]
     [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
-    [DecidableEq ι]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
     (Salt : Type) [SaltCodec U δ Salt] [VCVCompatible Salt]
     [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
