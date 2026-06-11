@@ -388,6 +388,20 @@ instance : ∀ i, SampleableType ((pSpecSumcheckFold 𝔽q β (ϑ:=ϑ)
 instance : ∀ i, SampleableType ((pSpecFinalSumcheckStep (L:=L)).Challenge i)
   | ⟨0, _⟩ => by (expose_names; exact inst_5)
 
+instance : ∀ i, VCVCompatible ((pSpecFinalSumcheckStep (L:=L)).Challenge i)
+  | ⟨⟨0, _⟩, _⟩ =>
+    { toFintype := inferInstanceAs (Fintype L)
+      toInhabited := ⟨(0 : L)⟩
+      type_decidableEq' := inferInstanceAs (DecidableEq L) }
+
+instance : OracleSpec.Fintype [(pSpecFinalSumcheckStep (L:=L)).Challenge]ₒ where
+  fintype_B
+  | ⟨⟨⟨0, _⟩, _⟩, _⟩ => inferInstanceAs (Fintype L)
+
+instance : OracleSpec.Inhabited [(pSpecFinalSumcheckStep (L:=L)).Challenge]ₒ where
+  inhabited_B
+  | ⟨⟨⟨0, _⟩, _⟩, _⟩ => ⟨(0 : L)⟩
+
 instance : ∀ i, SampleableType ((pSpecCoreInteraction 𝔽q β (ϑ:=ϑ)
   (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge i) := instSampleableTypeChallengeAppend
 

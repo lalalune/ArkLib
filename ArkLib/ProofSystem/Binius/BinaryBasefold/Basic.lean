@@ -840,6 +840,31 @@ def OracleStatement (ϑ : ℕ) [NeZero ϑ] (i : Fin (ℓ + 1)) :
       exact toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i j
     exact (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨sDomainIdx, by omega⟩ → L
 
+/-- **Oracle-evaluation congruence.** Evaluating an oracle family at propositionally equal
+positions and cast-related domain points gives equal values. The cast direction follows the
+position equality `h_j : j' = j` (the `j'` slot is the "canonical" one consumers rewrite to). -/
+lemma OracleStatement.oracle_eval_congr {i : Fin (ℓ + 1)}
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)
+    {j j' : Fin (toOutCodewordsCount ℓ ϑ (i := i))} (h_j : j' = j)
+    {x : (sDomain 𝔽q β h_ℓ_add_R_rate)
+      ⟨j * ϑ, by have := toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i j; omega⟩}
+    {x' : (sDomain 𝔽q β h_ℓ_add_R_rate)
+      ⟨j' * ϑ, by have := toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i j'; omega⟩}
+    (h_x : x = cast (by rw [h_j]) x') :
+    oStmtIn j x = oStmtIn j' x' := by
+  subst h_j
+  subst h_x
+  rfl
+
+/-- **Oracle HEq congruence.** An oracle family at propositionally equal positions gives
+heterogeneously equal oracles (their types are equal by `congrArg`). -/
+lemma OracleStatement.oracle_heq_congr {i : Fin (ℓ + 1)}
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)
+    {j j' : Fin (toOutCodewordsCount ℓ ϑ (i := i))} (h_j : j = j') :
+    HEq (oStmtIn j) (oStmtIn j') := by
+  subst h_j
+  rfl
+
 def mapOStmtOutRelayStep (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
     ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j := fun j => by

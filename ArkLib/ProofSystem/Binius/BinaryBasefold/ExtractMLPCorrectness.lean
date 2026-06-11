@@ -575,96 +575,11 @@ theorem consistency_of_extractPipeline_eq_some
       omega
     exact hgoal
 
-/-- **Decoder success inside the UDR, existence form.** When `f` is within the unique
-decoding radius of the base code, the pipeline always succeeds: the Berlekamp–Welch decoder
-finds the (unique) closest codeword and the degree gate passes. No consistency witness is
-needed — this is the brick consumed by the extractor-success obligations
-(`extractMLP_some_of_isCompliant_at_zero` in `Steps/FinalSumcheck.lean`). -/
-theorem extractPipeline_isSome_of_UDRClose
-    (E : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) ≃ Fin N)
-    (f : OracleFunction (𝔽q := 𝔽q) (β := β)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
-    (hUDR : 2 * Code.distFromCode (u := f)
-        (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) <
-      (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞)) :
-    ∃ tpoly, extractPipeline 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) E f = some tpoly := by
-  classical
-  -- realize the distance from the code by a closest codeword
-  haveI hne : Nonempty
-      ((BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) :
-        Set (sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) → L)) : Type) :=
-    ⟨⟨0, Submodule.zero_mem _⟩⟩
-  obtain ⟨M, hM_mem, hM_dist⟩ := Code.exists_closest_codeword_of_Nonempty_Code
-    (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) :
-      Set (sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) → L))) f
-  set d := Code.distFromCode (u := f)
-    (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) with hd
-  have hd_eq : d = (hammingDist f M : ℕ∞) := hM_dist.symm
-  have he_toNat : d.toNat = hammingDist f M := by rw [hd_eq]; simp
-  -- the closest codeword is a low-degree polynomial evaluation
-  obtain ⟨P, hPdeg, hPeval⟩ : ∃ P : L[X], P.natDegree < 2 ^ ℓ ∧
-      M = fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val := by
-    haveI : NeZero (2 ^ (ℓ - ((0 : Fin r)).val)) :=
-      ⟨(Nat.two_pow_pos _).ne'⟩
-    unfold BBF_Code at hM_mem
-    rw [ReedSolomon.mem_code_iff_exists_polynomial_of_ne_zero] at hM_mem
-    rcases hM_mem with ⟨P, hPdeg, hPeval⟩
-    refine ⟨P, by simpa using hPdeg, ?_⟩
-    funext x
-    rw [hPeval]
-    simp [ReedSolomon.evalOnPoints]
-  -- UDR arithmetic for the decoder
-  have hNcard : N = 2 ^ (ℓ + 𝓡) :=
-    N_eq_card 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) E
-  have hdist_eq := BBF_CodeDistance₀_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (ℓ := ℓ) (𝓡 := 𝓡)
-  have hd_ne_top : d ≠ ⊤ := by
-    rw [hd_eq]; exact ENat.coe_ne_top _
-  have hUDRnat : 2 * d.toNat <
-      BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
-    lift d to ℕ using hd_ne_top with dn hdn
-    rw [ENat.toNat_coe]
-    exact_mod_cast hUDR
-  have hkN : 2 ^ ℓ ≤ N := by
-    rw [hNcard]
-    exact Nat.pow_le_pow_right (by norm_num) (by omega)
-  have hUDRrad : 2 * d.toNat < N - 2 ^ ℓ + 1 := by
-    rw [hNcard, ← hdist_eq]
-    omega
-  -- decoded distance bound
-  have hdist_dec : hammingDist (fun j => f (E.symm j))
-      (P.eval ∘ fun j =>
-        ((E.symm j : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r)) : L)) ≤ d.toNat := by
-    have htrans := pipeline_dist_transport 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      E f P
-    rw [htrans, ← hPeval, he_toNat]
-  have hdec : BerlekampWelch.decoder d.toNat (2 ^ ℓ)
-      (fun j => ((E.symm j : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r)) : L))
-      (fun j => f (E.symm j)) = some P :=
-    BerlekampWelch.decoder_eq_some hUDRrad hkN
-      (pipeline_omegas_injective 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) E)
-      hPdeg hdist_dec
-  refine ⟨buildMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) P, ?_⟩
-  rw [extractPipeline_decoder_eq_some 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) E f hdec,
-    if_neg (not_le.mpr hPdeg)]
-
 end Core
 
 /-! ## Main theorems -/
 
 section Main
-
-/-- `extractMLP` at the base level succeeds on every UDR-close oracle function. -/
-theorem extractMLP_zero_isSome_of_UDRClose
-    (f : OracleFunction (𝔽q := 𝔽q) (β := β)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
-    (hUDR : 2 * Code.distFromCode (u := f)
-        (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) <
-      (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞)) :
-    ∃ tpoly, extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly := by
-  rw [extractMLP_zero_eq_extractPipeline]
-  exact extractPipeline_isSome_of_UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (domainEquiv₀ 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) f hUDR
 
 /-- Consistency forces UDR-closeness of `f` (the guard is free in the backward
 direction). -/
@@ -776,100 +691,111 @@ theorem firstOracleWitnessConsistencyProp_unique'
   exact revIndexMLP_injective (Option.some.inj e₂)
 
 /-!
-## Machine-checked obstructions: the deleted residual forced `ℓ = 1`
-
-The deleted `ExtractMLPCorrectnessResidual` class asserted the *unreversed* iff
-`extractMLP f = some t ↔ firstOracleWitnessConsistencyProp t f`. The theorems below keep the
-refutation in checked form, with the old class field taken as an explicit hypothesis: it forces
-every multilinear polynomial to equal its variable-reversal, hence `ℓ = 1`. The corrected
-theorem above is the replacement; the old unreversed statement should not be reintroduced.
+The deleted extraction hypothesis would force every multilinear polynomial to equal its
+variable-reversal. The corrected theorem above is the replacement: extraction success identifies
+the reversed witness under the UDR guard, and the old unreversed statement should not be
+reintroduced.
 -/
 
-/-- The codeword of the consistency polynomial is itself consistent (distance `0`). -/
-lemma firstOracleWitnessConsistency_self (t : MultilinearPoly L ℓ) :
-    firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t
-      (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) =>
-        (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
-          (fun ω => t.val.eval (statementOrderBitsOfIndex (L := L) ω))).val.eval x.val) := by
-  show 2 * hammingDist _ _ <
-    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨0, by omega⟩
-  rw [hammingDist_self]
-  have hidx : BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (⟨0, by omega⟩ : Fin r) =
+/-- **Existence of a consistency witness inside the UDR.** Every word that is UDR-close to the
+level-`0` code admits a multilinear consistency witness: rebuild the close codeword's polynomial
+in the novel basis and reindex its coefficients into statement order. -/
+lemma exists_firstOracleWitnessConsistency_of_UDRClose
+    (f : OracleFunction (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
+    (hUDR : 2 * Code.distFromCode (u := f)
+        (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) <
+      (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞)) :
+    ∃ t : MultilinearPoly L ℓ,
+      firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t f := by
+  classical
+  have h_ℓ_le_r : ℓ ≤ r := by omega
+  -- 1. The closest codeword realizes the distance.
+  haveI hne : Nonempty
+      ((BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) :
+        Set (sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) → L)) : Type) :=
+    ⟨⟨0, Submodule.zero_mem _⟩⟩
+  obtain ⟨M, hM_mem, hM_dist⟩ := Code.exists_closest_codeword_of_Nonempty_Code
+    (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) :
+      Set (sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) → L))) f
+  have hM_close : 2 * hammingDist M f <
       BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
-    congr 1
-    exact Fin.eq_of_val_eq (by simp)
-  rw [hidx, BBF_CodeDistance₀_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-  omega
-
-/-- **Obstruction I**: the deleted residual's field forces every multilinear polynomial
-to be its own variable-reversal. -/
-theorem revIndexMLP_eq_self_of_residual
-    (hIff : ∀ (f : OracleFunction (𝔽q := 𝔽q) (β := β)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
-      (tpoly : MultilinearPoly L ℓ),
-      extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly ↔
-      firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly f)
-    (t : MultilinearPoly L ℓ) :
-    revIndexMLP t = t := by
-  set f : OracleFunction (𝔽q := 𝔽q) (β := β)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0 :=
-    fun x =>
+    have h2 : 2 * (hammingDist f M : ℕ∞) <
+        (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞) := by
+      rw [← hM_dist] at hUDR
+      exact_mod_cast hUDR
+    have h3 : 2 * hammingDist f M <
+        BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
+      exact_mod_cast h2
+    simpa [hammingDist_comm M f] using h3
+  -- 2. The codeword is the evaluation of a low-degree polynomial.
+  obtain ⟨P, hP_eval⟩ := exists_BBF_poly_of_codeword 𝔽q β (0 : Fin r) ⟨M, hM_mem⟩
+  have hPdeg : P.val.natDegree < 2 ^ ℓ := by
+    have hprop := P.property
+    rw [Polynomial.mem_degreeLT] at hprop
+    by_cases hz : P.val = 0
+    · simp only [hz, Polynomial.natDegree_zero]
+      positivity
+    · have := (Polynomial.natDegree_lt_iff_degree_lt hz).mpr (by
+        simpa using hprop)
+      simpa using this
+  -- 3. Statement-order coefficients of the close polynomial.
+  set c : Fin (2 ^ ℓ) → L :=
+    AdditiveNTT.monomialToNovelCoeffs 𝔽q β ℓ h_ℓ_le_r (fun i => P.val.coeff i.val) with hc
+  have hb : ∀ (w : Fin ℓ → Fin 2) (j : Fin ℓ), ((w j : Fin 2) : ℕ) ≤ 1 := fun w j =>
+    Nat.lt_succ_iff.mp (w j).isLt
+  set s : MultilinearPoly L ℓ :=
+    ⟨MLE (fun w : Fin ℓ → Fin 2 =>
+        c (Nat.binaryFinMapToNat (fun j => ((w j : Fin 2) : ℕ)) (hb w))),
+      MLE_mem_restrictDegree _⟩ with hs
+  refine ⟨revIndexMLP s, ?_⟩
+  -- 4. The statement-order evaluations of `revIndexMLP s` are exactly `c`.
+  have heval : (fun ω => (revIndexMLP s).val.eval (statementOrderBitsOfIndex (L := L) ω)) = c := by
+    funext ω
+    rw [revIndexMLP_eval_statementOrderBits]
+    exact MLE_binaryFinMap_eval_bit2 (ℓ := ℓ) c ω hb
+  -- 5. Hence the consistency polynomial is `P` itself, and `f` is close to its codeword.
+  show 2 * hammingDist
+      (fun x => (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+        (fun ω => (revIndexMLP s).val.eval (statementOrderBitsOfIndex ω))).val.eval x.val) f <
+    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨0, by omega⟩
+  have hP₀ : (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
+      (fun ω => (revIndexMLP s).val.eval (statementOrderBitsOfIndex ω))).val = P.val := by
+    have hround := polynomialFromNovelCoeffs_monomialToNovelCoeffs 𝔽q β
+      (m := ℓ) (h := h_ℓ_le_r) P.val hPdeg
+    calc (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
+        (fun ω => (revIndexMLP s).val.eval (statementOrderBitsOfIndex ω))).val
+        = (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r) c).val := by
+          rw [heval]
+      _ = P.val := hround
+  have hMfun : (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.val.eval x.val) = M := by
+    funext x
+    have := congrFun hP_eval x
+    simpa [polyToOracleFunc] using this
+  have hPcw_eq_M : (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) =>
       (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
-        (fun ω => t.val.eval (statementOrderBitsOfIndex (L := L) ω))).val.eval x.val with hf
-  have hcons : firstOracleWitnessConsistencyProp 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t f :=
-    firstOracleWitnessConsistency_self 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t
-  have h₁ : extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some t :=
-    (hIff f t).mpr hcons
-  have h₂ : extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f =
-      some (revIndexMLP t) :=
-    extractMLP_zero_eq_some_of_firstOracleWitnessConsistency 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) f t hcons
-  rw [h₁] at h₂
-  exact (Option.some.inj h₂).symm
+        (fun ω => (revIndexMLP s).val.eval (statementOrderBitsOfIndex ω))).val.eval x.val) = M := by
+    funext x
+    rw [hP₀]
+    exact congrFun hMfun x
+  rw [hPcw_eq_M]
+  exact hM_close
 
-/-- **Obstruction II**: the deleted residual's field forces `ℓ = 1` — the unreversed iff is
-*false* for every `ℓ ≥ 2`. -/
-theorem extractMLPCorrectnessResidual_ell_eq_one
-    (hIff : ∀ (f : OracleFunction (𝔽q := 𝔽q) (β := β)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
-      (tpoly : MultilinearPoly L ℓ),
-      extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly ↔
-      firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly f) :
-    ℓ = 1 := by
-  by_contra hne
-  have hℓ2 : 2 ≤ ℓ := by
-    have := Nat.pos_of_neZero ℓ
-    omega
-  set t : MultilinearPoly L ℓ :=
-    ⟨MLE (fun w : Fin ℓ → Fin 2 => ((w 0 : Fin 2) : L)), MLE_mem_restrictDegree _⟩ with ht
-  have hrev : revIndexMLP t = t :=
-    revIndexMLP_eq_self_of_residual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) hIff t
-  set w : Fin ℓ → Fin 2 := fun j => if j = Fin.rev 0 then 1 else 0 with hw
-  have hne0 : (0 : Fin ℓ) ≠ Fin.rev 0 := by
-    intro hcontra
-    have hv := congrArg Fin.val hcontra
-    rw [Fin.val_rev] at hv
-    simp only [Fin.val_zero] at hv
-    omega
-  have hL : (revIndexMLP t).val.eval (fun j => ((w j : Fin 2) : L)) =
-      t.val.eval (fun j => ((w j : Fin 2) : L)) := by rw [hrev]
-  have hLHS : (revIndexMLP t).val.eval (fun j => ((w j : Fin 2) : L)) = 1 := by
-    rw [revIndexMLP_eval_zeroOne, ht]
-    have hmle := MLE_eval_zeroOne (R := L) (fun j : Fin ℓ => w (Fin.rev j))
-      (fun w' : Fin ℓ → Fin 2 => ((w' 0 : Fin 2) : L))
-    rw [hmle, hw]
-    simp
-  have hRHS : t.val.eval (fun j => ((w j : Fin 2) : L)) = 0 := by
-    rw [ht]
-    have hmle := MLE_eval_zeroOne (R := L) w
-      (fun w' : Fin ℓ → Fin 2 => ((w' 0 : Fin 2) : L))
-    rw [hmle, hw]
-    simp only [if_neg hne0]
-    simp
-  rw [hLHS, hRHS] at hL
-  exact one_ne_zero hL
+/-- **Decoder success inside the UDR** (existence form): if `f` is UDR-close to the level-`0`
+code, `extractMLP` succeeds. -/
+lemma extractMLP_zero_isSome_of_UDRClose
+    (f : OracleFunction (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
+    (hUDR : 2 * Code.distFromCode (u := f)
+        (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) <
+      (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞)) :
+    ∃ tpoly : MultilinearPoly L ℓ,
+      extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly := by
+  obtain ⟨t, ht⟩ := exists_firstOracleWitnessConsistency_of_UDRClose 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) f hUDR
+  exact ⟨revIndexMLP t,
+    extractMLP_zero_eq_some_of_firstOracleWitnessConsistency 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) f t ht⟩
 
 end Main
 
