@@ -40,7 +40,12 @@ honest runs reaching the query phase carry fully consistent oracles — but that
 NOT recorded in the relation chain (each `FoldPhase.outputRelation i` constrains rounds
 `i, i+1` only, and chaining forgets it). The honest repair is to thread a full-chain
 consistency invariant through all round relations (a `Spec`-level relation redesign) and
-restate this residual w.r.t. it; do NOT attempt to discharge the present statement. -/
+restate this residual w.r.t. it; do NOT attempt to discharge the present statement.
+
+**The repair is LANDED** (issue #341 closeout): `ToMathlib/FriCompleteQueryRound.lean`
+states the invariant in the checker's own currency (`queryCheckerAccepts`) and proves the
+repaired statement (`queryRound_perfectCompleteness_repaired`); the re-scoped remaining
+obligation is `queryRoundChainDeliveryResidual` there (fold phase delivers the invariant). -/
 def queryRoundPerfectCompletenessResidual
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
     [hQueryChallenge : ∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
