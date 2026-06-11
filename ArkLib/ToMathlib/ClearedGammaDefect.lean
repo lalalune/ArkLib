@@ -54,6 +54,10 @@ Axiom-clean.
 
 noncomputable section
 
+-- The hom classes over `𝒪 H →+* 𝕃 H` sit at the bottom of a deep quotient-ring instance
+-- chain; the default synthesis budget times out on `map_sum`/`map_mul` there.
+set_option synthInstance.maxHeartbeats 800000
+
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2
 open BCIKS20.HenselNumerator
 
@@ -112,7 +116,7 @@ lemma pi_z_wSection {z : F} (root : rationalRoot (H_tilde' H) z) (a b : F) :
     π_z z root (wSection H a b) = a + z * b := by
   unfold wSection
   rw [π_z_mk, Polynomial.evalEval_C]
-  simp
+  simp [mul_comm]
 
 /-- The section has weight `≤ 1` (`Y`-degree `0`, ground degree `≤ 1`). -/
 lemma weight_wSection_le {D : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree)
@@ -267,6 +271,7 @@ private lemma withBot_mul_nat_le {a : WithBot ℕ} {c d : ℕ}
     push_cast; ring
   rw [hcd]
   gcongr
+  exact h
 
 /-- **The Claim 5.10 capstone (monic): the per-coordinate ground-line value from counting.**
 
@@ -299,7 +304,7 @@ theorem gammaEvalTrunc_eq_ground_of_large (hlc : H.leadingCoeff = 1)
   -- Step 1: every place of `S` is a vanishing place of the defect.
   have hT : (↑S : Set F) ⊆ S_β (betaDefect H x₀ x a b R hHyp k) := by
     intro z hz
-    obtain ⟨root, p, hpdeg, hread, hmatch⟩ := hS (Finset.mem_coe.mp hz)
+    obtain ⟨root, p, hpdeg, hread, hmatch⟩ := hS z (Finset.mem_coe.mp hz)
     exact ⟨root, pi_z_betaDefect_eq_zero H x₀ x a b R hHyp k root p hpdeg hread hmatch⟩
   -- Step 2: the counting beats the weight; Lemma A.1 kills the defect's embedding.
   have hwt := weight_betaDefect_le H hD hH x₀ x a b R hHyp k wβ bξ N hwβ hbξ hN1 hN2
