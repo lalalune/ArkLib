@@ -1304,6 +1304,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BudgetCover
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Completeness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.EagerLazyDS
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23Bricks
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23FreshPath
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb34LogShapeFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb4ChallengeEntry
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemma
