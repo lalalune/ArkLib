@@ -5741,3 +5741,42 @@ computation — a new computable invariant of `(n, k, p)`. (c) The asymptotics o
 `max_A |N(e_j(A))|` in n (Lehmer/Mahler-measure territory) now directly prices how the
 exceptional-prime set grows — the lacunary-resultant thread of #357 §5 acquires a second,
 sharper target.
+
+### O141 — THE FAKE-POINT REFORMULATION + exact n = 32 death table: c*(n) = log₂n − 3 at the clean prime, and the fiber mechanism identified as STRUCTURAL moment vanishing (2026-06-11, #357)
+
+`probe_o141_mitm_fakepoint_census.py` (MITM, exact; gates: a = 10, 11 reproduce the O140
+exhaustive counts byte-exactly):
+
+**The fake-point lens.** Newton-reducing the constrained band: `e₂(A) = … = e_c(A) = 0`
+⟺ `p_j(A) = p₁(A)^j` for `j = 2..c` — a qualifying `a`-subset *masquerades as the single
+field point `t = p₁(A)` through its first `c` moments*, and the bad scalar is `λ = −t`.
+The census is the set of **fake points** the domain supports at level `(a, c)`. (This is
+what makes MITM counting trivial: match half-subset moment vectors against `(t, t², …)`.)
+
+**Exact death table, n = 32, rate 1/4 (constraints e₂..e_{a−8}):**
+| a | constraints | p = 97 | p = 193 |
+|---|---|---|---|
+| 12 | 3 | **384 (census 96 — saturates!)** | 0 |
+| 13 | 4 | 0 | 0 |
+
+* At the cleaner prime (193): death at 2→3 constraints for n = 32 vs 1→2 for n = 16:
+  **c*(n) = log₂ n − 3 at both scales** ⟹ the m = 1 adjacent-pair family dies at
+  `δ_death = 1 − ρ − Θ(log n / n)` — a *capacity-adjacent sliver*, far shallower than the
+  KKH26 fiber family's `capacity − Θ(1/log n)`.
+* At p = 97 an arithmetic halo keeps a = 12 alive (384 subsets, fake points saturating
+  nearly all of F₉₇) — small-prime accidents, gone at 193. Death is field-dependent at
+  fixed n; the **structural (field-independent) core** at these (n, a) is empty.
+* **The fiber mechanism, explained:** a union of `r` full fibers of `x ↦ x^m` on μ_n has
+  `p_j = 0` for every `j` with `m ∤ j` — the KKH26 fiber construction satisfies the moment
+  constraints *structurally* (for all fields at once), which is exactly why m-structured
+  families reach deep radii at production-size fields while the m = 1 family dies just
+  below capacity. Small-field extremality of the adjacent pair (O137/O138) and
+  large-field KKH26 reach are two regimes of ONE census.
+
+**The reduced production-scale question (the new apex):** classify the field-independent
+solutions of the moment-vanishing system `p_j(A) = t^j (j ≤ c)` over subsets of μ_n. If
+fiber unions (and their coset/orbit images) are the only structural solutions, then the
+extremal-family census at production fields IS the KKH26 fiber census, the in-tree ceiling
+is family-optimal, and the upper-bracket side of δ* equals the fiber-census threshold.
+This is the N1 structure conjecture made exact — and it is now a finite, probeable,
+formalizable classification problem at each (n, a, c).
