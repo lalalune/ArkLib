@@ -429,6 +429,35 @@ theorem two_mul_upperPairs_card (A : Finset ℕ) :
   rw [hms, hcard]
   omega
 
+/-- **The odd-pair-count rows are char-0 clean (general parity law).** For
+`|A| ≡ 2` or `3 (mod 4)` — exactly the sizes with an odd pair count `C(|A|,2)` — no subset
+can qualify at any prime above the explicit threshold: at every smooth scale `n = 2^m`,
+uniformly, with no enumeration. -/
+theorem e2_ne_zero_of_odd_row {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ m)) (A : Finset ℕ)
+    (hA : A.card % 4 = 2 ∨ A.card % 4 = 3)
+    (hp : (2 ^ (m - 1) * (A.card * A.card)) ^ 2 ^ (m - 1) < p) :
+    ∑ q ∈ upperPairs A, g ^ (q.1 + q.2) ≠ 0 := by
+  refine e2_ne_zero_of_large_prime hm hg A ?_ hp
+  refine e2Folded_ne_zero_of_odd_pairs m hm A ?_
+  intro ⟨u, hu⟩
+  have h2 := two_mul_upperPairs_card A
+  obtain ⟨t, ht⟩ : ∃ t, A.card = 4 * t + 2 ∨ A.card = 4 * t + 3 := ⟨A.card / 4, by omega⟩
+  obtain ⟨s, hs⟩ : ∃ s, t * t = s := ⟨_, rfl⟩
+  rcases ht with ht | ht
+  · -- `|A| = 4t + 2`: the pair count is `8t² + 6t + 1`, odd.
+    have h1 : A.card - 1 = 4 * t + 1 := by omega
+    rw [h1, ht] at h2
+    have hodd : (4 * t + 2) * (4 * t + 1) = 2 * (8 * (t * t) + 6 * t + 1) := by ring
+    rw [hodd, hs] at h2
+    omega
+  · -- `|A| = 4t + 3`: the pair count is `8t² + 10t + 3`, odd.
+    have h1 : A.card - 1 = 4 * t + 2 := by omega
+    rw [h1, ht] at h2
+    have hodd : (4 * t + 3) * (4 * t + 2) = 2 * (8 * (t * t) + 10 * t + 3) := by ring
+    rw [hodd, hs] at h2
+    omega
+
 /-- **Production dimensions are char-0 clean (O144 headline, formal).** For `|A| ≡ 2 (mod 4)`
 (the depth-1 census row `a = k + 2` at every dimension `k ≡ 0 (mod 4)`, in particular all
 `k = 2^j`, `j ≥ 2`), no subset can qualify at any prime above the explicit threshold — at
@@ -437,20 +466,8 @@ theorem e2_ne_zero_of_production_dim {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 
     {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ m)) (A : Finset ℕ)
     (hA : A.card % 4 = 2)
     (hp : (2 ^ (m - 1) * (A.card * A.card)) ^ 2 ^ (m - 1) < p) :
-    ∑ q ∈ upperPairs A, g ^ (q.1 + q.2) ≠ 0 := by
-  refine e2_ne_zero_of_large_prime hm hg A ?_ hp
-  refine e2Folded_ne_zero_of_odd_pairs m hm A ?_
-  intro ⟨u, hu⟩
-  have h2 := two_mul_upperPairs_card A
-  -- `|A| = 4t + 2` makes the pair count `(4t+2)(4t+1)/2 = 8t² + 6t + 1` odd.
-  obtain ⟨t, ht⟩ : ∃ t, A.card = 4 * t + 2 := ⟨A.card / 4, by omega⟩
-  have h1 : A.card - 1 = 4 * t + 1 := by omega
-  rw [h1, ht] at h2
-  have hodd : (4 * t + 2) * (4 * t + 1) = 2 * (8 * (t * t) + 6 * t + 1) := by ring
-  rw [hodd] at h2
-  obtain ⟨s, hs⟩ : ∃ s, t * t = s := ⟨_, rfl⟩
-  rw [hs] at h2
-  omega
+    ∑ q ∈ upperPairs A, g ^ (q.1 + q.2) ≠ 0 :=
+  e2_ne_zero_of_odd_row hm hg A (Or.inl hA) hp
 
 end Parity
 
@@ -460,6 +477,7 @@ end Parity
 #print axioms qualifying_implies_char0_vanishing
 #print axioms e2_ne_zero_of_large_prime
 #print axioms e2Folded_ne_zero_of_odd_pairs
+#print axioms e2_ne_zero_of_odd_row
 #print axioms e2_ne_zero_of_production_dim
 
 end ArkLib.ProximityGap.WindowTwoLayer

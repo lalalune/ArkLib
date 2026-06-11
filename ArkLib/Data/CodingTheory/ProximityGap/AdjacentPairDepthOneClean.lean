@@ -30,14 +30,17 @@ pullback through `IsPrimitiveRoot.pow_inj`.
 
 ## Headline
 
-`depthOne_no_badScalar`: for `a ≡ 2 (mod 4)` (every production depth-1 row `a = k + 2`,
-`k ≡ 0 (mod 4)` — in particular all `k = 2^j`, `j ≥ 2`), over **any** subset `H` of a smooth
-domain `μ_{2^m} ⊆ F_p` with `p` above the explicit threshold: **no scalar is bad for the
-adjacent pair at depth 1** — no polynomial of degree `≤ a − 3` agrees with the line
-`X^a + λ·X^{a−1}` on `a` points of `H`, for any `λ`. This is the formal, uniform-in-`n`,
-zero-enumeration form of the O141 verdict "the depth-1 mid-window row is clean at every
-prime above the finite spectrum": here the spectrum is bounded by the explicit resultant
-threshold, and the statement holds at every smooth scale `2^m` simultaneously.
+`oddRow_no_badScalar`: for `a ≡ 2` or `3 (mod 4)` — the rows with an odd pair count
+`C(a,2)`, i.e. **half of all window rows** — at **every** depth (`1 ≤ k ≤ a − 2`), over
+**any** subset `H` of a smooth domain `μ_{2^m} ⊆ F_p` with `p` above the explicit
+threshold: **no scalar is bad for the adjacent pair** — no polynomial of degree `≤ k − 1`
+agrees with the line `X^a + λ·X^{a−1}` on `a` points of `H`, for any `λ`. The mechanism:
+any bad witness forces its entire constrained band to vanish, in particular `e₂ = 0`,
+impossible on an odd row above the threshold. `depthOne_no_badScalar` is the `k = a − 2`
+production instance (`a = k + 2`, `k ≡ 0 (mod 4)` — all `k = 2^j`, `j ≥ 2`). This is the
+formal, uniform-in-`n`, zero-enumeration form of the O141 verdict "the mid-window rows are
+clean at every prime above the finite spectrum": the spectrum is bounded by the explicit
+resultant threshold, at every smooth scale `2^m` simultaneously.
 
 ## Honest scope
 
@@ -125,24 +128,28 @@ theorem coeff_prod_X_sub_C_sub_two {R : Type*} [CommRing R] (A : Finset ℕ) (f 
     Finset.esymm_map_val]
   exact sum_powersetCard_two_eq A f
 
-/-! ## The headline: depth-1 cleanliness at production dimensions -/
+/-! ## The headline: the odd rows are clean at every depth -/
 
-/-- **Depth-1 cleanliness of the adjacent-pair family (O141/O144, formal).** For
-`a ≡ 2 (mod 4)` and any subset `H` of the smooth domain `μ_{2^m} = {g^i} ⊆ F_p` with `p`
-above the explicit resultant threshold, **no scalar `λ` is bad for the adjacent pair
-`(X^a, X^{a−1})` at depth 1**: no polynomial of degree `≤ a − 3` agrees with the line
-`X^a + λ·X^{a−1}` on `a` points of `H`. Uniform in the scale `m`, zero enumeration. -/
-theorem depthOne_no_badScalar {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
+/-- **The odd rows of the adjacent-pair window profile are clean at EVERY depth
+(O141/O144, formal).** For `a ≡ 2` or `3 (mod 4)` (the rows with an odd pair count) and
+any depth — any code degree bound `k` with `1 ≤ k ≤ a − 2` — over any subset `H` of the
+smooth domain `μ_{2^m} = {g^i} ⊆ F_p` with `p` above the explicit resultant threshold:
+**no scalar `λ` is bad for the adjacent pair `(X^a, X^{a−1})`** — no polynomial of degree
+`≤ k − 1` agrees with the line `X^a + λ·X^{a−1}` on `a` points of `H`. Uniform in the
+scale `m`, zero enumeration. The mechanism: any bad witness forces the full constrained
+band to vanish, in particular `e₂ = 0` — impossible above the threshold on an odd row. -/
+theorem oddRow_no_badScalar {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
     {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ m))
     {H : Finset (ZMod p)} (hH : H ⊆ (Finset.range (2 ^ m)).image (g ^ ·))
-    {a : ℕ} (ha4 : a % 4 = 2) (ha3 : 3 ≤ a)
+    {a k : ℕ} (ha4 : a % 4 = 2 ∨ a % 4 = 3) (ha3 : 3 ≤ a)
+    (hk1 : 1 ≤ k) (hk2 : k ≤ a - 2)
     (hp : (2 ^ (m - 1) * (a * a)) ^ 2 ^ (m - 1) < p) (lam : ZMod p) :
-    ¬ ∃ q : Polynomial (ZMod p), q.natDegree ≤ a - 2 - 1 ∧
+    ¬ ∃ q : Polynomial (ZMod p), q.natDegree ≤ k - 1 ∧
         a ≤ (lineAgreeSet H a lam q).card := by
   rintro ⟨q, hq, hagree⟩
   obtain ⟨T, hTH, hTcard, hband, _⟩ :=
-    constrainedSubsetSum_of_badScalar (H := H) (a := a) (k := a - 2)
-      (by omega) (by omega) hq hagree
+    constrainedSubsetSum_of_badScalar (H := H) (a := a) (k := k)
+      hk1 (by omega) hq hagree
   have hcoeff : (∏ x ∈ T, (X - C x)).coeff (a - 2) = 0 := hband 2 le_rfl (by omega)
   -- pull the witness back to its exponent set
   set A : Finset ℕ := (Finset.range (2 ^ m)).filter (fun i => g ^ i ∈ T) with hA
@@ -176,24 +183,37 @@ theorem depthOne_no_badScalar {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
       _ = (∏ i ∈ A, (X - C (g ^ i))).coeff (a - 2) := hv.symm
       _ = (∏ x ∈ T, (X - C x)).coeff (a - 2) := by rw [hprod]
       _ = 0 := hcoeff
-  exact e2_ne_zero_of_production_dim hm hg A (by rw [hAcard]; exact ha4)
+  exact e2_ne_zero_of_odd_row hm hg A (by rw [hAcard]; exact ha4)
     (by rw [hAcard]; exact hp) he2
 
-/-- The full smooth domain instance: over `μ_{2^m}` itself, the depth-1 row of the
-adjacent-pair family is empty at every prime above the threshold. -/
-theorem depthOne_no_badScalar_smoothDomain {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
+/-- **Depth-1 cleanliness at production dimensions** — the `k = a − 2` instance of the
+odd-row theorem (every production depth-1 row `a = k + 2`, `k ≡ 0 (mod 4)`). -/
+theorem depthOne_no_badScalar {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
     {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ m))
+    {H : Finset (ZMod p)} (hH : H ⊆ (Finset.range (2 ^ m)).image (g ^ ·))
     {a : ℕ} (ha4 : a % 4 = 2) (ha3 : 3 ≤ a)
     (hp : (2 ^ (m - 1) * (a * a)) ^ 2 ^ (m - 1) < p) (lam : ZMod p) :
     ¬ ∃ q : Polynomial (ZMod p), q.natDegree ≤ a - 2 - 1 ∧
+        a ≤ (lineAgreeSet H a lam q).card :=
+  oddRow_no_badScalar hm hg hH (Or.inl ha4) ha3 (by omega) le_rfl hp lam
+
+/-- The full smooth domain instance: over `μ_{2^m}` itself, every odd row of the
+adjacent-pair family is empty at every depth, at every prime above the threshold. -/
+theorem oddRow_no_badScalar_smoothDomain {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ m))
+    {a k : ℕ} (ha4 : a % 4 = 2 ∨ a % 4 = 3) (ha3 : 3 ≤ a)
+    (hk1 : 1 ≤ k) (hk2 : k ≤ a - 2)
+    (hp : (2 ^ (m - 1) * (a * a)) ^ 2 ^ (m - 1) < p) (lam : ZMod p) :
+    ¬ ∃ q : Polynomial (ZMod p), q.natDegree ≤ k - 1 ∧
         a ≤ (lineAgreeSet ((Finset.range (2 ^ m)).image (g ^ ·)) a lam q).card :=
-  depthOne_no_badScalar hm hg (Finset.Subset.refl _) ha4 ha3 hp lam
+  oddRow_no_badScalar hm hg (Finset.Subset.refl _) ha4 ha3 hk1 hk2 hp lam
 
 /-! ## Source audit -/
 
 #print axioms sum_powersetCard_two_eq
 #print axioms coeff_prod_X_sub_C_sub_two
+#print axioms oddRow_no_badScalar
 #print axioms depthOne_no_badScalar
-#print axioms depthOne_no_badScalar_smoothDomain
+#print axioms oddRow_no_badScalar_smoothDomain
 
 end ArkLib.ProximityGap.WindowTwoLayer
