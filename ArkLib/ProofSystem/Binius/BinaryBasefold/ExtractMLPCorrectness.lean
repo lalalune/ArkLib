@@ -691,11 +691,95 @@ theorem firstOracleWitnessConsistencyProp_unique'
   exact revIndexMLP_injective (Option.some.inj e₂)
 
 /-!
-The deleted extraction hypothesis would force every multilinear polynomial to equal its
-variable-reversal. The corrected theorem above is the replacement: extraction success identifies
-the reversed witness under the UDR guard, and the old unreversed statement should not be
-reintroduced.
+## Machine-checked obstructions: the deleted residual forced `ℓ = 1`
+
+The deleted `ExtractMLPCorrectnessResidual` class asserted the *unreversed* iff
+`extractMLP f = some t ↔ firstOracleWitnessConsistencyProp t f`. The theorems below keep the
+refutation in checked form, with the old class field taken as an explicit hypothesis: it forces
+every multilinear polynomial to equal its variable-reversal, hence `ℓ = 1`. The corrected
+theorem above is the replacement; the old unreversed statement should not be reintroduced.
 -/
+
+/-- The codeword of the consistency polynomial is itself consistent (distance `0`). -/
+lemma firstOracleWitnessConsistency_self (t : MultilinearPoly L ℓ) :
+    firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t
+      (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) =>
+        (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
+          (fun ω => t.val.eval (statementOrderBitsOfIndex (L := L) ω))).val.eval x.val) := by
+  show 2 * hammingDist _ _ <
+    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨0, by omega⟩
+  rw [hammingDist_self,
+    BBF_CodeDistance₀_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+  omega
+
+/-- **Obstruction I**: the deleted residual's field forces every multilinear polynomial
+to be its own variable-reversal. -/
+theorem revIndexMLP_eq_self_of_residual
+    (hIff : ∀ (f : OracleFunction (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
+      (tpoly : MultilinearPoly L ℓ),
+      extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly ↔
+      firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly f)
+    (t : MultilinearPoly L ℓ) :
+    revIndexMLP t = t := by
+  set f : OracleFunction (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0 :=
+    fun x =>
+      (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
+        (fun ω => t.val.eval (statementOrderBitsOfIndex (L := L) ω))).val.eval x.val with hf
+  have hcons : firstOracleWitnessConsistencyProp 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t f :=
+    firstOracleWitnessConsistency_self 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t
+  have h₁ : extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some t :=
+    (hIff f t).mpr hcons
+  have h₂ : extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f =
+      some (revIndexMLP t) :=
+    extractMLP_zero_eq_some_of_firstOracleWitnessConsistency 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) f t hcons
+  rw [h₁] at h₂
+  exact (Option.some.inj h₂).symm
+
+/-- **Obstruction II**: the deleted residual's field forces `ℓ = 1` — the unreversed iff is
+*false* for every `ℓ ≥ 2`. -/
+theorem extractMLPCorrectnessResidual_ell_eq_one
+    (hIff : ∀ (f : OracleFunction (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
+      (tpoly : MultilinearPoly L ℓ),
+      extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly ↔
+      firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly f) :
+    ℓ = 1 := by
+  by_contra hne
+  have hℓ2 : 2 ≤ ℓ := by
+    have := Nat.pos_of_neZero ℓ
+    omega
+  set t : MultilinearPoly L ℓ :=
+    ⟨MLE (fun w : Fin ℓ → Fin 2 => ((w 0 : Fin 2) : L)), MLE_mem_restrictDegree _⟩ with ht
+  have hrev : revIndexMLP t = t :=
+    revIndexMLP_eq_self_of_residual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) hIff t
+  set w : Fin ℓ → Fin 2 := fun j => if j = Fin.rev 0 then 1 else 0 with hw
+  have hne0 : (0 : Fin ℓ) ≠ Fin.rev 0 := by
+    intro hcontra
+    have hv := congrArg Fin.val hcontra
+    rw [Fin.val_rev] at hv
+    simp only [Fin.val_zero] at hv
+    omega
+  have hL : (revIndexMLP t).val.eval (fun j => ((w j : Fin 2) : L)) =
+      t.val.eval (fun j => ((w j : Fin 2) : L)) := by rw [hrev]
+  have hLHS : (revIndexMLP t).val.eval (fun j => ((w j : Fin 2) : L)) = 1 := by
+    rw [revIndexMLP_eval_zeroOne, ht]
+    have hmle := MLE_eval_zeroOne (R := L) (fun j : Fin ℓ => w (Fin.rev j))
+      (fun w' : Fin ℓ → Fin 2 => ((w' 0 : Fin 2) : L))
+    rw [hmle, hw]
+    simp
+  have hRHS : t.val.eval (fun j => ((w j : Fin 2) : L)) = 0 := by
+    rw [ht]
+    have hmle := MLE_eval_zeroOne (R := L) w
+      (fun w' : Fin ℓ → Fin 2 => ((w' 0 : Fin 2) : L))
+    rw [hmle, hw]
+    simp only [if_neg hne0]
+    simp
+  rw [hLHS, hRHS] at hL
+  exact one_ne_zero hL
 
 end Main
 
