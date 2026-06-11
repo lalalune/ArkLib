@@ -222,9 +222,81 @@ theorem dsfs_hLHS {α : Type}
 
 #print axioms Reduction.dsfs_hLHS
 
+/-- Bridge: annotated vs direct lift of a single left-side query. -/
+theorem dsfs_lift_query_bridge_inl₂ (t₁ : oSpec.Domain) :
+    (@liftM (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U))
+      (OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+        [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+          ProtocolSpec 1).Challenge]ₒ)))
+      (instMonadLiftTOfMonadLift
+        (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U))
+        (OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)))
+        (OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+          [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+            ProtocolSpec 1).Challenge]ₒ))))
+      _ ((liftM ((OracleSpec.query (Sum.inl t₁) :
+        OracleQuery (oSpec + duplexSpongeChallengeOracle StmtIn U) _))) :
+        OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U) _))
+    = (liftM (liftM ((OracleSpec.query (Sum.inl t₁) :
+        OracleQuery (oSpec + duplexSpongeChallengeOracle StmtIn U) _)) :
+        OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U) _) :
+        OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+          [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+            ProtocolSpec 1).Challenge]ₒ)) _) := by
+  first
+  | rfl
+  | with_unfolding_all rfl
+  | trace_state
+
+
+
+
+set_option maxHeartbeats 1000000 in
+/-- Annotated lift through `OptionT (OracleComp base)` (the third path) = direct lift. -/
+theorem dsfs_hLHS₂ {α : Type}
+    (X : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U) α) :
+    (@liftM (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U))
+      (OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+          [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+            ProtocolSpec 1).Challenge]ₒ)))
+      (instMonadLiftTOfMonadLift
+        (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U))
+        (OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)))
+        (OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+          [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+            ProtocolSpec 1).Challenge]ₒ))))
+      α X)
+    = (liftM X : OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+          [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+            ProtocolSpec 1).Challenge]ₒ)) α) := by
+  induction X using OracleComp.inductionOn with
+  | pure a =>
+    first
+    | rfl
+    | with_unfolding_all rfl
+  | query_bind t oa ih =>
+    simp only [liftM_bind]
+    rcases t with t₁ | t₂ <;>
+      first
+      | exact bind_congr fun a => ih a
+      | (refine Eq.trans (congrArg₂ (· >>= ·) (dsfs_lift_query_bridge_inl₂ _) rfl) ?_
+         all_goals first
+           | (beta_reduce; exact bind_congr fun a => ih a)
+           | exact bind_congr fun a => ih a
+           | rfl)
+      | (refine Eq.trans (congrArg₂ (· >>= ·) (dsfs_lift_query_bridge_inr _) rfl) ?_
+         all_goals first
+           | (beta_reduce; exact bind_congr fun a => ih a)
+           | exact bind_congr fun a => ih a
+           | rfl)
+      | rfl
+
+
 end Reduction
 
 -- Axiom audits: all must be sorry-free.
 #print axioms Reduction.dsfs_hLHS
 #print axioms Reduction.dsfs_lift_query_bridge_inr
 #print axioms Reduction.dsfs_lift_query_bridge_inl
+#print axioms Reduction.dsfs_lift_query_bridge_inl₂
+#print axioms Reduction.dsfs_hLHS₂
