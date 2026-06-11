@@ -8,17 +8,17 @@ documented as open research with the paper trail.
 |---|---|---|---|---|
 | MCACapacityTrivial | 0 | 0 | 0 | 1 |
 | MCAGSRefutationCore | 0 | 0 | 0 | 1 |
-| ToMathlib | 0 | 0 | 0 | 91 |
-| ProofSystem/Fri | 0 | 0 | 0 | 1 |
+| ResidualAxioms | 0 | 0 | 0 | 2 |
+| ToMathlib | 0 | 0 | 0 | 69 |
 | ProofSystem/Logup | 0 | 0 | 0 | 51 |
 | ProofSystem/Whir | 0 | 0 | 0 | 25 |
 | ProofSystem/Stir | 0 | 0 | 0 | 3 |
-| ProofSystem/Spartan | 0 | 0 | 0 | 18 |
+| ProofSystem/Spartan | 0 | 0 | 0 | 5 |
 | ProofSystem/Sumcheck | 0 | 0 | 0 | 1 |
-| Data/CodingTheory | 0 | 0 | 0 | 204 |
+| Data/CodingTheory | 0 | 0 | 0 | 196 |
 | OracleReduction/Composition | 0 | 0 | 0 | 46 |
-| OracleReduction/FiatShamir | 0 | 0 | 0 | 64 |
-| **TOTAL** | **0** | **0** | **0** | **506** |
+| OracleReduction/FiatShamir | 0 | 0 | 0 | 61 |
+| **TOTAL** | **0** | **0** | **0** | **461** |
 
 
 ## Data/CodingTheory
@@ -46,7 +46,6 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardLatticeSlice.lean:180` theorem **boundaryCardLatticeResidual_of_subResiduals**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardLatticeSlice.lean:194` theorem **boundaryProbabilityResidual_of_subResiduals**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardLatticeSlice.lean:223` theorem **latticeResidual_target_is_boundary_good_set**
-- `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:207` def **BoundaryCardStrictInteriorResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:236` theorem **boundaryCardResidual_of_not_lattice**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:271` def **BoundaryCardLatticeResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:395` theorem **boundaryCardLatticeResidual_zero**
@@ -75,7 +74,6 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean:252` theorem **not_boundaryCardLatticeResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean:267` theorem **not_boundaryCardQuantizationResiduals**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean:274` theorem **not_boundaryProbabilityResidual**
-- `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardStrictInteriorRefutation.lean:299` theorem **not_boundaryCardStrictInteriorResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardStrictInteriorRefutation.lean:311` theorem **not_boundaryCardResidual_nonSquareEndpoint**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean:196` def **BoundaryCardLatticeThresholdResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean:206` theorem **boundaryCardLatticeThresholdResidual_of_extraction**
@@ -217,17 +215,11 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1107` def **GKL24FirstMomentWitnessCoverResidual**
 - `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1127` theorem **GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card**
 - `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1309` def **GKL24MaxCorrStrictWitnessCoverResidual**
-- `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1330` def **GKL24MaxCorrWitnessCoverResidual**
-- `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1357` theorem **GKL24MaxCorrWitnessCoverResidual_of_strict_cover**
 - `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1376` theorem **GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover**
 - `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1393` theorem **GKL24FirstMomentWitnessCoverResidual_of_strict_cover**
-- `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1412` def **GKL24PetalWitnessCoverResidual**
-- `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1433` theorem **GKL24PetalWitnessCoverResidual_of_maxCorr_cover**
-- `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1469` theorem **GKL24PetalWitnessCoverResidual_of_strict_cover**
 - `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1480` theorem **GKL24FirstMomentWitnessCoverResidual_of_petal_cover**
 - `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1529` theorem **GKL24FirstMomentResidual_inTree_delta_add_one_card**
 - `ArkLib/Data/CodingTheory/Connections/GKL24PetalWitnessCover.lean:56` def **GKL24MaxDomainWitnessCoverResidual**
-- `ArkLib/Data/CodingTheory/Connections/GKL24PetalWitnessCover.lean:84` theorem **gkl24PetalWitnessCoverResidual_of_maxDomainWitnessCover**
 
 ## MCACapacityTrivial
 
@@ -330,7 +322,6 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb4ChallengeEntry.lean:246` theorem **hyb4ChallengeEntryResidual_holds**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemma.lean:245` def **KeyLemmaResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:634` def **Lemma5_12HonestResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:668` def **Lemma5_16HonestResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:934` def **SimulatedProverChallengeBudgetResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:951` def **SimulatedProverSharedBudgetResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:971` def **KeyLemmaEagerResidual**
@@ -351,16 +342,9 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:441` theorem **lemma5_12HonestResidualPaper_holds**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:508` theorem **lemma5_16HonestResidualPaper_holds**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:705` theorem **lemma5_14HonestResidualPaper_holds**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:502` theorem **lemma5_16HonestResidual_false**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean:46` theorem **lemma5_8EagerPaperResidual_holds**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Reduction.lean:46` theorem **lemma5_8EagerPaperResidual_holds**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:417` theorem **duplexSpongeFiatShamir_runCollapseResidual_holds**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:502` theorem **lemma5_16HonestResidual_false**
-
-## ProofSystem/Fri
-
-### residual-named declarations
-- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:49` def **queryRoundPerfectCompletenessResidual**
 
 ## ProofSystem/Logup
 
@@ -421,23 +405,10 @@ documented as open research with the paper trail.
 
 ### residual-named declarations
 - `ArkLib/ProofSystem/Spartan/Basic.lean:700` def **r1csResidualAt**
-- `ArkLib/ProofSystem/Spartan/ComposedCompleteness.lean:759` theorem **composedCompletenessResidual_of_leaves**
-- `ArkLib/ProofSystem/Spartan/ComposedCompleteness.lean:807` theorem **composedCompletenessResidual_of_five_leaves**
-- `ArkLib/ProofSystem/Spartan/ComposedCompletenessFinal.lean:88` theorem **composedCompletenessResidual_proven**
-- `ArkLib/ProofSystem/Spartan/ComposedCompletenessTwoLeaves.lean:46` theorem **composedCompletenessResidual_of_two_leaves**
-- `ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean:93` theorem **composedCompletenessWithClaimResidual_proven**
-- `ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean:203` theorem **composedCompletenessWithClaimValueRelResidual_proven**
-- `ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean:237` theorem **composedCompletenessWithClaimSecondSumcheckEvalResidual_proven**
-- `ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeFinal.lean:89` theorem **composedRbrKnowledgeSoundnessResidual_proven**
-- `ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean:592` theorem **composedRbrKnowledgeSoundnessResidual_of_leaves**
-- `ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeWithClaimFinal.lean:212` theorem **composedRbrKnowledgeSoundnessWithClaimResidual_proven**
-- `ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeWithClaimFinal.lean:240` theorem **composedRbrKnowledgeSoundnessWithClaimValueRelResidual_proven**
-- `ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeWithClaimFinal.lean:268` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_proven**
 - `ArkLib/ProofSystem/Spartan/Composition.lean:477` theorem **composedPIOPResidual_holds_proof**
 - `ArkLib/ProofSystem/Spartan/Composition.lean:482` theorem **composedPIOPWithClaimResidual_holds_proof**
 - `ArkLib/ProofSystem/Spartan/R1CSMleEquivalence.lean:201` def **r1csResidual**
 - `ArkLib/ProofSystem/Spartan/R1CSMleEquivalence.lean:235` theorem **zeroCheckVirtualPolynomial_eq_mle'_r1csResidual**
-- `ArkLib/ProofSystem/Spartan/RbrKnowledgeWiring.lean:57` theorem **composedRbrKnowledgeSoundnessResidual_of_nonsumcheck_leaves**
 
 ## ProofSystem/Stir
 
@@ -480,6 +451,12 @@ documented as open research with the paper trail.
 - `ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean:319` def **mca_johnson_bound_CONJECTURE**
 - `ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean:371` def **mca_capacity_bound_CONJECTURE**
 
+## ResidualAxioms
+
+### residual-named declarations
+- `ArkLib/ResidualAxioms.lean:27` def **RingSwitchingKStateResidual**
+- `ArkLib/ResidualAxioms.lean:35` theorem **ringSwitchingKStateResidual_holds**
+
 ## ToMathlib
 
 ### residual-named declarations
@@ -499,10 +476,10 @@ documented as open research with the paper trail.
 - `ArkLib/ToMathlib/BoundaryDischarge.lean:628` theorem **boundaryCardResidual_zero**
 - `ArkLib/ToMathlib/BoundaryDischarge.lean:638` theorem **boundaryProbabilityResidual_zero**
 - `ArkLib/ToMathlib/BoundaryHalfState.lean:183` theorem **correlatedAgreementCurves_boundary_of_largeResidual_cellMin**
-- `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:262` def **DeepHoleProbResidual**
-- `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:278` theorem **hDeepHole_of_probResidual**
+- `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:264` def **DeepHoleProbResidual**
+- `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:282` theorem **hDeepHole_of_probResidual**
 - `ArkLib/ToMathlib/CS25DeepHoleFinish2.lean:259` theorem **deepHoleProbResidual_of_jointFar**
-- `ArkLib/ToMathlib/CS25JointFar.lean:203` theorem **deepHoleProbResidual_holds**
+- `ArkLib/ToMathlib/CS25JointFar.lean:205` theorem **deepHoleProbResidual_holds**
 - `ArkLib/ToMathlib/CurveFamilyHensel.lean:143` theorem **strictCoeffPolysResidual_of_curveHenselDatum**
 - `ArkLib/ToMathlib/CurveFamilyRoundConsumers.lean:95` theorem **boundaryProbabilityResidual_of_strict**
 - `ArkLib/ToMathlib/CurveHenselSupply.lean:680` theorem **strictCoeffPolysResidual_of_gsCurveInput**
@@ -544,32 +521,10 @@ documented as open research with the paper trail.
 - `ArkLib/ToMathlib/SpartanBricks.lean:785` theorem **firstSumcheckResidual_holds**
 - `ArkLib/ToMathlib/SpartanBricks.lean:839` def **r1csMleEncodingResidual**
 - `ArkLib/ToMathlib/SpartanBricks.lean:855` theorem **r1csMleEncodingResidual_holds**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1019` def **composedPIOPResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1035` theorem **composedPIOPResidual_of_reduction**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1048` def **composedPIOPWithClaimResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1060` theorem **composedPIOPWithClaimResidual_of_reduction**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1077` def **composedCompletenessResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1097` def **composedCompletenessWithClaimResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1130` def **composedCompletenessWithClaimValueRelResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1141` def **composedCompletenessWithClaimSecondSumcheckEvalResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1154` theorem **composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1170` theorem **composedCompletenessWithClaimValueRelResidual_of_secondSumcheckEval**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1186` theorem **composedCompletenessWithClaimSecondSumcheckEvalResidual_of_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1202` theorem **composedCompletenessWithClaimResidual_of_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1226` theorem **composedCompletenessWithClaimResidual_of_secondSumcheckEval**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1247` def **composedRbrKnowledgeSoundnessResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1267` def **composedRbrKnowledgeSoundnessWithClaimResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1280` def **composedRbrKnowledgeSoundnessWithClaimValueRelResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1293` def **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1307` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1326` theorem **composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1345` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1366` theorem **composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1401` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_residual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1515` theorem **composedCompletenessResidual_of_perfectCompleteness**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1528` theorem **composedCompletenessWithClaimResidual_of_perfectCompleteness**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1547` theorem **composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1562` theorem **composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1020` def **composedPIOPResidual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1036` theorem **composedPIOPResidual_of_reduction**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1049` def **composedPIOPWithClaimResidual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1061` theorem **composedPIOPWithClaimResidual_of_reduction**
 - `ArkLib/ToMathlib/SurfaceFactorProduction.lean:210` def **graphHypothesesOfResiduals**
 - `ArkLib/ToMathlib/UnifiedExtractionTarget.lean:96` theorem **strictCoeffPolysLargeResidual_of_producer**
 - `ArkLib/ToMathlib/UnifiedProducerWindowGlue.lean:325` theorem **strictCoeffPolysLargeResidual_of_window**
