@@ -63,6 +63,8 @@ FALSE_POSITIVES = {
     'r1csResidualAt', 'r1csResidual', 'mcaConjectureBound', 'johnsonConjectureEta',
     # interface-Prop on data with a canonical rfl witness (batchingConsistencyResidual_sum):
     'BatchingConsistencyResidual',
+    # plain structure-to-structure converter (where-def), not an obligation:
+    'toAlgebraicData',
 }
 
 pat = re.compile(r"- `([^:`]+):(\d+)` (\w+) \*\*([A-Za-z0-9_.']+)\*\*")
