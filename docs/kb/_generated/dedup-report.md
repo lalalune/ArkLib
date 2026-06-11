@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2279 files, 29154 declarations
+- `ArkLib` — 2286 files, 29210 declarations
 
-## Same short-name across multiple files (1231 groups)
+## Same short-name across multiple files (1234 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -872,6 +872,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Binius.FRIBinius.FullFRIBinius.fullRbrKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:227](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L227) — Combined RBR knowledge error for full FRI-Binius.
 - `def RingSwitching.FullRingSwitching.fullRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/General.lean:196](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L196) — (no docstring)
 
+### `gapPoly` (3 declarations, 3 files)
+
+- `def ArkLib.ProximityGap.GeneralGapCensus.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/GeneralGapCensusLaw.lean:58](../../../ArkLib/Data/CodingTheory/ProximityGap/GeneralGapCensusLaw.lean#L58) — The general-gap line polynomial `X^s + λX^t − q`.
+- `def CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCapture.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCapture.lean#L60) — The per-coordinate gap polynomial `∑ⱼ C(dⱼ(x))·Xʲ`.
+- `def ArkLib.ProximityGap.KKH26.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean:48](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean#L48) — The line-minus-explanation polynomial `X^A + λ·X^B − q`.
+
 ### `hammingBall` (3 declarations, 3 files)
 
 - `def ListDecodable.hammingBall` [ArkLib/Data/CodingTheory/ListDecodability.lean:27](../../../ArkLib/Data/CodingTheory/ListDecodability.lean#L27) — Hamming ball of radius `r` centred at a word `y`.
@@ -1605,6 +1611,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `abbrev Commitment.ExtractabilityAdversary` [ArkLib/CommitmentScheme/Basic.lean:183](../../../ArkLib/CommitmentScheme/Basic.lean#L183) — An adversary in the extractability game is an oracle computation that returns a commitment, a query,
 - `structure CommitmentScheme.ExtractabilityAdversary` [ArkLib/CommitmentScheme/CommitmentScheme.lean:137](../../../ArkLib/CommitmentScheme/CommitmentScheme.lean#L137) — An adversary in the extractability game returns a commitment, a claimed message/opening pair, and au
+
+### `F11` (2 declarations, 2 files)
+
+- `abbrev ProximityGap.MCAHalfDistanceGeneralRefuted.F11` [ArkLib/Data/CodingTheory/ProximityGap/MCAHalfDistanceGeneralRefuted.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAHalfDistanceGeneralRefuted.lean#L56) — (no docstring)
+- `abbrev ProximityGap.MCAWindowInteriorExact.F11` [ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean#L60) — The base field `F₁₁`.
 
 ### `FinalOracleStatement` (2 declarations, 2 files)
 
@@ -2595,10 +2606,15 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Binius.FRIBinius.FullFRIBinius.fullPspec` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:54](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L54) — (no docstring)
 - `def RingSwitching.fullPspec` [ArkLib/ProofSystem/RingSwitching/Spec.lean:57](../../../ArkLib/ProofSystem/RingSwitching/Spec.lean#L57) — (no docstring)
 
-### `gapPoly` (2 declarations, 2 files)
+### `gapAgreeSet` (2 declarations, 2 files)
 
-- `def CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCapture.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCapture.lean#L60) — The per-coordinate gap polynomial `∑ⱼ C(dⱼ(x))·Xʲ`.
-- `def ArkLib.ProximityGap.KKH26.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean:48](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean#L48) — The line-minus-explanation polynomial `X^A + λ·X^B − q`.
+- `def ArkLib.ProximityGap.GeneralGapCensus.gapAgreeSet` [ArkLib/Data/CodingTheory/ProximityGap/GeneralGapCensusLaw.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/GeneralGapCensusLaw.lean#L54) — The agreement set of the general-gap line `x^s + λx^t` against the explanation `q`.
+- `def ArkLib.ProximityGap.KKH26.gapAgreeSet` [ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean:44](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean#L44) — The agreement set of the two-monomial line word `x ↦ x^A + λ·x^B` with the polynomial `q`, inside th
+
+### `gapPoly_monic` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.GeneralGapCensus.gapPoly_monic` [ArkLib/Data/CodingTheory/ProximityGap/GeneralGapCensusLaw.lean:61](../../../ArkLib/Data/CodingTheory/ProximityGap/GeneralGapCensusLaw.lean#L61) — (no docstring)
+- `theorem ArkLib.ProximityGap.KKH26.gapPoly_monic` [ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean#L57) — (no docstring)
 
 ### `genMutualCorrParamsUDR` (2 declarations, 2 files)
 

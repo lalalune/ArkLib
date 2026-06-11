@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.MCASmoothJumpUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.MCAListBracketInterpolation
+import ArkLib.Data.CodingTheory.ProximityGap.RadiusOne
 
 /-!
 # The staircase collapse law (#357 round 3): dead witnesses and the complete threshold
@@ -42,7 +43,8 @@ plateau (`epsMCA_rs_highRate_plateau`):
 
 `RS[F, μ_n, n−2]` is the **first code family whose MCA threshold function is determined at
 every `(δ, ε*)`**, machine-checked. This also retro-explains the R1 probe's pure step
-function (`1/q` then `n/q`, nothing else, all the way to `δ = 1`).
+function (`epsMCA_rs_highRate_subgranularity`: `1/q` below the first rung, then `n/q`,
+nothing else, all the way to `δ = 1`).
 
 Axiom-clean (`propext`, `Classical.choice`, `Quot.sound`); no `sorry`.
 
@@ -59,6 +61,7 @@ open scoped NNReal ENNReal ProbabilityTheory
 open ProximityGap Code ProximityGap.MCAThresholdLedger
 open ProximityGap.MCAWitnessSpread ProximityGap.MCADeltaStarHighRateFamily
 open ProximityGap.MCAAntichainEngine ProximityGap.MCASmoothJumpUnconditional
+open ProximityGap.MCADeltaStarExactPoint
 
 namespace ProximityGap.MCAStaircaseCollapse
 
@@ -203,6 +206,30 @@ theorem epsMCA_rs_highRate_le_all (domain : ι ↪ F) (hn : 3 ≤ Fintype.card �
 
 /-! ## The plateau and the complete threshold function -/
 
+omit [DecidableEq ι] [DecidableEq F] in
+/-- **The sub-granularity branch:** for high-rate RS codes with `n ≥ 4`, every radius
+strictly below the first lattice point has exactly the universal floor `1/q`.
+
+Together with `epsMCA_rs_highRate_plateau`, this is the theorem form of the pure
+high-rate step function: `1/q` below `1/n`, `n/q` from `1/n` onward (in the smooth-domain
+setting of the plateau theorem). -/
+theorem epsMCA_rs_highRate_subgranularity (domain : ι ↪ F) (hn : 4 ≤ Fintype.card ι)
+    {δ : ℝ≥0} (hδ : δ < 1 / (Fintype.card ι : ℝ≥0)) :
+    epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain (Fintype.card ι - 2) : Set (ι → F)) δ
+      = 1 / (Fintype.card F : ℝ≥0∞) := by
+  classical
+  have hnpos : (0 : ℝ≥0) < (Fintype.card ι : ℝ≥0) := by
+    exact_mod_cast Fintype.card_pos
+  have hδn : δ * (Fintype.card ι : ℝ≥0) < 1 := by
+    have h := mul_lt_mul_of_pos_right hδ hnpos
+    rwa [one_div, inv_mul_cancel₀ (ne_of_gt hnpos)] at h
+  have hproper :
+      (ReedSolomon.code domain (Fintype.card ι - 2) : Set (ι → F)) ≠ Set.univ :=
+    rsCode_ne_univ domain (by omega) (by omega)
+  exact epsMCA_eq_inv_card_of_small_radius
+    (ReedSolomon.code domain (Fintype.card ι - 2)) hδn hproper
+
 /-- **The plateau:** `ε_mca(RS[F, μ_n, n−2], δ) = n/q` for every `δ ≥ 1/n` (smooth domain,
 antipodal pair, odd characteristic). -/
 theorem epsMCA_rs_highRate_plateau (domain : ι ↪ F)
@@ -238,6 +265,7 @@ theorem mcaDeltaStar_rs_highRate_top (domain : ι ↪ F) (hn : 3 ≤ Fintype.car
 #print axioms witness_card_of_mcaEvent
 #print axioms badScalar_card_le_card_high_rate
 #print axioms epsMCA_rs_highRate_le_all
+#print axioms epsMCA_rs_highRate_subgranularity
 #print axioms epsMCA_rs_highRate_plateau
 #print axioms mcaDeltaStar_rs_highRate_top
 
