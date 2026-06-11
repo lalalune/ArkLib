@@ -6143,3 +6143,35 @@ two-family prediction `max(staircase = n−a+1, census(a))`:
   crossing — the conditional pin `mcaDeltaStar_eq_of_censusCrossing'` with the corrected
   surface. The two named open surfaces are exactly: (i) two-family-max extremality,
   (ii) the per-prime halo bound. Everything else in the chain is machine-checked.
+
+### O148 — G2-3: the production crossing, priced exactly — under PROVEN census counts the fiber census never reaches ε*·q at |F| < 2^256; the entire numeric uncertainty of δ*(production) is the true subset-sum count at fold scales s ∈ [64, 256] (2026-06-11, #357)
+
+Assembly of the profile law (O147) with the in-tree census-size certificates:
+
+* **The crossing calculus.** Under the profile law, δ*(production) = 1 − a_c/n where a_c is
+  the largest agreement with census(a) > ε*·q ≈ 2^128. The census at fold scale s = n/m,
+  row r (radius δ = 1 − r/s, validity r ≤ ρs + 2) has PROVEN size ≥ stratified
+  `Σ_j 2^{r−2j}·C(s/2, r−2j)` — but distinctness is certified only under the prime
+  threshold: `p > s^{s/2}` (resultant route) or the Parseval-halved threshold (s = 64 rows
+  open unconditionally at |F| < 2^256; s = 128 closed — the in-tree reach table).
+* **The pricing.** At |F| < 2^256 the certified scales are s ≤ 64 (unconditional) where the
+  maximal certified census is ≈ 2^{s/2 + s/2} = 2^64 ≪ 2^128: **the certified fiber census
+  never crosses ε*·q at production parameters.** The deep rows (s ≥ 128, census up to
+  2^{s(H₂+ρ)} ≥ 2^128 at s ≈ 256) need either the TZ external (polynomial-field route,
+  `kkh26_mcaDeltaStar_le_of_TZ`, in-tree) or genuinely larger certified counts.
+* **The localized uncertainty.** The production δ* under the profile law therefore sits in
+  the bracket: floor = the proven Johnson-side MCA theorems (1 − √ρ, unconditional);
+  ceiling = capacity − 2/s* where s* is the largest fold scale whose TRUE distinct-sum
+  count crosses 2^128 at |F| < 2^256. Everything in between is decided by ONE number per
+  rate: **the true (not resultant-certified) distinct subset-sum count of μ_{s} strata at
+  s ∈ [64, 256]** — a finite question per scale, sharply localized, attackable by the
+  lacunary-resultant / certified-computation routes already inventoried (#357 §5) and by
+  the O134 per-prime correction theory.
+* **Two regimes of the answer (conditional on the two named surfaces):** if the true counts
+  match the char-0/stratified forecasts (no large-prime collapse — the genlaw/falsifier
+  evidence supports this up to measured surpluses), then s* ≈ 256 and
+  **δ*(ρ, 2^{−128}) = 1 − ρ − Θ(1/s*) = capacity − c(ρ)** with c(ρ) ≈ 2/s* a CONSTANT
+  (not Θ(1/log n)) for all n ≥ s*·m — strictly stronger than the published KKH26 phrasing,
+  whose 1/log n came from the prime-threshold coupling, not from the census itself. If the
+  true counts collapse at large p below 2^128, δ* recedes toward the floor accordingly. The
+  prize question, under the profile law, IS this count.
