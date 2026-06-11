@@ -98,21 +98,167 @@ def curveExplainSubmodule (C : Submodule F (ι → A)) {ℓ s : ℕ}
     rw [smul_comm]
     rfl
 
-/-! ### The assembly (Theorem 5.7 proper) — next brick
+/-! ### The assembly: Theorem 5.7 proper
 
-The remaining assembly — coverage of `F^s` by the `V_B` (via the marked base property on each
-`rowCombine`-projected instance and Lemma 5.6), properness of every `V_B` under failure (the
-standard vectors reassemble an interleaved witness), and the `C(a,b) ≤ q` covering
-contradiction (`exists_nonzero_notMem_of_proper_family`, junk-completed along an embedding of
-`A₀.powersetCard b` into `F`) — is fully drafted but currently blocked on a `whnf` divergence
-when consuming `MarkedCurveDecodable`'s clauses at the interleaved code `(C : Set _)^⋈ (Fin s)`
-(the `CodeInterleavable` projection grinds during unification of the hypothesis instances; the
-same membership defeq is fine in `Jo26InterleavingBound.lean`'s direct constructions). The fix
-candidates: an `@[reducible]` local alias for the interleaved set, or converting the marked
-clauses through `mem_interleavedCode_iff` once at entry. Recorded on issue #334. -/
+The earlier `whnf` walls were the `Finset.sum`-vs-pointwise defeq on Pi types (e.g.
+`∑ k, lam k • (fun i => f α i k)` against `fun i => ∑ k, lam k • f α i k` — definitionally
+equal only through `Multiset.foldr`); every such mixed-shape goal below crosses through an
+explicit `Finset.sum_apply` bridge instead. -/
+
+/-- The interleaved code as a plain set-builder: row-wise membership. Definitionally equal to
+`(C : Set (ι → A))^⋈ (Fin s)` (`rowwiseCode_eq_interleave`). -/
+def rowwiseCode (C : Set (ι → A)) (s : ℕ) : Set (ι → Fin s → A) :=
+  {w | ∀ k : Fin s, (fun i => w i k) ∈ C}
+
+/-- The bridge to the in-tree interleaving notation — definitional. -/
+theorem rowwiseCode_eq_interleave (C : Submodule F (ι → A)) (s : ℕ) :
+    rowwiseCode (C : Set (ι → A)) s = ((C : Set (ι → A))^⋈ (Fin s)) := rfl
+
+/-- The sum-shape bridge: the row-combination is the `Finset` sum of the scaled row words. -/
+theorem rowCombine_eq_sum_rows {s : ℕ} (lam : Fin s → F) (w : ι → Fin s → A) :
+    rowCombine (A := A) lam w = ∑ k, lam k • (fun i => w i k) := by
+  funext i
+  rw [Finset.sum_apply]
+  exact Finset.sum_congr rfl fun k _ => rfl
+
+set_option maxHeartbeats 1000000 in
+/-- **[Jo26] Theorem 5.7 (exact preservation of curve decodability).** If `C` is **marked**
+`(ℓ, δ, a, b)`-curve-decodable and `C(a, b) ≤ q`, then the `s`-fold interleaving `C^{≡s}` is
+marked `(ℓ, δ, a, b)`-curve-decodable — *no* field-size factor. Stated over `rowwiseCode`
+(definitionally the in-tree `^⋈`; convert with `rowwiseCode_eq_interleave`). -/
+theorem markedCurveDecodable_interleaved_of_choose_le
+    (C : Submodule F (ι → A)) {ℓ s : ℕ} (hs : 1 ≤ s) {δ : ℝ≥0} {a b : ℕ}
+    (hmarked : MarkedCurveDecodable (F := F) (C : Set (ι → A)) ℓ δ a b)
+    (hchoose : a.choose b ≤ Fintype.card F) :
+    MarkedCurveDecodable (F := F) (rowwiseCode (C : Set (ι → A)) s) ℓ δ a b := by
+  classical
+  intro U f hf A₀ hcard hδ
+  by_contra hfail
+  push Not at hfail
+  -- Every V_B is proper: a full V_B reassembles an interleaved witness from the e_k's.
+  have hproper : ∀ B ∈ A₀.powersetCard b,
+      (curveExplainSubmodule C (ℓ := ℓ) f B) ≠ ⊤ := by
+    intro B hB htop
+    rw [Finset.mem_powersetCard] at hB
+    have hek : ∀ k : Fin s, ∃ h : Fin (ℓ + 1) → ι → A, (∀ j, h j ∈ C) ∧
+        ∀ α ∈ B, rowCombine (A := A) (Pi.single k (1 : F)) (f α)
+          = fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • h j i := by
+      intro k
+      have : Pi.single k (1 : F) ∈ curveExplainSubmodule C (ℓ := ℓ) f B := by
+        rw [htop]; trivial
+      exact this
+    choose h hhC hhag using hek
+    set cs : Fin (ℓ + 1) → ι → Fin s → A := fun j i k => h k j i with hcs
+    have hrow : ∀ (k : Fin s) (α : F) (i : ι),
+        rowCombine (A := A) (Pi.single k (1 : F)) (f α) i = f α i k := by
+      intro k α i
+      unfold rowCombine
+      rw [Finset.sum_eq_single k]
+      · simp
+      · intro m _ hm
+        rw [Pi.single_eq_of_ne hm, zero_smul]
+      · simp
+    have hlt := hfail cs (fun j => fun k => hhC k j)
+    refine absurd ?_ (Nat.not_le.mpr hlt)
+    refine le_trans (le_of_eq hB.2.symm) (Finset.card_le_card ?_)
+    intro α hα
+    rw [Finset.mem_filter]
+    refine ⟨hB.1 hα, ?_⟩
+    funext i k
+    have := congrFun (hhag k α hα) i
+    rw [hrow k α i] at this
+    rw [this]
+    rw [Finset.sum_apply]
+    exact Finset.sum_congr rfl fun j _ => rfl
+  -- Coverage: the marked base property puts every λ in some V_B.
+  have hcover : ∀ lam : Fin s → F, ∃ B ∈ A₀.powersetCard b,
+      lam ∈ curveExplainSubmodule C (ℓ := ℓ) f B := by
+    intro lam
+    have hδ' : ∀ α ∈ A₀,
+        (δᵣ( (fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) •
+            rowCombine (A := A) lam (U j) i),
+          rowCombine (A := A) lam (f α) ) : ℝ≥0) ≤ δ := by
+      intro α hα
+      refine le_trans ?_ (hδ α hα)
+      have hpt : (fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) •
+            rowCombine (A := A) lam (U j) i)
+          = rowCombine (A := A) lam
+            (fun i k => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • U j i k) := by
+        funext i
+        unfold rowCombine
+        calc ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • ∑ k, lam k • U j i k
+            = ∑ j : Fin (ℓ + 1), ∑ k, α ^ (j : ℕ) • (lam k • U j i k) :=
+              Finset.sum_congr rfl fun j _ => Finset.smul_sum
+          _ = ∑ k, ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • (lam k • U j i k) := Finset.sum_comm
+          _ = ∑ k, lam k • ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • U j i k := by
+              refine Finset.sum_congr rfl fun k _ => ?_
+              rw [Finset.smul_sum]
+              exact Finset.sum_congr rfl fun j _ => smul_comm _ _ _
+      -- The curve argument inside δᵣ matches the marked clause through the explicit
+      -- sum-shape bridge: hδ's curve is `fun i => ∑ j, α^j • U j i` at the Pi alphabet —
+      -- pointwise it is `fun i k => ∑ j, α^j • U j i k` (Finset.sum_apply), whose
+      -- λ-row-combination is hpt's right side.
+      have hcurve : (fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • U j i)
+          = (fun i k => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • U j i k) := by
+        funext i k
+        rw [Finset.sum_apply]
+        exact Finset.sum_congr rfl fun j _ => rfl
+      rw [hpt, hcurve]
+      exact_mod_cast relHammingDist_rowCombine_le lam _ _
+    have hfC' : ∀ α, rowCombine (A := A) lam (f α) ∈ (C : Set (ι → A)) := by
+      intro α
+      rw [rowCombine_eq_sum_rows]
+      exact Submodule.sum_mem _ fun k _ => C.smul_mem _ (hf α k)
+    obtain ⟨h, hhC, hcount⟩ := hmarked
+      (fun j => rowCombine (A := A) lam (U j))
+      (fun α => rowCombine (A := A) lam (f α)) hfC' A₀ hcard hδ'
+    set S := A₀.filter (fun α => rowCombine (A := A) lam (f α)
+      = fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • h j i) with hS
+    obtain ⟨B, hBsub, hBcard⟩ := Finset.exists_subset_card_eq hcount
+    refine ⟨B, ?_, h, hhC, fun α hα => ?_⟩
+    · rw [Finset.mem_powersetCard]
+      exact ⟨hBsub.trans (Finset.filter_subset _ _), hBcard⟩
+    · have := hBsub hα
+      rw [hS, Finset.mem_filter] at this
+      exact this.2
+  -- Junk-complete the family along an embedding of the b-subsets into F.
+  have hcardle : Fintype.card ↥(A₀.powersetCard b) ≤ Fintype.card F := by
+    rw [Fintype.card_coe, Finset.card_powersetCard, hcard]
+    exact hchoose
+  obtain ⟨e⟩ := Function.Embedding.nonempty_of_card_le hcardle
+  set K : F → Submodule F (Fin s → F) := fun γ =>
+    if hγ : ∃ B : ↥(A₀.powersetCard b), e B = γ
+    then curveExplainSubmodule C (ℓ := ℓ) f hγ.choose.val
+    else ⊥ with hK
+  have hKproper : ∀ γ, K γ ≠ ⊤ := by
+    intro γ
+    rw [hK]
+    beta_reduce
+    by_cases hγ : ∃ B : ↥(A₀.powersetCard b), e B = γ
+    · rw [dif_pos hγ]
+      exact hproper hγ.choose.val hγ.choose.property
+    · rw [dif_neg hγ]
+      intro hbot
+      have h1 : ((fun _ => 1 : Fin s → F)) ∈ (⊤ : Submodule F (Fin s → F)) := trivial
+      rw [← hbot] at h1
+      have h2 : (fun _ => 1 : Fin s → F) = 0 := h1
+      have := congrFun h2 ⟨0, by omega⟩
+      simp at this
+  obtain ⟨lam, _, hlamK⟩ := exists_nonzero_notMem_of_proper_family hs K hKproper
+  obtain ⟨B, hB, hlamB⟩ := hcover lam
+  refine hlamK (e ⟨B, hB⟩) ?_
+  rw [hK]
+  beta_reduce
+  have hex : ∃ B' : ↥(A₀.powersetCard b), e B' = e ⟨B, hB⟩ := ⟨⟨B, hB⟩, rfl⟩
+  rw [dif_pos hex]
+  have hBeq : hex.choose.val = B :=
+    congrArg Subtype.val (e.injective hex.choose_spec)
+  rw [hBeq]
+  exact hlamB
 
 end ProximityGap
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.relHammingDist_rowCombine_le
 #print axioms ProximityGap.curveExplainSubmodule
+#print axioms ProximityGap.markedCurveDecodable_interleaved_of_choose_le
