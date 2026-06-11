@@ -9,6 +9,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Finset.Union
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Probability.Distributions.Uniform
 
 /-!
 # Marginals of a uniform permutation conditioned on a partial injection — counting core
@@ -173,6 +174,120 @@ theorem card_extendsFinset_eq_card_unused_mul (c : List (X × X)) (a b₀ : X)
       (Finset.mem_filter.mp hb).2 hb₀)]
   rw [Finset.sum_const, smul_eq_mul]
 
+/-! ## Nonemptiness propagation and the probabilistic chain rule -/
+
+/-- The unused outputs of a cache. -/
+noncomputable def unusedFinset (c : List (X × X)) : Finset X := by
+  classical
+  exact Finset.univ.filter (fun b => b ∉ c.map Prod.snd)
+
+@[simp] lemma mem_unusedFinset {c : List (X × X)} {b : X} :
+    b ∈ unusedFinset c ↔ b ∉ c.map Prod.snd := by
+  classical
+  simp [unusedFinset]
+
+/-- A fresh input plus duplicate-free keys and values leave at least one unused output. -/
+lemma unusedFinset_nonempty (c : List (X × X)) (a : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (ha : a ∉ c.map Prod.fst) : (unusedFinset c).Nonempty := by
+  classical
+  by_contra hempty
+  rw [Finset.not_nonempty_iff_eq_empty] at hempty
+  have hall : ∀ b : X, b ∈ c.map Prod.snd := by
+    intro b
+    by_contra hb
+    exact (Finset.eq_empty_iff_forall_notMem.mp hempty b) (mem_unusedFinset.mpr hb)
+  -- the value list covers `X`, so the key list (same length, nodup) covers `X` too,
+  -- contradicting the freshness of `a`
+  have hcardv : (c.map Prod.snd).toFinset.card = c.length := by
+    rw [List.toFinset_card_of_nodup hvals, List.length_map]
+  have hcardk : (c.map Prod.fst).toFinset.card = c.length := by
+    rw [List.toFinset_card_of_nodup hkeys, List.length_map]
+  have huniv : (c.map Prod.snd).toFinset = Finset.univ :=
+    Finset.eq_univ_iff_forall.mpr (fun b => List.mem_toFinset.mpr (hall b))
+  have hkuniv : (c.map Prod.fst).toFinset = Finset.univ := by
+    apply Finset.eq_univ_of_card
+    rw [hcardk, ← hcardv, huniv, Finset.card_univ]
+  exact ha (List.mem_toFinset.mp (hkuniv ▸ Finset.mem_univ a))
+
+/-- **Nonemptiness propagates along fresh extensions**: if the cache is realizable, every
+unused output is a realizable value at a fresh input (swap-trick equidistribution: all
+fibres of the partition have equal cardinality, and their union is nonempty). -/
+theorem extendsFinset_concat_nonempty (c : List (X × X)) (a b : X)
+    (ha : a ∉ c.map Prod.fst) (hb : b ∉ c.map Prod.snd)
+    (hne : (extendsFinset c).Nonempty) :
+    (extendsFinset (c.concat (a, b))).Nonempty := by
+  classical
+  rw [← Finset.card_pos]
+  by_contra hzero
+  push_neg at hzero
+  have hzero' : (extendsFinset (c.concat (a, b))).card = 0 := Nat.le_zero.mp hzero
+  have hcard := card_extendsFinset_eq_card_unused_mul c a b ha hb
+  rw [hzero', mul_zero] at hcard
+  exact (Finset.card_pos.mpr hne).ne' hcard
+
+/-- **The probabilistic chain rule for a uniform permutation conditioned on a cache**:
+drawing uniformly among the extensions of `c` is the same as first drawing the value at a
+fresh input `a` uniformly among the unused outputs, then drawing uniformly among the
+extensions of the grown cache. This is the per-query step of the lazy permutation oracle. -/
+theorem uniformOfFinset_extends_step (c : List (X × X)) (a : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (ha : a ∉ c.map Prod.fst) (hne : (extendsFinset c).Nonempty) :
+    PMF.uniformOfFinset (extendsFinset c) hne
+      = (PMF.uniformOfFinset (unusedFinset c)
+          (unusedFinset_nonempty c a hkeys hvals ha)).bind (fun b =>
+            if h : (extendsFinset (c.concat (a, b))).Nonempty then
+              PMF.uniformOfFinset (extendsFinset (c.concat (a, b))) h
+            else PMF.uniformOfFinset (extendsFinset c) hne) := by
+  classical
+  ext π
+  rw [PMF.bind_apply]
+  by_cases hπ : Extends π c
+  · -- only the summand `b = π a` contributes
+    have hπa_unused : π a ∈ unusedFinset c := by
+      rw [mem_unusedFinset]
+      intro hused
+      exact extends_apply_ne_of_used hπ ha hused rfl
+    have hπext : Extends π (c.concat (a, π a)) :=
+      (extends_concat_iff π c a (π a)).mpr ⟨hπ, rfl⟩
+    have hconc : (extendsFinset (c.concat (a, π a))).Nonempty :=
+      ⟨π, mem_extendsFinset.mpr hπext⟩
+    have hside : ∀ b, b ≠ π a →
+        (PMF.uniformOfFinset (unusedFinset c)
+            (unusedFinset_nonempty c a hkeys hvals ha)) b *
+          (if h : (extendsFinset (c.concat (a, b))).Nonempty then
+              PMF.uniformOfFinset (extendsFinset (c.concat (a, b))) h
+            else PMF.uniformOfFinset (extendsFinset c) hne) π = 0 := by
+      intro b hb
+      by_cases hbu : b ∈ unusedFinset c
+      · rw [dif_pos (extendsFinset_concat_nonempty c a b ha (mem_unusedFinset.mp hbu) hne)]
+        have hnotin : π ∉ extendsFinset (c.concat (a, b)) := by
+          rw [mem_extendsFinset, extends_concat_iff]
+          rintro ⟨-, hab⟩
+          exact hb hab.symm
+        rw [PMF.uniformOfFinset_apply_of_notMem (hs := extendsFinset_concat_nonempty c a b ha (mem_unusedFinset.mp hbu) hne) hnotin, mul_zero]
+      · rw [PMF.uniformOfFinset_apply_of_notMem (hs := unusedFinset_nonempty c a hkeys hvals ha) hbu, zero_mul]
+    rw [tsum_eq_single (π a) hside, PMF.uniformOfFinset_apply_of_mem (hs := unusedFinset_nonempty c a hkeys hvals ha) hπa_unused,
+      dif_pos hconc, PMF.uniformOfFinset_apply_of_mem (hs := hconc) (mem_extendsFinset.mpr hπext),
+      PMF.uniformOfFinset_apply_of_mem (hs := hne) (mem_extendsFinset.mpr hπ)]
+    have hN := card_extendsFinset_eq_card_unused_mul c a (π a) ha
+      (mem_unusedFinset.mp hπa_unused)
+    rw [hN, Nat.cast_mul,
+      ENNReal.mul_inv (Or.inr (ENNReal.natCast_ne_top _))
+        (Or.inl (ENNReal.natCast_ne_top _))]
+    rfl
+  · -- both sides vanish off the extensions of `c`
+    rw [PMF.uniformOfFinset_apply_of_notMem (hs := hne) (fun h => hπ (mem_extendsFinset.mp h))]
+    refine (ENNReal.tsum_eq_zero.mpr fun b => ?_).symm
+    by_cases hbu : b ∈ unusedFinset c
+    · rw [dif_pos (extendsFinset_concat_nonempty c a b ha (mem_unusedFinset.mp hbu) hne)]
+      have hnotin : π ∉ extendsFinset (c.concat (a, b)) := by
+        rw [mem_extendsFinset]
+        intro hext
+        exact hπ ((extends_concat_iff π c a b).mp hext).1
+      rw [PMF.uniformOfFinset_apply_of_notMem (hs := extendsFinset_concat_nonempty c a b ha (mem_unusedFinset.mp hbu) hne) hnotin, mul_zero]
+    · rw [PMF.uniformOfFinset_apply_of_notMem (hs := unusedFinset_nonempty c a hkeys hvals ha) hbu, zero_mul]
+
 end Fintype
 
 end LazyPermMarginal
@@ -180,3 +295,5 @@ end LazyPermMarginal
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms LazyPermMarginal.extendsFinset_card_eq_of_fresh
 #print axioms LazyPermMarginal.card_extendsFinset_eq_card_unused_mul
+#print axioms LazyPermMarginal.uniformOfFinset_extends_step
+#print axioms LazyPermMarginal.extendsFinset_concat_nonempty
