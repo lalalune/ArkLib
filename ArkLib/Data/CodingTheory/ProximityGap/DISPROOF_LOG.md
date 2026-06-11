@@ -6243,3 +6243,24 @@ M3 third moment) REVIVED as the live domain-aware thread.
   at |F| < 2^256 the unconditional-census layer now covers domains up to n = 128
   (m = 7: (2^7)^{2^5} = 2^224 < 2^256 ✓) versus n = 64 before. The certified-count
   frontier of surface (iii) moves one fold scale deeper.
+
+### O152 — RED-TEAM CYCLE 3: the two-family law survives the structure-free (prime-n) test; nine instances, zero deviations (2026-06-11, #357)
+
+`probe_o152_prime_domain_redteam.py` (exact): the harshest universality test — (11,5,2),
+domain μ₅ ⊆ F₁₁, n = 5 PRIME: no 2-adic tower, no fiber structure, Lam–Leung at prime
+order says the only vanishing subset sums are ∅ and the full group.
+
+| a | staircase | census | max | exact |
+|---|---|---|---|---|
+| 5 | 1 | **1** (= the full-group vanishing, the unique prime-5 Lam–Leung relation) | 1 | **1 ✓** |
+| 4 | 2 | 0 (no 4-subset vanishing at prime order — as the structural theory demands) | 2 | **2 ✓** |
+| 3 | 3 | 10 (unconstrained sums, all distinct) | 10 | **10 ✓** |
+
+The census values are exactly what the prime-order Lam–Leung classification predicts —
+the structural theory's reach extends beyond 2-power domains verbatim (vanishing-sums
+classification swaps in per prime factor). Scoreboard: the two-family profile law now
+matches **nine instances / 14+ field-combinations with zero deviations**, across 2-power
+(4, 16, 32), composite (6, 12), and prime (5) domain orders. Cycle-3 verdict: SURVIVES.
+Next falsifier frontier requires either larger-p composite-n exact runs (orbit-decide
+engineering) or a fundamentally different stack family (rational/DEEP shapes at an
+exactly-computed rung).
