@@ -20,9 +20,11 @@ greedy/uncrossing construction of the crossing-orientation must draw on; it also
 brick 21's vertex-degree bound as the `T = {j}` case.)
 
 * `twoCellPartition` — the partition `{T, Tᶜ}` of a proper nonempty subset;
-* `borderEdges` / `headBorderEdges` / `cutDeficiency` — named cut-count objects for the
-  Frank reorientation campaign;
+* `edgeCrosses` / `borderEdges` / `headBorderEdges` / `cutDeficiency` — named cut-count
+  objects for the Frank reorientation campaign;
 * `wpc_border_ge` — **the cut supply**: `k ≤ #{i | eᵢ touches both T and Tᶜ}`;
+* `edgeCrosses_inter_union_indicator_le` and `borderEdges_card_inter_add_union_le` — the
+  submodularity brick for the border count;
 * `exists_border_head_outside_of_deficient_cut` — a deficient cut has an unclaimed border
   edge whose head is outside the cut.
 -/
@@ -32,6 +34,21 @@ open Finset
 namespace AGL24
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-- A single edge crosses the cut `T` when it touches `T` and is not contained in `T`. -/
+def edgeCrosses (E T : Finset V) : Prop :=
+  (E ∩ T).Nonempty ∧ ¬ E ⊆ T
+
+/-- The `0/1` indicator for a single edge crossing a cut. -/
+noncomputable def edgeCrossesIndicator (E T : Finset V) : ℕ := by
+  classical
+  exact if edgeCrosses E T then 1 else 0
+
+omit [Fintype V] in
+theorem edgeCrossesIndicator_eq (E T : Finset V) :
+    edgeCrossesIndicator E T = if (E ∩ T).Nonempty ∧ ¬ E ⊆ T then 1 else 0 := by
+  classical
+  by_cases h : (E ∩ T).Nonempty ∧ ¬ E ⊆ T <;> simp [edgeCrossesIndicator, edgeCrosses, h]
 
 /-- The edges crossing the cut `T`: they touch `T` and are not contained in `T`. -/
 def borderEdges {ι : Type*} [Fintype ι] (e : ι → Finset V) (T : Finset V) : Finset ι :=
@@ -50,8 +67,8 @@ def cutDeficiency {ι : Type*} [Fintype ι] {e : ι → Finset V}
 omit [Fintype V] in
 @[simp] theorem mem_borderEdges {ι : Type*} [Fintype ι] (e : ι → Finset V)
     (T : Finset V) (i : ι) :
-    i ∈ borderEdges e T ↔ (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T := by
-  simp [borderEdges]
+    i ∈ borderEdges e T ↔ edgeCrosses (e i) T := by
+  simp [borderEdges, edgeCrosses]
 
 omit [Fintype V] in
 @[simp] theorem mem_headBorderEdges {ι : Type*} [Fintype ι] {e : ι → Finset V}
@@ -65,7 +82,7 @@ theorem headBorderEdges_subset_borderEdges {ι : Type*} [Fintype ι] {e : ι →
     headBorderEdges O T ⊆ borderEdges e T := by
   intro i hi
   rw [mem_headBorderEdges] at hi
-  rw [mem_borderEdges]
+  rw [mem_borderEdges, edgeCrosses]
   exact ⟨⟨O.head i, Finset.mem_inter.mpr ⟨O.head_mem i (hne i), hi.1⟩⟩, hi.2⟩
 
 omit [Fintype V] in
@@ -86,6 +103,110 @@ theorem cutDeficiency_eq_zero_of_le {ι : Type*} [Fintype ι] {e : ι → Finset
     (h : k ≤ (headBorderEdges O T).card) :
     cutDeficiency O T k = 0 := by
   rw [cutDeficiency, Nat.sub_eq_zero_of_le h]
+
+omit [Fintype V] in
+theorem edgeCrosses_iff_exists_in_out (E T : Finset V) :
+    edgeCrosses E T ↔
+      (∃ x, x ∈ E ∧ x ∈ T) ∧ ∃ y, y ∈ E ∧ y ∉ T := by
+  classical
+  unfold edgeCrosses
+  constructor
+  · rintro ⟨⟨x, hx⟩, hnot⟩
+    rw [Finset.mem_inter] at hx
+    refine ⟨⟨x, hx.1, hx.2⟩, ?_⟩
+    by_contra hall
+    push Not at hall
+    exact hnot (fun y hy => hall y hy)
+  · rintro ⟨⟨x, hxE, hxT⟩, ⟨y, hyE, hyT⟩⟩
+    exact ⟨⟨x, Finset.mem_inter.mpr ⟨hxE, hxT⟩⟩, fun hsub => hyT (hsub hyE)⟩
+
+omit [Fintype V] in
+theorem edgeCrosses_inter_imp_left_or_right (E A B : Finset V) :
+    edgeCrosses E (A ∩ B) → edgeCrosses E A ∨ edgeCrosses E B := by
+  classical
+  rw [edgeCrosses_iff_exists_in_out, edgeCrosses_iff_exists_in_out,
+    edgeCrosses_iff_exists_in_out]
+  rintro ⟨⟨x, hxE, hxAB⟩, ⟨y, hyE, hyAB⟩⟩
+  rw [Finset.mem_inter] at hxAB
+  rw [Finset.mem_inter] at hyAB
+  by_cases hyA : y ∈ A
+  · right
+    exact ⟨⟨x, hxE, hxAB.2⟩, ⟨y, hyE, fun hyB => hyAB ⟨hyA, hyB⟩⟩⟩
+  · left
+    exact ⟨⟨x, hxE, hxAB.1⟩, ⟨y, hyE, hyA⟩⟩
+
+omit [Fintype V] in
+theorem edgeCrosses_union_imp_left_or_right (E A B : Finset V) :
+    edgeCrosses E (A ∪ B) → edgeCrosses E A ∨ edgeCrosses E B := by
+  classical
+  rw [edgeCrosses_iff_exists_in_out, edgeCrosses_iff_exists_in_out,
+    edgeCrosses_iff_exists_in_out]
+  rintro ⟨⟨x, hxE, hxAB⟩, ⟨y, hyE, hyAB⟩⟩
+  rw [Finset.mem_union] at hxAB
+  rw [Finset.mem_union] at hyAB
+  rcases hxAB with hxA | hxB
+  · left
+    exact ⟨⟨x, hxE, hxA⟩, ⟨y, hyE, fun hyA => hyAB (Or.inl hyA)⟩⟩
+  · right
+    exact ⟨⟨x, hxE, hxB⟩, ⟨y, hyE, fun hyB => hyAB (Or.inr hyB)⟩⟩
+
+omit [Fintype V] in
+theorem not_edgeCrosses_left_not_both (E A B : Finset V)
+    (hA : ¬ edgeCrosses E A) :
+    ¬ (edgeCrosses E (A ∩ B) ∧ edgeCrosses E (A ∪ B)) := by
+  classical
+  rw [edgeCrosses_iff_exists_in_out] at hA
+  rintro ⟨hinter, hunion⟩
+  rw [edgeCrosses_iff_exists_in_out] at hinter hunion
+  rcases hinter with ⟨⟨x, hxE, hxAB⟩, -⟩
+  rcases hunion with ⟨-, ⟨y, hyE, hyAB⟩⟩
+  rw [Finset.mem_inter] at hxAB
+  rw [Finset.mem_union] at hyAB
+  exact hA ⟨⟨x, hxE, hxAB.1⟩, ⟨y, hyE, fun hyA => hyAB (Or.inl hyA)⟩⟩
+
+private theorem bool_sum_le_two (p q : Prop) [Decidable p] [Decidable q] :
+    (if p then 1 else 0) + (if q then 1 else 0) ≤ 2 := by
+  by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq]
+
+private theorem bool_sum_le_one_of_not_and (p q : Prop) [Decidable p] [Decidable q]
+    (h : ¬ (p ∧ q)) :
+    (if p then 1 else 0) + (if q then 1 else 0) ≤ 1 := by
+  by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq] at h ⊢
+
+omit [Fintype V] in
+/-- Pointwise submodularity for the `0/1` edge-crossing indicator. -/
+theorem edgeCrosses_inter_union_indicator_le (E A B : Finset V) :
+    edgeCrossesIndicator E (A ∩ B) + edgeCrossesIndicator E (A ∪ B)
+      ≤ edgeCrossesIndicator E A + edgeCrossesIndicator E B := by
+  classical
+  unfold edgeCrossesIndicator
+  by_cases hA : edgeCrosses E A
+  · by_cases hB : edgeCrosses E B
+    · have hleft := bool_sum_le_two (edgeCrosses E (A ∩ B)) (edgeCrosses E (A ∪ B))
+      simpa [hA, hB] using hleft
+    · have hnotboth := not_edgeCrosses_left_not_both E B A hB
+      have hleft : (if edgeCrosses E (A ∩ B) then 1 else 0) +
+          (if edgeCrosses E (A ∪ B) then 1 else 0) ≤ 1 := by
+        rw [Finset.inter_comm A B, Finset.union_comm A B]
+        exact bool_sum_le_one_of_not_and _ _ hnotboth
+      simpa [hA, hB] using hleft
+  · by_cases hB : edgeCrosses E B
+    · have hnotboth := not_edgeCrosses_left_not_both E A B hA
+      have hleft : (if edgeCrosses E (A ∩ B) then 1 else 0) +
+          (if edgeCrosses E (A ∪ B) then 1 else 0) ≤ 1 :=
+        bool_sum_le_one_of_not_and _ _ hnotboth
+      simpa [hA, hB] using hleft
+    · have hInter : ¬ edgeCrosses E (A ∩ B) := by
+        intro h
+        rcases edgeCrosses_inter_imp_left_or_right E A B h with h' | h'
+        · exact hA h'
+        · exact hB h'
+      have hUnion : ¬ edgeCrosses E (A ∪ B) := by
+        intro h
+        rcases edgeCrosses_union_imp_left_or_right E A B h with h' | h'
+        · exact hA h'
+        · exact hB h'
+      simp [hInter, hUnion]
 
 /-- The two-cell partition `{T, univ \ T}` of a proper nonempty subset `T`. -/
 def twoCellPartition (T : Finset V) (hT : T.Nonempty) (hTne : T ≠ Finset.univ) :
@@ -200,6 +321,23 @@ theorem wpc_border_ge {ι : Type*} [Fintype ι] {k : ℕ}
       rw [borderEdges, Finset.card_filter]
 
 omit [Fintype V] in
+/-- Submodularity of the hypergraph border-count cut function. This is the F2 uncrossing
+bookkeeping brick: the pointwise `0/1` edge-crossing submodularity summed over all edges. -/
+theorem borderEdges_card_inter_add_union_le {ι : Type*} [Fintype ι]
+    (e : ι → Finset V) (A B : Finset V) :
+    (borderEdges e (A ∩ B)).card + (borderEdges e (A ∪ B)).card
+      ≤ (borderEdges e A).card + (borderEdges e B).card := by
+  classical
+  simp only [borderEdges, Finset.card_filter]
+  rw [← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
+  exact Finset.sum_le_sum fun i _ => by
+    rw [← edgeCrossesIndicator_eq (e i) (A ∩ B),
+      ← edgeCrossesIndicator_eq (e i) (A ∪ B),
+      ← edgeCrossesIndicator_eq (e i) A,
+      ← edgeCrossesIndicator_eq (e i) B]
+    exact edgeCrosses_inter_union_indicator_le (e i) A B
+
+omit [Fintype V] in
 /-- If the head-border count is strictly smaller than the full border count, some border edge
 has not yet been headed into the cut. -/
 theorem exists_border_not_head_of_headBorder_lt_border {ι : Type*} [Fintype ι]
@@ -247,4 +385,5 @@ end AGL24
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms AGL24.wpc_border_ge
+#print axioms AGL24.borderEdges_card_inter_add_union_le
 #print axioms AGL24.exists_border_head_outside_of_positive_deficiency
