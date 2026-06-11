@@ -343,10 +343,102 @@ theorem harith_of_reduced_top {k degW Lξ nB : ℕ} (hnB : nB ≤ Lξ) :
     _ ≤ 1 + (k + 2) * degW + (2 * k * Lξ + Lξ) := by omega
     _ = 1 + (k + 2) * degW + (2 * k + 1) * Lξ := by rw [← hL]
 
+/-! ## The threaded per-term theorem: `StructuredSuccTermBound` from the B-budget alone -/
+
+/-- **The per-term theorem, threaded** (engine + closing inequality + partition facts):
+`StructuredSuccTermBound` holds given only the ξ-budget (the proven `weight_ξ_bound`'s
+output shape) and a B-budget meeting finding 8's reduced need. The partition facts
+(`m ≥ 1` when the partition is of a positive number; `m ≥ 2` at `i1 = 0` from the
+surviving-partition hypothesis; the top boundary `i1 = k+1` with the empty partition)
+are derived inline from `parts_pos`/`parts_sum`. -/
+theorem structuredSuccTermBound_of_B_budget (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (k : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some (structuredBound H R D l))
+    (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts)
+    {nB : ℕ}
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+      ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (hB : weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D ≤ WithBot.some nB)
+    (hreduced : nB + (sigmaLambda lam - 1)
+        + (deltaSave i1 + sigmaLambda lam - 2) * (H.leadingCoeff).natDegree
+      ≤ (Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) :
+    StructuredSuccTermBound x₀ R hHyp hH D k hIH i1 hi1 lam hlam := by
+  classical
+  have hi1le : i1 ≤ k + 1 := by
+    have := Finset.mem_range.mp hi1
+    omega
+  refine structuredSuccTermBound_of_budgets x₀ R hHyp hH hDH k hIH i1 hi1 lam hlam
+    hξ hB rfl ?_
+  unfold structuredBound
+  rcases Nat.eq_or_lt_of_le hi1le with htop | hlt
+  · -- `i1 = k + 1`: the empty partition
+    subst htop
+    have hm0 : sigmaLambda lam = 0 := by
+      rw [sigmaLambda]
+      by_contra hne
+      obtain ⟨a, ha⟩ := Multiset.card_pos_iff_exists_mem.mp (Nat.pos_of_ne_zero hne)
+      have hpos := lam.parts_pos ha
+      have hsum := lam.parts_sum
+      have hle : a ≤ lam.parts.sum := Multiset.le_sum_of_mem ha
+      omega
+    have hδ : deltaSave (k + 1) = 0 := by
+      rw [deltaSave]
+      simp
+    rw [hm0, hδ]
+    have hred : nB ≤ (Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1) := by
+      have := hreduced
+      omega
+    exact harith_of_reduced_top hred
+  · -- `i1 ≤ k`: nonempty partition
+    have hpos : 0 < k + 1 - i1 := by omega
+    have hm1 : 1 ≤ sigmaLambda lam := by
+      rw [sigmaLambda]
+      by_contra hne
+      have hempty : lam.parts = 0 := Multiset.card_eq_zero.mp (by omega)
+      have hsum := lam.parts_sum
+      rw [hempty] at hsum
+      simp at hsum
+      omega
+    have hm2 : i1 = 0 → 2 ≤ sigmaLambda lam := by
+      intro hi0
+      subst hi0
+      by_contra hne
+      have hm1' : Multiset.card lam.parts = 1 := by
+        rw [sigmaLambda] at hm1 hne
+        omega
+      obtain ⟨a, ha⟩ := Multiset.card_eq_one.mp hm1'
+      have hsum := lam.parts_sum
+      rw [ha] at hsum
+      simp at hsum
+      apply hlam
+      rw [ha]
+      have hone : a = k + 1 := by omega
+      rw [hone] at *
+      exact Multiset.mem_singleton_self _
+    have hmS : sigmaLambda lam ≤ k + 1 - i1 := by
+      rw [sigmaLambda]
+      calc Multiset.card lam.parts
+          = (lam.parts.map (fun _ => 1)).sum := by simp
+        _ ≤ (lam.parts.map id).sum := Multiset.sum_map_le_sum_map _ _
+            (fun l hl => lam.parts_pos hl)
+        _ = lam.parts.sum := by simp
+        _ = k + 1 - i1 := lam.parts_sum
+    have hδdef : deltaSave i1 = if i1 = 0 then 1 else 0 := by
+      rw [deltaSave]
+    refine harith_of_reduced hδdef hm2 hm1 hi1le hmS ?_
+    have := hreduced
+    rw [hδdef] at this
+    exact this
+
 /-! ## Source audit -/
 
 #print axioms harith_of_reduced
 #print axioms harith_of_reduced_top
+#print axioms structuredSuccTermBound_of_B_budget
 #print axioms nsmul_coe_withBot
 #print axioms structuredSuccTermBound_of_budgets
 #print axioms βHensel_weight_bound_zero_structured
