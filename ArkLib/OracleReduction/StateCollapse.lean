@@ -300,6 +300,79 @@ theorem rbrKnowledgeSoundness_collapseState_iff
     rw [← hkey]
     exact hbound stmtIn witIn prover i
 
+/-- Transfer a (plain) state function from the pinned original implementation to the collapsed
+implementation (only `toFun_full` mentions the implementation). -/
+def _root_.Verifier.StateFunction.collapse
+    {langIn : Set StmtIn} {langOut : Set StmtOut}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    {impl : QueryImpl oSpec (StateT σ ProbComp)} {s₀ : σ}
+    (hso : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (sF : verifier.StateFunction (pure s₀) impl langIn langOut) :
+    verifier.StateFunction (pure ()) (collapseState impl s₀) langIn langOut where
+  toFun := sF.toFun
+  toFun_empty := sF.toFun_empty
+  toFun_next := sF.toFun_next
+  toFun_full := fun stmt tr h => by
+    rw [probEvent_optionT_mk_collapseState impl hso]
+    exact sF.toFun_full stmt tr h
+
+/-- Transfer a (plain) state function from the collapsed implementation back to the pinned
+original. -/
+def _root_.Verifier.StateFunction.ofCollapse
+    {langIn : Set StmtIn} {langOut : Set StmtOut}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    {impl : QueryImpl oSpec (StateT σ ProbComp)} {s₀ : σ}
+    (hso : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (sF : verifier.StateFunction (pure ()) (collapseState impl s₀) langIn langOut) :
+    verifier.StateFunction (pure s₀) impl langIn langOut where
+  toFun := sF.toFun
+  toFun_empty := sF.toFun_empty
+  toFun_next := sF.toFun_next
+  toFun_full := fun stmt tr h => by
+    rw [← probEvent_optionT_mk_collapseState impl hso]
+    exact sF.toFun_full stmt tr h
+
+/-- **Round-by-round (plain) soundness transfers through the state collapse** (point-mass
+initial state). -/
+theorem rbrSoundness_collapseState_iff
+    (langIn : Set StmtIn) (langOut : Set StmtOut)
+    (verifier : Verifier oSpec StmtIn StmtOut pSpec)
+    (rbrSoundnessError : pSpec.ChallengeIdx → ℝ≥0)
+    (impl : QueryImpl oSpec (StateT σ ProbComp)) (s₀ : σ)
+    (hso : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s) :
+    Verifier.rbrSoundness (pure s₀) impl langIn langOut verifier rbrSoundnessError
+      ↔ Verifier.rbrSoundness (pure ()) (collapseState impl s₀) langIn langOut
+          verifier rbrSoundnessError := by
+  have hkey : ∀ {α : Type} (X : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) (p : α → Prop),
+      Pr[p | do
+        (simulateQ ((collapseState impl s₀).addLift challengeQueryImpl :
+          QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT Unit ProbComp)) X).run'
+          (← (pure () : ProbComp Unit))]
+      = Pr[p | do
+        (simulateQ (impl.addLift challengeQueryImpl :
+          QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) X).run'
+          (← (pure s₀ : ProbComp σ))] := by
+    intro α X p
+    simp only [pure_bind]
+    rw [collapseState_addLift impl challengeQueryImpl s₀]
+    exact probEvent_congr_evalDist
+      (evalDist_simulateQ_run'_collapseState (impl.addLift challengeQueryImpl)
+        (OptionTStateT.addLift_state_preserving impl hso) X s₀ ()) p
+  constructor
+  · rintro ⟨sF, hbound⟩
+    refine ⟨sF.collapse hso, ?_⟩
+    intro stmtIn hstmt WitIn WitOut witIn prover i
+    rw [hkey]
+    exact hbound stmtIn hstmt WitIn WitOut witIn prover i
+  · rintro ⟨sF, hbound⟩
+    refine ⟨sF.ofCollapse hso, ?_⟩
+    intro stmtIn hstmt WitIn WitOut witIn prover i
+    rw [← hkey]
+    exact hbound stmtIn hstmt WitIn WitOut witIn prover i
+
 end RbrTransfer
 
 end StateCollapse
@@ -309,3 +382,4 @@ end StateCollapse
 #print axioms StateCollapse.probEvent_simulateQ_run'_collapseState
 #print axioms StateCollapse.probEvent_init_bind_le_of_forall_collapse_le
 #print axioms StateCollapse.rbrKnowledgeSoundness_collapseState_iff
+#print axioms StateCollapse.rbrSoundness_collapseState_iff
