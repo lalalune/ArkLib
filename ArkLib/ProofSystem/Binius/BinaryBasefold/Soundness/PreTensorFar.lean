@@ -173,7 +173,7 @@ lemma fiberwiseClose_of_fiberwiseDistance_le_uniqueDecodingRadius
   have h_destIdx_fin : destIdx = (⟨i, by omega⟩ : Fin r).val + steps := by
     simpa using h_destIdx
   set C_dest : Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L) :=
-    BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx with hC_dest
+    ↑(BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) with hC_dest
   have h_dist_pos : 0 < ‖C_dest‖₀ := by
     have h_pos : 0 <
         BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx := by

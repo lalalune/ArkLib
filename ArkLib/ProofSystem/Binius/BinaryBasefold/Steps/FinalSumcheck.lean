@@ -470,6 +470,52 @@ lemma firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency
     exact h_close
 
 omit [SampleableType L] in
+/-- **Compliance at the base index forces extraction success.** `isCompliant` carries
+`fiberwiseClose` for the source oracle, which is UDR-closeness
+(`UDRClose_of_fiberwiseClose`), and inside the UDR the Berlekamp–Welch pipeline always
+succeeds (`extractMLP_zero_isSome_of_UDRClose`). The base index arrives as an arbitrary
+`zero_Idx : Fin r` with `zero_Idx.val = 0`; the conclusion transports the oracle to the
+literal index `0` so both block-`0` call shapes below can consume it. -/
+lemma extractMLP_some_of_isCompliant_at_zero
+    (steps : ℕ) [NeZero steps]
+    (zero_Idx : Fin r) (h_zero_Idx : zero_Idx.val = 0)
+    {destIdx : Fin r} (h_destIdx : destIdx = 0 + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) zero_Idx)
+    (f_next : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+    (challenges : Fin steps → L)
+    (h_compl : isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := zero_Idx) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := by
+        rw [show zero_Idx = (0 : Fin r) from
+          Fin.eq_of_val_eq (by rw [h_zero_Idx, Fin.val_zero])]
+        exact h_destIdx)
+      (h_destIdx_le := h_destIdx_le)
+      (f_i := f_i) (f_i_plus_steps := f_next) (challenges := challenges)) :
+    ∃ tpoly, extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0
+      (f := fun x => f_i (cast (congrArg (fun w : Fin r => ↥(sDomain 𝔽q β h_ℓ_add_R_rate w))
+        (Fin.eq_of_val_eq (by rw [h_zero_Idx, Fin.val_zero]) :
+          (0 : Fin r) = zero_Idx)) x)) = some tpoly := by
+  obtain rfl : zero_Idx = (0 : Fin r) :=
+    Fin.eq_of_val_eq (by rw [h_zero_Idx, Fin.val_zero])
+  rcases h_compl with ⟨h_fw, -, -⟩
+  have h_close : UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (0 : Fin r) (h_i := by simp) f_i :=
+    UDRClose_of_fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := (0 : Fin r)) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := by simpa using h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := f_i) h_fw
+  obtain ⟨tpoly, htp⟩ := extractMLP_zero_isSome_of_UDRClose 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) f_i h_close
+  refine ⟨tpoly, ?_⟩
+  have hfeq : (fun x => f_i (cast (congrArg
+      (fun w : Fin r => ↥(sDomain 𝔽q β h_ℓ_add_R_rate w))
+      (Fin.eq_of_val_eq (by rw [h_zero_Idx, Fin.val_zero]) :
+        (0 : Fin r) = (0 : Fin r))) x)) = f_i :=
+    funext fun x => congrArg f_i (eq_of_heq (cast_heq _ x))
+  rw [hfeq]
+  exact htp
+
+omit [SampleableType L] in
 /-! When final-sumcheck oracle consistency holds, extractMLP must succeed.
 
 This connects the proximity-based `finalSumcheckStepOracleConsistencyProp` to the decoder:

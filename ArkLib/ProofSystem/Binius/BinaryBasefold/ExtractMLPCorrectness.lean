@@ -575,11 +575,97 @@ theorem consistency_of_extractPipeline_eq_some
       omega
     exact hgoal
 
+/-- **Decoder success inside the UDR, existence form.** When `f` is within the unique
+decoding radius of the base code, the pipeline always succeeds: the Berlekamp–Welch decoder
+finds the (unique) closest codeword and the degree gate passes. No consistency witness is
+needed — this is the brick consumed by the extractor-success obligations
+(`extractMLP_some_of_isCompliant_at_zero` in `Steps/FinalSumcheck.lean`). -/
+theorem extractPipeline_isSome_of_UDRClose
+    (E : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) ≃ Fin N)
+    (f : OracleFunction (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
+    (hUDR : 2 * Code.distFromCode (u := f)
+        (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) <
+      (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞)) :
+    ∃ tpoly, extractPipeline 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) E f = some tpoly := by
+  classical
+  -- realize the distance from the code by a closest codeword
+  haveI hne : Nonempty
+      ((BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) :
+        Set (sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) → L)) : Type) :=
+    ⟨⟨0, Submodule.zero_mem _⟩⟩
+  obtain ⟨M, hM_mem, hM_dist⟩ := Code.exists_closest_codeword_of_Nonempty_Code
+    (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) :
+      Set (sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) → L))) f
+  set d := Code.distFromCode (u := f)
+    (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) with hd
+  have hd_eq : d = (hammingDist f M : ℕ∞) := hM_dist.symm
+  have he_toNat : d.toNat = hammingDist f M := by rw [hd_eq]; simp
+  -- the closest codeword is a low-degree polynomial evaluation
+  obtain ⟨P, hPdeg, hPeval⟩ : ∃ P : L[X], P.natDegree < 2 ^ ℓ ∧
+      M = fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val := by
+    haveI : NeZero (2 ^ (ℓ - ((0 : Fin r)).val)) :=
+      ⟨(Nat.pos_pow_of_pos _ (by norm_num)).ne'⟩
+    unfold BBF_Code at hM_mem
+    rw [ReedSolomon.mem_code_iff_exists_polynomial_of_ne_zero] at hM_mem
+    rcases hM_mem with ⟨P, hPdeg, hPeval⟩
+    refine ⟨P, by simpa using hPdeg, ?_⟩
+    funext x
+    rw [hPeval]
+    simp [ReedSolomon.evalOnPoints]
+  -- UDR arithmetic for the decoder
+  have hNcard : N = 2 ^ (ℓ + 𝓡) :=
+    N_eq_card 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) E
+  have hdist_eq := BBF_CodeDistance₀_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (ℓ := ℓ) (𝓡 := 𝓡)
+  have hd_ne_top : d ≠ ⊤ := by
+    rw [hd_eq]; exact ENat.coe_ne_top _
+  have hUDRnat : 2 * d.toNat <
+      BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
+    rw [hd] at hUDR ⊢
+    lift d to ℕ using hd_ne_top with dn hdn
+    rw [ENat.toNat_coe]
+    exact_mod_cast hUDR
+  have hkN : 2 ^ ℓ ≤ N := by
+    rw [hNcard]
+    exact Nat.pow_le_pow_right (by norm_num) (by omega)
+  have hUDRrad : 2 * d.toNat < N - 2 ^ ℓ + 1 := by
+    rw [hNcard, ← hdist_eq]
+    omega
+  -- decoded distance bound
+  have hdist_dec : hammingDist (fun j => f (E.symm j))
+      (P.eval ∘ fun j =>
+        ((E.symm j : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r)) : L)) ≤ d.toNat := by
+    have htrans := pipeline_dist_transport 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      E f P
+    rw [htrans, ← hPeval, he_toNat]
+  have hdec : BerlekampWelch.decoder d.toNat (2 ^ ℓ)
+      (fun j => ((E.symm j : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r)) : L))
+      (fun j => f (E.symm j)) = some P :=
+    BerlekampWelch.decoder_eq_some hUDRrad hkN
+      (pipeline_omegas_injective 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) E)
+      hPdeg hdist_dec
+  refine ⟨buildMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) P, ?_⟩
+  rw [extractPipeline_decoder_eq_some 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) E f hdec,
+    if_neg (not_le.mpr hPdeg)]
+
 end Core
 
 /-! ## Main theorems -/
 
 section Main
+
+/-- `extractMLP` at the base level succeeds on every UDR-close oracle function. -/
+theorem extractMLP_zero_isSome_of_UDRClose
+    (f : OracleFunction (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
+    (hUDR : 2 * Code.distFromCode (u := f)
+        (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) <
+      (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞)) :
+    ∃ tpoly, extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly := by
+  rw [extractMLP_zero_eq_extractPipeline]
+  exact extractPipeline_isSome_of_UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (domainEquiv₀ 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) f hUDR
 
 /-- Consistency forces UDR-closeness of `f` (the guard is free in the backward
 direction). -/
