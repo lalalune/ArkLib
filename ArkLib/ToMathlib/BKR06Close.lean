@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import Mathlib
+import ArkLib.Data.CodingTheory.Basic.Distance
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ReedSolomon
 
@@ -90,14 +91,8 @@ agreement set; `hammingDist` *is* the disagreement-set cardinality.) -/
 lemma agreement_card_le_hammingDist (w c : ι → F) (a : ℕ)
     (hagree : a ≤ (Finset.univ.filter (fun i => w i = c i)).card) :
     hammingDist w c ≤ Fintype.card ι - a := by
-  have hsplit :
-      (Finset.univ.filter (fun i => w i = c i)).card
-        + (Finset.univ.filter (fun i => ¬ (w i = c i))).card
-        = Fintype.card ι := by
-    rw [Finset.card_filter_add_card_filter_not, Finset.card_univ]
-  -- `hammingDist` unfolds (definitionally) to the disagreement-filter cardinality.
-  have hham : hammingDist w c = (Finset.univ.filter (fun i => ¬ (w i = c i))).card := rfl
-  omega
+  exact Code.hammingDist_le_card_sub_of_agreementCols_card_ge (u := w) (v := c)
+    (by simpa [Code.agreementCols] using hagree)
 
 /-- **Relative-distance closeness from a Hamming-distance ratio bound.**  If the
 relative Hamming distance `hammingDist w c / N ≤ δ`, then `c` lies in the

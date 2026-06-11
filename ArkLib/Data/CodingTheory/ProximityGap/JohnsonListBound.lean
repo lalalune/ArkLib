@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
+import ArkLib.Data.CodingTheory.Basic.Distance
 import Mathlib.InformationTheory.Hamming
 
 /-!
@@ -131,18 +132,16 @@ theorem johnson_unique_decoding_eq_one {ι F : Type*} [Fintype ι] [DecidableEq 
 theorem agree_card_add_hammingDist {ι F : Type*} [Fintype ι] [DecidableEq F] (c c' : ι → F) :
     (Finset.univ.filter (fun x => c x = c' x)).card + hammingDist c c'
       = Fintype.card ι := by
-  classical
-  simpa [hammingDist] using
-    (Finset.card_filter_add_card_filter_not
-      (s := (Finset.univ : Finset ι)) (p := fun x : ι => c x = c' x))
+  simpa [Code.agreementCols] using
+    Code.agreementCols_card_add_hammingDist (u := c) (v := c')
 
 /-- A pairwise Hamming-distance lower bound gives the pairwise agreement upper bound consumed by
 the Johnson second-moment API. -/
 theorem agree_card_le_card_sub_of_hammingDist_ge {ι F : Type*} [Fintype ι] [DecidableEq F]
     {c c' : ι → F} {d : ℕ} (hd : d ≤ hammingDist c c') :
     (Finset.univ.filter (fun x => c x = c' x)).card ≤ Fintype.card ι - d := by
-  have hpartition := agree_card_add_hammingDist c c'
-  omega
+  simpa [Code.agreementCols] using
+    Code.agreementCols_card_le_card_sub_of_hammingDist_ge (u := c) (v := c') hd
 
 /-- **Distance-form divided Johnson list bound.** If every listed word agrees with `f` on at least
 `a` coordinates and distinct listed words have pairwise Hamming distance at least `d`, then the

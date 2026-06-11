@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 293,
+    "files_with_citations": 310,
     "keys_cited": 30,
-    "total_citation_edges": 340
+    "total_citation_edges": 357
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -91,6 +91,9 @@
     "ArkLib/Data/CodingTheory/GuruswamiSudan/GSInterpolantZDegreeGraded.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/GuruswamiSudan/GSLargeCharSeparable.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/GuruswamiSudan/GSListSizeOverRatFunc.lean": [
       "BCIKS20"
     ],
@@ -151,6 +154,15 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineSpaces.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Kill.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Weld.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim59Vandermonde.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean": [
       "BCIKS20"
     ],
@@ -202,6 +214,9 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/CurvesBridge.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/DescendedDegreeSum.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/DescendedRset.lean": [
       "BCIKS20"
     ],
@@ -224,6 +239,9 @@
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean": [
@@ -262,10 +280,25 @@
     "ArkLib/Data/CodingTheory/ProximityGap/Hab25Core.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/Hab25FactorBudgetSupply.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/Hab25HeavyPoints.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/Hab25Johnson.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonDichotomy.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/Hab25RichCoordinateGate.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/Hab25SlackWeld.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/Hab25UniqueRichFactor.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/KKH26BadLineConstruction.lean": [
@@ -732,6 +765,9 @@
     "ArkLib/ToMathlib/GenuineTruncationFin.lean": [
       "BCIKS20"
     ],
+    "ArkLib/ToMathlib/GroundLineInterpolation.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/ToMathlib/HPzBridge.lean": [
       "BCIKS20"
     ],
@@ -760,6 +796,9 @@
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/InterpolantInputSupply.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/InterpolatedRepresentative.lean": [
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/KStateWeaken.lean": [
@@ -845,6 +884,9 @@
     "ArkLib/ToMathlib/PlaceSeriesCanonical.lean": [
       "BCIKS20"
     ],
+    "ArkLib/ToMathlib/PolyRootGradedBound.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/ToMathlib/PowerSeriesHenselianA.lean": [
       "BCIKS20"
     ],
@@ -884,6 +926,15 @@
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/SectionFromSurface.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/SectionNewtonGamma.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/SectionNewtonGradingSupply.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/SectionNewtonXiSupply.lean": [
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/SectionXiDivisibility.lean": [
@@ -995,6 +1046,7 @@
       "ArkLib/Data/CodingTheory/GuruswamiSudan/GSInterpolantSloped.lean",
       "ArkLib/Data/CodingTheory/GuruswamiSudan/GSInterpolantZDegreeCurve.lean",
       "ArkLib/Data/CodingTheory/GuruswamiSudan/GSInterpolantZDegreeGraded.lean",
+      "ArkLib/Data/CodingTheory/GuruswamiSudan/GSLargeCharSeparable.lean",
       "ArkLib/Data/CodingTheory/GuruswamiSudan/GSListSizeOverRatFunc.lean",
       "ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean",
       "ArkLib/Data/CodingTheory/GuruswamiSudan/TrivariateDivisibility.lean",
@@ -1009,6 +1061,9 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/JointAgreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/Main.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineSpaces.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Kill.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Weld.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim59Vandermonde.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/AgreementCount.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtraction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtractionResidual.lean",
@@ -1026,6 +1081,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Claim57FieldDischarge.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/CurvesBridge.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/DescendedDegreeSum.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/DescendedRset.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Extraction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean",
@@ -1034,6 +1090,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/S5Genuine.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/SliceSeparabilityBoundary.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/WeightedAgreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BadGammaAffineCount.lean",
@@ -1044,8 +1101,13 @@
       "ArkLib/Data/CodingTheory/ProximityGap/Errors.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25CoordinateUpgradeWeld.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25Core.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/Hab25FactorBudgetSupply.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/Hab25HeavyPoints.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25Johnson.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonDichotomy.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/Hab25RichCoordinateGate.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/Hab25SlackWeld.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/Hab25UniqueRichFactor.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/KKH26BadLineConstruction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/KKH26WitnessSpread.lean",
@@ -1136,6 +1198,7 @@
       "ArkLib/ToMathlib/GenuineMonicCapstone.lean",
       "ArkLib/ToMathlib/GenuinePpolyConverter.lean",
       "ArkLib/ToMathlib/GenuineTruncationFin.lean",
+      "ArkLib/ToMathlib/GroundLineInterpolation.lean",
       "ArkLib/ToMathlib/HPzBridge.lean",
       "ArkLib/ToMathlib/HcardDischarge.lean",
       "ArkLib/ToMathlib/HdvdTop.lean",
@@ -1146,6 +1209,7 @@
       "ArkLib/ToMathlib/HvanishSupply.lean",
       "ArkLib/ToMathlib/IncidenceBound.lean",
       "ArkLib/ToMathlib/InterpolantInputSupply.lean",
+      "ArkLib/ToMathlib/InterpolatedRepresentative.lean",
       "ArkLib/ToMathlib/KeystoneAssembly.lean",
       "ArkLib/ToMathlib/KeystoneStrictResidual.lean",
       "ArkLib/ToMathlib/L13Milestone.lean",
@@ -1172,6 +1236,7 @@
       "ArkLib/ToMathlib/PigeonholeTruncationCapstone.lean",
       "ArkLib/ToMathlib/PlaceGeometrySupply.lean",
       "ArkLib/ToMathlib/PlaceSeriesCanonical.lean",
+      "ArkLib/ToMathlib/PolyRootGradedBound.lean",
       "ArkLib/ToMathlib/PowerSeriesHenselianA.lean",
       "ArkLib/ToMathlib/Prop55.lean",
       "ArkLib/ToMathlib/RatFuncDegreeCalculus.lean",
@@ -1183,6 +1248,9 @@
       "ArkLib/ToMathlib/SectionBaseRational.lean",
       "ArkLib/ToMathlib/SectionFactor.lean",
       "ArkLib/ToMathlib/SectionFromSurface.lean",
+      "ArkLib/ToMathlib/SectionNewtonGamma.lean",
+      "ArkLib/ToMathlib/SectionNewtonGradingSupply.lean",
+      "ArkLib/ToMathlib/SectionNewtonXiSupply.lean",
       "ArkLib/ToMathlib/SectionXiDivisibility.lean",
       "ArkLib/ToMathlib/SectionXiUnit.lean",
       "ArkLib/ToMathlib/SignedGradedSupply.lean",
