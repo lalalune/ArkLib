@@ -1363,6 +1363,100 @@ theorem base_earlier_fwd_slots
   exact fresh_fwd_inserts ((∅, []) : DSCache StmtIn U) (log.take (f j')) a' b'
     ((log.take (f j)).drop (f j' + 1)) hfresh
 
+/-! ## Slot-persistence: inverse and hash arms -/
+
+/-- The hash cache only grows along the whole fold. -/
+theorem foldl_stepCache_hash_mono (c : DSCache StmtIn U) (L : List (DSEntry StmtIn U))
+    {q : StmtIn} {u : Vector U SpongeSize.C} (h : c.1 q = some u) :
+    (L.foldl stepCache c).1 q = some u := by
+  induction L generalizing c with
+  | nil => exact h
+  | cons e ℓ ih => rw [List.foldl_cons]; exact ih (stepCache c e) (stepCache_hash_mono c e h)
+
+/-- A fresh hash entry's answer ends up cached in the final fold. -/
+theorem fresh_hash_inserts (c : DSCache StmtIn U)
+    (L₁ : List (DSEntry StmtIn U)) (q : StmtIn) (u : Vector U SpongeSize.C)
+    (L₂ : List (DSEntry StmtIn U))
+    (hfresh : (L₁.foldl stepCache c).1 q = none) :
+    ((L₁ ++ (⟨.inl q, u⟩ : DSEntry StmtIn U) :: L₂).foldl stepCache c).1 q = some u := by
+  rw [List.foldl_append, List.foldl_cons]
+  set c1 := L₁.foldl stepCache c with hc1
+  have hstep : (stepCache c1 (⟨.inl q, u⟩ : DSEntry StmtIn U)).1 q = some u := by
+    simp only [stepCache, hfresh, OracleSpec.QueryCache.cacheQuery, Function.update_self]
+  exact foldl_stepCache_hash_mono (stepCache c1 (⟨.inl q, u⟩ : DSEntry StmtIn U)) L₂ hstep
+
+open DuplexSpongeFS.Paper in
+/-- **Slot-persistence (inverse).** -/
+theorem base_earlier_inv_slots
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) log)
+    (f : ℕ ↪o ℕ)
+    (hf : ∀ ix, (removeRedundantEntryDSPaper log).1[ix]? = log[f ix]?)
+    (hfo : ∀ ix p (e ep : DSEntry StmtIn U),
+      (removeRedundantEntryDSPaper log).1[ix]? = some e → log[p]? = some ep →
+      p < f ix → ¬ sameClass e ep)
+    (j j' : ℕ) (hjj : j' < j) (hj : j < (removeRedundantEntryDSPaper log).1.length)
+    (a' b' : CanonicalSpongeState U)
+    (hbj' : (removeRedundantEntryDSPaper log).1[j']'(by omega)
+      = (⟨.inr (.inr b'), a'⟩ : DSEntry StmtIn U)) :
+    (a', b') ∈ ((log.take (f j)).foldl stepCache ((∅, []) : DSCache StmtIn U)).2 := by
+  have hj' : j' < (removeRedundantEntryDSPaper log).1.length := by omega
+  obtain ⟨hpj', hsplit', hbjf', _⟩ := base_raw_split log f hf j' hj'
+  have he' : log[f j'] = (⟨.inr (.inr b'), a'⟩ : DSEntry StmtIn U) := by rw [hbjf', hbj']
+  have hcons' : ConsistentFrom ((∅, []) : DSCache StmtIn U)
+      (log.take (f j') ++ log[f j'] :: log.drop (f j' + 1)) := by rw [← hsplit']; exact hcons
+  have hnr' : ∀ e'' ∈ log.take (f j'), ¬ sameClass (log[f j']) e'' := by
+    intro e'' he''; rw [hbjf']; exact base_no_earlier_sameClass log f hf hfo j' hj' e'' he''
+  have hfresh : ¬ hasInvKey ((log.take (f j')).foldl stepCache ((∅, []) : DSCache StmtIn U)) b' :=
+    inv_entry_fresh (log.take (f j')) (log[f j']) (log.drop (f j' + 1)) a' b' he' hcons' hnr'
+  have hfjj : f j' < f j := f.strictMono hjj
+  have hfjlen : f j ≤ log.length := by
+    have hb : (removeRedundantEntryDSPaper log).1[j]? = some (removeRedundantEntryDSPaper log).1[j] :=
+      List.getElem?_eq_getElem hj
+    rw [hf j] at hb; rw [List.getElem?_eq_some_iff] at hb; exact le_of_lt hb.1
+  have hsplit_inner : log.take (f j)
+      = log.take (f j') ++ (⟨.inr (.inr b'), a'⟩ : DSEntry StmtIn U) :: (log.take (f j)).drop (f j' + 1) :=
+    take_inner_split log (f j) (f j') hfjj hfjlen (by rw [he'])
+  rw [hsplit_inner]
+  exact fresh_inv_inserts ((∅, []) : DSCache StmtIn U) (log.take (f j')) a' b'
+    ((log.take (f j)).drop (f j' + 1)) hfresh
+
+open DuplexSpongeFS.Paper in
+/-- **Slot-persistence (hash).** -/
+theorem base_earlier_hash_slot
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) log)
+    (f : ℕ ↪o ℕ)
+    (hf : ∀ ix, (removeRedundantEntryDSPaper log).1[ix]? = log[f ix]?)
+    (hfo : ∀ ix p (e ep : DSEntry StmtIn U),
+      (removeRedundantEntryDSPaper log).1[ix]? = some e → log[p]? = some ep →
+      p < f ix → ¬ sameClass e ep)
+    (j j' : ℕ) (hjj : j' < j) (hj : j < (removeRedundantEntryDSPaper log).1.length)
+    (q' : StmtIn) (u' : Vector U SpongeSize.C)
+    (hbj' : (removeRedundantEntryDSPaper log).1[j']'(by omega)
+      = (⟨.inl q', u'⟩ : DSEntry StmtIn U)) :
+    u' ∈ slotList ((log.take (f j)).foldl stepCache ((∅, []) : DSCache StmtIn U)) := by
+  have hj' : j' < (removeRedundantEntryDSPaper log).1.length := by omega
+  obtain ⟨hpj', hsplit', hbjf', _⟩ := base_raw_split log f hf j' hj'
+  have he' : log[f j'] = (⟨.inl q', u'⟩ : DSEntry StmtIn U) := by rw [hbjf', hbj']
+  have hcons' : ConsistentFrom ((∅, []) : DSCache StmtIn U)
+      (log.take (f j') ++ log[f j'] :: log.drop (f j' + 1)) := by rw [← hsplit']; exact hcons
+  have hnr' : ∀ e'' ∈ log.take (f j'), ¬ sameClass (log[f j']) e'' := by
+    intro e'' he''; rw [hbjf']; exact base_no_earlier_sameClass log f hf hfo j' hj' e'' he''
+  have hfresh : ((log.take (f j')).foldl stepCache ((∅, []) : DSCache StmtIn U)).1 q' = none :=
+    hash_entry_fresh (log.take (f j')) (log[f j']) (log.drop (f j' + 1)) q' u' he' hcons' hnr'
+  have hfjj : f j' < f j := f.strictMono hjj
+  have hfjlen : f j ≤ log.length := by
+    have hb : (removeRedundantEntryDSPaper log).1[j]? = some (removeRedundantEntryDSPaper log).1[j] :=
+      List.getElem?_eq_getElem hj
+    rw [hf j] at hb; rw [List.getElem?_eq_some_iff] at hb; exact le_of_lt hb.1
+  have hsplit_inner : log.take (f j)
+      = log.take (f j') ++ (⟨.inl q', u'⟩ : DSEntry StmtIn U) :: (log.take (f j)).drop (f j' + 1) :=
+    take_inner_split log (f j) (f j') hfjj hfjlen (by rw [he'])
+  rw [hsplit_inner]
+  exact mem_slotList_of_hash_cached _ (fresh_hash_inserts ((∅, []) : DSCache StmtIn U)
+    (log.take (f j')) q' u' ((log.take (f j)).drop (f j' + 1)) hfresh)
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1463,6 +1557,9 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.fresh_inv_inserts
 #print axioms DuplexSpongeFS.EagerLazyDS.mem_slotList_of_hash_cached
 #print axioms DuplexSpongeFS.EagerLazyDS.base_earlier_fwd_slots
+#print axioms DuplexSpongeFS.EagerLazyDS.fresh_hash_inserts
+#print axioms DuplexSpongeFS.EagerLazyDS.base_earlier_inv_slots
+#print axioms DuplexSpongeFS.EagerLazyDS.base_earlier_hash_slot
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
