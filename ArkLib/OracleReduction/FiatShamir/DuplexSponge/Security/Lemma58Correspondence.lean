@@ -1035,7 +1035,7 @@ theorem removeRedundant_firstOcc
     have hself : removeRedundantEntryDSPaper log = ⟨log, hnr⟩ :=
       removeRedundantEntryDSPaper_eq_self_of_noRedundantEntryDSPaper log hnr
     refine ⟨OrderEmbedding.ofStrictMono id strictMono_id, ?_, ?_⟩
-    · intro ix; rw [hself]
+    · intro ix; rw [hself]; rfl
     · intro ix p e ep hbe hlogp hpf
       rw [hself] at hbe
       have hix : ix < log.length := by
