@@ -685,6 +685,124 @@ instance largeFieldInvocationExtractorLens_rbr_knowledge_soundness
         dsimp [bbfAbstractOStmtIn] at h_first' ⊢
         exact h_first'
 
+/-! ### Challenge `Fintype`/`Inhabited` instances for the BBF protocol-spec tower
+
+The RingSwitching end-to-end completeness capstone consumes
+`[∀ i, Fintype (mlIOPCS.pSpec.Challenge i)]` and `[∀ i, Inhabited (…)]` (its run-semantics
+keystone needs finite, inhabited challenge oracles), and `SampleableType` implies neither.
+We register both chains for `fullPSpec`, mirroring the `SampleableType` chain in
+`BinaryBasefold/Spec.lean`; leaf challenge types are `L` and `Fin γ → sDomain …`. -/
+
+section ChallengeInstances
+
+instance : ∀ j, Fintype ((pSpecFold (L := L)).Challenge j)
+  | ⟨0, hj⟩ => by nomatch hj
+  | ⟨1, _⟩ => inferInstanceAs (Fintype L)
+
+instance : ∀ j, Inhabited ((pSpecFold (L := L)).Challenge j)
+  | ⟨0, hj⟩ => by nomatch hj
+  | ⟨1, _⟩ => ⟨(0 : L)⟩
+
+instance : ∀ j, Fintype ((pSpecRelay).Challenge j)
+  | ⟨x, _⟩ => x.elim0
+
+instance : ∀ j, Inhabited ((pSpecRelay).Challenge j)
+  | ⟨x, _⟩ => x.elim0
+
+instance {i : Fin ℓ'} : ∀ j, Fintype ((pSpecCommit 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Challenge j)
+  | ⟨0, hj⟩ => by nomatch hj
+
+instance {i : Fin ℓ'} : ∀ j, Inhabited ((pSpecCommit 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Challenge j)
+  | ⟨0, hj⟩ => by nomatch hj
+
+instance : ∀ j, Fintype ((pSpecFoldRelay (L := L)).Challenge j) :=
+  appendChallenge_fintype _ _
+
+instance : ∀ j, Inhabited ((pSpecFoldRelay (L := L)).Challenge j) :=
+  appendChallenge_inhabited _ _
+
+instance {i : Fin ℓ'} : ∀ j, Fintype ((pSpecFoldCommit 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Challenge j) :=
+  appendChallenge_fintype _ _
+
+instance {i : Fin ℓ'} : ∀ j, Inhabited ((pSpecFoldCommit 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Challenge j) :=
+  appendChallenge_inhabited _ _
+
+instance {n : ℕ} : ∀ j, Fintype ((pSpecFoldRelaySequence (L := L) n).Challenge j) :=
+  seqComposeChallenge_fintype _
+
+instance {n : ℕ} : ∀ j, Inhabited ((pSpecFoldRelaySequence (L := L) n).Challenge j) :=
+  seqComposeChallenge_inhabited _
+
+instance {i : Fin (ℓ' / ϑ - 1)} : ∀ j, Fintype ((pSpecFullNonLastBlock 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Challenge j) :=
+  appendChallenge_fintype _ _
+
+instance {i : Fin (ℓ' / ϑ - 1)} : ∀ j, Inhabited ((pSpecFullNonLastBlock 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Challenge j) :=
+  appendChallenge_inhabited _ _
+
+instance : ∀ j, Fintype ((pSpecNonLastBlocks 𝔽q β (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j) :=
+  seqComposeChallenge_fintype _
+
+instance : ∀ j, Inhabited ((pSpecNonLastBlocks 𝔽q β (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j) :=
+  seqComposeChallenge_inhabited _
+
+instance : ∀ j, Fintype ((pSpecLastBlock (L := L) (ϑ := ϑ)).Challenge j) :=
+  seqComposeChallenge_fintype _
+
+instance : ∀ j, Inhabited ((pSpecLastBlock (L := L) (ϑ := ϑ)).Challenge j) :=
+  seqComposeChallenge_inhabited _
+
+instance : ∀ j, Fintype ((pSpecSumcheckFold 𝔽q β (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j) :=
+  appendChallenge_fintype _ _
+
+instance : ∀ j, Inhabited ((pSpecSumcheckFold 𝔽q β (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j) :=
+  appendChallenge_inhabited _ _
+
+instance : ∀ j, Fintype ((pSpecFinalSumcheckStep (L := L)).Challenge j)
+  | ⟨0, _⟩ => inferInstanceAs (Fintype L)
+
+instance : ∀ j, Inhabited ((pSpecFinalSumcheckStep (L := L)).Challenge j)
+  | ⟨0, _⟩ => ⟨(0 : L)⟩
+
+instance : ∀ j, Fintype ((pSpecCoreInteraction 𝔽q β (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j) :=
+  appendChallenge_fintype _ _
+
+instance : ∀ j, Inhabited ((pSpecCoreInteraction 𝔽q β (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j) :=
+  appendChallenge_inhabited _ _
+
+instance : ∀ j, Fintype ((pSpecQuery 𝔽q β γ_repetitions
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j)
+  | ⟨0, _⟩ => by
+    haveI : Fintype (sDomain 𝔽q β h_ℓ_add_R_rate 0) :=
+      fintype_sDomain 𝔽q β h_ℓ_add_R_rate 0
+    exact inferInstanceAs
+      (Fintype (Fin γ_repetitions → sDomain 𝔽q β h_ℓ_add_R_rate 0))
+
+instance : ∀ j, Inhabited ((pSpecQuery 𝔽q β γ_repetitions
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j)
+  | ⟨0, _⟩ => ⟨fun _ => 0⟩
+
+instance : ∀ j, Fintype ((fullPSpec 𝔽q β γ_repetitions (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j) :=
+  appendChallenge_fintype _ _
+
+instance : ∀ j, Inhabited ((fullPSpec 𝔽q β γ_repetitions (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j) :=
+  appendChallenge_inhabited _ _
+
+end ChallengeInstances
+
 /-! ### MLIOPCS Instance -/
 
 /-- **External surface (lane 2, #317): inner Binary Basefold full-protocol perfect
