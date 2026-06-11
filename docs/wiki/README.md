@@ -11,6 +11,8 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
 - [`quickstart.md`](quickstart.md) - canonical agent command and validation playbook.
 - [`repo-map.md`](repo-map.md) - where to edit and how the main subtrees relate.
 - [`generated-files.md`](generated-files.md) - derived outputs and their sources of truth.
+- [`optiont-lift-coherence-walls.md`](optiont-lift-coherence-walls.md) - the per-branch-defeq
+  technique for instance-path walls in run-unrolling proofs.
 - [`blueprint-and-citations.md`](blueprint-and-citations.md) - blueprint workflow, paper
   references, and citation keys.
 - [`knowledge-base.md`](knowledge-base.md) - when to use `docs/kb/` and how it relates to the
