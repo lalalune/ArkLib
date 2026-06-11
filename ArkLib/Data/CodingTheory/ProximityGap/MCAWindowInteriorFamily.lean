@@ -151,9 +151,40 @@ theorem mcaDeltaStar_family_interior_pin {t : ℕ}
     (fun δ hδ => epsMCA_good_below_family C hhalf htn hδ)
     (fun δ hδ => epsMCA_bad_above_family C hhalf htn hext hδ)
 
+/-! ## The unconditional family lower bracket (the LYM reach) -/
+
+/-- **The unconditional family `δ*` lower bracket.** In the upper-half regime `n ≤ 2t`, *whenever*
+the threshold `ε*` absorbs the layer-`t` LYM ceiling (`C(n,t)/q ≤ ε*`), the threshold reaches at
+least the jump radius: `1 − t/n ≤ δ*(C, ε*)`. **No extremal hypothesis** — this is the precise,
+parametric reach of the LYM/antichain method, the floor any prize construction must beat. (At low
+rate it is honest but loose, because `C(n,⌊n/2⌋)/q` is exponentially larger than the true count —
+the localized open core.) -/
+theorem le_mcaDeltaStar_lym_family {t : ℕ}
+    (hhalf : Fintype.card ι ≤ 2 * t) (htn : t ≤ Fintype.card ι)
+    {εstar : ℝ≥0∞}
+    (hε : ((Fintype.card ι).choose t : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ εstar) :
+    1 - (t : ℝ≥0) / (Fintype.card ι : ℝ≥0) ≤ mcaDeltaStar (F := F) (A := A) (C : Set (ι → A)) εstar := by
+  set n := Fintype.card ι with hn
+  have hn0 : 0 < n := Fintype.card_pos
+  have htn1 : (t : ℝ≥0) / (n : ℝ≥0) ≤ 1 := by
+    rw [div_le_one (by exact_mod_cast hn0)]; exact_mod_cast htn
+  -- at radius `δ = 1 − t/n` the witness floor is exactly `t`, so the LYM ceiling is `C(n,t)/q ≤ ε*`
+  have hdiff : (1 : ℝ≥0) - ((1 : ℝ≥0) - (t : ℝ≥0) / (n : ℝ≥0)) = (t : ℝ≥0) / (n : ℝ≥0) :=
+    tsub_tsub_cancel_of_le htn1
+  have hceil_eq : ⌈((1 : ℝ≥0) - ((1 : ℝ≥0) - (t : ℝ≥0) / (n : ℝ≥0))) * (n : ℝ≥0)⌉₊ = t := by
+    rw [hdiff, div_mul_cancel₀ _ (by exact_mod_cast hn0.ne' : ((n : ℝ≥0)) ≠ 0), Nat.ceil_natCast]
+  have hhalf' : n ≤ 2 * ⌈((1 : ℝ≥0) - ((1 : ℝ≥0) - (t : ℝ≥0) / (n : ℝ≥0))) * (n : ℝ≥0)⌉₊ := by
+    rw [hceil_eq]; omega
+  have hbound := ProximityGap.MCAAntichainLYM.epsMCA_le_choose_ceil_div
+    (F := F) (A := A) C (1 - (t : ℝ≥0) / (n : ℝ≥0)) hhalf'
+  rw [hceil_eq] at hbound
+  exact le_mcaDeltaStar_of_good (F := F) (A := A) (C : Set (ι → A)) εstar tsub_le_self
+    (le_trans hbound hε)
+
 end ProximityGap.MCAWindowInteriorFamily
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms ProximityGap.MCAWindowInteriorFamily.choose_le_choose_upper
 #print axioms ProximityGap.MCAWindowInteriorFamily.epsMCA_good_below_family
 #print axioms ProximityGap.MCAWindowInteriorFamily.mcaDeltaStar_family_interior_pin
+#print axioms ProximityGap.MCAWindowInteriorFamily.le_mcaDeltaStar_lym_family
