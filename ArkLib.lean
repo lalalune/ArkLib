@@ -206,7 +206,6 @@ import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEListBound
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEPotential
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNERealStep
 import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
-import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.JH02
@@ -529,6 +528,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CensusExtremalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CensusLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerDescent
 import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerFinite
+import ArkLib.Data.CodingTheory.ProximityGap.ChordFamilyCount
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
 import ArkLib.Data.CodingTheory.ProximityGap.CollinearityCensusTransfer
@@ -612,6 +612,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.A5_EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.B2_CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.B3_ThornerZaman_s128
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TEMPLATE
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
@@ -984,6 +985,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSpectral
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSubgroupData
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionTower
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionWeilConditional
+import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominationBoundaryRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominationPin
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialStripExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
@@ -2116,7 +2118,6 @@ import ArkLib.ToMathlib.GGR11EraseDecodeTree
 import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
 import ArkLib.ToMathlib.GGR11TreeConstruction
-import ArkLib.ToMathlib.GHSZ02Cor20
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness
