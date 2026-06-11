@@ -813,7 +813,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarExactPoint
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
+import ArkLib.Data.CodingTheory.ProximityGap.MCAEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEventAgreeWitness
+import ArkLib.Data.CodingTheory.ProximityGap.MCAEventEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticeResolvedSpec
