@@ -6531,3 +6531,34 @@ J1 final spec: for the GS interpolant's factor `H` (monic via `H_tilde`, budgets
 rep degrees by interpolant budgets; alternatively trace the §5.2.7 interpolation argument
 (fulltext 1719–1740). J2 unchanged (`SβLargeAt` count). These two remain the entire gap
 between today's tree and Prop-free Johnson + the exact deployed-regime δ* pin.
+
+**O154 final addendum — THE LAST WALL: Claim 5.10 is FULLY ASSEMBLED in-tree
+(`exists_pinning_pair_of_heavy_agreement`, CellPinning) and J1 is BYPASSED; the entire
+Johnson programme rests on ONE residual: `βHenselSuccTermWeightResidual`.** The conclusive
+audit:
+
+* `CellPinning.exists_pinning_pair_of_heavy_agreement` produces the per-cell affine pair
+  `(v₀, v₁)` — Claim 5.10's output, the weld's `hdata` leg — from: heavy agreement data
+  (GS cell production shapes, in-tree), `LiftIdentityAt` (PROVEN monic), the Vandermonde/
+  Lagrange globalization (`Kill.coeff_sum_eq_ground_of_large` → `Claim59Vandermonde` →
+  `Claim59Lagrange`, all in-tree), and TWO numeric legs: `hcard` (matching-set sizes —
+  supplied by agreement mass via `mem_S_β_killTarget_of_pin_agree` + cell production
+  counts) and `hweight` (`Λ(killTarget) ≤ W`).
+* **J1 (general-degree Z-linearity) is BYPASSED**: the kill-target/Vandermonde route
+  derives the paper Z-linearity from largeness directly; no general-`d_H` canonical-rep
+  argument is needed.
+* `hweight` is the only deep leg: `βHensel_weight_bound` assembles the full strong
+  induction from the proven over-`𝒪` weight calculus, with exactly ONE residual — the
+  per-term WALL `βHenselSuccTermWeightResidual` (the weight of a single `(A.1)` recursion
+  term: Hasse-derivative coefficient × partition product, bounded by `(2t+1)·d_R·D` —
+  Claim A.2's per-term inequality, fulltext §A.4) — plus the cleared-sum weight
+  bookkeeping for the specific kill targets.
+* **Hence the COMPLETE remaining gap between today's tree and Prop-free Johnson + the
+  exact δ* pin is: (W1) `βHenselSuccTermWeightResidual` (one weight inequality per
+  recursion term, pure Λ-calculus over 𝒪) + (W2) the splice plumbing (kill-target weight
+  from W1; matching-set counts from cell production; feed
+  `exists_pinning_pair_of_heavy_agreement` into `cell_card_le_of_decode_family_pinning` →
+  `bad_card_le_of_cell_production` → `hsurface` → `johnsonNumericBound_holds`).** W1 is
+  the mathematics; W2 is wiring. After W1+W2: `JohnsonDischargeStatement` proven, the
+  bracket unconditional, and `kkh26_deltaStar_pin_of_interior_ceiling` pins the
+  deployed-regime δ* exactly.
