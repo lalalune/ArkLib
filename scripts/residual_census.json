@@ -1,10 +1,16 @@
 {
  "summary": {
-  "total": 90,
+  "total": 91,
   "open": 49,
-  "discharged": 41,
+  "discharged": 42,
   "refuted": 0,
   "by_top_dir": {
+   "(root)": {
+    "total": 1,
+    "open": 0,
+    "discharged": 1,
+    "refuted": 0
+   },
    "Data": {
     "total": 24,
     "open": 17,
@@ -3606,6 +3612,24 @@
    "status": "open"
   },
   {
+   "name": "RingSwitchingKStateResidual",
+   "fq_name": "RingSwitchingKStateResidual",
+   "file": "ArkLib/ResidualAxioms.lean",
+   "line": 27,
+   "providers": [
+    {
+     "name": "ringSwitchingKStateResidual_holds",
+     "kind": "theorem",
+     "file": "ArkLib/ResidualAxioms.lean",
+     "line": 35,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
+  },
+  {
    "name": "DeepHoleProbResidual",
    "fq_name": "CodingTheory.CS25.DeepHole.DeepHoleProbResidual",
    "file": "ArkLib/ToMathlib/CS25DeepHoleFinish.lean",
@@ -4183,14 +4207,6 @@
    "kind": "def",
    "file": "ArkLib/ProofSystem/ToyProblem/Metrics.lean",
    "line": 854,
-   "reason": "name does not end in `Residual`"
-  },
-  {
-   "name": "ring_switching_kstate_residual",
-   "fq_name": "ring_switching_kstate_residual",
-   "kind": "def",
-   "file": "ArkLib/ResidualAxioms.lean",
-   "line": 27,
    "reason": "name does not end in `Residual`"
   },
   {

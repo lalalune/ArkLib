@@ -14,14 +14,15 @@ always check this census before treating a `*Residual` name as open proof debt.
 
 ## Summary
 
-- **Total strict residuals:** 90
+- **Total strict residuals:** 91
 - **Open:** 49
-- **Discharged:** 41
+- **Discharged:** 42
 - **Refuted:** 0
-- **Residual-like near misses:** 44 (listed below and in `scripts/residual_census.json`)
+- **Residual-like near misses:** 43 (listed below and in `scripts/residual_census.json`)
 
 | top-level directory | total | open | discharged | refuted |
 |---|---:|---:|---:|---:|
+| `(root)` | 1 | 0 | 1 | 0 |
 | `Data` | 24 | 17 | 7 | 0 |
 | `OracleReduction` | 38 | 22 | 16 | 0 |
 | `ProofSystem` | 16 | 8 | 8 | 0 |
@@ -124,7 +125,6 @@ proof debt and naming drift.
 - `ToyProblem.arklib_lowerBound_irs_t128_residual` — `ArkLib/ProofSystem/ToyProblem/Metrics.lean:655` — `def`; name does not end in `Residual`
 - `ToyProblem.fenziSanso_upperBound_attack_residual` — `ArkLib/ProofSystem/ToyProblem/Metrics.lean:690` — `def`; name does not end in `Residual`
 - `ToyProblem.fenziSanso_upperBound_attack_concrete_residual` — `ArkLib/ProofSystem/ToyProblem/Metrics.lean:854` — `def`; name does not end in `Residual`
-- `ring_switching_kstate_residual` — `ArkLib/ResidualAxioms.lean:27` — `def`; name does not end in `Residual`
 - `ProximityGap.claim57Residuals_of_gsInterpolant` — `ArkLib/ToMathlib/BCIKS20ConcreteJohnson.lean:113` — `def`; name does not end in `Residual`
 - `ProximityGap.claim57Residuals_of_johnson` — `ArkLib/ToMathlib/BCIKS20PigeonholeSupply.lean:169` — `def`; name does not end in `Residual`
 - `ProximityGap.claim57Residuals_of_natCeil_johnson` — `ArkLib/ToMathlib/BCIKS20PigeonholeSupply.lean:205` — `def`; name does not end in `Residual`
@@ -168,6 +168,7 @@ None.
 - `Logup.LogupCompletenessBrickResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:206`
 - `StirIOP.MultiRound.stirCheckingRbrSoundnessResidual` — `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:964`
 - `StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual` — `ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean:224`
+- `RingSwitchingKStateResidual` — `ArkLib/ResidualAxioms.lean:27`
 - `Fri.Spec.Completeness.foldRoundPerfectCompletenessResidual` — `ArkLib/ToMathlib/FriComplete.lean:106`
 - `Fri.Spec.Completeness.finalFoldRoundPerfectCompletenessResidual` — `ArkLib/ToMathlib/FriComplete.lean:131`
 - `ArkLib.RingSwitching.Phases.BatchingConsistencyResidual` — `ArkLib/ToMathlib/RSPhases.lean:128`
