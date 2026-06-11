@@ -47,6 +47,7 @@ import ArkLib.Data.CodingTheory.AGL24EvalToSymbolic
 import ArkLib.Data.CodingTheory.AGL24FrontDoorBridge
 import ArkLib.Data.CodingTheory.AGL24KernelVector
 import ArkLib.Data.CodingTheory.AGL24ListDecodingBridge
+import ArkLib.Data.CodingTheory.AGL24Orientation
 import ArkLib.Data.CodingTheory.AGL24RIMPermutation
 import ArkLib.Data.CodingTheory.AGL24RSInstance
 import ArkLib.Data.CodingTheory.AGL24ReducedIntersectionMatrix
