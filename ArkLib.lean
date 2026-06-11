@@ -527,6 +527,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerFinite
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
 import ArkLib.Data.CodingTheory.ProximityGap.CollinearityCensusTransfer
+import ArkLib.Data.CodingTheory.ProximityGap.CollinearityMatchingFrame
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
