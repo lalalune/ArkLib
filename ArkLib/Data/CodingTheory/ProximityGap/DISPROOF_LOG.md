@@ -5621,3 +5621,12 @@ Interpretation for the δ* campaign: S1's "same mathematics" claim is now theore
 in-tree at the coefficient-surface level.  What remains open is the hard analytic transfer:
 the RS agreement-to-layer reduction, the marginal-layer laws beyond the balanced witness
 layer, and the per-prime norm-divisibility surplus correction.
+
+**O137 addendum — the conjecture survives (13,4,2) and (17,4,2), and predicts the FULL
+profile:** exact ladder rerun: max-bad profile `{m=3: 4, m=4: 1}` at BOTH p = 13 (domain
+(1,8,12,5)) and p = 17 (domain (1,13,16,4)) — equal to the census profile
+`{#3-subset sums = 4, #4-subset sums = 1}` of the respective μ₄ domains. Three fields
+(5, 13, 17), one census. The field-independent "flat numerator" phenomenon is *explained*
+at these rungs: the numerator is the subset-sum census, which is field-independent as long
+as the sums stay distinct (no collisions at these primes). Probe additions in
+`probe_o137_kkh26_extremal.py`-adjacent rerun of the exact ladder.

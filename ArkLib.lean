@@ -701,8 +701,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Jo26CurveNonCovering
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26InterleavingBound
-import ArkLib.Data.CodingTheory.ProximityGap.Jo26ObstructionCount
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26MissingLineGenerousRefuted
+import ArkLib.Data.CodingTheory.ProximityGap.Jo26ObstructionCount
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26ObstructionRowCount
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26PowerGeneratorInterleaving
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonBoundRealLower
@@ -821,7 +821,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEventAgreeWitness
-import ArkLib.Data.CodingTheory.ProximityGap.MCAEventEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticeResolvedSpec
@@ -839,6 +838,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeOverflowSharp
 import ArkLib.Data.CodingTheory.ProximityGap.MCALineReduction
 import ArkLib.Data.CodingTheory.ProximityGap.MCALineReductionSharp
+import ArkLib.Data.CodingTheory.ProximityGap.MCAListBracketInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAListCollapseFullSupport
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMasterBound
@@ -878,7 +878,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.MannFiberCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MasterLoop45
 import ArkLib.Data.CodingTheory.ProximityGap.MatchingDomainUniqueness
 import ArkLib.Data.CodingTheory.ProximityGap.MinimalVanishingReduction
-import ArkLib.Data.CodingTheory.ProximityGap.MissingLineDefeater
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumCompleteSquare
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.MixedRadixTower
@@ -1037,7 +1036,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumZeroInflation
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceAvoidance
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
-import ArkLib.Data.CodingTheory.ProximityGap.SumPolynomialAPI
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUDExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUpperReduction
