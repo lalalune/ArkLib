@@ -1299,12 +1299,12 @@ theorem mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
     exact linePetal_subset_compl D u₀ u₁ w γ
 
 /-- **Strict-expansion-only max-corr residual.**  This is a smaller producer surface for the
-GKL24/GCXK25 first-moment route.  Compared with `GKL24MaxCorrWitnessCoverResidual`, it asks only
+GKL24/GCXK25 first-moment route.  Compared with `GKL24MaxCorrWitnessCoverHypothesis`, it asks only
 for a close-codeword carrier and, for each carried codeword, a maximal correlated-agreement domain
 that is strictly expanded by every bad line-agreement domain.
 
 The pairwise large-intersection clause is derived by
-`GKL24MaxCorrWitnessCoverResidual_of_strict_cover` from the witness-size lower bounds when the
+`GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover` from the witness-size lower bounds when the
 Johnson parameter relation `2 * δ_mca ≤ p` holds. -/
 def GKL24MaxCorrStrictWitnessCoverResidual
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) (B_T : ℝ) : Prop :=
@@ -1327,7 +1327,7 @@ carrier-level version of `mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeD
 stack has a close-codeword carrier, and each carried codeword has a maximal
 correlated-agreement domain whose bad line-agreement domains strictly expand it while pairwise
 intersections remain large. -/
-def GKL24MaxCorrWitnessCoverResidual
+def GKL24MaxCorrWitnessCoverHypothesis
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) (B_T : ℝ) : Prop :=
   ∀ u : WordStack F (Fin 2) ι,
     ∃ T : Finset (ι → F),
@@ -1351,15 +1351,15 @@ def GKL24MaxCorrWitnessCoverResidual
                         (((lineAgreeSet (u 0) (u 1) w γ ∩
                             lineAgreeSet (u 0) (u 1) w γ').card : ℕ) : ℝ≥0))
 
-/-- A strict-expansion-only max-corr residual gives the full max-corr residual whenever
+/-- A strict-expansion-only max-corr residual gives the full max-corr hypothesis whenever
 `2 * δ ≤ p` and `p ≤ 1`.  The missing pairwise large-intersection clause follows from
 `lineAgreeSet_inter_card_ge_of_mem_mcaBadWitness`. -/
-theorem GKL24MaxCorrWitnessCoverResidual_of_strict_cover
+theorem GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hp_le_one : p ≤ 1)
     (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
     (hstrict : GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T) :
-    GKL24MaxCorrWitnessCoverResidual MC δ p B_T := by
+    GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T := by
   intro u
   obtain ⟨T, hTsub, hcover, hcard, hstrictT⟩ := hstrict u
   refine ⟨T, hTsub, hcover, hcard, ?_⟩
@@ -1375,7 +1375,7 @@ theorem GKL24MaxCorrWitnessCoverResidual_of_strict_cover
 witness-cover residual with per-codeword count `p · n`. -/
 theorem GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
-    (hmax : GKL24MaxCorrWitnessCoverResidual MC δ p B_T) :
+    (hmax : GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T) :
     GKL24FirstMomentWitnessCoverResidual MC δ B_T ((p : ℝ) * (Fintype.card ι : ℝ)) := by
   intro u
   obtain ⟨T, hTsub, hcover, hcard, hmaxT⟩ := hmax u
@@ -1398,18 +1398,18 @@ theorem GKL24FirstMomentWitnessCoverResidual_of_strict_cover
     GKL24FirstMomentWitnessCoverResidual MC δ B_T
       ((p : ℝ) * (Fintype.card ι : ℝ)) :=
   GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover MC δ p
-    (GKL24MaxCorrWitnessCoverResidual_of_strict_cover MC δ p hp_le_one hδp hstrict)
+    (GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp hstrict)
 
-/-- **Petal-certificate form of the GKL24/GCXK25 witness-cover residual.**
+/-- **Petal-certificate hypothesis for the GKL24/GCXK25 witness-cover route.**
 
 For every stack `u`, this asks for a close-codeword carrier `T` that covers the bad scalars and,
 for every codeword `w ∈ T`, a GKL/GCXK maximal-domain certificate: a large domain `D` and
 pairwise-disjoint nonempty petals in `Dᶜ` for the bad scalars witnessed by `w`.
 
-This is still a residual: the hard paper theorem is the construction of those domains and petals.
-The theorem below proves that this certificate is exactly strong enough to instantiate
-`GKL24FirstMomentWitnessCoverResidual` with `b = p · n`. -/
-def GKL24PetalWitnessCoverResidual
+This is a downstream hypothesis surface: the hard paper theorem is the construction of those
+domains and petals. The theorem below proves that this certificate is exactly strong enough to
+instantiate `GKL24FirstMomentWitnessCoverResidual` with `b = p · n`. -/
+def GKL24PetalWitnessCoverHypothesis
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) (B_T p : ℝ) : Prop :=
   ∀ u : WordStack F (Fin 2) ι,
     ∃ T : Finset (ι → F),
@@ -1428,12 +1428,12 @@ def GKL24PetalWitnessCoverResidual
                     (∀ γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
                       petal γ ⊆ (Finset.univ \ D))
 
-/-- A maximal-domain witness-cover residual gives the explicit petal-certificate residual by
+/-- A maximal-domain witness-cover residual gives the explicit petal-certificate hypothesis by
 choosing the canonical line petals outside each maximal domain. -/
-theorem GKL24PetalWitnessCoverResidual_of_maxCorr_cover
+theorem GKL24PetalWitnessCoverHypothesis_of_maxCorr_cover
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
-    (hmax : GKL24MaxCorrWitnessCoverResidual MC δ p B_T) :
-    GKL24PetalWitnessCoverResidual MC δ B_T (p : ℝ) := by
+    (hmax : GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T) :
+    GKL24PetalWitnessCoverHypothesis MC δ B_T (p : ℝ) := by
   classical
   intro u
   obtain ⟨T, hTsub, hcover, hcard, hmaxT⟩ := hmax u
@@ -1464,22 +1464,22 @@ theorem GKL24PetalWitnessCoverResidual_of_maxCorr_cover
   · intro γ _hγ
     exact linePetal_subset_compl D (u 0) (u 1) w γ
 
-/-- Strict-expansion-only max-corr certificates give the petal-certificate residual under the
-same Johnson parameter relation as `GKL24MaxCorrWitnessCoverResidual_of_strict_cover`. -/
-theorem GKL24PetalWitnessCoverResidual_of_strict_cover
+/-- Strict-expansion-only max-corr certificates give the petal-certificate hypothesis under the
+same Johnson parameter relation as `GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover`. -/
+theorem GKL24PetalWitnessCoverHypothesis_of_strict_cover
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hp_le_one : p ≤ 1)
     (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
     (hstrict : GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T) :
-    GKL24PetalWitnessCoverResidual MC δ B_T (p : ℝ) :=
-  GKL24PetalWitnessCoverResidual_of_maxCorr_cover MC δ p
-    (GKL24MaxCorrWitnessCoverResidual_of_strict_cover MC δ p hp_le_one hδp hstrict)
+    GKL24PetalWitnessCoverHypothesis MC δ B_T (p : ℝ) :=
+  GKL24PetalWitnessCoverHypothesis_of_maxCorr_cover MC δ p
+    (GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp hstrict)
 
-/-- A petal-certificate residual instantiates the corrected witness-cover residual with the
+/-- A petal-certificate hypothesis instantiates the corrected witness-cover residual with the
 first-moment count `b = p · n`. -/
 theorem GKL24FirstMomentWitnessCoverResidual_of_petal_cover
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T p : ℝ}
-    (hpetal : GKL24PetalWitnessCoverResidual MC δ B_T p) :
+    (hpetal : GKL24PetalWitnessCoverHypothesis MC δ B_T p) :
     GKL24FirstMomentWitnessCoverResidual MC δ B_T (p * (Fintype.card ι : ℝ)) := by
   intro u
   obtain ⟨T, hTsub, hcover, hcard, hpetalT⟩ := hpetal u
@@ -1490,12 +1490,12 @@ theorem GKL24FirstMomentWitnessCoverResidual_of_petal_cover
     mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals
       MC δ (u 0) (u 1) w D petal hDlarge hdisj hsize hsub
 
-/-- Count-level front door from the petal-certificate residual.  This is the exact
+/-- Count-level front door from the petal-certificate hypothesis.  This is the exact
 `B_T · p · n` first-moment shape used by the GCXK25/GKL24 route once the disjoint-petal
 construction is available. -/
-theorem mcaBad_card_le_of_gkl24_petal_witnessCover_residual
+theorem mcaBad_card_le_of_gkl24_petal_witnessCover_hypothesis
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T p : ℝ} (hp0 : 0 ≤ p)
-    (hres : GKL24PetalWitnessCoverResidual MC δ B_T p)
+    (hres : GKL24PetalWitnessCoverHypothesis MC δ B_T p)
     (u : WordStack F (Fin 2) ι) :
     ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤
       B_T * (p * (Fintype.card ι : ℝ)) := by
@@ -1508,16 +1508,16 @@ theorem mcaBad_card_le_of_gkl24_petal_witnessCover_residual
     mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals
       MC δ (u 0) (u 1) w D petal hDlarge hdisj hsize hsub
 
-/-- `ε_mca` front door from the petal-certificate residual.  This keeps the remaining first-moment
-paper work localized to the construction of the carrier and disjoint petals. -/
-theorem epsMCA_le_ofReal_of_gkl24_petal_witnessCover_residual
+/-- `ε_mca` front door from the petal-certificate hypothesis.  This keeps the remaining
+first-moment paper work localized to the construction of the carrier and disjoint petals. -/
+theorem epsMCA_le_ofReal_of_gkl24_petal_witnessCover_hypothesis
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T p : ℝ} (hp0 : 0 ≤ p)
-    (hres : GKL24PetalWitnessCoverResidual MC δ B_T p) :
+    (hres : GKL24PetalWitnessCoverHypothesis MC δ B_T p) :
     epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
       ENNReal.ofReal ((B_T * (p * (Fintype.card ι : ℝ))) / Fintype.card F) := by
   refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
   intro u
-  exact mcaBad_card_le_of_gkl24_petal_witnessCover_residual MC δ hp0 hres u
+  exact mcaBad_card_le_of_gkl24_petal_witnessCover_hypothesis MC δ hp0 hres u
 
 /-- **Sharp in-tree GKL24 first-moment residual instance `b = δ·n + 1`.** Taking `T` to be the
 finite set of all codewords of `MC`, the sharp disjoint-charging per-codeword count discharges the
@@ -1600,7 +1600,7 @@ theorem mcaBad_card_le_of_gkl24_witnessCover_residual
 /-- Count-level front door from the maximal-domain witness-cover residual. -/
 theorem mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
-    (hres : GKL24MaxCorrWitnessCoverResidual MC δ p B_T)
+    (hres : GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T)
     (u : WordStack F (Fin 2) ι) :
     ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤
       B_T * ((p : ℝ) * (Fintype.card ι : ℝ)) :=
@@ -1617,7 +1617,7 @@ theorem mcaBad_card_le_of_gkl24_strict_witnessCover_residual
     ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤
       B_T * ((p : ℝ) * (Fintype.card ι : ℝ)) :=
   mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual MC δ p
-    (GKL24MaxCorrWitnessCoverResidual_of_strict_cover MC δ p hp_le_one hδp hres) u
+    (GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp hres) u
 
 /-- Probability-level companion to `mcaBad_card_le_of_gkl24_witnessCover_residual`. -/
 theorem mcaEvent_prob_le_ofReal_of_gkl24_witnessCover_residual
@@ -1632,7 +1632,7 @@ theorem mcaEvent_prob_le_ofReal_of_gkl24_witnessCover_residual
 /-- Probability-level front door from the maximal-domain witness-cover residual. -/
 theorem mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_residual
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
-    (hres : GKL24MaxCorrWitnessCoverResidual MC δ p B_T)
+    (hres : GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T)
     (u : WordStack F (Fin 2) ι) :
     Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) γ] ≤
       ENNReal.ofReal ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
@@ -1649,7 +1649,7 @@ theorem mcaEvent_prob_le_ofReal_of_gkl24_strict_witnessCover_residual
     Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) γ] ≤
       ENNReal.ofReal ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
   mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_residual MC δ p
-    (GKL24MaxCorrWitnessCoverResidual_of_strict_cover MC δ p hp_le_one hδp hres) u
+    (GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp hres) u
 
 /-- **Alias for the witness-cover residual in the canonical ABF26 T5.1 parameter shape.**
 This is the future plug-in point for the GCXK25/GKL24 maximal-domain charging theorem at
@@ -1695,7 +1695,7 @@ theorem epsMCA_le_ofReal_of_gkl24_witnessCover_residual
 /-- `ε_mca` front door from the maximal-domain witness-cover residual. -/
 theorem epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_residual
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
-    (hres : GKL24MaxCorrWitnessCoverResidual MC δ p B_T) :
+    (hres : GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T) :
     epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
       ENNReal.ofReal
         ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) := by
@@ -1713,7 +1713,7 @@ theorem epsMCA_le_ofReal_of_gkl24_strict_witnessCover_residual
       ENNReal.ofReal
         ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
   epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_residual MC δ p
-    (GKL24MaxCorrWitnessCoverResidual_of_strict_cover MC δ p hp_le_one hδp hres)
+    (GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp hres)
 
 /-- **Fully in-tree `ε_mca` first-moment relaxation.** This is the residual corollary obtained from
 `GKL24FirstMomentResidual_inTree_card`: without any GKL24/GCXK25 hypothesis,
@@ -1771,14 +1771,14 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.badScalars_card_le_radius_mul_card_of_linePetal_core_eq
 #print axioms ProximityGap.mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals
 #print axioms ProximityGap.mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
-#print axioms ProximityGap.GKL24MaxCorrWitnessCoverResidual_of_strict_cover
-#print axioms ProximityGap.GKL24PetalWitnessCoverResidual_of_maxCorr_cover
-#print axioms ProximityGap.GKL24PetalWitnessCoverResidual_of_strict_cover
+#print axioms ProximityGap.GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover
+#print axioms ProximityGap.GKL24PetalWitnessCoverHypothesis_of_maxCorr_cover
+#print axioms ProximityGap.GKL24PetalWitnessCoverHypothesis_of_strict_cover
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_petal_cover
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_strict_cover
-#print axioms ProximityGap.mcaBad_card_le_of_gkl24_petal_witnessCover_residual
-#print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_petal_witnessCover_residual
+#print axioms ProximityGap.mcaBad_card_le_of_gkl24_petal_witnessCover_hypothesis
+#print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_petal_witnessCover_hypothesis
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_residual
 #print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_residual
 #print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual

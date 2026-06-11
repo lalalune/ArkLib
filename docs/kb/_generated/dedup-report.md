@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2354 files, 29779 declarations
+- `ArkLib` — 2356 files, 29799 declarations
 
 ## Same short-name across multiple files (1253 groups)
 
@@ -496,7 +496,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `proj` (9 declarations, 3 files)
 
-- `def ArkLib.ProximityGap.ChordFamilyCount.proj` [ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean:78](../../../ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean#L78) — The `ZMod 2` projection of `ZMod (2^m)`.
+- `def ArkLib.ProximityGap.ChordFamilyCount.proj` [ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean:84](../../../ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean#L84) — The `ZMod 2` projection of `ZMod (2^m)`.
 - `def Round16SelfSimilar.proj` [ArkLib/Data/CodingTheory/ProximityGap/SmoothDomainSelfSimilarity.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/SmoothDomainSelfSimilarity.lean#L62) — The index fiber map `π : Fin (s·e) → Fin s`, `i ↦ i % s` (the index-level power map).
 - `def Statement.Lens.proj` [ArkLib/OracleReduction/LiftContext/Lens.lean:49](../../../ArkLib/OracleReduction/LiftContext/Lens.lean#L49) — Transport input statements from the outer context to the inner context
 - `def OracleStatement.Lens.proj` [ArkLib/OracleReduction/LiftContext/Lens.lean:109](../../../ArkLib/OracleReduction/LiftContext/Lens.lean#L109) — Transport input statements from the outer context to the inner context This is the projection compon
@@ -2718,7 +2718,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `half_add_half` (2 declarations, 2 files)
 
-- `theorem ArkLib.ProximityGap.ChordFamilyCount.half_add_half` [ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean#L60) — `2^(m−1)` is self-negative in `ZMod (2^m)`: `h + h = 0`.
+- `theorem ArkLib.ProximityGap.ChordFamilyCount.half_add_half` [ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean:66](../../../ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean#L66) — `2^(m−1)` is self-negative in `ZMod (2^m)`: `h + h = 0`.
 - `lemma ArkLib.ProximityGap.KKH26.half_add_half` [ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean:461](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean#L461) — (no docstring)
 
 ### `ham_c0_c1` (2 declarations, 2 files)

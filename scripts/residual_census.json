@@ -1,13 +1,13 @@
 {
  "summary": {
-  "total": 102,
-  "open": 57,
+  "total": 100,
+  "open": 55,
   "discharged": 43,
   "refuted": 2,
   "by_top_dir": {
    "Data": {
-    "total": 27,
-    "open": 19,
+    "total": 25,
+    "open": 17,
     "discharged": 7,
     "refuted": 1
    },
@@ -241,9 +241,7 @@
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
      "line": 1376,
-     "conditional_on_residuals": [
-      "GKL24MaxCorrWitnessCoverResidual"
-     ],
+     "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hmax"
      ],
@@ -269,9 +267,7 @@
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
      "line": 1480,
-     "conditional_on_residuals": [
-      "GKL24PetalWitnessCoverResidual"
-     ],
+     "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hpetal"
      ],
@@ -286,80 +282,6 @@
    "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
    "line": 1309,
    "providers": [],
-   "status": "open"
-  },
-  {
-   "name": "GKL24MaxCorrWitnessCoverResidual",
-   "fq_name": "ProximityGap.GKL24MaxCorrWitnessCoverResidual",
-   "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-   "line": 1330,
-   "providers": [
-    {
-     "name": "ProximityGap.GKL24MaxCorrWitnessCoverResidual_of_strict_cover",
-     "kind": "theorem",
-     "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1357,
-     "conditional_on_residuals": [
-      "GKL24MaxCorrStrictWitnessCoverResidual"
-     ],
-     "extra_explicit_binders": [
-      "hp_le_one",
-      "hstrict",
-      "hδp"
-     ],
-     "ambiguous_name_match": false
-    }
-   ],
-   "status": "open"
-  },
-  {
-   "name": "GKL24PetalWitnessCoverResidual",
-   "fq_name": "ProximityGap.GKL24PetalWitnessCoverResidual",
-   "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-   "line": 1412,
-   "providers": [
-    {
-     "name": "ProximityGap.GKL24PetalWitnessCoverResidual_of_maxCorr_cover",
-     "kind": "theorem",
-     "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1433,
-     "conditional_on_residuals": [
-      "GKL24MaxCorrWitnessCoverResidual"
-     ],
-     "extra_explicit_binders": [
-      "hmax"
-     ],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "ProximityGap.GKL24PetalWitnessCoverResidual_of_strict_cover",
-     "kind": "theorem",
-     "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1469,
-     "conditional_on_residuals": [
-      "GKL24MaxCorrStrictWitnessCoverResidual"
-     ],
-     "extra_explicit_binders": [
-      "hp_le_one",
-      "hstrict",
-      "hδp"
-     ],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "ProximityGap.Issue67Scratch.gkl24PetalWitnessCoverResidual_of_maxDomainWitnessCover",
-     "kind": "theorem",
-     "file": "ArkLib/Data/CodingTheory/Connections/GKL24PetalWitnessCover.lean",
-     "line": 84,
-     "conditional_on_residuals": [
-      "GKL24MaxDomainWitnessCoverResidual"
-     ],
-     "extra_explicit_binders": [
-      "hres"
-     ],
-     "ambiguous_name_match": false
-    }
-   ],
    "status": "open"
   },
   {

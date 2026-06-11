@@ -345,7 +345,7 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual
 maximal-correlated-domain GKL24 residual.**
 
 This is the first-moment-only `ε_mca` consumer for the sharpened residual surface
-`GKL24MaxCorrWitnessCoverResidual`: at the Johnson-lifted MCA radius, with `B_T = L²` and
+`GKL24MaxCorrWitnessCoverHypothesis`: at the Johnson-lifted MCA radius, with `B_T = L²` and
 list-decoding radius `p = δ`, the in-tree max-correlation bridge gives the
 `L²·δ·n / |F|` summand. -/
 theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_maxCorr_residual
@@ -354,7 +354,7 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_maxCorr_residual
     (_hη_pos : 0 < η) (_hη_lt : η < 1) (_hη_le_δ : η ≤ δ)
     (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-        ProximityGap.GKL24MaxCorrWitnessCoverResidual C
+        ProximityGap.GKL24MaxCorrWitnessCoverHypothesis C
           ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
           δ.toNNReal
           ((L : ℝ) ^ 2)) :
@@ -379,7 +379,7 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-        ProximityGap.GKL24MaxCorrWitnessCoverResidual C
+        ProximityGap.GKL24MaxCorrWitnessCoverHypothesis C
           ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
           δ.toNNReal
           ((L : ℝ) ^ 2)) :
@@ -443,7 +443,7 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_strict_residual
 
 /-- **ABF26 T5.1 front door from the strict-expansion-only maximal-domain GKL24 residual.**
 This composes the strict-cover residual through
-`GKL24MaxCorrWitnessCoverResidual_of_strict_cover` and then reuses the max-corr T5.1 consumer.
+`GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover` and then reuses the max-corr T5.1 consumer.
 The only extra assumption is the strict-cover radius relation `2 * J(δ, η) ≤ δ`, expressed after
 the same `toNNReal` truncation as the theorem parameters. -/
 theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_strict_witnessCover_residual
@@ -468,7 +468,7 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_strict_witnessCover_residual
     exact le_of_lt hδ_lt
   exact linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual C L δ η
     hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ
-    (ProximityGap.GKL24MaxCorrWitnessCoverResidual_of_strict_cover C
+    (ProximityGap.GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover C
       ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
       δ.toNNReal hp_le_one hstrict_radius hres)
 
@@ -690,7 +690,7 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual_
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-        ProximityGap.GKL24MaxCorrWitnessCoverResidual C
+        ProximityGap.GKL24MaxCorrWitnessCoverHypothesis C
           ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
           δ.toNNReal
           ((L : ℝ) ^ 2)) :

@@ -37,9 +37,9 @@ shortcut surfaces.
 
 - `ProximityGap.GKL24MaxCorrStrictWitnessCoverResidual`
   (`ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1309`)
-- `ProximityGap.GKL24MaxCorrWitnessCoverResidual`
+- `ProximityGap.GKL24MaxCorrWitnessCoverHypothesis`
   (`ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1330`)
-- `ProximityGap.GKL24PetalWitnessCoverResidual`
+- `ProximityGap.GKL24PetalWitnessCoverHypothesis`
   (`ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1412`)
 - `ProximityGap.Issue67Scratch.GKL24MaxDomainWitnessCoverResidual`
   (`ArkLib/Data/CodingTheory/Connections/GKL24PetalWitnessCover.lean:56`)

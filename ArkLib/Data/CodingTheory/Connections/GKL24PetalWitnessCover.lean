@@ -81,10 +81,10 @@ def GKL24MaxDomainWitnessCoverResidual
 We derive the disjoint petals from the certificate via the in-tree
 `linePetal_pairwise_disjoint_of_maxCorrAgreeDomain` (per-γ `wOf` form), plus petal nonemptiness
 and subset-of-complement. The petal function we exhibit is `petal γ := linePetal D (wOf γ) γ`. -/
-theorem gkl24PetalWitnessCoverResidual_of_maxDomainWitnessCover
+theorem gkl24PetalWitnessCoverHypothesis_of_maxDomainWitnessCover
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ} {p : ℝ≥0}
     (hres : GKL24MaxDomainWitnessCoverResidual MC δ B_T p) :
-    GKL24PetalWitnessCoverResidual MC δ B_T (p : ℝ) := by
+    GKL24PetalWitnessCoverHypothesis MC δ B_T (p : ℝ) := by
   classical
   intro u
   obtain ⟨T, hTsub, hcover, hcard, hTcert⟩ := hres u
@@ -121,8 +121,8 @@ theorem mcaBad_card_le_t51_firstMoment_of_maxDomainWitnessCover
     (u : WordStack F (Fin 2) ι) :
     ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤
       B_T * ((p : ℝ) * (Fintype.card ι : ℝ)) :=
-  mcaBad_card_le_of_gkl24_petal_witnessCover_residual MC δ (p.coe_nonneg)
-    (gkl24PetalWitnessCoverResidual_of_maxDomainWitnessCover MC δ hres) u
+  mcaBad_card_le_of_gkl24_petal_witnessCover_hypothesis MC δ (p.coe_nonneg)
+    (gkl24PetalWitnessCoverHypothesis_of_maxDomainWitnessCover MC δ hres) u
 
 /-- **Sharp `ε_mca` first-moment bound from the atomic maximal-domain residual.** -/
 theorem epsMCA_le_ofReal_t51_firstMoment_of_maxDomainWitnessCover
@@ -130,8 +130,8 @@ theorem epsMCA_le_ofReal_t51_firstMoment_of_maxDomainWitnessCover
     (hres : GKL24MaxDomainWitnessCoverResidual MC δ B_T p) :
     epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
       ENNReal.ofReal ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
-  epsMCA_le_ofReal_of_gkl24_petal_witnessCover_residual MC δ (p.coe_nonneg)
-    (gkl24PetalWitnessCoverResidual_of_maxDomainWitnessCover MC δ hres)
+  epsMCA_le_ofReal_of_gkl24_petal_witnessCover_hypothesis MC δ (p.coe_nonneg)
+    (gkl24PetalWitnessCoverHypothesis_of_maxDomainWitnessCover MC δ hres)
 
 /-! ## 4. Regression sanity: the in-tree relaxed residual is still reachable.
 

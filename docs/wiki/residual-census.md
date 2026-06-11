@@ -117,8 +117,8 @@ Categories (all require focused, often multi-session, work):
 - `CurveCommonAgreementResidual`
 - `FaaDiBrunoSuccSumZeroResidual`
 - `GKL24FirstMomentWitnessCoverResidual`
-- `GKL24MaxCorrWitnessCoverResidual`
-- `GKL24PetalWitnessCoverResidual`
+- `GKL24MaxCorrWitnessCoverHypothesis`
+- `GKL24PetalWitnessCoverHypothesis`
 - `K4GradedFactorCellResidual`
 - `OuterCompletenessResidual`
 - `StrictCoeffPolysExcResidual`
