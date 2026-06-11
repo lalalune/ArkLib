@@ -39,6 +39,7 @@ import ArkLib.Data.Classes.Initialize
 import ArkLib.Data.Classes.Serde
 import ArkLib.Data.Classes.Slice
 import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
+import ArkLib.Data.CodingTheory.AGL24KernelVector
 import ArkLib.Data.CodingTheory.AGL24ReducedIntersectionMatrix
 import ArkLib.Data.CodingTheory.AGL24WeakPartition
 import ArkLib.Data.CodingTheory.AsymptoticGVBound
@@ -1298,6 +1299,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514PaperFork
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516HashHalf
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFalse
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58CacheProvenance
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Correspondence
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58EagerFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
