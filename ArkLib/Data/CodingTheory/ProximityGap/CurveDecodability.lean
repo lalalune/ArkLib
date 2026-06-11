@@ -91,7 +91,7 @@ variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 /-- The point of the degree-`ℓ` curve through the stack `u = (u₀, …, u_ℓ)` at parameter
 `α`: the word `i ↦ ∑ⱼ αʲ • uⱼ(i)` ([GG25] Definition 3.1). -/
 def curveAt {ℓ : ℕ} (u : Fin (ℓ + 1) → ι → M) (α : F) : ι → M :=
-  fun i => ∑ j, α ^ (j : ℕ) • u j i
+  fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • u j i
 
 /-- The close set `A_δ(u, f)`: parameters `α` at which the curve point is within relative
 Hamming distance `δ` of `f α` ([GG25] Definition 3.1). -/
@@ -202,8 +202,9 @@ def combCurveSubmodule (C : Submodule F (ι → A)) {ℓ s : ℕ}
         = (∑ k, lam k • f α i k) + ∑ k, lam' k • f α i k := by
           rw [← Finset.sum_add_distrib]
           exact Finset.sum_congr rfl fun k _ => by rw [Pi.add_apply, add_smul]
-      _ = (∑ j, α ^ (j : ℕ) • h j i) + ∑ j, α ^ (j : ℕ) • h' j i := by rw [h1, h2]
-      _ = ∑ j, α ^ (j : ℕ) • (h + h') j i := by
+      _ = (∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • h j i)
+          + ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • h' j i := by rw [h1, h2]
+      _ = ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • (h + h') j i := by
           rw [← Finset.sum_add_distrib]
           exact Finset.sum_congr rfl fun j _ => by
             rw [Pi.add_apply, Pi.add_apply, smul_add]
@@ -218,8 +219,8 @@ def combCurveSubmodule (C : Submodule F (ι → A)) {ℓ s : ℕ}
           rw [Finset.smul_sum]
           exact Finset.sum_congr rfl fun k _ => by
             rw [Pi.smul_apply, smul_eq_mul, mul_smul]
-      _ = r • ∑ j, α ^ (j : ℕ) • h j i := by rw [h1]
-      _ = ∑ j, α ^ (j : ℕ) • (r • h) j i := by
+      _ = r • ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • h j i := by rw [h1]
+      _ = ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • (r • h) j i := by
           rw [Finset.smul_sum]
           refine Finset.sum_congr rfl fun j _ => ?_
           simp only [Pi.smul_apply]
@@ -349,11 +350,16 @@ theorem markedCurveDecodable_of_interpolation (C : Submodule F (ι → A)) (ℓ 
     calc f α₀ i
         = ∑ m ∈ t, (P m).eval α₀ • f m i := by
           rw [Finset.sum_eq_single α₀]
-          · rw [show (P α₀).eval α₀ = 1 from Lagrange.eval_basis_self hinj hα₀,
-              one_smul]
+          · have hself : (P α₀).eval α₀ = 1 := by
+              simpa [hP] using
+                (Lagrange.eval_basis_self (s := t) (v := id) hinj hα₀)
+            rw [hself, one_smul]
           · intro m _ hne
-            rw [show (P m).eval α₀ = 0 from Lagrange.eval_basis_of_ne hne hα₀,
-              zero_smul]
+            have hzero : (P m).eval α₀ = 0 := by
+              simpa [hP] using
+                (Lagrange.eval_basis_of_ne (s := t) (v := id)
+                  (i := m) (j := α₀) hne hα₀)
+            rw [hzero, zero_smul]
           · intro hα
             exact absurd hα₀ hα
       _ = ∑ m ∈ t, (∑ j : Fin (ℓ + 1), (P m).coeff (j : ℕ) * α₀ ^ (j : ℕ)) • f m i := by
@@ -399,7 +405,7 @@ theorem farWordSupply_of_far_pair {C : Set (ι → M)} {δ : ℚ≥0}
       rw [hammingDist_comm w c₁]
       exact hammingDist_triangle c₁ w c₂
     simp only [Code.relHammingDist]
-    rw [div_add_div_same]
+    rw [← add_div]
     rw [div_eq_mul_inv, div_eq_mul_inv]
     refine mul_le_mul_right' ?_ _
     exact_mod_cast hnat
