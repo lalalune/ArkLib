@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposePerfectCompletenessThreaded
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessChallenge
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposeOracleCompleteness
 
 /-!
 # n-ary challenge-seam `seqCompose` perfect completeness
@@ -175,6 +176,55 @@ theorem seqCompose_perfectCompleteness_challenge_threaded {m : ℕ}
 
 end Reduction
 
+namespace OracleReduction
+
+variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
+  {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+
+set_option maxHeartbeats 1000000 in
+set_option linter.unusedFintypeInType false in
+/-- **n-ary challenge-seam `seqCompose` perfect completeness for oracle reductions.** Every
+component is nonempty and `V_to_P`-leading (`hValid`) and perfectly complete (`h`); with
+per-round challenge finiteness/inhabitedness the oracle-level `seqCompose` is perfectly
+complete. Pure pass-through to `Reduction.seqCompose_perfectCompleteness_challenge_threaded`
+via the structural `toReduction` bridge `seqCompose_toReduction` (exactly as the message-seam
+`seqCompose_perfectCompleteness_threaded` in `SeqComposeOracleCompleteness.lean`). -/
+theorem seqCompose_perfectCompleteness_challenge_threaded {m : ℕ}
+    (Stmt : Fin (m + 1) → Type)
+    {ιₛ : Fin (m + 1) → Type} (OStmt : (i : Fin (m + 1)) → ιₛ i → Type)
+    [Oₛ : ∀ i, ∀ j, OracleInterface (OStmt i j)]
+    (Wit : Fin (m + 1) → Type)
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
+    [∀ i, ∀ j, SampleableType ((pSpec i).Challenge j)]
+    [∀ i, ∀ j, Fintype ((pSpec i).Challenge j)]
+    [∀ i, ∀ j, Inhabited ((pSpec i).Challenge j)]
+    (R : (i : Fin m) →
+      OracleReduction oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Wit i.castSucc)
+        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (R i).verifier]
+    (rel : (i : Fin (m + 1)) → Set ((Stmt i × ∀ j, OStmt i j) × Wit i))
+    (hValid : ∀ i, ∃ h : 0 < n i, (pSpec i).dir ⟨0, h⟩ = .V_to_P)
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (h : ∀ i, (R i).perfectCompleteness init impl (rel i.castSucc) (rel i.succ)) :
+    (seqCompose Stmt OStmt Wit R).perfectCompleteness init impl (rel 0) (rel (Fin.last m)) := by
+  change Reduction.perfectCompleteness init impl (rel 0) (rel (Fin.last m))
+    (seqCompose Stmt OStmt Wit R).toReduction
+  rw [seqCompose_toReduction Stmt OStmt Wit R]
+  exact Reduction.seqCompose_perfectCompleteness_challenge_threaded
+    (fun i => Stmt i × (∀ j, OStmt i j)) Wit
+    (fun i => (R i).toReduction) rel hValid hInit hImplSupp himplSP himplNF h
+
+end OracleReduction
+
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProtocolSpec.seqCompose_appendValid_challenge
 #print axioms Reduction.seqCompose_perfectCompleteness_challenge_threaded
+#print axioms OracleReduction.seqCompose_perfectCompleteness_challenge_threaded
