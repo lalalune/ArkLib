@@ -156,3 +156,12 @@ for p in (17, 97, 113, 257, 337, 449, 577, 7681, 12289):
     r = census_modp(16, p)
     if r:
         print(f"n=16, p={p}: horizontal={r[0]}, vertical={r[1]}, slanted={r[2]}")
+
+# C5 (appended): large-scale stable census via line-grouping at large primes.
+# Verified stable values (agreement at >=3 large primes each):
+#   n=32: slanted 6720 (stable at 12289, 40961, 65537)
+#   n=64: slanted 64640 (stable at 786433, 7340033, 23068673, 167772161;
+#         surplus tail: 121984@12289, 82176@114689, 70144@147457; Fermat 65537
+#         corrupts even the vertical stratum: 5344 vs C(32,3)=4960)
+# family closed form (chord law): family(n) = n(n-4)^2/8 -> 16, 288, 3136, 28800
+# sporadic = slanted - family -> 0, 256, 3584, 35840 = 2^(m+4) * {1, 7, 35}
