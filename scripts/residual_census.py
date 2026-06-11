@@ -48,6 +48,15 @@ import re
 import sys
 from pathlib import Path
 
+
+def configure_stdio() -> None:
+    """Prefer UTF-8 output for declaration names on Windows consoles."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8")
+
+
 DECL_RE = re.compile(
     r"^\s*(?:@\[[^\]]*\]\s*)?"
     r"(?:private\s+|protected\s+|noncomputable\s+|partial\s+|scoped\s+|unsafe\s+|nonrec\s+)*"
@@ -421,7 +430,10 @@ def main() -> int:
 
     payload = {"summary": summary, "residuals": residuals, "near_misses": near_misses}
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n")
+    out_path.write_text(
+        json.dumps(payload, indent=1, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
 
     print(
         f"residual census: total {summary['total']} | "
@@ -450,4 +462,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    configure_stdio()
     sys.exit(main())
