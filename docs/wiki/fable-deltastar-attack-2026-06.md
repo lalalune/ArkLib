@@ -631,3 +631,58 @@ stacks, §15 saturation) close the generic escape routes, so any new hypothesis 
 genuinely new beyond-Johnson explicit-RS list technique (the 25-yr open problem) or land on the
 already-mapped bad/typical side. The honest terminus: the prize = one named obligation, exhaustively
 red-teamed, reducible to the open list-decoding wall, with no fabrication.
+## 22. ROUND 2 (fresh 3+3+3, engineered to attack the no-gos) — new insight: worst stack = LYM-achieving
+
+Per the directive's "if you refute all, start over," a second round with hypotheses targeting the
+ACTUAL obstruction (max-over-stacks §13, not generic combinatorics):
+
+### Reasonable
+- **R1' (GS per-z uniformization):** bound `ε_mca` max-stack above Johnson by UNIONing the BCIKS20
+  per-`z` list bound (`close_interpolants_card_le_johnson`, uniform in the point) over the pencil.
+  = the §14 GAP-1 (joint-agreement → γ-count) + GAP-2 (curve-list residual). DISPOSITION: formalizable
+  multi-brick (not a refutation), the regime-II wiring; reaches only up to Johnson, not above.
+- **R2' (dual-code MacWilliams):** bad count = scalars where the line meets `proj_S(code)`; bound via
+  the RS DUAL weight enumerator (RS⊥ = RS). DISPOSITION: gives the SAME LYM/antichain count (the dual
+  weight distribution at large weight reproduces `C(n,t)`), vacuous above Johnson — no new handle.
+- **R3' (resultant-degree in γ):** #bad γ ≤ degree in γ of a structured resultant. DISPOSITION:
+  the resultant degree IS the list size (Guruswami-Sudan `D_Y Q`), so this is the GS bound again =
+  the wall above Johnson.
+
+### Novel
+- **N1' (worst-case stack is the monomial-extremal `x^{k+1}/x^k`):** if TRUE, §10/§16 per-stack counts
+  WOULD bound the max ⟹ crack the good-side. **REFUTED by the existing `n=5` pin:** the sibling proved
+  `ε_mca(RS[F₁₁,5,2], 2/5) = 10/11 = C(5,3)/q` — the FULL LYM antichain count — whereas the monomial
+  stack's bad count = `#distinct 3-subset sums < C(5,3)` (collisions, §13). So the **maximizer is a
+  cleverer stack that activates ALL `C(5,3)` witness subsets**, not the monomial one. Monomial-
+  extremal is FALSE. *New reframing:* the worst stack is the one achieving the LYM ceiling (all
+  antichain subsets active); δ* is where that ceiling crosses ε*.
+- **N2' (Weil character-sum bound on smooth-domain list size):** the smooth subgroup's above-Johnson
+  list count = a multiplicative character sum over `⟨h⟩`; a Weil/RH-for-curves `√`-cancellation could
+  beat the trivial bound. DISPOSITION: this is THE known analytic technique for smooth domains
+  (#232 "Weil-on-curves = char-sum bound") and the genuinely most-promising open route — but per
+  #232 memory the aux construction + per-frequency `√q` bound stay OPEN (it is the hard frontier, not
+  cracked). Carried as the top open analytic direction.
+- **N3' (additive-energy → incidence list bound):** bound above-Johnson list size via the domain's
+  additive energy and a Stevens–de Zeeuw point-line incidence bound. DISPOSITION: smooth subgroups
+  have LARGE multiplicative but near-Sidon additive structure (§10/§16); incidence bounds give
+  `poly`-savings but NOT the `2^-128`-vs-exponential gap. Promising-but-insufficient; open.
+
+### Synthetic
+- **S1' (wire GAP-1+GAP-2 into RegimeIIBridge):** discharge `JohnsonLineCloseBound` from BCIKS20 →
+  regime II unconditional. DISPOSITION: the concrete formalizable target (multi-brick, §14), not a
+  δ*-pin; reaches Johnson only.
+- **S2' (E₂ extremal, not variance):** bound the MAX bad count via `t₂(b)` extremal structure.
+  DISPOSITION: refuted-as-pin — the LYM-achieving worst stack (N1' reframing) is not the E₂-extremal
+  pencil; energy is a typical-statistic (§21 N3).
+- **S3' (descended Claim 5.7 on the smooth subgroup):** specialize the in-tree DescendedAgreement
+  chain. DISPOSITION: that chain is itself conditional (hcoincide-gated, inseparable case false —
+  memory `descendedrset-f10-fix-hcoincide-gated`); no unconditional smooth handle.
+
+**Round-2 verdict:** the genuinely NEW content is the **worst-stack = LYM-achieving reframing** (N1'
+refuted monomial-extremal via the existing n=5 pin): `ε_mca` max-over-stacks is governed by *whether a
+single stack can simultaneously activate the full antichain of witness subsets* of size `≥(1−δ)n`.
+Below Johnson this is achievable (n=5: full `C(5,3)`); above Johnson it requires that many distinct
+active list-decoding witnesses = the explicit-RS list count = the wall. The most promising open
+ANALYTIC route is **N2' (Weil char-sum on the smooth subgroup)** — the only candidate technique not
+yet reduced to a no-go, and exactly the recognized 25-yr-hard frontier. No fresh hypothesis escapes to
+a pin; the reframing sharpens WHY (the max is a simultaneous-activation = list-decoding question).
