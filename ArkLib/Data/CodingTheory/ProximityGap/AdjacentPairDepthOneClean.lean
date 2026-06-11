@@ -128,6 +128,49 @@ theorem coeff_prod_X_sub_C_sub_two {R : Type*} [CommRing R] (A : Finset ℕ) (f 
     Finset.esymm_map_val]
   exact sum_powersetCard_two_eq A f
 
+/-! ## The exponent pullback -/
+
+/-- Pull a witness subset of a smooth domain back to its exponent set: a vanished
+`a − 2` coefficient of the vanishing polynomial becomes a vanished pair census of the
+exponents. -/
+theorem exponent_census_of_witness {p : ℕ} [Fact p.Prime] {m : ℕ} {g : ZMod p}
+    (hg : IsPrimitiveRoot g (2 ^ m))
+    {T : Finset (ZMod p)} (hTH : T ⊆ (Finset.range (2 ^ m)).image (g ^ ·))
+    {a : ℕ} (ha2 : 2 ≤ a) (hTcard : T.card = a)
+    (hcoeff : (∏ x ∈ T, (X - C x)).coeff (a - 2) = 0) :
+    ∃ A ⊆ Finset.range (2 ^ m), A.card = a ∧ T = A.image (g ^ ·) ∧
+      ∑ qq ∈ upperPairs A, g ^ (qq.1 + qq.2) = 0 := by
+  set A : Finset ℕ := (Finset.range (2 ^ m)).filter (fun i => g ^ i ∈ T) with hA
+  have hinj : ∀ i ∈ A, ∀ j ∈ A, g ^ i = g ^ j → i = j := by
+    intro i hi j hj hij
+    exact hg.pow_inj (Finset.mem_range.mp (Finset.mem_filter.mp hi).1)
+      (Finset.mem_range.mp (Finset.mem_filter.mp hj).1) hij
+  have hT : T = A.image (g ^ ·) := by
+    ext x
+    constructor
+    · intro hx
+      obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp (hTH hx)
+      exact Finset.mem_image.mpr ⟨i, Finset.mem_filter.mpr ⟨hi, hx⟩, rfl⟩
+    · intro hx
+      obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+      exact (Finset.mem_filter.mp hi).2
+  have hAcard : A.card = a := by
+    rw [← hTcard, hT]
+    exact (Finset.card_image_of_injOn fun i hi j hj hij =>
+      hinj i (Finset.mem_coe.mp hi) j (Finset.mem_coe.mp hj) hij).symm
+  have hprod : ∏ x ∈ T, (X - C x) = ∏ i ∈ A, (X - C (g ^ i)) := by
+    rw [hT]
+    exact Finset.prod_image hinj
+  refine ⟨A, Finset.filter_subset _ _, hAcard, hT, ?_⟩
+  have hv := coeff_prod_X_sub_C_sub_two A (g ^ ·) (by rw [hAcard]; omega)
+  rw [hAcard] at hv
+  calc ∑ qq ∈ upperPairs A, g ^ (qq.1 + qq.2)
+      = ∑ qq ∈ upperPairs A, g ^ qq.1 * g ^ qq.2 :=
+        Finset.sum_congr rfl fun qq _ => pow_add g qq.1 qq.2
+    _ = (∏ i ∈ A, (X - C (g ^ i))).coeff (a - 2) := hv.symm
+    _ = (∏ x ∈ T, (X - C x)).coeff (a - 2) := by rw [hprod]
+    _ = 0 := hcoeff
+
 /-! ## The headline: the odd rows are clean at every depth -/
 
 /-- **The odd rows of the adjacent-pair window profile are clean at EVERY depth
@@ -150,39 +193,8 @@ theorem oddRow_no_badScalar {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
   obtain ⟨T, hTH, hTcard, hband, _⟩ :=
     constrainedSubsetSum_of_badScalar (H := H) (a := a) (k := k)
       hk1 (by omega) hq hagree
-  have hcoeff : (∏ x ∈ T, (X - C x)).coeff (a - 2) = 0 := hband 2 le_rfl (by omega)
-  -- pull the witness back to its exponent set
-  set A : Finset ℕ := (Finset.range (2 ^ m)).filter (fun i => g ^ i ∈ T) with hA
-  have hinj : ∀ i ∈ A, ∀ j ∈ A, g ^ i = g ^ j → i = j := by
-    intro i hi j hj hij
-    exact hg.pow_inj (Finset.mem_range.mp (Finset.mem_filter.mp hi).1)
-      (Finset.mem_range.mp (Finset.mem_filter.mp hj).1) hij
-  have hT : T = A.image (g ^ ·) := by
-    ext x
-    constructor
-    · intro hx
-      obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp (hH (hTH hx))
-      exact Finset.mem_image.mpr ⟨i, Finset.mem_filter.mpr ⟨hi, hx⟩, rfl⟩
-    · intro hx
-      obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
-      exact (Finset.mem_filter.mp hi).2
-  have hAcard : A.card = a := by
-    rw [← hTcard, hT]
-    exact (Finset.card_image_of_injOn fun i hi j hj hij =>
-      hinj i (Finset.mem_coe.mp hi) j (Finset.mem_coe.mp hj) hij).symm
-  have hprod : ∏ x ∈ T, (X - C x) = ∏ i ∈ A, (X - C (g ^ i)) := by
-    rw [hT]
-    exact Finset.prod_image hinj
-  -- Vieta turns the vanished band coefficient into the vanished pair census
-  have he2 : ∑ qq ∈ upperPairs A, g ^ (qq.1 + qq.2) = 0 := by
-    have hv := coeff_prod_X_sub_C_sub_two A (g ^ ·) (by rw [hAcard]; omega)
-    rw [hAcard] at hv
-    calc ∑ qq ∈ upperPairs A, g ^ (qq.1 + qq.2)
-        = ∑ qq ∈ upperPairs A, g ^ qq.1 * g ^ qq.2 :=
-          Finset.sum_congr rfl fun qq _ => pow_add g qq.1 qq.2
-      _ = (∏ i ∈ A, (X - C (g ^ i))).coeff (a - 2) := hv.symm
-      _ = (∏ x ∈ T, (X - C x)).coeff (a - 2) := by rw [hprod]
-      _ = 0 := hcoeff
+  obtain ⟨A, hAsub, hAcard, hT, he2⟩ := exponent_census_of_witness hg
+    (hTH.trans hH) (by omega) hTcard (hband 2 le_rfl (by omega))
   exact e2_ne_zero_of_odd_row hm hg A (by rw [hAcard]; exact ha4)
     (by rw [hAcard]; exact hp) he2
 
@@ -208,12 +220,77 @@ theorem oddRow_no_badScalar_smoothDomain {p : ℕ} [Fact p.Prime] {m : ℕ} (hm 
         a ≤ (lineAgreeSet ((Finset.range (2 ^ m)).image (g ^ ·)) a lam q).card :=
   oddRow_no_badScalar hm hg (Finset.Subset.refl _) ha4 ha3 hk1 hk2 hp lam
 
+/-! ## The two-sided depth-1 dictionary: the bad set is a characteristic-zero object -/
+
+/-- **The complete two-layer law at depth 1 (two-sided).** For `p` above the explicit
+resultant threshold, a scalar `λ` is bad for the adjacent pair `(X^a, X^{a−1})` at depth 1
+(`k = a − 2`) over the smooth domain `μ_{2^m} ⊆ F_p` **iff** `λ = −∑_{i∈A} g^i` for an
+`a`-element exponent set `A ⊆ {0, …, 2^m − 1}` whose folded `e₂` polynomial vanishes **in
+characteristic zero** (`e2Folded m A = 0` in `ℤ[X]`). The depth-1 bad-scalar set is
+therefore a *p-independent* object above the threshold: one census in `ℤ[ζ_{2^m}]`
+describes every large prime at once — the formal O141/O143 'two-layer' statement with the
+surplus layer provably empty. -/
+theorem depthOne_badScalar_iff_char0 {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ m))
+    {a : ℕ} (ha3 : 3 ≤ a)
+    (hp : (2 ^ (m - 1) * (a * a)) ^ 2 ^ (m - 1) < p) (lam : ZMod p) :
+    (∃ q : Polynomial (ZMod p), q.natDegree ≤ a - 2 - 1 ∧
+        a ≤ (lineAgreeSet ((Finset.range (2 ^ m)).image (g ^ ·)) a lam q).card)
+      ↔ ∃ A ⊆ Finset.range (2 ^ m), A.card = a ∧ e2Folded m A = 0 ∧
+          lam = -∑ i ∈ A, g ^ i := by
+  constructor
+  · rintro ⟨q, hq, hagree⟩
+    obtain ⟨T, hTH, hTcard, hband, hlam⟩ :=
+      constrainedSubsetSum_of_badScalar (a := a) (k := a - 2)
+        (by omega) (by omega) hq hagree
+    obtain ⟨A, hAsub, hAcard, hT, he2⟩ := exponent_census_of_witness hg hTH
+      (by omega) hTcard (hband 2 le_rfl (by omega))
+    have hinj : ∀ i ∈ A, ∀ j ∈ A, g ^ i = g ^ j → i = j := fun i hi j hj hij =>
+      hg.pow_inj (Finset.mem_range.mp (hAsub hi)) (Finset.mem_range.mp (hAsub hj)) hij
+    refine ⟨A, hAsub, hAcard,
+      qualifying_implies_char0_vanishing hm hg A (by rw [hAcard]; exact hp) he2, ?_⟩
+    rw [hlam, hT, Finset.sum_image hinj]
+  · rintro ⟨A, hAsub, hAcard, hchar0, rfl⟩
+    have hinj : ∀ i ∈ A, ∀ j ∈ A, g ^ i = g ^ j → i = j := fun i hi j hj hij =>
+      hg.pow_inj (Finset.mem_range.mp (hAsub hi)) (Finset.mem_range.mp (hAsub hj)) hij
+    set T : Finset (ZMod p) := A.image (g ^ ·) with hT
+    have hTH : T ⊆ (Finset.range (2 ^ m)).image (g ^ ·) :=
+      Finset.image_subset_image hAsub
+    have hTcard : T.card = a := by
+      rw [hT, Finset.card_image_of_injOn fun i hi j hj hij =>
+        hinj i (Finset.mem_coe.mp hi) j (Finset.mem_coe.mp hj) hij]
+      exact hAcard
+    -- char-0 vanishing descends to the pair census mod `p`
+    have he2 : ∑ qq ∈ upperPairs A, g ^ (qq.1 + qq.2) = 0 := by
+      rw [← e2Folded_eval hm hg A, hchar0]
+      simp
+    -- which is exactly the constrained band at depth 1
+    have hband : ConstrainedBandZero T a (a - 2) := by
+      intro j hj2 hjle
+      have hj : j = 2 := by omega
+      subst hj
+      have hprod : ∏ x ∈ T, (X - C x) = ∏ i ∈ A, (X - C (g ^ i)) := by
+        rw [hT]
+        exact Finset.prod_image hinj
+      have hv := coeff_prod_X_sub_C_sub_two A (g ^ ·) (by rw [hAcard]; omega)
+      rw [hAcard] at hv
+      rw [hprod, hv]
+      calc ∑ qq ∈ upperPairs A, g ^ qq.1 * g ^ qq.2
+          = ∑ qq ∈ upperPairs A, g ^ (qq.1 + qq.2) :=
+            Finset.sum_congr rfl fun qq _ => (pow_add g qq.1 qq.2).symm
+        _ = 0 := he2
+    have hbad := badScalar_of_constrainedSubsetSum (k := a - 2)
+      (by omega) (by omega) hTH hTcard hband
+    rwa [hT, Finset.sum_image hinj] at hbad
+
 /-! ## Source audit -/
 
 #print axioms sum_powersetCard_two_eq
 #print axioms coeff_prod_X_sub_C_sub_two
+#print axioms exponent_census_of_witness
 #print axioms oddRow_no_badScalar
 #print axioms depthOne_no_badScalar
 #print axioms oddRow_no_badScalar_smoothDomain
+#print axioms depthOne_badScalar_iff_char0
 
 end ArkLib.ProximityGap.WindowTwoLayer
