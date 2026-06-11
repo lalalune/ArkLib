@@ -7118,3 +7118,37 @@ supports it. v4 pin mcaDeltaStar_eq_of_hybridCrossing same engine.
 **Surface lineage (all formal):** census (killed: empty rungs) → census+floor (killed:
 take-over) → monomial (killed: spike bands, this) → hybrid = the two-family max:
 consistent with every theorem and probe in the tree.
+
+## 2026-06-11 — Items 11/13/14 (char-0 faces) DECIDED: the 4-adic quartet-tower law; the family's window interior has NO field-independent floor
+
+Probe `probe_char0_death_law.py` (exact ℤ[ζ] folding): the char-0 constrained census
+`Z0(n, a, c) = #{a-subsets of μ_n : e₂ = … = e_{c+1} = 0 in char 0}`:
+
+**The mechanism (exact algebra, replaces the O143 enrichment statistics).** A quartet
+`{x, ix, −x, −ix}` has characteristic polynomial `T⁴ − x⁴`, so a union of `q` quartets
+has `e_j = 0 for ALL j ≢ 0 (mod 4)` and `e_{4s} = ±e_s(x₁⁴, …, x_q⁴)` — **the census
+recurses down the 4-adic tower**: constraints at depth `c` on `μ_n` become a
+vanishing-sum system at depth `⌊(c+1)/4⌋` on `μ_{n/4}`. Verified exactly:
+* `Z0(n, 8, 2) = C(n/4, 2)` (quartet pairs): 6 at n=16, 28 at n=32 ✓
+* `Z0(16, 9, 2) = C(4,2)·8 = 48` (+ free point) ✓; `Z0(n, a, c) = 0` for a ≡ 2, 3 mod 4 ✓
+* `Z0(16, 8, 3) = 2`, `Z0(32, 8, 3) = 4` = antipodal pairs in `μ_{n/4}` ✓ — and the
+  solutions are exactly the two cosets of `μ_{n/2}`, which survive EVERY depth
+  (`Π(T − y) = T^{n/2} − const`): `Z0(16, 8, c) = 2` for all c ≤ 6 ✓
+* `Z0(16, 12, c)`: 20 / 4 / **0** / 0 at c = 1/2/3/4 — death at c = 3 exactly as the
+  recursion predicts (`e₄ = 0` forces a 3-term vanishing sum on `μ₄`: odd size,
+  impossible by the proven 2-power Lam–Leung negation-symmetry) ✓
+
+**The structural verdict.** At rate 1/4 the window-interior rungs (`k+1 < a < n/2`)
+of the adjacent-pair family are char-0 DEAD beyond the first rung: parity kills
+`a ≡ 2, 3 (mod 4)` and the odd-recursion Lam–Leung kill takes the rest; the only
+survivors are the first rung `a = k+1` (near capacity) and the subgroup cosets AT the
+Johnson boundary `a = n/2`. **The family's window-interior census at large p is pure
+characteristic-p surplus (the Weil-fluctuation layer) with NO field-independent
+floor** — the conjecturally-extremal family cannot pin an interior δ* through its
+char-0 layer; any interior pin from this family must come from the char-p layer,
+i.e. from below-√q character-sum information (the same open kernel, fourth face).
+
+This is the asymptotic law item 11 asked for (char-0 face), the exact algebra item 13
+asked for (quartet-tower classification replaces the 1.8σ enrichment), and the tower
+closure item 14 asked for (the 4-adic recursion IS the closed form; layer 1 at
+`n = 2^20` is tower-computable by iterating it).
