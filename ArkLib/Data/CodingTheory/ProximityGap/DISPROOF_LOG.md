@@ -6353,3 +6353,43 @@ The master staircase threshold f(b) = 3b−2 (proven in UniversalStaircaseCollap
 the fleet's MCAStaircaseMaster) is sharp at every b, for every linear code INCLUDING
 MDS/RS. The MDS/general separation hoped for in the half-distance round does not
 exist at the staircase level.
+### MDSStaircaseConjecture REFUTED — the degenerate-pencil explosion; 3b−2 is sharp for RS/MDS too (#357)
+
+The "MDS rank conjecture" (RS keeps the staircase collapse down to `d ≥ 2b`; directed-search
+record at five instances, restated round 5 as Padé full-rank) is FALSE. The missed branch:
+the **perfect-square pencil syzygy** `rA² − hAB + pB² = ρλ²·T^(f+2(b−1))` with
+`A = B + λT^(b−1)`, `p = r = ρT^f`, `h = 2ρT^f` — a degenerate-discriminant solution to the
+collinearity system, valid mod `T^m` for every `m = 2(b−1)+f ≤ 3b−4`. Realization: any
+family of disjoint `(b−1)`-blocks of the domain with locators in one pencil `⟨B, T^(b−1)⟩`
+— **cosets of `μ_(b−1)`** on smooth domains (locators `1 − x^(b−1)T^(b−1)`), equal-sum
+pairs at `b = 3` on any domain — donates one bad scalar `γ_V` per block
+(`(1+γ_V)B + λT^(b−1) ∝ V`), with error words from the partial fractions of
+`ρ(1+γ)T^f/V` (all weights nonzero) and the affine-in-γ syndrome family exact. Count:
+**n/(b−1), field-independent, on every `d ∈ [2b−1, 3b−3]`**.
+
+Probe `probe_mds_pencil_explosion.py` (exact end-to-end mcaEvent scans): (11,8,3) d=6 → 4
+bad; (17,8,3) d=6 → 4; **(19,18,10) d=9=2b+1, b=4 → 6 bad** (the in-hypothesis formal
+instance, k+2b = 18 ≤ n); (19,18,11) d=8=2b → 6; (19,18,12) d=7=2b−1 → 6; (17,8,4) d=5
+band 3 → 4 (settles the widened band-3 sweep: ≥ 4 = n/2). Lean countermodel:
+`MCAMDSStaircaseRefuted.lean` (`mdsStaircaseConjecture_refuted`, five root-counting
+certificates, axiom-clean).
+
+**Why the directed searches missed it:** (i) band-3 `d = 6` exhaustive rows were at
+`n = 7`, where only 3 disjoint pencil pairs fit (geometric starvation — at `n = 7` the
+fourth pencil member degenerates to an improper singleton fraction, consistent with the
+measured collapse-to-3); (ii) at `(11,8,3)` the construction lives on exactly one of the
+105 pair-partitions (the equal-sum one) with the γ-quadruple Möbius-determined by the
+block products; (iii) the `(17,8,3)` "d=6 holds (B=3)" sweep was wt≤2-template-restricted
+— the pencil stack has weight 5. Constraint kept: collapse-side proofs below `3b−2`
+cannot exist; the binding obstruction is pencil capacity (`n/(b−1) ≥ b+1` ⟺
+`n ≥ b²−1`-ish), not parallel matroid classes.
+
+**Corrected landscape:** (a) `TheGeneralStaircaseLaw` (`d ≥ 3b−2`) is THE law for ALL
+linear codes including RS/MDS — no MDS/general separation at the threshold level (the
+d = 2b separation read off `MCAHalfDistanceGeneralRefuted` was an artifact of `n = 8 <`
+pencil capacity on the RS side); (b) the `d ≥ 2j` sharpening conjecture for
+`UniversalStaircaseCollapse` is refuted (T3: d = 2j+1, six bad > j = 4); (c) the exact-RS
+staircase (`MCAStaircaseRS`/`BandExactness`) hypotheses `3(b−1)+k ≤ n`-ish are TIGHT —
+the strip above is genuinely explosive; (d) `MonomialDomination` gains its sharpest live
+falsifier: the pencil stacks are non-monomial 9-sparse words — whether a monomial pair
+matches count n/(b−1) at the strip cells is now the decisive check.
