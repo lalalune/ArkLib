@@ -531,3 +531,35 @@ the low-rate end:
 **Net (honest):** a genuine exact computation on a real deployed-family member, refuting the naive
 uniform R1, red-team-validating the reduction's hypothesis as non-vacuous, and confirming the prize
 lives strictly at high rate. No pin claimed for the deployed (high-rate) regime; that stays open.
+## 19. SELF-CORRECTION to §18: repetition-code δ* is PIGEONHOLE/field-dependent, not Johnson
+
+Finer-grid exact probe (`scripts/probes/probe_rep_fine.py`) corrects §18's imprecise "saturates at
+Johnson" (read off a coarse 3-point grid). The repetition (constant) code's `ε_mca` saturates to `1`
+at a **field-size-dependent pigeonhole radius BELOW Johnson**, not at Johnson:
+
+| p | n | Johnson | saturates (ε_mca=1) at | vs Johnson |
+|---|---|---------|------------------------|------------|
+| 3 | 6 | 0.592 | δ=2/6=0.333 | **below** |
+| 3 | 5 | 0.553 | δ=2/5=0.400 | **below** |
+| 5 | 5 | 0.553 | δ=3/5=0.600 | above (later, larger p) |
+| 7 | 4 | 0.500 | δ=1/2 (6/7, not yet 1) | ≈at (coarse) |
+
+Mechanism: a word is δ-close to *some* constant iff its max value-multiplicity `≥ (1−δ)n`; by
+pigeonhole any word has multiplicity `≥ n/p`, so once `(1−δ)n ≤ n/p` (i.e. `δ ≥ 1−1/p`) closeness is
+automatic — and the worst *stack* pushes saturation even earlier. So the repetition-code threshold is
+governed by `p` (pigeonhole), drifting later as `p` grows; there is **no clean closed-form `δ*`** and
+in particular it is NOT the Johnson radius.
+
+**What stands / what's corrected:**
+- STANDS: §18's core — `R1` (ceiling-tightness, `δ* = 1−r/2^μ`) is **REFUTED at the r=2 low-rate
+  endpoint**; `InteriorCeiling` is FALSE there; the reduction's hypothesis is non-vacuous and
+  rate-dependent; the prize is strictly high-rate.
+- CORRECTED: the low-rate `δ*` is NOT "at Johnson" — it is a field-dependent pigeonhole radius
+  (generally below Johnson at small `p`), with no universal closed form. The hoped-for clean
+  repetition-code pin is **REFUTED**.
+- CONSEQUENCE: the low-rate endpoint is degenerate in a *field-size* way (pigeonhole), confirming it
+  carries no information about the high-rate deployed regime beyond "ceiling is loose here." The
+  deployed regime's `δ*` remains the genuine open core (high-rate explicit-RS list count, §17 wall).
+
+Red-team/self-correction logged per the honesty discipline: a coarse-grid reading was sharpened by a
+finer exact probe and the overstated locus ("Johnson") retracted.
