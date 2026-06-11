@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 349,
+    "files_with_citations": 351,
     "keys_cited": 30,
-    "total_citation_edges": 396
+    "total_citation_edges": 398
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -157,46 +157,25 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/Main.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffinePair.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineSpaces.lean": [
       "BCIKS20"
     ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510AffinePair.lean": [
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Agreement.lean": [
       "BCIKS20"
     ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Agreement.lean": [
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AgreementSupply.lean": [
       "BCIKS20"
     ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510AgreementSupply.lean": [
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Arith.lean": [
       "BCIKS20"
     ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Arith.lean": [
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Bundle.lean": [
       "BCIKS20"
     ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Bundle.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Capture.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510EndToEnd.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Improve.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Kill.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510SliceAffine.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Supply.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Weld.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim59Vandermonde.lean": [
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Capture.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean": [
@@ -235,16 +214,22 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/UniqueDecoding.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/EndToEnd.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ErrorBound.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/GammaGenuine.lean": [
       "BCIKS20"
     ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean": [
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Improve.lean": [
       "BCIKS20"
     ],
-    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Claim57FieldDischarge.lean": [
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Kill.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/CurvesBridge.lean": [
@@ -259,6 +244,9 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Extraction.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/FieldDischarge.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean": [
       "BCIKS20"
     ],
@@ -269,6 +257,9 @@
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/S5Genuine.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/SliceAffine.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/SliceSeparabilityBoundary.lean": [
@@ -286,7 +277,16 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Supply.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/VandermondeAgreement.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/WeightedAgreement.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Weld.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BadGammaAffineCount.lean": [
@@ -519,6 +519,12 @@
     "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean": [
       "CO25"
     ],
+    "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean": [
+      "CO25"
+    ],
+    "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean": [
+      "CO25"
+    ],
     "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemma.lean": [
       "CO25"
     ],
@@ -575,13 +581,13 @@
     "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/FoldDistance.lean": [
       "DP24"
     ],
-    "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean": [
-      "DP24"
-    ],
     "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean": [
       "DP24"
     ],
     "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhaseSoundness.lean": [
+      "DP24"
+    ],
+    "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/SoundnessProposition.lean": [
       "DP24"
     ],
     "ArkLib/ProofSystem/Binius/FRIBinius/General.lean": [
@@ -648,6 +654,36 @@
     "ArkLib/ProofSystem/Whir/RBRSoundness.lean": [
       "ACFY24"
     ],
+    "ArkLib/ToMathlib/BCIKS20Concrete.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BCIKS20ConcreteJohnson.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BCIKS20Conditional.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BCIKS20GroundLine.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BCIKS20GroundLineWiring.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BCIKS20PigeonholeSupply.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BCIKS20PointwiseConditional.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BCIKS20StrictDataFinOn.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BasefoldSingleRoundSoundness.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/ToMathlib/BetaDropIn.lean": [
       "BCIKS20"
     ],
@@ -697,24 +733,6 @@
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/CentreVanishingSupply.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/ToMathlib/Claim510Conditional.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/ToMathlib/Claim511.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/ToMathlib/Claim57Supply.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/ToMathlib/Claim59Conditional.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/ToMathlib/Claim59GroundLine.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/ToMathlib/Claim59GroundLineWiring.lean": [
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/ClearedGammaDefect.lean": [
@@ -974,9 +992,6 @@
     "ArkLib/ToMathlib/PowerSeriesHenselianA.lean": [
       "BCIKS20"
     ],
-    "ArkLib/ToMathlib/Prop55.lean": [
-      "BCIKS20"
-    ],
     "ArkLib/ToMathlib/RSPhases.lean": [
       "DP24"
     ],
@@ -995,15 +1010,6 @@
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/SbetaPackaging.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/ToMathlib/Section5Concrete.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/ToMathlib/Section5ConcreteJohnson.lean": [
-      "BCIKS20"
-    ],
-    "ArkLib/ToMathlib/Section5StrictDataFinOn.lean": [
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/SectionBaseRational.lean": [
@@ -1179,20 +1185,13 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/BWMatrix.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/JointAgreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/Main.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffinePair.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineSpaces.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510AffinePair.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Agreement.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510AgreementSupply.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Arith.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Bundle.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Capture.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510EndToEnd.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Improve.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Kill.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510SliceAffine.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Supply.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Weld.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim59Vandermonde.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Agreement.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AgreementSupply.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Arith.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Bundle.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Capture.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/AgreementCount.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtraction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtractionResidual.lean",
@@ -1205,24 +1204,31 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/SudanY2.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/UniqueDecoding.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/EndToEnd.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ErrorBound.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/GammaGenuine.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Improve.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Kill.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean",
-      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Claim57FieldDischarge.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/CurvesBridge.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/DescendedDegreeSum.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/DescendedRset.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Extraction.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/FieldDischarge.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ReedSolomonGap.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RemainingCore.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/S5Genuine.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/SliceAffine.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/SliceSeparabilityBoundary.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Supply.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/VandermondeAgreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/WeightedAgreement.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Weld.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BadGammaAffineCount.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Basic.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean",
@@ -1273,6 +1279,16 @@
       "ArkLib/ProofSystem/Stir/ProximityGapProof.lean",
       "ArkLib/ProofSystem/Stir/WindowCAFeed.lean",
       "ArkLib/ProofSystem/Whir/ProximityGen.lean",
+      "ArkLib/ToMathlib/BCIKS20Concrete.lean",
+      "ArkLib/ToMathlib/BCIKS20ConcreteJohnson.lean",
+      "ArkLib/ToMathlib/BCIKS20Conditional.lean",
+      "ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean",
+      "ArkLib/ToMathlib/BCIKS20GroundLine.lean",
+      "ArkLib/ToMathlib/BCIKS20GroundLineWiring.lean",
+      "ArkLib/ToMathlib/BCIKS20PigeonholeSupply.lean",
+      "ArkLib/ToMathlib/BCIKS20PointwiseConditional.lean",
+      "ArkLib/ToMathlib/BCIKS20StrictDataFinOn.lean",
+      "ArkLib/ToMathlib/BasefoldSingleRoundSoundness.lean",
       "ArkLib/ToMathlib/BetaDropIn.lean",
       "ArkLib/ToMathlib/BetaIdentify.lean",
       "ArkLib/ToMathlib/BetaInputSupply.lean",
@@ -1290,12 +1306,6 @@
       "ArkLib/ToMathlib/BranchSeparationUnsat.lean",
       "ArkLib/ToMathlib/BranchValuePigeonhole.lean",
       "ArkLib/ToMathlib/CentreVanishingSupply.lean",
-      "ArkLib/ToMathlib/Claim510Conditional.lean",
-      "ArkLib/ToMathlib/Claim511.lean",
-      "ArkLib/ToMathlib/Claim57Supply.lean",
-      "ArkLib/ToMathlib/Claim59Conditional.lean",
-      "ArkLib/ToMathlib/Claim59GroundLine.lean",
-      "ArkLib/ToMathlib/Claim59GroundLineWiring.lean",
       "ArkLib/ToMathlib/ClearedGammaDefect.lean",
       "ArkLib/ToMathlib/ClosedBoundaryFaithfulFloorCell.lean",
       "ArkLib/ToMathlib/CoordinateKillBudget.lean",
@@ -1380,14 +1390,10 @@
       "ArkLib/ToMathlib/PlaceSeriesCanonical.lean",
       "ArkLib/ToMathlib/PolyRootGradedBound.lean",
       "ArkLib/ToMathlib/PowerSeriesHenselianA.lean",
-      "ArkLib/ToMathlib/Prop55.lean",
       "ArkLib/ToMathlib/RatFuncDegreeCalculus.lean",
       "ArkLib/ToMathlib/RationalRootSupply.lean",
       "ArkLib/ToMathlib/SbetaExclusion.lean",
       "ArkLib/ToMathlib/SbetaPackaging.lean",
-      "ArkLib/ToMathlib/Section5Concrete.lean",
-      "ArkLib/ToMathlib/Section5ConcreteJohnson.lean",
-      "ArkLib/ToMathlib/Section5StrictDataFinOn.lean",
       "ArkLib/ToMathlib/SectionBaseRational.lean",
       "ArkLib/ToMathlib/SectionFactor.lean",
       "ArkLib/ToMathlib/SectionFromSurface.lean",
@@ -1436,6 +1442,8 @@
       "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Preliminaries.lean",
       "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/AbortAnalysis.lean",
       "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean",
+      "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean",
+      "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean",
       "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemma.lean",
       "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean",
       "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
@@ -1453,9 +1461,9 @@
       "ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/BadBlocks.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/FoldDistance.lean",
-      "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhaseSoundness.lean",
+      "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/SoundnessProposition.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness.lean",
       "ArkLib/ProofSystem/Binius/FRIBinius/General.lean",
       "ArkLib/ProofSystem/RingSwitching/General.lean",

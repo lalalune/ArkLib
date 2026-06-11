@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2164 files, 27709 declarations
+- `ArkLib` — 2240 files, 28761 declarations
 
-## Same short-name across multiple files (809 groups)
+## Same short-name across multiple files (1225 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -176,6 +176,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ToyProblem.Spec.outputRelation` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:266](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L266) — The IOR-shaped *relaxed* output relation derived from `ToyProblem.relaxedRelation` (Definition 6.3).
 - `def WhirIOP.FoldRound.outputRelation` [ArkLib/ProofSystem/Whir/FoldRound.lean:216](../../../ArkLib/ProofSystem/Whir/FoldRound.lean#L216) — Output relation: the folded oracle is a codeword of the level-`(j+1)` smooth code of degree-budget `
 
+### `getElem` (7 declarations, 7 files)
+
+- `theorem Array.getElem` [ArkLib/Data/Array/Lemmas.lean:63](../../../ArkLib/Data/Array/Lemmas.lean#L63) — (no docstring)
+- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:88](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L88) — Shifting a tracked slot through `eraseIdx` of a different index.
+- `theorem DuplexSpongeFS.EagerLazyDS.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:959](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L959) — The `getElem?` position map of `eraseIdx`: deleting index `i` shifts later positions by one, for all
+- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:137](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L137) — Shifting a tracked slot through `eraseIdx` of a different index.
+- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:88](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L88) — Shifting a tracked slot through `eraseIdx` of a different index.
+- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:137](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L137) — Shifting a tracked slot through `eraseIdx` of a different index.
+- `theorem DuplexSpongeFS.EagerLazyDS.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:959](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L959) — The `getElem?` position map of `eraseIdx`: deleting index `i` shifts later positions by one, for all
+
 ### `Witness` (6 declarations, 6 files)
 
 - `def BatchedFri.Spec.Witness` [ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean:54](../../../ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean#L54) — The Batched FRI protocol has as witness for each batched polynomial that is supposed to correspond t
@@ -196,7 +206,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `liftComp_optionT_pure` (5 declarations, 5 files)
 
 - `lemma StirIOP.Round3.liftComp_optionT_pure` [ArkLib/ProofSystem/Stir/CheckedFinalBlock.lean:277](../../../ArkLib/ProofSystem/Stir/CheckedFinalBlock.lean#L277) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional; the WHIR `CheckedVerifier` helper).
-- `lemma Whir302Checked.liftComp_optionT_pure` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:801](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L801) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional).
+- `lemma Whir302Checked.liftComp_optionT_pure` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:913](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L913) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional).
 - `lemma Whir302.liftComp_optionT_pure` [ArkLib/ProofSystem/Whir/ProtocolCompleteness.lean:66](../../../ArkLib/ProofSystem/Whir/ProtocolCompleteness.lean#L66) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional).
 - `lemma Whir302RBR.liftComp_optionT_pure` [ArkLib/ProofSystem/Whir/ThresholdKSF.lean:413](../../../ArkLib/ProofSystem/Whir/ThresholdKSF.lean#L413) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional).
 - `lemma Fri.Spec.Completeness.liftComp_optionT_pure` [ArkLib/ToMathlib/FriCompletePerRound.lean:112](../../../ArkLib/ToMathlib/FriCompletePerRound.lean#L112) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional); cf. the WHIR sibling `liftComp_opti
@@ -266,10 +276,10 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `agreeSet` (4 declarations, 4 files)
 
+- `def ProximityPrizeCA.agreeSet` [ArkLib/Data/CodingTheory/ProximityCA.lean:35](../../../ArkLib/Data/CodingTheory/ProximityCA.lean#L35) — The agreement set of two words.
 - `def ConcretePin.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConcretePinF17.lean:169](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConcretePinF17.lean#L169) — The agreement set of a line `(b, c)` with `w` inside `G`.
 - `def LinePairCooccurrence.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/LinePairCooccurrenceBound.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/LinePairCooccurrenceBound.lean#L57) — Coordinates where `u` and `v` agree.
-- `def R15Bracket.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/PrizeScaleBracketFull.lean:180](../../../ArkLib/Data/CodingTheory/ProximityGap/PrizeScaleBracketFull.lean#L180) — The agreement set of two words.
-- `def ProximityPrizeCA.agreeSet` [ArkLib/Data/CodingTheory/ProximityPrizeCA.lean:35](../../../ArkLib/Data/CodingTheory/ProximityPrizeCA.lean#L35) — The agreement set of two words.
+- `def R15Bracket.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean:180](../../../ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean#L180) — The agreement set of two words.
 
 ### `disagreementSet` (4 declarations, 4 files)
 
@@ -369,13 +379,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem R15.exists_ne_zero_map_eq_zero_of_finrank_lt` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean:51](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean#L51) — (no docstring)
 - `theorem R15.exists_ne_zero_map_eq_zero_of_finrank_lt` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean:51](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean#L51) — (no docstring)
 
-### `getElem` (4 declarations, 4 files)
-
-- `theorem Array.getElem` [ArkLib/Data/Array/Lemmas.lean:63](../../../ArkLib/Data/Array/Lemmas.lean#L63) — (no docstring)
-- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:88](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L88) — Shifting a tracked slot through `eraseIdx` of a different index.
-- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:137](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L137) — Shifting a tracked slot through `eraseIdx` of a different index.
-- `theorem DuplexSpongeFS.EagerLazyDS.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:959](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L959) — The `getElem?` position map of `eraseIdx`: deleting index `i` shifts later positions by one, for all
-
 ### `gsSupport` (4 declarations, 4 files)
 
 - `def GSHasse.gsSupport` [ArkLib/Data/CodingTheory/ProximityGap/GSHasseMultiplicity.lean:69](../../../ArkLib/Data/CodingTheory/ProximityGap/GSHasseMultiplicity.lean#L69) — Monomial support of the GS interpolation space: pairs `(i, j)` with `i + (k-1)·j < D`, organized as
@@ -404,6 +407,27 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem R15.natDegree_eval_lt` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean:211](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean#L211) — Weighted-degree transfer: the univariate restriction `Q(X, f(X))` has degree `< D`.
 - `theorem R15.natDegree_eval_lt` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean:211](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean#L211) — Weighted-degree transfer: the univariate restriction `Q(X, f(X))` has degree `< D`.
 
+### `Entry` (4 declarations, 4 files)
+
+- `abbrev DuplexSpongeFS.Sponge316.ForkCounter.Entry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:67](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L67) — Entry type at `StmtIn := Unit`, `U := UInt8` (sponge geometry `{N := 2, R := 1}` inherited from `Tim
+- `abbrev DuplexSpongeFS.Sponge316.ForkCounter.Entry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:67](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L67) — Entry type at `StmtIn := Unit`, `U := UInt8` (sponge geometry `{N := 2, R := 1}` inherited from `Tim
+- `abbrev DuplexSpongeFS.Sponge316.TimePCounter.Entry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:73](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L73) — (no docstring)
+- `abbrev DuplexSpongeFS.Sponge316.TimePCounter.Entry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:73](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L73) — (no docstring)
+
+### `dedup_eq` (4 declarations, 4 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:307](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L307) — The dedup fixpoint of `trcF` is `trcD`: classical choice first erases slot 2 or slot 4, and both bra
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:307](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L307) — The dedup fixpoint of `trcF` is `trcD`: classical choice first erases slot 2 or slot 4, and both bra
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:244](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L244) — The dedup fixpoint of the countermodel trace is `trc'` (erase slot 3, then stop).
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:244](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L244) — The dedup fixpoint of the countermodel trace is `trc'` (erase slot 3, then stop).
+
+### `dedup_eq'` (4 declarations, 4 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:354](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L354) — Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:354](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L354) — Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:263](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L263) — Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:263](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L263) — Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+
 ### `foldl_add_eq_sum` (4 declarations, 4 files)
 
 - `theorem Spartan.Spec.foldl_add_eq_sum` [ArkLib/ProofSystem/Spartan/FirstSumcheckMulVec.lean:36](../../../ArkLib/ProofSystem/Spartan/FirstSumcheckMulVec.lean#L36) — A left fold that accumulates `acc + g y` over a list equals `acc` plus the list sum of `g`.
@@ -413,10 +437,17 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `prizeRates_le_half` (4 declarations, 4 files)
 
-- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeDecision.lean:141](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeDecision.lean#L141) — Every prize rate is `≤ 1/2`.
-- `lemma ProximityGap.GrandChallengesLattice.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean:626](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean#L626) — Every ABF26 prize rate is at most `1/2`.
-- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean#L208) — Every ABF26 prize rate is at most `1/2`.
+- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/Decision.lean:141](../../../ArkLib/Data/CodingTheory/ProximityGap/Decision.lean#L141) — Every prize rate is `≤ 1/2`.
+- `lemma ProximityGap.GrandChallengesLattice.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/InteriorJ1.lean:626](../../../ArkLib/Data/CodingTheory/ProximityGap/InteriorJ1.lean#L626) — Every ABF26 prize rate is at most `1/2`.
+- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/LDFourRate.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/LDFourRate.lean#L208) — Every ABF26 prize rate is at most `1/2`.
 - `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean:363](../../../ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean#L363) — Every prize rate is at most `1/2`.
+
+### `smallSponge` (4 declarations, 4 files)
+
+- `instance DuplexSpongeFS.Sponge314.K1.smallSponge` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean:51](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean#L51) — Tiny sponge geometry: width 2, rate 1, capacity 1 (same as `Lemma516TimePFalse`).
+- `instance DuplexSpongeFS.Sponge316.TimePCounter.smallSponge` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:60](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L60) — Tiny sponge geometry: width 2, rate 1, capacity 1 — capacities are single `UInt8`s.
+- `instance DuplexSpongeFS.Sponge314.K1.smallSponge` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:51](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L51) — Tiny sponge geometry: width 2, rate 1, capacity 1 (same as `Lemma516TimePFalse`).
+- `instance DuplexSpongeFS.Sponge316.TimePCounter.smallSponge` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:60](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L60) — Tiny sponge geometry: width 2, rate 1, capacity 1 — capacities are single `UInt8`s.
 
 ### `vsum_two_pos` (4 declarations, 4 files)
 
@@ -424,6 +455,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Spartan.Spec.Bricks.vsum_two_pos` [ArkLib/ProofSystem/Spartan/ComposedCompleteness.lean:291](../../../ArkLib/ProofSystem/Spartan/ComposedCompleteness.lean#L291) — Positivity of two-step round counts.
 - `theorem Spartan.Spec.Bricks.vsum_two_pos` [ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean:84](../../../ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean#L84) — Positivity of two-step round counts.
 - `theorem Spartan.Spec.Bricks.vsum_two_pos` [ArkLib/ProofSystem/Spartan/SpartanDirFacts.lean:34](../../../ArkLib/ProofSystem/Spartan/SpartanDirFacts.lean#L34) — Positivity of two-step round counts.
+
+### `mem_of_getElem` (4 declarations, 4 files)
+
+- `lemma DuplexSpongeFS.Sponge316.mem_of_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:54](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L54) — Membership from an `getElem?`-hit.
+- `lemma DuplexSpongeFS.Sponge316.mem_of_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:157](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L157) — (no docstring)
+- `lemma DuplexSpongeFS.Sponge316.mem_of_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:54](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L54) — Membership from an `getElem?`-hit.
+- `lemma DuplexSpongeFS.Sponge316.mem_of_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:157](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L157) — (no docstring)
 
 ### `completeness` (6 declarations, 3 files)
 
@@ -637,8 +675,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `card_filter_eval_zero_le` (3 declarations, 3 files)
 
 - `lemma ProximityGap.card_filter_eval_zero_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/AgreementCount.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/AgreementCount.lean#L45) — Root-set cardinality bound (reproved inline to keep imports light): over a finite field a nonzero po
-- `theorem RingSwitching.card_filter_eval_zero_le` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1818](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1818) — **Root-set cardinality bound.** Over an integral domain `L`, the number of field elements at which a
-- `theorem Polynomial.card_filter_eval_zero_le` [ArkLib/ToMathlib/ExtractedIssueBricks.lean:57](../../../ArkLib/ToMathlib/ExtractedIssueBricks.lean#L57) — **Root-set cardinality bound.** Over a finite integral domain `L`, a nonzero `p : L[X]` vanishes at
+- `theorem RingSwitching.card_filter_eval_zero_le` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1858](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1858) — **Root-set cardinality bound.** Over an integral domain `L`, the number of field elements at which a
+- `theorem Polynomial.card_filter_eval_zero_le` [ArkLib/ToMathlib/PolynomialCombinatorialAuxiliary.lean:57](../../../ArkLib/ToMathlib/PolynomialCombinatorialAuxiliary.lean#L57) — **Root-set cardinality bound.** Over a finite integral domain `L`, a nonzero `p : L[X]` vanishes at
 
 ### `cards` (3 declarations, 3 files)
 
@@ -649,8 +687,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `choose_le_add_add` (3 declarations, 3 files)
 
 - `theorem Round14ConstantGap.choose_le_add_add` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean#L56) — **The Pascal shift.** `C(n, m) ≤ C(n + j, m + j)` for every `j` (iterate the one-step).
-- `theorem R15Bracket.choose_le_add_add` [ArkLib/Data/CodingTheory/ProximityGap/PrizeScaleBracketFull.lean:283](../../../ArkLib/Data/CodingTheory/ProximityGap/PrizeScaleBracketFull.lean#L283) — The Pascal shift: `C(n, m) ≤ C(n + j, m + j)`.
-- `theorem Round18Bracket.choose_le_add_add` [ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketPrizeScale.lean:205](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketPrizeScale.lean#L205) — Pascal shift `C(n,m) ≤ C(n+j, m+j)`.
+- `theorem R15Bracket.choose_le_add_add` [ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean:283](../../../ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean#L283) — The Pascal shift: `C(n, m) ≤ C(n + j, m + j)`.
+- `theorem Round18Bracket.choose_le_add_add` [ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketScale.lean:205](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketScale.lean#L205) — Pascal shift `C(n,m) ≤ C(n+j, m+j)`.
 
 ### `cliqueLocator` (3 declarations, 3 files)
 
@@ -702,13 +740,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `coreInteractionOracleReduction` (3 declarations, 3 files)
 
-- `def coreInteractionOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1117](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1117) — (no docstring)
+- `def coreInteractionOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1109](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1109) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1666](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1666) — The final oracle reduction that composes sumcheckFold with finalSumcheckStep
 - `def RingSwitching.SumcheckPhase.coreInteractionOracleReduction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1809](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1809) — Large-field reduction: Sumcheck seqCompose, then append FinalSum
 
 ### `coreInteractionOracleVerifier` (3 declarations, 3 files)
 
-- `def coreInteractionOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1101](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1101) — (no docstring)
+- `def coreInteractionOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1093](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1093) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1647](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1647) — The final oracle verifier that composes sumcheckFold with finalSumcheckStep
 - `def RingSwitching.SumcheckPhase.coreInteractionOracleVerifier` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1773](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1773) — Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum
 
@@ -718,10 +756,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.ProximityGap.CosetConcentration.coset_card` [ArkLib/Data/CodingTheory/ProximityGap/CosetPowerSumConcentration.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/CosetPowerSumConcentration.lean#L96) — A coset of a primitive `h`-th root, with `g ≠ 0`, has exactly `h` elements.
 - `theorem ArkLib.ProximityGap.HybridDepthNoGo.coset_card` [ArkLib/Data/CodingTheory/ProximityGap/HybridConcentrationDepthNoGo.lean:102](../../../ArkLib/Data/CodingTheory/ProximityGap/HybridConcentrationDepthNoGo.lean#L102) — (no docstring)
 
+### `dom` (3 declarations, 3 files)
+
+- `def ProximityGap.DeltaStarExactPin.dom` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:79](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L79) — The smooth evaluation domain: `F₅* = ⟨2⟩` enumerated as successive powers of the generator `2`, i.e.
+- `def ProximityGap.MCANearCapacityQuadratic.dom` [ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean:80](../../../ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean#L80) — The arithmetic evaluation domain `i ↦ (i : ZMod p)`, an embedding once `n ≤ p`.
+- `def ArkLib.ProximityGap.RSPrizeDataPoint.dom` [ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean#L42) — The smooth multiplicative domain mu_8 ⊂ (ZMod 17)ˣ : the eight 8th roots of unity, listed.
+
 ### `epsMCA_le_one` (3 declarations, 3 files)
 
+- `theorem ProximityGap.MCAGS.epsMCA_le_one` [ArkLib/Data/CodingTheory/ProximityGap/141Math.lean:100](../../../ArkLib/Data/CodingTheory/ProximityGap/141Math.lean#L100) — **The abstract MCA error is a probability ceiling: `ε_mca ≤ 1`.** (Companion to `epsMCAgs_le_one`; t
 - `theorem ProximityGap.epsMCA_le_one` [ArkLib/Data/CodingTheory/ProximityGap/Errors.lean:316](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean#L316) — The MCA error is bounded by the total probability mass.
-- `theorem ProximityGap.MCAGS.epsMCA_le_one` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141PrizeMath.lean:100](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141PrizeMath.lean#L100) — **The abstract MCA error is a probability ceiling: `ε_mca ≤ 1`.** (Companion to `epsMCAgs_le_one`; t
 - `theorem CodingTheory.Bridge.epsMCA_le_one` [ArkLib/ToMathlib/BridgeListDecodingCA.lean:77](../../../ArkLib/ToMathlib/BridgeListDecodingCA.lean#L77) — **`ε_mca ≤ 1`.** The mutual-correlated-agreement error is a supremum of PMF probabilities, hence at
 
 ### `evalDist_map_bijective_uniformSample` (3 declarations, 3 files)
@@ -742,18 +786,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma DeBruijnWeightedCardTwoPrime.exp_twelfth_primitive` [ArkLib/Data/CodingTheory/ProximityGap/DeBruijnWeightedCardTwoPrime.lean:97](../../../ArkLib/Data/CodingTheory/ProximityGap/DeBruijnWeightedCardTwoPrime.lean#L97) — (no docstring)
 - `lemma ThreadSplit.exp_twelfth_primitive` [ArkLib/Data/CodingTheory/ProximityGap/ThreadSplit.lean:297](../../../ArkLib/Data/CodingTheory/ProximityGap/ThreadSplit.lean#L297) — (no docstring)
 
-### `finalSumcheckKStateProp` (3 declarations, 3 files)
-
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1659](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1659) — (no docstring)
-- `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKStateProp` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1359](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1359) — (no docstring)
-- `def RingSwitching.SumcheckPhase.finalSumcheckKStateProp` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1536](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1536) — (no docstring)
-
-### `finalSumcheckKnowledgeStateFunction` (3 declarations, 3 files)
-
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1690](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1690) — (no docstring)
-- `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1399](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1399) — The knowledge state function for the final sumcheck step
-- `def RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1573](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1573) — The knowledge state function for the final sumcheck step
-
 ### `finalSumcheckOracleReduction` (3 declarations, 3 files)
 
 - `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:127](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L127) — (no docstring)
@@ -766,23 +798,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1129](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1129) — Perfect completeness for the final sumcheck step
 - `theorem RingSwitching.SumcheckPhase.finalSumcheckOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1450](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1450) — **Final-sumcheck perfect completeness — proven.** The single-message final sumcheck reduction is per
 
-### `finalSumcheckOracleVerifier_rbrKnowledgeSoundness` (3 declarations, 3 files)
-
-- `theorem Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1892](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1892) — (no docstring)
-- `theorem Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1620](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1620) — Round-by-round knowledge soundness for the final sumcheck step
-- `theorem RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1706](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1706) — Round-by-round knowledge soundness for the final sumcheck step
-
 ### `finalSumcheckProver` (3 declarations, 3 files)
 
 - `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckProver` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:67](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L67) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckProver` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:610](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L610) — The prover for the final sumcheck step
 - `def RingSwitching.SumcheckPhase.finalSumcheckProver` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1210](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1210) — The prover for the final sumcheck step
-
-### `finalSumcheckRbrExtractor` (3 declarations, 3 files)
-
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1616](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1616) — (no docstring)
-- `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1320](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1320) — The round-by-round extractor for the final sumcheck step
-- `def RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1516](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1516) — The round-by-round extractor for the final sumcheck step
 
 ### `finalSumcheckVerifier` (3 declarations, 3 files)
 
@@ -798,39 +818,39 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `fullOracleProof` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:102](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L102) — The full Binary Basefold protocol as a Proof
+- `def Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:98](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L98) — The full Binary Basefold protocol as a Proof
 - `def Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171) — The full Binary Basefold protocol as a Proof
-- `def RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:99](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L99) — The full Binary Basefold protocol as a Proof
+- `def RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:111](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L111) — The full Binary Basefold protocol as a Proof
 
 ### `fullOracleReduction` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:74](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L74) — The reduction for the full Binary Basefold protocol
+- `def Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:70](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L70) — The reduction for the full Binary Basefold protocol
 - `def Binius.FRIBinius.FullFRIBinius.fullOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:140](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L140) — The reduction for the full Binary Basefold protocol
-- `def RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:87](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L87) — The reduction for the full Binary Basefold protocol
+- `def RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:99](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L99) — The reduction for the full Binary Basefold protocol
 
 ### `fullOracleReduction_perfectCompleteness` (3 declarations, 3 files)
 
-- `theorem Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:117](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L117) — Perfect completeness for the full Binary Basefold protocol (reduction)
+- `theorem Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:113](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L113) — Perfect completeness for the full Binary Basefold protocol (reduction)
 - `theorem Binius.FRIBinius.FullFRIBinius.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:191](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L191) — Perfect completeness for the full Binary Basefold protocol (reduction)
-- `theorem fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/RingSwitching/General.lean:456](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L456) — **Issue #29: end-to-end RingSwitching perfect completeness (unconditional core).** The former five a
+- `theorem fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/RingSwitching/General.lean:489](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L489) — **Issue #29: end-to-end RingSwitching perfect completeness (unconditional core).** The former five a
 
 ### `fullOracleVerifier` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:51](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L51) — The oracle verifier for the full Binary Basefold protocol
+- `def Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:47](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L47) — The oracle verifier for the full Binary Basefold protocol
 - `def Binius.FRIBinius.FullFRIBinius.fullOracleVerifier` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:114](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L114) — The oracle verifier for the full Binary Basefold protocol
 - `def RingSwitching.FullRingSwitching.fullOracleVerifier` [ArkLib/ProofSystem/RingSwitching/General.lean:63](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L63) — The oracle verifier for the full Binary Basefold protocol
 
 ### `fullOracleVerifier_rbrKnowledgeSoundness` (3 declarations, 3 files)
 
-- `theorem Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:149](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L149) — Round-by-round knowledge soundness for the full Binary Basefold oracle verifier
+- `theorem Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:145](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L145) — Round-by-round knowledge soundness for the full Binary Basefold oracle verifier
 - `theorem Binius.FRIBinius.FullFRIBinius.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:237](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L237) — Round-by-round knowledge soundness for the full FRI-Binius oracle verifier.
-- `theorem RingSwitching.FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/General.lean:200](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L200) — Round-by-round knowledge soundness for the full ring-switching oracle verifier. `IsDomain K` (with t
+- `theorem RingSwitching.FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/General.lean:212](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L212) — Round-by-round knowledge soundness for the full ring-switching oracle verifier. `IsDomain K` (with t
 
 ### `fullRbrKnowledgeError` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.FullBinaryBasefold.fullRbrKnowledgeError` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:139](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L139) — Combined RBR knowledge soundness error for the full protocol
+- `def Binius.BinaryBasefold.FullBinaryBasefold.fullRbrKnowledgeError` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:135](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L135) — Combined RBR knowledge soundness error for the full protocol
 - `def Binius.FRIBinius.FullFRIBinius.fullRbrKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:227](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L227) — Combined RBR knowledge error for full FRI-Binius.
-- `def RingSwitching.FullRingSwitching.fullRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/General.lean:184](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L184) — (no docstring)
+- `def RingSwitching.FullRingSwitching.fullRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/General.lean:196](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L196) — (no docstring)
 
 ### `hammingBall` (3 declarations, 3 files)
 
@@ -876,7 +896,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `natDegree_eval_le` (3 declarations, 3 files)
 
-- `theorem ArkLib.ProximityGap.Issue232Bricks.natDegree_eval_le` [ArkLib/Data/CodingTheory/ProximityGap/Issue232VerifiedBricks.lean:313](../../../ArkLib/Data/CodingTheory/ProximityGap/Issue232VerifiedBricks.lean#L313) — **GS degree budget.** For `H ∈ F[X][Y]` whose `Y`-coefficients all have `X`-degree `≤ B` (`B = deg_X
+- `theorem ArkLib.ProximityGap.Issue232Bricks.natDegree_eval_le` [ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean:313](../../../ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean#L313) — **GS degree budget.** For `H ∈ F[X][Y]` whose `Y`-coefficients all have `X`-degree `≤ B` (`B = deg_X
 - `theorem ArkLib.IncidenceBound.natDegree_eval_le` [ArkLib/ToMathlib/IncidenceBound.lean:111](../../../ArkLib/ToMathlib/IncidenceBound.lean#L111) — Degree accounting for the incidence polynomial: `natDegree (B.eval v) ≤ degreeX B + natDegree_Y B ·
 - `theorem ArkLib.XiCertReduction.natDegree_eval_le` [ArkLib/ToMathlib/XiCertReduction.lean:228](../../../ArkLib/ToMathlib/XiCertReduction.lean#L228) — **The composition degree bound**: substituting `v : F[X]` for the `Y` variable of a bivariate `p` gi
 
@@ -974,7 +994,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma RingSwitching.SumcheckPhase.rename_finCongr_heq` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:317](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L317) — Renaming a polynomial along the canonical index `finCongr` of a (propositional) dimension equality `
 - `lemma Sumcheck.Structured.rename_finCongr_heq` [ArkLib/ProofSystem/Sumcheck/Structured/SingleRound.lean:140](../../../ArkLib/ProofSystem/Sumcheck/Structured/SingleRound.lean#L140) — Renaming a polynomial along the canonical index `finCongr` of a dimension equality is heterogeneousl
-- `theorem MvPolynomial.rename_finCongr_heq` [ArkLib/ToMathlib/ExtractedIssueBricks.lean:46](../../../ArkLib/ToMathlib/ExtractedIssueBricks.lean#L46) — Renaming along the canonical `finCongr` of a dimension equality is heterogeneously equal to the orig
+- `theorem MvPolynomial.rename_finCongr_heq` [ArkLib/ToMathlib/PolynomialCombinatorialAuxiliary.lean:46](../../../ArkLib/ToMathlib/PolynomialCombinatorialAuxiliary.lean#L46) — Renaming along the canonical `finCongr` of a dimension equality is heterogeneously equal to the orig
 
 ### `root` (3 declarations, 3 files)
 
@@ -997,7 +1017,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `simulateQ_simOracle2_messageQuery` (3 declarations, 3 files)
 
 - `lemma RingSwitching.BatchingPhase.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:71](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L71) — Local message-query collapse for `OracleInterface.simOracle2`.
-- `lemma RingSwitching.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1481](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1481) — **`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t₁ t₂
+- `lemma RingSwitching.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1521](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1521) — **`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t₁ t₂
 - `lemma ToyProblem.Spec.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:718](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L718) — `simOracle2` message-query collapse (`OracleComp` form), RIGHT (message) family.
 
 ### `squeeze` (3 declarations, 3 files)
@@ -1044,15 +1064,33 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `totient_two_pow` (3 declarations, 3 files)
 
-- `theorem ArkLib.ProximityGap.SubsetSumLowerLoop50.totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/CandidateSubsetSumLowerLoop50.lean:183](../../../ArkLib/Data/CodingTheory/ProximityGap/CandidateSubsetSumLowerLoop50.lean#L183) — `φ(2^m) = 2^{m-1}` for `m ≥ 1`.
 - `lemma ArkLib.ProximityGap.KKH26.totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean:135](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean#L135) — (no docstring)
 - `theorem R12.totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean:140](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean#L140) — `φ(2^m) = 2^{m-1}` for `m ≥ 1`.
+- `theorem ArkLib.ProximityGap.SubsetSumLowerLoop50.totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/SubsetSumLowerLoop50.lean:183](../../../ArkLib/Data/CodingTheory/ProximityGap/SubsetSumLowerLoop50.lean#L183) — `φ(2^m) = 2^{m-1}` for `m ≥ 1`.
 
 ### `transcriptSimulator` (3 declarations, 3 files)
 
 - `def RandomQuery.transcriptSimulator` [ArkLib/ProofSystem/Component/RandomQuery.lean:203](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L203) — The simulator for `RandomQuery`: the protocol is witness-free, so the simulator can rerun the honest
 - `def SendClaim.transcriptSimulator` [ArkLib/ProofSystem/Component/SendClaim.lean:246](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L246) — The simulator for `SendClaim`: the component has no private witness, so the simulator can run the ho
 - `def SendWitness.transcriptSimulator` [ArkLib/ProofSystem/Component/SendWitness.lean:103](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L103) — The simulator for the `SendWitness` reduction when the relation's witness is determined by the input
+
+### `ubad` (3 declarations, 3 files)
+
+- `def ProximityGap.DeltaStarExactPin.ubad` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:145](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L145) — The bad stack as a `WordStack`.
+- `def CodingTheory.LineDecodingRefutation.ubad` [ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean:113](../../../ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean#L113) — The refuting stack: `u 0 = 0`, `u 1 = 1` (the all-ones word of `Fin 1 → ZMod 2`).
+- `def ProximityGap.MCAZeroCode.ubad` [ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean#L57) — The refuting/witness stack: `u 0 = 0`, `u 1 = 𝟙` (the all-ones word `ι → F`).
+
+### `ubad_one` (3 declarations, 3 files)
+
+- `theorem ProximityGap.DeltaStarExactPin.ubad_one` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:149](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L149) — (no docstring)
+- `theorem CodingTheory.LineDecodingRefutation.ubad_one` [ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean:118](../../../ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean#L118) — (no docstring)
+- `theorem ProximityGap.MCAZeroCode.ubad_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean:61](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean#L61) — (no docstring)
+
+### `ubad_zero` (3 declarations, 3 files)
+
+- `theorem ProximityGap.DeltaStarExactPin.ubad_zero` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:147](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L147) — (no docstring)
+- `theorem CodingTheory.LineDecodingRefutation.ubad_zero` [ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean:115](../../../ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean#L115) — (no docstring)
+- `theorem ProximityGap.MCAZeroCode.ubad_zero` [ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean#L59) — (no docstring)
 
 ### `verify` (3 declarations, 3 files)
 
@@ -1108,6 +1146,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `structure pins` [ArkLib/Data/CodingTheory/ProximityGap/JointT2FiberTightness.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/JointT2FiberTightness.lean#L42) — (no docstring)
 - `structure pins` [ArkLib/Data/CodingTheory/ProximityGap/ListRecoveryInterleavedGap.lean:18](../../../ArkLib/Data/CodingTheory/ProximityGap/ListRecoveryInterleavedGap.lean#L18) — (no docstring)
 
+### `qIdx` (3 declarations, 3 files)
+
+- `def GSExactWall.qIdx` [ArkLib/Data/CodingTheory/ProximityGap/GSExactCountWall.lean:26](../../../ArkLib/Data/CodingTheory/ProximityGap/GSExactCountWall.lean#L26) — The number of genuinely contributing indices: `q = ⌈D/c⌉ = (D + c − 1)/c`.
+- `abbrev DuplexSpongeFS.Sponge314.K1.qIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean:69](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean#L69) — The oracle index of the single adversary query: `p⁻¹(s₀)`.
+- `abbrev DuplexSpongeFS.Sponge314.K1.qIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:69](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L69) — The oracle index of the single adversary query: `p⁻¹(s₀)`.
+
 ### `sudan_interpolation_exists` (3 declarations, 3 files)
 
 - `theorem GSInterp.sudan_interpolation_exists` [ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean:150](../../../ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean#L150) — (no docstring)
@@ -1118,7 +1162,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def support` [ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesB.lean:68](../../../ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesB.lean#L68) — (no docstring)
 - `def ArkLib.ProximityGap.Round5SecondMoment.support` [ArkLib/Data/CodingTheory/ProximityGap/SubsetSumPigeonholeManyTargets.lean:146](../../../ArkLib/Data/CodingTheory/ProximityGap/SubsetSumPigeonholeManyTargets.lean#L146) — The **support**: the set of targets actually hit by some size-`a` subset sum, `{ target : N(a, targe
-- `def support` [ArkLib/Data/CodingTheory/Quarantine/CandidateHypotheses.lean:20](../../../ArkLib/Data/CodingTheory/Quarantine/CandidateHypotheses.lean#L20) — (no docstring)
+- `def support` [ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean:20](../../../ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean#L20) — (no docstring)
 
 ### `uniform_event_mass` (3 declarations, 3 files)
 
@@ -1128,8 +1172,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `audit` (3 declarations, 3 files)
 
-- `axiom audit` [ArkLib/ProofSystem/Logup/Security/Issue13Status.lean:95](../../../ArkLib/ProofSystem/Logup/Security/Issue13Status.lean#L95) — (no docstring)
 - `axiom audit` [ArkLib/ProofSystem/Logup/Security/LogupCompletenessUncond.lean:84](../../../ArkLib/ProofSystem/Logup/Security/LogupCompletenessUncond.lean#L84) — (no docstring)
+- `axiom audit` [ArkLib/ProofSystem/Logup/Security/LogupProtocol2Status.lean:95](../../../ArkLib/ProofSystem/Logup/Security/LogupProtocol2Status.lean#L95) — (no docstring)
 - `axiom audit` [ArkLib/ProofSystem/Logup/Security/LogupSoundnessUncond.lean:84](../../../ArkLib/ProofSystem/Logup/Security/LogupSoundnessUncond.lean#L84) — (no docstring)
 
 ### `composedPSpec_dir_seam` (3 declarations, 3 files)
@@ -1140,8 +1184,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `prizeRate_floor_add_one_le` (3 declarations, 3 files)
 
-- `lemma ProximityGap.prizeRate_floor_add_one_le` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeDecision.lean:149](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeDecision.lean#L149) — For `n ≥ 2`, every prize-rate degree satisfies `k_j + 1 ≤ n`.
-- `lemma ProximityGap.prizeRate_floor_add_one_le` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean:218](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean#L218) — If the evaluation domain has at least two points, each prize degree is strictly below the block leng
+- `lemma ProximityGap.prizeRate_floor_add_one_le` [ArkLib/Data/CodingTheory/ProximityGap/Decision.lean:149](../../../ArkLib/Data/CodingTheory/ProximityGap/Decision.lean#L149) — For `n ≥ 2`, every prize-rate degree satisfies `k_j + 1 ≤ n`.
+- `lemma ProximityGap.prizeRate_floor_add_one_le` [ArkLib/Data/CodingTheory/ProximityGap/LDFourRate.lean:218](../../../ArkLib/Data/CodingTheory/ProximityGap/LDFourRate.lean#L218) — If the evaluation domain has at least two points, each prize degree is strictly below the block leng
 - `lemma ProximityGap.prizeRate_floor_add_one_le` [ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean:371](../../../ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean#L371) — For `n ≥ 2`, every prize-rate degree satisfies `k_j + 1 ≤ n`.
 
 ### `secondSumcheckWithTarget_perfectCompleteness_enrichedBinding` (3 declarations, 3 files)
@@ -1224,8 +1268,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `with` (3 declarations, 3 files)
 
-- `instance with` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDAttainment.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDAttainment.lean#L32) — (no docstring)
 - `theorem with` [ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonDischarge.lean:31](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonDischarge.lean#L31) — (no docstring)
+- `instance with` [ArkLib/Data/CodingTheory/ProximityGap/LDAttainment.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/LDAttainment.lean#L32) — (no docstring)
 - `theorem with` [ArkLib/Data/CodingTheory/ProximityGap/PermanentlyBlocked.lean:55](../../../ArkLib/Data/CodingTheory/ProximityGap/PermanentlyBlocked.lean#L55) — (no docstring)
 
 ### `cast_id` (9 declarations, 2 files)
@@ -1531,11 +1575,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `alias OracleSpec.QueryLog.BadEventDS.E_prp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean:293](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean#L293) — (no docstring)
 - `alias OracleSpec.QueryLog.BadEventDSPaper.E_prp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean:269](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean#L269) — (no docstring)
 
-### `Entry` (2 declarations, 2 files)
-
-- `abbrev DuplexSpongeFS.Sponge316.ForkCounter.Entry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:67](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L67) — Entry type at `StmtIn := Unit`, `U := UInt8` (sponge geometry `{N := 2, R := 1}` inherited from `Tim
-- `abbrev DuplexSpongeFS.Sponge316.TimePCounter.Entry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:73](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L73) — (no docstring)
-
 ### `ExtractabilityAdversary` (2 declarations, 2 files)
 
 - `abbrev Commitment.ExtractabilityAdversary` [ArkLib/CommitmentScheme/Basic.lean:183](../../../ArkLib/CommitmentScheme/Basic.lean#L183) — An adversary in the extractability game is an oracle computation that returns a commitment, a query,
@@ -1550,11 +1589,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def Fri.Spec.FinalStatement` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:83](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L83) — (no docstring)
 - `def Spartan.Spec.Bricks.FinalStatement` [ArkLib/ToMathlib/SpartanBricks.lean:97](../../../ArkLib/ToMathlib/SpartanBricks.lean#L97) — The terminal claim statement type: the full Spartan statement after the second sum-check (`(r_y, (r_
-
-### `FinalSumcheckWit` (2 declarations, 2 files)
-
-- `def Binius.BinaryBasefold.CoreInteraction.FinalSumcheckWit` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1610](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1610) — (no docstring)
-- `def Binius.FRIBinius.CoreInteractionPhase.FinalSumcheckWit` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1314](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1314) — (no docstring)
 
 ### `G_eighth_roots` (2 declarations, 2 files)
 
@@ -1578,7 +1612,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `Hypercube` (2 declarations, 2 files)
 
-- `def ArkLib.CodingTheory.Research.Hypercube` [ArkLib/Data/CodingTheory/Quarantine/CandidateMultilinearHypercube.lean:20](../../../ArkLib/Data/CodingTheory/Quarantine/CandidateMultilinearHypercube.lean#L20) — The Boolean Hypercube domain defined over the field F.
+- `def ArkLib.CodingTheory.Research.Hypercube` [ArkLib/Data/CodingTheory/Quarantine/MultilinearHypercube.lean:20](../../../ArkLib/Data/CodingTheory/Quarantine/MultilinearHypercube.lean#L20) — The Boolean Hypercube domain defined over the field F.
 - `def Logup.Hypercube` [ArkLib/ProofSystem/Logup/Common.lean:35](../../../ArkLib/ProofSystem/Logup/Common.lean#L35) — The boolean hypercube with `2^n` points. The paper writes this domain as `H = {±1}^n`; we use bit ve
 
 ### `KeyGen` (2 declarations, 2 files)
@@ -1586,10 +1620,15 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `structure Commitment.KeyGen` [ArkLib/CommitmentScheme/Basic.lean:49](../../../ArkLib/CommitmentScheme/Basic.lean#L49) — Key generation for a commitment scheme, producing a committer key and a verifier key.
 - `structure CommitmentScheme.KeyGen` [ArkLib/CommitmentScheme/CommitmentScheme.lean:34](../../../ArkLib/CommitmentScheme/CommitmentScheme.lean#L34) — The key-generation algorithm, returning separate keys for the committer and verifier.
 
+### `L11` (2 declarations, 2 files)
+
+- `def ArkLib.CodingTheory.TinyInteriorF11.L11` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11.lean:105](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11.lean#L105) — The candidate list `L₁₁ = {d0, …, d14}`.
+- `def ProximityGap.MissingLineDefeater.L11` [ArkLib/Data/CodingTheory/ProximityGap/MissingLineDefeater.lean:107](../../../ArkLib/Data/CodingTheory/ProximityGap/MissingLineDefeater.lean#L107) — (no docstring)
+
 ### `MLE_eval_eq_sum_eqTilde` (2 declarations, 2 files)
 
 - `theorem MvPolynomial.MLE_eval_eq_sum_eqTilde` [ArkLib/Data/MvPolynomial/Multilinear.lean:319](../../../ArkLib/Data/MvPolynomial/Multilinear.lean#L319) — **MLE evaluation as an eq-weighted sum over the hypercube.**  Evaluating the multilinear extension a
-- `lemma RingSwitching.MLE_eval_eq_sum_eqTilde` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1079](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1079) — **MLE evaluation as an `eq̃`-weighted hypercube sum.** Evaluating the multilinear extension `MLE f`
+- `lemma RingSwitching.MLE_eval_eq_sum_eqTilde` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1119](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1119) — **MLE evaluation as an `eq̃`-weighted hypercube sum.** Evaluating the multilinear extension `MLE f`
 
 ### `MarkedCurveDecodable` (2 declarations, 2 files)
 
@@ -1652,6 +1691,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ArkLib.ProofSystem.Stir.ErrorAccumulation.PerRoundProximityGap` [ArkLib/ProofSystem/Stir/ErrorAccumulation.lean:307](../../../ArkLib/ProofSystem/Stir/ErrorAccumulation.lean#L307) — The keystone, abstracted. `PerRoundProximityGap e ProxGapBound` says the accounting per-round error
 - `def Core2Keystone.PerRoundProximityGap` [ArkLib/ProofSystem/Whir/KeystoneReduction.lean:52](../../../ArkLib/ProofSystem/Whir/KeystoneReduction.lean#L52) — Verbatim copy of `Issue24FRISTIR.PerRoundProximityGap` (`Stir/SoundnessAccumulation.lean:253`): the
 
+### `Pr_badStack_eq_one` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.Pr_badStack_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean:64](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean#L64) — **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
+- `theorem Pr_badStack_eq_one` [ArkLib/MCAGSRefutationCore.lean:63](../../../ArkLib/MCAGSRefutationCore.lean#L63) — **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
+
 ### `Proof` (2 declarations, 2 files)
 
 - `abbrev Interaction.Proof` [ArkLib/Interaction/Reduction.lean:232](../../../ArkLib/Interaction/Reduction.lean#L232) — (no docstring)
@@ -1700,7 +1744,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `UDRClose_of_fin_eq` (2 declarations, 2 files)
 
 - `theorem Binius.BinaryBasefold.UDRClose_of_fin_eq` [ArkLib/ProofSystem/Binius/BinaryBasefold/Reconstruct/UDRCongruence.lean:52](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Reconstruct/UDRCongruence.lean#L52) — **UDR-closeness congruence under domain-index equality.** If the domain indices `i, j : Fin r` are e
-- `theorem Binius.BinaryBasefold.CoreInteraction.UDRClose_of_fin_eq` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:756](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L756) — Transport `UDRClose` across an index equality and a heterogeneous function equality.
+- `theorem Binius.BinaryBasefold.CoreInteraction.UDRClose_of_fin_eq` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:747](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L747) — Transport `UDRClose` across an index equality and a heterogeneous function equality.
 
 ### `Verifier.run` (2 declarations, 2 files)
 
@@ -1726,6 +1770,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def R14Derand.agreement` [ArkLib/Data/CodingTheory/ProximityGap/DerandomizationFrontier.lean:61](../../../ArkLib/Data/CodingTheory/ProximityGap/DerandomizationFrontier.lean#L61) — Absolute agreement: the number of coordinates where two words coincide.
 - `def Round16SelfSimilar.agreement` [ArkLib/Data/CodingTheory/ProximityGap/SmoothDomainSelfSimilarity.lean:129](../../../ArkLib/Data/CodingTheory/ProximityGap/SmoothDomainSelfSimilarity.lean#L129) — Agreement count of a polynomial `g` with a word `w` over a domain `D`.
+
+### `agreement_card_le` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.KKH26.agreement_card_le` [ArkLib/Data/CodingTheory/ProximityGap/KKH26CensusLaw.lean:102](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26CensusLaw.lean#L102) — **Rigidity: the agreement set of a bad scalar has size at most `r`.** The difference is monic of deg
+- `theorem ArkLib.CodingTheory.UniqueDecoding.agreement_card_le` [ArkLib/Data/CodingTheory/ProximityGap/UniqueDecodingListBound.lean:84](../../../ArkLib/Data/CodingTheory/ProximityGap/UniqueDecodingListBound.lean#L84) — **Agreement bound.** Two distinct polynomials of degree `< k` evaluated on an injective domain agree
 
 ### `all_agree_ge_three` (2 declarations, 2 files)
 
@@ -1838,6 +1887,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Issue29Ring.badPolyAgreement` [ArkLib/ProofSystem/RingSwitching/TraceTensorAlgebra.lean:39](../../../ArkLib/ProofSystem/RingSwitching/TraceTensorAlgebra.lean#L39) — **Named per-round residual = the weakened-KState bad event.** The prover message `p` differs from th
 - `def KStateWeaken.badPolyAgreement` [ArkLib/ToMathlib/KStateWeaken.lean:70](../../../ArkLib/ToMathlib/KStateWeaken.lean#L70) — **Named per-round residual (weakened KState surface).** `badPolyAgreement r p q` is the bad event to
 
+### `badStack` (2 declarations, 2 files)
+
+- `def ProximityGap.MCAGSPrizeRefutation.badStack` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean:29](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean#L29) — The adversarial stack: row 0 = `w₀`, row 1 = `0`.
+- `def badStack` [ArkLib/MCAGSRefutationCore.lean:28](../../../ArkLib/MCAGSRefutationCore.lean#L28) — The adversarial stack: row 0 = `w₀`, row 1 = `0`.
+
+### `badStack_one` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.badStack_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean#L32) — (no docstring)
+- `theorem badStack_one` [ArkLib/MCAGSRefutationCore.lean:31](../../../ArkLib/MCAGSRefutationCore.lean#L31) — (no docstring)
+
+### `badStack_zero` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.badStack_zero` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean:31](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean#L31) — (no docstring)
+- `theorem badStack_zero` [ArkLib/MCAGSRefutationCore.lean:30](../../../ArkLib/MCAGSRefutationCore.lean#L30) — (no docstring)
+
 ### `badSumcheckEventProp` (2 declarations, 2 files)
 
 - `def Binius.BinaryBasefold.badSumcheckEventProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Relations.lean:614](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Relations.lean#L614) — (no docstring)
@@ -1846,7 +1910,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `batchingCoreRbrKnowledgeError` (2 declarations, 2 files)
 
 - `def Binius.FRIBinius.FullFRIBinius.batchingCoreRbrKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:217](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L217) — Combined RBR knowledge error for batching + core interaction.
-- `def RingSwitching.FullRingSwitching.batchingCoreRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/General.lean:178](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L178) — (no docstring)
+- `def RingSwitching.FullRingSwitching.batchingCoreRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/General.lean:190](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L190) — (no docstring)
 
 ### `batchingCoreReduction` (2 declarations, 2 files)
 
@@ -1951,12 +2015,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `choose_le_succ_succ` (2 declarations, 2 files)
 
 - `theorem Round14ConstantGap.choose_le_succ_succ` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean:51](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean#L51) — One-step Pascal: `C(n, m) ≤ C(n+1, m+1)` (the RHS is `C(n,m) + C(n,m+1)`).
-- `theorem R15Bracket.choose_le_succ_succ` [ArkLib/Data/CodingTheory/ProximityGap/PrizeScaleBracketFull.lean:278](../../../ArkLib/Data/CodingTheory/ProximityGap/PrizeScaleBracketFull.lean#L278) — (no docstring)
+- `theorem R15Bracket.choose_le_succ_succ` [ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean:278](../../../ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean#L278) — (no docstring)
 
 ### `choose_prime_pow_cast_eq_zero` (2 declarations, 2 files)
 
-- `lemma ArkLib.ProximityGap.Issue232Bricks.choose_prime_pow_cast_eq_zero` [ArkLib/Data/CodingTheory/ProximityGap/Issue232VerifiedBricks.lean:73](../../../ArkLib/Data/CodingTheory/ProximityGap/Issue232VerifiedBricks.lean#L73) — **Char-`p` middle binomial vanishing.** In a commutative ring of prime characteristic `p`, `C(p^a, m
 - `lemma ProximityGap.LinearizedPolynomialHasse.choose_prime_pow_cast_eq_zero` [ArkLib/Data/CodingTheory/ProximityGap/LinearizedPolynomialHasse.lean:70](../../../ArkLib/Data/CodingTheory/ProximityGap/LinearizedPolynomialHasse.lean#L70) — **Char-`p` middle binomial vanishing.** For a commutative ring of characteristic `p` (prime), `(p^a)
+- `lemma ArkLib.ProximityGap.Issue232Bricks.choose_prime_pow_cast_eq_zero` [ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean:73](../../../ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean#L73) — **Char-`p` middle binomial vanishing.** In a commutative ring of prime characteristic `p`, `C(p^a, m
 
 ### `cliqueLocator_natDegree` (2 declarations, 2 files)
 
@@ -2005,7 +2069,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `coeff_pow_natDegree_le` (2 declarations, 2 files)
 
-- `lemma CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.coeff_pow_natDegree_le` [ArkLib/Data/CodingTheory/ProximityGap/Hab25CandidateProduction.lean:396](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25CandidateProduction.lean#L396) — Coefficient `Z`-degree bound for powers: if every coefficient of `p ∈ F[Z][X]` has `Z`-degree `≤ m`,
+- `lemma CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.coeff_pow_natDegree_le` [ArkLib/Data/CodingTheory/ProximityGap/Hab25Production.lean:396](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25Production.lean#L396) — Coefficient `Z`-degree bound for powers: if every coefficient of `p ∈ F[Z][X]` has `Z`-degree `≤ m`,
 - `lemma ArkLib.SurfaceFactorProduction.coeff_pow_natDegree_le` [ArkLib/ToMathlib/SurfaceFactorProduction.lean:90](../../../ArkLib/ToMathlib/SurfaceFactorProduction.lean#L90) — (no docstring)
 
 ### `coeff_toPoly` (2 declarations, 2 files)
@@ -2095,17 +2159,17 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `coreInteractionOracleRbrKnowledgeError` (2 declarations, 2 files)
 
-- `def coreInteractionOracleRbrKnowledgeError` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1166](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1166) — (no docstring)
+- `def coreInteractionOracleRbrKnowledgeError` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1158](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1158) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleRbrKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1728](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1728) — (no docstring)
 
 ### `coreInteractionOracleReduction_perfectCompleteness` (2 declarations, 2 files)
 
-- `theorem coreInteractionOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1137](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1137) — (no docstring)
+- `theorem coreInteractionOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1129](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1129) — (no docstring)
 - `theorem Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1688](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1688) — Perfect completeness for the core interaction oracle reduction
 
 ### `coreInteractionOracleVerifier_rbrKnowledgeSoundness` (2 declarations, 2 files)
 
-- `theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1174](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1174) — (no docstring)
+- `theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1166](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1166) — (no docstring)
 - `theorem Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1737](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1737) — Round-by-round knowledge soundness for the core interaction oracle verifier
 
 ### `correlatedAgreement_affine_curves_of_lattice_data` (2 declarations, 2 files)
@@ -2174,16 +2238,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def BerlekampWelch.decoder` [ArkLib/Data/CodingTheory/BerlekampWelch/BerlekampWelch.lean:52](../../../ArkLib/Data/CodingTheory/BerlekampWelch/BerlekampWelch.lean#L52) — Berlekamp-Welch decoder for Reed-Solomon codes. Given received codeword evaluations with potential e
 - `def GuruswamiSudan.decoder` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:113](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L113) — Specification-level Guruswami-Sudan decoder. This finite-field specification enumerates all degree-`
 
-### `dedup_eq` (2 declarations, 2 files)
-
-- `lemma DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:307](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L307) — The dedup fixpoint of `trcF` is `trcD`: classical choice first erases slot 2 or slot 4, and both bra
-- `lemma DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:244](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L244) — The dedup fixpoint of the countermodel trace is `trc'` (erase slot 3, then stop).
-
-### `dedup_eq'` (2 declarations, 2 files)
-
-- `lemma DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:354](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L354) — Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
-- `lemma DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:263](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L263) — Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
-
 ### `degree` (2 declarations, 2 files)
 
 - `def UniPoly.degree` [ArkLib/Data/UniPoly/Basic.lean:66](../../../ArkLib/Data/UniPoly/Basic.lean#L66) — Return the degree of a `UniPoly`.
@@ -2197,12 +2251,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `dist` (2 declarations, 2 files)
 
 - `def Code.dist` [ArkLib/Data/CodingTheory/Basic/Distance.lean:216](../../../ArkLib/Data/CodingTheory/Basic/Distance.lean#L216) — The Hamming distance of a code `C` is the minimum Hamming distance between any two distinct elements
-- `def dist` [ArkLib/Data/CodingTheory/Quarantine/CandidateHypotheses.lean:21](../../../ArkLib/Data/CodingTheory/Quarantine/CandidateHypotheses.lean#L21) — (no docstring)
-
-### `dom` (2 declarations, 2 files)
-
-- `def ProximityGap.MCANearCapacityQuadratic.dom` [ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean:80](../../../ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean#L80) — The arithmetic evaluation domain `i ↦ (i : ZMod p)`, an embedding once `n ≤ p`.
-- `def ArkLib.ProximityGap.RSPrizeDataPoint.dom` [ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean#L42) — The smooth multiplicative domain mu_8 ⊂ (ZMod 17)ˣ : the eight 8th roots of unity, listed.
+- `def dist` [ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean:21](../../../ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean#L21) — (no docstring)
 
 ### `domain_implies_char_ne_2` (2 declarations, 2 files)
 
@@ -2238,6 +2287,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ProximityGap.epsCA_le_one` [ArkLib/Data/CodingTheory/ProximityGap/Errors.lean:247](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean#L247) — The CA error is bounded by the total probability mass.
 - `theorem CodingTheory.Bridge.epsCA_le_one` [ArkLib/ToMathlib/BridgeListDecodingCA.lean:65](../../../ArkLib/ToMathlib/BridgeListDecodingCA.lean#L65) — **`ε_ca ≤ 1`.** The correlated-agreement error is a supremum of values each of which is either `0` o
+
+### `epsMCAgs_badList_eq_one` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.epsMCAgs_badList_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean#L82) — **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
+- `theorem epsMCAgs_badList_eq_one` [ArkLib/MCAGSRefutationCore.lean:81](../../../ArkLib/MCAGSRefutationCore.lean#L81) — **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
 
 ### `epsRbr` (2 declarations, 2 files)
 
@@ -2292,7 +2346,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` (2 declarations, 2 files)
 
 - `lemma ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6727](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6727) — Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the
-- `lemma ArkLib.Claim511.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/ToMathlib/Claim511.lean:129](../../../ArkLib/ToMathlib/Claim511.lean#L129) — **Complement-to-incidence selection.** If at least `r` coordinates are *not* heavy (each bad for `<
+- `lemma ArkLib.Claim511.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean:129](../../../ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean#L129) — **Complement-to-incidence selection.** If at least `r` coordinates are *not* heavy (each bad for `<
 
 ### `exists_monic_irreducible_factorization` (2 declarations, 2 files)
 
@@ -2307,7 +2361,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `exists_subset_card_eq_of_le_card` (2 declarations, 2 files)
 
 - `lemma ProximityGap.exists_subset_card_eq_of_le_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6677](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6677) — Select exactly `r` elements from a finite set once its cardinality is large enough.  This is the fin
-- `lemma ArkLib.Claim511.exists_subset_card_eq_of_le_card` [ArkLib/ToMathlib/Claim511.lean:119](../../../ArkLib/ToMathlib/Claim511.lean#L119) — Select exactly `r` elements from a finite set once its cardinality is large enough.  Final selection
+- `lemma ArkLib.Claim511.exists_subset_card_eq_of_le_card` [ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean:119](../../../ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean#L119) — Select exactly `r` elements from a finite set once its cardinality is large enough.  Final selection
 
 ### `exp_root_primitive` (2 declarations, 2 files)
 
@@ -2362,7 +2416,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `fiberCount` (2 declarations, 2 files)
 
 - `def AveragingCrossover.fiberCount` [ArkLib/Data/CodingTheory/ProximityGap/AveragingFiberConservation.lean:85](../../../ArkLib/Data/CodingTheory/ProximityGap/AveragingFiberConservation.lean#L85) — The fiber count over a target.
-- `def Round18Bracket.fiberCount` [ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketPrizeScale.lean:47](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketPrizeScale.lean#L47) — The fiber count `m x = #{c : x ∈ A c}`.
+- `def Round18Bracket.fiberCount` [ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketScale.lean:47](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketScale.lean#L47) — The fiber count `m x = #{c : x ∈ A c}`.
 
 ### `fiber_card_le` (2 declarations, 2 files)
 
@@ -2376,13 +2430,33 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `finSumFinEquiv_symm_dite` (2 declarations, 2 files)
 
-- `theorem RingSwitching.finSumFinEquiv_symm_dite` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1598](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1598) — Value-form of `finSumFinEquiv.symm`: classify the index by whether its value is `< m`.
+- `theorem RingSwitching.finSumFinEquiv_symm_dite` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1638](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1638) — Value-form of `finSumFinEquiv.symm`: classify the index by whether its value is `< m`.
 - `theorem finSumFinEquiv_symm_dite` [ArkLib/ToMathlib/FinSumMvPolyBricks.lean:25](../../../ArkLib/ToMathlib/FinSumMvPolyBricks.lean#L25) — Value-form classification of `finSumFinEquiv.symm`.
+
+### `finalSumcheckKStateProp` (2 declarations, 2 files)
+
+- `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKStateProp` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1359](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1359) — (no docstring)
+- `def RingSwitching.SumcheckPhase.finalSumcheckKStateProp` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1536](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1536) — (no docstring)
 
 ### `finalSumcheckKnowledgeError` (2 declarations, 2 files)
 
 - `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:206](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L206) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1309](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1309) — RBR knowledge error for the final sumcheck step
+
+### `finalSumcheckKnowledgeStateFunction` (2 declarations, 2 files)
+
+- `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1399](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1399) — The knowledge state function for the final sumcheck step
+- `def RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1573](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1573) — The knowledge state function for the final sumcheck step
+
+### `finalSumcheckOracleVerifier_rbrKnowledgeSoundness` (2 declarations, 2 files)
+
+- `theorem Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1620](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1620) — Round-by-round knowledge soundness for the final sumcheck step
+- `theorem RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1706](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1706) — Round-by-round knowledge soundness for the final sumcheck step
+
+### `finalSumcheckRbrExtractor` (2 declarations, 2 files)
+
+- `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1320](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1320) — The round-by-round extractor for the final sumcheck step
+- `def RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1516](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1516) — The round-by-round extractor for the final sumcheck step
 
 ### `finalSumcheckStepLogic` (2 declarations, 2 files)
 
@@ -2402,7 +2476,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `firstOracleWitnessConsistency_unique` (2 declarations, 2 files)
 
-- `lemma Binius.BBFSmallFieldIOPCS.firstOracleWitnessConsistency_unique` [ArkLib/ProofSystem/Binius/BBFSmallFieldIOPCS.lean:173](../../../ArkLib/ProofSystem/Binius/BBFSmallFieldIOPCS.lean#L173) — Uniqueness of the polynomial witness from first-oracle UDR-compatibility.
+- `lemma Binius.BBFSmallFieldIOPCS.firstOracleWitnessConsistency_unique` [ArkLib/ProofSystem/Binius/BBFSmallFieldIOPCS.lean:180](../../../ArkLib/ProofSystem/Binius/BBFSmallFieldIOPCS.lean#L180) — Uniqueness of the polynomial witness from first-oracle UDR-compatibility.
 - `lemma Binius.BinaryBasefold.CoreInteraction.firstOracleWitnessConsistency_unique` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/Fold.lean:763](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/Fold.lean#L763) — (no docstring)
 
 ### `firstSumcheckWithTarget_toVerifier_isFailingDet` (2 declarations, 2 files)
@@ -2414,6 +2488,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.Issue64Boundary.floor_lt_of_lt_of_lattice` [ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardLatticeSlice.lean:93](../../../ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardLatticeSlice.lean#L93) — **At a lattice point, every strict sub-radius drops the floor.**  If `δ·n` is an integer (`(⌊δ·n⌋ :
 - `theorem ArkLib.BoundaryCardResidual.floor_lt_of_lt_of_lattice` [ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:172](../../../ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean#L172) — **At a lattice endpoint, every strict sub-radius has strictly smaller floor.**  This is the exact co
+
+### `foldAt` (2 declarations, 2 files)
+
+- `def ProximityGap.Issue357.FoldQuotientStack.foldAt` [ArkLib/Data/CodingTheory/ProximityGap/KKH26FoldQuotientStack.lean:51](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26FoldQuotientStack.lean#L51) — The FRI fold of `f` at challenge `β`, evaluated at the fiber `{x, −x}` (the value assigned to `y = x
+- `def ProximityGap.KKH26FoldTransport.foldAt` [ArkLib/Data/CodingTheory/ProximityGap/KKH26FoldTransport.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26FoldTransport.lean#L63) — The FRI fold of a word `f`, evaluated at the point lying over `y = x²`: the even part plus `β` times
 
 ### `foldMatrixNat_det_ne_zero` (2 declarations, 2 files)
 
@@ -2463,12 +2542,22 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `four_pow_le_shift_choose` (2 declarations, 2 files)
 
 - `theorem Round14ConstantGap.four_pow_le_shift_choose` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean:68](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean#L68) — **Rate-1/2 engine.** For `t < m`: `4^{m−t} ≤ 2(m−t) · C(2m, m+t)`. Chain: `C(2m, m+t) ≥ C(2(m−t), m−
-- `theorem R15Bracket.four_pow_le_shift_choose` [ArkLib/Data/CodingTheory/ProximityGap/PrizeScaleBracketFull.lean:292](../../../ArkLib/Data/CodingTheory/ProximityGap/PrizeScaleBracketFull.lean#L292) — Central-binomial lower bound after a Pascal shift by `2t`: `4^(m−t) ≤ 2(m−t) · C(2m, m+t)` for `t <
+- `theorem R15Bracket.four_pow_le_shift_choose` [ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean:292](../../../ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean#L292) — Central-binomial lower bound after a Pascal shift by `2t`: `4^(m−t) ≤ 2(m−t) · C(2m, m+t)` for `t <
+
+### `fullOracleVerifier_rbrKnowledgeSoundness_wired` (2 declarations, 2 files)
+
+- `theorem Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier_rbrKnowledgeSoundness_wired` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:255](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L255) — **Round-by-round knowledge soundness of the full Binary Basefold oracle verifier, wired** (stateless
+- `theorem RingSwitching.FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness_wired` [ArkLib/ProofSystem/RingSwitching/RbrKnowledgeWiringFull.lean:119](../../../ArkLib/ProofSystem/RingSwitching/RbrKnowledgeWiringFull.lean#L119) — **Round-by-round knowledge soundness of the full ring-switching oracle verifier, wired** — no append
 
 ### `fullPspec` (2 declarations, 2 files)
 
 - `def Binius.FRIBinius.FullFRIBinius.fullPspec` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:54](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L54) — (no docstring)
 - `def RingSwitching.fullPspec` [ArkLib/ProofSystem/RingSwitching/Spec.lean:57](../../../ArkLib/ProofSystem/RingSwitching/Spec.lean#L57) — (no docstring)
+
+### `gapPoly` (2 declarations, 2 files)
+
+- `def CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCapture.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCapture.lean#L60) — The per-coordinate gap polynomial `∑ⱼ C(dⱼ(x))·Xʲ`.
+- `def ArkLib.ProximityGap.KKH26.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean:48](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean#L48) — The line-minus-explanation polynomial `X^A + λ·X^B − q`.
 
 ### `genMutualCorrParamsUDR` (2 declarations, 2 files)
 
@@ -2548,7 +2637,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `hasseDerivX` (2 declarations, 2 files)
 
 - `def BCIKS20.HenselNumerator.hasseDerivX` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:478](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L478) — `Δ_X^{i1}`: the `i1`-th Hasse derivative on the **lift `X` layer** (the middle `Polynomial` layer) o
-- `def Polynomial.Bivariate.hasseDerivX` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge1BruteForce.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge1BruteForce.lean#L54) — `Δ_X^{k}`: the `k`-th Hasse derivative in the inner variable `X`, applied coefficient-wise: each `Y`
+- `def Polynomial.Bivariate.hasseDerivX` [ArkLib/Data/CodingTheory/ProximityGap/BruteForce.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/BruteForce.lean#L54) — `Δ_X^{k}`: the `k`-th Hasse derivative in the inner variable `X`, applied coefficient-wise: each `Y`
 
 ### `hasseDerivX_monomial` (2 declarations, 2 files)
 
@@ -2558,12 +2647,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `hasseDerivY` (2 declarations, 2 files)
 
 - `def BCIKS20.HenselNumerator.hasseDerivY` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:483](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L483) — `Δ_Y^{m}`: the `m`-th Hasse derivative on the **outermost `Y` layer** of `R`, i.e. the ordinary math
-- `def Polynomial.Bivariate.hasseDerivY` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge1BruteForce.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge1BruteForce.lean#L49) — `Δ_Y^{k}`: the `k`-th Hasse derivative in the outer variable `Y`, i.e. the ordinary mathlib `Polynom
+- `def Polynomial.Bivariate.hasseDerivY` [ArkLib/Data/CodingTheory/ProximityGap/BruteForce.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/BruteForce.lean#L49) — `Δ_Y^{k}`: the `k`-th Hasse derivative in the outer variable `Y`, i.e. the ordinary mathlib `Polynom
 
 ### `hasseDeriv_X_pow_prime_pow_sub_one` (2 declarations, 2 files)
 
-- `theorem ArkLib.ProximityGap.Issue232Bricks.hasseDeriv_X_pow_prime_pow_sub_one` [ArkLib/Data/CodingTheory/ProximityGap/Issue232VerifiedBricks.lean:87](../../../ArkLib/Data/CodingTheory/ProximityGap/Issue232VerifiedBricks.lean#L87) — **Hasse–Lucas collapse of the vanishing polynomial.** Over a characteristic-`p` ring, `hasseDeriv m
 - `theorem ProximityGap.LinearizedPolynomialHasse.hasseDeriv_X_pow_prime_pow_sub_one` [ArkLib/Data/CodingTheory/ProximityGap/LinearizedPolynomialHasse.lean:92](../../../ArkLib/Data/CodingTheory/ProximityGap/LinearizedPolynomialHasse.lean#L92) — **Inseparable vanishing-polynomial form.** In characteristic `p`, `hasseDeriv m (X^{p^a} - 1) = 0` f
+- `theorem ArkLib.ProximityGap.Issue232Bricks.hasseDeriv_X_pow_prime_pow_sub_one` [ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean:87](../../../ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean#L87) — **Hasse–Lucas collapse of the vanishing polynomial.** Over a characteristic-`p` ring, `hasseDeriv m
 
 ### `hasseDeriv_eval_eq_sum` (2 declarations, 2 files)
 
@@ -2573,7 +2662,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `heavyCoords_card_mul_le` (2 declarations, 2 files)
 
 - `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6685](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6685) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then
-- `lemma ArkLib.Claim511.heavyCoords_card_mul_le` [ArkLib/ToMathlib/Claim511.lean:78](../../../ArkLib/ToMathlib/Claim511.lean#L78) — **Double-counting brick.** If each `z ∈ S` has at most `m` bad coordinates, then the coordinates tha
+- `lemma ArkLib.Claim511.heavyCoords_card_mul_le` [ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean:78](../../../ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean#L78) — **Double-counting brick.** If each `z ∈ S` has at most `m` bad coordinates, then the coordinates tha
 
 ### `hint` (2 declarations, 2 files)
 
@@ -2583,11 +2672,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `hybEncodedMessagesBefore` (6 declarations, 2 files)
 
 - `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:224](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L224) — `hybEncodedMessagesBefore?` is the walk applied to the flattened prefix.
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:301](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L301) — **H23-2.** `hybEncodedMessagesBefore?` succeeds whenever every encoded block before the round lies i
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:342](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L342) — **H23-2 glue.** On any backtrack output passing the simulator's image guard, the `Hyb₃` codec bridge
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:416](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L416) — **H23-3.** On success of `hybEncodedMessagesBefore?`, every decoded message re-serializes to the cor
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:430](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L430) — **H23-4.** Two encoded prefixes decoding (via `hybEncodedMessagesBefore?`) to the same message prefi
-- `def DuplexSpongeFS.TraceTransform.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean:363](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean#L363) — Public wrapper for the Section 5.8 `φ⁻¹` parser from the encoded-message tuple returned by `BackTrac
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:302](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L302) — **H23-2.** `hybEncodedMessagesBefore?` succeeds whenever every encoded block before the round lies i
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:343](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L343) — **H23-2 glue.** On any backtrack output passing the simulator's image guard, the `Hyb₃` codec bridge
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:418](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L418) — **H23-3.** On success of `hybEncodedMessagesBefore?`, every decoded message re-serializes to the cor
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:432](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L432) — **H23-4.** Two encoded prefixes decoding (via `hybEncodedMessagesBefore?`) to the same message prefi
+- `def DuplexSpongeFS.TraceTransform.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean:368](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean#L368) — Public wrapper for the Section 5.8 `φ⁻¹` parser from the encoded-message tuple returned by `BackTrac
 
 ### `id_isHVZK` (2 declarations, 2 files)
 
@@ -2816,13 +2905,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `johnson_radius_lt_capacity` (2 declarations, 2 files)
 
-- `theorem ArkLib.ProximityGap.Issue232Bricks.johnson_radius_lt_capacity` [ArkLib/Data/CodingTheory/ProximityGap/Issue232VerifiedBricks.lean:156](../../../ArkLib/Data/CodingTheory/ProximityGap/Issue232VerifiedBricks.lean#L156) — **Strict Johnson–capacity separation.** For a rate `ρ ∈ (0,1)`, the RS Johnson radius `1 − √ρ` is *s
 - `theorem ProximityGap.johnson_radius_lt_capacity` [ArkLib/Data/CodingTheory/ProximityGap/RSListDecodingFrontier.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/RSListDecodingFrontier.lean#L62) — **The Johnson radius is strictly below the list-decoding capacity radius.** For a Reed–Solomon code
+- `theorem ArkLib.ProximityGap.Issue232Bricks.johnson_radius_lt_capacity` [ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean:156](../../../ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean#L156) — **Strict Johnson–capacity separation.** For a rate `ρ ∈ (0,1)`, the RS Johnson radius `1 − √ρ` is *s
 
 ### `jointAgreeSet` (2 declarations, 2 files)
 
+- `def ProximityPrizeCA.jointAgreeSet` [ArkLib/Data/CodingTheory/ProximityCA.lean:39](../../../ArkLib/Data/CodingTheory/ProximityCA.lean#L39) — The joint agreement set of two word pairs.
 - `def Round17CAPair.jointAgreeSet` [ArkLib/Data/CodingTheory/ProximityGap/CAPairExtractionEngine.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/CAPairExtractionEngine.lean#L56) — The joint agreement set of the pair `(f₁, f₂)` with the codeword pair `(g₁, g₂)`.
-- `def ProximityPrizeCA.jointAgreeSet` [ArkLib/Data/CodingTheory/ProximityPrizeCA.lean:39](../../../ArkLib/Data/CodingTheory/ProximityPrizeCA.lean#L39) — The joint agreement set of two word pairs.
 
 ### `knowledgeSoundness.mono_error` (2 declarations, 2 files)
 
@@ -2833,6 +2922,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Verifier.knowledgeSoundness.mono_relations` [ArkLib/OracleReduction/Security/Basic.lean:397](../../../ArkLib/OracleReduction/Security/Basic.lean#L397) — Straightline knowledge soundness is monotone in the input and output relations. If knowledge soundne
 - `theorem Verifier.StateRestoration.knowledgeSoundness.mono_relations` [ArkLib/OracleReduction/Security/StateRestoration.lean:232](../../../ArkLib/OracleReduction/Security/StateRestoration.lean#L232) — State-restoration knowledge soundness is monotone under enlarging the valid input relation and shrin
+
+### `lagrangeCurve` (2 declarations, 2 files)
+
+- `def CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.lagrangeCurve` [ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCaptureUD.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCaptureUD.lean#L82) — The Lagrange curve tuple through the values `V` at the nodes `ν`: `a_j = ∑_t (ℓ_t).coeff j · V t`.
+- `def ProximityGap.lagrangeCurve` [ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean:44](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean#L44) — The Lagrange coefficient stack through the values of `f` on `B`: the `j`-th curve coefficient is `∑_
+
+### `lagrangeCurve_eval` (2 declarations, 2 files)
+
+- `lemma CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.lagrangeCurve_eval` [ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCaptureUD.lean:97](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCaptureUD.lean#L97) — **The curve identity**: `∑_j C(γʲ)·a_j = ∑_t C(ℓ_t(γ))·V t`.
+- `theorem ProximityGap.lagrangeCurve_eval` [ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveInterpolationRegime.lean#L60) — **The interpolation identity.** For `β ∈ B` with `#B ≤ ℓ + 1`, the degree-`≤ ℓ` curve with the Lagra
 
 ### `lambda_le_ggr11_of_Lambda_top` (2 declarations, 2 files)
 
@@ -2914,6 +3013,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Reduction.lift_oc_optionT_coh_right` [ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges.lean:110](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges.lean#L110) — **`OptionT`-lift coherence for a phase computation across the `pSpec₂` seam.** The `pSpec₂` analogue
 - `theorem Verifier.lift_oc_optionT_coh_right` [ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessMsgProof.lean:177](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessMsgProof.lean#L177) — (no docstring)
 
+### `lineAgreeSet` (2 declarations, 2 files)
+
+- `def ProximityGap.lineAgreeSet` [ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:106](../../../ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean#L106) — The agreement domain of the line `u₀ + γ • u₁` with a codeword `w`. GCXK/GKL maximal-domain argument
+- `def ArkLib.ProximityGap.KKH26.lineAgreeSet` [ArkLib/Data/CodingTheory/ProximityGap/KKH26CensusLaw.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26CensusLaw.lean#L54) — The agreement set of the line word `x ↦ x^r + λ·x^{r−1}` with the polynomial `q`, inside the evaluat
+
 ### `listAt` (2 declarations, 2 files)
 
 - `def ArkLib.ProximityGap.RSPrizeDataPoint.listAt` [ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean#L57) — The list-decoding list at agreement radius `a` for received word `w`, as a `Finset` of the coefficie
@@ -2936,8 +3040,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `localSeries_eq_aPDecoded` (2 declarations, 2 files)
 
-- `theorem BCIKS20.Claim510Agreement.localSeries_eq_aPDecoded` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Agreement.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Agreement.lean#L63) — **Per-place Hensel uniqueness (App-A §5.2.6, `π_z(γ) = P_z`).**  The canonical local Hensel series e
-- `theorem BCIKS20.Claim510AgreementSupply.localSeries_eq_aPDecoded` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510AgreementSupply.lean:77](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510AgreementSupply.lean#L77) — **Hensel uniqueness (BCIKS20 Step 6)**: the canonical local Hensel series equals the decoded surface
+- `theorem BCIKS20.Claim510Agreement.localSeries_eq_aPDecoded` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Agreement.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Agreement.lean#L63) — **Per-place Hensel uniqueness (App-A §5.2.6, `π_z(γ) = P_z`).**  The canonical local Hensel series e
+- `theorem BCIKS20.Claim510AgreementSupply.localSeries_eq_aPDecoded` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AgreementSupply.lean:77](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AgreementSupply.lean#L77) — **Hensel uniqueness (BCIKS20 Step 6)**: the canonical local Hensel series equals the decoded surface
 
 ### `lookupEncodedMessageAlphaHat` (2 declarations, 2 files)
 
@@ -2961,13 +3065,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `masterKStateCore` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.masterKStateCore` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1683](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1683) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
-- `def RingSwitching.masterKStateCore` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:459](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L459) — (no docstring)
+- `def Binius.BinaryBasefold.masterKStateCore` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1680](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1680) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
+- `def RingSwitching.masterKStateCore` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:499](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L499) — (no docstring)
 
 ### `masterKStateProp` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1697](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1697) — (no docstring)
-- `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:467](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L467) — (no docstring)
+- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1694](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1694) — (no docstring)
+- `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:507](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L507) — (no docstring)
 
 ### `mcaBad` (2 declarations, 2 files)
 
@@ -2978,6 +3082,31 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def ProximityGap.mcaBadCount` [ArkLib/Data/CodingTheory/ProximityGap/MCABadCount.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/MCABadCount.lean#L45) — The number of bad scalars `γ : F` realising the MCA event for the pair `(u₀, u₁)` at radius `δ`.
 - `def R15MCAGap.mcaBadCount` [ArkLib/Data/CodingTheory/ProximityGap/MCABadScalarSpreadBridge.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/MCABadScalarSpreadBridge.lean#L96) — The number of MCA-bad scalars on the pencil through `f1` in direction `f2`.
+
+### `mcaEventGSrow_badStack` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.mcaEventGSrow_badStack` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean:36](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean#L36) — **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
+- `theorem mcaEventGSrow_badStack` [ArkLib/MCAGSRefutationCore.lean:35](../../../ArkLib/MCAGSRefutationCore.lean#L35) — **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
+
+### `mcaEvent_g0` (2 declarations, 2 files)
+
+- `theorem ProximityGap.DeltaStarExactPin.mcaEvent_g0` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:164](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L164) — `γ = 0` is bad: the line is `u₀` itself, which agrees with the zero codeword on `S = {0,1,2}`, while
+- `theorem ProximityGap.MCADeltaStarExactPoint.mcaEvent_g0` [ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean:239](../../../ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean#L239) — `γ = 0`, witness `S = {0,1,2}`, on-line codeword `0`; no pair: `u₁` is not interpolable on `S` (`a+b
+
+### `mcaEvent_g2` (2 declarations, 2 files)
+
+- `theorem ProximityGap.DeltaStarExactPin.mcaEvent_g2` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:170](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L170) — `γ = 2` is bad, witness set `{0,2,3}`, interpolating codeword `1 + 4X`.
+- `theorem ProximityGap.MCADeltaStarExactPoint.mcaEvent_g2` [ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean:253](../../../ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean#L253) — `γ = 2`, witness `S = {0,2,3}`, on-line codeword `1 + 4·x`; no pair: `u₀` is not interpolable on `S`
+
+### `mcaEvent_g3` (2 declarations, 2 files)
+
+- `theorem ProximityGap.DeltaStarExactPin.mcaEvent_g3` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:176](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L176) — `γ = 3` is bad, witness set `{1,2,3}`, interpolating codeword `2 + 4X`.
+- `theorem ProximityGap.MCADeltaStarExactPoint.mcaEvent_g3` [ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean:268](../../../ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean#L268) — `γ = 3`, witness `S = {1,2,3}`, on-line codeword `2 + 4·x`; no pair: `u₀` is not interpolable on `S`
+
+### `mcaEvent_g4` (2 declarations, 2 files)
+
+- `theorem ProximityGap.DeltaStarExactPin.mcaEvent_g4` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:182](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L182) — `γ = 4` is bad, witness set `{0,1,3}`, interpolating codeword `0`.
+- `theorem ProximityGap.MCADeltaStarExactPoint.mcaEvent_g4` [ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean:283](../../../ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean#L283) — `γ = 4`, witness `S = {0,1,3}`, on-line codeword `0`; no pair: `u₀` is not interpolable on `S`.
 
 ### `mem_C_iff` (2 declarations, 2 files)
 
@@ -3022,7 +3151,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `mk_eq_trunc_of_tail_zero` (2 declarations, 2 files)
 
 - `theorem ArkLib.BetaToCurveCoeffPolys.mk_eq_trunc_of_tail_zero` [ArkLib/ToMathlib/BetaToCurveCoeffPolysOffcentre.lean:86](../../../ArkLib/ToMathlib/BetaToCurveCoeffPolysOffcentre.lean#L86) — A power series whose coefficients vanish from index `k` on **is** (the coercion of) its `k`-truncati
-- `theorem PowerSeries.mk_eq_trunc_of_tail_zero` [ArkLib/ToMathlib/ExtractedIssueBricks.lean:77](../../../ArkLib/ToMathlib/ExtractedIssueBricks.lean#L77) — A power series whose coefficients vanish from index `k` on equals the coercion of its `k`-truncation
+- `theorem PowerSeries.mk_eq_trunc_of_tail_zero` [ArkLib/ToMathlib/PolynomialCombinatorialAuxiliary.lean:77](../../../ArkLib/ToMathlib/PolynomialCombinatorialAuxiliary.lean#L77) — A power series whose coefficients vanish from index `k` on equals the coercion of its `k`-truncation
 
 ### `mono` (2 declarations, 2 files)
 
@@ -3092,7 +3221,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `natDegree_taylor_lt` (2 declarations, 2 files)
 
 - `theorem ArkLib.BetaToCurveCoeffPolys.natDegree_taylor_lt` [ArkLib/ToMathlib/BetaToCurveCoeffPolysOffcentre.lean:141](../../../ArkLib/ToMathlib/BetaToCurveCoeffPolysOffcentre.lean#L141) — Taylor shift preserves the strict degree bound of a coefficient profile.
-- `theorem Polynomial.natDegree_taylor_lt` [ArkLib/ToMathlib/ExtractedIssueBricks.lean:67](../../../ArkLib/ToMathlib/ExtractedIssueBricks.lean#L67) — A strict degree bound transports through a Taylor shift.
+- `theorem Polynomial.natDegree_taylor_lt` [ArkLib/ToMathlib/PolynomialCombinatorialAuxiliary.lean:67](../../../ArkLib/ToMathlib/PolynomialCombinatorialAuxiliary.lean#L67) — A strict degree bound transports through a Taylor shift.
 
 ### `nearCertainBadLine_of_allButOne` (2 declarations, 2 files)
 
@@ -3133,6 +3262,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.RemainingCoreWitness.not_johnson_at_quarter` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RemainingCore.lean:201](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RemainingCore.lean#L201) — At the canonical floor-matched radius `δ' = 1/4` the Johnson-side hypothesis `(1 − ρ)/2 < δ'` fails
 - `theorem ArkLib.ClosedBoundaryFaithfulFloorCellWitness.not_johnson_at_quarter` [ArkLib/ToMathlib/ClosedBoundaryFaithfulFloorCell.lean:363](../../../ArkLib/ToMathlib/ClosedBoundaryFaithfulFloorCell.lean#L363) — At the cell radius `δ'' = 1/4` the Johnson-side hypothesis fails *exactly*: `(1 − ρ)/2 = (1 − 1/2)/2
+
+### `not_uniformEpsMCAgsPrizeBoundConjecture` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean:102](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean#L102) — **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
+- `theorem not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/MCAGSRefutationCore.lean:101](../../../ArkLib/MCAGSRefutationCore.lean#L101) — **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
 
 ### `odd_psum_vanish` (2 declarations, 2 files)
 
@@ -3296,8 +3430,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `pi_z_aPre_eq_taylor_coeff` (2 declarations, 2 files)
 
-- `theorem BCIKS20.Claim510Agreement.pi_z_aPre_eq_taylor_coeff` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Agreement.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510Agreement.lean#L82) — **The coefficient reading**: `π_z (aPre t)` is the `t`-th Taylor coefficient of the decoded surface
-- `theorem BCIKS20.Claim510AgreementSupply.pi_z_aPre_eq_taylor_coeff` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510AgreementSupply.lean:98](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Claim510AgreementSupply.lean#L98) — The composed coefficient reading: `π_z(aPre t)` is the `t`-th Taylor coefficient of the decoded surf
+- `theorem BCIKS20.Claim510Agreement.pi_z_aPre_eq_taylor_coeff` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Agreement.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Agreement.lean#L82) — **The coefficient reading**: `π_z (aPre t)` is the `t`-th Taylor coefficient of the decoded surface
+- `theorem BCIKS20.Claim510AgreementSupply.pi_z_aPre_eq_taylor_coeff` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AgreementSupply.lean:98](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AgreementSupply.lean#L98) — The composed coefficient reading: `π_z(aPre t)` is the `t`-th Taylor coefficient of the decoded surf
 
 ### `pow_eq_card_eq_zero_or_gcd` (2 declarations, 2 files)
 
@@ -3338,11 +3472,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def MutualCorrAgreement.proximityCondition` [ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean:56](../../../ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean#L56) — For `parℓ` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽` and linea
 - `def Generator.proximityCondition` [ArkLib/ProofSystem/Whir/ProximityGen.lean:38](../../../ArkLib/ProofSystem/Whir/ProximityGen.lean#L38) — For `l` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽ˡ` and linear
-
-### `qIdx` (2 declarations, 2 files)
-
-- `def GSExactWall.qIdx` [ArkLib/Data/CodingTheory/ProximityGap/GSExactCountWall.lean:26](../../../ArkLib/Data/CodingTheory/ProximityGap/GSExactCountWall.lean#L26) — The number of genuinely contributing indices: `q = ⌈D/c⌉ = (D + c − 1)/c`.
-- `abbrev DuplexSpongeFS.Sponge314.K1.qIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:69](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L69) — The oracle index of the single adversary query: `p⁻¹(s₀)`.
 
 ### `queryCodeword` (2 declarations, 2 files)
 
@@ -3456,13 +3585,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `shiftSeries` (2 declarations, 2 files)
 
-- `def ArkLib.Claim59Conditional.shiftSeries` [ArkLib/ToMathlib/Claim59Conditional.lean:53](../../../ArkLib/ToMathlib/Claim59Conditional.lean#L53) — The BCIKS shift series corresponding to the substitution $X \mapsto X - x_0$.
+- `def ArkLib.Claim59Conditional.shiftSeries` [ArkLib/ToMathlib/BCIKS20PointwiseConditional.lean:53](../../../ArkLib/ToMathlib/BCIKS20PointwiseConditional.lean#L53) — The BCIKS shift series corresponding to the substitution $X \mapsto X - x_0$.
 - `def ArkLib.SubstFieldCaveat.shiftSeries` [ArkLib/ToMathlib/SubstFieldCaveat.lean:75](../../../ArkLib/ToMathlib/SubstFieldCaveat.lean#L75) — The shift series corresponding to the substitution $X \mapsto X - x_0$.
 
 ### `simulateQ_askInput` (2 declarations, 2 files)
 
 - `theorem StirIOP.MultiRound.simulateQ_askInput` [ArkLib/ProofSystem/Stir/CheckingVerifier.lean:248](../../../ArkLib/ProofSystem/Stir/CheckingVerifier.lean#L248) — `simulateQ` collapse for the input-oracle query.
-- `theorem Whir302Checked.simulateQ_askInput` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:406](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L406) — `simulateQ` collapse for an input-oracle query.
+- `theorem Whir302Checked.simulateQ_askInput` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:447](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L447) — `simulateQ` collapse for an input-oracle query.
 
 ### `simulateQ_askList` (2 declarations, 2 files)
 
@@ -3472,7 +3601,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `simulateQ_askMsg` (2 declarations, 2 files)
 
 - `theorem StirIOP.MultiRound.simulateQ_askMsg` [ArkLib/ProofSystem/Stir/CheckingVerifier.lean:254](../../../ArkLib/ProofSystem/Stir/CheckingVerifier.lean#L254) — `simulateQ` collapse for a message-oracle query.
-- `theorem Whir302Checked.simulateQ_askMsg` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:397](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L397) — `simulateQ` collapse for a message-oracle query.
+- `theorem Whir302Checked.simulateQ_askMsg` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:438](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L438) — `simulateQ` collapse for a message-oracle query.
 
 ### `simulateQ_optionT_failure'` (2 declarations, 2 files)
 
@@ -3492,7 +3621,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `simulateQ_simOracle2_query` (2 declarations, 2 files)
 
 - `lemma RingSwitching.BatchingPhase.simulateQ_simOracle2_query` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:84](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L84) — OptionT/query form of `simulateQ_simOracle2_messageQuery`.
-- `lemma RingSwitching.simulateQ_simOracle2_query` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1503](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1503) — **`simOracle2` message-query collapse (`OptionT`-`query` form).** The same reduction as `simulateQ_s
+- `lemma RingSwitching.simulateQ_simOracle2_query` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1543](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1543) — **`simOracle2` message-query collapse (`OptionT`-`query` form).** The same reduction as `simulateQ_s
 
 ### `simulateQ_simOracle_foldlM` (2 declarations, 2 files)
 
@@ -3503,11 +3632,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem singleton_bound` [ArkLib/Data/CodingTheory/Basic/LinearCode.lean:121](../../../ArkLib/Data/CodingTheory/Basic/LinearCode.lean#L121) — **Singleton bound** for arbitrary codes
 - `theorem ArkLib.CS25.singleton_bound` [ArkLib/Data/CodingTheory/SingletonBound.lean:30](../../../ArkLib/Data/CodingTheory/SingletonBound.lean#L30) — **Singleton bound.**  A code with minimum distance `≥ d` (`d ≥ 1`) has at most `q^(n−(d−1))` codewor
-
-### `smallSponge` (2 declarations, 2 files)
-
-- `instance DuplexSpongeFS.Sponge316.TimePCounter.smallSponge` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:60](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L60) — Tiny sponge geometry: width 2, rate 1, capacity 1 — capacities are single `UInt8`s.
-- `instance DuplexSpongeFS.Sponge314.K1.smallSponge` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:51](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L51) — Tiny sponge geometry: width 2, rate 1, capacity 1 (same as `Lemma516TimePFalse`).
 
 ### `soundness.mono_error` (2 declarations, 2 files)
 
@@ -3666,7 +3790,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `sumcheckConsistencyProp` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.sumcheckConsistencyProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1452](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1452) — Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean hypercube o
+- `def Binius.BinaryBasefold.sumcheckConsistencyProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1449](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1449) — Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean hypercube o
 - `def Sumcheck.Structured.sumcheckConsistencyProp` [ArkLib/ProofSystem/Sumcheck/Structured.lean:212](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L212) — Sumcheck consistency: the claimed sum equals the actual polynomial evaluation sum over the evaluatio
 
 ### `sumcheckConsistency_at_last_simplifies` (2 declarations, 2 files)
@@ -3676,22 +3800,22 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `sumcheckFoldOracleReduction` (2 declarations, 2 files)
 
-- `def sumcheckFoldOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:813](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L813) — (no docstring)
+- `def sumcheckFoldOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:805](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L805) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.sumcheckFoldOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:155](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L155) — (no docstring)
 
 ### `sumcheckFoldOracleReduction_perfectCompleteness` (2 declarations, 2 files)
 
-- `theorem sumcheckFoldOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:918](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L918) — (no docstring)
+- `theorem sumcheckFoldOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:910](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L910) — (no docstring)
 - `theorem Binius.FRIBinius.CoreInteractionPhase.sumcheckFoldOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:253](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L253) — (no docstring)
 
 ### `sumcheckFoldOracleVerifier` (2 declarations, 2 files)
 
-- `def sumcheckFoldOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:529](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L529) — (no docstring)
+- `def sumcheckFoldOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:521](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L521) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.sumcheckFoldOracleVerifier` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:148](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L148) — (no docstring)
 
 ### `sumcheckFoldOracleVerifier_rbrKnowledgeSoundness` (2 declarations, 2 files)
 
-- `theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1072](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1072) — (no docstring)
+- `theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:1064](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L1064) — (no docstring)
 - `theorem Binius.FRIBinius.CoreInteractionPhase.sumcheckFoldOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:443](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L443) — (no docstring)
 
 ### `support_mk` (2 declarations, 2 files)
@@ -3743,21 +3867,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.CodingTheory.Round6MultCharacter.two_ne_zero_zmod13` [ArkLib/Data/CodingTheory/ProximityGap/SubsetSumE2PowerSumReduction.lean:339](../../../ArkLib/Data/CodingTheory/ProximityGap/SubsetSumE2PowerSumReduction.lean#L339) — **`(2 : F) ≠ 0` is realized in the smooth-domain regime (concrete witness `F = ZMod 13`).** The smoo
 - `theorem ArkLib.CodingTheory.Round7PaleyZygmund.two_ne_zero_zmod13` [ArkLib/Data/CodingTheory/ProximityGap/SubsetSumPaleyZygmundDichotomy.lean:384](../../../ArkLib/Data/CodingTheory/ProximityGap/SubsetSumPaleyZygmundDichotomy.lean#L384) — **`(2 : ZMod 13) ≠ 0` — the smooth-domain regime is realized.** The smooth `2^k`-subgroup lives in o
-
-### `ubad` (2 declarations, 2 files)
-
-- `def CodingTheory.LineDecodingRefutation.ubad` [ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean:113](../../../ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean#L113) — The refuting stack: `u 0 = 0`, `u 1 = 1` (the all-ones word of `Fin 1 → ZMod 2`).
-- `def ProximityGap.MCAZeroCode.ubad` [ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean#L57) — The refuting/witness stack: `u 0 = 0`, `u 1 = 𝟙` (the all-ones word `ι → F`).
-
-### `ubad_one` (2 declarations, 2 files)
-
-- `theorem CodingTheory.LineDecodingRefutation.ubad_one` [ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean:118](../../../ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean#L118) — (no docstring)
-- `theorem ProximityGap.MCAZeroCode.ubad_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean:61](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean#L61) — (no docstring)
-
-### `ubad_zero` (2 declarations, 2 files)
-
-- `theorem CodingTheory.LineDecodingRefutation.ubad_zero` [ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean:115](../../../ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean#L115) — (no docstring)
-- `theorem ProximityGap.MCAZeroCode.ubad_zero` [ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAZeroCodeExact.lean#L59) — (no docstring)
 
 ### `umCode` (2 declarations, 2 files)
 
@@ -3841,7 +3950,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `whirCheckedVectorIOP_isSecureWithGap_of_rbr` (2 declarations, 2 files)
 
-- `theorem Whir302Checked.whirCheckedVectorIOP_isSecureWithGap_of_rbr` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:894](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L894) — With the completeness leg PROVEN for the checking verifier, `IsSecureWithGap` for the checked WHIR `
+- `theorem Whir302Checked.whirCheckedVectorIOP_isSecureWithGap_of_rbr` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:1006](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L1006) — With the completeness leg PROVEN for the checking verifier, `IsSecureWithGap` for the checked WHIR `
 - `theorem WhirIOP.whirCheckedVectorIOP_isSecureWithGap_of_rbr` [ArkLib/ProofSystem/Whir/ProtocolSoundness.lean:202](../../../ArkLib/ProofSystem/Whir/ProtocolSoundness.lean#L202) — The checked WHIR `VectorIOP` has the secure-with-gap package once its genuine RBR knowledge-soundnes
 
 ### `whirVectorIOP_isSecureWithGap_indicator` (2 declarations, 2 files)
@@ -3866,13 +3975,63 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `witnessStructuralInvariant` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1444](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1444) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
-- `def RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:452](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L452) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
+- `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1441](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1441) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
+- `def RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:492](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L492) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 
 ### `witness_list_card_seven` (2 declarations, 2 files)
 
 - `theorem ArkLib.CodingTheory.TinyInteriorK3.witness_list_card_seven` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11K3.lean:168](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11K3.lean#L168) — **The list has exactly seven elements.** All seven explicit codewords are pairwise distinct.
 - `theorem ArkLib.CodingTheory.Round3SmoothF17.witness_list_card_seven` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF17Subgroup.lean:177](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF17Subgroup.lean#L177) — **The list has exactly seven elements.** All seven explicit smooth-domain codewords are pairwise dis
+
+### `AnchoredFrom` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.AnchoredFrom` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:78](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L78) — Some entry of the log is an anchored collision against the running cache.
+- `def DuplexSpongeFS.EagerLazyDS.AnchoredFrom` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:78](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L78) — Some entry of the log is an anchored collision against the running cache.
+
+### `ConsistentFrom` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.ConsistentFrom` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:73](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L73) — The whole log is consistent with the running cache.
+- `def DuplexSpongeFS.EagerLazyDS.ConsistentFrom` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:73](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L73) — The whole log is consistent with the running cache.
+
+### `DSEntry` (2 declarations, 2 files)
+
+- `abbrev DuplexSpongeFS.EagerLazyDS.DSEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:46](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L46) — A single log entry of the combined oracle.
+- `abbrev DuplexSpongeFS.EagerLazyDS.DSEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:46](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L46) — A single log entry of the combined oracle.
+
+### `EPaperReduction` (2 declarations, 2 files)
+
+- `abbrev DuplexSpongeFS.EagerLazyDS.EPaperReduction` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1598](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1598) — The dedup reduction (the one remaining pure-combinatorics obligation): a log consistent with the emp
+- `abbrev DuplexSpongeFS.EagerLazyDS.EPaperReduction` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1598](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1598) — The dedup reduction (the one remaining pure-combinatorics obligation): a log consistent with the emp
+
+### `E_of_base_hasForwardCapacityBeforeForwardOutput` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.E_of_base_hasForwardCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1131](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1131) — If the deduplicated trace has the broader base permutation-ordering capacity shape, the combined bad
+- `theorem DuplexSpongeFS.Sponge316.E_of_base_hasForwardCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1131](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1131) — If the deduplicated trace has the broader base permutation-ordering capacity shape, the combined bad
+
+### `E_of_base_hasForwardCapacityBeforeHash` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.E_of_base_hasForwardCapacityBeforeHash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1103](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1103) — Predicate form of `E_of_base_hash_after_forward_capacity`: once the deduplicated base trace has the
+- `theorem DuplexSpongeFS.Sponge316.E_of_base_hasForwardCapacityBeforeHash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1103](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1103) — Predicate form of `E_of_base_hash_after_forward_capacity`: once the deduplicated base trace has the
+
+### `E_of_base_hasInputCapacityBeforeForwardOutput` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.E_of_base_hasInputCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1115](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1115) — If the deduplicated trace has the base permutation-ordering capacity shape, the combined bad event f
+- `theorem DuplexSpongeFS.Sponge316.E_of_base_hasInputCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1115](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1115) — If the deduplicated trace has the base permutation-ordering capacity shape, the combined bad event f
+
+### `E_of_base_hash_after_forward_capacity` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.E_of_base_hash_after_forward_capacity` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1078](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1078) — If the deduplicated trace has a hash entry and a strictly earlier forward permutation entry sharing
+- `theorem DuplexSpongeFS.Sponge316.E_of_base_hash_after_forward_capacity` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1078](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1078) — If the deduplicated trace has a hash entry and a strictly earlier forward permutation entry sharing
+
+### `E_of_hasFirstHashForwardCapacityBeforeHash` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.E_of_hasFirstHashForwardCapacityBeforeHash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean:220](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean#L220) — Raw first-occurrence collision shape fires the combined bad event `E`: transport the shape through d
+- `theorem DuplexSpongeFS.Sponge316.E_of_hasFirstHashForwardCapacityBeforeHash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean:220](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean#L220) — Raw first-occurrence collision shape fires the combined bad event `E`: transport the shape through d
+
+### `FwdKeysNodup` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.FwdKeysNodup` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:661](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L661) — The forward keys of the permutation cache are distinct.
+- `def DuplexSpongeFS.EagerLazyDS.FwdKeysNodup` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:661](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L661) — The forward keys of the permutation cache are distinct.
 
 ### `H_dvd_radical_fiber` (2 declarations, 2 files)
 
@@ -3881,7 +4040,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `H_eval_centreFold_eq_zero` (2 declarations, 2 files)
 
-- `theorem ArkLib.XiCertReduction.H_eval_centreFold_eq_zero` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:94](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L94) — **The centre fold globally roots `H`**: through the GS split `evalX (C x₀) R = H·G` and the global b
+- `theorem ArkLib.XiCertReduction.H_eval_centreFold_eq_zero` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:94](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L94) — **The centre fold globally roots `H`**: through the GS split `evalX (C x₀) R = H·G` and the global b
 - `theorem ArkLib.XiCertReduction.H_eval_centreFold_eq_zero` [ArkLib/ToMathlib/XiCertReduction.lean:125](../../../ArkLib/ToMathlib/XiCertReduction.lean#L125) — **The centre fold globally roots `H`**: through the GS split `evalX (C x₀) R = H·G` and the global b
 
 ### `H_eval_centreFold_eq_zero_radical` (2 declarations, 2 files)
@@ -3892,7 +4051,117 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `H_matrix` (2 declarations, 2 files)
 
 - `def H_matrix` [ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesB.lean:23](../../../ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesB.lean#L23) — (no docstring)
-- `def H_matrix` [ArkLib/Data/CodingTheory/Quarantine/CandidateHypothesesRefutations.lean:22](../../../ArkLib/Data/CodingTheory/Quarantine/CandidateHypothesesRefutations.lean#L22) — (no docstring)
+- `def H_matrix` [ArkLib/Data/CodingTheory/Quarantine/HypothesesRefutations.lean:22](../../../ArkLib/Data/CodingTheory/Quarantine/HypothesesRefutations.lean#L22) — (no docstring)
+
+### `HasCapBeforeInverseAnswerPaper` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasCapBeforeInverseAnswerPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:126](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L126) — Broad (guard-free) inverse-anchored collision shape, for the dedup'd base trace.
+- `def DuplexSpongeFS.Sponge316.HasCapBeforeInverseAnswerPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:126](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L126) — Broad (guard-free) inverse-anchored collision shape, for the dedup'd base trace.
+
+### `HasFirstCapBeforeInverseAnswerPaper` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasFirstCapBeforeInverseAnswerPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:116](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L116) — First-occurrence inverse-anchored collision shape (paper semantics, ℕ-indexed): an inverse entry wit
+- `def DuplexSpongeFS.Sponge316.HasFirstCapBeforeInverseAnswerPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:116](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L116) — First-occurrence inverse-anchored collision shape (paper semantics, ℕ-indexed): an inverse entry wit
+
+### `HasFirstForwardCapacityBeforeForwardOutput` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasFirstForwardCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:540](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L540) — Strengthened permutation-ordering collision shape: the later forward permutation entry is the first
+- `def DuplexSpongeFS.Sponge316.HasFirstForwardCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:540](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L540) — Strengthened permutation-ordering collision shape: the later forward permutation entry is the first
+
+### `HasFirstForwardCapacityBeforeForwardOutputNat` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasFirstForwardCapacityBeforeForwardOutputNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:598](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L598) — Natural-index form of `HasFirstForwardCapacityBeforeForwardOutput`, used for the recursive `eraseIdx
+- `def DuplexSpongeFS.Sponge316.HasFirstForwardCapacityBeforeForwardOutputNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:598](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L598) — Natural-index form of `HasFirstForwardCapacityBeforeForwardOutput`, used for the recursive `eraseIdx
+
+### `HasFirstHashForwardCapacityBeforeHash` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasFirstHashForwardCapacityBeforeHash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:173](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L173) — Strengthened raw collision shape: the hash entry is the first occurrence of its concrete hash anchor
+- `def DuplexSpongeFS.Sponge316.HasFirstHashForwardCapacityBeforeHash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:173](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L173) — Strengthened raw collision shape: the hash entry is the first occurrence of its concrete hash anchor
+
+### `HasFirstHashForwardCapacityBeforeHashNat` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasFirstHashForwardCapacityBeforeHashNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:349](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L349) — Natural-index form of `HasFirstHashForwardCapacityBeforeHash`, used for the recursive `eraseIdx` pro
+- `def DuplexSpongeFS.Sponge316.HasFirstHashForwardCapacityBeforeHashNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:349](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L349) — Natural-index form of `HasFirstHashForwardCapacityBeforeHash`, used for the recursive `eraseIdx` pro
+
+### `HasFirstHashFwdCapNat` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasFirstHashFwdCapNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean:55](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean#L55) — ℕ-indexed, `getElem?`-based restatement of `HasFirstHashForwardCapacityBeforeHash`: a first-occurren
+- `def DuplexSpongeFS.Sponge316.HasFirstHashFwdCapNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean:55](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean#L55) — ℕ-indexed, `getElem?`-based restatement of `HasFirstHashForwardCapacityBeforeHash`: a first-occurren
+
+### `HasFirstHashPermCapNatPaper` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasFirstHashPermCapNatPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:707](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L707) — ℕ-indexed first-hash collision shape, paper semantics: the hash anchor is first-occurrence, and an e
+- `def DuplexSpongeFS.Sponge316.HasFirstHashPermCapNatPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:707](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L707) — ℕ-indexed first-hash collision shape, paper semantics: the hash anchor is first-occurrence, and an e
+
+### `HasFirstPermCapacityBeforeForwardOutputPaper` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasFirstPermCapacityBeforeForwardOutputPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:271](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L271) — Paper-semantics first-occurrence collision shape: the tracked forward entry has no prior copy of its
+- `def DuplexSpongeFS.Sponge316.HasFirstPermCapacityBeforeForwardOutputPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:271](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L271) — Paper-semantics first-occurrence collision shape: the tracked forward entry has no prior copy of its
+
+### `HasFirstPermCapacityBeforeForwardOutputPaperNat` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasFirstPermCapacityBeforeForwardOutputPaperNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:331](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L331) — Natural-index form of `HasFirstPermCapacityBeforeForwardOutputPaper`, for the recursive `eraseIdx` p
+- `def DuplexSpongeFS.Sponge316.HasFirstPermCapacityBeforeForwardOutputPaperNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:331](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L331) — Natural-index form of `HasFirstPermCapacityBeforeForwardOutputPaper`, for the recursive `eraseIdx` p
+
+### `HasForwardCapacityBeforeForwardOutput` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasForwardCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:146](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L146) — The trace contains a forward permutation entry whose output capacity matches either side of a strict
+- `def DuplexSpongeFS.Sponge316.HasForwardCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:146](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L146) — The trace contains a forward permutation entry whose output capacity matches either side of a strict
+
+### `HasForwardCapacityBeforeHash` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasForwardCapacityBeforeHash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:111](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L111) — The trace contains a hash entry with a strictly earlier forward permutation entry sharing the hash c
+- `def DuplexSpongeFS.Sponge316.HasForwardCapacityBeforeHash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:111](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L111) — The trace contains a hash entry with a strictly earlier forward permutation entry sharing the hash c
+
+### `HasHashEntry` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasHashEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:102](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L102) — The trace contains a concrete hash entry.
+- `def DuplexSpongeFS.Sponge316.HasHashEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:102](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L102) — The trace contains a concrete hash entry.
+
+### `HasHashPermCapBeforeHashPaper` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasHashPermCapBeforeHashPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:719](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L719) — Broad (no-firstness) hash-anchored collision shape, paper semantics.
+- `def DuplexSpongeFS.Sponge316.HasHashPermCapBeforeHashPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:719](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L719) — Broad (no-firstness) hash-anchored collision shape, paper semantics.
+
+### `HasInputCapacityBeforeForwardOutput` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasInputCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:128](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L128) — The trace contains a forward permutation entry whose output capacity matches the input capacity of a
+- `def DuplexSpongeFS.Sponge316.HasInputCapacityBeforeForwardOutput` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:128](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L128) — The trace contains a forward permutation entry whose output capacity matches the input capacity of a
+
+### `HasInvEntry` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasInvEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:47](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L47) — The trace contains an inverse-permutation (`p⁻¹`) entry.
+- `def DuplexSpongeFS.Sponge316.HasInvEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:47](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L47) — The trace contains an inverse-permutation (`p⁻¹`) entry.
+
+### `HasPermCapacityBeforeForwardOutputPaper` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasPermCapacityBeforeForwardOutputPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:256](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L256) — Direction-agnostic prior-permutation capacity shape: some permutation entry (either direction) stric
+- `def DuplexSpongeFS.Sponge316.HasPermCapacityBeforeForwardOutputPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:256](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L256) — Direction-agnostic prior-permutation capacity shape: some permutation entry (either direction) stric
+
+### `HasPriorReversedForwardAnchor` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasPriorReversedForwardAnchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1446](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1446) — A raw obstruction to the first-forward transport guard: a `J_BT` permutation anchor has a strictly e
+- `def DuplexSpongeFS.Sponge316.HasPriorReversedForwardAnchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1446](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1446) — A raw obstruction to the first-forward transport guard: a `J_BT` permutation anchor has a strictly e
+
+### `HasRedundantForwardAnchor` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.HasRedundantForwardAnchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1458](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1458) — A `J_BT` nonterminal forward anchor is redundant under the in-tree `redundantEntryDS` predicate. Off
+- `def DuplexSpongeFS.Sponge316.HasRedundantForwardAnchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1458](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1458) — A `J_BT` nonterminal forward anchor is redundant under the in-tree `redundantEntryDS` predicate. Off
+
+### `Lemma5_12HonestResidualPaper` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.Lemma5_12HonestResidualPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:658](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L658) — CO25 Lemma 5.12 (honest form), **paper semantics**: off the paper combined bad event, no BackTrack c
+- `def DuplexSpongeFS.Sponge316.Lemma5_12HonestResidualPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:658](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L658) — CO25 Lemma 5.12 (honest form), **paper semantics**: off the paper combined bad event, no BackTrack c
+
+### `Lemma5_14HonestResidualPaper` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.Lemma5_14HonestResidualPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:666](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L666) — CO25 Lemma 5.14 (honest form), **paper semantics**: off the paper combined bad event, the backtrack
+- `def DuplexSpongeFS.Sponge316.Lemma5_14HonestResidualPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:666](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L666) — CO25 Lemma 5.14 (honest form), **paper semantics**: off the paper combined bad event, the backtrack
+
+### `Lemma5_16HonestResidualPaper` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.Lemma5_16HonestResidualPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:676](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L676) — CO25 Lemma 5.16 (honest form), **paper semantics**: off the paper combined bad event, all chain quer
+- `def DuplexSpongeFS.Sponge316.Lemma5_16HonestResidualPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:676](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L676) — CO25 Lemma 5.16 (honest form), **paper semantics**: off the paper combined bad event, all chain quer
 
 ### `OracleInterface` (3 declarations, 2 files)
 
@@ -3902,23 +4171,133 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `Section5StrictDataFinOn.ofProducersOn` (2 declarations, 2 files)
 
-- `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn` [ArkLib/ToMathlib/Section5BundleAssembler.lean:140](../../../ArkLib/ToMathlib/Section5BundleAssembler.lean#L140) — **The satisfiable-bundle producer assembly** — the restricted (`rootOn`/`mpFinOn`) mirror of `Keysto
-- `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:217](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L217) — **The satisfiable-bundle producer assembly** — the restricted (`rootOn`/`mpFinOn`) mirror of `Keysto
+- `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn` [ArkLib/ToMathlib/BCIKS20BundleAssembler.lean:140](../../../ArkLib/ToMathlib/BCIKS20BundleAssembler.lean#L140) — **The satisfiable-bundle producer assembly** — the restricted (`rootOn`/`mpFinOn`) mirror of `Keysto
+- `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:217](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L217) — **The satisfiable-bundle producer assembly** — the restricted (`rootOn`/`mpFinOn`) mirror of `Keysto
 
 ### `Section5StrictDataFinOn.ofProducersOn_gradedSigned` (2 declarations, 2 files)
 
-- `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn_gradedSigned` [ArkLib/ToMathlib/Section5BundleAssembler.lean:286](../../../ArkLib/ToMathlib/Section5BundleAssembler.lean#L286) — **Producer assembly at the signed canonical family with the PROVEN graded weight chain** (monic case
-- `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn_gradedSigned` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:275](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L275) — **Producer assembly at the signed canonical family with the PROVEN graded weight chain** (monic case
+- `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn_gradedSigned` [ArkLib/ToMathlib/BCIKS20BundleAssembler.lean:286](../../../ArkLib/ToMathlib/BCIKS20BundleAssembler.lean#L286) — **Producer assembly at the signed canonical family with the PROVEN graded weight chain** (monic case
+- `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn_gradedSigned` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:275](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L275) — **Producer assembly at the signed canonical family with the PROVEN graded weight chain** (monic case
 
 ### `Section5StrictDataFinOn.ofProducersOn_radical` (2 declarations, 2 files)
 
 - `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn_radical` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:530](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L530) — **The satisfiable bundle from the RADICAL of the fiber** (monic case): mirror of `Section5StrictData
 - `def ArkLib.RootOn304.Section5StrictDataFinOn.ofProducersOn_radical` [ArkLib/ToMathlib/RadicalAssembler.lean:549](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L549) — **The satisfiable bundle from the RADICAL of the fiber** (monic case): mirror of `Section5StrictData
 
+### `SlotKind` (2 declarations, 2 files)
+
+- `inductive DuplexSpongeFS.Sponge316.SlotKind` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:66](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L66) — A tagged trace slot: either a hash entry or a forward permutation entry. The tag determines the slot
+- `inductive DuplexSpongeFS.Sponge316.SlotKind` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:66](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L66) — A tagged trace slot: either a hash entry or a forward permutation entry. The tag determines the slot
+
+### `SlotKind.entry` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.SlotKind.entry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:70](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L70) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.SlotKind.entry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:70](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L70) — (no docstring)
+
+### `SlotKind.guard` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.SlotKind.guard` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:78](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L78) — The slot's first-occurrence guard: no strictly earlier slot holds any certificate target for this en
+- `def DuplexSpongeFS.Sponge316.SlotKind.guard` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:78](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L78) — The slot's first-occurrence guard: no strictly earlier slot holds any certificate target for this en
+
+### `SlotKind.not_redundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.SlotKind.not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:93](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L93) — A guarded slot is never paper-redundant.
+- `lemma DuplexSpongeFS.Sponge316.SlotKind.not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:93](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L93) — A guarded slot is never paper-redundant.
+
+### `SlotKind.ok` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.SlotKind.ok` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:88](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L88) — A guarded slot: the entry sits at slot `i` and is the first occurrence of its certificate class.
+- `def DuplexSpongeFS.Sponge316.SlotKind.ok` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:88](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L88) — A guarded slot: the entry sits at slot `i` and is the first occurrence of its certificate class.
+
+### `SlotKind.ok_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.SlotKind.ok_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:148](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L148) — A guarded slot shifts through `eraseIdx` of a different index.
+- `lemma DuplexSpongeFS.Sponge316.SlotKind.ok_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:148](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L148) — A guarded slot shifts through `eraseIdx` of a different index.
+
+### `TwoSurvivors` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.TwoSurvivors` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:164](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L164) — Two ordered guarded slots, the raw-trace shape of the two-survivor transport.
+- `def DuplexSpongeFS.Sponge316.TwoSurvivors` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:164](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L164) — Two ordered guarded slots, the raw-trace shape of the two-survivor transport.
+
+### `aligned_inputs` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.aligned_inputs` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:191](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L191) — **End-aligned input agreement** (CO25 Claim 5.19, Eq. 44 induction): off `EPaper`, the input states
+- `theorem DuplexSpongeFS.Paper.aligned_inputs` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:191](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L191) — **End-aligned input agreement** (CO25 Claim 5.19, Eq. 44 induction): off `EPaper`, the input states
+
+### `aligned_inputs_paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.aligned_inputs_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:546](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L546) — End-aligned input agreement: off `BadEventDSPaper.E`, two family sequences agree at end-aligned inpu
+- `theorem DuplexSpongeFS.Sponge316.aligned_inputs_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:546](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L546) — End-aligned input agreement: off `BadEventDSPaper.E`, two family sequences agree at end-aligned inpu
+
 ### `alpha12_injective` (2 declarations, 2 files)
 
 - `lemma R15.alpha12_injective` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean:388](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean#L388) — Injectivity of the evaluation points `0, 1, …, 11` in `ZMod 13`.
 - `lemma R15.alpha12_injective` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean:388](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean#L388) — Injectivity of the evaluation points `0, 1, …, 11` in `ZMod 13`.
+
+### `anchoredFrom_of_at` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_at` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:70](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L70) — **Positional anchoring**: a `collisionStep` at any position (against the prefix fold) yields `Anchor
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_at` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:70](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L70) — **Positional anchoring**: a `collisionStep` at any position (against the prefix fold) yields `Anchor
+
+### `anchoredFrom_of_eraseIdx_classRed` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_eraseIdx_classRed` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:537](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L537) — A class-redundant erasure reflects anchoredness in a consistent log.
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_eraseIdx_classRed` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:537](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L537) — A class-redundant erasure reflects anchoredness in a consistent log.
+
+### `anchoredFrom_of_eraseIdx_of_noop` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_eraseIdx_of_noop` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:375](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L375) — Erasing a no-op entry reflects anchoredness: a collision in the erased log is a collision in the ori
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_eraseIdx_of_noop` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:375](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L375) — Erasing a no-op entry reflects anchoredness: a collision in the erased log is a collision in the ori
+
+### `anchoredFrom_of_removeRedundantEntryDSPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_removeRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:595](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L595) — Anchoredness of the paper-deduplicated log reflects back to the original consistent log.
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_removeRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:595](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L595) — Anchoredness of the paper-deduplicated log reflects back to the original consistent log.
+
+### `anchoredFrom_of_removeRedundantEntryDSPaper_aux` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_removeRedundantEntryDSPaper_aux` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:557](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L557) — (no docstring)
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_removeRedundantEntryDSPaper_aux` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:557](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L557) — (no docstring)
+
+### `anchoredFrom_of_split` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1084](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1084) — **Constructive anchoring**: a collision at a split point makes the whole fold anchored.
+- `theorem DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1084](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1084) — **Constructive anchoring**: a collision at a split point makes the whole fold anchored.
+
+### `anchored_of_E_func` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_E_func` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1569](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1569) — **E_func arm.** A function violation among dedup entries is impossible in a non-anchored consistent
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_E_func` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1569](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1569) — **E_func arm.** A function violation among dedup entries is impossible in a non-anchored consistent
+
+### `anchored_of_E_h` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_E_h` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1464](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1464) — **E_h arm.** A hash-capacity duplicate among dedup entries anchors the consistent log.
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_E_h` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1464](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1464) — **E_h arm.** A hash-capacity duplicate among dedup entries anchors the consistent log.
+
+### `anchored_of_E_p` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_E_p` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1491](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1491) — **E_p arm.** A forward-permutation capacity duplicate anchors the consistent log.
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_E_p` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1491](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1491) — **E_p arm.** A forward-permutation capacity duplicate anchors the consistent log.
+
+### `anchored_of_E_pinv` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_E_pinv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1530](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1530) — **E_pinv arm.** An inverse-permutation capacity duplicate (B1-repaired) anchors the log.
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_E_pinv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1530](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1530) — **E_pinv arm.** An inverse-permutation capacity duplicate (B1-repaired) anchors the log.
+
+### `anchored_of_hash_anchor` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_hash_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:299](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L299) — **The `E_hash` arm anchors a collision** (CO25 Eq. 24 over a certified consistent list): a hash entr
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_hash_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:299](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L299) — **The `E_hash` arm anchors a collision** (CO25 Eq. 24 over a certified consistent list): a hash entr
+
+### `anchored_of_permInv_anchor` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_permInv_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:190](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L190) — **The `E_pinv` arm anchors a collision** (CO25 Eq. 26 over a certified consistent list): an inverse
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_permInv_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:190](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L190) — **The `E_pinv` arm anchors a collision** (CO25 Eq. 26 over a certified consistent list): an inverse
+
+### `anchored_of_perm_anchor` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_perm_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:387](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L387) — **The `E_p` arm anchors a collision** (CO25 Eq. 25 over a certified consistent list): a forward entr
+- `theorem DuplexSpongeFS.EagerLazyDS.anchored_of_perm_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:387](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L387) — **The `E_p` arm anchors a collision** (CO25 Eq. 25 over a certified consistent list): a forward entr
 
 ### `appendStage1Bridge` (2 declarations, 2 files)
 
@@ -3934,6 +4313,81 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Reduction.appendStage₁_run_eq_liftM` [ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges.lean:171](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges.lean#L171) — **The `OptionT.run` of the phase-1 stage body equals `liftM` of `R₁.run`'s `OptionT.run`.** `appendS
 - `theorem Reduction.appendStage₁_run_eq_liftM` [ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges2.lean:145](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges2.lean#L145) — **The `OptionT.run` of the phase-1 stage body equals `liftM` of `R₁.run`'s `OptionT.run`.** `appendS
+
+### `base_earlier_fwd_slots` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.base_earlier_fwd_slots` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1328](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1328) — **Slot-persistence (forward).** An earlier forward base entry's pair is cached in the later entry's
+- `theorem DuplexSpongeFS.EagerLazyDS.base_earlier_fwd_slots` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1328](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1328) — **Slot-persistence (forward).** An earlier forward base entry's pair is cached in the later entry's
+
+### `base_earlier_hash_slot` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.base_earlier_hash_slot` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1426](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1426) — **Slot-persistence (hash).**
+- `theorem DuplexSpongeFS.EagerLazyDS.base_earlier_hash_slot` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1426](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1426) — **Slot-persistence (hash).**
+
+### `base_earlier_inv_slots` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.base_earlier_inv_slots` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1390](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1390) — **Slot-persistence (inverse).**
+- `theorem DuplexSpongeFS.EagerLazyDS.base_earlier_inv_slots` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1390](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1390) — **Slot-persistence (inverse).**
+
+### `base_fwd_anchored` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.base_fwd_anchored` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1117](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1117) — **Forward-arm anchoring producer.** If a forward base entry `⟨inr (inl a), b⟩` has its answer capaci
+- `theorem DuplexSpongeFS.EagerLazyDS.base_fwd_anchored` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1117](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1117) — **Forward-arm anchoring producer.** If a forward base entry `⟨inr (inl a), b⟩` has its answer capaci
+
+### `base_hash_anchored` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.base_hash_anchored` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1240](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1240) — **Hash-arm anchoring producer.** A hash base entry whose answer is an existing slot anchors the cons
+- `theorem DuplexSpongeFS.EagerLazyDS.base_hash_anchored` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1240](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1240) — **Hash-arm anchoring producer.** A hash base entry whose answer is an existing slot anchors the cons
+
+### `base_inv_anchored` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.base_inv_anchored` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1152](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1152) — **Inverse-arm anchoring producer.** Symmetric to `base_fwd_anchored` for an inverse base entry `⟨inr
+- `theorem DuplexSpongeFS.EagerLazyDS.base_inv_anchored` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1152](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1152) — **Inverse-arm anchoring producer.** Symmetric to `base_fwd_anchored` for an inverse base entry `⟨inr
+
+### `base_no_earlier_sameClass` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.base_no_earlier_sameClass` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1064](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1064) — **w1**: a base entry has no earlier same-class entry in its raw prefix. Directly from the first-occu
+- `theorem DuplexSpongeFS.EagerLazyDS.base_no_earlier_sameClass` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1064](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1064) — **w1**: a base entry has no earlier same-class entry in its raw prefix. Directly from the first-occu
+
+### `base_raw_split` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.base_raw_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:905](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L905) — **Raw split at a base position.** For a base-trace index `j`, writing `pⱼ = f j` for the order embed
+- `theorem DuplexSpongeFS.EagerLazyDS.base_raw_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:905](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L905) — **Raw split at a base position.** For a base-trace index `j`, writing `pⱼ = f j` for the order embed
+
+### `cacheFold_hash_mem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.cacheFold_hash_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:148](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L148) — Every cached hash answer in a fold of `ℓ` over `c₀` either was in `c₀` or comes from a hash entry of
+- `theorem DuplexSpongeFS.EagerLazyDS.cacheFold_hash_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:148](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L148) — Every cached hash answer in a fold of `ℓ` over `c₀` either was in `c₀` or comes from a hash entry of
+
+### `cacheFold_pair_mem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.cacheFold_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:190](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L190) — Every cached permutation pair in a fold of `ℓ` over `c₀` either was in `c₀` or comes from a forward
+- `theorem DuplexSpongeFS.EagerLazyDS.cacheFold_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:190](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L190) — Every cached permutation pair in a fold of `ℓ` over `c₀` either was in `c₀` or comes from a forward
+
+### `cannot` (2 declarations, 2 files)
+
+- `class cannot` [ArkLib/Data/CodingTheory/ProximityGap/Jo26MissingLineSmallSeed.lean:34](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26MissingLineSmallSeed.lean#L34) — (no docstring)
+- `structure cannot` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorQDependenceNoGo.lean:69](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorQDependenceNoGo.lean#L69) — (no docstring)
+
+### `capacitySegmentDupPermInv_of_inv_mem` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.capacitySegmentDupPermInv_of_inv_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:915](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L915) — Any inverse-permutation entry in the dedup'd trace fires `E_pinv` (`capacitySegmentDupPermInv`): the
+- `lemma DuplexSpongeFS.Sponge316.capacitySegmentDupPermInv_of_inv_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:915](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L915) — Any inverse-permutation entry in the dedup'd trace fires `E_pinv` (`capacitySegmentDupPermInv`): the
+
+### `card_capacityFiber_preimage` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.card_capacityFiber_preimage` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:139](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L139) — The capacity-fiber preimage count: exactly `\|W\| · \|U\|^R` states carry a capacity from `W`.
+- `lemma DuplexSpongeFS.EagerLazyDS.card_capacityFiber_preimage` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:139](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L139) — The capacity-fiber preimage count: exactly `\|W\| · \|U\|^R` states carry a capacity from `W`.
+
+### `card_le_of_unusedKeysList_eq_nil` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.card_le_of_unusedKeysList_eq_nil` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:229](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L229) — An exhausted keys pool forces the cache to cover the type.
+- `lemma DuplexSpongeFS.EagerLazyDS.card_le_of_unusedKeysList_eq_nil` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:229](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L229) — An exhausted keys pool forces the cache to cover the type.
+
+### `card_le_of_unusedValuesList_eq_nil` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.card_le_of_unusedValuesList_eq_nil` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:220](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L220) — An exhausted values pool forces the cache to cover the type.
+- `lemma DuplexSpongeFS.EagerLazyDS.card_le_of_unusedValuesList_eq_nil` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:220](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L220) — An exhausted values pool forces the cache to cover the type.
 
 ### `card_listEval_eq_le` (2 declarations, 2 files)
 
@@ -3970,6 +4424,46 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ProximityGap.coeff_zero_of_natDegree_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:694](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L694) — (no docstring)
 - `lemma ProximityGap.coeff_zero_of_natDegree_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:31](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L31) — (no docstring)
 
+### `collisionStep` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.collisionStep` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:52](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L52) — **The anchored per-step collision event**: the query was fresh (a genuine sample), and the sampled a
+- `def DuplexSpongeFS.EagerLazyDS.collisionStep` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:52](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L52) — **The anchored per-step collision event**: the query was fresh (a genuine sample), and the sampled a
+
+### `consistentFrom_eraseIdx_classRed` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_eraseIdx_classRed` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:527](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L527) — A class-redundant erasure preserves consistency in a consistent log.
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_eraseIdx_classRed` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:527](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L527) — A class-redundant erasure preserves consistency in a consistent log.
+
+### `consistentFrom_eraseIdx_of_noop` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_eraseIdx_of_noop` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:352](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L352) — Erasing a no-op entry preserves consistency.
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_eraseIdx_of_noop` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:352](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L352) — Erasing a no-op entry preserves consistency.
+
+### `consistentFrom_prefix_getElem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_prefix_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:44](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L44) — Consistency localizes: on a consistent log, entry `k` is consistent with the cache folded over the s
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_prefix_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:44](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L44) — Consistency localizes: on a consistent log, entry `k` is consistent with the cache folded over the s
+
+### `consistentFrom_removeRedundantEntryDSPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_removeRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:548](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L548) — Consistency survives the full paper dedup pass.
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_removeRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:548](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L548) — Consistency survives the full paper dedup pass.
+
+### `consistentFrom_split` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:820](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L820) — `ConsistentFrom` gives entry-consistency at every split point against the fold cache of the prefix.
+- `theorem DuplexSpongeFS.EagerLazyDS.consistentFrom_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:820](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L820) — `ConsistentFrom` gives entry-consistency at every split point against the fold cache of the prefix.
+
+### `consistent_fwd_hit_pair_mem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.consistent_fwd_hit_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:757](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L757) — A consistent forward hit puts the entry's exact pair in the cache: if the running cache already hold
+- `theorem DuplexSpongeFS.EagerLazyDS.consistent_fwd_hit_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:757](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L757) — A consistent forward hit puts the entry's exact pair in the cache: if the running cache already hold
+
+### `consistent_inv_hit_pair_mem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.consistent_inv_hit_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:785](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L785) — A consistent inverse hit puts the entry's exact pair in the cache.
+- `theorem DuplexSpongeFS.EagerLazyDS.consistent_inv_hit_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:785](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L785) — A consistent inverse hit puts the entry's exact pair in the cache.
+
 ### `decodeLT_ne_of_val_ne` (2 declarations, 2 files)
 
 - `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:87](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L87) — Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the codeword
@@ -3977,8 +4471,23 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `derivative_eval_centreFold_isUnit` (2 declarations, 2 files)
 
-- `theorem ArkLib.XiCertReduction.derivative_eval_centreFold_isUnit` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:110](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L110) — **Separability makes the derivative reading along the surface a UNIT**: `IsCoprime Q (∂_Y Q)` evalua
+- `theorem ArkLib.XiCertReduction.derivative_eval_centreFold_isUnit` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:110](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L110) — **Separability makes the derivative reading along the surface a UNIT**: `IsCoprime Q (∂_Y Q)` evalua
 - `theorem ArkLib.XiCertReduction.derivative_eval_centreFold_isUnit` [ArkLib/ToMathlib/XiCertReduction.lean:141](../../../ArkLib/ToMathlib/XiCertReduction.lean#L141) — **Separability makes the derivative reading along the surface a UNIT**: `IsCoprime Q (∂_Y Q)` evalua
+
+### `div_card_pow_C_le_stepBound` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.div_card_pow_C_le_stepBound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:264](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L264) — The hash-arm arithmetic: `A / \|U\|^C ≤ stepBound` for `A ≤ 2m`.
+- `lemma DuplexSpongeFS.EagerLazyDS.div_card_pow_C_le_stepBound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:264](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L264) — The hash-arm arithmetic: `A / \|U\|^C ≤ stepBound` for `A ≤ 2m`.
+
+### `div_le_stepBound_of_le` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.div_le_stepBound_of_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:287](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L287) — The permutation-arm arithmetic: `A / len ≤ stepBound` for `A` below the numerator and `len` above th
+- `lemma DuplexSpongeFS.EagerLazyDS.div_le_stepBound_of_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:287](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L287) — The permutation-arm arithmetic: `A / len ≤ stepBound` for `A` below the numerator and `len` above th
+
+### `dsCacheSize_empty` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.dsCacheSize_empty` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:457](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L457) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.dsCacheSize_empty` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:457](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L457) — (no docstring)
 
 ### `dsfs_hLHS` (2 declarations, 2 files)
 
@@ -4005,6 +4514,141 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Reduction.dsfs_lift_query_bridge_inr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:65](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L65) — Bridge: annotated (assoc-routed) vs direct lift of a single right-side query.
 - `theorem Reduction.dsfs_lift_query_bridge_inr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:70](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L70) — Bridge: annotated (assoc-routed) vs direct lift of a single right-side query.
 
+### `ePaperReduction_holds` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.ePaperReduction_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1609](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1609) — **`EPaperReduction` is a theorem.** A consistent log exhibiting the paper bad event `EPaper` is anch
+- `theorem DuplexSpongeFS.EagerLazyDS.ePaperReduction_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1609](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1609) — **`EPaperReduction` is a theorem.** A consistent log exhibiting the paper bad event `EPaper` is anch
+
+### `ePaper_of_answerCap_pair'` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.ePaper_of_answerCap_pair'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean:52](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean#L52) — C1, unordered form: two first-of-mirror-class slots with distinct entries and equal answer-side capa
+- `theorem DuplexSpongeFS.Paper.ePaper_of_answerCap_pair'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean:52](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean#L52) — C1, unordered form: two first-of-mirror-class slots with distinct entries and equal answer-side capa
+
+### `ePaper_of_fwd_inv_pair'` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.ePaper_of_fwd_inv_pair'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean:119](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean#L119) — C1 finisher, forward-form previous step vs inverse-form current step (the CO25 5.12 case `ι > 0`): c
+- `theorem DuplexSpongeFS.Paper.ePaper_of_fwd_inv_pair'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean:119](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean#L119) — C1 finisher, forward-form previous step vs inverse-form current step (the CO25 5.12 case `ι > 0`): c
+
+### `ePaper_of_hash_inv_pair'` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.ePaper_of_hash_inv_pair'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean:104](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean#L104) — C1 finisher, hash anchor vs inverse-form chain slot (the CO25 5.12 case `ι = 0`): equal answer capac
+- `theorem DuplexSpongeFS.Paper.ePaper_of_hash_inv_pair'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean:104](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean#L104) — C1 finisher, hash anchor vs inverse-form chain slot (the CO25 5.12 case `ι = 0`): equal answer capac
+
+### `ePaper_of_jbt_inv_slot'` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.ePaper_of_jbt_inv_slot'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:178](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L178) — **5.12 core**: a chain step whose `J_BT` slot carries the *inverse-form* entry fires `EPaper`. Downw
+- `theorem DuplexSpongeFS.Paper.ePaper_of_jbt_inv_slot'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:178](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L178) — **5.12 core**: a chain step whose `J_BT` slot carries the *inverse-form* entry fires `EPaper`. Downw
+
+### `e_fork_holds` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.ForkCounter.e_fork_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:159](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L159) — The fork event fires: the family has two elements.
+- `theorem DuplexSpongeFS.Sponge316.ForkCounter.e_fork_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:159](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L159) — The fork event fires: the family has two elements.
+
+### `e_func_of_twoSurvivors_fwd_same_input` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.e_func_of_twoSurvivors_fwd_same_input` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:225](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L225) — **`Eprp`/`E_func` landing**: two guarded forward slots with the same input force the permutation-inc
+- `lemma DuplexSpongeFS.Sponge316.e_func_of_twoSurvivors_fwd_same_input` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:225](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L225) — **`Eprp`/`E_func` landing**: two guarded forward slots with the same input force the permutation-inc
+
+### `e_h_of_hasFirstHashPermCapNatPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_h_of_hasFirstHashPermCapNatPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:908](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L908) — **The hash-anchored keystone (paper semantics)**: a raw first-occurrence hash collision forces the p
+- `theorem DuplexSpongeFS.Sponge316.e_h_of_hasFirstHashPermCapNatPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:908](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L908) — **The hash-anchored keystone (paper semantics)**: a raw first-occurrence hash collision forces the p
+
+### `e_h_of_twoSurvivors_hash_hash` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.e_h_of_twoSurvivors_hash_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:256](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L256) — **`Efork,h` landing**: two guarded hash slots sharing the answer capacity force `capacitySegmentDupH
+- `lemma DuplexSpongeFS.Sponge316.e_h_of_twoSurvivors_hash_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:256](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L256) — **`Efork,h` landing**: two guarded hash slots sharing the answer capacity force `capacitySegmentDupH
+
+### `e_of_hasFirstCapBeforeInverseAnswerPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_of_hasFirstCapBeforeInverseAnswerPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:277](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L277) — The inverse-anchored keystone, composed into the combined paper bad event `E`.
+- `theorem DuplexSpongeFS.Sponge316.e_of_hasFirstCapBeforeInverseAnswerPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:277](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L277) — The inverse-anchored keystone, composed into the combined paper bad event `E`.
+
+### `e_of_hasFirstHashPermCapNatPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_of_hasFirstHashPermCapNatPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:935](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L935) — The hash-anchored keystone composed into the combined paper bad event `E`.
+- `theorem DuplexSpongeFS.Sponge316.e_of_hasFirstHashPermCapNatPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:935](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L935) — The hash-anchored keystone composed into the combined paper bad event `E`.
+
+### `e_of_hasFirstPermCapacityBeforeForwardOutputPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_of_hasFirstPermCapacityBeforeForwardOutputPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:639](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L639) — The reshaped keystone, composed into the combined paper bad event `E`.
+- `theorem DuplexSpongeFS.Sponge316.e_of_hasFirstPermCapacityBeforeForwardOutputPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:639](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L639) — The reshaped keystone, composed into the combined paper bad event `E`.
+
+### `e_p_of_hasFirstPermCapacityBeforeForwardOutputPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_p_of_hasFirstPermCapacityBeforeForwardOutputPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:618](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L618) — **The reshaped keystone (paper semantics)**: a raw first-occurrence permutation-capacity collision f
+- `theorem DuplexSpongeFS.Sponge316.e_p_of_hasFirstPermCapacityBeforeForwardOutputPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:618](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L618) — **The reshaped keystone (paper semantics)**: a raw first-occurrence permutation-capacity collision f
+
+### `e_p_of_twoSurvivors_hash_fwd` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.e_p_of_twoSurvivors_hash_fwd` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:240](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L240) — **`Efork,h,p` landing (permutation-late order)**: a guarded hash slot before a guarded forward slot
+- `lemma DuplexSpongeFS.Sponge316.e_p_of_twoSurvivors_hash_fwd` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:240](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L240) — **`Efork,h,p` landing (permutation-late order)**: a guarded hash slot before a guarded forward slot
+
+### `e_pinv_of_hasFirstCapBeforeInverseAnswerPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_pinv_of_hasFirstCapBeforeInverseAnswerPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:261](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L261) — **The inverse-anchored keystone (paper semantics)**: a raw first-occurrence inverse entry whose answ
+- `theorem DuplexSpongeFS.Sponge316.e_pinv_of_hasFirstCapBeforeInverseAnswerPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:261](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L261) — **The inverse-anchored keystone (paper semantics)**: a raw first-occurrence inverse entry whose answ
+
+### `e_time_h_honest_dedup_hasForwardCapacityBeforeHash_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_dedup_hasForwardCapacityBeforeHash_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1766](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1766) — Off `E`, the raw first-hash timing witness transports through DSFS dedup to a base-trace `HasForward
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_dedup_hasForwardCapacityBeforeHash_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1766](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1766) — Off `E`, the raw first-hash timing witness transports through DSFS dedup to a base-trace `HasForward
+
+### `e_time_h_honest_raw_forward_capacity_witness_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_capacity_witness_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1664](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1664) — Off `E`, an honest hash-ordering witness gives the raw collision shape before dedup: the earlier for
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_capacity_witness_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1664](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1664) — Off `E`, an honest hash-ordering witness gives the raw collision shape before dedup: the earlier for
+
+### `e_time_h_honest_raw_forward_witness_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1631](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1631) — Off `E`, an honest hash-ordering witness gives concrete raw trace entries: the anchoring hash query
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1631](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1631) — Off `E`, an honest hash-ordering witness gives concrete raw trace entries: the anchoring hash query
+
+### `e_time_h_honest_raw_hasFirstHashForwardCapacityBeforeHash_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasFirstHashForwardCapacityBeforeHash_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1729](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1729) — Strong predicate form of the raw timing witness: off `E`, `E_time_h_honest` produces a forward-befor
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasFirstHashForwardCapacityBeforeHash_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1729](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1729) — Strong predicate form of the raw timing witness: off `E`, `E_time_h_honest` produces a forward-befor
+
+### `e_time_h_honest_raw_hasFirstHashPermCapNatPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasFirstHashPermCapNatPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:953](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L953) — Off the **paper** combined bad event, an honest hash-timing witness yields the direction-agnostic fi
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasFirstHashPermCapNatPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:953](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L953) — Off the **paper** combined bad event, an honest hash-timing witness yields the direction-agnostic fi
+
+### `e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1698](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1698) — Predicate form of the raw timing witness: off `E`, `E_time_h_honest` produces a concrete forward-bef
+- `theorem DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1698](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1698) — Predicate form of the raw timing witness: off `E`, `E_time_h_honest` produces a concrete forward-bef
+
+### `e_time_p_holds` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.TimePCounter.e_time_p_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:170](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L170) — The out-of-order-permutation event fires on the countermodel.
+- `theorem DuplexSpongeFS.Sponge316.TimePCounter.e_time_p_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:170](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L170) — The out-of-order-permutation event fires on the countermodel.
+
+### `e_time_p_honest_raw_adjacent_forward_witness_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_adjacent_forward_witness_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1312](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1312) — Off `E`, an honest permutation-ordering witness gives adjacent raw forward permutation entries: the
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_adjacent_forward_witness_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1312](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1312) — Off `E`, an honest permutation-ordering witness gives adjacent raw forward permutation entries: the
+
+### `e_time_p_honest_raw_forward_capacity_witness_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_forward_capacity_witness_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1360](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1360) — Off `E`, an honest permutation-ordering witness gives the raw adjacent-forward capacity shape before
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_forward_capacity_witness_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1360](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1360) — Off `E`, an honest permutation-ordering witness gives the raw adjacent-forward capacity shape before
+
+### `e_time_p_honest_raw_hasFirstForwardCapacityBeforeForwardOutput_or_prior_reverse_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasFirstForwardCapacityBeforeForwardOutput_or_prior_reverse_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1534](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1534) — Off `E`, an honest permutation-ordering witness either gives the strengthened raw first-forward pred
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasFirstForwardCapacityBeforeForwardOutput_or_prior_reverse_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1534](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1534) — Off `E`, an honest permutation-ordering witness either gives the strengthened raw first-forward pred
+
+### `e_time_p_honest_raw_hasForwardCapacityBeforeForwardOutput_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasForwardCapacityBeforeForwardOutput_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1433](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1433) — Broad predicate form of the raw permutation-timing witness, aligned with the preservation-friendly b
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasForwardCapacityBeforeForwardOutput_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1433](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1433) — Broad predicate form of the raw permutation-timing witness, aligned with the preservation-friendly b
+
+### `e_time_p_honest_raw_hasInputCapacityBeforeForwardOutput_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasInputCapacityBeforeForwardOutput_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1398](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1398) — Predicate form of the raw permutation-timing witness: off `E`, `E_time_p_honest` produces a concrete
+- `theorem DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasInputCapacityBeforeForwardOutput_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1398](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1398) — Predicate form of the raw permutation-timing witness: off `E`, `E_time_p_honest` produces a concrete
+
 ### `ehQ` (2 declarations, 2 files)
 
 - `def MvPolynomial.ehQ` [ArkLib/ToMathlib/RestrictedSumset.lean:218](../../../ArkLib/ToMathlib/RestrictedSumset.lean#L218) — **The Erdős–Heilbronn polynomial** for a padded sumset `C'`.
@@ -4014,6 +4658,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def MvPolynomial.ehY` [ArkLib/ToMathlib/RestrictedSumset.lean:169](../../../ArkLib/ToMathlib/RestrictedSumset.lean#L169) — Abbreviation for the "diagonal" variable `y = X₀ + X₁`.
 - `def MvPolynomial.ehY` [ArkLib/ToMathlib/RestrictedSumsetGeneral.lean:191](../../../ArkLib/ToMathlib/RestrictedSumsetGeneral.lean#L191) — The "diagonal" variable `y = ∑_k X k`.
+
+### `entryConsistent` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.entryConsistent` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:67](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L67) — A log entry agrees with a cache: if its query is cached, the logged answer is the cached one.
+- `def DuplexSpongeFS.EagerLazyDS.entryConsistent` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:67](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L67) — A log entry agrees with a cache: if its query is cached, the logged answer is the cached one.
+
+### `entryFwdKey` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.entryFwdKey` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:348](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L348) — The forward key inserted by an entry (`none` for a hash entry).
+- `def DuplexSpongeFS.EagerLazyDS.entryFwdKey` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:348](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L348) — The forward key inserted by an entry (`none` for a hash entry).
+
+### `entryInvKey` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.entryInvKey` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:357](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L357) — The inverse key inserted by an entry (`none` for a hash entry). For a forward entry `⟨inr (inl a), b
+- `def DuplexSpongeFS.EagerLazyDS.entryInvKey` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:357](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L357) — The inverse key inserted by an entry (`none` for a hash entry). For a forward entry `⟨inr (inl a), b
 
 ### `epsMCAP_interleaved_eq` (2 declarations, 2 files)
 
@@ -4042,7 +4701,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `evalX_eval_centreFold_eq_zero` (2 declarations, 2 files)
 
-- `theorem ArkLib.XiCertReduction.evalX_eval_centreFold_eq_zero` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:86](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L86) — **The centre fold is a global root of the specialized trivariate**: `(evalX (C x₀) R).eval (w.eval (
+- `theorem ArkLib.XiCertReduction.evalX_eval_centreFold_eq_zero` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:86](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L86) — **The centre fold is a global root of the specialized trivariate**: `(evalX (C x₀) R).eval (w.eval (
 - `theorem ArkLib.XiCertReduction.evalX_eval_centreFold_eq_zero` [ArkLib/ToMathlib/XiCertReduction.lean:117](../../../ArkLib/ToMathlib/XiCertReduction.lean#L117) — **The centre fold is a global root of the specialized trivariate**: `(evalX (C x₀) R).eval (w.eval (
 
 ### `eval_ehQ_eq_zero` (2 declarations, 2 files)
@@ -4060,6 +4719,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.RadicalWire304.eval_natDegree_le_of_coeff_le` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:98](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L98) — The bivariate eval-degree bound (the fiber-level mirror of `SectionGlobalLift.eval_section_natDegree
 - `theorem ArkLib.RadicalWire304.eval_natDegree_le_of_coeff_le` [ArkLib/ToMathlib/RadicalAssembler.lean:117](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L117) — The bivariate eval-degree bound (the fiber-level mirror of `SectionGlobalLift.eval_section_natDegree
 
+### `exists_far_codeword_of_curveDecodable` (2 declarations, 2 files)
+
+- `theorem ProximityGap.exists_far_codeword_of_curveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/GG25NonCovering.lean:109](../../../ArkLib/Data/CodingTheory/ProximityGap/GG25NonCovering.lean#L109) — **[Jo26] Lemma 5.4 (curve decodability gives a non-covering condition).** A nonzero `(ℓ, δ, a, b)`-c
+- `theorem ProximityGap.exists_far_codeword_of_curveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveNonCovering.lean:53](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveNonCovering.lean#L53) — **[Jo26] Lemma 5.4 (curve decodability gives a non-covering condition).**  A nonzero `F`-submodule c
+
+### `famC` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.TimePCounter.famC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:104](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L104) — The singleton backtrack family `{seqC}` (maximality is vacuous).
+- `def DuplexSpongeFS.Sponge316.TimePCounter.famC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:104](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L104) — The singleton backtrack family `{seqC}` (maximality is vacuous).
+
+### `famF` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.ForkCounter.famF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:135](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L135) — The two-element backtrack family `{seqOne, seqTwo}`; maximality holds because neither chain's state
+- `def DuplexSpongeFS.Sponge316.ForkCounter.famF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:135](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L135) — The two-element backtrack family `{seqOne, seqTwo}`; maximality holds because neither chain's state
+
 ### `fiber_ne_zero` (2 declarations, 2 files)
 
 - `theorem ArkLib.RadicalWire304.fiber_ne_zero` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:71](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L71) — Nonzeroness of the fiber — the ONLY consequence of `separable_evalX` used in the radical split/branc
@@ -4069,6 +4743,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Spartan.Spec.Bricks.finalCheckTight_perfectCompleteness` [ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean:299](../../../ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean#L299) — **The tight terminal completeness leaf `h₈`**: perfect completeness of the tight chain's zero-round
 - `theorem Spartan.Spec.Bricks.finalCheckTight_perfectCompleteness` [ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean:247](../../../ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean#L247) — **Completeness leaf for the tight terminal check** (#329, B7): `finalCheckTight` carries the conjoin
+
+### `find` (4 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.find` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1097](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1097) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.find` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1105](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1105) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.find` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1097](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1097) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.find` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1105](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1105) — (no docstring)
 
 ### `finset_card_ge_of_pred_natCast_le_ennreal_lt` (2 declarations, 2 files)
 
@@ -4080,20 +4761,520 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:120](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L120) — (no docstring)
 - `theorem ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:120](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L120) — Convert an ENNReal lower bound on a finite set cardinality into a natural number strict cardinality
 
+### `firstForwardNat_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstForwardNat_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:659](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L659) — **One-step preservation**: erasing one redundant entry preserves the strengthened forward-before-fir
+- `lemma DuplexSpongeFS.Sponge316.firstForwardNat_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:659](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L659) — **One-step preservation**: erasing one redundant entry preserves the strengthened forward-before-fir
+
+### `firstForwardNat_of_first` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstForwardNat_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:612](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L612) — Convert the public finite-index first-forward witness into the private natural-index form.
+- `lemma DuplexSpongeFS.Sponge316.firstForwardNat_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:612](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L612) — Convert the public finite-index first-forward witness into the private natural-index form.
+
+### `firstForwardNat_removeRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstForwardNat_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:789](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L789) — **Fixpoint preservation**: dedup preserves the first-forward output-capacity collision shape as the
+- `lemma DuplexSpongeFS.Sponge316.firstForwardNat_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:789](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L789) — **Fixpoint preservation**: dedup preserves the first-forward output-capacity collision shape as the
+
+### `firstGuardD_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstGuardD_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:118](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L118) — Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+- `lemma DuplexSpongeFS.Sponge316.firstGuardD_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:118](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L118) — Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+
+### `firstGuard_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstGuard_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:69](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L69) — Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+- `lemma DuplexSpongeFS.Sponge316.firstGuard_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:69](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L69) — Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+
+### `firstHashPermNatPaper_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstHashPermNatPaper_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:741](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L741) — **One-step preservation (paper)**: erasing one paper-redundant entry preserves the first-hash collis
+- `lemma DuplexSpongeFS.Sponge316.firstHashPermNatPaper_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:741](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L741) — **One-step preservation (paper)**: erasing one paper-redundant entry preserves the first-hash collis
+
+### `firstHashPermNatPaper_removeRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstHashPermNatPaper_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:879](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L879) — **Fixpoint preservation (paper)**: dedup carries the first-hash collision shape to the broad base-tr
+- `lemma DuplexSpongeFS.Sponge316.firstHashPermNatPaper_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:879](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L879) — **Fixpoint preservation (paper)**: dedup carries the first-hash collision shape to the broad base-tr
+
+### `firstInvNatPaper_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstInvNatPaper_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:149](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L149) — **One-step preservation (paper semantics)**: erasing one paper-redundant entry preserves the first-o
+- `lemma DuplexSpongeFS.Sponge316.firstInvNatPaper_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:149](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L149) — **One-step preservation (paper semantics)**: erasing one paper-redundant entry preserves the first-o
+
+### `firstInvNatPaper_removeRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstInvNatPaper_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:234](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L234) — **Fixpoint preservation (paper semantics)**: dedup preserves the inverse-anchored shape.
+- `lemma DuplexSpongeFS.Sponge316.firstInvNatPaper_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:234](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L234) — **Fixpoint preservation (paper semantics)**: dedup preserves the inverse-anchored shape.
+
+### `firstNat_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstNat_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:411](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L411) — **One-step preservation**: erasing one redundant entry preserves the strengthened forward-before-fir
+- `lemma DuplexSpongeFS.Sponge316.firstNat_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:411](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L411) — **One-step preservation**: erasing one redundant entry preserves the strengthened forward-before-fir
+
+### `firstNat_of_first` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstNat_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:360](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L360) — Convert the public finite-index first-hash witness into the private natural-index form.
+- `lemma DuplexSpongeFS.Sponge316.firstNat_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:360](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L360) — Convert the public finite-index first-hash witness into the private natural-index form.
+
+### `firstNat_removeRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstNat_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:502](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L502) — **Fixpoint preservation**: dedup preserves the first-hash forward-capacity collision shape as the ba
+- `lemma DuplexSpongeFS.Sponge316.firstNat_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:502](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L502) — **Fixpoint preservation**: dedup preserves the first-hash forward-capacity collision shape as the ba
+
+### `firstOfClassAt_of_noRedundant` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.firstOfClassAt_of_noRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L53) — **Certificate freshness**: the dedup's `NoRedundantEntryDSPaper` certificate gives first-of-class at
+- `theorem DuplexSpongeFS.EagerLazyDS.firstOfClassAt_of_noRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L53) — **Certificate freshness**: the dedup's `NoRedundantEntryDSPaper` certificate gives first-of-class at
+
+### `firstOfClassAt_of_perm_index'` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.firstOfClassAt_of_perm_index'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean:67](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean#L67) — **Index bridge**: a nonterminal `BacktrackSequence.Index` permutation slot is a first-of-mirror-clas
+- `theorem DuplexSpongeFS.Paper.firstOfClassAt_of_perm_index'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean:67](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean#L67) — **Index bridge**: a nonterminal `BacktrackSequence.Index` permutation slot is a first-of-mirror-clas
+
+### `firstPermNatPaper_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstPermNatPaper_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:404](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L404) — **One-step preservation (paper semantics)**: erasing one paper-redundant entry preserves the first-p
+- `lemma DuplexSpongeFS.Sponge316.firstPermNatPaper_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:404](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L404) — **One-step preservation (paper semantics)**: erasing one paper-redundant entry preserves the first-p
+
+### `firstPermNatPaper_of_first` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstPermNatPaper_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:346](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L346) — Convert the public finite-index paper witness into the natural-index form.
+- `lemma DuplexSpongeFS.Sponge316.firstPermNatPaper_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:346](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L346) — Convert the public finite-index paper witness into the natural-index form.
+
+### `firstPermNatPaper_removeRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.firstPermNatPaper_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:582](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L582) — **Fixpoint preservation (paper semantics)**: dedup preserves the first-perm collision shape as the b
+- `lemma DuplexSpongeFS.Sponge316.firstPermNatPaper_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:582](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L582) — **Fixpoint preservation (paper semantics)**: dedup preserves the first-perm collision shape as the b
+
 ### `firstSumcheck_rbrKnowledgeSoundness_honest` (2 declarations, 2 files)
 
 - `theorem Spartan.Spec.firstSumcheck_rbrKnowledgeSoundness_honest` [ArkLib/ProofSystem/Spartan/FirstSumcheckComplete.lean:202](../../../ArkLib/ProofSystem/Spartan/FirstSumcheckComplete.lean#L202) — **First sum-check phase round-by-round knowledge soundness (issue #114).** The Spartan lift of the g
 - `theorem Spartan.Spec.firstSumcheck_rbrKnowledgeSoundness_honest` [ArkLib/ProofSystem/Spartan/SumcheckKnowledgeLeaves.lean:82](../../../ArkLib/ProofSystem/Spartan/SumcheckKnowledgeLeaves.lean#L82) — The first Spartan sum-check RBR-KS leaf over the honest transported relation contract, reduced to th
 
+### `foldl_hash_provenance` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_hash_provenance` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1205](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1205) — **Hash-cache provenance (whole fold).**
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_hash_provenance` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1205](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1205) — **Hash-cache provenance (whole fold).**
+
+### `foldl_pair_provenance` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_pair_provenance` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:740](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L740) — **Pair provenance (whole fold)**: a pair in the final cache was in the start cache or inserted by so
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_pair_provenance` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:740](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L740) — **Pair provenance (whole fold)**: a pair in the final cache was in the start cache or inserted by so
+
+### `foldl_stepCache_fwdNodup` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_fwdNodup` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:702](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L702) — Forward-key distinctness is preserved along a whole non-anchored fold.
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_fwdNodup` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:702](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L702) — Forward-key distinctness is preserved along a whole non-anchored fold.
+
 ### `foldl_stepCache_hash_mono` (2 declarations, 2 files)
 
-- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_hash_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:102](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L102) — Hash records persist through any fold suffix.
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_hash_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1369](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1369) — The hash cache only grows along the whole fold.
 - `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_hash_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1369](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1369) — The hash cache only grows along the whole fold.
+
+### `foldl_stepCache_pair_mono` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_pair_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:102](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L102) — Permutation pairs persist through any fold suffix.
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_pair_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:102](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L102) — Permutation pairs persist through any fold suffix.
+
+### `foldl_stepCache_perm_sublist` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_perm_sublist` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:329](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L329) — The permutation cache only grows along the whole fold.
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_perm_sublist` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:329](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L329) — The permutation cache only grows along the whole fold.
+
+### `foldl_stepCache_take_from_getElem` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.foldl_stepCache_take_from_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:408](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L408) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.foldl_stepCache_take_from_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:408](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L408) — (no docstring)
+
+### `foldl_take_succ_eq` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_take_succ_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:90](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L90) — Folding one more prefix entry is one `stepCache` step.
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_take_succ_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:90](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L90) — Folding one more prefix entry is one `stepCache` step.
 
 ### `for` (2 declarations, 2 files)
 
 - `theorem for` [ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessProof.lean:14](../../../ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessProof.lean#L14) — (no docstring)
 - `theorem for` [ArkLib/ProofSystem/Logup/Security/Soundness.lean:46](../../../ArkLib/ProofSystem/Logup/Security/Soundness.lean#L46) — (no docstring)
+
+### `forwardEntry` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.forwardEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:343](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L343) — Private shorthand for a concrete forward permutation query-answer entry.
+- `def DuplexSpongeFS.Sponge316.forwardEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:343](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L343) — Private shorthand for a concrete forward permutation query-answer entry.
+
+### `forwardEntryC` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.forwardEntryC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:58](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L58) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.forwardEntryC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:58](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L58) — (no docstring)
+
+### `forwardEntryD` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.forwardEntryD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:54](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L54) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.forwardEntryD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:54](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L54) — (no docstring)
+
+### `forwardEntryP` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.forwardEntryP` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:245](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L245) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.forwardEntryP` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:245](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L245) — (no docstring)
+
+### `forward_getElem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.forward_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:956](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L956) — Off `E`, a trace slot known to be either the forward or inverse entry for one sponge step must be th
+- `theorem DuplexSpongeFS.Sponge316.forward_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:956](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L956) — Off `E`, a trace slot known to be either the forward or inverse entry for one sponge step must be th
+
+### `fresh_at_firstOfClass_hash` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_at_firstOfClass_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:61](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L61) — **Freshness (hash case)**: at a class-first slot holding a hash entry, the hash cache misses.
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_at_firstOfClass_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:61](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L61) — **Freshness (hash case)**: at a class-first slot holding a hash entry, the hash cache misses.
+
+### `fresh_at_firstOfClass_perm` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_at_firstOfClass_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:90](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L90) — **Freshness (forward case)**: at a class-first slot holding a forward permutation entry, the pair ca
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_at_firstOfClass_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:90](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L90) — **Freshness (forward case)**: at a class-first slot holding a forward permutation entry, the pair ca
+
+### `fresh_at_firstOfClass_permInv` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_at_firstOfClass_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:132](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L132) — **Freshness (inverse case)**: at a class-first slot holding an inverse permutation entry, the pair c
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_at_firstOfClass_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:132](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L132) — **Freshness (inverse case)**: at a class-first slot holding an inverse permutation entry, the pair c
+
+### `fresh_fwd_inserts` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_fwd_inserts` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1272](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1272) — A fresh forward entry's pair ends up in the final fold cache.
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_fwd_inserts` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1272](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1272) — A fresh forward entry's pair ends up in the final fold cache.
+
+### `fresh_hash_inserts` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_hash_inserts` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1377](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1377) — A fresh hash entry's answer ends up cached in the final fold.
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_hash_inserts` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1377](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1377) — A fresh hash entry's answer ends up cached in the final fold.
+
+### `fresh_inv_inserts` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_inv_inserts` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1287](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1287) — A fresh inverse entry's pair ends up in the final fold cache.
+- `theorem DuplexSpongeFS.EagerLazyDS.fresh_inv_inserts` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1287](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1287) — A fresh inverse entry's pair ends up in the final fold cache.
+
+### `fwdInState` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Paper.fwdInState` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:58](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L58) — Query-state extractor for forward-permutation entries (avoids the dependent-`Sigma` `HEq` when compa
+- `def DuplexSpongeFS.Paper.fwdInState` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:58](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L58) — Query-state extractor for forward-permutation entries (avoids the dependent-`Sigma` `HEq` when compa
+
+### `fwdInStateD` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.fwdInStateD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:272](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L272) — Query-state extractor for forward-permutation entries.
+- `def DuplexSpongeFS.Sponge316.fwdInStateD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:272](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L272) — Query-state extractor for forward-permutation entries.
+
+### `fwdOutState` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Paper.fwdOutState` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:65](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L65) — Answer-state extractor for forward-permutation entries.
+- `def DuplexSpongeFS.Paper.fwdOutState` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:65](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L65) — Answer-state extractor for forward-permutation entries.
+
+### `fwdOutStateD` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.fwdOutStateD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:279](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L279) — Answer-state extractor for forward-permutation entries.
+- `def DuplexSpongeFS.Sponge316.fwdOutStateD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:279](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L279) — Answer-state extractor for forward-permutation entries.
+
+### `fwd_entry_fresh` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.fwd_entry_fresh` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:861](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L861) — **A non-redundant forward entry is fresh.** If `⟨inr (inl a), b⟩` occurs in a consistent log with no
+- `theorem DuplexSpongeFS.EagerLazyDS.fwd_entry_fresh` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:861](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L861) — **A non-redundant forward entry is fresh.** If `⟨inr (inl a), b⟩` occurs in a consistent log with no
+
+### `fwd_fresh_cap_new` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:552](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L552) — A fresh forward step that is not an anchored collision yields an answer capacity that is neither an
+- `theorem DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:552](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L552) — A fresh forward step that is not an anchored collision yields an answer capacity that is neither an
+
+### `fwd_hit_sameClass_mem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.fwd_hit_sameClass_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:773](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L773) — **Piece (A2c)**: in a fold from empty over `L`, a consistent forward entry `⟨inr (inl a), b⟩` whose
+- `theorem DuplexSpongeFS.EagerLazyDS.fwd_hit_sameClass_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:773](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L773) — **Piece (A2c)**: in a fold from empty over `L`, a consistent forward entry `⟨inr (inl a), b⟩` whose
+
+### `game_apply_eq` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge314.K1.game_apply_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean:83](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean#L83) — For every sampled carrier `c`, the logged eager game on `P` is deterministic: it returns the inverse
+- `lemma DuplexSpongeFS.Sponge314.K1.game_apply_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:83](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L83) — For every sampled carrier `c`, the logged eager game on `P` is deterministic: it returns the inverse
+
+### `game_eq` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge314.K1.game_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean:92](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean#L92) — The full game equals sampling a carrier and returning the deterministic logged output.
+- `lemma DuplexSpongeFS.Sponge314.K1.game_eq` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:92](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L92) — The full game equals sampling a carrier and returning the deterministic logged output.
+
+### `getElem_idx_congr` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Paper.getElem_idx_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:49](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L49) — Transport a `List.getElem` along a `Nat` index equality.
+- `lemma DuplexSpongeFS.Paper.getElem_idx_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:49](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L49) — Transport a `List.getElem` along a `Nat` index equality.
+
+### `getElem_idx_congrD` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.getElem_idx_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:286](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L286) — Transport a `List.getElem` along a `Nat` index equality.
+- `lemma DuplexSpongeFS.Sponge316.getElem_idx_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:286](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L286) — Transport a `List.getElem` along a `Nat` index equality.
+
+### `getElem_list_congr` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Paper.getElem_list_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L53) — Transport a `List.getElem` along a list equality.
+- `lemma DuplexSpongeFS.Paper.getElem_list_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L53) — Transport a `List.getElem` along a list equality.
+
+### `getElem_list_congrD` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.getElem_list_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:292](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L292) — Transport a `List.getElem` along a list equality.
+- `lemma DuplexSpongeFS.Sponge316.getElem_list_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:292](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L292) — Transport a `List.getElem` along a list equality.
+
+### `getElem_mem_take` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.getElem_mem_take` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:896](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L896) — An earlier-indexed element lies in the prefix `take p`.
+- `theorem DuplexSpongeFS.EagerLazyDS.getElem_mem_take` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:896](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L896) — An earlier-indexed element lies in the prefix `take p`.
+
+### `get_eraseIdx_after` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.get_eraseIdx_after` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:80](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L80) — (no docstring)
+- `lemma DuplexSpongeFS.Sponge316.get_eraseIdx_after` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:80](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L80) — (no docstring)
+
+### `get_eraseIdx_before` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.get_eraseIdx_before` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:60](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L60) — (no docstring)
+- `lemma DuplexSpongeFS.Sponge316.get_eraseIdx_before` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:60](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L60) — (no docstring)
+
+### `hasCapBeforeInverseAnswerPaper_of_first` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasCapBeforeInverseAnswerPaper_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:136](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L136) — (no docstring)
+- `lemma DuplexSpongeFS.Sponge316.hasCapBeforeInverseAnswerPaper_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:136](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L136) — (no docstring)
+
+### `hasFirstForwardCapacityBeforeForwardOutput_current_not_redundant` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasFirstForwardCapacityBeforeForwardOutput_current_not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:584](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L584) — The strong permutation-ordering predicate carries the nonredundancy proof needed for its later forwa
+- `theorem DuplexSpongeFS.Sponge316.hasFirstForwardCapacityBeforeForwardOutput_current_not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:584](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L584) — The strong permutation-ordering predicate carries the nonredundancy proof needed for its later forwa
+
+### `hasFirstHashForwardCapacityBeforeHash_hash_not_redundant` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasFirstHashForwardCapacityBeforeHash_hash_not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1041](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1041) — The strong forward-before-hash predicate carries exactly the nonredundancy proof needed for its hash
+- `theorem DuplexSpongeFS.Sponge316.hasFirstHashForwardCapacityBeforeHash_hash_not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1041](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1041) — The strong forward-before-hash predicate carries exactly the nonredundancy proof needed for its hash
+
+### `hasFirstHashFwdCapNat_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasFirstHashFwdCapNat_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean:97](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean#L97) — **One-step preservation**: erasing one redundant entry preserves `HasFirstHashFwdCapNat`.
+- `lemma DuplexSpongeFS.Sponge316.hasFirstHashFwdCapNat_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean:97](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean#L97) — **One-step preservation**: erasing one redundant entry preserves `HasFirstHashFwdCapNat`.
+
+### `hasFirstHashFwdCapNat_of_first` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasFirstHashFwdCapNat_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean:68](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean#L68) — The `Fin`-indexed first-occurrence shape implies the ℕ-indexed one.
+- `lemma DuplexSpongeFS.Sponge316.hasFirstHashFwdCapNat_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean:68](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean#L68) — The `Fin`-indexed first-occurrence shape implies the ℕ-indexed one.
+
+### `hasFirstHashFwdCapNat_removeRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasFirstHashFwdCapNat_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean:194](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean#L194) — **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves `HasFirstHashFwdCa
+- `lemma DuplexSpongeFS.Sponge316.hasFirstHashFwdCapNat_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean:194](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean#L194) — **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves `HasFirstHashFwdCa
+
+### `hasFirstPermCapacityBeforeForwardOutputPaper_current_not_redundant` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasFirstPermCapacityBeforeForwardOutputPaper_current_not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:315](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L315) — The paper first-occurrence collision shape carries the nonredundancy proof for its forward anchor.
+- `theorem DuplexSpongeFS.Sponge316.hasFirstPermCapacityBeforeForwardOutputPaper_current_not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:315](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L315) — The paper first-occurrence collision shape carries the nonredundancy proof for its forward anchor.
+
+### `hasForwardCapacityBeforeForwardOutput_of_first` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeForwardOutput_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:555](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L555) — Forgetting the first-occurrence guard leaves the broad forward-before-forward-output shape.
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeForwardOutput_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:555](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L555) — Forgetting the first-occurrence guard leaves the broad forward-before-forward-output shape.
+
+### `hasForwardCapacityBeforeForwardOutput_of_firstForwardNat` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeForwardOutput_of_firstForwardNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:644](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L644) — Convert the private natural-index witness back to the public broad base-trace shape.
+- `lemma DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeForwardOutput_of_firstForwardNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:644](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L644) — Convert the private natural-index witness back to the public broad base-trace shape.
+
+### `hasForwardCapacityBeforeForwardOutput_of_input` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeForwardOutput_of_input` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:163](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L163) — The input-side-only permutation-ordering shape is a special case of the broader preservation-friendl
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeForwardOutput_of_input` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:163](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L163) — The input-side-only permutation-ordering shape is a special case of the broader preservation-friendl
+
+### `hasForwardCapacityBeforeForwardOutput_removeRedundant_of_first` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeForwardOutput_removeRedundant_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:817](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L817) — Public dedup bridge for the M2c permutation-timing path: the strengthened raw first-forward witness
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeForwardOutput_removeRedundant_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:817](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L817) — Public dedup bridge for the M2c permutation-timing path: the strengthened raw first-forward witness
+
+### `hasForwardCapacityBeforeHash_of_first` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeHash_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:192](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L192) — Forgetting the first-occurrence guard leaves the ordinary forward-before-hash capacity shape.
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeHash_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:192](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L192) — Forgetting the first-occurrence guard leaves the ordinary forward-before-hash capacity shape.
+
+### `hasForwardCapacityBeforeHash_of_firstNat` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeHash_of_firstNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:384](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L384) — Convert the private natural-index witness back to the public base-trace collision shape.
+- `lemma DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeHash_of_firstNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:384](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L384) — Convert the private natural-index witness back to the public base-trace collision shape.
+
+### `hasForwardCapacityBeforeHash_of_nat` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeHash_of_nat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean:85](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean#L85) — The ℕ-indexed shape implies the plain (`Fin`-indexed, no firstness) collision shape.
+- `lemma DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeHash_of_nat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean:85](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean#L85) — The ℕ-indexed shape implies the plain (`Fin`-indexed, no firstness) collision shape.
+
+### `hasForwardCapacityBeforeHash_removeRedundant_of_first` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeHash_removeRedundant_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:529](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L529) — Public dedup bridge for the M2c hash-timing path: the strengthened raw first-hash witness survives `
+- `theorem DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeHash_removeRedundant_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:529](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L529) — Public dedup bridge for the M2c hash-timing path: the strengthened raw first-hash witness survives `
+
+### `hasFwdKey` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.hasFwdKey` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:340](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L340) — Whether a permutation cache already holds the forward key `a`.
+- `def DuplexSpongeFS.EagerLazyDS.hasFwdKey` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:340](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L340) — Whether a permutation cache already holds the forward key `a`.
+
+### `hasFwdKey_foldl_imp` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.hasFwdKey_foldl_imp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:436](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L436) — A forward key present after the whole fold was either present at the start or inserted by some entry
+- `theorem DuplexSpongeFS.EagerLazyDS.hasFwdKey_foldl_imp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:436](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L436) — A forward key present after the whole fold was either present at the start or inserted by some entry
+
+### `hasFwdKey_stepCache_imp` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.hasFwdKey_stepCache_imp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:400](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L400) — One fold step can only create the forward key it inserts: if a key is present after the step but not
+- `theorem DuplexSpongeFS.EagerLazyDS.hasFwdKey_stepCache_imp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:400](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L400) — One fold step can only create the forward key it inserts: if a key is present after the step but not
+
+### `hasHashEntry_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasHashEntry_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:265](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L265) — **One-step preservation**: erasing a redundant entry preserves a concrete hash entry.
+- `lemma DuplexSpongeFS.Sponge316.hasHashEntry_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:265](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L265) — **One-step preservation**: erasing a redundant entry preserves a concrete hash entry.
+
+### `hasHashEntry_eraseIdxPaper` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasHashEntry_eraseIdxPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:162](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L162) — (no docstring)
+- `lemma DuplexSpongeFS.Sponge316.hasHashEntry_eraseIdxPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:162](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L162) — (no docstring)
+
+### `hasHashEntry_removeRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:306](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L306) — **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+- `lemma DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:306](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L306) — **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+
+### `hasHashEntry_removeRedundantPaper` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:203](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L203) — **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+- `lemma DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:203](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L203) — **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+
+### `hasHashEntry_removeRedundantPaper_of_mem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:227](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L227) — Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
+- `theorem DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:227](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L227) — Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
+
+### `hasHashEntry_removeRedundant_of_mem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:330](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L330) — Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
+- `theorem DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:330](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L330) — Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
+
+### `hasHashPermCapBeforeHashPaper_of_nat` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasHashPermCapBeforeHashPaper_of_nat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:728](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L728) — (no docstring)
+- `lemma DuplexSpongeFS.Sponge316.hasHashPermCapBeforeHashPaper_of_nat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:728](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L728) — (no docstring)
+
+### `hasInvEntry_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasInvEntry_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:845](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L845) — **One-step preservation**: erasing a redundant entry preserves `HasInvEntry`.
+- `lemma DuplexSpongeFS.Sponge316.hasInvEntry_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:845](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L845) — **One-step preservation**: erasing a redundant entry preserves `HasInvEntry`.
+
+### `hasInvEntry_implies_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasInvEntry_implies_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:929](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L929) — **Keystone**: an inverse-permutation entry anywhere in the *raw* trace fires the combined bad event
+- `theorem DuplexSpongeFS.Sponge316.hasInvEntry_implies_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:929](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L929) — **Keystone**: an inverse-permutation entry anywhere in the *raw* trace fires the combined bad event
+
+### `hasInvEntry_removeRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasInvEntry_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:889](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L889) — **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves `HasInvEntry` (str
+- `lemma DuplexSpongeFS.Sponge316.hasInvEntry_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:889](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L889) — **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves `HasInvEntry` (str
+
+### `hasInvKey` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.hasInvKey` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:344](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L344) — Whether a permutation cache already holds the inverse key `b`.
+- `def DuplexSpongeFS.EagerLazyDS.hasInvKey` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:344](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L344) — Whether a permutation cache already holds the inverse key `b`.
+
+### `hasInvKey_foldl_imp` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.hasInvKey_foldl_imp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:451](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L451) — An inverse key present after the whole fold was present at the start or inserted by some entry of th
+- `theorem DuplexSpongeFS.EagerLazyDS.hasInvKey_foldl_imp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:451](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L451) — An inverse key present after the whole fold was present at the start or inserted by some entry of th
+
+### `hasInvKey_stepCache_imp` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.hasInvKey_stepCache_imp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:363](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L363) — One fold step can only create the inverse key it inserts (sound direction only).
+- `theorem DuplexSpongeFS.EagerLazyDS.hasInvKey_stepCache_imp` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:363](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L363) — One fold step can only create the inverse key it inserts (sound direction only).
+
+### `hasPermCapacityBeforeForwardOutputPaper_of_first` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:287](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L287) — Forgetting the first-occurrence guard leaves the broad paper shape.
+- `theorem DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:287](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L287) — Forgetting the first-occurrence guard leaves the broad paper shape.
+
+### `hasPermCapacityBeforeForwardOutputPaper_of_firstPermNat` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_of_firstPermNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:384](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L384) — Convert the natural-index witness back to the broad paper shape.
+- `lemma DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_of_firstPermNat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:384](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L384) — Convert the natural-index witness back to the broad paper shape.
+
+### `hasPermCapacityBeforeForwardOutputPaper_removeRedundant_of_first` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_removeRedundant_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:608](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L608) — **Public dedup bridge (paper semantics)**: a raw first-occurrence perm-capacity collision survives `
+- `theorem DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_removeRedundant_of_first` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:608](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L608) — **Public dedup bridge (paper semantics)**: a raw first-occurrence perm-capacity collision survives `
+
+### `hasPriorReversedForwardAnchor_iff_hasRedundantForwardAnchor_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasPriorReversedForwardAnchor_iff_hasRedundantForwardAnchor_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1522](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1522) — Off `E`, the prior-reversed-forward obstruction is exactly the statement that some nonterminal `J_BT
+- `theorem DuplexSpongeFS.Sponge316.hasPriorReversedForwardAnchor_iff_hasRedundantForwardAnchor_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1522](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1522) — Off `E`, the prior-reversed-forward obstruction is exactly the statement that some nonterminal `J_BT
+
+### `hasRedundantForwardAnchor_of_prior_reverse` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hasRedundantForwardAnchor_of_prior_reverse` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1468](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1468) — A prior same-direction reversed-forward entry makes the corresponding `J_BT` forward anchor redundan
+- `theorem DuplexSpongeFS.Sponge316.hasRedundantForwardAnchor_of_prior_reverse` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1468](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1468) — A prior same-direction reversed-forward entry makes the corresponding `J_BT` forward anchor redundan
+
+### `hashEntry` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.hashEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:338](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L338) — Private shorthand for a concrete hash query-answer entry.
+- `def DuplexSpongeFS.Sponge316.hashEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:338](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L338) — Private shorthand for a concrete hash query-answer entry.
+
+### `hashEntryC` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.hashEntryC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:54](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L54) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.hashEntryC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:54](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L54) — (no docstring)
+
+### `hashEntryD` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.hashEntryD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:50](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L50) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.hashEntryD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:50](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L50) — (no docstring)
+
+### `hashEntryP` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.hashEntryP` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:241](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L241) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.hashEntryP` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:241](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L241) — (no docstring)
+
+### `hashKey_isSome_foldl_mono` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.hashKey_isSome_foldl_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:333](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L333) — A cached hash key stays cached through any fold suffix (`isSome` form).
+- `theorem DuplexSpongeFS.EagerLazyDS.hashKey_isSome_foldl_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:333](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L333) — A cached hash key stays cached through any fold suffix (`isSome` form).
+
+### `hashRecord_cached_after_consistent` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.hashRecord_cached_after_consistent` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:283](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L283) — After a consistent hash step, the exact logged hash answer is cached.
+- `theorem DuplexSpongeFS.EagerLazyDS.hashRecord_cached_after_consistent` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:283](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L283) — After a consistent hash step, the exact logged hash answer is cached.
+
+### `hashRecord_take_of_le` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.hashRecord_take_of_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:162](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L162) — A hash record at the `(j'+1)`-prefix fold persists (with its value) to any larger prefix.
+- `theorem DuplexSpongeFS.EagerLazyDS.hashRecord_take_of_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:162](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L162) — A hash record at the `(j'+1)`-prefix fold persists (with its value) to any larger prefix.
+
+### `hash_anchor_unique` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.hash_anchor_unique` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:156](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L156) — **U2 (anchor uniqueness, paper event)**: off `EPaper`, two hash anchors with equal answer capacities
+- `theorem DuplexSpongeFS.Paper.hash_anchor_unique` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:156](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L156) — **U2 (anchor uniqueness, paper event)**: off `EPaper`, two hash anchors with equal answer capacities
+
+### `hash_anchor_unique_paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hash_anchor_unique_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:473](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L473) — Off `BadEventDSPaper.E`, two hash anchors with equal answer capacities carry the same statement.
+- `theorem DuplexSpongeFS.Sponge316.hash_anchor_unique_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:473](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L473) — Off `BadEventDSPaper.E`, two hash anchors with equal answer capacities carry the same statement.
+
+### `hash_entry_fresh` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.hash_entry_fresh` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1221](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1221) — **A non-redundant hash entry is fresh.** A consistent hash hit forces the cached answer to equal the
+- `theorem DuplexSpongeFS.EagerLazyDS.hash_entry_fresh` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1221](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1221) — **A non-redundant hash entry is fresh.** A consistent hash hit forces the cached answer to equal the
+
+### `hash_fresh_ans_new` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.hash_fresh_ans_new` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:574](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L574) — A fresh hash step that is not an anchored collision yields an answer that is not an existing slot.
+- `theorem DuplexSpongeFS.EagerLazyDS.hash_fresh_ans_new` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:574](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L574) — A fresh hash step that is not an anchored collision yields an answer that is not an existing slot.
+
+### `hash_step_separation` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.hash_step_separation` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:122](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L122) — **U3 (anchor separation, paper event)**: off `EPaper`, no chain-step output capacity equals a hash-a
+- `theorem DuplexSpongeFS.Paper.hash_step_separation` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:122](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L122) — **U3 (anchor separation, paper event)**: off `EPaper`, no chain-step output capacity equals a hash-a
+
+### `hash_step_separation_paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.hash_step_separation_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:388](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L388) — Off `BadEventDSPaper.E`, a hash anchor capacity cannot occur as the answer capacity of a family chai
+- `theorem DuplexSpongeFS.Sponge316.hash_step_separation_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:388](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L388) — Off `BadEventDSPaper.E`, a hash anchor capacity cannot occur as the answer capacity of a family chai
 
 ### `hbig_radical_of_coeff_budget` (2 declarations, 2 files)
 
@@ -4125,20 +5306,345 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma CheckClaim.head_some` [ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean:76](../../../ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean#L76) — A simulated `some`-wrapped computation only outputs `some`.
 - `lemma CheckClaim.head_some` [ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean:84](../../../ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean#L84) — A simulated `some`-wrapped computation only outputs `some`.
 
+### `honestBad_birthday_unconditional` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.BirthdayBoundPaper.honestBad_birthday_unconditional` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean:52](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean#L52) — **The §5.6 → §5.8 channel, unconditional**: the honest bad events of the eager `D_𝔖`-carrier game ob
+- `theorem DuplexSpongeFS.BirthdayBoundPaper.honestBad_birthday_unconditional` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Reduction.lean:52](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Reduction.lean#L52) — **The §5.6 → §5.8 channel, unconditional**: the honest bad events of the eager `D_𝔖`-carrier game ob
+
+### `honestBad_claim5_21Bound_unconditional` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.BirthdayBoundPaper.honestBad_claim5_21Bound_unconditional` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean:68](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean#L68) — **Claim 5.21, unconditional**: at the CO25 trace length `T = tₕ + 1 + tₚ + L + tₚᵢ`, the honest bad
+- `theorem DuplexSpongeFS.BirthdayBoundPaper.honestBad_claim5_21Bound_unconditional` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Reduction.lean:68](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Reduction.lean#L68) — **Claim 5.21, unconditional**: at the CO25 trace length `T = tₕ + 1 + tₚ + L + tₚᵢ`, the honest bad
+
 ### `hx_of_global_structural_radical` (2 declarations, 2 files)
 
 - `theorem ArkLib.RadicalWire304.hx_of_global_structural_radical` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:423](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L423) — **Per-place `ξ`-nonvanishing at the radical decoded roots, GLOBALLY discharged** — mirror of `RootOn
 - `theorem ArkLib.RadicalWire304.hx_of_global_structural_radical` [ArkLib/ToMathlib/RadicalAssembler.lean:442](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L442) — **Per-place `ξ`-nonvanishing at the radical decoded roots, GLOBALLY discharged** — mirror of `RootOn
 
+### `index_entry_forward_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.index_entry_forward_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:291](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L291) — **The cascade (the mathematical core of CO25 Lemmas 5.12/5.16)**: off the combined paper bad event,
+- `theorem DuplexSpongeFS.Sponge316.index_entry_forward_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:291](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L291) — **The cascade (the mathematical core of CO25 Lemmas 5.12/5.16)**: off the combined paper bad event,
+
+### `index_step1` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.index_step1` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:130](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L130) — The chain index of step 1 (pair `(sA, sB)`) is the raw slot `3`.
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.index_step1` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:130](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L130) — The chain index of step 1 (pair `(sA, sB)`) is the raw slot `3`.
+
+### `index_step2` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.index_step2` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:150](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L150) — The chain index of step 2 (pair `(sa, sb)`) is the raw slot `1`.
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.index_step2` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:150](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L150) — The chain index of step 2 (pair `(sa, sb)`) is the raw slot `1`.
+
+### `inv_entry_fresh` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.inv_entry_fresh` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:874](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L874) — **A non-redundant inverse entry is fresh.**
+- `theorem DuplexSpongeFS.EagerLazyDS.inv_entry_fresh` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:874](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L874) — **A non-redundant inverse entry is fresh.**
+
+### `inv_fresh_cap_new` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:563](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L563) — A fresh inverse step that is not an anchored collision yields an answer capacity that is neither an
+- `theorem DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:563](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L563) — A fresh inverse step that is not an anchored collision yields an answer capacity that is neither an
+
+### `inv_hit_sameClass_mem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.inv_hit_sameClass_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:800](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L800) — **Piece (A2c), inverse arm**: in a fold from empty over `L`, a consistent inverse entry `⟨inr (inr b
+- `theorem DuplexSpongeFS.EagerLazyDS.inv_hit_sameClass_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:800](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L800) — **Piece (A2c), inverse arm**: in a fold from empty over `L`, a consistent inverse entry `⟨inr (inr b
+
+### `inverseEntryC` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.inverseEntryC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:62](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L62) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.inverseEntryC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:62](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L62) — (no docstring)
+
+### `inverseEntryD` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.inverseEntryD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:58](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L58) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.inverseEntryD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:58](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L58) — (no docstring)
+
+### `inverseEntryP` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.inverseEntryP` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:249](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L249) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.inverseEntryP` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:249](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L249) — (no docstring)
+
+### `isTotalQueryBound_P` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge314.K1.isTotalQueryBound_P` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean:77](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean#L77) — `P` makes exactly one query.
+- `lemma DuplexSpongeFS.Sponge314.K1.isTotalQueryBound_P` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:77](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L77) — `P` makes exactly one query.
+
+### `jbt_hash_firstOfClassAt''` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.jbt_hash_firstOfClassAt''` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:158](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L158) — **Bridge**: the `J_BT` hash slot is first-of-mirror-class (hash entries are self-mirrors).
+- `theorem DuplexSpongeFS.Paper.jbt_hash_firstOfClassAt''` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:158](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L158) — **Bridge**: the `J_BT` hash slot is first-of-mirror-class (hash entries are self-mirrors).
+
+### `jbt_hash_getElem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.jbt_hash_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:977](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L977) — `J_BT` hash-index payloads point to the recorded hash query for their sequence.
+- `theorem DuplexSpongeFS.Sponge316.jbt_hash_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:977](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L977) — `J_BT` hash-index payloads point to the recorded hash query for their sequence.
+
+### `jbt_hash_getElem''` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.jbt_hash_getElem''` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:140](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L140) — The `J_BT` hash slot carries the hash anchor (Fin-getElem normal form).
+- `theorem DuplexSpongeFS.Paper.jbt_hash_getElem''` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:140](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L140) — The `J_BT` hash slot carries the hash anchor (Fin-getElem normal form).
+
+### `jbt_hash_no_prior` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.jbt_hash_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:999](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L999) — A `J_BT` hash-index payload is the first occurrence of its hash anchor: no strictly earlier raw trac
+- `theorem DuplexSpongeFS.Sponge316.jbt_hash_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:999](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L999) — A `J_BT` hash-index payload is the first occurrence of its hash anchor: no strictly earlier raw trac
+
+### `jbt_hash_not_redundant` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.jbt_hash_not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1056](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1056) — The hash index carried by any `J_BT` payload is not itself removed by one step of the duplex-sponge
+- `theorem DuplexSpongeFS.Sponge316.jbt_hash_not_redundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1056](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1056) — The hash index carried by any `J_BT` payload is not itself removed by one step of the duplex-sponge
+
+### `jbt_perm_forward_getElem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1151](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1151) — Off `E`, a nonterminal `J_BT` permutation-index payload points to the forward permutation query for
+- `theorem DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1151](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1151) — Off `E`, a nonterminal `J_BT` permutation-index payload points to the forward permutation query for
+
+### `jbt_perm_getElem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.jbt_perm_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:61](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L61) — Unconditional either-direction payload of a nonterminal `J_BT` permutation index (local copy of the
+- `theorem DuplexSpongeFS.Paper.jbt_perm_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:61](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L61) — Unconditional either-direction payload of a nonterminal `J_BT` permutation index (local copy of the
+
+### `jbt_perm_no_prior_of_lt` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.jbt_perm_no_prior_of_lt` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1174](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1174) — A nonterminal `J_BT` permutation-index payload is the first occurrence of either recorded permutatio
+- `theorem DuplexSpongeFS.Sponge316.jbt_perm_no_prior_of_lt` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1174](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1174) — A nonterminal `J_BT` permutation-index payload is the first occurrence of either recorded permutatio
+
+### `jbt_perm_slot_cases'` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.jbt_perm_slot_cases'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:99](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L99) — The raw-trace entry at a nonterminal `J_BT` permutation index is the forward or the inverse form of
+- `theorem DuplexSpongeFS.Paper.jbt_perm_slot_cases'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:99](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L99) — The raw-trace entry at a nonterminal `J_BT` permutation index is the forward or the inverse form of
+
+### `jbt_perm_slot_firstOfClassAt'` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.jbt_perm_slot_firstOfClassAt'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:122](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L122) — **Bridge**: a nonterminal `J_BT` permutation slot is first-of-mirror-class (`M2Engine.FirstOfClassAt
+- `theorem DuplexSpongeFS.Paper.jbt_perm_slot_firstOfClassAt'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:122](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L122) — **Bridge**: a nonterminal `J_BT` permutation slot is first-of-mirror-class (`M2Engine.FirstOfClassAt
+
+### `jbt_perm_slot_lt'` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.jbt_perm_slot_lt'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:85](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L85) — A nonterminal `J_BT` permutation index is a genuine raw-trace index.
+- `theorem DuplexSpongeFS.Paper.jbt_perm_slot_lt'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:85](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L85) — A nonterminal `J_BT` permutation index is a genuine raw-trace index.
+
+### `jbt_time_h_first_perm_forward_getElem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.jbt_time_h_first_perm_forward_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1237](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1237) — Off `E`, the first chain index in a hash-after-first-permutation `J_BT` payload is the forward permu
+- `theorem DuplexSpongeFS.Sponge316.jbt_time_h_first_perm_forward_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1237](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1237) — Off `E`, the first chain index in a hash-after-first-permutation `J_BT` payload is the forward permu
+
+### `jbt_time_h_outputState_nonempty` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1202](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1202) — A `J_BT` payload witnessing the hash-after-first-permutation timing condition cannot be the empty ch
+- `theorem DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1202](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1202) — A `J_BT` payload witnessing the hash-after-first-permutation timing condition cannot be the empty ch
+
+### `jbt_time_p_next_outputState_bound` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.jbt_time_p_next_outputState_bound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1264](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1264) — In an `E_time_p_honest` witness, the successor pair index cannot be the terminal sentinel: otherwise
+- `theorem DuplexSpongeFS.Sponge316.jbt_time_p_next_outputState_bound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1264](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1264) — In an `E_time_p_honest` witness, the successor pair index cannot be the terminal sentinel: otherwise
+
 ### `johnsonDenom` (2 declarations, 2 files)
 
 - `def ArkLib.JohnsonBound.johnsonDenom` [ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean:159](../../../ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean#L159) — The **Johnson denominator** `(n - e)² - n·(n - d)`. The Johnson regime is where it is positive.
-- `def ArkLib.JohnsonBound.johnsonDenom` [ArkLib/Data/CodingTheory/ProximityGap/Issue244Refutation.lean:11](../../../ArkLib/Data/CodingTheory/ProximityGap/Issue244Refutation.lean#L11) — (no docstring)
+- `def ArkLib.JohnsonBound.johnsonDenom` [ArkLib/Data/CodingTheory/ProximityGap/JohnsonCommonCenterRefutation.lean:11](../../../ArkLib/Data/CodingTheory/ProximityGap/JohnsonCommonCenterRefutation.lean#L11) — (no docstring)
+
+### `key_cached_after_step_hash` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.key_cached_after_step_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:213](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L213) — After folding any entry, that entry's key is cached (fresh ⟹ created; hit ⟹ was there). The work-ord
+- `theorem DuplexSpongeFS.EagerLazyDS.key_cached_after_step_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:213](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L213) — After folding any entry, that entry's key is cached (fresh ⟹ created; hit ⟹ was there). The work-ord
+
+### `key_cached_after_step_perm` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.key_cached_after_step_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:221](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L221) — After folding a forward entry, its forward key is cached.
+- `theorem DuplexSpongeFS.EagerLazyDS.key_cached_after_step_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:221](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L221) — After folding a forward entry, its forward key is cached.
+
+### `key_cached_after_step_permInv` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.key_cached_after_step_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:232](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L232) — After folding an inverse entry, its value key is cached.
+- `theorem DuplexSpongeFS.EagerLazyDS.key_cached_after_step_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:232](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L232) — After folding an inverse entry, its value key is cached.
+
+### `lazyDSImplFlagged` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:68](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L68) — The ghost-flagged lazy combined oracle: run `lazyDSImpl` verbatim and accumulate, as a `Prop` state
+- `def DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:68](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L68) — The ghost-flagged lazy combined oracle: run `lazyDSImpl` verbatim and accumulate, as a `Prop` state
+
+### `lazyDSImplFlagged_flag_monotone` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_flag_monotone` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:125](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L125) — The flag is sticky: once set, every reachable successor state keeps it.
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_flag_monotone` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:125](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L125) — The flag is sticky: once set, every reachable successor state keeps it.
+
+### `lazyDSImplFlagged_run` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_run` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:77](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L77) — Single-step exposure of the flagged oracle (public; the defeq `show` does not transport across files
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_run` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:77](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L77) — Single-step exposure of the flagged oracle (public; the defeq `show` does not transport across files
+
+### `lazyDSImplFlagged_step_bad` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_bad` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:300](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L300) — **The engine's `hstep_bad`**: from an unflagged state with cache size `m`, one step flags with proba
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_bad` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:300](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L300) — **The engine's `hstep_bad`**: from an unflagged state with cache size `m`, one step flags with proba
+
+### `lazyDSImplFlagged_step_size` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_size` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:114](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L114) — The engine's `hstep_size` for the flagged carrier: the cache component grows by at most one per step
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_size` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:114](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L114) — The engine's `hstep_size` for the flagged carrier: the cache component grows by at most one per step
+
+### `lazyDSImplFlagged_step_support` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_support` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:84](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L84) — **The per-step support facts**: each reachable one-step outcome of the flagged oracle has the folded
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_support` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:84](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L84) — **The per-step support facts**: each reachable one-step outcome of the flagged oracle has the folded
+
+### `lazyDSImpl_run_map_flagged` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImpl_run_map_flagged` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:85](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L85) — **The forgetting bridge**: the plain lazy run is the state projection of the flagged run — the ghost
+- `theorem DuplexSpongeFS.EagerLazyDS.lazyDSImpl_run_map_flagged` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:85](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L85) — **The forgetting bridge**: the plain lazy run is the state projection of the flagged run — the ghost
+
+### `le_length_unusedKeysList` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.le_length_unusedKeysList` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:202](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L202) — The unused-keys pool keeps at least `\|X\| - \|cache\|` elements.
+- `lemma DuplexSpongeFS.EagerLazyDS.le_length_unusedKeysList` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:202](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L202) — The unused-keys pool keeps at least `\|X\| - \|cache\|` elements.
+
+### `le_length_unusedValuesList` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.le_length_unusedValuesList` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:184](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L184) — The unused-values pool keeps at least `\|X\| - \|cache\|` elements.
+- `lemma DuplexSpongeFS.EagerLazyDS.le_length_unusedValuesList` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:184](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L184) — The unused-values pool keeps at least `\|X\| - \|cache\|` elements.
+
+### `lemma512Paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.lemma512Paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean:137](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaper.lean#L137) — **CO25 Lemma 5.12 (paper event)**: off the paper-faithful bad event `EPaper`, no BackTrack chain ste
+- `theorem DuplexSpongeFS.Paper.lemma512Paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean:137](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Paper.lean#L137) — **CO25 Lemma 5.12 (paper event)**: off the paper-faithful bad event `EPaper`, no BackTrack chain ste
+
+### `lemma514Paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.lemma514Paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:275](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L275) — **CO25 Lemma 5.14 over the paper event** (M2b, Def-5.5/Eq-26-faithful): off `EPaper` the backtrack f
+- `theorem DuplexSpongeFS.Paper.lemma514Paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:275](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L275) — **CO25 Lemma 5.14 over the paper event** (M2b, Def-5.5/Eq-26-faithful): off `EPaper` the backtrack f
+
+### `lemma516HashPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.lemma516HashPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:260](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L260) — **Lemma 5.16, hash half (paper event)**: off `EPaper`, the anchoring hash query does not appear afte
+- `theorem DuplexSpongeFS.Paper.lemma516HashPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:260](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L260) — **Lemma 5.16, hash half (paper event)**: off `EPaper`, the anchoring hash query does not appear afte
+
+### `lemma516Paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.lemma516Paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:351](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L351) — **CO25 Lemma 5.16 over the paper bad event**: off `EPaper`, all BackTrack chain queries appear in tr
+- `theorem DuplexSpongeFS.Paper.lemma516Paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:351](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L351) — **CO25 Lemma 5.16 over the paper bad event**: off `EPaper`, all BackTrack chain queries appear in tr
+
+### `lemma516TimePPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.lemma516TimePPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean:295](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashPaper.lean#L295) — **Lemma 5.16, permutation half (paper event)**: off `EPaper`, no chain permutation query appears in
+- `theorem DuplexSpongeFS.Paper.lemma516TimePPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean:295](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516Paper.lean#L295) — **Lemma 5.16, permutation half (paper event)**: off `EPaper`, no chain permutation query appears in
+
+### `lemma58StepBound` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.lemma58StepBound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:243](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L243) — The per-step bad probability: `(2m+1)·\|U\|^R / (\|U\|^N − m)` from cache size `m` — the union bound ove
+- `def DuplexSpongeFS.EagerLazyDS.lemma58StepBound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:243](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L243) — The per-step bad probability: `(2m+1)·\|U\|^R / (\|U\|^N − m)` from cache size `m` — the union bound ove
+
+### `lemma58StepBound_monotone` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.lemma58StepBound_monotone` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:248](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L248) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.lemma58StepBound_monotone` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:248](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L248) — (no docstring)
+
+### `lemma58_num_ne_zero` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.lemma58_num_ne_zero` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:257](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L257) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.lemma58_num_ne_zero` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:257](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L257) — (no docstring)
+
+### `lemma5_12HonestResidualPaper_holds` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_12HonestResidualPaper_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:441](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L441) — The residual `Lemma5_12HonestResidualPaper`, discharged.
+- `theorem DuplexSpongeFS.Sponge316.lemma5_12HonestResidualPaper_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:441](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L441) — The residual `Lemma5_12HonestResidualPaper`, discharged.
+
+### `lemma5_12_honest` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_12_honest` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1870](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1870) — **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual` holds: off the com
+- `theorem DuplexSpongeFS.Sponge316.lemma5_12_honest` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1870](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1870) — **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual` holds: off the com
+
+### `lemma5_12_paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_12_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:425](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L425) — **CO25 Lemma 5.12, paper semantics — DISCHARGED**: off the paper combined bad event, no BackTrack ch
+- `theorem DuplexSpongeFS.Sponge316.lemma5_12_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:425](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L425) — **CO25 Lemma 5.12, paper semantics — DISCHARGED**: off the paper combined bad event, no BackTrack ch
+
+### `lemma5_14HonestResidualPaper_holds` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_14HonestResidualPaper_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:705](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L705) — The residual `Lemma5_14HonestResidualPaper`, discharged.
+- `theorem DuplexSpongeFS.Sponge316.lemma5_14HonestResidualPaper_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:705](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L705) — The residual `Lemma5_14HonestResidualPaper`, discharged.
+
+### `lemma5_14HonestResidual_false` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.ForkCounter.lemma5_14HonestResidual_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:594](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L594) — **The in-tree `Lemma5_14HonestResidual` is FALSE** (at `StmtIn := Unit`, `U := UInt8`, sponge width
+- `theorem DuplexSpongeFS.Sponge316.ForkCounter.lemma5_14HonestResidual_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:594](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L594) — **The in-tree `Lemma5_14HonestResidual` is FALSE** (at `StmtIn := Unit`, `U := UInt8`, sponge width
+
+### `lemma5_14_paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_14_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:629](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L629) — **CO25 Lemma 5.14, paper semantics — DISCHARGED**: off `BadEventDSPaper.E`, the backtrack family has
+- `theorem DuplexSpongeFS.Sponge316.lemma5_14_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:629](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L629) — **CO25 Lemma 5.14, paper semantics — DISCHARGED**: off `BadEventDSPaper.E`, the backtrack family has
+
+### `lemma5_16HonestResidualPaper_holds` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16HonestResidualPaper_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:508](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L508) — The residual `Lemma5_16HonestResidualPaper`, discharged.
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16HonestResidualPaper_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:508](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L508) — The residual `Lemma5_16HonestResidualPaper`, discharged.
+
+### `lemma5_16HonestResidual_false` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:502](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L502) — **The in-tree `Lemma5_16HonestResidual` is FALSE** (at `StmtIn := Unit`, `U := UInt8`, sponge width
+- `theorem DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:502](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L502) — **The in-tree `Lemma5_16HonestResidual` is FALSE** (at `StmtIn := Unit`, `U := UInt8`, sponge width
+
+### `lemma5_16_honest_hash_half` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_honest_hash_half` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean:234](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HashHalf.lean#L234) — **M2c, hash half** — CO25 Lemma 5.16, `E_{time,h}` side: off the combined bad event `E`, no backtrac
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_honest_hash_half` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean:234](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516HashHalf.lean#L234) — **M2c, hash half** — CO25 Lemma 5.16, `E_{time,h}` side: off the combined bad event `E`, no backtrac
+
+### `lemma5_16_honest_of_noRedundantEntryDS` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_honest_of_noRedundantEntryDS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1858](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1858) — Conditional full M2c assembly for traces that are already deduplicated. This is the direct target if
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_honest_of_noRedundantEntryDS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1858](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1858) — Conditional full M2c assembly for traces that are already deduplicated. This is the direct target if
+
+### `lemma5_16_honest_of_no_prior_reverse` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_prior_reverse` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1826](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1826) — Conditional full M2c assembly: a global exclusion of the prior reversed-forward obstruction is enoug
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_prior_reverse` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1826](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1826) — Conditional full M2c assembly: a global exclusion of the prior reversed-forward obstruction is enoug
+
+### `lemma5_16_honest_of_no_redundant_forward_anchor` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_redundant_forward_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1842](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1842) — Conditional full M2c assembly, phrased at the stronger dedup-invariant boundary: excluding redundant
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_redundant_forward_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1842](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1842) — Conditional full M2c assembly, phrased at the stronger dedup-invariant boundary: excluding redundant
+
+### `lemma5_16_paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:497](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L497) — **CO25 Lemma 5.16, paper semantics — DISCHARGED** (both halves): off the paper combined bad event, a
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:497](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L497) — **CO25 Lemma 5.16, paper semantics — DISCHARGED** (both halves): off the paper combined bad event, a
+
+### `lemma5_16_paper_hash_half` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_paper_hash_half` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:1011](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L1011) — **CO25 Lemma 5.16, hash half, paper semantics — DISCHARGED**: off the paper combined bad event, no b
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_paper_hash_half` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:1011](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L1011) — **CO25 Lemma 5.16, hash half, paper semantics — DISCHARGED**: off the paper combined bad event, no b
+
+### `lemma5_16_paper_time_p_half` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_paper_time_p_half` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:452](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L452) — **CO25 Lemma 5.16, permutation half, paper semantics — DISCHARGED**: off the paper combined bad even
+- `theorem DuplexSpongeFS.Sponge316.lemma5_16_paper_time_p_half` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:452](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L452) — **CO25 Lemma 5.16, permutation half, paper semantics — DISCHARGED**: off the paper combined bad even
+
+### `lemma5_8Bound_one_lt_one` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge314.K1.lemma5_8Bound_one_lt_one` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean:128](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean#L128) — The claimed CO25 Lemma 5.8 bound at `T = 1` is `4/(2·256) < 1`.
+- `lemma DuplexSpongeFS.Sponge314.K1.lemma5_8Bound_one_lt_one` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:128](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L128) — The claimed CO25 Lemma 5.8 bound at `T = 1` is `4/(2·256) < 1`.
+
+### `lemma5_8EagerBirthdayResidual_false` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge314.K1.lemma5_8EagerBirthdayResidual_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean:147](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean#L147) — **#314 K1 — the eager birthday residual is FALSE as stated** (at `StmtIn := Unit`, `U := UInt8`, spo
+- `theorem DuplexSpongeFS.Sponge314.K1.lemma5_8EagerBirthdayResidual_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:147](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L147) — **#314 K1 — the eager birthday residual is FALSE as stated** (at `StmtIn := Unit`, `U := UInt8`, spo
 
 ### `lemma5_8EagerPaperResidual_holds` (2 declarations, 2 files)
 
-- `theorem DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean:177](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean#L177) — **The CO25 Lemma 5.8 eager-paper residual is now a theorem** (no hypothesis): the lazy `EPaper` boun
 - `theorem DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean:46](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean#L46) — **The repaired Lemma 5.8 eager residual holds**: the lazy-side bound `probEvent_EPaper_toReal_le_lem
+- `theorem DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Reduction.lean:46](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Reduction.lean#L46) — **The repaired Lemma 5.8 eager residual holds**: the lazy-side bound `probEvent_EPaper_toReal_le_lem
+
+### `length_not_lt` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.length_not_lt` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:244](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L244) — Asymmetric length kill: a strictly shorter family sequence would put its hash-anchor capacity on a c
+- `theorem DuplexSpongeFS.Paper.length_not_lt` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:244](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L244) — Asymmetric length kill: a strictly shorter family sequence would put its hash-anchor capacity on a c
+
+### `length_not_lt_paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.length_not_lt_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:599](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L599) — Asymmetric length kill: a strictly shorter family sequence would put its hash-anchor capacity on a c
+- `theorem DuplexSpongeFS.Sponge316.length_not_lt_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:599](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L599) — Asymmetric length kill: a strictly shorter family sequence would put its hash-anchor capacity on a c
 
 ### `listPoly` (2 declarations, 2 files)
 
@@ -4160,15 +5666,55 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Whir302SZ.listPoly_natDegree_lt` [ArkLib/ProofSystem/Whir/SchwartzZippelCore.lean:40](../../../ArkLib/ProofSystem/Whir/SchwartzZippelCore.lean#L40) — (no docstring)
 - `theorem Whir302SZ.listPoly_natDegree_lt` [ArkLib/ProofSystem/Whir/SubUnitRbr.lean:113](../../../ArkLib/ProofSystem/Whir/SubUnitRbr.lean#L113) — (no docstring)
 
+### `list_split_at` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.list_split_at` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:889](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L889) — A list splits at any in-range position into prefix, element, suffix.
+- `theorem DuplexSpongeFS.EagerLazyDS.list_split_at` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:889](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L889) — A list splits at any in-range position into prefix, element, suffix.
+
 ### `mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec` (2 declarations, 2 files)
 
-- `theorem ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec` [ArkLib/Data/CodingTheory/ProximityGap/LineDecodingGrandChallengesPrizeSpec.lean:1487](../../../ArkLib/Data/CodingTheory/ProximityGap/LineDecodingGrandChallengesPrizeSpec.lean#L1487) — Add the immediate lower and adjacent upper lattice brackets to a concrete adjacent `mcaPrizeLatticeR
-- `theorem ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSLatticePrizeSpec.lean:882](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSLatticePrizeSpec.lean#L882) — Add the immediate lower and adjacent upper lattice brackets to a concrete adjacent `mcaPrizeLatticeR
+- `theorem ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec` [ArkLib/Data/CodingTheory/ProximityGap/LineDecodingSpec.lean:1487](../../../ArkLib/Data/CodingTheory/ProximityGap/LineDecodingSpec.lean#L1487) — Add the immediate lower and adjacent upper lattice brackets to a concrete adjacent `mcaPrizeLatticeR
+- `theorem ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSLatticeSpec.lean:882](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSLatticeSpec.lean#L882) — Add the immediate lower and adjacent upper lattice brackets to a concrete adjacent `mcaPrizeLatticeR
 
-### `mem_of_getElem` (2 declarations, 2 files)
+### `mem_imp_sameClass_mem_removeRedundant` (2 declarations, 2 files)
 
-- `lemma DuplexSpongeFS.Sponge316.mem_of_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:54](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L54) — Membership from an `getElem?`-hit.
-- `lemma DuplexSpongeFS.Sponge316.mem_of_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:157](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L157) — (no docstring)
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_imp_sameClass_mem_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:470](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L470) — **Dedup is a system of class representatives**: every entry of the raw log has a class-representativ
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_imp_sameClass_mem_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:470](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L470) — **Dedup is a system of class representatives**: every entry of the raw log has a class-representativ
+
+### `mem_of_mem_removeRedundantEntryDSPaper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_of_mem_removeRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:608](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L608) — Every entry of the dedup'd base trace was already an entry of the original log.
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_of_mem_removeRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:608](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L608) — Every entry of the dedup'd base trace was already an entry of the original log.
+
+### `mem_slotList_foldl_of_mem_perm` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_foldl_of_mem_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:646](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L646) — A capacity cached early stays a slot of every later fold cache.
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_foldl_of_mem_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:646](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L646) — A capacity cached early stays a slot of every later fold cache.
+
+### `mem_slotList_of_hash` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:234](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L234) — A cached hash answer is a slot.
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:234](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L234) — A cached hash answer is a slot.
+
+### `mem_slotList_of_hash_cached` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_hash_cached` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1302](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1302) — A cached hash answer is a slot.
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_hash_cached` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1302](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1302) — A cached hash answer is a slot.
+
+### `mem_slotList_of_mem_perm` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_mem_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:637](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L637) — Both capacities of a cached permutation pair are slots.
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_mem_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:637](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L637) — Both capacities of a cached permutation pair are slots.
+
+### `mem_slotList_of_pair_fst` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_pair_fst` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:246](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L246) — A cached pair's forward-key capacity is a slot.
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_pair_fst` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:246](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L246) — A cached pair's forward-key capacity is a slot.
+
+### `mem_slotList_of_pair_snd` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_pair_snd` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:255](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L255) — A cached pair's value capacity is a slot.
+- `theorem DuplexSpongeFS.EagerLazyDS.mem_slotList_of_pair_snd` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:255](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L255) — A cached pair's value capacity is a slot.
 
 ### `mem_support_pure_eq` (2 declarations, 2 files)
 
@@ -4180,6 +5726,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma CheckClaim.mem_support_pure_optionT` [ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean:88](../../../ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean#L88) — A simulated `pure (some b)` only outputs `some b`.
 - `lemma CheckClaim.mem_support_pure_optionT` [ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean:96](../../../ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean#L96) — A simulated `pure (some b)` only outputs `some b`.
 
+### `mkSt` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.TimePCounter.mkSt` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:65](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L65) — (no docstring)
+- `def DuplexSpongeFS.Sponge316.TimePCounter.mkSt` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:65](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L65) — (no docstring)
+
 ### `mpFin_of_decoded_roots_radical` (2 declarations, 2 files)
 
 - `def ArkLib.RadicalWire304.mpFin_of_decoded_roots_radical` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:476](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L476) — The `hRsep` drop-in form of the radical `mpFin` family (via `MappedSliceSeparability.of_separable`).
@@ -4189,6 +5740,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def ArkLib.RadicalWire304.mpFin_of_decoded_roots_radical_mapped` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:449](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L449) — **The `mpFin` family from the RADICAL split, on the consolidated separability hypothesis** — `Decode
 - `def ArkLib.RadicalWire304.mpFin_of_decoded_roots_radical_mapped` [ArkLib/ToMathlib/RadicalAssembler.lean:468](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L468) — **The `mpFin` family from the RADICAL split, on the consolidated separability hypothesis** — `Decode
+
+### `natCast_sub_le_ennreal` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.natCast_sub_le_ennreal` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:253](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L253) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.natCast_sub_le_ennreal` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:253](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L253) — (no docstring)
 
 ### `natDegreeY_le` (2 declarations, 2 files)
 
@@ -4210,6 +5766,121 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.RadicalWire304.natDegree_radical_fiber_le` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:84](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L84) — Degree budget: the radical of the fiber has no larger degree than the fiber.
 - `theorem ArkLib.RadicalWire304.natDegree_radical_fiber_le` [ArkLib/ToMathlib/RadicalAssembler.lean:103](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L103) — Degree budget: the radical of the fiber has no larger degree than the fiber.
 
+### `noRedundant_pairwise_classDistinct` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.noRedundant_pairwise_classDistinct` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:617](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L617) — A `NoRedundantEntryDSPaper` trace is pairwise class-distinct: no later entry shares a class with any
+- `theorem DuplexSpongeFS.EagerLazyDS.noRedundant_pairwise_classDistinct` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:617](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L617) — A `NoRedundantEntryDSPaper` trace is pairwise class-distinct: no later entry shares a class with any
+
+### `noRedundant_raw_no_earlier_sameClass` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.noRedundant_raw_no_earlier_sameClass` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:947](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L947) — In a `NoRedundant` log, no earlier entry is the same class as a later one (raw `ℕ` positions). The f
+- `theorem DuplexSpongeFS.EagerLazyDS.noRedundant_raw_no_earlier_sameClass` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:947](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L947) — In a `NoRedundant` log, no earlier entry is the same class as a later one (raw `ℕ` positions). The f
+
+### `no_redundant_forward_anchor_of_noRedundantEntryDS` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.no_redundant_forward_anchor_of_noRedundantEntryDS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1610](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1610) — A deduplicated trace has no redundant nonterminal `J_BT` forward anchors.
+- `theorem DuplexSpongeFS.Sponge316.no_redundant_forward_anchor_of_noRedundantEntryDS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1610](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1610) — A deduplicated trace has no redundant nonterminal `J_BT` forward anchors.
+
+### `notFunction_data_impossible` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.notFunction_data_impossible` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:116](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L116) — **`E_func` refutation**: on a no-redundancy, consistent list, no forward entry can share its key wit
+- `theorem DuplexSpongeFS.EagerLazyDS.notFunction_data_impossible` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:116](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L116) — **`E_func` refutation**: on a no-redundancy, consistent list, no forward entry can share its key wit
+
+### `not_E_trc` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.TimePCounter.not_E_trc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:274](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L274) — The combined bad event `E` does NOT fire on the countermodel trace.
+- `theorem DuplexSpongeFS.Sponge316.TimePCounter.not_E_trc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:274](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L274) — The combined bad event `E` does NOT fire on the countermodel trace.
+
+### `not_E_trcF` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.ForkCounter.not_E_trcF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:365](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L365) — The combined bad event `E` does NOT fire on the countermodel trace.
+- `theorem DuplexSpongeFS.Sponge316.ForkCounter.not_E_trcF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:365](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L365) — The combined bad event `E` does NOT fire on the countermodel trace.
+
+### `not_anchoredFrom_cons` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:544](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L544) — Cons-unfolding of `¬ AnchoredFrom`: no step of `e :: ℓ` is an anchored collision.
+- `theorem DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:544](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L544) — Cons-unfolding of `¬ AnchoredFrom`: no step of `e :: ℓ` is an anchored collision.
+
+### `not_anchoredFrom_split` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:833](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L833) — `¬ AnchoredFrom` gives non-collision at every split point against the fold cache of the prefix.
+- `theorem DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:833](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L833) — `¬ AnchoredFrom` gives non-collision at every split point against the fold cache of the prefix.
+
+### `not_e_time_h_honest_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_h_honest_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1778](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1778) — Hash-timing half of M2c: off the combined bad event `E`, the honest hash out-of-order event cannot o
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_h_honest_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1778](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1778) — Hash-timing half of M2c: off the combined bad event `E`, the honest hash out-of-order event cannot o
+
+### `not_e_time_honest_of_not_E_of_noRedundantEntryDS` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_honest_of_not_E_of_noRedundantEntryDS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1790](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1790) — Full timing closure for a fixed trace that is already deduplicated.
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_honest_of_not_E_of_noRedundantEntryDS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1790](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1790) — Full timing closure for a fixed trace that is already deduplicated.
+
+### `not_e_time_honest_removeRedundantEntryDS_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_honest_removeRedundantEntryDS_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1802](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1802) — Full timing closure on the deduplicated base trace produced by `removeRedundantEntryDS`.
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_honest_removeRedundantEntryDS_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1802](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1802) — Full timing closure on the deduplicated base trace produced by `removeRedundantEntryDS`.
+
+### `not_e_time_honest_removeRedundantEntryDS_of_not_E_raw` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_honest_removeRedundantEntryDS_of_not_E_raw` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1814](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1814) — Full timing closure on the deduplicated base trace, discharged from the raw-trace `¬ E tr` hypothesi
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_honest_removeRedundantEntryDS_of_not_E_raw` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1814](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1814) — Full timing closure on the deduplicated base trace, discharged from the raw-trace `¬ E tr` hypothesi
+
+### `not_e_time_p_honest_of_not_E_of_noRedundantEntryDS` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_noRedundantEntryDS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1619](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1619) — Permutation-timing closure for traces already satisfying `NoRedundantEntryDS`.
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_noRedundantEntryDS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1619](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1619) — Permutation-timing closure for traces already satisfying `NoRedundantEntryDS`.
+
+### `not_e_time_p_honest_of_not_E_of_no_prior_reverse` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_no_prior_reverse` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1585](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1585) — Conditional permutation-timing half of M2c: after excluding the explicit prior reversed forward obst
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_no_prior_reverse` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1585](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1585) — Conditional permutation-timing half of M2c: after excluding the explicit prior reversed forward obst
+
+### `not_e_time_p_honest_of_not_E_of_no_redundant_forward_anchor` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_no_redundant_forward_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1600](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1600) — Equivalent conditional permutation-timing half of M2c, phrased directly as the missing dedup invaria
+- `theorem DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_no_redundant_forward_anchor` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1600](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1600) — Equivalent conditional permutation-timing half of M2c, phrased directly as the missing dedup invaria
+
+### `not_hasFwdKey_of_find` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.not_hasFwdKey_of_find` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:663](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L663) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.not_hasFwdKey_of_find` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:663](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L663) — (no docstring)
+
+### `not_hasInvEntry_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_hasInvEntry_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:936](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L936) — Contrapositive form of the keystone.
+- `theorem DuplexSpongeFS.Sponge316.not_hasInvEntry_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:936](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L936) — Contrapositive form of the keystone.
+
+### `not_inv_getElem` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_inv_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:944](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L944) — Index form of `not_hasInvEntry_of_not_E`: off `E`, no trace slot can be an inverse permutation entry
+- `theorem DuplexSpongeFS.Sponge316.not_inv_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:944](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L944) — Index form of `not_hasInvEntry_of_not_E`: off `E`, no trace slot can be an inverse permutation entry
+
+### `not_mem_fwdKeys_of_cap_not_slot` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.not_mem_fwdKeys_of_cap_not_slot` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:670](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L670) — A state whose capacity is not a slot is not a cached forward key.
+- `lemma DuplexSpongeFS.EagerLazyDS.not_mem_fwdKeys_of_cap_not_slot` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:670](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L670) — A state whose capacity is not a slot is not a cached forward key.
+
+### `not_redundantEntryDSPaper_forward_of_no_prior` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_forward_of_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:297](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L297) — A forward slot whose pair has no prior copy in either direction is not paper-redundant: the first-oc
+- `theorem DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_forward_of_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:297](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L297) — A forward slot whose pair has no prior copy in either direction is not paper-redundant: the first-oc
+
+### `not_redundantEntryDSPaper_hash_of_no_prior` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_hash_of_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:686](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L686) — A hash slot that is the first occurrence of its concrete entry is not paper-redundant (the hash cert
+- `theorem DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_hash_of_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:686](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L686) — A hash slot that is the first occurrence of its concrete entry is not paper-redundant (the hash cert
+
+### `not_redundantEntryDS_forward_of_no_prior` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_redundantEntryDS_forward_of_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:566](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L566) — A forward slot with no earlier same-or-reversed forward entry is not redundant under the duplex-spon
+- `theorem DuplexSpongeFS.Sponge316.not_redundantEntryDS_forward_of_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:566](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L566) — A forward slot with no earlier same-or-reversed forward entry is not redundant under the duplex-spon
+
+### `not_redundantEntryDS_hash_of_no_prior` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.not_redundantEntryDS_hash_of_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1022](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1022) — A hash trace slot with no earlier copy of the same hash entry is not redundant under the duplex-spon
+- `theorem DuplexSpongeFS.Sponge316.not_redundantEntryDS_hash_of_no_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1022](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1022) — A hash trace slot with no earlier copy of the same hash entry is not redundant under the duplex-spon
+
 ### `optionT_bind_pure_some` (2 declarations, 2 files)
 
 - `lemma RingSwitching.SumcheckPhase.optionT_bind_pure_some` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1080](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1080) — `OptionT.bind` of an honest `pure (some a)` reduces to the continuation at `a`. Used to collapse the
@@ -4225,6 +5896,31 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Reduction.optionT_liftM_run_assoc_path'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:48](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L48) — (no docstring)
 - `theorem Reduction.optionT_liftM_run_assoc_path'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L53) — (no docstring)
 
+### `pairKey_isSome_foldl_mono` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.pairKey_isSome_foldl_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:341](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L341) — A satisfiable pair-cache predicate stays satisfiable through any fold suffix.
+- `theorem DuplexSpongeFS.EagerLazyDS.pairKey_isSome_foldl_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:341](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L341) — A satisfiable pair-cache predicate stays satisfiable through any fold suffix.
+
+### `pairKey_isSome_take_of_le` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.pairKey_isSome_take_of_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:98](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L98) — A satisfiable pair predicate at the `(j'+1)`-prefix fold persists to any larger prefix.
+- `theorem DuplexSpongeFS.EagerLazyDS.pairKey_isSome_take_of_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:98](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L98) — A satisfiable pair predicate at the `(j'+1)`-prefix fold persists to any larger prefix.
+
+### `pairRecord_cached_after_consistent_perm` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.pairRecord_cached_after_consistent_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:293](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L293) — After a consistent forward step, the exact pair `(input, output)` is cached.
+- `theorem DuplexSpongeFS.EagerLazyDS.pairRecord_cached_after_consistent_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:293](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L293) — After a consistent forward step, the exact pair `(input, output)` is cached.
+
+### `pairRecord_cached_after_consistent_permInv` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.pairRecord_cached_after_consistent_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:312](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L312) — After a consistent inverse step, the exact pair `(answer, query)` is cached.
+- `theorem DuplexSpongeFS.EagerLazyDS.pairRecord_cached_after_consistent_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:312](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L312) — After a consistent inverse step, the exact pair `(answer, query)` is cached.
+
+### `pairRecord_take_of_le` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.pairRecord_take_of_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:174](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L174) — A pair record at the `(j'+1)`-prefix fold persists to any larger prefix.
+- `theorem DuplexSpongeFS.EagerLazyDS.pairRecord_take_of_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:174](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L174) — A pair record at the `(j'+1)`-prefix fold persists to any larger prefix.
+
 ### `pairUDRClose_of_pairFiberwiseClose` (2 declarations, 2 files)
 
 - `lemma Binius.BinaryBasefold.pairUDRClose_of_pairFiberwiseClose` [ArkLib/ProofSystem/Binius/BinaryBasefold/Code.lean:1086](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Code.lean#L1086) — if `d⁽ⁱ⁾(f⁽ⁱ⁾, g⁽ⁱ⁾) < d_{ᵢ₊steps} / 2` (fiberwise distance), then `d(f⁽ⁱ⁾, g⁽ⁱ⁾) < dᵢ/2` (regular c
@@ -4235,10 +5931,45 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `abbrev Spartan.Spec.Bricks.prependRLCTargetWTKS` [ArkLib/ProofSystem/Spartan/ComposedTightRbrKnowledge.lean:177](../../../ArkLib/ProofSystem/Spartan/ComposedTightRbrKnowledge.lean#L177) — The carried honest RLC-target adapter pinned to the concrete oracle-interface universe used by the r
 - `abbrev Spartan.Spec.Bricks.prependRLCTargetWTKS` [ArkLib/ProofSystem/Spartan/TightComposedFull.lean:52](../../../ArkLib/ProofSystem/Spartan/TightComposedFull.lean#L52) — Universe-pinned local alias of the carried RLC-target adapter (mirror of `prependRLCTargetKS`).
 
+### `priorCapWitnessC` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.priorCapWitnessC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:103](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L103) — Prior-witness class for the inverse-anchored collision shape: an earlier hash entry whose answer **i
+- `def DuplexSpongeFS.Sponge316.priorCapWitnessC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:103](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L103) — Prior-witness class for the inverse-anchored collision shape: an earlier hash entry whose answer **i
+
+### `prior_reverse_of_hasRedundantForwardAnchor_of_not_E` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.prior_reverse_of_hasRedundantForwardAnchor_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:1494](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L1494) — Conversely, off `E`, every redundant `J_BT` forward anchor is redundant for the only reason not alre
+- `theorem DuplexSpongeFS.Sponge316.prior_reverse_of_hasRedundantForwardAnchor_of_not_E` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:1494](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L1494) — Conversely, off `E`, every redundant `J_BT` forward anchor is redundant for the only reason not alre
+
+### `probEvent_EPaper_toReal_le_lemma5_8Bound` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1662](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1662) — **CO25 Lemma 5.8, unconditional (eager lazy carrier).** For any `T`-query adversary, the probability
+- `theorem DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1662](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1662) — **CO25 Lemma 5.8, unconditional (eager lazy carrier).** For any `T`-query adversary, the probability
+
+### `probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1622](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1622) — **The eager paper bound, conditional on the dedup reduction.** For any `T`-query adversary, the prob
+- `theorem DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1622](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1622) — **The eager paper bound, conditional on the dedup reduction.** For any `T`-query adversary, the prob
+
+### `probEvent_E_eq_one` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge314.K1.probEvent_E_eq_one` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean:106](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/EagerFalse.lean#L106) — The combined bad event `E` fires with probability **1** in the eager logged game on the single-inver
+- `lemma DuplexSpongeFS.Sponge314.K1.probEvent_E_eq_one` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:106](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean#L106) — The combined bad event `E` fires with probability **1** in the eager logged game on the single-inver
+
 ### `probEvent_eq_one_of_support_init` (2 declarations, 2 files)
 
 - `lemma CheckClaim.probEvent_eq_one_of_support_init` [ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean:105](../../../ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean#L105) — `OptionT`-level probability-one bridge with sampled initial state: if every output of the underlying
 - `lemma CheckClaim.probEvent_eq_one_of_support_init` [ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean:113](../../../ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean#L113) — `OptionT`-level probability-one bridge with sampled initial state: if every output of the underlying
+
+### `probEvent_flag_final_le_sum` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.probEvent_flag_final_le_sum` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:465](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L465) — **The accumulated flag bound**: a `T`-query computation, run from the empty cache with the flag down
+- `theorem DuplexSpongeFS.EagerLazyDS.probEvent_flag_final_le_sum` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:465](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L465) — **The accumulated flag bound**: a `T`-query computation, run from the empty cache with the flag down
+
+### `probEvent_flag_final_toReal_le_lemma5_8Bound` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.probEvent_flag_final_toReal_le_lemma5_8Bound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:545](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L545) — **The complete engine output for CO25 Lemma 5.8**: the final flag probability of any `T`-query compu
+- `theorem DuplexSpongeFS.EagerLazyDS.probEvent_flag_final_toReal_le_lemma5_8Bound` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:545](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L545) — **The complete engine output for CO25 Lemma 5.8**: the final flag probability of any `T`-query compu
 
 ### `probEvent_salvage_le` (2 declarations, 2 files)
 
@@ -4268,6 +5999,91 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Reduction.reduction_append_perfectCompleteness_msg` [ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessMsg.lean:414](../../../ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessMsg.lean#L414) — **Append perfect completeness, residual-free (message-seam case).** The public composition theorem w
 - `def Reduction.reduction_append_perfectCompleteness_msg` [ArkLib/Whir113Keystone.lean:17](../../../ArkLib/Whir113Keystone.lean#L17) — Residual for append perfect-completeness in the message-first case. The previous theorem body ended
 
+### `redundantEntryDSPaper_forward_inversion` (2 declarations, 2 files)
+
+- `lemma OracleSpec.QueryLog.redundantEntryDSPaper_forward_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:35](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L35) — Inversion of `redundantEntryDSPaper` at a forward slot: the certificate is an earlier entry with the
+- `lemma OracleSpec.QueryLog.redundantEntryDSPaper_forward_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:35](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L35) — Inversion of `redundantEntryDSPaper` at a forward slot: the certificate is an earlier entry with the
+
+### `redundantEntryDSPaper_hash_inversion` (2 declarations, 2 files)
+
+- `lemma OracleSpec.QueryLog.redundantEntryDSPaper_hash_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:77](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L77) — Inversion of `redundantEntryDSPaper` at a hash slot: an earlier copy of the same hash entry (unchang
+- `lemma OracleSpec.QueryLog.redundantEntryDSPaper_hash_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:77](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L77) — Inversion of `redundantEntryDSPaper` at a hash slot: an earlier copy of the same hash entry (unchang
+
+### `redundantEntryDSPaper_iff_sameClass` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.redundantEntryDSPaper_iff_sameClass` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:267](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L267) — The paper redundancy predicate is exactly "an earlier class member exists".
+- `lemma DuplexSpongeFS.EagerLazyDS.redundantEntryDSPaper_iff_sameClass` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:267](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L267) — The paper redundancy predicate is exactly "an earlier class member exists".
+
+### `redundantEntryDSPaper_inverse_inversion` (2 declarations, 2 files)
+
+- `lemma OracleSpec.QueryLog.redundantEntryDSPaper_inverse_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:56](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L56) — Inversion of `redundantEntryDSPaper` at an inverse slot: the certificate is an earlier entry with th
+- `lemma OracleSpec.QueryLog.redundantEntryDSPaper_inverse_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:56](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L56) — Inversion of `redundantEntryDSPaper` at an inverse slot: the certificate is an earlier entry with th
+
+### `redundantEntryDS_forward_inversion` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.redundantEntryDS_forward_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:202](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L202) — Inversion of `redundantEntryDS` at a forward-permutation slot: the redundancy certificate is an earl
+- `lemma DuplexSpongeFS.Sponge316.redundantEntryDS_forward_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:202](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L202) — Inversion of `redundantEntryDS` at a forward-permutation slot: the redundancy certificate is an earl
+
+### `redundantEntryDS_hashEntry_inversion` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.redundantEntryDS_hashEntry_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:398](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L398) — Hash-slot inversion for the private `hashEntry` shorthand.
+- `lemma DuplexSpongeFS.Sponge316.redundantEntryDS_hashEntry_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:398](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L398) — Hash-slot inversion for the private `hashEntry` shorthand.
+
+### `redundantEntryDS_hash_inversion` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.redundantEntryDS_hash_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:248](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L248) — Inversion of `redundantEntryDS` at a hash slot: the redundancy certificate is an earlier copy of the
+- `lemma DuplexSpongeFS.Sponge316.redundantEntryDS_hash_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:248](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L248) — Inversion of `redundantEntryDS` at a hash slot: the redundancy certificate is an earlier copy of the
+
+### `redundantEntryDS_inv_inversion` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.redundantEntryDS_inv_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:825](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L825) — Inversion of `redundantEntryDS` at an inverse-permutation slot: the redundancy certificate is an ear
+- `lemma DuplexSpongeFS.Sponge316.redundantEntryDS_inv_inversion` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:825](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L825) — Inversion of `redundantEntryDS` at an inverse-permutation slot: the redundancy certificate is an ear
+
+### `redundantPaper_forward_capacity_prior` (2 declarations, 2 files)
+
+- `theorem OracleSpec.QueryLog.redundantPaper_forward_capacity_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:95](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L95) — A paper-redundant forward entry sharing a target capacity has an earlier **permutation** replacement
+- `theorem OracleSpec.QueryLog.redundantPaper_forward_capacity_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:95](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L95) — A paper-redundant forward entry sharing a target capacity has an earlier **permutation** replacement
+
+### `redundantPaper_inverse_capacity_prior` (2 declarations, 2 files)
+
+- `theorem OracleSpec.QueryLog.redundantPaper_inverse_capacity_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:118](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L118) — A paper-redundant inverse entry sharing a target capacity has an earlier **permutation** replacement
+- `theorem OracleSpec.QueryLog.redundantPaper_inverse_capacity_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:118](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L118) — A paper-redundant inverse entry sharing a target capacity has an earlier **permutation** replacement
+
+### `redundant_forward_capacity_prior` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.redundant_forward_capacity_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:223](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L223) — A redundant forward entry that shares a target capacity has an earlier forward replacement that stil
+- `theorem DuplexSpongeFS.Sponge316.redundant_forward_capacity_prior` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:223](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L223) — A redundant forward entry that shares a target capacity has an earlier forward replacement that stil
+
+### `redundant_only_three` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.redundant_only_three` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:188](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L188) — No slot of `trc` other than `3` is redundant.
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.redundant_only_three` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:188](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L188) — No slot of `trc` other than `3` is redundant.
+
+### `redundant_three` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.redundant_three` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:184](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L184) — Entry 3 is in-tree-redundant: entry 2 is its same-direction swapped certificate.
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.redundant_three` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:184](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L184) — Entry 3 is in-tree-redundant: entry 2 is its same-direction swapped certificate.
+
+### `removeRedundantEntryDSPaper_pairwise_classDistinct` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_pairwise_classDistinct` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:627](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L627) — The dedup output is pairwise class-distinct.
+- `theorem DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_pairwise_classDistinct` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:627](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L627) — The dedup output is pairwise class-distinct.
+
+### `removeRedundantEntryDSPaper_sublist` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_sublist` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:587](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L587) — The paper dedup output is a sublist of its input (each step erases one entry).
+- `theorem DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_sublist` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:587](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L587) — The paper dedup output is a sublist of its input (each step erases one entry).
+
+### `removeRedundant_firstOcc` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.removeRedundant_firstOcc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:975](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L975) — **Dedup positions are first occurrences.** There is an order embedding `f` of the dedup base trace i
+- `theorem DuplexSpongeFS.EagerLazyDS.removeRedundant_firstOcc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:975](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L975) — **Dedup positions are first occurrences.** There is an order embedding `f` of the dedup base trace i
+
+### `removeRedundant_orderEmbedding` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.removeRedundant_orderEmbedding` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:850](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L850) — The dedup base trace embeds into the raw log by a strictly monotone index map that preserves entries
+- `theorem DuplexSpongeFS.EagerLazyDS.removeRedundant_orderEmbedding` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:850](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L850) — The dedup base trace embeds into the raw log by a strictly monotone index map that preserves entries
+
 ### `rootDecodedRadical` (2 declarations, 2 files)
 
 - `def ArkLib.RadicalWire304.rootDecodedRadical` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:307](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L307) — **The radical decoded branch root** — `DecodedRootSupply.rootDecoded` with the GS split replaced by
@@ -4282,6 +6098,66 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.RadicalWire304.rootDecodedRadical_val_monic` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:331](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L331) — The base-point fact at the radical decoded root (monic case): the value is exactly the surface's cen
 - `theorem ArkLib.RadicalWire304.rootDecodedRadical_val_monic` [ArkLib/ToMathlib/RadicalAssembler.lean:350](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L350) — The base-point fact at the radical decoded root (monic case): the value is exactly the surface's cen
+
+### `sameClass` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.sameClass` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:248](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L248) — Class membership: equal or the swap.
+- `def DuplexSpongeFS.EagerLazyDS.sameClass` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:248](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L248) — Class membership: equal or the swap.
+
+### `sameClass_of_entryKeys` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.sameClass_of_entryKeys` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:520](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L520) — An entry whose inserted pair is `(a, b)` is class-equal to the forward entry `⟨inr (inl a), b⟩`: it
+- `theorem DuplexSpongeFS.EagerLazyDS.sameClass_of_entryKeys` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:520](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L520) — An entry whose inserted pair is `(a, b)` is class-equal to the forward entry `⟨inr (inl a), b⟩`: it
+
+### `sameClass_refl` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.sameClass_refl` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:251](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L251) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.sameClass_refl` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:251](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L251) — (no docstring)
+
+### `sameClass_symm` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.sameClass_symm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:253](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L253) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.sameClass_symm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:253](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L253) — (no docstring)
+
+### `sameClass_trans` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.sameClass_trans` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:258](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L258) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.sameClass_trans` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:258](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L258) — (no docstring)
+
+### `seqC` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.TimePCounter.seqC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:87](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L87) — The backtrack chain `sB → sA → sB`, then `sa → sb`, ending at `sT`.
+- `def DuplexSpongeFS.Sponge316.TimePCounter.seqC` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:87](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L87) — The backtrack chain `sB → sA → sB`, then `sa → sb`, ending at `sT`.
+
+### `seqOne` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.ForkCounter.seqOne` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:95](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L95) — Chain 1: the alternating loop `t1 → t2 → t1` on the first pair.
+- `def DuplexSpongeFS.Sponge316.ForkCounter.seqOne` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:95](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L95) — Chain 1: the alternating loop `t1 → t2 → t1` on the first pair.
+
+### `seqOne_ne_seqTwo` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.seqOne_ne_seqTwo` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:129](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L129) — The two chains are distinct (their `inputState` lists differ).
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.seqOne_ne_seqTwo` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:129](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L129) — The two chains are distinct (their `inputState` lists differ).
+
+### `seqTwo` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.ForkCounter.seqTwo` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:112](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L112) — Chain 2: the alternating loop `t3 → t4 → (cap t3 = cap t1)` on the second pair, ending at the same t
+- `def DuplexSpongeFS.Sponge316.ForkCounter.seqTwo` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:112](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L112) — Chain 2: the alternating loop `t3 → t4 → (cap t3 = cap t1)` on the second pair, ending at the same t
+
+### `slotList_length_le` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.slotList_length_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:160](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L160) — The slot list is at most twice the cache size.
+- `lemma DuplexSpongeFS.EagerLazyDS.slotList_length_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:160](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L160) — The slot list is at most twice the cache size.
+
+### `slots_pair_ASB` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.slots_pair_ASB` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:114](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L114) — Entry 3 is the unique trace slot holding either orientation of the pair `(sA, sB)`.
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.slots_pair_ASB` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:114](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L114) — Entry 3 is the unique trace slot holding either orientation of the pair `(sA, sB)`.
+
+### `slots_pair_asb` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.slots_pair_asb` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:122](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L122) — Entry 1 is the unique trace slot holding either orientation of the pair `(sa, sb)`.
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.slots_pair_asb` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:122](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L122) — Entry 1 is the unique trace slot holding either orientation of the pair `(sa, sb)`.
 
 ### `split_branch_radical` (2 declarations, 2 files)
 
@@ -4328,6 +6204,91 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Spartan.Spec.Bricks.step8` [ArkLib/ProofSystem/Spartan/ComposedCompleteness.lean:517](../../../ArkLib/ProofSystem/Spartan/ComposedCompleteness.lean#L517) — Seam 7 (`secondSumcheck ▷ finalCheck`, empty trailing seam).
 - `theorem Spartan.Spec.Bricks.step8` [ArkLib/ProofSystem/Spartan/TightComposedCompleteness.lean:80](../../../ArkLib/ProofSystem/Spartan/TightComposedCompleteness.lean#L80) — Seam 7 (`secondSumcheck ▷ finalCheck`, empty trailing seam).
 
+### `stepCache` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.stepCache` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:51](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L51) — Fold one log entry onto a cache: first occurrence caches, repeats change nothing.
+- `def DuplexSpongeFS.EagerLazyDS.stepCache` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:51](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L51) — Fold one log entry onto a cache: first occurrence caches, repeats change nothing.
+
+### `stepCache_caches_fresh_hash` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_caches_fresh_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:113](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L113) — A fresh hash entry creates its record.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_caches_fresh_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:113](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L113) — A fresh hash entry creates its record.
+
+### `stepCache_caches_fresh_perm` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_caches_fresh_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:123](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L123) — A fresh forward permutation entry creates its pair.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_caches_fresh_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:123](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L123) — A fresh forward permutation entry creates its pair.
+
+### `stepCache_caches_fresh_permInv` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_caches_fresh_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:134](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L134) — A fresh inverse permutation entry creates its (answer, query) pair.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_caches_fresh_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:134](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L134) — A fresh inverse permutation entry creates its (answer, query) pair.
+
+### `stepCache_fwdNodup` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_fwdNodup` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:678](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L678) — One non-anchored fold step preserves forward-key distinctness.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_fwdNodup` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:678](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L678) — One non-anchored fold step preserves forward-key distinctness.
+
+### `stepCache_hash_mono` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_hash_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:315](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L315) — The hash cache only grows: an already-cached answer survives one fold step.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_hash_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:315](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L315) — The hash cache only grows: an already-cached answer survives one fold step.
+
+### `stepCache_hash_mono'` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_hash_mono'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L53) — A cached hash record survives one fold step.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_hash_mono'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L53) — A cached hash record survives one fold step.
+
+### `stepCache_hash_provenance` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_hash_provenance` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1187](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1187) — **Hash-cache provenance (one step).** A hash answer present after a step was already cached or was i
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_hash_provenance` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1187](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1187) — **Hash-cache provenance (one step).** A hash answer present after a step was already cached or was i
+
+### `stepCache_noop_hash` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_noop_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:173](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L173) — A hash entry whose key is cached is a `stepCache` no-op.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_noop_hash` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:173](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L173) — A hash entry whose key is cached is a `stepCache` no-op.
+
+### `stepCache_noop_of_classRedAt_consistent` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_noop_of_classRedAt_consistent` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:419](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L419) — In a consistent log, a class-redundant slot is a `stepCache` no-op at its prefix fold. This is the c
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_noop_of_classRedAt_consistent` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:419](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L419) — In a consistent log, a class-redundant slot is a `stepCache` no-op at its prefix fold. This is the c
+
+### `stepCache_noop_perm` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_noop_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:184](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L184) — A forward entry whose key is cached is a `stepCache` no-op.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_noop_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:184](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L184) — A forward entry whose key is cached is a `stepCache` no-op.
+
+### `stepCache_noop_permInv` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_noop_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:198](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L198) — An inverse entry whose key is cached is a `stepCache` no-op.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_noop_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:198](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L198) — An inverse entry whose key is cached is a `stepCache` no-op.
+
+### `stepCache_pair_mono` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_pair_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean:77](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/CacheProvenance.lean#L77) — A cached permutation pair survives one fold step.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_pair_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:77](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L77) — A cached permutation pair survives one fold step.
+
+### `stepCache_pair_provenance` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_pair_provenance` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:716](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L716) — **Pair provenance (one step)**: a pair in the cache after a step was already there or was inserted b
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_pair_provenance` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:716](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L716) — **Pair provenance (one step)**: a pair in the cache after a step was already there or was inserted b
+
+### `stepCache_perm_sublist` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_perm_sublist` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:300](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L300) — The permutation cache only grows (as a sublist) along one fold step.
+- `theorem DuplexSpongeFS.EagerLazyDS.stepCache_perm_sublist` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:300](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L300) — The permutation cache only grows (as a sublist) along one fold step.
+
+### `step_determinism` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Paper.step_determinism` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:76](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L76) — **U1 (step determinism, paper event)** — CO25 Claim 5.19, Eq. 44 step: off `EPaper`, two chain steps
+- `theorem DuplexSpongeFS.Paper.step_determinism` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:76](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L76) — **U1 (step determinism, paper event)** — CO25 Claim 5.19, Eq. 44 step: off `EPaper`, two chain steps
+
+### `step_determinism_paper` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.step_determinism_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:300](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L300) — **Step determinism, paper event**: off `BadEventDSPaper.E`, two family chain steps whose output capa
+- `theorem DuplexSpongeFS.Sponge316.step_determinism_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:300](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L300) — **Step determinism, paper event**: off `BadEventDSPaper.E`, two family chain steps whose output capa
+
 ### `stirInitReduction_rbrKnowledgeSoundness` (2 declarations, 2 files)
 
 - `theorem StirIOP.Round3.stirInitReduction_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Stir/InitAppendRbr.lean:123](../../../ArkLib/ProofSystem/Stir/InitAppendRbr.lean#L123) — RBR knowledge soundness of the initial block, phrased on `stirInitReduction`'s verifier.
@@ -4368,10 +6329,25 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem R15.sudan_list_bound_filter` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean:371](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean#L371) — Filter form (when `F` has decidable equality): the agreement hypothesis stated as a cardinality of `
 - `theorem R15.sudan_list_bound_filter` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean:371](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean#L371) — Filter form (when `F` has decidable equality): the agreement hypothesis stated as a cardinality of `
 
+### `sum_lemma58StepBound_le` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.sum_lemma58StepBound_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:489](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L489) — The Gauss-sum domination: below half the state space, the accumulated step bounds sum to at most `2T
+- `theorem DuplexSpongeFS.EagerLazyDS.sum_lemma58StepBound_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:489](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L489) — The Gauss-sum domination: below half the state space, the accumulated step bounds sum to at most `2T
+
 ### `sum_map_two_mul_sub_one` (2 declarations, 2 files)
 
 - `lemma BCIKS20.HenselNumerator.sum_map_two_mul_sub_one` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2KeystoneReindex.lean:183](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2KeystoneReindex.lean#L183) — Auxiliary: `∑_{l ∈ λ} (2 l - 1) = 2 c - (number of parts)` (truncated ℕ subtraction). The per-part s
 - `theorem BCIKS20.HenselNumerator.sum_map_two_mul_sub_one` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RestrictedFaaDiBrunoXiTelescope.lean:94](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RestrictedFaaDiBrunoXiTelescope.lean#L94) — **The LHS `ξ`-denominator exponent of a partition (axiom-clean).** The assembled-series coefficient
+
+### `sum_range_two_mul_add_one` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.sum_range_two_mul_add_one` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:481](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L481) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.sum_range_two_mul_add_one` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean:481](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Flag.lean#L481) — (no docstring)
+
+### `support_flagged_logged` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.support_flagged_logged` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:177](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L177) — **The master run correspondence**: every support element of the flagged run of the logged program ha
+- `theorem DuplexSpongeFS.EagerLazyDS.support_flagged_logged` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:177](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L177) — **The master run correspondence**: every support element of the flagged run of the logged program ha
 
 ### `support_oracleReduction_run` (2 declarations, 2 files)
 
@@ -4388,6 +6364,41 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem CheckClaim.support_toVerifier_run` [ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean:160](../../../ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean#L160) — **The pred-generic support collapse for the compiled `CheckClaim` oracle verifier**: the run only ev
 - `theorem CheckClaim.support_toVerifier_run` [ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean:143](../../../ArkLib/ProofSystem/Spartan/TightFinalCompleteness.lean#L143) — **The pred-generic support collapse for the compiled `CheckClaim` oracle verifier**: the run only ev
 
+### `swapEntry` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.EagerLazyDS.swapEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:237](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L237) — The opposite-direction form of an entry (hash entries are self-paired).
+- `def DuplexSpongeFS.EagerLazyDS.swapEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:237](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L237) — The opposite-direction form of an entry (hash entries are self-paired).
+
+### `swapEntry_eq_mirrorOf` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.swapEntry_eq_mirrorOf` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean:46](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Extraction.lean#L46) — The Correspondence-file `swapEntry` and the Engine-file `mirrorOf` are the same map.
+- `theorem DuplexSpongeFS.EagerLazyDS.swapEntry_eq_mirrorOf` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean:46](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Extraction.lean#L46) — The Correspondence-file `swapEntry` and the Engine-file `mirrorOf` are the same map.
+
+### `swapEntry_swapEntry` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.swapEntry_swapEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:242](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L242) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.swapEntry_swapEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:242](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L242) — (no docstring)
+
+### `swapKey_cached_after_consistent_perm` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:248](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L248) — After a consistent forward step, the **inverse** key is cached: fresh creates `(a, b)` (serving the
+- `theorem DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_perm` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:248](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L248) — After a consistent forward step, the **inverse** key is cached: fresh creates `(a, b)` (serving the
+
+### `swapKey_cached_after_consistent_permInv` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:266](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L266) — After a consistent inverse step, the **forward** key is cached: fresh creates `(a, b)` (serving the
+- `theorem DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_permInv` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:266](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L266) — After a consistent inverse step, the **forward** key is cached: fresh creates `(a, b)` (serving the
+
+### `take_inner_split` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.take_inner_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:1314](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L1314) — The inner split of `take (f j)` at an earlier position `f j'`.
+- `theorem DuplexSpongeFS.EagerLazyDS.take_inner_split` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1314](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1314) — The inner split of `take (f j)` at an earlier position `f j'`.
+
+### `take_split_getElem` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.EagerLazyDS.take_split_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean:399](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Freshness.lean#L399) — (no docstring)
+- `lemma DuplexSpongeFS.EagerLazyDS.take_split_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean:399](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Freshness.lean#L399) — (no docstring)
+
 ### `threshold_lt_pow_div` (2 declarations, 2 files)
 
 - `theorem CodingTheory.threshold_lt_pow_div` [ArkLib/Data/CodingTheory/ProximityGap/ListDecodingCapacityOverflow.lean:40](../../../ArkLib/Data/CodingTheory/ProximityGap/ListDecodingCapacityOverflow.lean#L40) — **`rpow` overflow bridge.** For `q > 1`, `0 < n1`, `0 < εq`, if `logb q (n1·εq) < E` then `εq < q^E
@@ -4403,6 +6414,91 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma MvPolynomial.totalDegree_prod_sub_pow_le` [ArkLib/ToMathlib/RestrictedSumset.lean:183](../../../ArkLib/ToMathlib/RestrictedSumset.lean#L183) — **Leading-part difference bound.** The product `∏_{c ∈ s} (y - C c)` differs from `y^{\|s\|}` by a pol
 - `lemma MvPolynomial.totalDegree_prod_sub_pow_le` [ArkLib/ToMathlib/RestrictedSumsetGeneral.lean:195](../../../ArkLib/ToMathlib/RestrictedSumsetGeneral.lean#L195) — **Leading-part difference bound.** The product `∏_{c ∈ s} (y - C c)` differs from `y^{\|s\|}` by a pol
 
+### `trc` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.TimePCounter.trc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:81](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L81) — The raw countermodel trace.
+- `def DuplexSpongeFS.Sponge316.TimePCounter.trc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:81](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L81) — The raw countermodel trace.
+
+### `trc'` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.TimePCounter.trc'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:84](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L84) — The dedup'd trace: entry 3 (`(p, sA, sB)`) is in-tree-redundant w.r.t. entry 2.
+- `def DuplexSpongeFS.Sponge316.TimePCounter.trc'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:84](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L84) — The dedup'd trace: entry 3 (`(p, sA, sB)`) is in-tree-redundant w.r.t. entry 2.
+
+### `trc'_noRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.trc'_noRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:218](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L218) — No slot of the 3-entry trace `trc'` is redundant.
+- `lemma DuplexSpongeFS.Sponge316.TimePCounter.trc'_noRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:218](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L218) — No slot of the 3-entry trace `trc'` is redundant.
+
+### `trcA` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.ForkCounter.trcA` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:84](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L84) — Intermediate trace after erasing slot 2 first.
+- `def DuplexSpongeFS.Sponge316.ForkCounter.trcA` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:84](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L84) — Intermediate trace after erasing slot 2 first.
+
+### `trcA_redundant_only` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcA_redundant_only` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:218](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L218) — In `trcA`, only slot 3 is redundant.
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcA_redundant_only` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:218](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L218) — In `trcA`, only slot 3 is redundant.
+
+### `trcA_redundant_three` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcA_redundant_three` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:214](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L214) — In `trcA = [eH, q1, q3, q4]`, slot 3 is redundant (slot 2 is its certificate).
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcA_redundant_three` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:214](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L214) — In `trcA = [eH, q1, q3, q4]`, slot 3 is redundant (slot 2 is its certificate).
+
+### `trcB` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.ForkCounter.trcB` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:87](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L87) — Intermediate trace after erasing slot 4 first.
+- `def DuplexSpongeFS.Sponge316.ForkCounter.trcB` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:87](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L87) — Intermediate trace after erasing slot 4 first.
+
+### `trcB_redundant_only` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcB_redundant_only` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:249](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L249) — In `trcB`, only slot 2 is redundant.
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcB_redundant_only` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:249](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L249) — In `trcB`, only slot 2 is redundant.
+
+### `trcB_redundant_two` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcB_redundant_two` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:245](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L245) — In `trcB = [eH, q1, q2, q3]`, slot 2 is redundant (slot 1 is its certificate).
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcB_redundant_two` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:245](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L245) — In `trcB = [eH, q1, q2, q3]`, slot 2 is redundant (slot 1 is its certificate).
+
+### `trcD` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.ForkCounter.trcD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:90](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L90) — The dedup fixpoint: both erasure orders converge here.
+- `def DuplexSpongeFS.Sponge316.ForkCounter.trcD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:90](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L90) — The dedup fixpoint: both erasure orders converge here.
+
+### `trcD_noRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcD_noRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:280](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L280) — No slot of the 3-entry trace `trcD` is redundant.
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcD_noRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:280](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L280) — No slot of the 3-entry trace `trcD` is redundant.
+
+### `trcF` (2 declarations, 2 files)
+
+- `def DuplexSpongeFS.Sponge316.ForkCounter.trcF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:81](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L81) — The raw countermodel trace.
+- `def DuplexSpongeFS.Sponge316.ForkCounter.trcF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:81](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L81) — The raw countermodel trace.
+
+### `trcF_redundant_four` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcF_redundant_four` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:175](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L175) — Slot 4 (`(p, t4, t3)`) is in-tree-redundant: slot 3 is its swapped certificate.
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcF_redundant_four` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:175](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L175) — Slot 4 (`(p, t4, t3)`) is in-tree-redundant: slot 3 is its swapped certificate.
+
+### `trcF_redundant_only` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcF_redundant_only` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:179](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L179) — No slot of `trcF` other than `2` and `4` is redundant.
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcF_redundant_only` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:179](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L179) — No slot of `trcF` other than `2` and `4` is redundant.
+
+### `trcF_redundant_two` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcF_redundant_two` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:171](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L171) — Slot 2 (`(p, t2, t1)`) is in-tree-redundant: slot 1 is its swapped certificate.
+- `lemma DuplexSpongeFS.Sponge316.ForkCounter.trcF_redundant_two` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:171](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L171) — Slot 2 (`(p, t2, t1)`) is in-tree-redundant: slot 1 is its swapped certificate.
+
+### `twoSurvivors_eraseIdx` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.twoSurvivors_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:170](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L170) — One-step preservation: erasing a paper-redundant entry preserves the two-survivor shape (the guarded
+- `lemma DuplexSpongeFS.Sponge316.twoSurvivors_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:170](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L170) — One-step preservation: erasing a paper-redundant entry preserves the two-survivor shape (the guarded
+
+### `twoSurvivors_removeRedundant` (2 declarations, 2 files)
+
+- `lemma DuplexSpongeFS.Sponge316.twoSurvivors_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:194](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L194) — **Two-survivor dedup transport**: both guarded slots survive paper dedup, in order.
+- `lemma DuplexSpongeFS.Sponge316.twoSurvivors_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:194](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L194) — **Two-survivor dedup transport**: both guarded slots survive paper dedup, in order.
+
 ### `two_element_list_witness` (2 declarations, 2 files)
 
 - `theorem R15.two_element_list_witness` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean:425](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean#L425) — **Non-vacuity / genuine list regime.**  For the explicit received word `wWit` over `ZMod 13`, the ex
@@ -4416,16 +6512,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `w_in_C` (2 declarations, 2 files)
 
 - `lemma w_in_C` [ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesB.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesB.lean#L56) — (no docstring)
-- `lemma w_in_C` [ArkLib/Data/CodingTheory/Quarantine/CandidateHypothesesRefutations.lean:35](../../../ArkLib/Data/CodingTheory/Quarantine/CandidateHypothesesRefutations.lean#L35) — (no docstring)
+- `lemma w_in_C` [ArkLib/Data/CodingTheory/Quarantine/HypothesesRefutations.lean:35](../../../ArkLib/Data/CodingTheory/Quarantine/HypothesesRefutations.lean#L35) — (no docstring)
 
 ### `weight` (2 declarations, 2 files)
 
 - `def weight` [ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesB.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesB.lean#L62) — (no docstring)
-- `def weight` [ArkLib/Data/CodingTheory/Quarantine/CandidateHypotheses.lean:19](../../../ArkLib/Data/CodingTheory/Quarantine/CandidateHypotheses.lean#L19) — (no docstring)
+- `def weight` [ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean:19](../../../ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean#L19) — (no docstring)
 
 ### `xiCert_eq_derivativeCert` (2 declarations, 2 files)
 
-- `theorem ArkLib.XiCertReduction.xiCert_eq_derivativeCert` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:127](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L127) — **The value identity (monic)**: the `ξ`-certificate equals the derivative reading along the surface,
+- `theorem ArkLib.XiCertReduction.xiCert_eq_derivativeCert` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:127](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L127) — **The value identity (monic)**: the `ξ`-certificate equals the derivative reading along the surface,
 - `theorem ArkLib.XiCertReduction.xiCert_eq_derivativeCert` [ArkLib/ToMathlib/XiCertReduction.lean:158](../../../ArkLib/ToMathlib/XiCertReduction.lean#L158) — **The value identity (monic)**: the `ξ`-certificate equals the derivative reading along the surface,
 
 ### `xiCert_eq_derivativeCert_of_centreFold_root` (2 declarations, 2 files)
@@ -4440,7 +6536,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `xiCert_isUnit` (2 declarations, 2 files)
 
-- `theorem ArkLib.XiCertReduction.xiCert_isUnit` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:156](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L156) — **The `ξ`-certificate is a UNIT** (monic): the structural GS facts force the certificate to be a non
+- `theorem ArkLib.XiCertReduction.xiCert_isUnit` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:156](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L156) — **The `ξ`-certificate is a UNIT** (monic): the structural GS facts force the certificate to be a non
 - `theorem ArkLib.XiCertReduction.xiCert_isUnit` [ArkLib/ToMathlib/XiCertReduction.lean:187](../../../ArkLib/ToMathlib/XiCertReduction.lean#L187) — **The `ξ`-certificate is a UNIT** (monic): the structural GS facts force the certificate to be a non
 
 ### `xiCert_isUnit_of_centreFold_root` (2 declarations, 2 files)
@@ -4450,20 +6546,20 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `xiCert_natDegree_eq_zero` (2 declarations, 2 files)
 
-- `theorem ArkLib.XiCertReduction.xiCert_natDegree_eq_zero` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:178](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L178) — The `ξ`-certificate has degree zero: it contributes nothing to the `hbig` budget.
+- `theorem ArkLib.XiCertReduction.xiCert_natDegree_eq_zero` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:178](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L178) — The `ξ`-certificate has degree zero: it contributes nothing to the `hbig` budget.
 - `theorem ArkLib.XiCertReduction.xiCert_natDegree_eq_zero` [ArkLib/ToMathlib/XiCertReduction.lean:209](../../../ArkLib/ToMathlib/XiCertReduction.lean#L209) — The `ξ`-certificate has degree zero: it contributes nothing to the `hbig` budget.
 
 ### `xiCert_ne_zero` (2 declarations, 2 files)
 
-- `theorem ArkLib.XiCertReduction.xiCert_ne_zero` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:169](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L169) — **THE CLOSURE: `hxi` holds.**  The `ξ`-certificate nonvanishing of `BranchCertificates.gammaGenuine_
+- `theorem ArkLib.XiCertReduction.xiCert_ne_zero` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:169](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L169) — **THE CLOSURE: `hxi` holds.**  The `ξ`-certificate nonvanishing of `BranchCertificates.gammaGenuine_
 - `theorem ArkLib.XiCertReduction.xiCert_ne_zero` [ArkLib/ToMathlib/XiCertReduction.lean:200](../../../ArkLib/ToMathlib/XiCertReduction.lean#L200) — **THE CLOSURE: `hxi` holds.**  The `ξ`-certificate nonvanishing of `BranchCertificates.gammaGenuine_
 
 ### `xi_ne_zero` (2 declarations, 2 files)
 
-- `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:188](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L188) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
+- `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:188](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L188) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/XiCertReduction.lean:219](../../../ArkLib/ToMathlib/XiCertReduction.lean#L219) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 194 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 239 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 
@@ -4515,31 +6611,31 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `ArkLib.SeqComposeRbrKnowledge.seqComposeError_eq_append` [ArkLib/OracleReduction/Composition/Sequential/SeqComposeRbrKnowledgeProof.lean:130](../../../ArkLib/OracleReduction/Composition/Sequential/SeqComposeRbrKnowledgeProof.lean#L130) vs `ArkLib.SeqComposeRbrSoundness.seqComposeError_eq_append` [ArkLib/ProofSystem/Sumcheck/Spec/SeqComposeRbrSoundness.lean:152](../../../ArkLib/ProofSystem/Sumcheck/Spec/SeqComposeRbrSoundness.lean#L152)
     - a: **The composed RBR error, indexed via `seqComposeChallengeIdxToSigma` over the global challenge inde
     - b: **The composed RBR error, indexed via `seqComposeChallengeIdxToSigma` over the global challenge inde
-- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:102](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L102) vs `Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171)
+- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:98](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L98) vs `Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171)
     - a: The full Binary Basefold protocol as a Proof
     - b: The full Binary Basefold protocol as a Proof
-- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:102](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L102) vs `RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:99](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L99)
+- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:98](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L98) vs `RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:111](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L111)
     - a: The full Binary Basefold protocol as a Proof
     - b: The full Binary Basefold protocol as a Proof
-- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:74](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L74) vs `Binius.FRIBinius.FullFRIBinius.fullOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:140](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L140)
+- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:70](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L70) vs `Binius.FRIBinius.FullFRIBinius.fullOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:140](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L140)
     - a: The reduction for the full Binary Basefold protocol
     - b: The reduction for the full Binary Basefold protocol
-- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:74](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L74) vs `RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:87](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L87)
+- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:70](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L70) vs `RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:99](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L99)
     - a: The reduction for the full Binary Basefold protocol
     - b: The reduction for the full Binary Basefold protocol
-- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:117](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L117) vs `Binius.FRIBinius.FullFRIBinius.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:191](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L191)
+- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:113](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L113) vs `Binius.FRIBinius.FullFRIBinius.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:191](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L191)
     - a: Perfect completeness for the full Binary Basefold protocol (reduction)
     - b: Perfect completeness for the full Binary Basefold protocol (reduction)
-- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:51](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L51) vs `Binius.FRIBinius.FullFRIBinius.fullOracleVerifier` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:114](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L114)
+- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:47](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L47) vs `Binius.FRIBinius.FullFRIBinius.fullOracleVerifier` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:114](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L114)
     - a: The oracle verifier for the full Binary Basefold protocol
     - b: The oracle verifier for the full Binary Basefold protocol
-- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:51](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L51) vs `RingSwitching.FullRingSwitching.fullOracleVerifier` [ArkLib/ProofSystem/RingSwitching/General.lean:63](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L63)
+- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:47](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L47) vs `RingSwitching.FullRingSwitching.fullOracleVerifier` [ArkLib/ProofSystem/RingSwitching/General.lean:63](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L63)
     - a: The oracle verifier for the full Binary Basefold protocol
     - b: The oracle verifier for the full Binary Basefold protocol
-- **1.00** `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean:162](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean#L162) vs `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps_farLiftLocal` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Prop421Case2FarLift.lean:321](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Prop421Case2FarLift.lean#L321)
+- **1.00** `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean:162](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean#L162) vs `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps_farLiftLocal` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/SoundnessCase2FarLift.lean:321](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/SoundnessCase2FarLift.lean#L321)
     - a: Source Hamming distance is bounded by the number of bad quotient fibers times the fiber size. Local
     - b: Source Hamming distance is bounded by the number of bad quotient fibers times the fiber size. Local
-- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1444](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1444) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:452](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L452)
+- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1441](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1441) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:492](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L492)
     - a: This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
     - b: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1309](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1309) vs `RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1513](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1513)
@@ -4551,10 +6647,10 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1320](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1320) vs `RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1516](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1516)
     - a: The round-by-round extractor for the final sumcheck step
     - b: The round-by-round extractor for the final sumcheck step
-- **1.00** `Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171) vs `RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:99](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L99)
+- **1.00** `Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171) vs `RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:111](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L111)
     - a: The full Binary Basefold protocol as a Proof
     - b: The full Binary Basefold protocol as a Proof
-- **1.00** `Binius.FRIBinius.FullFRIBinius.fullOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:140](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L140) vs `RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:87](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L87)
+- **1.00** `Binius.FRIBinius.FullFRIBinius.fullOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:140](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L140) vs `RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:99](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L99)
     - a: The reduction for the full Binary Basefold protocol
     - b: The reduction for the full Binary Basefold protocol
 - **1.00** `Binius.FRIBinius.FullFRIBinius.fullOracleVerifier` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:114](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L114) vs `RingSwitching.FullRingSwitching.fullOracleVerifier` [ArkLib/ProofSystem/RingSwitching/General.lean:63](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L63)
@@ -4578,24 +6674,105 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `DeBruijnTwoPrime.packet_mul_coeff` [ArkLib/Data/CodingTheory/ProximityGap/DeBruijnTwoPrime.lean:89](../../../ArkLib/Data/CodingTheory/ProximityGap/DeBruijnTwoPrime.lean#L89) vs `MixedRadixTower.packet_mul_coeff` [ArkLib/Data/CodingTheory/ProximityGap/MixedRadixTower.lean:510](../../../ArkLib/Data/CodingTheory/ProximityGap/MixedRadixTower.lean#L510)
     - a: Slices of a geometric-packet multiple: if `deg R < q` then `(Σ_{i<p} X^(iq) · R).coeff (iq + s) = R.
     - b: Slices of a geometric-packet multiple: if `deg R < q` then `(Σ_{i<p} X^{iq} · R).coeff (iq + s) = R.
+- **1.00** `DuplexSpongeFS.Paper.getElem_idx_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:49](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L49) vs `DuplexSpongeFS.Sponge316.getElem_idx_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:286](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L286)
+    - a: Transport a `List.getElem` along a `Nat` index equality.
+    - b: Transport a `List.getElem` along a `Nat` index equality.
+- **1.00** `DuplexSpongeFS.Paper.getElem_idx_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:49](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L49) vs `DuplexSpongeFS.Sponge316.getElem_idx_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:286](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L286)
+    - a: Transport a `List.getElem` along a `Nat` index equality.
+    - b: Transport a `List.getElem` along a `Nat` index equality.
+- **1.00** `DuplexSpongeFS.Paper.getElem_idx_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:49](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L49) vs `DuplexSpongeFS.Sponge316.getElem_idx_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:286](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L286)
+    - a: Transport a `List.getElem` along a `Nat` index equality.
+    - b: Transport a `List.getElem` along a `Nat` index equality.
 - **1.00** `DuplexSpongeFS.Paper.getElem_idx_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:49](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L49) vs `DuplexSpongeFS.Sponge316.getElem_idx_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:286](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L286)
     - a: Transport a `List.getElem` along a `Nat` index equality.
     - b: Transport a `List.getElem` along a `Nat` index equality.
+- **1.00** `DuplexSpongeFS.Paper.getElem_list_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L53) vs `DuplexSpongeFS.Sponge316.getElem_list_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:292](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L292)
+    - a: Transport a `List.getElem` along a list equality.
+    - b: Transport a `List.getElem` along a list equality.
+- **1.00** `DuplexSpongeFS.Paper.getElem_list_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaper.lean#L53) vs `DuplexSpongeFS.Sponge316.getElem_list_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:292](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L292)
+    - a: Transport a `List.getElem` along a list equality.
+    - b: Transport a `List.getElem` along a list equality.
+- **1.00** `DuplexSpongeFS.Paper.getElem_list_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L53) vs `DuplexSpongeFS.Sponge316.getElem_list_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:292](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L292)
+    - a: Transport a `List.getElem` along a list equality.
+    - b: Transport a `List.getElem` along a list equality.
 - **1.00** `DuplexSpongeFS.Paper.getElem_list_congr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514Paper.lean#L53) vs `DuplexSpongeFS.Sponge316.getElem_list_congrD` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:292](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L292)
     - a: Transport a `List.getElem` along a list equality.
     - b: Transport a `List.getElem` along a list equality.
+- **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:354](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L354) vs `DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:263](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L263)
+    - a: Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+    - b: Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+- **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:354](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L354) vs `DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:263](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L263)
+    - a: Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+    - b: Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
 - **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:354](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L354) vs `DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:263](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L263)
     - a: Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
     - b: Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+- **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:354](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L354) vs `DuplexSpongeFS.Sponge316.TimePCounter.dedup_eq'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:263](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L263)
+    - a: Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+    - b: Subtype form of `dedup_eq`, used to reduce the `let`-destructuring in the events.
+- **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.not_E_trcF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:365](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L365) vs `DuplexSpongeFS.Sponge316.TimePCounter.not_E_trc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:274](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L274)
+    - a: The combined bad event `E` does NOT fire on the countermodel trace.
+    - b: The combined bad event `E` does NOT fire on the countermodel trace.
+- **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.not_E_trcF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:365](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L365) vs `DuplexSpongeFS.Sponge316.TimePCounter.not_E_trc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:274](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L274)
+    - a: The combined bad event `E` does NOT fire on the countermodel trace.
+    - b: The combined bad event `E` does NOT fire on the countermodel trace.
 - **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.not_E_trcF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:365](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L365) vs `DuplexSpongeFS.Sponge316.TimePCounter.not_E_trc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:274](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L274)
     - a: The combined bad event `E` does NOT fire on the countermodel trace.
     - b: The combined bad event `E` does NOT fire on the countermodel trace.
+- **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.not_E_trcF` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:365](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L365) vs `DuplexSpongeFS.Sponge316.TimePCounter.not_E_trc` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:274](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L274)
+    - a: The combined bad event `E` does NOT fire on the countermodel trace.
+    - b: The combined bad event `E` does NOT fire on the countermodel trace.
+- **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.trcA` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:84](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L84) vs `DuplexSpongeFS.Sponge316.ForkCounter.trcB` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:87](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L87)
+    - a: Intermediate trace after erasing slot 2 first.
+    - b: Intermediate trace after erasing slot 4 first.
+- **1.00** `DuplexSpongeFS.Sponge316.ForkCounter.trcA` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:84](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L84) vs `DuplexSpongeFS.Sponge316.ForkCounter.trcB` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:87](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L87)
+    - a: Intermediate trace after erasing slot 2 first.
+    - b: Intermediate trace after erasing slot 4 first.
+- **1.00** `DuplexSpongeFS.Sponge316.TimePCounter.index_step1` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:130](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L130) vs `DuplexSpongeFS.Sponge316.TimePCounter.index_step2` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:150](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L150)
+    - a: The chain index of step 1 (pair `(sA, sB)`) is the raw slot `3`.
+    - b: The chain index of step 2 (pair `(sa, sb)`) is the raw slot `1`.
+- **1.00** `DuplexSpongeFS.Sponge316.TimePCounter.index_step1` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:130](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L130) vs `DuplexSpongeFS.Sponge316.TimePCounter.index_step2` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:150](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L150)
+    - a: The chain index of step 1 (pair `(sA, sB)`) is the raw slot `3`.
+    - b: The chain index of step 2 (pair `(sa, sb)`) is the raw slot `1`.
+- **1.00** `DuplexSpongeFS.Sponge316.TimePCounter.slots_pair_ASB` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:114](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L114) vs `DuplexSpongeFS.Sponge316.TimePCounter.slots_pair_asb` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:122](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L122)
+    - a: Entry 3 is the unique trace slot holding either orientation of the pair `(sA, sB)`.
+    - b: Entry 1 is the unique trace slot holding either orientation of the pair `(sa, sb)`.
+- **1.00** `DuplexSpongeFS.Sponge316.TimePCounter.slots_pair_ASB` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:114](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L114) vs `DuplexSpongeFS.Sponge316.TimePCounter.slots_pair_asb` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:122](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L122)
+    - a: Entry 3 is the unique trace slot holding either orientation of the pair `(sA, sB)`.
+    - b: Entry 1 is the unique trace slot holding either orientation of the pair `(sa, sb)`.
+- **1.00** `DuplexSpongeFS.Sponge316.firstGuardD_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:118](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L118) vs `DuplexSpongeFS.Sponge316.firstGuard_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:69](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L69)
+    - a: Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+    - b: Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+- **1.00** `DuplexSpongeFS.Sponge316.firstGuardD_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:118](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L118) vs `DuplexSpongeFS.Sponge316.firstGuard_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:69](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L69)
+    - a: Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+    - b: Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+- **1.00** `DuplexSpongeFS.Sponge316.firstGuardD_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:118](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L118) vs `DuplexSpongeFS.Sponge316.firstGuard_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:69](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L69)
+    - a: Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+    - b: Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
 - **1.00** `DuplexSpongeFS.Sponge316.firstGuardD_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:118](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L118) vs `DuplexSpongeFS.Sponge316.firstGuard_eraseIdx` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:69](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L69)
     - a: Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
     - b: Shifting a "no prior occurrence below `i`" guard through `eraseIdx`.
+- **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:306](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L306) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:203](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L203)
+    - a: **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+    - b: **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+- **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:306](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L306) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:203](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L203)
+    - a: **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+    - b: **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+- **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:306](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L306) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:203](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L203)
+    - a: **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+    - b: **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
 - **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:306](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L306) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:203](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L203)
     - a: **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
     - b: **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete hash entr
+- **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:227](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L227) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:330](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L330)
+    - a: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
+    - b: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
+- **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:227](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L227) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:330](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L330)
+    - a: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
+    - b: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
+- **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:227](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L227) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:330](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L330)
+    - a: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
+    - b: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
 - **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:227](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L227) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:330](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L330)
     - a: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
     - b: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
@@ -4626,85 +6803,4 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `KZG.CommitmentScheme.map_binding_instance_drag` [ArkLib/CommitmentScheme/KZG/Binding.lean:639](../../../ArkLib/CommitmentScheme/KZG/Binding.lean#L639) vs `KZG.CommitmentScheme.map_instance_drag` [ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean:534](../../../ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean#L534)
     - a: Transition 3: dragging the map into the probability event.
     - b: Transition 3: dragging the map into the probability event
-- **1.00** `Logup.simulateQ_optionT_failure'` [ArkLib/ProofSystem/Logup/Security/OuterRun.lean:52](../../../ArkLib/ProofSystem/Logup/Security/OuterRun.lean#L52) vs `ToyProblem.Spec.simulateQ_optionT_failure` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:643](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L643)
-    - a: `simulateQ` commutes with `OptionT` `failure`.
-    - b: `simulateQ` commutes with `OptionT` `failure`.
-- **1.00** `Logup.simulateQ_optionT_pure'` [ArkLib/ProofSystem/Logup/Security/OuterRun.lean:44](../../../ArkLib/ProofSystem/Logup/Security/OuterRun.lean#L44) vs `ToyProblem.Spec.simulateQ_optionT_pure` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:636](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L636)
-    - a: `simulateQ` commutes with `OptionT.pure`.
-    - b: `simulateQ` commutes with `OptionT.pure`.
-- **1.00** `Logup.simulateQ_simOracle2_leftQuery_oc'` [ArkLib/ProofSystem/Logup/Security/OuterRun.lean:129](../../../ArkLib/ProofSystem/Logup/Security/OuterRun.lean#L129) vs `ToyProblem.Spec.simulateQ_simOracle2_leftQuery_oc` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:733](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L733)
-    - a: `simOracle2` oracle-statement-query collapse (`OracleComp` form), LEFT (oracle) family.
-    - b: `simOracle2` oracle-statement-query collapse (`OracleComp` form), LEFT (oracle) family.
-- **1.00** `OracleSpec.QueryLog.BadEventDS.E_removeRedundantEntryDS_iff` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean:231](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean#L231) vs `OracleSpec.QueryLog.BadEventDSPaper.E_removeRedundantEntryDSPaper_iff` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean:207](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean#L207)
-    - a: The combined bad event only depends on the deduplicated base trace.
-    - b: The combined bad event only depends on the deduplicated base trace.
-- **1.00** `OracleSpec.QueryLog.BadEventDS.capacitySegmentDup` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean:208](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean#L208) vs `OracleSpec.QueryLog.BadEventDSPaper.capacitySegmentDup` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean:184](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean#L184)
-    - a: The combined capacity segment collision event. This occurs if there is any capacity segment collisio
-    - b: The combined capacity segment collision event. This occurs if there is any capacity segment collisio
-- **1.00** `OracleSpec.QueryLog.BadEventDS.lemma_5_10` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean:379](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean#L379) vs `OracleSpec.QueryLog.BadEventDSPaper.lemma_5_10` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean:355](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean#L355)
-    - a: CO25 Lemma 5.10, current trace-event form. If the combined bad event `E(tr)` does not occur, then th
-    - b: CO25 Lemma 5.10, current trace-event form. If the combined bad event `E(tr)` does not occur, then th
-- **1.00** `Probability.uniformSizeSubset_apply_mapEquiv` [ArkLib/Data/Probability/Combinatorial.lean:168](../../../ArkLib/Data/Probability/Combinatorial.lean#L168) vs `Probability.uniformSizedSubset_apply_mapEquiv` [ArkLib/Data/Probability/UniformSubset.lean:115](../../../ArkLib/Data/Probability/UniformSubset.lean#L115)
-    - a: Uniform fixed-size subset sampling is invariant under equivalence of ambient finite types.
-    - b: Uniform fixed-size subset sampling is invariant under equivalence of ambient finite types.
-- **1.00** `Prover.processRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:491](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L491) vs `Prover.processRoundFS` [ArkLib/OracleReduction/FiatShamir/Basic.lean:80](../../../ArkLib/OracleReduction/FiatShamir/Basic.lean#L80)
-    - a: Prover's function for processing the next round, given the current result of the previous round. Thi
-    - b: Prover's function for processing the next round, given the current result of the previous round. Thi
-- **1.00** `Prover.runToRound` [ArkLib/OracleReduction/Execution.lean:60](../../../ArkLib/OracleReduction/Execution.lean#L60) vs `Prover.runToRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:524](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L524)
-    - a: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-    - b: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-- **1.00** `Prover.runToRound` [ArkLib/OracleReduction/Execution.lean:60](../../../ArkLib/OracleReduction/Execution.lean#L60) vs `Prover.runToRoundFS` [ArkLib/OracleReduction/FiatShamir/Basic.lean:102](../../../ArkLib/OracleReduction/FiatShamir/Basic.lean#L102)
-    - a: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-    - b: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-- **1.00** `Prover.runToRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:524](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L524) vs `Prover.runToRoundFS` [ArkLib/OracleReduction/FiatShamir/Basic.lean:102](../../../ArkLib/OracleReduction/FiatShamir/Basic.lean#L102)
-    - a: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-    - b: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-- **1.00** `ProximityGap.GrandChallengesLattice.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean:626](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean#L626) vs `ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean#L208)
-    - a: Every ABF26 prize rate is at most `1/2`.
-    - b: Every ABF26 prize rate is at most `1/2`.
-- **1.00** `ProximityGap.RS_goodCoeffsCurve_finCongr` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:194](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L194) vs `ProximityGap.RS_goodCoeffsCurve_finCongr_core` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:1082](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L1082)
-    - a: `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its `Fin (k + 1)` coefficient word
-    - b: `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its `Fin (k + 1)` coefficient word
-- **1.00** `ProximityPrize.HenselExistence.coeff_S_succ_of_le` [ArkLib/Data/Polynomial/HenselExistence.lean:197](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L197) vs `ProximityPrize.HenselSeriesCoeff.coeff_S_succ_of_le` [ArkLib/Data/Polynomial/HenselSeriesCoeff.lean:275](../../../ArkLib/Data/Polynomial/HenselSeriesCoeff.lean#L275)
-    - a: Adding the order-`(t+1)` monomial leaves coefficients `≤ t` unchanged.
-    - b: Adding the order-`(t+1)` monomial leaves coefficients `≤ t` unchanged.
-- **1.00** `ProximityPrize.HenselExistence.coeff_γ_eq_S` [ArkLib/Data/Polynomial/HenselExistence.lean:236](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L236) vs `ProximityPrize.HenselSeriesCoeff.coeff_γ_eq_S` [ArkLib/Data/Polynomial/HenselSeriesCoeff.lean:312](../../../ArkLib/Data/Polynomial/HenselSeriesCoeff.lean#L312)
-    - a: `γ` agrees with the `t`-th partial sum below order `t + 1`.
-    - b: `γ` agrees with the `t`-th partial sum below order `t + 1`.
-- **1.00** `ProximityPrize.HenselExistence.constantCoeff_γ` [ArkLib/Data/Polynomial/HenselExistence.lean:231](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L231) vs `ProximityPrize.HenselSeriesCoeff.constantCoeff_γ` [ArkLib/Data/Polynomial/HenselSeriesCoeff.lean:307](../../../ArkLib/Data/Polynomial/HenselSeriesCoeff.lean#L307)
-    - a: The constant coefficient of the Newton root is the prescribed root `c`.
-    - b: The constant coefficient of the Newton root is the prescribed root `c`.
-- **1.00** `R12.linearIndependent_pow_le` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean#L62) vs `R12J.linearIndependent_pow_le` [ArkLib/Data/CodingTheory/ProximityGap/JointT2Unconditional.lean:93](../../../ArkLib/Data/CodingTheory/ProximityGap/JointT2Unconditional.lean#L93)
-    - a: UNCONDITIONAL: over a field `K`, the first `N` powers of `ζ` are `K`-linearly independent whenever `
-    - b: UNCONDITIONAL: over a field `K`, the first `N` powers of `ζ` are `K`-linearly independent whenever `
-- **1.00** `Reduction.dsfs_lift_query_bridge_inl` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:166](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L166) vs `Reduction.dsfs_lift_query_bridge_inl₂` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:232](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L232)
-    - a: Bridge: annotated vs direct lift of a single left-side query.
-    - b: Bridge: annotated vs direct lift of a single left-side query.
-- **1.00** `Reduction.dsfs_lift_query_bridge_inl` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:171](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L171) vs `Reduction.dsfs_lift_query_bridge_inl₂` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:226](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L226)
-    - a: Bridge: annotated vs direct lift of a single left-side query.
-    - b: Bridge: annotated vs direct lift of a single left-side query.
-- **1.00** `Reduction.hcoh_right` [ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges.lean:147](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges.lean#L147) vs `Reduction.hcoh_right'` [ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges2.lean:130](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges2.lean#L130)
-    - a: **`OptionT`-level lift transitivity through the `pSpec₂` challenge seam.** The `pSpec₂` analogue of
-    - b: **`OptionT`-level lift transitivity through the `pSpec₂` challenge seam.** The `pSpec₂` analogue of
-- **1.00** `Round20CliqueKernel.cliqueLocator` [ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueKernelStructure.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueKernelStructure.lean#L60) vs `Round21Relations.cliqueLocator` [ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueRelationModule.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueRelationModule.lean#L56)
-    - a: The clique error locator at vertex `α`: `Λ_{W∖{α}} = ∏_{β ∈ W.erase α} (X − β)`.
-    - b: The clique error locator at vertex `α`: `Λ_{W∖{α}} = ∏_{β ∈ W.erase α} (X − β)`.
-- **1.00** `Round23Rigidity.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityBaseCasePairs.lean:38](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityBaseCasePairs.lean#L38) vs `Round24Triples.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityTriplesSunflower.lean:44](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityTriplesSunflower.lean#L44)
-    - a: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
-    - b: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
-- **1.00** `Round23Rigidity.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityBaseCasePairs.lean:38](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityBaseCasePairs.lean#L38) vs `Round25General.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean:50](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean#L50)
-    - a: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
-    - b: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
-- **1.00** `Round24Triples.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityTriplesSunflower.lean:44](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityTriplesSunflower.lean#L44) vs `Round25General.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean:50](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean#L50)
-    - a: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
-    - b: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
-- **1.00** `Round26Recursion.even_psum_halves` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L96) vs `Round28FullWindow.even_psum_halves` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:98](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L98)
-    - a: **The even power sums halve:** for antipodally-closed `A`, `p_{2l}(A) = 2 · p_l(A²)` — summing `x^{2
-    - b: **The even power sums halve:** for antipodally-closed `A`, `p_{2l}(A) = 2 · p_l(A²)` — summing `x^{2
-- **1.00** `Round26Recursion.odd_psum_vanish` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:52](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L52) vs `Round28FullWindow.odd_psum_vanish` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L54)
-    - a: **Odd power sums vanish identically on antipodally-closed sets** (the Round-8 engine at `ω = −1`): p
-    - b: **Odd power sums vanish identically on antipodally-closed sets** (the Round-8 engine at `ω = −1`): p
-- **1.00** `Round26Recursion.squares_disjoint` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:131](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L131) vs `Round28FullWindow.squares_disjoint` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:133](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L133)
-    - a: **Disjointness descends to the squares:** if `A, B` are antipodally closed and disjoint, then `A²` a
-    - b: **Disjointness descends to the squares:** if `A, B` are antipodally closed and disjoint, then `A²` a
 
