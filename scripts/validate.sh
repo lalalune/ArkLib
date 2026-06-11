@@ -70,7 +70,7 @@ python3 ./scripts/forbidden_tokens.py
 
 echo ""
 echo "# Building project"
-lake build 2>&1 | tee "$build_log"
+./scripts/lake-locked.sh build 2>&1 | tee "$build_log"
 
 echo ""
 echo "# Checking Data warning budget"
@@ -111,7 +111,7 @@ fi
 if (( run_docs )); then
   echo ""
   echo "# Building API docs"
-  DISABLE_EQUATIONS=1 lake build ArkLib:docs
+  DISABLE_EQUATIONS=1 ./scripts/lake-locked.sh build ArkLib:docs
 fi
 
 if (( run_site )); then

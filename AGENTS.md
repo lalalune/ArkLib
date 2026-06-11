@@ -8,7 +8,7 @@ Start with [`README.md`](README.md) for project overview.
 ## Fast Start
 
 1. For a convenient routine check, start with `./scripts/validate.sh`.
-2. On a cold clone, run `lake exe cache get` first.
+2. On a cold clone, run `./scripts/lake-locked.sh exe cache get` first.
 3. If you add, rename, or delete files under `ArkLib/`, `git add` new paths before validation.
 4. If you also want Lean style linting, run `./scripts/validate.sh --lint`.
 5. For docstring or docs work, `./scripts/validate.sh --docs` is a convenient add-on check.
@@ -27,6 +27,13 @@ Start with [`README.md`](README.md) for project overview.
 
 ## Guardrails
 
+- Never run bare `lake build` / `lake exe cache get` when other agents may be building on the
+  same machine: use `./scripts/lake-locked.sh build <targets>` (and
+  `./scripts/lake-locked.sh exe cache get`). It serializes builds per checkout, caps
+  machine-wide build concurrency, and auto-repairs a missing mathlib olean cache before
+  building. Unserialized concurrent builds corrupt `.lake` artifacts and silently fall back to
+  compiling Mathlib from source. See
+  [`docs/wiki/quickstart.md`](docs/wiki/quickstart.md).
 - Lean defaults: `autoImplicit = false`; the long-file linter cap is `1500` unless a file opts
   out locally.
 - `ArkLib.lean` is generated; do not hand-edit it.
