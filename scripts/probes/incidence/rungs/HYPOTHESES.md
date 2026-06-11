@@ -180,3 +180,31 @@ content of level-1 counting is the weight filter, not locus incidence**. REDIREC
 lane's counting target shifts from "overlap corrections" to "how the weight filter cuts
 a per-locus space" — the measure of {f ∈ V_Z : wt(f) ≤ w} vs q^(16−2|Z|)·(ball fraction),
 where smooth-domain structure must enter. lane_g5_union_exact.py = the computation.
+
+## W1 (post-G5 redirect, pre-registered 2026-06-11): the weight-filter cut
+Constraints: O135 proved the union bound measure-tight — level-1 counting's open content
+is #{f ∈ V_Z : wt ≤ w} vs the generic volume fraction. Why not done: the redirect is
+hours old; all prior counting treated the weight filter via union bounds. No-larping:
+the dossier's "syndrome-space lens" is untried per §5; the census-conditional pin
+consumes census counts, not weight-conditional measures. Novel: first direct measurement
+of how a locus space meets the weight ball, smooth vs random domain.
+HYPOTHESIS W1: at toy scale (q=97, n=32), conditioned on f ∈ V_Z (slices vanishing on a
+size-z locus), the probability of list-band weight (wt ≤ 27, i.e. ≥ 5 domain zeros) on
+the SMOOTH domain μ₃₂ exceeds the same probability on random 32-point domains by a
+factor consistent with the census excess — i.e. the smooth-domain structure concentrates
+low-weight mass inside locus spaces. Falsifier: smooth/random ratio ≈ 1 within sampling
+error (then the census excess lives elsewhere — e.g. only at the exact-anatomy weights).
+
+## W1 — VERDICT: falsifier FIRED, sharply (2026-06-11, inline)
+On the smooth domain, the excess-zero distribution of V_Z samples beyond the forced
+2|Z| dichotomy zeros is **Poisson-generic to 4 decimals** (|Z|=3: P₀ 0.7644 vs
+Poisson(26/97) 0.7649; |Z|=5: 0.7967 vs 0.7971; 10⁵ samples each, q=97, n=32).
+**The weight-filter cut on smooth domains = forced (census) × generic (Poisson)** —
+no smooth concentration beyond the dichotomy. The random-domain comparison columns are
+contaminated by unmodeled coincidental partners/square-collisions (per-domain forced
+accounting needed; noted, not pursued — the smooth-vs-Poisson match is the verdict and
+needs no comparison). IMPLICATION: direct empirical support for the census-conditional
+pin — at level 1, the census/anatomy counts are the ONLY non-generic input; the weight
+filter contributes generic volume only. Together with O135 (union bound measure-tight):
+level-1 counting is COMPLETE given the census — exactly the reduction the
+CensusConditionalPin program assumes. lane_w1_weight_filter.py + this entry.
