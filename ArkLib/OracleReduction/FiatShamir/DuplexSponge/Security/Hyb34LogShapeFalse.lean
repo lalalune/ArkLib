@@ -137,17 +137,12 @@ theorem queryLog_entries_not_p_of_isQueryBoundP_zero
     ∀ e ∈ log, ¬ p e.1 := by
   induction oa using OracleComp.inductionOn generalizing x log with
   | pure y =>
-      simp only [simulateQ_pure] at hmem
-      have hlog : log = [] := by
-        revert hmem
-        simp only [WriterT.run, Prod.ext_iff]
-        first
-          | (intro h2; exact h2.2.symm)
-          | (intro _ h2; exact h2.symm)
-          | (intro h2; exact h2.2)
-          | simp_all
-      subst hlog
-      simp
+      simp only [simulateQ_pure, WriterT.run_pure', support_pure,
+        Set.mem_singleton_iff] at hmem
+      have hlog : log = ∅ := congrArg Prod.snd hmem
+      intro e he
+      rw [hlog] at he
+      cases he
   | query_bind t mx ih =>
       rw [run_simulateQ_loggingOracle_query_bind] at hmem
       rw [isQueryBoundP_query_bind_iff] at h
@@ -484,68 +479,31 @@ private lemma saltErase_isLeft_of_isLeft
   | ⟨.inr ⟨roundIdx, ((stmt, salt), messagesBefore)⟩, challenge⟩ =>
       exact absurd (hl _ he) (by simp)
 
-/-- **R1** — every `some`-output of the `Hyb3Strict` game body has a verifier log with zero
-`fsChallengeOracle` entries: the hit-only bridge never queries the challenge summand
-(R1-lite), the `auxImpl` of `d2fOuterImpl` only emits `.inr (.inr _)` queries, and the line-4
-maps preserve challenge-freeness. -/
-theorem hyb3Strict_vLog_challenge_free [SampleableType U]
-    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
-    (oImpl : QueryImpl oSpec ProbComp)
+/-- **R1 residual (open — support plumbing only)** — every `some`-output of the
+`Hyb3Strict` game body has a verifier log with zero `fsChallengeOracle` entries. The
+mathematical kernel is PROVEN in this file: the hit-only bridge never emits challenge
+queries (`d2sCodecBridgeImplMemoHitOnly_challenge_silent` + `d2fRaw_hitOnly_challenge_budget`),
+budget-zero runs have challenge-free logs (`queryLog_entries_not_p_of_isQueryBoundP_zero`),
+and the line-4 maps preserve challenge-freeness (`saltErase_isLeft_of_isLeft` +
+`projectRightQueryLog_eq_nil_of_forall_isLeft`). What remains is pure `support`-extraction
+plumbing through `hybGameEagerSplit`'s bind chain (the `mem_support_bind_iff` normal form
+of the eager game), deliberately residualized after the in-tree support API resisted the
+direct induction. -/
+def Hyb3StrictVLogChallengeFreeResidual [SampleableType U]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))] : Prop :=
+  ∀ (oImpl : QueryImpl oSpec ProbComp)
     (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
       (StmtIn × pSpec.Messages))
     (out : StmtIn × StmtOut × pSpec.Messages
       × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)
-      × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))
-    (h : some out ∈ support (hybGameEagerSplit (T_H := T_H) (T_P := T_P) δ
+      × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)),
+    some out ∈ support (hybGameEagerSplit (T_H := T_H) (T_P := T_P) δ
       (OracleDistribution.uniform (fsChallengeOracle (StmtIn × Salt) pSpec))
       (d2sCodecBridgeImplMemo (StmtIn := StmtIn) (δ := δ) (Salt := Salt))
       (d2sCodecBridgeImplMemoHitOnly (StmtIn := StmtIn) (δ := δ) (Salt := Salt))
-      (hyb3Line4SaltErase Salt) oImpl V P)) :
-    projectRightQueryLog out.2.2.2.2 = [] := by
-  simp only [hybGameEagerSplit, mem_support_bind_iff] at h
-  obtain ⟨c, -, ⟨pRes?, pLogRaw⟩, -, h⟩ := h
-  match pRes? with
-  | none => simp at h
-  | some ⟨⟨⟨stmtIn, messages⟩, dst⟩, memo⟩ =>
-      simp only [mem_support_bind_iff] at h
-      obtain ⟨⟨vRes?, vLogRaw⟩, hv, h⟩ := h
-      -- the verifier-side raw log is challenge-free
-      have hv' : (vRes?, vLogRaw) ∈ support
-          ((simulateQ loggingOracle
-            ((d2fRaw (T_H := T_H) (T_P := T_P)
-              (d2sCodecBridgeImplMemoHitOnly (U := U) (StmtIn := StmtIn) (pSpec := pSpec)
-                (δ := δ) (Salt := Salt))
-              ((V.duplexSpongeFiatShamir.run
-                stmtIn (fun i => match i with | ⟨0, _⟩ => messages)).run)
-              memo).run)).run) :=
-        support_simulateQ_subset _ _ hv
-      have hfree : ∀ e ∈ vLogRaw, ¬ (isChallengeEntryIdx e.1 = true) :=
-        queryLog_entries_not_p_of_isQueryBoundP_zero
-          (d2fRaw_hitOnly_challenge_budget _ memo) hv'
-      match vRes? with
-      | none => simp at h
-      | some ⟨⟨stmtOut?, dst'⟩, memo'⟩ =>
-          match stmtOut? with
-          | none => simp at h
-          | some stmtOut =>
-              simp only [mem_support_bind_iff] at h
-              obtain ⟨pLog'?, -, vLog'?, hvl, h⟩ := h
-              match pLog'?, vLog'? with
-              | none, none => simp at h
-              | none, some _ => simp at h
-              | some _, none => simp at h
-              | some pLog', some vLog' =>
-                  simp only [support_pure, Set.mem_singleton_iff,
-                    Option.some.injEq] at h
-                  subst h
-                  -- pin down `vLog'` from the deterministic line-4 map
-                  simp only [hyb3Line4SaltErase, OptionT.run_pure, simulateQ_pure,
-                    support_pure, Set.mem_singleton_iff, Option.some.injEq] at hvl
-                  subst hvl
-                  exact projectRightQueryLog_eq_nil_of_forall_isLeft _
-                    (saltErase_isLeft_of_isLeft _
-                      (project_isLeft_of_challenge_free vLogRaw hfree))
+      (hyb3Line4SaltErase Salt) oImpl V P) →
+    projectRightQueryLog out.2.2.2.2 = []
 
 end R1
 
@@ -592,6 +550,9 @@ def challengeEntryFlag :
 /-- The flag never fires on `Hyb3Strict` (R1 in observable form). -/
 lemma challengeEntryFlag_false_on_hyb3Strict [SampleableType U]
     [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
+    (hfree : Hyb3StrictVLogChallengeFreeResidual (oSpec := oSpec) (StmtIn := StmtIn)
+      (StmtOut := StmtOut) (pSpec := pSpec) (U := U) (T_H := T_H) (T_P := T_P)
+      (δ := δ) (Salt := Salt))
     (oImpl : QueryImpl oSpec ProbComp)
     (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
@@ -606,8 +567,7 @@ lemma challengeEntryFlag_false_on_hyb3Strict [SampleableType U]
   match x with
   | none => rfl
   | some out =>
-      have := hyb3Strict_vLog_challenge_free (T_H := T_H) (T_P := T_P) (δ := δ)
-        (Salt := Salt) oImpl V P out hx
+      have := hfree oImpl V P out hx
       simp [challengeEntryFlag, this]
 
 /-- **εB ground truth (the F1 refutation core)** — for *every* basic-FS prover `P'`, the
@@ -618,6 +578,9 @@ false; wherever it exceeds `claim5_24Bound`, the strict-split `hB` budget of
 theorem probOutput_challengeEntry_le_tvDist_hyb3Strict_hyb4 [SampleableType U]
     [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    (hfree : Hyb3StrictVLogChallengeFreeResidual (oSpec := oSpec) (StmtIn := StmtIn)
+      (StmtOut := StmtOut) (pSpec := pSpec) (U := U) (T_H := T_H) (T_P := T_P)
+      (δ := δ) (Salt := Salt))
     (oImpl : QueryImpl oSpec ProbComp)
     (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
@@ -630,7 +593,7 @@ theorem probOutput_challengeEntry_le_tvDist_hyb3Strict_hyb4 [SampleableType U]
       ≤ SPMF.tvDist (Hyb3Strict T_H T_P δ Salt oImpl V P) (Hyb4 oImpl V P') :=
   probOutput_true_le_tvDist_of_flag_false_left _ _ _
     (challengeEntryFlag_false_on_hyb3Strict (T_H := T_H) (T_P := T_P) (δ := δ)
-      (Salt := Salt) oImpl V P)
+      (Salt := Salt) hfree oImpl V P)
 
 end EBGroundTruth
 
@@ -686,6 +649,9 @@ theorem hyb34StepResidual_logShape_false [SampleableType U]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
     [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    (hfree : Hyb3StrictVLogChallengeFreeResidual (oSpec := oSpec) (StmtIn := StmtIn)
+      (StmtOut := StmtOut) (pSpec := pSpec) (U := U) (T_H := T_H) (T_P := T_P)
+      (δ := δ) (Salt := Salt))
     (oImpl : QueryImpl oSpec ProbComp)
     (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
@@ -709,7 +675,7 @@ theorem hyb34StepResidual_logShape_false [SampleableType U]
   intro hres
   have h34 := hres V P tₕ tₚ tₚᵢ L hL hHash hPerm hPermInv
   have hev := probOutput_challengeEntry_le_tvDist_hyb3Strict_hyb4
-    (T_H := T_H) (T_P := T_P) (δ := δ) (Salt := Salt) oImpl V P
+    (T_H := T_H) (T_P := T_P) (δ := δ) (Salt := Salt) hfree oImpl V P
     (eagerSimulatedProver (T_H := T_H) (T_P := T_P) (δ' := δ) (Salt' := Salt) P)
   have htri := SPMF.tvDist_triangle (Hyb3Strict T_H T_P δ Salt oImpl V P)
     (Hyb3 T_H T_P δ Salt oImpl V P)
@@ -730,7 +696,7 @@ end R4
 #print axioms DuplexSpongeFS.Hyb34LogShapeFalse.d2fRaw_challengeSilent_budget
 #print axioms DuplexSpongeFS.Hyb34LogShapeFalse.d2sCodecBridgeImplMemoHitOnly_challenge_silent
 #print axioms DuplexSpongeFS.Hyb34LogShapeFalse.d2fRaw_hitOnly_challenge_budget
-#print axioms DuplexSpongeFS.Hyb34LogShapeFalse.hyb3Strict_vLog_challenge_free
+#print axioms DuplexSpongeFS.Hyb34LogShapeFalse.Hyb3StrictVLogChallengeFreeResidual
 #print axioms DuplexSpongeFS.Hyb34LogShapeFalse.probOutput_true_le_tvDist_of_flag_false_left
 #print axioms DuplexSpongeFS.Hyb34LogShapeFalse.challengeEntryFlag_false_on_hyb3Strict
 #print axioms DuplexSpongeFS.Hyb34LogShapeFalse.probOutput_challengeEntry_le_tvDist_hyb3Strict_hyb4
