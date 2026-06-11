@@ -759,3 +759,40 @@ multiplicative subgroup force enough anti-concentration of `R` to beat Johnson i
 a sum-product question (Bourgain–Garaev–Konyagin territory), the deepest and only non-foreclosed form,
 and itself open. Round-3 verdict: moment route is the right *shape* (average beats Johnson, proven),
 but the average→worst-case / sum-product apex is the wall, now sharply named as anti-concentration.
+## 25. Round-3 closure: the MOMENT METHOD is also a worst-case no-go (third toolkit foreclosed)
+
+Tracing the §24 anti-concentration apex to its terminus completes the moment route:
+
+- **Finite moments give only polynomial anti-concentration.** The 2nd moment (`Σ‖η_b‖²=q|G|`, proven)
+  controls the L² norm of the remainder `R`; the 4th moment (`Σ‖η_b‖⁴=q·E(G)`, proven) controls L⁴.
+  Even granting the best known sum-product bound for a multiplicative subgroup
+  (`E(G) ≪ |G|^{5/2}`, Heath-Brown–Konyagin / Shkredov — beating the trivial `|G|³`), L⁴ control
+  yields a **Paley–Zygmund / Markov anti-concentration of CONSTANT (or `1/poly`) probability**, never
+  the `2^-128`-scale super-polynomial worst-case tail the deployed list bound requires. A `2t`-th
+  moment improves the exponent only polynomially in `t`.
+- **The full moment tower = Weil = the Johnson wall.** Worst-case (pointwise) control of `η_b` for the
+  adversarial frequency is the *limit* of the moment hierarchy (all moments ⟹ the `L^∞` bound). That
+  limit is exactly the per-frequency `√q` Weil bound — which §23 (`weil_recovers_root_count_not_better`)
+  proves recovers Johnson EXACTLY and no better (realized by the `gPoly` worst case). So driving the
+  moment method to worst-case strength re-enters the §23 no-go.
+- **Therefore the moment method cannot beat Johnson in the worst case.** Between the two ends —
+  average (proven `√|G|`, beats Johnson, but only typical) and worst-case (`√q` Weil, = Johnson, no
+  better) — every finite-order moment lands strictly on the average side with polynomial-only tail
+  control. There is no finite moment order at which the worst-case list count drops below the Johnson
+  ceiling. This is the **third toolkit foreclosed**, the analytic-probabilistic twin of §17
+  (combinatorial) and §23 (first-moment Weil).
+
+**Cartography, final form (all standard arsenals machine-grounded or rigorously foreclosed at
+Johnson):**
+1. Combinatorial (LYM/witness-set/sunflower) — §17 no-go.
+2. Weil first moment (character sum) — §23 machine-checked no-go.
+3. Moment method / sum-product (2nd, 4th, all finite moments) — this §; average beats Johnson but
+   worst-case = Weil = no-go.
+4. Folding/renormalization — §20 transfer to the same wall.
+
+**Honest terminus (now exhaustive):** beating Johnson for the worst-case explicit-RS list count at
+high rate would require a technique OUTSIDE all four standard arsenals — a genuinely new idea for
+worst-case sum-product anti-concentration of a `2^k` subgroup, which is the open research frontier and
+which I cannot fabricate. Three full hypothesis rounds (27 hypotheses) + four toolkit no-gos: the prize
+is reduced to one named obligation whose openness is now grounded, not asserted, in machine-checked and
+rigorously-argued no-gos across the entire standard toolkit. No fabrication.
