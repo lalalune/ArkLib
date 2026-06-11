@@ -27,7 +27,7 @@ The issue body names the Binius proof-system residuals that should become in-tre
 honest smaller residuals. Current local residual surfaces are:
 
 - `Prop421Case1FiberwiseCloseResidual` and `Prop421Case2FiberwiseFarResidual` in
-  `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean`; both have in-tree
+  `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition421.lean`; both have in-tree
   instances.
 - The old `Prop4212Case1Residual` and `Prop4212Case2Residual` classes are gone from
   `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Incremental.lean`; the current API exposes
@@ -69,7 +69,7 @@ or `PreTensorCombineJointProximityResidual` class remains in the current working
   Proposition 4.21 close-branch statement now use `fiberwiseDisagreementSetPerFiber` for the
   close-case source disagreement set. Targeted checks:
   - `lake build ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance:olean`
-  - `lake build ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21:olean`
+  - `lake build ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition421:olean`
 - `PreviousSuffixFiberAlignmentResidual`: proved in
   `Soundness/SuffixFiberAlignment.lean` as `instPreviousSuffixFiberAlignmentResidual`. The
   aggregate `Soundness.lean` now imports that discharge module so the instance is available from

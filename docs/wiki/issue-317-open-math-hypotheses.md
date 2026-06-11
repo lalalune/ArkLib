@@ -15,7 +15,7 @@ soundness closeout, after the 2026-06-10 fleet wave discharged
 `ExtractMLPCorrectnessResidual`, and `FoldPreservesBBFCodeMembershipResidual`.
 
 Remaining named classes: `Prop421Case1FiberwiseCloseResidual`,
-`Prop421Case2FiberwiseFarResidual` (`Soundness/Proposition4_21.lean`),
+`Prop421Case2FiberwiseFarResidual` (`Soundness/Proposition421.lean`),
 `Prop4212Case1Residual`, `Prop4212Case2Residual`, and the joint-proximity bridge
 (`Soundness/Incremental.lean`, active separate lane).
 

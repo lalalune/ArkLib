@@ -565,7 +565,7 @@ theorem epsMCAgs_prizeBound_of_uniform_listSize
 prize form: the formalization dropped the FAITHFUL clause on `L`).
 
 Unconditionally refuted in-tree, axiom-clean: `not_uniformEpsMCAgsPrizeBoundConjecture`
-(`MCAGSPrizeRefutation.lean`; duplicate record in `MCAGSRefutationCore_keep.lean`) — a
+(`MCAGSPrizeRefutation.lean`; duplicate record in `MCAGSRefutationCore.lean`) — a
 non-faithful `L = {w₀}` forces `epsMCAgs = 1` over `ZMod p` for `p > 2^(c₂+c₃)`, beating any
 candidate constants.  Kept ONLY as the documented-false statement; the genuinely open
 faithful field-universal surface is `epsMCAgsPrizeUniversalConjecture`.

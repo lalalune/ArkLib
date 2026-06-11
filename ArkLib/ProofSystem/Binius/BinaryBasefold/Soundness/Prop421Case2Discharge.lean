@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition421
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Probability
 
 /-!
@@ -12,7 +12,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Probabilit
 
 `Prop421Case2FiberwiseFarResidual` (the block-level fiberwise-far branch of DP24
 Proposition 4.21) receives its global instance here, welding the residual interface in
-`Soundness.Proposition4_21` to the fully-proven probability bound
+`Soundness.Proposition421` to the fully-proven probability bound
 `prop421Case2_probability_bound` in `Soundness.Prop421Case2Probability` (which combines the
 fold/pre-tensor multilinear bridge from `Soundness.Incremental` with the Lemma-4.22 far
 lift of `Soundness.Prop421Case2FarLift`).

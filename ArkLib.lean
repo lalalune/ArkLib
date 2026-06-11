@@ -829,6 +829,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityQuadratic
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacitySharpSpread
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacitySpreadOptimal
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
+import ArkLib.Data.CodingTheory.ProximityGap.MCAResearchLoop
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
@@ -1012,7 +1013,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowMassSpan
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
-import ArkLib.Data.CodingTheory.ProximityGap._mca_research_loop
 import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
@@ -1188,8 +1188,8 @@ import ArkLib.Data.UniPoly.Basic
 import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
-import ArkLib.MCACapacityTrivial_keep
-import ArkLib.MCAGSRefutationCore_keep
+import ArkLib.MCACapacityTrivial
+import ArkLib.MCAGSRefutationCore
 import ArkLib.OracleReduction.BCS.AppendSoundnessMsg
 import ArkLib.OracleReduction.BCS.BCSCompilerProof
 import ArkLib.OracleReduction.BCS.Basic
@@ -1448,7 +1448,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Assembly
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Discharge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2FarLift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Probability
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition421
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixAlignCore
@@ -2142,4 +2142,4 @@ import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
 import ArkLib.ToVCVio.UniformFamilyComap
-import ArkLib.whir113keystone
+import ArkLib.Whir113Keystone

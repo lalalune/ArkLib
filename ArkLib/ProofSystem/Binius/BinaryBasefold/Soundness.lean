@@ -8,7 +8,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixFiberAlignment
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition421
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Discharge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Incremental
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorMultilinear
@@ -25,7 +25,7 @@ This module packages the central bad-sumcheck probability estimate and re-export
 soundness submodules:
 1. `Soundness.QueryPhasePrelims` for query-phase helper definitions and logical/monadic
    alignment
-2. `Soundness.Lift`, `Soundness.Proposition4_21`, `Soundness.Incremental`, and
+2. `Soundness.Lift`, `Soundness.Proposition421`, `Soundness.Incremental`, and
    `Soundness.FoldDistance` for the folding and distance lemmas behind archived-DP24
    Propositions/Lemmas 4.21-4.25, with the full incremental Proposition 4.21.2 argument now
    living in `Soundness.Incremental`

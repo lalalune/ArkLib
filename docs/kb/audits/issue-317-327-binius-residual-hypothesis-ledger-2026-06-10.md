@@ -20,8 +20,8 @@ consumer map + degeneracy check), cross-checked in the orchestrator loop. Classi
 | 2 | `Prop4212Case1Residual` | Soundness/Incremental.lean:230 | provable as stated (post per-fiber migration) | one new brick (`qMap_total_fiber_succ_peel_first`, bottom/LSB fiber peel) + per-y affine SZ + union bound; probability layer (`Pr_le_Pr_of_implies`, `prob_uniform_eq_card_filter_div_card`) exists |
 | 3 | `Prop4212Case2Residual` | Soundness/Incremental.lean:1852 | weld-distance | all 5 chain deps proven incl. the full DG25 layer; remaining: residual #4 + the `s = 0` boundary of the close→affine-line bridge |
 | 4 | `PreTensorCombineJointProximityResidual` | Soundness/Incremental.lean:1659 | **FALSE as stated** (audit w/ counterexample) | the hypothesis `fiberwiseClose` is degenerate (source-level Hamming UDR `2·Δ₀(f,C^{(i)}) < d_i`, steps/destIdx phantom) — ~`2^steps`× too weak for the destination-UDR conclusion. Counterexample at ℓ=1, 𝓡=1, r=3, ϑ=1, L=F₈: single-point error f satisfies `2·1 < 3 = d_0` but its fold-at-1 row is non-constant, so the stack is not within interleaved `UDR(C^{(1)}) = 0`. Repair: redefine `fiberwiseClose` honestly (per-fiber distance vs **destination** threshold, = DP24 Def 4.20's split), re-prove `UDRClose_of_fiberwiseClose` (each bad fiber ≤ 2^steps points: `2Δ₀ ≤ 2^steps(d_dest−1) = d_i−1 < d_i`), then the close branch is deterministic counting (column-locality via `iterated_fold_eq_matrix_form` + `Finset.card_le_card`), no proximity gap needed |
-| 5 | `Prop421Case1FiberwiseCloseResidual` | Soundness/Proposition4_21.lean:68 | provable as stated (medium) | ONE new lemma: tensor bit-order bridge `(challengeTensorProduct n r).get = challengeTensorExpansion n (r ∘ Fin.rev)`; then `single_point_localized_fold_matrix_form_eq_iterated_fold` + `foldMatrix_det_ne_zero` + `prob_schwartz_zippel_mv_polynomial` (all proven) |
-| 6 | `Prop421Case2FiberwiseFarResidual` | Soundness/Proposition4_21.lean:440 | weld-distance | same DG25 chain as #3, telescoped over steps |
+| 5 | `Prop421Case1FiberwiseCloseResidual` | Soundness/Proposition421.lean:68 | provable as stated (medium) | ONE new lemma: tensor bit-order bridge `(challengeTensorProduct n r).get = challengeTensorExpansion n (r ∘ Fin.rev)`; then `single_point_localized_fold_matrix_form_eq_iterated_fold` + `foldMatrix_det_ne_zero` + `prob_schwartz_zippel_mv_polynomial` (all proven) |
+| 6 | `Prop421Case2FiberwiseFarResidual` | Soundness/Proposition421.lean:440 | weld-distance | same DG25 chain as #3, telescoped over steps |
 | 7 | `FoldPreservesBBFCodeMembershipResidual` | Code.lean:1039 | provable (medium, ~300–450 lines) | general-level-`i` novel-basis reconstruction: degree + triangularity of `intermediateNovelBasisX` (CompPoly has defs, no degree lemmas); level-0 template exists verbatim in CompPoly NovelPolynomialBasis.lean:1382–1545 |
 | 8 | `PreviousSuffixFiberAlignmentResidual` | Soundness/QueryPhasePrelims.lean:571 | provable (easy) | complete old proof exists (QueryPhase.lean:317–395) against the outdated CompPoly `iteratedQuotientMap` signature; re-state + port |
 | 9 | `ExtractMLPCorrectnessResidual` | Relations.lean:239 | provable (medium plumbing) | Berlekamp–Welch decoder soundness/completeness transported across the `sDomain` enumeration |
@@ -202,7 +202,7 @@ independent estimate of the Case-1 drop probability. *Prove-out:* NOT scheduled 
    pre-per-fiber API; deleting them shrinks the audit surface that made Prop4212Case1 look false.
 5. The incremental (`4.2.12`) and block (`4.21`) developments will, after H-K4 and H-A1, share
    one SZ core (`ctp ⬝ w = 0` bound) — the duplicated butterfly-algebra blocks in
-   Proposition4_21.lean and Incremental.lean collapse onto it.
+   Proposition421.lean and Incremental.lean collapse onto it.
 
 ## E. Session status pointers
 
