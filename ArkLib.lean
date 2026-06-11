@@ -45,6 +45,7 @@ import ArkLib.Data.CodingTheory.AGL24DetDegree
 import ArkLib.Data.CodingTheory.AGL24DeterministicChain
 import ArkLib.Data.CodingTheory.AGL24EvalToSymbolic
 import ArkLib.Data.CodingTheory.AGL24FrontDoorBridge
+import ArkLib.Data.CodingTheory.AGL24GenericZeroPattern
 import ArkLib.Data.CodingTheory.AGL24KernelVector
 import ArkLib.Data.CodingTheory.AGL24ListDecodingBridge
 import ArkLib.Data.CodingTheory.AGL24Orientation
