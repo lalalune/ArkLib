@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2164 files, 27709 declarations
+- `ArkLib` — 2180 files, 27788 declarations
 
-## Same short-name across multiple files (809 groups)
+## Same short-name across multiple files (814 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -1652,6 +1652,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ArkLib.ProofSystem.Stir.ErrorAccumulation.PerRoundProximityGap` [ArkLib/ProofSystem/Stir/ErrorAccumulation.lean:307](../../../ArkLib/ProofSystem/Stir/ErrorAccumulation.lean#L307) — The keystone, abstracted. `PerRoundProximityGap e ProxGapBound` says the accounting per-round error
 - `def Core2Keystone.PerRoundProximityGap` [ArkLib/ProofSystem/Whir/KeystoneReduction.lean:52](../../../ArkLib/ProofSystem/Whir/KeystoneReduction.lean#L52) — Verbatim copy of `Issue24FRISTIR.PerRoundProximityGap` (`Stir/SoundnessAccumulation.lean:253`): the
 
+### `Pr_badStack_eq_one` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.Pr_badStack_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:64](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L64) — **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
+- `theorem Pr_badStack_eq_one` [ArkLib/MCAGSRefutationCore.lean:63](../../../ArkLib/MCAGSRefutationCore.lean#L63) — **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
+
 ### `Proof` (2 declarations, 2 files)
 
 - `abbrev Interaction.Proof` [ArkLib/Interaction/Reduction.lean:232](../../../ArkLib/Interaction/Reduction.lean#L232) — (no docstring)
@@ -1837,6 +1842,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def Issue29Ring.badPolyAgreement` [ArkLib/ProofSystem/RingSwitching/TraceTensorAlgebra.lean:39](../../../ArkLib/ProofSystem/RingSwitching/TraceTensorAlgebra.lean#L39) — **Named per-round residual = the weakened-KState bad event.** The prover message `p` differs from th
 - `def KStateWeaken.badPolyAgreement` [ArkLib/ToMathlib/KStateWeaken.lean:70](../../../ArkLib/ToMathlib/KStateWeaken.lean#L70) — **Named per-round residual (weakened KState surface).** `badPolyAgreement r p q` is the bad event to
+
+### `badStack` (2 declarations, 2 files)
+
+- `def ProximityGap.MCAGSPrizeRefutation.badStack` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:29](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L29) — The adversarial stack: row 0 = `w₀`, row 1 = `0`.
+- `def badStack` [ArkLib/MCAGSRefutationCore.lean:28](../../../ArkLib/MCAGSRefutationCore.lean#L28) — The adversarial stack: row 0 = `w₀`, row 1 = `0`.
+
+### `badStack_one` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.badStack_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L32) — (no docstring)
+- `theorem badStack_one` [ArkLib/MCAGSRefutationCore.lean:31](../../../ArkLib/MCAGSRefutationCore.lean#L31) — (no docstring)
+
+### `badStack_zero` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.badStack_zero` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:31](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L31) — (no docstring)
+- `theorem badStack_zero` [ArkLib/MCAGSRefutationCore.lean:30](../../../ArkLib/MCAGSRefutationCore.lean#L30) — (no docstring)
 
 ### `badSumcheckEventProp` (2 declarations, 2 files)
 
@@ -2239,6 +2259,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ProximityGap.epsCA_le_one` [ArkLib/Data/CodingTheory/ProximityGap/Errors.lean:247](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean#L247) — The CA error is bounded by the total probability mass.
 - `theorem CodingTheory.Bridge.epsCA_le_one` [ArkLib/ToMathlib/BridgeListDecodingCA.lean:65](../../../ArkLib/ToMathlib/BridgeListDecodingCA.lean#L65) — **`ε_ca ≤ 1`.** The correlated-agreement error is a supremum of values each of which is either `0` o
 
+### `epsMCAgs_badList_eq_one` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.epsMCAgs_badList_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L82) — **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
+- `theorem epsMCAgs_badList_eq_one` [ArkLib/MCAGSRefutationCore.lean:81](../../../ArkLib/MCAGSRefutationCore.lean#L81) — **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
+
 ### `epsRbr` (2 declarations, 2 files)
 
 - `def Core2Keystone.epsRbr` [ArkLib/ProofSystem/Whir/KeystoneReduction.lean:72](../../../ArkLib/ProofSystem/Whir/KeystoneReduction.lean#L72) — The WHIR per-challenge RBR error (verbatim from `Whir/RbrBudgetAccounting.lean:74`).
@@ -2583,11 +2608,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `hybEncodedMessagesBefore` (6 declarations, 2 files)
 
 - `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:224](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L224) — `hybEncodedMessagesBefore?` is the walk applied to the flattened prefix.
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:301](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L301) — **H23-2.** `hybEncodedMessagesBefore?` succeeds whenever every encoded block before the round lies i
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:342](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L342) — **H23-2 glue.** On any backtrack output passing the simulator's image guard, the `Hyb₃` codec bridge
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:416](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L416) — **H23-3.** On success of `hybEncodedMessagesBefore?`, every decoded message re-serializes to the cor
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:430](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L430) — **H23-4.** Two encoded prefixes decoding (via `hybEncodedMessagesBefore?`) to the same message prefi
-- `def DuplexSpongeFS.TraceTransform.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean:363](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean#L363) — Public wrapper for the Section 5.8 `φ⁻¹` parser from the encoded-message tuple returned by `BackTrac
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:302](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L302) — **H23-2.** `hybEncodedMessagesBefore?` succeeds whenever every encoded block before the round lies i
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:343](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L343) — **H23-2 glue.** On any backtrack output passing the simulator's image guard, the `Hyb₃` codec bridge
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:418](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L418) — **H23-3.** On success of `hybEncodedMessagesBefore?`, every decoded message re-serializes to the cor
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:432](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L432) — **H23-4.** Two encoded prefixes decoding (via `hybEncodedMessagesBefore?`) to the same message prefi
+- `def DuplexSpongeFS.TraceTransform.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean:368](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean#L368) — Public wrapper for the Section 5.8 `φ⁻¹` parser from the encoded-message tuple returned by `BackTrac
 
 ### `id_isHVZK` (2 declarations, 2 files)
 
@@ -2979,6 +3004,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ProximityGap.mcaBadCount` [ArkLib/Data/CodingTheory/ProximityGap/MCABadCount.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/MCABadCount.lean#L45) — The number of bad scalars `γ : F` realising the MCA event for the pair `(u₀, u₁)` at radius `δ`.
 - `def R15MCAGap.mcaBadCount` [ArkLib/Data/CodingTheory/ProximityGap/MCABadScalarSpreadBridge.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/MCABadScalarSpreadBridge.lean#L96) — The number of MCA-bad scalars on the pencil through `f1` in direction `f2`.
 
+### `mcaEventGSrow_badStack` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.mcaEventGSrow_badStack` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:36](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L36) — **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
+- `theorem mcaEventGSrow_badStack` [ArkLib/MCAGSRefutationCore.lean:35](../../../ArkLib/MCAGSRefutationCore.lean#L35) — **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
+
 ### `mem_C_iff` (2 declarations, 2 files)
 
 - `theorem JohnsonBound.FamilyRefutation.mem_C_iff` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:49](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L49) — Membership in `C` is membership in the explicit three-element set.
@@ -3133,6 +3163,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.RemainingCoreWitness.not_johnson_at_quarter` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RemainingCore.lean:201](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RemainingCore.lean#L201) — At the canonical floor-matched radius `δ' = 1/4` the Johnson-side hypothesis `(1 − ρ)/2 < δ'` fails
 - `theorem ArkLib.ClosedBoundaryFaithfulFloorCellWitness.not_johnson_at_quarter` [ArkLib/ToMathlib/ClosedBoundaryFaithfulFloorCell.lean:363](../../../ArkLib/ToMathlib/ClosedBoundaryFaithfulFloorCell.lean#L363) — At the cell radius `δ'' = 1/4` the Johnson-side hypothesis fails *exactly*: `(1 − ρ)/2 = (1 − 1/2)/2
+
+### `not_uniformEpsMCAgsPrizeBoundConjecture` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAGSPrizeRefutation.not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:102](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L102) — **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
+- `theorem not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/MCAGSRefutationCore.lean:101](../../../ArkLib/MCAGSRefutationCore.lean#L101) — **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
 
 ### `odd_psum_vanish` (2 declarations, 2 files)
 
@@ -4085,11 +4120,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Spartan.Spec.firstSumcheck_rbrKnowledgeSoundness_honest` [ArkLib/ProofSystem/Spartan/FirstSumcheckComplete.lean:202](../../../ArkLib/ProofSystem/Spartan/FirstSumcheckComplete.lean#L202) — **First sum-check phase round-by-round knowledge soundness (issue #114).** The Spartan lift of the g
 - `theorem Spartan.Spec.firstSumcheck_rbrKnowledgeSoundness_honest` [ArkLib/ProofSystem/Spartan/SumcheckKnowledgeLeaves.lean:82](../../../ArkLib/ProofSystem/Spartan/SumcheckKnowledgeLeaves.lean#L82) — The first Spartan sum-check RBR-KS leaf over the honest transported relation contract, reduced to th
 
-### `foldl_stepCache_hash_mono` (2 declarations, 2 files)
-
-- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_hash_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:102](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L102) — Hash records persist through any fold suffix.
-- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_hash_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1369](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1369) — The hash cache only grows along the whole fold.
-
 ### `for` (2 declarations, 2 files)
 
 - `theorem for` [ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessProof.lean:14](../../../ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessProof.lean#L14) — (no docstring)
@@ -4134,11 +4164,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def ArkLib.JohnsonBound.johnsonDenom` [ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean:159](../../../ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean#L159) — The **Johnson denominator** `(n - e)² - n·(n - d)`. The Johnson regime is where it is positive.
 - `def ArkLib.JohnsonBound.johnsonDenom` [ArkLib/Data/CodingTheory/ProximityGap/Issue244Refutation.lean:11](../../../ArkLib/Data/CodingTheory/ProximityGap/Issue244Refutation.lean#L11) — (no docstring)
-
-### `lemma5_8EagerPaperResidual_holds` (2 declarations, 2 files)
-
-- `theorem DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean:177](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean#L177) — **The CO25 Lemma 5.8 eager-paper residual is now a theorem** (no hypothesis): the lazy `EPaper` boun
-- `theorem DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean:46](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean#L46) — **The repaired Lemma 5.8 eager residual holds**: the lazy-side bound `probEvent_EPaper_toReal_le_lem
 
 ### `listPoly` (2 declarations, 2 files)
 
@@ -4463,7 +4488,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:188](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L188) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/XiCertReduction.lean:219](../../../ArkLib/ToMathlib/XiCertReduction.lean#L219) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 194 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 198 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 
@@ -4644,6 +4669,9 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `OracleSpec.QueryLog.BadEventDS.lemma_5_10` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean:379](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean#L379) vs `OracleSpec.QueryLog.BadEventDSPaper.lemma_5_10` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean:355](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean#L355)
     - a: CO25 Lemma 5.10, current trace-event form. If the combined bad event `E(tr)` does not occur, then th
     - b: CO25 Lemma 5.10, current trace-event form. If the combined bad event `E(tr)` does not occur, then th
+- **1.00** `Pr_badStack_eq_one` [ArkLib/MCAGSRefutationCore.lean:63](../../../ArkLib/MCAGSRefutationCore.lean#L63) vs `ProximityGap.MCAGSPrizeRefutation.Pr_badStack_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:64](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L64)
+    - a: **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
+    - b: **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
 - **1.00** `Probability.uniformSizeSubset_apply_mapEquiv` [ArkLib/Data/Probability/Combinatorial.lean:168](../../../ArkLib/Data/Probability/Combinatorial.lean#L168) vs `Probability.uniformSizedSubset_apply_mapEquiv` [ArkLib/Data/Probability/UniformSubset.lean:115](../../../ArkLib/Data/Probability/UniformSubset.lean#L115)
     - a: Uniform fixed-size subset sampling is invariant under equivalence of ambient finite types.
     - b: Uniform fixed-size subset sampling is invariant under equivalence of ambient finite types.
@@ -4662,6 +4690,15 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `ProximityGap.GrandChallengesLattice.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean:626](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean#L626) vs `ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean#L208)
     - a: Every ABF26 prize rate is at most `1/2`.
     - b: Every ABF26 prize rate is at most `1/2`.
+- **1.00** `ProximityGap.MCAGSPrizeRefutation.epsMCAgs_badList_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L82) vs `epsMCAgs_badList_eq_one` [ArkLib/MCAGSRefutationCore.lean:81](../../../ArkLib/MCAGSRefutationCore.lean#L81)
+    - a: **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
+    - b: **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
+- **1.00** `ProximityGap.MCAGSPrizeRefutation.mcaEventGSrow_badStack` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:36](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L36) vs `mcaEventGSrow_badStack` [ArkLib/MCAGSRefutationCore.lean:35](../../../ArkLib/MCAGSRefutationCore.lean#L35)
+    - a: **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
+    - b: **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
+- **1.00** `ProximityGap.MCAGSPrizeRefutation.not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:102](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L102) vs `not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/MCAGSRefutationCore.lean:101](../../../ArkLib/MCAGSRefutationCore.lean#L101)
+    - a: **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
+    - b: **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
 - **1.00** `ProximityGap.RS_goodCoeffsCurve_finCongr` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:194](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L194) vs `ProximityGap.RS_goodCoeffsCurve_finCongr_core` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:1082](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L1082)
     - a: `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its `Fin (k + 1)` coefficient word
     - b: `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its `Fin (k + 1)` coefficient word
@@ -4695,16 +4732,4 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Round23Rigidity.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityBaseCasePairs.lean:38](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityBaseCasePairs.lean#L38) vs `Round25General.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean:50](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean#L50)
     - a: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
     - b: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
-- **1.00** `Round24Triples.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityTriplesSunflower.lean:44](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityTriplesSunflower.lean#L44) vs `Round25General.sval` [ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean:50](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean#L50)
-    - a: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
-    - b: A signed half-basis point `(j, ε)` represents the `2N`-th root `±ζ^j`.
-- **1.00** `Round26Recursion.even_psum_halves` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L96) vs `Round28FullWindow.even_psum_halves` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:98](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L98)
-    - a: **The even power sums halve:** for antipodally-closed `A`, `p_{2l}(A) = 2 · p_l(A²)` — summing `x^{2
-    - b: **The even power sums halve:** for antipodally-closed `A`, `p_{2l}(A) = 2 · p_l(A²)` — summing `x^{2
-- **1.00** `Round26Recursion.odd_psum_vanish` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:52](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L52) vs `Round28FullWindow.odd_psum_vanish` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L54)
-    - a: **Odd power sums vanish identically on antipodally-closed sets** (the Round-8 engine at `ω = −1`): p
-    - b: **Odd power sums vanish identically on antipodally-closed sets** (the Round-8 engine at `ω = −1`): p
-- **1.00** `Round26Recursion.squares_disjoint` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:131](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L131) vs `Round28FullWindow.squares_disjoint` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:133](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L133)
-    - a: **Disjointness descends to the squares:** if `A, B` are antipodally closed and disjoint, then `A²` a
-    - b: **Disjointness descends to the squares:** if `A, B` are antipodally closed and disjoint, then `A²` a
 

@@ -575,7 +575,7 @@
     "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/FoldDistance.lean": [
       "DP24"
     ],
-    "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean": [
+    "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition421.lean": [
       "DP24"
     ],
     "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean": [
@@ -1453,7 +1453,7 @@
       "ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/BadBlocks.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/FoldDistance.lean",
-      "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean",
+      "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition421.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhaseSoundness.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness.lean",

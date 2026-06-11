@@ -1,12 +1,12 @@
 {
  "summary": {
-  "total": 105,
-  "open": 26,
-  "discharged": 79,
+  "total": 107,
+  "open": 27,
+  "discharged": 80,
   "by_top_dir": {
    "Data": {
-    "total": 25,
-    "open": 10,
+    "total": 27,
+    "open": 12,
     "discharged": 15
    },
    "OracleReduction": {
@@ -16,8 +16,8 @@
    },
    "ProofSystem": {
     "total": 19,
-    "open": 6,
-    "discharged": 13
+    "open": 5,
+    "discharged": 14
    },
    "ToMathlib": {
     "total": 20,
@@ -27,6 +27,22 @@
   }
  },
  "residuals": [
+  {
+   "name": "FrankOrientationResidual",
+   "fq_name": "AGL24.FrankOrientationResidual",
+   "file": "ArkLib/Data/CodingTheory/AGL24GrandAssembly.lean",
+   "line": 42,
+   "providers": [],
+   "status": "open"
+  },
+  {
+   "name": "GMMDSResidual",
+   "fq_name": "AGL24.GMMDSResidual",
+   "file": "ArkLib/Data/CodingTheory/AGL24GrandAssembly.lean",
+   "line": 54,
+   "providers": [],
+   "status": "open"
+  },
   {
    "name": "SymbolicFullRankResidual",
    "fq_name": "AGL24.SymbolicFullRankResidual",
@@ -48,6 +64,17 @@
      "line": 98,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
+    },
+    {
+     "name": "AGL24.symbolicFullRank_of_classical_imports",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/AGL24GrandAssembly.lean",
+     "line": 65,
+     "conditional_on_residuals": [
+      "FrankOrientationResidual",
+      "GMMDSResidual"
+     ],
+     "ambiguous_name_match": false
     }
    ],
    "status": "discharged"
@@ -56,7 +83,7 @@
    "name": "RIMFullRankFailureProbResidual",
    "fq_name": "AGL24.RIMFullRankFailureProbResidual",
    "file": "ArkLib/Data/CodingTheory/AGL24UnionBound.lean",
-   "line": 88,
+   "line": 118,
    "providers": [],
    "status": "open"
   },
@@ -1757,21 +1784,13 @@
    "name": "Lemma5_8EagerPaperResidual",
    "fq_name": "DuplexSpongeFS.BirthdayBoundPaper.Lemma5_8EagerPaperResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean",
-   "line": 93,
+   "line": 92,
    "providers": [
     {
      "name": "DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_of_lazy",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean",
-     "line": 153,
-     "conditional_on_residuals": [],
-     "ambiguous_name_match": false
-    },
-    {
-     "name": "DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds",
-     "kind": "theorem",
-     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean",
-     "line": 177,
+     "line": 152,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -2407,6 +2426,25 @@
    "line": 183,
    "providers": [
     {
+     "name": "Logup.appendCompletenessResidual_unconditional",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Logup/Security/LogupAppendCompletenessUncond.lean",
+     "line": 66,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "Logup.appendCompletenessResidual_forall",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Logup/Security/LogupAppendCompletenessUncond.lean",
+     "line": 88,
+     "conditional_on_residuals": [
+      "OuterCompletenessResidual",
+      "SumcheckCompletenessResidual"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "Logup.appendCompletenessResidual_iff_toReduction",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Logup/Security/LogupCompletenessClose.lean",
@@ -2440,7 +2478,7 @@
      "ambiguous_name_match": false
     }
    ],
-   "status": "open"
+   "status": "discharged"
   },
   {
    "name": "LogupCompletenessBrickResidual",
@@ -2526,6 +2564,24 @@
      "ambiguous_name_match": false
     },
     {
+     "name": "StirIOP.MultiRound.stirCheckingRbrSoundness_mono",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Stir/RbrBudgetMono.lean",
+     "line": 47,
+     "conditional_on_residuals": [
+      "stirCheckingRbrSoundnessResidual"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "StirIOP.MultiRound.stirCheckingRbrSoundness_of_epsStar_le",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Stir/RbrBudgetMono.lean",
+     "line": 91,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "StirIOP.MultiRound.stirCheckingRbrSoundness_genuine",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Stir/SubUnitRbr.lean",
@@ -2550,6 +2606,24 @@
    "file": "ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean",
    "line": 224,
    "providers": [
+    {
+     "name": "StirIOP.MultiRound.stirMultiRoundRbrSoundness_mono",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Stir/RbrBudgetMono.lean",
+     "line": 57,
+     "conditional_on_residuals": [
+      "stirMultiRoundRbrSoundnessResidual"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "StirIOP.MultiRound.stirMultiRoundRbrSoundness_of_indicator_le",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Stir/RbrBudgetMono.lean",
+     "line": 103,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
     {
      "name": "StirIOP.MultiRound.stirMultiRoundRbrSoundness_indicator",
      "kind": "theorem",
