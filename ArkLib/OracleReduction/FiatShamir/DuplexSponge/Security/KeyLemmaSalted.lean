@@ -172,11 +172,15 @@ lemma projectLeftQueryLog_canonicalizeChallengeLogAux [DecidableEq ι₂]
       obtain ⟨q, r⟩ := e
       simp only [projectLeftQueryLog] at ih ⊢
       cases q with
-      | inl q => simp [canonicalizeChallengeLogAux, List.filterMap_cons, ih seen]
+      | inl q =>
+          simp only [canonicalizeChallengeLogAux, List.filterMap_cons]
+          rw [ih seen]
       | inr q =>
           by_cases hq : q ∈ seen
-          · simp [canonicalizeChallengeLogAux, List.filterMap_cons, hq, ih seen]
-          · simp [canonicalizeChallengeLogAux, List.filterMap_cons, hq, ih (q :: seen)]
+          · simp only [canonicalizeChallengeLogAux, if_pos hq, List.filterMap_cons]
+            rw [ih seen]
+          · simp only [canonicalizeChallengeLogAux, if_neg hq, List.filterMap_cons]
+            rw [ih (q :: seen)]
 
 /-- Shared-`oSpec` entries pass through canonicalization verbatim and in place: the
 left-summand projection of a canonicalized log equals that of the original log. -/

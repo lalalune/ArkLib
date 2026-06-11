@@ -77,7 +77,7 @@ private lemma findSome?_eq_some_of_unique {α β : Type _} {l : List α} {f : α
   induction l with
   | nil => simp at hmem
   | cons x xs ih =>
-    by_cases hxa : x = a
+    rcases eq_or_ne x a with hxa | hxa
     · subst hxa
       simp [List.findSome?_cons, hfa]
     · have hxnone : f x = none := huniq x (List.mem_cons_self ..) hxa
@@ -154,6 +154,7 @@ lemma messagesUpToAt_concat_of_lt {k : Fin n} (mb : pSpec.MessagesUpTo k.castSuc
         pSpec.dir (i.castLE (by omega)) = .P_to_V → pSpec.«Type» (i.castLE (by omega)))
       (fun i hi => mb ⟨i, hi⟩) _ (Fin.castSucc ⟨j.1.1, hlt⟩) j.2 = _
   rw [Fin.dconcat_castSucc]
+  rfl
 
 /-- `concat` writes the new message at the last position. -/
 lemma messagesUpToAt_concat_self {k : Fin n} (mb : pSpec.MessagesUpTo k.castSucc)
@@ -176,6 +177,7 @@ lemma messagesUpToAt_extend {k : Fin n} (mb : pSpec.MessagesUpTo k.castSucc)
         pSpec.dir (i.castLE (by omega)) = .P_to_V → pSpec.«Type» (i.castLE (by omega)))
       (fun i hi => mb ⟨i, hi⟩) _ (Fin.castSucc ⟨j.1.1, hlt⟩) j.2 = _
   rw [Fin.dconcat_castSucc]
+  rfl
 
 /-- A message index strictly before `k.succ` whose round is not the challenge round `k`
 is strictly before `k`. -/
@@ -256,7 +258,12 @@ lemma decodeMessagesPrefixStepPhiInv_pToV
   split
   · rename_i heq
     cases Subsingleton.elim hdir heq
-    rfl
+    cases lookupEncodedMessageAlphaHat? (pSpec := pSpec) (U := U) encodedList ⟨j, hdir⟩ with
+    | none => rfl
+    | some encodedMsg =>
+        cases decodeMessagePhiInv? (pSpec := pSpec) (U := U) ⟨j, hdir⟩ encodedMsg with
+        | none => rfl
+        | some msg => rfl
   · rename_i heq
     rw [hdir] at heq
     simp at heq
@@ -294,10 +301,11 @@ lemma decodePrefixBuild_isSome_of_inImage
           omega
         rw [decodeMessagesPrefixStepPhiInv_pToV (hdir := hdir),
           lookupEncodedMessageAlphaHat?_toList em ⟨j, hdir⟩ hjlt]
+        dsimp only
         obtain ⟨m, hm⟩ := Option.isSome_iff_exists.mp
           (decodeMessagePhiInv?_isSome_of_exists (h ⟨j, hdir⟩ hjlt))
         rw [hm]
-        rfl
+        dsimp only
 
 /-- **H23-2.** `hybEncodedMessagesBefore?` succeeds whenever every encoded block before the
 round lies in the serialize-image. -/
@@ -397,6 +405,7 @@ lemma decodePrefixBuild_serialize_eq
           simp only [Fin.val_succ] at hk
           omega
         rw [lookupEncodedMessageAlphaHat?_toList em ⟨j₀, hdir⟩ hj₀lt] at hbuild
+        dsimp only at hbuild
         cases hdec : decodeMessagePhiInv? (pSpec := pSpec) (U := U) ⟨j₀, hdir⟩
             (em ⟨⟨j₀, hdir⟩, hj₀lt⟩) with
         | none => rw [hdec] at hbuild; simp at hbuild
