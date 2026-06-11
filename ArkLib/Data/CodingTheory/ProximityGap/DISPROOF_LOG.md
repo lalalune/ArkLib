@@ -6264,3 +6264,50 @@ matches **nine instances / 14+ field-combinations with zero deviations**, across
 Next falsifier frontier requires either larger-p composite-n exact runs (orbit-decide
 engineering) or a fundamentally different stack family (rational/DEEP shapes at an
 exactly-computed rung).
+
+### O153 — THE BAND-j COLLAPSE THEOREM (proof worked out; formalization queued): for distance > 4j, at most j+1 bad scalars on band j — the staircase side of the profile law becomes a theorem (2026-06-11, #357 surface (i), the first general sup-side result)
+
+**Theorem (band-j collapse).** Let `C` be a linear code of distance `d > 4j` on `n` points,
+and `δ` with `j ≤ δn < j+1`. Then every stack `(u₀, u₁)` has at most `j + 1` bad scalars:
+`ε_mca(C, δ) ≤ (j+1)/q`. With the in-tree `(j+1)`-spike lower bound (`epsMCA_generalJ_ge`),
+the staircase law `ε_mca·q = j+1` on band `j` is EXACT for high-distance codes.
+
+**Proof.** Badness of `γ` at agreement `≥ n − j` gives a codeword `c_γ` and error
+`w_γ := L_γ − c_γ` of weight `≤ j`, where `L_γ = u₀ + γu₁`. Fix a bad `γ₁`. For bad `γ`,
+`(γ − γ₁)u₁ = (c_γ − c_{γ₁}) + (w_γ − w_{γ₁})`, so the coset `(γ−γ₁)u₁ + C` contains the
+weight-`≤ 2j` word `w_γ − w_{γ₁}` — unique since `d > 4j`. Cross-consistency for two bad
+`γ, γ'` (with `λ = γ−γ₁`, `λ' = γ'−γ₁`): `λ'(w_γ − w_{γ₁}) − λ(w_{γ'} − w_{γ₁}) ∈ C` has
+weight `≤ 4j < d`, hence is zero. Setting `v := (w_γ₂ − w_{γ₁})/λ₂` (any second bad scalar;
+`v ≡ u₁ mod C`), this yields the **rigid relation `w_γ = w_{γ₁} + (γ−γ₁)·v` pointwise** for
+every bad `γ`.
+
+Case `|supp v| ≥ j+1`: for each `x ∈ supp v`, the map `γ ↦ w_γ(x) = w_{γ₁}(x) + (γ−γ₁)v(x)`
+is injective-affine in `γ`, so it vanishes for at most ONE bad `γ`: each `x ∈ supp v` lies
+in `supp w_γ` for at least `t − 1` of the `t` bad scalars. Summing:
+`t·j ≥ Σ_γ wt(w_γ) ≥ |supp v|·(t−1) ≥ (j+1)(t−1)`, forcing **`t ≤ j+1`**.
+
+Case `|supp v| ≤ j`: `u₁ ≡ v mod C` with `v` short. The pair-clause criterion (any nonzero
+codeword agreeing with a weight-`≤ 2j` word on `n − j` points has weight `≤ 3j < d`, hence
+is zero) reduces badness of `γ` to: `supp v ⊄ supp(w_{γ₁} + (γ−γ₁)v)`, i.e. some
+`x ∈ supp v` has `w_{γ₁}(x) + (γ−γ₁)v(x) = 0`, i.e. `γ = γ₁ − w_{γ₁}(x)/v(x)` for some
+`x ∈ supp v` — at most `|supp v| ≤ j` bad scalars beyond... and including the bookkeeping
+at `γ₁`, **`t ≤ j+1`**. ∎
+
+**Hypothesis audit (honest):** the proof uses `d > 4j` (uniqueness at weight `2j` and the
+`4j`-weight cross-relation). The exact data says the conclusion holds beyond it: at
+(13,12,6), band 2 has `max = 3 = j+1` with `d = 7 < 8 = 4j`. So the distance condition is
+NOT tight — the cross-relation step (weight `≤ 4j`) is the binding constraint; sharpening
+to `d > 2j + j` or a direct argument is open. In-hypothesis checks: (13,12,6) band 1
+(`d = 7 > 4`): exact max 2 = j+1 ✓; all band-0 instances ✓ (the proven universal bands).
+
+**Consequences:** (a) the staircase side of the two-family profile law is now THEOREM-grade
+for `d > 4j` (previously: bands 0–1 only); (b) combined with the census side, the profile
+law's remaining conjectural content for high-distance codes is *only* the census-dominance
+regime (`a` near the crossing) — sup-extremality has been pushed from "all radii" to "the
+census band alone"; (c) production RS has `d = n − k + 1` huge, so every staircase band of
+interest is in-hypothesis there.
+
+**Formalization plan** (the next Lean brick): unique-short-coset-word lemma (`d > 4j`);
+the rigid relation (3 coset manipulations + weight bounds); the two counting cases
+(pigeonhole over `supp v`). All elementary Finset/weight arithmetic on top of the in-tree
+distance API; no new analytic input.
