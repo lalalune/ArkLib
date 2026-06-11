@@ -1055,6 +1055,43 @@ decreasing_by
     List.length_eraseIdx_add_one hlt
   omega
 
+/-! ## w1 wiring and constructive anchoring (final assembly foundations) -/
+
+open DuplexSpongeFS.Paper in
+/-- **w1**: a base entry has no earlier same-class entry in its raw prefix. Directly from the
+first-occurrence embedding: every earlier raw entry is at a position `< f j`, where the
+first-occurrence property forbids same-class. -/
+theorem base_no_earlier_sameClass
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (f : ℕ ↪o ℕ)
+    (hf : ∀ ix, (removeRedundantEntryDSPaper log).1[ix]? = log[f ix]?)
+    (hfo : ∀ ix p (e ep : DSEntry StmtIn U),
+      (removeRedundantEntryDSPaper log).1[ix]? = some e → log[p]? = some ep →
+      p < f ix → ¬ sameClass e ep)
+    (j : ℕ) (hj : j < (removeRedundantEntryDSPaper log).1.length)
+    (e' : DSEntry StmtIn U) (he' : e' ∈ log.take (f j)) :
+    ¬ sameClass (removeRedundantEntryDSPaper log).1[j] e' := by
+  obtain ⟨p, hp, hpx⟩ := List.getElem_of_mem he'
+  rw [List.length_take] at hp
+  rw [List.getElem_take] at hpx
+  have hbe : (removeRedundantEntryDSPaper log).1[j]? =
+      some (removeRedundantEntryDSPaper log).1[j] := List.getElem?_eq_getElem hj
+  have hlogp : log[p]? = some e' := by
+    rw [← hpx]; exact List.getElem?_eq_getElem (by omega : p < log.length)
+  exact hfo j p _ e' hbe hlogp (by omega)
+
+/-- **Constructive anchoring**: a collision at a split point makes the whole fold anchored. -/
+theorem anchoredFrom_of_split (c : DSCache StmtIn U)
+    (L₁ : List (DSEntry StmtIn U)) (e : DSEntry StmtIn U) (L₂ : List (DSEntry StmtIn U))
+    (hcol : collisionStep e.1 (L₁.foldl stepCache c) e.2) :
+    AnchoredFrom c (L₁ ++ e :: L₂) := by
+  induction L₁ generalizing c with
+  | nil => exact Or.inl hcol
+  | cons e₁ ℓ ih =>
+      rw [List.cons_append]
+      refine Or.inr (ih (stepCache c e₁) ?_)
+      rwa [List.foldl_cons] at hcol
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1144,6 +1181,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.noRedundant_raw_no_earlier_sameClass
 #print axioms DuplexSpongeFS.EagerLazyDS.getElem?_eraseIdx_map
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundant_firstOcc
+#print axioms DuplexSpongeFS.EagerLazyDS.base_no_earlier_sameClass
+#print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_split
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
