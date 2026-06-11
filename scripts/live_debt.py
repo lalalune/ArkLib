@@ -45,7 +45,11 @@ DOCUMENTED_END_STATE = {
 }
 
 # Mathematical objects, not proof obligations.
-FALSE_POSITIVES = {'r1csResidualAt', 'r1csResidual', 'mcaConjectureBound', 'johnsonConjectureEta'}
+FALSE_POSITIVES = {
+    'r1csResidualAt', 'r1csResidual', 'mcaConjectureBound', 'johnsonConjectureEta',
+    # interface-Prop on data with a canonical rfl witness (batchingConsistencyResidual_sum):
+    'BatchingConsistencyResidual',
+}
 
 pat = re.compile(r"- `([^:`]+):(\d+)` (\w+) \*\*([A-Za-z0-9_.']+)\*\*")
 entries = []
