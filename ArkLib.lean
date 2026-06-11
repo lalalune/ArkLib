@@ -538,6 +538,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
+import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Admissible
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Claim16Transport
 import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
@@ -673,6 +674,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue232VerifiedBricks
 import ArkLib.Data.CodingTheory.ProximityGap.Issue244Refutation
 import ArkLib.Data.CodingTheory.ProximityGap.IteratedSliceRootCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26InterleavingBound
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26PowerGeneratorInterleaving
