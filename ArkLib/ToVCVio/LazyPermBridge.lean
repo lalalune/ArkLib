@@ -643,6 +643,205 @@ theorem pmf_absorb_inv {α : Type} (c : List (X × X)) (b : X)
 
 end PMFAbsorption
 
+section MasterInduction
+
+variable [SampleableType (Equiv.Perm X)]
+
+/-- The bidirectional answer function of a permutation. -/
+def permFn (π : Equiv.Perm X) : (t : X ⊕ X) → X :=
+  fun t => match t with
+  | .inl x => π x
+  | .inr y => π.symm y
+
+@[simp] lemma permFn_inl (π : Equiv.Perm X) (x : X) : permFn π (.inl x) = π x := rfl
+@[simp] lemma permFn_inr (π : Equiv.Perm X) (y : X) : permFn π (.inr y) = π.symm y := rfl
+
+private lemma uniformOfFinset_congr {β : Type} [DecidableEq β] {s t : Finset β}
+    (h : s = t) (hs : s.Nonempty) (ht : t.Nonempty) :
+    PMF.uniformOfFinset s hs = PMF.uniformOfFinset t ht := by
+  subst h
+  rfl
+
+/-- Reduce the overlay-evaluation program's `toPMF` to PMF maps. -/
+private lemma toPMF_overlay {α : Type} (c' : List (X × X)) (F : Equiv.Perm X → α) :
+    (evalDist (do
+      let π ← $ᵗ (Equiv.Perm X)
+      pure (F (permExtending c' π)) : ProbComp α)).toPMF
+      = ((PMF.uniformOfFintype (Equiv.Perm X)).map
+          (fun π => F (permExtending c' π))).map some := by
+  have hprog : (do
+      let π ← $ᵗ (Equiv.Perm X)
+      pure (F (permExtending c' π)) : ProbComp α)
+      = (fun π => F (permExtending c' π)) <$> ($ᵗ (Equiv.Perm X)) := by
+    rw [map_eq_bind_pure_comp]
+    rfl
+  rw [hprog, evalDist_map, SPMF.toPMF_map, evalDist_uniformSample, SPMF.liftM_eq_map,
+    SPMF.toPMF_mk, PMF.monad_map_eq_map, PMF.map_comp, PMF.map_comp]
+  rfl
+
+/-- The sample's `toPMF` over a cache's unused values. -/
+private lemma toPMF_sampleUnused (c : List (X × X)) (a : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (ha : a ∉ c.map Prod.fst) :
+    (evalDist (sampleUnused (unusedValuesList c))).toPMF
+      = (PMF.uniformOfFinset (unusedFinset c)
+          (unusedFinset_nonempty c a hkeys hvals ha)).map some := by
+  rw [← SPMF.run_eq_toPMF,
+    evalDist_sampleUnused_run (unusedValuesList c) (unusedValuesList_nodup c)
+      (by
+        intro hnil
+        have := unusedFinset_nonempty c a hkeys hvals ha
+        rw [← toFinset_unusedValuesList, hnil] at this
+        simpa using this)]
+  exact congrArg (PMF.map some)
+    (uniformOfFinset_congr (toFinset_unusedValuesList c) _ _)
+
+/-- The sample's `toPMF` over a cache's unused keys (the swapped cache's unused values). -/
+private lemma toPMF_sampleUnusedKeys (c : List (X × X)) (b : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (hb : b ∉ c.map Prod.snd) :
+    (evalDist (sampleUnused (unusedKeysList c))).toPMF
+      = (PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+          (unusedFinset_nonempty (c.map Prod.swap) b
+            (by simpa [List.map_map, Function.comp_def] using hvals)
+            (by simpa [List.map_map, Function.comp_def] using hkeys)
+            (by simpa [List.map_map, Function.comp_def] using hb))).map some := by
+  rw [← SPMF.run_eq_toPMF,
+    evalDist_sampleUnused_run (unusedKeysList c) (unusedKeysList_nodup c)
+      (by
+        intro hnil
+        have := unusedFinset_nonempty (c.map Prod.swap) b
+          (by simpa [List.map_map, Function.comp_def] using hvals)
+          (by simpa [List.map_map, Function.comp_def] using hkeys)
+          (by simpa [List.map_map, Function.comp_def] using hb)
+        rw [← toFinset_unusedKeysList, hnil] at this
+        simpa using this)]
+  exact congrArg (PMF.map some)
+    (uniformOfFinset_congr (toFinset_unusedKeysList c) _ _)
+
+set_option maxHeartbeats 1600000 in
+/-- **The eager–lazy permutation bridge**: simulating against the lazy memoizing
+bidirectional permutation oracle from a duplicate-free cache has the same distribution as
+sampling one uniform permutation and answering eagerly through the cache overlay. The
+permutation analogue of `evalDist_simulateQ_randomOracle_run'_eq_tableExtending`. -/
+theorem evalDist_simulateQ_lazyPermImpl_run'
+    {α : Type} (oa : OracleComp ((X ⊕ X) →ₒ X) α) (c : List (X × X))
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup) :
+    evalDist ((simulateQ lazyPermImpl oa).run' c)
+      = evalDist (do
+          let π ← $ᵗ (Equiv.Perm X)
+          pure (evalWithAnswerFn (QueryImpl.ofFn (permFn (permExtending c π))) oa)
+          : ProbComp α) := by
+  classical
+  induction oa using OracleComp.inductionOn generalizing c with
+  | pure a =>
+    have hlhs : (simulateQ lazyPermImpl (pure a : OracleComp _ α)).run' c
+        = (pure a : ProbComp α) := by
+      rw [simulateQ_pure]
+      change (fun x => x.1) <$> (pure (a, c) : ProbComp (α × _)) = pure a
+      rw [map_pure]
+    rw [hlhs]
+    simp only [evalWithAnswerFn_pure]
+    symm
+    refine evalDist_ext fun x => ?_
+    rw [probOutput_bind_eq_tsum, ENNReal.tsum_mul_right,
+      tsum_probOutput_eq_one' (mx := $ᵗ (Equiv.Perm X)) (by simp), one_mul]
+  | query_bind t k ih =>
+    have hred : (simulateQ lazyPermImpl
+          (liftM (((X ⊕ X) →ₒ X).query t) >>= k)).run' c
+        = ((lazyPermImpl t).run c) >>= fun p =>
+            (simulateQ lazyPermImpl (k p.1)).run' p.2 := by
+      rw [simulateQ_bind, simulateQ_spec_query]
+      change Prod.fst <$> (((lazyPermImpl t).run c) >>= fun p =>
+        (simulateQ lazyPermImpl (k p.1)).run p.2) = _
+      rw [map_bind]
+      rfl
+    have heval : ∀ π : Equiv.Perm X,
+        evalWithAnswerFn (QueryImpl.ofFn (permFn π))
+            (liftM (((X ⊕ X) →ₒ X).query t) >>= k)
+          = evalWithAnswerFn (QueryImpl.ofFn (permFn π)) (k (permFn π t)) := by
+      intro π
+      rw [evalWithAnswerFn_bind]
+      rfl
+    rw [hred]
+    simp_rw [heval]
+    rcases t with x | y
+    · rcases hc : c.find? (fun p => p.1 = x) with _ | p
+      · -- forward fresh query
+        have hx : x ∉ c.map Prod.fst := by
+          intro hmem
+          obtain ⟨q, hq, hq1⟩ := List.mem_map.mp hmem
+          have := List.find?_eq_none.mp hc q hq
+          simp [hq1] at this
+        have hstep : (lazyPermImpl ((.inl x : X ⊕ X))).run c
+            = (fun b => (b, c.concat (x, b))) <$> sampleUnused (unusedValuesList c) := by
+          simp only [lazyPermImpl, hc]
+          rfl
+        rw [hstep, show ((((fun b => (b, c.concat (x, b))) <$>
+              sampleUnused (unusedValuesList c))) >>= fun p =>
+              (simulateQ lazyPermImpl (k p.1)).run' p.2)
+            = (sampleUnused (unusedValuesList c) >>= fun b =>
+                (simulateQ lazyPermImpl (k b)).run' (c.concat (x, b))) from by
+          rw [map_eq_bind_pure_comp]
+          simp [bind_assoc]]
+        rw [← SPMF.toPMF_inj]
+        rw [evalDist_bind, SPMF.toPMF_bind]
+        rw [toPMF_overlay c
+          (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ)) (k (σ x)))]
+        rw [toPMF_sampleUnused c x hkeys hvals hx]
+        rw [show Option.elimM ((PMF.uniformOfFinset (unusedFinset c)
+              (unusedFinset_nonempty c x hkeys hvals hx)).map some)
+            (PMF.pure none)
+            (fun b => (evalDist ((simulateQ lazyPermImpl (k b)).run'
+              (c.concat (x, b)))).toPMF)
+          = (PMF.uniformOfFinset (unusedFinset c)
+              (unusedFinset_nonempty c x hkeys hvals hx)).bind
+              (fun b => (evalDist ((simulateQ lazyPermImpl (k b)).run'
+                (c.concat (x, b)))).toPMF) from by
+          rw [Option.elimM, PMF.monad_bind_eq_bind, PMF.bind_map]
+          rfl]
+        have hfib : ∀ b ∈ (PMF.uniformOfFinset (unusedFinset c)
+            (unusedFinset_nonempty c x hkeys hvals hx)).support,
+            (evalDist ((simulateQ lazyPermImpl (k b)).run' (c.concat (x, b)))).toPMF
+            = ((PMF.uniformOfFintype (Equiv.Perm X)).map
+                (fun π => (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ)) (k (σ x)))
+                  (permExtending (c.concat (x, b)) π))).map some := by
+          intro b hb
+          rw [PMF.mem_support_uniformOfFinset_iff, mem_unusedFinset] at hb
+          have hk' : (((c.concat (x, b)).map Prod.fst)).Nodup := by
+            simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+            rw [List.nodup_append]
+            exact ⟨hkeys, List.nodup_singleton _, by
+              intro u hu v hv
+              simp only [List.mem_singleton] at hv
+              subst hv
+              exact fun h => hx (h ▸ hu)⟩
+          have hv' : (((c.concat (x, b)).map Prod.snd)).Nodup := by
+            simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+            rw [List.nodup_append]
+            exact ⟨hvals, List.nodup_singleton _, by
+              intro u hu v hv
+              simp only [List.mem_singleton] at hv
+              subst hv
+              exact fun h => hb (h ▸ hu)⟩
+          rw [ih (k b) (c.concat (x, b)) hk' hv',
+            toPMF_overlay (c.concat (x, b))
+              (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ)) (k b))]
+          -- replace the continuation argument `b` by the overlay's value at `x`
+          congr 1
+          refine congrArg _ (funext fun π => ?_)
+          have hagree : permExtending (c.concat (x, b)) π x = b := by
+            have := extends_permExtending (c.concat (x, b)) π hk' hv'
+            exact this (x, b) (by simp [List.concat_eq_append])
+          rw [hagree]
+        rw [pmf_bind_elim_congr? -- NOT elim shape anymore; use bind_congr_support
+          ]
+        sorry
+      · sorry
+    · sorry
+
+end MasterInduction
+
 /- WIP (4B master induction — design in memory; statement+pure case verified in-session):
 /-- **The eager–lazy permutation bridge**: simulating against the lazy memoizing oracle
 from a realizable cache has the same distribution as drawing one uniform extension of the

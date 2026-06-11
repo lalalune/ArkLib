@@ -1440,6 +1440,115 @@ theorem fold_preserves_BBF_Code_membership
       (A := A) (B := B) (P := P) hPdecomp (r_chal := r_chal) (y := y)]
     rw [hP_eval_fun]
 
+/-- Two destination codewords can be unfolded to one source codeword whose binary folds are them.
+
+This is the one-step surjectivity counterpart to `fold_preserves_BBF_Code_membership`: if
+`u₀ = A` and `u₁ = B` are destination Reed-Solomon words, then the source polynomial
+`A(qᵢ(X)) + X B(qᵢ(X))` folds to `u₀` at challenge `0` and to `u₁` at challenge `1`. -/
+theorem exists_unfold_of_binary_BBF_Codewords
+    (i : Fin r) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (u₀ u₁ : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+    (hu₀ : u₀ ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+    (hu₁ : u₁ ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) :
+    ∃ g, g ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i ∧
+      fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+        h_destIdx h_destIdx_le g 0 = u₀ ∧
+      fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+        h_destIdx h_destIdx_le g 1 = u₁ := by
+  classical
+  have ha_lt0 : i.val + 1 < r := by
+    have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+    omega
+  have hdest : destIdx = (⟨i.val + 1, ha_lt0⟩ : Fin r) := Fin.eq_of_val_eq h_destIdx
+  subst destIdx
+  let destIdx' : Fin r := ⟨i.val + 1, ha_lt0⟩
+  let u₀cw : BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx' :=
+    ⟨u₀, by simpa [destIdx'] using hu₀⟩
+  let u₁cw : BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx' :=
+    ⟨u₁, by simpa [destIdx'] using hu₁⟩
+  obtain ⟨A_sub, hA_eval⟩ := exists_BBF_poly_of_codeword
+    (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx' u₀cw
+  obtain ⟨B_sub, hB_eval⟩ := exists_BBF_poly_of_codeword
+    (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx' u₁cw
+  let A : L[X] := A_sub.val
+  let B : L[X] := B_sub.val
+  let P : L[X] := A.comp (qMap 𝔽q β i) + X * B.comp (qMap 𝔽q β i)
+  let m : ℕ := 2 ^ (ℓ - destIdx'.val)
+  have hm_pos : 0 < m := by
+    dsimp [m]
+    exact Nat.two_pow_pos _
+  have hi_le : i ≤ ℓ := by omega
+  have hpow : 2 ^ (ℓ - i.val) = 2 * m := by
+    dsimp [m]
+    have hsub : ℓ - i.val = ℓ - destIdx'.val + 1 := by omega
+    rw [hsub, pow_succ, Nat.mul_comm]
+  have hA_nat : A.natDegree < m := by
+    exact natDegree_of_mem_degreeLT (L := L) hm_pos A_sub.property
+  have hB_nat : B.natDegree < m := by
+    exact natDegree_of_mem_degreeLT (L := L) hm_pos B_sub.property
+  have hA_comp : (A.comp (qMap 𝔽q β i)).natDegree < 2 * m := by
+    rw [Polynomial.natDegree_comp, qMap_natDegree (𝔽q := 𝔽q) (β := β) (i := i)]
+    omega
+  have hB_comp_le : (B.comp (qMap 𝔽q β i)).natDegree ≤ B.natDegree * 2 := by
+    rw [Polynomial.natDegree_comp, qMap_natDegree (𝔽q := 𝔽q) (β := β) (i := i)]
+  have hX_B_comp : (X * B.comp (qMap 𝔽q β i)).natDegree < 2 * m := by
+    calc
+      (X * B.comp (qMap 𝔽q β i)).natDegree
+          ≤ (X : L[X]).natDegree + (B.comp (qMap 𝔽q β i)).natDegree :=
+            Polynomial.natDegree_mul_le
+      _ ≤ 1 + B.natDegree * 2 := by
+            rw [Polynomial.natDegree_X]
+            omega
+      _ < 2 * m := by omega
+  have hP_nat : P.natDegree < 2 ^ (ℓ - i.val) := by
+    dsimp [P]
+    rw [hpow]
+    exact natDegree_add_lt_of_lt hA_comp hX_B_comp
+  let P_sub : L⦃< 2 ^ (ℓ - i.val)⦄[X] := ⟨P, by
+    apply Polynomial.mem_degreeLT.mpr
+    by_cases hPzero : P = 0
+    · rw [hPzero, Polynomial.degree_zero, hpow]
+      exact WithBot.bot_lt_coe _
+    · exact (Polynomial.natDegree_lt_iff_degree_lt hPzero).1 hP_nat⟩
+  let g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i :=
+    polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := i) (P := P_sub)
+  have hg_mem : g ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i := by
+    unfold BBF_Code
+    rw [ReedSolomon.mem_code_iff_exists_polynomial]
+    exact ⟨P, Polynomial.mem_degreeLT.mp P_sub.2, by
+      ext y
+      simp [g, P_sub, polyToOracleFunc, ReedSolomon.evalOnPoints]⟩
+  refine ⟨g, hg_mem, ?_, ?_⟩
+  · funext y
+    have hA_fun :
+        (fun y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx' => A.eval y.val) = u₀ := by
+      simpa [A, u₀cw, polyToOracleFunc] using hA_eval
+    unfold fold
+    simp only [cast_eq, g, polyToOracleFunc]
+    change fold_legacy 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (h_i := by have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡; omega)
+        (f := fun x => P.eval x.val) (r_chal := 0) y = u₀ y
+    rw [fold_legacy_eval_qMap_decomp (𝔽q := 𝔽q) (β := β)
+      (i := i) (h_i := by have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡; omega)
+      (h_le := by omega) (A := A) (B := B) (P := P) (by rfl)
+      (r_chal := 0) (y := y)]
+    simpa using congrFun hA_fun y
+  · funext y
+    have hB_fun :
+        (fun y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx' => B.eval y.val) = u₁ := by
+      simpa [B, u₁cw, polyToOracleFunc] using hB_eval
+    unfold fold
+    simp only [cast_eq, g, polyToOracleFunc]
+    change fold_legacy 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (h_i := by have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡; omega)
+        (f := fun x => P.eval x.val) (r_chal := 1) y = u₁ y
+    rw [fold_legacy_eval_qMap_decomp (𝔽q := 𝔽q) (β := β)
+      (i := i) (h_i := by have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡; omega)
+      (h_le := by omega) (A := A) (B := B) (P := P) (by rfl)
+      (r_chal := 1) (y := y)]
+    simpa using congrFun hB_fun y
+
 /-- A fiberwise-closest source codeword exists whenever the close-branch hypothesis is available. -/
 lemma exists_fiberwiseClosestCodeword_within_close (i : Fin r) {destIdx : Fin r}
     (steps : ℕ) [NeZero steps] (h_destIdx : destIdx = i + steps)

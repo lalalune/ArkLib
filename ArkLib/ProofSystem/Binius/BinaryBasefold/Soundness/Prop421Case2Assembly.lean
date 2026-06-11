@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Contrapositive
 
 /-!
@@ -15,10 +15,10 @@ DP24 Proposition 4.21, Case 2 (fiberwise-far branch) closes through the in-tree 
 `ReedSolomon.code`, so within unique decoding the tensor combination of a far stack stays far
 except with probability `steps · |S_next| / |L|`.
 
-This file does all the instantiation work now — the RS unfolding of `BBF_Code`, the
+This file does all the proof assembly work now — the RS unfolding of `BBF_Code`, the
 `Nontrivial`/`NeZero` side instances, the `UDRClose ↔ distance ≤ uniqueDecodingRadius`
 arithmetic, and the ENNReal cast algebra — and packages the result as
-`prop421Case2_holds_of_bridges`, conditional on exactly the two statement-level inputs still
+`prop421Case2_probability_bound_of_bridges`, conditional on exactly the two statement-level inputs still
 being produced by other active lanes:
 
 1. **the fold/tensor bridge** (`iterated_fold_eq_multilinearCombine_preTensorCombine`, already
@@ -27,7 +27,7 @@ being produced by other active lanes:
    stack is NOT jointly proximate to the interleaved destination code at unique decoding
    radius.
 
-Once both land, discharging `Prop421Case2FiberwiseFarResidual` is a two-line instance.
+Once both land, the Proposition 4.21 case-2 probability bound follows directly.
 -/
 
 set_option linter.unusedSectionVars false
@@ -100,11 +100,11 @@ lemma UDRClose_iff_dist_le_udr (i : Fin r) (h_i : i ≤ ℓ)
 
 /-- **Proposition 4.21, Case 2 — conditional assembly.**
 
-Given (1) the fold/tensor bridge (proven in `Soundness/Incremental.lean` as
-`iterated_fold_eq_multilinearCombine_preTensorCombine`) and (2) the Lemma 4.22 far-lift
-(PreTensor lane), the fiberwise-far residual holds: the heavy probabilistic input is the
-in-tree DG25 Corollary 3.7 with `ε = |S_next|`, consumed in contrapositive form. -/
-lemma prop421Case2_holds_of_bridges
+	Given (1) the fold/tensor bridge (proven in `Soundness/Incremental.lean` as
+	`iterated_fold_eq_multilinearCombine_preTensorCombine`) and (2) the Lemma 4.22 far-lift
+	(PreTensor lane), the fiberwise-far bound holds: the heavy probabilistic input is the
+	in-tree DG25 Corollary 3.7 with `ε = |S_next|`, consumed in contrapositive form. -/
+	lemma prop421Case2_probability_bound_of_bridges
     (hBridge : ∀ (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
       (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
       (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
@@ -126,10 +126,19 @@ lemma prop421Case2_holds_of_bridges
           (u := preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i)
           (Code.uniqueDecodingRadius
             (C := ((BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
-              : Set ((sDomain 𝔽q β h_ℓ_add_R_rate) destIdx → L))))) :
-    Prop421Case2FiberwiseFarResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) := by
-  constructor
-  intro i steps _ destIdx h_destIdx h_destIdx_le f_i h_far next_domain_size
+              : Set ((sDomain 𝔽q β h_ℓ_add_R_rate) destIdx → L)))))
+    (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (h_far : ¬fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) (f := f_i)) :
+    let next_domain_size := Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx)
+    Pr_{ let r ←$ᵖ (Fin steps → L) }[
+      let f_next := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
+        h_destIdx h_destIdx_le f_i r
+      UDRClose 𝔽q β destIdx h_destIdx_le f_next
+    ] ≤ ((steps * next_domain_size) / Fintype.card L) := by
   -- Notation for the destination code (as a set) and its UDR.
   set C : Set ((sDomain 𝔽q β h_ℓ_add_R_rate) destIdx → L) :=
     ((BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
@@ -172,9 +181,7 @@ lemma prop421Case2_holds_of_bridges
       destIdx h_destIdx_le]
     rw [hBridge i steps h_destIdx h_destIdx_le f_i rch]
   refine le_trans (le_of_eq (Pr_congr hiff)) (le_trans hProb ?_)
-  -- Cast algebra: steps · |S_next| / |L| in the class's coercion shape.
-  have hcard : Fintype.card ((sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) = next_domain_size := rfl
-  rw [hcard]
+  -- Cast algebra: steps · |S_next| / |L| in the statement's coercion shape.
   push_cast
   exact le_of_eq (by rw [mul_div_assoc])
 
@@ -184,4 +191,4 @@ end Binius.BinaryBasefold
 
 #print axioms Binius.BinaryBasefold.BBF_Code_nontrivial
 #print axioms Binius.BinaryBasefold.UDRClose_iff_dist_le_udr
-#print axioms Binius.BinaryBasefold.prop421Case2_holds_of_bridges
+#print axioms Binius.BinaryBasefold.prop421Case2_probability_bound_of_bridges

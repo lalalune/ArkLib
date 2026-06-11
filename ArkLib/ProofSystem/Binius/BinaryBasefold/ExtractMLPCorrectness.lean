@@ -131,30 +131,6 @@ variable (𝔽q : Type) [Field 𝔽q] [Fintype 𝔽q]
 variable [Algebra 𝔽q L]
 variable (β : Fin r → L) [hβ_lin_indep : Fact (LinearIndependent 𝔽q β)]
 
-/-- Coefficient extraction of `polynomialFromNovelCoeffs` is exactly
-`novelToMonomialCoeffs`. -/
-lemma coeff_polynomialFromNovelCoeffs (m : ℕ) (h : m ≤ r) (a : Fin (2 ^ m) → L)
-    (i : Fin (2 ^ m)) :
-    (polynomialFromNovelCoeffs 𝔽q β m h a).coeff i.val =
-      novelToMonomialCoeffs 𝔽q β m h a i := by
-  unfold polynomialFromNovelCoeffs novelToMonomialCoeffs
-  rw [Polynomial.finset_sum_coeff]
-  simp only [Polynomial.coeff_C_mul]
-  simp [Matrix.vecMul, dotProduct, changeOfBasisMatrix, toCoeffsVec, basisVectors]
-
-/-- The novel coefficients recovered from the monomial coefficients of
-`polynomialFromNovelCoeffs a` are `a` itself. -/
-lemma monomialToNovelCoeffs_coeff_polynomialFromNovelCoeffs (m : ℕ) (h : m ≤ r)
-    (a : Fin (2 ^ m) → L) :
-    monomialToNovelCoeffs 𝔽q β m h
-      (fun i => (polynomialFromNovelCoeffs 𝔽q β m h a).coeff i.val) = a := by
-  have hc : (fun i : Fin (2 ^ m) => (polynomialFromNovelCoeffs 𝔽q β m h a).coeff i.val) =
-      novelToMonomialCoeffs 𝔽q β m h a := by
-    funext i
-    exact coeff_polynomialFromNovelCoeffs 𝔽q β m h a i
-  rw [hc]
-  exact novelToMonomial_monomialToNovel_inverse 𝔽q β m h a
-
 /-- Reconstructing a low-degree polynomial from its monomial→novel converted
 coefficients gives back the polynomial. -/
 lemma polynomialFromNovelCoeffs_monomialToNovelCoeffs (m : ℕ) (h : m ≤ r)
@@ -352,7 +328,7 @@ lemma polyEval_mem_BBF_Code₀ (P : L[X]) (hdeg : P.natDegree < 2 ^ ℓ) :
   unfold BBF_Code
   rw [ReedSolomon.mem_code_iff_exists_polynomial]
   refine ⟨P, ?_, ?_⟩
-  · rw [Polynomial.mem_degreeLT]
+  · simp only [Fin.val_zero, tsub_zero]
     calc P.degree ≤ (P.natDegree : WithBot ℕ) := Polynomial.degree_le_natDegree
       _ < ((2 ^ ℓ : ℕ) : WithBot ℕ) := by exact_mod_cast hdeg
   · funext x
@@ -379,12 +355,14 @@ lemma N_eq_card (E : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) ≃ Fin N) :
   rw [← h]
   rw [sDomain_card 𝔽q β h_ℓ_add_R_rate (i := (0 : Fin r))
     (h_i := val_zero_lt_card (r := r) (ℓ := ℓ) (𝓡 := 𝓡)), hF₂.out]
+  simp only [Fin.val_zero, tsub_zero]
 
 lemma BBF_CodeDistance₀_eq :
     BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) =
       2 ^ (ℓ + 𝓡) - 2 ^ ℓ + 1 := by
   rw [BBF_CodeDistance_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := (0 : Fin r)) (h_i := Nat.zero_le ℓ)]
+  simp only [Fin.val_zero, tsub_zero]
 
 /-- **Backward direction, pipeline form.**  Inside the unique decoding radius the
 Berlekamp–Welch decoder finds exactly the consistency-prop codeword, and the MLE
@@ -442,6 +420,11 @@ theorem extractPipeline_eq_some_of_consistency
     have htri : hammingDist M Pcw ≤ hammingDist M f + hammingDist f Pcw :=
       hammingDist_triangle M f Pcw
     have hMf : hammingDist M f = hammingDist f M := hammingDist_comm M f
+    have htri' : hammingDist M Pcw ≤ hammingDist f M + hammingDist f Pcw := by
+      simpa [hMf] using htri
+    have hcons' : 2 * hammingDist f Pcw <
+        BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
+      simpa [hammingDist_comm Pcw f] using hcons
     omega
   have hwe : hammingDist f Pcw = d.toNat := by
     rw [he_toNat, hMP]
@@ -454,8 +437,13 @@ theorem extractPipeline_eq_some_of_consistency
     rw [hNcard]
     exact Nat.pow_le_pow_right (by norm_num) (by omega)
   have hUDRrad : 2 * d.toNat < N - 2 ^ ℓ + 1 := by
-    rw [hNcard]
-    omega
+    have hcons_d : 2 * d.toNat <
+        BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
+      have hcons' : 2 * hammingDist f Pcw <
+          BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
+        simpa [hammingDist_comm Pcw f] using hcons
+      simpa [hwe] using hcons'
+    simpa [hNcard, hdist_eq] using hcons_d
   have hdist_dec : hammingDist (fun j => f (E.symm j))
       (P₀.val.eval ∘ fun j =>
         ((E.symm j : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r)) : L)) ≤ d.toNat := by
@@ -471,10 +459,16 @@ theorem extractPipeline_eq_some_of_consistency
   -- reduce the pipeline
   unfold extractPipeline
   rw [← hd] at *
-  rw [hdec]
-  rw [if_neg (by omega)]
+  dsimp only
+  change (match BerlekampWelch.decoder d.toNat (2 ^ ℓ)
+      (fun j => ((E.symm j : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r)) : L))
+      (fun j => f (E.symm j)) with
+    | none => none
+    | some P => if P.natDegree ≥ 2 ^ ℓ then none
+        else some (buildMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) P)) =
+      some (revIndexMLP t)
+  simp [hdec, if_neg (Nat.not_le_of_gt hP₀deg)]
   -- identify the reconstruction with `revIndexMLP t`
-  congr 1
   apply Subtype.ext
   show MLE _ = (revIndexMLP t).val
   have hcoeffs : AdditiveNTT.monomialToNovelCoeffs 𝔽q β ℓ h_ℓ_le_r
@@ -483,11 +477,6 @@ theorem extractPipeline_eq_some_of_consistency
       (m := ℓ) (h := h_ℓ_le_r) c
     rw [hP₀]
     exact hh
-  rw [show (buildMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) P₀.val).val =
-      MLE (fun w : Fin ℓ → Fin 2 =>
-        (AdditiveNTT.monomialToNovelCoeffs 𝔽q β ℓ h_ℓ_le_r (fun i => P₀.val.coeff i.val))
-          (Nat.binaryFinMapToNat (m := fun j => ((w j : Fin 2) : ℕ))
-            (fun j => Nat.le_of_lt_succ (w j).isLt))) from rfl]
   rw [hcoeffs]
   exact MLE_binaryFinMap_statementOrder_eq_revIndexMLP t _
 
@@ -519,68 +508,72 @@ theorem consistency_of_extractPipeline_eq_some
   -- open the pipeline
   unfold extractPipeline at hex
   rw [← hd] at hex
+  dsimp only at hex
+  change (match BerlekampWelch.decoder d.toNat (2 ^ ℓ)
+      (fun j => ((E.symm j : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r)) : L))
+      (fun j => f (E.symm j)) with
+    | none => none
+    | some P => if P.natDegree ≥ 2 ^ ℓ then none
+        else some (buildMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) P)) =
+      some tpoly at hex
   rcases hdec : BerlekampWelch.decoder d.toNat (2 ^ ℓ)
       (fun j => ((E.symm j : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r)) : L))
       (fun j => f (E.symm j)) with _ | P
-  · rw [hdec] at hex
-    simp at hex
-  · rw [hdec] at hex
-    by_cases hdeg : P.natDegree ≥ 2 ^ ℓ
-    · rw [if_pos hdeg] at hex
-      simp at hex
-    · rw [if_neg hdeg] at hex
-      have htp : tpoly = buildMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) P :=
-        (Option.some.inj hex).symm
-      -- decoded distance bound, transported back to the domain
-      have hdist := BerlekampWelch.hammingDist_le_of_decoder_eq_some hdec
-      have hdist' : hammingDist f
-          (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val) ≤ d.toNat := by
-        have htrans := pipeline_dist_transport 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          E f P
-        rw [← htrans]
-        exact hdist
-      -- the consistency coefficients of `revIndexMLP tpoly` are the decoded novel coeffs
-      set cP : Fin (2 ^ ℓ) → L :=
-        AdditiveNTT.monomialToNovelCoeffs 𝔽q β ℓ h_ℓ_le_r (fun i => P.coeff i.val) with hcP
-      have hcoeff_eq : (fun ω => (revIndexMLP tpoly).val.eval
-          (statementOrderBitsOfIndex (L := L) ω)) = cP := by
-        funext ω
-        rw [revIndexMLP_eval_statementOrderBits]
-        rw [htp]
-        rw [show (buildMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) P).val =
-            MLE (fun w : Fin ℓ → Fin 2 =>
-              cP (Nat.binaryFinMapToNat (m := fun j => ((w j : Fin 2) : ℕ))
-                (fun j => Nat.le_of_lt_succ (w j).isLt))) from rfl]
-        exact MLE_binaryFinMap_eval_bit2 cP ω _
-      have hpoly_eq : (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
+  · simp [hdec] at hex
+  · simp [hdec] at hex
+    have hPdeg : P.natDegree < 2 ^ ℓ := hex.1
+    have htp : tpoly = buildMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) P :=
+      hex.2.symm
+    -- decoded distance bound, transported back to the domain
+    have hdist := BerlekampWelch.hammingDist_le_of_decoder_eq_some hdec
+    have hdist' : hammingDist f
+        (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val) ≤ d.toNat := by
+      have htrans := pipeline_dist_transport 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        E f P
+      rw [← htrans]
+      exact hdist
+    -- the consistency coefficients of `revIndexMLP tpoly` are the decoded novel coeffs
+    set cP : Fin (2 ^ ℓ) → L :=
+      AdditiveNTT.monomialToNovelCoeffs 𝔽q β ℓ h_ℓ_le_r (fun i => P.coeff i.val) with hcP
+    have hcoeff_eq : (fun ω => (revIndexMLP tpoly).val.eval
+        (statementOrderBitsOfIndex (L := L) ω)) = cP := by
+      funext ω
+      rw [revIndexMLP_eval_statementOrderBits]
+      rw [htp]
+      rw [show (buildMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) P).val =
+          MLE (fun w : Fin ℓ → Fin 2 =>
+            cP (Nat.binaryFinMapToNat (m := fun j => ((w j : Fin 2) : ℕ))
+              (fun j => Nat.le_of_lt_succ (w j).isLt))) from rfl]
+      exact MLE_binaryFinMap_eval_bit2 cP ω _
+    have hpoly_eq : (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
+        (fun ω => (revIndexMLP tpoly).val.eval
+          (statementOrderBitsOfIndex (L := L) ω))).val = P := by
+      have hbase : polynomialFromNovelCoeffs 𝔽q β ℓ h_ℓ_le_r cP = P := by
+        rw [hcP]
+        exact polynomialFromNovelCoeffs_monomialToNovelCoeffs 𝔽q β ℓ h_ℓ_le_r P
+          hPdeg
+      calc (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
           (fun ω => (revIndexMLP tpoly).val.eval
-            (statementOrderBitsOfIndex (L := L) ω))).val = P := by
-        have hbase : polynomialFromNovelCoeffs 𝔽q β ℓ h_ℓ_le_r cP = P := by
-          rw [hcP]
-          exact polynomialFromNovelCoeffs_monomialToNovelCoeffs 𝔽q β ℓ h_ℓ_le_r P
-            (Nat.lt_of_not_le hdeg)
-        calc (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
+            (statementOrderBitsOfIndex (L := L) ω))).val
+          = polynomialFromNovelCoeffs 𝔽q β ℓ h_ℓ_le_r
             (fun ω => (revIndexMLP tpoly).val.eval
-              (statementOrderBitsOfIndex (L := L) ω))).val
-            = polynomialFromNovelCoeffs 𝔽q β ℓ h_ℓ_le_r
-              (fun ω => (revIndexMLP tpoly).val.eval
-                (statementOrderBitsOfIndex (L := L) ω)) := rfl
-          _ = polynomialFromNovelCoeffs 𝔽q β ℓ h_ℓ_le_r cP := by rw [hcoeff_eq]
-          _ = P := hbase
-      -- conclude
-      show 2 * hammingDist _ f <
-        BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨0, by omega⟩
-      rw [hpoly_eq]
-      have hcomm : hammingDist
-          (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val) f =
-          hammingDist f
-            (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val) :=
-        hammingDist_comm _ _
-      have hgoal : 2 * hammingDist
-          (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val) f <
-          BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
-        omega
-      exact hgoal
+              (statementOrderBitsOfIndex (L := L) ω)) := rfl
+        _ = polynomialFromNovelCoeffs 𝔽q β ℓ h_ℓ_le_r cP := by rw [hcoeff_eq]
+        _ = P := hbase
+    -- conclude
+    show 2 * hammingDist _ f <
+      BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨0, by omega⟩
+    rw [hpoly_eq]
+    have hcomm : hammingDist
+        (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val) f =
+        hammingDist f
+          (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val) :=
+      hammingDist_comm _ _
+    have hgoal : 2 * hammingDist
+        (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) => P.eval x.val) f <
+        BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
+      omega
+    exact hgoal
 
 end Core
 
@@ -617,9 +610,11 @@ lemma UDRClose_of_firstOracleWitnessConsistency
   have hle : Code.distFromCode (u := f)
       (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) ≤
       (hammingDist f Pcw : ℕ∞) :=
-    Code.distFromCode_le_dist_to_mem f Pcw hPmem
-  calc 2 * Code.distFromCode (u := f)
+    Code.distFromCode_le_dist_to_mem
       (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r))
+      (u := f) (v := Pcw) (hv := hPmem)
+  calc 2 * (Code.distFromCode (u := f)
+      (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)))
       ≤ 2 * (hammingDist f Pcw : ℕ∞) := mul_le_mul_left' hle 2
     _ = ((2 * hammingDist f Pcw : ℕ) : ℕ∞) := by push_cast; ring
     _ < (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞) := by
@@ -696,94 +691,12 @@ theorem firstOracleWitnessConsistencyProp_unique'
   rw [e₁] at e₂
   exact revIndexMLP_injective (Option.some.inj e₂)
 
-/-! ## Machine-checked obstruction: the residual as stated forces `ℓ = 1` -/
-
-/-- The codeword of the consistency polynomial is itself consistent (distance `0`). -/
-lemma firstOracleWitnessConsistency_self (t : MultilinearPoly L ℓ) :
-    firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t
-      (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) =>
-        (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
-          (fun ω => t.val.eval (statementOrderBitsOfIndex (L := L) ω))).val.eval x.val) := by
-  show 2 * hammingDist _ _ <
-    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨0, by omega⟩
-  have hgoal : 2 * hammingDist
-      (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) =>
-        (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
-          (fun ω => t.val.eval (statementOrderBitsOfIndex (L := L) ω))).val.eval x.val)
-      (fun x : sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r) =>
-        (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
-          (fun ω => t.val.eval (statementOrderBitsOfIndex (L := L) ω))).val.eval x.val) <
-      BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) := by
-    rw [hammingDist_self]
-    rw [BBF_CodeDistance₀_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-    omega
-  exact hgoal
-
-/-- **Obstruction I**: any global `ExtractMLPCorrectnessResidual` instance forces every
-multilinear polynomial to be its own variable-reversal. -/
-theorem revIndexMLP_eq_self_of_residual
-    [inst : ExtractMLPCorrectnessResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-    (t : MultilinearPoly L ℓ) :
-    revIndexMLP t = t := by
-  set f : OracleFunction (𝔽q := 𝔽q) (β := β)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0 :=
-    fun x =>
-      (polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega : ℓ ≤ r)
-        (fun ω => t.val.eval (statementOrderBitsOfIndex (L := L) ω))).val.eval x.val with hf
-  have hcons : firstOracleWitnessConsistencyProp 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t f :=
-    firstOracleWitnessConsistency_self 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t
-  have h₁ : extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some t :=
-    (inst.holds f t).mpr hcons
-  have h₂ : extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f =
-      some (revIndexMLP t) :=
-    extractMLP_zero_eq_some_of_firstOracleWitnessConsistency 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) f t hcons
-  rw [h₁] at h₂
-  exact (Option.some.inj h₂).symm
-
-/-- **Obstruction II**: a global `ExtractMLPCorrectnessResidual` instance forces
-`ℓ = 1`.  Hence the residual is *false as stated* for every `ℓ ≥ 2`: the statement in
-`Relations.lean` must be corrected (per `extractMLP_zero_eq_some_revIndexMLP_iff`)
-before an instance can exist. -/
-theorem extractMLPCorrectnessResidual_ell_eq_one
-    [inst : ExtractMLPCorrectnessResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)] :
-    ℓ = 1 := by
-  by_contra hne
-  have hℓ2 : 2 ≤ ℓ := by
-    have := Nat.pos_of_neZero ℓ
-    omega
-  -- the witness polynomial `MLE (w ↦ w 0)`
-  set t : MultilinearPoly L ℓ :=
-    ⟨MLE (fun w : Fin ℓ → Fin 2 => ((w 0 : Fin 2) : L)), MLE_mem_restrictDegree _⟩ with ht
-  have hrev : revIndexMLP t = t :=
-    revIndexMLP_eq_self_of_residual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t
-  -- evaluate both sides at the indicator of `Fin.rev 0`
-  set w : Fin ℓ → Fin 2 := fun j => if j = Fin.rev 0 then 1 else 0 with hw
-  have hne0 : (0 : Fin ℓ) ≠ Fin.rev 0 := by
-    intro hcontra
-    have hv := congrArg Fin.val hcontra
-    rw [Fin.val_rev] at hv
-    simp only [Fin.val_zero] at hv
-    omega
-  have hL : (revIndexMLP t).val.eval (fun j => ((w j : Fin 2) : L)) =
-      t.val.eval (fun j => ((w j : Fin 2) : L)) := by rw [hrev]
-  have hLHS : (revIndexMLP t).val.eval (fun j => ((w j : Fin 2) : L)) = 1 := by
-    rw [revIndexMLP_eval_zeroOne]
-    rw [ht]
-    have hmle := MLE_eval_zeroOne (R := L) (fun j : Fin ℓ => w (Fin.rev j))
-      (fun w' : Fin ℓ → Fin 2 => ((w' 0 : Fin 2) : L))
-    rw [hmle, hw]
-    simp
-  have hRHS : t.val.eval (fun j => ((w j : Fin 2) : L)) = 0 := by
-    rw [ht]
-    have hmle := MLE_eval_zeroOne (R := L) w
-      (fun w' : Fin ℓ → Fin 2 => ((w' 0 : Fin 2) : L))
-    rw [hmle, hw]
-    simp only [if_neg hne0]
-    simp
-  rw [hLHS, hRHS] at hL
-  exact one_ne_zero hL
+/-!
+The deleted `ExtractMLPCorrectnessResidual` class would force every multilinear
+polynomial to equal its variable-reversal.  The corrected theorem above is the
+replacement: extraction success identifies the reversed witness under the UDR
+guard, and the old residual statement should not be reintroduced.
+-/
 
 end Main
 

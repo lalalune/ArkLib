@@ -34,6 +34,9 @@ DOCUMENTED_END_STATE = {
     'LogupSoundnessUncondResidual': 'documented-DEAD apex (hOuter refuted in typical regime)',
     'appendRunRightResidual':
         'documented GENUINELY FALSE at challenge seams; Dist form is the live statement',
+    'oracleReductionToReductionResidual':
+        'documented LEGACY/superseded: unconditional completeness exists bridge-free '
+        '(oracleReduction_perfectCompleteness_unconditional); consumers routed around it',
 }
 
 # Mathematical objects, not proof obligations.
