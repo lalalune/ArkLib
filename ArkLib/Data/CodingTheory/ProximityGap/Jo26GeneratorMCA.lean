@@ -638,6 +638,18 @@ theorem epsMCAGen_pairGen_eq_epsMCA (C : Set (ι → A)) (δ : ℝ≥0) :
   unfold epsMCAGen ProximityGap.epsMCA
   exact iSup_congr fun u => Pr_congr fun γ => genMCAEvent_pairGen_iff C δ u γ
 
+/-- **Affine-line exactness fence.**  Specializing the generator framework to
+`γ ↦ ![1, γ]`, row-wise interleaving has exactly the original affine-line MCA
+error.  Thus any general-generator interleaving improvement must use genuinely
+larger or different seed geometry; on the affine-line surface there is no
+interleaving-width loss to improve. -/
+theorem epsMCAGen_pairGen_interleaved_eq_epsMCA (C : Submodule F (ι → A))
+    (s : ℕ) [NeZero s] (δ : ℝ≥0) :
+    epsMCAGen (F := F) (A := Fin s → A) (fun γ : F => ![1, γ])
+        ((C : Set (ι → A))^⋈ (Fin s)) δ
+      = ProximityGap.epsMCA (F := F) (A := A) (C : Set (ι → A)) δ := by
+  rw [epsMCAGen_pairGen_eq_epsMCA, ProximityGap.epsMCA_interleaved_eq]
+
 /-- The generator-MCA bad event at the power generator `γ ↦ (γ^{exp j})_j` coincides
 with the general-`parℓ` event `ProximityGapP.mcaEventP`. Definitional: `genComb` at this
 generator *is* `ProximityGapP.curveComb`. -/
@@ -671,4 +683,5 @@ end ProximityGap.Jo26Gen
 #print axioms ProximityGap.Jo26Gen.epsMCAGen_interleaved_le_of_card_le
 #print axioms ProximityGap.Jo26Gen.epsMCAGen_interleaved_eq_of_card_le
 #print axioms ProximityGap.Jo26Gen.epsMCAGen_pairGen_eq_epsMCA
+#print axioms ProximityGap.Jo26Gen.epsMCAGen_pairGen_interleaved_eq_epsMCA
 #print axioms ProximityGap.Jo26Gen.epsMCAGen_powGen_eq_epsMCAP
