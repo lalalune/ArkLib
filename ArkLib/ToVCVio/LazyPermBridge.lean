@@ -642,6 +642,42 @@ theorem pmf_absorb_inv {α : Type} (c : List (X × X)) (b : X)
     show (fun π => ψ (permExtending c π)) = ψ ∘ (permExtending c) from rfl,
     ← PMF.map_comp, map_permExtending_uniform_fintype c hkeys hvals]
 
+/-- The forward miss-case absorption with a spectator sample (the combined duplex-sponge
+induction's hash table rides along untouched): swap the spectator out, absorb per fibre. -/
+theorem pmf_absorb_spectator {α γ : Type} (c : List (X × X)) (a : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (ha : a ∉ c.map Prod.fst) (hne : (extendsFinset c).Nonempty)
+    (G : PMF γ) (ψ : γ → Equiv.Perm X → α) :
+    (PMF.uniformOfFinset (unusedFinset c)
+        (unusedFinset_nonempty c a hkeys hvals ha)).bind (fun b =>
+      G.bind (fun g =>
+        (PMF.uniformOfFintype (Equiv.Perm X)).map
+          (fun π => ψ g (permExtending (c.concat (a, b)) π))))
+      = G.bind (fun g =>
+          (PMF.uniformOfFintype (Equiv.Perm X)).map
+            (fun π => ψ g (permExtending c π))) := by
+  rw [PMF.bind_comm]
+  exact congrArg _ (funext fun g => pmf_absorb c a hkeys hvals ha hne (ψ g))
+
+/-- The inverse-direction spectatored absorption. -/
+theorem pmf_absorb_inv_spectator {α γ : Type} (c : List (X × X)) (b : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (hb : b ∉ c.map Prod.snd) (hne : (extendsFinset c).Nonempty)
+    (G : PMF γ) (ψ : γ → Equiv.Perm X → α) :
+    (PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+        (unusedFinset_nonempty (c.map Prod.swap) b
+          (by simpa [List.map_map, Function.comp_def] using hvals)
+          (by simpa [List.map_map, Function.comp_def] using hkeys)
+          (by simpa [List.map_map, Function.comp_def] using hb))).bind (fun a =>
+      G.bind (fun g =>
+        (PMF.uniformOfFintype (Equiv.Perm X)).map
+          (fun π => ψ g (permExtending (c.concat (a, b)) π))))
+      = G.bind (fun g =>
+          (PMF.uniformOfFintype (Equiv.Perm X)).map
+            (fun π => ψ g (permExtending c π))) := by
+  rw [PMF.bind_comm]
+  exact congrArg _ (funext fun g => pmf_absorb_inv c b hkeys hvals hb hne (ψ g))
+
 end PMFAbsorption
 
 section MasterInduction
