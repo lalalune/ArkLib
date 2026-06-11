@@ -673,6 +673,19 @@ theorem evalDist_DDS_eq_lazyDSImpl {α : Type}
     exact this
   rw [hprog]
 
+/-- Events transport through the bridge: any predicate's probability under the eager
+`D_DS` game equals its probability under the lazy game. The Lemma 5.8 accounting can
+therefore be performed entirely on the lazy side. -/
+theorem probEvent_DDS_eq_lazyDSImpl {α : Type}
+    (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (p : α → Prop) :
+    Pr[ p | do
+      let c ← (DuplexSpongeFS.KeyLemmaFoundations.D_DS StmtIn U).sample
+      simulateQ ((DuplexSpongeFS.KeyLemmaFoundations.D_DS StmtIn U).toImpl c) P]
+      = Pr[ p | (simulateQ lazyDSImpl P).run' (∅, ([] :
+          List (CanonicalSpongeState U × CanonicalSpongeState U)))] := by
+  unfold probEvent
+  rw [evalDist_DDS_eq_lazyDSImpl]
+
 end Connectors
 
 end DuplexSpongeFS.EagerLazyDS
@@ -682,3 +695,4 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.toPMF_two_sample
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_simulateQ_lazyDSImpl_run'
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_DDS_eq_lazyDSImpl
+#print axioms DuplexSpongeFS.EagerLazyDS.probEvent_DDS_eq_lazyDSImpl
