@@ -544,6 +544,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.GG25ExactPreservation
 import ArkLib.Data.CodingTheory.ProximityGap.GG25MarkedCurve
+import ArkLib.Data.CodingTheory.ProximityGap.GG25MarkedEquivalence
 import ArkLib.Data.CodingTheory.ProximityGap.GG25NonCovering
 import ArkLib.Data.CodingTheory.ProximityGap.GG25SmallWitness
 import ArkLib.Data.CodingTheory.ProximityGap.GG25WeightedTransfer
