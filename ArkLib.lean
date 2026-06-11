@@ -1336,6 +1336,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.HashPaper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.HonestConsistency
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.HonestConsistencyPaper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23Bricks
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23CouplingEngine
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23FreshPath
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23StepCoupling
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23TableComap
