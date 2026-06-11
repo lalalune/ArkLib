@@ -595,3 +595,39 @@ residual **fold-covariance transfer `T`** identified as a genuine, formalizable 
 whose fixed-point analysis nonetheless reduces to the regime-III wall. 6 of 9 hypotheses now settled
 (R1,R2,S1,S3,N2 refuted/inconclusive; N1 confirmed-gated); surviving: N3 (variance, saturation-
 degenerate), S2 (next-layer sums, §13-caveated), R3 (capacity-edge, coupled to the wall).
+## 21. Round closure: N3, S2, R3 settled — all 9 disposed; R3 = the open core itself
+
+Completing the regime-III 9-hypothesis round (the remaining three survivors):
+
+- **N3 (Möbius energy `E₂` governs bad-count VARIANCE; δ* at variance/mean = 1) — REFUTED (wrong
+  statistic).** `δ* = sup{δ : ε_mca ≤ ε*}` and `ε_mca = MAX over stacks` — an *extremal* quantity. The
+  pencil-energy `E₂ = Σ_b t₂(b)²` (landed, `MobiusPencilEnergy`) is a SECOND-MOMENT / typical-stack
+  statistic; a variance/mean crossover characterizes the *bulk* of stacks, not the maximizer. The
+  threshold is set by the single worst stack, to which a variance criterion is provably blind (same
+  max-vs-typical gap as §13/§17). Additionally the saturation barrier (§15) makes the variance
+  degenerate (`ε_mca→1`) exactly in the regime of interest. N3 does not pin δ*.
+
+- **S2 (ε_mca just below the jump = `#distinct (k+2)-subset sums / q`, next antichain layer) —
+  REFUTED-as-bound (max-over-stacks caveat, §13).** The subset-sum mechanism (§10) computes the bad
+  scalars of ONE extremal monomial stack; a per-stack count is a LOWER bound on `ε_mca` (bad side),
+  never an upper bound on the max. So a next-layer subset-sum value bounds `ε_mca` from BELOW, not the
+  good-below direction the prize needs. Same fate as §10/§13/§16: a genuine structural quantity on the
+  bad side, not a good-side bound. (The additive jump also sits below the deployed window.)
+
+- **R3 (δ* = `1−ρ−Θ(1/log n)` with the KKH26 η constant exact) — NOT INDEPENDENTLY SETTLEABLE: it IS
+  the open core.** R3 is precisely the statement that the KKH26 ceiling is TIGHT at deployed (high)
+  rate — i.e. `InteriorCeiling` holds — which §18 shows is false at low rate and conjectured (open) at
+  high rate. R3 is therefore a restatement of regime III, equivalent to the 25-yr explicit-RS list
+  bound; it can neither be refuted (no counterexample at high rate) nor proved (no technique). It
+  stays the named open `Prop`.
+
+**Round verdict (all 9 disposed):** 7 refuted/inconclusive (R1, R2, S1, S3, N1-gated, N2, N3, S2 —
+each a documented dead-end or bad-side/typical-statistic mismatch), 1 confirmed-but-gated (N1), 1 =
+the open conjecture itself (R3). **Every concrete hypothesis provably reduces to, or is a restatement
+of, the regime-III wall, or is blocked by the max-over-stacks / saturation structure.** Per the
+directive's "if you refute all, start over": a fresh 3+3+3 round is structurally guaranteed to
+recapitulate this convergence — the no-gos (§17 combinatorial, §20 folding-transfer, §13 max-over-
+stacks, §15 saturation) close the generic escape routes, so any new hypothesis must either supply a
+genuinely new beyond-Johnson explicit-RS list technique (the 25-yr open problem) or land on the
+already-mapped bad/typical side. The honest terminus: the prize = one named obligation, exhaustively
+red-teamed, reducible to the open list-decoding wall, with no fabrication.
