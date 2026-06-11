@@ -1583,6 +1583,7 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckWithTargetComplete
 import ArkLib.ProofSystem.Spartan.SendEvalClaimComplete
 import ArkLib.ProofSystem.Spartan.ShortPhaseKnowledgeLeaves
 import ArkLib.ProofSystem.Spartan.ShortPhaseRbrKnowledgeLeaves
+import ArkLib.ProofSystem.Spartan.SpartanDirFacts
 import ArkLib.ProofSystem.Spartan.SpartanRBRProof
 import ArkLib.ProofSystem.Spartan.SpartanRBRWithClaimProof
 import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
