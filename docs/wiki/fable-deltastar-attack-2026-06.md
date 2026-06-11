@@ -721,3 +721,41 @@ analytic-Weil, folding, spectral — is a verified no-go or provably reduces to 
 The prize demands a genuinely NEW technique beyond both Johnson-saturating toolkits; that is exactly
 the content of "25-yr open, no known technique," now grounded in the project's own machine-checked
 no-go bricks rather than asserted. No fabrication; the §22 overclaim is retracted.
+## 24. ROUND 3 (moment-method, fresh 3+3+3) + sharp refinement: the wall is ANTI-CONCENTRATION
+
+Round-3 hypotheses target the gap the §23 Weil no-go leaves: Weil bounds the WORST-CASE per-frequency
+subgroup Gauss sum `η_b = Σ_{y∈G} ψ(b·y)` by `√q`, but the moment substrate (proven, NO Weil) shows
+the TYPICAL `η_b` is far smaller — so the question is whether typical-behaviour control beats Johnson.
+
+### Substrate facts (all sorry-free, axiom-clean — `SubgroupGaussSum{Second,Fourth}Moment`, `SubgroupQuadraticSecondMoment`)
+- 2nd moment: `Σ_{b∈F} ‖η_b‖² = q·|G|` ⟹ **average `‖η_b‖² = |G|`** ⟹ typical `‖η_b‖ ≈ √|G| ≪ √q`.
+- 4th moment: `Σ_b ‖η_b‖⁴ = q·E(G)` (additive energy `E(G)=#{y₁+y₂=y₃+y₄}`), the sum-product bridge;
+  `E(G) ≥ |G|²` (diagonal), `b=0` term `=|G|⁴`.
+- quadratic: `Σ_b ‖ζ_b‖² = q·#{x'²=x²} = 2q|G|` (G ∋ −1), typical `√(2|G|) ≪ √q`.
+
+### Reasonable / Novel / Synthetic (round 3)
+- **R1'' (L²/Markov list bound):** bound #{p : agreement ≥ (1−δ)n} via Markov on the 2nd moment of the
+  remainder `R=Σ_{ψ≠0}η_ψ(p−w)`. DISPOSITION: 2nd moment gives the AVERAGE `R≈√(qn)`, but Markov on a
+  sum of `q−1` terms yields only a `1/poly` density, NOT the `2^-128`-vs-list gap; controls the bulk,
+  not the heavy tail = the open apex.
+- **N1'' (4th-moment / additive-energy anti-concentration):** small `E(G)` (sum-product) ⟹ 4th-moment
+  concentration ⟹ few `p` with large `R`. DISPOSITION: this IS the genuine deep direction (sum-product
+  for `2^k`-subgroups), but a 4th-moment bound gives Paley-Zygmund-type *constant*-probability anti-
+  concentration, not the super-polynomial tail the prize needs; the required `E(G)` bound for `2^k`
+  subgroups is itself a hard sum-product estimate (Bourgain–Garaev regime), open.
+- **S1'' (moment-tower → worst-case bridge):** the `MomentCollisionTower` / `Spectral` cone to convert
+  all-order moment control into a worst-case per-frequency bound. DISPOSITION: this is EXACTLY the
+  documented open apex (memory `moment-method-direction-a`: "average→worst-case past Johnson"); the
+  full tower = Weil (all moments ⟹ pointwise), so it re-enters the §23 no-go.
+
+### Sharp refinement (the genuine new takeaway — paperworthy framing)
+**The 25-yr wall is an ANTI-CONCENTRATION (worst-case) phenomenon, not a first-order size barrier —
+and this is now machine-grounded.** Proven, no Weil: the *average* subgroup Gauss sum is `√|G|`,
+quadratically below the `√q` Johnson scale. So in an *average/typical* sense the proximity count
+behaves far better than Johnson; `δ*` would sit well into the interior. The entire difficulty is that
+the prize is WORST-CASE (a single adversarial `(p,w)` aligning the `√q` Weil-tight frequency, the
+`gPoly` realizer of §23). The open core, precisely: **does the additive energy `E(G)` of a `2^k`
+multiplicative subgroup force enough anti-concentration of `R` to beat Johnson in the worst case?** —
+a sum-product question (Bourgain–Garaev–Konyagin territory), the deepest and only non-foreclosed form,
+and itself open. Round-3 verdict: moment route is the right *shape* (average beats Johnson, proven),
+but the average→worst-case / sum-product apex is the wall, now sharply named as anti-concentration.
