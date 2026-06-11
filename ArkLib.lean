@@ -1242,6 +1242,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Honest
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512HonestPaper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512PaperCascade
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514PaperFork
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514ForkFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516HashHalf
