@@ -7,6 +7,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25LaneBridge
 import ArkLib.ToMathlib.ZAffineDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 
 /-!
 # The capture wire — from the lane's close decode to `AffineCaptured`
@@ -219,6 +220,73 @@ theorem johnsonNumericBound_of_pencil_coherence
         exact_mod_cast hPz
       exact affineCaptured_of_pz_affine hd₀ hd₁ hbad hclose hreg
 
+
+open Classical in
+/-- **The pencil-coherence glue.**  A per-stack affine surface coherent with the lane's
+decode family (the surface-factor production's conclusion) yields the pencil-coherence
+hypothesis of the assembly: the surface's inner-coefficient extractions are the pair. -/
+theorem pencil_coherence_of_surface
+    {n k : ℕ} [NeZero n] {ωs : Fin n ↪ F} {δq : ℚ} [DecidableEq (RatFunc F)]
+    (hsurface : ∀ u : WordStack F (Fin 2) (Fin n),
+      ∃ w : Polynomial (Polynomial F), w.natDegree ≤ k ∧
+        (∀ i, (w.coeff i).natDegree ≤ 1) ∧
+        ∀ γ ∈ _root_.ProximityGap.coeffs_of_close_proximity
+            (F := F) k ωs δq (u 0) (u 1),
+          w.map (Polynomial.evalRingHom γ)
+            = _root_.ProximityGap.PzFamily
+                (F := F) (n := n) δq (u 0) (u 1) ωs k γ) :
+    ∀ u : WordStack F (Fin 2) (Fin n),
+      ∃ A₀ A₁ : F[X], A₀.natDegree < k + 1 ∧ A₁.natDegree < k + 1 ∧
+        ∀ γ ∈ _root_.ProximityGap.coeffs_of_close_proximity
+            (F := F) k ωs δq (u 0) (u 1),
+          ∀ hγ : γ ∈ _root_.ProximityGap.coeffs_of_close_proximity
+            (F := F) k ωs δq (u 0) (u 1),
+          _root_.ProximityGap.Pz (n := n) (k := k) (ωs := ωs) (δ := δq)
+            (u₀ := u 0) (u₁ := u 1) hγ = A₀ + Polynomial.C γ * A₁ := by
+  intro u
+  obtain ⟨w, hwdeg, haff, hcoh⟩ := hsurface u
+  refine ⟨Polynomial.innerCoeff w 0, Polynomial.innerCoeff w 1,
+    lt_of_le_of_lt (Polynomial.innerCoeff_natDegree_le w 0) (by omega),
+    lt_of_le_of_lt (Polynomial.innerCoeff_natDegree_le w 1) (by omega),
+    fun γ hγmem hγ => ?_⟩
+  have h1 : w.map (Polynomial.evalRingHom γ)
+      = Polynomial.innerCoeff w 0 + Polynomial.C γ * Polynomial.innerCoeff w 1 :=
+    Polynomial.map_evalRingHom_eq_affine haff γ
+  have h2 := hcoh γ hγmem
+  have h3 : _root_.ProximityGap.PzFamily
+      (F := F) (n := n) δq (u 0) (u 1) ωs k γ
+      = _root_.ProximityGap.Pz (n := n) (k := k) (ωs := ωs) (δ := δq)
+        (u₀ := u 0) (u₁ := u 1) hγ := by
+    unfold _root_.ProximityGap.PzFamily
+    rw [dif_pos hγ]
+  rw [← h3, ← h2, h1]
+
+open Classical in
+/-- **The numeric edge from the per-stack surface.**  The composed conditional: a
+per-stack coherent affine surface (the surface-factor production's conclusion, for every
+word stack) gives the below-Johnson numeric edge at the rational radius. -/
+theorem johnsonNumericBound_of_surface
+    {n k : ℕ} [NeZero n] (ωs : Fin n ↪ F) (δq : ℚ) (η : ℝ≥0)
+    [DecidableEq (RatFunc F)]
+    (hδq0 : 0 ≤ δq)
+    (hη : 0 < η)
+    (hδr : InJohnsonRange ωs (k + 1) η (Real.toNNReal (δq : ℝ)))
+    (hk2n : k + 2 ≤ n)
+    (hreg : ((k + 1 : ℕ) : ℝ)
+      + 2 * ((Real.toNNReal (δq : ℝ) : ℝ≥0) : ℝ) * Fintype.card (Fin n)
+      < Fintype.card (Fin n))
+    (hsurface : ∀ u : WordStack F (Fin 2) (Fin n),
+      ∃ w : Polynomial (Polynomial F), w.natDegree ≤ k ∧
+        (∀ i, (w.coeff i).natDegree ≤ 1) ∧
+        ∀ γ ∈ _root_.ProximityGap.coeffs_of_close_proximity
+            (F := F) k ωs δq (u 0) (u 1),
+          w.map (Polynomial.evalRingHom γ)
+            = _root_.ProximityGap.PzFamily
+                (F := F) (n := n) δq (u 0) (u 1) ωs k γ) :
+    JohnsonNumericBound ωs (k + 1) η (Real.toNNReal (δq : ℝ)) :=
+  johnsonNumericBound_of_pencil_coherence ωs δq η hδq0 hη hδr hk2n hreg
+    (pencil_coherence_of_surface hsurface)
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
@@ -226,3 +294,5 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.agreement_card_of_relDist_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.affineCaptured_of_pz_affine
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_pencil_coherence
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.pencil_coherence_of_surface
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_surface
