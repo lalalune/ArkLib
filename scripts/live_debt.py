@@ -22,6 +22,7 @@ KNOWN_DISCHARGED = {
     'SimulatedProverChallengeBudgetResidual': 'simulatedProverChallengeBudget',
     'SimulatedProverSharedBudgetResidual': 'simulatedProverSharedBudget',
     'OuterCompletenessResidual': 'outerCompletenessResidual_of_neverFail (NeverFail-standard)',
+    'Lemma5_12HonestResidual': 'lemma5_12_honest (Lemma512Honest.lean)',
 }
 
 # Honest non-proof end-states (documented obstruction / suspected-false / documented-dead).
