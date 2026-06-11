@@ -10,6 +10,44 @@ a "PROVEN" issue comment, or a grant-completion claim.
 (`native_decide`, `bv_decide`, undocumented `axiom` — `forbidden_tokens.py`), flagship-theorem
 axiom drift (`axiom_audit.py`). An auditor's job is everything those *cannot* see.
 
+## Current shortcut snapshot (2026-06-11)
+
+A comment/string-stripped scan of `ArkLib/**/*.lean` found:
+
+- Live `axiom` / bodyless `constant` / bodyless `opaque` declarations: **0**.
+- Live `sorry` / `admit` tokens: **0**.
+- Live `theorem` / `lemma` / `def` / `abbrev` / `instance` declarations with a top-level
+  `: True`, `True :=`, or `:= True` shape: **0**.
+- Remaining `def` / `abbrev` / `class ... : Prop` declarations: **90**. These are not all
+  dishonest: many are genuine bad-event predicates, conjecture statements, or refutation/spec
+  predicates. The audit job is to distinguish those from residual obligations that still need
+  proof.
+
+Current issue routing for the residual-shaped surface:
+
+- Binius class-carried residual obligations: [#317](https://github.com/lalalune/ArkLib/issues/317)
+  (six `class ...Residual : Prop` declarations).
+- Fiat-Shamir duplex sponge Lemma 5.8 residuals:
+  [#316](https://github.com/lalalune/ArkLib/issues/316).
+- Proximity/coding-theory residuals and conjecture/spec predicates:
+  [#334](https://github.com/lalalune/ArkLib/issues/334), with BCIKS20 core work also in
+  [#304](https://github.com/lalalune/ArkLib/issues/304).
+- Spartan residual Props: [#329](https://github.com/lalalune/ArkLib/issues/329).
+- WHIR soundness work: [#302](https://github.com/lalalune/ArkLib/issues/302); current direct
+  WHIR shortcut scan has no `def/class ... : Prop` hit under `ArkLib/ProofSystem/Whir`.
+- Logup residual Props after the old #13 closeout:
+  [#337](https://github.com/lalalune/ArkLib/issues/337).
+- RingSwitching completeness residual Props after the old #19 closeout:
+  [#338](https://github.com/lalalune/ArkLib/issues/338).
+- ToyProblem leaderboard residual Props after the old #18 closeout:
+  [#339](https://github.com/lalalune/ArkLib/issues/339).
+
+When extending this audit, keep the raw finding list in the relevant issue comment, not only in
+chat. In particular, do not treat every `def ... : Prop` as a bug: event predicates such as the
+duplex-sponge bad events are the specification language. The shortcut is when such a predicate is
+presented as a discharged theorem, hidden as a typeclass obligation, or used to assert a security
+front door without a proof of the predicate.
+
 ## Laundering patterns the gates miss
 
 1. **`def … : Prop` presented as a theorem.** A `Prop` *statement* compiles green forever without
