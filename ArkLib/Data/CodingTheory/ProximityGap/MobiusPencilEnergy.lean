@@ -7,6 +7,7 @@ import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Card
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 /-!
 # The Möbius pencil involution and its 2-orbit energy (#357, N1/C1 foundation)
@@ -109,8 +110,48 @@ theorem mobiusInvol_mapsTo_support (b : G) :
   intro hcontra
   exact hx (by rw [← hcontra, mobiusInvol_mobiusInvol])
 
+/-! ## The smooth-domain separation lower bound
+
+For a **cyclic** evaluation subgroup `H = G` (every multiplicative subgroup of `F^×` is
+cyclic), squaring is at most 2-to-1, so every pencil `b` has at most two square roots and
+therefore *near-maximal* 2-orbit count `t₂(b) ≥ (|G|−2)/2`. This is the structural fact that
+makes the pencil energy `E₂(H) = Σ_b t₂(b)²` of order `Θ(n³)` for smooth subgroups while a
+random domain has thin pencils — the **only known domain-separating mechanism** for δ\*. -/
+
+variable [IsCyclic G]
+
+/-- **At most two square roots** in a cyclic group: `#√b ≤ 2`. (If `b` has a root `x₀`, the map
+`x ↦ x·x₀⁻¹` injects `√b` into `√1 = {z : z²=1}`, which a cyclic group caps at `2`.) -/
+theorem card_sqrtSet_le_two (b : G) : (sqrtSet b).card ≤ 2 := by
+  classical
+  rcases (sqrtSet b).eq_empty_or_nonempty with h | ⟨x0, hx0⟩
+  · simp [h]
+  · rw [mem_sqrtSet] at hx0
+    have hinj : (sqrtSet b).card ≤ (sqrtSet (1 : G)).card := by
+      refine Finset.card_le_card_of_injOn (fun x => x * x0⁻¹) ?_ ?_
+      · intro x hx
+        rw [Finset.mem_coe, mem_sqrtSet] at hx
+        rw [Finset.mem_coe, mem_sqrtSet, mul_pow, inv_pow, hx, hx0]
+        exact mul_inv_cancel b
+      · intro x _ y _ hxy; exact mul_right_cancel hxy
+    refine hinj.trans ?_
+    exact IsCyclic.card_pow_eq_one_le (α := G) (n := 2) (by omega)
+
+/-- **Smooth-domain `t₂` lower bound.** Every pencil over a cyclic subgroup has near-maximal
+2-orbit count: `2·t₂(b) + 3 ≥ |G|`, i.e. `t₂(b) ≥ (|G|−3)/2`. This forces the pencil energy
+`Σ_b t₂(b)² = Θ(n³)` on smooth domains — the separation from random domains. -/
+theorem two_mul_t2_add_three_ge_card (b : G) :
+    2 * t2 b + 3 ≥ Fintype.card G := by
+  have hdecomp := card_eq_sqrtSet_add_support b
+  have hroots := card_sqrtSet_le_two b
+  have ht2 : 2 * t2 b + 1 ≥ (Finset.univ.filter (fun x => mobiusInvol b x ≠ x)).card := by
+    unfold t2; omega
+  omega
+
 end ProximityGap.MobiusPencil
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms ProximityGap.MobiusPencil.mobiusInvol_involutive
 #print axioms ProximityGap.MobiusPencil.mobiusInvol_apply_eq_self_iff
+#print axioms ProximityGap.MobiusPencil.card_sqrtSet_le_two
+#print axioms ProximityGap.MobiusPencil.two_mul_t2_add_three_ge_card
