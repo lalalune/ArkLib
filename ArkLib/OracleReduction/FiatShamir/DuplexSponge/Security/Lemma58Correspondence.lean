@@ -227,8 +227,76 @@ theorem support_flagged_logged {α : Type}
         rw [ih3, hflag]
         tauto
 
+/-! ## The entry-class structure (pure list combinatorics)
+
+CO25's redundancy certificates partition entries into classes of size at most two:
+a hash entry is its own class; a permutation entry is classed with its opposite-direction
+swap. The dedup procedure keeps exactly the first occurrence of each class. -/
+
+/-- The opposite-direction form of an entry (hash entries are self-paired). -/
+def swapEntry : DSEntry StmtIn U → DSEntry StmtIn U
+  | ⟨.inl q, u⟩ => ⟨.inl q, u⟩
+  | ⟨.inr (.inl a), b⟩ => ⟨.inr (.inr b), a⟩
+  | ⟨.inr (.inr b), a⟩ => ⟨.inr (.inl a), b⟩
+
+@[simp] lemma swapEntry_swapEntry (e : DSEntry StmtIn U) :
+    swapEntry (swapEntry e) = e := by
+  rcases e with ⟨t, ans⟩
+  rcases t with q | sIn | sOut <;> rfl
+
+/-- Class membership: equal or the swap. -/
+def sameClass (e e' : DSEntry StmtIn U) : Prop :=
+  e' = e ∨ e' = swapEntry e
+
+lemma sameClass_refl (e : DSEntry StmtIn U) : sameClass e e := Or.inl rfl
+
+lemma sameClass_symm {e e' : DSEntry StmtIn U} (h : sameClass e e') : sameClass e' e := by
+  rcases h with rfl | rfl
+  · exact Or.inl rfl
+  · exact Or.inr (swapEntry_swapEntry e).symm
+
+lemma sameClass_trans {e₁ e₂ e₃ : DSEntry StmtIn U}
+    (h₁ : sameClass e₁ e₂) (h₂ : sameClass e₂ e₃) : sameClass e₁ e₃ := by
+  rcases h₁ with rfl | rfl
+  · exact h₂
+  · rcases h₂ with rfl | rfl
+    · exact Or.inr rfl
+    · exact Or.inl (swapEntry_swapEntry e₁)
+
+/-- The paper redundancy predicate is exactly "an earlier class member exists". -/
+lemma redundantEntryDSPaper_iff_sameClass
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (idx : Fin log.length) :
+    DuplexSpongeFS.Paper.redundantEntryDSPaper log idx
+      ↔ ∃ j' < idx, sameClass log[idx] log[j'] := by
+  unfold DuplexSpongeFS.Paper.redundantEntryDSPaper
+  rcases hidx : log[idx] with ⟨t, ans⟩
+  rcases t with q | sIn | sOut
+  · constructor
+    · rintro ⟨j', hj', hej'⟩
+      exact ⟨j', hj', Or.inl hej'⟩
+    · rintro ⟨j', hj', hcl | hcl⟩
+      · exact ⟨j', hj', hcl⟩
+      · exact ⟨j', hj', hcl⟩
+  · constructor
+    · rintro ⟨j', hj', hej'⟩
+      rcases hej' with h | h
+      · exact ⟨j', hj', Or.inl h⟩
+      · exact ⟨j', hj', Or.inr h⟩
+    · rintro ⟨j', hj', hcl | hcl⟩
+      · exact ⟨j', hj', Or.inl hcl⟩
+      · exact ⟨j', hj', Or.inr hcl⟩
+  · constructor
+    · rintro ⟨j', hj', hej'⟩
+      rcases hej' with h | h
+      · exact ⟨j', hj', Or.inl h⟩
+      · exact ⟨j', hj', Or.inr h⟩
+    · rintro ⟨j', hj', hcl | hcl⟩
+      · exact ⟨j', hj', Or.inl hcl⟩
+      · exact ⟨j', hj', Or.inr hcl⟩
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_support
 #print axioms DuplexSpongeFS.EagerLazyDS.support_flagged_logged
+#print axioms DuplexSpongeFS.EagerLazyDS.redundantEntryDSPaper_iff_sameClass
