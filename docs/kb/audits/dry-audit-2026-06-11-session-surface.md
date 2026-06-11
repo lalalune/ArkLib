@@ -36,11 +36,11 @@ consolidation, and its status.
 7. **`relationRound_last_iff` deg-3 vs deg-generic** — **DONE** (third pass): the generic
    moved into `TightMidLeaves.lean`; the deg-3 form is a one-line corollary; duplicate proof
    deleted; full downstream cone rebuilds clean.
-8. **The `sfx*` direction facts and `vsum_two_pos`/`sumcheckPSpec_dir_zero` are cloned 3×**
-   (`ComposedCompleteness.lean`, `TightComposedFull.lean` (primed), and the textual-transform
-   regenerated `TightComposedCompleteness.lean`) — all `private`, so consolidation = a shared
-   public `SpartanDirFacts.lean` + three import swaps. The clones are proof-identical by
-   construction (two were generated from the first); drift risk is low but nonzero.
+8. **The `sfx*` direction facts cloned 3×** — **2 of 3 DONE** (third pass): public
+   `SpartanDirFacts.lean` extracted; `TightComposedCompleteness.lean`'s clone deleted (consumes
+   the shared copy, axiom-clean). Remaining: `TightComposedFull.lean`'s primed copy (15
+   call-site renames, mechanical) and `ComposedCompleteness.lean`'s original (sibling-shared —
+   coordinate before editing).
 9. **Inline `⊥ ≠ ⊤` proofs** — **DONE** (third pass): both sites now use
    `haveI : Nonempty (Fin s) := ⟨⟨0, hs⟩⟩; exact bot_ne_top` (Mathlib's lattice lemma; the
    `Nontrivial (Submodule F (Fin s → F))` instance synthesizes through `Function.nontrivial`).
