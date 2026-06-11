@@ -365,6 +365,76 @@ theorem map_onestep_uniform (c : List (X × X)) (a b : X)
       exact hτ (hstep ▸ onestep_extends c a b ha hb (mem_extendsFinset.mp hmem))
     · rw [if_neg hstep]
 
+@[simp] lemma extendsFinset_nil : extendsFinset ([] : List (X × X)) = Finset.univ := by
+  classical
+  ext π
+  simp [mem_extendsFinset, Extends]
+
+/-- Realizability of an appended cache, by induction from the front cache. -/
+lemma extendsFinset_append_nonempty (c₀ rest : List (X × X))
+    (hkeys : (((c₀ ++ rest).map Prod.fst)).Nodup)
+    (hvals : (((c₀ ++ rest).map Prod.snd)).Nodup)
+    (hne : (extendsFinset c₀).Nonempty) :
+    (extendsFinset (c₀ ++ rest)).Nonempty := by
+  classical
+  induction rest generalizing c₀ with
+  | nil => simpa using hne
+  | cons p rest ih =>
+      have hkeys' : (((c₀.concat p ++ rest).map Prod.fst)).Nodup := by
+        simpa [List.concat_append] using hkeys
+      have hvals' : (((c₀.concat p ++ rest).map Prod.snd)).Nodup := by
+        simpa [List.concat_append] using hvals
+      have hk0 := (List.nodup_append.mp (by
+        simpa [List.map_append] using hkeys)).2.2
+      have hv0 := (List.nodup_append.mp (by
+        simpa [List.map_append] using hvals)).2.2
+      have hp1 : p.1 ∉ c₀.map Prod.fst := fun h => hk0 p.1 h p.1 (by simp) rfl
+      have hp2 : p.2 ∉ c₀.map Prod.snd := fun h => hv0 p.2 h p.2 (by simp) rfl
+      have := ih (c₀.concat p) hkeys' hvals'
+        (extendsFinset_concat_nonempty c₀ p.1 p.2 hp1 hp2 hne)
+      simpa [List.concat_append] using this
+
+set_option maxHeartbeats 800000 in
+/-- **The overlay pushforward**: pushing a uniform extension of the front cache through the
+overlay of the remaining pairs gives a uniform extension of the whole cache. Iterates
+`map_onestep_uniform` along the fold. -/
+theorem map_permExtending_uniform (c₀ rest : List (X × X))
+    (hkeys : (((c₀ ++ rest).map Prod.fst)).Nodup)
+    (hvals : (((c₀ ++ rest).map Prod.snd)).Nodup)
+    (hne : (extendsFinset c₀).Nonempty) :
+    (PMF.uniformOfFinset (extendsFinset c₀) hne).map (permExtending rest)
+      = PMF.uniformOfFinset (extendsFinset (c₀ ++ rest))
+          (extendsFinset_append_nonempty c₀ rest hkeys hvals hne) := by
+  classical
+  induction rest generalizing c₀ with
+  | nil =>
+      rw [show (permExtending ([] : List (X × X))) = id from rfl, PMF.map_id]
+      have : c₀ ++ [] = c₀ := List.append_nil c₀
+      congr 1 <;> simp [this]
+  | cons p rest ih =>
+      have hkeys' : (((c₀.concat p ++ rest).map Prod.fst)).Nodup := by
+        simpa [List.concat_append] using hkeys
+      have hvals' : (((c₀.concat p ++ rest).map Prod.snd)).Nodup := by
+        simpa [List.concat_append] using hvals
+      have hk0 := (List.nodup_append.mp (by
+        simpa [List.map_append] using hkeys)).2.2
+      have hv0 := (List.nodup_append.mp (by
+        simpa [List.map_append] using hvals)).2.2
+      have hp1 : p.1 ∉ c₀.map Prod.fst := fun h => hk0 p.1 h p.1 (by simp) rfl
+      have hp2 : p.2 ∉ c₀.map Prod.snd := fun h => hv0 p.2 h p.2 (by simp) rfl
+      have hk0nodup : (c₀.map Prod.fst).Nodup :=
+        (List.nodup_append.mp (by simpa [List.map_append] using hkeys)).1
+      have hv0nodup : (c₀.map Prod.snd).Nodup :=
+        (List.nodup_append.mp (by simpa [List.map_append] using hvals)).1
+      have hsplit : (permExtending (p :: rest) : Equiv.Perm X → Equiv.Perm X)
+          = (permExtending rest) ∘ (fun π => (Equiv.swap p.1 (π.symm p.2)).trans π) := rfl
+      rw [hsplit, ← PMF.map_comp,
+        map_onestep_uniform c₀ p.1 p.2 hk0nodup hv0nodup hp1 hp2 hne,
+        ih (c₀.concat p) hkeys' hvals'
+          (extendsFinset_concat_nonempty c₀ p.1 p.2 hp1 hp2 hne)]
+      have hconc : c₀.concat p ++ rest = c₀ ++ p :: rest := List.concat_append
+      congr 1 <;> simp [hconc]
+
 /-! ## The master eager–lazy induction -/
 
 /-- The unused-values list enumerates the unused finset. -/
@@ -431,3 +501,4 @@ end LazyPermBridge
 #print axioms LazyPermBridge.onestep_fiber_iff
 #print axioms LazyPermBridge.extends_permExtending
 #print axioms LazyPermBridge.map_onestep_uniform
+#print axioms LazyPermBridge.map_permExtending_uniform
