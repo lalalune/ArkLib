@@ -24,14 +24,18 @@ witness-family count is a pure combinatorial quantity (a sum of binomials); the
 
 with both engines now formal. At the granularity radius the family has exactly `n + 1`
 members (`witnessFamily_card_granularity`: the `n` single-point erasures plus `univ`), so
-every linear code satisfies `ε_mca(C, 1/n) ≤ (n+1)/q` — one step beyond the sub-unit
-collapse (`≤ 1/q` below `1/n`), and for distance-`≥ 3` RS codes the two-sided jump bracket
+the raw witness-family count gives `ε_mca(C, 1/n) ≤ (n+1)/q`. The codimension-one
+witness-spread injection from `MCAWitnessSpread` sharpens this by one, charging the universal
+witness to an omitted coordinate:
 
-  `2/q ≤ ε_mca(RS[F,D,k], 1/n) ≤ (n+1)/q`        (`epsMCA_rs_jump_bracket`)
+  `ε_mca(C, 1/n) ≤ n/q`             (`epsMCA_le_card_div_at_granularity`).
 
-is pinched within a factor `(n+1)/2` — the probes measure the truth at `n` (the flat-`n`
-law); closing the remaining gap is the registered per-excluded-point nondegeneracy
-question.
+Thus for distance-`≥ 3` RS codes the two-sided jump bracket tightens to
+
+  `2/q ≤ ε_mca(RS[F,D,k], 1/n) ≤ n/q`            (`epsMCA_rs_jump_bracket_sharpUpper`)
+
+which matches the measured flat-`n` upper shape. Closing the lower gap is the registered
+per-excluded-point nondegeneracy question.
 
 Axiom-clean (`propext`, `Classical.choice`, `Quot.sound`); no `sorry`.
 
@@ -198,6 +202,15 @@ theorem epsMCA_le_succ_div_at_granularity (C : Submodule F (ι → A)) :
     at h
 
 open Classical in
+/-- **Sharper granularity cap:** the universal witness in the raw `n + 1` witness-family count
+does not cost an extra bad scalar. The codimension-one spread injection charges universal
+witnesses to an arbitrary coordinate and proves `ε_mca(C, 1/n) ≤ n/q` for every linear code. -/
+theorem epsMCA_le_card_div_at_granularity (C : Submodule F (ι → A)) :
+    epsMCA (F := F) (A := A) (C : Set (ι → A)) (1 / (Fintype.card ι : ℝ≥0))
+      ≤ (Fintype.card ι : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
+  ProximityGap.MCAWitnessSpread.epsMCA_le_card_div_of_granularity_radius C
+
+open Classical in
 /-- **The two-sided jump bracket for distance-`≥ 3` RS codes:**
 
   `2/q ≤ ε_mca(RS[F, D, k], 1/n) ≤ (n+1)/q`.
@@ -216,12 +229,33 @@ theorem epsMCA_rs_jump_bracket (domain : ι ↪ F) {k : ℕ}
   ⟨ProximityGap.MCADeltaStarHighRateFamily.epsMCA_highRate_ge domain hk hb,
     epsMCA_le_succ_div_at_granularity (ReedSolomon.code domain k)⟩
 
+open Classical in
+/-- **Sharp-upper two-sided jump bracket for distance-`≥ 3` RS codes:**
+
+  `2/q ≤ ε_mca(RS[F, D, k], 1/n) ≤ n/q`.
+
+The upper half uses the codimension-one witness-spread injection rather than the raw
+`n + 1` witness-family count. The remaining exact-jump task is the lower construction of
+`n` bad scalars for the distance-three edge case. -/
+theorem epsMCA_rs_jump_bracket_sharpUpper (domain : ι ↪ F) {k : ℕ}
+    (hk : k ≤ Fintype.card ι - 2) {b₁ b₂ : ι} (hb : b₁ ≠ b₂) :
+    (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)
+        ≤ epsMCA (F := F) (A := F)
+            (ReedSolomon.code domain k : Set (ι → F)) (1 / (Fintype.card ι : ℝ≥0))
+      ∧ epsMCA (F := F) (A := F)
+            (ReedSolomon.code domain k : Set (ι → F)) (1 / (Fintype.card ι : ℝ≥0))
+          ≤ (Fintype.card ι : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
+  ⟨ProximityGap.MCADeltaStarHighRateFamily.epsMCA_highRate_ge domain hk hb,
+    epsMCA_le_card_div_at_granularity (ReedSolomon.code domain k)⟩
+
 /-! ## Source audit -/
 
 #print axioms badScalar_card_le_witnessFamily_card
 #print axioms epsMCA_le_witnessFamily_card_div
 #print axioms witnessFamily_card_granularity
 #print axioms epsMCA_le_succ_div_at_granularity
+#print axioms epsMCA_le_card_div_at_granularity
 #print axioms epsMCA_rs_jump_bracket
+#print axioms epsMCA_rs_jump_bracket_sharpUpper
 
 end ProximityGap.MCAWitnessCountEngine
