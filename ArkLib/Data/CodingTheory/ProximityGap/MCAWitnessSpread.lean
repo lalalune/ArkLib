@@ -17,6 +17,10 @@ threshold `δ*`. The state-of-the-art near-capacity lower bound is `ε_mca ≥ n
 This file isolates *exactly* what such a construction must look like, and proves a sharp
 structural obstruction:
 
+* `pairJointAgreesOn_iff_split` — **rowwise split.** The MCA joint-pair predicate is exactly
+  the conjunction of independent row explanations on the same witness set. This makes row-level
+  non-explainability a reusable route to `¬ pairJointAgreesOn`.
+
 * `epsMCA_ge_card_div_of_mcaEvent_set` — **multi-`γ` lower bound.** If a fixed stack `u`
   admits a whole finite set `G ⊆ F` of bad scalars (`mcaEvent` fires at each), then
   `ε_mca(C, δ) ≥ |G|/|F|`. This is the lower-bound engine the prize needs: producing
@@ -38,6 +42,12 @@ structural obstruction:
   core honestly: the open content is *not* positivity (`1/|F|`, done) but producing a line
   whose `δ`-close points are witnessed by a *spread* of distinct coordinate sets.
 
+* `badScalar_card_le_one_of_forced_univ` / `epsMCA_le_inv_card_of_forced_univ` — **forced
+  universal witness barrier.** If the radius is so small that every legal `mcaEvent` witness set
+  must be all coordinates, then every bad scalar shares the same witness set `univ`; the common
+  witness obstruction collapses the bad set to size at most one. This turns the exact F5
+  `δ*` pin and the zero-code endpoint into instances of the same structural phenomenon.
+
 All results are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
 ## References
@@ -46,6 +56,8 @@ All results are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.
 -/
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
 
 open scoped NNReal ENNReal ProbabilityTheory BigOperators
 open ProximityGap Code
@@ -55,6 +67,19 @@ namespace ProximityGap.MCAWitnessSpread
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+
+/-- **The joint-pair clause splits rowwise.** `pairJointAgreesOn C S u₀ u₁` packages two
+independent row explanations over the same coordinate set `S`: one codeword agrees with `u₀`
+on `S`, and one codeword agrees with `u₁` on `S`. This is often the cleanest way to refute
+joint agreement, since failure of either row explanation is enough. -/
+theorem pairJointAgreesOn_iff_split (C : Set (ι → A)) (S : Finset ι) (u₀ u₁ : ι → A) :
+    pairJointAgreesOn C S u₀ u₁ ↔
+      (∃ v₀ ∈ C, ∀ i ∈ S, v₀ i = u₀ i) ∧ (∃ v₁ ∈ C, ∀ i ∈ S, v₁ i = u₁ i) := by
+  constructor
+  · rintro ⟨v₀, h₀, v₁, h₁, h⟩
+    exact ⟨⟨v₀, h₀, fun i hi => (h i hi).1⟩, ⟨v₁, h₁, fun i hi => (h i hi).2⟩⟩
+  · rintro ⟨⟨v₀, h₀, e₀⟩, ⟨v₁, h₁, e₁⟩⟩
+    exact ⟨v₀, h₀, v₁, h₁, fun i hi => ⟨e₀ i hi, e₁ i hi⟩⟩
 
 open Classical in
 /-- **Multi-scalar MCA lower bound.** If a fixed stack `u` admits a whole finite set `G ⊆ F`
@@ -147,9 +172,53 @@ theorem common_witness_badGamma_set_card_le_one
   intro γ₁ hmem₁ γ₂ hmem₂
   exact unique_bad_gamma_common_witness C S u₀ u₁ hno (hG γ₁ hmem₁) (hG γ₂ hmem₂)
 
+open Classical in
+/-- **Forced-universal-witness barrier.** If the radius/cardinality side condition forces every
+legal `mcaEvent` witness set to be `Finset.univ`, then every stack has at most one bad scalar.
+
+Mathematically, this is the endpoint version of the witness-spread obstruction: when geometry
+leaves no room for the witness sets to vary, all bad scalars share the common witness `univ`, so
+`unique_bad_gamma_common_witness` collapses them. -/
+theorem badScalar_card_le_one_of_forced_univ
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (hforce : ∀ T : Finset ι,
+      ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) ≤ (T.card : ℝ≥0) → T = Finset.univ)
+    (u : WordStack A (Fin 2) ι) :
+    (Finset.filter
+      (fun γ : F => mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ)
+      Finset.univ).card ≤ 1 := by
+  rw [Finset.card_le_one]
+  intro γ hγ γ' hγ'
+  rw [Finset.mem_filter] at hγ hγ'
+  obtain ⟨S, hS, hclose, hno⟩ := hγ.2
+  obtain ⟨S', hS', hclose', _⟩ := hγ'.2
+  rw [hforce S hS] at hclose hno
+  rw [hforce S' hS'] at hclose'
+  exact unique_bad_gamma_common_witness C Finset.univ (u 0) (u 1) hno hclose hclose'
+
+open Classical in
+/-- **Probability form of the forced-universal-witness barrier.** If every legal `mcaEvent`
+witness set is forced to be all coordinates, then the MCA error is at most the unconditional
+floor `1/|F|` for any linear code. The only way to exceed this floor is therefore a genuine
+spread of distinct witness sets. -/
+theorem epsMCA_le_inv_card_of_forced_univ
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (hforce : ∀ T : Finset ι,
+      ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) ≤ (T.card : ℝ≥0) → T = Finset.univ) :
+    epsMCA (F := F) (A := A) (C : Set (ι → A)) δ ≤ 1 / (Fintype.card F : ℝ≥0∞) := by
+  unfold epsMCA
+  refine iSup_le fun u => ?_
+  rw [prob_uniform_eq_card_filter_div_card]
+  simp only [ENNReal.coe_natCast]
+  gcongr
+  exact_mod_cast badScalar_card_le_one_of_forced_univ C δ hforce u
+
+#print axioms pairJointAgreesOn_iff_split
 #print axioms epsMCA_ge_card_div_of_mcaEvent_set
 #print axioms unique_bad_gamma_common_witness
 #print axioms common_witness_badGamma_card_le_one
 #print axioms common_witness_badGamma_set_card_le_one
+#print axioms badScalar_card_le_one_of_forced_univ
+#print axioms epsMCA_le_inv_card_of_forced_univ
 
 end ProximityGap.MCAWitnessSpread

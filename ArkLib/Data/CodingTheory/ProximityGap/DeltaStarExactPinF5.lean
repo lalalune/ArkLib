@@ -61,65 +61,6 @@ namespace ProximityGap.DeltaStarExactPin
 open scoped NNReal ProbabilityTheory ENNReal
 open ProximityGap Code
 
-/-! ## General bricks (arbitrary code / arbitrary submodule code) -/
-
-section General
-
-variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
-variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
-
-/-- **The joint-pair clause always splits.** `pairJointAgreesOn C S u₀ u₁` couples the two
-codeword witnesses syntactically, but they are independent: the pair agrees on `S` iff each row
-is separately explainable on `S`. (This is what makes exact `ε_mca` computation per-row cheap.) -/
-theorem pairJointAgreesOn_iff_split (C : Set (ι → A)) (S : Finset ι) (u₀ u₁ : ι → A) :
-    pairJointAgreesOn C S u₀ u₁ ↔
-      (∃ v₀ ∈ C, ∀ i ∈ S, v₀ i = u₀ i) ∧ (∃ v₁ ∈ C, ∀ i ∈ S, v₁ i = u₁ i) := by
-  constructor
-  · rintro ⟨v₀, h₀, v₁, h₁, h⟩
-    exact ⟨⟨v₀, h₀, fun i hi => (h i hi).1⟩, ⟨v₁, h₁, fun i hi => (h i hi).2⟩⟩
-  · rintro ⟨⟨v₀, h₀, e₀⟩, ⟨v₁, h₁, e₁⟩⟩
-    exact ⟨v₀, h₀, v₁, h₁, fun i hi => ⟨e₀ i hi, e₁ i hi⟩⟩
-
-open Classical in
-/-- **Good side, key combinatorics (any submodule code).** If the radius forces every `mcaEvent`
-witness set to be all of `ι`, then every stack has at most one bad scalar: all bad scalars share
-the witness set `univ`, and `unique_bad_gamma_common_witness` collapses them. -/
-theorem badScalar_card_le_one_of_forced_univ
-    (C : Submodule F (ι → A)) (δ : ℝ≥0)
-    (hforce : ∀ T : Finset ι,
-      ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) ≤ (T.card : ℝ≥0) → T = Finset.univ)
-    (u : WordStack A (Fin 2) ι) :
-    (Finset.filter
-      (fun γ : F => mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ)
-      Finset.univ).card ≤ 1 := by
-  rw [Finset.card_le_one]
-  intro γ hγ γ' hγ'
-  rw [Finset.mem_filter] at hγ hγ'
-  obtain ⟨S, hS, hclose, hno⟩ := hγ.2
-  obtain ⟨S', hS', hclose', _⟩ := hγ'.2
-  rw [hforce S hS] at hclose hno
-  rw [hforce S' hS'] at hclose'
-  exact MCAWitnessSpread.unique_bad_gamma_common_witness C Finset.univ (u 0) (u 1)
-    hno hclose hclose'
-
-open Classical in
-/-- **Good side, probability form.** Under the forced-universal-witness condition,
-`ε_mca(C, δ) ≤ 1/|F|` for any submodule code `C`. -/
-theorem epsMCA_le_inv_card_of_forced_univ
-    (C : Submodule F (ι → A)) (δ : ℝ≥0)
-    (hforce : ∀ T : Finset ι,
-      ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) ≤ (T.card : ℝ≥0) → T = Finset.univ) :
-    epsMCA (F := F) (A := A) (C : Set (ι → A)) δ ≤ 1 / (Fintype.card F : ℝ≥0∞) := by
-  unfold epsMCA
-  refine iSup_le fun u => ?_
-  rw [prob_uniform_eq_card_filter_div_card]
-  simp only [ENNReal.coe_natCast]
-  gcongr
-  exact_mod_cast badScalar_card_le_one_of_forced_univ C δ hforce u
-
-end General
-
 /-! ## The concrete code `RS[F₅, F₅*, 2]` -/
 
 /-- The field `F₅`. -/
@@ -149,7 +90,7 @@ def C542 : Submodule F5 (Fin 4 → F5) where
     rintro w w' ⟨a, b, rfl⟩ ⟨a', b', rfl⟩
     refine ⟨a + a', b + b', ?_⟩
     funext i
-    show lineEval a b i + lineEval a' b' i = lineEval (a + a') (b + b') i
+    change lineEval a b i + lineEval a' b' i = lineEval (a + a') (b + b') i
     simp only [lineEval]
     ring
   zero_mem' := ⟨0, 0, by funext i; simp [lineEval]⟩
@@ -157,7 +98,7 @@ def C542 : Submodule F5 (Fin 4 → F5) where
     rintro c w ⟨a, b, rfl⟩
     refine ⟨c * a, c * b, ?_⟩
     funext i
-    show c • lineEval a b i = lineEval (c * a) (c * b) i
+    change c • lineEval a b i = lineEval (c * a) (c * b) i
     simp only [lineEval, smul_eq_mul]
     ring
 
@@ -188,7 +129,7 @@ theorem explainableOn_iff (S : Finset (Fin 4)) (w : Fin 4 → F5) :
 theorem not_pairJointAgreesOn_of_row1 {S : Finset (Fin 4)} {u₀ u₁ : Fin 4 → F5}
     (h : ¬ ExplainableOn S u₁) :
     ¬ pairJointAgreesOn (C542 : Set (Fin 4 → F5)) S u₀ u₁ := by
-  rw [pairJointAgreesOn_iff_split]
+  rw [MCAWitnessSpread.pairJointAgreesOn_iff_split]
   rintro ⟨_, h₁⟩
   exact h ((explainableOn_iff S u₁).mp h₁)
 
@@ -272,7 +213,7 @@ theorem epsMCA_C542_quarter_ge :
 /-! ## The good side on `[0, 1/4)` -/
 
 /-- Below `δ = 1/4` the witness set is forced to be all of `Fin 4`. -/
-theorem forced_univ_of_lt_quarter {δ : ℝ≥0} (hδ : δ < 1/4) :
+theorem forced_univ_of_lt_quarter {δ : ℝ≥0} (hδ : δ < 1 / 4) :
     ∀ T : Finset (Fin 4),
       ((1 : ℝ≥0) - δ) * (Fintype.card (Fin 4) : ℝ≥0) ≤ (T.card : ℝ≥0) → T = Finset.univ := by
   intro T hT
@@ -293,9 +234,10 @@ theorem forced_univ_of_lt_quarter {δ : ℝ≥0} (hδ : δ < 1/4) :
   omega
 
 /-- **Good side:** `ε_mca(C, δ) ≤ 1/5` for every `δ < 1/4`. -/
-theorem epsMCA_C542_le_of_lt_quarter {δ : ℝ≥0} (hδ : δ < 1/4) :
+theorem epsMCA_C542_le_of_lt_quarter {δ : ℝ≥0} (hδ : δ < 1 / 4) :
     epsMCA (F := F5) (A := F5) (C542 : Set (Fin 4 → F5)) δ ≤ 1 / 5 := by
-  have h := epsMCA_le_inv_card_of_forced_univ C542 δ (forced_univ_of_lt_quarter hδ)
+  have h := MCAWitnessSpread.epsMCA_le_inv_card_of_forced_univ C542 δ
+    (forced_univ_of_lt_quarter hδ)
   rwa [show ((Fintype.card F5 : ℕ) : ℝ≥0∞) = 5 from by
     rw [show Fintype.card F5 = 5 from by simp [ZMod.card]]; norm_num] at h
 
@@ -318,7 +260,7 @@ theorem mcaEvent_floor (δ : ℝ≥0) :
 
 /-- **Exact value below the jump:** `ε_mca(C, δ) = 1/5` for every `δ < 1/4`. Together with
 `epsMCA_C542_quarter_ge` this exhibits the step profile `1/5 ↗ 4/5` at `δ = 1/4`. -/
-theorem epsMCA_C542_eq_inv_card_of_lt_quarter {δ : ℝ≥0} (hδ : δ < 1/4) :
+theorem epsMCA_C542_eq_inv_card_of_lt_quarter {δ : ℝ≥0} (hδ : δ < 1 / 4) :
     epsMCA (F := F5) (A := F5) (C542 : Set (Fin 4 → F5)) δ = 1 / 5 := by
   refine le_antisymm (epsMCA_C542_le_of_lt_quarter hδ) ?_
   have h := epsMCA_ge_inv_card_of_mcaEvent (F := F5) (A := F5)
@@ -341,12 +283,13 @@ theorem epsMCA_C542_quarter_gt :
   lt_of_lt_of_le two_fifth_lt_four_fifth epsMCA_C542_quarter_ge
 
 /-- **Good-radius membership:** every `δ < 1/4` is a good radius at `ε* = 2/5`. -/
-theorem mem_goodRadii_of_lt_quarter {δ : ℝ≥0} (hδ : δ < 1/4) :
+theorem mem_goodRadii_of_lt_quarter {δ : ℝ≥0} (hδ : δ < 1 / 4) :
     δ ∈ MCAThresholdLedger.mcaGoodRadii (F := F5) (A := F5)
       (C542 : Set (Fin 4 → F5)) (2/5 : ℝ≥0∞) := by
   refine ⟨le_of_lt (lt_of_lt_of_le hδ quarter_le_one), ?_⟩
   refine le_trans (epsMCA_C542_le_of_lt_quarter hδ) ?_
-  gcongr <;> norm_num
+  gcongr
+  norm_num
 
 /-- **THE PIN — the first machine-checked exact `δ*` value for any code.**
 
@@ -373,9 +316,9 @@ theorem mcaDeltaStar_C542_eq_quarter :
 
 /-! ## Source audit -/
 
-#print axioms pairJointAgreesOn_iff_split
-#print axioms badScalar_card_le_one_of_forced_univ
-#print axioms epsMCA_le_inv_card_of_forced_univ
+#print axioms ProximityGap.MCAWitnessSpread.pairJointAgreesOn_iff_split
+#print axioms ProximityGap.MCAWitnessSpread.badScalar_card_le_one_of_forced_univ
+#print axioms ProximityGap.MCAWitnessSpread.epsMCA_le_inv_card_of_forced_univ
 #print axioms epsMCA_C542_quarter_ge
 #print axioms epsMCA_C542_eq_inv_card_of_lt_quarter
 #print axioms mcaDeltaStar_C542_eq_quarter
