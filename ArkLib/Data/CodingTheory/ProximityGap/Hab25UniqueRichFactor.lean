@@ -56,6 +56,7 @@ set_option linter.unusedSectionVars false
 namespace CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 open Polynomial Polynomial.Bivariate Finset
+open _root_.ProximityGap Code
 
 attribute [local instance] Classical.propDecidable
 
