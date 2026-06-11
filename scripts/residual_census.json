@@ -1,12 +1,12 @@
 {
  "summary": {
-  "total": 104,
-  "open": 27,
+  "total": 105,
+  "open": 28,
   "discharged": 77,
   "by_top_dir": {
    "Data": {
-    "total": 20,
-    "open": 8,
+    "total": 22,
+    "open": 10,
     "discharged": 12
    },
    "OracleReduction": {
@@ -16,28 +16,44 @@
    },
    "ProofSystem": {
     "total": 22,
-    "open": 7,
-    "discharged": 15
+    "open": 6,
+    "discharged": 16
    },
    "ToMathlib": {
-    "total": 21,
+    "total": 20,
     "open": 2,
-    "discharged": 19
+    "discharged": 18
    }
   }
  },
  "residuals": [
   {
+   "name": "SymbolicFullRankResidual",
+   "fq_name": "AGL24.SymbolicFullRankResidual",
+   "file": "ArkLib/Data/CodingTheory/AGL24SymbolicRank.lean",
+   "line": 45,
+   "providers": [],
+   "status": "open"
+  },
+  {
+   "name": "RIMFullRankFailureProbResidual",
+   "fq_name": "AGL24.RIMFullRankFailureProbResidual",
+   "file": "ArkLib/Data/CodingTheory/AGL24UnionBound.lean",
+   "line": 79,
+   "providers": [],
+   "status": "open"
+  },
+  {
    "name": "GKL24FirstMomentResidual",
    "fq_name": "ProximityGap.GKL24FirstMomentResidual",
    "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-   "line": 1045,
+   "line": 1046,
    "providers": [
     {
      "name": "ProximityGap.GKL24FirstMomentResidual_inTree_card",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1057,
+     "line": 1058,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -45,7 +61,7 @@
      "name": "ProximityGap.GKL24FirstMomentResidual_inTree_two_delta_card",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1079,
+     "line": 1080,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -53,7 +69,7 @@
      "name": "ProximityGap.GKL24FirstMomentResidual_inTree_delta_add_one_card",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1503,
+     "line": 1529,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -64,13 +80,13 @@
    "name": "GKL24FirstMomentWitnessCoverResidual",
    "fq_name": "ProximityGap.GKL24FirstMomentWitnessCoverResidual",
    "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-   "line": 1106,
+   "line": 1107,
    "providers": [
     {
      "name": "ProximityGap.GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1126,
+     "line": 1127,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -78,9 +94,19 @@
      "name": "ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1375,
+     "line": 1376,
      "conditional_on_residuals": [
       "GKL24MaxCorrWitnessCoverResidual"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_strict_cover",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
+     "line": 1393,
+     "conditional_on_residuals": [
+      "GKL24MaxCorrStrictWitnessCoverResidual"
      ],
      "ambiguous_name_match": false
     },
@@ -88,7 +114,7 @@
      "name": "ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_petal_cover",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1454,
+     "line": 1480,
      "conditional_on_residuals": [
       "GKL24PetalWitnessCoverResidual"
      ],
@@ -101,7 +127,7 @@
    "name": "GKL24MaxCorrStrictWitnessCoverResidual",
    "fq_name": "ProximityGap.GKL24MaxCorrStrictWitnessCoverResidual",
    "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-   "line": 1308,
+   "line": 1309,
    "providers": [],
    "status": "open"
   },
@@ -109,13 +135,13 @@
    "name": "GKL24MaxCorrWitnessCoverResidual",
    "fq_name": "ProximityGap.GKL24MaxCorrWitnessCoverResidual",
    "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-   "line": 1329,
+   "line": 1330,
    "providers": [
     {
      "name": "ProximityGap.GKL24MaxCorrWitnessCoverResidual_of_strict_cover",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1356,
+     "line": 1357,
      "conditional_on_residuals": [
       "GKL24MaxCorrStrictWitnessCoverResidual"
      ],
@@ -128,15 +154,25 @@
    "name": "GKL24PetalWitnessCoverResidual",
    "fq_name": "ProximityGap.GKL24PetalWitnessCoverResidual",
    "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-   "line": 1397,
+   "line": 1412,
    "providers": [
     {
      "name": "ProximityGap.GKL24PetalWitnessCoverResidual_of_maxCorr_cover",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1418,
+     "line": 1433,
      "conditional_on_residuals": [
       "GKL24MaxCorrWitnessCoverResidual"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.GKL24PetalWitnessCoverResidual_of_strict_cover",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
+     "line": 1469,
+     "conditional_on_residuals": [
+      "GKL24MaxCorrStrictWitnessCoverResidual"
      ],
      "ambiguous_name_match": false
     },
@@ -1594,6 +1630,14 @@
      "line": 152,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
+    },
+    {
+     "name": "DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean",
+     "line": 165,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
     }
    ],
    "status": "discharged"
@@ -1868,13 +1912,13 @@
    "name": "KeyLemmaEagerSaltedResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.KeyLemmaEagerSaltedResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 706,
+   "line": 714,
    "providers": [
     {
      "name": "DuplexSpongeFS.KeyLemmaSalted.keyLemmaEagerSalted_of_steps",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-     "line": 735,
+     "line": 744,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -2384,8 +2428,17 @@
    "fq_name": "StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual",
    "file": "ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean",
    "line": 224,
-   "providers": [],
-   "status": "open"
+   "providers": [
+    {
+     "name": "StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual_indicator",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Stir/ShellRbrIndicator.lean",
+     "line": 57,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "stirCheckingRepRbrSoundnessResidual",
@@ -2408,13 +2461,13 @@
    "name": "K4GradedFactorCellResidual",
    "fq_name": "MutualCorrAgreement.K4GradedFactorCellResidual",
    "file": "ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean",
-   "line": 39,
+   "line": 46,
    "providers": [
     {
      "name": "MutualCorrAgreement.K4GradedFactorCellResidual_of_component",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean",
-     "line": 74,
+     "line": 87,
      "conditional_on_residuals": [
       "K4ComponentResidual"
      ],
@@ -2427,26 +2480,9 @@
    "name": "K4ComponentResidual",
    "fq_name": "MutualCorrAgreement.K4ComponentResidual",
    "file": "ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean",
-   "line": 51,
+   "line": 64,
    "providers": [],
    "status": "open"
-  },
-  {
-   "name": "randomRSListDecodingFirstMomentResidual",
-   "fq_name": "CodingTheory.randomRSListDecodingFirstMomentResidual",
-   "file": "ArkLib/ToMathlib/AGL24RandomRSProof.lean",
-   "line": 78,
-   "providers": [
-    {
-     "name": "CodingTheory.randomRSListDecodingFirstMomentResidual_of_badCount",
-     "kind": "theorem",
-     "file": "ArkLib/ToMathlib/AGL24RandomRSProof.lean",
-     "line": 178,
-     "conditional_on_residuals": [],
-     "ambiguous_name_match": false
-    }
-   ],
-   "status": "discharged"
   },
   {
    "name": "DeepHoleProbResidual",
@@ -3044,6 +3080,14 @@
    "reason": "name does not end in `Residual`"
   },
   {
+   "name": "StrictCoeffPolysResidualShare",
+   "fq_name": "ProximityGap.StrictCoeffPolysResidualShare",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean",
+   "line": 73,
+   "reason": "name does not end in `Residual`"
+  },
+  {
    "name": "BoundaryCardLatticeSubResiduals",
    "fq_name": "ArkLib.Issue64Boundary.BoundaryCardLatticeSubResiduals",
    "kind": "def",
@@ -3160,7 +3204,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb01StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 583,
+   "line": 590,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3168,7 +3212,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb12StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 605,
+   "line": 612,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3176,7 +3220,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb23StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 628,
+   "line": 635,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3184,7 +3228,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb34StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 648,
+   "line": 655,
    "reason": "name does not end in `Residual`"
   },
   {
