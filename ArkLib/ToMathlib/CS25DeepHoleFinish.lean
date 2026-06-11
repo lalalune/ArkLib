@@ -7,6 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.ToMathlib.CS25DeepHole
 import ArkLib.ToMathlib.CS25Claim3
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # CS25 "Claim 3" deep-hole — assembling the `hDeepHole` residual
@@ -266,6 +267,48 @@ def DeepHoleProbResidual
   (∀ j, p j ∈ Polynomial.degreeLT F (k + 1)) →
   (∀ j, ReedSolomon.evalOnPoints domain (p j) ∈ relHammingBall u δ) →
   ∀ a ∈ sampleSet domain, (numDistinct p a : ℝ) ≤ ε * (Fintype.card F : ℝ)
+
+/-- A one-point domain inside `ZMod 2`, used to exhibit that the unconditional
+`DeepHoleProbResidual` wrapper is too broad when `ε` is negative. -/
+def zmod2SingletonDomain : PUnit ↪ ZMod 2 where
+  toFun := fun _ => 0
+  inj' := by
+    intro x y _
+    cases x
+    cases y
+    rfl
+
+/-- The unconditional probability residual is false without a nonnegative probability bound.
+
+The side-conditioned provider `CS25JointFar.deepHoleProbResidual_holds` remains the intended true
+surface for the CS25 argument; this counterexample records why the strict wrapper itself should be
+tracked as refuted rather than as an open mathematical obligation. -/
+theorem not_deepHoleProbResidual_negativeEpsilon_zmod2 :
+    ¬ DeepHoleProbResidual
+        zmod2SingletonDomain 0 1 (0 : ℝ) (-1 : ℝ)
+        (fun _ : PUnit => (0 : ZMod 2))
+        (fun _ : Fin 1 => (0 : (ZMod 2)[X])) := by
+  intro h
+  have hdeg : ∀ j : Fin 1, (fun _ : Fin 1 => (0 : (ZMod 2)[X])) j ∈
+      Polynomial.degreeLT (ZMod 2) (0 + 1) := by
+    intro j
+    exact Polynomial.mem_degreeLT.mpr (by simp)
+  have hclose : ∀ j : Fin 1,
+      ReedSolomon.evalOnPoints zmod2SingletonDomain
+          ((fun _ : Fin 1 => (0 : (ZMod 2)[X])) j) ∈
+        _root_.ListDecodable.relHammingBall (fun _ : PUnit => (0 : ZMod 2)) (0 : ℝ) := by
+    intro j
+    have hzero : ReedSolomon.evalOnPoints zmod2SingletonDomain
+        ((fun _ : Fin 1 => (0 : (ZMod 2)[X])) j) = fun _ : PUnit => (0 : ZMod 2) := by
+      ext x
+      simp [ReedSolomon.evalOnPoints]
+    rw [_root_.ListDecodable.relHammingBall, Set.mem_setOf_eq]
+    rw [hzero]
+    norm_num [Code.relHammingDist, hammingDist_self]
+  have hsample : (1 : ZMod 2) ∈ sampleSet zmod2SingletonDomain := by
+    simp [sampleSet, zmod2SingletonDomain]
+  have hbad := h hdeg hclose (1 : ZMod 2) hsample
+  norm_num [numDistinct] at hbad
 
 /-! ### Assembling `hDeepHole` -/
 

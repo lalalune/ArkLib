@@ -1,9 +1,9 @@
 {
  "summary": {
   "total": 92,
-  "open": 49,
+  "open": 48,
   "discharged": 43,
-  "refuted": 0,
+  "refuted": 1,
   "by_top_dir": {
    "(root)": {
     "total": 1,
@@ -31,9 +31,9 @@
    },
    "ToMathlib": {
     "total": 12,
-    "open": 2,
+    "open": 1,
     "discharged": 10,
-    "refuted": 0
+    "refuted": 1
    }
   }
  },
@@ -3677,7 +3677,7 @@
    "name": "DeepHoleProbResidual",
    "fq_name": "CodingTheory.CS25.DeepHole.DeepHoleProbResidual",
    "file": "ArkLib/ToMathlib/CS25DeepHoleFinish.lean",
-   "line": 264,
+   "line": 265,
    "providers": [
     {
      "name": "CodingTheory.CS25.DeepHole.deepHoleProbResidual_of_jointFar",
@@ -3704,7 +3704,18 @@
      "ambiguous_name_match": false
     }
    ],
-   "status": "open"
+   "refutations": [
+    {
+     "name": "CodingTheory.CS25.DeepHole.not_deepHoleProbResidual_negativeEpsilon_zmod2",
+     "kind": "theorem",
+     "file": "ArkLib/ToMathlib/CS25DeepHoleFinish.lean",
+     "line": 286,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "refuted"
   },
   {
    "name": "foldRoundPerfectCompletenessResidual",

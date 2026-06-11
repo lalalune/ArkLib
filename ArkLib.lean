@@ -259,6 +259,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.A5CensusValue
 import ArkLib.Data.CodingTheory.ProximityGap.A8CosetStructure
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
+import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyCubeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyBridge
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyChar0
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFermat
@@ -1127,6 +1128,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyFermat65537
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyTowerF17
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConc
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConcElementary
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMarkov

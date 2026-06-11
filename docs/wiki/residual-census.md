@@ -15,9 +15,9 @@ always check this census before treating a `*Residual` name as open proof debt.
 ## Summary
 
 - **Total strict residuals:** 92
-- **Open:** 49
+- **Open:** 48
 - **Discharged:** 43
-- **Refuted:** 0
+- **Refuted:** 1
 - **Residual-like near misses:** 42 (listed below and in `scripts/residual_census.json`)
 
 | top-level directory | total | open | discharged | refuted |
@@ -26,7 +26,7 @@ always check this census before treating a `*Residual` name as open proof debt.
 | `Data` | 24 | 17 | 7 | 0 |
 | `OracleReduction` | 39 | 22 | 17 | 0 |
 | `ProofSystem` | 16 | 8 | 8 | 0 |
-| `ToMathlib` | 12 | 2 | 10 | 0 |
+| `ToMathlib` | 12 | 1 | 10 | 1 |
 
 ## Open Residuals
 
@@ -77,7 +77,6 @@ always check this census before treating a `*Residual` name as open proof debt.
 - `Logup.AppendCompletenessResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:183` — conditional providers only (residual deps: `OuterCompletenessResidual`, `SumcheckCompletenessResidual`, `appendToReductionResidual`; extra assumptions: `hBridge`, `hDir`, `hDir₂`, `hImplSupp`, `hInit`, `himplNF`, `himplSP`, `himplVB`, `hn`)
 - `MutualCorrAgreement.K4GradedFactorCellResidual` — `ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean:46` — conditional providers only (residual deps: `K4ComponentResidual`; extra assumptions: `hcomponent`)
 - `MutualCorrAgreement.K4ComponentResidual` — `ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean:64`
-- `CodingTheory.CS25.DeepHole.DeepHoleProbResidual` — `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:264` — conditional providers only (extra assumptions: `hjf`, `hkS`, `hδ0`)
 - `Fri.Spec.Completeness.queryRoundChainDeliveryResidual` — `ArkLib/ToMathlib/FriCompleteQueryRound.lean:177`
 
 ## Residual-Like Near Misses
@@ -132,7 +131,7 @@ proof debt and naming drift.
 
 ## Refuted Residuals
 
-None.
+- `CodingTheory.CS25.DeepHole.DeepHoleProbResidual` — `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:265` — refuted by `CodingTheory.CS25.DeepHole.not_deepHoleProbResidual_negativeEpsilon_zmod2` (ArkLib/ToMathlib/CS25DeepHoleFinish.lean:286)
 
 ## Discharged Residuals
 
