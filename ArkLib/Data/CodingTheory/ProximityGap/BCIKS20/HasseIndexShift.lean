@@ -56,10 +56,49 @@ theorem hasseDerivY_coeff_natDegree_le_of_total {R : F[X][X][Y]} {DR : ℕ}
     _ ≤ DR - (j + m) := htotal (j + m)
     _ = (DR - m) - j := by omega
 
+/-! ## Item (b): the top-coefficient W-divisibility read-off -/
+
+
+/-- **The top Hasse coefficient is W-divisible** (finding 7's final credit, paper line
+3955): under `Hypotheses x₀ R H`, the coefficient at the top index `d − m`
+(`d := deg_Y (R(x₀,·,·))`, `m ≤ d`) of the specialized `m`-th `Y`-Hasse derivative is the
+binomial multiple of the leading coefficient of `R(x₀,·,·)` — which `W = leadingCoeff H`
+divides (the proven `leadingCoeff_dvd_evalX_leadingCoeff`). -/
+theorem leadingCoeff_dvd_evalX_hasseDerivY_top {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
+    (hHyp : BCIKS20AppendixA.ClaimA2.Hypotheses x₀ R H) {m : ℕ}
+    (hm : m ≤ (Polynomial.Bivariate.evalX (Polynomial.C x₀) R).natDegree) :
+    H.leadingCoeff ∣
+      (Polynomial.Bivariate.evalX (Polynomial.C x₀) (hasseDerivY m R)).coeff
+        ((Polynomial.Bivariate.evalX (Polynomial.C x₀) R).natDegree - m) := by
+  set d : ℕ := (Polynomial.Bivariate.evalX (Polynomial.C x₀) R).natDegree with hd
+  -- `evalX` is a coefficient-wise map, so it commutes with the coefficient extraction
+  -- and with the `Y`-Hasse derivative's coefficient identity.
+  have hcomm : (Polynomial.Bivariate.evalX (Polynomial.C x₀) (hasseDerivY m R)).coeff (d - m)
+      = Polynomial.eval (Polynomial.C x₀) ((hasseDerivY m R).coeff (d - m)) := by
+    rw [Polynomial.Bivariate.evalX_eq_map, Polynomial.coeff_map]
+    rfl
+  rw [hcomm, hasseDerivY_coeff]
+  have hidx : d - m + m = d := by omega
+  rw [hidx]
+  -- the evaluated top coefficient is the binomial multiple of the leading coefficient
+  have htop : Polynomial.eval (Polynomial.C x₀)
+      (((d).choose m : F[X][X]) * R.coeff d)
+      = ((d).choose m : F[X]) *
+        (Polynomial.Bivariate.evalX (Polynomial.C x₀) R).coeff d := by
+    rw [Polynomial.eval_mul, Polynomial.Bivariate.evalX_eq_map, Polynomial.coeff_map]
+    simp [Polynomial.eval_natCast]
+  rw [htop]
+  have hlead : (Polynomial.Bivariate.evalX (Polynomial.C x₀) R).coeff d
+      = (Polynomial.Bivariate.evalX (Polynomial.C x₀) R).leadingCoeff := rfl
+  rw [hlead]
+  exact Dvd.dvd.mul_left
+    (BCIKS20AppendixA.ClaimA2.leadingCoeff_dvd_evalX_leadingCoeff hHyp) _
+
 /-! ## Source audit -/
 
 #print axioms hasseDerivY_coeff
 #print axioms hasseDerivY_coeff_natDegree_le
 #print axioms hasseDerivY_coeff_natDegree_le_of_total
+#print axioms leadingCoeff_dvd_evalX_hasseDerivY_top
 
 end BCIKS20.HenselNumerator
