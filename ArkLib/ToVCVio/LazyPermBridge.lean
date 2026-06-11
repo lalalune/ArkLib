@@ -152,6 +152,37 @@ lemma support_sampleUnused {xs : List X} (h : xs ≠ []) :
     obtain ⟨i, _, rfl⟩ := hx
     exact List.getElem_mem _
 
+/-- Event probability of the fresh sample: `countP/length` (mirrors
+`probEvent_uniformSelectList`, without the `OptionT` layer). -/
+lemma probEvent_sampleUnused {xs : List X} (h : xs ≠ []) (p : X → Prop) [DecidablePred p] :
+    Pr[ p | sampleUnused xs] = ((xs.countP p : ℕ) : ℝ≥0∞) / xs.length := by
+  classical
+  rcases xs with _ | ⟨y, ys⟩
+  · exact absurd rfl h
+  · show Pr[ p | ((y :: ys)[·]) <$> $[0..ys.length]] = _
+    simp only [Fin.getElem_fin, probEvent_map, ProbComp.probEvent_uniformFin,
+      Function.comp_apply, Fin.countP_eq_countP_map_finRange, Nat.cast_add, Nat.cast_one,
+      List.length_cons]
+    congr 2
+    exact List.countP_finRange_getElem (y :: ys) (fun b => decide (p b))
+
+/-- **The per-step landing bound (4D-3 atom)**: a fresh sample from a duplicate-free pool
+lands in a target set with probability at most `|target| / |pool|`. -/
+lemma probEvent_sampleUnused_le_card {xs : List X} (h : xs ≠ []) (hnd : xs.Nodup)
+    (S : Finset X) :
+    Pr[ (· ∈ S) | sampleUnused xs] ≤ (S.card : ℝ≥0∞) / xs.length := by
+  classical
+  rw [probEvent_sampleUnused h]
+  refine ENNReal.div_le_div_right ?_ _
+  have hcount : xs.countP (· ∈ S) ≤ S.card := by
+    have hlen : xs.countP (· ∈ S) = (xs.filter (· ∈ S)).length :=
+      List.countP_eq_length_filter
+    rw [hlen, ← List.toFinset_card_of_nodup (hnd.filter _)]
+    refine Finset.card_le_card fun x hx => ?_
+    have hmem := List.mem_toFinset.mp hx
+    exact of_decide_eq_true (List.mem_filter.mp hmem).2
+  exact_mod_cast hcount
+
 /-! ## Step exposures (public, for cross-file consumers) -/
 
 lemma lazyPermImpl_run_inl_none (cp : List (X × X)) {a : X}
