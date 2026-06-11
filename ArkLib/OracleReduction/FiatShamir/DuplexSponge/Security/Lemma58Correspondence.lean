@@ -294,6 +294,46 @@ lemma redundantEntryDSPaper_iff_sameClass
       · exact ⟨j', hj', Or.inl hcl⟩
       · exact ⟨j', hj', Or.inr hcl⟩
 
+/-! ## Fold monotonicity primitives -/
+
+/-- The permutation cache only grows (as a sublist) along one fold step. -/
+theorem stepCache_perm_sublist (c : DSCache StmtIn U) (e : DSEntry StmtIn U) :
+    c.2.Sublist (stepCache c e).2 := by
+  rcases e with ⟨t, ans⟩
+  rcases t with q | a | b
+  · rcases hcq : c.1 q with _ | u <;> simp [stepCache, hcq]
+  · rcases hf : c.2.find? (fun w => w.1 = a) with _ | w <;>
+      simp only [stepCache, hf]
+    · rw [List.concat_eq_append]; exact List.sublist_append_left _ _
+    · exact List.Sublist.refl _
+  · rcases hf : c.2.find? (fun w => w.2 = b) with _ | w <;>
+      simp only [stepCache, hf]
+    · rw [List.concat_eq_append]; exact List.sublist_append_left _ _
+    · exact List.Sublist.refl _
+
+/-- The hash cache only grows: an already-cached answer survives one fold step. -/
+theorem stepCache_hash_mono (c : DSCache StmtIn U) (e : DSEntry StmtIn U)
+    {q : StmtIn} {u : Vector U SpongeSize.C} (h : c.1 q = some u) :
+    (stepCache c e).1 q = some u := by
+  rcases e with ⟨t, ans⟩
+  rcases t with q' | a | b
+  · rcases hcq : c.1 q' with _ | u' <;> simp only [stepCache, hcq]
+    · rcases eq_or_ne q q' with rfl | hne
+      · rw [hcq] at h; exact absurd h (by simp)
+      · rw [OracleSpec.QueryCache.cacheQuery_of_ne _ _ hne]; exact h
+    · exact h
+  · rcases hf : c.2.find? (fun w => w.1 = a) with _ | w <;> simp only [stepCache, hf] <;> exact h
+  · rcases hf : c.2.find? (fun w => w.2 = b) with _ | w <;> simp only [stepCache, hf] <;> exact h
+
+/-- The permutation cache only grows along the whole fold. -/
+theorem foldl_stepCache_perm_sublist (c : DSCache StmtIn U) (L : List (DSEntry StmtIn U)) :
+    c.2.Sublist (L.foldl stepCache c).2 := by
+  induction L generalizing c with
+  | nil => exact List.Sublist.refl _
+  | cons e ℓ ih =>
+      rw [List.foldl_cons]
+      exact (stepCache_perm_sublist c e).trans (ih (stepCache c e))
+
 /-! ## Dedup recursion infrastructure (sublist + membership transport) -/
 
 open DuplexSpongeFS.Paper in
@@ -404,6 +444,9 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_support
 #print axioms DuplexSpongeFS.EagerLazyDS.support_flagged_logged
 #print axioms DuplexSpongeFS.EagerLazyDS.redundantEntryDSPaper_iff_sameClass
+#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_perm_sublist
+#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_hash_mono
+#print axioms DuplexSpongeFS.EagerLazyDS.foldl_stepCache_perm_sublist
 #print axioms DuplexSpongeFS.EagerLazyDS.noRedundant_pairwise_classDistinct
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_pairwise_classDistinct
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_sublist
