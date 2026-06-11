@@ -6614,3 +6614,32 @@ order-by-order through the proven monic lift identity (cleared = uncleared at W 
 the Johnson→δ* chain is machine-checked. After V1: `JohnsonDischargeStatement` proven →
 the unconditional bracket → `kkh26_deltaStar_pin_of_interior_ceiling` = the exact
 deployed-regime δ* pin.
+
+**O154 V1 dive, finding 1 — THE STRUCTURED INVARIANT AS STATED IS UNSATISFIABLE AT t = 0
+FOR THE CONSUMERS' D-REGIME; the base constant must be re-baselined to `D + 1 − d_H`
+(and the proven collapse has room for it).** The computation, from the definitions read
+this session (`weight_Λ` = sup over Y-monomials of `deg·(D+1−d_H) + deg_X(coeff)`;
+`canonicalRepOf𝒪` = modByMonic `H_tilde'`):
+
+* `βHensel 0 = mk X` (the Y-variable); its canonical rep is `Y` itself (degree `1 < d_H̃`
+  for `d_H ≥ 2`), so `Λ(β₀) = 1·(D+1−d_H) + 0 = D+1−d_H` — **exactly `1` iff `D = d_H`**.
+  This is why `alphaWeight_zero_cleared_fixed` carries `hD : D ≤ H.natDegree`.
+* But the consumers (`exists_pinning_pair_of_heavy_agreement`, `weight_ξ_bound`) require
+  `D ≥ totalDegree H` (and `≥ totalDegree (evalX x₀ R)`) — for the monisized `H_tilde'`
+  (X-content in coefficients) these force `D > d_H`, where `Λ(β₀) > 1`: the structured
+  hypothesis of `βHensel_weight_bound_of_structured_weight` is FALSE at `t = 0`.
+* **The fix (checked for room):** re-baseline the invariant to
+  `Λ(β_t) ≤ (D+1−d_H) + (t+1)·deg(W) + (2t−1)·(d_R−1)·(D−d_H+1)`; at `t = 0` this is
+  satisfied with equality-shape by the rep computation; the collapse target
+  `(2t+1)·d_R·D` absorbs the new base since `D+1−d_H ≤ D ≤ d_R·D` (using `d_R ≥ 1`,
+  and at `t ≥ 1` the slack grows). The collapse lemma needs its constant re-derived
+  (`structured_weight_collapse` analogue with base `D+1−d_H`) — pure ℕ-arithmetic.
+* **V1 successor proof shape after re-baselining:** `Λ(β_t) ≤ base + (2t−1)·Λ(ξ)` for
+  monic `H` via the PROVEN lift identity + `_mul`/`_pow` calculus + `weight_ξ_bound` —
+  PROVIDED a weight bound for `α_t`'s regular preimage is available; the lift identity
+  alone gives `β_t` in terms of `α_t` (circular without an independent `Λ(a_t)` input).
+  The non-circular route: bound `Λ(β_t)` DIRECTLY by strong induction using the
+  re-baselined invariant through the (A.1) recursion's *structured* form — the partition
+  cancellation that the loose IH destroyed (wave-5 diagnosis) is exactly restored by
+  carrying the `(2t−1)`-exponent structure, as the paper prescribes (line 3962).
+  Re-baselined per-term lemma = the corrected W1, now with the cancellation available.
