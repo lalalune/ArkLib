@@ -6078,3 +6078,35 @@ excess system?") — answered, with three structural verdicts at the take-over i
 γ-census, one orbit here) + (finite-spectrum surplus); the band system alone OVERCOUNTS by
 the explainable coset layer — any future excess-census ledger entry needs the
 explainability filter, not just band solvability.
+
+### S3 (#357 campaign) — pure-frequency extremality REFUTED at intermediate rungs; repaired by rotation powers; the flat numerator IS one orbit
+Idea (v1): every rung of the exact bad-γ profile is attained by a *pure-frequency*
+eigenstack `(e_{j₀}, e_{j₁})` of the rotation `R` (diagonal on syndrome frequencies), making
+every rung count `ε + j·d` with `d = ord(h^{j₁−j₀}) | n`.
+**Refuted (probe, exact):** at `(7,6,3)/(13,6,3)` m=5 and `(13,12,6)` m=11/m=10 the
+pure-frequency class caps at 1 < exact 2/2/3 (`probe_s3_eigenstack_orbit_law.py`, stages
+B/C). The σ¹ syndrome eigenspaces are 1-dimensional — too rigid for the count-2/3 rungs.
+**Repaired (same probe, confirmed):** rotation *powers* σ^t have multi-dimensional syndrome
+eigenspaces (frequency classes mod `n/gcd(t,n)`); σ^t-eigenstacks attain every missing rung
+with the predicted orbit structure — count-2 rungs by antipodal pairs `{γ, −γ}` (σ³ at n=6:
+`[1,6],[2,5],[3,4]` at p=7; σ⁶ at n=12: `[1,12],[2,11],[3,10]` at p=13), count-3 by
+ω-triples (σ⁴: `[4,10,12]` = an ⟨h⁴⟩-orbit). The plateau rung m=9 count 12 = **one full
+order-12 orbit** (attainer `(j₀,j₁) = (9,8)`, ε = 0), reproduced verbatim at p = 37, 61
+where the orbit is a *proper* coset of `F*` — the field-independent flat numerator is an
+orbit count, mechanism identified. Honest census caveat: at `(13,6,3)` m=5 only 6 of 300
+maximizers are genuinely σ³-eigen (the rest are eigen only for the vacuous t = n) —
+eigenstacks *attain* the exact max at every tested rung but do not *exhaust* the maximizer
+set at intermediate rungs; structured-extremality (N1) must be read as attainment.
+→ verified as `MCAEigenstackOrbitLaw.lean` (axiom-clean, layered on the same-hour sibling
+engine `MCAEquivariance.lean` — the two S3 lanes landed within the hour; engine adopted,
+orbit law layered on top): `mcaEvent_eigenstack_iff` (bad set invariant under
+`T(γ) = a⁻¹b + γ·a⁻¹c`), `orderOf_le/dvd_card_of_mul_mem` (orbit arithmetic for invariant
+scalar sets), `orderOf_le/dvd_badScalarSet_card_of_eigenstack` (count = ε + #orbits·d,
+field-independent), and the F₅ demo (one certificate + the orbit law re-derives
+`ε_mca(C542, 1/4) ≥ 4/5`, replacing four hand certificates).
+**Where the open core moves:** the rung profile is orbit arithmetic over divisors of `n`;
+which radius activates which divisor reduces to a splitting-locus question for
+`x^{j₀} + γx^{j₁} − β` over the domain subgroup — a sharply-posed finite question. The
+KKH26 ceiling stack is itself an eigenstack (eigenratio `g^{−m}`, order s): the
+near-capacity ceiling family and the toy plateau maximizers are one object class, and the
+one-orbit halo law (O145) is this mechanism at the census level.

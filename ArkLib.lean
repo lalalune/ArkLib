@@ -839,6 +839,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarExactPoint
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarHighRateFamily
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarSandwich
+import ArkLib.Data.CodingTheory.ProximityGap.MCAEigenstackOrbitLaw
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEquivariance
