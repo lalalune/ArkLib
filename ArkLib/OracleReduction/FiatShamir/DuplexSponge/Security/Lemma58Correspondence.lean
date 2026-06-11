@@ -781,6 +781,34 @@ theorem fwd_hit_sameClass_mem (L : List (DSEntry StmtIn U)) (a b : CanonicalSpon
   · simp at hp
   · exact ⟨e', he', sameClass_of_entryKeys hf' hi'⟩
 
+/-! ## Per-position extraction from the fold predicates -/
+
+/-- `ConsistentFrom` gives entry-consistency at every split point against the fold cache of
+the prefix. -/
+theorem consistentFrom_split (c : DSCache StmtIn U)
+    (L₁ : List (DSEntry StmtIn U)) (e : DSEntry StmtIn U) (L₂ : List (DSEntry StmtIn U))
+    (h : ConsistentFrom c (L₁ ++ e :: L₂)) :
+    entryConsistent (L₁.foldl stepCache c) e := by
+  induction L₁ generalizing c with
+  | nil => exact h.1
+  | cons e₁ ℓ ih =>
+      rw [List.cons_append, ConsistentFrom] at h
+      rw [List.foldl_cons]
+      exact ih (stepCache c e₁) h.2
+
+/-- `¬ AnchoredFrom` gives non-collision at every split point against the fold cache of the
+prefix. -/
+theorem not_anchoredFrom_split (c : DSCache StmtIn U)
+    (L₁ : List (DSEntry StmtIn U)) (e : DSEntry StmtIn U) (L₂ : List (DSEntry StmtIn U))
+    (h : ¬ AnchoredFrom c (L₁ ++ e :: L₂)) :
+    ¬ collisionStep e.1 (L₁.foldl stepCache c) e.2 := by
+  induction L₁ generalizing c with
+  | nil => exact (not_anchoredFrom_cons h).1
+  | cons e₁ ℓ ih =>
+      rw [List.cons_append] at h
+      rw [List.foldl_cons]
+      exact ih (stepCache c e₁) (not_anchoredFrom_cons h).2
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -859,6 +887,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.foldl_pair_provenance
 #print axioms DuplexSpongeFS.EagerLazyDS.consistent_fwd_hit_pair_mem
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_hit_sameClass_mem
+#print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_split
+#print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_split
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
