@@ -300,6 +300,20 @@ theorem fenziSanso_upperBound_attack_concrete_residual_holds :
   calc (2 : ℕ) ^ 70 ≤ 2 ^ 116 := Nat.pow_le_pow_right (by norm_num) (by norm_num)
     _ ≤ Fintype.card KoalaBear.Sextic := KoalaBear.card_sextic_ge
 
+/-- **`fenziSanso_upperBound_attack_residual` is TRUE** — the original 116-bit leaderboard
+attack residual, via the in-tree bridge from the concrete winning-set proof (issue #339
+closeout: residuals 2 and 3 of the filed list are both theorems). -/
+theorem fenziSanso_upperBound_attack_residual_holds :
+    ToyProblem.fenziSanso_upperBound_attack_residual :=
+  ToyProblem.fenziSanso_upperBound_attack_residual_of_concrete
+    fenziSanso_upperBound_attack_concrete_residual_holds
+
+/-- The unconditional 116-bit attack anchor at the genuine KoalaBear-sextic carrier
+(`SecurityUpperBound koalaIRSConcrete`), no residual hypothesis. -/
+noncomputable def attackUpperBound : ToyProblem.SecurityUpperBound ToyProblem.koalaIRSConcrete :=
+  ToyProblem.fenziSanso_upperBound_attack_concrete
+    fenziSanso_upperBound_attack_concrete_residual_holds
+
 end KoalaBearAttack
 
 end ArkLib
@@ -310,3 +324,5 @@ end ArkLib
 #print axioms ArkLib.KoalaBearAttack.all_challenges_win
 #print axioms ArkLib.KoalaBearAttack.instance_violates
 #print axioms ArkLib.KoalaBearAttack.fenziSanso_upperBound_attack_concrete_residual_holds
+#print axioms ArkLib.KoalaBearAttack.fenziSanso_upperBound_attack_residual_holds
+#print axioms ArkLib.KoalaBearAttack.attackUpperBound
