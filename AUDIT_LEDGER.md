@@ -297,8 +297,8 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean:152` theorem **lemma5_8EagerPaperResidual_of_lazy**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Completeness.lean:200` def **duplexSpongeFiatShamir_runCollapseResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Completeness.lean:212` def **duplexSpongeFiatShamirSalted_runCollapseResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean:645` def **Hyb4ChallengeEntryResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean:681` theorem **hyb34StepResidual_logShape_false**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean:649` def **Hyb4ChallengeEntryResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean:685` theorem **hyb34StepResidual_logShape_false**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemma.lean:245` def **KeyLemmaResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:630` def **Lemma5_12HonestResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:647` def **Lemma5_14HonestResidual**
@@ -330,10 +330,10 @@ documented as open research with the paper trail.
 ## ProofSystem/Fri
 
 ### residual-named declarations
-- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:44` def **queryRoundPerfectCompletenessResidual**
-- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:67` def **foldPhasePerfectCompletenessResidual**
-- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:103` def **reductionPerfectCompletenessResidual**
-- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:134` theorem **reductionPerfectCompletenessResidual_holds**
+- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:49` def **queryRoundPerfectCompletenessResidual**
+- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:72` def **foldPhasePerfectCompletenessResidual**
+- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:108` def **reductionPerfectCompletenessResidual**
+- `ArkLib/ProofSystem/Fri/Spec/Completeness.lean:139` theorem **reductionPerfectCompletenessResidual_holds**
 
 ## ProofSystem/Logup
 
@@ -491,7 +491,7 @@ documented as open research with the paper trail.
 - `ArkLib/ToMathlib/FriCompleteFinalRound.lean:125` theorem **finalFoldRoundPerfectCompletenessResidual_holds**
 - `ArkLib/ToMathlib/FriCompleteFoldPhase.lean:223` theorem **foldPhasePerfectCompletenessResidual_holds**
 - `ArkLib/ToMathlib/FriCompletePerRound.lean:137` theorem **foldRoundPerfectCompletenessResidual_holds**
-- `ArkLib/ToMathlib/FriCompleteQueryRound.lean:192` def **queryRoundChainDeliveryResidual**
+- `ArkLib/ToMathlib/FriCompleteQueryRound.lean:178` def **queryRoundChainDeliveryResidual**
 - `ArkLib/ToMathlib/GSGradedBundle.lean:283` structure **MonicHighYResidual**
 - `ArkLib/ToMathlib/GSLineInputSupply.lean:216` structure **PerZResidual**
 - `ArkLib/ToMathlib/KeystoneStrictResidual.lean:411` theorem **strictCoeffPolysResidual_of_betaRec**
