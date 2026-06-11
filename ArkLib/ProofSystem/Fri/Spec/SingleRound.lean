@@ -112,7 +112,9 @@ def Witness (F : Type) [NonBinaryField F] [DecidableEq F] {k : ℕ}
   CompPoly.CPolynomial.degreeLT (R := F)
       (2 ^ ((∑ j', (s j').1) - (∑ j' ∈ finRangeTo _ i.1, (s j').1)) * d)
 
-private lemma witness_lift {F : Type} [NonBinaryField F] [DecidableEq F]
+-- NOTE: not `private` — consumed downstream by `ToMathlib/FriCompletePerRound.lean`
+-- (the fold-round completeness discharge, issue #341).
+lemma witness_lift {F : Type} [NonBinaryField F] [DecidableEq F]
   {k : ℕ} {s : Fin (k + 1) → ℕ+} {d : ℕ+} {p : CompPoly.CPolynomial F} {α : F} {i : Fin (k + 1)} :
     p ∈ Witness F s d i.castSucc →
       CompPoly.CPolynomial.FoldingPolynomial.cpolyFold p (2 ^ (s i).1) α ∈
