@@ -854,6 +854,35 @@ theorem removeRedundant_orderEmbedding
   List.sublist_iff_exists_orderEmbedding_getElem?_eq.mp
     (removeRedundantEntryDSPaper_sublist log)
 
+/-! ## Freshness of non-redundant permutation entries (assembly step s2) -/
+
+/-- **A non-redundant forward entry is fresh.** If `⟨inr (inl a), b⟩` occurs in a consistent
+log with no earlier same-class entry, its forward key is not yet cached at its position. -/
+theorem fwd_entry_fresh (L₁ : List (DSEntry StmtIn U)) (e : DSEntry StmtIn U)
+    (L₂ : List (DSEntry StmtIn U)) (a b : CanonicalSpongeState U)
+    (he : e = (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) (L₁ ++ e :: L₂))
+    (hnr : ∀ e' ∈ L₁, ¬ sameClass e e') :
+    ¬ hasFwdKey (L₁.foldl stepCache ((∅, []) : DSCache StmtIn U)) a := by
+  intro hhit
+  have hc := consistentFrom_split ((∅, []) : DSCache StmtIn U) L₁ e L₂ hcons
+  rw [he] at hc
+  obtain ⟨e', he', hcl⟩ := fwd_hit_sameClass_mem L₁ a b hc hhit
+  exact hnr e' he' (by rw [he]; exact hcl)
+
+/-- **A non-redundant inverse entry is fresh.** -/
+theorem inv_entry_fresh (L₁ : List (DSEntry StmtIn U)) (e : DSEntry StmtIn U)
+    (L₂ : List (DSEntry StmtIn U)) (a b : CanonicalSpongeState U)
+    (he : e = (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) (L₁ ++ e :: L₂))
+    (hnr : ∀ e' ∈ L₁, ¬ sameClass e e') :
+    ¬ hasInvKey (L₁.foldl stepCache ((∅, []) : DSCache StmtIn U)) b := by
+  intro hhit
+  have hc := consistentFrom_split ((∅, []) : DSCache StmtIn U) L₁ e L₂ hcons
+  rw [he] at hc
+  obtain ⟨e', he', hcl⟩ := inv_hit_sameClass_mem L₁ a b hc hhit
+  exact hnr e' he' (by rw [he]; exact hcl)
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -937,6 +966,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_split
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_split
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundant_orderEmbedding
+#print axioms DuplexSpongeFS.EagerLazyDS.fwd_entry_fresh
+#print axioms DuplexSpongeFS.EagerLazyDS.inv_entry_fresh
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
