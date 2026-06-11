@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.LocalSeriesProducer
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellStrictExtraction
 import ArkLib.ToMathlib.LocalSeriesBaseRationalReading
 
 /-!
@@ -89,6 +90,7 @@ set_option linter.unusedDecidableInType false
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 Ideal
 open ProximityGap Code NNReal Finset Function ProbabilityTheory
 open ProximityPrize.BCIKS20.GammaGenuine BCIKS20.HenselNumerator
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 open scoped BigOperators ENNReal ProbabilityTheory
 
 namespace ArkLib
@@ -990,6 +992,50 @@ theorem correlatedAgreement_affine_curves_of_strict_claim57CellDatum {k : ℕ}
     (fun hk u hprob hJ _hsqrt => hStrictCell hk u hprob hJ)
     (fun _hk _u _hprob _hJ hnot => False.elim (hnot hδ))
 
+/-- **SK1-to-threshold weld (#304).** If every decoded family admits a large selected
+section-linked cell carrying the elementary strict-coefficient data, then
+`jointAgreement_of_exists_sub_coeffPolyWitness_of_pos` already yields joint agreement.
+
+This theorem deliberately does not select the cell: it only turns supplied cell data into the
+sub-finset coefficient-polynomial witness expected by the downstream threshold theorem. -/
+theorem jointAgreement_of_exists_cell_strictCoeffPolys_of_pos {n k deg : ℕ}
+    [NeZero n] [NeZero deg] (hk : 0 < k)
+    {domain : Fin n ↪ F} {δ : ℝ≥0} {u : WordStack F (Fin (k + 1)) (Fin n)}
+    (hInput : ∀ P : F → F[X],
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+      ∃ (E : Finset F) (R : (F[X])[X][Y]) (w : F[X][Y]) (Bw : ℕ)
+        (T : Finset (Fin n)) (S : Fin n → Finset F),
+        E.card > k ∧
+          E.card ≥ (Fintype.card (Fin n) + 1) * k ∧
+          (∀ z ∈ E,
+            z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ) ∧
+          Irreducible R ∧
+          (Polynomial.X - Polynomial.C w) ∣ R ∧
+          (∀ i, (w.coeff i).natDegree ≤ Bw) ∧
+          (∀ γ ∈ E, (Polynomial.X - Polynomial.C (P γ)) ∣
+            R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) ∧
+          w.natDegree < T.card ∧
+          (∀ t ∈ T, S t ⊆ E) ∧
+          (∀ t ∈ T, max Bw k < (S t).card) ∧
+          ∀ t ∈ T, ∀ z ∈ S t,
+            (P z).eval (domain t) = (foldSectionAt u t).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  refine jointAgreement_of_exists_sub_coeffPolyWitness_of_pos
+    (domain := domain) (δ := δ) (u := u) hk ?_
+  intro P hdecoded
+  obtain ⟨E, R, w, Bw, T, S, hEcard, hEthresh, hEgood, hRirr, hwdvd, hB, hdvdP,
+    hT, hSE, hcard, hagree⟩ := hInput P hdecoded
+  obtain ⟨B, hBdeg, hcoeff⟩ :=
+    BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_cell
+      (domain := domain) (u := u) (k := k)
+      hRirr hwdvd (by omega : k + 1 - 1 ≤ k) hB E P hdvdP T hT S hSE hcard hagree
+  exact ⟨E, hEcard, hEthresh, hEgood, B, (fun j _ => hBdeg j),
+    fun z hz j _ => hcoeff z hz j⟩
+
 end JointAgreement
 
 end Threshold304
@@ -1027,3 +1073,4 @@ end ArkLib
 #print axioms ArkLib.Threshold304.correlatedAgreement_affine_curves_of_strict_pigeonhole_output
 #print axioms ArkLib.Threshold304.correlatedAgreement_affine_curves_of_claim57CellDatum_and_boundary
 #print axioms ArkLib.Threshold304.correlatedAgreement_affine_curves_of_strict_claim57CellDatum
+#print axioms ArkLib.Threshold304.jointAgreement_of_exists_cell_strictCoeffPolys_of_pos
