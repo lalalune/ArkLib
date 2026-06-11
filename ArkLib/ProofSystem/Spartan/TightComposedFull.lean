@@ -9,6 +9,7 @@ import ArkLib.ProofSystem.Spartan.TightFinalLeaf
 import ArkLib.ProofSystem.Spartan.TightDeterminismWitnesses
 import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeSoundness
 import ArkLib.ProofSystem.Spartan.ComposedTightRbrKnowledge
+import ArkLib.ProofSystem.Spartan.SpartanDirFacts
 
 /-!
 # THE FULL TIGHT COMPOSED SPARTAN rbr KNOWLEDGE SOUNDNESS (issue #329, X-lane apex)
@@ -70,142 +71,7 @@ private abbrev finalCheckTightKS {ι : Type} (oSpec : OracleSpec ι) :
       (OracleStatement.AfterLinearCombination R pp) Unit !p[] :=
   finalCheckTight pp oSpec
 
-/-! ### Direction facts (private mirrors, pSpec-identical to the original chain) -/
-
-private theorem vsum_two_pos' {ℓ : ℕ} (h : 0 < ℓ) : 0 < Fin.vsum (fun _ : Fin ℓ => 2) := by
-  rcases ℓ with - | k
-  · omega
-  · rw [Fin.vsum_succ]; omega
-
-private theorem sumcheckPSpec_dir_zero' (deg n : ℕ)
-    (h : 0 < Fin.vsum (fun _ : Fin n => 2)) :
-    (Sumcheck.Spec.pSpec R deg n).dir ⟨0, h⟩ = .P_to_V := by
-  rcases ProtocolSpec.seqCompose_appendValid
-      (pSpec := fun _ : Fin n => Sumcheck.Spec.SingleRound.pSpec R deg)
-      (fun _ => ⟨by norm_num, rfl⟩) with hzero | ⟨h', hdir⟩
-  · omega
-  · exact hdir
-
-private theorem sfx6_dir_zero' (hn : 0 < pp.ℓ_n)
-    (h : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0) :
-    (sfx6 (R := R) pp).dir ⟨0, h⟩ = .P_to_V := by
-  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos' hn
-  rw [show (⟨0, h⟩ : Fin (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))
-      = Fin.castLE (by omega) (⟨0, hv⟩ : Fin (Fin.vsum (fun _ : Fin pp.ℓ_n => 2))) from by
-    ext; simp]
-  rw [Prover.append_dir_castLE]
-  exact sumcheckPSpec_dir_zero' 2 pp.ℓ_n hv
-
-private theorem sfx5_dir_zero' (hn : 0 < pp.ℓ_n)
-    (h : 0 < 0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)) :
-    (sfx5 (R := R) pp).dir ⟨0, h⟩ = .P_to_V := by
-  have h6 : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0 := by
-    have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos' hn
-    omega
-  rw [show (⟨0, h⟩ : Fin (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))
-      = Fin.natAdd 0 (⟨0, h6⟩ : Fin (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)) from by
-    ext; simp]
-  rw [Prover.append_dir_natAdd]
-  exact sfx6_dir_zero' pp hn h6
-
-private theorem sfx4_dir_zero'
-    (h : 0 < 1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))) :
-    (sfx4 (R := R) pp).dir ⟨0, h⟩ = .V_to_P := by
-  rw [show (⟨0, h⟩ : Fin (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))
-      = Fin.castLE (by omega) (⟨0, Nat.one_pos⟩ : Fin 1) from by ext; simp]
-  rw [Prover.append_dir_castLE]
-  rfl
-
-private theorem sfx4_dir_seam' (hn : 0 < pp.ℓ_n)
-    (h : 1 < 1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))) :
-    (sfx4 (R := R) pp).dir ⟨1, h⟩ = .P_to_V := by
-  have h5 : 0 < 0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0) := by omega
-  rw [show (⟨1, h⟩ : Fin (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))
-      = Fin.natAdd 1 (⟨0, h5⟩ : Fin (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))) from by
-    ext; simp]
-  rw [Prover.append_dir_natAdd]
-  exact sfx5_dir_zero' pp hn h5
-
-private theorem sfx3_dir_zero'
-    (h : 0 < 1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))) :
-    (sfx3 (R := R) pp).dir ⟨0, h⟩ = .P_to_V := by
-  rw [show (⟨0, h⟩ : Fin (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))))
-      = Fin.castLE (by omega) (⟨0, Nat.one_pos⟩ : Fin 1) from by ext; simp]
-  rw [Prover.append_dir_castLE]
-  rfl
-
-private theorem sfx3_dir_seam'
-    (h : 1 < 1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))) :
-    (sfx3 (R := R) pp).dir ⟨1, h⟩ = .V_to_P := by
-  have h4 : 0 < 1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)) := by omega
-  rw [show (⟨1, h⟩ : Fin (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))))
-      = Fin.natAdd 1 (⟨0, h4⟩ : Fin (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))) from by
-    ext; simp]
-  rw [Prover.append_dir_natAdd]
-  exact sfx4_dir_zero' pp h4
-
-private theorem sfx2_dir_zero' (hm : 0 < pp.ℓ_m)
-    (h : 0 < Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-      + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))) :
-    (sfx2 (R := R) pp).dir ⟨0, h⟩ = .P_to_V := by
-  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_m => 2) := vsum_two_pos' hm
-  rw [show (⟨0, h⟩ : Fin (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-        + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))))
-      = Fin.castLE (by omega) (⟨0, hv⟩ : Fin (Fin.vsum (fun _ : Fin pp.ℓ_m => 2))) from by
-    ext; simp]
-  rw [Prover.append_dir_castLE]
-  exact sumcheckPSpec_dir_zero' 3 pp.ℓ_m hv
-
-private theorem sfx2_dir_seam'
-    (h : Fin.vsum (fun _ : Fin pp.ℓ_m => 2) < Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-      + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))) :
-    (sfx2 (R := R) pp).dir ⟨Fin.vsum (fun _ : Fin pp.ℓ_m => 2), h⟩ = .P_to_V := by
-  have h3 : 0 < 1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))) := by omega
-  rw [show (⟨Fin.vsum (fun _ : Fin pp.ℓ_m => 2), h⟩ : Fin (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-        + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))))
-      = Fin.natAdd (Fin.vsum (fun _ : Fin pp.ℓ_m => 2))
-          (⟨0, h3⟩ : Fin (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))) from by
-    ext; simp]
-  rw [Prover.append_dir_natAdd]
-  exact sfx3_dir_zero' pp h3
-
-private theorem sfx1_dir_zero'
-    (h : 0 < 1 + (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-      + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))))) :
-    (sfx1 (R := R) pp).dir ⟨0, h⟩ = .V_to_P := by
-  rw [show (⟨0, h⟩ : Fin (1 + (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-        + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))))))
-      = Fin.castLE (by omega) (⟨0, Nat.one_pos⟩ : Fin 1) from by ext; simp]
-  rw [Prover.append_dir_castLE]
-  rfl
-
-private theorem sfx1_dir_seam' (hm : 0 < pp.ℓ_m)
-    (h : 1 < 1 + (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-      + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))))) :
-    (sfx1 (R := R) pp).dir ⟨1, h⟩ = .P_to_V := by
-  have h2 : 0 < Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-      + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))) := by omega
-  rw [show (⟨1, h⟩ : Fin (1 + (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-        + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))))))
-      = Fin.natAdd 1 (⟨0, h2⟩ : Fin (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-        + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0)))))) from by
-    ext; simp]
-  rw [Prover.append_dir_natAdd]
-  exact sfx2_dir_zero' pp hm h2
-
-private theorem composedPSpec_dir_seam'
-    (h : 1 < 1 + (1 + (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-      + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))))) :
-    (composedPSpec (R := R) pp).dir ⟨1, h⟩ = .V_to_P := by
-  have h1 : 0 < 1 + (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-      + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))) := by omega
-  rw [show (⟨1, h⟩ : Fin (1 + (1 + (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-        + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))))))
-      = Fin.natAdd 1 (⟨0, h1⟩ : Fin (1 + (Fin.vsum (fun _ : Fin pp.ℓ_m => 2)
-        + (1 + (1 + (0 + (Fin.vsum (fun _ : Fin pp.ℓ_n => 2) + 0))))))) from by
-    ext; simp]
-  rw [Prover.append_dir_natAdd]
-  exact sfx1_dir_zero' pp h1
+-- Direction facts now live in `SpartanDirFacts.lean` (DRY-audit item 8).
 
 /-! ### The eight-phase tight composed reduction -/
 
@@ -298,12 +164,12 @@ private theorem tightStep7 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
     ((prependRLCTargetWTKS pp oSpec).append ((secondSumcheckReductionWithTarget pp oSpec).append
         FC)).verifier.rbrKnowledgeSoundness init impl relF relI
       (Sum.elim err₆ errRest ∘ ChallengeIdx.sumEquiv.symm) := by
-  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos' hn
+  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos hn
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
     (prependRLCTargetWTKS pp oSpec).verifier
     ((secondSumcheckReductionWithTarget pp oSpec).append FC).verifier
     verify₆ hV₆ hInit hInitNF hNE ⟨()⟩ (by omega)
-    (sfx5_dir_zero' pp hn (by omega)) (sfx6_dir_zero' pp hn (by omega)) h₆ hRest
+    (sfx5_dir_zero pp hn (by omega)) (sfx6_dir_zero pp hn (by omega)) h₆ hRest
 
 private theorem tightStep6 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
     {err₅ : (⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩ : ProtocolSpec 1).ChallengeIdx → ℝ≥0}
@@ -329,13 +195,13 @@ private theorem tightStep6 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
           ((secondSumcheckReductionWithTarget pp oSpec).append
             FC))).verifier.rbrKnowledgeSoundness init impl relE relI
       (Sum.elim err₅ errRest ∘ ChallengeIdx.sumEquiv.symm) := by
-  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos' hn
+  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos hn
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
     (linearCombinationWithTarget pp oSpec).verifier
     ((prependRLCTargetWTKS pp oSpec).append ((secondSumcheckReductionWithTarget pp oSpec).append
       FC)).verifier
     verify₅ hV₅ hInit hInitNF hNE ⟨()⟩ (by omega)
-    (sfx4_dir_seam' pp hn (by omega)) (sfx5_dir_zero' pp hn (by omega)) h₅ hRest
+    (sfx4_dir_seam pp hn (by omega)) (sfx5_dir_zero pp hn (by omega)) h₅ hRest
 
 private theorem tightStep5 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
     {err₄ : (⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ : ProtocolSpec 1).ChallengeIdx → ℝ≥0}
@@ -363,14 +229,14 @@ private theorem tightStep5 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
             ((secondSumcheckReductionWithTarget pp oSpec).append
               FC)))).verifier.rbrKnowledgeSoundness init impl relD relI
       (Sum.elim err₄ errRest ∘ ChallengeIdx.sumEquiv.symm) := by
-  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos' hn
+  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos hn
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton_challenge
     (sendEvalClaimWithTarget pp oSpec).verifier
     ((linearCombinationWithTarget pp oSpec).append
       ((prependRLCTargetWTKS pp oSpec).append ((secondSumcheckReductionWithTarget pp oSpec).append
         FC))).verifier
     verify₄ hV₄ hInit hInitNF hNE ⟨()⟩ (by omega)
-    (sfx3_dir_seam' pp (by omega)) (sfx4_dir_zero' pp (by omega)) h₄ hRest
+    (sfx3_dir_seam pp (by omega)) (sfx4_dir_zero pp (by omega)) h₄ hRest
 
 private theorem tightStep4 [Subsingleton σ]
     [Inhabited (Statement.AfterFirstSumcheckWithTarget R pp ×
@@ -408,7 +274,7 @@ private theorem tightStep4 [Subsingleton σ]
           ((secondSumcheckReductionWithTarget pp oSpec).append
             FC)))).verifier
     verify₃? hV₃ hInit hInitNF ⟨()⟩ (by omega)
-    (sfx2_dir_seam' pp (by omega)) (sfx3_dir_zero' pp (by omega)) h₃ hRest
+    (sfx2_dir_seam pp (by omega)) (sfx3_dir_zero pp (by omega)) h₃ hRest
 
 private theorem tightStep3 [Subsingleton σ] (hm : 0 < pp.ℓ_m)
     {err₂ : (⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ : ProtocolSpec 1).ChallengeIdx → ℝ≥0}
@@ -439,7 +305,7 @@ private theorem tightStep3 [Subsingleton σ] (hm : 0 < pp.ℓ_m)
                 ((secondSumcheckReductionWithTarget pp oSpec).append
                   FC)))))).verifier.rbrKnowledgeSoundness init impl
       relB relI (Sum.elim err₂ errRest ∘ ChallengeIdx.sumEquiv.symm) := by
-  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_m => 2) := vsum_two_pos' hm
+  have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_m => 2) := vsum_two_pos hm
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
     (oracleReduction.firstChallenge R pp oSpec).verifier
     ((firstSumcheckReductionWithTarget pp oSpec).append
@@ -449,7 +315,7 @@ private theorem tightStep3 [Subsingleton σ] (hm : 0 < pp.ℓ_m)
             ((secondSumcheckReductionWithTarget pp oSpec).append
               FC))))).verifier
     verify₂ hV₂ hInit hInitNF hNE ⟨()⟩ (by omega)
-    (sfx1_dir_seam' pp hm (by omega)) (sfx2_dir_zero' pp hm (by omega)) h₂ hRest
+    (sfx1_dir_seam pp hm (by omega)) (sfx2_dir_zero pp hm (by omega)) h₂ hRest
 
 set_option maxHeartbeats 1000000 in
 /-- **The relation-generic eight-phase tight fold.** -/
@@ -564,7 +430,7 @@ theorem composedPIOPTightFull_rbrKnowledgeSoundness_of_leaves [Subsingleton σ]
               ((secondSumcheckReductionWithTarget pp oSpec).append
                 FC)))))).verifier
     verify₁ hV₁ hInit hInitNF hNE_B ⟨()⟩ (by omega)
-    (composedPSpec_dir_seam' pp (by omega)) (sfx1_dir_zero' pp (by omega)) h₁ hS3
+    (composedPSpec_dir_seam pp (by omega)) (sfx1_dir_zero pp (by omega)) h₁ hS3
 
 /-! ### THE APEX -/
 
