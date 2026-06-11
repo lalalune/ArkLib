@@ -272,7 +272,8 @@ first branch is the error-bound content of Lemma 6.10. -/
 (the *full* protocol C6.2) at proximity parameter `δ`: the `max` of the
 combination-randomness error `ε_mca(C,δ) + |Λ(C^{≡2},δ)| / |F|` and the
 spot-check error `(1-δ)^t`. These are the *exact* per-round terms of
-`protocol62_knowledgeSound`. It is the X-side proof vehicle: an analysis picks
+`protocol62_knowledgeSound`. The `(Lambda …).toNat` is faithful:
+`ListDecodable.Lambda_ne_top`. It is the X-side proof vehicle: an analysis picks
 an admissible δ and bounds `bestProvableError` through it (via
 `winningSetSoundness_le_toySoundnessError` and `bestProvableError_le`). -/
 noncomputable def toySoundnessError (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ) : ℝ≥0 :=
@@ -285,6 +286,7 @@ noncomputable def toySoundnessError (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ
 Construction 6.9 has knowledge soundness with error `ε_mca(C,δ) + Λ/|F|`).
 The Definition-6.11 soundness scalar is at most the L6.10 error term:
 `winningSetSoundness enc δ ≤ ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|`.
+The `(Lambda …).toNat` is faithful: `ListDecodable.Lambda_ne_top`.
 
 This is *only* the error bound; the full knowledge-soundness *game* of L6.10
 (extractor, `O(enc + ecor)` extraction recast cost-free) is

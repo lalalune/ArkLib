@@ -54,6 +54,44 @@ The verifier accepts iff `⟨g, v⟩ = μ₁ + γ · μ₂` (linear-constraint
 check) and for every `j ∈ Fin t`, `encode(g)(xⱼ) = f₁(xⱼ) + γ · f₂(xⱼ)`
 (spot-check).
 
+## Paper ↔ framework mapping
+
+How each step of Construction 6.2 lands on an ArkLib / VCV-io primitive:
+
+* `γ ←$ F` (combination randomness) ↦ `pSpec` round 0 (`.V_to_P`); the
+  security games sample it via the `SampleableType F` instance on the
+  challenge type.
+* prover claim `ḡ ∈ F^k` ↦ `pSpec` round 1 (`.P_to_V`), with
+  `OracleInterface.instDefault` as its message-oracle interface.
+* spot-check positions `x₁, …, xₜ` ↦ `pSpec` round 2 (`.V_to_P`), of
+  type `Fin t → ι`.
+* oracle access to `f₁, f₂` ↦ `OracleStatement` queried via `queryF`,
+  routed through the per-index `OracleInterface` instances.
+* the §6.1 decision predicate ↦ `accepts`.
+* verifier query routing ↦ `OracleInterface.simOracle2` / `simulateQ`
+  (VCV-io's query-simulation semantics).
+* completeness game ↦ `OracleReduction.perfectCompleteness`.
+* knowledge-soundness games (paper App A.1, Defs A.2 / A.4 / A.5) ↦
+  `OracleVerifier.knowledgeSoundness` / `OracleVerifier.rbrKnowledgeSoundness`.
+  Two caveats: extraction **time** (the paper's `O(enc + ecor)` extractor
+  cost) is outside ArkLib's cost-free model, and the verifier's query
+  complexity (`2t + 1`) is documented, not enforced
+  (`OracleVerifier.numQueries` is upstream-sorried).
+
+## Alphabet restriction (`s = 1`)
+
+The paper's Construction 6.1/6.2 inputs are `f : [n] → F^s` for a folding
+parameter `s` (and the §6.3 tables sweep `s = 2^0, …, 2^12`). This
+formalization fixes `s = 1`: words are `ι → F`, not `ι → F^s`. This is a
+genuine scope restriction, not mere notational choice — reindexing
+`ι := [n] × [s]` does **not** recover the general case, because the
+relative Hamming metric over the alphabet `F^s` (one symbol = one
+`F^s`-coordinate) differs from the metric over `F` on the flattened
+index set. The §6.3 `s`-sweep therefore needs the `F^s` generalization,
+planned for Phase-5 `Impl/FRS`. The `s = 2^0` rows of the paper's tables
+fall squarely inside the current form, so the `s = 1` formalization is
+non-vacuous for the prize regime.
+
 ## References
 
 * [Arnon, G., Boneh, D., Fenzi, G., *Open Problems in List Decoding and
@@ -213,7 +251,8 @@ oracle that needs the `OracleQuery` machinery), we use the **non-oracle**
 threaded through the bundled input `StmtIn = Statement × (∀ i, OracleStatement i)`.
 This is sound — it's the same shape produced by
 `OracleReduction.toReduction` — and avoids the `embed` / `hEq`
-plumbing. An `OracleProver` / `OracleVerifier` flavour is a follow-up.
+plumbing. The `OracleProver` / `OracleVerifier` flavour (the target of
+the completeness and soundness statements) follows in the next section.
 -/
 
 section Protocol
@@ -303,10 +342,26 @@ verifier explicit (`2t + 1` queries per execution: one for `g`, two
 per spot-check).
 
 The honest-completeness, knowledge-soundness, and round-by-round
-knowledge-soundness lemmas below are stated against this oracle-flavour
-reduction, since that's the form ArkLib's
-`Verifier.knowledgeSoundness` / `Verifier.rbrKnowledgeSoundness`
-machinery is designed for.
+knowledge-soundness lemmas below are all stated against these
+oracle-flavour objects: completeness via
+`OracleReduction.perfectCompleteness`, L6.6 via
+`OracleVerifier.knowledgeSoundness`, and L6.8 via
+`OracleVerifier.rbrKnowledgeSoundness`. The latter two are
+definitionally `toVerifier.knowledgeSoundness` /
+`toVerifier.rbrKnowledgeSoundness`, so the oracle-flavour statements
+carry no extra proof burden over the bundled-input forms.
+
+**Known framework vacuity (KS only).** `Verifier.knowledgeSoundness`
+(which `OracleVerifier.knowledgeSoundness` unfolds to) currently admits
+a degenerate witness: an extractor that always fails in `OptionT` makes
+the bad-event probability `0`, so the KS *sorries* below
+(`protocol62_knowledgeSound`, and `simplifiedIOR_knowledgeSound` in
+`Spec/SimplifiedIOR.lean`) must **not** be closed until the fix PR
+`fix/knowledge-soundness-failing-extractor` lands — a proof against the
+current definition would be vacuous. `Verifier.rbrKnowledgeSoundness`
+is unaffected (its `KnowledgeStateFunction` obligations do not factor
+through the failing extractor), so `protocol62_rbrKnowledgeSound` can
+be proved as-is.
 -/
 
 /-- Same as `prover` but exposed at the `OracleProver` signature. The
@@ -549,11 +604,17 @@ the toy-problem IOR has knowledge soundness against the relaxed relation
 
   `max { ε_mca(C, δ) + |Λ(C^{≡2}, δ)| / |F|, (1 − δ)^t }`.
 
-Stated against ArkLib's `Verifier.knowledgeSoundness` (cf.
-`OracleReduction/Security/Basic.lean :: Verifier.knowledgeSoundness`).
+The `(Lambda …).toNat` in the error term is faithful: `Lambda` is never
+`⊤` over a finite alphabet (`ListDecodable.Lambda_ne_top`), so `toNat`
+loses nothing.
+
+Stated against ArkLib's `OracleVerifier.knowledgeSoundness` (cf.
+`OracleReduction/Security/Basic.lean :: OracleVerifier.knowledgeSoundness`,
+definitionally `toVerifier.knowledgeSoundness`) — the faithful object
+for an IOPP whose inputs `f₁, f₂` are oracles.
 
 **Naming convention — paper vs API.** The ArkLib API's
-`Verifier.knowledgeSoundness` takes `(relIn, relOut)` where `relIn`
+`OracleVerifier.knowledgeSoundness` takes `(relIn, relOut)` where `relIn`
 is the relation the extracted witness satisfies and `relOut` is the
 relation the verifier's output must satisfy. In this file `relIn` is
 *our* `outputRelationFor` (paper's `R̃²_{C,δ}`, checked against the
@@ -577,10 +638,11 @@ theorem protocol62_knowledgeSound
     (_hC : Set.range encode = C)
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
-      (verifier (k := k) (t := t) (encode : (Fin k → F) → (ι → F))).knowledgeSoundness
+      (oracleVerifier (k := k) (t := t) (encode : (Fin k → F) → (ι → F))).knowledgeSoundness
         (WitOut := OutputWitness)
         init impl (outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ)
-        (Set.univ : Set (OutputStatement × OutputWitness))
+        (Set.univ : Set ((OutputStatement × ∀ i, OutputOracleStatement i) ×
+          OutputWitness))
         (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
                 ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
                   / (Fintype.card F : ℝ≥0))
@@ -591,15 +653,18 @@ theorem protocol62_knowledgeSound
   -- `max (ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|) ((1-δ)^t)`. The `δ < δ_min(C)`
   -- hypothesis is load-bearing: the proof uses it to force `g = f₁ + γ·f₂`
   -- from agreement on `> (1 - δ_min)·n` points (see paper eq. (3)).
+  -- WARNING: do NOT close this sorry until `fix/knowledge-soundness-failing-extractor`
+  -- lands — the current `Verifier.knowledgeSoundness` admits a vacuous
+  -- always-failing `OptionT` extractor (see the section comment above).
   sorry
 
-/-- **Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on
-**mutual** correlated agreement (MCA). With only correlated agreement
-(CA), one cannot prove every codeword `u ∈ Λ(C, f₁ + γ·f₂, δ)`
-decomposes as `u = u₁ + γ·u₂` for some
+/-! ### Remark 6.7 of [ABF26] — MCA, not just CA
+
+The L6.6 soundness argument depends on **mutual** correlated agreement
+(MCA). With only correlated agreement (CA), one cannot prove every
+codeword `u ∈ Λ(C, f₁ + γ·f₂, δ)` decomposes as `u = u₁ + γ·u₂` for some
 `(u₁, u₂) ∈ Λ(C^{≡2}, (f₁, f₂), δ)`, so the extractor would fail. MCA
 provides exactly this decomposition with probability `≥ 1 − ε_mca`. -/
-def remark67 : Unit := ()
 
 omit [DecidableEq ι] in
 /-- **Lemma 6.8 of [ABF26]** (round-by-round knowledge soundness of
@@ -607,11 +672,15 @@ Construction 6.2).
 
 For any `δ ∈ (0, δ_min(C))` and fixed linear encoder with range `C`,
 the IOR has round-by-round knowledge soundness (paper Definition A.5 ≡
-ArkLib's `Verifier.rbrKnowledgeSoundness`) against `R̃_{C,δ}^2`, with
+ArkLib's `OracleVerifier.rbrKnowledgeSoundness`, definitionally
+`toVerifier.rbrKnowledgeSoundness`) against `R̃_{C,δ}^2`, with
 per-round errors
 
   * `ε_mca(C, δ) + |Λ(C^{≡2}, δ)| / |F|` after the γ round,
   * `(1 − δ)^t` after the spot-check round.
+
+The `(Lambda …).toNat` in the γ-round error is faithful: `Lambda` is
+never `⊤` over a finite alphabet (`ListDecodable.Lambda_ne_top`).
 
 The `KnowledgeStateFunction` tracks the largest current agreement set;
 the extractor erasure-decodes against it. Tagged sorry. -/
@@ -624,10 +693,11 @@ theorem protocol62_rbrKnowledgeSound
     (_hC : Set.range encode = C)
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
-      (verifier (k := k) (t := t) (encode : (Fin k → F) → (ι → F))).rbrKnowledgeSoundness
+      (oracleVerifier (k := k) (t := t) (encode : (Fin k → F) → (ι → F))).rbrKnowledgeSoundness
         (WitOut := OutputWitness)
         init impl (outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ)
-        (Set.univ : Set (OutputStatement × OutputWitness))
+        (Set.univ : Set ((OutputStatement × ∀ i, OutputOracleStatement i) ×
+          OutputWitness))
         (fun i ↦
           -- round 0 (combination randomness γ): MCA + list-decoding term;
           -- round 2 (spot checks): `(1-δ)^t`.

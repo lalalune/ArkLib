@@ -40,6 +40,18 @@ Outputs:
 The new instance lies in `R̃¹_{C,δ}` iff the original lay in
 `R̃²_{C,δ}` (up to the soundness error of L6.10).
 
+## Alphabet restriction (`s = 1`)
+
+As in `Spec/General.lean`: the paper's inputs are `f : [n] → F^s` for a
+folding parameter `s` (the §6.3 tables sweep `s = 2^0, …, 2^12`), while
+this formalization fixes `s = 1` (words `ι → F`). This is a genuine
+scope restriction — reindexing `ι := [n] × [s]` does not recover the
+general case because the relative Hamming metric over the alphabet
+`F^s` differs from the metric over `F` on the flattened index set. The
+§6.3 `s`-sweep needs the `F^s` generalization (Phase-5 `Impl/FRS`); the
+`s = 2^0` table rows keep the current form non-vacuous for the prize
+regime.
+
 ## References
 
 * [Arnon, G., Boneh, D., Fenzi, G., *Open Problems in List Decoding and
@@ -186,15 +198,23 @@ body's `OracleComp`.
 
 There is therefore no way, within the current framework, to declare
 an output oracle whose contents are a `γ`-dependent linear combination
-of the inputs. A `simOStmt`-based refactor is sketched in
+of the inputs. The concrete prerequisite is **`simOStmt`-based virtual
+output oracles**: a refactor sketched in
 [`OracleReduction/Basic.lean`](../../OracleReduction/Basic.lean) at
-lines 278 and 293; once that lands, a C6.9 oracle flavour can be
-added back here.
+lines 278 and 293 (`simOStmt : QueryImpl [OStmtOut]ₒ
+(OracleComp ([OStmtIn]ₒ + [pSpec.Message]ₒ))`), under which the output
+oracle `f_new` would be *simulated* by querying `f₁, f₂` and combining.
+Once that lands, a C6.9 oracle flavour can be added back here.
 
 Until then, the bundled-input non-oracle `reduction` above captures
-the full protocol semantics; downstream IRS instantiations
-(`ToyProblem/Impl/IRS.lean :: simplifiedReductionIRS`) consume it
-directly. -/
+the full protocol semantics, and C6.9 as formalized is sound for the
+**standalone** statements L6.10 (`simplifiedIOR_knowledgeSound`), L6.12
+and L6.13 (`Leaderboard.lean`) — but it is **not composable as an IOR**:
+sequential composition with a downstream oracle reduction (which would
+consume `f_new` as an input *oracle*) requires the oracle flavour, hence
+the `simOStmt` refactor. Downstream IRS instantiations
+(`ToyProblem/Impl/IRS.lean :: simplifiedReductionIRS`) consume the
+bundled `reduction` directly and are unaffected. -/
 
 omit [DecidableEq ι] in
 /-- **Lemma 6.10 of [ABF26]** (knowledge soundness of Construction 6.9).
@@ -207,6 +227,9 @@ the simplified IOR has knowledge soundness (paper Def A.5) from
 
 Note the cleaner error term compared with L6.6: there's no `(1-δ)^t`
 spot-check term because C6.9 has no spot-check round.
+
+The `(Lambda …).toNat` in the error term is faithful: `Lambda` is never
+`⊤` over a finite alphabet (`ListDecodable.Lambda_ne_top`).
 
 The proof is the "1-round version" of L6.8's KnowledgeStateFunction
 construction; same extractor strategy (erasure-decode against the
@@ -232,6 +255,10 @@ theorem simplifiedIOR_knowledgeSound
   -- (the "1-round version" of L6.8), not an external import. Knowledge error
   -- `ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|` (no `(1-δ)^t` term: C6.9 has no spot-check
   -- round). `δ < δ_min(C)` load-bearing as in L6.8.
+  -- WARNING: do NOT close this sorry until `fix/knowledge-soundness-failing-extractor`
+  -- lands — the current `Verifier.knowledgeSoundness` admits a vacuous
+  -- always-failing `OptionT` extractor (see Spec/General.lean's oracle-flavour
+  -- section comment).
   sorry
 
 end Protocol
