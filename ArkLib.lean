@@ -1047,6 +1047,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridgeOnLattice
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.SparseDeviationExtremality
+import ArkLib.Data.CodingTheory.ProximityGap.FactorizableStacks
 import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.StackJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovFrobeniusReduction
