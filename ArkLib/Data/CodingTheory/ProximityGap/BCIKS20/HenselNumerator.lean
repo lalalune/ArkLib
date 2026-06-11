@@ -1417,6 +1417,39 @@ theorem structured_weight_collapse (d dH D t wW : ℕ) (hd : 2 ≤ d) (hdH : 1 �
     nlinarith [hwe, hc1, hdH, hdHc, Nat.mul_le_mul_left (2 * s + 2) hwe,
       Nat.mul_le_mul_left (2 * s + 1) (Nat.mul_le_mul_left c (by omega : e + 1 ≤ dH + e))]
 
+/-- **Re-baselined structured collapse.**  This is the same arithmetic collapse as
+`structured_weight_collapse`, but with the correct base weight `D + 1 - dH` of `β₀ = T`.
+The extra base is still absorbed by the loose target `(2t+1)·d·D` under the same App.-A
+degree hypotheses. -/
+theorem structured_weight_collapse_rebased (d dH D t wW : ℕ) (hd : 2 ≤ d) (hdH : 1 ≤ dH)
+    (hdHd : dH ≤ d) (hw : wW + dH ≤ D) :
+    (D + 1 - dH) + (t + 1) * wW + (2 * t - 1) * ((d - 1) * (D - dH + 1))
+      ≤ (2 * t + 1) * d * D := by
+  have hdHD : dH ≤ D := by omega
+  rcases Nat.eq_zero_or_pos t with ht | ht
+  · subst ht
+    obtain ⟨e, rfl⟩ : ∃ e, D = dH + e := ⟨D - dH, by omega⟩
+    obtain ⟨c, rfl⟩ : ∃ c, d = c + 1 := ⟨d - 1, by omega⟩
+    have hwe : wW ≤ e := by omega
+    have hc1 : 1 ≤ c := by omega
+    have hbase : dH + e + 1 - dH = e + 1 := by omega
+    simp only [Nat.mul_zero, Nat.zero_sub, Nat.zero_mul, Nat.add_zero]
+    rw [hbase]
+    nlinarith [hwe, hc1, hdH]
+  · obtain ⟨e, rfl⟩ : ∃ e, D = dH + e := ⟨D - dH, by omega⟩
+    obtain ⟨c, rfl⟩ : ∃ c, d = c + 1 := ⟨d - 1, by omega⟩
+    obtain ⟨s, rfl⟩ : ∃ s, t = s + 1 := ⟨t - 1, by omega⟩
+    have hwe : wW ≤ e := by omega
+    have hc1 : 1 ≤ c := by omega
+    have hdHc : dH ≤ c + 1 := hdHd
+    have h1 : (c + 1) - 1 = c := by omega
+    have h2 : (dH + e) - dH + 1 = e + 1 := by omega
+    have h3 : 2 * (s + 1) - 1 = 2 * s + 1 := by omega
+    have hbase : dH + e + 1 - dH = e + 1 := by omega
+    rw [h1, h2, h3, hbase]
+    nlinarith [hwe, hc1, hdH, hdHc, Nat.mul_le_mul_left (2 * s + 2) hwe,
+      Nat.mul_le_mul_left (2 * s + 1) (Nat.mul_le_mul_left c (by omega : e + 1 ≤ dH + e))]
+
 /-- **Structured invariant consumer for (P1).**
 
 Once the P2/`α_t` route supplies the structured Hensel-numerator weight
@@ -1442,6 +1475,29 @@ theorem βHensel_weight_bound_of_structured_weight (x₀ : F) (R : F[X][X][Y])
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
   refine hstructured.trans ?_
   exact_mod_cast structured_weight_collapse
+    (Bivariate.natDegreeY R) (Bivariate.natDegreeY H) D t (H.leadingCoeff).natDegree
+    hdR2 (by simpa using hH) hdHR hW
+
+/-- **Re-baselined structured invariant consumer for (P1).**
+
+This variant consumes the corrected invariant with base `D + 1 - natDegreeY H`, the actual
+weight of `β₀ = T`, and collapses it to the same loose Claim-A.2 target. -/
+theorem βHensel_weight_bound_of_structured_weight_rebased (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D) (t : ℕ)
+    (hstructured :
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+        ≤ WithBot.some
+          ((D + 1 - Bivariate.natDegreeY H)
+            + (t + 1) * (H.leadingCoeff).natDegree
+            + (2 * t - 1)
+              * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  refine hstructured.trans ?_
+  exact_mod_cast structured_weight_collapse_rebased
     (Bivariate.natDegreeY R) (Bivariate.natDegreeY H) D t (H.leadingCoeff).natDegree
     hdR2 (by simpa using hH) hdHR hW
 
