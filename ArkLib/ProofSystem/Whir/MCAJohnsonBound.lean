@@ -35,7 +35,14 @@ noncomputable def johnsonConjectureEta (n k : ℕ) (δ : ℝ≥0) : ℝ≥0 :=
   (min (1 - Real.sqrt ((k : ℝ) / (n : ℝ)) - (δ : ℝ))
     (Real.sqrt ((k : ℝ) / (n : ℝ)) / 20)).toNNReal
 
-/-- The remaining factor-cell K4 surface consumed by the graded Johnson numeric edge. -/
+/-- The remaining factor-cell K4 surface consumed by the graded Johnson numeric edge.
+
+**Classification (#351 audit, 2026-06-11): honest open research** — a cell-cardinality
+bound on the decode loci of one irreducible factor of the Guruswami–Sudan interpolant,
+the K4 leg of the `mca_johnson_bound_CONJECTURE` campaign (#334, successor to #232; the
+BCIKS20/GS open cores are tracked at #304).  Conditionally reduced to
+`K4ComponentResidual` by `K4GradedFactorCellResidual_of_component` below; no in-tree
+producer exists and none should be fabricated. -/
 def K4GradedFactorCellResidual {n : ℕ} [NeZero n]
     (φ : Fin n ↪ F) (k gsMult : ℕ) (δ : ℝ≥0) : Prop :=
   ∀ (u : Code.WordStack F (Fin 2) (Fin n)) (E : Finset F) (P : F → F[X])
@@ -47,7 +54,13 @@ def K4GradedFactorCellResidual {n : ℕ} [NeZero n]
     E.card ≤ n * (GuruswamiSudan.constraintIndices gsMult).card *
       (gs_degree_bound k n gsMult / (k - 1))
 
-/-- The deeper per-component K4 surface after taking one good fiber of the factor cell. -/
+/-- The deeper per-component K4 surface after taking one good fiber of the factor cell.
+
+**Classification (#351 audit, 2026-06-11): honest open research** — the per-fiber form of
+`K4GradedFactorCellResidual` (one good fiber `x₀` of the interpolant factor), the deepest
+open core of the Johnson-bound campaign (#334; BCIKS20/GS cores at #304).  Known
+obstruction: the fiber-counting step wants Weil-grade input on curves that Mathlib lacks
+(see the #232 round-8 coset-wall record).  No in-tree producer; do not fabricate. -/
 def K4ComponentResidual {n : ℕ} [NeZero n]
     (φ : Fin n ↪ F) (k gsMult : ℕ) (δ : ℝ≥0) : Prop :=
   ∀ (u : Code.WordStack F (Fin 2) (Fin n)) (E : Finset F) (P : F → F[X])
