@@ -500,3 +500,34 @@ and the gap above Johnson is irreducibly the explicit-RS list count (the `u₁`-
 coupling = the GS curve), with the combinatorial shortcut explicitly closed. This both confirms
 regime III = the 25-yr wall from the repo's own obstruction theorems AND saves future effort by
 ruling out the sunflower/intersection route. No new bound; a precise no-go that sharpens the frontier.
+## 18. R1 REFUTED at the low-rate endpoint: `InteriorCeiling` is rate-dependent (constant-code probe)
+
+`scripts/probes/probe_constcode.py` (exact) computes `ε_mca` for the **`r=2` KKH26-family endpoint** =
+the dimension-1 (constant / repetition) code `evalCode g n 0` — a genuine member of the deployed
+construction (domain-independent, since constants evaluate identically), not a toy. Result:
+
+| p | n | δ | regime | ε_mca |
+|---|---|---|--------|-------|
+| 7 | 4 | 1/4 | below-J | 2/7 |
+| 7 | 4 | 1/2 (=Johnson) | interior edge | 6/7 |
+| 7 | 4 | 3/4 | ≥cap | 6/7 |
+| 5 | 4 | 1/4 | below-J | 2/5 |
+| 5 | 4 | 1/2 | interior | 1 (saturated) |
+
+**`ε_mca` SATURATES at the Johnson radius**, far below the KKH26 jump `1−r/2^μ = 1−2/2^μ ≈ 1`. So at
+the low-rate end:
+- **R1 (δ* = KKH26 jump / ceiling-tightness) is REFUTED.** `δ*` sits at Johnson, not at the ceiling;
+  `kkh26_mcaDeltaStar_le` (δ* ≤ jump) stays TRUE but is LOOSE, and `InteriorCeiling` (good *up to* the
+  jump) is **FALSE** here (ε_mca is already saturated in `(Johnson, jump)`).
+- **Healthy red-team of `KKH26DeltaStarReduction`.** This confirms its hypothesis `InteriorCeiling`
+  has *real, rate-dependent content* — it is NOT vacuously true (false at r=2), so the reduction is
+  honestly conditional, not secretly empty. The pin applies only where `InteriorCeiling` genuinely
+  holds = strictly HIGH rate (large `r ≈ 2^{μ-1}`, constant rate ρ≈1/2).
+- **Localization sharpened:** the Proximity Prize is a strictly-high-rate phenomenon. The repetition
+  code (perfectly list-decodable, δ* at Johnson) is the easy refuting endpoint; ceiling-tightness can
+  only emerge as the rate rises and the code stops being trivially list-decodable. This is exactly
+  the regime where the explicit-RS list count above Johnson is open (§17 wall).
+
+**Net (honest):** a genuine exact computation on a real deployed-family member, refuting the naive
+uniform R1, red-team-validating the reduction's hypothesis as non-vacuous, and confirming the prize
+lives strictly at high rate. No pin claimed for the deployed (high-rate) regime; that stays open.
