@@ -334,6 +334,74 @@ theorem foldl_stepCache_perm_sublist (c : DSCache StmtIn U) (L : List (DSEntry S
       rw [List.foldl_cons]
       exact (stepCache_perm_sublist c e).trans (ih (stepCache c e))
 
+/-! ## Key-existence characterization of the fold (consistency-free) -/
+
+/-- Whether a permutation cache already holds the forward key `a`. -/
+def hasFwdKey (c : DSCache StmtIn U) (a : CanonicalSpongeState U) : Prop :=
+  ∃ w ∈ c.2, w.1 = a
+
+/-- Whether a permutation cache already holds the inverse key `b`. -/
+def hasInvKey (c : DSCache StmtIn U) (b : CanonicalSpongeState U) : Prop :=
+  ∃ w ∈ c.2, w.2 = b
+
+/-- The forward key inserted by an entry (`none` for a hash entry). -/
+def entryFwdKey : DSEntry StmtIn U → Option (CanonicalSpongeState U)
+  | ⟨.inl _, _⟩ => none
+  | ⟨.inr (.inl a), _⟩ => some a
+  | ⟨.inr (.inr _), a⟩ => some a
+
+/-- One fold step can only create the forward key it inserts: if a key is present after the
+step but not before, the step's entry inserts exactly that key. (The reverse is false for
+cache *hits* without a consistency assumption, so only this sound direction is stated.) -/
+theorem hasFwdKey_stepCache_imp (c : DSCache StmtIn U) (e : DSEntry StmtIn U)
+    (a : CanonicalSpongeState U) (h : hasFwdKey (stepCache c e) a) :
+    hasFwdKey c a ∨ entryFwdKey e = some a := by
+  rcases e with ⟨t, ans⟩
+  rcases t with q | a' | b'
+  · -- hash entry: perm cache unchanged
+    left
+    obtain ⟨w, hw, hwa⟩ := h
+    rcases hcq : c.1 q with _ | u
+    · exact ⟨w, by simpa [stepCache, hcq] using hw, hwa⟩
+    · exact ⟨w, by simpa [stepCache, hcq] using hw, hwa⟩
+  · -- forward entry inserts pair (a', ans)
+    rcases hf : c.2.find? (fun w => w.1 = a') with _ | w
+    · obtain ⟨w, hw, rfl⟩ := h
+      simp only [stepCache, hf] at hw
+      rw [List.concat_eq_append, List.mem_append] at hw
+      rcases hw with hw | hw
+      · exact Or.inl ⟨w, hw, rfl⟩
+      · simp only [List.mem_singleton] at hw; subst hw; exact Or.inr rfl
+    · left
+      obtain ⟨w', hw', hwa'⟩ := h
+      exact ⟨w', by simpa [stepCache, hf] using hw', hwa'⟩
+  · -- inverse entry inserts pair (ans, b')
+    rcases hf : c.2.find? (fun w => w.2 = b') with _ | w
+    · obtain ⟨w, hw, rfl⟩ := h
+      simp only [stepCache, hf] at hw
+      rw [List.concat_eq_append, List.mem_append] at hw
+      rcases hw with hw | hw
+      · exact Or.inl ⟨w, hw, rfl⟩
+      · simp only [List.mem_singleton] at hw; subst hw; exact Or.inr rfl
+    · left
+      obtain ⟨w', hw', hwa'⟩ := h
+      exact ⟨w', by simpa [stepCache, hf] using hw', hwa'⟩
+
+/-- A forward key present after the whole fold was either present at the start or inserted
+by some entry of the log. -/
+theorem hasFwdKey_foldl_imp (c : DSCache StmtIn U) (L : List (DSEntry StmtIn U))
+    (a : CanonicalSpongeState U) (h : hasFwdKey (L.foldl stepCache c) a) :
+    hasFwdKey c a ∨ ∃ e ∈ L, entryFwdKey e = some a := by
+  induction L generalizing c with
+  | nil => exact Or.inl h
+  | cons e ℓ ih =>
+      rw [List.foldl_cons] at h
+      rcases ih (stepCache c e) h with h' | ⟨e', he', hk'⟩
+      · rcases hasFwdKey_stepCache_imp c e a h' with h'' | h''
+        · exact Or.inl h''
+        · exact Or.inr ⟨e, List.mem_cons_self, h''⟩
+      · exact Or.inr ⟨e', List.mem_cons_of_mem _ he', hk'⟩
+
 /-! ## Dedup recursion infrastructure (sublist + membership transport) -/
 
 open DuplexSpongeFS.Paper in
@@ -470,6 +538,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.foldl_stepCache_perm_sublist
 #print axioms DuplexSpongeFS.EagerLazyDS.noRedundant_pairwise_classDistinct
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_pairwise_classDistinct
+#print axioms DuplexSpongeFS.EagerLazyDS.hasFwdKey_stepCache_imp
+#print axioms DuplexSpongeFS.EagerLazyDS.hasFwdKey_foldl_imp
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_sublist
 #print axioms DuplexSpongeFS.EagerLazyDS.mem_of_mem_removeRedundantEntryDSPaper
 #print axioms DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction
