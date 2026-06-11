@@ -461,6 +461,58 @@ theorem hasInvKey_foldl_imp (c : DSCache StmtIn U) (L : List (DSEntry StmtIn U))
         · exact Or.inr ⟨e, List.mem_cons_self, h''⟩
       · exact Or.inr ⟨e', List.mem_cons_of_mem _ he', hk'⟩
 
+/-! ## Dedup preserves every class (piece A1) -/
+
+open DuplexSpongeFS.Paper in
+/-- **Dedup is a system of class representatives**: every entry of the raw log has a
+class-representative surviving in the dedup output. (The output is also pairwise
+class-distinct, so it is exactly one representative per class.) -/
+theorem mem_imp_sameClass_mem_removeRedundant
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (e : DSEntry StmtIn U) (he : e ∈ log) :
+    ∃ e' ∈ (removeRedundantEntryDSPaper log).1, sameClass e e' := by
+  letI : Decidable (∃ idx : Fin log.length,
+      DuplexSpongeFS.Paper.redundantEntryDSPaper log idx) := Classical.propDecidable _
+  rw [removeRedundantEntryDSPaper]
+  by_cases h : ∃ idx : Fin log.length, redundantEntryDSPaper log idx
+  · rw [dif_pos h]
+    set i := (Classical.choose h).val with hi
+    have hilt : i < log.length := (Classical.choose h).isLt
+    by_cases hmem : e ∈ log.eraseIdx i
+    · obtain ⟨e'', hmem'', hcl''⟩ :=
+        mem_imp_sameClass_mem_removeRedundant (log.eraseIdx i) e hmem
+      exact ⟨e'', hmem'', hcl''⟩
+    · -- e ∈ log but not in eraseIdx i: every occurrence of e is at index i, so e = log[i]
+      have hek : e = log[i] := by
+        obtain ⟨k, hk, hke⟩ := List.getElem_of_mem he
+        by_cases hki : k = i
+        · subst hki; exact hke.symm
+        · exact absurd (List.mem_eraseIdx_iff_getElem.mpr ⟨k, hk, hki, hke⟩) hmem
+      -- log[i] is redundant: it has an earlier same-class witness at j' ≠ i
+      have hred : redundantEntryDSPaper log (Classical.choose h) := Classical.choose_spec h
+      obtain ⟨j', hj', hclj'⟩ :=
+        (redundantEntryDSPaper_iff_sameClass log (Classical.choose h)).mp hred
+      have hj'i : (j' : ℕ) ≠ i := by
+        rw [hi]; exact Nat.ne_of_lt hj'
+      have hwitmem : log[(j' : ℕ)] ∈ log.eraseIdx i :=
+        List.mem_eraseIdx_iff_getElem.mpr ⟨(j' : ℕ), j'.isLt, hj'i, rfl⟩
+      obtain ⟨e'', hmem'', hcl''⟩ :=
+        mem_imp_sameClass_mem_removeRedundant (log.eraseIdx i) log[(j' : ℕ)] hwitmem
+      refine ⟨e'', hmem'', ?_⟩
+      -- sameClass e log[j'] from hclj' (sameClass log[i] log[j']) and e = log[i]
+      have hcl_e : sameClass e log[(j' : ℕ)] := by
+        rw [hek]; exact hclj'
+      exact sameClass_trans hcl_e hcl''
+  · rw [dif_neg h]
+    exact ⟨e, he, sameClass_refl e⟩
+termination_by log.length
+decreasing_by
+  all_goals
+    have hlt : (Classical.choose h).val < log.length := (Classical.choose h).isLt
+    have heq : (log.eraseIdx (Classical.choose h).val).length + 1 = log.length :=
+      List.length_eraseIdx_add_one hlt
+    omega
+
 /-! ## Key pair pins the class -/
 
 /-- An entry whose inserted pair is `(a, b)` is class-equal to the forward entry
@@ -669,6 +721,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.hasInvKey_stepCache_imp
 #print axioms DuplexSpongeFS.EagerLazyDS.hasInvKey_foldl_imp
 #print axioms DuplexSpongeFS.EagerLazyDS.sameClass_of_entryKeys
+#print axioms DuplexSpongeFS.EagerLazyDS.mem_imp_sameClass_mem_removeRedundant
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
