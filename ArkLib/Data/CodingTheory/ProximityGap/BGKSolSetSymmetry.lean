@@ -82,6 +82,20 @@ theorem tau_mem_solSet {u : F} (hu : u ∈ solSet G) : -(1 + u) ∈ solSet G := 
 
 end ArkLib.ProximityGap.BGKSolSetSymmetry
 
+namespace ArkLib.ProximityGap.BGKSolSetSymmetry
+
+variable {F : Type*} [Field F]
+
+/-- **`τ` is an involution: `τ(τ(u)) = u`.** `τ(τ(u)) = −(1 + −(1+u)) = u`. One of the two `S₃`
+generators acting on the BGK solution set. -/
+theorem tau_involutive (u : F) : -(1 + -(1 + u)) = u := by ring
+
+/-- **`ι` is an involution: `ι(ι(u)) = u`** for `u ≠ 0`. The other `S₃` generator. -/
+theorem iota_involutive {u : F} (hu : u ≠ 0) : (u⁻¹)⁻¹ = u := inv_inv u
+
+end ArkLib.ProximityGap.BGKSolSetSymmetry
+
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms ArkLib.ProximityGap.BGKSolSetSymmetry.inv_mem_solSet
 #print axioms ArkLib.ProximityGap.BGKSolSetSymmetry.tau_mem_solSet
+#print axioms ArkLib.ProximityGap.BGKSolSetSymmetry.tau_involutive
