@@ -6110,3 +6110,36 @@ which radius activates which divisor reduces to a splitting-locus question for
 KKH26 ceiling stack is itself an eigenstack (eigenratio `g^{−m}`, order s): the
 near-capacity ceiling family and the toy plateau maximizers are one object class, and the
 one-orbit halo law (O145) is this mechanism at the census level.
+
+### O147 — RED-TEAM CYCLE 2: no third mechanism — THE TWO-FAMILY PROFILE LAW explains 100% of all exact data ever computed (2026-06-11, #357)
+
+The third-mechanism hunt at the richest exactly-computed instance, (13,12,6) (the n = 12
+orbit-exact profile {a=12: 1, a=11: 2, a=10: 3, a=9: 12, a≤8: 13}), against the corrected
+two-family prediction `max(staircase = n−a+1, census(a))`:
+
+| a | staircase | census (computed) | max | exact |
+|---|---|---|---|---|
+| 12 | 1 | 1 | 1 | **1 ✓** |
+| 11 | 2 | 0 | 2 | **2 ✓** |
+| 10 | 3 | 0 | 3 | **3 ✓** |
+| 9 | 4 | 12 | 12 | **12 ✓** |
+| ≤8 | — | saturates | p | **13 = p ✓** |
+
+* **No third mechanism at any exactly-computed point.** The two-family law now matches
+  every exact rung across 8 instances / 13 field-instance combinations: (5,4,2),
+  (13,4,2), (17,4,2), (12,6)@{13,37,61}, (7,6,3), (13,6,3), (16,4)-window-census rows,
+  (32,8)-census rows.
+* **The staircase generalization gets its third point:** band j = j+1 at j = 2 (a = 10:
+  exact 3). Conjecture: `ε_mca·q = ⌊δn⌋ + 1` on each band until the census crossing —
+  bands 0–1 already proven universally (sibling); band-j spike family = the obvious next
+  Lean target.
+* **The unified profile law (generation-2 central claim):** for smooth-domain RS,
+  `ε_mca(C, 1 − a/n)·q = min(q, max(n − a + 1, census(a)))` at every exactly-computed
+  scale. Status: both lower-bound families PROVEN (bands 0–1 universal; census at all
+  scales via `census_le_epsMCA`); census structural core CLASSIFIED (char-0, fiber unions);
+  upper half = the named two-family-max extremality + per-prime halo bound.
+* **Production consequence:** at `ε* = 2^{−128}` the staircase is irrelevant
+  (≤ n ≪ ε*·q ≈ 2^{128}) and `δ*(production smooth RS) = 1 − a_c/n` with `a_c` the census
+  crossing — the conditional pin `mcaDeltaStar_eq_of_censusCrossing'` with the corrected
+  surface. The two named open surfaces are exactly: (i) two-family-max extremality,
+  (ii) the per-prime halo bound. Everything else in the chain is machine-checked.
