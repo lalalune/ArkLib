@@ -166,3 +166,17 @@ B-census {2,4} factors. Verification (lane_g1_menu_law.py, on kernel-regenerated
 analytic aggregate == measured menu in ALL 40 entries; total 47,040; distinct 4,072.
 General-s form: multiplicity C(m₀, s/4−|J|) over the s/2−1 pair-blocks — the incidence
 menu at every rung is B-census convolution with this kernel.
+
+## G5 — VERDICT: REFUTED, informatively (2026-06-11, inline; exact computation, no truncation)
+The pre-registered falsifier fired: the exact union (Möbius over all 2¹⁶ loci,
+partition-checked Σ exact(D) = q¹⁶) and the union-bound sum agree to 9 significant
+digits — slack factor 1 + O(1/q). Mechanism: V-space overlaps are q^(16−2|Z∪Z′|) ≤
+(1/q)·min terms — over a 2×10⁹-element field, inclusion–exclusion corrections are
+measure-negligible BY CONSTRUCTION, regardless of how much the loci overlap
+combinatorially (the 11.55 multiplicity is real but lives in counting, not measure).
+Findings: (i) a 31-locus antichain (7 singletons + 24 pairs) carries the whole union;
+(ii) the union exceeds the 47,040 actual differences by 2.7×10¹²⁶ — **the entire open
+content of level-1 counting is the weight filter, not locus incidence**. REDIRECT: the
+lane's counting target shifts from "overlap corrections" to "how the weight filter cuts
+a per-locus space" — the measure of {f ∈ V_Z : wt(f) ≤ w} vs q^(16−2|Z|)·(ball fraction),
+where smooth-domain structure must enter. lane_g5_union_exact.py = the computation.
