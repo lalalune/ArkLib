@@ -87,6 +87,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
+import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
