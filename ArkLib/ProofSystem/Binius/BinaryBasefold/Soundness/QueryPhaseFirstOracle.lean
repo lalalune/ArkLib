@@ -119,7 +119,10 @@ lemma polyToOracleFunc_eq_getFirstOracle
     ⟨y.val, h_firstIdx_zero.symm ▸ y.property⟩
   change f₀ y = oStmt ⟨0, h_pos⟩ y0
   rw [h_first_oracle]
-  simp only [zero_mul]
+  rw [iterated_fold_congr_steps_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps' := 0)
+      (h_destIdx := by simp only [Fin.val_mk, zero_mul, Fin.val_zero, add_zero]; rfl)
+      (h_destIdx_le := by simp only [zero_mul, zero_le])
+      (h_steps_eq_steps' := by simp only [zero_mul])]
   rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
       (h_destIdx := by simp only [firstIdx, j0, Fin.val_mk, zero_mul, Fin.val_zero])]
   have h_y0_to_y :
