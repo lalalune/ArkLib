@@ -49,6 +49,7 @@ import ArkLib.Data.CodingTheory.AGL24RIMPermutation
 import ArkLib.Data.CodingTheory.AGL24RSInstance
 import ArkLib.Data.CodingTheory.AGL24ReducedIntersectionMatrix
 import ArkLib.Data.CodingTheory.AGL24SubfamilyTransport
+import ArkLib.Data.CodingTheory.AGL24SymbolicRank
 import ArkLib.Data.CodingTheory.AGL24Types
 import ArkLib.Data.CodingTheory.AGL24UnionBound
 import ArkLib.Data.CodingTheory.AGL24WeakPartition
