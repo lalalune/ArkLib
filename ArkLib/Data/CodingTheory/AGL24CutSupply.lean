@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import Mathlib
 import ArkLib.Data.CodingTheory.AGL24WeakPartition
+import ArkLib.Data.CodingTheory.AGL24Orientation
 
 /-!
 # [AGL24]/Frank: the cut supply — every cut of a WPC hypergraph has `k` border edges
@@ -19,7 +20,11 @@ greedy/uncrossing construction of the crossing-orientation must draw on; it also
 brick 21's vertex-degree bound as the `T = {j}` case.)
 
 * `twoCellPartition` — the partition `{T, Tᶜ}` of a proper nonempty subset;
-* `wpc_border_ge` — **the cut supply**: `k ≤ #{i | eᵢ touches both T and Tᶜ}`.
+* `borderEdges` / `headBorderEdges` / `cutDeficiency` — named cut-count objects for the
+  Frank reorientation campaign;
+* `wpc_border_ge` — **the cut supply**: `k ≤ #{i | eᵢ touches both T and Tᶜ}`;
+* `exists_border_head_outside_of_deficient_cut` — a deficient cut has an unclaimed border
+  edge whose head is outside the cut.
 -/
 
 open Finset
@@ -27,6 +32,60 @@ open Finset
 namespace AGL24
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-- The edges crossing the cut `T`: they touch `T` and are not contained in `T`. -/
+def borderEdges {ι : Type*} [Fintype ι] (e : ι → Finset V) (T : Finset V) : Finset ι :=
+  Finset.univ.filter (fun i => (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T)
+
+/-- The cut-crossing edges whose current orientation head lies in `T`. -/
+def headBorderEdges {ι : Type*} [Fintype ι] {e : ι → Finset V}
+    (O : HeadOrientation e) (T : Finset V) : Finset ι :=
+  Finset.univ.filter (fun i => O.head i ∈ T ∧ ¬ e i ⊆ T)
+
+/-- The positive part of the missing head-border count for a Frank cut. -/
+def cutDeficiency {ι : Type*} [Fintype ι] {e : ι → Finset V}
+    (O : HeadOrientation e) (T : Finset V) (k : ℕ) : ℕ :=
+  k - (headBorderEdges O T).card
+
+omit [Fintype V] in
+@[simp] theorem mem_borderEdges {ι : Type*} [Fintype ι] (e : ι → Finset V)
+    (T : Finset V) (i : ι) :
+    i ∈ borderEdges e T ↔ (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T := by
+  simp [borderEdges]
+
+omit [Fintype V] in
+@[simp] theorem mem_headBorderEdges {ι : Type*} [Fintype ι] {e : ι → Finset V}
+    (O : HeadOrientation e) (T : Finset V) (i : ι) :
+    i ∈ headBorderEdges O T ↔ O.head i ∈ T ∧ ¬ e i ⊆ T := by
+  simp [headBorderEdges]
+
+omit [Fintype V] in
+theorem headBorderEdges_subset_borderEdges {ι : Type*} [Fintype ι] {e : ι → Finset V}
+    (O : HeadOrientation e) (T : Finset V) (hne : ∀ i, (e i).Nonempty) :
+    headBorderEdges O T ⊆ borderEdges e T := by
+  intro i hi
+  rw [mem_headBorderEdges] at hi
+  rw [mem_borderEdges]
+  exact ⟨⟨O.head i, Finset.mem_inter.mpr ⟨O.head_mem i (hne i), hi.1⟩⟩, hi.2⟩
+
+omit [Fintype V] in
+theorem headBorderEdges_card_le_borderEdges_card {ι : Type*} [Fintype ι] {e : ι → Finset V}
+    (O : HeadOrientation e) (T : Finset V) (hne : ∀ i, (e i).Nonempty) :
+    (headBorderEdges O T).card ≤ (borderEdges e T).card :=
+  Finset.card_le_card (headBorderEdges_subset_borderEdges O T hne)
+
+omit [Fintype V] in
+theorem cutDeficiency_pos_iff {ι : Type*} [Fintype ι] {e : ι → Finset V}
+    (O : HeadOrientation e) (T : Finset V) (k : ℕ) :
+    0 < cutDeficiency O T k ↔ (headBorderEdges O T).card < k := by
+  rw [cutDeficiency, Nat.sub_pos_iff_lt]
+
+omit [Fintype V] in
+theorem cutDeficiency_eq_zero_of_le {ι : Type*} [Fintype ι] {e : ι → Finset V}
+    (O : HeadOrientation e) (T : Finset V) {k : ℕ}
+    (h : k ≤ (headBorderEdges O T).card) :
+    cutDeficiency O T k = 0 := by
+  rw [cutDeficiency, Nat.sub_eq_zero_of_le h]
 
 /-- The two-cell partition `{T, univ \ T}` of a proper nonempty subset `T`. -/
 def twoCellPartition (T : Finset V) (hT : T.Nonempty) (hTne : T ≠ Finset.univ) :
@@ -68,10 +127,10 @@ def twoCellPartition (T : Finset V) (hT : T.Nonempty) (hTne : T ≠ Finset.univ)
 /-- **The cut supply** (the necessary side of Frank's orientation theorem): every proper
 nonempty vertex subset of a `k`-weakly-partition-connected family is crossed by at least `k`
 edges. -/
-theorem wpc_border_ge {ι : Type*} [Fintype ι] [DecidableEq ι] {k : ℕ}
+theorem wpc_border_ge {ι : Type*} [Fintype ι] {k : ℕ}
     (e : ι → Finset V) (T : Finset V) (hT : T.Nonempty) (hTne : T ≠ Finset.univ)
     (h : WeaklyPartitionConnected k (Finset.univ : Finset V) e) :
-    k ≤ (Finset.univ.filter (fun i => (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T)).card := by
+    k ≤ (borderEdges e T).card := by
   classical
   have hP := h (twoCellPartition T hT hTne)
   -- The partition has two parts.
@@ -137,10 +196,55 @@ theorem wpc_border_ge {ι : Type*} [Fintype ι] [DecidableEq ι] {k : ℕ}
   _ ≤ ∑ i, ((touchedCells (twoCellPartition T hT hTne) (e i ∩ Finset.univ)).card - 1) := hP
   _ ≤ ∑ i, (if (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T then 1 else 0) :=
       Finset.sum_le_sum fun i _ => hper i
-  _ = (Finset.univ.filter (fun i => (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T)).card := by
-      rw [Finset.card_filter]
+  _ = (borderEdges e T).card := by
+      rw [borderEdges, Finset.card_filter]
+
+omit [Fintype V] in
+/-- If the head-border count is strictly smaller than the full border count, some border edge
+has not yet been headed into the cut. -/
+theorem exists_border_not_head_of_headBorder_lt_border {ι : Type*} [Fintype ι]
+    {e : ι → Finset V} (O : HeadOrientation e) (T : Finset V)
+    (hlt : (headBorderEdges O T).card < (borderEdges e T).card) :
+    ∃ i, i ∈ borderEdges e T ∧ i ∉ headBorderEdges O T := by
+  classical
+  by_contra h
+  push Not at h
+  have hsub : borderEdges e T ⊆ headBorderEdges O T := by
+    intro i hi
+    exact h i hi
+  have := Finset.card_le_card hsub
+  omega
+
+/-- A strictly deficient proper WPC cut has a crossing edge whose head lies outside the cut.
+This is the immediate F1 supply consumed by later Frank reorientation/uncrossing steps. -/
+theorem exists_border_head_outside_of_deficient_cut {ι : Type*} [Fintype ι]
+    {k : ℕ} {e : ι → Finset V} (O : HeadOrientation e) (T : Finset V)
+    (hT : T.Nonempty) (hTne : T ≠ Finset.univ)
+    (hwpc : WeaklyPartitionConnected k (Finset.univ : Finset V) e)
+    (hdef : (headBorderEdges O T).card < k) :
+    ∃ i, (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T ∧ O.head i ∉ T := by
+  classical
+  have hborder : k ≤ (borderEdges e T).card := wpc_border_ge e T hT hTne hwpc
+  obtain ⟨i, hiborder, hihead⟩ :=
+    exists_border_not_head_of_headBorder_lt_border O T (lt_of_lt_of_le hdef hborder)
+  rw [mem_borderEdges] at hiborder
+  rw [mem_headBorderEdges] at hihead
+  refine ⟨i, hiborder.1, hiborder.2, ?_⟩
+  intro hhead
+  exact hihead ⟨hhead, hiborder.2⟩
+
+/-- Positive `cutDeficiency` form of `exists_border_head_outside_of_deficient_cut`. -/
+theorem exists_border_head_outside_of_positive_deficiency {ι : Type*} [Fintype ι]
+    {k : ℕ} {e : ι → Finset V} (O : HeadOrientation e) (T : Finset V)
+    (hT : T.Nonempty) (hTne : T ≠ Finset.univ)
+    (hwpc : WeaklyPartitionConnected k (Finset.univ : Finset V) e)
+    (hdef : 0 < cutDeficiency O T k) :
+    ∃ i, (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T ∧ O.head i ∉ T := by
+  exact exists_border_head_outside_of_deficient_cut O T hT hTne hwpc
+    ((cutDeficiency_pos_iff O T k).mp hdef)
 
 end AGL24
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms AGL24.wpc_border_ge
+#print axioms AGL24.exists_border_head_outside_of_positive_deficiency
