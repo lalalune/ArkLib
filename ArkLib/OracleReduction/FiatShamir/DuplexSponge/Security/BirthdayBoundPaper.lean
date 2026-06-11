@@ -8,6 +8,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BirthdayBound
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516Paper
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.EagerLazyDS
 
 /-!
 # #314 wave-5 — the CO25 §5.6 → §5.8 channel over the paper-faithful event
@@ -144,6 +145,31 @@ theorem honestBad_claim5_21Bound_of_paperResidual
     honestBad_birthday_of_paperResidual (StmtIn := StmtIn) (U := U) h58 P
       (tₕ + 1 + tₚ + L + tₚᵢ) hT st₀
 
+/-- **The Lemma 5.8 residual reduces to its lazy-side form** (via the eager–lazy
+duplex-sponge bridge `evalDist_DDS_eq_lazyDSImpl`): it suffices to bound the `EPaper`
+probability of the **lazy memoizing game**, where every query is a deterministic cache hit
+or a fresh uniform draw — the regime of the per-step counting bricks. -/
+theorem lemma5_8EagerPaperResidual_of_lazy
+    [DecidableEq StmtIn] [Finite StmtIn]
+    [Nonempty (StmtIn → Vector U SpongeSize.C)]
+    [Nonempty (Equiv.Perm (CanonicalSpongeState U))]
+    [Fintype (StmtIn → Vector U SpongeSize.C)]
+    [Fintype (Vector U SpongeSize.C)] [Nonempty (Vector U SpongeSize.C)]
+    [SampleableType (Vector U SpongeSize.C)]
+    [DecidableEq (CanonicalSpongeState U)] [Inhabited (CanonicalSpongeState U)]
+    [Fintype (CanonicalSpongeState U)]
+    (h : ∀ {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ),
+      IsTotalQueryBound P T →
+      (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) => EPaper z.2 |
+        (simulateQ DuplexSpongeFS.EagerLazyDS.lazyDSImpl
+          ((simulateQ loggingOracle P).run)).run' (∅, ([] :
+            List (CanonicalSpongeState U × CanonicalSpongeState U)))]).toReal
+        ≤ lemma5_8Bound U T) :
+    Lemma5_8EagerPaperResidual StmtIn U := by
+  intro α P T hT
+  rw [DuplexSpongeFS.EagerLazyDS.probEvent_DDS_eq_lazyDSImpl]
+  exact h P T hT
+
 end EagerInstantiation
 
 end DuplexSpongeFS.BirthdayBoundPaper
@@ -151,3 +177,5 @@ end DuplexSpongeFS.BirthdayBoundPaper
 #print axioms DuplexSpongeFS.BirthdayBoundPaper.probEvent_honestBad_le_probEvent_EPaper
 #print axioms DuplexSpongeFS.BirthdayBoundPaper.honestBad_birthday_of_paperResidual
 #print axioms DuplexSpongeFS.BirthdayBoundPaper.honestBad_claim5_21Bound_of_paperResidual
+
+#print axioms DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_of_lazy
