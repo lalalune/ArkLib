@@ -632,7 +632,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralGapCensusLaw
-import ArkLib.Data.CodingTheory.ProximityGap.HalfPairSliceExact
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominationPin
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralPacketCombination
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralSpikeLowerBound
@@ -846,8 +845,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountRatio
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadScalarSpreadBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeCoredCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeInfra
-import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeAssembly
-import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoRS
@@ -917,6 +914,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAUpToCapacityFalse
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUpperWitnessSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAValueBracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWindowInteriorExact
+import ArkLib.Data.CodingTheory.ProximityGap.MCAWindowInteriorPin
+import ArkLib.Data.CodingTheory.ProximityGap.MCAExactPin
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessCountEngine
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpread
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpreadCodeword

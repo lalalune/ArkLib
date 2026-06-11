@@ -67,6 +67,32 @@ theorem mcaDeltaStar_eq_of_good_of_strictMono_bad
     mcaDeltaStar (F := F) (A := A) C εstar = δ₀ :=
   mcaDeltaStar_eq_of_good_of_bad_above C εstar hδ₀ hgood hbad
 
+/-- **The open-interval exact-pin combinator.** If *every* radius *strictly below* `δ₀` is good
+(`ε_mca(C, δ) ≤ ε*`) and *every* radius *at or above* `δ₀` is bad (`ε* < ε_mca(C, δ)`), then
+`δ*(C, ε*) = δ₀` — even though `δ₀` itself is **bad** (the good set is the open interval
+`[0, δ₀)`, whose supremum is `δ₀`). This is the form an exact pin takes when `ε_mca` *jumps
+across* `ε*` exactly at `δ₀` (a granularity boundary): the pin sits at the jump point. -/
+theorem mcaDeltaStar_eq_of_good_below_of_bad_above
+    (C : Set (ι → A)) (εstar : ℝ≥0∞) {δ₀ : ℝ≥0}
+    (hδ₀ : δ₀ ≤ 1)
+    (hgood : ∀ δ : ℝ≥0, δ < δ₀ → epsMCA (F := F) (A := A) C δ ≤ εstar)
+    (hbad : ∀ δ : ℝ≥0, δ₀ ≤ δ → εstar < epsMCA (F := F) (A := A) C δ) :
+    mcaDeltaStar (F := F) (A := A) C εstar = δ₀ := by
+  refine le_antisymm ?_ ?_
+  · -- good ⊆ [0, δ₀): any good δ has δ < δ₀ (δ ≥ δ₀ would be bad), so δ₀ upper-bounds good
+    refine csSup_le' (show δ₀ ∈ upperBounds (mcaGoodRadii (F := F) (A := A) C εstar) from ?_)
+    intro δ hδ
+    by_contra hnot
+    exact absurd hδ.2 (not_le_of_gt (hbad δ (le_of_lt (not_le.mp hnot))))
+  · -- δ₀ ≤ sSup good: if not, pick δ ∈ (sSup, δ₀); δ is good so δ ≤ sSup, contradiction
+    by_contra hnot
+    rw [not_le] at hnot
+    obtain ⟨δ, hδlo, hδhi⟩ := exists_between hnot
+    have hδ_good : δ ∈ mcaGoodRadii (F := F) (A := A) C εstar :=
+      ⟨le_of_lt (lt_of_lt_of_le hδhi hδ₀), hgood δ hδhi⟩
+    exact absurd (le_csSup (mcaGoodRadii_bddAbove (F := F) (A := A) C εstar) hδ_good)
+      (not_le_of_gt hδlo)
+
 /-- **Sanity instance (engine self-test): `δ* = 0` when every radius is bad.** If
 `ε_mca(C, δ) > ε*` for all `δ`, the good-radius set is empty, so the threshold pins at `0`
 (`sSup ∅ = 0`). This is the degenerate exact pin (e.g. the constant code below capacity). -/
@@ -87,3 +113,4 @@ end ProximityGap.MCAThresholdLedger
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms ProximityGap.MCAThresholdLedger.mcaDeltaStar_eq_of_good_of_bad_above
 #print axioms ProximityGap.MCAThresholdLedger.mcaDeltaStar_eq_zero_of_all_bad
+#print axioms ProximityGap.MCAThresholdLedger.mcaDeltaStar_eq_of_good_below_of_bad_above
