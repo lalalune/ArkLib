@@ -5488,3 +5488,26 @@ slots — affine counts drift by ±1 inside one structure class, which is now ex
 anomalous; (b) N1's structured-extremality conjecture survives its first decisive audit in
 projective form: at the R1 rung there are NO unstructured maximizers — the maximizer set is
 one projective orbit exactly.
+
+### O135 — G5 REFUTED: the union bound is measure-tight; the weight filter is the whole game (nubs, 2026-06-11)
+
+Fourth verdict of the pre-registered incidence batch (rungs/HYPOTHESES.md), computed
+inline exactly (Möbius over the full 2¹⁶ locus universe, partition check Σ = q¹⁶ passed,
+no truncation): the EXACT union of the per-locus spaces over the 4,072 measured
+cross-pair loci agrees with the union-bound SUM to 9 significant digits — slack
+1 + O(1/q). The pre-registered falsifier ("Bonferroni fails to separate") fired.
+Mechanism: V_Z ∩ V_Z′ = V_{Z∪Z′} has measure ≤ (1/q)·min(|V_Z|,|V_Z′|) — over
+|F| ≈ 2×10⁹, overlap corrections are negligible BY CONSTRUCTION; the measured
+locus-sharing (mean multiplicity 11.55, O129) is combinatorially real but
+measure-irrelevant. Structure: a 31-locus antichain (7 singletons + 24 pairs) carries
+the entire union; the union exceeds the 47,040 actual differences by 2.7×10¹²⁶.
+
+**Where the lane's counting target moves (the redirect):** level-1 list counting loses
+nothing to locus overlap — the ENTIRE gap is the weight filter: bound
+#{f ∈ V_Z : wt_D(f) ≤ w} against |V_Z|·(volume fraction), where smooth-domain structure
+must enter (a random subspace of the same dimension would meet the weight ball at the
+generic rate; the measured configuration's differences are EXACTLY the low-weight
+elements — their excess over generic is the true smooth-domain signal). Incidence stays
+decisive at the level of EXACT anatomy (G1 menu law, the S∩B lattice) — but as input to
+weight-filter arguments, not unions. Batch: G1 ✓ A1 ✓ A2 ✓ G5 ✗(refuted-informative);
+G2+G3, A3 pending capacity.
