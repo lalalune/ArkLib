@@ -348,3 +348,35 @@ actionable (non-research-blocked) next brick is the multi-center Johnson line-cl
 regime (II) — which would shrink `InteriorCeiling`'s open part from `[0,jump)` to `(Johnson,jump)`.
 This is a genuine sharpening of what the Proximity Prize actually requires, machine-substantiated
 by the existing refutation, with no fabrication.
+## 14. BCIKS20 → regime (II) dependency, traced precisely (honest gap analysis)
+
+Investigated whether the BCIKS20 cone discharges `JohnsonLineCloseBound` (the regime-(II) hook from
+`RegimeIIBridge.lean`). Finding — it does NOT close trivially; the precise chain and its two real
+gaps:
+
+* **What BCIKS20 exports** (`BCIKS20/ListDecoding/CloseInterpolantsCount.lean`):
+  `close_interpolants_card_le_johnson` bounds, at a single good GS parameter `z`, the number of
+  degree-`≤k` codewords agreeing with the line point `u₀+z•u₁` on a set of size `≥ e₀`, by the
+  `Y`-degree budget `D_Y Q = poly(n)` — UNCONDITIONALLY in `z`, given a `ModifiedGuruswami` curve `Q`.
+
+* **GAP 1 (counting-object mismatch):** that theorem counts *codewords close to ONE line point*
+  (the GS per-`z` list size). `JohnsonLineCloseBound` counts *scalars `γ` whose line point is δ-close
+  to SOME codeword*, uniformly over the pencil. These are different quantities; bridging them is the
+  correlated-agreement / joint-agreement step (`BCIKS20/ListDecoding/JointAgreementWiring.lean`,
+  `Agreement.lean`), not a relabelling. The substrate's own T1 (`rs_lineCloseCount_le_johnson`) does
+  the `γ → codeword` injection but only via the single-active-coordinate center — the route
+  `244HwitRefutation` kills past half-Johnson.
+
+* **GAP 2 (BCIKS20 is itself conditional):** the end-to-end BCIKS20 RS curve list size is gated on
+  named in-tree residuals (`RSCurveListSizeResidual`, the `DescendedRset`/`DescendedAgreement`
+  chain — see memory `descendedrset-f10-fix-hcoincide-gated`: the cone is "sorry-free-but-conditional",
+  inseparable-case `pg_RsetDescended = pg_Rset` is FALSE). So even GAP 1's upstream input is not
+  unconditional.
+
+**Honest consequence:** regime (II) is formalizable but NOT a one-brick wire — it requires
+(a) the joint-agreement bridge from per-`z` GS list size to pencil-`γ` count, AND (b) discharging
+BCIKS20's own curve-list-size residuals. `RegimeIIBridge.epsMCA_le_of_johnsonLineCloseBound` remains
+the correct clean reduction (the hook `JohnsonLineCloseBound` IS a literature theorem); but claiming
+BCIKS20 "immediately" discharges it would be an overclaim. The actionable sub-bricks are now named:
+GAP 1 (joint-agreement → γ-count) and GAP 2 (RSCurveListSizeResidual). Regime (III) stays the
+genuine 25-year wall regardless.
