@@ -415,6 +415,170 @@ theorem dual_combo_eq_zero_iff (h6 : Distinct6 a a' b b' c c') (α β γ : F) :
                     rw [mem_quad]; push Not; exact ⟨hib, hib', hic, hic'⟩)]
                 ring
 
+/-- Disjoint pairs have distinct `(e, m)` invariants. -/
+theorem pair_invariants_ne (hab : a ≠ b) (hab' : a ≠ b') :
+    ¬(domain a + domain a' = domain b + domain b'
+      ∧ domain a * domain a' = domain b * domain b') := by
+  rintro ⟨he, hm⟩
+  have h0 : (domain a - domain b) * (domain a - domain b') = 0 := by
+    linear_combination domain a * he - hm
+  rcases mul_eq_zero.mp h0 with h | h
+  · exact hab (domain.injective (by linear_combination h))
+  · exact hab' (domain.injective (by linear_combination h))
+
+/-- The `(e, m)` normal form of the pair quadratic. -/
+theorem pairQuad_eq (x y : F) :
+    pairQuad x y = X ^ 2 - C (x + y) * X + C (x * y) := by
+  rw [pairQuad, map_add, map_mul]
+  ring
+
+/-- **THE PENCIL CRITERION.** A nontrivial dependency of the pair-triangle duals exists
+**iff** the three pair-points `(e, m) = (sum, product)` are collinear. -/
+theorem dependent_iff_collinear (h6 : Distinct6 a a' b b' c c') :
+    (∃ α β γ : F, ¬(α = 0 ∧ β = 0 ∧ γ = 0) ∧
+      ∀ i, α * dualVec domain {a, a', b, b'} i + β * dualVec domain {a, a', c, c'} i
+        + γ * dualVec domain {b, b', c, c'} i = 0)
+      ↔ ((domain b + domain b') - (domain a + domain a'))
+            * ((domain c * domain c') - (domain a * domain a'))
+          = ((domain b * domain b') - (domain a * domain a'))
+            * ((domain c + domain c') - (domain a + domain a')) := by
+  have hform : ∀ α β γ : F,
+      α • pairQuad (domain c) (domain c') + β • pairQuad (domain b) (domain b')
+        + γ • pairQuad (domain a) (domain a')
+      = C (α + β + γ) * X ^ 2
+        + C (-(α * (domain c + domain c') + β * (domain b + domain b')
+            + γ * (domain a + domain a'))) * X
+        + C (α * (domain c * domain c') + β * (domain b * domain b')
+            + γ * (domain a * domain a')) := by
+    intro α β γ
+    simp only [Polynomial.smul_eq_C_mul, pairQuad_eq, map_add, map_mul, map_neg]
+    ring
+  constructor
+  · -- dependency ⟹ collinear
+    rintro ⟨α, β, γ, hnz, hcombo⟩
+    have hpoly := (dual_combo_eq_zero_iff domain h6 α β γ).mp hcombo
+    rw [hform α β γ] at hpoly
+    -- coefficient extraction
+    have hc2 : α + β + γ = 0 := by
+      have h := congrArg (fun p => Polynomial.coeff p 2) hpoly
+      simp only [Polynomial.coeff_add, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
+        Polynomial.coeff_C, Polynomial.coeff_X, Polynomial.coeff_zero] at h
+      norm_num at h
+      linear_combination h
+    have hc1 : α * (domain c + domain c') + β * (domain b + domain b')
+        + γ * (domain a + domain a') = 0 := by
+      have h := congrArg (fun p => Polynomial.coeff p 1) hpoly
+      simp only [Polynomial.coeff_add, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
+        Polynomial.coeff_C, Polynomial.coeff_X, Polynomial.coeff_zero] at h
+      norm_num at h
+      linear_combination -h
+    have hc0 : α * (domain c * domain c') + β * (domain b * domain b')
+        + γ * (domain a * domain a') = 0 := by
+      have h := congrArg (fun p => Polynomial.coeff p 0) hpoly
+      simp only [Polynomial.coeff_add, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
+        Polynomial.coeff_C, Polynomial.coeff_X, Polynomial.coeff_zero] at h
+      norm_num at h
+      linear_combination h
+    -- eliminate γ
+    have hαβ : ¬(α = 0 ∧ β = 0) := by
+      rintro ⟨h1, h2⟩
+      exact hnz ⟨h1, h2, by rw [h1, h2] at hc2; linear_combination hc2⟩
+    have h1' : α * ((domain c + domain c') - (domain a + domain a'))
+        + β * ((domain b + domain b') - (domain a + domain a')) = 0 := by
+      linear_combination hc1 - (domain a + domain a') * hc2
+    have h2' : α * ((domain c * domain c') - (domain a * domain a'))
+        + β * ((domain b * domain b') - (domain a * domain a')) = 0 := by
+      linear_combination hc0 - (domain a * domain a') * hc2
+    by_cases hα : α = 0
+    · have hβ : β ≠ 0 := fun h => hαβ ⟨hα, h⟩
+      rw [hα] at h1' h2'
+      have hb1 : (domain b + domain b') - (domain a + domain a') = 0 := by
+        rcases mul_eq_zero.mp (by linear_combination h1' :
+          β * ((domain b + domain b') - (domain a + domain a')) = 0) with h | h
+        · exact absurd h hβ
+        · exact h
+      have hb2 : (domain b * domain b') - (domain a * domain a') = 0 := by
+        rcases mul_eq_zero.mp (by linear_combination h2' :
+          β * ((domain b * domain b') - (domain a * domain a')) = 0) with h | h
+        · exact absurd h hβ
+        · exact h
+      rw [hb1, hb2]
+      ring
+    · have key : α * (((domain b + domain b') - (domain a + domain a'))
+          * ((domain c * domain c') - (domain a * domain a'))
+          - ((domain b * domain b') - (domain a * domain a'))
+          * ((domain c + domain c') - (domain a + domain a'))) = 0 := by
+        linear_combination ((domain b + domain b') - (domain a + domain a')) * h2'
+          - ((domain b * domain b') - (domain a * domain a')) * h1'
+      rcases mul_eq_zero.mp key with h | h
+      · exact absurd h hα
+      · linear_combination h
+  · -- collinear ⟹ dependency
+    intro hcol
+    by_cases he : (domain a + domain a') = (domain b + domain b')
+        ∧ (domain a + domain a') = (domain c + domain c')
+    · -- all pair-sums equal: use the product differences
+      refine ⟨(domain b * domain b') - (domain a * domain a'),
+        (domain a * domain a') - (domain c * domain c'),
+        (domain c * domain c') - (domain b * domain b'), ?_, ?_⟩
+      · rintro ⟨h1, h2, -⟩
+        have hmab : domain a * domain a' = domain b * domain b' := by
+          linear_combination -h1
+        exact pair_invariants_ne domain h6.hab h6.hab' ⟨he.1, hmab⟩
+      · rw [dual_combo_eq_zero_iff domain h6, hform]
+        have hz2 : ((domain b * domain b') - (domain a * domain a'))
+            + ((domain a * domain a') - (domain c * domain c'))
+            + ((domain c * domain c') - (domain b * domain b')) = 0 := by ring
+        have hz1 : ((domain b * domain b') - (domain a * domain a'))
+              * (domain c + domain c')
+            + ((domain a * domain a') - (domain c * domain c'))
+              * (domain b + domain b')
+            + ((domain c * domain c') - (domain b * domain b'))
+              * (domain a + domain a') = 0 := by
+          linear_combination ((domain c * domain c') - (domain a * domain a')) * he.1
+            + ((domain a * domain a') - (domain b * domain b')) * he.2
+        have hz0 : ((domain b * domain b') - (domain a * domain a'))
+              * (domain c * domain c')
+            + ((domain a * domain a') - (domain c * domain c'))
+              * (domain b * domain b')
+            + ((domain c * domain c') - (domain b * domain b'))
+              * (domain a * domain a') = 0 := by ring
+        rw [hz2, hz1, hz0]
+        simp
+    · -- not all pair-sums equal: use the sum differences
+      refine ⟨(domain b + domain b') - (domain a + domain a'),
+        (domain a + domain a') - (domain c + domain c'),
+        (domain c + domain c') - (domain b + domain b'), ?_, ?_⟩
+      · rintro ⟨h1, h2, -⟩
+        exact he ⟨by linear_combination -h1, by linear_combination h2⟩
+      · rw [dual_combo_eq_zero_iff domain h6, hform]
+        have hz2 : ((domain b + domain b') - (domain a + domain a'))
+            + ((domain a + domain a') - (domain c + domain c'))
+            + ((domain c + domain c') - (domain b + domain b')) = 0 := by ring
+        have hz1 : ((domain b + domain b') - (domain a + domain a'))
+              * (domain c + domain c')
+            + ((domain a + domain a') - (domain c + domain c'))
+              * (domain b + domain b')
+            + ((domain c + domain c') - (domain b + domain b'))
+              * (domain a + domain a') = 0 := by ring
+        have hz0 : ((domain b + domain b') - (domain a + domain a'))
+              * (domain c * domain c')
+            + ((domain a + domain a') - (domain c + domain c'))
+              * (domain b * domain b')
+            + ((domain c + domain c') - (domain b + domain b'))
+              * (domain a * domain a') = 0 := by
+          linear_combination hcol
+        rw [hz2, hz1, hz0]
+        simp
+
+/-! ## Source audit -/
+
+#print axioms dualVec_coord
+#print axioms coord_identity
+#print axioms dual_combo_eq_zero_iff
+#print axioms pair_invariants_ne
+#print axioms dependent_iff_collinear
+
 end Triangle
 
 end ProximityGap.MCADualPencilLaw
