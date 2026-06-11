@@ -34,7 +34,7 @@ the `(k+2)`-fold witness intersection forces every further good scalar onto the 
 * `correlatedAgreementCurves_johnsonClosed_of_window` — **deliverable (b)**: the closed-boundary
   keystone `δ_ε_correlatedAgreementCurves` at `δ = 1 − √ρ` with the explicit positive error
   `max (errorBound (cell)) ((n+1)/|F|)`, from the single window hypothesis;
-* `strictCoeffPolysResidualLarge_of_window` / `strictCoeffPolysResidual_of_window` — the strict
+* `strictCoeffPolysLargeResidual_of_window` / `strictCoeffPolysResidual_of_window` — the strict
   §5 residuals on the window (feeding the #301 checking bridge non-small-field);
 * `correlatedAgreement_affine_curves_of_window` — `δ_ε_correlatedAgreementCurves` at any
   `δ < 1 − √ρ` on the window, with error `errorBound δ deg domain`;
@@ -322,12 +322,12 @@ theorem correlatedAgreementCurves_johnsonClosed_of_window
 /-! ## §5 — the strict residual family on the window (the #301 checking-bridge feed) -/
 
 /-- The large-sector strict residual on the window, from the producer. -/
-theorem strictCoeffPolysResidualLarge_of_window {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+theorem strictCoeffPolysLargeResidual_of_window {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hdeg : 0 < deg)
     (hwin : curveUDWindow k deg (Fintype.card ι) δ) :
-    ProximityGap.StrictCoeffPolysResidualLarge
+    ProximityGap.StrictCoeffPolysLargeResidual
       (k := k) (deg := deg) (domain := domain) (δ := δ) :=
-  UnifiedExtractionTarget.strictCoeffPolysResidualLarge_of_producer
+  UnifiedExtractionTarget.strictCoeffPolysLargeResidual_of_producer
     (unifiedProducer_of_window hdeg hwin)
 
 /-- The full strict §5 residual on the window: large sector by the producer, small sector by
@@ -338,7 +338,7 @@ theorem strictCoeffPolysResidual_of_window {k deg : ℕ} {domain : ι ↪ F} {δ
     ProximityGap.StrictCoeffPolysResidual
       (k := k) (deg := deg) (domain := domain) (δ := δ) :=
   ProximityGap.strictCoeffPolysResidual_of_large
-    (strictCoeffPolysResidualLarge_of_window hdeg hwin)
+    (strictCoeffPolysLargeResidual_of_window hdeg hwin)
 
 /-- **Correlated agreement for affine curves on the window, strict radius**: at any
 `δ < 1 − √ρ` satisfying the width-`k` window, with error `errorBound δ deg domain`.
@@ -398,7 +398,7 @@ end ArkLib
 #print axioms ArkLib.UnifiedProducerWindowGlue.exists_curve_tuple_of_window
 #print axioms ArkLib.UnifiedProducerWindowGlue.unifiedProducer_of_window
 #print axioms ArkLib.UnifiedProducerWindowGlue.correlatedAgreementCurves_johnsonClosed_of_window
-#print axioms ArkLib.UnifiedProducerWindowGlue.strictCoeffPolysResidualLarge_of_window
+#print axioms ArkLib.UnifiedProducerWindowGlue.strictCoeffPolysLargeResidual_of_window
 #print axioms ArkLib.UnifiedProducerWindowGlue.strictCoeffPolysResidual_of_window
 #print axioms ArkLib.UnifiedProducerWindowGlue.correlatedAgreement_affine_curves_of_window
 #print axioms ArkLib.UnifiedProducerWindowGlue.curveUDWindow_all_of_floor_eq_zero

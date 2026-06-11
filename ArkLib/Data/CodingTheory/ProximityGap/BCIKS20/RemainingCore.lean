@@ -13,7 +13,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardStrictInteriorRefutatio
 The [BCIKS20] Theorem 1.5 keystone (`correlatedAgreement_affine_curves`) was reduced to two
 open obligations by two independent passes:
 
-* **the large-sector strict-coefficient residual** (`StrictCoeffPolysResidualLarge`,
+* **the large-sector strict-coefficient residual** (`StrictCoeffPolysLargeResidual`,
   `StrictCoeffLargeReduction.lean`): the §5 strict-Johnson extraction restricted to good sets of
   size `> k + 1` — the complementary sector is *free* (pure Lagrange interpolation; the cutoff
   is exact, probed in `scripts/probes/probe_strict_coeff_smallset.py`, 1861/2000 generic
@@ -30,7 +30,7 @@ open obligations by two independent passes:
 This file unifies the two into a single named Prop and a single consuming theorem:
 
 * `BCIKS20RemainingCore k deg domain δ δ'` — the conjunction
-  `StrictCoeffPolysResidualLarge δ ∧ StrictCoeffPolysResidualLarge δ'`: the large-sector
+  `StrictCoeffPolysLargeResidual δ ∧ StrictCoeffPolysLargeResidual δ'`: the large-sector
   residual at the target radius `δ` (carrying the strict-interior regime) and at the
   floor-matched working radius `δ'` (carrying the corrected boundary route).  The corrected
   boundary threshold *reduces* to the second conjunct: at a strict radius the §6.2 boundary
@@ -70,9 +70,9 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 /-- **The one remaining Prop of issue #304.**  The conjunction of the two reduced open
 obligations behind the [BCIKS20] Theorem 1.5 keystone:
 
-1. `StrictCoeffPolysResidualLarge` at the target radius `δ` — the §5 strict-Johnson
+1. `StrictCoeffPolysLargeResidual` at the target radius `δ` — the §5 strict-Johnson
    extraction on large good sets (O70: the small sector is free Lagrange interpolation);
-2. `StrictCoeffPolysResidualLarge` at the working radius `δ'` — intended floor-matched and
+2. `StrictCoeffPolysLargeResidual` at the working radius `δ'` — intended floor-matched and
    strictly below the Johnson boundary, where it carries the **corrected boundary threshold**
    (O76/O78): the §6.2 boundary residual is vacuous at strict radii, so this conjunct alone
    produces the full §5 statement at `δ'`, which floor-transports to the closed boundary with
@@ -82,8 +82,8 @@ Producers discharge `#304` by proving exactly this Prop; consumers obtain Theore
 `correlatedAgreement_of_remainingCore`.  In the strict interior, instantiate with `δ' = δ`
 (the floor match is `rfl`) and the two conjuncts coincide. -/
 def BCIKS20RemainingCore (k deg : ℕ) (domain : ι ↪ F) (δ δ' : ℝ≥0) : Prop :=
-  StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain) (δ := δ) ∧
-    StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain) (δ := δ')
+  StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain) (δ := δ) ∧
+    StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain) (δ := δ')
 
 omit [Nonempty ι] [DecidableEq ι] in
 /-- `δ_ε_correlatedAgreementCurves` is antitone in the error parameter: weakening `ε` upward

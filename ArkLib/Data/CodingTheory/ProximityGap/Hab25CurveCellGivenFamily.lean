@@ -10,7 +10,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellStrictExtraction
 # Cell cover and heavy-cell attribution for a GIVEN decode family (#304, SK4 brick)
 
 `exists_curve_cell_production` decomposes the bad scalars into cells for a decode family
-of its OWN choosing.  The share-form residual (`StrictCoeffPolysResidualShare`) quantifies
+of its OWN choosing.  The share-form residual (`StrictCoeffPolysShareResidual`) quantifies
 over an ARBITRARY decoded family `P`, so the production shape cannot feed it directly.
 This file closes that gap at the `McaDecodeCurve` interface:
 
@@ -29,7 +29,7 @@ This file closes that gap at the `McaDecodeCurve` interface:
   family on all of `G′`.
 
 This is the `∀ P` attribution package the share producer needs: what remains between this
-and `StrictCoeffPolysResidualShare` is the per-rich-cell surface supply
+and `StrictCoeffPolysShareResidual` is the per-rich-cell surface supply
 (`(Y − C w) ∣ R` with degree bounds — the S10-converse lane), the heavy-coordinate
 matching sets, and the `L`-ary Z-degree-bounded interpolant budget for `T`.
 
@@ -190,7 +190,7 @@ whenever `T < |G|`, some irreducible factor `R` of `Q₀` carries a `1/#factors(
 of `G` — a subset `G′ ⊆ G` with `|G| ≤ T + #factors(Q₀)·|G′|` on which the GIVEN family
 divides `R`'s specializations.  This is exactly the input shape of the SK1/SK2 strict
 extraction (`strict_coeffPolys_of_cell`) and the conclusion shape of
-`StrictCoeffPolysResidualShare` (share `ℓ = #factors(Q₀)`, budget `T`). -/
+`StrictCoeffPolysShareResidual` (share `ℓ = #factors(Q₀)`, budget `T`). -/
 theorem exists_heavy_factor_cell_of_given_family {n k m L : ℕ} [NeZero n]
     (domain : Fin n ↪ F₀)
     (u : WordStack F₀ (Fin L) (Fin n)) (δ : ℝ≥0) (T : ℕ)

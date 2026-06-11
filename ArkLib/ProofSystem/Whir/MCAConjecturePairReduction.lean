@@ -41,16 +41,16 @@ no comparison or plumbing hypotheses left:
 * `decode_family_affine_pinning_of_strictCoeffPolysResidual` — the local bridge from the
   BCIKS20 `StrictCoeffPolysResidual` surface to the affine-pinning witness consumed by
   the capture kernel.
-* `decode_family_affine_pinning_of_strictCoeffPolysResidualLarge` — the same bridge from
+* `decode_family_affine_pinning_of_strictCoeffPolysLargeResidual` — the same bridge from
   the large-sector residual, the actual §5 core after the small-good-set reduction.
 * `prob_close_curve_gt_of_cell_card_gt` — the inverse threshold adapter: a large cell inside
   `RS_goodCoeffsCurve` yields the probability premise needed by the strict residual.
 * `hsteps57_of_strictCoeffPolysResidual` — the same strict-residual bridge packaged in
   Claim-1's literal capture-above-threshold shape.
-* `hsteps57_of_strictCoeffPolysResidualLarge` — the large-sector form in Claim-1's
+* `hsteps57_of_strictCoeffPolysLargeResidual` — the large-sector form in Claim-1's
   literal capture-above-threshold shape.
 * `hsteps57_of_strictCoeffPolysResidual_cell_card_gt` /
-  `hsteps57_of_strictCoeffPolysResidualLarge_cell_card_gt` — the same Claim-1 capture
+  `hsteps57_of_strictCoeffPolysLargeResidual_cell_card_gt` — the same Claim-1 capture
   surfaces with the probability premise discharged by a concrete large cell.
 * `decode_family_affine_pinning_of_rawGSCargo` / `hsteps57_of_rawGSCargo` — the same
   bridge from the raw GS cargo bundle produced by the local-series/Hensel lane.
@@ -366,9 +366,9 @@ omit [Nonempty ι] [DecidableEq ι] in
 `StrictCoeffLargeReduction` proves that the full strict coefficient residual is equivalent
 to this large-good-set restriction; this wrapper exposes the actual §5 core directly on the
 K4 affine-pinning surface. -/
-theorem decode_family_affine_pinning_of_strictCoeffPolysResidualLarge
+theorem decode_family_affine_pinning_of_strictCoeffPolysLargeResidual
     {deg : ℕ} [NeZero deg] (φ : ι ↪ F) {δ : ℝ≥0}
-    (hLarge : _root_.ProximityGap.StrictCoeffPolysResidualLarge
+    (hLarge : _root_.ProximityGap.StrictCoeffPolysLargeResidual
       (k := 1) (deg := deg) (domain := φ) (δ := δ))
     (u : Code.WordStack F (Fin 2) ι)
     (hprob :
@@ -435,9 +435,9 @@ theorem hsteps57_of_strictCoeffPolysResidual
 This is the producer-facing form after the small-good-set interpolation sector has been
 removed: the remaining large-sector §5 residual directly implies Claim-1's
 capture-above-threshold hypothesis for a selected cell. -/
-theorem hsteps57_of_strictCoeffPolysResidualLarge
+theorem hsteps57_of_strictCoeffPolysLargeResidual
     {deg T : ℕ} [NeZero deg] (φ : ι ↪ F) {δ : ℝ≥0}
-    (hLarge : _root_.ProximityGap.StrictCoeffPolysResidualLarge
+    (hLarge : _root_.ProximityGap.StrictCoeffPolysLargeResidual
       (k := 1) (deg := deg) (domain := φ) (δ := δ))
     (u : Code.WordStack F (Fin 2) ι)
     (hprob :
@@ -589,9 +589,9 @@ theorem hsteps57_of_strictCoeffPolysResidual_cell_card_gt
 /-- **Claim-1 capture from the large-sector residual plus a large cell.**  This is the
 producer-facing form of the large-cell adapter after the small-good-set sector has been
 removed. -/
-theorem hsteps57_of_strictCoeffPolysResidualLarge_cell_card_gt
+theorem hsteps57_of_strictCoeffPolysLargeResidual_cell_card_gt
     {deg T : ℕ} [NeZero deg] (φ : ι ↪ F) {δ : ℝ≥0}
-    (hLarge : _root_.ProximityGap.StrictCoeffPolysResidualLarge
+    (hLarge : _root_.ProximityGap.StrictCoeffPolysLargeResidual
       (k := 1) (deg := deg) (domain := φ) (δ := δ))
     (u : Code.WordStack F (Fin 2) ι)
     (hJ :
@@ -706,8 +706,8 @@ theorem decode_family_affine_pinning_of_rawGSCargo_large
         δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t, (P z).eval ∘ φ) ≤ δ) :
     ∃ v₀ v₁ : F[X], v₀.natDegree < deg ∧ v₁.natDegree < deg ∧
       ∀ γ ∈ Ecell, P γ = v₀ + Polynomial.C γ * v₁ := by
-  exact decode_family_affine_pinning_of_strictCoeffPolysResidualLarge (φ := φ)
-    (ArkLib.RawGS304.strictCoeffPolysResidualLarge_of_rawGSCargo
+  exact decode_family_affine_pinning_of_strictCoeffPolysLargeResidual (φ := φ)
+    (ArkLib.RawGS304.strictCoeffPolysLargeResidual_of_rawGSCargo
       (k := 1) (deg := deg) (domain := φ) (δ := δ) hInput)
     u hprob hJ hsqrt P Ecell hsubset hPgood
 
@@ -1068,13 +1068,13 @@ end MutualCorrAgreement
 #print axioms MutualCorrAgreement.mca_johnson_bound_CONJECTURE_pair_of_decode_family_window
 #print axioms MutualCorrAgreement.mca_johnson_bound_CONJECTURE_pair_of_fixed_linear_factor_cells
 #print axioms MutualCorrAgreement.decode_family_affine_pinning_of_strictCoeffPolysResidual
-#print axioms MutualCorrAgreement.decode_family_affine_pinning_of_strictCoeffPolysResidualLarge
+#print axioms MutualCorrAgreement.decode_family_affine_pinning_of_strictCoeffPolysLargeResidual
 #print axioms MutualCorrAgreement.prob_close_curve_gt_of_cell_card_gt
 #print axioms MutualCorrAgreement.decode_family_affine_pinning_of_strictCoeffPolysResidual_cell_card_gt
 #print axioms MutualCorrAgreement.hsteps57_of_strictCoeffPolysResidual
-#print axioms MutualCorrAgreement.hsteps57_of_strictCoeffPolysResidualLarge
+#print axioms MutualCorrAgreement.hsteps57_of_strictCoeffPolysLargeResidual
 #print axioms MutualCorrAgreement.hsteps57_of_strictCoeffPolysResidual_cell_card_gt
-#print axioms MutualCorrAgreement.hsteps57_of_strictCoeffPolysResidualLarge_cell_card_gt
+#print axioms MutualCorrAgreement.hsteps57_of_strictCoeffPolysLargeResidual_cell_card_gt
 #print axioms MutualCorrAgreement.decode_family_affine_pinning_of_rawGSCargo
 #print axioms MutualCorrAgreement.decode_family_affine_pinning_of_rawGSCargo_large
 #print axioms MutualCorrAgreement.hsteps57_of_rawGSCargo

@@ -58,7 +58,7 @@ prover but a *forwarding shell* verifier (`verify := pure true`). This file buil
   the protocol-level checking bridge.
 * `strictCoeffPolysResidual_all_of_large` plus the `…_large` front doors — the #304-aligned
   route: STIR may consume the honest large-sector residual family
-  (`StrictCoeffPolysResidualLarge`) directly; the small-good-set sector is discharged by the
+  (`StrictCoeffPolysLargeResidual`) directly; the small-good-set sector is discharged by the
   landed Lagrange interpolation reduction.
 * `…_card_le_e7` variants — the same discharge through the sharp vacuous-regime bound
   `|F| ≤ deg² * 10⁷`.
@@ -1053,7 +1053,7 @@ interpolation case proven in `StrictCoeffLargeReduction`. -/
 theorem strictCoeffPolysResidual_all_of_large [DecidableEq ι]
     (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
     (hLarge : ∀ k : ℕ, 0 < k →
-      ProximityGap.StrictCoeffPolysResidualLarge (ι := ι) (F := F)
+      ProximityGap.StrictCoeffPolysLargeResidual (ι := ι) (F := F)
         (k := k) (deg := deg) (domain := φ) (δ := δ)) :
     ∀ k : ℕ, 0 < k →
       ProximityGap.StrictCoeffPolysResidual (ι := ι) (F := F)
@@ -1098,7 +1098,7 @@ theorem stirCheckingRbrSoundness_of_large [DecidableEq ι]
     (ProxGapBound : Fin (M + 1) → ℝ≥0)
     (hBridge : stirCheckingCABridge M φ deg δ ε_rbr ProxGapBound ProxGapBound)
     (hLarge : ∀ k : ℕ, 0 < k →
-      ProximityGap.StrictCoeffPolysResidualLarge (ι := ι) (F := F)
+      ProximityGap.StrictCoeffPolysLargeResidual (ι := ι) (F := F)
         (k := k) (deg := deg) (domain := φ) (δ := δ)) :
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
@@ -1284,7 +1284,7 @@ theorem stirCheckingIOP_isSecureWithGap_of_large [DecidableEq ι]
     (ProxGapBound : Fin (M + 1) → ℝ≥0)
     (hBridge : stirCheckingCABridge M φ deg δ ε_rbr ProxGapBound ProxGapBound)
     (hLarge : ∀ k : ℕ, 0 < k →
-      ProximityGap.StrictCoeffPolysResidualLarge (ι := ι) (F := F)
+      ProximityGap.StrictCoeffPolysLargeResidual (ι := ι) (F := F)
         (k := k) (deg := deg) (domain := φ) (δ := δ)) :
     IsSecureWithGap (stirRelation deg φ 0) (stirRelation deg φ δ) ε_rbr
       (stirCheckingIOP M φ deg) :=
@@ -1485,7 +1485,7 @@ theorem stir_rbr_soundness_of_checkingIOP_large
       (fun _ => ({ε_fold} ∪ {ε_fin} ∪ univ.image ε_out ∪ univ.image ε_shift).max' (by simp))
       ProxGapBound ProxGapBound)
     (hLarge : ∀ k : ℕ, 0 < k →
-      ProximityGap.StrictCoeffPolysResidualLarge (ι := ι 0) (F := F)
+      ProximityGap.StrictCoeffPolysLargeResidual (ι := ι 0) (F := F)
         (k := k) (deg := degree ι P 0) (domain := P.φ 0) (δ := Dist.δ 0))
     (hfold : ε_fold ≤ proximityError F (P.deg / P.foldingParam 0)
       (rate (code (P.φ 0) P.deg)) (Dist.δ 0) (P.repeatParam 0))
@@ -1681,7 +1681,7 @@ theorem stir_main_of_checkingIOP_large
     (ProxGapBound : Fin (M + 1) → ℝ≥0)
     (hBridge : stirCheckingCABridge M φ degree δ ε_rbr ProxGapBound ProxGapBound)
     (hLarge : ∀ k' : ℕ, 0 < k' →
-      ProximityGap.StrictCoeffPolysResidualLarge (ι := ι) (F := F)
+      ProximityGap.StrictCoeffPolysLargeResidual (ι := ι) (F := F)
         (k := k') (deg := degree) (domain := φ) (δ := δ))
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))

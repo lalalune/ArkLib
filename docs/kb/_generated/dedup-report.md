@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2153 files, 27661 declarations
+- `ArkLib` — 2153 files, 27641 declarations
 
-## Same short-name across multiple files (807 groups)
+## Same short-name across multiple files (799 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -196,7 +196,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `liftComp_optionT_pure` (5 declarations, 5 files)
 
 - `lemma StirIOP.Round3.liftComp_optionT_pure` [ArkLib/ProofSystem/Stir/CheckedFinalBlock.lean:277](../../../ArkLib/ProofSystem/Stir/CheckedFinalBlock.lean#L277) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional; the WHIR `CheckedVerifier` helper).
-- `lemma Whir302Checked.liftComp_optionT_pure` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:800](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L800) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional).
+- `lemma Whir302Checked.liftComp_optionT_pure` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:801](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L801) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional).
 - `lemma Whir302.liftComp_optionT_pure` [ArkLib/ProofSystem/Whir/ProtocolCompleteness.lean:66](../../../ArkLib/ProofSystem/Whir/ProtocolCompleteness.lean#L66) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional).
 - `lemma Whir302RBR.liftComp_optionT_pure` [ArkLib/ProofSystem/Whir/ThresholdKSF.lean:413](../../../ArkLib/ProofSystem/Whir/ThresholdKSF.lean#L413) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional).
 - `lemma Fri.Spec.Completeness.liftComp_optionT_pure` [ArkLib/ToMathlib/FriCompletePerRound.lean:112](../../../ArkLib/ToMathlib/FriCompletePerRound.lean#L112) — Spec-lifting an `OptionT`-level `pure` is `pure` (definitional); cf. the WHIR sibling `liftComp_opti
@@ -368,6 +368,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem GSInterp.exists_ne_zero_map_eq_zero_of_finrank_lt` [ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean:37](../../../ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean#L37) — (no docstring)
 - `theorem R15.exists_ne_zero_map_eq_zero_of_finrank_lt` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean:51](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean#L51) — (no docstring)
 - `theorem R15.exists_ne_zero_map_eq_zero_of_finrank_lt` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean:51](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean#L51) — (no docstring)
+
+### `getElem` (4 declarations, 4 files)
+
+- `theorem Array.getElem` [ArkLib/Data/Array/Lemmas.lean:63](../../../ArkLib/Data/Array/Lemmas.lean#L63) — (no docstring)
+- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:88](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L88) — Shifting a tracked slot through `eraseIdx` of a different index.
+- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:137](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L137) — Shifting a tracked slot through `eraseIdx` of a different index.
+- `theorem DuplexSpongeFS.EagerLazyDS.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:959](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L959) — The `getElem?` position map of `eraseIdx`: deleting index `i` shifts later positions by one, for all
 
 ### `gsSupport` (4 declarations, 4 files)
 
@@ -737,13 +744,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `finalSumcheckKStateProp` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1649](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1649) — (no docstring)
+- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1659](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1659) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKStateProp` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1359](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1359) — (no docstring)
 - `def RingSwitching.SumcheckPhase.finalSumcheckKStateProp` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1536](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1536) — (no docstring)
 
 ### `finalSumcheckKnowledgeStateFunction` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1680](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1680) — (no docstring)
+- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1690](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1690) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1399](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1399) — The knowledge state function for the final sumcheck step
 - `def RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1573](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1573) — The knowledge state function for the final sumcheck step
 
@@ -761,7 +768,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `finalSumcheckOracleVerifier_rbrKnowledgeSoundness` (3 declarations, 3 files)
 
-- `theorem Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1882](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1882) — (no docstring)
+- `theorem Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1892](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1892) — (no docstring)
 - `theorem Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1620](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1620) — Round-by-round knowledge soundness for the final sumcheck step
 - `theorem RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1706](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1706) — Round-by-round knowledge soundness for the final sumcheck step
 
@@ -773,7 +780,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `finalSumcheckRbrExtractor` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1606](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1606) — (no docstring)
+- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1616](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1616) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1320](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1320) — The round-by-round extractor for the final sumcheck step
 - `def RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1516](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1516) — The round-by-round extractor for the final sumcheck step
 
@@ -1065,12 +1072,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Concrete.zeta` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean:209](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean#L209) — The explicit primitive `2^m`-th root of unity `exp(2πi/2^m)` in `ℂ`.
 - `def ArkLib.ProximityGap.SubgroupQuadraticSecondMoment.zeta` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupQuadraticSecondMoment.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupQuadraticSecondMoment.lean#L54) — The quadratic subgroup Gauss sum at frequency `b`: `ζ_b = ∑_{x∈G} ψ(b·x²)`.
 
-### `MarkedCurveDecodable` (3 declarations, 3 files)
-
-- `def ProximityGap.CurveDec.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/CurveDecodability.lean:121](../../../ArkLib/Data/CodingTheory/ProximityGap/CurveDecodability.lean#L121) — **[Jo26] Definition 5.1: marked curve decodability.**  Same data, but quantified over an arbitrary *
-- `def ProximityGap.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/GG25MarkedCurve.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/GG25MarkedCurve.lean#L59) — **[Jo26] Definition 5.1 (marked curve decodability).** For every stack, every codeword-valued `f`, a
-- `def ProximityGap.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/Jo26MarkedCurveDecodability.lean:50](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26MarkedCurveDecodability.lean#L50) — **[Jo26] Definition 5.1 (marked curve decodability).** `C` is marked `(ℓ, δ, a, b)`-curve-decodable
-
 ### `card_le_natDegreeY_of_sub_C_dvd` (3 declarations, 3 files)
 
 - `theorem R14.card_le_natDegreeY_of_sub_C_dvd` [ArkLib/Data/CodingTheory/ProximityGap/GSYDegreeListCap.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/GSYDegreeListCap.lean#L45) — **Y-degree list cap.**  If `Q ≠ 0` in `(F[X])[Y]` and every `f` in the finite set `S ⊆ F[X]` gives a
@@ -1100,12 +1101,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem GSRootOrder.factor_of_agreement` [ArkLib/Data/CodingTheory/ProximityGap/GSRootOrderStep.lean:52](../../../ArkLib/Data/CodingTheory/ProximityGap/GSRootOrderStep.lean#L52) — **The root-order / factor step (Sudan, multiplicity 1).**  Let `Q : (F[X])[Y]` satisfy the `(1, k−1)
 - `theorem R15.factor_of_agreement` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean:233](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean#L233) — **Root-order / factor step (multiplicity 1).** `≥ D` vanishing points of the degree-`< D` univariate
 - `theorem R15.factor_of_agreement` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean:233](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean#L233) — **Root-order / factor step (multiplicity 1).** `≥ D` vanishing points of the degree-`< D` univariate
-
-### `getElem` (3 declarations, 3 files)
-
-- `theorem Array.getElem` [ArkLib/Data/Array/Lemmas.lean:63](../../../ArkLib/Data/Array/Lemmas.lean#L63) — (no docstring)
-- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:88](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L88) — Shifting a tracked slot through `eraseIdx` of a different index.
-- `lemma DuplexSpongeFS.Sponge316.getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:137](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L137) — Shifting a tracked slot through `eraseIdx` of a different index.
 
 ### `pins` (3 declarations, 3 files)
 
@@ -1558,7 +1553,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `FinalSumcheckWit` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.FinalSumcheckWit` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1600](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1600) — (no docstring)
+- `def Binius.BinaryBasefold.CoreInteraction.FinalSumcheckWit` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1610](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1610) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.FinalSumcheckWit` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1314](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1314) — (no docstring)
 
 ### `G_eighth_roots` (2 declarations, 2 files)
@@ -1595,6 +1590,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem MvPolynomial.MLE_eval_eq_sum_eqTilde` [ArkLib/Data/MvPolynomial/Multilinear.lean:319](../../../ArkLib/Data/MvPolynomial/Multilinear.lean#L319) — **MLE evaluation as an eq-weighted sum over the hypercube.**  Evaluating the multilinear extension a
 - `lemma RingSwitching.MLE_eval_eq_sum_eqTilde` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1079](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1079) — **MLE evaluation as an `eq̃`-weighted hypercube sum.** Evaluating the multilinear extension `MLE f`
+
+### `MarkedCurveDecodable` (2 declarations, 2 files)
+
+- `def ProximityGap.CurveDec.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/CurveDecodability.lean:121](../../../ArkLib/Data/CodingTheory/ProximityGap/CurveDecodability.lean#L121) — **[Jo26] Definition 5.1: marked curve decodability.**  Same data, but quantified over an arbitrary *
+- `def ProximityGap.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/GG25MarkedCurve.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/GG25MarkedCurve.lean#L59) — **[Jo26] Definition 5.1 (marked curve decodability).** For every stack, every codeword-valued `f`, a
 
 ### `MessageIdx` (2 declarations, 2 files)
 
@@ -1651,11 +1651,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def ArkLib.ProofSystem.Stir.ErrorAccumulation.PerRoundProximityGap` [ArkLib/ProofSystem/Stir/ErrorAccumulation.lean:307](../../../ArkLib/ProofSystem/Stir/ErrorAccumulation.lean#L307) — The keystone, abstracted. `PerRoundProximityGap e ProxGapBound` says the accounting per-round error
 - `def Core2Keystone.PerRoundProximityGap` [ArkLib/ProofSystem/Whir/KeystoneReduction.lean:52](../../../ArkLib/ProofSystem/Whir/KeystoneReduction.lean#L52) — Verbatim copy of `Issue24FRISTIR.PerRoundProximityGap` (`Stir/SoundnessAccumulation.lean:253`): the
-
-### `Pr_badStack_eq_one` (2 declarations, 2 files)
-
-- `theorem ProximityGap.MCAGSPrizeRefutation.Pr_badStack_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:64](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L64) — **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
-- `theorem Pr_badStack_eq_one` [ArkLib/MCAGSRefutationCore.lean:63](../../../ArkLib/MCAGSRefutationCore.lean#L63) — **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
 
 ### `Proof` (2 declarations, 2 files)
 
@@ -1806,7 +1801,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `askList` (2 declarations, 2 files)
 
 - `def StirIOP.MultiRound.askList` [ArkLib/ProofSystem/Stir/CheckingVerifier.lean:157](../../../ArkLib/ProofSystem/Stir/CheckingVerifier.lean#L157) — Monadic map over a list with definitional `nil`/`cons` equations (avoiding `List.mapM`'s tail-recurs
-- `def Whir302Checked.askList` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:103](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L103) — Monadic map over a list with definitional `nil`/`cons` equations (avoiding `List.mapM`'s tail-recurs
+- `def Whir302Checked.askList` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:102](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L102) — Monadic map over a list with definitional `nil`/`cons` equations (avoiding `List.mapM`'s tail-recurs
 
 ### `askMsg` (2 declarations, 2 files)
 
@@ -1842,21 +1837,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def Issue29Ring.badPolyAgreement` [ArkLib/ProofSystem/RingSwitching/TraceTensorAlgebra.lean:39](../../../ArkLib/ProofSystem/RingSwitching/TraceTensorAlgebra.lean#L39) — **Named per-round residual = the weakened-KState bad event.** The prover message `p` differs from th
 - `def KStateWeaken.badPolyAgreement` [ArkLib/ToMathlib/KStateWeaken.lean:70](../../../ArkLib/ToMathlib/KStateWeaken.lean#L70) — **Named per-round residual (weakened KState surface).** `badPolyAgreement r p q` is the bad event to
-
-### `badStack` (2 declarations, 2 files)
-
-- `def ProximityGap.MCAGSPrizeRefutation.badStack` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:29](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L29) — The adversarial stack: row 0 = `w₀`, row 1 = `0`.
-- `def badStack` [ArkLib/MCAGSRefutationCore.lean:28](../../../ArkLib/MCAGSRefutationCore.lean#L28) — The adversarial stack: row 0 = `w₀`, row 1 = `0`.
-
-### `badStack_one` (2 declarations, 2 files)
-
-- `theorem ProximityGap.MCAGSPrizeRefutation.badStack_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L32) — (no docstring)
-- `theorem badStack_one` [ArkLib/MCAGSRefutationCore.lean:31](../../../ArkLib/MCAGSRefutationCore.lean#L31) — (no docstring)
-
-### `badStack_zero` (2 declarations, 2 files)
-
-- `theorem ProximityGap.MCAGSPrizeRefutation.badStack_zero` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:31](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L31) — (no docstring)
-- `theorem badStack_zero` [ArkLib/MCAGSRefutationCore.lean:30](../../../ArkLib/MCAGSRefutationCore.lean#L30) — (no docstring)
 
 ### `badSumcheckEventProp` (2 declarations, 2 files)
 
@@ -2254,11 +2234,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ProximityGap.epsCA_le_one` [ArkLib/Data/CodingTheory/ProximityGap/Errors.lean:247](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean#L247) — The CA error is bounded by the total probability mass.
 - `theorem CodingTheory.Bridge.epsCA_le_one` [ArkLib/ToMathlib/BridgeListDecodingCA.lean:65](../../../ArkLib/ToMathlib/BridgeListDecodingCA.lean#L65) — **`ε_ca ≤ 1`.** The correlated-agreement error is a supremum of values each of which is either `0` o
 
-### `epsMCAgs_badList_eq_one` (2 declarations, 2 files)
-
-- `theorem ProximityGap.MCAGSPrizeRefutation.epsMCAgs_badList_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L82) — **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
-- `theorem epsMCAgs_badList_eq_one` [ArkLib/MCAGSRefutationCore.lean:81](../../../ArkLib/MCAGSRefutationCore.lean#L81) — **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
-
 ### `epsRbr` (2 declarations, 2 files)
 
 - `def Core2Keystone.epsRbr` [ArkLib/ProofSystem/Whir/KeystoneReduction.lean:72](../../../ArkLib/ProofSystem/Whir/KeystoneReduction.lean#L72) — The WHIR per-challenge RBR error (verbatim from `Whir/RbrBudgetAccounting.lean:74`).
@@ -2598,10 +2573,10 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `hybEncodedMessagesBefore` (6 declarations, 2 files)
 
 - `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:224](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L224) — `hybEncodedMessagesBefore?` is the walk applied to the flattened prefix.
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:307](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L307) — **H23-2.** `hybEncodedMessagesBefore?` succeeds whenever every encoded block before the round lies i
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:348](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L348) — **H23-2 glue.** On any backtrack output passing the simulator's image guard, the `Hyb₃` codec bridge
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:422](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L422) — **H23-3.** On success of `hybEncodedMessagesBefore?`, every decoded message re-serializes to the cor
-- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:436](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L436) — **H23-4.** Two encoded prefixes decoding (via `hybEncodedMessagesBefore?`) to the same message prefi
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:301](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L301) — **H23-2.** `hybEncodedMessagesBefore?` succeeds whenever every encoded block before the round lies i
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:342](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L342) — **H23-2 glue.** On any backtrack output passing the simulator's image guard, the `Hyb₃` codec bridge
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:416](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L416) — **H23-3.** On success of `hybEncodedMessagesBefore?`, every decoded message re-serializes to the cor
+- `lemma DuplexSpongeFS.Hyb23Bricks.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:430](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L430) — **H23-4.** Two encoded prefixes decoding (via `hybEncodedMessagesBefore?`) to the same message prefi
 - `def DuplexSpongeFS.TraceTransform.hybEncodedMessagesBefore` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean:363](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean#L363) — Public wrapper for the Section 5.8 `φ⁻¹` parser from the encoded-message tuple returned by `BackTrac
 
 ### `id_isHVZK` (2 declarations, 2 files)
@@ -2652,7 +2627,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `inputAns` (2 declarations, 2 files)
 
 - `def StirIOP.MultiRound.inputAns` [ArkLib/ProofSystem/Stir/CheckingVerifier.lean:180](../../../ArkLib/ProofSystem/Stir/CheckingVerifier.lean#L180) — The honest answer of the input-codeword oracle (ascribed at `F`).
-- `def Whir302Checked.inputAns` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:133](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L133) — The honest answer of the public input oracle.
+- `def Whir302Checked.inputAns` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:132](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L132) — The honest answer of the public input oracle.
 
 ### `instChalFintype` (2 declarations, 2 files)
 
@@ -2886,7 +2861,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `length_mainFoldedOracleMessageIdx` (2 declarations, 2 files)
 
-- `lemma Whir302Checked.length_mainFoldedOracleMessageIdx` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:77](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L77) — (no docstring)
+- `lemma Whir302Checked.length_mainFoldedOracleMessageIdx` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:76](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L76) — Payload length of the folded-oracle message slot `i` is the cardinality of the next paper evaluation
 - `lemma Whir302RBR.length_mainFoldedOracleMessageIdx` [ArkLib/ProofSystem/Whir/ThresholdKSF.lean:192](../../../ArkLib/ProofSystem/Whir/ThresholdKSF.lean#L192) — Payload length of the folded-oracle message slot `i` is the cardinality of the next evaluation domai
 
 ### `liftContext_completeness` (2 declarations, 2 files)
@@ -2976,12 +2951,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `masterKStateCore` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.masterKStateCore` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1688](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1688) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
+- `def Binius.BinaryBasefold.masterKStateCore` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1683](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1683) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
 - `def RingSwitching.masterKStateCore` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:459](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L459) — (no docstring)
 
 ### `masterKStateProp` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1702](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1702) — (no docstring)
+- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1697](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1697) — (no docstring)
 - `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:467](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L467) — (no docstring)
 
 ### `mcaBad` (2 declarations, 2 files)
@@ -2993,11 +2968,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def ProximityGap.mcaBadCount` [ArkLib/Data/CodingTheory/ProximityGap/MCABadCount.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/MCABadCount.lean#L45) — The number of bad scalars `γ : F` realising the MCA event for the pair `(u₀, u₁)` at radius `δ`.
 - `def R15MCAGap.mcaBadCount` [ArkLib/Data/CodingTheory/ProximityGap/MCABadScalarSpreadBridge.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/MCABadScalarSpreadBridge.lean#L96) — The number of MCA-bad scalars on the pencil through `f1` in direction `f2`.
-
-### `mcaEventGSrow_badStack` (2 declarations, 2 files)
-
-- `theorem ProximityGap.MCAGSPrizeRefutation.mcaEventGSrow_badStack` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:36](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L36) — **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
-- `theorem mcaEventGSrow_badStack` [ArkLib/MCAGSRefutationCore.lean:35](../../../ArkLib/MCAGSRefutationCore.lean#L35) — **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
 
 ### `mem_C_iff` (2 declarations, 2 files)
 
@@ -3052,7 +3022,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `msgAns` (2 declarations, 2 files)
 
 - `def StirIOP.MultiRound.msgAns` [ArkLib/ProofSystem/Stir/CheckingVerifier.lean:184](../../../ArkLib/ProofSystem/Stir/CheckingVerifier.lean#L184) — The honest answer of a message oracle (ascribed at `F`).
-- `def Whir302Checked.msgAns` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:126](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L126) — The honest answer of a message oracle (ascribed at `F`).
+- `def Whir302Checked.msgAns` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:125](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L125) — The honest answer of a message oracle (ascribed at `F`).
 
 ### `multilinearWeight` (2 declarations, 2 files)
 
@@ -3153,11 +3123,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.RemainingCoreWitness.not_johnson_at_quarter` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RemainingCore.lean:201](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/RemainingCore.lean#L201) — At the canonical floor-matched radius `δ' = 1/4` the Johnson-side hypothesis `(1 − ρ)/2 < δ'` fails
 - `theorem ArkLib.ClosedBoundaryFaithfulFloorCellWitness.not_johnson_at_quarter` [ArkLib/ToMathlib/ClosedBoundaryFaithfulFloorCell.lean:363](../../../ArkLib/ToMathlib/ClosedBoundaryFaithfulFloorCell.lean#L363) — At the cell radius `δ'' = 1/4` the Johnson-side hypothesis fails *exactly*: `(1 − ρ)/2 = (1 − 1/2)/2
-
-### `not_uniformEpsMCAgsPrizeBoundConjecture` (2 declarations, 2 files)
-
-- `theorem ProximityGap.MCAGSPrizeRefutation.not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:102](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L102) — **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
-- `theorem not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/MCAGSRefutationCore.lean:101](../../../ArkLib/MCAGSRefutationCore.lean#L101) — **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
 
 ### `odd_psum_vanish` (2 declarations, 2 files)
 
@@ -3357,7 +3322,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `prop_4_23_singleRepetition_proximityCheck_bound` (2 declarations, 2 files)
 
 - `theorem Binius.BinaryBasefold.QueryPhase.prop_4_23_singleRepetition_proximityCheck_bound` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:2691](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L2691) — **Single Repetition Proximity Check Bound (Proposition 4.24)** For a single repetition of the proxim
-- `theorem Binius.BinaryBasefold.prop_4_23_singleRepetition_proximityCheck_bound` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhaseSoundness.lean:1267](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhaseSoundness.lean#L1267) — **Proposition 4.24** (Query-phase soundness, assuming no bad events). If any oracle is non-compliant
+- `theorem Binius.BinaryBasefold.prop_4_23_singleRepetition_proximityCheck_bound` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhaseSoundness.lean:1272](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhaseSoundness.lean#L1272) — **Proposition 4.24** (Query-phase soundness, assuming no bad events). If any oracle is non-compliant
 
 ### `proximityCondition` (2 declarations, 2 files)
 
@@ -3371,7 +3336,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `queryCodeword` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.QueryPhase.queryCodeword` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean:184](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean#L184) — Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indi
+- `def Binius.BinaryBasefold.QueryPhase.queryCodeword` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean:91](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean#L91) — Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indi
 - `def Fri.Spec.QueryRound.queryCodeword` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:1040](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L1040) — (no docstring)
 
 ### `queryOracleReduction` (2 declarations, 2 files)
@@ -3487,17 +3452,17 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `simulateQ_askInput` (2 declarations, 2 files)
 
 - `theorem StirIOP.MultiRound.simulateQ_askInput` [ArkLib/ProofSystem/Stir/CheckingVerifier.lean:248](../../../ArkLib/ProofSystem/Stir/CheckingVerifier.lean#L248) — `simulateQ` collapse for the input-oracle query.
-- `theorem Whir302Checked.simulateQ_askInput` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:407](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L407) — `simulateQ` collapse for an input-oracle query.
+- `theorem Whir302Checked.simulateQ_askInput` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:406](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L406) — `simulateQ` collapse for an input-oracle query.
 
 ### `simulateQ_askList` (2 declarations, 2 files)
 
 - `theorem StirIOP.MultiRound.simulateQ_askList` [ArkLib/ProofSystem/Stir/CheckingVerifier.lean:168](../../../ArkLib/ProofSystem/Stir/CheckingVerifier.lean#L168) — If every step of an `askList` simulates to a pure value, the whole `askList` collapses to the corres
-- `theorem Whir302Checked.simulateQ_askList` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:114](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L114) — If every step of an `askList` simulates to a pure value, the whole `askList` collapses to the corres
+- `theorem Whir302Checked.simulateQ_askList` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:113](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L113) — If every step of an `askList` simulates to a pure value, the whole `askList` collapses to the corres
 
 ### `simulateQ_askMsg` (2 declarations, 2 files)
 
 - `theorem StirIOP.MultiRound.simulateQ_askMsg` [ArkLib/ProofSystem/Stir/CheckingVerifier.lean:254](../../../ArkLib/ProofSystem/Stir/CheckingVerifier.lean#L254) — `simulateQ` collapse for a message-oracle query.
-- `theorem Whir302Checked.simulateQ_askMsg` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:398](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L398) — `simulateQ` collapse for a message-oracle query.
+- `theorem Whir302Checked.simulateQ_askMsg` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:397](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L397) — `simulateQ` collapse for a message-oracle query.
 
 ### `simulateQ_optionT_failure'` (2 declarations, 2 files)
 
@@ -3691,7 +3656,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `sumcheckConsistencyProp` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.sumcheckConsistencyProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1457](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1457) — Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean hypercube o
+- `def Binius.BinaryBasefold.sumcheckConsistencyProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1452](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1452) — Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean hypercube o
 - `def Sumcheck.Structured.sumcheckConsistencyProp` [ArkLib/ProofSystem/Sumcheck/Structured.lean:212](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L212) — Sumcheck consistency: the claimed sum equals the actual polynomial evaluation sum over the evaluatio
 
 ### `sumcheckConsistency_at_last_simplifies` (2 declarations, 2 files)
@@ -3763,11 +3728,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem GSMultInterp.toPoly_add` [ArkLib/Data/CodingTheory/GuruswamiSudan/DictionaryBridge.lean:48](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/DictionaryBridge.lean#L48) — `toPoly` is additive in the coefficient vector.
 - `theorem UniPoly.toPoly_add` [ArkLib/Data/UniPoly/Basic.lean:854](../../../ArkLib/Data/UniPoly/Basic.lean#L854) — `UniPoly` addition is mapped to `Polynomial` addition
-
-### `totient_two_pow'` (2 declarations, 2 files)
-
-- `theorem ArkLib.ProximityGap.ResultantLiftLoop52.totient_two_pow'` [ArkLib/Data/CodingTheory/ProximityGap/CandidateResultantLiftLoop52.lean:129](../../../ArkLib/Data/CodingTheory/ProximityGap/CandidateResultantLiftLoop52.lean#L129) — (no docstring)
-- `lemma ArkLib.ProximityGap.KKH26.totient_two_pow'` [ArkLib/Data/CodingTheory/ProximityGap/KKH26ParsevalThreshold.lean:254](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26ParsevalThreshold.lean#L254) — (no docstring)
 
 ### `two_ne_zero_zmod13` (2 declarations, 2 files)
 
@@ -3871,7 +3831,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `whirCheckedVectorIOP_isSecureWithGap_of_rbr` (2 declarations, 2 files)
 
-- `theorem Whir302Checked.whirCheckedVectorIOP_isSecureWithGap_of_rbr` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:893](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L893) — With the completeness leg PROVEN for the checking verifier, `IsSecureWithGap` for the checked WHIR `
+- `theorem Whir302Checked.whirCheckedVectorIOP_isSecureWithGap_of_rbr` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:894](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L894) — With the completeness leg PROVEN for the checking verifier, `IsSecureWithGap` for the checked WHIR `
 - `theorem WhirIOP.whirCheckedVectorIOP_isSecureWithGap_of_rbr` [ArkLib/ProofSystem/Whir/ProtocolSoundness.lean:202](../../../ArkLib/ProofSystem/Whir/ProtocolSoundness.lean#L202) — The checked WHIR `VectorIOP` has the secure-with-gap package once its genuine RBR knowledge-soundnes
 
 ### `whirVectorIOP_isSecureWithGap_indicator` (2 declarations, 2 files)
@@ -3896,7 +3856,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `witnessStructuralInvariant` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1449](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1449) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
+- `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1444](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1444) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
 - `def RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:452](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L452) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 
 ### `witness_list_card_seven` (2 declarations, 2 files)
@@ -4000,11 +3960,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ProximityGap.coeff_zero_of_natDegree_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:694](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L694) — (no docstring)
 - `lemma ProximityGap.coeff_zero_of_natDegree_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:31](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L31) — (no docstring)
 
-### `composedTightFull_perfectCompleteness` (2 declarations, 2 files)
-
-- `theorem Spartan.Spec.Bricks.composedTightFull_perfectCompleteness` [ArkLib/ProofSystem/Spartan/TightComposedComplete.lean:620](../../../ArkLib/ProofSystem/Spartan/TightComposedComplete.lean#L620) — **THE TIGHT COMPOSED SPARTAN PERFECT COMPLETENESS (issue #329, B7 step 5).** The full eight-phase ti
-- `theorem Spartan.Spec.Bricks.composedTightFull_perfectCompleteness` [ArkLib/ProofSystem/Spartan/TightComposedFullCompleteProven.lean:74](../../../ArkLib/ProofSystem/Spartan/TightComposedFullCompleteProven.lean#L74) — **The tight composed Spartan PIOP is perfectly complete, fully discharged (issue #329).** From the r
-
 ### `decodeLT_ne_of_val_ne` (2 declarations, 2 files)
 
 - `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:87](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L87) — Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the codeword
@@ -4094,6 +4049,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Spartan.Spec.firstSumcheck_rbrKnowledgeSoundness_honest` [ArkLib/ProofSystem/Spartan/FirstSumcheckComplete.lean:202](../../../ArkLib/ProofSystem/Spartan/FirstSumcheckComplete.lean#L202) — **First sum-check phase round-by-round knowledge soundness (issue #114).** The Spartan lift of the g
 - `theorem Spartan.Spec.firstSumcheck_rbrKnowledgeSoundness_honest` [ArkLib/ProofSystem/Spartan/SumcheckKnowledgeLeaves.lean:82](../../../ArkLib/ProofSystem/Spartan/SumcheckKnowledgeLeaves.lean#L82) — The first Spartan sum-check RBR-KS leaf over the honest transported relation contract, reduced to th
+
+### `foldl_stepCache_hash_mono` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_hash_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean:102](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58CacheProvenance.lean#L102) — Hash records persist through any fold suffix.
+- `theorem DuplexSpongeFS.EagerLazyDS.foldl_stepCache_hash_mono` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:1369](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L1369) — The hash cache only grows along the whole fold.
 
 ### `for` (2 declarations, 2 files)
 
@@ -4453,7 +4413,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:188](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L188) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/XiCertReduction.lean:219](../../../ArkLib/ToMathlib/XiCertReduction.lean#L219) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 194 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 191 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 
@@ -4526,10 +4486,10 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:51](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L51) vs `RingSwitching.FullRingSwitching.fullOracleVerifier` [ArkLib/ProofSystem/RingSwitching/General.lean:63](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L63)
     - a: The oracle verifier for the full Binary Basefold protocol
     - b: The oracle verifier for the full Binary Basefold protocol
-- **1.00** `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean:162](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean#L162) vs `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps_farLift` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Prop421Case2FarLift.lean:321](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Prop421Case2FarLift.lean#L321)
+- **1.00** `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean:162](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean#L162) vs `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps_farLiftLocal` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Prop421Case2FarLift.lean:321](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Prop421Case2FarLift.lean#L321)
     - a: Source Hamming distance is bounded by the number of bad quotient fibers times the fiber size. Local
     - b: Source Hamming distance is bounded by the number of bad quotient fibers times the fiber size. Local
-- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1449](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1449) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:452](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L452)
+- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1444](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1444) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:452](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L452)
     - a: This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
     - b: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1309](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1309) vs `RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1513](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1513)
@@ -4634,9 +4594,6 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `OracleSpec.QueryLog.BadEventDS.lemma_5_10` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean:379](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEvents.lean#L379) vs `OracleSpec.QueryLog.BadEventDSPaper.lemma_5_10` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean:355](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean#L355)
     - a: CO25 Lemma 5.10, current trace-event form. If the combined bad event `E(tr)` does not occur, then th
     - b: CO25 Lemma 5.10, current trace-event form. If the combined bad event `E(tr)` does not occur, then th
-- **1.00** `Pr_badStack_eq_one` [ArkLib/MCAGSRefutationCore.lean:63](../../../ArkLib/MCAGSRefutationCore.lean#L63) vs `ProximityGap.MCAGSPrizeRefutation.Pr_badStack_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:64](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L64)
-    - a: **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
-    - b: **The bad event has probability 1.** Since `mcaEventGSrow_badStack` holds for every `γ`, the event i
 - **1.00** `Probability.uniformSizeSubset_apply_mapEquiv` [ArkLib/Data/Probability/Combinatorial.lean:168](../../../ArkLib/Data/Probability/Combinatorial.lean#L168) vs `Probability.uniformSizedSubset_apply_mapEquiv` [ArkLib/Data/Probability/UniformSubset.lean:115](../../../ArkLib/Data/Probability/UniformSubset.lean#L115)
     - a: Uniform fixed-size subset sampling is invariant under equivalence of ambient finite types.
     - b: Uniform fixed-size subset sampling is invariant under equivalence of ambient finite types.
@@ -4655,15 +4612,6 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `ProximityGap.GrandChallengesLattice.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean:626](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean#L626) vs `ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean#L208)
     - a: Every ABF26 prize rate is at most `1/2`.
     - b: Every ABF26 prize rate is at most `1/2`.
-- **1.00** `ProximityGap.MCAGSPrizeRefutation.epsMCAgs_badList_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L82) vs `epsMCAgs_badList_eq_one` [ArkLib/MCAGSRefutationCore.lean:81](../../../ArkLib/MCAGSRefutationCore.lean#L81)
-    - a: **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
-    - b: **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
-- **1.00** `ProximityGap.MCAGSPrizeRefutation.mcaEventGSrow_badStack` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:36](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L36) vs `mcaEventGSrow_badStack` [ArkLib/MCAGSRefutationCore.lean:35](../../../ArkLib/MCAGSRefutationCore.lean#L35)
-    - a: **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
-    - b: **Key lemma.** For any nonzero codeword `w₀ ∈ C` and any `δ ≤ 1`, the GS-row bad event fires at the
-- **1.00** `ProximityGap.MCAGSPrizeRefutation.not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:102](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean#L102) vs `not_uniformEpsMCAgsPrizeBoundConjecture` [ArkLib/MCAGSRefutationCore.lean:101](../../../ArkLib/MCAGSRefutationCore.lean#L101)
-    - a: **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
-    - b: **MAIN THEOREM (#141): the formalized uniform prize conjecture is FALSE.** `uniformEpsMCAgsPrizeBoun
 - **1.00** `ProximityGap.RS_goodCoeffsCurve_finCongr` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:194](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L194) vs `ProximityGap.RS_goodCoeffsCurve_finCongr_core` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:1082](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L1082)
     - a: `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its `Fin (k + 1)` coefficient word
     - b: `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its `Fin (k + 1)` coefficient word
@@ -4697,4 +4645,16 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Round26Recursion.even_psum_halves` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L96) vs `Round28FullWindow.even_psum_halves` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:98](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L98)
     - a: **The even power sums halve:** for antipodally-closed `A`, `p_{2l}(A) = 2 · p_l(A²)` — summing `x^{2
     - b: **The even power sums halve:** for antipodally-closed `A`, `p_{2l}(A) = 2 · p_l(A²)` — summing `x^{2
+- **1.00** `Round26Recursion.odd_psum_vanish` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:52](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L52) vs `Round28FullWindow.odd_psum_vanish` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L54)
+    - a: **Odd power sums vanish identically on antipodally-closed sets** (the Round-8 engine at `ω = −1`): p
+    - b: **Odd power sums vanish identically on antipodally-closed sets** (the Round-8 engine at `ω = −1`): p
+- **1.00** `Round26Recursion.squares_disjoint` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:131](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L131) vs `Round28FullWindow.squares_disjoint` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:133](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L133)
+    - a: **Disjointness descends to the squares:** if `A, B` are antipodally closed and disjoint, then `A²` a
+    - b: **Disjointness descends to the squares:** if `A, B` are antipodally closed and disjoint, then `A²` a
+- **1.00** `Round26Recursion.squares_fiber` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:76](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L76) vs `Round28FullWindow.squares_fiber` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:78](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L78)
+    - a: On an antipodally-closed set, the squaring map is exactly two-to-one: each fiber is the antipodal pa
+    - b: On an antipodally-closed set, the squaring map is exactly two-to-one: each fiber is the antipodal pa
+- **1.00** `Round26Recursion.window_halving_step` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:161](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L161) vs `Round28FullWindow.window_halving_step` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:163](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L163)
+    - a: **THE WINDOW-HALVING STEP (the full-window recursion engine).** Let `A, B` be antipodally closed (su
+    - b: **THE WINDOW-HALVING STEP (the full-window recursion engine).** Let `A, B` be antipodally closed (su
 

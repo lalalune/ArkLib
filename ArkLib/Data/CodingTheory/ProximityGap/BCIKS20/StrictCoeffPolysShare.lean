@@ -11,7 +11,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellStrictExtraction
 # BCIKS20 §5 — share-form (Prop-5.5-faithful) strict coefficient-polynomial residual
 
 `StrictCoeffPolysResidual` (`Curves.lean`) demands ONE coefficient family `B` matching the
-decoded family at EVERY good parameter; `StrictCoeffPolysResidualExc b`
+decoded family at EVERY good parameter; `StrictCoeffPolysExcResidual b`
 (`StrictCoeffPolysExceptional.lean`) relaxes this by a CONSTANT exceptional budget `b`.
 Neither matches what BCIKS20 §5 actually produces: Proposition 5.5 pins the decoded family
 to one curve only on a subset of PROPORTIONAL size (`|S′| ≥ |S|/2D_Y` on one curve) — the
@@ -26,12 +26,12 @@ factor cells of the GS interpolant, `T` = the degenerate-cell budget).
 This file builds the matching honest residual surface and its consumer chain down to the
 correlated-agreement keystone:
 
-* `StrictCoeffPolysResidualShare ℓ T` — verbatim `StrictCoeffPolysResidual`, except the
+* `StrictCoeffPolysShareResidual ℓ T` — verbatim `StrictCoeffPolysResidual`, except the
   coefficient identity is only required on a subset `G′ ⊆ good` with
   `|good| ≤ T + ℓ·|G′|` (the Prop-5.5 share shape; `ℓ = 1, T = 0` forces `G′` to exhaust
   the good set up to nothing and recovers the counting power of the original).
-* `strictCoeffPolysResidualShare_of_strictCoeffPolysResidual` /
-  `strictCoeffPolysResidualShare_of_exc` — the weld lattice: the original residual and the
+* `strictCoeffPolysShareResidual_of_strictCoeffPolysResidual` /
+  `strictCoeffPolysShareResidual_of_exc` — the weld lattice: the original residual and the
   constant-budget exceptional residual both land in the share surface.
 * `RS_jointAgreement_of_prob_gt_share` — the §6 consumer: a probability threshold whose
   mass dominates `ℓ·(n+1)·k + T` parameters still yields `jointAgreement`, by running the
@@ -73,7 +73,7 @@ a subset `G′` of the good set of proportional size: `|good| ≤ T + ℓ·|G′
 factor cells, `T` = degenerate-cell budget).  This is the conclusion shape of BCIKS20
 Proposition 5.5 and the exact output shape of the cell extraction
 (`strict_coeffPolys_of_heavy_cell`). -/
-def StrictCoeffPolysResidualShare {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+def StrictCoeffPolysShareResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (ℓ T : ℕ) : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     Pr_{
@@ -95,11 +95,11 @@ def StrictCoeffPolysResidualShare {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥
             ∀ z ∈ G', ∀ j < deg, (P z).coeff j = (B j).eval z
 
 /-- **Cell-decomposition supplier for the share residual.**  The SK2 cell theorem
-`strict_coeffPolys_of_heavy_cell` is exactly a producer for `StrictCoeffPolysResidualShare`:
+`strict_coeffPolys_of_heavy_cell` is exactly a producer for `StrictCoeffPolysShareResidual`:
 when the good set is larger than the degenerate budget `T`, the supplied section-linked
 cell decomposition gives the share subset; when it is not, the empty subset already satisfies
 the share inequality. -/
-theorem strictCoeffPolysResidualShare_of_cell_decomposition
+theorem strictCoeffPolysShareResidual_of_cell_decomposition
     {n k deg : ℕ} [NeZero n] {domain : Fin n ↪ F} {δ : ℝ≥0} {ℓ T : ℕ}
     (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) (Fin n)),
       Pr_{
@@ -137,7 +137,7 @@ theorem strictCoeffPolysResidualShare_of_cell_decomposition
             (∀ R, some R ∈ Index → ∀ t ∈ Tset R, max Bw k < (Sset R t).card) ∧
             ∀ R, some R ∈ Index → ∀ t ∈ Tset R, ∀ z ∈ Sset R t,
               (P z).eval (domain t) = (foldSectionAt u t).eval z) :
-    StrictCoeffPolysResidualShare (k := k) (deg := deg) (domain := domain) (δ := δ)
+    StrictCoeffPolysShareResidual (k := k) (deg := deg) (domain := domain) (δ := δ)
       ℓ T := by
   classical
   intro hk u hprob hJ hsqrt P hP
@@ -177,10 +177,10 @@ theorem strictCoeffPolysResidualShare_of_cell_decomposition
 
 /-- The original (full-good-set) residual implies the share residual at every positive
 share `ℓ` and every budget `T`, with `G′ = good`. -/
-theorem strictCoeffPolysResidualShare_of_strictCoeffPolysResidual
+theorem strictCoeffPolysShareResidual_of_strictCoeffPolysResidual
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} {ℓ T : ℕ} (hℓ : 0 < ℓ)
     (h : StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
-    StrictCoeffPolysResidualShare (k := k) (deg := deg) (domain := domain) (δ := δ)
+    StrictCoeffPolysShareResidual (k := k) (deg := deg) (domain := domain) (δ := δ)
       ℓ T := by
   intro hk u hprob hJ hsqrt P hP
   obtain ⟨B, hBdeg, hBid⟩ := h hk u hprob hJ hsqrt P hP
@@ -192,10 +192,10 @@ theorem strictCoeffPolysResidualShare_of_strictCoeffPolysResidual
 
 /-- The constant-budget exceptional residual implies the share residual at share `1` and
 budget `b`, with `G′ = good \ E`. -/
-theorem strictCoeffPolysResidualShare_of_exc
+theorem strictCoeffPolysShareResidual_of_exc
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} {b : ℕ}
-    (h : StrictCoeffPolysResidualExc (k := k) (deg := deg) (domain := domain) (δ := δ) b) :
-    StrictCoeffPolysResidualShare (k := k) (deg := deg) (domain := domain) (δ := δ)
+    (h : StrictCoeffPolysExcResidual (k := k) (deg := deg) (domain := domain) (δ := δ) b) :
+    StrictCoeffPolysShareResidual (k := k) (deg := deg) (domain := domain) (δ := δ)
       1 b := by
   intro hk u hprob hJ hsqrt P hP
   obtain ⟨B, E, hEcard, hBdeg, hBid⟩ := h hk u hprob hJ hsqrt P hP
@@ -336,7 +336,7 @@ theorem RS_jointAgreement_of_prob_gt_strict_johnson_share
 
 /-- **Theorem 1.5 from the share residual** ([BCIKS20], Prop-5.5-faithful conclusion
 shape).  Identical to `correlatedAgreement_affine_curves_of_strict_coeff_polys_exc` except
-that the strict Johnson branch consumes `StrictCoeffPolysResidualShare ℓ T` and the
+that the strict Johnson branch consumes `StrictCoeffPolysShareResidual ℓ T` and the
 proximity error pays for the share counting:
 `ε = errorBound + (ℓ·(n+1)·k + T) / |F|`. -/
 theorem correlatedAgreement_affine_curves_of_strict_coeff_polys_share {k : ℕ}
@@ -345,7 +345,7 @@ theorem correlatedAgreement_affine_curves_of_strict_coeff_polys_share {k : ℕ}
     (ℓ T : ℕ)
     (_hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
     (hShare :
-      StrictCoeffPolysResidualShare (k := k) (deg := deg) (domain := domain) (δ := δ)
+      StrictCoeffPolysShareResidual (k := k) (deg := deg) (domain := domain) (δ := δ)
         ℓ T)
     (hBoundary :
       BoundaryProbabilityResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
@@ -399,7 +399,7 @@ theorem correlatedAgreement_affine_curves_strict_of_strict_coeff_polys_share {k 
     (ℓ T : ℕ)
     (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
     (hShare :
-      StrictCoeffPolysResidualShare (k := k) (deg := deg) (domain := domain) (δ := δ)
+      StrictCoeffPolysShareResidual (k := k) (deg := deg) (domain := domain) (δ := δ)
         ℓ T) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ)
@@ -415,10 +415,10 @@ end ShareResidual
 end ProximityGap
 
 /-! ## Axiom audit — all kernel-clean. -/
-#print axioms ProximityGap.StrictCoeffPolysResidualShare
-#print axioms ProximityGap.strictCoeffPolysResidualShare_of_cell_decomposition
-#print axioms ProximityGap.strictCoeffPolysResidualShare_of_strictCoeffPolysResidual
-#print axioms ProximityGap.strictCoeffPolysResidualShare_of_exc
+#print axioms ProximityGap.StrictCoeffPolysShareResidual
+#print axioms ProximityGap.strictCoeffPolysShareResidual_of_cell_decomposition
+#print axioms ProximityGap.strictCoeffPolysShareResidual_of_strictCoeffPolysResidual
+#print axioms ProximityGap.strictCoeffPolysShareResidual_of_exc
 #print axioms ProximityGap.RS_jointAgreement_of_prob_gt_share
 #print axioms ProximityGap.RS_jointAgreement_of_prob_gt_strict_johnson_share
 #print axioms ProximityGap.correlatedAgreement_affine_curves_of_strict_coeff_polys_share

@@ -11,7 +11,7 @@ import ArkLib.ToMathlib.BoundaryHalfState
 
 The two named open cores of #304 — `StrictCoeffPolysResidual` (the strict-Johnson branch) and
 the boundary half (through the O76/O79/O86 quantization split, whose surviving leaves are
-`StrictCoeffPolysResidualLarge` at the cell radius and `LatticeCoeffPolyExtraction` at the
+`StrictCoeffPolysLargeResidual` at the cell radius and `LatticeCoeffPolyExtraction` at the
 square endpoint) — all conclude the same `∃ B` coefficient-polynomial extraction, differing
 only in their trigger (probability / probability+count / count).  And the faithful curve
 extraction (`FaithfulCurveExtraction.hcoeffPoly_witness_of_curveFamilyData`) produces that
@@ -22,7 +22,7 @@ This file states the convergence as theorems:
 * `UnifiedProducer` — the single production target: per word-stack and decoded family
   (count-triggered, the weakest trigger any consumer supplies), a `CurveFamilyData`.
 * `latticeCoeffPolyExtraction_of_producer` — the lattice leaf from the producer.
-* `strictCoeffPolysResidualLarge_of_producer` — the cell-radius leaf from the producer
+* `strictCoeffPolysLargeResidual_of_producer` — the cell-radius leaf from the producer
   (instantiated at the cell radius).
 * `strictCoeffPolysResidual_of_producer` — the strict-Johnson core from the producer
   (the probability trigger is discarded; the count trigger is supplied by the consumer's own
@@ -93,9 +93,9 @@ omit [Nonempty ι] [DecidableEq ι] in
 /-- **The cell-radius leaf from the producer** (instantiated at any radius — in particular
 the canonical cell radius): the probability and Johnson hypotheses are discarded; the count
 trigger `k + 1 < |good|` implies the producer's. -/
-theorem strictCoeffPolysResidualLarge_of_producer {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+theorem strictCoeffPolysLargeResidual_of_producer {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hprod : UnifiedProducer (k := k) (deg := deg) (ι := ι) (F := F) domain δ) :
-    ProximityGap.StrictCoeffPolysResidualLarge
+    ProximityGap.StrictCoeffPolysLargeResidual
       (k := k) (deg := deg) (domain := domain) (δ := δ) := by
   intro hk u _hprob _hJ _hsqrt hcount P hP
   obtain ⟨d⟩ := hprod u (by omega) P hP
@@ -104,7 +104,7 @@ theorem strictCoeffPolysResidualLarge_of_producer {k deg : ℕ} {domain : ι ↪
 /-! ## The closed-boundary keystone -/
 
 /-- **The closed-boundary Johnson-endpoint keystone from the single producer.**  Both leaves
-of the `BoundaryHalfState` dichotomy — the cell-radius `StrictCoeffPolysResidualLarge` and the
+of the `BoundaryHalfState` dichotomy — the cell-radius `StrictCoeffPolysLargeResidual` and the
 lattice `LatticeCoeffPolyExtraction` — are discharged by the same count-triggered
 `CurveFamilyData` production (at the cell radius and at `δ` respectively).  The explicit
 positive error is the dichotomy's `max (errorBound (⌊δ·n⌋/n)) ((n+1)/|F|)`. -/
@@ -123,7 +123,7 @@ theorem correlatedAgreementCurves_johnsonClosed_of_producer
           deg domain)
         (ArkLib.BoundaryLatticeThresholdLeaf.latticeThresholdEps ι F)) :=
   BoundaryHalfState.correlatedAgreementCurves_johnsonClosed_of_leaves hk hδeq hsqrt_le hdeg_le
-    (fun _ => strictCoeffPolysResidualLarge_of_producer hprodCell)
+    (fun _ => strictCoeffPolysLargeResidual_of_producer hprodCell)
     (fun _ => latticeCoeffPolyExtraction_of_producer hprodδ)
 
 end UnifiedExtractionTarget
@@ -134,5 +134,5 @@ end ArkLib
 `[propext, Classical.choice, Quot.sound]`, with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.UnifiedExtractionTarget.UnifiedProducer
 #print axioms ArkLib.UnifiedExtractionTarget.latticeCoeffPolyExtraction_of_producer
-#print axioms ArkLib.UnifiedExtractionTarget.strictCoeffPolysResidualLarge_of_producer
+#print axioms ArkLib.UnifiedExtractionTarget.strictCoeffPolysLargeResidual_of_producer
 #print axioms ArkLib.UnifiedExtractionTarget.correlatedAgreementCurves_johnsonClosed_of_producer

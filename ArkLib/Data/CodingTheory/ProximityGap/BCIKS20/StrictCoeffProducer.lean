@@ -37,7 +37,7 @@ consumer chain; this file transports the remaining total-root surfaces of the pr
   `LocalSeriesDatumOn` — the satisfiable per-`(u, P)` restricted-root analytic §5 datum — and
   the front doors `strictCoeffPolysResidual_of_localSeriesDatumOn` (discharging the exact
   `ProximityGap.StrictCoeffPolysResidual` of `Curves.lean`),
-  `strictCoeffPolysResidualLarge_of_localSeriesDatumOn` (the same producer in the reduced
+  `strictCoeffPolysLargeResidual_of_localSeriesDatumOn` (the same producer in the reduced
   large-good-set residual shape), and
   `correlatedAgreement_affine_curves_johnson_of_localSeriesDatumOn_strict` (reaching the §5
   keystone `δ_ε_correlatedAgreementCurves` in the strict Johnson regime).
@@ -443,11 +443,11 @@ theorem strictCoeffPolysResidual_of_localSeriesDatumOn
     (curveFamilyData_of_localSeriesDatumOn (hInput hk u hprob hJ hsqrt P hP))
 
 omit [Nonempty ι] [DecidableEq ι] in
-/-- **`StrictCoeffPolysResidualLarge` from a per-`(u, P)` restricted-root analytic producer.**
+/-- **`StrictCoeffPolysLargeResidual` from a per-`(u, P)` restricted-root analytic producer.**
 This is the producer-facing form of the #304 residual after
 `StrictCoeffLargeReduction.lean` removes the small-good-set sector: the analytic producer may
 assume the actual remaining hypothesis `k + 1 < |RS_goodCoeffsCurve|` directly. -/
-theorem strictCoeffPolysResidualLarge_of_localSeriesDatumOn
+theorem strictCoeffPolysLargeResidual_of_localSeriesDatumOn
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
       Pr_{
@@ -462,7 +462,7 @@ theorem strictCoeffPolysResidualLarge_of_localSeriesDatumOn
           (P z).natDegree < deg ∧
             δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
         LocalSeriesDatumOn (k := k) (deg := deg) (domain := domain) (δ := δ) u P) :
-    StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+    StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain) (δ := δ) := by
   intro hk u hprob hJ hsqrt hcard P hP
   exact hcoeffPoly_witness_of_curveFamilyData
     (curveFamilyData_of_localSeriesDatumOn (hInput hk u hprob hJ hsqrt hcard P hP))
@@ -622,7 +622,7 @@ end ArkLib
 #print axioms ArkLib.FaithfulCurveExtraction.LocalSeriesDatumOn
 #print axioms ArkLib.FaithfulCurveExtraction.curveFamilyData_of_localSeriesDatumOn
 #print axioms ArkLib.FaithfulCurveExtraction.strictCoeffPolysResidual_of_localSeriesDatumOn
-#print axioms ArkLib.FaithfulCurveExtraction.strictCoeffPolysResidualLarge_of_localSeriesDatumOn
+#print axioms ArkLib.FaithfulCurveExtraction.strictCoeffPolysLargeResidual_of_localSeriesDatumOn
 #print axioms ArkLib.FaithfulCurveExtraction.correlatedAgreement_affine_curves_johnson_of_localSeriesDatumOn_strict
 #print axioms ArkLib.FaithfulCurveExtraction.localSeriesDatumOn_of_matching_gradedDisc
 #print axioms ArkLib.FaithfulCurveExtraction.localSeriesDatumOn_of_SβLarge

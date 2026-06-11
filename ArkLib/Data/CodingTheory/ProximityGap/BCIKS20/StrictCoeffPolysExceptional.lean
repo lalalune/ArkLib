@@ -20,11 +20,11 @@ set of `z`'s.
 
 This file builds the honest **exceptional-set residual** and its consumer chain:
 
-* `StrictCoeffPolysResidualExc b` — verbatim `StrictCoeffPolysResidual`, except the
+* `StrictCoeffPolysExcResidual b` — verbatim `StrictCoeffPolysResidual`, except the
   conclusion allows an exceptional set `E` with `E.card ≤ b`: the coefficient-polynomial
   identity is only required at good `z ∉ E`.
-* `strictCoeffPolysResidualExc_of_strictCoeffPolysResidual` /
-  `strictCoeffPolysResidual_of_strictCoeffPolysResidualExc_zero` — the `b = 0` case is
+* `strictCoeffPolysExcResidual_of_strictCoeffPolysResidual` /
+  `strictCoeffPolysResidual_of_strictCoeffPolysExcResidual_zero` — the `b = 0` case is
   exactly the original residual, so the new surface is a strict weakening for `b > 0`.
 * `subset_single_decoded_family_coeff_polys_implies_jointAgreement_core` (and its
   positive-`k` wrapper) — single-family forms of the in-tree subset counting core
@@ -154,7 +154,7 @@ most `b` curve parameters: the coefficient-polynomial identity is required only 
 `z ∉ E`.  This matches the actual conclusion shape of BCIKS20 §5 and the BCHKS25
 exceptional-parameter phenomenon above the unique-decoding radius; `b = 0` recovers
 `StrictCoeffPolysResidual` exactly. -/
-def StrictCoeffPolysResidualExc {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} (b : ℕ) : Prop :=
+def StrictCoeffPolysExcResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} (b : ℕ) : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     Pr_{
       let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
@@ -175,19 +175,19 @@ def StrictCoeffPolysResidualExc {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
 
 /-- The original (no-exception) residual implies the exceptional-set residual at every
 budget, with `E = ∅`. -/
-theorem strictCoeffPolysResidualExc_of_strictCoeffPolysResidual
+theorem strictCoeffPolysExcResidual_of_strictCoeffPolysResidual
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} (b : ℕ)
     (h : StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
-    StrictCoeffPolysResidualExc (k := k) (deg := deg) (domain := domain) (δ := δ) b := by
+    StrictCoeffPolysExcResidual (k := k) (deg := deg) (domain := domain) (δ := δ) b := by
   intro hk u hprob hJ hsqrt P hP
   obtain ⟨B, hBdeg, hBid⟩ := h hk u hprob hJ hsqrt P hP
   exact ⟨B, ∅, by simp, hBdeg, fun z hz _ j hj => hBid z hz j hj⟩
 
 /-- At budget `b = 0` the exceptional-set residual is the original residual: the
 exceptional set is forced empty. -/
-theorem strictCoeffPolysResidual_of_strictCoeffPolysResidualExc_zero
+theorem strictCoeffPolysResidual_of_strictCoeffPolysExcResidual_zero
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
-    (h : StrictCoeffPolysResidualExc (k := k) (deg := deg) (domain := domain) (δ := δ) 0) :
+    (h : StrictCoeffPolysExcResidual (k := k) (deg := deg) (domain := domain) (δ := δ) 0) :
     StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ) := by
   intro hk u hprob hJ hsqrt P hP
   obtain ⟨B, E, hEcard, hBdeg, hBid⟩ := h hk u hprob hJ hsqrt P hP
@@ -404,7 +404,7 @@ theorem RS_jointAgreement_of_prob_gt_strict_johnson_exc
 /-- **Theorem 1.5 from the exceptional-set residual** ([BCIKS20], honest §5 conclusion
 shape; cf. BCHKS25 results 3–4).  Identical to
 `correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary` except that the
-strict Johnson branch consumes `StrictCoeffPolysResidualExc b` (which permits `≤ b`
+strict Johnson branch consumes `StrictCoeffPolysExcResidual b` (which permits `≤ b`
 exceptional parameters) and the proximity error pays for it:
 `ε = errorBound δ deg domain + b / |F|`. -/
 theorem correlatedAgreement_affine_curves_of_strict_coeff_polys_exc {k : ℕ}
@@ -413,7 +413,7 @@ theorem correlatedAgreement_affine_curves_of_strict_coeff_polys_exc {k : ℕ}
     (b : ℕ)
     (_hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
     (hStrictCoeffExc :
-      StrictCoeffPolysResidualExc (k := k) (deg := deg) (domain := domain) (δ := δ) b)
+      StrictCoeffPolysExcResidual (k := k) (deg := deg) (domain := domain) (δ := δ) b)
     (hBoundary :
       BoundaryProbabilityResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
@@ -463,7 +463,7 @@ theorem correlatedAgreement_affine_curves_strict_of_strict_coeff_polys_exc {k : 
     (b : ℕ)
     (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
     (hStrictCoeffExc :
-      StrictCoeffPolysResidualExc (k := k) (deg := deg) (domain := domain) (δ := δ) b) :
+      StrictCoeffPolysExcResidual (k := k) (deg := deg) (domain := domain) (δ := δ) b) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ)
       (ε := errorBound δ deg domain + (b : ℝ≥0) / (Fintype.card F : ℝ≥0)) :=
@@ -477,9 +477,9 @@ end ProximityGap
 
 #print axioms ProximityGap.subset_single_decoded_family_coeff_polys_implies_jointAgreement_core
 #print axioms ProximityGap.subset_single_decoded_family_coeff_polys_implies_jointAgreement_of_pos
-#print axioms ProximityGap.StrictCoeffPolysResidualExc
-#print axioms ProximityGap.strictCoeffPolysResidualExc_of_strictCoeffPolysResidual
-#print axioms ProximityGap.strictCoeffPolysResidual_of_strictCoeffPolysResidualExc_zero
+#print axioms ProximityGap.StrictCoeffPolysExcResidual
+#print axioms ProximityGap.strictCoeffPolysExcResidual_of_strictCoeffPolysResidual
+#print axioms ProximityGap.strictCoeffPolysResidual_of_strictCoeffPolysExcResidual_zero
 #print axioms ProximityGap.goodCoeffsCurve_card_bounds_of_prob_gt_exc
 #print axioms ProximityGap.RS_jointAgreement_of_prob_gt_exc
 #print axioms ProximityGap.δ_ε_correlatedAgreementCurves_mono_error

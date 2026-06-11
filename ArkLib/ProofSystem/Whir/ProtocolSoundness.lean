@@ -35,7 +35,7 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- **Issue #302/#304 corrected-core keystone export.**  The unified BCIKS20 remaining core
-(`StrictCoeffPolysResidualLarge` at the target and floor-matched working radii) yields the
+(`StrictCoeffPolysLargeResidual` at the target and floor-matched working radii) yields the
 numeric per-round curve-CA quantity consumed by WHIR/STIR accounting:
 `epsCA_curves C k δ δ ≤ k * max(errorBound δ, errorBound δ')`.
 

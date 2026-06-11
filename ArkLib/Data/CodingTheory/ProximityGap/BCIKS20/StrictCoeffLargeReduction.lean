@@ -32,7 +32,7 @@ itself is large.
 Main results:
 * `exists_coeff_interpolant_of_card_le` — the Lagrange brick (any field, any finset, any target).
 * `strictCoeffPolys_of_card_le` — the coefficient-family form demanded by the residual.
-* `StrictCoeffPolysResidualLarge` — the residual restricted to `k + 1 < S.card`.
+* `StrictCoeffPolysLargeResidual` — the residual restricted to `k + 1 < S.card`.
 * `strictCoeffPolysResidual_iff_large` — the equivalence (the reduction, both directions).
 * `correlatedAgreement_affine_curves_of_largeResidual` — the keystone front door consuming only
   the large-sector residual.
@@ -93,7 +93,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 `k + 1 < (RS_goodCoeffsCurve u δ).card`.  By `strictCoeffPolysResidual_iff_large` this carries
 the *entire* content of the residual: the complementary sector is discharged unconditionally by
 Lagrange interpolation. -/
-def StrictCoeffPolysResidualLarge {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
+def StrictCoeffPolysLargeResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     Pr_{
       let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
@@ -118,7 +118,7 @@ good-coefficient sets (`card ≤ k + 1`) the coefficient family is produced unco
 Lagrange interpolation. -/
 theorem strictCoeffPolysResidual_of_large {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hLarge :
-      StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+      StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ) := by
   intro hk u hprob hJ hsqrt P hP
   by_cases hcard :
@@ -130,9 +130,9 @@ theorem strictCoeffPolysResidual_of_large {k deg : ℕ} {domain : ι ↪ F} {δ 
 
 omit [Nonempty ι] [DecidableEq ι] in
 /-- The trivial converse: the full residual restricts to the large sector. -/
-theorem strictCoeffPolysResidualLarge_of_residual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+theorem strictCoeffPolysLargeResidual_of_residual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hRes : StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
-    StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+    StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
   fun hk u hprob hJ hsqrt _hcard P hP => hRes hk u hprob hJ hsqrt P hP
 
 omit [Nonempty ι] [DecidableEq ι] in
@@ -141,8 +141,8 @@ small-good-set sector of the [BCIKS20] §5 strict Johnson extraction carries no 
 content: it is pure interpolation. -/
 theorem strictCoeffPolysResidual_iff_large {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
     StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ) ↔
-      StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain) (δ := δ) :=
-  ⟨strictCoeffPolysResidualLarge_of_residual, strictCoeffPolysResidual_of_large⟩
+      StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  ⟨strictCoeffPolysLargeResidual_of_residual, strictCoeffPolysResidual_of_large⟩
 
 /-- **Keystone front door for the large sector.**  [BCIKS20] Theorem 1.5 (correlated agreement
 for low-degree parameterised curves) from the large-sector strict residual and the boundary
@@ -150,7 +150,7 @@ residual — producers never have to consider good sets of size `≤ k + 1`. -/
 theorem correlatedAgreement_affine_curves_of_largeResidual {k deg : ℕ}
     {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
     (hLarge :
-      StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain) (δ := δ))
+      StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hBoundary :
       BoundaryProbabilityResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :

@@ -3517,7 +3517,7 @@ sentence formal.
 **Brick (axiom-clean, 0 sorry, 0 warnings):**
 `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean` —
 `strictCoeffPolysResidual_iff_large`: the issue-#304 strict Johnson extraction residual
-([BCIKS20] §5) holds **iff** its restriction `StrictCoeffPolysResidualLarge` adding the
+([BCIKS20] §5) holds **iff** its restriction `StrictCoeffPolysLargeResidual` adding the
 hypothesis `k + 1 < (RS_goodCoeffsCurve u δ).card` holds.  The complementary sector
 `|S| ≤ k + 1` is discharged UNCONDITIONALLY for every decoded family `P` — no probability,
 Johnson, GS, or counting input — by pure Lagrange interpolation
@@ -3717,16 +3717,16 @@ what remains of de Bruijn is the CRT bookkeeping (apply this at prime 1 with coe
 in prime 2's field, then descend).
 ### O78 — #304's two reduced cores fused into ONE Prop consumed by ONE theorem: `BCIKS20RemainingCore` ⟹ Theorem 1.5 (nubs, 2026-06-10)
 
-O70 left the strict branch as `StrictCoeffPolysResidualLarge` + `BoundaryProbabilityResidual`; O76/O78 left the boundary as the corrected floor-matched threshold route. This pass welds them: the corrected boundary obligation REDUCES to the same large-sector residual at the working radius, because at any strict radius the §6.2 boundary residual is vacuous (`¬ δ' < 1 − √ρ` unreachable) — so the entire #304 debt is one obligation kind at (at most) two radii per floor cell.
+O70 left the strict branch as `StrictCoeffPolysLargeResidual` + `BoundaryProbabilityResidual`; O76/O78 left the boundary as the corrected floor-matched threshold route. This pass welds them: the corrected boundary obligation REDUCES to the same large-sector residual at the working radius, because at any strict radius the §6.2 boundary residual is vacuous (`¬ δ' < 1 − √ρ` unreachable) — so the entire #304 debt is one obligation kind at (at most) two radii per floor cell.
 
 **Bricks (`BCIKS20/RemainingCore.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):**
-* `BCIKS20RemainingCore k deg domain δ δ'` (line 84) — **the one named Prop**: `StrictCoeffPolysResidualLarge(δ) ∧ StrictCoeffPolysResidualLarge(δ')`.
+* `BCIKS20RemainingCore k deg domain δ δ'` (line 84) — **the one named Prop**: `StrictCoeffPolysLargeResidual(δ) ∧ StrictCoeffPolysLargeResidual(δ')`.
 * `correlatedAgreement_of_remainingCore` (line 149) — **the wiring theorem**: `δ' < 1 − √ρ` + `⌊δ'n⌋ = ⌊δn⌋` + the core ⟹ `δ_ε_correlatedAgreementCurves` at δ with `ε = max (errorBound δ) (errorBound δ')`. Strict interior: conjunct 1 through the O70 front door at the literal `errorBound δ` (boundary residual discharged by vacuity, `correlatedAgreementCurves_strict_of_remainingCore`). Closed boundary (`errorBound δ = 0`): conjunct 2 through the front door at δ' + the O76 floor transport, max realized by the honest `errorBound δ' > 0` (`correlatedAgreementCurves_floorMatched_of_remainingCore`). Glue: `correlatedAgreementCurves_mono_eps` (CA is antitone in ε).
 * `remainingCore_boundary_witness` + `correlatedAgreementCurves_boundary_witness` — the core is SATISFIABLE at the O76 closed-boundary instance (ZMod 5, n=4, deg=2, k=1, δ' = 1/4; rate = 1/2 kernel-checked via `rateOfLinearCode_eq_div'`), and the pipeline then exports an UNCONDITIONAL in-tree closed-boundary CA at threshold `max(0, 4/5)` — true content, exhaustively pre-verified by the O78 floor-cell probe (390,625 stacks, fired 60,625, 0 violations). Honest caveat in-file: at toy q both conjuncts hold vacuously (δ not strictly interior; `(1−ρ)/2 = 1/4` exactly) — the witness certifies consistency, not large-q content.
 
 **Probe (`probe_remaining_core_wiring.py`, exact arithmetic, exit 0):** 8,255 grid points, 0 violations — every one of the 8,113 non-lattice boundaries admits the canonical floor-matched strict `δ' = ⌊δn⌋/n` with `errorBound δ' > 0` (24,040 Johnson-window + 8,412 UDR instantiations over q ∈ {5, 97, BabyBear, M61}); `errorBound(boundary) = 0` always (the refuted-shape ε never exported); the 142 lattice points admit NO strict floor-matched radius and stay honestly behind `BoundaryCardLatticeData`; O76 witness reproduced to the digit.
 
-**Where #304 now sits:** the issue can be re-scoped verbatim as "remaining = `BCIKS20RemainingCore` (RemainingCore.lean:84), consumed by `correlatedAgreement_of_remainingCore` (line 149), plus the square-lattice endpoint branch behind `BoundaryCardLatticeData`". Producers target a single obligation kind — `StrictCoeffPolysResidualLarge` at one radius per floor cell — and every discharge flows to Theorem 1.5 with zero plumbing left.
+**Where #304 now sits:** the issue can be re-scoped verbatim as "remaining = `BCIKS20RemainingCore` (RemainingCore.lean:84), consumed by `correlatedAgreement_of_remainingCore` (line 149), plus the square-lattice endpoint branch behind `BoundaryCardLatticeData`". Producers target a single obligation kind — `StrictCoeffPolysLargeResidual` at one radius per floor cell — and every discharge flows to Theorem 1.5 with zero plumbing left.
 ### O79 — the Steps 5–7 capture kernel gets its statement and its first proven sub-obligation: capture IS affine decodability, and the Hensel-stream output shape now reaches the Claim-1 consumer
 
 O71/Hab25Claim1 pinned the #302 chain's single deep input to the per-cell `hsteps57` hypothesis of `claim1_dichotomy` (capture-above-threshold by one degree-`< k` affine pair), but nothing in-tree PRODUCED `AffineCaptured` — the #304/#138/#139 Hensel stream (HPzBridge/HenselDatum, MatchingExtractor, Claims 5.8/5.9) terminates on a different surface: per-`z` decoded-polynomial identities `P z = v₀ + z·v₁`. This pass builds the seam and the kernel's canonical form.

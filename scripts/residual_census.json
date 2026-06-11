@@ -1,18 +1,18 @@
 {
  "summary": {
-  "total": 105,
-  "open": 27,
-  "discharged": 78,
+  "total": 108,
+  "open": 26,
+  "discharged": 82,
   "by_top_dir": {
    "Data": {
-    "total": 22,
+    "total": 25,
     "open": 10,
-    "discharged": 12
+    "discharged": 15
    },
    "OracleReduction": {
     "total": 41,
-    "open": 10,
-    "discharged": 31
+    "open": 9,
+    "discharged": 32
    },
    "ProofSystem": {
     "total": 22,
@@ -32,8 +32,17 @@
    "fq_name": "AGL24.SymbolicFullRankResidual",
    "file": "ArkLib/Data/CodingTheory/AGL24SymbolicRank.lean",
    "line": 45,
-   "providers": [],
-   "status": "open"
+   "providers": [
+    {
+     "name": "AGL24.symbolicFullRankResidual_of_evaluated_witness",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/AGL24EvalToSymbolic.lean",
+     "line": 98,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "RIMFullRankFailureProbResidual",
@@ -285,7 +294,9 @@
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
      "line": 119,
-     "conditional_on_residuals": [],
+     "conditional_on_residuals": [
+      "StrictCoeffPolysLargeResidual"
+     ],
      "ambiguous_name_match": false
     },
     {
@@ -297,11 +308,13 @@
      "ambiguous_name_match": false
     },
     {
-     "name": "ProximityGap.strictCoeffPolysResidual_of_strictCoeffPolysResidualExc_zero",
+     "name": "ProximityGap.strictCoeffPolysResidual_of_strictCoeffPolysExcResidual_zero",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean",
      "line": 188,
-     "conditional_on_residuals": [],
+     "conditional_on_residuals": [
+      "StrictCoeffPolysExcResidual"
+     ],
      "ambiguous_name_match": false
     },
     {
@@ -856,6 +869,121 @@
    "line": 30,
    "providers": [],
    "status": "open"
+  },
+  {
+   "name": "StrictCoeffPolysLargeResidual",
+   "fq_name": "ProximityGap.StrictCoeffPolysLargeResidual",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
+   "line": 96,
+   "providers": [
+    {
+     "name": "ArkLib.RawGS304.strictCoeffPolysLargeResidual_of_rawGSCargo",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/LocalSeriesProducer.lean",
+     "line": 526,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ArkLib.RawGS304.strictCoeffPolysLargeResidual_of_rawGSCargoProducer",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/LocalSeriesProducer.lean",
+     "line": 548,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.strictCoeffPolysLargeResidual_of_residual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
+     "line": 133,
+     "conditional_on_residuals": [
+      "StrictCoeffPolysResidual"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ArkLib.FaithfulCurveExtraction.strictCoeffPolysLargeResidual_of_localSeriesDatumOn",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean",
+     "line": 450,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ArkLib.UnifiedExtractionTarget.strictCoeffPolysLargeResidual_of_producer",
+     "kind": "theorem",
+     "file": "ArkLib/ToMathlib/UnifiedExtractionTarget.lean",
+     "line": 96,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ArkLib.UnifiedProducerWindowGlue.strictCoeffPolysLargeResidual_of_window",
+     "kind": "theorem",
+     "file": "ArkLib/ToMathlib/UnifiedProducerWindowGlue.lean",
+     "line": 325,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
+  },
+  {
+   "name": "StrictCoeffPolysExcResidual",
+   "fq_name": "ProximityGap.StrictCoeffPolysExcResidual",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean",
+   "line": 157,
+   "providers": [
+    {
+     "name": "ProximityGap.strictCoeffPolysExcResidual_of_strictCoeffPolysResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean",
+     "line": 178,
+     "conditional_on_residuals": [
+      "StrictCoeffPolysResidual"
+     ],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "open"
+  },
+  {
+   "name": "StrictCoeffPolysShareResidual",
+   "fq_name": "ProximityGap.StrictCoeffPolysShareResidual",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean",
+   "line": 76,
+   "providers": [
+    {
+     "name": "ProximityGap.strictCoeffPolysShareResidual_of_cell_decomposition",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean",
+     "line": 102,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.strictCoeffPolysShareResidual_of_strictCoeffPolysResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean",
+     "line": 180,
+     "conditional_on_residuals": [
+      "StrictCoeffPolysResidual"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.strictCoeffPolysShareResidual_of_exc",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean",
+     "line": 195,
+     "conditional_on_residuals": [
+      "StrictCoeffPolysExcResidual"
+     ],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "BoundaryCardStrictInteriorResidual",
@@ -1680,9 +1808,18 @@
    "name": "Hyb4ChallengeEntryResidual",
    "fq_name": "DuplexSpongeFS.Hyb34LogShapeFalse.Hyb4ChallengeEntryResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean",
-   "line": 649,
-   "providers": [],
-   "status": "open"
+   "line": 643,
+   "providers": [
+    {
+     "name": "DuplexSpongeFS.Hyb34LogShapeFalse.hyb4ChallengeEntryResidual_holds",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb4ChallengeEntry.lean",
+     "line": 246,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "KeyLemmaResidual",
@@ -2385,7 +2522,9 @@
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Stir/CheckingVerifier.lean",
      "line": 1095,
-     "conditional_on_residuals": [],
+     "conditional_on_residuals": [
+      "StrictCoeffPolysLargeResidual"
+     ],
      "ambiguous_name_match": false
     },
     {
@@ -2547,7 +2686,7 @@
    "name": "queryRoundChainDeliveryResidual",
    "fq_name": "Fri.Spec.Completeness.queryRoundChainDeliveryResidual",
    "file": "ArkLib/ToMathlib/FriCompleteQueryRound.lean",
-   "line": 178,
+   "line": 177,
    "providers": [],
    "status": "open"
   },
@@ -3077,30 +3216,6 @@
    "kind": "def",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/AHIV22.lean",
    "line": 1537,
-   "reason": "name does not end in `Residual`"
-  },
-  {
-   "name": "StrictCoeffPolysResidualLarge",
-   "fq_name": "ProximityGap.StrictCoeffPolysResidualLarge",
-   "kind": "def",
-   "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
-   "line": 96,
-   "reason": "name does not end in `Residual`"
-  },
-  {
-   "name": "StrictCoeffPolysResidualExc",
-   "fq_name": "ProximityGap.StrictCoeffPolysResidualExc",
-   "kind": "def",
-   "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean",
-   "line": 157,
-   "reason": "name does not end in `Residual`"
-  },
-  {
-   "name": "StrictCoeffPolysResidualShare",
-   "fq_name": "ProximityGap.StrictCoeffPolysResidualShare",
-   "kind": "def",
-   "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean",
-   "line": 73,
    "reason": "name does not end in `Residual`"
   },
   {

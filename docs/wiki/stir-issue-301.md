@@ -116,7 +116,7 @@ discharging `stir_main` / `stir_rbr_soundness`.
   `stirCheckingIOP_isSecureWithGap_of_large`,
   `stir_rbr_soundness_of_checkingIOP_large`, and
   `stir_main_of_checkingIOP_large` consume the honest large-good-set
-  `StrictCoeffPolysResidualLarge` family plus the same checking bridge.
+  `StrictCoeffPolysLargeResidual` family plus the same checking bridge.
 - `ArkLib.ProofSystem.Stir.ErrorAccumulation.PerRoundProximityGap.refl` is the named
   reflexive keystone used when front doors choose accounting errors equal to the proximity-gap
   bounds.

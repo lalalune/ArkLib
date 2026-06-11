@@ -521,9 +521,9 @@ theorem strictCoeffPolysResidual_of_rawGSCargo
 
 omit [Nonempty ι] [DecidableEq ι] in
 /-- **End-to-end large-sector form:** per-`(u, P)` raw GS cargo discharges the reduced
-`StrictCoeffPolysResidualLarge` surface directly.  This is the producer-facing shape of the
+`StrictCoeffPolysLargeResidual` surface directly.  This is the producer-facing shape of the
 remaining #304 core after the small-good-set sector is removed. -/
-theorem strictCoeffPolysResidualLarge_of_rawGSCargo
+theorem strictCoeffPolysLargeResidual_of_rawGSCargo
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
       Pr_{
@@ -538,19 +538,19 @@ theorem strictCoeffPolysResidualLarge_of_rawGSCargo
           (P z).natDegree < deg ∧
             δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
         RawGSCargo (k := k) (deg := deg) (domain := domain) (δ := δ) u P) :
-    ProximityGap.StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain)
+    ProximityGap.StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain)
       (δ := δ) :=
-  FaithfulCurveExtraction.strictCoeffPolysResidualLarge_of_localSeriesDatumOn
+  FaithfulCurveExtraction.strictCoeffPolysLargeResidual_of_localSeriesDatumOn
     (fun hk u hprob hJ hsqrt hcard P hP =>
       localSeriesDatumOn_of_rawGSCargo (hInput hk u hprob hJ hsqrt hcard P hP))
 
-/-- Named-predicate version of `strictCoeffPolysResidualLarge_of_rawGSCargo`. -/
-theorem strictCoeffPolysResidualLarge_of_rawGSCargoProducer
+/-- Named-predicate version of `strictCoeffPolysLargeResidual_of_rawGSCargo`. -/
+theorem strictCoeffPolysLargeResidual_of_rawGSCargoProducer
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hInput : RawGSCargoLargeProducer (k := k) (deg := deg) (domain := domain) (δ := δ)) :
-    ProximityGap.StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain)
+    ProximityGap.StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain)
       (δ := δ) :=
-  strictCoeffPolysResidualLarge_of_rawGSCargo
+  strictCoeffPolysLargeResidual_of_rawGSCargo
     (k := k) (deg := deg) (domain := domain) (δ := δ)
     (fun hk u hprob hJ hsqrt hcard P hP => hInput hk u hprob hJ hsqrt hcard P hP)
 
@@ -562,8 +562,8 @@ theorem remainingCore_of_rawGSCargoLarge
     (hδ : RawGSCargoLargeProducer (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hδ' : RawGSCargoLargeProducer (k := k) (deg := deg) (domain := domain) (δ := δ')) :
     ProximityGap.BCIKS20RemainingCore k deg domain δ δ' :=
-  ⟨strictCoeffPolysResidualLarge_of_rawGSCargoProducer hδ,
-    strictCoeffPolysResidualLarge_of_rawGSCargoProducer hδ'⟩
+  ⟨strictCoeffPolysLargeResidual_of_rawGSCargoProducer hδ,
+    strictCoeffPolysLargeResidual_of_rawGSCargoProducer hδ'⟩
 
 end Weld
 
@@ -598,6 +598,6 @@ end ArkLib
 #print axioms ArkLib.RawGS304.RawGSCargoLargeProducer
 #print axioms ArkLib.RawGS304.localSeriesDatumOn_of_rawGSCargo
 #print axioms ArkLib.RawGS304.strictCoeffPolysResidual_of_rawGSCargo
-#print axioms ArkLib.RawGS304.strictCoeffPolysResidualLarge_of_rawGSCargo
-#print axioms ArkLib.RawGS304.strictCoeffPolysResidualLarge_of_rawGSCargoProducer
+#print axioms ArkLib.RawGS304.strictCoeffPolysLargeResidual_of_rawGSCargo
+#print axioms ArkLib.RawGS304.strictCoeffPolysLargeResidual_of_rawGSCargoProducer
 #print axioms ArkLib.RawGS304.remainingCore_of_rawGSCargoLarge
