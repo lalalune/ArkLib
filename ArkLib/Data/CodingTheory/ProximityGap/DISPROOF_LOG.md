@@ -5630,3 +5630,30 @@ profile:** exact ladder rerun: max-bad profile `{m=3: 4, m=4: 1}` at BOTH p = 13
 at these rungs: the numerator is the subset-sum census, which is field-independent as long
 as the sums stay distinct (no collisions at these primes). Probe additions in
 `probe_o137_kkh26_extremal.py`-adjacent rerun of the exact ladder.
+
+### O138 — THE (12,6) FLAT NUMERATOR SOLVED: the extremal stack is the m = 1 pair (X⁹, X⁸) and the numerator is the constrained subset-sum census, field-independent (2026-06-11, #357)
+
+The dossier's open phenomenon — max bad-γ count exactly 12 at (n,k) = (12,6), δ = 1/4, at
+EVERY field p ∈ {13,37,61} — is fully explained
+(`probe_o138_flat_numerator_solved.py`, exact):
+
+* **Monomial-stack scan at p = 13** (all `(X^s, X^t)`, 6 ≤ t < s ≤ 11, agreement ≥ 9):
+  unique maximum **(X⁹, X⁸) with badcount 12**; the KKH26 fiber stack (X⁹, X⁶) gives only 4;
+  (X¹⁰,X⁷) and (X¹¹,X⁸) give 4; everything else 0. The extremal monomial pair is the
+  **adjacent-exponent (m = 1) pair**, same as the n = 4 extremal (X³, X²) — NOT the
+  m = 3 fiber shape.
+* **The census explains 12 exactly:** the general m = 1 law (monic-root forcing at degree
+  a, coefficient matching) says λ is bad for `(X^a, X^{a−1})` against degree-< k codes at
+  agreement ≥ a iff `∃ A ∈ C(H, a)` with `e₂(A) = … = e_{a−k}(A) = 0` and `λ = −e₁(A)`.
+  At (12,6), a = 9: `{−e₁(A) : A ∈ C(μ₁₂,9), e₂(A) = e₃(A) = 0}` has EXACTLY 12 elements
+  (12 qualifying subsets, all sums distinct) at p = 13, 37, and 61 — field-independent,
+  matching the flat numerator. (12 = n suggests the qualifying subsets are one rotation
+  orbit — the orbit law again.)
+
+**Corrected extremality conjecture:** the sup in `ε_mca(C, 1 − a/n)` is attained on the
+twisted-monomial orbit of the **adjacent pair** `(X^a, X^{a−1})`, and equals
+`#{−e₁(A) : A ∈ C(H,a), e₂(A) = … = e_{a−k}(A) = 0} / |F|`. Confirmed exactly at every rung
+where exact computation exists: (5,4,2), (13,4,2), (17,4,2) (where the constraint set is
+empty and this reduces to the proven `badScalar_iff_subsetSum`), and (12,6) × three fields.
+Formalization target: `badScalar_iff_constrainedSubsetSum` (same monic-root-forcing proof,
+esymm coefficients via Vieta); the KKH26CensusLaw file's law is the k = a−1 special case.
