@@ -62,7 +62,33 @@ theorem append_rbrKnowledgeSoundness_keystone_collapse
     (init := pure ()) (impl := collapseState impl s₀)
     V₁ V₂ verify hVerify ⟨(), by simp⟩ (by simp) hNE₂ hNEW₂ hn hDir hDir₂ h₁ h₂
 
+/-- **The named append rbr-knowledge-soundness residual is a theorem** (message seam,
+deterministic first verifier, point-mass initialization, **arbitrary state type**): the exact
+`Prop` `Verifier.appendRbrKnowledgeSoundnessResidual V₁ V₂ h₁ h₂` from `Append.lean`,
+discharged by the collapse keystone. Strictly more general than a `[Subsingleton σ]`
+instantiation. -/
+theorem appendRbrKnowledgeSoundnessResidual_of_message_collapse
+    {impl : QueryImpl oSpec (StateT σ ProbComp)} {s₀ : σ}
+    (hso : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    (hNE₂ : Nonempty Stmt₂) (hNEW₂ : Nonempty Wit₂)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (h₁ : V₁.rbrKnowledgeSoundness (pure s₀) impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness (pure s₀) impl rel₂ rel₃ rbrKnowledgeError₂) :
+    appendRbrKnowledgeSoundnessResidual V₁ V₂ h₁ h₂ :=
+  append_rbrKnowledgeSoundness_keystone_collapse hso V₁ V₂ verify hVerify hNE₂ hNEW₂
+    hn hDir hDir₂ h₁ h₂
+
 end Verifier
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms Verifier.append_rbrKnowledgeSoundness_keystone_collapse
+#print axioms Verifier.appendRbrKnowledgeSoundnessResidual_of_message_collapse
