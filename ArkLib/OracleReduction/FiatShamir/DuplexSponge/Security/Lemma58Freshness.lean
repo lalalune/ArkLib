@@ -112,17 +112,20 @@ theorem fresh_at_firstOfClass_perm
   -- provenance: the pair comes from a forward or inverse prefix entry
   rcases cacheFold_pair_mem _ _ hwmem with h0 | hmem | hmem
   · simp at h0
-  all_goals {
+  · -- forward creator: same entry
     obtain ⟨j, hj, hjE⟩ := List.mem_iff_getElem.mp hmem
     have hjlt : j < (k : ℕ) := lt_of_lt_of_le hj (by simp [List.length_take])
     have hjlog : j < log.length := lt_trans hjlt k.isLt
     have hfc := hfirst ⟨j, hjlog⟩ (by exact_mod_cast hjlt)
     simp only [List.getElem_take] at hjE
-    first
-    | exact hfc.1 (by show log[j]'hjlog = log[k]; rw [hjE, he])
-    | exact hfc.2 (by show log[j]'hjlog = mirrorOf log[k]; rw [hjE, he])
-    | exact hfc.1 (by show log[j]'hjlog = log[k]; rw [hjE, he]; rfl)
-    | exact hfc.2 (by show log[j]'hjlog = mirrorOf log[k]; rw [hjE, he]; rfl) }
+    exact hfc.1 (by show log[j]'hjlog = log[k]; rw [hjE, he])
+  · -- inverse creator: the mirror entry
+    obtain ⟨j, hj, hjE⟩ := List.mem_iff_getElem.mp hmem
+    have hjlt : j < (k : ℕ) := lt_of_lt_of_le hj (by simp [List.length_take])
+    have hjlog : j < log.length := lt_trans hjlt k.isLt
+    have hfc := hfirst ⟨j, hjlog⟩ (by exact_mod_cast hjlt)
+    simp only [List.getElem_take] at hjE
+    exact hfc.2 (by show log[j]'hjlog = mirrorOf log[k]; rw [hjE, he, Paper.mirrorOf_fwd])
 
 /-- **Freshness (inverse case)**: at a class-first slot holding an inverse permutation
 entry, the pair cache has no record with that value key. -/
@@ -149,17 +152,20 @@ theorem fresh_at_firstOfClass_permInv
   subst ha
   rcases cacheFold_pair_mem _ _ hwmem with h0 | hmem | hmem
   · simp at h0
-  all_goals {
+  · -- forward creator: the mirror entry
     obtain ⟨j, hj, hjE⟩ := List.mem_iff_getElem.mp hmem
     have hjlt : j < (k : ℕ) := lt_of_lt_of_le hj (by simp [List.length_take])
     have hjlog : j < log.length := lt_trans hjlt k.isLt
     have hfc := hfirst ⟨j, hjlog⟩ (by exact_mod_cast hjlt)
     simp only [List.getElem_take] at hjE
-    first
-    | exact hfc.1 (by show log[j]'hjlog = log[k]; rw [hjE, he])
-    | exact hfc.2 (by show log[j]'hjlog = mirrorOf log[k]; rw [hjE, he])
-    | exact hfc.1 (by show log[j]'hjlog = log[k]; rw [hjE, he]; rfl)
-    | exact hfc.2 (by show log[j]'hjlog = mirrorOf log[k]; rw [hjE, he]; rfl) }
+    exact hfc.2 (by show log[j]'hjlog = mirrorOf log[k]; rw [hjE, he, Paper.mirrorOf_inv])
+  · -- inverse creator: same entry
+    obtain ⟨j, hj, hjE⟩ := List.mem_iff_getElem.mp hmem
+    have hjlt : j < (k : ℕ) := lt_of_lt_of_le hj (by simp [List.length_take])
+    have hjlog : j < log.length := lt_trans hjlt k.isLt
+    have hfc := hfirst ⟨j, hjlog⟩ (by exact_mod_cast hjlt)
+    simp only [List.getElem_take] at hjE
+    exact hfc.1 (by show log[j]'hjlog = log[k]; rw [hjE, he])
 
 end DuplexSpongeFS.EagerLazyDS
 
