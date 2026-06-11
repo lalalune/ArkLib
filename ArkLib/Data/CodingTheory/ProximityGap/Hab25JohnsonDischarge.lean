@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonCountWiring
+import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
 
 /-!
 # The Hab25 Johnson discharge site (#302)
@@ -42,6 +43,20 @@ open scoped NNReal ENNReal
 
 variable {ι₀ : Type} [Fintype ι₀] [Nonempty ι₀] [DecidableEq ι₀]
 variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
+
+
+/-- **The gate statement, pinned.**  The unconditional below-Johnson numeric edge as the
+final theorem `ProximityGap.johnsonNumericBound_holds` will assert it: for every smooth
+evaluation domain, rate, and Johnson-range radius (with the canonical multiplicity regime),
+the MCA error is inside the [Hab25] numeric budget.  Pinning the `Prop` removes the last
+flip-day design decision; the discharge theorem proves exactly this. -/
+def JohnsonDischargeStatement : Prop :=
+  ∀ (n k m : ℕ) (_ : NeZero n) (F₀ : Type) (_ : Field F₀) (_ : Fintype F₀)
+    (_ : DecidableEq F₀) (domain : Fin n ↪ F₀) (η δ : ℝ≥0),
+    2 ≤ k → k + 1 ≤ n → 12 ≤ m →
+    δ ≤ 1 → (δ : ℝ) < _root_.gs_johnson k n m →
+    ((m : ℝ) ≤ max (⌈((((k : ℝ) / n + 1 / n)) ^ ((1 : ℝ) / 2)) / (2 * (η : ℝ))⌉ : ℝ) 3) →
+    JohnsonNumericBound domain k η δ
 
 /-- **The capture-production obligation.**  The unconditional numeric edge, conditional
 on exactly one input: for each word stack, a list of at most `L` low-degree pairs whose
