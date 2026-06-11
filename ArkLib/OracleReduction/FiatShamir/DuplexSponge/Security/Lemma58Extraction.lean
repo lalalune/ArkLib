@@ -84,9 +84,83 @@ theorem anchoredFrom_of_at (c₀ : DSCache StmtIn U)
           refine Or.inr (ih (stepCache c₀ e) ⟨jv, hjv'⟩ ?_)
           simpa [List.take_succ_cons, List.foldl_cons] using hcol
 
+/-! ## Prefix-fold bookkeeping -/
+
+/-- Folding one more prefix entry is one `stepCache` step. -/
+theorem foldl_take_succ_eq (l : List (DSEntry StmtIn U)) (j : ℕ) (hj : j < l.length)
+    (c₀ : DSCache StmtIn U) :
+    (l.take (j + 1)).foldl stepCache c₀
+      = stepCache ((l.take j).foldl stepCache c₀) l[j] := by
+  rw [List.take_succ, List.getElem?_eq_getElem hj]
+  rw [Option.toList_some, List.foldl_append, List.foldl_cons, List.foldl_nil]
+
+/-- A satisfiable pair predicate at the `(j'+1)`-prefix fold persists to any larger prefix. -/
+theorem pairKey_isSome_take_of_le {l : List (DSEntry StmtIn U)} {j' j : ℕ}
+    (hj' : j' + 1 ≤ j) (c₀ : DSCache StmtIn U)
+    {p : CanonicalSpongeState U × CanonicalSpongeState U → Bool}
+    (h : (((l.take (j' + 1)).foldl stepCache c₀).2.find? p).isSome) :
+    (((l.take j).foldl stepCache c₀).2.find? p).isSome := by
+  have hsplit : l.take j
+      = l.take (j' + 1) ++ (l.take j).drop (j' + 1) := by
+    conv_lhs => rw [← List.take_append_drop (j' + 1) (l.take j)]
+    rw [List.take_take, min_eq_left hj']
+  rw [hsplit, List.foldl_append]
+  exact pairKey_isSome_foldl_mono _ _ h
+
+/-! ## The `E_func` arm is impossible on a certified consistent list -/
+
+/-- **`E_func` refutation**: on a no-redundancy, consistent list, no forward entry can share
+its key with an earlier forward query or inverse answer — the earlier entry was fresh at its
+slot, cached the pair with that forward key, the record persisted, contradicting the later
+entry's certificate freshness. -/
+theorem notFunction_data_impossible
+    {base : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (hnr : Paper.NoRedundantEntryDSPaper base)
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) base)
+    {j : Fin base.length} {stateIn stateOut : CanonicalSpongeState U}
+    (hj : base[j] = ⟨.inr (.inl stateIn), stateOut⟩)
+    {j' : Fin base.length} (hj'lt : j' < j)
+    (hcoin : (∃ stateOut1, base[j'] = ⟨.inr (.inl stateIn), stateOut1⟩)
+      ∨ (∃ stateOut2, base[j'] = ⟨.inr (.inr stateOut2), stateIn⟩)) :
+    False := by
+  -- the later entry is certificate-fresh: its forward key misses at its prefix fold
+  have hfresh_j := fresh_at_firstOfClass_perm hcons
+    (firstOfClassAt_of_noRedundant hnr j) hj
+  -- but the earlier entry caches a pair with that forward key, which persists
+  have hsome : (((base.take j).foldl stepCache ((∅, []) : DSCache StmtIn U)).2.find?
+      (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+        w.1 = stateIn)).isSome := by
+    have hstep := foldl_take_succ_eq base j' j'.isLt ((∅, []) : DSCache StmtIn U)
+    rcases hcoin with ⟨out1, hj'⟩ | ⟨out2, hj'⟩
+    · -- earlier forward entry: fresh at j', caches (stateIn, out1)
+      have hfresh_j' := fresh_at_firstOfClass_perm hcons
+        (firstOfClassAt_of_noRedundant hnr j') hj'
+      have hmem : (stateIn, out1) ∈ ((base.take (j'.val + 1)).foldl stepCache
+          ((∅, []) : DSCache StmtIn U)).2 := by
+        rw [hstep, show (base[(j' : ℕ)]'j'.isLt) = base[j'] from rfl, hj']
+        exact stepCache_caches_fresh_perm _ hfresh_j'
+      exact pairKey_isSome_take_of_le (by exact_mod_cast hj'lt)
+        ((∅, []) : DSCache StmtIn U)
+        (List.find?_isSome.mpr ⟨(stateIn, out1), hmem, by simp⟩)
+    · -- earlier inverse entry: fresh at j', caches (stateIn, out2)
+      have hfresh_j' := fresh_at_firstOfClass_permInv hcons
+        (firstOfClassAt_of_noRedundant hnr j') hj'
+      have hmem : (stateIn, out2) ∈ ((base.take (j'.val + 1)).foldl stepCache
+          ((∅, []) : DSCache StmtIn U)).2 := by
+        rw [hstep, show (base[(j' : ℕ)]'j'.isLt) = base[j'] from rfl, hj']
+        exact stepCache_caches_fresh_permInv _ hfresh_j'
+      exact pairKey_isSome_take_of_le (by exact_mod_cast hj'lt)
+        ((∅, []) : DSCache StmtIn U)
+        (List.find?_isSome.mpr ⟨(stateIn, out2), hmem, by simp⟩)
+  rw [hfresh_j] at hsome
+  cases hsome
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms DuplexSpongeFS.EagerLazyDS.swapEntry_eq_mirrorOf
 #print axioms DuplexSpongeFS.EagerLazyDS.firstOfClassAt_of_noRedundant
 #print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_at
+#print axioms DuplexSpongeFS.EagerLazyDS.foldl_take_succ_eq
+#print axioms DuplexSpongeFS.EagerLazyDS.pairKey_isSome_take_of_le
+#print axioms DuplexSpongeFS.EagerLazyDS.notFunction_data_impossible
