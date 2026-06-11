@@ -41,6 +41,7 @@ import ArkLib.Data.Classes.Slice
 import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
 import ArkLib.Data.CodingTheory.AGL24DeterministicChain
 import ArkLib.Data.CodingTheory.AGL24KernelVector
+import ArkLib.Data.CodingTheory.AGL24ListDecodingBridge
 import ArkLib.Data.CodingTheory.AGL24ReducedIntersectionMatrix
 import ArkLib.Data.CodingTheory.AGL24SubfamilyTransport
 import ArkLib.Data.CodingTheory.AGL24UnionBound
@@ -1307,6 +1308,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFals
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58CacheProvenance
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Correspondence
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58EagerFalse
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Extraction
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Freshness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.LiftCoherence
