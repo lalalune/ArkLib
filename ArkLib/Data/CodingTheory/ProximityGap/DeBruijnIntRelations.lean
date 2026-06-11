@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedTwoPrime
 
 /-!
@@ -160,103 +161,24 @@ theorem debruijn_int_two_prime [CharZero L] {p q a b : ℕ}
 
 The two-prime descent (O93/O94) split threads at a prime whose SQUARE divides the
 level; the coprime analogue needs the linear disjointness of `ℚ(ζ_M)` and
-`ℚ(ζ_N)` for coprime `M, N` at arbitrary orders.  The proof of
-`DeBruijnTwoPrime.minpoly_adjoin_primitiveRoot_eq_packet` never used prime-power
-structure — this is its honest generalization, same engine: divisibility
-`minpoly ∣ Φ_N` pinched against the totient tower bound. -/
+`ℚ(ζ_N)` for coprime `M, N` at arbitrary orders.  The totient-tower proof now lives
+once in `CoprimePacketMinpoly`; this section keeps the integer-relations-facing theorem
+names as wrappers. -/
 
 section CoprimeMinpoly
 
-open Polynomial IntermediateField Module
-
-/-- Roots of unity are integral over any base field of the ambient field.
-(Provenance: `CRTPacketMinpoly.isIntegral_of_pow_eq_one`.) -/
-private lemma isIntegral_of_pow_eq_one {K L : Type*} [Field K] [Field L] [Algebra K L]
-    {x : L} {m : ℕ} (hm : 0 < m) (hx : x ^ m = 1) : IsIntegral K x :=
-  ⟨X ^ m - 1, by simpa using monic_X_pow_sub_C (1 : K) hm.ne', by simp [hx]⟩
+open Polynomial IntermediateField
 
 /-- **The coprime cyclotomic minpoly, general orders**: for coprime `M, N ≥ 1` and
 primitive roots `ξ` (`M`-th), `η` (`N`-th) in a characteristic-zero field, the
 minimal polynomial of `η` over `ℚ⟮ξ⟯` is `Φ_N` — linear disjointness of coprime
-cyclotomic extensions, with no prime-power restriction.  (Generalizes
-`DeBruijnTwoPrime.minpoly_adjoin_primitiveRoot_eq_packet`, whose proof is
-order-agnostic.) -/
+cyclotomic extensions, with no prime-power restriction.
+(Wrapper around `CoprimePacketMinpoly.minpoly_adjoin_coprime_eq_cyclotomic`.) -/
 theorem minpoly_adjoin_coprime_eq_cyclotomic [CharZero L] {M N : ℕ}
     (hM : 0 < M) (hN : 0 < N) (hco : Nat.Coprime M N)
     {ξ η : L} (hξ : IsPrimitiveRoot ξ M) (hη : IsPrimitiveRoot η N) :
     minpoly ℚ⟮ξ⟯ η = Polynomial.cyclotomic N ℚ⟮ξ⟯ := by
-  classical
-  have hn : 0 < M * N := Nat.mul_pos hM hN
-  -- integrality of the three roots involved
-  have hintξ : IsIntegral ℚ ξ := isIntegral_of_pow_eq_one hM hξ.pow_eq_one
-  have hintηK : IsIntegral ℚ⟮ξ⟯ η := isIntegral_of_pow_eq_one hN hη.pow_eq_one
-  -- `ξ * η` is a primitive `(M * N)`-th root of unity (coprime orders multiply)
-  have h1 : orderOf ξ = M := hξ.eq_orderOf.symm
-  have h2 : orderOf η = N := hη.eq_orderOf.symm
-  have horder : orderOf (ξ * η) = M * N := by
-    rw [(Commute.all ξ η).orderOf_mul_eq_mul_orderOf_of_coprime
-      (by rw [h1, h2]; exact hco), h1, h2]
-  have hζ : IsPrimitiveRoot (ξ * η) (M * N) :=
-    horder ▸ IsPrimitiveRoot.orderOf (ξ * η)
-  have hintζ : IsIntegral ℚ (ξ * η) := isIntegral_of_pow_eq_one hn hζ.pow_eq_one
-  -- absolute degrees over ℚ, via unconditional rationals-cyclotomic irreducibility
-  have hrkK : finrank ℚ ℚ⟮ξ⟯ = M.totient := by
-    rw [IntermediateField.adjoin.finrank hintξ, ← cyclotomic_eq_minpoly_rat hξ hM,
-      natDegree_cyclotomic]
-  have hrkZ : finrank ℚ ℚ⟮ξ * η⟯ = (M * N).totient := by
-    rw [IntermediateField.adjoin.finrank hintζ, ← cyclotomic_eq_minpoly_rat hζ hn,
-      natDegree_cyclotomic]
-  -- finite dimensionality up the tower
-  haveI : FiniteDimensional ℚ ℚ⟮ξ⟯ := IntermediateField.adjoin.finiteDimensional hintξ
-  haveI : FiniteDimensional ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ :=
-    IntermediateField.adjoin.finiteDimensional hintηK
-  haveI : FiniteDimensional ℚ ℚ⟮ξ⟯⟮η⟯ := Module.Finite.trans ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯
-  -- `ξ * η` lives in `ℚ⟮ξ⟯⟮η⟯`
-  have hξE : ξ ∈ ℚ⟮ξ⟯⟮η⟯ := by
-    have h := ℚ⟮ξ⟯⟮η⟯.algebraMap_mem ⟨ξ, mem_adjoin_simple_self ℚ ξ⟩
-    simpa using h
-  have hηE : η ∈ ℚ⟮ξ⟯⟮η⟯ := mem_adjoin_simple_self ℚ⟮ξ⟯ η
-  have hsub : ∀ {x : L}, x ∈ ℚ⟮ξ * η⟯ → x ∈ ℚ⟮ξ⟯⟮η⟯ := by
-    intro x hx
-    have hle : ℚ⟮ξ * η⟯ ≤ (ℚ⟮ξ⟯⟮η⟯).restrictScalars ℚ := by
-      rw [adjoin_le_iff]
-      intro y hy
-      rw [Set.mem_singleton_iff] at hy
-      subst hy
-      exact mul_mem hξE hηE
-    exact hle hx
-  -- ℚ-linear embedding `ℚ⟮ξ * η⟯ ↪ ℚ⟮ξ⟯⟮η⟯` gives the degree lower bound
-  let f : ℚ⟮ξ * η⟯ →ₗ[ℚ] ℚ⟮ξ⟯⟮η⟯ :=
-    { toFun := fun x => ⟨x.1, hsub x.2⟩
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl }
-  have hinj : Function.Injective f := fun x y hxy => by
-    have h1 := congrArg Subtype.val hxy
-    exact Subtype.ext h1
-  have hle : finrank ℚ ℚ⟮ξ * η⟯ ≤ finrank ℚ ℚ⟮ξ⟯⟮η⟯ :=
-    LinearMap.finrank_le_finrank_of_injective hinj
-  have htower : finrank ℚ ℚ⟮ξ⟯ * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ = finrank ℚ ℚ⟮ξ⟯⟮η⟯ :=
-    Module.finrank_mul_finrank ℚ ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯
-  -- the totient tower bound: `φ(N) ≤ natDegree (minpoly ℚ⟮ξ⟯ η)`
-  have hdeg_ge : N.totient ≤ (minpoly ℚ⟮ξ⟯ η).natDegree := by
-    have hmul : M.totient * N.totient ≤ M.totient * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := by
-      calc M.totient * N.totient
-          = (M * N).totient := (Nat.totient_mul hco).symm
-        _ = finrank ℚ ℚ⟮ξ * η⟯ := hrkZ.symm
-        _ ≤ finrank ℚ ℚ⟮ξ⟯⟮η⟯ := hle
-        _ = finrank ℚ ℚ⟮ξ⟯ * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := htower.symm
-        _ = M.totient * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := by rw [hrkK]
-    have h2 : N.totient ≤ finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ :=
-      Nat.le_of_mul_le_mul_left hmul (Nat.totient_pos.mpr hM)
-    rwa [IntermediateField.adjoin.finrank hintηK] at h2
-  -- divisibility: `minpoly ℚ⟮ξ⟯ η ∣ Φ_N` over `ℚ⟮ξ⟯`
-  have hdvd : minpoly ℚ⟮ξ⟯ η ∣ cyclotomic N ℚ⟮ξ⟯ := by
-    apply minpoly.dvd
-    rw [aeval_def, ← eval_map, map_cyclotomic]
-    exact hη.isRoot_cyclotomic hN
-  -- monic divisor of matching degree: the minimal polynomial IS the cyclotomic
-  exact (Polynomial.eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic hintηK)
-    (cyclotomic.monic _ _) hdvd (by rwa [natDegree_cyclotomic])).symm
+  exact CoprimePacketMinpoly.minpoly_adjoin_coprime_eq_cyclotomic hM hN hco hξ hη
 
 /-- The degree extraction: `[ℚ(ζ_M)(ζ_N) : ℚ(ζ_M)] = φ(N)` for coprime orders. -/
 theorem natDegree_minpoly_adjoin_coprime [CharZero L] {M N : ℕ}
