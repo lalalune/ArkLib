@@ -375,6 +375,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.SliceSeparabilityBoundary
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysExceptional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShare
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShareOr
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ThresholdInterface
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
@@ -693,6 +694,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25LinearFactorCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25RichCoordinateGate
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25ShareGoodSetWeld
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25SlackWeld
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25SlackWeldFence
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniqueRichFactor
