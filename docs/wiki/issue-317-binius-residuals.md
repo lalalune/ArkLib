@@ -77,8 +77,14 @@ or `PreTensorCombineJointProximityResidual` class remains in the current working
   `Reconstruct.FinalOracleBridge.strictOracleFoldingConsistency_last_getLastOracle_eq_prefixFold`,
   which should be composed with the final `ϑ` folds via `iterated_fold_transitivity` and the
   constant/evaluation lemmas from `Reconstruct.IteratedFoldToLevel`.
-- `ExtractMLPCorrectnessResidual`: still live in the current tree. No current checked direct proof
-  has replaced the Berlekamp--Welch extraction correctness typeclass.
+- `ExtractMLPCorrectnessResidual`: still live in `Relations.lean`, but
+  `ExtractMLPCorrectness.lean` now shows the residual is false as stated for `ℓ ≥ 2`.
+  The checked replacement is the reversed-index/UDR-guarded theorem
+  `extractMLP_zero_eq_some_revIndexMLP_iff`, and the actually consumed uniqueness consequence is
+  available as residual-free `firstOracleWitnessConsistencyProp_unique'`.
+  `Steps/Fold.lean` and `BBFSmallFieldIOPCS.lean` have been moved off the false residual for
+  their local uniqueness lemmas; extraction-to-consistency call sites still need a statement-level
+  correction to use the reversed-index theorem honestly.
 - `FoldPreservesBBFCodeMembershipResidual`: discharged in `Code.lean`. The final proof avoids the
   brittle intermediate novel-basis round trip: it shows the binary quotient map is a nonzero scalar
   multiple of `X^2 - X`, decomposes any polynomial of degree `< 2m` as
@@ -115,7 +121,9 @@ or `PreTensorCombineJointProximityResidual` class remains in the current working
   DG25 affine/interleaved proximity gap instantiated against the Binary Basefold stack after the
   now-proven pre-tensor joint proximity lemma.
 - `PreviousSuffixFiberAlignmentResidual`, `ExtractMLPCorrectnessResidual`, and
-  `FinalSumcheckStepLogicCompleteResidual` remain live in the current tree.
+  `FinalSumcheckStepLogicCompleteResidual` remain live in the current tree. For
+  `ExtractMLPCorrectnessResidual`, do not try to instantiate the old iff: use the corrected
+  `revIndexMLP` theorem or replace downstream statements that expect unreversed output.
 - The next geometry lemma is the first-step analogue of
   `qMap_total_fiber_succ_peel_last`: split an `(n+1)`-step fiber index into low bit `idx % 2`
   (the fresh single-step fold) and high suffix `idx / 2`. Unlike the existing last-step peel,

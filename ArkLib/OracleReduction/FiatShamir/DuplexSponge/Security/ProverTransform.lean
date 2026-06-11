@@ -104,7 +104,7 @@ instance : Inhabited (D2SQueryState
   ⟨{ h_inv := TraceNabla.IsSubsetOfQueryLog_empty_nil }⟩
 
 /-- Checks if an encoded message vector lies in the image of the codec serialization function. -/
-private def messageInSerializeImage
+def messageInSerializeImage
     (msgIdx : pSpec.MessageIdx)
     (encoded : Vector U (messageSize msgIdx)) : Bool := by
   exact decide (∃ msg : pSpec.Message msgIdx, Serialize.serialize msg = encoded)
@@ -121,7 +121,7 @@ def backtrackOutputMessagesInImage
 
 /-- The predicate checking if all extracted messages belong to the codec's serialization image
 (CO25, Section 5.4, Items 4(d)/(e)). -/
-private noncomputable def d2sInCodecImagePredicate
+noncomputable def d2sInCodecImagePredicate
     (out : BacktrackOutput (δ := δ) (StmtIn := StmtIn) (pSpec := pSpec) (U := U)) : Bool :=
   backtrackOutputMessagesInImage
     (StmtIn := StmtIn) (pSpec := pSpec) (U := U)

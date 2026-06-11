@@ -316,3 +316,43 @@ Per-hypothesis discipline: constraints → new direction → why nobody has done
 4. **Every B-residual consumer is conditional-hypothesis-shaped** (Hab25Johnson pattern):
    TZ (K4), the GG25 curve-decodability input (K5), any future δ* paper (A-side) — the
    named-structure discipline is the unifying architecture; no axioms.
+
+## Closeout audit snapshot — 2026-06-11
+
+Status after the wave-1 formalization (`1d790913b`):
+
+- **B1 is formalized.** `Jo26GeneratorMCA.lean` gives the general-generator `epsMCAGen`
+  interface and [Jo26] Thm 4.2/4.4 style factor/equality statements; `Jo26PowerGeneratorInterleaving.lean`
+  connects the power-generator surface back to `epsMCAP`.
+- **B3 is formalized up to the intended named external.** `KKH26EntropyForm.lean` supplies
+  the finite method-of-types/entropy form. `KKH26ThornerZaman.lean` supplies the elementary
+  good-prime counting theorem from a `TZPrimeSupply`; the analytic Thorner--Zaman prime-supply
+  theorem remains an honest external input, not an in-tree theorem.
+- **The KKH26 Lemma-1 plumbing exists in-tree.** `KKH26SumsOfRootsOfUnity.lean` now has both
+  the old explicit-threshold route and the issue-#334 divisibility route
+  (`collisionResultant`, `not_isRoot_of_not_dvd_resultant`, `sVal_injOn_of_not_dvd`,
+  `kkh26_lemma1_of_not_dvd`). Future audits should treat the Thorner--Zaman bridge as wired
+  into the in-tree divisibility API.
+- **Two "residual-looking" predicates in the proximity scan are already discharged.**
+  `PrefactorWeightMatch` is proved by `prefactorWeightMatch_holds`; `GK16Lemma12HardResidual`
+  is proved by `gk16Lemma12HardResidual_holds`. They may still intentionally exist as named
+  hinge predicates, but they are not open mathematical debt.
+- **The remaining `CapacityBoundsProofs.lean` residuals are paper-level external interfaces.**
+  The GKL24, BGKS20, BCHKS25/KK25, CS25, and GG25 predicates package external theorems so
+  downstream results stay conditional rather than smuggling in axioms. Discharging them would
+  mean separately porting those papers' full proofs, not just rephrasing the declarations.
+- **The MCA-conjecture refutation remains conditional.** `CS25BreakdownLowerResidualUniversal`
+  is the CS25 Corollary-1 lower-bound external, and `CS25BandInstanceBelowConjectureBound` is
+  the remaining arithmetic/regime witness. The in-tree theorem honestly proves that these two
+  inputs imply `¬ mcaConjecture`; it does not prove the unconditional refutation by itself.
+
+Additional web/literature sweep on 2026-06-11 found adjacent progress but no δ* breakthrough for
+explicit smooth-domain Reed--Solomon MCA:
+
+- Folded Reed--Solomon/subspace-design papers reach capacity for related folded/subspace-design
+  code families, not the fixed smooth-domain RS family targeted by the prize δ* question.
+- Syndrome-space/random-linear-code approaches give direct proximity-gap machinery for random
+  linear codes, again not the explicit smooth-domain RS bridge from Johnson to capacity.
+- The public Proximity Prize statement still asks for the largest δ* for smooth-domain RS at
+  fixed rates and ε*; the gap between `1 - sqrt ρ` and `1 - ρ - Θρ(1 / log n)` remains the
+  honest open interval for this tracker.

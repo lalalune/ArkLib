@@ -112,7 +112,7 @@ predicate/function field. -/
 Because `φ_i` (via `instSerializeMessageInjective`) is strictly injective and the message domain
 is finite, we can invert the serialization computationally via brute-force search.
 -/
-private def decodeMessagePhiInv?
+def decodeMessagePhiInv?
     (msgIdx : pSpec.MessageIdx)
     (encoded : Vector U (messageSize msgIdx)) :
     Option (pSpec.Message msgIdx) := by
@@ -120,7 +120,7 @@ private def decodeMessagePhiInv?
     Serialize.serialize msg = encoded)
 
 /-- Looks up the encoded message block `α̂_j` from the flat list of extracted sponge queries. -/
-private def lookupEncodedMessageAlphaHat?
+def lookupEncodedMessageAlphaHat?
     (encodedMessages :
       List (Sigma fun msgIdx : pSpec.MessageIdx => Vector U (messageSize msgIdx)))
     (msgIdx : pSpec.MessageIdx) :
@@ -136,7 +136,7 @@ private def lookupEncodedMessageAlphaHat?
 /-- One step of the `decodeMessagesPrefixPhiInv?` walk: extend the partial `MessagesUpTo` prefix
 by one round. On a `P_to_V` round, extract the encoded message `α̂_j` and apply `φ_j⁻¹`
 (`decodeMessagePhiInv?`); on a `V_to_P` round, extend the prefix with no payload. -/
-private noncomputable def decodeMessagesPrefixStepPhiInv
+noncomputable def decodeMessagesPrefixStepPhiInv
     (encodedList :
       List (Sigma fun msgIdx : pSpec.MessageIdx => Vector U (messageSize msgIdx)))
     (j : Fin n) (messages : pSpec.MessagesUpTo j.castSucc) :
@@ -161,7 +161,7 @@ private noncomputable def decodeMessagesPrefixStepPhiInv
 /-- Implements the full `φ⁻¹` map over a structured prefix of encoded messages up to round `i`.
 Walks the rounds `0..i-1` and iteratively applies `decodeMessagesPrefixStepPhiInv` to return
 the unencoded message sequence `α_{<i}`. -/
-private noncomputable def decodeMessagesPrefixPhiInv?
+noncomputable def decodeMessagesPrefixPhiInv?
     (roundIdx : pSpec.ChallengeIdx)
     (encodedMessages : pSpec.EncodedMessagesBefore U roundIdx.1.castSucc) :
     Option (pSpec.MessagesUpTo roundIdx.1.castSucc) := by

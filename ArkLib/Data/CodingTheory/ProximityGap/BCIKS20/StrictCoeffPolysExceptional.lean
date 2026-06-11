@@ -46,6 +46,8 @@ This file builds the honest **exceptional-set residual** and its consumer chain:
 * `correlatedAgreement_affine_curves_of_strict_coeff_polys_exc` — the final keystone:
   Theorem 1.5 from the exceptional-set residual, at the adjusted proximity error
   `ε = errorBound δ deg domain + b / |F|`.
+* `correlatedAgreement_affine_curves_strict_of_strict_coeff_polys_exc` — the strict-interior
+  front door that does not carry the documented-false boundary residual.
 -/
 
 namespace ProximityGap
@@ -451,6 +453,24 @@ theorem correlatedAgreement_affine_curves_of_strict_coeff_polys_exc {k : ℕ}
           (RS_le_relativeUniqueDecodingRadius_of_le_rate_half
             (deg := deg) (domain := domain) (δ := δ) hJ))
 
+/-- **Strict-interior exceptional-set front door.**  In the open Johnson regime
+`δ < 1 - sqrtRate`, the boundary branch is unreachable, so the exceptional-set strict
+coefficient residual gives the curve correlated-agreement theorem without any
+`BoundaryProbabilityResidual` assumption. -/
+theorem correlatedAgreement_affine_curves_strict_of_strict_coeff_polys_exc {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (b : ℕ)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCoeffExc :
+      StrictCoeffPolysResidualExc (k := k) (deg := deg) (domain := domain) (δ := δ) b) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ)
+      (ε := errorBound δ deg domain + (b : ℝ≥0) / (Fintype.card F : ℝ≥0)) :=
+  correlatedAgreement_affine_curves_of_strict_coeff_polys_exc
+    (k := k) (deg := deg) (domain := domain) (δ := δ) b hδ.le hStrictCoeffExc
+    (fun _hk _u _hprob _hJ hnot => absurd hδ hnot)
+
 end ExceptionalResidual
 
 end ProximityGap
@@ -465,3 +485,4 @@ end ProximityGap
 #print axioms ProximityGap.δ_ε_correlatedAgreementCurves_mono_error
 #print axioms ProximityGap.RS_jointAgreement_of_prob_gt_strict_johnson_exc
 #print axioms ProximityGap.correlatedAgreement_affine_curves_of_strict_coeff_polys_exc
+#print axioms ProximityGap.correlatedAgreement_affine_curves_strict_of_strict_coeff_polys_exc

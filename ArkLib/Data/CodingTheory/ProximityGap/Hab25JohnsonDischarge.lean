@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonCountWiring
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Arith
 
 /-!
 # The Hab25 Johnson discharge site (#302)
@@ -23,6 +24,8 @@ construction hypothesis away from the unconditional statement:
 * `johnsonNumericBound_holds_of_dichotomy_production` — via the dichotomy funnel
   (`johnsonNumericBound_of_forall_dichotomy`): a per-stack dichotomy bundle within a
   budget `B` satisfying the Johnson arithmetic.
+* `johnsonNumericBound_holds_of_factorData_production` — the current [BCIKS20] Claim 5.10
+  funnel: a per-pair factor-family production plus the real closing arithmetic.
 
 When either producer lands, the unconditional `johnsonNumericBound_holds` is this file's
 theorem with the hypothesis replaced by the producer call.
@@ -95,8 +98,25 @@ theorem johnsonNumericBound_holds_of_dichotomy_production
     JohnsonNumericBound domain k η δ :=
   johnsonNumericBound_of_forall_dichotomy domain k η δ hη hδ B hdata harith
 
+open Classical in
+/-- **The factor-data production obligation.**  This is the most recent canonical #302
+consumer: for each word stack, produce the `PerPairFactorData` bundle from the GS/BCIKS20
+surface, and prove the single real closing inequality for the uniform `(ℓ, T)` budget. -/
+theorem johnsonNumericBound_holds_of_factorData_production
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) (ℓ T : ℕ)
+    (hdata : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      Nonempty (BCIKS20.Claim510Bundle.PerPairFactorData domain k δ u ℓ T))
+    (hpos : 0 ≤ johnsonBoundReal domain k η δ)
+    (hreal : ((ℓ * max T (Fintype.card ι₀) : ℕ) : ℝ)
+      ≤ johnsonBoundReal domain k η δ * (Fintype.card F₀ : ℝ)) :
+    JohnsonNumericBound domain k η δ :=
+  BCIKS20.Claim510Bundle.johnsonNumericBound_of_perPairFactorData_real
+    domain k η δ hη hδ ℓ T hdata hpos hreal
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_holds_of_capture_production
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_holds_of_dichotomy_production
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_holds_of_factorData_production

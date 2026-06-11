@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chung Thai Nguyen, Quang Dao
 -/
 import ArkLib.ProofSystem.Binius.BinaryBasefold.ReductionLogic
+import ArkLib.ProofSystem.Binius.BinaryBasefold.ExtractMLPCorrectness
 import ArkLib.ToVCVio.Oracle
 import ArkLib.ToVCVio.Simulation
 import ArkLib.OracleReduction.Completeness
@@ -321,6 +322,154 @@ def finalSumcheckKnowledgeError (m : pSpecFinalSumcheckStep (L := L).ChallengeId
   | ⟨0, h0⟩ => nomatch h0
 
 omit [SampleableType L] in
+lemma firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency
+    (stmtOut : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
+    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ) j)
+    (h_oracle_consistency : finalSumcheckStepOracleConsistencyProp 𝔽q β
+      (h_le := by apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) (hdiv.out))
+      (stmtOut := stmtOut) (oStmtOut := oStmt)) :
+    UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := (0 : Fin r)) (h_i := by simp) (f := getFirstOracle 𝔽q β oStmt) := by
+  have h_le : ϑ ≤ ℓ := by apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) (hdiv.out)
+  dsimp only [finalSumcheckStepOracleConsistencyProp] at h_oracle_consistency
+  rcases h_oracle_consistency with ⟨h_oracle_cons, h_final_cons⟩
+  let j0 : Fin (toOutCodewordsCount ℓ ϑ (Fin.last ℓ)) := ⟨0, by
+    exact Nat.pos_of_neZero (toOutCodewordsCount ℓ ϑ (Fin.last ℓ))
+  ⟩
+  by_cases h_ℓ_eq_ϑ : ℓ = ϑ
+  · have h_div : ℓ / ϑ = 1 := by
+      rw [h_ℓ_eq_ϑ]
+      rw [Nat.div_self (n := ϑ) (H := by omega)]
+    have h_getLastOraclePositionIndex_last : getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ) = 0 := by
+      dsimp only [getLastOraclePositionIndex]
+      simp only [toOutCodewordsCount_last, Fin.mk_eq_zero, h_div]
+    let jLast : Fin (toOutCodewordsCount ℓ ϑ (Fin.last ℓ)) :=
+      getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)
+    have h_jLast_eq_zero : jLast = 0 := by
+      dsimp only [jLast]
+      exact h_getLastOraclePositionIndex_last
+    have h_jLast_val : jLast.val = 0 := by
+      exact congrArg Fin.val h_jLast_eq_zero
+    let zeroIdxLast : Fin r := ⟨↑jLast * ϑ, by
+      have h_r_pos : 0 < r := Nat.pos_of_neZero r
+      rw [h_jLast_val, zero_mul]
+      exact h_r_pos⟩
+    let destIdxLast : Fin r := ⟨↑jLast * ϑ + ϑ, by
+      have h_ℓ_lt_r : ℓ < r := by omega
+      have h_ϑ_lt_r : ϑ < r := by
+        rw [← h_ℓ_eq_ϑ]
+        exact h_ℓ_lt_r
+      rw [h_jLast_val, zero_mul, zero_add]
+      exact h_ϑ_lt_r⟩
+    let challengesLast : Fin ϑ → L := fun cId =>
+      stmtOut.challenges ⟨↑jLast * ϑ + ↑cId, by
+        simp only [h_jLast_eq_zero, Fin.coe_ofNat_eq_mod, toOutCodewordsCount_last, h_ℓ_eq_ϑ,
+          Nat.zero_mod, zero_mul, zero_add, Fin.val_last, cId.isLt]⟩
+    have h_zeroIdxLast : zeroIdxLast.val = 0 := by
+      simp [zeroIdxLast, h_jLast_eq_zero]
+    have h_zeroIdxLast_eq : zeroIdxLast = 0 := Fin.eq_of_val_eq h_zeroIdxLast
+    have h_destIdxLast : destIdxLast = 0 + ϑ := by
+      simp [destIdxLast, h_jLast_eq_zero]
+    have h_destIdxLast_le : destIdxLast ≤ ℓ := by
+      simp only [h_jLast_eq_zero, Fin.coe_ofNat_eq_mod, toOutCodewordsCount_last, h_ℓ_eq_ϑ,
+        Nat.zero_mod, zero_mul, zero_add, le_refl, destIdxLast]
+    have h_compl0 :
+        isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := zeroIdxLast)
+          (steps := ϑ)
+          (destIdx := destIdxLast)
+          (h_destIdx := by
+            rw [h_zeroIdxLast_eq]
+            exact h_destIdxLast)
+          (h_destIdx_le := h_destIdxLast_le)
+          (f_i := oStmt jLast)
+          (f_i_plus_steps := fun _ => stmtOut.final_constant)
+          (challenges := challengesLast) := by
+      have h_final_cons' := h_final_cons
+      simp only [jLast, zeroIdxLast, destIdxLast, challengesLast] at h_final_cons' ⊢
+      exact h_final_cons'
+    rcases h_compl0 with ⟨h_fw_dist_lt, _, _⟩
+    have h_close :=
+      UDRClose_of_fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := zeroIdxLast) (steps := ϑ) (h_destIdx := by
+          rw [h_zeroIdxLast_eq]
+          exact h_destIdxLast)
+        (h_destIdx_le := h_destIdxLast_le) (f := oStmt jLast)
+        (h_fw_dist_lt := h_fw_dist_lt)
+    convert h_close using 1
+    · exact h_zeroIdxLast_eq
+    · funext x
+      dsimp [getFirstOracle]
+      refine OracleStatement.oracle_eval_congr (oStmtIn := oStmt)
+        (h_j := h_jLast_eq_zero.symm) (h_x := ?_)
+      simp only [Fin.coe_ofNat_eq_mod, cast_cast]
+  · dsimp only [oracleFoldingConsistencyProp] at h_oracle_cons
+    have h_lt : ϑ < ℓ := by omega
+    have h_div_gt_1 : ℓ / ϑ > 1 := by
+      have h_res := (Nat.div_lt_div_right (a := ϑ) (b := ϑ) (c := ℓ) (ha := by omega)
+        (by simp only [dvd_refl]) (by exact hdiv.out)).mpr h_lt
+      rw [Nat.div_self (n := ϑ) (H := by omega)] at h_res
+      exact h_res
+    have h_j0_next_lt : ↑j0 + 1 < toOutCodewordsCount ℓ ϑ (Fin.last ℓ) := by
+      dsimp only [j0]
+      rw [toOutCodewordsCount_last]
+      exact h_div_gt_1
+    let zeroIdx0 : Fin r := ⟨↑j0 * ϑ, by
+      have h_r_pos : 0 < r := Nat.pos_of_neZero r
+      dsimp only [j0]
+      rw [zero_mul]
+      exact h_r_pos⟩
+    let destIdx0 : Fin r := ⟨↑j0 * ϑ + ϑ, by
+      have h_ℓ_lt_r : ℓ < r := by omega
+      have h_ϑ_lt_r : ϑ < r := lt_of_le_of_lt h_le h_ℓ_lt_r
+      dsimp only [j0]
+      rw [zero_mul, zero_add]
+      exact h_ϑ_lt_r⟩
+    have h_zeroIdx0 : zeroIdx0.val = 0 := by
+      simp [zeroIdx0, j0]
+    have h_destIdx0 : destIdx0 = 0 + ϑ := by
+      simp [destIdx0, j0]
+    have h_destIdx0_le : destIdx0 ≤ ℓ := by
+      dsimp only [destIdx0, j0]
+      rw [zero_mul, zero_add]
+      exact h_le
+    have h_k_next_le_last : ↑j0 * ϑ + ϑ ≤ Fin.last ℓ := by
+      exact oracle_block_k_next_le_i (ℓ := ℓ) (ϑ := ϑ)
+        (i := Fin.last ℓ) (j := j0) (hj := h_j0_next_lt)
+    let fNext0 : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx0 :=
+      getNextOracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := Fin.last ℓ)
+        oStmt j0 h_j0_next_lt
+        (destDomainIdx := destIdx0)
+        (h_destDomainIdx := by simp only [destIdx0])
+    let challenges0 : Fin ϑ → L :=
+      getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) (i := Fin.last ℓ)
+        (challenges := stmtOut.challenges) (k := ↑j0 * ϑ) (h := h_k_next_le_last)
+    have h_isCompliant_f₀ :
+        isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := zeroIdx0) (steps := ϑ)
+          (destIdx := destIdx0)
+          (h_destIdx := by
+            rw [h_zeroIdx0]
+            exact h_destIdx0)
+          (h_destIdx_le := h_destIdx0_le)
+          (f_i := oStmt ⟨↑j0, by exact j0.isLt⟩)
+          (f_i_plus_steps := fNext0)
+          (challenges := challenges0) := by
+      have h_oracle_cons' := h_oracle_cons j0 h_j0_next_lt
+      simp only [zeroIdx0, destIdx0, fNext0, challenges0] at h_oracle_cons' ⊢
+      exact h_oracle_cons'
+    rcases h_isCompliant_f₀ with ⟨h_fw_dist_lt, _, _⟩
+    have h_close :=
+      UDRClose_of_fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := zeroIdx0) (steps := ϑ) (h_destIdx := by
+          rw [h_zeroIdx0]
+          exact h_destIdx0)
+        (h_destIdx_le := h_destIdx0_le) (f := oStmt ⟨↑j0, by exact j0.isLt⟩)
+        (h_fw_dist_lt := h_fw_dist_lt)
+    dsimp only [getFirstOracle, j0] at h_close ⊢
+    exact h_close
+
+omit [SampleableType L] in
 /-! When final-sumcheck oracle consistency holds, extractMLP must succeed.
 
 This connects the proximity-based `finalSumcheckStepOracleConsistencyProp` to the decoder:
@@ -496,7 +645,8 @@ the extracted polynomial's evaluation at challenges equals the final constant.
 This is the key lemma connecting extraction to the final sumcheck verification:
 - `oracleFoldingConsistencyProp` ensures all intermediate foldings are correct
 - `h_finalFolding` (isCompliant to final constant) ensures the last step is correct
-- Together, they imply the extracted `tpoly` satisfies `tpoly.eval(challenges) = c` -/
+- Together, they imply the corrected extracted polynomial `revIndexMLP tpoly` satisfies
+  `(revIndexMLP tpoly).eval(challenges) = c` -/
 omit [SampleableType L] in
 private theorem UDRCodeword_heq_of_fin_eq
     {i j : Fin r} (hij : i = j)
@@ -1336,14 +1486,14 @@ lemma extracted_t_poly_eval_eq_final_constant
     (h_finalSumcheckStepOracleConsistency : finalSumcheckStepOracleConsistencyProp 𝔽q β
       (h_le := by apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) (hdiv.out))
       (stmtOut := stmtOut) (oStmtOut := oStmtOut)) :
-    stmtOut.final_constant = tpoly.val.eval stmtOut.challenges := by
+    stmtOut.final_constant = (revIndexMLP tpoly).val.eval stmtOut.challenges := by
   -- Proof strategy:
-    -- 1. We can see that tpoly satisifes firstOracleWitnessConsistencyProp
+    -- 1. We can see that `revIndexMLP tpoly` satisfies firstOracleWitnessConsistencyProp
     -- 2. From h_finalSumcheckStepOracleConsistency, we can inductively prove that
       -- UDR-decoded(f_j) = iterated_fold (UDR-decoded(f_0), challenges_{0->j*ϑ})
-    -- 3. We have UDR-decoded(f_0) = encoded (tpoly's evaluations)
+    -- 3. We have UDR-decoded(f_0) = encoded (`revIndexMLP tpoly`'s evaluations)
     -- 4. We have UDR-decoded(f_{ℓ/ϑ}) = fun x => stmtOut.final_constant
-    -- 5. Therefore, tpoly.val.eval stmtOut.challenges = stmtOut.final_constant
+    -- 5. Therefore, `(revIndexMLP tpoly).val.eval stmtOut.challenges = stmtOut.final_constant`
       -- Somehow similar to the strict version `iterated_fold_to_const_strict`
   classical
   have h_final_consistency := h_finalSumcheckStepOracleConsistency
@@ -1351,16 +1501,25 @@ lemma extracted_t_poly_eval_eq_final_constant
   rcases h_final_consistency with ⟨h_oracle_cons, h_final_cons⟩
   let P₀ : L⦃< 2^ℓ⦄[X] :=
     polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
-      (fun ω => tpoly.val.eval (statementOrderBitsOfIndex ω))
+      (fun ω => (revIndexMLP tpoly).val.eval (statementOrderBitsOfIndex ω))
   let f₀ : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := (0 : Fin r)) :=
     polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := 0) (P := P₀)
   have h_pair :
       pair_UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (i := (0 : Fin r)) (h_i := by simp)
         (f := getFirstOracle 𝔽q β oStmtOut) (g := f₀) := by
+    have h_close_first' :=
+      firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtOut := stmtOut) (oStmt := oStmtOut)
+        h_finalSumcheckStepOracleConsistency
+    have hUDR : 2 * Code.distFromCode (u := getFirstOracle 𝔽q β oStmtOut)
+        (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) <
+      (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞) := by
+      simpa [UDRClose] using h_close_first'
     have h_pair' :=
-      (extractMLP_eq_some_iff_pair_UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (f := getFirstOracle 𝔽q β oStmtOut) (tpoly := tpoly)).1 h_extractMLP
+      firstOracleWitnessConsistency_revIndexMLP_of_extractMLP_eq_some 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (f := getFirstOracle 𝔽q β oStmtOut) (tpoly := tpoly) hUDR h_extractMLP
     dsimp only [f₀] at h_pair' ⊢
     exact h_pair'
   let C₀ : Set ((sDomain 𝔽q β h_ℓ_add_R_rate (0 : Fin r)) → L) :=
@@ -1594,7 +1753,7 @@ lemma extracted_t_poly_eval_eq_final_constant
     (destIdx := finalDomainIdx) (h_destIdx := by
       dsimp only [finalDomainIdx]
       rw [h_k]
-      exact Nat.sub_add_cancel h_ϑ_le_ℓ) (t := tpoly)]
+      exact Nat.sub_add_cancel h_ϑ_le_ℓ) (t := revIndexMLP tpoly)]
       at h_f_final_virtual_eq
   have h_res := congr_fun (h := h_f_final_virtual_eq) (a := 0)
   rw [← h_res]
@@ -1656,12 +1815,13 @@ noncomputable def finalSumcheckRbrExtractor :
     | some tpoly =>
       -- Build H_ℓ from t and challenges r'
       exact {
-        t := tpoly,
+        t := revIndexMLP tpoly,
         -- projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := tpoly)
           -- (m := BBF_SumcheckMultiplierParam.multpoly stmtMid.ctx)
           -- (i := Fin.last ℓ) (challenges := stmtMid.challenges),
         H := H_constant,
-        f := getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly stmtMid.challenges
+        f := getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (revIndexMLP tpoly) stmtMid.challenges
       }
   extractOut := fun ⟨stmtIn, oStmtIn⟩ tr witOut => ()
 
@@ -1759,10 +1919,10 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
         have h_sumcheck_target_eq : stmtIn.sumcheck_target =
           (MvPolynomial.eval stmtIn.challenges
             (BBF_SumcheckMultiplierParam.multpoly stmtIn.ctx).val) *
-            (MvPolynomial.eval stmtIn.challenges tpoly.val) := by
+            (MvPolynomial.eval stmtIn.challenges (revIndexMLP tpoly).val) := by
           rw [h_V_check]
           congr 1
-          change c = tpoly.val.eval stmtIn.challenges
+          change c = (revIndexMLP tpoly).val.eval stmtIn.challenges
           exact extracted_t_poly_eval_eq_final_constant 𝔽q β
             (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (oStmtOut := oStmtIn) (stmtOut := stmtOut)
             (tpoly := tpoly)
@@ -1773,9 +1933,17 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
         dsimp only [finalSumcheckRbrExtractor, firstOracleWitnessConsistencyProp]
         simp only [Fin.mk_zero', h_extractMLP, Fin.coe_ofNat_eq_mod, Fin.val_last,
           OracleFrontierIndex.val_mkFromStmtIdx]
-        exact (extractMLP_eq_some_iff_pair_UDRClose 𝔽q β
+        have h_close_first :=
+          firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency 𝔽q β
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtOut := stmtOut) (oStmt := oStmtIn)
+            hConsistent
+        have hUDR : 2 * Code.distFromCode (u := getFirstOracle 𝔽q β oStmtIn)
+            (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r)) <
+          (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin r) : ℕ∞) := by
+          simpa [UDRClose] using h_close_first
+        exact firstOracleWitnessConsistency_revIndexMLP_of_extractMLP_eq_some 𝔽q β
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (f := getFirstOracle 𝔽q β oStmtIn) (tpoly := tpoly)).mp h_extractMLP
+          (f := getFirstOracle 𝔽q β oStmtIn) (tpoly := tpoly) hUDR h_extractMLP
       · exact hConsistent.1
     | inr hBad =>
       -- Hybrid plan: map terminal block bad-event to incremental bad-event at m=0.

@@ -54,24 +54,19 @@ The counting step (2) is proven here unconditionally.
   `M = s^{s/2} = (2^μ)^{2^{μ−1}}` and `m = a²` resultants, and the bad-prime budget in
   the paper's `a² · 2^{μ−1}·μ·log 2 / (β·log n)` form.
 
-## Wiring to the in-tree threshold (what remains)
+## Wiring to the in-tree threshold
 
-`kkh26_lemma1` (in `KKH26SumsOfRootsOfUnity.lean`) currently *derives* the non-vanishing
-of the collision differences at the primitive root from the crude bound `p > s^{s/2}`
-via `not_isRoot_of_l1On_pow_lt`: if `p` exceeds every resultant it cannot divide any of
-them.  To run Lemma 1 at `p = Θ(n^β)` instead, one replaces that step by the conclusion
-of `kkh26_good_prime_of_TZ` applied to the family of nonzero resultants
-`R_{(d,d')} = Res_ℤ(sumPoly d − sumPoly d', Φ_{2^μ})` indexed by the `≤ (2^r·n.choose r)²`
-pairs of distinct signed data (nonzero by `resultant_int_ne_zero_of_isCoprime_rat` +
-`diff_coprime_cyclotomic_rat`, bounded by `natAbs_resultant_cyclotomic_le` since each
-sum-polynomial has window ℓ¹-norm `≤ 2^μ`): for the good prime `p`, no resultant vanishes
-mod `p`, hence (Loop52 pillar, contrapositive of `prime_dvd_resultant_of_common_root`)
-no difference of sum-polynomials has a common root with `Φ_{2^μ}` in `F_p`, which is
-exactly the injectivity `sVal_injOn` needs.  That re-plumbing of
-`KKH26SumsOfRootsOfUnity.lean` internals (threading a divisibility hypothesis in place
-of the size hypothesis through `not_isRoot_of_l1On_pow_lt` → `sVal_injOn` →
-`kkh26_lemma1`) is mechanical but touches an existing file, so it is documented here
-rather than performed; this file provides the complete good-prime supply side.
+`KKH26SumsOfRootsOfUnity.lean` contains both routes through Lemma 1.  The explicit-threshold
+route uses `not_isRoot_of_l1On_pow_lt`: if `p > s^{s/2}`, then `p` is larger than every
+collision resultant and cannot divide one.  The polynomial-field-size route uses the
+divisibility API added for issue #334: `collisionResultant` names
+`R_{(d,d')} = Res_ℤ(sumPoly d − sumPoly d', Φ_{2^μ})`,
+`not_isRoot_of_not_dvd_resultant` replaces the size contradiction by the hypothesis
+`¬ (p : ℤ) ∣ collisionResultant m d d'`, and
+`sVal_injOn_of_not_dvd` / `kkh26_lemma1_of_not_dvd` re-run the separation and counting chain
+under that no-bad-resultant assumption.  This file supplies the matching good-prime source:
+`kkh26_good_prime_of_TZ` and `kkh26_good_prime_paper_form` produce primes in the
+Thorner--Zaman window that avoid any supplied finite family of nonzero, bounded resultants.
 
 ## References
 

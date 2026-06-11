@@ -56,6 +56,13 @@ progressions.  Those remain external; this file is the complete additive-combina
   whenever `(2^m)^{2^{m-1}} < p`.
 * `kkh26_lemma1` — **[KKH26] Lemma 1**: the set of sums of `r` distinct elements of the
   order-`2^m` subgroup `⟨g⟩ ⊆ F_p^×` has at least `2^r · (2^{m-1}).choose r` elements.
+* **Divisibility route (issue #334, [KKH26] Lemma 2 wiring):** `collisionResultant` exposes
+  the integer `N(d₁,d₂) = Res_ℤ(P_{d₁} − P_{d₂}, Φ_{2^m})` the size route bounds internally;
+  `sVal_injOn_of_not_dvd` and `kkh26_lemma1_of_not_dvd` re-run the chain with the size
+  hypothesis `p > s^{s/2}` replaced by "`p` divides no collision resultant" (plus the mild
+  `p > 2^m`), the form consumable at `p = Θ(n^β)` from the [TZ24] good-prime supply
+  (`KKH26ThornerZaman.lean`); `not_dvd_collisionResultant_of_lt` shows the old hypothesis
+  implies the new one, so the routes share the same core.
 
 ## References
 
@@ -560,6 +567,219 @@ theorem kkh26_lemma1 {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m) {g : ZMod
       = ((sigData (2 ^ (m - 1)) r).image (sVal g)).card := hcard.symm
     _ ≤ _ := Finset.card_le_card hsub
 
+/-! ### The divisibility route (issue #334, [KKH26] Lemma 2 wiring)
+
+The size hypothesis `p > s^{s/2}` enters the chain above at exactly one point: it forces the
+nonzero resultant `N = Res_ℤ(R, Φ_{2^m})` (of absolute value `≤ s^{s/2}` by
+`natAbs_resultant_cyclotomic_le`) to satisfy `|N| < p`, so `p ∤ N`.  The lemmas below factor
+the proof through that divisibility statement instead, so that [KKH26] Lemma 2's good prime
+`p = Θ(n^β)` (supplied conditionally by `kkh26_good_prime_of_TZ` in `KKH26ThornerZaman.lean`)
+can drive the same separation argument: `not_dvd_resultant_of_l1On_pow_lt` is the bridge
+"size ⟹ not-dvd", `not_isRoot_of_not_dvd_resultant` is the non-vanishing core under the
+divisibility hypothesis (it only needs the mild `‖R‖₁ < p` to keep the leading coefficient
+alive mod `p`), `collisionResultant` names the integer family indexed by pairs of signed
+data, and `sVal_injOn_of_not_dvd` / `kkh26_lemma1_of_not_dvd` are the generalized
+injectivity and count.  The original statements above are untouched. -/
+
+/-- **Size ⟹ not-dvd bridge.**  The explicit-threshold hypothesis of
+`not_isRoot_of_l1On_pow_lt` already implies that `p` divides no collision resultant: the
+resultant is nonzero (Loop52 pillars) and of absolute value `< p` (archimedean bound). -/
+theorem not_dvd_resultant_of_l1On_pow_lt {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
+    {R : Polynomial ℤ} (hR0 : R ≠ 0) (hdeg : R.natDegree < 2 ^ (m - 1))
+    (hp : l1On (2 ^ (m - 1)) R ^ 2 ^ (m - 1) < p) :
+    ¬ (p : ℤ) ∣ Polynomial.resultant R (cyclotomic (2 ^ m) ℤ) := by
+  intro hdvd
+  have hne : Polynomial.resultant R (cyclotomic (2 ^ m) ℤ) ≠ 0 :=
+    resultant_int_ne_zero_of_isCoprime_rat _ _ (diff_coprime_cyclotomic_rat hm R hdeg hR0)
+  have hle : p ≤ (Polynomial.resultant R (cyclotomic (2 ^ m) ℤ)).natAbs := by
+    have h2 := Int.natAbs_dvd_natAbs.mpr hdvd
+    exact Nat.le_of_dvd (Int.natAbs_pos.mpr hne) (by simpa using h2)
+  have hub := natAbs_resultant_cyclotomic_le hm R hdeg
+  omega
+
+/-- **Non-vanishing at a primitive root, divisibility form** (issue #334).  If `p` does not
+divide `Res_ℤ(R, Φ_{2^m})` — instead of the size hypothesis `‖R‖₁^{2^{m-1}} < p` — then `R`
+has no root at a primitive `2^m`-th root of unity `g ∈ F_p`.  The residual hypothesis
+`‖R‖₁ < p` only keeps the leading coefficient of `R` alive mod `p` (so the Loop52 resultant
+pillar applies); it is far weaker than the original threshold. -/
+theorem not_isRoot_of_not_dvd_resultant {p : ℕ} [Fact p.Prime] {m : ℕ}
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ m))
+    {R : Polynomial ℤ} (hR0 : R ≠ 0) (hdeg : R.natDegree < 2 ^ (m - 1))
+    (hl1 : l1On (2 ^ (m - 1)) R < p)
+    (hndvd : ¬ (p : ℤ) ∣ Polynomial.resultant R (cyclotomic (2 ^ m) ℤ)) :
+    ¬ (R.map (Int.castRingHom (ZMod p))).IsRoot g := by
+  intro hroot
+  -- the leading coefficient of `R` survives mod `p`
+  have hlcR : ((R.leadingCoeff : ℤ) : ZMod p) ≠ 0 := by
+    intro h0
+    have hdvd : (p : ℤ) ∣ R.leadingCoeff := by
+      rwa [ZMod.intCast_zmod_eq_zero_iff_dvd] at h0
+    have hlcne : R.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hR0
+    have h1 : p ≤ R.leadingCoeff.natAbs := by
+      have h2 := Int.natAbs_dvd_natAbs.mpr hdvd
+      simpa using Nat.le_of_dvd (Int.natAbs_pos.mpr hlcne) (by simpa using h2)
+    have h2 : R.leadingCoeff.natAbs ≤ l1On (2 ^ (m - 1)) R :=
+      natAbs_leadingCoeff_le_l1On hdeg
+    omega
+  -- `Φ` is monic, so its leading coefficient survives as well
+  have hΦmonic : (cyclotomic (2 ^ m) ℤ).Monic := cyclotomic.monic _ ℤ
+  have hlcΦ : (((cyclotomic (2 ^ m) ℤ).leadingCoeff : ℤ) : ZMod p) ≠ 0 := by
+    rw [hΦmonic.leadingCoeff]
+    simp
+  -- `g` is a common root of `R` and `Φ` mod `p`, so `p ∣ Res` — contradiction
+  have hΦroot : ((cyclotomic (2 ^ m) ℤ).map (Int.castRingHom (ZMod p))).IsRoot g := by
+    rw [map_cyclotomic_int]
+    exact hg.isRoot_cyclotomic (by positivity)
+  exact hndvd (prime_dvd_resultant_of_common_root R (cyclotomic (2 ^ m) ℤ)
+    hlcR hlcΦ hroot hΦroot)
+
+/-- **The collision resultant** of a pair of signed data — the integer
+`N(d₁, d₂) = Res_ℤ(P_{d₁} − P_{d₂}, Φ_{2^m})` that the size route of
+`not_isRoot_of_l1On_pow_lt` bounds internally, exposed as a definition so that the
+[TZ24] good prime of `KKH26ThornerZaman.lean` can be required to divide none of them. -/
+noncomputable def collisionResultant (m : ℕ) (d₁ d₂ : (_ : Finset ℕ) × Finset ℕ) : ℤ :=
+  Polynomial.resultant (sumPoly d₁.1 d₁.2 - sumPoly d₂.1 d₂.2) (cyclotomic (2 ^ m) ℤ)
+
+/-- Collision resultants of *distinct* signed data are nonzero (char-0 distinctness of
+sum-polynomials + irreducibility of `Φ_{2^m}` over `ℚ`, the Loop52 pillars). -/
+theorem collisionResultant_ne_zero {m r : ℕ} (hm : 1 ≤ m)
+    {d₁ d₂ : (_ : Finset ℕ) × Finset ℕ}
+    (hd₁ : d₁ ∈ sigData (2 ^ (m - 1)) r) (hd₂ : d₂ ∈ sigData (2 ^ (m - 1)) r)
+    (hne : d₁ ≠ d₂) : collisionResultant m d₁ d₂ ≠ 0 := by
+  obtain ⟨U₁, T₁⟩ := d₁
+  obtain ⟨U₂, T₂⟩ := d₂
+  obtain ⟨⟨hU₁, _⟩, hT₁⟩ := mem_sigData.mp hd₁
+  obtain ⟨⟨hU₂, _⟩, hT₂⟩ := mem_sigData.mp hd₂
+  have hhalf : 0 < 2 ^ (m - 1) := by positivity
+  have hR0 : sumPoly U₁ T₁ - sumPoly U₂ T₂ ≠ 0 := by
+    intro h0
+    obtain ⟨hU, hT⟩ := sumPoly_inj hT₁ hT₂ (sub_eq_zero.mp h0)
+    subst hU; subst hT
+    exact hne rfl
+  have hdegR : (sumPoly U₁ T₁ - sumPoly U₂ T₂).natDegree < 2 ^ (m - 1) :=
+    lt_of_le_of_lt (Polynomial.natDegree_sub_le _ _)
+      (max_lt (sumPoly_natDegree_lt hhalf hU₁ hT₁) (sumPoly_natDegree_lt hhalf hU₂ hT₂))
+  exact resultant_int_ne_zero_of_isCoprime_rat _ _
+    (diff_coprime_cyclotomic_rat hm _ hdegR hR0)
+
+/-- Collision resultants are bounded by `s^{s/2} = (2^m)^{2^{m-1}}` in absolute value
+(the archimedean bound applied to the difference polynomial, whose window ℓ¹-norm is
+`≤ 2r ≤ 2^m`). -/
+theorem natAbs_collisionResultant_le {m r : ℕ} (hm : 1 ≤ m)
+    {d₁ d₂ : (_ : Finset ℕ) × Finset ℕ}
+    (hd₁ : d₁ ∈ sigData (2 ^ (m - 1)) r) (hd₂ : d₂ ∈ sigData (2 ^ (m - 1)) r)
+    (hr : r ≤ 2 ^ (m - 1)) :
+    (collisionResultant m d₁ d₂).natAbs ≤ ((2 : ℕ) ^ m) ^ 2 ^ (m - 1) := by
+  obtain ⟨U₁, T₁⟩ := d₁
+  obtain ⟨U₂, T₂⟩ := d₂
+  obtain ⟨⟨hU₁, hc₁⟩, hT₁⟩ := mem_sigData.mp hd₁
+  obtain ⟨⟨hU₂, hc₂⟩, hT₂⟩ := mem_sigData.mp hd₂
+  have hhalf : 0 < 2 ^ (m - 1) := by positivity
+  have hdegR : (sumPoly U₁ T₁ - sumPoly U₂ T₂).natDegree < 2 ^ (m - 1) :=
+    lt_of_le_of_lt (Polynomial.natDegree_sub_le _ _)
+      (max_lt (sumPoly_natDegree_lt hhalf hU₁ hT₁) (sumPoly_natDegree_lt hhalf hU₂ hT₂))
+  have hl1 : l1On (2 ^ (m - 1)) (sumPoly U₁ T₁ - sumPoly U₂ T₂) ≤ 2 * r := by
+    have h := l1On_sub_le (2 ^ (m - 1)) (sumPoly U₁ T₁) (sumPoly U₂ T₂)
+    rw [l1On_sumPoly hU₁ hT₁, l1On_sumPoly hU₂ hT₂, hc₁, hc₂] at h
+    omega
+  have h2r : 2 * r ≤ 2 ^ m := by
+    have hsum : 2 ^ (m - 1) * 2 = 2 ^ m := by
+      rw [← pow_succ, Nat.sub_add_cancel hm]
+    omega
+  have hub := natAbs_resultant_cyclotomic_le hm (sumPoly U₁ T₁ - sumPoly U₂ T₂) hdegR
+  exact le_trans hub (Nat.pow_le_pow_left (le_trans hl1 h2r) _)
+
+/-- The old explicit-threshold hypothesis implies the new divisibility hypothesis: above
+`p > s^{s/2}` no collision resultant can be divisible by `p` (it is nonzero of absolute
+value `≤ s^{s/2} < p`).  Hence the size route is a special case of the dvd route. -/
+theorem not_dvd_collisionResultant_of_lt {p : ℕ} [Fact p.Prime] {m r : ℕ} (hm : 1 ≤ m)
+    (hp : ((2 : ℕ) ^ m) ^ 2 ^ (m - 1) < p) (hr : r ≤ 2 ^ (m - 1))
+    {d₁ d₂ : (_ : Finset ℕ) × Finset ℕ}
+    (hd₁ : d₁ ∈ sigData (2 ^ (m - 1)) r) (hd₂ : d₂ ∈ sigData (2 ^ (m - 1)) r)
+    (hne : d₁ ≠ d₂) : ¬ (p : ℤ) ∣ collisionResultant m d₁ d₂ := by
+  intro hdvd
+  have h1 : p ≤ (collisionResultant m d₁ d₂).natAbs :=
+    Nat.le_of_dvd (Int.natAbs_pos.mpr (collisionResultant_ne_zero hm hd₁ hd₂ hne))
+      (by simpa using Int.natAbs_dvd_natAbs.mpr hdvd)
+  have h2 := natAbs_collisionResultant_le hm hd₁ hd₂ hr
+  omega
+
+/-- **Injectivity of signed sums, divisibility form** (issue #334).  If `p > 2^m` and `p`
+divides no collision resultant of distinct signed data, then distinct signed data give
+distinct values at the primitive root — the conclusion of `sVal_injOn` without the
+superpolynomial threshold `p > s^{s/2}`. -/
+theorem sVal_injOn_of_not_dvd {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m)
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ m))
+    (hpl : (2 : ℕ) ^ m < p) {r : ℕ} (hr : r ≤ 2 ^ (m - 1))
+    (hndvd : ∀ d₁ ∈ sigData (2 ^ (m - 1)) r, ∀ d₂ ∈ sigData (2 ^ (m - 1)) r,
+      d₁ ≠ d₂ → ¬ (p : ℤ) ∣ collisionResultant m d₁ d₂) :
+    Set.InjOn (sVal g) (sigData (2 ^ (m - 1)) r) := by
+  classical
+  intro d₁ hd₁ d₂ hd₂ heq
+  by_contra hne
+  have hnd : ¬ (p : ℤ) ∣ collisionResultant m d₁ d₂ := hndvd d₁ hd₁ d₂ hd₂ hne
+  obtain ⟨U₁, T₁⟩ := d₁
+  obtain ⟨U₂, T₂⟩ := d₂
+  obtain ⟨⟨hU₁, hc₁⟩, hT₁⟩ := mem_sigData.mp hd₁
+  obtain ⟨⟨hU₂, hc₂⟩, hT₂⟩ := mem_sigData.mp hd₂
+  have hhalf : 0 < 2 ^ (m - 1) := by positivity
+  have hR0 : sumPoly U₁ T₁ - sumPoly U₂ T₂ ≠ 0 := by
+    intro h0
+    obtain ⟨hU, hT⟩ := sumPoly_inj hT₁ hT₂ (sub_eq_zero.mp h0)
+    subst hU; subst hT
+    exact hne rfl
+  -- the collision polynomial has `g` as a root
+  have hroot : ((sumPoly U₁ T₁ - sumPoly U₂ T₂).map
+      (Int.castRingHom (ZMod p))).IsRoot g := by
+    rw [IsRoot.def, Polynomial.map_sub, eval_sub, sub_eq_zero,
+      ← sVal_eq_eval g U₁ T₁, ← sVal_eq_eval g U₂ T₂]
+    exact heq
+  -- degree and ℓ¹ bookkeeping
+  have hdegR : (sumPoly U₁ T₁ - sumPoly U₂ T₂).natDegree < 2 ^ (m - 1) :=
+    lt_of_le_of_lt (Polynomial.natDegree_sub_le _ _)
+      (max_lt (sumPoly_natDegree_lt hhalf hU₁ hT₁) (sumPoly_natDegree_lt hhalf hU₂ hT₂))
+  have hl1 : l1On (2 ^ (m - 1)) (sumPoly U₁ T₁ - sumPoly U₂ T₂) ≤ 2 * r := by
+    have h := l1On_sub_le (2 ^ (m - 1)) (sumPoly U₁ T₁) (sumPoly U₂ T₂)
+    rw [l1On_sumPoly hU₁ hT₁, l1On_sumPoly hU₂ hT₂, hc₁, hc₂] at h
+    omega
+  have h2r : 2 * r ≤ 2 ^ m := by
+    have hsum : 2 ^ (m - 1) * 2 = 2 ^ m := by
+      rw [← pow_succ, Nat.sub_add_cancel hm]
+    omega
+  have hl1lt : l1On (2 ^ (m - 1)) (sumPoly U₁ T₁ - sumPoly U₂ T₂) < p := by omega
+  have hnd' : ¬ (p : ℤ) ∣ Polynomial.resultant (sumPoly U₁ T₁ - sumPoly U₂ T₂)
+      (cyclotomic (2 ^ m) ℤ) := hnd
+  exact not_isRoot_of_not_dvd_resultant hg hR0 hdegR hl1lt hnd' hroot
+
+/-- **[KKH26] Lemma 1, divisibility form** (issue #334).  The count of `kkh26_lemma1` under
+the hypothesis that `p > 2^m` divides no collision resultant of distinct signed data — the
+form fed by the [TZ24] good prime `p = Θ(n^β)` of `kkh26_good_prime_of_TZ`
+(`KKH26ThornerZaman.lean`) in place of the superpolynomial threshold `p > s^{s/2}`. -/
+theorem kkh26_lemma1_of_not_dvd {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m) {g : ZMod p}
+    (hg : IsPrimitiveRoot g (2 ^ m)) (hpl : (2 : ℕ) ^ m < p)
+    {r : ℕ} (hr : r ≤ 2 ^ (m - 1))
+    (hndvd : ∀ d₁ ∈ sigData (2 ^ (m - 1)) r, ∀ d₂ ∈ sigData (2 ^ (m - 1)) r,
+      d₁ ≠ d₂ → ¬ (p : ℤ) ∣ collisionResultant m d₁ d₂) :
+    2 ^ r * (2 ^ (m - 1)).choose r ≤
+      ((((range (2 ^ m)).image (fun i => g ^ i)).powersetCard r).image
+        fun S => ∑ x ∈ S, x).card := by
+  classical
+  have hinj : Set.InjOn (sVal g) (sigData (2 ^ (m - 1)) r) :=
+    sVal_injOn_of_not_dvd hm hg hpl hr hndvd
+  have hcard : ((sigData (2 ^ (m - 1)) r).image (sVal g)).card
+      = 2 ^ r * (2 ^ (m - 1)).choose r := by
+    rw [Finset.card_image_of_injOn hinj, card_sigData]
+  have hsub : (sigData (2 ^ (m - 1)) r).image (sVal g) ⊆
+      (((range (2 ^ m)).image (fun i => g ^ i)).powersetCard r).image
+        fun S => ∑ x ∈ S, x := by
+    intro x hx
+    obtain ⟨d, hd, rfl⟩ := Finset.mem_image.mp hx
+    refine Finset.mem_image.mpr ⟨elemSet g (2 ^ (m - 1)) d, ?_, elemSet_sum hm hg hd⟩
+    exact mem_powersetCard.mpr ⟨elemSet_subset hm hd, elemSet_card hm hg hd⟩
+  calc 2 ^ r * (2 ^ (m - 1)).choose r
+      = ((sigData (2 ^ (m - 1)) r).image (sVal g)).card := hcard.symm
+    _ ≤ _ := Finset.card_le_card hsub
+
 end ArkLib.ProximityGap.KKH26
 
 /-! ## Axiom audit -/
@@ -567,3 +787,10 @@ end ArkLib.ProximityGap.KKH26
 #print axioms ArkLib.ProximityGap.KKH26.not_isRoot_of_l1On_pow_lt
 #print axioms ArkLib.ProximityGap.KKH26.sVal_injOn
 #print axioms ArkLib.ProximityGap.KKH26.kkh26_lemma1
+#print axioms ArkLib.ProximityGap.KKH26.not_dvd_resultant_of_l1On_pow_lt
+#print axioms ArkLib.ProximityGap.KKH26.not_isRoot_of_not_dvd_resultant
+#print axioms ArkLib.ProximityGap.KKH26.collisionResultant_ne_zero
+#print axioms ArkLib.ProximityGap.KKH26.natAbs_collisionResultant_le
+#print axioms ArkLib.ProximityGap.KKH26.not_dvd_collisionResultant_of_lt
+#print axioms ArkLib.ProximityGap.KKH26.sVal_injOn_of_not_dvd
+#print axioms ArkLib.ProximityGap.KKH26.kkh26_lemma1_of_not_dvd
