@@ -216,6 +216,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultantProduct
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySixDvd
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyThreeDvd
+import ArkLib.Data.CodingTheory.ProximityGap.AffineBlockKernels
 import ArkLib.Data.CodingTheory.ProximityGap.AgreementMomentOne
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
@@ -1252,7 +1253,6 @@ import ArkLib.OracleReduction.DecisionTail
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
-import ArkLib.OracleReduction.FiatShamir.RunEqHonestExecution
 import ArkLib.OracleReduction.FiatShamir.BasicCompleteness
 import ArkLib.OracleReduction.FiatShamir.ChallengeOracleSampling
 import ArkLib.OracleReduction.FiatShamir.CompletenessUnroll
@@ -1280,7 +1280,6 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Honest
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512HonestPaper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512PaperCascade
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514ForkFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514PaperFork
@@ -1288,6 +1287,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516HashHalf
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58EagerFalse
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEvents
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEventsCoincidence
@@ -1312,6 +1312,7 @@ import ArkLib.OracleReduction.FiatShamir.HVZKNoChallenge
 import ArkLib.OracleReduction.FiatShamir.HVZKPerStateClose
 import ArkLib.OracleReduction.FiatShamir.HVZKTransferReduction
 import ArkLib.OracleReduction.FiatShamir.ProverRunCharacterization
+import ArkLib.OracleReduction.FiatShamir.RunEqHonestExecution
 import ArkLib.OracleReduction.FiatShamir.SingleSalt
 import ArkLib.OracleReduction.FiatShamir.StateRestorationTransport
 import ArkLib.OracleReduction.FiatShamir.TestDesugar
@@ -1584,6 +1585,7 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckWithTargetComplete
 import ArkLib.ProofSystem.Spartan.SendEvalClaimComplete
 import ArkLib.ProofSystem.Spartan.ShortPhaseKnowledgeLeaves
 import ArkLib.ProofSystem.Spartan.ShortPhaseRbrKnowledgeLeaves
+import ArkLib.ProofSystem.Spartan.SpartanDirFacts
 import ArkLib.ProofSystem.Spartan.SpartanRBRProof
 import ArkLib.ProofSystem.Spartan.SpartanRBRWithClaimProof
 import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
