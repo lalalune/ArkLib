@@ -10,7 +10,7 @@ import ArkLib.ToVCVio.Simulation
 /-!
 # The `finalCheck` completeness leaf, pinned to the composed-PC chain endpoints (#114)
 
-`composedCompletenessResidual_of_five_leaves` (`ComposedCompleteness.lean`) takes the terminal
+`composedCompletenessStatement_of_five_leaves` (`ComposedCompleteness.lean`) takes the terminal
 `finalCheck` leaf as its hypothesis `h₈`, with the relation endpoints pinned to the concrete
 in-tree chain:
 
@@ -125,7 +125,7 @@ theorem finalCheck_perfectCompleteness_any {σ : Type} {init : ProbComp σ}
 
 omit [IsDomain R] [Fintype R] [DecidableEq R] [Inhabited R] [SampleableType R]
   [oSpec.Fintype] [oSpec.Inhabited] in
-/-- **The `finalCheck` leaf of `composedCompletenessResidual_of_five_leaves` (hypothesis `h₈`)**:
+/-- **The `finalCheck` leaf of `composedCompletenessStatement_of_five_leaves` (hypothesis `h₈`)**:
 perfect completeness of the terminal 0-round `CheckClaim` phase, from the second sum-check's
 bridge-free output relation `secondSumcheckRelOutBF` into `finalCheckRelOut` (= `Set.univ`),
 stated at exactly the consumer's endpoints and instance context. -/

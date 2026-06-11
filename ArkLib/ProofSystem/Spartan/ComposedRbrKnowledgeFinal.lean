@@ -10,7 +10,7 @@ import ArkLib.ProofSystem.Spartan.ShortPhaseRbrKnowledgeLeaves
 /-!
 # Composed Spartan RBR knowledge soundness — the named residual, discharged (issue #114)
 
-This file discharges `Bricks.composedRbrKnowledgeSoundnessResidual` (the broad-terminal
+This file discharges `Bricks.composedRbrKnowledgeSoundnessStatement` (the broad-terminal
 composed RBR-KS obligation, with output relation `finalCheckRelOut = Set.univ`) at the
 assembled `composedPIOP_Rc`, with the error vector of the unconditional relation-preserving
 apex `composedRbrKnowledgeSoundnessPreserving_unconditional`:
@@ -82,11 +82,11 @@ theorem composedRbrError_linearCombinationChallengeIdx
 
 /-- **The named composed Spartan RBR knowledge-soundness residual, discharged (issue #114).**
 
-`composedRbrKnowledgeSoundnessResidual` at `Rc := composedPIOP_Rc`, with the apex error
+`composedRbrKnowledgeSoundnessStatement` at `Rc := composedPIOP_Rc`, with the apex error
 vector. Obtained from the unconditional relation-preserving apex by truncating the knowledge
 state function at the (error-`1`) `linearCombination` round — see the module docstring for
 what this does and does not claim. -/
-theorem composedRbrKnowledgeSoundnessResidual_proven [Subsingleton σ]
+theorem composedRbrKnowledgeSoundnessStatement_proven [Subsingleton σ]
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     [Inhabited (FinalStatement R pp × ∀ i, FinalOracleStatement R pp i)]
     [Inhabited (Statement.AfterFirstSumcheck R pp ×
@@ -102,7 +102,7 @@ theorem composedRbrKnowledgeSoundnessResidual_proven [Subsingleton σ]
       ∀ i, OracleStatement.AfterLinearCombination R pp i))
     (hNE_G : Nonempty ((R × Statement.AfterLinearCombination R pp) ×
       ∀ i, OracleStatement.AfterLinearCombination R pp i)) :
-    composedRbrKnowledgeSoundnessResidual R pp oSpec (composedPIOP_Rc (R := R) pp oSpec)
+    composedRbrKnowledgeSoundnessStatement R pp oSpec (composedPIOP_Rc (R := R) pp oSpec)
       init impl
       (composedRbrError pp
         (0 : (⟨!v[.P_to_V], !v[Witness R pp]⟩ : ProtocolSpec 1).ChallengeIdx → ℝ≥0)
@@ -115,7 +115,7 @@ theorem composedRbrKnowledgeSoundnessResidual_proven [Subsingleton σ]
         (0 : (!p[] : ProtocolSpec 0).ChallengeIdx → ℝ≥0)) := by
   have h := composedRbrKnowledgeSoundnessPreserving_unconditional (R := R) pp oSpec
     (init := init) (impl := impl) hm hn hInit hInitNF hNE_B hNE_C hNE_E hNE_F hNE_G
-  unfold composedRbrKnowledgeSoundnessResidual
+  unfold composedRbrKnowledgeSoundnessStatement
   refine OracleVerifier.rbrKnowledgeSoundness_relOut_any_of_one_le_error h
     (linearCombinationChallengeIdx (R := R) pp) ?_ _
   rw [composedRbrError_linearCombinationChallengeIdx]
@@ -126,4 +126,4 @@ end Spartan.Spec.Bricks
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms Spartan.Spec.Bricks.composedRbrError_linearCombinationChallengeIdx
-#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual_proven
+#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessStatement_proven

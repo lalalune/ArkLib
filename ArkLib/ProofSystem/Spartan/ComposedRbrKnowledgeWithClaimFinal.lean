@@ -14,9 +14,9 @@ import ArkLib.ProofSystem.Spartan.FinalCheckRbrKnowledgeLeaf
 This file discharges the three target-carrying composed RBR-KS residuals of
 `ToMathlib/SpartanBricks.lean` —
 
-* `composedRbrKnowledgeSoundnessWithClaimResidual` (broad terminal, `Set.univ`),
-* `composedRbrKnowledgeSoundnessWithClaimValueRelResidual` (semantic value relation),
-* `composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual` (endpoint form),
+* `composedRbrKnowledgeSoundnessWithClaimStatement` (broad terminal, `Set.univ`),
+* `composedRbrKnowledgeSoundnessWithClaimValueRelStatement` (semantic value relation),
+* `composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement` (endpoint form),
 
 at the same composition witness as the proven WithClaim completeness apex:
 `Rc := (composedPIOP_Rc …).append (prependClaim …)`.
@@ -206,10 +206,10 @@ theorem composedWithClaim_rbrKnowledgeSoundness_base [Subsingleton σ]
 
 /-! ### Step 4 — the three named residuals -/
 
-/-- **`composedRbrKnowledgeSoundnessWithClaimResidual`, discharged** at
+/-- **`composedRbrKnowledgeSoundnessWithClaimStatement`, discharged** at
 `Rc := (composedPIOP_Rc …).append (prependClaim …)` with the extended apex error vector
 (`err₅ = 1`; see the module docstring). -/
-theorem composedRbrKnowledgeSoundnessWithClaimResidual_proven [Subsingleton σ]
+theorem composedRbrKnowledgeSoundnessWithClaimStatement_proven [Subsingleton σ]
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     [Inhabited (FinalStatement R pp × ∀ i, FinalOracleStatement R pp i)]
     [Inhabited (Statement.AfterFirstSumcheck R pp ×
@@ -225,19 +225,19 @@ theorem composedRbrKnowledgeSoundnessWithClaimResidual_proven [Subsingleton σ]
       ∀ i, OracleStatement.AfterLinearCombination R pp i))
     (hNE_G : Nonempty ((R × Statement.AfterLinearCombination R pp) ×
       ∀ i, OracleStatement.AfterLinearCombination R pp i)) :
-    composedRbrKnowledgeSoundnessWithClaimResidual R pp oSpec
+    composedRbrKnowledgeSoundnessWithClaimStatement R pp oSpec
       ((composedPIOP_Rc (R := R) pp oSpec).append (prependClaim (R := R) pp oSpec))
       init impl (composedWithClaimApexError (R := R) pp) := by
   have h := composedWithClaim_rbrKnowledgeSoundness_base (R := R) pp oSpec
     (init := init) (impl := impl) hm hn hInit hInitNF hNE_B hNE_C hNE_E hNE_F hNE_G
-  unfold composedRbrKnowledgeSoundnessWithClaimResidual
+  unfold composedRbrKnowledgeSoundnessWithClaimStatement
   exact OracleVerifier.rbrKnowledgeSoundness_relOut_any_of_one_le_error h
     (withClaimLinearCombinationChallengeIdx (R := R) pp)
     (one_le_composedWithClaimApexError_lc (R := R) pp) _
 
-/-- **`composedRbrKnowledgeSoundnessWithClaimValueRelResidual`, discharged** at the same
+/-- **`composedRbrKnowledgeSoundnessWithClaimValueRelStatement`, discharged** at the same
 composition and error vector. -/
-theorem composedRbrKnowledgeSoundnessWithClaimValueRelResidual_proven [Subsingleton σ]
+theorem composedRbrKnowledgeSoundnessWithClaimValueRelStatement_proven [Subsingleton σ]
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     [Inhabited (FinalStatement R pp × ∀ i, FinalOracleStatement R pp i)]
     [Inhabited (Statement.AfterFirstSumcheck R pp ×
@@ -253,19 +253,19 @@ theorem composedRbrKnowledgeSoundnessWithClaimValueRelResidual_proven [Subsingle
       ∀ i, OracleStatement.AfterLinearCombination R pp i))
     (hNE_G : Nonempty ((R × Statement.AfterLinearCombination R pp) ×
       ∀ i, OracleStatement.AfterLinearCombination R pp i)) :
-    composedRbrKnowledgeSoundnessWithClaimValueRelResidual R pp oSpec
+    composedRbrKnowledgeSoundnessWithClaimValueRelStatement R pp oSpec
       ((composedPIOP_Rc (R := R) pp oSpec).append (prependClaim (R := R) pp oSpec))
       init impl (composedWithClaimApexError (R := R) pp) := by
   have h := composedWithClaim_rbrKnowledgeSoundness_base (R := R) pp oSpec
     (init := init) (impl := impl) hm hn hInit hInitNF hNE_B hNE_C hNE_E hNE_F hNE_G
-  unfold composedRbrKnowledgeSoundnessWithClaimValueRelResidual
+  unfold composedRbrKnowledgeSoundnessWithClaimValueRelStatement
   exact OracleVerifier.rbrKnowledgeSoundness_relOut_any_of_one_le_error h
     (withClaimLinearCombinationChallengeIdx (R := R) pp)
     (one_le_composedWithClaimApexError_lc (R := R) pp) _
 
-/-- **`composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual`, discharged** at the
+/-- **`composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement`, discharged** at the
 same composition and error vector. -/
-theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_proven [Subsingleton σ]
+theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_proven [Subsingleton σ]
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     [Inhabited (FinalStatement R pp × ∀ i, FinalOracleStatement R pp i)]
     [Inhabited (Statement.AfterFirstSumcheck R pp ×
@@ -281,12 +281,12 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_proven 
       ∀ i, OracleStatement.AfterLinearCombination R pp i))
     (hNE_G : Nonempty ((R × Statement.AfterLinearCombination R pp) ×
       ∀ i, OracleStatement.AfterLinearCombination R pp i)) :
-    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual R pp oSpec
+    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement R pp oSpec
       ((composedPIOP_Rc (R := R) pp oSpec).append (prependClaim (R := R) pp oSpec))
       init impl (composedWithClaimApexError (R := R) pp) := by
   have h := composedWithClaim_rbrKnowledgeSoundness_base (R := R) pp oSpec
     (init := init) (impl := impl) hm hn hInit hInitNF hNE_B hNE_C hNE_E hNE_F hNE_G
-  unfold composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual
+  unfold composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement
   exact OracleVerifier.rbrKnowledgeSoundness_relOut_any_of_one_le_error h
     (withClaimLinearCombinationChallengeIdx (R := R) pp)
     (one_le_composedWithClaimApexError_lc (R := R) pp) _
@@ -300,7 +300,7 @@ end Spartan.Spec.Bricks
 #print axioms Spartan.Spec.Bricks.composedPIOP_Rc_toVerifier_isFailingDet
 #print axioms Spartan.Spec.Bricks.prependClaim_rbrKnowledgeSoundness_carrier
 #print axioms Spartan.Spec.Bricks.composedWithClaim_rbrKnowledgeSoundness_base
-#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimResidual_proven
-#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimValueRelResidual_proven
+#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimStatement_proven
+#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimValueRelStatement_proven
 #print axioms
-  Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_proven
+  Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_proven

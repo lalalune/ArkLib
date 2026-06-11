@@ -14,9 +14,9 @@ always check this census before treating a `*Residual` name as open proof debt.
 
 ## Summary
 
-- **Total strict residuals:** 98
-- **Open:** 55
-- **Discharged:** 43
+- **Total strict residuals:** 90
+- **Open:** 49
+- **Discharged:** 41
 - **Refuted:** 0
 - **Residual-like near misses:** 44 (listed below and in `scripts/residual_census.json`)
 
@@ -25,7 +25,7 @@ always check this census before treating a `*Residual` name as open proof debt.
 | `Data` | 24 | 17 | 7 | 0 |
 | `OracleReduction` | 38 | 22 | 16 | 0 |
 | `ProofSystem` | 16 | 8 | 8 | 0 |
-| `ToMathlib` | 20 | 8 | 12 | 0 |
+| `ToMathlib` | 12 | 2 | 10 | 0 |
 
 ## Open Residuals
 
@@ -78,12 +78,6 @@ always check this census before treating a `*Residual` name as open proof debt.
 - `MutualCorrAgreement.K4ComponentResidual` — `ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean:64`
 - `CodingTheory.CS25.DeepHole.DeepHoleProbResidual` — `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:264` — conditional providers only (extra assumptions: `hjf`, `hkS`, `hδ0`)
 - `Fri.Spec.Completeness.queryRoundChainDeliveryResidual` — `ArkLib/ToMathlib/FriCompleteQueryRound.lean:177`
-- `Spartan.Spec.Bricks.composedCompletenessResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1077` — conditional providers only (extra assumptions: `hImplSupp`, `hInit`, `hc`, `himplNF`, `himplSP`, `hm`, `hn`, `h₁`, `h₂`, `h₃`, `h₄`, `h₅`, `h₆`, `h₇`, `h₈`)
-- `Spartan.Spec.Bricks.composedCompletenessWithClaimResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1097` — conditional providers only (residual deps: `composedCompletenessWithClaimSecondSumcheckEvalResidual`, `composedCompletenessWithClaimValueRelResidual`; extra assumptions: `hEndpoint`, `hImplSupp`, `hInit`, `hValue`, `hc`, `himplNF`, `himplSP`, `hm`, `hn`)
-- `Spartan.Spec.Bricks.composedCompletenessWithClaimValueRelResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1130` — conditional providers only (residual deps: `composedCompletenessWithClaimSecondSumcheckEvalResidual`; extra assumptions: `hEndpoint`, `hImplSupp`, `hInit`, `himplNF`, `himplSP`, `hm`, `hn`)
-- `Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1247` — conditional providers only (residual deps: `composedRbrKnowledgeSoundnessResidual`; extra assumptions: `hInit`, `hInitNF`, `hNE_B`, `hNE_C`, `hNE_E`, `hNE_F`, `hNE_G`, `hResidual`, `hV₁`, `hV₂`, `hV₃`, `hV₄`, `hV₅`, `hV₆`, `hV₇`, `hks`, `hm`, `hn`, `h₁`, `h₂`, `h₃`, `h₄`, `h₅`, `h₆`, `h₇`, `h₈`)
-- `Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1267` — conditional providers only (extra assumptions: `hInit`, `hInitNF`, `hNE_B`, `hNE_C`, `hNE_E`, `hNE_F`, `hNE_G`, `hks`, `hm`, `hn`)
-- `Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimValueRelResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1280` — conditional providers only (residual deps: `composedRbrKnowledgeSoundnessWithClaimResidual`, `composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual`; extra assumptions: `hEndpoint`, `hInit`, `hInitNF`, `hNE_B`, `hNE_C`, `hNE_E`, `hNE_F`, `hNE_G`, `hResidual`, `hm`, `hn`)
 
 ## Residual-Like Near Misses
 
@@ -182,7 +176,5 @@ None.
 - `Spartan.Spec.Bricks.secondSumcheckResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:767`
 - `Spartan.Spec.Bricks.firstSumcheckResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:779`
 - `Spartan.Spec.Bricks.r1csMleEncodingResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:839`
-- `Spartan.Spec.Bricks.composedPIOPResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1019`
-- `Spartan.Spec.Bricks.composedPIOPWithClaimResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1048`
-- `Spartan.Spec.Bricks.composedCompletenessWithClaimSecondSumcheckEvalResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1141`
-- `Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1293`
+- `Spartan.Spec.Bricks.composedPIOPResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1020`
+- `Spartan.Spec.Bricks.composedPIOPWithClaimResidual` — `ArkLib/ToMathlib/SpartanBricks.lean:1049`

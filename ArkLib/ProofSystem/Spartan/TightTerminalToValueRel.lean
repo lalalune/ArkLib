@@ -9,7 +9,7 @@ import ArkLib.ToMathlib.SpartanBricks
 /-!
 # The tight terminal lands in the semantic value relation (#352)
 
-The D1 obstruction recorded at `composedCompletenessWithClaimValueRelResidual` was that the
+The D1 obstruction recorded at `composedCompletenessWithClaimValueRelStatement` was that the
 broad composed chain's `relOut` is `univ`, so the semantic value relation cannot be reached
 by monotonicity.  The TIGHT chain does not have that defect: its terminal currency
 `tightFinalRelOut` carries the second-terminal identity `e₂ = eval r_y (secondSCVP …)`,
@@ -25,7 +25,7 @@ the transport:
 * **`valueRel_of_tightFinalRelOut`** — membership transport: a tight-terminal pair in
   `tightFinalRelOut` reshapes into `finalCheckWithClaimValueRelIn`.
 
-Consequence for #352: `composedCompletenessWithClaimValueRelResidual` for the concrete
+Consequence for #352: `composedCompletenessWithClaimValueRelStatement` for the concrete
 `Rc := composedPIOPTightPure_Rc ▷ (0-round reshaping lens)` reduces to the tight chain's
 completeness at `tightFinalRelOut` (the landed `…_of_leaves` apex + the leaf suite) plus
 the standard 0-round lens-completeness plumbing — the semantic-vs-`univ` gap itself is

@@ -10,7 +10,7 @@ import ArkLib.ProofSystem.Spartan.FirstChallengeComplete
 /-!
 # The `firstChallenge` leaf of the composed Spartan completeness, discharged (#114)
 
-Discharges hypothesis `h₂` of `Spartan.Spec.Bricks.composedCompletenessResidual_of_five_leaves`
+Discharges hypothesis `h₂` of `Spartan.Spec.Bricks.composedCompletenessStatement_of_five_leaves`
 (`ComposedCompleteness.lean`): the `firstChallenge` phase (`oracleReduction.firstChallenge`, the
 `liftContext` of the generic `RandomQuery` oracle reduction onto the virtual zero-check polynomial
 `𝒢`) is perfectly complete from the consumer's pinned input relation `firstMessageRelOut` to the
@@ -50,7 +50,7 @@ consumer's bridge-free first-sumcheck input relation `firstSumcheckRelInBF`
 theorem firstChallengeRelOut_eq_firstSumcheckRelInBF :
     firstChallengeRelOut (R := R) pp = firstSumcheckRelInBF (R := R) pp := rfl
 
-/-- **Leaf `h₂` of `composedCompletenessResidual_of_five_leaves`, discharged (unconditional).**
+/-- **Leaf `h₂` of `composedCompletenessStatement_of_five_leaves`, discharged (unconditional).**
 The Spartan `firstChallenge` phase is perfectly complete from `firstMessageRelOut` to
 `firstSumcheckRelInBF` — exactly the relation endpoints the composed-completeness consumer pins.
 No hypotheses beyond the ambient instances: the inner `RandomQuery` completeness is a closed

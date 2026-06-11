@@ -14,14 +14,14 @@ import ArkLib.ProofSystem.Spartan.TightTerminalToValueRel
 # Spartan composed PIOP perfect completeness with claim — final assembly (issue #114)
 
 This file discharges the **target-carrying** composed completeness obligation
-`composedCompletenessWithClaimResidual` at the composition
+`composedCompletenessWithClaimStatement` at the composition
 `(composedPIOP_Rc …).append (prependClaim …)`.
 
 **Why this `Rc` and not `composedPIOPWithClaim_Rc`:** the residual is parameterized over the
 composed reduction (any `Rc : OracleReduction … pSpecC` qualifies). The in-tree
 `composedPIOPWithClaim_Rc` nests `prependClaim` at the *innermost* position
 (`… (finalCheck.append prependClaim)`), while the proven base apex
-`composedCompletenessResidual_proven` is about the 8-fold `composedPIOP_Rc`. Reduction
+`composedCompletenessStatement_proven` is about the 8-fold `composedPIOP_Rc`. Reduction
 `append` is **not definitionally associative** (the protocol-spec `Fin.vappend` nests
 differently), so the outer-append composition here is a *different* (equally valid) witness:
 the empty-seam keystone applies directly to it, with no re-derivation of the seven inner
@@ -90,7 +90,7 @@ the proven 8-fold completeness apex followed by the proven 0-round claim-slot ad
 by the empty-seam keystone, with the output relation relaxed to the residual's
 `finalCheckWithClaimRelOut` (= `Set.univ`). Only the standard honest-implementation side
 conditions remain as inputs. -/
-theorem composedCompletenessWithClaimResidual_proven
+theorem composedCompletenessWithClaimStatement_proven
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
@@ -99,13 +99,13 @@ theorem composedCompletenessWithClaimResidual_proven
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
-    composedCompletenessWithClaimResidual R pp oSpec
+    composedCompletenessWithClaimStatement R pp oSpec
       ((composedPIOP_Rc (R := R) pp oSpec).append (prependClaim (R := R) pp oSpec)) init impl := by
-  have h_base := composedCompletenessResidual_proven (R := R) pp oSpec hm hn hInit hImplSupp
+  have h_base := composedCompletenessStatement_proven (R := R) pp oSpec hm hn hInit hImplSupp
     himplSP himplNF
   have h_claim := prependClaim_perfectCompleteness (R := R) (pp := pp) (oSpec := oSpec)
     (init := init) (impl := impl) (finalCheckRelOut R pp)
-  unfold composedCompletenessWithClaimResidual
+  unfold composedCompletenessWithClaimStatement
   -- the per-index and bundled challenge-oracle instances for the empty-seam keystone
   haveI : ∀ j, Fintype ((composedPSpec (R := R) pp).Challenge j) := c0F pp
   haveI : ∀ j, Inhabited ((composedPSpec (R := R) pp).Challenge j) := c0I pp
@@ -200,7 +200,7 @@ instance instComposedPIOPTightPureRcVerifierAppendCoherent :
 the proven tight full Spartan composition followed by the zero-round projection
 `tightFinalToClaim`, so the final carried target is the tight second-sum-check endpoint rather than
 the old `prependClaim` adapter's hardwired `0`. -/
-theorem composedCompletenessWithClaimValueRelResidual_proven
+theorem composedCompletenessWithClaimValueRelStatement_proven
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
@@ -209,14 +209,14 @@ theorem composedCompletenessWithClaimValueRelResidual_proven
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
-    composedCompletenessWithClaimValueRelResidual R pp oSpec
+    composedCompletenessWithClaimValueRelStatement R pp oSpec
       ((composedPIOPTightPure_Rc (R := R) pp oSpec).append
         (tightFinalToClaim (R := R) pp oSpec)) init impl := by
   have h_base := composedTightPure_perfectCompleteness (R := R) pp oSpec hm hn hInit hImplSupp
     himplSP himplNF
   have h_claim := tightFinalToClaim_perfectCompleteness (R := R) pp oSpec
     (init := init) (impl := impl)
-  unfold composedCompletenessWithClaimValueRelResidual
+  unfold composedCompletenessWithClaimValueRelStatement
   -- the per-index and bundled challenge-oracle instances for the empty-seam keystone
   haveI : ∀ j, Fintype ((composedPSpec (R := R) pp).Challenge j) := c0F pp
   haveI : ∀ j, Inhabited ((composedPSpec (R := R) pp).Challenge j) := c0I pp
@@ -233,8 +233,8 @@ theorem composedCompletenessWithClaimValueRelResidual_proven
     (tightFinalToClaim (R := R) pp oSpec)
     h_base h_claim hInit hImplSupp
 
-/-- Endpoint-form companion of `composedCompletenessWithClaimValueRelResidual_proven`. -/
-theorem composedCompletenessWithClaimSecondSumcheckEvalResidual_proven
+/-- Endpoint-form companion of `composedCompletenessWithClaimValueRelStatement_proven`. -/
+theorem composedCompletenessWithClaimSecondSumcheckEvalStatement_proven
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
@@ -243,21 +243,21 @@ theorem composedCompletenessWithClaimSecondSumcheckEvalResidual_proven
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
-    composedCompletenessWithClaimSecondSumcheckEvalResidual R pp oSpec
+    composedCompletenessWithClaimSecondSumcheckEvalStatement R pp oSpec
       ((composedPIOPTightPure_Rc (R := R) pp oSpec).append
         (tightFinalToClaim (R := R) pp oSpec)) init impl :=
-  composedCompletenessWithClaimSecondSumcheckEvalResidual_of_valueRel
+  composedCompletenessWithClaimSecondSumcheckEvalStatement_of_valueRel
     R pp oSpec
     ((composedPIOPTightPure_Rc (R := R) pp oSpec).append
       (tightFinalToClaim (R := R) pp oSpec))
     init impl
-    (composedCompletenessWithClaimValueRelResidual_proven (R := R) pp oSpec
+    (composedCompletenessWithClaimValueRelStatement_proven (R := R) pp oSpec
       hm hn hInit hImplSupp himplSP himplNF)
 
 end Spartan.Spec.Bricks
 
 -- Axiom check
-#print axioms Spartan.Spec.Bricks.composedCompletenessWithClaimResidual_proven
+#print axioms Spartan.Spec.Bricks.composedCompletenessWithClaimStatement_proven
 #print axioms Spartan.Spec.Bricks.tightFinalToClaim_perfectCompleteness
-#print axioms Spartan.Spec.Bricks.composedCompletenessWithClaimValueRelResidual_proven
-#print axioms Spartan.Spec.Bricks.composedCompletenessWithClaimSecondSumcheckEvalResidual_proven
+#print axioms Spartan.Spec.Bricks.composedCompletenessWithClaimValueRelStatement_proven
+#print axioms Spartan.Spec.Bricks.composedCompletenessWithClaimSecondSumcheckEvalStatement_proven

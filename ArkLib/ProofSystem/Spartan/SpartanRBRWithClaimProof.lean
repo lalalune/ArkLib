@@ -9,7 +9,7 @@ import ArkLib.ToMathlib.SpartanBricks
 /-!
 # Spartan RBR Knowledge Soundness with Claim — parameterized end-to-end statement
 
-This module lifts the target-carrying composed RBR knowledge-soundness residual into a single
+This module lifts the target-carrying composed RBR knowledge-soundness statement into a single
 end-to-end statement for the Spartan PIOP, parameterized on the assembled composed reduction `Rc`
 and its end-to-end RBR knowledge-soundness fact `hks`.
 
@@ -31,8 +31,8 @@ variable {R : Type} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [Sampl
 composed target-carrying Spartan oracle reduction `Rc` (over its combined spec `pSpecC`) together
 with its end-to-end round-by-round knowledge-soundness fact `hks` from the Spartan input relation
 to the terminal target-carrying final-check relation, the named composed RBR-knowledge-soundness
-residual holds. A thin delegation to the verified
-`Bricks.composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness`. -/
+statement holds. A thin delegation to the verified
+`Bricks.composedRbrKnowledgeSoundnessWithClaimStatement_of_rbrKnowledgeSoundness`. -/
 theorem spartan_rbr_knowledge_soundness_with_claim
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
@@ -43,8 +43,9 @@ theorem spartan_rbr_knowledge_soundness_with_claim
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
     (hks : Rc.verifier.rbrKnowledgeSoundness init impl
       (Bricks.spartanRelIn R pp) (Bricks.finalCheckWithClaimRelOut R pp) rbrKnowledgeError) :
-    Bricks.composedRbrKnowledgeSoundnessWithClaimResidual R pp oSpec Rc init impl rbrKnowledgeError :=
-  Bricks.composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness
+    Bricks.composedRbrKnowledgeSoundnessWithClaimStatement R pp oSpec Rc init impl
+      rbrKnowledgeError :=
+  Bricks.composedRbrKnowledgeSoundnessWithClaimStatement_of_rbrKnowledgeSoundness
     R pp oSpec Rc init impl rbrKnowledgeError hks
 
 end Spartan.Spec

@@ -14,8 +14,8 @@ import ArkLib.ProofSystem.Spartan.FinalCheckLeafComplete
 # Spartan composed PIOP perfect completeness — final assembly (issue #114)
 
 This file discharges **all five** remaining leaf hypotheses of
-`composedCompletenessResidual_of_five_leaves`, yielding the composed Spartan PIOP
-perfect-completeness obligation `composedCompletenessResidual` with **no leaf
+`composedCompletenessStatement_of_five_leaves`, yielding the composed Spartan PIOP
+perfect-completeness obligation `composedCompletenessStatement` with **no leaf
 hypotheses left** — only the standard honest-implementation side conditions
 (`NeverFail init`, support-faithfulness, state-preservation, no-failure) remain, exactly
 as in every other completeness consumer in the tree.
@@ -66,7 +66,7 @@ theorem firstChallengeRelOut_subset_firstSumcheckRelInBF :
   fun _ hx => hx
 
 /-- **The `firstChallenge` leaf at the consumer endpoints** (`h₂` of
-`composedCompletenessResidual_of_five_leaves`): perfect completeness from
+`composedCompletenessStatement_of_five_leaves`): perfect completeness from
 `firstMessageRelOut` into `firstSumcheckRelInBF`, by re-pointing
 `firstChallenge_perfectCompleteness` across the two seam inclusions. -/
 theorem firstChallenge_perfectCompleteness_consumer :
@@ -81,11 +81,11 @@ theorem firstChallenge_perfectCompleteness_consumer :
     (firstMessageRelOut_subset_firstChallengeRelIn pp) h'
 
 /-- **Composed Spartan PIOP perfect completeness, fully discharged (issue #114).**
-`composedCompletenessResidual` holds with *no leaf hypotheses*: all eight phase
+`composedCompletenessStatement` holds with *no leaf hypotheses*: all eight phase
 perfect-completenesses are the in-tree machine-checked theorems, threaded along the
 honesty-carrying relation chain. Only the standard honest-implementation side conditions
 remain as inputs. -/
-theorem composedCompletenessResidual_proven
+theorem composedCompletenessStatement_proven
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     (hInit : NeverFail init)
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
@@ -94,8 +94,8 @@ theorem composedCompletenessResidual_proven
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
-    composedCompletenessResidual R pp oSpec (composedPIOP_Rc pp oSpec) init impl :=
-  composedCompletenessResidual_of_five_leaves.{0, 0, 0} pp oSpec hm hn
+    composedCompletenessStatement R pp oSpec (composedPIOP_Rc pp oSpec) init impl :=
+  composedCompletenessStatement_of_five_leaves.{0, 0, 0} pp oSpec hm hn
     (firstChallenge_perfectCompleteness_consumer pp oSpec)
     (sendEvalClaim_perfectCompleteness R pp oSpec init impl
       (firstSumcheckRelOutBF (R := R) pp))
@@ -110,4 +110,4 @@ end Spartan.Spec.Bricks
 -- Axiom checks
 #print axioms Spartan.Spec.Bricks.firstMessageRelOut_subset_firstChallengeRelIn
 #print axioms Spartan.Spec.Bricks.firstChallenge_perfectCompleteness_consumer
-#print axioms Spartan.Spec.Bricks.composedCompletenessResidual_proven
+#print axioms Spartan.Spec.Bricks.composedCompletenessStatement_proven

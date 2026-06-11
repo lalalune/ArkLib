@@ -35,8 +35,8 @@ completeness fold): any chain `relA → … → relI` of intermediate relations 
 
 ## What this reduces #114's rbr layer to
 
-`composedRbrKnowledgeSoundnessResidual_of_leaves` discharges the official
-`SpartanBricks.composedRbrKnowledgeSoundnessResidual` (at `Rc := composedPIOP_Rc`, error
+`composedRbrKnowledgeSoundnessStatement_of_leaves` discharges the official
+`SpartanBricks.composedRbrKnowledgeSoundnessStatement` (at `Rc := composedPIOP_Rc`, error
 `composedRbrError`) from:
 
 1. the **eight per-phase rbr knowledge-soundness leaves** (`h₁`–`h₈`);
@@ -584,12 +584,12 @@ theorem composedPIOP_Rc_rbrKnowledgeSoundness_of_leaves [Subsingleton σ]
     verify₁ hV₁ hInit hInitNF hNE_B ⟨()⟩ (by omega)
     (composedPSpec_dir_seam pp (by omega)) (sfx1_dir_zero pp (by omega)) h₁ hS3
 
-/-- **`composedRbrKnowledgeSoundnessResidual` reduced to the eight per-phase rbr-KS leaves** (+
+/-- **`composedRbrKnowledgeSoundnessStatement` reduced to the eight per-phase rbr-KS leaves** (+
 the seven determinism witnesses): the official composed rbr knowledge-soundness obligation of
 `SpartanBricks`, with input relation `spartanRelIn` and output relation `finalCheckRelOut`,
 holds — at `Rc := composedPIOP_Rc`, with the folded error `composedRbrError` — as soon as the
 eight phases are rbr knowledge sound along *any* chain of intermediate relations. -/
-theorem composedRbrKnowledgeSoundnessResidual_of_leaves [Subsingleton σ]
+theorem composedRbrKnowledgeSoundnessStatement_of_leaves [Subsingleton σ]
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     [Inhabited (FinalStatement R pp × ∀ i, FinalOracleStatement R pp i)]
     [Inhabited (Statement.AfterFirstSumcheck R pp ×
@@ -672,7 +672,7 @@ theorem composedRbrKnowledgeSoundnessResidual_of_leaves [Subsingleton σ]
       ∀ i, OracleStatement.AfterLinearCombination R pp i))
     (hNE_G : Nonempty ((R × Statement.AfterLinearCombination R pp) ×
       ∀ i, OracleStatement.AfterLinearCombination R pp i)) :
-    composedRbrKnowledgeSoundnessResidual R pp oSpec (composedPIOP_Rc pp oSpec) init impl
+    composedRbrKnowledgeSoundnessStatement R pp oSpec (composedPIOP_Rc pp oSpec) init impl
       (composedRbrError pp err₁ err₂ err₃ err₄ err₅ err₆ err₇ err₈) :=
   composedPIOP_Rc_rbrKnowledgeSoundness_of_leaves pp oSpec hm hn
     verify₁ hV₁ verify₂ hV₂ verify₃? hV₃ verify₄ hV₄ verify₅ hV₅ verify₆ hV₆ verify₇? hV₇
@@ -760,7 +760,7 @@ end Spartan.Spec.Bricks
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms Spartan.Spec.Bricks.composedRbrError
 #print axioms Spartan.Spec.Bricks.composedPIOP_Rc_rbrKnowledgeSoundness_of_leaves
-#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual_of_leaves
+#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessStatement_of_leaves
 #print axioms Spartan.Spec.Bricks.firstMessage_toVerifier_pure
 #print axioms Spartan.Spec.Bricks.firstChallenge_toVerifier_pure
 #print axioms Spartan.Spec.Bricks.sendEvalClaim_toVerifier_pure

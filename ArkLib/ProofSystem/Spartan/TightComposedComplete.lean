@@ -616,7 +616,7 @@ Spartan input relation `spartanRelIn` to the tight final relation `tightFinalRel
 terminal identities, quantifier-free). Together with the KS apex
 `composedTightFull_rbrKnowledgeSoundness` (`TightComposedFull.lean`), this closes #329's
 acceptance criteria in both directions. Only the standard honest-implementation side
-conditions remain as inputs (exactly those of `composedCompletenessResidual_proven`). -/
+conditions remain as inputs (exactly those of `composedCompletenessStatement_proven`). -/
 theorem composedTightFull_perfectCompleteness
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     (hInit : NeverFail init)

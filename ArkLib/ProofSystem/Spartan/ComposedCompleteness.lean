@@ -35,9 +35,9 @@ All declarations are axiom-clean (`[propext, Classical.choice, Quot.sound]`), ze
 6. `Spartan.Spec.Bricks.composedPIOP_Rc_perfectCompleteness_of_leaves` — the **8-fold composed-PC
    assembly** over all seven seams of `composedPIOP_Rc` (2 challenge + 4 message + 1 empty),
    reducing composed perfect completeness to the eight leaf perfect completenesses.
-7. `Spartan.Spec.Bricks.composedCompletenessResidual_of_leaves` — the official `SpartanBricks`
+7. `Spartan.Spec.Bricks.composedCompletenessStatement_of_leaves` — the official `SpartanBricks`
    composed-completeness residual, from the leaf PCs.
-8. `Spartan.Spec.Bricks.composedCompletenessResidual_of_five_leaves` — sharpened: `firstMessage`
+8. `Spartan.Spec.Bricks.composedCompletenessStatement_of_five_leaves` — sharpened: `firstMessage`
    (SendSingleWitness) + both sum-checks (bridge-free) discharged; **five** named leaf obligations
    remain (`firstChallenge` [in-tree proof exists, module build-broken], `sendEvalClaim`,
    `linearCombination`, `prependRLCTarget`-honest-target [the genuine gap], `finalCheck`).
@@ -752,11 +752,11 @@ theorem composedPIOP_Rc_perfectCompleteness_of_leaves
     h₁ hS3 (by omega) (composedPSpec_dir_seam pp (by omega)) (sfx1_dir_zero pp (by omega))
     hInit himplSP himplNF
 
-/-- **`composedCompletenessResidual` reduced to the eight leaf perfect-completenesses**:
+/-- **`composedCompletenessStatement` reduced to the eight leaf perfect-completenesses**:
 the official composed-completeness obligation of `SpartanBricks`, with input relation
 `spartanRelIn` and output relation `finalCheckRelOut`, holds as soon as the eight phases are
 perfectly complete along *any* chain of intermediate relations. -/
-theorem composedCompletenessResidual_of_leaves
+theorem composedCompletenessStatement_of_leaves
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     (h₁ : (oracleReduction.firstMessage R pp oSpec).perfectCompleteness init impl
       (spartanRelIn R pp) relB)
@@ -774,7 +774,7 @@ theorem composedCompletenessResidual_of_leaves
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
-    composedCompletenessResidual R pp oSpec (composedPIOP_Rc pp oSpec) init impl :=
+    composedCompletenessStatement R pp oSpec (composedPIOP_Rc pp oSpec) init impl :=
   composedPIOP_Rc_perfectCompleteness_of_leaves pp oSpec hm hn
     h₁ h₂ h₃ h₄ h₅ h₆ h₇ h₈ hInit hImplSupp himplSP himplNF
 
@@ -804,7 +804,7 @@ concrete in-tree chain (`firstMessageRelOut` → `firstSumcheckRelInBF` →
   honest linear-combination value, so this hypothesis demands the honest-target adapter (or a
   `relF` strengthening) — the known genuine remaining gap of #114's completeness layer;
 * `h₈` — `finalCheck` (`CheckClaim` completeness into `finalCheckRelOut`). -/
-theorem composedCompletenessResidual_of_five_leaves
+theorem composedCompletenessStatement_of_five_leaves
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     (h₂ : (oracleReduction.firstChallenge R pp oSpec).perfectCompleteness init impl
       (firstMessageRelOut (R := R) pp) (firstSumcheckRelInBF (R := R) pp))
@@ -822,8 +822,8 @@ theorem composedCompletenessResidual_of_five_leaves
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
-    composedCompletenessResidual R pp oSpec (composedPIOP_Rc pp oSpec) init impl :=
-  composedCompletenessResidual_of_leaves pp oSpec hm hn
+    composedCompletenessStatement R pp oSpec (composedPIOP_Rc pp oSpec) init impl :=
+  composedCompletenessStatement_of_leaves pp oSpec hm hn
     (SendSingleWitness.oracleReduction_completeness (oSpec := oSpec)
       (Statement := Statement R pp) (OStatement := OracleStatement R pp)
       (Witness := Witness R pp) (init := init) (impl := impl)

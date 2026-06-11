@@ -54,7 +54,7 @@ private abbrev prependRLCTargetKSWiring {ι : Type} (oSpec : OracleSpec ι) :
 
 The remaining hypotheses are precisely the non-sum-check relation leaves, including the terminal
 `finalCheck` leaf against the chosen relation chain. -/
-theorem composedRbrKnowledgeSoundnessResidual_of_nonsumcheck_leaves [Subsingleton σ]
+theorem composedRbrKnowledgeSoundnessStatement_of_nonsumcheck_leaves [Subsingleton σ]
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     [Inhabited (FinalStatement R pp × ∀ i, FinalOracleStatement R pp i)]
     [Inhabited (Statement.AfterFirstSumcheck R pp ×
@@ -89,7 +89,7 @@ theorem composedRbrKnowledgeSoundnessResidual_of_nonsumcheck_leaves [Subsingleto
       ∀ i, OracleStatement.AfterLinearCombination R pp i))
     (hNE_G : Nonempty ((R × Statement.AfterLinearCombination R pp) ×
       ∀ i, OracleStatement.AfterLinearCombination R pp i)) :
-    composedRbrKnowledgeSoundnessResidual R pp oSpec (composedPIOP_Rc pp oSpec) init impl
+    composedRbrKnowledgeSoundnessStatement R pp oSpec (composedPIOP_Rc pp oSpec) init impl
       (composedRbrError pp err₁ err₂ (fun _ => (3 : ℝ≥0) / (Fintype.card R))
         err₄ err₅ err₆ (fun _ => (2 : ℝ≥0) / (Fintype.card R)) err₈) := by
   obtain ⟨verify₁, hV₁⟩ := firstMessage_toVerifier_pure (R := R) pp oSpec
@@ -114,12 +114,12 @@ theorem composedRbrKnowledgeSoundnessResidual_of_nonsumcheck_leaves [Subsingleto
     (R := R) pp oSpec (init := init) (impl := impl) hInit hInitNF
   have h₇ := secondSumcheck_rbrKnowledgeSoundness_honest_full
     (R := R) pp oSpec (init := init) (impl := impl) hInit hInitNF
-  exact composedRbrKnowledgeSoundnessResidual_of_leaves pp oSpec hm hn
+  exact composedRbrKnowledgeSoundnessStatement_of_leaves pp oSpec hm hn
     verify₁ hV₁ verify₂ hV₂ verify₃? hV₃ verify₄ hV₄ verify₅ hV₅ verify₆ hV₆
     verify₇? hV₇ h₁ h₂ h₃ h₄ h₅ h₆ h₇ h₈ hInit hInitNF hNE_B hNE_C hNE_E
     hNE_F hNE_G
 
-#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual_of_nonsumcheck_leaves
+#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessStatement_of_nonsumcheck_leaves
 
 /-- Relation-preserving composed Spartan RBR-KS progress after plugging in:
 
