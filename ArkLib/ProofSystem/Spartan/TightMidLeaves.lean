@@ -92,13 +92,15 @@ theorem eval_append_empty_tail {n m : ℕ} (h : n = n + m) (c : Fin n → R) (x 
     rw [show Fin.cast h i = Fin.castAdd 0 i from rfl, Fin.append_left]
   exact congrArg (fun pt => MvPolynomial.eval pt F) hpt
 
-/-- **The terminal sum-check relation at `Fin.last` is the direct evaluation identity**: the
-remaining cube is empty, so the relation says exactly `eval challenges poly = target`. -/
-theorem relationRound_last_iff {n : ℕ}
+/-! ## The degree-generic terminal-relation collapse -/
+
+/-- **The terminal sum-check relation at `Fin.last` is the direct evaluation identity** (any
+degree): the remaining cube is empty. Degree-generic form of `relationRound_last_iff`. -/
+theorem relationRound_last_iff_deg {n deg : ℕ}
     (t : R) (c : Fin n → R)
-    (polyO : ∀ _ : Unit, Sumcheck.Spec.OracleStatement R n 3 ()) :
+    (polyO : ∀ _ : Unit, Sumcheck.Spec.OracleStatement R n deg ()) :
     (((⟨t, fun i => c i⟩ : Sumcheck.Spec.StatementRound R n (Fin.last n)), polyO), ())
-        ∈ Sumcheck.Spec.relationRound R n 3 (boolEmbedding R) (Fin.last n)
+        ∈ Sumcheck.Spec.relationRound R n deg (boolEmbedding R) (Fin.last n)
       ↔ MvPolynomial.eval c (polyO ()).val = t := by
   haveI : IsEmpty (Fin (n - ((Fin.last n) : Fin (n+1)).val)) := by
     simp only [Fin.val_last, Nat.sub_self]
@@ -126,7 +128,17 @@ theorem relationRound_last_iff {n : ℕ}
   rw [hset, Finset.sum_singleton]
   simp only [key]
 
-/-! ## The tight relation chain -/
+/-! ## The tight final relation and the terminal check -/
+
+/-- **The terminal relation at `Fin.last` is the direct evaluation identity** (degree-3 form;
+corollary of the degree-generic `relationRound_last_iff_deg`, DRY-audit item 7). -/
+theorem relationRound_last_iff {n : ℕ}
+    (t : R) (c : Fin n → R)
+    (polyO : ∀ _ : Unit, Sumcheck.Spec.OracleStatement R n 3 ()) :
+    (((⟨t, fun i => c i⟩ : Sumcheck.Spec.StatementRound R n (Fin.last n)), polyO), ())
+        ∈ Sumcheck.Spec.relationRound R n 3 (boolEmbedding R) (Fin.last n)
+      ↔ MvPolynomial.eval c (polyO ()).val = t :=
+  relationRound_last_iff_deg t c polyO
 
 /-- **The first-terminal binding identity over the *sent* claims** (the conjoined invariant of
 the tight chain): the carried target `e₁` equals `eq̃(τ)(r_x) · (v_A·v_B − v_C)`, with the claims

@@ -48,43 +48,8 @@ variable {R : Type 0} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [Inh
 
 variable {ι : Type} (oSpec : OracleSpec ι)
 
-/-! ## The degree-generic terminal-relation collapse -/
-
-/-- **The terminal sum-check relation at `Fin.last` is the direct evaluation identity** (any
-degree): the remaining cube is empty. Degree-generic form of `relationRound_last_iff`. -/
-theorem relationRound_last_iff_deg {n deg : ℕ}
-    (t : R) (c : Fin n → R)
-    (polyO : ∀ _ : Unit, Sumcheck.Spec.OracleStatement R n deg ()) :
-    (((⟨t, fun i => c i⟩ : Sumcheck.Spec.StatementRound R n (Fin.last n)), polyO), ())
-        ∈ Sumcheck.Spec.relationRound R n deg (boolEmbedding R) (Fin.last n)
-      ↔ MvPolynomial.eval c (polyO ()).val = t := by
-  haveI : IsEmpty (Fin (n - ((Fin.last n) : Fin (n+1)).val)) := by
-    simp only [Fin.val_last, Nat.sub_self]
-    exact Fin.isEmpty'
-  have hset : ((univ.map (boolEmbedding R)) ^ᶠ (n - ((Fin.last n) : Fin (n+1)).val))
-      = {(fun a => isEmptyElim a :
-          Fin (n - ((Fin.last n) : Fin (n+1)).val) → R)} :=
-    Finset.eq_singleton_iff_unique_mem.mpr
-      ⟨Fintype.mem_piFinset.mpr (fun i => isEmptyElim i),
-       fun y _ => funext fun i => isEmptyElim i⟩
-  have key : ∀ pf : n = ((Fin.last n) : Fin (n+1)).val
-        + (n - ((Fin.last n) : Fin (n+1)).val),
-      MvPolynomial.eval ((Fin.append (fun i : Fin ((Fin.last n) : Fin (n+1)).val => c i)
-        (fun a : Fin (n - ((Fin.last n) : Fin (n+1)).val) => isEmptyElim a)) ∘ Fin.cast pf)
-        (polyO ()).val
-      = MvPolynomial.eval c (polyO ()).val := by
-    intro pf
-    apply congrArg (fun pt => MvPolynomial.eval pt (polyO ()).val)
-    funext i
-    show Fin.append _ _ (Fin.cast pf i) = c i
-    rw [show Fin.cast pf i = Fin.castAdd (n - ((Fin.last n) : Fin (n+1)).val)
-        ⟨i.val, by simpa using i.isLt⟩ from Fin.ext rfl, Fin.append_left]
-    rfl
-  simp only [Sumcheck.Spec.relationRound, Set.mem_setOf_eq]
-  rw [hset, Finset.sum_singleton]
-  simp only [key]
-
-/-! ## The tight final relation and the terminal check -/
+-- `relationRound_last_iff_deg` now lives in `TightMidLeaves.lean` (DRY-audit item 7); it
+-- resolves here through the import chain unchanged.
 
 /-- **The tight final output relation** — the acceptance currency of the tight chain, checkable
 by the next stage from the final statement and oracles (no quantifiers): the second-terminal
