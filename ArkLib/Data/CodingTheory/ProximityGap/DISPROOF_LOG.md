@@ -6475,3 +6475,31 @@ exactly 2b, and below it the bad-scalar locus = F_q-points of a determinant curv
 first machine-verified ARITHMETIC sensitivity of ε_mca (prototype of the window's
 root-of-unity barrier). Same quadric appears as maximal minor at d = 6 (the overdetermined
 extension kills its zero locus there).
+
+**O154 second addendum — the Johnson core is even smaller than mapped: Claim 5.8 is PROVEN
+(monic), Claim 5.9 is PROVEN (monic, deg_Y ≤ 2), the GS Z-degree budget is in-tree; the
+true frontier is two specific extensions.** Deep audit of the Hensel/A.1 lane:
+
+* `LiftIdentityAt` — **PROVEN for monic H** (`LiftIdentityAt.of_leadingCoeff_one`,
+  P2RootBridgeS5; via `assembledSeries_isRoot_of_monic` / the proven monic Faà-di-Bruno
+  match in MonicFaaDiBrunoMatchAlt). Claim 5.8 consumers wired
+  (`claim58_genuine_via_leadingCoeff_one`). The named
+  `FaaDiBrunoSuccSumZeroResidual` is open only for NON-monic H — and Appendix A's whole
+  device (`H_tilde`, in-tree in RationalFunctionsCore) is monisization.
+* Claim 5.9 (Z-linearity of the genuine root): order-0 face proven for monic
+  (S5GenuineZLinearMonic); **full claim proven for monic H with deg_Y ≤ 2**
+  (`claim59_zLinear_of_monic_natDegree_le_two`, S5GenuineZLinearQuadratic). The successor
+  case at general degree needs the GS interpolant's Z-degree budget — and that budget IS
+  in-tree (`gs_existence_over_ratfunc_zDegree_div` + Tight/Graded/Curve variants).
+* **The true remaining frontier, exactly two extensions:**
+  (J1) Claim 5.9 for monic H of general Y-degree — wire the in-tree Z-degree budget into
+  the successor residual (the §5.2.7 geometric argument; the deg ≤ 2 proof is the
+  template, the budget files the input); alternatively establish that the weld's
+  factor-degree structure reduces consumers to deg_Y ≤ 2 (check whether richness
+  concentration + budget inheritance cap the relevant factors).
+  (J2) `SβLargeAt` — the §5.2.6 agreement-mass count ((5.13)/(5.14) + the Claim A.2
+  Λ-weight bound `weight_Λ_over_𝒪`; the in-tree `βHensel_weight_bound_zero` is the
+  order-0 anchor).
+  Both for monic H, on built substrates, with proven templates one notch below. When J1+J2
+  land: Claim 5.10 weld fires → CoordinateUpgrade → hsurface → johnsonNumericBound_holds →
+  JohnsonDischargeStatement (no Prop) → the bracket → the deployed-regime exact δ* pin.
