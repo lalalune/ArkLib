@@ -6,6 +6,9 @@ Authors: ArkLib Contributors
 
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessFinal
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessLeaves
+import ArkLib.ProofSystem.Component.ReduceClaim
+import ArkLib.ProofSystem.Spartan.TightCompletenessProven
+import ArkLib.ProofSystem.Spartan.TightTerminalToValueRel
 
 /-!
 # Spartan composed PIOP perfect completeness with claim — final assembly (issue #114)
@@ -120,7 +123,141 @@ theorem composedCompletenessWithClaimResidual_proven
   exact Reduction.completeness_relOut_mono init impl
     (Set.subset_univ _) h
 
+/-- Project the tight terminal statement `((e₂, r_y), (r, (e₁, ...)))` to the public
+`FinalClaimStatement` surface by keeping the terminal target `e₂` and dropping the first-sum-check
+passenger target `e₁`. -/
+def tightFinalToClaimStmt (stmt : Statement.AfterSecondSumcheckWithTarget R pp) :
+    FinalClaimStatement R pp :=
+  (stmt.1.1, (stmt.1.2, dropFirstTarget pp stmt.2))
+
+/-- Zero-round projection from the tight composed terminal endpoint to the target-carrying final
+claim endpoint. The oracle family is unchanged; only the statement is re-associated and the
+tight `e₂` target becomes the carried final claim target. -/
+noncomputable def tightFinalToClaim :
+    OracleReduction oSpec
+      (Statement.AfterSecondSumcheckWithTarget R pp)
+      (OracleStatement.AfterLinearCombination R pp) Unit
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
+      !p[] :=
+  ReduceClaim.oracleReduction oSpec (tightFinalToClaimStmt (R := R) pp)
+    (fun _ _ => ()) (Function.Embedding.refl _) (by intro i; rfl)
+
+set_option linter.unusedDecidableInType false in
+set_option linter.unusedFintypeInType false in
+/-- The tight terminal relation maps into the semantic final-claim value relation: its first
+conjunct pins the carried terminal target to the second-sum-check endpoint, and the endpoint bridge
+identifies that value with `finalExpectedClaimValue`. -/
+theorem tightFinalToClaim_perfectCompleteness :
+    (tightFinalToClaim (R := R) pp oSpec).perfectCompleteness init impl
+      (tightFinalRelOut (R := R) pp) (finalCheckWithClaimValueRelIn R pp) := by
+  refine ReduceClaim.oracleReduction_completeness
+    (oSpec := oSpec)
+    (mapStmt := tightFinalToClaimStmt (R := R) pp)
+    (mapWit := fun _ _ => ())
+    (embedIdx := Function.Embedding.refl _)
+    (hEq := by intro i; rfl)
+    (relIn := tightFinalRelOut (R := R) pp)
+    (relOut := finalCheckWithClaimValueRelIn R pp)
+    (init := init) (impl := impl) ?_
+  intro stmt oStmt wit h
+  cases wit
+  let x : (Statement.AfterSecondSumcheckWithTarget R pp ×
+      (∀ i, OracleStatement.AfterLinearCombination R pp i)) × Unit :=
+    ((stmt, oStmt), ())
+  simpa only [tightFinalToClaimStmt, tightTerminalToFinalClaim] using
+    valueRel_of_tightFinalRelOut (R := R) pp x h
+
+/-- `AppendCoherent` for the pure tight terminal verifier, needed to expose coherence for the
+syntactic tight eight-fold prefix below. -/
+instance instFinalCheckPureVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (finalCheckPure (R := R) pp oSpec).verifier where
+  hCohInl i k h := by
+    simp only [finalCheckPure, CheckClaim.oracleReduction, CheckClaim.oracleVerifier,
+      Function.Embedding.inl_apply] at h
+    obtain rfl := Sum.inl.inj h
+    rfl
+  hCohInr i k h := by
+    simp only [finalCheckPure, CheckClaim.oracleReduction, CheckClaim.oracleVerifier,
+      Function.Embedding.inl_apply] at h
+    cases h
+
+/-- `AppendCoherent` for the tight composed prefix. As with `composedPIOP_Rc`, the prefix is a
+plain `def`, so expose the syntactic append fold where the leaf instances can fire. -/
+instance instComposedPIOPTightPureRcVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (composedPIOPTightPure_Rc (R := R) pp oSpec).verifier :=
+  inferInstanceAs (OracleVerifier.Append.AppendCoherent
+    ((oracleReduction.firstMessage R pp oSpec).append <|
+      (oracleReduction.firstChallenge R pp oSpec).append <|
+      (firstSumcheckReductionWithTarget pp oSpec).append <|
+      (sendEvalClaimWithTarget pp oSpec).append <|
+      (linearCombinationWithTarget pp oSpec).append <|
+      (prependRLCTargetWithTarget pp oSpec).append <|
+      (secondSumcheckReductionWithTarget pp oSpec).append <|
+      (finalCheckPureKS pp oSpec)).verifier)
+
+/-- **Semantic target-carrying composed completeness, discharged (issue #352).** The witness is
+the proven tight full Spartan composition followed by the zero-round projection
+`tightFinalToClaim`, so the final carried target is the tight second-sum-check endpoint rather than
+the old `prependClaim` adapter's hardwired `0`. -/
+theorem composedCompletenessWithClaimValueRelResidual_proven
+    (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
+    composedCompletenessWithClaimValueRelResidual R pp oSpec
+      ((composedPIOPTightPure_Rc (R := R) pp oSpec).append
+        (tightFinalToClaim (R := R) pp oSpec)) init impl := by
+  have h_base := composedTightPure_perfectCompleteness (R := R) pp oSpec hm hn hInit hImplSupp
+    himplSP himplNF
+  have h_claim := tightFinalToClaim_perfectCompleteness (R := R) pp oSpec
+    (init := init) (impl := impl)
+  unfold composedCompletenessWithClaimValueRelResidual
+  -- the per-index and bundled challenge-oracle instances for the empty-seam keystone
+  haveI : ∀ j, Fintype ((composedPSpec (R := R) pp).Challenge j) := c0F pp
+  haveI : ∀ j, Inhabited ((composedPSpec (R := R) pp).Challenge j) := c0I pp
+  haveI := ProtocolSpec.challengeOracle_fintype (composedPSpec (R := R) pp)
+  haveI := ProtocolSpec.challengeOracle_inhabited (composedPSpec (R := R) pp)
+  haveI := ProtocolSpec.challengeOracle_fintype
+    ((composedPSpec (R := R) pp) ++ₚ (!p[] : ProtocolSpec 0))
+  haveI := ProtocolSpec.challengeOracle_inhabited
+    ((composedPSpec (R := R) pp) ++ₚ (!p[] : ProtocolSpec 0))
+  haveI := ProtocolSpec.challengeOracle_fintype (!p[] : ProtocolSpec 0)
+  haveI := ProtocolSpec.challengeOracle_inhabited (!p[] : ProtocolSpec 0)
+  exact OracleReduction.append_perfectCompleteness_keystone_empty_114
+    (composedPIOPTightPure_Rc (R := R) pp oSpec)
+    (tightFinalToClaim (R := R) pp oSpec)
+    h_base h_claim hInit hImplSupp
+
+/-- Endpoint-form companion of `composedCompletenessWithClaimValueRelResidual_proven`. -/
+theorem composedCompletenessWithClaimSecondSumcheckEvalResidual_proven
+    (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
+    composedCompletenessWithClaimSecondSumcheckEvalResidual R pp oSpec
+      ((composedPIOPTightPure_Rc (R := R) pp oSpec).append
+        (tightFinalToClaim (R := R) pp oSpec)) init impl :=
+  composedCompletenessWithClaimSecondSumcheckEvalResidual_of_valueRel
+    R pp oSpec
+    ((composedPIOPTightPure_Rc (R := R) pp oSpec).append
+      (tightFinalToClaim (R := R) pp oSpec))
+    init impl
+    (composedCompletenessWithClaimValueRelResidual_proven (R := R) pp oSpec
+      hm hn hInit hImplSupp himplSP himplNF)
+
 end Spartan.Spec.Bricks
 
 -- Axiom check
 #print axioms Spartan.Spec.Bricks.composedCompletenessWithClaimResidual_proven
+#print axioms Spartan.Spec.Bricks.tightFinalToClaim_perfectCompleteness
+#print axioms Spartan.Spec.Bricks.composedCompletenessWithClaimValueRelResidual_proven
+#print axioms Spartan.Spec.Bricks.composedCompletenessWithClaimSecondSumcheckEvalResidual_proven

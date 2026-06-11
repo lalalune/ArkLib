@@ -710,7 +710,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue232VerifiedBricks
 import ArkLib.Data.CodingTheory.ProximityGap.Issue244Refutation
 import ArkLib.Data.CodingTheory.ProximityGap.IteratedSliceRootCoherence
-import ArkLib.Data.CodingTheory.ProximityGap.Jo26DeltaZeroForcedEquality
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26InterleavingBound
@@ -728,7 +727,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26AsymptoticCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26BadLineConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26EntropyForm
-import ArkLib.Data.CodingTheory.ProximityGap.KKH26ParsevalThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26PolyFieldCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
@@ -835,7 +833,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityQuadratic
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacitySharpSpread
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacitySpreadOptimal
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
-import ArkLib.Data.CodingTheory.ProximityGap.MCAResearchLoop
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
@@ -1195,9 +1192,7 @@ import ArkLib.Data.UniPoly.Basic
 import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
-import ArkLib.MCACapacityTrivial
 import ArkLib.MCACapacityTrivial_keep
-import ArkLib.MCAGSRefutationCore
 import ArkLib.MCAGSRefutationCore_keep
 import ArkLib.OracleReduction.BCS.AppendSoundnessMsg
 import ArkLib.OracleReduction.BCS.BCSCompilerProof
@@ -1410,7 +1405,6 @@ import ArkLib.ProofSystem.BatchedFri.Spec.SingleRound
 import ArkLib.ProofSystem.Binius.BBFSmallFieldIOPCS
 import ArkLib.ProofSystem.Binius.BinaryBasefold.BaseFoldDetBrick
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
-import ArkLib.ProofSystem.Binius.BinaryBasefold.BitReversal
 import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Code
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
@@ -1458,7 +1452,6 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Assembly
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Discharge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2FarLift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Probability
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition421
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
@@ -1640,7 +1633,6 @@ import ArkLib.ProofSystem.Spartan.TightCompletenessProven
 import ArkLib.ProofSystem.Spartan.TightComposedComplete
 import ArkLib.ProofSystem.Spartan.TightComposedCompleteness
 import ArkLib.ProofSystem.Spartan.TightComposedFull
-import ArkLib.ProofSystem.Spartan.TightComposedFullCompleteProven
 import ArkLib.ProofSystem.Spartan.TightConjoinedSecondLeaf
 import ArkLib.ProofSystem.Spartan.TightDeterminismWitnesses
 import ArkLib.ProofSystem.Spartan.TightFinalCompleteness
