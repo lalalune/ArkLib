@@ -6782,3 +6782,35 @@ this hterm — feed it the structured-IH per-term lemma);
 `JohnsonDischargeStatement` → bracket → `kkh26_deltaStar_pin_of_interior_ceiling`).
 Every claim above is traced to a paper line or an in-tree theorem name; no step rests on
 an unverified guess. The remaining work is the E1′/E2′ formalization and E3 wiring.
+
+**O154 V1 dive, finding 7 — THE COMPLETE PER-TERM ARITHMETIC (E1′) VERIFIED BY HAND in
+the original-H frame; the last missing `Λ_W` is the paper-3955 W-DIVISIBILITY of the
+leading coefficient; E1′ is now transcription.** With `Λ_W := Λ(W) = D − d_H` (tight),
+`Λ_ξ := (D−1) + (d−2)·Λ_W` (Claim A.2 bullet 1, exact form), structured IH
+`Λ(β_l) ≤ 1 + (l+1)Λ_W + e_l·Λ_ξ`, per-term object
+`W^{i1+δ−1}·ξ^{2i1+Σλ−2}·B_{i1,λ}·∏_parts β_part` (m parts, Σ parts = k+1−i1):
+
+* **ξ-coefficient: `(2i1+m−2) + Σ_parts e_part ≤ (2i1+m−2) + (2(k+1−i1)−m) = 2k`** —
+  the finding-3 cancellation, unchanged. Target `e_{k+1} = 2k+1`: headroom `Λ_ξ`.
+* **W-coefficient: `(i1+δ−1) + Σ_parts(part+1) = (i1+δ−1) + (k+1−i1) + m = k+δ+m`.**
+  Target `k+2`: deficit `(δ+m−2)·Λ_W`, absorbed by the headroom `Λ_ξ ⊇ (d−2)Λ_W`
+  provided `Λ(B)` is good enough.
+* Reduced need: **`Λ(B_{i1,λ}) ≤ D − m + (d − δ − m)·Λ_W`.**
+* **The B-estimate (joint per-monomial, with both drops):** the rep of `B_{i1,λ}` is (up
+  to integer prefactor, weight-free by `weight_Λ_over_𝒪_nsmul_le`) the Hasse coefficient
+  `evalX(x₀)(Δ_X^{i1} Δ_Y^{m} R)`: `T`-degree ≤ `d − m` (PROVEN drop) and the `T^j`
+  coefficient has `Z`-degree ≤ `D_R − (j+m)` (the `Δ_Y^m` index shift: coefficient `j` of
+  the derivative is `C(j+m,m)·r_{j+m}`). Hence
+  `Λ(B) ≤ max_j [j·(D+1−d_H) + D_R − j − m] = D_R − m + (d−m)·Λ_W ≤ D − m + (d−m)·Λ_W`.
+* **The final credit (δ-cases):** for `δ = 0` the need is met outright. For the `i1 = 0`,
+  `δ = 1` boundary the estimate is `Λ_W` short — and the paper supplies exactly it at
+  line 3955: **`W` divides the leading coefficient of `R_{x₀}`**, so the TOP Hasse
+  coefficient (`j = d−m`) carries a `W` factor; accounting it (reduce or factor) lowers
+  the dominant term by `Λ_W`:
+  `Λ(B) ≤ D − m + (d−m−1)·Λ_W` — meeting the need exactly. ∎ (hand)
+* **E1′ transcription inventory:** the `Δ_Y` index-shift Z-degree bound (new small lemma
+  on `hasseDerivY` coefficients); the W-divisibility of the top coefficient (from
+  `Hypotheses.dvd_evalX`, in-tree); the joint-monomial Λ-estimate (a `Finset.sup` bound);
+  then the bookkeeping above (ℕ-arithmetic, same flavour as the proven rebased collapse).
+  E2′: feed into `βHensel_weight_bound`'s hterm. E3: wiring. The mathematics of the
+  Johnson endgame is now COMPLETE on paper; all of it is traced; what remains is Lean.
