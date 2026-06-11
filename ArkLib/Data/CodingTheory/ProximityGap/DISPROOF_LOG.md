@@ -6946,3 +6946,34 @@ audit for the B-budget brick (the final to-do before wiring):
 Status at this checkpoint: ELEVEN axiom-clean endgame bricks; TEN findings; the per-term
 wall a theorem modulo budgets; i1 ≥ 1 budgets closed by computation; i1 = 0 reduced to
 one convention-audit + one bridge lemma with the paper's mechanism now extracted verbatim.
+
+**O154 V1 dive, finding 11 (the convention audit, decisive) — the in-tree `B_coeff` is
+UNTWISTED (`prefactor • hasseCoeffRepr𝒪`, HenselNumerator:989-region docstring confirms);
+the in-tree `B_coeff_weight_le` (PROVEN) is `(d_R−m)·(D+1−d_H) + degX(p)` — computed
+against `hreduced` it is exactly `(d_R−m)` TOO LOOSE (deficit `d_H − m − i1`, not
+`d_H − i1 − d_R`); my item-(d) per-monomial bound (`DQ + dT·(D−d_H)`, the `(D−d_H)` factor
+not `(D+1−d_H)`) is the SHARP one and closes i1 ≥ 1.** Audit details:
+
+* `B_coeff := prefactor • hasseCoeffRepr𝒪` — untwisted; the `_cleared` twist exists
+  separately with its embedding identity (`embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared`,
+  proven). The docstring's named remaining sharpening for the in-tree route is the
+  degree-tracking `degX p ≤ D − Σλ`.
+* In-tree bound + crude tracking: `nB = (d_R−m)Λ_W + (d_R−m) + (D−m−i1)` ⟹ hreduced
+  deficit `d_H − m − i1` — NOT always ≤ 0 (fails at small m+i1, large d_H). My item-(d):
+  `nB = (D_R−m−i1) + (d_R−m)Λ_W` ⟹ deficit `d_H − i1 − d_R ≤ 0` for i1 ≥ 1 ✓ (finding 9
+  reconfirmed against the in-tree lemma — item (d) is the right B-budget, not
+  `B_coeff_weight_le`).
+* **The remaining i1 = 0 question, now fully precise:** with the untwisted uniform bound
+  the deficit is `D − d_R ≥ 0`; the per-monomial refinement shows the TOP monomial
+  contributes only `dT·Λ_W + (D_R − d_R − i1)` (less than uniform by `dT`), so the sup
+  may sit at interior monomials where W-divisibility says nothing — the paper's saving is
+  genuinely a property of the TWISTED clearing (the `T/W`-denominator structure), not of
+  the untwisted sup. **Resolution for the next session (one of):** (T-a) state the i1 = 0
+  B-budget through the `_cleared` form (its embedding identity is proven; need its
+  Λ-bound — the twist multiplies coefficient `j` by `W^{dT−j}`, giving per-monomial
+  `j·(Λ_W+1) + (DQ−j) + (dT−j)·degW = dT·Λ_W + DQ − ... ` compute carefully); or (T-b)
+  verify whether `βHensel_succ`'s recursion identity actually consumes the twisted form at
+  i1 = 0 (the δ-saving MUST live somewhere — if the recursion's W-prefactor exponent
+  `i1 + δ − 1 = 0` at i1 = 0 is paired with the untwisted B, the paper-vs-tree term
+  normalization differs by exactly one W and the in-tree per-term TARGET may differ
+  accordingly — audit `βHensel_succ` against (A.1) at i1 = 0 specifically).
