@@ -29,5 +29,11 @@ Equivariance proofs are concrete finite-group / `Equiv`-on-`Finset` arguments.
 **Honesty.** The equivariance lemma is a genuine `Finset` bijection result; no shortcuts.
 -/
 
--- Replace with the affine action `def` + the bad-γ-count-invariance lemma.
+-- DISCHARGED (2026-06-11, #357 S3): the equivariance engine lives in
+-- `ProximityGap.MCAEquivariance` (translation/scaling/γ-shift/permutation invariances,
+-- probability transfer, `epsMCA_eq_iSup_subtype_of_reps`, and the RS rotation instance
+-- `mcaEvent_rs_rotate`), with the strictly more general diagonal-twisted form in
+-- `ProximityGap.MCAMonomialEquivariance` (`mcaEvent_monomial` — needed for the GRS-duality
+-- twist `u(x) ↦ x·u(1/x)`, which merges the two extremal orbits at the exact-pin instance;
+-- see DISPROOF_LOG O135). The n = 12 numeric capstone consumes these lemmas.
 example : True := trivial

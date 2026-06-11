@@ -5488,3 +5488,49 @@ slots — affine counts drift by ±1 inside one structure class, which is now ex
 anomalous; (b) N1's structured-extremality conjecture survives its first decisive audit in
 projective form: at the R1 rung there are NO unstructured maximizers — the maximizer set is
 one projective orbit exactly.
+
+### O135 (#357 S3 addendum) — extremal-orbit law at the exact-pin instance: TWO free orbits under the plain group, ONE under the monomial twist; raw inversion and row-swap REFUTED as invariances
+
+Complements the landed S3 engine (`MCAEquivariance.lean`) and the R1 pin
+(`DeltaStarExactPinF5.lean`). Probes `probe_s3_extremal_orbits.py` /
+`probe_s3_twisted_inversion_merger.py` (exact, mask-engine cross-checked vs the R1 ladder):
+
+* The δ = 1/4 extremal stacks (badCount = 4) of RS[F₅,(1,2,4,3),2] number exactly **100,000**
+  and decompose under ⟨translation(625), scaling(4), γ-shift(5), rotation(4)⟩ (order 50,000)
+  into exactly **two FREE orbits** — every extremal stabilizer is trivial.
+* **Raw inversion `u ↦ u∘(x↦x⁻¹)` is NOT an invariance** (12,500 violations — it does not
+  stabilize a degree-< k code); **row swap `(u₀,u₁) ↦ (u₁,u₀)` is NOT an invariance**
+  (200,000 violations — γ ↦ 1/γ breaks at γ = 0).
+* The **twisted inversion `u(x) ↦ x·u(1/x)`** (coefficient reversal, GRS-duality; verified
+  code-stabilizing) **merges the two orbits: ONE orbit, size 100,000, zero violations.**
+
+Formal vehicle landed: `mcaEvent_monomial` (`MCAMonomialEquivariance.lean`, axiom-clean) —
+invariance under permutation × nonvanishing diagonal, strictly generalizing the engine's
+`mcaEvent_comp_perm_iff` (the plain-permutation engine provably cannot reach the twist).
+Verdict: the worst-case stacks of the first exact-δ* instance form a SINGLE orbit of the
+full monomial normalizer. Next falsifier: the (12,6) flat-numerator census across
+p ∈ {13,37,61} — is it one twisted orbit?
+
+### O136 (#357 R2 addendum) — the EXACT CENSUS LAW on the monomial-pair line: bad scalars = r-subset sums, as SETS; the stratified-spread count is census-exact
+
+Complements the landed K1/R2 entry (fold fixed-point at even m, DEEP-quotient form, p=17).
+This lane probed the *monomial-pair* form `(X^{rm}, X^{(r−1)m})` at the smallest
+KKH26-faithful prime: `probe_r2_kkh26_fold_transport.py` + `probe_r2b_stratified_census_exact.py`
+(p = 4129 > 8⁴, μ = 3, m = 1, r = 4; pre-registered H1a/b/c):
+
+* **Shape covariance (exact):** fold maps `(X⁴, X³)` on μ₈ to exactly `(y², β·y)` on μ₄ —
+  the `(μ−1, r/2)` instance up to a row scaling (an `mcaEvent_smul_right` move); at even m,
+  β never enters (consistent with the landed fixed-point entry).
+* **Witness death:** the construction's antipodal-free witness sets contribute ZERO surviving
+  agreement pairs to the fold — inherited closeness dies; folded badness is regenerated at
+  the smaller scale, not transported. K1-as-amplification stays dead from this side too.
+* **THE CENSUS LAW (new, set equality at two scales):** the exact bad-scalar set at
+  δ = 1 − r/s equals **exactly** `{−Σ T : T an r-subset of the domain}` — census 41 = 41 at
+  (μ=3, r=4) and 5 = 5 folded (any β), both equal to the in-tree stratified closed form
+  `Σ_j 2^{r−2j}·C(s/2, r−2j)`. Elementary proof for m = 1 (domain-agnostic): the difference
+  `x^r + λx^{r−1} − q` is monic of degree exactly r (deg q ≤ r−2), so ≥ r agreements force
+  exactly r roots S ⊆ H and the X^{r−1} coefficient pins λ = −e₁(S); conversely every
+  r-subset realizes its sum. Subgroup structure enters only in *counting distinct sums*.
+  Formalization target: `kkh26_badScalar_iff_subsetSum` — upgrades the ceiling numerator to
+  an exact census and welds the KKH26 lane to the vanishing-sums/de Bruijn lane at the LINE
+  level (the S1 unification's first half).
