@@ -7098,40 +7098,23 @@ engine closes ALL cells — (P1) complete for the repaired recursion.
 countermodel (concrete `F, H, R` with `Hypotheses` instance, compute both sides at t = 1)
 to be promoted to a refutation, or a re-audit of `βHensel_succ`'s intended semantics.
 
-## 2026-06-11 — Items 9 + 24 of the 26-program: decided (⊖ identifications)
-
-**Item 9 (Lam–Leung W(pqr) status).** Audited: nine `LamLeung*.lean` files in-tree,
-all sorry-free. The case the production cone needs — vanishing subsets of `2^m`-th
-roots of unity are negation-symmetric, for EVERY `m`, unconditionally
-(`LamLeungUnconditionalGeneral.lean`: minpoly = cyclotomic + `φ(2^m) = 2^{m-1}` +
-`PowerBasis.linearIndependent_pow`) — is PROVEN. The open `W(pqr)` (three odd prime
-factors) is **outside the 2-smooth production cone**: no production domain has a
-three-odd-prime root-of-unity order. Verdict: ✓ as scoped to #357; the general
-question stays with the vanishing-sums literature, not this dossier.
-
-**Item 24 (run the sandwich backward systematically).** Quantified: the reverse
-dictionary (`exists_interleavedList_card_gt_of_epsMCA_gt`) at the ladder exacts
-`ε_mca = j/q` forces only `L = 0`: the threshold needs
-`(1 + (n − a)·L)/q < j/q` with `n − a = 2j − 2`, i.e. `L < (j−1)/(2j−2) = 1/2`.
-So the systematic reverse direction yields exactly **nonemptiness** of interleaved
-ambiguous lists at agreement `a = n − 2j + 2` — true but thin. Meaningful reverse
-statements (`L ≥ 1`) require band values `> 2j − 1`, i.e. the explosion regime
-(item 18), whose exact values are the open band question. Verdict: ⊖ — decided,
-gated on item 18; no theorem worth landing before the explosion law.
-
-## 2026-06-11 — Item 12 DECIDED: the a = 5 and a = 6 census closed forms
-
-Probe `probe_census_a5_a6.py` (exact ℤ[ζ_{2^m}] arithmetic via folding — no prime,
-no threshold caveat): the char-0 census `N_a(n)` of `a`-subsets of the `2^m`-th
-roots of unity with `e₂ = 0`:
-
-* **`N₅(n) = n(n−4)/4`** — verified 8/48/224 at n = 8/16/32 and the blind n = 64
-  forecast **960**. Every solution is `{±x, ±ix} ∪ {w}` (one quartet + one free
-  point): the 2-pair cross-terms vanish identically, `e₂ = −x² − y²`, forcing
-  `y = ±ix`; the would-be second family (one pair + `st+su+tu = x²` triple)
-  contributes ZERO solutions at every tested scale — the quartet ansatz is COMPLETE.
-* **`N₆(n) = 0`** at n = 8, 16, 32 — an exact instance of the landed parity law
-  (a ≡ 2 mod 4 ⟹ empty), now confirmed at the a = 6 rung directly.
-
-With the landed `N₄ = n(n−3)/4` this gives the first THREE rungs of the depth-1
-vanishing-locus classification in closed form: `n(n−3)/4 · n(n−4)/4 · 0`.
+### Red team round 3 (#357 campaign) — MonomialDomination KILLED on the low bands by the spike floor; hybrid (v4) repair landed
+The v3 surface (epsMCA ≤ monomialEps above the crossing) quantified over ALL grid
+agreements — including the low bands, where the fleet's universal spike floor
+(epsMCA_ge_j_div_card: per-position coefficient freedom u₀ = Σ aₗe_{pₗ}, u₁ = Σ e_{pₗ})
+realizes j bad scalars while monomial pairs are structurally capped.
+**Machine-checked (`MonomialDominationKilled.lean`, axiom-clean):** at (F₁₇, μ₈, k=2),
+band 2 (a = 7): ε_mca ≥ 2/17 (spike floor + noWeightLE_two: affine two-roots) but EVERY
+monomial pair has ≤ 1 bad scalar (monomial_coreG_le_one — kernel decide over the
+GENERALIZED agreement-set maximality bridge coreG_of_mcaEvent, stack/agreement
+parameterized; Python cross-check over all 64 pairs incl. diagonal: max = 1) ⟹
+monomialEps ≤ 1/17 < 2/17 ≤ ε_mca: ¬MonomialDomination dom8 C ac for every ac < 7.
+This is the formal twin of the empirical O146 cycle (double-spike refutation of
+CensusUpperExtremal → two-family max correction).
+**Repair (v4): HybridDomination** — ε_mca ≤ max(monomialEps, (n−a+1)/q); the staircase
+term is an exact THEOREM below distance/3 (BandExactness/master collapse), so the
+conjectural content is confined to the structured/window regime where every probe
+supports it. v4 pin mcaDeltaStar_eq_of_hybridCrossing same engine.
+**Surface lineage (all formal):** census (killed: empty rungs) → census+floor (killed:
+take-over) → monomial (killed: spike bands, this) → hybrid = the two-family max:
+consistent with every theorem and probe in the tree.

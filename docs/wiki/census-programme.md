@@ -38,6 +38,10 @@ data point ever computed** (9 instances, 14+ field-combos, 3 red-team cycles).
 | staircase | sibling universal-band files | `ε_mca·q` exact on the first two bands for every code (the double-spike mechanism) |
 | staircase | `BandCollapse.lean` | `badScalar_card_le_band` / `epsMCA_le_band` — **the band collapse** (O153): ≤ `j+1` bad scalars on band `j` for distance `> 3j`; the rigid relation `w_γ = w_{γ₁} + (γ−γ₁)v` + injection + pinch |
 | staircase | `BandExactness.lean` | `epsMCA_band_exact` — **the exact staircase**: `ε_mca(RS, j/n) = (j+1)/q` exactly at every in-hypothesis band (collapse + spike LB + `rs_nonzero_wt_lower`) |
+| surface lineage | `CensusExtremalFloor.lean` → `TakeoverCountermodel.lean` → `MonomialDominationKilled.lean` | the three formal red-team kills of the extremality surfaces (empty-rung floor / excess take-over / spike-vs-monomial band 2) — each with countermodel + repair; current surface = **hybrid two-family max** (`HybridDomination` + v4 pin `mcaDeltaStar_eq_of_hybridCrossing`) |
+| exact points | `HalfPairSliceExact.lean` + `JohnsonExactPoint.lean` + `SmoothWindowSaturation.lean` | the (F₁₇, μ₈, 2) instance closed at UDR (law census = μ₈) / Johnson (mcaEvent census = μ₈, via the **agreement-set maximality device**) / in-window 5/8 (ε_mca = 1 — saturation as theorem) |
+| lower staircase | `CosetSplittingFloor.lean` + `SplittingLadder.lean` + `SmoothLadderInstance.lean` + `FactorizableStacks.lean` | hypothesis-free ε_mca ≥ (n/g)/q on δ ≥ 1/2 − g/n (deepest rung = UDR); the mechanism generalized to arbitrary rows (fiber reach–count tradeoff: the half-pair dominates the factorizable class) |
+| gap laws | `ExcessCensusLaw.lean` + `GeneralGapCensusLaw.lean` | monic-cofactor excess witnesses: exact iff for (X^s, X^{s−1}) and arbitrary (X^s, X^t), k ≤ t < s — the corrected census objects after the take-over |
 
 ## The empirical layer (DISPROOF_LOG O135–O152; probes in `scripts/probes/`)
 
