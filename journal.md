@@ -79,3 +79,10 @@ campaign on this repository. Maintained alongside the work; newest entries last.
   degree parameters (the paper's threshold scales with the close-count). The probe ran
   before the top assembly was built on the vacuous window — methodology item 3 doing
   its job.
+
+- Entry 5: the thin window is fully diagnosed — only the full-coverage conversion
+  forces the degenerate parameter pinning; the underlying point-selection has an open
+  window in the complement form, with the threshold scaling correctly. Rerouting to
+  partial coverage: scalars matched at every selected point inherit the pencil; the
+  rest are counted against the per-point miss budget. The route is non-vacuous and the
+  three pieces (partial pencil identity, escapee count, count assembly) are enumerated.
