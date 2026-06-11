@@ -469,6 +469,102 @@ private lemma pmf_bind_elim_congr {α β : Type} (p : PMF (Option α))
     · simp only [Option.elim_some]
       rw [h a ha]
 
+section PMFAbsorption
+
+variable [SampleableType (Equiv.Perm X)]
+
+/-- The overlay pushforward, stated from the uniform permutation (`uniformOfFintype` is
+definitionally `uniformOfFinset univ`, and `extendsFinset [] = univ`). -/
+theorem map_permExtending_uniform_fintype (rest : List (X × X))
+    (hkeys : ((rest.map Prod.fst)).Nodup) (hvals : ((rest.map Prod.snd)).Nodup) :
+    (PMF.uniformOfFintype (Equiv.Perm X)).map (permExtending rest)
+      = PMF.uniformOfFinset (extendsFinset rest)
+          (by
+            have := extendsFinset_append_nonempty [] rest (by simpa using hkeys)
+              (by simpa using hvals) (by simp)
+            simpa using this) := by
+  classical
+  have h := map_permExtending_uniform [] rest (by simpa using hkeys)
+    (by simpa using hvals) (by simp)
+  have huniv : PMF.uniformOfFintype (Equiv.Perm X)
+      = PMF.uniformOfFinset (extendsFinset ([] : List (X × X)))
+          (by simp) := by
+    ext π
+    rw [PMF.uniformOfFintype_apply, PMF.uniformOfFinset_apply_of_mem
+      (hs := by simp) (by simp [mem_extendsFinset])]
+    simp
+  rw [huniv]
+  simpa using h
+
+/-- **The miss-case absorption, PMF level**: drawing a fresh unused output and overlaying
+the grown cache on a uniform permutation is the overlay of the original cache — the chain
+rule `uniformOfFinset_extends_step` composed with the overlay pushforward. -/
+theorem pmf_absorb {α : Type} (c : List (X × X)) (a : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (ha : a ∉ c.map Prod.fst) (hne : (extendsFinset c).Nonempty)
+    (ψ : Equiv.Perm X → α) :
+    (PMF.uniformOfFinset (unusedFinset c)
+        (unusedFinset_nonempty c a hkeys hvals ha)).bind (fun b =>
+      ((PMF.uniformOfFintype (Equiv.Perm X)).map
+        (fun π => ψ (permExtending (c.concat (a, b)) π))))
+      = (PMF.uniformOfFintype (Equiv.Perm X)).map
+          (fun π => ψ (permExtending c π)) := by
+  classical
+  -- nodups of the grown cache, for unused `b` (rewritten per-fibre on the support)
+  have hgrow : ∀ b, b ∉ c.map Prod.snd →
+      (((c.concat (a, b)).map Prod.fst).Nodup ∧ ((c.concat (a, b)).map Prod.snd).Nodup) := by
+    intro b hb
+    constructor
+    · simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+      rw [List.nodup_append]
+      exact ⟨hkeys, List.nodup_singleton _, by
+        intro x hx y hy
+        simp only [List.mem_singleton] at hy
+        subst hy
+        exact fun h => ha (h ▸ hx)⟩
+    · simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+      rw [List.nodup_append]
+      exact ⟨hvals, List.nodup_singleton _, by
+        intro x hx y hy
+        simp only [List.mem_singleton] at hy
+        subst hy
+        exact fun h => hb (h ▸ hx)⟩
+  -- rewrite the bound fibres via the fintype pushforward at the grown cache
+  rw [LazyPermMarginal.bind_congr_support _ _
+    (fun b =>
+      if h : (extendsFinset (c.concat (a, b))).Nonempty then
+        (PMF.uniformOfFinset (extendsFinset (c.concat (a, b))) h).map ψ
+      else (PMF.uniformOfFinset (extendsFinset c) hne).map ψ)
+    (by
+      intro b hb
+      rw [PMF.mem_support_uniformOfFinset_iff, mem_unusedFinset] at hb
+      obtain ⟨hk', hv'⟩ := hgrow b hb
+      have hpos := extendsFinset_concat_nonempty c a b ha hb hne
+      dsimp only
+      rw [dif_pos hpos,
+        show (fun π => ψ (permExtending (c.concat (a, b)) π))
+          = ψ ∘ (permExtending (c.concat (a, b))) from rfl, ← PMF.map_comp,
+        map_permExtending_uniform_fintype (c.concat (a, b)) hk' hv'])]
+  -- pull the `ψ`-map out of the bind and apply the chain rule
+  have hpull : (PMF.uniformOfFinset (unusedFinset c)
+      (unusedFinset_nonempty c a hkeys hvals ha)).bind (fun b =>
+        (if h : (extendsFinset (c.concat (a, b))).Nonempty then
+          (PMF.uniformOfFinset (extendsFinset (c.concat (a, b))) h).map ψ
+        else (PMF.uniformOfFinset (extendsFinset c) hne).map ψ))
+      = ((PMF.uniformOfFinset (unusedFinset c)
+          (unusedFinset_nonempty c a hkeys hvals ha)).bind (fun b =>
+            if h : (extendsFinset (c.concat (a, b))).Nonempty then
+              PMF.uniformOfFinset (extendsFinset (c.concat (a, b))) h
+            else PMF.uniformOfFinset (extendsFinset c) hne)).map ψ := by
+    rw [PMF.map_bind]
+    refine congrArg _ (funext fun b => ?_)
+    split_ifs <;> rfl
+  rw [hpull, ← uniformOfFinset_extends_step c a hkeys hvals ha hne,
+    show (fun π => ψ (permExtending c π)) = ψ ∘ (permExtending c) from rfl,
+    ← PMF.map_comp, map_permExtending_uniform_fintype c hkeys hvals]
+
+end PMFAbsorption
+
 /- WIP (4B master induction — design in memory; statement+pure case verified in-session):
 /-- **The eager–lazy permutation bridge**: simulating against the lazy memoizing oracle
 from a realizable cache has the same distribution as drawing one uniform extension of the
@@ -502,3 +598,5 @@ end LazyPermBridge
 #print axioms LazyPermBridge.extends_permExtending
 #print axioms LazyPermBridge.map_onestep_uniform
 #print axioms LazyPermBridge.map_permExtending_uniform
+#print axioms LazyPermBridge.pmf_absorb
+#print axioms LazyPermBridge.map_permExtending_uniform_fintype
