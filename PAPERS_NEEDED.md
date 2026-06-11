@@ -3,6 +3,18 @@
 For the user: please obtain PDFs for the entries below (DOI / IACR ePrint / arXiv id given).
 Triage agents append precise per-residual needs at the bottom as they find them.
 
+**STATUS 2026-06-10 (end of day): every open-access entry below is already on disk at
+`~/papers/arklib/` (verified by the wave agents; CO25 ePrint 2025/536 + CS25 2025/2046
+included). The ONLY two items not obtained are paywalled and currently believed unneeded:**
+
+| Paper | Identifier | Why it can wait |
+|---|---|---|
+| Guruswami–Sudan 1999 (journal version) | DOI 10.1109/18.782097 | the ePrint/author copy content is already reflected in-tree (`GuruswamiSudan/`); only exact constants would need checking |
+| de Bruijn 1953 (asymptotic methods note) | n/a (paywalled archive) | cited once for a classical asymptotic; the in-tree de Bruijn lemmas were proven directly |
+
+If you can obtain those two, drop them in `~/papers/arklib/`; nothing is currently blocked
+on them.
+
 ## Core protocol papers (residual classes cite these directly)
 
 | # | Paper | Identifier | Needed for |
