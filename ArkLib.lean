@@ -816,6 +816,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEventAgreeWitness
+import ArkLib.Data.CodingTheory.ProximityGap.MCAEventEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticeResolvedSpec
@@ -842,6 +843,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityQuadratic
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacitySharpSpread
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacitySpreadOptimal
+import ArkLib.Data.CodingTheory.ProximityGap.MCAProjectiveEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCAResearchLoop
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
