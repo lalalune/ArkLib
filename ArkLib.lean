@@ -58,6 +58,7 @@ import ArkLib.Data.CodingTheory.AGL24Submatrix
 import ArkLib.Data.CodingTheory.AGL24SymbolicRank
 import ArkLib.Data.CodingTheory.AGL24Types
 import ArkLib.Data.CodingTheory.AGL24UnionBound
+import ArkLib.Data.CodingTheory.AGL24VertexDegree
 import ArkLib.Data.CodingTheory.AGL24WeakPartition
 import ArkLib.Data.CodingTheory.AsymptoticGVBound
 import ArkLib.Data.CodingTheory.Basic.CosetFarCount
@@ -1327,13 +1328,13 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Freshness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Reduction
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.LiftCoherence
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunEqHonest
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEvents
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEventsCoincidence
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEventsEngine
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ProverTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunCollapse
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunEqHonest
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.SimulatorBudgets
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Soundness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructures
