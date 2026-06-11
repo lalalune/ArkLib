@@ -34,6 +34,7 @@ namespace ArkLib.ProximityGap.CurveUDR
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
 
+omit [DecidableEq F] [DecidableEq ι] [Nonempty ι] in
 open Classical in
 /-- Curve analogue of `epsMCA_le_of_badCount_le`: a uniform per-stack bad-scalar bound gives the
 `ℓ/|F|` curve-MCA bound. -/
@@ -49,6 +50,7 @@ theorem epsMCACurve_le_of_badCount_le
   gcongr
   exact_mod_cast h u
 
+omit [DecidableEq F] [DecidableEq ι] in
 open Classical in
 /-- **Curve-UDR stage 3: the Reed–Solomon curve MCA bound in the curve unique-decoding regime.**
 For the Reed–Solomon code of degree `k` and any arity `L ≥ 2`, in the regime
@@ -101,6 +103,7 @@ theorem epsMCACurve_rs_udr_le (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ F
     simp only [hSdef, dif_pos h]
     exact h.choose_spec.2.2
 
+omit [Fintype F] [DecidableEq F] [DecidableEq ι] [Nonempty ι] in
 /-- **Full-agreement edge case.** When every witness set is everything (`t = n`), at most
 `L − 1` scalars can be bad: `L` of them would interpolate a joint codeword stack agreeing
 everywhere, contradicting the no-joint-agreement clause. -/
