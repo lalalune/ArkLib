@@ -295,6 +295,83 @@ theorem farword_agreement_le {F : Type*} [Field F] [DecidableEq F] (H : Finset F
         rw [natDegree_X_pow]
         exact max_le le_rfl (hq.trans hde.le)
 
+/-! ### The exact monomial-line census: necessary Vieta direction -/
+
+/-- **Necessary scalar law for the KKH26 monomial pair (`m = 1`).**
+
+If the line point `X^r + λ X^(r-1)` agrees with a polynomial of degree at most `r - 2`
+on `r` distinct points `T`, then the scalar is forced:
+
+`λ = -∑_{x∈T} x`.
+
+This is the elementary Vieta half of the exact census law probed in #357/R2: every close
+scalar for the monomial pair must be a negative `r`-subset sum.  The converse is the existing
+gap-expansion construction (`gap_expansion` with `m = 1`), while distinctness of those sums is
+the KKH26/resultant/de Bruijn content. -/
+theorem monomial_line_scalar_eq_neg_sum_of_agreement {F : Type*} [Field F] [DecidableEq F]
+    {r : ℕ} (hr2 : 2 ≤ r) {T : Finset F} (hTcard : T.card = r)
+    {lam : F} {q : Polynomial F} (hq : q.natDegree ≤ r - 2)
+    (hagree : ∀ x ∈ T, x ^ r + lam * x ^ (r - 1) = q.eval x) :
+    lam = -∑ x ∈ T, x := by
+  classical
+  set P : Polynomial F := X ^ r + (C lam * X ^ (r - 1) - q) with hP
+  have hlower_nat : (C lam * X ^ (r - 1) - q : Polynomial F).natDegree ≤ r - 1 := by
+    calc (C lam * X ^ (r - 1) - q : Polynomial F).natDegree
+        ≤ max (C lam * X ^ (r - 1) : Polynomial F).natDegree q.natDegree :=
+          natDegree_sub_le _ _
+      _ ≤ r - 1 := max_le (natDegree_C_mul_X_pow_le lam (r - 1)) (hq.trans (by omega))
+  have hlower_deg : (C lam * X ^ (r - 1) - q : Polynomial F).degree < (r : WithBot ℕ) :=
+    lt_of_le_of_lt (degree_le_of_natDegree_le hlower_nat)
+      ((WithBot.coe_lt_coe).mpr (by omega : r - 1 < r))
+  have hlower_deg_X :
+      (C lam * X ^ (r - 1) - q : Polynomial F).degree < ((X : Polynomial F) ^ r).degree := by
+    simpa [degree_X_pow] using hlower_deg
+  have hPnat : P.natDegree = r := by
+    rw [hP, natDegree_add_eq_left_of_degree_lt hlower_deg_X, natDegree_X_pow]
+  have hPmonic : P.Monic := by
+    rw [hP]
+    exact monic_X_pow_add hlower_deg
+  have hroots_on_T : ∀ x ∈ T, P.eval x = 0 := by
+    intro x hx
+    rw [hP]
+    simp only [eval_add, eval_sub, eval_mul, eval_pow, eval_X, eval_C]
+    rw [← hagree x hx]
+    ring
+  have hroots : P.roots = T.val := by
+    refine roots_eq_of_natDegree_le_card_of_ne_zero hroots_on_T ?_ hPmonic.ne_zero
+    rw [hPnat, hTcard]
+  have hroots_card : P.roots.card = P.natDegree := by
+    simpa [hroots, hTcard, hPnat]
+  have hprod_multiset : (P.roots.map fun a => X - C a).prod = P :=
+    prod_multiset_X_sub_C_of_monic_of_roots_card_eq hPmonic hroots_card
+  have hprod : (∏ x ∈ T, (X - C x) : Polynomial F) = P := by
+    rw [← hprod_multiset, hroots]
+    simp
+  set R : Polynomial F := ∏ x ∈ T, (X - C x) with hR
+  have hRmonic : R.Monic := by
+    rw [hR]
+    exact monic_prod_of_monic _ _ fun x _ => monic_X_sub_C x
+  have hRdeg : R.natDegree = r := by
+    rw [hR, natDegree_prod_of_monic _ _ fun x _ => monic_X_sub_C x]
+    simp [natDegree_X_sub_C, hTcard]
+  have hcoeffR : R.coeff (r - 1) = -∑ x ∈ T, x := by
+    have h1 : R.nextCoeff = -∑ x ∈ T, x := by
+      rw [hR]
+      exact prod_X_sub_C_nextCoeff (fun x => x)
+    have h2 : R.nextCoeff = R.coeff (R.natDegree - 1) :=
+      nextCoeff_of_natDegree_pos (by rw [hRdeg]; omega)
+    rw [h2, hRdeg] at h1
+    exact h1
+  have hq_coeff : q.coeff (r - 1) = 0 := by
+    exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt hq (by omega))
+  have hPcoeff : P.coeff (r - 1) = lam := by
+    rw [hP]
+    simp only [coeff_add, coeff_sub, coeff_C_mul, coeff_X_pow, hq_coeff]
+    simp [show r - 1 ≠ r by omega]
+  have hcoeff_eq : R.coeff (r - 1) = P.coeff (r - 1) := by rw [hprod]
+  rw [hcoeffR, hPcoeff] at hcoeff_eq
+  exact hcoeff_eq.symm
+
 /-! ### [KKH26] Proposition 1 — the bad line -/
 
 /-- **[KKH26] Proposition 1, close-point count (explicit form).**  Let `g ∈ F_p` generate
@@ -433,6 +510,7 @@ end ArkLib.ProximityGap.KKH26
 #print axioms ArkLib.ProximityGap.KKH26.gap_expansion
 #print axioms ArkLib.ProximityGap.KKH26.fiber_count
 #print axioms ArkLib.ProximityGap.KKH26.farword_agreement_le
+#print axioms ArkLib.ProximityGap.KKH26.monomial_line_scalar_eq_neg_sum_of_agreement
 #print axioms ArkLib.ProximityGap.KKH26.kkh26_badline_closePoints
 #print axioms ArkLib.ProximityGap.KKH26.kkh26_badline_farWord
 #print axioms ArkLib.ProximityGap.KKH26.kkh26_ca_failure
