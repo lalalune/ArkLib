@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # The anharmonic (`S₃`) symmetry of the BGK solution set (#357)
@@ -92,6 +93,12 @@ theorem tau_involutive (u : F) : -(1 + -(1 + u)) = u := by ring
 
 /-- **`ι` is an involution: `ι(ι(u)) = u`** for `u ≠ 0`. The other `S₃` generator. -/
 theorem iota_involutive {u : F} (hu : u ≠ 0) : (u⁻¹)⁻¹ = u := inv_inv u
+
+/-- **`τ` has a unique fixed point: `τ(u) = u ⟺ 2u = −1`.** (Over char `≠ 2`, `u = −2⁻¹`.) So in the
+`S₃`-orbit decomposition of `sol`, the `τ`-reflection contributes at most one fixed coordinate —
+relevant to any Burnside/orbit count of `M = |sol|`. -/
+theorem tau_fixed_iff {u : F} : -(1 + u) = u ↔ (2 : F) * u = -1 := by
+  constructor <;> intro h <;> linear_combination -h
 
 end ArkLib.ProximityGap.BGKSolSetSymmetry
 
