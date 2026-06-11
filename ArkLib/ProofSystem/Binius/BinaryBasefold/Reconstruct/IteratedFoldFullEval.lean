@@ -64,8 +64,11 @@ lemma iterated_fold_full_eq_weight_sum
       (r_challenges := rc) =
       fun _ => ∑ x : Fin (2 ^ ℓ), multilinearWeight rc x * coeffs x := by
   have h𝓡 : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+  have hℓ_lt_r : ℓ < r := by omega
+  let finalIdx : Fin r := ⟨(Fin.last ℓ).val, by
+    simpa only [Fin.val_last] using hℓ_lt_r⟩
   -- normalize the destination index to the canonical `⟨(Fin.last ℓ).val, _⟩`
-  obtain rfl : destIdx = (⟨(Fin.last ℓ).val, by omega⟩ : Fin r) :=
+  obtain rfl : destIdx = finalIdx :=
     Fin.eq_of_val_eq (by simpa using h_destIdx)
   -- Step 1: the codeword is the raw-eval of the level-0 intermediate evaluation polynomial.
   have h_base := intermediate_poly_P_base 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -82,13 +85,20 @@ lemma iterated_fold_full_eq_weight_sum
     exact (congrArg (fun p => Polynomial.eval x.val p) h_base).symm
   rw [h_f₀]
   -- Step 2: advance the fold from level 0 to level ℓ in one pass.
+  change
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := (0 : Fin r)) (steps := ℓ) (destIdx := finalIdx)
+      (h_destIdx := by simp [finalIdx]) (h_destIdx_le := by simp [finalIdx])
+      (f := fun x => (intermediateEvaluationPoly 𝔽q β h_ℓ_add_R_rate
+        ⟨(0 : Fin r).val, by
+          have h0 : (0 : Fin r).val = 0 := rfl
+          omega⟩ coeffs).eval x.val)
+      (r_challenges := rc) =
+    fun _ => ∑ x : Fin (2 ^ ℓ), multilinearWeight rc x * coeffs x
   rw [iterated_fold_advances_evaluation_poly_nat 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := (0 : Fin r)) (steps := ℓ)
-    (destIdx := ⟨(Fin.last ℓ).val, by omega⟩)
-    (h_destIdx := by simp)
-    (h_destIdx_le := by
-      show (Fin.last ℓ).val ≤ ℓ
-      simp)
+    (destIdx := finalIdx)
+    (h_destIdx := by simp [finalIdx]) (h_destIdx_le := by simp [finalIdx])
     (coeffs := coeffs) (r_challenges := rc)]
   -- Step 3: the endpoint evaluation is the multilinear-weight sum (constant in `y`).
   funext y
@@ -120,7 +130,7 @@ lemma iterated_fold_to_level_ℓ_eval
   have h_weights :
       (fun j : Fin ℓ => (fun j' : Fin ℓ => rc (Fin.rev j')) (Fin.rev j)) = rc := by
     funext j
-    rw [Fin.rev_rev]
+    simp
   rw [h_weights] at h_sum
   exact h_sum.symm
 
