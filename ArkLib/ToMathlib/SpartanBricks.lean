@@ -1113,7 +1113,20 @@ theorem finalCheckWithClaimValueRelIn_subset_finalCheckWithClaimRelOut :
 
 /-- Stronger target-carrying composed completeness residual, where the composed Spartan reduction
 must output the semantic value relation tying the carried target to the algebraic final expected
-claim value. This is a compatibility target for future terminal `CheckClaim` completeness work. -/
+claim value. This is a compatibility target for future terminal `CheckClaim` completeness work.
+
+**Audit status (2026-06-10): genuine remaining content — semantic target threading (D1).**
+The composed-`Rc` instance of this residual is NOT dischargeable from
+`composedCompletenessWithClaimResidual_proven` by output-relation monotonicity: that theorem's
+relOut is weakened to `univ` (its final step is `completeness_relOut_mono (Set.subset_univ _)`),
+while this residual demands the *semantic* value relation (carried target = second-sum-check
+terminal eval). The adapter `prependClaim` emits the literal target `0` (`prependSlot`'s
+`pure (0, stmt)`), so the discharge must thread Spartan's zero-check semantics — the honest
+run's terminal eval IS `0` for satisfying R1CS witnesses — which requires re-landing the base
+composition with a contentful relOut recording the terminal-eval fact (not `univ`). Until
+then, this residual and its `SecondSumcheckEval` twin (equivalent via
+`composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel`) are honest open
+engineering, tracked under issue #329. -/
 def composedCompletenessWithClaimValueRelResidual
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
