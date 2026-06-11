@@ -5860,3 +5860,38 @@ Formalization target now precise: `fiberUnion_gapBand` (a fiber union satisfies 
 off-stride band — pure power-sum algebra over `X^m − t` roots) gives the backward
 (construction) half structurally; the forward classification half is the genuinely new
 mathematics, now with an exact finite target at each instance.
+
+### O144 — M2 IS A THEOREM: the agreement-spectrum second moment in Lean — the O120/O122-named follow-up closed, numeric-gated before proving (moments lane, 2026-06-11)
+
+`AgreementMomentTwo.lean` (axiom-clean ×3 `[propext, Classical.choice, Quot.sound]`,
+0 sorry, 0 warnings, verified under `autoImplicit=false`):
+
+* `card_exact_pair_agreement` — **the generic two-constraint count** (ToMathlib-grade):
+  for ANY `f g : α → β`, functions agreeing with `f` on exactly `j₁` and `g` on exactly
+  `j₂` coordinates number `pairAgreementCount |β| d e j₁ j₂` (the explicit
+  `Σ_s C(e,s)(q−1)^{e−s}C(d,j₁−s)C(d−(j₁−s),j₂−s)(q−2)^{d−(j₁−s)−(j₂−s)}` closed form,
+  ℕ-truncation handling all degenerate regimes incl. q ≤ 2). Proof: partition by the
+  agreement-set pair through the sigma index `(s, S, A, B)`; each fiber is the piFinset
+  of per-coordinate ZONES `(T-side) ∩ (G-side)` — the intersection form makes
+  incompatible patterns vanish through a zero factor instead of case analysis.
+* `sum_agreement_spectrum_sq` — **M2**: `Σ_u a_j(u)² = q^k·Σ_{c : deg<k}
+  pairAgreementCount q (wt c) (n − wt c) j j` for EVERY n-point domain — the second
+  moment enters through the weight enumerator alone, which MDS pins: machine-checked
+  domain-independence of the variance, the other half of the O120 reframing (M1 = O122).
+  Proof: square → ordered pairs (card_filter + sum_mul_sum), per-pair count = the generic
+  theorem at the difference polynomial, pair sum collapsed by the translation bijection
+  (sub/add closure of polysDegLT).
+* `sq_agreement_le_sum_agreement_spectrum_sq` — the per-word bound (Chebyshev/Markov
+  seed): `a_j(u₀)² ≤` the M2 sum, every received word.
+
+**Discipline note:** the statements were NUMERIC-GATED before any proof effort
+(`scripts/probes/moments/gate/gate_m2_statements.py`: literal transcription of the Lean
+text vs brute-force enumeration at 8 T1 cases + 4 T2 setups incl. non-subgroup domains
+and q ∈ {2,3} edges) — a proved mis-transcription is still a wrong brick; the gate makes
+that failure mode structurally impossible.
+
+**Where this sits:** with O133 (M3 IS domain-dependent, pencil census) the moment
+ladder is now machine-checked on both sides of the boundary: M1 (O122) and M2 (this)
+provably domain-blind, M3 provably domain-sensitive with classified mechanism. Named
+next: the max-LIST tail corollary (partial sums of a_j), the k=2 rigidity theorem, the
+affine-invariance lemma, the t₂ spectral-gap theorem, the (2,4) cross-ratio cell.
