@@ -32,9 +32,9 @@ scripts/pg-iterate.sh ArkLib/Data/CodingTheory/ProximityGap/Frontier/<YourFile>.
 Rules that keep iteration fast and parallel-safe:
 - **Minimal imports.** Your frontier file imports ONLY the substrate modules you actually
   consume (§4), never `import`-the-whole-cone. Each extra heavy import adds olean-load time.
-- **Build deps once.** Before iterating, ensure your imports' oleans exist:
-  `lake build <ThatSubstrateModule>` once (or `lake exe cache get` for mathlib). Then
-  `pg-iterate.sh` never rebuilds them.
+- **Build deps once.** Run `scripts/pg-warm.sh` ONCE per machine — it pre-builds all #334
+  substrate oleans (not the 808-file cone) so `pg-iterate.sh` never stalls on a missing olean.
+  (Or `lake build <ThatSubstrateModule>` for a single dep; `lake exe cache get` for mathlib.)
 - **Only run `lake build` to land.** Run a real `lake build <YourModule>` exactly once,
   right before committing, to confirm it passes the project build (`autoImplicit=false`,
   which `lake env lean` does NOT enforce — see pitfall (a)). Stagger these across agents.

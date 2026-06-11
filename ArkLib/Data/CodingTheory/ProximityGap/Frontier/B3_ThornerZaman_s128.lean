@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZaman
-import ArkLib.Data.CodingTheory.ProximityGap.KKH26PolyFieldCeiling
+-- (the consumer `kkh26_mcaDeltaStar_le_of_TZ` lives in KKH26PolyFieldCeiling; import it only
+--  when wiring the final ceiling — keeping it out keeps this lane's iteration fast.)
 
 /-!
 # B3 — s=128 prize rows via Thorner–Zaman (#334)
@@ -38,8 +39,6 @@ specific prize moduli, exhibit `supply` explicit primes (a finite Decidable chec
 
 **Honesty.** `TZPrimeSupply` is the honest named hypothesis. Do NOT assert it as an `axiom`.
 -/
-
-open ProximityGap
 
 -- Replace with `theorem tzPrimeSupply_prize_holds : TZPrimeSupply n β supply := …`
 -- for the concrete prize (n, β, supply), or a parametrized sufficient condition.
