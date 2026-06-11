@@ -984,6 +984,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PackingClassCSP
 import ArkLib.Data.CodingTheory.ProximityGap.PackingSubdivision
 import ArkLib.Data.CodingTheory.ProximityGap.PackingTreeSufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.PadePartialFractionsKill
+import ArkLib.Data.CodingTheory.ProximityGap.PairSumRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
