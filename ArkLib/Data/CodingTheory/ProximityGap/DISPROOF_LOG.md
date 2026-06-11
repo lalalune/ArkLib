@@ -6225,3 +6225,21 @@ INTERIOR (Johnson,capacity), where δ* lives and KKH26 is domain-specific, is ex
 low rate. So: domain-blind in the saturated band (proved by enumeration of all 252/120 subsets);
 interior separation OPEN, not killed. N1 (specific E₂ law) stays refuted; N1' (extremal pencil /
 M3 third moment) REVIVED as the live domain-aware thread.
+
+### O151 — PARSEVAL RESTORATION (anti-laundering note) + the sharpened finite-field tower: threshold exponent HALVED (2026-06-11, #357 surface (ii))
+
+* **Anti-laundering record:** `KKH26ParsevalThreshold.lean` (520 lines, the A3 resolution —
+  `natAbs_resultant_cyclotomic_le_parseval`, `kkh26_lemma1_parseval`) was deleted by the
+  #353 cleanup (1d1bd5c86) as "refuted/superseded". It is **neither**: restored verbatim,
+  it compiles axiom-clean against the current tree, and its halved-exponent bound is
+  load-bearing. Restored and re-landed. Lesson: "superseded" claims in prune commits need
+  the same grep-the-theorem scrutiny as "proven" claims.
+* **The sharpened tower** (`HaloFreeThresholdParseval.lean`, axiom-clean):
+  `not_isRoot_of_l2On_parseval_lt` (generic ℓ² non-vanishing at a primitive root, exponent
+  halved against the ℓ¹ engine), depth-1 at threshold `(2^m)^{2^{m−2}}`, and
+  `tower_closed_finite_parseval` — the full dyadic classification in `F_p` at the halved
+  threshold (level 1 threshold-free; levels ≥ 2 Parseval; one top-level bound covers all).
+* **Reach gained:** m = 5 (n = 32): threshold 2^64 → 2^40; m = 6 (n = 64): 2^160 → 2^96 —
+  at |F| < 2^256 the unconditional-census layer now covers domains up to n = 128
+  (m = 7: (2^7)^{2^5} = 2^224 < 2^256 ✓) versus n = 64 before. The certified-count
+  frontier of surface (iii) moves one fold scale deeper.
