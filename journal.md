@@ -84,3 +84,10 @@ campaign on this repository. Maintained alongside the work; newest entries last.
   frontier is now an exact named list: the centre-curve supply for the integer
   representative (the one open core), a total root section, the series-converter
   identification, Schwartz–Zippel-counted centre goods, and the standard numerics.
+
+- Entry 9: the per-cell engine landed from the other side, concluding exactly the
+  dichotomy input the funnels consume — and its construction eliminates both items
+  previously believed open (the centre-curve supply is built from irreducibility plus
+  the surface; the series identification is free at the section branch). The remaining
+  per-cell quantitative inputs map one-to-one onto suppliers landed or in flight. The
+  final wire is enumerable; the program is in its last file.
