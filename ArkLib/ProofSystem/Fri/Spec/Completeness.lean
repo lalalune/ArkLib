@@ -25,7 +25,22 @@ variable {k : ℕ} {s : Fin (k + 1) → ℕ+} {d : ℕ+}
 variable {ω : SmoothCosetFftDomain n F}
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
 
-/-- **Brick residual — query round.** -/
+/-- **Brick residual — query round.**
+
+**Audit status (2026-06-10): SUSPECTED FALSE as stated — relation/check mismatch.** The query
+verifier (`QueryRound.queryVerifier`) guards `RoundConsistency.roundConsistencyCheck` for
+**every** round `i : Fin (k+1)` (comparing oracle `i` against oracle `i+1`, resp. the
+in-the-clear final polynomial at `i = k`), but the stated input relation
+(`QueryRound.outputRelation = FinalFoldPhase.outputRelation`) constrains **only the last
+fold** (plaintext match + round-`k` folding consistency). A relation member whose oracles at
+indices `< k` are inconsistent (e.g. arbitrary functions unrelated by folding) makes the
+round-`i` guard fail for `i < k`, so the success probability is below `1` and perfect
+completeness fails. The composite FRI reduction is *not* affected at the design level — the
+honest runs reaching the query phase carry fully consistent oracles — but that invariant is
+NOT recorded in the relation chain (each `FoldPhase.outputRelation i` constrains rounds
+`i, i+1` only, and chaining forgets it). The honest repair is to thread a full-chain
+consistency invariant through all round relations (a `Spec`-level relation redesign) and
+restate this residual w.r.t. it; do NOT attempt to discharge the present statement. -/
 def queryRoundPerfectCompletenessResidual
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
     [hQueryChallenge : ∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
