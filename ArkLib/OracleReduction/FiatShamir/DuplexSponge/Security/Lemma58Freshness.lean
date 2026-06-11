@@ -493,6 +493,62 @@ theorem anchoredFrom_of_eraseIdx_classRed (c₀ : DSCache StmtIn U)
   anchoredFrom_of_eraseIdx_of_noop c₀ log k hk
     (stepCache_noop_of_classRedAt_consistent c₀ hcons hk hred) hA
 
+open DuplexSpongeFS.Paper in
+/-- Consistency survives the full paper dedup pass. -/
+theorem consistentFrom_removeRedundantEntryDSPaper (c₀ : DSCache StmtIn U)
+    {log : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (hcons : ConsistentFrom c₀ log) :
+    ConsistentFrom c₀ (removeRedundantEntryDSPaper log).1 :=
+  dedup_invariant (fun L => ConsistentFrom c₀ L)
+    (fun _ _ hk hred hP => consistentFrom_eraseIdx_classRed c₀ hP hk hred)
+    log hcons
+
+open DuplexSpongeFS.Paper in
+private theorem anchoredFrom_of_removeRedundantEntryDSPaper_aux (c₀ : DSCache StmtIn U) :
+    ∀ (n : ℕ) (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)),
+      log.length ≤ n →
+      ConsistentFrom c₀ log →
+      AnchoredFrom c₀ (removeRedundantEntryDSPaper log).1 →
+      AnchoredFrom c₀ log := by
+  intro n
+  induction n with
+  | zero =>
+      intro log hlen _ hA
+      have hlog : log = [] := List.length_eq_zero_iff.mp (Nat.le_zero.mp hlen)
+      subst hlog
+      have hnr : NoRedundantEntryDSPaper
+          ([] : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :=
+        fun idx => absurd idx.isLt (by simp)
+      rw [removeRedundantEntryDSPaper_fst_eq_self_of_noRedundantEntryDSPaper _ hnr] at hA
+      exact hA
+  | succ n ih =>
+      intro log hlen hcons hA
+      by_cases hex : ∃ idx : Fin log.length, redundantEntryDSPaper log idx
+      · rw [removeRedundantEntryDSPaper_step log hex] at hA
+        have hk := (Classical.choose hex).isLt
+        have hred : ClassRedAt log (Classical.choose hex).val hk :=
+          (classRedAt_iff_redundant log (Classical.choose hex)).mpr
+            (Classical.choose_spec hex)
+        have hconsErase : ConsistentFrom c₀ (log.eraseIdx (Classical.choose hex).val) :=
+          consistentFrom_eraseIdx_classRed c₀ hcons hk hred
+        have hlenErase : (log.eraseIdx (Classical.choose hex).val).length ≤ n := by
+          have := List.length_eraseIdx_add_one hk
+          omega
+        exact anchoredFrom_of_eraseIdx_classRed c₀ hcons hk hred
+          (ih (log.eraseIdx (Classical.choose hex).val) hlenErase hconsErase hA)
+      · rw [removeRedundantEntryDSPaper_fst_eq_self_of_noRedundantEntryDSPaper _
+          (fun idx => not_exists.mp hex idx)] at hA
+        exact hA
+
+open DuplexSpongeFS.Paper in
+/-- Anchoredness of the paper-deduplicated log reflects back to the original consistent log. -/
+theorem anchoredFrom_of_removeRedundantEntryDSPaper (c₀ : DSCache StmtIn U)
+    {log : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (hcons : ConsistentFrom c₀ log)
+    (hA : AnchoredFrom c₀ (removeRedundantEntryDSPaper log).1) :
+    AnchoredFrom c₀ log :=
+  anchoredFrom_of_removeRedundantEntryDSPaper_aux c₀ log.length log le_rfl hcons hA
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -515,3 +571,5 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.stepCache_noop_of_classRedAt_consistent
 #print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_eraseIdx_classRed
 #print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_eraseIdx_classRed
+#print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_removeRedundantEntryDSPaper
+#print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_removeRedundantEntryDSPaper
