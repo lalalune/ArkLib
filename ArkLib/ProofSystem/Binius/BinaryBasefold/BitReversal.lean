@@ -70,9 +70,13 @@ lemma bitRevAux_involutive {n : ℕ} : Function.Involutive (bitRevAux (n := n)) 
   apply Nat.eq_iff_eq_all_getBits.mpr
   intro m
   by_cases hm : m < n
-  · have h₁ := getBit_bitRevAux (bitRevAux k) ⟨m, hm⟩
-    have h₂ := getBit_bitRevAux k (Fin.rev ⟨m, hm⟩)
-    rw [Fin.rev_rev] at h₂
+  · have h₁ : Nat.getBit m (bitRevAux (bitRevAux k)).val =
+        Nat.getBit (Fin.rev ⟨m, hm⟩).val (bitRevAux k).val :=
+      getBit_bitRevAux (bitRevAux k) ⟨m, hm⟩
+    have h₂ : Nat.getBit (Fin.rev ⟨m, hm⟩).val (bitRevAux k).val =
+        Nat.getBit m k.val := by
+      have h := getBit_bitRevAux k (Fin.rev ⟨m, hm⟩)
+      rwa [Fin.rev_rev] at h
     rw [h₁, h₂]
   · have hout : ∀ (a : Fin (2 ^ n)), Nat.getBit m a.val = 0 := by
       intro a
@@ -104,7 +108,7 @@ lemma multilinearWeight_bitRevPerm {n : ℕ} (rc : Fin n → L) (k : Fin (2 ^ n)
     (fun j : Fin n =>
       if (bitRevPerm n k).val.testBit (Fin.rev j).val then rc (Fin.rev j)
       else 1 - rc (Fin.rev j))
-    (fun j => by simp only [Fin.revPerm_apply])]
+    (fun j => by simp only [Fin.revPerm_apply, Fin.rev_rev])]
   apply Finset.prod_congr rfl
   intro j _
   by_cases htest : k.val.testBit j.val = true
@@ -151,7 +155,7 @@ theorem challengeTensorProduct_get_eq_multilinearWeight_rev
     (steps : ℕ) (rc : Fin steps → L) (idx : Fin (2 ^ steps)) :
     (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r) steps rc).get idx =
       multilinearWeight (fun j => rc (Fin.rev j)) idx := by
-  induction steps with
+  induction steps generalizing rc idx with
   | zero =>
     unfold multilinearWeight
     simp only [Finset.univ_eq_empty, Finset.prod_empty]
@@ -173,11 +177,11 @@ theorem challengeTensorProduct_get_eq_multilinearWeight_rev
       · have ht : idx.val.testBit 0 = false := by
           rw [Nat.testBit_zero]
           simp [h2]
-        simp [h2, ht]
+        simp [h2, ht, Fin.val_zero]
       · have ht : idx.val.testBit 0 = true := by
           rw [Nat.testBit_zero]
           simp [h2]
-        simp [h2, ht]
+        simp [h2, ht, Fin.val_zero]
     have htail :
         ∀ j : Fin n,
           (if (idx.val / 2).testBit j.val then rc (Fin.rev j).castSucc

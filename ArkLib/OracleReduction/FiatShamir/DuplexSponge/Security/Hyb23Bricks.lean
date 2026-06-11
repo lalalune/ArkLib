@@ -255,8 +255,7 @@ lemma decodeMessagesPrefixStepPhiInv_pToV
             | none => none
             | some msg => some (MessagesUpTo.concat mb hdir msg) := by
   unfold decodeMessagesPrefixStepPhiInv
-  cases hdir.symm
-  rfl
+  simp [hdir]
 /-! ## H23-2 — the parser succeeds on codec-image inputs -/
 
 /-- Walk-level success: if every encoded block before round `i` has a serialize-preimage,

@@ -133,6 +133,22 @@ noncomputable def msgAns (P : Params ιs F) (d : ℕ)
 noncomputable def inputAns (oStmt : ∀ i, OracleStatement (ιs 0) F i) (x : ιs 0) : F :=
   OracleInterface.answer (oStmt ()) x
 
+/-- Query the input oracle after transporting a source power-domain point back to `ιs 0`. -/
+noncomputable def askInputSource (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i)) (bridge : PaperInputDomainBridge P S)
+    (x : BlockRelDistance.indexPowT (S 0) (P.φ 0) 0) :
+    OracleComp ([]ₒ + ([OracleStatement (ιs 0) F]ₒ +
+      [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)) F :=
+  askInput P d (bridge.sourceDomainEquiv.symm x)
+
+/-- The pure answer corresponding to `askInputSource`. -/
+noncomputable def inputSourceAns
+    (oStmt : ∀ i, OracleStatement (ιs 0) F i)
+    (P : Params ιs F) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperInputDomainBridge P S)
+    (x : BlockRelDistance.indexPowT (S 0) (P.φ 0) 0) : F :=
+  inputAns oStmt (bridge.sourceDomainEquiv.symm x)
+
 /-- The honest answer of a folded-oracle message at a named paper-domain point. -/
 noncomputable def foldedOracleAns (P : Params ιs F) (d : ℕ)
     (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j)
@@ -164,6 +180,114 @@ theorem listEval_map_zero {β : Type} (l : List β) (x : F) :
   induction l with
   | nil => rfl
   | cons y ys ih => simp [listEval, List.foldr_cons] at ih ⊢; simp [ih]
+
+/-! ### Monadic input folding for the first binding check -/
+
+section MonadicFold
+
+variable {ι : Type} [Pow ι ℕ] {Sdom : Finset ι} {φdom : ι ↪ F}
+variable [∀ j : ℕ, Neg (BlockRelDistance.indexPowT Sdom φdom j)]
+
+/-- Monadic counterpart of `Fold.fold_k_core`: source evaluations are obtained by oracle queries,
+then combined with the same WHIR even/odd folding formula. -/
+noncomputable def foldCoreM {ιq : Type} {spec : OracleSpec ιq}
+    (ask : BlockRelDistance.indexPowT Sdom φdom 0 → OracleComp spec F) :
+    (i : ℕ) → (Fin i → F) → BlockRelDistance.indexPowT Sdom φdom i → OracleComp spec F
+  | 0, _, x => ask x
+  | k + 1, αs, y => do
+      let α := αs 0
+      let αs' : Fin k → F := fun i => αs (Fin.succ i)
+      let xPow := Fold.extract_x Sdom φdom k y
+      let fx ← foldCoreM ask k αs' xPow
+      let fNeg ← foldCoreM ask k αs' (-xPow)
+      pure ((fx + fNeg) / 2 + α * ((fx - fNeg) / (2 * (xPow.val : F))))
+
+/-- Monadic counterpart of `Fold.fold_k`. -/
+noncomputable def foldM {ιq : Type} {spec : OracleSpec ιq}
+    (ask : BlockRelDistance.indexPowT Sdom φdom 0 → OracleComp spec F)
+    {k m : ℕ} (αs : Fin k → F) (_hk : k ≤ m) :
+    BlockRelDistance.indexPowT Sdom φdom k → OracleComp spec F :=
+  foldCoreM ask k αs
+
+/-- Simulation collapse for `foldCoreM`: once every source query collapses to `ans`, the whole
+monadic fold collapses to the pure WHIR fold on `ans`. -/
+theorem simulateQ_foldCoreM {ιq ιq' : Type} {spec : OracleSpec ιq}
+    {spec' : OracleSpec ιq'} (so : QueryImpl spec (OracleComp spec'))
+    (ask : BlockRelDistance.indexPowT Sdom φdom 0 → OracleComp spec F)
+    (ans : BlockRelDistance.indexPowT Sdom φdom 0 → F)
+    (hask : ∀ x, simulateQ so (ask x) = (pure (ans x) : OracleComp spec' F)) :
+    ∀ (i : ℕ) (αs : Fin i → F) (y : BlockRelDistance.indexPowT Sdom φdom i),
+      simulateQ so (foldCoreM ask i αs y)
+        = (pure (Fold.fold_k_core ans i αs y) : OracleComp spec' F) := by
+  intro i
+  induction i with
+  | zero =>
+      intro αs y
+      simpa [foldCoreM, Fold.fold_k_core] using hask y
+  | succ k ih =>
+      intro αs y
+      simp [foldCoreM, Fold.fold_k_core, Fold.foldf, simulateQ_bind, ih]
+
+/-- Simulation collapse for `foldM`, stated against `Fold.fold_k`. -/
+theorem simulateQ_foldM {ιq ιq' : Type} {spec : OracleSpec ιq}
+    {spec' : OracleSpec ιq'} (so : QueryImpl spec (OracleComp spec'))
+    (ask : BlockRelDistance.indexPowT Sdom φdom 0 → OracleComp spec F)
+    (ans : BlockRelDistance.indexPowT Sdom φdom 0 → F)
+    (hask : ∀ x, simulateQ so (ask x) = (pure (ans x) : OracleComp spec' F))
+    {k m : ℕ} (αs : Fin k → F) (hk : k ≤ m)
+    (y : BlockRelDistance.indexPowT Sdom φdom k) :
+    simulateQ so (foldM ask αs hk y)
+      = (pure (Fold.fold_k ans αs hk y) : OracleComp spec' F) := by
+  simpa [foldM, Fold.fold_k] using simulateQ_foldCoreM so ask ans hask k αs y
+
+end MonadicFold
+
+/-- The first main folded-oracle slot, available once the paper transcript has at least one
+main-loop folded oracle. -/
+noncomputable def firstMainFoldIdx [Fact (0 < M)] : Fin M :=
+  ⟨0, Fact.out⟩
+
+/-- Expected first folded-oracle value computed by querying the input oracle and applying the WHIR
+folding formula. -/
+noncomputable def askInitialInputFoldValue (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
+    (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Fact (0 < M)]
+    (αs : Fin (P.foldingParam 0) → F) (y : ιs (firstMainFoldIdx (M := M)).succ) :
+    OracleComp ([]ₒ + ([OracleStatement (ιs 0) F]ₒ +
+      [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)) F :=
+  letI : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := hNeg0
+  foldM (Sdom := S 0) (φdom := P.φ 0) (askInputSource P d S inputBridge)
+    αs hFoldLe0 (foldBridge.nextDomainEquiv (firstMainFoldIdx (M := M)) y)
+
+/-- A single first-round input-binding check at paper-domain point `y`: the folded-oracle message
+must equal the fold computed from input-oracle queries. -/
+noncomputable def initialInputBindingCheckAt (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
+    (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Fact (0 < M)]
+    (αs : Fin (P.foldingParam 0) → F) (y : ιs (firstMainFoldIdx (M := M)).succ) :
+    OracleComp ([]ₒ + ([OracleStatement (ιs 0) F]ₒ +
+      [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)) Bool := do
+  let expected ← askInitialInputFoldValue P d S inputBridge foldBridge hNeg0 hFoldLe0 αs y
+  let got ← askFoldedOracle P d (firstMainFoldIdx (M := M)) y
+  pure (decide (got = expected))
+
+/-- Pure value of `initialInputBindingCheckAt` under an oracle implementation. -/
+noncomputable def initialInputBindingCheckAtAns (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
+    (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Fact (0 < M)]
+    (αs : Fin (P.foldingParam 0) → F) (y : ιs (firstMainFoldIdx (M := M)).succ)
+    (oStmt : ∀ i, OracleStatement (ιs 0) F i)
+    (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j) : Bool :=
+  letI : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := hNeg0
+  decide (foldedOracleAns P d msgs (firstMainFoldIdx (M := M)) y =
+    Fold.fold_k (paperInputSourceFromOracle P S inputBridge (oStmt ())) αs hFoldLe0
+      (foldBridge.nextDomainEquiv (firstMainFoldIdx (M := M)) y))
 
 /-- Read the field element off a (length-positive) vector challenge; `0` for empty payloads. -/
 noncomputable def chalAt (P : Params ιs F) (d : ℕ)
@@ -287,6 +411,16 @@ theorem simulateQ_askInput (P : Params ιs F) (d : ℕ)
     simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs) (askInput P d x)
       = (pure (inputAns oStmt x) : OracleComp []ₒ F) := rfl
 
+/-- `simulateQ` collapse for a transported input-source query. -/
+theorem simulateQ_askInputSource (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i)) (bridge : PaperInputDomainBridge P S)
+    (oStmt : ∀ i, OracleStatement (ιs 0) F i)
+    (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j)
+    (x : BlockRelDistance.indexPowT (S 0) (P.φ 0) 0) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs) (askInputSource P d S bridge x)
+      = (pure (inputSourceAns oStmt P S bridge x) : OracleComp []ₒ F) :=
+  simulateQ_askInput P d oStmt msgs (bridge.sourceDomainEquiv.symm x)
+
 /-- `simulateQ` collapse for a named folded-oracle query. -/
 theorem simulateQ_askFoldedOracle (P : Params ιs F) (d : ℕ)
     (oStmt : ∀ i, OracleStatement (ιs 0) F i)
@@ -296,6 +430,35 @@ theorem simulateQ_askFoldedOracle (P : Params ιs F) (d : ℕ)
       = (pure (foldedOracleAns P d msgs i x) : OracleComp []ₒ F) :=
   simulateQ_askMsg P d oStmt msgs (mainFoldedOracleMessageIdx P d i)
     (foldedOracleQueryIndex P d i x)
+
+/-- `simulateQ` collapse for the single-point first input-binding check. -/
+theorem simulateQ_initialInputBindingCheckAt (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
+    (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Fact (0 < M)]
+    (αs : Fin (P.foldingParam 0) → F) (y : ιs (firstMainFoldIdx (M := M)).succ)
+    (oStmt : ∀ i, OracleStatement (ιs 0) F i)
+    (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs)
+        (initialInputBindingCheckAt P d S inputBridge foldBridge hNeg0 hFoldLe0 αs y)
+      = (pure (initialInputBindingCheckAtAns P d S inputBridge foldBridge hNeg0 hFoldLe0
+          αs y oStmt msgs) : OracleComp []ₒ Bool) := by
+  letI : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := hNeg0
+  unfold initialInputBindingCheckAt initialInputBindingCheckAtAns askInitialInputFoldValue
+  rw [simulateQ_bind]
+  rw [simulateQ_foldM (so := OracleInterface.simOracle2 []ₒ oStmt msgs)
+    (ask := askInputSource P d S inputBridge)
+    (ans := paperInputSourceFromOracle P S inputBridge (oStmt ()))
+    (hask := by
+      intro x
+      simpa [inputSourceAns, paperInputSourceFromOracle] using
+        simulateQ_askInputSource P d S inputBridge oStmt msgs x)
+    (αs := αs) (hk := hFoldLe0)
+    (y := foldBridge.nextDomainEquiv (firstMainFoldIdx (M := M)) y)]
+  rw [pure_bind, simulateQ_bind,
+    simulateQ_askFoldedOracle P d oStmt msgs (firstMainFoldIdx (M := M)) y, pure_bind,
+    simulateQ_pure]
 
 /-- `simulateQ` collapse for a full message read. -/
 theorem simulateQ_readMsg (P : Params ιs F) (d : ℕ)
@@ -743,7 +906,12 @@ end Whir302Checked
 
 #print axioms Whir302Checked.simulateQ_whirCheckingComp
 #print axioms Whir302Checked.simulateQ_askInput
+#print axioms Whir302Checked.simulateQ_askInputSource
 #print axioms Whir302Checked.simulateQ_askFoldedOracle
+#print axioms Whir302Checked.simulateQ_foldCoreM
+#print axioms Whir302Checked.simulateQ_foldM
+#print axioms Whir302Checked.initialInputBindingCheckAt
+#print axioms Whir302Checked.simulateQ_initialInputBindingCheckAt
 #print axioms Whir302Checked.length_mainFoldedOracleMessageIdx
 #print axioms Whir302Checked.foldedOracleQueryIndex
 #print axioms Whir302Checked.whirCheckingBool_honest
