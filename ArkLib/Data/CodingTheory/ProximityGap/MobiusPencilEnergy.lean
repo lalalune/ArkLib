@@ -8,6 +8,8 @@ import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Card
 import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # The Möbius pencil involution and its 2-orbit energy (#357, N1/C1 foundation)
@@ -148,6 +150,27 @@ theorem two_mul_t2_add_three_ge_card (b : G) :
     unfold t2; omega
   omega
 
+/-- Per-pencil `t₂` lower bound in division form: `t₂(b) ≥ (|G|−3)/2`. -/
+theorem t2_ge (b : G) : t2 b ≥ (Fintype.card G - 3) / 2 := by
+  have h := two_mul_t2_add_three_ge_card b; omega
+
+/-- **The Möbius pencil energy** `E₂(G) = Σ_b t₂(b)²` — the agreement-spectrum invariant that
+separates smooth multiplicative subgroups from random evaluation domains. -/
+def pencilEnergy : ℕ := ∑ b : G, (t2 b) ^ 2
+
+/-- **The smooth-domain energy lower bound: `E₂(G) ≥ n·((n−3)/2)²`** (i.e. `Θ(n³)`).** Every one
+of the `n = |G|` pencils contributes a near-maximal `t₂(b)² ≥ ((n−3)/2)²`; summing gives the
+cubic floor. A random evaluation domain has pencil energy only `Θ(n²)` — *this gap is the only
+known domain-separating signal for the proximity threshold δ\*.* -/
+theorem pencilEnergy_ge :
+    pencilEnergy (G := G) ≥ Fintype.card G * ((Fintype.card G - 3) / 2) ^ 2 := by
+  unfold pencilEnergy
+  calc Fintype.card G * ((Fintype.card G - 3) / 2) ^ 2
+      = ∑ _b : G, ((Fintype.card G - 3) / 2) ^ 2 := by
+        rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+    _ ≤ ∑ b : G, (t2 b) ^ 2 :=
+        Finset.sum_le_sum (fun b _ => Nat.pow_le_pow_left (t2_ge b) 2)
+
 end ProximityGap.MobiusPencil
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -155,3 +178,4 @@ end ProximityGap.MobiusPencil
 #print axioms ProximityGap.MobiusPencil.mobiusInvol_apply_eq_self_iff
 #print axioms ProximityGap.MobiusPencil.card_sqrtSet_le_two
 #print axioms ProximityGap.MobiusPencil.two_mul_t2_add_three_ge_card
+#print axioms ProximityGap.MobiusPencil.pencilEnergy_ge
