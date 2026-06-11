@@ -344,6 +344,155 @@ theorem anchoredFrom_of_eraseIdx_of_noop (c₀ : DSCache StmtIn U)
           · refine Or.inr (ih (stepCache c₀ e) k hk' ?_ hA)
             simpa [List.take_succ_cons, List.foldl_cons] using hnoop
 
+/-! ## Class-redundant steps are no-ops under consistency -/
+
+private lemma take_split_getElem {α : Type _} (l : List α) {j k : ℕ}
+    (hjlog : j < l.length) (hjk : j < k) :
+    l.take k = l.take j ++ l[j]'hjlog :: (l.drop (j + 1)).take (k - j - 1) := by
+  have hk : k = j + (1 + (k - j - 1)) := by omega
+  conv_lhs => rw [hk, List.take_add]
+  congr 1
+  rw [List.drop_eq_getElem_cons hjlog,
+    show 1 + (k - j - 1) = (k - j - 1) + 1 from by omega, List.take_succ_cons]
+
+private lemma foldl_stepCache_take_from_getElem
+    (c₀ : DSCache StmtIn U) (log : List (DSEntry StmtIn U)) {j k : ℕ}
+    (hjlog : j < log.length) (hjk : j < k) :
+    (log.take k).foldl stepCache c₀ =
+      ((log.drop (j + 1)).take (k - j - 1)).foldl stepCache
+        (stepCache ((log.take j).foldl stepCache c₀) log[j]) := by
+  rw [take_split_getElem log hjlog hjk, List.foldl_append, List.foldl_cons]
+
+open DuplexSpongeFS.Paper in
+/-- In a consistent log, a class-redundant slot is a `stepCache` no-op at its prefix fold.
+This is the cache-equality bridge from `ClassRedAt` to the no-op erasure transport pair. -/
+theorem stepCache_noop_of_classRedAt_consistent
+    (c₀ : DSCache StmtIn U)
+    {log : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (hcons : ConsistentFrom c₀ log)
+    {k : ℕ} (hk : k < log.length) (hred : ClassRedAt log k hk) :
+    stepCache ((log.take k).foldl stepCache c₀) log[k] =
+      ((log.take k).foldl stepCache c₀) := by
+  rcases hred with hmem | hmem
+  · obtain ⟨j, hjtake, hgetj⟩ := List.mem_iff_getElem.mp hmem
+    have hjk : j < k := lt_of_lt_of_le hjtake (by simp [List.length_take])
+    have hjlog : j < log.length := lt_trans hjk hk
+    have hsame : log[j] = log[k] := by
+      simp only [List.getElem_take] at hgetj
+      exact hgetj
+    have hfold := foldl_stepCache_take_from_getElem c₀ log hjlog hjk
+    rcases hke : log[k] with ⟨t, ans⟩
+    rcases t with q | a | b
+    · have hcachedJ :
+          ((stepCache ((log.take j).foldl stepCache c₀) log[j]).1 q).isSome := by
+        rw [hsame, hke]
+        exact key_cached_after_step_hash _ q ans
+      have hcachedK :
+          (((log.take k).foldl stepCache c₀).1 q).isSome := by
+        rw [hfold]
+        exact hashKey_isSome_foldl_mono _ _ hcachedJ
+      exact stepCache_noop_hash hcachedK ans
+    · have hcachedJ :
+          ((stepCache ((log.take j).foldl stepCache c₀) log[j]).2.find?
+            (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+              w.1 = a)).isSome := by
+        rw [hsame, hke]
+        exact key_cached_after_step_perm _ a ans
+      have hcachedK :
+          (((log.take k).foldl stepCache c₀).2.find?
+            (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+              w.1 = a)).isSome := by
+        rw [hfold]
+        exact pairKey_isSome_foldl_mono _ _ hcachedJ
+      exact stepCache_noop_perm hcachedK ans
+    · have hcachedJ :
+          ((stepCache ((log.take j).foldl stepCache c₀) log[j]).2.find?
+            (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+              w.2 = b)).isSome := by
+        rw [hsame, hke]
+        exact key_cached_after_step_permInv _ b ans
+      have hcachedK :
+          (((log.take k).foldl stepCache c₀).2.find?
+            (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+              w.2 = b)).isSome := by
+        rw [hfold]
+        exact pairKey_isSome_foldl_mono _ _ hcachedJ
+      exact stepCache_noop_permInv hcachedK ans
+  · obtain ⟨j, hjtake, hgetj⟩ := List.mem_iff_getElem.mp hmem
+    have hjk : j < k := lt_of_lt_of_le hjtake (by simp [List.length_take])
+    have hjlog : j < log.length := lt_trans hjk hk
+    have hmirror : log[j] = mirrorOf log[k] := by
+      simp only [List.getElem_take] at hgetj
+      exact hgetj
+    have hcj := consistentFrom_prefix_getElem c₀ log hcons j hjlog
+    have hfold := foldl_stepCache_take_from_getElem c₀ log hjlog hjk
+    rcases hke : log[k] with ⟨t, ans⟩
+    rcases t with q | a | b
+    · have hcachedJ :
+          ((stepCache ((log.take j).foldl stepCache c₀) log[j]).1 q).isSome := by
+        rw [hmirror, hke, mirrorOf_hash]
+        exact key_cached_after_step_hash _ q ans
+      have hcachedK :
+          (((log.take k).foldl stepCache c₀).1 q).isSome := by
+        rw [hfold]
+        exact hashKey_isSome_foldl_mono _ _ hcachedJ
+      exact stepCache_noop_hash hcachedK ans
+    · have hcjInv :
+          entryConsistent ((log.take j).foldl stepCache c₀)
+            (⟨.inr (.inr ans), a⟩ : DSEntry StmtIn U) := by
+        simpa [hmirror, hke, mirrorOf_fwd] using hcj
+      have hcachedJ :
+          ((stepCache ((log.take j).foldl stepCache c₀) log[j]).2.find?
+            (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+              w.1 = a)).isSome := by
+        rw [hmirror, hke, mirrorOf_fwd]
+        exact swapKey_cached_after_consistent_permInv hcjInv
+      have hcachedK :
+          (((log.take k).foldl stepCache c₀).2.find?
+            (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+              w.1 = a)).isSome := by
+        rw [hfold]
+        exact pairKey_isSome_foldl_mono _ _ hcachedJ
+      exact stepCache_noop_perm hcachedK ans
+    · have hcjFwd :
+          entryConsistent ((log.take j).foldl stepCache c₀)
+            (⟨.inr (.inl ans), b⟩ : DSEntry StmtIn U) := by
+        simpa [hmirror, hke, mirrorOf_inv] using hcj
+      have hcachedJ :
+          ((stepCache ((log.take j).foldl stepCache c₀) log[j]).2.find?
+            (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+              w.2 = b)).isSome := by
+        rw [hmirror, hke, mirrorOf_inv]
+        exact swapKey_cached_after_consistent_perm hcjFwd
+      have hcachedK :
+          (((log.take k).foldl stepCache c₀).2.find?
+            (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+              w.2 = b)).isSome := by
+        rw [hfold]
+        exact pairKey_isSome_foldl_mono _ _ hcachedJ
+      exact stepCache_noop_permInv hcachedK ans
+
+open DuplexSpongeFS.Paper in
+/-- A class-redundant erasure preserves consistency in a consistent log. -/
+theorem consistentFrom_eraseIdx_classRed (c₀ : DSCache StmtIn U)
+    {log : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (hcons : ConsistentFrom c₀ log)
+    {k : ℕ} (hk : k < log.length) (hred : ClassRedAt log k hk) :
+    ConsistentFrom c₀ (log.eraseIdx k) :=
+  consistentFrom_eraseIdx_of_noop c₀ log k hk
+    (stepCache_noop_of_classRedAt_consistent c₀ hcons hk hred) hcons
+
+open DuplexSpongeFS.Paper in
+/-- A class-redundant erasure reflects anchoredness in a consistent log. -/
+theorem anchoredFrom_of_eraseIdx_classRed (c₀ : DSCache StmtIn U)
+    {log : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (hcons : ConsistentFrom c₀ log)
+    {k : ℕ} (hk : k < log.length) (hred : ClassRedAt log k hk)
+    (hA : AnchoredFrom c₀ (log.eraseIdx k)) :
+    AnchoredFrom c₀ log :=
+  anchoredFrom_of_eraseIdx_of_noop c₀ log k hk
+    (stepCache_noop_of_classRedAt_consistent c₀ hcons hk hred) hA
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -363,3 +512,6 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.pairKey_isSome_foldl_mono
 #print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_eraseIdx_of_noop
 #print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_eraseIdx_of_noop
+#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_noop_of_classRedAt_consistent
+#print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_eraseIdx_classRed
+#print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_eraseIdx_classRed
