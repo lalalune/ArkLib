@@ -31,11 +31,11 @@ open Finset Polynomial
 
 namespace ArkLib.ProximityGap.CurveUDR
 
-variable {F : Type} [Field F] [DecidableEq F] [Fintype F]
-variable {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+variable {F : Type} [Field F] [DecidableEq F]
+variable {ι : Type} [Fintype ι]
 
 /-- Local copy of the iterated inclusion–exclusion intersection bound. -/
-private theorem card_inf_ge' {κ : Type} [DecidableEq κ] (s : Finset κ) (A : κ → Finset ι) :
+private theorem card_inf_ge' {κ : Type} [DecidableEq ι] (s : Finset κ) (A : κ → Finset ι) :
     (∑ i ∈ s, (A i).card : ℤ) - (s.card - 1) * (Fintype.card ι : ℤ)
       ≤ ((s.inf A).card : ℤ) := by
   classical
@@ -63,6 +63,7 @@ private theorem card_inf_ge' {κ : Type} [DecidableEq κ] (s : Finset κ) (A : �
       nlinarith [ih, hpair]
 
 set_option maxHeartbeats 2000000 in
+-- The interpolation/collapse/root-count proof combines several nonlinear cardinality estimates.
 /-- **Curve bad-scalar count in the unique-decoding regime (stage 2).** For a code of minimum
 distance `d` (agreement form) and a degree-`<L` data stack `u`, the scalars `γ` whose curve
 point `∑ₖ γᵏ·uₖ` agrees with a codeword on a `t`-large set without joint stack agreement number
@@ -158,7 +159,7 @@ theorem curveBadCount_udr_le (C : Submodule F (ι → F)) (L : ℕ) (hL : 2 ≤ 
         · have : ((n - (T ∩ S γ).card : ℕ) : ℤ) = (n : ℤ) - (T ∩ S γ).card := by
             push_cast [Nat.cast_sub hle]; ring
           exact_mod_cast this ▸ hgoal
-        · push_neg at hle
+        · push Not at hle
           have : (n - (T ∩ S γ).card : ℕ) = 0 := Nat.sub_eq_zero_of_le (le_of_lt hle)
           rw [this]
           have : 0 < d := by
@@ -168,11 +169,11 @@ theorem curveBadCount_udr_le (C : Submodule F (ι → F)) (L : ℕ) (hL : 2 ≤ 
       exact hfin
     -- every good scalar is a root of a nonzero degree-<L polynomial at a bad coordinate
     set e : Fin L → ι → F := fun k => u k - c k with he
-    have hGsub : G ⊆ univ.filter
+    have hGsub : G ⊆ G.filter
         (fun γ : F => ∃ i, (∃ k : Fin L, e k i ≠ 0) ∧
           ∑ k : Fin L, γ ^ (k : ℕ) * e k i = 0) := by
       intro γ hγ
-      simp only [mem_filter, mem_univ, true_and]
+      simp only [mem_filter, hγ, true_and]
       have hnj := hno γ hγ
       have hexi : ∃ i ∈ S γ, ∃ k : Fin L, c k i ≠ u k i := by
         by_contra hcon
@@ -225,7 +226,7 @@ theorem curveBadCount_udr_le (C : Submodule F (ι → F)) (L : ℕ) (hL : 2 ≤ 
           := by
         intro γ hγ
         have hmem := hGsub hγ
-        simp only [mem_filter, mem_univ, true_and] at hmem
+        simp only [mem_filter, hγ, true_and] at hmem
         obtain ⟨i, ⟨k, hk⟩, hroot⟩ := hmem
         rw [Finset.mem_biUnion]
         refine ⟨i, Finset.mem_filter.mpr ⟨Finset.mem_univ _, ⟨k, hk⟩⟩, ?_⟩
