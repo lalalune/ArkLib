@@ -7097,3 +7097,24 @@ engine closes ALL cells — (P1) complete for the repaired recursion.
 **Status:** prediction from exact symbol-pushing against the paper; needs a machine-checked
 countermodel (concrete `F, H, R` with `Hypotheses` instance, compute both sides at t = 1)
 to be promoted to a refutation, or a re-audit of `βHensel_succ`'s intended semantics.
+
+## 2026-06-11 — Items 9 + 24 of the 26-program: decided (⊖ identifications)
+
+**Item 9 (Lam–Leung W(pqr) status).** Audited: nine `LamLeung*.lean` files in-tree,
+all sorry-free. The case the production cone needs — vanishing subsets of `2^m`-th
+roots of unity are negation-symmetric, for EVERY `m`, unconditionally
+(`LamLeungUnconditionalGeneral.lean`: minpoly = cyclotomic + `φ(2^m) = 2^{m-1}` +
+`PowerBasis.linearIndependent_pow`) — is PROVEN. The open `W(pqr)` (three odd prime
+factors) is **outside the 2-smooth production cone**: no production domain has a
+three-odd-prime root-of-unity order. Verdict: ✓ as scoped to #357; the general
+question stays with the vanishing-sums literature, not this dossier.
+
+**Item 24 (run the sandwich backward systematically).** Quantified: the reverse
+dictionary (`exists_interleavedList_card_gt_of_epsMCA_gt`) at the ladder exacts
+`ε_mca = j/q` forces only `L = 0`: the threshold needs
+`(1 + (n − a)·L)/q < j/q` with `n − a = 2j − 2`, i.e. `L < (j−1)/(2j−2) = 1/2`.
+So the systematic reverse direction yields exactly **nonemptiness** of interleaved
+ambiguous lists at agreement `a = n − 2j + 2` — true but thin. Meaningful reverse
+statements (`L ≥ 1`) require band values `> 2j − 1`, i.e. the explosion regime
+(item 18), whose exact values are the open band question. Verdict: ⊖ — decided,
+gated on item 18; no theorem worth landing before the explosion law.
