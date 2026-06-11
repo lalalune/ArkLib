@@ -176,3 +176,50 @@ end Reduction
 #print axioms Reduction.append_completeness_empty_err
 #print axioms Reduction.append_completeness_total
 #print axioms Reduction.reductionAppendCompletenessResidual_holds
+
+namespace OracleReduction
+
+open Reduction in
+set_option maxHeartbeats 2000000 in
+/-- **The oracle-level general `appendCompletenessResidual` is DISCHARGED** (seam-agnostic,
+additive error): definitionally the `toReduction` statement, collapsed by the unconditional
+verifier-fusion bridge and closed by the error-ful seam-agnostic total. -/
+theorem appendCompletenessResidual_holds
+    {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
+    {Stmt₁ : Type} {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type}
+    [Oₛ₁ : ∀ i, OracleInterface (OStmt₁ i)] {Wit₁ : Type}
+    {Stmt₂ : Type} {ιₛ₂ : Type} {OStmt₂ : ιₛ₂ → Type}
+    [Oₛ₂ : ∀ i, OracleInterface (OStmt₂ i)] {Wit₂ : Type}
+    {Stmt₃ : Type} {ιₛ₃ : Type} {OStmt₃ : ιₛ₃ → Type}
+    [Oₛ₃ : ∀ i, OracleInterface (OStmt₃ i)] {Wit₃ : Type}
+    {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+    [Oₘ₁ : ∀ i, OracleInterface (pSpec₁.Message i)]
+    [Oₘ₂ : ∀ i, OracleInterface (pSpec₂.Message i)]
+    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel₁ : Set ((Stmt₁ × ∀ i, OStmt₁ i) × Wit₁)}
+    {rel₂ : Set ((Stmt₂ × ∀ i, OStmt₂ i) × Wit₂)}
+    {rel₃ : Set ((Stmt₃ × ∀ i, OStmt₃ i) × Wit₃)}
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    {e₁ e₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ e₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ e₂)
+    (hInit : NeverFail init)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    appendCompletenessResidual R₁ R₂ h₁ h₂ := by
+  unfold appendCompletenessResidual
+  change Reduction.completeness init impl rel₁ rel₃ (R₁.append R₂).toReduction (e₁ + e₂)
+  rw [show (R₁.append R₂).toReduction = R₁.toReduction.append R₂.toReduction from
+    appendToReductionResidual_proof R₁ R₂]
+  exact Reduction.append_completeness_total R₁.toReduction R₂.toReduction h₁ h₂
+    hInit himplSP himplNF himplVB
+
+end OracleReduction
+
+#print axioms OracleReduction.appendCompletenessResidual_holds
