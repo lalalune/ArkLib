@@ -98,6 +98,234 @@ theorem chalCoordT_one [SampleableType F] {M : ℕ} [Nonempty ι]
     (i : ((stirMultiVSpecT M ι 1).toProtocolSpec F).ChallengeIdx) :
     chalCoordT chals i 0 = chalFE chals i := rfl
 
+/-! ## The t-point checking verifier surface -/
+
+section CheckingT
+
+open OracleSpec OracleComp OracleInterface STIR ReedSolomon
+
+variable [Nonempty ι] [SampleableType F]
+
+/-- The `j`-th message round of the t-repetition shape (round `3j + 1`). -/
+def msgIdxT (M t : ℕ) (j : Fin (M + 1)) :
+    ((stirMultiVSpecT M ι t).toProtocolSpec F).MessageIdx :=
+  ⟨⟨3 * (j : ℕ) + 1, by omega⟩, by
+    show (stirMultiVSpecT M ι t).dir _ = .P_to_V
+    rw [show (stirMultiVSpecT M ι t).dir ⟨3 * (j : ℕ) + 1, by omega⟩
+      = (stirVSpec M (fun _ => Fintype.card ι) t).dir ⟨3 * (j : ℕ) + 1, by omega⟩ from rfl,
+      stirVSpec_dir_eq_msg_iff]
+    simp only [Fin.val_mk]
+    omega⟩
+
+/-- The out-challenge round of the t-repetition shape (round `3j + 2`). -/
+def outChalIdxT (M t : ℕ) (j : Fin (M + 1)) :
+    ((stirMultiVSpecT M ι t).toProtocolSpec F).ChallengeIdx :=
+  ⟨⟨3 * (j : ℕ) + 2, by omega⟩, by
+    show (stirMultiVSpecT M ι t).dir _ = .V_to_P
+    rw [show (stirMultiVSpecT M ι t).dir ⟨3 * (j : ℕ) + 2, by omega⟩
+      = (stirVSpec M (fun _ => Fintype.card ι) t).dir ⟨3 * (j : ℕ) + 2, by omega⟩ from rfl,
+      stirVSpec_dir_eq_chal_iff]
+    simp only [Fin.val_mk]
+    omega⟩
+
+/-- The shift-challenge round of the t-repetition shape (round `3j + 3`). -/
+def shiftChalIdxT (M t : ℕ) (j : Fin M) :
+    ((stirMultiVSpecT M ι t).toProtocolSpec F).ChallengeIdx :=
+  ⟨⟨3 * (j : ℕ) + 3, by omega⟩, by
+    show (stirMultiVSpecT M ι t).dir _ = .V_to_P
+    rw [show (stirMultiVSpecT M ι t).dir ⟨3 * (j : ℕ) + 3, by omega⟩
+      = (stirVSpec M (fun _ => Fintype.card ι) t).dir ⟨3 * (j : ℕ) + 3, by omega⟩ from rfl,
+      stirVSpec_dir_eq_chal_iff]
+    simp only [Fin.val_mk]
+    omega⟩
+
+/-- The position of domain point `x` inside a packed t-repetition message vector. -/
+noncomputable def msgPosT (M t : ℕ)
+    (j : ((stirMultiVSpecT M ι t).toProtocolSpec F).MessageIdx) (x : ι) :
+    Fin ((stirMultiVSpecT M ι t).length j.1) :=
+  Fin.cast (stirMultiVSpecT_length_msg j) (Fintype.equivFin ι x)
+
+/-- Query the input codeword oracle at a domain point (t-repetition wire). -/
+noncomputable def askInputT (M t : ℕ) (x : ι) :
+    OracleComp ([]ₒ + ([OracleStatement ι F]ₒ +
+      [((stirMultiVSpecT M ι t).toProtocolSpec F).Message]ₒ)) F :=
+  liftM (OracleSpec.query (spec := [OracleStatement ι F]ₒ)
+    (⟨(), x⟩ : (Σ i : Unit, OracleInterface.Query (OracleStatement ι F i))))
+
+/-- Query the `j`-th prover message oracle at a vector position (t-repetition wire). -/
+noncomputable def askMsgT (M t : ℕ)
+    (j : ((stirMultiVSpecT M ι t).toProtocolSpec F).MessageIdx)
+    (k : Fin ((stirMultiVSpecT M ι t).length j.1)) :
+    OracleComp ([]ₒ + ([OracleStatement ι F]ₒ +
+      [((stirMultiVSpecT M ι t).toProtocolSpec F).Message]ₒ)) F :=
+  liftM (OracleSpec.query
+    (spec := [((stirMultiVSpecT M ι t).toProtocolSpec F).Message]ₒ)
+    (⟨j, k⟩ : (Σ i, OracleInterface.Query
+      (((stirMultiVSpecT M ι t).toProtocolSpec F).Message i))))
+
+/-- The honest answer of a t-repetition message oracle. -/
+noncomputable def msgAnsT {M t : ℕ}
+    (msgs : ∀ j, ((stirMultiVSpecT M ι t).toProtocolSpec F).Message j)
+    (j : ((stirMultiVSpecT M ι t).toProtocolSpec F).MessageIdx)
+    (k : Fin ((stirMultiVSpecT M ι t).length j.1)) : F :=
+  OracleInterface.answer (msgs j) k
+
+variable (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (t : ℕ)
+
+open scoped Classical in
+/-- **The t-point checking computation**: every binding and consistency check is performed
+at ALL `t` challenge-derived points; the final low-degree check reads the last message in
+full.  At `t = 1` this is (a reshuffling of) the landed `checkingComp`. -/
+noncomputable def checkingCompT
+    (chals : ((stirMultiVSpecT M ι t).toProtocolSpec F).Challenges) :
+    OracleComp ([]ₒ + ([OracleStatement ι F]ₒ +
+      [((stirMultiVSpecT M ι t).toProtocolSpec F).Message]ₒ)) Bool := do
+  -- (1) the t-point round-0 binding checks
+  let binds ← askList (List.finRange t) (fun j' => do
+      let x0 := queryPoint φ (chalCoordT chals (outChalIdxT M t 0) j')
+      let vIn ← askInputT M t x0
+      let v0 ← askMsgT M t (msgIdxT M t 0) (msgPosT M t (msgIdxT M t 0) x0)
+      pure (decide (vIn = v0)))
+  -- (2) the t-point per-round consistency checks
+  let consist ← askList (List.finRange M) (fun j => do
+      let inner ← askList (List.finRange t) (fun j' => do
+          let xa := queryPoint φ (chalCoordT chals (outChalIdxT M t j.succ) j')
+          let xb := queryPoint φ (chalCoordT chals (shiftChalIdxT M t j) j')
+          let va ← askMsgT M t (msgIdxT M t j.castSucc)
+            (msgPosT M t (msgIdxT M t j.castSucc) xa)
+          let vb ← askMsgT M t (msgIdxT M t j.succ)
+            (msgPosT M t (msgIdxT M t j.succ) xa)
+          let vc ← askMsgT M t (msgIdxT M t j.castSucc)
+            (msgPosT M t (msgIdxT M t j.castSucc) xb)
+          let vd ← askMsgT M t (msgIdxT M t j.succ)
+            (msgPosT M t (msgIdxT M t j.succ) xb)
+          pure (decide (va = vb) && decide (vc = vd)))
+      pure (inner.all (fun b => b)))
+  -- (3) the final full-read low-degree check
+  let finalVals ← askList (List.finRange (Fintype.card ι)) (fun k =>
+      askMsgT M t (msgIdxT M t (Fin.last M))
+        (Fin.cast (stirMultiVSpecT_length_msg (msgIdxT M t (Fin.last M))) k))
+  pure (binds.all (fun b => b) && consist.all (fun b => b) &&
+    decide ((fun x : ι => finalVals.getD ((Fintype.equivFin ι x) : ℕ) 0)
+      ∈ ReedSolomon.code φ deg))
+
+open scoped Classical in
+/-- **The pure value of the t-point checking computation** under the honest oracle
+implementation. -/
+noncomputable def checkingBoolT (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpecT M ι t).toProtocolSpec F).Message j)
+    (chals : ((stirMultiVSpecT M ι t).toProtocolSpec F).Challenges) : Bool :=
+  let binds := (List.finRange t).map (fun j' =>
+      let x0 := queryPoint φ (chalCoordT chals (outChalIdxT M t 0) j')
+      decide (inputAns oStmt x0
+        = msgAnsT msgs (msgIdxT M t 0) (msgPosT M t (msgIdxT M t 0) x0)))
+  let consist := (List.finRange M).map (fun j =>
+      ((List.finRange t).map (fun j' =>
+        let xa := queryPoint φ (chalCoordT chals (outChalIdxT M t j.succ) j')
+        let xb := queryPoint φ (chalCoordT chals (shiftChalIdxT M t j) j')
+        decide (msgAnsT msgs (msgIdxT M t j.castSucc)
+            (msgPosT M t (msgIdxT M t j.castSucc) xa)
+          = msgAnsT msgs (msgIdxT M t j.succ) (msgPosT M t (msgIdxT M t j.succ) xa)) &&
+        decide (msgAnsT msgs (msgIdxT M t j.castSucc)
+            (msgPosT M t (msgIdxT M t j.castSucc) xb)
+          = msgAnsT msgs (msgIdxT M t j.succ)
+              (msgPosT M t (msgIdxT M t j.succ) xb)))).all (fun b => b))
+  let finalVals := (List.finRange (Fintype.card ι)).map (fun k =>
+      msgAnsT msgs (msgIdxT M t (Fin.last M))
+        (Fin.cast (stirMultiVSpecT_length_msg (msgIdxT M t (Fin.last M))) k))
+  binds.all (fun b => b) && consist.all (fun b => b) &&
+    decide ((fun x : ι => finalVals.getD ((Fintype.equivFin ι x) : ℕ) 0)
+      ∈ ReedSolomon.code φ deg)
+
+/-- `simulateQ` collapse for the t-repetition input-oracle query. -/
+theorem simulateQ_askInputT (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpecT M ι t).toProtocolSpec F).Message j) (x : ι) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs) (askInputT M t x)
+      = (pure (inputAns oStmt x) : OracleComp []ₒ F) := rfl
+
+/-- `simulateQ` collapse for a t-repetition message-oracle query. -/
+theorem simulateQ_askMsgT (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpecT M ι t).toProtocolSpec F).Message j)
+    (j : ((stirMultiVSpecT M ι t).toProtocolSpec F).MessageIdx)
+    (k : Fin ((stirMultiVSpecT M ι t).length j.1)) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs) (askMsgT M t j k)
+      = (pure (msgAnsT msgs j k) : OracleComp []ₒ F) := rfl
+
+open scoped Classical in
+/-- **Central collapse for the t-point checking computation**: under the honest oracle
+implementation it is the pure computation of `checkingBoolT` (for ARBITRARY oracle and
+message values). -/
+theorem simulateQ_checkingCompT (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpecT M ι t).toProtocolSpec F).Message j)
+    (chals : ((stirMultiVSpecT M ι t).toProtocolSpec F).Challenges) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs)
+        (checkingCompT M φ deg t chals)
+      = pure (checkingBoolT M φ deg t oStmt msgs chals) := by
+  unfold checkingCompT checkingBoolT
+  rw [simulateQ_bind,
+    simulateQ_askList _ _ _ (fun j' =>
+      let x0 := queryPoint φ (chalCoordT chals (outChalIdxT M t 0) j')
+      decide (inputAns oStmt x0
+        = msgAnsT msgs (msgIdxT M t 0) (msgPosT M t (msgIdxT M t 0) x0)))
+      (fun j' => by
+        rw [simulateQ_bind, simulateQ_askInputT]
+        simp only [pure_bind]
+        rw [simulateQ_bind, simulateQ_askMsgT]
+        simp only [pure_bind, simulateQ_pure])]
+  simp only [pure_bind]
+  rw [simulateQ_bind,
+    simulateQ_askList _ _ _ (fun j =>
+      ((List.finRange t).map (fun j' =>
+        let xa := queryPoint φ (chalCoordT chals (outChalIdxT M t j.succ) j')
+        let xb := queryPoint φ (chalCoordT chals (shiftChalIdxT M t j) j')
+        decide (msgAnsT msgs (msgIdxT M t j.castSucc)
+            (msgPosT M t (msgIdxT M t j.castSucc) xa)
+          = msgAnsT msgs (msgIdxT M t j.succ) (msgPosT M t (msgIdxT M t j.succ) xa)) &&
+        decide (msgAnsT msgs (msgIdxT M t j.castSucc)
+            (msgPosT M t (msgIdxT M t j.castSucc) xb)
+          = msgAnsT msgs (msgIdxT M t j.succ)
+              (msgPosT M t (msgIdxT M t j.succ) xb)))).all (fun b => b))
+      (fun j => by
+        rw [simulateQ_bind,
+          simulateQ_askList _ _ _ (fun j' =>
+            let xa := queryPoint φ (chalCoordT chals (outChalIdxT M t j.succ) j')
+            let xb := queryPoint φ (chalCoordT chals (shiftChalIdxT M t j) j')
+            decide (msgAnsT msgs (msgIdxT M t j.castSucc)
+                (msgPosT M t (msgIdxT M t j.castSucc) xa)
+              = msgAnsT msgs (msgIdxT M t j.succ)
+                  (msgPosT M t (msgIdxT M t j.succ) xa)) &&
+            decide (msgAnsT msgs (msgIdxT M t j.castSucc)
+                (msgPosT M t (msgIdxT M t j.castSucc) xb)
+              = msgAnsT msgs (msgIdxT M t j.succ)
+                  (msgPosT M t (msgIdxT M t j.succ) xb)))
+            (fun j' => by
+              rw [simulateQ_bind, simulateQ_askMsgT]
+              simp only [pure_bind]
+              rw [simulateQ_bind, simulateQ_askMsgT]
+              simp only [pure_bind]
+              rw [simulateQ_bind, simulateQ_askMsgT]
+              simp only [pure_bind]
+              rw [simulateQ_bind, simulateQ_askMsgT]
+              simp only [pure_bind, simulateQ_pure])]
+        simp only [pure_bind, simulateQ_pure])]
+  simp only [pure_bind]
+  rw [simulateQ_bind,
+    simulateQ_askList _ _ _ (fun k =>
+      msgAnsT msgs (msgIdxT M t (Fin.last M))
+        (Fin.cast (stirMultiVSpecT_length_msg (msgIdxT M t (Fin.last M))) k))
+      (fun k => simulateQ_askMsgT M t oStmt msgs _ _)]
+  simp only [pure_bind, simulateQ_pure]
+
+/-- **The t-point checking verifier** (IOP shape: no forwarded oracles). -/
+noncomputable def stirCheckingVerifierT :
+    OracleVerifier []ₒ Unit (OracleStatement ι F) Bool (fun _ : Empty => Unit)
+      ((stirMultiVSpecT M ι t).toProtocolSpec F) where
+  verify := fun _ chals => OptionT.lift (checkingCompT M φ deg t chals)
+  embed := ⟨fun i => i.elim, fun i => i.elim⟩
+  hEq := fun i => i.elim
+
+end CheckingT
+
 end MultiRound
 
 end StirIOP
@@ -106,3 +334,5 @@ end StirIOP
 #print axioms StirIOP.MultiRound.stirMultiVSpecT_length_msg
 #print axioms StirIOP.MultiRound.stirMultiVSpecT_length_chal
 #print axioms StirIOP.MultiRound.chalCoordT_one
+#print axioms StirIOP.MultiRound.simulateQ_checkingCompT
+#print axioms StirIOP.MultiRound.stirCheckingVerifierT
