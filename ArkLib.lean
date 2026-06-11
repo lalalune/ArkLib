@@ -288,6 +288,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.DescendedRset
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.EvalOnZNonzero
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Extraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.PzFamilyUD
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.LocalSeriesProducer
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.MonicFaaDiBrunoMatch
@@ -572,6 +573,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralPacketCombination
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralSpikeLowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141JohnsonCount
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeArchitecture
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
@@ -1201,6 +1203,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDe
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDetChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDetEmpty
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeOracleLift
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePerRoundDischarge
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2ReconcileProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeSeamZero
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeStateCollapse
@@ -1408,6 +1411,9 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorWitness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Bridge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Discharge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Assembly
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Discharge
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2FarLift
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Probability
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
@@ -1419,6 +1425,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Commit
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.FinalSumcheck
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Fold
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Relay
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.VerifierDeterminism
 import ArkLib.ProofSystem.Binius.FRIBinius.CoreInteractionPhase
 import ArkLib.ProofSystem.Binius.FRIBinius.General
 import ArkLib.ProofSystem.Binius.FRIBinius.Prelude
@@ -1588,8 +1595,10 @@ import ArkLib.ProofSystem.Spartan.TightComposedComplete
 import ArkLib.ProofSystem.Spartan.TightComposedCompleteness
 import ArkLib.ProofSystem.Spartan.TightComposedFull
 import ArkLib.ProofSystem.Spartan.TightComposedFullComplete
+import ArkLib.ProofSystem.Spartan.TightComposedFullCompleteProven
 import ArkLib.ProofSystem.Spartan.TightConjoinedSecondLeaf
 import ArkLib.ProofSystem.Spartan.TightDeterminismWitnesses
+import ArkLib.ProofSystem.Spartan.TightFinalCompleteness
 import ArkLib.ProofSystem.Spartan.TightFinalLeaf
 import ArkLib.ProofSystem.Spartan.TightFinalTrivial
 import ArkLib.ProofSystem.Spartan.TightFirstCompleteness
