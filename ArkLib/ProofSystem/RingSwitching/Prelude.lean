@@ -10,7 +10,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
 import ArkLib.ProofSystem.RingSwitching.Profile
 import ArkLib.ProofSystem.Sumcheck.Structured
-import ArkLib.ToMathlib.ExtractedIssueBricks
+import ArkLib.ToMathlib.PolynomialCombinatorialAuxiliary
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Matrix.Basic
 

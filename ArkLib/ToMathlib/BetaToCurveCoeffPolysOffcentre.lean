@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
-import ArkLib.ToMathlib.ExtractedIssueBricks
+import ArkLib.ToMathlib.PolynomialCombinatorialAuxiliary
 import ArkLib.ToMathlib.HcardDischarge
 
 /-!

@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ListDecodability
-import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
+import ArkLib.Data.CodingTheory.ProximityLeaves2
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Tactic.Choose

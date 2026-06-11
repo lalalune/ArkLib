@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticePrizeSpec
+import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticeSpec
 
 /-!
 # Exact GS MCA prize resolution specification re-exports

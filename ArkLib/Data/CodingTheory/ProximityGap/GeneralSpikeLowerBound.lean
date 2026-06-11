@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Core
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice2.Core
 
 /-!
 # The General Spike-Plant MCA Lower Bound at Lattice Index `j` (Issue #232)

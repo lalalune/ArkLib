@@ -1,4 +1,4 @@
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
+import ArkLib.Data.CodingTheory.ProximityGap.141Math
 
 /-! # Core of the #141 refutation: `epsMCAgs = 1` for an adversarial (non-faithful) list family.
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.ProofSystem.ToyProblem.Leaderboard
+import ArkLib.ProofSystem.ToyProblem.Metrics
 
 /-!
 # Issue #339 — `fenziSanso_upperBound_attack_concrete_residual` is TRUE:

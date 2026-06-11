@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.ListThreshold
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice2.ListThreshold
 
 /-!
 # Faithful §1 Grand-Challenge lattice thresholds — prize-resolution targets

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdElias
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
+import ArkLib.Data.CodingTheory.ProximityGap.Collapse
+import ArkLib.Data.CodingTheory.ProximityGap.LDThresholdElias
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountRatio

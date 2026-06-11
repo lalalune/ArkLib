@@ -6,6 +6,8 @@ documented as open research with the paper trail.
 
 | subsystem | sorry/admit | native_decide | axioms | residual-named |
 |---|---|---|---|---|
+| MCACapacityTrivial | 0 | 0 | 0 | 1 |
+| MCAGSRefutationCore | 0 | 0 | 0 | 1 |
 | ToMathlib | 0 | 0 | 0 | 91 |
 | ProofSystem/Fri | 0 | 0 | 0 | 1 |
 | ProofSystem/Logup | 0 | 0 | 0 | 51 |
@@ -13,18 +15,29 @@ documented as open research with the paper trail.
 | ProofSystem/Stir | 0 | 0 | 0 | 3 |
 | ProofSystem/Spartan | 0 | 0 | 0 | 18 |
 | ProofSystem/Sumcheck | 0 | 0 | 0 | 1 |
-| Data/CodingTheory | 0 | 0 | 0 | 192 |
+| Data/CodingTheory | 0 | 0 | 0 | 194 |
 | OracleReduction/Composition | 0 | 0 | 0 | 46 |
-| OracleReduction/FiatShamir | 0 | 0 | 0 | 59 |
-| **TOTAL** | **0** | **0** | **0** | **487** |
+| OracleReduction/FiatShamir | 0 | 0 | 0 | 60 |
+| **TOTAL** | **0** | **0** | **0** | **492** |
 
 
 ## Data/CodingTheory
 
 ### residual-named declarations
 - `ArkLib/Data/CodingTheory/AGL24EvalToSymbolic.lean:98` theorem **symbolicFullRankResidual_of_evaluated_witness**
+- `ArkLib/Data/CodingTheory/AGL24GrandAssembly.lean:42` def **FrankOrientationResidual**
+- `ArkLib/Data/CodingTheory/AGL24GrandAssembly.lean:54` def **GMMDSResidual**
 - `ArkLib/Data/CodingTheory/AGL24SymbolicRank.lean:45` def **SymbolicFullRankResidual**
-- `ArkLib/Data/CodingTheory/AGL24UnionBound.lean:79` def **RIMFullRankFailureProbResidual**
+- `ArkLib/Data/CodingTheory/AGL24UnionBound.lean:88` def **RIMFullRankFailureProbResidual**
+- `ArkLib/Data/CodingTheory/ProximityGap/141Math.lean:187` def **epsMCAgsPrizeUniformConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/141Progress.lean:78` theorem **epsMCA_le_mcaConjectureBound_of_one_le_bound**
+- `ArkLib/Data/CodingTheory/ProximityGap/141Progress.lean:116` theorem **mcaConjecture_iff_abstractRSMcaPolyBound**
+- `ArkLib/Data/CodingTheory/ProximityGap/141Progress.lean:121` theorem **mcaConjecture_of_abstractRSMcaPolyBound**
+- `ArkLib/Data/CodingTheory/ProximityGap/141Progress.lean:126` theorem **abstractRSMcaPolyBound_of_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/141UniformResolved.lean:126` def **epsMCAgsPrizeUniversalConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/141UniformResolved.lean:150` theorem **epsMCA_le_of_universalGSConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/141UniformResolved.lean:205` theorem **epsMCAgsPrizeUniversalConjecture_of_UniversalGSListMassBound**
+- `ArkLib/Data/CodingTheory/ProximityGap/141UniformVacuity.lean:36` theorem **epsMCAgsPrizeUniformConjecture_holds_as_stated**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardLatticeSlice.lean:131` def **BoundaryCardLatticeSubResiduals**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardLatticeSlice.lean:157` theorem **subResiduals_iff_latticeData**
 - `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardLatticeSlice.lean:180` theorem **boundaryCardLatticeResidual_of_subResiduals**
@@ -69,15 +82,6 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/ProximityGap/GK16Lemma12.lean:399` theorem **GK16Lemma12HardResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/GK16Lemma12.lean:413` theorem **GK16Lemma12HardResidual_reduces_hard**
 - `ArkLib/Data/CodingTheory/ProximityGap/GK16Lemma12.lean:435` theorem **gk16Lemma12HardResidual_holds**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141PrizeMath.lean:187` def **epsMCAgsPrizeUniformConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141Progress.lean:78` theorem **epsMCA_le_mcaConjectureBound_of_one_le_bound**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141Progress.lean:116` theorem **mcaConjecture_iff_abstractRSMcaPolyBound**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141Progress.lean:121` theorem **mcaConjecture_of_abstractRSMcaPolyBound**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141Progress.lean:126` theorem **abstractRSMcaPolyBound_of_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141UniformResolved.lean:126` def **epsMCAgsPrizeUniversalConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141UniformResolved.lean:150` theorem **epsMCA_le_of_universalGSConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141UniformResolved.lean:205` theorem **epsMCAgsPrizeUniversalConjecture_of_UniversalGSListMassBound**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141UniformVacuity.lean:36` theorem **epsMCAgsPrizeUniformConjecture_holds_as_stated**
 - `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean:489` def **mcaConjectureBound**
 - `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean:516` def **mcaConjecture**
 - `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean:536` theorem **nonempty_mcaLowerWitness_of_mcaConjecture**
@@ -88,22 +92,6 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean:632` theorem **nonempty_prize_mcaLowerWitness_of_ignored_mcaConjecture**
 - `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean:655` theorem **exists_prize_mcaLowerWitnesses_allRates_of_ignored_mcaConjecture**
 - `ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean:687` theorem **nonempty_prize_mcaLowerWitnesses_allRates_of_ignored_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:722` theorem **exists_mcaPrizeLatticeResolved_with_spec_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:757` theorem **exists_mcaPrizeLatticeSpec_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:791` theorem **mcaThreshold_spec_and_lower_bracket_prize_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:833` theorem **mcaThreshold_lower_bracket_prize_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:861` theorem **mcaThreshold_spec_and_lower_bracket_prize_allRates_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:893` theorem **mcaThreshold_lower_bracket_prize_allRates_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:926` theorem **mcaThreshold_spec_and_bracket_prize_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:963` theorem **mcaThreshold_bracket_prize_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:995` theorem **mcaThreshold_spec_and_bracket_prize_allRates_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:1036` theorem **mcaThreshold_bracket_prize_allRates_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:1077` theorem **exists_mcaPrizeLatticeSpec_and_lower_brackets_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:1127` theorem **exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:1164` theorem **exists_mcaPrizeLatticeResolved_with_lower_brackets_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:1195` theorem **exists_mcaPrizeLatticeSpec_and_brackets_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:1252` theorem **exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLatticePrizeSpec.lean:1297` theorem **exists_mcaPrizeLatticeResolved_with_brackets_of_ignoredSource_mcaConjecture**
 - `ArkLib/Data/CodingTheory/ProximityGap/Hab25Johnson.lean:329` structure **Hab25JohnsonResiduals**
 - `ArkLib/Data/CodingTheory/ProximityGap/Hab25Johnson.lean:339` def **Hab25JohnsonResiduals.ofAlgebraicData**
 - `ArkLib/Data/CodingTheory/ProximityGap/Hab25Johnson.lean:359` def **Hab25JohnsonResiduals.toAlgebraicData**
@@ -112,21 +100,30 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonNumericBridge.lean:143` def **Hab25JohnsonResiduals.ofAlgebraicData_card_le_nat**
 - `ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonNumericBridge.lean:167` def **Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover**
 - `ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonNumericBridge.lean:186` def **Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover_nat**
-- `ArkLib/Data/CodingTheory/ProximityGap/Issue141Kernels.lean:51` def **UniformPolyListSizeConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:722` theorem **exists_mcaPrizeLatticeResolved_with_spec_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:757` theorem **exists_mcaPrizeLatticeSpec_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:791` theorem **mcaThreshold_spec_and_lower_bracket_prize_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:833` theorem **mcaThreshold_lower_bracket_prize_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:861` theorem **mcaThreshold_spec_and_lower_bracket_prize_allRates_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:893` theorem **mcaThreshold_lower_bracket_prize_allRates_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:926` theorem **mcaThreshold_spec_and_bracket_prize_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:963` theorem **mcaThreshold_bracket_prize_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:995` theorem **mcaThreshold_spec_and_bracket_prize_allRates_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:1036` theorem **mcaThreshold_bracket_prize_allRates_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:1077` theorem **exists_mcaPrizeLatticeSpec_and_lower_brackets_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:1127` theorem **exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:1164` theorem **exists_mcaPrizeLatticeResolved_with_lower_brackets_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:1195` theorem **exists_mcaPrizeLatticeSpec_and_brackets_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:1252` theorem **exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/LatticeSpec.lean:1297` theorem **exists_mcaPrizeLatticeResolved_with_brackets_of_ignoredSource_mcaConjecture**
 - `ArkLib/Data/CodingTheory/ProximityGap/MCAConjectureRefutation.lean:48` def **CS25BreakdownBelowConjectureBound**
 - `ArkLib/Data/CodingTheory/ProximityGap/MCAConjectureRefutation.lean:63` theorem **not_mcaConjecture_of_cs25BreakdownBelowBound**
 - `ArkLib/Data/CodingTheory/ProximityGap/MCAConjectureRefutation.lean:120` def **CS25BreakdownLowerResidualUniversal**
 - `ArkLib/Data/CodingTheory/ProximityGap/MCAConjectureRefutation.lean:130` def **CS25BandInstanceBelowConjectureBound**
 - `ArkLib/Data/CodingTheory/ProximityGap/MCAConjectureRefutation.lean:161` theorem **not_mcaConjecture_of_bandInstances_and_cs25Lower**
 - `ArkLib/Data/CodingTheory/ProximityGap/MCAGS.lean:575` def **uniformEpsMCAgsPrizeBoundConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/MCAGSPrizeRefutation.lean:102` theorem **not_uniformEpsMCAgsPrizeBoundConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLattice/Prize.lean:227` theorem **exists_mcaPrizeLatticeResolved_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLattice/Witnesses.lean:400` theorem **mcaThresholdExists_of_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLattice/Witnesses.lean:422` theorem **mcaThreshold_spec_of_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLattice/Witnesses.lean:445` theorem **mcaThresholdExists_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLattice/Witnesses.lean:461` theorem **mcaThreshold_spec_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLattice/Witnesses.lean:479` theorem **mcaThresholdExists_prize_of_ignoredSource_mcaConjecture**
-- `ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLattice/Witnesses.lean:501` theorem **mcaThreshold_spec_prize_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean:102` theorem **not_uniformEpsMCAgsPrizeBoundConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/RSListDecodingCapacityGap.lean:51` def **UniformPolyListSizeConjecture**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2505` def **StrictCoeffPolysResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2528` def **StrictCanonicalCoeffPolysResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2554` theorem **strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual**
@@ -192,6 +189,13 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtractionVacuous.lean:183` theorem **strictCoeffPolysResidual_of_card_le_e7**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidual.lean:45` def **RSCurveListSizeResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidual.lean:61` theorem **RS_jointAgreement_of_curveListSizeResidual**
+- `ArkLib/Data/CodingTheory/ProximityGap/Lattice2/Spec.lean:227` theorem **exists_mcaPrizeLatticeResolved_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/Lattice2/Witnesses.lean:400` theorem **mcaThresholdExists_of_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/Lattice2/Witnesses.lean:422` theorem **mcaThreshold_spec_of_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/Lattice2/Witnesses.lean:445` theorem **mcaThresholdExists_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/Lattice2/Witnesses.lean:461` theorem **mcaThreshold_spec_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/Lattice2/Witnesses.lean:479` theorem **mcaThresholdExists_prize_of_ignoredSource_mcaConjecture**
+- `ArkLib/Data/CodingTheory/ProximityGap/Lattice2/Witnesses.lean:501` theorem **mcaThreshold_spec_prize_of_ignoredSource_mcaConjecture**
 - `ArkLib/Data/CodingTheory/ListDecoding/Bounds/RandomAndReedSolomon.lean:142` def **randomLinearLambdaLowerFirstMomentResidual**
 - `ArkLib/Data/CodingTheory/ListDecoding/Bounds/RandomAndReedSolomon.lean:200` theorem **randomLinearLambdaLowerFirstMomentResidual_of_exists_event**
 - `ArkLib/Data/CodingTheory/ListDecoding/Bounds/RandomAndReedSolomon.lean:224` theorem **exists_code_of_randomLinearLambdaLowerFirstMomentResidual**
@@ -214,6 +218,16 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1529` theorem **GKL24FirstMomentResidual_inTree_delta_add_one_card**
 - `ArkLib/Data/CodingTheory/Connections/GKL24PetalWitnessCover.lean:56` def **GKL24MaxDomainWitnessCoverResidual**
 - `ArkLib/Data/CodingTheory/Connections/GKL24PetalWitnessCover.lean:84` theorem **gkl24PetalWitnessCoverResidual_of_maxDomainWitnessCover**
+
+## MCACapacityTrivial
+
+### residual-named declarations
+- `ArkLib/MCACapacityTrivial.lean:20` theorem **mca_capacity_bound_CONJECTURE_trivially_true**
+
+## MCAGSRefutationCore
+
+### residual-named declarations
+- `ArkLib/MCAGSRefutationCore.lean:101` theorem **not_uniformEpsMCAgsPrizeBoundConjecture**
 
 ## OracleReduction/Composition
 
@@ -326,7 +340,8 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:705` theorem **lemma5_14HonestResidualPaper_holds**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:502` theorem **lemma5_16HonestResidual_false**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:147` theorem **lemma5_8EagerBirthdayResidual_false**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean:165` theorem **lemma5_8EagerPaperResidual_holds**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean:46` theorem **lemma5_8EagerPaperResidual_holds**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:417` theorem **duplexSpongeFiatShamir_runCollapseResidual_holds**
 
 ## ProofSystem/Fri
 
@@ -338,12 +353,12 @@ documented as open research with the paper trail.
 ### residual-named declarations
 - `ArkLib/ProofSystem/Logup/Security/BridgeAndAppendResiduals.lean:237` theorem **oracleReductionToReductionResidual_of_binary**
 - `ArkLib/ProofSystem/Logup/Security/Completeness.lean:237` def **SubPhaseCompletenessResidual**
-- `ArkLib/ProofSystem/Logup/Security/Issue13Status.lean:343` theorem **issue13_sumcheckSoundnessResidual_projClosed**
 - `ArkLib/ProofSystem/Logup/Security/LogupCompletenessClose.lean:139` theorem **appendCompletenessResidual_iff_toReduction**
 - `ArkLib/ProofSystem/Logup/Security/LogupCompletenessMsgSeam.lean:114` theorem **appendCompletenessResidual_msgSeam**
 - `ArkLib/ProofSystem/Logup/Security/LogupCompletenessUncond.lean:169` theorem **sumcheckCompletenessResidual_of_perRound**
 - `ArkLib/ProofSystem/Logup/Security/LogupCompletenessWired.lean:185` theorem **appendCompletenessResidual_wired**
 - `ArkLib/ProofSystem/Logup/Security/LogupCompletenessWired.lean:264` theorem **logupCompletenessBrickResidual_holds**
+- `ArkLib/ProofSystem/Logup/Security/LogupProtocol2Status.lean:343` theorem **issue13_sumcheckSoundnessResidual_projClosed**
 - `ArkLib/ProofSystem/Logup/Security/LogupResidualDischarge.lean:70` theorem **outerSoundnessResidual_holds**
 - `ArkLib/ProofSystem/Logup/Security/LogupResidualDischarge.lean:82` theorem **sumcheckSoundnessResidual_holds_pointwise**
 - `ArkLib/ProofSystem/Logup/Security/LogupResidualDischarge.lean:96` theorem **subPhaseSoundnessResidual_holds**

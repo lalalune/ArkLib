@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Core
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLineDecoding
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice2.Core
+import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding2
 
 /-!
 # Faithful §1 Grand-Challenge lattice thresholds — MCA witnesses → threshold

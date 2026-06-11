@@ -75,7 +75,9 @@ private lemma getFirstOracle_apply_zero {i : Fin (ℓ + 1)}
     (y : sDomain 𝔽q β h_ℓ_add_R_rate 0) :
     getFirstOracle 𝔽q β oStmt y =
       oStmt ⟨0, (instNeZeroNatToOutCodewordsCount ℓ ϑ i).pos⟩
-        ⟨y.val, by simpa only [Fin.val_mk, zero_mul, Nat.zero_mod] using y.property⟩ := rfl
+        ⟨y.val, by simpa only [Fin.val_mk, zero_mul, Nat.zero_mod] using y.property⟩ := by
+  unfold getFirstOracle
+  rfl
 
 set_option maxHeartbeats 2000000 in
 -- The final equality crosses two dependent `sDomain` transports introduced by `getFirstOracle`
@@ -114,24 +116,27 @@ lemma polyToOracleFunc_eq_getFirstOracle
     apply Fin.ext
     simp only [firstIdx, j0, Fin.val_mk, zero_mul, Fin.val_zero]
   let y0 : sDomain 𝔽q β h_ℓ_add_R_rate firstIdx :=
-    ⟨y.val, by simpa only [Fin.val_mk, zero_mul, Nat.zero_mod] using y.property⟩
+    ⟨y.val, h_firstIdx_zero.symm ▸ y.property⟩
   change f₀ y = oStmt ⟨0, h_pos⟩ y0
   rw [h_first_oracle]
   rw [iterated_fold_congr_steps_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps' := 0)
       (h_destIdx := by simp only [Nat.zero_mod, zero_mul, Fin.coe_ofNat_eq_mod, add_zero])
-      (h_destIdx_le := by simp only [zero_mul, zero_le])
+      (h_destIdx_le := by simpa only [Fin.val_mk, zero_mul] using Nat.zero_le ℓ)
       (h_steps_eq_steps' := by simp only [zero_mul])]
   rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
       (h_destIdx := by simp only [Nat.zero_mod, zero_mul, Fin.coe_ofNat_eq_mod])]
+  have h_y0_to_y :
+      (cast (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j : Type))
+        h_firstIdx_zero) y0) = y := by
+    apply Subtype.ext
+    exact (val_of_cast_sDomain 𝔽q β firstIdx (0 : Fin r) h_firstIdx_zero
+      (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j : Type)) h_firstIdx_zero)
+      y0).trans rfl
   simp only [polyToOracleFunc]
-  congr 1
-  trans y0.val
-  · rfl
-  · symm
-    simpa [y0, firstIdx, eq_mp_eq_cast] using
-      val_of_cast_sDomain 𝔽q β firstIdx (0 : Fin r) h_firstIdx_zero
-        (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j : Type)) h_firstIdx_zero)
-        y0
+  change P₀.val.eval y.val =
+    P₀.val.eval (cast (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j : Type))
+      h_firstIdx_zero) y0).val
+  rw [h_y0_to_y]
 
 end QueryPhase
 

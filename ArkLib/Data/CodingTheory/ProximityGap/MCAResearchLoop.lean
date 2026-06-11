@@ -1,4 +1,4 @@
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Prize
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice2.Spec
 
 open scoped BigOperators
 

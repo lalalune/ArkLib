@@ -752,49 +752,7 @@ Ring-switching + Binary Basefold as MLIOPCS.
 
 This is a direct instantiation of `fullOracleReduction_perfectCompleteness` from
 `RingSwitching/General.lean` with the Binary Basefold MLIOPCS. -/
-theorem bbf_fullOracleReduction_perfectCompleteness (hInit : NeverFail init)
-    (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
-      (κ := κ) (L := L) (K := K) (P := β_rs) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := (bbfMLIOPCS 𝔽q β γ_repetitions
-        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).toAbstractOStmtIn)
-      (init := init) (impl := impl))
-    (hCoreSeqComposePerfectCompleteness :
-      let mlIOPCS := bbfMLIOPCS 𝔽q β γ_repetitions
-        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
-      (SumcheckPhase.sumcheckLoopOracleReduction κ L K β_rs ℓ ℓ' h_l
-        (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).perfectCompleteness
-          init impl
-          (strictSumcheckRoundRelation κ L K β_rs ℓ ℓ' h_l (𝓑 := 𝓑)
-            mlIOPCS.toAbstractOStmtIn 0)
-          (strictSumcheckRoundRelation κ L K β_rs ℓ ℓ' h_l (𝓑 := 𝓑)
-            mlIOPCS.toAbstractOStmtIn (Fin.last ℓ')))
-    (hCoreAppendPerfectCompleteness :
-      let mlIOPCS := bbfMLIOPCS 𝔽q β γ_repetitions
-        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
-      (SumcheckPhase.coreInteractionOracleReduction κ L K β_rs ℓ ℓ' h_l
-        (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).perfectCompleteness
-          init impl
-          (strictSumcheckRoundRelation κ L K β_rs ℓ ℓ' h_l (𝓑 := 𝓑)
-            mlIOPCS.toAbstractOStmtIn 0)
-          mlIOPCS.toAbstractOStmtIn.toStrictRelInput)
-    (hBatchingCoreAppendPerfectCompleteness :
-      let mlIOPCS := bbfMLIOPCS 𝔽q β γ_repetitions
-        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
-      (FullRingSwitching.batchingCoreReduction κ L K β_rs ℓ ℓ' h_l
-        (𝓑 := 𝓑) mlIOPCS).perfectCompleteness
-          init impl
-          (BatchingPhase.strictBatchingInputRelation κ L K β_rs ℓ ℓ' h_l
-            mlIOPCS.toAbstractOStmtIn)
-          mlIOPCS.toStrictRelInput)
-    (hFullAppendPerfectCompleteness :
-      let mlIOPCS := bbfMLIOPCS 𝔽q β γ_repetitions
-        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
-      (FullRingSwitching.fullOracleReduction κ L K β_rs ℓ ℓ' h_l
-        (𝓑 := 𝓑) mlIOPCS).perfectCompleteness
-          init impl
-          (BatchingPhase.strictBatchingInputRelation κ L K β_rs ℓ ℓ' h_l
-            mlIOPCS.toAbstractOStmtIn)
-          acceptRejectOracleRel) :
+theorem bbf_fullOracleReduction_perfectCompleteness (hInit : NeverFail init) :
     OracleReduction.perfectCompleteness
       (oracleReduction := FullRingSwitching.fullOracleReduction κ L K β_rs ℓ ℓ' h_l
         (𝓑 := 𝓑)
@@ -805,40 +763,15 @@ theorem bbf_fullOracleReduction_perfectCompleteness (hInit : NeverFail init)
         (bbfMLIOPCS 𝔽q β γ_repetitions
           (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).toAbstractOStmtIn)
       (relOut := acceptRejectOracleRel)
-      (init := init) (impl := impl) :=
-  FullRingSwitching.fullOracleReduction_perfectCompleteness κ L K β_rs ℓ ℓ' h_l
-    (𝓑 := 𝓑)
-    (bbfMLIOPCS 𝔽q β γ_repetitions
-      (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑))
-    init hInit hRounds
-    hCoreSeqComposePerfectCompleteness hCoreAppendPerfectCompleteness
-    hBatchingCoreAppendPerfectCompleteness hFullAppendPerfectCompleteness
+      (init := init) (impl := impl) := by
+  apply FullRingSwitching.fullOracleReduction_perfectCompleteness
+  exact hInit
 
 /-- RBR knowledge soundness of the composed protocol:
 Ring-switching + Binary Basefold as MLIOPCS.
 
 This is a direct instantiation of `fullOracleVerifier_rbrKnowledgeSoundness` from
 `RingSwitching/General.lean` with the Binary Basefold MLIOPCS. -/
-theorem bbf_fullOracleVerifier_rbrKnowledgeSoundness
-    (hCoreSeqComposeRbrKnowledgeSoundness :
-      let mlIOPCS := bbfMLIOPCS 𝔽q β γ_repetitions
-        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
-      (SumcheckPhase.sumcheckLoopOracleVerifier κ (L := L) (K := K) (β := β_rs) (ℓ := ℓ)
-        (ℓ' := ℓ') (h_l := h_l) (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).rbrKnowledgeSoundness
-          (init := init) (impl := impl)
-          (relIn := sumcheckRoundRelation κ L K β_rs ℓ ℓ' h_l (𝓑 := 𝓑)
-            mlIOPCS.toAbstractOStmtIn 0)
-          (relOut := sumcheckRoundRelation κ L K β_rs ℓ ℓ' h_l (𝓑 := 𝓑)
-            mlIOPCS.toAbstractOStmtIn (Fin.last ℓ'))
-          (rbrKnowledgeError := fun combinedIdx =>
-            letI ij := seqComposeChallengeIdxToSigma combinedIdx
-            iteratedSumcheckRoundKnowledgeError L ℓ' ij.1 ij.2))
-    (hCoreAppendRbrKnowledgeSoundness :
-      let mlIOPCS := bbfMLIOPCS 𝔽q β γ_repetitions
-        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
-      (SumcheckPhase.coreInteractionOracleVerifier κ L K β_rs ℓ ℓ' h_l
-        (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).rbrKnowledgeSoundness
-          (init := init) (impl := impl)
           (relIn := sumcheckRoundRelation κ L K β_rs ℓ ℓ' h_l (𝓑 := 𝓑)
             mlIOPCS.toAbstractOStmtIn 0)
           (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)

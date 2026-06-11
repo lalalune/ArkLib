@@ -1,4 +1,4 @@
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
+import ArkLib.Data.CodingTheory.ProximityGap.141Math
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 

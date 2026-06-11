@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.InterleavedLambdaGe
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice
 
 /-!
 # Base-code overflow sharpens the threshold past capacity, at every arity (#232)

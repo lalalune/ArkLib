@@ -17,12 +17,6 @@ Sequential composition of:
 ## References
 
 * [Diamond, B.E. and Posen, J., *Polylogarithmic proofs for multilinears over binary towers*][DP24]
-
-## Residual surface
-
-The full-protocol security wrappers below expose the remaining sequential-composition
-obligations as explicit hypotheses. These hypotheses are named by their protocol role rather
-than by a generic residual name, matching the audit convention in `CoreInteractionPhase.lean`.
 -/
 
 open AdditiveNTT Polynomial

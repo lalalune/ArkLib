@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
-import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
+import ArkLib.Data.CodingTheory.ProximityLeaves2
 import ArkLib.Data.CodingTheory.BinomialEntropyBound
 
 /-!

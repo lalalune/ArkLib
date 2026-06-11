@@ -7,7 +7,7 @@ import ArkLib.ProofSystem.Logup.Security.OuterVerifierSupport
 import ArkLib.ProofSystem.Logup.Security.MarginalBridgeProof
 import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessReal
-import ArkLib.ProofSystem.Logup.Security.Issue13Status
+import ArkLib.ProofSystem.Logup.Security.LogupProtocol2Status
 
 /-!
 # LogUp outer phase: RBR soundness and the `hOuter` discharge at the sharp language (issue #13)

@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2FarLift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Incremental
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition421
 
 /-!
 # Proposition 4.21 Case 2 probability bound

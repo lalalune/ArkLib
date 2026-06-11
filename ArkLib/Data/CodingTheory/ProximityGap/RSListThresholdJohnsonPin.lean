@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaJohnson
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThreshold
+import ArkLib.Data.CodingTheory.ProximityGap.LDThreshold
 
 /-!
 # Concrete Johnson-radius pin: `δ*` trapped in exactly the open gap (#232)

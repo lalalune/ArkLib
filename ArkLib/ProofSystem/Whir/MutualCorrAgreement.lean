@@ -365,7 +365,7 @@ remains `mca_johnson_bound_CONJECTURE` above.
 claim, the *formalized* `Prop` below is VACUOUSLY TRUE as written: the `∃ c₁ c₂` is unbounded
 and the bound is not required to be `< 1`, so `c₁ = 0, c₂ = |F|` inflates the RHS past `1`
 (proven in-tree: `mca_capacity_bound_CONJECTURE_trivially_true`,
-`ArkLib/MCACapacityTrivial_keep.lean`).  So "unprovable as written" in the STATUS note applies
+`ArkLib/MCACapacityTrivial.lean`).  So "unprovable as written" in the STATUS note applies
 to the *genuine* sub-1 capacity bound, NOT to this Lean statement, which carries zero proof
 obligation either way.  Kept purely as a historical record of the refuted conjecture's shape. -/
 def mca_capacity_bound_CONJECTURE
