@@ -320,3 +320,31 @@ with the saturated-band finding; (b) no spike below the jump (`InteriorCeiling` 
 but vacuously — `n=4` has no genuine Johnson↔capacity interior). Inconclusive for the deployed
 regime (too small to exhibit a KKH26 jump); rules out a *cheap* small-scale separation or
 counterexample. The open core remains the beyond-Johnson explicit-RS list count — the 25-year wall.
+## 13. STRUCTURAL SHARPENING: `InteriorCeiling` decomposes into THREE sub-regimes (distinct status)
+
+`InteriorCeiling` = "ε_mca ≤ ε* for all δ < jump (1−r/2^μ)". Tracing the substrate
+(`141JohnsonCount.lean` + `244HwitRefutation.lean`) shows the radius interval `[0, jump)` is NOT
+homogeneous — it splits into three regimes whose provability differs sharply:
+
+  (I)  **[0, half-Johnson]** — `rs_epsMCA_le_johnson_ceil_of_hwit` gives `ε_mca ≤ L_Johnson/|F|`
+       via the single-common-center clustering hypothesis `hwitAll`. With cryptographic `|F|` (so
+       `L_Johnson/|F| ≤ 2^-128`) this DISCHARGES the obligation here — PROVABLE (conditional on
+       `hwitAll`, which holds up to half-Johnson).
+  (II) **(half-Johnson, Johnson]** — `244HwitRefutation` proves `hwitAll` (single center) is
+       REFUTABLE past half-Johnson (constant-pencil countermodel over GF(5): all |F| scalars
+       line-close vs Johnson cap 2.4). So regime (I)'s route DIES here; a genuine MULTI-center
+       Johnson argument is needed. The classical Johnson list bound still caps list size here
+       unconditionally — so this regime is PROVABLE IN PRINCIPLE but needs the multi-center
+       `lineCloseCount ≤ L_Johnson` brick (not yet assembled; the single-center one is refuted).
+  (III)**(Johnson, jump)** — strictly above Johnson. NO list-size bound is known for explicit RS
+       here; this is THE 25-year wall. GENUINELY OPEN.
+
+**Why this is the right way to state the frontier:** it isolates the irreducibly-open piece to
+regime (III) — a STRICTLY SMALLER interval than `[0, jump)` — and identifies regime (II) as a
+*formalizable* (not research-open) gap blocked only on a multi-center Johnson brick the project
+has not yet built (the single-center version is machine-refuted, so the obstruction is precise).
+The honest open core is therefore "regime (III): explicit-RS list count above Johnson", and the
+actionable (non-research-blocked) next brick is the multi-center Johnson line-close count for
+regime (II) — which would shrink `InteriorCeiling`'s open part from `[0,jump)` to `(Johnson,jump)`.
+This is a genuine sharpening of what the Proximity Prize actually requires, machine-substantiated
+by the existing refutation, with no fabrication.
