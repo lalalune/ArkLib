@@ -686,6 +686,185 @@ theorem probEvent_DDS_eq_lazyDSImpl {α : Type}
   unfold probEvent
   rw [evalDist_DDS_eq_lazyDSImpl]
 
+/-! ## Cache well-formedness along lazy runs (brick 4D-2a) -/
+
+/-- The unused-values list is nonempty whenever some input is fresh. -/
+lemma unusedValuesList_ne_nil_of_fresh
+    (cp : List (CanonicalSpongeState U × CanonicalSpongeState U)) {a : CanonicalSpongeState U}
+    (hkeys : (cp.map Prod.fst).Nodup) (hvals : (cp.map Prod.snd).Nodup)
+    (ha : a ∉ cp.map Prod.fst) :
+    LazyPermBridge.unusedValuesList cp ≠ [] := by
+  intro hnil
+  have := LazyPermMarginal.unusedFinset_nonempty cp a hkeys hvals ha
+  rw [← LazyPermBridge.toFinset_unusedValuesList, hnil] at this
+  simpa using this
+
+/-- The unused-keys list analogue. -/
+lemma unusedKeysList_ne_nil_of_fresh
+    (cp : List (CanonicalSpongeState U × CanonicalSpongeState U)) {b : CanonicalSpongeState U}
+    (hkeys : (cp.map Prod.fst).Nodup) (hvals : (cp.map Prod.snd).Nodup)
+    (hb : b ∉ cp.map Prod.snd) :
+    LazyPermBridge.unusedKeysList cp ≠ [] := by
+  intro hnil
+  have := LazyPermMarginal.unusedFinset_nonempty (cp.map Prod.swap) b
+    (by simpa [List.map_map, Function.comp_def] using hvals)
+    (by simpa [List.map_map, Function.comp_def] using hkeys)
+    (by simpa [List.map_map, Function.comp_def] using hb)
+  rw [← LazyPermBridge.toFinset_unusedKeysList, hnil] at this
+  simpa using this
+
+/-- **Cache well-formedness invariant**: every reachable state of a lazy run from
+duplicate-free caches has duplicate-free caches. The foundational invariant of the
+Lemma 5.8 log–cache correspondence. -/
+theorem lazyDSImpl_cache_nodup {α : Type}
+    (oa : OracleComp (duplexSpongeChallengeOracle StmtIn U) α)
+    (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (cp : List (CanonicalSpongeState U × CanonicalSpongeState U))
+    (hkeys : (cp.map Prod.fst).Nodup) (hvals : (cp.map Prod.snd).Nodup) :
+    ∀ x ∈ support ((simulateQ lazyDSImpl oa).run (ch, cp)),
+      ((x.2.2.map Prod.fst).Nodup ∧ (x.2.2.map Prod.snd).Nodup) := by
+  classical
+  induction oa using OracleComp.inductionOn generalizing ch cp with
+  | pure a =>
+      intro x hx
+      rw [simulateQ_pure] at hx
+      simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff] at hx
+      subst hx
+      exact ⟨hkeys, hvals⟩
+  | query_bind t k ih =>
+      intro x hx
+      rw [simulateQ_bind] at hx
+      rw [show ((simulateQ lazyDSImpl
+            (liftM ((duplexSpongeChallengeOracle StmtIn U).query t))
+            >>= fun u => simulateQ lazyDSImpl (k u)).run (ch, cp))
+          = ((lazyDSImpl t).run (ch, cp) >>= fun (p : _ × DSCache StmtIn U) =>
+              (simulateQ lazyDSImpl (k p.1)).run p.2) from by
+        rw [StateT.run_bind]
+        refine congrArg (fun z => z >>= fun (p : _ × DSCache StmtIn U) =>
+          (simulateQ lazyDSImpl (k p.1)).run p.2) ?_
+        simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query,
+          id_map]] at hx
+      obtain ⟨p, hp, hxp⟩ := (mem_support_bind_iff _ _ _).1 hx
+      rcases t with q | sIn | sOut
+      · -- hash arm: the perm cache is untouched
+        have hp2 : p.2.2 = cp := by
+          rcases hcq : ch q with _ | u
+          · rw [show (lazyDSImpl ((.inl q :
+                (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+              = (fun (w : Vector U SpongeSize.C × _) => (w.1, (w.2, cp))) <$>
+                  (((StmtIn →ₒ Vector U SpongeSize.C).randomOracle q).run ch) from rfl,
+              QueryImpl.withCaching_run_none _ hcq, Functor.map_map] at hp
+            have hp' : p ∈ support ((fun a => (a, (ch.cacheQuery q a, cp))) <$>
+                ($ᵗ (Vector U SpongeSize.C))) := hp
+            simp only [support_map, Set.mem_image] at hp'
+            obtain ⟨u', _, rfl⟩ := hp'
+            rfl
+          · rw [show (lazyDSImpl ((.inl q :
+                (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+              = (fun (w : Vector U SpongeSize.C × _) => (w.1, (w.2, cp))) <$>
+                  (((StmtIn →ₒ Vector U SpongeSize.C).randomOracle q).run ch) from rfl,
+              QueryImpl.withCaching_run_some _ hcq, map_pure] at hp
+            simp only [support_pure, Set.mem_singleton_iff] at hp
+            subst hp
+            rfl
+        exact ih p.1 p.2.1 p.2.2 (hp2 ▸ hkeys) (hp2 ▸ hvals) x hxp
+      · -- forward permutation arm
+        rcases hc : cp.find? (fun w => w.1 = sIn) with _ | w
+        · have hfresh : sIn ∉ cp.map Prod.fst := by
+            intro hmem
+            obtain ⟨v, hv, hv1⟩ := List.mem_map.mp hmem
+            have := List.find?_eq_none.mp hc v hv
+            simp [hv1] at this
+          rw [show (lazyDSImpl ((.inr (.inl sIn) :
+                (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+              = (fun (w : CanonicalSpongeState U × _) => (w.1, (ch, w.2))) <$>
+                  ((LazyPermBridge.lazyPermImpl (.inl sIn :
+                    CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+            LazyPermBridge.lazyPermImpl_run_inl_none cp hc, Functor.map_map] at hp
+          have hp' : p ∈ support ((fun b => (b, (ch, cp.concat (sIn, b)))) <$>
+              LazyPermBridge.sampleUnused (LazyPermBridge.unusedValuesList cp)) := hp
+          simp only [support_map, Set.mem_image] at hp'
+          obtain ⟨b, hb, rfl⟩ := hp'
+          have hbu : b ∈ LazyPermBridge.unusedValuesList cp :=
+            LazyPermBridge.support_sampleUnused
+              (unusedValuesList_ne_nil_of_fresh cp hkeys hvals hfresh) hb
+          have hbv : b ∉ cp.map Prod.snd := by
+            rwa [LazyPermBridge.mem_unusedValuesList] at hbu
+          have hk' : (((cp.concat (sIn, b)).map Prod.fst)).Nodup := by
+            simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+            rw [List.nodup_append]
+            exact ⟨hkeys, List.nodup_singleton _, by
+              intro u hu v hv
+              simp only [List.mem_singleton] at hv
+              subst hv
+              exact fun h => hfresh (h ▸ hu)⟩
+          have hv' : (((cp.concat (sIn, b)).map Prod.snd)).Nodup := by
+            simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+            rw [List.nodup_append]
+            exact ⟨hvals, List.nodup_singleton _, by
+              intro u hu v hv
+              simp only [List.mem_singleton] at hv
+              subst hv
+              exact fun h => hbv (h ▸ hu)⟩
+          exact ih b ch (cp.concat (sIn, b)) hk' hv' x hxp
+        · rw [show (lazyDSImpl ((.inr (.inl sIn) :
+                (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+              = (fun (w : CanonicalSpongeState U × _) => (w.1, (ch, w.2))) <$>
+                  ((LazyPermBridge.lazyPermImpl (.inl sIn :
+                    CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+            LazyPermBridge.lazyPermImpl_run_inl_some cp hc, map_pure] at hp
+          simp only [support_pure, Set.mem_singleton_iff] at hp
+          subst hp
+          exact ih w.2 ch cp hkeys hvals x hxp
+      · -- inverse permutation arm
+        rcases hc : cp.find? (fun w => w.2 = sOut) with _ | w
+        · have hfresh : sOut ∉ cp.map Prod.snd := by
+            intro hmem
+            obtain ⟨v, hv, hv2⟩ := List.mem_map.mp hmem
+            have := List.find?_eq_none.mp hc v hv
+            simp [hv2] at this
+          rw [show (lazyDSImpl ((.inr (.inr sOut) :
+                (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+              = (fun (w : CanonicalSpongeState U × _) => (w.1, (ch, w.2))) <$>
+                  ((LazyPermBridge.lazyPermImpl (.inr sOut :
+                    CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+            LazyPermBridge.lazyPermImpl_run_inr_none cp hc, Functor.map_map] at hp
+          have hp' : p ∈ support ((fun a => (a, (ch, cp.concat (a, sOut)))) <$>
+              LazyPermBridge.sampleUnused (LazyPermBridge.unusedKeysList cp)) := hp
+          simp only [support_map, Set.mem_image] at hp'
+          obtain ⟨a, ha, rfl⟩ := hp'
+          have hau : a ∈ LazyPermBridge.unusedKeysList cp :=
+            LazyPermBridge.support_sampleUnused
+              (unusedKeysList_ne_nil_of_fresh cp hkeys hvals hfresh) ha
+          have hak : a ∉ cp.map Prod.fst := by
+            rwa [LazyPermBridge.mem_unusedKeysList] at hau
+          have hk' : (((cp.concat (a, sOut)).map Prod.fst)).Nodup := by
+            simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+            rw [List.nodup_append]
+            exact ⟨hkeys, List.nodup_singleton _, by
+              intro u hu v hv
+              simp only [List.mem_singleton] at hv
+              subst hv
+              exact fun h => hak (h ▸ hu)⟩
+          have hv' : (((cp.concat (a, sOut)).map Prod.snd)).Nodup := by
+            simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+            rw [List.nodup_append]
+            exact ⟨hvals, List.nodup_singleton _, by
+              intro u hu v hv
+              simp only [List.mem_singleton] at hv
+              subst hv
+              exact fun h => hfresh (h ▸ hu)⟩
+          exact ih a ch (cp.concat (a, sOut)) hk' hv' x hxp
+        · rw [show (lazyDSImpl ((.inr (.inr sOut) :
+                (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+              = (fun (w : CanonicalSpongeState U × _) => (w.1, (ch, w.2))) <$>
+                  ((LazyPermBridge.lazyPermImpl (.inr sOut :
+                    CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) from rfl,
+            LazyPermBridge.lazyPermImpl_run_inr_some cp hc, map_pure] at hp
+          simp only [support_pure, Set.mem_singleton_iff] at hp
+          subst hp
+          exact ih w.1 ch cp hkeys hvals x hxp
+
 end Connectors
 
 end DuplexSpongeFS.EagerLazyDS
@@ -696,3 +875,4 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_simulateQ_lazyDSImpl_run'
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_DDS_eq_lazyDSImpl
 #print axioms DuplexSpongeFS.EagerLazyDS.probEvent_DDS_eq_lazyDSImpl
+#print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImpl_cache_nodup
