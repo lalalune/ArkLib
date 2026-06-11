@@ -6584,3 +6584,33 @@ ALREADY PROVEN.** The decisive chain for monic `H` (= the `H_tilde` regime):
   Then: structured invariant → (proven collapse) → loose bound → kill-target weights →
   `exists_pinning_pair_of_heavy_agreement` → … → `JohnsonDischargeStatement` → the exact
   δ* pin. The recursion wall is BYPASSED, exactly as the paper prescribes.
+
+**O154 conclusion — V2 IS PROVEN (`weight_ξ_bound`, RationalFunctionsCore:2854, exactly the
+structured budget `Λ(ξ) ≤ (d_R−1)·(D−d_H+1)`); V1's order-0 is PROVEN
+(`alphaWeight_zero_cleared_fixed`); the un-cleared invariant is provably FALSE non-monic
+(de-fabrication record in AlphaWeightProof.lean) — the ENTIRE Johnson gap is now V1's
+successor orders for monic H (the #138 P1 obligation), and nothing else.** Summary of the
+complete reduction achieved by this siege:
+
+| target | status |
+|---|---|
+| Claim 5.8 / LiftIdentityAt (monic) | PROVEN |
+| Claim 5.9 / Z-linearity | BYPASSED (kill-target/Vandermonde route, assembled) |
+| Claim 5.10 / cell pinning | ASSEMBLED (`exists_pinning_pair_of_heavy_agreement`) |
+| structured→loose collapse | PROVEN (`βHensel_weight_bound_of_structured_weight`) |
+| V2: Λ(ξ) budget | **PROVEN** (`weight_ξ_bound`) |
+| V1 order 0 | PROVEN (`alphaWeight_zero_cleared_fixed`, weight ≤ 1) |
+| W1 per-term recursion | UNPROVABLE as stated (documented); correctly bypassed |
+| un-cleared invariant | FALSE non-monic (refutation in-tree); monic routing forced |
+| **V1 successors (monic)** | **THE GAP** — `Λ(α_t) ≤ 1` for `t ≥ 1`, monic `H` |
+
+The mathematical content of "Johnson with no Props" is now a single statement: the genuine
+Hensel coefficients of a root of a monic `H̃` have unit Λ-weight at every order. Paper
+route: γ = Σ α_t z^t IS the root (`Y`-weight 1); the closed form bounds each coefficient.
+In-tree route candidates: (i) extend `alphaWeight_zero_cleared_fixed`'s argument
+order-by-order through the proven monic lift identity (cleared = uncleared at W = 1);
+(ii) the canonical-representative weight of `gammaGenuine`'s coefficients via
+`alphaGenuine_regular_of_monic` integrality + the rep-degree calculus. Everything else in
+the Johnson→δ* chain is machine-checked. After V1: `JohnsonDischargeStatement` proven →
+the unconditional bracket → `kkh26_deltaStar_pin_of_interior_ceiling` = the exact
+deployed-regime δ* pin.
