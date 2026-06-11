@@ -56,7 +56,7 @@ variable {ι : Type} {oSpec : OracleSpec ι} {Statement : Type}
 
 /-- `simulateQ` collapses an `OptionT`-level `pure` to an honest `pure (some _)` in the target
 monad, for any lawful target. -/
-private lemma simulateQ_optionT_pure_some {ι' : Type} {spec : OracleSpec ι'}
+lemma simulateQ_optionT_pure_some {ι' : Type} {spec : OracleSpec ι'}
     {n : Type → Type u} [Monad n] [LawfulMonad n] (impl : QueryImpl spec n)
     {γ : Type} (b : γ) :
     simulateQ impl (pure b : OptionT (OracleComp spec) γ) = (pure (some b) : n (Option γ)) := by
@@ -65,7 +65,7 @@ private lemma simulateQ_optionT_pure_some {ι' : Type} {spec : OracleSpec ι'}
 
 /-- An `OptionT` bind, re-expressed as the underlying monad bind with an `Option.elim`
 continuation. -/
-private lemma optionT_bind_eq_elim_bind {n : Type → Type u} [Monad n]
+lemma optionT_bind_eq_elim_bind {n : Type → Type u} [Monad n]
     {α β : Type} (x : OptionT n α) (f : α → OptionT n β) :
     (x >>= f : OptionT n β) =
       (x.run >>= fun o => Option.elim o (pure none) (fun a => (f a).run) : n (Option β)) := by
