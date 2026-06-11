@@ -1180,6 +1180,92 @@ theorem base_inv_anchored
   have := anchoredFrom_of_split ((∅, []) : DSCache StmtIn U) L₁ (log[f j]) L₂ hcol
   rwa [← hsplit] at this
 
+/-! ## Hash-arm anchoring producer (final assembly, hash) -/
+
+/-- **Hash-cache provenance (one step).** A hash answer present after a step was already
+cached or was inserted by the step's (hash) entry. -/
+theorem stepCache_hash_provenance (c : DSCache StmtIn U) (e : DSEntry StmtIn U)
+    {q : StmtIn} {u : Vector U SpongeSize.C} (h : (stepCache c e).1 q = some u) :
+    c.1 q = some u ∨ e = (⟨.inl q, u⟩ : DSEntry StmtIn U) := by
+  rcases e with ⟨t, ans⟩
+  rcases t with q' | a | b
+  · rcases hcq : c.1 q' with _ | u'
+    · simp only [stepCache, hcq] at h
+      by_cases hqq : q = q'
+      · subst hqq
+        rw [OracleSpec.QueryCache.cacheQuery_self] at h
+        exact Or.inr (by rw [Option.some_inj.mp h])
+      · rw [OracleSpec.QueryCache.cacheQuery, Function.update_of_ne hqq] at h
+        exact Or.inl h
+    · left; simpa [stepCache, hcq] using h
+  · rcases hf : c.2.find? (fun w => w.1 = a) with _ | w <;> · left; simpa [stepCache, hf] using h
+  · rcases hf : c.2.find? (fun w => w.2 = b) with _ | w <;> · left; simpa [stepCache, hf] using h
+
+/-- **Hash-cache provenance (whole fold).** -/
+theorem foldl_hash_provenance (c : DSCache StmtIn U) (L : List (DSEntry StmtIn U))
+    {q : StmtIn} {u : Vector U SpongeSize.C} (h : (L.foldl stepCache c).1 q = some u) :
+    c.1 q = some u ∨ ∃ e ∈ L, e = (⟨.inl q, u⟩ : DSEntry StmtIn U) := by
+  induction L generalizing c with
+  | nil => exact Or.inl h
+  | cons e ℓ ih =>
+      rw [List.foldl_cons] at h
+      rcases ih (stepCache c e) h with h' | ⟨e', he', hk'⟩
+      · rcases stepCache_hash_provenance c e h' with h'' | h''
+        · exact Or.inl h''
+        · exact Or.inr ⟨e, List.mem_cons_self, h''⟩
+      · exact Or.inr ⟨e', List.mem_cons_of_mem _ he', hk'⟩
+
+/-- **A non-redundant hash entry is fresh.** A consistent hash hit forces the cached answer
+to equal the entry's, making the inserting entry same-class (equal); so a non-redundant hash
+entry cannot be a hit. -/
+theorem hash_entry_fresh (L₁ : List (DSEntry StmtIn U)) (e : DSEntry StmtIn U)
+    (L₂ : List (DSEntry StmtIn U)) (q : StmtIn) (u : Vector U SpongeSize.C)
+    (he : e = (⟨.inl q, u⟩ : DSEntry StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) (L₁ ++ e :: L₂))
+    (hnr : ∀ e' ∈ L₁, ¬ sameClass e e') :
+    (L₁.foldl stepCache ((∅, []) : DSCache StmtIn U)).1 q = none := by
+  by_contra hne
+  obtain ⟨u', hu'⟩ := Option.ne_none_iff_exists'.mp hne
+  have hc := consistentFrom_split ((∅, []) : DSCache StmtIn U) L₁ e L₂ hcons
+  rw [he] at hc
+  have huu : u = u' := hc u' hu'
+  rcases foldl_hash_provenance ((∅, []) : DSCache StmtIn U) L₁ hu' with h0 | ⟨e', he'mem, he'eq⟩
+  · simp at h0
+  · refine hnr e' he'mem ?_
+    rw [he, he'eq, huu]; exact sameClass_refl _
+
+open DuplexSpongeFS.Paper in
+/-- **Hash-arm anchoring producer.** A hash base entry whose answer is an existing slot
+anchors the consistent log. -/
+theorem base_hash_anchored
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) log)
+    (f : ℕ ↪o ℕ)
+    (hf : ∀ ix, (removeRedundantEntryDSPaper log).1[ix]? = log[f ix]?)
+    (hfo : ∀ ix p (e ep : DSEntry StmtIn U),
+      (removeRedundantEntryDSPaper log).1[ix]? = some e → log[p]? = some ep →
+      p < f ix → ¬ sameClass e ep)
+    (j : ℕ) (hj : j < (removeRedundantEntryDSPaper log).1.length)
+    (q : StmtIn) (u : Vector U SpongeSize.C)
+    (hbj : (removeRedundantEntryDSPaper log).1[j] = (⟨.inl q, u⟩ : DSEntry StmtIn U))
+    (hcap : u ∈ slotList ((log.take (f j)).foldl stepCache ((∅, []) : DSCache StmtIn U))) :
+    AnchoredFrom ((∅, []) : DSCache StmtIn U) log := by
+  obtain ⟨hpj, hsplit, hbjf, _hearlier⟩ := base_raw_split log f hf j hj
+  set L₁ := log.take (f j) with hL₁
+  set L₂ := log.drop (f j + 1) with hL₂
+  have he : log[f j] = (⟨.inl q, u⟩ : DSEntry StmtIn U) := by rw [hbjf, hbj]
+  have hcons' : ConsistentFrom ((∅, []) : DSCache StmtIn U) (L₁ ++ log[f j] :: L₂) := by
+    rw [← hsplit]; exact hcons
+  have hnr : ∀ e' ∈ L₁, ¬ sameClass (log[f j]) e' := by
+    intro e' he''; rw [hbjf]; exact base_no_earlier_sameClass log f hf hfo j hj e' he''
+  have hfresh : (L₁.foldl stepCache ((∅, []) : DSCache StmtIn U)).1 q = none :=
+    hash_entry_fresh L₁ (log[f j]) L₂ q u he hcons' hnr
+  have hcol : collisionStep (log[f j]).1 (L₁.foldl stepCache ((∅, []) : DSCache StmtIn U))
+      (log[f j]).2 := by
+    rw [he]; exact ⟨hfresh, hcap⟩
+  have := anchoredFrom_of_split ((∅, []) : DSCache StmtIn U) L₁ (log[f j]) L₂ hcol
+  rwa [← hsplit] at this
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1273,6 +1359,9 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_split
 #print axioms DuplexSpongeFS.EagerLazyDS.base_fwd_anchored
 #print axioms DuplexSpongeFS.EagerLazyDS.base_inv_anchored
+#print axioms DuplexSpongeFS.EagerLazyDS.foldl_hash_provenance
+#print axioms DuplexSpongeFS.EagerLazyDS.hash_entry_fresh
+#print axioms DuplexSpongeFS.EagerLazyDS.base_hash_anchored
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
