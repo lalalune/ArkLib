@@ -1,13 +1,13 @@
 {
  "summary": {
   "total": 105,
-  "open": 24,
-  "discharged": 81,
+  "open": 22,
+  "discharged": 83,
   "by_top_dir": {
    "Data": {
     "total": 27,
-    "open": 11,
-    "discharged": 16
+    "open": 9,
+    "discharged": 18
    },
    "OracleReduction": {
     "total": 41,
@@ -49,8 +49,17 @@
    "fq_name": "AGL24.GMMDSResidual",
    "file": "ArkLib/Data/CodingTheory/AGL24GrandAssembly.lean",
    "line": 54,
-   "providers": [],
-   "status": "open"
+   "providers": [
+    {
+     "name": "AGL24.gmmDsResidual_of_dualZeroPatternTheorem",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/AGL24GMMDSInterface.lean",
+     "line": 74,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "SymbolicFullRankResidual",
@@ -94,6 +103,14 @@
       "GMMDSResidual"
      ],
      "ambiguous_name_match": false
+    },
+    {
+     "name": "AGL24.symbolicFullRank_of_rootedOutCut_and_dualZeroPattern",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/AGL24Issue354Discharge.lean",
+     "line": 39,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
     }
    ],
    "status": "discharged"
@@ -105,6 +122,14 @@
    "line": 88,
    "providers": [
     {
+     "name": "AGL24.rimFailureProb_of_rootedOutCut_and_dualZeroPattern",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/AGL24Issue354Discharge.lean",
+     "line": 59,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "AGL24.rimFailureProb_of_symbolic",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/AGL24ProbDischarge.lean",
@@ -115,7 +140,7 @@
      "ambiguous_name_match": false
     }
    ],
-   "status": "open"
+   "status": "discharged"
   },
   {
    "name": "GKL24FirstMomentResidual",

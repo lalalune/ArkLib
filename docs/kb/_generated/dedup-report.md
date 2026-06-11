@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2269 files, 29057 declarations
+- `ArkLib` — 2279 files, 29154 declarations
 
-## Same short-name across multiple files (1228 groups)
+## Same short-name across multiple files (1231 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -202,6 +202,14 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `abbrev Spartan.Spec.Statement` [ArkLib/ProofSystem/Spartan/Basic.lean:56](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L56) — This unfolds to `𝕩 : Fin (2 ^ ℓ_n - 2 ^ ℓ_w) → R`
 - `structure Sumcheck.Structured.Statement` [ArkLib/ProofSystem/Sumcheck/Structured.lean:197](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L197) — Statement per iterated sumcheck round
 - `def ToyProblem.Spec.Statement` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:93](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L93) — Input (explicit) statement of Construction 6.2: the linear-constraint vector `v ∈ F^k` and the two c
+
+### `dom` (5 declarations, 5 files)
+
+- `def ProximityGap.DeltaStarExactPin.dom` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:79](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L79) — The smooth evaluation domain: `F₅* = ⟨2⟩` enumerated as successive powers of the generator `2`, i.e.
+- `def ProximityGap.DeltaStarSecondPin.dom` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean#L54) — The smooth domain: the order-8 subgroup `⟨2⟩ ≤ F₁₇ˣ`, enumerated as powers.
+- `def ProximityGap.MCANearCapacityQuadratic.dom` [ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean:80](../../../ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean#L80) — The arithmetic evaluation domain `i ↦ (i : ZMod p)`, an embedding once `n ≤ p`.
+- `def ProximityGap.MCAWindowInteriorExact.dom` [ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean#L63) — The evaluation domain `(1, 2, 3, 4, 5)`.
+- `def ArkLib.ProximityGap.RSPrizeDataPoint.dom` [ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean#L42) — The smooth multiplicative domain mu_8 ⊂ (ZMod 17)ˣ : the eight 8th roots of unity, listed.
 
 ### `liftComp_optionT_pure` (5 declarations, 5 files)
 
@@ -678,6 +686,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ArkLib.CodingTheory.TinyInteriorK3.c5_isRS` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11K3.lean:133](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11K3.lean#L133) — (no docstring)
 - `lemma ArkLib.CodingTheory.Round3SmoothF17.c5_isRS` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF17Subgroup.lean:145](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF17Subgroup.lean#L145) — (no docstring)
 
+### `card_clause` (3 declarations, 3 files)
+
+- `theorem ProximityGap.DeltaStarSecondPin.card_clause` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean:130](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean#L130) — The size clause at `δ = 1/4`, `n = 8`: a 6-element witness suffices.
+- `theorem ProximityGap.MCADeltaStarExactPoint.card_clause` [ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean:222](../../../ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean#L222) — The membership clause of `mcaEvent`'s witness sets at `δ = 1/4`, `n = 4`: card `3` suffices (`(1 − 1
+- `theorem ProximityGap.MCAWindowInteriorExact.card_clause` [ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean:115](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean#L115) — The witness-size clause at `δ = 2/5`, `n = 5`: a 3-set qualifies.
+
 ### `card_filter_eval_zero_le` (3 declarations, 3 files)
 
 - `lemma ProximityGap.card_filter_eval_zero_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/AgreementCount.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/AgreementCount.lean#L45) — Root-set cardinality bound (reproved inline to keep imports light): over a finite field a nonzero po
@@ -761,12 +775,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Code.coset_card` [ArkLib/Data/CodingTheory/Basic/CosetFarCount.lean:31](../../../ArkLib/Data/CodingTheory/Basic/CosetFarCount.lean#L31) — A coset `{w \| w - w₀ ∈ C}` of a linear code `C` has cardinality `\|C\|`.
 - `theorem ArkLib.ProximityGap.CosetConcentration.coset_card` [ArkLib/Data/CodingTheory/ProximityGap/CosetPowerSumConcentration.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/CosetPowerSumConcentration.lean#L96) — A coset of a primitive `h`-th root, with `g ≠ 0`, has exactly `h` elements.
 - `theorem ArkLib.ProximityGap.HybridDepthNoGo.coset_card` [ArkLib/Data/CodingTheory/ProximityGap/HybridConcentrationDepthNoGo.lean:102](../../../ArkLib/Data/CodingTheory/ProximityGap/HybridConcentrationDepthNoGo.lean#L102) — (no docstring)
-
-### `dom` (3 declarations, 3 files)
-
-- `def ProximityGap.DeltaStarExactPin.dom` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:79](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L79) — The smooth evaluation domain: `F₅* = ⟨2⟩` enumerated as successive powers of the generator `2`, i.e.
-- `def ProximityGap.MCANearCapacityQuadratic.dom` [ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean:80](../../../ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean#L80) — The arithmetic evaluation domain `i ↦ (i : ZMod p)`, an embedding once `n ≤ p`.
-- `def ArkLib.ProximityGap.RSPrizeDataPoint.dom` [ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean#L42) — The smooth multiplicative domain mu_8 ⊂ (ZMod 17)ˣ : the eight 8th roots of unity, listed.
 
 ### `epsMCA_le_one` (3 declarations, 3 files)
 
@@ -1887,13 +1895,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `badCount_udr_le` (2 declarations, 2 files)
 
-- `theorem ProximityGap.UDRwire.badCount_udr_le` [ArkLib/Data/CodingTheory/ProximityGap/MCAUDRBound.lean:53](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAUDRBound.lean#L53) — (no docstring)
-- `theorem ProximityGap.UDR.badCount_udr_le` [ArkLib/Data/CodingTheory/ProximityGap/UDRBadCount.lean:74](../../../ArkLib/Data/CodingTheory/ProximityGap/UDRBadCount.lean#L74) — (no docstring)
+- `theorem ProximityGap.UDRwire.badCount_udr_le` [ArkLib/Data/CodingTheory/ProximityGap/MCAUDRBound.lean:51](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAUDRBound.lean#L51) — (no docstring)
+- `theorem ProximityGap.UDR.badCount_udr_le` [ArkLib/Data/CodingTheory/ProximityGap/UDRBadCount.lean:86](../../../ArkLib/Data/CodingTheory/ProximityGap/UDRBadCount.lean#L86) — (no docstring)
 
 ### `badGamma_le` (2 declarations, 2 files)
 
-- `theorem ProximityGap.UDRwire.badGamma_le` [ArkLib/Data/CodingTheory/ProximityGap/MCAUDRBound.lean:35](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAUDRBound.lean#L35) — (no docstring)
-- `theorem ProximityGap.UDR.badGamma_le` [ArkLib/Data/CodingTheory/ProximityGap/UDRBadCount.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/UDRBadCount.lean#L56) — (no docstring)
+- `theorem ProximityGap.UDRwire.badGamma_le` [ArkLib/Data/CodingTheory/ProximityGap/MCAUDRBound.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAUDRBound.lean#L45) — (no docstring)
+- `theorem ProximityGap.UDR.badGamma_le` [ArkLib/Data/CodingTheory/ProximityGap/UDRBadCount.lean:81](../../../ArkLib/Data/CodingTheory/ProximityGap/UDRBadCount.lean#L81) — Finite-field specialization of `badGammaOn_le`.
 
 ### `badPolyAgreement` (2 declarations, 2 files)
 
@@ -2266,6 +2274,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Code.dist` [ArkLib/Data/CodingTheory/Basic/Distance.lean:216](../../../ArkLib/Data/CodingTheory/Basic/Distance.lean#L216) — The Hamming distance of a code `C` is the minimum Hamming distance between any two distinct elements
 - `def dist` [ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean:21](../../../ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean#L21) — (no docstring)
 
+### `dom_injective` (2 declarations, 2 files)
+
+- `theorem ProximityGap.DeltaStarSecondPin.dom_injective` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean#L57) — `dom` is injective (eight distinct field elements).
+- `theorem ProximityGap.MCAWindowInteriorExact.dom_injective` [ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean:65](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean#L65) — (no docstring)
+
 ### `domain_implies_char_ne_2` (2 declarations, 2 files)
 
 - `lemma Domain.CosetFftDomainClass.domain_implies_char_ne_2` [ArkLib/Data/Domain/CosetFftDomain/Ops.lean:98](../../../ArkLib/Data/Domain/CosetFftDomain/Ops.lean#L98) — (no docstring)
@@ -2310,6 +2323,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ProximityGap.MCAAntichainEngine.epsMCA_le_card_div_at_granularity` [ArkLib/Data/CodingTheory/ProximityGap/MCAAntichainEngine.lean:179](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAAntichainEngine.lean#L179) — **The tight granularity cap:** `ε_mca(C, 1/n) ≤ n/q` for every linear code.
 - `theorem ProximityGap.MCAWitnessCountEngine.epsMCA_le_card_div_at_granularity` [ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessCountEngine.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessCountEngine.lean#L208) — **Sharper granularity cap:** the universal witness in the raw `n + 1` witness-family count does not
+
+### `epsMCA_le_choose_div` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCALYMCeiling.epsMCA_le_choose_div` [ArkLib/Data/CodingTheory/ProximityGap/MCALYMCeiling.lean:186](../../../ArkLib/Data/CodingTheory/ProximityGap/MCALYMCeiling.lean#L186) — **THE LYM CEILING.** For every linear code over every finite field, at every radius with agreement f
+- `theorem ProximityGap.epsMCA_le_choose_div` [ArkLib/Data/CodingTheory/ProximityGap/MCAPlateauWindow.lean:313](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAPlateauWindow.lean#L313) — **The canonical-witness window bound.** For every RS code and every radius `δ`: `ε_mca(RS[F, domain,
 
 ### `epsMCAgs_badList_eq_one` (2 declarations, 2 files)
 
@@ -6577,7 +6595,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:188](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L188) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/XiCertReduction.lean:219](../../../ArkLib/ToMathlib/XiCertReduction.lean#L219) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 240 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 241 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 
