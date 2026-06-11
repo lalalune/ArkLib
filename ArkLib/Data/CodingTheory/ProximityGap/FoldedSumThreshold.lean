@@ -288,6 +288,35 @@ theorem foldedSum_ne_zero_of_char0 {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 �
     ∑ x ∈ S, (w x : ZMod p) * g ^ (e x) ≠ 0 :=
   fun hzero => hR0 ((foldedSum_vanishing_iff_char0 hm hg S e w hp).mp hzero)
 
+/-! ## The balance characterization: characteristic-zero vanishing is a counting condition -/
+
+/-- **Characteristic-zero vanishing ⟺ antipodal fiber balance.** The folded polynomial of
+a weight-one family vanishes iff every residue fiber `t` is exactly matched by its
+antipodal fiber `t + 2^(m−1)` — the purely combinatorial form of the char-0 census layer
+(the object O145 counts). Stated for weight-one families (covers the `e₂` census and all
+incidence counts); the general-weight analogue replaces cards by weight sums. -/
+theorem foldedSum_eq_zero_iff_balanced (m : ℕ) (S : Finset ι) (e : ι → ℕ) :
+    foldedSum m S e (fun _ => 1) = 0 ↔ ∀ t < 2 ^ (m - 1),
+      (S.filter (fun x => e x % 2 ^ m = t)).card
+        = (S.filter (fun x => e x % 2 ^ m = t + 2 ^ (m - 1))).card := by
+  constructor
+  · intro h0 t ht
+    have hc := congrArg (fun P : Polynomial ℤ => P.coeff t) h0
+    simp only [Polynomial.coeff_zero] at hc
+    rw [foldedSum_coeff, if_pos ht] at hc
+    unfold foldedCoeff at hc
+    simp only [Finset.sum_const, nsmul_eq_mul, mul_one] at hc
+    omega
+  · intro hbal
+    rw [foldedSum]
+    refine Finset.sum_eq_zero fun t ht => ?_
+    have hc : foldedCoeff m S e (fun _ => 1) t = 0 := by
+      unfold foldedCoeff
+      simp only [Finset.sum_const, nsmul_eq_mul, mul_one]
+      have := hbal t (Finset.mem_range.mp ht)
+      omega
+    rw [hc, map_zero, zero_mul]
+
 /-! ## Sanity weld: the `e₂` census engine is the `w ≡ 1` instance -/
 
 theorem e2Coeff_eq_foldedCoeff (m : ℕ) (A : Finset ℕ) (t : ℕ) :
@@ -308,6 +337,7 @@ theorem e2Folded_eq_foldedSum (m : ℕ) (A : Finset ℕ) :
 #print axioms l1On_foldedSum_le
 #print axioms foldedSum_vanishing_iff_char0
 #print axioms foldedSum_ne_zero_of_char0
+#print axioms foldedSum_eq_zero_iff_balanced
 #print axioms e2Folded_eq_foldedSum
 
 end ArkLib.ProximityGap.WindowTwoLayer
