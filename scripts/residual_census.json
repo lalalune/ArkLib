@@ -1,8 +1,8 @@
 {
  "summary": {
   "total": 105,
-  "open": 28,
-  "discharged": 77,
+  "open": 27,
+  "discharged": 78,
   "by_top_dir": {
    "Data": {
     "total": 22,
@@ -21,8 +21,8 @@
    },
    "ToMathlib": {
     "total": 20,
-    "open": 2,
-    "discharged": 18
+    "open": 1,
+    "discharged": 19
    }
   }
  },
@@ -2790,7 +2790,7 @@
      "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimResidual_proven",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean",
-     "line": 90,
+     "line": 93,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -2832,6 +2832,14 @@
    "line": 1130,
    "providers": [
     {
+     "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimValueRelResidual_proven",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean",
+     "line": 203,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimValueRelResidual_of_secondSumcheckEval",
      "kind": "theorem",
      "file": "ArkLib/ToMathlib/SpartanBricks.lean",
@@ -2842,7 +2850,7 @@
      "ambiguous_name_match": false
     }
    ],
-   "status": "open"
+   "status": "discharged"
   },
   {
    "name": "composedCompletenessWithClaimSecondSumcheckEvalResidual",
@@ -2850,6 +2858,14 @@
    "file": "ArkLib/ToMathlib/SpartanBricks.lean",
    "line": 1141,
    "providers": [
+    {
+     "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimSecondSumcheckEvalResidual_proven",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean",
+     "line": 237,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
     {
      "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel",
      "kind": "theorem",
