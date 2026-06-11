@@ -255,8 +255,26 @@ lemma decodeMessagesPrefixStepPhiInv_pToV
             | none => none
             | some msg => some (MessagesUpTo.concat mb hdir msg) := by
   unfold decodeMessagesPrefixStepPhiInv
-  simp [hdir]
-
+  split
+  · rename_i heq
+    cases Subsingleton.elim hdir heq
+    split
+    · rename_i heq2
+      rw [show lookupEncodedMessageAlphaHat? (pSpec := pSpec) (U := U)
+          encodedList ⟨j, hdir⟩ = none from heq2]
+    · rename_i encodedMsg heq2
+      rw [show lookupEncodedMessageAlphaHat? (pSpec := pSpec) (U := U)
+          encodedList ⟨j, hdir⟩ = some encodedMsg from heq2]
+      split
+      · rename_i heq3
+        rw [show decodeMessagePhiInv? (pSpec := pSpec) (U := U) ⟨j, hdir⟩ encodedMsg
+            = none from heq3]
+      · rename_i msg heq3
+        rw [show decodeMessagePhiInv? (pSpec := pSpec) (U := U) ⟨j, hdir⟩ encodedMsg
+            = some msg from heq3]
+  · rename_i heq
+    rw [hdir] at heq
+    simp at heq
 /-! ## H23-2 — the parser succeeds on codec-image inputs -/
 
 /-- Walk-level success: if every encoded block before round `i` has a serialize-preimage,
