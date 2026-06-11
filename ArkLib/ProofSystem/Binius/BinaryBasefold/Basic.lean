@@ -991,7 +991,7 @@ noncomputable def extractMLP (i : Fin ℓ) (f : (sDomain 𝔽q β h_ℓ_add_R_ra
         let t_multilinear_mv := MvPolynomial.MLE hypercube_evals
         exact some ⟨t_multilinear_mv, MLE_mem_restrictDegree hypercube_evals⟩
 
-def dummyLastWitness :
+def zeroLastWitness :
     Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) := {
   t := ⟨0, by apply zero_mem⟩,
   H := ⟨0, by apply zero_mem⟩,
