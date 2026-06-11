@@ -542,6 +542,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetWallDeepInteriorNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.CountingGapConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
+import ArkLib.Data.CodingTheory.ProximityGap.CrossingPin
 import ArkLib.Data.CodingTheory.ProximityGap.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBound
