@@ -5895,3 +5895,24 @@ ladder is now machine-checked on both sides of the boundary: M1 (O122) and M2 (t
 provably domain-blind, M3 provably domain-sensitive with classified mechanism. Named
 next: the max-LIST tail corollary (partial sums of a_j), the k=2 rigidity theorem, the
 affine-invariance lemma, the t₂ spectral-gap theorem, the (2,4) cross-ratio cell.
+
+### O145 — W1: the weight filter is census × generic — level-1 counting is complete given the census (nubs, 2026-06-11)
+
+Post-O135 redirect executed (pre-registered W1, rungs/HYPOTHESES.md): sampling the
+per-locus spaces V_Z at toy scale (q=97, n=32, 10⁵ samples/cell), the excess-zero
+distribution beyond the forced 2|Z| dead-fiber zeros on the SMOOTH domain is
+**Poisson(remaining/q)-generic to 4 decimal places** (|Z|=3: 0.7644 vs 0.7649;
+|Z|=5: 0.7967 vs 0.7971). The pre-registered falsifier ("no smooth concentration beyond
+forced") FIRED: the weight-filter cut on smooth domains factorizes as
+forced-part (census/dichotomy) × generic volume. Random-domain comparison columns are
+partner-contaminated (honest caveat; the smooth-vs-Poisson match needs no comparison).
+
+**Synthesis of the incidence lane's three counting verdicts:** O135 (union bound
+measure-tight — incidence overlap contributes nothing in measure) + W1 (weight filter
+contributes nothing beyond census) + G1/O132 (the census's incidence anatomy is
+closed-form) ⟹ **level-1 list counting is COMPLETE given the census** — empirically, the
+only non-generic object in the level-1 window is the census itself. This is exactly the
+reduction the census-conditional pin (CensusConditionalPin.lean) assumes; the incidence
+lane's evidence now backs its premise from below. Remaining incidence items: G2+G3
+(n=64 blind incl. O134 spurious elements) and A3 (λ-family) — blocked on the weekly
+agent capacity (Jun 13); both fully specified in HYPOTHESES.md for any seat to take.
