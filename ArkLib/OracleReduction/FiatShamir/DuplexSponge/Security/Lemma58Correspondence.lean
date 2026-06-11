@@ -650,6 +650,65 @@ theorem mem_slotList_foldl_of_mem_perm (c : DSCache StmtIn U)
       p.2.capacitySegment ∈ slotList (L.foldl stepCache c) :=
   mem_slotList_of_mem_perm _ ((foldl_stepCache_perm_sublist c L).subset hp)
 
+/-! ## Forward/inverse key uniqueness along a non-anchored fold
+
+Forward-key uniqueness is NOT a pure property of `stepCache`: an inverse-fresh step inserts
+its sampled answer as a new forward key, which could a priori coincide with an existing one.
+But that coincidence is exactly an anchored collision (the answer's capacity equals an
+existing slot's), so along a *non-anchored* fold the forward keys stay distinct. -/
+
+/-- The forward keys of the permutation cache are distinct. -/
+def FwdKeysNodup (c : DSCache StmtIn U) : Prop := (c.2.map Prod.fst).Nodup
+
+lemma not_hasFwdKey_of_find?_none {c : DSCache StmtIn U} {a : CanonicalSpongeState U}
+    (h : c.2.find? (fun w => w.1 = a) = none) : a ∉ c.2.map Prod.fst := by
+  intro hmem
+  obtain ⟨w, hw, hwa⟩ := List.mem_map.mp hmem
+  exact absurd (by simpa using List.find?_eq_none.mp h w hw) (by simp [hwa])
+
+/-- A state whose capacity is not a slot is not a cached forward key. -/
+lemma not_mem_fwdKeys_of_cap_not_slot (c : DSCache StmtIn U)
+    {x : CanonicalSpongeState U} (h : x.capacitySegment ∉ slotList c) :
+    x ∉ c.2.map Prod.fst := by
+  intro hmem
+  obtain ⟨w, hw, hwx⟩ := List.mem_map.mp hmem
+  exact h (hwx ▸ (mem_slotList_of_mem_perm c hw).1)
+
+/-- One non-anchored fold step preserves forward-key distinctness. -/
+theorem stepCache_fwdNodup (c : DSCache StmtIn U) (e : DSEntry StmtIn U)
+    (hnc : ¬ collisionStep e.1 c e.2) (h : FwdKeysNodup c) :
+    FwdKeysNodup (stepCache c e) := by
+  rcases e with ⟨t, ans⟩
+  rcases t with q | a' | b'
+  · rcases hcq : c.1 q with _ | u <;> simpa [stepCache, hcq, FwdKeysNodup] using h
+  · rcases hf : c.2.find? (fun w => w.1 = a') with _ | w
+    · simp only [stepCache, hf, FwdKeysNodup, List.concat_eq_append, List.map_append,
+        List.map_cons, List.map_nil]
+      rw [← List.concat_eq_append]
+      exact (List.nodup_concat _ _).mpr ⟨not_hasFwdKey_of_find?_none hf, h⟩
+    · simpa [stepCache, hf, FwdKeysNodup] using h
+  · rcases hf : c.2.find? (fun w => w.2 = b') with _ | w
+    · -- inverse-fresh inserts pair (ans, b'); forward key = ans. ¬anchored ⟹ ans.cap ∉ slot
+      have hcap : ans.capacitySegment ∉ slotList c := by
+        simp only [collisionStep, hf, true_and, not_or] at hnc
+        exact hnc.1
+      simp only [stepCache, hf, FwdKeysNodup, List.concat_eq_append, List.map_append,
+        List.map_cons, List.map_nil]
+      rw [← List.concat_eq_append]
+      exact (List.nodup_concat _ _).mpr ⟨not_mem_fwdKeys_of_cap_not_slot c hcap, h⟩
+    · simpa [stepCache, hf, FwdKeysNodup] using h
+
+/-- Forward-key distinctness is preserved along a whole non-anchored fold. -/
+theorem foldl_stepCache_fwdNodup (c : DSCache StmtIn U) (L : List (DSEntry StmtIn U))
+    (hna : ¬ AnchoredFrom c L) (h : FwdKeysNodup c) :
+    FwdKeysNodup (L.foldl stepCache c) := by
+  induction L generalizing c with
+  | nil => exact h
+  | cons e ℓ ih =>
+      obtain ⟨hnc, hna'⟩ := not_anchoredFrom_cons hna
+      rw [List.foldl_cons]
+      exact ih (stepCache c e) hna' (stepCache_fwdNodup c e hnc h)
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -722,6 +781,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.hasInvKey_foldl_imp
 #print axioms DuplexSpongeFS.EagerLazyDS.sameClass_of_entryKeys
 #print axioms DuplexSpongeFS.EagerLazyDS.mem_imp_sameClass_mem_removeRedundant
+#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_fwdNodup
+#print axioms DuplexSpongeFS.EagerLazyDS.foldl_stepCache_fwdNodup
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
