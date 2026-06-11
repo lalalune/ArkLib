@@ -592,6 +592,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ExactnessWithoutCoverability
 import ArkLib.Data.CodingTheory.ProximityGap.ExcessCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.FactorizableStacks
+import ArkLib.Data.CodingTheory.ProximityGap.FarWordSupplyCounting
 import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldDisproofLoop53
 import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldLiftLoop51
 import ArkLib.Data.CodingTheory.ProximityGap.FisherJohnsonCrossover
