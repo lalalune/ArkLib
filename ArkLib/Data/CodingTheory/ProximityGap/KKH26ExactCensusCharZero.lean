@@ -758,6 +758,15 @@ theorem card_image_sum (hk : 1 ≤ k) (hζ : IsPrimitiveRoot ζ (2 ^ k)) (r : �
     obtain ⟨h2j', -⟩ := mem_feasSet.mp (Finset.mem_coe.mp hj')
     exact hne (by omega)
 
+/-- Data-set form of `card_image_sum`: in characteristic zero, the subset-sum census is
+exactly the cardinality of the existing stratified signed-data index set. -/
+theorem card_image_sum_eq_card_stratData (hk : 1 ≤ k)
+    (hζ : IsPrimitiveRoot ζ (2 ^ k)) (r : ℕ) :
+    ((((nthRootsFinset (2 ^ k) (1 : L)).powersetCard r).image
+        fun S => ∑ z ∈ S, z)).card
+      = (stratData (2 ^ (k - 1)) r).card := by
+  rw [card_image_sum hk hζ r, card_stratData]
+
 /-! ## Source audit -/
 
 #print axioms card_afSets
@@ -765,5 +774,6 @@ theorem card_image_sum (hk : 1 ≤ k) (hζ : IsPrimitiveRoot ζ (2 ^ k)) (r : �
 #print axioms exists_subset_with_freePart
 #print axioms image_sum_eq_biUnion
 #print axioms card_image_sum
+#print axioms card_image_sum_eq_card_stratData
 
 end ProximityGap.KKH26ExactCensus
