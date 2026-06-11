@@ -47,24 +47,46 @@ Chapter~\ref{chap:oracle_reductions}.
 
 \subsection{Perfect completeness}\label{sec:fri_completeness}
 
-Completeness is layered.  Per-round honest-protocol obligations are named as bricks; the
-folding phase, query phase, and full reduction are then assembled by the generic append and
-sequential-composition theorems.
+Completeness is layered.  Per-round honest-protocol obligations were originally named as
+bricks; as of 2026-06-11 every fold-side brick is a proved theorem, and the query-round brick
+--- which was \emph{false as stated} (the query verifier checks round consistency for every
+round, while the chained relation constrained only the last fold) --- has been repaired and
+proved against the full-chain consistency invariant.
 
-\begin{definition}[Completeness residuals]\label{def:fri_completeness_residual}
-\lean{Fri.Spec.Completeness.foldPhasePerfectCompletenessResidual,Fri.Spec.Completeness.queryRoundPerfectCompletenessResidual,Fri.Spec.Completeness.reductionPerfectCompletenessResidual}
+\begin{theorem}[Fold-side completeness, discharged]\label{thm:fri_fold_completeness}
+\lean{Fri.Spec.Completeness.foldRoundPerfectCompletenessResidual_holds,Fri.Spec.Completeness.finalFoldRoundPerfectCompletenessResidual_holds,Fri.Spec.Completeness.foldPhasePerfectCompletenessResidual_holds,Fri.Spec.Completeness.reductionPerfectCompletenessResidual_holds}
 \uses{def:fri_reduction}
-    These predicates isolate the per-phase completeness obligations consumed by the composed
-    FRI completeness theorem.
+    The non-final fold rounds, the final fold round, the assembled folding phase, and the
+    reduction-level composition are each perfectly complete; all four former residuals carry
+    axiom-clean \texttt{\_holds} theorems, assembled through the generic append and
+    sequential-composition keystones.
+\end{theorem}
+
+\begin{definition}[Query-round chain invariant]\label{def:fri_query_chain_invariant}
+\lean{Fri.Spec.Completeness.queryCheckerAccepts,Fri.Spec.Completeness.queryRoundChainRelation}
+\uses{def:fri_output_relation}
+    The full-chain consistency invariant, stated in the checker's own currency: the compiled
+    query verifier never fails on the statement, at any transcript.  Conjoining it onto the
+    base relation makes a relation/check mismatch impossible by design.
 \end{definition}
 
-\begin{theorem}[FRI perfect completeness]\label{thm:fri_completeness}
-\lean{Fri.Spec.Completeness.foldPhase_perfectCompleteness,Fri.Spec.Completeness.queryRound_perfectCompleteness,Fri.Spec.Completeness.reduction_perfectCompleteness}
-\uses{def:fri_reduction,def:fri_completeness_residual}
-    Assuming the named per-round and per-phase completeness bricks, the composed FRI reduction is
-    perfectly complete.  The proof uses the generic composition keystones rather than duplicating
-    FRI-specific append reasoning.
+\begin{theorem}[Query-round completeness, repaired]\label{thm:fri_query_completeness}
+\lean{Fri.Spec.Completeness.queryRound_perfectCompleteness_repaired}
+\uses{def:fri_query_chain_invariant}
+    The query-round oracle reduction is perfectly complete from the chain relation to the base
+    relation.  The original residual statement
+    (\texttt{queryRoundPerfectCompletenessResidual}) is retained, documented as false as
+    stated, with a pointer to this repair.
 \end{theorem}
+
+\begin{definition}[Chain-delivery residual]\label{def:fri_chain_delivery_residual}
+\lean{Fri.Spec.Completeness.queryRoundChainDeliveryResidual}
+\uses{thm:fri_fold_completeness,def:fri_query_chain_invariant}
+    The single remaining completeness obligation: the folding phase delivers the chain
+    invariant (honest folding produces oracles the query checker accepts).  Unlike the
+    original query residual this is true by design for honest runs; the proof route is the
+    proved fold-phase completeness strengthened on the honest-run support.
+\end{definition}
 
 \subsection{Soundness accounting}\label{sec:fri_soundness}
 
