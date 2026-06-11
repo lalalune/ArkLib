@@ -408,11 +408,82 @@ theorem duplexSpongeFiatShamir_run_eq_honestExecution_holds
             | (simp only [Option.elim]; exact ih a)
             | (dsimp only []; exact ih a)))
 
-/- NEXT: `duplexSpongeFiatShamir_runCollapseResidual_holds` follows from the run-equality
-above plus the challenge-oracle collapse (`liftM_OptionT_eq` + `simulateQ_simulateQ` +
-pointwise addLift routing); the assembly needs its lift-path pin spelled against the
-residual's own instance chain — same method as above. -/
+set_option maxHeartbeats 4000000 in
+/-- **The unsalted DSFS challenge-collapse residual is DISCHARGED**: rewrite by the
+run-equality, then whole-goal induction on the honest execution — the pure case is
+definitional, and the query case distributes the lifted bind via the pinned run-level
+`elim` exposure and collapses the per-query routed head by case analysis through the
+sponge oracle's internal domain sum. -/
+theorem duplexSpongeFiatShamir_runCollapseResidual_holds
+    {σ : Type}
+    (impl : QueryImpl (oSpec + duplexSpongeChallengeOracle StmtIn U) (StateT σ ProbComp))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    duplexSpongeFiatShamir_runCollapseResidual (U := U) impl R stmtIn witIn := by
+  unfold duplexSpongeFiatShamir_runCollapseResidual
+  rw [duplexSpongeFiatShamir_run_eq_honestExecution_holds R stmtIn witIn]
+  induction (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
+      using OracleComp.inductionOn with
+  | pure a =>
+    rcases a with _ | a <;>
+      first
+      | rfl
+      | with_unfolding_all rfl
+      | (dsimp only []; rfl)
+  | query_bind t oa ih =>
+    -- run-level: both sides' OptionT-binds expose as elimM over the lifted query
+    have hrunL : ((liftM ((liftM (OracleSpec.query t) :
+        OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)) _) >>= oa) :
+        OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+          [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+            ProtocolSpec (0 + 1)).Challenge]ₒ)) _)).run
+        = (((liftM ((liftM (OracleSpec.query t) :
+            OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)) _)) :
+            OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+              [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+                ProtocolSpec (0 + 1)).Challenge]ₒ)) _)).run >>= fun o =>
+            o.elim (pure none) fun a => ((liftM ((show OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U))
+                ((Verifier.DuplexSpongeProofTranscript (pSpec := pSpec) × StmtOut × WitOut) × StmtOut) from oa a)) :
+              OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+                [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+                  ProtocolSpec (0 + 1)).Challenge]ₒ))
+              ((Verifier.DuplexSpongeProofTranscript (pSpec := pSpec) × StmtOut × WitOut) × StmtOut))).run) := by
+      first
+      | rfl
+      | with_unfolding_all rfl
+    refine Eq.trans (congrArg (simulateQ (impl.addLift challengeQueryImpl)) hrunL) ?_
+    refine Eq.trans ?_ (congrArg (simulateQ impl) (show (OptionT.run ((liftM (OracleSpec.query t) :
+        OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)) _) >>= oa))
+        = ((liftM (OracleSpec.query t) :
+            OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)) _)).run >>=
+          fun o => o.elim (pure none) fun a =>
+            ((show OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U))
+              ((Verifier.DuplexSpongeProofTranscript (pSpec := pSpec) × StmtOut × WitOut) × StmtOut) from oa a)).run
+      from rfl)).symm
+    simp only [simulateQ_bind]
+    refine Eq.trans (congrArg₂ (· >>= ·)
+      (show (simulateQ (impl.addLift challengeQueryImpl)
+          ((liftM ((liftM (OracleSpec.query t) :
+            OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)) _)) :
+            OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
+        [(⟨!v[Direction.P_to_V], !v[(i : pSpec.MessageIdx) → pSpec.Message i]⟩ :
+          ProtocolSpec (0 + 1)).Challenge]ₒ)) _)).run)
+        = simulateQ impl ((liftM (OracleSpec.query t) :
+            OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)) _)).run
+        from by
+          rcases t with t₁ | t₂
+          · first | rfl | with_unfolding_all rfl
+          · rcases t₂ with s | (c | c) <;> first | rfl | with_unfolding_all rfl) rfl) ?_
+    apply bind_congr; intro o
+    rcases o with _ | a
+    · first | rfl | with_unfolding_all rfl | (dsimp only []; rfl)
+    · first
+      | exact ih a
+      | (dsimp only []; exact ih a)
+
+
 
 end Reduction
 
 #print axioms Reduction.duplexSpongeFiatShamir_run_eq_honestExecution_holds
+#print axioms Reduction.duplexSpongeFiatShamir_runCollapseResidual_holds
