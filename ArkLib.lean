@@ -240,7 +240,6 @@ import ArkLib.Data.CodingTheory.Prelims
 import ArkLib.Data.CodingTheory.ProximityCA
 import ArkLib.Data.CodingTheory.ProximityGap
 import ArkLib.Data.CodingTheory.ProximityGap.BandCollapse
-import ArkLib.Data.CodingTheory.ProximityGap.BandExactness
 import ArkLib.Data.CodingTheory.ProximityGap.«141Architecture»
 import ArkLib.Data.CodingTheory.ProximityGap.«141JohnsonCount»
 import ArkLib.Data.CodingTheory.ProximityGap.«141Kernels»
@@ -860,8 +859,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarExactPoint
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarFullBand
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarHighRateFamily
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarSandwich
-import ArkLib.Data.CodingTheory.ProximityGap.MCADictionaryBracket
-import ArkLib.Data.CodingTheory.ProximityGap.MCADictionaryBracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEigenstackOrbitLaw
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
@@ -1133,8 +1130,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.WindowFiberCount
 import ArkLib.Data.CodingTheory.ProximityGap.WindowMassSpan
-import ArkLib.Data.CodingTheory.ProximityGap.WindowTwoLayerThreshold
-import ArkLib.Data.CodingTheory.ProximityGap.WindowTwoLayerThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
