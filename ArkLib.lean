@@ -64,6 +64,7 @@ import ArkLib.Data.CodingTheory.AGL24ReducedIntersectionMatrix
 import ArkLib.Data.CodingTheory.AGL24RevealStep
 import ArkLib.Data.CodingTheory.AGL24SubfamilyTransport
 import ArkLib.Data.CodingTheory.AGL24Submatrix
+import ArkLib.Data.CodingTheory.AGL24Submodular
 import ArkLib.Data.CodingTheory.AGL24SymbolicRank
 import ArkLib.Data.CodingTheory.AGL24Types
 import ArkLib.Data.CodingTheory.AGL24UnionBound
@@ -235,21 +236,17 @@ import ArkLib.Data.CodingTheory.PolishchukSpielman.Resultant
 import ArkLib.Data.CodingTheory.Prelims
 import ArkLib.Data.CodingTheory.ProximityCA
 import ArkLib.Data.CodingTheory.ProximityGap
-import ArkLib.Data.CodingTheory.ProximityGap.141Architecture
-import ArkLib.Data.CodingTheory.ProximityGap.141JohnsonCount
-import ArkLib.Data.CodingTheory.ProximityGap.141Kernels
-import ArkLib.Data.CodingTheory.ProximityGap.141Math
-import ArkLib.Data.CodingTheory.ProximityGap.141Progress
-import ArkLib.Data.CodingTheory.ProximityGap.141Proof
-import ArkLib.Data.CodingTheory.ProximityGap.141Reduction
-import ArkLib.Data.CodingTheory.ProximityGap.141UDRProximityGap
-import ArkLib.Data.CodingTheory.ProximityGap.141UniformResolved
-import ArkLib.Data.CodingTheory.ProximityGap.141UniformVacuity
-import ArkLib.Data.CodingTheory.ProximityGap.1BruteForce
-import ArkLib.Data.CodingTheory.ProximityGap.1BruteForceRefutations
-import ArkLib.Data.CodingTheory.ProximityGap.1Proof
-import ArkLib.Data.CodingTheory.ProximityGap.1RefutationProofs
-import ArkLib.Data.CodingTheory.ProximityGap.244HwitRefutation
+import ArkLib.Data.CodingTheory.ProximityGap.«141Architecture»
+import ArkLib.Data.CodingTheory.ProximityGap.«141JohnsonCount»
+import ArkLib.Data.CodingTheory.ProximityGap.«141Kernels»
+import ArkLib.Data.CodingTheory.ProximityGap.«141Math»
+import ArkLib.Data.CodingTheory.ProximityGap.«141Progress»
+import ArkLib.Data.CodingTheory.ProximityGap.«141Proof»
+import ArkLib.Data.CodingTheory.ProximityGap.«141Reduction»
+import ArkLib.Data.CodingTheory.ProximityGap.«141UDRProximityGap»
+import ArkLib.Data.CodingTheory.ProximityGap.«141UniformResolved»
+import ArkLib.Data.CodingTheory.ProximityGap.«141UniformVacuity»
+import ArkLib.Data.CodingTheory.ProximityGap.«244HwitRefutation»
 import ArkLib.Data.CodingTheory.ProximityGap.A2Injective
 import ArkLib.Data.CodingTheory.ProximityGap.A3InstanceBadness
 import ArkLib.Data.CodingTheory.ProximityGap.A3InstanceCore
@@ -400,7 +397,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.SlicedComposition
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.SlicedCompositionWip
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysExceptional
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShare
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShareOr
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
@@ -436,6 +432,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.BridgeClaim62Loop48
 import ArkLib.Data.CodingTheory.ProximityGap.BridgeLoop41
 import ArkLib.Data.CodingTheory.ProximityGap.BridgeLoop43
 import ArkLib.Data.CodingTheory.ProximityGap.BridgeLoop44
+import ArkLib.Data.CodingTheory.ProximityGap.BruteForce
+import ArkLib.Data.CodingTheory.ProximityGap.BruteForceRefutations
 import ArkLib.Data.CodingTheory.ProximityGap.BruteForceSearch
 import ArkLib.Data.CodingTheory.ProximityGap.C2CoreEliminationBound
 import ArkLib.Data.CodingTheory.ProximityGap.CAPairExtractionEngine
@@ -579,6 +577,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.FoldPolynomialSlices
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.A5_EquivariancePin
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.B2_CurveDecodability
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.B3_ThornerZaman_s128
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TEMPLATE
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.GG25ExactPreservation
@@ -674,6 +676,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniformShareBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniqueRichFactor
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WitnessMassWiring
+import ArkLib.Data.CodingTheory.ProximityGap.HalvingWindowExit
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMultiplicityBridge
@@ -692,11 +695,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.InterleavingStabilityMCA
 import ArkLib.Data.CodingTheory.ProximityGap.InterleavingStabilityMCAP
 import ArkLib.Data.CodingTheory.ProximityGap.IteratedSliceRootCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.J1Cap
-import ArkLib.Data.CodingTheory.ProximityGap.Jo26DeltaZeroForcedEquality
+import ArkLib.Data.CodingTheory.ProximityGap.Jo26CurveInterpolationRegime
+import ArkLib.Data.CodingTheory.ProximityGap.Jo26CurveNonCovering
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26InterleavingBound
-import ArkLib.Data.CodingTheory.ProximityGap.Jo26MarkedCurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26ObstructionCount
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26PowerGeneratorInterleaving
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonBoundRealLower
@@ -713,7 +716,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26AsymptoticCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26BadLineConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26EntropyForm
-import ArkLib.Data.CodingTheory.ProximityGap.KKH26ParsevalThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26PolyFieldCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
@@ -893,6 +895,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesA
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesB
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesC
+import ArkLib.Data.CodingTheory.ProximityGap.Proof
 import ArkLib.Data.CodingTheory.ProximityGap.ProofLoop39
 import ArkLib.Data.CodingTheory.ProximityGap.ProofLoop40
 import ArkLib.Data.CodingTheory.ProximityGap.ProofLoop42
@@ -931,6 +934,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
+import ArkLib.Data.CodingTheory.ProximityGap.RefutationProofs
 import ArkLib.Data.CodingTheory.ProximityGap.Resolution
 import ArkLib.Data.CodingTheory.ProximityGap.ResolutionWitness
 import ArkLib.Data.CodingTheory.ProximityGap.ResultantLiftLoop52
@@ -1474,7 +1478,6 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.FinalConstantWeld
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.FinalOracleBridge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IncrementalHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldAdvances
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldFullEval
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldToLevel
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidLastEval
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidSucc
@@ -1560,7 +1563,6 @@ import ArkLib.ProofSystem.Logup.Security.BatchingSZ
 import ArkLib.ProofSystem.Logup.Security.BridgeAndAppendResiduals
 import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.ProofSystem.Logup.Security.ConsistentClaimCore
-import ArkLib.ProofSystem.Logup.Security.LogupAppendCompletenessUncond
 import ArkLib.ProofSystem.Logup.Security.LogupBatchingBinding
 import ArkLib.ProofSystem.Logup.Security.LogupClaimBatchAffine
 import ArkLib.ProofSystem.Logup.Security.LogupClearedGrandSum
@@ -1693,8 +1695,6 @@ import ArkLib.ProofSystem.Spartan.TightCompletenessProven
 import ArkLib.ProofSystem.Spartan.TightComposedComplete
 import ArkLib.ProofSystem.Spartan.TightComposedCompleteness
 import ArkLib.ProofSystem.Spartan.TightComposedFull
-import ArkLib.ProofSystem.Spartan.TightComposedFullComplete
-import ArkLib.ProofSystem.Spartan.TightComposedFullCompleteProven
 import ArkLib.ProofSystem.Spartan.TightConjoinedSecondLeaf
 import ArkLib.ProofSystem.Spartan.TightDeterminismWitnesses
 import ArkLib.ProofSystem.Spartan.TightFinalCompleteness
@@ -2136,7 +2136,6 @@ import ArkLib.ToMathlib.SectionBaseRational
 import ArkLib.ToMathlib.SectionFactor
 import ArkLib.ToMathlib.SectionFromSurface
 import ArkLib.ToMathlib.SectionGlobalLift
-import ArkLib.ToMathlib.SectionNewtonCapstone
 import ArkLib.ToMathlib.SectionNewtonCleared
 import ArkLib.ToMathlib.SectionNewtonClearedSharp
 import ArkLib.ToMathlib.SectionNewtonFunctorial
@@ -2144,7 +2143,6 @@ import ArkLib.ToMathlib.SectionNewtonGSData
 import ArkLib.ToMathlib.SectionNewtonGamma
 import ArkLib.ToMathlib.SectionNewtonGradingSupply
 import ArkLib.ToMathlib.SectionNewtonPlaceReading
-import ArkLib.ToMathlib.SectionNewtonReadback
 import ArkLib.ToMathlib.SectionNewtonRecentre
 import ArkLib.ToMathlib.SectionNewtonWindow
 import ArkLib.ToMathlib.SectionNewtonWindowSharp

@@ -5416,3 +5416,14 @@ CALIBRATED correction theory (char-0 count + p|N(α) surplus), not a conjecture;
 α-spectrum is the new finite object to classify. The witness count is formal; the analytic
 reduction and the marginal-layer (r ≥ 3) counting laws are the remaining formalization
 targets on this front.
+
+### N3 (#357 campaign) — halving-map renormalization bands REFUTED at kill-check
+Idea: iterate 2026/858's threshold-halving `T : δ ↦ δ/2` on the window `(1−√ρ, 1−ρ)`;
+hoped fixpoint bands force δ* to a band edge.
+**Refuted (one inequality):** `(1−ρ)/2 ≤ 1−√ρ` (it is `(1−√ρ)² ≥ 0`), so the FIRST
+iterate from anywhere below capacity already lands strictly below Johnson; the orbit
+never returns; the unique fixpoint is 0; the band partition is trivial. Any
+renormalization analysis of the window needs a map that re-enters it — halving never
+does (which is precisely why 858 works as a protocol trick and says nothing about
+`ε_mca` in the window). → verified as `halving_exits_window` /
+`halving_orbit_never_returns` (`HalvingWindowExit.lean`, axiom-clean).
