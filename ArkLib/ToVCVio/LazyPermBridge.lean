@@ -775,19 +775,16 @@ theorem evalDist_simulateQ_lazyPermImpl_run'
           simp [hq1] at this
         have hstep : (lazyPermImpl ((.inl x : X ⊕ X))).run c
             = (fun b => (b, c.concat (x, b))) <$> sampleUnused (unusedValuesList c) := by
-          simp only [lazyPermImpl, hc]
-          rfl
-        rw [hstep, show ((((fun b => (b, c.concat (x, b))) <$>
-              sampleUnused (unusedValuesList c))) >>= fun p =>
-              (simulateQ lazyPermImpl (k p.1)).run' p.2)
-            = (sampleUnused (unusedValuesList c) >>= fun b =>
-                (simulateQ lazyPermImpl (k b)).run' (c.concat (x, b))) from by
-          rw [map_eq_bind_pure_comp]
-          simp [bind_assoc]]
+          show (match c.find? (fun p => p.1 = x) with
+            | some p => (pure (p.2, c) : ProbComp (X × List (X × X)))
+            | none => (fun b => (b, c.concat (x, b))) <$>
+                sampleUnused (unusedValuesList c)) = _
+          rw [hc]
+        rw [hstep, bind_map_left]
         rw [← SPMF.toPMF_inj]
         rw [evalDist_bind, SPMF.toPMF_bind]
         rw [toPMF_overlay c
-          (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ)) (k (σ x)))]
+          (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ)) (k (permFn σ (Sum.inl x))))]
         rw [toPMF_sampleUnused c x hkeys hvals hx]
         rw [show Option.elimM ((PMF.uniformOfFinset (unusedFinset c)
               (unusedFinset_nonempty c x hkeys hvals hx)).map some)
@@ -804,8 +801,10 @@ theorem evalDist_simulateQ_lazyPermImpl_run'
             (unusedFinset_nonempty c x hkeys hvals hx)).support,
             (evalDist ((simulateQ lazyPermImpl (k b)).run' (c.concat (x, b)))).toPMF
             = ((PMF.uniformOfFintype (Equiv.Perm X)).map
-                (fun π => (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ)) (k (σ x)))
-                  (permExtending (c.concat (x, b)) π))).map some := by
+                (fun π => evalWithAnswerFn
+                  (QueryImpl.ofFn (permFn (permExtending (c.concat (x, b)) π)))
+                  (k (permFn (permExtending (c.concat (x, b)) π) (Sum.inl x))))).map
+                some := by
           intro b hb
           rw [PMF.mem_support_uniformOfFinset_iff, mem_unusedFinset] at hb
           have hk' : (((c.concat (x, b)).map Prod.fst)).Nodup := by
@@ -824,7 +823,7 @@ theorem evalDist_simulateQ_lazyPermImpl_run'
               simp only [List.mem_singleton] at hv
               subst hv
               exact fun h => hb (h ▸ hu)⟩
-          rw [ih (k b) (c.concat (x, b)) hk' hv',
+          rw [ih b (c.concat (x, b)) hk' hv',
             toPMF_overlay (c.concat (x, b))
               (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ)) (k b))]
           -- replace the continuation argument `b` by the overlay's value at `x`
@@ -833,12 +832,152 @@ theorem evalDist_simulateQ_lazyPermImpl_run'
           have hagree : permExtending (c.concat (x, b)) π x = b := by
             have := extends_permExtending (c.concat (x, b)) π hk' hv'
             exact this (x, b) (by simp [List.concat_eq_append])
-          rw [hagree]
-        rw [pmf_bind_elim_congr? -- NOT elim shape anymore; use bind_congr_support
-          ]
-        sorry
-      · sorry
-    · sorry
+          dsimp only [Function.comp_apply]
+          rw [show permFn (permExtending (c.concat (x, b)) π) (Sum.inl x)
+              = permExtending (c.concat (x, b)) π x from rfl, hagree]
+        rw [LazyPermMarginal.bind_congr_support _ _ _ hfib, ← PMF.map_bind]
+        have hne : (extendsFinset c).Nonempty := by
+          have := extendsFinset_append_nonempty [] c (by simpa using hkeys)
+            (by simpa using hvals) (by simp)
+          simpa using this
+        exact congrArg (fun p => PMF.map some p)
+          (pmf_absorb c x hkeys hvals hx hne
+            (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ))
+              (k (permFn σ (Sum.inl x)))))
+      · -- forward cache hit
+        have hp1 : p.1 = x := by
+          have := List.find?_some hc
+          simpa using this
+        have hpc : p ∈ c := List.mem_of_find?_eq_some hc
+        have hstep : (lazyPermImpl ((.inl x : X ⊕ X))).run c
+            = (pure (p.2, c) : ProbComp (X × List (X × X))) := by
+          show (match c.find? (fun p => p.1 = x) with
+            | some p => (pure (p.2, c) : ProbComp (X × List (X × X)))
+            | none => (fun b => (b, c.concat (x, b))) <$>
+                sampleUnused (unusedValuesList c)) = _
+          rw [hc]
+        rw [hstep, pure_bind]
+        rw [ih p.2 c hkeys hvals]
+        refine congrArg evalDist
+          (congrArg (fun F => ($ᵗ (Equiv.Perm X)) >>= F) (funext fun π => ?_))
+        have hval : permExtending c π x = p.2 := by
+          have := extends_permExtending c π hkeys hvals p hpc
+          rwa [hp1] at this
+        rw [show permFn (permExtending c π) (Sum.inl x)
+            = permExtending c π x from rfl, hval]
+    · rcases hc : c.find? (fun p => p.2 = y) with _ | p
+      · -- inverse fresh query
+        have hy : y ∉ c.map Prod.snd := by
+          intro hmem
+          obtain ⟨q, hq, hq2⟩ := List.mem_map.mp hmem
+          have := List.find?_eq_none.mp hc q hq
+          simp [hq2] at this
+        have hstep : (lazyPermImpl ((.inr y : X ⊕ X))).run c
+            = (fun a => (a, c.concat (a, y))) <$> sampleUnused (unusedKeysList c) := by
+          show (match c.find? (fun p => p.2 = y) with
+            | some p => (pure (p.1, c) : ProbComp (X × List (X × X)))
+            | none => (fun a => (a, c.concat (a, y))) <$>
+                sampleUnused (unusedKeysList c)) = _
+          rw [hc]
+        rw [hstep, bind_map_left]
+        rw [← SPMF.toPMF_inj]
+        rw [evalDist_bind, SPMF.toPMF_bind]
+        rw [toPMF_overlay c
+          (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ)) (k (permFn σ (Sum.inr y))))]
+        rw [toPMF_sampleUnusedKeys c y hkeys hvals hy]
+        rw [show Option.elimM ((PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+              (unusedFinset_nonempty (c.map Prod.swap) y
+                (by simpa [List.map_map, Function.comp_def] using hvals)
+                (by simpa [List.map_map, Function.comp_def] using hkeys)
+                (by simpa [List.map_map, Function.comp_def] using hy))).map some)
+            (PMF.pure none)
+            (fun a => (evalDist ((simulateQ lazyPermImpl (k a)).run'
+              (c.concat (a, y)))).toPMF)
+          = (PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+              (unusedFinset_nonempty (c.map Prod.swap) y
+                (by simpa [List.map_map, Function.comp_def] using hvals)
+                (by simpa [List.map_map, Function.comp_def] using hkeys)
+                (by simpa [List.map_map, Function.comp_def] using hy))).bind
+              (fun a => (evalDist ((simulateQ lazyPermImpl (k a)).run'
+                (c.concat (a, y)))).toPMF) from by
+          rw [Option.elimM, PMF.monad_bind_eq_bind, PMF.bind_map]
+          rfl]
+        have hfib : ∀ a ∈ (PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+            (unusedFinset_nonempty (c.map Prod.swap) y
+              (by simpa [List.map_map, Function.comp_def] using hvals)
+              (by simpa [List.map_map, Function.comp_def] using hkeys)
+              (by simpa [List.map_map, Function.comp_def] using hy))).support,
+            (evalDist ((simulateQ lazyPermImpl (k a)).run' (c.concat (a, y)))).toPMF
+            = ((PMF.uniformOfFintype (Equiv.Perm X)).map
+                (fun π => evalWithAnswerFn
+                  (QueryImpl.ofFn (permFn (permExtending (c.concat (a, y)) π)))
+                  (k (permFn (permExtending (c.concat (a, y)) π) (Sum.inr y))))).map
+                some := by
+          intro a ha
+          rw [PMF.mem_support_uniformOfFinset_iff, mem_unusedFinset] at ha
+          have haK : a ∉ c.map Prod.fst := by
+            simpa [List.map_map, Function.comp_def] using ha
+          have hk' : (((c.concat (a, y)).map Prod.fst)).Nodup := by
+            simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+            rw [List.nodup_append]
+            exact ⟨hkeys, List.nodup_singleton _, by
+              intro u hu v hv
+              simp only [List.mem_singleton] at hv
+              subst hv
+              exact fun h => haK (h ▸ hu)⟩
+          have hv' : (((c.concat (a, y)).map Prod.snd)).Nodup := by
+            simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+            rw [List.nodup_append]
+            exact ⟨hvals, List.nodup_singleton _, by
+              intro u hu v hv
+              simp only [List.mem_singleton] at hv
+              subst hv
+              exact fun h => hy (h ▸ hu)⟩
+          rw [ih a (c.concat (a, y)) hk' hv',
+            toPMF_overlay (c.concat (a, y))
+              (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ)) (k a))]
+          congr 1
+          refine congrArg _ (funext fun π => ?_)
+          have hagree : permExtending (c.concat (a, y)) π a = y := by
+            have := extends_permExtending (c.concat (a, y)) π hk' hv'
+            exact this (a, y) (by simp [List.concat_eq_append])
+          have hsymm : (permExtending (c.concat (a, y)) π).symm y = a :=
+            (Equiv.symm_apply_eq _).mpr hagree.symm
+          dsimp only [Function.comp_apply]
+          rw [show permFn (permExtending (c.concat (a, y)) π) (Sum.inr y)
+              = (permExtending (c.concat (a, y)) π).symm y from rfl, hsymm]
+        rw [LazyPermMarginal.bind_congr_support _ _ _ hfib, ← PMF.map_bind]
+        have hne : (extendsFinset c).Nonempty := by
+          have := extendsFinset_append_nonempty [] c (by simpa using hkeys)
+            (by simpa using hvals) (by simp)
+          simpa using this
+        exact congrArg (fun p => PMF.map some p)
+          (pmf_absorb_inv c y hkeys hvals hy hne
+            (fun σ => evalWithAnswerFn (QueryImpl.ofFn (permFn σ))
+              (k (permFn σ (Sum.inr y)))))
+      · -- inverse cache hit
+        have hp2 : p.2 = y := by
+          have := List.find?_some hc
+          simpa using this
+        have hpc : p ∈ c := List.mem_of_find?_eq_some hc
+        have hstep : (lazyPermImpl ((.inr y : X ⊕ X))).run c
+            = (pure (p.1, c) : ProbComp (X × List (X × X))) := by
+          show (match c.find? (fun p => p.2 = y) with
+            | some p => (pure (p.1, c) : ProbComp (X × List (X × X)))
+            | none => (fun a => (a, c.concat (a, y))) <$>
+                sampleUnused (unusedKeysList c)) = _
+          rw [hc]
+        rw [hstep, pure_bind]
+        rw [ih p.1 c hkeys hvals]
+        refine congrArg evalDist
+          (congrArg (fun F => ($ᵗ (Equiv.Perm X)) >>= F) (funext fun π => ?_))
+        have hval : permExtending c π p.1 = y := by
+          have := extends_permExtending c π hkeys hvals p hpc
+          rwa [hp2] at this
+        have hsymm : (permExtending c π).symm y = p.1 :=
+          (Equiv.symm_apply_eq _).mpr hval.symm
+        rw [show permFn (permExtending c π) (Sum.inr y)
+            = (permExtending c π).symm y from rfl, hsymm]
 
 end MasterInduction
 
@@ -877,4 +1016,5 @@ end LazyPermBridge
 #print axioms LazyPermBridge.map_permExtending_uniform
 #print axioms LazyPermBridge.pmf_absorb
 #print axioms LazyPermBridge.pmf_absorb_inv
+#print axioms LazyPermBridge.evalDist_simulateQ_lazyPermImpl_run'
 #print axioms LazyPermBridge.map_permExtending_uniform_fintype
