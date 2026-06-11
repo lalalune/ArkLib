@@ -6814,3 +6814,31 @@ leading coefficient; E1′ is now transcription.** With `Λ_W := Λ(W) = D − d
   then the bookkeeping above (ℕ-arithmetic, same flavour as the proven rebased collapse).
   E2′: feed into `βHensel_weight_bound`'s hterm. E3: wiring. The mathematics of the
   Johnson endgame is now COMPLETE on paper; all of it is traced; what remains is Lean.
+
+### MonomialDomination REFUTED at the boundary row — the triangle-incidence stack (#357)
+
+The v3 pin's named surface fails at `d = 2b−1`. At `C84 = RS[F₁₇, μ₈, 4]`, δ = 1/4
+(agreement 6, band 3, boundary row d = 5): the two-triangle incidence stack
+`v₀ = (0,8,16,0,…)`, `v₁ = (10,15,5,0,…)` (affine line in the 2-dim intersection of the
+column spans of exponent triangles {0,1,2} and {3,4,6}) carries SEVEN bad scalars
+{0,4,7,9,10,12,13} — formal: `MonomialDominationBoundaryRefuted.lean`
+(`epsMCA_quarter_ge_seven`, seven `interp_kill` certificates) — while every monomial pair
+has ≤ 4 (exhaustive probe, max at (X⁶,X⁴); named numeric surface `MonomialBoundaryBound`).
+`monomialDomination_refuted_of_monomial_bound`: the bound ⟹ ¬MonomialDomination for every
+crossing ac ≤ 5.
+
+**Mechanism (probes `probe_boundary_row_incidence.py` / `probe_boundary_triangle_stratum.py`
+/ `probe_boundary_n12_coset_triangles.py`):** at the boundary row the per-block syndrome
+spaces R_B (codim b−1) admit lines in the intersection of two triangle spans — 3 scalars
+per triangle + extra-pair incidences. Boundary band-3 law: value = n when 3 ∣ n (coset
+triangles; the excess pair (X^{n−2},X^{n−3}) is then itself coset-structured and TIES —
+the n=12 cell (13,12,8) gives 12 = n for both); value = 7 = 3·⌊n/3⌋+1 at n = 8 (3 ∤ n,
+two generic triangles + one extra pair; two-triangle stratum exhaustive, mcaEvent-filtered).
+2-power smooth domains always have 3 ∤ n ⟹ the defect case (triangles strictly beat
+monomials) is the production shape. Single-block lines reach incidence q−1 but are
+MCA-invisible (the O147 coset-witness phenomenon at the staircase level).
+
+**Surviving v4 surface:** domination restricted to rows with d ≥ 2b (off the boundary
+rows) — equivalently ε_mca ≤ max(staircase, boundary-incidence value, monomialEps).
+At production ε*·q ≈ 2¹²⁸ the boundary rows (mass ~n/q) never decide the census crossing,
+so the production conclusion of pin v3 is unaffected; the surface as stated is dead.
