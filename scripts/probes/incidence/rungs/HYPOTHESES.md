@@ -208,3 +208,32 @@ pin — at level 1, the census/anatomy counts are the ONLY non-generic input; th
 filter contributes generic volume only. Together with O135 (union bound measure-tight):
 level-1 counting is COMPLETE given the census — exactly the reduction the
 CensusConditionalPin program assumes. lane_w1_weight_filter.py + this entry.
+
+## G2 — VERDICT: REFUTED at n=64, by exact char-0 identities (2026-06-11)
+34 violations / 2,329,470 pairs (6,435 witnesses × 340 census + 22 O134-spurious
+elements). The mech classification: ALL 34 are CHAR0-IDENTITY — the extra collisions
+reproduce at p₂ identically (prime-independent), the same cyclotomic-identity class as
+the n=32 dense-dense excess (O129), now appearing in the witness–dense cross channel.
+**The exactness law is rung-bounded**: exact at s = 8/16 cross pairs (proven, certified),
+fails at s = 32 with a finite family of exact identities (O(10) per the run). The
+certificate framing survives — in char 0 the collisions are explicit identities, not
+noise. Verified by independent rerun of the in-tree script (deterministic, 6 s).
+
+## G3 — VERDICT: CONFIRMED at n=64 (2026-06-11)
+0 violations / 2,329,470: the dead-fiber dichotomy (locus = S∩B) is RUNG-GENERAL —
+including on the 22 prime-spurious O134 elements (char-p-only objects obey the same
+incidence anatomy). The S∩B lattice is the incidence geometry at every scale tested.
+
+## G1-general — blind-CONFIRMED at s=32 (same run)
+The general menu law C(m₀, 8−|A|−|J|) passes on all 362/362 elements (census AND
+spurious) — first blind test at a new rung, as pre-registered.
+
+## A3 — PARTIAL: s=8 leg CONFIRMED (2026-06-11; s=16 leg pending capacity)
+Across the λ-family at s=8 (multiple fiber sizes, 563 pairwise checks): zero excess
+everywhere — exactness is not max-fiber-specific at the base rung. s=16 script staged
+(laneA3/lane_a3_s16_pairs.py), unrun.
+
+## Record note (the discipline): the G2G3/A3 artifacts were written by lanes that died
+on the weekly cap mid-report; they entered the tree in the O145 (W1) commit's sweep
+before being described. This entry + the independent rerun close the gap: every number
+above was reproduced from this seat before being recorded.
