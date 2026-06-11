@@ -422,6 +422,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.CollinearProximates
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
 import ArkLib.Data.CodingTheory.ProximityGap.BadGammaAffineCount
+import ArkLib.Data.CodingTheory.ProximityGap.BalancedFiveLaw
 import ArkLib.Data.CodingTheory.ProximityGap.BalancedFourLaw
 import ArkLib.Data.CodingTheory.ProximityGap.BallIntersectionSecondMomentLinear
 import ArkLib.Data.CodingTheory.ProximityGap.BallVolume
