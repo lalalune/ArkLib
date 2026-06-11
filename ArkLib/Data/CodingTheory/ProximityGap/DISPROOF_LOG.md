@@ -5689,3 +5689,23 @@ question; the (12,6) scan pattern (adjacent pair uniquely maximal, higher shapes
 smaller) suggests not. Next: the (16,4,a=7) higher-monomial scan; death-radius scaling in n
 at fixed rate (does δ_death → Johnson, capacity, or an interior limit? — this is a direct
 empirical probe OF δ* itself for the conjecturally-extremal family).
+
+### O140 — the adjacent-pair death radius is rate-UNIVERSAL at constraint depth 2: rate 1/2 dies at the same two vanishing power sums (2026-06-11, #357)
+
+`probe_o140_death_radius_rate_half.py` (exact, asserts green): rate 1/2 (n = 16, k = 8),
+window (0.293, 0.5), the O138/O139 constrained census at δ = 1 − a/16:
+
+* **a = 9 (δ = 0.4375, 0 constraints):** census saturates the field (= p) at
+  p ∈ {17, 97, 113, 193} — the same ε_ca = 1 saturation above Johnson as O139's a = 5 row.
+* **a = 10 (δ = 0.375, e₂ = 0):** field-dependent ~n-scale census:
+  (17, 432, 17), (97, 32, 16), (113, 64, 32), (193, 32, 32).
+* **a = 11 (δ = 0.3125, e₂ = e₃ = 0):** **EMPTY at every p — including p = 17** (which
+  retained 32 qualifying subsets at rate 1/4). δ_death(16, 8) ∈ (0.3125, 0.375].
+
+Reading: at BOTH measured rates the family dies at exactly TWO vanishing power sums:
+`δ_death(n, k) ∈ (capacity − 3/n, capacity − 2/n]` — the adjacent-pair bad strip is
+`capacity − Θ(1/n)`, *narrower at toy scale* than the KKH26 `Θ(1/log n)` strip. If the
+O138 adjacent-pair extremality conjecture holds at small n while the KKH26 m > 1 fiber
+shapes dominate asymptotically, the two families must CROSS OVER in n; locating that
+crossover is a concrete probe-able question that directly shapes δ*. (Also note the
+rate-1/2 small-field artifact is weaker: two constraints already kill p = 17.)
