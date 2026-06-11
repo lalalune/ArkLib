@@ -632,6 +632,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureWire
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellDichotomyWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellPencilJohnson
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellSelectionFree
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Claim1
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ConjectureGlue
