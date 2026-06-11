@@ -5933,3 +5933,33 @@ F₅ instantiation still recovers δ* = 1/4 (`mcaDeltaStar_F5_via_censusFloor`) 
 non-destructive. **Honest status:** the +1 asserts nothing takes over at death radii
 beyond the floor — exactly O139's registered higher-monomial scan question, which is now
 precisely the falsifier of the repaired hypothesis.
+
+### O145 — the classification HOLDS at three instances (after proper multi-prime intersection) + THE ONE-ORBIT HALO LAW + a methodological trap caught (2026-06-11, #357)
+
+`probe_o145_classification_instances.py` + follow-ups (exact):
+
+* **Instance A (n = 16, stack (X¹², X⁸), k = 5 — the m = 4, r = 3 shape):** solutions = 4 at
+  every prime ∈ {97, 113, 193, 257}, equal to the 4 quartic-fiber unions. **No halo at all.**
+* **Instance B (n = 32, stack (X⁸, X⁶), k = 5 — the m = 2, r = 4 shape):** per-prime
+  solutions = **1852 at p = 193, 257, AND 449** (flat count!), of which the three-prime
+  intersection is **exactly the 1820 antipodal-fiber unions**. The classification holds.
+* **The one-orbit halo law:** at each prime the 32 extra solutions are exactly ONE rotation
+  orbit (size n) of a prime-specific exotic 8-subset (e.g. (0,1,3,8,11,18,20,21) at 193 —
+  verified dead at 257..1153 and char-0-nonzero |Σζ^i| ≈ 0.66). Halo membership is
+  field-specific; halo SIZE is field-independent (32 = n at every prime tested) — the
+  flat-count phenomenon at yet another level.
+* **METHODOLOGICAL TRAP (caught):** intersecting over TWO primes is NOT a valid
+  structurality test — a char-0-nonzero sum can vanish at several primes simultaneously
+  (its norm has many prime divisors; the initial 2-prime run made the 193-halo look
+  structural because 257 happened to carry an equally-sized halo). Char-0 Lam–Leung
+  (no non-antipodal-closed vanishing sums of 2-power roots of unity) is the theoretical
+  anchor: any apparent non-fiber structural solution MUST die at large/many primes.
+  Protocol fixed: ≥ 3 primes + char-0 numeric check.
+
+**Classification scoreboard:** fiber unions are exactly the field-independent gap-band
+solutions at ALL three instances tested — (16, m=2, r=4), (16, m=4, r=3), (32, m=2, r=4) —
+strengthening `CensusUpperExtremal`'s structural half. The remaining open legs of the
+ceiling chain stay: the classification as a THEOREM (the Lam–Leung bridge — at 2-power n,
+char-0 vanishing of e₁ forces antipodal-closure, which plus the band forces fiber towers),
+the per-prime halo quantification (one orbit — provable?), and beyond-two-monomial
+extremality.
