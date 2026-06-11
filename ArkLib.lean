@@ -254,6 +254,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.A2Injective
 import ArkLib.Data.CodingTheory.ProximityGap.A3InstanceBadness
 import ArkLib.Data.CodingTheory.ProximityGap.A3InstanceCore
 import ArkLib.Data.CodingTheory.ProximityGap.A3ProportionalityTrap
+import ArkLib.Data.CodingTheory.ProximityGap.A4CensusValue
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyBridge
