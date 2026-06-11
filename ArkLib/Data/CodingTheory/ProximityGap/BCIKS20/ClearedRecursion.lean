@@ -43,8 +43,10 @@ noncomputable def B_coeffC (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
   if i1 = 0 then
     (prefactor R.natDegree i1 lam) •
       Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-        (hasseCoeffRepr𝒪_cleared H x₀ R i1 (sigmaLambda lam)
-            (Bivariate.natDegreeY R - 1 - sigmaLambda lam)
+        ((if sigmaLambda lam + 1 ≤ Bivariate.natDegreeY R then
+            hasseCoeffRepr𝒪_cleared H x₀ R i1 (sigmaLambda lam)
+              (Bivariate.natDegreeY R - 1 - sigmaLambda lam)
+          else 0)
           + Polynomial.C
               ((Polynomial.Bivariate.evalX (Polynomial.C x₀)
                   (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R))).coeff
@@ -117,7 +119,7 @@ theorem B_coeffC_weight_le_anchored_zero
       ≤ WithBot.some ((DR - sigmaLambda lam)
           + (Bivariate.natDegreeY R - 1 - sigmaLambda lam)
             * (H.leadingCoeff).natDegree) := by
-  rw [B_coeffC, if_pos rfl]
+  rw [B_coeffC, if_pos rfl, if_pos hdRm]
   refine le_trans (weight_Λ_over_𝒪_nsmul_le H hH hDH _ _) ?_
   rw [map_add]
   refine le_trans (weight_Λ_over_𝒪_add_le H hH hDH _ _) ?_
@@ -173,10 +175,108 @@ theorem B_coeffC_weight_le_anchored_zero
         rw [h1, Nat.add_mul, Nat.one_mul]
       omega
 
+/-! ## The repaired recursion -/
+
+/-- **The repaired (A.1) recursion `βHenselC`:** identical engine exponents to the paper
+(and to the in-tree `βHensel`), with the paper-faithful cleared cell coefficient
+`B_coeffC` in place of the divergent un-cleared `B_coeff` (finding 14). -/
+noncomputable def βHenselC (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    ℕ → 𝒪 H :=
+  fun t => Nat.strongRecOn t (fun n ih =>
+    match n with
+    | 0 => Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (Polynomial.X : F[X][Y])
+    | (k + 1) =>
+        - ∑ i1 ∈ Finset.range (k + 2),
+            ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (k + 1 - i1))).filter
+                      (fun lam => (k + 1) ∉ lam.parts),
+              (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+                * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+                * B_coeffC (H := H) x₀ R i1 lam
+                * partitionProd lam (fun l => if h : l < k + 1 then ih l (by omega) else 0))
+
+/-- Base case: `βHenselC 0 = mk X = T mod H̃` — identical to the original. -/
+theorem βHenselC_zero (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    βHenselC (H := H) x₀ R hHyp 0 =
+      Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (Polynomial.X : F[X][Y]) := by
+  unfold βHenselC
+  rw [Nat.strongRecOn_eq]
+
+/-- Successor unfolding: the literal repaired `(A.1)` sum. -/
+theorem βHenselC_succ (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (k : ℕ) :
+    βHenselC (H := H) x₀ R hHyp (k + 1) =
+      - ∑ i1 ∈ Finset.range (k + 2),
+          ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (k + 1 - i1))).filter
+                    (fun lam => (k + 1) ∉ lam.parts),
+            (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+              * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+              * B_coeffC (H := H) x₀ R i1 lam
+              * partitionProd lam
+                  (fun l => if _h : l < k + 1 then βHenselC (H := H) x₀ R hHyp l
+                    else 0) := by
+  conv_lhs => rw [βHenselC, Nat.strongRecOn_eq]
+  rfl
+
+/-- **The anchored closing arithmetic for the `i1 = 0` cells** (the cell class the
+original engine could not close): with the SAVED budget
+`nB = (D_R−m) + (d_R−1−m)·w` the raw per-term ledger closes at the anchor for every
+genuine `i1 = 0` cell (`m ≥ 2`, `m < d_R`). -/
+theorem harith_anchored_zero {k m DR dR dH w D Lξ nB : ℕ}
+    (hm2 : 2 ≤ m) (hms : m ≤ k + 1) (hmdR : m + 1 ≤ dR)
+    (hdR2 : 2 ≤ dR) (hdH1 : 1 ≤ dH) (hdHdR : dH ≤ dR) (hdRDR : dR ≤ DR)
+    (hD : D = dH + w) (hDR : DR ≤ D)
+    (hnB : nB = (DR - m) + (dR - 1 - m) * w)
+    (hLξ : Lξ = (dR - 1) * (w + 1)) :
+    (0 + 1 - 1) * w + (2 * 0 + m - 2) * Lξ + nB
+      + (m + ((k + 1 - 0) + m) * w + (2 * (k + 1 - 0) - m) * Lξ)
+    ≤ 1 + (k + 2) * w + (2 * (k + 1) - 1) * Lξ := by
+  have hxi : (2 * 0 + m - 2) * Lξ + (2 * (k + 1 - 0) - m) * Lξ = (2 * k) * Lξ := by
+    rw [← Nat.add_mul]
+    congr 1
+    omega
+  have hW : (dR - 1 - m) * w + ((k + 1 - 0) + m) * w = (k + dR) * w := by
+    rw [← Nat.add_mul]
+    congr 1
+    omega
+  have hWsplit : (k + dR) * w = (k + 2) * w + (dR - 2) * w := by
+    rw [← Nat.add_mul]
+    congr 1
+    omega
+  have hxisplit : (2 * (k + 1) - 1) * Lξ = (2 * k) * Lξ + Lξ := by
+    have h21 : 2 * (k + 1) - 1 = 2 * k + 1 := by omega
+    rw [h21, Nat.add_mul, Nat.one_mul]
+  have hLexp : Lξ = (dR - 1) * w + (dR - 1) := by
+    rw [hLξ, Nat.mul_add, Nat.mul_one]
+  have hmerge : (dR - 2) * w + w = (dR - 1) * w := by
+    rw [← Nat.succ_mul]
+    congr 1
+    omega
+  calc (0 + 1 - 1) * w + (2 * 0 + m - 2) * Lξ + nB
+        + (m + ((k + 1 - 0) + m) * w + (2 * (k + 1 - 0) - m) * Lξ)
+      = ((dR - 1 - m) * w + ((k + 1 - 0) + m) * w)
+          + ((2 * 0 + m - 2) * Lξ + (2 * (k + 1 - 0) - m) * Lξ)
+          + ((DR - m) + m) := by
+        rw [hnB]; ring
+    _ = (k + dR) * w + (2 * k) * Lξ + ((DR - m) + m) := by rw [hW, hxi]
+    _ = (k + 2) * w + (dR - 2) * w + (2 * k) * Lξ + ((DR - m) + m) := by rw [hWsplit]
+    _ ≤ (k + 2) * w + (dR - 2) * w + (2 * k) * Lξ + (dH + w) := by
+        have : (DR - m) + m ≤ dH + w := by omega
+        omega
+    _ ≤ 1 + (k + 2) * w + (2 * k) * Lξ + Lξ := by
+        have h1 : (dR - 2) * w + (dH + w) ≤ 1 + Lξ := by
+          have h2 : (dR - 2) * w + w = (dR - 1) * w := hmerge
+          rw [hLexp]
+          omega
+        omega
+    _ = 1 + (k + 2) * w + (2 * (k + 1) - 1) * Lξ := by rw [hxisplit]; ring
+
 /-! ## Source audit -/
 
 #print axioms weight_Λ_C_mul_X_pow_le
 #print axioms B_coeffC_weight_le_anchored_pos
 #print axioms B_coeffC_weight_le_anchored_zero
+#print axioms βHenselC_zero
+#print axioms βHenselC_succ
+#print axioms harith_anchored_zero
 
 end BCIKS20.HenselNumerator
