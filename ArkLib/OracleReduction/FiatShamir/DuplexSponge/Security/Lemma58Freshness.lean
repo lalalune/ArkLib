@@ -277,6 +277,24 @@ theorem swapKey_cached_after_consistent_permInv {c : DSCache StmtIn U}
     rw [stepCache_noop_permInv (by rw [hf]; rfl) a]
     exact List.find?_isSome.mpr ⟨w, hwmem, by simp [ha]⟩
 
+/-! ## `isSome`-persistence through the fold (item (iii) assembly consumers) -/
+
+/-- A cached hash key stays cached through any fold suffix (`isSome` form). -/
+theorem hashKey_isSome_foldl_mono (c : DSCache StmtIn U) (ℓ : List (DSEntry StmtIn U))
+    {q : StmtIn} (h : (c.1 q).isSome) :
+    ((ℓ.foldl stepCache c).1 q).isSome := by
+  rcases hq : c.1 q with _ | u
+  · rw [hq] at h; cases h
+  · rw [foldl_stepCache_hash_mono c ℓ hq]; rfl
+
+/-- A satisfiable pair-cache predicate stays satisfiable through any fold suffix. -/
+theorem pairKey_isSome_foldl_mono (c : DSCache StmtIn U) (ℓ : List (DSEntry StmtIn U))
+    {p : CanonicalSpongeState U × CanonicalSpongeState U → Bool}
+    (h : (c.2.find? p).isSome) :
+    (((ℓ.foldl stepCache c).2).find? p).isSome := by
+  rcases List.find?_isSome.mp h with ⟨w, hwmem, hwp⟩
+  exact List.find?_isSome.mpr ⟨w, foldl_stepCache_pair_mono c ℓ hwmem, hwp⟩
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -292,3 +310,5 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.key_cached_after_step_permInv
 #print axioms DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_perm
 #print axioms DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_permInv
+#print axioms DuplexSpongeFS.EagerLazyDS.hashKey_isSome_foldl_mono
+#print axioms DuplexSpongeFS.EagerLazyDS.pairKey_isSome_foldl_mono
