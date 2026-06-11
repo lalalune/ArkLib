@@ -115,13 +115,14 @@ theorem erase_card_clause (b : ι) :
 /-- **`mcaEvent` fires at `γ = 0`** on the indicator-pair stack, at radius `1/n`, for the
 high-rate code: witness `univ \ {b₂}`, zero codeword, and no joint explanation (a joint
 second row would vanish at `n−2` points yet equal `1` at `b₁`). -/
-theorem mcaEvent_highRate_zero (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
+theorem mcaEvent_highRate_zero (domain : ι ↪ F) {k : ℕ}
+    (hk : k ≤ Fintype.card ι - 2)
     {b₁ b₂ : ι} (hb : b₁ ≠ b₂) :
     mcaEvent (F := F)
-      (ReedSolomon.code domain (Fintype.card ι - 2) : Set (ι → F))
+      (ReedSolomon.code domain k : Set (ι → F))
       (1 / (Fintype.card ι : ℝ≥0)) (ind1 b₂) (ind2 b₁ b₂) (0 : F) := by
   refine ⟨Finset.univ.erase b₂, erase_card_clause b₂,
-    ⟨0, (ReedSolomon.code domain (Fintype.card ι - 2)).zero_mem, ?_⟩, ?_⟩
+    ⟨0, (ReedSolomon.code domain k).zero_mem, ?_⟩, ?_⟩
   · intro i hi
     have hib : i ≠ b₂ := (Finset.mem_erase.mp hi).1
     simp [ind1, ind2, hib]
@@ -134,7 +135,7 @@ theorem mcaEvent_highRate_zero (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
       have h := (hag i hi2).2
       rw [ind2] at h
       simpa [hib1, hib2] using h
-    have hcard : Fintype.card ι - 2 ≤ ((Finset.univ.erase b₂).erase b₁).card := by
+    have hcard : k ≤ ((Finset.univ.erase b₂).erase b₁).card := by
       rw [Finset.card_erase_of_mem (Finset.mem_erase.mpr ⟨hb, Finset.mem_univ b₁⟩),
         Finset.card_erase_of_mem (Finset.mem_univ b₂), Finset.card_univ]
       omega
@@ -148,13 +149,14 @@ theorem mcaEvent_highRate_zero (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
 /-- **`mcaEvent` fires at `γ = −1`** on the indicator-pair stack: witness `univ \ {b₁}`,
 the line `𝟙_{b₂} − 𝟙_{b₁,b₂} = −𝟙_{b₁}` vanishes there, and a joint second row would
 vanish at `n−2` points yet equal `1` at `b₂`. -/
-theorem mcaEvent_highRate_negOne (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
+theorem mcaEvent_highRate_negOne (domain : ι ↪ F) {k : ℕ}
+    (hk : k ≤ Fintype.card ι - 2)
     {b₁ b₂ : ι} (hb : b₁ ≠ b₂) :
     mcaEvent (F := F)
-      (ReedSolomon.code domain (Fintype.card ι - 2) : Set (ι → F))
+      (ReedSolomon.code domain k : Set (ι → F))
       (1 / (Fintype.card ι : ℝ≥0)) (ind1 b₂) (ind2 b₁ b₂) (-1 : F) := by
   refine ⟨Finset.univ.erase b₁, erase_card_clause b₁,
-    ⟨0, (ReedSolomon.code domain (Fintype.card ι - 2)).zero_mem, ?_⟩, ?_⟩
+    ⟨0, (ReedSolomon.code domain k).zero_mem, ?_⟩, ?_⟩
   · intro i hi
     have hib : i ≠ b₁ := (Finset.mem_erase.mp hi).1
     by_cases h2 : i = b₂
@@ -169,7 +171,7 @@ theorem mcaEvent_highRate_negOne (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι
       have h := (hag i hi1).2
       rw [ind2] at h
       simpa [hib1, hib2] using h
-    have hcard : Fintype.card ι - 2 ≤ ((Finset.univ.erase b₁).erase b₂).card := by
+    have hcard : k ≤ ((Finset.univ.erase b₁).erase b₂).card := by
       rw [Finset.card_erase_of_mem
           (Finset.mem_erase.mpr ⟨hb.symm, Finset.mem_univ b₂⟩),
         Finset.card_erase_of_mem (Finset.mem_univ b₁), Finset.card_univ]
@@ -187,11 +189,12 @@ def indStack (b₁ b₂ : ι) : WordStack F (Fin 2) ι :=
 
 /-- **The bad half: `ε_mca(RS[F, D, n−2], 1/n) ≥ 2/q`** — two bad scalars, every field,
 every domain. -/
-theorem epsMCA_highRate_ge (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
+theorem epsMCA_highRate_ge (domain : ι ↪ F) {k : ℕ}
+    (hk : k ≤ Fintype.card ι - 2)
     {b₁ b₂ : ι} (hb : b₁ ≠ b₂) :
     (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)
       ≤ epsMCA (F := F) (A := F)
-          (ReedSolomon.code domain (Fintype.card ι - 2) : Set (ι → F))
+          (ReedSolomon.code domain k : Set (ι → F))
           (1 / (Fintype.card ι : ℝ≥0)) := by
   classical
   have hne : (0 : F) ∉ ({-1} : Finset F) := by
@@ -200,7 +203,7 @@ theorem epsMCA_highRate_ge (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
     have : (1 : F) = 0 := by linear_combination h
     exact one_ne_zero this
   have h := epsMCA_ge_card_div_of_mcaEvent_set (F := F) (A := F)
-    (ReedSolomon.code domain (Fintype.card ι - 2) : Set (ι → F))
+    (ReedSolomon.code domain k : Set (ι → F))
     (1 / (Fintype.card ι : ℝ≥0)) (indStack b₁ b₂) ({0, -1} : Finset F) (by
       intro γ hγ
       rw [Finset.mem_insert, Finset.mem_singleton] at hγ
@@ -210,8 +213,8 @@ theorem epsMCA_highRate_ge (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
         norm_num
       rw [h0, h1]
       rcases hγ with rfl | rfl
-      · exact mcaEvent_highRate_zero domain hn hb
-      · exact mcaEvent_highRate_negOne domain hn hb)
+      · exact mcaEvent_highRate_zero domain hk hb
+      · exact mcaEvent_highRate_negOne domain hk hb)
   have hcard : ({0, -1} : Finset F).card = 2 := by
     rw [Finset.card_insert_of_notMem hne, Finset.card_singleton]
   rwa [hcard] at h
@@ -220,20 +223,25 @@ theorem epsMCA_highRate_ge (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
 
 /-- **THE FIRST EXACT `δ*` THEOREM FOR AN INFINITE FAMILY.**
 
-For every finite field `F`, every evaluation domain `D : ι ↪ F` with `n = |ι| ≥ 3`, and
-every error target `ε* ∈ [1/q, 2/q)`:
+For every finite field `F`, every evaluation domain `D : ι ↪ F` with `n = |ι| ≥ 3`,
+**every degree bound `k ≤ n − 2`**, and every error target `ε* ∈ [1/q, 2/q)`:
 
-  `mcaDeltaStar(RS[F, D, n−2], ε*) = 1/n`  **exactly**.
+  `mcaDeltaStar(RS[F, D, k], ε*) = 1/n`  **exactly**.
 
-The MCA threshold of every high-rate (distance-3) Reed–Solomon code sits exactly at its
-unique-decoding radius `(1−ρ)/2 = 1/n`, with the jump certified on both sides: the
-sub-unit collapse below, the indicator-pair two-scalar stack at the radius. -/
-theorem mcaDeltaStar_rs_highRate_eq (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
+At the tightest nontrivial error band the MCA threshold of *every* Reed–Solomon code with
+distance `≥ 3` sits exactly at the granularity radius `1/n` — which for the high-rate
+member `k = n − 2` is also its unique-decoding radius `(1−ρ)/2`. Certified on both sides:
+the sub-unit collapse below, the indicator-pair two-scalar stack at the radius. (The
+red-team probe at `F₇, D = (1,…,5)` confirms both brackets exhaustively, and shows the
+two-scalar bad side is *tight* for `k < n−2` while `k = n−2` carries `n` bad scalars —
+the flat-`n` law.) -/
+theorem mcaDeltaStar_rs_eq_inv_card (domain : ι ↪ F) {k : ℕ}
+    (hk : k ≤ Fintype.card ι - 2)
     {b₁ b₂ : ι} (hb : b₁ ≠ b₂) {εstar : ℝ≥0∞}
     (hlo : 1 / (Fintype.card F : ℝ≥0∞) ≤ εstar)
     (hhi : εstar < 2 / (Fintype.card F : ℝ≥0∞)) :
     mcaDeltaStar (F := F) (A := F)
-        (ReedSolomon.code domain (Fintype.card ι - 2) : Set (ι → F)) εstar
+        (ReedSolomon.code domain k : Set (ι → F)) εstar
       = 1 / (Fintype.card ι : ℝ≥0) := by
   have hnpos : (0 : ℝ≥0) < (Fintype.card ι : ℝ≥0) := by
     exact_mod_cast Fintype.card_pos
@@ -248,9 +256,19 @@ theorem mcaDeltaStar_rs_highRate_eq (domain : ι ↪ F) (hn : 3 ≤ Fintype.card
       rwa [one_div, inv_mul_cancel₀ (ne_of_gt hnpos)] at h
     exact le_trans
       (epsMCA_le_inv_card_of_small_radius
-        (ReedSolomon.code domain (Fintype.card ι - 2)) hδn) hlo
+        (ReedSolomon.code domain k) hδn) hlo
   · -- bad at the jump: two scalars
-    exact lt_of_lt_of_le hhi (epsMCA_highRate_ge domain hn hb)
+    exact lt_of_lt_of_le hhi (epsMCA_highRate_ge domain hk hb)
+
+/-- The high-rate (unique-decoding-radius) member: `δ*(RS[F, D, n−2], ε*) = 1/n = (1−ρ)/2`. -/
+theorem mcaDeltaStar_rs_highRate_eq (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
+    {b₁ b₂ : ι} (hb : b₁ ≠ b₂) {εstar : ℝ≥0∞}
+    (hlo : 1 / (Fintype.card F : ℝ≥0∞) ≤ εstar)
+    (hhi : εstar < 2 / (Fintype.card F : ℝ≥0∞)) :
+    mcaDeltaStar (F := F) (A := F)
+        (ReedSolomon.code domain (Fintype.card ι - 2) : Set (ι → F)) εstar
+      = 1 / (Fintype.card ι : ℝ≥0) :=
+  mcaDeltaStar_rs_eq_inv_card domain le_rfl hb hlo hhi
 
 /-- Existence form: any index type of size `≥ 3` supplies the two marked positions. -/
 theorem mcaDeltaStar_rs_highRate_eq' (domain : ι ↪ F) (hn : 3 ≤ Fintype.card ι)
@@ -305,6 +323,7 @@ end Rung8
 #print axioms mcaEvent_highRate_zero
 #print axioms mcaEvent_highRate_negOne
 #print axioms epsMCA_highRate_ge
+#print axioms mcaDeltaStar_rs_eq_inv_card
 #print axioms mcaDeltaStar_rs_highRate_eq
 #print axioms mcaDeltaStar_rs_highRate_eq'
 #print axioms mcaDeltaStar_rs17_eq_eighth
