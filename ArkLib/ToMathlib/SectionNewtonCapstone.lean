@@ -39,7 +39,7 @@ namespace ArkLib.SectionNewtonCleared
 
 open PowerSeries ProximityPrize.HenselSeriesCoeff
 
-variable {F : Type*} [Field F]
+variable {F : Type} [Field F]
 
 /-! ## Slice degree bookkeeping -/
 
@@ -47,7 +47,7 @@ variable {F : Type*} [Field F]
 theorem slice_coeff_natDegree_le {x₀ : F} {R : Polynomial (Polynomial (Polynomial F))}
     {DZ : ℕ} (hRflat : ∀ i m, ((R.coeff i).coeff m).natDegree ≤ DZ) (i : ℕ) :
     ((Polynomial.Bivariate.evalX (Polynomial.C x₀) R).coeff i).natDegree ≤ DZ := by
-  rw [Polynomial.Bivariate.evalX_eq_map, Polynomial.coeff_map]
+  rw [Polynomial.Bivariate.evalX_eq_map, Polynomial.coeff_map, Polynomial.coe_evalRingHom]
   rw [Polynomial.eval_eq_sum_range]
   apply Polynomial.natDegree_sum_le_of_forall_le
   intro m _
@@ -104,13 +104,14 @@ theorem seed_root_of_matching {x₀ : F} {R : Polynomial (Polynomial (Polynomial
       intro z hz
       rw [Multiset.mem_toFinset, Polynomial.mem_roots hq0]
       show q.eval z = 0
-      rw [hq, ProximityGap.BranchCollapse.eval_eval_eq_evalEval z v _, ← hval z hz]
-      exact ProximityGap.CentreVanishingSupply.centre_vanishing_of_specialized_dvd
+      rw [hq, ArkLib.BranchCollapse.eval_eval_eq_evalEval z v _, ← hval z hz]
+      exact CentreVanishingSupply.centre_vanishing_of_specialized_dvd
         (hdvdM z hz) x₀
     calc M.card ≤ q.roots.toFinset.card := Finset.card_le_card hsub
       _ ≤ Multiset.card q.roots := q.roots.toFinset_card_le
       _ ≤ q.natDegree := q.card_roots'
-  have := sliceValue_natDegree_le hRflat v (x₀ := x₀) (R := R)
+  have hbound := sliceValue_natDegree_le hRflat v (x₀ := x₀) (R := R)
+  rw [← hq] at hbound
   omega
 
 /-! ## The capstone -/
@@ -193,8 +194,8 @@ theorem exists_polynomial_branch {x₀ : F} {R : Polynomial (Polynomial (Polynom
     hc0_capstone ξ (seed_root_of_matching hRflat M hcard0 hdvdM hval)
   have hu : IsUnit (Polynomial.eval (𝔞 v)
       (Polynomial.derivative (Q₀ (gsNewtonData ξ x₀ R)))) := by
-    rw [eval_derivative_Q₀_gsNewtonData, hξ]
-    · exact isUnit_xi ξ
+    rw [eval_derivative_Q₀_gsNewtonData, ← hξ]
+    exact isUnit_xi ξ
   -- the X-truncation of the Newton data, through the recentring
   have hQX : ∀ i, ∀ a, DX < a →
       PowerSeries.coeff a ((gsNewtonData ξ x₀ R).coeff i) = 0 := by

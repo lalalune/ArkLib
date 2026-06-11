@@ -2128,6 +2128,7 @@ import ArkLib.ToMathlib.SectionBaseRational
 import ArkLib.ToMathlib.SectionFactor
 import ArkLib.ToMathlib.SectionFromSurface
 import ArkLib.ToMathlib.SectionGlobalLift
+import ArkLib.ToMathlib.SectionNewtonCapstone
 import ArkLib.ToMathlib.SectionNewtonCleared
 import ArkLib.ToMathlib.SectionNewtonClearedSharp
 import ArkLib.ToMathlib.SectionNewtonFunctorial
