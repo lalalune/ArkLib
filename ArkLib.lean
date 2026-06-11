@@ -511,6 +511,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.CensusConditionalPin
+import ArkLib.Data.CodingTheory.ProximityGap.CensusExtremalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CensusLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
@@ -726,13 +727,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26AsymptoticCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26BadLineConstruction
-import ArkLib.Data.CodingTheory.ProximityGap.KKH26CensusExact
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26CensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26CharZeroCollisionLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ConstrainedCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26EntropyForm
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ExactCensusCharZero
-import ArkLib.Data.CodingTheory.ProximityGap.KKH26FiberStructural
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldQuotientStack
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldStability
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldTransport
@@ -898,7 +897,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.MissingLineDefeater
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumCompleteSquare
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.MixedRadixTower
-import ArkLib.Data.CodingTheory.ProximityGap.MobiusPencilEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionLocalFactor
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionMultigrade
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionRigidity
@@ -939,6 +937,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
+import ArkLib.Data.CodingTheory.ProximityGap.RSCheckMatrixBridge
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingCapacityGap
@@ -1054,6 +1053,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumZeroInflation
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceAvoidance
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
+import ArkLib.Data.CodingTheory.ProximityGap.SumPolynomialAPI
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUDExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUpperReduction

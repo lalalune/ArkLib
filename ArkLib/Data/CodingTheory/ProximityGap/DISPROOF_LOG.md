@@ -5917,53 +5917,19 @@ lane's evidence now backs its premise from below. Remaining incidence items: G2+
 (n=64 blind incl. O134 spurious elements) and A3 (λ-family) — blocked on the weekly
 agent capacity (Jun 13); both fully specified in HYPOTHESES.md for any seat to take.
 
-### O146 — the incidence batch closes: exactness is RUNG-BOUNDED (char-0 identities at n=64), the dichotomy is rung-general, the menu law passes blind (nubs, 2026-06-11)
-
-Final verdicts of the pre-registered batch (rungs/HYPOTHESES.md; lanes died on the
-weekly cap mid-report — their deterministic in-tree scripts were rerun from this seat
-and reproduce exactly; full record note in the doc):
-
-- **G2 REFUTED at n=64**: 34/2,329,470 witness–dense pairs violate exactness — and ALL
-  34 are CHAR0-IDENTITY class (identical at p₂): exact cyclotomic identities, the same
-  mechanism as O129's dense-dense excess, now in the cross channel. **The exactness law
-  is rung-bounded** — exact at s=8/16, finite-identity-corrected at s=32. Char-0
-  rigidity survives as "collisions are classified identities," not "collisions absent."
-- **G3 CONFIRMED**: dichotomy (locus = S∩B) holds 0/2.3M at n=64 — including on the 22
-  O134 prime-spurious elements: char-p-only objects obey the same incidence anatomy.
-- **G1 general law blind-CONFIRMED at s=32**: C(m₀, 8−|A|−|J|), 362/362.
-- **A3 partial (s=8): zero excess across the λ-family** (563/563) — exactness is not
-  max-fiber-specific at the base rung; s=16 leg staged for capacity.
-
-**The lane's closing synthesis (O129→O146):** the incidence channel is now fully
-charted at level 1 — anatomy closed-form (menu law, all rungs), incidence geometry =
-the S∩B lattice (rung-general, even for prime-spurious elements), exactness = char-0
-identities classified by rung, per-prime behavior = the A2 Galois law, unions
-measure-tight (O135), weight filter census × generic (O145). **Every level-1 object is
-either derived or classified; the census is the sole non-generic input** — which is
-precisely the premise of the census-conditional δ* pin. Remaining staged: A3-s16, A4
-(flag tower), A5 (turn-on predictor), G4 (rank cap) — specified in HYPOTHESES.md for
-any seat.
-
-### O144 — THE PARITY LAW of the char-0 layer: |A| mod 4 governs the depth-1 vanishing locus (one-line F₂ proof); production dimensions are char-0-clean at EVERY smooth scale, uniformly (2026-06-11, #357)
-
-`probe_o144_parity_law.py` + `o144_char0_n32.c` (exact, asserts green; the C scan covers
-all 64,512,240 ten-subsets of μ₃₂):
-
-* a ≡ 0 (mod 4): char-0 layer NONZERO and growing — (8,4): 10, (16,4): 52, (32,4): 232,
-  (16,8): 70;
-* a ≡ 2 (mod 4): char-0 layer EMPTY everywhere measured — (8,6), (16,6), (16,10), (32,10).
-
-**The law, with proof.** The ring map `ℤ[ζ_{2^m}] → F₂`, `ζ ↦ 1` (well-defined since
-`Φ_{2^m}(1) = 2`) sends `e₂(A) ↦ C(|A|,2) mod 2`; so `e₂(A) = 0` forces `C(a,2)` even,
-i.e. `a ≡ 0, 1 (mod 4)`. The depth-1 census row sits at `a = k + 2`, so **every production
-dimension `k ≡ 0 (mod 4)` (in particular all `k = 2^j, j ≥ 2`) has an EMPTY char-0 layer
-at every smooth scale `n = 2^m`** — no enumeration, uniform in n. The `k ≡ 2 (mod 4)`
-dimensions (e.g. the (8,2) instance with its 10 solutions) are the only ones with a
-persistent field-independent layer.
-
-**Consequence (with O141's threshold, being formalized in `WindowTwoLayerThreshold.lean`):**
-at production dimensions the adjacent-pair family's depth-1 mid-window row is clean at
-every prime above an explicit threshold, for every smooth domain size — the first
-uniform-in-n cleanliness statement inside the window, and it is fully formalizable with
-zero kernel enumeration (the parity argument is the `X := 1, mod 2` evaluation of the
-folded e₂ polynomial).
+### Red team (#357 campaign) — CensusUpperExtremal (the O138 extremality formalization) FALSE as stated at empty-census rungs; floor repair landed
+Self-applied adversarial review of the census-conditional pin chain, hours after landing.
+**The defect:** the O138 corrected extremality conjecture (ε_mca·|F| = #constrainedCensus)
+and its formalization `CensusUpperExtremal` demand ε_mca = 0 wherever the constrained
+census is EMPTY — but O139/O140 *measured* empty census rungs inside the window (the
+death radius: (16,4), a=7, all p ≥ 97), and every proper linear code has the unconditional
+floor ε_mca ≥ 1/|F| at every below-capacity radius (`epsMCA_ge_inv_card_of_finrank_lt`).
+**Machine-checked:** `censusUpperExtremal_false_of_empty` (`CensusExtremalFloor.lean`,
+axiom-clean): empty census at any in-range agreement + rank < a refutes the hypothesis
+outright. The conjecture as posted cannot be exactly right at death radii.
+**The repair:** `CensusUpperExtremalFloor` — ε_mca ≤ (#census + 1)/|F| (floor-absorbing);
+the repaired pin `mcaDeltaStar_eq_of_censusCrossingFloor` carries the +1 through, and the
+F₅ instantiation still recovers δ* = 1/4 (`mcaDeltaStar_F5_via_censusFloor`) — repair
+non-destructive. **Honest status:** the +1 asserts nothing takes over at death radii
+beyond the floor — exactly O139's registered higher-monomial scan question, which is now
+precisely the falsifier of the repaired hypothesis.
