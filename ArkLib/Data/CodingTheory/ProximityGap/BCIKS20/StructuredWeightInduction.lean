@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HasseIndexShift
 
 /-!
 # The structured weight induction (Johnson E2′): the Claim A.2 invariant, assembled
@@ -872,6 +873,226 @@ theorem rebasedSuccTermBound_of_B_budget (x₀ : F) (R : F[X][X][Y])
     have := hreduced
     rwa [hδdef] at this
 
+/-! ## The ANCHORED engine (finding 13 / DISPROOF_LOG O155)
+
+At the paper's anchor `D = d_H + deg W` (the operating point where BCIKS20 A.2/A.4's weight
+ledger is exact, `Λ(T) = Λ(W) + 1`), every `i1 ≥ 1` cell and every zero cell of the (A.1)
+recursion discharges UNCONDITIONALLY from the landed budget supplier
+(`hasseCoeffRepr𝒪_weight_le_of_total`); the `i1 = 0` cells — whose paper treatment uses the
+δ-saving of the W-TWISTED clearing, a different `B`-normalization than the in-tree
+`Y ↦ T` transcription — remain the single per-term obligation. -/
+
+/-- `Δ_Y^m R = 0` once the Hasse order exceeds the `Y`-degree. -/
+theorem hasseDerivY_eq_zero_of_natDegreeY_lt (R : F[X][X][Y]) {m : ℕ}
+    (hm : Bivariate.natDegreeY R < m) : hasseDerivY m R = 0 := by
+  refine Polynomial.ext fun j => ?_
+  rw [hasseDerivY_coeff, Polynomial.coeff_zero]
+  have hz : R.coeff (j + m) = 0 :=
+    Polynomial.coeff_eq_zero_of_natDegree_lt (by
+      have hYd : Bivariate.natDegreeY R = R.natDegree := rfl
+      omega)
+  rw [hz, mul_zero]
+
+/-- The cell coefficient `B_{i1,λ}` vanishes once the partition card exceeds the
+`Y`-degree of `R` (Hasse order beyond the degree): the genuine zero cells. -/
+theorem B_coeff_eq_zero_of_natDegreeY_lt (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+    (lam : Nat.Partition m) (hm : Bivariate.natDegreeY R < sigmaLambda lam) :
+    B_coeff H x₀ R i1 lam = 0 := by
+  rw [B_coeff, hasseCoeffRepr𝒪, hasseDerivY_eq_zero_of_natDegreeY_lt R hm]
+  have hX : hasseDerivX i1 (0 : F[X][X][Y]) = 0 := by
+    rw [hasseDerivX]
+    exact Polynomial.sum_zero_index _
+  rw [hX]
+  have hE : Bivariate.evalX (Polynomial.C x₀) (0 : F[X][X][Y]) = 0 := by
+    rw [Bivariate.evalX_eq_map, Polynomial.map_zero]
+  rw [hE, map_zero]
+  exact smul_zero _
+
+/-- **The anchored closing arithmetic** for every `i1 ≥ 1` cell (including the top
+`m = 0` cell): at the anchor `D = d_H + w` the raw per-term ledger closes with the
+supplier's budget `nB = (D_R − m − i1) + (d_R − m)·w` and the proven
+`Lξ = (d_R − 1)·(w + 1)`. -/
+theorem harith_anchored {k i1 m DR dR dH w D Lξ nB : ℕ}
+    (hi1 : 1 ≤ i1) (hi1k : i1 ≤ k + 1) (hms : m ≤ k + 1 - i1) (hmdR : m ≤ dR)
+    (hdR2 : 2 ≤ dR) (hdH1 : 1 ≤ dH) (hdHdR : dH ≤ dR) (hdRDR : dR ≤ DR)
+    (hD : D = dH + w) (hDR : DR ≤ D)
+    (hnB : nB = (DR - m - i1) + (dR - m) * w)
+    (hLξ : Lξ = (dR - 1) * (w + 1)) :
+    (i1 + 0 - 1) * w + (2 * i1 + m - 2) * Lξ + nB
+      + (m + ((k + 1 - i1) + m) * w + (2 * (k + 1 - i1) - m) * Lξ)
+    ≤ 1 + (k + 2) * w + (2 * (k + 1) - 1) * Lξ := by
+  -- collect the ξ-coefficients: they sum to exactly 2k (the BCIKS20 exponent identity)
+  have hxi : (2 * i1 + m - 2) * Lξ + (2 * (k + 1 - i1) - m) * Lξ = (2 * k) * Lξ := by
+    rw [← Nat.add_mul]
+    congr 1
+    omega
+  -- collect the W-coefficients: they sum to exactly k + dR
+  have hW : (i1 + 0 - 1) * w + (dR - m) * w + ((k + 1 - i1) + m) * w = (k + dR) * w := by
+    rw [← Nat.add_mul, ← Nat.add_mul]
+    congr 1
+    omega
+  -- split the target's W- and ξ-budgets
+  have hWsplit : (k + dR) * w = (k + 2) * w + (dR - 2) * w := by
+    rw [← Nat.add_mul]
+    congr 1
+    omega
+  have hxisplit : (2 * (k + 1) - 1) * Lξ = (2 * k) * Lξ + Lξ := by
+    have h21 : 2 * (k + 1) - 1 = 2 * k + 1 := by omega
+    rw [h21, Nat.add_mul, Nat.one_mul]
+  -- the residual Z-need: (DR − m − i1) + m + (dR−2)·w ≤ 1 + Lξ
+  have hLexp : Lξ = (dR - 1) * w + (dR - 1) := by
+    rw [hLξ, Nat.mul_add, Nat.mul_one]
+  have hmerge : (dR - 2) * w + w = (dR - 1) * w := by
+    rw [← Nat.succ_mul]
+    congr 1
+    omega
+  -- assemble
+  calc (i1 + 0 - 1) * w + (2 * i1 + m - 2) * Lξ + nB
+        + (m + ((k + 1 - i1) + m) * w + (2 * (k + 1 - i1) - m) * Lξ)
+      = ((i1 + 0 - 1) * w + (dR - m) * w + ((k + 1 - i1) + m) * w)
+          + ((2 * i1 + m - 2) * Lξ + (2 * (k + 1 - i1) - m) * Lξ)
+          + ((DR - m - i1) + m) := by
+        rw [hnB]; ring
+    _ = (k + dR) * w + (2 * k) * Lξ + ((DR - m - i1) + m) := by rw [hW, hxi]
+    _ = (k + 2) * w + (dR - 2) * w + (2 * k) * Lξ + ((DR - m - i1) + m) := by
+        rw [hWsplit]
+    _ ≤ (k + 2) * w + (dR - 2) * w + (2 * k) * Lξ + (dH + w) := by
+        have : (DR - m - i1) + m ≤ dH + w := by omega
+        omega
+    _ ≤ 1 + (k + 2) * w + (2 * k) * Lξ + Lξ := by
+        have h1 : (dR - 2) * w + (dH + w) ≤ 1 + Lξ := by
+          have h2 : (dR - 2) * w + w = (dR - 1) * w := hmerge
+          rw [hLexp]
+          omega
+        omega
+    _ = 1 + (k + 2) * w + (2 * (k + 1) - 1) * Lξ := by rw [hxisplit]; ring
+
+/-- **The anchored per-term discharge for `i1 ≥ 1`.** At the anchor every positive-`i1`
+cell of the (A.1) recursion satisfies the structured per-term bound: zero cells
+(`σλ > d_R`) via the vanishing of `B`, live cells via the landed supplier + the anchored
+closing arithmetic. NO per-cell hypothesis remains. -/
+theorem anchoredSuccTerm_discharge (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (htight : D ≤ H.natDegree + (H.leadingCoeff).natDegree)
+    (hWdeg : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHdR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (hDRD : DR ≤ D) (hdRDR : Bivariate.natDegreeY R ≤ DR)
+    (k : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some (structuredBound H R D l))
+    (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2)) (hi1pos : 1 ≤ i1)
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
+    StructuredSuccTermBound x₀ R hHyp hH D k hIH i1 hi1 lam hlam := by
+  by_cases hzero : Bivariate.natDegreeY R < sigmaLambda lam
+  · -- the zero cell: B = 0 kills the whole term
+    unfold StructuredSuccTermBound
+    rw [B_coeff_eq_zero_of_natDegreeY_lt x₀ R i1 lam hzero, mul_zero, zero_mul,
+      weight_Λ_over_𝒪_zero]
+    exact bot_le
+  · push_neg at hzero
+    -- the live cell: supplier + anchored arithmetic
+    have hdY : Bivariate.natDegreeY H = H.natDegree := rfl
+    have hDYle : Bivariate.natDegreeY H ≤ D := by omega
+    have hw : D - Bivariate.natDegreeY H = (H.leadingCoeff).natDegree := by omega
+    have hδ : deltaSave i1 = 0 := by
+      rw [deltaSave, if_neg (by omega : ¬ i1 = 0)]
+    have hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+        ≤ WithBot.some
+          ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) :=
+      ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hD_Rx0
+    have hB : weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D
+        ≤ WithBot.some ((DR - sigmaLambda lam - i1)
+            + (Bivariate.natDegreeY R - sigmaLambda lam)
+              * (D - Bivariate.natDegreeY H)) :=
+      le_trans (B_coeff_weight_le_hasse H x₀ R i1 lam hH hDH)
+        (hasseCoeffRepr𝒪_weight_le_of_total hH hDH hDYle x₀ R htotal hvanish i1
+          (sigmaLambda lam))
+    have hmS : sigmaLambda lam ≤ k + 1 - i1 := by
+      rw [sigmaLambda]
+      calc Multiset.card lam.parts
+          = (lam.parts.map (fun _ => 1)).sum := by simp
+        _ ≤ (lam.parts.map id).sum := Multiset.sum_map_le_sum_map _ _
+            (fun l hl => lam.parts_pos hl)
+        _ = lam.parts.sum := by simp
+        _ = k + 1 - i1 := lam.parts_sum
+    refine structuredSuccTermBound_of_budgets x₀ R hHyp hH hDH k hIH i1 hi1 lam hlam
+      hξ hB rfl ?_
+    unfold structuredBound
+    rw [hδ, hw]
+    exact harith_anchored hi1pos (by have := Finset.mem_range.mp hi1; omega)
+      hmS hzero hdR2 (by omega) hdHdR hdRDR (by omega) hDRD rfl rfl
+
+/-- **THE ANCHORED (P1) STRUCTURED BOUND, conditional ONLY on the `i1 = 0` cells.**
+At the paper's anchor every other cell is discharged; the `i1 = 0` per-term obligation
+(the W-twisted δ-saving, a genuinely different `B`-normalization question) is the single
+remaining hypothesis. -/
+theorem βHensel_weight_bound_anchored_of_i1zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (htight : D ≤ H.natDegree + (H.leadingCoeff).natDegree)
+    (hWdeg : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHdR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (hDRD : DR ≤ D) (hdRDR : Bivariate.natDegreeY R ≤ DR)
+    (hzero : ∀ (k : ℕ)
+      (hIH : ∀ l, l < k + 1 →
+        weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+          ≤ WithBot.some (structuredBound H R D l))
+      (hi1 : 0 ∈ Finset.range (k + 2))
+      (lam : Nat.Partition (k + 1 - 0)) (hlam : (k + 1) ∉ lam.parts),
+        StructuredSuccTermBound x₀ R hHyp hH D k hIH 0 hi1 lam hlam)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some (structuredBound H R D t) := by
+  refine βHensel_weight_bound_structured x₀ R hHyp hH hDH htight
+    (fun k hIH i1 hi1 lam hlam => ?_) t
+  rcases Nat.eq_zero_or_pos i1 with h0 | hpos
+  · subst h0
+    exact hzero k hIH hi1 lam hlam
+  · exact anchoredSuccTerm_discharge x₀ R hHyp hH hDH htight hWdeg hD_Rx0 hdR2 hdHdR
+      htotal hvanish hDRD hdRDR k hIH i1 hi1 hpos lam hlam
+
+/-- **The anchored (P1) LOOSE bound** — the Claim-A.2 target `(2t+1)·d_R·D`, conditional
+only on the `i1 = 0` cells, via the proven structured collapse. -/
+theorem βHensel_weight_bound_anchored_loose_of_i1zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (htight : D ≤ H.natDegree + (H.leadingCoeff).natDegree)
+    (hWdeg : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHdR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (hDRD : DR ≤ D) (hdRDR : Bivariate.natDegreeY R ≤ DR)
+    (hzero : ∀ (k : ℕ)
+      (hIH : ∀ l, l < k + 1 →
+        weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+          ≤ WithBot.some (structuredBound H R D l))
+      (hi1 : 0 ∈ Finset.range (k + 2))
+      (lam : Nat.Partition (k + 1 - 0)) (hlam : (k + 1) ∉ lam.parts),
+        StructuredSuccTermBound x₀ R hHyp hH D k hIH 0 hi1 lam hlam)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  refine βHensel_weight_bound_of_structured_weight H x₀ R hHyp hH hdR2 hdHdR hWdeg t ?_
+  have h := βHensel_weight_bound_anchored_of_i1zero x₀ R hHyp hH hDH htight hWdeg
+    hD_Rx0 hdR2 hdHdR htotal hvanish hDRD hdRDR hzero t
+  unfold structuredBound at h
+  exact h
+
 /-! ## The capstone composition: (P1) conditional only on the per-cell B-budgets -/
 
 /-- **The (P1) weight bound, conditional ONLY on the per-cell B-coefficient budgets.**
@@ -921,6 +1142,12 @@ theorem βHensel_weight_bound_of_cell_budgets (x₀ : F) (R : F[X][X][Y])
 #print axioms partitionProd_βHensel_weight_rebased_le
 #print axioms rebasedSuccTermBound_of_B_budget
 #print axioms βHensel_weight_bound_of_cell_budgets
+#print axioms hasseDerivY_eq_zero_of_natDegreeY_lt
+#print axioms B_coeff_eq_zero_of_natDegreeY_lt
+#print axioms harith_anchored
+#print axioms anchoredSuccTerm_discharge
+#print axioms βHensel_weight_bound_anchored_of_i1zero
+#print axioms βHensel_weight_bound_anchored_loose_of_i1zero
 #print axioms structuredSuccTermBound_of_B_budget
 #print axioms nsmul_coe_withBot
 #print axioms structuredSuccTermBound_of_budgets

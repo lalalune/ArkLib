@@ -7011,34 +7011,52 @@ Net state: the per-term wall is a theorem for ALL cells except `i1 = 0`, whose r
 is one identity-comparison plus possibly one Λ-bound — with every surrounding object
 (embedding identities, rep computations, collapse variants) already proven.
 
-## 2026-06-11 — Item 22 (deviation-restricted LYM): the naive weld is asymptotically VACUOUS; the genuine sharpening is already landed (⊖ identification)
+## O155 (2026-06-11, Johnson V1 finding 13 — DECISIVE): the rebased hbudget is UNSATISFIABLE; the correct frame is the ANCHORED original engine
 
-**Claim examined** (26-thread item 22): contributing stacks are deviation stacks
-(`rows_close_of_two_bad` + `DeviationSupSplit`), so their witness antichains are
-constrained near codeword pairs — compose with the LYM ceiling for a sharpened
-window bound.
+**Claim attacked:** the landed capstone `βHensel_weight_bound_of_cell_budgets`
+(StructuredWeightInduction.lean) can be discharged by instantiating its `hbudget`
+hypothesis with the sharp untwisted per-cell budget
+`nB = (D_R−m−i1) + (d_R−m)(D−d_H)` (finding 9's plan).
 
-**The naive composition, quantified.** After codeword translation the stack is
-`(ε₀, ε₁)` with `|supp(ε₀)| ≤ 3δn`, `|supp(ε₁)| ≤ 2δn`; set
-`D = supp(ε₀) ∪ supp(ε₁)`, `|D| ≤ 5δn`. Every bad-scalar witness `T` must HIT `D`:
-if `T ∩ D = ∅` then both rows vanish on `T` and the zero-codeword pair is a joint
-explanation, contradicting `mcaEvent`. So the witness family is an antichain of
-`≥ (1−δ)n`-sets each meeting `D`. **But this constraint is asymptotically free**: a
-set of size `≥ (1−δ)n` misses only `δn` points, and avoiding `D` requires
-`D ⊆ complement`, i.e. `|D| ≤ δn` — while `|D|` may be up to `5δn`. The fraction of
-`t`-sets avoiding a `5δn`-set is `C(n−5δn, t)/C(n,t) ≈ (1−5δ·(t/n))`-small but
-**bounded below by a constant** for fixed `δ`; the hit-restricted antichain maximum
-is `C(n,t) − C(n−|D|, t)`-shaped only for the trivial union bound and the genuine
-extremal hit-restricted antichain stays `Θ(C(n,t))`. No window-scale improvement.
+**Refutation (machine-checkable arithmetic):** the rebased reduced-need
+`nB + (m−1)·(D+1−d_H) + (δ+m−2)·degW ≤ (d_R−1)(D−d_H+1)` is unsatisfiable for ANY
+`nB ≥ 0` at the genuine nonzero cell `m = sigmaLambda = d_R` once `d_R ≥ 3` and
+`degW ≥ 1`: already `(m−1)(D+1−d_H) + (m−2)degW = (d_R−1)(D−d_H+1) + (d_R−2)degW`
+exceeds the entire ξ-budget. (Toy: D=10, d_H=2, degW=1, d_R=4, m=4: 27+2 = 29 > 27.)
+High-card cells `m > d_R` are zero (Hasse order > Y-degree) but `m = d_R` is genuine.
 
-**Where the deviation structure genuinely bites — already landed.** The sharpening
-that works is not "witnesses hit `D`" but "explanations are FORCED on `T ∩ S*`":
-the deviation-kernel pinning (`Jo26DeviationKernels.mem_jointStackSubmodule_iff_deviation`,
-`obstruction_line_pinned_by_deviation`) bounds distinct obstruction lines by
-`#(row, position)` deviations — `l·n + 1` members, FIELD-INDEPENDENT — and the
-band-collapse engine (`UniversalStaircaseCollapse.badScalars_card_le`) bounds bad
-scalars by `j` on the ladder bands via pointwise pinning. Item 22's content is
-exactly these two landed mechanisms; the LYM side adds nothing they do not already
-capture. **Verdict: ⊖ — identification, no new theorem available along this line.**
-The open sup-extremality question remains with the explosion-regime count (item 18),
-where the kernel mechanism (not the antichain mechanism) is the binding constraint.
+**Root cause (paper line-level diagnosis, BCIKS20 A.2+A.4 re-read):** the rebased
+constant `B₀ = D+1−d_H` DOUBLE-COUNTS `degW`. The paper's invariant
+`Λ(β_t) ≤ 1 + (t+1)Λ(W) + e_t Λ(ξ)` carries the base's W-content in the `(t+1)Λ(W)`
+schedule (base case: `Λ(T) = Λ(W)+1`), and the paper's per-term ledger closes with
+EXACT EQUALITY (`D + (d−2)Λ(W) = 1 + Λ(ξ)` with `Λ(ξ) = (D−1)+(d−2)Λ(W)`), zero slack.
+The paper's base-case assertion `Λ(T) = Λ(W)+1` is an implicit ANCHOR assumption
+`g := D − d_H − degW = 0`, i.e. `totalDegree H = d_H + degW` with `D := totalDegree H`
+(total degree achieved at the leading Y-monomial). At `g > 0` the paper's own claimed
+B-budget `(D−Σλ)+(d−Σλ)Λ(W)` understates the A.2-weight of the cleared B by `b·g`
+per T-monomial, and the per-term ledger fails by `~(d_R−d_H)·g` at `m = 1` cells; the
+paper's real proof at `g > 0` is the VALUATION argument (`Λ(α_t) = Λ(Y) = g+1`), which
+the recursion-telescoping route cannot reproduce without Newton-polygon machinery.
+
+**The closable frame (verified by complete cell-ledger):** at the anchor `g = 0`
+(`D₀ := d_H + degW = totalDegree H`, reduction-safety `weight_Λ_modByMonic_le` takes
+`tot H ≤ D` so the calculus is VALID at `D₀`), the ORIGINAL structured engine (B₀ = 1,
+in-tree `βHensel_weight_bound_structured` + `βHensel_weight_bound_zero_structured`,
+whose anchor hypothesis is exactly `D ≤ d_H+degW`) closes EVERY cell with the proven
+`Lξ = (d_R−1)(D−d_H+1)` and the landed supplier
+`hasseCoeffRepr𝒪_weight_le_of_total`:
+- `m ≥ 2, i1 ≥ 1`: need `⟺ DR ≤ d_R+degW+i1` ✓ (`DR ≤ D₀ = d_H+degW ≤ d_R+degW`);
+- `m ≥ 2, i1 = 0`: needs the δ-SAVED budget `nB = (DR−m)+(d_R−1−m)degW` (the
+  finding-10 twist via the PROVEN `leadingCoeff_dvd_evalX_hasseDerivY_top` + a cleared-rep
+  weight lemma), then `⟺ DR ≤ d_R+degW` ✓;
+- `m = 1, i1 ≥ 1`: the TRUNCATED need-form loses the spare W; the engine genuinely has
+  `nB ≤ degW + Lξ` (per-term W-ledger `k+1 ≤ k+2`), under which `⟺ d_H ≤ d_R+i1` ✓;
+- `m = 0` (top): `nB ≤ 1+2degW+Lξ` ✓.
+
+**Action:** build the ANCHORED engine (per-case need-forms incl. the m=1 credit + the
+i1=0 saved-budget lemma), deliver `Λ_{D₀}(β_t) ≤ (2t+1)d_R D₀`, convert upward via
+D-monotonicity (`Λ_D ≤ Λ_{D₀} + (d_H−1)(D−D₀)` on canonical reps). Johnson becomes
+conditional on the single ANCHOR hypothesis `totalDegree H = d_H + degW` at the
+application point — to be checked against the GS factor structure (for proper factors
+`d_H < d_R` of `R_{x₀}`, `degW ≤ D−d_R < D−d_H` at the GLOBAL D, so the anchor holds
+only at the PER-FACTOR D₀, which is what the engine now uses).
