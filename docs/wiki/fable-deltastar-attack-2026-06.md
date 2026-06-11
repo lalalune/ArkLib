@@ -467,3 +467,36 @@ for a cyclic group of order `n` — via the exponent-sum-mod-`n` surjection. A g
 clean combinatorial lemma (the multiplicative analog of subset-sum counting), independent of the
 open core. STATUS: N1 premise CONFIRMED; the connection is paperworthy; the ε_mca bound stays gated
 by the max-over-stacks caveat (does not crack regime III).
+## 17. WHY every combinatorial shortcut on the good-side bound fails (grounded in MCAWitnessSpread)
+
+Traced the good-side (uniform-over-stacks) upper bound to its exact failure point using the repo's
+own `MCAWitnessSpread.lean`:
+
+* **The uniform bound IS witness-set counting.** `unique_bad_gamma_common_witness` (any linear code):
+  two bad scalars sharing a witness set `S` are equal ⟹ **at most one bad `γ` per witness set**.
+  Hence `ε_mca(C,δ) ≤ #(distinct active witness sets)/|F| ≤ (Σ_{j≥(1−δ)n} C(n,j))/|F|`, the LYM
+  antichain ceiling (`MCAAntichainLYM.epsMCA_le_choose_ceil_div`). This bound is **uniform over all
+  pencils** — so it genuinely bounds the max, resolving the §13/§16 "max-over-stacks" worry FOR THE
+  UPPER BOUND. The catch: it is tight below Johnson and **vacuous (`> 1`) above Johnson**, because the
+  binding antichain layer `C(n, ⌈(1−δ)n⌉)` is exponential (`~2^n`) once `(1−δ)n` falls toward `n/2`.
+  THIS is the precise mechanism of the wall: the only uniform handle blows past `|F|` exactly at
+  Johnson.
+
+* **The sunflower / large-intersection shortcut is RULED OUT.** Natural idea: the active witness sets
+  `S_γ` (size `≥ (1−δ)n`, so `> n/2` for `δ<1/2`) have large pairwise intersections
+  (`|S∩S'| ≥ (1−2δ)n`), so maybe a Frankl/sunflower bound caps their number below `C(n,t)`. It does
+  NOT: a family of large subsets sharing a common core is unboundedly large, so pure
+  size+intersection data gives no sub-`C(n,t)` bound. The REAL constraint is algebraic, not
+  set-theoretic: on `S∩S'` the two witness codewords satisfy
+  `c_S − c_{S'} = (γ_S − γ_{S'})·u₁`  (both equal the line point on their own set, differenced on the
+  overlap). So the codeword difference is a **scalar multiple of `u₁` on every pairwise intersection**
+  — i.e. `u₁` must be "code-like" along the overlaps. This is exactly the Guruswami–Sudan *curve /
+  proximity-gap* coupling, NOT a combinatorial sunflower condition. Bounding the witness-set count
+  therefore cannot avoid the list-decoding geometry — any purely combinatorial (LYM/sunflower/
+  intersection) attempt is provably blind to the algebraic coupling that does the work.
+
+**Net (honest):** the good-side uniform bound is fully characterized — tight ⇄ Johnson, vacuous above,
+and the gap above Johnson is irreducibly the explicit-RS list count (the `u₁`-code-like-on-overlaps
+coupling = the GS curve), with the combinatorial shortcut explicitly closed. This both confirms
+regime III = the 25-yr wall from the repo's own obstruction theorems AND saves future effort by
+ruling out the sunflower/intersection route. No new bound; a precise no-go that sharpens the frontier.
