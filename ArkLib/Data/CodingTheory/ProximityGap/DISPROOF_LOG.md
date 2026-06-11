@@ -7060,3 +7060,40 @@ conditional on the single ANCHOR hypothesis `totalDegree H = d_H + degW` at the
 application point — to be checked against the GS factor structure (for proper factors
 `d_H < d_R` of `R_{x₀}`, `degW ≤ D−d_R < D−d_H` at the GLOBAL D, so the anchor holds
 only at the PER-FACTOR D₀, which is what the engine now uses).
+
+## O156 (2026-06-11, Johnson finding 14 — PREDICTION, falsifiable): the in-tree (A.1) transcription's B is un-cleared ⟹ hroot/(P2) is generically FALSE for the in-tree βHensel
+
+**The divergence.** Paper (A.1) (BCIKS20 lines 4060–4210) uses the W-TWISTED coefficients
+`B_{i1,λ} = W^{d−δ−Σλ}·A_{i1,λ}` where `A = (Δ_X^{i1}Δ_Y^{Σλ}R)(x₀, α₀)` is evaluated at
+`α₀ = T/W` — i.e. `B = Σ_b c_b·W^{d−δ−Σλ−b}·T^b` (the cleared form, in-tree analogue
+`hasseCoeffRepr𝒪_cleared`). The in-tree `B_coeff = prefactor • hasseCoeffRepr𝒪` instead
+`mk`'s the UN-cleared `Y ↦ T` lift `p(T) = Σ_b c_b·T^b`. These are different 𝒪-elements
+(they differ by `W^{d−δ−Σλ−b}` per monomial), while `βHensel_succ` copies the paper's
+engine exponents `W^{i1+δ−1}·ξ^{2i1+Σλ−2}` verbatim.
+
+**The t = 1 test (exact).** `β₁ = −B_coeff(1,∅)` (the only surviving cell). The (P2) lift
+identity at t = 1 demands `embedding β₁ = αGenuine 1 · W² · (emb ξ)`. With the PROVEN
+`emb ξ = W^{d_R−2}·ζ` and the genuine Newton step `α₁ = −A_{1,∅}/ζ`, the RHS is
+`−W^{d_R}·p₁(T/W)` while the LHS is `−p₁(T)` (up to the common scalar prefactor):
+the identity holds iff `H̃ ∣ Σ_b c_b(1 − W^{d_R−b})·T^b` — FALSE generically (any `R`
+whose specialized `Δ_X R` has a coefficient below the top degree, `W ≠ 1`).
+
+**Consequences if confirmed.**
+1. `hroot : eval (βHenselAssembled) Q = 0` — the single hypothesis (P2) was reduced to —
+   is FALSE for the in-tree object; (P2) as stated is unprovable-because-false, not deep.
+2. (P1)'s weight target for the in-tree βHensel is about a non-Hensel object; the i1 = 0
+   budget failure (finding 13's residue) is a SYMPTOM of the same divergence: the paper's
+   δ-saving lives on the cleared B, which the in-tree recursion does not use.
+
+**The repair (one move fixes (P1)-residue and (P2)-shape together):** redefine the
+recursion's coefficient as the cleared `B_coeff_cleared := prefactor •
+mk (Σ_b c_b·W^{d−δ−Σλ−b}·Y^b)` (the in-tree `hasseCoeffRepr𝒪_cleared` with the δ-adjusted
+power; its W-div top-coefficient saving is the PROVEN `leadingCoeff_dvd_evalX_hasseDerivY_top`).
+Then (a) the t = 1 lift identity holds by construction, (b) the i1 = 0 SAVED budget
+`(D_R−m)+(d_R−1−m)·degW` is provable by the same per-monomial supplier computation
+(`hasseCoeffRepr𝒪_weight_le_of_total`'s pattern on the cleared rep), and (c) the ANCHORED
+engine closes ALL cells — (P1) complete for the repaired recursion.
+
+**Status:** prediction from exact symbol-pushing against the paper; needs a machine-checked
+countermodel (concrete `F, H, R` with `Hypotheses` instance, compute both sides at t = 1)
+to be promoted to a refutation, or a re-audit of `βHensel_succ`'s intended semantics.
