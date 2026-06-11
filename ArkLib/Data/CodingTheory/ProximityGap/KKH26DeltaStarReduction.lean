@@ -17,9 +17,9 @@ order `n = 2^μ·m`), `kkh26_mcaDeltaStar_le` proves
   `mcaDeltaStar(C, ε*) ≤ 1 − r/2^μ`   (the bad lines near capacity force the threshold down).
 
 The grand challenge — meeting brackets at a deployed-regime interior `δ*` — is therefore exactly
-the **lower** bracket at the *same* radius: a single good point
+the **lower** bracket *up to* that radius: the count stays good *below* it,
 
-  `ε_mca(C, 1 − r/2^μ) ≤ ε*`   (`InteriorCeiling`).
+  `ε_mca(C, δ) ≤ ε*` for every `δ < 1 − r/2^μ`   (`InteriorCeiling`).
 
 `kkh26_deltaStar_pin_of_interior_ceiling` proves that this one obligation **pins `δ*` exactly**:
 `mcaDeltaStar(C, ε*) = 1 − r/2^μ`. The reduction is axiom-clean; the obligation is the genuine
@@ -57,14 +57,16 @@ theorem mcaDeltaStar_eq_of_le_of_good
     mcaDeltaStar (F := F) (A := A) C εstar = δ₀ :=
   le_antisymm hle (le_mcaDeltaStar_of_good (F := F) (A := A) C εstar hδ₀ hgood)
 
-/-- **The interior-ceiling obligation** for the KKH26 family at the ceiling radius: the single
-good point `ε_mca(C, 1 − r/2^μ) ≤ ε*`. This — and only this — is what remains open for the
-deployed prize; everything else (the ceiling) is in-tree. -/
+/-- **The interior-ceiling obligation** for the KKH26 family: the bad-scalar count stays below
+`ε*·q` for *every radius strictly below* the ceiling `1 − r/2^μ`. This — and only this — is the
+open core for the deployed prize; the bad point *at* the ceiling (and hence above, by
+monotonicity) is **in-tree** (`kkh26_epsMCA_lower_bound`). The radius `1 − r/2^μ` itself is *bad*,
+so the good set is the open interval `[0, 1 − r/2^μ)` whose supremum is the pin — the obligation is
+"the explicit-RS list stays small *up to* the near-capacity radius", the 25-year open problem. -/
 def InteriorCeiling (p n : ℕ) [Fact p.Prime] [NeZero n] (g : ZMod p) (μ m r : ℕ)
     (εstar : ℝ≥0∞) : Prop :=
-  epsMCA (F := ZMod p) (A := ZMod p)
-      (evalCode g n ((r - 2) * m)) (1 - (r : ℝ≥0) / ((2 : ℝ≥0) ^ μ))
-    ≤ εstar
+  ∀ δ : ℝ≥0, δ < 1 - (r : ℝ≥0) / ((2 : ℝ≥0) ^ μ) →
+    epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n ((r - 2) * m)) δ ≤ εstar
 
 /-- **THE DEPLOYED-REGIME REDUCTION.** For the explicit KKH26 smooth-domain code, the entire
 grand-challenge pin reduces to the single `InteriorCeiling` obligation: granting it,
@@ -72,9 +74,11 @@ grand-challenge pin reduces to the single `InteriorCeiling` obligation: granting
   `mcaDeltaStar(evalCode g n ((r−2)m), ε*) = 1 − r/2^μ`
 
 — `δ*` pinned exactly at the KKH26 ceiling radius (an interior point of the window, sitting
-`(2m−1)/n` below capacity). The upper bracket is `kkh26_mcaDeltaStar_le` (unconditional, in-tree);
-the lower bracket is the obligation. The two meet. This is the cleanest statement of "what is left
-to win the Proximity Prize": one named good point at the explicit near-capacity radius. -/
+`(2m−1)/n` below capacity). The bad side is **in-tree and unconditional**: `kkh26_epsMCA_lower_bound`
+makes `1 − r/2^μ` bad, and `epsMCA_mono` propagates it to every larger radius. The good side is the
+obligation (`InteriorCeiling`, good *below* the ceiling). The two meet at the jump via the
+open-interval combinator. This is the cleanest statement of "what is left to win the Proximity
+Prize": one named good-below-the-ceiling obligation at the explicit near-capacity radius. -/
 theorem kkh26_deltaStar_pin_of_interior_ceiling
     {p n : ℕ} [Fact p.Prime] [NeZero n] {μ m r : ℕ}
     (hμ : 1 ≤ μ) {g : ZMod p} (hm : 1 ≤ m) (hn : n = 2 ^ μ * m)
@@ -85,12 +89,15 @@ theorem kkh26_deltaStar_pin_of_interior_ceiling
     (hceiling : InteriorCeiling p n g μ m r εstar) :
     mcaDeltaStar (F := ZMod p) (A := ZMod p)
         (evalCode g n ((r - 2) * m)) εstar
-      = 1 - (r : ℝ≥0) / ((2 : ℝ≥0) ^ μ) :=
-  mcaDeltaStar_eq_of_le_of_good
-    (evalCode g n ((r - 2) * m)) εstar
-    (kkh26_mcaDeltaStar_le hμ hm hn hg hp hr2 hr εstar hεstar)
-    tsub_le_self
-    hceiling
+      = 1 - (r : ℝ≥0) / ((2 : ℝ≥0) ^ μ) := by
+  -- the ceiling radius is bad (KKH26 lower bound); monotonicity makes every `δ ≥` it bad too
+  have hbad_at : εstar < epsMCA (F := ZMod p) (A := ZMod p)
+      (evalCode g n ((r - 2) * m)) (1 - (r : ℝ≥0) / ((2 : ℝ≥0) ^ μ)) :=
+    lt_of_lt_of_le hεstar (kkh26_epsMCA_lower_bound hμ hm hn hg hp hr2 hr)
+  refine mcaDeltaStar_eq_of_good_below_of_bad_above
+    (evalCode g n ((r - 2) * m)) εstar tsub_le_self hceiling
+    (fun δ hδ => lt_of_lt_of_le hbad_at
+      (epsMCA_mono (F := ZMod p) (A := ZMod p) (evalCode g n ((r - 2) * m)) hδ))
 
 end ProximityGap.KKH26DeltaStarReduction
 
