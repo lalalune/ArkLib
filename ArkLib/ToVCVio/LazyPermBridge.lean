@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.ToVCVio.LazyPermMarginal
+import ArkLib.Data.Hash.DuplexSponge
 import VCVio
 
 /-!
@@ -978,6 +979,15 @@ theorem evalDist_simulateQ_lazyPermImpl_run'
           (Equiv.symm_apply_eq _).mpr hval.symm
         rw [show permFn (permExtending c π) (Sum.inr y)
             = (permExtending c π).symm y from rfl, hsymm]
+
+/-- The duplex-sponge permutation oracle (a sum of the forward and backward single-query
+specs) **is** the bridge's bidirectional spec: `OracleSpec ι` is just the range function,
+and both assign `X` at every index. Lets the bridge consume `permutationOracle` programs
+directly. -/
+lemma permutationOracle_eq_sumSpec :
+    OracleSpec.permutationOracle X = ((X ⊕ X) →ₒ X) := by
+  funext t
+  rcases t with a | b <;> rfl
 
 end MasterInduction
 
