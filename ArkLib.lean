@@ -1022,6 +1022,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PrimePowerMultisetWindow
+import ArkLib.Data.CodingTheory.ProximityGap.ProductionRegimeBracket
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesA
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesB
