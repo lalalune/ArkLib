@@ -139,10 +139,81 @@ theorem two_plus_antipodal_collinear_iff {m : ℕ} (hm : 1 ≤ m) {ζ : L}
       rw [h3, mul_zero]
     exact sub_eq_zero.mp ((chord_det_factor hm hζ i j k d).trans h0)
 
+/-! ## The completion count: one antipodal pair per admissible chord -/
+
+/-- **The chord-law solution count.** The congruence `2k ≡ s (mod 2^m)` has exactly two
+solutions `k < 2^m` when `s` is even — `k₀` and `k₀ + 2^(m−1)`, i.e. **one antipodal
+pair** — and none when `s` is odd. With `s = i + j + d`, each admissible chord of the
+`d`-parabola is completed by exactly one antipodal pair-point (parity permitting),
+which is the per-chord step of the family count `n(n−4)²/8`. -/
+theorem completion_count {m : ℕ} (hm : 1 ≤ m) (s : ℕ) :
+    ((Finset.range (2 ^ m)).filter
+      (fun k => (2 * k) % 2 ^ m = s % 2 ^ m)).card
+      = if s % 2 = 0 then 2 else 0 := by
+  have hsplit : 2 ^ (m - 1) + 2 ^ (m - 1) = 2 ^ m := by
+    have h := pow_succ 2 (m - 1)
+    rw [Nat.sub_add_cancel hm] at h
+    omega
+  have hH : 0 < 2 ^ (m - 1) := by positivity
+  set H := 2 ^ (m - 1) with hHdef
+  set N := 2 ^ m with hNdef
+  have hN : 0 < N := by positivity
+  have hr : s % N < N := Nat.mod_lt _ hN
+  have hrpar : s % N % 2 = s % 2 :=
+    Nat.mod_mod_of_dvd s ⟨H, by omega⟩
+  -- the `% N` of `2k` for `k < N`, as a linear case split
+  have hmod : ∀ k, k < N → ((2 * k) % N = 2 * k ∧ 2 * k < N) ∨
+      ((2 * k) % N = 2 * k - N ∧ N ≤ 2 * k) := by
+    intro k hk
+    by_cases hc : 2 * k < N
+    · exact Or.inl ⟨Nat.mod_eq_of_lt hc, hc⟩
+    · right
+      refine ⟨?_, not_lt.mp hc⟩
+      rw [Nat.mod_eq_sub_mod (not_lt.mp hc)]
+      exact Nat.mod_eq_of_lt (by omega)
+  by_cases hpar : s % 2 = 0
+  · rw [if_pos hpar]
+    have hreven : s % N % 2 = 0 := by omega
+    have hfilter : (Finset.range N).filter
+        (fun k => (2 * k) % N = s % N)
+        = {s % N / 2, s % N / 2 + H} := by
+      ext k
+      simp only [Finset.mem_filter, Finset.mem_range, Finset.mem_insert,
+        Finset.mem_singleton]
+      have hk0 : 2 * (s % N / 2) = s % N := by omega
+      constructor
+      · rintro ⟨hk, heq⟩
+        rcases hmod k hk with ⟨h, hlt2⟩ | ⟨h, hge⟩
+        · left
+          omega
+        · right
+          omega
+      · rintro (rfl | rfl)
+        · have hklt : s % N / 2 < N := by omega
+          refine ⟨hklt, ?_⟩
+          rcases hmod _ hklt with ⟨h, hlt2⟩ | ⟨h, hge⟩
+          · omega
+          · omega
+        · have hklt : s % N / 2 + H < N := by omega
+          refine ⟨hklt, ?_⟩
+          rcases hmod _ hklt with ⟨h, hlt2⟩ | ⟨h, hge⟩
+          · omega
+          · omega
+    rw [hfilter, Finset.card_insert_of_notMem (by
+        simp only [Finset.mem_singleton]
+        omega),
+      Finset.card_singleton]
+  · rw [if_neg hpar]
+    rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff]
+    intro k hk
+    have hkN := Finset.mem_range.mp hk
+    rcases hmod k hkN with ⟨h, hlt2⟩ | ⟨h, hge⟩ <;> omega
+
 /-! ## Source audit -/
 
 #print axioms pow_reduce
 #print axioms chord_det_factor
 #print axioms two_plus_antipodal_collinear_iff
+#print axioms completion_count
 
 end ArkLib.ProximityGap.TwoPlusAntipodalChordLaw
