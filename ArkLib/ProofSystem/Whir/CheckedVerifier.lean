@@ -252,7 +252,7 @@ noncomputable def askInitialInputFoldValue (P : Params ιs F) (d : ℕ)
     (S : ∀ i : Fin (M + 1), Finset (ιs i))
     (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
     (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
-    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Fact (0 < M)]
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Pow (ιs 0) ℕ] [Fact (0 < M)]
     (αs : Fin (P.foldingParam 0) → F) (y : ιs (firstMainFoldIdx (M := M)).succ) :
     OracleComp ([]ₒ + ([OracleStatement (ιs 0) F]ₒ +
       [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)) F :=
@@ -266,7 +266,7 @@ noncomputable def initialInputBindingCheckAt (P : Params ιs F) (d : ℕ)
     (S : ∀ i : Fin (M + 1), Finset (ιs i))
     (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
     (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
-    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Fact (0 < M)]
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Pow (ιs 0) ℕ] [Fact (0 < M)]
     (αs : Fin (P.foldingParam 0) → F) (y : ιs (firstMainFoldIdx (M := M)).succ) :
     OracleComp ([]ₒ + ([OracleStatement (ιs 0) F]ₒ +
       [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)) Bool := do
@@ -279,7 +279,7 @@ noncomputable def initialInputBindingCheckAtAns (P : Params ιs F) (d : ℕ)
     (S : ∀ i : Fin (M + 1), Finset (ιs i))
     (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
     (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
-    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Fact (0 < M)]
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Pow (ιs 0) ℕ] [Fact (0 < M)]
     (αs : Fin (P.foldingParam 0) → F) (y : ιs (firstMainFoldIdx (M := M)).succ)
     (oStmt : ∀ i, OracleStatement (ιs 0) F i)
     (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j) : Bool :=
@@ -391,6 +391,47 @@ noncomputable def whirCheckingBool (P : Params ιs F) (d : ℕ)
   && ((List.finRange M).map (mainRoundAns P d msgs chals)).all (fun b => b)
   && decide ((readAns P d msgs (finalPolynomialMessageIdx P d)).sum = 0)
 
+/-! ### First-round input-binding port -/
+
+/-- Runtime fold challenges for the first WHIR input-folding check, read from the initial
+sumcheck challenge slots. -/
+noncomputable def initialFoldChallenges (P : Params ιs F) (d : ℕ)
+    (chals : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges) :
+    Fin (P.foldingParam 0) → F :=
+  fun s => chalAt P d chals (initialSumcheckChallengeIdx P d s)
+
+/-- Existing WHIR checks conjoined with one first-round input-binding query at `y`.
+
+This is a local port for a future random-query / door-die sampler: `y` is explicit here rather
+than sampled by the current paper challenge schedule. -/
+noncomputable def whirCheckingCompWithInitialInputBindingAt (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
+    (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Pow (ιs 0) ℕ] [Fact (0 < M)]
+    (y : ιs (firstMainFoldIdx (M := M)).succ)
+    (chals : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges) :
+    OracleComp ([]ₒ + ([OracleStatement (ιs 0) F]ₒ +
+      [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)) Bool := do
+  let bound ← initialInputBindingCheckAt P d S inputBridge foldBridge hNeg0 hFoldLe0
+    (initialFoldChallenges P d chals) y
+  let checked ← whirCheckingComp P d chals
+  pure (bound && checked)
+
+/-- Pure value of `whirCheckingCompWithInitialInputBindingAt` under an oracle implementation. -/
+noncomputable def whirCheckingBoolWithInitialInputBindingAt (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
+    (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Pow (ιs 0) ℕ] [Fact (0 < M)]
+    (y : ιs (firstMainFoldIdx (M := M)).succ)
+    (oStmt : ∀ i, OracleStatement (ιs 0) F i)
+    (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j)
+    (chals : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges) : Bool :=
+  initialInputBindingCheckAtAns P d S inputBridge foldBridge hNeg0 hFoldLe0
+    (initialFoldChallenges P d chals) y oStmt msgs
+  && whirCheckingBool P d msgs chals
+
 /-! ### `simulateQ` collapse -/
 
 /-- `simulateQ` collapse for a message-oracle query. -/
@@ -435,7 +476,7 @@ theorem simulateQ_initialInputBindingCheckAt (P : Params ιs F) (d : ℕ)
     (S : ∀ i : Fin (M + 1), Finset (ιs i))
     (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
     (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
-    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Fact (0 < M)]
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Pow (ιs 0) ℕ] [Fact (0 < M)]
     (αs : Fin (P.foldingParam 0) → F) (y : ιs (firstMainFoldIdx (M := M)).succ)
     (oStmt : ∀ i, OracleStatement (ιs 0) F i)
     (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j) :
@@ -448,7 +489,8 @@ theorem simulateQ_initialInputBindingCheckAt (P : Params ιs F) (d : ℕ)
   letI : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := hNeg0
   unfold initialInputBindingCheckAt initialInputBindingCheckAtAns askInitialInputFoldValue
   rw [simulateQ_bind]
-  rw [simulateQ_foldM (so := OracleInterface.simOracle2 []ₒ oStmt msgs)
+  rw [simulateQ_foldM (Sdom := S 0) (φdom := P.φ 0)
+    (so := OracleInterface.simOracle2 []ₒ oStmt msgs)
     (ask := askInputSource P d S inputBridge)
     (ans := paperInputSourceFromOracle P S inputBridge (oStmt ()))
     (hask := by
@@ -532,6 +574,28 @@ theorem simulateQ_whirCheckingComp (P : Params ιs F) (d : ℕ)
       (fun i => simulateQ_mainRound P d oStmt msgs chals i),
     pure_bind, simulateQ_bind, simulateQ_readMsg P d oStmt msgs, pure_bind, simulateQ_pure]
 
+/-- `simulateQ` collapse for the one-point input-binding checking port. -/
+theorem simulateQ_whirCheckingCompWithInitialInputBindingAt (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
+    (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Pow (ιs 0) ℕ] [Fact (0 < M)]
+    (y : ιs (firstMainFoldIdx (M := M)).succ)
+    (oStmt : ∀ i, OracleStatement (ιs 0) F i)
+    (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j)
+    (chals : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs)
+        (whirCheckingCompWithInitialInputBindingAt P d S inputBridge foldBridge hNeg0 hFoldLe0
+          y chals)
+      = (pure (whirCheckingBoolWithInitialInputBindingAt P d S inputBridge foldBridge hNeg0
+          hFoldLe0 y oStmt msgs chals) : OracleComp []ₒ Bool) := by
+  unfold whirCheckingCompWithInitialInputBindingAt whirCheckingBoolWithInitialInputBindingAt
+  rw [simulateQ_bind,
+    simulateQ_initialInputBindingCheckAt P d S inputBridge foldBridge hNeg0 hFoldLe0
+      (initialFoldChallenges P d chals) y oStmt msgs,
+    pure_bind, simulateQ_bind, simulateQ_whirCheckingComp P d oStmt msgs chals, pure_bind,
+    simulateQ_pure]
+
 /-! ### The checked verifier -/
 
 /-- **The checked WHIR verifier logic** (drop-in replacement for `whirVerify`): the genuine
@@ -545,6 +609,27 @@ noncomputable def whirVerifyChecked (P : Params ιs F) (d : ℕ) :
                 [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)))
           Bool :=
   fun _ chals => OptionT.lift (whirCheckingComp P d chals)
+
+/-- Checked WHIR verifier with the local first-round input-binding port enabled at a fixed
+query point `y`. This intentionally does not replace `whirVerifyChecked`: the landed honest
+transcript generator is still input-oblivious, so perfect completeness for arbitrary statements
+requires a future bound honest prover. -/
+noncomputable def whirVerifyCheckedWithInitialInputBindingAt (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
+    (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Pow (ιs 0) ℕ] [Fact (0 < M)]
+    (y : ιs (firstMainFoldIdx (M := M)).succ) :
+    Unit → ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges →
+        OptionT
+          (OracleComp
+            ([]ₒ +
+              ([OracleStatement (ιs 0) F]ₒ +
+                [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)))
+          Bool :=
+  fun _ chals => OptionT.lift
+    (whirCheckingCompWithInitialInputBindingAt P d S inputBridge foldBridge hNeg0 hFoldLe0
+      y chals)
 
 /-- **The checked WHIR `VectorIOP`**: the landed honest transcript generator together with the
 checking verifier. -/
@@ -565,6 +650,33 @@ theorem simulateQ_lift_whirCheckingComp (P : Params ιs F) (d : ℕ)
       : OracleComp []ₒ (Option Bool))
     = pure (some (whirCheckingBool P d msgs chals))
   rw [simulateQ_bind, simulateQ_whirCheckingComp, pure_bind, simulateQ_pure]
+
+/-- `simulateQ` collapse of the one-point input-binding checker at the `OptionT` layer. -/
+theorem simulateQ_lift_whirCheckingCompWithInitialInputBindingAt (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (inputBridge : PaperInputDomainBridge P S) (foldBridge : PaperFoldDomainBridge P S)
+    (hNeg0 : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j))
+    (hFoldLe0 : P.foldingParam 0 ≤ P.varCount 0) [Pow (ιs 0) ℕ] [Fact (0 < M)]
+    (y : ιs (firstMainFoldIdx (M := M)).succ)
+    (oStmt : ∀ i, OracleStatement (ιs 0) F i)
+    (msgs : ∀ j, ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message j)
+    (chals : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges) :
+    (simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs)
+      (OptionT.lift
+        (whirCheckingCompWithInitialInputBindingAt P d S inputBridge foldBridge hNeg0 hFoldLe0
+          y chals)) : OptionT (OracleComp []ₒ) Bool)
+      = pure (whirCheckingBoolWithInitialInputBindingAt P d S inputBridge foldBridge hNeg0
+          hFoldLe0 y oStmt msgs chals) := by
+  show (simulateQ (OracleInterface.simOracle2 []ₒ oStmt msgs)
+      (whirCheckingCompWithInitialInputBindingAt P d S inputBridge foldBridge hNeg0 hFoldLe0
+        y chals >>= fun b => (pure (some b) : OracleComp _ (Option Bool)))
+      : OracleComp []ₒ (Option Bool))
+    = pure (some (whirCheckingBoolWithInitialInputBindingAt P d S inputBridge foldBridge hNeg0
+        hFoldLe0 y oStmt msgs chals))
+  rw [simulateQ_bind,
+    simulateQ_whirCheckingCompWithInitialInputBindingAt P d S inputBridge foldBridge hNeg0
+      hFoldLe0 y oStmt msgs chals,
+    pure_bind, simulateQ_pure]
 
 /-! ### The honest (all-zero) transcript passes every check -/
 
@@ -913,6 +1025,10 @@ end Whir302Checked
 #print axioms Whir302Checked.simulateQ_foldM
 #print axioms Whir302Checked.initialInputBindingCheckAt
 #print axioms Whir302Checked.simulateQ_initialInputBindingCheckAt
+#print axioms Whir302Checked.whirCheckingCompWithInitialInputBindingAt
+#print axioms Whir302Checked.simulateQ_whirCheckingCompWithInitialInputBindingAt
+#print axioms Whir302Checked.whirVerifyCheckedWithInitialInputBindingAt
+#print axioms Whir302Checked.simulateQ_lift_whirCheckingCompWithInitialInputBindingAt
 #print axioms Whir302Checked.length_mainFoldedOracleMessageIdx
 #print axioms Whir302Checked.foldedOracleQueryIndex
 #print axioms Whir302Checked.whirCheckingBool_honest
