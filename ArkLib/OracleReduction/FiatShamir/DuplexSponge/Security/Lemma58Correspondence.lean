@@ -809,6 +809,19 @@ theorem not_anchoredFrom_split (c : DSCache StmtIn U)
       rw [List.foldl_cons]
       exact ih (stepCache c e₁) (not_anchoredFrom_cons h).2
 
+/-! ## Order embedding of the dedup base trace into the raw log (assembly step s1) -/
+
+open DuplexSpongeFS.Paper in
+/-- The dedup base trace embeds into the raw log by a strictly monotone index map that
+preserves entries. The order-preserving correspondence used to relate base-trace indices to
+raw-fold positions. -/
+theorem removeRedundant_orderEmbedding
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :
+    ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ,
+      (removeRedundantEntryDSPaper log).1[ix]? = log[f ix]? :=
+  List.sublist_iff_exists_orderEmbedding_getElem?_eq.mp
+    (removeRedundantEntryDSPaper_sublist log)
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -889,6 +902,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_hit_sameClass_mem
 #print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_split
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_split
+#print axioms DuplexSpongeFS.EagerLazyDS.removeRedundant_orderEmbedding
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
