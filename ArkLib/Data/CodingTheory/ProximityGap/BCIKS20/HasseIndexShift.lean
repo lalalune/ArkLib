@@ -275,6 +275,89 @@ theorem hasseCoeffRepr𝒪_weight_le_of_total
     exact (Polynomial.mem_support_iff.mp hj)
       (specializedHasse_coeff_eq_zero_of_vanish hvanish i1 m (by omega))
 
+/-- Coefficient extraction for the cleared representative: the `b`-th coefficient of
+`hasseCoeffRepr𝒪_cleared H x₀ R i1 m k` is `p.coeff b · W^{k−b}` for `b ≤ k` and `0`
+beyond the clearing degree. -/
+theorem hasseCoeffRepr𝒪_cleared_coeff (H : F[X][Y]) (x₀ : F) (R : F[X][X][Y])
+    (i1 m k b : ℕ) :
+    (hasseCoeffRepr𝒪_cleared H x₀ R i1 m k).coeff b
+      = if b ≤ k then
+          ((Polynomial.Bivariate.evalX (Polynomial.C x₀)
+            (hasseDerivX i1 (hasseDerivY m R))).coeff b) * H.leadingCoeff ^ (k - b)
+        else 0 := by
+  classical
+  rw [hasseCoeffRepr𝒪_cleared, Polynomial.finset_sum_coeff]
+  simp only [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, mul_ite, mul_one, mul_zero]
+  rw [Finset.sum_ite_eq (Finset.range (k + 1))]
+  simp [Finset.mem_range, Nat.lt_succ_iff]
+
+/-- **The ANCHORED cleared-form budget** (finding 14's repair supplier): at the anchor
+`D ≤ d_H + degW`, the cleared representative at clearing power `k` has weight at most
+`(D_R − m − i1) + k·degW` — every `T`-power's cost is fully absorbed by its cleared
+`W`-deficit, so the budget is uniform across monomials. At `k = d_R − 1 − m` (the δ-saved
+clearing) this is exactly the paper's `i1 = 0` saved budget. -/
+theorem hasseCoeffRepr𝒪_cleared_weight_le_of_total_anchored
+    {H : F[X][Y]} (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Polynomial.Bivariate.totalDegree H ≤ D)
+    (htight : D ≤ Polynomial.Bivariate.natDegreeY H + (H.leadingCoeff).natDegree)
+    (x₀ : F) (R : F[X][X][Y]) {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (i1 m k : ℕ) :
+    weight_Λ_over_𝒪 hH
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m k) : 𝒪 H) D
+      ≤ WithBot.some ((DR - m - i1) + k * (H.leadingCoeff).natDegree) := by
+  refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH rfl) ?_
+  rw [weight_Λ]
+  refine Finset.sup_le fun b hb => ?_
+  refine WithBot.coe_le_coe.mpr ?_
+  -- the coefficient at `b`: zero beyond `k`, the cleared product within
+  have hcoef := hasseCoeffRepr𝒪_cleared_coeff H x₀ R i1 m k b
+  by_cases hbk : b ≤ k
+  · -- within the clearing degree: the support lives inside the shape budget
+    have hbDQ : b ≤ DR - m - i1 := by
+      by_contra hcon
+      push_neg at hcon
+      have hz : (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+          (hasseDerivX i1 (hasseDerivY m R))).coeff b = 0 :=
+        specializedHasse_coeff_eq_zero_of_vanish hvanish i1 m hcon
+      have : (hasseCoeffRepr𝒪_cleared H x₀ R i1 m k).coeff b = 0 := by
+        rw [hcoef, if_pos hbk, hz, zero_mul]
+      exact (Polynomial.mem_support_iff.mp hb) this
+    rw [hcoef, if_pos hbk]
+    -- inner degree: shape + clearing power
+    have hshape := specializedHasse_coeff_natDegree_le_of_total (x₀ := x₀) htotal i1 m b
+    have hdeg : (((Polynomial.Bivariate.evalX (Polynomial.C x₀)
+          (hasseDerivX i1 (hasseDerivY m R))).coeff b)
+            * H.leadingCoeff ^ (k - b)).natDegree
+        ≤ ((DR - m - i1) - b) + (k - b) * (H.leadingCoeff).natDegree := by
+      refine le_trans (Polynomial.natDegree_mul_le) ?_
+      have hpow : (H.leadingCoeff ^ (k - b)).natDegree
+          ≤ (k - b) * (H.leadingCoeff).natDegree :=
+        Polynomial.natDegree_pow_le
+      omega
+    -- the anchor absorbs the T-cost: b·(D+1−d_H) ≤ b·(degW+1)
+    have hanchor : b * (D + 1 - Polynomial.Bivariate.natDegreeY H)
+        ≤ b * ((H.leadingCoeff).natDegree + 1) :=
+      Nat.mul_le_mul_left b (by omega)
+    have hb1 : b * ((H.leadingCoeff).natDegree + 1)
+        = b * (H.leadingCoeff).natDegree + b := by
+      rw [Nat.mul_add, Nat.mul_one]
+    have hsplit : (k - b) * (H.leadingCoeff).natDegree
+        + b * (H.leadingCoeff).natDegree ≤ k * (H.leadingCoeff).natDegree := by
+      have : (k - b) + b ≤ k := by omega
+      calc (k - b) * (H.leadingCoeff).natDegree + b * (H.leadingCoeff).natDegree
+          = ((k - b) + b) * (H.leadingCoeff).natDegree := (Nat.add_mul _ _ _).symm
+        _ ≤ k * (H.leadingCoeff).natDegree :=
+            Nat.mul_le_mul_right _ this
+    omega
+  · -- beyond the clearing degree the coefficient is zero, contradicting support
+    exfalso
+    have : (hasseCoeffRepr𝒪_cleared H x₀ R i1 m k).coeff b = 0 := by
+      rw [hcoef, if_neg hbk]
+    exact (Polynomial.mem_support_iff.mp hb) this
+
 /-! ## Source audit -/
 
 #print axioms hasseDerivY_coeff
@@ -283,5 +366,11 @@ theorem hasseCoeffRepr𝒪_weight_le_of_total
 #print axioms leadingCoeff_dvd_evalX_hasseDerivY_top
 #print axioms weight_Λ_le_of_shape
 #print axioms hasseCoeffRepr𝒪_weight_le_of_shape
+#print axioms eval_constX_natDegree_le_of_shape
+#print axioms specializedHasse_coeff_natDegree_le_of_total
+#print axioms specializedHasse_coeff_eq_zero_of_vanish
+#print axioms hasseCoeffRepr𝒪_weight_le_of_total
+#print axioms hasseCoeffRepr𝒪_cleared_coeff
+#print axioms hasseCoeffRepr𝒪_cleared_weight_le_of_total_anchored
 
 end BCIKS20.HenselNumerator
