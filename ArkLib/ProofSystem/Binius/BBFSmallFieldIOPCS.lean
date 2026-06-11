@@ -27,14 +27,21 @@ in contrast to `FRIBinius/CoreInteractionPhase.lean` which fuses the sumcheck-fo
 
 ## Main Results
 
-- `bbfMLIOPCS`: Binary Basefold instantiated as an `MLIOPCS L ℓ'`
+- `bbfMLIOPCS`: Binary Basefold instantiated as an `MLIOPCS L ℓ'`, parameterized over the two
+  named inner-protocol surfaces `BBFInnerPerfectCompleteness` / `BBFInnerRbrKnowledgeSoundness`
+  (the `FullBinaryBasefold.*_wired` front doors of issue #317); both `MLIOPCS` security
+  fields are proven from them via the `LiftContext` lenses in this file
 - `bbf_fullOracleReduction_perfectCompleteness`: Perfect completeness of the composed protocol
-- `bbf_fullOracleVerifier_rbrKnowledgeSoundness`: RBR knowledge soundness of the composed protocol
-- `bbfSmallFieldConcreteKnowledgeError`: closed-form scalar error
-  (ring-switching front + BBF (43)-style tail)
-- `bbf_fullOracleVerifier_knowledgeSoundness`: Scalar KS for the composed verifier via
-  `FullRingSwitching.fullOracleVerifier_knowledgeSoundness` and
-  `FullBinaryBasefold.fullRbrKnowledgeError_sum_le_concrete` (PCS RBR-error sum).
+  on the strict-track input relation, via the proven RingSwitching end-to-end capstone
+- `bbf_fullOracleVerifier_rbrKnowledgeSoundness`: RBR knowledge soundness of the composed
+  protocol; the three append-seam hypotheses remain external (the RBR-KS append keystone
+  still consumes the composite `KnowledgeStateFunction` + phase-2 flip bound)
+
+A concrete scalar-KS corollary (ring-switching front + BBF (43)-style tail) is deliberately
+not stated here yet: the non-fused concrete-error spine
+(`concreteBinaryBasefoldKnowledgeError`, `FullBinaryBasefold.fullRbrKnowledgeError_sum_le_*`)
+does not exist in-tree (the fused variant lives in `FRIBinius/General.lean`). A previous
+revision referenced those phantom declarations; see issue #317.
 
 ## References
 
