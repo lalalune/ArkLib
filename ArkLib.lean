@@ -206,7 +206,6 @@ import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEListBound
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEPotential
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNERealStep
 import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
-import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.JH02
@@ -239,7 +238,6 @@ import ArkLib.Data.CodingTheory.PolishchukSpielman.Resultant
 import ArkLib.Data.CodingTheory.Prelims
 import ArkLib.Data.CodingTheory.ProximityCA
 import ArkLib.Data.CodingTheory.ProximityGap
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StructuredCollapseRebased
 import ArkLib.Data.CodingTheory.ProximityGap.«141Architecture»
 import ArkLib.Data.CodingTheory.ProximityGap.«141JohnsonCount»
 import ArkLib.Data.CodingTheory.ProximityGap.«141Kernels»
@@ -406,6 +404,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysExceptional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShare
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShareOr
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StructuredCollapseRebased
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Supply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.TailWiring
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ThresholdInterface
@@ -1064,6 +1063,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Round9SubgroupCharExpansion
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleBracketFull
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleJohnsonInstance
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleThresholdBracket
+import ArkLib.Data.CodingTheory.ProximityGap.SecondLayerSeedFamily
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
@@ -2106,7 +2106,6 @@ import ArkLib.ToMathlib.GGR11EraseDecodeTree
 import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
 import ArkLib.ToMathlib.GGR11TreeConstruction
-import ArkLib.ToMathlib.GHSZ02Cor20
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness
