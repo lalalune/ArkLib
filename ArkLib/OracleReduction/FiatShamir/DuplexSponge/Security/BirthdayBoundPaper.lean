@@ -9,7 +9,6 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.EagerLazyDS
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Correspondence
 
 /-!
 # #314 wave-5 — the CO25 §5.6 → §5.8 channel over the paper-faithful event
@@ -171,76 +170,6 @@ theorem lemma5_8EagerPaperResidual_of_lazy
   rw [DuplexSpongeFS.EagerLazyDS.probEvent_DDS_eq_lazyDSImpl]
   exact h P T hT
 
-/-- **The CO25 Lemma 5.8 eager-paper residual is now a theorem** (no hypothesis): the lazy
-`EPaper` bound is unconditional (`EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound`, which
-consumes the proven dedup reduction `ePaperReduction_holds`). -/
-theorem lemma5_8EagerPaperResidual_holds
-    [DecidableEq StmtIn] [Finite StmtIn]
-    [Nonempty (StmtIn → Vector U SpongeSize.C)]
-    [Nonempty (Equiv.Perm (CanonicalSpongeState U))]
-    [Fintype (StmtIn → Vector U SpongeSize.C)]
-    [Fintype (Vector U SpongeSize.C)] [Nonempty (Vector U SpongeSize.C)]
-    [SampleableType (Vector U SpongeSize.C)]
-    [DecidableEq (CanonicalSpongeState U)] [Inhabited (CanonicalSpongeState U)]
-    [Fintype StmtIn] [Fintype U] [DecidableEq U]
-    [SampleableType (StmtIn → Vector U SpongeSize.C)]
-    [SampleableType (Equiv.Perm (CanonicalSpongeState U))] :
-    Lemma5_8EagerPaperResidual StmtIn U :=
-  lemma5_8EagerPaperResidual_of_lazy
-    (fun P T hT => DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound P T hT)
-
-/-- **The honest §5.6 bad events are birthday-bounded, unconditionally.** The `h58`
-hypothesis is now discharged by `lemma5_8EagerPaperResidual_holds`. -/
-theorem honestBad_birthday
-    [DecidableEq StmtIn] [Finite StmtIn]
-    [Nonempty (StmtIn → Vector U SpongeSize.C)]
-    [Nonempty (Equiv.Perm (CanonicalSpongeState U))]
-    [Fintype (StmtIn → Vector U SpongeSize.C)]
-    [Fintype (Vector U SpongeSize.C)] [Nonempty (Vector U SpongeSize.C)]
-    [SampleableType (Vector U SpongeSize.C)]
-    [DecidableEq (CanonicalSpongeState U)] [Inhabited (CanonicalSpongeState U)]
-    [Fintype StmtIn] [Fintype U] [DecidableEq U]
-    [SampleableType (StmtIn → Vector U SpongeSize.C)]
-    [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
-    {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
-    (hT : IsTotalQueryBound P T) (st₀ : CanonicalSpongeState U) :
-    (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) =>
-        ∃ S : Backtrack.S_BT z.2 st₀,
-          E_inv_honest z.2 st₀ S ∨ E_fork_honest z.2 st₀ S ∨ E_time_honest z.2 st₀ S |
-      do
-        let c ← (D_DS StmtIn U).sample
-        simulateQ ((D_DS StmtIn U).toImpl c)
-          ((simulateQ loggingOracle P).run)]).toReal
-      ≤ lemma5_8Bound U T :=
-  honestBad_birthday_of_paperResidual lemma5_8EagerPaperResidual_holds P T hT st₀
-
-/-- **CO25 Claim 5.21, unconditional.** The honest §5.6 bad events are bounded by
-`claim5_21Bound` with no remaining hypothesis. -/
-theorem honestBad_claim5_21Bound
-    [DecidableEq StmtIn] [Finite StmtIn]
-    [Nonempty (StmtIn → Vector U SpongeSize.C)]
-    [Nonempty (Equiv.Perm (CanonicalSpongeState U))]
-    [Fintype (StmtIn → Vector U SpongeSize.C)]
-    [Fintype (Vector U SpongeSize.C)] [Nonempty (Vector U SpongeSize.C)]
-    [SampleableType (Vector U SpongeSize.C)]
-    [DecidableEq (CanonicalSpongeState U)] [Inhabited (CanonicalSpongeState U)]
-    [Fintype StmtIn] [Fintype U] [DecidableEq U]
-    [SampleableType (StmtIn → Vector U SpongeSize.C)]
-    [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
-    {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α)
-    (tₕ tₚ tₚᵢ L : ℕ)
-    (hT : IsTotalQueryBound P (tₕ + 1 + tₚ + L + tₚᵢ))
-    (st₀ : CanonicalSpongeState U) :
-    (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) =>
-        ∃ S : Backtrack.S_BT z.2 st₀,
-          E_inv_honest z.2 st₀ S ∨ E_fork_honest z.2 st₀ S ∨ E_time_honest z.2 st₀ S |
-      do
-        let c ← (D_DS StmtIn U).sample
-        simulateQ ((D_DS StmtIn U).toImpl c)
-          ((simulateQ loggingOracle P).run)]).toReal
-      ≤ claim5_21Bound U tₕ tₚ tₚᵢ L :=
-  honestBad_claim5_21Bound_of_paperResidual lemma5_8EagerPaperResidual_holds P tₕ tₚ tₚᵢ L hT st₀
-
 end EagerInstantiation
 
 end DuplexSpongeFS.BirthdayBoundPaper
@@ -250,6 +179,3 @@ end DuplexSpongeFS.BirthdayBoundPaper
 #print axioms DuplexSpongeFS.BirthdayBoundPaper.honestBad_claim5_21Bound_of_paperResidual
 
 #print axioms DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_of_lazy
-#print axioms DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds
-#print axioms DuplexSpongeFS.BirthdayBoundPaper.honestBad_birthday
-#print axioms DuplexSpongeFS.BirthdayBoundPaper.honestBad_claim5_21Bound

@@ -98,15 +98,6 @@ theorem stepCache_pair_mono (c : DSCache StmtIn U) (e : DSEntry StmtIn U)
       exact List.mem_append_left _ h
     · simpa using h
 
-/-- Hash records persist through any fold suffix. -/
-theorem foldl_stepCache_hash_mono (c : DSCache StmtIn U)
-    (ℓ : List (DSEntry StmtIn U))
-    {q : StmtIn} {u : Vector U SpongeSize.C} (h : c.1 q = some u) :
-    (ℓ.foldl stepCache c).1 q = some u := by
-  induction ℓ generalizing c with
-  | nil => exact h
-  | cons e ℓ ih => exact ih (stepCache c e) (stepCache_hash_mono' c e h)
-
 /-- Permutation pairs persist through any fold suffix. -/
 theorem foldl_stepCache_pair_mono (c : DSCache StmtIn U)
     (ℓ : List (DSEntry StmtIn U))
@@ -274,7 +265,6 @@ end DuplexSpongeFS.EagerLazyDS
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms DuplexSpongeFS.EagerLazyDS.stepCache_hash_mono'
 #print axioms DuplexSpongeFS.EagerLazyDS.stepCache_pair_mono
-#print axioms DuplexSpongeFS.EagerLazyDS.foldl_stepCache_hash_mono
 #print axioms DuplexSpongeFS.EagerLazyDS.foldl_stepCache_pair_mono
 #print axioms DuplexSpongeFS.EagerLazyDS.stepCache_caches_fresh_hash
 #print axioms DuplexSpongeFS.EagerLazyDS.stepCache_caches_fresh_perm
