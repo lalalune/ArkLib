@@ -27,6 +27,17 @@ KNOWN_DISCHARGED = {
         'stirCheckingRbrSoundness_genuine (SubUnitRbr.lean, at the genuine stirEpsStar budget)',
     'stirCheckingRepRbrSoundnessResidual':
         'stirCheckingRepRbrSoundness_genuine (RepWire.lean, at the (.)^t stirEpsStarRep budget)',
+    'fiatShamir_soundnessTransferResidual':
+        'fiatShamir_soundnessTransferResidual_canonical (StateRestorationTransport.lean — '
+        'proven at the canonical coupled SR implementation; #116 closure)',
+    'fiatShamir_knowledgeSoundnessTransferResidual':
+        'fiatShamir_knowledgeSoundnessTransferResidual_canonical (StateRestorationTransport.lean'
+        ' — #116 closure)',
+    'fiatShamir_statisticalHVZKTransferResidual':
+        'fiatShamir_statisticalHVZKTransferResidual_canonical_proved (HVZKCanonicalClose.lean — '
+        '#116 closure)',
+    'fiatShamir_hvzkTransferResidual':
+        'fiatShamir_hvzkTransferResidual_canonical_proved (HVZKKernelClose.lean — #116 closure)',
     'MonicHighYResidual':
         'residualw (FaithfulFrontierWitness.lean — per-bundle interface, witness instance '
         'proven) + general-monic boundary half (882d85173)',
