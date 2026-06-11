@@ -41,6 +41,7 @@ import ArkLib.Data.Classes.Slice
 import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
 import ArkLib.Data.CodingTheory.AGL24ConditionalAssembly
 import ArkLib.Data.CodingTheory.AGL24DeletionRobustness
+import ArkLib.Data.CodingTheory.AGL24DetDegree
 import ArkLib.Data.CodingTheory.AGL24DeterministicChain
 import ArkLib.Data.CodingTheory.AGL24FrontDoorBridge
 import ArkLib.Data.CodingTheory.AGL24KernelVector
