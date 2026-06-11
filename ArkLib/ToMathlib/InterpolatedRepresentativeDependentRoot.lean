@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.ToMathlib.InterpolatedRepresentativeSliced
 import ArkLib.ToMathlib.RationalRootSupply
+import ArkLib.ToMathlib.XiAtIncidenceSupply
 
 /-!
 # Issue #304 — the dependent-root packager: `double_assignment` meets the sliced apex
@@ -260,6 +261,145 @@ theorem exists_representative_pair_of_matching_branch (hHyp : Hypotheses x₀ R 
 
 end Apex
 
+/-! ## The counting weld: `ξ`/leading-coefficient bad places subtracted by Bézout bounds -/
+
+section MatchingCounting
+
+variable [DecidableEq F]
+variable (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+variable [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+
+/-- **The single-counting front door.**  From `double_assignment`'s raw matching set (per-`z`
+incidence + divisibility, NO per-`z` side conditions) and ONE counting input — the budget plus
+the two Bézout-bounded bad-set sizes (`ξ`-elimination resultant degree and slice
+leading-coefficient degree) below the matching-set size — the bundle's terminal
+`(Ppoly, hrep, hdegX)` pair exists.  The `ξ`-nonvanishing and sliced-separability places are
+carved out internally (`xiBad_card_le` + the leading-coefficient root bound); no separability
+or nonvanishing hypothesis of any kind remains. -/
+theorem exists_representative_pair_of_matching_counting (hHyp : Hypotheses x₀ R H)
+    {D : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree)
+    (hmonic : H.Monic) (hd2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHD : H.natDegree ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hRgrade : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hξ : ξ x₀ R H hHyp ≠ 0)
+    (hRdeg : 0 < R.natDegree)
+    (hcdeg : (Bivariate.evalX (Polynomial.C x₀) R).natDegree = R.natDegree)
+    {u₀ u₁ : F[X]} {k : ℕ} (h₀ : u₀.natDegree < k) (h₁ : u₁.natDegree < k)
+    {matchingSet : Finset F}
+    (hinc : ∀ z ∈ matchingSet,
+      Polynomial.evalEval z ((u₀ + z • u₁).eval x₀) H = 0)
+    (hdvd : ∀ z ∈ matchingSet, Polynomial.X - Polynomial.C (u₀ + z • u₁) ∣
+      R.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)))
+    (hcount : clearedPairBudget (Bivariate.natDegreeY R) D H.natDegree 1 k * H.natDegree
+        + (XiAtIncidenceSupply.xiResultant hH x₀ R hHyp).natDegree
+        + (Bivariate.evalX (Polynomial.C x₀) R).leadingCoeff.natDegree
+      < matchingSet.card)
+    (htailα : ∀ t, k ≤ t →
+      BetaToCurveCoeffPolys.αFromBeta x₀ R H hHyp
+        (BetaRecGenuineBridge.BcoeffSigned H x₀ R) t = 0) :
+    ∃ Ppoly : F[X][Y],
+      polyToPowerSeries𝕃 H Ppoly
+          = BetaToCurveCoeffPolys.gammaLocal x₀ R H hHyp
+              (BetaRecGenuineBridge.BcoeffSigned H x₀ R)
+        ∧ Polynomial.Bivariate.degreeX Ppoly ≤ 1
+        ∧ Ppoly.natDegree < k := by
+  classical
+  set y : F → F := fun z => (u₀ + z • u₁).eval x₀ with hy
+  set lc : F[X] := (Bivariate.evalX (Polynomial.C x₀) R).leadingCoeff with hlcdef
+  -- the slice is nonzero, hence its leading coefficient is nonzero
+  have hslice_ne : Bivariate.evalX (Polynomial.C x₀) R ≠ 0 := by
+    intro h0
+    rw [h0, Polynomial.natDegree_zero] at hcdeg
+    omega
+  have hlc_ne : lc ≠ 0 := Polynomial.leadingCoeff_ne_zero.mpr hslice_ne
+  -- the good set: ξ-representative nonvanishing AND lc-avoidance
+  set T : Finset F := matchingSet.filter (fun z =>
+    Polynomial.evalEval z (y z) (canonicalRepOf𝒪 hH (ξ x₀ R H hHyp)) ≠ 0
+      ∧ lc.eval z ≠ 0) with hT
+  have hTsub : T ⊆ matchingSet := Finset.filter_subset _ _
+  -- bad-set cardinalities
+  have hbadξ : (matchingSet.filter (fun z =>
+      Polynomial.evalEval z (y z) (canonicalRepOf𝒪 hH (ξ x₀ R H hHyp)) = 0)).card
+      ≤ (XiAtIncidenceSupply.xiResultant hH x₀ R hHyp).natDegree :=
+    XiAtIncidenceSupply.xiBad_card_le hHyp hH hmonic.leadingCoeff hinc
+  have hbadlc : (matchingSet.filter (fun z => lc.eval z = 0)).card ≤ lc.natDegree := by
+    have hsub : matchingSet.filter (fun z => lc.eval z = 0) ⊆ lc.roots.toFinset := by
+      intro z hz
+      rw [Finset.mem_filter] at hz
+      exact Multiset.mem_toFinset.mpr (Polynomial.mem_roots'.mpr ⟨hlc_ne, hz.2⟩)
+    calc (matchingSet.filter (fun z => lc.eval z = 0)).card
+        ≤ lc.roots.toFinset.card := Finset.card_le_card hsub
+      _ ≤ Multiset.card lc.roots := Multiset.toFinset_card_le _
+      _ ≤ lc.natDegree := Polynomial.card_roots' _
+  -- the complement of T inside matchingSet is covered by the two bad sets
+  have hsplit : (matchingSet.filter (fun z =>
+      ¬ (Polynomial.evalEval z (y z) (canonicalRepOf𝒪 hH (ξ x₀ R H hHyp)) ≠ 0
+        ∧ lc.eval z ≠ 0))).card
+      ≤ (XiAtIncidenceSupply.xiResultant hH x₀ R hHyp).natDegree + lc.natDegree := by
+    have hcover : matchingSet.filter (fun z =>
+        ¬ (Polynomial.evalEval z (y z) (canonicalRepOf𝒪 hH (ξ x₀ R H hHyp)) ≠ 0
+          ∧ lc.eval z ≠ 0))
+        ⊆ (matchingSet.filter (fun z =>
+            Polynomial.evalEval z (y z) (canonicalRepOf𝒪 hH (ξ x₀ R H hHyp)) = 0))
+          ∪ (matchingSet.filter (fun z => lc.eval z = 0)) := by
+      intro z hz
+      rw [Finset.mem_filter] at hz
+      rcases hz with ⟨hzm, hznot⟩
+      rw [Finset.mem_union, Finset.mem_filter, Finset.mem_filter]
+      by_cases hξz : Polynomial.evalEval z (y z)
+          (canonicalRepOf𝒪 hH (ξ x₀ R H hHyp)) = 0
+      · exact Or.inl ⟨hzm, hξz⟩
+      · refine Or.inr ⟨hzm, ?_⟩
+        by_contra hlcz
+        exact hznot ⟨hξz, hlcz⟩
+    calc (matchingSet.filter _).card
+        ≤ ((matchingSet.filter (fun z =>
+            Polynomial.evalEval z (y z) (canonicalRepOf𝒪 hH (ξ x₀ R H hHyp)) = 0))
+          ∪ (matchingSet.filter (fun z => lc.eval z = 0))).card :=
+          Finset.card_le_card hcover
+      _ ≤ _ + _ := Finset.card_union_le _ _
+      _ ≤ _ := add_le_add hbadξ hbadlc
+  -- T is big enough
+  have hcardT : clearedPairBudget (Bivariate.natDegreeY R) D H.natDegree 1 k * H.natDegree
+      < T.card := by
+    have hpart := Finset.card_filter_add_card_filter_not
+      (s := matchingSet) (fun z =>
+        Polynomial.evalEval z (y z) (canonicalRepOf𝒪 hH (ξ x₀ R H hHyp)) ≠ 0
+          ∧ lc.eval z ≠ 0)
+    rw [← hT] at hpart
+    omega
+  -- per-z data on T
+  have hincT : ∀ z ∈ T, Polynomial.evalEval z ((u₀ + z • u₁).eval x₀) H = 0 :=
+    fun z hz => hinc z (hTsub hz)
+  have hdvdT : ∀ z ∈ T, Polynomial.X - Polynomial.C (u₀ + z • u₁) ∣
+      R.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) :=
+    fun z hz => hdvd z (hTsub hz)
+  -- the constructed roots coincide with the incidence roots (value-level)
+  have hroot_eq : ∀ z (hz : z ∈ T),
+      RationalRootSupply.rationalRoot_of_evalEval hH (hincT z hz)
+        = BranchValuePigeonhole.incidenceRootFn (H := H) (hincT z hz) :=
+    fun z hz => Subtype.ext rfl
+  -- hx on T from the first filter conjunct
+  have hxT : ∀ z (hz : z ∈ T),
+      (π_z z (RationalRootSupply.rationalRoot_of_evalEval hH (hincT z hz)))
+        (ξ x₀ R H hHyp) ≠ 0 := by
+    intro z hz
+    have hfilter := (Finset.mem_filter.mp hz).2
+    rw [hroot_eq z hz]
+    exact (XiAtIncidenceSupply.hx_iff_evalEval hHyp hH hmonic.leadingCoeff
+      (hincT z hz)).mpr hfilter.1
+  -- sliced separability on T from the second filter conjunct
+  have hsepOn : MappedSeparability.MappedSliceSeparabilityOn T hHyp :=
+    MappedSeparability.mappedSliceSeparabilityOn_of_slice_leadingCoeff hHyp hRdeg hcdeg
+      (fun z hz => (Finset.mem_filter.mp hz).2.2)
+  -- conclude via the packager
+  exact exists_representative_pair_of_matching_branch x₀ R H hHyp hD hH hmonic hd2 hdHD
+    hD_Rx0 hRgrade hξ h₀ h₁ hincT hdvdT hxT
+    (fun z hz => hsepOn z hz _ (hxT z hz)) hcardT htailα
+
+end MatchingCounting
+
 end InterpolatedRepresentativeDependentRoot
 
 end ArkLib
@@ -272,3 +412,4 @@ end ArkLib
 #print axioms ArkLib.InterpolatedRepresentativeDependentRoot.hvan_line_of_perz_data_dep
 #print axioms ArkLib.InterpolatedRepresentativeDependentRoot.hrep_line_of_perz_data_dep
 #print axioms ArkLib.InterpolatedRepresentativeDependentRoot.exists_representative_pair_of_matching_branch
+#print axioms ArkLib.InterpolatedRepresentativeDependentRoot.exists_representative_pair_of_matching_counting
