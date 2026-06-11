@@ -1,7 +1,7 @@
 {
  "summary": {
-  "total": 105,
-  "open": 22,
+  "total": 103,
+  "open": 20,
   "discharged": 83,
   "by_top_dir": {
    "Data": {
@@ -10,8 +10,8 @@
     "discharged": 18
    },
    "OracleReduction": {
-    "total": 41,
-    "open": 9,
+    "total": 39,
+    "open": 7,
     "discharged": 32
    },
    "ProofSystem": {
@@ -815,13 +815,13 @@
    "name": "βHenselSuccTermWeightResidual",
    "fq_name": "BCIKS20.HenselNumerator.βHenselSuccTermWeightResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean",
-   "line": 1598,
+   "line": 1654,
    "providers": [
     {
      "name": "BCIKS20.HenselNumerator.βHenselSuccTermWeightResidual_of_structured",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean",
-     "line": 1699,
+     "line": 1755,
      "conditional_on_residuals": [
       "βHenselSuccTermStructuredWeightResidual"
      ],
@@ -834,13 +834,13 @@
    "name": "βHenselSuccTermStructuredWeightResidual",
    "fq_name": "BCIKS20.HenselNumerator.βHenselSuccTermStructuredWeightResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean",
-   "line": 1679,
+   "line": 1735,
    "providers": [
     {
      "name": "BCIKS20.HenselNumerator.βHenselSuccTermStructuredWeightResidual_holds",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean",
-     "line": 2690,
+     "line": 2746,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -851,7 +851,7 @@
    "name": "FaaDiBrunoSuccSumZeroResidual",
    "fq_name": "BCIKS20.HenselNumerator.FaaDiBrunoSuccSumZeroResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean",
-   "line": 2454,
+   "line": 2510,
    "providers": [
     {
      "name": "BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_of_monic",
@@ -1838,14 +1838,6 @@
    "status": "discharged"
   },
   {
-   "name": "Lemma5_8EagerBirthdayResidual",
-   "fq_name": "DuplexSpongeFS.BirthdayBound.Lemma5_8EagerBirthdayResidual",
-   "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBound.lean",
-   "line": 470,
-   "providers": [],
-   "status": "open"
-  },
-  {
    "name": "Lemma5_8EagerPaperResidual",
    "fq_name": "DuplexSpongeFS.BirthdayBoundPaper.Lemma5_8EagerPaperResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean",
@@ -1949,7 +1941,7 @@
    "name": "Lemma5_12HonestResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 630,
+   "line": 634,
    "providers": [
     {
      "name": "DuplexSpongeFS.Sponge316.lemma5_12_honest",
@@ -1971,18 +1963,10 @@
    "status": "discharged"
   },
   {
-   "name": "Lemma5_14HonestResidual",
-   "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.Lemma5_14HonestResidual",
-   "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 647,
-   "providers": [],
-   "status": "open"
-  },
-  {
    "name": "Lemma5_16HonestResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 663,
+   "line": 668,
    "providers": [
     {
      "name": "DuplexSpongeFS.Sponge316.lemma5_16_honest_of_no_prior_reverse",
@@ -2039,7 +2023,7 @@
    "name": "SimulatedProverChallengeBudgetResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.SimulatedProverChallengeBudgetResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 929,
+   "line": 934,
    "providers": [
     {
      "name": "DuplexSpongeFS.SimulatorBudgets.simulatedProverChallengeBudget",
@@ -2056,7 +2040,7 @@
    "name": "SimulatedProverSharedBudgetResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.SimulatedProverSharedBudgetResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 946,
+   "line": 951,
    "providers": [
     {
      "name": "DuplexSpongeFS.SimulatorBudgets.simulatedProverSharedBudget",
@@ -2073,7 +2057,7 @@
    "name": "KeyLemmaEagerResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaEagerResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 966,
+   "line": 971,
    "providers": [
     {
      "name": "DuplexSpongeFS.KeyLemmaAssembly.keyLemmaEager_of_hybSteps",
@@ -2122,7 +2106,7 @@
    "name": "D2sQueryStepGSpecBudgetResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.D2sQueryStepGSpecBudgetResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 1006,
+   "line": 1011,
    "providers": [
     {
      "name": "DuplexSpongeFS.SimulatorBudgets.d2sQueryStepGSpecBudget",
@@ -2139,7 +2123,7 @@
    "name": "D2fOuterImplSharedBudgetResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaFoundations.D2fOuterImplSharedBudgetResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean",
-   "line": 1022,
+   "line": 1027,
    "providers": [
     {
      "name": "DuplexSpongeFS.SimulatorBudgets.d2fOuterImplSharedBudget",

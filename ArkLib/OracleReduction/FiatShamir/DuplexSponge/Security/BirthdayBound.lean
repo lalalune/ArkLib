@@ -48,20 +48,23 @@ complementary shapes that the CO25 §5.6 analysis needs and VCVio lacks:
 - `birthday_toReal_le_lemma5_8Bound` / `hit_toReal_le_capacityRatio` (R1d): the ENNReal
   outputs of the generic bricks, over any answer space at least as large as the capacity
   space `|U|^C`, are dominated by the real-valued CO25 bounds.
-- `probEvent_honestBad_le_probEvent_E` (R1e): **modulo the M2 residual interfaces**
-  (`Lemma5_12/5_14/5_16HonestResidual`), the honest CO25 bad events
+- `probEvent_honestBad_le_probEvent_E` (R1e): **modulo the M2 statement interfaces**
+  (`Lemma5_12HonestResidual`, the refuted legacy `Lemma5_14HonestFalseStatement`, and
+  `Lemma5_16HonestResidual`), the honest CO25 bad events
   `E_inv/E_fork/E_time` over `Backtrack.S_BT` are dominated — for *any* trace
   distribution — by the single trace event `E` (CO25 §5.6), reducing their probability
   bound to Lemma 5.8.
-- `honestBad_birthday_of_residuals` (R1 assembly): M2 + `Lemma5_8EagerBirthdayResidual`
-  imply the honest bad events of the eager `D_𝔖`-carrier game are bounded by
-  `lemma5_8Bound` (= `claim5_21Bound` at the game's trace length).
+- `honestBad_birthday_of_residuals` (R1 assembly): M2 + the legacy
+  `Lemma5_8EagerBirthdayFalseStatement` imply the honest bad events of the eager
+  `D_𝔖`-carrier game are bounded by `lemma5_8Bound` (= `claim5_21Bound` at the game's
+  trace length).
 
-## Open core (named `*Residual : Prop`, NOT proven)
+## Legacy false statement, not a live residual
 
-- `Lemma5_8EagerBirthdayResidual`: CO25 Lemma 5.8 over the eager `D_DS` carrier —
-  `Pr[E(tr)] ≤ (7T²−3T)/(2|Σ|^c)` for the logged trace of any `T`-query adversary. The
-  exact gap between it and the bricks above is documented on the definition.
+- `Lemma5_8EagerBirthdayFalseStatement`: the original in-tree attempt at CO25 Lemma 5.8 over
+  the eager `D_DS` carrier. It is kept only as a refuted historical surface with a
+  machine-checked countermodel; use `BirthdayBoundPaper.Lemma5_8EagerPaperResidual` for the
+  repaired paper-faithful obligation.
 
 ## Claim-numbering note
 
@@ -361,7 +364,7 @@ honest bad event is at most the probability of the single trace event `E` (CO25 
 This channels all three §5.6 bad events into the one event that Lemma 5.8 bounds. -/
 theorem probEvent_honestBad_le_probEvent_E
     (h12 : Lemma5_12HonestResidual StmtIn U)
-    (h14 : Lemma5_14HonestResidual StmtIn U)
+    (h14 : Lemma5_14HonestFalseStatement StmtIn U)
     (h16 : Lemma5_16HonestResidual StmtIn U)
     {β : Type} (game : ProbComp β)
     (tr : β → QueryLog (duplexSpongeChallengeOracle StmtIn U))
@@ -397,11 +400,11 @@ theorem probEvent_dedupTimeHonest_le_probEvent_E
     (tr := tr z) (state := st z) (S := S) hE) hS
 
 /-- R1e, mixed raw/deduped route — raw inverse/fork honest events plus deduped timing
-events are dominated by raw `E`. This keeps the true M2a/M2b residual interface and removes
-the false raw M2c residual from the timing side. -/
+events are dominated by raw `E`. This keeps the true M2a residual plus the legacy M2b
+statement and removes the false raw M2c residual from the timing side. -/
 theorem probEvent_honestBadDedupTime_le_probEvent_E
     (h12 : Lemma5_12HonestResidual StmtIn U)
-    (h14 : Lemma5_14HonestResidual StmtIn U)
+    (h14 : Lemma5_14HonestFalseStatement StmtIn U)
     {β : Type} (game : ProbComp β)
     (tr : β → QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (st : β → CanonicalSpongeState U) :
@@ -434,10 +437,11 @@ variable (StmtIn U : Type) [SpongeUnit U] [SpongeSize] [Fintype U] [DecidableEq 
   [SampleableType (StmtIn → Vector U SpongeSize.C)]
   [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
 
-/-- R1f residual — **CO25 Lemma 5.8 over the eager `D_𝔖` carrier** (the open research
-core of this brick layer): for any `T`-query adversary against the duplex-sponge challenge
-oracle answered by the once-sampled `(h, p, p⁻¹)` carrier `D_DS`, the logged trace realizes
-the combined §5.6 event `E` with probability at most `(7T² − 3T)/(2|Σ|^c)`
+/-- R1f legacy false statement — **CO25 Lemma 5.8 over the eager `D_𝔖` carrier** as
+originally stated over the legacy event `E`: for any `T`-query adversary against the
+duplex-sponge challenge oracle answered by the once-sampled `(h, p, p⁻¹)` carrier `D_DS`,
+the logged trace realizes the combined §5.6 event `E` with probability at most
+`(7T² − 3T)/(2|Σ|^c)`
 (= `lemma5_8Bound U T`; at the Hyb₀/Hyb₁ trace length this is `claim5_21Bound`).
 
 **Exact gap to the proven bricks of this file.** The generic bricks bound (i) collisions
@@ -460,14 +464,14 @@ among fresh i.i.d. uniform answers and (ii) landings in adaptively-chosen sets, 
    `T = tₕ + 1 + tₚ + L + tₚᵢ` — see `lemma5_8Bound_eq_claim5_21Bound`).
 
 **Audit (2026-06-10): REFUTED as stated** —
-`Sponge314.K1.lemma5_8EagerBirthdayResidual_false` (Lemma58EagerFalse.lean) exhibits a
+`Sponge314.K1.lemma5_8EagerBirthdayFalseStatement_false` (Lemma58EagerFalse.lean) exhibits a
 single-inverse-query countermodel with `Pr[E] = 1 > lemma5_8Bound U 1`. Root cause is the
 B1 defect of `capacitySegmentDupPermInv` (BadEvents.lean): its 5th disjunct anchors on the
 **answer** capacity at `j' ≤ j` and self-fires at `j' = j`, so `E` holds on any trace with
 a `p⁻¹` entry (`Sponge316.hasInvEntry_implies_E`); CO25 Eq. 26 anchors on the **input**
 capacity. The CO25-faithful repaired event and re-statement are the active #314 wave-4
 work; the steps 1–3 above describe the proof plan against the *repaired* event. -/
-def Lemma5_8EagerBirthdayResidual : Prop :=
+def Lemma5_8EagerBirthdayFalseStatement : Prop :=
   ∀ {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ),
     IsTotalQueryBound P T →
     (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) => E z.2 |
@@ -488,9 +492,9 @@ eager residual together bound the probability that the logged trace of the eager
 residuals and the bad-event side of the Hyb₀₁ step is numerically closed. -/
 theorem honestBad_birthday_of_residuals
     (h12 : Lemma5_12HonestResidual StmtIn U)
-    (h14 : Lemma5_14HonestResidual StmtIn U)
+    (h14 : Lemma5_14HonestFalseStatement StmtIn U)
     (h16 : Lemma5_16HonestResidual StmtIn U)
-    (h58 : Lemma5_8EagerBirthdayResidual StmtIn U)
+    (h58 : Lemma5_8EagerBirthdayFalseStatement StmtIn U)
     {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
     (hT : IsTotalQueryBound P T) (st₀ : CanonicalSpongeState U) :
     (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) =>
@@ -510,7 +514,7 @@ theorem honestBad_birthday_of_residuals
 probability of an honest timing event over the deduplicated logged trace is bounded by
 `lemma5_8Bound`. This avoids consuming the refuted raw `Lemma5_16HonestResidual`. -/
 theorem dedupTimeHonest_birthday_of_residual
-    (h58 : Lemma5_8EagerBirthdayResidual StmtIn U)
+    (h58 : Lemma5_8EagerBirthdayFalseStatement StmtIn U)
     {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
     (hT : IsTotalQueryBound P T) (st₀ : CanonicalSpongeState U) :
     (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) =>
@@ -532,8 +536,8 @@ assembly counterpart of `probEvent_honestBadDedupTime_le_probEvent_E` and avoids
 raw M2c hypothesis. -/
 theorem honestBadDedupTime_birthday_of_residuals
     (h12 : Lemma5_12HonestResidual StmtIn U)
-    (h14 : Lemma5_14HonestResidual StmtIn U)
-    (h58 : Lemma5_8EagerBirthdayResidual StmtIn U)
+    (h14 : Lemma5_14HonestFalseStatement StmtIn U)
+    (h58 : Lemma5_8EagerBirthdayFalseStatement StmtIn U)
     {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
     (hT : IsTotalQueryBound P T) (st₀ : CanonicalSpongeState U) :
     (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) =>

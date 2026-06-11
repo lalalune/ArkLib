@@ -66,9 +66,13 @@ stable statement surface.
 - `SimulatedProverChallengeBudgetResidual` (M1c), `SimulatedProverSharedBudgetResidual` (M1d):
   the budget conjuncts of Lemma 5.1 for the `d2sAlgo` witness, both proven in
   `SimulatorBudgets`.
-- `Lemma5_12HonestResidual` / `Lemma5_14HonestResidual` / `Lemma5_16HonestResidual` (M2):
-  `¬E ⇒ ¬E_inv / ¬E_fork / ¬E_time` with the honest definitions. M2a is proven by
-  `Sponge316.lemma5_12_honest`; M2b/M2c remain open.
+- `Lemma5_12HonestResidual` / `Lemma5_16HonestResidual` (M2 residuals): legacy-event
+  `¬E ⇒ ¬E_inv / ¬E_time` with the honest definitions. M2a is proven by
+  `Sponge316.lemma5_12_honest`; the paper-faithful repaired M2 surfaces live in
+  `HonestConsistencyPaper`.
+- `Lemma5_14HonestFalseStatement`: the original legacy-event M2b statement. It is refuted by
+  a machine-checked counterexample and kept only as an audit surface; do not use it as live
+  proof debt.
 - `KeyLemmaEagerResidual` (R4): the full quantified CO25 Lemma 5.1 on the eager surface
   (requires the Hyb₀–Hyb₄ ladder, Claims 5.21–5.24, and the §5.7 abort analysis).
 -/
@@ -632,19 +636,20 @@ def Lemma5_12HonestResidual (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop
     (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),
     ¬ E tr → ¬ E_inv_honest tr state S
 
-/-- M2b residual — CO25 Lemma 5.14 (honest form): off `E` the backtrack family has at most
-one maximal sequence, `¬E(tr) → ¬E_fork(tr, s)`.
+/-- M2b legacy false statement — CO25 Lemma 5.14 (honest form) as originally stated over
+the legacy event `E`: off `E` the backtrack family has at most one maximal sequence,
+`¬E(tr) → ¬E_fork(tr, s)`.
 
 **Audit status (2026-06-10): REFUTED as stated** —
-`DuplexSpongeFS.Sponge316.ForkCounter.lemma5_14HonestResidual_false`
+`DuplexSpongeFS.Sponge316.ForkCounter.lemma5_14HonestFalseStatement_false`
 (`Lemma514ForkFalse.lean`, axiom-clean) exhibits a 5-entry trace with two
 alternating-pair loop chains to the same state, so `E_fork_honest` fires while `E` is
 absent, exploiting the same `redundantEntryDS` deviation from CO25 Def. 5.5
 (same-direction swapped certificates instead of the paper's opposite-direction `p⁻¹` one)
 that refutes the sibling `Lemma5_16HonestResidual` (`Lemma516TimePFalse.lean`).
-Do NOT add this residual as a hypothesis expecting a future discharge; repair
-`redundantEntryDS` first. -/
-def Lemma5_14HonestResidual (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
+Do NOT add this statement as a hypothesis expecting a future discharge; use the paper-faithful
+`Lemma5_14HonestResidualPaper` surface instead. -/
+def Lemma5_14HonestFalseStatement (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
   ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),
     ¬ E tr → ¬ E_fork_honest tr state S

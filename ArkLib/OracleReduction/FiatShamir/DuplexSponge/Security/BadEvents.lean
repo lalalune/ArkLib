@@ -67,7 +67,7 @@ certificate for a permutation entry is the *opposite-direction* entry
 disjuncts below instead use the *same direction* with the state pair reversed
 (`(p, y, x)` resp. `(p⁻¹, x, y)`). Machine-checked consequence: the M2c honest residual
 `Lemma5_16HonestResidual` is FALSE against this definition
-(`Lemma516TimePFalse.lemma5_16HonestResidual_false`), and the `Lemma5_14HonestResidual`
+(`Lemma516TimePFalse.lemma5_16HonestResidual_false`), and the `Lemma5_14HonestFalseStatement`
 fork analysis carries the same risk. Repairing this definition (swap `.inl ↦ .inr` in the
 second disjunct of the forward arm and `.inr ↦ .inl` in the inverse arm) changes the
 meaning of `E`; downstream proofs in `Lemma512Honest.lean` use the current certificates

@@ -7,7 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TimePFalse
 
 /-!
-# `Lemma5_14HonestResidual` is FALSE as stated: a machine-checked fork countermodel
+# `Lemma5_14HonestFalseStatement` is FALSE as stated: a machine-checked fork countermodel
 
 This file settles the audit question for the M2b residual (CO25 Lemma 5.14, honest form):
 like its sibling `Lemma5_16HonestResidual` (refuted in `Lemma516TimePFalse.lean`), the
@@ -585,14 +585,14 @@ theorem not_E_trcF : ¬ BadEventDS.E trcF := by
           decide
         · exact absurd (congrArg Sigma.fst h) (by simp)
 
-/-- **The in-tree `Lemma5_14HonestResidual` is FALSE** (at `StmtIn := Unit`,
+/-- **The in-tree `Lemma5_14HonestFalseStatement` is FALSE** (at `StmtIn := Unit`,
 `U := UInt8`, sponge width 2 / rate 1): two alternating-pair loop chains end at the
 same state while the combined bad event `E` is absent — the fork event
 `E_fork_honest` fires off `E`. Statement repair of `redundantEntryDS`
 (opposite-direction certificates, CO25 Def. 5.5) is required before the full
 Lemma 5.14 can be discharged, exactly as for the refuted `Lemma5_16HonestResidual`. -/
-theorem lemma5_14HonestResidual_false :
-    ¬ DuplexSpongeFS.KeyLemmaFoundations.Lemma5_14HonestResidual Unit UInt8 := by
+theorem lemma5_14HonestFalseStatement_false :
+    ¬ DuplexSpongeFS.KeyLemmaFoundations.Lemma5_14HonestFalseStatement Unit UInt8 := by
   intro h
   exact h trcF t1 famF not_E_trcF e_fork_holds
 
@@ -600,4 +600,4 @@ end DuplexSpongeFS.Sponge316.ForkCounter
 
 #print axioms DuplexSpongeFS.Sponge316.ForkCounter.e_fork_holds
 #print axioms DuplexSpongeFS.Sponge316.ForkCounter.not_E_trcF
-#print axioms DuplexSpongeFS.Sponge316.ForkCounter.lemma5_14HonestResidual_false
+#print axioms DuplexSpongeFS.Sponge316.ForkCounter.lemma5_14HonestFalseStatement_false

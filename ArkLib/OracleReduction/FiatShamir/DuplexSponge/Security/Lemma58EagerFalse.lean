@@ -7,7 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BirthdayBound
 
 /-!
-# #314 — `Lemma5_8EagerBirthdayResidual` is FALSE as stated: a machine-checked countermodel
+# #314 — `Lemma5_8EagerBirthdayFalseStatement` is FALSE as stated: a machine-checked countermodel
 
 The in-tree combined bad event `E` (BadEvents.lean) deviates from CO25 Eq. 26: the 5th
 disjunct of `capacitySegmentDupPermInv` anchors on the **answer** capacity of an inverse
@@ -144,8 +144,8 @@ combined bad event `E` with probability `1`, exceeding the claimed bound
 `j' ≤ j`), via the keystone `Sponge316.hasInvEntry_implies_E`. Statement repair of the
 `E_pinv` disjunct (anchor on the *query* capacity, CO25 Eq. 26) is required before
 CO25 Lemma 5.8 can be discharged over this event. -/
-theorem lemma5_8EagerBirthdayResidual_false :
-    ¬ DuplexSpongeFS.BirthdayBound.Lemma5_8EagerBirthdayResidual Unit UInt8 := by
+theorem lemma5_8EagerBirthdayFalseStatement_false :
+    ¬ DuplexSpongeFS.BirthdayBound.Lemma5_8EagerBirthdayFalseStatement Unit UInt8 := by
   intro h
   have hb := h P 1 isTotalQueryBound_P
   rw [probEvent_E_eq_one] at hb
@@ -155,4 +155,4 @@ theorem lemma5_8EagerBirthdayResidual_false :
 end DuplexSpongeFS.Sponge314.K1
 
 #print axioms DuplexSpongeFS.Sponge314.K1.probEvent_E_eq_one
-#print axioms DuplexSpongeFS.Sponge314.K1.lemma5_8EagerBirthdayResidual_false
+#print axioms DuplexSpongeFS.Sponge314.K1.lemma5_8EagerBirthdayFalseStatement_false

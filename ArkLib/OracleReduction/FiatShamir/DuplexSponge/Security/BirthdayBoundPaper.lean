@@ -25,7 +25,7 @@ are refuted or trivialized as stated (`Lemma58EagerFalse`, `Lemma514ForkFalse`,
   probability of `EPaper`.
 - `Lemma5_8EagerPaperResidual` — the repaired R1f core: the CO25 Lemma 5.8 birthday bound
   for `EPaper` over the eager `D_𝔖` carrier.  Unlike the refuted
-  `Lemma5_8EagerBirthdayResidual`, this statement survives the K1 single-inverse-query
+  `Lemma5_8EagerBirthdayFalseStatement`, this statement survives the K1 single-inverse-query
   countermodel: an inverse entry fires the repaired `E_pinv` arm only through a genuine
   capacity coincidence (its disjunct 5 anchors on the *query* capacity per CO25 Eq. 26),
   so `Pr[EPaper]` is small for low-query adversaries.
@@ -81,7 +81,7 @@ event**: for any `T`-query adversary against the duplex-sponge challenge oracle 
 by the once-sampled `(h, p, p⁻¹)` carrier `D_DS`, the logged trace realizes `EPaper` with
 probability at most `(7T² − 3T)/(2|Σ|^c)`.
 
-This replaces the refuted `Lemma5_8EagerBirthdayResidual` (see `Lemma58EagerFalse.lean`):
+This replaces the refuted `Lemma5_8EagerBirthdayFalseStatement` (see `Lemma58EagerFalse.lean`):
 over `EPaper` the B1 self-firing channel is closed, so the K1 single-inverse-query
 countermodel does not apply — an inverse entry contributes only genuine capacity
 coincidences.  Proof plan (CO25 Lemma 5.8): (1) carrier coupling — eager permutation table

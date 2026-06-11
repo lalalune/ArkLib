@@ -9,7 +9,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundatio
 /-!
 # Budget recombination for predicate-targeted query bounds (CO25 Lemma 5.8, step 3)
 
-The third documented step of `Lemma5_8EagerBirthdayResidual` (BirthdayBound.lean) is the
+The third documented step of `Lemma5_8EagerBirthdayFalseStatement` (BirthdayBound.lean) is the
 *budget split*: the per-flavor budgets `(tₕ, tₚ, tₚᵢ)` of the Key-Lemma surface must be
 recombined into a single total trace-length bound (`IsTotalQueryBound`), since CO25
 Lemma 5.8 is applied at the total trace length `T`. VCVio provides
@@ -26,7 +26,7 @@ use. This file fills that gap, with no finiteness assumptions:
   predicates cover the index set yield a total bound at the sum.
 * `DuplexSpongeFS.dsBaseQueryFlavor` + `isTotalQueryBound_of_dsBaseFlavorBudgets` — the
   DSFS instantiation on the bare duplex-sponge challenge oracle (the oracle of the
-  `Lemma5_8EagerBirthdayResidual` adversary): hash/perm/permInv budgets `(tₕ, tₚ, tₚᵢ)`
+  `Lemma5_8EagerBirthdayFalseStatement` adversary): hash/perm/permInv budgets `(tₕ, tₚ, tₚᵢ)`
   give `IsTotalQueryBound P (tₕ + tₚ + tₚᵢ)`.
 * `DuplexSpongeFS.isTotalQueryBound_of_dsFlavorBudgets` — the same on the full Key-Lemma
   surface `oSpec + duplexSpongeChallengeOracle` with the shared budget included.
@@ -107,7 +107,7 @@ open OracleComp
 variable {StmtIn : Type} {U : Type} [SpongeUnit U] [SpongeSize]
 
 /-- Flavor of a single query index of the bare duplex-sponge challenge oracle
-`duplexSpongeChallengeOracle StmtIn U` (the oracle of the `Lemma5_8EagerBirthdayResidual`
+`duplexSpongeChallengeOracle StmtIn U` (the oracle of the `Lemma5_8EagerBirthdayFalseStatement`
 adversary, with no shared `oSpec` component): `(h, p, p⁻¹)` of CO25 §5.4. -/
 def dsBaseQueryFlavor :
     (StmtIn ⊕ CanonicalSpongeState U ⊕ CanonicalSpongeState U) → DSQueryFlavor
