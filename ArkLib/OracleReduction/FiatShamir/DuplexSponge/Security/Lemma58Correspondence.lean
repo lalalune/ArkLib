@@ -486,6 +486,48 @@ theorem sameClass_of_entryKeys
     -- e' = ⟨inr (inr b), a⟩ = swapEntry ⟨inr (inl a), b⟩
     exact Or.inr rfl
 
+/-! ## Capacity-freshness from non-anchoredness (piece B) -/
+
+/-- Cons-unfolding of `¬ AnchoredFrom`: no step of `e :: ℓ` is an anchored collision. -/
+theorem not_anchoredFrom_cons {c : DSCache StmtIn U} {e : DSEntry StmtIn U}
+    {ℓ : List (DSEntry StmtIn U)} (h : ¬ AnchoredFrom c (e :: ℓ)) :
+    ¬ collisionStep e.1 c e.2 ∧ ¬ AnchoredFrom (stepCache c e) ℓ := by
+  rw [AnchoredFrom, not_or] at h
+  exact h
+
+/-- A fresh forward step that is not an anchored collision yields an answer capacity that is
+neither an existing slot nor the query's own capacity. -/
+theorem fwd_fresh_cap_new {c : DSCache StmtIn U}
+    {a b : CanonicalSpongeState U}
+    (hfresh : c.2.find? (fun w => w.1 = a) = none)
+    (hnc : ¬ collisionStep (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U).1 c
+            (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U).2) :
+    b.capacitySegment ∉ slotList c ∧ b.capacitySegment ≠ a.capacitySegment := by
+  simp only [collisionStep, hfresh, true_and, not_or] at hnc
+  exact hnc
+
+/-- A fresh inverse step that is not an anchored collision yields an answer capacity that is
+neither an existing slot nor the query's own capacity. -/
+theorem inv_fresh_cap_new {c : DSCache StmtIn U}
+    {a b : CanonicalSpongeState U}
+    (hfresh : c.2.find? (fun w => w.2 = b) = none)
+    (hnc : ¬ collisionStep (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U).1 c
+            (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U).2) :
+    a.capacitySegment ∉ slotList c ∧ a.capacitySegment ≠ b.capacitySegment := by
+  simp only [collisionStep, hfresh, true_and, not_or] at hnc
+  exact hnc
+
+/-- A fresh hash step that is not an anchored collision yields an answer that is not an
+existing slot. -/
+theorem hash_fresh_ans_new {c : DSCache StmtIn U}
+    {q : StmtIn} {u : Vector U SpongeSize.C}
+    (hfresh : c.1 q = none)
+    (hnc : ¬ collisionStep (⟨.inl q, u⟩ : DSEntry StmtIn U).1 c
+            (⟨.inl q, u⟩ : DSEntry StmtIn U).2) :
+    u ∉ slotList c := by
+  simp only [collisionStep, hfresh, true_and] at hnc
+  exact hnc
+
 /-! ## Dedup recursion infrastructure (sublist + membership transport) -/
 
 open DuplexSpongeFS.Paper in
@@ -627,6 +669,10 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.hasInvKey_stepCache_imp
 #print axioms DuplexSpongeFS.EagerLazyDS.hasInvKey_foldl_imp
 #print axioms DuplexSpongeFS.EagerLazyDS.sameClass_of_entryKeys
+#print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
+#print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
+#print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
+#print axioms DuplexSpongeFS.EagerLazyDS.hash_fresh_ans_new
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_sublist
 #print axioms DuplexSpongeFS.EagerLazyDS.mem_of_mem_removeRedundantEntryDSPaper
 #print axioms DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction
