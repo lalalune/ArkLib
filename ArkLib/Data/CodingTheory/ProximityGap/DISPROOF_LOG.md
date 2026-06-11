@@ -5427,3 +5427,28 @@ renormalization analysis of the window needs a map that re-enters it — halving
 does (which is precisely why 858 works as a protocol trick and says nothing about
 `ε_mca` in the window). → verified as `halving_exits_window` /
 `halving_orbit_never_returns` (`HalvingWindowExit.lean`, axiom-clean).
+
+### K1 (#357 R2) — "fold strictly shrinks the KKH26 bad family" REFUTED; covariance is EXACT
+Probe `probe_kkh26_fold_transport.py` (p=17, chain n=16→8→4, r=3, w=3): the KKH26 stack
+`(x^{rm}/(x^m−w), 1/(x^m−w))` is FIBER-EVEN at even m, so the FRI fold acts on it
+β-independently and sends it to the same construction at (n/2, m/2), same w — verified
+for ALL β at both even-m levels. The exact bad-γ sets are EQUAL down the chain at
+matched relative δ ({10,12,13,16} at δ=1/4, 3/8). The ceiling neither improves nor
+degrades down the tower: the construction is a fold FIXED POINT. Terminal m=1: the
+fold is β-dependent and exactly ONE challenge — β = −w — kills the structure
+(folded u₁ = (w+β)/(y²−w²) ≡ 0), so the bad line survives terminal folding except
+w.p. 1/q. K1's strict-improvement is dead; the self-similarity is the keepable lemma
+(formalization queued).
+
+### S2(b) (#357) — MissingLine-as-stated REFUTED at the Johnson radius; holds below
+Probes `probe_missing_line_search.py` + `probe_missing_line_rungs.py` +
+`probe_defeater_exactness.py` (exhaustive up to codeword translation): the obstruction
+hitting number H(U) obeys H ≤ 2 ≤ q on every below-Johnson rung tested
+(F₃/F₅ × n∈{3,4} × k∈{1,2}, l∈{2,3}), but at (F₃, n=4, k=1, |T|≥2) — which is
+δ = 1/2 = EXACTLY Johnson for ρ=1/4 — a defeater stack ((1,3),(9,13)) reaches
+H = 4 > q = 3. Same code strictly below Johnson (|T|≥3): H ≤ 2 again. So:
+**ObstructionBound is Johnson-gated** — refined conjecture S2(b′): it holds for all
+δ < 1−√ρ. The defeater does NOT break exactness: at δ = Johnson both interleaved and
+base saturate (9/9 bad seeds), so `epsMCAG` exactness survives and the obstruction
+bound is sufficient-not-necessary. No strict interleaving separation found (old K2
+still witness-less).
