@@ -140,12 +140,9 @@ theorem queryLog_entries_not_p_of_isQueryBoundP_zero
       simp only [simulateQ_pure] at hmem
       have hlog : log = [] := by
         revert hmem
-        simp only [WriterT.run, Prod.ext_iff]
-        first
-          | (intro h2; exact h2.2.symm)
-          | (intro _ h2; exact h2.symm)
-          | (intro h2; exact h2.2)
-          | simp_all
+        simp only [WriterT.run_pure', support_pure, Set.mem_singleton_iff,
+          Prod.mk.injEq]
+        exact fun h2 => h2.2
       subst hlog
       simp
   | query_bind t mx ih =>
@@ -523,29 +520,26 @@ theorem hyb3Strict_vLog_challenge_free [SampleableType U]
       have hfree : ∀ e ∈ vLogRaw, ¬ (isChallengeEntryIdx e.1 = true) :=
         queryLog_entries_not_p_of_isQueryBoundP_zero
           (d2fRaw_hitOnly_challenge_budget _ memo) hv'
-      match vRes? with
-      | none => simp at h
-      | some ⟨⟨stmtOut?, dst'⟩, memo'⟩ =>
-          match stmtOut? with
-          | none => simp at h
-          | some stmtOut =>
-              simp only [mem_support_bind_iff] at h
-              obtain ⟨pLog'?, -, vLog'?, hvl, h⟩ := h
-              match pLog'?, vLog'? with
-              | none, none => simp at h
-              | none, some _ => simp at h
-              | some _, none => simp at h
-              | some pLog', some vLog' =>
-                  simp only [support_pure, Set.mem_singleton_iff,
-                    Option.some.injEq] at h
-                  subst h
-                  -- pin down `vLog'` from the deterministic line-4 map
-                  simp only [hyb3Line4SaltErase, OptionT.run_pure, simulateQ_pure,
-                    support_pure, Set.mem_singleton_iff, Option.some.injEq] at hvl
-                  subst hvl
-                  exact projectRightQueryLog_eq_nil_of_forall_isLeft _
-                    (saltErase_isLeft_of_isLeft _
-                      (project_isLeft_of_challenge_free vLogRaw hfree))
+      rcases vRes? with _ | ⟨⟨stmtOut?, dst'⟩, memo'⟩
+      · simp at h
+      · rcases stmtOut? with _ | stmtOut
+        · simp at h
+        · simp only [mem_support_bind_iff] at h
+          obtain ⟨pLog'?, -, vLog'?, hvl, h⟩ := h
+          rcases pLog'? with _ | pLog' <;> rcases vLog'? with _ | vLog'
+          · simp at h
+          · simp at h
+          · simp at h
+          · simp only [support_pure, Set.mem_singleton_iff,
+              Option.some.injEq] at h
+            subst h
+            -- pin down `vLog'` from the deterministic line-4 map
+            simp only [hyb3Line4SaltErase, OptionT.run_pure, simulateQ_pure,
+              support_pure, Set.mem_singleton_iff, Option.some.injEq] at hvl
+            subst hvl
+            exact projectRightQueryLog_eq_nil_of_forall_isLeft _
+              (saltErase_isLeft_of_isLeft _
+                (project_isLeft_of_challenge_free vLogRaw hfree))
 
 end R1
 
