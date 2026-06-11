@@ -6462,3 +6462,16 @@ formalization session should prove, in order: (1) the discriminant-budget branch
 bound; (2) the one-branch concentration from incidence mass; (3) the rationality/degree
 read-off; then the proven chain fires through to `JohnsonDischargeStatement` and the
 deployed-regime δ* pin.
+
+### The RS band-3 staircase at d = 2b−1 REFUTED via curve points — ε_mca is ARITHMETIC at the boundary (#357 round 5)
+
+RS(n=8, k=4, d=5), band 3, disjoint 2+2+2+2 punctures: the syndrome system is square and
+det = Q(g,h) = g²h²+294g²h+105g²−296gh²−504gh+400h² (γ = (0,1,g,h) normalized), an
+irreducible quadric NOT supported on the degeneracy locus. Over F₁₀₁: 196 admissible
+points; γ = (0,1,2,33) verified END-TO-END as a 4-bad configuration (4 exact codeword
+agreements + no-joint-explanation by solvability tests). Hence: RS collapse at band b
+holds at d ≥ 2b (cell sweep, certified) and FAILS at d = 2b−1 — the MDS threshold is
+exactly 2b, and below it the bad-scalar locus = F_q-points of a determinant curve: the
+first machine-verified ARITHMETIC sensitivity of ε_mca (prototype of the window's
+root-of-unity barrier). Same quadric appears as maximal minor at d = 6 (the overdetermined
+extension kills its zero locus there).
