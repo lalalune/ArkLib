@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Data.Finset.Basic
 
@@ -89,7 +91,70 @@ theorem representationCount_le (G : Finset F) {n : ℕ} (hn : 0 < n)
     _ ≤ (reprPoly c n).natDegree := Polynomial.card_roots' _
     _ = n := reprPoly_natDegree c hn
 
+/-- `Xⁿ − 1`, the defining polynomial of the root-of-unity subgroup `G`. -/
+theorem X_pow_sub_one_ne_zero {n : ℕ} (hn : 0 < n) : (Polynomial.X ^ n - 1 : F[X]) ≠ 0 := by
+  have : (Polynomial.X ^ n - 1 : F[X]) = Polynomial.X ^ n - Polynomial.C 1 := by
+    rw [map_one]
+  rw [this]; exact Polynomial.X_pow_sub_C_ne_zero hn 1
+
+/-- **The representation set sits inside the roots of `gcd(Xⁿ−1, (C c−X)ⁿ−1)`.** Every `z ∈ G` with
+`c − z ∈ G` is a *common* root of `G`'s defining polynomial `Xⁿ−1` and of `reprPoly c n`, so
+`X − C z` divides their `gcd`, i.e. `z` is a root of the gcd. This is the object the resultant /
+Stepanov sum-product argument controls (the gcd is trivial for most `c`). -/
+theorem representationSet_subset_gcd_roots (G : Finset F) {n : ℕ} (hn : 0 < n)
+    (hGmem : ∀ z, z ∈ G ↔ z ^ n = 1) (c : F) :
+    G.filter (fun z => c - z ∈ G)
+      ⊆ (gcd (Polynomial.X ^ n - 1) (reprPoly c n)).roots.toFinset := by
+  classical
+  have hgne : gcd (Polynomial.X ^ n - 1 : F[X]) (reprPoly c n) ≠ 0 := by
+    intro h
+    rw [gcd_eq_zero_iff] at h
+    exact X_pow_sub_one_ne_zero hn h.1
+  intro z hz
+  rw [Finset.mem_filter] at hz
+  -- `z` is a root of both `Xⁿ−1` (from `z∈G`) and `reprPoly c n` (from `c−z∈G`).
+  have hz1 : (Polynomial.X ^ n - 1 : F[X]).IsRoot z := by
+    have hzn : z ^ n = 1 := (hGmem z).mp hz.1
+    simp [Polynomial.IsRoot.def, hzn]
+  have hz2 : (reprPoly c n).IsRoot z := by
+    have hcz : (c - z) ^ n = 1 := (hGmem (c - z)).mp hz.2
+    rw [Polynomial.IsRoot.def, reprPoly]
+    simp only [Polynomial.eval_sub, Polynomial.eval_pow, Polynomial.eval_C, Polynomial.eval_X,
+      Polynomial.eval_one]
+    rw [hcz]; ring
+  -- `X − C z` divides both, hence divides the gcd, hence `z` is a root of the gcd.
+  have hd1 : (Polynomial.X - Polynomial.C z) ∣ (Polynomial.X ^ n - 1 : F[X]) :=
+    Polynomial.dvd_iff_isRoot.mpr hz1
+  have hd2 : (Polynomial.X - Polynomial.C z) ∣ reprPoly c n :=
+    Polynomial.dvd_iff_isRoot.mpr hz2
+  have hdg : (Polynomial.X - Polynomial.C z) ∣
+      gcd (Polynomial.X ^ n - 1 : F[X]) (reprPoly c n) :=
+    dvd_gcd hd1 hd2
+  rw [Multiset.mem_toFinset, Polynomial.mem_roots hgne]
+  exact Polynomial.dvd_iff_isRoot.mp hdg
+
+/-- **Gcd-degree representation bound: `r(c) ≤ deg gcd(Xⁿ−1, (C c−X)ⁿ−1)`.** The sharp polynomial-method
+form: the additive representation count is bounded by the degree of the gcd of `G`'s defining
+polynomial and `reprPoly c n`. This is the quantity the resultant non-vanishing controls — `gcd`
+trivial (degree `0`) for `c` away from the few additive coincidences is exactly the sum-product input
+the HBK/Stepanov argument supplies to push `N = Σ_c r(c)` below the trivial `|G|²`. -/
+theorem representationCount_le_gcd_degree (G : Finset F) {n : ℕ} (hn : 0 < n)
+    (hGmem : ∀ z, z ∈ G ↔ z ^ n = 1) (c : F) :
+    (G.filter (fun z => c - z ∈ G)).card
+      ≤ (gcd (Polynomial.X ^ n - 1 : F[X]) (reprPoly c n)).natDegree := by
+  classical
+  have hgne : gcd (Polynomial.X ^ n - 1 : F[X]) (reprPoly c n) ≠ 0 := by
+    intro h; rw [gcd_eq_zero_iff] at h; exact X_pow_sub_one_ne_zero hn h.1
+  calc (G.filter (fun z => c - z ∈ G)).card
+      ≤ (gcd (Polynomial.X ^ n - 1 : F[X]) (reprPoly c n)).roots.toFinset.card :=
+        Finset.card_le_card (representationSet_subset_gcd_roots G hn hGmem c)
+    _ ≤ Multiset.card (gcd (Polynomial.X ^ n - 1 : F[X]) (reprPoly c n)).roots :=
+        Multiset.toFinset_card_le _
+    _ ≤ (gcd (Polynomial.X ^ n - 1 : F[X]) (reprPoly c n)).natDegree :=
+        Polynomial.card_roots' _
+
 end ArkLib.ProximityGap.SubgroupRepresentationRoots
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms ArkLib.ProximityGap.SubgroupRepresentationRoots.representationCount_le
+#print axioms ArkLib.ProximityGap.SubgroupRepresentationRoots.representationCount_le_gcd_degree
