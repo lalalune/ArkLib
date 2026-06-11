@@ -82,7 +82,7 @@ hypotheses, not hidden `sorryAx` placeholders.
 
 **Regime warning (audit 2026-06-10).** The conditional entry points whose `hOuter` slot is typed
 at `midSoundnessProtocolLanguage` with the paper error — `issue13_soundness`,
-`issue13_soundness_of_residual`, `issue13_soundness_msgSeam`,
+`issue13_soundness_msgSeam`,
 `issue13_soundness_msgSeam_wiredSumcheck`, `issue13_soundness_msgSeam_wiredRoundAppend` — are
 **vacuously conditional in the typical (small-support, large-field) regime**: that `hOuter` is
 refuted there by `prob_midSoundnessLanguage_ge_compl_support` (`OuterSoundnessSharp.lean`).  They
@@ -214,23 +214,13 @@ theorem issue13_soundness (sumcheckSoundnessError : ℝ≥0)
   logup_soundness_uncond oSpec F n M params init impl sumcheckSoundnessError
     hOuter hSumcheck hPlainAppend
 
-/-- **Issue #13 — bundled-residual front door for soundness.**
-
-Packages the three remaining soundness obligations into one existential `Prop` and re-derives the
-headline. A re-export of `logup_soundness_uncond_of_residual`.
-
-**DEPRECATED / VACUOUSLY CONDITIONAL (audit 2026-06-10).** The bundled hypothesis
-`LogupSoundnessUncondResidual` is uninstantiable in the typical (small-support, large-field)
-regime: its `hOuter` conjunct at `midSoundnessProtocolLanguage` with the paper error is refuted
-by `prob_midSoundnessLanguage_ge_compl_support` (`OuterSoundnessSharp.lean`).  Live routes:
-`logup_soundness_end_to_end` (`OuterMaliciousSoundness.lean`) and
-`outerVerifier_soundness_sharp` (`OuterRbrSoundness.lean`). -/
-theorem issue13_soundness_of_residual (sumcheckSoundnessError : ℝ≥0)
-    (h : LogupSoundnessUncondResidual oSpec F n M params init impl sumcheckSoundnessError) :
-    (logupVerifier oSpec F n M params).soundness init impl
-      (inputRelation F n M).language outputRelation.language
-      (logupSoundnessError F n M params sumcheckSoundnessError) :=
-  logup_soundness_uncond_of_residual oSpec F n M params init impl sumcheckSoundnessError h
+/-! The bundled-residual front door `issue13_soundness_of_residual` (re-export of
+`logup_soundness_uncond_of_residual` over `LogupSoundnessUncondResidual`) was DELETED in the
+#351 burn-down (2026-06-11): the bundle was shown uninstantiable in the typical regime by the
+2026-06-10 audit (`prob_midSoundnessLanguage_ge_compl_support`, `OuterSoundnessSharp.lean`),
+making it vacuously conditional.  Use `issue13_soundness` with the three obligations held
+individually, or the live routes `issue13_soundness_end_to_end` /
+`outerVerifier_soundness_sharp`. -/
 
 /-- **Issue #13 — LogUp Protocol 2 soundness with the append blocker CLOSED (message seam).**
 
@@ -598,7 +588,6 @@ end Logup
 #print axioms Logup.issue13_soundness_end_to_end
 #print axioms Logup.issue13_completeness_final
 #print axioms Logup.issue13_soundness
-#print axioms Logup.issue13_soundness_of_residual
 #print axioms Logup.issue13_soundness_msgSeam
 #print axioms Logup.issue13_soundness_pointwiseSumcheck
 #print axioms Logup.issue13_soundness_msgSeam_wiredSumcheck
