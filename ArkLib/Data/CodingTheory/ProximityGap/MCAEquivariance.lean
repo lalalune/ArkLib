@@ -3,57 +3,65 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarExactPoint
+import ArkLib.Data.Probability.Instances
+import ArkLib.Data.CodingTheory.ReedSolomon
 
 /-!
-# S3 (#357): the MCA equivariance engine — the symmetry group of `ε_mca`
+# The MCA equivariance engine (#357 S3): `mcaEvent` symmetry, orbit-sup reduction
 
-Four independently-discovered phenomena across the δ* campaign — the probes' syndrome
-reduction (codeword translation), the M3 affine/coset invariance, the KKH26 rotation orbits,
-and the γ-shift used in the exact ladder — are the statement that `mcaEvent` is equivariant
-under one group acting on word stacks:
+`ε_mca` is a `⨆` over `|A|^{2n}` stacks of a probability over the line scalar `γ`. The probe
+laboratory computes exact values of `ε_mca` only because the per-stack probability is constant
+on the orbits of a large symmetry group. This file makes that symmetry **formal**, turning the
+probes' orbit reductions into theorems and providing the scaling engine for exact-`δ*` rungs
+beyond `n = 4` (R1, `MCADeltaStarExactPoint.lean`).
 
-  `G = (code-preserving coordinate permutations) ⋉ (C² ⋊ (scalar scaling × shear))`,
+## The group, and the lemmas
 
-with the scaling/shear components acting on the *line parameter* `γ` by an affine bijection of
-`F`. This file proves the four equivariance laws, pushes each to the probability level
-(uniform-`γ` reindexing), and derives the **orbit-section theorem**: `ε_mca` is a supremum
-over any system of orbit representatives. Consequences:
+For a linear code `C ⊆ (ι → A)` over `F`, the per-stack bad-scalar probability
+`γ ↦ Pr[mcaEvent C δ u₀ u₁ γ]` is invariant under:
 
-* every orbit-reduced exact `ε_mca` computation (the probe lab's engine, the n = 8/12 rungs)
-  is retroactively certified by a formal reduction;
-* the R1 exact-point methodology (`MCADeltaStarExactPoint`) scales: `decide`-feasibility of
-  the next rungs needs only one stack per orbit;
-* any flat-numerator/orbit-count law (the `(12,6)` plateau) is now *stateable* in Lean.
+* **codeword translation** (`mcaEvent_translate`, `prob_mcaEvent_translate`):
+  `(u₀, u₁) ↦ (u₀ + c₀, u₁ + c₁)` for codewords `c₀, c₁ ∈ C` — `mcaEvent` is preserved at
+  *each* `γ` (the translation `c₀ + γ•c₁` stays in `C`);
+* **scaling of the whole stack** (`mcaEvent_smul_both`, `prob_mcaEvent_smul_both`):
+  `(u₀, u₁) ↦ (s•u₀, s•u₁)`, `s ≠ 0` — preserved at each `γ`;
+* **scaling of the direction row** (`mcaEvent_smul_right`, `prob_mcaEvent_smul_right`):
+  `u₁ ↦ s•u₁`, `s ≠ 0` — reparametrizes `γ ↦ γ·s`, so the *probability* is preserved
+  (uniform measure, `prob_uniform_comp_equiv`);
+* **γ-shift** (`mcaEvent_shift`, `prob_mcaEvent_shift`): `u₀ ↦ u₀ + β•u₁` — reparametrizes
+  `γ ↦ β + γ`, probability preserved;
+* **domain symmetry** (`mcaEvent_comp_perm_iff`, `prob_mcaEvent_comp_perm`): any permutation
+  `σ` of the coordinates with `C ∘ σ = C` — preserved at each `γ`. For Reed–Solomon codes the
+  multiplicative rotations of a (smooth) subgroup domain qualify (`comp_perm_mem_code`,
+  `mcaEvent_rs_rotate`): `domain (σ i) = g · domain i` maps `code domain k` to itself via
+  `p ↦ p ∘ (gX)`.
 
-The laws, for `C` a submodule code:
+Consequently `ε_mca` is computable as a sup over **orbit representatives**
+(`epsMCA_eq_iSup_subtype_of_reps`): any set of stacks meeting every orbit of the action
+suffices. This is the engine that makes the `n = 8` exact rung kernel-feasible and
+retroactively certifies the probe lab's orbit reductions.
 
-1. **Translation** (`mcaEvent_translate_iff`): for codewords `c₀, c₁ ∈ C`,
-   `mcaEvent C δ (u₀+c₀) (u₁+c₁) γ ↔ mcaEvent C δ u₀ u₁ γ` — same `γ`.
-2. **Permutation** (`mcaEvent_perm_iff`): for `π` a coordinate permutation with
-   `w ∈ C ↔ w∘π ∈ C`, `mcaEvent C δ (u₀∘π) (u₁∘π) γ ↔ mcaEvent C δ u₀ u₁ γ` — same `γ`,
-   witness sets transported by `π` (cardinality preserved).
-3. **Scaling** (`mcaEvent_smul_right_iff`): for `a ≠ 0`,
-   `mcaEvent C δ u₀ (a•u₁) γ ↔ mcaEvent C δ u₀ u₁ (γ·a)` — `γ` reparametrized.
-4. **Shear** (`mcaEvent_shear_iff`):
-   `mcaEvent C δ (u₀+b•u₁) u₁ γ ↔ mcaEvent C δ u₀ u₁ (γ+b)` — `γ` shifted.
+## The R1 instance
 
-Probability level: 1–2 are pointwise-in-`γ`, so `Pr` is equal on the nose; 3–4 compose with
-the uniform-measure reindexing `prob_uniform_comp_equiv` (any bijection of `F` preserves the
-uniform `γ`-mass). The orbit-section theorem `epsMCA_eq_iSup_rep` then states: for any
-representative map `rep` with per-stack `Pr`-invariance, `ε_mca = ⨆ u, Pr[mcaEvent (rep u)]`.
+For the `R1` code `rsC = RS[F₅, ⟨2⟩, 2]` (`MCADeltaStarExactPoint.lean`):
+* `rsC_eq_code` — **the bridge**: the hand-rolled `rsC` *is* literally
+  `ReedSolomon.code ⟨gdom, _⟩ 2` (red-teaming R1: its "RS" claim is now anchored to the
+  project-wide RS definition);
+* `gdom_rotate` / `rsC_comp_rotate_mem` / `mcaEvent_rsC_rotate` — the concrete domain
+  rotation `σ = finRotate 4` (`gdom (σ i) = 2 · gdom i`) preserves `rsC` and hence
+  `mcaEvent`: the A5 equivariance pin, machine-checked at the first exact-δ* instance.
 
-Non-vacuity: the R1 code `RS[F₅, ⟨2⟩, 2]` is closed under the domain rotation `x ↦ 2x`
-(`rsC_rot_closed`), giving a genuine nontrivial instance of law 2 on a smooth domain
-(`prob_mcaEvent_rsC_rot_eq`).
-
-All results are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
+Everything is axiom-clean (`propext`, `Classical.choice`, `Quot.sound`); no `sorry`, no
+`native_decide`.
 
 ## References
-- Issue #357 (the δ* campaign; hypothesis S3); [ABF26] ePrint 2026/680.
+
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
+  ePrint 2026/680. Issue #357 (S3 in the campaign dossier).
 -/
 
-set_option autoImplicit false
 set_option linter.unusedSectionVars false
 
 open scoped NNReal ENNReal ProbabilityTheory
@@ -65,368 +73,463 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
-/-! ## Law 1 — translation by a pair of codewords -/
+/-! ## Probability helpers -/
 
-/-- Joint explanations transport along translation by codewords (one direction). -/
-theorem pairJointAgreesOn_translate_of (C : Submodule F (ι → A)) {c₀ c₁ : ι → A}
-    (hc₀ : c₀ ∈ C) (hc₁ : c₁ ∈ C) {S : Finset ι} {u₀ u₁ : ι → A}
-    (h : pairJointAgreesOn (C : Set (ι → A)) S u₀ u₁) :
-    pairJointAgreesOn (C : Set (ι → A)) S (u₀ + c₀) (u₁ + c₁) := by
-  obtain ⟨v₀, hv₀, v₁, hv₁, hag⟩ := h
-  refine ⟨v₀ + c₀, C.add_mem hv₀ hc₀, v₁ + c₁, C.add_mem hv₁ hc₁, fun i hi => ?_⟩
-  refine ⟨?_, ?_⟩
-  · show v₀ i + c₀ i = u₀ i + c₀ i
-    rw [(hag i hi).1]
-  · show v₁ i + c₁ i = u₁ i + c₁ i
-    rw [(hag i hi).2]
+open Classical in
+/-- Pointwise-equivalent events have equal probability. -/
+theorem Pr_congr_iff {α : Type} (D : PMF α) {P Q : α → Prop} (h : ∀ x, P x ↔ Q x) :
+    Pr_{ let x ← D }[P x] = Pr_{ let x ← D }[Q x] :=
+  le_antisymm (Pr_le_Pr_of_implies D P Q fun x => (h x).mp)
+    (Pr_le_Pr_of_implies D Q P fun x => (h x).mpr)
 
-/-- Joint explanations are invariant under translation by codewords. -/
-theorem pairJointAgreesOn_translate_iff (C : Submodule F (ι → A)) {c₀ c₁ : ι → A}
-    (hc₀ : c₀ ∈ C) (hc₁ : c₁ ∈ C) (S : Finset ι) (u₀ u₁ : ι → A) :
+open Classical in
+/-- The uniform measure is invariant under any self-equivalence of the sample space:
+`Pr[P (e γ)] = Pr[P γ]`. -/
+theorem prob_uniform_comp_equiv {G : Type} [Fintype G] [Nonempty G]
+    (P : G → Prop) (e : G ≃ G) :
+    Pr_{ let γ ←$ᵖ G }[P (e γ)] = Pr_{ let γ ←$ᵖ G }[P γ] := by
+  have hcard : (Finset.filter (fun γ => P (e γ)) Finset.univ).card
+      = (Finset.filter P Finset.univ).card := by
+    apply Finset.card_equiv e
+    intro γ
+    simp
+  rw [prob_uniform_eq_card_filter_div_card, prob_uniform_eq_card_filter_div_card, hcard]
+
+/-- Right multiplication by a nonzero scalar, as a self-equivalence of `F` whose
+forward map is *syntactically* `γ * s`. -/
+def mulRightEquiv (s : F) (hs : s ≠ 0) : F ≃ F where
+  toFun γ := γ * s
+  invFun γ := γ * s⁻¹
+  left_inv γ := by field_simp
+  right_inv γ := by field_simp
+
+/-- Left addition by a scalar, as a self-equivalence of `F` whose forward map is
+*syntactically* `β + γ`. -/
+def addLeftEquiv (β : F) : F ≃ F where
+  toFun γ := β + γ
+  invFun γ := γ - β
+  left_inv γ := by ring_nf
+  right_inv γ := by ring_nf
+
+/-! ## Transport of `pairJointAgreesOn` -/
+
+/-- Joint explainability is invariant under translating the stack by a codeword pair. -/
+theorem pairJointAgreesOn_translate (C : Submodule F (ι → A)) {S : Finset ι}
+    {u₀ u₁ c₀ c₁ : ι → A} (hc₀ : c₀ ∈ C) (hc₁ : c₁ ∈ C) :
     pairJointAgreesOn (C : Set (ι → A)) S (u₀ + c₀) (u₁ + c₁) ↔
       pairJointAgreesOn (C : Set (ι → A)) S u₀ u₁ := by
   constructor
-  · intro h
-    have h' := pairJointAgreesOn_translate_of C (C.neg_mem hc₀) (C.neg_mem hc₁) h
-    rwa [add_neg_cancel_right, add_neg_cancel_right] at h'
-  · exact pairJointAgreesOn_translate_of C hc₀ hc₁
+  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
+    refine ⟨v₀ - c₀, C.sub_mem hv₀ hc₀, v₁ - c₁, C.sub_mem hv₁ hc₁, fun i hi => ?_⟩
+    obtain ⟨h0, h1⟩ := hag i hi
+    constructor
+    · simp only [Pi.sub_apply, h0, Pi.add_apply]
+      abel
+    · simp only [Pi.sub_apply, h1, Pi.add_apply]
+      abel
+  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
+    refine ⟨v₀ + c₀, C.add_mem hv₀ hc₀, v₁ + c₁, C.add_mem hv₁ hc₁, fun i hi => ?_⟩
+    obtain ⟨h0, h1⟩ := hag i hi
+    exact ⟨by simp only [Pi.add_apply, h0], by simp only [Pi.add_apply, h1]⟩
 
-/-- One direction of the translation law for the MCA bad event. -/
-theorem mcaEvent_translate_of (C : Submodule F (ι → A)) {c₀ c₁ : ι → A}
-    (hc₀ : c₀ ∈ C) (hc₁ : c₁ ∈ C) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
-    (h : mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ) :
-    mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + c₀) (u₁ + c₁) γ := by
-  obtain ⟨S, hS, ⟨w, hw, hweq⟩, hno⟩ := h
-  refine ⟨S, hS, ⟨w + (c₀ + γ • c₁), C.add_mem hw (C.add_mem hc₀ (C.smul_mem γ hc₁)),
-    fun i hi => ?_⟩, ?_⟩
-  · show w i + (c₀ i + γ • c₁ i) = (u₀ i + c₀ i) + γ • (u₁ i + c₁ i)
-    rw [hweq i hi, smul_add]
+/-- Joint explainability is invariant under scaling the direction row by `s ≠ 0`. -/
+theorem pairJointAgreesOn_smul_right (C : Submodule F (ι → A)) {S : Finset ι}
+    {u₀ u₁ : ι → A} {s : F} (hs : s ≠ 0) :
+    pairJointAgreesOn (C : Set (ι → A)) S u₀ (s • u₁) ↔
+      pairJointAgreesOn (C : Set (ι → A)) S u₀ u₁ := by
+  constructor
+  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
+    refine ⟨v₀, hv₀, s⁻¹ • v₁, C.smul_mem _ hv₁, fun i hi => ?_⟩
+    obtain ⟨h0, h1⟩ := hag i hi
+    refine ⟨h0, ?_⟩
+    rw [Pi.smul_apply, h1, Pi.smul_apply, smul_smul, inv_mul_cancel₀ hs, one_smul]
+  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
+    refine ⟨v₀, hv₀, s • v₁, C.smul_mem _ hv₁, fun i hi => ?_⟩
+    obtain ⟨h0, h1⟩ := hag i hi
+    exact ⟨h0, by rw [Pi.smul_apply, h1, Pi.smul_apply]⟩
+
+/-- Joint explainability is invariant under scaling the whole stack by `s ≠ 0`. -/
+theorem pairJointAgreesOn_smul_both (C : Submodule F (ι → A)) {S : Finset ι}
+    {u₀ u₁ : ι → A} {s : F} (hs : s ≠ 0) :
+    pairJointAgreesOn (C : Set (ι → A)) S (s • u₀) (s • u₁) ↔
+      pairJointAgreesOn (C : Set (ι → A)) S u₀ u₁ := by
+  constructor
+  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
+    refine ⟨s⁻¹ • v₀, C.smul_mem _ hv₀, s⁻¹ • v₁, C.smul_mem _ hv₁, fun i hi => ?_⟩
+    obtain ⟨h0, h1⟩ := hag i hi
+    constructor
+    · rw [Pi.smul_apply, h0, Pi.smul_apply, smul_smul, inv_mul_cancel₀ hs, one_smul]
+    · rw [Pi.smul_apply, h1, Pi.smul_apply, smul_smul, inv_mul_cancel₀ hs, one_smul]
+  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
+    refine ⟨s • v₀, C.smul_mem _ hv₀, s • v₁, C.smul_mem _ hv₁, fun i hi => ?_⟩
+    obtain ⟨h0, h1⟩ := hag i hi
+    exact ⟨by rw [Pi.smul_apply, h0, Pi.smul_apply],
+      by rw [Pi.smul_apply, h1, Pi.smul_apply]⟩
+
+/-- Joint explainability is invariant under the γ-shift `u₀ ↦ u₀ + β•u₁`. -/
+theorem pairJointAgreesOn_shift (C : Submodule F (ι → A)) {S : Finset ι}
+    {u₀ u₁ : ι → A} (β : F) :
+    pairJointAgreesOn (C : Set (ι → A)) S (u₀ + β • u₁) u₁ ↔
+      pairJointAgreesOn (C : Set (ι → A)) S u₀ u₁ := by
+  constructor
+  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
+    refine ⟨v₀ - β • v₁, C.sub_mem hv₀ (C.smul_mem _ hv₁), v₁, hv₁, fun i hi => ?_⟩
+    obtain ⟨h0, h1⟩ := hag i hi
+    refine ⟨?_, h1⟩
+    simp only [Pi.sub_apply, Pi.smul_apply, h0, h1, Pi.add_apply]
     abel
-  · intro hp
-    exact hno ((pairJointAgreesOn_translate_iff C hc₀ hc₁ S u₀ u₁).mp hp)
+  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
+    refine ⟨v₀ + β • v₁, C.add_mem hv₀ (C.smul_mem _ hv₁), v₁, hv₁, fun i hi => ?_⟩
+    obtain ⟨h0, h1⟩ := hag i hi
+    refine ⟨?_, h1⟩
+    simp only [Pi.add_apply, Pi.smul_apply, h0, h1]
 
-/-- **Law 1 (translation).** `mcaEvent` is invariant under translating the stack by a pair of
-codewords, at the same `γ`. -/
-theorem mcaEvent_translate_iff (C : Submodule F (ι → A)) {c₀ c₁ : ι → A}
-    (hc₀ : c₀ ∈ C) (hc₁ : c₁ ∈ C) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F) :
+/-! ## Transport of `mcaEvent` -/
+
+/-- **Translation equivariance (per-`γ`).** Translating the stack by a codeword pair preserves
+the MCA event at every scalar: the line picks up `c₀ + γ•c₁ ∈ C`. -/
+theorem mcaEvent_translate (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ c₀ c₁ : ι → A} (hc₀ : c₀ ∈ C) (hc₁ : c₁ ∈ C) (γ : F) :
     mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + c₀) (u₁ + c₁) γ ↔
       mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ := by
   constructor
-  · intro h
-    have h' := mcaEvent_translate_of C (C.neg_mem hc₀) (C.neg_mem hc₁) δ _ _ γ h
-    rwa [add_neg_cancel_right, add_neg_cancel_right] at h'
-  · exact mcaEvent_translate_of C hc₀ hc₁ δ u₀ u₁ γ
-
-/-! ## Law 2 — code-preserving coordinate permutations -/
-
-/-- A code-closure hypothesis for `π` transfers to `π⁻¹`. -/
-theorem code_perm_closed_symm {C : Set (ι → A)} {π : Equiv.Perm ι}
-    (hC : ∀ w : ι → A, w ∈ C ↔ w ∘ π ∈ C) (w : ι → A) :
-    w ∈ C ↔ w ∘ π.symm ∈ C := by
-  constructor
-  · intro hw
-    have h := (hC (w ∘ π.symm)).mpr
-    apply h
-    have : (w ∘ π.symm) ∘ π = w := by
-      funext i
-      simp [Function.comp, Equiv.symm_apply_apply]
-    rwa [this]
-  · intro hw
-    have h := (hC (w ∘ π.symm)).mp hw
-    have : (w ∘ π.symm) ∘ π = w := by
-      funext i
-      simp [Function.comp, Equiv.symm_apply_apply]
-    rwa [this] at h
-
-/-- One direction of the permutation law: an event for the `π`-pulled-back stack transports to
-the original stack, with the witness set pushed forward along `π`. -/
-theorem mcaEvent_perm_of (C : Set (ι → A)) (π : Equiv.Perm ι)
-    (hC : ∀ w : ι → A, w ∈ C ↔ w ∘ π ∈ C) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
-    (h : mcaEvent (F := F) C δ (u₀ ∘ π) (u₁ ∘ π) γ) :
-    mcaEvent (F := F) C δ u₀ u₁ γ := by
-  obtain ⟨S, hS, ⟨w, hw, hweq⟩, hno⟩ := h
-  refine ⟨S.image π, ?_, ⟨w ∘ π.symm, (code_perm_closed_symm hC w).mp hw, ?_⟩, ?_⟩
-  · rwa [Finset.card_image_of_injective S π.injective]
-  · intro j hj
-    obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hj
-    show w (π.symm (π i)) = u₀ (π i) + γ • u₁ (π i)
-    rw [Equiv.symm_apply_apply]
-    exact hweq i hi
-  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
-    refine hno ⟨v₀ ∘ π, (hC v₀).mp hv₀, v₁ ∘ π, (hC v₁).mp hv₁, fun i hi => ?_⟩
-    exact hag (π i) (Finset.mem_image_of_mem π hi)
-
-/-- **Law 2 (permutation).** For a coordinate permutation `π` preserving the code,
-`mcaEvent` for the pulled-back stack `(u₀∘π, u₁∘π)` is equivalent to the event for
-`(u₀, u₁)`, at the same `γ`. -/
-theorem mcaEvent_perm_iff (C : Set (ι → A)) (π : Equiv.Perm ι)
-    (hC : ∀ w : ι → A, w ∈ C ↔ w ∘ π ∈ C) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F) :
-    mcaEvent (F := F) C δ (u₀ ∘ π) (u₁ ∘ π) γ ↔ mcaEvent (F := F) C δ u₀ u₁ γ := by
-  constructor
-  · exact mcaEvent_perm_of C π hC δ u₀ u₁ γ
-  · intro h
-    refine mcaEvent_perm_of C π.symm (code_perm_closed_symm hC) δ (u₀ ∘ π) (u₁ ∘ π) γ ?_
-    have h₀ : (u₀ ∘ π) ∘ π.symm = u₀ := by
-      funext i; simp [Function.comp, Equiv.apply_symm_apply]
-    have h₁ : (u₁ ∘ π) ∘ π.symm = u₁ := by
-      funext i; simp [Function.comp, Equiv.apply_symm_apply]
-    rwa [h₀, h₁]
-
-/-! ## Law 3 — scaling the second row reparametrizes `γ` multiplicatively -/
-
-/-- Joint explanations are invariant under scaling the second row by a unit. -/
-theorem pairJointAgreesOn_smul_right_iff (C : Submodule F (ι → A)) {a : F} (ha : a ≠ 0)
-    (S : Finset ι) (u₀ u₁ : ι → A) :
-    pairJointAgreesOn (C : Set (ι → A)) S u₀ (a • u₁) ↔
-      pairJointAgreesOn (C : Set (ι → A)) S u₀ u₁ := by
-  constructor
-  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
-    refine ⟨v₀, hv₀, a⁻¹ • v₁, C.smul_mem a⁻¹ hv₁, fun i hi => ⟨(hag i hi).1, ?_⟩⟩
-    show a⁻¹ • v₁ i = u₁ i
-    rw [(hag i hi).2]
-    show a⁻¹ • a • u₁ i = u₁ i
-    rw [inv_smul_smul₀ ha]
-  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
-    refine ⟨v₀, hv₀, a • v₁, C.smul_mem a hv₁, fun i hi => ⟨(hag i hi).1, ?_⟩⟩
-    show a • v₁ i = a • u₁ i
-    rw [(hag i hi).2]
-
-/-- **Law 3 (scaling).** Scaling the second row by `a ≠ 0` reparametrizes the line:
-`mcaEvent C δ u₀ (a•u₁) γ ↔ mcaEvent C δ u₀ u₁ (γ·a)`. -/
-theorem mcaEvent_smul_right_iff (C : Submodule F (ι → A)) {a : F} (ha : a ≠ 0)
-    (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F) :
-    mcaEvent (F := F) (C : Set (ι → A)) δ u₀ (a • u₁) γ ↔
-      mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ (γ * a) := by
-  have hline : ∀ i, u₀ i + γ • (a • u₁) i = u₀ i + (γ * a) • u₁ i := fun i => by
-    show u₀ i + γ • a • u₁ i = u₀ i + (γ * a) • u₁ i
-    rw [smul_smul]
-  constructor
-  · rintro ⟨S, hS, ⟨w, hw, hweq⟩, hno⟩
-    refine ⟨S, hS, ⟨w, hw, fun i hi => by rw [hweq i hi]; exact hline i⟩, ?_⟩
-    intro hp
-    exact hno ((pairJointAgreesOn_smul_right_iff C ha S u₀ u₁).mpr hp)
-  · rintro ⟨S, hS, ⟨w, hw, hweq⟩, hno⟩
-    refine ⟨S, hS, ⟨w, hw, fun i hi => by rw [hweq i hi]; exact (hline i).symm⟩, ?_⟩
-    intro hp
-    exact hno ((pairJointAgreesOn_smul_right_iff C ha S u₀ u₁).mp hp)
-
-/-! ## Law 4 — shearing the first row shifts `γ` additively -/
-
-/-- Joint explanations are invariant under shearing the first row by a multiple of the
-second. -/
-theorem pairJointAgreesOn_shear_iff (C : Submodule F (ι → A)) (b : F)
-    (S : Finset ι) (u₀ u₁ : ι → A) :
-    pairJointAgreesOn (C : Set (ι → A)) S (u₀ + b • u₁) u₁ ↔
-      pairJointAgreesOn (C : Set (ι → A)) S u₀ u₁ := by
-  constructor
-  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
-    refine ⟨v₀ - b • v₁, C.sub_mem hv₀ (C.smul_mem b hv₁), v₁, hv₁,
-      fun i hi => ⟨?_, (hag i hi).2⟩⟩
-    show v₀ i - b • v₁ i = u₀ i
-    rw [(hag i hi).1, (hag i hi).2]
-    show (u₀ i + b • u₁ i) - b • u₁ i = u₀ i
-    exact add_sub_cancel_right _ _
-  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
-    refine ⟨v₀ + b • v₁, C.add_mem hv₀ (C.smul_mem b hv₁), v₁, hv₁,
-      fun i hi => ⟨?_, (hag i hi).2⟩⟩
-    show v₀ i + b • v₁ i = u₀ i + b • u₁ i
-    rw [(hag i hi).1, (hag i hi).2]
-
-/-- **Law 4 (shear).** Shearing the first row by `b•u₁` shifts the line parameter:
-`mcaEvent C δ (u₀ + b•u₁) u₁ γ ↔ mcaEvent C δ u₀ u₁ (γ + b)`. -/
-theorem mcaEvent_shear_iff (C : Submodule F (ι → A)) (b : F)
-    (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F) :
-    mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + b • u₁) u₁ γ ↔
-      mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ (γ + b) := by
-  have hline : ∀ i, (u₀ i + b • u₁ i) + γ • u₁ i = u₀ i + (γ + b) • u₁ i := fun i => by
-    rw [add_smul]
+  · rintro ⟨S, hcard, ⟨w, hw, hag⟩, hno⟩
+    refine ⟨S, hcard, ⟨w - (c₀ + γ • c₁),
+      C.sub_mem hw (C.add_mem hc₀ (C.smul_mem γ hc₁)), fun i hi => ?_⟩,
+      fun hp => hno ((pairJointAgreesOn_translate C hc₀ hc₁).mpr hp)⟩
+    simp only [Pi.sub_apply, Pi.add_apply, Pi.smul_apply]
+    rw [hag i hi]
+    simp only [Pi.add_apply, Pi.smul_apply, smul_add]
     abel
+  · rintro ⟨S, hcard, ⟨w, hw, hag⟩, hno⟩
+    refine ⟨S, hcard, ⟨w + (c₀ + γ • c₁),
+      C.add_mem hw (C.add_mem hc₀ (C.smul_mem γ hc₁)), fun i hi => ?_⟩,
+      fun hp => hno ((pairJointAgreesOn_translate C hc₀ hc₁).mp hp)⟩
+    simp only [Pi.add_apply, Pi.smul_apply]
+    rw [hag i hi]
+    simp only [smul_add]
+    abel
+
+/-- **Stack-scaling equivariance (per-`γ`).** Scaling both rows by `s ≠ 0` preserves the MCA
+event at every scalar. -/
+theorem mcaEvent_smul_both (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ : ι → A} {s : F} (hs : s ≠ 0) (γ : F) :
+    mcaEvent (F := F) (C : Set (ι → A)) δ (s • u₀) (s • u₁) γ ↔
+      mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ := by
   constructor
-  · rintro ⟨S, hS, ⟨w, hw, hweq⟩, hno⟩
-    refine ⟨S, hS, ⟨w, hw, fun i hi => by rw [hweq i hi]; exact hline i⟩, ?_⟩
-    intro hp
-    exact hno ((pairJointAgreesOn_shear_iff C b S u₀ u₁).mpr hp)
-  · rintro ⟨S, hS, ⟨w, hw, hweq⟩, hno⟩
-    refine ⟨S, hS, ⟨w, hw, fun i hi => by rw [hweq i hi]; exact (hline i).symm⟩, ?_⟩
-    intro hp
-    exact hno ((pairJointAgreesOn_shear_iff C b S u₀ u₁).mp hp)
+  · rintro ⟨S, hcard, ⟨w, hw, hag⟩, hno⟩
+    refine ⟨S, hcard, ⟨s⁻¹ • w, C.smul_mem _ hw, fun i hi => ?_⟩,
+      fun hp => hno ((pairJointAgreesOn_smul_both C hs).mpr hp)⟩
+    rw [Pi.smul_apply, hag i hi]
+    simp only [Pi.add_apply, Pi.smul_apply, smul_add, smul_smul]
+    have hs2 : s⁻¹ * (γ * s) = γ := by
+      rw [← mul_assoc, mul_comm s⁻¹ γ, mul_assoc, inv_mul_cancel₀ hs, mul_one]
+    rw [inv_mul_cancel₀ hs, one_smul, hs2]
+  · rintro ⟨S, hcard, ⟨w, hw, hag⟩, hno⟩
+    refine ⟨S, hcard, ⟨s • w, C.smul_mem _ hw, fun i hi => ?_⟩,
+      fun hp => hno ((pairJointAgreesOn_smul_both C hs).mp hp)⟩
+    rw [Pi.smul_apply, hag i hi]
+    simp only [Pi.add_apply, Pi.smul_apply, smul_add, smul_smul]
+    rw [mul_comm s γ]
 
-/-! ## The probability level -/
+/-- **Direction-scaling reparametrization.** Scaling the direction row by `s ≠ 0` moves the
+MCA event from scalar `γ` to scalar `γ·s`. -/
+theorem mcaEvent_smul_right (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ : ι → A} {s : F} (hs : s ≠ 0) (γ : F) :
+    mcaEvent (F := F) (C : Set (ι → A)) δ u₀ (s • u₁) γ ↔
+      mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ (γ * s) := by
+  constructor
+  · rintro ⟨S, hcard, ⟨w, hw, hag⟩, hno⟩
+    refine ⟨S, hcard, ⟨w, hw, fun i hi => ?_⟩,
+      fun hp => hno ((pairJointAgreesOn_smul_right C hs).mpr hp)⟩
+    rw [hag i hi, Pi.smul_apply, smul_smul]
+  · rintro ⟨S, hcard, ⟨w, hw, hag⟩, hno⟩
+    refine ⟨S, hcard, ⟨w, hw, fun i hi => ?_⟩,
+      fun hp => hno ((pairJointAgreesOn_smul_right C hs).mp hp)⟩
+    rw [hag i hi, Pi.smul_apply, smul_smul]
+
+/-- **γ-shift reparametrization.** Shifting `u₀` by `β•u₁` moves the MCA event from scalar
+`γ` to scalar `β + γ`. -/
+theorem mcaEvent_shift (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ : ι → A} (β : F) (γ : F) :
+    mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + β • u₁) u₁ γ ↔
+      mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ (β + γ) := by
+  constructor
+  · rintro ⟨S, hcard, ⟨w, hw, hag⟩, hno⟩
+    refine ⟨S, hcard, ⟨w, hw, fun i hi => ?_⟩,
+      fun hp => hno ((pairJointAgreesOn_shift C β).mpr hp)⟩
+    rw [hag i hi]
+    simp only [Pi.add_apply, Pi.smul_apply, add_smul]
+    abel
+  · rintro ⟨S, hcard, ⟨w, hw, hag⟩, hno⟩
+    refine ⟨S, hcard, ⟨w, hw, fun i hi => ?_⟩,
+      fun hp => hno ((pairJointAgreesOn_shift C β).mp hp)⟩
+    rw [hag i hi]
+    simp only [Pi.add_apply, Pi.smul_apply, add_smul]
+    abel
+
+/-- One direction of domain-permutation equivariance: if the stack is precomposed with a
+code-preserving permutation `σ`, the MCA event transports back along `σ` (witness set
+`S ↦ S.image σ`, codeword `w ↦ w ∘ σ⁻¹`). -/
+theorem mcaEvent_comp_perm_mp (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ : ι → A} {γ : F} (σ : Equiv.Perm ι)
+    (hσ : ∀ w ∈ C, w ∘ ⇑σ ∈ C) (hσ' : ∀ w ∈ C, w ∘ ⇑σ⁻¹ ∈ C) :
+    mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ ∘ ⇑σ) (u₁ ∘ ⇑σ) γ →
+      mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ := by
+  rintro ⟨S, hcard, ⟨w, hw, hag⟩, hno⟩
+  refine ⟨S.image ⇑σ, ?_, ⟨w ∘ ⇑σ⁻¹, hσ' w hw, ?_⟩, ?_⟩
+  · rw [Finset.card_image_of_injective S σ.injective]
+    exact hcard
+  · intro i hi
+    obtain ⟨j, hj, rfl⟩ := Finset.mem_image.mp hi
+    have h := hag j hj
+    simpa [Function.comp] using h
+  · intro hpair
+    apply hno
+    obtain ⟨v₀, hv₀, v₁, hv₁, hagp⟩ := hpair
+    refine ⟨v₀ ∘ ⇑σ, hσ v₀ hv₀, v₁ ∘ ⇑σ, hσ v₁ hv₁, fun j hj => ?_⟩
+    exact hagp (σ j) (Finset.mem_image_of_mem ⇑σ hj)
+
+/-- **Domain-permutation equivariance (per-`γ`).** For any coordinate permutation preserving
+the code (in both directions), precomposing the stack preserves the MCA event at every
+scalar. -/
+theorem mcaEvent_comp_perm_iff (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ : ι → A} {γ : F} (σ : Equiv.Perm ι)
+    (hσ : ∀ w ∈ C, w ∘ ⇑σ ∈ C) (hσ' : ∀ w ∈ C, w ∘ ⇑σ⁻¹ ∈ C) :
+    mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ ∘ ⇑σ) (u₁ ∘ ⇑σ) γ ↔
+      mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ := by
+  constructor
+  · exact mcaEvent_comp_perm_mp C σ hσ hσ'
+  · intro h
+    have e0 : (u₀ ∘ ⇑σ) ∘ ⇑σ⁻¹ = u₀ := by
+      funext i
+      simp [Function.comp, Equiv.Perm.inv_def]
+    have e1 : (u₁ ∘ ⇑σ) ∘ ⇑σ⁻¹ = u₁ := by
+      funext i
+      simp [Function.comp, Equiv.Perm.inv_def]
+    have h' : mcaEvent (F := F) (C : Set (ι → A)) δ ((u₀ ∘ ⇑σ) ∘ ⇑σ⁻¹)
+        ((u₁ ∘ ⇑σ) ∘ ⇑σ⁻¹) γ := by
+      rw [e0, e1]
+      exact h
+    refine mcaEvent_comp_perm_mp C σ⁻¹ hσ' ?_ h'
+    intro w hw
+    have := hσ w hw
+    simpa using this
+
+/-! ## The probability-level invariances -/
 
 open Classical in
-/-- **Uniform reindexing:** precomposing the event with any bijection of `F` preserves the
-uniform-`γ` probability. The measure-side engine for laws 3–4. -/
-theorem prob_uniform_comp_equiv (P : F → Prop) (e : F ≃ F) :
-    Pr_{let γ ← $ᵖ F}[P (e γ)] = Pr_{let γ ← $ᵖ F}[P γ] := by
-  rw [prob_uniform_eq_card_filter_div_card, prob_uniform_eq_card_filter_div_card]
-  have hcard : (Finset.filter (fun γ : F => P (e γ)) Finset.univ).card
-      = (Finset.filter (fun γ : F => P γ) Finset.univ).card := by
-    refine Finset.card_nbij' (i := fun γ => e γ) (j := fun γ => e.symm γ) ?_ ?_ ?_ ?_
-    · intro γ hγ
-      simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hγ ⊢
-      exact hγ
-    · intro γ hγ
-      simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hγ ⊢
-      simpa [Equiv.apply_symm_apply] using hγ
-    · intro γ _
-      exact e.symm_apply_apply γ
-    · intro γ _
-      exact e.apply_symm_apply γ
-  rw [hcard]
+/-- Per-stack bad-scalar probability is invariant under codeword translation. -/
+theorem prob_mcaEvent_translate (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ c₀ c₁ : ι → A} (hc₀ : c₀ ∈ C) (hc₁ : c₁ ∈ C) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + c₀) (u₁ + c₁) γ]
+      = Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ] :=
+  Pr_congr_iff _ fun γ => mcaEvent_translate C hc₀ hc₁ γ
 
 open Classical in
-/-- Translation invariance at the probability level. -/
-theorem prob_mcaEvent_translate_eq (C : Submodule F (ι → A)) {c₀ c₁ : ι → A}
-    (hc₀ : c₀ ∈ C) (hc₁ : c₁ ∈ C) (δ : ℝ≥0) (u₀ u₁ : ι → A) :
-    Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + c₀) (u₁ + c₁) γ]
-      = Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ] := by
-  have hfilter : Finset.filter (fun γ : F =>
-        mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + c₀) (u₁ + c₁) γ) Finset.univ
-      = Finset.filter (fun γ : F =>
-        mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ) Finset.univ :=
-    Finset.filter_congr fun γ _ => mcaEvent_translate_iff C hc₀ hc₁ δ u₀ u₁ γ
-  rw [prob_uniform_eq_card_filter_div_card, prob_uniform_eq_card_filter_div_card, hfilter]
+/-- Per-stack bad-scalar probability is invariant under whole-stack scaling. -/
+theorem prob_mcaEvent_smul_both (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ : ι → A} {s : F} (hs : s ≠ 0) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ (s • u₀) (s • u₁) γ]
+      = Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ] :=
+  Pr_congr_iff _ fun γ => mcaEvent_smul_both C hs γ
 
 open Classical in
-/-- Permutation invariance at the probability level. -/
-theorem prob_mcaEvent_perm_eq (C : Set (ι → A)) (π : Equiv.Perm ι)
-    (hC : ∀ w : ι → A, w ∈ C ↔ w ∘ π ∈ C) (δ : ℝ≥0) (u₀ u₁ : ι → A) :
-    Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) C δ (u₀ ∘ π) (u₁ ∘ π) γ]
-      = Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) C δ u₀ u₁ γ] := by
-  have hfilter : Finset.filter (fun γ : F =>
-        mcaEvent (F := F) C δ (u₀ ∘ π) (u₁ ∘ π) γ) Finset.univ
-      = Finset.filter (fun γ : F => mcaEvent (F := F) C δ u₀ u₁ γ) Finset.univ :=
-    Finset.filter_congr fun γ _ => mcaEvent_perm_iff C π hC δ u₀ u₁ γ
-  rw [prob_uniform_eq_card_filter_div_card, prob_uniform_eq_card_filter_div_card, hfilter]
-
-open Classical in
-/-- Scaling invariance at the probability level: the `γ ↦ γ·a` reparametrization is a
-bijection of `F`, so the uniform mass is preserved. -/
-theorem prob_mcaEvent_smul_right_eq (C : Submodule F (ι → A)) {a : F} (ha : a ≠ 0)
-    (δ : ℝ≥0) (u₀ u₁ : ι → A) :
-    Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ (a • u₁) γ]
-      = Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ] := by
-  have hstep : Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ (a • u₁) γ]
-      = Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ (γ * a)] := by
-    have hfilter : Finset.filter (fun γ : F =>
-          mcaEvent (F := F) (C : Set (ι → A)) δ u₀ (a • u₁) γ) Finset.univ
-        = Finset.filter (fun γ : F =>
-          mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ (γ * a)) Finset.univ :=
-      Finset.filter_congr fun γ _ => mcaEvent_smul_right_iff C ha δ u₀ u₁ γ
-    rw [prob_uniform_eq_card_filter_div_card, prob_uniform_eq_card_filter_div_card, hfilter]
-  rw [hstep]
+/-- Per-stack bad-scalar probability is invariant under direction-row scaling (uniform
+measure + the `γ·s` reparametrization). -/
+theorem prob_mcaEvent_smul_right (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ : ι → A} {s : F} (hs : s ≠ 0) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ (s • u₁) γ]
+      = Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ] := by
+  rw [Pr_congr_iff ($ᵖ F) (fun γ => mcaEvent_smul_right C hs γ)]
   exact prob_uniform_comp_equiv
-    (fun γ => mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ)
-    (Equiv.mulRight₀ a ha)
+    (fun γ => mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ) (mulRightEquiv s hs)
 
 open Classical in
-/-- Shear invariance at the probability level: the `γ ↦ γ + b` shift is a bijection of `F`. -/
-theorem prob_mcaEvent_shear_eq (C : Submodule F (ι → A)) (b : F)
-    (δ : ℝ≥0) (u₀ u₁ : ι → A) :
-    Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + b • u₁) u₁ γ]
-      = Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ] := by
-  have hstep : Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + b • u₁) u₁ γ]
-      = Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ (γ + b)] := by
-    have hfilter : Finset.filter (fun γ : F =>
-          mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + b • u₁) u₁ γ) Finset.univ
-        = Finset.filter (fun γ : F =>
-          mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ (γ + b)) Finset.univ :=
-      Finset.filter_congr fun γ _ => mcaEvent_shear_iff C b δ u₀ u₁ γ
-    rw [prob_uniform_eq_card_filter_div_card, prob_uniform_eq_card_filter_div_card, hfilter]
-  rw [hstep]
+/-- Per-stack bad-scalar probability is invariant under the γ-shift `u₀ ↦ u₀ + β•u₁`
+(uniform measure + the `β + γ` reparametrization). -/
+theorem prob_mcaEvent_shift (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ : ι → A} (β : F) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ + β • u₁) u₁ γ]
+      = Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ] := by
+  rw [Pr_congr_iff ($ᵖ F) (fun γ => mcaEvent_shift C β γ)]
   exact prob_uniform_comp_equiv
-    (fun γ => mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ)
-    (Equiv.addRight b)
-
-/-! ## The orbit-section theorem -/
+    (fun γ => mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ) (addLeftEquiv β)
 
 open Classical in
-/-- **The orbit-section theorem.** If a representative map `rep` preserves the per-stack
-bad-scalar probability (e.g. it normalizes each stack inside its orbit under any composition
-of laws 1–4), then `ε_mca` is the supremum over representatives only. This is the formal
-licence for orbit-reduced exact `ε_mca` computation: a `decide`/enumeration over `range rep`
-suffices. -/
-theorem epsMCA_eq_iSup_rep (C : Set (ι → A)) (δ : ℝ≥0)
-    (rep : WordStack A (Fin 2) ι → WordStack A (Fin 2) ι)
-    (hrep : ∀ u : WordStack A (Fin 2) ι,
-      Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) C δ (rep u 0) (rep u 1) γ]
-        = Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) C δ (u 0) (u 1) γ]) :
-    epsMCA (F := F) (A := A) C δ
-      = ⨆ u : WordStack A (Fin 2) ι,
-          Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) C δ (rep u 0) (rep u 1) γ] := by
+/-- Per-stack bad-scalar probability is invariant under code-preserving domain
+permutations. -/
+theorem prob_mcaEvent_comp_perm (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    {u₀ u₁ : ι → A} (σ : Equiv.Perm ι)
+    (hσ : ∀ w ∈ C, w ∘ ⇑σ ∈ C) (hσ' : ∀ w ∈ C, w ∘ ⇑σ⁻¹ ∈ C) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ (u₀ ∘ ⇑σ) (u₁ ∘ ⇑σ) γ]
+      = Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (C : Set (ι → A)) δ u₀ u₁ γ] :=
+  Pr_congr_iff _ fun γ => mcaEvent_comp_perm_iff C σ hσ hσ' (γ := γ)
+
+/-! ## The orbit-sup reduction -/
+
+open Classical in
+/-- **The orbit-representative reduction.** If a set `T` of stacks meets every per-stack
+probability value (e.g. a transversal of the equivariance-group orbits, by the invariance
+lemmas above), then `ε_mca` is the sup over `T` alone. This is the formal engine behind the
+probe lab's orbit reductions and the scaling route for exact-`δ*` rungs beyond `n = 4`. -/
+theorem epsMCA_eq_iSup_subtype_of_reps (C : Set (ι → A)) (δ : ℝ≥0)
+    (T : Set (WordStack A (Fin 2) ι))
+    (hT : ∀ u : WordStack A (Fin 2) ι, ∃ v ∈ T,
+      Pr_{ let γ ←$ᵖ F }[mcaEvent C δ (v 0) (v 1) γ]
+        = Pr_{ let γ ←$ᵖ F }[mcaEvent C δ (u 0) (u 1) γ]) :
+    epsMCA (F := F) C δ
+      = ⨆ v : T, Pr_{ let γ ←$ᵖ F }[mcaEvent C δ ((v : WordStack A (Fin 2) ι) 0)
+          ((v : WordStack A (Fin 2) ι) 1) γ] := by
   unfold epsMCA
-  refine le_antisymm (iSup_le fun u => ?_) (iSup_le fun u => ?_)
-  · rw [← hrep u]
-    exact le_iSup (fun v : WordStack A (Fin 2) ι =>
-      Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) C δ (rep v 0) (rep v 1) γ]) u
-  · rw [hrep u]
-    exact le_iSup (fun v : WordStack A (Fin 2) ι =>
-      Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) C δ (v 0) (v 1) γ]) u
+  apply le_antisymm
+  · refine iSup_le fun u => ?_
+    obtain ⟨v, hvT, hve⟩ := hT u
+    rw [← hve]
+    exact le_iSup (fun v : T =>
+      Pr_{ let γ ←$ᵖ F }[mcaEvent C δ ((v : WordStack A (Fin 2) ι) 0)
+        ((v : WordStack A (Fin 2) ι) 1) γ]) ⟨v, hvT⟩
+  · refine iSup_le fun v => ?_
+    exact le_iSup (fun u : WordStack A (Fin 2) ι =>
+      Pr_{ let γ ←$ᵖ F }[mcaEvent C δ (u 0) (u 1) γ]) (v : WordStack A (Fin 2) ι)
 
-/-! ## Non-vacuity: the R1 code is rotation-closed -/
+/-! ## Reed–Solomon domain rotations -/
 
-section Concrete
+/-- **RS codes are closed under multiplicative domain rotations.** If a coordinate
+permutation `σ` scales the evaluation domain (`domain (σ i) = g · domain i`), then
+precomposition with `σ` maps `code domain k` into itself, via `p ↦ p.comp (gX)`. -/
+theorem comp_perm_mem_code {domain : ι ↪ F} {k : ℕ} (σ : Equiv.Perm ι) (g : F)
+    (hg : ∀ i, domain (σ i) = g * domain i) {w : ι → F}
+    (hw : w ∈ ReedSolomon.code domain k) : (w ∘ ⇑σ) ∈ ReedSolomon.code domain k := by
+  rw [ReedSolomon.mem_code_iff_exists_polynomial] at hw ⊢
+  obtain ⟨p, hdeg, rfl⟩ := hw
+  refine ⟨p.comp (Polynomial.C g * Polynomial.X), ?_, ?_⟩
+  · rcases eq_or_ne (p.comp (Polynomial.C g * Polynomial.X)) 0 with h0 | h0
+    · rw [h0, Polynomial.degree_zero]
+      exact WithBot.bot_lt_coe k
+    · have hp0 : p ≠ 0 := by
+        rintro rfl
+        simp at h0
+      have hgle : (Polynomial.C g * Polynomial.X).natDegree ≤ 1 :=
+        le_trans (Polynomial.natDegree_C_mul_le _ _) Polynomial.natDegree_X_le
+      have hple : (p.comp (Polynomial.C g * Polynomial.X)).natDegree ≤ p.natDegree := by
+        refine le_trans Polynomial.natDegree_comp_le ?_
+        calc p.natDegree * (Polynomial.C g * Polynomial.X).natDegree
+            ≤ p.natDegree * 1 := Nat.mul_le_mul_left _ hgle
+          _ = p.natDegree := Nat.mul_one _
+      have hdeg' : p.natDegree < k := (Polynomial.natDegree_lt_iff_degree_lt hp0).mpr hdeg
+      exact (Polynomial.natDegree_lt_iff_degree_lt h0).mp (lt_of_le_of_lt hple hdeg')
+  · funext i
+    simp [ReedSolomon.evalOnPoints, Function.comp, Polynomial.eval_comp, hg i]
+
+/-- **MCA-event equivariance under RS domain rotation.** For any multiplicative rotation of
+the evaluation domain (`domain (σ i) = g · domain i`, `g ≠ 0`), precomposing the stack
+preserves the MCA event of the RS code at every scalar. -/
+theorem mcaEvent_rs_rotate (domain : ι ↪ F) (k : ℕ) (σ : Equiv.Perm ι) (g : F)
+    (hg0 : g ≠ 0) (hg : ∀ i, domain (σ i) = g * domain i)
+    (δ : ℝ≥0) (γ : F) (u₀ u₁ : ι → F) :
+    mcaEvent (F := F) (ReedSolomon.code domain k : Set (ι → F)) δ (u₀ ∘ ⇑σ) (u₁ ∘ ⇑σ) γ ↔
+      mcaEvent (F := F) (ReedSolomon.code domain k : Set (ι → F)) δ u₀ u₁ γ := by
+  have hginv : ∀ i, domain (σ⁻¹ i) = g⁻¹ * domain i := by
+    intro i
+    have h := hg (σ⁻¹ i)
+    simp only [Equiv.Perm.inv_def, Equiv.apply_symm_apply] at h ⊢
+    rw [h, ← mul_assoc, inv_mul_cancel₀ hg0, one_mul]
+  exact mcaEvent_comp_perm_iff (ReedSolomon.code domain k) σ
+    (fun w hw => comp_perm_mem_code σ g hg hw)
+    (fun w hw => comp_perm_mem_code σ⁻¹ g⁻¹ hginv hw)
+
+/-! ## The R1 instance: bridging `rsC` to `ReedSolomon.code`, and its rotation -/
+
+section R1Instance
 
 open ProximityGap.MCADeltaStarExactPoint
 
-/-- The domain rotation `x ↦ 2x` of `⟨2⟩ ⊂ F₅` is the cyclic coordinate shift:
-`gdom (finRotate 4 i) = 2 * gdom i`. -/
-theorem gdom_rot : ∀ i : Fin 4, gdom (finRotate 4 i) = 2 * gdom i := by decide
+/-- The R1 domain as an embedding. -/
+def gdomEmb : Fin 4 ↪ F5 := ⟨gdom, gdom_injective⟩
 
-/-- The inverse rotation multiplies by `2⁻¹ = 3`. -/
-theorem gdom_rot_symm : ∀ i : Fin 4, gdom ((finRotate 4).symm i) = 3 * gdom i := by decide
-
-/-- **The R1 code is closed under the smooth-domain rotation** `x ↦ 2x` (as the cyclic
-coordinate permutation `finRotate 4`): a genuine nontrivial instance of Law 2. -/
-theorem rsC_rot_closed :
-    ∀ w : Fin 4 → F5, w ∈ (rsC : Set (Fin 4 → F5)) ↔ w ∘ (finRotate 4) ∈
-      (rsC : Set (Fin 4 → F5)) := by
-  intro w
+/-- **The bridge (red-teaming R1):** the hand-rolled `rsC` of `MCADeltaStarExactPoint.lean`
+*is* the project-wide Reed–Solomon code `code ⟨gdom,_⟩ 2`. The exact-`δ*` theorem therefore
+genuinely speaks about `RS[F₅, ⟨2⟩, 2]` in the canonical sense. -/
+theorem rsC_eq_code : rsC = ReedSolomon.code gdomEmb 2 := by
+  ext w
   constructor
   · rintro ⟨a, b, h⟩
-    refine ⟨a, b * 2, fun i => ?_⟩
-    show w (finRotate 4 i) = a + b * 2 * gdom i
-    rw [h (finRotate 4 i), gdom_rot i]
+    rw [ReedSolomon.mem_code_iff_exists_polynomial_of_ne_zero]
+    refine ⟨Polynomial.C b * Polynomial.X + Polynomial.C a, ?_, ?_⟩
+    · have h1 : (Polynomial.C b * Polynomial.X).natDegree ≤ 1 :=
+        le_trans (Polynomial.natDegree_C_mul_le _ _) Polynomial.natDegree_X_le
+      have h2 : (Polynomial.C a : Polynomial F5).natDegree = 0 := Polynomial.natDegree_C a
+      have h3 := Polynomial.natDegree_add_le (Polynomial.C b * Polynomial.X)
+        (Polynomial.C a : Polynomial F5)
+      omega
+    · funext i
+      rw [h i]
+      simp [ReedSolomon.evalOnPoints, gdomEmb]
+      ring
+  · intro hw
+    rw [ReedSolomon.mem_code_iff_exists_polynomial_of_ne_zero] at hw
+    obtain ⟨p, hdeg, rfl⟩ := hw
+    obtain ⟨c, d, rfl⟩ :=
+      Polynomial.exists_eq_X_add_C_of_natDegree_le_one (Nat.lt_succ_iff.mp hdeg)
+    refine ⟨d, c, fun i => ?_⟩
+    simp [ReedSolomon.evalOnPoints, gdomEmb]
     ring
-  · rintro ⟨a, b, h⟩
-    refine ⟨a, b * 3, fun i => ?_⟩
-    have h' := h ((finRotate 4).symm i)
-    show w i = a + b * 3 * gdom i
-    have hi : w (finRotate 4 ((finRotate 4).symm i)) = w i := by
-      rw [Equiv.apply_symm_apply]
-    rw [← hi]
-    have := h ((finRotate 4).symm i)
-    show w (finRotate 4 ((finRotate 4).symm i)) = a + b * 3 * gdom i
-    rw [Equiv.apply_symm_apply]
-    calc w i = w ((finRotate 4) ((finRotate 4).symm i)) := by rw [Equiv.apply_symm_apply]
-      _ = a + b * gdom ((finRotate 4).symm i) := h'
-      _ = a + b * (3 * gdom i) := by rw [gdom_rot_symm i]
-      _ = a + b * 3 * gdom i := by ring
 
-open Classical in
-/-- The per-stack bad-scalar probability of the R1 code is rotation-invariant — the engine's
-non-vacuous instantiation on a smooth domain. -/
-theorem prob_mcaEvent_rsC_rot_eq (δ : ℝ≥0) (u₀ u₁ : Fin 4 → F5) :
-    Pr_{let γ ← $ᵖ F5}[mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) δ
-        (u₀ ∘ (finRotate 4)) (u₁ ∘ (finRotate 4)) γ]
-      = Pr_{let γ ← $ᵖ F5}[mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) δ u₀ u₁ γ] :=
-  prob_mcaEvent_perm_eq (rsC : Set (Fin 4 → F5)) (finRotate 4) rsC_rot_closed δ u₀ u₁
+/-- The cyclic rotation of the R1 domain: `finRotate 4` doubles the evaluation point
+(`gdom = (2^i)` and `σ : i ↦ i+1`). -/
+theorem gdom_rotate : ∀ i : Fin 4, gdom (finRotate 4 i) = 2 * gdom i := by decide
 
-end Concrete
+/-- The R1 code is closed under the domain rotation. -/
+theorem rsC_comp_rotate_mem {w : Fin 4 → F5} (hw : w ∈ rsC) :
+    (w ∘ ⇑(finRotate 4)) ∈ rsC := by
+  obtain ⟨a, b, h⟩ := hw
+  refine ⟨a, 2 * b, fun i => ?_⟩
+  have := h (finRotate 4 i)
+  rw [Function.comp_apply, this, gdom_rotate i]
+  ring
+
+/-- The inverse rotation also preserves the R1 code (closure under `σ⁻¹`, needed for the
+event-equivariance wrapper). -/
+theorem rsC_comp_rotate_inv_mem {w : Fin 4 → F5} (hw : w ∈ rsC) :
+    (w ∘ ⇑(finRotate 4)⁻¹) ∈ rsC := by
+  obtain ⟨a, b, h⟩ := hw
+  have hrot : ∀ i : Fin 4, gdom ((finRotate 4)⁻¹ i) = 3 * gdom i := by decide
+  refine ⟨a, 3 * b, fun i => ?_⟩
+  have := h ((finRotate 4)⁻¹ i)
+  rw [Function.comp_apply, this, hrot i]
+  ring
+
+/-- **The A5 equivariance pin at the R1 instance:** the MCA event of `rsC` is invariant under
+the smooth-domain rotation, at every radius, every stack and every scalar. -/
+theorem mcaEvent_rsC_rotate (δ : ℝ≥0) (γ : F5) (u₀ u₁ : Fin 4 → F5) :
+    mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) δ
+        (u₀ ∘ ⇑(finRotate 4)) (u₁ ∘ ⇑(finRotate 4)) γ ↔
+      mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) δ u₀ u₁ γ :=
+  mcaEvent_comp_perm_iff rsC (finRotate 4)
+    (fun _ hw => rsC_comp_rotate_mem hw)
+    (fun _ hw => rsC_comp_rotate_inv_mem hw)
+
+end R1Instance
 
 /-! ## Source audit -/
 
-#print axioms mcaEvent_translate_iff
-#print axioms mcaEvent_perm_iff
-#print axioms mcaEvent_smul_right_iff
-#print axioms mcaEvent_shear_iff
+#print axioms Pr_congr_iff
 #print axioms prob_uniform_comp_equiv
-#print axioms prob_mcaEvent_translate_eq
-#print axioms prob_mcaEvent_perm_eq
-#print axioms prob_mcaEvent_smul_right_eq
-#print axioms prob_mcaEvent_shear_eq
-#print axioms epsMCA_eq_iSup_rep
-#print axioms rsC_rot_closed
-#print axioms prob_mcaEvent_rsC_rot_eq
+#print axioms mcaEvent_translate
+#print axioms mcaEvent_smul_both
+#print axioms mcaEvent_smul_right
+#print axioms mcaEvent_shift
+#print axioms mcaEvent_comp_perm_iff
+#print axioms prob_mcaEvent_translate
+#print axioms prob_mcaEvent_smul_both
+#print axioms prob_mcaEvent_smul_right
+#print axioms prob_mcaEvent_shift
+#print axioms prob_mcaEvent_comp_perm
+#print axioms epsMCA_eq_iSup_subtype_of_reps
+#print axioms comp_perm_mem_code
+#print axioms mcaEvent_rs_rotate
+#print axioms rsC_eq_code
+#print axioms mcaEvent_rsC_rotate
 
 end ProximityGap.MCAEquivariance
