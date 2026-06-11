@@ -6439,3 +6439,26 @@ file's theorems and axiom blocks:
   `JohnsonDischargeStatement` → the Johnson floor with no Props → with the in-tree KKH26
   ceiling, the unconditional bracket `[1−√ρ−η, KKH26 rows]`, and with `InteriorCeiling`
   the exact deployed-regime pin.
+
+**O154 addendum — the cross-coordinate no-go and the exact irreducible step.** One more
+elementarization route closed, with the failure mechanism identified: the saturation
+observation makes every high-mass coordinate carry the fold section as a fiber root
+(`(Y − w_ω(Z)) ∣ R(Z, ω, Y)`), and the factor theorem over `F[Z][X]` would conclude
+`(Y − pHat) ∣ R` outright if `G(Z,X) := R(Z, X, pHat)` vanished identically — BUT the
+candidate `pHat` must interpolate the *words* `u₀, u₁` across coordinates, and arbitrary
+words interpolate with degree `|T₀| − 1`, not `k − 1`: `deg_X G ≈ deg_Y R · |T₀| ≫ |T₀|`,
+so vanishing on `|T₀|` lines never forces `G ≡ 0`. Degree-`< k` interpolability of the
+words IS the correlated-agreement conclusion — the route is circular. GS multiplicity
+(`m ≥ 12`) strengthens only the per-coordinate saturation count, not this cross-coordinate
+glue. **Hence the irreducible step, exactly:** branch separation — two distinct `Y`-roots
+of `R` (in the integral closure) agree over at most `deg disc_Y(R)` many `(Z, X)`-points
+(separability from the in-tree lane), and the section's incidence mass exceeds that
+budget, forcing all saturated coordinates onto ONE branch; that branch, evaluated against
+any single scalar's witnessed coordinates, is `F[Z][X]`-rational of `X`-degree `< k` and
+`Z`-degree `≤ 1`. This is Claim 5.10/5.11 with the discriminant in the role the paper
+gives the regular-ring apparatus; the in-tree `GSDiscriminantOverRatFunc` +
+`GSDecodedSeparationOverRatFunc` + `RationalFunctionsCore` are the substrate. The next
+formalization session should prove, in order: (1) the discriminant-budget branch-agreement
+bound; (2) the one-branch concentration from incidence mass; (3) the rationality/degree
+read-off; then the proven chain fires through to `JohnsonDischargeStatement` and the
+deployed-regime δ* pin.
