@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2358 files, 29821 declarations
+- `ArkLib` — 2358 files, 29823 declarations
 
 ## Same short-name across multiple files (1253 groups)
 
@@ -5738,15 +5738,15 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem DuplexSpongeFS.Sponge316.lemma5_14_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:629](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L629) — **CO25 Lemma 5.14, paper semantics — DISCHARGED**: off `BadEventDSPaper.E`, the backtrack family has
 - `theorem DuplexSpongeFS.Sponge316.lemma5_14_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:629](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L629) — **CO25 Lemma 5.14, paper semantics — DISCHARGED**: off `BadEventDSPaper.E`, the backtrack family has
 
+### `lemma5_16HonestFalseAsStated_false` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestFalseAsStated_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:502](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L502) — **The in-tree `Lemma5_16HonestFalseAsStated` is FALSE** (at `StmtIn := Unit`, `U := UInt8`, sponge w
+- `theorem DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestFalseAsStated_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:502](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L502) — **The in-tree `Lemma5_16HonestFalseAsStated` is FALSE** (at `StmtIn := Unit`, `U := UInt8`, sponge w
+
 ### `lemma5_16HonestResidualPaper_holds` (2 declarations, 2 files)
 
 - `theorem DuplexSpongeFS.Sponge316.lemma5_16HonestResidualPaper_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean:508](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ConsistencyPaperCascade.lean#L508) — The residual `Lemma5_16HonestResidualPaper`, discharged.
 - `theorem DuplexSpongeFS.Sponge316.lemma5_16HonestResidualPaper_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:508](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean#L508) — The residual `Lemma5_16HonestResidualPaper`, discharged.
-
-### `lemma5_16HonestResidual_false` (2 declarations, 2 files)
-
-- `theorem DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:502](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean#L502) — **The in-tree `Lemma5_16HonestResidual` is FALSE** (at `StmtIn := Unit`, `U := UInt8`, sponge width
-- `theorem DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean:502](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TimePFalse.lean#L502) — **The in-tree `Lemma5_16HonestResidual` is FALSE** (at `StmtIn := Unit`, `U := UInt8`, sponge width
 
 ### `lemma5_16_honest_hash_half` (2 declarations, 2 files)
 

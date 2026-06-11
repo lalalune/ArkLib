@@ -77,6 +77,25 @@ theorem containsOrderFourCoset16Bool_eq_true_iff (A : Finset (ZMod 16)) :
   · rintro ⟨x, hsub⟩
     exact ⟨x, mem_zmod16Universe x, decide_eq_true hsub⟩
 
+/-- The general coset-augmentation law specialized to the order-4 cosets in `ZMod 16`. -/
+theorem balanced_pairSums_orderFourCoset16_augment (x : ZMod 16) (A : Multiset (ZMod 16)) :
+    Balanced ((8 : ℕ) : ZMod 16)
+        (pairSums (x ::ₘ (x + 4) ::ₘ (x + 8) ::ₘ (x + 12) ::ₘ A)) ↔
+      Balanced ((8 : ℕ) : ZMod 16) (pairSums A) := by
+  convert balanced_pairSums_coset_augment (R := ZMod 16) (h := ((8 : ℕ) : ZMod 16))
+    (q := ((4 : ℕ) : ZMod 16)) (by decide) (by decide) x A using 1
+  ring_nf
+
+/-- A single order-4 coset has balanced pair sums at half-period `8`. -/
+theorem balanced_pairSums_orderFourCoset16 (x : ZMod 16) :
+    Balanced ((8 : ℕ) : ZMod 16)
+      (pairSums ({x, x + 4, x + 8, x + 12} : Multiset (ZMod 16))) := by
+  have h := (balanced_pairSums_orderFourCoset16_augment x 0).mpr ?_
+  · simpa using h
+  · intro t
+    unfold pairSums
+    simp
+
 /-- The canonical computable list of 8-subsets of `ZMod 16`. -/
 def zmod16Subsets8 : List (Finset (ZMod 16)) :=
   (zmod16Universe.sublists.filter (fun xs => xs.length = 8)).map List.toFinset
@@ -124,5 +143,7 @@ theorem balanced_eight_contains_orderFourCoset_zmod16 :
 /-! ## Source audit -/
 
 #print axioms balanced_eight_contains_orderFourCoset_zmod16
+#print axioms balanced_pairSums_orderFourCoset16_augment
+#print axioms balanced_pairSums_orderFourCoset16
 
 end ArkLib.ProximityGap.WindowTwoLayer
