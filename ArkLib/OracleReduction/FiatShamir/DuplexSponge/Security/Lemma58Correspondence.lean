@@ -1146,6 +1146,40 @@ theorem base_fwd_anchored
   have := anchoredFrom_of_split ((∅, []) : DSCache StmtIn U) L₁ (log[f j]) L₂ hcol
   rwa [← hsplit] at this
 
+open DuplexSpongeFS.Paper in
+/-- **Inverse-arm anchoring producer.** Symmetric to `base_fwd_anchored` for an inverse base
+entry `⟨inr (inr b), a⟩`. -/
+theorem base_inv_anchored
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) log)
+    (f : ℕ ↪o ℕ)
+    (hf : ∀ ix, (removeRedundantEntryDSPaper log).1[ix]? = log[f ix]?)
+    (hfo : ∀ ix p (e ep : DSEntry StmtIn U),
+      (removeRedundantEntryDSPaper log).1[ix]? = some e → log[p]? = some ep →
+      p < f ix → ¬ sameClass e ep)
+    (j : ℕ) (hj : j < (removeRedundantEntryDSPaper log).1.length)
+    (a b : CanonicalSpongeState U)
+    (hbj : (removeRedundantEntryDSPaper log).1[j] = (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U))
+    (hcap : a.capacitySegment ∈ slotList ((log.take (f j)).foldl stepCache ((∅, []) : DSCache StmtIn U))
+        ∨ a.capacitySegment = b.capacitySegment) :
+    AnchoredFrom ((∅, []) : DSCache StmtIn U) log := by
+  obtain ⟨hpj, hsplit, hbjf, _hearlier⟩ := base_raw_split log f hf j hj
+  set L₁ := log.take (f j) with hL₁
+  set L₂ := log.drop (f j + 1) with hL₂
+  have he : log[f j] = (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U) := by rw [hbjf, hbj]
+  have hcons' : ConsistentFrom ((∅, []) : DSCache StmtIn U) (L₁ ++ log[f j] :: L₂) := by
+    rw [← hsplit]; exact hcons
+  have hnr : ∀ e' ∈ L₁, ¬ sameClass (log[f j]) e' := by
+    intro e' he''; rw [hbjf]; exact base_no_earlier_sameClass log f hf hfo j hj e' he''
+  have hfresh : ¬ hasInvKey (L₁.foldl stepCache ((∅, []) : DSCache StmtIn U)) b :=
+    inv_entry_fresh L₁ (log[f j]) L₂ a b he hcons' hnr
+  have hcol : collisionStep (log[f j]).1 (L₁.foldl stepCache ((∅, []) : DSCache StmtIn U))
+      (log[f j]).2 := by
+    rw [he]
+    refine ⟨find?_snd_none_of_not_hasInvKey hfresh, hcap⟩
+  have := anchoredFrom_of_split ((∅, []) : DSCache StmtIn U) L₁ (log[f j]) L₂ hcol
+  rwa [← hsplit] at this
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1238,6 +1272,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.base_no_earlier_sameClass
 #print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_split
 #print axioms DuplexSpongeFS.EagerLazyDS.base_fwd_anchored
+#print axioms DuplexSpongeFS.EagerLazyDS.base_inv_anchored
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
