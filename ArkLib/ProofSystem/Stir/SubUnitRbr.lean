@@ -6,11 +6,11 @@ Authors: ArkLib Contributors
 
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 import ArkLib.ProofSystem.Whir.ThresholdKSF
+import ArkLib.OracleReduction.FullPredKSF
 import ArkLib.ProofSystem.Whir.SubUnitRbr
 import ArkLib.Data.Probability.MarginalBound
 import ArkLib.ProofSystem.Component.SendWitness
 
-set_option linter.style.longFile 1600
 
 /-!
 # Issue #301 — GENUINE sub-unit RBR knowledge soundness of the STIR checking verifier
@@ -64,8 +64,9 @@ HONESTY NOTES:
   Consequently `2^{-secpar}` budgets at large `secpar` are NOT achievable in this wire model
   (the `hε` leg of the front door pins `secpar` accordingly); paper-STIR's L5.4 budgets
   require `t`-fold repetition per round, which is the natural next wire-model upgrade.
-* The generic multi-flip lemma lives here pending promotion to a shared home next to
-  `ThresholdKSF` (it is WHIR-consumable as-is).
+* The generic multi-flip lemma is now a thin wrapper around the shared home
+  `FullPredKSF.rbrKnowledgeSoundness_of_salvageBound` (consolidated; statement kept for
+  consumers).
 -/
 
 
@@ -139,14 +140,12 @@ theorem rbrKnowledgeSoundness_of_flipBounds (verifier : Verifier oSpec StmtIn St
                 prover.runWithLogToRound i.1.castSucc stmtIn witIn
               let challenge ← liftComp (pSpec.getChallenge i) _
               return (transcript, challenge, proveQueryLog))).run' (← init)] ≤ (ε i : ℝ≥0∞)) :
-    verifier.rbrKnowledgeSoundness init impl relIn relOut ε := by
-  classical
-  refine ⟨fun _ => Unit, unitExtractor,
-    predKSF init impl verifier relIn relOut pred hEmpty hConcat hFull, ?_⟩
-  intro stmtIn witIn prover i
-  refine le_trans (probEvent_mono ?_) (hFlip i stmtIn witIn prover)
-  rintro ⟨tr, ch, log⟩ _ ⟨w, hne, hyes⟩
-  exact ⟨hne, hyes⟩
+    verifier.rbrKnowledgeSoundness init impl relIn relOut ε :=
+  -- consolidation (#301 dedup): this is `FullPredKSF.rbrKnowledgeSoundness_of_salvageBound`
+  -- (the shared multi-flip home) with the flip-bound arguments reordered; the local
+  -- `predKSF` shape is preserved for consumers, the proof is no longer duplicated.
+  FullPredKSF.rbrKnowledgeSoundness_of_salvageBound init impl verifier relIn relOut pred ε
+    hEmpty hConcat hFull (fun stmtIn witIn prover i => hFlip i stmtIn witIn prover)
 
 end ThresholdKSF
 
