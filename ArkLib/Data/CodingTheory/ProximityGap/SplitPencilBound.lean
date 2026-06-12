@@ -270,6 +270,34 @@ theorem pencil_split_card_le (hw : 1 ≤ g.natDegree)
     exact hbigcard
   omega
 
+open Classical in
+/-- **Exact-size split-pencil bound.**  If every realized split member has at
+least `deg g` domain roots, the small-member exception disappears and the
+disjointness packing gives the sharp `n / deg g` count. -/
+theorem splitMember_count_le (hw : 1 ≤ g.natDegree)
+    (hgeval : ∀ i : Fin n, g.eval (dom i) ≠ 0)
+    (𝒯 : Finset (Finset (Fin n)))
+    (h𝒯 : ∀ T ∈ 𝒯, SplitMember dom f g T)
+    (hcard : ∀ T ∈ 𝒯, g.natDegree ≤ T.card) :
+    𝒯.card ≤ n / g.natDegree := by
+  classical
+  set w := g.natDegree with hwdef
+  have hbigcard : w * 𝒯.card ≤ n := by
+    have hdisj : ∀ T₁ ∈ 𝒯, ∀ T₂ ∈ 𝒯, T₁ ≠ T₂ → Disjoint T₁ T₂ := by
+      intro T₁ h₁ T₂ h₂ hne
+      exact pencil_split_disjoint hgeval hne (h𝒯 T₁ h₁) (h𝒯 T₂ h₂)
+    calc w * 𝒯.card = ∑ _T ∈ 𝒯, w := by
+          rw [Finset.sum_const, smul_eq_mul, mul_comm]
+      _ ≤ ∑ T ∈ 𝒯, T.card := by
+          exact Finset.sum_le_sum fun T hT => by
+            rw [hwdef]
+            exact hcard T hT
+      _ = (𝒯.biUnion id).card := (Finset.card_biUnion hdisj).symm
+      _ ≤ Fintype.card (Fin n) := Finset.card_le_univ _
+      _ = n := Fintype.card_fin n
+  rw [Nat.le_div_iff_mul_le (by omega : 0 < w), mul_comm]
+  exact hbigcard
+
 end Pencil
 
 end ProximityGap.WBPencil

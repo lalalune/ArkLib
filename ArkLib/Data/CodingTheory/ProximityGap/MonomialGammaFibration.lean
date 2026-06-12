@@ -368,6 +368,87 @@ theorem adjacent_card_eq_n_mul_add_zero {p : ℕ} [Fact p.Prime]
   simpa [hmul, hg] using
     badScalars_card_eq_order_mul_add_zero hg hg0 d a (a + 1) δ
 
+open Classical in
+/-- **One seed gives one full orbit.**  If a nonzero scalar is bad for a monomial stack, then
+the nonzero bad set contains its complete `⟨gᵇ·(gᵃ)⁻¹⟩`-orbit, hence has size at least the
+orbit order.  This is the lower-bound counterpart to
+`orderOf_dvd_card_badScalars_erase_zero`. -/
+theorem orderOf_le_card_badScalars_erase_zero_of_nonzero_bad {p : ℕ} [Fact p.Prime]
+    {g : ZMod p} {n : ℕ} [NeZero n] (hg : orderOf g = n) (hg0 : g ≠ 0)
+    (d a b : ℕ) (δ : ℝ≥0) {γ : ZMod p} (hγ0 : γ ≠ 0)
+    (hγbad : mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+      (monoWord g a) (monoWord g b) γ) :
+    orderOf (g ^ b * (g ^ a)⁻¹) ≤
+      ((Finset.univ.filter (fun γ : ZMod p =>
+        mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+          (monoWord g a) (monoWord g b) γ)).erase 0).card := by
+  classical
+  set c : ZMod p := g ^ b * (g ^ a)⁻¹ with hcdef
+  set Bad := (Finset.univ.filter (fun γ : ZMod p =>
+      mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+        (monoWord g a) (monoWord g b) γ)).erase 0 with hBaddef
+  set O := (Finset.range (orderOf c)).image (fun k => γ * c ^ k) with hOdef
+  have npos : 0 < n := Nat.pos_of_ne_zero (NeZero.ne n)
+  have hga : (g : ZMod p) ^ a ≠ 0 := pow_ne_zero _ hg0
+  have hc0 : c ≠ 0 := by
+    rw [hcdef]
+    exact mul_ne_zero (pow_ne_zero _ hg0) (inv_ne_zero hga)
+  have hcfin : IsOfFinOrder c := by
+    refine isOfFinOrder_iff_pow_eq_one.mpr ⟨n, npos, ?_⟩
+    have hgn : g ^ n = 1 := hg ▸ pow_orderOf_eq_one g
+    rw [hcdef, mul_pow, inv_pow, ← pow_mul, ← pow_mul, mul_comm b n, mul_comm a n, pow_mul,
+      pow_mul, hgn, one_pow, one_pow, inv_one, mul_one]
+  have horbmem : ∀ k : ℕ, γ * c ^ k ∈ Bad := by
+    intro k
+    induction k with
+    | zero =>
+        rw [hBaddef]
+        simp [hγ0, hγbad]
+    | succ k ih =>
+        have hbadk : mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+            (monoWord g a) (monoWord g b) (γ * c ^ k) := by
+          simpa [hBaddef] using (Finset.mem_erase.mp ih).2
+        have hbadnext :
+            mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+              (monoWord g a) (monoWord g b) ((γ * c ^ k) * c) := by
+          simpa [c] using (mcaEvent_monoStack_gamma_mul hg hg0 d a b δ (γ * c ^ k)).mp hbadk
+        rw [hBaddef]
+        refine Finset.mem_erase.mpr ⟨?_, ?_⟩
+        · exact mul_ne_zero hγ0 (pow_ne_zero _ hc0)
+        · simpa [pow_succ, mul_assoc] using hbadnext
+  have hOsub : O ⊆ Bad := by
+    intro x hx
+    obtain ⟨k, _, rfl⟩ := Finset.mem_image.mp hx
+    exact horbmem k
+  have hinjOn : Set.InjOn (fun k => γ * c ^ k) ↑(Finset.range (orderOf c)) := by
+    intro i hi j hj hij
+    have hipow : c ^ i = c ^ j := mul_left_cancel₀ hγ0 hij
+    exact pow_injOn_Iio_orderOf
+      (by simpa using Finset.mem_range.mp (Finset.mem_coe.mp hi))
+      (by simpa using Finset.mem_range.mp (Finset.mem_coe.mp hj)) hipow
+  have hOcard : O.card = orderOf c := by
+    rw [hOdef, Finset.card_image_of_injOn hinjOn, Finset.card_range]
+  rw [← hOcard]
+  exact Finset.card_le_card hOsub
+
+open Classical in
+/-- Adjacent-pair one-orbit lower bound: one nonzero bad scalar forces at least `n` nonzero
+bad scalars. -/
+theorem n_le_card_badScalars_adjacent_erase_zero_of_nonzero_bad {p : ℕ} [Fact p.Prime]
+    {g : ZMod p} {n : ℕ} [NeZero n] (hg : orderOf g = n) (hg0 : g ≠ 0)
+    (d a : ℕ) (δ : ℝ≥0) {γ : ZMod p} (hγ0 : γ ≠ 0)
+    (hγbad : mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+      (monoWord g a) (monoWord g (a + 1)) γ) :
+    n ≤ ((Finset.univ.filter (fun γ : ZMod p =>
+      mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+        (monoWord g a) (monoWord g (a + 1)) γ)).erase 0).card := by
+  have hga : (g : ZMod p) ^ a ≠ 0 := pow_ne_zero _ hg0
+  have hmul : g ^ (a + 1) * (g ^ a)⁻¹ = g := by
+    rw [pow_succ', mul_assoc, mul_inv_cancel₀ hga, mul_one]
+  have h := orderOf_le_card_badScalars_erase_zero_of_nonzero_bad hg hg0 d a (a + 1) δ
+    hγ0 hγbad
+  rwa [hmul, hg] at h
+
 end ArkLib.ProximityGap.MonomialGammaFibration
 
 #print axioms ArkLib.ProximityGap.MonomialGammaFibration.mcaEvent_monoStack_gamma_mul

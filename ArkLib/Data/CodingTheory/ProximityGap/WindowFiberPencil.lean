@@ -412,6 +412,81 @@ theorem stratumG_firstRow_badScalars_card_le
       hdℓ₁ hdR₁ hℓ₁pos hG₀ hcop₀ hcop₁ hcopℓ hδn)
     (Nat.le_succ _)
 
+open Classical in
+/-- **Sharp first-row split-pencil bound.**  In the `n = 3w`, `k = 1` window row,
+the witness complements all have exact size `w`; hence the small-member exception
+in `pencil_split_card_le` cannot occur and the count is at most `n / w`. -/
+theorem stratumG_firstRow_badScalars_card_le_sharp
+    (dom : Fin n ↪ F) {w : ℕ} (hw : 1 ≤ w) (hn : n = 3 * w)
+    {u₀ u₁ : Fin n → F} {ℓ₀ R₀ ℓ₁ R₁ : F[X]}
+    (hrel₀ : ∀ i, ℓ₀.eval (dom i) * u₀ i = R₀.eval (dom i))
+    (hrel₁ : ∀ i, ℓ₁.eval (dom i) * u₁ i = R₁.eval (dom i))
+    (hdℓ₀ : ℓ₀.natDegree = w) (hdR₀ : R₀.natDegree ≤ w)
+    (hdℓ₁ : ℓ₁.natDegree ≤ w) (hdR₁ : R₁.natDegree ≤ w)
+    (hℓ₁pos : 1 ≤ ℓ₁.natDegree)
+    (hG₀ : ∀ i, ℓ₀.eval (dom i) ≠ 0)
+    (hcop₀ : IsCoprime R₀ ℓ₀) (hcop₁ : IsCoprime R₁ ℓ₁) (hcopℓ : IsCoprime ℓ₀ ℓ₁)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+      ((rsCode dom 1 : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+      ≤ n / w := by
+  classical
+  set badSet := Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+    ((rsCode dom 1 : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)
+    with hbadDef
+  rcases Finset.eq_empty_or_nonempty badSet with h0 | hne
+  · rw [h0]
+    simp
+  obtain ⟨γ₀, hγ₀⟩ := hne
+  have hdata : ∀ γ ∈ badSet, ∃ (S : Finset (Fin n)) (g p : F), g ≠ 0 ∧
+      S.card + w = n ∧
+      R₀ * ℓ₁ + C γ * (R₁ * ℓ₀) - C p * (ℓ₀ * ℓ₁) = C g * vanishingPoly dom S :=
+    fun γ hγ => witness_division_identity hw hn hrel₀ hrel₁ hdℓ₀ hdR₀ hdℓ₁ hdR₁
+      hcop₀ hcopℓ hδn (Finset.mem_filter.mp hγ).2
+  choose Sf gf pf hgne hcard hid using hdata
+  have hinj : ∀ γ₁ (h₁ : γ₁ ∈ badSet) γ₂ (h₂ : γ₂ ∈ badSet),
+      Sf γ₁ h₁ = Sf γ₂ h₂ → γ₁ = γ₂ := by
+    intro γ₁ h₁ γ₂ h₂ hSeq
+    have e₂ := hid γ₂ h₂
+    rw [← hSeq] at e₂
+    exact witness_gamma_injective hG₀ (by rw [hdℓ₀]; exact hw) hℓ₁pos hcop₁
+      (hid γ₁ h₁) e₂
+  set 𝒯 := badSet.attach.image
+    (fun x : {γ // γ ∈ badSet} => (Sf x.1 x.2)ᶜ) with h𝒯
+  have hmem : ∀ T ∈ 𝒯, SplitMember dom (vanishingPoly dom (Sf γ₀ hγ₀)ᶜ) ℓ₀ T := by
+    intro T hT
+    rw [h𝒯, Finset.mem_image] at hT
+    obtain ⟨⟨γ, hγ⟩, -, rfl⟩ := hT
+    exact witness_compl_splitMember hG₀ hcop₀ hcopℓ (by rw [hdℓ₀]; exact hw)
+      (hgne γ₀ hγ₀) (hid γ₀ hγ₀) (by rw [hdℓ₀]; exact hcard γ₀ hγ₀)
+      (hid γ hγ) (by rw [hdℓ₀]; exact hcard γ hγ)
+  have hTlarge : ∀ T ∈ 𝒯, ℓ₀.natDegree ≤ T.card := by
+    intro T hT
+    rw [h𝒯, Finset.mem_image] at hT
+    obtain ⟨⟨γ, hγ⟩, -, rfl⟩ := hT
+    have hTcard : ((Sf γ hγ)ᶜ : Finset (Fin n)).card = w := by
+      rw [Finset.card_compl, Fintype.card_fin]
+      have hSle : (Sf γ hγ).card ≤ n := by
+        have := Finset.card_le_univ (Sf γ hγ)
+        rwa [Fintype.card_fin] at this
+      have hS := hcard γ hγ
+      omega
+    rw [hTcard, hdℓ₀]
+  have hG1 := splitMember_count_le (f := vanishingPoly dom (Sf γ₀ hγ₀)ᶜ)
+    (by rw [hdℓ₀]; exact hw) hG₀ 𝒯 hmem hTlarge
+  rw [hdℓ₀] at hG1
+  have hinjOn : Set.InjOn (fun x : {γ // γ ∈ badSet} => (Sf x.1 x.2)ᶜ)
+      badSet.attach := by
+    intro x _ y _ hxy
+    have hSS : Sf x.1 x.2 = Sf y.1 y.2 := by
+      have h2 := congrArg (fun s : Finset (Fin n) => sᶜ) hxy
+      simpa using h2
+    exact Subtype.ext (hinj _ _ _ _ hSS)
+  have hcardeq : 𝒯.card = badSet.card := by
+    rw [h𝒯, Finset.card_image_of_injOn hinjOn, Finset.card_attach]
+  rw [← hcardeq]
+  exact hG1
+
 end FiberPencil
 
 end ProximityGap.WBPencil
