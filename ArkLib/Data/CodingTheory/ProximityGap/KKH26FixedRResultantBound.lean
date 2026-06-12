@@ -62,21 +62,49 @@ theorem not_dvd_collisionResultant_of_two_mul_r_pow_lt {p : ℕ} [Fact p.Prime] 
   have h2 := natAbs_collisionResultant_le_two_mul_r_pow hm hd₁ hd₂
   omega
 
+/-- Family form of `not_dvd_collisionResultant_of_two_mul_r_pow_lt`, matching the
+non-divisibility hypothesis consumed by the KKH26 witness-spread and pin wrappers. -/
+theorem collisionResultant_not_dvd_of_two_mul_r_pow_lt {p : ℕ} [Fact p.Prime] {m r : ℕ}
+    (hm : 1 ≤ m) (hp : (2 * r) ^ 2 ^ (m - 1) < p) :
+    ∀ d₁ ∈ sigData (2 ^ (m - 1)) r, ∀ d₂ ∈ sigData (2 ^ (m - 1)) r,
+      d₁ ≠ d₂ → ¬ (p : ℤ) ∣ collisionResultant m d₁ d₂ := by
+  intro d₁ hd₁ d₂ hd₂ hne
+  exact not_dvd_collisionResultant_of_two_mul_r_pow_lt hm hp hd₁ hd₂ hne
+
 end ArkLib.ProximityGap.KKH26
 
 namespace ArkLib.ProximityGap.Mu6FixedRResultantBound
 
 open ArkLib.ProximityGap.KKH26
 open ArkLib.ProximityGap.Mu6ConditionalPin
+open scoped NNReal ENNReal
+
+local instance fact_prime_P : Fact (Nat.Prime P) := ⟨prime_P⟩
 
 /-- The fixed-r threshold for the landed `mu = 6`, `r = 5` conditional pin
 is below the certified prime. -/
 theorem ten_pow_32_lt_P : (2 * 5 : ℕ) ^ 2 ^ (6 - 1) < P := by
   norm_num [P]
 
+/-- The fixed-r resultant bound discharges the last named divisibility hypothesis in the
+`mu = 6`, `r = 5` literal-budget pin.  Thus the dimension-4 smooth-domain code over the
+certified Proth prime `P` has the machine-checked threshold value
+`δ* = 59/64` at `ε* = 2^-128` without any external collision-resultant side condition. -/
+theorem deltaStar_pin_mu6_dim4_fixed_r :
+    ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod P) (A := ZMod P)
+        (evalCode
+          (343681710474810194684472438365758239853939287 : ZMod P) 64 3)
+        (1 / 2 ^ 128)
+      = 59 / 64 := by
+  exact deltaStar_pin_mu6_dim4_of_not_dvd
+    (collisionResultant_not_dvd_of_two_mul_r_pow_lt (p := P) (m := 6) (r := 5)
+      (by norm_num) ten_pow_32_lt_P)
+
 end ArkLib.ProximityGap.Mu6FixedRResultantBound
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.KKH26.natAbs_collisionResultant_le_two_mul_r_pow
 #print axioms ArkLib.ProximityGap.KKH26.not_dvd_collisionResultant_of_two_mul_r_pow_lt
+#print axioms ArkLib.ProximityGap.KKH26.collisionResultant_not_dvd_of_two_mul_r_pow_lt
 #print axioms ArkLib.ProximityGap.Mu6FixedRResultantBound.ten_pow_32_lt_P
+#print axioms ArkLib.ProximityGap.Mu6FixedRResultantBound.deltaStar_pin_mu6_dim4_fixed_r
