@@ -1696,3 +1696,38 @@ spectrum `N(μ,r)`, the proven ownership `MCA-bad ≤ C(n,k+1)/2`, both lanes ax
 constant-rate open. The §50 "construction slack" lead is CLOSED (explainability artifact); KKH26 is
 consistent with extremal-among-far-lines. The δ*-relevant worst-FAR-line MCA-bad bound at constant rate
 remains the one open inequality. No fabrication; self-corrected via the in-tree ownership theorem.
+
+---
+
+## §52 — Apparent contradiction RESOLVED; true ceiling ε_mca = C(n,d+2)/q (far-generic), not N(μ,r); the pin band could widen but crypto ε* sits below it
+
+Chased a real apparent contradiction: far random lines give `4368 = C(16,5)` MCA-bad scalars at the
+ceiling `δ=11/16` (probe `probe_farline_extremal.py`; for far `u₁` the no-joint clause is automatic so
+explainability = MCA-badness), which seemingly violates the PROVEN ownership bound `MCA-bad ≤ C(16,5)/2
+= 2184`. **Resolution (read the lemma's hypothesis):** `dimGeneral_badScalars_card_mul_two_le` requires
+`hδ : (d+2) < (1−δ)·n` STRICT. At the ceiling `(1−δ)·n = d+2` exactly, so the hypothesis FAILS — the
+ownership bound applies only STRICTLY BELOW the ceiling (`w ≥ d+3`, i.e. `δ < 1−(d+3)/n`), never AT it.
+No contradiction; my `4368` is at the ceiling, outside the lemma's domain.
+
+**Genuine correction (sharper than §50/§51).** The TRUE `ε_mca` at the ceiling radius is
+`ε_mca(C, 1−(d+2)/n) = C(n,d+2)/q` — achieved by a FAR GENERIC line (every `(d+2)`-subset gives a
+distinct bad scalar, zero collisions, the absolute max `C(n,d+2)`). KKH26's `N(μ,r)` (collision-heavy,
+cyclotomic) is **near-MINIMAL among far lines**, a valid but conservative LOWER bound. So:
+- the bad-at-ceiling value is `C(n,d+2)/q`, NOT `N(μ,r)/q`;
+- the pin band could WIDEN from `[C(n,d+2)/2, N(μ,r))` (KKH26-based, closes at `r≲√(n log n)` because it
+  needs `N(μ,r) > C/2`) to `[C(n,d+2)/2, C(n,d+2))` — which is **NONEMPTY FOR ALL rates** (since
+  `C/2 < C`). The "band closes at √(n log n)" is an artifact of using `N(μ,r)` instead of the true `ε_mca`.
+
+**Why this still does NOT pin the deployed regime.** The always-nonempty band `[C(n,d+2)/2, C(n,d+2))` is
+at a LARGE `ε*` regime: `ε*q ∈ [C(n,d+2)/2, C(n,d+2))`, and `C(n,d+2)` at constant rate is exponential
+`2^{Θ(n)}`. The cryptographic `ε* = 2^-128` gives `ε*q = 2^128 ≪ C(n,d+2)/2`, so it sits BELOW the band.
+For `ε*q` that small, the good-below at the ceiling fails (ε_mca below ceiling can reach `C/2 ≫ 2^128`),
+so the deployed `δ*` is at a SMALLER radius — higher agreement `w`, where the worst far-line incidence is
+the open list-size quantity. So the correction widens the pin's `ε*` reach and removes the `√(n log n)`
+band-closure as a true obstruction, but the cryptographic-`ε*` deployed pin remains the open core (now:
+the worst far-line incidence at agreement `w` such that it `≈ 2^128`, well above `d+2`).
+
+**NET.** Genuine new understanding from a real investigation (apparent contradiction → resolved →
+true ceiling value `C(n,d+2)/q`). The sibling's `N(μ,r)`-based pin is CORRECT but conservative; the true
+ceiling ε_mca is larger. δ* pinned `1−r/2^μ` for `r ≲ √(n log n)` stands; the deployed crypto-ε* core is
+unchanged. No fabrication; the ownership-hypothesis domain (`w > d+2`) is the key fact that resolved it.
