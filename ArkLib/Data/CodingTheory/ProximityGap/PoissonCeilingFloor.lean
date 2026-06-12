@@ -336,3 +336,94 @@ theorem card_explainable_words_pair (hg : orderOf g = n) {d : ℕ}
 end ArkLib.ProximityGap.PoissonCeilingFloor
 
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_explainable_words_pair
+
+namespace ArkLib.ProximityGap.PoissonCeilingFloor
+
+/-! ## Part B2a: pointwise Bonferroni (ordered-pair, ℕ-clean form) -/
+
+open Classical in
+/-- **Bonferroni, second order**: over any finite family,
+`2·Σ_T |A_T| ≤ 2·|⋃ A_T| + Σ_{(T,T') distinct ordered} |A_T ∩ A_T'|`.  Pointwise this is
+`2m ≤ 2 + m(m−1)` for multiplicity `m ≥ 1`. -/
+theorem two_mul_sum_card_le {α β : Type} [DecidableEq α] [DecidableEq β]
+    (𝒯 : Finset β) (A : β → Finset α) :
+    2 * ∑ T ∈ 𝒯, (A T).card
+      ≤ 2 * (𝒯.biUnion A).card
+        + ∑ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card := by
+  classical
+  set U := 𝒯.biUnion A with hU
+  -- single counts through U
+  have hsub : ∀ T ∈ 𝒯, A T ⊆ U := fun T hT x hx =>
+    Finset.mem_biUnion.mpr ⟨T, hT, hx⟩
+  have hsingle : ∀ T ∈ 𝒯, (A T).card
+      = ∑ x ∈ U, (if x ∈ A T then 1 else 0) := by
+    intro T hT
+    rw [Finset.sum_ite_mem U (A T) (fun _ => 1)]
+    rw [Finset.inter_comm, Finset.inter_eq_left.mpr (hsub T hT)]
+    simp
+  -- pair counts through U
+  have hpair : ∀ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card
+      = ∑ x ∈ U, (if x ∈ A TT'.1 ∧ x ∈ A TT'.2 then 1 else 0) := by
+    intro TT' hTT'
+    have hmem := Finset.mem_offDiag.mp hTT'
+    have hsubI : A TT'.1 ∩ A TT'.2 ⊆ U :=
+      subset_trans (Finset.inter_subset_left) (hsub _ hmem.1)
+    calc (A TT'.1 ∩ A TT'.2).card
+        = ∑ x ∈ U, (if x ∈ A TT'.1 ∩ A TT'.2 then 1 else 0) := by
+          rw [Finset.sum_ite_mem U (A TT'.1 ∩ A TT'.2) (fun _ => 1)]
+          rw [Finset.inter_comm U (A TT'.1 ∩ A TT'.2), Finset.inter_eq_left.mpr hsubI]
+          simp
+    _ = ∑ x ∈ U, (if x ∈ A TT'.1 ∧ x ∈ A TT'.2 then 1 else 0) :=
+        Finset.sum_congr rfl (fun x _ =>
+          if_congr (by simp [Finset.mem_inter]) rfl rfl)
+  -- the multiplicity of a point
+  set m : α → ℕ := fun x => (𝒯.filter (fun T => x ∈ A T)).card with hm
+  have hswap1 : (∑ T ∈ 𝒯, (A T).card) = ∑ x ∈ U, m x := by
+    rw [Finset.sum_congr rfl hsingle, Finset.sum_comm]
+    refine Finset.sum_congr rfl (fun x _ => ?_)
+    exact (Finset.card_filter _ _).symm
+  have hswap2 : (∑ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card)
+      = ∑ x ∈ U, (m x * m x - m x) := by
+    rw [Finset.sum_congr rfl hpair, Finset.sum_comm]
+    refine Finset.sum_congr rfl (fun x _ => ?_)
+    have hoff : (𝒯.offDiag.filter
+        (fun TT' : β × β => x ∈ A TT'.1 ∧ x ∈ A TT'.2))
+        = (𝒯.filter (fun T => x ∈ A T)).offDiag := by
+      ext TT'
+      simp only [Finset.mem_filter, Finset.mem_offDiag]
+      tauto
+    calc (∑ TT' ∈ 𝒯.offDiag, if x ∈ A TT'.1 ∧ x ∈ A TT'.2 then 1 else 0)
+        = (𝒯.offDiag.filter
+            (fun TT' : β × β => x ∈ A TT'.1 ∧ x ∈ A TT'.2)).card :=
+          (Finset.card_filter _ _).symm
+    _ = ((𝒯.filter (fun T => x ∈ A T)).offDiag).card := by rw [hoff]
+    _ = m x * m x - m x := by
+          rw [Finset.offDiag_card]
+  -- the multiplicity is positive on U
+  have hpos : ∀ x ∈ U, 1 ≤ m x := by
+    intro x hx
+    obtain ⟨T, hT, hxT⟩ := Finset.mem_biUnion.mp hx
+    exact Finset.card_pos.mpr ⟨T, Finset.mem_filter.mpr ⟨hT, hxT⟩⟩
+  -- pointwise: 2m ≤ 2 + (m² − m) for m ≥ 1
+  have hptw : ∀ x ∈ U, 2 * m x ≤ 2 + (m x * m x - m x) := by
+    intro x hx
+    have h1 := hpos x hx
+    have key : 3 * m x ≤ m x * m x + 2 := by
+      rcases Nat.lt_or_ge (m x) 3 with h | h
+      · have h12 : m x = 1 ∨ m x = 2 := by omega
+        rcases h12 with h' | h' <;> rw [h'] <;> norm_num
+      · have h3 : 3 * m x ≤ m x * m x := Nat.mul_le_mul_right _ h
+        omega
+    have hsq : m x ≤ m x * m x := Nat.le_mul_of_pos_left _ (by omega)
+    omega
+  -- assemble
+  calc 2 * ∑ T ∈ 𝒯, (A T).card = 2 * ∑ x ∈ U, m x := by rw [hswap1]
+  _ = ∑ x ∈ U, 2 * m x := by rw [Finset.mul_sum]
+  _ ≤ ∑ x ∈ U, (2 + (m x * m x - m x)) := Finset.sum_le_sum hptw
+  _ = 2 * U.card + ∑ x ∈ U, (m x * m x - m x) := by
+      rw [Finset.sum_add_distrib, Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+  _ = 2 * U.card + ∑ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card := by rw [hswap2]
+
+end ArkLib.ProximityGap.PoissonCeilingFloor
+
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.two_mul_sum_card_le
