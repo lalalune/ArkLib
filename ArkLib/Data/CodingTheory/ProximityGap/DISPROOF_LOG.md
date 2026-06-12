@@ -7195,3 +7195,27 @@ naive `3w+k` overcount (the free-on-roots correction) is not real.  WB-1 is
 non-vacuous on a `1 − O(q^{2w+k−n})` fraction of directions at every below-UDR slack.
 Remaining for the all-stacks law: the near-direction side (the `O(q^{2w+k})`
 exceptional directions) via pencil deflation.
+
+## 2026-06-11 — WB-2 open-core probes: the doubly-rational sup is EMPTY at every tested below-UDR instance
+
+`probe_rational_pair_extremality.py` (17,8,2,w=2) + `probe_rational_pair_window.py`
+(97,16,2,w=5 — the genuine window `3w+k−1 ≥ n > 2w+k` where degree-forcing fails):
+
+* Random genuine rational pairs: **max bad = 0** at both instances (250 + 60 samples).
+* Monomial pairs `(x^a, x^b)`: max **1**; quadratic/shared-denominator pairs: max **1/0**.
+* So the WB-2 residual sup is far below its `(w+3)/q` far-side companion everywhere
+  tested — the below-UDR all-stacks law `ε_mca ≤ O(w)/q` looks TRUE.
+
+**The mechanism, by regime (analysis):**
+* `3w+k−1 < n` (ladder reach): explainability forces the polynomial identity
+  `c·ℓ₀ℓ₁ = ℓ₁R₀ + γℓ₀R₁`; coprime genuine denominators give `ℓ₀ | R₀` — contradiction:
+  **zero bad scalars, provable** (WB-3a, Lean queued: agreement > degree forcing +
+  divisibility).
+* `4w+k−1 < n`: pairwise differencing forces `ℓ₁ | R₁` from two bad scalars:
+  **≤ 1 bad, provable** (weaker radius, subsumed).
+* The window `[(n−k)/3, (n−k)/2)`: neither forcing applies, yet the probe finds zero —
+  the conjectured mechanism is codimension counting on the root-configuration variety
+  (each bad γ needs a degree-`2w+k−1` pencil member with ALL its roots on `D`).
+  **Open: an adversarial construction OR a counting proof.**  This — the window
+  rational-pair bad count — is now the entire below-UDR question, and the
+  above-UDR/Johnson window remains the recognized core beyond it.
