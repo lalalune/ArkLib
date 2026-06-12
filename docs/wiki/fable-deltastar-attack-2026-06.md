@@ -1795,3 +1795,40 @@ single resultant/Stepanov estimate, open at `|G| = p^{o(1)}` per the directory h
 **NET.** δ* pinned `r ≲ √(n log n)` stands; the deployed crypto-ε* core is now confirmed (10 rounds) to be
 ONE quantity — `Σ_c (deg gcd_c)²` — viewed through 5 equivalent faces, all proven-capped by counting/
 averaging/symmetry and now the deep-hole route. No fabrication; the convergence is the round's deliverable.
+
+---
+
+## §55 — Honest refinement of §54: the five faces split into AVERAGE-scale (Johnson-capped) vs WORST-case (the true core); they are not one identical bounded quantity
+
+Red-teaming §54's "all five faces converge on ONE quantity `Σ_c(deg gcd_c)²`" for over-clean-ness. The
+honest, precise picture distinguishes two tiers among the subgroup quantities:
+
+**AVERAGE-scale tier (provably Johnson-capped or bounded-but-insufficient):**
+- Additive energy `E(G) = Σ_c r(c)²`: HBK PROVES `E(G) ≪ |G|^{5/2}` floor-free for `|G| < p^{2/3}`
+  (round 5, §43–§44) — but the 4th-moment no-go `fourth_moment_cannot_beat_johnson_from_S4` proves no
+  4th-moment/energy bound beats Johnson. So `E(G)` is bounded yet does NOT pin δ* above Johnson.
+- `Σ_c (deg gcd_c)² ≥ E(G)` (the `AddEnergyGcdDegreeBound` named-open input): harder than `E(G)`, and
+  being an average-over-scalars quantity it is the SAME average scale — bounding it would give the Johnson
+  reach, not the above-Johnson interior.
+- List 4th-moment `S₄ = Σ_i m_i⁴`: the §44/§46 per-word Johnson-tightness — `R = nS₄/S₂² ≥ 1` always.
+
+**WORST-case tier (the genuine deployed core, NOT any average quantity):** the worst far-line incidence
+`I(w)` at the interior agreement level `w* = Θ(n)` where `I(w*) = ε*q = 2^128`. This is a sup over
+lines/cosets, NOT an average over scalars or coordinates; the average-scale bounds (HBK energy, gcd-sum,
+4th moment) are all PROVABLY too weak to reach it (the average→worst-case wall, rounds 1–3).
+
+**CORRECTED unification (the accurate statement).** The five faces are all faces of the SAME underlying
+object — the additive/multiplicative structure of `μ_n` controlling near-codeword coincidences — but they
+are NOT one identical bounded quantity. They split: the gcd/energy/4th-moment faces are average-scale and
+Johnson-capped (some, like `E(G)`, even have KNOWN bounds that still don't suffice); the line-ball /
+far-line / `I(w)` / deep-hole faces are the worst-case sup that is the genuine above-Johnson open core.
+§54 over-collapsed these; the true deployed pin needs the WORST-CASE bound, which no average-scale
+resultant/energy estimate (bounded or not) supplies. This is exactly the rounds-1–3 average→worst-case
+wall, now confirmed from the deep-hole/gcd side too: even the HBK-bounded `E(G)` and the named-open
+`Σ(deg gcd_c)²` are average-scale and Johnson-capped.
+
+**NET.** δ* pinned `r ≲ √(n log n)` stands. The deployed crypto-ε* core is the WORST-CASE far-line
+incidence `I(w*)` (a sup), NOT the average-scale gcd/energy sum — and the average→worst-case gap is the
+proven, irreducible wall (5 toolkits + deep-hole, all average-scale, all Johnson-capped). §54's
+"one quantity" is refined to: one underlying structure, two tiers, the worst-case tier open. No
+fabrication; honest self-correction of an over-clean consolidation.
