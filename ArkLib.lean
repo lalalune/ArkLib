@@ -534,6 +534,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CensusLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerDescent
 import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerFinite
 import ArkLib.Data.CodingTheory.ProximityGap.ChordConverseCore
+import ArkLib.Data.CodingTheory.ProximityGap.ChordConverseWrapper
 import ArkLib.Data.CodingTheory.ProximityGap.ChordFamilyCount
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
@@ -787,6 +788,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldStability
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldTransport
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26GapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26PolyFieldCeiling
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26RegimeSplit
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZaman
@@ -1106,6 +1108,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Round9SubgroupCharExpansion
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleBracketFull
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleJohnsonInstance
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleThresholdBracket
+import ArkLib.Data.CodingTheory.ProximityGap.SecondLayerConverseCore
 import ArkLib.Data.CodingTheory.ProximityGap.SecondLayerSeedFamily
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
