@@ -539,6 +539,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
+import ArkLib.Data.CodingTheory.ProximityGap.CapacityFailureBandwidth
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.CensusClassificationCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.CensusCollapse
