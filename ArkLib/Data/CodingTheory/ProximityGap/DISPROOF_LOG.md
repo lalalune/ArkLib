@@ -7278,3 +7278,19 @@ the invariant family by linear projection.  Remaining routes for
 observed extremals) PLUS a genuinely bivariate argument for mixed pairs — or a
 different mechanism entirely.  Logged as the third documented no-go of the window
 analysis (after degree-forcing and the naive GRS recursion).
+
+## 2026-06-11 — Ownership degeneracy REFUTED: the count mechanism EXPLAINS the window cap
+
+`probe_ownership_degeneracy.py` at (13,6,1,w=2), k = 1 (residual of a pair =
+`u₁(j) − u₁(i)`): the Möbius window extremal's per-scalar ownership is **8 = the
+generic mean (8.1)** — NO collapse on the symmetric locus.  And the count is nearly
+tight: `#bad·ownership = 3·8 = 24 ≤ 30 = n(n−1)` — the window cap `w+1 = 3` IS the
+ownership bound `⌊30/8⌋`.  The mechanism, exactly: the extremal's `u₁ = (0,1,1,0,2,2)`
+has value-multiplicity `μ = 2`, every witness has `|S| ≥ 4`, so ownership
+`≥ |S|(|S|−μ) = 4·2 = 8` — measured exactly.
+
+**Consequence (the multiplicity theorem, k = 1)**: `#bad ≤ n²/((n−w)(n−w−μ))` where
+`μ` is the max value-multiplicity of `u₁` — radius-free, window-valid, the first
+unconditional bound past the ladder reach for these stacks.  The general-k analogue
+(μ → max agreement of `u₁` with degree-< k polynomials) is the ownership route to
+`WindowRationalBounded` in full.
