@@ -1109,3 +1109,38 @@ own + the mutual partner), advancing it from untested to live with the survivor 
 This does NOT yet prove a strictly-better ceiling (needs the level-(μ-1) survivor bracket
 instantiation) — that's the next concrete step. No δ* edge-move yet; genuine actionable-direction
 progress per the issue's own protocol. No fabrication.
+## 36. RED-TEAM CORRECTION: the binding open core is the DEEPER interior (t≥2), NOT the BGK t=1 cell M
+
+Resolving a tension between §25 (worst-case = Weil = Johnson, open) and §30-31 (reduced to BGK M ≪ √n).
+The authoritative issue (#357 §1) says δ* is coupled to the 25-yr beyond-Johnson list-decoding problem.
+Re-checking the deployed arithmetic settles it DECISIVELY:
+
+**The BGK quantity M is NON-BINDING for deployed parameters.** `M = bgkCount = |μ_n ∩ -(1+μ_n)|`
+(`AdditiveEnergyKernel`) is the `t=1, a=3` interior cell. Deployed: `n ≤ 2^40`, `q ≤ 2^256`,
+`ε* = 2^-128`. The threshold a count must exceed to make a radius bad is `ε*·q ≥ 2^128`. But
+`M ≤ n = 2^40 ≪ 2^128` (even the TRIVIAL bound, no BGK needed). So the `t=1` cell never reaches the
+deployed threshold — `M`-control is **not** the binding constraint, and the sibling's "prize open iff M
+controlled" + my §30-31 "δ* reduces to M ≪ √n" are BOTH about a cell that is non-binding for the
+production regime. CORRECTED.
+
+**Where the binding open core actually is.** The δ* pin is set by the DEEPEST interior radius at which
+the list size first exceeds `ε*·q`. At agreement `a = (1-δ)n` with `δ` in the window, the list can be
+up to `~C(n,a)` (e.g. `2^{Θ(n)}` near `a≈n/2`), vastly exceeding `2^128`. The genuine open core is
+bounding this **deeper-interior (t≥2) worst-case list count** for explicit smooth RS — exactly the
+25-yr beyond-Johnson list-decoding wall the issue names, and the `t≥2` "multiplicative joint-symmetric
+count" obstruction recorded as open in `ListInteriorUnconditionalT2` / memory §12.
+
+**Consequences (honest):**
+- The average-side machinery (anti-concentration ladder §24-25, energy homogeneity, M-reduction §30-31)
+  controls the t=1/typical side — which is NON-BINDING for deployed q. It does NOT touch the binding
+  deeper-interior worst-case.
+- There is **no BGK / sum-product formalization shortcut** to the deployed δ*: even a fully-formalized
+  `M ≪ √n` closes only the non-binding t=1 cell. The binding core (t≥2 worst-case list count) is the
+  genuine 25-yr open problem.
+- §25's "worst-case = Weil = Johnson" was the correct read; §30-31's "reduced to M" over-claimed by
+  conflating the non-binding t=1 cell with the full pin. This corrects the campaign's open-core locus:
+  it is the deeper-interior list count, not M.
+
+No fabrication; this is a red-team correction aligning my reduction with the authoritative #357 framing
+and the deployed arithmetic. The deployed δ* remains OPEN, blocked on the deeper-interior beyond-Johnson
+list count — not closeable by formalizing BGK.
