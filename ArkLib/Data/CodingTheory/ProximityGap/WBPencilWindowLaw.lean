@@ -467,7 +467,12 @@ square row-selection is a nonzero `γ`-polynomial.  Equivalently (not needed
 formally): the pencil has corank ≤ 1 over `F(γ)`.  Probe record
 (`probe_wb_window_pencil_extremal_class.py`, `probe_wb_window_kernel_family.py`):
 0/4000 genuine rational pairs violate corank ≤ 1, and every probed extremal —
-including all `w+1`-bad Möbius-symmetric ones — is anchored. -/
+including all `w+1`-bad Möbius-symmetric ones — is anchored.
+
+**Post-landing correction (see DISPROOF_LOG 2026-06-12 + `WBPencilWindowCapstone`)**:
+anchoredness is NOT universal — class-V stacks (vanishing-denominator rows) can
+have corank ≥ 2 for every representation pair; the corrected residual is
+`UnanchoredLinear` (unanchored stacks have ≤ n bad scalars; probe record ≤ 2). -/
 def WindowPencilAnchored (dom : Fin n ↪ F) (k w : ℕ) (u₀ u₁ : Fin n → F) : Prop :=
   ∃ ℓ₀ R₀ ℓ₁ R₁ : F[X],
     ℓ₀.natDegree ≤ w ∧ ℓ₁.natDegree ≤ w ∧
