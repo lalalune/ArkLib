@@ -71,7 +71,7 @@ theorem residual_ladder_schur (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
     monic_prod_of_monic _ _ fun a _ => monic_X_sub_C _
   have hPdeg : P.natDegree = k + 1 := by
     rw [hP, natDegree_prod_of_monic _ _ fun a _ => monic_X_sub_C _]
-    simp [natDegree_X_sub_C]
+    simp
   have hPk : P.coeff k = -e₁ := by
     have h := prod_X_sub_C_coeff_card_pred (Finset.univ : Finset (Fin (k + 1)))
       (fun a => dom (t a)) (by simp)

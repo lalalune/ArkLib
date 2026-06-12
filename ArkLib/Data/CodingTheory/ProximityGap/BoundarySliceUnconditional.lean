@@ -72,7 +72,7 @@ theorem agreeSet_card_le_of_natDegree_eq (dom : Fin n ↪ F) {k : ℕ}
           (fun i => Q.eval (dom i)) := Finset.mem_coe.mp hi
       rw [agreeSet, Finset.mem_filter] at hi'
       rw [Finset.mem_coe, Multiset.mem_toFinset, mem_roots hD0]
-      show (Q - P).eval (dom i) = 0
+      change (Q - P).eval (dom i) = 0
       rw [eval_sub, sub_eq_zero]
       exact hi'.2.symm
     · exact fun i _ j _ h => dom.injective h
@@ -101,6 +101,24 @@ theorem boundary_slice_ladder_badSet_eq_unconditional (dom : Fin n ↪ F)
   simpa using h
 
 open Classical in
+/-- Cardinality form of `boundary_slice_ladder_badSet_eq_unconditional`: the
+ladder-stack bad-scalar count needs no separate farness hypothesis when the
+direction is `X^k`. -/
+theorem boundary_slice_ladder_badSet_card_eq_unconditional (dom : Fin n ↪ F)
+    {k : ℕ} (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ)) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => (dom i) ^ (k + 1)) (fun i => (dom i) ^ k) γ)).card
+      = ((Finset.univ.powersetCard (k + 1)).image
+          (fun S : Finset (Fin n) => ∑ i ∈ S, dom i)).card := by
+  refine boundary_slice_ladder_badSet_card_eq dom hk hlo hhi ?_
+  have h := agreeSet_card_le_of_natDegree_eq dom hk
+    (Q := X ^ k) (natDegree_X_pow k)
+  simpa using h
+
+open Classical in
 /-- **THE UNCONDITIONAL MODULAR CENSUS**: at the boundary radius, for every
 polynomial stack whose direction has degree exactly `k`, the bad-scalar set is
 exactly the modular Wronskian ratio set over `(k+1)`-subsets. -/
@@ -119,9 +137,48 @@ theorem boundary_slice_badSet_modular_of_natDegree (dom : Fin n ↪ F)
   boundary_slice_badSet_modular dom hk hlo hhi Q₀ Q₁
     (agreeSet_card_le_of_natDegree_eq dom hk hdeg)
 
+open Classical in
+/-- Cardinality form of `boundary_slice_badSet_modular_of_natDegree`: for a
+degree-exact direction polynomial, the bad-scalar count is exactly the modular
+ratio image size. -/
+theorem boundary_slice_badSet_modular_card_eq_of_natDegree (dom : Fin n ↪ F)
+    {k : ℕ} (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (Q₀ Q₁ : F[X]) (hdeg : Q₁.natDegree = k) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => Q₀.eval (dom i)) (fun i => Q₁.eval (dom i)) γ)).card
+      = ((Finset.univ.powersetCard (k + 1)).image
+          (fun S : Finset (Fin n) =>
+            -((Q₀ %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)
+              / (Q₁ %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)).card :=
+  boundary_slice_badSet_modular_card_eq dom hk hlo hhi Q₀ Q₁
+    (agreeSet_card_le_of_natDegree_eq dom hk hdeg)
+
+omit [DecidableEq F] in
+open Classical in
+/-- Coarse counting form of `boundary_slice_badSet_modular_of_natDegree`: a
+degree-exact direction polynomial has at most one boundary-slice bad scalar per
+`(k+1)`-subset before modular-ratio collisions. -/
+theorem boundary_slice_badSet_modular_card_le_choose_of_natDegree (dom : Fin n ↪ F)
+    {k : ℕ} (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (Q₀ Q₁ : F[X]) (hdeg : Q₁.natDegree = k) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => Q₀.eval (dom i)) (fun i => Q₁.eval (dom i)) γ)).card
+      ≤ n.choose (k + 1) :=
+  boundary_slice_badSet_modular_card_le_choose dom hk hlo hhi Q₀ Q₁
+    (agreeSet_card_le_of_natDegree_eq dom hk hdeg)
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.agreeSet_card_le_of_natDegree_eq
 #print axioms ProximityGap.Ownership.boundary_slice_ladder_badSet_eq_unconditional
+#print axioms ProximityGap.Ownership.boundary_slice_ladder_badSet_card_eq_unconditional
 #print axioms ProximityGap.Ownership.boundary_slice_badSet_modular_of_natDegree
+#print axioms ProximityGap.Ownership.boundary_slice_badSet_modular_card_eq_of_natDegree
+#print axioms ProximityGap.Ownership.boundary_slice_badSet_modular_card_le_choose_of_natDegree
