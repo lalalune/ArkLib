@@ -42,6 +42,8 @@ Results:
 - `two_mul_t2_eq_support_card`, `card_eq_two_mul_t2_add_sqrtSet` : the exact finite-orbit
   form of the decomposition, using the cycle-type fact that an order-two permutation has even
   support.
+- `t2_eq_card_sub_sqrtSet_card_div_two` : the exact normalizer-band statistic once the fixed
+  point count is known; the empty/two-root cases give `t₂ = n/2` and `t₂ = (n-2)/2`.
 - `card_image_univ_le_t2_add_sqrtSet` : a Möbius-invariant word has one value per 2-cycle plus
   fixed points; in cyclic groups this gives the half-dimension bound `≤ |G|/2 + 2`.
 
@@ -145,6 +147,26 @@ theorem card_eq_two_mul_t2_add_sqrtSet (b : G) :
   have hdecomp := card_eq_sqrtSet_add_support b
   have ht2 := two_mul_t2_eq_support_card b
   omega
+
+/-- Exact `t₂` as half the non-fixed population: once the fixed-point count of the pencil is
+known, the 2-orbit count is `(n - #√b)/2`. This is the reusable normalizer-band statistic behind
+the `t₂ = n/2` versus `t₂ = (n-2)/2` split. -/
+theorem t2_eq_card_sub_sqrtSet_card_div_two (b : G) :
+    t2 b = (Fintype.card G - (sqrtSet b).card) / 2 := by
+  have hdecomp := card_eq_two_mul_t2_add_sqrtSet b
+  omega
+
+/-- No fixed points means every point lies in a 2-cycle, so `t₂ = n/2`. -/
+theorem t2_eq_card_div_two_of_sqrtSet_card_eq_zero {b : G}
+    (hroots : (sqrtSet b).card = 0) :
+    t2 b = Fintype.card G / 2 := by
+  rw [t2_eq_card_sub_sqrtSet_card_div_two, hroots, Nat.sub_zero]
+
+/-- Two fixed points give the normalizer-band value `t₂ = (n-2)/2`. -/
+theorem t2_eq_card_sub_two_div_two_of_sqrtSet_card_eq_two {b : G}
+    (hroots : (sqrtSet b).card = 2) :
+    t2 b = (Fintype.card G - 2) / 2 := by
+  rw [t2_eq_card_sub_sqrtSet_card_div_two, hroots]
 
 /-! ## The smooth-domain separation lower bound
 
@@ -368,6 +390,9 @@ end ProximityGap.MobiusPencil
 #print axioms ProximityGap.MobiusPencil.mobiusInvol_support_card_even
 #print axioms ProximityGap.MobiusPencil.two_mul_t2_eq_support_card
 #print axioms ProximityGap.MobiusPencil.card_eq_two_mul_t2_add_sqrtSet
+#print axioms ProximityGap.MobiusPencil.t2_eq_card_sub_sqrtSet_card_div_two
+#print axioms ProximityGap.MobiusPencil.t2_eq_card_div_two_of_sqrtSet_card_eq_zero
+#print axioms ProximityGap.MobiusPencil.t2_eq_card_sub_two_div_two_of_sqrtSet_card_eq_two
 #print axioms ProximityGap.MobiusPencil.card_sqrtSet_le_two
 #print axioms ProximityGap.MobiusPencil.card_image_support_le_t2
 #print axioms ProximityGap.MobiusPencil.card_image_univ_le_t2_add_sqrtSet
