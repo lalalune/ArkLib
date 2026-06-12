@@ -171,8 +171,8 @@ def main():
         big = {tuple(s["phi"]) for s in spikes if s["t2"] >= max(3, n // 2 - 1)}
         lines.append(f"A5 predicted family ({len(pred)} pencils): "
                      f"big-spike set == predicted: {big == pred}; "
-                     f"extra big spikes: {sorted(big - pred)[:8]}; "
-                     f"missed predictions: {sorted(pred - big)[:8]}")
+                     f"extra big spikes ({len(big - pred)}): {sorted(big - pred)}; "
+                     f"missed predictions ({len(pred - big)}): {sorted(pred - big)}")
         if "census" in runs.get("random_1", {}):
             lines.append(f"random_1 t2 histogram: {runs['random_1']['census'].get('t2_hist')}")
         lines.append("")
