@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 352,
+    "files_with_citations": 355,
     "keys_cited": 30,
-    "total_citation_edges": 399
+    "total_citation_edges": 402
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -178,6 +178,9 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Capture.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedRecursion.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean": [
       "BCIKS20"
     ],
@@ -218,6 +221,9 @@
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ErrorBound.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Finding14Countermodel.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/GammaGenuine.lean": [
@@ -344,6 +350,9 @@
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonDischarge.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonPackageSupply.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/Hab25RichCoordinateGate.lean": [
@@ -1195,6 +1204,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Arith.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Bundle.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Capture.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedRecursion.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/AgreementCount.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtraction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtractionResidual.lean",
@@ -1209,6 +1219,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/EndToEnd.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ErrorBound.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Finding14Countermodel.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/GammaGenuine.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Improve.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Kill.lean",
@@ -1249,6 +1260,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonCountWiring.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonDichotomy.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonDischarge.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonPackageSupply.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25RichCoordinateGate.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25SlackWeld.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25UniqueRichFactor.lean",

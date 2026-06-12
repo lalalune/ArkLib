@@ -91,7 +91,7 @@ shortcut surfaces.
   - historical false surface:
     `Fri.Spec.Completeness.queryRoundPerfectCompletenessFalseAsStated`
     (`ArkLib/ProofSystem/Fri/Spec/Completeness.lean:51`)
-  - `Fri.Spec.Completeness.queryRoundChainDeliveryResidual`
+  - `Fri.Spec.Completeness.queryRoundChainDeliveryHypothesis`
     (`ArkLib/ToMathlib/FriCompleteQueryRound.lean:177`)
 - #337 tracks the remaining Logup residuals:
   - `Logup.LogupSoundnessFullResidual`
