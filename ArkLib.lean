@@ -1121,6 +1121,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.RefutationProofs
 import ArkLib.Data.CodingTheory.ProximityGap.RegimeIIBridge
+import ArkLib.Data.CodingTheory.ProximityGap.ResidualModularReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Resolution
 import ArkLib.Data.CodingTheory.ProximityGap.ResolutionWitness
 import ArkLib.Data.CodingTheory.ProximityGap.ResultantLiftLoop52
