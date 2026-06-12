@@ -202,6 +202,42 @@ theorem mcaEvent_owned_tuples (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k) (δ :
   have := hag (t a) (ht a)
   simpa [smul_eq_mul] using this.symm
 
+open Classical in
+/-- **MCA ownership lower-bound wrapper.**  Any theorem lower-bounding the number
+of nonzero direction-residual tuples inside every MCA witness immediately bounds
+the number of bad scalars.
+
+This is the reusable bridge from geometric/combinatorial ownership lower bounds
+(multiplicity, non-degeneracy, Möbius quotient census, etc.) to `ε_mca` bad-scalar
+counts. -/
+theorem mcaEvent_card_mul_le_of_ownership_lower (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
+    (δ : ℝ≥0) (u₀ u₁ : Fin n → F) (M : ℕ)
+    (hdetect : ∀ S : Finset (Fin n),
+      ((S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card (Fin n)) →
+        M ≤ (Finset.univ.filter (fun t : Fin (k + 1) → Fin n =>
+          (∀ a, t a ∈ S) ∧ residual dom k t u₁ ≠ 0)).card) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+      * M ≤ Fintype.card (Fin (k + 1) → Fin n) := by
+  set bad := Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+    ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ) with hbad
+  have hch : ∀ γ ∈ bad, ∃ S : Finset (Fin n),
+      ((S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card (Fin n)) ∧
+      ∀ t : Fin (k + 1) → Fin n, (∀ a, t a ∈ S) →
+        residual dom k t u₁ ≠ 0 →
+        residual dom k t u₀ + γ * residual dom k t u₁ = 0 := by
+    intro γ hγ
+    exact mcaEvent_owned_tuples dom hk δ (Finset.mem_filter.mp hγ).2
+  choose! W hWsz hWprop using hch
+  set 𝒯 : F → Finset (Fin (k + 1) → Fin n) := fun γ =>
+    Finset.univ.filter (fun t => (∀ a, t a ∈ W γ) ∧ residual dom k t u₁ ≠ 0) with h𝒯
+  refine badScalars_card_mul_le_ownership dom k u₀ u₁ bad M 𝒯 ?_ ?_
+  · intro γ hγ t ht
+    obtain ⟨htW, hres⟩ := (Finset.mem_filter.mp ht).2
+    exact ⟨hres, hWprop γ hγ t htW hres⟩
+  · intro γ hγ
+    exact hdetect (W γ) (hWsz γ hγ)
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -210,3 +246,4 @@ end ProximityGap.Ownership
 #print axioms ProximityGap.Ownership.gamma_eq_of_owned
 #print axioms ProximityGap.Ownership.badScalars_card_mul_le_ownership
 #print axioms ProximityGap.Ownership.mcaEvent_owned_tuples
+#print axioms ProximityGap.Ownership.mcaEvent_card_mul_le_of_ownership_lower
