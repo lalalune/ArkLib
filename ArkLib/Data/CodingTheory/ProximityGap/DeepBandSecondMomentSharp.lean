@@ -286,9 +286,122 @@ theorem sum_N2_le_sharp (dom : Fin n ↪ F) (k m : ℕ) {M : ℕ}
     _ = P ^ 2 * q ^ (M - (2 * m + 1)) + deepS.card * q ^ (M - (m + 1))
         + P * q ^ (M - m) := by ring
 
+
+/-! ## The sharp pigeonhole and the sharp consumer -/
+
+open Classical in
+/-- `exists_generator_many_values` with the SHARP moment budget: the deep term enters
+at `q^(M−(m+1))`. -/
+theorem exists_generator_many_values_sharp (dom : Fin n ↪ F) (k m : ℕ) {M : ℕ}
+    (hM : 2 * (k + m + 1) ≤ M) {L V : ℕ}
+    (hbudget : ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card ^ 2 * (Fintype.card F) ^ (M - (2 * m + 1))
+        + (((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)) ×ˢ (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)))).filter (fun p => p.1 ≠ p.2 ∧ k < (p.1 ∩ p.2).card)).card) * (Fintype.card F) ^ (M - (m + 1))
+        + ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card * (Fintype.card F) ^ (M - m)
+        + V * (Fintype.card F) ^ M
+      ≤ 2 * L * (∑ c : Fin M → F,
+          (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c))).card)) :
+    ∃ c : Fin M → F,
+      V ≤ ((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c))).image
+          (fun T => (coreInterp dom T (genPoly c)).coeff k)).card * L ^ 2 := by
+  classical
+  have hex : ∃ c : Fin M → F,
+      ((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c)) ×ˢ
+        (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c)))).filter
+        (fun p => (coreInterp dom p.1 (genPoly c)).coeff k
+          = (coreInterp dom p.2 (genPoly c)).coeff k)).card + V
+      ≤ 2 * L * (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c))).card := by
+    by_contra hcon
+    push_neg at hcon
+    have hstrict : ∀ c : Fin M → F,
+        2 * L * (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c))).card + 1
+        ≤ ((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c)) ×ˢ
+          (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c)))).filter
+          (fun p => (coreInterp dom p.1 (genPoly c)).coeff k
+            = (coreInterp dom p.2 (genPoly c)).coeff k)).card + V := by
+      intro c
+      exact Nat.succ_le_of_lt (hcon c)
+    have hsum := Finset.sum_le_sum
+      (fun c (_ : c ∈ (Finset.univ : Finset (Fin M → F))) => hstrict c)
+    rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.mul_sum,
+      Finset.sum_const, Finset.sum_const, Finset.card_univ, Fintype.card_fun,
+      Fintype.card_fin, smul_eq_mul, mul_one, smul_eq_mul] at hsum
+    have hS2 := sum_N2_le_sharp dom k m hM
+    have hchain : 2 * L * (∑ c : Fin M → F,
+        (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c))).card)
+        + (Fintype.card F) ^ M
+        ≤ 2 * L * (∑ c : Fin M → F,
+          (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c))).card) := by
+      calc 2 * L * (∑ c : Fin M → F, _) + (Fintype.card F) ^ M
+          ≤ (∑ c : Fin M → F,
+              ((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c)) ×ˢ
+                (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c)))).filter
+                (fun p => (coreInterp dom p.1 (genPoly c)).coeff k
+                  = (coreInterp dom p.2 (genPoly c)).coeff k)).card)
+            + (Fintype.card F) ^ M * V := hsum
+        _ ≤ (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card ^ 2 * (Fintype.card F) ^ (M - (2 * m + 1))
+            + (((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)) ×ˢ (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)))).filter (fun p => p.1 ≠ p.2 ∧ k < (p.1 ∩ p.2).card)).card) * (Fintype.card F) ^ (M - (m + 1))
+            + ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card * (Fintype.card F) ^ (M - m))
+            + (Fintype.card F) ^ M * V :=
+            Nat.add_le_add_right hS2 _
+        _ = ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card ^ 2 * (Fintype.card F) ^ (M - (2 * m + 1))
+            + (((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)) ×ˢ (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)))).filter (fun p => p.1 ≠ p.2 ∧ k < (p.1 ∩ p.2).card)).card) * (Fintype.card F) ^ (M - (m + 1))
+            + ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card * (Fintype.card F) ^ (M - m)
+            + V * (Fintype.card F) ^ M := by ring
+        _ ≤ _ := hbudget
+    have hqMpos : 0 < (Fintype.card F) ^ M := pow_pos Fintype.card_pos _
+    set A := 2 * L * (∑ c : Fin M → F,
+      (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c))).card) with hA
+    set Z := (Fintype.card F) ^ M with hZ
+    omega
+  obtain ⟨c, hc⟩ := hex
+  refine ⟨c, ?_⟩
+  have hquad := value_count_quadratic dom k m c L
+  have hfinal := le_trans hc hquad
+  exact Nat.le_of_add_le_add_left hfinal
+
+open Classical in
+/-- **THE SHARP SECOND-MOMENT DEEP-BAND FAILURE.**  `deep_band_badSet_card_of_moments`
+with the sharp budget: the deep-pair term enters a full factor `q` lower. -/
+theorem deep_band_badSet_card_of_moments_sharp (dom : Fin n ↪ F) {k m : ℕ}
+    (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ ((k + m + 1 : ℕ) : ℝ≥0))
+    {M : ℕ} (hM : 2 * (k + m + 1) ≤ M) {L V : ℕ}
+    (hbudget : ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card ^ 2 * (Fintype.card F) ^ (M - (2 * m + 1))
+        + (((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)) ×ˢ (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)))).filter (fun p => p.1 ≠ p.2 ∧ k < (p.1 ∩ p.2).card)).card) * (Fintype.card F) ^ (M - (m + 1))
+        + ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card * (Fintype.card F) ^ (M - m)
+        + V * (Fintype.card F) ^ M
+      ≤ 2 * L * (∑ c : Fin M → F,
+          (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c))).card)) :
+    ∃ Q₀ : F[X],
+      V ≤ (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+            ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+            (fun i => Q₀.eval (dom i)) (fun i => (dom i) ^ k) γ)).card
+          * L ^ 2 := by
+  classical
+  obtain ⟨c, hc⟩ := exists_generator_many_values_sharp dom k m hM hbudget
+  refine ⟨genPoly c, ?_⟩
+  refine le_trans hc (Nat.mul_le_mul_right _ ?_)
+  set coh := ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter (fun T => IsCoherent dom k m T (genPoly c)) with hcoh
+  set vals := coh.image (fun T => (coreInterp dom T (genPoly c)).coeff k)
+    with hvals
+  set bad := Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+    ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+    (fun i => (genPoly c).eval (dom i)) (fun i => (dom i) ^ k) γ) with hbad
+  refine Finset.card_le_card_of_injOn (fun v => -v) ?_ ?_
+  · intro v hv
+    obtain ⟨T, hT, rfl⟩ := Finset.mem_image.mp hv
+    obtain ⟨hTm, hTcoh⟩ := Finset.mem_filter.mp hT
+    refine Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩
+    exact mcaEvent_of_coherent dom hk hhi
+      ((Finset.mem_powersetCard.mp hTm).2) hTcoh
+  · intro a _ b _ hab
+    exact neg_injective hab
+
 end ProximityGap.PairRank
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.PairRank.deep_fiber_eq
 #print axioms ProximityGap.PairRank.deep_fiber_le
 #print axioms ProximityGap.PairRank.sum_N2_le_sharp
+#print axioms ProximityGap.PairRank.exists_generator_many_values_sharp
+#print axioms ProximityGap.PairRank.deep_band_badSet_card_of_moments_sharp
