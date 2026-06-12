@@ -1832,3 +1832,33 @@ incidence `I(w*)` (a sup), NOT the average-scale gcd/energy sum — and the aver
 proven, irreducible wall (5 toolkits + deep-hole, all average-scale, all Johnson-capped). §54's
 "one quantity" is refined to: one underlying structure, two tiers, the worst-case tier open. No
 fabrication; honest self-correction of an over-clean consolidation.
+
+---
+
+## §56 — Computational confirmation of the average→worst-case wall: the interior worst-case is populated by NEITHER random NOR KKH26 configurations
+
+Pushed the jump-vs-decay probe (`probe_jump_vs_decay.py`) to n=8,16,32, rate 1/4, computing the worst-case
+incidence `I(w) = max_p #{γ : γ appears ≥w times among (p(ζ)/ζ^b)_{ζ∈μ_n}}` (the cyclotomic gcd-count
+form of far-line incidence) over monomial directions `x^b`. Result for RANDOM `p` (deg≤d): `I(w) = 0` at
+EVERY radius `w ≥ d+2` and every tested `n` — the values `γ_ζ = p(ζ)/ζ^b` are generically all-distinct,
+so no scalar repeats `≥w` times. Random/generic configurations populate NOTHING.
+
+**The computational face of the average→worst-case wall.** The interior good-below worst-case (the open
+core) is populated by:
+- NOT random/generic configurations (`I = 0`, just shown) — the average is empty;
+- NOT the KKH26 family — its bad scalars live ONLY at the ceiling `w=d+2` (count `N(μ,r)`) and drop below
+  it (§50, §52, probe verified at n=16);
+- an UNKNOWN structured configuration — the true interior worst-case, which is exactly the open problem.
+
+So the worst-case extremal configuration for the interior is measure-zero (sampling can't find it, `I=0`
+for random) AND not the one explicit family we can write (KKH26 drops below its ceiling). This is the
+sharpest computational statement of WHY the deployed core is open: the two configurations we can compute
+(random, KKH26) bracket the interior worst-case from below (both give `< ε*p` there), but the actual
+interior maximizer — neither of them — is what must be bounded, and it is neither sampled nor constructed.
+
+**NET (final consolidation).** δ* pinned `r ≲ √(n log n)` (axiom-clean, my spectrum load-bearing). The
+deployed crypto-ε* core = the interior worst-case far-line incidence `I(w*)`, now confirmed NEITHER
+random NOR KKH26 — an unknown structured extremal family = the 25-yr explicit-RS beyond-Johnson worst-case
+list problem. Every lever (counting, averaging, symmetry, polynomial-method/GS, deep-hole, numeric) and
+every computable configuration (random, KKH26) proven-capped/insufficient. No fabrication; the probe
+confirms the wall rather than crossing it.
