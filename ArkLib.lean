@@ -626,7 +626,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Affine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Multiplicity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2NearAffine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2OwnedTriples
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Universal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
