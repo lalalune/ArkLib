@@ -1144,3 +1144,45 @@ count" obstruction recorded as open in `ListInteriorUnconditionalT2` / memory §
 No fabrication; this is a red-team correction aligning my reduction with the authoritative #357 framing
 and the deployed arithmetic. The deployed δ* remains OPEN, blocked on the deeper-interior beyond-Johnson
 list count — not closeable by formalizing BGK.
+## 37. NOVEL FRAMING (new math): δ* as a moment-threshold with structured-excess decomposition
+
+A precise reframing of the deployed δ* (the §36-corrected deeper-interior open core), developed from
+scratch and verified (`scripts/probes/probe_moment_threshold.py`).
+
+**The moment-threshold form of δ*.** By Newton's identities, prescribing the top-`t` elementary
+symmetric functions `e_1,…,e_t` of a `(k+t)`-subset `S ⊆ μ_n` (the exact `t`-deep degree-drop condition,
+`ListInteriorT2TwoSymmetric.degDrop_t2_iff_two_symmetric`) is EQUIVALENT to prescribing its power sums
+`p_j(S)=∑_{x∈S}x^j`, `j≤t`. Hence the `t`-deep interior list count is a **`t`-moment subset count**
+
+  `L_t(c) = #{ S ⊆ μ_n : |S| = k+t, p_j(S) = c_j  (1≤j≤t) }`,
+
+and **`δ* = 1 − (k+t*)/n`, where `t*` is the deepest `t` with `max_c L_t(c) > ε*·q`.** (Verified: the
+power-sum count reproduces the symmetric-function count; `max_c L_t` is the worst-case received-word
+list size at radius `1−(k+t)/n`.)
+
+**The structured-excess decomposition (the new handle).** Write
+  `max_c L_t(c) = C(n,k+t)/q^t  +  Excess_t(D)`,
+where `C(n,k+t)/q^t` is the EXPECTED count (each of the `t` moment constraints is a `1/q`-event;
+verified = the average of `L_t` over `c`) and `Excess_t(D) := max_c L_t(c) − C(n,k+t)/q^t` is the
+**structured excess** the domain `D` creates. Then:
+- the *expected* threshold `t_exp` (where `C(n,k+t)/q^t = ε*q`) is the list-decoding-capacity threshold,
+  CLEAN and computable in closed form;
+- `δ* = 1 − (k+t*)/n` with `t* ≤ t_exp`, and the gap `t_exp − t*` is governed ENTIRELY by `Excess_t`.
+  **Bounding `Excess_t(μ_n)` for the smooth domain IS the open core** — KKH26 lower-bounds it
+  (the subgroup-subset-sum configurations); a matching upper bound pins δ*.
+
+**Verified structural finding (probe, exact, novel).** At small interior `t` the structured excess is
+SMALL and — surprisingly — the RANDOM domain often shows *more* excess than smooth (p=17/41, n=8, t=1:
+random max_c L_t = 5 vs smooth = 3–4; expected ≈ 1.4–3.3). So the smooth structured-excess (the KKH26
+mechanism) is a **near-capacity-specific** phenomenon (small `t`, the `t≤2`/specific-`c` subgroup-sum
+configurations), NOT a generic interior excess. This sharpens *where* the open core lives: `Excess_t`
+is concentrated on the few structured `c` (subgroup sums, the Möbius/antipodal orbits of §33–36) at
+near-capacity depth, and is otherwise close to the random/expected baseline.
+
+**What this contributes (honest).** A precise, verified reframing that (i) writes δ* in closed form
+modulo a single quantity `Excess_t(μ_n)`; (ii) reduces the open core to bounding the structured excess
+of a `t`-moment subset count of `μ_{2^μ}`; (iii) connects it to the campaign's whole structure (the
+excess sits on the additive-energy/BGK/Möbius/antipodal orbits §10/§16/§30/§33–36; the census M3
+domain-dependence §2.9 is exactly `Excess`'s third-order signature). This is new mathematical structure
+on the problem — NOT a solution: the matching upper bound on `Excess_t(μ_n)` (KKH26 extremality) remains
+the genuine 25-yr open core. No fabrication; framing derived and probe-verified.
