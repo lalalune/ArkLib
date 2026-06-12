@@ -180,6 +180,13 @@ def Aligned (dom : Fin n ↪ F) (k : ℕ) (u₀ u₁ : Fin n → F) (γ : F)
     residual dom k t u₀ + γ * residual dom k t u₁ = 0
 
 omit [Fintype F] [DecidableEq F] [NeZero n] in
+/-- Alignment is monotone under subsets: every tuple of a subset is a tuple of the set. -/
+theorem Aligned.mono {dom : Fin n ↪ F} {k : ℕ} {u₀ u₁ : Fin n → F} {γ : F}
+    {S S' : Finset (Fin n)} (h : Aligned dom k u₀ u₁ γ S) (hsub : S' ⊆ S) :
+    Aligned dom k u₀ u₁ γ S' :=
+  fun t htinj htmem => h t htinj (fun b => hsub (htmem b))
+
+omit [Fintype F] [DecidableEq F] [NeZero n] in
 /-- An aligned set with a non-degenerate tuple pins its scalar. -/
 theorem Aligned.gamma_eq {dom : Fin n ↪ F} {k : ℕ} {u₀ u₁ : Fin n → F} {γ γ' : F}
     {S : Finset (Fin n)} (h : Aligned dom k u₀ u₁ γ S) (h' : Aligned dom k u₀ u₁ γ' S)
