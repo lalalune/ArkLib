@@ -644,6 +644,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.FactorizableStacks
 import ArkLib.Data.CodingTheory.ProximityGap.FamilyBadBound
 import ArkLib.Data.CodingTheory.ProximityGap.FarCosetExplosion
+import ArkLib.Data.CodingTheory.ProximityGap.FarPairRankBound
 import ArkLib.Data.CodingTheory.ProximityGap.FarWordSupplyCounting
 import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldDisproofLoop53
 import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldLiftLoop51
