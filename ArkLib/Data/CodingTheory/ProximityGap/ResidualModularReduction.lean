@@ -213,8 +213,35 @@ theorem boundary_slice_badSet_modular (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ 
     rw [← hPmatch t htinj, neg_div, neg_div, mul_div_mul_right _ _ hr]
   rw [h1, injTuple_image_setFn_eq φ k]
 
+open Classical in
+/-- Coarse counting form of the modular census: every strongly-far polynomial
+stack at the boundary slice has at most one bad scalar per `(k+1)`-subset of the
+domain, before quotienting by modular-ratio collisions. -/
+theorem boundary_slice_badSet_modular_card_le_choose (dom : Fin n ↪ F) {k : ℕ}
+    (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (Q₀ Q₁ : F[X])
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c (fun i => Q₁.eval (dom i))).card ≤ k) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => Q₀.eval (dom i)) (fun i => Q₁.eval (dom i)) γ)).card
+      ≤ n.choose (k + 1) := by
+  rw [boundary_slice_badSet_modular dom hk hlo hhi Q₀ Q₁ hμ]
+  calc
+    ((Finset.univ.powersetCard (k + 1)).image
+        (fun S : Finset (Fin n) =>
+          -((Q₀ %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)
+            / (Q₁ %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)).card
+        ≤ (Finset.univ.powersetCard (k + 1) : Finset (Finset (Fin n))).card :=
+          Finset.card_image_le
+    _ = n.choose (k + 1) := by
+          rw [Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.residual_eq_remainder_coeff
 #print axioms ProximityGap.Ownership.boundary_slice_badSet_modular
+#print axioms ProximityGap.Ownership.boundary_slice_badSet_modular_card_le_choose
