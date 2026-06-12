@@ -523,6 +523,25 @@ theorem window_jzero_solved (hk : 1 ≤ k) (hj : n = 3 * w + k - 1) (hwn : w ≤
     hℓ₀d hℓ₁d hR₀d hR₁d hℓ₀v hℓ₁v hcop hgen₀ hgen₁ hδn
   simpa using h
 
+open Classical in
+/-- Division form of `window_jzero_solved`: if `w > 0`, then the
+per-stack bad-scalar count at the first beyond-ladder slice is at most `⌊n / w⌋`. -/
+theorem window_jzero_solved_card_le (hk : 1 ≤ k)
+    (hj : n = 3 * w + k - 1) (hwn : w ≤ n) (hwpos : 0 < w)
+    (hℓ₀d : ℓ₀.natDegree ≤ w) (hℓ₁d : ℓ₁.natDegree ≤ w)
+    (hR₀d : R₀.natDegree ≤ w + k - 1) (hR₁d : R₁.natDegree ≤ w + k - 1)
+    (hℓ₀v : ∀ i : Fin n, ℓ₀.eval (dom i) ≠ 0)
+    (hℓ₁v : ∀ i : Fin n, ℓ₁.eval (dom i) ≠ 0)
+    (hcop : IsCoprime ℓ₀ ℓ₁) (hgen₀ : ¬ ℓ₀ ∣ R₀) (hgen₁ : ¬ ℓ₁ ∣ R₁)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+      ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      (fun i => R₀.eval (dom i) / ℓ₀.eval (dom i))
+      (fun i => R₁.eval (dom i) / ℓ₁.eval (dom i)) γ)).card ≤ n / w := by
+  exact Nat.le_div_iff_mul_le hwpos |>.mpr
+    (window_jzero_solved (dom := dom) (k := k) (w := w) hk hj hwn
+      hℓ₀d hℓ₁d hR₀d hR₁d hℓ₀v hℓ₁v hcop hgen₀ hgen₁ hδn)
+
 end Packing
 
 end ProximityGap.WBPencil
@@ -532,4 +551,5 @@ end ProximityGap.WBPencil
 #print axioms ProximityGap.WBPencil.window_explainer
 #print axioms ProximityGap.WBPencil.window_packing_law
 #print axioms ProximityGap.WBPencil.window_jzero_solved
+#print axioms ProximityGap.WBPencil.window_jzero_solved_card_le
 #print axioms ProximityGap.WBPencil.window_packing_law_general
