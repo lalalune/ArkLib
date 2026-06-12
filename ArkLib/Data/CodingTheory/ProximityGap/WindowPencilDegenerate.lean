@@ -395,7 +395,6 @@ theorem window_degenerate_count (hk : 1 ≤ k)
     {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
     (hj : 2 * w + k - 1 - (n - w) ≤ j)
     {τ : Fin (j + 1) ⊕ Fin (w + 1) → Fin (2 * w)}
-    (hτ0 : recDetPoly dom ℓ₀ ℓ₁ R₀ R₁ j w τ = 0)
     {c₀ cs : Fin (j + 1) ⊕ Fin (w + 1)}
     (hU : (recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).det ≠ 0)
     (hNB : ∀ i : Fin n,
@@ -613,6 +612,71 @@ theorem window_degenerate_count (hk : 1 ≤ k)
         + Γ₁.card * (n - (2 * w + k - 1)) := by ring
     _ ≤ (w + 1) * (n - (2 * w + k - 1)) + n * (w + 1) :=
         Nat.add_le_add (Nat.mul_le_mul_right _ hΓ₀card) hΓ₁count
+
+open Classical in
+/-- **P4: THE WINDOW DICHOTOMY (per-stack weld).**  For a genuine coprime stack
+whose chosen reconstruction square is either nondegenerate (branch i) or admits a
+surviving update with no blind points (branch ii):
+
+`#bad · (n−(2w+k−1)) ≤ 2(w+1) · (n−(2w+k−1)) + n·(w+1)`.
+
+The excluded configuration is the deep residual, never exhibited by any probe. -/
+theorem window_dichotomy_count (hk : 1 ≤ k) (hw : 1 ≤ w)
+    (hudr : 2 * w + k ≤ n)
+    (hl0d : ℓ₀.natDegree ≤ w) (hl1d : ℓ₁.natDegree ≤ w)
+    (hR0d : R₀.natDegree ≤ w + k - 1) (hR1d : R₁.natDegree ≤ w + k - 1)
+    (hl0v : ∀ i : Fin n, ℓ₀.eval (dom i) ≠ 0)
+    (hl1v : ∀ i : Fin n, ℓ₁.eval (dom i) ≠ 0)
+    (hcop : IsCoprime ℓ₀ ℓ₁) (hgen0 : ¬ ℓ₀ ∣ R₀)
+    (hmonic : (ℓ₀ * ℓ₁).Monic) (hdeg2w : (ℓ₀ * ℓ₁).natDegree = 2 * w)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {τ : Fin (2 * w + k - 1 - (n - w) + 1) ⊕ Fin (w + 1) → Fin (2 * w)}
+    (hndeep : recDetPoly dom ℓ₀ ℓ₁ R₀ R₁ (2 * w + k - 1 - (n - w)) w τ ≠ 0 ∨
+      ∃ c₀ cs : Fin (2 * w + k - 1 - (n - w) + 1) ⊕ Fin (w + 1),
+        (recSquareU dom ℓ₀ ℓ₁ R₀ R₁ (2 * w + k - 1 - (n - w)) w τ c₀ cs).det ≠ 0 ∧
+        ∀ i : Fin n, kernelFamilyAt dom ℓ₀ ℓ₁ R₀ R₁ (2 * w + k - 1 - (n - w)) w
+          τ c₀ cs (dom i) ≠ 0) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+      ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      (fun i => R₀.eval (dom i) / ℓ₀.eval (dom i))
+      (fun i => R₁.eval (dom i) / ℓ₁.eval (dom i)) γ)).card
+        * (n - (2 * w + k - 1))
+      ≤ 2 * (w + 1) * (n - (2 * w + k - 1)) + n * (w + 1) := by
+  rcases hndeep with hbranch1 | ⟨c₀, cs, hU, hNB⟩
+  · have hjw : 2 * w + k - 1 - (n - w) < 2 * w := by omega
+    have hmono : (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => R₀.eval (dom i) / ℓ₀.eval (dom i))
+        (fun i => R₁.eval (dom i) / ℓ₁.eval (dom i)) γ)).card
+        ≤ (Finset.univ.filter (fun γ : F =>
+            RecSolvable dom ℓ₀ ℓ₁ R₀ R₁ (2 * w + k - 1 - (n - w)) w γ)).card := by
+      refine Finset.card_le_card ?_
+      intro γ hγ
+      rw [Finset.mem_filter] at hγ ⊢
+      exact ⟨Finset.mem_univ _, recSolvable_of_mcaEvent dom ℓ₀ ℓ₁ R₀ R₁ hk
+        hl0d hl1d hR0d hR1d hl0v hl1v hcop hgen0 hδn hγ.2⟩
+    have hcount := recSolvable_card_le dom ℓ₀ ℓ₁ R₀ R₁ hw hjw hmonic hdeg2w
+      (I := τ) hbranch1
+    have hle := le_trans hmono hcount
+    have h1 := Nat.mul_le_mul_right (n - (2 * w + k - 1)) hle
+    have h2 : (w + 1) * (n - (2 * w + k - 1))
+        ≤ 2 * (w + 1) * (n - (2 * w + k - 1)) :=
+      Nat.mul_le_mul_right _ (by omega)
+    omega
+  · have h2 := window_degenerate_count dom ℓ₀ ℓ₁ R₀ R₁
+      (j := 2 * w + k - 1 - (n - w)) hk
+      hl0d hl1d hR0d hR1d hl0v hl1v hcop hgen0 hmonic hδn (le_refl _)
+      hU hNB
+    have h3 : (w + 1) * (n - (2 * w + k - 1))
+        ≤ 2 * (w + 1) * (n - (2 * w + k - 1)) :=
+      Nat.mul_le_mul_right _ (by omega)
+    omega
+
+end Degenerate
+
+end ProximityGap.WBPencil
+
+-- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.WBPencil.isCoprime_mul_domZ
 #print axioms ProximityGap.WBPencil.recSolvable_fraction_unique
 #print axioms ProximityGap.WBPencil.recSquarePoly_mulVec_adjugate
@@ -621,3 +685,4 @@ theorem window_degenerate_count (hk : 1 ≤ k)
 #print axioms ProximityGap.WBPencil.det_natDegree_le_of_column_weights
 #print axioms ProximityGap.WBPencil.recSquareU_adjugate_natDegree_le
 #print axioms ProximityGap.WBPencil.window_degenerate_count
+#print axioms ProximityGap.WBPencil.window_dichotomy_count
