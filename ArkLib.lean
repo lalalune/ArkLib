@@ -613,6 +613,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.DeepQuotientTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
+import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarCeilingTightTheory
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactCrossoverF17
