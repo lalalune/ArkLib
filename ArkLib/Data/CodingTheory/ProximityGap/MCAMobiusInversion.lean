@@ -343,6 +343,62 @@ theorem reversalTwist_reversalTwist (k : ℕ) (hk : 1 ≤ k) (P : F[X])
       exact_mod_cast (by omega : k ≤ j)
     rw [h1, coeff_smul, h2, smul_zero]
 
+/-! ## T-fixed codewords ⟺ palindromes (the quotient-census bridge) -/
+
+/-- The twist of an evaluation word is the evaluation of the reversal twist. -/
+theorem twist_eval_eq (dom : Fin n ↪ F) {k : ℕ} (σ : Equiv.Perm (Fin n))
+    (hdom0 : ∀ i, dom i ≠ 0) (hσ : ∀ i, dom (σ i) = -(dom i)⁻¹)
+    {P : F[X]} (hPdeg : P.degree < k) :
+    twist σ (fun i => (dom i) ^ (k - 1)) (fun i => P.eval (dom i))
+      = fun i => (reversalTwist k P).eval (dom i) := by
+  funext i
+  show (dom i) ^ (k - 1) * P.eval (dom (σ i)) = (reversalTwist k P).eval (dom i)
+  rw [reversalTwist_eval k P hPdeg (hdom0 i), hσ i]
+
+/-- **T-fixed codewords are exactly the palindrome evaluations** (`k ≤ n`):
+the quotient-census object of the invariant window pairs. -/
+theorem twist_fixed_iff_palindrome (dom : Fin n ↪ F) {k : ℕ} (hkn : k ≤ n)
+    (σ : Equiv.Perm (Fin n)) (hdom0 : ∀ i, dom i ≠ 0)
+    (hσ : ∀ i, dom (σ i) = -(dom i)⁻¹)
+    {P : F[X]} (hPdeg : P.degree < k) :
+    twist σ (fun i => (dom i) ^ (k - 1)) (fun i => P.eval (dom i))
+        = (fun i => P.eval (dom i))
+      ↔ reversalTwist k P = P := by
+  rw [twist_eval_eq dom σ hdom0 hσ hPdeg]
+  constructor
+  · intro h
+    -- two degree-< k polynomials agreeing on n ≥ k distinct points are equal
+    have hdiff : reversalTwist k P - P = 0 := by
+      by_cases hk1 : 1 ≤ k
+      · refine Polynomial.eq_zero_of_degree_lt_of_eval_finset_eq_zero
+          (f := reversalTwist k P - P)
+          (s := (Finset.univ : Finset (Fin n)).image dom) ?_ ?_
+        · have hcard : ((Finset.univ : Finset (Fin n)).image dom).card = n := by
+            rw [Finset.card_image_of_injective _ dom.injective, Finset.card_univ,
+              Fintype.card_fin]
+          rw [hcard]
+          calc (reversalTwist k P - P).degree
+              ≤ max (reversalTwist k P).degree P.degree := degree_sub_le _ _
+            _ < k := max_lt (reversalTwist_degree_lt k hk1 P) hPdeg
+            _ ≤ (n : WithBot ℕ) := by exact_mod_cast hkn
+        · intro x hx
+          obtain ⟨i, -, rfl⟩ := Finset.mem_image.mp hx
+          rw [eval_sub, sub_eq_zero]
+          exact congrFun h i
+      · -- k = 0: both sides are 0
+        push Not at hk1
+        interval_cases k
+        have hP0 : P = 0 := by
+          rw [← Polynomial.degree_eq_bot]
+          have h0 : P.degree < (0 : ℕ) := hPdeg
+          exact Nat.WithBot.lt_zero_iff.mp (by exact_mod_cast h0)
+        rw [hP0, reversalTwist]
+        simp
+    have := sub_eq_zero.mp hdiff
+    exact this
+  · intro h
+    rw [h]
+
 end ProximityGap.MCAMobius
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -357,3 +413,4 @@ end ProximityGap.MCAMobius
 #print axioms ProximityGap.MCAMobius.twist_eigenPlus
 #print axioms ProximityGap.MCAMobius.twist_eigenMinus
 #print axioms ProximityGap.MCAMobius.reversalTwist_reversalTwist
+#print axioms ProximityGap.MCAMobius.twist_fixed_iff_palindrome
