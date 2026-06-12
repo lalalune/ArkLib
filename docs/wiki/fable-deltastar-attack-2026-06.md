@@ -1367,3 +1367,50 @@ in the literature or the tree.
 maximally-sharp terminus of the top-down attack: not a solution, but a machine-verified theorem about
 *why* there is no solution within known mathematics, with the exact two new mechanisms a breakthrough
 must supply. No fabrication; the open core (matching the refreshed `CLAUDE.md` §3.5 four-faces) stands.
+
+---
+
+## §43 — Round 5 (novel-math attempt on the crux): CANDIDATE RESOLUTION — the open core may be a KNOWN theorem (HBK/Stepanov), not open research
+
+Run `wf_09c22198-dd2`, 4 distinct proof routes on the actual crux `N ≪ |G|^{3/2}` (⟺ `E(G) ≪ |G|^{5/2}`
+⟺ BGK `M ≪ √n`) for `G = μ_{2^μ}`, `n = 2^μ = q^{o(1)}`, each adversarially refereed. **No survivor
+proved the bound** (all gcd/resultant/character-orbit routes returned only the trivial Johnson-scale
+`N ≤ |G|²`). BUT the decisive finding is a **reframing of the open core**, referee-confirmed:
+
+**My prior 5-toolkit no-go cartography (§16–§26) conflated two different theorems.**
+1. **Bourgain–Glibichuk–Konyagin** exponential-sum bound `|Σ_{x∈G} e_p(ξx)| ≤ |G|·p^{−δ'}`: genuinely
+   needs a fixed floor `|G| ≥ p^δ`; degenerates at `|G| = p^{o(1)}`. This is the theorem all my no-go
+   sessions correctly identified as unavailable — but it is **not** the theorem the crux needs.
+2. **Heath-Brown–Konyagin** additive-energy bound `E(A) ≪ |A|^{5/2}` for a multiplicative subgroup
+   `A ⊂ F_q^×` with `|A| ≪ q^{2/3}`: proved by **Stepanov's polynomial method** (auxiliary polynomial of
+   degree `O(|A|)` vanishing to high order at additive-coincidence points; the `q^{2/3}` ceiling is the
+   non-identical-vanishing condition). This argument uses **no exponential-sum cancellation, hence no
+   lower floor** on `|A|`. Its sole hypothesis is the *upper* bound `|A| ≪ q^{2/3}`.
+
+`|G| = 2^μ ≪ √q ≪ q^{2/3}` satisfies the HBK hypothesis with huge margin, and HBK bounds the 4th-moment
+energy `E(A)` *directly* — the worst-case quantity — so the average→worst-case wall (§24–25) is
+**bypassed**, not crossed. The smooth/2-power/Galois structure is not even needed; HBK applies to all
+subgroups in the size range. The sibling no-go `stepanov_does_not_bound_e1_fiber` was about a *specific
+fiber count*, NOT the HBK energy route — so it does not foreclose this.
+
+Tentative citation (UNVERIFIED primary source — see Gap A): Heath-Brown & Konyagin, *New bounds for
+Gauss sums derived from k-th powers, and for Heilbronn's exponential sum*, Q. J. Math. 51 (2000),
+221–235; restated in Konyagin–Shparlinski and Shkredov surveys (arXiv:1303.2729, 1504.01354).
+
+**Why this is NOT yet a $1M pin — two honest gaps:**
+- **Gap A (literature provenance, LINCHPIN):** the exact "no lower floor, `E(A) ≪ |A|^{5/2}` for all
+  `|A| ≪ q^{2/3}`" theorem line was corroborated by the *structure* of Stepanov's method + secondary
+  search-engine extractions, NOT a directly-quoted primary theorem (primary-PDF fetches failed). If the
+  real HBK/Shkredov statement carries a hidden lower-floor or a weaker exponent at `|A|=q^{o(1)}`, the
+  resolution collapses back to open. **Must verify before any pin claim.**
+- **Gap B (formalization):** the in-tree chain stops at `addEnergy_le_sum_gcd_degree_sq`
+  (`E(G) ≤ Σ_c (deg gcd(X^n−1,(c−X)^n−1))²`); the remaining Stepanov degree estimate
+  `Σ_c (deg gcd_c)² ≪ |G|^{5/2}` is unproven in Lean (Stepanov's method has no Mathlib instance). No δ*
+  file discharges yet.
+
+**STATE after round 5:** δ* is **pinned-modulo-formalization, CONDITIONAL on the unverified HBK
+literature claim (Gap A).** This is a genuine, large reframing — the open core is plausibly KNOWN
+mathematics (HBK/Stepanov), not the "25-year new-math wall" the prior sessions concluded — but it is a
+CANDIDATE, not a proof: no in-tree artifact discharges, and the linchpin citation is unverified. Next:
+(1) rigorously verify Gap A (exact HBK/Shkredov statement + hypotheses); (2) if it holds, formalize the
+Stepanov brick (Gap B) → genuine pin. No fabrication; recorded as candidate per honesty discipline.
