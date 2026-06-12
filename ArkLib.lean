@@ -791,6 +791,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldQuotientStack
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldStability
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldTransport
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26GapCensusLaw
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26LadderArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26PolyFieldCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26RegimeSplit
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
