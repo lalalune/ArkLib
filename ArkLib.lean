@@ -813,6 +813,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.JohnsonListBound
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonPerWord
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSecondMomentFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSimplexBound
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSplitSupply
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonTightnessRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonTouchingCorner
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
@@ -1222,13 +1223,13 @@ import ArkLib.Data.CodingTheory.ProximityGap.SmoothLadderInstance
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridgeOnLattice
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothSupplyTowerBridge
-import ArkLib.Data.CodingTheory.ProximityGap.SpectrumCosetLevelBound
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothWindowSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.SparseCoverComputable
 import ArkLib.Data.CodingTheory.ProximityGap.SparseDeviationExtremality
 import ArkLib.Data.CodingTheory.ProximityGap.SparseDirectionGeneralK
 import ArkLib.Data.CodingTheory.ProximityGap.SparseDirectionWindow
+import ArkLib.Data.CodingTheory.ProximityGap.SpectrumCosetLevelBound
 import ArkLib.Data.CodingTheory.ProximityGap.SpernerCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.SplitPencilBound
 import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
