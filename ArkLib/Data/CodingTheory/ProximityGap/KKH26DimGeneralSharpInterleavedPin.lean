@@ -62,9 +62,19 @@ theorem deltaStar_dimFour_interleaved_pin_F4294967377 (t : ℕ) [NeZero t] :
     (ne_zero_of_orderOf_eq ArkLib.ProximityGap.KKH26DimGeneral.orderOf_526957872) 3]
   exact deltaStar_dimFour_pin_F4294967377
 
+/-- **Falsifiable in-window guard.** The pinned value `δ* = 11/16` lies strictly *beyond the
+Johnson radius* `1 − √ρ` (squared form `(1 − δ*)² < ρ`, with rate `ρ = (r−1)/2^μ = 4/16`) and
+strictly *below capacity* `1 − ρ = 3/4`. A miscomputed pin value would break this decidable check —
+the "light" that the dim-four (interleaved) pin is a genuine interior point, not a vacuous or
+out-of-window value. -/
+theorem deltaStar_dimFour_in_window :
+    ((1 : ℚ) - 11 / 16) ^ 2 < 4 / 16 ∧ (11 : ℚ) / 16 < 1 - 4 / 16 :=
+  ⟨by norm_num, by norm_num⟩
+
 end Concrete4294967377
 
 end ArkLib.ProximityGap.KKH26DimGeneralSharp
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.deltaStar_dimFour_interleaved_pin_F4294967377
+#print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.deltaStar_dimFour_in_window
