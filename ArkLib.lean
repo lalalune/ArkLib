@@ -687,6 +687,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GeneralKMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralPacketCombination
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralSpikeLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneratorMCA
+import ArkLib.Data.CodingTheory.ProximityGap.GenericFarPin
 import ArkLib.Data.CodingTheory.ProximityGap.GenericFarSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.GranularityLadderRS
