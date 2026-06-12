@@ -446,6 +446,216 @@ theorem partitionProd_family_weight_le
   rw [sum_map_structured_general lam.parts B0 wW xξ (fun l hl => lam.parts_pos hl)]
   rw [lam.parts_sum, sigmaLambda, show Multiset.card lam.parts = lam.parts.card from rfl]
 
+/-- **The per-term discharge for the repaired recursion** — EVERY cell, no per-cell
+hypothesis: zero cells vanish; live cells route through the matching budget + closing
+arithmetic (`i1 ≥ 1` general, `i1 = 0` saved, `i1 = 0` top). -/
+theorem anchoredSuccTermBoundC (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (htight : D ≤ H.natDegree + (H.leadingCoeff).natDegree)
+    (hWdeg : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHdR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (hDRD : DR ≤ D) (hdRDR : Bivariate.natDegreeY R ≤ DR)
+    (hdvd : ∀ mm : ℕ, H.leadingCoeff ∣
+      (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX 0 (hasseDerivY mm R))).coeff (Bivariate.natDegreeY R - mm))
+    (k : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHenselC (H := H) x₀ R hHyp l) D
+        ≤ WithBot.some (structuredBound H R D l))
+    (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
+    weight_Λ_over_𝒪 hH
+        ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+          * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+          * B_coeffC (H := H) x₀ R i1 lam
+          * partitionProd lam
+              (fun l => if _h : l < k + 1 then βHenselC (H := H) x₀ R hHyp l else 0)) D
+      ≤ WithBot.some (structuredBound H R D (k + 1)) := by
+  classical
+  by_cases hzero : Bivariate.natDegreeY R < sigmaLambda lam
+  · -- zero cell
+    rw [B_coeffC_eq_zero_of_natDegreeY_lt x₀ R i1 lam hzero, mul_zero, zero_mul,
+      weight_Λ_over_𝒪_zero]
+    exact bot_le
+  push_neg at hzero
+  -- shared facts
+  have hi1le : i1 ≤ k + 1 := by
+    have := Finset.mem_range.mp hi1
+    omega
+  have hdY : Bivariate.natDegreeY H = H.natDegree := rfl
+  have hdH1 : 1 ≤ Bivariate.natDegreeY H := by omega
+  have hw : D - Bivariate.natDegreeY H = (H.leadingCoeff).natDegree := by omega
+  have hWne : H.leadingCoeff ≠ 0 := by
+    intro h0
+    have : H = 0 := Polynomial.leadingCoeff_eq_zero.mp h0
+    rw [this] at hH
+    simp at hH
+  have hmS : sigmaLambda lam ≤ k + 1 - i1 := by
+    rw [sigmaLambda]
+    calc Multiset.card lam.parts
+        = (lam.parts.map (fun _ => 1)).sum := by simp
+      _ ≤ (lam.parts.map id).sum := Multiset.sum_map_le_sum_map _ _
+          (fun l hl => lam.parts_pos hl)
+      _ = lam.parts.sum := by simp
+      _ = k + 1 - i1 := lam.parts_sum
+  have hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+      ≤ WithBot.some
+        ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) :=
+    ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hD_Rx0
+  -- the four factor bounds
+  have hW : weight_Λ_over_𝒪 hH ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)) D
+      ≤ WithBot.some ((i1 + deltaSave i1 - 1) * (H.leadingCoeff).natDegree) := by
+    refine le_trans (weight_Λ_over_𝒪_pow_le H hH hDH _ _) ?_
+    exact nsmul_withBot_le _ _ (weight_Λ_over_𝒪_W H hH hDH)
+  have hXi : weight_Λ_over_𝒪 hH
+      ((ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)) D
+      ≤ WithBot.some ((2 * i1 + sigmaLambda lam - 2)
+          * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
+    refine le_trans (weight_Λ_over_𝒪_pow_le H hH hDH _ _) ?_
+    exact nsmul_withBot_le _ _ hξ
+  have hPi : weight_Λ_over_𝒪 hH
+      (partitionProd lam
+        (fun l => if _h : l < k + 1 then βHenselC (H := H) x₀ R hHyp l else 0)) D
+      ≤ WithBot.some (sigmaLambda lam * 1
+          + ((k + 1 - i1) + sigmaLambda lam) * (H.leadingCoeff).natDegree
+          + (2 * (k + 1 - i1) - sigmaLambda lam)
+              * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
+    refine partitionProd_family_weight_le hH hDH k i1 1 (H.leadingCoeff).natDegree
+      ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))
+      (βHenselC (H := H) x₀ R hHyp) ?_ lam hlam
+    intro l hl
+    have := hIH l hl
+    unfold structuredBound at this
+    exact this
+  -- decompose the product into the four factors
+  refine le_trans (weight_Λ_over_𝒪_mul_le H hH hDH _ _) ?_
+  refine le_trans (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) le_rfl) ?_
+  refine le_trans (add_le_add
+    (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) le_rfl) le_rfl) ?_
+  -- dispatch by cell class through the matching budget
+  rcases Nat.eq_zero_or_pos i1 with hi0 | hi1pos
+  · -- i1 = 0
+    subst hi0
+    have hm2 : 2 ≤ sigmaLambda lam := two_le_sigmaLambda_of_i1_zero lam hlam
+    rcases Nat.lt_or_ge (sigmaLambda lam) (Bivariate.natDegreeY R) with hlt | hge
+    · -- saved budget, 2 ≤ m < d_R
+      have hB := B_coeffC_weight_le_anchored_zero hH hDH (by omega) hWne x₀ R htotal
+        hvanish lam (hdvd (sigmaLambda lam)) (by omega) hdRDR
+      refine le_trans (add_le_add (add_le_add (add_le_add hW hXi) hB) hPi) ?_
+      rw [show ∀ a b c d : ℕ, (WithBot.some a + WithBot.some b + WithBot.some c
+          + WithBot.some d) = WithBot.some (a + b + c + d) from fun _ _ _ _ => rfl]
+      refine WithBot.coe_le_coe.mpr ?_
+      unfold structuredBound
+      rw [Nat.mul_one, hw]
+      exact harith_anchored_zero hm2 (by omega) (by omega) hdR2 (by omega) hdHdR hdRDR
+        (by omega) hDRD rfl rfl
+    · -- top cell, m = d_R
+      have htopeq : sigmaLambda lam = Bivariate.natDegreeY R := by omega
+      have hB := B_coeffC_weight_le_anchored_zero_top hH hDH hWne x₀ R htotal lam
+        (hdvd (sigmaLambda lam)) htopeq
+      refine le_trans (add_le_add (add_le_add (add_le_add hW hXi) hB) hPi) ?_
+      rw [show ∀ a b c d : ℕ, (WithBot.some a + WithBot.some b + WithBot.some c
+          + WithBot.some d) = WithBot.some (a + b + c + d) from fun _ _ _ _ => rfl]
+      refine WithBot.coe_le_coe.mpr ?_
+      unfold structuredBound
+      rw [Nat.mul_one, hw]
+      exact harith_anchored_zero_top hm2 (by omega) htopeq hdR2 (by omega) hdHdR
+        (by omega) hDRD rfl rfl
+  · -- i1 ≥ 1 (including the top m = 0 cell)
+    have hδ : deltaSave i1 = 0 := by
+      rw [deltaSave, if_neg (by omega : ¬ i1 = 0)]
+    have hB := B_coeffC_weight_le_anchored_pos hH hDH (by omega) x₀ R htotal hvanish
+      (by omega : i1 ≠ 0) lam
+    refine le_trans (add_le_add (add_le_add (add_le_add hW hXi) hB) hPi) ?_
+    rw [show ∀ a b c d : ℕ, (WithBot.some a + WithBot.some b + WithBot.some c
+        + WithBot.some d) = WithBot.some (a + b + c + d) from fun _ _ _ _ => rfl]
+    refine WithBot.coe_le_coe.mpr ?_
+    unfold structuredBound
+    rw [Nat.mul_one, hδ, hw]
+    exact harith_anchored hi1pos hi1le hmS hzero hdR2 (by omega) hdHdR hdRDR (by omega)
+      hDRD rfl rfl
+
+/-- **THE REPAIRED ANCHORED (P1) STRUCTURED BOUND — NO per-cell hypotheses.** Every
+Hensel numerator of the repaired recursion satisfies the paper's structured invariant at
+the anchor, with all cells discharged. -/
+theorem βHenselC_weight_bound_anchored (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (htight : D ≤ H.natDegree + (H.leadingCoeff).natDegree)
+    (hWdeg : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHdR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (hDRD : DR ≤ D) (hdRDR : Bivariate.natDegreeY R ≤ DR)
+    (hdvd : ∀ mm : ℕ, H.leadingCoeff ∣
+      (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX 0 (hasseDerivY mm R))).coeff (Bivariate.natDegreeY R - mm))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHenselC (H := H) x₀ R hHyp t) D
+      ≤ WithBot.some (structuredBound H R D t) := by
+  classical
+  induction t using Nat.strong_induction_on with
+  | _ t hIH =>
+    match t with
+    | 0 =>
+        rw [βHenselC_zero]
+        refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH rfl) ?_
+        have hweq : weight_Λ (Polynomial.X : F[X][Y]) H D
+            = WithBot.some (D + 1 - Bivariate.natDegreeY H) := by
+          rw [weight_Λ, Polynomial.support_X (by norm_num)]
+          simp
+        rw [hweq]
+        refine WithBot.coe_le_coe.mpr ?_
+        unfold structuredBound
+        have hdY : Bivariate.natDegreeY H = H.natDegree := rfl
+        omega
+    | (k + 1) =>
+        rw [βHenselC_succ]
+        refine le_trans (weight_Λ_over_𝒪_neg H hH hDH _) ?_
+        refine le_trans (weight_Λ_over_𝒪_sum_le H hH hDH _ _) ?_
+        refine Finset.sup_le (fun i1 hi1 => ?_)
+        refine le_trans (weight_Λ_over_𝒪_sum_le H hH hDH _ _) ?_
+        refine Finset.sup_le (fun lam hlam => ?_)
+        exact anchoredSuccTermBoundC x₀ R hHyp hH hDH htight hWdeg hD_Rx0 hdR2 hdHdR
+          htotal hvanish hDRD hdRDR hdvd k (fun l hl => hIH l (by omega)) i1 hi1 lam
+          (Finset.mem_filter.mp hlam).2
+
+/-- **The repaired anchored (P1) LOOSE bound** `(2t+1)·d_R·D` — all cells discharged,
+via the proven structured collapse. -/
+theorem βHenselC_weight_bound_anchored_loose (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (htight : D ≤ H.natDegree + (H.leadingCoeff).natDegree)
+    (hWdeg : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHdR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (hDRD : DR ≤ D) (hdRDR : Bivariate.natDegreeY R ≤ DR)
+    (hdvd : ∀ mm : ℕ, H.leadingCoeff ∣
+      (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX 0 (hasseDerivY mm R))).coeff (Bivariate.natDegreeY R - mm))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHenselC (H := H) x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  refine le_trans (βHenselC_weight_bound_anchored x₀ R hHyp hH hDH htight hWdeg hD_Rx0
+    hdR2 hdHdR htotal hvanish hDRD hdRDR hdvd t) ?_
+  unfold structuredBound
+  exact_mod_cast structured_weight_collapse
+    (Bivariate.natDegreeY R) (Bivariate.natDegreeY H) D t (H.leadingCoeff).natDegree
+    hdR2 (by simpa using hH) hdHdR hWdeg
+
 /-! ## Source audit -/
 
 #print axioms weight_Λ_C_mul_X_pow_le
@@ -459,5 +669,8 @@ theorem partitionProd_family_weight_le
 #print axioms B_coeffC_weight_le_anchored_zero_top
 #print axioms harith_anchored_zero_top
 #print axioms partitionProd_family_weight_le
+#print axioms anchoredSuccTermBoundC
+#print axioms βHenselC_weight_bound_anchored
+#print axioms βHenselC_weight_bound_anchored_loose
 
 end BCIKS20.HenselNumerator
