@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2404 files, 30239 declarations
+- `ArkLib` — 2397 files, 30214 declarations
 
-## Same short-name across multiple files (1264 groups)
+## Same short-name across multiple files (1262 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -2103,11 +2103,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.CodingTheory.BallVolume.card_filter_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/BallVolume.lean:33](../../../ArkLib/Data/CodingTheory/ProximityGap/BallVolume.lean#L33) — The number of nonzero field elements is `q - 1`.
 - `theorem ArkLib.RandomLinearCode.card_filter_ne_zero` [ArkLib/Data/CodingTheory/RandomLinearCodeFirstMoment.lean:53](../../../ArkLib/Data/CodingTheory/RandomLinearCodeFirstMoment.lean#L53) — The number of nonzero messages is `qᵏ − 1`.
 
-### `card_sum_of_mem_image` (2 declarations, 2 files)
-
-- `theorem BCIKS20.HenselNumerator.card_sum_of_mem_image` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2Bijection.lean:91](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2Bijection.lean#L91) — Cardinality and sum of a realized value multiset.
-- `theorem P2BijectionImage.card_sum_of_mem_image` [ArkLib/Scratch/P2BijectionImage.lean:17](../../../ArkLib/Scratch/P2BijectionImage.lean#L17) — Forward characterization of the source index set: every value-multiset arising from a weak compositi
-
 ### `card_wordStack_eq` (2 declarations, 2 files)
 
 - `theorem CS25.card_wordStack_eq` [ArkLib/Data/CodingTheory/ProximityGap/CS25JointProxBound.lean:255](../../../ArkLib/Data/CodingTheory/ProximityGap/CS25JointProxBound.lean#L255) — **`#stacks = Q^n`** for the interleaved alphabet `Q = \|κ→A\|`, `n = \|ι\|`.
@@ -3378,11 +3373,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma BCIKS20.HenselNumerator.WeightWitness.myR_natDegree` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P1MonicWeightRefutation.lean:79](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P1MonicWeightRefutation.lean#L79) — (no docstring)
 - `lemma BCIKS20.HenselNumerator.Witness.myR_natDegree` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutationWitness.lean:92](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutationWitness.lean#L92) — (no docstring)
-
-### `natDegree_aeval_le` (2 declarations, 2 files)
-
-- `lemma CodingTheory.Bounds.Capacity.natDegree_aeval_le` [ArkLib/Data/CodingTheory/ListDecoding/Bounds/CapacityBoundsProofs.lean:34](../../../ArkLib/Data/CodingTheory/ListDecoding/Bounds/CapacityBoundsProofs.lean#L34) — Bounding the degree of the substituted polynomial P(X) = Q(X, f(X)).
-- `lemma natDegree_aeval_le` [ArkLib/Scratch/JR_degree_attempt.lean:9](../../../ArkLib/Scratch/JR_degree_attempt.lean#L9) — Degree bound for substituting `X₀ ↦ X`, `X₁ ↦ f` into a bivariate polynomial.
 
 ### `natDegree_lt_of_mem_degreeLT` (2 declarations, 2 files)
 
