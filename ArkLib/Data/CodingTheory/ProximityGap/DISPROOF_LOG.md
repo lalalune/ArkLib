@@ -7178,3 +7178,20 @@ the char-0 slanted stratum of the wide-circuit census — disjoint pair-triples
 disjoint slanted collinear triple is an affine-Galois image of chord/shape-I/shape-II.
 The 12-term determinant analysis (item 2's Lean half) is the completeness proof of
 exactly this statement; the strata census closed form follows by orbit counting.
+
+## 2026-06-11 — WB-1 red-team: non-vacuity CONFIRMED; the solvable set is a (2w+k)-dim variety
+
+`probe_wbfar_existence.py` at (p,n,k) = (17,8,2): the WB-solvable direction fraction
+* `w = 2` (one below the UDR boundary): **16/4000 = 0.40%** vs the variety prediction
+  `q^{2w+k−n} = 17^{−2} = 0.35%` — 99.6% of directions are WB-far; WB-1 bites
+  generically;
+* `w = 1`: 0/2000 (`~17^{−4}`) — even more generic deeper below;
+* `w = 3` (`n = 2w+k`, the boundary): 4000/4000 solvable — the underdetermined system,
+  exactly the sharpness cutoff stated in the theorem.
+
+So the dimension picture is: the WB-solvable directions form a `≤ (2w+k)`-parameter
+image inside `F^n` (pairs `(ℓ, R)` mod scaling), proper exactly below UDR, and the
+naive `3w+k` overcount (the free-on-roots correction) is not real.  WB-1 is
+non-vacuous on a `1 − O(q^{2w+k−n})` fraction of directions at every below-UDR slack.
+Remaining for the all-stacks law: the near-direction side (the `O(q^{2w+k})`
+exceptional directions) via pencil deflation.
