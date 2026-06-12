@@ -7603,3 +7603,37 @@ mechanism (explainers of bad scalars move polynomially `p_γ = P(γ)` with codew
 coefficients; the column dichotomy — ≤ a−1 identically-zero columns else joint — gives
 `#bad ≤ n·deg P`; the missing piece is SLOPE COLLAPSE: `deg P ≤ 1` on the band, probe
 `_scratch_probe_slope_collapse.py`).
+
+## 2026-06-12 — SLOPE COLLAPSE REFUTED (directed t=2 construction); the surviving two-regime pencil law
+
+The slope-collapse conjecture (UDR-edge amendment above: every band bad-family's
+explainer map is affine, `deg P ≤ 1`) is FALSE as stated: the explicit quadratic-pencil
+construction (`_scratch_probe_nonaffine_directed.py`, wt371) produces genuine nonaffine
+bad families wherever the scalar field gives room.  Witness at the band instance
+`(p, n, k, w) = (73, 9, 2, 3)`, `a = 6`:
+`u₀ = (64, 48, 33, 62, 37, 56, 46, 22, 36)`, `u₁ = (5, 29, 30, 32, 65, 5, 29, 61, 55)`,
+bad scalars `{12, 16, 36}`, no affine selection (verified over all explainer pairs).
+The first random probe's zero-nonaffine reading at `p = 17, 19` was a small-field
+artifact.  Design: column polys `−m₂(i)(γ−r₁ᵢ)(γ−r₂ᵢ)` with `m₂` a nonzero codeword and
+the `γ¹`/`γ⁰` coefficients absorbed into the FREE `ε`/`u₀` — t = 2 needs no rigidity
+beyond the top coefficient.
+
+**What survives (verified by the same construction): the two-regime pencil law.**
+Identically-zero columns of a degree-`t` pencil:
+* `t = 1`: capped at `a − 1` by joint-exclusion only ⟹ `#bad_affine ≤ (n−z)/(a−z)`,
+  maximal `w + 1` at `z = a−1`;
+* `t ≥ 2`: the TOP Newton coefficient `m_t` is a nonzero codeword (divided differences
+  of codewords), so `z ≤ k − 1` ⟹ `#bad ≤ t·(n−k+1)/(a−k+1)` — at the band ≈ `2t`.
+  The probe's max nonaffine family (3) meets the `t = 2` cap `⌊2(n−k+1)/(a−k+1)⌋ = 3`
+  exactly; it CANNOT beat the affine cap at `t = 2`.
+
+**The open t-control, reduced:** beating `w + 1` needs `t ≈ w/2`, and a degree-`t`
+pencil constrains `t − 2` symmetric functions of every column's root set to be
+codeword-ratios — for non-constant ratios, ≤ `k−1` columns per value; for constant
+ratios, the root `t`-sets lie in a fiber of `t − 2` prescribed power sums of the scalar
+set `Γ`.  So the band adversary beyond affine is a SCALAR-SIDE deep moment-fiber
+extremal problem (the census programme's object, transposed from the domain to the
+scalar field): large nonaffine families need `|Γ| ≈ w` scalar sets that are
+moment-degenerate to depth `≈ w/2` with large fibers.  Conjectured cap (next probe):
+additive moment fibers at depth `t−2` collapse the supply below the affine cap for all
+`t ≥ 2` ⟹ `#bad ≤ w + O(1)` on the band.
