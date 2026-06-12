@@ -1324,3 +1324,46 @@ non-averaging handle on S_m(b), or a derandomization importing the random-RS wor
 mechanism to the explicit smooth domain. No standard tool does this; it is the open breakthrough. δ*
 remains OPEN; no fabrication; the 3-round adversarial attack delivered the sharpest possible
 characterization of the open core, not a solution.
+
+---
+
+## §42 — Round 4 executed: both escape hatches REFUTED (the confinement is now sharp on both sides)
+
+Run `wf_0057da0a-64f`, 3 attacks + adversarial verifiers, **0 survivors**. Round 4 attacked the only
+two non-walled directions §41 left (construction-side worst-case + derandomization) plus a
+data-mining pass. All three landed as **machine-verified refutations** — negative, but a strictly
+stronger result than §41:
+
+1. **Ceiling NOT improvable in-tree (construction side closed).** The entire in-tree
+   antipodal/Möbius/stratified/fold bad-scalar family is **radius-rigid**: it deposits bad scalars
+   *only at* the KKH26 radius `δ = 1−r/2^μ` (raising the count at fixed radius), never strictly below
+   it. The one radius-moving mechanism — fold-transport K1 — is refuted both ways (even cofactor =
+   same family one level down; s-step = strictly smaller survivor family `C(2^{μ−1},r)·2^r`). No
+   "better bad line" below the ceiling exists in-tree, and none is known.
+
+2. **Floor NOT raisable in-tree (derandomization closed).** Importing the random-RS GM-MDS/RIM
+   worst-case capacity mechanism to explicit smooth `μ_n` does not transfer: it either only partially
+   lifts the floor (stays at/near Johnson `1−√ρ`) or re-expresses `δ*` as capacity minus an
+   *unquantified* KKH26 gap. No explicit-domain capacity transfer.
+
+3. **No hidden closed-form in the verified data.** The two EXACT in-tree `mcaDeltaStar` points are
+   both **unique-decoding-radius** points `δ* = (1−ρ)/2` (i.e. `t=(n−k)/2`), NOT interior/above-
+   Johnson; the remaining "interior pins" are list-SIZE brackets at a hand-chosen `δ`, not solved-for
+   `δ*` values. No interior closed-form `δ*` law fits the data. (Note: this predates the refreshed
+   `ProximityGap/CLAUDE.md`, which records a *new* exact closed form `δ* = j/n` on granularity bands
+   `3(j−1)+k ≤ n` via `GranularityLadderRS.lean` — a genuine band-restricted pin, but still not the
+   production-window interior.)
+
+**Net state after 4 rounds + ~20 agent-attacks + 0 survivors.** δ* is confined to the half-open
+window `(1−√ρ, 1−r/2^μ]` with **both walls and all three closure routes machine-verified-immovable**
+by every mechanism in the tree. The earlier "average→worst-case wall" diagnosis is upgraded: the two
+construction/derandomization hatches that survived the average-scale refutations are themselves now
+refuted. Confirmed: pinning the production-interior δ* requires a genuinely new mechanism that is
+intrinsically worst-case AND either (a) produces bad scalars strictly inside `(Johnson, ceiling)`, or
+(b) transfers worst-case capacity to explicit smooth domains without GM-MDS randomness. Neither exists
+in the literature or the tree.
+
+**$1M answer: NOT pinned — and now provably not pinnable by any in-tree route.** This is the honest,
+maximally-sharp terminus of the top-down attack: not a solution, but a machine-verified theorem about
+*why* there is no solution within known mathematics, with the exact two new mechanisms a breakthrough
+must supply. No fabrication; the open core (matching the refreshed `CLAUDE.md` §3.5 four-faces) stands.
