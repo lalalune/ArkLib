@@ -37,6 +37,18 @@ THE CATALOGUE (tier 2; char-0 layer, mod-p surplus possible at p = 17 -- flagged
               T = gcd(s',n), count n/gcd(s',n), valid when X^b is unfit on the fiber.
   DOUBLET:    (e_x, e_y - e_x): 2 bad scalars at T = n-1 (any d <= n-3) -- the bottom
               rung, landed as two_deviation_epsMCA_lower_bound.
+  SIMPLEX(e): line of words supported on an (e+1)-set; e+1 bad scalars at T = n-e
+              (any d <= n-e-2), landed as simplex_epsMCA_lower_bound.  ROUND-8 FIX:
+              this family was missing from the original predictor (the t=6, d=1
+              "triangle" cell W_6 = 3 is simplex(2), not a new family).
+  BISIMPLEX(e): disjoint double simplex (ROUND-8 DISCOVERY, landed as
+              bisimplex_epsMCA_lower_bound): S1 = {0..e}, S2 = {e+1..2e+1},
+              q0 = prod_{z in Z}(X - z) over the complement Z; u1 = q0|S1,
+              u0 = (X q0)|S1.  gamma = -x is bad for EVERY x in S1 u S2: for
+              x in S1 the line word is ((X-x)q0)|S1, weight <= e, vs the ZERO
+              codeword; for x in S2 it is (X-x)q0 - ((X-x)q0)|S2, i.e. the
+              degree-<= d codeword (X-x)q0 minus a weight-<= e word.  Count
+              2e+2 at T = n-e, valid for n-2e-1 <= d <= n-e-2.
   SINGLE:     1 bad scalar at T = n (u0 = c - gamma0 u1, u1 not in C).
 The envelope prediction:  W_t^pred = max{count(F) : T(F) >= t}  (a family bad at its
 threshold T is bad at every t <= T).
@@ -627,7 +639,17 @@ class SyndromeCensus:
 # ----------------------------------------------------------------- the catalogue
 
 def catalogue_families(n, d, mu):
-    """Char-0 catalogue with thresholds and counts (m = 1 slice, n = 2^mu)."""
+    """Char-0 catalogue with thresholds and counts (m = 1 slice, n = 2^mu).
+
+    ROUND-8 CORRECTION: the original predictor omitted the SIMPLEX ladder entirely
+    (count e+1 at threshold n-e, any d <= n-e-2: the (p,n,d)=(17,8,1), t=6 census cell
+    W_6 = 3 -- the "triangle" {a,b},{a,c},{b,c} extremal -- IS simplex(e=2), a matcher/
+    predictor omission, not a new family), and the BISIMPLEX (disjoint double simplex:
+    S1, S2 disjoint (e+1)-sets, q0 = prod_{z notin S1 u S2}(X - z), u1 = q0|S1,
+    u0 = (X q0)|S1; every gamma = -x, x in S1 u S2, is bad at threshold n-e: count
+    2e+2, valid for n-2e-1 <= d <= n-e-2).  The bisimplex is the char-0 layer of the
+    (17,8,3) t=6 cell (W_6 = 7 = bisimplex 6 + one mod-17 extra) and of the n=16, d=2,
+    t=7 hill-climb find (20 = 2(e+1) at e=9, overlapping variant)."""
     fams = []
     r = d + 2
     for j in range(0, mu):
@@ -643,9 +665,81 @@ def catalogue_families(n, d, mu):
                 sig = gcd(s, n)
                 fams.append(dict(name=f"pencil(a={a},s={s})", T=f + sig,
                                  count=n // sig, stack=(a, (a + s) % n)))
+    for e2 in range(1, n - d - 1):                      # e2 <= n - d - 2
+        fams.append(dict(name=f"simplex(e={e2})", T=n - e2, count=e2 + 1,
+                         stack=("simplex", e2)))
+        if 2 * e2 + 2 <= n and n <= d + 2 * e2 + 1:     # n-2e-1 <= d
+            fams.append(dict(name=f"bisimplex(e={e2})", T=n - e2, count=2 * e2 + 2,
+                             stack=("bisimplex", e2)))
     fams.append(dict(name="doublet", T=n - 1, count=2, stack="doublet"))
     fams.append(dict(name="single", T=n, count=1, stack="single"))
     return fams
+
+
+def simplex_stack(dom, e):
+    """The simplex line: words supported on {0..e}; u0(j) = j, u1(j) = 1 there."""
+    n = dom.N
+    u0 = [j % dom.P if j <= e else 0 for j in range(n)]
+    u1 = [1 if j <= e else 0 for j in range(n)]
+    return u0, u1
+
+
+def bisimplex_stack(dom, e):
+    """The disjoint double simplex: S1 = {0..e}, S2 = {e+1..2e+1}, Z = the rest;
+    q0 = prod_{z in Z}(X - X[z]); u1 = q0|S1, u0 = (X*q0)|S1.  The 2e+2 bad scalars
+    are -X[x], x in S1 u S2 (each kills one coordinate of the S1- resp. S2-residual)."""
+    p, n, X = dom.P, dom.N, dom.X
+
+    def q0(x):
+        v = 1
+        for z in range(2 * e + 2, n):
+            v = v * (x - X[z]) % p
+        return v
+
+    u0 = [X[i] * q0(X[i]) % p if i <= e else 0 for i in range(n)]
+    u1 = [q0(X[i]) % p if i <= e else 0 for i in range(n)]
+    return u0, u1
+
+
+def family_stack(dom, f):
+    """Materialize a catalogue family's witness stack (None when stackless)."""
+    st = f["stack"]
+    if st == "doublet":
+        return doublet_stack(dom)
+    if st == "single":
+        return None
+    if isinstance(st, tuple) and st and st[0] == "simplex":
+        return simplex_stack(dom, st[1])
+    if isinstance(st, tuple) and st and st[0] == "bisimplex":
+        return bisimplex_stack(dom, st[1])
+    if isinstance(st, tuple):
+        return monomial(dom, st[0]), monomial(dom, st[1])
+    return None
+
+
+def classify_blocks(sig, n):
+    """Structural decomposition of an extremal's per-gamma minimal-support signature
+    into simplex blocks (all (k-1)-subsets of a k-set, one gamma each) plus leftovers.
+    ROUND-8 matcher fix: the line-key matcher only recognizes the exact seed lines
+    (one per family), so EVERY generic extremal was flagged novel; this structural
+    layer recognizes the family by its support pattern instead."""
+    remaining = Counter(frozenset(s) for (_, w, s) in sig)
+    sups = list(remaining)
+    cands = set()
+    for s1 in sups:
+        for s2 in sups:
+            cands.add(s1 | s2)
+    blocks = []
+    for S in sorted(cands, key=lambda S: (len(S), tuple(sorted(S)))):
+        if len(S) < 2:
+            continue
+        subs = [frozenset(S - {x}) for x in sorted(S)]
+        while all(remaining[s] >= 1 for s in subs):
+            for s in subs:
+                remaining[s] -= 1
+            blocks.append(f"simplex{tuple(sorted(S))}")
+    left = [tuple(sorted(s)) for s, c in remaining.items() if c > 0 for _ in range(c)]
+    return blocks, left
 
 
 def envelope_pred(fams, t):
@@ -674,10 +768,9 @@ def tier1_instance(p, g, n, d, e_list, results):
     # cross-check the three checkers on catalogue + random stacks
     teststacks = []
     for f in fams:
-        if isinstance(f["stack"], tuple):
-            teststacks.append((monomial(dom, f["stack"][0]),
-                               monomial(dom, f["stack"][1]), f["name"]))
-    teststacks.append((*doublet_stack(dom), "doublet"))
+        st = family_stack(dom, f)
+        if st is not None:
+            teststacks.append((st[0], st[1], f["name"]))
     for _ in range(6):
         teststacks.append(([random.randrange(p) for _ in range(n)],
                            [random.randrange(p) for _ in range(n)], "random"))
@@ -695,11 +788,8 @@ def tier1_instance(p, g, n, d, e_list, results):
     # canonical line keys of ALL catalogue stacks (any threshold) + all monomial pairs
     cat_keys = {}
     for f in fams:
-        if isinstance(f["stack"], tuple):
-            st = (monomial(dom, f["stack"][0]), monomial(dom, f["stack"][1]))
-        elif f["stack"] == "doublet":
-            st = doublet_stack(dom)
-        else:
+        st = family_stack(dom, f)
+        if st is None:
             continue
         line = sc.stack_line(*st)
         if line:
@@ -771,17 +861,20 @@ def tier1_instance(p, g, n, d, e_list, results):
                                  for x in masks)
                         sig.append((gam, mm[0],
                                     tuple(i for i in range(n) if mm[1] >> i & 1)))
+                blocks, left = classify_blocks(sig, n)
                 novel.append(dict(count=cnt, word_level=wl, u0=u0, u1=u1,
-                                  orbit=int(osz), gamma_repwt=sig))
-        verdict = (("MATCHES catalogue" if not novel else "NOVEL EXTREMALS")
-                   if best == pred else
+                                  orbit=int(osz), gamma_repwt=sig,
+                                  structure=dict(blocks=blocks, extra=left)))
+        verdict = ("MATCHES catalogue (value-exact)" if best == pred else
                    (f"{'EXCEEDS' if best > pred else 'BELOW'} prediction"
-                    + ("; NOVEL EXTREMALS" if novel else "")))
+                    + ("; see structural decomposition" if novel else "")))
         log(f"      EXACT W_{t} = {best} (pred {pred}; runner-up line value "
             f"{runner}); {evaluated} argmax lines; extremal classes "
-            f"matched={dict(Counter(matched))} novel={len(novel)} -> {verdict}")
+            f"matched={dict(Counter(matched))} unmatched-by-line-key={len(novel)} "
+            f"-> {verdict}")
         for nv in novel[:6]:
-            log(f"         NOVEL: count={nv['count']} (word-level {nv['word_level']}) "
+            log(f"         EXTREMAL: count={nv['count']} (word-level "
+                f"{nv['word_level']}) structure={nv['structure']} "
                 f"u0={nv['u0']} u1={nv['u1']} repwt={nv['gamma_repwt']}")
         inst[t] = dict(W=best, pred=pred, runner=runner,
                        dist={k: v for k, v in sorted(dist.items())[-12:]},
@@ -791,6 +884,58 @@ def tier1_instance(p, g, n, d, e_list, results):
                        exhaustive=bool(exhaustive))
     results[f"p{p}_n{n}_d{d}"] = inst
     return inst
+
+
+def tier1b_shoulder_p97(results):
+    """EXHAUSTIVE census of the (p=97, n=8, d=3, e=2, t=6) shoulder cell — the cell
+    where p=17 measured W_6 = 7 (bisimplex 6 + 1).  Verdict semantics:
+      W = 6  -> the +1 was a mod-17 coincidence; the bisimplex is EXACT at large p;
+      W = 7  -> the +1 is itself char-0 (the catalogue is still incomplete);
+      W = 4  -> the bisimplex itself would be refuted at p=97 (not expected: the
+                construction is field-independent and cross-checked word-level)."""
+    p, g, n, d, e = 97, 64, 8, 3, 2
+    t = n - e
+    dom = Domain(p, g, n)
+    sc = SyndromeCensus(dom, d)
+    fams = catalogue_families(n, d, n.bit_length() - 1)
+    pred = envelope_pred(fams, t)
+    log(f"== TIER 1B EXHAUSTIVE SHOULDER CELL: p={p}, n={n}, d={d}, e={e} (t={t}) — "
+        f"catalogue prediction W_pred={pred} (bisimplex) ==")
+    # word-level sanity of the bisimplex stack at p=97 first (cheap, independent)
+    u0b, u1b = bisimplex_stack(dom, e)
+    wl = sum(1 for gam in range(p) if dom.bad_fast(u0b, u1b, gam, t, d))
+    log(f"   bisimplex stack word-level count at p={p}: {wl} (construction predicts "
+        f"{2 * e + 2})")
+    assert wl >= 2 * e + 2, ("bisimplex word-level check", wl)
+    dist, best, extremal, runner = sc.census_exact(e, progress_every=30000)
+    log(f"      incidence dist (top): "
+        f"{dict(sorted(dist.items(), reverse=True)[:8])}")
+    for (cnt, v, s0, osz) in extremal[:4]:
+        slow = sc.exact_line_count(v, s0, e)
+        assert slow == cnt, ("argmax cross-check p97", cnt, slow)
+    structures = []
+    for (cnt, v, s0, osz) in extremal[:6]:
+        u0, u1 = sc.words_of_line(v, s0)
+        sig = []
+        for gam in range(p):
+            key = int(sc.encode(((s0 + gam * v) % p).reshape(1, -1))[0])
+            masks = sc.rep_supports(key, e)
+            if len(masks):
+                mm = min((bin(int(x)).count("1"), int(x)) for x in masks)
+                sig.append((gam, mm[0],
+                            tuple(i for i in range(n) if mm[1] >> i & 1)))
+        blocks, left = classify_blocks(sig, n)
+        structures.append(dict(count=cnt, structure=dict(blocks=blocks, extra=left)))
+        log(f"         EXTREMAL: count={cnt} structure(blocks={blocks}, extra={left}) "
+            f"u0={u0} u1={u1}")
+    verdict = ("bisimplex EXACT at p=97; the p=17 '+1' is a mod-17 surplus"
+               if best == pred else
+               f"{'EXCEEDS' if best > pred else 'BELOW'} the bisimplex envelope")
+    log(f"      EXACT W_{t}(p=97, d=3) = {best} (pred {pred}; runner-up {runner}) "
+        f"-> {verdict}")
+    results["p97_n8_d3_shoulder"] = dict(W=best, pred=pred, runner=runner,
+                                         word_level_bisimplex=wl,
+                                         extremals=structures, exhaustive=True)
 
 
 # ----------------------------------------------------------------- tier 2: law table
@@ -874,9 +1019,9 @@ def tier3_discovery(p, g, n, d, t_targets, results, iters=260):
              (monomial(dom, h), monomial(dom, (h + 2) % n), "pencil2"),
              doublet_stack(dom) + ("doublet",)]
     for f in fams:
-        if isinstance(f["stack"], tuple):
-            seeds.append((monomial(dom, f["stack"][0]),
-                          monomial(dom, f["stack"][1]), f["name"]))
+        st = family_stack(dom, f)
+        if st is not None:
+            seeds.append((st[0], st[1], f["name"]))
     # hybrid structured families: pencil with sign-subset deviations
     hybrids = []
     for a in range(0, n, max(1, n // 8)):
@@ -932,6 +1077,10 @@ def main():
         tier1_instance(17, 2, 8, 2, e_list=[1, 2, 3, 4], results=results)
         # d=1 (m=6): t in {5,6,7}; e=4 (t=4) infeasible -> heuristic there
         tier1_instance(17, 2, 8, 1, e_list=[1, 2, 3], results=results)
+
+    # ---------------- tier 1b: the p=97 shoulder cell, exhaustive ----------------
+    if only in ("all", "t1b"):
+        tier1b_shoulder_p97(results)
 
     # ---------------- tier 2: monomial law tables ----------------
     if only in ("all", "t2"):
