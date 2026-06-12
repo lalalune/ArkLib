@@ -221,6 +221,85 @@ theorem GKL24MaxCorrStrictWitnessCoverResidual_of_subset_cover
   exact ⟨D, hD, fun γ hγ =>
     ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn hγ (hDsub γ hγ) hD.1.2⟩
 
+/-- **The common zero set IS the maximal correlated-agreement domain, for a multi-witness codeword.**
+When a codeword `w` has two distinct bad witnesses `γ ≠ γ'`, the common zero set
+`C₀ = {i : u₁ᵢ = 0 ∧ wᵢ = u₀ᵢ}` is a `maxCorrAgreeDomain` at rate `p`:
+
+* it is a correlated-agreement domain — joint via `(w, 0)` (`pairJointAgreesOn_common`), and large
+  (`|C₀| = |lineAgreeSet w γ ∩ lineAgreeSet w γ'| ≥ (1−p)·n`, Bonferroni + `2δ ≤ p`);
+* it is **maximal** — any correlated-agreement domain `E ⊇ C₀` agrees with codewords `(v₀, v₁)` on
+  `E`; on `C₀` then `v₁ = 0` and `v₀ = w`, so by the code-determination hypothesis `hCodeDet`
+  (codewords agreeing on `C₀` coincide — a Johnson-regime `p·n < minDist` consequence, since
+  `|C₀| ≥ (1−p)n`) we get `v₁ ≡ 0` and `v₀ ≡ w`, forcing `E ⊆ C₀`.
+
+This is the structural heart of GKL24 Lemma 1's per-codeword maximal domain in the regime where it
+is satisfiable: `C₀` discharges the residual's `maxCorrAgreeDomain` and (being contained in every
+`lineAgreeSet w γ`) the strict-expansion clause via
+`ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn`. -/
+theorem maxCorrAgreeDomain_commonZero_of_two_witnesses
+    {MC : Submodule F (ι → F)} {δ p : ℝ≥0} {u₀ u₁ w : ι → F} (hw : w ∈ MC)
+    {γ γ' : F} (hγ : γ ≠ γ')
+    (hbad : γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w)
+    (hbad' : γ' ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w)
+    (hp1 : p ≤ 1) (h2δp : 2 * δ ≤ p)
+    (hCodeDet : ∀ a ∈ MC, ∀ b ∈ MC,
+      (∀ i ∈ Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i), a i = b i) → a = b) :
+    maxCorrAgreeDomain MC p u₀ u₁
+      (Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)) := by
+  classical
+  set C₀ := Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i) with hC₀def
+  have hC₀eq : C₀ = lineAgreeSet u₀ u₁ w γ ∩ lineAgreeSet u₀ u₁ w γ' :=
+    (lineAgreeSet_inter_eq u₀ u₁ w hγ).symm
+  have hjoint : pairJointAgreesOn (MC : Set (ι → F)) C₀ u₀ u₁ := pairJointAgreesOn_common hw
+  have hcard : ((1 - p) * Fintype.card ι : ℝ≥0) ≤ (C₀.card : ℝ≥0) := by
+    rw [hC₀eq]
+    exact lineAgreeSet_inter_card_ge_pn hp1 h2δp
+      (card_lineAgreeSet_ge_of_mem_mcaBadWitness (MC := MC) hbad)
+      (card_lineAgreeSet_ge_of_mem_mcaBadWitness (MC := MC) hbad')
+  refine ⟨⟨hcard, hjoint⟩, fun E hC₀E hE => ?_⟩
+  obtain ⟨_, v₀, hv₀, v₁, hv₁, hagreeE⟩ := hE
+  have hv1zero : v₁ = 0 := by
+    refine hCodeDet v₁ hv₁ 0 MC.zero_mem (fun i hi => ?_)
+    have hmem := hi
+    rw [hC₀def, Finset.mem_filter] at hmem
+    rw [Pi.zero_apply, (hagreeE i (hC₀E hi)).2]; exact hmem.2.1
+  have hv0w : v₀ = w := by
+    refine hCodeDet v₀ hv₀ w hw (fun i hi => ?_)
+    have hmem := hi
+    rw [hC₀def, Finset.mem_filter] at hmem
+    rw [(hagreeE i (hC₀E hi)).1]; exact hmem.2.2.symm
+  intro i hiE
+  rw [hC₀def, Finset.mem_filter]
+  refine ⟨Finset.mem_univ i, ?_, ?_⟩
+  · rw [← (hagreeE i hiE).2, hv1zero, Pi.zero_apply]
+  · rw [← (hagreeE i hiE).1, hv0w]
+
+/-- **Per-codeword discharge for multi-witness codewords.**  Combining
+`maxCorrAgreeDomain_commonZero_of_two_witnesses` with the strict-expansion lemma: if every bad
+witness `γ` of `w` is paired (some other witness exists) and `hCodeDet` holds, then `C₀` witnesses
+the residual's per-`w` clause — a maximal domain strictly expanded by every `lineAgreeSet w γ`. -/
+theorem exists_maxCorrAgreeDomain_strict_of_two_witnesses
+    {MC : Submodule F (ι → F)} {δ p : ℝ≥0} {u₀ u₁ w : ι → F} (hw : w ∈ MC)
+    {γ₀ γ₀' : F} (hγ : γ₀ ≠ γ₀')
+    (hbad₀ : γ₀ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w)
+    (hbad₀' : γ₀' ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w)
+    (hp1 : p ≤ 1) (h2δp : 2 * δ ≤ p)
+    (hCodeDet : ∀ a ∈ MC, ∀ b ∈ MC,
+      (∀ i ∈ Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i), a i = b i) → a = b) :
+    ∃ D : Finset ι, maxCorrAgreeDomain MC p u₀ u₁ D ∧
+      ∀ γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w,
+        D ⊂ lineAgreeSet u₀ u₁ w γ := by
+  classical
+  set C₀ := Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i) with hC₀def
+  have hmax := maxCorrAgreeDomain_commonZero_of_two_witnesses hw hγ hbad₀ hbad₀' hp1 h2δp hCodeDet
+  refine ⟨C₀, hmax, fun γ hγbad => ?_⟩
+  -- C₀ ⊆ lineAgreeSet w γ: on C₀, u₁ = 0 and w = u₀, so w = u₀ + γ • u₁
+  have hsub : C₀ ⊆ lineAgreeSet u₀ u₁ w γ := by
+    intro i hi
+    rw [hC₀def, Finset.mem_filter] at hi
+    rw [mem_lineAgreeSet_iff, hi.2.1, smul_zero, add_zero]; exact hi.2.2
+  exact ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn hγbad hsub hmax.1.2
+
 end ProximityGap
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -230,3 +309,5 @@ end ProximityGap
 #print axioms ProximityGap.corrAgreeDomain_subset_lineAgreeSet_lineCombiner
 #print axioms ProximityGap.ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn
 #print axioms ProximityGap.GKL24MaxCorrStrictWitnessCoverResidual_of_subset_cover
+#print axioms ProximityGap.maxCorrAgreeDomain_commonZero_of_two_witnesses
+#print axioms ProximityGap.exists_maxCorrAgreeDomain_strict_of_two_witnesses
