@@ -1452,3 +1452,41 @@ per-received-word quadruple agreement below the Chebyshev floor `S₂²/n`**" fo
 — a quantity the global energy provably cannot control (`fourth_moment_cannot_beat_johnson_from_S4`).
 The §43 candidate pin is RETRACTED. No fabrication; the red-team (checking the candidate against the
 tree's own proven no-go) did its job.
+
+---
+
+## §45 — Round 6: per-word core stays open; NEW sharp fact — capacity is field-size-unreachable in the deployed regime
+
+Run `wf_1f4c73a6-f8d` (re-run after an API outage killed the first attempt), 3 routes on the sharpened
+per-word quadruple core, adversarially refereed. **No survivor pins δ*.** Outcomes:
+
+1. **RS-rigidity per-word route — still open (not walled).** The no-go `fourth_moment_cannot_beat_johnson_
+   from_S4` forecloses only the GLOBAL `S₄` route; it is provably silent on a per-received-word bound that
+   uses 4-wise common-root rigidity (any 4 distinct deg-`<k` codewords agree with `w` in `≤ k−1` points)
+   to control `S₂(w)`/`S₁(w)` directly. That per-word bound `S₄(w) < S₂(w)²/n` at some `δ∈(1−√ρ,1−ρ)`
+   for the fixed explicit `RS[μ_n,k]` is the single missing object — genuinely OPEN, no paper supplies it.
+   The unexploited handles: (i) 4-wise rigidity, (ii) multiplicative/coset structure of agreement loci on
+   the subgroup `μ_n`.
+
+2. **BGM-genericity decision — capacity route VOIDED by field-size necessity (NEW, sharp).** Brakensiek–
+   Gopi–Makam achieve list-decoding capacity only for higher-order-MDS / reduced-intersection-generic
+   evaluation points AND exponentially large fields. The large field is PROVABLY NECESSARY: Guo–Zhang–
+   Zhang — any code within `ε` of the generalized Singleton bound needs `q ≥ 2^{Ω(1/ε)}`. At `ε*=2^−128`
+   this forces `q ≥ 2^{Ω(2^128)}`, incompatible with `n=2^μ ≪ √q` by a tower of exponentials. **So in the
+   deployed fixed-field regime, δ* provably cannot reach capacity `1−ρ`** — a clean, citable reason the
+   upper end of the open window is strictly sub-capacity, independent of genericity. (Whether `μ_{2^μ}`
+   itself satisfies the BGM determinant condition is MOOT — Rmk 2.12 is silent on structured points and
+   field-size necessity voids the conclusion either way; so no localized smooth-fails-genericity
+   refutation, and BGM gives no degradation curve, hence no "exact gap below capacity" corollary.)
+
+3. **Explicit-smooth literature sweep — every known technique stops at Johnson for unfolded smooth RS.**
+   Folded RS lives on a different alphabet/code and does not transfer to the unfolded `μ_n` δ*; higher-
+   order-MDS/generic needs non-`μ_n` points + super-poly/exp fields; KRZSW explicit-capacity codes are not
+   plain smooth RS; BCIKS20 §5 CellPackageSupply is the open core itself. None yields a worst-case per-word
+   `S₄(w)` bound below the Chebyshev floor for fixed explicit `RS[μ_n,k]` above Johnson.
+
+**NET (rounds 1–6, ~30 agent-attacks, 0 surviving pins):** δ* OPEN, now confined more tightly —
+`(1−√ρ, 1−r/2^μ]` on the bad side, AND provably strictly below capacity `1−ρ` in the deployed regime by
+field-size necessity (§45.2). The open core is the per-received-word `S₄(w) < S₂(w)²/n` bound via RS
+rigidity + `μ_n` coset structure — the one route that escapes the global-`S₄` no-go and every literature
+technique surveyed. No fabrication; the field-size-necessity fact is the round's genuine new deliverable.
