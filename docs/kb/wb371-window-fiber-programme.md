@@ -74,6 +74,30 @@ small-`w` exotic sharpening (probe ceiling: 3).
 - Graded slack-1 fiber = unique-core chain + ≤ 2 exotics; ungraded counts are
   vacuous (59–116) — the budget `deg g ≤ D_def − (w − |T̂|)` is essential.
 
+## The nine-hypothesis disposition (campaign discipline)
+
+The opening dossier ran three reasonable (R), three novel (N), three synthetic
+(S) hypotheses.  Status after the first brick campaign:
+
+| # | Hypothesis | Disposition | Artifact |
+|---|---|---|---|
+| S1 | Möbius involution = MCA monomial symmetry | **PROVEN** | `MobiusMCASymmetry.lean` |
+| R1 | Δ-channel split (zero-class vs defect) | **PROVEN** (transformed) | `witness_defect_dichotomy`; per-stratum zero-class kills |
+| N2 | Ratio-variety / incidence bound | **SPLIT**: division identity + pencil bound proven; pure-incidence sufficiency REFUTED | `WindowFiberPencil.lean`; `probe_wb371_scale2_incidence.py` (MaxCollinear ≥ w+4) |
+| N1 | Möbius renormalization (σ-quotient RG) | OPEN — foundation laid by S1; quotient step unformalized | swarm renormalization probes |
+| S2 | Census ↔ window unification | PARTIALLY CONFIRMED — coset pencils = census configurations, strip value `n/(b−1)` = pencil count `n/w`, quartet recursion ↔ fold | this page §1; crystallization open |
+| R3 | δ* = census crossing | GATED on the coupling wall (unchanged) | `CensusConditionalPin.lean` |
+| S3 | Plancherel two-family law | GATED on the √q kernel | — |
+| R2 | Johnson via `CellPackageSupply` | OPEN in-tree residual, untouched by this lane | `Hab25JohnsonPackageSupply.lean` |
+| N3 | Isotropy-radius discriminant | DROPPED — no probe support found | — |
+
+Successor generation (spawned by refutations, per discipline):
+- **G3-a** (ungraded fiber cap) — REFUTED (`probe_wb371_g3_subspace_split.py`).
+- **G3-b** (graded ℓ₀-side cap) — REFUTED (chains survive grading).
+- **G3-c** (two-sided count) — probe-CONFIRMED sound + tight; slack-1 instance
+  PROVEN (`stratumG_slack1_badScalars_card_le`).
+- **CF-telescope** (higher slack) — OPEN, the next rung.
+
 ## Open targets, in order
 
 1. Slack-1 assembly (`bad ≤ 1 + exotics` capstone + strata wiring) and the
