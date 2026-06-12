@@ -298,6 +298,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Capture
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.CellPinning
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBruno
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBrunoProof
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.AgreementCount

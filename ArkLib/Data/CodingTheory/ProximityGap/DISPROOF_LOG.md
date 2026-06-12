@@ -7155,3 +7155,26 @@ This is the asymptotic law item 11 asked for (char-0 face), the exact algebra it
 asked for (quartet-tower classification replaces the 1.8σ enrichment), and the tower
 closure item 14 asked for (the 4-adic recursion IS the closed form; layer 1 at
 `n = 2^20` is tower-computable by iterating it).
+
+## 2026-06-11 — Item 2 DECIDED (probe-grade): the slanted supply is COMPLETE
+
+`probe_slanted_stratum_census.py` (exact ℤ[ζ] folding, 12-term determinant exactly):
+the char-0 slanted stratum of the wide-circuit census — disjoint pair-triples
+(6 distinct indices) collinear on a non-vertical, non-horizontal line:
+
+* Census totals: **16** at n = 8, **544** at n = 16 (exhaustive).
+* **The three landed families generate ALL of it**: the chord law `(d, d, n/2)` with
+  its congruence + the shape-I/II seeds, closed under the affine-Galois symmetry
+  group `i ↦ u·i + c` (u odd — Galois conjugation preserves char-0 collinearity):
+  explained 16/16 and 544/544, **zero unexplained** at both scales.  (The handful of
+  "spurious" orbit images are family instances degenerating onto vertical/horizontal
+  lines, correctly excluded by the stratum filter.)
+* Bonus structure found en route: triples of pairs sharing a common index are ALWAYS
+  collinear (`s = ζ^i + ζ^{−i}·p` — the star pencil), which is why the matroid lane
+  restricts to disjoint pairs; and at n = 8 the only non-chord disjoint instances are
+  the reflected-chord shape `(d, −d, n/2)`, which the seeds' orbit closure covers.
+
+**Verdict: the slanted-stratum case analysis has a now-known-true target**: every
+disjoint slanted collinear triple is an affine-Galois image of chord/shape-I/shape-II.
+The 12-term determinant analysis (item 2's Lean half) is the completeness proof of
+exactly this statement; the strata census closed form follows by orbit counting.
