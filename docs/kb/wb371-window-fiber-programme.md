@@ -146,3 +146,23 @@ escape kernel directions carry `q₁ = q₂` identically — any kernel vector
 glues the big blocks and destroys the base 20. ns = 3 stays impossible with
 genuinely distinct blocks. **Ceiling 22 verified against: random search,
 hill-climb, multi-block, glued micro-blocks, structure-aware escapes.**
+
+## THE REDUCTION (landed): the 5/8 pin = one identity-level Prop
+
+`RungEventInterface.lean` + `RungThresholdRouter.lean` +
+`RungInstanceF12289.lean` (all axiom-clean): the interior obligation of the
+level-1 rung pin reduces to
+
+  `IdentityCensusBound dom4134 2 7 31` — every stack of deg-<16
+  interpolants carries ≤ 31 scalars with a size-≥7 non-joint
+  defect-identity witness (deg P ≤ 2),
+
+via `mcaEventNat_iff_defect` (event ⟺ identity), the in-A joint kill
+(`rows_explainable_of_witness_in_agreement` — bad witnesses leave agreement
+sets; discharges the per-class cap's nonempty-off-part hypothesis), the
+census routers through `MCAExactKit`, the threshold band router (one bound
+at t₀ = 7 covers all δ < 5/8), and the literal instance wiring
+(`orderOf_4134' = 16` via the ℕ-congruence `4134⁸ ≡ −1`). Issue comment
+4694739379. Open heart: the class-coexistence count (probe ceiling 22,
+margin 9; per-class and pencil-root caps proven, all-equal-kernel cap and
+pool ≤ 2 unproven).
