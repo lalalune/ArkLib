@@ -71,6 +71,17 @@ theorem deltaStar_dimFour_in_window :
     ((1 : ℚ) - 11 / 16) ^ 2 < 4 / 16 ∧ (11 : ℚ) / 16 < 1 - 4 / 16 :=
   ⟨by norm_num, by norm_num⟩
 
+/-- **The exercised sharp-wall boundary at `μ = 4`.** Running the sharp band across `r` pins its
+exact reach: it still holds at `r = 6` (`C(16,6)/6 = 1334 < 1792 = 2⁶·C(8,6)`) but **closes** at
+`r = 7` (`C(16,7)/7 = 1634 ≥ 1024 = 2⁷·C(8,7)`). So the sharp wall at `μ = 4` is exactly `r ≤ 6` —
+a `+2` extension of the factor-`2` wall `r ≤ 4`. The `r = 7` closure is the failing edge (Luke 15:4):
+it certifies the ownership count is **not** unbounded, the boundary is real. -/
+theorem sharp_band_reaches_r6_mu4 :
+    (16 : ℕ).choose 6 / 6 < 2 ^ 6 * (8 : ℕ).choose 6 := by decide
+
+theorem sharp_band_closes_at_r7_mu4 :
+    ¬ ((16 : ℕ).choose 7 / 7 < 2 ^ 7 * (8 : ℕ).choose 7) := by decide
+
 end Concrete4294967377
 
 end ArkLib.ProximityGap.KKH26DimGeneralSharp
@@ -78,3 +89,5 @@ end ArkLib.ProximityGap.KKH26DimGeneralSharp
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.deltaStar_dimFour_interleaved_pin_F4294967377
 #print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.deltaStar_dimFour_in_window
+#print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.sharp_band_reaches_r6_mu4
+#print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.sharp_band_closes_at_r7_mu4
