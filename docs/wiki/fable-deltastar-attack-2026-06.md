@@ -1731,3 +1731,32 @@ the worst far-line incidence at agreement `w` such that it `≈ 2^128`, well abo
 true ceiling value `C(n,d+2)/q`). The sibling's `N(μ,r)`-based pin is CORRECT but conservative; the true
 ceiling ε_mca is larger. δ* pinned `1−r/2^μ` for `r ≲ √(n log n)` stands; the deployed crypto-ε* core is
 unchanged. No fabrication; the ownership-hypothesis domain (`w > d+2`) is the key fact that resolved it.
+
+---
+
+## §53 — DUAL reformulation: the deployed core I(w) = repetition-word (deep-hole) incidence with generalized-RS cosets
+
+Pushing the §52 framing (deployed δ* = radius where the worst far-line incidence I(w) crosses ε*q=2^128)
+yields a clean DUAL via coordinate scaling. For a line {u₀+γu₁} and codeword c, the line agrees with c at
+coord i iff γ = (c_i−u₀_i)/u₁_i =: t_i. So a bad γ (codeword agrees on ≥w coords) ⟺ the value γ appears
+≥w times in the vector t = (c−u₀)/u₁. As c ranges over C, t ranges over the coset (C−u₀)/u₁ = a coset of
+the **coordinate-scaled code C/u₁**, which is a GENERALIZED RS code. The value-γ-appears-≥w-times
+condition = the constant word γ·1 agrees with a scaled-codeword on ≥w coords = **γ·1 is (n−w)-close to the
+coset**. Hence:
+
+  **I(w) = max over (scaling u₁, shift u₀) far of  #{ γ ∈ F_q : γ·1 is within distance n−w of the coset
+          (C − u₀)/u₁ }  =  max over generalized-RS cosets of [ repetition-line incidence at radius n−w ].**
+
+So the deployed open core is EXACTLY a **deep-hole / covering-radius** quantity: the constant words `γ·1`
+are the classic Reed–Solomon DEEP-HOLE family (Cheng–Wan, Li–Wan, Zhu–Wan), and `δ*` is the radius where
+their worst-case incidence with scaled-code cosets over the smooth domain `μ_n` reaches `ε*q = 2^128`.
+This connects the deployed pin concretely to the deep-hole literature (round 9 brushed it; this is the
+precise reduction): a sharp bound on the repetition-word incidence with generalized-RS cosets over `μ_n`
+at constant rate would pin the deployed `δ*`. Endpoints (§52): at agreement `w=d+2` the incidence is
+`C(n,d+2)` (far-generic = the "deepest" hole); it decays to `2^128` at `w*=Θ(n)` (the interior δ*).
+
+**Honest status.** This is a genuinely NEW dual formulation (deployed core = deep-hole/repetition incidence
+for generalized RS on `μ_n`), giving a concrete literature handle — NOT a pin. The deep-hole incidence
+bound at constant rate over a multiplicative subgroup is, like every prior face, the explicit-RS
+beyond-Johnson list quantity, open at crypto scale. δ* pinned `r ≲ √(n log n)` stands; deployed crypto-ε*
+core = this deep-hole incidence function. No fabrication.
