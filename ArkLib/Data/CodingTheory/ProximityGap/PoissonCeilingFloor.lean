@@ -762,6 +762,54 @@ theorem poisson_exists_stack_two_mul_badCount_ge (hg : orderOf g = n) {d : ℕ} 
           ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
             P.1 P.2 γ)).card) hCpos hmain
 
+open Classical in
+/-- **Poisson `ε_mca` lower payoff.**  The doubled Nat stack bound yields the exact integer
+half-mass lower bound `ceil(C(n,d+2)/2) / p` for `ε_mca`. -/
+theorem poisson_epsMCA_floor_half_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
+    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
+    ((((n.choose (d + 2) + 1) / 2 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))
+      ≤ ProximityGap.epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n d) δ := by
+  classical
+  obtain ⟨P, hP⟩ := poisson_exists_stack_two_mul_badCount_ge (g := g) (n := n) hg hdn hq hδ
+  set G : Finset (ZMod p) := Finset.univ.filter (fun γ : ZMod p =>
+    ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ P.1 P.2 γ) with hG
+  have hceil : (n.choose (d + 2) + 1) / 2 ≤ G.card := by
+    rw [hG] at hP
+    rw [hG]
+    omega
+  set u : Code.WordStack (ZMod p) (Fin 2) (Fin n) := ![P.1, P.2] with hu
+  have hbad : ∀ γ ∈ G,
+      ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+        (u 0) (u 1) γ := by
+    intro γ hγ
+    have hγbad : ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+        P.1 P.2 γ := by
+      simpa [hG] using hγ
+    simpa [hu] using hγbad
+  have hengine := ProximityGap.MCAWitnessSpread.epsMCA_ge_card_div_of_mcaEvent_set
+    (F := ZMod p) (A := ZMod p) (C := evalCode g n d) (δ := δ) (u := u) (G := G) hbad
+  rw [ZMod.card p] at hengine
+  exact le_trans (ENNReal.div_le_div_right (by exact_mod_cast hceil) _) hengine
+
+open Classical in
+/-- Slackened `/4p` integer form of `poisson_epsMCA_floor_half_int`, matching the constant
+usually advertised for the Poisson floor. -/
+theorem poisson_epsMCA_floor_quarter_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
+    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
+    (((n.choose (d + 2) / 4 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))
+      ≤ ProximityGap.epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n d) δ := by
+  classical
+  have hhalf := poisson_epsMCA_floor_half_int (g := g) (n := n) hg hdn hq hδ
+  exact le_trans
+    (ENNReal.div_le_div_right
+      (by
+        exact_mod_cast (by
+          omega : n.choose (d + 2) / 4 ≤ (n.choose (d + 2) + 1) / 2))
+      _)
+    hhalf
+
 end ArkLib.ProximityGap.PoissonCeilingFloor
 
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.not_pairJointAgreesOn_of_not_explainable
@@ -772,3 +820,5 @@ end ArkLib.ProximityGap.PoissonCeilingFloor
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_union_ge
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poissonPairUnion_card_ge
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_exists_stack_two_mul_badCount_ge
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_half_int
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_quarter_int
