@@ -541,6 +541,33 @@ theorem poisson_total_badIncidence_ge_pairUnion {d : ℕ} {δ : ℝ≥0}
         simp_rw [Finset.card_filter]
         rw [Finset.sum_comm]
 
+open Classical in
+/-- Finite mean-to-sup in the doubled Nat form used by the Poisson floor: if the average of
+`2 * f` is at least `C`, then some fiber has `2 * f ≥ C`. -/
+theorem exists_two_mul_ge_of_card_mul_le_two_sum {α : Type} [Fintype α] [Nonempty α]
+    (C : ℕ) (f : α → ℕ) (hC : 0 < C)
+    (h : C * Fintype.card α ≤ 2 * ∑ a, f a) :
+    ∃ a, C ≤ 2 * f a := by
+  classical
+  by_contra hnone
+  push Not at hnone
+  have hbound : ∀ a, 2 * f a ≤ C - 1 := by
+    intro a
+    have := hnone a
+    omega
+  have hsum : 2 * ∑ a, f a ≤ Fintype.card α * (C - 1) := by
+    calc 2 * ∑ a, f a = ∑ a, 2 * f a := by rw [Finset.mul_sum]
+      _ ≤ ∑ _a : α, (C - 1) := by
+          exact Finset.sum_le_sum (s := Finset.univ) fun a _ => hbound a
+      _ = Fintype.card α * (C - 1) := by
+          rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+  have hlt : Fintype.card α * (C - 1) < C * Fintype.card α := by
+    have hcard : 0 < Fintype.card α := Fintype.card_pos_iff.mpr inferInstance
+    calc Fintype.card α * (C - 1) < Fintype.card α * C :=
+        (Nat.mul_lt_mul_left hcard).mpr (by omega)
+      _ = C * Fintype.card α := by ring
+  omega
+
 /-! ## Part B2b-i: the master union count over the `(W, U)`-space -/
 
 open Classical in
@@ -683,11 +710,65 @@ theorem poissonPairUnion_card_ge (hg : orderOf g = n) {d : ℕ} (hdn : d + 2 ≤
       ≤ 2 * (poissonPairUnion g n d).card := by
   simpa [poissonPairUnion] using card_union_ge (g := g) (n := n) hg hdn hq
 
+open Classical in
+/-- **Poisson mean-to-sup payoff.**  Under the Bonferroni range and the radius whose legal
+witnesses include `(d+2)`-tuples, some stack has at least half of the Poisson tuple mass as
+bad scalars, in doubled Nat form. -/
+theorem poisson_exists_stack_two_mul_badCount_ge (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
+    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
+    ∃ P : (Fin n → ZMod p) × (Fin n → ZMod p),
+      n.choose (d + 2) ≤ 2 *
+        (Finset.univ.filter (fun γ : ZMod p =>
+          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+            P.1 P.2 γ)).card := by
+  classical
+  set C := n.choose (d + 2) with hCdef
+  set M := (poissonPairUnion g n d).card with hMdef
+  set total := ∑ P : (Fin n → ZMod p) × (Fin n → ZMod p),
+        (Finset.univ.filter (fun γ : ZMod p =>
+          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+            P.1 P.2 γ)).card with htotaldef
+  have hCpos : 0 < C := by
+    rw [hCdef]
+    exact Nat.choose_pos hdn
+  have hPairCard :
+      Fintype.card ((Fin n → ZMod p) × (Fin n → ZMod p)) = p ^ (2 * n) := by
+    rw [Fintype.card_prod]
+    simp [Fintype.card_fin, ZMod.card, ← pow_add]
+    congr 1
+    omega
+  have hU : C * p ^ (2 * n - 1) ≤ 2 * M := by
+    simpa [hCdef, hMdef] using poissonPairUnion_card_ge (g := g) (n := n) hg hdn hq
+  have hI : p * M ≤ total := by
+    simpa [hMdef, htotaldef] using poisson_total_badIncidence_ge_pairUnion (g := g) hδ
+  have hmain :
+      C * Fintype.card ((Fin n → ZMod p) × (Fin n → ZMod p)) ≤ 2 * total := by
+    rw [hPairCard]
+    have hpow : p * p ^ (2 * n - 1) = p ^ (2 * n) := by
+      rw [Nat.mul_comm p (p ^ (2 * n - 1)), ← pow_succ]
+      congr 1
+      omega
+    calc C * p ^ (2 * n) = p * (C * p ^ (2 * n - 1)) := by
+          rw [← hpow]
+          ring
+      _ ≤ p * (2 * M) := Nat.mul_le_mul_left _ hU
+      _ = 2 * (p * M) := by ring
+      _ ≤ 2 * total := Nat.mul_le_mul_left _ hI
+  simpa [hCdef, htotaldef] using
+    exists_two_mul_ge_of_card_mul_le_two_sum C
+      (fun P : (Fin n → ZMod p) × (Fin n → ZMod p) =>
+        (Finset.univ.filter (fun γ : ZMod p =>
+          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+            P.1 P.2 γ)).card) hCpos hmain
+
 end ArkLib.ProximityGap.PoissonCeilingFloor
 
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.not_pairJointAgreesOn_of_not_explainable
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.mcaEvent_of_explainable_not_explainable
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poissonPairUnion_card_le_badPairs_at_gamma
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_total_badIncidence_ge_pairUnion
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.exists_two_mul_ge_of_card_mul_le_two_sum
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_union_ge
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poissonPairUnion_card_ge
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_exists_stack_two_mul_badCount_ge
