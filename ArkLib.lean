@@ -1280,6 +1280,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.WBPencilPolynomialRow
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilRationalReduction
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilSubmatrix
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilSymmetry
+import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowLaw
+import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowMatrix
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedPrimePowerPacket
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
