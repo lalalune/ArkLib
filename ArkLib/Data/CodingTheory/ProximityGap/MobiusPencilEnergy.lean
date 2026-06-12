@@ -197,6 +197,87 @@ theorem card_sqrtSet_le_two (b : G) : (sqrtSet b).card ≤ 2 := by
     refine hinj.trans ?_
     exact IsCyclic.card_pow_eq_one_le (α := G) (n := 2) (by omega)
 
+/-- In an even cyclic group, `x² = 1` has exactly two solutions. -/
+theorem card_sqrtSet_one_eq_two_of_even_card (hcard : Even (Fintype.card G)) :
+    (sqrtSet (1 : G)).card = 2 := by
+  classical
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
+  let n := Fintype.card G
+  let z : G := g ^ (n / 2)
+  have hnpos : 0 < n := Fintype.card_pos_iff.mpr ⟨1⟩
+  have htwo_dvd : 2 ∣ n := by
+    rcases hcard with ⟨m, hm⟩
+    exact ⟨m, by omega⟩
+  have hmul : n / 2 * 2 = n := Nat.div_mul_cancel htwo_dvd
+  have hgorder : orderOf g = n := by
+    simpa [n, Nat.card_eq_fintype_card] using orderOf_eq_card_of_forall_mem_zpowers hg
+  have hz_sq : z ^ 2 = 1 := by
+    dsimp [z]
+    rw [← pow_mul, hmul, ← hgorder, pow_orderOf_eq_one]
+  have hz_ne : z ≠ 1 := by
+    intro hz
+    have hdvd : n ∣ n / 2 := by
+      have := orderOf_dvd_of_pow_eq_one hz
+      simpa [hgorder] using this
+    have hhalfpos : 0 < n / 2 := by
+      rcases hcard with ⟨m, hm⟩
+      omega
+    have hle : n ≤ n / 2 := Nat.le_of_dvd hhalfpos hdvd
+    have hlt : n / 2 < n := Nat.div_lt_self hnpos (by decide : 1 < 2)
+    omega
+  have hpair : ({(1 : G), z} : Finset G) ⊆ sqrtSet (1 : G) := by
+    intro x hx
+    rw [Finset.mem_insert, Finset.mem_singleton] at hx
+    rw [mem_sqrtSet]
+    rcases hx with rfl | rfl
+    · simp
+    · exact hz_sq
+  have hge : 2 ≤ (sqrtSet (1 : G)).card := by
+    calc
+      2 = ({(1 : G), z} : Finset G).card := (Finset.card_pair (Ne.symm hz_ne)).symm
+      _ ≤ (sqrtSet (1 : G)).card := Finset.card_le_card hpair
+  have hle := card_sqrtSet_le_two (G := G) (1 : G)
+  omega
+
+omit [IsCyclic G] in
+/-- If `b` has one square root `x₀`, then `√b` is a translate of `√1`, hence has the same
+cardinality. -/
+theorem card_sqrtSet_eq_card_sqrtSet_one_of_mem {b x0 : G} (hx0 : x0 ∈ sqrtSet b) :
+    (sqrtSet b).card = (sqrtSet (1 : G)).card := by
+  classical
+  rw [mem_sqrtSet] at hx0
+  have hle : (sqrtSet b).card ≤ (sqrtSet (1 : G)).card := by
+    refine Finset.card_le_card_of_injOn (fun x => x * x0⁻¹) ?_ ?_
+    · intro x hx
+      rw [Finset.mem_coe, mem_sqrtSet] at hx
+      rw [Finset.mem_coe, mem_sqrtSet, mul_pow, inv_pow, hx, hx0]
+      exact mul_inv_cancel b
+    · intro x _ y _ hxy
+      exact mul_right_cancel hxy
+  have hge : (sqrtSet (1 : G)).card ≤ (sqrtSet b).card := by
+    refine Finset.card_le_card_of_injOn (fun z => z * x0) ?_ ?_
+    · intro z hz
+      rw [Finset.mem_coe, mem_sqrtSet] at hz
+      rw [Finset.mem_coe, mem_sqrtSet, mul_pow, hz, hx0, one_mul]
+    · intro x _ y _ hxy
+      exact mul_right_cancel hxy
+  omega
+
+/-- In an even cyclic group, every nonempty square-root fiber has exactly two points. -/
+theorem card_sqrtSet_eq_two_of_even_card_of_nonempty {b : G}
+    (hcard : Even (Fintype.card G)) (hroot : (sqrtSet b).Nonempty) :
+    (sqrtSet b).card = 2 := by
+  rcases hroot with ⟨x0, hx0⟩
+  rw [card_sqrtSet_eq_card_sqrtSet_one_of_mem hx0,
+    card_sqrtSet_one_eq_two_of_even_card hcard]
+
+/-- In the residue/solvable normalizer band over an even cyclic group, `t₂ = (n-2)/2`. -/
+theorem t2_eq_card_sub_two_div_two_of_even_card_of_sqrtSet_nonempty {b : G}
+    (hcard : Even (Fintype.card G)) (hroot : (sqrtSet b).Nonempty) :
+    t2 b = (Fintype.card G - 2) / 2 :=
+  t2_eq_card_sub_two_div_two_of_sqrtSet_card_eq_two
+    (card_sqrtSet_eq_two_of_even_card_of_nonempty hcard hroot)
+
 /-- **Smooth-domain `t₂` lower bound.** Every pencil over a cyclic subgroup has near-maximal
 2-orbit count: `2·t₂(b) + 3 ≥ |G|`, i.e. `t₂(b) ≥ (|G|−3)/2`. This forces the pencil energy
 `Σ_b t₂(b)² = Θ(n³)` on smooth domains — the separation from random domains. -/
@@ -394,6 +475,10 @@ end ProximityGap.MobiusPencil
 #print axioms ProximityGap.MobiusPencil.t2_eq_card_div_two_of_sqrtSet_card_eq_zero
 #print axioms ProximityGap.MobiusPencil.t2_eq_card_sub_two_div_two_of_sqrtSet_card_eq_two
 #print axioms ProximityGap.MobiusPencil.card_sqrtSet_le_two
+#print axioms ProximityGap.MobiusPencil.card_sqrtSet_one_eq_two_of_even_card
+#print axioms ProximityGap.MobiusPencil.card_sqrtSet_eq_card_sqrtSet_one_of_mem
+#print axioms ProximityGap.MobiusPencil.card_sqrtSet_eq_two_of_even_card_of_nonempty
+#print axioms ProximityGap.MobiusPencil.t2_eq_card_sub_two_div_two_of_even_card_of_sqrtSet_nonempty
 #print axioms ProximityGap.MobiusPencil.card_image_support_le_t2
 #print axioms ProximityGap.MobiusPencil.card_image_univ_le_t2_add_sqrtSet
 #print axioms ProximityGap.MobiusPencil.card_image_univ_le_t2_add_two
