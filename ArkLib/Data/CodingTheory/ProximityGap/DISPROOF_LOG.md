@@ -7709,3 +7709,36 @@ of codewords at agreement `≥ k+m+1` — below Johnson agreement that is
 quantitatively the list-decoding wall (the known `δ*`↔LD coupling).  The
 supply-side mathematics above the wall is proven; the wall itself remains the
 open core, now in its sharpest isolated form.
+## 2026-06-12 — round 9: the k-simplex packing collapses; the packing cap at `n` is FALSE (the overlap law)
+
+Two round-8 census conjectures resolved in opposite directions
+(`probe_packing_envelope.py`, `PackingEnvelope.lean`):
+
+* **"k ≥ 3 disjoint (e+1)-simplex packings extend the envelope" — REFUTED.**
+  The k-packing stack (`u₁ = q₀|_{S₁}`, `u₀ = (X·q₀)|_{S₁}`, `q₀` vanishing on the
+  complement `Z` of the union) only depends on `(s₁, z) = (|S₁|, |Z|)`: the `k−1`
+  other blocks are an undifferentiated reservoir whose every point contributes one
+  `(X−x)q₀`-alignment scalar.  Count `n − z` at threshold `min(n−s₁+1, s₁+z+1)`;
+  the per-radius optimum is the bisimplex value, and any `k ≥ 2` packing's count
+  `k(e+1)` is `≤ 2E+2` at its own radius with the unified window implied
+  (`kPacking_subsumed`, pure arithmetic).  Probe T2: at `(97,16,d=5), t=9` the
+  `k=3,e=3` stack carries exactly its `12` while the `(s₁,z)=(8,0)` optimum carries
+  `16` at the same threshold.  `k ≥ 3` never appears on the envelope.
+
+* **"the packing count caps at `min(n, 2E+2)`" — REFUTED: the OVERLAP law.**
+  The round-8 `t=7` hint (`20` at `(97,16,2)`) is a genuine char-0 family —
+  hill-climbs at `p = 97` AND `p = 257` independently converge to `2(n−t)+2 = 20`
+  with identical structure (two `(E+1)`-point simplex blocks overlapping in
+  `n−2t+2 = 4` points, zero leftovers).  Reverse-engineered mechanism: stack
+  `(X, 1)` on `S∖Y`, tuned `(a_x, b_x)` on the overlap `Y`, zero off `S`; each
+  overlap point carries TWO bad scalars (its kill `−a_x/b_x` and its align
+  `(x−a_x)/(b_x−1)`), so the count is `n + |Y|`, exceeding `n`.  Proven general
+  (`overlap_packing_epsMCA_lower_bound`) and instantiated word-level exact at
+  `(12289, 16, d=2)`: `20` bad scalars at radius `9/16` and `18` at `1/2`
+  (probe-verified exact counts).  Grand packing law: `2(n−t)+2` on the whole
+  window `d+2 ≤ t ≤ (n+d+1)/2`.
+
+Side observation (probe T1): at `t = d+3` cells, e.g. `(97,16,4), t=7`, sub-optimal
+`(s₁,z)` stacks pick up large SMALL-FIELD surpluses (`34` observed vs `14` designed;
+expected-count heuristic `C(10,5)·C(6,2)/97 ≈ 39`) — the same codim-0 coincidence
+species as the censused mod-17 extras; vanishes for `p ≫ poly(n)`.

@@ -1093,6 +1093,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.OwnershipMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.PTEFamilyConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.PacketCombinationDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.PackingClassCSP
+import ArkLib.Data.CodingTheory.ProximityGap.PackingEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.PackingSubdivision
 import ArkLib.Data.CodingTheory.ProximityGap.PackingTreeSufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.PadePartialFractionsKill
