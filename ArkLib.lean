@@ -783,6 +783,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26CharZeroCollisionLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ConstrainedCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DeltaStarReduction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DimOnePin
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26DimTwoPin
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26EntropyForm
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ExactCensusCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FiberStructural
