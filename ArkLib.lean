@@ -1073,6 +1073,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominationPin
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialGammaFibration
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialStripExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6ConditionalPin
+import ArkLib.Data.CodingTheory.ProximityGap.Mu6DeepRung
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6LiteralBands
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
