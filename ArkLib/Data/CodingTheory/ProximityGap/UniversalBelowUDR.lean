@@ -197,6 +197,84 @@ theorem above_udr_near_code_of_large_badCount (dom : Fin n ↪ F)
       omega
     exact absurd (le_trans hge hmult) (not_le.mpr hbig)
 
+open Classical in
+/-- **THE STRONGLY-FAR LAW** — radius-free, reaching capacity: a direction agreeing
+with no codeword on more than `k` points has `#bad · (k+1)! ≤ n^{k+1}` at EVERY
+radius `δ ≤ w/n` with `k + 1 ≤ n − w` (witnesses exist).  Probe-tight at the
+boundary slice: far directions attain `C(n, k+1)` exactly — each `(k+1)`-subset of
+a witness determines its scalar, disjointly. -/
+theorem strongly_far_badScalars_card_mul_le (dom : Fin n ↪ F)
+    {k w : ℕ} (hk : 1 ≤ k)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {u₀ u₁ : Fin n → F}
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c u₁).card ≤ k) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+      * ((n - w).descFactorial (k + 1))
+      ≤ Fintype.card (Fin (k + 1) → Fin n) := by
+  set bad := Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+    ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ) with hbad
+  have hch : ∀ γ ∈ bad, ∃ S : Finset (Fin n),
+      ((S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card (Fin n)) ∧
+      ∀ t : Fin (k + 1) → Fin n, (∀ a, t a ∈ S) →
+        residual dom k t u₁ ≠ 0 →
+        residual dom k t u₀ + γ * residual dom k t u₁ = 0 := by
+    intro γ hγ
+    exact mcaEvent_owned_tuples dom hk δ (Finset.mem_filter.mp hγ).2
+  choose! W hWsz hWprop using hch
+  set 𝒯 : F → Finset (Fin (k + 1) → Fin n) := fun γ =>
+    Finset.univ.filter (fun t => (Function.Injective t ∧ ∀ a, t a ∈ W γ) ∧
+      residual dom k t u₁ ≠ 0) with h𝒯
+  refine badScalars_card_mul_le_ownership dom k u₀ u₁ bad _ 𝒯 ?_ ?_
+  · intro γ hγ t ht
+    obtain ⟨⟨-, htW⟩, hres⟩ := (Finset.mem_filter.mp ht).2
+    exact ⟨hres, hWprop γ hγ t htW hres⟩
+  · intro γ hγ
+    -- EVERY injective tuple in the witness has nonzero residual (strong farness)
+    have hSsz : n - w ≤ (W γ).card := by
+      have h1 := hWsz γ hγ
+      have h2 : ((n - w : ℕ) : ℝ≥0) ≤ ((W γ).card : ℝ≥0) := by
+        have hcardn : (Fintype.card (Fin n) : ℝ≥0) = (n : ℝ≥0) := by
+          rw [Fintype.card_fin]
+        calc ((n - w : ℕ) : ℝ≥0) = (n : ℝ≥0) - (w : ℝ≥0) := by rw [Nat.cast_tsub]
+          _ ≤ (n : ℝ≥0) - δ * (Fintype.card (Fin n) : ℝ≥0) := by
+              exact tsub_le_tsub_left (by rw [hcardn] at hδn ⊢; exact hδn) _
+          _ = (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) := by
+              rw [tsub_mul, one_mul, hcardn]
+          _ ≤ ((W γ).card : ℝ≥0) := h1
+      exact_mod_cast h2
+    have hallres : ∀ t : Fin (k+1) → Fin n, Function.Injective t →
+        residual dom k t u₁ ≠ 0 := by
+      intro t htinj hres
+      obtain ⟨c, hcC, hcag⟩ := extension_of_residual_eq_zero dom t htinj hres
+      -- the tuple's k+1 points all lie in the agreement set: contradiction with ≤ k
+      have hsub : Finset.univ.image t ⊆ agreeSet c u₁ := by
+        intro x hx
+        obtain ⟨a, -, rfl⟩ := Finset.mem_image.mp hx
+        rw [agreeSet, Finset.mem_filter]
+        exact ⟨Finset.mem_univ _, hcag a⟩
+      have hcard : k + 1 ≤ (agreeSet c u₁).card := by
+        calc k + 1 = (Finset.univ.image t).card := by
+              rw [Finset.card_image_of_injective _ htinj, Finset.card_univ,
+                Fintype.card_fin]
+          _ ≤ _ := Finset.card_le_card hsub
+      have := hμ c hcC
+      omega
+    -- ownership: ALL injective tuples in the witness
+    have hsub2 : Finset.univ.filter (fun t : Fin (k+1) → Fin n =>
+        Function.Injective t ∧ ∀ a, t a ∈ W γ) ⊆ 𝒯 γ := by
+      intro t ht
+      obtain ⟨-, htinj, htmem⟩ := Finset.mem_filter.mp ht
+      rw [h𝒯, Finset.mem_filter]
+      exact ⟨Finset.mem_univ _, ⟨htinj, htmem⟩, hallres t htinj⟩
+    calc (n - w).descFactorial (k + 1)
+        ≤ (W γ).card.descFactorial (k + 1) := Nat.descFactorial_le _ hSsz
+      _ ≤ (Finset.univ.filter (fun t : Fin (k+1) → Fin n =>
+            Function.Injective t ∧ ∀ a, t a ∈ W γ)).card :=
+          injective_tuples_card_ge_descFactorial (W γ)
+      _ ≤ (𝒯 γ).card := Finset.card_le_card hsub2
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -204,3 +282,4 @@ end ProximityGap.Ownership
 #print axioms ProximityGap.Ownership.generalK_epsMCA_le_universal
 #print axioms ProximityGap.Ownership.le_mcaDeltaStar_universal
 #print axioms ProximityGap.Ownership.above_udr_near_code_of_large_badCount
+#print axioms ProximityGap.Ownership.strongly_far_badScalars_card_mul_le
