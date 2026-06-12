@@ -7219,3 +7219,23 @@ exceptional directions) via pencil deflation.
   **Open: an adversarial construction OR a counting proof.**  This — the window
   rational-pair bad count — is now the entire below-UDR question, and the
   above-UDR/Johnson window remains the recognized core beyond it.
+
+## 2026-06-11 — WindowRationalEmpty REFUTED; the window adversary is MÖBIUS-SYMMETRIC and caps at w+1
+
+`probe_window_rational_adversarial.py` at (q,n,k,w) = (13,6,1,2) — genuinely in the
+window (`3w+k = 7 > 6 = n > 2w+k+1−1`): **max bad = 3 = w+1 > 0** over 30k genuine
+rational pairs. The "window empty" reading of the earlier null probes is REFUTED —
+those instances were at or below the ladder reach, or under-sampled.
+
+**The structure** (`probe_window_mobius_structure.py`): the extremal stack is
+invariant under the Möbius involution `x ↦ −1/x` (both rows constant on the orbits
+`{x, −x⁻¹}`), and the EXHAUSTIVE search over the Möbius-invariant family confirms
+its max is exactly `w+1 = 3` — attained at the clean stack
+`u₀ = (0,0,0,0,1,1)`, `u₁ = (0,1,1,0,2,2)` on orbit values.  The window adversary
+exists and lives on the involution-quotient — the fold/Möbius structure the dossier
+predicted (`MobiusPencilEnergy` lane), now witnessed inside the WB window.
+
+**Surviving form**: `WindowRationalBounded` — doubly-WB-solvable stacks in the
+window have bad count ≤ w+3 (observed max w+1).  WB-2's grand bound
+`ε_mca ≤ (w+3)/q` below UDR is CONSISTENT with the find (3 ≤ 5); the named Prop
+carries the window and the below-UDR law is conditional on it alone.
