@@ -182,11 +182,9 @@ theorem pencilDU_natDegree_le (dom : Fin n ↪ F) (k w : ℕ) (ℓ₀ R₀ ℓ�
   set τ : WCol n k w → WCol n k w := fun c =>
     if c = c₀ then Sum.inl t else Sum.inl t' with hτ
   have hτ0 : τ c₀ = Sum.inl t := by
-    simp only [hτ]
-    rw [if_pos rfl]
+    simp [hτ]
   have hτ0' : τ c₀' = Sum.inl t' := by
-    simp only [hτ]
-    rw [if_neg (Ne.symm hcc)]
+    simp [hτ, Ne.symm hcc]
   have hbound := natDegree_det_le_of_single_rows (F := F)
     (((pencilSqDU dom k w ℓ₀ R₀ ℓ₁ R₁ J c₀ c₀' cs cs').updateRow c₀
       (Pi.single (Sum.inl t) 1)).updateRow c₀' (Pi.single (Sum.inl t') 1))
