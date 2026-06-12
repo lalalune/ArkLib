@@ -269,10 +269,16 @@ section Transport
 variable {R : Type*} [CommRing R]
 
 /-- The index involution of the `(1↔2)` point swap. -/
-def swapPerm₁₂ : Fin 12 → Fin 12 := ![4, 5, 8, 9, 0, 1, 10, 11, 2, 3, 6, 7]
+def swapPerm₁₂ : Fin 12 → Fin 12 := fun x =>
+  match x with
+  | 0 => 4 | 1 => 5 | 2 => 8 | 3 => 9 | 4 => 0 | 5 => 1
+  | 6 => 10 | 7 => 11 | 8 => 2 | 9 => 3 | 10 => 6 | 11 => 7
 
 /-- The index involution of the `(2↔3)` point swap. -/
-def swapPerm₂₃ : Fin 12 → Fin 12 := ![6, 7, 10, 11, 8, 9, 0, 1, 4, 5, 2, 3]
+def swapPerm₂₃ : Fin 12 → Fin 12 := fun x =>
+  match x with
+  | 0 => 6 | 1 => 7 | 2 => 10 | 3 => 11 | 4 => 8 | 5 => 9
+  | 6 => 0 | 7 => 1 | 8 => 4 | 9 => 5 | 10 => 2 | 11 => 3
 
 theorem swapPerm₁₂_involutive : ∀ x, swapPerm₁₂ (swapPerm₁₂ x) = x := by decide
 
@@ -283,8 +289,7 @@ theorem stack_swap₁₂ {A₁ B₁ A₂ B₂ A₃ B₃ h : R} (hh2 : h + h = 0)
     chordStack A₂ B₂ A₁ B₁ A₃ B₃ h x
       = chordStack A₁ B₁ A₂ B₂ A₃ B₃ h (swapPerm₁₂ x) + h := by
   fin_cases x <;>
-    simp only [swapPerm₁₂, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-      Matrix.cons_val_succ, chordStack] <;>
+    simp only [swapPerm₁₂, chordStack] <;>
     first | linear_combination -hh2 | linear_combination (0 : R) * hh2
 
 /-- The `(2↔3)` swap = `swapPerm₂₃` + global `h`-translation. -/
@@ -292,8 +297,7 @@ theorem stack_swap₂₃ {A₁ B₁ A₂ B₂ A₃ B₃ h : R} (hh2 : h + h = 0)
     chordStack A₁ B₁ A₃ B₃ A₂ B₂ h x
       = chordStack A₁ B₁ A₂ B₂ A₃ B₃ h (swapPerm₂₃ x) + h := by
   fin_cases x <;>
-    simp only [swapPerm₂₃, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-      Matrix.cons_val_succ, chordStack] <;>
+    simp only [swapPerm₂₃, chordStack] <;>
     first | linear_combination -hh2 | linear_combination (0 : R) * hh2
 
 /-- Injectivity transports along a stack-swap law. -/
@@ -314,7 +318,6 @@ theorem closed_of_swap {f g : Fin 12 → R} {h : R} {π : Fin 12 → Fin 12}
   obtain ⟨y₀, hy₀⟩ := hclosed (π x)
   refine ⟨π y₀, ?_⟩
   rw [hlaw, hlaw, hπ, hy₀]
-  ring
 
 end Transport
 
@@ -464,7 +467,7 @@ theorem chord_form_of_balanced_antipodal₃ (hm : 2 ≤ m)
     (natCast_zmod_ne ha₁ ha₂ h12) (natCast_zmod_ne ha₁ hb₂ h1b2)
     (natCast_zmod_ne hb₁ ha₂ hb12) (natCast_zmod_ne hb₁ hb₂ hb1b2)
     (hgcast a₁ b₁ a₃ b₃ hg13)
-    (fun h => hgcast a₂ b₂ a₃ b₃ hg23 (by linear_combination h))
+    (fun h => hgcast a₂ b₂ a₃ b₃ hg23 (by linear_combination -h))
     ((hmod_iff a₃ b₃ hb₃).mp hant₃)
     (fun h => hna₁ ((hmod_iff a₁ b₁ hb₁).mpr h))
     (fun h => hna₂ ((hmod_iff a₂ b₂ hb₂).mpr h))
