@@ -3,13 +3,13 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.141JohnsonCount
+import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonCount
 
 /-!
 # Issue #244 — the `hwitAll` common-center clustering hypothesis, audited
 
 `ProximityGap.MCAGS.rs_epsMCA_le_johnson_ceil_of_hwit`
-(`GrandChallenge141JohnsonCount.lean`) is conditional on a clustering hypothesis `hwitAll`:
+(`MCAJohnsonCount.lean`) is conditional on a clustering hypothesis `hwitAll`:
 for the pencil there is a single active coordinate `x`, a center word `w`, and a sub-Johnson
 radius `e` such that **every** line-close scalar `γ` is explained by a codeword `c` with
 `Δ₀(c, w) ≤ e` and `c x = u₀ x + γ·u₁ x`. Issue #244 claims this is refutable past the
