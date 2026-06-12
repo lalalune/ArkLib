@@ -353,11 +353,266 @@ theorem recSquareU_adjugate_natDegree_le (j w : ℕ)
       rw [recSquarePoly, Matrix.submatrix_apply, id_eq]
       exact recMatrixPoly_entry_natDegree dom ℓ₀ ℓ₁ R₀ R₁ j w (τ a) b'
 
-end Degenerate
+/-- The kernel-family polynomial at a domain point: the γ-polynomial whose roots
+are the scalars at which the adjugate kernel's denominator vanishes there. -/
+noncomputable def kernelFamilyAt (j w : ℕ)
+    (τ : Fin (j + 1) ⊕ Fin (w + 1) → Fin (2 * w))
+    (c₀ cs : Fin (j + 1) ⊕ Fin (w + 1)) (x : F) : F[X] :=
+  ∑ s : Fin (w + 1),
+    (recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).adjugate (Sum.inr s) c₀
+      * C (x ^ (s : ℕ))
 
-end ProximityGap.WBPencil
+theorem kernelFamilyAt_natDegree_le (j w : ℕ)
+    (τ : Fin (j + 1) ⊕ Fin (w + 1) → Fin (2 * w))
+    (c₀ cs : Fin (j + 1) ⊕ Fin (w + 1)) (x : F) :
+    (kernelFamilyAt dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs x).natDegree ≤ w + 1 := by
+  rw [kernelFamilyAt]
+  refine natDegree_sum_le_of_forall_le _ _ fun s _ => ?_
+  calc ((recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).adjugate (Sum.inr s) c₀
+        * C (x ^ (s : ℕ))).natDegree
+      ≤ ((recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).adjugate (Sum.inr s) c₀).natDegree
+        + (C (x ^ (s : ℕ)) : F[X]).natDegree := natDegree_mul_le
+    _ ≤ (w + 1) + 0 := Nat.add_le_add
+        (recSquareU_adjugate_natDegree_le dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs _ _)
+        (le_of_eq (natDegree_C _))
+    _ = w + 1 := by omega
 
--- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
+open Classical in
+/-- **P3: THE DEGENERATE-BRANCH INCIDENCE COUNT.**  Under square degeneracy with a
+surviving update and no blind domain points, the bad scalars satisfy
+
+`#bad · (n − (2w+k−1)) ≤ (w+1) · (n − (2w+k−1)) + n · (w+1)`.
+
+(The factor `n − (2w+k−1)` is `w − j`; at every below-UDR stratum this puts
+`#bad ≤ (w+1) + n(w+1)/(w−j)` — production-silent.) -/
+theorem window_degenerate_count (hk : 1 ≤ k)
+    (hℓ₀d : ℓ₀.natDegree ≤ w) (hℓ₁d : ℓ₁.natDegree ≤ w)
+    (hR₀d : R₀.natDegree ≤ w + k - 1) (hR₁d : R₁.natDegree ≤ w + k - 1)
+    (hℓ₀v : ∀ i : Fin n, ℓ₀.eval (dom i) ≠ 0)
+    (hℓ₁v : ∀ i : Fin n, ℓ₁.eval (dom i) ≠ 0)
+    (hcop : IsCoprime ℓ₀ ℓ₁) (hgen₀ : ¬ ℓ₀ ∣ R₀)
+    (hmonic : (ℓ₀ * ℓ₁).Monic)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    (hj : 2 * w + k - 1 - (n - w) ≤ j)
+    {τ : Fin (j + 1) ⊕ Fin (w + 1) → Fin (2 * w)}
+    (hτ0 : recDetPoly dom ℓ₀ ℓ₁ R₀ R₁ j w τ = 0)
+    {c₀ cs : Fin (j + 1) ⊕ Fin (w + 1)}
+    (hU : (recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).det ≠ 0)
+    (hNB : ∀ i : Fin n,
+      kernelFamilyAt dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs (dom i)
+        ≠ 0) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+      ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      (fun i => R₀.eval (dom i) / ℓ₀.eval (dom i))
+      (fun i => R₁.eval (dom i) / ℓ₁.eval (dom i)) γ)).card
+        * (n - (2 * w + k - 1))
+      ≤ (w + 1) * (n - (2 * w + k - 1)) + n * (w + 1) := by
+  set Γ : Finset F := Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+      ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      (fun i => R₀.eval (dom i) / ℓ₀.eval (dom i))
+      (fun i => R₁.eval (dom i) / ℓ₁.eval (dom i)) γ) with hΓ
+  set detU : F[X] :=
+    (recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).det with hdetU
+  have hdetUne : detU ≠ 0 := hU
+  have hNB' : ∀ i : Fin n,
+      kernelFamilyAt dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs (dom i) ≠ 0 := hNB
+  -- split: scalars where the update dies vs survives
+  set Γ₀ : Finset F := Γ.filter (fun γ => detU.eval γ = 0) with hΓ₀
+  set Γ₁ : Finset F := Γ.filter (fun γ => detU.eval γ ≠ 0) with hΓ₁
+  have hsplit : Γ.card ≤ Γ₀.card + Γ₁.card := by
+    have h := Finset.filter_card_add_filter_neg_card_eq_card
+      (s := Γ) (p := fun γ => detU.eval γ = 0)
+    rw [← hΓ₀] at h
+    have h2 : (Γ.filter fun γ => ¬ detU.eval γ = 0) = Γ₁ := by
+      rw [hΓ₁]
+    rw [h2] at h
+    omega
+  -- Γ₀: roots of the update determinant
+  have hΓ₀card : Γ₀.card ≤ w + 1 := by
+    have hdetUdeg : detU.natDegree ≤ w + 1 := by
+      rw [hdetU, recSquareU]
+      refine det_natDegree_le_of_column_weights _ fun a b => ?_
+      by_cases hac : a = c₀
+      · subst hac
+        rw [Matrix.updateRow_self]
+        have : ((Pi.single cs 1 :
+            (Fin (j + 1) ⊕ Fin (w + 1)) → F[X]) b).natDegree = 0 := by
+          by_cases h : b = cs
+          · subst h; rw [Pi.single_eq_same]; exact natDegree_one
+          · rw [Pi.single_eq_of_ne h]; exact natDegree_zero
+        rw [this]
+        exact Nat.zero_le _
+      · rw [Matrix.updateRow_ne hac, recSquarePoly, Matrix.submatrix_apply, id_eq]
+        exact recMatrixPoly_entry_natDegree dom ℓ₀ ℓ₁ R₀ R₁ j w (τ a) b
+    calc Γ₀.card ≤ detU.roots.toFinset.card := by
+          refine Finset.card_le_card ?_
+          intro γ hγ
+          rw [hΓ₀, Finset.mem_filter] at hγ
+          rw [Multiset.mem_toFinset, mem_roots hdetUne]
+          exact hγ.2
+      _ ≤ detU.roots.card := detU.roots.toFinset_card_le
+      _ ≤ detU.natDegree := detU.card_roots'
+      _ ≤ w + 1 := hdetUdeg
+  -- Γ₁: the incidence count through the kernel family
+  -- per bad γ in Γ₁: the witness missing set T_γ has ≥ n−(2w+k−1) points, each
+  -- rooting the kernel family's γ-polynomial at γ
+  have hkey : ∀ γ ∈ Γ₁, ∃ T : Finset (Fin n),
+      n - (2 * w + k - 1) ≤ T.card ∧
+      ∀ i ∈ T, (kernelFamilyAt dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs (dom i)).eval γ = 0 := by
+    intro γ hγ
+    rw [hΓ₁, Finset.mem_filter] at hγ
+    obtain ⟨hγΓ, hdetγ⟩ := hγ
+    rw [hΓ, Finset.mem_filter] at hγΓ
+    obtain ⟨S, h, P, hScard, hPd, hdeg, hid⟩ := mcaEvent_factored dom hk
+      hℓ₀d hℓ₁d hR₀d hR₁d hℓ₀v hℓ₁v hcop hgen₀ hδn hγΓ.2
+    set T : Finset (Fin n) := Finset.univ \ S with hT
+    set ZT : F[X] := T.prod fun i => X - C (dom i) with hZT
+    -- |T| ≥ n − (2w+k−1)
+    have hTcard : n - (2 * w + k - 1) ≤ T.card := by
+      have hScard' : S.card ≤ 2 * w + k - 1 := by omega
+      have hSn : S.card ≤ n := by
+        have := Finset.card_le_card (Finset.subset_univ S)
+        rwa [Finset.card_univ, Fintype.card_fin] at this
+      have : T.card = n - S.card := by
+        rw [hT, Finset.card_sdiff, Finset.card_univ, Finset.inter_univ,
+          Fintype.card_fin]
+      omega
+    refine ⟨T, hTcard, fun i hiT => ?_⟩
+    -- the witness kernel vector
+    set u : Fin (j + 1) ⊕ Fin (w + 1) → F :=
+      Sum.elim (fun t => h.coeff t) (fun s => ZT.coeff s) with hu
+    have hrecH : recH (j := j) (w := w) u = h := by
+      rw [recH]
+      conv_rhs => rw [h.as_sum_range' (j + 1) (by omega)]
+      rw [Finset.sum_range]
+      exact Finset.sum_congr rfl fun t _ => by
+        rw [hu, Sum.elim_inl, C_mul_X_pow_eq_monomial]
+    have hZTdeg : ZT.natDegree = T.card := by
+      rw [hZT, natDegree_prod _ _ (fun i _ => X_sub_C_ne_zero (dom i))]
+      simp [natDegree_X_sub_C]
+    have hTw : T.card ≤ w := by
+      have : T.card = n - S.card := by
+        rw [hT, Finset.card_sdiff, Finset.card_univ, Finset.inter_univ,
+          Fintype.card_fin]
+      omega
+    have hrecZ : recZ (j := j) (w := w) u = ZT := by
+      rw [recZ]
+      conv_rhs => rw [ZT.as_sum_range' (w + 1) (by omega)]
+      rw [Finset.sum_range]
+      exact Finset.sum_congr rfl fun s _ => by
+        rw [hu, Sum.elim_inr, C_mul_X_pow_eq_monomial]
+    -- u is in the kernel of the instantiated square
+    have hudvd : (ℓ₀ * ℓ₁) ∣ (domZ dom * h
+        - (ℓ₁ * R₀ + C γ * (ℓ₀ * R₁)) * ZT) := by
+      have hpart : ZT * (S.prod fun i => X - C (dom i)) = domZ dom := by
+        rw [hZT, hT, domZ]
+        exact Finset.prod_sdiff (Finset.subset_univ S)
+      refine ⟨-(ZT * P), ?_⟩
+      calc domZ dom * h - (ℓ₁ * R₀ + C γ * (ℓ₀ * R₁)) * ZT
+          = ZT * ((S.prod fun i => X - C (dom i)) * h)
+            - (ℓ₁ * R₀ + C γ * (ℓ₀ * R₁)) * ZT := by
+            rw [← hpart]; ring
+        _ = ZT * (ℓ₁ * R₀ + C γ * (ℓ₀ * R₁) - P * (ℓ₀ * ℓ₁))
+            - (ℓ₁ * R₀ + C γ * (ℓ₀ * R₁)) * ZT := by rw [hid]
+        _ = ℓ₀ * ℓ₁ * -(ZT * P) := by ring
+    have hker : (recMatrix dom ℓ₀ ℓ₁ R₀ R₁ j w γ).mulVec u = 0 := by
+      funext r
+      rw [recMatrix_mulVec dom ℓ₀ ℓ₁ R₀ R₁ j w γ hmonic, hrecH, hrecZ]
+      rw [(modByMonic_eq_zero_iff_dvd hmonic).mpr hudvd]
+      simp
+    have hkerSq : ((recMatrix dom ℓ₀ ℓ₁ R₀ R₁ j w γ).submatrix τ id).mulVec u
+        = 0 := by
+      funext a
+      have hsub : ((recMatrix dom ℓ₀ ℓ₁ R₀ R₁ j w γ).submatrix τ id).mulVec u a
+          = (recMatrix dom ℓ₀ ℓ₁ R₀ R₁ j w γ).mulVec u (τ a) := by
+        rw [Matrix.mulVec, Matrix.mulVec, dotProduct, dotProduct]
+        rfl
+      rw [hsub, hker]
+      rfl
+    -- the span
+    have hspan := corank1_span dom ℓ₀ ℓ₁ R₀ R₁ j w
+      (τ := τ) (c₀ := c₀) (cs := cs) hkerSq hdetγ
+    -- u cs ≠ 0 (else u = 0 against ZT ≠ 0)
+    have hZTne : ZT ≠ 0 := by
+      rw [hZT]
+      exact (monic_prod_of_monic _ _ (fun i _ => monic_X_sub_C (dom i))).ne_zero
+    have hucs : u cs ≠ 0 := by
+      intro h0
+      apply hZTne
+      rw [← hrecZ, recZ]
+      have hall : ∀ b, u b = 0 := by
+        intro b
+        have := hspan b
+        rw [h0, zero_mul] at this
+        exact (mul_eq_zero.mp this).resolve_left hdetγ
+      refine Finset.sum_eq_zero fun s _ => ?_
+      rw [hall (Sum.inr s)]
+      simp
+    -- the incidence at i ∈ T
+    have hZTi : ZT.eval (dom i) = 0 := by
+      rw [hZT]
+      rw [eval_prod]
+      refine Finset.prod_eq_zero hiT ?_
+      rw [eval_sub, eval_X, eval_C, sub_self]
+    -- detU(γ) · ZT(x) = u cs · family(x)(γ)
+    have hcomb : detU.eval γ * ZT.eval (dom i)
+        = u cs * (kernelFamilyAt dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs (dom i)).eval γ := by
+      rw [← hrecZ, recZ, eval_finset_sum, Finset.mul_sum]
+      rw [kernelFamilyAt, eval_finset_sum, Finset.mul_sum]
+      refine Finset.sum_congr rfl fun s _ => ?_
+      rw [eval_mul, eval_C, eval_pow, eval_X, eval_mul, eval_C]
+      have := hspan (Sum.inr s)
+      calc detU.eval γ * (u (Sum.inr s) * (dom i) ^ (s : ℕ))
+          = (detU.eval γ * u (Sum.inr s)) * (dom i) ^ (s : ℕ) := by ring
+        _ = (u cs * ((recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).adjugate
+              (Sum.inr s) c₀).eval γ) * (dom i) ^ (s : ℕ) := by rw [this]
+        _ = u cs * (((recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).adjugate
+              (Sum.inr s) c₀).eval γ * (dom i) ^ (s : ℕ)) := by ring
+    rw [hZTi, mul_zero] at hcomb
+    exact ((mul_eq_zero.mp hcomb.symm).resolve_left hucs)
+  -- count the incidences
+  choose! Tf hTfcard hTfroot using hkey
+  have hΓ₁count : Γ₁.card * (n - (2 * w + k - 1)) ≤ n * (w + 1) := by
+    have hincid : ∀ i : Fin n,
+        (Γ₁.filter (fun γ => i ∈ Tf γ)).card ≤ w + 1 := by
+      intro i
+      calc (Γ₁.filter (fun γ => i ∈ Tf γ)).card
+          ≤ ((kernelFamilyAt dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs
+              (dom i)).roots.toFinset).card := by
+            refine Finset.card_le_card ?_
+            intro γ hγ
+            rw [Finset.mem_filter] at hγ
+            rw [Multiset.mem_toFinset, mem_roots (hNB' i)]
+            exact hTfroot γ hγ.1 i hγ.2
+        _ ≤ (kernelFamilyAt dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs (dom i)).roots.card :=
+            Multiset.toFinset_card_le _
+        _ ≤ (kernelFamilyAt dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs (dom i)).natDegree :=
+            Polynomial.card_roots' _
+        _ ≤ w + 1 := kernelFamilyAt_natDegree_le dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs _
+    calc Γ₁.card * (n - (2 * w + k - 1))
+        = ∑ _γ ∈ Γ₁, (n - (2 * w + k - 1)) := by
+          rw [Finset.sum_const, smul_eq_mul, mul_comm]
+      _ ≤ ∑ γ ∈ Γ₁, (Tf γ).card :=
+          Finset.sum_le_sum fun γ hγ => hTfcard γ hγ
+      _ = ∑ γ ∈ Γ₁, ∑ i : Fin n, (if i ∈ Tf γ then 1 else 0) := by
+          refine Finset.sum_congr rfl fun γ _ => ?_
+          rw [Finset.sum_ite_mem, Finset.univ_inter, Finset.card_eq_sum_ones]
+      _ = ∑ i : Fin n, ∑ γ ∈ Γ₁, (if i ∈ Tf γ then 1 else 0) :=
+          Finset.sum_comm
+      _ = ∑ i : Fin n, (Γ₁.filter (fun γ => i ∈ Tf γ)).card := by
+          refine Finset.sum_congr rfl fun i _ => ?_
+          rw [Finset.card_filter]
+      _ ≤ ∑ _i : Fin n, (w + 1) :=
+          Finset.sum_le_sum fun i _ => hincid i
+      _ = n * (w + 1) := by
+          rw [Finset.sum_const, smul_eq_mul, Finset.card_univ, Fintype.card_fin]
+  calc Γ.card * (n - (2 * w + k - 1))
+      ≤ (Γ₀.card + Γ₁.card) * (n - (2 * w + k - 1)) :=
+        Nat.mul_le_mul_right _ hsplit
+    _ = Γ₀.card * (n - (2 * w + k - 1))
+        + Γ₁.card * (n - (2 * w + k - 1)) := by ring
+    _ ≤ (w + 1) * (n - (2 * w + k - 1)) + n * (w + 1) :=
+        Nat.add_le_add (Nat.mul_le_mul_right _ hΓ₀card) hΓ₁count
 #print axioms ProximityGap.WBPencil.isCoprime_mul_domZ
 #print axioms ProximityGap.WBPencil.recSolvable_fraction_unique
 #print axioms ProximityGap.WBPencil.recSquarePoly_mulVec_adjugate
@@ -365,3 +620,4 @@ end ProximityGap.WBPencil
 #print axioms ProximityGap.WBPencil.corank1_span
 #print axioms ProximityGap.WBPencil.det_natDegree_le_of_column_weights
 #print axioms ProximityGap.WBPencil.recSquareU_adjugate_natDegree_le
+#print axioms ProximityGap.WBPencil.window_degenerate_count
