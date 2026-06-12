@@ -28,7 +28,7 @@ in-tree signed-sum injectivity.
 -/
 
 open Finset Polynomial
-open scoped NNReal ENNReal
+open scoped NNReal ENNReal ProbabilityTheory
 
 namespace ProximityGap.Ownership
 
@@ -229,8 +229,32 @@ theorem ladder_badSet_card_le_spectrum_all_radii (dom : Fin n ↪ F) {k : ℕ}
         rw [himg2]
         exact subsetSum_image_card_eq g hh (k + 1) hinj
 
+open ArkLib.ProximityGap.KKH26 in
+open Classical in
+omit [DecidableEq F] in
+/-- Probability form of `ladder_badSet_card_le_spectrum_all_radii`: at every
+radius below capacity, the ladder stack's `mcaEvent` probability is bounded by
+the spectrum mass divided by the field size. -/
+theorem ladder_mcaEvent_prob_le_spectrum_all_radii (dom : Fin n ↪ F) {k : ℕ}
+    (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    {g : F} {h : ℕ} (hn : n = 2 * h) (hh : g ^ h = -1)
+    (hdom : ∀ i : Fin n, dom i = g ^ (i : ℕ))
+    (hinj : Set.InjOn (spectrumVal g)
+      (spectrumData h (validWeights h (k + 1)))) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => (dom i) ^ (k + 1)) (fun i => (dom i) ^ k) γ]
+      ≤ (((∑ a ∈ validWeights h (k + 1), 2 ^ a * h.choose a : ℕ) : ℝ≥0) :
+            ℝ≥0∞)
+          / (((Fintype.card F : ℕ) : ℝ≥0) : ℝ≥0∞) := by
+  rw [prob_uniform_eq_card_filter_div_card]
+  gcongr
+  exact ladder_badSet_card_le_spectrum_all_radii dom hk hlo hn hh hdom hinj
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.badSet_subset_ratio_image
 #print axioms ProximityGap.Ownership.ladder_badSet_card_le_spectrum_all_radii
+#print axioms ProximityGap.Ownership.ladder_mcaEvent_prob_le_spectrum_all_radii
