@@ -445,6 +445,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardStrictInteriorRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryDefectBound
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdLeaf
+import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceEveryLine
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceExact
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySupExactness
