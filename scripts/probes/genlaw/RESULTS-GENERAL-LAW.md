@@ -108,8 +108,9 @@ bound pending the (64, 9..31) band.
    enumeration (legitimate by the proven parity-purity theorem T1); r ≥ 17 by T1's
    corollary outright (r > s/2). The same method independently re-establishes
    DERIVED-672 completeness at s=16 (third implementation). A raw (mixed-parity
-   included) r=13 sign-config sweep is also running as belt-and-suspenders; workers
-   0–3 of 8 returned 0.
+   included) r=13 sign-config sweep ran as belt-and-suspenders until T4 landed: 5 of 8
+   workers (62.5% of the O-space) returned raw 0, fully consistent; terminated as
+   redundant once the proof + pure-only enumeration closed the question.
 2. **All counts are char-0** (ℤ[ζ_n]) statements — and the per-prime falsifier (run
    2026-06-11, `falsifier/`) **measured the transfer FAILING at n=64**: the consistency
    equation is linear in the B-subset sum, so an exhaustive per-class meet-in-the-middle
