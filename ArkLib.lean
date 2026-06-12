@@ -1278,6 +1278,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WBPencilAbsorption
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilBelowUDR
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilBound
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilLadderZero
+import ArkLib.Data.CodingTheory.ProximityGap.WBPencilLinearBudget
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilPolynomialRow
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilRationalReduction
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilSubmatrix
