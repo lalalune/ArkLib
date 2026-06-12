@@ -645,6 +645,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgroup
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
+import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.GG25ExactPreservation
