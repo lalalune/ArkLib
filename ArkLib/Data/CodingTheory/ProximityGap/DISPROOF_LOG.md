@@ -7693,3 +7693,19 @@ with no anchored pair have ≤ `n` bad scalars (budget aligned with the repaired
 `ε_mca ≤ ((n+1)(w+1)+1)/q` holds under this residual alone
 (`epsMCA_le_below_udr_of_unanchoredLinear`), with the anchored bulk carried by
 the proven pencil law.
+
+## 2026-06-12 — The deep-band supply: production closure via agreement caps is VACUOUS (analysis, not a refutation of the reduction)
+
+The agreement-capped supply instance (`explainable_cores_card_of_agreement_le`:
+`#explCores·C(k+m+1,k) ≤ C(n,k)·C(A−k,m+1)`) combined with the near-line
+dichotomy (`near_scalar_unique`: at most one scalar's line exceeds agreement
+`(n+k)/2`) does NOT close the production deep-band count: at `A ≈ (n+k)/2`,
+`k ≈ n/2`, the bound `C(n,k)·C(A−k,m+1)/C(k+m+1,k) ≈ C(n,k)·2^{−(m+1)}` is of
+the same order as the witness mass `C(n,k+m+1)/q^m·q^m`, leaving
+`#badSet ≳ 2^{m+1}/q^m` — vacuous for `m ≥ 1` at production `q`.  The loss is
+the `C(n,k)` factor from `k`-subset determination (only `q^k` codewords exist,
+but `C(n,k)` `k`-subsets are counted).  Sharpening requires bounding the number
+of codewords at agreement `≥ k+m+1` — below Johnson agreement that is
+quantitatively the list-decoding wall (the known `δ*`↔LD coupling).  The
+supply-side mathematics above the wall is proven; the wall itself remains the
+open core, now in its sharpest isolated form.
