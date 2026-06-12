@@ -1760,3 +1760,38 @@ for generalized RS on `μ_n`), giving a concrete literature handle — NOT a pin
 bound at constant rate over a multiplicative subgroup is, like every prior face, the explicit-RS
 beyond-Johnson list quantity, open at crypto scale. δ* pinned `r ≲ √(n log n)` stands; deployed crypto-ε*
 core = this deep-hole incidence function. No fabrication.
+
+---
+
+## §54 — Round 10: the deep-hole dual UNIFIES with the additive-energy/Stepanov line on ONE named-open quantity
+
+Targeted deep-hole literature + analytic + probe attack on the §53 dual (run `wf_bc9bcea7-113`),
+adversarially refereed against the in-tree anchors. **No pin; faithful reformulation that converges on the
+already-named open core.** Findings (anchor-verified):
+
+1. **Literature (deep-hole / error-distance: Cheng–Wan, Li–Wan, Zhu–Wan, Kaipa):** all theorems are for
+   the FULL domain `D = F_q`, `n = q`, large `q`, and EDGE-only (covering radius `n−k`). The deployed
+   `D = μ_n`, `n = 2^μ ≪ √q` is uncharted: the Weil `√q` error swamps the main term (vacuous), and the
+   deployed quantity is a worst-case-over-cosets MAX, not an interior average. Deep-hole theory classifies
+   WHICH words are deep holes (membership), not a sharp interior incidence count. No pin.
+2. **The gcd-incidence bound is already in-tree (vacuous).** `I(w) = max_{p,b} #{γ : deg gcd(p−γx^b,
+   x^n−1) ≥ w} ≤ min(q, n/w)` — because distinct `γ` sharing a root `ζ∈μ_n` force `(γ₁−γ₂)ζ^b = 0 ⟹ ζ=0`.
+   This is EXACTLY the proven `unique_bad_gamma_common_witness` / `common_witness_badGamma_card_le_one`
+   (card ≤ 1 per witness), a single-`(p,b)` pigeonhole losing a factor `q`. `n/w` is vacuous against
+   `ε*q = 2^128` (forces `w*=O(1)`, `δ*≈1`, ABOVE the window). No new content.
+3. **Probe: I(w) saturates at small n** (`n=8,k=2`: `I(4)=6 ≈ ceiling`, `I(5)=1`, `I(≥6)=0`, field-indep
+   across `p=41..137`). Only well-defined `ε*q` crossing is the jump at `w*=d+2 ⟹ δ*=1−(d+2)/n=1−ρ`
+   (Singleton/ceiling EDGE, not interior). Crypto-scale jump-vs-decay UNRESOLVED — small `q` cannot
+   separate the `I=q` saturation regime from a possible field-dependent interior decay at crypto `n`.
+
+**THE UNIFICATION (genuine consolidation).** The pin via the deep-hole dual needs the cross-line bound
+`Σ_c (deg gcd(x^n−1, (C c − X)^n−1))² ≪ |G|^{5/2}` — which is EXACTLY the open Stepanov/resultant input
+named verbatim in `AddEnergyGcdDegreeBound.lean` (§27). So the §53 deep-hole/repetition-incidence dual,
+the line-ball incidence (face 4), far-line extremality, the `I(w)` function, AND the additive-energy
+sum-product line ALL converge on ONE named-open quantity: the gcd-degree resultant sum = the Johnson→
+capacity bridge for explicit RS. Every reformulation of the deployed core is a different face of this
+single resultant/Stepanov estimate, open at `|G| = p^{o(1)}` per the directory honesty contract.
+
+**NET.** δ* pinned `r ≲ √(n log n)` stands; the deployed crypto-ε* core is now confirmed (10 rounds) to be
+ONE quantity — `Σ_c (deg gcd_c)²` — viewed through 5 equivalent faces, all proven-capped by counting/
+averaging/symmetry and now the deep-hole route. No fabrication; the convergence is the round's deliverable.
