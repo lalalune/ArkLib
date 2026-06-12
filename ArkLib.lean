@@ -1347,6 +1347,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowMassSpan
 import ArkLib.Data.CodingTheory.ProximityGap.WindowPackingLaw
 import ArkLib.Data.CodingTheory.ProximityGap.WindowPadeBridge
 import ArkLib.Data.CodingTheory.ProximityGap.WindowParametricCapstone
+import ArkLib.Data.CodingTheory.ProximityGap.WindowReconstructionPencil
 import ArkLib.Data.CodingTheory.ProximityGap.WindowStrataKills
 import ArkLib.Data.CodingTheory.ProximityGap.WindowTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.WindowTwoLayerThreshold
