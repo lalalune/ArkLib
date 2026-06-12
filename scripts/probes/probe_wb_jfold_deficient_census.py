@@ -69,3 +69,10 @@ for (q, n, k, a, w) in [(449, 14, 4, 10, 9), (449, 14, 4, 10, 8), (29, 14, 4, 10
         print(f"   rotation orbits: {len(orbits)}; sizes: "
               f"{Counter(len(set(rot(S, r) for r in range(n))) for S in map(tuple, cert))}",
               flush=True)
+
+# Round extension (j=2 + a-dependence, run via /tmp variant):
+# (449,14,4,w=7,a=10) j=2: certifying 100/3432, distinct gammas = 15 ~ n
+# (449,14,4,w=8,a=9)  j=1: certifying 308/3003, distinct gammas = 14 = n (a-independent)
+# => THE SPECTRUM-COLLAPSE LAW pinned at j = 0,1,2: j=0 fills the field; j>=1 collapses
+#    to ONE mu_n-coset (rotation equivariance gives coset-closure; the cross-orbit
+#    single-coset collapse = a norm-type invariant of the deficiency variety in F*/mu_n).
