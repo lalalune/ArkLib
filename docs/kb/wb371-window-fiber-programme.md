@@ -9,12 +9,12 @@
 
 > **2026-06-12 correction.**  `WindowRationalBounded` is now refuted by the
 > normalizer-pair family: the high-rate first beyond-ladder slice has
-> `(n-2)/2` bad scalars, so the `w+3` constant budget is false.  The surviving
-> target is the linear-budget replacement `WindowRationalLinearBounded` in
-> `WBPencilBelowUDR.lean`, whose consumer gives
-> `ε_mca ≤ max n (w+3) / q`.  The structural programme below remains useful as
-> a source of mechanisms, but any step still claiming the `w+3` cap should be
-> read as pre-refutation history.
+> `(n-2)/2` bad scalars, so the `w+3` constant budget is false.  The current
+> replacement is WB-4, `WBPencilWindowLaw.lean`: under the single structural
+> residual `WindowPencilAnchored`, it proves
+> `ε_mca ≤ ((w+1)+n(w+1)+1)/q`.  `WBPencilBelowUDR.lean` keeps the old theorem
+> as a historical false-residual consumer and adds a direct linear count
+> fallback, but the active target is anchored-pencil corank ≤ 1.
 
 ## The reduction chain (all axiom-clean, in-tree)
 
@@ -115,12 +115,12 @@ Successor generation (spawned by refutations, per discipline):
 2. Pole-recursion bricks (aligned case → punctured deficient instance).
 3. Higher slack: the chain theory at `deg g ≤ s` (multi-level CF; the
    `(X−t)`-cancellation telescopes), toward the parametric all-rows theorem.
-4. Assembly: replace the refuted `WindowRationalBounded` target with
-   `WindowRationalLinearBounded` and consume
-   `epsMCA_le_below_udr_linear`.  This preserves the below-UDR production-scale
-   route at the honest linear budget `max n (w+3) / q`, while the old
+4. Assembly: replace the refuted `WindowRationalBounded` target with WB-4's
+   `WindowPencilAnchored` residual and consume `epsMCA_le_of_anchored` /
+   `le_mcaDeltaStar_of_anchored` from `WBPencilWindowLaw.lean`.  The old
    `epsMCA_le_below_udr` theorem remains only a conditional consumer of a false
-   historical residual.
+   historical residual; `epsMCA_le_below_udr_linear` is a direct count-residual
+   fallback, not the live blocker.
 
 ## The rung census campaign (2026-06-12 session): conjecture refuted, ceiling found
 

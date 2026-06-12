@@ -12,8 +12,7 @@ The WB programme's original conditional capstone used `WindowRationalBounded`, t
 claim that every doubly-WB-solvable stack has bad-scalar count ≤ `w + 3`.  That
 residual is now **refuted** by the normalizer-pair family at high rate (see
 `DISPROOF_LOG.md` and `probe_normalizer_pair_family.py`).  We keep the old
-conditional theorem below as a historical consumer of the false residual, but new
-work should target the corrected linear-budget residual `WindowRationalLinearBounded`.
+conditional theorem below as a historical consumer of the false residual.
 
 **`epsMCA_le_below_udr`** — under the Prop, for every radius `δ ≤ w/n` with
 `w + k ≤ n`:  `ε_mca(RS, δ) ≤ (w+3)/q`.
@@ -22,14 +21,16 @@ At production shape this is `≤ (w+3)/q ≪ 2^{−128}` for every below-UDR rad
 the unconditional-modulo-one-Prop extension of the production floor from the ladder
 reach `(1−ρ)/3` to the unique-decoding radius `(1−ρ)/2`.
 
-**Corrected survivor.**  `WindowRationalLinearBounded` asks for the rational-window
-bad count to be at most `n`.  Together with the already-proven WB-far side
-(`≤ w+3`) this gives the honest conditional mass
+**Count-residual fallback.**  `WindowRationalLinearBounded` asks for the
+rational-window bad count to be at most `n`.  Together with the already-proven
+WB-far side (`≤ w+3`) this gives the conditional mass
 
   `ε_mca(RS, δ) ≤ max n (w+3) / q`.
 
-This is the consumer matching the post-refutation state: the normalizer-pair family
-rules out a constant budget but remains linear in the domain size.
+The current live route is stronger and more structural: `WBPencilWindowLaw.lean`
+uses the anchor residual `WindowPencilAnchored` to prove the polynomial budget
+`((w+1) + n(w+1) + 1)/q`.  The linear wrapper here remains only a simple
+count-residual consumer if that stronger estimate is ever proved directly.
 -/
 
 open Finset
@@ -53,10 +54,11 @@ def WindowRationalBounded (dom : Fin n ↪ F) (k w : ℕ) (δ : ℝ≥0) : Prop 
       ≤ w + 3
 
 open Classical in
-/-- **Corrected rational-window residual after the normalizer-pair refutation**:
+/-- **Count-residual fallback after the normalizer-pair refutation**:
 every doubly-WB-solvable stack has linearly many bad scalars, bounded by `n`.
 The refuting normalizer-pair family has `(n - 2) / 2` bad scalars, so a constant
-bound is false but this linear target is still compatible with the evidence. -/
+bound is false but this linear target is still compatible with the evidence.
+The active WB-4 route instead uses `WindowPencilAnchored` in `WBPencilWindowLaw`. -/
 def WindowRationalLinearBounded (dom : Fin n ↪ F) (k w : ℕ) (δ : ℝ≥0) : Prop :=
   ∀ u₀ u₁ : Fin n → F, WBSolvable dom k w u₀ → WBSolvable dom k w u₁ →
     (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
@@ -109,11 +111,12 @@ theorem le_mcaDeltaStar_below_udr (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k)
     (le_trans (epsMCA_le_below_udr dom hk hwk hδn hwin) hbudget)
 
 open Classical in
-/-- **Corrected conditional below-UDR law after the refutation of
+/-- **Count-residual conditional below-UDR law after the refutation of
 `WindowRationalBounded`.**  If the doubly-WB-solvable rational-window part has
 at most `n` bad scalars, then all stacks have bad count bounded by
 `max n (w+3)`, because the complementary WB-far branches are already proven to
-cost at most `w+3`. -/
+cost at most `w+3`.  This is a generic fallback; the current WB-4 consumer in
+`WBPencilWindowLaw` uses the weaker structural residual `WindowPencilAnchored`. -/
 theorem epsMCA_le_below_udr_linear (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k)
     (hwk : w + k ≤ n) {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
     (hwin : WindowRationalLinearBounded dom k w δ) :
@@ -140,9 +143,9 @@ theorem epsMCA_le_below_udr_linear (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k
     exact_mod_cast le_trans (le_trans this (by omega)) (Nat.le_max_right n (w + 3))
 
 open Classical in
-/-- Threshold form of the corrected linear-budget consumer.  This is the
-post-refutation replacement for `le_mcaDeltaStar_below_udr`: the budget to clear
-is `max n (w+3) / q`, not `(w+3) / q`. -/
+/-- Threshold form of the count-residual fallback.  The current WB-4 replacement
+is `le_mcaDeltaStar_of_anchored` in `WBPencilWindowLaw`; this theorem records the
+simple consequence of a direct linear bad-count residual. -/
 theorem le_mcaDeltaStar_below_udr_linear (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k)
     (hwk : w + k ≤ n) {δ : ℝ≥0} (hδ1 : δ ≤ 1)
     (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
