@@ -544,6 +544,33 @@ theorem badScalars_card_le_of_corank2_refined (dom : Fin n ↪ F) {k w : ℕ}
         have := hb3
         omega
 
+open Classical in
+omit [DecidableEq F] in
+/-- Probability form of `badScalars_card_le_of_corank2_refined`: under the same
+double-update anchor and `hPair`-twin-freeness hypotheses, the fixed-stack
+`mcaEvent` probability is bounded by the refined corank-2 count divided by the
+field size. -/
+theorem mcaEvent_prob_le_of_corank2_refined (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {u₀ u₁ : Fin n → F} {ℓ₀ R₀ ℓ₁ R₁ : F[X]}
+    (hd₀ : ℓ₀.natDegree ≤ w) (hd₁ : ℓ₁.natDegree ≤ w)
+    (hr₀ : R₀.natDegree ≤ w + k - 1) (hr₁ : R₁.natDegree ≤ w + k - 1)
+    (hrel₀ : ∀ i, ℓ₀.eval (dom i) * u₀ i = R₀.eval (dom i))
+    (hrel₁ : ∀ i, ℓ₁.eval (dom i) * u₁ i = R₁.eval (dom i))
+    {J : WCol n k w → Fin (3 * w + k)} {c₀ c₀' cs cs' : WCol n k w}
+    (hcc : c₀ ≠ c₀')
+    (hdet : (pencilSqDU dom k w ℓ₀ R₀ ℓ₁ R₁ J c₀ c₀' cs cs').det ≠ 0)
+    (htwin : ∀ i j : Fin n, i ≠ j →
+      pencilHPair dom k w ℓ₀ R₀ ℓ₁ R₁ J c₀ c₀' cs cs' i j ≠ 0) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ]
+      ≤ (((((w + 1) + (n + 1) + n * n * (w - 1) : ℕ) : ℝ≥0) : ℝ≥0∞)
+          / (((Fintype.card F : ℕ) : ℝ≥0) : ℝ≥0∞)) := by
+  rw [prob_uniform_eq_card_filter_div_card]
+  gcongr
+  exact badScalars_card_le_of_corank2_refined dom hk hδn hd₀ hd₁ hr₀ hr₁
+    hrel₀ hrel₁ hcc hdet htwin
+
 end ProximityGap.WBPencil
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -551,3 +578,4 @@ end ProximityGap.WBPencil
 #print axioms ProximityGap.WBPencil.coincPoly_eq_det_mul_hPair
 #print axioms ProximityGap.WBPencil.pencilHPair_natDegree_le
 #print axioms ProximityGap.WBPencil.badScalars_card_le_of_corank2_refined
+#print axioms ProximityGap.WBPencil.mcaEvent_prob_le_of_corank2_refined

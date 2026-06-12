@@ -25,9 +25,11 @@ instantiates it at a certified Proth prime inside the `r = 5` band:
 `P = 1526377·2¹²⁸ + 1 ≈ 2^{148.5}` is certified prime here (Lucas, literal squaring
 chains as in `CertifiedRungPrime.lean`); the order-64 element is the chain value
 `g = 3^((P−1)/64) = u₁₂₂`.  The divisibility hypothesis is exactly what the Landau
-ℓ²-sharpening of `natAbs_resultant_cyclotomic_le` would discharge for ALL `p > 2^{127.5}`
-(see the #371 thread), and what the [TZ24] good-prime supply discharges for `p = Θ(n^β)`:
-either route closes this pin with no further work on this file.
+ℓ²-sharpening of `natAbs_resultant_cyclotomic_le` discharges for ALL `p > 2^{127.5}`
+(see `cyclotomicLandauSqBound_proved` in `KKH26SumsOfRootsOfUnity.lean`), and what the
+[TZ24] good-prime supply discharges for `p = Θ(n^β)`: either route closes this pin with no
+further work on this file.  The theorem `deltaStar_pin_mu6_dim4` applies the proved
+Parseval + AM-GM cyclotomic Landau bound to remove the last named analytic assumption.
 
 **General wiring** (reusable at every `(μ, r)`):
 `kkh26_deltaStar_pin_of_interior_ceiling_of_not_dvd` (the divisibility twin of the
@@ -1246,6 +1248,64 @@ theorem deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_lt
     (collisionResultant_not_dvd_of_forall_natAbs_lt (p := P) (m := 6) (r := 5)
       (by omega) hbound)
 
+/-- The μ = 6 squared Landau envelope is exactly `2^255`. -/
+theorem landauSqEnvelope_mu6_eq_two_pow_255 :
+    landauSqEnvelope (2 ^ 5) = 2 ^ 255 := by
+  norm_num [landauSqEnvelope]
+
+/-- The certified prime `P` is large enough for the μ = 6 squared Landau envelope:
+`(4·32)^32·2^31 = 2^255 < P^2`. -/
+theorem landauSqEnvelope_mu6_lt_P_sq : landauSqEnvelope (2 ^ 5) < P ^ 2 := by
+  have hstrict : landauSqEnvelope (2 ^ 5) < (2 ^ 128 : ℕ) ^ 2 := by
+    rw [landauSqEnvelope_mu6_eq_two_pow_255]
+    norm_num
+  have hp : 2 ^ 128 ≤ P := by norm_num [P]
+  exact lt_of_lt_of_le hstrict (Nat.pow_le_pow_left hp 2)
+
+/-- **Squared Mahler/Landau handoff for the μ = 6 literal pin.**  It is enough to bound
+every relevant collision resultant by the μ = 6 squared Landau envelope; the envelope is
+already below `P²`, so the finite divisibility hypothesis follows. -/
+theorem deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_sq_bound
+    (hbound : ∀ d₁ ∈ sigData (2 ^ 5) 5, ∀ d₂ ∈ sigData (2 ^ 5) 5,
+      d₁ ≠ d₂ → (collisionResultant 6 d₁ d₂).natAbs ^ 2 ≤ landauSqEnvelope (2 ^ 5)) :
+    mcaDeltaStar (F := ZMod P) (A := ZMod P)
+        (evalCode
+          (343681710474810194684472438365758239853939287 : ZMod P) 64 3)
+        (1 / 2 ^ 128)
+      = 59 / 64 := by
+  exact deltaStar_pin_mu6_dim4_of_not_dvd
+    (collisionResultant_not_dvd_of_uniform_natAbs_sq_bound (p := P)
+      (B := landauSqEnvelope (2 ^ 5)) (m := 6) (r := 5) (by norm_num)
+      hbound landauSqEnvelope_mu6_lt_P_sq)
+
+/-- **Cyclotomic Landau handoff for the μ = 6 literal pin.**  A proof of the single
+analytic obligation `cyclotomicLandauSqBound 6` closes the certified dimension-4 pin
+`δ* = 59/64` at `ε* = 2^-128`. -/
+theorem deltaStar_pin_mu6_dim4_of_cyclotomicLandauSqBound
+    (hL : cyclotomicLandauSqBound 6) :
+    mcaDeltaStar (F := ZMod P) (A := ZMod P)
+        (evalCode
+          (343681710474810194684472438365758239853939287 : ZMod P) 64 3)
+        (1 / 2 ^ 128)
+      = 59 / 64 := by
+  exact deltaStar_pin_mu6_dim4_of_not_dvd
+    (collisionResultant_not_dvd_of_cyclotomicLandauSqBound (p := P)
+      (m := 6) (r := 5) hL (by norm_num) (by norm_num)
+      landauSqEnvelope_mu6_lt_P_sq)
+
+/-- **Promoted μ = 6 dimension-4 literal pin.**  The Parseval + AM-GM proof of
+`cyclotomicLandauSqBound 6` discharges the collision-resultant divisibility route, so the
+certified code has `δ* = 59/64` at `ε* = 2^-128` without any remaining named bad-side
+hypothesis. -/
+theorem deltaStar_pin_mu6_dim4 :
+    mcaDeltaStar (F := ZMod P) (A := ZMod P)
+        (evalCode
+          (343681710474810194684472438365758239853939287 : ZMod P) 64 3)
+        (1 / 2 ^ 128)
+      = 59 / 64 := by
+  exact deltaStar_pin_mu6_dim4_of_cyclotomicLandauSqBound
+    (cyclotomicLandauSqBound_proved (m := 6) (by norm_num))
+
 /-- The Mahler/Landau target `2^143` is strictly below the certified prime `P`. -/
 theorem two_pow_143_lt_P : (2 : ℕ) ^ 143 < P := by
   have hpow : (2 : ℕ) ^ 143 = 2 ^ 15 * 2 ^ 128 := by
@@ -1266,6 +1326,13 @@ end ArkLib.ProximityGap.Mu6ConditionalPin
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.prime_P
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.orderOf_gP
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_not_dvd
+#print axioms ArkLib.ProximityGap.Mu6ConditionalPin.landauSqEnvelope_mu6_eq_two_pow_255
+#print axioms ArkLib.ProximityGap.Mu6ConditionalPin.landauSqEnvelope_mu6_lt_P_sq
+#print axioms
+  ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_sq_bound
+#print axioms
+  ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_cyclotomicLandauSqBound
+#print axioms ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.two_pow_143_lt_P
 #print axioms
   ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_lt
