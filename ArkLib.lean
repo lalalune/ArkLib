@@ -435,6 +435,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BalancedFourLaw
 import ArkLib.Data.CodingTheory.ProximityGap.BallIntersectionSecondMomentLinear
 import ArkLib.Data.CodingTheory.ProximityGap.BallVolume
 import ArkLib.Data.CodingTheory.ProximityGap.BandAttainment
+import ArkLib.Data.CodingTheory.ProximityGap.BandAttainmentChained
 import ArkLib.Data.CodingTheory.ProximityGap.BandCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.BandExactness
 import ArkLib.Data.CodingTheory.ProximityGap.BandFloor
