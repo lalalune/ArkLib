@@ -37,6 +37,26 @@ namespace ProximityGap.Ownership
 
 open ProximityGap.SpikeFloor ProximityGap
 
+/-- The chained construction's floor lower bound dominates the older disjoint-block floor
+whenever the degree parameter fits in the domain. -/
+theorem disjoint_band_floor_le_chained_floor {n k m : ℕ} (hkn : k ≤ n) :
+    n / (k + m + 1) ≤ (n - k) / (m + 1) := by
+  by_cases hq : n / (k + m + 1) = 0
+  · rw [hq]
+    exact Nat.zero_le _
+  · have hqpos : 0 < n / (k + m + 1) := Nat.pos_of_ne_zero hq
+    rw [Nat.le_div_iff_mul_le (by omega : 0 < m + 1)]
+    have hmul : n / (k + m + 1) * (k + m + 1) ≤ n := Nat.div_mul_le_self _ _
+    have hkq : k ≤ n / (k + m + 1) * k :=
+      Nat.le_mul_of_pos_left k hqpos
+    have hsplit : n / (k + m + 1) * (m + 1) + k
+        ≤ n / (k + m + 1) * (k + m + 1) := by
+      calc n / (k + m + 1) * (m + 1) + k
+          ≤ n / (k + m + 1) * (m + 1) + n / (k + m + 1) * k :=
+            Nat.add_le_add_left hkq _
+        _ = n / (k + m + 1) * (k + m + 1) := by ring
+    omega
+
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ} [NeZero n]
 
@@ -54,6 +74,8 @@ theorem chainPoly_succ (W : ℕ → F[X]) (g : ℕ → F) (l : ℕ) :
       = chainPoly W g l + C (g (l + 1) - g l) * W l := rfl
 
 set_option maxHeartbeats 1600000 in
+-- The chained gluing proof has long interpolation and arithmetic subgoals after refinement.
+omit [DecidableEq F] in
 open Classical in
 /-- **THE CHAINED BAND ATTAINMENT**: overlapping blocks stepping by `m+1`,
 glued by interpolants, realize `r` bad scalars whenever `r·(m+1) + k ≤ n` and
@@ -220,7 +242,7 @@ theorem band_attainment_chained (dom : Fin n ↪ F) {k m : ℕ} (hk : 1 ≤ k)
       have hγj : γn (j : ℕ) = ι j := by
         rw [hγn]
         simp only [j.2, dif_pos]
-      show (P (j : ℕ)).eval (dom i) = u₀ i + ι j • (dom i) ^ k
+      change (P (j : ℕ)).eval (dom i) = u₀ i + ι j • (dom i) ^ k
       rw [h, ← hγj, smul_eq_mul]
       ring
     · -- no joint pair: the direction is strongly far
@@ -243,6 +265,7 @@ theorem band_attainment_chained (dom : Fin n ↪ F) {k m : ℕ} (hk : 1 ≤ k)
         obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hγ
         exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hbadj j⟩
 
+omit [DecidableEq F] in
 open Classical in
 /-- **THE IMPROVED BAND BRACKET**: at the band radius
 `k+m < (1−δ)n ≤ k+m+1`, the sup over stacks with direction `x^k` satisfies
@@ -278,5 +301,6 @@ theorem band_bracket_chained (dom : Fin n ↪ F) {k m : ℕ} (hk : 1 ≤ k)
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
+#print axioms ProximityGap.Ownership.disjoint_band_floor_le_chained_floor
 #print axioms ProximityGap.Ownership.band_attainment_chained
 #print axioms ProximityGap.Ownership.band_bracket_chained
