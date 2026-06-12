@@ -7392,3 +7392,42 @@ P(i,j) = (ζ^{i+j}, ζ^j, ζ^i, 1) on a non-normalizer hyperplane.
   candidate mechanism for the in-tree vanishing-sum machinery); the height upgrade
   of ≤ at n = 32, 64 (third prime or Hadamard sharpening); norm-spectrum
   quantification for the production surplus threshold.
+
+## 2026-06-12 — The level-j staircase is NOT the complete envelope: the ANTIPODAL PENCIL; the d = 4 level-1 rung pin is REFUTED
+
+**Attempt** (#371 round 7): pin the first sub-ceiling rung exactly — `δ* = 5/8` for the
+`n = 16, d = 2` code on `⟨4134⟩ ⊆ F₁₂₂₈₉ˣ` at budgets `ε* < 32/p`, with the good side
+"every stack has few bad scalars below `5/8`" (the staircase-completeness hope: only the
+deeper level-`j` sign-subset families are bad below a rung, counts `5 → 1`).
+
+**Disproof of completeness.** The corrected adversarial probe (`probe_level1_pin.py`;
+the old S6 "worst = 1" was a search artifact — its pool capped monomial exponents at 4)
+found the **antipodal pencil** `(X^h, X^{h+1})`, `h = n/2`: since `x^h = ±1`, the line
+`x^h(1+γx)` *is* the degree-1 word `±(1+γX)` on a full antipodal half-coset plus the one
+rotating cross-coset point `x₀ = −1/γ`, and the direction `±x` single-deviates there.
+**All `n` scalars of the inversion orbit `−1/⟨g⟩` are bad at radius `1 − (h+1)/n`**, for
+every code degree `1 ≤ d ≤ h − 1` — strictly below the deepest staircase rung (`1/2`)
+with count strictly above every deep-rung spectrum (`16 > 5 = N(2,2)` at the instance).
+Proven axiom-clean, in general:
+
+```lean
+ArkLib.ProximityGap.Level1Rung.antipodal_pencil_epsMCA_lower_bound   -- n bad at 1−(h+1)/n
+ArkLib.ProximityGap.Level1Rung.mcaDeltaStar_le_antipodal             -- δ* ≤ 1−(h+1)/n at ε* < n/p
+```
+
+**Consequences (Level1RungPin.lean, all axiom-clean).**
+- The `d = 4` (rate 5/16) level-1 rung `1/2` is **refuted as a pin point on its entire
+  band**: the pencil count `16` equals the rung budget `K₁ = 16`, so for every
+  `ε* < 16/p`, `δ* ≤ 7/16 < 1/2` (`deltaStar_lt_levelOne_rung_F12289_d4`); the per-rung
+  interior obligation there is **unsatisfiable** (`level1_interior_unsat_F12289_d4`).
+- The `d = 2` rung `5/8` **survives**, with its conditional band trapped to
+  `[16/p, 32/p)` (`level1_interior_floor16_F12289`); probed worst stack at threshold 7
+  is exactly 16 = the pencil. Envelope-exactness there = ONE named obligation
+  (`SubCeilingInteriorCeiling` via `subceiling_deltaStar_pin_of_interior`, the general
+  per-rung reduction), and the in-tree per-witness subset counting **provably cannot
+  discharge it**: absolute scheme cap `C(16,4)/C(7,4) = 52 > 31` (the saturation theorem
+  made concrete; `level1_budget_le_subset_cap`).
+- The pencil ladder continues: `(X^h, X^{h+2})` gives 8 bad at radius `3/8` (probed,
+  exact, `p ∈ {97, 12289}`). The refined envelope = staircase ⊔ pencil ladder (⊔ ...?)
+  is the successor question; any future "complete envelope" claim must subsume the
+  pencil orbit.

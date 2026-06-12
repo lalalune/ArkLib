@@ -822,6 +822,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Lattice2.ListThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.Lattice2.Spec
 import ArkLib.Data.CodingTheory.ProximityGap.Lattice2.Witnesses
 import ArkLib.Data.CodingTheory.ProximityGap.LatticeSpec
+import ArkLib.Data.CodingTheory.ProximityGap.Level1RungPin
 import ArkLib.Data.CodingTheory.ProximityGap.LineAgreementCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineBallIntersection
 import ArkLib.Data.CodingTheory.ProximityGap.LineClosePairsLinear
