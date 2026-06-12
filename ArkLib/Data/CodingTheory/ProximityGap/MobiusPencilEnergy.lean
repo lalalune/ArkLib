@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Card
@@ -38,6 +39,11 @@ Results:
 - `mobiusInvol` : the involution as an `Equiv.Perm G`, with `mobiusInvol_involutive`.
 - `mobiusInvol_apply_eq_self_iff` : `x` is fixed ⟺ `x² = b`.
 - `t2`, `card_eq_two_mul_t2_add_fixed` : `|G| = 2·t₂(b) + #√b` (the orbit decomposition).
+- `two_mul_t2_eq_support_card`, `card_eq_two_mul_t2_add_sqrtSet` : the exact finite-orbit
+  form of the decomposition, using the cycle-type fact that an order-two permutation has even
+  support.
+- `card_image_univ_le_t2_add_sqrtSet` : a Möbius-invariant word has one value per 2-cycle plus
+  fixed points; in cyclic groups this gives the half-dimension bound `≤ |G|/2 + 2`.
 
 Axiom-clean: `[propext, Classical.choice, Quot.sound]` (see `#print axioms` at EOF).
 -/
@@ -53,14 +59,14 @@ It is its own inverse (commutativity: `(b·x⁻¹)⁻¹ = b⁻¹·x`, so `σ_b (
 def mobiusInvol (b : G) : Equiv.Perm G where
   toFun x := b * x⁻¹
   invFun x := b * x⁻¹
-  left_inv x := by simp [mul_inv_rev, mul_comm, mul_assoc, mul_left_comm]
-  right_inv x := by simp [mul_inv_rev, mul_comm, mul_assoc, mul_left_comm]
+  left_inv x := by simp [mul_inv_rev]
+  right_inv x := by simp [mul_inv_rev]
 
 @[simp] lemma mobiusInvol_apply (b x : G) : mobiusInvol b x = b * x⁻¹ := rfl
 
 /-- The Möbius involution is an involution. -/
 theorem mobiusInvol_involutive (b : G) : Function.Involutive (mobiusInvol b) := by
-  intro x; simp [mobiusInvol_apply, mul_inv_rev, mul_comm, mul_assoc, mul_left_comm]
+  intro x; simp [mobiusInvol_apply, mul_inv_rev]
 
 @[simp] lemma mobiusInvol_mobiusInvol (b x : G) :
     mobiusInvol b (mobiusInvol b x) = x := mobiusInvol_involutive b x
@@ -95,8 +101,10 @@ support of the involution `σ_b`; each lies in a 2-orbit `{x, b·x⁻¹}`. The 2
 theorem card_eq_sqrtSet_add_support (b : G) :
     Fintype.card G
       = (sqrtSet b).card + (Finset.univ.filter (fun x => mobiusInvol b x ≠ x)).card := by
-  rw [sqrtSet_eq_filter_fixed, ← Finset.card_univ,
-    Finset.filter_card_add_filter_neg_card_eq_card (p := fun x => mobiusInvol b x = x)]
+  rw [sqrtSet_eq_filter_fixed, ← Finset.card_univ]
+  simpa using
+    (Finset.card_filter_add_card_filter_not (s := Finset.univ)
+      (p := fun x => mobiusInvol b x = x)).symm
 
 /-- The 2-orbit count of `σ_b` (the per-`b` Möbius pencil energy summand). -/
 def t2 (b : G) : ℕ := (Finset.univ.filter (fun x => mobiusInvol b x ≠ x)).card / 2
@@ -112,6 +120,32 @@ theorem mobiusInvol_mapsTo_support (b : G) :
   intro hcontra
   exact hx (by rw [← hcontra, mobiusInvol_mobiusInvol])
 
+/-- The non-fixed support of the Möbius involution has even cardinality. -/
+theorem mobiusInvol_support_card_even (b : G) :
+    Even (Finset.univ.filter (fun x => mobiusInvol b x ≠ x)).card := by
+  have hsupp : (mobiusInvol b).support
+      = Finset.univ.filter (fun x => mobiusInvol b x ≠ x) := by
+    ext x
+    simp [Equiv.Perm.mem_support]
+  have hdiv : 2 ∣ (mobiusInvol b).support.card :=
+    Equiv.Perm.two_dvd_card_support (σ := mobiusInvol b) (mobiusInvol_sq b)
+  rw [hsupp] at hdiv
+  exact (even_iff_exists_two_nsmul _).2 hdiv
+
+/-- The definition `t₂ = support.card / 2` is exact: the support consists of 2-cycles. -/
+theorem two_mul_t2_eq_support_card (b : G) :
+    2 * t2 b = (Finset.univ.filter (fun x => mobiusInvol b x ≠ x)).card := by
+  unfold t2
+  exact Nat.two_mul_div_two_of_even (mobiusInvol_support_card_even b)
+
+/-- **Exact orbit decomposition.** The group is the disjoint union of fixed points (`√b`) and
+two-cycles of `σ_b`, so `|G| = 2·t₂(b) + #√b`. -/
+theorem card_eq_two_mul_t2_add_sqrtSet (b : G) :
+    Fintype.card G = 2 * t2 b + (sqrtSet b).card := by
+  have hdecomp := card_eq_sqrtSet_add_support b
+  have ht2 := two_mul_t2_eq_support_card b
+  omega
+
 /-! ## The smooth-domain separation lower bound
 
 For a **cyclic** evaluation subgroup `H = G` (every multiplicative subgroup of `F^×` is
@@ -119,6 +153,8 @@ cyclic), squaring is at most 2-to-1, so every pencil `b` has at most two square 
 therefore *near-maximal* 2-orbit count `t₂(b) ≥ (|G|−2)/2`. This is the structural fact that
 makes the pencil energy `E₂(H) = Σ_b t₂(b)²` of order `Θ(n³)` for smooth subgroups while a
 random domain has thin pencils — the **only known domain-separating mechanism** for δ\*. -/
+
+section Cyclic
 
 variable [IsCyclic G]
 
@@ -144,15 +180,28 @@ theorem card_sqrtSet_le_two (b : G) : (sqrtSet b).card ≤ 2 := by
 `Σ_b t₂(b)² = Θ(n³)` on smooth domains — the separation from random domains. -/
 theorem two_mul_t2_add_three_ge_card (b : G) :
     2 * t2 b + 3 ≥ Fintype.card G := by
-  have hdecomp := card_eq_sqrtSet_add_support b
+  have hdecomp := card_eq_two_mul_t2_add_sqrtSet b
   have hroots := card_sqrtSet_le_two b
-  have ht2 : 2 * t2 b + 1 ≥ (Finset.univ.filter (fun x => mobiusInvol b x ≠ x)).card := by
-    unfold t2; omega
+  omega
+
+/-- **Sharp smooth-domain `t₂` lower bound.** The exact 2-cycle decomposition improves the
+lossy `+3` support bound to `2·t₂(b)+2 ≥ |G|`. -/
+theorem two_mul_t2_add_two_ge_card (b : G) :
+    2 * t2 b + 2 ≥ Fintype.card G := by
+  have hdecomp := card_eq_two_mul_t2_add_sqrtSet b
+  have hroots := card_sqrtSet_le_two b
   omega
 
 /-- Per-pencil `t₂` lower bound in division form: `t₂(b) ≥ (|G|−3)/2`. -/
 theorem t2_ge (b : G) : t2 b ≥ (Fintype.card G - 3) / 2 := by
   have h := two_mul_t2_add_three_ge_card b; omega
+
+/-- Per-pencil `t₂` lower bound in sharp division form: `t₂(b) ≥ (|G|−2)/2`. -/
+theorem t2_ge_sharp (b : G) : t2 b ≥ (Fintype.card G - 2) / 2 := by
+  have h := two_mul_t2_add_two_ge_card b
+  omega
+
+end Cyclic
 
 /-- Per-pencil `t₂` upper bound (holds for any group): `t₂(b) ≤ |G|/2`. -/
 theorem t2_le (b : G) : t2 b ≤ Fintype.card G / 2 := by
@@ -160,9 +209,118 @@ theorem t2_le (b : G) : t2 b ≤ Fintype.card G / 2 := by
   refine Nat.div_le_div_right (le_trans (Finset.card_filter_le _ _) ?_)
   rw [Finset.card_univ]
 
+private theorem two_mul_card_image_le_of_fixedPointFree_involutive
+    {α β : Type*} [DecidableEq β] (s : Finset α) (σ : α → α)
+    (f : α → β)
+    (hsmap : ∀ x ∈ s, σ x ∈ s)
+    (hfix : ∀ x ∈ s, σ x ≠ x)
+    (hinv : ∀ x ∈ s, f (σ x) = f x) :
+    2 * (s.image f).card ≤ s.card := by
+  classical
+  have hfiber : ∀ y ∈ s.image f, 2 ≤ (s.filter fun x => f x = y).card := by
+    intro y hy
+    rw [Finset.mem_image] at hy
+    obtain ⟨x, hx, rfl⟩ := hy
+    have hxσ : σ x ∈ s := hsmap x hx
+    have hne : x ≠ σ x := (hfix x hx).symm
+    have hsub : ({x, σ x} : Finset α) ⊆ s.filter (fun z => f z = f x) := by
+      intro z hz
+      rw [Finset.mem_insert, Finset.mem_singleton] at hz
+      rw [Finset.mem_filter]
+      rcases hz with rfl | rfl
+      · exact ⟨hx, rfl⟩
+      · exact ⟨hxσ, hinv x hx⟩
+    calc
+      2 = ({x, σ x} : Finset α).card := (Finset.card_pair hne).symm
+      _ ≤ (s.filter fun z => f z = f x).card := Finset.card_le_card hsub
+  calc
+    2 * (s.image f).card = ∑ _y ∈ s.image f, 2 := by
+      rw [Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+    _ ≤ ∑ y ∈ s.image f, (s.filter fun x => f x = y).card :=
+      Finset.sum_le_sum hfiber
+    _ = s.card := (Finset.card_eq_sum_card_image f s).symm
+
+/-- A word invariant under the Möbius involution takes at most one value per non-fixed
+2-cycle: its image on the non-fixed support has cardinal at most `t₂(b)`. -/
+theorem card_image_support_le_t2 (b : G) {A : Type*} [DecidableEq A] (f : G → A)
+    (hinv : ∀ x, f (mobiusInvol b x) = f x) :
+    ((Finset.univ.filter (fun x => mobiusInvol b x ≠ x)).image f).card ≤ t2 b := by
+  classical
+  set S : Finset G := Finset.univ.filter (fun x => mobiusInvol b x ≠ x) with hS
+  have htwo : 2 * (S.image f).card ≤ S.card :=
+    two_mul_card_image_le_of_fixedPointFree_involutive S (mobiusInvol b) f
+      (by
+        intro x hx
+        rw [hS] at hx ⊢
+        exact mobiusInvol_mapsTo_support b x hx)
+      (by
+        intro x hx
+        rw [hS, Finset.mem_filter] at hx
+        exact hx.2)
+      (by intro x _; exact hinv x)
+  have ht2 := two_mul_t2_eq_support_card b
+  rw [← hS] at ht2
+  omega
+
+/-- A Möbius-invariant word on `G` has image cardinal bounded by the quotient size:
+one value per 2-cycle plus one possible value per fixed point.  This is the formal
+"half-dimension" census behind the window-residual Möbius descent route. -/
+theorem card_image_univ_le_t2_add_sqrtSet (b : G) {A : Type*} [DecidableEq A] (f : G → A)
+    (hinv : ∀ x, f (mobiusInvol b x) = f x) :
+    ((Finset.univ : Finset G).image f).card ≤ t2 b + (sqrtSet b).card := by
+  classical
+  set S : Finset G := Finset.univ.filter (fun x => mobiusInvol b x ≠ x) with hS
+  have hsub : ((Finset.univ : Finset G).image f) ⊆ (S.image f) ∪ ((sqrtSet b).image f) := by
+    intro y hy
+    rw [Finset.mem_image] at hy
+    obtain ⟨x, -, rfl⟩ := hy
+    by_cases hx : mobiusInvol b x = x
+    · refine Finset.mem_union_right (S.image f) ?_
+      rw [Finset.mem_image]
+      refine ⟨x, ?_, rfl⟩
+      rw [mem_sqrtSet, ← mobiusInvol_apply_eq_self_iff]
+      exact hx
+    · refine Finset.mem_union_left ((sqrtSet b).image f) ?_
+      rw [Finset.mem_image]
+      exact ⟨x, by rw [hS, Finset.mem_filter]; exact ⟨Finset.mem_univ x, hx⟩, rfl⟩
+  calc
+    ((Finset.univ : Finset G).image f).card ≤ ((S.image f) ∪ ((sqrtSet b).image f)).card :=
+      Finset.card_le_card hsub
+    _ ≤ (S.image f).card + ((sqrtSet b).image f).card := Finset.card_union_le _ _
+    _ ≤ t2 b + (sqrtSet b).card :=
+      Nat.add_le_add (by simpa [hS] using card_image_support_le_t2 b f hinv) Finset.card_image_le
+
+section CyclicImage
+
+variable [IsCyclic G]
+
+/-- On a cyclic smooth domain, a Möbius-invariant word has at most `t₂(b)+2` values:
+one per non-fixed 2-cycle plus the at-most-two fixed points. -/
+theorem card_image_univ_le_t2_add_two (b : G) {A : Type*} [DecidableEq A] (f : G → A)
+    (hinv : ∀ x, f (mobiusInvol b x) = f x) :
+    ((Finset.univ : Finset G).image f).card ≤ t2 b + 2 :=
+  (card_image_univ_le_t2_add_sqrtSet b f hinv).trans
+    (Nat.add_le_add_left (card_sqrtSet_le_two b) (t2 b))
+
+omit [DecidableEq G] in
+/-- A coarser but parameter-only half-dimension bound for Möbius-invariant words:
+`#range(f) ≤ |G|/2 + 2`. -/
+theorem card_image_univ_le_card_div_two_add_two (b : G) {A : Type*} [DecidableEq A]
+    (f : G → A) (hinv : ∀ x, f (mobiusInvol b x) = f x) :
+    ((Finset.univ : Finset G).image f).card ≤ Fintype.card G / 2 + 2 := by
+  classical
+  exact (card_image_univ_le_t2_add_two b f hinv).trans
+    (Nat.add_le_add_right (t2_le b) 2)
+
+end CyclicImage
+
 /-- **The Möbius pencil energy** `E₂(G) = Σ_b t₂(b)²` — the agreement-spectrum invariant that
 separates smooth multiplicative subgroups from random evaluation domains. -/
 def pencilEnergy : ℕ := ∑ b : G, (t2 b) ^ 2
+
+section CyclicEnergy
+
+variable [IsCyclic G]
 
 /-- **The smooth-domain energy lower bound: `E₂(G) ≥ n·((n−3)/2)²`** (i.e. `Θ(n³)`).** Every one
 of the `n = |G|` pencils contributes a near-maximal `t₂(b)² ≥ ((n−3)/2)²`; summing gives the
@@ -176,6 +334,19 @@ theorem pencilEnergy_ge :
         rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
     _ ≤ ∑ b : G, (t2 b) ^ 2 :=
         Finset.sum_le_sum (fun b _ => Nat.pow_le_pow_left (t2_ge b) 2)
+
+/-- **Sharp smooth-domain energy lower bound: `E₂(G) ≥ n·((n−2)/2)²`.** This is the exact
+2-orbit version of `pencilEnergy_ge`; the only loss is the possible two square roots of a pencil. -/
+theorem pencilEnergy_ge_sharp :
+    pencilEnergy (G := G) ≥ Fintype.card G * ((Fintype.card G - 2) / 2) ^ 2 := by
+  unfold pencilEnergy
+  calc Fintype.card G * ((Fintype.card G - 2) / 2) ^ 2
+      = ∑ _b : G, ((Fintype.card G - 2) / 2) ^ 2 := by
+        rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+    _ ≤ ∑ b : G, (t2 b) ^ 2 :=
+        Finset.sum_le_sum (fun b _ => Nat.pow_le_pow_left (t2_ge_sharp b) 2)
+
+end CyclicEnergy
 
 /-- **The energy upper bound: `E₂(G) ≤ n·(n/2)²`.** With `pencilEnergy_ge` this two-sidedly
 pins `E₂(G) = Θ(n³)` for a smooth (cyclic) evaluation subgroup — the quantitative C1 separation
@@ -194,7 +365,16 @@ end ProximityGap.MobiusPencil
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms ProximityGap.MobiusPencil.mobiusInvol_involutive
 #print axioms ProximityGap.MobiusPencil.mobiusInvol_apply_eq_self_iff
+#print axioms ProximityGap.MobiusPencil.mobiusInvol_support_card_even
+#print axioms ProximityGap.MobiusPencil.two_mul_t2_eq_support_card
+#print axioms ProximityGap.MobiusPencil.card_eq_two_mul_t2_add_sqrtSet
 #print axioms ProximityGap.MobiusPencil.card_sqrtSet_le_two
+#print axioms ProximityGap.MobiusPencil.card_image_support_le_t2
+#print axioms ProximityGap.MobiusPencil.card_image_univ_le_t2_add_sqrtSet
+#print axioms ProximityGap.MobiusPencil.card_image_univ_le_t2_add_two
+#print axioms ProximityGap.MobiusPencil.card_image_univ_le_card_div_two_add_two
 #print axioms ProximityGap.MobiusPencil.two_mul_t2_add_three_ge_card
+#print axioms ProximityGap.MobiusPencil.two_mul_t2_add_two_ge_card
 #print axioms ProximityGap.MobiusPencil.pencilEnergy_ge
+#print axioms ProximityGap.MobiusPencil.pencilEnergy_ge_sharp
 #print axioms ProximityGap.MobiusPencil.pencilEnergy_le
