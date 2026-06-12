@@ -7637,3 +7637,41 @@ scalar field): large nonaffine families need `|Γ| ≈ w` scalar sets that are
 moment-degenerate to depth `≈ w/2` with large fibers.  Conjectured cap (next probe):
 additive moment fibers at depth `t−2` collapse the supply below the affine cap for all
 `t ≥ 2` ⟹ `#bad ≤ w + O(1)` on the band.
+||||||| parent of 23f172e5a (autosync: ArkLib updates)
+## 2026-06-12 — `WindowPencilAnchored` is NOT universal: class V (vanishing-denominator rows)
+
+The window pencil law (`WBPencilWindowLaw.lean`) counts ≤ `(w+1)+n(w+1)+1` bad
+scalars for stacks with an ANCHORED representation pair (some adjugate entry of
+some square row-selection of the coefficient pencil ≢ 0, ⟺ corank ≤ 1 over
+`F(γ)`).  The hope that every doubly-WB-solvable stack admits an anchored
+representation is **FALSE**:
+
+* **Class V** — rows that are *rational-with-exceptions* (`u = R/ℓ` off the
+  domain zero set of `ℓ`, free at the zeros; the WB relation `ℓ(x_i)u_i = R(x_i)`
+  forces `R` to vanish with `ℓ`, so these are honest WB rows) — generically has
+  pencil corank ≥ 2 for EVERY representation pair: 103/130 fresh class-V stacks
+  at `(13,6,1,2)` have NO anchored pair under FULL enumeration of both rows' WB
+  solution spaces (`probe_wb_window_anchor_existential.py`); coranks up to 4
+  occur (`probe_wb_window_corank2.py`).
+* **The common-factor reduction is insufficient**: dividing the forced shared
+  factor (the `(x−a)`'s where `ℓ` and `R` jointly vanish) out of all four data
+  polynomials preserves corank verbatim under the uniform caps, and with the
+  correctly shrunken cofactor cap (`m − z`) still leaves a residue class
+  degenerate — the survivors are recognizable: shared reduced denominators,
+  post-reduction polynomial rows (`probe_wb_window_reduced_anchor.py`).
+* **The saving observation**: every unanchored stack found has ≤ 2 mca-bad
+  scalars.  Mechanism (the proof route for the corrected residual): for
+  `gcd(ℓ₀ℓ₁, Z_D) = 1` data below UDR, two `F(γ)`-independent kernel solutions
+  force `Q₁Z₂ = Q₂Z₁` (degree < n) and `Z_D ∣ (A+γB)g − Lρ` for the gcd-split
+  `Z_j = gζ_j` — every kernel solution is a polynomial multiple of ONE primitive
+  triple `(g, ρ, c)` with slack in all three caps (the kernel is `K[x]`-cyclic);
+  a bad scalar needs `g(γ,·)` to split over the domain, i.e. the anchored
+  incidence count re-runs on the primitive curve.
+
+**Surviving form** (`WBPencilWindowCapstone.lean`): `UnanchoredLinear` — stacks
+with no anchored pair have ≤ `n` bad scalars (budget aligned with the repaired
+`WindowRationalLinear`; strictly weaker than it via
+`unanchoredLinear_of_windowRationalLinear`).  The below-UDR law
+`ε_mca ≤ ((n+1)(w+1)+1)/q` holds under this residual alone
+(`epsMCA_le_below_udr_of_unanchoredLinear`), with the anchored bulk carried by
+the proven pencil law.
