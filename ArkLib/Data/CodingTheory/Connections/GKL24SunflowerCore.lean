@@ -166,6 +166,31 @@ theorem corrAgreeDomain_subset_lineAgreeSet_lineCombiner
   obtain ⟨ha', hb'⟩ := hab i hi
   rw [ha', hb']
 
+/-- **Strict expansion reduces to containment, for bad witnesses.**  If `γ` is a bad witness of a
+codeword `w` (so its agreement set `S` of size `≥ (1−δ)·n` carries the line but is **not** a
+joint-agreement set) and a joint-agreement domain `D` is contained in `lineAgreeSet w γ`, then the
+containment is **strict**: `D ⊊ lineAgreeSet w γ`.
+
+Reason: if `D = lineAgreeSet w γ`, then `S ⊆ lineAgreeSet w γ = D`, and joint agreement on `D`
+restricts to joint agreement on `S` (the agreeing codeword pair agrees on every subset) —
+contradicting `¬ pairJointAgreesOn S`.  This discharges the residual's strict-expansion clause from
+the bare **containment** `D ⊆ lineAgreeSet (wOf γ) γ`; no cardinality comparison is needed. -/
+theorem ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn
+    {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ w : ι → F} {γ : F} {D : Finset ι}
+    (hγ : γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w)
+    (hDsub : D ⊆ lineAgreeSet u₀ u₁ w γ)
+    (hDjoint : pairJointAgreesOn (MC : Set (ι → F)) D u₀ u₁) :
+    D ⊂ lineAgreeSet u₀ u₁ w γ := by
+  classical
+  rw [mcaBadWitness, Finset.mem_filter] at hγ
+  obtain ⟨S, _hScard, hSagree, hSnojoint⟩ := hγ.2
+  have hSsub : S ⊆ lineAgreeSet u₀ u₁ w γ := fun i hi => by
+    rw [mem_lineAgreeSet_iff]; exact hSagree i hi
+  refine lt_of_le_of_ne (Finset.le_iff_subset.mpr hDsub) (fun hEq => hSnojoint ?_)
+  -- `D = lineAgreeSet`, so `S ⊆ D`, and joint agreement on `D` restricts to `S`.
+  obtain ⟨v₀, hv₀, v₁, hv₁, hagree⟩ := hDjoint
+  exact ⟨v₀, hv₀, v₁, hv₁, fun i hi => hagree i (hEq ▸ hSsub hi)⟩
+
 end ProximityGap
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -173,3 +198,4 @@ end ProximityGap
 #print axioms ProximityGap.lineAgreeSet_inter_card_ge_pn
 #print axioms ProximityGap.corrAgreeDomain_inter_lineAgreeSet
 #print axioms ProximityGap.corrAgreeDomain_subset_lineAgreeSet_lineCombiner
+#print axioms ProximityGap.ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn
