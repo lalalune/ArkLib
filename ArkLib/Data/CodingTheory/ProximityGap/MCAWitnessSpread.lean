@@ -139,6 +139,69 @@ theorem unique_bad_gamma_common_witness
     abel
   exact ⟨hv₀i, hv₁i⟩
 
+/-- **Two line witnesses determine a slope codeword.** If two distinct scalars have line
+explainers `c, c'` on witness sets `S, S'`, then the divided difference
+`(γ - γ')⁻¹ • (c - c')` is a codeword and it agrees with the direction row `u₁` on
+`S ∩ S'`.
+
+This is the algebraic core behind the UDR-edge polynomial-pencil route: once witness
+overlaps are large, the explainer map has codeword-valued secant slopes. -/
+theorem line_slope_codeword_of_two_witnesses
+    (C : Submodule F (ι → A)) {S S' : Finset ι} {u₀ u₁ c c' : ι → A} {γ γ' : F}
+    (hne : γ ≠ γ') (hc : c ∈ C) (hc' : c' ∈ C)
+    (hS : ∀ i ∈ S, c i = u₀ i + γ • u₁ i)
+    (hS' : ∀ i ∈ S', c' i = u₀ i + γ' • u₁ i) :
+    (γ - γ')⁻¹ • (c - c') ∈ C ∧
+      ∀ i ∈ S ∩ S', ((γ - γ')⁻¹ • (c - c')) i = u₁ i := by
+  constructor
+  · exact C.smul_mem _ (C.sub_mem hc hc')
+  · intro i hi
+    obtain ⟨hiS, hiS'⟩ := Finset.mem_inter.mp hi
+    have hd : γ - γ' ≠ 0 := sub_ne_zero.mpr hne
+    simp only [Pi.smul_apply, Pi.sub_apply, hS i hiS, hS' i hiS']
+    rw [show (u₀ i + γ • u₁ i) - (u₀ i + γ' • u₁ i) = (γ - γ') • u₁ i from by
+      rw [sub_smul]
+      abel]
+    rw [inv_smul_smul₀ hd]
+
+/-- **Edge-band witness overlap.** If two witness sets both have size at least `n-w`
+inside an `n`-point domain and `2w+k+1 ≤ n`, then they overlap in at least `k+1`
+coordinates. -/
+theorem edge_witness_inter_card_ge {S S' : Finset ι} {n k w : ℕ}
+    (hcard : Fintype.card ι = n) (hS : n - w ≤ S.card) (hS' : n - w ≤ S'.card)
+    (hband : 2 * w + k + 1 ≤ n) :
+    k + 1 ≤ (S ∩ S').card := by
+  have hU : (S ∪ S').card ≤ n := by
+    calc (S ∪ S').card ≤ (Finset.univ : Finset ι).card :=
+          Finset.card_le_card (Finset.subset_univ _)
+      _ = Fintype.card ι := Finset.card_univ
+      _ = n := hcard
+  have hie : (S ∪ S').card + (S ∩ S').card = S.card + S'.card :=
+    Finset.card_union_add_card_inter S S'
+  have hmain : 2 * (n - w) ≤ n + (S ∩ S').card := by
+    calc 2 * (n - w) ≤ S.card + S'.card := by omega
+      _ = (S ∪ S').card + (S ∩ S').card := hie.symm
+      _ ≤ n + (S ∩ S').card := Nat.add_le_add_right hU _
+  omega
+
+/-- **UDR-edge slope bridge.** In the edge band, any two distinct line witnesses produce
+a codeword-valued secant slope that agrees with the direction row on at least `k+1`
+coordinates.  This is the formal first step toward the slope-collapse/polynomial-pencil
+count: all pairwise explainer slopes are genuine nearby codewords for `u₁`. -/
+theorem edge_slope_codeword_of_two_line_witnesses
+    (C : Submodule F (ι → A)) {n k w : ℕ} (hcard : Fintype.card ι = n)
+    (hband : 2 * w + k + 1 ≤ n)
+    {S S' : Finset ι} {u₀ u₁ c c' : ι → A} {γ γ' : F}
+    (hne : γ ≠ γ') (hSsz : n - w ≤ S.card) (hS'sz : n - w ≤ S'.card)
+    (hc : c ∈ C) (hc' : c' ∈ C)
+    (hS : ∀ i ∈ S, c i = u₀ i + γ • u₁ i)
+    (hS' : ∀ i ∈ S', c' i = u₀ i + γ' • u₁ i) :
+    ∃ v ∈ C, v = (γ - γ')⁻¹ • (c - c') ∧
+      k + 1 ≤ (S ∩ S').card ∧ ∀ i ∈ S ∩ S', v i = u₁ i := by
+  have hslope := line_slope_codeword_of_two_witnesses C hne hc hc' hS hS'
+  refine ⟨(γ - γ')⁻¹ • (c - c'), hslope.1, rfl,
+    edge_witness_inter_card_ge hcard hSsz hS'sz hband, hslope.2⟩
+
 open Classical in
 /-- **The common-witness bad-scalar set is a subsingleton (linear codes).** Restating
 `unique_bad_gamma_common_witness`: with a single coordinate set `S` on which `(u₀, u₁)` has no
@@ -246,8 +309,7 @@ theorem badScalar_card_le_card_of_forced_codimOne
     apply Subtype.ext
     rcases key_spec γ with hγuniv | hγerase
     · rcases key_spec γ' with hγ'univ | hγ'erase
-      ·
-        have hcloseγ : ∃ w ∈ C, ∀ i ∈ Finset.univ, w i = u 0 i + (γ : F) • u 1 i := by
+      · have hcloseγ : ∃ w ∈ C, ∀ i ∈ Finset.univ, w i = u 0 i + (γ : F) • u 1 i := by
           obtain ⟨w, hwC, hw⟩ := (S_spec γ).2.1
           exact ⟨w, hwC, fun i hi => hw i (by simp [hγuniv])⟩
         have hcloseγ' : ∃ w ∈ C, ∀ i ∈ Finset.univ, w i = u 0 i + (γ' : F) • u 1 i := by
@@ -255,21 +317,18 @@ theorem badScalar_card_le_card_of_forced_codimOne
           exact ⟨w, hwC, fun i hi => hw i (by simp [hγ'univ])⟩
         exact unique_bad_gamma_common_witness C Finset.univ (u 0) (u 1)
           (by simpa [hγuniv] using (S_spec γ).2.2) hcloseγ hcloseγ'
-      ·
-        have hcloseγ : ∃ w ∈ C, ∀ i ∈ S γ', w i = u 0 i + (γ : F) • u 1 i := by
+      · have hcloseγ : ∃ w ∈ C, ∀ i ∈ S γ', w i = u 0 i + (γ : F) • u 1 i := by
           obtain ⟨w, hwC, hw⟩ := (S_spec γ).2.1
           exact ⟨w, hwC, fun i hi => hw i (by rw [hγuniv]; exact Finset.mem_univ i)⟩
         exact unique_bad_gamma_common_witness C (S γ') (u 0) (u 1)
           (S_spec γ').2.2 hcloseγ (S_spec γ').2.1
     · rcases key_spec γ' with hγ'univ | hγ'erase
-      ·
-        have hcloseγ' : ∃ w ∈ C, ∀ i ∈ S γ, w i = u 0 i + (γ' : F) • u 1 i := by
+      · have hcloseγ' : ∃ w ∈ C, ∀ i ∈ S γ, w i = u 0 i + (γ' : F) • u 1 i := by
           obtain ⟨w, hwC, hw⟩ := (S_spec γ').2.1
           exact ⟨w, hwC, fun i hi => hw i (by rw [hγ'univ]; exact Finset.mem_univ i)⟩
         exact unique_bad_gamma_common_witness C (S γ) (u 0) (u 1)
           (S_spec γ).2.2 (S_spec γ).2.1 hcloseγ'
-      ·
-        have hSsame : S γ' = S γ := by
+      · have hSsame : S γ' = S γ := by
           rw [hγ'erase, hγerase, hkey]
         have hcloseγ' : ∃ w ∈ C, ∀ i ∈ S γ, w i = u 0 i + (γ' : F) • u 1 i := by
           obtain ⟨w, hwC, hw⟩ := (S_spec γ').2.1
@@ -417,6 +476,9 @@ theorem epsMCA_le_card_div_of_granularity_radius (C : Submodule F (ι → A)) :
 #print axioms pairJointAgreesOn_iff_split
 #print axioms epsMCA_ge_card_div_of_mcaEvent_set
 #print axioms unique_bad_gamma_common_witness
+#print axioms line_slope_codeword_of_two_witnesses
+#print axioms edge_witness_inter_card_ge
+#print axioms edge_slope_codeword_of_two_line_witnesses
 #print axioms common_witness_badGamma_card_le_one
 #print axioms common_witness_badGamma_set_card_le_one
 #print axioms badScalar_card_le_one_of_forced_univ

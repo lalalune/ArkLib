@@ -61,9 +61,14 @@ bounds.  The file chain (all axiom-clean, in `ArkLib/Data/CodingTheory/Proximity
 | Ladder cliff (`= 0` below band) + band packing law | `BandPackingLaw.lean` |
 | Band attainment + two-sided bracket at every band | `BandAttainment.lean` |
 
-Solved landscape: boundary band sup `= C(n,k+1)` (attained + universal);
-ladder curve exact at all radii (`0` below the band, the spectrum mass in it);
-band `m ≥ 1` bracketed `[⌊n/(k+m+1)⌋, C(n,k+1)/C(k+m+1,k+1)]`.  Remaining open
-(#371): the band-`m` bracket gap (an extremal-design question: near-perfect
-`≤k`-overlap packings of witness cores with compatible explaining codewords)
-and the production regime where `C(n,k+1)² > q`.
+Solved landscape (final, rounds 64–80): boundary band sup `= C(n,k+1)`
+(attained + universal) and production boundary failure `ε_mca ≈ 1`
+unconditionally (`ProductionBoundaryFailure.lean`); ladder curve exact at all
+radii; band `m ≥ 1` bracketed `[⌊(n−k)/(m+1)⌋, C(n,k+1)/C(k+m+1,k+1)]`
+(`BandAttainmentChained.lean`), witness-mass dense (`DeepBandCoherence.lean`),
+multiplicity-reduced to the named `ExplainableCoreSupply`
+(`DeepBandMultiplicity.lean`) with the supply proven above the wall
+(`ExplainableCoreSupplyInstance.lean`).  #371 is CLOSED (consolidated
+2026-06-12); the single remaining statement — the sub-Johnson supply wall,
+quantitatively the classical RS list-size question — is tracked at **#389**
+with the reduction chain and both recorded attack routes.

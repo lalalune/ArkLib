@@ -21,8 +21,8 @@ the pencil.  Results:
   (`g_combination`), so a common root would make `g` vanish on the domain;
 * `pencil_split_small_unique` — at most one realized `T` has `|T| < w` (else `g`
   itself would have degree `< w`);
-* **`splitMember_count_le`** — if every realized `T` has size at least `w`, the
-  split members are just a disjoint packing, so the count is at most `n/w`;
+* **`pencil_split_card_le_of_degree_le_card`** — if every realized member has
+  `|T| ≥ w`, the small-member exception vanishes and the family has size `≤ n / w`;
 * **`pencil_split_card_le`** — any family `𝒯` of realized index sets has
   `𝒯.card ≤ n / w + 1`.
 
@@ -204,33 +204,29 @@ theorem pencil_split_small_unique
               (le_of_eq (vanishingPoly_natDegree dom T₂))
   rcases max_cases T₁.card T₂.card with ⟨hmax, _⟩ | ⟨hmax, _⟩ <;> omega
 
+omit [DecidableEq F] in
 open Classical in
-/-- **Exact-size split-pencil bound.**  If every realized split member has at
-least `deg g` domain roots, the small-member exception disappears and the
-disjointness packing gives the sharp `n / deg g` count. -/
-theorem splitMember_count_le (hw : 1 ≤ g.natDegree)
+/-- **Exact split-pencil bound for large realized members.**  If every split member
+has at least `g.natDegree` roots on the domain, the exceptional small-member term in
+`pencil_split_card_le` disappears. -/
+theorem pencil_split_card_le_of_degree_le_card (hw : 1 ≤ g.natDegree)
     (hgeval : ∀ i : Fin n, g.eval (dom i) ≠ 0)
     (𝒯 : Finset (Finset (Fin n)))
     (h𝒯 : ∀ T ∈ 𝒯, SplitMember dom f g T)
     (hcard : ∀ T ∈ 𝒯, g.natDegree ≤ T.card) :
     𝒯.card ≤ n / g.natDegree := by
-  classical
-  set w := g.natDegree with hwdef
-  have hbigcard : w * 𝒯.card ≤ n := by
+  have hmul : g.natDegree * 𝒯.card ≤ n := by
     have hdisj : ∀ T₁ ∈ 𝒯, ∀ T₂ ∈ 𝒯, T₁ ≠ T₂ → Disjoint T₁ T₂ := by
       intro T₁ h₁ T₂ h₂ hne
       exact pencil_split_disjoint hgeval hne (h𝒯 T₁ h₁) (h𝒯 T₂ h₂)
-    calc w * 𝒯.card = ∑ _T ∈ 𝒯, w := by
+    calc g.natDegree * 𝒯.card = ∑ _T ∈ 𝒯, g.natDegree := by
           rw [Finset.sum_const, smul_eq_mul, mul_comm]
-      _ ≤ ∑ T ∈ 𝒯, T.card := by
-          exact Finset.sum_le_sum fun T hT => by
-            rw [hwdef]
-            exact hcard T hT
+      _ ≤ ∑ T ∈ 𝒯, T.card := Finset.sum_le_sum hcard
       _ = (𝒯.biUnion id).card := (Finset.card_biUnion hdisj).symm
       _ ≤ Fintype.card (Fin n) := Finset.card_le_univ _
       _ = n := Fintype.card_fin n
-  rw [Nat.le_div_iff_mul_le (by omega : 0 < w), mul_comm]
-  exact hbigcard
+  rw [Nat.le_div_iff_mul_le (by omega : 0 < g.natDegree), mul_comm]
+  exact hmul
 
 open Classical in
 /-- **THE SPLIT-PENCIL BOUND (G1).**  Any family of index sets realized as split
@@ -274,6 +270,34 @@ theorem pencil_split_card_le (hw : 1 ≤ g.natDegree)
     exact hbigcard
   omega
 
+open Classical in
+/-- **Exact-size split-pencil bound.**  If every realized split member has at
+least `deg g` domain roots, the small-member exception disappears and the
+disjointness packing gives the sharp `n / deg g` count. -/
+theorem splitMember_count_le (hw : 1 ≤ g.natDegree)
+    (hgeval : ∀ i : Fin n, g.eval (dom i) ≠ 0)
+    (𝒯 : Finset (Finset (Fin n)))
+    (h𝒯 : ∀ T ∈ 𝒯, SplitMember dom f g T)
+    (hcard : ∀ T ∈ 𝒯, g.natDegree ≤ T.card) :
+    𝒯.card ≤ n / g.natDegree := by
+  classical
+  set w := g.natDegree with hwdef
+  have hbigcard : w * 𝒯.card ≤ n := by
+    have hdisj : ∀ T₁ ∈ 𝒯, ∀ T₂ ∈ 𝒯, T₁ ≠ T₂ → Disjoint T₁ T₂ := by
+      intro T₁ h₁ T₂ h₂ hne
+      exact pencil_split_disjoint hgeval hne (h𝒯 T₁ h₁) (h𝒯 T₂ h₂)
+    calc w * 𝒯.card = ∑ _T ∈ 𝒯, w := by
+          rw [Finset.sum_const, smul_eq_mul, mul_comm]
+      _ ≤ ∑ T ∈ 𝒯, T.card := by
+          exact Finset.sum_le_sum fun T hT => by
+            rw [hwdef]
+            exact hcard T hT
+      _ = (𝒯.biUnion id).card := (Finset.card_biUnion hdisj).symm
+      _ ≤ Fintype.card (Fin n) := Finset.card_le_univ _
+      _ = n := Fintype.card_fin n
+  rw [Nat.le_div_iff_mul_le (by omega : 0 < w), mul_comm]
+  exact hbigcard
+
 end Pencil
 
 end ProximityGap.WBPencil
@@ -282,5 +306,5 @@ end ProximityGap.WBPencil
 #print axioms ProximityGap.WBPencil.g_combination
 #print axioms ProximityGap.WBPencil.pencil_split_disjoint
 #print axioms ProximityGap.WBPencil.pencil_split_small_unique
-#print axioms ProximityGap.WBPencil.splitMember_count_le
+#print axioms ProximityGap.WBPencil.pencil_split_card_le_of_degree_le_card
 #print axioms ProximityGap.WBPencil.pencil_split_card_le

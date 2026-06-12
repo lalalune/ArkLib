@@ -151,6 +151,127 @@ theorem degenerate_tuples_card_le (dom : Fin n ↪ F) {k : ℕ} (S : Finset (Fin
   exact le_trans hsub hBcount
 
 open Classical in
+/-- **Sharpened degenerate-tuple count**: after the first `k` coordinates determine
+the unique extending codeword, those same `k` coordinates are already in its agreement
+set with `u₁`.  The injective last coordinate is outside that prefix, so each fixed
+prefix contributes at most `μ - k` degenerate extensions, not `μ`. -/
+theorem degenerate_tuples_card_le_sharp (dom : Fin n ↪ F) {k : ℕ} (S : Finset (Fin n))
+    {u₁ : Fin n → F} {μ : ℕ}
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c u₁).card ≤ μ) :
+    ((Finset.univ.filter (fun t : Fin (k+1) → Fin n =>
+        (Function.Injective t ∧ ∀ a, t a ∈ S) ∧
+        ∃ c ∈ (rsCode dom k : Submodule F (Fin n → F)), ∀ a, c (t a) = u₁ (t a))).card)
+      ≤ (Finset.univ.filter (fun t' : Fin k → Fin n =>
+          Function.Injective t' ∧ ∀ a, t' a ∈ S)).card * (μ - k) := by
+  set kT := Finset.univ.filter (fun t' : Fin k → Fin n =>
+    Function.Injective t' ∧ ∀ a, t' a ∈ S) with hkT
+  set B := (kT ×ˢ (Finset.univ : Finset (Fin n))).filter
+    (fun p => p.2 ∉ Finset.univ.image p.1 ∧
+      ∃ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+        (∀ a, c (p.1 a) = u₁ (p.1 a)) ∧ c p.2 = u₁ p.2) with hB
+  -- The degenerate set injects into prefix/last-coordinate pairs with the last
+  -- coordinate explicitly outside the prefix image.
+  have hsub : (Finset.univ.filter (fun t : Fin (k+1) → Fin n =>
+      (Function.Injective t ∧ ∀ a, t a ∈ S) ∧
+      ∃ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+        ∀ a, c (t a) = u₁ (t a))).card ≤ B.card := by
+    refine Finset.card_le_card_of_injOn
+      (fun t => (fun a => t a.castSucc, t (Fin.last k))) ?_ ?_
+    · intro t ht
+      rw [Finset.mem_coe, Finset.mem_filter] at ht
+      obtain ⟨-, ⟨hinjt, hmem⟩, c, hcC, hagr⟩ := ht
+      have hlast_not : t (Fin.last k) ∉
+          Finset.univ.image (fun a : Fin k => t a.castSucc) := by
+        intro hlast
+        obtain ⟨a, -, ha⟩ := Finset.mem_image.mp hlast
+        have hidx : a.castSucc = Fin.last k := hinjt ha
+        have hval := congrArg Fin.val hidx
+        rw [Fin.val_castSucc, Fin.val_last] at hval
+        omega
+      rw [Finset.mem_coe, hB, Finset.mem_filter, Finset.mem_product]
+      refine ⟨⟨?_, Finset.mem_univ _⟩, hlast_not, c, hcC,
+        fun a => hagr a.castSucc, hagr (Fin.last k)⟩
+      rw [hkT, Finset.mem_filter]
+      refine ⟨Finset.mem_univ _, ?_, fun a => hmem _⟩
+      intro a b hab
+      exact Fin.castSucc_injective k (hinjt hab)
+    · intro t ht t' ht' heq
+      funext a
+      by_cases ha : a = Fin.last k
+      · rw [ha]
+        exact congrArg Prod.snd heq
+      · have ha' : (a : ℕ) < k := by
+          have := a.2
+          by_contra hc
+          exact ha (Fin.ext (by rw [Fin.val_last]; omega))
+        have haeq : a = Fin.castSucc ⟨(a : ℕ), ha'⟩ := Fin.ext rfl
+        rw [haeq]
+        exact congrFun (congrArg Prod.fst heq) ⟨(a : ℕ), ha'⟩
+  -- B counts fiberwise over the first component, ≤ μ-k per fiber.
+  have hBcount : B.card ≤ kT.card * (μ - k) := by
+    have hfib : B.card = ∑ t' ∈ kT, (B.filter (fun p => p.1 = t')).card := by
+      refine Finset.card_eq_sum_card_fiberwise (f := Prod.fst) ?_
+      intro p hp
+      exact (Finset.mem_product.mp (Finset.mem_filter.mp hp).1).1
+    rw [hfib]
+    calc ∑ t' ∈ kT, (B.filter (fun p => p.1 = t')).card
+        ≤ ∑ _t' ∈ kT, (μ - k) := by
+          refine Finset.sum_le_sum fun t' ht' => ?_
+          -- Per-fiber: all last points lie in one agreement set minus the prefix.
+          by_cases hne : (B.filter (fun p => p.1 = t')).Nonempty
+          · obtain ⟨p₀, hp₀⟩ := hne
+            obtain ⟨hp₀B, hp₀fst⟩ := Finset.mem_filter.mp hp₀
+            obtain ⟨-, -, c₀, hc₀C, hc₀ag, -⟩ := Finset.mem_filter.mp hp₀B
+            rw [hp₀fst] at hc₀ag
+            have ht'inj : Function.Injective t' :=
+              ((Finset.mem_filter.mp ht').2).1
+            set pref : Finset (Fin n) := Finset.univ.image t' with hpref
+            have hprefsub : pref ⊆ agreeSet c₀ u₁ := by
+              intro x hx
+              rw [hpref] at hx
+              obtain ⟨a, -, rfl⟩ := Finset.mem_image.mp hx
+              rw [agreeSet, Finset.mem_filter]
+              exact ⟨Finset.mem_univ _, hc₀ag a⟩
+            have hprefcard : pref.card = k := by
+              rw [hpref, Finset.card_image_of_injective _ ht'inj, Finset.card_univ,
+                Fintype.card_fin]
+            calc (B.filter (fun p => p.1 = t')).card
+                ≤ ((agreeSet c₀ u₁) \ pref).card := by
+                  refine Finset.card_le_card_of_injOn Prod.snd ?_ ?_
+                  · intro p hp
+                    obtain ⟨hpB, hpfst⟩ := Finset.mem_filter.mp hp
+                    obtain ⟨-, hpnot, c, hcC, hcag, hclast⟩ :=
+                      Finset.mem_filter.mp hpB
+                    rw [hpfst] at hcag hpnot
+                    -- uniqueness: c = c₀
+                    have hceq : c = c₀ :=
+                      codeword_eq_of_common_tuple dom (y := u₁) hcC hc₀C t'
+                        ht'inj hcag hc₀ag
+                    rw [Finset.mem_coe, Finset.mem_sdiff]
+                    refine ⟨?_, ?_⟩
+                    · rw [agreeSet, Finset.mem_filter]
+                      refine ⟨Finset.mem_univ _, ?_⟩
+                      rw [← hceq]
+                      exact hclast
+                    · simpa [pref, hpref] using hpnot
+                  · intro p hp p' hp' hsnd
+                    have h1 := (Finset.mem_filter.mp hp).2
+                    have h2 := (Finset.mem_filter.mp hp').2
+                    exact Prod.ext (h1.trans h2.symm) hsnd
+              _ = (agreeSet c₀ u₁).card - pref.card := by
+                  rw [Finset.card_sdiff_of_subset hprefsub]
+              _ ≤ μ - k := by
+                  have hμc := hμ c₀ hc₀C
+                  rw [hprefcard]
+                  omega
+          · rw [Finset.not_nonempty_iff_eq_empty.mp hne]
+            simp
+      _ = kT.card * (μ - k) := by
+          rw [Finset.sum_const, smul_eq_mul]
+  exact le_trans hsub hBcount
+
+open Classical in
 /-- **The converse vanishing**: a zero residual on an injective tuple yields a
 codeword extension of the direction on that tuple. -/
 theorem extension_of_residual_eq_zero (dom : Fin n ↪ F) {k : ℕ}
@@ -284,18 +405,21 @@ theorem extension_of_residual_eq_zero (dom : Fin n ↪ F) {k : ℕ}
 
 
 open Classical in
-/-- **THE GENERAL-k MULTIPLICITY THEOREM**: for a direction with maximum codeword
-agreement ≤ `μ`, at every radius `δ ≤ w/n`:
+/-- **The sharpened general-k multiplicity theorem**: for a direction with maximum
+codeword agreement ≤ `μ`, at every radius `δ ≤ w/n`:
 
-  `#bad · ((n−w).descFactorial k · (n−w−k−μ)) ≤ n^{k+1}`. -/
-theorem badScalars_card_mul_le_of_agreement (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
+  `#bad · ((n−w).descFactorial k · (n−w−k−(μ−k))) ≤ n^{k+1}`.
+
+When `μ ≥ k`, the final factor is `n−w−μ`, removing the `k`-loss in the
+landed multiplicity theorem. -/
+theorem badScalars_card_mul_le_of_agreement_sharp (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
     {w : ℕ} {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
     {u₀ u₁ : Fin n → F} {μ : ℕ}
     (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
       (agreeSet c u₁).card ≤ μ) :
     (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
         ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
-      * ((n - w).descFactorial k * (n - w - k - μ))
+      * ((n - w).descFactorial k * (n - w - k - (μ - k)))
       ≤ Fintype.card (Fin (k + 1) → Fin n) := by
   set bad := Finset.univ.filter (fun γ : F => mcaEvent (F := F)
     ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ) with hbad
@@ -429,7 +553,7 @@ theorem badScalars_card_mul_le_of_agreement (dom : Fin n ↪ F) {k : ℕ} (hk : 
               simpa [Fin.snoc_last] using this
     -- degenerate count
     have hdeg : (I.filter (fun t => ¬ residual dom k t u₁ ≠ 0)).card
-        ≤ kT.card * μ := by
+        ≤ kT.card * (μ - k) := by
       have hsub3 : I.filter (fun t => ¬ residual dom k t u₁ ≠ 0)
           ⊆ Finset.univ.filter (fun t : Fin (k+1) → Fin n =>
             (Function.Injective t ∧ ∀ a, t a ∈ W γ) ∧
@@ -442,7 +566,7 @@ theorem badScalars_card_mul_le_of_agreement (dom : Fin n ↪ F) {k : ℕ} (hk : 
         rw [Finset.mem_filter]
         exact ⟨Finset.mem_univ _, ⟨htinj, htmem⟩, hconv t htinj htres⟩
       exact le_trans (Finset.card_le_card hsub3)
-        (degenerate_tuples_card_le dom (W γ) hμ)
+        (degenerate_tuples_card_le_sharp dom (W γ) hμ)
     -- the owned set contains the nondegenerate injective tuples
     have hown : I.filter (fun t => residual dom k t u₁ ≠ 0) ⊆ 𝒯 γ := by
       intro t ht
@@ -456,25 +580,46 @@ theorem badScalars_card_mul_le_of_agreement (dom : Fin n ↪ F) {k : ℕ} (hk : 
     have hkTge : (n - w).descFactorial k ≤ kT.card := by
       refine le_trans ?_ (injective_tuples_card_ge_descFactorial (W γ))
       exact Nat.descFactorial_le _ hSsz
-    calc (n - w).descFactorial k * (n - w - k - μ)
-        ≤ kT.card * ((W γ).card - k - μ) := by
+    calc (n - w).descFactorial k * (n - w - k - (μ - k))
+        ≤ kT.card * ((W γ).card - k - (μ - k)) := by
           refine Nat.mul_le_mul hkTge ?_
           omega
       _ ≤ (𝒯 γ).card := by
-          have h1 : kT.card * ((W γ).card - k - μ)
-              ≤ kT.card * ((W γ).card - k) - kT.card * μ := by
+          have h1 : kT.card * ((W γ).card - k - (μ - k))
+              ≤ kT.card * ((W γ).card - k) - kT.card * (μ - k) := by
             rw [← Nat.mul_sub]
-          have h2 : kT.card * ((W γ).card - k) - kT.card * μ
-              ≤ I.card - kT.card * μ := by omega
-          have h3 : I.card - kT.card * μ
+          have h2 : kT.card * ((W γ).card - k) - kT.card * (μ - k)
+              ≤ I.card - kT.card * (μ - k) := by omega
+          have h3 : I.card - kT.card * (μ - k)
               ≤ (I.filter (fun t => residual dom k t u₁ ≠ 0)).card := by omega
           exact le_trans h1 (le_trans h2 (le_trans h3
             (Finset.card_le_card hown)))
+
+open Classical in
+/-- **THE GENERAL-k MULTIPLICITY THEOREM**: for a direction with maximum codeword
+agreement ≤ `μ`, at every radius `δ ≤ w/n`:
+
+  `#bad · ((n−w).descFactorial k · (n−w−k−μ)) ≤ n^{k+1}`. -/
+theorem badScalars_card_mul_le_of_agreement (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
+    {w : ℕ} {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {u₀ u₁ : Fin n → F} {μ : ℕ}
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c u₁).card ≤ μ) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+      * ((n - w).descFactorial k * (n - w - k - μ))
+      ≤ Fintype.card (Fin (k + 1) → Fin n) := by
+  have hsharp := badScalars_card_mul_le_of_agreement_sharp dom hk hδn
+    (u₀ := u₀) (u₁ := u₁) hμ
+  refine le_trans (Nat.mul_le_mul_left _ ?_) hsharp
+  exact Nat.mul_le_mul_left _ (by omega)
 
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.injective_tuples_card_ge_descFactorial
 #print axioms ProximityGap.Ownership.degenerate_tuples_card_le
+#print axioms ProximityGap.Ownership.degenerate_tuples_card_le_sharp
 #print axioms ProximityGap.Ownership.extension_of_residual_eq_zero
+#print axioms ProximityGap.Ownership.badScalars_card_mul_le_of_agreement_sharp
 #print axioms ProximityGap.Ownership.badScalars_card_mul_le_of_agreement

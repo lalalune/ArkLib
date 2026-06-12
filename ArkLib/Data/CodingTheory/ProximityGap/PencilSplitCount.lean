@@ -22,6 +22,7 @@ by this lemma.  The `μ_w`-coset family is exactly the pencil
 -/
 
 open Finset Polynomial
+open scoped NNReal ENNReal ProbabilityTheory
 
 namespace ProximityGap.WBPencil
 
@@ -79,7 +80,35 @@ theorem pencil_split_count_le (dom : Fin n ↪ F) {w : ℕ} (hw : 1 ≤ w)
     _ = (Λ.biUnion T).card := hbiU.symm
     _ ≤ n := hcap
 
+open Classical in
+/-- Floor form of `pencil_split_count_le`: the number of split members is at most `n / w`. -/
+theorem pencil_split_count_card_le_div (dom : Fin n ↪ F) {w : ℕ} (hw : 1 ≤ w)
+    (f g : F[X])
+    (hno : ∀ i : Fin n, ¬ (f.eval (dom i) = 0 ∧ g.eval (dom i) = 0)) :
+    (Finset.univ.filter (fun lam : F =>
+        ∃ T : Finset (Fin n), w ≤ T.card ∧
+          ∀ i ∈ T, (f - C lam * g).eval (dom i) = 0)).card ≤ n / w := by
+  exact (Nat.le_div_iff_mul_le (by omega : 0 < w)).mpr
+    (pencil_split_count_le dom hw f g hno)
+
+omit [DecidableEq F] in
+open Classical in
+/-- Probability form of `pencil_split_count_le`: a uniform pencil member is split on at
+least `w` domain points with probability at most `(n / w) / |F|`. -/
+theorem pencil_split_prob_le_div (dom : Fin n ↪ F) {w : ℕ} (hw : 1 ≤ w)
+    (f g : F[X])
+    (hno : ∀ i : Fin n, ¬ (f.eval (dom i) = 0 ∧ g.eval (dom i) = 0)) :
+    Pr_{ let lam ←$ᵖ F }[∃ T : Finset (Fin n), w ≤ T.card ∧
+        ∀ i ∈ T, (f - C lam * g).eval (dom i) = 0]
+      ≤ (((n / w : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) := by
+  rw [prob_uniform_eq_card_filter_div_card]
+  exact ENNReal.div_le_div_right
+    (by exact_mod_cast pencil_split_count_card_le_div dom hw f g hno)
+    _
+
 end ProximityGap.WBPencil
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.WBPencil.pencil_split_count_le
+#print axioms ProximityGap.WBPencil.pencil_split_count_card_le_div
+#print axioms ProximityGap.WBPencil.pencil_split_prob_le_div

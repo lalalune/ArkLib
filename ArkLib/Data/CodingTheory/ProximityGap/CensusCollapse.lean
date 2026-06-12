@@ -17,13 +17,15 @@ mod 4:
 > `A` has a qualifying core `A'` with `|A'| < 6`, `|A'| ≡ |A| (mod 4)`, and
 > `∑_{i∈A} g^i = ∑_{i∈A'} g^i` for every `(p, g)`.
 
-Since the only qualifying sizes `< 6` are `0, 4, 5` (sizes `1, 2, 3` cannot balance:
-their pair multisets are too small to pair antipodally — `0`, `1`, and `3` sums
-respectively), the `a ≡ 0 (mod 4)` censuses collapse onto `census(4) ∪ {0}` and the
-`a ≡ 1 (mod 4)` censuses onto `census(5) ∪ (size-1 values)` — pinning the entire
-even-row half of the depth-1 table modulo the one named obligation, which is reduced
-(issue thread) to a scale-uniform ℤ[i]-collision case analysis, probe-verified at
-`a = 8, 12, 16` and doubling-stable.
+The obligation is restricted to sets of size EXACTLY 8: the C sweeps refute every
+larger form — coset-free balanced 9-sets exist (one orbit at n=16, eleven at n=32),
+and coset-free balanced 12- and 16-sets exist at n=32 (128 and 256, ALL of whose census
+values escape census(4)): the rows a ≥ 9 of the depth-1 table are genuinely growing
+primitive hierarchies, and only the a = 8 row collapses. The size-8 obligation is
+probe-verified exhaustively at n = 16, 32, 64 (zero exceptions, all class structures —
+4.4·10⁹ configurations at n = 64), the k = 3 class-count case is proven by hand, the
+k = 4, 5 architecture lists are enumerated (67 cases, one killed), and the k ≥ 6
+singleton-heavy core is localized to a σ-pinning propagation question.
 
 ## References
 
@@ -39,12 +41,13 @@ open ArkLib.ProximityGap.KKH26
 namespace ArkLib.ProximityGap.WindowTwoLayer
 
 /-- **The named obligation** (the project's residual convention): every qualifying
-exponent set of size at least 6 contains a full coset of the order-4 subgroup in
-reduction. Probe-true at `n = 16` for `a = 8, 12, 16` (`probe_coset_core_conjecture.py`,
-zero exceptions), stable under the doubling functor; the scale-uniform ℤ[i]-collision
-case analysis is the named proof route. -/
-def ContainsCosetHyp (m : ℕ) : Prop :=
-  ∀ A : Finset ℕ, A ⊆ Finset.range (2 ^ m) → 6 ≤ A.card → e2Folded m A = 0 →
+exponent set of size EXACTLY 8 contains a full coset of the order-4 subgroup in
+reduction. The size restriction is essential and sharp: coset-free balanced sets of sizes
+9, 12, 16 exist at `n = 32` (C sweeps), so no larger form is true. Probe-verified
+exhaustively at `n = 16, 32, 64` with zero exceptions across all class structures. -/
+def ContainsCosetHyp8 (m : ℕ) : Prop :=
+  ∀ A : Finset ℕ, A ⊆ Finset.range (2 ^ m) → A.card = 8 →
+    e2Folded m A = 0 →
     ∃ x : ZMod (2 ^ m),
       x ∈ A.val.map (Nat.cast : ℕ → ZMod (2 ^ m)) ∧
       x + ((2 ^ (m - 2) : ℕ) : ZMod (2 ^ m))
@@ -54,39 +57,25 @@ def ContainsCosetHyp (m : ℕ) : Prop :=
       x + ((2 ^ (m - 2) : ℕ) : ZMod (2 ^ m)) + ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m))
         ∈ A.val.map (Nat.cast : ℕ → ZMod (2 ^ m))
 
-/-- **The conditional census collapse.** Under the contains-a-coset obligation, every
-qualifying set strips to a qualifying core of size `< 6`, congruent mod 4, with the same
-census value at every prime and primitive root simultaneously. -/
-theorem census_collapse_of_containsCoset {m : ℕ} (hm : 2 ≤ m) (hyp : ContainsCosetHyp m)
-    {A : Finset ℕ} (hsub : A ⊆ Finset.range (2 ^ m)) (hzero : e2Folded m A = 0) :
-    ∃ A' : Finset ℕ, A' ⊆ Finset.range (2 ^ m) ∧ A'.card < 6 ∧
-      A'.card % 4 = A.card % 4 ∧ e2Folded m A' = 0 ∧
+/-- **The conditional a = 8 collapse.** Under the size-8 obligation, every qualifying
+8-set strips to a qualifying 4-set with the same census value at every prime
+simultaneously: `census(8) ⊆ census(4)`, the downward half of the measured set-equality
+`census(8) = census(4) = (n/2−1)²`. (The upward half is the free-coset augmentation;
+rows `a ≥ 9` provably do NOT collapse — their censuses grow with the primitive layers.) -/
+theorem census8_collapse_of_containsCoset {m : ℕ} (hm : 2 ≤ m)
+    (hyp : ContainsCosetHyp8 m)
+    {A : Finset ℕ} (hsub : A ⊆ Finset.range (2 ^ m)) (hcard : A.card = 8)
+    (hzero : e2Folded m A = 0) :
+    ∃ A' : Finset ℕ, A' ⊆ Finset.range (2 ^ m) ∧ A'.card = 4 ∧ e2Folded m A' = 0 ∧
       ∀ {p : ℕ} [Fact p.Prime] (g : ZMod p), IsPrimitiveRoot g (2 ^ m) →
         ∑ i ∈ A, g ^ i = ∑ i ∈ A', g ^ i := by
-  suffices H : ∀ n (A : Finset ℕ), A.card = n → A ⊆ Finset.range (2 ^ m) →
-      e2Folded m A = 0 →
-      ∃ A' : Finset ℕ, A' ⊆ Finset.range (2 ^ m) ∧ A'.card < 6 ∧
-        A'.card % 4 = A.card % 4 ∧ e2Folded m A' = 0 ∧
-        ∀ {p : ℕ} [Fact p.Prime] (g : ZMod p), IsPrimitiveRoot g (2 ^ m) →
-          ∑ i ∈ A, g ^ i = ∑ i ∈ A', g ^ i by
-    exact H A.card A rfl hsub hzero
-  intro n
-  induction n using Nat.strong_induction_on with
-  | _ n ih =>
-    intro A hcard hsub hzero
-    by_cases h6 : A.card < 6
-    · exact ⟨A, hsub, h6, rfl, hzero, fun g _ => rfl⟩
-    · obtain ⟨x, hx, hxq, hxh, hxqh⟩ := hyp A hsub (by omega) hzero
-      obtain ⟨A'', hsub'', hcard'', hzero'', hsum''⟩ :=
-        strip_coset hm hsub hzero hx hxq hxh hxqh
-      obtain ⟨A', hsub', h6', hmod', hzero', hsum'⟩ :=
-        ih A''.card (by omega) A'' rfl hsub'' hzero''
-      refine ⟨A', hsub', h6', by omega, hzero', ?_⟩
-      intro p _ g hg
-      rw [hsum'' g hg, hsum' g hg]
+  obtain ⟨x, hx, hxq, hxh, hxqh⟩ := hyp A hsub hcard hzero
+  obtain ⟨A', hsub', hcard', hzero', hsum'⟩ :=
+    strip_coset hm hsub hzero hx hxq hxh hxqh
+  exact ⟨A', hsub', by omega, hzero', hsum'⟩
 
 /-! ## Source audit -/
 
-#print axioms census_collapse_of_containsCoset
+#print axioms census8_collapse_of_containsCoset
 
 end ArkLib.ProximityGap.WindowTwoLayer

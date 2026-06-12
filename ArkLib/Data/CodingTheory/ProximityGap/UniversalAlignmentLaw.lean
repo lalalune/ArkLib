@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceEveryLine
+import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 
 /-!
 # The universal alignment law: MCA ≡ residual-pencil alignment at EVERY radius (#371)
@@ -179,6 +180,16 @@ def Aligned (dom : Fin n ↪ F) (k : ℕ) (u₀ u₁ : Fin n → F) (γ : F)
   ∀ t : Fin (k + 1) → Fin n, Function.Injective t → (∀ b, t b ∈ S) →
     residual dom k t u₀ + γ * residual dom k t u₁ = 0
 
+open Classical in
+/-- The `a`-point sets that are aligned for some scalar and contain a non-degenerate
+tuple.  These are the census objects in `badScalars_card_le_alignable`. -/
+noncomputable def alignableSets (dom : Fin n ↪ F) (k a : ℕ)
+    (u₀ u₁ : Fin n → F) : Finset (Finset (Fin n)) :=
+  (Finset.univ.powersetCard a).filter (fun S : Finset (Fin n) =>
+    ∃ γ : F, Aligned dom k u₀ u₁ γ S ∧
+      ∃ t : Fin (k + 1) → Fin n, Function.Injective t ∧ (∀ b, t b ∈ S) ∧
+        ¬ (residual dom k t u₀ = 0 ∧ residual dom k t u₁ = 0))
+
 omit [Fintype F] [DecidableEq F] [NeZero n] in
 /-- Alignment is monotone under subsets: every tuple of a subset is a tuple of the set. -/
 theorem Aligned.mono {dom : Fin n ↪ F} {k : ℕ} {u₀ u₁ : Fin n → F} {γ : F}
@@ -305,6 +316,61 @@ theorem badScalars_card_le_alignable (dom : Fin n ↪ F) {k a : ℕ} (hk : 1 ≤
     obtain ⟨t, htinj, htmem, hnd⟩ := hspec₁.2.2
     exact Aligned.gamma_eq hspec₁.2.1 (heq ▸ hspec₂.2.1) htinj htmem hnd
 
+open Classical in
+/-- The universal census bound in `alignableSets` notation. -/
+theorem badScalars_card_le_alignableSets (dom : Fin n ↪ F) {k a : ℕ} (hk : 1 ≤ k)
+    (hka : k + 1 ≤ a) {δ : ℝ≥0}
+    (hlo : ((a - 1 : ℕ) : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (a : ℕ))
+    (u₀ u₁ : Fin n → F) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+      ≤ (alignableSets dom k a u₀ u₁).card := by
+  simpa [alignableSets] using badScalars_card_le_alignable dom hk hka hlo hhi u₀ u₁
+
+open Classical in
+/-- Any uniform census bound for alignable `a`-sets immediately gives the prize-side
+`ε_mca` bound.  This is the main consumer for future alignment-census theorems. -/
+theorem epsMCA_le_of_alignableSets_card_le (dom : Fin n ↪ F) {k a : ℕ} (hk : 1 ≤ k)
+    (hka : k + 1 ≤ a) {δ : ℝ≥0}
+    (hlo : ((a - 1 : ℕ) : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (a : ℕ)) (L : ℕ)
+    (hL : ∀ u₀ u₁ : Fin n → F, (alignableSets dom k a u₀ u₁).card ≤ L) :
+    epsMCA (F := F) (A := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      ≤ (L : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
+  epsMCA_le_of_badCount_le
+    (((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F))) δ L
+    (fun u => le_trans
+      (badScalars_card_le_alignableSets dom hk hka hlo hhi (u 0) (u 1))
+      (hL (u 0) (u 1)))
+
+open Classical in
+/-- Coarse alignment census: before using any structure, there is at most one bad scalar
+per `a`-subset. -/
+theorem alignableSets_card_le_choose (dom : Fin n ↪ F) (k a : ℕ) (u₀ u₁ : Fin n → F) :
+    (alignableSets dom k a u₀ u₁).card ≤ n.choose a := by
+  calc
+    (alignableSets dom k a u₀ u₁).card
+        ≤ ((Finset.univ : Finset (Fin n)).powersetCard a).card := by
+          rw [alignableSets]
+          exact Finset.card_le_card (Finset.filter_subset _ _)
+    _ = n.choose a := by
+      rw [Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
+
+open Classical in
+/-- Coarse probability form of the universal alignment law:
+`ε_mca(δ) ≤ C(n,a)/|F|` whenever `a−1 < (1−δ)n ≤ a` and `a ≥ k+1`. -/
+theorem epsMCA_le_alignment_choose (dom : Fin n ↪ F) {k a : ℕ} (hk : 1 ≤ k)
+    (hka : k + 1 ≤ a) {δ : ℝ≥0}
+    (hlo : ((a - 1 : ℕ) : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (a : ℕ)) :
+    epsMCA (F := F) (A := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      ≤ ((n.choose a : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
+  epsMCA_le_of_alignableSets_card_le dom hk hka hlo hhi (n.choose a)
+    (fun u₀ u₁ => alignableSets_card_le_choose dom k a u₀ u₁)
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -312,3 +378,7 @@ end ProximityGap.Ownership
 #print axioms ProximityGap.Ownership.pairJointAgreesOn_iff_forall_residual
 #print axioms ProximityGap.Ownership.mcaEvent_iff_aligned_subset
 #print axioms ProximityGap.Ownership.badScalars_card_le_alignable
+#print axioms ProximityGap.Ownership.badScalars_card_le_alignableSets
+#print axioms ProximityGap.Ownership.epsMCA_le_of_alignableSets_card_le
+#print axioms ProximityGap.Ownership.alignableSets_card_le_choose
+#print axioms ProximityGap.Ownership.epsMCA_le_alignment_choose

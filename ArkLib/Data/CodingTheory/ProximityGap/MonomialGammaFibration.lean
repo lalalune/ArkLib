@@ -24,8 +24,6 @@ So the bad-scalar set fibers over `γ ↦ c·γ`: its nonzero part is a disjoint
 > **`orderOf_dvd_card_badScalars_erase_zero`** — `ord(c) ∣ #(badSet ∖ {0})`, and for the
 > adjacent-pair family (`b = a + 1`, the KKH26 ceiling stacks) **`n ∣ #(badSet ∖ {0})`**
 > (`n_dvd_card_badScalars_adjacent`).
-> **`orderOf_le_card_badScalars_erase_zero_of_nonzero_bad`** — one nonzero bad scalar
-> seeds a full free `⟨c⟩`-orbit, so `ord(c) ≤ #(badSet ∖ {0})`.
 
 ## Why this matters (#371)
 
@@ -293,6 +291,84 @@ theorem orderOf_dvd_card_badScalars_erase_zero {p : ℕ} [Fact p.Prime] {g : ZMo
     exact (mcaEvent_monoStack_gamma_mul hg hg0 d a b δ γ).mpr hbad
 
 open Classical in
+/-- Total-count form of the fibration divisibility: the full monomial bad-scalar count is
+an `ord(c)`-multiple plus the possible fixed zero scalar.  This packages
+`orderOf_dvd_card_badScalars_erase_zero` in the form used by spectrum exactness checks:
+`#bad = ord(c)·q + [0 ∈ badSet]`. -/
+theorem badScalars_card_eq_order_mul_add_zero {p : ℕ} [Fact p.Prime]
+    {g : ZMod p} {n : ℕ} [NeZero n] (hg : orderOf g = n) (hg0 : g ≠ 0)
+    (d a b : ℕ) (δ : ℝ≥0) :
+    ∃ q : ℕ,
+      (Finset.univ.filter (fun γ : ZMod p =>
+        mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+          (monoWord g a) (monoWord g b) γ)).card =
+        orderOf (g ^ b * (g ^ a)⁻¹) * q +
+          if mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+              (monoWord g a) (monoWord g b) 0 then 1 else 0 := by
+  classical
+  let B : Finset (ZMod p) := Finset.univ.filter (fun γ : ZMod p =>
+    mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+      (monoWord g a) (monoWord g b) γ)
+  have hdvd : orderOf (g ^ b * (g ^ a)⁻¹) ∣ (B.erase 0).card := by
+    simpa [B] using orderOf_dvd_card_badScalars_erase_zero hg hg0 d a b δ
+  rcases hdvd with ⟨q, hq⟩
+  refine ⟨q, ?_⟩
+  change B.card =
+    orderOf (g ^ b * (g ^ a)⁻¹) * q +
+      if mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+          (monoWord g a) (monoWord g b) 0 then 1 else 0
+  by_cases h0 : mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+      (monoWord g a) (monoWord g b) 0
+  · have h0B : (0 : ZMod p) ∈ B := by
+      simp [B, h0]
+    have hcard : (B.erase 0).card + 1 = B.card := Finset.card_erase_add_one h0B
+    simp only [h0, if_true]
+    rw [hq] at hcard
+    exact hcard.symm
+  · have h0B : (0 : ZMod p) ∉ B := by
+      simp [B, h0]
+    have hcard : (B.erase 0).card = B.card := by
+      rw [Finset.erase_eq_of_notMem h0B]
+    simp only [h0, if_false, add_zero]
+    rw [hcard] at hq
+    exact hq
+
+open Classical in
+/-- **The adjacent-pair divisibility** (`b = a + 1`, the KKH26 ceiling family): the
+multiplier is `g` itself, so the nonzero bad count is divisible by the full domain size
+`n` at every radius — the structural constraint behind the spectrum laws' arithmetic
+(`N(3,3) = 40 = 5·8`; `N(4,4) = 1233 = 77·16 + 1`, the `+1` being `γ = 0`). -/
+theorem n_dvd_card_badScalars_adjacent {p : ℕ} [Fact p.Prime] {g : ZMod p}
+    {n : ℕ} [NeZero n] (hg : orderOf g = n) (hg0 : g ≠ 0) (d a : ℕ) (δ : ℝ≥0) :
+    n ∣ ((Finset.univ.filter (fun γ : ZMod p =>
+      mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+        (monoWord g a) (monoWord g (a + 1)) γ)).erase 0).card := by
+  have hga : (g : ZMod p) ^ a ≠ 0 := pow_ne_zero _ hg0
+  have hmul : g ^ (a + 1) * (g ^ a)⁻¹ = g := by
+    rw [pow_succ', mul_assoc, mul_inv_cancel₀ hga, mul_one]
+  have h := orderOf_dvd_card_badScalars_erase_zero hg hg0 d a (a + 1) δ
+  rwa [hmul, hg] at h
+
+open Classical in
+/-- Adjacent-pair total-count form: for the KKH26 ceiling stacks `(Xᵃ, Xᵃ⁺¹)`, the full
+bad-scalar count is `n·q + [0 ∈ badSet]` at every radius. -/
+theorem adjacent_card_eq_n_mul_add_zero {p : ℕ} [Fact p.Prime]
+    {g : ZMod p} {n : ℕ} [NeZero n] (hg : orderOf g = n) (hg0 : g ≠ 0)
+    (d a : ℕ) (δ : ℝ≥0) :
+    ∃ q : ℕ,
+      (Finset.univ.filter (fun γ : ZMod p =>
+        mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+          (monoWord g a) (monoWord g (a + 1)) γ)).card =
+        n * q +
+          if mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+              (monoWord g a) (monoWord g (a + 1)) 0 then 1 else 0 := by
+  have hga : (g : ZMod p) ^ a ≠ 0 := pow_ne_zero _ hg0
+  have hmul : g ^ (a + 1) * (g ^ a)⁻¹ = g := by
+    rw [pow_succ', mul_assoc, mul_inv_cancel₀ hga, mul_one]
+  simpa [hmul, hg] using
+    badScalars_card_eq_order_mul_add_zero hg hg0 d a (a + 1) δ
+
+open Classical in
 /-- **One seed gives one full orbit.**  If a nonzero scalar is bad for a monomial stack, then
 the nonzero bad set contains its complete `⟨gᵇ·(gᵃ)⁻¹⟩`-orbit, hence has size at least the
 orbit order.  This is the lower-bound counterpart to
@@ -356,65 +432,6 @@ theorem orderOf_le_card_badScalars_erase_zero_of_nonzero_bad {p : ℕ} [Fact p.P
   exact Finset.card_le_card hOsub
 
 open Classical in
-/-- Total-count form of the fibration divisibility: the full monomial bad-scalar count is
-an `ord(c)`-multiple plus the possible fixed zero scalar.  This packages
-`orderOf_dvd_card_badScalars_erase_zero` in the form used by spectrum exactness checks:
-`#bad = ord(c)·q + [0 ∈ badSet]`. -/
-theorem badScalars_card_eq_order_mul_add_zero {p : ℕ} [Fact p.Prime]
-    {g : ZMod p} {n : ℕ} [NeZero n] (hg : orderOf g = n) (hg0 : g ≠ 0)
-    (d a b : ℕ) (δ : ℝ≥0) :
-    ∃ q : ℕ,
-      (Finset.univ.filter (fun γ : ZMod p =>
-        mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-          (monoWord g a) (monoWord g b) γ)).card =
-        orderOf (g ^ b * (g ^ a)⁻¹) * q +
-          if mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-              (monoWord g a) (monoWord g b) 0 then 1 else 0 := by
-  classical
-  let B : Finset (ZMod p) := Finset.univ.filter (fun γ : ZMod p =>
-    mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-      (monoWord g a) (monoWord g b) γ)
-  have hdvd : orderOf (g ^ b * (g ^ a)⁻¹) ∣ (B.erase 0).card := by
-    simpa [B] using orderOf_dvd_card_badScalars_erase_zero hg hg0 d a b δ
-  rcases hdvd with ⟨q, hq⟩
-  refine ⟨q, ?_⟩
-  change B.card =
-    orderOf (g ^ b * (g ^ a)⁻¹) * q +
-      if mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-          (monoWord g a) (monoWord g b) 0 then 1 else 0
-  by_cases h0 : mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-      (monoWord g a) (monoWord g b) 0
-  · have h0B : (0 : ZMod p) ∈ B := by
-      simp [B, h0]
-    have hcard : (B.erase 0).card + 1 = B.card := Finset.card_erase_add_one h0B
-    simp only [h0, if_true]
-    rw [hq] at hcard
-    exact hcard.symm
-  · have h0B : (0 : ZMod p) ∉ B := by
-      simp [B, h0]
-    have hcard : (B.erase 0).card = B.card := by
-      rw [Finset.erase_eq_of_notMem h0B]
-    simp only [h0, if_false, add_zero]
-    rw [hcard] at hq
-    exact hq
-
-open Classical in
-/-- **The adjacent-pair divisibility** (`b = a + 1`, the KKH26 ceiling family): the
-multiplier is `g` itself, so the nonzero bad count is divisible by the full domain size
-`n` at every radius — the structural constraint behind the spectrum laws' arithmetic
-(`N(3,3) = 40 = 5·8`; `N(4,4) = 1233 = 77·16 + 1`, the `+1` being `γ = 0`). -/
-theorem n_dvd_card_badScalars_adjacent {p : ℕ} [Fact p.Prime] {g : ZMod p}
-    {n : ℕ} [NeZero n] (hg : orderOf g = n) (hg0 : g ≠ 0) (d a : ℕ) (δ : ℝ≥0) :
-    n ∣ ((Finset.univ.filter (fun γ : ZMod p =>
-      mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-        (monoWord g a) (monoWord g (a + 1)) γ)).erase 0).card := by
-  have hga : (g : ZMod p) ^ a ≠ 0 := pow_ne_zero _ hg0
-  have hmul : g ^ (a + 1) * (g ^ a)⁻¹ = g := by
-    rw [pow_succ', mul_assoc, mul_inv_cancel₀ hga, mul_one]
-  have h := orderOf_dvd_card_badScalars_erase_zero hg hg0 d a (a + 1) δ
-  rwa [hmul, hg] at h
-
-open Classical in
 /-- Adjacent-pair one-orbit lower bound: one nonzero bad scalar forces at least `n` nonzero
 bad scalars. -/
 theorem n_le_card_badScalars_adjacent_erase_zero_of_nonzero_bad {p : ℕ} [Fact p.Prime]
@@ -432,37 +449,12 @@ theorem n_le_card_badScalars_adjacent_erase_zero_of_nonzero_bad {p : ℕ} [Fact 
     hγ0 hγbad
   rwa [hmul, hg] at h
 
-open Classical in
-/-- Adjacent-pair total-count form: for the KKH26 ceiling stacks `(Xᵃ, Xᵃ⁺¹)`, the full
-bad-scalar count is `n·q + [0 ∈ badSet]` at every radius. -/
-theorem adjacent_card_eq_n_mul_add_zero {p : ℕ} [Fact p.Prime]
-    {g : ZMod p} {n : ℕ} [NeZero n] (hg : orderOf g = n) (hg0 : g ≠ 0)
-    (d a : ℕ) (δ : ℝ≥0) :
-    ∃ q : ℕ,
-      (Finset.univ.filter (fun γ : ZMod p =>
-        mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-          (monoWord g a) (monoWord g (a + 1)) γ)).card =
-        n * q +
-          if mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-              (monoWord g a) (monoWord g (a + 1)) 0 then 1 else 0 := by
-  have hga : (g : ZMod p) ^ a ≠ 0 := pow_ne_zero _ hg0
-  have hmul : g ^ (a + 1) * (g ^ a)⁻¹ = g := by
-    rw [pow_succ', mul_assoc, mul_inv_cancel₀ hga, mul_one]
-  simpa [hmul, hg] using
-    badScalars_card_eq_order_mul_add_zero hg hg0 d a (a + 1) δ
-
 end ArkLib.ProximityGap.MonomialGammaFibration
 
-namespace ArkLib.ProximityGap.MonomialGammaFibration
-
-#print axioms mcaEvent_monoStack_gamma_mul
-#print axioms badScalars_image_mul_eq
-#print axioms card_dvd_of_mul_invariant
-#print axioms orderOf_dvd_card_badScalars_erase_zero
-#print axioms orderOf_le_card_badScalars_erase_zero_of_nonzero_bad
-#print axioms n_dvd_card_badScalars_adjacent
-#print axioms badScalars_card_eq_order_mul_add_zero
-#print axioms n_le_card_badScalars_adjacent_erase_zero_of_nonzero_bad
-#print axioms adjacent_card_eq_n_mul_add_zero
-
-end ArkLib.ProximityGap.MonomialGammaFibration
+#print axioms ArkLib.ProximityGap.MonomialGammaFibration.mcaEvent_monoStack_gamma_mul
+#print axioms ArkLib.ProximityGap.MonomialGammaFibration.badScalars_image_mul_eq
+#print axioms ArkLib.ProximityGap.MonomialGammaFibration.card_dvd_of_mul_invariant
+#print axioms ArkLib.ProximityGap.MonomialGammaFibration.orderOf_dvd_card_badScalars_erase_zero
+#print axioms ArkLib.ProximityGap.MonomialGammaFibration.n_dvd_card_badScalars_adjacent
+#print axioms ArkLib.ProximityGap.MonomialGammaFibration.badScalars_card_eq_order_mul_add_zero
+#print axioms ArkLib.ProximityGap.MonomialGammaFibration.adjacent_card_eq_n_mul_add_zero

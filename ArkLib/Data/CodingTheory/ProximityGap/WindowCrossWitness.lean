@@ -134,6 +134,50 @@ theorem cross_witness_dvd
       rw [hZT, hZT']
     rwa [heq] at h1
 
+open Classical in
+/-- **Witness-fraction uniqueness — the Padé property of the window.**  Two factored
+residual witnesses for the SAME nonzero scalar represent one fraction:
+`h·Z_{T′} = h′·Z_T`, whenever the difference sits below the modulus degree (the
+window condition `j < w` makes this automatic: `deg ≤ j + w < 2w`).  Hence the
+reduced witness fraction is canonical per scalar — the window is the
+rational-reconstruction uniqueness regime. -/
+theorem witness_fraction_unique
+    (hcop : IsCoprime ℓ₀ ℓ₁) (hcop₀ : IsCoprime ℓ₀ R₀) (hcop₁ : IsCoprime ℓ₁ R₁)
+    {S S' : Finset (Fin n)} {h h' P P' : F[X]} {γ : F} (hγ : γ ≠ 0)
+    (hid : (S.prod fun i => X - C (dom i)) * h
+      = ℓ₁ * R₀ + C γ * (ℓ₀ * R₁) - P * (ℓ₀ * ℓ₁))
+    (hid' : (S'.prod fun i => X - C (dom i)) * h'
+      = ℓ₁ * R₀ + C γ * (ℓ₀ * R₁) - P' * (ℓ₀ * ℓ₁))
+    (hlt : (h * ((Finset.univ \ S').prod fun i => X - C (dom i))
+        - h' * ((Finset.univ \ S).prod fun i => X - C (dom i))).natDegree
+        < (ℓ₀ * ℓ₁).natDegree) :
+    h * ((Finset.univ \ S').prod fun i => X - C (dom i))
+      = h' * ((Finset.univ \ S).prod fun i => X - C (dom i)) := by
+  obtain ⟨hd0, hd1⟩ := cross_witness_dvd dom hcop hcop₀ hcop₁ hid hid'
+  -- the second law at equal scalars factors through the unit C γ
+  have hd1' : ℓ₁ ∣ h * ((Finset.univ \ S').prod fun i => X - C (dom i))
+      - h' * ((Finset.univ \ S).prod fun i => X - C (dom i)) := by
+    have hfact : C γ * (h' * ((Finset.univ \ S).prod fun i => X - C (dom i)))
+        - C γ * (h * ((Finset.univ \ S').prod fun i => X - C (dom i)))
+        = C γ * -(h * ((Finset.univ \ S').prod fun i => X - C (dom i))
+            - h' * ((Finset.univ \ S).prod fun i => X - C (dom i))) := by
+      ring
+    rw [hfact] at hd1
+    have h2 : ℓ₁ ∣ C γ⁻¹ * (C γ * -(h * ((Finset.univ \ S').prod fun i =>
+        X - C (dom i)) - h' * ((Finset.univ \ S).prod fun i => X - C (dom i)))) :=
+      Dvd.dvd.mul_left hd1 _
+    rw [← mul_assoc, ← C_mul, inv_mul_cancel₀ hγ, C_1, one_mul, dvd_neg] at h2
+    exact h2
+  have hboth : (ℓ₀ * ℓ₁) ∣ h * ((Finset.univ \ S').prod fun i => X - C (dom i))
+      - h' * ((Finset.univ \ S).prod fun i => X - C (dom i)) :=
+    hcop.mul_dvd hd0 hd1'
+  by_contra hne
+  have hne' : h * ((Finset.univ \ S').prod fun i => X - C (dom i))
+      - h' * ((Finset.univ \ S).prod fun i => X - C (dom i)) ≠ 0 :=
+    sub_ne_zero.mpr hne
+  have := Polynomial.natDegree_le_of_dvd hboth hne'
+  omega
+
 end CrossWitness
 
 end ProximityGap.WBPencil
@@ -141,3 +185,4 @@ end ProximityGap.WBPencil
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.WBPencil.vanishing_prod_dvd
 #print axioms ProximityGap.WBPencil.cross_witness_dvd
+#print axioms ProximityGap.WBPencil.witness_fraction_unique

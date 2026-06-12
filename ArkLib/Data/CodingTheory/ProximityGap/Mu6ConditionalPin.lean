@@ -8,29 +8,28 @@ import ArkLib.Data.CodingTheory.ProximityGap.StaircaseBandTheorem
 import Mathlib.NumberTheory.LucasPrimality
 
 /-!
-# The μ = 6 literal-budget pin: the named divisibility hypothesis discharged (#371)
+# The μ = 6 conditional literal-budget pin: one named divisibility hypothesis (#371)
 
 `Mu6LiteralBands.lean` certified all twelve `μ = 6` literal-budget bands open; the only
 missing piece for `n = 64` pins at `ε* = 2⁻¹²⁸` is the bad side, whose in-tree size
-threshold `2¹⁹² < p` overshoots every band.  **This file wires and discharges the
-divisibility route** (`kkh26_epsMCA_lower_bound_of_not_dvd`, hypotheses: `2^μ < p` + `p`
-divides no collision resultant) through the interior-ceiling consumer and the ceiling-march
-good side, and instantiates it at a certified Proth prime inside the `r = 5` band:
+threshold `2¹⁹² < p` overshoots every band.  **This file wires the divisibility route**
+(`kkh26_epsMCA_lower_bound_of_not_dvd`, hypotheses: `2^μ < p` + `p` divides no collision
+resultant) through the interior-ceiling consumer and the ceiling-march good side, and
+instantiates it at a certified Proth prime inside the `r = 5` band:
 
 > **`deltaStar_pin_mu6_dim4_of_not_dvd`** — given only the named in-tree hypothesis
 > `p ∤ collisionResultant 6 d₁ d₂` (for the `sigData (2⁵) 5` signed pairs),
 > `mcaDeltaStar(evalCode g 64 3, 1/2¹²⁸) = 59/64` — the dimension-4 (rate `4/64`) code
 > on the 64-point smooth domain, beyond Johnson (`3/4 < 59/64 < 60/64` = capacity).
-> **`deltaStar_pin_mu6_dim4`** — the same pin with no external hypothesis: the
-> coefficient-energy Landau certificate proves all relevant collision resultants have
-> absolute value below `P`.
 
 `P = 1526377·2¹²⁸ + 1 ≈ 2^{148.5}` is certified prime here (Lucas, literal squaring
 chains as in `CertifiedRungPrime.lean`); the order-64 element is the chain value
-`g = 3^((P−1)/64) = u₁₂₂`.  The final handoff is
-`collisionResultant_mu6_r5_natAbs_lt_P`: Landau gives
-`|collisionResultant| ≤ 2^31 · (√40)^32 = 2^31 · 40^16 < 2^143 < P`, so the
-divisibility hypothesis is discharged inside Lean.
+`g = 3^((P−1)/64) = u₁₂₂`.  The divisibility hypothesis is exactly what the Landau
+ℓ²-sharpening of `natAbs_resultant_cyclotomic_le` discharges for ALL `p > 2^{127.5}`
+(see `cyclotomicLandauSqBound_proved` in `KKH26SumsOfRootsOfUnity.lean`), and what the
+[TZ24] good-prime supply discharges for `p = Θ(n^β)`: either route closes this pin with no
+further work on this file.  The theorem `deltaStar_pin_mu6_dim4` applies the proved
+Parseval + AM-GM cyclotomic Landau bound to remove the last named analytic assumption.
 
 **General wiring** (reusable at every `(μ, r)`):
 `kkh26_deltaStar_pin_of_interior_ceiling_of_not_dvd` (the divisibility twin of the
@@ -1202,7 +1201,7 @@ private theorem choose_32_5 : (32 : ℕ).choose 5 = 201376 := by
 hypothesis, `δ* = 59/64` exactly at `ε* = 2⁻¹²⁸` for the dimension-4 (rate `1/16`) code
 on the 64-point smooth domain — beyond Johnson (`3/4`), below capacity (`15/16`). -/
 theorem deltaStar_pin_mu6_dim4_of_not_dvd
-    (hndvd : ∀ d₁ ∈ sigData (2 ^ (6 - 1)) 5, ∀ d₂ ∈ sigData (2 ^ (6 - 1)) 5,
+    (hndvd : ∀ d₁ ∈ sigData (2 ^ 5) 5, ∀ d₂ ∈ sigData (2 ^ 5) 5,
       d₁ ≠ d₂ → ¬ (P : ℤ) ∣ collisionResultant 6 d₁ d₂) :
     mcaDeltaStar (F := ZMod P) (A := ZMod P)
         (evalCode
@@ -1221,7 +1220,7 @@ theorem deltaStar_pin_mu6_dim4_of_not_dvd
     exact band_lo_general (by norm_num) (by norm_num)
   case hhi =>
     have hc : (2 ^ 5 * (2 ^ (6 - 1)).choose 5 : ℕ) = 6444032 := by
-      change (2 ^ 5 * (32 : ℕ).choose 5 : ℕ) = 6444032
+      show (2 ^ 5 * (32 : ℕ).choose 5 : ℕ) = 6444032
       rw [choose_32_5]
       norm_num
     rw [hc]
@@ -1238,7 +1237,7 @@ theorem deltaStar_pin_mu6_dim4_of_not_dvd
 resultant has absolute value below the certified prime `P`, the named divisibility
 hypothesis of `deltaStar_pin_mu6_dim4_of_not_dvd` is discharged. -/
 theorem deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_lt
-    (hbound : ∀ d₁ ∈ sigData (2 ^ (6 - 1)) 5, ∀ d₂ ∈ sigData (2 ^ (6 - 1)) 5,
+    (hbound : ∀ d₁ ∈ sigData (2 ^ 5) 5, ∀ d₂ ∈ sigData (2 ^ 5) 5,
       d₁ ≠ d₂ → (collisionResultant 6 d₁ d₂).natAbs < P) :
     mcaDeltaStar (F := ZMod P) (A := ZMod P)
         (evalCode
@@ -1248,6 +1247,64 @@ theorem deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_lt
   exact deltaStar_pin_mu6_dim4_of_not_dvd
     (collisionResultant_not_dvd_of_forall_natAbs_lt (p := P) (m := 6) (r := 5)
       (by omega) hbound)
+
+/-- The μ = 6 squared Landau envelope is exactly `2^255`. -/
+theorem landauSqEnvelope_mu6_eq_two_pow_255 :
+    landauSqEnvelope (2 ^ 5) = 2 ^ 255 := by
+  norm_num [landauSqEnvelope]
+
+/-- The certified prime `P` is large enough for the μ = 6 squared Landau envelope:
+`(4·32)^32·2^31 = 2^255 < P^2`. -/
+theorem landauSqEnvelope_mu6_lt_P_sq : landauSqEnvelope (2 ^ 5) < P ^ 2 := by
+  have hstrict : landauSqEnvelope (2 ^ 5) < (2 ^ 128 : ℕ) ^ 2 := by
+    rw [landauSqEnvelope_mu6_eq_two_pow_255]
+    norm_num
+  have hp : 2 ^ 128 ≤ P := by norm_num [P]
+  exact lt_of_lt_of_le hstrict (Nat.pow_le_pow_left hp 2)
+
+/-- **Squared Mahler/Landau handoff for the μ = 6 literal pin.**  It is enough to bound
+every relevant collision resultant by the μ = 6 squared Landau envelope; the envelope is
+already below `P²`, so the finite divisibility hypothesis follows. -/
+theorem deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_sq_bound
+    (hbound : ∀ d₁ ∈ sigData (2 ^ 5) 5, ∀ d₂ ∈ sigData (2 ^ 5) 5,
+      d₁ ≠ d₂ → (collisionResultant 6 d₁ d₂).natAbs ^ 2 ≤ landauSqEnvelope (2 ^ 5)) :
+    mcaDeltaStar (F := ZMod P) (A := ZMod P)
+        (evalCode
+          (343681710474810194684472438365758239853939287 : ZMod P) 64 3)
+        (1 / 2 ^ 128)
+      = 59 / 64 := by
+  exact deltaStar_pin_mu6_dim4_of_not_dvd
+    (collisionResultant_not_dvd_of_uniform_natAbs_sq_bound (p := P)
+      (B := landauSqEnvelope (2 ^ 5)) (m := 6) (r := 5) (by norm_num)
+      hbound landauSqEnvelope_mu6_lt_P_sq)
+
+/-- **Cyclotomic Landau handoff for the μ = 6 literal pin.**  A proof of the single
+analytic obligation `cyclotomicLandauSqBound 6` closes the certified dimension-4 pin
+`δ* = 59/64` at `ε* = 2^-128`. -/
+theorem deltaStar_pin_mu6_dim4_of_cyclotomicLandauSqBound
+    (hL : cyclotomicLandauSqBound 6) :
+    mcaDeltaStar (F := ZMod P) (A := ZMod P)
+        (evalCode
+          (343681710474810194684472438365758239853939287 : ZMod P) 64 3)
+        (1 / 2 ^ 128)
+      = 59 / 64 := by
+  exact deltaStar_pin_mu6_dim4_of_not_dvd
+    (collisionResultant_not_dvd_of_cyclotomicLandauSqBound (p := P)
+      (m := 6) (r := 5) hL (by norm_num) (by norm_num)
+      landauSqEnvelope_mu6_lt_P_sq)
+
+/-- **Promoted μ = 6 dimension-4 literal pin.**  The Parseval + AM-GM proof of
+`cyclotomicLandauSqBound 6` discharges the collision-resultant divisibility route, so the
+certified code has `δ* = 59/64` at `ε* = 2^-128` without any remaining named bad-side
+hypothesis. -/
+theorem deltaStar_pin_mu6_dim4 :
+    mcaDeltaStar (F := ZMod P) (A := ZMod P)
+        (evalCode
+          (343681710474810194684472438365758239853939287 : ZMod P) 64 3)
+        (1 / 2 ^ 128)
+      = 59 / 64 := by
+  exact deltaStar_pin_mu6_dim4_of_cyclotomicLandauSqBound
+    (cyclotomicLandauSqBound_proved (m := 6) (by norm_num))
 
 /-- The Mahler/Landau target `2^143` is strictly below the certified prime `P`. -/
 theorem two_pow_143_lt_P : (2 : ℕ) ^ 143 < P := by
@@ -1260,41 +1317,6 @@ theorem two_pow_143_lt_P : (2 : ℕ) ^ 143 < P := by
   rw [hpow]
   omega
 
-private theorem collisionResultant_m_eq_six_r5_natAbs_lt_P {m : ℕ} (hm6 : m = 6) :
-    ∀ d₁ ∈ sigData (2 ^ (m - 1)) 5, ∀ d₂ ∈ sigData (2 ^ (m - 1)) 5,
-      d₁ ≠ d₂ → (collisionResultant m d₁ d₂).natAbs < P := by
-  intro d₁ hd₁ d₂ hd₂ _hne
-  have hm : 1 ≤ m := by omega
-  have hlandau := natAbs_collisionResultant_le_landau (m := m) (r := 5) hm hd₁ hd₂
-  have hle143R : ((collisionResultant m d₁ d₂).natAbs : ℝ) ≤ (2 : ℝ) ^ 143 := by
-    refine le_trans hlandau ?_
-    subst m
-    norm_num
-    rw [show (√(40 : ℝ)) ^ 32 = (40 : ℝ) ^ 16 by
-      rw [show 32 = 2 * 16 by norm_num, pow_mul]
-      rw [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 40)]]
-    norm_num
-  have hle143N : (collisionResultant m d₁ d₂).natAbs ≤ (2 : ℕ) ^ 143 := by
-    exact_mod_cast hle143R
-  exact lt_of_le_of_lt hle143N two_pow_143_lt_P
-
-/-- **μ = 6 collision-resultant size certificate.**  The coefficient-energy Landau bound
-gives `|collisionResultant 6 d₁ d₂| < P` for every signed `r = 5` pair in the 32-window. -/
-theorem collisionResultant_mu6_r5_natAbs_lt_P :
-    ∀ d₁ ∈ sigData (2 ^ (6 - 1)) 5, ∀ d₂ ∈ sigData (2 ^ (6 - 1)) 5,
-      d₁ ≠ d₂ → (collisionResultant 6 d₁ d₂).natAbs < P :=
-  collisionResultant_m_eq_six_r5_natAbs_lt_P rfl
-
-/-- **The μ = 6 literal-budget pin, discharged by the Landau size certificate.** -/
-theorem deltaStar_pin_mu6_dim4 :
-    mcaDeltaStar (F := ZMod P) (A := ZMod P)
-        (evalCode
-          (343681710474810194684472438365758239853939287 : ZMod P) 64 3)
-        (1 / 2 ^ 128)
-      = 59 / 64 :=
-  deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_lt
-    collisionResultant_mu6_r5_natAbs_lt_P
-
 end ArkLib.ProximityGap.Mu6ConditionalPin
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -1304,8 +1326,13 @@ end ArkLib.ProximityGap.Mu6ConditionalPin
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.prime_P
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.orderOf_gP
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_not_dvd
+#print axioms ArkLib.ProximityGap.Mu6ConditionalPin.landauSqEnvelope_mu6_eq_two_pow_255
+#print axioms ArkLib.ProximityGap.Mu6ConditionalPin.landauSqEnvelope_mu6_lt_P_sq
+#print axioms
+  ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_sq_bound
+#print axioms
+  ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_cyclotomicLandauSqBound
+#print axioms ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.two_pow_143_lt_P
 #print axioms
   ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_lt
-#print axioms ArkLib.ProximityGap.Mu6ConditionalPin.collisionResultant_mu6_r5_natAbs_lt_P
-#print axioms ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4
