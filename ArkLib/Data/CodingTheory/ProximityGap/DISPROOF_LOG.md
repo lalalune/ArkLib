@@ -7261,286 +7261,44 @@ classification of σ-invariant rational pairs over the involution quotient — a
 half-dimension problem where the census/quartet machinery applies — grounded in
 finite base cases (the n = 6 window base is exhaustively `≤ w+1`).
 
-## 2026-06-11 — The eigencomponent decomposition of badness is REFUTED
+## 2026-06-12 — WindowRationalBounded REFUTED: the normalizer-pair family (n/2 bad scalars, every field)
 
-`probe_eigen_coupling.py` at (13,6,1,2), k = 1 (plain involution, weight 1): among
-200 random stacks with ≥ 2 bad scalars, **28 (14%) have mixed bad count strictly
-exceeding ALL FOUR eigen-projected stacks** `(u₀^±, u₁^±)` — e.g. `b = 3` against
-eigenprofiles `(2,2,0,0)` and `(1,2,0,0)`.
+The named Prop of the below-UDR capstone (`WBPencilBelowUDR.lean`) asserted every
+doubly-WB-solvable stack has ≤ w+3 bad scalars.  **FALSE at high rate.**  The
+counterexamples are an explicit, q-independent family derived from the CRT/projective
+class reduction at the first beyond-ladder slice `n = 3w+k−1` (j = 0):
 
-**Verdict**: the σ-average argument does NOT work pointwise — `mcaEvent` genuinely
-couples the T-eigencomponents (the witness set is shared across components; badness
-of the mixture is not controlled by badness of the parts).  The proven eigenframe
-(`eigen_add`, `twist_eigenPlus/Minus`) organizes the stack space, and the proven
-equivariance confines extremal ORBITS, but the window bound cannot be reduced to
-the invariant family by linear projection.  Remaining routes for
-`WindowRationalBounded`: the quotient census of T-invariant pairs (covers the
-observed extremals) PLUS a genuinely bivariate argument for mixed pairs — or a
-different mechanism entirely.  Logged as the third documented no-go of the window
-analysis (after degree-forcing and the naive GRS recursion).
+* **The alignment identity.**  For `c ∈ μ_n` and any `ξ ∉ μ_n ∪ {0}`:
+  `(ξ−α)(ξ−c/α) = (ξ²/c)·((c/ξ)−α)((c/ξ)−c/α)` — equivalently, every involution pair
+  `T = {α, c/α}` has the SAME projective class `[Z_T] ∈ (F[X]/ℓ)^×/F^×` for
+  `ℓ = (X−ξ)(X−c/ξ)`.  Taking `ℓ₀, ℓ₁` two such quadratics (roots off-domain,
+  coprime) and `R_j` the canonical representatives aligning one pair `T₀`, EVERY
+  pair `T = {α, c/α}` yields `M := c_T·Z_{D∖T} ≡ ℓ₁R₀ (mod ℓ₀) ≡ γ(T)·ℓ₀R₁ (mod ℓ₁)`,
+  i.e. `γ(T)` is line-explainable with witness `D∖T`.
+* **No-joint is free**: a genuinely rational row (`ℓ ∤ R`, `ℓ` domain-nonvanishing)
+  is NEVER deg-<k-explainable on n−w ≥ w+k points (degree forcing) — so every
+  explainable γ is mca-BAD; the (n−2)/2 (c square) pair-scalars are distinct.
+* **Verified** (`probe_normalizer_pair_family.py`, predicted = exact everywhere,
+  independent second implementation at the violation): (37,12,7,2): 5; (97,12,7,2): 5
+  (q-independent); **(97,16,11,2): 7 > 5 = w+3 — REFUTED at the 2-power production
+  shape**; (113,16,11,2): 7; **(41,20,15,2): 9 > 5**.
+* **Why never seen before**: all prior window probes ran at `n = q−1` (full
+  multiplicative group), where NO off-domain ξ exists — the family needs `q−1 > n+4`.
+  The "window cap = w+1" empirics (scales 1–2) were an n = q−1 artifact.
+* **The w ≥ 4 collapse** (probed): full-degree denominators (products of w/2
+  involution quadratics) are REQUIRED (else deg P ≥ k), and then the per-quadratic
+  scalar-consistency constraints kill all unions except T₀ (predicted = exact = 1 at
+  (37,12,1,4), (97,16,5,4), (61,20,9,4)).  The μ_w-coset variant (`ℓ = X^w − e`,
+  `T = t·μ_w`, `Z_T ≡ e−t^w` constant) gives `n/w` distinct bad scalars (Möbius in
+  `t^w`) for every `w ∣ n` — the general-w family is Θ(n/w), not n^{w/2}.
+* **Structural reading**: the two maximal w = 2 families are exactly the
+  torus-normalizer involutions `x ↦ c/x` and `x ↦ −x` — the same normalizer the
+  O133/O144 moment census isolates.  Maximal aligned-pair families = normalizer
+  graphs; non-normalizer Möbius classes cap at O(1) pairs.
 
-## 2026-06-11 — Ownership degeneracy REFUTED: the count mechanism EXPLAINS the window cap
-
-`probe_ownership_degeneracy.py` at (13,6,1,w=2), k = 1 (residual of a pair =
-`u₁(j) − u₁(i)`): the Möbius window extremal's per-scalar ownership is **8 = the
-generic mean (8.1)** — NO collapse on the symmetric locus.  And the count is nearly
-tight: `#bad·ownership = 3·8 = 24 ≤ 30 = n(n−1)` — the window cap `w+1 = 3` IS the
-ownership bound `⌊30/8⌋`.  The mechanism, exactly: the extremal's `u₁ = (0,1,1,0,2,2)`
-has value-multiplicity `μ = 2`, every witness has `|S| ≥ 4`, so ownership
-`≥ |S|(|S|−μ) = 4·2 = 8` — measured exactly.
-
-**Consequence (the multiplicity theorem, k = 1)**: `#bad ≤ n²/((n−w)(n−w−μ))` where
-`μ` is the max value-multiplicity of `u₁` — radius-free, window-valid, the first
-unconditional bound past the ladder reach for these stacks.  The general-k analogue
-(μ → max agreement of `u₁` with degree-< k polynomials) is the ownership route to
-`WindowRationalBounded` in full.
-
-### O136 — THE TAIL STRUCTURE THEOREMS: parity purity kills every odd r > s/2 at every scale (T1, PROVEN); marginal(32) = 1,728,112 is COMPLETE (T4); turn-on is monotone (T3); r_max = 2j−5 REFUTED by 29 certificates; sharp law r² ≤ s+1 conjectured at 26/26 — and the r=5 taxonomy derivation passes adversarial audit (nubs, 2026-06-12)
-
-Two audited deliverables (independent adversarial legs, both 0.93, zero fatal):
-`scripts/probes/genlaw/exclusion/REPORT.md` and `scripts/probes/genlaw/r5tax/DERIVED-99512.md`.
-
-* **T1 [PROVEN, every odd r, every s = 2^j]: parity purity.** The odd-exponent part of the
-  balance multiset is exactly the mixed-parity products; its vanishing sum factors as U·V
-  over ℤ[ζ_n], and either factor vanishing forces one parity side empty (distinct fibers
-  occupy distinct antipodal classes). **Corollary: N_r(s) = 0 unconditionally for r > s/2**
-  — the entire deep tail, all scales, no enumeration. (Generalizes O108's L1 and the r=5
-  3-torsion argument in one stroke.)
-* **T4: s = 32 marginal CLOSED.** N_r(32) = 0 for ALL odd r ≥ 7 (r=7: full 215,414,784-config
-  sweep; r=7..15: pure-only exhaustive, legitimate by T1; r ≥ 17: T1 corollary). **O130's
-  load-bearing caveat 1 is discharged at s=32: marginal(32) = 2·(764,544 + 99,512) =
-  1,728,112 COMPLETE.** Same method re-establishes DERIVED-672 completeness at s=16 (third
-  implementation). Raw mixed-parity r=13 sign sweep running as belt-and-suspenders (0–3 of
-  8 workers returned 0 at entry time).
-* **T3 [PROVEN]: doubling monotonicity** — N_r(s) ≥ 1 ⟹ N_r(2s) ≥ 1 (double the witness,
-  pad with s/4 antipodal pairs). Strata never turn off. **T2 [PROVEN]:** h ≡ b (mod 2) for
-  pure configs — the "(b−h) odd" gate is vacuous (die_par = 0 in every measured stratum).
-* **The boundary: r_max = 2j−5 (O130's pattern guess) is REFUTED.** 29 explicit (O, m, B)
-  certificates — 8×(128,9), 6×(128,11), 8×(256,13), 3×(256,15), 2×(512,17), 2×(512,19) —
-  each re-verified twice (exact integer multiset rebuild + independent complex-float
-  vanishing check). The surviving conjecture is the **sharp law: N_r(s) > 0 ⟺ r² ≤ s+1**
-  (equivalently C(r,2) ≤ b), 26/26 on every settled stratum, explaining the s=8 tightness
-  (9 ≤ 9). Mechanism finding [MEASURED]: the aggregate budget inequality X+F ≥ ((r+1)²−s)/2
-  is NEVER the kill — 100% of pure deaths at zero strata are PER-AXIS capacity (|d| ≥ 2) or
-  forced-fiber blocking; the additive-combinatorial bound for the middle band
-  √(s+1) < r ≤ s/2 was attempted and NOT achieved (the obstruction: B is a SET with per-axis
-  capacity 1, invisible to aggregate coincidence counts). Honest opens: (64,9) — law says 0,
-  enumeration DNF (prior pass's claimed closure had 0-byte artifacts, withdrawn); (512,21) —
-  law says ON, three climbs stall (open in BOTH directions; the sharpest falsification
-  target); OFF-side evidence above s=64 is single-probe-per-scale.
-* **The r=5 taxonomy (O130's residual 3) PASSES AUDIT and lands:** every [PROVEN] lemma
-  hand re-derived (incl. the 3-torsion purity proof: index-disjoint matching forces a
-  3-cycle, t³ = −1 impossible in μ_{2^k}); complete-axis-alphabet classification of all
-  11,808 records with zero out-of-alphabet hits; independent σ-rank engine over all 8,736
-  geometries; C1/C2/C3 closed forms re-derived; all four target charts (11,808 / 99,512 /
-  ε-split / E5 census / 11 z*-strata) crossfooted from records. Landed at
-  `genlaw/r5tax/` with the audit's two required edits applied (in-tree artifact paths;
-  s ≥ 64 kernel-row provenance note + general-r threshold form). The s=64 blind-hit
-  re-execution: `struct_count` reproduces all 9 small-s rungs from source and the
-  line-by-line review found no s-dependence hazard; **independent re-execution lands the
-  blind hits: (64,5) and (64,7) EXACT vs the enumerated anchors (0.5s / 3min), and both
-  s=128 rows reproduce exactly — N₃(128) = 5,479,419,333,117,151,127,552 and N₅(128) =
-  11,414,927,180,313,095,025,440 now stand as kernel-validated predictions** (independent
-  algorithm at s=128 = the remaining falsifier; by T3+certificates the true marginal(128)
-  ALSO includes N₇, N₉(8 certs), N₁₁(6 certs) strata — the law's r ≤ 11 band).
-
-**Where the open core moves:** the per-level law now has a PROVEN skeleton (T1 purity +
-T2 parity + T3 monotonicity + per-s enumeration below s/2) and one conjectured sharp
-boundary (r² ≤ s+1) with two named decision points ((64,9), (512,21)). The middle-band
-structural proof — per-axis capacity, not aggregate budget — is the remaining theorem.
-
-### O155 — THE CONSTANT-6 LAW: the char-0 non-normalizer Möbius coincidence with μ_n is exactly 6 at every tested 2-power scale — flat in n, one uniform witness family, one closed-form normal; the small-field growth was entirely mod-p surplus (normalizer-gap lane, 2026-06-12)
-
-`scripts/probes/normalizer_gap/` (census `probe_pgl2_coincidence_census.py` brute-gated
-at q=41 + O133-calibration-gated; char-0 `probe_char0_incidence_census.py` two split
-primes ≳ 2^28; anchor `probe_char0_anchor.py` exact ℤ[x]/(x^{n/2}+1), fraction-free
-Bareiss). Object: M(n) = max over Möbius σ ∉ N(T) (the torus normalizer x↦cx, x↦c/x)
-of |μ_n ∩ σ(μ_n)| in char 0 — each incidence is a point of the surface
-P(i,j) = (ζ^{i+j}, ζ^j, ζ^i, 1) on a non-normalizer hyperplane.
-
-* **M(8) = M(16) = M(32) = M(64) = 6 — FLAT.** Lower bound PROVEN in char 0: the
-  uniform family S(n) = {(0,0),(1,1),(2,3),(4,n/2+2),(n/2−1,n−3),(n−2,n−1)} lies on
-  the ONE closed-form normal (m = n/2): c = −ζ^{m−1}+ζ−2, d = 2ζ^{m−1}−ζ^{m−2}−ζ³+ζ²+ζ,
-  −a = −ζ^{m−1}+ζ^{m−2}+ζ³−2ζ²+1, −b = (ζ−1)² — max |coeff| = 2, rank exactly 3,
-  ad−bc ≠ 0, all six incidences vanish identically, no 7th char-0 point. Upper bound
-  PROVEN-BY-HEIGHT at n = 8, 16 (Hadamard < 2^56 < p₁p₂); two-prime bit-identical
-  evidence at n = 32, 64. Structure laws (exact, every n): j−i multiset
-  {0,0,1,1,n/2−2,n/2−2}; σ ~ σ^{-1} invariance (swapneg at (1,1)); trivial translation
-  stabilizer (no torsion-coset structure); n=8's full dihedral symmetry lost at n ≥ 16.
-* **The F_q growth was surplus**: drained field maxima (10@n=32/q=449, 16@n=64/q=1153)
-  still sat ABOVE the constant core 6 — the two-layer law again (O134's lesson; an
-  intermediate pre-registered Fibonacci fit was refuted by its own falsifier 11 min
-  after registration). Count-6 planes multiply with n (12, 300, 1932, 9420) but the
-  cap stays 6.
-* **Position**: the (1,1)-curve of σ is torus-special ⟺ σ ∈ N(T) — for everything
-  else Corvaja–Zannier (JEMS 2013, Cor 2) gives O(|H|^{2/3}) up to p^{3/4} (explicit
-  ≈ 4.77, Makarychev–Vyugin); the production regime n ≤ 2^40 ≪ p^{1/2} is KSV
-  Conjecture 1.3 (O(1), A ≥ 9 known) — OUR 2-POWER-TORSION CAP 6 < 9 says smooth
-  domains are below the conjecture's worst case in char 0. Consumers: the WB σ-descent
-  concentration step (#371 — only normalizer symmetries can carry invariant extremal
-  structure; everything else touches the domain in ≤ 6 char-0 points); the O133
-  spectral gap (its census = this engine's involution slice, audit-confirmed).
-* **Also this cycle (same lane, #371 comment 4687572266)**: the σ-invariant
-  WB-RATIONAL family at scale 2 has exhaustive max bad = 1 (their sampled "invariant
-  max 3" was over non-rational orbit-constant pairs) — inside WindowRationalBounded's
-  own class the invariant family does not renormalize. And the O133 probe program
-  passed independent adversarial audit (two fresh algorithms incl. the n = q−1 edge;
-  one [:8]-truncation reporting bug found+fixed, headlines intact;
-  scripts/probes/moments/audit/).
-* **Named next**: the M(n) ≥ 6 ∀ 2-power n Lean brick (one parametric identity);
-  the ≤ 6 theorem (7-incidence impossibility — Lam–Leung/antipodal route, the
-  candidate mechanism for the in-tree vanishing-sum machinery); the height upgrade
-  of ≤ at n = 32, 64 (third prime or Hadamard sharpening); norm-spectrum
-  quantification for the production surplus threshold.
-
-## 2026-06-12 — The level-j staircase is NOT the complete envelope: the ANTIPODAL PENCIL; the d = 4 level-1 rung pin is REFUTED
-
-**Attempt** (#371 round 7): pin the first sub-ceiling rung exactly — `δ* = 5/8` for the
-`n = 16, d = 2` code on `⟨4134⟩ ⊆ F₁₂₂₈₉ˣ` at budgets `ε* < 32/p`, with the good side
-"every stack has few bad scalars below `5/8`" (the staircase-completeness hope: only the
-deeper level-`j` sign-subset families are bad below a rung, counts `5 → 1`).
-
-**Disproof of completeness.** The corrected adversarial probe (`probe_level1_pin.py`;
-the old S6 "worst = 1" was a search artifact — its pool capped monomial exponents at 4)
-found the **antipodal pencil** `(X^h, X^{h+1})`, `h = n/2`: since `x^h = ±1`, the line
-`x^h(1+γx)` *is* the degree-1 word `±(1+γX)` on a full antipodal half-coset plus the one
-rotating cross-coset point `x₀ = −1/γ`, and the direction `±x` single-deviates there.
-**All `n` scalars of the inversion orbit `−1/⟨g⟩` are bad at radius `1 − (h+1)/n`**, for
-every code degree `1 ≤ d ≤ h − 1` — strictly below the deepest staircase rung (`1/2`)
-with count strictly above every deep-rung spectrum (`16 > 5 = N(2,2)` at the instance).
-Proven axiom-clean, in general:
-
-```lean
-ArkLib.ProximityGap.Level1Rung.antipodal_pencil_epsMCA_lower_bound   -- n bad at 1−(h+1)/n
-ArkLib.ProximityGap.Level1Rung.mcaDeltaStar_le_antipodal             -- δ* ≤ 1−(h+1)/n at ε* < n/p
-```
-
-**Consequences (Level1RungPin.lean, all axiom-clean).**
-- The `d = 4` (rate 5/16) level-1 rung `1/2` is **refuted as a pin point on its entire
-  band**: the pencil count `16` equals the rung budget `K₁ = 16`, so for every
-  `ε* < 16/p`, `δ* ≤ 7/16 < 1/2` (`deltaStar_lt_levelOne_rung_F12289_d4`); the per-rung
-  interior obligation there is **unsatisfiable** (`level1_interior_unsat_F12289_d4`).
-- The `d = 2` rung `5/8` **survives**, with its conditional band trapped to
-  `[16/p, 32/p)` (`level1_interior_floor16_F12289`); probed worst stack at threshold 7
-  is exactly 16 = the pencil. Envelope-exactness there = ONE named obligation
-  (`SubCeilingInteriorCeiling` via `subceiling_deltaStar_pin_of_interior`, the general
-  per-rung reduction), and the in-tree per-witness subset counting **provably cannot
-  discharge it**: absolute scheme cap `C(16,4)/C(7,4) = 52 > 31` (the saturation theorem
-  made concrete; `level1_budget_le_subset_cap`).
-- The pencil ladder continues: `(X^h, X^{h+2})` gives 8 bad at radius `3/8` (probed,
-  exact, `p ∈ {97, 12289}`). The refined envelope = staircase ⊔ pencil ladder (⊔ ...?)
-  is the successor question; any future "complete envelope" claim must subsume the
-  pencil orbit.
-
-### O156 — THE CONSTANT-6 LAW IS TWO-SIDED at n = 8..64, and the ≤-side target is a Beukers–Smyth sharpening: M(32) = M(64) = 6 rigorous via the invisibility trichotomy; the witness curve is conjugate-reciprocal exactly as BS's structure theorem demands (normalizer-gap lane, 2026-06-12; follow-up to O155)
-
-* **M(32) ≤ 6 and M(64) ≤ 6 RIGOROUS** (`probe_char0_rigor.py`, RESULTS-CHAR0-RIGOR.md):
-  a hypothetical 7-incidence char-0 plane fixes THREE nonzero case integers
-  (coordinate norms ≤ 3^{3m/2}, det norm ≤ 54^m — exact Hadamard; cruder L1 route
-  6^m/72^m carried independently); a clean census at split p > 2^28 misses the plane
-  only if p divides one of them (the invisibility trichotomy — audited against the
-  census skip-paths; note: the naive "p | content" exclusion is INVALID since
-  reduction is evaluation, not coefficientwise — replaced by the norm/divisibility
-  lemma); per-plane pigeonhole: 6 clean primes kill n=32, 11 (Hadamard) / 12 (L1)
-  kill n=64; ladders ran 8 and 12 primes, ALL max = 6, bit-identical histograms.
-  Combined with O155's char-0 anchor: **M(n) = 6, both directions, n ∈ {8,16,32,64}**
-  (program-assisted: exact arithmetic + symbolic self-checks; not yet Lean).
-* **The Laurent collapse** (from the ≥6 brick design): under ζ^m = −1 the witness
-  datum is m-INDEPENDENT — z·c = (ζ−1)², ζ²·d = −(ζ−1)²(ζ³+ζ²−1),
-  ζ²·a = −(ζ−1)²(ζ³−ζ−1), b = −(ζ−1)², ζ⁴(ad−bc) = (ζ−1)⁶(ζ+1)²(ζ²+ζ+1): ONE fixed
-  Möbius map realizes the 6 points at every 2-power level; incidences are ring
-  identities for ALL m ≥ 2. Lean brick (MobiusCoincidenceWitness.lean) in flight.
-* **The ≤6-for-all-n question is exactly a Beukers–Smyth sharpening** (lit-gated at
-  the source, Number Theory for the Millennium I 2002): BS bound = 22·V (V = 1 for
-  bidegree (1,1)); sharp constant OPEN even for BS (16 ≤ C ≤ 22); their §5.6 covers
-  only the symmetric rational family xy + λ(x+y) + 1 (max 4). CONSISTENCY FALSIFIER
-  PASSED: BS cap non-reciprocal curves at 4V — any curve beating 4 MUST be
-  conjugate-reciprocal (f ~ f̄(x⁻¹,y⁻¹)) with ℚ^ab coefficients; our witness curve
-  verified exactly that (inversion + conjugation returns it with unit factor 1/ζ).
-  So the open branch of the ≤6 theorem is ONLY the conjugate-reciprocal
-  abelian-coefficient (1,1)-family — explicitly parameterizable via the
-  reciprocity relations; census ground truth: count-6 maximizer classes are rich
-  (34 at n=16, 210 at n=32, all partial injections — finite-list classification
-  impossible, the uniform mechanism must be BS's f†/seven-polynomial machinery).
-* Census engine debt note: the count-6 classification + ladders share the one
-  census code path (mitigated by the symbolic identity checks, the n=8 exhaustive
-  norm audit, and brute gates at q=41); an independent reimplementation would
-  upgrade confidence — cheap follow-up for any seat.
-
-### O157 — THE SPANNING IDENTITY: rank-3 surface planes are AUTOMATICALLY conjugate-reciprocal (λ = ζ^{−Σ} explicit) — non-reciprocal planes carry ≤ 2 points; all 244 maximizer classes verified; the constant-6 law extends to n = 128 with a forward-predicted exact count law (normalizer-gap lane, 2026-06-12; follow-up to O155/O156)
-
-`scripts/probes/normalizer_gap/` (probe_reciprocal_param.py, probe_reciprocal_census.py,
-RESULTS-RECIPROCAL.md; commit 66b05bd71). Batch-2 falsifier round — all passed:
-
-* **The spanning identity** (machine-verified exhaustively at n=8, randomly to 256, mod-p in
-  every census run): rev(cross(P00, P(i₁,j₁), P(i₂,j₂))) = ζ^Σ·conj(cross), Σ = i₁+j₁+i₂+j₂.
-  Consequence: EVERY plane spanned by a rank-3 surface triple is conjugate-reciprocal with
-  the explicit unit λ = ζ^{−Σ} — and invertible non-normalizer NON-reciprocal planes carry
-  ≤ 2 surface points (rank-3 ⟹ reciprocal; rank-2 ⟹ coordinate line ⟹ singular). On this
-  surface that sharpens Beukers–Smyth's non-reciprocal 4V-cap to 2, and localizes the
-  ≤6-for-all-n question ENTIRELY inside the explicit λ-family (a half-dimension K-subspace,
-  rank-verified). Care taken: λλ̄ = 1 does NOT imply λ = ±ζ^t in general (machine
-  counterexample (3+4i)/5) — the ±ζ^t form holds for primitive integral normals
-  (content + Kronecker) and is explicit for spanned planes via the identity.
-* **BS-consistency falsifier passed at full strength**: all 34 (n=16) + 210 (n=32) count-6
-  maximizer classes reconstructed and re-proven char-0 count-6 in exact ℤ[x]/(x^{n/2}+1),
-  each fitting the UNIQUE predicted λ = ζ^{−Σ}. No anomaly.
-* **Constant-6 extends to n = 128**: M_p(128) = 6 at two split primes, zero planes above 6;
-  M(128) ≥ 6 and M(256) ≥ 6 proven char-0 (multi-prime certificate mode: heights ⟹
-  N² ≤ 432^m; ladder product exceeding it forces exact vanishing — every count-5/6 plane at
-  every n ∈ {8..128} carries an exact certificate, 0 failures). ≤6 at 128 remains two-prime
-  evidence (rigor ladder = 24 clean primes, ~3h, named follow-up; n=256 census needs ~35GB
-  disk — skipped honestly, ≥6 anchor stands).
-* **Exact count laws** (forward-predicted: the quadratic through n=16/32/64 predicted
-  count6(128) = 41292 BEFORE the run; both primes returned exactly that):
-  count6(n) = (n−4)(11n−76)/4 over n = 8..128 (12/300/1932/9420/41292, five-for-five) and
-  count5(n) = 10(n−6) (five-for-five). Closed-form DERIVATION from the λ-family = the named
-  next brick (these are the maximizer-population laws the ≤6 theorem must reproduce).
-* **First mod-p surplus of the program observed** (n=128: count-3/4 buckets differ across the
-  two primes; count-5/6 and the max bit-identical, all certified char-0) — the two-layer law
-  surfaces exactly where the certificates stop, never touching the headline.
-* **O156's engine-debt note DISCHARGED**: independent reimplementation of dedupe (streamed
-  gzip + external sort) and recount (fresh Möbius O(n)-per-plane counter), gate-reproduced
-  bit-identically at n=32/64 before n=128 was believed.
-
-Named next: the ≤6 theorem ON the λ-family (BS f†/seven-polynomial machinery, count laws as
-ground truth); the 24-prime M(128) ladder; count6/count5 closed-form derivation; the
-const6_witness Lean brick's ≤-side counterpart.
-
-## 2026-06-12 — The UDR-edge gap of the universal dichotomy is INTRINSIC (analysis)
-
-The universal below-UDR law covers `2w + 2k ≤ n`; the band `n ∈ [2w+k+1, 2w+2k)`
-(width `k/n` in radius) is a genuine gap of the method, not bookkeeping: for a
-direction at distance `e ∈ (w, w+k]` from the code (max agreement
-`a ∈ [n−w−k, n−w)`), BOTH branches vanish — the multiplicity factor
-`n−w−k−μ = e−w−k ≤ 0`, and the sparse/packing popular count needs witness-minus-
-support `m = n−w−e ≥ k`, which fails exactly there (at `m < k` even a single
-codeword is not determined by the off-support agreement, so the popularity
-argument cannot start).  Closing the band needs a counting mechanism for
-explaining codewords pinned by FEWER than `k` points plus the γ-line structure —
-the same shape as the at-UDR boundary slice (`B6 = 7`) analysis.  Logged as the
-fifth documented no-go; the band is the precise below-UDR residue.
-
-## 2026-06-12 — THE TUBE EXPERIMENT: ladder extremality at threshold REFUTED; far directions attain C(n,k+1) exactly; WB-3b live-verified beyond Johnson
-
-`probe_tube_vs_spectrum.py` at the dimension-ladder instance (p = 12289, n = 8 = μ₈,
-k = 2, agreement t = 3 — the threshold radius δ = 5/8, beyond Johnson):
-
-* **ladder stack (X³, X²): exactly 40 bad scalars** — byte-matches the sibling's
-  spectrum law N(3,3) (checker cross-validated);
-* **random far directions: 56 = C(8,3) — repeatedly, exactly** — every
-  (k+1)-subset of a witness determines one scalar, all distinct generically: the
-  ownership count is TIGHT, and far directions BEAT the spectrum family at the
-  threshold (56 > 40).  The adjacent-pair family is NOT the threshold extremizer;
-  the exact threshold sup is ≥ C(n,k+1)/p;
-* **genuine codeword direction: 0 bad** — WB-3b verified computationally at a
-  beyond-Johnson radius (live red-team pass for the Lean theorem);
-* the sibling's δ*-pin is UNAFFECTED (it is a sup over radii strictly below the
-  threshold; the good-side ownership bound applies there).
-
-**Theorem landed** (`strongly_far_badScalars_card_mul_le`, axiom-clean): directions
-with max codeword agreement ≤ k satisfy `#bad · (n−w).descFactorial (k+1) ≤ n^{k+1}`
-at EVERY radius — at the boundary slice this is ≈ C(n,k+1), matching the measured
-56 within the ordered-count factor.  The exact threshold value of ε_mca at the
-boundary slice is now bracketed `[C(n,k+1), n^{k+1}/(k+1)!]`-ish for the far class,
-with the far class provably extremal over the spectrum family.
+**Surviving form** (`WindowRationalLinear`, repaired budget): doubly-WB-solvable
+stacks have ≤ n bad scalars below UDR.  Consistent with: the new families (n/2, n/w),
+the per-family bound w+1 (`FamilyBadBound.lean`), WB-1/3a/3b, and the H-RC slice-1
+≤ n law above UDR.  At production (q ≥ 2¹⁹², n ≤ 2³⁰): n/q ≤ 2^{−162} ≪ 2^{−128} —
+**the production floor (1−ρ)/2 SURVIVES with the repaired budget**.  Lean repair
+queued: `¬WindowRationalBounded` countermodel + re-parameterized capstone.
