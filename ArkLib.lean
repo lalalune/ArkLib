@@ -825,6 +825,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26DimTwoPin
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26EntropyForm
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ExactCensusCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FiberStructural
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26FixedRResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldQuotientStack
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldStability
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldTransport
