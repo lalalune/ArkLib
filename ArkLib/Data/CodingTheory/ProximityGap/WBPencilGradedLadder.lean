@@ -602,9 +602,37 @@ theorem badScalars_card_le_of_graded (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤
         have := hb3
         omega
 
+open Classical in
+omit [DecidableEq F] in
+/-- Probability form of `badScalars_card_le_of_graded`: under the same grade-`|C₀|`
+anchor and `c`-twin-freeness hypotheses, the fixed-stack `mcaEvent` probability is bounded
+by the WB-6 graded count divided by the field size. -/
+theorem mcaEvent_prob_le_of_graded (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {u₀ u₁ : Fin n → F} {ℓ₀ R₀ ℓ₁ R₁ : F[X]}
+    (hd₀ : ℓ₀.natDegree ≤ w) (hd₁ : ℓ₁.natDegree ≤ w)
+    (hr₀ : R₀.natDegree ≤ w + k - 1) (hr₁ : R₁.natDegree ≤ w + k - 1)
+    (hrel₀ : ∀ i, ℓ₀.eval (dom i) * u₀ i = R₀.eval (dom i))
+    (hrel₁ : ∀ i, ℓ₁.eval (dom i) * u₁ i = R₁.eval (dom i))
+    {J : WCol n k w → Fin (3 * w + k)} {C₀ : Finset (WCol n k w)}
+    {τ : WCol n k w → WCol n k w} (hc : 1 ≤ C₀.card)
+    (hdet : (pencilSqG dom k w ℓ₀ R₀ ℓ₁ R₁ J C₀ τ).det ≠ 0)
+    (htwin : ∀ T ∈ Finset.powersetCard C₀.card (Finset.univ : Finset (Fin n)),
+      gradedCoinc dom k w ℓ₀ R₀ ℓ₁ R₁ J C₀ τ T ≠ 0) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ]
+      ≤ (((((w + 1) + (∑ j ∈ Finset.range C₀.card, n.choose (n - j))
+              + n.choose C₀.card * (C₀.card * (w + 1)) : ℕ) : ℝ≥0) : ℝ≥0∞)
+          / (((Fintype.card F : ℕ) : ℝ≥0) : ℝ≥0∞)) := by
+  rw [prob_uniform_eq_card_filter_div_card]
+  gcongr
+  exact badScalars_card_le_of_graded dom hk hδn hd₀ hd₁ hr₀ hr₁
+    hrel₀ hrel₁ hc hdet htwin
+
 end ProximityGap.WBPencil
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.WBPencil.graded_span
 #print axioms ProximityGap.WBPencil.gradedCoinc_natDegree_le
 #print axioms ProximityGap.WBPencil.badScalars_card_le_of_graded
+#print axioms ProximityGap.WBPencil.mcaEvent_prob_le_of_graded
