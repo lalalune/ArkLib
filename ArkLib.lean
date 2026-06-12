@@ -1085,6 +1085,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.O11StructureLoop48
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
+import ArkLib.Data.CodingTheory.ProximityGap.OrbitSpectrumBound
 import ArkLib.Data.CodingTheory.ProximityGap.Overreach
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipBound
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipCensusSharpened
