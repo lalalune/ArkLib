@@ -611,10 +611,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWindowedLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Decision
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandPairRank
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEps
 import ArkLib.Data.CodingTheory.ProximityGap.DeepQuotientTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.DegeneracyLocusRank
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
