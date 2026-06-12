@@ -92,3 +92,9 @@ two-prime evidence (plus bit-identical histograms) rather than a proof. Surplus,
 only push the true M(n) BELOW the per-prime maxima; both primes already agree at 6, and the
 proven lower bound pins M(n) = 6 unless both primes simultaneously miss the same larger system.
 
+**UPDATE (2026-06-12): this caveat is RESOLVED.** `RESULTS-CHAR0-RIGOR.md`
+(`probe_char0_rigor.py`) derives the exact invisibility bound (norm case-integers
+D_bc, D_ad <= 3^(3m/2), D_det <= 54^m + capacity pigeonhole) and runs clean prime
+ladders of length k(32) = 8 >= 6 and k(64) = 12 >= 12 needed — the upper bound
+M(n) <= 6 is now RIGOROUS at all n in {8, 16, 32, 64}, hence M(n) = 6.
+

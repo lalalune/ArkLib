@@ -5052,5 +5052,108 @@
     }
    }
   }
+ },
+ "rigor": {
+  "date": "2026-06-12",
+  "method": "exact invisibility bound: a char-0 plane with >= 7 incidences fixes three nonzero integers D_bc, D_ad <= 3^(3m/2), D_det <= 54^m (norms of cross-product coordinates / determinant); invisibility at a clean split prime p > 2^28 forces p to divide one of them; capacity pigeonhole gives ladder length k(n) = 2*cap(3^(3m/2)) + cap(54^m) + 1; see RESULTS-CHAR0-RIGOR.md",
+  "per_n": {
+   "8": {
+    "k_needed_hadamard": 1,
+    "k_needed_l1": 1,
+    "k_run": 2,
+    "primes": [
+     268435537,
+     268435561
+    ],
+    "histogram": {
+     "3": 336,
+     "4": 88,
+     "5": 20,
+     "6": 12
+    },
+    "all_checks_pass": true,
+    "upper_bound_rigorous": true,
+    "B_coord_hadamard": "729",
+    "B_det_hadamard": "8503056"
+   },
+   "16": {
+    "k_needed_hadamard": 2,
+    "k_needed_l1": 2,
+    "k_run": 2,
+    "primes": [
+     268435537,
+     268435649
+    ],
+    "histogram": {
+     "3": 11448,
+     "4": 2264,
+     "5": 100,
+     "6": 300
+    },
+    "all_checks_pass": true,
+    "upper_bound_rigorous": true,
+    "B_coord_hadamard": "531441",
+    "B_det_hadamard": "72301961339136"
+   },
+   "32": {
+    "k_needed_hadamard": 6,
+    "k_needed_l1": 6,
+    "k_run": 8,
+    "primes": [
+     268435649,
+     268435873,
+     268436801,
+     268437409,
+     268437569,
+     268437857,
+     268437889,
+     268438081
+    ],
+    "histogram": {
+     "3": 326472,
+     "4": 28056,
+     "5": 260,
+     "6": 1932
+    },
+    "all_checks_pass": true,
+    "upper_bound_rigorous": true,
+    "B_coord_hadamard": "282429536481",
+    "B_det_hadamard": "5227573613485916806405226496"
+   },
+   "64": {
+    "k_needed_hadamard": 11,
+    "k_needed_l1": 12,
+    "k_run": 12,
+    "primes": [
+     268435649,
+     268436801,
+     268437569,
+     268437889,
+     268438081,
+     268438337,
+     268438657,
+     268438913,
+     268439681,
+     268440449,
+     268440577,
+     268440833
+    ],
+    "histogram": {
+     "3": 6778728,
+     "4": 249368,
+     "5": 580,
+     "6": 9420
+    },
+    "all_checks_pass": true,
+    "upper_bound_rigorous": true,
+    "B_coord_hadamard": "79766443076872509863361",
+    "B_det_hadamard": "27327525884414205519790497974303154461449992065060438016"
+   }
+  },
+  "all_rigorous": true,
+  "files": [
+   "RESULTS-CHAR0-RIGOR.md",
+   "results_char0_rigor.json"
+  ]
  }
 }

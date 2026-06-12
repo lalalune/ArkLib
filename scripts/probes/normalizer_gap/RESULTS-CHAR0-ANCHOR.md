@@ -114,6 +114,9 @@ M(n) = [6, 6, 6, 6] over n = [8, 16, 32, 64]: flat across a factor-8 range. The 
 - The UPPER bound M(n) ≤ 6 inherits the census status: proven-by-height at n = 8, 16
   (Hadamard bounds < 2^56 < p1·p2), two-prime evidence at n = 32, 64 (bit-identical
   histograms at both primes; a larger char-0 system would need p1·p2 | Norm(det)).
+  **UPDATE (2026-06-12): the n = 32, 64 upper bounds are now RIGOROUS too** — see
+  `RESULTS-CHAR0-RIGOR.md` (exact invisibility bound + prime ladders of length 8 and
+  12); M(n) = 6 is a theorem at all four sizes.
 - Four data points, all equal: 'consistent with the constant law', not 'is'.
 - The mod-p layer (q-decreasing F_q maxima at n = 32) is OUTSIDE this probe's scope;
   this anchors only the char-0 core of the two-layer signature.
