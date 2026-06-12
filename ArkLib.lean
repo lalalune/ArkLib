@@ -1118,6 +1118,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Overreach
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipBound
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipCensusSharpened
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipMultiplicity
+import ArkLib.Data.CodingTheory.ProximityGap.PMOneWordCap
 import ArkLib.Data.CodingTheory.ProximityGap.PTEFamilyConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.PacketCombinationDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.PackingClassCSP
