@@ -1283,6 +1283,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.VVectorN16
 import ArkLib.Data.CodingTheory.ProximityGap.ValueSpreadSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
 import ArkLib.Data.CodingTheory.ProximityGap.VerifiedBricks
+import ArkLib.Data.CodingTheory.ProximityGap.W2WindowHalfCount
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilAbsorption
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilBelowUDR
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilBound
@@ -1305,6 +1306,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowExoticBound
 import ArkLib.Data.CodingTheory.ProximityGap.WindowFiberCount
 import ArkLib.Data.CodingTheory.ProximityGap.WindowFiberPencil
 import ArkLib.Data.CodingTheory.ProximityGap.WindowMassSpan
+import ArkLib.Data.CodingTheory.ProximityGap.WindowPackingLaw
 import ArkLib.Data.CodingTheory.ProximityGap.WindowParametricCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.WindowStrataKills
 import ArkLib.Data.CodingTheory.ProximityGap.WindowTelescope
