@@ -10,6 +10,17 @@ import Mathlib.LinearAlgebra.Lagrange
 /-!
 # The glueing law: the exact subset-ownership constant of the dimension ladder (#371)
 
+> **Priority and dedup note.**  The glueing sharpening `#bad·(d+2) ≤ C(n, d+2)` landed
+> first in `KKH26DimGeneralSharpPin.lean` (the sharp-ownership thread), via the same
+> at-most-one argument on `polyFitOn`; this file derived it independently and landed
+> second.  What is **new here relative to that file**: (i) the boundary band criterion
+> `r² ≤ 2^μ + 1` — strictly wider than the landed strict `r² < 2^μ`, covering the
+> perfect-square rungs `r = 2^{μ/2}` at every even `μ` (`(4,4)`, `(8,6)`, `(16,8)`, …)
+> via the tight induction step `(r+1)² ≤ 2m+1`; (ii) the `(10, 5)` past-`√n` rung
+> instance and the pair-law comparison (`march_opens_r10_mu5`); (iii) the widened-band
+> NTT instance `δ* = 5/8` at `ε* = 18/12289` (`deltaStar_pin_F12289_dimTwo`).  The rest
+> stands as an independent-route confirmation (`ExplainableOn` here, `polyFitOn` there).
+
 The dimension-ladder arc (`KKH26DimOnePin.lean` `r = 2` · `KKH26DimTwoPin.lean` `r = 3` ·
 `KKH26DimGeneralPin.lean` all `(r, m)`, per-scalar subset ownership `2` ·
 `OwnershipCensusSharpened.lean` the pair law `2·C(n,r)/(r+1)` at the slice, plus the
@@ -41,11 +52,13 @@ regime the pin consumes — the glueing constant is optimal for the scheme.)
 * the clean nonemptiness criterion moves to **`r² ≤ 2^μ + 1`** (`march_band_nonempty`,
   descending-factorial induction) — covering e.g. `(r, μ) = (4, 4)` by the general law
   (both landed criteria miss it);
-* **a rung neither landed law opens**: at `(r, μ) = (10, 5)` the glueing floor
+* **the `(10, 5)` past-`√n` rung instance**: the glueing/sharp floor
   `C(32,10)/10 = 6451224` clears the ceiling spectrum `2^10·C(16,10) = 8200192` while the
-  sharpened pair floor `2·C(32,10)/11 = 11729498` does not (`march_opens_r10_mu5`) — the
+  pair-law floor `2·C(32,10)/11 = 11729498` does not (`march_opens_r10_mu5`) — the
   dimension-9, rate-`9/32` code joins the unconditional in-window pin family at
-  `δ* = 11/16`, beyond Johnson (`10² < 9·2^5`).
+  `δ* = 11/16`, beyond Johnson (`10² < 9·2^5`).  (The sharp subset law of
+  `KKH26DimGeneralSharpPin.lean` opens this rung equally — the instance lemma lands
+  here; the *pair* law cannot reach it.)
 
 **The mechanism, end to end** (independent route, shared substrate): witness ⟹ `u₁`
 non-explainable (`not_expl_dir_of_witness`, else `q_w − γ·q₁` joint-explains) ⟹ a
@@ -552,11 +565,11 @@ theorem march_band_at_r5_mu4 : (2 ^ 4).choose 5 / 5 < 2 ^ 5 * (2 ^ 3).choose 5 :
   rw [h1, h2]
   norm_num
 
-/-- **The `(r, μ) = (10, 5)` rung opens ONLY under the glueing law**: the floor
+/-- **The `(r, μ) = (10, 5)` past-`√n` rung**: the glueing/sharp floor
 `C(32,10)/10 = 6451224` clears the ceiling spectrum `2^10·C(16,10) = 8200192`, while the
-sharpened pair-law floor `2·C(32,10)/11 = 11729498` does not.  The dimension-9
-(rate `9/32`) code joins the unconditional in-window family at `δ* = 11/16`, beyond
-Johnson (`10·10 < 9·2^5`). -/
+pair-law floor `2·C(32,10)/11 = 11729498` does not.  The dimension-9 (rate `9/32`) code
+joins the unconditional in-window family at `δ* = 11/16`, beyond Johnson
+(`10·10 < 9·2^5`). -/
 theorem march_opens_r10_mu5 :
     (2 ^ 5).choose 10 / 10 < 2 ^ 10 * (2 ^ 4).choose 10 ∧
       ¬ (2 * (2 ^ 5).choose 10 / 11 < 2 ^ 10 * (2 ^ 4).choose 10) := by
