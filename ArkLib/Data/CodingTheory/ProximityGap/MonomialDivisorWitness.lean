@@ -63,8 +63,32 @@ theorem monomial_divisor_agreement (d : ℕ) (x₀ A : F) (x : F)
   rw [hzero] at h
   exact sub_eq_zero.mp h
 
+/-- **Coset form of the divisor witness**: if `c^(2d) = A²`, then the whole
+`μ_d`-coset `c·μ_d` consists of agreement points for the monomial line at
+scalar `−x₀`. -/
+theorem monomial_divisor_agreement_coset (d : ℕ) (x₀ A c ζ : F)
+    (hc : c ^ (2 * d) = A ^ 2) (hζ : ζ ^ d = 1) :
+    (c * ζ) ^ (2 * d + 1) + (-x₀) * (c * ζ) ^ (2 * d)
+      = A ^ 2 * (c * ζ) - A ^ 2 * x₀ := by
+  refine monomial_divisor_agreement d x₀ A (c * ζ) (Or.inr ?_)
+  have hζ2d : ζ ^ (2 * d) = 1 := by
+    rw [Nat.mul_comm 2 d, pow_mul, hζ, one_pow]
+  rw [mul_pow, hc, hζ2d, mul_one]
+
+/-- Membership form for the anchor-plus-coset agreement set. -/
+theorem monomial_divisor_agreement_anchor_or_coset (d : ℕ) (x₀ A c x : F)
+    (hc : c ^ (2 * d) = A ^ 2)
+    (hx : x = x₀ ∨ ∃ ζ : F, ζ ^ d = 1 ∧ x = c * ζ) :
+    x ^ (2 * d + 1) + (-x₀) * x ^ (2 * d) = A ^ 2 * x - A ^ 2 * x₀ := by
+  rcases hx with hx₀ | ⟨ζ, hζ, hxζ⟩
+  · exact monomial_divisor_agreement d x₀ A x (Or.inl hx₀)
+  · rw [hxζ]
+    exact monomial_divisor_agreement_coset d x₀ A c ζ hc hζ
+
 end ProximityGap.MonomialDivisorWitness
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.MonomialDivisorWitness.line_sub_codeword
 #print axioms ProximityGap.MonomialDivisorWitness.monomial_divisor_agreement
+#print axioms ProximityGap.MonomialDivisorWitness.monomial_divisor_agreement_coset
+#print axioms ProximityGap.MonomialDivisorWitness.monomial_divisor_agreement_anchor_or_coset
