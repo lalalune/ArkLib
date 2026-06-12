@@ -87,19 +87,29 @@ finish — residual risk explicitly noted). s=16 re-swept independently to r = 1
 N₃(64) = 244,593,584,640 (34,280 classes); N₅(64) = 141,450,979,280 (2,212,000 classes);
 **N₇(64) = 1,586,840,480 (3,300,096 classes)** — measured 2026-06-10 (4-way sweep,
 ~4×10¹⁰ configs; kernel calibrated on 99,512 / 0 / 672 and the 4-way split validated to
-sum exactly 99,512 on s=32 r=5; raw logs `s64r7_sweep.txt`). **The turn-on is now a
-recurring phenomenon, not a one-off:** active strata {3} at s=8,16 → {3,5} at s=32 →
-{3,5,7} at s=64 (consistent with r_max = 2j−5 for s = 2^j, j ≥ 4 — pattern-extrapolated,
-NOT derived; predicts r_max = 9 at s=128). So marginal(64) ≥ 2·387,631,404,400 =
-775,262,808,800 — still a **lower bound only**: the r ≥ 9 tail at s = 64 is unswept
-(~7.05×10¹² configs at r=9, r=13@s=32-scale compute).
+sum exactly 99,512 on s=32 r=5; raw logs `s64r7_sweep.txt`). **The turn-on staircase is
+now structural** (`exclusion/REPORT.md`, audited): **T1 [PROVEN, all scales]** — parity
+purity for every odd r ⟹ N_r(s) = 0 unconditionally for r > s/2 (the whole deep tail);
+**T3 [PROVEN]** — doubling monotonicity (N_r(s) ≥ 1 ⟹ N_r(2s) ≥ 1): strata never turn
+back off. The boundary is conjecturally the **sharp law N_r(s) > 0 ⟺ r² ≤ s+1**
+(26/26 calibration; explains the s=8 tightness 9 ≤ 9). The earlier r_max = 2j−5 guess is
+**REFUTED** by 29 doubly-verified explicit certificates: N₁₁(128) > 0, N₁₃(256) > 0,
+N₁₅(256) > 0, N₁₇(512), N₁₉(512) all > 0. Named open boundary points: (64, 9) — the
+sharp law predicts 0, enumeration did not finish; (512, 21) — law predicts ON, no
+certificate found (climbs stall); the middle band √(s+1) < r ≤ s/2 has no structural
+proof above s = 32. marginal(64) ≥ 2·387,631,404,400 = 775,262,808,800 remains a lower
+bound pending the (64, 9..31) band.
 
 ## 5. Honest caveats (what would move the numbers)
 
-1. **The r ≥ 13 tail at s = 32 is unswept** (C(32,r)·2^{r−1} ≥ 1.4×10¹²). The 1,728,112
-   total is proven only for r ≤ 11; the r=5 turn-on proves strata do switch on, so
-   "predicted 0" is genuine extrapolation. r=13 (~18 core-h) is feasible and recommended;
-   closing the tail for good needs a structural exclusion theorem, not sweeps.
+1. ~~The r ≥ 13 tail at s = 32 is unswept~~ **CLOSED (2026-06-12, `exclusion/REPORT.md`
+   T4): marginal(32) = 2·(N₃+N₅) = 1,728,112 is COMPLETE.** N_r(32) = 0 for ALL odd
+   r ≥ 7: r=7 by full 215,414,784-config sweep; r = 7..15 by pure-only exhaustive
+   enumeration (legitimate by the proven parity-purity theorem T1); r ≥ 17 by T1's
+   corollary outright (r > s/2). The same method independently re-establishes
+   DERIVED-672 completeness at s=16 (third implementation). A raw (mixed-parity
+   included) r=13 sign-config sweep is also running as belt-and-suspenders; workers
+   0–3 of 8 returned 0.
 2. **All counts are char-0** (ℤ[ζ_n]) statements — and the per-prime falsifier (run
    2026-06-11, `falsifier/`) **measured the transfer FAILING at n=64**: the consistency
    equation is linear in the B-subset sum, so an exhaustive per-class meet-in-the-middle

@@ -7294,3 +7294,57 @@ has value-multiplicity `μ = 2`, every witness has `|S| ≥ 4`, so ownership
 unconditional bound past the ladder reach for these stacks.  The general-k analogue
 (μ → max agreement of `u₁` with degree-< k polynomials) is the ownership route to
 `WindowRationalBounded` in full.
+
+### O136 — THE TAIL STRUCTURE THEOREMS: parity purity kills every odd r > s/2 at every scale (T1, PROVEN); marginal(32) = 1,728,112 is COMPLETE (T4); turn-on is monotone (T3); r_max = 2j−5 REFUTED by 29 certificates; sharp law r² ≤ s+1 conjectured at 26/26 — and the r=5 taxonomy derivation passes adversarial audit (nubs, 2026-06-12)
+
+Two audited deliverables (independent adversarial legs, both 0.93, zero fatal):
+`scripts/probes/genlaw/exclusion/REPORT.md` and `scripts/probes/genlaw/r5tax/DERIVED-99512.md`.
+
+* **T1 [PROVEN, every odd r, every s = 2^j]: parity purity.** The odd-exponent part of the
+  balance multiset is exactly the mixed-parity products; its vanishing sum factors as U·V
+  over ℤ[ζ_n], and either factor vanishing forces one parity side empty (distinct fibers
+  occupy distinct antipodal classes). **Corollary: N_r(s) = 0 unconditionally for r > s/2**
+  — the entire deep tail, all scales, no enumeration. (Generalizes O108's L1 and the r=5
+  3-torsion argument in one stroke.)
+* **T4: s = 32 marginal CLOSED.** N_r(32) = 0 for ALL odd r ≥ 7 (r=7: full 215,414,784-config
+  sweep; r=7..15: pure-only exhaustive, legitimate by T1; r ≥ 17: T1 corollary). **O130's
+  load-bearing caveat 1 is discharged at s=32: marginal(32) = 2·(764,544 + 99,512) =
+  1,728,112 COMPLETE.** Same method re-establishes DERIVED-672 completeness at s=16 (third
+  implementation). Raw mixed-parity r=13 sign sweep running as belt-and-suspenders (0–3 of
+  8 workers returned 0 at entry time).
+* **T3 [PROVEN]: doubling monotonicity** — N_r(s) ≥ 1 ⟹ N_r(2s) ≥ 1 (double the witness,
+  pad with s/4 antipodal pairs). Strata never turn off. **T2 [PROVEN]:** h ≡ b (mod 2) for
+  pure configs — the "(b−h) odd" gate is vacuous (die_par = 0 in every measured stratum).
+* **The boundary: r_max = 2j−5 (O130's pattern guess) is REFUTED.** 29 explicit (O, m, B)
+  certificates — 8×(128,9), 6×(128,11), 8×(256,13), 3×(256,15), 2×(512,17), 2×(512,19) —
+  each re-verified twice (exact integer multiset rebuild + independent complex-float
+  vanishing check). The surviving conjecture is the **sharp law: N_r(s) > 0 ⟺ r² ≤ s+1**
+  (equivalently C(r,2) ≤ b), 26/26 on every settled stratum, explaining the s=8 tightness
+  (9 ≤ 9). Mechanism finding [MEASURED]: the aggregate budget inequality X+F ≥ ((r+1)²−s)/2
+  is NEVER the kill — 100% of pure deaths at zero strata are PER-AXIS capacity (|d| ≥ 2) or
+  forced-fiber blocking; the additive-combinatorial bound for the middle band
+  √(s+1) < r ≤ s/2 was attempted and NOT achieved (the obstruction: B is a SET with per-axis
+  capacity 1, invisible to aggregate coincidence counts). Honest opens: (64,9) — law says 0,
+  enumeration DNF (prior pass's claimed closure had 0-byte artifacts, withdrawn); (512,21) —
+  law says ON, three climbs stall (open in BOTH directions; the sharpest falsification
+  target); OFF-side evidence above s=64 is single-probe-per-scale.
+* **The r=5 taxonomy (O130's residual 3) PASSES AUDIT and lands:** every [PROVEN] lemma
+  hand re-derived (incl. the 3-torsion purity proof: index-disjoint matching forces a
+  3-cycle, t³ = −1 impossible in μ_{2^k}); complete-axis-alphabet classification of all
+  11,808 records with zero out-of-alphabet hits; independent σ-rank engine over all 8,736
+  geometries; C1/C2/C3 closed forms re-derived; all four target charts (11,808 / 99,512 /
+  ε-split / E5 census / 11 z*-strata) crossfooted from records. Landed at
+  `genlaw/r5tax/` with the audit's two required edits applied (in-tree artifact paths;
+  s ≥ 64 kernel-row provenance note + general-r threshold form). The s=64 blind-hit
+  re-execution: `struct_count` reproduces all 9 small-s rungs from source and the
+  line-by-line review found no s-dependence hazard; **independent re-execution lands the
+  blind hits: (64,5) and (64,7) EXACT vs the enumerated anchors (0.5s / 3min), and both
+  s=128 rows reproduce exactly — N₃(128) = 5,479,419,333,117,151,127,552 and N₅(128) =
+  11,414,927,180,313,095,025,440 now stand as kernel-validated predictions** (independent
+  algorithm at s=128 = the remaining falsifier; by T3+certificates the true marginal(128)
+  ALSO includes N₇, N₉(8 certs), N₁₁(6 certs) strata — the law's r ≤ 11 band).
+
+**Where the open core moves:** the per-level law now has a PROVEN skeleton (T1 purity +
+T2 parity + T3 monotonicity + per-s enumeration below s/2) and one conjectured sharp
+boundary (r² ≤ s+1) with two named decision points ((64,9), (512,21)). The middle-band
+structural proof — per-axis capacity, not aggregate budget — is the remaining theorem.
