@@ -190,9 +190,64 @@ theorem badScalars_card_mul_le_of_multiplicity (dom : Fin n ↪ F)
           exact Nat.mul_le_mul hSsz h1
       _ ≤ _ := hpairs
 
+open Classical in
+/-- **Window multiplicity corollary.** If every value fibre of the direction has size at
+most `w`, then the k=1 ownership denominator improves to `(n-w)(n-2w)`. This is the
+arithmetic form used for the genuine-rational branch of the k=1 window decomposition. -/
+theorem badScalars_card_mul_le_of_valueMultiplicity_le_w (dom : Fin n ↪ F)
+    {w : ℕ} (hw : w ≤ n) {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {u₀ u₁ : Fin n → F}
+    (hμw : ∀ v : F, (Finset.univ.filter (fun i => u₁ i = v)).card ≤ w) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom 1 : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+      * ((n - w) * (n - 2 * w))
+      ≤ Fintype.card (Fin 2 → Fin n) := by
+  have hmain := badScalars_card_mul_le_of_multiplicity (dom := dom) hw hδn
+    (u₀ := u₀) (u₁ := u₁) (μ := w) hμw
+  have hden : (n - w) * (n - 2 * w) ≤ (n - w) * (n - w - w) := by
+    have hsub : n - w - w = n - 2 * w := by omega
+    rw [hsub]
+  exact le_trans (Nat.mul_le_mul_left _ hden) hmain
+
+open Classical in
+/-- Division form of `badScalars_card_mul_le_of_valueMultiplicity_le_w`: in the window
+where `(n-w)(n-2w)` is positive, the bad-scalar count is at most
+`n² / ((n-w)(n-2w))` (with `n²` represented as `Fintype.card (Fin 2 → Fin n)`). -/
+theorem badScalars_card_le_div_of_valueMultiplicity_le_w (dom : Fin n ↪ F)
+    {w : ℕ} (hw : w ≤ n) {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {u₀ u₁ : Fin n → F}
+    (hμw : ∀ v : F, (Finset.univ.filter (fun i => u₁ i = v)).card ≤ w)
+    (hpos : 0 < (n - w) * (n - 2 * w)) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom 1 : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+      ≤ Fintype.card (Fin 2 → Fin n) / ((n - w) * (n - 2 * w)) := by
+  rw [Nat.le_div_iff_mul_le hpos]
+  exact badScalars_card_mul_le_of_valueMultiplicity_le_w (dom := dom) hw hδn
+    (u₀ := u₀) (u₁ := u₁) hμw
+
+/-- A sparse direction has a large zero fibre. Thus the value-multiplicity corollary above
+cannot cover sparse directions in the window `n > 2w`: after translating by a codeword,
+`hammingNorm u₁ ≤ w` forces at least `n-w` zero coordinates. This isolates the remaining
+k=1 sparse-support problem rather than hiding it behind the multiplicity theorem. -/
+theorem zero_fiber_card_ge_card_sub_of_hammingNorm_le (u₁ : Fin n → F) {w : ℕ}
+    (hwt : hammingNorm u₁ ≤ w) :
+    n - w ≤ (Finset.univ.filter (fun i => u₁ i = 0)).card := by
+  have hsplit := Finset.card_filter_add_card_filter_not
+    (s := (Finset.univ : Finset (Fin n))) (p := fun i => u₁ i = 0)
+  have hsupport : (Finset.univ.filter (fun i => ¬ u₁ i = 0)).card ≤ w := by
+    simpa [hammingNorm, ne_eq] using hwt
+  have hsplitn :
+      (Finset.univ.filter (fun i => u₁ i = 0)).card
+        + (Finset.univ.filter (fun i => ¬ u₁ i = 0)).card = n := by
+    simpa [Fintype.card_fin] using hsplit
+  omega
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.residual_one
 #print axioms ProximityGap.Ownership.owned_pairs_card_ge
 #print axioms ProximityGap.Ownership.badScalars_card_mul_le_of_multiplicity
+#print axioms ProximityGap.Ownership.badScalars_card_mul_le_of_valueMultiplicity_le_w
+#print axioms ProximityGap.Ownership.badScalars_card_le_div_of_valueMultiplicity_le_w
+#print axioms ProximityGap.Ownership.zero_fiber_card_ge_card_sub_of_hammingNorm_le
