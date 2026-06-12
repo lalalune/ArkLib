@@ -277,6 +277,15 @@ theorem card_low_hammingNorm_gamma_mul_le_support (u₀ u₁ : ι → F) (R : �
     _ ≤ (univ.filter (fun i => u₁ i ≠ 0)).card :=
           lineRatioHeavy_card_mul_le_support (u₀ := u₀) (u₁ := u₁) A
 
+/-- Low zero-centred Hamming weight forces a large ratio fibre. -/
+theorem lineRatioHits_card_ge_of_hammingNorm_le
+    (u₀ u₁ : ι → F) (γ : F) {R : ℕ}
+    (hR : hammingNorm (u₀ + γ • u₁) ≤ R) :
+    (univ.filter (fun i => u₁ i ≠ 0)).card + (lineStaticNonzero u₀ u₁).card - R
+      ≤ (lineRatioHits u₀ u₁ γ).card := by
+  have hmain := hammingNorm_line_add_lineRatioHits_card (u₀ := u₀) (u₁ := u₁) γ
+  omega
+
 /-! ## Ratio-census form for a line ball around an arbitrary centre -/
 
 /-- The scalar that makes the affine line coordinate agree with a fixed centre `w`, when
@@ -447,6 +456,16 @@ theorem card_close_gamma_mul_le_support_add_static (u₀ u₁ w : ι → F) (R :
     _ ≤ (univ.filter (fun i => u₁ i ≠ 0)).card :=
           lineAgreementHeavy_card_mul_le_support (u₀ := u₀) (u₁ := u₁) (w := w) A
 
+/-- Low distance to a fixed centre forces a large agreement-ratio fibre. -/
+theorem lineAgreementHits_card_ge_of_hammingDist_le
+    (u₀ u₁ w : ι → F) (γ : F) {R : ℕ}
+    (hR : hammingDist (u₀ + γ • u₁) w ≤ R) :
+    (univ.filter (fun i => u₁ i ≠ 0)).card + (lineStaticDisagreement u₀ u₁ w).card - R
+      ≤ (lineAgreementHits u₀ u₁ w γ).card := by
+  have hmain := hammingDist_line_add_lineAgreementHits_card
+    (u₀ := u₀) (u₁ := u₁) (w := w) γ
+  omega
+
 /-! ## Polynomial ratio fibres -/
 
 /-- **Polynomial ratio-level bound, with the degenerate scalar exposed.** If a line comes from
@@ -503,20 +522,99 @@ theorem lineRatioHits_card_le_degreeBound_pencil
       ≤ D := by
   exact (lineRatioHits_card_le_max_natDegree_pencil domain P₀ P₁ γ hp).trans (max_le hP₀ hP₁)
 
+/-- **Degree threshold obstruction.** For polynomial rows of degree at most `D`, a nonzero
+pencil scalar cannot produce a line word of weight `≤ R` once the ratio-census threshold
+`|supp P₁| + static - R` is strictly larger than `D`. Any such low-weight scalar must therefore
+come from the degenerate pencil `P₀ + γ P₁ = 0`. -/
+theorem not_hammingNorm_le_of_degreeBound_pencil_lt_threshold
+    (domain : ι ↪ F) (P₀ P₁ : Polynomial F) (γ : F) {D R : ℕ}
+    (hP₀ : P₀.natDegree ≤ D) (hP₁ : P₁.natDegree ≤ D)
+    (hp : P₀ + Polynomial.C γ * P₁ ≠ 0)
+    (hD : D <
+      (univ.filter (fun i => P₁.eval (domain i) ≠ 0)).card
+        + (lineStaticNonzero (fun i => P₀.eval (domain i)) (fun i => P₁.eval (domain i))).card
+        - R) :
+    ¬ hammingNorm ((fun i => P₀.eval (domain i)) + γ • (fun i => P₁.eval (domain i))) ≤ R := by
+  intro hR
+  have hge := lineRatioHits_card_ge_of_hammingNorm_le
+    (u₀ := fun i => P₀.eval (domain i)) (u₁ := fun i => P₁.eval (domain i))
+    (γ := γ) hR
+  have hge' :
+      (univ.filter (fun i => P₁.eval (domain i) ≠ 0)).card
+          + (lineStaticNonzero (fun i => P₀.eval (domain i))
+              (fun i => P₁.eval (domain i))).card - R
+        ≤ (lineRatioHits (fun i => P₀.eval (domain i))
+            (fun i => P₁.eval (domain i)) γ).card := by
+    simpa using hge
+  have hle := lineRatioHits_card_le_degreeBound_pencil domain P₀ P₁ γ hP₀ hP₁ hp
+  omega
+
+/-- A nonzero direction pencil has at most one scalar where `P₀ + γ P₁` vanishes
+identically. -/
+theorem polynomial_pencil_zero_scalar_unique (P₀ P₁ : Polynomial F) (hP₁ : P₁ ≠ 0)
+    {γ₁ γ₂ : F} (h₁ : P₀ + Polynomial.C γ₁ * P₁ = 0)
+    (h₂ : P₀ + Polynomial.C γ₂ * P₁ = 0) : γ₁ = γ₂ := by
+  have h₁' : Polynomial.C γ₁ * P₁ = -P₀ := by
+    calc Polynomial.C γ₁ * P₁ = P₀ + Polynomial.C γ₁ * P₁ - P₀ := by ring
+      _ = 0 - P₀ := by rw [h₁]
+      _ = -P₀ := by ring
+  have h₂' : Polynomial.C γ₂ * P₁ = -P₀ := by
+    calc Polynomial.C γ₂ * P₁ = P₀ + Polynomial.C γ₂ * P₁ - P₀ := by ring
+      _ = 0 - P₀ := by rw [h₂]
+      _ = -P₀ := by ring
+  have hkey : (Polynomial.C γ₁ - Polynomial.C γ₂) * P₁ = 0 := by
+    rw [sub_mul, h₁', h₂']
+    simp
+  rcases mul_eq_zero.mp hkey with hC | hzero
+  · exact Polynomial.C_inj.mp (sub_eq_zero.mp hC)
+  · exact (hP₁ hzero).elim
+
+/-- Once the ratio-census threshold clears the polynomial degree budget, the low-weight
+scalars of a polynomial line collapse to at most the single degenerate scalar. -/
+theorem card_low_hammingNorm_gamma_le_one_of_degreeBound_pencil
+    (domain : ι ↪ F) (P₀ P₁ : Polynomial F) {D R : ℕ}
+    (hP₀ : P₀.natDegree ≤ D) (hP₁d : P₁.natDegree ≤ D) (hP₁ : P₁ ≠ 0)
+    (hD : D <
+      (univ.filter (fun i => P₁.eval (domain i) ≠ 0)).card
+        + (lineStaticNonzero (fun i => P₀.eval (domain i)) (fun i => P₁.eval (domain i))).card
+        - R) :
+    (univ.filter (fun γ : F =>
+      hammingNorm ((fun i => P₀.eval (domain i)) + γ • (fun i => P₁.eval (domain i))) ≤ R)).card
+      ≤ 1 := by
+  classical
+  rw [Finset.card_le_one]
+  intro γ₁ hγ₁ γ₂ hγ₂
+  have hdeg : ∀ γ : F,
+      hammingNorm ((fun i => P₀.eval (domain i)) + γ • (fun i => P₁.eval (domain i))) ≤ R →
+        P₀ + Polynomial.C γ * P₁ = 0 := by
+    intro γ hlow
+    by_contra hp
+    exact not_hammingNorm_le_of_degreeBound_pencil_lt_threshold
+      (domain := domain) (P₀ := P₀) (P₁ := P₁) (γ := γ)
+      (D := D) (R := R) hP₀ hP₁d hp hD hlow
+  exact polynomial_pencil_zero_scalar_unique P₀ P₁ hP₁
+    (hdeg γ₁ (Finset.mem_filter.mp hγ₁).2)
+    (hdeg γ₂ (Finset.mem_filter.mp hγ₂).2)
+
 #print axioms line_coord_zero_iff_lineZeroRoot
 #print axioms hammingNorm_line_add_lineRatioHits_card
 #print axioms hammingNorm_line_eq_support_sub_lineRatioHits_card_add_static
 #print axioms sum_lineRatioHits_card_eq_support
 #print axioms lineRatioHeavy_card_mul_le_support
 #print axioms card_low_hammingNorm_gamma_mul_le_support
+#print axioms lineRatioHits_card_ge_of_hammingNorm_le
 #print axioms line_coord_eq_iff_lineAgreementRoot
 #print axioms hammingDist_line_add_lineAgreementHits_card
 #print axioms hammingDist_line_eq_support_sub_lineAgreementHits_card_add_static
 #print axioms sum_lineAgreementHits_card_eq_support
 #print axioms lineAgreementHeavy_card_mul_le_support
 #print axioms card_close_gamma_mul_le_support_add_static
+#print axioms lineAgreementHits_card_ge_of_hammingDist_le
 #print axioms lineRatioHits_card_le_natDegree_pencil
 #print axioms lineRatioHits_card_le_max_natDegree_pencil
 #print axioms lineRatioHits_card_le_degreeBound_pencil
+#print axioms not_hammingNorm_le_of_degreeBound_pencil_lt_threshold
+#print axioms polynomial_pencil_zero_scalar_unique
+#print axioms card_low_hammingNorm_gamma_le_one_of_degreeBound_pencil
 
 end ProximityGap
