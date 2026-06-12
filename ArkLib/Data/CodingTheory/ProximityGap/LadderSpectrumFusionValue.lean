@@ -27,7 +27,7 @@ closed form.  At `h = 4, k = 2` the formula gives
 -/
 
 open Finset Polynomial
-open scoped NNReal ENNReal
+open scoped NNReal ENNReal ProbabilityTheory
 
 namespace ProximityGap.Ownership
 
@@ -103,7 +103,31 @@ theorem boundary_slice_ladder_badSet_card {F : Type} [Field F] [Fintype F]
   rw [himg]
   exact subsetSum_image_card_eq g hh (k + 1) hinj
 
+open ArkLib.ProximityGap.KKH26 in
+open Classical in
+/-- Probability form of `boundary_slice_ladder_badSet_card`: the ladder stack's
+boundary-slice `mcaEvent` probability is the exact spectrum mass divided by the
+field size. -/
+theorem boundary_slice_ladder_mcaEvent_prob {F : Type} [Field F] [Fintype F]
+    {n : ℕ} [NeZero n] (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
+    {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    {g : F} {h : ℕ} (hn : n = 2 * h) (hh : g ^ h = -1)
+    (hdom : ∀ i : Fin n, dom i = g ^ (i : ℕ))
+    (hinj : Set.InjOn (spectrumVal g)
+      (spectrumData h (validWeights h (k + 1)))) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => (dom i) ^ (k + 1)) (fun i => (dom i) ^ k) γ]
+      = (((∑ a ∈ validWeights h (k + 1), 2 ^ a * h.choose a : ℕ) : ℝ≥0) :
+            ℝ≥0∞)
+          / (((Fintype.card F : ℕ) : ℝ≥0) : ℝ≥0∞) := by
+  rw [prob_uniform_eq_card_filter_div_card]
+  rw [boundary_slice_ladder_badSet_card dom hk hlo hhi hn hh hdom hinj]
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.boundary_slice_ladder_badSet_card
+#print axioms ProximityGap.Ownership.boundary_slice_ladder_mcaEvent_prob
