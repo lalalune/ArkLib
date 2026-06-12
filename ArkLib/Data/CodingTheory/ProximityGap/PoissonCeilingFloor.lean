@@ -24,10 +24,12 @@ radius of every fixed-dimension evaluation code — no cyclotomic injectivity, n
    are explainable on a fixed `(d+2)`-subset.
 3. *(the direction count)* `card_not_explainable_words`: exactly `q^n − q^{n−1}` words
    are NOT explainable on a fixed `(d+2)`-subset.
+4. *(the pair count, the triangular solve)* `card_explainable_words_pair`: for distinct
+   `(d+2)`-subsets exactly `q^{n−2}` words are explainable on both — choosing
+   `i₀ ∈ T \ T'` and `i₁ ∈ T' \ T`, the `T'`-completion reads neither special
+   coordinate, so the constraint system is triangular: solve `i₁`, then `i₀`.
 
-Part B (next file) adds the pair count `q^{n−2}` (distinct tuples solve DISTINCT
-coordinates: `i₀ ∈ T \ T'`, `i₀' ∈ T' \ T` — independence), pointwise Bonferroni, and
-assembles everything into
+Part B2 (next) adds pointwise Bonferroni and assembles everything into
 `ε_mca(evalCode, 1 − (d+2)/n) ≥ (C(n,d+2) − corrections)/q ≥ C(n,d+2)/(4q)` for
 `2·C(n,d+2) ≤ q`, and the census-free pin family it opens (bands
 `[(C(n,r)/r)/q, C(n,r)/(4q))`, nonempty for every `r ≥ 5` — every `μ`, polynomial
@@ -193,3 +195,144 @@ end ArkLib.ProximityGap.PoissonCeilingFloor
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.explainableOn_iff_solve
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_explainable_words
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_not_explainable_words
+
+namespace ArkLib.ProximityGap.PoissonCeilingFloor
+
+variable {p : ℕ} [Fact p.Prime] {g : ZMod p} {n : ℕ} [NeZero n]
+
+/-! ## Part B1: the pair count — the triangular solve -/
+
+open Classical in
+/-- **The pair count**: for distinct `(d+2)`-subsets `T ≠ T'`, exactly `q^{n−2}` words are
+explainable on both.  The system is *triangular*: choosing `i₀ ∈ T \ T'` and
+`i₁ ∈ T' \ T`, the `T'`-completion reads `T'.erase i₁` (neither special coordinate), so
+it is determined by the free coordinates alone; the `T`-completion reads `T.erase i₀`
+(which may contain `i₁`, already determined).  Two solved coordinates: `q^{n−2}`. -/
+theorem card_explainable_words_pair (hg : orderOf g = n) {d : ℕ}
+    {T T' : Finset (Fin n)} (hT : T.card = d + 2) (hT' : T'.card = d + 2)
+    (hne : T ≠ T') :
+    (Finset.univ.filter (fun v : Fin n → ZMod p =>
+        ExplainableOn g d v T ∧ ExplainableOn g d v T')).card
+      = p ^ (n - 2) := by
+  classical
+  obtain ⟨i₀, hi₀T, hi₀T'⟩ : ∃ i, i ∈ T ∧ i ∉ T' := by
+    by_contra hc
+    push Not at hc
+    exact hne (Finset.eq_of_subset_of_card_le (fun x hx => hc x hx)
+      (le_of_eq (hT'.trans hT.symm)))
+  obtain ⟨i₁, hi₁T', hi₁T⟩ : ∃ i, i ∈ T' ∧ i ∉ T := by
+    by_contra hc
+    push Not at hc
+    exact hne (Finset.eq_of_subset_of_card_le (fun x hx => hc x hx)
+      (le_of_eq (hT.trans hT'.symm))).symm
+  have hi₀₁ : i₀ ≠ i₁ := fun h => hi₀T' (h ▸ hi₁T')
+  have htarget : Fintype.card ({j : Fin n // j ≠ i₀ ∧ j ≠ i₁} → ZMod p) = p ^ (n - 2) := by
+    have h1 : Fintype.card {j : Fin n // j ≠ i₀ ∧ j ≠ i₁} = n - 2 := by
+      have he : Fintype.card {j : Fin n // j ≠ i₀ ∧ j ≠ i₁}
+          = ((Finset.univ : Finset (Fin n)).filter (fun j => j ≠ i₀ ∧ j ≠ i₁)).card :=
+        Fintype.card_subtype _
+      have hsplit : (Finset.univ : Finset (Fin n)).filter (fun j => j ≠ i₀ ∧ j ≠ i₁)
+          = (Finset.univ \ {i₀, i₁}) := by
+        ext j
+        simp [Finset.mem_sdiff, not_or, and_comm]
+      rw [he, hsplit, Finset.card_sdiff, Finset.inter_univ, Finset.card_univ,
+        Fintype.card_fin, Finset.card_insert_of_notMem (by simp [hi₀₁]),
+        Finset.card_singleton]
+    rw [Fintype.card_fun, h1, ZMod.card]
+  set pad : ({j : Fin n // j ≠ i₀ ∧ j ≠ i₁} → ZMod p) → (Fin n → ZMod p) :=
+    fun w i => if h : i = i₀ ∨ i = i₁ then 0 else w ⟨i, by tauto⟩ with hpad
+  set step1 : ({j : Fin n // j ≠ i₀ ∧ j ≠ i₁} → ZMod p) → (Fin n → ZMod p) :=
+    fun w i => if h : i = i₁ then lagrangeCompletion g i₁ T' (pad w) else pad w i
+    with hstep1
+  set ext2 : ({j : Fin n // j ≠ i₀ ∧ j ≠ i₁} → ZMod p) → (Fin n → ZMod p) :=
+    fun w i => if h : i = i₀ then lagrangeCompletion g i₀ T (step1 w) else step1 w i
+    with hext2
+  have hT'sub : ∀ i ∈ T'.erase i₁, i ≠ i₀ ∧ i ≠ i₁ := by
+    intro i hi
+    exact ⟨fun h => hi₀T' (h ▸ Finset.mem_of_mem_erase hi), (Finset.mem_erase.mp hi).1⟩
+  have hstep1_off : ∀ w (i : Fin n), i ≠ i₁ → step1 w i = pad w i := by
+    intro w i h
+    simp [hstep1, h]
+  have hext2_off : ∀ w (i : Fin n), i ≠ i₀ → ext2 w i = step1 w i := by
+    intro w i h
+    simp [hext2, h]
+  have hext2_free : ∀ w (i : Fin n) (h : i ≠ i₀ ∧ i ≠ i₁), ext2 w i = w ⟨i, h⟩ := by
+    intro w i h
+    rw [hext2_off w i h.1, hstep1_off w i h.2]
+    simp [hpad, h.1, h.2]
+  have hcompl1 : ∀ w, lagrangeCompletion g i₁ T' (ext2 w)
+      = lagrangeCompletion g i₁ T' (pad w) := by
+    intro w
+    refine lagrangeCompletion_congr g i₁ T' (fun i hi => ?_)
+    obtain ⟨h0, h1⟩ := hT'sub i hi
+    rw [hext2_off w i h0, hstep1_off w i h1]
+  have hcompl2 : ∀ w, lagrangeCompletion g i₀ T (ext2 w)
+      = lagrangeCompletion g i₀ T (step1 w) := by
+    intro w
+    refine lagrangeCompletion_congr g i₀ T (fun i hi => ?_)
+    exact hext2_off w i (Finset.mem_erase.mp hi).1
+  have hboth : ∀ w, ExplainableOn g d (ext2 w) T ∧ ExplainableOn g d (ext2 w) T' := by
+    intro w
+    constructor
+    · rw [explainableOn_iff_solve hg hT hi₀T]
+      calc ext2 w i₀ = lagrangeCompletion g i₀ T (step1 w) := by simp [hext2]
+      _ = lagrangeCompletion g i₀ T (ext2 w) := (hcompl2 w).symm
+    · rw [explainableOn_iff_solve hg hT' hi₁T']
+      calc ext2 w i₁ = step1 w i₁ := hext2_off w i₁ (Ne.symm hi₀₁)
+      _ = lagrangeCompletion g i₁ T' (pad w) := by simp [hstep1]
+      _ = lagrangeCompletion g i₁ T' (ext2 w) := (hcompl1 w).symm
+  rw [show p ^ (n - 2)
+      = Fintype.card ({j : Fin n // j ≠ i₀ ∧ j ≠ i₁} → ZMod p) from htarget.symm,
+    ← Finset.card_univ]
+  refine Finset.card_bij'
+    (fun (v : Fin n → ZMod p) _ => fun i : {j : Fin n // j ≠ i₀ ∧ j ≠ i₁} => v i.1)
+    (fun w _ => ext2 w) ?_ ?_ ?_ ?_
+  · intro v _
+    exact Finset.mem_univ _
+  · intro w _
+    exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hboth w⟩
+  · intro v hv
+    funext i
+    dsimp only
+    obtain ⟨hvT, hvT'⟩ := (Finset.mem_filter.mp hv).2
+    set vr : {j : Fin n // j ≠ i₀ ∧ j ≠ i₁} → ZMod p :=
+      fun k => v k.1 with hvr
+    -- the padded restriction agrees with v on T'.erase i₁
+    have hpadv : ∀ l ∈ T'.erase i₁, pad vr l = v l := by
+      intro l hl
+      obtain ⟨hl0, hl1⟩ := hT'sub l hl
+      simp [hpad, hvr, hl0, hl1]
+    -- step1 of the restriction agrees with v on T.erase i₀
+    have hstep1v : ∀ j ∈ T.erase i₀, step1 vr j = v j := by
+      intro j hj
+      have hj₀ : j ≠ i₀ := (Finset.mem_erase.mp hj).1
+      by_cases hj₁ : j = i₁
+      · rw [hj₁]
+        rw [explainableOn_iff_solve hg hT' hi₁T'] at hvT'
+        calc step1 vr i₁ = lagrangeCompletion g i₁ T' (pad vr) := by simp [hstep1]
+        _ = lagrangeCompletion g i₁ T' v := lagrangeCompletion_congr g i₁ T' hpadv
+        _ = v i₁ := hvT'.symm
+      · rw [hstep1_off vr j hj₁]
+        simp [hpad, hvr, hj₀, hj₁]
+    by_cases h₀ : i = i₀
+    · rw [h₀]
+      rw [explainableOn_iff_solve hg hT hi₀T] at hvT
+      calc ext2 vr i₀ = lagrangeCompletion g i₀ T (step1 vr) := by simp [hext2]
+      _ = lagrangeCompletion g i₀ T v := lagrangeCompletion_congr g i₀ T hstep1v
+      _ = v i₀ := hvT.symm
+    · by_cases h₁ : i = i₁
+      · rw [h₁]
+        rw [explainableOn_iff_solve hg hT' hi₁T'] at hvT'
+        calc ext2 vr i₁ = step1 vr i₁ := hext2_off vr i₁ (Ne.symm hi₀₁)
+        _ = lagrangeCompletion g i₁ T' (pad vr) := by simp [hstep1]
+        _ = lagrangeCompletion g i₁ T' v := lagrangeCompletion_congr g i₁ T' hpadv
+        _ = v i₁ := hvT'.symm
+      · exact hext2_free vr i ⟨h₀, h₁⟩
+  · intro w _
+    funext k
+    dsimp only
+    exact hext2_free w k.1 k.2
+
+end ArkLib.ProximityGap.PoissonCeilingFloor
+
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_explainable_words_pair
