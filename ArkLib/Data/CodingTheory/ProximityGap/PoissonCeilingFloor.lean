@@ -45,7 +45,7 @@ set_option maxHeartbeats 1600000
 
 open Finset Polynomial
 open scoped NNReal ENNReal
-open ArkLib.ProximityGap.KKH26 ArkLib.ProximityGap.KKH26CeilingMarch
+open ArkLib.ProximityGap.KKH26CeilingMarch
 
 namespace ArkLib.ProximityGap.PoissonCeilingFloor
 
@@ -432,160 +432,6 @@ namespace ArkLib.ProximityGap.PoissonCeilingFloor
 
 variable {p : ℕ} [Fact p.Prime] {g : ZMod p} {n : ℕ} [NeZero n]
 
-/-! ## Part B2b-ii: the γ-slice bridge to MCA badness -/
-
-open Classical in
-/-- The Poisson union of `(W, U)` pairs: some minimal overdetermined tuple `T`
-explains `W` but does not explain `U`. -/
-noncomputable def poissonPairUnion (g : ZMod p) (n d : ℕ) :
-    Finset ((Fin n → ZMod p) × (Fin n → ZMod p)) :=
-  (Finset.powersetCard (d + 2) (Finset.univ : Finset (Fin n))).biUnion
-    (fun T => (Finset.univ.filter (fun W : Fin n → ZMod p => ExplainableOn g d W T))
-      ×ˢ (Finset.univ.filter (fun U : Fin n → ZMod p => ¬ ExplainableOn g d U T)))
-
-open Classical in
-/-- If the second row is not explainable on `S`, then the stack cannot be jointly explained
-on `S`, regardless of the first row. -/
-theorem not_pairJointAgreesOn_of_not_explainable {d : ℕ} {S : Finset (Fin n)}
-    {u₀ u₁ : Fin n → ZMod p} (hnot : ¬ ExplainableOn g d u₁ S) :
-    ¬ ProximityGap.pairJointAgreesOn (evalCode g n d) S u₀ u₁ := by
-  rintro ⟨v₀, hv₀, v₁, hv₁, hagree⟩
-  obtain ⟨q, hqd, hq⟩ := hv₁
-  exact hnot ⟨q, hqd, fun i hi => by
-    calc u₁ i = v₁ i := (hagree i hi).2.symm
-      _ = q.eval (g ^ (i : ℕ)) := hq i⟩
-
-open Classical in
-/-- **γ-slice bridge.** If `W` is explainable on `T` but `U` is not, then for the stack
-`(W - γU, U)` the scalar `γ` is MCA-bad on witness `T`. -/
-theorem mcaEvent_of_explainable_not_explainable {d : ℕ} {δ : ℝ≥0}
-    {T : Finset (Fin n)} {W U : Fin n → ZMod p}
-    (hTδ : (T.card : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
-    (hW : ExplainableOn g d W T) (hU : ¬ ExplainableOn g d U T) (γ : ZMod p) :
-    ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-      (fun i => W i - γ * U i) U γ := by
-  obtain ⟨q, hqd, hq⟩ := hW
-  refine ⟨T, hTδ, ?_, ?_⟩
-  · refine ⟨fun i : Fin n => q.eval (g ^ (i : ℕ)), ⟨q, hqd, fun _ => rfl⟩, ?_⟩
-    intro i hi
-    change q.eval (g ^ (i : ℕ)) = W i - γ * U i + γ • U i
-    rw [hq i hi, smul_eq_mul]
-    ring
-  · exact not_pairJointAgreesOn_of_not_explainable (g := g) (d := d)
-      (S := T) (u₀ := fun i => W i - γ * U i) hU
-
-open Classical in
-/-- Every γ-slice of the Poisson pair union injects into the γ-bad stack set by the shear
-`(W, U) ↦ (W - γU, U)`. -/
-theorem poissonPairUnion_card_le_badPairs_at_gamma {d : ℕ} {δ : ℝ≥0}
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
-    (γ : ZMod p) :
-    (poissonPairUnion g n d).card ≤
-      (Finset.univ.filter (fun P : (Fin n → ZMod p) × (Fin n → ZMod p) =>
-        ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-          P.1 P.2 γ)).card := by
-  classical
-  let shear : ((Fin n → ZMod p) × (Fin n → ZMod p)) ≃
-      ((Fin n → ZMod p) × (Fin n → ZMod p)) :=
-    { toFun := fun P => (fun i => P.1 i - γ * P.2 i, P.2)
-      invFun := fun P => (fun i => P.1 i + γ * P.2 i, P.2)
-      left_inv := fun P => by
-        ext i <;> simp
-      right_inv := fun P => by
-        ext i <;> simp }
-  refine Finset.card_le_card_of_injOn (fun P => shear P) ?_ ?_
-  · intro P hP
-    obtain ⟨T, hTmem, hPT⟩ := Finset.mem_biUnion.mp hP
-    obtain ⟨hW, hU⟩ := Finset.mem_product.mp hPT
-    have hTcard : T.card = d + 2 := (Finset.mem_powersetCard.mp hTmem).2
-    have hWexp : ExplainableOn g d P.1 T := (Finset.mem_filter.mp hW).2
-    have hUnot : ¬ ExplainableOn g d P.2 T := (Finset.mem_filter.mp hU).2
-    have hevent : ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-        (fun i => P.1 i - γ * P.2 i) P.2 γ :=
-      mcaEvent_of_explainable_not_explainable (g := g) (T := T)
-      (by simpa [hTcard] using hδ) hWexp hUnot γ
-    simpa [shear, Finset.mem_filter] using hevent
-  · intro P hP Q hQ hPQ
-    exact shear.injective hPQ
-
-open Classical in
-/-- Summing the γ-slice bridge over all scalars gives the total bad-incidence lower bound
-over all stacks. -/
-theorem poisson_total_badIncidence_ge_pairUnion {d : ℕ} {δ : ℝ≥0}
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
-    p * (poissonPairUnion g n d).card ≤
-      ∑ P : (Fin n → ZMod p) × (Fin n → ZMod p),
-        (Finset.univ.filter (fun γ : ZMod p =>
-          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-            P.1 P.2 γ)).card := by
-  classical
-  set M := (poissonPairUnion g n d).card with hM
-  have hslice : ∀ γ : ZMod p, M ≤
-      (Finset.univ.filter (fun P : (Fin n → ZMod p) × (Fin n → ZMod p) =>
-        ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-          P.1 P.2 γ)).card := by
-    intro γ
-    rw [hM]
-    exact poissonPairUnion_card_le_badPairs_at_gamma (g := g) hδ γ
-  calc p * M = ∑ _γ : ZMod p, M := by
-        rw [Finset.sum_const, Finset.card_univ, ZMod.card, smul_eq_mul]
-    _ ≤ ∑ γ : ZMod p,
-        (Finset.univ.filter (fun P : (Fin n → ZMod p) × (Fin n → ZMod p) =>
-          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-            P.1 P.2 γ)).card :=
-        Finset.sum_le_sum fun γ _ => hslice γ
-    _ = ∑ P : (Fin n → ZMod p) × (Fin n → ZMod p),
-        (Finset.univ.filter (fun γ : ZMod p =>
-          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-            P.1 P.2 γ)).card := by
-        simp_rw [Finset.card_filter]
-        rw [Finset.sum_comm]
-
-open Classical in
-/-- Finite mean-to-sup in the doubled Nat form used by the Poisson floor: if the average of
-`2 * f` is at least `C`, then some fiber has `2 * f ≥ C`. -/
-theorem exists_two_mul_ge_of_card_mul_le_two_sum {α : Type} [Fintype α] [Nonempty α]
-    (C : ℕ) (f : α → ℕ) (hC : 0 < C)
-    (h : C * Fintype.card α ≤ 2 * ∑ a, f a) :
-    ∃ a, C ≤ 2 * f a := by
-  classical
-  by_contra hnone
-  push Not at hnone
-  have hbound : ∀ a, 2 * f a ≤ C - 1 := by
-    intro a
-    have := hnone a
-    omega
-  have hsum : 2 * ∑ a, f a ≤ Fintype.card α * (C - 1) := by
-    calc 2 * ∑ a, f a = ∑ a, 2 * f a := by rw [Finset.mul_sum]
-      _ ≤ ∑ _a : α, (C - 1) := by
-          exact Finset.sum_le_sum (s := Finset.univ) fun a _ => hbound a
-      _ = Fintype.card α * (C - 1) := by
-          rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
-  have hlt : Fintype.card α * (C - 1) < C * Fintype.card α := by
-    have hcard : 0 < Fintype.card α := Fintype.card_pos_iff.mpr inferInstance
-    calc Fintype.card α * (C - 1) < Fintype.card α * C :=
-        (Nat.mul_lt_mul_left hcard).mpr (by omega)
-      _ = C * Fintype.card α := by ring
-  omega
-
-open Classical in
-/-- ENNReal division cancellation for Nat inequalities of the form `C ≤ m * B`. -/
-theorem ennreal_natCast_div_mul_le_div_of_le_mul {C B q m : ℕ} (hm0 : m ≠ 0)
-    (h : C ≤ m * B) :
-    (C : ℝ≥0∞) / ((m : ℝ≥0∞) * (q : ℝ≥0∞))
-      ≤ (B : ℝ≥0∞) / (q : ℝ≥0∞) := by
-  have hm0E : (m : ℝ≥0∞) ≠ 0 := by
-    exact_mod_cast hm0
-  have hmtop : (m : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top m
-  calc
-    (C : ℝ≥0∞) / ((m : ℝ≥0∞) * (q : ℝ≥0∞))
-        ≤ ((m * B : ℕ) : ℝ≥0∞) / ((m : ℝ≥0∞) * (q : ℝ≥0∞)) := by
-          exact ENNReal.div_le_div_right (by exact_mod_cast h) _
-    _ = (B : ℝ≥0∞) / (q : ℝ≥0∞) := by
-          simpa [mul_comm, mul_left_comm, mul_assoc] using
-            (ENNReal.mul_div_mul_right (a := (B : ℝ≥0∞)) (b := (q : ℝ≥0∞))
-              (c := (m : ℝ≥0∞)) hm0E hmtop)
-
 /-! ## Part B2b-i: the master union count over the `(W, U)`-space -/
 
 open Classical in
@@ -720,210 +566,187 @@ theorem card_union_ge (hg : orderOf g = n) {d : ℕ} (hdn : d + 2 ≤ n)
   rw [hX]
   omega
 
-open Classical in
-/-- Named form of `card_union_ge` for the Poisson pair union. -/
-theorem poissonPairUnion_card_ge (hg : orderOf g = n) {d : ℕ} (hdn : d + 2 ≤ n)
-    (hq : n.choose (d + 2) + 1 ≤ p) :
-    n.choose (d + 2) * p ^ (2 * n - 1)
-      ≤ 2 * (poissonPairUnion g n d).card := by
-  simpa [poissonPairUnion] using card_union_ge (g := g) (n := n) hg hdn hq
+end ArkLib.ProximityGap.PoissonCeilingFloor
+
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_union_ge
+
+open ProximityGap ArkLib.ProximityGap.KKH26
+open scoped ProbabilityTheory
+
+namespace ArkLib.ProximityGap.PoissonCeilingFloor
+
+variable {p : ℕ} [Fact p.Prime] {g : ZMod p} {n : ℕ} [NeZero n]
+
+/-! ## Part B2b: the payoff — the census-free bad side -/
 
 open Classical in
-/-- **Poisson mean-to-sup payoff.**  Under the Bonferroni range and the radius whose legal
-witnesses include `(d+2)`-tuples, some stack has at least half of the Poisson tuple mass as
-bad scalars, in doubled Nat form. -/
-theorem poisson_exists_stack_two_mul_badCount_ge (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
-    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
-    ∃ P : (Fin n → ZMod p) × (Fin n → ZMod p),
-      n.choose (d + 2) ≤ 2 *
-        (Finset.univ.filter (fun γ : ZMod p =>
-          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-            P.1 P.2 γ)).card := by
+/-- A firing tuple produces an MCA-bad scalar: if `W` is explainable on the
+`(d+2)`-set `T` and `U` is not, then `γ` is bad for the stack `(W − γU, U)` at the
+ceiling radius. -/
+theorem mcaEvent_of_tuple (hg : orderOf g = n) {d : ℕ} (hdn : d + 2 ≤ n)
+    {T : Finset (Fin n)} (hT : T ∈ Finset.powersetCard (d + 2) (Finset.univ : Finset (Fin n)))
+    {W U : Fin n → ZMod p} (hW : ExplainableOn g d W T) (hU : ¬ ExplainableOn g d U T)
+    (γ : ZMod p) :
+    mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d)
+      (1 - ((d + 2 : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0)) (fun i => W i - γ * U i) U γ := by
+  obtain ⟨-, hTcard⟩ := Finset.mem_powersetCard.mp hT
+  obtain ⟨qpoly, hqd, hqe⟩ := hW
+  have hn0 : ((n : ℕ) : ℝ≥0) ≠ 0 := by
+    exact_mod_cast Nat.cast_ne_zero.mpr (NeZero.ne n)
+  have hle1 : ((d + 2 : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0) ≤ 1 := by
+    rw [div_le_one (lt_of_le_of_ne (zero_le _) (Ne.symm hn0))]
+    exact_mod_cast hdn
+  refine ⟨T, ?_, ⟨fun i => qpoly.eval (g ^ (i : ℕ)), ⟨qpoly, hqd, fun i => rfl⟩,
+    fun i hi => ?_⟩, ?_⟩
+  · -- the witness size: (1 − δ)·n = d + 2 exactly
+    rw [hTcard]
+    have hcanc : (1 : ℝ≥0) - (1 - ((d + 2 : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0))
+        = ((d + 2 : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0) := tsub_tsub_cancel_of_le hle1
+    rw [hcanc]
+    rw [show ((Fintype.card (Fin n) : ℕ) : ℝ≥0) = ((n : ℕ) : ℝ≥0) from by
+      rw [Fintype.card_fin]]
+    rw [div_mul_cancel₀ _ hn0]
+  · -- agreement on T
+    show qpoly.eval (g ^ (i : ℕ)) = (fun i => W i - γ * U i) i + γ • U i
+    rw [smul_eq_mul]
+    have := hqe i hi
+    dsimp only
+    rw [← this]
+    ring
+  · -- no joint explanation
+    rintro ⟨v₀, hv₀, v₁, hv₁, hagree⟩
+    obtain ⟨q₁, hq₁d, hq₁e⟩ := hv₁
+    exact hU ⟨q₁, hq₁d, fun i hi => by rw [← (hagree i hi).2]; exact hq₁e i⟩
+
+open Classical in
+/-- **THE POISSON CEILING FLOOR** — the census-free bad side: at the ceiling radius
+`1 − (d+2)/n`, the MCA error of the degree-`d` code is at least `C(n,d+2)/(2q)`, for
+EVERY field with `C(n,d+2) + 1 ≤ q`.  No cyclotomic injectivity, no doubly-exponential
+threshold, no resultants, no Thorner–Zaman — pure counting (`sup ≥ mean` over the
+exact Poisson incidence structure). -/
+theorem epsMCA_ceiling_ge (hg : orderOf g = n) {d : ℕ} (hdn : d + 2 ≤ n)
+    (hq : n.choose (d + 2) + 1 ≤ p) :
+    ((n.choose (d + 2) : ℕ) : ℝ≥0∞) / (2 * (p : ℝ≥0∞))
+      ≤ epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n d)
+          (1 - ((d + 2 : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0)) := by
   classical
-  set C := n.choose (d + 2) with hCdef
-  set M := (poissonPairUnion g n d).card with hMdef
-  set total := ∑ P : (Fin n → ZMod p) × (Fin n → ZMod p),
+  haveI : NeZero p := ⟨(Fact.out : p.Prime).ne_zero⟩
+  haveI : Nonempty (ZMod p) := ⟨0⟩
+  set δ := (1 : ℝ≥0) - ((d + 2 : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0) with hδ
+  set 𝒯 := Finset.powersetCard (d + 2) (Finset.univ : Finset (Fin n)) with h𝒯
+  set A : Finset (Fin n) → Finset ((Fin n → ZMod p) × (Fin n → ZMod p)) :=
+    fun T => (Finset.univ.filter (fun W : Fin n → ZMod p => ExplainableOn g d W T))
+      ×ˢ (Finset.univ.filter (fun U : Fin n → ZMod p => ¬ ExplainableOn g d U T)) with hA
+  set 𝒰 := 𝒯.biUnion A with h𝒰
+  -- per-γ injection into the bad set
+  have hγcount : ∀ γ : ZMod p, 𝒰.card
+      ≤ (Finset.univ.filter (fun uu : (Fin n → ZMod p) × (Fin n → ZMod p) =>
+          mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ uu.1 uu.2 γ)).card := by
+    intro γ
+    refine Finset.card_le_card_of_injOn
+      (fun WU => ((fun i => WU.1 i - γ * WU.2 i), WU.2)) ?_ ?_
+    · intro WU hWU
+      obtain ⟨T, hT, hWU'⟩ := Finset.mem_biUnion.mp hWU
+      rw [hA] at hWU'
+      obtain ⟨hWmem, hUmem⟩ := Finset.mem_product.mp hWU'
+      refine Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩
+      exact mcaEvent_of_tuple hg hdn hT (Finset.mem_filter.mp hWmem).2
+        (Finset.mem_filter.mp hUmem).2 γ
+    · intro a _ b _ hab
+      have hab' : ((fun i => a.1 i - γ * a.2 i), a.2)
+          = ((fun i => b.1 i - γ * b.2 i), b.2) := hab
+      obtain ⟨h1, h2⟩ := Prod.ext_iff.mp hab'
+      refine Prod.ext ?_ h2
+      funext i
+      have hi1 : a.1 i - γ * a.2 i = b.1 i - γ * b.2 i := congrFun h1 i
+      have hi2 : a.2 i = b.2 i := congrFun h2 i
+      linear_combination hi1 + γ * hi2
+  -- the master count
+  have hmaster := card_union_ge (g := g) hg hdn hq
+  rw [← h𝒯, ← hA, ← h𝒰] at hmaster
+  -- sum over γ, swap, extract a heavy stack
+  have hswap : (∑ γ : ZMod p,
+      (Finset.univ.filter (fun uu : (Fin n → ZMod p) × (Fin n → ZMod p) =>
+        mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ uu.1 uu.2 γ)).card)
+      = ∑ uu : (Fin n → ZMod p) × (Fin n → ZMod p),
         (Finset.univ.filter (fun γ : ZMod p =>
-          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-            P.1 P.2 γ)).card with htotaldef
-  have hCpos : 0 < C := by
-    rw [hCdef]
-    exact Nat.choose_pos hdn
-  have hPairCard :
-      Fintype.card ((Fin n → ZMod p) × (Fin n → ZMod p)) = p ^ (2 * n) := by
-    rw [Fintype.card_prod]
-    simp [Fintype.card_fin, ZMod.card, ← pow_add]
+          mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ uu.1 uu.2 γ)).card := by
+    simp_rw [Finset.card_filter]
+    exact Finset.sum_comm
+  have hsumlow : p * 𝒰.card ≤ ∑ uu : (Fin n → ZMod p) × (Fin n → ZMod p),
+      (Finset.univ.filter (fun γ : ZMod p =>
+        mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ uu.1 uu.2 γ)).card := by
+    rw [← hswap]
+    calc p * 𝒰.card = ∑ _γ : ZMod p, 𝒰.card := by
+          rw [Finset.sum_const, Finset.card_univ, ZMod.card, smul_eq_mul]
+    _ ≤ _ := Finset.sum_le_sum (fun γ _ => hγcount γ)
+  -- the stack space and its size
+  have hstacks : Fintype.card ((Fin n → ZMod p) × (Fin n → ZMod p)) = p ^ (2 * n) := by
+    rw [Fintype.card_prod, Fintype.card_fun, ZMod.card, Fintype.card_fin, ← pow_add]
     congr 1
     omega
-  have hU : C * p ^ (2 * n - 1) ≤ 2 * M := by
-    simpa [hCdef, hMdef] using poissonPairUnion_card_ge (g := g) (n := n) hg hdn hq
-  have hI : p * M ≤ total := by
-    simpa [hMdef, htotaldef] using poisson_total_badIncidence_ge_pairUnion (g := g) hδ
-  have hmain :
-      C * Fintype.card ((Fin n → ZMod p) × (Fin n → ZMod p)) ≤ 2 * total := by
-    rw [hPairCard]
-    have hpow : p * p ^ (2 * n - 1) = p ^ (2 * n) := by
-      rw [Nat.mul_comm p (p ^ (2 * n - 1)), ← pow_succ]
-      congr 1
+  -- exists a stack with 2·badcount ≥ C
+  have hexists : ∃ uu : (Fin n → ZMod p) × (Fin n → ZMod p),
+      n.choose (d + 2) ≤ 2 * (Finset.univ.filter (fun γ : ZMod p =>
+        mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ uu.1 uu.2 γ)).card := by
+    by_contra hall
+    push Not at hall
+    have hbound : ∀ uu : (Fin n → ZMod p) × (Fin n → ZMod p),
+        2 * (Finset.univ.filter (fun γ : ZMod p =>
+          mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ uu.1 uu.2 γ)).card
+        ≤ n.choose (d + 2) - 1 := by
+      intro uu
+      have := hall uu
       omega
-    calc C * p ^ (2 * n) = p * (C * p ^ (2 * n - 1)) := by
-          rw [← hpow]
-          ring
-      _ ≤ p * (2 * M) := Nat.mul_le_mul_left _ hU
-      _ = 2 * (p * M) := by ring
-      _ ≤ 2 * total := Nat.mul_le_mul_left _ hI
-  simpa [hCdef, htotaldef] using
-    exists_two_mul_ge_of_card_mul_le_two_sum C
-      (fun P : (Fin n → ZMod p) × (Fin n → ZMod p) =>
+    have hsumup : 2 * (∑ uu : (Fin n → ZMod p) × (Fin n → ZMod p),
         (Finset.univ.filter (fun γ : ZMod p =>
-          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-            P.1 P.2 γ)).card) hCpos hmain
-
-open Classical in
-/-- **Poisson `ε_mca` lower payoff.**  The doubled Nat stack bound yields the exact integer
-half-mass lower bound `ceil(C(n,d+2)/2) / p` for `ε_mca`. -/
-theorem poisson_epsMCA_floor_half_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
-    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
-    ((((n.choose (d + 2) + 1) / 2 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))
-      ≤ ProximityGap.epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n d) δ := by
-  classical
-  obtain ⟨P, hP⟩ := poisson_exists_stack_two_mul_badCount_ge (g := g) (n := n) hg hdn hq hδ
-  set G : Finset (ZMod p) := Finset.univ.filter (fun γ : ZMod p =>
-    ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ P.1 P.2 γ) with hG
-  have hceil : (n.choose (d + 2) + 1) / 2 ≤ G.card := by
-    rw [hG] at hP
-    rw [hG]
+          mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ uu.1 uu.2 γ)).card)
+        ≤ (n.choose (d + 2) - 1) * p ^ (2 * n) := by
+      rw [Finset.mul_sum]
+      calc (∑ uu : (Fin n → ZMod p) × (Fin n → ZMod p),
+            2 * (Finset.univ.filter (fun γ : ZMod p =>
+              mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ uu.1 uu.2 γ)).card)
+          ≤ ∑ _uu : (Fin n → ZMod p) × (Fin n → ZMod p), (n.choose (d + 2) - 1) :=
+            Finset.sum_le_sum (fun uu _ => hbound uu)
+      _ = (n.choose (d + 2) - 1) * p ^ (2 * n) := by
+          rw [Finset.sum_const, Finset.card_univ, hstacks, smul_eq_mul, Nat.mul_comm]
+    -- but 2·Σ ≥ 2·p·|𝒰| ≥ C·p^{2n}
+    have hlow2 : n.choose (d + 2) * p ^ (2 * n)
+        ≤ 2 * (∑ uu : (Fin n → ZMod p) × (Fin n → ZMod p),
+          (Finset.univ.filter (fun γ : ZMod p =>
+            mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ uu.1 uu.2 γ)).card) := by
+      calc n.choose (d + 2) * p ^ (2 * n)
+          = (n.choose (d + 2) * p ^ (2 * n - 1)) * p := by
+            rw [Nat.mul_assoc, ← pow_succ]
+            congr 2
+            omega
+      _ ≤ (2 * 𝒰.card) * p := Nat.mul_le_mul_right _ hmaster
+      _ = 2 * (p * 𝒰.card) := by ring
+      _ ≤ _ := by
+          have := hsumlow
+          omega
+    have hCpos : 1 ≤ n.choose (d + 2) := Nat.choose_pos hdn
+    have hppos : 1 ≤ p ^ (2 * n) := Nat.one_le_pow _ _ (Fact.out : p.Prime).pos
+    -- C·p^{2n} ≤ (C−1)·p^{2n} : contradiction
+    have : n.choose (d + 2) * p ^ (2 * n) ≤ (n.choose (d + 2) - 1) * p ^ (2 * n) := by
+      omega
+    have hlt : (n.choose (d + 2) - 1) * p ^ (2 * n)
+        < n.choose (d + 2) * p ^ (2 * n) :=
+      (Nat.mul_lt_mul_right (by omega : 0 < p ^ (2 * n))).mpr (by omega)
     omega
-  set u : Code.WordStack (ZMod p) (Fin 2) (Fin n) := ![P.1, P.2] with hu
-  have hbad : ∀ γ ∈ G,
-      ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-        (u 0) (u 1) γ := by
-    intro γ hγ
-    have hγbad : ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
-        P.1 P.2 γ := by
-      simpa [hG] using hγ
-    simpa [hu] using hγbad
-  have hengine := ProximityGap.MCAWitnessSpread.epsMCA_ge_card_div_of_mcaEvent_set
-    (F := ZMod p) (A := ZMod p) (C := evalCode g n d) (δ := δ) (u := u) (G := G) hbad
-  rw [ZMod.card p] at hengine
-  exact le_trans (ENNReal.div_le_div_right (by exact_mod_cast hceil) _) hengine
-
-open Classical in
-/-- Literal ENNReal half-mass form of `poisson_epsMCA_floor_half_int`. -/
-theorem poisson_epsMCA_floor_half (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
-    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
-    ((n.choose (d + 2) : ℝ≥0∞) / ((2 : ℝ≥0∞) * (p : ℝ≥0∞)))
-      ≤ ProximityGap.epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n d) δ := by
-  classical
-  have hhalf := poisson_epsMCA_floor_half_int (g := g) (n := n) hg hdn hq hδ
-  have hnat : n.choose (d + 2) ≤ 2 * ((n.choose (d + 2) + 1) / 2) := by
-    omega
-  exact le_trans
-    (ennreal_natCast_div_mul_le_div_of_le_mul (q := p) (m := 2) (by norm_num) hnat)
-    hhalf
-
-open Classical in
-/-- Slackened `/4p` integer form of `poisson_epsMCA_floor_half_int`, matching the constant
-usually advertised for the Poisson floor. -/
-theorem poisson_epsMCA_floor_quarter_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
-    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
-    (((n.choose (d + 2) / 4 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))
-      ≤ ProximityGap.epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n d) δ := by
-  classical
-  have hhalf := poisson_epsMCA_floor_half_int (g := g) (n := n) hg hdn hq hδ
-  exact le_trans
-    (ENNReal.div_le_div_right
-      (by
-        exact_mod_cast (by
-          omega : n.choose (d + 2) / 4 ≤ (n.choose (d + 2) + 1) / 2))
-      _)
-    hhalf
-
-open Classical in
-/-- Literal ENNReal `/4p` form of the Poisson floor. -/
-theorem poisson_epsMCA_floor_quarter (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
-    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
-    ((n.choose (d + 2) : ℝ≥0∞) / ((4 : ℝ≥0∞) * (p : ℝ≥0∞)))
-      ≤ ProximityGap.epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n d) δ := by
-  classical
-  have hhalf := poisson_epsMCA_floor_half_int (g := g) (n := n) hg hdn hq hδ
-  have hnat : n.choose (d + 2) ≤ 4 * ((n.choose (d + 2) + 1) / 2) := by
-    omega
-  exact le_trans
-    (ennreal_natCast_div_mul_le_div_of_le_mul (q := p) (m := 4) (by norm_num) hnat)
-    hhalf
-
-open Classical in
-/-- `δ*` upper bracket from the Poisson half-mass floor. -/
-theorem poisson_mcaDeltaStar_le_floor_half_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
-    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
-    (εstar : ℝ≥0∞)
-    (hεstar : εstar < ((((n.choose (d + 2) + 1) / 2 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))) :
-    ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod p) (A := ZMod p)
-        (evalCode g n d) εstar ≤ δ :=
-  ProximityGap.MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
-    (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_half_int (g := g) (n := n) hg hdn hq hδ))
-
-open Classical in
-/-- `δ*` upper bracket from the literal Poisson half-mass floor. -/
-theorem poisson_mcaDeltaStar_le_floor_half (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
-    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
-    (εstar : ℝ≥0∞)
-    (hεstar : εstar < ((n.choose (d + 2) : ℝ≥0∞) / ((2 : ℝ≥0∞) * (p : ℝ≥0∞)))) :
-    ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod p) (A := ZMod p)
-        (evalCode g n d) εstar ≤ δ :=
-  ProximityGap.MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
-    (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_half (g := g) (n := n) hg hdn hq hδ))
-
-open Classical in
-/-- `δ*` upper bracket from the slackened Poisson `/4p` floor. -/
-theorem poisson_mcaDeltaStar_le_floor_quarter_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
-    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
-    (εstar : ℝ≥0∞)
-    (hεstar : εstar < (((n.choose (d + 2) / 4 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))) :
-    ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod p) (A := ZMod p)
-        (evalCode g n d) εstar ≤ δ :=
-  ProximityGap.MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
-    (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_quarter_int (g := g) (n := n)
-      hg hdn hq hδ))
-
-open Classical in
-/-- `δ*` upper bracket from the literal Poisson `/4p` floor. -/
-theorem poisson_mcaDeltaStar_le_floor_quarter (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
-    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
-    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
-    (εstar : ℝ≥0∞)
-    (hεstar : εstar < ((n.choose (d + 2) : ℝ≥0∞) / ((4 : ℝ≥0∞) * (p : ℝ≥0∞)))) :
-    ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod p) (A := ZMod p)
-        (evalCode g n d) εstar ≤ δ :=
-  ProximityGap.MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
-    (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_quarter (g := g) (n := n)
-      hg hdn hq hδ))
+  -- conclude through the sup
+  obtain ⟨uu, huu⟩ := hexists
+  unfold epsMCA
+  refine le_trans ?_ (le_iSup _ ![uu.1, uu.2])
+  rw [prob_uniform_eq_card_filter_div_card, ZMod.card p]
+  rw [show (![uu.1, uu.2] : Fin 2 → Fin n → ZMod p) 0 = uu.1 from rfl,
+    show (![uu.1, uu.2] : Fin 2 → Fin n → ZMod p) 1 = uu.2 from rfl]
+  -- C/(2p) ≤ (2#B)/(2p) = #B/p  from  C ≤ 2#B (unification, not syntactic rw)
+  refine le_trans (ENNReal.div_le_div_right ?_ (2 * (p : ℝ≥0∞)))
+    (le_of_eq (ENNReal.mul_div_mul_left _ _ (by norm_num) (by norm_num)))
+  exact_mod_cast huu
 
 end ArkLib.ProximityGap.PoissonCeilingFloor
 
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.not_pairJointAgreesOn_of_not_explainable
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.mcaEvent_of_explainable_not_explainable
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poissonPairUnion_card_le_badPairs_at_gamma
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_total_badIncidence_ge_pairUnion
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.exists_two_mul_ge_of_card_mul_le_two_sum
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.ennreal_natCast_div_mul_le_div_of_le_mul
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_union_ge
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poissonPairUnion_card_ge
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_exists_stack_two_mul_badCount_ge
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_half_int
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_half
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_quarter_int
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_quarter
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_half_int
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_half
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_quarter_int
-#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_quarter
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.mcaEvent_of_tuple
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.epsMCA_ceiling_ge
