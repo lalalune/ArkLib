@@ -1092,6 +1092,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PairSumRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.PairSumsWiring
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
+import ArkLib.Data.CodingTheory.ProximityGap.PencilSplitCount
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PoleSpikeMatching
 import ArkLib.Data.CodingTheory.ProximityGap.PopularCodewords
