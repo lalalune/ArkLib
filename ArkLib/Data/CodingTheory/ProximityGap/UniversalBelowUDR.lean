@@ -157,9 +157,50 @@ theorem le_mcaDeltaStar_universal (dom : Fin n ↪ F)
   ProximityGap.MCAThresholdLedger.le_mcaDeltaStar_of_good _ _ hδ1
     (le_trans (generalK_epsMCA_le_universal dom hk hn hδn) hbudget)
 
+open Classical in
+/-- **THE ABOVE-UDR LOCALIZATION** — the multiplicity theorem is radius-free, so it
+bites at EVERY radius, beyond UDR and through the window toward capacity: any
+direction whose bad count exceeds the polynomial budget must be within `w + k` of
+the code.  The above-UDR adversary provably lives in near-code directions —
+the unconditional class-localization complementing the dimension ladder's exact
+pins. -/
+theorem above_udr_near_code_of_large_badCount (dom : Fin n ↪ F)
+    {k w : ℕ} (hk : 1 ≤ k)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {u₀ u₁ : Fin n → F}
+    (hbig : Fintype.card (Fin (k + 1) → Fin n)
+      < (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+        * ((n - w).descFactorial k)) :
+    ∃ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      n - w - k ≤ (agreeSet c u₁).card := by
+  by_cases hz : n - w - k = 0
+  · exact ⟨0, (rsCode dom k : Submodule F (Fin n → F)).zero_mem, by omega⟩
+  by_contra hno
+  push Not at hno
+  have hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c u₁).card ≤ n - w - k - 1 := by
+    intro c hc
+    have := hno c hc
+    omega
+  have hmult := badScalars_card_mul_le_of_agreement dom hk hδn
+    (u₀ := u₀) (u₁ := u₁) hμ
+  have h1 : 1 ≤ n - w - k - (n - w - k - 1) := by omega
+  · have hge : (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+        * ((n - w).descFactorial k)
+        ≤ (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+        * ((n - w).descFactorial k * (n - w - k - (n - w - k - 1))) := by
+      rw [← mul_assoc]
+      refine Nat.le_mul_of_pos_right _ ?_
+      omega
+    exact absurd (le_trans hge hmult) (not_le.mpr hbig)
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.generalK_badScalars_card_mul_le_universal
 #print axioms ProximityGap.Ownership.generalK_epsMCA_le_universal
 #print axioms ProximityGap.Ownership.le_mcaDeltaStar_universal
+#print axioms ProximityGap.Ownership.above_udr_near_code_of_large_badCount
