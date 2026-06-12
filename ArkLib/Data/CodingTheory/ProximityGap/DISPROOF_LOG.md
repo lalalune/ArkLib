@@ -7239,3 +7239,24 @@ predicted (`MobiusPencilEnergy` lane), now witnessed inside the WB window.
 window have bad count ≤ w+3 (observed max w+1).  WB-2's grand bound
 `ε_mca ≤ (w+3)/q` below UDR is CONSISTENT with the find (3 ≤ 5); the named Prop
 carries the window and the below-UDR law is conditional on it alone.
+
+## 2026-06-11 — The Möbius dominance confirmed at scale 2; the window cap holds with room
+
+`probe_window_renormalization.py` at (13, 12, 1, w=4) — the next window scale
+(`2w+k+1 = 10 ≤ 12 < 13 = 3w+k`), domain `F₁₃* = μ₁₂` with σ(x) = −1/x
+(7 classes: 5 doubletons + 2 fixed points {5, 8}):
+
+* **Möbius-invariant pairs: sampled max bad = 3** (60k samples);
+* **general pairs: sampled max bad = 1** (20k samples) —
+  the invariant family dominates 3:1, replicating the scale-1 finding that the
+  window adversary is Möbius-symmetric;
+* both far inside the `w+1 = 5` observed cap and the `w+3 = 7` budget of
+  `WindowRationalBounded`.
+
+**The renormalization picture**: the window is scale-self-similar (the quotient of
+a window instance is again a window instance at half scale — `3w'/n' = 3w/n`), the
+extremals concentrate on the σ-invariant family at every tested scale, and the
+per-scale cap stays `≤ w+1`.  The attack on `WindowRationalBounded` is therefore a
+classification of σ-invariant rational pairs over the involution quotient — a
+half-dimension problem where the census/quartet machinery applies — grounded in
+finite base cases (the n = 6 window base is exhaustively `≤ w+1`).
