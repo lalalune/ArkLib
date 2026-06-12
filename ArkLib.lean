@@ -95,6 +95,7 @@ import ArkLib.Data.CodingTheory.Connections.GCXK25SecondMoment
 import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 import ArkLib.Data.CodingTheory.Connections.GKL24MaxDomainExists
 import ArkLib.Data.CodingTheory.Connections.GKL24PetalWitnessCover
+import ArkLib.Data.CodingTheory.Connections.GKL24SunflowerCore
 import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
 import ArkLib.Data.CodingTheory.Connections.ProximityPrizeConnectiveTissue
 import ArkLib.Data.CodingTheory.Connections.SmoothDomainMCAWitness
@@ -780,6 +781,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.JohnsonTightnessRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonTouchingCorner
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
+import ArkLib.Data.CodingTheory.ProximityGap.K1WindowUniversal
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26AsymptoticCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26BadLineConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26CensusExact
@@ -799,7 +801,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldQuotientStack
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldStability
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldTransport
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26GapCensusLaw
-import ArkLib.Data.CodingTheory.ProximityGap.KKH26LadderArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26PolyFieldCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26RegimeSplit
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
@@ -1046,6 +1047,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.Overreach
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipBound
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipCensusSharpened
+import ArkLib.Data.CodingTheory.ProximityGap.OwnershipMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.PTEFamilyConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.PacketCombinationDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.PackingClassCSP
@@ -1057,6 +1059,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PairSumsWiring
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
+import ArkLib.Data.CodingTheory.ProximityGap.PopularCodewords
 import ArkLib.Data.CodingTheory.ProximityGap.PrimePowerMultisetWindow
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionJohnsonBudget
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionRegimeBracket
@@ -1094,7 +1097,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdPinRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdStrictRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdSubcapacityRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdTrappedRate12
-import ArkLib.Data.CodingTheory.ProximityGap.RSLocalOwnership
 import ArkLib.Data.CodingTheory.ProximityGap.RSMDSListBound
 import ArkLib.Data.CodingTheory.ProximityGap.RadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.RadiusOneExact
@@ -1149,6 +1151,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.SparseCoverComputable
 import ArkLib.Data.CodingTheory.ProximityGap.SparseDeviationExtremality
 import ArkLib.Data.CodingTheory.ProximityGap.SparseDirectionGeneralK
+import ArkLib.Data.CodingTheory.ProximityGap.SparseDirectionWindow
 import ArkLib.Data.CodingTheory.ProximityGap.SpernerCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.StackJointAgreement
