@@ -39,7 +39,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ} [NeZero n]
 
 /-- The grade-`c` count budget. -/
-def gradedBudget (n k w c : ℕ) : ℕ :=
+def gradedBudget (n _k w c : ℕ) : ℕ :=
   (w + 1) + (∑ j ∈ Finset.range c, n.choose (n - j)) + n.choose c * (c * (w + 1))
 
 /-- **The per-grade named residual**: every doubly-WB-solvable stack admits WB
@@ -62,14 +62,16 @@ def GradedAnchoredTwinFree (dom : Fin n ↪ F) (k w c : ℕ) : Prop :=
           gradedCoinc dom k w ℓ₀ R₀ ℓ₁ R₁ J C₀ τ T ≠ 0)
 
 open Classical in
-/-- **The graded ε_mca law**: under the grade-`c` residual, every radius
-`δ ≤ w/n` has `ε_mca(RS, δ) ≤ gradedBudget/q`. -/
-theorem epsMCA_le_of_graded (dom : Fin n ↪ F) {k w c : ℕ} (hk : 1 ≤ k)
+omit [DecidableEq F] in
+/-- Fixed-stack probability form of the graded consumer: under the grade-`c` residual,
+every stack's bad-scalar probability is bounded by the WB-6 graded budget divided by the
+field size. -/
+theorem mcaEvent_prob_le_of_gradedResidual (dom : Fin n ↪ F) {k w c : ℕ} (hk : 1 ≤ k)
     (hwk : w + k ≤ n) (hc : 1 ≤ c) (hcn : c ≤ n) {δ : ℝ≥0}
     (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
-    (hres : GradedAnchoredTwinFree dom k w c) :
-    epsMCA (F := F) (A := F)
-        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+    (hres : GradedAnchoredTwinFree dom k w c) (u₀ u₁ : Fin n → F) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ]
       ≤ ((gradedBudget n k w c : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
   -- the far-branch budget comparison
   have hbudget : w + 3 ≤ gradedBudget n k w c := by
@@ -87,35 +89,49 @@ theorem epsMCA_le_of_graded (dom : Fin n ↪ F) {k w c : ℕ} (hk : 1 ≤ k)
         _ ≤ n.choose c * (c * (w + 1)) := Nat.mul_le_mul hpos hcw
     rw [gradedBudget]
     omega
-  rw [epsMCA]
-  refine iSup_le fun u => ?_
   rw [prob_uniform_eq_card_filter_div_card]
   refine ENNReal.div_le_div_right ?_ _
-  by_cases h1 : WBSolvable dom k w (u 1)
-  · by_cases h0 : WBSolvable dom k w (u 0)
+  by_cases h1 : WBSolvable dom k w u₁
+  · by_cases h0 : WBSolvable dom k w u₀
     · obtain ⟨ℓ₀, R₀, ℓ₁, R₁, hd₀, hd₁, hr₀, hr₁, hrel₀, hrel₁, J, C₀, τ,
-        hCc, hdet, htwin⟩ := hres (u 0) (u 1) h0 h1
+        hCc, hdet, htwin⟩ := hres u₀ u₁ h0 h1
       have hc1 : 1 ≤ C₀.card := by omega
       have := badScalars_card_le_of_graded dom hk hδn hd₀ hd₁ hr₀ hr₁ hrel₀ hrel₁
         hc1 hdet htwin
       rw [hCc] at this
       exact_mod_cast le_trans this (le_of_eq rfl)
     · have hswap := badScalars_card_swap_le
-        (rsCode dom k : Submodule F (Fin n → F)) δ (u 0) (u 1)
+        (rsCode dom k : Submodule F (Fin n → F)) δ u₀ u₁
       have hfar := badScalars_card_le_of_far_snd dom hk hwk hδn
-        (u₀ := u 1) (u₁ := u 0) h0
+        (u₀ := u₁) (u₁ := u₀) h0
       have hb : (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
           ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
-          (u 0) (u 1) γ)).card ≤ gradedBudget n k w c := by omega
+          u₀ u₁ γ)).card ≤ gradedBudget n k w c := by omega
       exact_mod_cast hb
   · have hfar := badScalars_card_le_of_far_snd dom hk hwk hδn
-      (u₀ := u 0) (u₁ := u 1) h1
+      (u₀ := u₀) (u₁ := u₁) h1
     have hb : (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
         ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
-        (u 0) (u 1) γ)).card ≤ gradedBudget n k w c := by omega
+        u₀ u₁ γ)).card ≤ gradedBudget n k w c := by omega
     exact_mod_cast hb
 
 open Classical in
+omit [DecidableEq F] in
+/-- **The graded ε_mca law**: under the grade-`c` residual, every radius
+`δ ≤ w/n` has `ε_mca(RS, δ) ≤ gradedBudget/q`. -/
+theorem epsMCA_le_of_graded (dom : Fin n ↪ F) {k w c : ℕ} (hk : 1 ≤ k)
+    (hwk : w + k ≤ n) (hc : 1 ≤ c) (hcn : c ≤ n) {δ : ℝ≥0}
+    (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    (hres : GradedAnchoredTwinFree dom k w c) :
+    epsMCA (F := F) (A := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      ≤ ((gradedBudget n k w c : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+  rw [epsMCA]
+  exact iSup_le fun u =>
+    mcaEvent_prob_le_of_gradedResidual dom hk hwk hc hcn hδn hres (u 0) (u 1)
+
+open Classical in
+omit [DecidableEq F] in
 /-- **The graded δ* floor**: under the grade-`c` residual, every radius
 `δ ≤ w/n` whose graded budget clears `ε*` is a good point of the threshold. -/
 theorem le_mcaDeltaStar_of_graded (dom : Fin n ↪ F) {k w c : ℕ} (hk : 1 ≤ k)
@@ -133,5 +149,6 @@ theorem le_mcaDeltaStar_of_graded (dom : Fin n ↪ F) {k w c : ℕ} (hk : 1 ≤ 
 end ProximityGap.WBPencil
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
+#print axioms ProximityGap.WBPencil.mcaEvent_prob_le_of_gradedResidual
 #print axioms ProximityGap.WBPencil.epsMCA_le_of_graded
 #print axioms ProximityGap.WBPencil.le_mcaDeltaStar_of_graded
