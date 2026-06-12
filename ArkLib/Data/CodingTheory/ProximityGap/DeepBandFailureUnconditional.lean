@@ -406,8 +406,58 @@ theorem deep_band_failure_unconditional (dom : Fin n ↪ F) {k m : ℕ}
         refine Nat.mul_le_mul_right _ (Nat.mul_le_mul_left _ hcount)
     _ = 2 * bad.card * q ^ m * n.choose k := by ring
 
+open Classical in
+/-- Product-inequality consumer for `deep_band_failure_unconditional`: if a
+target `B` is below the proven quotient
+`C(n,k+m+1)/(2 q^m C(n,k))`, then some generated stack has more than `B`
+bad scalars.  This division-free form is the safest way to instantiate the
+unconditional deep-band failure theorem in concrete parameter budgets. -/
+theorem deep_band_failure_badSet_card_gt_of_mul_lt (dom : Fin n ↪ F)
+    {k m B : ℕ} (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ ((k + m + 1 : ℕ) : ℝ≥0))
+    (hB : B * (2 * (Fintype.card F) ^ m * n.choose k)
+      < n.choose (k + m + 1)) :
+    ∃ Q₀ : F[X],
+      B < (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => Q₀.eval (dom i)) (fun i => (dom i) ^ k) γ)).card := by
+  obtain ⟨Q₀, hQ₀⟩ := deep_band_failure_unconditional dom hk hhi
+  refine ⟨Q₀, ?_⟩
+  set bad := Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+    ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+    (fun i => Q₀.eval (dom i)) (fun i => (dom i) ^ k) γ)
+  have hQ : n.choose (k + m + 1)
+      ≤ 2 * bad.card * (Fintype.card F) ^ m * n.choose k := by
+    simpa [bad] using hQ₀
+  by_contra hnot
+  have hleB : bad.card ≤ B := by omega
+  have hprod : 2 * bad.card * (Fintype.card F) ^ m * n.choose k
+      ≤ B * (2 * (Fintype.card F) ^ m * n.choose k) := by
+    calc 2 * bad.card * (Fintype.card F) ^ m * n.choose k
+        = bad.card * (2 * (Fintype.card F) ^ m * n.choose k) := by ring
+      _ ≤ B * (2 * (Fintype.card F) ^ m * n.choose k) :=
+        Nat.mul_le_mul_right _ hleB
+  exact (lt_irrefl (B * (2 * (Fintype.card F) ^ m * n.choose k)))
+    (lt_of_lt_of_le (lt_of_lt_of_le hB hQ) hprod)
+
+open Classical in
+/-- Nonempty-band corollary: whenever there is at least one `(k+m+1)`-core,
+some generated stack has at least one bad scalar at the band radius. -/
+theorem deep_band_failure_badSet_card_pos (dom : Fin n ↪ F) {k m : ℕ}
+    (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ ((k + m + 1 : ℕ) : ℝ≥0))
+    (hcore : 0 < n.choose (k + m + 1)) :
+    ∃ Q₀ : F[X],
+      0 < (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => Q₀.eval (dom i)) (fun i => (dom i) ^ k) γ)).card := by
+  simpa using deep_band_failure_badSet_card_gt_of_mul_lt
+    (dom := dom) (k := k) (m := m) (B := 0) hk hhi (by simpa using hcore)
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.agreeSet_card_le_of_natDegree_le
 #print axioms ProximityGap.Ownership.deep_band_failure_unconditional
+#print axioms ProximityGap.Ownership.deep_band_failure_badSet_card_gt_of_mul_lt
+#print axioms ProximityGap.Ownership.deep_band_failure_badSet_card_pos
