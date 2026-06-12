@@ -591,3 +591,36 @@ coordination notes (c8, c10, c12, c134, c137, c150, c163, c165, c242–c243, c26
 `.lake` symlink incident and recovery (c170, c177); race-dropped-import repairs and the
 sibling-commit-sweep incident (c145, c158); NubsCarson draft-PR handoffs #364/#365 (c191,
 c195); one transcription-garbled duplicate (c262, duplicating c261's landing).
+
+## Addendum: the #371 boundary-band solution (2026-06-12, rounds 64–75)
+
+The successor-issue campaign solved the deepest above-Johnson band exactly.
+Chain of results (all axiom-clean; see `docs/wiki/deltastar-programme.md` for
+the file table, and the #371 comment thread for the round-by-round record):
+
+1. **Boundary-slice exact law** (R64): at `k < (1−δ)n ≤ k+1`, strongly-far
+   directions, `badSet = {−e_t(u₀)/e_t(u₁)}` over injective `(k+1)`-tuples,
+   both inclusions.
+2. **Schur-ladder + master modular reduction** (R65–66): `e_t(Q∘dom) =
+   (Q %ₘ P_t).coeff k · e_t(x^k)` — the whole census is remainder-coefficient
+   arithmetic in `F[X]/P`; ladder ratios are negated node sums.
+3. **Farness discharge** (R67): degree-exactly-`k` directions are automatically
+   strongly far — the exact laws are unconditional in the radius window.
+4. **Spectrum fusion** (R68–69): subset sums of an antipodally closed power
+   domain are exactly the realizable signed sums; the ladder bad count at the
+   boundary is `Σ_{a∈A(h,k+1)} 2^a·C(h,a)` — the first exact bad count above
+   Johnson (validates the probe census 40 at h=4, k=2).
+5. **Full-band ladder law + cliff** (R70, R74): the ladder is `0` below the
+   band and the spectrum mass in it — the first complete `ε_mca` curve.
+6. **Generic-far pin** (R71–72): when `C(n,k+1)² ≤ q`, a collision-free stack
+   attains `#badSet = C(n,k+1)` (Lagrange divided differences + Vandermonde
+   kernel + hyperplane union bound).
+7. **Universal bound + all-stacks solution** (R73): `#badSet ≤ C(n,k+1)` for
+   EVERY stack at EVERY radius below capacity (gluing + joint-pair assembly);
+   with (6), the boundary sup over all stacks is exactly `C(n,k+1)`.
+8. **Band packing + attainment** (R74–75): at band `k+m < (1−δ)n ≤ k+m+1`,
+   `⌊n/(k+m+1)⌋ ≤ sup #badSet ≤ C(n,k+1)/C(k+m+1,k+1)` (≤k-overlap packing of
+   witness cores; disjoint-blocks construction).
+
+Remaining open (#371): the band-`m` bracket gap (extremal design) and the
+production regime (`C(n,k+1)² > q`).

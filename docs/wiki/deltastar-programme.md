@@ -39,3 +39,31 @@ production regime is bracketed `[(1−ρ)/3 unconditional · 1−√ρ−η modu
 `CellPackageSupply`, 1]` with the numeric budget proven and the bad side provably
 silent. The open core has four equivalent faces (Johnson supply, bad-side family,
 sub-√q subgroup character sums, line–ball incidence) — see the agent guide §3.5.
+
+## The boundary-band solution (2026-06-12, #371 rounds 64–75)
+
+The deepest radius band before capacity (`k < (1−δ)n ≤ k+1`) is **solved
+exactly**, and every band of the above-Johnson regime carries proven two-sided
+bounds.  The file chain (all axiom-clean, in `ArkLib/Data/CodingTheory/ProximityGap/`):
+
+| Result | File |
+|---|---|
+| Bad set = residual-ratio image (exact, both inclusions) | `BoundarySliceExact.lean` |
+| Schur-ladder law: ladder bad set = −(subset sums) | `LadderSchurReduction.lean` |
+| Master modular reduction: census = arithmetic in `F[X]/P_S` | `ResidualModularReduction.lean` |
+| Strong farness is FREE for degree-`k` directions | `BoundarySliceUnconditional.lean` |
+| Subset sums = signed sums (antipodal reduction, both ways) | `LadderSpectrumFusion{,Exact}.lean` |
+| **Exact ladder count** `= Σ_{a∈A(h,k+1)} 2^a·C(h,a)` | `LadderSpectrumFusionValue.lean` |
+| Ladder ≤ spectrum at every radius below capacity | `FullBandLadderLaw.lean` |
+| Ratio functionals pairwise distinct (Lagrange/Vandermonde) | `GenericFarSeparation.lean` |
+| **Generic-far pin**: `∃ stack, #badSet = C(n,k+1)` (`C(n,k+1)² ≤ q`) | `GenericFarPin.lean` |
+| **Universal bound**: `#badSet ≤ C(n,k+1)`, ALL stacks, ALL radii | `UniversalBoundaryBound.lean` |
+| Ladder cliff (`= 0` below band) + band packing law | `BandPackingLaw.lean` |
+| Band attainment + two-sided bracket at every band | `BandAttainment.lean` |
+
+Solved landscape: boundary band sup `= C(n,k+1)` (attained + universal);
+ladder curve exact at all radii (`0` below the band, the spectrum mass in it);
+band `m ≥ 1` bracketed `[⌊n/(k+m+1)⌋, C(n,k+1)/C(k+m+1,k+1)]`.  Remaining open
+(#371): the band-`m` bracket gap (an extremal-design question: near-perfect
+`≤k`-overlap packings of witness cores with compatible explaining codewords)
+and the production regime where `C(n,k+1)² > q`.
