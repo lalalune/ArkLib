@@ -810,6 +810,31 @@ theorem poisson_epsMCA_floor_quarter_int (hg : orderOf g = n) {d : ℕ} {δ : �
       _)
     hhalf
 
+open Classical in
+/-- `δ*` upper bracket from the Poisson half-mass floor. -/
+theorem poisson_mcaDeltaStar_le_floor_half_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
+    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (εstar : ℝ≥0∞)
+    (hεstar : εstar < ((((n.choose (d + 2) + 1) / 2 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))) :
+    ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod p) (A := ZMod p)
+        (evalCode g n d) εstar ≤ δ :=
+  ProximityGap.MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
+    (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_half_int (g := g) (n := n) hg hdn hq hδ))
+
+open Classical in
+/-- `δ*` upper bracket from the slackened Poisson `/4p` floor. -/
+theorem poisson_mcaDeltaStar_le_floor_quarter_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
+    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (εstar : ℝ≥0∞)
+    (hεstar : εstar < (((n.choose (d + 2) / 4 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))) :
+    ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod p) (A := ZMod p)
+        (evalCode g n d) εstar ≤ δ :=
+  ProximityGap.MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
+    (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_quarter_int (g := g) (n := n)
+      hg hdn hq hδ))
+
 end ArkLib.ProximityGap.PoissonCeilingFloor
 
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.not_pairJointAgreesOn_of_not_explainable
@@ -822,3 +847,5 @@ end ArkLib.ProximityGap.PoissonCeilingFloor
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_exists_stack_two_mul_badCount_ge
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_half_int
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_quarter_int
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_half_int
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_quarter_int
