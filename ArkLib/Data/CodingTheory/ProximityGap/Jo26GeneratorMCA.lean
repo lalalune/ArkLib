@@ -670,6 +670,64 @@ theorem epsMCAGen_powGen_eq_epsMCAP (C : Set (ι → A)) (exp : Fin ℓ → ℕ)
   unfold epsMCAGen ProximityGapP.epsMCAP
   exact iSup_congr fun u => Pr_congr fun γ => genMCAEvent_powGen_iff C exp δ u γ
 
+/-! ### Canonical-curve bridges
+
+The power-generator bridge above and `ProximityGapP.epsMCAP_val_eq_epsMCACurve` make the
+fixed Vandermonde-curve API another specialization of the generator framework. These
+lemmas close the triangle explicitly, so downstream code can move between the Jo26
+generator theorem, the arbitrary-exponent `epsMCAP` theorem, and the older
+`epsMCACurve` theorem without unfolding definitions. -/
+
+/-- At the canonical exponent `j ↦ j`, the generator-MCA event is the fixed curve MCA
+event `mcaEventCurve`. -/
+theorem genMCAEvent_val_iff_mcaEventCurve (C : Set (ι → A)) (δ : ℝ≥0)
+    (u : WordStack A (Fin ℓ) ι) (γ : F) :
+    genMCAEvent (fun γ : F => fun j : Fin ℓ => γ ^ (j : ℕ)) C δ u γ
+      ↔ ProximityGap.mcaEventCurve C δ u γ := by
+  rw [genMCAEvent_powGen_iff]
+  exact ProximityGapP.mcaEventP_val_iff_mcaEventCurve C δ u γ
+
+/-- Generator-MCA at the canonical power generator is exactly `epsMCACurve`. -/
+theorem epsMCAGen_val_eq_epsMCACurve (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCAGen (fun γ : F => fun j : Fin ℓ => γ ^ (j : ℕ)) C δ
+      = ProximityGap.epsMCACurve (F := F) C ℓ δ := by
+  rw [epsMCAGen_powGen_eq_epsMCAP,
+    ProximityGapP.epsMCAP_val_eq_epsMCACurve]
+
+/-- Reverse-orientation alias for callers starting from the fixed curve API. -/
+theorem epsMCACurve_eq_epsMCAGen_val (C : Set (ι → A)) (δ : ℝ≥0) :
+    ProximityGap.epsMCACurve (F := F) C ℓ δ =
+      epsMCAGen (fun γ : F => fun j : Fin ℓ => γ ^ (j : ℕ)) C δ :=
+  (epsMCAGen_val_eq_epsMCACurve (F := F) C δ).symm
+
+/-- At two rows, the canonical power generator is another presentation of affine-line
+MCA. This is the commuting-square version of `epsMCAGen_pairGen_eq_epsMCA`. -/
+theorem epsMCAGen_val_two_eq_epsMCA (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCAGen (ℓ := 2) (fun γ : F => fun j : Fin 2 => γ ^ (j : ℕ)) C δ
+      = ProximityGap.epsMCA (F := F) C δ := by
+  rw [epsMCAGen_val_eq_epsMCACurve,
+    ProximityGap.epsMCACurve_two_eq_epsMCA]
+
+/-- Event-level two-row version of `epsMCAGen_val_two_eq_epsMCA`. -/
+theorem genMCAEvent_val_two_iff_mcaEvent (C : Set (ι → A)) (δ : ℝ≥0)
+    (u : WordStack A (Fin 2) ι) (γ : F) :
+    genMCAEvent (fun γ : F => fun j : Fin 2 => γ ^ (j : ℕ)) C δ u γ
+      ↔ ProximityGap.mcaEvent C δ (u 0) (u 1) γ := by
+  rw [genMCAEvent_val_iff_mcaEventCurve]
+  exact ProximityGap.mcaEventCurve_pair_iff C δ u γ
+
+/-- The fixed curve MCA error is exactly invariant under row-wise interleaving. This is
+the `epsMCACurve` specialization of Jo26 exact small-seed interleaving invariance. -/
+theorem epsMCACurve_interleaved_eq (C : Submodule F (ι → A)) (s : ℕ) [NeZero s]
+    (L : ℕ) (δ : ℝ≥0) :
+    ProximityGap.epsMCACurve (F := F) (A := Fin s → A)
+        ((C : Set (ι → A))^⋈ (Fin s)) L δ
+      = ProximityGap.epsMCACurve (F := F) (A := A) (C : Set (ι → A)) L δ := by
+  rw [epsMCACurve_eq_epsMCAGen_val (F := F) (A := Fin s → A),
+    epsMCACurve_eq_epsMCAGen_val (F := F) (A := A)]
+  exact epsMCAGen_interleaved_eq_of_card_le C s
+    (fun γ : F => fun j : Fin L => γ ^ (j : ℕ)) δ le_rfl
+
 end ProximityGap.Jo26Gen
 
 /-! ## Axiom audit -/
@@ -685,3 +743,7 @@ end ProximityGap.Jo26Gen
 #print axioms ProximityGap.Jo26Gen.epsMCAGen_pairGen_eq_epsMCA
 #print axioms ProximityGap.Jo26Gen.epsMCAGen_pairGen_interleaved_eq_epsMCA
 #print axioms ProximityGap.Jo26Gen.epsMCAGen_powGen_eq_epsMCAP
+#print axioms ProximityGap.Jo26Gen.genMCAEvent_val_iff_mcaEventCurve
+#print axioms ProximityGap.Jo26Gen.epsMCAGen_val_eq_epsMCACurve
+#print axioms ProximityGap.Jo26Gen.epsMCAGen_val_two_eq_epsMCA
+#print axioms ProximityGap.Jo26Gen.epsMCACurve_interleaved_eq
