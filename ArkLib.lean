@@ -771,6 +771,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.JohnsonListBound
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonPerWord
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSecondMomentFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSimplexBound
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonTightnessRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26AsymptoticCeiling
@@ -1229,6 +1230,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ValueSpreadSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
 import ArkLib.Data.CodingTheory.ProximityGap.VerifiedBricks
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilAbsorption
+import ArkLib.Data.CodingTheory.ProximityGap.WBPencilSubmatrix
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedPrimePowerPacket
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.WideCircuitTrichotomy
