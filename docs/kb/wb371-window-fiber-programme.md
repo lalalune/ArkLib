@@ -1,4 +1,4 @@
-# The window fiber–pencil programme (#371): the WB residual, brick by brick
+# The window fiber-pencil programme (#371): the WB residual, brick by brick
 
 > Lane state as of 2026-06-12.  Goal: discharge `WindowRationalBounded`
 > (`WBPencilBelowUDR.lean`) — the single named residual of the below-UDR law —
@@ -6,6 +6,15 @@
 > unconditional production floor from `(1−ρ)/3` to the unique-decoding radius
 > `(1−ρ)/2`.  Everything here is k = 1 (the current battleground); the
 > machinery is k-generic at the identity level.
+
+> **2026-06-12 correction.**  `WindowRationalBounded` is now refuted by the
+> normalizer-pair family: the high-rate first beyond-ladder slice has
+> `(n-2)/2` bad scalars, so the `w+3` constant budget is false.  The surviving
+> target is the linear-budget replacement `WindowRationalLinearBounded` in
+> `WBPencilBelowUDR.lean`, whose consumer gives
+> `ε_mca ≤ max n (w+3) / q`.  The structural programme below remains useful as
+> a source of mechanisms, but any step still claiming the `w+3` cap should be
+> read as pre-refutation history.
 
 ## The reduction chain (all axiom-clean, in-tree)
 
@@ -43,8 +52,9 @@
 
 **Slack-1 census** (stratum G): bad ≤ 1 (cored family) + #exotics; exotics are
 pairwise ≤ 1-intersecting `w`-subsets, so pair-counting caps them at
-`C(n,2)/C(w,2)` — within the `w+3` budget for `w ≥ 6`.  Named residual: the
-small-`w` exotic sharpening (probe ceiling: 3).
+`C(n,2)/C(w,2)`.  This is still a structural bound, but the normalizer-pair
+refutation shows the old constant-budget assembly was too optimistic at high
+rate.  The corrected assembly asks for a linear-in-`n` cap.
 
 ## Strata map (first row; pole rows recurse)
 
@@ -105,9 +115,12 @@ Successor generation (spawned by refutations, per discipline):
 2. Pole-recursion bricks (aligned case → punctured deficient instance).
 3. Higher slack: the chain theory at `deg g ≤ s` (multi-level CF; the
    `(X−t)`-cancellation telescopes), toward the parametric all-rows theorem.
-4. Assembly: `WindowRationalBounded` ⟹ `epsMCA_le_below_udr` unconditional ⟹
-   `δ* ≥ (1−ρ)/2` at production shape; strip-row sup-side closure (the KB §5.7
-   "lower strip rows" open) via the same machinery.
+4. Assembly: replace the refuted `WindowRationalBounded` target with
+   `WindowRationalLinearBounded` and consume
+   `epsMCA_le_below_udr_linear`.  This preserves the below-UDR production-scale
+   route at the honest linear budget `max n (w+3) / q`, while the old
+   `epsMCA_le_below_udr` theorem remains only a conditional consumer of a false
+   historical residual.
 
 ## The rung census campaign (2026-06-12 session): conjecture refuted, ceiling found
 
