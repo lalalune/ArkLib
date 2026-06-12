@@ -1025,6 +1025,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MissingLineDefeater
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumCompleteSquare
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.MixedRadixTower
+import ArkLib.Data.CodingTheory.ProximityGap.MobiusCoincidenceWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MobiusPencilEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionLocalFactor
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionMultigrade
