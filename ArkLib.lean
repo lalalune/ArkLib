@@ -1305,6 +1305,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.UDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.UDREdgeClosure
 import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentLaw
+import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBelowUDR
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBoundaryBound
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalGSArchitecture
