@@ -1038,6 +1038,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.O11StructureLoop48
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.Overreach
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipBound
+import ArkLib.Data.CodingTheory.ProximityGap.OwnershipCensusSharpened
 import ArkLib.Data.CodingTheory.ProximityGap.PTEFamilyConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.PacketCombinationDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.PackingClassCSP
