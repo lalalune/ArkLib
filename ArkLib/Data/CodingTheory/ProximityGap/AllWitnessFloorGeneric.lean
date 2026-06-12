@@ -36,7 +36,7 @@ set_option maxHeartbeats 1000000
 set_option linter.unusedSectionVars false
 
 open Finset Polynomial
-open scoped NNReal ENNReal
+open scoped NNReal ENNReal ProbabilityTheory
 
 namespace ProximityGap.Ownership
 
@@ -528,6 +528,31 @@ theorem allWitnessDom_badScalars_card_mul_le_w {n : ℕ} [NeZero n] (dom : Fin n
     _ ≤ ((1 : ℝ≥0) - δ) * (n : ℝ≥0) := hsub
 
 open Classical in
+omit [DecidableEq F] in
+/-- Fixed-stack probability form of `allWitnessDom_badScalars_card_mul_le`: at witness
+threshold `w₀ ≥ d+1`, every stack's bad-scalar probability is bounded by the all-witness
+floor divided by the field size. -/
+theorem allWitnessDom_mcaEvent_prob_le {n : ℕ} [NeZero n] (dom : Fin n ↪ F)
+    (d w₀ : ℕ) (hw₀ : d + 1 ≤ w₀)
+    {δ : ℝ≥0} (hδ : ((w₀ : ℕ) : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (u₀ u₁ : Fin n → F) :
+    Pr_{ let γ ←$ᵖ F }[mcaEvent (F := F) (A := F)
+        ((rsCode dom (d + 1) : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ]
+      ≤ ((n.choose (d + 2) / w₀.choose (d + 1) : ℕ) : ℝ≥0∞)
+        / (Fintype.card F : ℝ≥0∞) := by
+  rw [prob_uniform_eq_card_filter_div_card]
+  refine ENNReal.div_le_div_right ?_ _
+  have h := allWitnessDom_badScalars_card_mul_le dom d w₀ hδ u₀ u₁
+  have hpos : 0 < w₀.choose (d + 1) :=
+    Nat.choose_pos (by omega)
+  have hdiv : (Finset.filter (fun γ : F =>
+      mcaEvent (F := F) (A := F)
+        ((rsCode dom (d + 1) : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)
+      Finset.univ).card ≤ n.choose (d + 2) / w₀.choose (d + 1) :=
+    Nat.le_div_iff_mul_le hpos |>.mpr h
+  exact_mod_cast hdiv
+
+open Classical in
 /-- **The all-witness `ε_mca` bound, generic domain**: at witness threshold `w₀ ≥ d+1`,
 `ε_mca ≤ (C(n, d+2)/C(w₀, d+1))/|F|`. -/
 theorem allWitnessDom_epsMCA_le {n : ℕ} [NeZero n] (dom : Fin n ↪ F)
@@ -538,18 +563,7 @@ theorem allWitnessDom_epsMCA_le {n : ℕ} [NeZero n] (dom : Fin n ↪ F)
       ≤ ((n.choose (d + 2) / w₀.choose (d + 1) : ℕ) : ℝ≥0∞)
         / (Fintype.card F : ℝ≥0∞) := by
   rw [epsMCA]
-  refine iSup_le fun u => ?_
-  rw [prob_uniform_eq_card_filter_div_card]
-  refine ENNReal.div_le_div_right ?_ _
-  have h := allWitnessDom_badScalars_card_mul_le dom d w₀ hδ (u 0) (u 1)
-  have hpos : 0 < w₀.choose (d + 1) :=
-    Nat.choose_pos (by omega)
-  have hdiv : (Finset.filter (fun γ : F =>
-      mcaEvent (F := F) (A := F)
-        ((rsCode dom (d + 1) : Submodule F (Fin n → F)) : Set (Fin n → F)) δ (u 0) (u 1) γ)
-      Finset.univ).card ≤ n.choose (d + 2) / w₀.choose (d + 1) :=
-    Nat.le_div_iff_mul_le hpos |>.mpr h
-  exact_mod_cast hdiv
+  exact iSup_le fun u => allWitnessDom_mcaEvent_prob_le dom d w₀ hw₀ hδ (u 0) (u 1)
 
 open Classical in
 /-- **The threshold form, generic domain**: `δ* ≥ δ` at the all-witness budget for every
@@ -574,5 +588,6 @@ end ProximityGap.Ownership
 #print axioms ProximityGap.Ownership.unfitDom_subsets_card_ge
 #print axioms ProximityGap.Ownership.allWitnessDom_badScalars_card_mul_le
 #print axioms ProximityGap.Ownership.allWitnessDom_badScalars_card_mul_le_w
+#print axioms ProximityGap.Ownership.allWitnessDom_mcaEvent_prob_le
 #print axioms ProximityGap.Ownership.allWitnessDom_epsMCA_le
 #print axioms ProximityGap.Ownership.le_mcaDeltaStar_allWitnessDom

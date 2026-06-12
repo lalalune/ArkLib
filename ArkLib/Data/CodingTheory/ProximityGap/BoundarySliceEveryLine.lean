@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceExact
+import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 
 /-!
 # The boundary-slice law UNCONDITIONAL: every line, no far-ness hypothesis (#371)
@@ -237,9 +238,51 @@ theorem boundary_slice_badScalars_card_le_unconditional (dom : Fin n ↪ F) {k :
   rw [boundary_slice_badSet_eq_unconditional dom hk hlo hhi u₀ u₁]
   exact Finset.card_image_le
 
+open Classical in
+/-- **Coarse every-line boundary budget**: the unconditional boundary-slice count is always
+at most the number of `(k+1)`-tuples.  This is the hypothesis-free `n^(k+1)` numerator
+before any residual-ratio collision census is used. -/
+theorem boundary_slice_badScalars_card_le_pow_unconditional (dom : Fin n ↪ F) {k : ℕ}
+    (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (u₀ u₁ : Fin n → F) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+      ≤ n ^ (k + 1) := by
+  refine le_trans (boundary_slice_badScalars_card_le_unconditional dom hk hlo hhi u₀ u₁) ?_
+  calc
+    (Finset.univ.filter
+        (fun t : Fin (k + 1) → Fin n =>
+          Function.Injective t ∧ residual dom k t u₁ ≠ 0)).card
+        ≤ (Finset.univ : Finset (Fin (k + 1) → Fin n)).card := by
+          exact Finset.card_le_card (by intro t _; simp)
+    _ = Fintype.card (Fin (k+1) → Fin n) := by rw [Finset.card_univ]
+    _ = n ^ (k + 1) := by
+      rw [Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
+
+open Classical in
+/-- **The every-line boundary `ε_mca` bridge**: at the boundary radius
+`k < (1-δ)n ≤ k+1`, every stack has bad-scalar mass at most `n^(k+1)/|F|`.
+Sharper boundary-slice results replace the numerator by a residual-ratio image
+size; this theorem is the unconditional coarse consumer. -/
+theorem epsMCA_le_boundary_slice_everyLine_pow (dom : Fin n ↪ F) {k : ℕ}
+    (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ)) :
+    epsMCA (F := F) (A := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      ≤ ((n ^ (k + 1) : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
+  epsMCA_le_of_badCount_le
+    (((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F))) δ (n ^ (k + 1))
+    (fun u => boundary_slice_badScalars_card_le_pow_unconditional dom hk hlo hhi
+      (u 0) (u 1))
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.exists_resNeZero_tuple_of_no_joint
 #print axioms ProximityGap.Ownership.boundary_slice_badSet_eq_unconditional
 #print axioms ProximityGap.Ownership.boundary_slice_badScalars_card_le_unconditional
+#print axioms ProximityGap.Ownership.boundary_slice_badScalars_card_le_pow_unconditional
+#print axioms ProximityGap.Ownership.epsMCA_le_boundary_slice_everyLine_pow

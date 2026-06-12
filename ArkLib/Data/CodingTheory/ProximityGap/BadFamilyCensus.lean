@@ -32,36 +32,53 @@ cross-validating three independent badness checkers byte-exactly.
 |---|---|---|---|
 | level-`j` staircase | `(X^{r'_j 2^j m}, X^{(r'_j−1) 2^j m})` | `r'_j 2^j m` | `N(μ−j, r'_j)` |
 | pencil rung `s` | `(X^a, X^{a+s})`, `gcd(a,n) ≥ d+1` | `gcd(a,n) + gcd(s,n)` | `n/gcd(s,n)` |
-| doublet | `(e_x, e_y − e_x)` | `n − 1` | `2` |
+| simplex `e` | line of words on an `(e+1)`-set, `d ≤ n−e−2` | `n − e` | `e + 1` |
+| bisimplex `e` | `((X·q₀)|_{S₁}, q₀|_{S₁})`, `n−2e−1 ≤ d ≤ n−e−2` | `n − e` | `2e + 2` |
+| doublet (= simplex `1`) | `(e_x, e_y − e_x)` | `n − 1` | `2` |
 | single | `(c − γ₀u₁, u₁)`, `u₁ ∉ C` | `n` | `1` |
 | explosion (`t = d+2` band) | support-compact stacks | `d + 2` | `Θ(p)` |
 
 This file proves the **general pencil-rung law** (`pencil_rung_epsMCA_lower_bound`: the
 `s ∣ h` ladder `(X^h, X^{h+s})` carries `n/s` bad scalars at radius `1 − (h+s)/n`,
-generalizing the landed `s = 1` antipodal pencil) and the **doublet bottom rung**
-(`two_deviation_epsMCA_lower_bound`: every smooth-domain code with `d + 3 ≤ n` has `2` bad
-scalars at radius `1 − (n−1)/n` — the floor of every envelope), plus the concrete
-δ*-envelope extensions they give at `p = 12289` (`δ* ≤ 3/8`, then `≤ 1/4`, strictly below
-the round-7 pencil value `7/16`) and at the censused instance `p = 17`.
+generalizing the landed `s = 1` antipodal pencil), the **doublet bottom rung**
+(`two_deviation_epsMCA_lower_bound`), the **simplex ladder**
+(`simplex_epsMCA_lower_bound`: `e + 1` bad scalars at radius `e/n` for every
+`d ≤ n−e−2` — discovered by the census at the `(d, t) = (1, 6)` cell), and the
+**BISIMPLEX** (`bisimplex_epsMCA_lower_bound`, THE ROUND-8 DISCOVERY: two disjoint
+simplices on one affine line, `2e + 2` bad scalars at radius `e/n` in the window
+`n−2e−1 ≤ d ≤ n−e−2` — strictly above every previously known family at its cells), plus
+the concrete δ*-envelope extensions at `p = 12289` (`δ* ≤ 3/8` at `ε* < 8/p` for `d = 2`;
+`δ* ≤ 3/8` at the WIDER band `ε* < 14/p` for `d = 4` via the bisimplex; `δ* ≤ 1/4` at
+`ε* < 4/p`) and at the censused instance `p = 17`.
 
 ## The census verdict (probe, exact: every affine line, side condition exact)
 
-At `(p, n, g) = (17, 8, 2)` the exhaustive exact maxima `W_t = p·ε_mca` per threshold:
+At `(p, n, g) = (17, 8, 2)` the exhaustive exact maxima `W_t = p·ε_mca` per threshold
+(round-8 corrected predictor + structural extremal classification):
 
-* `d = 2`: `W_4 = 17 = p` (explosion band, `t = d+2`) · `W_5 = 11` (a **mod-17 surplus
-  family**: eleven collinear weight-3 syndromes; the char-0 layer is the pencil's `8`)
+* `d = 2`: `W_4 = 17 = p` (explosion band, `t = d+2`) · `W_5 = 11` (mod-17 surplus
+  `8 + 3`: the extremal = two OVERLAPPING `e = 3` simplices `{0,2,4,7}`, `{3,5,6,7}`
+  plus a 3-scalar sunflower; the char-0 layer `8` is the pencil/bisimplex value)
   · `W_6 = 4` = **the `s = 2` pencil, catalogue-EXACT** · `W_7 = 2` = **the
   doublet/simplex, catalogue-EXACT** · `W_8 = 1`.
-* `d = 1`: `W_5 = 8` = the pencil `(X⁴, X⁵)` · `W_6 = 3` = **the `e = 2` simplex,
-  catalogue-EXACT** (the cell that discovered the simplex ladder) · `W_7 = 2`.
-* `d = 3` (the boundary `d = h − 1`): `W_5 = 17` (explosion) · `W_6 = 7` (mod-17
-  surplus over the char-0 simplex value `3`) · `W_7 = 2`.
+* `d = 1`: `W_5 = 8` = the pencil tied with the disjoint BISIMPLEX (the extremal's
+  structure is `simplex{0,1,3,6} + simplex{2,4,5,7}`), catalogue-EXACT · `W_6 = 3` =
+  **the `e = 2` simplex, catalogue-EXACT** (the cell that exposed the predictor's
+  simplex omission: the "triangle" extremal IS the simplex) · `W_7 = 2`.
+* `d = 3` (the boundary `d = h − 1`): `W_5 = 17` (explosion) · `W_6 = 7` = **the
+  BISIMPLEX `6` plus exactly one mod-17 extra** (the extremal decomposes as
+  `simplex{0,2,6} + simplex{1,3,5}` + one weight-2 support on the complement pair
+  `{4,7}`) · `W_7 = 2`.
 
 Two-layer law: the char-0 layer of every censused cell is a catalogue family
-(staircase / pencil / simplex / explosion); the small-field surplus (`11`, `7`) vanishes
-at `p = 97` probes.  The conjecture that the catalogue good sides are exact at the
-instance is the named Prop `CompleteEnvelopeF17`, with its unconditionally-proven bad
-sides and the conditional full-curve theorem `completeEnvelopeF17_curve`.
+(staircase / pencil / simplex / BISIMPLEX / explosion); the small-field surpluses
+(`+3` at `(d,t) = (2,5)`, `+1` at `(3,6)`) are mod-17-specific: the `(3,6)` shoulder
+cell re-censused EXHAUSTIVELY at `p = 97` gives `W_6 = 6` — the bisimplex EXACTLY,
+extremal = two clean simplex triangles, runner-up `5` — and the `(2,5)` surplus does
+not recur in the `p = 97` heuristic novelty searches.  The conjecture that the
+catalogue good sides are exact at the instance is the named Prop
+`CompleteEnvelopeF17`, with its unconditionally-proven bad sides and the conditional
+full-curve theorem `completeEnvelopeF17_curve`.
 
 Axiom-clean (`propext`, `Classical.choice`, `Quot.sound`); no `sorry`.
 -/
@@ -736,6 +753,340 @@ theorem mcaDeltaStar_le_simplex {p n : ℕ} [Fact p.Prime] [NeZero n] {d e : ℕ
   mcaDeltaStar_le_of_bad _ _
     (lt_of_lt_of_le hεstar (simplex_epsMCA_lower_bound hg he1 hed))
 
+/-! ## The bisimplex: two disjoint simplices on one line — THE ROUND-8 DISCOVERY
+
+The census surplus cells decompose: at `(p, n, d) = (17, 8, 3)`, threshold `6`, the exact
+worst count is `7`, and the extremal's per-scalar error supports are the THREE 2-subsets
+of `{0,2,6}` **plus** the three 2-subsets of `{1,3,5}` **plus** one extra pair — two
+complete simplices riding the SAME affine line, plus a mod-17 coincidence.  The compound
+is a genuine char-0 family the catalogue missed:
+
+Take disjoint `(e+1)`-sets `S₁ = {0,…,e}`, `S₂ = {e+1,…,2e+1}`, complement `Z`, and the
+vanishing polynomial `q₀ = ∏_{z ∈ Z} (X − z)` (degree `n − 2e − 2`).  Stack:
+`u₁ = q₀|_{S₁}` and `u₀ = (X·q₀)|_{S₁}`.  Then `γ = −x` is bad for **every**
+`x ∈ S₁ ∪ S₂` — `2e + 2` scalars:
+
+* `x ∈ S₁`: the line word is `((X−x)q₀)|_{S₁}` — weight `≤ e` (it vanishes at `x`),
+  within `e` of the ZERO codeword, and the direction is unfit on the witness (it
+  vanishes on the `n−e−1` points off `S₁` but not at `x`);
+* `x ∈ S₂`: the line word is `(X−x)q₀ − ((X−x)q₀)|_{S₂∪Z}` — the degree-`≤ d` codeword
+  `(X−x)q₀` minus a weight-`≤ e` word supported on `S₂ ∖ {x}` (`q₀` kills `Z`), and the
+  direction agrees with `q₀` off `S₂` but vanishes at `x` where `q₀` does not.
+
+Count `2e + 2` at radius `e/n`, valid for `n − 2e − 1 ≤ d ≤ n − e − 2` — strictly above
+both the simplex (`e+1`) and, at the censused `(d, t) = (3, 6)` cell, the pencil (`4`).
+The probe confirms the count word-level at `p ∈ {17, 97}`, and the exhaustive `p = 97`
+shoulder-cell census pins the cell value at exactly `6` = the bisimplex (runner-up `5`):
+the family is char-0 real, not a small-field artifact. -/
+
+open Classical in
+/-- **The bisimplex lower bound**: `2e + 2` bad scalars at radius `1 − (n−e)/n`, for
+every `1 ≤ e` with `2e + 2 ≤ n` and `n − 2e − 1 ≤ d ≤ n − e − 2`.  Two disjoint
+simplices share one affine line of words; each point of `S₁ ∪ S₂` contributes the scalar
+`−x` killing its coordinate of the corresponding residual. -/
+theorem bisimplex_epsMCA_lower_bound {p n : ℕ} [Fact p.Prime] [NeZero n] {d e : ℕ}
+    {g : ZMod p} (hg : orderOf g = n) (he1 : 1 ≤ e) (hed : e + d + 2 ≤ n)
+    (hlow : n ≤ d + 2 * e + 1) (h2e : 2 * e + 2 ≤ n) :
+    ((2 * e + 2 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞)
+      ≤ epsMCA (F := ZMod p) (evalCode g n d)
+          (1 - ((n - e : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0)) := by
+  classical
+  have hn0 : 0 < n := by omega
+  have hg0 : g ≠ 0 := by
+    rintro rfl
+    have h1 : (0 : ZMod p) ^ n = 1 := by
+      rw [← hg]; exact pow_orderOf_eq_one 0
+    rw [zero_pow (by omega : n ≠ 0)] at h1
+    exact zero_ne_one h1
+  have hginj : ∀ i j : Fin n, g ^ (i : ℕ) = g ^ (j : ℕ) → i = j := by
+    intro i j hij
+    exact Fin.ext (pow_inj_below_order''' hg0 hg _ i.isLt _ j.isLt hij)
+  -- the vanishing polynomial of the complement `Z = {2e+2, …, n−1}`
+  set Zc : ℕ := n - (2 * e + 2) with hZc
+  set q0 : Polynomial (ZMod p) :=
+    ∏ j ∈ Finset.range Zc, (Polynomial.X - Polynomial.C (g ^ (2 * e + 2 + j)))
+    with hq0
+  have hq0deg : q0.natDegree = Zc := by
+    rw [hq0, Polynomial.natDegree_prod_of_monic _ _
+      (fun j _ => Polynomial.monic_X_sub_C _)]
+    rw [Finset.sum_congr rfl
+      (fun j _ => Polynomial.natDegree_X_sub_C (g ^ (2 * e + 2 + j)))]
+    rw [Finset.sum_const, smul_eq_mul, mul_one, Finset.card_range]
+  have hq0eval : ∀ x : ZMod p,
+      q0.eval x = ∏ j ∈ Finset.range Zc, (x - g ^ (2 * e + 2 + j)) := by
+    intro x
+    rw [hq0]
+    simp [Polynomial.eval_prod]
+  have hq0_ne : ∀ a : ℕ, a < 2 * e + 2 → q0.eval (g ^ a) ≠ 0 := by
+    intro a ha
+    rw [hq0eval]
+    refine Finset.prod_ne_zero_iff.mpr fun j hj => ?_
+    rw [Finset.mem_range] at hj
+    intro hzero
+    have heq : g ^ a = g ^ (2 * e + 2 + j) := sub_eq_zero.mp hzero
+    have h1 : (⟨a, by omega⟩ : Fin n) = ⟨2 * e + 2 + j, by omega⟩ :=
+      hginj _ _ heq
+    have h2 := congrArg Fin.val h1
+    simp only at h2
+    omega
+  have hq0_zero : ∀ a : ℕ, 2 * e + 2 ≤ a → a < n → q0.eval (g ^ a) = 0 := by
+    intro a ha han
+    rw [hq0eval]
+    refine Finset.prod_eq_zero (Finset.mem_range.mpr
+      (show a - (2 * e + 2) < Zc by omega)) ?_
+    have h1 : 2 * e + 2 + (a - (2 * e + 2)) = a := by omega
+    rw [h1, sub_self]
+  -- the stack: the line `(X·q₀)|_{S₁} + γ·q₀|_{S₁}`
+  set u : WordStack (ZMod p) (Fin 2) (Fin n) :=
+    ![fun j => if (j : ℕ) ≤ e then g ^ (j : ℕ) * q0.eval (g ^ (j : ℕ)) else 0,
+      fun j => if (j : ℕ) ≤ e then q0.eval (g ^ (j : ℕ)) else 0] with hu
+  set Λ : Finset (ZMod p) :=
+    Finset.univ.image (fun i : Fin (2 * e + 2) => -(g ^ (i : ℕ))) with hΛ
+  have hΛcard : Λ.card = 2 * e + 2 := by
+    have hinj : Function.Injective (fun i : Fin (2 * e + 2) => -(g ^ (i : ℕ))) := by
+      intro i j hij
+      simp only at hij
+      have heq : g ^ (i : ℕ) = g ^ (j : ℕ) := neg_injective hij
+      exact Fin.ext (pow_inj_below_order''' hg0 hg _
+        (lt_of_lt_of_le i.isLt h2e) _ (lt_of_lt_of_le j.isLt h2e) heq)
+    rw [hΛ, Finset.card_image_of_injective _ hinj, Finset.card_univ,
+      Fintype.card_fin]
+  -- shared witness-size arithmetic
+  have hsizeS : ∀ S : Finset (Fin n), S.card = n - e →
+      ((S.card : ℕ) : ℝ≥0) ≥ (1 - (1 - ((n - e : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0)))
+        * (Fintype.card (Fin n) : ℝ≥0) := by
+    intro S hS
+    have hn0' : ((n : ℕ) : ℝ≥0) ≠ 0 := by exact_mod_cast hn0.ne'
+    have hle1 : ((n - e : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0) ≤ 1 := by
+      rw [div_le_one (lt_of_le_of_ne (zero_le _) (Ne.symm hn0'))]
+      exact_mod_cast (by omega : n - e ≤ n)
+    have h1δ : (1 : ℝ≥0) - (1 - ((n - e : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0))
+        = ((n - e : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0) := tsub_tsub_cancel_of_le hle1
+    rw [hS, h1δ, Fintype.card_fin, div_mul_cancel₀ _ hn0']
+  have hbad : ∀ γ ∈ Λ, mcaEvent (evalCode g n d)
+      (1 - ((n - e : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0)) (u 0) (u 1) γ := by
+    intro γ hγ
+    obtain ⟨a, -, rfl⟩ := Finset.mem_image.mp hγ
+    set a₀ : ℕ := (a : ℕ) with ha₀_def
+    have ha₀lt : a₀ < 2 * e + 2 := a.isLt
+    have ha₀n : a₀ < n := by omega
+    set xa : Fin n := ⟨a₀, ha₀n⟩ with hxa
+    rcases Nat.lt_or_ge a₀ (e + 1) with hae1 | hae1
+    · -- `x ∈ S₁`: the simplex case against the ZERO codeword
+      have hae : a₀ ≤ e := by omega
+      have hflt : ∀ k : Fin (n - e - 1), (k : ℕ) + e + 1 < n := fun k => by
+        have := k.isLt
+        omega
+      set f : Fin (n - e - 1) → Fin n := fun k => ⟨(k : ℕ) + e + 1, hflt k⟩ with hf
+      set Stail : Finset (Fin n) := Finset.univ.image f with hSt
+      have htail_gt : ∀ j ∈ Stail, e < (j : ℕ) := by
+        intro j hjt
+        obtain ⟨k, -, hk⟩ := Finset.mem_image.mp hjt
+        subst hk
+        show e < (k : ℕ) + e + 1
+        omega
+      have hfinj : Function.Injective f := by
+        intro a b hab
+        have h1 := congrArg Fin.val hab
+        simp only [hf] at h1
+        exact Fin.ext (by omega)
+      have hStail_card : Stail.card = n - e - 1 := by
+        rw [hSt, Finset.card_image_of_injective _ hfinj, Finset.card_univ,
+          Fintype.card_fin]
+      have hxa_notin : xa ∉ Stail := by
+        intro hmem
+        have := htail_gt xa hmem
+        simp only [hxa] at this
+        omega
+      set S : Finset (Fin n) := insert xa Stail with hS
+      have hScard : S.card = n - e := by
+        rw [hS, Finset.card_insert_of_notMem hxa_notin, hStail_card]
+        omega
+      refine ⟨S, hsizeS S hScard, ⟨fun j => (0 : Polynomial (ZMod p)).eval
+        (g ^ (j : ℕ)), polyEval_mem_evalCode 0 (by simp), ?_⟩, ?_⟩
+      · -- agreement with the zero codeword
+        intro j hj
+        rw [hu]
+        simp only [Matrix.cons_val_zero, Matrix.cons_val_one, smul_eq_mul,
+          Polynomial.eval_zero]
+        rcases Finset.mem_insert.mp hj with rfl | hjt
+        · simp only [hxa, hae, if_pos]
+          ring
+        · have hgt := htail_gt j hjt
+          have hnle : ¬ (j : ℕ) ≤ e := by omega
+          simp [hnle]
+      · -- the direction vanishes on the tail but not at `xa`
+        rintro ⟨v₀, -, v₁, hv₁, hpair⟩
+        obtain ⟨q₁, hq₁deg, hq₁⟩ := hv₁
+        have hq₁zero : q₁ = 0 := by
+          refine fit_unique hginj (B := Stail) ?_ hq₁deg (by simp) fun j hjt => ?_
+          · rw [hStail_card]
+            omega
+          · have hgt := htail_gt j hjt
+            have hnle : ¬ (j : ℕ) ≤ e := by omega
+            have h1 : v₁ j = u 1 j := (hpair j (Finset.mem_insert_of_mem hjt)).2
+            have h2 : v₁ j = q₁.eval (g ^ (j : ℕ)) := hq₁ j
+            rw [← h2, h1, hu]
+            simp [hnle]
+        have h4 : v₁ xa = u 1 xa := (hpair xa (Finset.mem_insert_self _ _)).2
+        have h5 : v₁ xa = q₁.eval (g ^ ((xa : Fin n) : ℕ)) := hq₁ xa
+        rw [hq₁zero] at h5
+        simp only [Polynomial.eval_zero] at h5
+        have h6 : u 1 xa = q0.eval (g ^ a₀) := by
+          rw [hu]
+          simp [hxa, hae]
+        rw [← h4, h5] at h6
+        exact hq0_ne a₀ ha₀lt h6.symm
+    · -- `x ∈ S₂`: the line word is the codeword `(X − g^{a₀})·q₀` minus a weight-`≤ e`
+      -- word supported on `S₂ ∖ {x}`
+      have ha₀2 : e + 1 ≤ a₀ := hae1
+      set P : Polynomial (ZMod p) :=
+        (Polynomial.X - Polynomial.C (g ^ a₀)) * q0 with hP
+      have hPdeg : P.natDegree ≤ d := by
+        refine le_trans (Polynomial.natDegree_mul_le) ?_
+        rw [Polynomial.natDegree_X_sub_C, hq0deg]
+        omega
+      have hPeval : ∀ x : ZMod p, P.eval x = (x - g ^ a₀) * q0.eval x := by
+        intro x
+        rw [hP]
+        simp [Polynomial.eval_mul, Polynomial.eval_sub]
+      -- the witness: `S₁`, the complement `Z`, and `xa`
+      have hhflt : ∀ k : Fin (e + 1), (k : ℕ) < n := fun k => by
+        have := k.isLt
+        omega
+      set fh : Fin (e + 1) → Fin n := fun k => ⟨(k : ℕ), hhflt k⟩ with hfh
+      set Shead : Finset (Fin n) := Finset.univ.image fh with hSh
+      have hhead_le : ∀ j ∈ Shead, (j : ℕ) ≤ e := by
+        intro j hjh
+        obtain ⟨k, -, hk⟩ := Finset.mem_image.mp hjh
+        subst hk
+        show (k : ℕ) ≤ e
+        have := k.isLt
+        omega
+      have hfhinj : Function.Injective fh := by
+        intro a b hab
+        have h1 := congrArg Fin.val hab
+        simp only [hfh] at h1
+        exact Fin.ext h1
+      have hShead_card : Shead.card = e + 1 := by
+        rw [hSh, Finset.card_image_of_injective _ hfhinj, Finset.card_univ,
+          Fintype.card_fin]
+      have hzflt : ∀ k : Fin Zc, 2 * e + 2 + (k : ℕ) < n := fun k => by
+        have := k.isLt
+        omega
+      set fz : Fin Zc → Fin n := fun k => ⟨2 * e + 2 + (k : ℕ), hzflt k⟩ with hfz
+      set Sz : Finset (Fin n) := Finset.univ.image fz with hSz
+      have hz_ge : ∀ j ∈ Sz, 2 * e + 2 ≤ (j : ℕ) := by
+        intro j hjz
+        obtain ⟨k, -, hk⟩ := Finset.mem_image.mp hjz
+        subst hk
+        show 2 * e + 2 ≤ 2 * e + 2 + (k : ℕ)
+        omega
+      have hfzinj : Function.Injective fz := by
+        intro a b hab
+        have h1 := congrArg Fin.val hab
+        simp only [hfz] at h1
+        exact Fin.ext (by omega)
+      have hSz_card : Sz.card = Zc := by
+        rw [hSz, Finset.card_image_of_injective _ hfzinj, Finset.card_univ,
+          Fintype.card_fin]
+      have hdisj : Disjoint Shead Sz := by
+        rw [Finset.disjoint_right]
+        intro j hjz hjh
+        have h1 := hhead_le j hjh
+        have h2 := hz_ge j hjz
+        omega
+      set B : Finset (Fin n) := Shead ∪ Sz with hB
+      have hBcard : B.card = n - e - 1 := by
+        rw [hB, Finset.card_union_of_disjoint hdisj, hShead_card, hSz_card]
+        omega
+      have hxa_notinB : xa ∉ B := by
+        intro hmem
+        rcases Finset.mem_union.mp hmem with hh | hz
+        · have := hhead_le xa hh
+          simp only [hxa] at this
+          omega
+        · have := hz_ge xa hz
+          simp only [hxa] at this
+          omega
+      set S : Finset (Fin n) := insert xa B with hS
+      have hScard : S.card = n - e := by
+        rw [hS, Finset.card_insert_of_notMem hxa_notinB, hBcard]
+        omega
+      refine ⟨S, hsizeS S hScard, ⟨fun j => P.eval (g ^ (j : ℕ)),
+        polyEval_mem_evalCode P hPdeg, ?_⟩, ?_⟩
+      · -- agreement with the codeword `(X − g^{a₀})·q₀` on the witness
+        intro j hj
+        rw [hu]
+        simp only [Matrix.cons_val_zero, Matrix.cons_val_one, smul_eq_mul]
+        rw [hPeval]
+        rcases Finset.mem_insert.mp hj with rfl | hjB
+        · have hnle : ¬ (xa : ℕ) ≤ e := by
+            simp only [hxa]
+            omega
+          simp only [hnle, if_neg, not_false_iff]
+          simp only [hxa]
+          ring_nf
+        · rcases Finset.mem_union.mp hjB with hjh | hjz
+          · have hle := hhead_le j hjh
+            simp only [hle, if_pos]
+            ring
+          · have hge := hz_ge j hjz
+            have hnle : ¬ (j : ℕ) ≤ e := by omega
+            simp only [hnle, if_neg, not_false_iff]
+            rw [hq0_zero (j : ℕ) hge j.isLt]
+            ring
+      · -- the direction agrees with `q₀` on `B` but vanishes at `xa` where `q₀` does not
+        rintro ⟨v₀, -, v₁, hv₁, hpair⟩
+        obtain ⟨q₁, hq₁deg, hq₁⟩ := hv₁
+        have hq₁q0 : q₁ = q0 := by
+          refine fit_unique hginj (B := B) ?_ hq₁deg
+            (by rw [hq0deg]; omega) fun j hjB => ?_
+          · rw [hBcard]
+            omega
+          · have h1 : v₁ j = u 1 j := (hpair j (Finset.mem_insert_of_mem hjB)).2
+            have h2 : v₁ j = q₁.eval (g ^ (j : ℕ)) := hq₁ j
+            rcases Finset.mem_union.mp hjB with hjh | hjz
+            · have hle := hhead_le j hjh
+              rw [← h2, h1, hu]
+              simp [hle]
+            · have hge := hz_ge j hjz
+              have hnle : ¬ (j : ℕ) ≤ e := by omega
+              rw [← h2, h1, hu, hq0_zero (j : ℕ) hge j.isLt]
+              simp [hnle]
+        have h4 : v₁ xa = u 1 xa := (hpair xa (Finset.mem_insert_self _ _)).2
+        have h5 : v₁ xa = q₁.eval (g ^ ((xa : Fin n) : ℕ)) := hq₁ xa
+        rw [hq₁q0] at h5
+        have h6 : u 1 xa = 0 := by
+          have hnle : ¬ (xa : ℕ) ≤ e := by
+            simp only [hxa]
+            omega
+          rw [hu]
+          simp [hnle]
+        have h7 : q0.eval (g ^ a₀) = 0 := by
+          have hxv : ((xa : Fin n) : ℕ) = a₀ := rfl
+          rw [← hxv, ← h5, h4, h6]
+        exact hq0_ne a₀ ha₀lt h7
+  have hengine := ProximityGap.MCAWitnessSpread.epsMCA_ge_card_div_of_mcaEvent_set
+    (F := ZMod p) (evalCode g n d)
+    (1 - ((n - e : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0)) u Λ hbad
+  rw [ZMod.card p] at hengine
+  refine le_trans ?_ hengine
+  rw [hΛcard]
+
+/-- **The bisimplex `δ*` upper bound**: at every budget `ε* < (2e+2)/p`, the threshold is
+at most `e/n`.  In its validity window `n − 2e − 1 ≤ d ≤ n − e − 2` the bisimplex
+strictly dominates the simplex (`2e+2 > e+1`) and widens every envelope band it
+touches. -/
+theorem mcaDeltaStar_le_bisimplex {p n : ℕ} [Fact p.Prime] [NeZero n] {d e : ℕ}
+    {g : ZMod p} (hg : orderOf g = n) (he1 : 1 ≤ e) (hed : e + d + 2 ≤ n)
+    (hlow : n ≤ d + 2 * e + 1) (h2e : 2 * e + 2 ≤ n)
+    (εstar : ℝ≥0∞) (hεstar : εstar < ((2 * e + 2 : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞)) :
+    mcaDeltaStar (F := ZMod p) (A := ZMod p) (evalCode g n d) εstar
+      ≤ 1 - ((n - e : ℕ) : ℝ≥0) / ((n : ℕ) : ℝ≥0) :=
+  mcaDeltaStar_le_of_bad _ _
+    (lt_of_lt_of_le hεstar (bisimplex_epsMCA_lower_bound hg he1 hed hlow h2e))
+
 /-! ## The pencil ladder at the first biting instance (`p = 12289`, `n = 16`)
 
 Round 7 trapped the `d = 2` level-1 rung band to `[16/p, 32/p)` via the `s = 1` pencil.
@@ -801,6 +1152,34 @@ theorem deltaStar_le_pencil4_F12289_d4 (εstar : ℝ≥0∞)
         (evalCode (4134 : ZMod 12289) 16 4) εstar ≤ 1 / 4 :=
   mcaDeltaStar_le_of_bad _ _ (lt_of_lt_of_le hεstar pencil4_epsMCA_F12289_d4)
 
+/-- The bisimplex (`e = 6`) at the `d = 4` instance: FOURTEEN bad scalars at radius
+`3/8` — strictly above the `s = 2` pencil's `8` at the same radius.  The widest
+bad family known at this `(rate, radius)` point. -/
+theorem bisimplex_epsMCA_F12289_d4 :
+    (14 : ℝ≥0∞) / (12289 : ℝ≥0∞)
+      ≤ epsMCA (F := ZMod 12289) (evalCode (4134 : ZMod 12289) 16 4) (3 / 8 : ℝ≥0) := by
+  haveI : NeZero (16 : ℕ) := ⟨by norm_num⟩
+  have h := bisimplex_epsMCA_lower_bound (p := 12289) (n := 16) (d := 4) (e := 6)
+    (g := (4134 : ZMod 12289)) orderOf_4134 (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+  have e1 : ((2 * 6 + 2 : ℕ) : ℝ≥0∞) = (14 : ℝ≥0∞) := by norm_num
+  have e2 : ((12289 : ℕ) : ℝ≥0∞) = (12289 : ℝ≥0∞) := by norm_num
+  have e3 : (1 : ℝ≥0) - ((16 - 6 : ℕ) : ℝ≥0) / ((16 : ℕ) : ℝ≥0) = 3 / 8 := by
+    have hd : ((16 - 6 : ℕ) : ℝ≥0) / ((16 : ℕ) : ℝ≥0) = 5 / 8 := by norm_num
+    rw [hd]
+    refine tsub_eq_of_eq_add ?_
+    norm_num
+  rw [e1, e2, e3] at h
+  exact h
+
+/-- The `d = 4` budget band `ε* < 14/p` forces `δ* ≤ 3/8` — the bisimplex widens the
+band of the `3/8` rung from the pencil's `ε* < 8/p` to `ε* < 14/p`. -/
+theorem deltaStar_le_bisimplex_F12289_d4 (εstar : ℝ≥0∞)
+    (hεstar : εstar < (14 : ℝ≥0∞) / (12289 : ℝ≥0∞)) :
+    mcaDeltaStar (F := ZMod 12289) (A := ZMod 12289)
+        (evalCode (4134 : ZMod 12289) 16 4) εstar ≤ 3 / 8 :=
+  mcaDeltaStar_le_of_bad _ _ (lt_of_lt_of_le hεstar bisimplex_epsMCA_F12289_d4)
+
 end Concrete12289
 
 /-! ## The censused instance: `p = 17`, `n = 8`, `g = 2`, `d = 2` (rate `3/8`)
@@ -808,10 +1187,12 @@ end Concrete12289
 The probe's exhaustive cells (`W_t` = exact max bad count over ALL stacks at threshold
 `t`, certified by the all-lines syndrome census with the exact side condition):
 
-  `W_4 = 17 = p` (explosion band, support-compact stacks) · `W_5 = 11` (a mod-17
-  surplus family of eleven collinear weight-3 syndromes; the char-0 layer is the
-  pencil's `8`) · `W_6 = 4` (the `s = 2` pencil, catalogue-EXACT) · `W_7 = 2` (the
-  doublet/simplex, catalogue-EXACT) · `W_8 = 1`.
+  `W_4 = 17 = p` (explosion band, support-compact stacks) · `W_5 = 11` (mod-17 surplus
+  `8 + 3`: the extremal is an OVERLAPPING bisimplex — two `e = 3` simplices
+  `{0,2,4,7}`, `{3,5,6,7}` sharing one point — plus a 3-scalar sunflower at a second
+  point; the char-0 layer `8` is the pencil/bisimplex value) · `W_6 = 4` (the `s = 2`
+  pencil, catalogue-EXACT) · `W_7 = 2` (the doublet/simplex, catalogue-EXACT) ·
+  `W_8 = 1`.
 
 The bad sides provable from the general family theorems are below; the matching good
 sides — true by exhaustion — are the named census conjecture. -/
@@ -884,6 +1265,27 @@ theorem simplex1_epsMCA_F17 :
   rw [e1, e2, e3] at h
   exact h
 
+/-- The bisimplex at the censused boundary instance `d = 3` (the `(d, t) = (3, 6)`
+cell): SIX bad scalars at radius `1/4` — the char-0 layer of the censused `W_6 = 7`
+(`7 = 6 + 1`: the probe's extremal decomposes into the two simplex triangles
+`{0,2,6}`, `{1,3,5}` plus one mod-17 extra pair on the complement `{4,7}`). -/
+theorem bisimplex_epsMCA_F17_d3 :
+    (6 : ℝ≥0∞) / (17 : ℝ≥0∞)
+      ≤ epsMCA (F := ZMod 17) (evalCode (2 : ZMod 17) 8 3) (1 / 4 : ℝ≥0) := by
+  haveI : NeZero (8 : ℕ) := ⟨by norm_num⟩
+  have h := bisimplex_epsMCA_lower_bound (p := 17) (n := 8) (d := 3) (e := 2)
+    (g := (2 : ZMod 17)) orderOf_two_F17 (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+  have e1 : ((2 * 2 + 2 : ℕ) : ℝ≥0∞) = (6 : ℝ≥0∞) := by norm_num
+  have e2 : ((17 : ℕ) : ℝ≥0∞) = (17 : ℝ≥0∞) := by norm_num
+  have e3 : (1 : ℝ≥0) - ((8 - 2 : ℕ) : ℝ≥0) / ((8 : ℕ) : ℝ≥0) = 1 / 4 := by
+    have hd : ((8 - 2 : ℕ) : ℝ≥0) / ((8 : ℕ) : ℝ≥0) = 3 / 4 := by norm_num
+    rw [hd]
+    refine tsub_eq_of_eq_add ?_
+    norm_num
+  rw [e1, e2, e3] at h
+  exact h
+
 /-- **The unconditional upper staircase at the censused instance** — the provable bad
 sides of the catalogue, in one statement. -/
 theorem deltaStar_upper_staircase_F17 (εstar : ℝ≥0∞) :
@@ -926,10 +1328,12 @@ consecutive budget bands, with the fourth band bounded from below —
   `[4/17, 8/17)` · `≥ 1/2` on `[11/17, ∞)`.
 
 (The census says `δ* = 3/8` in fact persists through `[8/17, 11/17)` — the bad side
-there is the mod-17 eleven-scalar family, which has no in-tree Lean construction yet —
-and `= 1/2` on `[11/17, 1)`, whose bad side is the explosion stack.)  This is the first
-instance whose whole budget curve is reduced to one census-verified hypothesis: every
-band value is attained by a catalogue family, and the census checked every stack. -/
+there is the 11-scalar overlapping-bisimplex-plus-sunflower compound, whose char-0
+layer `8` is in-tree (`pencil1_epsMCA_F17`) while the mod-17 `+3` has no in-tree
+construction yet — and `= 1/2` on `[11/17, 1)`, whose bad side is the explosion
+stack.)  This is the first instance whose whole budget curve is reduced to one
+census-verified hypothesis: the three pinned band values are attained by catalogue
+families, and the census checked every stack. -/
 theorem completeEnvelopeF17_curve (hint : CompleteEnvelopeF17) :
     (∀ εstar : ℝ≥0∞, (1 : ℝ≥0∞) / (17 : ℝ≥0∞) ≤ εstar →
       εstar < (2 : ℝ≥0∞) / (17 : ℝ≥0∞) →
@@ -989,6 +1393,11 @@ end ArkLib.ProximityGap.BadFamilyCensus
 #print axioms ArkLib.ProximityGap.BadFamilyCensus.two_deviation_epsMCA_lower_bound
 #print axioms ArkLib.ProximityGap.BadFamilyCensus.simplex_epsMCA_lower_bound
 #print axioms ArkLib.ProximityGap.BadFamilyCensus.mcaDeltaStar_le_simplex
+#print axioms ArkLib.ProximityGap.BadFamilyCensus.bisimplex_epsMCA_lower_bound
+#print axioms ArkLib.ProximityGap.BadFamilyCensus.mcaDeltaStar_le_bisimplex
+#print axioms ArkLib.ProximityGap.BadFamilyCensus.bisimplex_epsMCA_F12289_d4
+#print axioms ArkLib.ProximityGap.BadFamilyCensus.deltaStar_le_bisimplex_F12289_d4
+#print axioms ArkLib.ProximityGap.BadFamilyCensus.bisimplex_epsMCA_F17_d3
 #print axioms ArkLib.ProximityGap.BadFamilyCensus.pencil2_epsMCA_F12289_d2
 #print axioms ArkLib.ProximityGap.BadFamilyCensus.deltaStar_le_pencil2_F12289_d2
 #print axioms ArkLib.ProximityGap.BadFamilyCensus.pencil4_epsMCA_F12289_d4
