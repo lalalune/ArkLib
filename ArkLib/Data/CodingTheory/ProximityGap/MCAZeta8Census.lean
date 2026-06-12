@@ -63,7 +63,7 @@ end Z8
 
 section Phi
 
-variable {L : Type*} [Field L] [CharZero L]
+variable {L : Type*} [Field L]
 
 /-- Evaluation of a coordinate vector at `ζ`. -/
 def phi (ζ : L) (x : Z8) : L :=
@@ -140,9 +140,9 @@ def detVec (p p' q q' r r' : ℕ) : Z8 :=
     (Z8.mul (Z8.sub (eVec q q') (eVec p p')) (Z8.sub (mVec r r') (mVec p p')))
     (Z8.mul (Z8.sub (mVec q q') (mVec p p')) (Z8.sub (eVec r r') (eVec p p')))
 
-section Bridge
+section BridgeGeneral
 
-variable {L : Type*} [Field L] [CharZero L]
+variable {L : Type*} [Field L]
 
 /-- **The determinant bridge.** The field-level collinearity determinant of a `μ₈`
 pair-triangle equals the evaluation of its integer vector. -/
@@ -158,6 +158,12 @@ theorem det_eq_phi {ζ : L} (hζ : IsPrimitiveRoot ζ 8) (p p' q q' r r' : ℕ) 
   rw [phi_add, phi_add, phi_add]
   rw [phi_zpow hζ, phi_zpow hζ, phi_zpow hζ, phi_zpow hζ, phi_zpow hζ, phi_zpow hζ,
     phi_zpow hζ, phi_zpow hζ, phi_zpow hζ]
+
+end BridgeGeneral
+
+section Bridge
+
+variable {L : Type*} [Field L] [CharZero L]
 
 /-- **Census decidability.** A `μ₈` pair-triangle is collinear in a char-0 field iff its
 integer determinant vector vanishes — the census is a finite integer computation. -/
