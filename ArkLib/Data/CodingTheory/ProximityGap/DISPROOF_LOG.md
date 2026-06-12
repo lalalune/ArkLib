@@ -7542,3 +7542,27 @@ argument cannot start).  Closing the band needs a counting mechanism for
 explaining codewords pinned by FEWER than `k` points plus the γ-line structure —
 the same shape as the at-UDR boundary slice (`B6 = 7`) analysis.  Logged as the
 fifth documented no-go; the band is the precise below-UDR residue.
+
+## 2026-06-12 — THE TUBE EXPERIMENT: ladder extremality at threshold REFUTED; far directions attain C(n,k+1) exactly; WB-3b live-verified beyond Johnson
+
+`probe_tube_vs_spectrum.py` at the dimension-ladder instance (p = 12289, n = 8 = μ₈,
+k = 2, agreement t = 3 — the threshold radius δ = 5/8, beyond Johnson):
+
+* **ladder stack (X³, X²): exactly 40 bad scalars** — byte-matches the sibling's
+  spectrum law N(3,3) (checker cross-validated);
+* **random far directions: 56 = C(8,3) — repeatedly, exactly** — every
+  (k+1)-subset of a witness determines one scalar, all distinct generically: the
+  ownership count is TIGHT, and far directions BEAT the spectrum family at the
+  threshold (56 > 40).  The adjacent-pair family is NOT the threshold extremizer;
+  the exact threshold sup is ≥ C(n,k+1)/p;
+* **genuine codeword direction: 0 bad** — WB-3b verified computationally at a
+  beyond-Johnson radius (live red-team pass for the Lean theorem);
+* the sibling's δ*-pin is UNAFFECTED (it is a sup over radii strictly below the
+  threshold; the good-side ownership bound applies there).
+
+**Theorem landed** (`strongly_far_badScalars_card_mul_le`, axiom-clean): directions
+with max codeword agreement ≤ k satisfy `#bad · (n−w).descFactorial (k+1) ≤ n^{k+1}`
+at EVERY radius — at the boundary slice this is ≈ C(n,k+1), matching the measured
+56 within the ordered-count factor.  The exact threshold value of ε_mca at the
+boundary slice is now bracketed `[C(n,k+1), n^{k+1}/(k+1)!]`-ish for the far class,
+with the far class provably extremal over the spectrum family.
