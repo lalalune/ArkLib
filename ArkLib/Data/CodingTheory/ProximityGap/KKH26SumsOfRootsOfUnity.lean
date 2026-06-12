@@ -138,6 +138,167 @@ private lemma totient_two_pow {m : ℕ} (hm : 1 ≤ m) :
   rw [Nat.zero_add, Nat.totient_prime_pow_succ Nat.prime_two]
   simp
 
+/-! ### The Mahler/Landau sharpening surface -/
+
+/-- For `m ≥ 1`, the two-power cyclotomic is `Φ_{2^m}(X) = X^(2^(m-1)) + 1`. -/
+lemma cyclotomic_two_pow_eq_X_pow_add_one {R : Type*} [CommRing R] {m : ℕ}
+    (hm : 1 ≤ m) :
+    cyclotomic (2 ^ m) R = X ^ (2 ^ (m - 1)) + 1 := by
+  have hpow : 2 ^ m = 2 ^ ((m - 1) + 1) := by rw [Nat.sub_add_cancel hm]
+  rw [hpow, cyclotomic_prime_pow_eq_geom_sum Nat.prime_two]
+  norm_num [Finset.sum_range_succ, add_comm]
+
+/-- Evaluating `Φ_{2^m}` at a complex point costs at most a factor `2` times the
+`2^(m-1)`-st power of the usual root-height factor. -/
+lemma norm_eval_cyclotomic_two_pow_le {m : ℕ} (hm : 1 ≤ m) (z : ℂ) :
+    ‖(cyclotomic (2 ^ m) ℂ).eval z‖
+      ≤ 2 * (max 1 ‖z‖) ^ (2 ^ (m - 1)) := by
+  rw [cyclotomic_two_pow_eq_X_pow_add_one (R := ℂ) hm]
+  have hzle : ‖z‖ ^ (2 ^ (m - 1)) ≤ (max 1 ‖z‖) ^ (2 ^ (m - 1)) :=
+    pow_le_pow_left₀ (norm_nonneg z) (le_max_right 1 ‖z‖) _
+  have h1le : 1 ≤ (max 1 ‖z‖) ^ (2 ^ (m - 1)) :=
+    one_le_pow₀ (le_max_left 1 ‖z‖)
+  calc
+    ‖(X ^ (2 ^ (m - 1)) + 1 : Polynomial ℂ).eval z‖
+        = ‖z ^ (2 ^ (m - 1)) + 1‖ := by simp
+    _ ≤ ‖z ^ (2 ^ (m - 1))‖ + ‖(1 : ℂ)‖ := norm_add_le _ _
+    _ = ‖z‖ ^ (2 ^ (m - 1)) + 1 := by rw [norm_pow, norm_one]
+    _ ≤ (max 1 ‖z‖) ^ (2 ^ (m - 1)) + (max 1 ‖z‖) ^ (2 ^ (m - 1)) :=
+        add_le_add hzle h1le
+    _ = 2 * (max 1 ‖z‖) ^ (2 ^ (m - 1)) := by ring
+
+lemma norm_multiset_prod_map_le_prod {α : Type*} (s : Multiset α) (f : α → ℂ)
+    (B : α → ℝ) (hB : ∀ x ∈ s, 0 ≤ B x) (hf : ∀ x ∈ s, ‖f x‖ ≤ B x) :
+    ‖(s.map f).prod‖ ≤ (s.map B).prod := by
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons a s ih =>
+      rw [Multiset.map_cons, Multiset.map_cons, Multiset.prod_cons, Multiset.prod_cons, norm_mul]
+      refine mul_le_mul (hf a (Multiset.mem_cons_self a s))
+        (ih (fun x hx => hB x (Multiset.mem_cons_of_mem hx))
+          (fun x hx => hf x (Multiset.mem_cons_of_mem hx)))
+        (norm_nonneg _) (hB a (Multiset.mem_cons_self a s))
+
+lemma multiset_prod_two_mul_pow_height (s : Multiset ℂ) (N : ℕ) :
+    (s.map (fun z => (2 : ℝ) * (max 1 ‖z‖) ^ N)).prod
+      = (2 : ℝ) ^ s.card * (s.map (fun z => max 1 ‖z‖)).prod ^ N := by
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons a s ih =>
+      rw [Multiset.map_cons, Multiset.map_cons, Multiset.prod_cons, Multiset.prod_cons,
+        Multiset.card_cons, ih, mul_pow, pow_succ']
+      ring
+
+/-- **Mahler resultant bound.**  For `deg R < deg Φ_{2^m}`, the cyclotomic resultant is
+bounded by `2^deg(R) · M(R)^(2^(m-1))`.  This is the root-side sharpening of the older
+pointwise `ℓ¹` bound: `Φ_{2^m}(β) = β^(2^(m-1)) + 1`, so each root of `R` contributes only
+one factor `2` and the remaining height is exactly Mahler measure. -/
+theorem natAbs_resultant_cyclotomic_le_mahler {m : ℕ} (hm : 1 ≤ m)
+    (R : Polynomial ℤ) (hdeg : R.natDegree < 2 ^ (m - 1)) :
+    ((Polynomial.resultant R (cyclotomic (2 ^ m) ℤ)).natAbs : ℝ)
+      ≤ (2 : ℝ) ^ R.natDegree
+        * (R.map (Int.castRingHom ℂ)).mahlerMeasure ^ (2 ^ (m - 1)) := by
+  classical
+  set ι : ℤ →+* ℂ := Int.castRingHom ℂ with hι
+  have hinj : Function.Injective ι := Int.cast_injective
+  set Φ : Polynomial ℤ := cyclotomic (2 ^ m) ℤ with hΦdef
+  set RC : Polynomial ℂ := R.map ι with hRCdef
+  set ΦC : Polynomial ℂ := Φ.map ι with hΦCdef
+  by_cases hR0 : R = 0
+  · subst hR0
+    have hΦdeg_pos : 0 < (cyclotomic (2 ^ m) ℤ).natDegree := by
+      rw [natDegree_cyclotomic, totient_two_pow hm]
+      positivity
+    simp [RC, Φ, ι, hΦdeg_pos.ne']
+  have hRC0 : RC ≠ 0 := by
+    rw [hRCdef]
+    exact (Polynomial.map_ne_zero_iff hinj).mpr hR0
+  have hdegR : RC.natDegree = R.natDegree := by
+    rw [hRCdef, natDegree_map_eq_of_injective hinj]
+  have hdegΦ : ΦC.natDegree = Φ.natDegree := by
+    rw [hΦCdef, natDegree_map_eq_of_injective hinj]
+  have hmap : Polynomial.resultant RC ΦC = ι (Polynomial.resultant R Φ) := by
+    rw [hRCdef, hΦCdef]
+    rw [show Polynomial.resultant (R.map ι) (Φ.map ι)
+          = Polynomial.resultant (R.map ι) (Φ.map ι) R.natDegree Φ.natDegree by
+        rw [natDegree_map_eq_of_injective hinj, natDegree_map_eq_of_injective hinj],
+      Polynomial.resultant_map_map]
+  have hsplits : RC.Splits := IsAlgClosed.splits _
+  have hprod : Polynomial.resultant RC ΦC
+      = RC.leadingCoeff ^ ΦC.natDegree * (RC.roots.map ΦC.eval).prod := by
+    have h := Polynomial.resultant_eq_prod_eval RC ΦC ΦC.natDegree le_rfl hsplits
+    simpa using h
+  have hΦeval : ∀ z ∈ RC.roots,
+      ‖ΦC.eval z‖ ≤ 2 * (max 1 ‖z‖) ^ (2 ^ (m - 1)) := by
+    intro z _hz
+    rw [hΦCdef, hΦdef, map_cyclotomic_int]
+    exact norm_eval_cyclotomic_two_pow_le hm z
+  have hprodBound : ‖(RC.roots.map ΦC.eval).prod‖
+      ≤ (2 : ℝ) ^ R.natDegree
+        * (RC.roots.map (fun z => max 1 ‖z‖)).prod ^ (2 ^ (m - 1)) := by
+    have h₁ := norm_multiset_prod_map_le_prod RC.roots ΦC.eval
+      (fun z => (2 : ℝ) * (max 1 ‖z‖) ^ (2 ^ (m - 1)))
+      (by
+        intro z _hz
+        positivity)
+      hΦeval
+    have h₂ := multiset_prod_two_mul_pow_height RC.roots (2 ^ (m - 1))
+    rw [h₂] at h₁
+    have hcard : RC.roots.card = R.natDegree := by
+      rw [← hsplits.natDegree_eq_card_roots, hdegR]
+    rwa [hcard] at h₁
+  have hresNorm : ‖(ι (Polynomial.resultant R Φ) : ℂ)‖
+      ≤ (2 : ℝ) ^ R.natDegree * RC.mahlerMeasure ^ (2 ^ (m - 1)) := by
+    rw [← hmap, hprod]
+    calc
+      ‖RC.leadingCoeff ^ ΦC.natDegree * (RC.roots.map ΦC.eval).prod‖
+          = ‖RC.leadingCoeff‖ ^ ΦC.natDegree * ‖(RC.roots.map ΦC.eval).prod‖ := by
+            rw [norm_mul, norm_pow]
+      _ ≤ ‖RC.leadingCoeff‖ ^ ΦC.natDegree
+            * ((2 : ℝ) ^ R.natDegree
+              * (RC.roots.map (fun z => max 1 ‖z‖)).prod ^ (2 ^ (m - 1))) := by
+            exact mul_le_mul_of_nonneg_left hprodBound (pow_nonneg (norm_nonneg _) _)
+      _ = (2 : ℝ) ^ R.natDegree
+            * (‖RC.leadingCoeff‖
+              * (RC.roots.map (fun z => max 1 ‖z‖)).prod) ^ (2 ^ (m - 1)) := by
+            rw [hdegΦ, hΦdef, natDegree_cyclotomic, totient_two_pow hm, mul_pow]
+            ring
+      _ = (2 : ℝ) ^ R.natDegree * RC.mahlerMeasure ^ (2 ^ (m - 1)) := by
+            rw [mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
+  have hcast : ‖(ι (Polynomial.resultant R Φ) : ℂ)‖
+      = ((Polynomial.resultant R Φ).natAbs : ℝ) := by
+    rw [show (ι (Polynomial.resultant R Φ) : ℂ)
+          = ((Polynomial.resultant R Φ : ℤ) : ℂ) from rfl]
+    rw [Complex.norm_intCast, Nat.cast_natAbs]
+    exact Int.cast_abs.symm
+  have hfinal : ((Polynomial.resultant R Φ).natAbs : ℝ)
+      ≤ (2 : ℝ) ^ R.natDegree * RC.mahlerMeasure ^ (2 ^ (m - 1)) := by
+    rw [← hcast]
+    exact hresNorm
+  simpa [Φ, RC, ι] using hfinal
+
+/-- **Landau resultant bridge.**  Combining the Mahler resultant bound with Landau's
+inequality gives the `ℓ²` surface needed for the μ=6 divisor-discharge lane. -/
+theorem natAbs_resultant_cyclotomic_le_landau {m : ℕ} (hm : 1 ≤ m)
+    (R : Polynomial ℤ) (hdeg : R.natDegree < 2 ^ (m - 1)) :
+    ((Polynomial.resultant R (cyclotomic (2 ^ m) ℤ)).natAbs : ℝ)
+      ≤ (2 : ℝ) ^ (2 ^ (m - 1) - 1)
+        * (√(∑ i ∈ (R.map (Int.castRingHom ℂ)).support,
+          ‖(R.map (Int.castRingHom ℂ)).coeff i‖ ^ 2)) ^ (2 ^ (m - 1)) := by
+  set RC : Polynomial ℂ := R.map (Int.castRingHom ℂ)
+  have hbase := natAbs_resultant_cyclotomic_le_mahler hm R hdeg
+  have hpow2 : (2 : ℝ) ^ R.natDegree ≤ (2 : ℝ) ^ (2 ^ (m - 1) - 1) := by
+    exact pow_le_pow_right₀ (show (1 : ℝ) ≤ 2 by norm_num) (by omega)
+  have hM : RC.mahlerMeasure
+      ≤ √(∑ i ∈ RC.support, ‖RC.coeff i‖ ^ 2) :=
+    Polynomial.mahlerMeasure_le_sqrt_sum_sq_norm_coeff RC
+  have hMpow : RC.mahlerMeasure ^ (2 ^ (m - 1))
+      ≤ (√(∑ i ∈ RC.support, ‖RC.coeff i‖ ^ 2)) ^ (2 ^ (m - 1)) :=
+    pow_le_pow_left₀ RC.mahlerMeasure_nonneg hM _
+  refine le_trans hbase ?_
+  exact mul_le_mul hpow2 hMpow
+    (pow_nonneg RC.mahlerMeasure_nonneg _) (pow_nonneg (by norm_num) _)
+
 /-! ### The archimedean resultant bound (the new quantitative core over Loop52/53) -/
 
 /-- **Archimedean bound for the cyclotomic resultant.** For `R : ℤ[X]` of degree
@@ -352,6 +513,97 @@ lemma l1On_sumPoly {U T : Finset ℕ} {n : ℕ} (hU : U ⊆ range n) (hT : T ⊆
         simp [hjT, hjU, hjD]
   rw [Finset.sum_congr rfl hpt, Finset.sum_ite_mem, Finset.sum_const, smul_eq_mul, mul_one,
     Finset.inter_eq_right.mpr hU]
+
+lemma sumPoly_coeff_natAbs_le_one {U T : Finset ℕ} (hT : T ⊆ U) (k : ℕ) :
+    ((sumPoly U T).coeff k).natAbs ≤ 1 := by
+  rw [sumPoly_coeff]
+  by_cases hkT : k ∈ T
+  · have hkU : k ∈ U := hT hkT
+    have hkD : k ∉ U \ T := fun h => (mem_sdiff.mp h).2 hkT
+    simp [hkT, hkD]
+  · by_cases hkU : k ∈ U
+    · have hkD : k ∈ U \ T := mem_sdiff.mpr ⟨hkU, hkT⟩
+      simp [hkT, hkD]
+    · have hkD : k ∉ U \ T := fun h => hkU (mem_sdiff.mp h).1
+      simp [hkT, hkD]
+
+lemma sumPoly_coeff_eq_zero_of_not_mem {U T : Finset ℕ} (hT : T ⊆ U) {k : ℕ}
+    (hk : k ∉ U) : (sumPoly U T).coeff k = 0 := by
+  rw [sumPoly_coeff]
+  have hkT : k ∉ T := fun h => hk (hT h)
+  have hkD : k ∉ U \ T := fun h => hk (mem_sdiff.mp h).1
+  simp [hkT, hkD]
+
+lemma sumPoly_sub_coeff_natAbs_le_two {U₁ T₁ U₂ T₂ : Finset ℕ}
+    (hT₁ : T₁ ⊆ U₁) (hT₂ : T₂ ⊆ U₂) (k : ℕ) :
+    ((sumPoly U₁ T₁ - sumPoly U₂ T₂).coeff k).natAbs ≤ 2 := by
+  rw [Polynomial.coeff_sub]
+  have h₁ := sumPoly_coeff_natAbs_le_one hT₁ k
+  have h₂ := sumPoly_coeff_natAbs_le_one hT₂ k
+  have hsub := Int.natAbs_sub_le
+    ((sumPoly U₁ T₁).coeff k) ((sumPoly U₂ T₂).coeff k)
+  omega
+
+lemma sumPoly_sub_coeff_eq_zero_of_not_mem_union {U₁ T₁ U₂ T₂ : Finset ℕ}
+    (hT₁ : T₁ ⊆ U₁) (hT₂ : T₂ ⊆ U₂) {k : ℕ} (hk : k ∉ U₁ ∪ U₂) :
+    (sumPoly U₁ T₁ - sumPoly U₂ T₂).coeff k = 0 := by
+  rw [Polynomial.coeff_sub]
+  have hk₁ : k ∉ U₁ := fun h => hk (mem_union_left U₂ h)
+  have hk₂ : k ∉ U₂ := fun h => hk (mem_union_right U₁ h)
+  rw [sumPoly_coeff_eq_zero_of_not_mem hT₁ hk₁,
+    sumPoly_coeff_eq_zero_of_not_mem hT₂ hk₂]
+  simp
+
+/-- **Collision-polynomial coefficient energy.**  The difference of two signed
+`r`-term polynomials has support inside `U₁ ∪ U₂` and every coefficient has size at
+most `2`, so its complex coefficient-square mass is at most `8r`. -/
+lemma sum_sq_norm_coeff_sumPoly_sub_le {U₁ T₁ U₂ T₂ : Finset ℕ} {r : ℕ}
+    (hT₁ : T₁ ⊆ U₁) (hT₂ : T₂ ⊆ U₂) (hc₁ : U₁.card = r) (hc₂ : U₂.card = r) :
+    ∑ i ∈ ((sumPoly U₁ T₁ - sumPoly U₂ T₂).map (Int.castRingHom ℂ)).support,
+        ‖((sumPoly U₁ T₁ - sumPoly U₂ T₂).map (Int.castRingHom ℂ)).coeff i‖ ^ 2
+      ≤ (8 * r : ℝ) := by
+  classical
+  set R : Polynomial ℤ := sumPoly U₁ T₁ - sumPoly U₂ T₂ with hR
+  set RC : Polynomial ℂ := R.map (Int.castRingHom ℂ) with hRC
+  have hcoeff : ∀ i ∈ RC.support, ‖RC.coeff i‖ ^ 2 ≤ (4 : ℝ) := by
+    intro i _hi
+    have hnat : (R.coeff i).natAbs ≤ 2 := by
+      rw [hR]
+      exact sumPoly_sub_coeff_natAbs_le_two hT₁ hT₂ i
+    have hint : |R.coeff i| ≤ (2 : ℤ) := by
+      rw [Int.abs_eq_natAbs]
+      exact_mod_cast hnat
+    have hnorm : ‖RC.coeff i‖ ≤ (2 : ℝ) := by
+      rw [hRC, Polynomial.coeff_map]
+      change ‖((R.coeff i : ℤ) : ℂ)‖ ≤ (2 : ℝ)
+      rw [Complex.norm_intCast, ← Int.cast_abs]
+      exact_mod_cast hint
+    nlinarith [norm_nonneg (RC.coeff i)]
+  have hsum : ∑ i ∈ RC.support, ‖RC.coeff i‖ ^ 2 ≤ (RC.support.card : ℝ) * 4 := by
+    calc
+      ∑ i ∈ RC.support, ‖RC.coeff i‖ ^ 2
+          ≤ ∑ _i ∈ RC.support, (4 : ℝ) := Finset.sum_le_sum hcoeff
+      _ = (RC.support.card : ℝ) * 4 := by
+          rw [Finset.sum_const, nsmul_eq_mul]
+  have hsupp : RC.support ⊆ U₁ ∪ U₂ := by
+    intro i hi
+    by_contra hmem
+    have hzeroR : R.coeff i = 0 := by
+      rw [hR]
+      exact sumPoly_sub_coeff_eq_zero_of_not_mem_union hT₁ hT₂ hmem
+    have hzeroC : RC.coeff i = 0 := by
+      rw [hRC, Polynomial.coeff_map, hzeroR]
+      simp
+    exact (Polynomial.mem_support_iff.mp hi) hzeroC
+  have hcard : RC.support.card ≤ 2 * r := by
+    calc RC.support.card ≤ (U₁ ∪ U₂).card := Finset.card_le_card hsupp
+      _ ≤ U₁.card + U₂.card := Finset.card_union_le U₁ U₂
+      _ = 2 * r := by omega
+  calc
+    ∑ i ∈ RC.support, ‖RC.coeff i‖ ^ 2 ≤ (RC.support.card : ℝ) * 4 := hsum
+    _ ≤ (2 * r : ℝ) * 4 := by
+        exact mul_le_mul_of_nonneg_right (by exact_mod_cast hcard) (by norm_num)
+    _ = (8 * r : ℝ) := by ring
 
 lemma sumPoly_map_eval {F : Type*} [CommRing F] (φ : ℤ →+* F) (g : F) (U T : Finset ℕ) :
     ((sumPoly U T).map φ).eval g = ∑ i ∈ T, g ^ i - ∑ i ∈ U \ T, g ^ i := by
@@ -689,6 +941,40 @@ theorem natAbs_collisionResultant_le {m r : ℕ} (hm : 1 ≤ m)
   have hub := natAbs_resultant_cyclotomic_le hm (sumPoly U₁ T₁ - sumPoly U₂ T₂) hdegR
   exact le_trans hub (Nat.pow_le_pow_left (le_trans hl1 h2r) _)
 
+/-- **Landau collision-resultant bound.**  For signed `r`-data, the Mahler/Landau
+surface plus the coefficient-energy lemma gives
+`|collisionResultant| ≤ 2^(2^(m-1)-1) * sqrt(8r)^(2^(m-1))`.  For `m = 6, r = 5`,
+this is far below the certified μ=6 prime budget and is the reusable archimedean
+handoff requested by the literal-pin route. -/
+theorem natAbs_collisionResultant_le_landau {m r : ℕ} (hm : 1 ≤ m)
+    {d₁ d₂ : (_ : Finset ℕ) × Finset ℕ}
+    (hd₁ : d₁ ∈ sigData (2 ^ (m - 1)) r) (hd₂ : d₂ ∈ sigData (2 ^ (m - 1)) r) :
+    ((collisionResultant m d₁ d₂).natAbs : ℝ)
+      ≤ (2 : ℝ) ^ (2 ^ (m - 1) - 1) * (√(8 * r : ℝ)) ^ (2 ^ (m - 1)) := by
+  obtain ⟨U₁, T₁⟩ := d₁
+  obtain ⟨U₂, T₂⟩ := d₂
+  obtain ⟨⟨hU₁, hc₁⟩, hT₁⟩ := mem_sigData.mp hd₁
+  obtain ⟨⟨hU₂, hc₂⟩, hT₂⟩ := mem_sigData.mp hd₂
+  have hhalf : 0 < 2 ^ (m - 1) := by positivity
+  have hdegR : (sumPoly U₁ T₁ - sumPoly U₂ T₂).natDegree < 2 ^ (m - 1) :=
+    lt_of_le_of_lt (Polynomial.natDegree_sub_le _ _)
+      (max_lt (sumPoly_natDegree_lt hhalf hU₁ hT₁) (sumPoly_natDegree_lt hhalf hU₂ hT₂))
+  have hbase := natAbs_resultant_cyclotomic_le_landau hm
+    (sumPoly U₁ T₁ - sumPoly U₂ T₂) hdegR
+  have henergy := sum_sq_norm_coeff_sumPoly_sub_le hT₁ hT₂ hc₁ hc₂
+  have hsqrt :
+      √(∑ i ∈ ((sumPoly U₁ T₁ - sumPoly U₂ T₂).map (Int.castRingHom ℂ)).support,
+          ‖((sumPoly U₁ T₁ - sumPoly U₂ T₂).map (Int.castRingHom ℂ)).coeff i‖ ^ 2)
+        ≤ √(8 * r : ℝ) := Real.sqrt_le_sqrt henergy
+  have hpow :
+      (√(∑ i ∈ ((sumPoly U₁ T₁ - sumPoly U₂ T₂).map (Int.castRingHom ℂ)).support,
+          ‖((sumPoly U₁ T₁ - sumPoly U₂ T₂).map (Int.castRingHom ℂ)).coeff i‖ ^ 2))
+          ^ (2 ^ (m - 1))
+        ≤ (√(8 * r : ℝ)) ^ (2 ^ (m - 1)) :=
+    pow_le_pow_left₀ (Real.sqrt_nonneg _) hsqrt _
+  refine le_trans ?_ (mul_le_mul_of_nonneg_left hpow (pow_nonneg (by norm_num) _))
+  simpa [collisionResultant] using hbase
+
 /-- The old explicit-threshold hypothesis implies the new divisibility hypothesis: above
 `p > s^{s/2}` no collision resultant can be divisible by `p` (it is nonzero of absolute
 value `≤ s^{s/2} < p`).  Hence the size route is a special case of the dvd route. -/
@@ -809,16 +1095,30 @@ theorem kkh26_lemma1_of_not_dvd {p : ℕ} [Fact p.Prime] {m : ℕ} (hm : 1 ≤ m
 end ArkLib.ProximityGap.KKH26
 
 /-! ## Axiom audit -/
-#print axioms ArkLib.ProximityGap.KKH26.natAbs_resultant_cyclotomic_le
-#print axioms ArkLib.ProximityGap.KKH26.not_isRoot_of_l1On_pow_lt
-#print axioms ArkLib.ProximityGap.KKH26.sVal_injOn
-#print axioms ArkLib.ProximityGap.KKH26.kkh26_lemma1
-#print axioms ArkLib.ProximityGap.KKH26.not_dvd_resultant_of_l1On_pow_lt
-#print axioms ArkLib.ProximityGap.KKH26.not_isRoot_of_not_dvd_resultant
-#print axioms ArkLib.ProximityGap.KKH26.collisionResultant_ne_zero
-#print axioms ArkLib.ProximityGap.KKH26.natAbs_collisionResultant_le
-#print axioms ArkLib.ProximityGap.KKH26.not_dvd_collisionResultant_of_lt
-#print axioms ArkLib.ProximityGap.KKH26.not_dvd_collisionResultant_of_natAbs_lt
-#print axioms ArkLib.ProximityGap.KKH26.collisionResultant_not_dvd_of_forall_natAbs_lt
-#print axioms ArkLib.ProximityGap.KKH26.sVal_injOn_of_not_dvd
-#print axioms ArkLib.ProximityGap.KKH26.kkh26_lemma1_of_not_dvd
+namespace ArkLib.ProximityGap.KKH26
+
+#print axioms cyclotomic_two_pow_eq_X_pow_add_one
+#print axioms norm_eval_cyclotomic_two_pow_le
+#print axioms norm_multiset_prod_map_le_prod
+#print axioms multiset_prod_two_mul_pow_height
+#print axioms natAbs_resultant_cyclotomic_le_mahler
+#print axioms natAbs_resultant_cyclotomic_le_landau
+#print axioms natAbs_resultant_cyclotomic_le
+#print axioms sumPoly_coeff_natAbs_le_one
+#print axioms sumPoly_sub_coeff_natAbs_le_two
+#print axioms sum_sq_norm_coeff_sumPoly_sub_le
+#print axioms not_isRoot_of_l1On_pow_lt
+#print axioms sVal_injOn
+#print axioms kkh26_lemma1
+#print axioms not_dvd_resultant_of_l1On_pow_lt
+#print axioms not_isRoot_of_not_dvd_resultant
+#print axioms collisionResultant_ne_zero
+#print axioms natAbs_collisionResultant_le
+#print axioms natAbs_collisionResultant_le_landau
+#print axioms not_dvd_collisionResultant_of_lt
+#print axioms not_dvd_collisionResultant_of_natAbs_lt
+#print axioms collisionResultant_not_dvd_of_forall_natAbs_lt
+#print axioms sVal_injOn_of_not_dvd
+#print axioms kkh26_lemma1_of_not_dvd
+
+end ArkLib.ProximityGap.KKH26
