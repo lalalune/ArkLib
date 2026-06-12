@@ -1222,6 +1222,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SmoothLadderInstance
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridgeOnLattice
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothSupplyTowerBridge
+import ArkLib.Data.CodingTheory.ProximityGap.SpectrumCosetLevelBound
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothWindowSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.SparseCoverComputable
