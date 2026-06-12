@@ -11,7 +11,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WBPencilRationalReduction
 
 **For doubly-rational stacks with reduced, coprime, domain-nonvanishing locators at
 the first window row (`n = 3w`, `k = 1`), the bad-scalar count is at most
-`n/w + 1`** — far inside the `WindowRationalBounded` budget `w + 3` for `w ≥ 2`.
+`n/w`**.  The old `n/w + 1` statement remains as a compatibility wrapper.
 
 The fiber linearization:
 * `witness_division_identity` — every bad `γ` yields an **exact division identity**
@@ -25,8 +25,8 @@ The fiber linearization:
   witness complement is a `SplitMember` of the pencil `⟨m̂₀, ℓ₀⟩`;
 * `witness_set_injective` — distinct bad scalars have distinct agreement sets
   (equal sets force `ℓ₁ ∣ C(γ−γ')` through reducedness of the second row);
-* **`stratumG_firstRow_badScalars_card_le`** — the split-pencil bound (G1) caps
-  the count at `n/w + 1`.
+* **`stratumG_firstRow_badScalars_card_le_div`** — the exact-size split-pencil
+  bound caps the count at `n/w`.
 
 Probe record: `probe_fiber_census.py` (f*(12,4) = 3 = n/w by a μ₁₂ partition);
 `probe_deep_window.py` (G×G random max bad 0–2 at the tested window scales);
@@ -314,12 +314,15 @@ theorem witness_gamma_injective
     exact natDegree_C _
   omega
 
+omit [DecidableEq F] in
 open Classical in
-/-- **THE STRATUM-G FIRST-ROW BOUND (G2 capstone).**  For a doubly-rational stack
+/-- **Exact stratum-G first-row bound (G2 capstone).**  For a doubly-rational stack
 with reduced, mutually coprime locators — `ℓ₀` of exact degree `w` nonvanishing on
 the domain, `ℓ₁` nonconstant — at the first window row `n = 3w` (`k = 1`) and any
-radius `δ·n ≤ w`, the bad-scalar count is at most `n/w + 1`. -/
-theorem stratumG_firstRow_badScalars_card_le
+radius `δ·n ≤ w`, the bad-scalar count is at most `n/w`.  The witness complements
+all have exact size `w`, so the small-member exception in the general split-pencil
+bound does not appear. -/
+theorem stratumG_firstRow_badScalars_card_le_div
     (dom : Fin n ↪ F) {w : ℕ} (hw : 1 ≤ w) (hn : n = 3 * w)
     {u₀ u₁ : Fin n → F} {ℓ₀ R₀ ℓ₁ R₁ : F[X]}
     (hrel₀ : ∀ i, ℓ₀.eval (dom i) * u₀ i = R₀.eval (dom i))
@@ -332,7 +335,7 @@ theorem stratumG_firstRow_badScalars_card_le
     {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w) :
     (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
       ((rsCode dom 1 : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
-      ≤ n / w + 1 := by
+      ≤ n / w := by
   classical
   set badSet := Finset.univ.filter (fun γ : F => mcaEvent (F := F)
     ((rsCode dom 1 : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)
@@ -363,8 +366,16 @@ theorem stratumG_firstRow_badScalars_card_le
     exact witness_compl_splitMember hG₀ hcop₀ hcopℓ (by rw [hdℓ₀]; exact hw)
       (hgne γ₀ hγ₀) (hid γ₀ hγ₀) (by rw [hdℓ₀]; exact hcard γ₀ hγ₀)
       (hid γ hγ) (by rw [hdℓ₀]; exact hcard γ hγ)
-  have hG1 := pencil_split_card_le (f := vanishingPoly dom (Sf γ₀ hγ₀)ᶜ)
-    (by rw [hdℓ₀]; exact hw) hG₀ 𝒯 hmem
+  have hlarge : ∀ T ∈ 𝒯, ℓ₀.natDegree ≤ T.card := by
+    intro T hT
+    rw [h𝒯, Finset.mem_image] at hT
+    obtain ⟨⟨γ, hγ⟩, -, rfl⟩ := hT
+    have hc := hcard γ hγ
+    rw [hdℓ₀, Finset.card_compl, Fintype.card_fin]
+    exact Nat.le_sub_of_add_le (by rw [Nat.add_comm, hc])
+  have hG1 := pencil_split_card_le_of_degree_le_card
+    (f := vanishingPoly dom (Sf γ₀ hγ₀)ᶜ)
+    (by rw [hdℓ₀]; exact hw) hG₀ 𝒯 hmem hlarge
   rw [hdℓ₀] at hG1
   have hinjOn : Set.InjOn (fun x : {γ // γ ∈ badSet} => (Sf x.1 x.2)ᶜ)
       badSet.attach := by
@@ -378,6 +389,29 @@ theorem stratumG_firstRow_badScalars_card_le
   rw [← hcardeq]
   exact hG1
 
+omit [DecidableEq F] in
+open Classical in
+/-- Compatibility wrapper for the older G2 statement.  The exact theorem is
+`stratumG_firstRow_badScalars_card_le_div`. -/
+theorem stratumG_firstRow_badScalars_card_le
+    (dom : Fin n ↪ F) {w : ℕ} (hw : 1 ≤ w) (hn : n = 3 * w)
+    {u₀ u₁ : Fin n → F} {ℓ₀ R₀ ℓ₁ R₁ : F[X]}
+    (hrel₀ : ∀ i, ℓ₀.eval (dom i) * u₀ i = R₀.eval (dom i))
+    (hrel₁ : ∀ i, ℓ₁.eval (dom i) * u₁ i = R₁.eval (dom i))
+    (hdℓ₀ : ℓ₀.natDegree = w) (hdR₀ : R₀.natDegree ≤ w)
+    (hdℓ₁ : ℓ₁.natDegree ≤ w) (hdR₁ : R₁.natDegree ≤ w)
+    (hℓ₁pos : 1 ≤ ℓ₁.natDegree)
+    (hG₀ : ∀ i, ℓ₀.eval (dom i) ≠ 0)
+    (hcop₀ : IsCoprime R₀ ℓ₀) (hcop₁ : IsCoprime R₁ ℓ₁) (hcopℓ : IsCoprime ℓ₀ ℓ₁)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+      ((rsCode dom 1 : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ)).card
+      ≤ n / w + 1 := by
+  exact le_trans
+    (stratumG_firstRow_badScalars_card_le_div (dom := dom) hw hn hrel₀ hrel₁ hdℓ₀ hdR₀
+      hdℓ₁ hdR₁ hℓ₁pos hG₀ hcop₀ hcop₁ hcopℓ hδn)
+    (Nat.le_succ _)
+
 end FiberPencil
 
 end ProximityGap.WBPencil
@@ -386,4 +420,5 @@ end ProximityGap.WBPencil
 #print axioms ProximityGap.WBPencil.witness_division_identity
 #print axioms ProximityGap.WBPencil.witness_compl_splitMember
 #print axioms ProximityGap.WBPencil.witness_gamma_injective
+#print axioms ProximityGap.WBPencil.stratumG_firstRow_badScalars_card_le_div
 #print axioms ProximityGap.WBPencil.stratumG_firstRow_badScalars_card_le

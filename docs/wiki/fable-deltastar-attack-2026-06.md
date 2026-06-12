@@ -1862,3 +1862,29 @@ random NOR KKH26 — an unknown structured extremal family = the 25-yr explicit-
 list problem. Every lever (counting, averaging, symmetry, polynomial-method/GS, deep-hole, numeric) and
 every computable configuration (random, KKH26) proven-capped/insufficient. No fabrication; the probe
 confirms the wall rather than crossing it.
+
+---
+
+## §57 — Third support for δ*=ceiling: the 2-power subgroup has MINIMAL (Sidon-mod-neg) additive energy E(G)=3n²−3n
+
+Computed the exact additive energy `E(G) = #{(a,b,c,d)∈μ_n⁴ : a+b=c+d}` via the cyclotomic `{−1,0,1}^h`
+reduction (probe `probe_exact_energy.py`): **`E(G) = 3n² − 3n` EXACTLY for every μ** (verified μ=1..6:
+`E = 6,36,168,720,2976,12096`). This is the MINIMAL (Sidon-modulo-negation) value — already in-tree as
+`AdditiveEnergyBridge.addEnergy_eq_of_sidonModNeg` (so NOT new), but clarifying: it is far below HBK's
+worst-case `|G|^{5/2} = n^{2.5}` (e.g. n=64: `E=12096 ≈ 3n²` vs `n^{2.5}≈32768`). The 2-power
+multiplicative subgroup is additively **as random-like as possible** — its only additive coincidences are
+the trivial `{a,b}={c,d}` and the negation-structure ones.
+
+**Why this supports (heuristically) δ*=ceiling.** Minimal additive energy = the subgroup behaves
+additively like a random set; random RS codes list-decode to CAPACITY (BGM); so the additive-combinatorics
+"shape" of `μ_n` is the random-like / capacity one, consistent with δ* sitting at the near-capacity
+KKH26 ceiling rather than down near Johnson. This is now the THIRD independent piece of support for the
+δ*=ceiling conjecture, alongside (§56) "no family populates the interior" and (the over-determined
+interior dimension count) "below-ceiling bad families are measure-zero".
+
+**HONEST scope.** This is average-scale (2nd/4th-moment) evidence, NOT a proof: minimal AVERAGE energy
+does not imply worst-case capacity list-decoding (the average→worst-case wall, §44/§55 — `E(G)` bounded
+or minimal still cannot beat Johnson via the 4th-moment no-go). So it strengthens the CONJECTURE
+δ*=1−ρ−Θ(1/log n) (random-like ⟹ capacity-like) but the deployed pin still needs the worst-case bound.
+Three independent supports now point at the ceiling; the matching worst-case lower bound is the open core.
+No fabrication; the energy value is in-tree and the implication is explicitly heuristic.
