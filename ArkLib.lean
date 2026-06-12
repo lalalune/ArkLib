@@ -1105,6 +1105,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
 import ArkLib.Data.CodingTheory.ProximityGap.PencilSplitCount
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
+import ArkLib.Data.CodingTheory.ProximityGap.PoissonCeilingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.PoleSpikeMatching
 import ArkLib.Data.CodingTheory.ProximityGap.PopularCodewords
 import ArkLib.Data.CodingTheory.ProximityGap.PrimePowerMultisetWindow
