@@ -1235,6 +1235,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ValueSpreadSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
 import ArkLib.Data.CodingTheory.ProximityGap.VerifiedBricks
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilAbsorption
+import ArkLib.Data.CodingTheory.ProximityGap.WBPencilBelowUDR
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilBound
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilLadderZero
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilPolynomialRow
