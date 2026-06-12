@@ -407,6 +407,32 @@ theorem deep_band_failure_unconditional (dom : Fin n ↪ F) {k m : ℕ}
     _ = 2 * bad.card * q ^ m * n.choose k := by ring
 
 open Classical in
+/-- Quotient form of `deep_band_failure_unconditional`: the same product inequality exposes
+the residual wall as an explicit Nat floor
+`C(n,k+m+1) / (2*q^m*C(n,k))` bad scalars on one generated stack. -/
+theorem deep_band_failure_badSet_card_ge_div (dom : Fin n ↪ F) {k m : ℕ}
+    (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ ((k + m + 1 : ℕ) : ℝ≥0)) :
+    ∃ Q₀ : F[X],
+      n.choose (k + m + 1) / (2 * (Fintype.card F) ^ m * n.choose k)
+        ≤ (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+            ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+            (fun i => Q₀.eval (dom i)) (fun i => (dom i) ^ k) γ)).card := by
+  obtain ⟨Q₀, hQ₀⟩ := deep_band_failure_unconditional dom hk hhi
+  set bad : Finset F := Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+      ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      (fun i => Q₀.eval (dom i)) (fun i => (dom i) ^ k) γ)
+  refine ⟨Q₀, ?_⟩
+  have hmul :
+      n.choose (k + m + 1)
+        ≤ (2 * (Fintype.card F) ^ m * n.choose k) * bad.card := by
+    calc n.choose (k + m + 1)
+        ≤ 2 * bad.card * (Fintype.card F) ^ m * n.choose k := by
+          simpa [bad] using hQ₀
+      _ = (2 * (Fintype.card F) ^ m * n.choose k) * bad.card := by ring
+  exact Nat.div_le_of_le_mul hmul
+
+open Classical in
 /-- Product-inequality consumer for `deep_band_failure_unconditional`: if a
 target `B` is below the proven quotient
 `C(n,k+m+1)/(2 q^m C(n,k))`, then some generated stack has more than `B`
@@ -459,5 +485,6 @@ end ProximityGap.Ownership
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.agreeSet_card_le_of_natDegree_le
 #print axioms ProximityGap.Ownership.deep_band_failure_unconditional
+#print axioms ProximityGap.Ownership.deep_band_failure_badSet_card_ge_div
 #print axioms ProximityGap.Ownership.deep_band_failure_badSet_card_gt_of_mul_lt
 #print axioms ProximityGap.Ownership.deep_band_failure_badSet_card_pos
