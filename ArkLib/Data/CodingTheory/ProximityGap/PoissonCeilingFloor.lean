@@ -45,7 +45,7 @@ set_option maxHeartbeats 1600000
 
 open Finset Polynomial
 open scoped NNReal ENNReal
-open ArkLib.ProximityGap.KKH26CeilingMarch
+open ArkLib.ProximityGap.KKH26 ArkLib.ProximityGap.KKH26CeilingMarch
 
 namespace ArkLib.ProximityGap.PoissonCeilingFloor
 
@@ -432,6 +432,115 @@ namespace ArkLib.ProximityGap.PoissonCeilingFloor
 
 variable {p : ℕ} [Fact p.Prime] {g : ZMod p} {n : ℕ} [NeZero n]
 
+/-! ## Part B2b-ii: the γ-slice bridge to MCA badness -/
+
+open Classical in
+/-- The Poisson union of `(W, U)` pairs: some minimal overdetermined tuple `T`
+explains `W` but does not explain `U`. -/
+noncomputable def poissonPairUnion (g : ZMod p) (n d : ℕ) :
+    Finset ((Fin n → ZMod p) × (Fin n → ZMod p)) :=
+  (Finset.powersetCard (d + 2) (Finset.univ : Finset (Fin n))).biUnion
+    (fun T => (Finset.univ.filter (fun W : Fin n → ZMod p => ExplainableOn g d W T))
+      ×ˢ (Finset.univ.filter (fun U : Fin n → ZMod p => ¬ ExplainableOn g d U T)))
+
+open Classical in
+/-- If the second row is not explainable on `S`, then the stack cannot be jointly explained
+on `S`, regardless of the first row. -/
+theorem not_pairJointAgreesOn_of_not_explainable {d : ℕ} {S : Finset (Fin n)}
+    {u₀ u₁ : Fin n → ZMod p} (hnot : ¬ ExplainableOn g d u₁ S) :
+    ¬ ProximityGap.pairJointAgreesOn (evalCode g n d) S u₀ u₁ := by
+  rintro ⟨v₀, hv₀, v₁, hv₁, hagree⟩
+  obtain ⟨q, hqd, hq⟩ := hv₁
+  exact hnot ⟨q, hqd, fun i hi => by
+    calc u₁ i = v₁ i := (hagree i hi).2.symm
+      _ = q.eval (g ^ (i : ℕ)) := hq i⟩
+
+open Classical in
+/-- **γ-slice bridge.** If `W` is explainable on `T` but `U` is not, then for the stack
+`(W - γU, U)` the scalar `γ` is MCA-bad on witness `T`. -/
+theorem mcaEvent_of_explainable_not_explainable {d : ℕ} {δ : ℝ≥0}
+    {T : Finset (Fin n)} {W U : Fin n → ZMod p}
+    (hTδ : (T.card : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hW : ExplainableOn g d W T) (hU : ¬ ExplainableOn g d U T) (γ : ZMod p) :
+    ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+      (fun i => W i - γ * U i) U γ := by
+  obtain ⟨q, hqd, hq⟩ := hW
+  refine ⟨T, hTδ, ?_, ?_⟩
+  · refine ⟨fun i : Fin n => q.eval (g ^ (i : ℕ)), ⟨q, hqd, fun _ => rfl⟩, ?_⟩
+    intro i hi
+    change q.eval (g ^ (i : ℕ)) = W i - γ * U i + γ • U i
+    rw [hq i hi, smul_eq_mul]
+    ring
+  · exact not_pairJointAgreesOn_of_not_explainable (g := g) (d := d)
+      (S := T) (u₀ := fun i => W i - γ * U i) hU
+
+open Classical in
+/-- Every γ-slice of the Poisson pair union injects into the γ-bad stack set by the shear
+`(W, U) ↦ (W - γU, U)`. -/
+theorem poissonPairUnion_card_le_badPairs_at_gamma {d : ℕ} {δ : ℝ≥0}
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (γ : ZMod p) :
+    (poissonPairUnion g n d).card ≤
+      (Finset.univ.filter (fun P : (Fin n → ZMod p) × (Fin n → ZMod p) =>
+        ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+          P.1 P.2 γ)).card := by
+  classical
+  let shear : ((Fin n → ZMod p) × (Fin n → ZMod p)) ≃
+      ((Fin n → ZMod p) × (Fin n → ZMod p)) :=
+    { toFun := fun P => (fun i => P.1 i - γ * P.2 i, P.2)
+      invFun := fun P => (fun i => P.1 i + γ * P.2 i, P.2)
+      left_inv := fun P => by
+        ext i <;> simp
+      right_inv := fun P => by
+        ext i <;> simp }
+  refine Finset.card_le_card_of_injOn (fun P => shear P) ?_ ?_
+  · intro P hP
+    obtain ⟨T, hTmem, hPT⟩ := Finset.mem_biUnion.mp hP
+    obtain ⟨hW, hU⟩ := Finset.mem_product.mp hPT
+    have hTcard : T.card = d + 2 := (Finset.mem_powersetCard.mp hTmem).2
+    have hWexp : ExplainableOn g d P.1 T := (Finset.mem_filter.mp hW).2
+    have hUnot : ¬ ExplainableOn g d P.2 T := (Finset.mem_filter.mp hU).2
+    have hevent : ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+        (fun i => P.1 i - γ * P.2 i) P.2 γ :=
+      mcaEvent_of_explainable_not_explainable (g := g) (T := T)
+      (by simpa [hTcard] using hδ) hWexp hUnot γ
+    simpa [shear, Finset.mem_filter] using hevent
+  · intro P hP Q hQ hPQ
+    exact shear.injective hPQ
+
+open Classical in
+/-- Summing the γ-slice bridge over all scalars gives the total bad-incidence lower bound
+over all stacks. -/
+theorem poisson_total_badIncidence_ge_pairUnion {d : ℕ} {δ : ℝ≥0}
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
+    p * (poissonPairUnion g n d).card ≤
+      ∑ P : (Fin n → ZMod p) × (Fin n → ZMod p),
+        (Finset.univ.filter (fun γ : ZMod p =>
+          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+            P.1 P.2 γ)).card := by
+  classical
+  set M := (poissonPairUnion g n d).card with hM
+  have hslice : ∀ γ : ZMod p, M ≤
+      (Finset.univ.filter (fun P : (Fin n → ZMod p) × (Fin n → ZMod p) =>
+        ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+          P.1 P.2 γ)).card := by
+    intro γ
+    rw [hM]
+    exact poissonPairUnion_card_le_badPairs_at_gamma (g := g) hδ γ
+  calc p * M = ∑ _γ : ZMod p, M := by
+        rw [Finset.sum_const, Finset.card_univ, ZMod.card, smul_eq_mul]
+    _ ≤ ∑ γ : ZMod p,
+        (Finset.univ.filter (fun P : (Fin n → ZMod p) × (Fin n → ZMod p) =>
+          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+            P.1 P.2 γ)).card :=
+        Finset.sum_le_sum fun γ _ => hslice γ
+    _ = ∑ P : (Fin n → ZMod p) × (Fin n → ZMod p),
+        (Finset.univ.filter (fun γ : ZMod p =>
+          ProximityGap.mcaEvent (F := ZMod p) (A := ZMod p) (evalCode g n d) δ
+            P.1 P.2 γ)).card := by
+        simp_rw [Finset.card_filter]
+        rw [Finset.sum_comm]
+
 /-! ## Part B2b-i: the master union count over the `(W, U)`-space -/
 
 open Classical in
@@ -566,6 +675,19 @@ theorem card_union_ge (hg : orderOf g = n) {d : ℕ} (hdn : d + 2 ≤ n)
   rw [hX]
   omega
 
+open Classical in
+/-- Named form of `card_union_ge` for the Poisson pair union. -/
+theorem poissonPairUnion_card_ge (hg : orderOf g = n) {d : ℕ} (hdn : d + 2 ≤ n)
+    (hq : n.choose (d + 2) + 1 ≤ p) :
+    n.choose (d + 2) * p ^ (2 * n - 1)
+      ≤ 2 * (poissonPairUnion g n d).card := by
+  simpa [poissonPairUnion] using card_union_ge (g := g) (n := n) hg hdn hq
+
 end ArkLib.ProximityGap.PoissonCeilingFloor
 
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.not_pairJointAgreesOn_of_not_explainable
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.mcaEvent_of_explainable_not_explainable
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poissonPairUnion_card_le_badPairs_at_gamma
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_total_badIncidence_ge_pairUnion
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_union_ge
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poissonPairUnion_card_ge
