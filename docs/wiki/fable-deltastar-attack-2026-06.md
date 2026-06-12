@@ -1637,3 +1637,31 @@ Johnson list-size problem. Both proven barriers (counting vacuous at constant ra
 caps at Johnson) and the now-closed symmetry lever confirm: this single inequality needs a per-line,
 non-counting, non-averaging argument — the precise, machine-verified residual $1M obligation. No
 fabrication; δ* pinned for `r ≲ √(n log n)`, deployed constant-rate is this one isolated inequality.
+
+---
+
+## §50 — Fresh finding: KKH26's frequency choice is near-MINIMAL among character lines (line-incidence), with an honest far/no-joint caveat
+
+Probing "answers in plain sight" on the construction side (probes `probe_worst_charline*.py`, n=16,
+rate 1/4, k=4, large p=2^32+81 = the sibling's pin instance): computed the distinct bad-scalar
+(line-explainability) count for ALL character lines `[x^a, x^b]` at radius `11/16` (w=k+1=5).
+
+**FINDING (exact, verified):** KKH26's adjacent-frequency line `[x^5, x^4]` gives `2256 = N(4,5)` (my
+proven spectrum) — but it is **near-MINIMAL**, not maximal. The MAX over character lines is `3984`,
+achieved by 8 high-frequency pairs (`[x^7,x^6]`, `[x^5,x^12]`, `[x^14,x^7]`, …), all with `a−b` coprime
+to 16. KKH26's "lowest frequencies just above the code" choice has the MOST cyclotomic collisions
+(fewest distinct bad scalars: C(16,5)−2256 = 2112); the worst lines have only 384 collisions. Bad
+scalars exist ONLY at radius `11/16` (w=5), vanishing at w≥6 — consistent with the `δ*=11/16` pin.
+
+**HONEST CAVEAT (a LEAD, not a confirmed ε_mca sharpening):** the `3984` count is line-EXPLAINABILITY
+incidence, which equals MCA-badness ONLY for FAR lines (no-joint clause automatic —
+`FarCosetExplosion.mcaEvent_iff_line_explainable`). KKH26's `[x^5,x^4]` is constructed far; the
+high-frequency lines may NOT be far (directions `x^6,x^7` could be close to the deg≤3 code), so for them
+MCA-bad ≤ incidence and `3984` is only an UPPER bound on their ε_mca contribution. Confirming a genuine
+ε_mca sharpening requires verifying `¬pairJointAgreesOn` (far/no-joint) — NOT yet done.
+
+**SCOPE.** Even if confirmed, this is a **constant-factor** (≈1.77×) bad-side sharpening at fixed `(n,k)`,
+NOT a deployed-regime pin: it would raise the ε_mca LOWER bound at the ceiling, widening the ε* range for
+`δ* ≤ 11/16`, but leaves the good-below interior list bound at constant rate — the open `$1M` core —
+untouched. Honest lead: KKH26's construction has unexploited slack among character lines; the deployed
+pin is unaffected. No fabrication; far/no-joint verification is the open follow-up.
