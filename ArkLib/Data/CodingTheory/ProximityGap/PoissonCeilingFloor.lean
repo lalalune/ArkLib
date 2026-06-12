@@ -568,6 +568,24 @@ theorem exists_two_mul_ge_of_card_mul_le_two_sum {α : Type} [Fintype α] [Nonem
       _ = C * Fintype.card α := by ring
   omega
 
+open Classical in
+/-- ENNReal division cancellation for Nat inequalities of the form `C ≤ m * B`. -/
+theorem ennreal_natCast_div_mul_le_div_of_le_mul {C B q m : ℕ} (hm0 : m ≠ 0)
+    (h : C ≤ m * B) :
+    (C : ℝ≥0∞) / ((m : ℝ≥0∞) * (q : ℝ≥0∞))
+      ≤ (B : ℝ≥0∞) / (q : ℝ≥0∞) := by
+  have hm0E : (m : ℝ≥0∞) ≠ 0 := by
+    exact_mod_cast hm0
+  have hmtop : (m : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top m
+  calc
+    (C : ℝ≥0∞) / ((m : ℝ≥0∞) * (q : ℝ≥0∞))
+        ≤ ((m * B : ℕ) : ℝ≥0∞) / ((m : ℝ≥0∞) * (q : ℝ≥0∞)) := by
+          exact ENNReal.div_le_div_right (by exact_mod_cast h) _
+    _ = (B : ℝ≥0∞) / (q : ℝ≥0∞) := by
+          simpa [mul_comm, mul_left_comm, mul_assoc] using
+            (ENNReal.mul_div_mul_right (a := (B : ℝ≥0∞)) (b := (q : ℝ≥0∞))
+              (c := (m : ℝ≥0∞)) hm0E hmtop)
+
 /-! ## Part B2b-i: the master union count over the `(W, U)`-space -/
 
 open Classical in
@@ -793,6 +811,21 @@ theorem poisson_epsMCA_floor_half_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ�
   exact le_trans (ENNReal.div_le_div_right (by exact_mod_cast hceil) _) hengine
 
 open Classical in
+/-- Literal ENNReal half-mass form of `poisson_epsMCA_floor_half_int`. -/
+theorem poisson_epsMCA_floor_half (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
+    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
+    ((n.choose (d + 2) : ℝ≥0∞) / ((2 : ℝ≥0∞) * (p : ℝ≥0∞)))
+      ≤ ProximityGap.epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n d) δ := by
+  classical
+  have hhalf := poisson_epsMCA_floor_half_int (g := g) (n := n) hg hdn hq hδ
+  have hnat : n.choose (d + 2) ≤ 2 * ((n.choose (d + 2) + 1) / 2) := by
+    omega
+  exact le_trans
+    (ennreal_natCast_div_mul_le_div_of_le_mul (q := p) (m := 2) (by norm_num) hnat)
+    hhalf
+
+open Classical in
 /-- Slackened `/4p` integer form of `poisson_epsMCA_floor_half_int`, matching the constant
 usually advertised for the Poisson floor. -/
 theorem poisson_epsMCA_floor_quarter_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
@@ -811,6 +844,21 @@ theorem poisson_epsMCA_floor_quarter_int (hg : orderOf g = n) {d : ℕ} {δ : �
     hhalf
 
 open Classical in
+/-- Literal ENNReal `/4p` form of the Poisson floor. -/
+theorem poisson_epsMCA_floor_quarter (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
+    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0)) :
+    ((n.choose (d + 2) : ℝ≥0∞) / ((4 : ℝ≥0∞) * (p : ℝ≥0∞)))
+      ≤ ProximityGap.epsMCA (F := ZMod p) (A := ZMod p) (evalCode g n d) δ := by
+  classical
+  have hhalf := poisson_epsMCA_floor_half_int (g := g) (n := n) hg hdn hq hδ
+  have hnat : n.choose (d + 2) ≤ 4 * ((n.choose (d + 2) + 1) / 2) := by
+    omega
+  exact le_trans
+    (ennreal_natCast_div_mul_le_div_of_le_mul (q := p) (m := 4) (by norm_num) hnat)
+    hhalf
+
+open Classical in
 /-- `δ*` upper bracket from the Poisson half-mass floor. -/
 theorem poisson_mcaDeltaStar_le_floor_half_int (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
     (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
@@ -821,6 +869,18 @@ theorem poisson_mcaDeltaStar_le_floor_half_int (hg : orderOf g = n) {d : ℕ} {�
         (evalCode g n d) εstar ≤ δ :=
   ProximityGap.MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
     (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_half_int (g := g) (n := n) hg hdn hq hδ))
+
+open Classical in
+/-- `δ*` upper bracket from the literal Poisson half-mass floor. -/
+theorem poisson_mcaDeltaStar_le_floor_half (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
+    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (εstar : ℝ≥0∞)
+    (hεstar : εstar < ((n.choose (d + 2) : ℝ≥0∞) / ((2 : ℝ≥0∞) * (p : ℝ≥0∞)))) :
+    ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod p) (A := ZMod p)
+        (evalCode g n d) εstar ≤ δ :=
+  ProximityGap.MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
+    (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_half (g := g) (n := n) hg hdn hq hδ))
 
 open Classical in
 /-- `δ*` upper bracket from the slackened Poisson `/4p` floor. -/
@@ -835,6 +895,19 @@ theorem poisson_mcaDeltaStar_le_floor_quarter_int (hg : orderOf g = n) {d : ℕ}
     (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_quarter_int (g := g) (n := n)
       hg hdn hq hδ))
 
+open Classical in
+/-- `δ*` upper bracket from the literal Poisson `/4p` floor. -/
+theorem poisson_mcaDeltaStar_le_floor_quarter (hg : orderOf g = n) {d : ℕ} {δ : ℝ≥0}
+    (hdn : d + 2 ≤ n) (hq : n.choose (d + 2) + 1 ≤ p)
+    (hδ : ((d + 2 : ℕ) : ℝ≥0) ≥ (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (εstar : ℝ≥0∞)
+    (hεstar : εstar < ((n.choose (d + 2) : ℝ≥0∞) / ((4 : ℝ≥0∞) * (p : ℝ≥0∞)))) :
+    ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod p) (A := ZMod p)
+        (evalCode g n d) εstar ≤ δ :=
+  ProximityGap.MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
+    (lt_of_lt_of_le hεstar (poisson_epsMCA_floor_quarter (g := g) (n := n)
+      hg hdn hq hδ))
+
 end ArkLib.ProximityGap.PoissonCeilingFloor
 
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.not_pairJointAgreesOn_of_not_explainable
@@ -842,10 +915,15 @@ end ArkLib.ProximityGap.PoissonCeilingFloor
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poissonPairUnion_card_le_badPairs_at_gamma
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_total_badIncidence_ge_pairUnion
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.exists_two_mul_ge_of_card_mul_le_two_sum
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.ennreal_natCast_div_mul_le_div_of_le_mul
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_union_ge
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poissonPairUnion_card_ge
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_exists_stack_two_mul_badCount_ge
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_half_int
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_half
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_quarter_int
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_epsMCA_floor_quarter
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_half_int
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_half
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_quarter_int
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.poisson_mcaDeltaStar_le_floor_quarter
