@@ -21,10 +21,14 @@ owns at least `d+2` non-fit `(d+2)`-subsets, giving
 
   `#bad · (d+2) ≤ C(n, d+2)`   (`dimGeneralSharp_badScalars_card_mul_succ_le`),
 
-a factor-`(d+2)/2` improvement.  At `m = 1` this divisor is `r`, extending the unconditional pin
-family from `r ≲ √n` to `r ≲ √(n·ln n)` — strictly past the prior wall.  The disjointness and
-assembly are reused verbatim from the general count (a non-fit subset still determines `γ`); only
-the per-scalar lower bound changes from `2` to `d+2`.
+a factor-`(d+2)/2` improvement.  At `m = 1` this divisor is `r`, sharpening the *general* band
+criterion from the factor-`2` `r(r−1) < 2^{μ−1}` (`r ≲ √(n/2)`) to **`r² < 2^μ`** (`r < √n`,
+`dimGeneralSharp_band_nonempty`) — a `√2` improvement proven in one statement; per-instance
+decidable checks reach further still *past* `√n` (e.g. `r = 6` at `μ = 4`, where `√n = 4`).  The
+asymptotic potential of the sharp count is `r ≲ √(n·ln n)`, but that is a heuristic estimate, *not*
+a landed general theorem — only `r < √n` and the explicit instances are proven here.  The
+disjointness and assembly are reused verbatim from the general count (a non-fit subset still
+determines `γ`); only the per-scalar lower bound changes from `2` to `d+2`.
 
 The concrete witness: at `μ = 4`, `r = 5` (`d = 3`, dimension-four code on the 16-point smooth
 domain) the prior factor-`2` band is **empty** (`C(16,5)/2 = 2184 > 1792 = 2⁵·C(8,5)`), yet the
