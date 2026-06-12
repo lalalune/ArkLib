@@ -5,7 +5,7 @@ turns the Ethereum Foundation **Proximity Prize** (proximityprize.org, $1M)
 question — *how big is the gap between what we can prove and the best known
 attack?* — into a single Lean scalar that contestants minimise.
 
-- **Code:** [`ArkLib/ProofSystem/ToyProblem/Leaderboard.lean`](../../ArkLib/ProofSystem/ToyProblem/Leaderboard.lean)
+- **Code:** [`ArkLib/ProofSystem/ToyProblem/Metrics.lean`](../../ArkLib/ProofSystem/ToyProblem/Metrics.lean)
 - **Paper:** Arnon–Boneh–Fenzi, *Open Problems in List Decoding and Correlated
   Agreement* (eprint 2026/680), §6.2 (Lemma 6.8), §6.4 (Lemmas 6.12, 6.13),
   §6.3 (Tables 2–5). The attack side is also Fenzi–Sanso, eprint 2025/2197

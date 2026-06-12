@@ -46,7 +46,7 @@ restate this residual w.r.t. it; do NOT attempt to discharge the present stateme
 **The repair is LANDED** (issue #341 closeout): `ToMathlib/FriCompleteQueryRound.lean`
 states the invariant in the checker's own currency (`queryCheckerAccepts`) and proves the
 repaired statement (`queryRound_perfectCompleteness_repaired`); the re-scoped remaining
-obligation is `queryRoundChainDeliveryResidual` there (fold phase delivers the invariant).
+obligation is `queryRoundChainDeliveryHypothesis` there (fold phase delivers the invariant).
 
 This definition is intentionally **not** named as a strict residual: it is retained only as
 the historical false surface consumed by old composition wrappers. -/

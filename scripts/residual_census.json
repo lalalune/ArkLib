@@ -1,7 +1,7 @@
 {
  "summary": {
-  "total": 92,
-  "open": 48,
+  "total": 91,
+  "open": 47,
   "discharged": 43,
   "refuted": 1,
   "by_top_dir": {
@@ -30,8 +30,8 @@
     "refuted": 0
    },
    "ToMathlib": {
-    "total": 12,
-    "open": 1,
+    "total": 11,
+    "open": 0,
     "discharged": 10,
     "refuted": 1
    }
@@ -3754,14 +3754,6 @@
    "status": "discharged"
   },
   {
-   "name": "queryRoundChainDeliveryResidual",
-   "fq_name": "Fri.Spec.Completeness.queryRoundChainDeliveryResidual",
-   "file": "ArkLib/ToMathlib/FriCompleteQueryRound.lean",
-   "line": 177,
-   "providers": [],
-   "status": "open"
-  },
-  {
    "name": "BatchingConsistencyResidual",
    "fq_name": "ArkLib.RingSwitching.Phases.BatchingConsistencyResidual",
    "file": "ArkLib/ToMathlib/RSPhases.lean",
@@ -3960,6 +3952,38 @@
   }
  ],
  "near_misses": [
+  {
+   "name": "ofListSizeGCXK25_of_gkl24_firstMoment_residual",
+   "fq_name": "ProximityGap.GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_firstMoment_residual",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/Connections/ProximityPrizeConnectiveTissue.lean",
+   "line": 241,
+   "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "ofListSizeGCXK25_of_gkl24_witnessCover_residual",
+   "fq_name": "ProximityGap.GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_witnessCover_residual",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/Connections/ProximityPrizeConnectiveTissue.lean",
+   "line": 321,
+   "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "ofListSizeGCXK25_of_gkl24_maxCorr_residual",
+   "fq_name": "ProximityGap.GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_maxCorr_residual",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/Connections/ProximityPrizeConnectiveTissue.lean",
+   "line": 380,
+   "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "ofListSizeGCXK25_of_gkl24_strict_residual",
+   "fq_name": "ProximityGap.GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_strict_residual",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/Connections/ProximityPrizeConnectiveTissue.lean",
+   "line": 439,
+   "reason": "name does not end in `Residual`"
+  },
   {
    "name": "ahiv17_affineLine_correlatedAgreement_residual",
    "fq_name": "ProximityToRS.ahiv17_affineLine_correlatedAgreement_residual",

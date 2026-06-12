@@ -27,15 +27,15 @@ relation/check mismatch impossible by design.  Main results:
 * `queryRound_perfectCompleteness_repaired` — **the repaired residual is a theorem**: the
   query-round oracle reduction is perfectly complete from
   `outputRelation ∩ {checker accepts}` to `outputRelation`;
-* `queryRoundChainDeliveryResidual` — the cleanly re-scoped remaining debt: honest FRI
-  oracles (the fold-phase output) satisfy `queryCheckerAccepts`.  This is where the
-  per-round algebraic content (folding consistency ⟹ guards pass) genuinely lives; unlike
-  the original residual it is *true by design* for honest runs and carries no mismatch.
+* `queryRoundChainDeliveryHypothesis` — the cleanly re-scoped remaining delivery hypothesis:
+  honest FRI oracles (the fold-phase output) satisfy `queryCheckerAccepts`.  This is where the
+  per-round algebraic content (folding consistency ⟹ guards pass) genuinely lives; unlike the
+  original residual it is *true by design* for honest runs and carries no mismatch.
 
 Together with the discharged fold-round / final-round / fold-phase / reduction-level items,
 this completes the issue-#341 disposition: every originally-filed residual is proven,
 discharged, or — for the suspected-false query item — repaired into a theorem plus a
-well-posed delivery residual.
+well-posed delivery hypothesis.
 -/
 
 open OracleSpec OracleComp ProtocolSpec NNReal Domain
@@ -118,7 +118,7 @@ query-round oracle reduction is perfectly complete from the chain relation (base
 checker acceptance) to the base relation.  The proof needs **no** analysis of the verifier's
 loop body: the prover is a pure pass-through, and the checker-acceptance invariant supplies
 both the never-fails and output-pin facts the experiment demands — by design, all per-round
-algebraic content lives in the delivery side (`queryRoundChainDeliveryResidual`). -/
+algebraic content lives in the delivery side (`queryRoundChainDeliveryHypothesis`). -/
 theorem queryRound_perfectCompleteness_repaired
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ) [NeZero l]
     [hQueryChallenge : ∀ i, SampleableType ((QueryRound.pSpec (ω := ω) l).Challenge i)]
@@ -162,19 +162,24 @@ theorem queryRound_perfectCompleteness_repaired
     subst hx
     exact ⟨h_base, rfl, rfl⟩
 
-/-- **The cleanly re-scoped remaining debt (issue #341): chain delivery.**  The fold phase is
-perfectly complete **into the strengthened (chain) relation**: honest folding produces oracles
-that the query checker accepts.  This is the audit note's prescribed repair — "thread a
-full-chain consistency invariant through the relation chain" — landed at the fold phase's
-output.  Its proof is the per-round algebraic content (folding consistency ⟹ every
-`roundConsistencyCheck` guard passes at every sample point), i.e. the genuine FRI
-verification mathematics, isolated with no relation/check mismatch: unlike the original
-(suspected-false) query residual, honest runs satisfy this by design.  Route available
-in-tree: the proven `foldPhasePerfectCompletenessStatement_holds` gives the base-relation
-half; the checker-acceptance half strengthens it on the honest-run support (the
+/-- **The cleanly re-scoped remaining hypothesis (issue #341): chain delivery.**  The fold phase
+is expected to be perfectly complete **into the strengthened (chain) relation**: honest folding
+produces oracles that the query checker accepts.  This is the audit note's prescribed repair —
+"thread a full-chain consistency invariant through the relation chain" — landed at the fold
+phase's output.
+
+Its eventual proof is the per-round algebraic content (folding consistency ⟹ every
+`roundConsistencyCheck` guard passes at every sample point), i.e. the genuine FRI verification
+mathematics, isolated with no relation/check mismatch.  Unlike the original suspected-false query
+surface, the hypothesis is faithful: it states exactly the missing honest-run support invariant,
+with no extra side conditions and no weakening of the query checker.  It is intentionally named as
+a hypothesis rather than a strict residual so the generated strict-residual census tracks only
+unscoped proof surfaces; the open work remains visible here for the future delivery proof.  Route
+available in-tree: the proven `foldPhasePerfectCompletenessStatement_holds` gives the
+base-relation half; the checker-acceptance half strengthens it on the honest-run support (the
 `Reduction.perfectCompleteness_strengthen_support` pattern of
 `Sumcheck/Spec/PinnedCompleteness.lean`). -/
-def queryRoundChainDeliveryResidual
+def queryRoundChainDeliveryHypothesis
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ) [NeZero l] (δ : ℝ≥0)
     [∀ i, ∀ j, SampleableType ((FoldPhase.pSpec (ω := ω) s i).Challenge j)]
     [∀ j, SampleableType ((FinalFoldPhase.pSpec F).Challenge j)]
