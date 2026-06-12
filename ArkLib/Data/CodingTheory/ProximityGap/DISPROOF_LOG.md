@@ -7348,3 +7348,47 @@ Two audited deliverables (independent adversarial legs, both 0.93, zero fatal):
 T2 parity + T3 monotonicity + per-s enumeration below s/2) and one conjectured sharp
 boundary (r² ≤ s+1) with two named decision points ((64,9), (512,21)). The middle-band
 structural proof — per-axis capacity, not aggregate budget — is the remaining theorem.
+
+### O155 — THE CONSTANT-6 LAW: the char-0 non-normalizer Möbius coincidence with μ_n is exactly 6 at every tested 2-power scale — flat in n, one uniform witness family, one closed-form normal; the small-field growth was entirely mod-p surplus (normalizer-gap lane, 2026-06-12)
+
+`scripts/probes/normalizer_gap/` (census `probe_pgl2_coincidence_census.py` brute-gated
+at q=41 + O133-calibration-gated; char-0 `probe_char0_incidence_census.py` two split
+primes ≳ 2^28; anchor `probe_char0_anchor.py` exact ℤ[x]/(x^{n/2}+1), fraction-free
+Bareiss). Object: M(n) = max over Möbius σ ∉ N(T) (the torus normalizer x↦cx, x↦c/x)
+of |μ_n ∩ σ(μ_n)| in char 0 — each incidence is a point of the surface
+P(i,j) = (ζ^{i+j}, ζ^j, ζ^i, 1) on a non-normalizer hyperplane.
+
+* **M(8) = M(16) = M(32) = M(64) = 6 — FLAT.** Lower bound PROVEN in char 0: the
+  uniform family S(n) = {(0,0),(1,1),(2,3),(4,n/2+2),(n/2−1,n−3),(n−2,n−1)} lies on
+  the ONE closed-form normal (m = n/2): c = −ζ^{m−1}+ζ−2, d = 2ζ^{m−1}−ζ^{m−2}−ζ³+ζ²+ζ,
+  −a = −ζ^{m−1}+ζ^{m−2}+ζ³−2ζ²+1, −b = (ζ−1)² — max |coeff| = 2, rank exactly 3,
+  ad−bc ≠ 0, all six incidences vanish identically, no 7th char-0 point. Upper bound
+  PROVEN-BY-HEIGHT at n = 8, 16 (Hadamard < 2^56 < p₁p₂); two-prime bit-identical
+  evidence at n = 32, 64. Structure laws (exact, every n): j−i multiset
+  {0,0,1,1,n/2−2,n/2−2}; σ ~ σ^{-1} invariance (swapneg at (1,1)); trivial translation
+  stabilizer (no torsion-coset structure); n=8's full dihedral symmetry lost at n ≥ 16.
+* **The F_q growth was surplus**: drained field maxima (10@n=32/q=449, 16@n=64/q=1153)
+  still sat ABOVE the constant core 6 — the two-layer law again (O134's lesson; an
+  intermediate pre-registered Fibonacci fit was refuted by its own falsifier 11 min
+  after registration). Count-6 planes multiply with n (12, 300, 1932, 9420) but the
+  cap stays 6.
+* **Position**: the (1,1)-curve of σ is torus-special ⟺ σ ∈ N(T) — for everything
+  else Corvaja–Zannier (JEMS 2013, Cor 2) gives O(|H|^{2/3}) up to p^{3/4} (explicit
+  ≈ 4.77, Makarychev–Vyugin); the production regime n ≤ 2^40 ≪ p^{1/2} is KSV
+  Conjecture 1.3 (O(1), A ≥ 9 known) — OUR 2-POWER-TORSION CAP 6 < 9 says smooth
+  domains are below the conjecture's worst case in char 0. Consumers: the WB σ-descent
+  concentration step (#371 — only normalizer symmetries can carry invariant extremal
+  structure; everything else touches the domain in ≤ 6 char-0 points); the O133
+  spectral gap (its census = this engine's involution slice, audit-confirmed).
+* **Also this cycle (same lane, #371 comment 4687572266)**: the σ-invariant
+  WB-RATIONAL family at scale 2 has exhaustive max bad = 1 (their sampled "invariant
+  max 3" was over non-rational orbit-constant pairs) — inside WindowRationalBounded's
+  own class the invariant family does not renormalize. And the O133 probe program
+  passed independent adversarial audit (two fresh algorithms incl. the n = q−1 edge;
+  one [:8]-truncation reporting bug found+fixed, headlines intact;
+  scripts/probes/moments/audit/).
+* **Named next**: the M(n) ≥ 6 ∀ 2-power n Lean brick (one parametric identity);
+  the ≤ 6 theorem (7-incidence impossibility — Lam–Leung/antipodal route, the
+  candidate mechanism for the in-tree vanishing-sum machinery); the height upgrade
+  of ≤ at n = 32, 64 (third prime or Hadamard sharpening); norm-spectrum
+  quantification for the production surplus threshold.
