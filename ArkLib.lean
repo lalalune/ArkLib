@@ -733,6 +733,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyCharacterTransport
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
+import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessStructure
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyMinimalF73
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyRelationAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.EntropyGateBinomial
@@ -1486,6 +1487,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonResultantImproved
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupGVBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonThresholdImproved
+import ArkLib.Data.CodingTheory.ProximityGap.SignedWalkMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
 import ArkLib.Data.CodingTheory.ProximityGap.SinglePencilQIndependence
 import ArkLib.Data.CodingTheory.ProximityGap.Slack1Assembly
@@ -1494,6 +1496,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.SlantedTransferThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLevelTwoCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusUnionBudget
+import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupDeltaStarPin
+import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupGVRepTwo
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupSidon
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupSidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothCubicCapstone
