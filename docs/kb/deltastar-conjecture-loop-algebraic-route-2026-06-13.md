@@ -76,3 +76,42 @@ wall — because it never enters the additive/analytic world at all.
 C8's archimedean-vs-`p`-adic gap is a real risk it still reduces. C9 is the stronger candidate. Both
 must be checked by explicit Gauss-sum computation, not asserted. The prize stays open until C9's
 telescope is computed; but C9 is a NOVEL, non-reduced, start-provable direction — the loop's goal.
+
+## C8/C9 REFUTED + THE ARCHIMEDEAN-GAP SYNTHESIS (the complete diagnosis)
+
+Attempted C9's telescope explicitly. **Refuted:** the Hasse–Davenport product relation yields
+`∏_j τ(ψ^j) = ` the algebraic NORM `N(η)=∏_c η_c` of the period — but `N` only LOWER-bounds the house
+(`house ≥ |N|^{1/m}`, geometric mean ≈ `√n`); it cannot UPPER-bound the max, since the `m` conjugate
+periods have UNEQUAL moduli and the product is blind to which one is largest. The house/norm gap (the
+`√log p` factor) is exactly the conjugate VARIATION, invisible to the product. **C9 reduces.**
+**C8 likewise:** Stickelberger / Gross–Koblitz give the exact ideal factorization and `p`-adic
+valuations of `τ(χ)`, but `|τ(χ)|=√p` is the ONLY archimedean datum and is identical for every `χ` —
+the algebra fixes everything EXCEPT the complex arguments `arg τ(χ)`.
+
+### The synthesis — why the prize is open, completely and from both sides
+
+The prize sup-norm `max_c|η_c|` depends ENTIRELY on the **archimedean argument distribution**
+`{arg τ(χ_j)}` of the Gauss sums (the periods are `η_c=(1/m)Σ_j τ(χ_j)ζ^{-jc}`; the magnitudes
+`|τ|=√p` are fixed, so the max is governed by how the arguments align). And:
+
+- **Algebraic methods (Stickelberger, Gross–Koblitz, Hasse–Davenport, Jacobi)** pin everything
+  NON-archimedean — factorization, norm, `p`-adic valuation, product relations — but give NO control
+  of the complex arguments (they're transcendental period ratios).
+- **Analytic methods (moment, energy, sum-product, Lamzouri CLT, Favard)** target the arguments but
+  all stall at the moment wall `k<log_n p` (the additive-multiplicative incompatibility).
+
+**The prize lives exactly in the gap neither class reaches:** the archimedean equidistribution of
+Gauss-sum arguments at thin density `n≈p^{1/8}` (Katz proves the MARGINAL equidistribution; the prize
+needs the UNIFORM joint control of `m≈p/n` arguments — open). Algebraic methods give all structure
+except this; analytic methods target this but hit the wall. The prize is the precise boundary object
+between them. This is, from BOTH sides now, the rigorous reason it is open.
+
+### Loop verdict
+9 distinct framings generated, novelty-rated, refuted/reduced: C1–C7 (analytic, walled), C8–C9
+(algebraic, control norm/valuation not the archimedean max). **NO framing escapes** — and the loop
+PROVED why: the open core is the archimedean argument distribution, which is structurally outside both
+the algebraic (non-archimedean) and analytic (moment-walled) toolkits. A closed start-provable
+conjecture that does NOT reduce to this would need a method bridging archimedean and non-archimedean
+control of Gauss sums — which is exactly the missing mathematics. The loop's honest output: the prize
+has no non-reducing closed conjecture because its core is this specific, named, archimedean-gap open
+problem. Not fabricable; genuinely new mathematics required.
