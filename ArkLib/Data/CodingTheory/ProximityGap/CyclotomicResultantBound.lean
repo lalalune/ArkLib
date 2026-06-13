@@ -198,3 +198,46 @@ theorem prime_le_of_cyclotomic_resultant {n : ℕ} (hn : 0 < n) {p : ℕ} [Fact 
   have hpos : 0 < R.natAbs := Int.natAbs_pos.mpr hResne
   exact le_trans (Nat.le_of_dvd hpos hpd) hbound
 
+/-- **`Res ≠ 0` from the ℂ-Sidon property.** If `g` (mapped to `ℂ`) has no root among the
+primitive `n`-th roots of unity, then `Res(Φ_n, g) ≠ 0` (the integer resultant is the product of
+`g` over those roots, none of which vanish). -/
+theorem resultant_cyclotomic_ne_zero_of_forall_root_ne (n : ℕ) (g : ℤ[X])
+    (h : ∀ ω : ℂ, ω ∈ (cyclotomic n ℂ).roots → (g.map (Int.castRingHom ℂ)).eval ω ≠ 0) :
+    resultant (cyclotomic n ℤ) g (cyclotomic n ℤ).natDegree g.natDegree ≠ 0 := by
+  intro hR0
+  have hdeg : (cyclotomic n ℤ).natDegree = (cyclotomic n ℂ).natDegree := by
+    rw [natDegree_cyclotomic, natDegree_cyclotomic]
+  have hmapC : ((resultant (cyclotomic n ℤ) g (cyclotomic n ℤ).natDegree g.natDegree : ℤ) : ℂ)
+      = ((cyclotomic n ℂ).roots.map (g.map (Int.castRingHom ℂ)).eval).prod := by
+    have h1 : ((resultant (cyclotomic n ℤ) g (cyclotomic n ℤ).natDegree g.natDegree : ℤ) : ℂ)
+        = resultant (cyclotomic n ℂ) (g.map (Int.castRingHom ℂ))
+            (cyclotomic n ℤ).natDegree g.natDegree := by
+      rw [← map_cyclotomic_int n ℂ]
+      exact (resultant_map_map (f := cyclotomic n ℤ) (g := g)
+        (m := (cyclotomic n ℤ).natDegree) (n := g.natDegree) (Int.castRingHom ℂ)).symm
+    rw [h1, hdeg, resultant_eq_prod_eval (cyclotomic n ℂ) _ g.natDegree natDegree_map_le
+      (IsAlgClosed.splits _), (cyclotomic.monic n ℂ).leadingCoeff, one_pow, one_mul]
+  rw [hR0, Int.cast_zero] at hmapC
+  have hmem : (0 : ℂ) ∈ (cyclotomic n ℂ).roots.map (g.map (Int.castRingHom ℂ)).eval :=
+    Multiset.prod_eq_zero_iff.mp hmapC.symm
+  rw [Multiset.mem_map] at hmem
+  obtain ⟨ω, hω, hgω⟩ := hmem
+  exact h ω hω hgω
+
+/-- **The fully-reduced small-subgroup Sidon keystone.** A parallelogram mod `p` (primitive `ζ`
+with `g(ζ) = 0`) forces `p ≤ 4^{φ(n)} = 2^n`, given only the magnitude bound (`hgC`, automatic for
+a 4-term `±1` polynomial), the degree condition (`hgdeg`, automatic for unit leading coefficient),
+and the **ℂ-Sidon property** (`hSidon`: `g` has no primitive `n`-th root of unity as a root over
+`ℂ` — the conjugation argument).  Contrapositive: `p > 2^n ⟹ μ_n ⊆ F_p` has no nontrivial additive
+parallelogram, discharging the `hnc`/`SidonModNeg` hypothesis of `rootsOfUnity_additiveEnergy_eq`
+in the small-subgroup regime.  Everything but `hSidon` is now mechanical. -/
+theorem prime_le_of_cyclotomic_parallelogram {n : ℕ} (hn : 0 < n) {p : ℕ} [Fact p.Prime]
+    (g : ℤ[X]) (hgC : ∀ ω : ℂ, ω ^ n = 1 → ‖(g.map (Int.castRingHom ℂ)).eval ω‖₊ ≤ 4)
+    (hgdeg : (g.map (Int.castRingHom (ZMod p))).natDegree = g.natDegree)
+    (hSidon : ∀ ω : ℂ, ω ∈ (cyclotomic n ℂ).roots → (g.map (Int.castRingHom ℂ)).eval ω ≠ 0)
+    {ζ : ZMod p} (hζ : IsPrimitiveRoot ζ n)
+    (hgζ : (g.map (Int.castRingHom (ZMod p))).eval ζ = 0) :
+    p ≤ 4 ^ n.totient :=
+  prime_le_of_cyclotomic_resultant hn g hgC hgdeg
+    (resultant_cyclotomic_ne_zero_of_forall_root_ne n g hSidon) hζ hgζ
+
