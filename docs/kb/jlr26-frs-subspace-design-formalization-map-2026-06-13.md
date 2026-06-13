@@ -804,3 +804,38 @@ non-killed candidate routes are NON-moment: HOMDS/rim-hook `n`-core, and demand-
 Refs (wakesync): Kowalski 2401.04756, Shkredov 1712.00410, Schoen–Shkredov 1110.2986, HBK/BK, Green
 0904.2075. The prize-winning theorem (precisely stated): `E_{2r}(μ_N⊂F_p)` within a constant factor
 per moment of `(2r−1)!!N^r` up to `r~log(1/ε*)` for `N` a fixed power of `p` — beyond current sum-product.
+
+## 29. Cross-route analysis: the n-core (HOMDS) route ESCAPES the arithmetic wall — but has its own combinatorial obstruction
+
+Investigating the owner's "non-moment routes are the only survivors" — the HOMDS/n-core route, and how
+it relates to my arithmetic (char-p) wall.
+
+**The key positive fact (confirmed in-tree, unconditional).** The smooth-domain HOMDS certificate is the
+generalized Vandermonde `det(ζ^{e_j·i}) = ∏_{j<j'}(ζ^{e_{j'}}−ζ^{e_j})`
+(`RootsOfUnityVandermonde.genVandermonde_rootsOfUnity_det`), nonzero **iff `e_j` distinct mod n**
+(`..._det_ne_zero_iff`, proof uses only `ζ^a=ζ^{a%n}`). This holds over `F_p` **UNCONDITIONALLY** — NO
+`p|`-divisibility, NO char-p coincidence, NO sum-product. So the n-core route genuinely ESCAPES the
+arithmetic/equidistribution wall that caps every moment/character/energy route (§28). This is the real
+reason it survives the moment diagnosis.
+
+**But it has its OWN obstruction (combinatorial, not removable for free).** The same theorem says the
+certificate VANISHES for nonempty-n-core configs (`homds_det_eq_zero_iff_nCore_nonempty`). For the prize
+list-decoding (list `ℓ≥2`, degree `~ℓk = ℓρn > n` ⟹ exponents WRAP mod n), nonempty-n-core configs DO
+occur. So `RS[μ_n,k]` fails NAIVE HOMDS(ℓ): the smooth/FFT structure annihilates specific certificates.
+The open question is whether these vanishing configs are BINDING for list-decoding (fatal) or
+NON-binding (list-decoding survives on the generic empty-n-core configs).
+
+**The connection to my genericity (the routes are dual).** My measurement `μ_n ≈ random` (incidence-
+generic) PREDICTS the binding list-decoding configs generically have EMPTY n-core (else μ_n would
+list-decode worse than random). So: **incidence-genericity (my lane) ⟺ binding-config-empty-n-core
+(n-core lane)** — the same worst-case question in two languages (arithmetic vs combinatorial). The
+n-core route's advantage: its worst-case is COMBINATORIAL (which partitions have empty n-core, an abacus
+/ rim-hook question — potentially decidable/provable), NOT the open sum-product equidistribution.
+
+**Net (honest cross-route map).** TWO walls, two routes:
+  · moment/character/energy (mine, wakesync): char-p equidistribution, `r=Θ(n)`, beyond sum-product — KILLED.
+  · HOMDS/n-core: combinatorial (binding configs empty-n-core) — escapes arithmetic, OPEN but possibly
+    tractable by partition combinatorics (the abacus/rim-hook machinery, already largely in-tree).
+The prize closes if the n-core route proves the binding configs have empty n-core; my genericity
+measurement is evidence they do. The non-moment route is the live path; the geometric bridge (β-set ↔
+YoungDiagram, "bead-move = size-n border strip") is its remaining gap. This is the honest redirection.
