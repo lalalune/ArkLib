@@ -644,6 +644,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandDeltaStarCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureClosedFormSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureUnconditional
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFieldSizeWindow
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMomentInstance
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMomentInstanceSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
@@ -1426,6 +1427,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListSupply
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonResidualFloor
+import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonSupplyReframe
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyF17
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyFermat65537
