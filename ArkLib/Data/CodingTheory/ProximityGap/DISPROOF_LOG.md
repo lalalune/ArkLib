@@ -7948,28 +7948,3 @@ at the deep band. Any positive supply/MCA result there must restrict the domain 
 dyadic structure or accept exponential `B`. Refutation is machine-checked (not a wall — a
 proved negative). The campaign's recent linear claim should be re-scoped to random/generic
 domains; the prize's smooth-domain case is exponentially worse and this is the honest state.
-
-### O158 — M(128) = 6 RIGOROUS: the constant-6 law is now both-sided rigorous at n = 8..128 (25-prime ladder, route-independent) (normalizer-gap lane, 2026-06-13; closes O157 caveat 1)
-
-`scripts/probes/normalizer_gap/` (probe_m128_rigor.py + RESULTS-M128-RIGOR.md;
-census engine independently reimplemented per the O156 debt note, gate-reproduced
-bit-identical at n=32/64). Extends the O156 invisibility trichotomy to n=128:
-
-* **k(128) = 25 primes** (route-independent): exact case integers at m=64 give
-  cap(B_coord = 3^96) = 5, cap(B_det = 54^64) = 13 ⟹ Hadamard k = 2·5+13+1 = 24;
-  the cruder L1 route (6^64/72^64) gives cap = 5/14 ⟹ k = 25. Ran 25 distinct
-  split primes ≡ 1 (mod 128), p > 2^28, smallest first (the two RESULTS-RECIPROCAL
-  primes reused after integrity recheck). EVERY prime clean: M_p = 6, recount
-  uncapped, coordinate-line bucket fact, distinct-point asserts; count-6 = 41,292
-  and count-5 = 1,220 BIT-IDENTICAL across all 25 (matching the O157 count laws).
-* **Verdict M(128) ≤ 6 rigorous** (both height routes); with the O157 char-0
-  certificate M(128) ≥ 6, this is **M(128) = 6 exact**. The constant-6 law is now
-  both-sided RIGOROUS at every tested 2-power scale n = 8, 16, 32, 64, 128.
-* **The mod-p surplus is benign and bounded**: 4 of 25 primes carried surplus
-  (count-3/4 buckets only — exact sizes e.g. {3:216, 4:144} at p=268456961), every
-  count-5/6 plane proven a true char-0 plane by the multi-prime certificate (0
-  alarms). The two-layer law holds: surplus lives strictly below the headline.
-* Honest scope: program-assisted (exact arithmetic + symbolic self-checks +
-  independent-reimplementation gate), not Lean. n=256: ≥6 proven (O157), ≤6 needs
-  47 primes / ~35GB disk — deferred. The general-n ≤6 theorem (the BS sharpening
-  on the explicit λ-family, O157) remains the named research target.

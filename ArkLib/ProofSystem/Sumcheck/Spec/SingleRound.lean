@@ -7,7 +7,6 @@ Authors: Quang Dao
 import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.LiftContext.OracleReduction
-import VCVio.OracleComp.SimSemantics.OptionT.Basic
 import ArkLib.ProofSystem.Component.SendClaim
 import ArkLib.ProofSystem.Component.CheckClaim
 import ArkLib.ProofSystem.Component.RandomQuery
@@ -706,7 +705,7 @@ def oracleVerifier : OracleVerifier oSpec (StmtIn R) (OStmtIn R deg) (StmtOut R)
     let evals : Vector R m ← (Vector.finRange m).mapM
       (fun i => OptionT.lift <| OracleComp.liftComp
         (OracleComp.lift <|
-          OracleSpec.query (show [(pSpec R deg).Message]ₒ.Domain from ⟨default, D i⟩))
+          OracleSpec.query (show [OStmtIn R deg]ₒ.Domain from ⟨(), D i⟩))
         _)
     guard (evals.sum = target)
     -- The new target is the evaluation of the oracle polynomial at the challenge point.

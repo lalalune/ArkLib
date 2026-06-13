@@ -18,29 +18,15 @@ import ArkLib.Data.Domain.FftDomain.Ops
 import ArkLib.Data.Domain.FftDomain.ToSubgroup
 
 /-!
-# Subdomains of smooth FFT domains
+# Subdomains of FFT domains
 
-This file develops the subdomain tower for smooth FFT domains and relates it to
-the corresponding construction for coset FFT domains.
+We define `subdomain ω i`, the `i`-th subdomain of an FFT domain as a smaller `SmoothFftDomain`,
+and relate it to the underlying coset subdomain via `mem_fft_subdomain_iff_mem_coset_subdomain`.
 
-## Main definitions
-
-- `FftDomainClass.subdomain`: The `i`th FFT subdomain.
-- `FftDomain.subdomain`: Concrete notation for FFT subdomains.
-
-## Main results
-
-- `mem_fft_subdomain_iff_mem_coset_subdomain`:
-  FFT and coset subdomains have the same underlying elements.
-- `mem_subdomain_of_mem_subdomain_of_le`:
-  Membership descends along the subdomain tower.
-- `subdomain_toFinset_subset_subdomain_toFinset_of_le`:
-  Inclusion of image finsets.
-- `subdomain_toSubgroup_subset_subdomain_toSubgroup_of_le`:
-  Inclusion of associated subgroups.
-- `subdomain_toFftDomain_comm`:
-  Taking subdomains commutes with normalization.
-
+The monotonicity lemmas (`mem_subdomain_of_mem_subdomain_of_le`,
+`subdomain_toFinset_subset_subdomain_toFinset_of_le`,
+`subdomain_toSubgroup_subset_subdomain_toSubgroup_of_le`) and the commutation lemma
+`subdomain_toFftDomain_comm` describe how subdomains nest and interact with `toFftDomain`.
 -/
 
 namespace Domain
@@ -55,36 +41,26 @@ variable {ω : D} {x : F}
 
 open CosetFftDomainClass
 
-/-- The `i`th subdomain of a smooth FFT domain,
-  obtained by taking the corresponding coset subdomain and normalizing it back to an FFT domain. -/
 def subdomain (ω : D) (i : ℕ) : SmoothFftDomain (n - i) F :=
   (CosetFftDomainClass.subdomain ω i).toFftDomain
 
-/-- Membership in an FFT subdomain is the same as membership in
-  the corresponding coset subdomain. -/
 lemma mem_fft_subdomain_iff_mem_coset_subdomain {i : ℕ} :
-  x ∈ subdomain ω i ↔ x ∈ CosetFftDomainClass.subdomain ω i := by
+    x ∈ subdomain ω i ↔ x ∈ CosetFftDomainClass.subdomain ω i := by
   simp [subdomain, mem_toFftDomain_iff_mul_mem, CosetFftDomain.map_0_eq_coset_generator]
 
-/-- If `x` is a member of `subdomain ω i` it is a member of
-  any `subdomain ω j` with `j ≤ i`. -/
 lemma mem_subdomain_of_mem_subdomain_of_le {i j : ℕ} (h : x ∈ subdomain ω i) (hji : j ≤ i) :
-  x ∈ subdomain ω j := by
-  aesop
-    (add simp [mem_fft_subdomain_iff_mem_coset_subdomain])
-    (add unsafe forward [mem_subdomain_of_le_of_mem_subdomain])
+    x ∈ subdomain ω j := by
+    aesop
+      (add simp [mem_fft_subdomain_iff_mem_coset_subdomain])
+      (add unsafe forward [mem_subdomain_of_le_of_mem_subdomain])
 
-/-- If `j ≤ i`, then the finset of elements of the `i`th FFT subdomain is
-  contained in the finset of elements of the `j`th FFT subdomain. -/
 lemma subdomain_toFinset_subset_subdomain_toFinset_of_le [DecidableEq F]
-  {i j : ℕ} (hji : j ≤ i) :
+    {i j : ℕ} (hji : j ≤ i) :
   (subdomain ω i).toFinset ⊆ (subdomain ω j).toFinset := fun x hx ↦ by
   aesop (add unsafe [mem_subdomain_of_mem_subdomain_of_le])
 
-/-- If `j ≤ i`, then the subgroup associated to the `i`th FFT subdomain is
-  contained in the subgroup associated to the `j`th FFT subdomain. -/
 lemma subdomain_toSubgroup_subset_subdomain_toSubgroup_of_le [DecidableEq F]
-  {i j : ℕ} (hji : j ≤ i) :
+    {i j : ℕ} (hji : j ≤ i) :
   (subdomain ω i).toSubgroup ≤ (subdomain ω j).toSubgroup := fun x hx ↦ by
   aesop (add unsafe [mem_subdomain_of_mem_subdomain_of_le])
 
@@ -96,10 +72,8 @@ variable {n : ℕ}
 variable {D : Type} [FunLike D (Fin (2 ^ n)) F] [CosetFftDomainClass D (Fin (2 ^ n)) F]
 variable {ω : D}
 
-/-- Normalizing the `i`th coset subdomain agrees with
-  taking the `i`th FFT subdomain of the normalized domain. -/
 lemma subdomain_toFftDomain_comm {i : ℕ} :
-  (subdomain ω i).toFftDomain = FftDomainClass.subdomain (toFftDomain ω) i := by
+    (subdomain ω i).toFftDomain = FftDomainClass.subdomain (toFftDomain ω) i := by
   ext u
   rw [eval_toFftDomain]
   conv_rhs =>
@@ -132,10 +106,8 @@ lemma subdomain_toFftDomain_comm {i : ℕ} :
         CosetFftDomainClass.subdomain_generator_pow_generator]
     simp
 
-/-- Multiplying an element of a coset subdomain by an element of
-  a deeper FFT subdomain of the normalized domain stays in the original coset subdomain. -/
 lemma mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain
-  {i j : ℕ} (hji : j ≤ i)
+    {i j : ℕ} (hji : j ≤ i)
   {a b : F}
   (ha : a ∈ subdomain ω j)
   (hb : b ∈ FftDomainClass.subdomain (toFftDomain ω) i) :
@@ -145,10 +117,8 @@ lemma mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain
     (add unsafe [FftDomainClass.mem_subdomain_of_mem_subdomain_of_le,
                   mul_mem_of_mem_of_mem_toFftDomain])
 
-/-- Multiplying an element of a deeper FFT subdomain of the normalized domain by
-  an element of a coset subdomain stays in the coset subdomain. -/
 lemma mem_subdomain_of_mem_fft_subdomain_of_mem_subdomain
-  {i j : ℕ} (hji : j ≤ i)
+    {i j : ℕ} (hji : j ≤ i)
   {a b : F}
   (ha : a ∈ FftDomainClass.subdomain (toFftDomain ω) i)
   (hb : b ∈ subdomain ω j) :
@@ -156,11 +126,11 @@ lemma mem_subdomain_of_mem_fft_subdomain_of_mem_subdomain
   rw [mul_comm]
   exact mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain hji hb ha
 
+
 end CosetFftDomainClass
 
 namespace FftDomain
 
-/-- Concrete notation for the `i`th subdomain of a smooth FFT domain. -/
 abbrev subdomain {n : ℕ} (ω : SmoothFftDomain n F) (i : ℕ) : SmoothFftDomain (n - i) F :=
   FftDomainClass.subdomain ω i
 

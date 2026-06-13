@@ -8,7 +8,7 @@ import ArkLib.Data.Polynomial.Bivariate
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.LinearAlgebra.Lagrange
 import Mathlib.Tactic.Cases
-import Mathlib.Tactic.LinearCombinationPrime
+import Mathlib.Tactic.LinearCombination'
 
 import CompPoly.Univariate.Lagrange
 import CompPoly.Univariate.ToPoly.Impl
@@ -125,7 +125,7 @@ lemma indicator_eq_0_on_neg_sub_pos {pos neg : Finset F} {x : F}
     aesop
       (add simp [Finset.mem_sdiff, Lagrange.basis, id_eq, eval_prod])
       (add safe [(by rw [Finset.prod_eq_zero])])
-  aesop (add simp [indicator, Polynomial.eval_finsetSum, Finset.sum_eq_zero])
+  aesop (add simp [indicator, Polynomial.eval_finset_sum, Finset.sum_eq_zero])
 
 /-- The degree of the indicator polynomial
   is less than `#(pos ∪ neg)`. -/

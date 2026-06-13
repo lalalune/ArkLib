@@ -16,6 +16,15 @@ import Mathlib.Tactic.Field
 import ArkLib.Data.Domain.CosetFftDomain.Mem
 import ArkLib.Data.Domain.FftDomain.Mem
 
+/-!
+# Listing the elements of a coset FFT domain
+
+We define `toList`, the list of (proof-carrying) elements of a coset FFT domain `ω`, obtained from
+`Finset.toListWithProof` on `toFinset ω`. The lemma `toList_eq_finset_toList` relates it to the
+underlying finset list, and concrete `toList` definitions are given for coset and FFT domains
+indexed by `Fin m`.
+-/
+
 namespace Domain
 
 variable {ι : Type} [Fintype ι] [AddCommGroup ι]
@@ -30,7 +39,7 @@ noncomputable def toList (ω : D) : List (toFinset ω) :=
 
 set_option linter.unusedSimpArgs false in -- false alert
 lemma toList_eq_finset_toList {ω : D} :
-  (toList ω).map (fun x ↦ x.1) = (toFinset ω).toList := by simp [toList, mem_def]
+    (toList ω).map (fun x ↦ x.1) = (toFinset ω).toList := by simp [toList, mem_def]
 
 end CosetFftDomainClass
 

@@ -83,3 +83,16 @@ theorem yet carries `428 > 2n = 160` mass at `(q,n) = (101,80)` — prime field,
 `CappedSupplyTwoRegimeLaw` (prime, calibrated `C₀ ≤ 1.91`, false over extension
 fields by subfield transport) and `SmoothDomainTwoRegimeLaw` (μ_n production
 form).  SS13 free-domain asymptotic red-team recorded.
+
+**2026-06-13 — the all-`k` power-word list is exactly a zero-sum fiber.**
+`PowerWordListBound.lean` proves the exact list identity
+`powerWord_list_eq_sumZero`: for `w(x)=x^(k+1)`, the codewords of `rsCode dom k`
+with agreement at least `k+1` are counted exactly by `(k+1)`-subsets of the
+domain whose sum is zero.  The proof combines the Vieta coefficient cancellation
+`coeff X^k = -ΣT`, the converse root-rigidity argument, and a root-count cap
+showing no listed codeword can agree on more than `k+1` points.  This identifies
+the `m=0` supply obstruction as a higher zero-sum/additive-energy fiber and links
+directly to the `EsymmFiber.lean` deep-band target (`e_1 = ... = e_(m+1) = 0` for
+`W=X^(k+m+1)`).  See
+[`docs/kb/deltastar-powerword-zero-sum-law-2026-06-13.md`](../kb/deltastar-powerword-zero-sum-law-2026-06-13.md)
+for the ten-connection research note and next formal targets.

@@ -20,12 +20,9 @@ coefficient vector, which holds for the cyclic/negacyclic rings `X^n ∓ 1` of [
 Phrasing this for an arbitrary `Φ` would therefore be unsound.
 
 This is one of the two unproven lemmas for the Greyhound [NS24] / Hachi [NOZ26]
-weak-binding argument. For the *cyclic* ring `X^n − 1`, Micciancio proves the analogous
-convolution-norm bounds `‖f ⊗ g‖∞ ≤ ‖f‖₂·‖g‖₂` and `‖f ⊗ g‖∞ ≤ ‖f‖₁·‖g‖∞`
-([Mic07, ineqs. (2.6)–(2.7)]). The `ℓ₂` bound `‖f·g‖₂ ≤ ‖f‖₁·‖g‖₂` proved here is the same
-discrete Young / Cauchy–Schwarz convolution inequality, adapted sign-invariantly (via
-`natAbs`) to the *negacyclic* ring `X^n + 1`; minimality of the centered representative
-supplies the per-coefficient bound.
+weak-binding argument. The paper proof is in [Mic07, Lemma 2]: discrete Cauchy–Schwarz over
+the negacyclic convolution, together with minimality of the centered representative, gives the
+product norm inequality `‖fg‖ ≤ ‖f‖₁·‖g‖`.
 
 ## References
 

@@ -1,36 +1,15 @@
-# Additions to VCV-io not yet in the pinned dependency
+# Additions to VCVio not yet in the pinned dependency
 
-This directory mirrors VCV-io's module structure (`OracleComp/`, `EvalDist/`,
-`ToMathlib/`, ...). Each file holds `simulateQ` / `OracleComp` / distribution
-lemmas that ArkLib needs but that the currently-pinned VCVio commit predates,
-plus ArkLib-local additions that are candidates for upstreaming.
+This is a collection of `simulateQ` / `OracleComp` lemmas that ArkLib needs but
+that the currently-pinned VCVio commit predates (ArkLib pins VCVio ~41 commits
+behind upstream `master`, and bumping is parked alongside the Lean-toolchain
+bump).
 
-Workflow: prefer landing general statements upstream in VCV-io under the same
-names and the mirrored path; on the next VCVio bump, delete the corresponding
-declaration here and let references resolve to the upstream version.
+Each lemma here is staged so it can be **deleted wholesale** once the VCVio
+dependency is bumped: prefer landing the general statements upstream in
+`~/VCV-io/` under the same names, then remove the corresponding declaration
+here and let references resolve to the upstream version.
 
-## Staging state (2026-06-12)
-
-Everything generic in this directory is staged on the VCV-io branch
-`feat/simulateq-routing-lemmas` (commits `c8e953c2` + `a1e79b1b` + `01ff338f`,
-PR pending). **At the first VCVio bump past that branch's merge, delete the
-mirrored declarations here** — they were verified to be same-name drop-ins
-(some upstream versions are *generalized*: `ProbComp` → generic monad,
-`StateT σ ProbComp` → lawful target; all unify at ArkLib's instantiations).
-Before deleting, confirm the bump actually carries them.
-
-Three local names resolve to pre-existing upstream lemmas instead — at
-deletion time, **rename call sites**:
-
-| ArkLib-local name | upstream replacement |
-|---|---|
-| `OptionT.failure_bind` | `failure_bind` (Batteries, `@[simp]`) |
-| `StateT.run'_map_comm` | `StateT.run'_map'` (note: arg order differs) |
-| `OracleComp.bind_liftComp_map` | `bind_map_left` (Mathlib) |
-
-**Not staged (genuinely ArkLib-specific, keep):**
-`OracleComp/RbrGame.lean` — references ArkLib's `ProtocolSpec`
-(challenge-query resolution + the rbr/KS game master mixture lemmas).
-
-History note: `simulateQ_list_forIn` was staged here and has been deleted —
-the VCVio pin (`5f7707fb`, Lean 4.30 bump) now contains it upstream.
+- `SimulateQ.lean` — `simulateQ`-distributivity simp lemmas (`forIn`, …) used by
+  the toy-problem / IOR completeness proofs. `simulateQ_list_forIn` is already
+  upstreamed to VCVio under the same name.

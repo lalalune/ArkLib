@@ -40,18 +40,6 @@ Outputs:
 The new instance lies in `R̃¹_{C,δ}` iff the original lay in
 `R̃²_{C,δ}` (up to the soundness error of L6.10).
 
-## Alphabet restriction (`s = 1`)
-
-As in `Spec/General.lean`: the paper's inputs are `f : [n] → F^s` for a
-folding parameter `s` (the §6.3 tables sweep `s = 2^0, …, 2^12`), while
-this formalization fixes `s = 1` (words `ι → F`). This is a genuine
-scope restriction — reindexing `ι := [n] × [s]` does not recover the
-general case because the relative Hamming metric over the alphabet
-`F^s` differs from the metric over `F` on the flattened index set. The
-§6.3 `s`-sweep needs the `F^s` generalization (Phase-5 `Impl/FRS`); the
-`s = 2^0` table rows keep the current form non-vacuous for the prize
-regime.
-
 ## References
 
 * [Arnon, G., Boneh, D., Fenzi, G., *Open Problems in List Decoding and
@@ -69,7 +57,7 @@ open ToyProblem.Spec (Statement OracleStatement Witness)
 
 /-! ### Output types and the output relation
 
-These need only `[Fintype ι]` (for `relaxedRelationFor`'s `Fintype.card ι`
+These need only `[Fintype ι]` (for `relaxedRelation`'s `Fintype.card ι`
 call) and `[Field F]`. The heavier `[DecidableEq ι] [Fintype F]
 [DecidableEq F]` instances come in below for the protocol-object
 definitions. -/
@@ -128,10 +116,6 @@ instance : ∀ j, OracleInterface ((pSpec (F := F)).Challenge j) :=
 
 instance [SampleableType F] : ∀ j, SampleableType ((pSpec (F := F)).Challenge j)
   | ⟨0, _⟩ => (inferInstance : SampleableType F)
-
-instance : ProtocolSpec.VerifierFirst (pSpec (F := F)) := ⟨rfl⟩
-
-instance : ProtocolSpec.VerifierOnly (pSpec (F := F)) := ⟨⟩
 
 /-- Honest prover for Construction 6.9. After receiving `γ`, sets the
 new witness `M_new := M₀ + γ·M₁` and outputs the reduced instance.
@@ -202,108 +186,20 @@ body's `OracleComp`.
 
 There is therefore no way, within the current framework, to declare
 an output oracle whose contents are a `γ`-dependent linear combination
-of the inputs. The concrete prerequisite is **`simOStmt`-based virtual
-output oracles**: a refactor sketched in
+of the inputs. A `simOStmt`-based refactor is sketched in
 [`OracleReduction/Basic.lean`](../../OracleReduction/Basic.lean) at
-lines 278 and 293 (`simOStmt : QueryImpl [OStmtOut]ₒ
-(OracleComp ([OStmtIn]ₒ + [pSpec.Message]ₒ))`), under which the output
-oracle `f_new` would be *simulated* by querying `f₁, f₂` and combining.
-Once that lands, a C6.9 oracle flavour can be added back here.
+lines 278 and 293; once that lands, a C6.9 oracle flavour can be
+added back here.
 
 Until then, the bundled-input non-oracle `reduction` above captures
-the full protocol semantics, and C6.9 as formalized is sound for the
-**standalone** statements L6.10 (`simplifiedIOR_knowledgeSound`), L6.12
-and L6.13 (`Leaderboard.lean`) — but it is **not composable as an IOR**:
-sequential composition with a downstream oracle reduction (which would
-consume `f_new` as an input *oracle*) requires the oracle flavour, hence
-the `simOStmt` refactor. Downstream IRS instantiations
-(`ToyProblem/Impl/IRS.lean :: simplifiedReductionIRS`) consume the
-bundled `reduction` directly and are unaffected. -/
+the full protocol semantics; downstream IRS instantiations
+(`ToyProblem/Impl/IRS.lean :: simplifiedReductionIRS`) consume it
+directly. -/
 
-/-! ### Lemma 6.10 assembly — γ-round bound and game-shape reduction.
-
-The L6.10 game is the single-round analogue of the L6.8 γ-round
-(`Spec/General.lean :: gamma_round_game_bound`): the extractor is the same
-classical choice `Spec.extractZero`, and the mathematical content is the same
-`ToyProblem.gamma_transition_prob_le`. What is new is the game-shape
-reduction: the plain knowledge-soundness game wraps the challenge draw inside
-`Reduction.runWithLog`, so we peel the logging (the extractor here ignores
-the query logs) and the always-accepting pure verifier to reach the
-challenge-first shape consumed by
-`ProtocolSpec.probEvent_optionT_simulateQ_addLift_getChallenge_bind_some_le`. -/
-
-omit [DecidableEq ι] in
-/-- The L6.10 γ-round bound ([ABF26] §6.4, via
-`ToyProblem.gamma_transition_prob_le`): if the choice extractor fails on
-`stmtIn` then no `R̃²` witness exists, and the probability over a uniform `γ`
-that the folded instance has an `R̃¹` witness is at most
-`ε_mca + |Λ(C^{≡2}, δ)| / |F|`. Stated in the reduced form of the L6.10 game
-event so the master lemma's challenge-only hypothesis can consume it. -/
-private lemma gamma_game_bound [SampleableType F] [Nonempty ι]
-    (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) →ₗ[F] (ι → F))
-    (hinj : Function.Injective encode)
-    (hC : Set.range encode = C)
-    (hδ_pos : 0 < δ) (hδ_lt : δ < (minRelHammingDistCode C : ℝ≥0))
-    (stmtIn : Statement (F := F) k × (∀ i, OracleStatement ι F i)) :
-    Pr[fun γ : F ↦
-        (stmtIn, Spec.extractZero k (encode : (Fin k → F) → (ι → F)) δ stmtIn) ∉
-            Spec.outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ ∧
-          ∃ m : Fin k → F,
-            (∑ j, m j * stmtIn.1.1 j = stmtIn.1.2.1 + γ * stmtIn.1.2.2) ∧
-            ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
-              ∀ j ∈ S, stmtIn.2 0 j + γ * stmtIn.2 1 j = encode m j
-      | $ᵗ F] ≤
-      (((epsMCA (F := F) (A := F) C δ).toNNReal +
-        ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-          / (Fintype.card F : ℝ≥0) : ℝ≥0) : ℝ≥0∞) := by
-  classical
-  rw [probEvent_uniformSample_eq_prob_uniformOfFintype]
-  by_cases hw : ∃ M,
-      (stmtIn, M) ∈ Spec.outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ
-  · -- The choice extractor succeeds, so the event is empty.
-    refine le_trans (le_of_eq ?_) zero_le'
-    rw [prob_tsum_form_singleton]
-    have hnot : ∀ γ : F, ¬ (
-        (stmtIn, Spec.extractZero k (encode : (Fin k → F) → (ι → F)) δ stmtIn) ∉
-            Spec.outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ ∧
-          ∃ m : Fin k → F,
-            (∑ j, m j * stmtIn.1.1 j = stmtIn.1.2.1 + γ * stmtIn.1.2.2) ∧
-            ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
-              ∀ j ∈ S, stmtIn.2 0 j + γ * stmtIn.2 1 j = encode m j) :=
-      fun _ h ↦ h.1 (Spec.extractZero_mem k hw)
-    simp [hnot]
-  · refine le_trans (Pr_le_Pr_of_implies _ _
-      (fun γ ↦ ∃ m : Fin k → F,
-        (∑ j, m j * stmtIn.1.1 j = stmtIn.1.2.1 + γ * stmtIn.1.2.2) ∧
-        ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
-          ∀ j ∈ S, stmtIn.2 0 j + γ * stmtIn.2 1 j = encode m j) ?_) ?_
-    · rintro γ ⟨-, hm⟩
-      exact hm
-    · have hNoWit : ¬ ∃ M : Fin 2 → (Fin k → F),
-          (∀ i : Fin 2, ∑ j, M i j * stmtIn.1.1 j = ![stmtIn.1.2.1, stmtIn.1.2.2] i) ∧
-          ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
-            ∀ i : Fin 2, ∀ j ∈ S, ![stmtIn.2 0, stmtIn.2 1] i j = encode (M i) j := by
-        rintro ⟨M, h1, S, h2, h3⟩
-        refine hw ⟨M, h1, S, h2, fun i j hj ↦ ?_⟩
-        fin_cases i
-        · simpa using h3 0 j hj
-        · simpa using h3 1 j hj
-      refine le_trans (gamma_transition_prob_le C δ encode hinj hC hδ_pos hδ_lt
-        stmtIn.1.1 stmtIn.1.2.1 stmtIn.1.2.2 (stmtIn.2 0) (stmtIn.2 1) hNoWit)
-        (le_of_eq ?_)
-      rw [ENNReal.coe_add, ENNReal.coe_toNNReal (Spec.epsMCA_ne_top C δ),
-        ENNReal.coe_div (Nat.cast_ne_zero.mpr Fintype.card_ne_zero),
-        ENNReal.coe_natCast, ENNReal.coe_natCast]
-
-omit [DecidableEq ι] in
 /-- **Lemma 6.10 of [ABF26]** (knowledge soundness of Construction 6.9).
 
-For any `δ ∈ (0, δ_min(C))` and fixed injective linear encoder with
-range `C` (injectivity is implicit in the paper's encoding map and
-load-bearing for the extractor's per-list-pair counting),
-the simplified IOR has knowledge soundness (paper Def A.5) from
-`R̃²_{C,δ}` to `R̃¹_{C,δ}` with error
+For any `δ ∈ (0, δ_min(C))`, the simplified IOR has knowledge soundness
+(paper Def A.5) from `R̃²_{C,δ}` to `R̃¹_{C,δ}` with error
 
   `ε_mca(C, δ) + |Λ(C^{≡2}, δ)| / |F|`.
 
@@ -330,6 +226,7 @@ theorem simplifiedIOR_knowledgeSound
       (ToyProblem.Spec.toyStmtOf (ι := ι) (F := F) (k := k))
       (ToyProblem.Spec.toyAccepts (ι := ι) (F := F) (k := k) C δ decode) :=
   ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding C δ decode
+
 
 end Protocol
 

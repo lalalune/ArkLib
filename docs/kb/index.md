@@ -9,6 +9,12 @@ This is the main catalog for ArkLib's knowledge base.
 - [`_generated/lean-citations.json`](_generated/lean-citations.json) - generated map from
   `ArkLib/**/*.lean` to cited BibTeX keys.
 
+## Active delta* Notes
+
+- [`deltastar-powerword-zero-sum-law-2026-06-13.md`](deltastar-powerword-zero-sum-law-2026-06-13.md)
+  - all-`k` power-word exact list identity, ten connections to #389/#371, and the
+    next symmetric-function fiber targets.
+
 ## Paper Pages
 
 - [`papers/ACFY24.md`](papers/ACFY24.md) - WHIR ePrint paper and its ArkLib touchpoints in

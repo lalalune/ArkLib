@@ -75,10 +75,7 @@ end OracleProver
 
 namespace Extractor
 
-/-- A straightline extractor for state-restoration.
-
-The extractor is partial: failure to output a witness must count as extraction failure in the
-knowledge-soundness game whenever the prover convinces the verifier. -/
+/-- A straightline extractor for state-restoration. -/
 def StateRestoration (oSpec : OracleSpec ι)
     (StmtIn WitIn WitOut : Type) {n : ℕ} (pSpec : ProtocolSpec n) :=
   StmtIn → -- input statement
@@ -86,7 +83,7 @@ def StateRestoration (oSpec : OracleSpec ι)
   pSpec.FullTranscript → -- transcript
   QueryLog (oSpec + (srChallengeOracle StmtIn pSpec)) → -- prover's query log
   QueryLog oSpec → -- verifier's query log
-  OptionT (OracleComp oSpec) WitIn -- an oracle computation that outputs an input witness
+  OracleComp oSpec WitIn -- an oracle computation that outputs an input witness
 
 end Extractor
 

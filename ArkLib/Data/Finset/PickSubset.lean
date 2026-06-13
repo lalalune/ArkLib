@@ -9,7 +9,7 @@ import Mathlib.Data.Finset.Lattice.Basic
 import Mathlib.Data.Finset.SDiff
 import Mathlib.Data.Finset.Card
 import Mathlib.Tactic.Cases
-import Mathlib.Tactic.LinearCombinationPrime
+import Mathlib.Tactic.LinearCombination'
 
 /-!
   This module provides tools for picking a

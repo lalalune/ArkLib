@@ -178,7 +178,7 @@ lemma support_liftM (m : Type _ → Type _) [Monad m] [HasEvalSet m]
   OptionT.support_liftM mx
 
 @[simp]
-lemma support_mk (m : Type _ → Type _) [Monad m] [MonadLiftT m SetM]
+lemma support_mk (m : Type _ → Type _) [Monad m] [HasEvalSet m]
     {α} (mx : m (Option α)) :
     support (OptionT.mk mx) = {x | some x ∈ support mx} := by
   -- `OptionT.mk` packages an `m (Option α)` into `OptionT m α`; the standalone instance gives

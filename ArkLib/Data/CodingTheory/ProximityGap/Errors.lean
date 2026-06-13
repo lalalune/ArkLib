@@ -1921,40 +1921,6 @@ theorem δ_ε_correlatedAgreementAffineSpaces_iff_epsCA_affineSpaces_le {k : ℕ
     · rw [if_neg hjp] at h_term_le
       exact absurd h_pr (not_lt.mpr h_term_le)
 
-
-/-- **ABF26 `lemma:interleaving-mca` [Jo26].** The MCA error of an interleaved code is
-*exactly* the MCA error of the base code: for any `F`-additive code `C`, `t ∈ ℕ` and
-`δ ∈ (0, 1)`,
-
-  `ε_mca(C^≡t, δ) = ε_mca(C, δ)` .
-
-The canonical ABF26 `.tex` (around lines 1718–1724) states this as a theorem of [Jo26]
-("The following theorem, which resolves a previous open question in this document,
-shows that the MCA error of an interleaved code is exactly the MCA error of the base
-code"). It **supersedes** the proven inequality `epsMCA_interleaved_le`
-(`ε_mca(C^≡t, δ) ≤ t · ε_mca(C, δ)`, the paper's earlier L4.7) above: that lemma stays
-because it is true and machine-checked in-tree, but this equality is strictly stronger
-in both directions (no factor `t`, plus the `≥` direction) and resolves what was
-previously an open question in the survey.
-
-**Guards (2026-06-10 re-review).** `0 < t`: at `t = 0` the `Fin 0`-interleaved
-alphabet is a singleton, every stack vacuously agrees, and the LHS is provably
-`0` (the proven `epsMCA_interleaved_le` already gives `≤ 0·ε`) while the RHS can
-be positive — the unguarded equality was refutable. `δ ∈ (0, 1)`: the paper's
-Johnson functions/`ε` quantities are defined on `(0,1)` (`.tex` 1346) and [Jo26]
-does not cover the endpoints.
-
-Admitted as an external result.
-
-TODO(bib): `[Jo26]` (Sunghyeon Jo, *Interleaving Stability for Mutual Correlated
-Agreement and Curve Decodability*, ePrint 2026/891) has no entry in
-`blueprint/src/references.bib` yet; add it during the references.bib cleanup pass. -/
-theorem epsMCA_interleaved_eq (C : Submodule F (ι → A)) (t : ℕ) (δ : ℝ≥0)
-    (_ht : 0 < t) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1) :
-    epsMCA (F := F) (A := Fin t → A) ((C : Set (ι → A))^⋈ (Fin t)) δ =
-    epsMCA (F := F) (A := A) (C : Set (ι → A)) δ := by
-  sorry -- ABF26-L4.7 (equality form); external admit [Jo26].
-
 end
 
 end ProximityGap

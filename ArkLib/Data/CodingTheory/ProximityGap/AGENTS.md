@@ -103,9 +103,6 @@ threshold constant. The δ* core and B4 are blocked — only touch them when new
 | Character-sum kernel closed at √q both sides (Parseval avg + completion worst case) | `SubgroupGaussSum{SecondMoment,WorstCase}.lean` |
 | Quartet-tower law (census 4-adic recursion); strata classifications + mod-p transfers | `QuartetTowerLaw.lean`, `SlantedTransferThreshold.lean` |
 | Tower monotonicity (ε_mca monotone up the 2-adic tower), crossing pin, Sperner ceiling | `TowerMonotonicity{,RS}.lean`, `CrossingPin.lean`, `SpernerCeiling.lean` |
-| **Universal radius-free ceiling**: ε_mca(RS_k, δ) ≤ C(n,k+1)/q at EVERY radius (every stack; sharp); agreement-indexed refinement #bad ≤ C(n,k+1) − C(a,k+1) for any codeword agreement a; WB-3b (codeword directions: 0 bad) radius-free | `UniversalRatioInjection.lean` |
-| Strongly-far subset law #bad·C(n−w,k+1) ≤ C(n,k+1) (radius-indexed, dominates the ordered law); boundary ratio-set identity badSet = ratioSet | `StronglyFarSubsetLaw.lean` |
-| Boundary value attained: far class reaches ε_mca = C(n,k+1)/q at the boundary slice (probe `probe_far_subset_law.py`: 56 = C(8,3) at p=12289, n=8, k=2, δ=5/8 — beyond Johnson; near classes strictly below via the agreement-indexed ceiling) | `UniversalRatioInjection.lean` + probe |
 
 **The open core — four equivalent faces (pick your attack surface):**
 1. **CellPackageSupply** (`Hab25JohnsonPackageSupply.lean`): the BCIKS20 §5 per-cell

@@ -38,9 +38,6 @@ variable {ι : Type} {oSpec : OracleSpec ι}
   -- Note: `σ` may depend on the previous data, like `StmtIn`, `pSpec`, and so on
   {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
 
-local instance {spec : OracleSpec ι} [spec.Fintype] [spec.Inhabited] : IsUniformSpec spec :=
-  IsUniformSpec.ofFintypeInhabited spec
-
 /-
 Future work: the "right" factoring for the security definitions are the following:
 
@@ -352,24 +349,10 @@ theorem soundness.mono_languages
   - there exists a straightline extractor `E`, such that
   - for all input statement `stmtIn`, witness `witIn`, and (malicious) prover `prover`,
   - if the execution with the honest verifier results in a pair `(stmtOut, witOut)`,
+  - and the extractor produces some `witIn'`,
 
-  then the probability that `(stmtOut, witOut)` is valid and yet the extractor fails to produce
-  a witness `witIn'` such that `(stmtIn, witIn')` is valid is at most `knowledgeError`.
-
-  Implementation note: the extractor returns an `OptionT` computation, so it may fail. We run
-  this `OptionT` layer explicitly (via `.run`) and keep the resulting `Option WitIn` in the
-  game's output, so that extractor failure counts as a "bad" event (the adversary wins).
-
-  This is essential for the definition to be meaningful: if instead the extractor were bound
-  inside the surrounding `OptionT` computation, its failure would contribute to the failure
-  mass of the whole game, which `probEvent` excludes (it only measures `some` outputs). The
-  always-failing extractor `fun _ _ _ _ _ => failure` would then drive the game's event
-  probability to `0`, vacuously discharging knowledge soundness (at error `0`!) for any
-  verifier and any relations.
-
-  In contrast, failures of the reduction execution itself (e.g. the verifier aborting) are
-  still excluded from the event, matching the convention for (plain) soundness: a run in which
-  the verifier does not accept imposes no obligation on the extractor.
+  then the probability that `(stmtIn, witIn')` is not valid and yet `(stmtOut, witOut)` is valid
+  is at most `knowledgeError`.
 -/
 def knowledgeSoundness (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
     (verifier : Verifier oSpec StmtIn StmtOut pSpec) (knowledgeError : ℝ≥0) : Prop :=
@@ -382,12 +365,10 @@ def knowledgeSoundness (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut ×
     let exec := do
       let ⟨⟨⟨transcript, ⟨_, witOut⟩⟩, stmtOut⟩, proveQueryLog, verifyQueryLog⟩
         ← (Reduction.mk prover verifier).runWithLog stmtIn witIn
-      let extractedWitIn? ←
-        liftM (extractor stmtIn witOut transcript proveQueryLog.fst verifyQueryLog).run
-      return (stmtIn, extractedWitIn?, stmtOut, witOut)
-    Pr[fun ⟨stmtIn, extractedWitIn?, stmtOut, witOut⟩ =>
-        (∀ extractedWitIn ∈ extractedWitIn?, (stmtIn, extractedWitIn) ∉ relIn) ∧
-          (stmtOut, witOut) ∈ relOut
+      let extractedWitIn ← extractor stmtIn witOut transcript proveQueryLog.fst verifyQueryLog
+      return (stmtIn, extractedWitIn, stmtOut, witOut)
+    Pr[fun ⟨stmtIn, witIn, stmtOut, witOut⟩ =>
+        (stmtIn, witIn) ∉ relIn ∧ (stmtOut, witOut) ∈ relOut
       | OptionT.mk do (simulateQ pImpl exec.run).run' (← init)] ≤ knowledgeError
 
 /-- Type class for knowledge soundness for a verifier -/

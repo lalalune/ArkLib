@@ -23,7 +23,8 @@ Default checks (mirrors the CI gates so local == CI):
   - python3 ./scripts/axiom_audit.py                   (CI gate 3)
   - ./scripts/check-imports.sh
   - python3 ./scripts/check-docs-integrity.py
-  - python3 ./scripts/kb/lint.py
+  - python3 ./scripts/kb/check_generated.py
+  - python3 ./scripts/kb/lint.py --strict-cited-pages
 
 Optional checks:
   --lint   Run ./scripts/lint-style.sh
@@ -98,7 +99,8 @@ python3 ./scripts/check-docs-integrity.py
 
 echo ""
 echo "# Checking knowledge base"
-python3 ./scripts/kb/lint.py
+python3 ./scripts/kb/check_generated.py
+python3 ./scripts/kb/lint.py --strict-cited-pages
 
 if (( run_lint )); then
   echo ""

@@ -26,7 +26,6 @@ For substantial contributions, discuss the blueprint-first workflow described in
 2. Give the Lean file a `## References` section in its module docstring.
 3. Add the matching BibTeX entry to `blueprint/src/references.bib`.
 4. For durable paper context, create or update `docs/kb/papers/KEY.md` for the same citation key.
-   Leave stub-only paper pages and source metadata to the main-branch KB workflow.
 5. Prefer public paper titles, venues, DOIs, or URLs in shared docs rather than pointing readers
    to private or local notes.
 
@@ -36,7 +35,6 @@ For substantial contributions, discuss the blueprint-first workflow described in
 - `docs/kb/papers/KEY.md` is the preferred repository-local landing page for a cited paper key.
 - `docs/kb/sources/KEY/metadata.yml` records source provenance and optional local artifacts.
 - `docs/kb/_generated/lean-citations.json` is the generated map from Lean files to cited keys.
-  Do not commit `_generated` changes from feature PRs.
 
 ## Build And Publish Checks
 

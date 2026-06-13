@@ -18,8 +18,7 @@ Agreement*, 2026).
 
 The existing `JohnsonBound.J q δ : ℝ` matches the paper's `J_q(δ)`. This file adds:
 
-- `JohnsonBound.Jqℓ q ℓ δ` — paper's `J_{q,ℓ}(δ)`, with the additional `(ℓ-1)/ℓ` factor
-  (NB: deviates from the `.tex`, which prints a wrong-direction `ℓ/(ℓ-1)` — see `Jqℓ`)
+- `JohnsonBound.Jqℓ q ℓ δ` — paper's `J_{q,ℓ}(δ)`, with the additional `ℓ/(ℓ-1)` factor
   inside the square root.
 - `JohnsonBound.Jcap δ` — paper's asymptotic Johnson bound `J(δ) := 1 - √(1 - δ)`.
 
@@ -56,26 +55,15 @@ namespace JohnsonBound
 open Real
 open Finset
 
-/-- **ABF26 Definition 3.1, `J_{q,ℓ}` (with a corrected list factor).** The q-ary
-ℓ-radius Johnson function:
+/-- **ABF26 Definition 3.1, `J_{q,ℓ}`.** Paper's q-ary ℓ-radius Johnson function:
 
-  `J_{q,ℓ}(δ) := (1 - 1/q) · (1 - √(1 - q/(q-1) · (ℓ-1)/ℓ · δ))`
-
-**Deviation from the canonical `.tex` (typo there, flagged upstream 2026-06-10).**
-The `.tex` (~line 1347) prints the list factor as `ℓ/(ℓ-1)`. That direction is
-wrong: a *smaller* list budget `ℓ` must give a *smaller* radius, but `ℓ/(ℓ-1)`
-is decreasing in `ℓ`, and with it Theorem 3.2 is falsified by a concrete
-counterexample — `C = (Fin 2)^(Fin 8)` (all of `𝔽₂⁸`, `δ_min = 1/8`), `ℓ = 2`:
-the printed radius is `≈ 0.146`, i.e. Hamming radius 1, where `Λ = 9 > 2`.
-The classical list-`ℓ` Johnson factor is `(ℓ-1)/ℓ` (= `1 - 1/ℓ`, cf. [GRS25]);
-both factors tend to `1`, so the paper's `J_q = lim_{ℓ→∞} J_{q,ℓ}` is
-unaffected.
+  `J_{q,ℓ}(δ) := (1 - 1/q) · (1 - √(1 - q/(q-1) · ℓ/(ℓ-1) · δ))`
 
 For `ℓ = 2` this is the binary Johnson radius; as `ℓ → ∞`, `Jqℓ q ℓ δ → J q δ`
 (the existing `JohnsonBound.J`). The `ℓ` parameter is the target list size. -/
 noncomputable def Jqℓ (q ℓ : ℚ) (δ : ℚ) : ℝ :=
   let frac : ℚ := q / (q - 1)
-  let lFac : ℚ := (ℓ - 1) / ℓ
+  let lFac : ℚ := ℓ / (ℓ - 1)
   ((1 - 1 / q) : ℚ) * (1 - √(1 - frac * lFac * δ))
 
 /-- Reciprocal finite-list Johnson radius reached by the current quadratic-cap

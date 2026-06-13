@@ -182,23 +182,6 @@ lemma exists_closeFinset_card_gt_of_not_Lambda_le_natCast [Fintype F]
     ∃ f : ι → F, ℓ < (closeCodewordsRelFinset C f δ).card := by
   exact exists_closeFinset_card_gt_of_natCast_lt_Lambda (not_le.mp h)
 
-/-- `|Λ(C, δ)| ≤ |F^ι|`: each point list is a set of words, so the maximised
-list size is bounded by the total number of words. Stated with `Nat.card`
-under `[Finite F]` (no `Fintype (ι → F)` instance needed). -/
-lemma Lambda_le_card {C : Code ι F} [Finite F] (δ : ℝ) :
-    Lambda C δ ≤ (Nat.card (ι → F) : ℕ∞) := by
-  refine iSup_le fun f => ?_
-  exact_mod_cast (Set.ncard_le_ncard (Set.subset_univ _) Set.finite_univ).trans_eq
-    (Set.ncard_univ _)
-
-/-- `|Λ(C, δ)|` is **finite** over a finite alphabet. This is what makes the
-downstream `(Lambda C δ).toNat` occurrences (e.g. in the ABF26 §6 soundness
-error terms) faithful: `ENat.toNat` only collapses at `⊤` (`⊤.toNat = 0`),
-which this lemma rules out. -/
-lemma Lambda_ne_top {C : Code ι F} [Finite F] (δ : ℝ) :
-    Lambda C δ ≠ ⊤ :=
-  ne_top_of_le_ne_top (by simp) (Lambda_le_card δ)
-
 end Lambda
 
 end ListDecodable
