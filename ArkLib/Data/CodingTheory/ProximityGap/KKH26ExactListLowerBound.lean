@@ -231,6 +231,75 @@ lemma antiSet_injOn (hs : s = 2 * half) (hω : orderOf ω = s) (hωhalf : ω ^ h
     · exact absurd (mem_range.mp (hD₁ h)) hj
     · exact absurd (mem_range.mp (hD₂ h)) hj
 
+/-! ## The odd antipodal family `T_D = {1} ∪ {±ω^j : j ∈ D}` (singleton + pairs) -/
+
+/-- The odd antipodal `r`-set: the unit `1 = ω^0` plus `(r−1)/2` antipodal pairs. -/
+def antiSetOdd (ω : ZMod p) (D : Finset ℕ) : Finset (ZMod p) := insert 1 (antiSet ω D)
+
+/-- `1 = ω^0 ∉ antiSet ω D` when `0 ∉ D` — the singleton is genuinely new. -/
+lemma one_not_mem_antiSet (hs : s = 2 * half) (hhalf : 1 ≤ half) (hω : orderOf ω = s)
+    (hωhalf : ω ^ half = -1) {D : Finset ℕ} (hD : D ⊆ range half) (h0 : 0 ∉ D) :
+    (1 : ZMod p) ∉ antiSet ω D := by
+  have h1 : (1 : ZMod p) = ω ^ 0 := (pow_zero ω).symm
+  rw [h1, omega_pow_mem_antiSet hs hω hωhalf hD (by omega)]
+  exact h0
+
+lemma antiSetOdd_card (hs : s = 2 * half) (hhalf : 1 ≤ half) (hω : orderOf ω = s)
+    (hωhalf : ω ^ half = -1) {D : Finset ℕ} (hD : D ⊆ range half) (h0 : 0 ∉ D) :
+    (antiSetOdd ω D).card = 2 * D.card + 1 := by
+  rw [antiSetOdd, Finset.card_insert_of_notMem
+    (one_not_mem_antiSet hs hhalf hω hωhalf hD h0), antiSet_card hs hω hωhalf hD]
+
+lemma antiSetOdd_sum (hs : s = 2 * half) (hhalf : 1 ≤ half) (hω : orderOf ω = s)
+    (hωhalf : ω ^ half = -1) {D : Finset ℕ} (hD : D ⊆ range half) (h0 : 0 ∉ D) :
+    ∑ x ∈ antiSetOdd ω D, x = 1 := by
+  rw [antiSetOdd, Finset.sum_insert (one_not_mem_antiSet hs hhalf hω hωhalf hD h0),
+    antiSet_sum hs hω hωhalf hD, add_zero]
+
+lemma antiSetOdd_subset_G (hs : s = 2 * half) (hhalf : 1 ≤ half) (hω : orderOf ω = s)
+    (hωhalf : ω ^ half = -1) {D : Finset ℕ} (hD : D ⊆ range half) :
+    antiSetOdd ω D ⊆ (range s).image (fun i => ω ^ i) := by
+  rw [antiSetOdd]
+  refine Finset.insert_subset ?_ (antiSet_subset_G hs hωhalf hD)
+  exact Finset.mem_image.mpr ⟨0, mem_range.mpr (by omega), pow_zero ω⟩
+
+/-- `D ↦ T_D^odd` is injective on `(r−1)/2`-subsets of the punctured half-system. -/
+lemma antiSetOdd_injOn (hs : s = 2 * half) (hhalf : 1 ≤ half) (hω : orderOf ω = s)
+    (hωhalf : ω ^ half = -1) :
+    Set.InjOn (antiSetOdd ω) (((range half).erase 0).powerset : Set (Finset ℕ)) := by
+  intro D₁ hD₁ D₂ hD₂ heq
+  rw [Finset.coe_powerset] at hD₁ hD₂
+  simp only [Set.mem_preimage, Set.mem_powerset_iff, Finset.coe_subset] at hD₁ hD₂
+  have hsub₁ : D₁ ⊆ range half := fun x hx => Finset.mem_of_mem_erase (hD₁ hx)
+  have hsub₂ : D₂ ⊆ range half := fun x hx => Finset.mem_of_mem_erase (hD₂ hx)
+  ext j
+  by_cases hj : j < half
+  · by_cases hj0 : j = 0
+    · subst hj0
+      constructor <;> intro h
+      · exact absurd rfl (Finset.mem_erase.mp (hD₁ h)).1
+      · exact absurd rfl (Finset.mem_erase.mp (hD₂ h)).1
+    · -- j ≥ 1: ω^j ≠ 1, so ω^j ∈ antiSetOdd ↔ ω^j ∈ antiSet ↔ j ∈ D
+      have hne1 : ω ^ j ≠ 1 := by
+        rw [show (1 : ZMod p) = ω ^ 0 from (pow_zero ω).symm]
+        intro hc
+        exact hj0 (omega_pow_injOn hω (by simp only [Set.mem_Iio]; omega)
+          (by simp only [Set.mem_Iio]; omega) hc)
+      have hmemOdd : ∀ {D : Finset ℕ}, D ⊆ range half →
+          (ω ^ j ∈ antiSetOdd ω D ↔ j ∈ D) := by
+        intro D hDsub
+        rw [antiSetOdd, Finset.mem_insert]
+        rw [omega_pow_mem_antiSet hs hω hωhalf hDsub hj]
+        constructor
+        · rintro (h | h)
+          · exact absurd h hne1
+          · exact h
+        · exact fun h => Or.inr h
+      rw [← hmemOdd hsub₁, ← hmemOdd hsub₂, heq]
+  · constructor <;> intro h
+    · exact absurd (mem_range.mp (hsub₁ h)) hj
+    · exact absurd (mem_range.mp (hsub₂ h)) hj
+
 /-! ## The evaluation-domain embedding and the index-level fibre count -/
 
 /-- The smooth evaluation domain `i ↦ g^i : Fin n ↪ F_p` when `g` has order `n`. -/
@@ -640,6 +709,85 @@ theorem equalSum_family_list_card_ge {μ m r : ℕ} (hμ : 1 ≤ μ) (hm : 1 ≤
     simp only [dif_pos hT₁, dif_pos hT₂] at heq
     exact hinj T₁ hT₁ T₂ hT₂ heq
 
+/-! ## The closed-form lower bounds (even and odd `r`), via the generic lemma -/
+
+open Classical in
+/-- **EXACT list lower bound, EVEN `r`** (re-derived from the generic lemma via the
+antipodal family, `σ = 0`): the monomial word `x^{rm}` has list `≥ C(2^{μ−1}, r/2)`. -/
+theorem monomial_list_card_ge_even {μ m r : ℕ} (hμ : 1 ≤ μ) (hm : 1 ≤ m) (hr2 : 2 ≤ r)
+    (hreven : r % 2 = 0) (hr : r ≤ 2 ^ (μ - 1)) {g : ZMod p} (hg : orderOf g = 2 ^ μ * m) :
+    (2 ^ (μ - 1)).choose (r / 2) ≤
+      (Finset.univ.filter (fun c : Fin (2 ^ μ * m) → ZMod p =>
+        c ∈ rsCode (domEmb hg) ((r - 2) * m + 1) ∧ r * m ≤ (Finset.univ.filter
+          (fun i => c i = (g ^ (i : ℕ)) ^ (r * m)
+            - (0 : ZMod p) * (g ^ (i : ℕ)) ^ ((r - 1) * m))).card)).card := by
+  have hs2 : (2 : ℕ) ^ μ = 2 * 2 ^ (μ - 1) := by rw [← pow_succ']; congr 1; omega
+  have hω : orderOf (g ^ m) = 2 ^ μ := omega_orderOf hm hg
+  have hωhalf : (g ^ m) ^ (2 ^ (μ - 1)) = -1 := omega_pow_half hμ hm hg
+  set Fam := ((range (2 ^ (μ - 1))).powersetCard (r / 2)).image (antiSet (g ^ m)) with hFam
+  have hFamcard : Fam.card = (2 ^ (μ - 1)).choose (r / 2) := by
+    rw [hFam, Finset.card_image_of_injOn, Finset.card_powersetCard, Finset.card_range]
+    intro D₁ hD₁ D₂ hD₂ heq
+    exact antiSet_injOn hs2 hω hωhalf
+      (Finset.mem_coe.mpr (Finset.mem_powerset.mpr (Finset.mem_powersetCard.mp hD₁).1))
+      (Finset.mem_coe.mpr (Finset.mem_powerset.mpr (Finset.mem_powersetCard.mp hD₂).1)) heq
+  rw [← hFamcard]
+  refine equalSum_family_list_card_ge hμ hm hr2 hr hg 0 Fam ?_ ?_ ?_
+  · intro T hT
+    obtain ⟨D, hD, rfl⟩ := Finset.mem_image.mp hT
+    exact antiSet_subset_G hs2 hωhalf (Finset.mem_powersetCard.mp hD).1
+  · intro T hT
+    obtain ⟨D, hD, rfl⟩ := Finset.mem_image.mp hT
+    obtain ⟨hDsub, hDcard⟩ := Finset.mem_powersetCard.mp hD
+    rw [antiSet_card hs2 hω hωhalf hDsub, hDcard]; omega
+  · intro T hT
+    obtain ⟨D, hD, rfl⟩ := Finset.mem_image.mp hT
+    exact antiSet_sum hs2 hω hωhalf (Finset.mem_powersetCard.mp hD).1
+
+open Classical in
+/-- **EXACT list lower bound, ODD `r`** (the generic lemma via the singleton-plus-pairs
+family, `σ = 1`): the word `x^{rm} − x^{(r−1)m}` has list `≥ C(2^{μ−1}−1, (r−1)/2)`. -/
+theorem monomial_list_card_ge_odd {μ m r : ℕ} (hμ : 1 ≤ μ) (hm : 1 ≤ m) (hr2 : 2 ≤ r)
+    (hrodd : r % 2 = 1) (hr : r ≤ 2 ^ (μ - 1)) {g : ZMod p} (hg : orderOf g = 2 ^ μ * m) :
+    (2 ^ (μ - 1) - 1).choose (r / 2) ≤
+      (Finset.univ.filter (fun c : Fin (2 ^ μ * m) → ZMod p =>
+        c ∈ rsCode (domEmb hg) ((r - 2) * m + 1) ∧ r * m ≤ (Finset.univ.filter
+          (fun i => c i = (g ^ (i : ℕ)) ^ (r * m)
+            - (1 : ZMod p) * (g ^ (i : ℕ)) ^ ((r - 1) * m))).card)).card := by
+  have hhalf1 : (1 : ℕ) ≤ 2 ^ (μ - 1) := Nat.one_le_two_pow
+  have hs2 : (2 : ℕ) ^ μ = 2 * 2 ^ (μ - 1) := by rw [← pow_succ']; congr 1; omega
+  have hω : orderOf (g ^ m) = 2 ^ μ := omega_orderOf hm hg
+  have hωhalf : (g ^ m) ^ (2 ^ (μ - 1)) = -1 := omega_pow_half hμ hm hg
+  set E := (range (2 ^ (μ - 1))).erase 0 with hE
+  have hEcard : E.card = 2 ^ (μ - 1) - 1 := by
+    rw [hE, Finset.card_erase_of_mem (mem_range.mpr (by omega)), Finset.card_range]
+  set Fam := (E.powersetCard (r / 2)).image (antiSetOdd (g ^ m)) with hFam
+  have hFamcard : Fam.card = (2 ^ (μ - 1) - 1).choose (r / 2) := by
+    rw [hFam, Finset.card_image_of_injOn, Finset.card_powersetCard, hEcard]
+    intro D₁ hD₁ D₂ hD₂ heq
+    exact antiSetOdd_injOn hs2 hhalf1 hω hωhalf
+      (Finset.mem_coe.mpr (Finset.mem_powerset.mpr (Finset.mem_powersetCard.mp hD₁).1))
+      (Finset.mem_coe.mpr (Finset.mem_powerset.mpr (Finset.mem_powersetCard.mp hD₂).1)) heq
+  rw [← hFamcard]
+  refine equalSum_family_list_card_ge hμ hm hr2 hr hg 1 Fam ?_ ?_ ?_
+  · intro T hT
+    obtain ⟨D, hD, rfl⟩ := Finset.mem_image.mp hT
+    have hDsub : D ⊆ range (2 ^ (μ - 1)) := fun x hx =>
+      Finset.mem_of_mem_erase ((Finset.mem_powersetCard.mp hD).1 hx)
+    exact antiSetOdd_subset_G hs2 hhalf1 hω hωhalf hDsub
+  · intro T hT
+    obtain ⟨D, hD, rfl⟩ := Finset.mem_image.mp hT
+    obtain ⟨hDsub, hDcard⟩ := Finset.mem_powersetCard.mp hD
+    have hDsub' : D ⊆ range (2 ^ (μ - 1)) := fun x hx => Finset.mem_of_mem_erase (hDsub hx)
+    have hD0 : 0 ∉ D := fun hc => (Finset.mem_erase.mp (hDsub hc)).1 rfl
+    rw [antiSetOdd_card hs2 hhalf1 hω hωhalf hDsub' hD0, hDcard]; omega
+  · intro T hT
+    obtain ⟨D, hD, rfl⟩ := Finset.mem_image.mp hT
+    obtain ⟨hDsub, -⟩ := Finset.mem_powersetCard.mp hD
+    have hDsub' : D ⊆ range (2 ^ (μ - 1)) := fun x hx => Finset.mem_of_mem_erase (hDsub hx)
+    have hD0 : 0 ∉ D := fun hc => (Finset.mem_erase.mp (hDsub hc)).1 rfl
+    exact antiSetOdd_sum hs2 hhalf1 hω hωhalf hDsub' hD0
+
 end ArkLib.ProximityGap.KKH26
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -647,3 +795,4 @@ end ArkLib.ProximityGap.KKH26
 #print axioms ArkLib.ProximityGap.KKH26.index_fiber_count
 #print axioms ArkLib.ProximityGap.KKH26.monomial_list_card_ge
 #print axioms ArkLib.ProximityGap.KKH26.equalSum_family_list_card_ge
+#print axioms ArkLib.ProximityGap.KKH26.monomial_list_card_ge_odd
