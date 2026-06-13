@@ -1341,6 +1341,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop27
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop28
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop29
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop30
+import ArkLib.Data.CodingTheory.ProximityGap.StructuredSupplyViaCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop31
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop32
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop33
