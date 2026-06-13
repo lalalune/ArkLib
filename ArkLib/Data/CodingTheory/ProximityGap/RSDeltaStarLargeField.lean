@@ -79,9 +79,38 @@ theorem rsCode_mcaDeltaStar_le_of_boundary_bad (dom : Fin n ↪ F) {k : ℕ} (hk
   mcaDeltaStar_le_of_bad (F := F) (A := F) _ εstar
     (by rw [epsMCA_eq_boundary_choose_of_genericFar dom hk hlo hhi hsmall]; exact hε)
 
+/-- **THE BOUNDARY δ\* DICHOTOMY (headline form).** At the boundary radius the MCA value is the
+single exact constant `ε_mca = C(n,k+1)/|F|` (`epsMCA_eq_boundary_choose_of_genericFar`, attained
+under `C(n,k+1)² ≤ |F|`).  Whether `δ*` reaches the boundary radius is therefore decided entirely
+by comparing that one constant to `ε*`:
+
+* `C(n,k+1)/|F| ≤ ε*`  ⟹  the boundary radius is good, so `δ ≤ mcaDeltaStar`;
+* `ε* < C(n,k+1)/|F|`  ⟹  the boundary radius is bad, so `mcaDeltaStar ≤ δ`.
+
+Both directions route through the *same* exact equality — the boundary radius is the exact pivot,
+and `ε* ⋚ C(n,k+1)/|F|` is the whole story.  Unconditional; no sum-product / GKL24 residual. -/
+theorem rsCode_boundary_deltaStar_dichotomy (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hδ1 : δ ≤ 1)
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (hsmall : (n.choose (k + 1)) ^ 2 ≤ Fintype.card F)
+    (εstar : ℝ≥0∞) :
+    ((n.choose (k + 1) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ εstar →
+        δ ≤ mcaDeltaStar (F := F) (A := F)
+          ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) εstar)
+    ∧ (εstar < (n.choose (k + 1) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) →
+        mcaDeltaStar (F := F) (A := F)
+          ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) εstar ≤ δ) := by
+  have hEq := epsMCA_eq_boundary_choose_of_genericFar dom hk hlo hhi hsmall
+  refine ⟨fun hle => le_mcaDeltaStar_of_good (F := F) (A := F) _ εstar hδ1 ?_,
+          fun hlt => mcaDeltaStar_le_of_bad (F := F) (A := F) _ εstar ?_⟩
+  · rw [hEq]; exact hle
+  · rw [hEq]; exact hlt
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.rsCode_epsMCA_le_uniform
 #print axioms ProximityGap.Ownership.rsCode_mcaDeltaStar_ge_of_large_field
 #print axioms ProximityGap.Ownership.rsCode_mcaDeltaStar_le_of_boundary_bad
+#print axioms ProximityGap.Ownership.rsCode_boundary_deltaStar_dichotomy
