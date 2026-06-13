@@ -1459,6 +1459,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumLadderMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMarkov
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMarkov
