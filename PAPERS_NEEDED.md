@@ -73,3 +73,20 @@ Hab25 2025/1184, CS25 2025/2046, 2025/536, Thaler book). Nothing needed from the
 Only two paywalled rows possibly remain, both likely unneeded: GS-1999 (IEEE; Hab25 + on-disk
 treatments cover the construction) and de Bruijn 1953 (Indagationes; the in-tree two-prime
 classification was proven independently).
+
+## Prize-regime sub-Johnson list-decoding reading list (issue #389/#371, 2026-06-13)
+
+The deep-band MCA programme reduces (issue #389) to: bound the sub-Johnson
+list size of EXPLICIT smooth-domain (dyadic μ_{2^μ}) Reed–Solomon codes.
+Papers to obtain (none currently on disk — `~/papers/arklib/` is empty):
+
+| # | Paper | Identifier | Why |
+|---|---|---|---|
+| P1 | Arnon–Boneh–Fenzi, *Open Problems in List Decoding and Correlated Agreement* | IACR ePrint 2026/680 | THE prize paper; grand MCA + grand list-decoding challenges, the regime |
+| P2 | Ben-Sasson–Kopparty–Radhakrishnan, *Subspace Polynomials and List Decoding of RS* | FOCS 2006 / IEEE-IT 2010 | super-poly list just beyond Johnson on SUBSPACE eval sets — the additive analog of dyadic μ_{2^μ}; the explosion risk |
+| P3 | Brakensiek–Gopi–Makam, *Generic RS codes achieve list-decoding capacity* | STOC 2023 / arXiv 2206.05256 | RANDOM eval points → capacity (small lists); contrast with structured/dyadic |
+| P4 | Guruswami–Rudra, *Limits to List Decoding RS Codes* | IEEE-IT 2006 | list-size lower bounds; what structured RS can force |
+| P5 | Kopparty–Ron-Zewi–Saraf–Wootters, *Improved decoding of folded RS & multiplicity codes* | FOCS 2018 / arXiv 1805.01498 | capacity-achieving via folding = a multiplicative/Frobenius structure close to μ_n |
+
+Also re-check in-tree: ECCC TR25-169 (barrier), ePrint 2026/861 (action-orbit),
+2026/858 (threshold-halving) — listed above, may bear on the dyadic explosion.
