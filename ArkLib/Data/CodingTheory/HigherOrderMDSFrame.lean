@@ -15,9 +15,9 @@ A Reed–Solomon (or any MDS) generator presents its `n` columns as a **frame**
 `v : ι → V` in the `k`-dimensional message space `V` (for RS, `v ζ = (1,ζ,…,ζ^{k-1})`,
 the Vandermonde column).  For an index set `J`, `frameSpan K v J = span{v ζ : ζ ∈ J}`.
 Roth (2022) / Brakensiek–Gopi–Makam (2023): the code is **higher-order MDS of order
-`ℓ`** exactly when, for every `ℓ` index sets, the column-spans meet generically — i.e.
-`IsGenericInter` of the `frameSpan`s — with generic intersection dimension
-`max(0, Σ|Jᵢ| − (ℓ−1)·k)`.
+`ℓ`** when, for every `ℓ` **pairwise disjoint** index sets, the column-spans meet
+generically (`IsGenericInter` of the `frameSpan`s).  Disjointness matters: overlapping
+sets force shared columns, so the abstract `min(k, Σ codim)` value only applies disjointly.
 
 ## Results
 
@@ -25,13 +25,14 @@ Roth (2022) / Brakensiek–Gopi–Makam (2023): the code is **higher-order MDS o
   condition on the frame; for RS this is the Vandermonde determinant).
 * `finrank_frameSpan` — under `IsMDSFrame`, `finrank (frameSpan K v J) = |J|` for
   `|J| ≤ k`, so `codim (frameSpan K v J) = k − |J|`.
-* `IsHigherMDS` — higher-order MDS of order `ℓ`: all `ℓ`-families of `≤ k`-column-spans
-  are in generic position.
+* `IsHigherMDS` — higher-order MDS of order `ℓ`: all `ℓ`-families of **pairwise disjoint**
+  `≤ k`-column index sets have generic-position column-spans (disjointness is essential —
+  see the def; overlapping sets share columns and are never generic).
 * (generic value `dim(⋂ᵢ frameSpan K v Jᵢ) = max(0, Σ|Jᵢ| − (ℓ−1)k)` follows directly
   from layer-1 `finrank_iInf_of_generic` applied to the MDS(ℓ) hypothesis.)
-* `not_higherMDS_of_over_intersect` — **the failure certificate**: an `ℓ`-family whose
-  column-spans intersect in *more* than the generic dimension witnesses `¬ IsHigherMDS`.
-  This is the tool for the explicit smooth-domain (negative) question.
+* `not_higherMDS_of_not_generic` — **the failure certificate**: a *disjoint* `ℓ`-family
+  whose column-spans intersect in *more* than the generic dimension witnesses
+  `¬ IsHigherMDS` — the tool for the explicit smooth-domain (negative) question.
 
 Issue #389.
 -/
@@ -76,10 +77,17 @@ theorem codim_frameSpan {v : ι → V} (hv : IsMDSFrame K v) {J : Finset ι}
     codim (frameSpan K v J) = finrank K V - J.card := by
   rw [codim, finrank_frameSpan hv hJ]
 
-/-- **Higher-order MDS of order `ℓ`** for a frame: every family of `ℓ` column-spans,
-each from `≤ k` columns, is in generic intersection position (Roth/BGM). -/
+/-- **Higher-order MDS of order `ℓ`** for a frame: every family of `ℓ` **pairwise
+disjoint** `≤ k`-column index sets has its column-spans in generic intersection position.
+Disjointness is essential: column-spans from *overlapping* index sets share the common
+columns, so they are never in generic position in the abstract `min(k, Σ codim)` sense
+(`span{v₁,v₂} ∩ span{v₂,v₃} ⊇ ⟨v₂⟩`); the genuine higher-order content lives in disjoint
+configurations with `Σ|Jᵢ| > k`, where generic points achieve the bound and special
+points (e.g. `μ_n`) can fail it.  The precise *code-level* GM-MDS notion is the dual
+generic-zero-pattern object (`AGL24.GMMDSDualZeroPatternTheorem`). -/
 def IsHigherMDS (K : Type*) [Field K] [Module K V] (ℓ : ℕ) (v : ι → V) : Prop :=
   ∀ J : Fin ℓ → Finset ι, (∀ i, (J i).card ≤ finrank K V) →
+    (∀ i j, i ≠ j → Disjoint (J i) (J j)) →
     IsGenericInter (fun i => frameSpan K v (J i))
 
 /-- **The failure certificate.**  A single `ℓ`-family of `≤ k`-column-spans that is not
@@ -89,10 +97,11 @@ intersect in strictly more than `max(0, Σ|Jᵢ| − (ℓ−1)k)` dimensions cer
 failure — the tool for the explicit smooth-domain (negative) question. -/
 theorem not_higherMDS_of_not_generic {ℓ : ℕ} {v : ι → V}
     {J : Fin ℓ → Finset ι} (hJ : ∀ i, (J i).card ≤ finrank K V)
+    (hdisj : ∀ i j, i ≠ j → Disjoint (J i) (J j))
     (hbad : ¬ IsGenericInter (fun i => frameSpan K v (J i))) :
     ¬ IsHigherMDS K ℓ v := by
   intro hmds
-  exact hbad (hmds J hJ)
+  exact hbad (hmds J hJ hdisj)
 
 end ArkLib.HigherOrderMDS
 
