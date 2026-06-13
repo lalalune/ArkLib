@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBoundaryBound
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryGenericFarExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
 
@@ -62,8 +63,25 @@ theorem rsCode_mcaDeltaStar_ge_of_large_field (dom : Fin n ↪ F) {k : ℕ} (hk 
   le_mcaDeltaStar_of_good (F := F) (A := F) _ εstar hδ1
     (le_trans (rsCode_epsMCA_le_uniform dom hk hlo) hε)
 
+/-- **Bad-side complement: δ* drops below capacity once `C(n,k+1) > ε*·|F|`.** At the boundary
+radius (under `C(n,k+1)² ≤ |F|`) the bad-scalar sup is *attained*, so `ε_mca = C(n,k+1)/|F|`
+exactly (`epsMCA_eq_boundary_choose_of_genericFar`); if that exceeds `ε*`, the boundary radius is
+bad and `mcaDeltaStar ≤ δ`.  Together with `rsCode_mcaDeltaStar_ge_of_large_field` this is the
+sharp **dichotomy**: for `C(n,k+1)² ≤ |F|`, the threshold reaches capacity *iff* `C(n,k+1) ≤ ε*·|F|`. -/
+theorem rsCode_mcaDeltaStar_le_of_boundary_bad (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (hsmall : (n.choose (k + 1)) ^ 2 ≤ Fintype.card F)
+    {εstar : ℝ≥0∞}
+    (hε : εstar < (n.choose (k + 1) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) :
+    mcaDeltaStar (F := F) (A := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) εstar ≤ δ :=
+  mcaDeltaStar_le_of_bad (F := F) (A := F) _ εstar
+    (by rw [epsMCA_eq_boundary_choose_of_genericFar dom hk hlo hhi hsmall]; exact hε)
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.rsCode_epsMCA_le_uniform
 #print axioms ProximityGap.Ownership.rsCode_mcaDeltaStar_ge_of_large_field
+#print axioms ProximityGap.Ownership.rsCode_mcaDeltaStar_le_of_boundary_bad
