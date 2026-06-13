@@ -13,7 +13,10 @@ import ArkLib.Data.CodingTheory.HigherOrderMDSReedSolomon
 Companion to `HigherOrderMDSOrderTwo.lean` (`isHigherMDS_two_of_isMDSFrame`, which shows order 2 is
 automatic for every MDS frame).  Here is an *explicit Reed–Solomon (hence MDS) frame that is not
 higher-order MDS of order 3*, proving the order-2 ceiling is sharp and that the genuine GM-MDS
-difficulty really does begin at order 3.
+difficulty really does begin at order 3.  `reedSolomonFrame_not_isHigherMDS_three_of_commonPairSum`
+states the general mechanism: any three disjoint pairs with a common sum force the failure — i.e.
+an **additive collision** among the evaluation points, tying order-3 failure to the
+additive-energy/Sidon structure of the domain.
 
 The construction exposes the mechanism by which explicit/structured domains fail: take three
 disjoint pairs of evaluation points sharing a common **sum** — here `{0,10}, {1,9}, {2,8}`, all
@@ -95,6 +98,65 @@ theorem reedSolomonFrame_not_isHigherMDS_three :
       codim_frameSpan hmds (hc 1), codim_frameSpan hmds (hc 2), codim, hV] at hgen
     have hcard : ∀ i, (Jfail i).card = 2 := by intro i; fin_cases i <;> simp [Jfail]
     rw [hcard 0, hcard 1, hcard 2] at hgen
+    omega
+
+/-- **Additive collision ⟹ order-3 higher-MDS failure (the lane bridge).**  If three pairwise
+disjoint 2-element index sets share a common pair-sum `σ = ∑_{x∈Jᵢ} D x`, then the explicit
+Reed–Solomon frame of dimension 3 on distinct points `D` is *not* order-3 higher MDS: the vector
+`(0,1,σ)` lies in all three pair-spans (each `{a,b}` with `a+b=σ` has interpolation normal
+`(ab,−σ,1)`, all sharing the orthogonal `(0,1,σ)`), while generic intersection is `{0}`.
+For an evaluation domain this is exactly an additive collision among the points, so the
+additive-energy/Sidon structure of the domain controls this family of higher-order-MDS failures. -/
+theorem reedSolomonFrame_not_isHigherMDS_three_of_commonPairSum {K : Type*} [Field K]
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {D : ι → K} (hD : Function.Injective D)
+    {J : Fin 3 → Finset ι} (hcard : ∀ i, (J i).card = 2)
+    (hdisj : ∀ i j, i ≠ j → Disjoint (J i) (J j))
+    {σ : K} (hsum : ∀ i, ∑ x ∈ J i, D x = σ) :
+    ¬ IsHigherMDS K 3 (reedSolomonFrame D 3) := by
+  set v := reedSolomonFrame D 3 with hvdef
+  have hmds : IsMDSFrame K v := reedSolomonFrame_isMDS hD (by norm_num)
+  set w : Fin 3 → K := ![0, 1, σ] with hwdef
+  have hw_ne : w ≠ 0 := by
+    intro h; have := congrFun h 1; simp [hwdef] at this
+  -- the common vector lies in every pair-span
+  have mem_w : ∀ i, w ∈ frameSpan K v (J i) := by
+    intro i
+    obtain ⟨a, b, hab, hJi⟩ := Finset.card_eq_two.mp (hcard i)
+    have hsumab : D a + D b = σ := by
+      have := hsum i; rw [hJi, Finset.sum_pair hab] at this; exact this
+    have hDab : D b - D a ≠ 0 := sub_ne_zero.mpr (fun h => hab (hD h.symm))
+    have hmem_a : v a ∈ frameSpan K v (J i) :=
+      Submodule.subset_span ⟨a, by rw [hJi]; exact Finset.mem_coe.mpr (by simp), rfl⟩
+    have hmem_b : v b ∈ frameSpan K v (J i) :=
+      Submodule.subset_span ⟨b, by rw [hJi]; exact Finset.mem_coe.mpr (by simp), rfl⟩
+    -- inverse-free scaling: `(D b − D a) • w = v b − v a`
+    have hscaled : (D b - D a) • w = v b - v a := by
+      funext j
+      fin_cases j
+      · simp [hwdef, hvdef, reedSolomonFrame]
+      · simp [hwdef, hvdef, reedSolomonFrame]
+      · simp only [hwdef, hvdef, reedSolomonFrame, Pi.smul_apply, Pi.sub_apply, smul_eq_mul]
+        show (D b - D a) * σ = D b ^ 2 - D a ^ 2
+        rw [← hsumab]; ring
+    have hmem_diff : v b - v a ∈ frameSpan K v (J i) := Submodule.sub_mem _ hmem_b hmem_a
+    have hwsmul : w = (D b - D a)⁻¹ • ((D b - D a) • w) := by
+      rw [smul_smul, inv_mul_cancel₀ hDab, one_smul]
+    rw [hwsmul, hscaled]
+    exact Submodule.smul_mem _ _ hmem_diff
+  apply not_higherMDS_of_not_generic (J := J)
+  · intro i; rw [hcard i]; exact (by norm_num : (2 : ℕ) ≤ finrank K (Fin 3 → K)).trans_eq (by simp)
+  · exact hdisj
+  · intro hgen
+    have hwmem : w ∈ ⨅ i, frameSpan K v (J i) := Submodule.mem_iInf _ |>.mpr mem_w
+    have hbot : (⨅ i, frameSpan K v (J i)) ≠ ⊥ := fun h => by
+      rw [h, Submodule.mem_bot] at hwmem; exact hw_ne hwmem
+    have hpos : 1 ≤ finrank K ↥(⨅ i, frameSpan K v (J i)) :=
+      Submodule.one_le_finrank_iff.mpr hbot
+    have hV : finrank K (Fin 3 → K) = 3 := by simp
+    have hc : ∀ i, (J i).card ≤ finrank K (Fin 3 → K) := fun i => by rw [hV, hcard i]; norm_num
+    rw [IsGenericInter, Fin.sum_univ_three, codim_frameSpan hmds (hc 0),
+      codim_frameSpan hmds (hc 1), codim_frameSpan hmds (hc 2), codim, hV, hcard 0, hcard 1,
+      hcard 2] at hgen
     omega
 
 end ArkLib.HigherOrderMDS
