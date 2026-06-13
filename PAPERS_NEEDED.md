@@ -192,3 +192,12 @@ Jun 2026; none on disk):
 mature toolkit (Deligne–Katz equidistribution + Talagrand chaining), strictly weaker than the raw
 all-moments wall — but the quantitative joint Gauss-sum independence over `m−1≈p/n` characters at thin
 `n≈p^{0.12}` remains open. A better-tooled route, not a closure. The prize stays open.
+
+## δ* — the Lamzouri value-distribution CLT edge (2026-06-13, decisive localization)
+The prize ⟺ extending the Gaussian value-distribution CLT past its proven `log H=o(log q)` range to
+fixed-power length `n=p^β`. See `deltastar-salem-zygmund-gausssum-chaining-2026-06-13.md` §"DECISIVE".
+- Lamzouri, **The distribution of short character sums**, arXiv **1106.6072** (Camb. Phil. Soc.) — 2-D
+  Gaussian limit for `log H=o(log q)`, quantitative Kolmogorov rate; the proven positive direction.
+  Prize regime `n=p^{1/8}` is exactly where it stops. THE paper for the residual.
+- Lamzouri–Mangerel, **Large odd order character sums & improvements of Pólya–Vinogradov**, arXiv
+  **1701.01042** — max partial sum `M(χ)≪√q(log q)^{1−δ_g}` (fixed order); the max-side analogue.

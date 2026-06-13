@@ -117,3 +117,31 @@ at thin `n≈p^{0.12}`** — a concrete value-distribution-tail statement, not a
 Net: the value-distribution literature (1207.1607 limit law, Duke–Garcia) is the right toolkit, but the
 uniform sub-Gaussian tail in the prize regime remains open. Honest scores: novelty 8 / insight 8 /
 proximity 9 / **feasibility 4**. Still the cleanest classical *form* of the residual; not a closure.
+
+## DECISIVE LOCALIZATION (2026-06-13) — the prize sits exactly at the edge of Lamzouri's CLT
+
+The sharpened residual ("sub-Gaussian tail of the Gaussian-period value distribution") has a PROVEN
+positive answer in an adjacent regime, which pins the open core to an explicit theorem-extension:
+
+**Lamzouri (Distribution of short character sums, arXiv 1106.6072 / Camb. Phil. Soc.):** the value
+distribution of a character sum of length `H` converges to a **2-D complex Gaussian** provided
+`log H = o(log q)` (with a quantitative Kolmogorov rate). A Gaussian limit ⟹ a **sub-Gaussian tail**
+⟹ via the union bound (flat metric, above) `max ≈ √(n log m)` ⟹ **the prize δ* window — in this regime
+the prize-true direction is a THEOREM.**
+
+**The boundary IS the prize regime.** Lamzouri needs length `H = q^{o(1)}` (sub-polynomial). The prize
+subgroup has `n ≈ p^{1/8}` (e.g. `n=2^32`, `p≈2^256`: `log n/log p = 32/256 = 1/8`), a **fixed power**,
+NOT `o(1)`. So the prize is **exactly the first regime where Lamzouri's Gaussian-limit CLT is not
+known.** The open core is now the *cleanest possible* statement:
+
+> **(Prize ⟺ Lamzouri-at-fixed-power.)** Extend the 2-D Gaussian value-distribution CLT for the
+> subgroup-period sums `η_c` from length `n = p^{o(1)}` to length `n = p^{β}`, `β` a fixed constant
+> (`β ≈ 1/8` for the deployed dyadic domain), with variance proxy `O(n)` (uniform sub-Gaussian tail).
+
+This is a recognized hard barrier (the CLT-at-fixed-density is the same Bourgain regime), BUT it is now
+"extend a proven theorem by one regime," with a quantitative rate already in hand for `o(log)` — a
+concrete, named, attackable target, not an opaque wall. Companion: Lamzouri–Mangerel (large odd-order
+character sums, arXiv 1701.01042) bound the MAX `M(χ)≪√q(log q)^{1−δ_g}` for fixed order — the
+max-side analogue, also short of the thin-subgroup prize regime. Honest scores for this localization:
+novelty 7 / insight 9 / proximity 10 / feasibility 5 (extend-a-CLT is sharper than prove-from-scratch,
+still the Bourgain barrier). The prize stays open — but now as "Lamzouri's CLT one regime further."
