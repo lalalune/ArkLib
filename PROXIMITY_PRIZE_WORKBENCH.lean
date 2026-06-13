@@ -7,7 +7,6 @@ import Mathlib
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyCharacterTransport
 
 set_option linter.style.longLine false
-set_option linter.style.longFile 2400
 
 /-!
 # PROXIMITY PRIZE WORKBENCH — the Shaw operator, the closed-form δ*, and its single residual
@@ -268,6 +267,7 @@ noncomputable def shawOp (D : Finset F) (f : F → ℂ) : F → ℂ := fun x => 
 /-- **Spectrum of `𝖲_D` = the character-sum family.** Each additive character `χ_b : x ↦ ψ(b·x)` is
 an eigenvector with eigenvalue `η_b = ∑_{d∈D} ψ(b·d)`: `(𝖲_D χ_b)(x) = ψ(b·x) · η_b`. This is the
 identity making the gap `B(μ_n)` and the moments `E_m(D)` the *same* operator's invariants. -/
+omit [Fintype F] [DecidableEq F] in
 theorem shawOp_eigen (ψ : AddChar F ℂ) (D : Finset F) (b x : F) :
     shawOp D (fun y => ψ (b * y)) x = ψ (b * x) * eta ψ D b := by
   show (∑ d ∈ D, ψ (b * (x + d))) = ψ (b * x) * ∑ y ∈ D, ψ (b * y)
@@ -305,8 +305,9 @@ theorem shaw_offdiag_moment_le {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (D : 
       ‖eta ψ D b‖ ^ (2 * M) ≤ B ^ (2 * M - 2) * ‖eta ψ D b‖ ^ 2 := by
     intro b hb
     have hb0 : b ≠ 0 := Finset.ne_of_mem_erase hb
-    have he : 2 * M = (2 * M - 2) + 2 := by omega
-    rw [he, pow_add]
+    have hpow : ‖eta ψ D b‖ ^ (2 * M) = ‖eta ψ D b‖ ^ (2 * M - 2) * ‖eta ψ D b‖ ^ 2 := by
+      rw [← pow_add]; congr 1; omega
+    rw [hpow]
     refine mul_le_mul_of_nonneg_right ?_ (by positivity)
     exact pow_le_pow_left₀ (norm_nonneg _) (hB b hb0) (2 * M - 2)
   calc ∑ b ∈ Finset.univ.erase (0 : F), ‖eta ψ D b‖ ^ (2 * M)
@@ -362,7 +363,7 @@ lemma**. It is exactly the Shkredov-type gap bound for the small production subg
 closed form, and nothing else. -/
 def ShawFlatnessConjecture : Prop :=
   ∃ C : ℝ, Real.sqrt 2 ≤ C ∧
-    ∀ {F : Type} [inst : Field F] [inst2 : Fintype F] [inst3 : DecidableEq F]
+    ∀ {F : Type} [Field F] [Fintype F] [DecidableEq F]
       (ψ : AddChar F ℂ) (D : Finset F),
       ψ.IsPrimitive → (D.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ) →
       ShawFlatness ψ D C
