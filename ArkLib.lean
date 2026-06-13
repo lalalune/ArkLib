@@ -282,6 +282,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AttackLoop46
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.BadScalarSingleWord
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.BWMatrix
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.GoodCoeffs
