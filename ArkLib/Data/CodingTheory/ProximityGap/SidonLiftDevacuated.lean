@@ -9,13 +9,14 @@ import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySidonModNeg
 /-!
 # THE USABLE SMALL-SUBGROUP SIDON ENERGY PIN — `E(μ_n ⊂ F_p) = 3n² − 3n` (#389)
 
-The companion `SidonLiftClosed.lean` states the "no parallelogram" theorem
-`prime_le_of_parallelogram` with the hypothesis
-`hne : ∀ ζ : ℂ, ζ^n = 1 → ζ^i + ζ^j − ζ^k − ζ^l ≠ 0`.  **That hypothesis is unsatisfiable**:
-at the always-present `n`-th root `ζ = 1` the four-term value is `1 + 1 − 1 − 1 = 0`, so
-`hne 1 (one_pow n)` proves `(0 : ℂ) ≠ 0`.  Hence `prime_le_of_parallelogram` and
-`resultant_fourTerm_ne_zero`, while axiom-clean, are **vacuous as bricks** — they can never be
-applied.  (The vacuity is recorded as `allRoots_hne_false` below.)
+The **all-roots** form of the resultant nonvanishing hypothesis —
+`hne : ∀ ζ : ℂ, ζ^n = 1 → ζ^i + ζ^j − ζ^k − ζ^l ≠ 0` — is **unsatisfiable**: at the always-present
+`n`-th root `ζ = 1` the four-term value is `1 + 1 − 1 − 1 = 0`, so `hne 1 (one_pow n)` proves
+`(0 : ℂ) ≠ 0` (recorded as `allRoots_hne_false` below).  An earlier form of
+`SidonLiftClosed.prime_le_of_parallelogram` carried exactly this unsatisfiable hypothesis — axiom-clean
+but **vacuous as a brick** — and has since been restated over *primitive* roots.  The fix is the same
+either way: the resultant only needs the primitive-root condition, which is satisfiable.  (A sibling
+lane, `SidonSubgroupClosed.lean`, develops the small-subgroup energy pin in parallel.)
 
 The fix is mechanical: the resultant `R = Res(Φ_n, f)` is a product over **primitive** `n`-th
 roots, so all the proof ever needs is `f(ζ) ≠ 0` at primitive roots — a satisfiable condition.
