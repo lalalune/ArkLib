@@ -1309,6 +1309,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetInvariance
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCurve
+import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalVanish
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountEnergyNfold
