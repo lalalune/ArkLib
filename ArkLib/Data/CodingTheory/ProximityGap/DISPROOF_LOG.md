@@ -7839,3 +7839,35 @@ exact-solution target is the **two-phase law** `E_max(μ_n) = Θ_{k,m}(n + C(n,t
 — arithmetic/fibre families rule `q ≫ n`, generic density rules `n = Θ(q)`, and any
 positive proof must use BOTH the additive-unstructuredness of `μ_n` (Frobenius entry)
 AND the field-size hypothesis (this entry).
+## 2026-06-12 — "Linear/subexponential supply on smooth domains" is FALSE for DYADIC domains (multiplicative subspace polynomials)
+
+The rounds 78–84 census conjecture — capped supply `Σ_c C(a_c,t) = O(n)` (`B = O(n)`),
+"empirically true with subexponential `B`" — is **refuted for the explicit smooth 2-adic
+(FFT) domains the prize targets**. The linear value is the *random-RS / Singleton-optimal*
+list size; structured smooth domains beat it exponentially. The census hill-climbs missed
+the structured extremizer, exactly as hill-climbing misses BKR subspace polynomials.
+
+**Construction** (`EsymmFiber.lean`, axiom-clean; `probe_coset_union.py`, full-enum
+verified μ₁₆/μ₃₂). Domain `μ_n`, `n = 2^μ`. Reformulation: a degree-`t` word's explainable
+`t`-cores are the `t`-subsets `A` with prescribed `e_1..e_{m+1}` (Vieta;
+`explainable_iff_forcedPoly_degree`). For `w = wt·X^t + (deg<k)` the prescribed values are
+`0`. A union `A` of `s` cosets of `μ_d` (`d = 2^j ≥ m+2`, `s·d = t`) has
+`∏_{a∈A}(X−a) = expand_d(Q)` ∈ `F[X^d]`, so `e_1(A)=…=e_{d−1}(A)=0` ⊇ the constraints, and
+the forced explainer has degree `≤ t−d = k−1 < k`. Hence every such union is an explainable
+core (`explainable_of_expand`), and there are `C(n/d, t/d)` of them
+(`smooth_dyadic_supply_lower_bound`):
+
+  `#explainable t-cores ≥ C(n/d, t/d) = 2^{H(ρ)·n/d·(1+o(1))}`  — EXPONENTIAL.
+
+Regime: agreement `α = t/n = ρ + d/n`, just above capacity, strictly sub-Johnson
+(`α < √ρ`). `μ_d ⊂ μ_n` = the multiplicative analogue of an additive BKR subspace
+polynomial; needs only the multiplicative 2-adic subgroup tower (no subfield — works over
+prime fields). Consistent with: only random RS reaches capacity (GG25 2025/2054); the
+up-to-capacity proximity-gap conjecture is false (BCIS-2025 2025/2055, CS25 2025/2046); the
+barrier is the list-decoding radius (PG⇒LD, BCIS-2025 Thm 1.9).
+
+**Status:** the "subexponential uniform supply `B`" supply statement is FALSE on `μ_{2^μ}`
+at the deep band. Any positive supply/MCA result there must restrict the domain away from
+dyadic structure or accept exponential `B`. Refutation is machine-checked (not a wall — a
+proved negative). The campaign's recent linear claim should be re-scoped to random/generic
+domains; the prize's smooth-domain case is exponentially worse and this is the honest state.
