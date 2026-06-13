@@ -8226,3 +8226,43 @@ n ≤ √p** (the production NTT range, n ≤ √p for Goldilocks): there the wo
 2.62→0.74 across n=8..256). So: the n²log n bound is FALSE universally, TRUE (empirically) for
 n ≤ √p — exactly the deployed regime. The boundary n≈√p bound remains the open core (= GV/HBK
 square-root-cancellation, faces B2/B3 below n^{5/2}).
+
+### O165 — INDEPENDENT AUDIT of the δ* reduction: AIRTIGHT + axiom-clean, conditional on one honest open Prop — with 3 mandatory disclosures (nubs, hostile 4-agent Opus-4.8 audit + independent rebuild, 2026-06-13)
+
+A zero-charity audit of the headline "all supporting math proven; δ* reduced to ONE clean
+Prop." Independently rebuilt the chain (`lake build CensusDominationWeld`, 8365 jobs) +
+transitive `#print axioms` on all load-bearing nodes (pin, interiorCeiling,
+kkh26_epsMCA_lower_bound, badScalars_card_le_alignable, kkh26_lemma1, the meet lemma):
+**ALL exactly [propext, Classical.choice, Quot.sound]; zero sorry/admit/custom-axiom/
+native_decide across the 44-file closure** (every grep hit was docstring prose).
+
+**CERTIFIED SOLID (the reduction itself):** `kkh26_deltaStar_pin_of_censusDomination` proves
+`mcaDeltaStar(evalCode, ε*) = 1 − r/2^μ` — a genuine EQUALITY (two-sided meet at the SAME
+δ₀, via `mcaDeltaStar_eq_of_good_below_of_bad_above`), NOT a one-sided bound. Lower bracket
+from CensusDomination; **upper bracket (KKH26 ceiling) is UNCONDITIONAL** (no hidden Prop).
+The sole undischarged hypothesis is `CensusDomination` — and it is the HONEST residual:
+its filter predicate is byte-identical to the consumer's proven count obligation
+(`badScalars_card_le_alignable`), it is provably NON-vacuous (`kkh26_fibreUnion_aligned_
+nondegenerate` builds ≥ 2^r·C(2^{μ−1},r) aligned bad scalars; K is forced < that, so it's
+the real supply wall, not a free bound), and it is never discharged (no `_holds`).
+
+**THREE MANDATORY DISCLOSURES (without these the headline is oversell):**
+1. "One Prop" is the residual ONLY for the hard deep-band/large-r regime. The bulk range
+   is ALREADY unconditional via `kkh26_deltaStar_pin_allWitness` (binomial budget, no
+   CensusDomination) + a concrete zero-hypothesis instance `deltaStar_pin_concrete_F4129`
+   (δ*=3/4 over ZMod 4129, fully discharged). Do NOT say "the whole prize is one Prop."
+2. CensusDomination is GENUINELY OPEN at the prize window, NOT near-proven: the team's own
+   `packing_exceeds_budget_deep_band` PROVES the elementary route fails at r=n/2;
+   `packing_covers_sqrt` reaches only ~√n; production support is EMPIRICAL (O158/O159/O164
+   block the structured mechanisms, but the general bound = the open Stepanov/additive-
+   energy E(μ_n)=n^{2+o(1)} = 25-year explicit-RS sub-Johnson list-decoding problem). Do
+   NOT imply it is plausibly-soon-provable.
+3. "Beyond Johnson" holds for the m=1 NTT regime (numerically) but is NOT a Lean theorem
+   (no Real.sqrt comparison in-tree); at m≥2 small-r the pin can fall to/below Johnson.
+
+**BOTTOM LINE (safe to send):** "δ* = 1 − r/2^μ is pinned EXACTLY, both-sided, axiom-clean,
+conditional on a single honest non-vacuous combinatorial Prop (CensusDomination) — the
+genuine open core (explicit-RS beyond-Johnson list decoding); the upper bracket, a
+bulk-parameter unconditional pin, and a concrete zero-hypothesis instance are already
+in-tree." That is a real, valuable, certified result. The three caveats are what keep it
+honest before Boneh/Vitalik. (Cosmetic: CensusDominationWeld.lean:81 unused binder hmu.)
