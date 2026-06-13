@@ -1156,6 +1156,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MonomialGammaFibration
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialLocusCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSpectrumEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialStripExplosion
+import ArkLib.Data.CodingTheory.ProximityGap.MonomialSupplyChoose
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSupplyWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialZeroSumIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6ConditionalPin
