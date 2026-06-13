@@ -220,8 +220,35 @@ theorem additiveEnergy_mu_n {p : ℕ} [Fact p.Prime] {n m : ℕ} (hn2 : n = 2 ^ 
   exact additiveEnergy_eq_of_sidonModNeg h2F h0 hneg
     (sidonModNeg_mu_n hn2 hm hp hω hGmem)
 
+/-- **The small-subgroup `μ_n` is Sidon**: every nonzero shift has at most two representations,
+for `p > 2^n`, unconditionally.  This is the literal rep-count input the supply chain consumes
+(`additiveEnergy_le_three_of_repTwo`, `gvRepBound_of_sidonModNeg`). -/
+theorem repCount_mu_n_le_two {p : ℕ} [Fact p.Prime] {n m : ℕ} (hn2 : n = 2 ^ m) (hm : 1 ≤ m)
+    (hp : 2 ^ n < p) {ω : ZMod p} (hω : IsPrimitiveRoot ω n)
+    {G : Finset (ZMod p)} (hGmem : ∀ z, z ∈ G ↔ z ^ n = 1)
+    (c : ZMod p) (hc : c ≠ 0) :
+    repCount G c ≤ 2 := by
+  have hn : n ≠ 0 := by rw [hn2]; positivity
+  have hS := sidonModNeg_mu_n hn2 hm hp hω hGmem
+  have hneg : ∀ x ∈ G, -x ∈ G := by
+    intro x hx
+    rw [hGmem] at hx ⊢
+    have he : Even n := by rw [hn2]; exact Nat.even_pow.mpr ⟨even_two, by omega⟩
+    rw [neg_pow, he.neg_one_pow, one_mul]; exact hx
+  rcases Nat.eq_zero_or_pos (repCount G c) with h0 | hpos
+  · omega
+  · obtain ⟨y, hy⟩ := Finset.card_pos.mp hpos
+    rw [Finset.mem_filter] at hy
+    obtain ⟨hyG, hcyG⟩ := hy
+    have hsum : y + (c - y) = c := by ring
+    have hrc := repCount_sidonModNeg hneg hS hyG hcyG
+    rw [hsum, if_neg hc] at hrc
+    rw [hrc]
+    exact le_trans (Finset.card_insert_le _ _) (by simp)
+
 end ArkLib.ProximityGap.AdditiveEnergySidonModNeg
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.sidonModNeg_mu_n
 #print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.additiveEnergy_mu_n
+#print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.repCount_mu_n_le_two
