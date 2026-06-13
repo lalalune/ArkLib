@@ -123,9 +123,159 @@ theorem lovettD_replaceMeet {V : Fin m → (Fin n → ℕ)} {k : ℕ} {I : Finse
   unfold tightConstraint at htight
   omega
 
+/-! ## `V*(k)` preservation under tight meet-replacement (clause (ii)) -/
+
+/-- The `Fin m`-block attached to a replacement index: the whole of `I` for the meet index, a
+singleton for each surviving index. -/
+def replaceBlock (I : Finset (Fin m)) : ReplaceIdx I → Finset (Fin m) :=
+  Sum.elim (fun _ => I) (fun i => {i.1})
+
+/-- The expansion of an index set `J` of `V'` to a `Fin m`-index set of `V`: replace the meet
+index by all of `I`, keep the surviving indices. -/
+noncomputable def expandIdx (I : Finset (Fin m)) (J : Finset (ReplaceIdx I)) : Finset (Fin m) :=
+  J.biUnion (replaceBlock I)
+
+/-- Each replacement block is nonempty (for the meet index this uses `I.Nonempty`). -/
+theorem replaceBlock_nonempty {I : Finset (Fin m)} (hI : I.Nonempty) (p : ReplaceIdx I) :
+    (replaceBlock I p).Nonempty := by
+  cases p with
+  | inl _ => exact hI
+  | inr i => exact Finset.singleton_nonempty i.1
+
+/-- The replacement blocks are pairwise disjoint. -/
+theorem replaceBlock_pairwiseDisjoint (I : Finset (Fin m)) :
+    (Set.univ : Set (ReplaceIdx I)).PairwiseDisjoint (replaceBlock I) := by
+  classical
+  rintro p - q - hpq
+  -- show blocks are disjoint
+  cases p with
+  | inl a => cases q with
+    | inl b => exact absurd (by rw [Subsingleton.elim a b]) hpq
+    | inr j =>
+      -- I vs {j.1}, j.1 ∉ I
+      show Disjoint I ({j.1} : Finset (Fin m))
+      refine Finset.disjoint_right.mpr ?_
+      intro x hx
+      rw [Finset.mem_singleton] at hx
+      subst hx
+      exact j.2
+  | inr i => cases q with
+    | inl b =>
+      show Disjoint ({i.1} : Finset (Fin m)) I
+      refine Finset.disjoint_left.mpr ?_
+      intro x hx
+      rw [Finset.mem_singleton] at hx
+      subst hx
+      exact i.2
+    | inr j =>
+      -- {i.1} vs {j.1}, i ≠ j
+      have hij : i.1 ≠ j.1 := by
+        intro h; exact hpq (by cases i; cases j; simp_all)
+      show Disjoint ({i.1} : Finset (Fin m)) {j.1}
+      exact Finset.disjoint_singleton.mpr hij
+
+/-- The expansion of a `Fin`-index set `J` of `V' = replaceMeetFin` to a `Fin m`-index set of `V`:
+push `J` through the reindexing bijection, then replace the meet index by all of `I`. -/
+noncomputable def expandFin (I : Finset (Fin m)) (J : Finset (Fin ((m - I.card) + 1))) :
+    Finset (Fin m) :=
+  expandIdx I (J.image (replaceEquiv I).symm)
+
+/-- `expandFin` of a nonempty set is nonempty. -/
+theorem expandFin_nonempty {I : Finset (Fin m)} (hI : I.Nonempty)
+    {J : Finset (Fin ((m - I.card) + 1))} (hJ : J.Nonempty) : (expandFin I J).Nonempty := by
+  unfold expandFin expandIdx
+  exact (hJ.image _).biUnion (fun p _ => replaceBlock_nonempty hI p)
+
+/-- **The replacement meet equals the original meet over the expanded index set** (`Fin` form). -/
+theorem vMeet_replaceMeetFin {V : Fin m → (Fin n → ℕ)} {I : Finset (Fin m)} (hI : I.Nonempty)
+    {J : Finset (Fin ((m - I.card) + 1))} (hJ : J.Nonempty) :
+    vMeet (replaceMeetFin V I hI) J hJ
+      = vMeet V (expandFin I J) (expandFin_nonempty hI hJ) := by
+  classical
+  funext l
+  unfold vMeet expandFin expandIdx replaceMeetFin
+  simp only [Function.comp_apply]
+  -- reindex inf' over J along the injection symm into ReplaceIdx
+  have hrw : (J.inf' hJ fun x => replaceMeet V I hI ((replaceEquiv I).symm x) l)
+      = (J.image (replaceEquiv I).symm).inf' (hJ.image _)
+          (fun p => replaceMeet V I hI p l) :=
+    (Finset.inf'_image (f := (replaceEquiv I).symm) (s := J)
+      (hs := hJ.image _) (g := fun p => replaceMeet V I hI p l)).symm
+  rw [hrw]
+  rw [Finset.inf'_biUnion (fun i => V i l) (hJ.image _)
+      (fun p => replaceBlock_nonempty hI p)]
+  refine Finset.inf'_congr (hJ.image _) rfl (fun p _ => ?_)
+  cases p with
+  | inl a =>
+    show vMeet V I hI l = (replaceBlock I (Sum.inl a)).inf' _ (fun i => V i l)
+    simp only [replaceBlock, Sum.elim_inl]
+    rfl
+  | inr i =>
+    show V i.1 l = (replaceBlock I (Sum.inr i)).inf' _ (fun i => V i l)
+    simp only [replaceBlock, Sum.elim_inr, Finset.inf'_singleton]
+
+/-- **The replacement block-size sum equals the original over the expanded index set** (`Fin` form;
+uses tightness: the meet block `k − |v_I|` accounts for the full `Σ_{i∈I}(k − |vᵢ|)`). -/
+theorem sum_replaceMeetFin {V : Fin m → (Fin n → ℕ)} {k : ℕ} {I : Finset (Fin m)} (hI : I.Nonempty)
+    (htight : tightConstraint V k I hI) (J : Finset (Fin ((m - I.card) + 1))) :
+    (∑ q ∈ J, (k - vAbs (replaceMeetFin V I hI q)))
+      = ∑ i ∈ expandFin I J, (k - vAbs (V i)) := by
+  classical
+  unfold expandFin expandIdx replaceMeetFin
+  simp only [Function.comp_apply]
+  -- reindex sum over J along the injection symm
+  rw [← Finset.sum_image (g := (replaceEquiv I).symm)
+      (f := fun p => k - vAbs (replaceMeet V I hI p))
+      (fun a _ b _ h => (replaceEquiv I).symm.injective h : Set.InjOn _ _)]
+  rw [Finset.sum_biUnion
+      ((replaceBlock_pairwiseDisjoint I).subset (Set.subset_univ _))]
+  refine Finset.sum_congr rfl (fun p _ => ?_)
+  cases p with
+  | inl a =>
+    show (k - vAbs (vMeet V I hI)) = ∑ i ∈ replaceBlock I (Sum.inl a), (k - vAbs (V i))
+    simp only [replaceBlock, Sum.elim_inl]
+    unfold tightConstraint at htight
+    omega
+  | inr i =>
+    show (k - vAbs (V i.1)) = ∑ i' ∈ replaceBlock I (Sum.inr i), (k - vAbs (V i'))
+    simp only [replaceBlock, Sum.elim_inr, Finset.sum_singleton]
+
+/-- **`V*(k)` is preserved under tight meet-replacement** (`Fin`-indexed form).  The combinatorial
+heart of Lovett's Lemma 2.4: clauses (i)/(iii) from the meet being `≤` each member, clause (ii)
+for any index set `J` of `V'` is the MDS inequality of `V` at the *expanded* index set
+`expandFin I J` (meet block ↦ all of `I`), using tightness for the size bookkeeping. -/
+theorem replaceMeetFin_isVStar {V : Fin m → (Fin n → ℕ)} {k : ℕ} {I : Finset (Fin m)}
+    (hI : I.Nonempty) (_hk : 1 ≤ k) (hV : IsVStar V k) (htight : tightConstraint V k I hI) :
+    IsVStar (replaceMeetFin V I hI) k := by
+  classical
+  refine ⟨?_, ?_, ?_⟩
+  · -- (i) weight ≤ k-1
+    intro q
+    show vAbs (replaceMeet V I hI ((replaceEquiv I).symm q)) ≤ k - 1
+    rcases (replaceEquiv I).symm q with a | i
+    · show vAbs (vMeet V I hI) ≤ k - 1
+      obtain ⟨i₀, hi₀⟩ := id hI
+      exact le_trans (vAbs_vMeet_le_mem hI hi₀) (hV.weight_le i₀)
+    · exact hV.weight_le i.1
+  · -- (ii) MDS via expansion
+    intro J hJ
+    rw [sum_replaceMeetFin hI htight J, vMeet_replaceMeetFin hI hJ]
+    exact hV.mds (expandFin I J) _
+  · -- (iii) shape: meet ≤ each member, members ≤ 1 on interior coords
+    intro q l hl
+    show replaceMeet V I hI ((replaceEquiv I).symm q) l ≤ 1
+    rcases (replaceEquiv I).symm q with a | i
+    · show vMeet V I hI l ≤ 1
+      obtain ⟨i₀, hi₀⟩ := id hI
+      exact le_trans (vMeet_le_mem hI hi₀ l) (hV.shape i₀ l hl)
+    · exact hV.shape i.1 l hl
+
 end ArkLib.GMMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.GMMDS.vAbs_vMeet_le_mem
 #print axioms ArkLib.GMMDS.replaceMeet_card
 #print axioms ArkLib.GMMDS.lovettD_replaceMeet
+#print axioms ArkLib.GMMDS.vMeet_replaceMeetFin
+#print axioms ArkLib.GMMDS.sum_replaceMeetFin
+#print axioms ArkLib.GMMDS.replaceMeetFin_isVStar
