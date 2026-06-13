@@ -224,3 +224,27 @@ one of them. This is why `ClassPackingBound` is the right named-residual
 endpoint: it is genuinely as hard as the rung at this instance, with every
 surrounding law proven. Empirical truth 22 ≤ 31 (margin 9), but no clean
 counting certificate is known — the residual is real.
+
+## The sum bound is an ATTACHMENT-gated count, not R₁-graph incidence
+
+Reframing (`probe_wb371_incidence.py`): since `Φ_j = m_{A_j}h_j = R₁ − q_j`
+definitionally, a frame class is exactly a quadratic `q` (deg `< k`) whose
+agreement set `A_q = {i : R₁(xᵢ) = q(xᵢ)}` (points of R₁'s graph on the
+curve `y = q(x)`) hosts `≥ 2` attached bad scalars; `cap = 16 − |A_q|`.
+
+Measured:
+* **record-22 R₁**: exactly **2** quadratics with `a_q = 6` (the two big
+  classes), 520 with `a_q = 3`; UNGATED `Σ_{a_q≥2}(16 − a_q) = 6780`.
+* **random R₁**: ALL 560 quadratics have `a_q = 3` exactly (no clustering).
+
+So R₁-graph incidence is generically trivial (every triple spans its own
+quadratic, none richer), and the ungated sum is ~6780. The
+`≥2-attached-bad-scalars` GATE must cut this by a factor of >200 to reach
+`≤ 30`. **The entire content of the sum bound lives in the attachment gate
+— the R₀-frame coupling (a quadratic hosts a bad scalar only when R₀'s
+frame `r` and a non-joint size-≥7 witness exist) — NOT in the agreement
+geometry of R₁ alone.** This redirects the attack: the `RungOffPointPinning`
+/ `RungCrossRestriction` frame laws (R₀-side) are the operative constraint,
+not the Fisher/e-symmetric counts (R₁-side, both already refuted as
+shortcuts). The named residual `ClassPackingBound` correctly bundles this:
+its hardness is the R₀-R₁ joint frame-attachment count.
