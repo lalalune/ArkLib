@@ -921,6 +921,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Level1RungPin
 import ArkLib.Data.CodingTheory.ProximityGap.LineAgreementCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineBallIntersection
 import ArkLib.Data.CodingTheory.ProximityGap.LineClosePairsLinear
+import ArkLib.Data.CodingTheory.ProximityGap.LineCorePartition
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding2
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding3
