@@ -886,6 +886,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWFoldedDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
+import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralGapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralKMultiplicity
