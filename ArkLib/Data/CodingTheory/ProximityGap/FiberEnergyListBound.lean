@@ -112,6 +112,18 @@ theorem maxRep_sq_le_addEnergy {F : Type*} [Field F] [DecidableEq F] (H : Finset
   rw [maxRep, ← collisionEnergy_add_eq_addEnergy]
   exact fiberMax_sq_le_collisionEnergy _ _
 
+/-- **The general-rate list rung (Form 4 at every `t`).** The largest `t`-subset-sum fibre — which
+*is* the list size of the monomial word `xᵗ` at agreement `t` (`monomial_list_eq_zeroSum`: the list
+equals `#{t-subsets of the domain summing to 0}`, a single fibre, hence `≤` this max) — squared is
+at most the `t`-subset collision energy `#{(T,T') : ΣT = ΣT'}`. This is the same Form 2 ⟹ Form 4
+inequality one tower up from `maxRep_sq_le_addEnergy`; the `t`-subset collision energy is the
+recognized open object whose dyadic-domain bracket is `adf042f96`. -/
+theorem subsetSum_fiberMax_sq_le_energy {F : Type*} [Field F] [DecidableEq F]
+    (H : Finset F) (t : ℕ) :
+    (fiberMax (H.powersetCard t) (fun T => ∑ x ∈ T, x)) ^ 2
+      ≤ collisionEnergy (H.powersetCard t) (fun T => ∑ x ∈ T, x) :=
+  fiberMax_sq_le_collisionEnergy _ _
+
 end ArkLib.ProximityGap.FiberEnergyListBound
 
 /-! ## Axiom audit -/
@@ -119,3 +131,4 @@ end ArkLib.ProximityGap.FiberEnergyListBound
 #print axioms ArkLib.ProximityGap.FiberEnergyListBound.card_le_image_mul_fiberMax
 #print axioms ArkLib.ProximityGap.FiberEnergyListBound.collisionEnergy_add_eq_addEnergy
 #print axioms ArkLib.ProximityGap.FiberEnergyListBound.maxRep_sq_le_addEnergy
+#print axioms ArkLib.ProximityGap.FiberEnergyListBound.subsetSum_fiberMax_sq_le_energy
