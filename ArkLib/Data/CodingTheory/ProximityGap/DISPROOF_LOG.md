@@ -8012,3 +8012,28 @@ codeword would agree with `u₁` on `k+m+1` points), so `line_total_cores_le`:
 constraint the refutation proved is required. NOT a full closure: it bounds the line aggregate,
 not the per-scalar worst case; the per-scalar gap remains the open wall, but it is now precisely
 localized to "is the worst-case-γ core count `≪` the line average `C(n,a)/q`?"
+
+## 2026-06-13 — smooth-domain δ* tracks subgroup ARITHMETIC, not smoothness (QR-bad / 2-power-good)
+
+A structural finding from the exact m=0 (cubic) supply on two smooth domains, both
+machine-checked, that sharpens what "smooth-domain immunity" can mean:
+
+* **2-power NTT domain `μ_16 ⊂ F₂₅₇`** (`cubicSupply_mu16_F257_eq_zero`): cubic word
+  `x³` has **exactly 0** explainable 3-cores at radius `13/16` (one step below
+  capacity) — the char-0 Mann rigidity (no cube root in `μ_{2^k}` ⟹ no three 2-power
+  roots of unity sum to zero) **survives to `F₂₅₇`**.  δ*-GOOD.
+* **QR index-2 domain `QR* ⊂ F_q`** (`qr_zeroSum_ordered_card`): the cubic ordered
+  zero-sum count is `8·#ord + 6q = q² + 5`, i.e. `(q−1)(q−5)/8 = Θ(n²)` — the
+  additively rich index-2 subgroup carries **quadratic** near-capacity cubic supply.
+  δ*-BAD.
+
+So a domain being "smooth" (a multiplicative subgroup) is NOT enough for a good δ*;
+the relevant invariant is the **additive structure of the specific subgroup**.  The
+production NTT domains (`μ_{2^k}`, FFT) are exactly the arithmetically-rigid good ones;
+index-2 (QR) is bad.  This is consistent with the GV/HBK programme (the additive energy
+`E(μ_n)` is the governing quantity) and with `representationCount_eq_gcd_degree`
+(`GVRepBound G M ⟺ deg gcd(Xⁿ−1, (Cc−X)ⁿ−1) ≤ M`, no slack): the gcd degree, hence
+the energy, hence δ*, is a subgroup-arithmetic quantity.  CAVEAT: `μ_16/F₂₅₇`'s zero is
+PRIME-DEPENDENT (other primes give positive cubic supply for `n=16`); there is no
+general `gcd(3,n)=1 ⟹ supply 0` transfer to `F_p` (the char-0 rigidity does not
+transfer in general — that gap is exactly why the unconditional bound needs Stepanov).
