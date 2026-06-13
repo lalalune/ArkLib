@@ -97,8 +97,28 @@ theorem exists_separating_restriction_injective (r : ℕ) (H : Submodule F (ι �
   rw [hSsep, Submodule.mem_bot, sub_eq_zero] at hdiff
   exact Subtype.ext hdiff
 
+/-- **Determination from a separating set.** If `S` separates `H` (`H ⊓ ⨅_{i∈S} ker projᵢ = ⊥`),
+then for any word `y` at most one codeword of `H` agrees with `y` on all of `S` — the constructive
+list-recovery core (a separated subspace's elements are pinned down by their values on `S`, so the
+codewords of a low-dimensional list close to `y` are determined once `S` separates the list span). -/
+theorem separated_agree_subsingleton {H : Submodule F (ι → Fin s → F)} {S : Finset ι}
+    (hSsep : H ⊓ (⨅ i ∈ S, LinearMap.ker
+      (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) = ⊥)
+    (y : ι → Fin s → F) :
+    {c : ι → Fin s → F | c ∈ H ∧ ∀ i ∈ S, c i = y i}.Subsingleton := by
+  intro c₁ hc₁ c₂ hc₂
+  have hdiff : (c₁ - c₂) ∈ H ⊓ (⨅ i ∈ S, LinearMap.ker
+      (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) := by
+    refine Submodule.mem_inf.mpr ⟨H.sub_mem hc₁.1 hc₂.1, ?_⟩
+    simp only [Submodule.mem_iInf]
+    intro i hiS
+    rw [LinearMap.mem_ker, LinearMap.proj_apply, Pi.sub_apply, sub_eq_zero, hc₁.2 i hiS, hc₂.2 i hiS]
+  rw [hSsep, Submodule.mem_bot, sub_eq_zero] at hdiff
+  exact hdiff
+
 end ProximityGap
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.exists_separating_coords
 #print axioms ProximityGap.exists_separating_restriction_injective
+#print axioms ProximityGap.separated_agree_subsingleton
