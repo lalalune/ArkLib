@@ -297,6 +297,8 @@ def LovettWitnessExists (F : Type*) [Field F] : Prop :=
       LovettHolds F V' k') →
     (∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
       lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) →
+    (∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k = lovettD V k → m' < m → IsVStar V' k → LovettHolds F V' k) →
     LovettWitness F V k
 
 /-- The `n ≤ k` constraint always available from a witness: `|vᵢ₀| = n − 1` and `|vᵢ₀| ≤ k − 1`

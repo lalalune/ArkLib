@@ -177,6 +177,8 @@ def MergeBranchImpossible (F : Type*) [Field F] : Prop :=
       LovettHolds F V' k') →
     (∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
       lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) →
+    (∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k = lovettD V k → m' < m → IsVStar V' k → LovettHolds F V' k) →
     (∀ (i : Fin m) (j : Fin n), (j : ℕ) < n - 1 → V i j = 0 → V i (lastCoord n hn) = 0 →
       ∃ i₀, V i₀ = oneVec n hn)
 
@@ -192,14 +194,14 @@ Branch on the ambient dimension `n`:
 Unconditional and axiom-clean: it consumes only landed lemmas. -/
 theorem lovettPrimitiveStep_of_mergeBranchImpossible (hmerge : MergeBranchImpossible F) :
     LovettPrimitiveStep F := by
-  intro n m V k hk hV hprim IHn IHd
+  intro n m V k hk hV hprim IHn IHd IHm
   rcases Nat.eq_zero_or_pos n with hn0 | hn
   · subst hn0; exact lovettHolds_dim0 V k hk hV
   · have hwit : LovettWitness F V k := by
       rcases witness_or_mergeCandidate (V := V) (k := k) hn hV hprim with ⟨i₀, hone⟩ | hcand
       · exact ⟨hn, i₀, hone⟩
       · obtain ⟨i, j, hjlt, hj0, hlast⟩ := hcand
-        obtain ⟨i₀, hone⟩ := hmerge V k hk hn hV hprim IHn IHd i j hjlt hj0 hlast
+        obtain ⟨i₀, hone⟩ := hmerge V k hk hn hV hprim IHn IHd IHm i j hjlt hj0 hlast
         exact ⟨hn, i₀, hone⟩
     exact lovettHolds_of_witness hk hV hwit IHd
 

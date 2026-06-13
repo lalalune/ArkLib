@@ -266,8 +266,8 @@ theorem lovettHolds_of_witness {m : ℕ} {V : Fin m → (Fin n → ℕ)} {k : �
 /-- **The primitive step reduces to the witness residual** (Lemma 2.5 existence). -/
 theorem lovettPrimitiveStep_of_witnessExists (hw : LovettWitnessExists F) :
     LovettPrimitiveStep F := by
-  intro n m V k hk hV hprim IHn IHd
-  exact lovettHolds_of_witness hk hV (hw V k hk hV hprim IHn IHd) IHd
+  intro n m V k hk hV hprim IHn IHd IHm
+  exact lovettHolds_of_witness hk hV (hw V k hk hV hprim IHn IHd IHm) IHd
 
 /-- **`LovettPrimitiveCase` (and full Theorem 1.7) reduce to the witness residual.** -/
 theorem lovettPrimitiveCase_of_witnessExists (hw : LovettWitnessExists F) {n : ℕ} :

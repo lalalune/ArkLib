@@ -175,6 +175,8 @@ def LovettMergeIndep (F : Type*) [Field F] : Prop :=
       LovettHolds F V' k') →
     (∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
       lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) →
+    (∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k = lovettD V k → m' < m → IsVStar V' k → LovettHolds F V' k) →
     (∃ (i : Fin m) (j : Fin n), (j : ℕ) < n - 1 ∧ V i j = 0 ∧ V i (lastCoord n hn) = 0) →
     LovettHolds F V k
 
@@ -184,13 +186,13 @@ directly and splits `n ≥ 1` via `witness_or_mergeCandidate`: the witness branc
 candidate).  This reduction is genuinely usable — `LovettMergeIndep` is true — discharging it closes
 Theorem 1.7 and the prize route R3. -/
 theorem lovettPrimitiveStep_of_mergeIndep (hmi : LovettMergeIndep F) : LovettPrimitiveStep F := by
-  intro n m V k hk hV hprim IHn IHd
+  intro n m V k hk hV hprim IHn IHd IHm
   rcases Nat.eq_zero_or_pos n with hn0 | hnpos
   · subst hn0; exact lovettHolds_primitive_n0 hk hV
   · rcases witness_or_mergeCandidate hnpos hV hprim with hwit | hmerge
     · obtain ⟨i₀, hone⟩ := hwit
       exact lovettHolds_of_witness hk hV ⟨hnpos, i₀, hone⟩ IHd
-    · exact hmi hnpos V k hk hV hprim IHn IHd hmerge
+    · exact hmi hnpos V k hk hV hprim IHn IHd IHm hmerge
 
 /-- **Theorem 1.7 (and `LovettPrimitiveCase`, full GM-MDS), modulo `LovettMergeIndep`.** -/
 theorem lovettThm17_of_mergeIndep (hmi : LovettMergeIndep F) {n : ℕ} : LovettThm17 F n :=

@@ -56,6 +56,9 @@ def LovettPrimitiveStep (F : Type*) [Field F] : Prop :=
     -- IH on d at the same (n, k): strictly fewer polynomials
     (∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
       lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) →
+    -- IH on m at the same (n, k, d): EQUAL measure d, strictly fewer vectors (Lemma 2.4)
+    (∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k = lovettD V k → m' < m → IsVStar V' k → LovettHolds F V' k) →
     LovettHolds F V k
 
 /-- **The master induction frame.**  Nested strong induction on `(n, k, d)`; the reducible
@@ -80,19 +83,28 @@ theorem lovettThm17_master (hstep : LovettPrimitiveStep F) : ∀ {n : ℕ}, Love
     induction k using Nat.strong_induction_on with
     | _ k IHk =>
       -- `IHk` : ∀ k' < k, ∀ m V, 1 ≤ k' → IsVStar V k' → LovettHolds F V k'
-      -- Now strong induction on the measure d.
-      suffices Hd : ∀ d : ℕ, ∀ {m : ℕ} (V : Fin m → (Fin n → ℕ)),
+      -- Now strong induction on the measure d, then on the number of vectors m.
+      suffices Hd : ∀ d : ℕ, ∀ m : ℕ, ∀ (V : Fin m → (Fin n → ℕ)),
           lovettD V k = d → 1 ≤ k → IsVStar V k → LovettHolds F V k by
-        intro m V hk hV; exact Hd (lovettD V k) V rfl hk hV
+        intro m V hk hV; exact Hd (lovettD V k) m V rfl hk hV
       intro d
       induction d using Nat.strong_induction_on with
       | _ d IHd =>
-        intro m V hdV hk hV
-        -- IH on d (at this n, k):
+        -- `IHd` : ∀ d' < d, ∀ m V, lovettD V k = d' → … → LovettHolds.  Now induct on m at fixed d.
+        intro m
+        induction m using Nat.strong_induction_on with
+        | _ m IHm =>
+        intro V hdV hk hV
+        -- IH on d (at this n, k): strictly smaller measure, any number of vectors.
         have IHdstep : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
             lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k := by
           intro m' V' hlt hV'
-          exact IHd (lovettD V' k) (by rw [hdV] at hlt; exact hlt) V' rfl hk hV'
+          exact IHd (lovettD V' k) (by rw [hdV] at hlt; exact hlt) m' V' rfl hk hV'
+        -- IH on m (at this n, k, d): EQUAL measure, strictly fewer vectors.
+        have IHmstep : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+            lovettD V' k = lovettD V k → m' < m → IsVStar V' k → LovettHolds F V' k := by
+          intro m' V' heq hmlt hV'
+          exact IHm m' hmlt V' (by rw [heq, hdV]) hk hV'
         -- Dichotomy: reducible vs primitive.
         by_cases hred : ∃ j : Fin n, ∀ i, 1 ≤ V i j
         · -- reducible: peel (x − aⱼ) and use the k-level IH at k − 1.
@@ -117,7 +129,7 @@ theorem lovettThm17_master (hstep : LovettPrimitiveStep F) : ∀ {n : ℕ}, Love
           push_neg at hred
           have hprim : ∀ j : Fin n, ∃ i, V i j = 0 := by
             intro j; obtain ⟨i, hi⟩ := hred j; exact ⟨i, by omega⟩
-          exact hstep V k hk hV hprim IHn' IHdstep
+          exact hstep V k hk hV hprim IHn' IHdstep IHmstep
 
 /-- **Theorem 1.7 modulo the primitive step.**  With `LovettPrimitiveStep`, full GM-MDS. -/
 theorem lovettThm17_of_primitiveStep (hstep : LovettPrimitiveStep F) {n : ℕ} :
