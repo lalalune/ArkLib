@@ -7984,3 +7984,23 @@ support; it does NOT prove `CensusDomination` (other supply sources may exist, e
 Frobenius-subfield blowup O-entry, which is additive-structure-coupled and a separate
 question). It removes the multiplicative-subspace route as a production-rate obstruction
 and pins it to the same vanishing-rate barrier as the known capacity disproofs.
+
+### O159 — NAIVE FOLD-TRANSPORT REFUTED at every prize rate: the unfolding loss L = s ≥ 2 exceeds the breakeven L*(ρ) = 1+√ρ; the route survives only under a (1−√ρ) tower-co-location condition (δ* lower-bound side, #389, 2026-06-13)
+
+`scripts/probes/probe_fold_transport_feasibility.py` + RESULTS-FOLD-TRANSPORT.md.
+The all-rates bracket (probe_deltastar_bracket_allrates.py) reduced pinning δ* to the
+lower-bound side; this decides research-map vector 5 (fold-transport of explicit
+capacity results) at the constraint level, exactly.
+
+* Folded smooth-RS (arity s) preserves rate ρ, list-decodes to folded-symbol-error
+  fraction 1−ρ−ε (GW/CZ25); a plain δ-fraction maps to folded fraction up to min(δs,1)
+  (adversary spreads). Beyond-Johnson plain radius needs effective loss L < L*(ρ) =
+  (1−ρ)/(1−√ρ) = **1+√ρ** (exact: 1−ρ = (1−√ρ)(1+√ρ)).
+* **Naive worst-case L = s ≥ 2 > 1+√ρ = L*(ρ) ∀ρ ≤ 1/2 ⟹ naive fold-transport beats
+  Johnson at NO prize rate** (1+√ρ ∈ {1.707, 1.5, 1.354, 1.25} for ρ ∈ {1/2,1/4,1/8,1/16}).
+  Exact refutation of the naive route — the research-map hand-wave made precise.
+* SURVIVING CONDITION: the smooth tower must force MCA-bad error supports to co-locate
+  within tower blocks to fraction ≥ 1−√ρ (= the Johnson radius; at s=2 the fresh-block
+  spread must be < √ρ). The supply census (exponential, spread-thin — EsymmFiber) is
+  prior evidence AGAINST co-location. Named successor: the toy-scale co-location probe
+  on MCA-bad stacks under the squaring-tower ordering (decides the route fully).
