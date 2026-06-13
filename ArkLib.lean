@@ -751,6 +751,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessStructure
+import ArkLib.Data.CodingTheory.ProximityGap.EnergyInjection
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyMinimalF73
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyRelationAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.EntropyGateBinomial
