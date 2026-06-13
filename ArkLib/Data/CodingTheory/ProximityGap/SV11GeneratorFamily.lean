@@ -139,6 +139,32 @@ theorem sv11Gen_deriv_eval_mul (c y : F) {t : ℕ} (a b : ℕ) (h : (y - c) ^ t 
         = ((t * b : ℕ) : F) * (y - c) ^ (t * b - 1) * (y - c) * y ^ a by ring,
     hpm]
 
+/-- **Order-1 of the combination: the weighted moments.** If the row sums vanish
+(`∑_b coef(a,b) = 0`), then the *first derivative* of `Ψ = ∑ coef·g_{a,b}` at a rep point is governed
+by the next moment level — `(y−c)·Ψ'(y) = t·∑_a (∑_b b·coef(a,b))·y^a`. So imposing order-2 vanishing
+at the rep points costs only the `D` *weighted* row-sum conditions `∑_b b·coef(a,b) = 0` (on top of the
+`D` row-sum conditions): the order-`M` moment ladder, the next rung after `sv11_combination_vanishes_of_rowsum_zero`. -/
+theorem sv11_deriv_combination_of_rowsum_zero {D B : ℕ} (c y : F) (t : ℕ) (coef : ℕ → ℕ → F)
+    (h : (y - c) ^ t = 1) (hrow : ∀ a, ∑ b ∈ Finset.range B, coef a b = 0) :
+    (Polynomial.derivative (∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+        Polynomial.C (coef a b) * sv11Gen c t (a, b))).eval y * (y - c)
+      = (t : F) * ∑ a ∈ Finset.range D, (∑ b ∈ Finset.range B, (b : F) * coef a b) * y ^ a := by
+  rw [derivative_sum, eval_finset_sum, Finset.sum_mul]
+  rw [Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro a _
+  rw [derivative_sum, eval_finset_sum, Finset.sum_mul]
+  -- inner: ∑_b (derivative (C (coef a b) * g)).eval y * (y-c) = t * (∑_b b*coef) * y^a   (using row sum 0)
+  have hterm : ∀ b ∈ Finset.range B,
+      (Polynomial.derivative (Polynomial.C (coef a b) * sv11Gen c t (a, b))).eval y * (y - c)
+        = coef a b * ((a : F) * y ^ (a - 1) * (y - c)) + (t : F) * ((b : F) * coef a b) * y ^ a := by
+    intro b _
+    rw [derivative_C_mul, eval_mul, eval_C, mul_assoc, sv11Gen_deriv_eval_mul c y a b h]
+    push_cast
+    ring
+  rw [Finset.sum_congr rfl hterm, Finset.sum_add_distrib, ← Finset.sum_mul, hrow a, zero_mul,
+    zero_add, ← Finset.sum_mul, ← Finset.mul_sum, mul_assoc]
+
 end ProximityGap.BinomialDet
 
 
@@ -146,5 +172,6 @@ end ProximityGap.BinomialDet
 #print axioms ProximityGap.BinomialDet.sv11Gen_eval_of_pow_eq_one
 #print axioms ProximityGap.BinomialDet.sv11_combination_vanishes_of_rowsum_zero
 #print axioms ProximityGap.BinomialDet.sv11Gen_deriv_eval_mul
+#print axioms ProximityGap.BinomialDet.sv11_deriv_combination_of_rowsum_zero
 #print axioms ProximityGap.BinomialDet.add_mul_lt_injective
 #print axioms ProximityGap.BinomialDet.sv11_wronskianDet_ne_zero
