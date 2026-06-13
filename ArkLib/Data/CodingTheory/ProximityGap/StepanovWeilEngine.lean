@@ -110,9 +110,136 @@ theorem natDegree_weil_form_le
     rw [Polynomial.natDegree_pow]
     exact Nat.add_le_add_left (natDegree_subq_le _ A1 h1) _
 
+/-! ## The two-component dimension-count construction of the obstruction-form auxiliary.
+
+`exists_stepanov_auxiliary_pair`: a nonzero pair `(A₀, A₁)` with `X`-blocks of degree `≤ A` and
+`Y`-degree `< ℓ`, whose Weil-form auxiliary `R = subq A₀ + g^((q−1)/2)·subq A₁` vanishes to
+Hasse-order `M` at every point of `V`, exists as soon as the dimension `2·ℓ·(A+1)` exceeds the
+number of conditions `|V|·M`. Pure rank-nullity (`ker_ne_bot_of_finrank_lt`) on the linear map
+`(b₀, b₁) ↦ (a, k) ↦ E^k(R)(a)`. Non-triviality of `(A₀, A₁)` comes from injectivity of the
+block-to-polynomial map, NOT from the (separately proven) non-vanishing of `R`. -/
+section Construction
+
+/-- `subq` as an `F`-linear map (it is the `F[X]`-algebra map `aeval (X^q)`). -/
+noncomputable def subqLin (q : ℕ) : Polynomial (Polynomial F) →ₗ[F] Polynomial F :=
+  (Polynomial.aeval (X ^ q : Polynomial F)).toLinearMap.restrictScalars F
+
+theorem subqLin_eq (q : ℕ) (A : Polynomial (Polynomial F)) : subqLin q A = subq q A := by
+  simp only [subqLin, LinearMap.restrictScalars_apply, AlgHom.toLinearMap_apply,
+    Polynomial.aeval_def]
+  rfl
+
+/-- The block-data `→ F[X][Y]` map: `b ↦ ∑_{j<ℓ} (b j)·Y^j` (each block `b j ∈ F[X]_{<A+1}`). -/
+noncomputable def blockPoly (ℓ A : ℕ) :
+    (Fin ℓ → Polynomial.degreeLT F (A + 1)) →ₗ[F] Polynomial (Polynomial F) :=
+  ∑ j : Fin ℓ, ((Polynomial.monomial (j : ℕ)).restrictScalars F).comp
+    (((Polynomial.degreeLT F (A + 1)).subtype).comp (LinearMap.proj j))
+
+theorem blockPoly_apply (ℓ A : ℕ) (b : Fin ℓ → Polynomial.degreeLT F (A + 1)) :
+    blockPoly ℓ A b = ∑ j : Fin ℓ, Polynomial.monomial (j : ℕ) (b j : Polynomial F) := by
+  rw [blockPoly, LinearMap.sum_apply]
+  exact Finset.sum_congr rfl (fun j _ => by simp [LinearMap.comp_apply])
+
+theorem blockPoly_coeff (ℓ A : ℕ) (b : Fin ℓ → Polynomial.degreeLT F (A + 1)) (i : Fin ℓ) :
+    (blockPoly ℓ A b).coeff (i : ℕ) = (b i : Polynomial F) := by
+  rw [blockPoly_apply, finset_sum_coeff, Finset.sum_eq_single i]
+  · rw [Polynomial.coeff_monomial, if_pos rfl]
+  · intro j _ hj; rw [Polynomial.coeff_monomial, if_neg (fun h => hj (Fin.ext h))]
+  · intro h; exact absurd (Finset.mem_univ i) h
+
+theorem blockPoly_inj (ℓ A : ℕ) : Function.Injective (blockPoly (F := F) ℓ A) := by
+  intro b b' hbb; funext i; rw [Subtype.ext_iff]
+  rw [← blockPoly_coeff ℓ A b i, ← blockPoly_coeff ℓ A b' i, hbb]
+
+theorem blockPoly_coeff_natDegree_le (ℓ A : ℕ) (b : Fin ℓ → Polynomial.degreeLT F (A + 1)) (i : ℕ) :
+    ((blockPoly ℓ A b).coeff i).natDegree ≤ A := by
+  by_cases hi : i < ℓ
+  · rw [show i = ((⟨i, hi⟩ : Fin ℓ) : ℕ) from rfl, blockPoly_coeff]
+    have hb := (b ⟨i, hi⟩).2
+    rw [Polynomial.mem_degreeLT] at hb
+    by_cases hz : (b ⟨i, hi⟩ : Polynomial F) = 0
+    · rw [hz]; simp
+    · have := (Polynomial.natDegree_lt_iff_degree_lt hz).mpr hb; omega
+  · rw [blockPoly_apply, finset_sum_coeff, Finset.sum_eq_zero]
+    · simp
+    · intro j _; rw [Polynomial.coeff_monomial, if_neg (by intro h; omega)]
+
+/-- Per-component Weil-form builder `b ↦ subq (blockPoly b)`. -/
+noncomputable def Pbuild (q ℓ A : ℕ) : (Fin ℓ → Polynomial.degreeLT F (A + 1)) →ₗ[F] Polynomial F :=
+  (subqLin q).comp (blockPoly ℓ A)
+
+/-- The full Weil-form builder over the pair domain. -/
+noncomputable def toR (g : Polynomial F) (q ℓ A : ℕ) :
+    ((Fin ℓ → Polynomial.degreeLT F (A + 1)) × (Fin ℓ → Polynomial.degreeLT F (A + 1)))
+      →ₗ[F] Polynomial F :=
+  (Pbuild q ℓ A).comp (LinearMap.fst F _ _)
+    + ((LinearMap.mulLeft F (g ^ ((q - 1) / 2))).comp (Pbuild q ℓ A)).comp (LinearMap.snd F _ _)
+
+theorem toR_apply (g : Polynomial F) (q ℓ A : ℕ)
+    (bb : (Fin ℓ → Polynomial.degreeLT F (A + 1)) × (Fin ℓ → Polynomial.degreeLT F (A + 1))) :
+    toR g q ℓ A bb
+      = subq q (blockPoly ℓ A bb.1) + (g ^ ((q - 1) / 2)) * subq q (blockPoly ℓ A bb.2) := by
+  simp only [toR, LinearMap.add_apply, LinearMap.comp_apply, LinearMap.fst_apply,
+    LinearMap.snd_apply, LinearMap.mulLeft_apply, Pbuild, subqLin_eq]
+
+/-- The jet-evaluation map `Ψ ↦ (a, k) ↦ E^k(Ψ)(a)`. -/
+noncomputable def jetEvalAt (V : Finset F) (M : ℕ) : Polynomial F →ₗ[F] (↥V × Fin M → F) :=
+  LinearMap.pi (fun p => (Polynomial.leval (p.1 : F)).comp (hasseDeriv (p.2 : ℕ)))
+
+theorem jetEvalAt_apply (V : Finset F) (M : ℕ) (Ψ : Polynomial F) (p : ↥V × Fin M) :
+    jetEvalAt V M Ψ p = (hasseDeriv (p.2 : ℕ) Ψ).eval (p.1 : F) := rfl
+
+theorem finrank_construction_domain (ℓ A : ℕ) :
+    Module.finrank F
+        ((Fin ℓ → Polynomial.degreeLT F (A + 1)) × (Fin ℓ → Polynomial.degreeLT F (A + 1)))
+      = 2 * (ℓ * (A + 1)) := by
+  rw [Module.finrank_prod]
+  simp only [Module.finrank_pi_fintype,
+    Module.finrank_eq_card_basis (Polynomial.degreeLT.basis F (A + 1)),
+    Finset.sum_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul]
+  ring
+
+theorem finrank_construction_codomain (V : Finset F) (M : ℕ) :
+    Module.finrank F (↥V × Fin M → F) = V.card * M := by
+  rw [Module.finrank_fintype_fun_eq_card, Fintype.card_prod, Fintype.card_coe, Fintype.card_fin]
+
+/-- **The two-component Stepanov auxiliary, constructed by dimension count.** Whenever
+`|V|·M < 2·ℓ·(A+1)`, there is a nonzero pair `(A₀, A₁)` (Y-degree `< ℓ`, `X`-blocks of degree `≤ A`)
+whose Weil-form auxiliary vanishes to Hasse-order `M` at every point of `V`. Pure rank-nullity. -/
+theorem exists_stepanov_auxiliary_pair (g : Polynomial F) (q ℓ A : ℕ) (V : Finset F) (M : ℕ)
+    (hdim : V.card * M < 2 * (ℓ * (A + 1))) :
+    ∃ A0 A1 : Polynomial (Polynomial F),
+      ¬ (A0 = 0 ∧ A1 = 0) ∧
+      (∀ j, (A0.coeff j).natDegree ≤ A) ∧ (∀ j, (A1.coeff j).natDegree ≤ A) ∧
+      (∀ a ∈ V, ∀ k < M,
+        (hasseDeriv k (subq q A0 + (g ^ ((q - 1) / 2)) * subq q A1)).eval a = 0) := by
+  set Φ := (jetEvalAt V M).comp (toR g q ℓ A) with hΦ
+  have hlt : Module.finrank F (↥V × Fin M → F)
+      < Module.finrank F
+        ((Fin ℓ → Polynomial.degreeLT F (A + 1)) × (Fin ℓ → Polynomial.degreeLT F (A + 1))) := by
+    rw [finrank_construction_codomain, finrank_construction_domain]; exact hdim
+  have hker : LinearMap.ker Φ ≠ ⊥ := LinearMap.ker_ne_bot_of_finrank_lt hlt
+  obtain ⟨bb, hbbmem, hbbne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hker
+  refine ⟨blockPoly ℓ A bb.1, blockPoly ℓ A bb.2, ?_, ?_, ?_, ?_⟩
+  · rintro ⟨h0, h1⟩
+    apply hbbne
+    have hb0 : bb.1 = 0 := blockPoly_inj ℓ A (h0.trans (map_zero _).symm)
+    have hb1 : bb.2 = 0 := blockPoly_inj ℓ A (h1.trans (map_zero _).symm)
+    exact Prod.ext hb0 hb1
+  · exact blockPoly_coeff_natDegree_le ℓ A bb.1
+  · exact blockPoly_coeff_natDegree_le ℓ A bb.2
+  · intro a ha k hk
+    have hΦ0 : Φ bb = 0 := by rwa [LinearMap.mem_ker] at hbbmem
+    have hcf := congrFun hΦ0 (⟨a, ha⟩, ⟨k, hk⟩)
+    rw [hΦ, LinearMap.comp_apply, jetEvalAt_apply, toR_apply] at hcf
+    simpa using hcf
+
+end Construction
+
 end ArkLib.ProximityGap.StepanovWeilEngine
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.StepanovWeilEngine.weil_form_card_lt
 #print axioms ArkLib.ProximityGap.StepanovWeilEngine.weil_form_card_le
 #print axioms ArkLib.ProximityGap.StepanovWeilEngine.natDegree_weil_form_le
+#print axioms ArkLib.ProximityGap.StepanovWeilEngine.exists_stepanov_auxiliary_pair
