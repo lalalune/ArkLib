@@ -71,17 +71,10 @@ def powDomain {p : ℕ} [Fact p.Prime] (g : ZMod p) {n : ℕ} (hg : orderOf g = 
   toFun i := g ^ (i : ℕ)
   inj' := by
     intro i j hij
-    wlog hle : (i : ℕ) ≤ (j : ℕ) generalizing i j
-    · exact (this j i hij.symm (le_of_not_le hle)).symm
-    have hcancel : g ^ ((j : ℕ) - (i : ℕ)) = 1 := by
-      have h1 : g ^ (i : ℕ) * g ^ ((j : ℕ) - (i : ℕ)) = g ^ (i : ℕ) * 1 := by
-        rw [mul_one, ← pow_add, Nat.add_sub_cancel' hle]
-        exact hij.symm
-      exact mul_left_cancel₀ (pow_ne_zero _ hg0) h1
-    have hdvd : n ∣ (j : ℕ) - (i : ℕ) := hg ▸ orderOf_dvd_of_pow_eq_one hcancel
-    have hlt : (j : ℕ) - (i : ℕ) < n := lt_of_le_of_lt (Nat.sub_le _ _) j.isLt
-    have hz : (j : ℕ) - (i : ℕ) = 0 := Nat.eq_zero_of_dvd_of_lt hdvd hlt
-    exact Fin.ext (by omega)
+    change g ^ (i : ℕ) = g ^ (j : ℕ) at hij
+    have hi : (i : ℕ) ∈ Set.Iio (orderOf g) := by rw [hg]; exact i.isLt
+    have hj : (j : ℕ) ∈ Set.Iio (orderOf g) := by rw [hg]; exact j.isLt
+    exact Fin.ext (pow_injOn_Iio_orderOf hi hj hij)
 
 /-- **The bridge:** the KKH26 ceiling family `evalCode g n d` (degree-`≤ d` evaluations on the
 power domain) **is** the Reed–Solomon code `ReedSolomon.code (powDomain g) (d+1)`.  This is the
@@ -135,7 +128,7 @@ theorem interiorCeiling_of_below_and_regimeIII
     (hIII : RegimeIIIGoodness p n g μ m r εstar δJ) :
     InteriorCeiling p n g μ m r εstar := by
   intro δ hδ
-  rcases lt_or_le ((δ : ℝ)) δJ with h | h
+  rcases lt_or_ge ((δ : ℝ)) δJ with h | h
   · exact hbelow δ h
   · exact hIII δ h hδ
 
@@ -233,7 +226,7 @@ theorem gs_johnson_lt_jump {μ m r k n : ℕ} (m₀ : ℕ)
   have hcast : (((k : ℚ) / n : ℚ) : ℝ) = (k : ℝ) / (n : ℝ) := by push_cast; ring
   -- the squared comparison: (r/2^μ)² < k/n
   have hsq : ((r : ℝ) / 2 ^ μ) ^ 2 < (k : ℝ) / n := by
-    rw [div_pow, div_lt_div_iff (by positivity) (by exact_mod_cast hnpos)]
+    rw [div_pow, div_lt_div_iff₀ (by positivity) (by exact_mod_cast hnpos)]
     have h2 : ((2 : ℝ) ^ μ) ^ 2 = (2 : ℝ) ^ μ * 2 ^ μ := by ring
     rw [h2, hn]
     push_cast

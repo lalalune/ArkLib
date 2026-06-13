@@ -7261,6 +7261,201 @@ classification of σ-invariant rational pairs over the involution quotient — a
 half-dimension problem where the census/quartet machinery applies — grounded in
 finite base cases (the n = 6 window base is exhaustively `≤ w+1`).
 
+## 2026-06-12 — WindowRationalBounded REFUTED: the normalizer-pair family (n/2 bad scalars, every field)
+
+The named Prop of the below-UDR capstone (`WBPencilBelowUDR.lean`) asserted every
+doubly-WB-solvable stack has ≤ w+3 bad scalars.  **FALSE at high rate.**  The
+counterexamples are an explicit, q-independent family derived from the CRT/projective
+class reduction at the first beyond-ladder slice `n = 3w+k−1` (j = 0):
+
+* **The alignment identity.**  For `c ∈ μ_n` and any `ξ ∉ μ_n ∪ {0}`:
+  `(ξ−α)(ξ−c/α) = (ξ²/c)·((c/ξ)−α)((c/ξ)−c/α)` — equivalently, every involution pair
+  `T = {α, c/α}` has the SAME projective class `[Z_T] ∈ (F[X]/ℓ)^×/F^×` for
+  `ℓ = (X−ξ)(X−c/ξ)`.  Taking `ℓ₀, ℓ₁` two such quadratics (roots off-domain,
+  coprime) and `R_j` the canonical representatives aligning one pair `T₀`, EVERY
+  pair `T = {α, c/α}` yields `M := c_T·Z_{D∖T} ≡ ℓ₁R₀ (mod ℓ₀) ≡ γ(T)·ℓ₀R₁ (mod ℓ₁)`,
+  i.e. `γ(T)` is line-explainable with witness `D∖T`.
+* **No-joint is free**: a genuinely rational row (`ℓ ∤ R`, `ℓ` domain-nonvanishing)
+  is NEVER deg-<k-explainable on n−w ≥ w+k points (degree forcing) — so every
+  explainable γ is mca-BAD; the (n−2)/2 (c square) pair-scalars are distinct.
+* **Verified** (`probe_normalizer_pair_family.py`, predicted = exact everywhere,
+  independent second implementation at the violation): (37,12,7,2): 5; (97,12,7,2): 5
+  (q-independent); **(97,16,11,2): 7 > 5 = w+3 — REFUTED at the 2-power production
+  shape**; (113,16,11,2): 7; **(41,20,15,2): 9 > 5**.
+* **Why never seen before**: all prior window probes ran at `n = q−1` (full
+  multiplicative group), where NO off-domain ξ exists — the family needs `q−1 > n+4`.
+  The "window cap = w+1" empirics (scales 1–2) were an n = q−1 artifact.
+* **The w ≥ 4 collapse** (probed): full-degree denominators (products of w/2
+  involution quadratics) are REQUIRED (else deg P ≥ k), and then the per-quadratic
+  scalar-consistency constraints kill all unions except T₀ (predicted = exact = 1 at
+  (37,12,1,4), (97,16,5,4), (61,20,9,4)).  The μ_w-coset variant (`ℓ = X^w − e`,
+  `T = t·μ_w`, `Z_T ≡ e−t^w` constant) gives `n/w` distinct bad scalars (Möbius in
+  `t^w`) for every `w ∣ n` — the general-w family is Θ(n/w), not n^{w/2}.
+* **Structural reading**: the two maximal w = 2 families are exactly the
+  torus-normalizer involutions `x ↦ c/x` and `x ↦ −x` — the same normalizer the
+  O133/O144 moment census isolates.  Maximal aligned-pair families = normalizer
+  graphs; non-normalizer Möbius classes cap at O(1) pairs.
+
+**Surviving form** (`WindowRationalLinear`, repaired budget): doubly-WB-solvable
+stacks have ≤ n bad scalars below UDR.  Consistent with: the new families (n/2, n/w),
+the per-family bound w+1 (`FamilyBadBound.lean`), WB-1/3a/3b, and the H-RC slice-1
+≤ n law above UDR.  At production (q ≥ 2¹⁹², n ≤ 2³⁰): n/q ≤ 2^{−162} ≪ 2^{−128} —
+**the production floor (1−ρ)/2 SURVIVES with the repaired budget**.  Lean repair
+queued: `¬WindowRationalBounded` countermodel + re-parameterized capstone.
+
+## 2026-06-11 — Ownership degeneracy REFUTED: the count mechanism EXPLAINS the window cap
+
+`probe_ownership_degeneracy.py` at (13,6,1,w=2), k = 1 (residual of a pair =
+`u₁(j) − u₁(i)`): the Möbius window extremal's per-scalar ownership is **8 = the
+generic mean (8.1)** — NO collapse on the symmetric locus.  And the count is nearly
+tight: `#bad·ownership = 3·8 = 24 ≤ 30 = n(n−1)` — the window cap `w+1 = 3` IS the
+ownership bound `⌊30/8⌋`.  The mechanism, exactly: the extremal's `u₁ = (0,1,1,0,2,2)`
+has value-multiplicity `μ = 2`, every witness has `|S| ≥ 4`, so ownership
+`≥ |S|(|S|−μ) = 4·2 = 8` — measured exactly.
+
+**Consequence (the multiplicity theorem, k = 1)**: `#bad ≤ n²/((n−w)(n−w−μ))` where
+`μ` is the max value-multiplicity of `u₁` — radius-free, window-valid, the first
+unconditional bound past the ladder reach for these stacks.  The general-k analogue
+(μ → max agreement of `u₁` with degree-< k polynomials) is the ownership route to
+`WindowRationalBounded` in full.
+
+### O136 — THE TAIL STRUCTURE THEOREMS: parity purity kills every odd r > s/2 at every scale (T1, PROVEN); marginal(32) = 1,728,112 is COMPLETE (T4); turn-on is monotone (T3); r_max = 2j−5 REFUTED by 29 certificates; sharp law r² ≤ s+1 conjectured at 26/26 — and the r=5 taxonomy derivation passes adversarial audit (nubs, 2026-06-12)
+
+Two audited deliverables (independent adversarial legs, both 0.93, zero fatal):
+`scripts/probes/genlaw/exclusion/REPORT.md` and `scripts/probes/genlaw/r5tax/DERIVED-99512.md`.
+
+* **T1 [PROVEN, every odd r, every s = 2^j]: parity purity.** The odd-exponent part of the
+  balance multiset is exactly the mixed-parity products; its vanishing sum factors as U·V
+  over ℤ[ζ_n], and either factor vanishing forces one parity side empty (distinct fibers
+  occupy distinct antipodal classes). **Corollary: N_r(s) = 0 unconditionally for r > s/2**
+  — the entire deep tail, all scales, no enumeration. (Generalizes O108's L1 and the r=5
+  3-torsion argument in one stroke.)
+* **T4: s = 32 marginal CLOSED.** N_r(32) = 0 for ALL odd r ≥ 7 (r=7: full 215,414,784-config
+  sweep; r=7..15: pure-only exhaustive, legitimate by T1; r ≥ 17: T1 corollary). **O130's
+  load-bearing caveat 1 is discharged at s=32: marginal(32) = 2·(764,544 + 99,512) =
+  1,728,112 COMPLETE.** Same method re-establishes DERIVED-672 completeness at s=16 (third
+  implementation). Raw mixed-parity r=13 sign sweep running as belt-and-suspenders (0–3 of
+  8 workers returned 0 at entry time).
+* **T3 [PROVEN]: doubling monotonicity** — N_r(s) ≥ 1 ⟹ N_r(2s) ≥ 1 (double the witness,
+  pad with s/4 antipodal pairs). Strata never turn off. **T2 [PROVEN]:** h ≡ b (mod 2) for
+  pure configs — the "(b−h) odd" gate is vacuous (die_par = 0 in every measured stratum).
+* **The boundary: r_max = 2j−5 (O130's pattern guess) is REFUTED.** 29 explicit (O, m, B)
+  certificates — 8×(128,9), 6×(128,11), 8×(256,13), 3×(256,15), 2×(512,17), 2×(512,19) —
+  each re-verified twice (exact integer multiset rebuild + independent complex-float
+  vanishing check). The surviving conjecture is the **sharp law: N_r(s) > 0 ⟺ r² ≤ s+1**
+  (equivalently C(r,2) ≤ b), 26/26 on every settled stratum, explaining the s=8 tightness
+  (9 ≤ 9). Mechanism finding [MEASURED]: the aggregate budget inequality X+F ≥ ((r+1)²−s)/2
+  is NEVER the kill — 100% of pure deaths at zero strata are PER-AXIS capacity (|d| ≥ 2) or
+  forced-fiber blocking; the additive-combinatorial bound for the middle band
+  √(s+1) < r ≤ s/2 was attempted and NOT achieved (the obstruction: B is a SET with per-axis
+  capacity 1, invisible to aggregate coincidence counts). Honest opens: (64,9) — law says 0,
+  enumeration DNF (prior pass's claimed closure had 0-byte artifacts, withdrawn); (512,21) —
+  law says ON, three climbs stall (open in BOTH directions; the sharpest falsification
+  target); OFF-side evidence above s=64 is single-probe-per-scale.
+* **The r=5 taxonomy (O130's residual 3) PASSES AUDIT and lands:** every [PROVEN] lemma
+  hand re-derived (incl. the 3-torsion purity proof: index-disjoint matching forces a
+  3-cycle, t³ = −1 impossible in μ_{2^k}); complete-axis-alphabet classification of all
+  11,808 records with zero out-of-alphabet hits; independent σ-rank engine over all 8,736
+  geometries; C1/C2/C3 closed forms re-derived; all four target charts (11,808 / 99,512 /
+  ε-split / E5 census / 11 z*-strata) crossfooted from records. Landed at
+  `genlaw/r5tax/` with the audit's two required edits applied (in-tree artifact paths;
+  s ≥ 64 kernel-row provenance note + general-r threshold form). The s=64 blind-hit
+  re-execution: `struct_count` reproduces all 9 small-s rungs from source and the
+  line-by-line review found no s-dependence hazard; **independent re-execution lands the
+  blind hits: (64,5) and (64,7) EXACT vs the enumerated anchors (0.5s / 3min), and both
+  s=128 rows reproduce exactly — N₃(128) = 5,479,419,333,117,151,127,552 and N₅(128) =
+  11,414,927,180,313,095,025,440 now stand as kernel-validated predictions** (independent
+  algorithm at s=128 = the remaining falsifier; by T3+certificates the true marginal(128)
+  ALSO includes N₇, N₉(8 certs), N₁₁(6 certs) strata — the law's r ≤ 11 band).
+
+**Where the open core moves:** the per-level law now has a PROVEN skeleton (T1 purity +
+T2 parity + T3 monotonicity + per-s enumeration below s/2) and one conjectured sharp
+boundary (r² ≤ s+1) with two named decision points ((64,9), (512,21)). The middle-band
+structural proof — per-axis capacity, not aggregate budget — is the remaining theorem.
+
+### O155 — THE CONSTANT-6 LAW: the char-0 non-normalizer Möbius coincidence with μ_n is exactly 6 at every tested 2-power scale — flat in n, one uniform witness family, one closed-form normal; the small-field growth was entirely mod-p surplus (normalizer-gap lane, 2026-06-12)
+
+`scripts/probes/normalizer_gap/` (census `probe_pgl2_coincidence_census.py` brute-gated
+at q=41 + O133-calibration-gated; char-0 `probe_char0_incidence_census.py` two split
+primes ≳ 2^28; anchor `probe_char0_anchor.py` exact ℤ[x]/(x^{n/2}+1), fraction-free
+Bareiss). Object: M(n) = max over Möbius σ ∉ N(T) (the torus normalizer x↦cx, x↦c/x)
+of |μ_n ∩ σ(μ_n)| in char 0 — each incidence is a point of the surface
+P(i,j) = (ζ^{i+j}, ζ^j, ζ^i, 1) on a non-normalizer hyperplane.
+
+* **M(8) = M(16) = M(32) = M(64) = 6 — FLAT.** Lower bound PROVEN in char 0: the
+  uniform family S(n) = {(0,0),(1,1),(2,3),(4,n/2+2),(n/2−1,n−3),(n−2,n−1)} lies on
+  the ONE closed-form normal (m = n/2): c = −ζ^{m−1}+ζ−2, d = 2ζ^{m−1}−ζ^{m−2}−ζ³+ζ²+ζ,
+  −a = −ζ^{m−1}+ζ^{m−2}+ζ³−2ζ²+1, −b = (ζ−1)² — max |coeff| = 2, rank exactly 3,
+  ad−bc ≠ 0, all six incidences vanish identically, no 7th char-0 point. Upper bound
+  PROVEN-BY-HEIGHT at n = 8, 16 (Hadamard < 2^56 < p₁p₂); two-prime bit-identical
+  evidence at n = 32, 64. Structure laws (exact, every n): j−i multiset
+  {0,0,1,1,n/2−2,n/2−2}; σ ~ σ^{-1} invariance (swapneg at (1,1)); trivial translation
+  stabilizer (no torsion-coset structure); n=8's full dihedral symmetry lost at n ≥ 16.
+* **The F_q growth was surplus**: drained field maxima (10@n=32/q=449, 16@n=64/q=1153)
+  still sat ABOVE the constant core 6 — the two-layer law again (O134's lesson; an
+  intermediate pre-registered Fibonacci fit was refuted by its own falsifier 11 min
+  after registration). Count-6 planes multiply with n (12, 300, 1932, 9420) but the
+  cap stays 6.
+* **Position**: the (1,1)-curve of σ is torus-special ⟺ σ ∈ N(T) — for everything
+  else Corvaja–Zannier (JEMS 2013, Cor 2) gives O(|H|^{2/3}) up to p^{3/4} (explicit
+  ≈ 4.77, Makarychev–Vyugin); the production regime n ≤ 2^40 ≪ p^{1/2} is KSV
+  Conjecture 1.3 (O(1), A ≥ 9 known) — OUR 2-POWER-TORSION CAP 6 < 9 says smooth
+  domains are below the conjecture's worst case in char 0. Consumers: the WB σ-descent
+  concentration step (#371 — only normalizer symmetries can carry invariant extremal
+  structure; everything else touches the domain in ≤ 6 char-0 points); the O133
+  spectral gap (its census = this engine's involution slice, audit-confirmed).
+* **Also this cycle (same lane, #371 comment 4687572266)**: the σ-invariant
+  WB-RATIONAL family at scale 2 has exhaustive max bad = 1 (their sampled "invariant
+  max 3" was over non-rational orbit-constant pairs) — inside WindowRationalBounded's
+  own class the invariant family does not renormalize. And the O133 probe program
+  passed independent adversarial audit (two fresh algorithms incl. the n = q−1 edge;
+  one [:8]-truncation reporting bug found+fixed, headlines intact;
+  scripts/probes/moments/audit/).
+* **Named next**: the M(n) ≥ 6 ∀ 2-power n Lean brick (one parametric identity);
+  the ≤ 6 theorem (7-incidence impossibility — Lam–Leung/antipodal route, the
+  candidate mechanism for the in-tree vanishing-sum machinery); the height upgrade
+  of ≤ at n = 32, 64 (third prime or Hadamard sharpening); norm-spectrum
+  quantification for the production surplus threshold.
+
+## 2026-06-12 — The level-j staircase is NOT the complete envelope: the ANTIPODAL PENCIL; the d = 4 level-1 rung pin is REFUTED
+
+**Attempt** (#371 round 7): pin the first sub-ceiling rung exactly — `δ* = 5/8` for the
+`n = 16, d = 2` code on `⟨4134⟩ ⊆ F₁₂₂₈₉ˣ` at budgets `ε* < 32/p`, with the good side
+"every stack has few bad scalars below `5/8`" (the staircase-completeness hope: only the
+deeper level-`j` sign-subset families are bad below a rung, counts `5 → 1`).
+
+**Disproof of completeness.** The corrected adversarial probe (`probe_level1_pin.py`;
+the old S6 "worst = 1" was a search artifact — its pool capped monomial exponents at 4)
+found the **antipodal pencil** `(X^h, X^{h+1})`, `h = n/2`: since `x^h = ±1`, the line
+`x^h(1+γx)` *is* the degree-1 word `±(1+γX)` on a full antipodal half-coset plus the one
+rotating cross-coset point `x₀ = −1/γ`, and the direction `±x` single-deviates there.
+**All `n` scalars of the inversion orbit `−1/⟨g⟩` are bad at radius `1 − (h+1)/n`**, for
+every code degree `1 ≤ d ≤ h − 1` — strictly below the deepest staircase rung (`1/2`)
+with count strictly above every deep-rung spectrum (`16 > 5 = N(2,2)` at the instance).
+Proven axiom-clean, in general:
+
+```lean
+ArkLib.ProximityGap.Level1Rung.antipodal_pencil_epsMCA_lower_bound   -- n bad at 1−(h+1)/n
+ArkLib.ProximityGap.Level1Rung.mcaDeltaStar_le_antipodal             -- δ* ≤ 1−(h+1)/n at ε* < n/p
+```
+
+**Consequences (Level1RungPin.lean, all axiom-clean).**
+- The `d = 4` (rate 5/16) level-1 rung `1/2` is **refuted as a pin point on its entire
+  band**: the pencil count `16` equals the rung budget `K₁ = 16`, so for every
+  `ε* < 16/p`, `δ* ≤ 7/16 < 1/2` (`deltaStar_lt_levelOne_rung_F12289_d4`); the per-rung
+  interior obligation there is **unsatisfiable** (`level1_interior_unsat_F12289_d4`).
+- The `d = 2` rung `5/8` **survives**, with its conditional band trapped to
+  `[16/p, 32/p)` (`level1_interior_floor16_F12289`); probed worst stack at threshold 7
+  is exactly 16 = the pencil. Envelope-exactness there = ONE named obligation
+  (`SubCeilingInteriorCeiling` via `subceiling_deltaStar_pin_of_interior`, the general
+  per-rung reduction), and the in-tree per-witness subset counting **provably cannot
+  discharge it**: absolute scheme cap `C(16,4)/C(7,4) = 52 > 31` (the saturation theorem
+  made concrete; `level1_budget_le_subset_cap`).
+- The pencil ladder continues: `(X^h, X^{h+2})` gives 8 bad at radius `3/8` (probed,
+  exact, `p ∈ {97, 12289}`). The refined envelope = staircase ⊔ pencil ladder (⊔ ...?)
+  is the successor question; any future "complete envelope" claim must subsume the
+  pencil orbit.
+
 ## 2026-06-12 — REFUTED: the rung census conjecture `bad ≤ 16 = n` (p=12289, n=16, k=3, agreement 7)
 
 The block-frame construction beats the antipodal pencil. Two disjoint 6-point
@@ -7282,3 +7477,1055 @@ frames simultaneously (`RungMaximalFrame.lean` predicts the 20 exactly).
   realizability question is now THE obligation-critical computation.
 * The conjecture `δ* truth = 16` at this rung and the issue-comment claim
   "bad ≤ 16 HOLDS at both scales" (comment 4688420285) are WITHDRAWN.
+
+### O156 — THE CONSTANT-6 LAW IS TWO-SIDED at n = 8..64, and the ≤-side target is a Beukers–Smyth sharpening: M(32) = M(64) = 6 rigorous via the invisibility trichotomy; the witness curve is conjugate-reciprocal exactly as BS's structure theorem demands (normalizer-gap lane, 2026-06-12; follow-up to O155)
+
+* **M(32) ≤ 6 and M(64) ≤ 6 RIGOROUS** (`probe_char0_rigor.py`, RESULTS-CHAR0-RIGOR.md):
+  a hypothetical 7-incidence char-0 plane fixes THREE nonzero case integers
+  (coordinate norms ≤ 3^{3m/2}, det norm ≤ 54^m — exact Hadamard; cruder L1 route
+  6^m/72^m carried independently); a clean census at split p > 2^28 misses the plane
+  only if p divides one of them (the invisibility trichotomy — audited against the
+  census skip-paths; note: the naive "p | content" exclusion is INVALID since
+  reduction is evaluation, not coefficientwise — replaced by the norm/divisibility
+  lemma); per-plane pigeonhole: 6 clean primes kill n=32, 11 (Hadamard) / 12 (L1)
+  kill n=64; ladders ran 8 and 12 primes, ALL max = 6, bit-identical histograms.
+  Combined with O155's char-0 anchor: **M(n) = 6, both directions, n ∈ {8,16,32,64}**
+  (program-assisted: exact arithmetic + symbolic self-checks; not yet Lean).
+* **The Laurent collapse** (from the ≥6 brick design): under ζ^m = −1 the witness
+  datum is m-INDEPENDENT — z·c = (ζ−1)², ζ²·d = −(ζ−1)²(ζ³+ζ²−1),
+  ζ²·a = −(ζ−1)²(ζ³−ζ−1), b = −(ζ−1)², ζ⁴(ad−bc) = (ζ−1)⁶(ζ+1)²(ζ²+ζ+1): ONE fixed
+  Möbius map realizes the 6 points at every 2-power level; incidences are ring
+  identities for ALL m ≥ 2. Lean brick (MobiusCoincidenceWitness.lean) in flight.
+* **The ≤6-for-all-n question is exactly a Beukers–Smyth sharpening** (lit-gated at
+  the source, Number Theory for the Millennium I 2002): BS bound = 22·V (V = 1 for
+  bidegree (1,1)); sharp constant OPEN even for BS (16 ≤ C ≤ 22); their §5.6 covers
+  only the symmetric rational family xy + λ(x+y) + 1 (max 4). CONSISTENCY FALSIFIER
+  PASSED: BS cap non-reciprocal curves at 4V — any curve beating 4 MUST be
+  conjugate-reciprocal (f ~ f̄(x⁻¹,y⁻¹)) with ℚ^ab coefficients; our witness curve
+  verified exactly that (inversion + conjugation returns it with unit factor 1/ζ).
+  So the open branch of the ≤6 theorem is ONLY the conjugate-reciprocal
+  abelian-coefficient (1,1)-family — explicitly parameterizable via the
+  reciprocity relations; census ground truth: count-6 maximizer classes are rich
+  (34 at n=16, 210 at n=32, all partial injections — finite-list classification
+  impossible, the uniform mechanism must be BS's f†/seven-polynomial machinery).
+* Census engine debt note: the count-6 classification + ladders share the one
+  census code path (mitigated by the symbolic identity checks, the n=8 exhaustive
+  norm audit, and brute gates at q=41); an independent reimplementation would
+  upgrade confidence — cheap follow-up for any seat.
+
+### O157 — THE SPANNING IDENTITY: rank-3 surface planes are AUTOMATICALLY conjugate-reciprocal (λ = ζ^{−Σ} explicit) — non-reciprocal planes carry ≤ 2 points; all 244 maximizer classes verified; the constant-6 law extends to n = 128 with a forward-predicted exact count law (normalizer-gap lane, 2026-06-12; follow-up to O155/O156)
+
+`scripts/probes/normalizer_gap/` (probe_reciprocal_param.py, probe_reciprocal_census.py,
+RESULTS-RECIPROCAL.md; commit 66b05bd71). Batch-2 falsifier round — all passed:
+
+* **The spanning identity** (machine-verified exhaustively at n=8, randomly to 256, mod-p in
+  every census run): rev(cross(P00, P(i₁,j₁), P(i₂,j₂))) = ζ^Σ·conj(cross), Σ = i₁+j₁+i₂+j₂.
+  Consequence: EVERY plane spanned by a rank-3 surface triple is conjugate-reciprocal with
+  the explicit unit λ = ζ^{−Σ} — and invertible non-normalizer NON-reciprocal planes carry
+  ≤ 2 surface points (rank-3 ⟹ reciprocal; rank-2 ⟹ coordinate line ⟹ singular). On this
+  surface that sharpens Beukers–Smyth's non-reciprocal 4V-cap to 2, and localizes the
+  ≤6-for-all-n question ENTIRELY inside the explicit λ-family (a half-dimension K-subspace,
+  rank-verified). Care taken: λλ̄ = 1 does NOT imply λ = ±ζ^t in general (machine
+  counterexample (3+4i)/5) — the ±ζ^t form holds for primitive integral normals
+  (content + Kronecker) and is explicit for spanned planes via the identity.
+* **BS-consistency falsifier passed at full strength**: all 34 (n=16) + 210 (n=32) count-6
+  maximizer classes reconstructed and re-proven char-0 count-6 in exact ℤ[x]/(x^{n/2}+1),
+  each fitting the UNIQUE predicted λ = ζ^{−Σ}. No anomaly.
+* **Constant-6 extends to n = 128**: M_p(128) = 6 at two split primes, zero planes above 6;
+  M(128) ≥ 6 and M(256) ≥ 6 proven char-0 (multi-prime certificate mode: heights ⟹
+  N² ≤ 432^m; ladder product exceeding it forces exact vanishing — every count-5/6 plane at
+  every n ∈ {8..128} carries an exact certificate, 0 failures). ≤6 at 128 remains two-prime
+  evidence (rigor ladder = 24 clean primes, ~3h, named follow-up; n=256 census needs ~35GB
+  disk — skipped honestly, ≥6 anchor stands).
+* **Exact count laws** (forward-predicted: the quadratic through n=16/32/64 predicted
+  count6(128) = 41292 BEFORE the run; both primes returned exactly that):
+  count6(n) = (n−4)(11n−76)/4 over n = 8..128 (12/300/1932/9420/41292, five-for-five) and
+  count5(n) = 10(n−6) (five-for-five). Closed-form DERIVATION from the λ-family = the named
+  next brick (these are the maximizer-population laws the ≤6 theorem must reproduce).
+* **First mod-p surplus of the program observed** (n=128: count-3/4 buckets differ across the
+  two primes; count-5/6 and the max bit-identical, all certified char-0) — the two-layer law
+  surfaces exactly where the certificates stop, never touching the headline.
+* **O156's engine-debt note DISCHARGED**: independent reimplementation of dedupe (streamed
+  gzip + external sort) and recount (fresh Möbius O(n)-per-plane counter), gate-reproduced
+  bit-identically at n=32/64 before n=128 was believed.
+
+Named next: the ≤6 theorem ON the λ-family (BS f†/seven-polynomial machinery, count laws as
+ground truth); the 24-prime M(128) ladder; count6/count5 closed-form derivation; the
+const6_witness Lean brick's ≤-side counterpart.
+
+## 2026-06-12 — The UDR-edge gap of the universal dichotomy is INTRINSIC (analysis)
+
+The universal below-UDR law covers `2w + 2k ≤ n`; the band `n ∈ [2w+k+1, 2w+2k)`
+(width `k/n` in radius) is a genuine gap of the method, not bookkeeping: for a
+direction at distance `e ∈ (w, w+k]` from the code (max agreement
+`a ∈ [n−w−k, n−w)`), BOTH branches vanish — the multiplicity factor
+`n−w−k−μ = e−w−k ≤ 0`, and the sparse/packing popular count needs witness-minus-
+support `m = n−w−e ≥ k`, which fails exactly there (at `m < k` even a single
+codeword is not determined by the off-support agreement, so the popularity
+argument cannot start).  Closing the band needs a counting mechanism for
+explaining codewords pinned by FEWER than `k` points plus the γ-line structure —
+the same shape as the at-UDR boundary slice (`B6 = 7`) analysis.  Logged as the
+fifth documented no-go; the band is the precise below-UDR residue.
+
+## 2026-06-12 — THE TUBE EXPERIMENT: ladder extremality at threshold REFUTED; far directions attain C(n,k+1) exactly; WB-3b live-verified beyond Johnson
+
+`probe_tube_vs_spectrum.py` at the dimension-ladder instance (p = 12289, n = 8 = μ₈,
+k = 2, agreement t = 3 — the threshold radius δ = 5/8, beyond Johnson):
+
+* **ladder stack (X³, X²): exactly 40 bad scalars** — byte-matches the sibling's
+  spectrum law N(3,3) (checker cross-validated);
+* **random far directions: 56 = C(8,3) — repeatedly, exactly** — every
+  (k+1)-subset of a witness determines one scalar, all distinct generically: the
+  ownership count is TIGHT, and far directions BEAT the spectrum family at the
+  threshold (56 > 40).  The adjacent-pair family is NOT the threshold extremizer;
+  the exact threshold sup is ≥ C(n,k+1)/p;
+* **genuine codeword direction: 0 bad** — WB-3b verified computationally at a
+  beyond-Johnson radius (live red-team pass for the Lean theorem);
+* the sibling's δ*-pin is UNAFFECTED (it is a sup over radii strictly below the
+  threshold; the good-side ownership bound applies there).
+
+**Theorem landed** (`strongly_far_badScalars_card_mul_le`, axiom-clean): directions
+with max codeword agreement ≤ k satisfy `#bad · (n−w).descFactorial (k+1) ≤ n^{k+1}`
+at EVERY radius — at the boundary slice this is ≈ C(n,k+1), matching the measured
+56 within the ordered-count factor.  The exact threshold value of ε_mca at the
+boundary slice is now bracketed `[C(n,k+1), n^{k+1}/(k+1)!]`-ish for the far class,
+with the far class provably extremal over the spectrum family.
+## 2026-06-12 — UDR-edge band amendment: RADIUS coverage closed by composition (the no-go stands for the dichotomy budget)
+
+The fifth no-go above is intrinsic to the universal DICHOTOMY's two branches, not to the
+radius band: the subset-ownership law (`march_badScalars_card_mul_le`, glueing constant)
+is radius-free, so the band `n ∈ [2w+k+1, 2w+2k)` moves at the subset budget
+`C(n,k+1)/((k+1)·p)` — `UDREdgeClosure.lean` (`udrEdgeBand_closure`,
+`le_mcaDeltaStar_subset_law_w`).  Below-UDR radius coverage is gapless at every rate.
+What remains open on the band is only the BUDGET gap: the dichotomy's
+`n^{k+1}/(n−2w−2k+1)^k` shape is unavailable there; recovering it needs the γ-line
+mechanism (explainers of bad scalars move polynomially `p_γ = P(γ)` with codeword
+coefficients; the column dichotomy — ≤ a−1 identically-zero columns else joint — gives
+`#bad ≤ n·deg P`; the missing piece is SLOPE COLLAPSE: `deg P ≤ 1` on the band, probe
+`_scratch_probe_slope_collapse.py`).
+
+**Generic-domain addendum (same day):** the band is also closed for EVERY injective
+evaluation domain (no smoothness) by a second independent mechanism — the γ-preserving
+puncture descent (`BelowUDRPuncture.lean`): a direction vanishing at a witness point
+`x₀` forces every explainer through `(x₀, u₀ x₀)` at every γ, and dividing the instance
+by `(X − x₀)` maps `(n, k, w) → (n−1, k−1, w)` at the same γ with `n − k` (hence the
+UDR slack σ = n−2w−k) invariant; induction on k bottoms at the k = 1 universal law.
+Result: `#bad·(n−2w−k) ≤ n^{k+1}` on ALL of `2w+k+1 ≤ n` — one statement, the whole
+below-UDR range, generic domain (`belowUDR_badScalars_card_mul_le`,
+`le_mcaDeltaStar_belowUDR`, `udrEdgeBand_closure_generic`; probe
+`probe_edgeband_puncture.py`, 633/633 descent checks).  Budget comparison stands: on
+smooth domains in the band the subset budget `C(n,k+1)/((k+1)p)` is sharper, and on
+`2w+2k ≤ n` the dichotomy budget is sharper — the descent adds generality (any domain),
+uniformity (one statement), and a reusable γ-preserving transfer mechanism (it is
+radius-agnostic: above UDR it descends every bad scalar whose witness meets the
+direction's zero set; the complementary stratum has witnesses concentrated on the
+support).  (Slope collapse was refuted the same day — see the entry above; the
+descent bound here is unaffected, and the surviving two-regime pencil law plus the
+moment-fiber question remain the named budget targets on smooth domains.)
+
+## 2026-06-12 — SLOPE COLLAPSE REFUTED (directed t=2 construction); the surviving two-regime pencil law
+
+The slope-collapse conjecture (UDR-edge amendment above: every band bad-family's
+explainer map is affine, `deg P ≤ 1`) is FALSE as stated: the explicit quadratic-pencil
+construction (`_scratch_probe_nonaffine_directed.py`, wt371) produces genuine nonaffine
+bad families wherever the scalar field gives room.  Witness at the band instance
+`(p, n, k, w) = (73, 9, 2, 3)`, `a = 6`:
+`u₀ = (64, 48, 33, 62, 37, 56, 46, 22, 36)`, `u₁ = (5, 29, 30, 32, 65, 5, 29, 61, 55)`,
+bad scalars `{12, 16, 36}`, no affine selection (verified over all explainer pairs).
+The first random probe's zero-nonaffine reading at `p = 17, 19` was a small-field
+artifact.  Design: column polys `−m₂(i)(γ−r₁ᵢ)(γ−r₂ᵢ)` with `m₂` a nonzero codeword and
+the `γ¹`/`γ⁰` coefficients absorbed into the FREE `ε`/`u₀` — t = 2 needs no rigidity
+beyond the top coefficient.
+
+**What survives (verified by the same construction): the two-regime pencil law.**
+Identically-zero columns of a degree-`t` pencil:
+* `t = 1`: capped at `a − 1` by joint-exclusion only ⟹ `#bad_affine ≤ (n−z)/(a−z)`,
+  maximal `w + 1` at `z = a−1`;
+* `t ≥ 2`: the TOP Newton coefficient `m_t` is a nonzero codeword (divided differences
+  of codewords), so `z ≤ k − 1` ⟹ `#bad ≤ t·(n−k+1)/(a−k+1)` — at the band ≈ `2t`.
+  The probe's max nonaffine family (3) meets the `t = 2` cap `⌊2(n−k+1)/(a−k+1)⌋ = 3`
+  exactly; it CANNOT beat the affine cap at `t = 2`.
+
+**The open t-control, reduced:** beating `w + 1` needs `t ≈ w/2`, and a degree-`t`
+pencil constrains `t − 2` symmetric functions of every column's root set to be
+codeword-ratios — for non-constant ratios, ≤ `k−1` columns per value; for constant
+ratios, the root `t`-sets lie in a fiber of `t − 2` prescribed power sums of the scalar
+set `Γ`.  So the band adversary beyond affine is a SCALAR-SIDE deep moment-fiber
+extremal problem (the census programme's object, transposed from the domain to the
+scalar field): large nonaffine families need `|Γ| ≈ w` scalar sets that are
+moment-degenerate to depth `≈ w/2` with large fibers.  Conjectured cap (next probe):
+additive moment fibers at depth `t−2` collapse the supply below the affine cap for all
+`t ≥ 2` ⟹ `#bad ≤ w + O(1)` on the band.
+## 2026-06-12 — `WindowPencilAnchored` is NOT universal: class V (vanishing-denominator rows)
+
+The window pencil law (`WBPencilWindowLaw.lean`) counts ≤ `(w+1)+n(w+1)+1` bad
+scalars for stacks with an ANCHORED representation pair (some adjugate entry of
+some square row-selection of the coefficient pencil ≢ 0, ⟺ corank ≤ 1 over
+`F(γ)`).  The hope that every doubly-WB-solvable stack admits an anchored
+representation is **FALSE**:
+
+* **Class V** — rows that are *rational-with-exceptions* (`u = R/ℓ` off the
+  domain zero set of `ℓ`, free at the zeros; the WB relation `ℓ(x_i)u_i = R(x_i)`
+  forces `R` to vanish with `ℓ`, so these are honest WB rows) — generically has
+  pencil corank ≥ 2 for EVERY representation pair: 103/130 fresh class-V stacks
+  at `(13,6,1,2)` have NO anchored pair under FULL enumeration of both rows' WB
+  solution spaces (`probe_wb_window_anchor_existential.py`); coranks up to 4
+  occur (`probe_wb_window_corank2.py`).
+* **The common-factor reduction is insufficient**: dividing the forced shared
+  factor (the `(x−a)`'s where `ℓ` and `R` jointly vanish) out of all four data
+  polynomials preserves corank verbatim under the uniform caps, and with the
+  correctly shrunken cofactor cap (`m − z`) still leaves a residue class
+  degenerate — the survivors are recognizable: shared reduced denominators,
+  post-reduction polynomial rows (`probe_wb_window_reduced_anchor.py`).
+* **The saving observation**: every unanchored stack found has ≤ 2 mca-bad
+  scalars.  Mechanism (the proof route for the corrected residual): for
+  `gcd(ℓ₀ℓ₁, Z_D) = 1` data below UDR, two `F(γ)`-independent kernel solutions
+  force `Q₁Z₂ = Q₂Z₁` (degree < n) and `Z_D ∣ (A+γB)g − Lρ` for the gcd-split
+  `Z_j = gζ_j` — every kernel solution is a polynomial multiple of ONE primitive
+  triple `(g, ρ, c)` with slack in all three caps (the kernel is `K[x]`-cyclic);
+  a bad scalar needs `g(γ,·)` to split over the domain, i.e. the anchored
+  incidence count re-runs on the primitive curve.
+
+**Surviving form** (`WBPencilWindowCapstone.lean`): `UnanchoredLinear` — stacks
+with no anchored pair have ≤ `n` bad scalars (budget aligned with the repaired
+`WindowRationalLinear`; strictly weaker than it via
+`unanchoredLinear_of_windowRationalLinear`).  The below-UDR law
+`ε_mca ≤ ((n+1)(w+1)+1)/q` holds under this residual alone
+(`epsMCA_le_below_udr_of_unanchoredLinear`), with the anchored bulk carried by
+the proven pencil law.
+
+## 2026-06-12 — The deep-band supply: production closure via agreement caps is VACUOUS (analysis, not a refutation of the reduction)
+
+The agreement-capped supply instance (`explainable_cores_card_of_agreement_le`:
+`#explCores·C(k+m+1,k) ≤ C(n,k)·C(A−k,m+1)`) combined with the near-line
+dichotomy (`near_scalar_unique`: at most one scalar's line exceeds agreement
+`(n+k)/2`) does NOT close the production deep-band count: at `A ≈ (n+k)/2`,
+`k ≈ n/2`, the bound `C(n,k)·C(A−k,m+1)/C(k+m+1,k) ≈ C(n,k)·2^{−(m+1)}` is of
+the same order as the witness mass `C(n,k+m+1)/q^m·q^m`, leaving
+`#badSet ≳ 2^{m+1}/q^m` — vacuous for `m ≥ 1` at production `q`.  The loss is
+the `C(n,k)` factor from `k`-subset determination (only `q^k` codewords exist,
+but `C(n,k)` `k`-subsets are counted).  Sharpening requires bounding the number
+of codewords at agreement `≥ k+m+1` — below Johnson agreement that is
+quantitatively the list-decoding wall (the known `δ*`↔LD coupling).  The
+supply-side mathematics above the wall is proven; the wall itself remains the
+open core, now in its sharpest isolated form.
+## 2026-06-12 — round 9: the k-simplex packing collapses; the packing cap at `n` is FALSE (the overlap law)
+
+Two round-8 census conjectures resolved in opposite directions
+(`probe_packing_envelope.py`, `PackingEnvelope.lean`):
+
+* **"k ≥ 3 disjoint (e+1)-simplex packings extend the envelope" — REFUTED.**
+  The k-packing stack (`u₁ = q₀|_{S₁}`, `u₀ = (X·q₀)|_{S₁}`, `q₀` vanishing on the
+  complement `Z` of the union) only depends on `(s₁, z) = (|S₁|, |Z|)`: the `k−1`
+  other blocks are an undifferentiated reservoir whose every point contributes one
+  `(X−x)q₀`-alignment scalar.  Count `n − z` at threshold `min(n−s₁+1, s₁+z+1)`;
+  the per-radius optimum is the bisimplex value, and any `k ≥ 2` packing's count
+  `k(e+1)` is `≤ 2E+2` at its own radius with the unified window implied
+  (`kPacking_subsumed`, pure arithmetic).  Probe T2: at `(97,16,d=5), t=9` the
+  `k=3,e=3` stack carries exactly its `12` while the `(s₁,z)=(8,0)` optimum carries
+  `16` at the same threshold.  `k ≥ 3` never appears on the envelope.
+
+* **"the packing count caps at `min(n, 2E+2)`" — REFUTED: the OVERLAP law.**
+  The round-8 `t=7` hint (`20` at `(97,16,2)`) is a genuine char-0 family —
+  hill-climbs at `p = 97` AND `p = 257` independently converge to `2(n−t)+2 = 20`
+  with identical structure (two `(E+1)`-point simplex blocks overlapping in
+  `n−2t+2 = 4` points, zero leftovers).  Reverse-engineered mechanism: stack
+  `(X, 1)` on `S∖Y`, tuned `(a_x, b_x)` on the overlap `Y`, zero off `S`; each
+  overlap point carries TWO bad scalars (its kill `−a_x/b_x` and its align
+  `(x−a_x)/(b_x−1)`), so the count is `n + |Y|`, exceeding `n`.  Proven general
+  (`overlap_packing_epsMCA_lower_bound`) and instantiated word-level exact at
+  `(12289, 16, d=2)`: `20` bad scalars at radius `9/16` and `18` at `1/2`
+  (probe-verified exact counts).  Grand packing law: `2(n−t)+2` on the whole
+  window `d+2 ≤ t ≤ (n+d+1)/2`.
+
+Side observation (probe T1): at `t = d+3` cells, e.g. `(97,16,4), t=7`, sub-optimal
+`(s₁,z)` stacks pick up large SMALL-FIELD surpluses (`34` observed vs `14` designed;
+expected-count heuristic `C(10,5)·C(6,2)/97 ≈ 39`) — the same codim-0 coincidence
+species as the censused mod-17 extras; vanishes for `p ≫ poly(n)`.
+
+### The any-domain sub-Johnson supply laws — REFUTED by the Frobenius secant family (Fable, 2026-06-13)
+
+Context: the crossing/Cauchy–Schwarz campaign proved the mean-degree law `Σ|A| ≤ 2n`
+for pairwise-`≤1` families down to the Johnson agreement `t² ≥ 2n`, and noted that
+below it set systems blow up (projective planes), so "any proof must couple the word."
+This entry sharpens the wall: **coupling the word is not enough — the blowup is
+realized by genuine RS agreement families** (`FrobeniusSubfieldBlowup.lean`, 8 theorems,
+axiom-clean; probe `probe_frobenius_blowup.py`, exact at `(p,e) = (3,2),(3,3),(5,2)`).
+
+Mechanism (JH01/BSKR06 in the #389 charter objects): char `p`, `k = 2`, the Frobenius
+word `w(z) = z^p` over any `𝔽_p`-affine-closed domain (e.g. all of `𝔽_{p^e}`, `n = p^e`).
+Freshman's dream: the affine codeword `z₀^p + u^{p−1}(z−z₀)` agrees with `w` on the
+ENTIRE affine line `z₀ + 𝔽_p u` — every secant of the Frobenius graph is `p`-rich.
+At level `t = p` (sub-Johnson: `t² = n^{2/e} ≤ n`):
+
+* **"`Σ|A| ≤ 2n` (or any `C·n`) below Johnson for RS agreement families" — REFUTED.**
+  The family is pairwise-`≤1`, every member exactly `p = t` points
+  (`frobenius_explainable_inter_le_one`), and the mass SATURATES the universal pair
+  bound exactly: `Σ|A| = n(n−1)/(p−1)` (`frobenius_mass_floor`,
+  `frobenius_mass_gt_two_n`).  At `e = 2` this is `≈ n^{3/2}` at `t² = n` — failure
+  one notch below the Johnson threshold `2n`, matching the projective-plane envelope
+  (the family IS the affine plane `AG(2,p)`, sheared into a function graph).
+* **"the capped optimum / explainable-core supply is linear in `n` at fixed `(k,m)`"
+  (the growth-law census conjecture, measured at prime `q`) — REFUTED in any-domain
+  form.**  At fixed `(k, m) = (2, p−3)`: explainable-`p`-core count
+  `= n(n−1)/(p(p−1)) = Θ(n²)` (`frobenius_supply_floor`); against the named Prop:
+  any `B` for `ExplainableCoreSupply dom 2 (p−3) B` has `n(n−1) ≤ p(p−1)·B`
+  (`frobenius_charter_floor`).  The prime-`q` census probes were structurally blind
+  to this: the mechanism needs a proper subfield.
+
+What is NOT refuted: `ExplainableCoreSupply` with `B` subexponential in the witness
+mass (the Frobenius supply is only quadratic — the self-cap `deg(X^p − aX − b) = p`
+bounds every agreement at `p`); and the production setting `μ_n ⊂ 𝔽_q` with `q` prime,
+where the only `𝔽_p`-lines have size `q ≫ n`.  Consequence for the programme: the
+sub-Johnson supply statement is irreducibly DOMAIN-coupled — any proof must use the
+absence of `𝔽_p`-affine structure in the evaluation domain (no-large-subfield /
+additive-unstructuredness of `μ_n`), not just `w ∉ C` and pairwise distance.
+
+#### Addendum (same day, second lane): COMPOSITE subfields obstruct too — at every band (`SubplaneSupplyFloor.lean`)
+
+The Frobenius-secant entry above leaves two gaps, both now closed
+(`SubplaneSupplyFloor.lean`, axiom-clean; probe `probe_subplane_supply.py`, exact at
+`F₉/K=F₃`, `F₂₇/K=F₃`, `F₁₆/K=F₄`):
+
+* **Any prime-power subfield `K`, `r = |K|` — not just the prime one.**  Shear
+  `AG(2, K)` into `F` by `(a,b) ↦ a + λb`, `λ ∉ K`: domain `n = r²` points, word
+  `w(a+λb) = b`.  The `r²+r` lines of the plane become honest degree-`<2` codewords
+  (`y = (sx+c)/(1+λs)`, `y = (x−a₀)/λ`) agreeing with `w` on exactly `r = √n` points
+  each, pairwise `≤ 1` (probe: agreement histogram is `{0,1,r}` ONLY).  In char 2 the
+  Frobenius mechanism is vacuous (`t = 2` fills no core) — here `K = 𝔽_{2^j}` bites at
+  every `j`: **binary-tower (char-2 production) fields carry the explosion whenever
+  the evaluation domain contains a sheared `K`-plane; only PRIME fields are immune to
+  the subfield mechanism.**
+* **Every band at once**: `subplane_supply_floor` — any `B` for
+  `ExplainableCoreSupply dom 2 m B` has `(r²+r)·C(r, 2+m+1) ≤ B`, for ALL `m` with
+  `2+m+1 ≤ r` simultaneously (`≈ n^{(m+3)/2}`, superpolynomial at every fixed band
+  depth) — vs the single tuned band `2+m+1 = p` of the secant floor.
+
+Unchanged verdict, sharpened scope: the sub-Johnson supply statement is irreducibly
+domain-coupled, the coupling needed is *absence of sheared-subfield-plane structure*,
+and the surviving positive targets are prime fields and (conjecturally) smooth `μ_n`
+domains — for binary-tower deployments the supply route is closed unconditionally at
+subfield-aligned domains.
+
+## 2026-06-12 — μ_n-immunity is q-CONDITIONAL: prime-field, multiplicative-subgroup linear supply REFUTED at `n = Θ(q)` (the generic-density phase)
+
+Claim refuted: "`SubJohnsonSupplyResidual dom k m B` holds with `B = O(n)` (or any
+`B = o(C(n,t)/q^{m+1})`, `t = k+m+1`) for multiplicative subgroups `μ_n ⊂ 𝔽_q`,
+`q` prime" — the surviving hope of the Frobenius entry above ("the production setting
+`μ_n ⊂ 𝔽_q` with `q` prime") and the convergence comments' "μ_n tracks the random set
+`~O(n)`".  Both were measured at `q ≫ n` only.
+
+Witness (`MonomialSupplyWitness.lean` + the pair-hash probe): `w = x^t`, `t = k+m+1`.
+Capped for free (`monomial_word_agreement_le`: agreements `≤ t ≤ 2k+m+1`); a `t`-set
+`T` is an explainable core iff the remainder window of `x^t mod ∏_{i∈T}(X−x_i)`
+vanishes (`explainableOn_of_remainder_degree_lt` — the remainder IS the codeword;
+`monomial_supply_ge`).  The window is codimension `m+1`: density `C(n,t)/q^{m+1}`.
+Exact counts at `(k,m) = (2,1)`, `t = 4`, cap `4 ≤ 6`:
+
+* full units of `𝔽₁₂₇` (`n = 126`): **630 = 5.0·n** cores (agreement profile
+  `{1:5418, 2:3969, 3:42, 4:630}` — cap verified);
+* full units of `𝔽₂₅₇` (`n = 256`): **2,624 = 10.25·n**;
+* **`μ₄₀₉₆ ⊂ 𝔽₁₂₂₈₉` — THE standard 2-smooth NTT domain: 103,424 = 25.25·n**,
+  33% ABOVE the generic `C(n,4)/q² ≈ 77,546` — subgroup vanishing-sum arithmetic
+  ENHANCES the density; the opposite of immunity;
+* full units of `𝔽₃₁` (the census scale): 30 = 1.0·n — invisible; the measured
+  "linear growth law" (30/46/67/86 at `q = 31`) was a scale artifact.
+
+Consequences: (i) the unconditional pair-count ceiling `B = C(n,k)` is asymptotically
+TIGHT at `n ~ q` (within the `t!`-constant) — at fixed rate and `n = Θ(q)` the supply
+question is closed at `Θ(n^k)`; (ii) the open charter is now `q`-conditional:
+`q^{m+1} ≳ n^{t−1}/t!` (production `q ≥ 2^128` is safely inside); (iii) the corrected
+exact-solution target is the **two-phase law** `E_max(μ_n) = Θ_{k,m}(n + C(n,t)/q^{m+1})`
+— arithmetic/fibre families rule `q ≫ n`, generic density rules `n = Θ(q)`, and any
+positive proof must use BOTH the additive-unstructuredness of `μ_n` (Frobenius entry)
+AND the field-size hypothesis (this entry).
+## 2026-06-12 — the sub-Johnson supply curve IS small-set Szemerédi–Trotter (Fable; `GridSupplyRefutation.lean`)
+
+A reframing entry, complementary to the two-branch/Frobenius/subplane/monomial
+witnesses above.  All of those exhibit blowup; this one *names the curve* and points
+at a formalizable unconditional improvement.
+
+Observation: for `k = 2` an explainable `t`-core (`t = k+m+1 ≥ 3`) is exactly a
+`t`-subset of the word's graph `P = {(dom i, w i)} ⊂ 𝔽_q²` that is collinear, and (for
+`t ≥ 3`) it lies on a *unique* affine codeword.  Hence **explainable-core supply =
+`Σ_{lines ℓ} C(a_ℓ, t)` = the rich-line incidence count of the graph point set** —
+the Szemerédi–Trotter rich-line problem.  The capped residual restricts to `a_ℓ ≤ t+2`.
+
+Witness (`GridSupplyRefutation.lean`, axiom-clean, `n = 36`, `ZMod 41`, fixed band
+`(k,m) = (2,1)`, `t = 4`, cap `6`): the `6×6` sheared grid `(i,j) ↦ (i+7j, j)` (abscissae
+= base-7 digits ⟹ word graph; shears preserve lines).  `grid_word_cap` proves the cap
+*structurally* (no root budget: a non-constant line meets each constant row `≤ 1×`; six
+rows) ⟹ the word is in the `SubJohnsonSupplyResidual gridDom 2 1` class.  Yet
+`subJohnsonSupplyResidual_floor_grid`: every valid `B ≥ 234`, strictly above the
+partition target `90` and the (now-dead) mean-degree-law target `180`.  Asymptotically
+(`probe_grid_supply_refutation.py`) the family-capped mass is the ST extremal
+`Σ a_ℓ = Θ(n²/t²)`, violation `×11.2` at `n = 400` — and the construction is over ℤ,
+so it transfers to `𝔽_p` for every prime `p > 2N³` (subfield-free production primes
+included), the prime-field counterpart of the subplane mechanism.
+
+* **REFUTED**: "the mean-degree law `Σ a_ℓ ≤ 2n` holds on the residual's hypothesis
+  class at a fixed band" (the `n ≤ 20` census stopped below the ST onset `n ~ t³`).
+* **NOT refuted, and the corrected shape target**: for additive/`μ_n` domains the
+  rich-line count obeys the small-set finite-field ST conjecture
+  `L_{≥t} = O(n²/t³ + n/t)`.  Concrete **unconditional partial**: Stevens–de Zeeuw
+  (via Rudnev's point-plane bound) gives `I(P,L) ≲ |P|^{11/15}|L|^{11/15} + |P| + |L|`
+  in the production range `p ≫ poly(n)`, hence `L_{≥t} ≲ n^{11/4}/t^{15/4}` — which
+  **beats the packing bound `n²/t²` for every `t > n^{3/7}`**, i.e. on the band
+  `(n^{3/7}, √(2n))` strictly below Johnson `√(2n)`.  This is the first unconditional
+  strictly-sub-Johnson supply improvement; formalized as a named-residual import +
+  consumer chain in `STSupplyReduction.lean` (the heavy Rudnev bound is the import
+  surface; the reduction `RichLineBound → capped supply → bad-set count` is proven).
+
+## 2026-06-13 — THE UNIVERSAL MEAN-DEGREE LAW IS FALSE (two-branch parabola countermodel); the supply growth law is two-regime
+
+The conjectured universal form of the mean-degree law ("`Σ_c a_c ≤ 2n` over the
+capped large-agreement family of any word", probe census `717da6067` / the #389
+thread's "final measured form") is **REFUTED** in the open sub-Johnson range
+`t² < 2(k−1)n` (`TwoBranchSupplyCountermodel.lean`, axiom-clean):
+
+* **The countermodel family**: split `D = A ⊔ B`, set `w = x²` on `A`,
+  `x² + c` on `B`.  Every degree-`<2` polynomial agrees with each branch on
+  `≤ 2` points (root budget), so every codeword agreement is `≤ 4 ≤ 6 =
+  2k+m+1`: **agreement-capped unconditionally**.  The line through
+  `(x₁,x₁²), (x₂,x₂²)` meets branch `B` at the roots of
+  `z² − (x₁+x₂)z + (x₁x₂+c)`; when the discriminant `(x₁−x₂)² − 4c` is a
+  nonzero square with both roots in `B`, the line is 4-rich.  About `1/8` of
+  the `A`-pairs qualify: `Σ a_c ~ n²/16`, **quadratic**.
+* **Machine-checked instance** `(q,n) = (101, 80)`: interval domain
+  `{0..79}`, `A = {0..39}`, `c = 29`: `107` four-rich lines (census-exact:
+  these are ALL the `≥4`-rich lines; max agreement `4`), `Σ a_c = 428 > 160 =
+  2n`.  `universalMeanDegreeLaw_REFUTED`.
+* **Why the censuses missed it**: at `q = 31, n ≤ 24` the two-branch count
+  sits below `2n` — the crossover `n³ ≈ 64q²` is exactly where the growth
+  census stopped.  `probe_two_branch_subjohnson_supply.py`: 21/25 instances
+  violate (first at `p = n = 41`, exact counting); the linear-B form
+  (`≈ 3.625n`) falls from `p = 251` (957 cores vs 910).
+* **What survives**: `mean_degree_law_deep` and the crossing/CS route are
+  hypothesis-guarded (`t² ≥ ~2(k−1)n`) and unaffected — and now provably
+  SHARP: below the threshold the truth is a different growth law, not a
+  missing word-coupling refinement of the linear one.
+* **The corrected named target** (`CappedSupplyTwoRegimeLaw`, PRIME fields):
+  `S_max(capped) = Θ(n + C(n,k+m+1)/q^{m+1})` — partition floor + random
+  mean.  The two-branch family realizes the mean term constructively (and
+  `r`-branch words `x^k + c_j` extend this to every band `m` with
+  `r·k ≤ 2k+m+1`).  The general-field form is FALSE by subfield transport:
+  over `q = p²` with `D = F_p ⊂ F_{p²}` the same construction carries
+  `~ n²/64` cores while the mean term collapses to `O(1)` — char-2/extension
+  production settings need a no-large-subfield-structure hypothesis.
+  Consumer arithmetic: any `B = O(n + C(n,t)/q^{m+1})` still delivers
+  prize-grade bad-scalar counts through `deep_band_badSet_card_of_residual`
+  (`#badSet ≳ min(C(n,t)/(qᵐ·n), q/const)`) — the wall is recalibrated, not
+  destroyed.
+## 2026-06-12 — "Linear/subexponential supply on smooth domains" is FALSE for DYADIC domains (multiplicative subspace polynomials)
+
+The rounds 78–84 census conjecture — capped supply `Σ_c C(a_c,t) = O(n)` (`B = O(n)`),
+"empirically true with subexponential `B`" — is **refuted for the explicit smooth 2-adic
+(FFT) domains the prize targets**. The linear value is the *random-RS / Singleton-optimal*
+list size; structured smooth domains beat it exponentially. The census hill-climbs missed
+the structured extremizer, exactly as hill-climbing misses BKR subspace polynomials.
+
+**Construction** (`EsymmFiber.lean`, axiom-clean; `probe_coset_union.py`, full-enum
+verified μ₁₆/μ₃₂). Domain `μ_n`, `n = 2^μ`. Reformulation: a degree-`t` word's explainable
+`t`-cores are the `t`-subsets `A` with prescribed `e_1..e_{m+1}` (Vieta;
+`explainable_iff_forcedPoly_degree`). For `w = wt·X^t + (deg<k)` the prescribed values are
+`0`. A union `A` of `s` cosets of `μ_d` (`d = 2^j ≥ m+2`, `s·d = t`) has
+`∏_{a∈A}(X−a) = expand_d(Q)` ∈ `F[X^d]`, so `e_1(A)=…=e_{d−1}(A)=0` ⊇ the constraints, and
+the forced explainer has degree `≤ t−d = k−1 < k`. Hence every such union is an explainable
+core (`explainable_of_expand`), and there are `C(n/d, t/d)` of them
+(`smooth_dyadic_supply_lower_bound`):
+
+  `#explainable t-cores ≥ C(n/d, t/d) = 2^{H(ρ)·n/d·(1+o(1))}`  — EXPONENTIAL.
+
+Regime: agreement `α = t/n = ρ + d/n`, just above capacity, strictly sub-Johnson
+(`α < √ρ`). `μ_d ⊂ μ_n` = the multiplicative analogue of an additive BKR subspace
+polynomial; needs only the multiplicative 2-adic subgroup tower (no subfield — works over
+prime fields). Consistent with: only random RS reaches capacity (GG25 2025/2054); the
+up-to-capacity proximity-gap conjecture is false (BCIS-2025 2025/2055, CS25 2025/2046); the
+barrier is the list-decoding radius (PG⇒LD, BCIS-2025 Thm 1.9).
+
+**Status:** the "subexponential uniform supply `B`" supply statement is FALSE on `μ_{2^μ}`
+at the deep band. Any positive supply/MCA result there must restrict the domain away from
+dyadic structure or accept exponential `B`. Refutation is machine-checked (not a wall — a
+proved negative). The campaign's recent linear claim should be re-scoped to random/generic
+domains; the prize's smooth-domain case is exponentially worse and this is the honest state.
+
+### O158 — THE PRODUCTION-RATE OBSTRUCTION: the multiplicative-subspace exponential supply is VACUOUS at fixed production ρ — it requires vanishing rate, exactly like DG25 (nubs incidence/census lane, 2026-06-13)
+
+Boundary map of `EsymmFiber.smooth_dyadic_supply_lower_bound` (the just-landed "smooth
+dyadic domains have exponential sub-Johnson supply") vs the prize's production parameters.
+Claimed #389 comment 4697214100; exact integer arithmetic, `scripts/probes/incidence/boundary/`.
+
+**The construction's firing condition (exact, from the Lean hypotheses):** a μ_d-coset
+union is an explainable t-core iff `d = 2^j | t`, `d ≥ m+2`, `t = k+m+1`; supply
+`C(n/d, t/d)`. Exponential supply requires `d = O(1)` (so `n/d → ∞`).
+
+**The obstruction (verified mu=5..14, all production rates):** at fixed production rate
+`ρ ∈ {1/2,1/4,1/8,1/16}` (so `k = ρ·2^μ` is a large power of 2), the best coset-union
+supply rate `log₂(supply)/n → 0` as the domain grows — **POLYNOMIAL, not exponential**
+(ρ=1/2: identically 0 at every μ; ρ=1/4,1/8,1/16: halving each μ-step). 2-adic mechanism:
+exponential needs constant `d=2^j ≥ m+2` dividing `k+m+1`; for `k=2^a` and constant `m`,
+`2^j | (2^a+m+1)` with `2^j ≥ m+2` forces `2^j | (m+1)` ∧ `2^j ≥ m+2` ⟹ `m+1 ≥ 2^j ≥ m+2`,
+impossible. The only firings have `d ∝ n` (giving `C(O(1),O(1))` = constant supply) or
+sit at the s=1,2 single/few-coset tips (linear supply, rate → 0).
+
+**Where the exponential bite actually lives:** non-production rates `ρ → 0` (fixed small
+absolute `k`, rate shrinking with n) — e.g. k=5,9,13 show genuine positive supply rate.
+**This is exactly the DG25 escape** (DISPROOF_LOG §3/Loop: DG25's super-poly capacity
+disproof needs vanishing rate `ρ ≈ e·n^{1/3}/n → 0`, not fixed ρ). The multiplicative-
+subspace construction is the explicit-smooth-domain shadow of DG25 and respects the SAME
+rate barrier — it does not cross into fixed-rate territory.
+
+**Consequence for #389 / the pin:** the EsymmFiber theorem is true and axiom-clean, but
+its defeat of subexponential `ExplainableCoreSupply` (and hence any threat to
+`CensusDomination` / the δ* pin) is confined to vanishing-rate regimes. **At the
+production rates the prize actually targets, this construction yields only polynomial
+supply — it does NOT break the pin there.** HONEST SCOPE: this maps ONE construction's
+support; it does NOT prove `CensusDomination` (other supply sources may exist, e.g. the
+Frobenius-subfield blowup O-entry, which is additive-structure-coupled and a separate
+question). It removes the multiplicative-subspace route as a production-rate obstruction
+and pins it to the same vanishing-rate barrier as the known capacity disproofs.
+
+## 2026-06-13 — THE SUPPLY-SIDE PACKING BOUND IS WORST-CASE VACUOUS; the line-partition is the algebraic fix (Fable)
+
+Distinct from the failure-side packing entries above (those bound bad-scalar *counts* from
+below): this is about the **supply** (`ExplainableCoreSupply`, the #389 positive direction),
+which counts explainable `(k+m+1)`-cores of a word `w` from above.
+
+**The exact identity** (`ExplainableCoreExactCount.lean`, axiom-clean):
+`#cores(w) = Σ_c C(|agreeSet c w|, k+m+1)` — each core lies in exactly one codeword's
+agreement set (`k+m+1 > k−1` ⟹ uniqueness via `rsCode_pairwise_agreeSet_card_le`). So the
+supply IS the agreement-size profile `(a_c)`.
+
+**The refutation.** Combined with the `k`-subset packing `Σ_c C(a_c,k) ≤ C(n,k)` and the fact
+that `C(a,k+m+1)/C(a,k)` is increasing in `a`, the extremal profile is a SINGLE codeword with
+`a_c ≈ n`, giving `#cores ≈ C(n,k+m+1)` = the trivial bound (`probe_supply_extremal.py`:
+single/trivial = 1.0000 at every production scale n=16…256). **So no purely combinatorial /
+packing / Johnson-first-moment argument can give a sub-trivial per-word supply** — a word
+near a single codeword saturates it. Any supply proof MUST use the algebraic structure of
+which words arise as bad-scalar lines.
+
+**The line-partition fix** (`LineCorePartition.lean`, axiom-clean): for the bad-scalar line
+`w_γ = u₀ + γ·u₁` with `u₁ = xᵏ` far from the code (agreement `< k+m+1`),
+`line_core_unique_scalar` shows each core is explainable for ≤ 1 scalar (secant-slope
+codeword would agree with `u₁` on `k+m+1` points), so `line_total_cores_le`:
+`Σ_γ #cores(w_γ) ≤ C(n,k+m+1)`. This is the line-level (aggregate) supply — the algebraic
+constraint the refutation proved is required. NOT a full closure: it bounds the line aggregate,
+not the per-scalar worst case; the per-scalar gap remains the open wall, but it is now precisely
+localized to "is the worst-case-γ core count `≪` the line average `C(n,a)/q`?"
+
+## 2026-06-13 — smooth-domain δ* tracks subgroup ARITHMETIC, not smoothness (QR-bad / 2-power-good)
+
+A structural finding from the exact m=0 (cubic) supply on two smooth domains, both
+machine-checked, that sharpens what "smooth-domain immunity" can mean:
+
+* **2-power NTT domain `μ_16 ⊂ F₂₅₇`** (`cubicSupply_mu16_F257_eq_zero`): cubic word
+  `x³` has **exactly 0** explainable 3-cores at radius `13/16` (one step below
+  capacity) — the char-0 Mann rigidity (no cube root in `μ_{2^k}` ⟹ no three 2-power
+  roots of unity sum to zero) **survives to `F₂₅₇`**.  δ*-GOOD.
+* **QR index-2 domain `QR* ⊂ F_q`** (`qr_zeroSum_ordered_card`): the cubic ordered
+  zero-sum count is `8·#ord + 6q = q² + 5`, i.e. `(q−1)(q−5)/8 = Θ(n²)` — the
+  additively rich index-2 subgroup carries **quadratic** near-capacity cubic supply.
+  δ*-BAD.
+
+So a domain being "smooth" (a multiplicative subgroup) is NOT enough for a good δ*;
+the relevant invariant is the **additive structure of the specific subgroup**.  The
+production NTT domains (`μ_{2^k}`, FFT) are exactly the arithmetically-rigid good ones;
+index-2 (QR) is bad.  This is consistent with the GV/HBK programme (the additive energy
+`E(μ_n)` is the governing quantity) and with `representationCount_eq_gcd_degree`
+(`GVRepBound G M ⟺ deg gcd(Xⁿ−1, (Cc−X)ⁿ−1) ≤ M`, no slack): the gcd degree, hence
+the energy, hence δ*, is a subgroup-arithmetic quantity.  CAVEAT: `μ_16/F₂₅₇`'s zero is
+PRIME-DEPENDENT (other primes give positive cubic supply for `n=16`); there is no
+general `gcd(3,n)=1 ⟹ supply 0` transfer to `F_p` (the char-0 rigidity does not
+transfer in general — that gap is exactly why the unconditional bound needs Stepanov).
+
+### O159 — BOTH supply-explosion mechanisms PROVABLY production-blocked: the Frobenius immunity brick (nubs, 2026-06-13)
+
+The sub-Johnson supply wall (#389) has two known explosion mechanisms; both are now proven
+vacuous at production smooth μ_n. (1) Coset-union (EsymmFiber): production-vacuous by the
+2-adic obstruction (O158); the swarm's pin-band check (4cf519992) independently confirms
+the m=1 FFT domains are off-by-one blocked. (2) **Frobenius subfield blowup** (Θ(n²) supply,
+`FrobeniusSubfieldBlowup.lean`): gated entirely on `AffClosed dom p`; immunity was
+PROSE-ONLY in-tree (FrobeniusSubfieldBlowup.lean:37-39) until this brick.
+
+**`FrobeniusImmunityMuN.lean` (axiom-clean ×3, single-module build green):**
+`le_card_of_affClosed` (AffClosed ⟹ p ≤ n via the existing `secant_card`: the 𝔽_p-line
+through two domain points has exactly p points, all in the n-point domain) →
+`not_affClosed_of_card_lt` (2 ≤ n < p ⟹ ¬AffClosed) → `smoothDom_not_affClosed`
+(production μ_n ⊂ 𝔽_q, q prime, 2 ≤ n < q is NOT 𝔽_q-affine-closed; only CharP of 𝔽_q is q,
+so AffClosed is type-correct only at p=q, where the q-point affine line cannot fit an
+order-n multiplicative subgroup).
+
+**Consequence:** every `AffClosed`-gated Θ(n²) supply source is vacuous over production
+smooth domains; with O158 both known super-polynomial sub-Johnson supply routes are
+production-blocked. HONEST SCOPE: proves two specific mechanisms cannot fire; does NOT
+prove `CensusDomination` (no exponential supply from ANY source). Remaining: the max
+e-symm fiber census over all targets (H-MAX) + the inverse theorem that structured families
+are the only supply sources (H-EXT) — in progress, `scripts/probes/incidence/landscape/`.
+
+### O160 — SidonModNeg(μ_n) holds far below √p but the threshold is NOT universal-in-√p (probe + refutation, 2026-06-13)
+
+Direct attack on the energyExcess core (`EnergyExcessCore.lean`): the whole #389 cubic/energy
+wall closes iff `energyExcess(μ_n) = E⁺(μ_n) − (3n²−3n) = 0`, i.e. iff `μ_n` is `SidonModNeg`
+(`AdditiveEnergySidonModNeg.lean`; in-tree `E ≤ 3n²` is conditional on it).
+
+**Probe (`scripts/probes/probe_sidonmodneg_threshold.py`, exact `E⁺` in `F_p`):** small
+multiplicative subgroups are EXACTLY Sidon-mod-negation (`excess = 0`, `E = 3n²−3n` exactly) far
+below the random heuristic — e.g. `p=786433, n=256`: `n³/p ≈ 21` exotic quadruples predicted,
+**0 observed**. Holds for any order (not just 2-power): `n=6..192 | p−1` all zero-excess.
+
+**Bold conjecture E'' (exact universal minimality, `n ≤ c√p ⟹ excess 0`): REFUTED.** No universal
+multiplicative-in-√p constant exists:
+- `p=786433`: zero excess at `n=256` (`n/√p = 0.289`).
+- `p=23068673`: ALREADY nonzero at `n=1024` (`n/√p = 0.213`).
+Since `0.213 < 0.289`, no constant `c` with `n ≤ c√p ⟹ excess 0` fits both. The
+Sidon-mod-negation threshold is genuinely p-dependent (number-theoretic), not a clean power law.
+(Flip points `n/√p`: 0.32, 0.58, 0.38, 0.21 across p = 40961, 786433, 7340033, 23068673.)
+
+**What survives (honest):** the PRIZE regime `n ≲ 2³⁰ ≪ √q ≈ 2¹²⁸` sits ~2⁹⁸ below every observed
+flip, so `SidonModNeg(μ_n)` (hence `energyExcess = 0`, `E = 3n²−3n`) is empirically overwhelming
+there — but proving it needs the p-dependent threshold, which Weil/character-sum bounds do NOT
+force to exactly zero (the observed suppression is stronger than Weil predicts; an open
+number-theoretic fact).
+
+**Why this does NOT pin δ* (the load-bearing caveat):** even with `energyExcess = 0`, δ* is not
+closed. Zero excess controls the additive-energy / cubic-supply front only. The **capacity-edge
+supply is a SEPARATE mechanism** (`CS25*`: deep-hole + random-word combinations cover
+small-distance balls, `ε_mca → 1` at capacity, NOT additive-energy-governed), which sets the upper
+bracket `δ* ≤ 1−ρ−Θ(1/log n)`. Residual-free δ* therefore requires BOTH the subgroup sum-product
+front (this entry) AND the covering / list-decoding-capacity front (CS25/BCHKS Conj 1.12) —
+two independent recognized-hard problems. No fabricated closure.
+
+### O161 — the coset/power-word construction is NOT the extremal max-list word (Conjecture J refuted, 2026-06-13)
+
+Direct attack on δ*: the in-tree `rootsOfUnity_dyadic_codeword_list_ge` gives list `≥ C(n/d, t/d)`
+via coset-union subsets; worked against the budget `list = q·ε*` with `q = poly(n)` this reproduces
+the BCHKS upper bracket `δ* ≤ 1−ρ−Θ(H(ρ)/log n)` CONSTRUCTIVELY. **Conjecture J** asked whether this
+construction is also the MAXIMUM list (which would pin δ* residual-free).
+
+**Probe (`scripts/probes/probe_extremal_word.py`, exact list enumeration, F₉₇, μ₁₆, k=2):**
+- `t=3` (sub-Johnson): `L(x³) = 0` (this μ₁₆ has no zero-sum triples) but `max over 40 random
+  words = 11`. The power word is BELOW the random baseline; the coset construction (degenerate
+  here, 3∤16) gives 0. The true max-list word is neither the power word nor coset-structured.
+- `t=4`: `L(x⁴)=4`, random max 3 (power word competitive here); `t=5`: all 0.
+
+**Verdict: Conjecture J REFUTED.** The coset/power-word construction is a valid list LOWER bound
+(hence a valid δ* UPPER bracket) but is NOT extremal — the maximum sub-Johnson list is larger and
+word-dependent. Pinning δ* requires the extremal/worst-word characterization (H-MAX), which this
+shows is not the obvious construction. No fabricated closure; H-MAX remains the open residual.
+
+**Caveat:** small-scale, `max-over-40-random` is a weak lower bound on the true max (could be far
+larger); this strengthens, not weakens, the refutation (even a weak search beats the construction).
+
+### O162 — H-MAX (extremal middle-band list) ↔ subset-sum fibres ↔ additive energy: the loop closes (2026-06-13)
+
+Refined Conjecture J' (coset/power-word extremal in the MIDDLE band t=k+m+1, the prize regime,
+not the sub-Johnson regime O161 tested). Probe (`probe_midband_extremal.py`, F₁₇, n=16, k=4, full
+exact enumeration of all 17⁴ codewords):
+- `t=5`: `L(x⁵)=256` BEATS random (max 167) — but `x⁵`'s list = `#{5-subsets of μ_n summing to 0}`
+  (the e₁=0 fibre), and μ₁₆=F₁₇^× is the FULL group where sum-zero subsets are abundant.
+- `t=6`: `L(x⁶)=32` > random 21 (same mechanism, e₁=e₂=0 fibre).
+- `t=7`: `L(x⁷)=0` < random 6 (4∤7, coset construction degenerate).
+
+**The closure (why this ends the direct attack):** the power-word list IS the subset-sum fibre
+count `#{t-subsets with e₁..e_{t−k}=0}`. So the extremal-list question (H-MAX) is the subset-sum
+fibre question, which is governed by the additive structure of μ_n — i.e. by `E_Fp(μ_n)` and the
+SidonModNeg threshold. For the FULL group (abundant sum-zero subsets) the power word is extremal;
+for a PROPER SidonModNeg subgroup (the prize, sum-zero subsets rare) it collapses to ~0 (cf. O161
+t=3). Therefore **H-MAX, the subset-sum fibre supply, and `E=O(n²)` are the SAME irreducible core**
+— every direct route to δ* (energy front, capacity-edge front, extremal-list front) lands here.
+
+Conjectures refuted/closed this campaign: E'' (O160), J (O161), J' (O162) + the swarm's 6 bypasses
+of E≤Cn². The δ* residual-free target is equivalent to the multiplicative-subgroup additive-energy
+conjecture `E_Fp(μ_n)=n^{2+o(1)}` (best known n^{2.44}, Shkredov) — a recognized open problem.
+No fabricated closure.
+
+### O163 — δ* is NOT pinned by the exact subset-sum fibre: H-MAX is a combinatorial densest-cluster (Conjecture L refuted, 2026-06-13)
+
+The unconditional Garcia–Voloch/Stepanov bound E ≤ 4n^{8/3} already makes the energy/cubic supply
+SILENT at prize scale (≈2^85 ≪ q·ε* = 2^128), so δ* is bound by the NEAR-CAPACITY extremal list
+(H-MAX), a higher-order subset-sum fibre — which for 2-power domains is EXACTLY known
+(`TwoPowerFibreValue`). **Conjecture L**: power word extremal at near-capacity ⟹ δ* pinned exactly
+by the fibre value, no residual.
+
+**Probe (`probe_powerword_extremal_search.py`, μ₈⊂F₁₇ PROPER subgroup, k=2, t=3 = middle band,
+strong hill-climb + 300-random search):** `L(x³) = 0` (= #sum-zero 3-subsets; μ₈ is SidonModNeg)
+but the **strong search finds a word with list 7**. The power word is beaten by a non-algebraic,
+non-subset-sum word.
+
+**Verdict: Conjecture L REFUTED.** The extremal list H-MAX is a *combinatorial densest codeword
+cluster* (7 linear codewords pairwise agreeing ≤1, all ≥3-agreeing with one deep word), NOT the
+algebraic power-word fibre. So δ* is NOT pinned by `TwoPowerFibreValue`; the binding quantity is the
+explicit-RS sub-Johnson list-decoding bound, which has no closed form — the recognized open problem.
+
+**Campaign tally (direct δ* attack, all probe-refuted, all logged):** E'' (O160, energy-minimality
+threshold non-universal), J (O161, coset not extremal sub-Johnson), J' (O162, extremality=subset-sum
+=energy core), L (O163, H-MAX is combinatorial densest-cluster not the fibre). + swarm's 6 E≤Cn²
+bypasses. Every direct route to a residual-free δ* terminates at the explicit-smooth-RS
+sub-Johnson list-decoding bound = a recognized open problem. No fabricated closure.
+
+### O164 — H-MAX deep-band fiber is O(1) at production primes (the e-symm map is near-injective/Sidon); a small-prime SATURATION GUARDRAIL (nubs, 2026-06-13)
+
+Census of the max e-symm fiber at the deep band (offset m=1, the open #389 region), with a
+methodology correction that matters for the whole campaign.
+
+**The guardrail (a trap others can hit):** counting the supply fiber
+#{t-subsets of μ_n : e₁..e_{m+1} = target} mod a SMALL prime is meaningless when
+p^{m+1} ≪ C(n,t): the targets saturate and every bucket holds ~C(n,t)/p^{m+1} subsets by
+PIGEONHOLE, not by genuine fiber structure. Concretely at n=32, m=1, p=97: C(32,18) ≈ 5×10⁸
+subsets into p² = 9409 targets ⟹ "max fiber" 51,160 ≈ the pigeonhole average, fully
+saturated (#targets hit = 9409 = p², all of them). This is a small-prime artifact, NOT
+supply — the same char-0→mod-p failure mode O134 flagged, in its most extreme form.
+
+**The faithful result (production-scale prime p = 2013265921):** at n=16, m=1, both
+production rates, the e-symm targets are NOT saturated (C(16,10) = 8008 ≪ p²), and the
+TRUE max fiber over ALL targets is **3** (brute-materialized: 7864 distinct targets for
+8008 subsets — the map is near-injective). The structured zero-target (e₁=e₂=0) fiber is
+**0**. So the deep-band supply is **O(1)**, not exponential: the p=97 numbers were pure
+saturation.  (matching-trick fiber
+counter, validated against brute force).
+
+**Alignment + consequence:** max fiber O(1) ⟺ the e-symm map on t-subsets of μ_n is
+near-injective — exactly the fleet's  (O160) and 
+(E = 3n²−3n) framing; this is the empirical confirmation of that analytic attack. So
+**H-MAX (no exponential deep-band supply at production) holds empirically**, and the
+asymptotic closure is precisely the Stepanov/Sidon/additive-energy bound the fleet is
+building. HONEST SCOPE: n=16 faithful + n≤16 exhaustive; the n≥32 asymptotic is the
+analytic (Stepanov) bound, not brute-measured (production-prime materialization is
+memory-prohibitive). Combined with O158/O159 (both structured explosion mechanisms
+production-blocked), the supply-explosion landscape at production is: structured
+constructions vacuous, the e-symm map near-injective ⟹ no known route to super-polynomial
+supply — the CensusDomination premise, supported empirically; the proof is the fleet's
+Stepanov multiplicity bound.
+
+### O164 — max-list is field-independent ONLY in the Johnson regime; open regime is computationally inaccessible (Conjecture M, 2026-06-13)
+
+Conjecture M: the cyclic-symmetry of the smooth domain forces a clean field-independent closed form
+for the max single-word list, pinning δ*. Probe (`probe_maxlist_field_independence.py`, hill-climb
+max-list): `n=8,k=2,t=3 → maxlist = 7 = n−1` across SEVEN fields (p=17,41,73,89,97,113,137) —
+genuinely field-independent. BUT `t=3` is the Johnson regime (Johnson agreement √(n(k−1))=√8≈2.83),
+where the combinatorial Johnson bound IS known and field-independent — not new.
+
+**The open middle band is computationally inaccessible:** it needs k≥4 (room between capacity
+agreement k and Johnson √(n(k−1))), but a PROPER subgroup forces p≫n, so the p^k codeword matrix
+explodes (p=97,k=4 ⟹ 88M). Cannot probe exactly. And the in-tree `rootsOfUnity_dyadic_codeword_list_ge`
+(exponential, structure-dependent) plus the divisor-poverty probes show the open-regime list is
+field/subgroup-DEPENDENT — so field-independence (Conjecture M) fails exactly where it would matter.
+Conjecture M holds only where the answer is already the classical Johnson bound. Not a δ* pin.
+
+Campaign: E''(O160), J(O161), J'(O162), L(O163), M(O164) — 5 direct conjectures, all refuted or
+reduced to the open explicit-RS sub-Johnson list-decoding bound. No fabricated closure.
+
+## 2026-06-13 — "E(μ_n) ≤ C·n²·log n for ALL p≡1 mod n" is FALSE (Fermat-prime degeneracy); restrict to n ≤ √p (Fable fleet)
+
+The over-general energy conjecture (B10) is refuted by the **Fermat-prime family** p = 2^m+1,
+n = p−1 = 2^m (a 2-power, p≡1 mod n): then μ_n = F_p^× (the WHOLE multiplicative group), so
+E(μ_n) = n² + n(n−1)² ≈ n³ ≫ n²log n. The conjecture fails whenever the subgroup fills the
+field (n ≈ p). The correct, surviving form restricts to the **small/boundary subgroup regime
+n ≤ √p** (the production NTT range, n ≤ √p for Goldilocks): there the worst-case energy is
+≈ 1.3·n²·ln n (probe_worstcase_energy, probe_boundary; ratio E/(n²ln n) BOUNDED and DECREASING
+2.62→0.74 across n=8..256). So: the n²log n bound is FALSE universally, TRUE (empirically) for
+n ≤ √p — exactly the deployed regime. The boundary n≈√p bound remains the open core (= GV/HBK
+square-root-cancellation, faces B2/B3 below n^{5/2}).
+
+### O165 — INDEPENDENT AUDIT of the δ* reduction: AIRTIGHT + axiom-clean, conditional on one honest open Prop — with 3 mandatory disclosures (nubs, hostile 4-agent Opus-4.8 audit + independent rebuild, 2026-06-13)
+
+A zero-charity audit of the headline "all supporting math proven; δ* reduced to ONE clean
+Prop." Independently rebuilt the chain (`lake build CensusDominationWeld`, 8365 jobs) +
+transitive `#print axioms` on all load-bearing nodes (pin, interiorCeiling,
+kkh26_epsMCA_lower_bound, badScalars_card_le_alignable, kkh26_lemma1, the meet lemma):
+**ALL exactly [propext, Classical.choice, Quot.sound]; zero sorry/admit/custom-axiom/
+native_decide across the 44-file closure** (every grep hit was docstring prose).
+
+**CERTIFIED SOLID (the reduction itself):** `kkh26_deltaStar_pin_of_censusDomination` proves
+`mcaDeltaStar(evalCode, ε*) = 1 − r/2^μ` — a genuine EQUALITY (two-sided meet at the SAME
+δ₀, via `mcaDeltaStar_eq_of_good_below_of_bad_above`), NOT a one-sided bound. Lower bracket
+from CensusDomination; **upper bracket (KKH26 ceiling) is UNCONDITIONAL** (no hidden Prop).
+The sole undischarged hypothesis is `CensusDomination` — and it is the HONEST residual:
+its filter predicate is byte-identical to the consumer's proven count obligation
+(`badScalars_card_le_alignable`), it is provably NON-vacuous (`kkh26_fibreUnion_aligned_
+nondegenerate` builds ≥ 2^r·C(2^{μ−1},r) aligned bad scalars; K is forced < that, so it's
+the real supply wall, not a free bound), and it is never discharged (no `_holds`).
+
+**THREE MANDATORY DISCLOSURES (without these the headline is oversell):**
+1. "One Prop" is the residual ONLY for the hard deep-band/large-r regime. The bulk range
+   is ALREADY unconditional via `kkh26_deltaStar_pin_allWitness` (binomial budget, no
+   CensusDomination) + a concrete zero-hypothesis instance `deltaStar_pin_concrete_F4129`
+   (δ*=3/4 over ZMod 4129, fully discharged). Do NOT say "the whole prize is one Prop."
+2. CensusDomination is GENUINELY OPEN at the prize window, NOT near-proven: the team's own
+   `packing_exceeds_budget_deep_band` PROVES the elementary route fails at r=n/2;
+   `packing_covers_sqrt` reaches only ~√n; production support is EMPIRICAL (O158/O159/O164
+   block the structured mechanisms, but the general bound = the open Stepanov/additive-
+   energy E(μ_n)=n^{2+o(1)} = 25-year explicit-RS sub-Johnson list-decoding problem). Do
+   NOT imply it is plausibly-soon-provable.
+3. "Beyond Johnson" holds for the m=1 NTT regime (numerically) but is NOT a Lean theorem
+   (no Real.sqrt comparison in-tree); at m≥2 small-r the pin can fall to/below Johnson.
+
+**BOTTOM LINE (safe to send):** "δ* = 1 − r/2^μ is pinned EXACTLY, both-sided, axiom-clean,
+conditional on a single honest non-vacuous combinatorial Prop (CensusDomination) — the
+genuine open core (explicit-RS beyond-Johnson list decoding); the upper bracket, a
+bulk-parameter unconditional pin, and a concrete zero-hypothesis instance are already
+in-tree." That is a real, valuable, certified result. The three caveats are what keep it
+honest before Boneh/Vitalik. (Cosmetic: CensusDominationWeld.lean:81 unused binder hmu.)
+
+### O166 — DISCLOSURE O165-#3 CLOSED: beyond-Johnson placement is now a Lean theorem (no Real.sqrt gap) (nubs, 2026-06-13, goal priority 1)
+
+The audit (O165) flagged the "δ* = 1−r/2^μ lies beyond the Johnson radius 1−√ρ" placement
+as numeric-only (no Real.sqrt comparison in-tree). Now a theorem, axiom-clean:
+`PinBeyondJohnson.lean` (single-module build green).
+
+* `pin_beyond_johnson_iff` (μ,m,r; m≥1, r≥2): for the pin code (length 2^μ·m, dim (r−2)m+1,
+  rate ρ), `1 − r/2^μ > 1 − √ρ ↔ r²·m < 2^μ·((r−2)m+1)` — via `Real.lt_sqrt` the sqrt
+  comparison reduces EXACTLY to an elementary Nat inequality (no sqrt gap; the substitution
+  r = r'+2 eliminates all Nat-subtraction casts).
+* `pin_beyond_johnson_iff_m1` (the FRI/STIR dyadic n=2^μ case): `1 − r/2^μ > 1 − √ρ ↔
+  r² < 2^μ(r−1)`.
+
+HONEST SCOPE (faithful to O165-#3): it is an IFF — beyond-Johnson holds exactly under the
+stated inequality, true throughout the m=1 production regime, provably FALSE at m≥2 small r
+(μ=2,m=2,r=2: pin 1/2 < Johnson). So "beyond Johnson" is genuinely conditional, now exactly
+CHARACTERIZED rather than asserted. Goal disclosure-#3: CLOSED (landed Lean theorem).
+
+### O167 — DISCLOSURE O165-#1 CLOSED: the unconditional/residual boundary is EXACTLY r ≈ √(2^μ), via a landed axiom-clean theorem (nubs, 2026-06-13, goal priority 1 — all 3 disclosures now resolved)
+
+Disclosure #1 (the audit's "one Prop is the residual ONLY for deep-band/large-r; the bulk
+range is already unconditional") is now precisely CHARACTERIZED by an in-tree theorem I
+independently verified axiom-clean:
+
+* `kkh26_deltaStar_pin_lowdegree` (KKH26DeltaStarPinAllWitness.lean:181, axiom-clean
+  [propext,Classical.choice,Quot.sound], module build green 8371 jobs): for EVERY μ≥1,
+  prime p above the KKH26 threshold with an order-2^μ element, and EVERY degree r in
+  `2 ≤ r ≤ 2^{μ-1}` with `r² ≤ 2^μ+1`, the pin `mcaDeltaStar(evalCode g 2^μ (r−2)) = 1−r/2^μ`
+  holds with **NO CensusDomination and NO binomial hypothesis** — the budget-below-supply
+  inequality `C(2^μ,r)/r < 2^r·C(2^{μ-1},r)` is discharged outright by `choose_bulk`
+  (axiom-clean). An INFINITE unconditional family.
+
+**THE EXACT BOUNDARY (the disclosure's precise content):**
+- **Unconditional region (no open Prop):** `r ≤ √(2^μ)` (i.e. `r² ≤ 2^μ+1`) — δ* pinned
+  outright, landed theorem above. Includes the concrete zero-hypothesis
+  `deltaStar_pin_concrete_F4129` (δ*=3/4 over ZMod 4129).
+- **CensusDomination-load-bearing region:** `√(2^μ) < r ≤ 2^{μ-1}` (deep band toward
+  capacity). The PRODUCTION prize rates live here: ρ=1/2 ⟹ r≈2^{μ-1} ≫ √(2^μ) for μ≥4.
+- The boundary `r ≈ √(2^μ) = √n` (at m=1) COINCIDES with `packing_covers_sqrt` (the
+  elementary route reaches exactly ~√n) and `packing_exceeds_budget_deep_band` (fails at
+  r=n/2) — three independent in-tree objects agree on the same √n boundary.
+
+HONEST FRAMING (the disclosure's whole point): there is an infinite family of
+δ*-pins with NO open math — but it is the LOW-DEGREE (small-r) family, NOT the production
+prize rates. "The bulk range is unconditional" is true and now exactly bounded; "the prize
+itself is unconditional" is FALSE (production r is deep in the CensusDomination region).
+
+**GOAL STATUS — all three O165 disclosures now resolved:** #1 CLOSED (this, landed
+theorem + exact boundary); #2 documented-as-blocked (CensusDomination = the Stepanov/
+additive-energy / explicit-RS sub-Johnson 25-year open problem); #3 CLOSED (O166
+`PinBeyondJohnson.lean`, landed theorem). Reduction re-audits clean (O165); dossier
+current (#371). The residual is now EXACTLY the named classical open problem — nothing
+further to honestly add without solving it.
+
+### O168 — O163 "energy silent at prize scale" is now a CHECKED conditional theorem (nubs, 2026-06-13, goal clause 3)
+
+O163 stated only in PROSE that the GV/Stepanov additive-energy bound makes the cubic/energy
+supply silent at prize scale. Now a theorem (`CubicSupplySilentPrizeScale.lean`, axiom-clean
+[propext,Classical.choice,Quot.sound], independently compiled + single-module build green):
+
+* `cubicSupply_silent_at_prize_scale` — under `GVRepBound (image dom univ) M` (the in-tree
+  integer-clean form of the cited GV/Stepanov `E(μ_n) ≲ n^{8/3}`, kept as a NAMED HYPOTHESIS,
+  never asserted — the TZPrimeSupply pattern) and `n ≤ 2^40` (prize domain bound), the cubic
+  word's explainable-3-core supply `S` satisfies `S < 2^128 = ε*·q`. The energy/cubic
+  mechanism CANNOT breach the prize threshold — it is silent.
+* `gv_supply_envelope_lt` — the bare numeric kernel `260·(2^40)^11 < (2^128)^6` (norm_num).
+* Proof = the landed capstone `cubicSupply_pow_le_of_gvRepBound` (`S^6 ≤ 260·n^11`) +
+  monotonicity in n≤2^40 + the envelope + strict monotonicity of x↦x^6 (`lt_of_pow_lt_pow_left₀`).
+  Margin huge: proven supply ≈ 2^74.7 ≪ 2^128 (O163's prose ≈2^85 was a loose over-estimate).
+
+HONEST SCOPE (goal clause 3 compliant): the GV energy bound is a HYPOTHESIS, never asserted
+— this does NOT prove the energy bound (that's the open Stepanov/additive-energy input). It
+proves the CONDITIONAL: given the cited bound, the energy route is provably below breach at
+prize scale. Strengthens the dossier — the "energy mechanism is silent" leg of the
+δ*-residual map is now checked, not prose. Found via Opus-4.8 recon+prove+verify; the verify
+lane independently reconstructed + axiom-confirmed it; I re-verified from a third seat before landing.
+
+### O169 — the cubic-supply silence is UNCONDITIONAL: O168's GV hypothesis is REMOVABLE for the threshold (nubs, 2026-06-13)
+
+Strengthening O168. `cubicSupply_silent_unconditional` (same file, axiom-clean, build green):
+the cubic explainable-3-core supply is `< 2^128 = ε*·q` at `n ≤ 2^40` with **NO additive-energy
+hypothesis** — it is `≤ C(n,3) ≤ n³ ≤ (2^40)³ = 2^120 < 2^128` by pure subset counting
+(`Finset.card_filter_le` + `Nat.choose_le_pow`). So O168's `GVRepBound` was UNNECESSARY for the
+silence threshold; the GV/Stepanov energy bound buys only the tighter estimate (≈2^74.7 vs 2^120),
+not the silence. (The in-tree unconditional order-2 Stepanov bound `additiveEnergy_lt_cube_stepanov`,
+E(μ_n) < n³, gives the same via the energy route; the subset count is the cleanest.) Net: the
+cubic/energy supply route is provably silent at prize scale UNCONDITIONALLY — one fewer residual
+on that leg of the δ*-map. Honest scope: this is the cubic (k=2) word's supply only — it does NOT
+touch the general deep-band CensusDomination (still the open core); it cleanly closes the cubic leg.
+
+### O170 — SELF-CORRECTION: O168/O169 cubic-supply silence is CORRECT but VACUOUS for the prize (cubic supply ≡ 0 on 2-power μ_n); the framing overclaimed (nubs, 2026-06-13)
+
+Honesty correction, triggered by the fleet's d7feabd7a guardrail + independent re-verification.
+O168/O169 prove the cubic (3-term zero-sum) explainable supply is < 2^128 at n ≤ 2^40. The
+THEOREMS ARE CORRECT and axiom-clean. BUT the cubic 3-term zero-sum supply is **IDENTICALLY 0
+for 2-power μ_n** (Mann: no 3-term vanishing sum of 2^m-th roots of unity, 3∤2^m) — independently
+re-confirmed even at the SPLIT production prime p=2013265921:
+`scripts/probes/incidence/landscape/cubic_vacuous_check.py` → mu_8/16/32 all give 3-term count
+= 0 (4-term count = 6/28/120 = C(n/2,2)). So O168/O169 bound a quantity that is already ZERO for
+the prize 2-power domains — they are **vacuous-for-prize**, and my framing "closes the cubic/energy
+supply leg of the δ*-map" OVERCLAIMED. RETRACTED.
+
+**What's actually operative:** the supply for 2-power μ_n runs through the 4-term/even zero-sum
+route (= additive energy E(μ_n)), NOT the cubic route. At production SPLIT primes the relevant
+energy is the OPEN GV/Stepanov quantity E(μ_n)=n^{2+o(1)} — its prize-scale silence is governed by
+that open bound (in-tree as the GVRepBound hypothesis), NOT closed by O168/O169. The exact value
+E=3n(n−1) is the INERT/char-0 case; production primes are split, where it is the open problem.
+
+NET (honest): O168/O169 stand as correct lemmas but contribute nothing to the prize 2-power supply
+question (they bound 0). The energy-supply leg for the prize is NOT closed — it remains the open
+GV/additive-energy bound. This entry corrects the record; no fabricated closure.
+
+### O171 — FALSIFY-FIRST ON THE $1M PROP: the deep-band #bad-SCALAR count HOLDS vs the KKH26 budget K=2^r·C(n/2,r) with 2.5×–20× margin at n=16 (faithful, triple-verified) — first direct positive evidence CensusDomination is true at the demand level; the literal alignable-SETS form is FALSE (lossy overcount) so the obligation must be the bad-scalar form (nubs, 2026-06-13)
+
+The δ* prize (#389) reduces to CensusDomination: deep-band bad count ≤ budget K. The packing
+route (PackingDeepBandMiss) provably MISSES the deep band (its upper bound exceeds K there:
+n=16 r=7 pack=1430 > K=1024) — but that is the BOUND being weak; the TRUE count was uncomputed.
+Computed it exactly (Opus 4.8, falsify-first, pin→compute→adversarial-verify).
+
+* **HOLDS WITH MARGIN [COMPUTED, faithful BabyBear p²=4×10¹⁸ ≫ C(16,8)=12,870 — no O164
+  saturation].** Worst-case-over-stacks deep-band #bad-scalar at n=16 (exhaustive over 240
+  monomial pairs + 200 random/structured): r=3..8 → #bad = 97, 145, 89, 113, **225, 104** vs
+  K = 448, 1120, 1792, 1792, **1024, 256** — margin 2.5×–20×, tightest at the deepest prize
+  bands r=7 (4.6×) and r=8 (2.5×). Every count ≤ the packing bound C(16,a₀)/(a₀+1)
+  (calibration). The maximizer is a high-frequency monomial pair (x⁸=−1), NOT canonical
+  KKH26 — which gives #bad=0 at the deep band (its supply lives at the ceiling band a=rm:
+  #bad=113,464,1233,2256,3025,3280,3281, validated). **First direct faithful positive evidence
+  the prize Prop is true at the demand level.**
+* **The LITERAL alignable-SETS CensusDomination is FALSE at the deep band** — a degenerate
+  codeword stack (u₀ constant in deg<k_c) makes γ=0 own all C(n,a₀) a-sets (#align up to
+  12,870 ≫ K, 12.6× at r=7) while pinning exactly ONE bad scalar. NOT a δ* refutation: the
+  documented lossy overcount (SinglePencilQIndependence L19-23). **The correct in-tree
+  obligation is the #bad-SCALAR form (badScalars_card_le_alignable / the SinglePencil route),
+  not the alignable-sets cap.** Verified the degenerate stack is a genuine alignment respecting
+  the non-degeneracy clause.
+* **Triple-verified:** the counts reproduce digit-for-digit across THREE distinct code paths
+  (builder's Gauss/ratio C; Laplace+Vandermonde-minor C; from-scratch Python Bareiss+itertools)
+  and are invariant across three faithful primes (kills the O164 pigeonhole artifact).
+  Residual def cross-checked vs OwnershipBound/UniversalAlignmentLaw/CensusDominationWeld.
+* **Honest scope:** n=16 is the exact worst-case frontier; n=32 worst-case is INFEASIBLE
+  (C(32,17)≈5.7×10⁸/stack, search ~days; syndrome route q^{2(n-k)} astronomically infeasible).
+  Char-0-faithful, m=1 rate family — direct EVIDENCE the Prop holds in the form that matters,
+  NOT a proof for all n (that is the swarm's analytic Stepanov/Weil route). Complements the
+  other NubsCarson seat's O164 (fiber/supply side = O(1)): #alignable ≈ #bad × fiber, both
+  measured small.
+
+**Where it lands:** the census-domination route to δ* is NOT killed by the deep band (the
+honest worst case I could most fear) — the gating bad-scalar count holds with comfortable
+margin at the computable frontier, and the only failure (the literal set-form) is a known
+overcount that re-statement fixes. The prize obligation sharpens to: prove the #bad-scalar
+deep-band bound for all n (the analytic core). Dossier: scripts/probes/genlaw/o165_census_demand/.
+
+### O172 — THE q-THRESHOLD + r=3 PROVEN FOR ALL n: production q is the deep-band WORST case (saturating envelope, char-0 supremum), and #bad(r=3)=n²(n−4)/32+1 ≤ K for all n — so O171's faithful evidence transfers to production; general r≥4 stays the open analytic core (nubs, 2026-06-13)
+
+Follow-on to O171. O171 showed CensusDomination's deep-band #bad-scalar count holds with
+margin at n=16 FAITHFUL prime; DeepBandSaturationDischarge shows it fails at small q. This
+resolves the q-threshold and the production-transfer question (Opus 4.8, adversarially
+verified 0.85, one wording fix applied).
+
+* **Production q is the WORST case, not a relief [MEASURED + envelope argument].** #bad(q) has
+  the char-0 algebraic count as its SUPREMUM — a *saturating envelope* (NOT monotone: the
+  small-q regime fluctuates, measured strict drops e.g. n=16 r=7 sweep 17,97,…,209,225 with
+  3 drops — corrects the workflow's initial "monotone" claim — but nothing exceeds char-0).
+  Below q\*=√C(n,r+1) the count is value-space-limited (#bad ≤ q−1) and CensusDomination fails
+  by pigeonhole (= DeepBandSaturationDischarge / O164 saturation). Above q\*, #bad = the fixed
+  char-0 count. So production q (2⁶⁴–2²⁵⁶, far above q\* for n ≤ ~512) REALIZES the char-0
+  worst case exactly ⟹ wherever char-0 #bad ≤ K, **production HOLDS** — O171's n=16/32 faithful
+  evidence transfers to production (resolving O171's open q-transfer worry).
+* **r=3 PROVEN for all n [PROVEN modulo landed A4 rigidity].** Exact closed form
+  **#bad(r=3) = n·C(n/4,2)+1 = n²(n−4)/32+1** (n=16→97, 32→897 full sweep, 64→7681, all match
+  O171), and ≤ K for ALL n by the exact integer identity K−#bad=(h−2)h(13h−16)/12−1>0 (h=n/2≥4,
+  margin→5.33×). Order-2 character line → parity-split collinearity → antipodal pair-product →
+  bad γ=−e₁ (in-tree Vieta pin); config count n·C(n/4,2) field-independent; distinctness =
+  PairSumRigidityModP.pair_sums_ne_modp (threshold 2ⁿ). First partial PROOF of the demand
+  bound (not just evidence).
+* **Honest scope:** r ≥ 4 OPEN — no clean closed form (divisor-dependent worst-case family:
+  x^{n/2} at r=3, x^{n/4} at r=4; counts non-monotone 97,145,89,113,225,104); general-r ≤ K
+  MEASURED only (n=16 all bands 2.46×–20.1×; n=32 r=3 5.0×, r=4 33×) = the ExcessCensusLaw
+  open analytic core. The literal alignable-SETS form stays FALSE (O171 overcount, retained).
+
+**Where it lands:** the census route to δ\* is alive at production and r=3-closed for all n; the
+worst case I most feared (production q amplifying the count) is the opposite — production q is
+the worst case but it's the char-0 value, which is ≤ K. The remaining prize obligation
+sharpens to ONE target: the general-r (r≥4) deep-band #bad-scalar bound (the analytic core,
+the swarm's Stepanov/Weil lane). Dossier: scripts/probes/genlaw/o172_qthreshold/.
+
+### O173 — THE SECOND-MOMENT PAIR-SUM GATE IS INSUFFICIENT: Σ_d A_d I_∩(d) = Θ(E[N]²) (NOT o(E²)) through the upper window, and Θ(1) overdispersion is exponentially blind to the KKH26 worst line — so the upper-window δ* wall is genuinely worst-case extremality, not any moment bound (nubs, demand/list-decoding seat, 2026-06-13)
+
+Targets lalalune's localization comment (2026-06-13), which proved δ* = H_q⁻¹(1−ρ−log_q(1/ε*)/n)
+in the lower window and reduced the upper window to ONE explicit gate: "is Σ_d A_d·I_∩(d) =
+o(E[#bad]²) at threshold?" (A_d = MDS weight enumerator, I_∩(d) = radius-R two-center ball
+intersection). I built and computed that object exactly — probe_pairsum_gate.py, the named
+"machinery to build next" (Opus 4.8 inline; implementations validated: Σ_w A_w = q^k exact,
+I_∩(0) = V(R) exact; lower-window switch lands precisely at (1−ρ)/2).
+
+* **(a) Lower window δ < (1−ρ)/2 — MACHINE-CONFIRMED unconditional.** pair_term = Σ·q^n/(q^k·V²)
+  = EXACT 0: the d∈[d_min,2R] band is empty (2R<d_min=n−k+1), so no codeword pair has
+  overlapping radius-R balls ⟹ worst = average ⟹ the closed form holds with zero residual.
+  Verified at ρ∈{1/4,1/2}, n∈{16,32,48,64}, q from 257 up to the genuine prize q=n·2¹²⁸. The
+  switch lands at exactly (1−ρ)/2 (ρ=1/2,n=32: pair_term 0 at δ=0.25, turns on at 0.281).
+* **(b) Upper window — the gate's "o(E²)" hope is FALSE.** pair_term rises from ≈0 just above
+  (1−ρ)/2, PLATEAUS just below 1 across the whole window, and crosses 1 EXACTLY at capacity
+  δ=1−ρ (coincident with E[N]→1). So Σ_d A_d I_∩(d) = Θ(E[N]²), NOT o(E[N]²): the pair sum is
+  COMPARABLE to the mean², Var ≈ E[N]², only O(1) typical overdispersion. lalalune's hoped-for
+  o(E²) certificate does not exist in the upper window — refuted by exact in-regime arithmetic.
+* **(c) Even Θ(1) is exponentially blind to the wall.** KKH26 (ePrint 2026/782, Krachun–Kazanin–
+  Haböck) PROVES a worst line with 2^{Ω(1/η)} close points at δ=1−ρ−Θ(1/log n). The 2nd-moment
+  overdispersion Θ(1) ≪ 2^{Ω(1/η)}: the average pair sum cannot feel the measure-zero structured
+  worst line. A small (or any) second moment is a typical/whp certificate (Chebyshev), never a
+  worst-case one — so proving the gate could NOT close the upper window even if it were o(E²).
+
+**Where it lands:** the second-moment/pair-sum route to the upper-window δ* is now RULED OUT as
+a certificate — both because the gate is Θ(E²) not o(E²), and because Θ(1) overdispersion is
+exponentially below the proven KKH26 worst line. This converts lalalune's "open: is the gate
+o(E²)?" into "answered NO, and it wouldn't suffice regardless." The lower window (δ<(1−ρ)/2) is
+FULLY CLOSED (closed form, zero residual). The entire open content is the WORST-CASE combinatorial
+extremality of the antipodal subset-sum fibre (BCHKS25 Conj 1.12) — exactly lalalune's "must be a
+combinatorial extremality argument, not a character-sum/interpolation/moment bound." Probe:
+scripts/probes/probe_pairsum_gate.py.
+### O174 — the closed-form-FREE per-line structural route: d-ary split + 2^r sign-symmetry + single-line dominance all CONFIRMED, but the per-line injection into C(n/2,r)·2^r BREAKS for r≥4 (axis-support mismatch) — same open core as O172 (nubs, 2026-06-13)
+
+Asked whether each order-d character line has deep-band #bad ≤ its budget share (so
+max_d ≤ K = 2^r·C(n/2,r)) WITHOUT the O172 closed form. **Verdict: PARTIAL.** The per-line
+framing is correct and dominance HOLDS, but the structural per-line UPPER BOUND does not — it is
+a count-coincidence, not an injection. All probes reproduce the O172 worst-stack #bad n=16
+r=3..8 = 97,145,89,113,225,104 digit-for-digit (OwnershipBound.residual modular-det ground
+truth, BabyBear p=2013265921); K=448,1120,1792,1792,1024,256; margins 2.46×–20.1×.
+
+* **d-ary split generalizes in FORM [confirmed].** High-freq line u₀=χ_d(i)=x_i^{n/d}, u₁=u₀/x_i:
+  aligned-S(γ) ⟺ the a₀=r+1 points lie on one deg-<(r−1) curve; clearing 1/x_i gives
+  P(x_i)−ωʲ(x_i+γ)=0, P free deg≤r−1; χ_d constant per residue class mod d so S splits into d
+  classes, class j = roots of Q_j=P−ωʲ(x+γ), deg≤r−1. The Q_j form a PENCIL
+  Q_j−Q_{j'}=−(ωʲ−ω^{j'})(x+γ) — the d-cyclic product condition generalizing the r=3 antipodal
+  pair-product (d=2: x_a x_b + x_c x_d = 0). Aligned sets DO split into χ-class distributions
+  (r=3 order-2: {(2,2):96,(4,):140}; r=8 order-16: all-1s).
+* **OBSTRUCTION #1 (per-class size).** Naive "class size ≤ deg Q_j = r−1" FAILS on degenerate
+  classes: r=3 (4,)-distribution (140 sets, size 4 > r−1=2) = the B=0 collinear-degenerate family
+  that ALL collapse to the single γ=0 (the "+1" in n·C(n/4,2)+1). Harmless to the count, breaks
+  the clean structural statement.
+* **OBSTRUCTION #2 (the real one — axis-support mismatch).** A per-line injection
+  {bad γ}→{r-subset of n/2 antipodal axes}×{2^r signs}=K requires aligned sets to touch exactly
+  r axes. Measured axis-support: r=3 {2:12,3:128,4:96} (up to r+1, too many to fit r-subsets);
+  r=8 {5:80,6:192} (5–6 axes, fewer than n/2=8 needed for C(8,8)=1). So C(n/2,r) has NO geometric
+  realization on the bad set — K bounds #bad NUMERICALLY but not via injection for r≥4.
+* **The 2^r factor IS structural [confirmed].** At the tightest band r=8 (margin 2.46×):
+  #bad=104=2×52, bad-γ set CLOSED under negation γ↔−γ; 2^r=256=K (C(8,8)=1). 2^r = the
+  free-negation sign symmetry of the antipodal-balance engine (matches RESULTS-GENERAL-LAW).
+* **NON-OBSTRUCTION: single-line dominance HOLDS.** Obligation = worst witness PAIR = one line,
+  so max-over-lines is correct. Even unioning a whole degree-window (not required) stays far below
+  K: r=3 union over all (x⁸,x^f)=113≪448; r=4 union over (x⁸,*)+(x⁴,*)+(x¹²,*)+(x⁷,*)=337≪1120.
+  No harmful cross-line interference at any tested band.
+* **Normalization note (NOT an O172 error).** residual-ratio γ ≠ −e₁(S) per-set (0/96 equal at
+  r=3) but |{γ}|=|{−e₁}|=96=n·C(n/4,2); CF.md's "γ=−e₁" is the in-tree witness_pin convention,
+  count-equivalent, so the proven r=3 closed form stands.
+
+**Where it lands:** the per-line bad set is the JOINT (e₁..e_{r−1})-level-set whose cardinality
+is exactly the open analytic core O172/ExcessCensusLaw names; the d-cyclic pencil constrains but
+does not cap it at C(n/2,r)·2^r. The gap is PURELY the per-line count bound for r≥4 — identical
+to O172's open core, so a closed-form-free per-line structural proof is NOT available. Probes:
+/tmp/fanoutC/{dary_split_theory,axis_injection,r8_tight_analysis,crossline_check,crossline_r4,
+perline_budget}.py. Reading list for the analytic core: PAPERS_NEEDED.md §"ExcessCensusLaw
+analytic core".

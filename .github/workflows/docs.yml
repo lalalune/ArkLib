@@ -57,6 +57,22 @@ jobs:
             leanblueprint pdf
             leanblueprint web
 
+      # --- δ* paper site (static Next.js export) ---
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/deltastar-paper/package-lock.json
+
+      - name: Build δ* paper site
+        working-directory: website/deltastar-paper
+        env:
+          PAGES_BASE_PATH: /deltastar
+        run: |
+          npm ci
+          npm run build
+
       # --- Combine and Deploy ---
       - name: Prepare deployment directory
         run: |
@@ -71,6 +87,9 @@ jobs:
           # Copy blueprint HTML
           mkdir -p _deploy/blueprint
           cp -r blueprint/web/* _deploy/blueprint/
+          # Copy δ* paper site
+          mkdir -p _deploy/deltastar
+          cp -r website/deltastar-paper/out/* _deploy/deltastar/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

@@ -15,7 +15,7 @@ induction needs, for the `B`-coefficient estimate, the **index-shift** property 
 coefficient. In the total-degree shape (`deg coeff_i ≤ D_R − i`) this yields the drop
 `deg ((Δ_Y^m R).coeff j) ≤ (D_R − m) − j` — the `−m` that finding 7's arithmetic consumes.
 
-* `hasseDerivY_coeff` — the coefficient identity, specialized to the in-tree `hasseDerivY`;
+* `hasseDerivY_coeff_cast` — the coefficient identity, specialized to the in-tree `hasseDerivY`;
 * `hasseDerivY_coeff_natDegree_le` — the per-coefficient degree bound (shift form);
 * `hasseDerivY_coeff_natDegree_le_of_total` — the total-degree-shape drop.
 
@@ -31,7 +31,7 @@ variable {F : Type} [Field F]
 
 /-- The coefficient identity for the in-tree `Δ_Y`: the `j`-th coefficient of
 `Δ_Y^{m} R` is the binomial multiple of the `(j+m)`-th coefficient of `R`. -/
-theorem hasseDerivY_coeff (m j : ℕ) (R : F[X][X][Y]) :
+theorem hasseDerivY_coeff_cast (m j : ℕ) (R : F[X][X][Y]) :
     (hasseDerivY m R).coeff j = ((j + m).choose m : F[X][X]) * R.coeff (j + m) := by
   unfold hasseDerivY
   exact Polynomial.hasseDeriv_coeff (k := m) (f := R) j
@@ -40,7 +40,7 @@ theorem hasseDerivY_coeff (m j : ℕ) (R : F[X][X][Y]) :
 degree at most that of `R.coeff (j + m)`. -/
 theorem hasseDerivY_coeff_natDegree_le (m j : ℕ) (R : F[X][X][Y]) :
     ((hasseDerivY m R).coeff j).natDegree ≤ (R.coeff (j + m)).natDegree := by
-  rw [hasseDerivY_coeff]
+  rw [hasseDerivY_coeff_cast]
   refine le_trans (Polynomial.natDegree_mul_le) ?_
   simp [Polynomial.natDegree_natCast]
 
@@ -77,7 +77,7 @@ theorem leadingCoeff_dvd_evalX_hasseDerivY_top {x₀ : F} {R : F[X][X][Y]} {H : 
       = Polynomial.eval (Polynomial.C x₀) ((hasseDerivY m R).coeff (d - m)) := by
     rw [Polynomial.Bivariate.evalX_eq_map, Polynomial.coeff_map]
     rfl
-  rw [hcomm, hasseDerivY_coeff]
+  rw [hcomm, hasseDerivY_coeff_cast]
   have hidx : d - m + m = d := by omega
   rw [hidx]
   -- the evaluated top coefficient is the binomial multiple of the leading coefficient
@@ -208,7 +208,7 @@ theorem specializedHasse_coeff_natDegree_le_of_total {x₀ : F} {R : F[X][X][Y]}
   -- the `Y`-layer Hasse shift drops the budget by `m` (binomial scalar is degree-free)
   have hc2 : (((hasseDerivY m R).coeff n).coeff (i + i1)).natDegree
       ≤ ((R.coeff (n + m)).coeff (i + i1)).natDegree := by
-    rw [hasseDerivY_coeff, ← nsmul_eq_mul, Polynomial.coeff_smul]
+    rw [hasseDerivY_coeff_cast, ← nsmul_eq_mul, Polynomial.coeff_smul]
     exact Polynomial.natDegree_smul_le _ _
   have hc3 := htotal (n + m) (i + i1)
   omega
@@ -231,7 +231,7 @@ theorem specializedHasse_coeff_eq_zero_of_vanish {x₀ : F} {R : F[X][X][Y]} {DR
   have hz : Polynomial.hasseDeriv i1 ((hasseDerivY m R).coeff n) = 0 := by
     refine Polynomial.ext fun i => ?_
     have hinner : ((hasseDerivY m R).coeff n).coeff (i + i1) = 0 := by
-      rw [hasseDerivY_coeff, ← nsmul_eq_mul, Polynomial.coeff_smul,
+      rw [hasseDerivY_coeff_cast, ← nsmul_eq_mul, Polynomial.coeff_smul,
         hvanish (n + m) (i + i1) (by omega), smul_zero]
     rw [Polynomial.hasseDeriv_coeff, hinner, mul_zero, Polynomial.coeff_zero]
   rw [hz, Polynomial.eval_zero]
@@ -360,7 +360,7 @@ theorem hasseCoeffRepr𝒪_cleared_weight_le_of_total_anchored
 
 /-! ## Source audit -/
 
-#print axioms hasseDerivY_coeff
+#print axioms hasseDerivY_coeff_cast
 #print axioms hasseDerivY_coeff_natDegree_le
 #print axioms hasseDerivY_coeff_natDegree_le_of_total
 #print axioms leadingCoeff_dvd_evalX_hasseDerivY_top

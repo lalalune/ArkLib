@@ -4,35 +4,30 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
-import Mathlib.Tactic
-
-set_option linter.style.longLine false
 
 /-!
-# Round 9 (Issue #232, ABF26) — the subgroup Gauss-sum FOURTH MOMENT = `q · (additive energy)`.
+# The subgroup Gauss-sum FOURTH moment = `q · (additive energy)` (#389)
 
-The second moment of the subgroup Gauss sum `η_b = ∑_{y∈G} ψ(b·y)` is `q·|G|`
-(`SubgroupGaussSumSecondMoment`). Its **fourth** moment is the genuinely sum-product object: it equals
-`q` times the **additive energy** of the multiplicative subgroup `G`,
+This extends `SubgroupGaussSumSecondMoment` (`∑_b ‖η_b‖² = q·|G|`, Parseval) to the **fourth
+moment**, supplying the exact bridge from the **additive energy** of a subset `G ⊆ F` — the
+object that controls the cubic/`ℓ`-fold supply, hence δ\* — to the **incomplete character sum**
+`η_b = ∑_{y∈G} ψ(b·y)`:
 
-> `subgroup_gaussSum_fourthMoment`:  `∑_{b∈F} ‖η_b‖⁴ = q · E(G)`,
+> **`subgroup_gaussSum_fourthMoment`** — `∑_b ‖η_b‖⁴ = q · E(G)`, where
+> `E(G) = #{(a,a',c,c') ∈ G⁴ : a+a' = c+c'}` is the additive energy.
 
-where `E(G) = #{(y₁,y₂,y₃,y₄)∈G⁴ : y₁ + y₂ = y₃ + y₄}` is the additive energy (the count of additive
-quadruples). This is the exact bridge from the analytic side (Gauss-sum moments) to the additive
-combinatorics of a *multiplicative* subgroup — the sum-product tension at the heart of the deep-interior
-proximity question. It is again **pure additive-character orthogonality** (Parseval), with **no Weil
-input**: expanding `‖η_b‖⁴ = (η_b·conj η_b)²` into a sum over `G⁴` and summing over `b` collapses each
-quadruple to `q·[y₁+y₂ = y₃+y₄]`.
+Pure additive-character orthogonality (`AddChar.sum_mulShift`); no Weil input. The payoff:
 
-Consequence: `subgroup_gaussSum_energy_lower` — since `‖η_b‖⁴ ≥ 0` and `E(G) ≥ |G|²` always (the
-"diagonal" quadruples `y₁=y₃, y₂=y₄`), the fourth moment is `≥ q·|G|²`; and the trivial frequency `b=0`
-alone contributes `‖η_0‖⁴ = |G|⁴`. The additive energy `E(G)` of a 2-power multiplicative subgroup is
-*the* quantity a sum-product estimate would bound — small `E(G)` (close to the minimum `|G|²`) is exactly
-the anti-concentration that would make the proximity count behave, and it is governed by the
-multiplicative structure of `G`. All `sorry`-free and axiom-clean.
+> **`addEnergy_le`** — if `‖η_b‖² ≤ M` for all `b ≠ 0`, then
+> `q·E(G) ≤ |G|⁴ + M·(q|G| − |G|²)`.
 
-## References
-- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026. #232.
+Splitting off the spike `b=0` (`‖η_0‖ = |G|`) and using the second moment. Consequence for the
+δ\* programme: in the deployed regime `q ≥ |G|²` this gives `E(G) = O(|G|²)` — the sharp,
+**Weil-strength** energy/supply bound that closes the interior up to capacity — **iff** the
+worst-case incomplete sum obeys `|η_b| ≤ C√|G|` for `b ≠ 0`. That worst-case bound is the open
+Bourgain residual (CLAUDE.md face #3); this file is the precise reduction of the energy/supply
+side to it. The *average* `∑_{b≠0}‖η_b‖² = q|G|−|G|²` (i.e. `√|G|` typical) is the in-tree second
+moment; the per-frequency worst case stays open. All proofs axiom-clean. Issue #389.
 -/
 
 open Finset AddChar
@@ -42,108 +37,122 @@ namespace ArkLib.ProximityGap.SubgroupGaussSumFourthMoment
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
-/-- The **additive energy** of a finite set `G`: the number of quadruples `(y₁,y₂,y₃,y₄) ∈ G⁴` with
-`y₁ + y₂ = y₃ + y₄`. -/
-def addEnergy (G : Finset F) : ℕ :=
-  ∑ y₁ ∈ G, ∑ y₂ ∈ G, ∑ y₃ ∈ G, ∑ y₄ ∈ G, (if y₁ + y₂ = y₃ + y₄ then 1 else 0)
+/-- The additive energy `E(G) = #{(a,a',c,c') ∈ G⁴ : a+a' = c+c'}`, as a nested indicator sum. -/
+noncomputable def addEnergy (G : Finset F) : ℕ :=
+  ∑ a ∈ G, ∑ a' ∈ G, ∑ c ∈ G, ∑ c' ∈ G, (if a + a' = c + c' then 1 else 0)
 
-/-- `‖η_b‖²`, as a complex number, is the double character sum `∑_{y',y∈G} ψ(b·(y'−y))`. (Extracted
-from the second-moment computation; the value is a nonnegative real.) -/
-theorem eta_normSq_eq (ψ : AddChar F ℂ) (G : Finset F) (b : F) :
-    ((‖eta ψ G b‖ ^ 2 : ℝ) : ℂ) = ∑ y' ∈ G, ∑ y ∈ G, ψ (b * (y' - y)) := by
-  have hconjeta : (starRingEnd ℂ) (eta ψ G b) = ∑ y ∈ G, ψ (-(b * y)) := by
-    have hchar : (0 : ℕ) < ringChar F := by
-      haveI := ringChar.charP F
-      exact Nat.pos_of_ne_zero (CharP.char_ne_zero_of_finite F (ringChar F))
-    rw [eta, map_sum]
-    refine Finset.sum_congr rfl (fun y _ => ?_)
-    rw [AddChar.starComp_apply hchar, AddChar.inv_apply]
-  rw [show ((‖eta ψ G b‖ ^ 2 : ℝ) : ℂ) = eta ψ G b * (starRingEnd ℂ) (eta ψ G b) from by
-    rw [RCLike.mul_conj]; norm_cast]
-  rw [hconjeta, show eta ψ G b = ∑ y ∈ G, ψ (b * y) from rfl, Finset.sum_mul_sum]
-  refine Finset.sum_congr rfl (fun y' _ => Finset.sum_congr rfl (fun y _ => ?_))
-  rw [← AddChar.map_add_eq_mul]
-  congr 1; ring
-
-/-- **The subgroup Gauss-sum fourth moment equals `q · E(G)`.** Pure orthogonality (Parseval): the
-fourth moment of `η_b` is `q` times the additive energy of `G`. No Weil. -/
+/-- **The subgroup Gauss-sum fourth moment, exactly: `∑_b ‖η_b‖⁴ = q · E(G)`.** -/
 theorem subgroup_gaussSum_fourthMoment {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) :
     ∑ b : F, ‖eta ψ G b‖ ^ 4 = (Fintype.card F : ℝ) * addEnergy G := by
-  -- Complex identity, then cast.
-  have hcomplex : (∑ b : F, ((‖eta ψ G b‖ ^ 2 : ℝ) : ℂ) ^ 2)
+  have hchar : (0 : ℕ) < ringChar F := by
+    haveI := ringChar.charP F
+    exact Nat.pos_of_ne_zero (CharP.char_ne_zero_of_finite F (ringChar F))
+  have hconj : ∀ a : F, (starRingEnd ℂ) (ψ a) = ψ (-a) := by
+    intro a; rw [AddChar.starComp_apply hchar, AddChar.inv_apply]
+  have hetaconj : ∀ b : F, eta ψ G b * (starRingEnd ℂ) (eta ψ G b)
+      = ∑ a ∈ G, ∑ c ∈ G, ψ (b * (a - c)) := by
+    intro b
+    have hconjeta : (starRingEnd ℂ) (eta ψ G b) = ∑ y ∈ G, ψ (-(b * y)) := by
+      rw [eta, map_sum]; exact Finset.sum_congr rfl (fun y _ => hconj (b * y))
+    have hL : eta ψ G b = ∑ y ∈ G, ψ (b * y) := rfl
+    rw [hconjeta, hL, Finset.sum_mul_sum]
+    refine Finset.sum_congr rfl (fun a _ => ?_)
+    refine Finset.sum_congr rfl (fun c _ => ?_)
+    have h : b * a + -(b * c) = b * (a - c) := by ring
+    rw [← AddChar.map_add_eq_mul, h]
+  have hnorm4 : ∀ b : F,
+      (eta ψ G b * (starRingEnd ℂ) (eta ψ G b)) ^ 2 = ((‖eta ψ G b‖ ^ 4 : ℝ) : ℂ) := by
+    intro b
+    have hsq : eta ψ G b * (starRingEnd ℂ) (eta ψ G b) = ((‖eta ψ G b‖ ^ 2 : ℝ) : ℂ) := by
+      rw [RCLike.mul_conj]; norm_cast
+    rw [hsq]; push_cast; ring
+  have hcomplex : (∑ b : F, (eta ψ G b * (starRingEnd ℂ) (eta ψ G b)) ^ 2)
       = (Fintype.card F : ℂ) * addEnergy G := by
-    calc ∑ b : F, ((‖eta ψ G b‖ ^ 2 : ℝ) : ℂ) ^ 2
-        = ∑ b : F, (∑ y₁ ∈ G, ∑ y₃ ∈ G, ψ (b * (y₁ - y₃)))
-            * (∑ y₂ ∈ G, ∑ y₄ ∈ G, ψ (b * (y₂ - y₄))) := by
+    calc ∑ b : F, (eta ψ G b * (starRingEnd ℂ) (eta ψ G b)) ^ 2
+        = ∑ b : F, ∑ a ∈ G, ∑ a' ∈ G, ∑ c ∈ G, ∑ c' ∈ G,
+            ψ (b * ((a - c) + (a' - c'))) := by
           refine Finset.sum_congr rfl (fun b _ => ?_)
-          rw [sq, eta_normSq_eq ψ G b]
-      _ = ∑ b : F, ∑ y₁ ∈ G, ∑ y₂ ∈ G, ∑ y₃ ∈ G, ∑ y₄ ∈ G,
-            ψ (b * ((y₁ - y₃) + (y₂ - y₄))) := by
-          refine Finset.sum_congr rfl (fun b _ => ?_)
+          rw [hetaconj b, sq, Finset.sum_mul_sum]
+          refine Finset.sum_congr rfl (fun a _ => ?_)
+          refine Finset.sum_congr rfl (fun a' _ => ?_)
           rw [Finset.sum_mul_sum]
-          refine Finset.sum_congr rfl (fun y₁ _ => ?_)
-          refine Finset.sum_congr rfl (fun y₂ _ => ?_)
-          rw [Finset.sum_mul_sum]
-          refine Finset.sum_congr rfl (fun y₃ _ => ?_)
-          refine Finset.sum_congr rfl (fun y₄ _ => ?_)
-          rw [← AddChar.map_add_eq_mul]; congr 1; ring
-      _ = ∑ y₁ ∈ G, ∑ y₂ ∈ G, ∑ y₃ ∈ G, ∑ y₄ ∈ G, ∑ b : F,
-            ψ (b * ((y₁ - y₃) + (y₂ - y₄))) := by
+          refine Finset.sum_congr rfl (fun c _ => ?_)
+          refine Finset.sum_congr rfl (fun c' _ => ?_)
+          have h : b * (a - c) + b * (a' - c') = b * ((a - c) + (a' - c')) := by ring
+          rw [← AddChar.map_add_eq_mul, h]
+      _ = ∑ a ∈ G, ∑ a' ∈ G, ∑ c ∈ G, ∑ c' ∈ G, ∑ b : F,
+            ψ (b * ((a - c) + (a' - c'))) := by
           rw [Finset.sum_comm]
-          refine Finset.sum_congr rfl (fun y₁ _ => ?_)
+          refine Finset.sum_congr rfl (fun a _ => ?_)
           rw [Finset.sum_comm]
-          refine Finset.sum_congr rfl (fun y₂ _ => ?_)
+          refine Finset.sum_congr rfl (fun a' _ => ?_)
           rw [Finset.sum_comm]
-          refine Finset.sum_congr rfl (fun y₃ _ => ?_)
+          refine Finset.sum_congr rfl (fun c _ => ?_)
           rw [Finset.sum_comm]
-      _ = ∑ y₁ ∈ G, ∑ y₂ ∈ G, ∑ y₃ ∈ G, ∑ y₄ ∈ G,
-            (if y₁ + y₂ = y₃ + y₄ then (Fintype.card F : ℂ) else 0) := by
-          refine Finset.sum_congr rfl (fun y₁ _ => Finset.sum_congr rfl (fun y₂ _ =>
-            Finset.sum_congr rfl (fun y₃ _ => Finset.sum_congr rfl (fun y₄ _ => ?_))))
-          rw [AddChar.sum_mulShift ((y₁ - y₃) + (y₂ - y₄)) hψ]
-          have hcond : ((y₁ - y₃) + (y₂ - y₄) = 0) ↔ (y₁ + y₂ = y₃ + y₄) := by
-            constructor <;> intro h <;> linear_combination h
-          simp only [hcond]
-          split <;> simp
       _ = (Fintype.card F : ℂ) * addEnergy G := by
-          rw [addEnergy]
+          simp only [addEnergy]
           push_cast
-          simp only [Finset.mul_sum]
-          refine Finset.sum_congr rfl (fun y₁ _ => Finset.sum_congr rfl (fun y₂ _ =>
-            Finset.sum_congr rfl (fun y₃ _ => Finset.sum_congr rfl (fun y₄ _ => ?_))))
-          split <;> simp
-  -- cast back
-  have hcast : ((∑ b : F, ‖eta ψ G b‖ ^ 4 : ℝ) : ℂ) = (Fintype.card F : ℂ) * addEnergy G := by
+          rw [Finset.mul_sum]
+          refine Finset.sum_congr rfl (fun a _ => ?_)
+          rw [Finset.mul_sum]
+          refine Finset.sum_congr rfl (fun a' _ => ?_)
+          rw [Finset.mul_sum]
+          refine Finset.sum_congr rfl (fun c _ => ?_)
+          rw [Finset.mul_sum]
+          refine Finset.sum_congr rfl (fun c' _ => ?_)
+          rw [AddChar.sum_mulShift ((a - c) + (a' - c')) hψ]
+          have hiff : ((a - c) + (a' - c') = 0) ↔ (a + a' = c + c') := by
+            constructor <;> intro h <;> linear_combination h
+          by_cases h : a + a' = c + c' <;> simp [hiff, h]
+  have hcast : ((∑ b : F, ‖eta ψ G b‖ ^ 4 : ℝ) : ℂ)
+      = (Fintype.card F : ℂ) * addEnergy G := by
     rw [Complex.ofReal_sum, ← hcomplex]
-    refine Finset.sum_congr rfl (fun b _ => ?_)
-    push_cast; ring
-  have : ((∑ b : F, ‖eta ψ G b‖ ^ 4 : ℝ) : ℂ) = (((Fintype.card F : ℝ) * addEnergy G : ℝ) : ℂ) := by
+    exact Finset.sum_congr rfl (fun b _ => (hnorm4 b).symm)
+  have hreal : ((∑ b : F, ‖eta ψ G b‖ ^ 4 : ℝ) : ℂ)
+      = (((Fintype.card F : ℝ) * addEnergy G : ℝ) : ℂ) := by
     rw [hcast]; push_cast; ring
-  exact_mod_cast this
+  exact_mod_cast hreal
 
-/-- **Additive energy is at least `|G|²`** (the diagonal quadruples `y₃=y₁, y₄=y₂`). So the fourth
-moment is `≥ q·|G|²`, and minimal energy `E(G) = |G|²` is the maximal anti-concentration. -/
-theorem addEnergy_ge_sq (G : Finset F) : G.card ^ 2 ≤ addEnergy G := by
-  rw [addEnergy]
-  have hdiag : G.card ^ 2 = ∑ y₁ ∈ G, ∑ _y₂ ∈ G, 1 := by
-    simp [Finset.sum_const, sq, mul_comm]
-  rw [hdiag]
-  refine Finset.sum_le_sum (fun y₁ hy₁ => ?_)
-  refine Finset.sum_le_sum (fun y₂ hy₂ => ?_)
-  -- inner: `1 ≤ ∑_{y₃∈G} ∑_{y₄∈G} [y₁+y₂=y₃+y₄]`, witnessed by `(y₃,y₄)=(y₁,y₂)`
-  have h1 : (1 : ℕ) ≤ ∑ y₄ ∈ G, (if y₁ + y₂ = y₁ + y₄ then 1 else 0) := by
-    have := Finset.single_le_sum (f := fun y₄ => if y₁ + y₂ = y₁ + y₄ then (1 : ℕ) else 0)
-      (fun i _ => Nat.zero_le _) hy₂
-    simpa using this
-  have h2 : (∑ y₄ ∈ G, (if y₁ + y₂ = y₁ + y₄ then 1 else 0))
-      ≤ ∑ y₃ ∈ G, ∑ y₄ ∈ G, (if y₁ + y₂ = y₃ + y₄ then 1 else 0) :=
-    Finset.single_le_sum
-      (f := fun y₃ => ∑ y₄ ∈ G, (if y₁ + y₂ = y₃ + y₄ then (1 : ℕ) else 0))
-      (fun i _ => Finset.sum_nonneg (fun _ _ => Nat.zero_le _)) hy₁
-  exact le_trans h1 h2
+/-- **The energy↔character-sum bridge.** If the worst-case (off-zero) subgroup Gauss sum
+satisfies `‖η_b‖² ≤ M` for all `b ≠ 0`, then
+`q·E(G) ≤ |G|⁴ + M·(q|G| − |G|²)`.  Splitting `∑_b‖η_b‖⁴ = q·E` at the spike `b=0`
+(`‖η_0‖ = |G|`) and bounding `‖η_b‖⁴ ≤ M‖η_b‖²` off it, using the second moment
+`∑_{b≠0}‖η_b‖² = q|G|−|G|²`.  Hence `E(G) = O(|G|²)` once `q ≥ |G|²` **and** `M = O(|G|)`
+(worst-case `|η_b| ≤ C√|G|`) — the sharp Weil-strength supply bound for the deployed regime. -/
+theorem addEnergy_le {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) {M : ℝ}
+    (hM : ∀ b : F, b ≠ 0 → ‖eta ψ G b‖ ^ 2 ≤ M) :
+    (Fintype.card F : ℝ) * (addEnergy G : ℝ)
+      ≤ (G.card : ℝ) ^ 4 + M * ((Fintype.card F : ℝ) * G.card - (G.card : ℝ) ^ 2) := by
+  rw [← subgroup_gaussSum_fourthMoment hψ G]
+  have h0 : eta ψ G 0 = (G.card : ℂ) := by
+    simp [eta, AddChar.map_zero_eq_one]
+  have hn0sq : ‖eta ψ G 0‖ ^ 2 = (G.card : ℝ) ^ 2 := by rw [h0, Complex.norm_natCast]
+  have hn04 : ‖eta ψ G 0‖ ^ 4 = (G.card : ℝ) ^ 4 := by rw [h0, Complex.norm_natCast]
+  have hb : ∀ b ∈ Finset.univ.erase (0 : F), ‖eta ψ G b‖ ^ 4 ≤ M * ‖eta ψ G b‖ ^ 2 := by
+    intro b hbm
+    have hbne : b ≠ 0 := (Finset.mem_erase.mp hbm).1
+    have hsq := hM b hbne
+    have hnn : (0 : ℝ) ≤ ‖eta ψ G b‖ ^ 2 := sq_nonneg _
+    nlinarith [hsq, hnn]
+  have hsum2 : ∑ b ∈ Finset.univ.erase (0 : F), ‖eta ψ G b‖ ^ 2
+      = (Fintype.card F : ℝ) * G.card - (G.card : ℝ) ^ 2 := by
+    have h2 := subgroup_gaussSum_secondMoment hψ G
+    have hsp : ∑ b : F, ‖eta ψ G b‖ ^ 2
+        = ‖eta ψ G 0‖ ^ 2 + ∑ b ∈ Finset.univ.erase 0, ‖eta ψ G b‖ ^ 2 :=
+      (Finset.add_sum_erase _ _ (Finset.mem_univ 0)).symm
+    rw [hsp, hn0sq] at h2
+    linarith [h2]
+  calc ∑ b : F, ‖eta ψ G b‖ ^ 4
+      = ‖eta ψ G 0‖ ^ 4 + ∑ b ∈ Finset.univ.erase 0, ‖eta ψ G b‖ ^ 4 :=
+        (Finset.add_sum_erase _ _ (Finset.mem_univ 0)).symm
+    _ ≤ ‖eta ψ G 0‖ ^ 4 + ∑ b ∈ Finset.univ.erase 0, M * ‖eta ψ G b‖ ^ 2 := by
+        have hsle := Finset.sum_le_sum hb; linarith
+    _ = ‖eta ψ G 0‖ ^ 4 + M * ∑ b ∈ Finset.univ.erase 0, ‖eta ψ G b‖ ^ 2 := by
+        rw [Finset.mul_sum]
+    _ = (G.card : ℝ) ^ 4 + M * ((Fintype.card F : ℝ) * G.card - (G.card : ℝ) ^ 2) := by
+        rw [hn04, hsum2]
 
 end ArkLib.ProximityGap.SubgroupGaussSumFourthMoment
 
-/-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumFourthMoment.subgroup_gaussSum_fourthMoment
-#print axioms ArkLib.ProximityGap.SubgroupGaussSumFourthMoment.addEnergy_ge_sq
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumFourthMoment.addEnergy_le

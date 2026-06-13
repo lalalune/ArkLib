@@ -122,8 +122,9 @@ theorem qMap_total_fiber_succ_decompose (i : Fin ℓ) (n : ℕ)
       have hj_eq : j.val = n := by omega
       rw [dif_pos hjn1, dif_neg hjn]
       -- LHS bit: getBit n (b·2ⁿ + k) = b.
-      subst hj_eq
-      rw [getBit_high_of_add_mul_two_pow k.isLt b.isLt]
+      have hbit : Nat.getBit j.val (b.val * 2 ^ n + k.val) = b.val := by
+        rw [hj_eq]; exact getBit_high_of_add_mul_two_pow k.isLt b.isLt
+      rw [hbit]
       -- RHS: the z_b coefficient at index 0 via the 1-step extraction.
       rw [qMap_total_fiber_repr_coeff 𝔽q β ⟨i.val + n, by omega⟩ (steps := 1)
         (by show i.val + n + 1 ≤ ℓ; omega)
@@ -131,13 +132,13 @@ theorem qMap_total_fiber_succ_decompose (i : Fin ℓ) (n : ℕ)
           have hy := y.property
           simpa only [Nat.add_assoc] using hy⟩) (k := b)
         ⟨j.val - n, by
-          have hj := j.isLt
+          have hj : (j.val : ℕ) < ℓ + 𝓡 - i.val := j.isLt
           show j.val - n < ℓ + 𝓡 - (i.val + n)
           omega⟩]
       unfold fiber_coeff
       rw [dif_pos (show j.val - n < 1 by omega)]
       rw [show (⟨j.val - n, by
-          have hj := j.isLt
+          have hj : (j.val : ℕ) < ℓ + 𝓡 - i.val := j.isLt
           show j.val - n < ℓ + 𝓡 - (i.val + n)
           omega⟩ : Fin (ℓ + 𝓡 - (i.val + n))).val = 0 from by simp; omega]
       rw [getBit_zero_fin_two b]
@@ -150,20 +151,16 @@ theorem qMap_total_fiber_succ_decompose (i : Fin ℓ) (n : ℕ)
           have hy := y.property
           simpa only [Nat.add_assoc] using hy⟩) (k := b)
         ⟨j.val - n, by
-          have hj := j.isLt
+          have hj : (j.val : ℕ) < ℓ + 𝓡 - i.val := j.isLt
           show j.val - n < ℓ + 𝓡 - (i.val + n)
           omega⟩]
       unfold fiber_coeff
       rw [dif_neg (show ¬ ((⟨j.val - n, by
-          have hj := j.isLt
+          have hj : (j.val : ℕ) < ℓ + 𝓡 - i.val := j.isLt
           show j.val - n < ℓ + 𝓡 - (i.val + n)
           omega⟩ : Fin (ℓ + 𝓡 - (i.val + n))).val < 1) from by simp; omega)]
       -- both sides are `y_coeffs` at the same shifted index (same `.val`).
       congr 1
-      · omega
-      · apply Fin.ext
-        show j.val - (n + 1) = j.val - n - 1
-        omega
 
 end
 

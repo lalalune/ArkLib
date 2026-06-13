@@ -60,7 +60,7 @@ The subgroup's pencil spectrum at n=16 (both q=113 and q=257):
   φ = (1, 0, f₂) with −f₂ ∈ H (the involutions x ↦ c/x, c ∈ H: t₂ = (n−2)/2 when c is
   a square in H — 2 fixed points — and n/2 otherwise) plus φ = (0,1,0) (x ↦ −x,
   present since −1 ∈ H for even n). Set equality verified exactly at (41,10),
-  (113,16), (257,16); at (41,8) the threshold-3 band also catches 8 non-normalizer
+  (113,16), (257,16); at (41,8) the threshold-3 band also catches 16 non-normalizer
   involutions stabilizing 6 of 8 points — small-scale noise, gone by n=10.
 * **The spectral gap (surprise):** for the subgroup at n=16, NO pencil has t₂ ∈ {4,5,6}
   — the noise band caps at 3 and the normalizer band sits isolated at {(n−2)/2, n/2}.
@@ -102,7 +102,7 @@ by magnitude — to be quantified through the Chebyshev/third-moment tail machin
     # identical JSON; then:
     python3 probe_agreement_m3_experiment.py   # writes RESULTS-M3-RAW.md + experiment/
 
-Validation artifacts: `validation/` (7 setup pairs, byte-exact). Engine internal
+Validation artifacts: `validation/` (10 setup pairs, byte-exact; audit note: the k=2 subgroup-vs-random control is engine-structural — the independent k=2 evidence is the brute-vs-decomp byte-exact validations). Engine internal
 asserts include: the ordered-pair partition of q^{2k}; MDS weight distribution
 (closed form == enumeration); the t₂ first moment; N(profile) vs brute word counts;
 the full ordered-pair profile histogram vs the class decomposition (q^k ≤ 1400);

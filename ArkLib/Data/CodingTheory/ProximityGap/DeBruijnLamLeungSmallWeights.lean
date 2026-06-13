@@ -509,7 +509,7 @@ theorem two_dvd_of_quadruple_sum_eq_zero [CharZero L] {n : ℕ} (hn : 0 < n)
   have hrel : 1 + u + v + w = 0 := by
     have h := congrArg (· * x⁻¹) hxyzt
     simp only [add_mul, zero_mul] at h
-    rw [hu, hv, hw, mul_inv_cancel₀ hx0] at h
+    rw [mul_inv_cancel₀ hx0, ← hu, ← hv, ← hw] at h
     linear_combination h
   -- the two-generator number field and its complex embedding
   have hintu : IsIntegral ℚ u := isIntegral_of_pow_eq_one hn hun

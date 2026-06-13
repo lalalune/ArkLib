@@ -1,5 +1,19 @@
 # The δ* Programme — Agent Guide (successor of issues #334 → #357)
 
+> ## ⚡ START HERE TO SOLVE THE PRIZE: `PROXIMITY_PRIZE_WORKBENCH.lean`
+> The single self-contained "write your solution here" file:
+> [`PROXIMITY_PRIZE_WORKBENCH.lean`](PROXIMITY_PRIZE_WORKBENCH.lean). It has, in one place:
+> the **exact non-degenerate target** (`mcaConjecture` / `mcaDeltaStar`, NOT the radius-one-
+> degenerate `grandMCAChallenge`), the **prize regime** (`ρ∈{1/2,1/4,1/8,1/16}`, `ε*=2^-128`,
+> `q≈n·2^128`, smooth `μ_n`, window interior `(1−√ρ, 1−ρ−Θ(1/log n))`), the **proven substrate**
+> (the law, capacity-for-constant-DIM, granularity ladder, boundary law, ownership bracket,
+> energy chain, paper bridges) **all imported and `#check`-verified accessible**, the **proven
+> walls** (per-witness counting exhausted, energy √-loss, confluent-Stepanov, Weil/√q), the
+> **closure contract** (§4 — what a winning conjecture must do), and a `▼ YOUR CONJECTURE HERE ▼`
+> slot. Open it, write the closed-form `δ*(ρ,ε*,n)` + proof, validate with
+> `scripts/pg-iterate.sh`, wire to `mcaConjecture`/`GrandMCAResolution`/the LD bridge. The
+> conjecture must be **CLOSED** — no residual, no incomputable lemma — and must beat wall W1.
+
 > This file is auto-loaded when you work under `ArkLib/Data/CodingTheory/ProximityGap/`.
 > It is the **single source of truth** for attacking the mutual-correlated-agreement
 > threshold (δ*) formalization. `AGENTS.md` in this directory is a verbatim copy.

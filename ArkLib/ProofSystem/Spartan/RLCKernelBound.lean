@@ -78,7 +78,9 @@ theorem mem_prependRLCTargetRbrRelF_iff_rlc
       ↔ ∑ idx, c idx * oStmt (.inl 0) idx
           = ∑ idx, c idx * evalClaimValue R pp stmt (fun i => oStmt (.inr i)) idx := by
   simp only [prependRLCTargetRbrRelF, Spartan.Spec.secondSumcheckRbrRelIn,
-    Extractor.Lens.Honest.pullbackRelIn, Set.mem_setOf_eq, Sumcheck.Spec.relationRound]
+    Extractor.Lens.Honest.pullbackRelIn, Set.mem_setOf_eq, Sumcheck.Spec.relationRound,
+    Spartan.Spec.secondSumcheckOracleLens, Spartan.Spec.secondSumcheckStmtLens,
+    Statement.Lens.proj]
   have hsum : (∑ x ∈ (Finset.univ.map (boolEmbedding R)) ^ᶠ (pp.ℓ_n - 0),
       (secondSumCheckVirtualPolynomial R pp (c, stmt) oStmt)
         ⸨(Fin.elim0 : Fin 0 → R), x⸩)
@@ -94,9 +96,9 @@ theorem mem_prependRLCTargetRbrRelF_iff_rlc
     rfl
   constructor
   · intro h
-    rw [← hsum, h]
+    exact h.symm.trans hsum
   · intro h
-    rw [hsum, h]
+    exact hsum.trans h.symm
 
 /-- **The exact flip probability of the `linearCombination` round.**  If some stored claim
 deviates from its honest value, then a uniformly sampled RLC challenge lands the output in the
@@ -123,11 +125,11 @@ theorem linearCombination_flip_prob_eq
     constructor
     · intro h
       rw [← h]
-      exact Finset.sum_congr rfl fun idx _ => (mul_sub _ _ _).symm
+      exact Finset.sum_congr rfl fun idx _ => mul_sub _ _ _
     · intro h
       rw [← h]
-      exact Finset.sum_congr rfl fun idx _ => mul_sub _ _ _
-  rw [probEvent_congr (q := fun c : LinearCombinationChallenge R =>
+      exact Finset.sum_congr rfl fun idx _ => (mul_sub _ _ _).symm
+  rw [probEvent_ext (q := fun c : LinearCombinationChallenge R =>
       ∑ idx, c idx * (oStmt (.inl 0) idx
         - evalClaimValue R pp stmt (fun i => oStmt (.inr i)) idx) = 0)
     (fun c _ => hiff c)]

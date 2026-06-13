@@ -1,11 +1,24 @@
-# The window fiber–pencil programme (#371): the WB residual, brick by brick
+# The window fiber-pencil programme (#371): the WB residual, brick by brick
 
-> Lane state as of 2026-06-12.  Goal: discharge `WindowRationalBounded`
-> (`WBPencilBelowUDR.lean`) — the single named residual of the below-UDR law —
-> by structural analysis of the doubly-rational bad-scalar supply, lifting the
-> unconditional production floor from `(1−ρ)/3` to the unique-decoding radius
-> `(1−ρ)/2`.  Everything here is k = 1 (the current battleground); the
-> machinery is k-generic at the identity level.
+> Lane state as of 2026-06-12.  `WindowRationalBounded`
+> (`WBPencilBelowUDR.lean`) is a refuted historical residual.  The repaired
+> below-UDR capstone is `WBPencilLinearBudget.lean`: discharge
+> `WindowRationalLinear` to get the sharp conditional mass `ε_mca ≤ n/q`.
+> WB-4 (`WBPencilWindowLaw.lean`) gives a structural weaker-residual route:
+> `WindowPencilAnchored` implies the production-safe polynomial mass
+> `((w+1)+n(w+1)+1)/q`.  Everything here is k = 1 (the current battleground);
+> the machinery is k-generic at the identity level.
+
+> **2026-06-12 correction.**  `WindowRationalBounded` is now refuted by the
+> normalizer-pair family: the high-rate first beyond-ladder slice has
+> `(n-2)/2` bad scalars, so the `w+3` constant budget is false.  The sharp
+> repaired residual is `WindowRationalLinear` in `WBPencilLinearBudget.lean`
+> (bad count `≤ n`, consumer `ε_mca ≤ n/q`).  WB-4's
+> `WindowPencilAnchored` is the structural corank-1 route with the larger
+> polynomial budget.  `WBPencilBelowUDR.lean` keeps the old theorem as a
+> historical false-residual consumer, plus a legacy direct-count fallback under
+> `_linear_fallback` names so `WBPencilLinearBudget.lean` owns the canonical
+> `*_linear` declarations.
 
 ## The reduction chain (all axiom-clean, in-tree)
 
@@ -43,16 +56,20 @@
 
 **Slack-1 census** (stratum G): bad ≤ 1 (cored family) + #exotics; exotics are
 pairwise ≤ 1-intersecting `w`-subsets, so pair-counting caps them at
-`C(n,2)/C(w,2)` — within the `w+3` budget for `w ≥ 6`.  Named residual: the
-small-`w` exotic sharpening (probe ceiling: 3).
+`C(n,2)/C(w,2)`.  This is still a structural bound, but the normalizer-pair
+refutation shows the old constant-budget assembly was too optimistic at high
+rate.  The corrected assembly asks for a linear-in-`n` cap.
 
 ## Strata map (first row; pole rows recurse)
 
 - **G×G reduced coprime**: items 5–7.
 - **Shared locator factor** (`gcd(ℓ₀,ℓ₁) ≠ 1`, nonvanishing): zero bad — the
-  factor divides the constant `g`.  (Math done; Lean queued.)
+  factor divides the constant `g`.  **LANDED**: `shared_factor_no_defect`
+  (`WindowStrataKills.lean`).
 - **Codeword row** (`ℓ₀` constant): ≤ 1 bad via translation equivariance.
-  (Math done; Lean queued.)
+  **LANDED**: `codeword_fst_not_bad` / `codeword_fst_badScalars_card_le_one`
+  (`WindowStrataKills.lean`), `badScalars_card_le_one_of_fst_mem`
+  (`WBPencilPolynomialRow.lean`).
 - **Pole rows** (`PoleSpikeMatching.lean`, new): the stratum-agnostic
   `witness_defect_dichotomy`; defect witnesses contain every pole
   (`pole_witness_contains_poles`); misaligned pole pairs pin γ
@@ -100,14 +117,23 @@ Successor generation (spawned by refutations, per discipline):
 
 ## Open targets, in order
 
-1. Slack-1 assembly (`bad ≤ 1 + exotics` capstone + strata wiring) and the
-   small-`w` exotic bound.
+1. **The small-`w` exotic bound — the genuinely-open piece** (the high-rate tail
+   the normalizer-pair family showed defeats any constant budget; `WindowRationalLinear`
+   stays a named residual until this lands). The slack-1 `bad ≤ 1 + exotics` capstone +
+   strata wiring are DONE: `stratumG_slack1_badScalars_card_le` (`Slack1Assembly.lean`),
+   the codeword-row + shared-locator kills (`WindowStrataKills.lean`), the per-direction
+   ratio level-set bound `grs_line_incidence_le` (`Frontier/RatioLevelSet.lean`).
 2. Pole-recursion bricks (aligned case → punctured deficient instance).
 3. Higher slack: the chain theory at `deg g ≤ s` (multi-level CF; the
    `(X−t)`-cancellation telescopes), toward the parametric all-rows theorem.
-4. Assembly: `WindowRationalBounded` ⟹ `epsMCA_le_below_udr` unconditional ⟹
-   `δ* ≥ (1−ρ)/2` at production shape; strip-row sup-side closure (the KB §5.7
-   "lower strip rows" open) via the same machinery.
+4. Assembly: replace the refuted `WindowRationalBounded` target with
+   `WindowRationalLinear` from `WBPencilLinearBudget.lean` and consume
+   `epsMCA_le_below_udr_linear` / `le_mcaDeltaStar_below_udr_linear` there
+   for the sharp `n/q` budget.  The parallel structural route is WB-4's
+   `WindowPencilAnchored` residual and `epsMCA_le_of_anchored` /
+   `le_mcaDeltaStar_of_anchored` from `WBPencilWindowLaw.lean`.  The old
+   `epsMCA_le_below_udr` theorem remains only a conditional consumer of a false
+   historical residual.
 
 ## The rung census campaign (2026-06-12 session): conjecture refuted, ceiling found
 

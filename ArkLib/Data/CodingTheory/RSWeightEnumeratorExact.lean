@@ -48,18 +48,9 @@ theorem card_evalSupport_subset (α : ι ↪ F) (deg : ℕ)
   have hbij : (Finset.univ.filter
         (fun p : Polynomial.degreeLT F deg => evalSupport α p ⊆ S)).card
       = Fintype.card (LinearMap.ker (evalOnS α deg Sᶜ)) := by
-    rw [← Set.toFinset_card]
-    apply Finset.card_bij (fun p _ => p)
-    · intro p hp
-      rw [Set.mem_toFinset, SetLike.mem_coe]
-      exact (mem_ker_evalOnS_compl_iff α deg S p).mpr
-        ((Finset.mem_filter.mp hp).2)
-    · intro p₁ _ p₂ _ h
-      exact h
-    · intro p hp
-      rw [Set.mem_toFinset, SetLike.mem_coe] at hp
-      exact ⟨p, Finset.mem_filter.mpr ⟨Finset.mem_univ _,
-        (mem_ker_evalOnS_compl_iff α deg S p).mp hp⟩, rfl⟩
+    rw [← Fintype.card_subtype]
+    exact Fintype.card_congr
+      (Equiv.subtypeEquivRight (fun p => (mem_ker_evalOnS_compl_iff α deg S p).symm))
   rw [hbij, ← Nat.card_eq_fintype_card, natCard_ker_evalOnS_general,
     Finset.card_compl]
 
@@ -139,7 +130,9 @@ theorem card_evalSupport_eq (α : ι ↪ F) (deg : ℕ)
         · exact hsub.trans (Finset.sdiff_subset)
     rw [hset]
     have hcount := card_evalSupport_subset α deg (T \ t)
-    rw [hcount, Finset.card_sdiff htT]
+    have hcs : (T \ t).card = T.card - t.card := by
+      rw [Finset.card_sdiff, Finset.inter_eq_left.mpr htT]
+    rw [hcount, hcs]
     have harith : Fintype.card ι - (T.card - t.card)
         = Fintype.card ι - T.card + t.card := by
       have h1 : t.card ≤ T.card := Finset.card_le_card htT
@@ -196,7 +189,7 @@ theorem card_evalWeight_eq (α : ι ↪ F) (deg : ℕ)
   push_cast
   rw [Finset.sum_congr rfl (fun T _ => card_evalSupport_eq (F := F) α deg T)]
   -- each per-T sum depends only on |T| = d; regroup the powerset sum by size
-  have hperT : ∀ T ∈ Finset.univ.powersetCard d,
+  have hperT : ∀ T ∈ (Finset.univ : Finset ι).powersetCard d,
       (∑ t ∈ T.powerset, (-1 : ℤ) ^ t.card
         * (Fintype.card F : ℤ) ^ (deg - (Fintype.card ι - T.card + t.card)))
       = ∑ j ∈ Finset.range (d + 1), (-1 : ℤ) ^ j * (d.choose j : ℤ)
@@ -216,10 +209,10 @@ theorem card_evalWeight_eq (α : ι ↪ F) (deg : ℕ)
       obtain ⟨-, htcard⟩ := Finset.mem_powersetCard.mp ht
       rw [htcard]
     rw [Finset.sum_congr rfl hconst, Finset.sum_const,
-      Finset.card_powersetCard, hTcard, smul_eq_mul]
+      Finset.card_powersetCard, hTcard, nsmul_eq_mul]
     push_cast
     ring
   rw [Finset.sum_congr rfl hperT, Finset.sum_const, Finset.card_powersetCard,
-    Finset.card_univ, smul_eq_mul]
+    Finset.card_univ, nsmul_eq_mul]
 
 end ArkLib.CS25

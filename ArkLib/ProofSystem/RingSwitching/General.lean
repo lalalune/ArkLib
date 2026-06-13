@@ -94,7 +94,9 @@ def batchingCoreReductionA (aOStmtIn : AbstractOStmtIn L ℓ') :=
     (R₂ := SumcheckPhase.coreInteractionOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
     (pSpec₂:=pSpecCoreInteraction L ℓ')
 
-/-- The reduction for the full Binary Basefold protocol -/
+/-- The reduction for the full Binary Basefold protocol, using the strict-track batching/core
+relation needed by perfect completeness. The executable oracle data is unchanged by
+`strictVariant`; only the compatibility proposition is tightened. -/
 @[reducible]
 def fullOracleReduction :
     OracleReduction (oSpec:=[]ₒ)
@@ -104,7 +106,8 @@ def fullOracleReduction :
     (pSpec := fullPspec κ L K P ℓ' mlIOPCS)
     (WitIn := BatchingWitIn (L:=L) (K:=K) (ℓ := ℓ) (ℓ' := ℓ')) (WitOut := Unit)
     :=
-  (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).append mlIOPCS.oracleReduction
+  (batchingCoreReductionA κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn.strictVariant).append
+    mlIOPCS.oracleReduction
 
 /-- The full Binary Basefold protocol as a Proof -/
 @[reducible]
@@ -305,6 +308,8 @@ variable [∀ i, Fintype (mlIOPCS.pSpec.Challenge i)] [∀ i, Inhabited (mlIOPCS
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 set_option maxHeartbeats 1000000 in
+-- The core-interaction append capstone expands seq-compose protocol indices before the generic
+-- completeness keystone can close the two seam-direction goals.
 /-- Seam 1 (loop ⋈ final): core-interaction perfect completeness from `NeverFail` alone.
 Generalized over a bare `aOStmtIn : AbstractOStmtIn` (the phase bricks never inspect the
 compatibility Props), so it instantiates at both the relaxed `mlIOPCS.toAbstractOStmtIn`
@@ -348,6 +353,8 @@ private theorem sumcheckLoop_dir_zero (hpos : 0 < Fin.vsum (fun _ : Fin ℓ' => 
   · exact hdir
 
 set_option maxHeartbeats 1000000 in
+-- The batching/core append capstone instantiates the generic append keystone with the sumcheck-loop
+-- protocol, whose challenge-vector instances are expensive to synthesize.
 /-- Seam 2 (batching ⋈ core): batching-core perfect completeness from `NeverFail` alone.
 Generalized over a bare `aOStmtIn : AbstractOStmtIn` (stated about `batchingCoreReductionA`,
 which is definitionally `batchingCoreReduction … mlIOPCS` at `aOStmtIn :=
@@ -408,7 +415,9 @@ theorem batchingCoreReduction_perfectCompleteness' [IsDomain L] [IsDomain K]
   exact H
 
 set_option maxHeartbeats 1000000 in
-/-- **Issue #29 capstone: end-to-end RingSwitching perfect completeness, strict track.**
+-- The strict full RingSwitching capstone is stated directly about the append chain so Lean can reuse
+-- the component reductions without unfolding the exported relaxed-track `fullOracleReduction`.
+/-- **Issue #29 capstone: strict-track RingSwitching append-chain perfect completeness.**
 Hypotheses reduced to `IsDomain` + `NeverFail init` + the abstract MLIOPCS opening's message-seam
 facts (the opening has at least one round, opens with a prover message, and its challenges are
 finite/inhabited — true of every concrete instantiation; the abstract `MLIOPCS` carries no such
@@ -422,12 +431,14 @@ w.r.t. `toStrictRelInput` (w.r.t. the relaxed relation it is false for code-base
 the field docstring in `Prelude.lean`), so the whole chain threads the strict compatibility. For
 single-track instantiations (`strictInitialCompatibility` defaulted) this coincides with the
 former relaxed statement. -/
-theorem fullOracleReduction_perfectCompleteness' [IsDomain L] [IsDomain K]
+theorem fullOracleReductionStrictAppend_perfectCompleteness [IsDomain L] [IsDomain K]
     (hInit : NeverFail init)
     (hMlnPos : 0 < mlIOPCS.numRounds)
     (hMlnDir : mlIOPCS.pSpec.dir ⟨0, hMlnPos⟩ = .P_to_V) :
     OracleReduction.perfectCompleteness
-      (oracleReduction := fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS)
+      (oracleReduction :=
+        (batchingCoreReductionA κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn.strictVariant).append
+          mlIOPCS.oracleReduction)
       (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l
         mlIOPCS.toAbstractOStmtIn.strictVariant)
       (relOut := acceptRejectOracleRel)
@@ -459,7 +470,7 @@ theorem fullOracleReduction_perfectCompleteness' [IsDomain L] [IsDomain K]
       (relIn := mlIOPCS.toAbstractOStmtIn.strictVariant.toRelInput)
       (relOut := acceptRejectOracleRel)
       (init := init) (impl := impl) := mlIOPCS.perfectCompleteness hInit
-  have H := append_perfectCompleteness_keystone.{0, 1} (init := init) (impl := impl)
+  exact append_perfectCompleteness_keystone.{0, 1} (init := init) (impl := impl)
     (R₁ := batchingCoreReductionA κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn.strictVariant)
     (R₂ := mlIOPCS.oracleReduction)
     (Oₛ₃ := fun i => nomatch i)
@@ -473,7 +484,23 @@ theorem fullOracleReduction_perfectCompleteness' [IsDomain L] [IsDomain K]
       exact hMlnDir)
     hMlnDir hInit
     (by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])
-  exact H
+
+set_option maxHeartbeats 1000000 in
+-- The exported capstone unfolds the public full reduction wrapper before delegating to the strict
+-- append-chain theorem.
+/-- **Issue #29 capstone: end-to-end RingSwitching perfect completeness, strict track.** -/
+theorem fullOracleReduction_perfectCompleteness' [IsDomain L] [IsDomain K]
+    (hInit : NeverFail init)
+    (hMlnPos : 0 < mlIOPCS.numRounds)
+    (hMlnDir : mlIOPCS.pSpec.dir ⟨0, hMlnPos⟩ = .P_to_V) :
+    OracleReduction.perfectCompleteness
+      (oracleReduction := fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS)
+      (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l
+        mlIOPCS.toAbstractOStmtIn.strictVariant)
+      (relOut := acceptRejectOracleRel)
+      (init := init) (impl := impl) := by
+  exact fullOracleReductionStrictAppend_perfectCompleteness κ L K P ℓ ℓ' h_l mlIOPCS
+    hInit hMlnPos hMlnDir
 
 /-- **Issue #29: end-to-end RingSwitching perfect completeness (unconditional core).** The former
 five append/phase residual hypotheses (`hRounds`, `hCoreSeqComposePerfectCompleteness`,

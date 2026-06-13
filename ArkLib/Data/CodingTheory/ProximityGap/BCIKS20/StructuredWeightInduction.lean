@@ -886,7 +886,7 @@ recursion discharges UNCONDITIONALLY from the landed budget supplier
 theorem hasseDerivY_eq_zero_of_natDegreeY_lt (R : F[X][X][Y]) {m : ℕ}
     (hm : Bivariate.natDegreeY R < m) : hasseDerivY m R = 0 := by
   refine Polynomial.ext fun j => ?_
-  rw [hasseDerivY_coeff, Polynomial.coeff_zero]
+  rw [hasseDerivY_coeff_cast, Polynomial.coeff_zero]
   have hz : R.coeff (j + m) = 0 :=
     Polynomial.coeff_eq_zero_of_natDegree_lt (by
       have hYd : Bivariate.natDegreeY R = R.natDegree := rfl

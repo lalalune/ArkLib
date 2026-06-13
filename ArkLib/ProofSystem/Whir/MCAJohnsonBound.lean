@@ -165,7 +165,7 @@ theorem mca_johnson_bound_CONJECTURE_holds_of_rawGSCargo
   obtain ⟨Idx, hIdx, Index, Ecell, Pcell, hcard, hcover, hdec, hcell⟩ :=
     hdata δ hδ0 hδB u
   letI : DecidableEq Idx := hIdx
-  refine ⟨Idx, inferInstance, Index, Ecell, hcard, hcover, ?_⟩
+  refine ⟨Idx, Index, Ecell, hcard, hcover, ?_⟩
   intro ij hij hlarge
   rcases hcell ij hij hlarge with hwin | hstrict
   · have hkpos : 0 < 2 ^ m := by positivity

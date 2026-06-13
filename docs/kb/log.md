@@ -141,3 +141,13 @@ Updated `ArkLib/Data/Polynomial/RationalFunctions.lean` with an explicit functio
 variable, regular-element closure lemmas, and a concrete low-degree `ξ` regularity helper.
 The Appendix A rational-functions audit now records this as the next denominator-clearing layer
 toward `ClaimA2.ξ_regular`.
+
+## [2026-06-13] synthesize | power-word zero-sum list law for delta*
+
+Added:
+
+- `docs/kb/deltastar-powerword-zero-sum-law-2026-06-13.md`
+
+to record the exact all-`k` power-word sub-Johnson list identity from
+`PowerWordListBound.lean`, its ten connections to the #389/#371 supply programme, and the
+next symmetric-function fiber targets.

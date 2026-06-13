@@ -19,6 +19,17 @@ Companion ledgers: `docs/wiki/deltastar-357-nine-hypotheses-2026-06-11.md` (hypo
 `docs/wiki/residual-census.md` (whole-project residual map),
 `ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md` (build and honesty rules).
 
+> **2026-06-13 literature sweep — see [`deltastar-literature-findings-2026-06-13.md`](deltastar-literature-findings-2026-06-13.md).**
+> A fresh six-topic sweep past this map. Net: (1) one **unconditional in-tree win** — the #389
+> energy bound `E⁺(G) ≪ |G|^{5/2}` (Heath-Brown–Konyagin, supersedes the conditional `8/3`/`GVRepBound`
+> route) ⇒ zero-sum-triples `≪ |G|^{7/4}`, beating in-tree `n^{11/6}`; (2) the **2-power Lam–Leung
+> antipodal-pair** census-compression and the **ratio-multiplicity degree bound** confirmed as clean
+> formalization targets; (3) the wall is real with precise citations — the prize **upper bracket is
+> gated on BCHKS25 Conjecture 1.12** (subgroup-sumset), the formal twin of our #389 framing; (4) face
+> (ii) character sums is a quantitative **no-go** for the deployed regime; (5) several **corrected
+> paper identifiers** (the in-tree "KKH26 = 2026/782" is actually Goyal–Guruswami ECCC TR25-166 =
+> 2025/2054 and does **not** apply to plain RS). Read the findings page before re-surveying.
+
 ---
 
 ## 1. The four faces of the open core

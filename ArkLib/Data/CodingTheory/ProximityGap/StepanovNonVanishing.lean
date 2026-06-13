@@ -8,8 +8,7 @@ import Mathlib
 set_option linter.style.longLine false
 
 /-!
-# Issue #232 — the Stepanov non-vanishing: reduced to ONE named genus hypothesis, with the
-# elementary obstruction proven.
+# Issue #232 — the Stepanov non-vanishing, PROVEN (squarefree / integrally-closed argument).
 
 `StepanovWeilSubstrate.lean` reduced the #232 Weil bound to the Stepanov auxiliary's
 **non-vanishing**: that the constructed `R(X) = A₀(X, X^q) + g(X)^((q−1)/2)·A₁(X, X^q)` is not the
@@ -41,14 +40,14 @@ zero polynomial. This file pins that down completely:
   non-vanishing — this is machine-checked, not asserted.
 * `aux_key_claim_under_irreducibility` — the non-vanishing conclusion `A₀ = A₁ = 0`, carried under the
   single **named hypothesis** `hIrred` (the absolute-irreducibility / genus / Riemann–Roch consequence
-  that the relation `A₀ = −g^((q−1)/2)·A₁` has only the trivial solution). This is the irreducible
-  analytic core Mathlib lacks: ruling out the cross-block cancellation requires counting `F`-points on
+  that the relation `A₀ = −g^((q−1)/2)·A₁` has only the trivial solution). SUPERSEDED by `obstruction_forces_trivial` (§5), which proves the non-vanishing outright; the
+  earlier reading was that ruling out the cross-block cancellation requires counting `F`-points on
   `Y²=g(X)` (Hasse–Weil), which recovers **only the Johnson radius `√ρ`**, never the past-Johnson `δ*`
   prize #232 actually asks for.
 
-Net: the entire Stepanov non-vanishing is now machine-checked **except** the one named genus
-hypothesis, whose *precondition* (irreducibility of `Y²−g`) is itself discharged here for squarefree
-`g`. Honest: even discharging it recovers Johnson, not the prize. `#232` stays the open tracker.
+Net: the entire Stepanov non-vanishing is now machine-checked (`obstruction_forces_trivial`, §5),
+axiom-clean, with NO named genus hypothesis. Honest: even the full Weil bound recovers Johnson,
+not the past-Johnson prize. `#232`/`#389` stay the open tracker for the deep-band supply wall.
 
 All results are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
@@ -297,6 +296,178 @@ theorem obstruction_combined_digit_fails [Field F]
   rw [Polynomial.natDegree_mul hG ha, Polynomial.natDegree_pow]
   omega
 
+/-! ## 5. The genuine non-vanishing, PROVEN: the squarefree / integrally-closed argument.
+
+The `aux_collapses_to_relation` route above is a dead end (`obstruction_combined_digit_fails`:
+its combined-digit hypothesis is *false* in the relevant regime). But the non-vanishing does
+**not** need that collapse, and it is **not** "genus content Mathlib lacks". The correct argument
+(Kopparty, *The Weil bounds*, Lemma 3 = Hanson, *Stepanov's Method for Hyperelliptic Curves*,
+Lemma 5) **squares first**: from `R = subq A₀ + g^((q−1)/2)·subq A₁ = 0` one gets
+`(subq A₀)² = g^(q−1)·(subq A₁)²`, then multiplies by `g` and uses `g^q = g(X^q) = subq ĝ`
+(`pow_card_eq_subq_map_C`) to fold *both* sides through `subq` — now with `X`-blocks of degree
+`< q`, so faithfulness (`subq_eq_zero_iff`) applies and yields the genuine `F[X][Y]` identity
+`C g · A₀² = ĝ · A₁²` (i.e. `g(X)·A₀² = g(Y)·A₁²`). Squarefree `g` of positive degree then forces
+`A₀ = A₁ = 0` by the integrally-closed argument (`genus_squarefree_forces_trivial`), which is the
+**same** `IsIntegrallyClosed` route already used here for the one-variable
+`squarefree_not_isSquare_ratFunc`. This closes the Stepanov non-vanishing wall outright,
+axiom-clean — superseding the named hypothesis `hIrred` of `aux_key_claim_under_irreducibility`.
+
+Honest scope unchanged: the Weil bound recovers the **Johnson** radius `√ρ`, never the
+past-Johnson `δ*` prize (#389/#232 stay the open tracker for the deep-band supply wall). -/
+
+/-- `subq` packaged as a ring hom, to transport `*`, `^`. -/
+noncomputable def subqHom [CommRing F] (q : ℕ) : Polynomial (Polynomial F) →+* Polynomial F :=
+  Polynomial.eval₂RingHom (RingHom.id (Polynomial F)) (X ^ q)
+
+theorem subqHom_apply [CommRing F] (q : ℕ) (A : Polynomial (Polynomial F)) :
+    subqHom q A = subq q A := rfl
+
+theorem subq_mul [CommRing F] (q : ℕ) (A B : Polynomial (Polynomial F)) :
+    subq q (A * B) = subq q A * subq q B := by
+  show subqHom q (A * B) = subqHom q A * subqHom q B; rw [map_mul]
+
+theorem subq_pow [CommRing F] (q : ℕ) (A : Polynomial (Polynomial F)) (k : ℕ) :
+    subq q (A ^ k) = (subq q A) ^ k := by
+  show subqHom q (A ^ k) = (subqHom q A) ^ k; rw [map_pow]
+
+theorem subq_C [CommRing F] (q : ℕ) (G : Polynomial F) : subq q (Polynomial.C G) = G := by
+  show subqHom q (Polynomial.C G) = G; simp [subqHom, Polynomial.eval₂RingHom]
+
+/-- `subq` of the `Y`-lift `g.map C` is `g(X^q)`. -/
+theorem subq_map_C [CommRing F] (q : ℕ) (g : Polynomial F) :
+    subq q (g.map (Polynomial.C)) = Polynomial.expand F q g := by
+  unfold subq
+  rw [Polynomial.eval₂_map]
+  rw [show (RingHom.id (Polynomial F)).comp Polynomial.C = Polynomial.C from rfl]
+  rw [Polynomial.expand_eq_comp_X_pow]; rfl
+
+/-- **Frobenius for polynomials:** over a finite field, `g^q = g(X^q) = subq ĝ`. -/
+theorem pow_card_eq_subq_map_C [Field F] [Fintype F] (g : Polynomial F) :
+    g ^ (Fintype.card F) = subq (Fintype.card F) (g.map (Polynomial.C)) := by
+  rw [subq_map_C, FiniteField.expand_card]
+
+/-- A squarefree polynomial of positive degree over a field `L` is not a square in
+`FractionRing L[X]` (the two-variable analogue's integrally-closed core). -/
+theorem squarefree_pos_not_isSquare_frac {L : Type*} [Field L] (p : L[X])
+    (hsf : Squarefree p) (hdeg : 0 < p.natDegree) :
+    ¬ IsSquare (algebraMap L[X] (FractionRing L[X]) p) := by
+  rintro ⟨r, hr⟩
+  have hr2 : r ^ 2 = algebraMap L[X] (FractionRing L[X]) p := by rw [sq]; exact hr.symm
+  have hint : IsIntegral L[X] r := by
+    refine ⟨X ^ 2 - C p, ?_, ?_⟩
+    · apply monic_X_pow_sub
+      exact lt_of_le_of_lt degree_C_le (by norm_num)
+    · rw [eval₂_sub, eval₂_X_pow, eval₂_C, hr2, sub_self]
+  obtain ⟨h, hh⟩ := IsIntegrallyClosed.isIntegral_iff.mp hint
+  have key : algebraMap L[X] (FractionRing L[X]) p
+      = algebraMap L[X] (FractionRing L[X]) (h ^ 2) := by
+    rw [map_pow, hh, ← hr2]
+  have hp : p = h ^ 2 := IsFractionRing.injective L[X] (FractionRing L[X]) key
+  have hsq : IsSquare p := ⟨h, by rw [hp, sq]⟩
+  obtain ⟨h2, rfl⟩ := hsq
+  have hu : IsUnit (h2 * h2) := (hsf h2 (dvd_refl _)).mul (hsf h2 (dvd_refl _))
+  have := natDegree_eq_zero_of_isUnit hu
+  omega
+
+/-- Over a field `K`, `C γ · s² = gL · t²` with `γ ≠ 0` and `gL` squarefree of positive
+degree forces `s = t = 0`. -/
+theorem const_times_sq_eq_squarefree_times_sq {K : Type*} [Field K]
+    (γ : K) (hγ : γ ≠ 0) (gL : K[X]) (hsf : Squarefree gL) (hdeg : 0 < gL.natDegree)
+    (s t : K[X]) (hrel : C γ * s ^ 2 = gL * t ^ 2) : s = 0 ∧ t = 0 := by
+  by_cases ht : t = 0
+  · subst ht
+    rw [zero_pow (two_ne_zero), mul_zero] at hrel
+    have hCγ0 : (C γ : K[X]) ≠ 0 := by rwa [ne_eq, C_eq_zero]
+    rcases mul_eq_zero.mp hrel with h | h
+    · exact absurd h hCγ0
+    · exact ⟨(pow_eq_zero_iff (two_ne_zero)).mp h, rfl⟩
+  · exfalso
+    set A := FractionRing K[X]
+    set ν := algebraMap K[X] A with hν
+    have hνinj : Function.Injective ν := IsFractionRing.injective K[X] A
+    have ht0 : ν t ≠ 0 := by
+      simp only [ne_eq, map_eq_zero_iff ν hνinj]; exact ht
+    have hCγ : IsUnit (C γ⁻¹ : K[X]) := isUnit_C.mpr (Ne.isUnit (inv_ne_zero hγ))
+    have hassoc : Associated (C γ⁻¹ * gL) gL :=
+      ⟨(isUnit_C.mpr (Ne.isUnit hγ)).unit, by
+        rw [IsUnit.unit_spec]
+        rw [mul_comm (C γ⁻¹) gL, mul_assoc, ← C_mul, inv_mul_cancel₀ hγ, C_1, mul_one]⟩
+    have hsf2 : Squarefree (C γ⁻¹ * gL) := hassoc.squarefree_iff.mpr hsf
+    have hdeg2 : 0 < (C γ⁻¹ * gL).natDegree := by
+      rw [natDegree_C_mul (inv_ne_zero hγ)]; exact hdeg
+    apply squarefree_pos_not_isSquare_frac (C γ⁻¹ * gL) hsf2 hdeg2
+    refine ⟨ν s / ν t, ?_⟩
+    have hmap : ν (C γ) * ν s ^ 2 = ν gL * ν t ^ 2 := by
+      have := congrArg ν hrel
+      rwa [map_mul, map_mul, map_pow, map_pow] at this
+    have hCC : ν (C γ⁻¹) * ν (C γ) = 1 := by
+      rw [← map_mul, ← C_mul, inv_mul_cancel₀ hγ, C_1, map_one]
+    rw [map_mul, div_mul_div_comm, ← sq, ← sq, eq_div_iff (pow_ne_zero 2 ht0)]
+    linear_combination (-ν (C γ⁻¹)) * hmap + ν s ^ 2 * hCC
+
+/-- **THE GENUS STATEMENT, PROVEN.** Over a finite field `F`, `C g · A₀² = ĝ · A₁²`
+(`g(X)·A₀² = g(Y)·A₁²`) with `g` squarefree of positive degree forces `A₀ = A₁ = 0`. This is
+exactly the consequence `hIrred` named as "Mathlib-lacking genus content"; it is the
+integrally-closed argument, here discharged. -/
+theorem genus_squarefree_forces_trivial [Field F] [Fintype F]
+    (g : F[X]) (hg : Squarefree g) (hdeg : 0 < g.natDegree)
+    (A0 A1 : Polynomial (Polynomial F))
+    (hrel : Polynomial.C g * A0 ^ 2 = (g.map Polynomial.C) * A1 ^ 2) :
+    A0 = 0 ∧ A1 = 0 := by
+  set ι : F[X] →+* RatFunc F := algebraMap F[X] (RatFunc F) with hιdef
+  have hιinj : Function.Injective ι := IsFractionRing.injective F[X] (RatFunc F)
+  set φ : Polynomial (Polynomial F) →+* Polynomial (RatFunc F) := Polynomial.mapRingHom ι with hφ
+  have hφinj : Function.Injective φ := Polynomial.map_injective ι hιinj
+  have himg : φ (C g * A0 ^ 2) = φ ((g.map C) * A1 ^ 2) := by rw [hrel]
+  rw [map_mul, map_mul, map_pow, map_pow] at himg
+  have h1 : φ (C g) = C (ι g) := by rw [hφ, coe_mapRingHom, Polynomial.map_C]
+  have h2 : φ (g.map (C : F →+* F[X])) = g.map (algebraMap F (RatFunc F)) := by
+    rw [hφ, coe_mapRingHom, Polynomial.map_map]; congr 1
+  rw [h1, h2] at himg
+  have hγ : ι g ≠ 0 := by
+    rw [ne_eq, map_eq_zero_iff ι hιinj]; rintro rfl; simp at hdeg
+  have hgLsf : Squarefree (g.map (algebraMap F (RatFunc F))) :=
+    (PerfectField.separable_iff_squarefree.mpr hg).map.squarefree
+  have hgLdeg : 0 < (g.map (algebraMap F (RatFunc F))).natDegree := by
+    rw [natDegree_map_eq_of_injective (algebraMap F (RatFunc F)).injective]; exact hdeg
+  obtain ⟨ha0, ha1⟩ := const_times_sq_eq_squarefree_times_sq (ι g) hγ
+    (g.map (algebraMap F (RatFunc F))) hgLsf hgLdeg (φ A0) (φ A1) himg
+  exact ⟨hφinj (by rw [ha0, map_zero]), hφinj (by rw [ha1, map_zero])⟩
+
+/-- **THE STEPANOV NON-VANISHING, PROVEN (no `hIrred`).** Over a finite field `F` with `q = |F|`
+odd, for `g` squarefree of positive degree: if the combined square-blocks `C g·A₀² − ĝ·A₁²` have
+`X`-degree `< q` and the auxiliary `R = subq A₀ + g^((q−1)/2)·subq A₁` vanishes, then `A₀ = A₁ = 0`.
+Squares first (so faithfulness applies), then closes by `genus_squarefree_forces_trivial`. -/
+theorem obstruction_forces_trivial [Field F] [Fintype F]
+    (g : F[X]) (hg : Squarefree g) (hdeg : 0 < g.natDegree)
+    (hq_odd : Odd (Fintype.card F))
+    (A0 A1 : Polynomial (Polynomial F))
+    (hblk : ∀ j, ((C g * A0 ^ 2 - (g.map C) * A1 ^ 2).coeff j).natDegree < Fintype.card F)
+    (hR : subq (Fintype.card F) A0
+      + (g ^ ((Fintype.card F - 1) / 2)) * subq (Fintype.card F) A1 = 0) :
+    A0 = 0 ∧ A1 = 0 := by
+  set q := Fintype.card F with hq
+  have hq1 : 1 ≤ q := Fintype.card_pos
+  have heven : Even (q - 1) := Nat.Odd.sub_odd hq_odd odd_one
+  have htwo : 2 * ((q - 1) / 2) = q - 1 := Nat.two_mul_div_two_of_even heven
+  have hg2 : (g ^ ((q - 1) / 2)) ^ 2 = g ^ (q - 1) := by
+    rw [← pow_mul, mul_comm ((q - 1) / 2) 2, htwo]
+  have hsq : (subq q A0) ^ 2 = g ^ (q - 1) * (subq q A1) ^ 2 := by
+    have h0 : subq q A0 = - (g ^ ((q - 1) / 2)) * subq q A1 := by linear_combination hR
+    rw [h0, neg_mul, neg_sq, mul_pow, hg2]
+  have hgmul : g * (subq q A0) ^ 2 = g ^ q * (subq q A1) ^ 2 := by
+    rw [hsq, ← mul_assoc, ← pow_succ', show q - 1 + 1 = q from by omega]
+  have hfold : subq q (C g * A0 ^ 2) = subq q ((g.map C) * A1 ^ 2) := by
+    rw [subq_mul, subq_mul, subq_C, subq_pow, subq_pow, hgmul, pow_card_eq_subq_map_C]
+  have hdiff : subq q (C g * A0 ^ 2 - (g.map C) * A1 ^ 2) = 0 := by
+    have : subqHom q (C g * A0 ^ 2 - (g.map C) * A1 ^ 2) = 0 := by
+      rw [map_sub]; show subq q _ - subq q _ = 0; rw [hfold]; ring
+    rwa [subqHom_apply] at this
+  have hrel0 : C g * A0 ^ 2 - (g.map C) * A1 ^ 2 = 0 :=
+    (subq_eq_zero_iff q _ hblk).mp hdiff
+  have hrel : C g * A0 ^ 2 = (g.map C) * A1 ^ 2 := by linear_combination hrel0
+  exact genus_squarefree_forces_trivial g hg hdeg A0 A1 hrel
+
 end BaseQ
 
 end ArkLib.ProximityGap.StepanovNonVanishing
@@ -308,3 +479,5 @@ end ArkLib.ProximityGap.StepanovNonVanishing
 #print axioms ArkLib.ProximityGap.StepanovNonVanishing.aux_collapses_to_relation
 #print axioms ArkLib.ProximityGap.StepanovNonVanishing.aux_key_claim_under_irreducibility
 #print axioms ArkLib.ProximityGap.StepanovNonVanishing.obstruction_combined_digit_fails
+#print axioms ArkLib.ProximityGap.StepanovNonVanishing.genus_squarefree_forces_trivial
+#print axioms ArkLib.ProximityGap.StepanovNonVanishing.obstruction_forces_trivial

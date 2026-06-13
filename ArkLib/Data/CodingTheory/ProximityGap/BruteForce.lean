@@ -5,7 +5,6 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSWitness
-import ArkLib.Data.CodingTheory.ProximityGap.141Math
 import ArkLib.Data.Polynomial.Bivariate
 import Mathlib.RingTheory.Polynomial.Resultant.Basic
 

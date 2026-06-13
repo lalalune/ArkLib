@@ -141,7 +141,8 @@ theorem claim59_groundLine (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypothese
         intro y hy
         obtain ⟨x, hx, rfl⟩ := Finset.mem_image.mp (hs ▸ hy)
         show (gammaTruncPoly H x₀ R hHyp k).eval (fieldTo𝕃 (x - x₀)) = _
-        rw [eval_gammaTruncPoly, hcoord x hx, sub_add_cancel]
+        rw [eval_gammaTruncPoly, hcoord x hx]
+        simp only [sub_add_cancel]
         rfl)
   refine ⟨v₀, v₁, hv₀, hv₁, fun t => ?_⟩
   by_cases htk : t ≤ k
@@ -153,8 +154,8 @@ theorem claim59_groundLine (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypothese
   · -- tail: both sides vanish.
     push_neg at htk
     rw [htail t htk, Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt hv₀ htk),
-      Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt hv₁ htk), map_zero, map_zero,
-      mul_zero, add_zero]
+      Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt hv₁ htk)]
+    simp only [map_zero, mul_zero, add_zero]
 
 /-! ## Corollaries -/
 

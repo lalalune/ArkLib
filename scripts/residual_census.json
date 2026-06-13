@@ -1,8 +1,8 @@
 {
  "summary": {
   "total": 91,
-  "open": 47,
-  "discharged": 43,
+  "open": 46,
+  "discharged": 44,
   "refuted": 1,
   "by_top_dir": {
    "(root)": {
@@ -13,8 +13,8 @@
    },
    "Data": {
     "total": 24,
-    "open": 17,
-    "discharged": 7,
+    "open": 16,
+    "discharged": 8,
     "refuted": 0
    },
    "OracleReduction": {
@@ -72,6 +72,31 @@
      "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hgm"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ArkLib.GMMDS.gmmDsResidual_of_lovett",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/GMMDS/LovettToGMMDSBridge.lean",
+     "line": 95,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hbridge",
+      "hlovett"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ArkLib.GMMDS.gmmDsResidual_of_lovett_steps",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/GMMDS/LovettToGMMDSBridge.lean",
+     "line": 118,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hbridge",
+      "hprim",
+      "hstep"
      ],
      "ambiguous_name_match": false
     }
@@ -219,7 +244,7 @@
      "name": "ProximityGap.GKL24FirstMomentResidual_inTree_delta_add_one_card",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1529,
+     "line": 1536,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [],
      "ambiguous_name_match": false
@@ -246,7 +271,7 @@
      "name": "ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1376,
+     "line": 1383,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hmax"
@@ -257,10 +282,8 @@
      "name": "ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_strict_cover",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1393,
-     "conditional_on_residuals": [
-      "GKL24MaxCorrStrictWitnessCoverResidual"
-     ],
+     "line": 1400,
+     "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hp_le_one",
       "hstrict",
@@ -272,7 +295,7 @@
      "name": "ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_petal_cover",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-     "line": 1480,
+     "line": 1487,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hpetal"
@@ -281,22 +304,6 @@
     }
    ],
    "status": "discharged"
-  },
-  {
-   "name": "GKL24MaxCorrStrictWitnessCoverResidual",
-   "fq_name": "ProximityGap.GKL24MaxCorrStrictWitnessCoverResidual",
-   "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
-   "line": 1309,
-   "providers": [],
-   "status": "open"
-  },
-  {
-   "name": "GKL24MaxDomainWitnessCoverResidual",
-   "fq_name": "ProximityGap.Issue67Scratch.GKL24MaxDomainWitnessCoverResidual",
-   "file": "ArkLib/Data/CodingTheory/Connections/GKL24PetalWitnessCover.lean",
-   "line": 56,
-   "providers": [],
-   "status": "open"
   },
   {
    "name": "randomLinearLambdaLowerFirstMomentResidual",
@@ -436,6 +443,19 @@
      "line": 200,
      "conditional_on_residuals": [
       "StrictCoeffPolysExcResidual"
+     ],
+     "extra_explicit_binders": [
+      "h"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.strictCoeffPolysResidual_of_shareResidual_base",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShareBaseCase.lean",
+     "line": 37,
+     "conditional_on_residuals": [
+      "StrictCoeffPolysShareResidual"
      ],
      "extra_explicit_binders": [
       "h"
@@ -1597,6 +1617,73 @@
    "status": "open"
   },
   {
+   "name": "SubJohnsonSupplyResidual",
+   "fq_name": "ProximityGap.Ownership.SubJohnsonSupplyResidual",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/JohnsonSplitSupply.lean",
+   "line": 258,
+   "providers": [
+    {
+     "name": "ProximityGap.Ownership.subJohnsonSupplyResidual_pairCount",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/JohnsonSplitSupply.lean",
+     "line": 268,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hk"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.Ownership.subJohnsonSupplyResidual_above_johnson",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/JohnsonSplitSupply.lean",
+     "line": 288,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hgap",
+      "hk"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.PairRank.subJohnsonSupplyResidual_iff_forall",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/SubJohnsonSupplyReframe.lean",
+     "line": 34,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.PairRank.subJohnsonSupplyResidual_iff_optimal_le",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/SubJohnsonSupplyReframe.lean",
+     "line": 52,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.PairRank.cappedSupplyOptimal_is_least",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/SubJohnsonSupplyReframe.lean",
+     "line": 138,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
+  },
+  {
+   "name": "SubJohnsonListResidual",
+   "fq_name": "ProximityGap.Ownership.SubJohnsonListResidual",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/SubJohnsonListSupply.lean",
+   "line": 76,
+   "providers": [],
+   "status": "open"
+  },
+  {
    "name": "reductionAppendCompletenessResidual",
    "fq_name": "Reduction.reductionAppendCompletenessResidual",
    "file": "ArkLib/OracleReduction/Composition/Sequential/Append.lean",
@@ -1719,6 +1806,20 @@
      "extra_explicit_binders": [
       "hDir",
       "hDir₂",
+      "himplNF",
+      "himplSP",
+      "himplVB",
+      "hn"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "Verifier.appendSoundnessResidual_total_pos",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessTotal.lean",
+     "line": 85,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
       "himplNF",
       "himplSP",
       "himplVB",
@@ -1961,6 +2062,36 @@
      "extra_explicit_binders": [
       "hDir",
       "hDir₂",
+      "himplNF",
+      "himplSP",
+      "himplVB",
+      "hn"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "OracleVerifier.appendSoundnessResidual_challenge",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessTotal.lean",
+     "line": 157,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hDir",
+      "hDir₂",
+      "himplNF",
+      "himplSP",
+      "himplVB",
+      "hn"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "OracleVerifier.appendSoundnessResidual_total_pos",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessTotal.lean",
+     "line": 211,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
       "himplNF",
       "himplSP",
       "himplVB",
@@ -3957,7 +4088,7 @@
    "fq_name": "ProximityGap.GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_firstMoment_residual",
    "kind": "def",
    "file": "ArkLib/Data/CodingTheory/Connections/ProximityPrizeConnectiveTissue.lean",
-   "line": 241,
+   "line": 242,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3965,23 +4096,7 @@
    "fq_name": "ProximityGap.GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_witnessCover_residual",
    "kind": "def",
    "file": "ArkLib/Data/CodingTheory/Connections/ProximityPrizeConnectiveTissue.lean",
-   "line": 321,
-   "reason": "name does not end in `Residual`"
-  },
-  {
-   "name": "ofListSizeGCXK25_of_gkl24_maxCorr_residual",
-   "fq_name": "ProximityGap.GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_maxCorr_residual",
-   "kind": "def",
-   "file": "ArkLib/Data/CodingTheory/Connections/ProximityPrizeConnectiveTissue.lean",
-   "line": 380,
-   "reason": "name does not end in `Residual`"
-  },
-  {
-   "name": "ofListSizeGCXK25_of_gkl24_strict_residual",
-   "fq_name": "ProximityGap.GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_strict_residual",
-   "kind": "def",
-   "file": "ArkLib/Data/CodingTheory/Connections/ProximityPrizeConnectiveTissue.lean",
-   "line": 439,
+   "line": 322,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -4111,6 +4226,22 @@
    "file": "ArkLib/Data/CodingTheory/ProximityGap/MCAConjectureRefutation.lean",
    "line": 120,
    "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "residual",
+   "fq_name": "ProximityGap.Ownership.residual",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/OwnershipBound.lean",
+   "line": 48,
+   "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "w2Residual",
+   "fq_name": "ProximityGap.WBPencil.w2Residual",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/W2WindowHalfCount.lean",
+   "line": 43,
+   "reason": "result type is `F[X]`, not `Prop`"
   },
   {
    "name": "Lemma5_12HonestResidualPaper",

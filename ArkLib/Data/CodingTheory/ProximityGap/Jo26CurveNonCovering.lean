@@ -140,7 +140,7 @@ theorem exists_far_codeword_of_curveDecodable {M : Submodule F (ι → A)} (hM :
   have hsubroots : T ⊆ p.roots.toFinset := by
     intro α hα
     rw [Multiset.mem_toFinset, Polynomial.mem_roots hp0]
-    exact ⟨trivial, hproots α hα⟩
+    exact hproots α hα
   have : b ≤ ℓ + 1 := by
     calc b ≤ T.card := hcount
       _ ≤ p.roots.toFinset.card := Finset.card_le_card hsubroots
@@ -185,7 +185,7 @@ theorem MarkedCurveDecodable.of_curveDecodable {M : Submodule F (ι → A)}
     else Classical.choose (h54 (fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • u j i)) with hf'
   have hf'M : ∀ α, f' α ∈ (M : Set (ι → A)) := by
     intro α
-    rw [hf']
+    simp only [hf']
     by_cases hα : α ∈ A₀
     · rw [if_pos hα]; exact hf α
     · rw [if_neg hα]
@@ -200,7 +200,7 @@ theorem MarkedCurveDecodable.of_curveDecodable {M : Submodule F (ι → A)}
       by_contra hα
       have hfar := (Classical.choose_spec
         (h54 (fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • u j i))).2
-      rw [hf'] at hle
+      simp only [hf'] at hle
       rw [if_neg hα] at hle
       exact hfar hle
     · intro hα
@@ -216,11 +216,11 @@ theorem MarkedCurveDecodable.of_curveDecodable {M : Submodule F (ι → A)}
     rw [Finset.mem_filter] at hα ⊢
     refine ⟨hα.1, ?_⟩
     have := hα.2
-    rw [hf', if_pos hα.1] at this
+    simp only [hf', if_pos hα.1] at this
     exact this
   · rw [Finset.mem_filter] at hα ⊢
     refine ⟨hα.1, ?_⟩
-    rw [hf', if_pos hα.1]
+    simp only [hf', if_pos hα.1]
     exact hα.2
 
 /-- **[Jo26] Theorem 5.5 (marked/original equivalence)** for `F`-submodule codes with
@@ -229,7 +229,8 @@ theorem markedCurveDecodable_iff {M : Submodule F (ι → A)} {ℓ : ℕ} {δ : 
     (hba : b ≤ a) (ha : a ≤ Fintype.card F) :
     MarkedCurveDecodable (F := F) (M : Set (ι → A)) ℓ δ a b
       ↔ CurveDecodable (F := F) (M : Set (ι → A)) ℓ δ a b :=
-  ⟨CurveDecodable.of_marked, fun h => h.of_curveDecodable hba ha⟩
+  ⟨ProximityGap.curveDecodable_of_marked,
+    fun h => MarkedCurveDecodable.of_curveDecodable h hba ha⟩
 
 end ProximityGap
 

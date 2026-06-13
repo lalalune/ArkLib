@@ -3,12 +3,10 @@ Copyright (c) 2024-2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tobias Rothmann
 -/
-import ArkLib.Data.Lattices.CyclotomicRing.NormBounds.MicciancioYoung
+import ArkLib.Data.Lattices.CyclotomicRing.NormBounds.Basic
+import ArkLib.Data.Lattices.CyclotomicRing.NormBounds.LsCore
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
-import Mathlib.RingTheory.ZMod.UnitsCyclic
-import Mathlib.Algebra.Ring.NonZeroDivisors
 
 /-!
 # Lyubashevsky–Seiler: Short Elements Are Invertible
@@ -26,25 +24,34 @@ general cyclotomic `Φ_m` of power-of-two *degree* (e.g. `Φ₁₅`, `Φ₁₂`)
 condition and the `√q` bound are simply wrong, so phrasing the lemma for an arbitrary
 `Φ` with `deg φ = 2^α` would be unsound.
 
-This is one of the two key lemmas for the Greyhound [NS24] / Hachi [NOZ26] weak-binding argument.
-The proof is a genuine piece of algebraic number theory, carried out here in full:
+This is one of the two unproven lemmas for the Greyhound [NS24] / Hachi [NOZ26]
+weak-binding argument; the other is `scalarVecMul_mul_l2NormSq_le` in
+`NormBounds.MicciancioYoung`.
 
-* For `α ≥ 1` the modulus splits as `X^{2^α}+1 = (X^{2^{α-1}} − r)(X^{2^{α-1}} + r) (mod q)`, where
-  `r² = −1` (`exists_sqrt_neg_one`, from `ZMod.exists_sq_eq_neg_one_iff` since `q % 4 = 1`).
-* Each conjugate factor is *irreducible* (`irreducible_X_pow_sub_C`): it divides the
-  `2^{α+1}`-th cyclotomic polynomial and its degree `2^{α-1}` equals the multiplicative order of
-  `q` modulo `2^{α+1}`, which for `q ≡ 5 (mod 8)` is exactly `2^{α-1}` (`orderOf_q_mod_twoPow`,
-  via `ZMod.orderOf_one_add_four_mul`), so the finite-field cyclotomic-factor criterion
-  (`ZMod.irreducible_of_dvd_cyclotomic_of_natDegree`) applies.
-* The minimum-distance bound (`eq_zero_of_dvd_X_pow_sub_C`) is the LS18 statement that a nonzero
-  element of the ideal `(X^{2^{α-1}} − s)` has `ℓ₂` norm `≥ √q`: writing `m = 2^{α-1}`, if such a
-  factor divides the lift `c̃`, comparing coefficients of `c̃ = (X^m − s)·h` gives
-  `cᵢ² + c_{m+i}² ≡ 0` mod `q`, so `q` divides each (nonnegative) summand of `‖c‖₂² < q`, forcing
-  every coefficient — hence `c` — to vanish.
-* Thus `c̃` is coprime to each irreducible factor (`Irreducible.coprime_iff_not_dvd`), hence to
-  `X^{2^α}+1`, hence `c` is a unit (`isUnit_of_isCoprime_toPoly`, through the ring isomorphism
-  `Rq Φ ≃+* Polynomial (ZMod q) ⧸ (φ)`, `Rq.equivQuotient`). The `α = 0` case is the field
-  `ZMod q[X]/(X+1) ≅ ZMod q`, handled directly.
+## Overview
+
+Write `n := 2^α`. The argument is the `k = 2` splitting case and reduces to an elementary
+`mod q` divisibility count, needing no ideal lattices, canonical embedding, or Minkowski bound.
+
+Since `q ≡ 5 (mod 8)`, `-1` is a square in `ZMod q` (`ZMod.exists_sq_eq_neg_one_iff`), say
+`r^2 = -1`, and the negacyclic modulus splits as `X^n + 1 = (X^{n/2} - r)(X^{n/2} + r)`. Both
+factors are irreducible over `ZMod q`: the multiplicative order of `q` modulo `2^{α+1}` is
+`2^{α-1}` (lifting-the-exponent, `v₂(q^{2^k} - 1) = k + 2`), so every irreducible factor of
+`cyclotomic (2^{α+1}) (ZMod q) = X^n + 1` has degree `n/2`, which forces each degree-`n/2`
+factor to be irreducible.
+
+A non-unit `c` is therefore not coprime to `X^n + 1`, so one factor `g = X^{n/2} - s`
+(`s = ±r`, `s^2 = -1`) divides its lift `c̃`; evaluating at a root `ζ` of `g` (so
+`ζ^{n/2} = s`) gives `c̃(ζ) = Σ_{j<n/2} (c̃_j + s·c̃_{n/2+j}) ζ^j = 0`. As `1, …, ζ^{n/2-1}`
+are independent over `ZMod q`, each `c̃_j + s·c̃_{n/2+j} = 0`, and squaring (`s^2 = -1`) gives
+`q ∣ (c̃_j² + c̃_{n/2+j}²)` over `ℤ`. Summing, `q ∣ ‖c‖₂²`. With `‖c‖₂² ≤ ‖c‖₁² ≤ κ² < q` this
+forces `‖c‖₂² = 0`, hence `c = 0`, contradicting `‖c‖₁ > 0`. (Edge case `α = 0`: `Rq` is a
+field, so a nonzero element is a unit.)
+
+The supporting lemmas live in `NormBounds.LsCore` (the iso `Rq.equivQuotient`, the order
+computation `orderOf_q_mod_two_pow`, the irreducibility `irreducible_X_pow_sub_C_r`, and the
+coefficient kernel `dvd_sq_add_sq`); the splitting and `√-1` existence are
+`powTwoCyclotomic_splits_of_sq_eq_neg_one` and `exists_sq_eq_neg_one_of_mod_eight_eq_five`.
 
 ## References
 
@@ -57,351 +64,300 @@ The proof is a genuine piece of algebraic number theory, carried out here in ful
 
 open scoped BigOperators
 
-open Polynomial
-
 namespace ArkLib.Lattices.CyclotomicModulus
 
-/-! ## The reduced-representative ring is the cyclotomic quotient
-
-`Rq.toQuotientHom` is injective (`toQuotient_injective`); it is also surjective, since every
-quotient class has a (canonical, reduced) representative, so it is a ring isomorphism. We package
-this and transfer `IsUnit` across it: invertibility in `Rq Φ` is the same as invertibility in the
-semantic quotient `Polynomial R ⧸ (φ)`. -/
-
-section Bridge
-
-variable {R : Type*} [Field R] [BEq R] [LawfulBEq R] [Nontrivial R]
-  (Φ : CyclotomicModulus R) [IsCyclotomic Φ]
-
-/-- `Rq.toQuotientHom` is surjective: a quotient class `[p]` is hit by the reduced representative
-`Rq.mk Φ (ringEquiv.symm p)`. -/
-theorem Rq.toQuotientHom_surjective : Function.Surjective (Rq.toQuotientHom Φ) := by
-  intro y
-  obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective y
-  refine ⟨Rq.mk Φ (CompPoly.CPolynomial.ringEquiv.symm p), ?_⟩
-  change Rq.toQuotient Φ _ = _
-  rw [Rq.toQuotient_mk, Φ.quotientHom_apply]
-  congr 1
-  exact CompPoly.CPolynomial.ringEquiv.apply_symm_apply p
-
-/-- The ring isomorphism `Rq Φ ≃+* Polynomial R ⧸ (φ)`. -/
-noncomputable def Rq.equivQuotient : Rq Φ ≃+* Φ.CyclotomicRing :=
-  RingEquiv.ofBijective (Rq.toQuotientHom Φ)
-    ⟨Rq.toQuotient_injective Φ, Rq.toQuotientHom_surjective Φ⟩
-
-/-- Invertibility in `Rq Φ` matches invertibility of the image in the semantic quotient. -/
-theorem Rq.isUnit_iff_isUnit_toQuotient (c : Rq Φ) :
-    IsUnit c ↔ IsUnit (Φ.quotientHom c.1) := by
-  have h : (Rq.equivQuotient Φ) c = Φ.quotientHom c.1 := rfl
-  rw [← h, MulEquiv.isUnit_map]
-
-/-- If the reduced lift `c̃` is coprime to the modulus `φ̃` in `R[X]`, then `c` is a unit in
-`Rq Φ`: coprimality `a·φ̃ + b·c̃ = 1` maps, under `quotientHom` with `quotientHom φ̃ = 0`, to
-`(mk b)·(mk c̃) = 1`. -/
-theorem isUnit_of_isCoprime_toPoly {c : Rq Φ}
-    (h : IsCoprime Φ.φ.toPoly c.1.toPoly) : IsUnit c := by
-  rw [Rq.isUnit_iff_isUnit_toQuotient]
-  obtain ⟨a, b, hab⟩ := h
-  have hmk : (Ideal.Quotient.mk Φ.modIdeal b) * (Ideal.Quotient.mk Φ.modIdeal c.1.toPoly) = 1 := by
-    have hcong := congrArg (Ideal.Quotient.mk Φ.modIdeal) hab
-    rw [map_add, map_mul, map_mul, map_one] at hcong
-    rwa [show (Ideal.Quotient.mk Φ.modIdeal Φ.φ.toPoly) = 0 from
-        Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mem_span_singleton_self _),
-      mul_zero, zero_add] at hcong
-  rw [Φ.quotientHom_apply]
-  exact IsUnit.of_mul_eq_one _ (by rw [mul_comm]; exact hmk)
-
-end Bridge
-
-variable {q : ℕ} [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)]
-
-omit [NeZero q] in
-/-- The squared `ℓ₂` norm is bounded by the square of the `ℓ₁` norm: `Σ aᵢ² ≤ (Σ aᵢ)²`. -/
-theorem Rq.l2NormSq_le_l1Norm_sq (Φ' : CyclotomicModulus (ZMod q)) [IsCyclotomic Φ']
-    (c : Rq Φ') : Rq.l2NormSq Φ' c ≤ (Rq.l1Norm Φ' c) ^ 2 :=
-  Finset.sum_sq_le_sq_sum_of_nonneg (fun _ _ => Nat.zero_le _)
-
-variable (α : ℕ)
+variable {q : ℕ} [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)] (α : ℕ)
 
 /-- The power-of-two ("Hachi") cyclotomic modulus `X^{2^α}+1` over `ZMod q`. -/
 local notation "Φ" => (powTwoCyclotomic (R := ZMod q) α)
 
-/-! ## Number-theoretic input: the multiplicative order of `q` mod `2^{α+1}`
-
-For `q ≡ 5 (mod 8)` the residue `q` is `1 + 4·(odd)` modulo `2^{α+1}`, so its multiplicative
-order in `(ℤ/2^{α+1})ˣ` is exactly `2^{α-1}` (`q` generates the full `⟨5⟩` cyclic part). Combined
-with the degree of the irreducible factors of `cyclotomic (2^{α+1})` over the finite field
-`ZMod q` (which is that multiplicative order, `natDegree_of_dvd_cyclotomic_of_irreducible`), this
-forces the splitting `X^{2^α}+1 = (X^{2^{α-1}} − r)(X^{2^{α-1}} + r)` into two *irreducible*
-degree-`2^{α-1}` factors. -/
-
-omit [NeZero q] [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
-/-- For `q ≡ 5 (mod 8)` and `α ≥ 1`, the multiplicative order of `q` modulo `2^{α+1}` is
-`2^{α-1}`. This is the classical fact that an integer `≡ 5 (mod 8)` generates the `⟨5⟩` cyclic
-part of `(ℤ/2^{α+1})ˣ`. -/
-theorem orderOf_q_mod_twoPow (hq5 : q % 8 = 5) {β : ℕ} :
-    orderOf ((q : ZMod (2 ^ (β + 2)))) = 2 ^ β := by
-  -- Write `q = 1 + 4·a` with `a` odd, coming from `q ≡ 5 (mod 8)`.
-  -- From `q ≡ 5 (mod 8)` get `q = 8·s + 5` over ℤ, so `q - 1 = 4·(2s+1)` with `2s+1` odd.
-  obtain ⟨s, hs⟩ : ∃ s : ℕ, q = 8 * s + 5 := ⟨q / 8, by omega⟩
-  set a : ℤ := 2 * (s : ℤ) + 1 with ha
-  have hq1 : (q : ℤ) - 1 = 4 * a := by rw [ha, hs]; push_cast; ring
-  have haodd : Odd a := ⟨(s : ℤ), by rw [ha]⟩
-  have hq : ((q : ZMod (2 ^ (β + 2)))) = 1 + 4 * (a : ZMod (2 ^ (β + 2))) := by
-    have hzint : (q : ℤ) = 1 + 4 * a := by linarith [hq1]
-    have : ((q : ℤ) : ZMod (2 ^ (β + 2))) = ((1 + 4 * a : ℤ) : ZMod (2 ^ (β + 2))) := by
-      rw [hzint]
-    rw [Int.cast_natCast] at this
-    rw [this]; push_cast; ring
-  rw [hq, ZMod.orderOf_one_add_four_mul a haodd β]
-
-/-! ## The splitting `X^{2^α}+1 = (X^{2^{α-1}} − r)(X^{2^{α-1}} + r)` into irreducible factors -/
+omit [NeZero q] in
+/-- **Norm bridge.** The centered squared `ℓ₂` norm is at most the square of the
+centered `ℓ₁` norm: `‖c‖₂² ≤ ‖c‖₁²`. This is `Σ aₖ² ≤ (Σ aₖ)²` for nonnegative `aₖ`. -/
+theorem Rq.l2NormSq_le_l1Norm_sq (c : Rq Φ) :
+    Rq.l2NormSq Φ c ≤ (Rq.l1Norm Φ c) ^ 2 := by
+  unfold Rq.l2NormSq Rq.l1Norm
+  exact Finset.sum_sq_le_sq_sum_of_nonneg (fun i _ ↦ Nat.zero_le _)
 
 omit [NeZero q] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
-/-- For `q ≡ 5 (mod 8)`, `−1` is a square modulo `q` (since `q % 4 = 1 ≠ 3`); pick a square root
-`r` with `r² = −1`. -/
-theorem exists_sqrt_neg_one (hq5 : q % 8 = 5) : ∃ r : ZMod q, r ^ 2 = -1 := by
-  have hp : (q : ℕ) % 4 ≠ 3 := by omega
-  obtain ⟨r, hr⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := q)).mpr hp
-  exact ⟨r, by rw [sq, ← hr]⟩
+/-- For a prime `q ≡ 5 (mod 8)` we have `q % 4 = 1 ≠ 3`, so `-1` is a square in `ZMod q`
+(`ZMod.exists_sq_eq_neg_one_iff`). This `r` (`r² = -1`) drives the explicit splitting. -/
+theorem exists_sq_eq_neg_one_of_mod_eight_eq_five (hq5 : q % 8 = 5) :
+    ∃ r : ZMod q, r ^ 2 = -1 := by
+  have h4 : q % 4 ≠ 3 := by omega
+  obtain ⟨r, hr⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := q)).mpr h4
+  exact ⟨r, by rw [sq]; exact hr.symm⟩
 
-/-- `q` does not divide `2^{α+1}` (it is an odd prime). -/
-theorem q_not_dvd_twoPow (hq5 : q % 8 = 5) : ¬ q ∣ 2 ^ (α + 1) := by
-  intro hdvd
-  have hq : q ∣ 2 := (Nat.Prime.dvd_of_dvd_pow (Fact.out (p := Nat.Prime q)) hdvd)
-  have hq2 : q ≤ 2 := Nat.le_of_dvd (by norm_num) hq
-  omega
+omit [NeZero q] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
+open Polynomial in
+/-- **Splitting into explicit factors.** Over `ZMod q`, given `r² = -1`, the negacyclic
+modulus `X^{2^α}+1` factors as `(X^{2^{α-1}} - r)·(X^{2^{α-1}} + r)` for `α ≥ 1`. These are
+the two degree-`2^{α-1}` pieces of the LS `k = 2` splitting; over `q ≡ 5 (mod 8)` they are
+irreducible (the order-of-`q` argument), which is what makes the CRT factors fields. -/
+theorem powTwoCyclotomic_splits_of_sq_eq_neg_one {r : ZMod q} (hr : r ^ 2 = -1) (hα : 1 ≤ α) :
+    (X ^ (2 ^ (α - 1)) - C r) * (X ^ (2 ^ (α - 1)) + C r) = (X : (ZMod q)[X]) ^ (2 ^ α) + 1 := by
+  have hm : 2 ^ (α - 1) * 2 = 2 ^ α := by rw [← pow_succ]; congr 1; omega
+  have hCr : (C r) ^ 2 = (-1 : (ZMod q)[X]) := by rw [← C_pow, hr, C_neg, C_1]
+  calc (X ^ (2 ^ (α - 1)) - C r) * (X ^ (2 ^ (α - 1)) + C r)
+      = (X ^ (2 ^ (α - 1))) ^ 2 - (C r) ^ 2 := by ring
+    _ = X ^ (2 ^ α) - (-1) := by rw [hCr, ← pow_mul, hm]
+    _ = X ^ (2 ^ α) + 1 := by ring
 
-/-- The negacyclic modulus splits as a product of the two conjugate binomials:
-`X^{2^{β+1}} + 1 = (X^{2^β} − r)(X^{2^β} + r)` when `r² = −1`. -/
-theorem X_pow_add_one_eq_mul {r : ZMod q} (hr : r ^ 2 = -1) (β : ℕ) :
-    (Polynomial.X : (ZMod q)[X]) ^ (2 ^ (β + 1)) + 1
-      = (Polynomial.X ^ (2 ^ β) - Polynomial.C r) * (Polynomial.X ^ (2 ^ β) + Polynomial.C r) := by
-  have hpow : (Polynomial.X : (ZMod q)[X]) ^ (2 ^ (β + 1))
-      = (Polynomial.X ^ (2 ^ β)) ^ 2 := by
-    rw [← pow_mul, pow_succ]
-  have hCr : (Polynomial.C r) ^ 2 = Polynomial.C (r ^ 2) := by rw [← Polynomial.C_pow]
-  rw [hpow]
-  have hfac : (Polynomial.X ^ (2 ^ β) - Polynomial.C r) * (Polynomial.X ^ (2 ^ β) + Polynomial.C r)
-      = (Polynomial.X ^ (2 ^ β)) ^ 2 - (Polynomial.C r) ^ 2 := by ring
-  rw [hfac, hCr, hr, Polynomial.C_neg, Polynomial.C_1, sub_neg_eq_add]
+omit [NeZero q] in
+open Polynomial in
+/-- `(powTwoCyclotomic α).φ.toPoly = X^(2^α) + 1`. -/
+theorem phi_toPoly :
+    (powTwoCyclotomic (R := ZMod q) α).φ.toPoly = X ^ (2 ^ α) + 1 := by
+  change (CompPoly.CPolynomial.X ^ (2 ^ α) + 1 : CompPoly.CPolynomial (ZMod q)).toPoly = _
+  rw [CompPoly.CPolynomial.toPoly_add, CompPoly.CPolynomial.toPoly_pow,
+    CompPoly.CPolynomial.toPoly_X, CompPoly.CPolynomial.toPoly_one]
 
-/-- Each conjugate factor `X^{2^β} − r` (and its sign-flip via `r ↦ −r`) is irreducible over
-`ZMod q` for `q ≡ 5 (mod 8)`: it divides `cyclotomic (2^{β+2})` and its degree `2^β` equals the
-multiplicative order of `q` modulo `2^{β+2}` (`orderOf_q_mod_twoPow`), so the
-finite-field cyclotomic-factor criterion forces irreducibility. -/
-theorem irreducible_X_pow_sub_C (hq5 : q % 8 = 5) {r : ZMod q} (hr : r ^ 2 = -1) (β : ℕ) :
-    Irreducible ((Polynomial.X : (ZMod q)[X]) ^ (2 ^ β) - Polynomial.C r) := by
-  -- The modulus is the `2^{β+2}`-th cyclotomic polynomial.
-  have hcyc : (Polynomial.X : (ZMod q)[X]) ^ (2 ^ (β + 1)) + 1
-      = Polynomial.cyclotomic (2 ^ (β + 2)) (ZMod q) := by
-    have := (powTwoCyclotomic_isCyclotomic (R := ZMod q) (β + 1)).isCyclotomic
-    rw [powTwo_toPoly (α := β + 1)] at this
-    simpa using this
-  -- The factor divides the cyclotomic polynomial.
-  have hdvd : ((Polynomial.X : (ZMod q)[X]) ^ (2 ^ β) - Polynomial.C r)
-      ∣ Polynomial.cyclotomic (2 ^ (β + 2)) (ZMod q) := by
-    rw [← hcyc, X_pow_add_one_eq_mul hr β]
-    exact Dvd.intro _ rfl
-  -- The factor has degree `2^β`.
-  have hdeg : ((Polynomial.X : (ZMod q)[X]) ^ (2 ^ β) - Polynomial.C r).natDegree = 2 ^ β := by
-    rw [Polynomial.natDegree_X_pow_sub_C]
-  -- That degree equals the multiplicative order of `q` modulo `2^{β+2}`.
-  have hqn : ¬ q ∣ 2 ^ (β + 2) := q_not_dvd_twoPow (β + 1) hq5
-  apply ZMod.irreducible_of_dvd_cyclotomic_of_natDegree hqn hdvd
-  rw [hdeg, show orderOf (ZMod.unitOfCoprime q
-      ((Fact.out (p := Nat.Prime q)).coprime_iff_not_dvd.mpr hqn))
-      = orderOf ((q : ZMod (2 ^ (β + 2)))) from by
-    rw [← ZMod.coe_unitOfCoprime q
-      ((Fact.out (p := Nat.Prime q)).coprime_iff_not_dvd.mpr hqn), orderOf_units]]
-  rw [orderOf_q_mod_twoPow hq5]
+omit [NeZero q] in
+open Polynomial in
+/-- `(powTwoCyclotomic α).φ.natDegree = 2^α`. -/
+theorem phi_natDegree :
+    (powTwoCyclotomic (R := ZMod q) α).φ.natDegree = 2 ^ α := by
+  rw [CompPoly.CPolynomial.natDegree_toPoly, phi_toPoly]
+  compute_degree!
 
-/-! ## The minimum-distance / norm argument
+omit [NeZero q] [BEq (ZMod q)] [LawfulBEq (ZMod q)] in
+open Polynomial in
+/-- If `a` is coprime to `f` then `Ideal.Quotient.mk (span {f}) a` is a unit. -/
+theorem isUnit_mk_of_isCoprime {a f : (ZMod q)[X]} (h : IsCoprime a f) :
+    IsUnit (Ideal.Quotient.mk (Ideal.span {f}) a) := by
+  obtain ⟨u, v, huv⟩ := h
+  refine IsUnit.of_mul_eq_one (Ideal.Quotient.mk (Ideal.span {f}) u) ?_
+  have hf : Ideal.Quotient.mk (Ideal.span {f}) f = 0 :=
+    Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mem_span_singleton_self f)
+  have hkey := congrArg (Ideal.Quotient.mk (Ideal.span {f})) huv
+  rw [map_add, map_mul, map_mul, hf, mul_zero, add_zero, map_one] at hkey
+  rw [mul_comm]; exact hkey
 
-If a conjugate factor `X^m − s` (with `s² = −1`, `m = 2^β`) divides the reduced lift `c̃` of a ring
-element `c` of degree `< 2m`, then comparing coefficients of `c̃ = (X^m − s)·h` gives
-`c_i = −s·c_{m+i}` for `i < m`, hence `c_i² + c_{m+i}² = 0` in `ZMod q`. Over the centered integer
-representatives this says `q ∣ |c_i|² + |c_{m+i}|²`; summing over `i < m` is exactly the squared
-`ℓ₂` norm `‖c‖₂² < q`, so every term — being a nonnegative multiple of `q` bounded by a value
-`< q` — vanishes. Thus all coefficients of `c̃` are zero, i.e. `c = 0`. This is the concrete
-incarnation of the LS18 ideal-lattice minimum-distance bound `√(det) = √q`. -/
+set_option maxHeartbeats 1600000 in
+-- This combined assembly proof exceeds the default heartbeat budget.
+omit [NeZero q] in
+open Polynomial in
+/-- **Algebraic core.** If `c : Rq Φ` over `q ≡ 5 (mod 8)` is *not* a unit,
+then `q` divides its centered squared `ℓ₂` norm. A non-unit's image in
+`(ZMod q)[X]/(X^{2^α}+1)` is non-coprime to the modulus, so an irreducible factor
+`φᵢ = X^{2^{α-1}} ∓ r` of `X^{2^α}+1` (`powTwoCyclotomic_splits_of_sq_eq_neg_one`,
+`irreducible_X_pow_sub_C_r`) divides its lift; evaluating at the root `ζ` of `AdjoinRoot φᵢ`
+(`ζ^{2^{α-1}} = ±r`, `s² = -1`) and using the degree-`2^{α-1}` independence of
+`1,…,ζ^{2^{α-1}-1}` (`dvd_sq_add_sq`) gives `q ∣ (c̃_j² + c̃_{2^{α-1}+j}²)` per `j`; summing
+yields `q ∣ ‖c‖₂²`. Edge case `α = 0`: `Rq Φ` is a field, so a non-unit is `0`. -/
+theorem q_dvd_l2NormSq_of_not_isUnit (hq5 : q % 8 = 5) {c : Rq Φ} (hc : ¬ IsUnit c) :
+    (q : ℤ) ∣ (Rq.l2NormSq Φ c : ℤ) := by
+  rcases Nat.eq_zero_or_pos α with hα0 | hαpos
+  · -- α = 0: `φ.toPoly = X + 1` irreducible, so `Rq Φ` is a field; a non-unit is `0`.
+    subst hα0
+    have hφ : (powTwoCyclotomic (R := ZMod q) 0).φ.toPoly = X + 1 := by
+      rw [phi_toPoly]; norm_num
+    have hirr : Irreducible ((powTwoCyclotomic (R := ZMod q) 0).φ.toPoly) := by
+      rw [hφ, show (X + 1 : (ZMod q)[X]) = X - C (-1) by rw [C_neg, C_1, sub_neg_eq_add]]
+      exact irreducible_X_sub_C (-1)
+    haveI hfact : Fact (Irreducible ((powTwoCyclotomic (R := ZMod q) 0).φ.toPoly)) := ⟨hirr⟩
+    haveI hmax : ((powTwoCyclotomic (R := ZMod q) 0).modIdeal).IsMaximal := by
+      rw [modIdeal]; exact PrincipalIdealRing.isMaximal_of_irreducible hirr
+    have hisfield : IsField ((powTwoCyclotomic (R := ZMod q) 0).CyclotomicRing) :=
+      (Ideal.Quotient.maximal_ideal_iff_isField_quotient _).mp hmax
+    have hnu := Rq.not_isUnit_toQuotientHom_of_not_isUnit
+      (powTwoCyclotomic (R := ZMod q) 0) hc
+    have hz : Rq.toQuotientHom (powTwoCyclotomic (R := ZMod q) 0) c = 0 := by
+      by_contra hne
+      obtain ⟨b, hb⟩ := hisfield.mul_inv_cancel hne
+      exact hnu (IsUnit.of_mul_eq_one b hb)
+    have hc0 : c = 0 := by
+      have hmap : Rq.toQuotientHom (powTwoCyclotomic (R := ZMod q) 0) c
+          = Rq.toQuotientHom (powTwoCyclotomic (R := ZMod q) 0) 0 := by
+        rw [hz, map_zero]
+      exact Rq.toQuotient_injective (powTwoCyclotomic (R := ZMod q) 0) hmap
+    rw [hc0]
+    have hzero : Rq.l2NormSq (powTwoCyclotomic (R := ZMod q) 0) (0 : Rq _) = 0 := by
+      unfold Rq.l2NormSq
+      refine Finset.sum_eq_zero (fun k _ ↦ ?_)
+      rw [Rq.zero_val, CompPoly.CPolynomial.coeff_zero, ZMod.valMinAbs_zero, Int.natAbs_zero]
+      norm_num
+    rw [hzero]; norm_num
+  · have hα : 1 ≤ α := hαpos
+    obtain ⟨r, hr⟩ := exists_sq_eq_neg_one_of_mod_eight_eq_five (q := q) hq5
+    set g1 : (ZMod q)[X] := X ^ (2 ^ (α - 1)) - C r with hg1
+    set g2 : (ZMod q)[X] := X ^ (2 ^ (α - 1)) + C r with hg2
+    set ct : (ZMod q)[X] := c.1.toPoly with hct
+    have hmul : g1 * g2 = (powTwoCyclotomic (R := ZMod q) α).φ.toPoly := by
+      rw [hg1, hg2, powTwoCyclotomic_splits_of_sq_eq_neg_one α hr hα, phi_toPoly]
+    have hirr1 : Irreducible g1 := by
+      rw [hg1]
+      apply irreducible_X_pow_sub_C_r α hq5 hα r hr
+      convert orderOf_q_mod_two_pow hq5 α hα using 2
+    -- `g2 = X^{2^{α-1}} - C (-r)` with `(-r)² = -1`, reusing the same factor lemma for `-r`.
+    have hrr : (-r) ^ 2 = -1 := by rw [neg_pow]; simp [hr]
+    have hg2eq : g2 = X ^ (2 ^ (α - 1)) - C (-r) := by rw [hg2, C_neg, sub_neg_eq_add]
+    have hirr2 : Irreducible g2 := by
+      rw [hg2eq]
+      apply irreducible_X_pow_sub_C_r α hq5 hα (-r) hrr
+      convert orderOf_q_mod_two_pow hq5 α hα using 2
+    have hnu : ¬ IsUnit (Ideal.Quotient.mk
+        (Ideal.span {(powTwoCyclotomic (R := ZMod q) α).φ.toPoly}) ct) := by
+      have hh := Rq.not_isUnit_toQuotientHom_of_not_isUnit
+        (powTwoCyclotomic (R := ZMod q) α) hc
+      rw [Rq.toQuotientHom] at hh
+      simpa only [Rq.toQuotient, quotientHom_apply, modIdeal, hct] using hh
+    have hdvd : g1 ∣ ct ∨ g2 ∣ ct := by
+      by_contra hcon
+      rw [not_or] at hcon
+      obtain ⟨hd1, hd2⟩ := hcon
+      have hcop1 : IsCoprime ct g1 := (hirr1.coprime_iff_not_dvd.mpr hd1).symm
+      have hcop2 : IsCoprime ct g2 := (hirr2.coprime_iff_not_dvd.mpr hd2).symm
+      have hcop : IsCoprime ct ((powTwoCyclotomic (R := ZMod q) α).φ.toPoly) := by
+        rw [← hmul]; exact hcop1.mul_right hcop2
+      exact hnu (isUnit_mk_of_isCoprime hcop)
+    have finish : ∀ (g : (ZMod q)[X]) (s : ZMod q),
+        Irreducible g → g = X ^ (2 ^ (α - 1)) - C s → s ^ 2 = -1 → g ∣ ct →
+        (q : ℤ) ∣ (Rq.l2NormSq Φ c : ℤ) := by
+      intro g s hirr hgeq hs hdvdg
+      haveI : Fact (Irreducible g) := ⟨hirr⟩
+      have hgmonic : g.Monic := by rw [hgeq]; exact monic_X_pow_sub_C s (by positivity)
+      have hgnd : g.natDegree = 2 ^ (α - 1) := by rw [hgeq, natDegree_X_pow_sub_C]
+      let F := AdjoinRoot g
+      let ζ : F := AdjoinRoot.root g
+      have hroot : (Polynomial.aeval ζ) g = 0 := by
+        change (Polynomial.aeval (AdjoinRoot.root g)) g = 0
+        rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self]
+      have hζ : ζ ^ (2 ^ (α - 1)) = algebraMap (ZMod q) F s := by
+        have h0 : (Polynomial.aeval ζ) (X ^ (2 ^ (α - 1)) - C s) = 0 := by
+          rw [← hgeq]; exact hroot
+        rw [map_sub, map_pow, Polynomial.aeval_X, Polynomial.aeval_C] at h0
+        linear_combination h0
+      have hctdeg : ct.natDegree < 2 ^ α := by
+        have hlt : ct.degree < (powTwoCyclotomic (R := ZMod q) α).φ.toPoly.degree :=
+          (powTwoCyclotomic (R := ZMod q) α).degree_toPoly_lt_of_reduced c.2
+        rw [phi_toPoly] at hlt
+        have hnd : ((X : (ZMod q)[X]) ^ (2 ^ α) + 1).natDegree = 2 ^ α := by compute_degree!
+        have hφne : ((X : (ZMod q)[X]) ^ (2 ^ α) + 1) ≠ 0 := by
+          intro h; rw [h, natDegree_zero] at hnd; exact absurd hnd.symm (by positivity)
+        by_cases hctz : ct = 0
+        · rw [hctz, natDegree_zero]; positivity
+        · rw [Polynomial.degree_eq_natDegree hctz,
+            Polynomial.degree_eq_natDegree hφne, hnd] at hlt
+          exact_mod_cast hlt
+      have hmkzero : AdjoinRoot.mk g ct = 0 := AdjoinRoot.mk_eq_zero.mpr hdvdg
+      have hsum : ∑ k ∈ Finset.range (2 ^ α),
+          algebraMap (ZMod q) F (ct.coeff k) * ζ ^ k = 0 := by
+        have he : (Polynomial.aeval ζ) ct = AdjoinRoot.mk g ct := by
+          change (Polynomial.aeval (AdjoinRoot.root g)) ct = AdjoinRoot.mk g ct
+          rw [AdjoinRoot.aeval_eq]
+        rw [Polynomial.aeval_eq_sum_range' hctdeg] at he
+        rw [hmkzero] at he
+        rw [← he]
+        apply Finset.sum_congr rfl
+        intro k _; rw [Algebra.smul_def]
+      have hindep : LinearIndependent (ZMod q)
+          (fun i : Fin (2 ^ (α - 1)) ↦ ζ ^ (i : ℕ)) := by
+        have hli := (AdjoinRoot.powerBasis' hgmonic).basis.linearIndependent
+        have hbpow : ⇑(AdjoinRoot.powerBasis' hgmonic).basis
+            = fun i : Fin (AdjoinRoot.powerBasis' hgmonic).dim ↦
+              (AdjoinRoot.powerBasis' hgmonic).gen ^ (i : ℕ) :=
+          (AdjoinRoot.powerBasis' hgmonic).coe_basis
+        rw [hbpow] at hli
+        have hdim : (AdjoinRoot.powerBasis' hgmonic).dim = 2 ^ (α - 1) := hgnd
+        rw [hdim] at hli
+        exact hli
+      set a : ℕ → ZMod q := fun k ↦ ct.coeff k with ha
+      have hcoeff_eq : ∀ k, c.1.coeff k = a k := by
+        intro k; rw [ha, hct, CompPoly.CPolynomial.coeff_toPoly]
+      have hdvdj : ∀ j, j < 2 ^ (α - 1) →
+          (q : ℤ) ∣ ((a j).valMinAbs ^ 2 + (a (2 ^ (α - 1) + j)).valMinAbs ^ 2) := by
+        intro j hj
+        exact dvd_sq_add_sq α hα ζ s hζ hs hindep a hsum j hj
+      have hsumeq : (Rq.l2NormSq Φ c : ℤ)
+          = ∑ k ∈ Finset.range (2 ^ α), ((c.1.coeff k).valMinAbs ^ 2 : ℤ) := by
+        unfold Rq.l2NormSq
+        rw [phi_natDegree, Nat.cast_sum]
+        apply Finset.sum_congr rfl
+        intro k _
+        push_cast
+        rw [sq_abs]
+      have hpow : 2 ^ α = 2 ^ (α - 1) + 2 ^ (α - 1) := by
+        rw [← two_mul, ← pow_succ']; congr 1; omega
+      rw [hsumeq, hpow, Finset.sum_range_add]
+      have hpair : (∑ j ∈ Finset.range (2 ^ (α - 1)), ((c.1.coeff j).valMinAbs ^ 2 : ℤ))
+          + ∑ j ∈ Finset.range (2 ^ (α - 1)),
+              ((c.1.coeff (2 ^ (α - 1) + j)).valMinAbs ^ 2 : ℤ)
+          = ∑ j ∈ Finset.range (2 ^ (α - 1)),
+              ((c.1.coeff j).valMinAbs ^ 2
+                + (c.1.coeff (2 ^ (α - 1) + j)).valMinAbs ^ 2 : ℤ) := by
+        rw [← Finset.sum_add_distrib]
+      rw [hpair]
+      apply Finset.dvd_sum
+      intro j hj
+      rw [Finset.mem_range] at hj
+      rw [hcoeff_eq j, hcoeff_eq (2 ^ (α - 1) + j)]
+      exact hdvdj j hj
+    rcases hdvd with h1 | h2
+    · exact finish g1 r hirr1 hg1 hr h1
+    · exact finish g2 (-r) hirr2 hg2eq hrr h2
 
-/-- Coefficient relation from divisibility by a conjugate factor: if `X^m − C s` divides a
-polynomial `f` of degree `< 2m`, then `f.coeff i = − s · f.coeff (m + i)` for every `i < m`. -/
-theorem coeff_of_dvd_X_pow_sub_C {S : Type*} [CommRing S] [Nontrivial S] {m : ℕ} (hm : 0 < m)
-    {s : S} {f : S[X]} (hf : f.natDegree < 2 * m)
-    (hdvd : ((Polynomial.X : S[X]) ^ m - Polynomial.C s) ∣ f) {i : ℕ} (hi : i < m) :
-    f.coeff i = - (s * f.coeff (m + i)) := by
-  rcases eq_or_ne f 0 with hf0 | hfne
-  · subst hf0; simp
-  obtain ⟨h, hfh⟩ := hdvd
-  -- `deg (X^m - C s) = m`, so `deg h < m` from `deg f < 2m`.
-  have hmon : ((Polynomial.X : S[X]) ^ m - Polynomial.C s).Monic := by
-    apply Polynomial.monic_X_pow_sub
-    exact lt_of_le_of_lt (Polynomial.degree_C_le) (by exact_mod_cast hm)
-  have hgnd : ((Polynomial.X : S[X]) ^ m - Polynomial.C s).natDegree = m :=
-    Polynomial.natDegree_X_pow_sub_C
-  have hh0 : h ≠ 0 := by rintro rfl; rw [mul_zero] at hfh; exact hfne hfh
-  have hhnd : h.natDegree < m := by
-    have hfnd : f.natDegree = m + h.natDegree := by
-      rw [hfh, hmon.natDegree_mul' hh0, hgnd]
-    omega
-  -- `f = X^m * h - C s * h`; read off coefficients.
-  have hexp : f = (Polynomial.X : S[X]) ^ m * h - Polynomial.C s * h := by
-    rw [hfh]; ring
-  -- `f.coeff i = -(s * h.coeff i)` for `i < m`.
-  have hci : f.coeff i = - (s * h.coeff i) := by
-    rw [hexp, Polynomial.coeff_sub, Polynomial.coeff_X_pow_mul', if_neg (by omega),
-      Polynomial.coeff_C_mul, zero_sub]
-  -- `f.coeff (m+i) = h.coeff i` for `i < m`.
-  have hcmi : f.coeff (m + i) = h.coeff i := by
-    rw [hexp, Polynomial.coeff_sub, Polynomial.coeff_X_pow_mul', if_pos (by omega),
-      Polynomial.coeff_C_mul]
-    have : h.coeff (m + i) = 0 := Polynomial.coeff_eq_zero_of_natDegree_lt (by omega)
-    rw [show m + i - m = i from by omega, this, mul_zero, sub_zero]
-  rw [hci, hcmi]
+omit [NeZero q] in
+/-- A ring element with zero centered squared `ℓ₂` norm is `0`: every centered coefficient
+representative below `deg φ` vanishes (`ZMod.valMinAbs_eq_zero`), and the representative is
+reduced (degree `< deg φ`), so the underlying polynomial is `0`. -/
+theorem Rq.eq_zero_of_l2NormSq_eq_zero {c : Rq Φ} (h : Rq.l2NormSq Φ c = 0) : c = 0 := by
+  unfold Rq.l2NormSq at h
+  -- Each centered coefficient below `deg φ` is zero.
+  have hlt : ∀ k, k < (powTwoCyclotomic (R := ZMod q) α).φ.natDegree → c.1.coeff k = 0 := by
+    intro k hk
+    have hsq : (c.1.coeff k).valMinAbs.natAbs ^ 2 = 0 :=
+      (Finset.sum_eq_zero_iff.mp h) k (Finset.mem_range.mpr hk)
+    have hz0 : (c.1.coeff k).valMinAbs.natAbs = 0 := (Nat.pow_eq_zero.mp hsq).1
+    rw [← ZMod.valMinAbs_eq_zero, ← Int.natAbs_eq_zero]
+    exact hz0
+  -- Hence the underlying polynomial is `0` (coeffs below `deg φ` by the above, coeffs at or
+  -- above `deg φ` by reducedness).
+  have htoP : c.1.toPoly = 0 := by
+    apply Polynomial.ext
+    intro k
+    rw [Polynomial.coeff_zero]
+    by_cases hk : k < (powTwoCyclotomic (R := ZMod q) α).φ.natDegree
+    · rw [← CompPoly.CPolynomial.coeff_toPoly]; exact hlt k hk
+    · rw [not_lt] at hk
+      have hdeg : c.1.toPoly.degree < (powTwoCyclotomic (R := ZMod q) α).φ.toPoly.degree :=
+        (powTwoCyclotomic (R := ZMod q) α).degree_toPoly_lt_of_reduced c.2
+      have hmonic : (powTwoCyclotomic (R := ZMod q) α).φ.toPoly.Monic := IsCyclotomic.monic
+      have hφne : (powTwoCyclotomic (R := ZMod q) α).φ.toPoly ≠ 0 := hmonic.ne_zero
+      have hdegφ : (powTwoCyclotomic (R := ZMod q) α).φ.toPoly.degree
+          = ((powTwoCyclotomic (R := ZMod q) α).φ.natDegree : WithBot ℕ) := by
+        rw [Polynomial.degree_eq_natDegree hφne, CompPoly.CPolynomial.natDegree_toPoly]
+      have hle' : (powTwoCyclotomic (R := ZMod q) α).φ.toPoly.degree ≤ (k : WithBot ℕ) := by
+        rw [hdegφ]; exact_mod_cast hk
+      exact Polynomial.coeff_eq_zero_of_degree_lt (lt_of_lt_of_le hdeg hle')
+  have hc1 : c.1 = 0 := (CompPoly.CPolynomial.toPoly_eq_zero_iff c.1).mp htoP
+  exact Subtype.ext (by rw [Rq.zero_val]; exact hc1)
 
-/-- **Minimum-distance bound.** If a conjugate factor `X^{2^β} − s` (`s² = −1`) divides the reduced
-lift of a ring element `c : Rq (powTwoCyclotomic (β+1))` whose squared `ℓ₂` norm is `< q`, then
-`c = 0`. This is the LS18 statement that the nonzero elements of the ideal `(X^{2^β} − s)` have
-`ℓ₂` norm `≥ √q`. -/
-theorem eq_zero_of_dvd_X_pow_sub_C {β : ℕ} {s : ZMod q} (hs : s ^ 2 = -1)
-    {c : Rq (powTwoCyclotomic (R := ZMod q) (β + 1))}
-    (hnorm : Rq.l2NormSq (powTwoCyclotomic (R := ZMod q) (β + 1)) c < q)
-    (hdvd : ((Polynomial.X : (ZMod q)[X]) ^ (2 ^ β) - Polynomial.C s) ∣ c.1.toPoly) :
-    c = 0 := by
-  have hmpos : 0 < 2 ^ β := by positivity
-  have hsplitnat : (2 : ℕ) ^ (β + 1) = 2 ^ β + 2 ^ β := by rw [pow_succ]; ring
-  have hdeg2m : c.1.toPoly.natDegree < 2 * 2 ^ β := by
-    have := natDegree_toPoly_lt (α := β + 1) c
-    rw [show (2 : ℕ) ^ (β + 1) = 2 * 2 ^ β from by rw [pow_succ]; ring] at this
-    exact this
-  -- Abbreviations for the per-index centered absolute values.
-  let A : ℕ → ℕ := fun i => (c.1.coeff i).valMinAbs.natAbs
-  let B : ℕ → ℕ := fun i => (c.1.coeff (2 ^ β + i)).valMinAbs.natAbs
-  -- `(natAbs (valMinAbs x))² ≡ x² (mod q)`.
-  have hsqcast : ∀ x : ZMod q, ((x.valMinAbs.natAbs : ZMod q)) ^ 2 = x ^ 2 := fun x => by
-    have h1 : ((x.valMinAbs.natAbs : ZMod q)) ^ 2 = ((x.valMinAbs : ℤ) : ZMod q) ^ 2 := by
-      rw [← Int.cast_natCast, ← Int.cast_pow, ← Int.cast_pow, Int.natAbs_sq]
-    rw [h1, ZMod.coe_valMinAbs]
-  -- `q ∣ A i ^ 2 + B i ^ 2` for `i < 2^β`.
-  have hdvdsum : ∀ i, i < 2 ^ β → q ∣ A i ^ 2 + B i ^ 2 := by
-    intro i hi
-    have hcoeff := coeff_of_dvd_X_pow_sub_C (s := s) hmpos hdeg2m hdvd hi
-    rw [← CompPoly.CPolynomial.coeff_toPoly, ← CompPoly.CPolynomial.coeff_toPoly] at hcoeff
-    have hzero : (c.1.coeff i) ^ 2 + (c.1.coeff (2 ^ β + i)) ^ 2 = 0 := by
-      rw [hcoeff]
-      have : (-(s * c.1.coeff (2 ^ β + i))) ^ 2 = s ^ 2 * (c.1.coeff (2 ^ β + i)) ^ 2 := by ring
-      rw [this, hs]; ring
-    have hcast : ((A i ^ 2 + B i ^ 2 : ℕ) : ZMod q) = 0 := by
-      change (((c.1.coeff i).valMinAbs.natAbs ^ 2
-          + (c.1.coeff (2 ^ β + i)).valMinAbs.natAbs ^ 2 : ℕ) : ZMod q) = 0
-      push_cast
-      rw [show (((c.1.coeff i).valMinAbs.natAbs : ZMod q)) ^ 2 = (c.1.coeff i) ^ 2 from
-          hsqcast _,
-        show (((c.1.coeff (2 ^ β + i)).valMinAbs.natAbs : ZMod q)) ^ 2
-          = (c.1.coeff (2 ^ β + i)) ^ 2 from hsqcast _, hzero]
-    rwa [ZMod.natCast_eq_zero_iff] at hcast
-  -- The squared `ℓ₂` norm splits as `Σ_{i<2^β} (A i ^ 2 + B i ^ 2)`.
-  have hsplit : Rq.l2NormSq (powTwoCyclotomic (R := ZMod q) (β + 1)) c
-      = ∑ i ∈ Finset.range (2 ^ β), (A i ^ 2 + B i ^ 2) := by
-    rw [Rq.l2NormSq, powTwo_natDegree (α := β + 1), hsplitnat]
-    rw [Finset.sum_range_add (fun k => (c.1.coeff k).valMinAbs.natAbs ^ 2) (2 ^ β) (2 ^ β),
-      ← Finset.sum_add_distrib]
-  -- Each term is `0`, so all coefficients vanish.
-  have hterm0 : ∀ i, i < 2 ^ β → A i = 0 ∧ B i = 0 := by
-    intro i hi
-    have hle : A i ^ 2 + B i ^ 2
-        ≤ Rq.l2NormSq (powTwoCyclotomic (R := ZMod q) (β + 1)) c := by
-      rw [hsplit]
-      exact Finset.single_le_sum (f := fun i => A i ^ 2 + B i ^ 2)
-        (fun _ _ => Nat.zero_le _) (Finset.mem_range.mpr hi)
-    have hlt : A i ^ 2 + B i ^ 2 < q := lt_of_le_of_lt hle hnorm
-    have heq0 : A i ^ 2 + B i ^ 2 = 0 := by
-      rcases (hdvdsum i hi) with ⟨t, ht⟩
-      rcases Nat.eq_zero_or_pos t with ht0 | htpos
-      · rw [ht, ht0, mul_zero]
-      · exfalso; rw [ht] at hlt; nlinarith [htpos]
-    exact ⟨by nlinarith [heq0, Nat.zero_le (B i)], by nlinarith [heq0, Nat.zero_le (A i)]⟩
-  -- Conclude `c = 0`.
-  apply Subtype.ext
-  rw [Rq.zero_val]
-  apply toPoly_injective
-  rw [CompPoly.CPolynomial.toPoly_zero]
-  ext k
-  rw [Polynomial.coeff_zero, ← CompPoly.CPolynomial.coeff_toPoly]
-  rcases lt_or_ge k (2 ^ β) with hk | hk
-  · exact (ZMod.valMinAbs_eq_zero _).mp (Int.natAbs_eq_zero.mp (hterm0 k hk).1)
-  · rcases lt_or_ge k (2 * 2 ^ β) with hk2 | hk2
-    · obtain ⟨i, hi, rfl⟩ : ∃ i, i < 2 ^ β ∧ k = 2 ^ β + i := ⟨k - 2 ^ β, by omega, by omega⟩
-      exact (ZMod.valMinAbs_eq_zero _).mp (Int.natAbs_eq_zero.mp (hterm0 i hi).2)
-    · have := coeff_toPoly_eq_zero_of_le (α := β + 1) (a := c) (i := k)
-        (by rw [show (2 : ℕ) ^ (β + 1) = 2 * 2 ^ β from by rw [pow_succ]; ring]; omega)
-      rwa [← CompPoly.CPolynomial.coeff_toPoly] at this
-
+omit [NeZero q] in
 /-- **Lyubashevsky–Seiler: short elements are invertible** (LS18, Cor. 1.2; Hachi, Lemma 3).
 Over the power-of-two cyclotomic modulus `powTwoCyclotomic α` (`φ = X^{2^α}+1`) with a prime
 `q ≡ 5 (mod 8)`, a nonzero element of `Rq (powTwoCyclotomic α)` with centered `ℓ₁` norm
-`≤ κ` and `κ² < q` is a unit (then `‖c‖₂² ≤ ‖c‖₁² ≤ κ² < q`, the LS `k = 2` bound
-`‖c‖ < √q`). Proved via the negacyclic splitting into irreducible conjugate factors and the
-minimum-distance bound; see the module docstring for the structure. -/
+`≤ κ` and `κ² < q` is a unit: by the algebraic core a non-unit forces `q ∣ ‖c‖₂²`, while
+`‖c‖₂² ≤ ‖c‖₁² ≤ κ² < q`, so `‖c‖₂² = 0`, forcing `c = 0` against `‖c‖₁ > 0`. -/
 theorem isUnit_of_l1Norm_le (hq5 : q % 8 = 5) {c : Rq Φ} {κ : ℕ}
     (hpos : 0 < Rq.l1Norm Φ c) (hle : Rq.l1Norm Φ c ≤ κ) (hκ : κ ^ 2 < q) :
     IsUnit c := by
-  -- Reduce to coprimality of the reduced lift `c̃` with the modulus `φ̃ = X^{2^α}+1`.
-  apply isUnit_of_isCoprime_toPoly
-  -- The squared `ℓ₂` norm is `< q`.
-  have hl2 : Rq.l2NormSq Φ c < q :=
-    lt_of_le_of_lt (Rq.l2NormSq_le_l1Norm_sq Φ c)
-      (lt_of_le_of_lt (Nat.pow_le_pow_left hle 2) hκ)
-  -- `c ≠ 0`, since its `ℓ₁` norm is positive.
-  have hcne : c ≠ 0 := by
-    rintro rfl
-    rw [Rq.l1Norm] at hpos
-    simp only [Rq.zero_val, CompPoly.CPolynomial.coeff_zero, ZMod.valMinAbs_zero,
-      Int.natAbs_zero, Finset.sum_const_zero, lt_self_iff_false] at hpos
-  -- The modulus as a Mathlib polynomial.
-  have hφ : (powTwoCyclotomic (R := ZMod q) α).φ.toPoly
-      = (Polynomial.X : (ZMod q)[X]) ^ (2 ^ α) + 1 := powTwo_toPoly (α := α)
-  rcases Nat.eq_zero_or_pos α with hα0 | hαpos
-  · -- `α = 0`: the modulus is `X + 1` (degree 1) and a nonzero `c` is a nonzero constant, a unit.
-    subst hα0
-    rw [hφ]
-    -- `c̃` has degree `< 1`, hence is the constant `C (c̃.coeff 0)`, and it is nonzero.
-    have hdeglt : c.1.toPoly.natDegree < 1 := by
-      have := natDegree_toPoly_lt (α := 0) c; simpa using this
-    have hc0 : c.1.toPoly ≠ 0 := by
-      intro h0; apply hcne; apply Subtype.ext; rw [Rq.zero_val]
-      exact toPoly_injective (by rw [h0, CompPoly.CPolynomial.toPoly_zero])
-    have hcconst : c.1.toPoly = Polynomial.C (c.1.toPoly.coeff 0) :=
-      Polynomial.eq_C_of_natDegree_le_zero (by omega)
-    have hunit : IsUnit c.1.toPoly := by
-      rw [hcconst]
-      refine isUnit_C.mpr (isUnit_iff_ne_zero.mpr (fun h0 => hc0 ?_))
-      rw [hcconst, h0, map_zero]
-    -- A unit is coprime to everything.
-    obtain ⟨u, hu⟩ := hunit
-    exact ⟨0, (↑u⁻¹ : (ZMod q)[X]), by rw [zero_mul, zero_add, ← hu]; simp [← Units.val_mul]⟩
-  · -- `α = β + 1`: genuine splitting into two irreducible conjugate factors.
-    obtain ⟨β, rfl⟩ : ∃ β, α = β + 1 := ⟨α - 1, by omega⟩
-    obtain ⟨r, hr⟩ := exists_sqrt_neg_one (q := q) hq5
-    have hrneg : (-r) ^ 2 = -1 := by rw [neg_pow]; simpa using hr
-    -- Neither conjugate factor divides `c̃` (else `c = 0`).
-    have hnd1 : ¬ ((Polynomial.X : (ZMod q)[X]) ^ (2 ^ β) - Polynomial.C r) ∣ c.1.toPoly := by
-      intro hdvd; exact hcne (eq_zero_of_dvd_X_pow_sub_C hr hl2 hdvd)
-    have hnd2 : ¬ ((Polynomial.X : (ZMod q)[X]) ^ (2 ^ β) - Polynomial.C (-r)) ∣ c.1.toPoly := by
-      intro hdvd; exact hcne (eq_zero_of_dvd_X_pow_sub_C hrneg hl2 hdvd)
-    -- Each factor is irreducible, hence coprime to `c̃`.
-    have hcop1 : IsCoprime ((Polynomial.X : (ZMod q)[X]) ^ (2 ^ β) - Polynomial.C r) c.1.toPoly :=
-      (irreducible_X_pow_sub_C hq5 hr β).coprime_iff_not_dvd.mpr hnd1
-    have hcop2 :
-        IsCoprime ((Polynomial.X : (ZMod q)[X]) ^ (2 ^ β) - Polynomial.C (-r)) c.1.toPoly :=
-      (irreducible_X_pow_sub_C hq5 hrneg β).coprime_iff_not_dvd.mpr hnd2
-    -- The product `(X^{2^β}−r)(X^{2^β}+r) = X^{2^{β+1}}+1 = φ̃` is coprime to `c̃`.
-    rw [hφ, X_pow_add_one_eq_mul hr β]
-    have hcop2' :
-        IsCoprime ((Polynomial.X : (ZMod q)[X]) ^ (2 ^ β) + Polynomial.C r) c.1.toPoly := by
-      rwa [Polynomial.C_neg, sub_neg_eq_add] at hcop2
-    exact hcop1.mul_left hcop2'
+  by_contra hc
+  -- Algebraic core: a non-unit has `q ∣ ‖c‖₂²`.
+  have hdvd : (q : ℤ) ∣ (Rq.l2NormSq Φ c : ℤ) := q_dvd_l2NormSq_of_not_isUnit α hq5 hc
+  have hdvdn : q ∣ Rq.l2NormSq Φ c := by exact_mod_cast hdvd
+  -- Norm bridge + hypotheses: `‖c‖₂² ≤ ‖c‖₁² ≤ κ² < q`.
+  have hb : Rq.l2NormSq Φ c < q :=
+    lt_of_le_of_lt (le_trans (Rq.l2NormSq_le_l1Norm_sq α c) (Nat.pow_le_pow_left hle 2)) hκ
+  -- A multiple of `q` below `q` is `0`.
+  have hz : Rq.l2NormSq Φ c = 0 := Nat.eq_zero_of_dvd_of_lt hdvdn hb
+  -- Zero squared norm ⇒ `c = 0`, contradicting `‖c‖₁ > 0`.
+  have hc0 : c = 0 := Rq.eq_zero_of_l2NormSq_eq_zero α hz
+  have hl1zero : Rq.l1Norm Φ (0 : Rq Φ) = 0 := by
+    unfold Rq.l1Norm
+    refine Finset.sum_eq_zero fun k _ ↦ ?_
+    rw [Rq.zero_val, CompPoly.CPolynomial.coeff_zero, ZMod.valMinAbs_zero, Int.natAbs_zero]
+  rw [hc0, hl1zero] at hpos
+  exact absurd hpos (lt_irrefl 0)
 
 end ArkLib.Lattices.CyclotomicModulus

@@ -23,7 +23,7 @@ k=2 control q=41 n=8 subgroup vs random_2: EXACTLY EQUAL
 
 subgroup t2 histogram: {'0': 778, '1': 800, '2': 120, '3': 20, '4': 5}
 subgroup spikes (t2 >= 3): 25
-A5 predicted family (9 pencils): big-spike set == predicted: False; extra big spikes: [(1, 2, 40), (1, 6, 32), (1, 7, 9), (1, 13, 9), (1, 16, 1), (1, 18, 1), (1, 19, 32), (1, 20, 40)]; missed predictions: []
+A5 predicted family (9 pencils): big-spike set == predicted: False; extra big spikes (16; list was [:8]-truncated pre-audit, see audit/): [(1, 2, 40), (1, 6, 32), (1, 7, 9), (1, 13, 9), (1, 16, 1), (1, 18, 1), (1, 19, 32), (1, 20, 40), (1, 21, 40), (1, 22, 32), (1, 23, 1), (1, 25, 1), (1, 28, 9), (1, 34, 9), (1, 35, 32), (1, 39, 40)]; missed predictions: []
 random_1 t2 histogram: {'0': 799, '1': 742, '2': 168, '3': 14}
 
 ## k=3, q=41, n=10
