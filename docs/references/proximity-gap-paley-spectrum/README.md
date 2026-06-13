@@ -58,6 +58,32 @@ NOT in the generalized-Paley/Cayley-spectrum literature. The thin-`n` `η_b` bou
 BGK-style `|Σ χ(a+b)|` bounds for sets of small multiplicative doubling and Shkredov's third-energy
 method.
 
+## THE BGK/Shkredov/HBK CORPUS — precise best-available thin-subgroup `|η_b|` bounds (fetched)
+
+The actual thin-`n` Gauss-period bound lives here (PDFs added: `HBK-jointkon.pdf`,
+`BGK-gausssum-crma.pdf`, `subgroup-expsum-2401.04756.pdf` (Kowalski's BGK exposition),
+`shkredov-sumsets-subgroups-Zp.pdf`, `subgroup-expsum-2003.06165.pdf`). Let `H=μ_n`, `|H|=n=p^γ`,
+`η_b = Σ_{y∈H} e_p(by)`. Writing the Gauss sum `G(a)=Σ_x e_p(a x^k) = k·η_a` with `k=(p-1)/n` the index:
+
+| regime (subgroup order `n`) | best PROVABLE bound on `\|η_b\|` | vs trivial `n` / target `√n` |
+|---|---|---|
+| `n ∈ [p^{1/3}, p^{1/2}]` | **HBK** (Heath-Brown–Konyagin, Stepanov method): `G(a) ≪ min(k^{5/8}p^{5/8}, k^{3/8}p^{3/4})` ⟹ `\|η_b\| ≪ min(n^{5/8}p^{1/8}, n^{3/8}p^{1/4})` | sub-trivial but `≫ √n` |
+| **`n < p^{1/3}` (PRIZE: `n=p^{0.19}`)** | **BGK only** (Bourgain–Glibichuk–Konyagin, sum-product): `\|η_b\| ≪ n·p^{-ν(γ)}`, `ν(γ)>0` but **tiny/ineffective** for small `γ` ⟹ effectively **`n^{1-o(1)}`** | **barely sub-trivial; HBK is VACUOUS here** |
+| all `n < p^{1/2}` | optimal `\|η_b\| ≲ √n` (Ramanujan / Paley Graph Conjecture) | **OPEN everywhere** |
+
+**The dramatic gap:** the *true* value (measured) is `\|η_b\| ≈ √(n·log(q/n))`, and the prize needs it
+*proved*. The best **proven** bound at `n=p^{0.19}` is `n^{1-o(1)}` (BGK) — off by a factor `≈ n^{0.4}`
+from `√n`. HBK/Stepanov don't even apply below `p^{1/3}`. So the per-frequency Gauss-period route requires
+proving `√n` cancellation for a thin 2-power subgroup — itself a **major open problem in analytic number
+theory** (the Paley Graph / optimal sum-product conjecture), far beyond all current techniques. The 2-power
+structure (Lam–Leung) helps only at `n < log q` (see `issue389-shaw-operator-assessment` regime-boundary
+probe), NOT at `n=p^{0.19} ≫ log q`.
+
+**Consequence for the prize:** if the team's solution closes the prize via this per-frequency route, it
+needs a thin-subgroup `√n` Gauss-period bound that does not exist in the literature — so either (a) it uses
+the *specific* designed `q` / 2-power structure in a way that bypasses the generic thin bound, or (b) it
+uses a *different* object than the per-frequency Gauss sum. Honest open question.
+
 ## CONCRETE NEXT ACTIONS
 
 1. **Formalize the dictionary** (Liu–Zhou Thm 115) as a Lean definition-level bridge: our `η_b`/`I(δ)`
