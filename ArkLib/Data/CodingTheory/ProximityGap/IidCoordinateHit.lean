@@ -44,6 +44,19 @@ theorem prob_iid_all_mem (r : ℕ) (T : Finset ι) :
     Nat.cast_pow]
   rw [div_pow, ← ENNReal.coe_div (pow_ne_zero r (by exact_mod_cast Fintype.card_ne_zero))]
 
+/-- **Usable lower bound.** If `T` has density at least `θ` (`θ·n ≤ |T|`), then `r` i.i.d. uniform
+coordinates all land in `T` with probability at least `θ^r`. With `T` the agreement set of a
+codeword `δ`-close to `y`, this is the `η^r`-style survival factor. -/
+theorem prob_iid_all_mem_ge (r : ℕ) (T : Finset ι) {θ : ℝ≥0}
+    (hθ : θ * Fintype.card ι ≤ T.card) :
+    (θ : ENNReal) ^ r ≤ Pr_{ let v ←$ᵖ (Fin r → ι) }[ ∀ j, v j ∈ T ] := by
+  rw [prob_iid_all_mem, ← ENNReal.coe_pow]
+  apply ENNReal.coe_le_coe.mpr
+  gcongr
+  rw [le_div_iff₀ (by exact_mod_cast Fintype.card_pos)]
+  exact hθ
+
 end ProximityGap
 
 #print axioms ProximityGap.prob_iid_all_mem
+#print axioms ProximityGap.prob_iid_all_mem_ge
