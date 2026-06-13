@@ -77,3 +77,25 @@ if __name__ == "__main__":
         for w in [5, 6, 7]:
             row = [incidence(n, k, q, a, b, w) for q in (97, 193, 257, 353)]
             print(f"({a},{b})  {w}  {1-w/n:.3f}  | {row}")
+
+
+# ── Correlation distinction: the smooth-subgroup "counterexamples" are CORRELATED, not MCA ──
+# X^{n/2} collapses to +-1 on mu_n (subgroup), so on mu_{n/2}: X^{n/2}=+1 and X^{n/2+1}=X are
+# BOTH low-degree => the pair (X^{n/2},X^{n/2+1}) is JOINTLY delta-close on mu_{n/2} at Johnson
+# delta=1/2. So direction (n/2,n/2+1) has incidence q-1 at Johnson -- but that is the CORRELATED
+# agreement case the MCA bad-event EXCLUDES, NOT an MCA violation. Measured (n=16,k=4,q=97):
+#   X^8 on mu_16 = [1,96,1,96,...] = [+1,-1,...]   (96 = -1 mod 97)
+#   dir(8,9): incidence at w=8 (Johnson) = 96 = q-1; X^8 close-on-8pts = True  (CORRELATED)
+#   dir(5,6): incidence at w=8 (Johnson) = 0;        X^5 close-on-8pts = False (non-correlated)
+# So the genuine MCA delta* is set by NON-correlated directions (X^a not self-close on >a pts);
+# there the incidence is q-independent and bounded (-> ~n), landing delta* in the window interior.
+def correlation_demo():
+    n, k, q = 16, 4, 97
+    dom = gen_mu_faithful(q, n); inv = inv_table(q)
+    print("X^{n/2} on mu_n:", [pow(dom[i], n // 2, q) for i in range(n)], " (-1 ==", q - 1, ")")
+    for (a, b) in [(8, 9), (5, 6)]:
+        incid = sum(1 for g in range(1, q)
+                    if close_ge([(pow(dom[i], b, q) + g * pow(dom[i], a, q)) % q for i in range(n)],
+                                dom, k, q, n, 8, inv))
+        xa = close_ge([pow(dom[i], a, q) for i in range(n)], dom, k, q, n, 8, inv)
+        print(f"dir({a},{b}): incidence@Johnson(w8)={incid}  X^{a}-self-close@8(correlated?)={xa}")
