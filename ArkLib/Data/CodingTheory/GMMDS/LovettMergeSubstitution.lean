@@ -44,8 +44,8 @@ minimality contradiction, are NOT in this file — see the residual note below).
 
 Assembling these into `LovettMergeIndep` still needs: (a) the dimension reindexing
 `Fin n → Fin (n−1)` that lets `substPoly`-transported relations be read as `pFamUnion` combinations
-over the merged dimension and invoke the `n`-IH (`shape (iii)` bookkeeping — `j* < n−1`); and (b) the
-minimal-counterexample / measure-drop contradiction that closes the substitute-back step
+over the merged dimension and invoke the `n`-IH (`shape (iii)` bookkeeping — `j* < n−1`); and
+(b) the minimal-counterexample / measure-drop contradiction that closes the substitute-back step
 (`cancel_common_factor` is only its domain half).  Those two are the remaining open content.
 
 Issue #389.

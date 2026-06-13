@@ -137,6 +137,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettMergeIdentity
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeMeet
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReindex
+import ArkLib.Data.CodingTheory.GMMDS.LovettMergeSubstitution
 import ArkLib.Data.CodingTheory.GMMDS.LovettNLtK
 import ArkLib.Data.CodingTheory.GMMDS.LovettPairwise
 import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
@@ -1340,6 +1341,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MovingDirectionCoordinate
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6ConditionalPin
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6DeepRung
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6LiteralBands
+import ArkLib.Data.CodingTheory.ProximityGap.Mu8AntipodalProfile
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
