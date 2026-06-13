@@ -94,6 +94,28 @@ window. The *asymptotic* prize parameters still need the analytic [TZ24] supply 
   core (actively built by a sibling). The δ* prize stays open until past-Johnson literature for
   explicit codes lands.
 
+## The prize open-core, diagnosed at the TECHNIQUE level (added 2026-06-13)
+
+After mapping the live fleet B2/GG25 §4.3 frontier against the in-tree bricks, the prize's open core
+localizes to one **uncovered quadrant**, with both available techniques provably failing to reach it:
+
+| | up to Johnson | **past Johnson** |
+|---|---|---|
+| **plain RS** (the prize code) | ✓ polynomial method (`curve_agreement_card_le`, heavy-γ ≤ `D·n/(a−b)`) | **OPEN ← the δ\* prize** |
+| folded / mult / random RS | ✓ | ✓ subspace designs (`subspaceDesign_jointAgree_card_le`, `prob_separates_ge`) |
+
+- The **polynomial method** (`CurveAgreementThreshold.curve_agreement_card_le`) is the in-tree
+  Schwartz–Zippel bound; it certifies plain-RS curve-decodability *only up to Johnson* — the bound
+  `D·n/(a−b)` goes vacuous (`≥ |F|`) exactly as `δ → 1−√ρ`, the classical Johnson wall.
+- The **subspace-design method** (`SubspaceDesignJointAgree`, `SeparationProbability`,
+  `SeparatingCoordsCount`) reaches *past* Johnson but needs the subspace-design property, which the
+  fleet proved for **folded RS** (its own docstring) — plain RS lacks the folding structure.
+- The prize is the empty cell: **plain RS, past Johnson**. The reduction `MCA ⟸ CurveDecodable`
+  (`GG25MCAFromCurveDecodability`) is in-tree and honest; `CurveDecodable(plain RS)` is *never proven,
+  only assumed* (audit: every occurrence is a hypothesis). This equals the recognized open problem
+  of RS list-/curve-decodability past Johnson for explicit codes — no technique in the codebase or
+  literature bridges it. The fleet is correctly formalizing the folded-RS (GG25) case, not the prize.
+
 ## Reusable lemmas (beyond #389)
 
 `parseval_general` (general finite DFT Parseval over roots of unity), `prod_le_of_sum_le` (uniform
