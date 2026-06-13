@@ -1469,6 +1469,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RigidityIterated2kLift
 import ArkLib.Data.CodingTheory.ProximityGap.RigiditySunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityWindowHalving
+import ArkLib.Data.CodingTheory.ProximityGap.RimHookArea
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergyExact
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityCyclicList
