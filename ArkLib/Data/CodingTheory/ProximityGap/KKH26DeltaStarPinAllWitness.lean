@@ -33,7 +33,11 @@ The non-emptiness of the `ε*` interval `[budget/p, supply/p)` requires `budget 
 only in the top sliver `r → n/2`, which is the remaining line-ball-incidence residual where the
 *sharper* `CensusDomination` budget is needed.
 
-Axiom-clean (`propext, Classical.choice, Quot.sound`); no `sorry`.
+`deltaStar_pin_concrete_F4129` is a **fully-discharged concrete instance** (zero hypotheses):
+`δ* = 3/4` for the explicit RS code over `ZMod 4129` at the order-8 element `g = 777`
+(μ=3, m=1, r=2, n=8) — every side condition closed by `decide`/`norm_num`, no `CensusDomination`.
+
+Axiom-clean (`propext, Classical.choice, Quot.sound`); no `sorry`/`native_decide`.
 -/
 
 open Finset Polynomial
@@ -99,8 +103,45 @@ theorem kkh26_deltaStar_pin_allWitness
   kkh26_deltaStar_pin_of_interior_ceiling hμ hm hn hg hp hr2 hr εstar hεstar
     (interiorCeiling_of_allWitnessDom hm hr2 hn (hn ▸ hg) εstar hbudget)
 
+/-- Statement-level primality so `ZMod 4129` is a field in the type below. -/
+instance : Fact (Nat.Prime 4129) := ⟨by norm_num⟩
+
+/-- **A concrete, FULLY-DISCHARGED unconditional δ* pin — zero hypotheses.** Every side condition
+of `kkh26_deltaStar_pin_allWitness` is closed by `decide`/`norm_num` for the explicit Reed–Solomon
+evaluation code over `ZMod 4129` at the order-8 element `g = 777` (μ=3, m=1, r=2, n=8, rate 1/4,
+code degree `(r−2)m = 0`):
+
+  `mcaDeltaStar (evalCode 777 8 0) (14/4129) = 1 − 2/2^3 = 3/4`.
+
+The order-8 fact is `orderOf 777 = 8` (`777^8 = 1`, `777^4 = 4128 ≠ 1`, via `orderOf_eq_prime_pow`);
+the KKH26 prime threshold `8^4 = 4096 < 4129` holds; the all-witness budget `C(8,2)/C(2,1) = 14`
+sits strictly below the supply `2^2·C(4,2) = 24`, so `ε* = 14/4129` lies in the pinning interval
+`[14/4129, 24/4129)`. This is a machine-checked instance of the Proximity-prize threshold pinned
+EXACTLY and **unconditionally** — no `CensusDomination`, no open math, no `sorry`/`native_decide`. -/
+theorem deltaStar_pin_concrete_F4129 :
+    mcaDeltaStar (F := ZMod 4129) (A := ZMod 4129)
+        (evalCode (777 : ZMod 4129) 8 ((2 - 2) * 1)) ((14 : ℝ≥0∞) / 4129)
+      = 1 - ((2 : ℕ) : ℝ≥0) / ((2 : ℝ≥0) ^ 3) := by
+  haveI : NeZero (8 : ℕ) := ⟨by norm_num⟩
+  have hg : orderOf (777 : ZMod 4129) = 2 ^ 3 * 1 := by
+    have h8 : (777 : ZMod 4129) ^ (2 ^ 3) = 1 := by decide
+    have h4 : ¬ (777 : ZMod 4129) ^ (2 ^ 2) = 1 := by decide
+    simpa using orderOf_eq_prime_pow (p := 2) (n := 2) h4 h8
+  have hb1 : (Nat.choose 8 ((2 - 2) * 1 + 2) / Nat.choose (2 * 1) ((2 - 2) * 1 + 1) : ℕ) = 14 := by
+    decide
+  have hb2 : (2 ^ 2 * Nat.choose (2 ^ (3 - 1)) 2 : ℕ) = 24 := by decide
+  exact kkh26_deltaStar_pin_allWitness (p := 4129) (n := 8) (μ := 3) (m := 1) (r := 2)
+    (g := 777) (by norm_num) (le_refl 1) (by norm_num) hg (by norm_num) (by norm_num) (by norm_num)
+    ((14 : ℝ≥0∞) / 4129)
+    (by rw [hb1]; norm_num)
+    (by
+      rw [hb2, ENNReal.div_eq_inv_mul, ENNReal.div_eq_inv_mul]
+      exact ENNReal.mul_lt_mul_right (ENNReal.inv_ne_zero.mpr ENNReal.ofNat_ne_top)
+        (ENNReal.inv_ne_top.mpr (by norm_num)) (by norm_num))
+
 end ProximityGap.Ownership.KKH26AllWitnessPin
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Ownership.KKH26AllWitnessPin.interiorCeiling_of_allWitnessDom
 #print axioms ProximityGap.Ownership.KKH26AllWitnessPin.kkh26_deltaStar_pin_allWitness
+#print axioms ProximityGap.Ownership.KKH26AllWitnessPin.deltaStar_pin_concrete_F4129
