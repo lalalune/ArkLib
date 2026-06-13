@@ -8,6 +8,7 @@ import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.FieldTheory.KummerExtension
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
+import ArkLib.Data.CodingTheory.ProximityGap.CorePartitionLemma
 
 /-!
 # The degree-`t` supply = elementary-symmetric fiber (#389)
@@ -121,6 +122,257 @@ theorem explainable_iff_forcedPoly_degree
   · intro hdeg
     refine ⟨fun i => (forcedPoly dom k m W T).eval (dom i),
       ⟨forcedPoly dom k m W T, hdeg, rfl⟩, fun i hi => hForcedeval i hi⟩
+
+omit [Fintype F] [DecidableEq F] [NeZero n] in
+/-- Coefficients of the core vanishing polynomial are signed elementary symmetric functions
+of the domain values on the core. -/
+theorem coreVanish_coeff (dom : Fin n ↪ F) (T : Finset (Fin n)) {r : ℕ}
+    (hr : r ≤ T.card) :
+    (coreVanish dom T).coeff (T.card - r)
+      = (-1 : F) ^ r * (T.val.map dom).esymm r := by
+  classical
+  have h := Multiset.prod_X_sub_C_coeff (T.val.map dom) (k := T.card - r) (by
+    rw [Multiset.card_map, Finset.card_val]
+    exact Nat.sub_le _ _)
+  rw [coreVanish, Finset.prod_eq_multiset_prod]
+  simpa [Multiset.card_map, Finset.card_val, Nat.sub_sub_self hr] using h
+
+/-- The forced polynomial always drops below the core size: the leading degree-`k+m+1`
+terms cancel. -/
+theorem forcedPoly_degree_lt_core
+    (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
+    (hWdeg : W.degree = ((k + m + 1 : ℕ) : WithBot ℕ))
+    {T : Finset (Fin n)} (hT : T.card = k + m + 1) :
+    (forcedPoly dom k m W T).degree < ((k + m + 1 : ℕ) : WithBot ℕ) := by
+  classical
+  have hWne : W ≠ 0 := by
+    rintro rfl
+    rw [degree_zero] at hWdeg
+    exact absurd hWdeg WithBot.bot_ne_coe
+  have hWnat : W.natDegree = k + m + 1 := natDegree_eq_of_degree_eq_some hWdeg
+  have hWtne : W.coeff (k + m + 1) ≠ 0 := by
+    rw [← hWnat]
+    exact leadingCoeff_ne_zero.mpr hWne
+  have hCVdeg : (coreVanish dom T).degree = ((k + m + 1 : ℕ) : WithBot ℕ) := by
+    rw [coreVanish_degree, hT]
+  have hCmuldeg :
+      (C (W.coeff (k + m + 1)) * coreVanish dom T).degree
+        = ((k + m + 1 : ℕ) : WithBot ℕ) := by
+    rw [degree_mul, degree_C hWtne, hCVdeg, zero_add]
+  rw [forcedPoly, ← hWdeg]
+  refine degree_sub_lt ?_ hWne ?_
+  · rw [hWdeg, hCmuldeg]
+  · rw [leadingCoeff_mul, leadingCoeff_C, (coreVanish_monic dom T).leadingCoeff, mul_one]
+    rw [show W.leadingCoeff = W.coeff (k + m + 1) from by rw [← hWnat]; rfl]
+
+omit [Fintype F] [DecidableEq F] [NeZero n] in
+/-- A top-band coefficient of the forced polynomial vanishes iff the corresponding
+elementary symmetric function of the core hits the value forced by `W`'s top coefficients. -/
+theorem forcedPoly_topCoeff_zero_iff_esymm
+    (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
+    {T : Finset (Fin n)} (hT : T.card = k + m + 1)
+    {r : ℕ} (hrm : r ≤ m + 1) :
+    (forcedPoly dom k m W T).coeff (k + m + 1 - r) = 0
+      ↔ W.coeff (k + m + 1 - r)
+          = W.coeff (k + m + 1) * ((-1 : F) ^ r * (T.val.map dom).esymm r) := by
+  classical
+  have hrT : r ≤ T.card := by rw [hT]; omega
+  have hidx : k + m + 1 - r = T.card - r := by rw [hT]
+  rw [forcedPoly, coeff_sub, coeff_C_mul, hidx, coreVanish_coeff dom T hrT, sub_eq_zero]
+
+/-- **Elementary-symmetric fibre form of the degree-`t` supply condition.** For a
+degree-`t = k+m+1` received polynomial, the forced explainer has degree `< k` exactly when
+the first `m+1` elementary symmetric functions of the core's domain values hit the top
+coefficient targets forced by `W`. -/
+theorem forcedPoly_degree_lt_iff_esymm_topCoeffs
+    (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
+    (hWdeg : W.degree = ((k + m + 1 : ℕ) : WithBot ℕ))
+    {T : Finset (Fin n)} (hT : T.card = k + m + 1) :
+    (forcedPoly dom k m W T).degree < (k : WithBot ℕ)
+      ↔ ∀ r ∈ Finset.Icc 1 (m + 1),
+          W.coeff (k + m + 1 - r)
+            = W.coeff (k + m + 1) * ((-1 : F) ^ r * (T.val.map dom).esymm r) := by
+  classical
+  constructor
+  · intro hdeg r hr
+    rw [Finset.mem_Icc] at hr
+    have hz : (forcedPoly dom k m W T).coeff (k + m + 1 - r) = 0 :=
+      (Polynomial.degree_lt_iff_coeff_zero _ k).mp hdeg _ (by omega)
+    exact (forcedPoly_topCoeff_zero_iff_esymm dom W hT hr.2).mp hz
+  · intro htop
+    have hcore := forcedPoly_degree_lt_core dom W hWdeg hT
+    refine (Polynomial.degree_lt_iff_coeff_zero _ k).mpr ?_
+    intro d hd
+    by_cases htd : k + m + 1 ≤ d
+    · exact Polynomial.coeff_eq_zero_of_degree_lt
+        (lt_of_lt_of_le hcore (by exact_mod_cast htd))
+    · push Not at htd
+      set r := k + m + 1 - d with hr
+      have hr1 : 1 ≤ r := by rw [hr]; omega
+      have hrm : r ≤ m + 1 := by rw [hr]; omega
+      have hd_eq : k + m + 1 - r = d := by rw [hr]; omega
+      have heq := htop r (by rw [Finset.mem_Icc]; exact ⟨hr1, hrm⟩)
+      have hz := (forcedPoly_topCoeff_zero_iff_esymm dom W hT hrm).mpr heq
+      rwa [hd_eq] at hz
+
+/-- **Exact elementary-symmetric fibre form of explainability.** For a degree
+`t = k+m+1` word `W`, a `t`-core is explainable by a Reed-Solomon codeword iff its
+first `m+1` elementary symmetric functions hit the coefficient targets forced by `W`.
+Thus the degree-`t` sub-Johnson supply problem is exactly a worst-case fibre-size
+problem for this symmetric-function map on `t`-subsets of the smooth domain. -/
+theorem explainable_iff_esymm_topCoeffs
+    (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
+    (hWdeg : W.degree = ((k + m + 1 : ℕ) : WithBot ℕ))
+    {T : Finset (Fin n)} (hT : T.card = k + m + 1) :
+    (∃ c ∈ (rsCode dom k : Submodule F (Fin n → F)), ∀ i ∈ T, c i = W.eval (dom i))
+      ↔ ∀ r ∈ Finset.Icc 1 (m + 1),
+          W.coeff (k + m + 1 - r)
+            = W.coeff (k + m + 1) * ((-1 : F) ^ r * (T.val.map dom).esymm r) := by
+  rw [explainable_iff_forcedPoly_degree dom W hWdeg hT,
+    forcedPoly_degree_lt_iff_esymm_topCoeffs dom W hWdeg hT]
+
+omit [Fintype F] [NeZero n] in
+/-- A degree-`< k` RS codeword agrees with a degree-`t=k+m+1` polynomial word on at most
+`t` points. -/
+theorem agree_card_le_of_degree_t (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
+    (hWdeg : W.degree = ((k + m + 1 : ℕ) : WithBot ℕ))
+    {c : Fin n → F} (hc : c ∈ (rsCode dom k : Submodule F (Fin n → F))) :
+    (Finset.univ.filter (fun i => c i = W.eval (dom i))).card ≤ k + m + 1 := by
+  classical
+  obtain ⟨P, hPdeg, hcP⟩ := hc
+  set t := k + m + 1 with ht
+  have hPlt : P.degree < (t : WithBot ℕ) :=
+    lt_of_lt_of_le hPdeg (by exact_mod_cast (by omega : k ≤ t))
+  have hPWdeg : (P - W).degree = (t : WithBot ℕ) := by
+    rw [sub_eq_add_neg, Polynomial.degree_add_eq_right_of_degree_lt
+      (by rw [Polynomial.degree_neg, hWdeg]; exact hPlt), Polynomial.degree_neg, hWdeg]
+  have hPWne : P - W ≠ 0 := by
+    intro h
+    rw [h, Polynomial.degree_zero] at hPWdeg
+    exact absurd hPWdeg (by simp)
+  have hPWnat : (P - W).natDegree = t := natDegree_eq_of_degree_eq_some hPWdeg
+  have hsub : (Finset.univ.filter (fun i => c i = W.eval (dom i))).image dom
+      ⊆ (P - W).roots.toFinset := by
+    intro x hx
+    simp only [Finset.mem_image, Finset.mem_filter] at hx
+    obtain ⟨i, ⟨-, hi⟩, rfl⟩ := hx
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hPWne, Polynomial.IsRoot.def,
+      Polynomial.eval_sub, sub_eq_zero, ← hi]
+    exact (congrFun hcP i).symm
+  calc (Finset.univ.filter (fun i => c i = W.eval (dom i))).card
+      = ((Finset.univ.filter (fun i => c i = W.eval (dom i))).image dom).card :=
+        (Finset.card_image_of_injective _ dom.injective).symm
+    _ ≤ (P - W).roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card (P - W).roots := Multiset.toFinset_card_le _
+    _ ≤ (P - W).natDegree := Polynomial.card_roots' _
+    _ = t := hPWnat
+
+open scoped Classical in
+/-- **Exact codeword-list fibre form for degree-`t` words.** The agreement-`t`
+Reed-Solomon list of an exact-degree `t = k+m+1` word has cardinality exactly equal
+to the number of `t`-subsets whose first `m+1` elementary symmetric functions hit
+the top-coefficient targets forced by `W`. -/
+theorem degree_t_list_eq_esymm_topCoeffs (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
+    (hWdeg : W.degree = ((k + m + 1 : ℕ) : WithBot ℕ)) :
+    ((Finset.univ : Finset (Fin n → F)).filter (fun c =>
+        c ∈ (rsCode dom k : Submodule F (Fin n → F))
+          ∧ k + m + 1 ≤ (Finset.univ.filter (fun i => c i = W.eval (dom i))).card)).card
+      =
+      (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+        (fun T => ∀ r ∈ Finset.Icc 1 (m + 1),
+          W.coeff (k + m + 1 - r)
+            = W.coeff (k + m + 1) * ((-1 : F) ^ r * (T.val.map dom).esymm r))).card := by
+  classical
+  let P : Finset (Fin n) → Prop := fun T =>
+    ∀ r ∈ Finset.Icc 1 (m + 1),
+      W.coeff (k + m + 1 - r)
+        = W.coeff (k + m + 1) * ((-1 : F) ^ r * (T.val.map dom).esymm r)
+  letI : DecidablePred P := fun T => Classical.propDecidable (P T)
+  change ((Finset.univ : Finset (Fin n → F)).filter (fun c =>
+        c ∈ (rsCode dom k : Submodule F (Fin n → F))
+          ∧ k + m + 1 ≤ (Finset.univ.filter (fun i => c i = W.eval (dom i))).card)).card
+      = (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter P).card
+  refine Finset.card_bij
+    (fun c _ => Finset.univ.filter (fun i => c i = W.eval (dom i))) ?_ ?_ ?_
+  · intro c hc
+    obtain ⟨-, hcmem, hge⟩ := Finset.mem_filter.mp hc
+    have hle : (Finset.univ.filter (fun i => c i = W.eval (dom i))).card ≤ k + m + 1 :=
+      agree_card_le_of_degree_t dom W hWdeg hcmem
+    have hcard : (Finset.univ.filter (fun i => c i = W.eval (dom i))).card = k + m + 1 :=
+      le_antisymm hle hge
+    refine Finset.mem_filter.mpr ⟨Finset.mem_powersetCard.mpr
+      ⟨Finset.subset_univ _, hcard⟩, ?_⟩
+    exact (explainable_iff_esymm_topCoeffs dom W hWdeg hcard).mp
+      ⟨c, hcmem, fun i hi => (Finset.mem_filter.mp hi).2⟩
+  · intro c hc c' hc' heq
+    obtain ⟨-, hcmem, hge⟩ := Finset.mem_filter.mp hc
+    obtain ⟨-, hc'mem, -⟩ := Finset.mem_filter.mp hc'
+    refine ProximityGap.PairRank.explainable_core_explainer_unique (k := k) dom
+      (le_trans (by omega : k ≤ k + m + 1) hge) hcmem hc'mem
+      (fun i hi => (Finset.mem_filter.mp hi).2) ?_
+    intro i hi
+    have heq2 : Finset.univ.filter (fun i => c i = W.eval (dom i))
+        = Finset.univ.filter (fun i => c' i = W.eval (dom i)) := heq
+    rw [heq2] at hi
+    exact (Finset.mem_filter.mp hi).2
+  · intro T hT
+    obtain ⟨hTp, htop⟩ := Finset.mem_filter.mp hT
+    obtain ⟨-, hTcard⟩ := Finset.mem_powersetCard.mp hTp
+    obtain ⟨c, hcmem, hagree⟩ :=
+      (explainable_iff_esymm_topCoeffs dom W hWdeg hTcard).mpr htop
+    have hTsub : T ⊆ Finset.univ.filter (fun i => c i = W.eval (dom i)) :=
+      fun i hi => Finset.mem_filter.mpr ⟨Finset.mem_univ _, hagree i hi⟩
+    have hge : k + m + 1 ≤ (Finset.univ.filter (fun i => c i = W.eval (dom i))).card := by
+      calc k + m + 1 = T.card := hTcard.symm
+        _ ≤ _ := Finset.card_le_card hTsub
+    refine ⟨c, Finset.mem_filter.mpr ⟨Finset.mem_univ _, hcmem, hge⟩, ?_⟩
+    have hle : (Finset.univ.filter (fun i => c i = W.eval (dom i))).card ≤ k + m + 1 :=
+      agree_card_le_of_degree_t dom W hWdeg hcmem
+    exact (Finset.eq_of_subset_of_card_le hTsub (by rw [hTcard]; exact hle)).symm
+
+open scoped Classical in
+/-- **Zero-fibre form.** If a degree-`t = k+m+1` received polynomial has vanishing
+top subleading coefficients in the window `t-1, ..., k`, then its agreement-`t`
+Reed-Solomon list is exactly the zero fibre of
+`T |-> (e_1(dom(T)), ..., e_(m+1)(dom(T)))`. -/
+theorem degree_t_list_eq_esymm_zero_of_topCoeff_band_zero
+    (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
+    (hWdeg : W.degree = ((k + m + 1 : ℕ) : WithBot ℕ))
+    (hWzero : ∀ r ∈ Finset.Icc 1 (m + 1), W.coeff (k + m + 1 - r) = 0) :
+    ((Finset.univ : Finset (Fin n → F)).filter (fun c =>
+        c ∈ (rsCode dom k : Submodule F (Fin n → F))
+          ∧ k + m + 1 ≤ (Finset.univ.filter (fun i => c i = W.eval (dom i))).card)).card
+      =
+      (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+        (fun T => ∀ r ∈ Finset.Icc 1 (m + 1), (T.val.map dom).esymm r = 0)).card := by
+  classical
+  have hWne : W ≠ 0 := by
+    rintro rfl
+    rw [degree_zero] at hWdeg
+    exact absurd hWdeg WithBot.bot_ne_coe
+  have hWnat : W.natDegree = k + m + 1 := natDegree_eq_of_degree_eq_some hWdeg
+  have hWtne : W.coeff (k + m + 1) ≠ 0 := by
+    rw [← hWnat]
+    exact leadingCoeff_ne_zero.mpr hWne
+  rw [degree_t_list_eq_esymm_topCoeffs dom W hWdeg]
+  apply congrArg Finset.card
+  ext T
+  simp only [Finset.mem_filter]
+  constructor
+  · rintro ⟨hTmem, htop⟩
+    refine ⟨hTmem, ?_⟩
+    intro r hr
+    have htopr := htop r hr
+    rw [hWzero r hr] at htopr
+    have hprod : W.coeff (k + m + 1) * ((-1 : F) ^ r * (T.val.map dom).esymm r) = 0 :=
+      htopr.symm
+    rw [← mul_assoc] at hprod
+    exact (mul_eq_zero.mp hprod).resolve_left
+      (mul_ne_zero hWtne (pow_ne_zero r (neg_ne_zero.mpr one_ne_zero)))
+  · rintro ⟨hTmem, hzero⟩
+    refine ⟨hTmem, ?_⟩
+    intro r hr
+    simp [hWzero r hr, hzero r hr]
 
 /-! ## The dyadic coset-union construction: exponential supply on smooth domains
 
@@ -409,6 +661,12 @@ end ProximityGap.EsymmFiber
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.EsymmFiber.explainable_iff_forcedPoly_degree
+#print axioms ProximityGap.EsymmFiber.coreVanish_coeff
+#print axioms ProximityGap.EsymmFiber.forcedPoly_degree_lt_iff_esymm_topCoeffs
+#print axioms ProximityGap.EsymmFiber.explainable_iff_esymm_topCoeffs
+#print axioms ProximityGap.EsymmFiber.agree_card_le_of_degree_t
+#print axioms ProximityGap.EsymmFiber.degree_t_list_eq_esymm_topCoeffs
+#print axioms ProximityGap.EsymmFiber.degree_t_list_eq_esymm_zero_of_topCoeff_band_zero
 #print axioms ProximityGap.EsymmFiber.explainable_of_expand
 #print axioms ProximityGap.EsymmFiber.smooth_dyadic_supply_lower_bound
 #print axioms ProximityGap.EsymmFiber.rootsOfUnity_dyadic_supply
