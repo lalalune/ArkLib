@@ -125,7 +125,7 @@ FRI-shaped domain.  Antipodal pairs: `(1,16), (2,15), (4,13), (8,9)` (`−1 = 16
 def dom8vals : Fin 8 → ZMod 17 := ![1, 2, 4, 8, 16, 15, 13, 9]
 
 /-- The evaluation domain `μ_8 ⊂ F₁₇` as an embedding (injective by `decide`). -/
-def dom8 : Fin 8 ↪ ZMod 17 := ⟨dom8vals, by decide⟩
+def quarticDom8 : Fin 8 ↪ ZMod 17 := ⟨dom8vals, by decide⟩
 
 set_option maxHeartbeats 4000000 in
 /-- The zero-sum-4-subset count of `μ_8 ⊂ F₁₇` is `6 = C(4,2)`: the only zero-sum quadruples
@@ -133,7 +133,7 @@ are the `C(4,2) = 6` unions of two of the four antipodal pairs `{1,16}, {2,15}, 
 (Mann: no non-antipodal quadruple of distinct roots of unity vanishes). -/
 theorem mu8_F17_zeroSum_quads_eq_six :
     (((Finset.univ : Finset (Fin 8)).powersetCard (3 + 1)).filter
-        (fun T => ∑ i ∈ T, dom8 i = 0)).card = 6 := by
+        (fun T => ∑ i ∈ T, quarticDom8 i = 0)).card = 6 := by
   decide
 
 open Classical in
@@ -144,9 +144,9 @@ of antipodal pairs is a zero-sum quadruple) — polynomial, consistent with the 
 hypothesis `δ* = capacity − Θ(1/log n)`, yet strictly larger than the cubic word's supply. -/
 theorem quarticSupply_mu8_F17_eq_six :
     ((Finset.univ : Finset (Fin 8 → ZMod 17)).filter (fun c =>
-        c ∈ (rsCode dom8 3 : Submodule (ZMod 17) (Fin 8 → ZMod 17))
-          ∧ 3 + 1 ≤ (agreeSet c (fun i => (dom8 i) ^ (3 + 1))).card)).card = 6 := by
-  rw [general_orchard_card dom8 (by norm_num : (1 : ℕ) ≤ 3)]
+        c ∈ (rsCode quarticDom8 3 : Submodule (ZMod 17) (Fin 8 → ZMod 17))
+          ∧ 3 + 1 ≤ (agreeSet c (fun i => (quarticDom8 i) ^ (3 + 1))).card)).card = 6 := by
+  rw [general_orchard_card quarticDom8 (by norm_num : (1 : ℕ) ≤ 3)]
   exact mu8_F17_zeroSum_quads_eq_six
 
 end MuEight

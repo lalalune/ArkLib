@@ -18,7 +18,7 @@ Cauchy–Schwarz on the crossing identity closes the law down to **exactly the J
 agreement** `t² > s·n`, for arbitrary set systems, with no branch analysis, no pencil
 exclusion, and no cap hypothesis:
 
-> **`crossing_double_count_general`** — pairwise `≤ s` intersections:
+> **`crossing_double_count_general_local`** — pairwise `≤ s` intersections:
 > `Σ_x d_x(d_x−1) ≤ s·L(L−1)` (the general-`s` form of the landed
 > `crossing_double_count`).
 
@@ -56,7 +56,7 @@ variable {n : ℕ} [NeZero n]
 open Classical in
 /-- **The general crossing double-count**: for a family pairwise intersecting in
 `≤ s` points, `Σ_x d_x(d_x−1) ≤ s·L(L−1)`. -/
-theorem crossing_double_count_general {S : Finset (Finset (Fin n))} {s : ℕ}
+theorem crossing_double_count_general_local {S : Finset (Finset (Fin n))} {s : ℕ}
     (hpair : ∀ A ∈ S, ∀ B ∈ S, A ≠ B → (A ∩ B).card ≤ s) :
     ∑ x : Fin n, ((S.filter (fun A => x ∈ A)).card
         * ((S.filter (fun A => x ∈ A)).card - 1))
@@ -146,7 +146,7 @@ theorem mean_degree_master {S : Finset (Finset (Fin n))} {s t : ℕ}
       = (∑ x : Fin n, d x * (d x - 1)) + u := by
     rw [Finset.sum_congr rfl (fun x _ => hsq x), Finset.sum_add_distrib, hdu]
   have hcross : ∑ x : Fin n, d x * (d x - 1) ≤ s * (L * (L - 1)) :=
-    crossing_double_count_general hpair
+    crossing_double_count_general_local hpair
   -- crossing mass dominated by u²: t²·L(L−1) ≤ (L·t)² ≤ u²
   have hcrossu : t ^ 2 * (L * (L - 1)) ≤ u ^ 2 := by
     calc t ^ 2 * (L * (L - 1)) ≤ t ^ 2 * (L * L) := by
@@ -323,7 +323,7 @@ end RSInstantiation
 end ProximityGap.PairRank
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
-#print axioms ProximityGap.PairRank.crossing_double_count_general
+#print axioms ProximityGap.PairRank.crossing_double_count_general_local
 #print axioms ProximityGap.PairRank.degree_sum_exchange
 #print axioms ProximityGap.PairRank.mean_degree_master
 #print axioms ProximityGap.PairRank.mean_degree_sharp
