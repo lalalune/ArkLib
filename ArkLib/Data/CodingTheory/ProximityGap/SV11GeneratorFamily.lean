@@ -183,6 +183,27 @@ theorem sv11_combination_order_two_vanish {D B : ℕ} (c y : F) (t : ℕ) (coef 
   rw [hwm, mul_zero] at h1
   exact (mul_eq_zero.mp h1).resolve_right (sub_ne_zero.mpr hcy)
 
+/-- **Degree bound for the imposed combination.** `Ψ = ∑_{a<D} ∑_{b<B} coef(a,b)·g_{a,b}` has
+`natDegree ≤ (D−1) + t·(B−1)` — the max generator degree. Combined with the proven counting engine
+(`|rep set|·M ≤ deg Ψ` from `sv11_combination_rootMultiplicity_ge`) this gives `r ≤ ((D−1)+t(B−1))/M`,
+i.e. `r ≲ tB/M`: since order-`M` vanishing needs `B > M`, this is only the *trivial* `r ≲ t` bound.
+Formalizes precisely why the imposed-combination route does **not** reach `O(t^{2/3})` — the `t`-power
+degree must be cancelled (the Wronskian-as-auxiliary degree-reduction), into which the structural
+theorems feed. -/
+theorem sv11_combination_natDegree_le {D B : ℕ} (c : F) (t : ℕ) (coef : ℕ → ℕ → F) :
+    (∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+        Polynomial.C (coef a b) * sv11Gen c t (a, b)).natDegree ≤ (D - 1) + t * (B - 1) := by
+  apply Polynomial.natDegree_sum_le_of_forall_le
+  intro a ha
+  apply Polynomial.natDegree_sum_le_of_forall_le
+  intro b hb
+  rw [Finset.mem_range] at ha hb
+  calc (Polynomial.C (coef a b) * sv11Gen c t (a, b)).natDegree
+      ≤ (sv11Gen c t (a, b)).natDegree := Polynomial.natDegree_C_mul_le _ _
+    _ = a + t * b := sv11Gen_natDegree c t (a, b)
+    _ ≤ (D - 1) + t * (B - 1) :=
+        Nat.add_le_add (by omega) (Nat.mul_le_mul_left t (by omega))
+
 end ProximityGap.BinomialDet
 
 
@@ -192,5 +213,6 @@ end ProximityGap.BinomialDet
 #print axioms ProximityGap.BinomialDet.sv11Gen_deriv_eval_mul
 #print axioms ProximityGap.BinomialDet.sv11_deriv_combination_of_rowsum_zero
 #print axioms ProximityGap.BinomialDet.sv11_combination_order_two_vanish
+#print axioms ProximityGap.BinomialDet.sv11_combination_natDegree_le
 #print axioms ProximityGap.BinomialDet.add_mul_lt_injective
 #print axioms ProximityGap.BinomialDet.sv11_wronskianDet_ne_zero
