@@ -61,3 +61,23 @@ top two coefficients are pinned by C9, C14; the full coefficient sequence is the
 
 Both are decidable, provable (via the antipodal/no-relation structure + inclusion–exclusion),
 and do NOT touch the past-Johnson barrier — pure structural combinatorics the swarm can formalize.
+
+## ★ HEADLINE LAW (verified r=2..5 × all computable n; essentially proven) ★
+
+**The Bessel even-moment law.** In the no-genuine-relation regime (char 0 for 2-power roots,
+or `p` above threshold), the `2r`-fold additive moment of `μ_n` is
+
+    E_r(μ_n)  =  (2r)! · [x^r] ( Σ_{m≥0} x^m/(m!)² )^{n/2}  =  (2r)! · [x^r] I₀(2√x)^{n/2}
+
+where `I₀` is the modified Bessel function. **Derivation (essentially a proof):** `E_r =`
+#{negation-balanced `2r`-tuples} (every value's multiplicity equals its antipode's) — this
+equals the zero-sum count *exactly when* `2r`-term vanishing sums are antipodal-closed (the
+established char-0 / K1 hypothesis); and the negation-balanced count is the pure-combinatorial
+`Σ_{Σmᵢ=r} (2r)!/∏(mᵢ!)²` over the `n/2` antipodal pairs `= (2r)![x^r](Σ x^m/m!²)^{n/2}`.
+
+This **subsumes C2, C8, C9, C14** (leading coeff `(2r−1)!!`, subleading `−(2r−1)!!C(r,2)`, the
+exact polynomials) and predicts all higher moments with no computation, e.g.
+`E_6(μ_16)=64941883776`, `E_7(μ_16)=9071319628800`. The unconditional novel core is the
+combinatorial identity "negation-balanced 2r-tuple count = (2r)![x^r] I₀-series^{n/2}". A clean,
+complete, formalizable theorem connecting **additive moments of multiplicative subgroups to
+Bessel functions** — to my knowledge not in the literature in this exact form.
