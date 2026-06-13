@@ -560,6 +560,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ChordConverseWrapper
 import ArkLib.Data.CodingTheory.ProximityGap.ChordFamilyCount
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.ClassSupplyFloor
+import ArkLib.Data.CodingTheory.ProximityGap.CodewordHeavyScalar
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
 import ArkLib.Data.CodingTheory.ProximityGap.CollinearityCensusTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.CollinearityMatchingFrame
