@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.GranularityLadderRS
 import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+import Mathlib.FieldTheory.KummerExtension
 
 /-!
 # The degree-`t` supply = elementary-symmetric fiber (#389)
@@ -271,9 +273,102 @@ theorem smooth_dyadic_supply_lower_bound
     ext j
     rw [hmemiff S j, hmemiff S' j, heq2]
 
+
+/-! ## Unconditional: the roots-of-unity (smooth 2-adic) domain realizes the construction -/
+
+/-- The roots-of-unity domain `i ↦ ζ^i` for a primitive `n`-th root `ζ`. -/
+noncomputable def domRU {ζ : F} (hζ : IsPrimitiveRoot ζ n) : Fin n ↪ F :=
+  ⟨fun i => ζ ^ (i : ℕ), by
+    intro a b hab
+    exact Fin.ext (hζ.pow_inj a.isLt b.isLt hab)⟩
+
+@[simp] theorem domRU_apply {ζ : F} (hζ : IsPrimitiveRoot ζ n) (i : Fin n) :
+    domRU hζ i = ζ ^ (i : ℕ) := rfl
+
+open scoped Classical in
+open Polynomial in
+/-- **Exponential supply for the explicit roots-of-unity domain (#389) — UNCONDITIONAL.**
+For `dom = μ_n` (`ζ` a primitive `n`-th root, `n = d·r`), the dyadic block structure is
+realized by the cosets of `μ_d` (each `∏(X−dom) = X^d − C(ζ^{jd})`), so the word
+`wt·X^t + lowPart` has at least `C(n/d, t/d)` explainable `(k+m+1)`-cores.  For `n = 2^μ`
+and constant rate this is exponential — explicit smooth (FFT) RS codes have exponential
+sub-Johnson list size. -/
+theorem rootsOfUnity_dyadic_supply {ζ : F} (hζ : IsPrimitiveRoot ζ n)
+    {k m d r : ℕ} (hk : 1 ≤ k) (hd : m + 2 ≤ d) (hnr : n = d * r)
+    (wt : F) (hwt : wt ≠ 0) (lowPart : Polynomial F) (hlow : lowPart.degree < (k : WithBot ℕ))
+    {s : ℕ} (hsd : s * d = k + m + 1) :
+    r.choose s ≤
+      (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+        (fun T => ∃ c ∈ (rsCode (domRU hζ) k : Submodule F (Fin n → F)),
+            ∀ i ∈ T, c i = (C wt * X ^ (k + m + 1) + lowPart).eval (domRU hζ i))).card := by
+  classical
+  have hnpos : 0 < n := NeZero.pos n
+  have hdpos : 0 < d := by omega
+  have hrpos : 0 < r := by
+    rcases Nat.eq_zero_or_pos r with h | h
+    · rw [h, Nat.mul_zero] at hnr; omega
+    · exact h
+  have hg : IsPrimitiveRoot (ζ ^ r) d := IsPrimitiveRoot.pow hnpos hζ (by rw [hnr]; ring)
+  -- index bound: j + r·l < n for j < r, l < d
+  have hlt : ∀ (j : Fin r) (l : ℕ), l < d → (j : ℕ) + r * l < n := by
+    intro j l hl
+    have h1 : r * (l + 1) ≤ r * d := mul_le_mul_left' (by omega) r
+    have h2 : r * (l + 1) = r * l + r := by ring
+    have hj : (j : ℕ) < r := j.isLt
+    rw [hnr, Nat.mul_comm d r]; omega
+  have hmodid : ∀ (j : Fin r) (l : ℕ), l < d → ((j : ℕ) + r * l) % n = (j : ℕ) + r * l :=
+    fun j l hl => Nat.mod_eq_of_lt (hlt j l hl)
+  set φ : Fin r → ℕ → Fin n :=
+    fun j l => (⟨((j : ℕ) + r * l) % n, Nat.mod_lt _ hnpos⟩ : Fin n) with hφ
+  set blk : Fin r → Finset (Fin n) := fun j => (Finset.range d).image (φ j) with hblk
+  -- φ j injective on range d
+  have hinj : ∀ (j : Fin r), Set.InjOn (φ j) ↑(Finset.range d) := by
+    intro j a ha b hb hab
+    simp only [Finset.coe_range, Set.mem_Iio] at ha hb
+    have heq : (j : ℕ) + r * a = (j : ℕ) + r * b := by
+      have := Fin.ext_iff.mp hab
+      simp only [hφ] at this
+      rw [hmodid j a ha, hmodid j b hb] at this; exact this
+    exact Nat.eq_of_mul_eq_mul_left hrpos (by omega : r * a = r * b)
+  have hcard : ∀ j, (blk j).card = d := fun j => by
+    rw [hblk, Finset.card_image_of_injOn (hinj j), Finset.card_range]
+  have hdisj : ∀ j j', j ≠ j' → Disjoint (blk j) (blk j') := by
+    intro j j' hjj'
+    rw [Finset.disjoint_left]
+    intro x hx hx'
+    simp only [hblk, Finset.mem_image, Finset.mem_range] at hx hx'
+    obtain ⟨a, ha, rfl⟩ := hx
+    obtain ⟨b, hb, hb2⟩ := hx'
+    have heq : (j' : ℕ) + r * b = (j : ℕ) + r * a := by
+      have h := Fin.ext_iff.mp hb2
+      simp only [hφ] at h
+      rw [hmodid j' b hb, hmodid j a ha] at h; exact h
+    -- j ≡ j' (mod r), both < r ⟹ j = j'
+    have hmod : (j : ℕ) % r = (j' : ℕ) % r := by
+      have h := congrArg (· % r) heq
+      simp only [Nat.add_mul_mod_self_left] at h
+      exact h.symm
+    exact hjj' (Fin.ext (by
+      rw [← Nat.mod_eq_of_lt j.isLt, hmod, Nat.mod_eq_of_lt j'.isLt]))
+  set β : Fin r → F := fun j => (ζ ^ (j : ℕ)) ^ d with hβ
+  have hcoset : ∀ j, (∏ i ∈ blk j, (X - C (domRU hζ i))) = X ^ d - C (β j) := by
+    intro j
+    rw [hblk, Finset.prod_image (hinj j)]
+    have step1 : ∀ l ∈ Finset.range d,
+        (X - C (domRU hζ (φ j l))) = (X - C ((ζ ^ r) ^ l * ζ ^ (j : ℕ))) := by
+      intro l hl
+      have hval : ((φ j l : Fin n) : ℕ) = ((j : ℕ) + r * l) % n := by simp [hφ]
+      rw [domRU_apply, hval, hmodid j l (Finset.mem_range.mp hl), pow_add, pow_mul, mul_comm]
+    rw [Finset.prod_congr rfl step1, hβ,
+      ← X_pow_sub_C_eq_prod hg hdpos (show (ζ ^ (j : ℕ)) ^ d = (ζ ^ (j : ℕ)) ^ d from rfl)]
+  exact smooth_dyadic_supply_lower_bound (domRU hζ) hk hd wt hwt lowPart hlow blk hcard hdisj β
+    hcoset hsd
+
+-- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 end ProximityGap.EsymmFiber
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.EsymmFiber.explainable_iff_forcedPoly_degree
 #print axioms ProximityGap.EsymmFiber.explainable_of_expand
 #print axioms ProximityGap.EsymmFiber.smooth_dyadic_supply_lower_bound
+#print axioms ProximityGap.EsymmFiber.rootsOfUnity_dyadic_supply
