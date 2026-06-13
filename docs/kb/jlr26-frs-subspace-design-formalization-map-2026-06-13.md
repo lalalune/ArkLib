@@ -936,3 +936,21 @@ sum. SCOPE: antipodal counts small (≤4); worst-case is RESONANT (NubsCarson n=
 a GENERALIZED tower recursion (iterate σ^j along the maximizer's 2-power order) reduce the resonant
 maximizer to lower-rung μ_{n/2^j}, closing general-r by induction on tower depth? Concrete form of the
 O108/O130 2-power engine lever. Posted to #389. Genuine partial contribution to the demand target.
+
+## 33b. Tower recursion refinement + HONEST object-mismatch caveat
+
+Extending §33: the worst-case per-subset level-set demand is achieved by **cosets of the order-r
+subgroup** and has a clean closed form. For `S = ω·μ_r` (`r|n`), `P_S(t)=t^r−ω^r`, so `P_S(t)=c` splits
+over `μ_n` iff `ω^r+c ∈ μ_{n/r}` (the r-th powers), giving exactly **`#bad_S = n/r`** values of `c`.
+Verified: μ₁₆ r=4, the 4 maximizers are exactly `{0,4,8,12}+j` (μ₄-cosets), demand 4 = n/r. The tower
+recursion captures these exactly. So in this parametrization the worst-case IS tower-structured.
+
+**HONEST CAVEAT (object mismatch — do not overstate).** My per-subset level-set object
+`E = Σ_S #{c: P_S−c splits}` is NOT NubsCarson's `#bad`-scalar count: numerically `E ≈ 1820` at
+μ₁₆/r=4 (dominated by ~C(16,4) demand-1 subsets) vs their `#bad = 113 ≤ K=560`. So my object is a
+DIFFERENT, larger quantity (the full symmetric/PTE energy `Σ_S`), while their `#bad` is the e₁-axis
+SUPPORT (distinct γ=−e₁ values), a projection. The tower recursion and the `n/r` coset worst-case are
+genuine structure for the PTE-energy object, but the prize-relevant `#bad` bound needs their exact
+pencil→γ→subset dictionary (their lane). My contribution: evidence the demand's worst-case is
+tower/coset-structured (the 2-power lever is real), with an honest scope flag that I'm one projection
+away from their exact prize quantity. The general-r prize bound remains open on the demand lane.
