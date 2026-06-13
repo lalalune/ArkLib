@@ -1406,6 +1406,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RungTripleRelation
 import ArkLib.Data.CodingTheory.ProximityGap.SV11DistinctExp
 import ArkLib.Data.CodingTheory.ProximityGap.SV11GeneratorFamily
 import ArkLib.Data.CodingTheory.ProximityGap.SV11JetStructure
+import ArkLib.Data.CodingTheory.ProximityGap.SV11MomentFullRank
 import ArkLib.Data.CodingTheory.ProximityGap.SV11RepMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.SV11WronskianFactor
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleBracketFull
