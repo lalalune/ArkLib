@@ -8529,3 +8529,104 @@ to O172's open core, so a closed-form-free per-line structural proof is NOT avai
 /tmp/fanoutC/{dary_split_theory,axis_injection,r8_tight_analysis,crossline_check,crossline_r4,
 perline_budget}.py. Reading list for the analytic core: PAPERS_NEEDED.md §"ExcessCensusLaw
 analytic core".
+
+### O175 — ADJUDICATION of CONJECTURE C-half (#bad(r) ≤ K/2 = 2^{r-1}·C(n/2,r)): calibration EXACT and non-refuted, but proof REDUCES-TO-OPEN (same E_{1,2}(μ_n) core as O172/O174) and the /2 factor is a calibration FIT with no proof-handle — NOT a $1M closure (nubs, demand seat, 2026-06-13)
+
+Verifier #389 reported C-half as the sharpest clean closed form dominating every measured deep-band
+#bad-scalar rung while staying ≤ K, with proofStatus REDUCES-TO-OPEN. Adjudicated this seat,
+recomputed (not quoted), reused cd_demand/badscalar kernels for spot-checks. **Verdict: HONEST
+NON-CLOSURE — calibration confirmed, REDUCES-TO-OPEN confirmed, NOT a solution. Standing upheld.**
+
+* **CALIBRATION [PASS, digit-for-digit].** K=2^r·C(8,r)=448,1120,1792,1792,1024,256 and K/2=
+  224,560,896,896,512,128 recomputed exactly. K/2 DOMINATES the O172/O174 n=16 ladder
+  97,145,89,113,225,104 at EVERY rung and all stay ≤ K; margins (K/2)/#bad =
+  2.31,3.86,10.07,7.93,2.28,1.23 reproduced. r=3 proven form n·C(n/4,2)+1 dominated by K/2 at all n
+  (97≤224, 897≤2240, 7681≤19840, 63489≤166656, 516097≤1365504). n=16 r=8 maximizer (x^9,x^11)=104
+  reproduced via badscalar kernel (calibration gate PASS). Verifier's own binding-band script
+  (o389_binding_check.py) confirms #bad≤K/2 HOLDS at all 9 measured points — including the
+  CORRECTED corner-sweep n=32 r=4=3105 (x^16,x^25) and r=5=1441 (x^17,x^31), both ≪ K/2 — while
+  K/3 and K/4 FAIL at n=16 r=8 (104>85.3, 104>64). So K/2 is the tightest clean power-of-2 fraction
+  surviving all data. No mismatch, never exceeds K. Calibration is SOUND.
+
+* **THE CLOSED CHECK [REDUCES-TO-OPEN — the cardinal failure, but HONESTLY self-flagged].** C-half's
+  proof requires an upper bound on the e₁-axis support of the affine (e₁,e₂)-slice = joint
+  higher-order additive energy E_{1,2}(μ_n) over a thin 2-power subgroup in the prize regime — the
+  named OPEN ExcessCensusLaw core (O172/O174-isolated), confirmed absent from MSS (1910.05894 /
+  2401.x) / vanishing-sums (2008.11268) / additive-energy (Shkredov, Hanson–Petridis) literature.
+  The /2 factor has NO proof-handle: the ±e₁-pairing S↦−S=ζ^{n/2}·S controls PARITY (explains the
+  proven r=3 "+1") but is ORTHOGONAL to the 2^r sign factor in K, so /2 is empirical. The report
+  does NOT dress this up — it tags REDUCES-TO-OPEN and states "fails the CLOSED requirement." This
+  is the correct, honest classification: a calibrated non-refuted conjecture, not a closure.
+
+* **PRIZE REGIME [transfer SOUND, central band UNVERIFIED at scale].** O172 envelope (production q =
+  char-0 worst case, q-independent above q*≈2^{n/2}) makes the n=16/32 char-0 data transfer to
+  production — sound. BUT the binding fragility is the central band r=n/2 at 1.23× (n=16), which is
+  computationally checkable ONLY at n=16: n=32 (r=16) needs C(32,17)=5.6×10⁸ subset interpolations,
+  out of budget; n=2^k for k≥6 is astronomically out. (Confirmed n=12,20 are invalid test points —
+  not powers of 2 — so they degenerate to #bad=0, NOT counterevidence.) The n=32 data tops out at
+  ratio 0.107 (r=4), nowhere near the 0.406 binding ratio, so it does NOT stress C-half — the n=16
+  central band stands alone and unverified beyond n=16. The report's "one unverified fragility
+  (central band r=n/2 for n≥32)" is an ACCURATE, complete disclosure.
+
+* **PROVABLE-IN-TREE alternative OVERSHOOTS.** Spectrum bound #bad≤|spectrum|≤C(n,r+1) [axiom-clean]
+  overshoots K at n=16 by 4.06×–44.7× (worst at central band r=8: 11440 vs K=256) — useless as a
+  route to K, let alone K/2. Second-moment/Cauchy–Schwarz gives a LOWER bound on support (wrong
+  direction). r=3 closed form PROVEN (DeepBandR3Bound, axioms [propext,Classical.choice,Quot.sound])
+  but O174-confirmed non-generalizing (axis-support tracks x^{n/2}→x^{n/4} as r grows). So no
+  in-tree provable object reaches C-half.
+
+* **SCORES [defensible].** nov 5 ins 6 prox 3 feas 4 — correctly low; prox 3 honestly reflects
+  REDUCES-TO-OPEN. No dressed-up fit; the report self-downgrades and refuses to claim closure.
+
+**Where it lands:** C-half is the cleanest calibrated closed form dominating every measured rung and
+respecting K, with one exact bonus (parity "+1" variant matches proven r=3). It is a useful
+SHARPENING of O171/O172 evidence and a precise conjecture. It is NOT a $1M closure: its proof reduces
+to the SAME open E_{1,2}(μ_n) energy core O172/O174 already isolated, the /2 factor is calibration-fit
+not derived, and the binding central band is unverified for n≥32. Honest standing — calibrated,
+non-refuted, closed-FORM but open-PROOF — upheld. Open object unchanged: PAPERS_NEEDED.md
+§"ExcessCensusLaw analytic core". Spot-checks: /tmp/{calib_check,n32_check,central_band3}.py;
+reused scripts/probes/genlaw/o165_census_demand/{badscalar_demand.py,o389_binding_check.py}.
+
+### O176 — THE DEMAND-SIDE WALL LOCATED: general-r (r≥4) #bad ≤ K has NO clean closed form (refuted) and its tightest clean bound #bad ≤ K/2 REDUCES-TO-OPEN — the exact new-math target is an upper bound on the e1-support of the (e1,e2) joint level-set = joint additive energy E_{1,2}(μ_n) over a thin 2-power subgroup, ABSENT from the literature (nubs, demand seat, 2026-06-13)
+
+Two adversarially-verified passes (computational + analytic, both 0.88–0.9, zero fatal) converge:
+the demand-side general-r bound is genuinely beyond current math, and the precise new object is named.
+
+* **No clean closed form [REFUTED, computational pass].** The divisor-family hypothesis
+  (x^{n/2}@r3, x^{n/4}@r4, d=n/2^⌊log₂r⌋) is FALSE: the maximizing high-freq line is r-dependent
+  with no divisor selector (leading-char orders {2,2,16,2,8,16} scattered, non-monotone), no
+  power-law n-scaling (16→32 ratios 9.25/21.41/16.19). Each line is the maximizer at exactly one
+  r and degenerates (#bad→1) elsewhere — RESONANCE, not a family. Corrected a prior calibration
+  slip: n=32 r=4 maximizer is (x¹⁶,x⁹)=3105 (NOT (x⁸,x⁵)=865).
+* **The object, exactly [PROVEN reductions].** Via the Vieta pin γ=−e₁(S) (in-tree
+  `badscalar_eq_neg_subset_sum`) and Newton e₁²=p₂+2e₂, the deep-band #bad-scalar count =
+  the **e₁-axis support of the (e₁,e₂) joint level-set** over μ_n = #{distinct Σx over (r+1)-subsets
+  S of μ_n with Σx and Σx² both line-forced}. Equivalently the support side of the joint additive
+  energy **E_{1,2}(μ_n)** = #{(a,b,c,d): a+b=c+d, a²+b²=c²+d²} (and its (r+1)-fold analogue).
+* **The bound, conjectured [CONJECTURE C-half, calibrated, NOT a closure].** #bad(r) ≤
+  K/2 = 2^{r−1}·C(n/2,r): dominates every measured rung (n=16 r=3..8 = 97,145,89,113,225,104;
+  n=32 r=3..5), stays ≤ K, dominates the proven r=3 form; K/3 and K/4 FAIL at the binding band
+  (n=16 r=8). But the /2 is a calibration FIT (no proof-handle), and the proof
+  **REDUCES-TO-OPEN**: an upper bound on the e₁-support / E_{1,2}(μ_n) — which is **absent from
+  the literature**, confirmed by a ruthless four-fold gap:
+  1. **Ground set:** moment-subset-sum bounds (LMRW 1910.05894, GPP 2401.06964) are over the
+     full field F_q or polynomial images (~q points), NEVER a thin multiplicative subgroup μ_n;
+     GPP explicitly does not use multiplicative structure.
+  2. **Object/moment-dimension:** they bound the per-target count N₂(c₁,c₂) (~O(1), main term
+     ≪1, vacuous for thin G); the prize needs the 1-D e₁-support projection (~Θ(n³) at r=3).
+  3. **Parameter window:** they need k large, m≪k, k≤q^{0.24}; the prize is m=2 FIXED, k=r+1 small,
+     deep band — outside every stated window.
+  4. **q-dependence:** their bounds are q-dependent (/q^m, q^{k/2}); the prize count is
+     q-INDEPENDENT poly(n) (O172 envelope: faithful = worst case). The additive-energy route
+     (Hanson–Petridis, Shkredov) has the right q-free object but is prime-field-calibrated with
+     documented F_q-transfer failure (in-tree O30), the joint E_{1,2} is itself OPEN (only the
+     4th-moment floor E₂=3n²−3n known, Duke–García), and Cauchy–Schwarz points the WRONG way
+     (lower bound on support, not the upper bound #bad≤K needs).
+
+**Where it lands [HONEST, per the CLOSED requirement]:** r=3 PROVEN (O172/DeepBandR3Bound), a=4
+slice PROVEN (A4CensusValue), general-r ≤ K is CONJECTURE C-half whose proof needs genuinely new
+mathematics — an upper bound on the (e₁,e₂) joint level-set support / joint additive energy
+E_{1,2} over μ_{2^k} in the prize regime. The literature does not supply it; the 2-power
+antipodal/Lam–Leung structure of μ_{2^k} (the in-tree O108/O130 engine) is the most promising
+lever the general additive-combinatorics literature cannot use. That is the named new-math
+target for the demand side. Dossiers: scripts/probes/genlaw/o174_general_r/{,analytic/}.
