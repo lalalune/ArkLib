@@ -69,8 +69,42 @@ theorem finrank_dualAnnihilator_frameSpan {v : ι → V} (hv : IsMDSFrame K v)
   rw [finrank_frameSpan hv hJ] at hadd
   omega
 
+/-! ## The `L = 1` case: the MDS minimum-distance bound, via the squeeze -/
+
+/-- Under an MDS frame, a `≥ k`-column span is everything. -/
+theorem frameSpan_eq_top_of_card_ge {v : ι → V} (hv : IsMDSFrame K v) {J : Finset ι}
+    (hJ : finrank K V ≤ J.card) : frameSpan K v J = ⊤ := by
+  classical
+  obtain ⟨J', hJ'sub, hJ'card⟩ := Finset.exists_subset_card_eq hJ
+  have hsub : frameSpan K v J' ≤ frameSpan K v J :=
+    Submodule.span_mono (Set.image_mono (by exact_mod_cast hJ'sub))
+  have htop : frameSpan K v J' = ⊤ :=
+    Submodule.eq_top_of_finrank_eq (by rw [finrank_frameSpan hv (by omega), hJ'card])
+  exact top_le_iff.mp (htop ▸ hsub)
+
+/-- **The MDS minimum-distance bound, derived through the higher-order-MDS dual squeeze.**
+Two *distinct* message functionals agree on at most `k − 1` coordinates (codeword
+Hamming distance `≥ n − k + 1`).  This is the `L = 1` (unique-decoding) case of the BGM
+list argument: the difference is squeezed into the dual annihilator of the agreement
+column-span, which collapses to `0` once the agreement reaches `k`. -/
+theorem messages_agree_card_lt_of_ne {v : ι → V} (hv : IsMDSFrame K v)
+    {m m' : Module.Dual K V} (hne : m ≠ m') :
+    (Finset.univ.filter (fun ζ => m (v ζ) = m' (v ζ))).card < finrank K V := by
+  classical
+  by_contra hge
+  push_neg at hge
+  set J := Finset.univ.filter (fun ζ => m (v ζ) = m' (v ζ)) with hJ
+  have hmem : (m - m') ∈ (frameSpan K v J).dualAnnihilator :=
+    diff_mem_dualAnnihilator K v (y := fun ζ => m' (v ζ))
+      (fun ζ hζ => (Finset.mem_filter.mp hζ).2) (fun _ _ => rfl)
+  rw [frameSpan_eq_top_of_card_ge hv hge, Submodule.dualAnnihilator_top,
+    Submodule.mem_bot] at hmem
+  exact hne (sub_eq_zero.mp hmem)
+
 end ArkLib.HigherOrderMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.HigherOrderMDS.diff_mem_dualAnnihilator
 #print axioms ArkLib.HigherOrderMDS.finrank_dualAnnihilator_frameSpan
+#print axioms ArkLib.HigherOrderMDS.frameSpan_eq_top_of_card_ge
+#print axioms ArkLib.HigherOrderMDS.messages_agree_card_lt_of_ne
