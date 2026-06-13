@@ -124,7 +124,20 @@ threshold constant. The δ* core and B4 are blocked — only touch them when new
 2. **The bad-side family**: a stack with > q·2⁻¹²⁸ bad scalars at some δ < 1 — every
    landed family is O(n)/q (silent at production budget).
 3. **Sub-√q incomplete character sums** over smooth multiplicative subgroups
-   (per-frequency; the average is already √|G|).
+   (per-frequency; the average is already √|G|). **[CHARACTERIZED 2026-06-13 — read first:**
+   `docs/references/proximity-gap-paley-spectrum/README.md` + memory `issue389-gauss-sum-reformulation`,
+   `issue389-paley-graph-dictionary`.] The object `B = max_{b≠0}‖η_b‖`, `η_b=Σ_{y∈μ_n}ψ(by)`, IS the
+   non-principal eigenvalue of the **generalized Paley graph** `Cay(F_q,μ_n)` (Liu–Zhou Thm 115);
+   `B≤2√n ⟺ Ramanujan` = the **Paley Graph Conjecture** (open; best PROVEN is BGK `n^{1-o(1)}`, HBK
+   vacuous below `q^{1/3}`). TWO axiom-clean named-conditional bridges land it: `GeneralizedPaleyRamanujan.lean`
+   (`‖η_b‖≤2√n ⟹ WorstCaseIncompleteSumBound`) and `GaussPeriodMomentBound.lean` (the **moment method**:
+   `GaussianEnergyBound G r := E_r(μ_n)≤(2r-1)‼·n^r` ⟹ `‖η_b‖^{2r}≤q(2r-1)‼n^r` ⟹ `WorstCaseIncompleteSumBound`
+   at `M_r`; min over `r≈ln q` gives `B≤√(2n ln q)`). The energy input `E_r(μ_n)≤(2r-1)‼n^r` is **PROVEN in
+   char-0** (Lam–Leung: vanishing 2-power-root sums = negation pairs; union bound over the `(2r-1)‼` matchings;
+   not yet Lean-formalized — Mathlib lacks Lam–Leung). **THE open residual = the char-`p` transfer** of that
+   char-0 bound to `r≈ln q`: proven for `n<2log q/loglog q≈40` (norm bound `q>(2r)^{n/2}`), OPEN for the prize
+   `n=2^30` (whether short `≤2ln q`-term `±1`-relations of `2^μ`-th roots vanish mod the prize prime). Same wall
+   as faces 3↔4 and the additive-energy CRUX, now stated as ONE cited Prop (`GaussianEnergyBound`).
 4. **Line–ball incidence** (`epsMCA_ge_far_incidence`): max incidence of an affine
    line with far-coset direction against the weight-⌊δn⌋ syndrome ball in F_q^{n−k}.
    The explosion-band dichotomy (far cosets: every explainable scalar is bad;
