@@ -1,7 +1,7 @@
 {
  "summary": {
-  "total": 91,
-  "open": 47,
+  "total": 93,
+  "open": 49,
   "discharged": 43,
   "refuted": 1,
   "by_top_dir": {
@@ -12,8 +12,8 @@
     "refuted": 0
    },
    "Data": {
-    "total": 24,
-    "open": 17,
+    "total": 26,
+    "open": 19,
     "discharged": 7,
     "refuted": 0
    },
@@ -287,7 +287,19 @@
    "fq_name": "ProximityGap.GKL24MaxCorrStrictWitnessCoverResidual",
    "file": "ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean",
    "line": 1309,
-   "providers": [],
+   "providers": [
+    {
+     "name": "ProximityGap.GKL24MaxCorrStrictWitnessCoverResidual_of_subset_cover",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/Connections/GKL24SunflowerCore.lean",
+     "line": 204,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hcover"
+     ],
+     "ambiguous_name_match": false
+    }
+   ],
    "status": "open"
   },
   {
@@ -1597,6 +1609,46 @@
    "status": "open"
   },
   {
+   "name": "SubJohnsonSupplyResidual",
+   "fq_name": "ProximityGap.Ownership.SubJohnsonSupplyResidual",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/JohnsonSplitSupply.lean",
+   "line": 258,
+   "providers": [
+    {
+     "name": "ProximityGap.Ownership.subJohnsonSupplyResidual_pairCount",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/JohnsonSplitSupply.lean",
+     "line": 268,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hk"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "ProximityGap.Ownership.subJohnsonSupplyResidual_above_johnson",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/JohnsonSplitSupply.lean",
+     "line": 288,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hgap",
+      "hk"
+     ],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "open"
+  },
+  {
+   "name": "SubJohnsonListResidual",
+   "fq_name": "ProximityGap.Ownership.SubJohnsonListResidual",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/SubJohnsonListSupply.lean",
+   "line": 76,
+   "providers": [],
+   "status": "open"
+  },
+  {
    "name": "reductionAppendCompletenessResidual",
    "fq_name": "Reduction.reductionAppendCompletenessResidual",
    "file": "ArkLib/OracleReduction/Composition/Sequential/Append.lean",
@@ -1719,6 +1771,20 @@
      "extra_explicit_binders": [
       "hDir",
       "hDir₂",
+      "himplNF",
+      "himplSP",
+      "himplVB",
+      "hn"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "Verifier.appendSoundnessResidual_total_pos",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessTotal.lean",
+     "line": 85,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
       "himplNF",
       "himplSP",
       "himplVB",
@@ -1961,6 +2027,36 @@
      "extra_explicit_binders": [
       "hDir",
       "hDir₂",
+      "himplNF",
+      "himplSP",
+      "himplVB",
+      "hn"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "OracleVerifier.appendSoundnessResidual_challenge",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessTotal.lean",
+     "line": 157,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hDir",
+      "hDir₂",
+      "himplNF",
+      "himplSP",
+      "himplVB",
+      "hn"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "OracleVerifier.appendSoundnessResidual_total_pos",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessTotal.lean",
+     "line": 211,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
       "himplNF",
       "himplSP",
       "himplVB",
@@ -4111,6 +4207,22 @@
    "file": "ArkLib/Data/CodingTheory/ProximityGap/MCAConjectureRefutation.lean",
    "line": 120,
    "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "residual",
+   "fq_name": "ProximityGap.Ownership.residual",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/OwnershipBound.lean",
+   "line": 48,
+   "reason": "name does not end in `Residual`"
+  },
+  {
+   "name": "w2Residual",
+   "fq_name": "ProximityGap.WBPencil.w2Residual",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/W2WindowHalfCount.lean",
+   "line": 43,
+   "reason": "result type is `F[X]`, not `Prop`"
   },
   {
    "name": "Lemma5_12HonestResidualPaper",

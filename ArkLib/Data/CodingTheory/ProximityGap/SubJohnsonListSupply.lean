@@ -67,6 +67,15 @@ def SubJohnsonListBound (dom : Fin n ↪ F) (k m L A : ℕ) : Prop :=
     (bigAgreeCodewords dom k m w).card ≤ L
       ∧ ∀ c ∈ bigAgreeCodewords dom k m w, (listAgreeSet c w).card ≤ A
 
+/-- **Census-tracked alias of the open core of #389** (the named-residual
+convention).  Definitionally `SubJohnsonListBound`; surfaced under the `…Residual`
+name so the canonical residual census tracks it.  It is *conditionally discharged
+above the Johnson radius* (`SubJohnsonListDischarge.subJohnsonListBound_aboveJohnson`)
+and stays the single explicit open obligation in the strictly sub-Johnson band — the
+recognized 25-year explicit-RS-beyond-Johnson problem. -/
+def SubJohnsonListResidual (dom : Fin n ↪ F) (k m L A : ℕ) : Prop :=
+  SubJohnsonListBound dom k m L A
+
 open Classical in
 /-- **Uniqueness of the explaining codeword.**  Two degree-`<k` codewords agreeing
 with `w` on a `(k+m+1)`-core coincide (they agree on `k+m+1 > k−1` points). -/
