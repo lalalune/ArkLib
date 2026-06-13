@@ -66,3 +66,42 @@ theorem nnnorm_prod_eval_cyclotomic_roots_le (n : ℕ) (g : ℂ[X])
     _ ≤ 4 ^ (((cyclotomic n ℂ).roots.map g.eval).map (‖·‖₊)).card :=
         Multiset.prod_le_pow_card _ 4 hb
     _ = 4 ^ n.totient := by rw [Multiset.card_map, Multiset.card_map, hcard]
+
+/-- A concrete four-term parallelogram polynomial has norm at most `4` on every nonzero-order
+root of unity. This discharges the side condition of
+`nnnorm_prod_eval_cyclotomic_roots_le` for `X^i + X^j - X^k - X^l`. -/
+theorem fourTerm_eval_nnnorm_le_four {n i j k l : ℕ} (hn : n ≠ 0) {ω : ℂ}
+    (hω : ω ^ n = 1) :
+    ‖((X ^ i + X ^ j - X ^ k - X ^ l : ℂ[X]).eval ω)‖₊ ≤ 4 := by
+  have hnormω : ‖ω‖ = 1 := Complex.norm_eq_one_of_pow_eq_one hω hn
+  have hi : ‖ω ^ i‖ = 1 := by rw [norm_pow, hnormω, one_pow]
+  have hj : ‖ω ^ j‖ = 1 := by rw [norm_pow, hnormω, one_pow]
+  have hk : ‖ω ^ k‖ = 1 := by rw [norm_pow, hnormω, one_pow]
+  have hl : ‖ω ^ l‖ = 1 := by rw [norm_pow, hnormω, one_pow]
+  have hreal : ‖ω ^ i + ω ^ j - ω ^ k - ω ^ l‖ ≤ (4 : ℝ) := by
+    calc ‖ω ^ i + ω ^ j - ω ^ k - ω ^ l‖
+        = ‖(ω ^ i + ω ^ j) - (ω ^ k + ω ^ l)‖ := by ring_nf
+      _ ≤ ‖ω ^ i + ω ^ j‖ + ‖ω ^ k + ω ^ l‖ := norm_sub_le _ _
+      _ ≤ (‖ω ^ i‖ + ‖ω ^ j‖) + (‖ω ^ k‖ + ‖ω ^ l‖) :=
+            add_le_add (norm_add_le _ _) (norm_add_le _ _)
+      _ = 4 := by rw [hi, hj, hk, hl]; norm_num
+  have heval :
+      ((X ^ i + X ^ j - X ^ k - X ^ l : ℂ[X]).eval ω)
+        = ω ^ i + ω ^ j - ω ^ k - ω ^ l := by simp
+  rw [heval]
+  exact_mod_cast hreal
+
+/-- The archimedean product bound specialized to the actual four-term `±1` parallelogram
+polynomial used in the small-subgroup Sidon lift. -/
+theorem nnnorm_prod_eval_cyclotomic_roots_fourTerm_le (n i j k l : ℕ) (hn : n ≠ 0) :
+    ‖((cyclotomic n ℂ).roots.map
+        (fun ω => ((X ^ i + X ^ j - X ^ k - X ^ l : ℂ[X]).eval ω))).prod‖₊
+      ≤ 4 ^ n.totient := by
+  simpa using
+    nnnorm_prod_eval_cyclotomic_roots_le n
+      (X ^ i + X ^ j - X ^ k - X ^ l : ℂ[X])
+      (fun ω hω => fourTerm_eval_nnnorm_le_four hn hω)
+
+/-! ## Axiom audit -/
+#print axioms fourTerm_eval_nnnorm_le_four
+#print axioms nnnorm_prod_eval_cyclotomic_roots_fourTerm_le
