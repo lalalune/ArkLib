@@ -33,8 +33,10 @@ You are formalizing residuals around the **Ethereum Proximity Prize** ([ABF26], 
 list-decoding threshold `δ*` for explicit smooth-domain Reed–Solomon codes in the window
 `(1−√ρ, 1−ρ−Θ(1/log n))` at `ε* = 2^-128` — is **genuine open research, blocked on the
 literature** (no known technique bridges Johnson→capacity for explicit fixed RS codes).
-**Do not fabricate a closure of the open core.** Predecessors #232, #334, #357 are
-CLOSED (each distilled into the successor); see §3.5 for the current state.
+Propose bold closed-form `δ*` conjectures and attack the core freely — just **don't *claim* a
+closure is *proven* when its input is unresolved** (see the §6 contract: bold in exploration,
+strict only in proof-claims). Predecessors #232, #334, #357 are CLOSED (each distilled into the
+successor); see §3.5 for the current state.
 
 ## 1. ⚡ BUILD — read this FIRST or you will clog the machine
 
@@ -124,7 +126,20 @@ threshold constant. The δ* core and B4 are blocked — only touch them when new
 2. **The bad-side family**: a stack with > q·2⁻¹²⁸ bad scalars at some δ < 1 — every
    landed family is O(n)/q (silent at production budget).
 3. **Sub-√q incomplete character sums** over smooth multiplicative subgroups
-   (per-frequency; the average is already √|G|).
+   (per-frequency; the average is already √|G|). **[CHARACTERIZED 2026-06-13 — read first:**
+   `docs/references/proximity-gap-paley-spectrum/README.md` + memory `issue389-gauss-sum-reformulation`,
+   `issue389-paley-graph-dictionary`.] The object `B = max_{b≠0}‖η_b‖`, `η_b=Σ_{y∈μ_n}ψ(by)`, IS the
+   non-principal eigenvalue of the **generalized Paley graph** `Cay(F_q,μ_n)` (Liu–Zhou Thm 115);
+   `B≤2√n ⟺ Ramanujan` = the **Paley Graph Conjecture** (open; best PROVEN is BGK `n^{1-o(1)}`, HBK
+   vacuous below `q^{1/3}`). TWO axiom-clean named-conditional bridges land it: `GeneralizedPaleyRamanujan.lean`
+   (`‖η_b‖≤2√n ⟹ WorstCaseIncompleteSumBound`) and `GaussPeriodMomentBound.lean` (the **moment method**:
+   `GaussianEnergyBound G r := E_r(μ_n)≤(2r-1)‼·n^r` ⟹ `‖η_b‖^{2r}≤q(2r-1)‼n^r` ⟹ `WorstCaseIncompleteSumBound`
+   at `M_r`; min over `r≈ln q` gives `B≤√(2n ln q)`). The energy input `E_r(μ_n)≤(2r-1)‼n^r` is **PROVEN in
+   char-0** (Lam–Leung: vanishing 2-power-root sums = negation pairs; union bound over the `(2r-1)‼` matchings;
+   not yet Lean-formalized — Mathlib lacks Lam–Leung). **THE open residual = the char-`p` transfer** of that
+   char-0 bound to `r≈ln q`: proven for `n<2log q/loglog q≈40` (norm bound `q>(2r)^{n/2}`), OPEN for the prize
+   `n=2^30` (whether short `≤2ln q`-term `±1`-relations of `2^μ`-th roots vanish mod the prize prime). Same wall
+   as faces 3↔4 and the additive-energy CRUX, now stated as ONE cited Prop (`GaussianEnergyBound`).
 4. **Line–ball incidence** (`epsMCA_ge_far_incidence`): max incidence of an affine
    line with far-coset direction against the weight-⌊δn⌋ syndrome ball in F_q^{n−k}.
    The explosion-band dichotomy (far cosets: every explainable scalar is bad;
@@ -161,16 +176,36 @@ The bracket engine (everything routes through `mcaDeltaStar`):
 If a needed paper is absent, append a row to `/PAPERS_NEEDED.md` with the DOI/ePrint id and
 leave the dependent residual as an explicit named hypothesis — never guess the statement.
 
-## 6. The honesty contract (non-negotiable; the whole project depends on it)
+## 6. The honesty contract (be BOLD in exploration, STRICT in claims)
 
-- **No `sorry`/`admit`/`native_decide`/fabricated `axiom`.** The fast script's axiom audit
-  must show only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
-- **A false statement gets a machine-checked countermodel**, then stays documented-refuted
-  (tier-b), e.g. `Lemma5_8EagerBirthdayResidual`, the `*_REFUTED` bricks. Do not "prove" them.
-- **The open core (δ*, B4) stays an explicit named `Prop`/hypothesis** until literature lands.
-  Naming an obligation and proving it elsewhere (`*_holds`/`*_of_*`) is the project's modularity
-  convention — see the generated `/docs/wiki/residual-census.md` ledger before treating a
-  `*Residual` name as incomplete.
+The contract governs **two different axes** — be maximally liberal on the first, strictly
+conservative only on the second. They are not in tension; conflating them is what stalls the work.
+
+**(A) EXPLORATION — be bold, creative, and liberal.** Conjectures are *encouraged*, including ones
+that may well be false. Invent novel routes, propose closed-form `δ*` formulas, state speculative
+laws, attempt the open core directly, follow analogies from other fields. **You do NOT need to know
+a conjecture is true before stating and attacking it** — that is the whole method (propose → try to
+refute → if it survives, try to prove). A conjecture that turns out false is a *successful* grind
+iteration, not a violation. Label such things clearly as `conjecture`/`Conjecture`/`def … : Prop`
+(a named hypothesis) or a `docs/kb` note, give them honest novelty/feasibility scores, and explore
+freely. Speculative `docs/kb` writeups and `scripts/probes` numerics need no proof at all.
+
+**(B) PROOF CLAIMS — be strict; this is the only non-negotiable.** The discipline applies *only* to
+what you assert is **proven**:
+- **No `sorry`/`admit`/`native_decide`/fabricated `axiom` inside a theorem you present as proved.**
+  The fast script's axiom audit must show only `[propext, Classical.choice, Quot.sound]` (no
+  `sorryAx`). (A `sorry`-stubbed *work-in-progress*, clearly labeled as not-yet-proved, is fine —
+  just never call it proven or commit it as "axiom-clean".)
+- **Do not claim the open core is closed when it is not.** Stating a closed-form `δ*` *as a
+  conjecture* (with the open input named) is encouraged (A); claiming `δ* = …` is *a theorem* with
+  the open input silently discharged by a vacuous hypothesis or hidden `sorry` is the one forbidden
+  move. The open core may live as an explicit named `Prop`/hypothesis indefinitely; naming an
+  obligation and proving it elsewhere (`*_holds`/`*_of_*`) is the project's modularity convention
+  (see `/docs/wiki/residual-census.md` before treating a `*Residual` as incomplete).
+- **A statement found false gets a machine-checked countermodel** (`*_REFUTED`), then stays
+  documented-refuted (tier-b) — don't "prove" it. (Finding the countermodel is good work.)
+
+**One-line rule:** *explore anything; only the word "proven" (and an axiom-clean build) is sacred.*
 
 ## 7. Common pitfalls (each has cost a real debugging session)
 

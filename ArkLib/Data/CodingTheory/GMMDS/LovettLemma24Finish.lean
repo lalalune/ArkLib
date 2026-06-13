@@ -119,6 +119,36 @@ theorem lovettHolds_of_tight_of_spanTransfer {m : ℕ} {V : Fin m → (Fin n →
   htransfer V k I hI hk hV htight hlo hhi
     (lovettHolds_replaceMeetFin hI hk hV htight hlo IHm)
 
+/-! ## The corrected (dischargeable) span-transfer residual
+
+The bare `Lemma24SpanTransfer` above is **not provable as stated**: from `P(k,V')` independent
+alone one cannot recover `P(k,V)` independent, because the equal-span step needs the *reverse*
+inclusion `span (meet block) ⊆ span (I-block)`, which is a dimension-count requiring the
+**`I`-block itself to be independent** (`span_eq_of_le_of_card_of_indep` in [[LovettCounting]]).
+The forward inclusion `span (I-block) ⊆ span (meet block)` is unconditional
+(`pFamUnion_I_mem_span_meetBlock` in [[LovettBlockDim]]), and the meet block is independent
+(`pFam_single_linearIndependent`), but the `I`-block independence is genuine extra input.
+
+At the real call site it is available: the `I`-subsystem `V ∘ (I ↪ Fin m)` is `V*(k)`
+(`isVStar_comp`) over the same `(n, k)` with measure `d(I) = Σ_{i∈I}(k−|vᵢ|) = k−|v_I|` (tightness)
+which is `< lovettD V k` (since `|I| < m` leaves at least one surviving block of size `≥ 1`), so the
+`d`-induction hypothesis `IHd` of the master frame applies and gives the `I`-block independent.
+
+`Lemma24SpanTransferWithIBlock` records this corrected residual (threading the `I`-block
+independence as an explicit hypothesis).  It is TRUE and dischargeable from the span bricks; the
+only remaining plumbing is the range-decomposition of `pFamUnion V` / `pFamUnion V'` into the
+shared non-`I` blocks plus the `I`-block / meet-block, matching the `Fin m` and `Fin 1 ⊕ {i∉I}`
+index structures. -/
+def Lemma24SpanTransferWithIBlock (F : Type*) [Field F] : Prop :=
+  ∀ {n m : ℕ} (V : Fin m → (Fin n → ℕ)) (k : ℕ) (I : Finset (Fin m)) (hI : I.Nonempty),
+    1 ≤ k → IsVStar V k → tightConstraint V k I hI → 1 < I.card → I.card < m →
+    -- the I-block (subfamily over i ∈ I) is independent (from IHd at the call site):
+    LinearIndependent (MvPolynomial (Fin n) F)
+      (fun p : Σ i : {i // i ∈ I}, Fin (k - vAbs (V i.1)) =>
+        pFam (F := F) (V p.1.1) (p.2 : ℕ)) →
+    LovettHolds F (replaceMeetFin V I hI) k →
+    LovettHolds F V k
+
 end ArkLib.GMMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)

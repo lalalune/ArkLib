@@ -114,4 +114,67 @@ theorem youngDiagram_removeRimHook_le_no2x2 {B B' : Finset ℕ} {n hsz : ℕ}
     omega
   · rw [rowLen_youngDiagramOfBeta_zero hB (i + 1) hi1]; exact Nat.zero_le _
 
+/-- A skew shape `ν/μ` is a **border strip** (rim hook): contained, nonempty, `2×2`-free, and
+connected (consecutive occupied rows overlap in exactly one column — the ladder). -/
+def IsBorderStrip (μ ν : YoungDiagram) : Prop :=
+  μ ≤ ν ∧ μ ≠ ν ∧ (¬ Has2x2 μ ν) ∧
+    ∀ i, μ.rowLen i < ν.rowLen i → μ.rowLen (i + 1) < ν.rowLen (i + 1) →
+      ν.rowLen (i + 1) = μ.rowLen i + 1
+
+/-- **The full geometric James–Kerber theorem.** A single abacus rim-hook removal `B → B'` produces
+a genuine border strip `YD(B') / YD(B)`: contained, nonempty, `2×2`-free, and connected. -/
+theorem youngDiagram_removeRimHook_isBorderStrip {B B' : Finset ℕ} {n hsz : ℕ}
+    (hB : B.card = n) (hstep : RemovesRimHook B B' hsz)
+    (hne : youngDiagramOfBeta (show B'.card = n from (card_removeRimHook hstep).trans hB)
+        ≠ youngDiagramOfBeta hB) :
+    IsBorderStrip (youngDiagramOfBeta (show B'.card = n from (card_removeRimHook hstep).trans hB))
+        (youngDiagramOfBeta hB) := by
+  have hB' : B'.card = n := (card_removeRimHook hstep).trans hB
+  obtain ⟨hle, hno2⟩ := youngDiagram_removeRimHook_le_no2x2 hB hstep
+  refine ⟨hle, hne, hno2, ?_⟩
+  intro i hocci hocci1
+  have hi1 : i + 1 < n := by
+    by_contra hcon; push Not at hcon
+    rw [rowLen_youngDiagramOfBeta_zero hB' (i + 1) (by omega),
+      rowLen_youngDiagramOfBeta_zero hB (i + 1) (by omega)] at hocci1
+    omega
+  have hi : i < n := by omega
+  -- value-equality: order stat at Fin.rev = order stat at explicit reversed index
+  have cv : ∀ (s : Finset ℕ) (hs : s.card = n) (a b : ℕ) (ha : a < n) (hb : b < n),
+      (Fin.rev ⟨a, ha⟩ : Fin n).val = b →
+      s.orderEmbOfFin hs (Fin.rev ⟨a, ha⟩) = s.orderEmbOfFin hs ⟨b, hb⟩ :=
+    fun s hs a b ha hb hval => congrArg _ (Fin.ext hval)
+  -- rewrite goal + hyps to explicit indices n-1-i and n-1-(i+1)
+  rw [rowLen_youngDiagramOfBeta hB (i + 1) hi1, rowLen_youngDiagramOfBeta hB' i hi,
+    cv B hB (i + 1) (n - 1 - (i + 1)) hi1 (by omega) (by simp only [Fin.val_rev]; omega),
+    cv B' hB' i (n - 1 - i) hi (by omega) (by simp only [Fin.val_rev]; omega)]
+  rw [rowLen_youngDiagramOfBeta hB' i hi, rowLen_youngDiagramOfBeta hB i hi,
+    cv B' hB' i (n - 1 - i) hi (by omega) (by simp only [Fin.val_rev]; omega),
+    cv B hB i (n - 1 - i) hi (by omega) (by simp only [Fin.val_rev]; omega)] at hocci
+  rw [rowLen_youngDiagramOfBeta hB' (i + 1) hi1, rowLen_youngDiagramOfBeta hB (i + 1) hi1,
+    cv B' hB' (i + 1) (n - 1 - (i + 1)) hi1 (by omega) (by simp only [Fin.val_rev]; omega),
+    cv B hB (i + 1) (n - 1 - (i + 1)) hi1 (by omega) (by simp only [Fin.val_rev]; omega)] at hocci1
+  -- lower bounds
+  have lb1 : n - 1 - i ≤ B'.orderEmbOfFin hB' ⟨n - 1 - i, by omega⟩ := orderEmbOfFin_le hB' _ (by omega)
+  have lb2 : n - 1 - i ≤ B.orderEmbOfFin hB ⟨n - 1 - i, by omega⟩ := orderEmbOfFin_le hB _ (by omega)
+  have lb3 : n - 1 - (i+1) ≤ B'.orderEmbOfFin hB' ⟨n - 1 - (i+1), by omega⟩ := orderEmbOfFin_le hB' _ (by omega)
+  have lb4 : n - 1 - (i+1) ≤ B.orderEmbOfFin hB ⟨n - 1 - (i+1), by omega⟩ := orderEmbOfFin_le hB _ (by omega)
+  -- apply the ladder at k = ⟨n-1-i⟩
+  have hk1 : 1 ≤ (⟨n - 1 - i, by omega⟩ : Fin n).val := by simp only [Fin.val_mk]; omega
+  have hock : B'.orderEmbOfFin hB' ⟨n - 1 - i, by omega⟩ < B.orderEmbOfFin hB ⟨n - 1 - i, by omega⟩ := by
+    omega
+  have hveB' : B'.orderEmbOfFin hB' ⟨(⟨n - 1 - i, by omega⟩ : Fin n).val - 1, by omega⟩
+      = B'.orderEmbOfFin hB' ⟨n - 1 - (i + 1), by omega⟩ :=
+    congrArg _ (Fin.ext (by simp only [Fin.val_mk]; omega))
+  have hveB : B.orderEmbOfFin hB ⟨(⟨n - 1 - i, by omega⟩ : Fin n).val - 1, by omega⟩
+      = B.orderEmbOfFin hB ⟨n - 1 - (i + 1), by omega⟩ :=
+    congrArg _ (Fin.ext (by simp only [Fin.val_mk]; omega))
+  have hock1 : B'.orderEmbOfFin hB' ⟨(⟨n - 1 - i, by omega⟩ : Fin n).val - 1, by omega⟩
+      < B.orderEmbOfFin hB ⟨(⟨n - 1 - i, by omega⟩ : Fin n).val - 1, by omega⟩ := by
+    rw [hveB', hveB]; omega
+  have hlad := orderEmbOfFin_ladder hstep hB hB'
+    ⟨n - 1 - i, by omega⟩ hk1 hock hock1
+  rw [hveB] at hlad
+  omega
+
 end ArkLib.ProximityGap.RimHookBorderStrip

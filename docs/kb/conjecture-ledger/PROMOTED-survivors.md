@@ -126,3 +126,38 @@ Probe: `scripts/probes/probe_conj_zerosum.py`. Verified n∈{3..16,25}, k=2..5.
 - Open direction (noted, not promoted): general `Z_k(μ_n)` for composite `k` / mixed `n` = a SUM over
   partitions of `k` into prime-coset-relations weighted by the divisors of `n` (the full vanishing-sum
   inclusion–exclusion). Z_5(μ_6)=360, Z_4(μ_6)=90 etc. are the mixed cases. Promoted: +4 (running ≈ 14).
+
+## Theme F/G — the shifted subgroup 1+μ_n: GV rep bound via two circles (PRIZE-RELEVANT)
+
+Probes: `scripts/probes/probe_conj_nthpower.py`, `probe_conj_gvrep_twocircles.py`. n=3..59.
+
+- **F (REFUTED — recorded).** "1+μ_n is multiplicatively Sidon (multE=2m²−m)" — TRUE numerically but
+  NOT special: over a huge field (p~n⁶) EVERY size-m set is multiplicatively Sidon (no coincidences).
+  Refuted as generic (like the earlier generic-Sidon E_3 kill). The non-trivial object is the n-th power.
+- **G (GV rep bound over ℂ, two-circles proof — PROVED, novel, prize-relevant).** The fiber map
+  `ζ ↦ (1+ζ)^n` on μ_n is at most **2-to-1**: `max_c repCount(c) ≤ 2` (the García–Voloch rep bound),
+  and the fiber energy `M2(μ_n) := #{(x,y)∈μ_n² : (1+x)^n=(1+y)^n} = 2n−1` (odd) / `2n−2` (even).
+  Verified maxfiber=2 and M2 closed form for ALL n=3..59.
+  **Proof (geometric):** `1+μ_n` lies on the circle `C₁ = {|z−1|=1}`; the n-th roots of a value `v`
+  lie on `C₂ = {|z|=|v|^{1/n}}`. Two distinct circles intersect in ≤2 points, so at most 2 elements of
+  `1+μ_n` are n-th roots of `v` ⇒ fiber ≤ 2. ∎  (Connects to: E⁺(μ_n)=n·M2 holds for ODD n —
+  n(2n−1)=2n²−n ✓ — the RepCountFiber link, but breaks for even n where antipodal structure differs.)
+  **Prize relevance:** r(c)≤2 over ℂ is the "split regime" GV condition; the OPEN deployed prize is
+  the transfer of this bound to small p (p~n⁴), where bad primes (the energy P_max) may break it.
+  The ℂ version here is the clean provable base case. Promoted: G (+1); F refuted. Running ≈ 15.
+
+## Theme H/E5 — norm moments & the even-n zero-sum symmetry
+
+Probe: `scripts/probes/probe_conj_norm_moments.py`.
+
+- **H (PROVED; moderate novelty — exact-quadrature flavor).** Over ℂ, for `k < n`:
+    `Σ_{ζ∈μ_n} |1+ζ|^{2k} = n·C(2k,k)` (the central binomial = the 2k-th moment of `|1+e^{iθ}|`).
+  Proof: `|1+ζ|² = 2+ζ+ζ⁻¹`; expand `(2+ζ+ζ⁻¹)^k`, only exponent-0 terms survive `Σ_ζ` for k<n
+  (root-of-unity filter / exactness of n-point quadrature for trig-poly degree <n), giving the constant
+  term `Σ_j C(k,j)2^{k-j}... = C(2k,k)`, times n. Verified n=5,7,11, k=1..4. Links to the in-tree
+  `TwoElementEnergy` `E_r({1,−1})=C(2r,r)` (same central binomial — the |1+ζ| ↔ {1,−1} correspondence).
+- **E5 (PROVED; corollary).** For EVEN `n` (where `−μ_n = μ_n`): `Z_{2r}(μ_n) = E_r(μ_n)`.
+  Proof: negate `r` of the `2r` summands; the bijection `(a₁..a_r,b₁..b_r)↦(a₁..a_r,−b₁..−b_r)` maps
+  `{Σa=Σb}` (E_r) onto `{Σ(2r terms)=0}` (Z_{2r}). Verified n=4,6,8,12,16, r=2,3. (So all even-n higher
+  zero-sums reduce to the energies of A1/B3/D — closing the even branch of the zero-sum theorem E.)
+  Promoted: +2 (running ≈ 17). Novelty flags: H = clean but classical-quadrature; E5 = negation corollary.

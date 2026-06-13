@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 # Lovett's GM-MDS proof: the basis-counting transfer (#389)
@@ -56,7 +57,33 @@ theorem linearIndependent_of_span_eq_card {ι' : Type*} [Fintype ι']
     unfold Set.finrank; rw [hspan]
   rw [hfr, ← h', hcard]
 
+/-- **Reverse-direction span equality (the dimension-counting core of Lemma 2.4).**  Over a field,
+if `g` and `g'` are both linearly independent finite families with `span g ≤ span g'` and equal
+index cardinality, then their spans are **equal**.  (Both spans are finite-dimensional of the same
+dimension `|ι| = |ι'|`, and one is contained in the other.)
+
+This is the half of the equal-span transfer that the forward inclusion alone cannot give: it
+requires `g` (the `I`-block) to *also* be independent — the genuine extra input of Lovett's Lemma
+2.4, supplied in the proof by the independence of the `I`-subsystem. -/
+theorem span_eq_of_le_of_card_of_indep {ι' : Type*} [Fintype ι']
+    {g : ι → V} {g' : ι' → V}
+    (hle : Submodule.span K (Set.range g) ≤ Submodule.span K (Set.range g'))
+    (hcard : Fintype.card ι = Fintype.card ι')
+    (hg : LinearIndependent K g) (hg' : LinearIndependent K g') :
+    Submodule.span K (Set.range g) = Submodule.span K (Set.range g') := by
+  classical
+  haveI : FiniteDimensional K (Submodule.span K (Set.range g')) :=
+    FiniteDimensional.span_of_finite K (Set.finite_range g')
+  refine Submodule.eq_of_le_of_finrank_le hle ?_
+  -- goal: finrank (span g') ≤ finrank (span g)
+  have hg_fr : Module.finrank K (Submodule.span K (Set.range g)) = Fintype.card ι :=
+    finrank_span_eq_card hg
+  have hg'_fr : Module.finrank K (Submodule.span K (Set.range g')) = Fintype.card ι' :=
+    finrank_span_eq_card hg'
+  rw [hg_fr, hg'_fr, hcard]
+
 end ArkLib.GMMDS
 
 #print axioms ArkLib.GMMDS.linearIndependent_of_span_eq
 #print axioms ArkLib.GMMDS.linearIndependent_of_span_eq_card
+#print axioms ArkLib.GMMDS.span_eq_of_le_of_card_of_indep
