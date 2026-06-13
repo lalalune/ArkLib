@@ -122,8 +122,37 @@ theorem iInf_eq_bot_of_generic {ι : Type*} [Fintype ι] [DecidableEq ι]
   rw [hc] at h
   omega
 
+/-! ## Failure detectors (the negative direction)
+
+To certify a configuration is **not** higher-order MDS — the direction the explicit
+smooth-domain RS sub-Johnson list-size question turns on (a super-polynomial
+sub-Johnson list is exactly an unexpectedly non-transversal agreement configuration) —
+it suffices to exhibit an intersection *larger* than the codimension budget permits. -/
+
+/-- **Non-generic-intersection detector.**  If the codimension budget saturates
+(`dim V ≤ Σ codim`) yet the intersection is *nonzero*, the configuration is **not**
+in generic position — a higher-order-MDS *failure* witness.  (Contrapositive of
+`iInf_eq_bot_of_generic`.) -/
+theorem not_generic_of_iInf_ne_bot {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {W : ι → Submodule K V} (hbudget : finrank K V ≤ ∑ i, codim (W i))
+    (hne : (⨅ i, W i) ≠ ⊥) : ¬ IsGenericInter W := by
+  intro hgen
+  exact hne (Submodule.finrank_eq_zero.mp (iInf_eq_bot_of_generic hgen hbudget))
+
+/-- **Quantitative failure detector.**  If `finrank(⋂)` exceeds the generic value
+`dim V − Σ codim`, the configuration is not generic; the excess is the *defect*. -/
+theorem not_generic_of_finrank_iInf_gt {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {W : ι → Submodule K V} (hbudget : ∑ i, codim (W i) ≤ finrank K V)
+    (hgt : finrank K V - ∑ i, codim (W i) < finrank K ↥(⨅ i, W i)) :
+    ¬ IsGenericInter W := by
+  intro hgen
+  have heq := finrank_iInf_of_generic hgen hbudget
+  omega
+
 end ArkLib.HigherOrderMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.HigherOrderMDS.codim_iInf_le
 #print axioms ArkLib.HigherOrderMDS.finrank_iInf_of_generic
+#print axioms ArkLib.HigherOrderMDS.not_generic_of_iInf_ne_bot
+#print axioms ArkLib.HigherOrderMDS.not_generic_of_finrank_iInf_gt
