@@ -8,6 +8,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettMeetReplace
 import ArkLib.Data.CodingTheory.GMMDS.LovettCounting
 import ArkLib.Data.CodingTheory.GMMDS.LovettBaseCase
 import ArkLib.Data.CodingTheory.GMMDS.LovettFractionField
+import ArkLib.Data.CodingTheory.GMMDS.LovettLemma2456
 
 /-!
 # Lovett's GM-MDS proof: the range decomposition closing Lemma 2.4 (#389)
@@ -264,6 +265,111 @@ theorem lemma24SpanTransferWithIBlock_holds :
   have hspan := pFamUnion_span_eq_replaceMeetFin_K (F := F) hI hV htight hIblock
   exact linearIndependent_of_span_eq_card hspan hcard hV'
 
+/-! ## The `I`-block independence from the `d`-induction hypothesis -/
+
+/-- The `I`-block of `V` equals (the reindexing of) `pFamUnion (V ∘ σ) k` for the enumeration
+`σ : Fin (card {i // i ∈ I}) → Fin m` of `I`. -/
+theorem iBlock_eq_pFamUnion_comp {V : Fin m → (Fin n → ℕ)} {k : ℕ} {I : Finset (Fin m)} :
+    LinearIndependent (MvPolynomial (Fin n) F) (iBlock (F := F) V k I) ↔
+      LinearIndependent (MvPolynomial (Fin n) F)
+        (pFamUnion (F := F)
+          (fun q : Fin (Fintype.card {i // i ∈ I}) =>
+            V ((Fintype.equivFin {i // i ∈ I}).symm q).1) k) := by
+  classical
+  set e := (Fintype.equivFin {i // i ∈ I}).symm with he
+  -- the sigma base-reindex equiv
+  let σ : (Σ q : Fin (Fintype.card {i // i ∈ I}), Fin (k - vAbs (V (e q).1)))
+      ≃ (Σ i : {i // i ∈ I}, Fin (k - vAbs (V i.1))) :=
+    Equiv.sigmaCongrLeft (β := fun i : {i // i ∈ I} => Fin (k - vAbs (V i.1))) e
+  have hcomp : pFamUnion (F := F) (fun q => V (e q).1) k
+      = iBlock (F := F) V k I ∘ σ := by
+    funext q; rfl
+  rw [hcomp, linearIndependent_equiv σ]
+
+/-- **The `I`-block is independent, from the `d`-induction hypothesis.**  For a tight `I` with
+`1 < |I| < m`, the `I`-subsystem `V ∘ σ` is `V*(k)` (`isVStar_comp`) with measure
+`Σ_{i∈I}(k − |vᵢ|) < lovettD V k` (since `|I| < m` leaves ≥ 1 surviving positive block), so the
+`d`-IH applies and gives the `I`-block independent. -/
+theorem iBlock_indep_of_dIH {V : Fin m → (Fin n → ℕ)} {k : ℕ} {I : Finset (Fin m)}
+    (hI : I.Nonempty) (hk : 1 ≤ k) (hV : IsVStar V k) (hhi : I.card < m)
+    (IHd : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) :
+    LinearIndependent (MvPolynomial (Fin n) F) (iBlock (F := F) V k I) := by
+  classical
+  set e := (Fintype.equivFin {i // i ∈ I}).symm with he
+  set W := fun q : Fin (Fintype.card {i // i ∈ I}) => V (e q).1 with hW
+  -- W = V ∘ σ with σ injective
+  have hσinj : Function.Injective (fun q => (e q).1) :=
+    fun a b h => e.injective (Subtype.ext h)
+  have hWstar : IsVStar W k := isVStar_comp hV hσinj
+  -- measure of W = Σ_{i∈I}(k - |vᵢ|)
+  have hWmeasure : lovettD W k = ∑ i ∈ I, (k - vAbs (V i)) := by
+    unfold lovettD
+    rw [Equiv.sum_comp e (fun i : {i // i ∈ I} => k - vAbs (V i.1))]
+    rw [← Finset.sum_coe_sort I (fun i => k - vAbs (V i))]
+  -- the measure is strictly smaller than lovettD V k (Iᶜ nonempty, terms ≥ 1)
+  have hlt : lovettD W k < lovettD V k := by
+    rw [hWmeasure]
+    unfold lovettD
+    rw [← Finset.sum_add_sum_compl I (fun i => k - vAbs (V i))]
+    have hcompl : (Iᶜ : Finset (Fin m)).Nonempty := by
+      rw [← Finset.card_pos, Finset.card_compl, Fintype.card_fin]; omega
+    obtain ⟨i₀, hi₀⟩ := hcompl
+    have hpos : 1 ≤ k - vAbs (V i₀) := by
+      have := hV.weight_le i₀; omega
+    have hsum : 1 ≤ ∑ i ∈ Iᶜ, (k - vAbs (V i)) :=
+      le_trans hpos (Finset.single_le_sum (f := fun i => k - vAbs (V i))
+        (fun i _ => Nat.zero_le _) hi₀)
+    omega
+  -- apply the d-IH to W, then reindex back to the I-block
+  have hWindep : LovettHolds F W k := IHd W hlt hWstar
+  rw [iBlock_eq_pFamUnion_comp]
+  exact hWindep
+
+/-! ## Lemma 2.4: the tight case is independent, and the classification -/
+
+/-- **Lovett's Lemma 2.4 — the tight case `1 < |I| < m` is independent (self-contained).**  Given
+the master frame's `d`-IH (`IHd`) and `m`-IH (`IHm`), a `V*(k)` system with a tight set `I`,
+`1 < |I| < m`, satisfies `LovettHolds`: the `I`-block is independent by `IHd` (the `I`-subsystem has
+smaller measure), the meet-replacement is independent by `IHm` (equal measure, fewer vectors), and
+the span-transfer (`lemma24SpanTransferWithIBlock_holds`) closes it. -/
+theorem lovettHolds_of_tight {V : Fin m → (Fin n → ℕ)} {k : ℕ} {I : Finset (Fin m)}
+    (hI : I.Nonempty) (hk : 1 ≤ k) (hV : IsVStar V k) (htight : tightConstraint V k I hI)
+    (hlo : 1 < I.card) (hhi : I.card < m)
+    (IHd : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k)
+    (IHm : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k = lovettD V k → m' < m → IsVStar V' k → LovettHolds F V' k) :
+    LovettHolds F V k := by
+  have hIblock := iBlock_indep_of_dIH (F := F) hI hk hV hhi IHd
+  have hV' := lovettHolds_replaceMeetFin hI hk hV htight hlo IHm
+  exact lemma24SpanTransferWithIBlock_holds V k I hI hk hV htight hlo hhi hIblock hV'
+
+/-- **Lovett's Lemma 2.4 (classification).**  In a minimal counterexample to Theorem 1.7 (`V*(k)`
+with `¬ LovettHolds`), every tight constraint `I` has `|I| = 1` or `|I| = m`: a tight set with
+`1 < |I| < m` would force `LovettHolds` (`lovettHolds_of_tight`), contradicting the counterexample.
+
+This is the exact form `arXiv:1803.02523` Lemma 2.4 states; it is consumed by the merge-branch
+clause-(ii) verification (`mergeSys_mds` at all index sets). -/
+theorem tight_card_eq_one_or_m {V : Fin m → (Fin n → ℕ)} {k : ℕ} {I : Finset (Fin m)}
+    (hI : I.Nonempty) (hk : 1 ≤ k) (hV : IsVStar V k) (htight : tightConstraint V k I hI)
+    (hcex : ¬ LovettHolds F V k)
+    (IHd : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k)
+    (IHm : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k = lovettD V k → m' < m → IsVStar V' k → LovettHolds F V' k) :
+    I.card = 1 ∨ I.card = m := by
+  -- I is nonempty so |I| ≥ 1; and |I| ≤ m always.
+  have hlo : 1 ≤ I.card := Finset.Nonempty.card_pos hI
+  have hhi : I.card ≤ m := by
+    have := Finset.card_le_univ I; simpa [Fintype.card_fin] using this
+  -- rule out the strict interior 1 < |I| < m
+  rcases Nat.lt_or_ge 1 I.card with h1 | h1
+  · rcases Nat.lt_or_ge I.card m with h2 | h2
+    · exact absurd (lovettHolds_of_tight hI hk hV htight h1 h2 IHd IHm) hcex
+    · exact Or.inr (le_antisymm hhi h2)
+  · exact Or.inl (le_antisymm h1 hlo)
+
 end ArkLib.GMMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -274,3 +380,7 @@ end ArkLib.GMMDS
 #print axioms ArkLib.GMMDS.phiX_range_pFamUnion_replaceMeetFin
 #print axioms ArkLib.GMMDS.pFamUnion_span_eq_replaceMeetFin_K
 #print axioms ArkLib.GMMDS.lemma24SpanTransferWithIBlock_holds
+#print axioms ArkLib.GMMDS.iBlock_eq_pFamUnion_comp
+#print axioms ArkLib.GMMDS.iBlock_indep_of_dIH
+#print axioms ArkLib.GMMDS.lovettHolds_of_tight
+#print axioms ArkLib.GMMDS.tight_card_eq_one_or_m
