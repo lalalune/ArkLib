@@ -1599,6 +1599,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusUnionBudget
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupDeltaStarPin
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupGVRepTwo
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupGoodListMDS
+import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupInterleavedJohnsonFloor
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupSidon
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupSidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupUncondQuarter
