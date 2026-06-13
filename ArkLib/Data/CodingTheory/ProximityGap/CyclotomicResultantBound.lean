@@ -241,3 +241,38 @@ theorem prime_le_of_cyclotomic_parallelogram {n : ℕ} (hn : 0 < n) {p : ℕ} [F
   prime_le_of_cyclotomic_resultant hn g hgC hgdeg
     (resultant_cyclotomic_ne_zero_of_forall_root_ne n g hSidon) hζ hgζ
 
+/-- **The unit-circle Sidon step (conjugation argument).** If `x, y, z, w` lie on the unit circle
+and `x + y = z + w ≠ 0`, then `x = z` or `x = w`.  Conjugation sends `t ↦ t⁻¹`, so the equal sums
+also have equal "inverse sums", forcing equal products `xy = zw`; with equal sums this makes
+`(x−z)(x−w) = 0`. -/
+theorem unitCircle_parallelogram {x y z w : ℂ} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) (hz : ‖z‖ = 1)
+    (hw : ‖w‖ = 1) (hsum : x + y = z + w) (hne : x + y ≠ 0) : x = z ∨ x = w := by
+  have hx0 : x ≠ 0 := by intro h; rw [h] at hx; simp at hx
+  have hy0 : y ≠ 0 := by intro h; rw [h] at hy; simp at hy
+  have hz0 : z ≠ 0 := by intro h; rw [h] at hz; simp at hz
+  have hw0 : w ≠ 0 := by intro h; rw [h] at hw; simp at hw
+  have hconjinv : ∀ {t : ℂ}, ‖t‖ = 1 → (starRingEnd ℂ) t = t⁻¹ := by
+    intro t ht
+    have h1 : t * (starRingEnd ℂ) t = 1 := by
+      rw [Complex.mul_conj]; norm_cast; rw [Complex.normSq_eq_norm_sq, ht]; norm_num
+    exact (inv_eq_of_mul_eq_one_right h1).symm
+  -- conjugate the sum equation
+  have hconjsum : x⁻¹ + y⁻¹ = z⁻¹ + w⁻¹ := by
+    have := congrArg (starRingEnd ℂ) hsum
+    rw [map_add, map_add, hconjinv hx, hconjinv hy, hconjinv hz, hconjinv hw] at this
+    exact this
+  -- equal sums + equal inverse-sums ⟹ equal products
+  have hprod : x * y = z * w := by
+    have e1 : x⁻¹ + y⁻¹ = (x + y) / (x * y) := by field_simp; ring
+    have e2 : z⁻¹ + w⁻¹ = (z + w) / (z * w) := by field_simp; ring
+    have hzw : z + w ≠ 0 := hsum ▸ hne
+    rw [e1, e2, hsum] at hconjsum
+    field_simp [hzw] at hconjsum
+    linear_combination -hconjsum
+  -- (x - z)(x - w) = x² − (z+w)x + zw = x² − (x+y)x + xy = 0
+  have hquad : (x - z) * (x - w) = 0 := by
+    have : (x - z) * (x - w) = x ^ 2 - (z + w) * x + z * w := by ring
+    rw [this, ← hsum, ← hprod]; ring
+  rcases mul_eq_zero.mp hquad with h | h
+  · left; exact sub_eq_zero.mp h
+  · right; exact sub_eq_zero.mp h
