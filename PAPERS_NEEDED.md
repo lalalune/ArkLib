@@ -212,3 +212,17 @@ The r=3 deep-band #bad-scalar bound is CLOSED in-tree (`DeepBandR3Bound.lean`, O
 - arXiv:2409.13515, arXiv:2502.14436 — incomplete/sparse multiplicative character sums over subgroups (2024-25; latter improves Mérai–Shparlinski–Winterhof for 0.13<ρ<0.32). Sharpest current subgroup partial-char-sum bounds in the prize ρ-window — the missing `subgroup_quadratic_sum_is_partial` analytic input (in-tree `ConcreteWeilInstance.lean`, `SubgroupGaussSumAntiConc.lean`). OPEN ACCESS.
 - Supporting (additive energy of multiplicative subgroups, OPEN): Alon–Bourgain "Additive patterns in multiplicative subgroups" (princeton multip3.pdf); Shkredov/Murphy–Petridis arXiv:1102.1172, arXiv:1303.2729.
 - NOTE for fetcher: arxiv.org abs pages BLOCKED for WebFetch in this env; arxiv.org/html/<id>, arxiv.org/pdf/<id>, www.arxiv.org/abs/<id>, PMC and university PDFs fetch fine.
+
+## δ* — the Favard-length / self-similar NON-MOMENT route (2026-06-13, harmonic analysis × NT)
+The impossibility map forces a non-moment method; this is the first that fits the dyadic tower. See
+`docs/kb/deltastar-favard-length-selfsimilar-route-2026-06-13.md`. Papers:
+- Łaba–Marshall, **Vanishing sums of roots of unity & Favard length of self-similar product sets**,
+  arXiv **2202.07555** (Discrete Anal. 2022) — improves Lam–Leung; non-moment sup/L¹ decay via
+  vanishing-sum structure; built for self-similar iterated products = the 2-power tower μ_{2^k}.
+- Nazarov–Peres–Volberg, **Favard length of the 4-corner Cantor set ≤ n^{−c}** (Ann. Math. 2010) +
+  Bond–Łaba–Volberg — the method's origin.
+- **On vanishing sums of m-th roots of unity in finite fields**, arXiv **math/9605216** — the char-p
+  engine governing the halo excess.
+- Poonen–Rubinstein / arXiv **2008.11268** classifying minimal vanishing sums — the input bound.
+ALSO (crypto-side, confirms NOT above Johnson — do NOT chase as a lever): Haböck **eprint 2025/2110**
+(MCA = ordinary CA up to Johnson via Guruswami–Sudan), **2025/2051** (all-poly-generators MCA).
