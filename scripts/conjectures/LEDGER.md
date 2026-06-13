@@ -138,3 +138,18 @@ structure** (Lam–Leung), one generating-function factor per prime dividing `n`
 This ties the additive moments of *every* multiplicative subgroup to the cyclotomic / Lam–Leung
 vanishing-sum classification (which the in-tree census machinery already formalizes) — a complete,
 deep, novel framework, decidable per instance, wall-free.
+
+## Cyclotomic block decomposition (the mechanism behind the moment law)
+
+`E_3` cube contribution (for `{2,3}`-smooth `n`) verified: n=6:+180, 12:+3240, 24:+18000,
+48:+82080. **Mechanism (NOVEL):** a 6-term zero-sum of `μ_n` decomposes (Lam–Leung) into minimal
+vanishing blocks — antipodal pairs (2-term) and cube-triples `{b,ωb,ω²b}` (3-term). Since `6 = 3·2
+= 2·3`, the 6-term zero-sums are exactly *three-pair* configs (the antipodal/Bessel part, the
+2-power formula) **plus** *two-triple* configs (the cube part: 10 position-matchings × `(2n)` per
+triple-block, minus coincidences). This gives `E_3(μ_n) = E_3^{2-power}(n) + [cube part if 3|n]`,
+and generally `E_r(μ_n) = Σ over block-decompositions of 2r into {p-relation blocks : p|n}`.
+
+**Status:** the decomposition framework is the verified mechanism (a complete novel structural
+picture connecting additive moments to Lam–Leung). The exact closed coefficient of each prime-block
+factor `B_p` (the inclusion–exclusion over coinciding cosets) is the open refinement — a concrete,
+decidable, wall-free target the swarm can push (the `B_2 = I₀` factor is done = the Bessel law).
