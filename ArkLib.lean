@@ -926,6 +926,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LamLeungMultisetAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSpanTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSquarefreeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPow
+import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPower
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalQ
 import ArkLib.Data.CodingTheory.ProximityGap.Lattice
@@ -1278,10 +1279,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetInvariance
-import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusBound
-import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalVanish
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountEnergyNfold
+import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusBound
+import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusInvariance
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountShiftedPower
 import ArkLib.Data.CodingTheory.ProximityGap.ResidualModularReduction
@@ -1377,6 +1378,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop37
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop38
 import ArkLib.Data.CodingTheory.ProximityGap.StructuredLineCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.StructuredSupplyViaCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.StructuredWordCores
 import ArkLib.Data.CodingTheory.ProximityGap.SubCeilingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonCorradiEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListBound
@@ -1515,6 +1517,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
+import ArkLib.Data.CodingTheory.ProximityGap.WronskianStepanovBridge
 import ArkLib.Data.CodingTheory.ProximityLeaves
 import ArkLib.Data.CodingTheory.ProximityLeaves2
 import ArkLib.Data.CodingTheory.QEntropyMonotone

@@ -82,6 +82,19 @@ theorem linearIndependent_of_wronskianDet_ne_zero [IsDomain R] {f : Fin l → R[
   by_contra hμ
   exact hW (wronskianDet_eq_zero_of_dependent hμ hdep)
 
+/-- **Bridge to `LinearIndependent`**: a nonzero Wronskian gives Mathlib's `LinearIndependent F f`
+in the exact form the in-tree Stepanov existence engine (`exists_highMult_vanisher`) consumes.
+Over a field the `F`-scalar action on `F[X]` is `a • p = C a * p`, so this is the packaged
+form of `linearIndependent_of_wronskianDet_ne_zero`. -/
+theorem linearIndependent_of_wronskianDet_ne_zero' {F : Type*} [Field F] {f : Fin l → F[X]}
+    (hW : wronskianDet f ≠ 0) : LinearIndependent F f := by
+  rw [Fintype.linearIndependent_iff]
+  intro c hc
+  have hc' : ∑ j, C (c j) * f j = 0 := by
+    simpa only [Polynomial.smul_eq_C_mul] using hc
+  have h0 := linearIndependent_of_wronskianDet_ne_zero hW hc'
+  intro i; rw [h0]; rfl
+
 /-- The sum of `σ i` over a permutation of `Fin l` is `C(l, 2)`. -/
 theorem sum_perm_eq_choose_two (σ : Equiv.Perm (Fin l)) :
     ∑ i : Fin l, (σ i : ℕ) = l.choose 2 := by
