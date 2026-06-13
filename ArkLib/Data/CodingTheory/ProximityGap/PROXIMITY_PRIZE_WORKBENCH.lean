@@ -327,6 +327,13 @@ not a proof. Full record: `docs/kb/jlr26-frs-subspace-design-formalization-map-2
 
 ## §R.4  SYNTHESIS 2026-06-13d — δ* is the CAPACITY term (Incidence-Genericity Dichotomy + refutation).
 
+⛔ **CORRECTED (KB §37): this section's "δ* = capacity term" claim is WRONG.** Kambiré
+(arXiv:2604.09724, native to μ_{2^t}) PROVES δ* is the WINDOW EDGE `1−ρ−2/(K·log₂n)`=`1−ρ−Θ(1/log n)`,
+NOT the capacity term. The in-tree `PrizeEntropyDeltaStar.prizeDeltaStar(ρ, q·ε*)`=`1−ρ−H(ρ)/log₂(qε*)`
+IS the window edge (log₂(qε*)≈log₂n) and is correct; my H_q⁻¹/capacity-term framing below overshoots.
+Genericity ALSO INVERTED: bad count = DISTINCT r-fold sumset `|H^{(+r)}|`, so LARGE sumset FUELS the
+disproof. Treat §R.4 as superseded by KB §37.
+
 CORRECTION to the §R.3/window-edge reading, synthesizing the issue thread's Incidence-Genericity
 Dichotomy with the fabricate-then-refute certificate.
 
