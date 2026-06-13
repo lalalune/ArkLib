@@ -281,6 +281,43 @@ theorem not_mcaShawConjecture_of_lt_secondMoment [Nonempty V] (S : Finset V) (s�
   have hsq : ‖shawError (F := F) S s₀ s₁‖ ^ 2 ≤ B ^ 2 := by nlinarith
   linarith
 
+/-- **Exact Shaw value on a fully-contained line.** If the whole line `s₀ + γ·s₁` lies in `S`
+(incidence `= |F|`), then `𝒮(S;s₀,s₁) = |V| − |S|` — the maximal possible value of the operator.
+Directly from `incidence_eq_average_add_shaw` by cancelling `|F|`. -/
+theorem shawError_of_line_subset (S : Finset V) (s₀ s₁ : V)
+    (hline : ∀ γ : F, s₀ + γ • s₁ ∈ S) :
+    shawError (F := F) S s₀ s₁ = (Fintype.card V : ℂ) - (S.card : ℂ) := by
+  have hinc : (univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card = Fintype.card F := by
+    rw [Finset.filter_true_of_mem (fun γ _ => hline γ), Finset.card_univ]
+  have hid := incidence_eq_average_add_shaw (F := F) S s₀ s₁
+  rw [hinc] at hid
+  have hF : (Fintype.card F : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr Fintype.card_ne_zero
+  have hcancel : (Fintype.card V : ℂ) = (S.card : ℂ) + shawError (F := F) S s₀ s₁ :=
+    mul_left_cancel₀ hF hid
+  linear_combination -hcancel
+
+/-- **The unrestricted Shaw bound is false — the far-coset restriction is forced.** If some line lies
+entirely in `S` and the budget undershoots `|V| − |S|`, then `MCAShawConjecture S B` fails (with the
+explicit witness `s₀, s₁`). A Hamming `δ`-ball always contains the full low-weight lines `⟨s₁⟩` with
+`wt s₁ ≤ δn` (take `s₀ = 0`: every `γ·s₁` has weight `≤ wt s₁`), so the prize bound *cannot* hold over
+all directions `s₁`. **Restricting to far cosets is mathematically necessary, not a convention** — the
+worst case over *all* `s₁` is the trivial `|V| − |S|`, attained on a near (low-weight) direction; the
+prize lives entirely in the far-direction sub-problem (`epsMCA_ge_far_incidence`). -/
+theorem not_mcaShawConjecture_of_line_subset (S : Finset V) (s₀ s₁ : V) (B : ℝ)
+    (hline : ∀ γ : F, s₀ + γ • s₁ ∈ S)
+    (hB : B < (Fintype.card V : ℝ) - (S.card : ℝ)) :
+    ¬ MCAShawConjecture (F := F) S B := by
+  intro h
+  have hcardnat : S.card ≤ Fintype.card V := Finset.card_le_univ S
+  have hval := shawError_of_line_subset (F := F) S s₀ s₁ hline
+  have hval2 : shawError (F := F) S s₀ s₁ = ((Fintype.card V - S.card : ℕ) : ℂ) := by
+    rw [hval, Nat.cast_sub hcardnat]
+  have hnorm : ‖shawError (F := F) S s₀ s₁‖ = ((Fintype.card V - S.card : ℕ) : ℝ) := by
+    rw [hval2, Complex.norm_natCast]
+  have hle := h s₀ s₁
+  rw [hnorm, Nat.cast_sub hcardnat] at hle
+  linarith
+
 end ArkLib.ProximityGap.ShawSecondMoment
 
 /-! ## Axiom audit -/
@@ -294,4 +331,6 @@ end ArkLib.ProximityGap.ShawSecondMoment
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.shawError_sq_le_second_moment
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.exists_shawError_sq_ge
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.not_mcaShawConjecture_of_lt_secondMoment
+#print axioms ArkLib.ProximityGap.ShawSecondMoment.shawError_of_line_subset
+#print axioms ArkLib.ProximityGap.ShawSecondMoment.not_mcaShawConjecture_of_line_subset
 #check @ArkLib.ProximityGap.ShawSecondMoment.parseval_indicator
