@@ -100,9 +100,21 @@ theorem explainableCoreSupply_aboveJohnson (dom : Fin n ↪ F) {k m : ℕ} (hk :
       ((n ^ 2 / ((k + m + 1) ^ 2 - n * (k - 1))) * (n.choose (k + m + 1))) :=
   explainableCoreSupply_of_listBound dom (subJohnsonListBound_aboveJohnson dom hk hJohnson)
 
+/-- **Non-vacuity, concrete parameters.**  At `k = 2, m = 2, n = 16` the band
+threshold `k+m+1 = 5` sits above the Johnson radius (`16·1 = 16 < 25 = 5²`), so the
+deep-band supply is fully proven for *any* domain with the concrete bound
+`B = (16²/(5²−16))·C(16,5) = 28·4368 = 122304`. -/
+theorem explainableCoreSupply_concrete_k2m2n16 (dom : Fin 16 ↪ F) :
+    ExplainableCoreSupply dom 2 2 122304 := by
+  have h := explainableCoreSupply_aboveJohnson (k := 2) (m := 2) dom
+    (by norm_num) (by norm_num)
+  norm_num at h
+  exact h
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.rsCode_pairwise_agree_le
 #print axioms ProximityGap.Ownership.subJohnsonListBound_aboveJohnson
 #print axioms ProximityGap.Ownership.explainableCoreSupply_aboveJohnson
+#print axioms ProximityGap.Ownership.explainableCoreSupply_concrete_k2m2n16
