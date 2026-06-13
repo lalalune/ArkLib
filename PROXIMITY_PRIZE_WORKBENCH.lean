@@ -267,7 +267,6 @@ noncomputable def shawOp (D : Finset F) (f : F → ℂ) : F → ℂ := fun x => 
 /-- **Spectrum of `𝖲_D` = the character-sum family.** Each additive character `χ_b : x ↦ ψ(b·x)` is
 an eigenvector with eigenvalue `η_b = ∑_{d∈D} ψ(b·d)`: `(𝖲_D χ_b)(x) = ψ(b·x) · η_b`. This is the
 identity making the gap `B(μ_n)` and the moments `E_m(D)` the *same* operator's invariants. -/
-omit [Fintype F] [DecidableEq F] in
 theorem shawOp_eigen (ψ : AddChar F ℂ) (D : Finset F) (b x : F) :
     shawOp D (fun y => ψ (b * y)) x = ψ (b * x) * eta ψ D b := by
   show (∑ d ∈ D, ψ (b * (x + d))) = ψ (b * x) * ∑ y ∈ D, ψ (b * y)
