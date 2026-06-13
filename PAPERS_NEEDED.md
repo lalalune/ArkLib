@@ -171,3 +171,24 @@ above. Verified via web search (Jun 2026); none on disk.
 supercharacter + Hasse–Weil moment machinery is a genuinely different, formalizable handle on `E_r`
 than the analytic Katz thread, and G2's curve method already underlies the in-tree 4th-moment floor.
 The prize stays open; this widens the toolset on the named residual.
+
+## δ* halo-residual — the Salem–Zygmund / generic-chaining route (2026-06-13, probability × NT)
+
+NEW cross-field route (`docs/kb/deltastar-salem-zygmund-gausssum-chaining-2026-06-13.md`): the period
+DFT identity `η_c=−1/m+(1/m)Σ_j τ(χ_j)e(−jc/m)` makes `max_c|η_c|` the SUP-NORM of the Gauss-sum
+trigonometric polynomial. Prize ⟺ that sup-norm is Salem–Zygmund-generic `√(n log m)`; provable via a
+sub-Gaussian MGF / generic-chaining bound (increment geometry only, NOT all moments). Papers (web,
+Jun 2026; none on disk):
+
+| # | paper | id | role in the route |
+|---|---|---|---|
+| SZ1 | Salem–Zygmund, **sup-norm of random trigonometric polynomials** (+ modern: Kahane *Some Random Series of Functions*) | classical | the `‖P‖_∞≍√(N log N)` law the Gauss-sum poly must match; the random model to derandomize. |
+| SZ2 | Talagrand, **generic chaining / γ₂ bound on sub-Gaussian suprema** | *Upper and Lower Bounds for Stochastic Processes* (+ arXiv 1309.3522 tail-via-chaining, 2511.06338 L^q empirical process) | the apparatus: bounds `E max_c|η_c|` from increment metric `d(c,c')=‖η_c−η_{c'}‖_{ψ₂}` — needs only MGF/increment geometry, not every moment. The feasibility win. |
+| SZ3 | **Equidistribution and independence of Gauss sums** | arXiv 2207.12439 (Adv. Math. 2024) | the derandomizer: joint independence of `{τ(χ_j)}` ⟹ the MGF factors ⟹ sub-Gaussian proxy `n`. Open part = uniformity over `m−1` chars. |
+| SZ4 | Demirci Akarsu–Marklof, **value distribution of incomplete Gauss sums** | arXiv 1207.1607 | the limit law for exactly this sum class; gives the distributional shape (Gumbel tail) underpinning the SZ prediction. |
+| SZ5 | Hegyvári, **On the distribution of additive energy revisited** | arXiv 2602.01781 (Feb 2026) | freshest on the `E_r` distribution (density + ratio lower bound of energy values) — the moment-side companion / refutation oracle for the SZ-genericity. |
+
+**Honest scope:** this reframes the open core into a Salem–Zygmund/sub-Gaussian-MGF statement with a
+mature toolkit (Deligne–Katz equidistribution + Talagrand chaining), strictly weaker than the raw
+all-moments wall — but the quantitative joint Gauss-sum independence over `m−1≈p/n` characters at thin
+`n≈p^{0.12}` remains open. A better-tooled route, not a closure. The prize stays open.
