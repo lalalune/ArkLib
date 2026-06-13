@@ -128,6 +128,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma24
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma2456
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25Opening
+import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettNLtK
 import ArkLib.Data.CodingTheory.GMMDS.LovettPairwise
 import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
@@ -1705,6 +1706,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeRatClassification
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeWindowObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.ThreeRootsSumZeroCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
+import ArkLib.Data.CodingTheory.ProximityGap.TowerMomentBridge
 import ArkLib.Data.CodingTheory.ProximityGap.TowerMonotonicity
 import ArkLib.Data.CodingTheory.ProximityGap.TowerMonotonicityRS
 import ArkLib.Data.CodingTheory.ProximityGap.TruncatedRecurrenceTransversality
