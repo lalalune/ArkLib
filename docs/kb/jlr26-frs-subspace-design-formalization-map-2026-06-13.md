@@ -865,3 +865,27 @@ the valid partitions stay empty-n-core at `L~poly log n`. This is the prize, in 
 every arithmetic wall, and it is a partition-combinatorics question on the in-tree GM-MDS machinery —
 the live path, being worked by the rim-hook/abacus lane. My contribution: confirming the route escapes
 the wall, the pigeonhole cap, and the genericity⟺reachability dictionary. Probe /tmp/ncore_probe.py.
+
+## 31. Reconciling the two routes — the n-core obstruction is AT CAPACITY, not in the window
+
+Apparent conflict: the n-core route says μ_n FAILS MDS(L) for nonempty-n-core configs (obstruction);
+my genericity says μ_n ≈ random (no obstruction). RESOLVED by the radius dependence:
+
+**List size `L ~ 1/η` at radius `δ=1−ρ−η`.** The n-core PIGEONHOLE obstruction (forced nonempty,
+`L>n`) requires `1/η>n ⟺ η<1/n` — i.e. within `1/n` of capacity, BEYOND the granularity limit
+`1−ρ−1/n` and FAR beyond the window edge `η~1/log n ≫ 1/n`. So:
+  · **In the window (`η ≥ Θ(1/log n)`, the prize): `L~log n ≪ n`, NO pigeonhole, n-core generically
+    empty — genericity holds, `μ_n≈random`.** The prize δ* sits in the clean regime.
+  · The forced n-core obstruction is at `η<1/n` (≈capacity), strictly BEYOND δ*. NO conflict.
+
+So the two routes agree: μ_n behaves like random in the window (where the prize lives), and the n-core
+obstruction is a capacity-limit phenomenon outside the prize range. The HOMDS(L>n) failure (§30) is
+real but irrelevant — it is the statement "μ_n isn't MDS at order exceeding its size," which only bites
+at `η<1/n`, past the prize.
+
+**Refined open core (the genuine remaining question).** Within the window (`L≪n`, pigeonhole satisfied),
+the GENERIC reachable config is empty-n-core; the ADVERSARY can construct nonempty-n-core small-L
+partitions (§30). The prize is whether those adversarial partitions are GM-MDS-REACHABLE by an actual
+window-radius list-decoding instance. Generic⟹empty (μ_n≈random measured); adversarial reachability is
+the open combinatorial core — now correctly scoped to the window (not the capacity obstruction). This
+is the precise, correctly-scoped statement of the live route's open question. Probe /tmp/route_reconcile.py.
