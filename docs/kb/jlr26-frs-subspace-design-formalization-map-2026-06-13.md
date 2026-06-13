@@ -1066,3 +1066,30 @@ construction: sumset `≥ n^C`). LOWER bracket (the open prize) = the demand-sid
 for `δ < window edge` — proximity gaps HOLD below the construction's radius. So Kambiré + the demand
 lane are the two brackets of the SAME δ*, and the bad count is the distinct r-fold sumset of `μ_s`. This
 is the genuine corrected picture; my capacity-term δ* must be replaced by the window-edge form.
+
+## 38. The CORRECTED exact δ* structure — small-subgroup (s=Θ(log n)) sumset crossing
+
+Refining §37 (Kambiré). Computed the Kambiré bad count `|H^{(+r)}| = #{distinct r-fold sums of μ_s}`:
+  · `|H^{(+r)}|` slightly EXCEEDS `2^r·C(s/2,r)` (s=8,r=2: 25>24; s=16,r=3: 464>448; s=32,r=4:
+    29601>29120). So the antipodal count `2^r C(s/2,r)` is NOT a tight cap; the true sumset is a bit
+    larger (between it and `C(s,r)`). The demand-lane budget `K=2^r C(s/2,r)` is thus slightly below the
+    actual sumset — but their `#bad`(97) is a SMALLER object (worst monomial stack) than the full
+    `|H^{(+r)}|`(464), so no contradiction; the parametrizations differ.
+
+**The prize SCALE (corrected).** Kambiré: `n=sm`, `ρ=(r−2)/s`, `δ=1−r/s=(1−ρ)−2/s`. At the window
+edge `η=2/s=Θ(1/log n)`, the subgroup is **SMALL: `s=Θ(log n)`**, `r=ρs+2=Θ(log n)`, `m=n/s`. So the
+bad count `|H^{(+r)}|(μ_s)` with `s~log n` is `~C(s/2,r)~2^{Θ(s)}=2^{Θ(log n)}=n^{Θ(1)}=n^C` — exactly
+Kambiré's super-polynomial count. The bad count is the **small-subgroup r-fold sumset**, NOT a
+large-subgroup energy.
+
+**The corrected exact δ*.**
+  **`δ* = 1 − ρ − 2/s*`,  where `s*` (and `r*=ρs*+2`) satisfy `|H^{(+r*)}|(μ_{s*}) = q·ε*`.**
+The closed form is the subgroup-sumset-growth crossing. UPPER bracket PROVEN (Kambiré: the construction
+realizes `|H^{(+r)}|`). LOWER bracket OPEN (no stack beats the coset construction — worst-case bad count
+≤ `|H^{(+r)}|` for the matching δ; equivalently the small-subgroup sumset is the extremal demand).
+
+**Net.** The prize is the SMALL-subgroup r-fold sumset extremality: `δ*` is pinned by where
+`|H^{(+r)}(μ_s)|` crosses `q·ε*` (`s=Θ(log n)`), Kambiré proves the construction is achievable (upper),
+and the open core is that NO configuration exceeds the coset/sumset construction (lower) — the
+extremality of the small-subgroup sumset. This corrects §37 to the exact small-subgroup scale and
+identifies the closed-form δ* as a sumset-crossing, not an entropy/energy formula.
