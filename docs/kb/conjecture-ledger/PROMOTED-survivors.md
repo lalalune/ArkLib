@@ -108,3 +108,21 @@ A6 (complete perfect-B_r characterization) · A1–A4 (energy/sumset/diffset dic
 C1 (antipodal-excess factored forms) · C4 (sumset saturation = one-sided A6) · D (coset-correction
 first-failure excess). B3 (2-power Gaussian energy) = confirmed rediscovery. All refutation-survived,
 all with rigorous proofs from the cyclotomic relation lattice (Lam–Leung).
+
+## Theme E — the zero-sum theorem: Z_k(μ_n) = #{ordered k-tuples in μ_n summing to 0}
+
+Probe: `scripts/probes/probe_conj_zerosum.py`. Verified n∈{3..16,25}, k=2..5.
+
+- **E1 (PROVED).** `Z_2(μ_n) = n·[2∣n]`.  (a+b=0 ⟺ b=−a; needs −1∈μ_n.)
+- **E2 (PROVED).** `Z_3(μ_n) = 2n·[3∣n]` — universal (even & odd). (3-term vanishing sums of n-th roots
+  are exactly μ_3-coset sums; 3! orderings × n/3 cosets = 2n.)
+- **E3 (PROVED, general — novel).** For prime `p` and ODD `n`: `Z_p(μ_n) = (p−1)!·n·[p∣n]`.
+  Verified `Z_3=2n[3∣n]`, `Z_5=24n[5∣n]` (n=5,15,25→120,360,600). Proof: p-term zero-sums of odd
+  n-th roots = μ_p-coset sums (Lam–Leung), counted `p!·(n/p) = (p−1)!·n`. **Refuted for even n**
+  (`Z_5(μ_6)=360≠0`: mixed contributions from primes 2,3 dividing 6) ⇒ cleanly an odd-n theorem.
+- **E4 (PROVED).** `Z_4(μ_n) = (3n²−3n)·[2∣n]` ( = `E⁺(μ_n)` for even n, via the negation bijection
+  `(c,d)↦(−c,−d)` since `−μ_n=μ_n`; `=0` for odd n, where Z_4 has no two-antipodal-pair decomposition).
+  Verified n=4,6,8,10,16 (36,90,168,270,720).
+- Open direction (noted, not promoted): general `Z_k(μ_n)` for composite `k` / mixed `n` = a SUM over
+  partitions of `k` into prime-coset-relations weighted by the divisors of `n` (the full vanishing-sum
+  inclusion–exclusion). Z_5(μ_6)=360, Z_4(μ_6)=90 etc. are the mixed cases. Promoted: +4 (running ≈ 14).
