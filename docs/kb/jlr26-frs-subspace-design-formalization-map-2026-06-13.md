@@ -454,3 +454,24 @@ worst-case Shaw excess, whose value the refutation methodology pins (`max char s
 §15) and BGK floors (`n^{1−ε}`). The open core is the WORST-CASE polynomial-root census sup-norm —
 the same object as the η_b sup-norm under Fourier duality, now seen as a root-count concentration.
 This is the sharpest structural statement: provable average + refutation-pinned worst-case excess.
+
+## 17b. CORRECTION to §17 — the average is NOT the prize; the prize is purely the lower bracket
+
+§17 risked implying the average δ\* (`1−ρ−h(1−ρ)/log₂q`) is prize-relevant. It is NOT. Numerics
+(`n=2⁴⁰, ρ=½, q=2²⁵⁶`): at the window edge `η=1/log₂n=1/40`, the AVERAGE bad count is `2^{−5.9·10¹²}`
+≈ 0 — there is essentially zero average bad mass there. But Thm 4.16 (KK25) exhibits a WORST-case
+stack with bad count `≥ nᶜ ≫ n` at that same `η`. So the worst-case exceeds the average by a factor
+`2^{Θ(n)}` — the bad mass is entirely a worst-case concentration phenomenon, and the average δ\* (much
+closer to capacity, `η~h/log q`) is irrelevant to the prize.
+
+**The CORRECT, complete bracket (consistent with ABF26 §4):**
+  · **UPPER `δ* ≤ 1−ρ−Θ(1/log n)`** — PROVEN, the KK25/BCHKS25 bad CONSTRUCTION (Thm 4.16): an
+    explicit worst-case stack whose bad count blows past `q·ε*` just above the window edge.
+  · **LOWER `δ* ≥ 1−ρ−Θ(1/log n)`** — OPEN, = "no construction is worse than KK25's" = the worst-case
+    `μ_n` polynomial-root-census sup-norm `≤ 2√(n ln p)` (refutation-pinned §15, BGK-floored §R.2).
+
+The prize is EXACTLY closing the lower bracket: proving the worst-case root-census/character sup-norm
+does not exceed the refutation-pinned value. The average, the Johnson/Fisher pairwise bound (which I
+re-derived gives EXACTLY `δ_J=1−√ρ` and fails beyond — the trivial agreement `k=ρn` saturates it),
+and the granularity ladder (low-δ\*) are all strictly inside and provably not the prize. This is the
+sharpest correct localization: one open inequality, the worst-case lower bracket, value known.
