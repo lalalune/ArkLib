@@ -216,6 +216,47 @@ theorem card_large_shawError_mul_sq_le_unconditional (S : Finset V) (s₁ : V) {
   rw [shawError_second_moment]
   exact card_large_shawError_mul_sq_le (F := F) S s₁ ht
 
+/-- **Worst-case Shaw operator — upper half of the second-moment bracket.** Each single value is at
+most the whole second moment: `‖𝒮(S;s₀,s₁)‖² ≤ |V|·∑_{ψ≠0,ψ⊥s₁}‖∑ψ(−s)‖²`. So
+`max_{s₀}‖𝒮‖ ≤ √(|V|·M)` — the *only* upper bound the moment method yields, inflated by the full
+`√|V|` factor (the union tax over the `|V|` base points). -/
+theorem shawError_sq_le_second_moment (S : Finset V) (s₀ s₁ : V) :
+    ‖shawError (F := F) S s₀ s₁‖ ^ 2
+      ≤ (Fintype.card V : ℝ)
+        * ∑ ψ ∈ univ.filter (fun ψ : AddChar V ℂ =>
+              directionChar (F := F) ψ s₁ = 0 ∧ ψ ≠ 0),
+            ‖∑ s ∈ S, ψ (-s)‖ ^ 2 := by
+  rw [← shawError_second_moment]
+  exact Finset.single_le_sum (f := fun s₀ => ‖shawError (F := F) S s₀ s₁‖ ^ 2)
+    (fun i _ => by positivity) (Finset.mem_univ s₀)
+
+/-- **Worst-case Shaw operator — lower half of the bracket (necessity).** Some base point achieves at
+least the average: `∃ s₀, ‖𝒮(S;s₀,s₁)‖² ≥ ∑_{ψ≠0,ψ⊥s₁}‖∑ψ(−s)‖² = M`. Hence `max_{s₀}‖𝒮‖ ≥ √M`, so
+**any** prize Shaw budget `B` is forced to satisfy `B ≥ √M`: an unconditional necessary condition the
+prize bound must respect (no cancellation can push the worst case below the L² mass on `ψ ⊥ s₁`).
+
+Together with `shawError_sq_le_second_moment` this brackets `max_{s₀}‖𝒮‖ ∈ [√M, √(|V|·M)]` — a
+multiplicative gap of exactly `√|V| = q^{n/2}`.  This is the precise, machine-checked reason the
+second-moment / union route cannot pin `δ*`: it determines the prize's worst case only up to a
+`√|V|` factor, which dwarfs the budget.  Closing the prize needs genuine *uniform* (every-`s₀`)
+square-root cancellation of the structured sum `∑_ψ Ŝ(ψ)·ψ(s₀)` — the open W4 content, untouched by
+any L² estimate. -/
+theorem exists_shawError_sq_ge [Nonempty V] (S : Finset V) (s₁ : V) :
+    ∃ s₀ : V,
+      (∑ ψ ∈ univ.filter (fun ψ : AddChar V ℂ =>
+            directionChar (F := F) ψ s₁ = 0 ∧ ψ ≠ 0),
+          ‖∑ s ∈ S, ψ (-s)‖ ^ 2)
+        ≤ ‖shawError (F := F) S s₀ s₁‖ ^ 2 := by
+  classical
+  set M := ∑ ψ ∈ univ.filter (fun ψ : AddChar V ℂ =>
+        directionChar (F := F) ψ s₁ = 0 ∧ ψ ≠ 0), ‖∑ s ∈ S, ψ (-s)‖ ^ 2 with hM
+  by_contra h
+  push_neg at h
+  have hlt : ∑ s₀ : V, ‖shawError (F := F) S s₀ s₁‖ ^ 2 < ∑ _s₀ : V, M :=
+    Finset.sum_lt_sum_of_nonempty Finset.univ_nonempty (fun s₀ _ => h s₀)
+  rw [shawError_second_moment, Finset.sum_const, nsmul_eq_mul, Finset.card_univ] at hlt
+  exact lt_irrefl _ hlt
+
 end ArkLib.ProximityGap.ShawSecondMoment
 
 /-! ## Axiom audit -/
@@ -226,4 +267,6 @@ end ArkLib.ProximityGap.ShawSecondMoment
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.parseval_indicator
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.shawError_second_moment_le
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.card_large_shawError_mul_sq_le_unconditional
+#print axioms ArkLib.ProximityGap.ShawSecondMoment.shawError_sq_le_second_moment
+#print axioms ArkLib.ProximityGap.ShawSecondMoment.exists_shawError_sq_ge
 #check @ArkLib.ProximityGap.ShawSecondMoment.parseval_indicator
