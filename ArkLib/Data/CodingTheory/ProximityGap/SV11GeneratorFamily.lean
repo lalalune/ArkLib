@@ -84,9 +84,21 @@ theorem sv11_wronskianDet_ne_zero {l : ℕ} (c : F) (t : ℕ) (idx : Fin l → �
     rw [sv11Gen_natDegree, sv11Gen_natDegree] at hij
     exact hij
 
+
+/-- **The b-collapse at a rep point.** If `(y − c)^t = 1` (the subgroup relation defining a rep
+point), the SV11 generator `g_{a,b}(X) = X^a (X−c)^{tb}` evaluates to `y^a`, *independent of `b`*.
+This is the seed of the Stepanov multiplicity-from-relations mechanism: all `g_{a,b}` sharing an `a`
+collapse to the same value `y^a` at rep points, so the value-evaluation map has rank `≤ D` (not
+`D·B`) — the rank deficiency the high-order vanishing exploits. -/
+theorem sv11Gen_eval_of_pow_eq_one (c y : F) {t : ℕ} (a b : ℕ) (h : (y - c) ^ t = 1) :
+    (sv11Gen c t (a, b)).eval y = y ^ a := by
+  unfold sv11Gen
+  rw [eval_mul, eval_pow, eval_X, eval_pow, eval_sub, eval_X, eval_C, pow_mul, h, one_pow, mul_one]
+
 end ProximityGap.BinomialDet
 
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
+#print axioms ProximityGap.BinomialDet.sv11Gen_eval_of_pow_eq_one
 #print axioms ProximityGap.BinomialDet.add_mul_lt_injective
 #print axioms ProximityGap.BinomialDet.sv11_wronskianDet_ne_zero
