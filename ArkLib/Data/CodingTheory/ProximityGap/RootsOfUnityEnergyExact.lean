@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Tactic
 
 /-!
@@ -111,5 +112,67 @@ theorem rootsOfUnity_additiveEnergy_eq (S : Finset F) (n : ℕ) (hn : S.card = n
     omega
   rw [Finset.sum_congr rfl inner, Finset.sum_const, hn, smul_eq_mul]
   ring
+
+omit [DecidableEq F] in
+/-- **Frobenius discharges the no-coincidence hypothesis in the inert case** `n ∣ p+1`.
+For `n`-th roots of unity in a field of characteristic `p` with `n ∣ p+1`, `x^p = x⁻¹`, so the
+Frobenius (additive in characteristic `p`) sends `a+b = y+z` to `a⁻¹+b⁻¹ = y⁻¹+z⁻¹`, forcing
+`ab = yz`, hence `(y−a)(y−b) = 0` — no nontrivial additive coincidence. -/
+theorem hnc_of_dvd_succ {p : ℕ} [Fact p.Prime] [CharP F p] {n : ℕ} (hn1 : 1 ≤ n)
+    (hdvd : n ∣ p + 1) (S : Finset F) (hS : ∀ x : F, x ∈ S ↔ x ^ n = 1) :
+    ∀ a ∈ S, ∀ b ∈ S, a + b ≠ 0 → ∀ y ∈ S, (a + b) - y ∈ S → y = a ∨ y = b := by
+  have hne : ∀ x ∈ S, x ≠ 0 := by
+    intro x hx h0
+    rw [hS] at hx; rw [h0, zero_pow (by omega : n ≠ 0)] at hx; exact zero_ne_one hx
+  have hinv : ∀ x ∈ S, x ^ p = x⁻¹ := by
+    intro x hx
+    have hxn : x ^ n = 1 := (hS x).mp hx
+    have hx0 : x ≠ 0 := hne x hx
+    obtain ⟨k, hk⟩ := hdvd
+    have hp1 : x ^ (p + 1) = 1 := by rw [hk, pow_mul, hxn, one_pow]
+    have hpx : x ^ p * x = 1 := by rw [← pow_succ]; exact hp1
+    field_simp
+    linear_combination hpx
+  intro a ha b hb hab y hy hz
+  set z := (a + b) - y with hzdef
+  have hzS : z ∈ S := hz
+  have hyz : y + z = a + b := by rw [hzdef]; ring
+  have hfrob : a⁻¹ + b⁻¹ = y⁻¹ + z⁻¹ := by
+    have e1 : (a + b) ^ p = a ^ p + b ^ p := add_pow_char a b p
+    have e2 : (y + z) ^ p = y ^ p + z ^ p := add_pow_char y z p
+    rw [hinv a ha, hinv b hb] at e1
+    rw [hinv y hy, hinv z hzS] at e2
+    rw [hyz] at e2
+    rw [← e1, e2]
+  have ha0 := hne a ha; have hb0 := hne b hb; have hy0 := hne y hy; have hz0 := hne z hzS
+  have habyz : a * b = y * z := by
+    have lhs : a⁻¹ + b⁻¹ = (a + b) * (a * b)⁻¹ := by field_simp; ring
+    have rhs : y⁻¹ + z⁻¹ = (a + b) * (y * z)⁻¹ := by rw [← hyz]; field_simp; ring
+    rw [lhs, rhs] at hfrob
+    exact inv_injective (mul_left_cancel₀ hab hfrob)
+  have hquad : (y - a) * (y - b) = 0 := by
+    have h1 : (y - a) * (y - b) = y * y - (a + b) * y + a * b := by ring
+    rw [h1, ← hyz, habyz]; ring
+  rcases mul_eq_zero.mp hquad with h | h
+  · left; exact sub_eq_zero.mp h
+  · right; exact sub_eq_zero.mp h
+
+/-- **The exact additive energy in the inert case, unconditionally** (`n ∣ p+1`, `n` even,
+`p ≠ 2`): for the `n`-th roots of unity `S = μ_n` (with `|S| = n`), the additive energy is
+*exactly* `3·n·(n−1)`.  Combines the exact count `rootsOfUnity_additiveEnergy_eq` with the
+Frobenius discharge `hnc_of_dvd_succ`, upgrading the in-tree `additiveEnergy_le_of_dvd_succ`
+(`≤ 3n²`) to the sharp exact value. -/
+theorem rootsOfUnity_additiveEnergy_eq_inert {p : ℕ} [Fact p.Prime] [CharP F p] {n : ℕ}
+    (hn1 : 1 ≤ n) (hne2 : 2 ∣ n) (hdvd : n ∣ p + 1) (hp2 : p ≠ 2)
+    (S : Finset F) (hS : ∀ x : F, x ∈ S ↔ x ^ n = 1) (hcard : S.card = n) :
+    ∑ a ∈ S, ∑ b ∈ S, (S.filter (fun y => (a + b) - y ∈ S)).card = 3 * n * (n - 1) := by
+  refine rootsOfUnity_additiveEnergy_eq S n hcard ?_ ?_ ?_ (hnc_of_dvd_succ hn1 hdvd S hS)
+  · intro x hx
+    rw [hS] at hx ⊢
+    rw [(even_iff_two_dvd.mpr hne2).neg_pow]; exact hx
+  · rw [hS, zero_pow (by omega : n ≠ 0)]; exact zero_ne_one
+  · intro h2
+    have hp : p ∣ 2 := (CharP.cast_eq_zero_iff F p 2).mp (by exact_mod_cast h2)
+    exact hp2 ((Nat.prime_dvd_prime_iff_eq Fact.out Nat.prime_two).mp hp)
 
 end ArkLib.ProximityGap
