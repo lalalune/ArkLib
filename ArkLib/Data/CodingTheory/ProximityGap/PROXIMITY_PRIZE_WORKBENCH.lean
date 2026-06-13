@@ -248,6 +248,38 @@ structure of `μ_n`** (the in-tree energy + this-session antipodal work). A winn
 states `max-incidence(δ) ≤ f(n,ρ,δ)` in closed form, with `f` crossing `n` at the claimed `δ*`, and
 respecting the near-capacity lower bound `ε_mca ≥ n^{Ω(1)}/|F|` (ABF26 Table 1). This is the
 `▼ YOUR CONJECTURE HERE ▼` slot's precise target — a syndrome line–ball incidence bound for `μ_n`.
+
+## §R.2  SESSION 2026-06-13b — energy⟹sup-norm reduction, the EXACT constant √2, and the proven
+##        BGK partial bound (connecting the Shaw operator of §3 to known number theory).
+
+The §3 Shaw operator's even moments ARE the `r`-fold additive energies `E_r(μ_n)` of the syndrome
+incidence, so the prize bound is a bound on `E_r(μ_n)`. Three results this session:
+
+  **(1) Reduction, LANDED axiom-clean** (`SubgroupGaussSumEnergyReduction.eta_pow_le_energyR`):
+  `max_{b≠0}‖η_b‖^{2r} ≤ q·E_r(μ_n) − |μ_n|^{2r}`, via the in-tree moment ladder
+  `∑_b‖η_b‖^{2r}=q·E_r` (pure orthogonality, no Weil). Converts ANY `E_r` bound into a Shaw/η bound.
+
+  **(2) The EXACT prize constant √2** (char-0 Wick). For `n=2^μ`, `{ζ^0..ζ^{n/2−1}}` is a ℚ-basis of
+  `ℚ(ζ_n)`, so the char-0 `r`-fold energy is a pure matching count `E_r^ℂ(μ_n)=(2r−1)!!·n^r`
+  (μ_n ≈ complex Gaussian; r=1→n, r=2→3n²−3n in-tree-exact). At the critical `r≈ln q` this yields
+  `max‖η_b‖ ≤ √(2·n·ln q)`. The controlled quantity is the EXCESS over the equidistribution baseline,
+  `Excess(r):=E_r−n^{2r}/q=(1/q)∑_{b≠0}‖η_b‖^{2r}`; the prize ⟺ `Excess(ln q) ≤ (2r−1)!!·n^r`. The
+  `r=2` case is PROVEN in-tree (pinned `E_2=3n²−3n`, `n⁴/q≈2⁻⁹⁶` negligible) but gives only a trivial
+  sup bound — the √2 needs `r≈ln q`, the open regime.
+
+  **(3) Proven PARTIAL bound (BGK).** The prize needs only ENOUGH cancellation, not the sharp √2:
+  the sharp sup-norm needs equidistribution to relative precision `e^{−Θ(n)}` (absurd) and was an
+  over-strong side-target. Throughout the ENTIRE prize regime `n=2⁴⁰ ≥ p^{0.156}` (fixed `δ` since
+  `p≤2²⁵⁶`), Bourgain–Glibichuk–Konyagin gives a PROVEN power-saving `max‖η_b‖ ≤ n^{1−ε}`,
+  `ε=ε(0.156)>0`. Via the in-tree `SubgroupGaussSumMomentBound.rEnergy_le` (with `M=n^{2−2ε}`) this is
+  a proven `Excess(r) ≤ n^{2r−1−2ε(r−1)}` — strictly past Johnson, but `≫ Wick` for small `ε`, so it
+  does NOT reach the window edge `1−ρ−Θ(1/log n)`.
+
+So the prize is bracketed by two in-tree-expressible bounds on the SAME Shaw/`E_r` object: BGK
+(proven, past Johnson) below, Wick-√2 (conjectured, window edge) above. The open core is exactly the
+sharp per-frequency `Z/n` block estimate of `FarLineIncidenceEquivariance` (§3) — sharper than BGK,
+= `Excess(ln q) ≤ (2r−1)!!n^r`. Full derivation + numerics:
+`docs/kb/jlr26-frs-subspace-design-formalization-map-2026-06-13.md` §§13–14b.
 -/
 
 set_option linter.unusedSectionVars false
