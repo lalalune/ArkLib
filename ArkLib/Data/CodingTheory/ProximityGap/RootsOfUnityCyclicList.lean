@@ -166,6 +166,18 @@ theorem bigAgreeCodewords_card_shift {ζ : F} (hζ : IsPrimitiveRoot ζ n) {k m 
   · intro c _; exact unShift_shift c
   · intro c _; exact shift_unShift c
 
+/-- **Full `ℤ/n` action: the list size is invariant under every iterated shift.**  By
+induction on the single-shift invariance, the sub-Johnson list size is a genuine class
+function on the cyclic orbits of words. -/
+theorem bigAgreeCodewords_card_iterate {ζ : F} (hζ : IsPrimitiveRoot ζ n) {k m : ℕ}
+    (w : Fin n → F) (j : ℕ) :
+    (bigAgreeCodewords (domRU hζ) k m (shiftWord^[j] w)).card
+      = (bigAgreeCodewords (domRU hζ) k m w).card := by
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+    rw [Function.iterate_succ', Function.comp_apply, bigAgreeCodewords_card_shift, ih]
+
 /-- The core-shift embedding `i ↦ i+1` on index sets. -/
 def coreShift : Fin n ↪ Fin n := (Equiv.addRight (1 : Fin n)).toEmbedding
 
