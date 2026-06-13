@@ -238,6 +238,107 @@ theorem rootsOfUnity_mca_badscalar_card_le (Q0 : F[X]) (μ : Finset F) (k a : �
       ≤ (μ.powersetCard a).card :=
   mca_badscalar_card_le Q0 μ k a hka
 
+private theorem prodXsubC_monic (S : Finset F) : (∏ ζ ∈ S, (X - C ζ)).Monic :=
+  monic_prod_of_monic _ _ (fun ζ _ => monic_X_sub_C ζ)
+
+private theorem C_mul_modByMonic (c : F) (p m : F[X]) :
+    (C c * p) %ₘ m = C c * (p %ₘ m) := by
+  rw [← smul_eq_C_mul, ← smul_eq_C_mul, smul_modByMonic]
+
+private theorem sub_self_modByMonic_dvd (Q m : F[X]) : m ∣ (Q - Q %ₘ m) :=
+  ⟨Q /ₘ m, by linear_combination -(Polynomial.modByMonic_add_div Q m)⟩
+
+private theorem modByMonic_self_lowdeg (W m : F[X]) (k a : ℕ) (hm : m.Monic)
+    (hdeg : m.natDegree = a) (hWk : W.natDegree < k) (hka : k < a) : W %ₘ m = W := by
+  rw [modByMonic_eq_self_iff hm, Polynomial.degree_eq_natDegree hm.ne_zero, hdeg]
+  refine lt_of_le_of_lt Polynomial.degree_le_natDegree ?_
+  exact_mod_cast (show W.natDegree < a by omega)
+
+private theorem modByMonic_eval_eq (Q : F[X]) (S : Finset F) (ζ : F) (hζ : ζ ∈ S) :
+    (Q %ₘ (∏ x ∈ S, (X - C x))).eval ζ = Q.eval ζ := by
+  set m := ∏ x ∈ S, (X - C x) with hm
+  have hmζ : m.eval ζ = 0 := by rw [hm, eval_prod]; exact Finset.prod_eq_zero hζ (by simp)
+  obtain ⟨c, hc⟩ := sub_self_modByMonic_dvd Q m
+  have hev : (Q - Q %ₘ m).eval ζ = 0 := by rw [hc, eval_mul, hmζ, zero_mul]
+  rw [eval_sub, sub_eq_zero] at hev; exact hev.symm
+
+/-- **The MCA bad-scalar count is q-independent for EVERY single-poly stack (general `Q₁`).**
+The `¬pairJoint` non-degeneracy absorbs the codeword freedom AND removes any degree restriction on
+`Q₁`: the number of `γ` for which `Q₀ + γ·Q₁` agrees with a degree-`<k` codeword on some `a`-subset
+`S ⊆ μ` *without* `(Q₀, Q₁)` jointly agreeing with codewords on `S` is `≤ C(|μ|, a)`, independent of
+`|F|`. -/
+theorem mca_badscalar_general (Q0 Q1 : F[X]) (μ : Finset F) (k a : ℕ) (hka : k < a) :
+    (Finset.univ.filter (fun γ : F =>
+      ∃ S : Finset F, S ⊆ μ ∧ S.card = a ∧
+        (∃ W : F[X], W.natDegree < k ∧ ∀ ζ ∈ S, (Q0 + C γ * Q1 - W).eval ζ = 0) ∧
+        ¬ (∃ W0 W1 : F[X], W0.natDegree < k ∧ W1.natDegree < k ∧
+            (∀ ζ ∈ S, (Q0 - W0).eval ζ = 0) ∧ (∀ ζ ∈ S, (Q1 - W1).eval ζ = 0)))).card
+      ≤ (μ.powersetCard a).card := by
+  classical
+  set bad := Finset.univ.filter (fun γ : F =>
+      ∃ S : Finset F, S ⊆ μ ∧ S.card = a ∧
+        (∃ W : F[X], W.natDegree < k ∧ ∀ ζ ∈ S, (Q0 + C γ * Q1 - W).eval ζ = 0) ∧
+        ¬ (∃ W0 W1 : F[X], W0.natDegree < k ∧ W1.natDegree < k ∧
+            (∀ ζ ∈ S, (Q0 - W0).eval ζ = 0) ∧ (∀ ζ ∈ S, (Q1 - W1).eval ζ = 0))) with hbad
+  have hwit : ∀ γ ∈ bad, ∃ S : Finset F, S ⊆ μ ∧ S.card = a ∧
+      (∃ W : F[X], W.natDegree < k ∧ ∀ ζ ∈ S, (Q0 + C γ * Q1 - W).eval ζ = 0) ∧
+      ¬ (∃ W0 W1 : F[X], W0.natDegree < k ∧ W1.natDegree < k ∧
+          (∀ ζ ∈ S, (Q0 - W0).eval ζ = 0) ∧ (∀ ζ ∈ S, (Q1 - W1).eval ζ = 0)) :=
+    fun γ hγ => (Finset.mem_filter.mp hγ).2
+  choose Spick hSsub hScard hWit hNoPair using hwit
+  apply Finset.card_le_card_of_injOn (fun γ => if h : γ ∈ bad then Spick γ h else ∅)
+  · intro γ hγ
+    have hfeq : (if h : γ ∈ bad then Spick γ h else ∅) = Spick γ hγ := dif_pos hγ
+    show (if h : γ ∈ bad then Spick γ h else ∅) ∈ μ.powersetCard a
+    rw [hfeq]; exact Finset.mem_powersetCard.mpr ⟨hSsub γ hγ, hScard γ hγ⟩
+  · intro γ hγ γ' hγ' heq
+    have hγb := Finset.mem_coe.mp hγ
+    have hγb' := Finset.mem_coe.mp hγ'
+    simp only [dif_pos hγb, dif_pos hγb'] at heq
+    by_contra hne
+    set S := Spick γ hγb with hSdef
+    set m := ∏ ζ ∈ S, (X - C ζ) with hmdef
+    have hmmonic : m.Monic := prodXsubC_monic S
+    have hmdeg : m.natDegree = a := by rw [hmdef, prodXsubC_natDegree, hScard γ hγb]
+    obtain ⟨W, hWdeg, hWvan⟩ := hWit γ hγb
+    obtain ⟨W', hWdeg', hWvan'⟩ := hWit γ' hγb'
+    rw [← heq] at hWvan'
+    have hd1 : m ∣ (Q0 + C γ * Q1 - W) := by rw [hmdef]; exact prodXsubC_dvd_of_roots _ S hWvan
+    have hd2 : m ∣ (Q0 + C γ' * Q1 - W') := by rw [hmdef]; exact prodXsubC_dvd_of_roots _ S hWvan'
+    have hddiff : m ∣ (C (γ - γ') * Q1 - (W - W')) := by
+      have hs := dvd_sub hd1 hd2
+      have he : (Q0 + C γ * Q1 - W) - (Q0 + C γ' * Q1 - W') = C (γ - γ') * Q1 - (W - W') := by
+        rw [map_sub]; ring
+      rwa [he] at hs
+    have hWdiff_low : (W - W').natDegree < k := lt_of_le_of_lt (Polynomial.natDegree_sub_le _ _)
+      (by rw [Nat.max_lt]; exact ⟨hWdeg, hWdeg'⟩)
+    have hmod0 : (C (γ - γ') * Q1 - (W - W')) %ₘ m = 0 :=
+      (modByMonic_eq_zero_iff_dvd hmmonic).mpr hddiff
+    have hWmWself : (W - W') %ₘ m = W - W' :=
+      modByMonic_self_lowdeg (W - W') m k a hmmonic hmdeg hWdiff_low hka
+    have hkey : C (γ - γ') * (Q1 %ₘ m) = W - W' := by
+      have h := hmod0
+      rw [sub_modByMonic, C_mul_modByMonic, hWmWself, sub_eq_zero] at h
+      exact h
+    have hW1deg : (Q1 %ₘ m).natDegree < k := by
+      have hrepr : Q1 %ₘ m = C (γ - γ')⁻¹ * (W - W') := by
+        rw [← hkey, ← mul_assoc, ← C_mul, inv_mul_cancel₀ (sub_ne_zero.mpr hne), C_1, one_mul]
+      rw [hrepr, Polynomial.natDegree_C_mul (inv_ne_zero (sub_ne_zero.mpr hne))]
+      exact hWdiff_low
+    have hWself : W %ₘ m = W := modByMonic_self_lowdeg W m k a hmmonic hmdeg hWdeg hka
+    have hW0eq : Q0 %ₘ m = W - C γ * (Q1 %ₘ m) := by
+      have h : (Q0 + C γ * Q1 - W) %ₘ m = 0 := (modByMonic_eq_zero_iff_dvd hmmonic).mpr hd1
+      rw [sub_modByMonic, add_modByMonic, C_mul_modByMonic, hWself] at h
+      linear_combination h
+    -- the pairJoint contradiction
+    refine hNoPair γ hγb ⟨Q0 %ₘ m, Q1 %ₘ m, ?_, hW1deg, ?_, ?_⟩
+    · rw [hW0eq]
+      exact lt_of_le_of_lt (Polynomial.natDegree_sub_le _ _)
+        (by rw [Nat.max_lt]
+            exact ⟨hWdeg, lt_of_le_of_lt (Polynomial.natDegree_C_mul_le _ _) hW1deg⟩)
+    · intro ζ hζ; rw [eval_sub, hmdef] at *; rw [modByMonic_eval_eq Q0 S ζ hζ, sub_self]
+    · intro ζ hζ; rw [eval_sub, hmdef] at *; rw [modByMonic_eval_eq Q1 S ζ hζ, sub_self]
+
 end ArkLib.ProximityGap.SinglePencilQIndependence
 
 /-! ## Axiom audit -/
@@ -245,3 +346,4 @@ end ArkLib.ProximityGap.SinglePencilQIndependence
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.rootsOfUnity_pencil_aclose_card_le
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_card_le
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.rootsOfUnity_mca_badscalar_card_le
+#print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_general
