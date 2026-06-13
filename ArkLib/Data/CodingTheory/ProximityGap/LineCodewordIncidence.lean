@@ -70,8 +70,42 @@ theorem line_codeword_incidence_le
         w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)).card ≤ n / w :=
   Nat.le_div_iff_mul_le hw |>.mpr (line_codeword_incidence_mul_le u v c hv w)
 
+open Classical in
+/-- **The quantified LD⟺MCA bridge.** The far-line incidence — the number of scalars `γ` for which
+`u + γ·v` agrees on `≥ w` coordinates with *some* codeword in `C` — is at most `⌊n/w⌋` times the
+number of codewords of `C` that lie within `w`-agreement of the line. In the window `w ~ n/2`,
+`⌊n/w⌋ ≤ 2`, so the incidence is `≤ 2·L` where `L` is the line's close-codeword list size: the MCA
+threshold and the list-decoding radius coincide up to the factor `⌊n/w⌋`. -/
+theorem line_list_incidence_le (u v : Fin n → F) (hv : ∀ i, v i ≠ 0) {w : ℕ} (hw : 0 < w)
+    (C : Finset (Fin n → F)) :
+    (univ.filter (fun γ : F =>
+        ∃ c ∈ C, w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)).card
+      ≤ (C.filter (fun c => ∃ γ : F,
+          w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)).card * (n / w) := by
+  set close := C.filter (fun c => ∃ γ : F,
+      w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card) with hclose
+  have hsub : (univ.filter (fun γ : F =>
+        ∃ c ∈ C, w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card))
+      ⊆ close.biUnion (fun c => univ.filter (fun γ : F =>
+          w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)) := by
+    intro γ hγ
+    rw [mem_filter] at hγ; obtain ⟨_, c, hcC, hcw⟩ := hγ
+    rw [mem_biUnion]
+    exact ⟨c, by rw [hclose, mem_filter]; exact ⟨hcC, γ, hcw⟩,
+      by rw [mem_filter]; exact ⟨mem_univ _, hcw⟩⟩
+  calc (univ.filter (fun γ : F =>
+          ∃ c ∈ C, w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)).card
+      ≤ (close.biUnion (fun c => univ.filter (fun γ : F =>
+          w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card))).card := card_le_card hsub
+    _ ≤ ∑ c ∈ close, (univ.filter (fun γ : F =>
+          w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)).card := card_biUnion_le
+    _ ≤ ∑ _c ∈ close, n / w := by
+        apply sum_le_sum; intro c _; exact line_codeword_incidence_le u v c hv hw
+    _ = close.card * (n / w) := by rw [sum_const, smul_eq_mul]
+
 end ProximityGap.LineCodewordIncidence
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.LineCodewordIncidence.line_codeword_incidence_mul_le
 #print axioms ProximityGap.LineCodewordIncidence.line_codeword_incidence_le
+#print axioms ProximityGap.LineCodewordIncidence.line_list_incidence_le
