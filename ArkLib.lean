@@ -957,6 +957,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineFirstMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.LineHeavySetBound
 import ArkLib.Data.CodingTheory.ProximityGap.LineListCodewordCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.LineListDimensionLift
+import ArkLib.Data.CodingTheory.ProximityGap.LineListJohnsonClosure
 import ArkLib.Data.CodingTheory.ProximityGap.LineListReduction
 import ArkLib.Data.CodingTheory.ProximityGap.LinePairCooccurrenceBound
 import ArkLib.Data.CodingTheory.ProximityGap.LineSecondMomentBound
