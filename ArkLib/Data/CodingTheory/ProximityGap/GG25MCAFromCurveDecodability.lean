@@ -121,8 +121,49 @@ theorem all_seeds_relClose_of_curveDecodable
       = ((t - ℓ : ℕ) : ℝ≥0) * (hammingDist (comb u β) (comb cs β) : ℝ≥0) := by ring
     _ ≤ (t : ℝ≥0) * δ * (Fintype.card ι : ℝ≥0) := hcastineq
 
+/-- **[GG25] Lemma 3.2, relative-distance form (arbitrary stacks).** The general spread statement
+(no curve-decodability): if two curves `∑ⱼ αʲ•uⱼ`, `∑ⱼ αʲ•cⱼ` are within relative Hamming distance
+`δ` at `≥ t` seeds (`ℓ < t`), then at *every* seed they are within `(t/(t−ℓ))·δ` — i.e.
+`δ·(1 + ℓ/(t−ℓ))`. `all_seeds_relClose_of_curveDecodable` is the curve-decodable specialization. -/
+theorem all_seeds_relClose {ℓ t : ℕ} {δ : ℝ≥0} (hlt : ℓ < t)
+    (u c : Fin (ℓ + 1) → ι → A)
+    (hclose : t ≤ (univ.filter (fun α : F =>
+      ((relHammingDist (comb u α) (comb c α) : ℚ≥0) : ℝ≥0) ≤ δ)).card) (β : F) :
+    ((relHammingDist (comb u β) (comb c β) : ℚ≥0) : ℝ≥0)
+      ≤ ((t : ℝ≥0) / ((t - ℓ : ℕ) : ℝ≥0)) * δ := by
+  classical
+  have hsub : (univ.filter (fun α : F =>
+        ((relHammingDist (comb u α) (comb c α) : ℚ≥0) : ℝ≥0) ≤ δ))
+      ⊆ univ.filter (fun α : F =>
+        hammingDist (comb u α) (comb c α) ≤ ⌊δ * (Fintype.card ι : ℝ≥0)⌋₊) := by
+    intro α hα
+    simp only [mem_filter, mem_univ, true_and] at hα ⊢
+    exact hammingDist_le_floor_of_relHam_le hα
+  have hint : t ≤ (univ.filter (fun α : F =>
+      hammingDist (comb u α) (comb c α) ≤ ⌊δ * (Fintype.card ι : ℝ≥0)⌋₊)).card :=
+    le_trans hclose (Finset.card_le_card hsub)
+  have hball := all_seeds_close hlt u c hint β
+  have hnpos : (0 : ℝ≥0) < (Fintype.card ι : ℝ≥0) := by exact_mod_cast Fintype.card_pos
+  have htlpos : (0 : ℝ≥0) < ((t - ℓ : ℕ) : ℝ≥0) := by exact_mod_cast Nat.sub_pos_of_lt hlt
+  have hcastineq : ((t - ℓ : ℕ) : ℝ≥0) * (hammingDist (comb u β) (comb c β) : ℝ≥0)
+      ≤ (t : ℝ≥0) * δ * (Fintype.card ι : ℝ≥0) := by
+    have key : ((t - ℓ : ℕ) : ℝ≥0) * (hammingDist (comb u β) (comb c β) : ℝ≥0)
+        ≤ (t : ℝ≥0) * ((⌊δ * (Fintype.card ι : ℝ≥0)⌋₊ : ℕ) : ℝ≥0) := by exact_mod_cast hball
+    refine key.trans ?_
+    rw [mul_assoc]
+    gcongr
+    exact Nat.floor_le (by positivity)
+  rw [show ((relHammingDist (comb u β) (comb c β) : ℚ≥0) : ℝ≥0)
+        = (hammingDist (comb u β) (comb c β) : ℝ≥0) / (Fintype.card ι : ℝ≥0) by
+      simp only [relHammingDist, NNRat.cast_div, NNRat.cast_natCast]]
+  rw [div_le_iff₀ hnpos, div_mul_eq_mul_div, div_mul_eq_mul_div, le_div_iff₀ htlpos]
+  calc (hammingDist (comb u β) (comb c β) : ℝ≥0) * ((t - ℓ : ℕ) : ℝ≥0)
+      = ((t - ℓ : ℕ) : ℝ≥0) * (hammingDist (comb u β) (comb c β) : ℝ≥0) := by ring
+    _ ≤ (t : ℝ≥0) * δ * (Fintype.card ι : ℝ≥0) := hcastineq
+
 end ProximityGap.GG25Lemma32
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.GG25Lemma32.all_seeds_close_of_curveDecodable
 #print axioms ProximityGap.GG25Lemma32.all_seeds_relClose_of_curveDecodable
+#print axioms ProximityGap.GG25Lemma32.all_seeds_relClose
