@@ -50,3 +50,21 @@ n=2^m antipodal [in-tree LamLeungTwoPow], the multinomial EGF, and Graf's additi
 PROMOTED and PROVEN. Grind status: the first conjecture that survived refutation (true) AND is now
 fully proven — but it is the resolvable structural layer, NOT the prize open core (which is the
 deviation past the no-relation threshold).
+
+## COROLLARY — the char-0 GaussianEnergyBound E_r ≤ (2r−1)‼·n^r (closes face-3's named char-0 input)
+
+The updated CLAUDE.md face 3 needs `GaussianEnergyBound: E_r(μ_n) ≤ (2r−1)‼·n^r` (char-0, feeds
+GaussPeriodMomentBound ⟹ B≤√(2n ln q)). The Bessel theorem proves it EXACTLY:
+  E_r = (2r)!·[x^r]I₀(2√x)^N, N=n/2, and
+  [x^r]I₀(2√x)^N = Σ_{Σm_k=r} ∏ 1/(m_k!)²  ≤  Σ_{Σm_k=r} ∏ 1/(m_k!) = [x^r]e^{Nx} = N^r/r!,
+using ONLY 1/(m!)² ≤ 1/m!. Hence E_r ≤ (2r)!·N^r/r! = (2r)!/(2^r r!)·n^r = (2r−1)‼·n^r.  ∎
+Leading term sharp: for N≫r the all-m_k∈{0,1} terms give [x^r]I₀^N ≈ C(N,r) ≈ N^r/r!, so
+E_r = (2r−1)‼ n^r (1+o(1)) — energy EXACTLY Gaussian to leading order, Bessel gives all corrections.
+Check n=4,r=2: 36 ≤ 48 ✓.
+
+So this PROVES the char-0 half of face 3 (exact value + one-line comparison), an alternative to the
+Lam–Leung union-bound route, and arguably cleaner (exact closed form). The OPEN residual is unchanged
+and as CLAUDE.md states: the char-p TRANSFER of E_r≤(2r−1)‼n^r to r≈ln q — proven n<40 (norm bound
+q>(2r)^{n/2}), OPEN for prize n=2^30 (do short ≤2ln q-term ±1 relations of 2^μ-th roots vanish mod the
+prize prime?). That char-p transfer is the prize open core (= my 0-dimensional arithmetic-cancellation
+classification, = Paley Graph Conjecture / BCHKS 1.12). Bessel closes the baseline; the deviation is open.
