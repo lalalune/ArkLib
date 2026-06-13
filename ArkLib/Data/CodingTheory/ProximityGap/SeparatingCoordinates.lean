@@ -74,7 +74,31 @@ theorem exists_separating_coords (r : ℕ) (H : Submodule F (ι → Fin s → F)
         rw [← inf_assoc]]
       exact hS'sep
 
+/-- **Few coordinates determine a low-dimensional subspace.** For `H ≤ (ι → Fin s → F)` with
+`finrank H ≤ r`, the restriction of `H` to some set `S` of at most `r` coordinates is *injective*:
+a dimension-`r` subspace is pinned down by its values on `r` coordinates. The form the
+subspace-design list-decoding / GG25 §4.3 pruning consumes (close codewords agreeing on the sampled
+coordinates coincide). -/
+theorem exists_separating_restriction_injective (r : ℕ) (H : Submodule F (ι → Fin s → F))
+    (hr : Module.finrank F H ≤ r) :
+    ∃ S : Finset ι, S.card ≤ r ∧
+      Function.Injective (fun (c : H) => fun i : S => (c : ι → Fin s → F) (i : ι)) := by
+  obtain ⟨S, hScard, hSsep⟩ := exists_separating_coords r H hr
+  refine ⟨S, hScard, ?_⟩
+  intro c₁ c₂ heq
+  have hdiff : ((c₁ : ι → Fin s → F) - (c₂ : ι → Fin s → F)) ∈
+      H ⊓ (⨅ i ∈ S, LinearMap.ker
+        (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) := by
+    refine Submodule.mem_inf.mpr ⟨H.sub_mem c₁.2 c₂.2, ?_⟩
+    simp only [Submodule.mem_iInf]
+    intro i hiS
+    rw [LinearMap.mem_ker, LinearMap.proj_apply, Pi.sub_apply, sub_eq_zero]
+    exact congrFun heq ⟨i, hiS⟩
+  rw [hSsep, Submodule.mem_bot, sub_eq_zero] at hdiff
+  exact Subtype.ext hdiff
+
 end ProximityGap
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.exists_separating_coords
+#print axioms ProximityGap.exists_separating_restriction_injective
