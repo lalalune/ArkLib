@@ -8138,3 +8138,27 @@ Conjectures refuted/closed this campaign: E'' (O160), J (O161), J' (O162) + the 
 of E≤Cn². The δ* residual-free target is equivalent to the multiplicative-subgroup additive-energy
 conjecture `E_Fp(μ_n)=n^{2+o(1)}` (best known n^{2.44}, Shkredov) — a recognized open problem.
 No fabricated closure.
+
+### O163 — δ* is NOT pinned by the exact subset-sum fibre: H-MAX is a combinatorial densest-cluster (Conjecture L refuted, 2026-06-13)
+
+The unconditional Garcia–Voloch/Stepanov bound E ≤ 4n^{8/3} already makes the energy/cubic supply
+SILENT at prize scale (≈2^85 ≪ q·ε* = 2^128), so δ* is bound by the NEAR-CAPACITY extremal list
+(H-MAX), a higher-order subset-sum fibre — which for 2-power domains is EXACTLY known
+(`TwoPowerFibreValue`). **Conjecture L**: power word extremal at near-capacity ⟹ δ* pinned exactly
+by the fibre value, no residual.
+
+**Probe (`probe_powerword_extremal_search.py`, μ₈⊂F₁₇ PROPER subgroup, k=2, t=3 = middle band,
+strong hill-climb + 300-random search):** `L(x³) = 0` (= #sum-zero 3-subsets; μ₈ is SidonModNeg)
+but the **strong search finds a word with list 7**. The power word is beaten by a non-algebraic,
+non-subset-sum word.
+
+**Verdict: Conjecture L REFUTED.** The extremal list H-MAX is a *combinatorial densest codeword
+cluster* (7 linear codewords pairwise agreeing ≤1, all ≥3-agreeing with one deep word), NOT the
+algebraic power-word fibre. So δ* is NOT pinned by `TwoPowerFibreValue`; the binding quantity is the
+explicit-RS sub-Johnson list-decoding bound, which has no closed form — the recognized open problem.
+
+**Campaign tally (direct δ* attack, all probe-refuted, all logged):** E'' (O160, energy-minimality
+threshold non-universal), J (O161, coset not extremal sub-Johnson), J' (O162, extremality=subset-sum
+=energy core), L (O163, H-MAX is combinatorial densest-cluster not the fibre). + swarm's 6 E≤Cn²
+bypasses. Every direct route to a residual-free δ* terminates at the explicit-smooth-RS
+sub-Johnson list-decoding bound = a recognized open problem. No fabricated closure.
