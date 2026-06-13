@@ -248,3 +248,33 @@ geometry of R₁ alone.** This redirects the attack: the `RungOffPointPinning`
 not the Fisher/e-symmetric counts (R₁-side, both already refuted as
 shortcuts). The named residual `ClassPackingBound` correctly bundles this:
 its hardness is the R₀-R₁ joint frame-attachment count.
+
+## Correction: the n−|A| per-class cap is LOOSE; the bound is the shared-R₀ coupling
+
+A subtlety in the `ClassPackingBound` framing, found while testing 3-class
+coexistence: three DISJOINT size-5 agreement sets (15 pts) coexist
+geometrically (R₁ = qᵢ on Aᵢ is consistent at deg ≤ 15), so
+`Σ(n − |Aⱼ|) = 3·11 = 33 > 31`. Hence the partition bound with caps
+`n − |A|` (`maximal_frame_attached_card_le`) does NOT by itself give ≤ 31 —
+the cap is loose. The obligation must hold because each class hosts FEW
+ACTUAL attached scalars, not because few classes coexist.
+
+The operative mechanism (the shared single R₀): a class-`i` bad scalar with
+witness `Aᵢ ∪ T` (`|T| = 2` off-`Aᵢ`) needs `T` to lie on the candidate
+map `fᵢ = −(R₀−rᵢ)/(R₁−qᵢ)` at one shared value. But the off-points of
+class `i` are LARGELY the agreement points of classes `j ≠ i`, where R₀ is
+PINNED to `rⱼ` (their frame). So `fᵢ` on `Aⱼ` is determined by the other
+classes' frames — not freely maximizable. This is exactly the regime of the
+landed `cross_restriction_card_le` (`RungCrossRestriction`): a fixed scalar
+is served by ≤ `k−1 = 2` frame points of another class. The only truly free
+off-points are the few outside every `Aⱼ` (here 1), too few to form witness
+pairs.
+
+**Corrected residual focus**: the per-class attachment count is bounded by
+`fᵢ`-value collisions among the (mostly R₀-pinned) off-points, governed by
+`cross_restriction` — NOT by `n − |A|`. The right `ClassPackingBound` cap is
+the cross-restriction collision count, and the global bound is the
+shared-R₀ coupling across all classes. (The `probe_wb371_sharedR0` hill-climb
+was inconclusive — single-coordinate moves cannot bootstrap a bad scalar
+from a random stack; a constructive multi-class builder is needed to push
+the empirical max past the fiber-tuned 22.)
