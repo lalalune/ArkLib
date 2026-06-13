@@ -77,8 +77,42 @@ theorem vAbs_vMeet_univ_eq_zero {V : Fin m → (Fin n → ℕ)}
     vAbs (vMeet V Finset.univ hne) = 0 := by
   rw [vMeet_univ_eq_zero hne hprim]; simp [vAbs]
 
+/-- **Slack form of the MDS condition.**  In a `V*(k)` system, a *non-tight* index set `I`
+satisfies the strict inequality, i.e. over `ℕ` the MDS quantity is `≤ k − 1`:
+`Σ_{i∈I}(k − |vᵢ|) + |⋀_{i∈I} vᵢ| ≤ k − 1`.
+
+This is the precise "slack absorbs the merge" inequality used in the `|I| < m` branch of Lemma
+2.5's clause (ii): a non-tight set has at least one unit of slack to absorb the `+1` produced by
+merging two coordinates. -/
+theorem not_tightConstraint_le {V : Fin m → (Fin n → ℕ)} {k : ℕ} (hV : IsVStar V k)
+    {I : Finset (Fin m)} (hI : I.Nonempty) (hnt : ¬ tightConstraint V k I hI) :
+    (∑ i ∈ I, (k - vAbs (V i))) + vAbs (vMeet V I hI) ≤ k - 1 := by
+  have hle := hV.mds I hI
+  unfold tightConstraint at hnt
+  omega
+
+/-- **Tight ⟹ no slack.**  The contrapositive companion: if the MDS quantity has slack
+(`≤ k − 1`), then `I` is not tight.  (Trivial, but convenient for the dichotomy bookkeeping.) -/
+theorem not_tightConstraint_of_le {V : Fin m → (Fin n → ℕ)} {k : ℕ}
+    {I : Finset (Fin m)} (hI : I.Nonempty)
+    (hle : (∑ i ∈ I, (k - vAbs (V i))) + vAbs (vMeet V I hI) ≤ k - 1) (hk : 1 ≤ k) :
+    ¬ tightConstraint V k I hI := by
+  unfold tightConstraint
+  omega
+
+/-- **Primitivity ⟹ the full-set meet is tight-at-last with value `0`.**  In a primitive system
+the last coordinate of the full meet vanishes (`meet_univ_coord_zero` with the last coordinate),
+the precise fact used in the `|I| = m` branch of Lemma 2.5's clause (ii) — there the merge of the
+last two coordinates of the meet contributes nothing, since both are `0`. -/
+theorem meet_univ_last_zero {V : Fin m → (Fin n → ℕ)}
+    (hne : (Finset.univ : Finset (Fin m)).Nonempty) {j : Fin n}
+    (hj : ∃ i, V i j = 0) : vMeet V Finset.univ hne j = 0 :=
+  meet_univ_coord_zero hne hj
+
 end ArkLib.GMMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.GMMDS.singleton_tight
 #print axioms ArkLib.GMMDS.vMeet_univ_eq_zero
+#print axioms ArkLib.GMMDS.not_tightConstraint_le
+#print axioms ArkLib.GMMDS.not_tightConstraint_of_le
