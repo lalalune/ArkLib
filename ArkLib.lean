@@ -830,6 +830,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWeilBoundInstances
+import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HybridConcentrationDepthNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.HybridPinInstance
 import ArkLib.Data.CodingTheory.ProximityGap.IntSquarefreeClassification
