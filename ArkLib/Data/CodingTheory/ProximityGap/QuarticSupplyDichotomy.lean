@@ -33,8 +33,16 @@ Together this is the exact `k = 3` deep-band dichotomy, mirroring the cubic case
   `2 ∤ n  ⟹  quartic supply 0` (no antipodal pairs, e.g. `μ_5`);
   `2 ∣ n  ⟹  quartic supply ≥ 1` (antipodal-pair complements, e.g. `μ_6`).
 
+A third witness fixes the **growth rate** on the prize-relevant 2-power domain:
+
+> **`quarticSupply_mu8_F17_eq_six`** — `x⁴` on `μ_8 = ⟨2⟩ ⊂ F₁₇` (the FRI-shaped 2-power
+> domain, `n = 8`) has exactly `6 = C(n/2, 2)` explainable `4`-cores: every pair of the four
+> antipodal pairs `{1,16}, {2,15}, {4,13}, {8,9}` is a zero-sum quadruple.  So the deepest-band
+> quartic supply is `Θ(n²)` — polynomial (consistent with `δ* = capacity − Θ(1/log n)`) but
+> strictly larger than the cubic word's supply.
+
 So the deepest pre-capacity (sub-Johnson) supply of the tower-shaped word `x⁴` is governed by
-the parity of `n` — the `k = 3` instance of the general orchard identity, exhibited at two
+the parity of `n` — the `k = 3` instance of the general orchard identity, exhibited at three
 concrete fields.  Issue #389.
 -/
 
@@ -108,8 +116,44 @@ theorem quarticSupply_mu6_F7_eq_three :
 
 end MuSix
 
+section MuEight
+
+local instance : Fact (Nat.Prime 17) := ⟨by norm_num⟩
+
+/-- `μ_8 = ⟨2⟩ ⊂ F₁₇` (the order-8 subgroup; `2` has order `8` mod `17`) — the 2-power,
+FRI-shaped domain.  Antipodal pairs: `(1,16), (2,15), (4,13), (8,9)` (`−1 = 16`). -/
+def dom8vals : Fin 8 → ZMod 17 := ![1, 2, 4, 8, 16, 15, 13, 9]
+
+/-- The evaluation domain `μ_8 ⊂ F₁₇` as an embedding (injective by `decide`). -/
+def dom8 : Fin 8 ↪ ZMod 17 := ⟨dom8vals, by decide⟩
+
+set_option maxHeartbeats 4000000 in
+/-- The zero-sum-4-subset count of `μ_8 ⊂ F₁₇` is `6 = C(4,2)`: the only zero-sum quadruples
+are the `C(4,2) = 6` unions of two of the four antipodal pairs `{1,16}, {2,15}, {4,13}, {8,9}`
+(Mann: no non-antipodal quadruple of distinct roots of unity vanishes). -/
+theorem mu8_F17_zeroSum_quads_eq_six :
+    (((Finset.univ : Finset (Fin 8)).powersetCard (3 + 1)).filter
+        (fun T => ∑ i ∈ T, dom8 i = 0)).card = 6 := by
+  decide
+
+open Classical in
+/-- **The deep-band quartic supply on the 2-power (FRI-shaped) domain**: `x⁴` on `μ_8 ⊂ F₁₇`
+has exactly `6 = C(n/2, 2)` explainable `4`-cores.  This confirms the **quadratic growth law**
+on the prize-relevant 2-power domain: the deepest-band supply of `x⁴` is `Θ(n²)` (every pair
+of antipodal pairs is a zero-sum quadruple) — polynomial, consistent with the bold pinning
+hypothesis `δ* = capacity − Θ(1/log n)`, yet strictly larger than the cubic word's supply. -/
+theorem quarticSupply_mu8_F17_eq_six :
+    ((Finset.univ : Finset (Fin 8 → ZMod 17)).filter (fun c =>
+        c ∈ (rsCode dom8 3 : Submodule (ZMod 17) (Fin 8 → ZMod 17))
+          ∧ 3 + 1 ≤ (agreeSet c (fun i => (dom8 i) ^ (3 + 1))).card)).card = 6 := by
+  rw [general_orchard_card dom8 (by norm_num : (1 : ℕ) ≤ 3)]
+  exact mu8_F17_zeroSum_quads_eq_six
+
+end MuEight
+
 end ProximityGap.PairRank
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.PairRank.quarticSupply_mu5_F11_eq_zero
 #print axioms ProximityGap.PairRank.quarticSupply_mu6_F7_eq_three
+#print axioms ProximityGap.PairRank.quarticSupply_mu8_F17_eq_six

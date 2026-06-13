@@ -690,6 +690,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionSubJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionSubJohnsonGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationSharp
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationMajority
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEps
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEpsSharp
