@@ -788,11 +788,96 @@ theorem monomial_list_card_ge_odd {μ m r : ℕ} (hμ : 1 ≤ μ) (hm : 1 ≤ m)
     have hD0 : 0 ∉ D := fun hc => (Finset.mem_erase.mp (hDsub hc)).1 rfl
     exact antiSetOdd_sum hs2 hhalf1 hω hωhalf hDsub' hD0
 
+/-! ## The matching UPPER bound at `r = 2` (the constant-code slice): pigeonhole
+
+For `r = 2` the code has degree `≤ 0` (constants), and the list upper bound is a clean
+pigeonhole — the agreement sets of distinct constants are disjoint value-fibres.  This is
+the one slice of the otherwise-open upper-bound wall that falls unconditionally, and it
+makes the list size EXACT (`= 2^{μ−1} = N_fib(2^μ, 2)`).  For `r ≥ 3` the upper bound is
+the recognized Szemerédi–Trotter / additive-energy wall. -/
+
+open Classical in
+/-- **Pigeonhole upper bound for constant codewords.**  For any word `w` and threshold
+`a`, the constant codewords (`rsCode dom 1`) agreeing with `w` on `≥ a` points number at
+most `n / a`: their agreement sets are pairwise-disjoint value-fibres inside `[n]`. -/
+theorem const_list_card_mul_le {n : ℕ} [NeZero n] (dom : Fin n ↪ ZMod p)
+    (w : Fin n → ZMod p) (a : ℕ) :
+    (Finset.univ.filter (fun c : Fin n → ZMod p => c ∈ rsCode dom 1 ∧
+      a ≤ (Finset.univ.filter (fun i => c i = w i)).card)).card * a ≤ n := by
+  classical
+  set L := Finset.univ.filter (fun c : Fin n → ZMod p => c ∈ rsCode dom 1 ∧
+    a ≤ (Finset.univ.filter (fun i => c i = w i)).card) with hLdef
+  set ag : (Fin n → ZMod p) → Finset (Fin n) :=
+    fun c => Finset.univ.filter (fun i => c i = w i) with hagdef
+  -- constants agree at a point only on their unique value, so agreement sets are disjoint
+  have hconst : ∀ c ∈ L, ∀ i j, c i = c j := by
+    intro c hc i j
+    obtain ⟨-, ⟨P, hP, rfl⟩, -⟩ := Finset.mem_filter.mp hc
+    rcases eq_or_ne P 0 with rfl | hP0
+    · simp
+    · have hnd : P.natDegree = 0 := by
+        have h1 : (P.natDegree : WithBot ℕ) < 1 := by
+          rwa [← Polynomial.degree_eq_natDegree hP0]
+        exact_mod_cast Nat.lt_one_iff.mp (by exact_mod_cast h1)
+      obtain ⟨a, ha⟩ := Polynomial.natDegree_eq_zero.mp hnd
+      rw [← ha]; simp
+  have hdisj : ∀ c ∈ L, ∀ c' ∈ L, c ≠ c' → Disjoint (ag c) (ag c') := by
+    intro c hc c' hc' hne
+    rw [Finset.disjoint_left]
+    intro i hi hi'
+    rw [hagdef, Finset.mem_filter] at hi hi'
+    refine hne (funext fun j => ?_)
+    rw [hconst c hc j i, hconst c' hc' j i, hi.2, hi'.2]
+  -- the disjoint agreement sets fit in [n]
+  have hbiUnion : (L.biUnion ag).card = ∑ c ∈ L, (ag c).card := Finset.card_biUnion hdisj
+  have hle_n : (L.biUnion ag).card ≤ n := by
+    calc (L.biUnion ag).card ≤ (Finset.univ : Finset (Fin n)).card := Finset.card_le_card
+          (Finset.biUnion_subset.mpr fun c _ => Finset.filter_subset _ _)
+      _ = n := by rw [Finset.card_univ, Fintype.card_fin]
+  -- each agreement set has ≥ a points
+  have hge : ∀ c ∈ L, a ≤ (ag c).card := fun c hc => (Finset.mem_filter.mp hc).2.2
+  calc L.card * a = ∑ _c ∈ L, a := by rw [Finset.sum_const, smul_eq_mul]
+    _ ≤ ∑ c ∈ L, (ag c).card := Finset.sum_le_sum hge
+    _ = (L.biUnion ag).card := hbiUnion.symm
+    _ ≤ n := hle_n
+
+open Classical in
+/-- **EXACT list size at `r = 2`** — the first slice of the upper-bound wall to fall.
+On the smooth domain of order `2^μ·m`, the agreement-`2m` list of constant codewords for
+the word `x^{2m}` has size EXACTLY `2^{μ−1} = N_fib(2^μ, 2)`: the lower bound from the
+antipodal family (`monomial_list_card_ge_even`) meets the pigeonhole upper bound. -/
+theorem monomial_list_card_eq_two {μ m : ℕ} (hμ : 2 ≤ μ) (hm : 1 ≤ m)
+    {g : ZMod p} (hg : orderOf g = 2 ^ μ * m) :
+    haveI : NeZero (2 ^ μ * m) := ⟨by positivity⟩
+    (Finset.univ.filter (fun c : Fin (2 ^ μ * m) → ZMod p =>
+      c ∈ rsCode (domEmb hg) ((2 - 2) * m + 1) ∧ 2 * m ≤ (Finset.univ.filter
+        (fun i => c i = (g ^ (i : ℕ)) ^ (2 * m)
+          - (0 : ZMod p) * (g ^ (i : ℕ)) ^ ((2 - 1) * m))).card)).card = 2 ^ (μ - 1) := by
+  haveI : NeZero (2 ^ μ * m) := ⟨by positivity⟩
+  have hr2pow : (2 : ℕ) ≤ 2 ^ (μ - 1) := by
+    calc (2 : ℕ) = 2 ^ 1 := by norm_num
+      _ ≤ 2 ^ (μ - 1) := Nat.pow_le_pow_right (by norm_num) (by omega)
+  have hpow : (2 : ℕ) ^ μ * m = 2 ^ (μ - 1) * (2 * m) := by
+    have h2 : (2 : ℕ) ^ μ = 2 * 2 ^ (μ - 1) := by rw [← pow_succ']; congr 1; omega
+    rw [h2]; ring
+  refine le_antisymm ?_ ?_
+  · -- upper bound: pigeonhole gives list·2m ≤ 2^μ·m = 2^{μ−1}·2m, so list ≤ 2^{μ−1}
+    have hub := const_list_card_mul_le (domEmb hg)
+      (fun i => (g ^ (i : ℕ)) ^ (2 * m) - (0 : ZMod p) * (g ^ (i : ℕ)) ^ ((2 - 1) * m))
+      (2 * m)
+    rw [show (2 - 2) * m + 1 = 1 from by omega]
+    refine Nat.le_of_mul_le_mul_right ?_ (show 0 < 2 * m by omega)
+    rw [← hpow]; exact hub
+  · -- lower bound: the even achievability at r = 2 gives ≥ C(2^{μ−1}, 1) = 2^{μ−1}
+    have hlb := monomial_list_card_ge_even (p := p) (μ := μ) (m := m) (r := 2)
+      (by omega) hm (by norm_num) (by norm_num) hr2pow hg
+    rwa [show (2 : ℕ) / 2 = 1 from by norm_num, Nat.choose_one_right] at hlb
+
 end ArkLib.ProximityGap.KKH26
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
-#print axioms ArkLib.ProximityGap.KKH26.antiSet_card
-#print axioms ArkLib.ProximityGap.KKH26.index_fiber_count
 #print axioms ArkLib.ProximityGap.KKH26.monomial_list_card_ge
 #print axioms ArkLib.ProximityGap.KKH26.equalSum_family_list_card_ge
 #print axioms ArkLib.ProximityGap.KKH26.monomial_list_card_ge_odd
+#print axioms ArkLib.ProximityGap.KKH26.const_list_card_mul_le
+#print axioms ArkLib.ProximityGap.KKH26.monomial_list_card_eq_two
