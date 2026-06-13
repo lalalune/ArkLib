@@ -65,8 +65,38 @@ theorem gwFoldedDegreeObligation_of_lt {s : ℕ} (A : Fin (s + 1) → F[X]) (p :
     GWFoldedDegreeObligation A p shift agreeCount :=
   lt_of_le_of_lt (foldedSubstitution_natDegree_le A p shift hA0 hAj hp hshift) hlt
 
+/-- **End-to-end BRICK-I/V vanishing mechanism — named residual fully discharged.**
+
+Chaining the degree bound `foldedSubstitution_natDegree_le` (through `gwFoldedDegreeObligation_of_lt`)
+into the degree-vs-roots collapse `foldedSubstitution_eq_zero_of_degree_and_roots`, the folded
+substitution `R_p` is forced to vanish identically from **transparent computable data only**:
+
+* the GW block-degree budgets `deg A 0 ≤ d₀`, `deg A_{j+1} ≤ d`, `deg p ≤ dₚ`, `deg shiftⱼ ≤ 1`;
+* the parameter inequality `max d₀ (d + dₚ) < agreeCount`;
+* `R_p` vanishing at `agreeCount`-many distinct points (the agreement set of a close codeword).
+
+This is the complete *agreement ⇒ functional-equation* (`R_p = 0`) hand-off feeding BRICK-V, with the
+`GWFoldedDegreeObligation` residual eliminated — no named hypothesis remains, only degree arithmetic
+and a vanishing-on-an-agreement-set fact. The single place open math could enter is whether
+`max d₀ (d + dₚ) < agreeCount` is *achievable*: a pure arithmetic feasibility question on the
+parameters, satisfied for folded/multiplicity RS and violated for plain RS in the prize regime
+(`max d₀ (d+dₚ) ≥ n+k-1 ≥ agreeCount` — wall W1). -/
+theorem foldedSubstitution_eq_zero_of_degrees_and_roots {s : ℕ}
+    (A : Fin (s + 1) → F[X]) (p : F[X]) (shift : Fin s → F[X])
+    {d₀ d dₚ agreeCount : ℕ}
+    (hA0 : (A 0).natDegree ≤ d₀) (hAj : ∀ j : Fin s, (A j.succ).natDegree ≤ d)
+    (hp : p.natDegree ≤ dₚ) (hshift : ∀ j : Fin s, (shift j).natDegree ≤ 1)
+    (hlt : max d₀ (d + dₚ) < agreeCount)
+    (roots : Finset F) (hcard : agreeCount ≤ roots.card)
+    (hroots : ∀ x ∈ roots, (foldedSubstitution A p shift).eval x = 0) :
+    foldedSubstitution A p shift = 0 :=
+  foldedSubstitution_eq_zero_of_degree_and_roots A p shift agreeCount
+    (gwFoldedDegreeObligation_of_lt A p shift hA0 hAj hp hshift hlt)
+    roots hcard hroots
+
 end CodingTheory.GWBrickI
 
 /-! ## Axiom audit -/
 #print axioms CodingTheory.GWBrickI.foldedSubstitution_natDegree_le
 #print axioms CodingTheory.GWBrickI.gwFoldedDegreeObligation_of_lt
+#print axioms CodingTheory.GWBrickI.foldedSubstitution_eq_zero_of_degrees_and_roots
