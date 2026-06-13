@@ -134,9 +134,111 @@ theorem unitCircle_negClosed_additiveEnergy_eq (hunit : ∀ y ∈ S, y * conj y 
   exact AdditiveEnergySidonModNeg.additiveEnergy_eq_of_sidonModNeg
     two_ne_zero h0 hneg (unitCircle_sidonModNeg hunit)
 
+open AdditiveEnergyRepBound in
+/-- The pointwise representation count on the unit circle: `repCount S (a+b)` is `repCount S 0`
+when `a+b=0` and `|{a,b}|` otherwise. -/
+theorem unitCircle_repCount (hunit : ∀ y ∈ S, y * conj y = 1) {a b : ℂ}
+    (ha : a ∈ S) (hb : b ∈ S) :
+    repCount S (a + b) = if a + b = 0 then repCount S 0 else ({a, b} : Finset ℂ).card := by
+  by_cases hab : a + b = 0
+  · rw [if_pos hab, hab]
+  · rw [if_neg hab, repCount, unitCircle_filter_eq_pair hunit ha hb hab]
+
+/-- Pure counting: `∑_{a,b∈S} |{a,b}| + |S| = 2|S|²` (`|{a,b}| + [a=b] = 2` pointwise). -/
+theorem pair_card_sum {α : Type*} [DecidableEq α] (T : Finset α) :
+    (∑ a ∈ T, ∑ b ∈ T, ({a, b} : Finset α).card) + T.card = 2 * T.card ^ 2 := by
+  classical
+  have hkey : ∀ a ∈ T, (∑ b ∈ T, ({a, b} : Finset α).card)
+      + (T.filter (fun b => a = b)).card = 2 * T.card := by
+    intro a _
+    rw [Finset.card_filter, ← Finset.sum_add_distrib]
+    calc (∑ b ∈ T, (({a, b} : Finset α).card + if a = b then 1 else 0))
+        = ∑ _b ∈ T, 2 := by
+          refine Finset.sum_congr rfl fun b _ => ?_
+          by_cases hab : a = b
+          · subst hab; simp
+          · rw [Finset.card_pair hab]; simp [hab]
+      _ = 2 * T.card := by rw [Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+  have hdiag : (∑ a ∈ T, (T.filter (fun b => a = b)).card) = T.card := by
+    refine (Finset.sum_congr rfl fun a ha => ?_).trans (by
+      rw [Finset.sum_const, smul_eq_mul, Nat.mul_one])
+    rw [Finset.filter_eq T a, if_pos ha, Finset.card_singleton]
+  calc (∑ a ∈ T, ∑ b ∈ T, ({a, b} : Finset α).card) + T.card
+      = (∑ a ∈ T, ∑ b ∈ T, ({a, b} : Finset α).card)
+        + (∑ a ∈ T, (T.filter (fun b => a = b)).card) := by rw [hdiag]
+    _ = ∑ a ∈ T, ((∑ b ∈ T, ({a, b} : Finset α).card)
+          + (T.filter (fun b => a = b)).card) := by rw [Finset.sum_add_distrib]
+    _ = ∑ _a ∈ T, (2 * T.card) := Finset.sum_congr rfl hkey
+    _ = 2 * T.card ^ 2 := by rw [Finset.sum_const, smul_eq_mul]; ring
+
+open AdditiveEnergyRepBound in
+/-- **THE EXACT char-0 additive energy of ANY unit-circle set** (both parities, no
+negation-closure needed): `E(S) + 2·r₀ + |S| = r₀² + 2|S|²`, with `r₀ = repCount S 0` the
+ordered antipodal-pair count.  Specializes to `E(μ_n) = 2n²−n` (`n` odd, `r₀=0`, SIDON) and
+`3n²−3n` (`n` even, `r₀=n`).  Sharpens the in-tree `≤ 3|S|²` to an exact equality for every
+finite unit-circle set — the complete form-2/3 char-0 anchor. -/
+theorem unitCircle_additiveEnergy_eq (hunit : ∀ y ∈ S, y * conj y = 1) :
+    additiveEnergy S + 2 * repCount S 0 + S.card = repCount S 0 ^ 2 + 2 * S.card ^ 2 := by
+  classical
+  set r0 := repCount S 0 with hr0
+  have hne0 : ∀ a ∈ S, a ≠ 0 := fun a ha h => by simpa [h] using hunit a ha
+  -- antipodal-pair count `Z = ∑_{a,b} [a+b=0] = r0`
+  have hZ : (∑ a ∈ S, ∑ b ∈ S, if a + b = 0 then (1 : ℕ) else 0) = r0 := by
+    have hinner : ∀ a, (∑ b ∈ S, if a + b = 0 then (1 : ℕ) else 0)
+        = if -a ∈ S then 1 else 0 := by
+      intro a
+      have hcond : ∀ b, (a + b = 0) ↔ (b = -a) :=
+        fun b => ⟨fun h => by linear_combination h, fun h => by linear_combination h⟩
+      simp only [hcond]
+      exact Finset.sum_ite_eq' S (-a) (fun _ => 1)
+    rw [Finset.sum_congr rfl (fun a _ => hinner a), hr0, repCount, Finset.card_filter]
+    refine Finset.sum_congr rfl fun a _ => ?_
+    simp only [zero_sub]
+  -- `repCount S (a+b) = if a+b=0 then r0 else |{a,b}|`
+  have hE : additiveEnergy S
+      = ∑ a ∈ S, ∑ b ∈ S, (if a + b = 0 then r0 else ({a, b} : Finset ℂ).card) := by
+    rw [additiveEnergy]
+    exact Finset.sum_congr rfl fun a ha =>
+      Finset.sum_congr rfl fun b hb => by rw [unitCircle_repCount hunit ha hb, hr0]
+  -- the pointwise identity: g + 2·[a+b=0] = |{a,b}| + r0·[a+b=0]
+  have hpt : ∀ a ∈ S, ∀ b ∈ S,
+      (if a + b = 0 then r0 else ({a, b} : Finset ℂ).card)
+        + 2 * (if a + b = 0 then (1 : ℕ) else 0)
+      = ({a, b} : Finset ℂ).card + r0 * (if a + b = 0 then (1 : ℕ) else 0) := by
+    intro a ha b hb
+    by_cases hab : a + b = 0
+    · have hane : a ≠ b := by
+        intro h; exact hne0 a ha (by linear_combination hab / 2 + h / 2)
+      rw [if_pos hab, if_pos hab, Finset.card_pair hane]; ring
+    · rw [if_neg hab, if_neg hab]; ring
+  -- `∑∑ 2·[a+b=0] = 2·r0` and `∑∑ r0·[a+b=0] = r0·r0`
+  have h2z : (∑ a ∈ S, ∑ b ∈ S, 2 * (if a + b = 0 then (1 : ℕ) else 0)) = 2 * r0 := by
+    simp only [← Finset.mul_sum]; rw [hZ]
+  have hr0z : (∑ a ∈ S, ∑ b ∈ S, r0 * (if a + b = 0 then (1 : ℕ) else 0)) = r0 * r0 := by
+    simp only [← Finset.mul_sum]; rw [hZ]
+  -- sum the pointwise identity
+  have hsum : (∑ a ∈ S, ∑ b ∈ S, (if a + b = 0 then r0 else ({a, b} : Finset ℂ).card))
+        + 2 * r0
+      = (∑ a ∈ S, ∑ b ∈ S, ({a, b} : Finset ℂ).card) + r0 ^ 2 := by
+    have key : (∑ a ∈ S, ∑ b ∈ S, ((if a + b = 0 then r0 else ({a, b} : Finset ℂ).card)
+          + 2 * (if a + b = 0 then (1 : ℕ) else 0)))
+        = (∑ a ∈ S, ∑ b ∈ S, (({a, b} : Finset ℂ).card
+          + r0 * (if a + b = 0 then (1 : ℕ) else 0))) :=
+      Finset.sum_congr rfl fun a ha => Finset.sum_congr rfl fun b hb => hpt a ha b hb
+    simp only [Finset.sum_add_distrib] at key
+    rw [h2z, hr0z] at key
+    rw [pow_two]
+    exact key
+  -- assemble with `pair_card_sum`
+  have hpc := pair_card_sum S
+  rw [hE]
+  omega
+
 end ArkLib.ProximityGap.RootsOfUnityAdditiveEnergy
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.RootsOfUnityAdditiveEnergy.unitCircle_filter_eq_pair
 #print axioms ArkLib.ProximityGap.RootsOfUnityAdditiveEnergy.unitCircle_sidonModNeg
 #print axioms ArkLib.ProximityGap.RootsOfUnityAdditiveEnergy.unitCircle_negClosed_additiveEnergy_eq
+#print axioms ArkLib.ProximityGap.RootsOfUnityAdditiveEnergy.pair_card_sum
+#print axioms ArkLib.ProximityGap.RootsOfUnityAdditiveEnergy.unitCircle_additiveEnergy_eq
