@@ -207,6 +207,7 @@ theorem explainable_of_expand
     _ ≤ ((k - 1 : ℕ) : WithBot ℕ) := by exact_mod_cast hdk
     _ < (k : WithBot ℕ) := by exact_mod_cast (by omega : k - 1 < k)
 
+open scoped Classical in
 open Polynomial in
 /-- **Exponential supply on smooth dyadic domains (#389).**  Suppose the domain is
 partitioned into `r` blocks, each a `μ_d`-coset — i.e. `(block j).card = d`, the blocks
@@ -250,25 +251,25 @@ theorem smooth_dyadic_supply_lower_bound
   refine Finset.card_le_card_of_injOn (fun S => S.biUnion block) ?_ ?_
   · -- the union of `s` blocks is an explainable `t`-core
     intro S hS
-    rw [Finset.mem_powersetCard] at hS
+    rw [Finset.mem_coe, Finset.mem_powersetCard] at hS
     obtain ⟨-, hScard⟩ := hS
     have hfcard : (S.biUnion block).card = k + m + 1 := by
       rw [Finset.card_biUnion (fun a _ b _ hab => hbdisj a b hab),
         Finset.sum_congr rfl (fun j _ => hbcard j), Finset.sum_const, hScard,
         smul_eq_mul, hsd]
-    rw [Finset.mem_filter, Finset.mem_powersetCard]
-    refine ⟨⟨Finset.subset_univ _, hfcard⟩, ?_⟩
+    refine Finset.mem_filter.mpr
+      ⟨Finset.mem_powersetCard.mpr ⟨Finset.subset_univ _, hfcard⟩, ?_⟩
     have hAexp : (∏ i ∈ S.biUnion block, (X - C (dom i)))
         = Polynomial.expand F d (∏ j ∈ S, (X - C (β j))) := by
-      rw [Finset.prod_biUnion (fun a _ b _ hab => hbdisj a b hab),
-        Finset.prod_congr rfl (fun j _ => by
-          rw [hbcoset j, map_sub, Polynomial.expand_X, Polynomial.expand_C]),
-        ← map_prod]
+      rw [Finset.prod_biUnion (fun a _ b _ hab => hbdisj a b hab), _root_.map_prod]
+      refine Finset.prod_congr rfl (fun j _ => ?_)
+      rw [hbcoset j, _root_.map_sub, Polynomial.expand_X, Polynomial.expand_C]
     exact explainable_of_expand dom hk hd wt hwt lowPart hlow hfcard _ hAexp
   · -- injectivity: `S` is recoverable from its union of blocks
     intro S _ S' _ heq
+    have heq2 : S.biUnion block = S'.biUnion block := heq
     ext j
-    rw [hmemiff S j, hmemiff S' j, heq]
+    rw [hmemiff S j, hmemiff S' j, heq2]
 
 end ProximityGap.EsymmFiber
 
