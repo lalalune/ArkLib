@@ -215,6 +215,16 @@ theorem hasseDeriv_eval_eq_zero_of_root {F : Type*} [Field F]
   obtain ⟨h, hh⟩ := hasseDeriv_mul_pow_dvd f g r k
   rw [hh, eval_mul, eval_pow, ha, zero_pow (by omega), zero_mul]
 
+/-- **Root multiplicity from the power rule (the engine feeder).** A root `a` of `g` is a root of
+`f·g^r` of multiplicity `≥ r` — in every characteristic. Directly supplies the
+`∀ a ∈ V, M ≤ Ψ.rootMultiplicity a` hypothesis of `stepanov_card_mul_mult_le_natDegree` for a
+`g^r`-weighted Stepanov auxiliary. -/
+theorem rootMultiplicity_mul_pow_ge {F : Type*} [Field F]
+    (f g : F[X]) (a : F) (ha : g.eval a = 0) (r : ℕ) (hne : f * g ^ r ≠ 0) :
+    r ≤ (f * g ^ r).rootMultiplicity a :=
+  rootMultiplicity_ge_of_hasseDeriv_vanish hne a r
+    (fun k hk => hasseDeriv_eval_eq_zero_of_root f g a ha r k hk)
+
 end PowerRule
 
 end ArkLib.CodingTheory.HasseMultiplicityBridge
@@ -229,4 +239,5 @@ open ArkLib.CodingTheory.HasseMultiplicityBridge
 #print axioms hasseDeriv_pow_dvd
 #print axioms hasseDeriv_mul_pow_dvd
 #print axioms hasseDeriv_eval_eq_zero_of_root
+#print axioms rootMultiplicity_mul_pow_ge
 end AxiomAudit
