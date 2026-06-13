@@ -1278,6 +1278,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.QRAdditiveEnergyGaussSum
+import ArkLib.Data.CodingTheory.ProximityGap.QRAdditiveEnergyIngredients
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicExactList
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicExactValue
