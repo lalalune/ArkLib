@@ -84,7 +84,29 @@ theorem exists_determining_tuple {s : ℕ} {τ : ℕ → ℝ} {θ θ' : ℝ}
   obtain ⟨v, hsep, hvT⟩ := exists_surv_tuple h hθ hθ0 hθθ' hθ'1 T hT r H hHC hr
   exact ⟨v, hvT, fun y => tuple_agree_subsingleton hsep y⟩
 
+open Classical in
+/-- **Per-codeword recovery (line-decodability for a codeword).** A codeword `c` of a low-dimensional
+span `H ≤ C` that agrees with the received word `y` on a `≥ θ'`-fraction of coordinates (and with the
+design parameter `θ < θ'`) is **uniquely recovered**: there is a tuple `v` of coordinates on which
+`c` equals `y`, and `c` is the only codeword of `H` agreeing with `y` on them. -/
+theorem exists_recovering_tuple {s : ℕ} {τ : ℕ → ℝ} {θ θ' : ℝ}
+    {C : Submodule F (ι → Fin s → F)} (h : IsSubspaceDesign s τ C)
+    (hθ : ∀ j, τ j ≤ θ) (hθ0 : 0 ≤ θ) (hθθ' : θ < θ') (hθ'1 : θ' ≤ 1)
+    (r : ℕ) (H : Submodule F (ι → Fin s → F)) (hHC : H ≤ C) (hr : Module.finrank F H ≤ r)
+    (y c : ι → Fin s → F) (hcH : c ∈ H)
+    (hagree : θ' * (Fintype.card ι : ℝ)
+      ≤ ((univ.filter (fun i : ι => c i = y i)).card : ℝ)) :
+    ∃ v : Fin r → ι, (∀ j, c (v j) = y (v j)) ∧
+      ∀ c' : ι → Fin s → F, c' ∈ H → (∀ j, c' (v j) = y (v j)) → c' = c := by
+  obtain ⟨v, hvT, hdet⟩ := exists_determining_tuple h hθ hθ0 hθθ' hθ'1
+    (univ.filter (fun i : ι => c i = y i)) hagree r H hHC hr
+  have hcv : ∀ j, c (v j) = y (v j) := fun j => (mem_filter.mp (hvT j)).2
+  refine ⟨v, hcv, fun c' hc'H hc'agree => ?_⟩
+  exact hdet y ⟨hc'H, hc'agree⟩ ⟨hcH, hcv⟩
+
 end ProximityGap
+
 
 #print axioms ProximityGap.exists_surv_tuple
 #print axioms ProximityGap.exists_determining_tuple
+#print axioms ProximityGap.exists_recovering_tuple
