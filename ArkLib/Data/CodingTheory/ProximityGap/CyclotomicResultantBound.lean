@@ -314,3 +314,44 @@ theorem fourTerm_sidon {n : ℕ} (hn : 0 < n) {ω : ℂ} (hω : IsPrimitiveRoot 
     rw [had, hbd] at heq
     have hdc : d = c := hinj hd hc (by linear_combination heq)
     exact Or.inl ⟨by omega, hbd⟩
+
+/-- For a primitive `n`-th root `ξ` in a field of characteristic `≠ 2`, `ξ^a + ξ^b = 0` is
+equivalent to the *exponent condition* `2a ≡ 2b [MOD n] ∧ a ≢ b [MOD n]` — which is independent of
+which field/root.  Hence the "nonzero sum" condition transfers between `F_p` and `ℂ`. -/
+theorem primitiveRoot_pow_add_eq_zero_iff {F : Type*} [Field F] (hchar : (2 : F) ≠ 0) {n : ℕ}
+    (hn : 0 < n) {ξ : F} (hξ : IsPrimitiveRoot ξ n) {a b : ℕ} :
+    ξ ^ a + ξ ^ b = 0 ↔ (2 * a ≡ 2 * b [MOD n] ∧ ¬ a ≡ b [MOD n]) := by
+  haveI : NeZero n := ⟨hn.ne'⟩
+  have hξ0 : ξ ≠ 0 := hξ.ne_zero hn.ne'
+  have hpow_iff : ∀ i j : ℕ, ξ ^ i = ξ ^ j ↔ i ≡ j [MOD n] := by
+    intro i j
+    have hred : ∀ k : ℕ, ξ ^ k = ξ ^ (k % n) := by
+      intro k
+      conv_lhs => rw [← Nat.div_add_mod k n, pow_add, pow_mul, hξ.pow_eq_one, one_pow, one_mul]
+    rw [hred i, hred j, Nat.ModEq]
+    constructor
+    · exact fun h => hξ.injOn_pow (Finset.mem_coe.mpr (Finset.mem_range.mpr (Nat.mod_lt i hn)))
+        (Finset.mem_coe.mpr (Finset.mem_range.mpr (Nat.mod_lt j hn))) h
+    · exact fun h => by rw [h]
+  constructor
+  · intro h
+    have hne : ξ ^ a ≠ ξ ^ b := by
+      intro he
+      rw [he] at h
+      have : (2 : F) * ξ ^ b = 0 := by linear_combination h
+      rcases mul_eq_zero.mp this with h2 | h2
+      · exact hchar h2
+      · exact pow_ne_zero b hξ0 h2
+    have hsq : ξ ^ (2 * a) = ξ ^ (2 * b) := by
+      have : ξ ^ a = -ξ ^ b := by linear_combination h
+      rw [two_mul, two_mul, pow_add, pow_add, this]; ring
+    exact ⟨(hpow_iff _ _).mp hsq, fun hc => hne ((hpow_iff _ _).mpr hc)⟩
+  · rintro ⟨hsq, hne⟩
+    have hsqeq : (ξ ^ a) ^ 2 = (ξ ^ b) ^ 2 := by
+      rw [← pow_mul, ← pow_mul, mul_comm a 2, mul_comm b 2]
+      exact (hpow_iff _ _).mpr hsq
+    have hne' : ξ ^ a ≠ ξ ^ b := fun hc => hne ((hpow_iff _ _).mp hc)
+    have : (ξ ^ a - ξ ^ b) * (ξ ^ a + ξ ^ b) = 0 := by linear_combination hsqeq
+    rcases mul_eq_zero.mp this with h | h
+    · exact absurd (sub_eq_zero.mp h) hne'
+    · exact h
