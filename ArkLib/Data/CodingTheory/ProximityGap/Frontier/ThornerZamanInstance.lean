@@ -39,4 +39,33 @@ theorem tzPrimeSupply_16_two : TZPrimeSupply 16 (2 : ℝ) 6 := by
   calc (6 : ℕ) = ({257, 337, 353, 401, 433, 449} : Finset ℕ).card := by decide
     _ ≤ (tzWindow 16 (2 : ℝ)).card := Finset.card_le_card hsub
 
+/-- **Concrete discharge for `n = 8, β = 2`.**  The window `[64, 128]` contains the four primes
+`73, 89, 97, 113`, all `≡ 1 (mod 8)`. -/
+theorem tzPrimeSupply_8_two : TZPrimeSupply 8 (2 : ℝ) 4 := by
+  refine ⟨?_⟩
+  have hpow : ((8 : ℕ) : ℝ) ^ (2 : ℝ) = 64 := by
+    rw [show (2 : ℝ) = ((2 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+  have hsub : ({73, 89, 97, 113} : Finset ℕ) ⊆ tzWindow 8 (2 : ℝ) := by
+    intro p hp
+    rw [mem_tzWindow]
+    fin_cases hp <;>
+      exact ⟨by norm_num, by decide, by rw [hpow]; norm_num, by rw [hpow]; norm_num⟩
+  calc (4 : ℕ) = ({73, 89, 97, 113} : Finset ℕ).card := by decide
+    _ ≤ (tzWindow 8 (2 : ℝ)).card := Finset.card_le_card hsub
+
+/-- **Concrete discharge for `n = 32, β = 2`.**  The window `[1024, 2048]` contains the six primes
+`1153, 1217, 1249, 1409, 1601, 1697`, all `≡ 1 (mod 32)`.  (The supply grows `4, 6, 6` across
+`n = 8, 16, 32` — the `n^{β−1}`-type growth of the [TZ24] window.) -/
+theorem tzPrimeSupply_32_two : TZPrimeSupply 32 (2 : ℝ) 6 := by
+  refine ⟨?_⟩
+  have hpow : ((32 : ℕ) : ℝ) ^ (2 : ℝ) = 1024 := by
+    rw [show (2 : ℝ) = ((2 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+  have hsub : ({1153, 1217, 1249, 1409, 1601, 1697} : Finset ℕ) ⊆ tzWindow 32 (2 : ℝ) := by
+    intro p hp
+    rw [mem_tzWindow]
+    fin_cases hp <;>
+      exact ⟨by norm_num, by decide, by rw [hpow]; norm_num, by rw [hpow]; norm_num⟩
+  calc (6 : ℕ) = ({1153, 1217, 1249, 1409, 1601, 1697} : Finset ℕ).card := by decide
+    _ ≤ (tzWindow 32 (2 : ℝ)).card := Finset.card_le_card hsub
+
 end ArkLib.ProximityGap.KKH26
