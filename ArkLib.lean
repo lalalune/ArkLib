@@ -93,6 +93,7 @@ import ArkLib.Data.CodingTheory.CodeGeometry
 import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
 import ArkLib.Data.CodingTheory.Connections.GCXK25SecondMoment
 import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
+import ArkLib.Data.CodingTheory.Connections.GKL24MaxCorrCommonZeroCover
 import ArkLib.Data.CodingTheory.Connections.GKL24MaxDomainExists
 import ArkLib.Data.CodingTheory.Connections.GKL24PetalWitnessCover
 import ArkLib.Data.CodingTheory.Connections.GKL24SunflowerCore
@@ -1479,6 +1480,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetFactorWitness
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetThreePowUpper
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetWiden
 import ArkLib.Data.CodingTheory.ProximityGap.SubplaneSupplyFloor
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumCharacterSum
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumE2PairingInflate
