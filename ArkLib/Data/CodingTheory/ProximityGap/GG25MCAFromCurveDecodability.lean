@@ -87,7 +87,42 @@ theorem all_seeds_close_of_curveDecodable
     le_trans hcount (Finset.card_le_card hsub)
   exact all_seeds_close hlt u cs ht β
 
+/-- **The relative-distance form of Theorem 3.3** (the literal [GG25] conclusion). At every seed
+the tested curve is within relative Hamming distance `(t/(t−ℓ))·δ` of the codeword curve `cs` —
+i.e. `δ·(1 + ℓ/(t−ℓ))`, the mutual-correlated-agreement spread radius. (`t−ℓ` is taken in `ℕ`
+then cast, since `NNReal` subtraction is truncated.) -/
+theorem all_seeds_relClose_of_curveDecodable
+    {C : Set (ι → A)} {ℓ : ℕ} {δ : ℝ≥0} {a t : ℕ} (hlt : ℓ < t)
+    (h : CurveDecodable (F := F) C ℓ δ a t)
+    {u : Fin (ℓ + 1) → ι → A} {f : F → ι → A} (hf : ∀ α, f α ∈ C)
+    (hclose : a ≤ (curveCloseSet δ u f).card) :
+    ∃ cs : Fin (ℓ + 1) → ι → A, (∀ j, cs j ∈ C) ∧
+      ∀ β : F, ((relHammingDist (comb u β) (comb cs β) : ℚ≥0) : ℝ≥0)
+            ≤ ((t : ℝ≥0) / ((t - ℓ : ℕ) : ℝ≥0)) * δ := by
+  obtain ⟨cs, hcs, hball⟩ := all_seeds_close_of_curveDecodable hlt h hf hclose
+  refine ⟨cs, hcs, fun β => ?_⟩
+  have hnpos : (0 : ℝ≥0) < (Fintype.card ι : ℝ≥0) := by exact_mod_cast Fintype.card_pos
+  have htlpos : (0 : ℝ≥0) < ((t - ℓ : ℕ) : ℝ≥0) := by exact_mod_cast Nat.sub_pos_of_lt hlt
+  -- cast hball to ℝ≥0 and weaken the floor: (t−ℓ)·H ≤ t·δ·n
+  have hcastineq : ((t - ℓ : ℕ) : ℝ≥0) * (hammingDist (comb u β) (comb cs β) : ℝ≥0)
+      ≤ (t : ℝ≥0) * δ * (Fintype.card ι : ℝ≥0) := by
+    have key : ((t - ℓ : ℕ) : ℝ≥0) * (hammingDist (comb u β) (comb cs β) : ℝ≥0)
+        ≤ (t : ℝ≥0) * ((⌊δ * (Fintype.card ι : ℝ≥0)⌋₊ : ℕ) : ℝ≥0) := by exact_mod_cast hball β
+    refine key.trans ?_
+    rw [mul_assoc]
+    gcongr
+    exact Nat.floor_le (by positivity)
+  -- δᵣ = H/n, divide back
+  rw [show ((relHammingDist (comb u β) (comb cs β) : ℚ≥0) : ℝ≥0)
+        = (hammingDist (comb u β) (comb cs β) : ℝ≥0) / (Fintype.card ι : ℝ≥0) by
+      simp only [relHammingDist, NNRat.cast_div, NNRat.cast_natCast]]
+  rw [div_le_iff₀ hnpos, div_mul_eq_mul_div, div_mul_eq_mul_div, le_div_iff₀ htlpos]
+  calc (hammingDist (comb u β) (comb cs β) : ℝ≥0) * ((t - ℓ : ℕ) : ℝ≥0)
+      = ((t - ℓ : ℕ) : ℝ≥0) * (hammingDist (comb u β) (comb cs β) : ℝ≥0) := by ring
+    _ ≤ (t : ℝ≥0) * δ * (Fintype.card ι : ℝ≥0) := hcastineq
+
 end ProximityGap.GG25Lemma32
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.GG25Lemma32.all_seeds_close_of_curveDecodable
+#print axioms ProximityGap.GG25Lemma32.all_seeds_relClose_of_curveDecodable
