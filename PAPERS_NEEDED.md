@@ -74,3 +74,20 @@ Hab25 2025/1184, CS25 2025/2046, 2025/536, Thaler book). Nothing needed from the
 Only two paywalled rows possibly remain, both likely unneeded: GS-1999 (IEEE; Hab25 + on-disk
 treatments cover the construction) and de Bruijn 1953 (Indagationes; the in-tree two-prime
 classification was proven independently).
+
+---
+## 2026-06-13 acquisition pass (δ* / #389 — see docs/kb/deltastar-acquisition-2026-06-13.md)
+
+**44 open-access PDFs acquired** automatically (all arXiv energy/character-sum/list-decoding/
+roots-of-unity/Littlewood-Offord sources from the 2026-06-13 findings sweep). **74 total in
+`~/papers/arklib/`.**
+
+**Still needed — IACR ePrint is Cloudflare-403 against this environment (manual browser fetch):**
+- ePrint 2026/680 — ABF26 *Open Problems in LD & CA* (the prize paper; statements recovered from
+  proximityprize.org). ★★★
+- ePrint 2025/1712 — Okamoto *Syndrome-Space Lens* (claims complete resolution up to capacity —
+  read adversarially, locate the flaw). ★★★
+- ePrint 2025/2110 — Hab25; 2025/2010 — Diamond–Gruen; 2025/2051 — Bordage; 2026/1055 —
+  Mohnblatt–Wagner; 2025/1993 — GMW (Lean4 FRI); 2025/2197 — Fenzi–Sanso.
+- Paywalled (Elsevier): Li–Wan char-2 k-subset-sum (S1071579719300462); "subgroup is not a
+  sumset" (S1071579720300149).
