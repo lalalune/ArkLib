@@ -68,7 +68,7 @@ theorem mds_incidence_card_le {d : ℕ} (N : ι → (Fin d → F)) (c : ι → F
       have hpb := hp b
       have hp'b := hp' b
       simp only [hS, mem_filter, mem_univ, true_and] at hpb hp'b
-      show N (σ b) ⬝ᵥ p = N (σ b) ⬝ᵥ p'
+      change N (σ b) ⬝ᵥ p = N (σ b) ⬝ᵥ p'
       rw [hpb, hp'b]
     have step : M⁻¹.mulVec (M.mulVec p) = M⁻¹.mulVec (M.mulVec p') := by rw [hMp]
     rwa [Matrix.mulVec_mulVec, Matrix.mulVec_mulVec, Matrix.nonsing_inv_mul M hdetU,
