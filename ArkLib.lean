@@ -880,6 +880,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GeneralOrchardIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralOrchardSumZero
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralPacketCombination
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralSpikeLowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.GeneralizedPaleyRamanujan
 import ArkLib.Data.CodingTheory.ProximityGap.GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.GenericFarPin
 import ArkLib.Data.CodingTheory.ProximityGap.GenericFarSeparation
