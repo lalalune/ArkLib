@@ -588,6 +588,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.CrossingCountBound
 import ArkLib.Data.CodingTheory.ProximityGap.CrossingCountGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.CrossingPin
+import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyCountermodel
 import ArkLib.Data.CodingTheory.ProximityGap.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBound
