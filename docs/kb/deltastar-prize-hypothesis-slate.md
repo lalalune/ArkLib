@@ -373,3 +373,39 @@ hardest to keep disjoint; `sparse_divisors_card_le` bounds the structured
 5. `sparse_divisors_card_le ≤ n` = the formalized first piece (coset codewords).
 The wall is the UNIVERSAL petal certificate at constant rate — sub-Johnson
 list decoding of explicit RS, ~25y open. No closure; precise placement.
+
+## DEFINITIVE: the wall is the multi-codeword aggregation, not the per-codeword line-list
+
+Read the GKL24 upper-bound machinery (`GKL24MaxDomainExists.lean`) to the
+bottom. The per-codeword line-list is essentially CLOSED, hypothesis-free:
+
+  `mcaBadWitness_card_le_compl_common` (w ∈ MC):
+    `#{γ : u₀+γu₁ explained by the SINGLE codeword w, non-joint} ≤ n − |C₀|`,
+    `C₀ = {i : u₁ᵢ=0 ∧ wᵢ=u₀ᵢ}`.
+
+Petal disjointness is FREE from the line structure: distinct γ, γ' have
+`lineAgreeSet γ ∩ lineAgreeSet γ' ⊆ {u₁=0 ∧ w=u₀} = C₀` (since
+`(γ−γ')u₁ᵢ=0 ⟹ u₁ᵢ=0`), and non-joint forces each petal outside `C₀`
+nonempty (`pairJointAgreesOn_common`). So per codeword the line-list is
+`≤ n` — POLY, no hypotheses. This is the proven core of the "every family
+is O(n)/q" behavior.
+
+**Therefore the deep-band explosion is NOT in the per-codeword line-list
+(poly), but in the MULTI-CODEWORD aggregation:**
+`#badSet_full = #{γ : ∃ codeword wᵧ explaining u₀+γu₁ on ≥a, non-joint}`,
+where different γ may use DIFFERENT codewords `wᵧ`. This is the
+affine-line-vs-whole-code list (the line `{u₀+γu₁}_γ` against the entire
+code), = the supply statement (#389) = sub-Johnson list decoding of explicit
+RS = THE WALL.
+
+**Final precise location of the prize (this session's definitive map):**
+- per-codeword line-list: `≤ n−|C₀|`, PROVEN hypothesis-free (GKL24 petals);
+- multi-codeword / line-vs-code aggregation: OPEN = the wall;
+- my rung petal certificate = the per-class instance of the per-codeword bound;
+- Mann/coset bricks (`sparse_divisors_card_le`, `two_coset_divisors_card_le`)
+  = poly control of the STRUCTURED codewords `wᵧ` that the aggregation must
+  sum over.
+The unsolved step is precisely: bound the NUMBER of distinct codewords `wᵧ`
+the line gets `≥a`-close to (constant rate, q=2^128). That is the
+beyond-Johnson wall; no in-tree or session brick closes it, and the honest
+unlock is new technique (Mann-coset aggregation, or the P1–P7 literature).
