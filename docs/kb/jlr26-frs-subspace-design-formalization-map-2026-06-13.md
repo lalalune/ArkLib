@@ -243,3 +243,37 @@ concrete) and `δ* < 1−ρ−Θ(1/log n)` (Thm 4.16). The OPEN content: the mat
 *magnitude* is the genuine open additive-combinatorics core; the full subgroup energy is the
 *proven* concrete `E(μ_n) = 3n²−3n` (in-tree, this session) but the per-frequency/incomplete version
 is open. So the conjecture is now a concrete closed form gated on one named character-sum magnitude.
+
+## 13. Sharpening the open kernel: the Jacobi-sum moment, with a PROVEN Parseval bracket
+
+The §11–12 conjecture is gated on the dyadic Gauss-sum sup-norm `max_b|G(b)|`. Via the R3 identity
+`max_b|G(b)| = max_j|η_j|`, `η_j = (1/f)(−1 + √q·P(g^j))`, `P(y) = Σ_{a=1}^{f−1} ω_a χ̄_a(y)`, `ω_a =
+τ(χ_a)/√q` unimodular, the prize upper bound `max|η| ≤ C√(2n log f)` is exactly `sup_y|P(y)| ≤
+C'√(f log f)`. I reduce this to a **moment of Jacobi sums** and bracket it:
+
+**(a) PROVEN lower bracket (Parseval).** Over the `f` evaluation points `y ∈ μ_f`, character
+orthogonality `Σ_y χ_{a−b}(y) = f·[a≡b]` gives the EXACT
+  `Σ_y |P(y)|² = Σ_{a,b} ω_a ω̄_b · f·[a≡b] = f·Σ_a |ω_a|² = f(f−1)`.
+Hence `max_y|P|² ≥ avg = f−1`, i.e. **`√(f−1) ≤ sup_y|P| ≤ f−1`** (upper = triangle, `Σ|ω_a|=f−1`).
+This is unconditional and in-tree-formalizable from the additive-energy/orthogonality infra
+(`qr_additive_energy`, `unitCircle_sidon`). The conjecture `√(f log f)` sits strictly inside.
+
+**(b) The open kernel, now at the Jacobi-moment level.** The `2k`-th moment is EXACT:
+  `Σ_y |P(y)|^{2k} = f · Σ_{a_1..a_k, b_1..b_k ∈ [1,f−1]} [Σa_i ≡ Σb_j (mod f)] · (∏_i ω_{a_i})(∏_j ω̄_{b_j})`.
+Using the Jacobi combination law `ω_a ω_b = (J(χ_a,χ_b)/√q)·ω_{a+b}`, `|J|=√q`, each phase product
+collapses to a product of Jacobi-sum phases. Split:
+  - **Diagonal** (`{b_j}={a_i}` as multisets): phase `=1`, contributes `≈ f·k!·(f−1)^k > 0`.
+  - **Off-diagonal**: a signed sum of Jacobi-sum phases over `{Σa≡Σb}` with `{a}≠{b}`.
+The prize upper bound holds **iff the off-diagonal Jacobi-phase moment is `o(diagonal)`** for
+`k ≈ log f`. This is the precise novel kernel: a *power-saving in a combinatorial average of Jacobi
+sums*, strictly stronger than Deligne equidistribution (which controls each `J` but not the signed
+combinatorial sum). The R3 numerics (NO_COUNTEREXAMPLE, conf 0.6) are evidence the off-diagonal
+*does* cancel to `o(diagonal)`, but no proof exists in any surveyed paper (Bourgain–Glibichuk–
+Konyagin bound single incomplete sums, not these moment averages).
+
+**Honest status of the kernel.** PROVEN: the Parseval bracket `[√f, f]` and the diagonal lower
+heuristic. OPEN (the $1M kernel): the off-diagonal Jacobi-moment cancellation collapsing the bracket
+to `√(f log f)`. This is now named at the finest level — a Jacobi-sum moment, not a vague "magnitude"
+— and is exactly the object a genuine MCA solution must control. I do not fabricate its proof; it is
+the real open core, and the reduction TO it (both grand challenges → this single Jacobi-moment) is
+the closed-form content I can honestly deliver.
