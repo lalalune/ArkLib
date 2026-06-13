@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.SeparatingCoordsCount
+import ArkLib.Data.CodingTheory.ProximityGap.SeparationSurvivalCount
 
 /-!
 # The separation probability (issue #389, GG25 §4.3)
@@ -42,6 +42,26 @@ theorem prob_separates_ge {s : ℕ} {τ : ℕ → ℝ} {θ : ℝ}
   rw [le_div_iff₀ hpos]
   exact hcount
 
+open Classical in
+/-- Probability form of `card_surv_ge`: if `T` has density at least `θ'`, a uniformly random
+coordinate tuple both separates `H` and lands coordinatewise in `T` with probability at least
+`(θ' - θ)^r`. -/
+theorem prob_surv_ge {s : ℕ} {τ : ℕ → ℝ} {θ θ' : ℝ}
+    {C : Submodule F (ι → Fin s → F)} (h : IsSubspaceDesign s τ C)
+    (hθ : ∀ j, τ j ≤ θ) (hθ0 : 0 ≤ θ) (hθθ' : θ ≤ θ') (hθ'1 : θ' ≤ 1)
+    (T : Finset ι) (hT : θ' * (Fintype.card ι : ℝ) ≤ T.card)
+    (r : ℕ) (H : Submodule F (ι → Fin s → F)) (hHC : H ≤ C) (hr : Module.finrank F H ≤ r) :
+    (θ' - θ) ^ r
+      ≤ (Pr_{ let v ←$ᵖ (Fin r → ι) }[ Separates H v ∧ ∀ j, v j ∈ T ]).toReal := by
+  have hcount := card_surv_ge h hθ hθ0 hθθ' hθ'1 T hT r H hHC hr
+  have hpos : (0 : ℝ) < (Fintype.card ι : ℝ) ^ r := by positivity
+  rw [prob_uniform_eq_card_filter_div_card]
+  simp only [ENNReal.toReal_div, ENNReal.coe_toReal, NNReal.coe_pow, NNReal.coe_natCast,
+    Fintype.card_fun, Fintype.card_fin, Nat.cast_pow]
+  rw [le_div_iff₀ hpos]
+  exact hcount
+
 end ProximityGap
 
 #print axioms ProximityGap.prob_separates_ge
+#print axioms ProximityGap.prob_surv_ge
