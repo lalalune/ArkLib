@@ -1281,6 +1281,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SlantedTransferThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLevelTwoCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusUnionBudget
+import ArkLib.Data.CodingTheory.ProximityGap.SmoothCubicCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothCubicSupplyBound
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothDomainSelfSimilarity
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothFiberCount
