@@ -1208,6 +1208,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaJohnson
+import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaSubJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingCapacityGap
 import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.RSListSize
