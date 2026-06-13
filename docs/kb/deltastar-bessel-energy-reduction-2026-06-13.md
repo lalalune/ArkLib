@@ -121,3 +121,30 @@ moment equidistribution of subgroup Gauss sums, main term machine-checked, the
 deviation reduced to a named (sum-product / Sato–Tate) bound — the literature
 unlock (Katz; BGK; Shkredov; Bourgain–Garaev) is exactly what closes the
 constant-rate case.
+
+## Sato–Tate moment data: the b≠0 coset moments are sub-Gaussian (supportive)
+
+`probe_prize_satotate.py` computes the normalized coset moments
+`M_r = avg_C |η_C|^{2r}/n^r` (cheap: only `(p−1)/n` coset values). Data
+(n=8,16; p~n³,n⁴; ratios `M_r/(2r−1)!!`):
+- ALL ratios `≤ 1` up to `r=8` — the b≠0 coset moments are **sub-Gaussian**,
+  consistent with the proven Bessel bound `E_r^∞ ≤ (2r−1)!!n^r`;
+- ratios DECREASE with r (more concentrated than Gaussian at high r — *good*:
+  smaller moments ⟹ smaller supply `B` via Markov), and IMPROVE (→1) with n.
+- No moment ever EXCEEDS Gaussian in range — the failure mode (moments > clean)
+  is not observed.
+
+Refined decomposition: `E_r^{(p)} = n^{2r}/p + M_r·n^r·(1+o(1))`. The
+`n^{2r}/p` term is the **b=0** (trivial all-ones character = global agreement),
+handled separately; the supply/list `B` depends on the **b≠0** moments
+`M_r·n^r`, which are sub-Gaussian. Via Markov on the b≠0 tail,
+`B² ≤ (#cosets·M_r·n^r)^{1/r} ≤ (p/n)^{1/r}·(2r−1)!!^{1/r}·n`, so
+
+  **`M_r ≤ (2r−1)!!` up to `r~log p`  ⟹  B ≤ √(n·log p)  ⟹  δ* closes.**
+
+The data supports `M_r ≤ (2r−1)!!` well beyond the naive threshold (to `r=8`
+at small p), via the proven exact bound + the empirically-small mod-p excess.
+So the conjecture is empirically well-supported AND has its main term proven;
+the remaining rigorous input is the constant-rate bound on the b≠0 moments
+(= the Sato–Tate/sum-product moment control, P8–P10), now with strong
+numerical backing in addition to the proven exact-energy baseline.
