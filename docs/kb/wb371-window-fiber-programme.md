@@ -195,3 +195,32 @@ force ratio constancy), the cross-class collision pencil
 pairwise deg≤2-close ⟹ Φ has the same agreement structure as R₁, one
 level down). Empirical margin: ceiling 22 vs budget 31 — crude forms of
 these laws suffice.
+
+## Sum-bound shortcuts REFUTED (the residual needs the full coupling)
+
+The `ClassPackingBound` sum bound `Σ(n−aⱼ) + #solo ≤ 30` is NOT closable by
+any single counting lemma on the agreement sets or factor products in
+isolation. Two natural shortcuts both fail (probe `probe_wb371_esym.py` +
+the earlier bookkeeping note):
+
+1. **Fisher on agreement sets** (pairwise share ≤ 2): allows ~28 size-6
+   sets → contribution ~280.
+2. **e-symmetric confinement** (`D = a`, `h` constant ⟹ `m_{Aⱼ}` share top
+   `a−3` elementary symmetric functions): `probe_wb371_esym` finds up to
+   **6** size-6 subsets of μ₁₆ sharing `(e₁,e₂,e₃)` (the 4 maximal profiles
+   × 6 — a coset/orbit structure), contribution 6·10 = **60 > 30**. Counts
+   by size: a=5→12, a=6→6, a=7→1, a=8→2.
+
+Moreover the **record-22 extremal does not satisfy the `D=a` premise**: its
+two big agreement blocks A₁={0..5}, A₂={6..11} have DIFFERENT top-3
+symmetric functions `(2571,9386,3562) ≠ (4887,2903,1542)`, so there `h` is
+non-constant (`D > a`) — the confinement lives on the full product
+`Φ = m_A·h`, not `m_A`.
+
+**Conclusion**: the sum bound requires the FULL gluing coupling acting on
+all classes simultaneously (factor confinement + agreement Fisher + frame
+pinning + the degree collapse + off-part disjointness), not a reduction to
+one of them. This is why `ClassPackingBound` is the right named-residual
+endpoint: it is genuinely as hard as the rung at this instance, with every
+surrounding law proven. Empirical truth 22 ≤ 31 (margin 9), but no clean
+counting certificate is known — the residual is real.
