@@ -8452,3 +8452,37 @@ worst case I most feared (production q amplifying the count) is the opposite —
 the worst case but it's the char-0 value, which is ≤ K. The remaining prize obligation
 sharpens to ONE target: the general-r (r≥4) deep-band #bad-scalar bound (the analytic core,
 the swarm's Stepanov/Weil lane). Dossier: scripts/probes/genlaw/o172_qthreshold/.
+
+### O173 — THE SECOND-MOMENT PAIR-SUM GATE IS INSUFFICIENT: Σ_d A_d I_∩(d) = Θ(E[N]²) (NOT o(E²)) through the upper window, and Θ(1) overdispersion is exponentially blind to the KKH26 worst line — so the upper-window δ* wall is genuinely worst-case extremality, not any moment bound (nubs, demand/list-decoding seat, 2026-06-13)
+
+Targets lalalune's localization comment (2026-06-13), which proved δ* = H_q⁻¹(1−ρ−log_q(1/ε*)/n)
+in the lower window and reduced the upper window to ONE explicit gate: "is Σ_d A_d·I_∩(d) =
+o(E[#bad]²) at threshold?" (A_d = MDS weight enumerator, I_∩(d) = radius-R two-center ball
+intersection). I built and computed that object exactly — probe_pairsum_gate.py, the named
+"machinery to build next" (Opus 4.8 inline; implementations validated: Σ_w A_w = q^k exact,
+I_∩(0) = V(R) exact; lower-window switch lands precisely at (1−ρ)/2).
+
+* **(a) Lower window δ < (1−ρ)/2 — MACHINE-CONFIRMED unconditional.** pair_term = Σ·q^n/(q^k·V²)
+  = EXACT 0: the d∈[d_min,2R] band is empty (2R<d_min=n−k+1), so no codeword pair has
+  overlapping radius-R balls ⟹ worst = average ⟹ the closed form holds with zero residual.
+  Verified at ρ∈{1/4,1/2}, n∈{16,32,48,64}, q from 257 up to the genuine prize q=n·2¹²⁸. The
+  switch lands at exactly (1−ρ)/2 (ρ=1/2,n=32: pair_term 0 at δ=0.25, turns on at 0.281).
+* **(b) Upper window — the gate's "o(E²)" hope is FALSE.** pair_term rises from ≈0 just above
+  (1−ρ)/2, PLATEAUS just below 1 across the whole window, and crosses 1 EXACTLY at capacity
+  δ=1−ρ (coincident with E[N]→1). So Σ_d A_d I_∩(d) = Θ(E[N]²), NOT o(E[N]²): the pair sum is
+  COMPARABLE to the mean², Var ≈ E[N]², only O(1) typical overdispersion. lalalune's hoped-for
+  o(E²) certificate does not exist in the upper window — refuted by exact in-regime arithmetic.
+* **(c) Even Θ(1) is exponentially blind to the wall.** KKH26 (ePrint 2026/782, Krachun–Kazanin–
+  Haböck) PROVES a worst line with 2^{Ω(1/η)} close points at δ=1−ρ−Θ(1/log n). The 2nd-moment
+  overdispersion Θ(1) ≪ 2^{Ω(1/η)}: the average pair sum cannot feel the measure-zero structured
+  worst line. A small (or any) second moment is a typical/whp certificate (Chebyshev), never a
+  worst-case one — so proving the gate could NOT close the upper window even if it were o(E²).
+
+**Where it lands:** the second-moment/pair-sum route to the upper-window δ* is now RULED OUT as
+a certificate — both because the gate is Θ(E²) not o(E²), and because Θ(1) overdispersion is
+exponentially below the proven KKH26 worst line. This converts lalalune's "open: is the gate
+o(E²)?" into "answered NO, and it wouldn't suffice regardless." The lower window (δ<(1−ρ)/2) is
+FULLY CLOSED (closed form, zero residual). The entire open content is the WORST-CASE combinatorial
+extremality of the antipodal subset-sum fibre (BCHKS25 Conj 1.12) — exactly lalalune's "must be a
+combinatorial extremality argument, not a character-sum/interpolation/moment bound." Probe:
+scripts/probes/probe_pairsum_gate.py.
