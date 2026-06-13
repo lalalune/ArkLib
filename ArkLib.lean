@@ -545,6 +545,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CapacityVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.CensusClassificationCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.CensusCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CensusConditionalPin
+import ArkLib.Data.CodingTheory.ProximityGap.CensusDominationWeld
 import ArkLib.Data.CodingTheory.ProximityGap.CensusDoubling
 import ArkLib.Data.CodingTheory.ProximityGap.CensusDoublingMap
 import ArkLib.Data.CodingTheory.ProximityGap.CensusExtremalFloor
