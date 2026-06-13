@@ -51,7 +51,7 @@ All results `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.soun
   (issue #389; the MCA threshold `δ*`).
 -/
 
-open Polynomial
+open Polynomial Finset
 open scoped Classical
 
 namespace ArkLib.ProximityGap.SinglePencilQIndependence
@@ -353,6 +353,119 @@ theorem mca_badscalar_sharp (Q0 : F[X]) (μ : Finset F) (k : ℕ) :
       ≤ (μ.powersetCard (k + 1)).card :=
   mca_badscalar_card_le Q0 μ k (k + 1) (Nat.lt_succ_self k)
 
+/-- **Packing bound (universe `V`).** A family `G` of `a`-subsets of `V`, pairwise intersecting in
+`≤ k` elements (`k < a`), has `|G| · C(a, k+1) ≤ C(|V|, k+1)`. -/
+theorem packing_card_mul_le {U : Type*} [DecidableEq U] {a k : ℕ}
+    (V : Finset U) (G : Finset (Finset U)) (hVsub : ∀ S ∈ G, S ⊆ V)
+    (hcard : ∀ S ∈ G, S.card = a)
+    (hinter : ∀ S ∈ G, ∀ S' ∈ G, S ≠ S' → (S ∩ S').card ≤ k) :
+    G.card * (a.choose (k + 1)) ≤ V.card.choose (k + 1) := by
+  classical
+  have hdisj : (G : Set (Finset U)).PairwiseDisjoint (fun S => S.powersetCard (k + 1)) := by
+    intro S hS S' hS' hne
+    simp only [Function.onFun, Finset.disjoint_left]
+    intro T hT hT'
+    rw [Finset.mem_powersetCard] at hT hT'
+    have hsub : T ⊆ S ∩ S' := Finset.subset_inter hT.1 hT'.1
+    have hcardT := card_le_card hsub
+    rw [hT.2] at hcardT
+    have := hinter S hS S' hS' hne; omega
+  have hbig : (G.biUnion (fun S => S.powersetCard (k + 1))).card ≤ V.card.choose (k + 1) := by
+    have hsubV : G.biUnion (fun S => S.powersetCard (k + 1)) ⊆ V.powersetCard (k + 1) := by
+      intro T hT
+      rw [Finset.mem_biUnion] at hT
+      obtain ⟨S, hSG, hTS⟩ := hT
+      rw [Finset.mem_powersetCard] at hTS ⊢
+      exact ⟨hTS.1.trans (hVsub S hSG), hTS.2⟩
+    refine le_trans (card_le_card hsubV) ?_
+    rw [Finset.card_powersetCard]
+  rw [Finset.card_biUnion (fun S hS S' hS' hne => hdisj hS hS' hne)] at hbig
+  calc G.card * (a.choose (k + 1))
+      = ∑ S ∈ G, (a.choose (k + 1)) := by rw [Finset.sum_const, smul_eq_mul, mul_comm]
+    _ = ∑ S ∈ G, (S.powersetCard (k + 1)).card := by
+        refine Finset.sum_congr rfl (fun S hS => ?_)
+        rw [Finset.card_powersetCard, hcard S hS]
+    _ ≤ V.card.choose (k + 1) := hbig
+
+/-- **The packing bound on the MCA bad-scalar count.** For a single-poly pencil over a finite `μ`,
+the bad scalars (`Q₀ + γ·Xᵏ` agrees with a degree-`<k` codeword on `≥ a` points, `k < a`) satisfy
+`#bad · C(a, k+1) ≤ C(|μ|, k+1)`. Witness `a`-subsets of distinct scalars `k`-pack (`|S∩S'| ≤ k`,
+since `C(γ−γ')Xᵏ − (W−W')` has degree exactly `k`). -/
+theorem mca_badscalar_packing (Q0 : F[X]) (μ : Finset F) (k a : ℕ) (hka : k < a) :
+    (Finset.univ.filter (fun γ : F =>
+        ∃ W : F[X], W.natDegree < k ∧
+          a ≤ (μ.filter (fun ζ => (Q0 + C γ * X ^ k - W).eval ζ = 0)).card)).card
+        * (a.choose (k + 1))
+      ≤ (μ.card).choose (k + 1) := by
+  classical
+  set bad := Finset.univ.filter (fun γ : F =>
+      ∃ W : F[X], W.natDegree < k ∧
+        a ≤ (μ.filter (fun ζ => (Q0 + C γ * X ^ k - W).eval ζ = 0)).card) with hbad
+  have hwit : ∀ γ ∈ bad, ∃ W : F[X], ∃ S : Finset F, S ⊆ μ ∧ S.card = a ∧ W.natDegree < k ∧
+      ∀ ζ ∈ S, (Q0 + C γ * X ^ k - W).eval ζ = 0 := by
+    intro γ hγ
+    obtain ⟨W, hWdeg, hcard⟩ := (Finset.mem_filter.mp hγ).2
+    obtain ⟨S, hSsub, hScard⟩ := Finset.exists_subset_card_eq hcard
+    exact ⟨W, S, hSsub.trans (Finset.filter_subset _ _), hScard, hWdeg,
+      fun ζ hζ => (Finset.mem_filter.mp (hSsub hζ)).2⟩
+  choose Wp Sp hSsub hScard hWdeg hvan using hwit
+  -- pinning: a large common intersection forces the scalars equal
+  have hpin : ∀ γ (hγ : γ ∈ bad) γ' (hγ' : γ' ∈ bad),
+      k < (Sp γ hγ ∩ Sp γ' hγ').card → γ = γ' := by
+    intro γ hγ γ' hγ' hgt
+    by_contra hne
+    set I := Sp γ hγ ∩ Sp γ' hγ' with hI
+    set D := C (γ - γ') * X ^ k - (Wp γ hγ - Wp γ' hγ') with hD
+    have hd1 : (∏ ζ ∈ I, (X - C ζ)) ∣ (Q0 + C γ * X ^ k - Wp γ hγ) :=
+      prodXsubC_dvd_of_roots _ I (fun ζ hζ => hvan γ hγ ζ (Finset.mem_inter.mp hζ).1)
+    have hd2 : (∏ ζ ∈ I, (X - C ζ)) ∣ (Q0 + C γ' * X ^ k - Wp γ' hγ') :=
+      prodXsubC_dvd_of_roots _ I (fun ζ hζ => hvan γ' hγ' ζ (Finset.mem_inter.mp hζ).2)
+    have hdD : (∏ ζ ∈ I, (X - C ζ)) ∣ D := by
+      have hs := dvd_sub hd1 hd2
+      have he : (Q0 + C γ * X ^ k - Wp γ hγ) - (Q0 + C γ' * X ^ k - Wp γ' hγ') = D := by
+        rw [hD, map_sub]; ring
+      rwa [he] at hs
+    have hDk : D.coeff k = γ - γ' := by
+      rw [hD, Polynomial.coeff_sub, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl,
+        mul_one, Polynomial.coeff_sub,
+        Polynomial.coeff_eq_zero_of_natDegree_lt (hWdeg γ hγ),
+        Polynomial.coeff_eq_zero_of_natDegree_lt (hWdeg γ' hγ'), sub_zero, sub_zero]
+    have hDne : D ≠ 0 := by
+      intro h; rw [h, Polynomial.coeff_zero] at hDk; exact hne (sub_eq_zero.mp hDk.symm)
+    have hDdeg : D.natDegree ≤ k := by
+      rw [hD]
+      refine le_trans (Polynomial.natDegree_sub_le _ _) ?_
+      rw [Nat.max_le]
+      refine ⟨le_trans (Polynomial.natDegree_C_mul_le _ _) (by rw [Polynomial.natDegree_X_pow]), ?_⟩
+      exact le_trans (Polynomial.natDegree_sub_le _ _)
+        (by rw [Nat.max_le]; exact ⟨le_of_lt (hWdeg γ hγ), le_of_lt (hWdeg γ' hγ')⟩)
+    have hle := Polynomial.natDegree_le_of_dvd hdD hDne
+    rw [prodXsubC_natDegree] at hle
+    omega
+  -- the family of witnesses, indexed by bad.attach, is injective and k-packs
+  set G := bad.attach.image (fun p => Sp p.1 p.2) with hG
+  have hinj : Set.InjOn (fun p : {x // x ∈ bad} => Sp p.1 p.2) bad.attach := by
+    intro p _ q _ heq
+    have hpq : Sp p.1 p.2 = Sp q.1 q.2 := heq
+    have hkk : k < (Sp p.1 p.2 ∩ Sp q.1 q.2).card := by
+      rw [← hpq, Finset.inter_self, hScard p.1 p.2]; omega
+    exact Subtype.ext (hpin p.1 p.2 q.1 q.2 hkk)
+  have hGcard : G.card = bad.card := by
+    rw [hG, Finset.card_image_of_injOn hinj, Finset.card_attach]
+  have hGfacts : (∀ S ∈ G, S ⊆ μ) ∧ (∀ S ∈ G, S.card = a) := by
+    constructor <;> (intro S hS; rw [hG, Finset.mem_image] at hS; obtain ⟨p, _, rfl⟩ := hS)
+    · exact hSsub p.1 p.2
+    · exact hScard p.1 p.2
+  have hGinter : ∀ S ∈ G, ∀ S' ∈ G, S ≠ S' → (S ∩ S').card ≤ k := by
+    intro S hS S' hS' hne
+    rw [hG, Finset.mem_image] at hS hS'
+    obtain ⟨p, _, rfl⟩ := hS; obtain ⟨q, _, rfl⟩ := hS'
+    by_contra hgt
+    have hpeq : p.1 = q.1 := hpin p.1 p.2 q.1 q.2 (not_le.mp hgt)
+    exact hne (by rw [show p = q from Subtype.ext hpeq])
+  have := packing_card_mul_le μ G hGfacts.1 hGfacts.2 hGinter
+  rwa [hGcard] at this
+
 end ArkLib.ProximityGap.SinglePencilQIndependence
 
 /-! ## Axiom audit -/
@@ -361,4 +474,6 @@ end ArkLib.ProximityGap.SinglePencilQIndependence
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_card_le
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.rootsOfUnity_mca_badscalar_card_le
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_general
+#print axioms ArkLib.ProximityGap.SinglePencilQIndependence.packing_card_mul_le
+#print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_packing
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_sharp
