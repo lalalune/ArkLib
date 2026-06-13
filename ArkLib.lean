@@ -578,6 +578,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetSplittingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CosetStrip
 import ArkLib.Data.CodingTheory.ProximityGap.CosetVanishingDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.CosetWallDeepInteriorNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.CosetWordCap
 import ArkLib.Data.CodingTheory.ProximityGap.CountingGapConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
