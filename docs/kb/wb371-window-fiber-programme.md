@@ -64,9 +64,12 @@ rate.  The corrected assembly asks for a linear-in-`n` cap.
 
 - **G×G reduced coprime**: items 5–7.
 - **Shared locator factor** (`gcd(ℓ₀,ℓ₁) ≠ 1`, nonvanishing): zero bad — the
-  factor divides the constant `g`.  (Math done; Lean queued.)
+  factor divides the constant `g`.  **LANDED**: `shared_factor_no_defect`
+  (`WindowStrataKills.lean`).
 - **Codeword row** (`ℓ₀` constant): ≤ 1 bad via translation equivariance.
-  (Math done; Lean queued.)
+  **LANDED**: `codeword_fst_not_bad` / `codeword_fst_badScalars_card_le_one`
+  (`WindowStrataKills.lean`), `badScalars_card_le_one_of_fst_mem`
+  (`WBPencilPolynomialRow.lean`).
 - **Pole rows** (`PoleSpikeMatching.lean`, new): the stratum-agnostic
   `witness_defect_dichotomy`; defect witnesses contain every pole
   (`pole_witness_contains_poles`); misaligned pole pairs pin γ
@@ -114,8 +117,12 @@ Successor generation (spawned by refutations, per discipline):
 
 ## Open targets, in order
 
-1. Slack-1 assembly (`bad ≤ 1 + exotics` capstone + strata wiring) and the
-   small-`w` exotic bound.
+1. **The small-`w` exotic bound — the genuinely-open piece** (the high-rate tail
+   the normalizer-pair family showed defeats any constant budget; `WindowRationalLinear`
+   stays a named residual until this lands). The slack-1 `bad ≤ 1 + exotics` capstone +
+   strata wiring are DONE: `stratumG_slack1_badScalars_card_le` (`Slack1Assembly.lean`),
+   the codeword-row + shared-locator kills (`WindowStrataKills.lean`), the per-direction
+   ratio level-set bound `grs_line_incidence_le` (`Frontier/RatioLevelSet.lean`).
 2. Pole-recursion bricks (aligned case → punctured deficient instance).
 3. Higher slack: the chain theory at `deg g ≤ s` (multi-level CF; the
    `(X−t)`-cancellation telescopes), toward the parametric all-rows theorem.
