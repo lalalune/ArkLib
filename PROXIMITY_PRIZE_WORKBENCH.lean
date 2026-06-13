@@ -397,6 +397,44 @@ def ShawFlatnessConjecture : Prop :=
       ψ.IsPrimitive → (D.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ) →
       ShawGapLaw ψ D C
 
+/-! ## §8b  The STRUCTURED closed-form δ* (the true value) — entropy law, proven ceiling, open floor
+
+The average/Shaw view (§4–§8) gives δ* via the worst-case spectral error. The **structured** view
+(in-tree `PrizeEntropyDeltaStar.lean`, axiom-clean on `main`) pins the exact *value* and proves one
+direction unconditionally. The two are the same δ*: `H_q⁻¹(1−ρ−log_q(1/ε*)/n) = prizeDeltaStar` (the
+entropy law is the explicit closed form of the `H_q⁻¹` level set).
+
+The worst-case list on the dyadic subgroup `μ_s` is the **maximal subset-sum fibre**
+`N_fib(s,r) = C(s/2 − r%2, ⌊r/2⌋)` — *exact* via the Lam–Leung antipodal law (two `r`-subsets have
+equal sum iff their symmetric difference is a union of antipodal pairs, so the sum depends only on
+the *singleton part*; `TwoPowerFibreValue`). At constant rate the ladder forces `r ≈ ρs+2`, list
+`2^{(s/2)·H(ρ)}`, exceeding the budget `B = q·ε* (≈ n)` exactly at `δ = prizeDeltaStar`. -/
+
+/-- **THE STRUCTURED CLOSED-FORM δ*** `= 1 − ρ − H(ρ)/log₂ B`, `H` = binary entropy, `B = q·ε*`.
+A single computable real (no `∃`-over-objects, no incomputable lemma), strictly inside `(1−√ρ, 1−ρ)`.
+Mirrors in-tree `ProximityGap.PrizeEntropy.prizeDeltaStar`. -/
+noncomputable def prizeDeltaStar (ρ B : ℝ) : ℝ :=
+  1 - ρ - Real.binEntropy ρ / Real.logb 2 B
+
+/- **State of the structured pin (the definitive frontier, 2026-06-13):**
+* **CEILING — PROVEN, unconditional** (`PrizeEntropyDeltaStar.prizeDeltaStar_ceiling`, axiom-clean):
+  `δ* ≤ prizeDeltaStar` via the explicit ladder family, under the MILD decidable hypothesis `q > 2^μ`
+  ∧ `q ∤ (collision resultants)` — a finite checkable prime spectrum, NOT the `s^{s/2}<q` transfer
+  wall, NO `CensusDomination`, no incomputable lemma. The structured adversary is realizable.
+* **FLOOR — the single open core** (`PrizeFloorStatement`): for every word, the list at radius
+  `δ < prizeDeltaStar` is `≤ B` (worst-case `ε_mca ≤ ε*`). This is the worst-case list UPPER bound
+  for explicit smooth RS above Johnson = **BCHKS25 Conj 1.12** = the structured **optimality** (no
+  word beats the antipodal ladder). Proving it pins `δ* = prizeDeltaStar` and resolves BOTH grand
+  challenges (via the in-tree LD⇔MCA bridges).
+
+**Why BGK's known `B(μ_n)=o(n)` does NOT close the floor (the trap):** BGK bounds the *generic*
+character sum (the AVERAGE direction), but the floor's worst case is the *structured* ladder
+extremizer, whose list `N_fib` is `≫` generic. So the floor is NOT a character-sum cancellation
+bound — it is the combinatorial optimality of the antipodal subset-sum fibre, which the Shaw
+operator encodes as its top moment `E_{ρn}` (R6/R7), not its gap. The gap `B` (W4, §8) controls the
+generic stratum; the floor's open content is the optimality of the top moment — and the two are the
+SAME wall (BCHKS Thm 1.9: worst-case incidence ⟺ explicit-RS beyond-Johnson list size). -/
+
 /-
 ### §9  Refutation ledger (the conjecture SURVIVES all of these — they fix its sharp form)
 
