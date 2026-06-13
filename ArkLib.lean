@@ -127,8 +127,8 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma22
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma24
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma2456
 import ArkLib.Data.CodingTheory.GMMDS.LovettNLtK
-import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
 import ArkLib.Data.CodingTheory.GMMDS.LovettPairwise
+import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
 import ArkLib.Data.CodingTheory.GMMDS.LovettPrimitiveDischarge
 import ArkLib.Data.CodingTheory.GMMDS.LovettPrimitiveDistinctDegree
 import ArkLib.Data.CodingTheory.GMMDS.LovettRaise
@@ -292,6 +292,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.A8CosetStructure
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AbacusNCore
+import ArkLib.Data.CodingTheory.ProximityGap.AbacusReduction
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyCubeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGcdDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGroupRepBound
@@ -1504,6 +1505,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SeparationProbability
 import ArkLib.Data.CodingTheory.ProximityGap.SeparationSurvivalCount
 import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.ShawFlatnessRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.ShawOperator
 import ArkLib.Data.CodingTheory.ProximityGap.ShawOperatorDual
 import ArkLib.Data.CodingTheory.ProximityGap.ShellFourierKrawtchouk
