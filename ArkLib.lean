@@ -1315,6 +1315,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop38
 import ArkLib.Data.CodingTheory.ProximityGap.SubCeilingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonCorradiEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListBound
+import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListSupply
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonResidualFloor
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyF17
