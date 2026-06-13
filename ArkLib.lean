@@ -940,6 +940,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniformShareBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniqueRichFactor
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WitnessMassWiring
+import ArkLib.Data.CodingTheory.ProximityGap.HalfJohnsonDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.HalfPairSliceExact
 import ArkLib.Data.CodingTheory.ProximityGap.HaloFreeThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.HalvingWindowExit
@@ -1679,6 +1680,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
 import ArkLib.Data.CodingTheory.ProximityGap.SumProductBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SumZeroSubsetsBound
 import ArkLib.Data.CodingTheory.ProximityGap.SumsetDistinctDissociation
+import ArkLib.Data.CodingTheory.ProximityGap.SuperCodeListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SupplyFoldInjection
 import ArkLib.Data.CodingTheory.ProximityGap.SupplyProfileDiagnostic
 import ArkLib.Data.CodingTheory.ProximityGap.SupplySizeProfile
@@ -1772,6 +1774,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentBound
+import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentRatioLower
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodSidonBound
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianNonVanishing
