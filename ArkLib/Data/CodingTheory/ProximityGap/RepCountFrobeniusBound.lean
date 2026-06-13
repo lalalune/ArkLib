@@ -46,19 +46,19 @@ theorem frobenius_eq_inv_of_dvd_succ {n : ℕ} (ndvd : n ∣ p + 1) {z : F}
     _ = (z ^ p * z) * z⁻¹ := by ring
     _ = z⁻¹ := by rw [hmul, one_mul]
 
-/-- **THE FINITE-FIELD GV BOUND** (Frobenius regime `n ∣ p+1`): for `c` Frobenius-fixed and
-nonzero, the additive representation count of `μ_n` is `≤ 2`. -/
+/-- **THE FINITE-FIELD GV BOUND** (Frobenius regime `n ∣ p+1`): for EVERY nonzero `c`, the
+additive representation count of `μ_n` is `≤ 2` — no `c^p = c` restriction. -/
 theorem repCount_le_two_of_dvd_succ {G : Finset F} {n : ℕ} (hn : 1 ≤ n)
-    (ndvd : n ∣ p + 1) (hGmem : ∀ z, z ∈ G ↔ z ^ n = 1) {c : F} (hc : c ^ p = c)
-    (hc0 : c ≠ 0) :
+    (ndvd : n ∣ p + 1) (hGmem : ∀ z, z ∈ G ↔ z ^ n = 1) {c : F} (hc0 : c ≠ 0) :
     repCount G c ≤ 2 := by
   classical
-  set P : F[X] := X ^ 2 - C c * X + 1 with hP
-  have hPmonic : P.Monic := by
-    rw [hP]; monicity!
+  have hcp0 : c ^ p ≠ 0 := pow_ne_zero p hc0
+  -- the fixed degree-2 polynomial `c^p·X² − c·c^p·X + c` (leading coeff `c^p ≠ 0`)
+  set P : F[X] := C (c ^ p) * X ^ 2 - C (c * c ^ p) * X + C c with hP
   have hPdeg : P.natDegree = 2 := by
-    rw [hP]; compute_degree!
-  have hP0 : P ≠ 0 := hPmonic.ne_zero
+    rw [hP]; compute_degree!; exact fun h => absurd h hc0
+  have hP0 : P ≠ 0 := by
+    intro h; rw [h, natDegree_zero] at hPdeg; exact absurd hPdeg (by norm_num)
   have hroots : (G.filter (fun y => c - y ∈ G)) ⊆ P.roots.toFinset := by
     intro y hy
     rw [Finset.mem_filter] at hy
@@ -72,19 +72,16 @@ theorem repCount_le_two_of_dvd_succ {G : Finset F} {n : ℕ} (hn : 1 ≤ n)
     -- Frobenius = inversion on both
     have hyp : y ^ p = y⁻¹ := frobenius_eq_inv_of_dvd_succ ndvd hyn hy0
     have hcyp : (c - y) ^ p = (c - y)⁻¹ := frobenius_eq_inv_of_dvd_succ ndvd hcyn hcy0
-    -- `(c−y)^p = c^p − y^p = c − y⁻¹`, so `(c−y)⁻¹ = c − y⁻¹`
-    have hcyinv : (c - y)⁻¹ = c - y⁻¹ := by
-      rw [← hcyp, sub_pow_char_of_commute (R := F) (p := p) (Commute.all c y), hc, hyp]
-    -- hence `(c−y)·(c − y⁻¹) = 1` and `y·y⁻¹ = 1`
-    have h2 : (c - y) * (c - y⁻¹) = 1 := by
+    -- `(c−y)^p = c^p − y^p = c^p − y⁻¹`, so `(c−y)⁻¹ = c^p − y⁻¹`
+    have hcyinv : (c - y)⁻¹ = c ^ p - y⁻¹ := by
+      rw [← hcyp, sub_pow_char_of_commute (R := F) (p := p) (Commute.all c y), hyp]
+    have h2 : (c - y) * (c ^ p - y⁻¹) = 1 := by
       rw [← hcyinv]; exact mul_inv_cancel₀ hcy0
     have hyinv : y * y⁻¹ = 1 := mul_inv_cancel₀ hy0
-    -- `y` is a root of `X² − cX + 1`
+    -- `y` is a root of `c^p·X² − c·c^p·X + c`
     rw [Multiset.mem_toFinset, mem_roots hP0]
-    simp only [IsRoot, hP, eval_add, eval_sub, eval_mul, eval_pow, eval_C, eval_X, eval_one]
-    have hkey : c * (y ^ 2 - c * y + 1) = 0 := by
-      linear_combination (-y) * h2 + (-(c - y)) * hyinv
-    exact (mul_eq_zero.mp hkey).resolve_left hc0
+    simp only [IsRoot, hP, eval_add, eval_sub, eval_mul, eval_pow, eval_C, eval_X]
+    linear_combination (-y) * h2 + (-(c - y)) * hyinv
   calc repCount G c = (G.filter (fun y => c - y ∈ G)).card := rfl
     _ ≤ P.roots.toFinset.card := Finset.card_le_card hroots
     _ ≤ Multiset.card P.roots := Multiset.toFinset_card_le _
