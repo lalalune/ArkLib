@@ -833,6 +833,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWeilBoundInstances
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianPoly
+import ArkLib.Data.CodingTheory.ProximityGap.HighMultiplicityBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.HybridConcentrationDepthNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.HybridPinInstance
 import ArkLib.Data.CodingTheory.ProximityGap.IntSquarefreeClassification
@@ -1289,10 +1290,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.RepCountEnergyNfold
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusGeneral
-import ArkLib.Data.CodingTheory.ProximityGap.RepCountStepanovOrderTwo
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusInvariance
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountShiftedPower
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountSidonBound
+import ArkLib.Data.CodingTheory.ProximityGap.RepCountStepanovOrderTwo
 import ArkLib.Data.CodingTheory.ProximityGap.ResidualModularReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Resolution
 import ArkLib.Data.CodingTheory.ProximityGap.ResolutionWitness
