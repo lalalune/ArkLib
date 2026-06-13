@@ -1294,6 +1294,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PolywordSupplyGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.PopularCodewords
 import ArkLib.Data.CodingTheory.ProximityGap.PowerWordListBound
 import ArkLib.Data.CodingTheory.ProximityGap.PrimePowerMultisetWindow
+import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorCovering
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionBoundaryFailure
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionJohnsonBudget
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionRegimeBracket
