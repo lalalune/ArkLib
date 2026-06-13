@@ -599,6 +599,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CommonCenterJohnsonRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ComplementQuadric
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstance
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu10
+import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu10F101
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu12
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu4
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu8
