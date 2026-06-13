@@ -645,6 +645,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWindowedLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Decision
+import ArkLib.Data.CodingTheory.ProximityGap.DecoupledJohnsonBound
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandCeilingWindow
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandDeltaStarCeiling
@@ -1509,6 +1510,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
 import ArkLib.Data.CodingTheory.ProximityGap.SumProductBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SumZeroSubsetsBound
+import ArkLib.Data.CodingTheory.ProximityGap.SumsetDistinctDissociation
 import ArkLib.Data.CodingTheory.ProximityGap.SupplyProfileDiagnostic
 import ArkLib.Data.CodingTheory.ProximityGap.SupplySizeProfile
 import ArkLib.Data.CodingTheory.ProximityGap.TakeoverCountermodel
