@@ -95,3 +95,24 @@ admissibility, Conj 1.12), NOT generic multiplicative-subgroup smoothness. So at
 radii a GENERIC μ_n is no worse than random — consistent with δ* being controlled, but the
 DEEP-window regime (where the special structures could bite) remains the open question. Neither
 closes nor refutes the prize; it localizes the danger to special structures + deep radii.
+
+## REFINEMENT (self-correction) — the capacity-deficit is REAL but SMALL and STRUCTURED, measured
+
+The incidence-genericity dichotomy in its clean form is REFINED by the across-window test
+(refute-or-confirm, smooth vs random worst-case incidence at every window radius, ρ=1/4):
+- n=12: at d=0.583 (deep window) smooth=4 vs random=0 — SMOOTH EXCEEDS (by 4).
+- n=16: smooth≈random at all radii (2373/2369, 23/23, 0/0).
+- n=20: at d=0.650 smooth=40 vs random=35 — SMOOTH EXCEEDS (by 5).
+
+So smooth ≈ random at MOST radii, but the smooth domain carries a SMALL STRUCTURED EXCESS (the
+algebraic/antipodal family: a few extra bad scalars) at specific DEEP-window radii where random
+has dropped off. The excess is small (4–5) and roughly CONSTANT across n (12→20), NOT exploding.
+**This directly MEASURES the capacity-deficit: it is real but small + structured**, consistent
+with the master conjecture's `δ* = 1−ρ·N_fib(n,r)/N_fib(n,r−1)` (slightly sub-capacity, the
+antipodal cost) rather than the pure average-term `H_q^{-1}` (which the excess sits just below).
+Open question (the wall, unchanged): does the structured excess stay sub-`q·ε*` in-regime (prize
+survives at the small-deficit δ*) or grow (catastrophic)? The N_fib closed form predicts it stays
+small; proving it is the `PrizeFloorStatement` / Shkredov wall. Net: the workbench's
+`prizeDeltaStar` (entropy ceiling) is the upper envelope; the true `δ*` sits a small structured
+deficit below it, pinned by the antipodal `N_fib` count — the open core is exactly that the
+deficit is the N_fib value and no larger.
