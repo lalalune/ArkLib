@@ -1440,6 +1440,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusBound
 import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusDyadicChain
 import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusDyadicChainCorollaries
 import ArkLib.Data.CodingTheory.ProximityGap.SeparatingCoordinates
+import ArkLib.Data.CodingTheory.ProximityGap.SeparatingCoordsAvoiding
 import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledBound
