@@ -543,6 +543,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityFailureBandwidth
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityVacuity
+import ArkLib.Data.CodingTheory.ProximityGap.CappedSupplyMassIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.CensusClassificationCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.CensusCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CensusConditionalPin
@@ -1107,8 +1108,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.MannFiberCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MasterLoop45
 import ArkLib.Data.CodingTheory.ProximityGap.MatchingDomainUniqueness
 import ArkLib.Data.CodingTheory.ProximityGap.MatchingForcingLemmas
+import ArkLib.Data.CodingTheory.ProximityGap.MeanDegreeCauchySchwarz
 import ArkLib.Data.CodingTheory.ProximityGap.MeanDegreeDeepBand
 import ArkLib.Data.CodingTheory.ProximityGap.MeanDegreeGeneral
+import ArkLib.Data.CodingTheory.ProximityGap.MeanDegreeLawRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.MinimalVanishingReduction
 import ArkLib.Data.CodingTheory.ProximityGap.MissingLineDefeater
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumCompleteSquare
