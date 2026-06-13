@@ -33,13 +33,12 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettSeparateStep
 import ArkLib.Data.CodingTheory.GMMDS.LovettDivisibility
 -- §3 THE SHAW OPERATOR — the unified unknown + the closed prize conjecture:
 import ArkLib.Data.CodingTheory.ProximityGap.ShawOperator
-<<<<<<< HEAD
+-- §3 (W6) the machine-checked second-moment / L² no-go + far-restriction + falsification:
+import ArkLib.Data.CodingTheory.ProximityGap.ShawSecondMoment
 -- §Y the explicit entropy closed-form δ* value + the rigorous in-window ladder ceiling:
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
-=======
 -- §D THE DEMAND-SIDE LANE (#389) — the CensusDomination #bad-scalar count, r=3 closed (O172):
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR3Bound
->>>>>>> 1f2337fda (feat(#389): r=3 deep-band bound LANDED as axiom-clean Lean (DeepBandR3Bound) + workbench demand-side lane + O173 structural-route negative)
 
 /-!
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -469,7 +468,6 @@ noncomputable example {F : Type} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
     cyclic block-diagonal `Z/n` per-frequency estimate of `FarLineIncidenceEquivariance`) is the
     whole prize. -/
 
-<<<<<<< HEAD
 
 /-! ### A concrete, unconditionally-proven witness of the δ* law
 
@@ -551,7 +549,6 @@ theorem deltaStar_pin_mu8_F4129_witness :
 #check @ProximityGap.PrizeEntropy.prizeDeltaStar_ceiling      -- PROVEN: unconditional ladder ceiling
 #check @ProximityGap.PrizeEntropy.PrizeFloorStatement         -- the single closed open core
 #check @ProximityGap.PrizeEntropy.PrizePinConjecture          -- δ* = prizeDeltaStar (the pin)
-=======
 /-! ════════════════════════════════════════════════════════════════════════════
     ║   §D   THE DEMAND-SIDE LANE (#389) — CensusDomination #bad-scalar count    ║
     ════════════════════════════════════════════════════════════════════════════
@@ -656,6 +653,5 @@ theorem deepBandBudget_r_three (g : ℕ) :
   unfold deepBandBudget_r deepBandBudget
   congr 2
   omega
->>>>>>> 1f2337fda (feat(#389): r=3 deep-band bound LANDED as axiom-clean Lean (DeepBandR3Bound) + workbench demand-side lane + O173 structural-route negative)
 
 end ProximityGap.Workbench
