@@ -466,6 +466,18 @@ theorem mca_badscalar_packing (Q0 : F[X]) (μ : Finset F) (k a : ℕ) (hka : k <
   have := packing_card_mul_le μ G hGfacts.1 hGfacts.2 hGinter
   rwa [hGcard] at this
 
+/-- **Explicit form.** `#bad ≤ C(|μ|, k+1) / C(a, k+1)`. For `μ = μ_n` (`n = 2^μ`, `m=1`,
+`a = r+1`, `k+1 = r`) this is `C(n, r)/(r+1)`, which is `< 2^r·C(2^{μ-1}, r)` (the KKH26 budget)
+for the bulk of the range `r ≤ ~3n/8`, proving `CensusDomination` / the `δ*` pin there. The only
+residual is the top sliver `r → n/2`. -/
+theorem mca_badscalar_packing_div (Q0 : F[X]) (μ : Finset F) (k a : ℕ) (hka : k < a) :
+    (Finset.univ.filter (fun γ : F =>
+        ∃ W : F[X], W.natDegree < k ∧
+          a ≤ (μ.filter (fun ζ => (Q0 + C γ * X ^ k - W).eval ζ = 0)).card)).card
+      ≤ (μ.card).choose (k + 1) / (a.choose (k + 1)) := by
+  rw [Nat.le_div_iff_mul_le (Nat.choose_pos (by omega))]
+  exact mca_badscalar_packing Q0 μ k a hka
+
 end ArkLib.ProximityGap.SinglePencilQIndependence
 
 /-! ## Axiom audit -/
@@ -476,4 +488,5 @@ end ArkLib.ProximityGap.SinglePencilQIndependence
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_general
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.packing_card_mul_le
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_packing
+#print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_packing_div
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_sharp
