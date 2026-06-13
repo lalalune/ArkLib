@@ -266,6 +266,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyChar0
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFermat
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFullGroupClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyKernel
+import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyNegClosedLower
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyParity
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyRepBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultant
