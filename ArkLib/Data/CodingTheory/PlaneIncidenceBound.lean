@@ -66,10 +66,12 @@ theorem plane_incidence_card_le (u v c : ι → F) {k : ℕ}
     have e2 : u j * (p.1 - p'.1) + v j * (p.2 - p'.2) = 0 := by linear_combination hjp - hjp'
     have hdet : u i * v j - v i * u j ≠ 0 := sub_ne_zero.mpr (hmds i j hij)
     have hw1 : p.1 - p'.1 = 0 := by
-      have h : (u i * v j - v i * u j) * (p.1 - p'.1) = 0 := by linear_combination v j * e1 - v i * e2
+      have h : (u i * v j - v i * u j) * (p.1 - p'.1) = 0 := by
+        linear_combination v j * e1 - v i * e2
       exact (mul_eq_zero.mp h).resolve_left hdet
     have hw2 : p.2 - p'.2 = 0 := by
-      have h : (u i * v j - v i * u j) * (p.2 - p'.2) = 0 := by linear_combination u i * e2 - u j * e1
+      have h : (u i * v j - v i * u j) * (p.2 - p'.2) = 0 := by
+        linear_combination u i * e2 - u j * e1
       exact (mul_eq_zero.mp h).resolve_left hdet
     exact Prod.ext (sub_eq_zero.mp hw1) (sub_eq_zero.mp hw2)
   have htarget : (univ.powersetCard 2 : Finset (Finset ι)).card = (Fintype.card ι).choose 2 := by
@@ -78,7 +80,7 @@ theorem plane_incidence_card_le (u v c : ι → F) {k : ℕ}
       = ∑ p ∈ Heavy, (S p).card.choose 2 := by
     rw [Finset.card_sigma]
     exact Finset.sum_congr rfl (fun p _ => Finset.card_powersetCard 2 (S p))
-  -- charge each (heavy parameter, pair of agreeing positions) to that pair; the pair fixes the param
+  -- charge each (heavy param, pair of agreeing positions) to it; the pair fixes the param
   have hcard_le : (∑ p ∈ Heavy, (S p).card.choose 2) ≤ (Fintype.card ι).choose 2 := by
     rw [← hsig, ← htarget]
     apply Finset.card_le_card_of_injOn (fun x => x.2)
