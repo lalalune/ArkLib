@@ -101,9 +101,18 @@ theorem packing_covers (N : ℕ) :
         _ = ((r + 1 + 1) * 2 ^ (r + 1) * N.choose (r + 1)) * (r + 1) := by ring
     exact Nat.le_of_mul_le_mul_right hstep (Nat.succ_pos r)
 
+/-- Clean `√n` form of `packing_covers`: `r² ≤ N ⟹ C(2N,r) ≤ (r+1)·2^r·C(N,r)`.  The packing route
+proves `CensusDomination` for every radius up to `r ≤ ⌊√N⌋`. -/
+theorem packing_covers_sqrt {N r : ℕ} (h : r * r ≤ N) :
+    (2 * N).choose r ≤ (r + 1) * 2 ^ r * N.choose r := by
+  apply packing_covers N r
+  intro j hj
+  nlinarith [hj, h, Nat.zero_le j]
+
 end ArkLib.ProximityGap.PackingDeepBandMiss
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.PackingDeepBandMiss.two_pow_ge_sq_add
 #print axioms ArkLib.ProximityGap.PackingDeepBandMiss.packing_exceeds_budget_deep_band
 #print axioms ArkLib.ProximityGap.PackingDeepBandMiss.packing_covers
+#print axioms ArkLib.ProximityGap.PackingDeepBandMiss.packing_covers_sqrt
