@@ -25,7 +25,7 @@ This file builds that foundation:
   linear combination `∑_j μ_j · f_j` vanishes with `μ ≠ 0`, the Wronskian is zero.  Equivalently
   (contrapositive `wronskianDet_ne_zero_imp_linearIndependent`) a nonzero Wronskian certifies
   linear independence of `f` — the engine for proving the Stepanov generators independent.
-The degree bound `deg W ≤ ∑_j deg f_j − C(l,2)` (the SV degree contradiction) is the next brick.
+* `natDegree_wronskianDet_le` — the precise degree bound `deg W ≤ ∑_j deg f_j − C(l,2)` (the input to the SV degree contradiction).
 -/
 
 open Polynomial Matrix Finset
@@ -81,5 +81,46 @@ theorem linearIndependent_of_wronskianDet_ne_zero [IsDomain R] {f : Fin l → R[
     μ = 0 := by
   by_contra hμ
   exact hW (wronskianDet_eq_zero_of_dependent hμ hdep)
+
+/-- The sum of `σ i` over a permutation of `Fin l` is `C(l, 2)`. -/
+theorem sum_perm_eq_choose_two (σ : Equiv.Perm (Fin l)) :
+    ∑ i : Fin l, (σ i : ℕ) = l.choose 2 := by
+  rw [Equiv.sum_comp σ (fun i : Fin l => (i : ℕ)),
+    Fin.sum_univ_eq_sum_range (fun i => i) l, Finset.sum_range_id, Nat.choose_two_right]
+
+/-- **The precise Wronskian degree bound** `deg(wronskianDet f) ≤ ∑_j deg(f j) − C(l, 2)`,
+the input to the Stepanov degree contradiction.  Each of the `l` derivative-rows drops the
+degree by one more, removing `0 + 1 + ⋯ + (l−1) = C(l,2)` from the naive product bound. -/
+theorem natDegree_wronskianDet_le (f : Fin l → R[X]) :
+    (wronskianDet f).natDegree ≤ (∑ j, (f j).natDegree) - l.choose 2 := by
+  classical
+  rw [wronskianDet, Matrix.det_apply]
+  refine le_trans (Polynomial.natDegree_sum_le _ _) ?_
+  rw [Finset.fold_max_le]
+  refine ⟨Nat.zero_le _, fun σ _ => ?_⟩
+  simp only [Function.comp_apply]
+  have hsmul : (Equiv.Perm.sign σ • ∏ i, wronskianMatrix f (σ i) i).natDegree
+      = (∏ i, wronskianMatrix f (σ i) i).natDegree := by
+    rcases Int.units_eq_one_or (Equiv.Perm.sign σ) with sg | sg
+    · rw [sg, one_smul]
+    · rw [sg, Units.neg_smul, one_smul, natDegree_neg]
+  rw [hsmul]
+  by_cases hprod : (∏ i, wronskianMatrix f (σ i) i) = 0
+  · rw [hprod, natDegree_zero]; exact Nat.zero_le _
+  · have hfac : ∀ i, (σ i : ℕ) ≤ (f i).natDegree := by
+      intro i
+      by_contra h
+      simp only [not_le] at h
+      exact hprod (Finset.prod_eq_zero (Finset.mem_univ i)
+        (by rw [wronskianMatrix_apply]; exact Polynomial.iterate_derivative_eq_zero h))
+    have hterm : ∀ i, (wronskianMatrix f (σ i) i).natDegree ≤ (f i).natDegree - (σ i : ℕ) := by
+      intro i; rw [wronskianMatrix_apply]; exact Polynomial.natDegree_iterate_derivative _ _
+    have hcombined : ∑ i, ((f i).natDegree - (σ i : ℕ)) = (∑ j, (f j).natDegree) - l.choose 2 := by
+      have h1 : ∑ i, ((f i).natDegree - (σ i : ℕ)) + l.choose 2 = ∑ j, (f j).natDegree := by
+        rw [← sum_perm_eq_choose_two σ, ← Finset.sum_add_distrib,
+          Finset.sum_congr rfl (fun i _ => Nat.sub_add_cancel (hfac i))]
+      omega
+    rw [← hcombined]
+    exact le_trans (Polynomial.natDegree_prod_le _ _) (Finset.sum_le_sum (fun i _ => hterm i))
 
 end ArkLib.ProximityGap.Wronskian

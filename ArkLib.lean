@@ -758,6 +758,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GenericFarSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.GranularityLadderRS
 import ArkLib.Data.CodingTheory.ProximityGap.GridSupplyRefutation
+import ArkLib.Data.CodingTheory.ProximityGap.HBKEnergySupplyBound
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AffineCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25BranchDichotomy
