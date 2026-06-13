@@ -65,3 +65,26 @@ So the proven-Ramanujan GP-graph results (semiprimitive, and the explicit `k≤4
 (almost-Ramanujan, NOT the tight `√n`). **The prize regime is precisely the open, non-semiprimitive,
 prime-field, small-2-power-subgroup case that no GP-graph result covers.** The reframing stands; the
 base case does not transfer. The residual is unchanged and genuinely open.
+
+## 7. The proven unconditional baseline + why the gap is irreducible (deep read, 2026-06-13)
+**Proven baseline (Weil / Gauss sum):** `B(μ_n) = max_{b≠0}|η_b| ≤ √p` unconditionally — via the
+Gauss-sum decomposition `η_b=(1/f)Σ_ψ ψ̄(b)g(ψ)`, `|g(ψ)|=√p`; equivalently the eigenvalue↔code-weight
+relation `λ_γ=n−(p/(p−1))w(c_γ)` + the Artin–Schreier point count `#C_{k,β}=2p+k(p−1)λ` bounded by
+Weil (Podestá–Videla 1911.08549, eq. 1.9/6.1). This is the unconditional fallback for the scaffold.
+
+**Why `√p` does NOT close the prize (precise):**
+- The prize needs `B ≤ √(n·log(p/n))`, and `√p ≫ √(n log)` for `n≪p`. Via the moment identity
+  `Σ_b η_b^{2r}=p·E_r`, the Weil bound gives only `E_r ≤ p^r` (since `|η|≤√p`), which is **useless**
+  (the clean value is `(2r−1)!!n^r ≪ p^r`); so `√p` and the energy bound are genuinely separate.
+- **`r≈log p` is genuinely required (no small-`r` shortcut):** `B ≤ (p·E_r)^{1/2r}`, and with
+  `E_r=(2r−1)!!n^r≈(2rn/e)^r` this is `p^{1/2r}·√(2rn/e)`; `p^{1/2r}=O(1)` only at `r≈log p`, where it
+  gives `√(n log p)`. Smaller `r` leaves a `p^{1/2r}≫1` factor. So the bound needs `E_r` clean (up to
+  a `C^r` factor) all the way to `r≈log p` — exactly the open content.
+- **Large `|F|` does NOT bypass it:** the field-size lever (`censusDomination_pin_largeField`) needs a
+  `q`-INDEPENDENT list bound; the worst-case beyond-Johnson list is `q`-independent and open, so growing
+  `q` enlarges the budget `ε*q` but not the (open) bound. `√p`-on-`B` does not bound the list.
+
+**Exact residual (sharpest statement):** prove `E_r(μ_n) ≤ (C·r·n)^r` for `r ≤ log(p/n)`,
+`n=2^μ ≪ √p`, `p≡1 mod n` (equivalently `B(μ_n) ≤ C√(n log(p/n))`, equivalently the Paley graph is
+almost-Ramanujan). The proven `√p` is the unconditional baseline; this `√p → √(n log)` gap is the
+entire open core. No acquired paper (incl. the 42 user-supplied) crosses it.
