@@ -108,7 +108,96 @@ theorem badScalars_monomial_eq_degreeLTSucc (domain : ι ↪ F) (δ : ℝ≥0) (
         simp only [map_add, map_smul, Pi.add_apply, Pi.smul_apply]
       rw [hev, hq i hiS]
 
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- Degree-`< k+1` RS evaluations remember their `X^k` coefficient as long as
+`k < |domain|`. This is the injectivity step behind the cardinality form of the
+monomial-line bridge. -/
+theorem coeff_eq_of_evalOnPoints_eq_of_degreeLT_succ (domain : ι ↪ F) {k : ℕ}
+    (hk : k < Fintype.card ι) {q q' : F[X]}
+    (hq : q ∈ Polynomial.degreeLT F (k + 1)) (hq' : q' ∈ Polynomial.degreeLT F (k + 1))
+    (heval : ReedSolomon.evalOnPoints domain q = ReedSolomon.evalOnPoints domain q') :
+    q.coeff k = q'.coeff k := by
+  classical
+  have hqdeg : q.degree < ((k + 1 : ℕ) : WithBot ℕ) := by
+    rwa [Polynomial.mem_degreeLT] at hq
+  have hq'deg : q'.degree < ((k + 1 : ℕ) : WithBot ℕ) := by
+    rwa [Polynomial.mem_degreeLT] at hq'
+  have hsucc : k + 1 ≤ Fintype.card ι := Nat.succ_le_iff.mpr hk
+  have hdiffdeg : (q - q').degree < ((Fintype.card ι : ℕ) : WithBot ℕ) := by
+    refine lt_of_le_of_lt (Polynomial.degree_sub_le _ _) (max_lt ?_ ?_)
+    · exact lt_of_lt_of_le hqdeg (by exact_mod_cast hsucc)
+    · exact lt_of_lt_of_le hq'deg (by exact_mod_cast hsucc)
+  have hzero : q - q' = 0 := by
+    refine Polynomial.eq_zero_of_degree_lt_of_eval_finset_eq_zero
+      (s := (Finset.univ : Finset ι).image domain) ?_ ?_
+    · rw [Finset.card_image_of_injective _ domain.injective, Finset.card_univ]
+      exact hdiffdeg
+    · intro x hx
+      obtain ⟨i, -, rfl⟩ := Finset.mem_image.mp hx
+      have hi := congrFun heval i
+      change q.eval (domain i) = q'.eval (domain i) at hi
+      rw [Polynomial.eval_sub, hi, sub_self]
+  rw [sub_eq_zero.mp hzero]
+
+open Classical in
+/-- **Cardinality form of the monomial-line bridge.**  For the far monomial direction
+`X^k`, the bad-scalar count for `RS[k]` is at most the radius-`δ` list size of
+`RS[k+1]` around the base word `u₀`, provided `k < |domain|` so degree-`<k+1`
+evaluations are injective. -/
+theorem badScalars_monomial_card_le_degreeLTSucc_list (domain : ι ↪ F) (δ : ℝ≥0)
+    (u₀ : ι → F) {k : ℕ} (hk : k < Fintype.card ι) :
+    (explainableScalars (F := F) (↑(ReedSolomon.code domain k) : Set (ι → F)) δ u₀
+        (ReedSolomon.evalOnPoints domain (X ^ k))).card
+      ≤
+    ((Finset.univ : Finset (ι → F)).filter (fun w =>
+      w ∈ (ReedSolomon.code domain (k + 1) : Set (ι → F)) ∧
+        ∃ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
+          ∀ i ∈ S, w i = u₀ i)).card := by
+  classical
+  let Bad : Finset F :=
+    explainableScalars (F := F) (↑(ReedSolomon.code domain k) : Set (ι → F)) δ u₀
+      (ReedSolomon.evalOnPoints domain (X ^ k))
+  let GoodPoly : F → F[X] → Prop := fun γ q =>
+    q ∈ Polynomial.degreeLT F (k + 1) ∧ q.coeff k = -γ ∧
+      ∃ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
+        ∀ i ∈ S, ReedSolomon.evalOnPoints domain q i = u₀ i
+  let chooseQ : F → F[X] := fun γ =>
+    if h : ∃ q : F[X], GoodPoly γ q then h.choose else 0
+  have chooseQ_spec : ∀ γ ∈ Bad, GoodPoly γ (chooseQ γ) := by
+    intro γ hγ
+    have hex : ∃ q : F[X], GoodPoly γ q := by
+      rcases (badScalars_monomial_eq_degreeLTSucc domain δ u₀ k γ).mp (by simpa [Bad] using hγ)
+        with ⟨S, hS, q, hq, hcoeff, hagree⟩
+      exact ⟨q, hq, hcoeff, S, hS, hagree⟩
+    dsimp [chooseQ]
+    rw [dif_pos hex]
+    exact hex.choose_spec
+  refine Finset.card_le_card_of_injOn (fun γ => ReedSolomon.evalOnPoints domain (chooseQ γ))
+    ?_ ?_
+  · intro γ hγ
+    have hspec := chooseQ_spec γ hγ
+    change ReedSolomon.evalOnPoints domain (chooseQ γ) ∈
+      ((Finset.univ : Finset (ι → F)).filter (fun w =>
+        w ∈ (ReedSolomon.code domain (k + 1) : Set (ι → F)) ∧
+          ∃ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
+            ∀ i ∈ S, w i = u₀ i))
+    rw [Finset.mem_filter]
+    refine ⟨Finset.mem_univ _, ?_, ?_⟩
+    · change ReedSolomon.evalOnPoints domain (chooseQ γ) ∈ ReedSolomon.code domain (k + 1)
+      rw [ReedSolomon.code, Submodule.mem_map]
+      exact ⟨chooseQ γ, hspec.1, rfl⟩
+    · rcases hspec.2.2 with ⟨S, hS, hagree⟩
+      exact ⟨S, hS, hagree⟩
+  · intro γ hγ γ' hγ' heq
+    have hspec := chooseQ_spec γ hγ
+    have hspec' := chooseQ_spec γ' hγ'
+    have hcoeff := coeff_eq_of_evalOnPoints_eq_of_degreeLT_succ domain hk hspec.1 hspec'.1 heq
+    rw [hspec.2.1, hspec'.2.1] at hcoeff
+    exact neg_injective hcoeff
+
 end ProximityGap.FarCosetExplosion
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.FarCosetExplosion.badScalars_monomial_eq_degreeLTSucc
+#print axioms ProximityGap.FarCosetExplosion.coeff_eq_of_evalOnPoints_eq_of_degreeLT_succ
+#print axioms ProximityGap.FarCosetExplosion.badScalars_monomial_card_le_degreeLTSucc_list
