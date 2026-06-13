@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.CorePartitionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.PopularCodewords
+import ArkLib.Data.CodingTheory.ProximityGap.CS25RSDimension
+import ArkLib.Data.CodingTheory.ProximityGap.CS25RSCoveredFraction
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!
@@ -49,7 +51,7 @@ open scoped NNReal ENNReal
 
 namespace ProximityGap.PairRank
 
-open ProximityGap.SpikeFloor ProximityGap ProximityGap.Ownership Code
+open ProximityGap.SpikeFloor ProximityGap ProximityGap.Ownership Code ArkLib.CS25
 
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ} [NeZero n]
@@ -379,6 +381,33 @@ theorem absorb_choose_sum (q n' t : ℕ) (hq : 1 ≤ q) (htn : t ≤ n') :
   rw [one_pow, one_mul, Nat.cast_id]
   ring
 
+/-- `rsCode` (the `SpikeFloor` Reed–Solomon submodule) coincides with the Mathlib
+`ReedSolomon.code` as a membership predicate. -/
+theorem rsCode_mem_iff_code (dom : Fin n ↪ F) (k : ℕ) (c : Fin n → F) :
+    c ∈ (rsCode dom k : Submodule F (Fin n → F)) ↔ c ∈ ReedSolomon.code dom k := by
+  constructor
+  · rintro ⟨P, hP, rfl⟩
+    exact ⟨P, Polynomial.mem_degreeLT.mpr hP, rfl⟩
+  · rintro ⟨P, hP, rfl⟩
+    exact ⟨P, Polynomial.mem_degreeLT.mp hP, rfl⟩
+
+open Classical in
+/-- **RS dimension for `codeFinset`**: `#code = q^k` for `1 ≤ k ≤ n`.  Bridges
+`codeFinset` to `rsCodeFinset` and applies `rsCodeFinset_card`. -/
+theorem codeFinset_card (dom : Fin n ↪ F) {k : ℕ} [NeZero k] (hk : k ≤ n) :
+    (codeFinset dom k).card = Fintype.card F ^ k := by
+  classical
+  have hdeg : Fintype (Polynomial.degreeLT F k) :=
+    Fintype.ofEquiv (Fin k → F) (Polynomial.degreeLTEquiv F k).toEquiv.symm
+  have hset : codeFinset dom k = rsCodeFinset dom k := by
+    ext c
+    simp only [codeFinset, Finset.mem_filter, Finset.mem_univ, true_and,
+      mem_rsCodeFinset]
+    exact rsCode_mem_iff_code dom k c
+  rw [hset]
+  have hnk : k ≤ Fintype.card (Fin n) := by rw [Fintype.card_fin]; exact hk
+  exact rsCodeFinset_card dom k hnk
+
 open Classical in
 /-- **THE EXACT WITNESS-MASS FLOOR**: with the RS dimension `#code = q^k` (true for
 `k ≤ n`, discharged by `rsCodeFinset_card`), the supply floor is exactly the witness
@@ -427,11 +456,26 @@ theorem explainableCoreSupply_witness_floor (dom : Fin n ↪ F) {k m B : ℕ}
   rw [hsplit] at hfloor
   exact hfloor
 
+open Classical in
+/-- **THE WITNESS-MASS FLOOR, unconditional** (`1 ≤ k`, `k+m+1 ≤ n`): every
+admissible `B` for the named residual `ExplainableCoreSupply dom k m B` dominates the
+witness mass `C(n, k+m+1) / q^{m+1}`, for every evaluation domain.  The RS dimension
+hypothesis is discharged by `codeFinset_card`. -/
+theorem explainableCoreSupply_witness_floor' (dom : Fin n ↪ F) {k m B : ℕ}
+    (hk : 1 ≤ k) (hkn : k + m + 1 ≤ n)
+    (hB : ExplainableCoreSupply dom k m B) :
+    n.choose (k + m + 1) / (Fintype.card F) ^ (m + 1) ≤ B := by
+  have : NeZero k := ⟨by omega⟩
+  exact explainableCoreSupply_witness_floor dom hkn
+    (codeFinset_card dom (by omega)) hB
+
 end ProximityGap.PairRank
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.PairRank.absorb_choose_sum
+#print axioms ProximityGap.PairRank.codeFinset_card
 #print axioms ProximityGap.PairRank.explainableCoreSupply_witness_floor
+#print axioms ProximityGap.PairRank.explainableCoreSupply_witness_floor'
 #print axioms ProximityGap.PairRank.agreeSet_fiber_card
 #print axioms ProximityGap.PairRank.sum_g_agreeSet_card
 #print axioms ProximityGap.PairRank.cappedSupply_mass_identity
