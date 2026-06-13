@@ -53,4 +53,25 @@ theorem rs_johnson_lambda_le {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq
     (ReedSolomon.code α k) η hη_pos (ReedSolomon.isMDS_code hk)
   simpa only [hfin] using hmds
 
+/-- **`ℕ`-valued RS Johnson list-size, ready for the GCXK25 floor consumer.** The same bound
+with the list size packaged as the natural number `L = ⌈1/(2ηρ)⌉₊`, in the `ℕ∞` order that
+`SmoothDomainMCAWitness.le_mcaThreshold_ofListSizeGCXK25` consumes as its `hΛ` hypothesis:
+
+  `Λ(RS[α,k], 1 − √ρ − η) ≤ ⌈1/(2ηρ)⌉₊`.
+
+This is the directly-pluggable list-size atom: supplying it to the smooth-domain MCA floor path
+leaves `hBadCount` (the GCXK25 first-moment per-stack bad-scalar count) as the *sole* residual for
+the conditional RS Johnson δ* floor. -/
+theorem rs_johnson_lambda_nat_le {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {k : ℕ} [NeZero k] {α : ι ↪ F}
+    (η : ℝ) (hη_pos : 0 < η) (hk : k ≤ Fintype.card ι) :
+    Lambda ((ReedSolomon.code α k : Set (ι → F)))
+        (1 - Real.sqrt ((k : ℝ) / Fintype.card ι) - η)
+      ≤ (⌈1 / (2 * η * ((k : ℝ) / Fintype.card ι))⌉₊ : ℕ∞) := by
+  rw [← ENat.toENNReal_le, ENat.toENNReal_coe]
+  refine le_trans (rs_johnson_lambda_le η hη_pos hk) ?_
+  rw [← ENNReal.ofReal_natCast]
+  exact ENNReal.ofReal_le_ofReal (Nat.le_ceil _)
+
 end ArkLib.JohnsonBound
