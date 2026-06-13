@@ -1213,7 +1213,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProofLoop42
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
-import ArkLib.Data.CodingTheory.ProximityGap.QRCubicExactList
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicOrderedClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicSupplyLower
 import ArkLib.Data.CodingTheory.ProximityGap.QRShiftPairCount
@@ -1341,7 +1340,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop27
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop28
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop29
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop30
-import ArkLib.Data.CodingTheory.ProximityGap.StructuredSupplyViaCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop31
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop32
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop33
@@ -1351,6 +1349,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop36
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop37
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop38
 import ArkLib.Data.CodingTheory.ProximityGap.StructuredLineCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.StructuredSupplyViaCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.SubCeilingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonCorradiEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListBound
