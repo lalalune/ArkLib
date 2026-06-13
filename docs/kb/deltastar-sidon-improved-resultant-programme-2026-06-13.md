@@ -60,6 +60,24 @@ These sharpen the picture but live in the **same energy/Sidon cone** — still t
 (see Boundary).  Reusable: `additiveEnergy_ge` is a clean "Sidon is the minimum energy" bound usable
 wherever a negation-closed additive-energy lower bound is needed.
 
+## B3 lane — a fully concrete machine-checked δ* ceiling (added 2026-06-13)
+
+Separate from the Sidon cone, the **prize-relevant B3 lane** ([KKH26] s=128, polynomial field size)
+got a concrete end-to-end capstone. The lane's only open input is the named analytic hypothesis
+`TZPrimeSupply n β supply` (Thorner–Zaman PNT-in-APs, not in mathlib). Two axiom-clean files
+discharge it *concretely* and run the whole machine:
+
+| file | content |
+|---|---|
+| `KKH26ThornerZamanConstructor` | **`tzPrimeSupply_of_subset`** (reusable: explicit verified window primes `⟹ TZPrimeSupply`, option (ii), no analytic NT) + `tzPrimeSupply_two_three` (concrete instance) + `kkh26_good_prime_concrete` (e2e good-prime check through `kkh26_good_prime_of_TZ`) |
+| `KKH26ConcreteCeiling` | **`kkh26_mcaDeltaStar_le_concrete`**: discharges `TZPrimeSupply 4 4 7` via the seven explicit primes `257..317 ≡ 1 (mod 4)` in `[256,512]` (budget `12·log16/log(4⁴)=6<7`), feeds `kkh26_mcaDeltaStar_le_of_TZ`, and gets an actual prime `p∈[256,512]`, smooth `⟨g⟩⊆F_p^×` of order 4, and `mcaDeltaStar(evalCode g 4 0, ε*) ≤ 1−2/2² = 1/2` for `ε*<4/p` |
+
+This exercises the entire B3 chain — supply → good-prime collision-avoidance → [KKH26] Lemma 1
+separation → witness spread → δ* ceiling — **end-to-end on an explicit code**, certifying it
+non-vacuous and correctly wired. Limited to `μ=2` (degree-0 code): for `μ≥3` the collision-resultant
+count (`|collisionPairs 3 3|=992`) blows the bad-prime budget past any `decide`-checkable prime
+window. The *asymptotic* prize parameters still need the analytic [TZ24] supply (open, not in mathlib).
+
 ## Boundary — why this is NOT the δ* prize, and what is
 
 - **Regime:** Sidon holds only for `n < (4/3)·log₂p / log₂12·… ≈ 1.12·log₂p` (small subgroups). At
