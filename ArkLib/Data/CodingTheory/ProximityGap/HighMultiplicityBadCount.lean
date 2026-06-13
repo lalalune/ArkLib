@@ -121,4 +121,69 @@ theorem highMult_empty_of_lt (e₀ e₁ : ι → F) {D μ₀ : ℕ}
   intro γ _
   exact fun hge => absurd (lt_of_lt_of_le hμ hge) (not_lt.mpr (hD γ))
 
+/-! ### Bridge to Hamming weight: the multiplicity *is* the agreement deficit
+
+The bad-scalar event for mutual correlated agreement is phrased by weight: `γ` is bad when the
+line word `e₀ + γ·e₁` has *low* weight (high agreement with the code, after subtracting the nearby
+codeword pair).  These lemmas turn the abstract multiplicity into that weight, making the
+pigeonhole bound a genuine bad-scalar-by-weight bound — with no dependence on the
+`{e₁ = 0 ∧ e₀ = 0}` count (it cancels). -/
+
+omit [DecidableEq ι] [Fintype F] in
+/-- **The agreement identity (one inequality).**  The weight of `e₁` is at most the multiplicity
+plus the weight of the line word: `weight(e₁) ≤ mult(γ) + weight(e₀ + γ·e₁)`.  Within `supp e₁`,
+every coordinate is either a root of the line word (counted by `mult`) or a nonzero of the line
+word (counted by its weight).  The `{e₁ = 0}` coordinates drop out entirely. -/
+theorem weight_e1_le_mult_add_weightLine (e₀ e₁ : ι → F) (γ : F) :
+    (univ.filter (fun i => e₁ i ≠ 0)).card
+      ≤ mult e₀ e₁ γ + (univ.filter (fun i => e₀ i + γ * e₁ i ≠ 0)).card := by
+  classical
+  have hsplit :
+      (univ.filter (fun i => e₁ i ≠ 0)).card
+        = ((univ.filter (fun i => e₁ i ≠ 0)).filter
+              (fun i => e₀ i + γ * e₁ i = 0)).card
+          + ((univ.filter (fun i => e₁ i ≠ 0)).filter
+              (fun i => ¬ (e₀ i + γ * e₁ i = 0))).card :=
+    (Finset.card_filter_add_card_filter_not
+      (s := univ.filter (fun i => e₁ i ≠ 0)) (fun i => e₀ i + γ * e₁ i = 0)).symm
+  rw [hsplit, Finset.filter_filter, Finset.filter_filter]
+  have hmult : (univ.filter (fun i => e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0)).card = mult e₀ e₁ γ := rfl
+  rw [hmult]
+  refine Nat.add_le_add_left ?_ _
+  apply Finset.card_le_card
+  intro i hi
+  simp only [mem_filter, mem_univ, true_and] at hi ⊢
+  exact hi.2
+
+omit [DecidableEq ι] [Fintype F] in
+/-- **Bad-by-weight ⟹ high multiplicity.**  If the line word `e₀ + γ·e₁` has weight `≤ w`, then its
+multiplicity is at least `weight(e₁) − w`.  Hence the bad-by-weight scalars sit inside the
+high-multiplicity set with threshold `μ₀ = weight(e₁) − w`. -/
+theorem weightLine_le_imp_highMult (e₀ e₁ : ι → F) (w : ℕ) (γ : F)
+    (hw : (univ.filter (fun i => e₀ i + γ * e₁ i ≠ 0)).card ≤ w) :
+    (univ.filter (fun i => e₁ i ≠ 0)).card - w ≤ mult e₀ e₁ γ := by
+  have h := weight_e1_le_mult_add_weightLine e₀ e₁ γ
+  omega
+
+omit [DecidableEq ι] in
+/-- **The bad-scalar-by-weight bound (per error line).**  Writing `s = weight(e₁)` and
+`μ₀ = s − w > 0`, the scalars `γ` for which the line word `e₀ + γ·e₁` has weight `≤ w` number at
+most `s / μ₀`: precisely, `(s − w) · #{γ : weight(e₀+γ·e₁) ≤ w} ≤ s`.  This is the pigeonhole
+incidence bound in directly consumable, weight-phrased form — the per-codeword-pair bad-scalar
+count for mutual correlated agreement.  Summed over the in-window codeword list it yields the
+total bad-scalar count; that list size is the open sub-Johnson supply core. -/
+theorem badWeight_card_mul_le (e₀ e₁ : ι → F) (w : ℕ) :
+    ((univ.filter (fun i => e₁ i ≠ 0)).card - w)
+        * (univ.filter (fun γ : F =>
+            (univ.filter (fun i => e₀ i + γ * e₁ i ≠ 0)).card ≤ w)).card
+      ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := by
+  classical
+  set s := (univ.filter (fun i => e₁ i ≠ 0)).card with hs
+  refine le_trans ?_ (card_highMult_mul_le e₀ e₁ (s - w))
+  refine Nat.mul_le_mul_left _ ?_
+  apply Finset.card_le_card
+  intro γ hγ
+  simp only [mem_filter, mem_univ, true_and] at hγ ⊢
+  exact weightLine_le_imp_highMult e₀ e₁ w γ hγ
+
 end ArkLib.ProximityGap.HighMultiplicity
