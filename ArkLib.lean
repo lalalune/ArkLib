@@ -863,6 +863,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonEllBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonPackageSupply
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4AffinePinningCardBound
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4FiberReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4Seam
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25LaneBridge
