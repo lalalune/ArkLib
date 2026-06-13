@@ -165,6 +165,24 @@ theorem sv11_deriv_combination_of_rowsum_zero {D B : ℕ} (c y : F) (t : ℕ) (c
   rw [Finset.sum_congr rfl hterm, Finset.sum_add_distrib, ← Finset.sum_mul, hrow a, zero_mul,
     zero_add, ← Finset.sum_mul, ← Finset.mul_sum, mul_assoc]
 
+/-- **Order-2 free vanishing at a rep point.** If the row sums vanish (`∑_b coef(a,b) = 0`, order-0)
+and the weighted-moment polynomial vanishes at `y` (`∑_a (∑_b b·coef(a,b))·y^a = 0`, order-1), then
+`Ψ = ∑ coef·g_{a,b}` vanishes to order ≥ 2 at the rep point: both `Ψ(y) = 0` and `Ψ'(y) = 0`. Combines
+the order-0 (`sv11_combination_vanishes_of_rowsum_zero`) and order-1 (`sv11_deriv_combination_of_rowsum_zero`)
+moment-ladder bricks — the order-2 rung of the Stepanov multiplicity. -/
+theorem sv11_combination_order_two_vanish {D B : ℕ} (c y : F) (t : ℕ) (coef : ℕ → ℕ → F)
+    (h : (y - c) ^ t = 1) (hcy : y ≠ c)
+    (hrow : ∀ a, ∑ b ∈ Finset.range B, coef a b = 0)
+    (hwm : ∑ a ∈ Finset.range D, (∑ b ∈ Finset.range B, (b : F) * coef a b) * y ^ a = 0) :
+    (∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+          Polynomial.C (coef a b) * sv11Gen c t (a, b)).eval y = 0
+      ∧ (Polynomial.derivative (∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+          Polynomial.C (coef a b) * sv11Gen c t (a, b))).eval y = 0 := by
+  refine ⟨sv11_combination_vanishes_of_rowsum_zero c t coef y h hrow, ?_⟩
+  have h1 := sv11_deriv_combination_of_rowsum_zero (D := D) c y t coef h hrow
+  rw [hwm, mul_zero] at h1
+  exact (mul_eq_zero.mp h1).resolve_right (sub_ne_zero.mpr hcy)
+
 end ProximityGap.BinomialDet
 
 
@@ -173,5 +191,6 @@ end ProximityGap.BinomialDet
 #print axioms ProximityGap.BinomialDet.sv11_combination_vanishes_of_rowsum_zero
 #print axioms ProximityGap.BinomialDet.sv11Gen_deriv_eval_mul
 #print axioms ProximityGap.BinomialDet.sv11_deriv_combination_of_rowsum_zero
+#print axioms ProximityGap.BinomialDet.sv11_combination_order_two_vanish
 #print axioms ProximityGap.BinomialDet.add_mul_lt_injective
 #print axioms ProximityGap.BinomialDet.sv11_wronskianDet_ne_zero
