@@ -8037,3 +8037,27 @@ the energy, hence δ*, is a subgroup-arithmetic quantity.  CAVEAT: `μ_16/F₂�
 PRIME-DEPENDENT (other primes give positive cubic supply for `n=16`); there is no
 general `gcd(3,n)=1 ⟹ supply 0` transfer to `F_p` (the char-0 rigidity does not
 transfer in general — that gap is exactly why the unconditional bound needs Stepanov).
+
+### O159 — BOTH supply-explosion mechanisms PROVABLY production-blocked: the Frobenius immunity brick (nubs, 2026-06-13)
+
+The sub-Johnson supply wall (#389) has two known explosion mechanisms; both are now proven
+vacuous at production smooth μ_n. (1) Coset-union (EsymmFiber): production-vacuous by the
+2-adic obstruction (O158); the swarm's pin-band check (4cf519992) independently confirms
+the m=1 FFT domains are off-by-one blocked. (2) **Frobenius subfield blowup** (Θ(n²) supply,
+`FrobeniusSubfieldBlowup.lean`): gated entirely on `AffClosed dom p`; immunity was
+PROSE-ONLY in-tree (FrobeniusSubfieldBlowup.lean:37-39) until this brick.
+
+**`FrobeniusImmunityMuN.lean` (axiom-clean ×3, single-module build green):**
+`le_card_of_affClosed` (AffClosed ⟹ p ≤ n via the existing `secant_card`: the 𝔽_p-line
+through two domain points has exactly p points, all in the n-point domain) →
+`not_affClosed_of_card_lt` (2 ≤ n < p ⟹ ¬AffClosed) → `smoothDom_not_affClosed`
+(production μ_n ⊂ 𝔽_q, q prime, 2 ≤ n < q is NOT 𝔽_q-affine-closed; only CharP of 𝔽_q is q,
+so AffClosed is type-correct only at p=q, where the q-point affine line cannot fit an
+order-n multiplicative subgroup).
+
+**Consequence:** every `AffClosed`-gated Θ(n²) supply source is vacuous over production
+smooth domains; with O158 both known super-polynomial sub-Johnson supply routes are
+production-blocked. HONEST SCOPE: proves two specific mechanisms cannot fire; does NOT
+prove `CensusDomination` (no exponential supply from ANY source). Remaining: the max
+e-symm fiber census over all targets (H-MAX) + the inverse theorem that structured families
+are the only supply sources (H-EXT) — in progress, `scripts/probes/incidence/landscape/`.
