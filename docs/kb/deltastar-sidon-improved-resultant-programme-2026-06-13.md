@@ -42,6 +42,24 @@ forbids the parallelogram. The full SidonModNeg case-splits genuine coincidences
 distinct) and S=6 (doubled, `j=i` or `k=l`); worst case S=6 ⟹ **threshold `p>12^{n/4}≈2^{0.896n}`**,
 a 33%-larger unconditional Sidon regime than the committed `p>2ⁿ`.
 
+## The energy-extremality characterization (added 2026-06-13)
+
+Three more axiom-clean files complete the additive-energy theory of the negation-closed `G ∌ 0`
+(char `≠ 2`) into a self-contained **triple equivalence** (the char-0 minimal energy is attained
+exactly at the Sidon-modulo-negation sets):
+
+> **`E(G) = 3|G|² − 3|G|   ↔   SidonModNeg G   ↔   ∀ c ≠ 0, repCount G c ≤ 2`**
+
+| file | content |
+|---|---|
+| `AdditiveEnergyLowerBound` | **`additiveEnergy_ge`**: `E(G) ≥ 3|G|² − 3|G|` for *every* negation-closed `G` (the trivial pair-match + zero-sum coincidences alone force it) — the matching lower bound to the existing Sidon equality. Helpers `structuredInner_eq` (structural inner sum `= 3|G|−3`, unconditional) + `repCount_ge_structured` (each pair `{a,b}` always represents `a+b`). |
+| `AdditiveEnergyCharacterization` | **`sidonModNeg_of_additiveEnergy_eq`** (energy-minimal ⟹ Sidon: equality in the lower bound forces, pointwise via `Finset.sum_eq_sum_iff_of_le`, exactly the two trivial reps) + **`additiveEnergy_eq_iff_sidonModNeg`** (the first `↔`). |
+| `SidonRepCountCharacterization` | **`sidonModNeg_of_repCount_le_two`** (a genuine coincidence `a+b=c+d` yields a *third* distinct rep of `a+b`, `card_eq_three` on `{a,b,c}`/`{a,c,d}`) + **`sidonModNeg_iff_repCount_le_two`** (the second `↔`). |
+
+These sharpen the picture but live in the **same energy/Sidon cone** — still the wrong lever for δ*
+(see Boundary).  Reusable: `additiveEnergy_ge` is a clean "Sidon is the minimum energy" bound usable
+wherever a negation-closed additive-energy lower bound is needed.
+
 ## Boundary — why this is NOT the δ* prize, and what is
 
 - **Regime:** Sidon holds only for `n < (4/3)·log₂p / log₂12·… ≈ 1.12·log₂p` (small subgroups). At
