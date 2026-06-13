@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
+import Mathlib.Tactic.Abel
 
 /-!
 # The spectral form of the line–ball incidence (#389): the line-sum collapse
@@ -58,5 +60,57 @@ theorem lineSum_collapse (ψ : AddChar V R) (s₀ s₁ : V)
     intro γ
     rw [directionChar_apply, ← AddChar.map_add_eq_mul]
   rw [Finset.sum_congr rfl (fun γ _ => hfac γ), ← Finset.mul_sum, AddChar.sum_eq_ite]
+
+/-! ### The full spectral identity (over ℂ, via Pontryagin duality) -/
+
+/-- **The line–ball incidence spectral identity.** For a finite `F`-module `V`, a finset `S ⊆ V`,
+and the affine line `s₀ + γ·s₁`, the incidence count satisfies
+`(#{γ : s₀+γ·s₁ ∈ S}) · |V| = |F| · Σ_{ψ ⊥ s₁} Σ_{s∈S} ψ(s₀−s)`,
+the sum over additive characters `ψ` trivial on the direction `s₁`. The trivial character `ψ=0`
+contributes the average `|F|·|S|`; the rest is the spectral error on `s₁^⊥`. -/
+theorem lineIncidence_spectral {F V : Type*} [Field F] [Fintype F]
+    [AddCommGroup V] [Fintype V] [DecidableEq V] [Module F V]
+    (S : Finset V) (s₀ s₁ : V) :
+    ((Finset.univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card : ℂ) * (Fintype.card V : ℂ)
+      = (Fintype.card F : ℂ)
+        * ∑ ψ : AddChar V ℂ,
+            (if directionChar (F := F) ψ s₁ = 0 then ∑ s ∈ S, ψ (s₀ - s) else 0) := by
+  classical
+  have hA : ((Finset.univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card : ℂ)
+        * (Fintype.card V : ℂ)
+      = ∑ γ : F, ∑ s ∈ S, ∑ ψ : AddChar V ℂ, ψ ((s₀ + γ • s₁) - s) := by
+    have inner : ∀ γ : F, (∑ s ∈ S, ∑ ψ : AddChar V ℂ, ψ ((s₀ + γ • s₁) - s))
+        = if s₀ + γ • s₁ ∈ S then (Fintype.card V : ℂ) else 0 := by
+      intro γ
+      have e1 : ∀ s ∈ S, (∑ ψ : AddChar V ℂ, ψ ((s₀ + γ • s₁) - s))
+          = if s₀ + γ • s₁ = s then (Fintype.card V : ℂ) else 0 := by
+        intro s _; rw [AddChar.sum_apply_eq_ite]; simp only [sub_eq_zero]
+      rw [Finset.sum_congr rfl e1]
+      exact Finset.sum_ite_eq S (s₀ + γ • s₁) (fun _ => (Fintype.card V : ℂ))
+    rw [eq_comm, Finset.sum_congr rfl (fun γ _ => inner γ), ← Finset.sum_filter,
+      Finset.sum_const, nsmul_eq_mul, mul_comm]
+  rw [hA]
+  -- reorder the triple sum to ∑_ψ ∑_s ∑_γ
+  have hreorder : (∑ γ : F, ∑ s ∈ S, ∑ ψ : AddChar V ℂ, ψ ((s₀ + γ • s₁) - s))
+      = ∑ ψ : AddChar V ℂ, ∑ s ∈ S, ∑ γ : F, ψ ((s₀ + γ • s₁) - s) := by
+    rw [Finset.sum_comm]
+    rw [show (∑ s ∈ S, ∑ γ : F, ∑ ψ : AddChar V ℂ, ψ ((s₀ + γ • s₁) - s))
+          = ∑ s ∈ S, ∑ ψ : AddChar V ℂ, ∑ γ : F, ψ ((s₀ + γ • s₁) - s)
+        from Finset.sum_congr rfl (fun s _ => Finset.sum_comm)]
+    rw [Finset.sum_comm]
+  rw [hreorder, Finset.mul_sum]
+  refine Finset.sum_congr rfl (fun ψ _ => ?_)
+  have hcol : ∀ s ∈ S, (∑ γ : F, ψ ((s₀ + γ • s₁) - s))
+      = ψ (s₀ - s) * (if directionChar (F := F) ψ s₁ = 0 then (Fintype.card F : ℂ) else 0) := by
+    intro s _
+    have h := lineSum_collapse (F := F) ψ (s₀ - s) s₁
+    rw [← h]
+    refine Finset.sum_congr rfl (fun γ _ => ?_)
+    congr 1; abel
+  rw [Finset.sum_congr rfl hcol]
+  by_cases hd : directionChar (F := F) ψ s₁ = 0
+  · simp only [hd, if_true]
+    rw [← Finset.sum_mul, mul_comm]
+  · simp only [hd, if_false, mul_zero, Finset.sum_const_zero, mul_zero]
 
 end ArkLib.ProximityGap.LineIncidenceSpectral
