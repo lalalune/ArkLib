@@ -103,9 +103,31 @@ theorem line_list_incidence_le (u v : Fin n → F) (hv : ∀ i, v i ≠ 0) {w : 
         apply sum_le_sum; intro c _; exact line_codeword_incidence_le u v c hv hw
     _ = close.card * (n / w) := by rw [sum_const, smul_eq_mul]
 
+open Classical in
+/-- **Prize-relevant form of the bridge.** If the line's close-codeword list size is `≤ w`, the
+far-line incidence is `≤ n`. In the prize regime `q ≈ n·2^128`, so `q·ε* = n`; thus `L ≤ w` yields
+exactly the MCA threshold condition `incidence ≤ q·ε*`. This isolates the single remaining input —
+the list size `L ≤ w` for explicit smooth-domain RS beyond Johnson (the open list-decoding
+challenge) — that closes the prize. -/
+theorem line_incidence_le_card_of_list_le (u v : Fin n → F) (hv : ∀ i, v i ≠ 0) {w : ℕ} (hw : 0 < w)
+    (C : Finset (Fin n → F))
+    (hL : (C.filter (fun c => ∃ γ : F,
+        w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)).card ≤ w) :
+    (univ.filter (fun γ : F =>
+        ∃ c ∈ C, w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)).card ≤ n := by
+  calc (univ.filter (fun γ : F =>
+          ∃ c ∈ C, w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)).card
+      ≤ (C.filter (fun c => ∃ γ : F,
+          w ≤ (univ.filter (fun i : Fin n => u i + γ * v i = c i)).card)).card * (n / w) :=
+        line_list_incidence_le u v hv hw C
+    _ ≤ w * (n / w) := Nat.mul_le_mul_right _ hL
+    _ = (n / w) * w := by rw [mul_comm]
+    _ ≤ n := Nat.div_mul_le_self n w
+
 end ProximityGap.LineCodewordIncidence
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.LineCodewordIncidence.line_codeword_incidence_mul_le
 #print axioms ProximityGap.LineCodewordIncidence.line_codeword_incidence_le
 #print axioms ProximityGap.LineCodewordIncidence.line_list_incidence_le
+#print axioms ProximityGap.LineCodewordIncidence.line_incidence_le_card_of_list_le
