@@ -40,6 +40,7 @@ noncomputable def shawError (S : Finset V) (s₀ s₁ : V) : ℂ :=
   ∑ ψ : AddChar V ℂ,
     (if directionChar (F := F) ψ s₁ = 0 ∧ ψ ≠ 0 then ∑ s ∈ S, ψ (s₀ - s) else 0)
 
+omit [Fintype F] [Fintype V] [DecidableEq V] in
 /-- The trivial character of `V` restricts to the trivial character on any direction. -/
 theorem directionChar_zero (s₁ : V) : directionChar (F := F) (0 : AddChar V ℂ) s₁ = 0 := by
   ext γ
@@ -101,7 +102,34 @@ theorem incidence_pinned_of_shawBound (S : Finset V) (B : ℝ)
   rw [incidence_eq_average_add_shaw, mul_add, add_sub_cancel_left, norm_mul, Complex.norm_natCast]
   exact mul_le_mul_of_nonneg_left (h s₀ s₁) (by positivity)
 
+/-- **Real upper-bound form of the Shaw certificate.**  The complex norm certificate from
+`incidence_pinned_of_shawBound` immediately gives the cardinal inequality usually consumed by
+δ* arguments:
+
+`incidence · |V| ≤ |F| · (|S| + B)`.
+
+This is the one-sided "average plus Shaw budget" estimate, stripped of complex notation. -/
+theorem incidence_le_average_add_shawBound (S : Finset V) (B : ℝ)
+    (h : MCAShawConjecture (F := F) S B) (s₀ s₁ : V) :
+    (((univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card : ℝ) * (Fintype.card V : ℝ))
+      ≤ (Fintype.card F : ℝ) * ((S.card : ℝ) + B) := by
+  let z : ℂ :=
+    ((univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card : ℂ) * (Fintype.card V : ℂ)
+      - (Fintype.card F : ℂ) * (S.card : ℂ)
+  have hdev : ‖z‖ ≤ (Fintype.card F : ℝ) * B := by
+    simpa [z] using incidence_pinned_of_shawBound (F := F) S B h s₀ s₁
+  have hre : z.re ≤ (Fintype.card F : ℝ) * B := le_trans (Complex.re_le_norm z) hdev
+  have hz :
+      z.re =
+        (((univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card : ℝ)
+          * (Fintype.card V : ℝ)
+          - (Fintype.card F : ℝ) * (S.card : ℝ)) := by
+    simp [z]
+  rw [hz] at hre
+  nlinarith
+
 end ArkLib.ProximityGap.ShawOperator
 
 #print axioms ArkLib.ProximityGap.ShawOperator.incidence_eq_average_add_shaw
 #print axioms ArkLib.ProximityGap.ShawOperator.incidence_pinned_of_shawBound
+#print axioms ArkLib.ProximityGap.ShawOperator.incidence_le_average_add_shawBound
