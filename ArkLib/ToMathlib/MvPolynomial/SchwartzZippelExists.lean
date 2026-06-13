@@ -237,6 +237,41 @@ theorem exists_embedding_eval_ne_zero {n : ℕ} {P : MvPolynomial (Fin n) R} (hP
   refine ⟨⟨f, hinj⟩, hfS, ?_⟩
   exact hfQ.1
 
+/-! ## Arbitrary finite index type -/
+
+/-- **Distinct-coordinate Schwartz–Zippel over an arbitrary finite variable type.**  For a
+nonzero `P : MvPolynomial σ R` with `σ` a `Fintype` and
+`P.totalDegree + (#σ)*(#σ−1)/2 < #S`, there is an injection `φ : σ ↪ R` with all values in `S`
+and `eval (φ ·) P ≠ 0`.
+
+Proof: transport along the equivalence `σ ≃ Fin (#σ)` via `MvPolynomial.renameEquiv`, which
+preserves `totalDegree`, then apply `exists_embedding_eval_ne_zero`. -/
+theorem exists_embedding_eval_ne_zero_fintype {σ : Type*} [Fintype σ] [DecidableEq σ]
+    {P : MvPolynomial σ R} (hP : P ≠ 0) (S : Finset R)
+    (hdeg : P.totalDegree + Fintype.card σ * (Fintype.card σ - 1) / 2 < S.card) :
+    ∃ φ : σ ↪ R, (∀ i, φ i ∈ S) ∧ eval (φ ·) P ≠ 0 := by
+  classical
+  -- The equivalence `σ ≃ Fin (#σ)`.
+  set e : σ ≃ Fin (Fintype.card σ) := (Fintype.equivFin σ) with he
+  set P' : MvPolynomial (Fin (Fintype.card σ)) R := rename e P with hP'
+  have hP'ne : P' ≠ 0 := by
+    rw [hP']
+    intro hc
+    exact hP ((rename_injective _ e.injective) (by rw [hc, map_zero]))
+  have hdeg' : P'.totalDegree = P.totalDegree := by
+    rw [hP']
+    exact totalDegree_renameEquiv e P
+  obtain ⟨ψ, hψS, hψ⟩ := exists_embedding_eval_ne_zero hP'ne S (by rw [hdeg']; exact hdeg)
+  -- pull back ψ along e to an embedding σ ↪ R.
+  refine ⟨e.toEmbedding.trans ψ, fun i => hψS _, ?_⟩
+  -- relate eval of P' under ψ to eval of P under the composite.
+  have : eval (fun i => ψ (e i)) P ≠ 0 := by
+    have hkey : eval (ψ ·) P' = eval (fun i => ψ (e i)) P := by
+      rw [hP', eval_rename]
+      rfl
+    rw [← hkey]; exact hψ
+  exact this
+
 end MvPolynomial
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]`.
@@ -245,3 +280,4 @@ end MvPolynomial
 #print axioms MvPolynomial.eval_vandermondeDiff_ne_zero_iff
 #print axioms MvPolynomial.totalDegree_vandermondeDiff_le
 #print axioms MvPolynomial.exists_embedding_eval_ne_zero
+#print axioms MvPolynomial.exists_embedding_eval_ne_zero_fintype
