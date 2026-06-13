@@ -186,6 +186,43 @@ a closed `CZ25CoordFiberCap` list-recovery dim bound (R2), or the dual-zero-patt
 
 Once proved, wire it to `mcaConjecture` (T1) or a `GrandMCAResolution` (T2), then to the LD
 prize via the GG25 curve-decodability bridge (T3).
+
+────────────────────────────────────────────────────────────────────────────────
+## §R.  RESEARCH SYNTHESIS 2026-06-13 — the two challenges collapse to ONE δ*, and
+##      every published route provably misses the prize regime (plain RS, s=1).
+##      (full map: `docs/kb/jlr26-frs-subspace-design-formalization-map-2026-06-13.md`)
+────────────────────────────────────────────────────────────────────────────────
+**THE REDUCTION (defensible, from the ABF26 bridges).** The grand MCA challenge and the grand
+list-decoding challenge share the *same* `δ*`:
+  · MCA ⟹ list  (ABF26 Thm 5.2 [BCHKS25 1.9] / Thm 5.3 [CS25 2]): `ε_mca ≤ ε*` ⟹ `|Λ| ≲ ε*·|F|`.
+  · list ⟹ MCA  (ABF26 Thm 5.1 [GCXK25 3]): `|Λ(C,δ)| ≤ L` ⟹ `ε_mca(C, 1−√(1−δ+η)) ≤ L²δn/(η|F|)`.
+With `ε*=2⁻¹²⁸`, `q≈n·2¹²⁸`, so `ε*·|F| ≈ n`, hence the prize core is exactly:
+
+  **`δ*_prize = sup{ δ : |Λ(RS[F, μ_n, k], δ)| ≤ ε*·|F| ≈ n }`**  — the radius where the
+  *worst-case list size of explicit smooth-domain RS* crosses `~n`. Pin THIS and both fall.
+
+**THE THREE PUBLISHED ROUTES AND THEIR FATAL GAPS (exhaustive — none reaches plain RS, s=1):**
+  1. **List⇒CA** (GCXK25 Thm 3): has a **√-loss in the radius** (`δ → 1−√(1−δ)`) that ABF26 proves
+     is FALSE to remove in general (Thm 5.4 [BGKS20] counterexample). OUT unless smooth structure.
+  2. **Subspace-design / line-stitching** (JLR26 = arXiv 2601.10047 / GG25 = 2025/2054): proves
+     `ε_mca ≤ (C₁/q)(n/η+1/η³)` up to capacity δ=1−R−η, BUT is **FRS-only** — needs folding
+     `m=Ω(η⁻²)`; plain RS (`s=1`) has `τ(r)=R+O(r)`, useless. Its lemma chain is ~70% in-tree:
+     Claim 5.8 = `subspaceDesign_list_dim_bound`, Lemma 5.4 = `curve_agreement_card_le` (both
+     landed), Def 4.3 = `IsSubspaceDesign`, Lemma 5.5 = `exists_separating_*` (fleet); only line
+     stitching (5.7) + peeling (5.10) remain — relevant for the FRS arm, NOT the prize.
+  3. **Syndrome-space + witness reduction** (Yuan–Zhu arXiv 2605.07595, May 2026): `ρ<1−R−ε`
+     up to capacity WITHOUT list decoding — but **random linear codes only** (random parity-check
+     model); it works precisely because the random syndrome avoids `μ_n`'s additive structure.
+
+**THE SINGLE NAMED OPEN TARGET (the prize core, no open-ended search).** Transferring route 3 to
+explicit `μ_n` is the **line–ball incidence in syndrome space** (face iv, `epsMCA_ge_far_incidence`):
+the bad-scalar count is `max over far-direction lines |{γ : syn(u₀)+γ·syn(u₁) ∈ B_{⌊δn⌋}}|`, where
+`B_w` is the weight-`w` syndrome ball = high-frequency DFT image of weight-`≤w` errors over `μ_n`.
+Pinning `δ*` is bounding this incidence; the controlling quantity is the **additive-energy / Sidon
+structure of `μ_n`** (the in-tree energy + this-session antipodal work). A winning closed conjecture
+states `max-incidence(δ) ≤ f(n,ρ,δ)` in closed form, with `f` crossing `n` at the claimed `δ*`, and
+respecting the near-capacity lower bound `ε_mca ≥ n^{Ω(1)}/|F|` (ABF26 Table 1). This is the
+`▼ YOUR CONJECTURE HERE ▼` slot's precise target — a syndrome line–ball incidence bound for `μ_n`.
 -/
 
 set_option linter.unusedSectionVars false
