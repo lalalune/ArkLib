@@ -270,9 +270,31 @@ theorem rootsOfUnity_additiveEnergy_eq_sidon {n : ℕ} (hn2 : 2 ∣ n) (hn0 : n 
   have hS : SidonModNeg G := sidonModNeg_rootsOfUnity hn2 hn0 hp hω
   rw [additiveEnergy_eq_of_sidonModNeg h2 h0 hneg hS, hcard]
 
+/-- For `n = 2^m` (`m ≥ 1`), `4^{φ(n)} = 2^n`: the resultant bound is exactly `2^n`. -/
+theorem four_pow_totient_two_pow {m : ℕ} (hm : 1 ≤ m) :
+    (4 : ℕ) ^ ((2 ^ m : ℕ).totient) = 2 ^ (2 ^ m) := by
+  have htot : (2 ^ m : ℕ).totient = 2 ^ (m - 1) := by
+    rw [Nat.totient_prime_pow Nat.prime_two (by omega)]; simp
+  rw [htot, show (4 : ℕ) = 2 ^ 2 from rfl, ← pow_mul]
+  congr 1
+  rw [show 2 * 2 ^ (m - 1) = 2 ^ m from by rw [← pow_succ']; congr 1; omega]
+
+open Finset in
+/-- **The issue-statement form.**  For `n = 2^m` and a prime `p > 2^n`, the additive energy of the
+`n`-th roots of unity in `F_p` is exactly `3n² − 3n` — the explicit small-subgroup Sidon energy pin,
+unconditional. -/
+theorem rootsOfUnity_additiveEnergy_eq_sidon_two_pow {m : ℕ} (hm : 1 ≤ m)
+    {p : ℕ} [Fact p.Prime] [NeZero ((2 ^ m : ℕ) : ZMod p)] (hp : 2 ^ (2 ^ m) < p)
+    {ω : ZMod p} (hω : IsPrimitiveRoot ω (2 ^ m)) :
+    additiveEnergy ((Finset.range (2 ^ m)).image (ω ^ ·)) = 3 * (2 ^ m) ^ 2 - 3 * 2 ^ m := by
+  refine rootsOfUnity_additiveEnergy_eq_sidon (dvd_pow_self 2 (by omega)) (by positivity) ?_ hω
+  rw [four_pow_totient_two_pow hm]; exact hp
+
 end ArkLib.ProximityGap.AdditiveEnergyRepBound
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.prime_le_of_parallelogram'
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.sidonModNeg_rootsOfUnity
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.rootsOfUnity_additiveEnergy_eq_sidon
+#print axioms
+  ArkLib.ProximityGap.AdditiveEnergyRepBound.rootsOfUnity_additiveEnergy_eq_sidon_two_pow
