@@ -99,3 +99,8 @@ roots-of-unity/Littlewood-Offord sources from the 2026-06-13 findings sweep). **
 - ePrint 2025/870 — Gao–Cai, list-decodability⇒proximity gaps (Johnson-√-bounded). IACR.
 - ePrint 2026/891 — Interleaving stability for MCA (exact at seed-set ≤ q). IACR.
 - arXiv:2003.06165 — di Benedetto et al., char sum n^{1−31/2880} for n>p^{1/4} (only large-regime survivor; too weak for energy). Open-access.
+
+## 2026-06-13 (b) — THE EQUIVALENCE papers (decisive: prize = explicit-RS beyond-Johnson list-decoding)
+- ePrint 2025/169 — Ben-Sasson–Carmon–Haböck–Kopparty–Saraf, "On Proximity Gaps for Reed-Solomon Codes". Thm 1.9: proximity-gap/line-ball incidence beyond Johnson <=> list-decoding beyond Johnson (list <= q). DISPROVES the n^gamma-bounded proximity-gap conjecture and (with CS) the CA/MCA-up-to-capacity conjectures. Negative constructions use the smooth-domain structure. THE paper. (math.toronto.edu/swastik/rs-proximity-gaps-2025.pdf)
+- ePrint 2025/2046 — Crites–Stewart, "On Reed-Solomon Proximity Gaps Conjectures". Corrected delta* = list-decoding-capacity boundary H_q^{-1}(1-rho), NOT rate 1-rho. IACR.
+- arXiv:2312.12962 — Tamo, "Points-Polynomials Incidence Theorem w/ Application to RS". The incidence method's RS ceiling = Johnson (Thm 5.1), domain-agnostic. Open-access.
