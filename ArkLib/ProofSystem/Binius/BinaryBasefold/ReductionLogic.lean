@@ -37,7 +37,7 @@ import ArkLib.Data.Misc.Basic
 -/
 
 set_option maxHeartbeats 400000
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 2000
 set_option linter.unusedDecidableInType false
 set_option linter.unusedFintypeInType false
 namespace Binius.BinaryBasefold.CoreInteraction
@@ -306,6 +306,28 @@ def OracleAwareReductionLogicStep.IsStronglyCompleteUnderSimulation
 
     -- Conclusion C: The Prover and Verifier agree on the oracle statements
     proverOStmtOut = verifierOStmtOut
+
+/-- **RBR Extraction Failure Event**: Generic predicate for round-by-round knowledge soundness.
+
+This captures when the RBR extractor fails to produce a valid witness at round `i.1.castSucc`,
+but a valid witness exists at round `i.1.succ`. This is the fundamental "bad event" that must
+be bounded in all RBR knowledge soundness proofs.
+
+**Usage:** Instantiate with protocol-specific `kSF`, `extractor`, and transcript to get the
+phase-specific doom-escape event. The `kSF` argument may be a bare state-function or a
+`Verifier.KnowledgeStateFunction` (coerced to its `toFun` via the `CoeFun` instance). -/
+@[reducible]
+def rbrExtractionFailureEvent {ι : Type} {oSpec : OracleSpec ι}
+    {StmtIn WitIn WitOut : Type} {n : ℕ}
+    {pSpec : ProtocolSpec n} {WitMid : Fin (n + 1) → Type}
+    (kSF : (m : Fin (n + 1)) → StmtIn → Transcript m pSpec → WitMid m → Prop)
+    (extractor : Extractor.RoundByRound oSpec StmtIn WitIn WitOut pSpec WitMid)
+    (i : pSpec.ChallengeIdx) (stmtIn : StmtIn)
+    (transcript : Transcript i.1.castSucc pSpec) (challenge : pSpec.Challenge i) : Prop :=
+  ∃ witMid : WitMid i.1.succ,
+    ¬ kSF i.1.castSucc stmtIn transcript
+      (extractor.extractMid i.1 stmtIn (transcript.concat challenge) witMid) ∧
+    kSF i.1.succ stmtIn (transcript.concat challenge) witMid
 
 end GenericLogic
 
