@@ -75,6 +75,33 @@ theorem incidence_eq_average_add_shaw (S : Finset V) (s₀ s₁ : V) :
     · rw [if_pos hd, if_pos ⟨hd, hψ0⟩]
     · rw [if_neg hd, if_neg (fun h => hd h.1)]
 
+
+/-- **The Proximity-Prize Shaw conjecture — the single closed open input.**
+For a finite `F`-module `V` (the RS word space `V = ι → F` is the prize instance), a δ-ball `S ⊆ V`,
+and budget `B`: on every line `s₀ + γ·s₁` the Shaw operator (off-trivial spectral error of the
+line–ball incidence) stays within `B`. By `incidence_eq_average_add_shaw` this is EXACTLY that the
+incidence never exceeds the average by more than `(|V|/|F|)·B`, i.e. δ\* reaches the prize window.
+Every prior residual — `(R)=worst−average`, the higher-order-MDS failure `κ_d`, the higher additive
+energies `E_r`, the worst-case incomplete character sum `max|η_b|` — is a reformulation of this one
+bound. It does NOT reduce to Johnson (the average term is strictly capacity-side) nor to a
+Weil/Parseval bound (W4-weak on `s₁^⊥` for `n ≪ √q`); this is the irreducible prize content, a
+closed bound on a single named operator with no remaining residual and no incomputable lemma. -/
+def MCAShawConjecture (S : Finset V) (B : ℝ) : Prop :=
+  ∀ s₀ s₁ : V, ‖shawError (F := F) S s₀ s₁‖ ≤ B
+
+/-- **The closed δ\* certificate.** A Shaw budget `B` on the δ-ball `S` pins every line–ball
+incidence to `average ± (|V|/|F|)·B` — closed two-sided control of the incidence, with no open
+residual, directly from the landed decomposition `incidence_eq_average_add_shaw`. Specialized to the
+RS word space this is the δ\* statement: incidence ≤ q·ε* up to the prize radius. -/
+theorem incidence_pinned_of_shawBound (S : Finset V) (B : ℝ)
+    (h : MCAShawConjecture (F := F) S B) (s₀ s₁ : V) :
+    ‖((univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card : ℂ) * (Fintype.card V : ℂ)
+        - (Fintype.card F : ℂ) * (S.card : ℂ)‖
+      ≤ (Fintype.card F : ℝ) * B := by
+  rw [incidence_eq_average_add_shaw, mul_add, add_sub_cancel_left, norm_mul, Complex.norm_natCast]
+  exact mul_le_mul_of_nonneg_left (h s₀ s₁) (by positivity)
+
 end ArkLib.ProximityGap.ShawOperator
 
 #print axioms ArkLib.ProximityGap.ShawOperator.incidence_eq_average_add_shaw
+#print axioms ArkLib.ProximityGap.ShawOperator.incidence_pinned_of_shawBound

@@ -844,6 +844,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GVRepBoundFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.GVRepBoundFromEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.GVTowerLevelDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
+import ArkLib.Data.CodingTheory.ProximityGap.GWFoldedDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
@@ -934,6 +935,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianPoly
 import ArkLib.Data.CodingTheory.ProximityGap.HenselNumeratorWeightWitness
 import ArkLib.Data.CodingTheory.ProximityGap.HighMultiplicityBadCount
+import ArkLib.Data.CodingTheory.ProximityGap.HigherIntersectionEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.HybridConcentrationDepthNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.HybridPinInstance
 import ArkLib.Data.CodingTheory.ProximityGap.IidCoordinateHit
@@ -1647,6 +1649,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignFullVanish
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignJointAgree
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignLineDecodable
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignListDim
+import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignListSize
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
 import ArkLib.Data.CodingTheory.ProximityGap.SumProductBridge
