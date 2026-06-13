@@ -279,17 +279,17 @@ import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyMulHomogeneous
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyNormalizedBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyBridge
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyChar0
+import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyCharacterization
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFermat
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFullGroupClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyKernel
+import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyNegClosedLower
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyParity
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyRepBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultant
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultantProduct
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySidonModNeg
-import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyLowerBound
-import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyCharacterization
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySixDvd
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyThreeDvd
 import ArkLib.Data.CodingTheory.ProximityGap.AdjacentPairDepthOneClean
@@ -641,6 +641,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplySilentPrizeScale
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyZeroF73
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyZeroNTT
 import ArkLib.Data.CodingTheory.ProximityGap.CurveAgreementThreshold
+import ArkLib.Data.CodingTheory.ProximityGap.CurveCloseSetTargetBound
 import ArkLib.Data.CodingTheory.ProximityGap.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBound
