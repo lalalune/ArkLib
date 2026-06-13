@@ -1449,6 +1449,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumZeroInflation
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceAvoidance
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
+import ArkLib.Data.CodingTheory.ProximityGap.SumProductBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SumZeroSubsetsBound
 import ArkLib.Data.CodingTheory.ProximityGap.SupplyProfileDiagnostic
 import ArkLib.Data.CodingTheory.ProximityGap.SupplySizeProfile
