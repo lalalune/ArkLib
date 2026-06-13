@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.SubspaceDesign
+import ArkLib.Data.Probability.Instances
 
 /-!
 # A τ-subspace-design has few fully-vanishing coordinates (issue #389, GG25 §4.3 toward B2)
@@ -25,6 +26,7 @@ Axiom-clean `[propext, Classical.choice, Quot.sound]`.
 -/
 
 open Finset CodingTheory
+open scoped ProbabilityTheory NNReal
 
 namespace ProximityGap
 
@@ -105,8 +107,28 @@ theorem subspaceDesign_support_card_ge {s : ℕ} {τ : ℕ → ℝ}
   rw [hexp]
   linarith [hfv, hsplitℝ]
 
+open Classical in
+/-- **Design → probability bridge.** A uniformly random coordinate does not fully-vanish a
+dimension-`r` subspace `A ≤ C` of a `τ`-subspace-design with probability at least `1 − τ(r)` — the
+single-step separation guarantee the GG25 §4.3 / `[KRSW23, Tam24]` pruning iterates (combining
+`subspaceDesign_support_card_ge` with the uniform-coordinate law). -/
+theorem subspaceDesign_random_coord_support_prob {s : ℕ} {τ : ℕ → ℝ}
+    {C : Submodule F (ι → Fin s → F)} (h : IsSubspaceDesign s τ C)
+    {r : ℕ} (hr : 1 ≤ r) {A : Submodule F (ι → Fin s → F)} (hAC : A ≤ C)
+    (hrank : Module.finrank F A = r) :
+    (1 - τ r : ℝ)
+      ≤ (Pr_{ let i ←$ᵖ ι }[ ¬ (A ≤ LinearMap.ker
+          (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) ]).toReal := by
+  have hsupp := subspaceDesign_support_card_ge h hr hAC hrank
+  have hn : (0 : ℝ) < (Fintype.card ι : ℝ) := by exact_mod_cast Fintype.card_pos
+  rw [prob_uniform_eq_card_filter_div_card]
+  simp only [ENNReal.toReal_div, ENNReal.coe_toReal, NNReal.coe_div, NNReal.coe_natCast]
+  rw [le_div_iff₀ hn]
+  exact hsupp
+
 end ProximityGap
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.subspaceDesign_fullVanish_card_le
 #print axioms ProximityGap.subspaceDesign_support_card_ge
+#print axioms ProximityGap.subspaceDesign_random_coord_support_prob
