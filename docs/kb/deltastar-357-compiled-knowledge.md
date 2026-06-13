@@ -624,3 +624,51 @@ the file table, and the #371 comment thread for the round-by-round record):
 
 Remaining open (#371): the band-`m` bracket gap (extremal design) and the
 production regime (`C(n,k+1)² > q`).
+
+## The supply wall (#389), two faces, one open problem (2026-06-13)
+
+The #371 → #389 successor isolated the entire remaining δ* question to ONE
+statement: a per-word bound on the explainable `(k+m+1)`-core count over a smooth
+multiplicative domain `μ_n ⊂ F_p` (`SmoothDomainTwoRegimeLaw`, the production form;
+`ExplainableCoreSupply` / `SubJohnsonSupplyResidual`, the abstract forms). The
+fleet attacked it from two independent directions, and **both reduce to the same
+open subgroup-rigidity input** — a `poly(n)`-field transfer of a sum-product /
+vanishing-sum bound on `μ_n`. This is the precise current location of the wall.
+
+**Countermodels (all machine-checked) — why it is domain-coupled.** Any proof MUST
+use the absence of additive structure in `μ_n`; the supply blows up on every
+additively-structured domain:
+- abstract set systems stop at Johnson sharply (`AffinePlaneSharpness`, pole at
+  `t² = s·n`);
+- prime-subfield Frobenius secants (`FrobeniusSubfieldBlowup`, `Θ(n²)`, char `p`);
+- ANY composite subfield, every band (`SubplaneSupplyFloor`: sheared `AG(2,K)`,
+  `(r²+r)·C(r,2+m+1)`; covers char 2 / binary towers);
+- random words at `q = Θ(n)` (`TwoBranchSupplyCountermodel`, no subfield needed).
+The capped general-domain optimum IS the trivial pair bound `C(n,k)`, attained
+(`subJohnsonSupplyResidual_pairCount_tight`). So no improvement is possible from
+counting alone — the gain must come from the domain.
+
+**Face A — additive (energy / Garcia–Voloch).** The cubic/Sylvester word `x³` has
+supply exactly the zero-sum-triple count (`cubicSupply_eq_sumZeroCard`); Cauchy–
+Schwarz ties it to the additive energy `E(μ_n)` (`zeroSumTriples_sq_le_card_mul_energy`).
+The named input `GVRepBound` (Garcia–Voloch `|G∩(G+μ)| ≤ 4|G|^{2/3}`, HBK via
+Stepanov) gives `E ≤ 6.4|G|^{8/3}` (`additiveEnergy_cube_le_of_gvRepBound`), hence
+`cubicSupply < 2.54·n^{11/6} ≪ n²` (`cubicSupply_pow_le_of_gvRepBound`) and, on the
+Fourier side, no Gauss-sum frequency reaches the Johnson scale up to `n ≈ 2⁴⁸`
+(`card_johnson_scale_le_gv`). Non-vacuity: `gvRepBound_H16`, `cubicSupply_mu16_F257_eq_zero`.
+
+**Face B — multiplicative (Mann / esymm fibre).** The monomial word `x^{k+m+1}` has
+supply exactly the elementary-symmetric fibre `{T : e_1=…=e_{m+1}=0}` (`EsymmFiber`).
+The 2-power Lam–Leung/Mann theorem makes a zero-sum SET of `2^ν`-th roots antipodally
+closed (`subset_neg_mem_of_sum_zero`), pinning the char-0 fibre to `N_fib` exactly;
+`LadderListModP` transfers it to `F_p` above a resultant threshold.
+
+**The shared wall.** Face A needs `GVRepBound` at `p = poly(n)` (Stepanov substrate
+`StepanovHighMultVanisher` has the linear-algebra existence half; the Frobenius-reduced
+√q-saving generator family is open). Face B's `LadderListModP` threshold is
+`p > (2r)^{n/2}` (super-exponential, **vacuous at production**: `p = 2¹²⁸` fixed, `n`
+growing); the sharp statement is that violating primes divide a folded resultant — the
+same `poly(n)`-field rigidity transfer. **Both faces are machine-checked up to that one
+transfer; it is open research (HBK `E ≪ |G|^{5/2}` for `|G| ≲ p^{2/3}` is the
+closest published result, but production needs `n ≪ √q`, where Weil alone is provably
+insufficient — `SubgroupCharacterSumNoGo`). Do not fabricate its closure.**
