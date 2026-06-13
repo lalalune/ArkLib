@@ -433,7 +433,35 @@ extremizer, whose list `N_fib` is `≫` generic. So the floor is NOT a character
 bound — it is the combinatorial optimality of the antipodal subset-sum fibre, which the Shaw
 operator encodes as its top moment `E_{ρn}` (R6/R7), not its gap. The gap `B` (W4, §8) controls the
 generic stratum; the floor's open content is the optimality of the top moment — and the two are the
-SAME wall (BCHKS Thm 1.9: worst-case incidence ⟺ explicit-RS beyond-Johnson list size). -/
+SAME wall (BCHKS Thm 1.9: worst-case incidence ⟺ explicit-RS beyond-Johnson list size).
+
+**§8c — THE MOMENT-PROBLEM FRAMING + the floor's HEALTH (2026-06-13, convergent across agents).**
+The floor is a *constrained Chebyshev–Markov moment problem*. The agreement profile `{a_c}` of EVERY
+word has its first `k` binomial moments fixed and w-INDEPENDENT: `Σ_c C(a_c,j) = C(n,j)` for `j ≤ k`
+(`moment_identity_base`). So:
+  Floor  =  maximize the upper tail `#{a_c ≥ t}` over profiles REALIZABLE by a smooth-domain word,
+            given the fixed first-`k` moments.
+The *unconstrained* max is the trivial Johnson bound `C(n,k)/C(t,k)`; the gap down to `N_fib` is
+ENTIRELY the realizability constraint, which is the first **≥3-wise word-coupled moment** (the pair
+/2-wise layer caps at EXACTLY Johnson). That moment `⟺ E(μ_n)=n^{2+o(1)} ⟺ ShawGapLaw §8` —
+independently re-derived by the swarm's 4-angle workflow.
+
+**The floor is plausibly TRUE (not refuted on the prize domain):**
+* the catastrophic smooth-domain counterexample (BCHKS Thm 1.6) is **characteristic-2 ONLY**;
+  prime-field dyadic RS (the prize) is explicitly "possibly still true" — NOT killed;
+* the BCHKS prime-field construction IS the antipodal ladder, exceeding budget ONLY *above*
+  `prizeDeltaStar` (the known-bad band where the floor makes no claim);
+* the smooth−random deficit is **O(1), constant in n, NOT growing** (Lam–Leung antipodal family);
+* exhaustive large-prime counterexample hunt (no mod-p pollution) at n=8,16 rate 1/2 finds NO word
+  beating the ladder (t=9: ladder 153 vs hill 12). The conjecture is structurally healthy.
+
+**Every route to the floor is mapped BLOCKED** (so a genuine proof needs new analytic input):
+pair/2-wise moment → Johnson only; char-0 higher moment → prime-INDEPENDENT pigeonhole failure at
+`r≥5` (`n^5>p` forces spurious vanishing, no NTT prime avoids it); antipodal/Möbius symmetry →
+exponent-halving (√ of the count) only, never the `e^{Θ(n)}` rate gap; GS interpolation / HOMDS /
+character sums → invisible to the cyclic structure. The single missing input is the √-cancellation
+Gauss-sum bound `max_{b≠0}|Σ_{x∈μ_n} e_p(bx)| ≤ C√(n·log(p/n))` for `n=q^{1/4}` (= `ShawGapLaw`) —
+the recognized open Burgess–Shkredov wall. -/
 
 /-
 ### §9  Refutation ledger (the conjecture SURVIVES all of these — they fix its sharp form)
