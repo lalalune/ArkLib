@@ -306,6 +306,29 @@ through the window, so `δ* = 1−ρ−Θ(1/log n)` (ABF26 Thm 4.16 met). Via §
 bound on `∑_ψ ψ̄(b)τ(ψ)` (Deligne equidistribution + union bound over `b`) — replacing the FALSE
 sharp-`√2` route. Refutation-tested CONJECTURE (n≤512 verified; n=2⁴⁰ is inductive extrapolation),
 not a proof. Full record: `docs/kb/jlr26-frs-subspace-design-formalization-map-2026-06-13.md` §15.
+
+## §R.4  SYNTHESIS 2026-06-13d — δ* is the CAPACITY term (Incidence-Genericity Dichotomy + refutation).
+
+CORRECTION to the §R.3/window-edge reading, synthesizing the issue thread's Incidence-Genericity
+Dichotomy with the fabricate-then-refute certificate.
+
+  **`δ*(dyadic μ_{2^μ}, ε*) = H_q⁻¹(1 − ρ − log_q(1/ε*)/n)`**  (the list-decoding CAPACITY radius;
+  ≈ `1 − ρ − h(1−ρ)/log₂q` to first order).
+
+WHY (not the window edge): the KK25/BCHKS bad construction `δ*≤1−ρ−Θ(1/log n)` (Thm 4.16) is the
+worst case over ALL domains — its construction is F₂-linear/special-sumset. The GENERIC dyadic
+prime-field `μ_n` BEATS it and reaches the capacity term, because it is incidence-generic:
+  · `B(μ_n) = max_{b≠0}|∑_{x∈μ_n}e_p(bx)| ≤ 2√(n ln p)` (refutation, §R.3) and
+    `B(μ_n)/B_random ≈ 0.48–0.64 ≤ 1` — μ_n is at most as additively concentrated as a RANDOM
+    n-subset (whose worst sum is also `√(n ln p)`);
+  · `E(μ_n) = 3n²−3n` exactly (in-tree `RootsOfUnityEnergyExact`) = the CLEAN generic value
+    (`E⁺/3n(n−1)=1`), the antipodal `−1∈μ_n` accounted for, NOT an inflation.
+
+So both grand challenges share `δ* = ` the capacity radius. Open core (gated): deployed-regime
+genericity `E(μ_n)=O(n²) ⟺ B(μ_n)=O(√(n·polylog))` (the 25-yr wall) — PROVEN for `p>2^n`
+(cyclotomic resultant, in-tree), refutation-certified for deployed `p≈2^168≪2^{2^40}`, BGK-floored
+`B≤n^{1−ε}`. The two remaining open links: the dichotomy's forward direction (generic ⟹ capacity δ*)
+and the asymptotic genericity proof. Issue #389 comment 4699815321; KB §19.
 -/
 
 set_option linter.unusedSectionVars false
