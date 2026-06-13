@@ -164,6 +164,53 @@ theorem blockPoly_coeff_natDegree_le (ℓ A : ℕ) (b : Fin ℓ → Polynomial.d
     · simp
     · intro j _; rw [Polynomial.coeff_monomial, if_neg (by intro h; omega)]
 
+theorem blockPoly_natDegree_le (ℓ A : ℕ) (b : Fin ℓ → Polynomial.degreeLT F (A + 1)) :
+    (blockPoly ℓ A b).natDegree ≤ ℓ - 1 := by
+  rw [blockPoly_apply]
+  apply Polynomial.natDegree_sum_le_of_forall_le
+  intro j _
+  exact le_trans (Polynomial.natDegree_monomial_le _) (by have := j.2; omega)
+
+theorem coeff_mul_block_natDegree_le {a b : ℕ} (P Q : Polynomial (Polynomial F))
+    (hP : ∀ j, (P.coeff j).natDegree ≤ a) (hQ : ∀ j, (Q.coeff j).natDegree ≤ b) (j : ℕ) :
+    ((P * Q).coeff j).natDegree ≤ a + b := by
+  rw [Polynomial.coeff_mul]
+  apply Polynomial.natDegree_sum_le_of_forall_le
+  intro x _
+  exact le_trans Polynomial.natDegree_mul_le (Nat.add_le_add (hP x.1) (hQ x.2))
+
+theorem coeff_sq_block_natDegree_le {a : ℕ} (P : Polynomial (Polynomial F))
+    (hP : ∀ j, (P.coeff j).natDegree ≤ a) (j : ℕ) :
+    ((P ^ 2).coeff j).natDegree ≤ 2 * a := by
+  rw [sq, two_mul]; exact coeff_mul_block_natDegree_le P P hP hP j
+
+theorem coeff_C_block_natDegree_le (g : Polynomial F) (j : ℕ) :
+    ((Polynomial.C g).coeff j).natDegree ≤ g.natDegree := by
+  rw [Polynomial.coeff_C]; split_ifs with h
+  · exact le_refl _
+  · simp
+
+theorem coeff_mapC_block_natDegree_le (g : Polynomial F) (j : ℕ) :
+    ((g.map (Polynomial.C : F →+* Polynomial F)).coeff j).natDegree ≤ 0 := by
+  rw [Polynomial.coeff_map]; simp
+
+/-- The combined square-block of `C g·A₀² − ĝ·A₁²` has `X`-degree `< q` whenever both block
+bounds are `≤ A` and `2A + deg g < q` — exactly the `hblk` hypothesis the engine consumes. -/
+theorem combined_block_lt (g : Polynomial F) (A0 A1 : Polynomial (Polynomial F)) {A q : ℕ}
+    (h0 : ∀ j, (A0.coeff j).natDegree ≤ A) (h1 : ∀ j, (A1.coeff j).natDegree ≤ A)
+    (hq : 2 * A + g.natDegree < q) (j : ℕ) :
+    ((Polynomial.C g * A0 ^ 2 - (g.map Polynomial.C) * A1 ^ 2).coeff j).natDegree < q := by
+  rw [Polynomial.coeff_sub]
+  refine lt_of_le_of_lt (Polynomial.natDegree_sub_le _ _) ?_
+  rw [Nat.max_lt]
+  refine ⟨?_, ?_⟩
+  · have := coeff_mul_block_natDegree_le (Polynomial.C g) (A0 ^ 2)
+      (coeff_C_block_natDegree_le g) (coeff_sq_block_natDegree_le A0 h0) j
+    omega
+  · have := coeff_mul_block_natDegree_le (g.map Polynomial.C) (A1 ^ 2)
+      (coeff_mapC_block_natDegree_le g) (coeff_sq_block_natDegree_le A1 h1) j
+    omega
+
 /-- Per-component Weil-form builder `b ↦ subq (blockPoly b)`. -/
 noncomputable def Pbuild (q ℓ A : ℕ) : (Fin ℓ → Polynomial.degreeLT F (A + 1)) →ₗ[F] Polynomial F :=
   (subqLin q).comp (blockPoly ℓ A)
@@ -209,7 +256,7 @@ whose Weil-form auxiliary vanishes to Hasse-order `M` at every point of `V`. Pur
 theorem exists_stepanov_auxiliary_pair (g : Polynomial F) (q ℓ A : ℕ) (V : Finset F) (M : ℕ)
     (hdim : V.card * M < 2 * (ℓ * (A + 1))) :
     ∃ A0 A1 : Polynomial (Polynomial F),
-      ¬ (A0 = 0 ∧ A1 = 0) ∧
+      ¬ (A0 = 0 ∧ A1 = 0) ∧ A0.natDegree ≤ ℓ - 1 ∧ A1.natDegree ≤ ℓ - 1 ∧
       (∀ j, (A0.coeff j).natDegree ≤ A) ∧ (∀ j, (A1.coeff j).natDegree ≤ A) ∧
       (∀ a ∈ V, ∀ k < M,
         (hasseDeriv k (subq q A0 + (g ^ ((q - 1) / 2)) * subq q A1)).eval a = 0) := by
@@ -220,19 +267,49 @@ theorem exists_stepanov_auxiliary_pair (g : Polynomial F) (q ℓ A : ℕ) (V : F
     rw [finrank_construction_codomain, finrank_construction_domain]; exact hdim
   have hker : LinearMap.ker Φ ≠ ⊥ := LinearMap.ker_ne_bot_of_finrank_lt hlt
   obtain ⟨bb, hbbmem, hbbne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hker
-  refine ⟨blockPoly ℓ A bb.1, blockPoly ℓ A bb.2, ?_, ?_, ?_, ?_⟩
+  refine ⟨blockPoly ℓ A bb.1, blockPoly ℓ A bb.2, ?_, blockPoly_natDegree_le ℓ A bb.1,
+    blockPoly_natDegree_le ℓ A bb.2, blockPoly_coeff_natDegree_le ℓ A bb.1,
+    blockPoly_coeff_natDegree_le ℓ A bb.2, ?_⟩
   · rintro ⟨h0, h1⟩
     apply hbbne
     have hb0 : bb.1 = 0 := blockPoly_inj ℓ A (h0.trans (map_zero _).symm)
     have hb1 : bb.2 = 0 := blockPoly_inj ℓ A (h1.trans (map_zero _).symm)
     exact Prod.ext hb0 hb1
-  · exact blockPoly_coeff_natDegree_le ℓ A bb.1
-  · exact blockPoly_coeff_natDegree_le ℓ A bb.2
   · intro a ha k hk
     have hΦ0 : Φ bb = 0 := by rwa [LinearMap.mem_ker] at hbbmem
     have hcf := congrFun hΦ0 (⟨a, ha⟩, ⟨k, hk⟩)
     rw [hΦ, LinearMap.comp_apply, jetEvalAt_apply, toR_apply] at hcf
     simpa using hcf
+
+/-- **The Stepanov machine, assembled.** For `g` squarefree of positive degree over a finite
+field (`q = |F|` odd) with `2A + deg g < q`: whenever `|V|·M < 2·ℓ·(A+1)`, the constructed
+non-vanishing auxiliary forces `|V|·M < D₀ + 1`, where
+`D₀ = max(q(ℓ−1)+(q−1), ((q−1)/2)·deg g + q(ℓ−1)+(q−1))`. This chains construction
+(`exists_stepanov_auxiliary_pair`) → non-vanishing (`obstruction_forces_trivial`, via
+`weil_form_card_lt`) → counting → degree (`natDegree_weil_form_le`), unconditionally. Only the
+character-set identification (`V = {a : g(a) a nonzero square}`) and the `√q` parameter choice
+(`A ≈ q/2−d`, `M ≈ √q`) remain to turn this into the explicit Weil character-sum bound. -/
+theorem weil_stepanov_card_lt (g : F[X]) (hg : Squarefree g) (hdeg : 0 < g.natDegree)
+    (hq_odd : Odd (Fintype.card F)) (ℓ A : ℕ)
+    (hAq : 2 * A + g.natDegree < Fintype.card F)
+    (V : Finset F) (M : ℕ) (hdim : V.card * M < 2 * (ℓ * (A + 1))) :
+    V.card * M
+      < (Fintype.card F * (ℓ - 1) + (Fintype.card F - 1)) ⊔
+          (((Fintype.card F - 1) / 2) * g.natDegree
+            + (Fintype.card F * (ℓ - 1) + (Fintype.card F - 1))) + 1 := by
+  obtain ⟨A0, A1, hne, hd0, hd1, h0, h1, hvan⟩ :=
+    exists_stepanov_auxiliary_pair g (Fintype.card F) ℓ A V M hdim
+  have hAlt : A < Fintype.card F := by omega
+  have hblk : ∀ j, ((C g * A0 ^ 2 - (g.map C) * A1 ^ 2).coeff j).natDegree < Fintype.card F :=
+    combined_block_lt g A0 A1 h0 h1 hAq
+  refine weil_form_card_lt g hg hdeg hq_odd A0 A1 hne hblk V ?_ hvan
+  refine lt_of_le_of_lt
+    (natDegree_weil_form_le g A0 A1 (fun j => lt_of_le_of_lt (h0 j) hAlt)
+      (fun j => lt_of_le_of_lt (h1 j) hAlt)) ?_
+  rw [Nat.lt_succ_iff]
+  exact max_le_max
+    (Nat.add_le_add_right (Nat.mul_le_mul_left _ hd0) _)
+    (Nat.add_le_add_left (Nat.add_le_add_right (Nat.mul_le_mul_left _ hd1) _) _)
 
 end Construction
 
@@ -243,3 +320,4 @@ end ArkLib.ProximityGap.StepanovWeilEngine
 #print axioms ArkLib.ProximityGap.StepanovWeilEngine.weil_form_card_le
 #print axioms ArkLib.ProximityGap.StepanovWeilEngine.natDegree_weil_form_le
 #print axioms ArkLib.ProximityGap.StepanovWeilEngine.exists_stepanov_auxiliary_pair
+#print axioms ArkLib.ProximityGap.StepanovWeilEngine.weil_stepanov_card_lt
