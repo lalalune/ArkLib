@@ -88,3 +88,31 @@ genuinely actionable open routes for the *prize* (plain RS) are:
 machinery (Claim 5.8 + Lemma 5.4 landed this session; 5.7/5.10 are the remaining specified gaps).
 The plain-RS prize is a *different, harder* object — open, capped near capacity, and only
 reachable via the LD⇒MCA bridge or a new s=1 technique.
+
+## 6. The two bridges and why the plain-RS prize is doubly blocked (the actionable core)
+
+ABF26 gives two LD⇒(M)CA bridges; understanding their failure modes pins the open core.
+
+**(B1) Line-decoding ⟹ MCA — ABF26 Thm 4.21 [GG25 Thm 3.5], PROVEN, no loss.**
+If `C` is `(δ, a, n+1)`-line-decodable then `ε_mca(C, δ) ≤ a/|F|`. This is exactly how JLR26's
+line stitching (`(δ, a=r²t, t)`-line-decodable, Lemma 5.7) yields the FRS MCA bound. **But
+line-decodability requires the τ-subspace-design structure** (the whole JLR26 §5 argument), which
+**plain RS (s=1) does not have** (`τ(r) = R + O(r)` is useless). So B1 is unavailable for the prize.
+
+**(B2) List decoding ⟹ CA — ABF26 Thm 5.1 [GCXK25 Thm 3], PROVEN but with a √-LOSS.**
+A list bound gives CA, but only at the *square-root* of the proximity, so it reaches MCA only up to
+~sub-Johnson (the in-tree W2 wall: `T² ≤ |G|·E`). ABF26 states the key: **"Strengthening
+Theorem 5.1 to remove the square-root loss in proximity would reestablish all [the plain-RS
+results]."** So removing the √-loss in B2 is *the* lever for the plain-RS prize.
+
+**Conclusion — the plain-RS prize is open, blocked on EITHER:**
+1. removing the √-loss from GCXK25 Thm 3 (B2) — then a plain-RS window list bound ⟹ window MCA; or
+2. a plain-RS (s=1) beyond-Johnson list bound *and* the √-loss removal (both open); or
+3. directly pinning `δ*` via the line–ball incidence / character-sum face (`epsMCA_ge_far_incidence`),
+   which the in-tree walls (W4/character sums) show is the incomplete-Gauss-sum problem.
+
+This sharpens the directive's "throw away anything that fails in the prize regime": the entire
+subspace-design / line-decoding edifice (JLR26, GG25, my Claim 5.8 + Lemma 5.4, fleet 5.5) is
+**FRS-only** and provably does not reach plain-RS `s=1`. The plain-RS prize's genuine open core is
+the **√-loss removal in the list⇒CA bridge** (a clean, named, closed target — not an open-ended
+search), with the near-capacity lower bound (Table 1) capping how far it can possibly go.
