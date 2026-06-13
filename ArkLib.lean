@@ -229,6 +229,7 @@ import ArkLib.Data.CodingTheory.JohnsonBound.FamilyRefutation
 import ArkLib.Data.CodingTheory.JohnsonBound.FamilyRefutationComplete
 import ArkLib.Data.CodingTheory.JohnsonBound.Lemmas
 import ArkLib.Data.CodingTheory.JohnsonBound.ListSize
+import ArkLib.Data.CodingTheory.JohnsonBound.ReedSolomonJohnsonLambda
 import ArkLib.Data.CodingTheory.JohnsonBound.ReedSolomonListSize
 import ArkLib.Data.CodingTheory.LineListBound
 import ArkLib.Data.CodingTheory.ListDecodability
