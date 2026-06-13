@@ -50,3 +50,18 @@ gap `≤ √(n log(p/n))` for `n=2^μ ≪ √p`**, which is the prize residual. 
 (a) extend the semiprimitive computation toward general `p` mod `2^μ`; (b) a trace-formula / amplification
 bound for the Paley spectral gap; (c) the Alon–Roichman-style derandomization for the *specific*
 subgroup generating set. No closure; the residual is now a named, studied spectral-graph problem.
+
+## 6. CORRECTION: the semiprimitive base case is the WRONG regime for the prize
+Checked: `μ_n ⊂ F_p` requires `n | p−1` (`p≡1 mod n`) — this IS the deployed NTT / prize setup.
+But **semiprimitive** needs `−1 ∈ ⟨p⟩ mod n`; for `μ_n⊂F_p` (`p≡1 mod n`) we have `⟨p⟩ mod n = {1}`,
+so `−1∉⟨p⟩` for `n>2` — **the prime-field prize case is NEVER semiprimitive.** The semiprimitive
+GP-graphs live over **extension fields** `F_{p^m}`, `m≥2` (where `⟨p⟩ mod n` is nontrivial and can
+contain `−1`); for 2-power `n` over the prime field this corresponds to the `n | p+1` setup where
+`μ_n ⊄ F_p` (it sits in `F_{p^2}`) — the *easy* Frobenius case (`r(c)≤2`), NOT the prize.
+
+So the proven-Ramanujan GP-graph results (semiprimitive, and the explicit `k≤4` i.e. `n≈p` cases) are
+**all outside the prize regime** (prime field `F_p`, *small* 2-power subgroup `n=2^μ ≪ √p`,
+`p≡1 mod n`). Verified empirically: for the deployed case `p≡1 mod n`, `B(μ_n)/√(n·log(p/n)) ≈ 0.9–1.0`
+(almost-Ramanujan, NOT the tight `√n`). **The prize regime is precisely the open, non-semiprimitive,
+prime-field, small-2-power-subgroup case that no GP-graph result covers.** The reframing stands; the
+base case does not transfer. The residual is unchanged and genuinely open.
