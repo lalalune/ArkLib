@@ -1532,8 +1532,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusUnionBudget
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupDeltaStarPin
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupGVRepTwo
+import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupGoodListMDS
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupSidon
 import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupSidonModNeg
+import ArkLib.Data.CodingTheory.ProximityGap.SmallSubgroupUncondQuarter
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothCubicCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothCubicSupplyBound
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothDomainSelfSimilarity
@@ -1604,6 +1606,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConc
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConcElementary
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumCosetInv
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumDensity
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumEnergyReduction
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumLadderMarkov
