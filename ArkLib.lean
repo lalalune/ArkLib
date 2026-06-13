@@ -1242,6 +1242,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumCompleteSquare
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.MixedRadixTower
 import ArkLib.Data.CodingTheory.ProximityGap.MobiusCoincidenceWitness
+import ArkLib.Data.CodingTheory.ProximityGap.MobiusInvolutionEvenSupport
 import ArkLib.Data.CodingTheory.ProximityGap.MobiusMCASymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.MobiusPencilEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionLocalFactor
@@ -1265,6 +1266,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MonomialStripExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSupplyChoose
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSupplyWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialZeroSumIdentity
+import ArkLib.Data.CodingTheory.ProximityGap.MovingDirectionCoordinate
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6ConditionalPin
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6DeepRung
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6LiteralBands
@@ -1592,6 +1594,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetThreePowUpper
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetWiden
 import ArkLib.Data.CodingTheory.ProximityGap.SubplaneSupplyFloor
+import ArkLib.Data.CodingTheory.ProximityGap.SubqDegreeLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumCharacterSum
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumE2PairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumE2PowerSumReduction
