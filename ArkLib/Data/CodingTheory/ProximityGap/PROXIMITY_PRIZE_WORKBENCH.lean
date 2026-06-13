@@ -198,6 +198,20 @@ without residual, closes the prize via its bridge.
   is a *different, smaller* point on the `δ*(ε*)` curve where the line–ball incidence must be
   *sub-exponential* (= the open W4 incidence / incomplete-Gauss-sum problem). Do not expect a
   sharper budget/supply count to win the prize — it provably pins the wrong point.
+**(W6) The second-moment / Fourier-L² method is PROVEN EXHAUSTED (machine-checked, `ShawSecondMoment`).**
+  The Shaw operator's exact second moment `∑_{s₀}‖𝒮‖² = |V|·M`, `M = ∑_{ψ≠0,ψ⊥s₁}‖Ŝ(ψ)‖²`
+  (`shawError_second_moment`) brackets the prize's worst case
+  `max_{s₀}‖𝒮‖ ∈ [√M, √(|V|·M)]` (`exists_shawError_sq_ge` + `shawError_sq_le_second_moment`) — a
+  multiplicative gap of EXACTLY `√|V| = q^{n/2}` (the union tax over the `|V|` base points). So no
+  L²/moment/union argument can *certify* `‖𝒮‖≤B`; it can only *falsify*
+  (`not_mcaShawConjecture_of_lt_secondMoment`: `B²<M ⟹` the bound fails — an unconditional δ* CEILING).
+  The far-coset restriction is FORCED, not a convention: a fully-contained line gives `𝒮 = |V|−|S|`
+  exactly (`shawError_of_line_subset`, `not_mcaShawConjecture_of_line_subset`). **REGIME TRAP (avoided):**
+  the single-Hamming-ball model makes the prize trivial (`incidence ≤ ⌊w₁/(w₁−R)⌋ < budget`); the TRUE
+  object is `S = δ-neighborhood of the CODE C`, so `M = ∑_{ψ∈C^⊥, ψ⊥s₁, ψ≠0} |K(wt ψ)|²` — the
+  **dual-code Krawtchouk sum**, whose uniform worst-`u₀` bound IS W4 (and equals the list-size bound, so
+  one bound closes BOTH challenges). The prize needs genuine uniform √-cancellation of THAT sum, beyond
+  any L² estimate.
 
 ────────────────────────────────────────────────────────────────────────────────
 ## §4.  WHAT A WINNING CONJECTURE MUST DO  (the closure contract)
