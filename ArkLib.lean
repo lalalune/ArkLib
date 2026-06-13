@@ -1201,6 +1201,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.QRShiftPairCount
+import ArkLib.Data.CodingTheory.ProximityGap.QRZeroSumTripleScaling
 import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
 import ArkLib.Data.CodingTheory.ProximityGap.QuartetTowerLaw
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
@@ -1338,6 +1339,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyFermat65537
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyTowerF17
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupEnergyAntiConcGV
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConc
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConcElementary
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumDensity
