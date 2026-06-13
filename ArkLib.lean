@@ -742,6 +742,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FarCosetExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.FarPairRankBound
 import ArkLib.Data.CodingTheory.ProximityGap.FarPairRankSupply
 import ArkLib.Data.CodingTheory.ProximityGap.FarWordSupplyCounting
+import ArkLib.Data.CodingTheory.ProximityGap.Fermat257EnergyCrossover
 import ArkLib.Data.CodingTheory.ProximityGap.FiberEnergyListBound
 import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldDisproofLoop53
 import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldLiftLoop51
