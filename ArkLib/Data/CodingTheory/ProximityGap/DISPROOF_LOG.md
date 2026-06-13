@@ -8094,3 +8094,24 @@ small-distance balls, `ε_mca → 1` at capacity, NOT additive-energy-governed),
 bracket `δ* ≤ 1−ρ−Θ(1/log n)`. Residual-free δ* therefore requires BOTH the subgroup sum-product
 front (this entry) AND the covering / list-decoding-capacity front (CS25/BCHKS Conj 1.12) —
 two independent recognized-hard problems. No fabricated closure.
+
+### O161 — the coset/power-word construction is NOT the extremal max-list word (Conjecture J refuted, 2026-06-13)
+
+Direct attack on δ*: the in-tree `rootsOfUnity_dyadic_codeword_list_ge` gives list `≥ C(n/d, t/d)`
+via coset-union subsets; worked against the budget `list = q·ε*` with `q = poly(n)` this reproduces
+the BCHKS upper bracket `δ* ≤ 1−ρ−Θ(H(ρ)/log n)` CONSTRUCTIVELY. **Conjecture J** asked whether this
+construction is also the MAXIMUM list (which would pin δ* residual-free).
+
+**Probe (`scripts/probes/probe_extremal_word.py`, exact list enumeration, F₉₇, μ₁₆, k=2):**
+- `t=3` (sub-Johnson): `L(x³) = 0` (this μ₁₆ has no zero-sum triples) but `max over 40 random
+  words = 11`. The power word is BELOW the random baseline; the coset construction (degenerate
+  here, 3∤16) gives 0. The true max-list word is neither the power word nor coset-structured.
+- `t=4`: `L(x⁴)=4`, random max 3 (power word competitive here); `t=5`: all 0.
+
+**Verdict: Conjecture J REFUTED.** The coset/power-word construction is a valid list LOWER bound
+(hence a valid δ* UPPER bracket) but is NOT extremal — the maximum sub-Johnson list is larger and
+word-dependent. Pinning δ* requires the extremal/worst-word characterization (H-MAX), which this
+shows is not the obvious construction. No fabricated closure; H-MAX remains the open residual.
+
+**Caveat:** small-scale, `max-over-40-random` is a weak lower bound on the true max (could be far
+larger); this strengthens, not weakens, the refutation (even a weak search beats the construction).
