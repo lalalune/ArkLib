@@ -1367,6 +1367,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
 import ArkLib.Data.CodingTheory.ProximityGap.TowerMonotonicity
 import ArkLib.Data.CodingTheory.ProximityGap.TowerMonotonicityRS
 import ArkLib.Data.CodingTheory.ProximityGap.TruncatedRecurrenceTransversality
+import ArkLib.Data.CodingTheory.ProximityGap.TwoBranchSupplyCountermodel
 import ArkLib.Data.CodingTheory.ProximityGap.TwoGenPackingCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPlusAntipodalChordLaw

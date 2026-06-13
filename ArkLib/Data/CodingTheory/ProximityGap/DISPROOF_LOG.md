@@ -7875,3 +7875,44 @@ included), the prime-field counterpart of the subplane mechanism.
   strictly-sub-Johnson supply improvement; formalized as a named-residual import +
   consumer chain in `STSupplyReduction.lean` (the heavy Rudnev bound is the import
   surface; the reduction `RichLineBound → capped supply → bad-set count` is proven).
+
+## 2026-06-13 — THE UNIVERSAL MEAN-DEGREE LAW IS FALSE (two-branch parabola countermodel); the supply growth law is two-regime
+
+The conjectured universal form of the mean-degree law ("`Σ_c a_c ≤ 2n` over the
+capped large-agreement family of any word", probe census `717da6067` / the #389
+thread's "final measured form") is **REFUTED** in the open sub-Johnson range
+`t² < 2(k−1)n` (`TwoBranchSupplyCountermodel.lean`, axiom-clean):
+
+* **The countermodel family**: split `D = A ⊔ B`, set `w = x²` on `A`,
+  `x² + c` on `B`.  Every degree-`<2` polynomial agrees with each branch on
+  `≤ 2` points (root budget), so every codeword agreement is `≤ 4 ≤ 6 =
+  2k+m+1`: **agreement-capped unconditionally**.  The line through
+  `(x₁,x₁²), (x₂,x₂²)` meets branch `B` at the roots of
+  `z² − (x₁+x₂)z + (x₁x₂+c)`; when the discriminant `(x₁−x₂)² − 4c` is a
+  nonzero square with both roots in `B`, the line is 4-rich.  About `1/8` of
+  the `A`-pairs qualify: `Σ a_c ~ n²/16`, **quadratic**.
+* **Machine-checked instance** `(q,n) = (101, 80)`: interval domain
+  `{0..79}`, `A = {0..39}`, `c = 29`: `107` four-rich lines (census-exact:
+  these are ALL the `≥4`-rich lines; max agreement `4`), `Σ a_c = 428 > 160 =
+  2n`.  `universalMeanDegreeLaw_REFUTED`.
+* **Why the censuses missed it**: at `q = 31, n ≤ 24` the two-branch count
+  sits below `2n` — the crossover `n³ ≈ 64q²` is exactly where the growth
+  census stopped.  `probe_two_branch_subjohnson_supply.py`: 21/25 instances
+  violate (first at `p = n = 41`, exact counting); the linear-B form
+  (`≈ 3.625n`) falls from `p = 251` (957 cores vs 910).
+* **What survives**: `mean_degree_law_deep` and the crossing/CS route are
+  hypothesis-guarded (`t² ≥ ~2(k−1)n`) and unaffected — and now provably
+  SHARP: below the threshold the truth is a different growth law, not a
+  missing word-coupling refinement of the linear one.
+* **The corrected named target** (`CappedSupplyTwoRegimeLaw`, PRIME fields):
+  `S_max(capped) = Θ(n + C(n,k+m+1)/q^{m+1})` — partition floor + random
+  mean.  The two-branch family realizes the mean term constructively (and
+  `r`-branch words `x^k + c_j` extend this to every band `m` with
+  `r·k ≤ 2k+m+1`).  The general-field form is FALSE by subfield transport:
+  over `q = p²` with `D = F_p ⊂ F_{p²}` the same construction carries
+  `~ n²/64` cores while the mean term collapses to `O(1)` — char-2/extension
+  production settings need a no-large-subfield-structure hypothesis.
+  Consumer arithmetic: any `B = O(n + C(n,t)/q^{m+1})` still delivers
+  prize-grade bad-scalar counts through `deep_band_badSet_card_of_residual`
+  (`#badSet ≳ min(C(n,t)/(qᵐ·n), q/const)`) — the wall is recalibrated, not
+  destroyed.

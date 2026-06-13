@@ -73,3 +73,13 @@ multiplicity-reduced to the named `ExplainableCoreSupply`
 2026-06-12); the single remaining statement — the sub-Johnson supply wall,
 quantitatively the classical RS list-size question — is tracked at **#389**
 with the reduction chain and both recorded attack routes.
+
+**2026-06-13 — the shallow supply is two-regime (the two-branch countermodel).**
+The universal mean-degree law (`Σ a_c ≤ 2n`) is REFUTED in Lean
+(`TwoBranchSupplyCountermodel.lean`, `universalMeanDegreeLaw_REFUTED`): the
+two-branch parabola word (`x²` on `A`, `x²+c` on `B`) is agreement-capped by
+theorem yet carries `428 > 2n = 160` mass at `(q,n) = (101,80)` — prime field,
+`n < q`, no subfield structure.  Corrected named targets:
+`CappedSupplyTwoRegimeLaw` (prime, calibrated `C₀ ≤ 1.91`, false over extension
+fields by subfield transport) and `SmoothDomainTwoRegimeLaw` (μ_n production
+form).  SS13 free-domain asymptotic red-team recorded.
