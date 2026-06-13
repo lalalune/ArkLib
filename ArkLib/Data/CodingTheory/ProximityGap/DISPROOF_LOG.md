@@ -8418,3 +8418,37 @@ honest worst case I could most fear) — the gating bad-scalar count holds with 
 margin at the computable frontier, and the only failure (the literal set-form) is a known
 overcount that re-statement fixes. The prize obligation sharpens to: prove the #bad-scalar
 deep-band bound for all n (the analytic core). Dossier: scripts/probes/genlaw/o165_census_demand/.
+
+### O172 — THE q-THRESHOLD + r=3 PROVEN FOR ALL n: production q is the deep-band WORST case (saturating envelope, char-0 supremum), and #bad(r=3)=n²(n−4)/32+1 ≤ K for all n — so O171's faithful evidence transfers to production; general r≥4 stays the open analytic core (nubs, 2026-06-13)
+
+Follow-on to O171. O171 showed CensusDomination's deep-band #bad-scalar count holds with
+margin at n=16 FAITHFUL prime; DeepBandSaturationDischarge shows it fails at small q. This
+resolves the q-threshold and the production-transfer question (Opus 4.8, adversarially
+verified 0.85, one wording fix applied).
+
+* **Production q is the WORST case, not a relief [MEASURED + envelope argument].** #bad(q) has
+  the char-0 algebraic count as its SUPREMUM — a *saturating envelope* (NOT monotone: the
+  small-q regime fluctuates, measured strict drops e.g. n=16 r=7 sweep 17,97,…,209,225 with
+  3 drops — corrects the workflow's initial "monotone" claim — but nothing exceeds char-0).
+  Below q\*=√C(n,r+1) the count is value-space-limited (#bad ≤ q−1) and CensusDomination fails
+  by pigeonhole (= DeepBandSaturationDischarge / O164 saturation). Above q\*, #bad = the fixed
+  char-0 count. So production q (2⁶⁴–2²⁵⁶, far above q\* for n ≤ ~512) REALIZES the char-0
+  worst case exactly ⟹ wherever char-0 #bad ≤ K, **production HOLDS** — O171's n=16/32 faithful
+  evidence transfers to production (resolving O171's open q-transfer worry).
+* **r=3 PROVEN for all n [PROVEN modulo landed A4 rigidity].** Exact closed form
+  **#bad(r=3) = n·C(n/4,2)+1 = n²(n−4)/32+1** (n=16→97, 32→897 full sweep, 64→7681, all match
+  O171), and ≤ K for ALL n by the exact integer identity K−#bad=(h−2)h(13h−16)/12−1>0 (h=n/2≥4,
+  margin→5.33×). Order-2 character line → parity-split collinearity → antipodal pair-product →
+  bad γ=−e₁ (in-tree Vieta pin); config count n·C(n/4,2) field-independent; distinctness =
+  PairSumRigidityModP.pair_sums_ne_modp (threshold 2ⁿ). First partial PROOF of the demand
+  bound (not just evidence).
+* **Honest scope:** r ≥ 4 OPEN — no clean closed form (divisor-dependent worst-case family:
+  x^{n/2} at r=3, x^{n/4} at r=4; counts non-monotone 97,145,89,113,225,104); general-r ≤ K
+  MEASURED only (n=16 all bands 2.46×–20.1×; n=32 r=3 5.0×, r=4 33×) = the ExcessCensusLaw
+  open analytic core. The literal alignable-SETS form stays FALSE (O171 overcount, retained).
+
+**Where it lands:** the census route to δ\* is alive at production and r=3-closed for all n; the
+worst case I most feared (production q amplifying the count) is the opposite — production q is
+the worst case but it's the char-0 value, which is ≤ K. The remaining prize obligation
+sharpens to ONE target: the general-r (r≥4) deep-band #bad-scalar bound (the analytic core,
+the swarm's Stepanov/Weil lane). Dossier: scripts/probes/genlaw/o172_qthreshold/.
