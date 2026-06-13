@@ -1703,6 +1703,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SumZeroSubsetsBound
 import ArkLib.Data.CodingTheory.ProximityGap.SumsetDistinctDissociation
 import ArkLib.Data.CodingTheory.ProximityGap.SuperCodeListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SupplyFoldInjection
+import ArkLib.Data.CodingTheory.ProximityGap.SupplyForcingLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.SupplyProfileDiagnostic
 import ArkLib.Data.CodingTheory.ProximityGap.SupplySizeProfile
 import ArkLib.Data.CodingTheory.ProximityGap.SurvivingTPrimeRetired

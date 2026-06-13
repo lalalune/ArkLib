@@ -128,7 +128,7 @@ theorem cubicCosetSupply_ge (dom : Fin n ↪ F) (τ : Fin n → Fin n) (ζ : F)
 
 section Mu6Tight
 
-local instance : Fact (Nat.Prime 7) := ⟨by norm_num⟩
+local instance factPrime7 : Fact (Nat.Prime 7) := ⟨by norm_num⟩
 
 /-- `μ_6 = F₇^×`. -/
 def cubeDom6vals : Fin 6 → ZMod 7 := ![1, 2, 3, 4, 5, 6]
@@ -155,7 +155,7 @@ end Mu6Tight
 
 section CubicSmallChar
 
-local instance : Fact (Nat.Prime 13) := ⟨by norm_num⟩
+local instance factPrime13 : Fact (Nat.Prime 13) := ⟨by norm_num⟩
 
 /-- `μ_{12} = F₁₃^×`. -/
 def dom12vals : Fin 12 → ZMod 13 := ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]

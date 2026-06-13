@@ -113,7 +113,7 @@ theorem evenTowerSupply_antipodal_ge (dom : Fin n ↪ F) (ν : Fin n → Fin n)
 
 section SmallCharCountermodel
 
-local instance : Fact (Nat.Prime 11) := ⟨by norm_num⟩
+local instance factPrime11 : Fact (Nat.Prime 11) := ⟨by norm_num⟩
 
 /-- `μ_{10} = F₁₁^×` (the full multiplicative group). -/
 def dom10vals : Fin 10 → ZMod 11 := ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
