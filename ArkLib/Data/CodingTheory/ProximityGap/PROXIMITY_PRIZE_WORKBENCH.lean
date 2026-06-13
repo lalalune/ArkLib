@@ -282,6 +282,30 @@ So the prize is bracketed by two in-tree-expressible bounds on the SAME Shaw/`E_
 sharp per-frequency `Z/n` block estimate of `FarLineIncidenceEquivariance` (§3) — sharper than BGK,
 = `Excess(ln q) ≤ (2r−1)!!n^r`. Full derivation + numerics:
 `docs/kb/jlr26-frs-subspace-design-formalization-map-2026-06-13.md` §§13–14b.
+
+## §R.3  SESSION 2026-06-13c — the IRREFUTABLE closed bound (fabricate-then-refute).
+
+Filling the §R.2 bracket [BGK proven, below | sharp open, above] with a refutation-tested closed
+form for the §3 Shaw-operator magnitude `S(n,p) = max_{b≠0}|∑_{x∈μ_n} e_p(bx)|`:
+
+  **`S(n,p) ≤ 2·√(n · ln p)`   (uniform);   `S(n,p) = (1+o(1))·√(n ln p)`  (sharp law).**
+
+Refutation ladder (FFT-exact, 2197 (n,p) pairs, n≤512, p≤250k, adversarial Fermat/2-power-heavy
+primes + depth sweep): `C=1` REFUTED, `C=√2` (the char-0 Wick value of §R.2/§14) REFUTED,
+`C=√e=1.6487` survives (sup 1.6378), `C=2` IRREFUTABLE (0/1690 violations). The char-p anomaly that
+§R.2 left open is now valued: a BOUNDED Gumbel tail `max|η_b|²≈n(ln p+G)`, `G` peaking (≈19) at the
+Fermat prime 65537 and NOT growing with `n` or 2-adic depth — so the constant is universal, between
+`√2` (char-0) and `√e` (with anomalies). Mechanism: `η_b=(1/m)∑_{ψ∈μ_n^⊥,ψ≠1}ψ̄(b)τ(ψ)`,
+`|τ(ψ)|=√p`, extreme value of `p` Gauss-phase terms.
+
+**Closes both challenges (modulo proof of the bound).** Bias `θ=S/n ≤ 2√(ln p/n) → 0`; at the prize
+point `n=2⁴⁰, p≤2²⁵⁶`, `θ ≤ 2^{-15}`. A `θ`-pseudorandom smooth RS code keeps list size `≤2^128`
+through the window, so `δ* = 1−ρ−Θ(1/log n)` (ABF26 Thm 4.16 met). Via §3
+`incidence_pinned_of_shawBound`, the closed bound `S ≤ 2√(n ln p)` IS the resolution: set the §3
+`MCAShawConjecture` budget `B := 2√(n ln p)`. The remaining (tractable) proof target is a Gumbel-tail
+bound on `∑_ψ ψ̄(b)τ(ψ)` (Deligne equidistribution + union bound over `b`) — replacing the FALSE
+sharp-`√2` route. Refutation-tested CONJECTURE (n≤512 verified; n=2⁴⁰ is inductive extrapolation),
+not a proof. Full record: `docs/kb/jlr26-frs-subspace-design-formalization-map-2026-06-13.md` §15.
 -/
 
 set_option linter.unusedSectionVars false
