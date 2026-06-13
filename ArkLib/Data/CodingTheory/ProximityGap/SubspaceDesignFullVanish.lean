@@ -77,7 +77,36 @@ theorem subspaceDesign_fullVanish_card_le {s : ℕ} {τ : ℕ → ℝ}
       _ = (r : ℝ) * (τ r * Fintype.card ι) := by rw [hrank]; ring
   exact le_of_mul_le_mul_left hcomb hrpos
 
+open Classical in
+/-- **Large union-support (dual form).** A dimension-`r` subspace `A ≤ C` of a `τ`-subspace-design
+is nonzero on at least `(1 − τ(r))·n` coordinates: at most `τ(r)·n` coordinates kill all of `A`.
+This is the form the list-decoding/pruning argument consumes (a small subspace is "spread out"). -/
+theorem subspaceDesign_support_card_ge {s : ℕ} {τ : ℕ → ℝ}
+    {C : Submodule F (ι → Fin s → F)} (h : IsSubspaceDesign s τ C)
+    {r : ℕ} (hr : 1 ≤ r) {A : Submodule F (ι → Fin s → F)} (hAC : A ≤ C)
+    (hrank : Module.finrank F A = r) :
+    ((1 - τ r) * Fintype.card ι : ℝ)
+      ≤ ((univ.filter (fun i : ι => ¬ (A ≤ LinearMap.ker
+          (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)))).card : ℝ) := by
+  have hfv := subspaceDesign_fullVanish_card_le h hr hAC hrank
+  have hsplit : (univ.filter (fun i : ι => A ≤ LinearMap.ker
+        (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i))).card
+      + (univ.filter (fun i : ι => ¬ (A ≤ LinearMap.ker
+        (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)))).card
+      = Fintype.card ι := by
+    rw [Finset.filter_card_add_filter_neg_card_eq_card]; exact Finset.card_univ
+  have hsplitℝ : ((univ.filter (fun i : ι => A ≤ LinearMap.ker
+        (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i))).card : ℝ)
+      + ((univ.filter (fun i : ι => ¬ (A ≤ LinearMap.ker
+        (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)))).card : ℝ)
+      = (Fintype.card ι : ℝ) := by exact_mod_cast hsplit
+  have hexp : (1 - τ r) * (Fintype.card ι : ℝ)
+      = (Fintype.card ι : ℝ) - τ r * Fintype.card ι := by ring
+  rw [hexp]
+  linarith [hfv, hsplitℝ]
+
 end ProximityGap
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.subspaceDesign_fullVanish_card_le
+#print axioms ProximityGap.subspaceDesign_support_card_ge
