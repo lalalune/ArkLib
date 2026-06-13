@@ -121,6 +121,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettInduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
 import ArkLib.Data.CodingTheory.GMMDS.LovettReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettUnion
+import ArkLib.Data.CodingTheory.GMMDS.LovettVStarReduce
 import ArkLib.Data.CodingTheory.GVCounting
 import ArkLib.Data.CodingTheory.GilbertVarshamov
 import ArkLib.Data.CodingTheory.GilbertVarshamovExistence
