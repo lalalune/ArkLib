@@ -677,6 +677,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedList
 import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedUD
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiber
+import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiberCodewordList
 import ArkLib.Data.CodingTheory.ProximityGap.ExactCoherenceCount
 import ArkLib.Data.CodingTheory.ProximityGap.ExactnessWithoutCoverability
 import ArkLib.Data.CodingTheory.ProximityGap.ExcessCensusLaw
