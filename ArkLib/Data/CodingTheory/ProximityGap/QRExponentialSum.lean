@@ -45,6 +45,34 @@ theorem chiC_apply (a : ZMod p) :
 theorem chiC_zero : chiC (0 : ZMod p) = 0 := by
   simp [chiC_apply, quadraticChar_zero]
 
+theorem ringChar_zmod_ne_two_of_two_lt (hp2 : 2 < p) :
+    ringChar (ZMod p) ≠ 2 := by
+  rw [ringChar.eq (ZMod p) p]
+  omega
+
+/-- The pushed quadratic character is nontrivial for odd prime fields. -/
+theorem chiC_ne_one (hp2 : 2 < p) : chiC (p := p) ≠ 1 := by
+  rw [chiC, Ne, MulChar.ringHomComp_eq_one_iff (f := Int.castRingHom ℂ)
+      (by exact_mod_cast Int.cast_injective)]
+  exact quadraticChar_ne_one (F := ZMod p) (ringChar_zmod_ne_two_of_two_lt hp2)
+
+/-- The pushed quadratic character is quadratic. -/
+theorem chiC_isQuadratic : (chiC (p := p)).IsQuadratic :=
+  (quadraticChar_isQuadratic (ZMod p)).comp _
+
+/-- The value of `χ` at `-1`, exposed in the `chiC` API. -/
+theorem chiC_neg_one (hp2 : 2 < p) :
+    chiC (p := p) (-1) = ((ZMod.χ₄ (p : ZMod 4) : ℤ) : ℂ) := by
+  rw [chiC_apply,
+    quadraticChar_neg_one (F := ZMod p) (ringChar_zmod_ne_two_of_two_lt hp2), ZMod.card]
+
+/-- The quadratic Gauss-sum square specialized to `chiC`. This is the exact algebraic input
+needed to evaluate the QR fourth-moment expression. -/
+theorem gaussSum_chiC_sq (hp2 : 2 < p) {ψ : AddChar (ZMod p) ℂ} (hψ : ψ.IsPrimitive) :
+    gaussSum (chiC (p := p)) ψ ^ 2 = chiC (p := p) (-1) * (p : ℂ) := by
+  simpa [ZMod.card] using
+    (gaussSum_sq (chiC_ne_one (p := p) hp2) chiC_isQuadratic hψ)
+
 theorem zero_not_mem_QR : (0 : ZMod p) ∉ QR p := by
   simp [QR, chiC_zero]
 
