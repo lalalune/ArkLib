@@ -469,7 +469,14 @@ theorem mca_badscalar_packing (Q0 : F[X]) (μ : Finset F) (k a : ℕ) (hka : k <
 /-- **Explicit form.** `#bad ≤ C(|μ|, k+1) / C(a, k+1)`. For `μ = μ_n` (`n = 2^μ`, `m=1`,
 `a = r+1`, `k+1 = r`) this is `C(n, r)/(r+1)`, which is `< 2^r·C(2^{μ-1}, r)` (the KKH26 budget)
 for the bulk of the range `r ≤ ~3n/8`, proving `CensusDomination` / the `δ*` pin there. The only
-residual is the top sliver `r → n/2`. -/
+residual is the top sliver `r → n/2`.
+
+**REGIME CAVEAT (verified, `scripts/probes/probe_packing_regime.py`).** This bound lands at the
+*supply* level, not the prize level. For prize-window `δ ∈ (1−√ρ, 1−ρ−Θ(1/log n))` the right side is
+`2^{Θ(n)}` (e.g. `log₂ ≈ 79` at `ρ=1/2, n=128`), exponentially above the prize budget `qε* = n`
+(`log₂ ≈ 7`). So this pins `δ*` in the W5 *supply strip* `(1−ρ−Θ(1/log n), 1−ρ)` — strictly ABOVE the
+window — NOT in the prize window. Reaching the prize `#bad ≤ n` needs the `2^{Θ(n)} → n` collapse =
+the W4 sub-exponential cancellation (open). A true bound that does not reach the prize regime. -/
 theorem mca_badscalar_packing_div (Q0 : F[X]) (μ : Finset F) (k a : ℕ) (hka : k < a) :
     (Finset.univ.filter (fun γ : F =>
         ∃ W : F[X], W.natDegree < k ∧
