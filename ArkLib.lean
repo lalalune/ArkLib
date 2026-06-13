@@ -120,6 +120,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettCombinatorial
 import ArkLib.Data.CodingTheory.GMMDS.LovettInduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
 import ArkLib.Data.CodingTheory.GMMDS.LovettReduction
+import ArkLib.Data.CodingTheory.GMMDS.LovettThm17Reduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettUnion
 import ArkLib.Data.CodingTheory.GMMDS.LovettVStarReduce
 import ArkLib.Data.CodingTheory.GVCounting
@@ -915,8 +916,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26CensusExact
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26CensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26CharZeroCollisionLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ConstrainedCensusLaw
-import ArkLib.Data.CodingTheory.ProximityGap.KKH26DeltaStarReduction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DeltaStarPinAllWitness
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26DeltaStarReduction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DimGeneralPin
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DimGeneralSharpInterleavedPin
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DimGeneralSharpPin
