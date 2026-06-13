@@ -247,6 +247,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTop
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTranslate
 import ArkLib.Data.CodingTheory.ListDecoding.UniqueDecodingPairwise
 import ArkLib.Data.CodingTheory.ListSizeVolumeBound
+import ArkLib.Data.CodingTheory.PlaneIncidenceBound
 import ArkLib.Data.CodingTheory.PlotkinBound
 import ArkLib.Data.CodingTheory.PlotkinBoundCard
 import ArkLib.Data.CodingTheory.PolishchukSpielman
@@ -1634,6 +1635,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowTwoLayerThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
+import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianNonVanishing
