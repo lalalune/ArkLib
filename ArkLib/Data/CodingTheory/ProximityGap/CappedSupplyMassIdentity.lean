@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.CorePartitionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.PopularCodewords
+import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # The capped-supply mass identity and the supply floor (#389)
@@ -318,9 +319,119 @@ theorem explainableCoreSupply_floor (dom : Fin n ↪ F) {k m B : ℕ}
   exact le_trans hw (le_trans
     (cappedSupply_le_explainable_card dom n (by omega) w) (hB w))
 
+/-! ## The exact witness-mass floor
+
+The mass sum collapses by Vandermonde absorption + the binomial theorem:
+`Σ_{j=t}^{n} C(n,j)(q−1)^{n−j}C(j,t) = C(n,t)·q^{n−t}`.  With `#code = q^k`
+(RS dimension, `k ≤ n`) the floor becomes exactly the witness mass
+`C(n,k+m+1)/q^{m+1}`. -/
+
+/-- **Vandermonde absorption + binomial theorem in ℕ**:
+`Σ_{j=t}^{n} C(n,j)(q−1)^{n−j}C(j,t) = C(n,t)·q^{n−t}`. -/
+theorem absorb_choose_sum (q n' t : ℕ) (hq : 1 ≤ q) (htn : t ≤ n') :
+    ∑ j ∈ Finset.range (n' + 1),
+        (if t ≤ j then n'.choose j * (q - 1) ^ (n' - j) * j.choose t else 0)
+      = n'.choose t * q ^ (n' - t) := by
+  rw [← Finset.sum_filter]
+  have hbij : ∑ j ∈ (Finset.range (n' + 1)).filter (fun j => t ≤ j),
+        n'.choose j * (q - 1) ^ (n' - j) * j.choose t
+      = ∑ i ∈ Finset.range (n' - t + 1),
+          n'.choose (t + i) * (q - 1) ^ (n' - t - i) * (t + i).choose t := by
+    refine Finset.sum_nbij' (fun j => j - t) (fun i => t + i) ?_ ?_ ?_ ?_ ?_
+    · intro j hj
+      simp only [Finset.mem_filter, Finset.mem_range] at hj
+      simp only [Finset.mem_range]; omega
+    · intro i hi
+      simp only [Finset.mem_range] at hi
+      simp only [Finset.mem_filter, Finset.mem_range]; omega
+    · intro j hj
+      simp only [Finset.mem_filter, Finset.mem_range] at hj
+      simp only []; omega
+    · intro i hi
+      simp only [Finset.mem_range] at hi
+      simp only []; omega
+    · intro j hj
+      simp only [Finset.mem_filter, Finset.mem_range] at hj
+      simp only []
+      have hjt : t + (j - t) = j := by omega
+      have hexp : n' - t - (j - t) = n' - j := by omega
+      rw [hjt, hexp]
+  rw [hbij]
+  have habs : ∀ i ∈ Finset.range (n' - t + 1),
+      n'.choose (t + i) * (q - 1) ^ (n' - t - i) * (t + i).choose t
+      = n'.choose t * ((n' - t).choose i * (q - 1) ^ (n' - t - i)) := by
+    intro i _
+    have hmul : n'.choose (t + i) * (t + i).choose t
+        = n'.choose t * (n' - t).choose (t + i - t) :=
+      Nat.choose_mul (Nat.le_add_right t i)
+    have ht' : t + i - t = i := by omega
+    rw [ht'] at hmul
+    calc n'.choose (t + i) * (q - 1) ^ (n' - t - i) * (t + i).choose t
+        = (n'.choose (t + i) * (t + i).choose t) * (q - 1) ^ (n' - t - i) := by ring
+      _ = (n'.choose t * (n' - t).choose i) * (q - 1) ^ (n' - t - i) := by rw [hmul]
+      _ = n'.choose t * ((n' - t).choose i * (q - 1) ^ (n' - t - i)) := by ring
+  rw [Finset.sum_congr rfl habs, ← Finset.mul_sum]
+  congr 1
+  have hbinom := add_pow (1 : ℕ) (q - 1) (n' - t)
+  rw [show (1 : ℕ) + (q - 1) = q from by omega] at hbinom
+  rw [hbinom]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [one_pow, one_mul, Nat.cast_id]
+  ring
+
+open Classical in
+/-- **THE EXACT WITNESS-MASS FLOOR**: with the RS dimension `#code = q^k` (true for
+`k ≤ n`, discharged by `rsCodeFinset_card`), the supply floor is exactly the witness
+mass:
+
+  `C(n, k+m+1) / q^{m+1} ≤ B`
+
+for any admissible `B` of `ExplainableCoreSupply dom k m B`.  Every evaluation domain,
+unconditionally: the named residual's `B` cannot beat the witness mass. -/
+theorem explainableCoreSupply_witness_floor (dom : Fin n ↪ F) {k m B : ℕ}
+    (hkn : k + m + 1 ≤ n)
+    (hcard : (codeFinset dom k).card = Fintype.card F ^ k)
+    (hB : ExplainableCoreSupply dom k m B) :
+    n.choose (k + m + 1) / (Fintype.card F) ^ (m + 1) ≤ B := by
+  classical
+  set q : ℕ := Fintype.card F with hq
+  have hq1 : 1 ≤ q := Fintype.card_pos
+  set t : ℕ := k + m + 1 with ht
+  have hfloor := explainableCoreSupply_floor dom hB
+  -- rewrite the inner sum: the `j ≤ n` condition is automatic on `range (n+1)`
+  have hsum : ∑ j ∈ Finset.range (n + 1),
+      (if t ≤ j ∧ j ≤ n
+        then n.choose j * (q - 1) ^ (n - j) * j.choose t else 0)
+      = ∑ j ∈ Finset.range (n + 1),
+          (if t ≤ j then n.choose j * (q - 1) ^ (n - j) * j.choose t else 0) := by
+    refine Finset.sum_congr rfl fun j hj => ?_
+    have hjn : j ≤ n := by simp only [Finset.mem_range] at hj; omega
+    by_cases h : t ≤ j
+    · simp [h, hjn]
+    · simp [h]
+  rw [hsum, absorb_choose_sum q n t hq1 hkn] at hfloor
+  rw [hcard] at hfloor
+  -- q^k · (C(n,t)·q^{n−t}) / q^n = C(n,t)/q^{m+1}
+  have hsplit : q ^ k * (n.choose t * q ^ (n - t)) / q ^ n
+      = n.choose t / q ^ (m + 1) := by
+    have hpow : q ^ k * (n.choose t * q ^ (n - t))
+        = (n.choose t) * q ^ (n - (m + 1)) := by
+      rw [show n - (m + 1) = k + (n - t) from by omega, pow_add]
+      ring
+    have hqn : q ^ n = q ^ (m + 1) * q ^ (n - (m + 1)) := by
+      rw [← pow_add]
+      congr 1
+      omega
+    rw [hpow, hqn]
+    rw [Nat.mul_div_mul_right _ _ (pow_pos hq1 (n - (m + 1)))]
+  rw [hsplit] at hfloor
+  exact hfloor
+
 end ProximityGap.PairRank
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
+#print axioms ProximityGap.PairRank.absorb_choose_sum
+#print axioms ProximityGap.PairRank.explainableCoreSupply_witness_floor
 #print axioms ProximityGap.PairRank.agreeSet_fiber_card
 #print axioms ProximityGap.PairRank.sum_g_agreeSet_card
 #print axioms ProximityGap.PairRank.cappedSupply_mass_identity
