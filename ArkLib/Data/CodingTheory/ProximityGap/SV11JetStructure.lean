@@ -116,6 +116,46 @@ theorem sv11_combination_hasseDeriv_eval_zero {D B M : ℕ} (c y : F) (t : ℕ) 
   have hp2 : p.2 < M := lt_of_le_of_lt (by rw [Finset.mem_antidiagonal] at hp; omega) hi
   rw [hmom a p.2 hp2, mul_zero]
 
+/-- **Free order-`M` vanishing for arbitrary `x`-exponents.** The generalized rank-deficiency vanishing
+(`sv11_combination_hasseDeriv_eval_zero`) re-parametrized so the `x`-layer uses arbitrary exponents
+`m a` rather than `a` itself — exactly the form needed for the sharp `DB²` family (`m a = a'+t·b₀`,
+matching `sv11_family_indep`). The moment conditions are unchanged (they range over `b`); the exponent
+`m a` is simply carried through the jet formula. -/
+theorem sv11_combination_hasseDeriv_eval_zero_exp {D B M : ℕ} (c y : F) (t : ℕ) (m : ℕ → ℕ)
+    (coef : ℕ → ℕ → F) (h : (y - c) ^ t = 1) (hcy : y ≠ c)
+    (hmom : ∀ a, ∀ k, k < M → ∑ b ∈ Finset.range B, coef a b * ((t * b).choose k : F) = 0)
+    {i : ℕ} (hi : i < M) :
+    (hasseDeriv i (∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+        Polynomial.C (coef a b) * sv11Gen c t (m a, b))).eval y = 0 := by
+  have hne : (y - c) ^ i ≠ 0 := pow_ne_zero i (sub_ne_zero.mpr hcy)
+  refine (mul_eq_zero.mp ?_).resolve_right hne
+  have hlin : (hasseDeriv i (∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+        Polynomial.C (coef a b) * sv11Gen c t (m a, b))).eval y
+      = ∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+          coef a b * (hasseDeriv i (sv11Gen c t (m a, b))).eval y := by
+    rw [map_sum, eval_finset_sum]
+    refine Finset.sum_congr rfl (fun a _ => ?_)
+    rw [map_sum, eval_finset_sum]
+    refine Finset.sum_congr rfl (fun b _ => ?_)
+    rw [← smul_eq_C_mul, map_smul, smul_eq_C_mul, eval_C_mul]
+  rw [hlin, Finset.sum_mul]
+  refine Finset.sum_eq_zero (fun a _ => ?_)
+  rw [Finset.sum_mul]
+  have hb : ∀ b ∈ Finset.range B,
+      coef a b * (hasseDeriv i (sv11Gen c t (m a, b))).eval y * (y - c) ^ i
+        = ∑ p ∈ Finset.antidiagonal i,
+            (((m a).choose p.1 : F) * y ^ (m a - p.1) * (y - c) ^ p.1)
+              * (coef a b * ((t * b).choose p.2 : F)) := by
+    intro b _
+    rw [mul_assoc, sv11Gen_hasseDeriv_eval_mul c y (m a) b i h, Finset.mul_sum]
+    refine Finset.sum_congr rfl (fun p _ => ?_)
+    ring
+  rw [Finset.sum_congr rfl hb, Finset.sum_comm]
+  refine Finset.sum_eq_zero (fun p hp => ?_)
+  rw [← Finset.mul_sum]
+  have hp2 : p.2 < M := lt_of_le_of_lt (by rw [Finset.mem_antidiagonal] at hp; omega) hi
+  rw [hmom a p.2 hp2, mul_zero]
+
 end ProximityGap.BinomialDet
 
 
@@ -123,3 +163,4 @@ end ProximityGap.BinomialDet
 #print axioms ProximityGap.BinomialDet.hasseDeriv_X_sub_C_pow_eval
 #print axioms ProximityGap.BinomialDet.sv11Gen_hasseDeriv_eval_mul
 #print axioms ProximityGap.BinomialDet.sv11_combination_hasseDeriv_eval_zero
+#print axioms ProximityGap.BinomialDet.sv11_combination_hasseDeriv_eval_zero_exp
