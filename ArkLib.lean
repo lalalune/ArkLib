@@ -127,6 +127,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettInduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma22
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma24
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma2456
+import ArkLib.Data.CodingTheory.GMMDS.LovettLemma24Finish
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25Opening
 import ArkLib.Data.CodingTheory.GMMDS.LovettMeetReplace
@@ -1341,6 +1342,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedPairingCount
+import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedPairingLifting
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedWalkBound
 import ArkLib.Data.CodingTheory.ProximityGap.NewtonPowerSumWindow
 import ArkLib.Data.CodingTheory.ProximityGap.NoJohnsonSidonBound
