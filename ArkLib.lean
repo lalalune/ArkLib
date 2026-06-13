@@ -1346,6 +1346,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegComplex
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
+import ArkLib.Data.CodingTheory.ProximityGap.SinglePencilQIndependence
 import ArkLib.Data.CodingTheory.ProximityGap.Slack1Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.SlantedSupplyWideCircuits
 import ArkLib.Data.CodingTheory.ProximityGap.SlantedTransferThreshold
