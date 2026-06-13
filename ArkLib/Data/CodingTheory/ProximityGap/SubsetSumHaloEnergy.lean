@@ -81,8 +81,40 @@ theorem subsetSum_energy_gt_of_card_lt (x : Fin N → F)
     rw [show (4 : ℕ) = 2 * 2 from rfl, mul_pow]
   omega
 
+/-- **The subset-sum energy is always `≥ 2^N`** (the diagonal/no-collision floor).
+Since `r(v) ≤ r(v)²` pointwise and `∑_v r(v) = 2^N`, the energy never drops below `2^N`. -/
+theorem two_pow_le_subsetSum_energy (x : Fin N → F) :
+    2 ^ N ≤ ∑ v : F, (subsetSumRep x v) ^ 2 := by
+  rw [← sum_subsetSumRep x]
+  exact Finset.sum_le_sum (fun v _ => Nat.le_self_pow (by norm_num) _)
+
+/-- **The halo vanishes EXACTLY when the subset-sums are distinct.**  The subset-sum energy
+equals its floor `2^N` iff every value has at most one representing subset — i.e. the sums
+`{∑_{j∈A} x_j : A ⊆ [N]}` are all distinct (no collision).  Combined with
+`subsetSum_energy_gt_of_card_lt` (`|F| < 2^N ⟹ energy > 2^N`), this pins the wall precisely:
+the census halo is empty (so the past-Johnson pin `δ* = 1−r/2^μ` is valid) **iff** the geometric
+sequence `{g^j}` is Sidon for subset sums — automatic above `p ≳ 2^N`, provably violated below. -/
+theorem subsetSum_energy_eq_two_pow_iff (x : Fin N → F) :
+    (∑ v : F, (subsetSumRep x v) ^ 2) = 2 ^ N ↔ ∀ v : F, subsetSumRep x v ≤ 1 := by
+  rw [← sum_subsetSumRep x, eq_comm,
+    Finset.sum_eq_sum_iff_of_le (fun v _ => Nat.le_self_pow (by norm_num) _)]
+  constructor
+  · intro h v
+    have hv := h v (Finset.mem_univ v)
+    rw [pow_two] at hv
+    rcases Nat.lt_or_ge (subsetSumRep x v) 2 with h' | h'
+    · omega
+    · exfalso
+      have hmul : 2 * subsetSumRep x v ≤ subsetSumRep x v * subsetSumRep x v :=
+        Nat.mul_le_mul_right (subsetSumRep x v) h'
+      omega
+  · intro h v _
+    rcases Nat.le_one_iff_eq_zero_or_eq_one.mp (h v) with h' | h' <;> simp [h']
+
 end ArkLib.ProximityGap.SubsetSumHalo
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.SubsetSumHalo.four_pow_le_card_mul_subsetSum_energy
 #print axioms ArkLib.ProximityGap.SubsetSumHalo.subsetSum_energy_gt_of_card_lt
+#print axioms ArkLib.ProximityGap.SubsetSumHalo.two_pow_le_subsetSum_energy
+#print axioms ArkLib.ProximityGap.SubsetSumHalo.subsetSum_energy_eq_two_pow_iff
