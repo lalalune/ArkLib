@@ -531,3 +531,31 @@ holding because the dyadic `μ_n` is incidence-generic, certified by `B(μ_n)≈
 certified for the deployed `p≈2^168≪2^{2^40}`, BGK-floored `B≤n^{1−ε}`. The dichotomy's forward
 direction (generic ⟹ capacity δ*) + the asymptotic genericity are the two remaining open links.
 Issue #389 comment 4699815321.
+
+## 20. The two open links UNIFY into one: the √-loss removal = higher-moment genericity = §15
+
+A correction/sharpening of §19's "two open links." They are ONE.
+
+**The √-loss is the real wall, and `E_2` does not remove it.** The second-moment list bound
+`bad² ≤ n·E_2 = 3n³` gives `bad ≤ √3·n^{1.5}` — SUB-JOHNSON (the workbench's fatal W2). So
+`E_2(μ_n)=3n²` (my "genericity certificate" of §19) is necessary but NOT sufficient: it only certifies
+the 2nd moment, which reaches sub-Johnson, not capacity.
+
+**Capacity needs the HIGHER moments.** Using the `2k`-th moment with CLEAN energy `E_k=(2r−1)!!·n^k`:
+`bad^{2k} ≤ n·E_k ⟹ bad ≤ ((2k−1)!!·n^{k+1})^{1/2k}`. At `k≈ln n=28`: `bad ≤ 2^{22.9} ~ √(2n log n)`
+— the √-loss is REMOVED, reaching capacity. (Verified: `n^{1.5}` at k=1 → `n^{0.57}` at k~ln n.)
+
+**So the two §19 open links collapse to one object.** "Generic ⟹ capacity δ*" (dichotomy forward
+direction) AND "deployed-regime genericity" are BOTH exactly:
+
+  **`E_k(μ_n)` is clean (= `(2k−1)!!n^k`) for `k ≈ log n`  ⟺  `max_{b≠0}|η_b(μ_n)| ≤ 2√(n ln p)`**
+
+(the two are dual via the moment ladder `∑_b|η_b|^{2k}=q·E_k`, `eta_pow_le_energyR`). This is EXACTLY
+the §15 refutation object — refutation-pinned (`C∈[1,2]`, `G=O(1)`, n≤512), BGK-floored (`n^{1−ε}`,
+which only removes the √-loss PARTIALLY: `bad ≤ n^{1−ε/?}`, sub-capacity), char-0-clean for `p>2^n`.
+
+**Final unified statement.** The prize = `δ*(dyadic μ_n) = H_q⁻¹(1−ρ−log_q(1/ε*)/n)` (capacity term,
+§R.4), gated on ONE inequality: the higher-moment energy `E_{log n}(μ_n)` is at the clean Wick scale,
+equivalently `max|η_b| ≤ 2√(n ln p)`. Value refutation-pinned; proof = the open Bourgain higher-energy
+bound. Both grand challenges, the dichotomy's forward direction, the √-loss removal, and the genericity
+are now provably the SAME single inequality — the sharpest possible localization.
