@@ -8320,3 +8320,26 @@ additive-energy / explicit-RS sub-Johnson 25-year open problem); #3 CLOSED (O166
 `PinBeyondJohnson.lean`, landed theorem). Reduction re-audits clean (O165); dossier
 current (#371). The residual is now EXACTLY the named classical open problem — nothing
 further to honestly add without solving it.
+
+### O168 — O163 "energy silent at prize scale" is now a CHECKED conditional theorem (nubs, 2026-06-13, goal clause 3)
+
+O163 stated only in PROSE that the GV/Stepanov additive-energy bound makes the cubic/energy
+supply silent at prize scale. Now a theorem (`CubicSupplySilentPrizeScale.lean`, axiom-clean
+[propext,Classical.choice,Quot.sound], independently compiled + single-module build green):
+
+* `cubicSupply_silent_at_prize_scale` — under `GVRepBound (image dom univ) M` (the in-tree
+  integer-clean form of the cited GV/Stepanov `E(μ_n) ≲ n^{8/3}`, kept as a NAMED HYPOTHESIS,
+  never asserted — the TZPrimeSupply pattern) and `n ≤ 2^40` (prize domain bound), the cubic
+  word's explainable-3-core supply `S` satisfies `S < 2^128 = ε*·q`. The energy/cubic
+  mechanism CANNOT breach the prize threshold — it is silent.
+* `gv_supply_envelope_lt` — the bare numeric kernel `260·(2^40)^11 < (2^128)^6` (norm_num).
+* Proof = the landed capstone `cubicSupply_pow_le_of_gvRepBound` (`S^6 ≤ 260·n^11`) +
+  monotonicity in n≤2^40 + the envelope + strict monotonicity of x↦x^6 (`lt_of_pow_lt_pow_left₀`).
+  Margin huge: proven supply ≈ 2^74.7 ≪ 2^128 (O163's prose ≈2^85 was a loose over-estimate).
+
+HONEST SCOPE (goal clause 3 compliant): the GV energy bound is a HYPOTHESIS, never asserted
+— this does NOT prove the energy bound (that's the open Stepanov/additive-energy input). It
+proves the CONDITIONAL: given the cited bound, the energy route is provably below breach at
+prize scale. Strengthens the dossier — the "energy mechanism is silent" leg of the
+δ*-residual map is now checked, not prose. Found via Opus-4.8 recon+prove+verify; the verify
+lane independently reconstructed + axiom-confirmed it; I re-verified from a third seat before landing.
