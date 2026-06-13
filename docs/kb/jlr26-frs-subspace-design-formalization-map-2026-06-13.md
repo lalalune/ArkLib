@@ -559,3 +559,31 @@ which only removes the √-loss PARTIALLY: `bad ≤ n^{1−ε/?}`, sub-capacity)
 equivalently `max|η_b| ≤ 2√(n ln p)`. Value refutation-pinned; proof = the open Bourgain higher-energy
 bound. Both grand challenges, the dichotomy's forward direction, the √-loss removal, and the genericity
 are now provably the SAME single inequality — the sharpest possible localization.
+
+## 21. Literature confirmation + the precise proof structure (off-diagonal Jacobi-moment cancellation)
+
+**Web + disk search (2026) confirms the gating inequality `max|η_b(μ_n)| ≤ 2√(n ln p)` is genuinely
+open**, not a known result I overlooked. The state of the art for subgroup character sums:
+  · Pólya–Vinogradov: `√q log q` (intervals, not subgroups).
+  · Weil/Gauss: `max_a|∑_{x∈H}ψ(ax)| ≤ (|H|−1)√p` — trivial in the prize regime.
+  · Completion: `≤ √p` — trivial (`√p > n` for `p>n²`).
+  · BGK / Bourgain–Glibichuk–Konyagin (arXiv 0705.4573, 1401.4618, 1712.00761): power-saving
+    `|H|^{1−ε}` for `|H|>p^δ` — the PROVEN floor I use, NOT sharp.
+The sharp `√(n log p)` (optimal constant, log factor) is the open frontier — exactly the prize kernel.
+
+**The precise proof structure (why it's open).** Via the Gauss-sum DFT, `η_b = T(b)/m`,
+`T(c)=∑_{ψ≠1}ψ̄(c)τ(ψ)` (DFT over `Z/m`, `m=(p−1)/n`, `|τ(ψ)|=√p`). The `2k`-th moment is EXACT:
+  `∑_c|T(c)|^{2k} = m·∑_{∑j≡∑j' (mod m)} ∏_i τ(ψ_{j_i})·∏_i τ̄(ψ_{j'_i})`.
+  · **Diagonal** (`{j'}` a permutation of `{j}`): `∏|τ|² = p^k > 0`, sums to `≈ m·k!·(mp)^k`, giving
+    via `max ≤ (∑)^{1/2k}` at `k≈ln m` exactly **`max|η_b| ≤ √(n ln p)`** — the bound.
+  · **Off-diagonal**: by Hasse–Davenport `∏τ(ψ_{j_i}) = (∏ Jacobi sums)·τ(ψ^{∑ j_i})`, each term is a
+    product of unimodular Jacobi-sum phases (`|J|=√p`). Triangle inequality gives only the TRIVIAL
+    `√p`; the bound needs the off-diagonal to be `o(diagonal)` — a **power-saving in a combinatorial
+    average of Jacobi sums**, STRICTLY stronger than Deligne/Katz equidistribution (which controls
+    each `J` but not the constrained sum). This cancellation is the open kernel; the refutation
+    (`max|η_b|≈√(n ln p)`, `G=O(1)`) is direct evidence it holds, but no proof exists.
+
+So the prize, fully localized: `δ* = H_q⁻¹(1−ρ−log_q(1/ε*)/n)` (capacity term), gated on the
+off-diagonal Jacobi-moment cancellation `⟺ max|η_b| ≤ 2√(n ln p) ⟺ E_{log n}(μ_n)` clean. Value
+refutation-pinned; BGK-floored; literature-confirmed open. Sources: arXiv 0705.4573, 1401.4618,
+1712.00761 (BGK power-saving); Pólya–Vinogradov; Hasse–Davenport; Deligne/Katz equidistribution.
