@@ -452,6 +452,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIJointProximity
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
 import ArkLib.Data.CodingTheory.ProximityGap.BelowUDRPuncture
 import ArkLib.Data.CodingTheory.ProximityGap.BestProvableBracket
+import ArkLib.Data.CodingTheory.ProximityGap.BinomialMatrixDet
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardLatticeSlice
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
@@ -925,7 +926,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.LamLeungMultisetAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSpanTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSquarefreeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPow
-import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPower
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalQ
 import ArkLib.Data.CodingTheory.ProximityGap.Lattice
@@ -1278,9 +1278,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetInvariance
+import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalVanish
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountEnergyNfold
-import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusInvariance
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountShiftedPower
 import ArkLib.Data.CodingTheory.ProximityGap.ResidualModularReduction
@@ -1376,7 +1376,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop37
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop38
 import ArkLib.Data.CodingTheory.ProximityGap.StructuredLineCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.StructuredSupplyViaCollapse
-import ArkLib.Data.CodingTheory.ProximityGap.StructuredWordCores
 import ArkLib.Data.CodingTheory.ProximityGap.SubCeilingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonCorradiEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListBound
