@@ -3,6 +3,13 @@
 All requested IACR-blocked + paywalled papers are now in `~/papers/arklib/` with proper names
 (**100 PDFs total**). **Nothing outstanding.**
 
+
+## ⬜ NEW REQUEST (the precise near-capacity upper-bracket paper)
+
+| # | paper | id | URL | save as |
+|---|---|---|---|---|
+| 14 | **"Failure of proximity gaps close to capacity"** — IACR twin of Kambiré arXiv 2604.09724 (on disk); the subgroup-r-fold-sumset upper-bracket construction over smooth domains; uses "a new additive-combinatorics lemma on sums of roots of unity" (= the SubsetSumHalo distinctness). May contain a matching LOWER bound. | IACR ePrint **2026/782** | https://eprint.iacr.org/2026/782.pdf | `eprint-2026-782-FailureNearCapacity.pdf` |
+
 ## ⬜ ONE NEW REQUEST (surfaced from ABF26 §4.4 citation)
 
 | # | paper | id | URL | save as |
