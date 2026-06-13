@@ -226,3 +226,24 @@ The impossibility map forces a non-moment method; this is the first that fits th
 - Poonen–Rubinstein / arXiv **2008.11268** classifying minimal vanishing sums — the input bound.
 ALSO (crypto-side, confirms NOT above Johnson — do NOT chase as a lever): Haböck **eprint 2025/2110**
 (MCA = ordinary CA up to Johnson via Guruswami–Sudan), **2025/2051** (all-poly-generators MCA).
+
+## δ* OPEN-CORE reading list addendum — 2026-06-13c (state-of-the-art subgroup-sum bounds; the BGK→Burgess gap)
+
+Independent literature re-confirmation (fleet already has the state-of-the-art Di Benedetto bound in
+`deltastar-literature-findings-2026-06-13.md`). The prize core `max_c|Σ_{x∈μ_n}e_p(cx)| ≤ n^{1/2+o(1)}`
+at `n~p^{1/4}` is OPEN; the best PUBLISHED bound is the BGK-family power-saving:
+- **Di Benedetto–Garaev–García–González-Sánchez–Shparlinski–Trujillo (2020, arXiv 2003.06165)**:
+  `n^{1−31/2880+o(1)}` for `n>p^{1/4}` — `δ≈0.0108`, vs the prize-needed `δ=1/2`. This is the SOTA and
+  the precise distance to the prize: ~45× in the power-saving exponent. No √-cancellation exists.
+3 papers NEW to catalog (on-topic additive-combinatorics/char-sum; NONE a √-cancellation breakthrough):
+
+| # | paper | id | URL | bearing on the core |
+|---|---|---|---|---|
+| S1 | **Restricted sumsets in multiplicative subgroups** | arXiv **2309.10950** | https://arxiv.org/abs/2309.10950 | restricted/structured sumsets inside μ_n — the additive structure governing the energy/excess; check vs the antipodal/Lam-Leung characterization. |
+| S2 | **Structure theory of set addition with two operations** (2026) | arXiv **2601.12457** | https://arxiv.org/abs/2601.12457 | sum-product / two-operation structure — the engine class behind BGK; whether its newest form sharpens the subgroup power-saving. |
+| S3 | **Mixed character sums modulo prime powers** (2026) | arXiv **2604.02614** | https://arxiv.org/abs/2604.02614 | mixed (additive×multiplicative) char sums; prize is mod prime but the amplification technique may transfer to the subgroup case. |
+
+**Honest scope:** these are leads on the BGK→Burgess gap, NOT a closure. The published SOTA
+(`n^{1−1/2880}`) confirms the prize's `n^{1/2}` cancellation is a recognized open problem with no
+current solution; every moment-method route is ruled out (`deltastar-moment-method-convergence-diagnosis`),
+and the only non-moment hope is a Stepanov/Burgess amplification that does not yet exist.
