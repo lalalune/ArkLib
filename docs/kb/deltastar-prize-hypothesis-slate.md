@@ -113,3 +113,27 @@ the candidate map on μ_n vs degree, testing whether the conjectured
 `O(D + n/log n)` saving is even true before attempting the abc-style proof.
 If collisions are `Θ(n)` (no saving), N1 is refuted and the window-interior
 list is genuinely large (negative). If `o(n)`, there is a real target.
+
+## Top-pick attack result (N1/S3): the collision saving is not cheaply measurable
+
+`probe_prize_collision.py` (n up to 1024, smooth μ_n vs generic domain):
+ALL value-multiplicity counts are 0 in the window — because a fixed
+small-degree map takes each value ≤ deg times, so no value reaches the
+window radius `a = Θ(n)`. The fix (map degree `Θ(n)`, matching constant-rate
+codewords) makes "count high-multiplicity values" EXACTLY the open
+list-decoding question — no cheap proxy. **N1's conjectured `O(D+n/log n)`
+collision saving cannot be measured at small degree, and at the needed
+degree it is the wall.** Smooth-vs-generic showed no difference at small
+degree (both 0), so no structural-inflation signal is cheaply visible either.
+
+**Cycle conclusion (honest).** The full directive loop is complete: research
+→ 9-hypothesis slate (3 reasonable / 3 novel / 3 synthetic) → dual rankings →
+attack top pick (N1/S3) → all routes reduce to one of {Johnson (forbidden),
+the sub-√q incomplete-sum open face, or the proven exponential supply}. No
+entry clears 9/10 feasibility because that bar IS the prize. No winning
+conjecture was found; none was fabricated. The prize core (constant-rate
+window-interior list size for explicit smooth dyadic RS) is the genuine
+~25-year wall, computationally unreachable at constant rate, and every
+cheap proxy either misses the regime or reduces to the open question. The
+realistic paths forward require either new literature technique (P1–P5, to
+fetch) or a genuine mathematical breakthrough — not more probing.
