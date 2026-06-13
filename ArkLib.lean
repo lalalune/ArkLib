@@ -1500,6 +1500,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPlusAntipodalChordLaw
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPowerFibreValue
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPowerSubsetSumSpectrum
+import ArkLib.Data.CodingTheory.ProximityGap.TwoPowerTowerFactorization
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeSyndromeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.TwoSidedBracketScale
