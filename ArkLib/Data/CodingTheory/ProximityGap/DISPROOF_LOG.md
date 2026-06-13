@@ -8115,3 +8115,26 @@ shows is not the obvious construction. No fabricated closure; H-MAX remains the 
 
 **Caveat:** small-scale, `max-over-40-random` is a weak lower bound on the true max (could be far
 larger); this strengthens, not weakens, the refutation (even a weak search beats the construction).
+
+### O162 — H-MAX (extremal middle-band list) ↔ subset-sum fibres ↔ additive energy: the loop closes (2026-06-13)
+
+Refined Conjecture J' (coset/power-word extremal in the MIDDLE band t=k+m+1, the prize regime,
+not the sub-Johnson regime O161 tested). Probe (`probe_midband_extremal.py`, F₁₇, n=16, k=4, full
+exact enumeration of all 17⁴ codewords):
+- `t=5`: `L(x⁵)=256` BEATS random (max 167) — but `x⁵`'s list = `#{5-subsets of μ_n summing to 0}`
+  (the e₁=0 fibre), and μ₁₆=F₁₇^× is the FULL group where sum-zero subsets are abundant.
+- `t=6`: `L(x⁶)=32` > random 21 (same mechanism, e₁=e₂=0 fibre).
+- `t=7`: `L(x⁷)=0` < random 6 (4∤7, coset construction degenerate).
+
+**The closure (why this ends the direct attack):** the power-word list IS the subset-sum fibre
+count `#{t-subsets with e₁..e_{t−k}=0}`. So the extremal-list question (H-MAX) is the subset-sum
+fibre question, which is governed by the additive structure of μ_n — i.e. by `E_Fp(μ_n)` and the
+SidonModNeg threshold. For the FULL group (abundant sum-zero subsets) the power word is extremal;
+for a PROPER SidonModNeg subgroup (the prize, sum-zero subsets rare) it collapses to ~0 (cf. O161
+t=3). Therefore **H-MAX, the subset-sum fibre supply, and `E=O(n²)` are the SAME irreducible core**
+— every direct route to δ* (energy front, capacity-edge front, extremal-list front) lands here.
+
+Conjectures refuted/closed this campaign: E'' (O160), J (O161), J' (O162) + the swarm's 6 bypasses
+of E≤Cn². The δ* residual-free target is equivalent to the multiplicative-subgroup additive-energy
+conjecture `E_Fp(μ_n)=n^{2+o(1)}` (best known n^{2.44}, Shkredov) — a recognized open problem.
+No fabricated closure.
