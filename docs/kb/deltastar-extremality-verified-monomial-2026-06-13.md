@@ -64,3 +64,42 @@ proven in general).
 **Honest status:** still not a full closure — (b) "monomials worst" is the load-bearing open piece
 (it is the `B(μ_n)` character-sum bound, genuinely hard). But the *combinatorial heart* of
 extremality is now verified and half-proven, and the open part is sharply localized. No fabrication.
+
+## 6. STRESS-TEST at larger m — extremality SURVIVES (8 more cases, 15 total)
+Larger `m` widens the gap between the constrained frequencies `{1..2m−1}` and all of `Z/n`, so extra
+non-coset subsets are most likely there. They do **not** appear:
+
+| (s,m,r) | n | #pattern | C(s,r) | extremal? |
+|---|---|---|---|---|
+| (3,4,2) | 12 | 3 | 3 | ✅ |
+| (4,4,2) | 16 | 6 | 6 | ✅ |
+| (5,3,2) | 15 | 10 | 10 | ✅ |
+| (3,5,2) | 15 | 3 | 3 | ✅ |
+| (4,3,3) | 12 | 4 | 4 | ✅ |
+| (3,4,1),(2,4,1),(4,4,1) | — | =C(s,r) | | ✅ |
+
+**15/15 cases extremal, `m` up to 5.** The construction is extremal among monomial directions at all
+tested scales.
+
+## 7. The DFT-rigidity lemma + a proof handle (the remaining converse)
+Index `μ_n=⟨ω⟩`; a subset `S` ↔ indicator `a∈{0,1}^{Z/n}`, `p_j(S)=â(−j)`. Pattern ⟺ `â(j)=0` for
+`j∈{1..2m−1}\{m}`. **Coset-union ⟺ `â(j)=0` for ALL `j∉mℤ`.** So the lemma is:
+> **A 0/1 vector `a` on `ℤ/n` (`n=sm`, `|a|=rm`) with `â(j)=0` on `{1..2m−1}\{m}` is `s`-periodic.**
+
+**Handle (fiber-DFT factorization):** writing `t=u+sl` (`u∈ℤ/s`, `l∈ℤ/m`) and `â_u` for the `m`-point
+DFT of fiber `u`'s indicator,
+```
+   â(j) = Σ_{u∈ℤ/s} ω^{−ju} · â_u(j mod m).
+```
+Coset-union ⟺ every `â_u` is pure-DC (`â_u(c)=b_u·[c=0]`). The pattern forces `Σ_u ω^{−ju} â_u(c)=0`
+for the low non-DC frequencies `c`; the `0/1`-rigidity (each fiber indicator is itself 0/1, `Σ=b_u`)
+must then propagate this to *all* frequencies. Proving this propagation is the open lemma — now a
+clean, self-contained statement in discrete Fourier analysis of 0/1 vectors, **not** coding theory.
+
+## 8. Honest feasibility (unchanged at 8, not inflated)
+Monomial extremality is now **robustly verified (15 cases) + forward-proven + reduced to a clean DFT
+lemma with a concrete handle**. BUT the full `δ*` closure still needs **(b) "monomials are the worst
+far direction"** — equivalently the worst-case Gaussian-period bound `B(μ_n)=Θ(√(n log(q/n)))` (the
+sibling Shaw-operator reduction). That is the genuinely hard, still-open piece (a Bourgain-regime
+incomplete-character-sum bound). So feasibility stays **8**: the combinatorial heart is nearly closed,
+but the analytic core (b) is open. No fabrication — (b) is not solved.
