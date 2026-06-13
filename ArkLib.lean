@@ -298,6 +298,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyThreeDvd
 import ArkLib.Data.CodingTheory.ProximityGap.AdjacentPairDepthOneClean
 import ArkLib.Data.CodingTheory.ProximityGap.AffineBlockKernels
 import ArkLib.Data.CodingTheory.ProximityGap.AffinePlaneSharpness
+import ArkLib.Data.CodingTheory.ProximityGap.AffineSubspaceCardBound
 import ArkLib.Data.CodingTheory.ProximityGap.AgreementMomentOne
 import ArkLib.Data.CodingTheory.ProximityGap.AgreementMomentTwo
 import ArkLib.Data.CodingTheory.ProximityGap.AllRatesJohnsonInstances
