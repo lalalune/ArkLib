@@ -740,6 +740,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GenericFarPin
 import ArkLib.Data.CodingTheory.ProximityGap.GenericFarSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.GranularityLadderRS
+import ArkLib.Data.CodingTheory.ProximityGap.GridSupplyRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AffineCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25BranchDichotomy
@@ -1137,6 +1138,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
+import ArkLib.Data.CodingTheory.ProximityGap.NodalSupplyWitness
 import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.O11StructureLoop48
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry

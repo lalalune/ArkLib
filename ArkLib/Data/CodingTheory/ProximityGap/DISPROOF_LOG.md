@@ -7839,3 +7839,39 @@ exact-solution target is the **two-phase law** `E_max(μ_n) = Θ_{k,m}(n + C(n,t
 — arithmetic/fibre families rule `q ≫ n`, generic density rules `n = Θ(q)`, and any
 positive proof must use BOTH the additive-unstructuredness of `μ_n` (Frobenius entry)
 AND the field-size hypothesis (this entry).
+## 2026-06-12 — the sub-Johnson supply curve IS small-set Szemerédi–Trotter (Fable; `GridSupplyRefutation.lean`)
+
+A reframing entry, complementary to the two-branch/Frobenius/subplane/monomial
+witnesses above.  All of those exhibit blowup; this one *names the curve* and points
+at a formalizable unconditional improvement.
+
+Observation: for `k = 2` an explainable `t`-core (`t = k+m+1 ≥ 3`) is exactly a
+`t`-subset of the word's graph `P = {(dom i, w i)} ⊂ 𝔽_q²` that is collinear, and (for
+`t ≥ 3`) it lies on a *unique* affine codeword.  Hence **explainable-core supply =
+`Σ_{lines ℓ} C(a_ℓ, t)` = the rich-line incidence count of the graph point set** —
+the Szemerédi–Trotter rich-line problem.  The capped residual restricts to `a_ℓ ≤ t+2`.
+
+Witness (`GridSupplyRefutation.lean`, axiom-clean, `n = 36`, `ZMod 41`, fixed band
+`(k,m) = (2,1)`, `t = 4`, cap `6`): the `6×6` sheared grid `(i,j) ↦ (i+7j, j)` (abscissae
+= base-7 digits ⟹ word graph; shears preserve lines).  `grid_word_cap` proves the cap
+*structurally* (no root budget: a non-constant line meets each constant row `≤ 1×`; six
+rows) ⟹ the word is in the `SubJohnsonSupplyResidual gridDom 2 1` class.  Yet
+`subJohnsonSupplyResidual_floor_grid`: every valid `B ≥ 234`, strictly above the
+partition target `90` and the (now-dead) mean-degree-law target `180`.  Asymptotically
+(`probe_grid_supply_refutation.py`) the family-capped mass is the ST extremal
+`Σ a_ℓ = Θ(n²/t²)`, violation `×11.2` at `n = 400` — and the construction is over ℤ,
+so it transfers to `𝔽_p` for every prime `p > 2N³` (subfield-free production primes
+included), the prime-field counterpart of the subplane mechanism.
+
+* **REFUTED**: "the mean-degree law `Σ a_ℓ ≤ 2n` holds on the residual's hypothesis
+  class at a fixed band" (the `n ≤ 20` census stopped below the ST onset `n ~ t³`).
+* **NOT refuted, and the corrected shape target**: for additive/`μ_n` domains the
+  rich-line count obeys the small-set finite-field ST conjecture
+  `L_{≥t} = O(n²/t³ + n/t)`.  Concrete **unconditional partial**: Stevens–de Zeeuw
+  (via Rudnev's point-plane bound) gives `I(P,L) ≲ |P|^{11/15}|L|^{11/15} + |P| + |L|`
+  in the production range `p ≫ poly(n)`, hence `L_{≥t} ≲ n^{11/4}/t^{15/4}` — which
+  **beats the packing bound `n²/t²` for every `t > n^{3/7}`**, i.e. on the band
+  `(n^{3/7}, √(2n))` strictly below Johnson `√(2n)`.  This is the first unconditional
+  strictly-sub-Johnson supply improvement; formalized as a named-residual import +
+  consumer chain in `STSupplyReduction.lean` (the heavy Rudnev bound is the import
+  surface; the reduction `RichLineBound → capped supply → bad-set count` is proven).
