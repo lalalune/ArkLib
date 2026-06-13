@@ -666,6 +666,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSupplyGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSupplyTheorem
 import ArkLib.Data.CodingTheory.ProximityGap.DeepPairIndependence
 import ArkLib.Data.CodingTheory.ProximityGap.DeepQuotientTransfer
+import ArkLib.Data.CodingTheory.ProximityGap.DeepRungFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.DeepStratumMovingDirection
 import ArkLib.Data.CodingTheory.ProximityGap.DeepStratumRankUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.DeepStratumSurvivingCoord
