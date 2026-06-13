@@ -50,7 +50,8 @@ transport hits a `whnf` elaboration wall. -/
 def LovettReducibleStep (F : Type*) [Field F] (n : ℕ) : Prop :=
   ∀ {m : ℕ} (V : Fin m → (Fin n → ℕ)) (k : ℕ) (j : Fin n), 1 ≤ k → IsVStar V k →
     (∀ i, 1 ≤ V i j) →
-    LinearIndependent (MvPolynomial (Fin n) F) (pFamUnion (F := F) (vReduce V j) (k - 1)) →
+    LinearIndependent (MvPolynomial (Fin n) F)
+      (pFamUnion (F := F) (fun i => Function.update (V i) j (V i j - 1)) (k - 1)) →
     LinearIndependent (MvPolynomial (Fin n) F) (pFamUnion (F := F) V k)
 
 /-- **The primitive case of Lovett's Theorem 1.7** (the open *mathematical* obligation): when
@@ -91,10 +92,11 @@ theorem lovettThm17_of_steps (hstep : LovettReducibleStep F n)
           have hjle : V i₀ j ≤ vAbs (V i₀) :=
             Finset.single_le_sum (f := V i₀) (fun _ _ => Nat.zero_le _) (Finset.mem_univ j)
           omega
-        have hV' : IsVStar (vReduce V j) (k - 1) := isVStar_reduce hk hV hjj
+        have hV' : IsVStar (fun i => Function.update (V i) j (V i j - 1)) (k - 1) :=
+          isVStar_reduce hk hV hjj
         have hIH : LinearIndependent (MvPolynomial (Fin n) F)
-            (pFamUnion (F := F) (vReduce V j) (k - 1)) :=
-          IH (k - 1) (by omega) (vReduce V j) (by omega) hV'
+            (pFamUnion (F := F) (fun i => Function.update (V i) j (V i j - 1)) (k - 1)) :=
+          IH (k - 1) (by omega) (fun i => Function.update (V i) j (V i j - 1)) (by omega) hV'
         exact hstep V k j hk hV hjj hIH
     · -- primitive: no globally peelable coordinate
       push_neg at hred
