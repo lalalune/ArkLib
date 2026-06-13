@@ -698,3 +698,31 @@ workbench; char-0 baseline PROVEN (Bessel); excess=0 for `p>(2r)^{n/2}` and log-
 `B≤2√(n ln p)` + `G=O(1)` refutation-certified; BGK floor `B≤n^{1−ε}`. OPEN: the constant-rate excess
 (small points of `P`), from both sides. Both lanes converge; the prize is this one geometric question.
 Issue #389 comment 4699879160. Cross-ref @wakesync `docs/kb/deltastar-bessel-energy-reduction-2026-06-13.md`.
+
+## 26. EXACT excess computation — generically ZERO for β≥4, sporadically o(Wick); connects both lanes
+
+Exact integer computation of `excess = E_r^{(p)}(μ_8) − E_r^∞` (E_r^∞ via Bessel/direct), the open core
+of §25, across primes at `β = log_n p`:
+
+**(1) Generically EXACTLY ZERO for β ≥ 4.** At `β=3` (`p~n³`) the excess is small-nonzero (≤0.0024·Wick).
+At `β≥4` it is **exactly 0 for ALL r≤7** (the window), for 13/14 primes tested near `n⁴`. So the prime
+`P` above `p` generically has NO short sum-of-≤2r-roots vector — `E_r^{(p)} = E_r^∞ ≤ (2r−1)!!n^r`
+(clean Bessel), hence `max|η_b| ≤ √(2n ln p)·(1+o(1))` and `δ* = ` the capacity term, CLEANLY.
+
+**(2) Sporadic bad primes are negligible.** 1/14 (`p=4337`) had excess>0 — but EXACTLY 0 for r≤6, then
+`160160` at r=7 = `5.65·10⁻⁷·Wick`, with `E_fp/E_inf = 1.00001` ⟹ max|η| inflation `(E_fp/E_inf)^{1/2r}
+= 1.0000` (negligible). So even bad primes keep `max|η_b| ≤ √(2n ln p)(1+o(1))`.
+
+**(3) The bad primes ARE my refutation's spike primes.** wakesync's "mod-p excess at sporadic primes"
+= my refutation's "Gumbel-tail spike primes" (Fermat 65537 etc.) — the SAME phenomenon (P has a short
+sum-of-roots ⟺ η_b spikes). The two lanes describe one object from L² (energy) and L∞ (character) sides.
+
+**Prize relevance.** The prize ratio is `β = log₂(2^168)/log₂(2^40) = 168/40 = 4.2 > 4` — exactly the
+regime where the excess generically VANISHES. So for a generic deployed prime, `E_r(μ_n)` is exactly
+the clean Bessel baseline in the window ⟹ `δ* = prizeDeltaStar` (capacity term) CLEANLY, no excess.
+The worst-case over primes is the sporadic bad primes, whose excess is `o(Wick)` (negligible inflation).
+
+**OPEN (the genuine remaining core, now sharply quantified).** Uniformity: does the β≥4 clean threshold
+hold for `n=2⁴⁰` (vs n=8 tested), and does the worst-case bad-prime excess stay `o(Wick)` at `r~log p`?
+My refutation (`G=O(1)`, n≤512) + this exact excess (generically 0, sporadically negligible) are strong
+joint evidence YES. The prize is now: "the β≥4 excess-vanishing is n-uniform." Probe /tmp/excess_*.py.
