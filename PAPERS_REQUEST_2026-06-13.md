@@ -3,6 +3,12 @@
 All requested IACR-blocked + paywalled papers are now in `~/papers/arklib/` with proper names
 (**100 PDFs total**). **Nothing outstanding.**
 
+## ⬜ ONE NEW REQUEST (surfaced from ABF26 §4.4 citation)
+
+| # | paper | id | URL | save as |
+|---|---|---|---|---|
+| 13 | **CGHLL26 — "S-two Whitepaper"** (Carmon–Goldberg–Haböck–Lerer–Lesokhin): circle STARK, **cross-domain correlated agreement**, explicit **list-/line-decodability conjectures for RS** (ABF26 flags App. A for line-decoding conjectures) | IACR ePrint **2026/532** | https://eprint.iacr.org/2026/532.pdf | `eprint-2026-532-CGHLL-Stwo.pdf` |
+
 ## ✅ ALL ITEMS FETCHED — the last two (paywalled Elsevier)
 
 | # | paper | filed as |

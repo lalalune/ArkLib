@@ -135,3 +135,22 @@ resolution.
 IACR-only + 2 paywalled items flagged for manual fetch (the Syndrome-Space-Lens "complete
 resolution" claim is the one to read adversarially first — if correct it closes the prize, so the
 flaw must be located).*
+
+## 6. Freshly-dropped 2026 papers (auto-added; identified 2026-06-13) — energy/LD core
+- `arxiv-2603.03841` **Kumar–Ron-Zewi, "Advances in List Decoding of Polynomial Codes"** — the
+  current LD-core survey; check for the best explicit-RS beyond-Johnson list bounds (face (i)).
+- `arxiv-2602.20919` **Kim–Yip–Yoo, "Multiplicative Irreducibility of Shifted Multiplicative
+  Subgroups"** — builds on **Kalmynin's 2026 breakthrough** resolving Lev–Sonn / Sárközy on
+  additive decompositions; the *superpoly / no-additive-structure* side of `E(μ_n)` (μ_n ≠ A+B).
+- `arxiv-2602.04111` **Cochrane**, "Mult. subgroups of Z*_p that are GAPs" — a subgroup is a
+  generalized AP iff `|A|∈{2,4}` or trivial; structural rigidity evidence (subgroups are *not*
+  additively structured), supporting small energy.
+- `arxiv-2604.26989` **Kable–Mills–Wright**, "Subgroups of finite fields as cap sets" — small
+  cases; tangential.
+- `arxiv-2510.13777`, `arxiv-2604.15218` explicit subspace-design constructions (face (i) explicit
+  side); `arxiv-2605.07595` Yuan–Zhu syndrome-space for **random** linear codes (not plain RS).
+
+**Net:** none closes the `E(μ_n)=n^{2+o(1)}` exponent, but the Kalmynin-line (2602.20919/2602.04111)
+is the strongest current *structural* evidence that μ_n carries no additive structure — the
+qualitative form of the conjecture. Worth a deep read for whether the irreducibility method yields
+any *quantitative* energy exponent improvement (the in-tree open core).
