@@ -30,7 +30,7 @@ Two assembly corollaries:
 * `lineAgreeSet_inter_card_ge_pn` / `corrAgreeDomain_inter_lineAgreeSet` — the Bonferroni size
   bound (`2δ ≤ p ≤ 1`) lifts the kernel to a full `corrAgreeDomain` at rate `p` for two
   bad-witness combiners.  This discharges, for the *decoded* codewords `wOf γ := wγ`, the pairwise
-  `(1−p)·n` intersection clause of `GKL24MaxDomainWitnessCoverResidual` directly — no maximality
+  `(1−p)·n` intersection clause of `GKL24MaxDomainWitnessCoverFalseAsStated` directly — no maximality
   argument is needed for the *size* of the intersection, only Bonferroni.
 
 * `corrAgreeDomain_subset_lineAgreeSet_lineCombiner` — from a correlated-agreement domain `D`
@@ -38,11 +38,12 @@ Two assembly corollaries:
   `D ⊆ lineAgreeSet (wOf γ) γ` for **every** `γ`; hence (via `corrAgreeDomain_subset_inter_card`)
   the pairwise intersection clause holds for the combiner codewords as well.
 
-Together with the in-tree maximal-domain existence and petal machinery, these isolate the single
-remaining open kernel of the residual (`GKL24MaxDomainWitnessCoverResidual`, file
-`GKL24PetalWitnessCover.lean`): the **strict-expansion** clause `D ⊂ lineAgreeSet (wOf γ) γ` for a
-maximal `D` — equivalently, that the maximal joint-agreement domain lands strictly inside each bad
-line's agreement set — plus the close-codeword carrier `T`.
+Together with the in-tree maximal-domain existence and petal machinery, these isolate what the
+retired over-strong surface (`GKL24MaxDomainWitnessCoverFalseAsStated`, file
+`GKL24PetalWitnessCover.lean`) would need under repaired side conditions: the **strict-expansion**
+clause `D ⊂ lineAgreeSet (wOf γ) γ` for a maximal `D` — equivalently, that the maximal
+joint-agreement domain lands strictly inside each bad line's agreement set — plus the
+close-codeword carrier `T`.
 
 ## References
 
@@ -96,7 +97,7 @@ theorem pairJointAgreesOn_inter_lineAgreeSet
 /-- **The common core of two bad lines is large.**  Bonferroni: if both line-agreement sets have
 size `≥ (1−δ)·n` (as for two bad-witness combiners) and `2δ ≤ p ≤ 1`, then their overlap has size
 `≥ (1−p)·n`.  This is exactly the pairwise `(1−p)·n` intersection clause of
-`GKL24MaxDomainWitnessCoverResidual` for the decoded codewords — no maximality needed. -/
+`GKL24MaxDomainWitnessCoverFalseAsStated` for the decoded codewords — no maximality needed. -/
 theorem lineAgreeSet_inter_card_ge_pn
     {δ p : ℝ≥0} {u₀ u₁ wγ wγ' : ι → F} {γ γ' : F}
     (hp1 : p ≤ 1) (h2δp : 2 * δ ≤ p)
@@ -191,8 +192,9 @@ theorem ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn
   obtain ⟨v₀, hv₀, v₁, hv₁, hagree⟩ := hDjoint
   exact ⟨v₀, hv₀, v₁, hv₁, fun i hi => hagree i (hEq ▸ hSsub hi)⟩
 
-/-- **The strict witness-cover residual reduces to the non-strict (subset) cover.**  A provider for
-`GKL24MaxCorrStrictWitnessCoverResidual` (file `GKL24FirstMoment.lean`, previously with no
+/-- **The strict witness-cover false surface reduces to the non-strict (subset) cover.**  A
+provider for
+`GKL24MaxCorrStrictWitnessCoverFalseAsStated` (file `GKL24FirstMoment.lean`, previously with no
 reduction theorems): it suffices to supply, per stack, a close-codeword carrier `T` and, for each
 `w ∈ T`, a maximal correlated-agreement domain `D` merely **contained** in (not strictly expanded
 by) each bad line-agreement set `lineAgreeSet w γ`.  The strict expansion is then automatic
@@ -201,7 +203,7 @@ of `maxCorrAgreeDomain`) and each `γ`'s witness is non-joint.
 
 This removes the strictness obligation from the hard GKL24 input: only the *containment* of the
 maximal domain in every bad witness's agreement set remains. -/
-theorem GKL24MaxCorrStrictWitnessCoverResidual_of_subset_cover
+theorem GKL24MaxCorrStrictWitnessCoverFalseAsStated_of_subset_cover
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hcover : ∀ u : WordStack F (Fin 2) ι,
       ∃ T : Finset (ι → F),
@@ -213,7 +215,7 @@ theorem GKL24MaxCorrStrictWitnessCoverResidual_of_subset_cover
         ∀ w ∈ T, ∃ D : Finset ι, maxCorrAgreeDomain MC p (u 0) (u 1) D ∧
           ∀ γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
             D ⊆ lineAgreeSet (u 0) (u 1) w γ) :
-    GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T := by
+    GKL24MaxCorrStrictWitnessCoverFalseAsStated MC δ p B_T := by
   intro u
   obtain ⟨T, hTsub, hcov, hcard, hT⟩ := hcover u
   refine ⟨T, hTsub, hcov, hcard, fun w hw => ?_⟩
@@ -277,7 +279,8 @@ theorem maxCorrAgreeDomain_commonZero_of_two_witnesses
 /-- **Per-codeword discharge for multi-witness codewords.**  Combining
 `maxCorrAgreeDomain_commonZero_of_two_witnesses` with the strict-expansion lemma: if every bad
 witness `γ` of `w` is paired (some other witness exists) and `hCodeDet` holds, then `C₀` witnesses
-the residual's per-`w` clause — a maximal domain strictly expanded by every `lineAgreeSet w γ`. -/
+the historical surface's per-`w` clause — a maximal domain strictly expanded by every
+`lineAgreeSet w γ`. -/
 theorem exists_maxCorrAgreeDomain_strict_of_two_witnesses
     {MC : Submodule F (ι → F)} {δ p : ℝ≥0} {u₀ u₁ w : ι → F} (hw : w ∈ MC)
     {γ₀ γ₀' : F} (hγ : γ₀ ≠ γ₀')
@@ -308,6 +311,6 @@ end ProximityGap
 #print axioms ProximityGap.corrAgreeDomain_inter_lineAgreeSet
 #print axioms ProximityGap.corrAgreeDomain_subset_lineAgreeSet_lineCombiner
 #print axioms ProximityGap.ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn
-#print axioms ProximityGap.GKL24MaxCorrStrictWitnessCoverResidual_of_subset_cover
+#print axioms ProximityGap.GKL24MaxCorrStrictWitnessCoverFalseAsStated_of_subset_cover
 #print axioms ProximityGap.maxCorrAgreeDomain_commonZero_of_two_witnesses
 #print axioms ProximityGap.exists_maxCorrAgreeDomain_strict_of_two_witnesses

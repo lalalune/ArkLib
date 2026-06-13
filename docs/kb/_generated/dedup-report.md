@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2397 files, 30214 declarations
+- `ArkLib` — 2907 files, 34366 declarations
 
-## Same short-name across multiple files (1262 groups)
+## Same short-name across multiple files (1576 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -205,6 +205,15 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `abbrev Spartan.Spec.Witness` [ArkLib/ProofSystem/Spartan/Basic.lean:64](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L64) — This unfolds to `𝕨 : Fin 2 ^ ℓ_w → R`
 - `def ToyProblem.Spec.Witness` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:107](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L107) — Honest witness: the underlying messages `M₁, M₂ : Fin k → F` whose encodings are the oracle codeword
 
+### `pow_half_eq_neg_one` (6 declarations, 6 files)
+
+- `lemma ArkLib.ProximityGap.KKH26.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean:528](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean#L528) — `g^{2^{m-1}} = −1` for a primitive `2^m`-th root of unity in a prime field.
+- `lemma LamLeungTwoPow.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungTwoPow.lean:38](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungTwoPow.lean#L38) — A primitive `2^(m+1)`-th root of unity has `ζ^(2^m) = −1`.
+- `theorem R12.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean:165](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean#L165) — For a primitive `2^m`-th root of unity `ζ` (`m ≥ 1`), `ζ^{2^{m-1}} = -1`: `ζ^{2^{m-1}}` is a primiti
+- `theorem Round29IteratedLift.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/RigidityIterated2kLift.lean:369](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityIterated2kLift.lean#L369) — For `ζ` primitive `2^m`-th (`m ≥ 1`), the half-order power is `−1`.
+- `theorem ArkLib.ProximityGap.Round3SubgroupSumsetDirect.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetThreePowUpper.lean:79](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetThreePowUpper.lean#L79) — For a primitive `2N`-th root of unity `ζ` (`N ≥ 1`), `ζ^N = -1`: `ζ^N` is a primitive square root of
+- `lemma ProximityGap.PairRank.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/TwoPowerFibreValue.lean:81](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoPowerFibreValue.lean#L81) — `ζ^(2^h) = −1` for a primitive `2^(h+1)`-th root of unity.
+
 ### `Statement` (5 declarations, 5 files)
 
 - `def R1CS.Statement` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:45](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L45) — (no docstring)
@@ -212,6 +221,14 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `abbrev Spartan.Spec.Statement` [ArkLib/ProofSystem/Spartan/Basic.lean:56](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L56) — This unfolds to `𝕩 : Fin (2 ^ ℓ_n - 2 ^ ℓ_w) → R`
 - `structure Sumcheck.Structured.Statement` [ArkLib/ProofSystem/Sumcheck/Structured.lean:197](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L197) — Statement per iterated sumcheck round
 - `def ToyProblem.Spec.Statement` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:93](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L93) — Input (explicit) statement of Construction 6.2: the linear-constraint vector `v ∈ F^k` and the two c
+
+### `agreeSet` (5 declarations, 5 files)
+
+- `def ProximityPrizeCA.agreeSet` [ArkLib/Data/CodingTheory/ProximityCA.lean:35](../../../ArkLib/Data/CodingTheory/ProximityCA.lean#L35) — The agreement set of two words.
+- `def ConcretePin.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConcretePinF17.lean:169](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConcretePinF17.lean#L169) — The agreement set of a line `(b, c)` with `w` inside `G`.
+- `def LinePairCooccurrence.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/LinePairCooccurrenceBound.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/LinePairCooccurrenceBound.lean#L57) — Coordinates where `u` and `v` agree.
+- `def ProximityGap.Ownership.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/PopularCodewords.lean:36](../../../ArkLib/Data/CodingTheory/ProximityGap/PopularCodewords.lean#L36) — The agreement set of a codeword with a word.
+- `def R15Bracket.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean:180](../../../ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean#L180) — The agreement set of two words.
 
 ### `liftComp_optionT_pure` (5 declarations, 5 files)
 
@@ -228,14 +245,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ReduceClaim.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:489](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L489) — The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness. Note that s
 - `theorem Sumcheck.Spec.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/RbrKnowledgeSoundnessOracle.lean:168](../../../ArkLib/ProofSystem/Sumcheck/Spec/RbrKnowledgeSoundnessOracle.lean#L168) — **The full multi-round sum-check ORACLE verifier is round-by-round knowledge sound** on the canonica
 - `theorem Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1220](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1220) — Round-by-round knowledge soundness for the oracle verifier
-
-### `pow_half_eq_neg_one` (5 declarations, 5 files)
-
-- `lemma ArkLib.ProximityGap.KKH26.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean:444](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean#L444) — `g^{2^{m-1}} = −1` for a primitive `2^m`-th root of unity in a prime field.
-- `lemma LamLeungTwoPow.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungTwoPow.lean:38](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungTwoPow.lean#L38) — A primitive `2^(m+1)`-th root of unity has `ζ^(2^m) = −1`.
-- `theorem R12.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean:165](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean#L165) — For a primitive `2^m`-th root of unity `ζ` (`m ≥ 1`), `ζ^{2^{m-1}} = -1`: `ζ^{2^{m-1}}` is a primiti
-- `theorem Round29IteratedLift.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/RigidityIterated2kLift.lean:369](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityIterated2kLift.lean#L369) — For `ζ` primitive `2^m`-th (`m ≥ 1`), the half-order power is `−1`.
-- `theorem ArkLib.ProximityGap.Round3SubgroupSumsetDirect.pow_half_eq_neg_one` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetThreePowUpper.lean:79](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetThreePowUpper.lean#L79) — For a primitive `2N`-th root of unity `ζ` (`N ≥ 1`), `ζ^N = -1`: `ζ^N` is a primitive square root of
 
 ### `for` (5 declarations, 5 files)
 
@@ -292,19 +301,40 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def R15MCAGap.agreeCount` [ArkLib/Data/CodingTheory/ProximityGap/MCABadScalarSpreadBridge.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/MCABadScalarSpreadBridge.lean#L59) — Number of coordinates on which the word `w` agrees with the word `c`.
 - `def RSDeltaStar.agreeCount` [ArkLib/Data/CodingTheory/ProximityGap/RSAveragingDeltaStarUpper.lean:145](../../../ArkLib/Data/CodingTheory/ProximityGap/RSAveragingDeltaStarUpper.lean#L145) — Number of evaluation points where the codeword `tupleToPoly c` agrees with the word `w`.
 
-### `agreeSet` (4 declarations, 4 files)
-
-- `def ProximityPrizeCA.agreeSet` [ArkLib/Data/CodingTheory/ProximityCA.lean:35](../../../ArkLib/Data/CodingTheory/ProximityCA.lean#L35) — The agreement set of two words.
-- `def ConcretePin.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConcretePinF17.lean:169](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConcretePinF17.lean#L169) — The agreement set of a line `(b, c)` with `w` inside `G`.
-- `def LinePairCooccurrence.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/LinePairCooccurrenceBound.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/LinePairCooccurrenceBound.lean#L57) — Coordinates where `u` and `v` agree.
-- `def R15Bracket.agreeSet` [ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean:180](../../../ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean#L180) — The agreement set of two words.
-
 ### `card_clause` (4 declarations, 4 files)
 
 - `theorem ProximityGap.DeltaStarSecondPin.card_clause` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean:130](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean#L130) — The size clause at `δ = 1/4`, `n = 8`: a 6-element witness suffices.
 - `theorem ProximityGap.MCADeltaStarExactPoint.card_clause` [ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean:222](../../../ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean#L222) — The membership clause of `mcaEvent`'s witness sets at `δ = 1/4`, `n = 4`: card `3` suffices (`(1 − 1
 - `theorem ProximityGap.MCAMDSStaircaseRefuted.card_clause` [ArkLib/Data/CodingTheory/ProximityGap/MCAMDSStaircaseRefuted.lean:155](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAMDSStaircaseRefuted.lean#L155) — The size clause at `δ = 1/6`, `n = 18`: a 15-element witness suffices (`(1 − 1/6)·18 = 15`).
 - `theorem ProximityGap.MCAWindowInteriorExact.card_clause` [ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean:115](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorExact.lean#L115) — The witness-size clause at `δ = 2/5`, `n = 5`: a 3-set qualifies.
+
+### `cert_main` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.cert_main` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:338](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L338) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.cert_main` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1102](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1102) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.cert_main` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1149](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1149) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.cert_main` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1091](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1091) — (no docstring)
+
+### `cert_q2` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.cert_q2` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:341](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L341) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.cert_q2` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1105](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1105) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.cert_q2` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1152](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1152) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.cert_q2` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1094](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1094) — (no docstring)
+
+### `cert_qh` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.cert_qh` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:345](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L345) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.cert_qh` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1109](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1109) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.cert_qh` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1156](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1156) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.cert_qh` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1098](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1098) — (no docstring)
+
+### `coeffVec` (4 declarations, 4 files)
+
+- `def Round19Clique.coeffVec` [ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueBeachhead.lean:121](../../../ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueBeachhead.lean#L121) — The coefficient vector of a polynomial, truncated to `Fin N`.
+- `def ArkLib.CodingTheory.Round7GeneralT.coeffVec` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorUnconditionalGeneralT.lean:188](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorUnconditionalGeneralT.lean#L188) — The **top-`t`-coefficient vector** of the monic root product `∏_{i∈S}(X − D i)` over the index windo
+- `def ProximityGap.WBPencil.coeffVec` [ArkLib/Data/CodingTheory/ProximityGap/WBPencilWindowMatrix.lean:88](../../../ArkLib/Data/CodingTheory/ProximityGap/WBPencilWindowMatrix.lean#L88) — The coefficient vector of a triple of polynomials.
+- `def CPoly.CMvPolynomial.degreeLE.coeffVec` [ArkLib/Data/MvPolynomial/ComputableDegreeLE.lean:111](../../../ArkLib/Data/MvPolynomial/ComputableDegreeLE.lean#L111) — Coefficient vector for a bounded-degree computable univariate polynomial.
 
 ### `disagreementSet` (4 declarations, 4 files)
 
@@ -319,6 +349,27 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ArkLib.ProximityGap.Rigidity.fiber` [ArkLib/Data/CodingTheory/ProximityGap/CosetExactCount.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/CosetExactCount.lean#L45) — (no docstring)
 - `def Round25General.fiber` [ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean#L60) — The index fiber of `A` at `j`.
 - `def ArkLib.ProximityGap.Round5SecondMoment.fiber` [ArkLib/Data/CodingTheory/ProximityGap/SubsetSumPigeonholeManyTargets.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/SubsetSumPigeonholeManyTargets.lean#L96) — The `target`-fiber `A_target = { S ∈ powersetCard a G : ∑_{x∈S} x = target }`, whose card is `subset
+
+### `fiberCount` (4 declarations, 4 files)
+
+- `def AveragingCrossover.fiberCount` [ArkLib/Data/CodingTheory/ProximityGap/AveragingFiberConservation.lean:85](../../../ArkLib/Data/CodingTheory/ProximityGap/AveragingFiberConservation.lean#L85) — The fiber count over a target.
+- `def ArkLib.ProximityGap.FiberEnergyListBound.fiberCount` [ArkLib/Data/CodingTheory/ProximityGap/FiberEnergyListBound.lean:46](../../../ArkLib/Data/CodingTheory/ProximityGap/FiberEnergyListBound.lean#L46) — The fibre of the census map `f` over a value `v`: `#{i ∈ S : f i = v}`.
+- `def ArkLib.ProximityGap.WF2SignedWalkMoment.fiberCount` [ArkLib/Data/CodingTheory/ProximityGap/SignedWalkMoment.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/SignedWalkMoment.lean#L60) — The **fiber count**: the number of `r`-tuples from `S` summing to a fixed value `v`.
+- `def Round18Bracket.fiberCount` [ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketScale.lean:47](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketScale.lean#L47) — The fiber count `m x = #{c : x ∈ A c}`.
+
+### `fiber_card_le` (4 declarations, 4 files)
+
+- `theorem ProximityGap.MonomialStripExplosion.fiber_card_le` [ArkLib/Data/CodingTheory/ProximityGap/MonomialStripExplosion.lean:131](../../../ArkLib/Data/CodingTheory/ProximityGap/MonomialStripExplosion.lean#L131) — The fiber `{i : dom i ^ g = c}` has at most `g` elements (roots of `X^g − c`).
+- `theorem ProximityGap.PairRank.fiber_card_le` [ArkLib/Data/CodingTheory/ProximityGap/QRCubicSupplyLower.lean:75](../../../ArkLib/Data/CodingTheory/ProximityGap/QRCubicSupplyLower.lean#L75) — Each fiber of the orbit map has `≤ 27` elements (it sits in `T ×ˢ T ×ˢ T`).
+- `theorem ArkLib.ProximityGap.SmoothFiberCount.fiber_card_le` [ArkLib/Data/CodingTheory/ProximityGap/SmoothFiberCount.lean:30](../../../ArkLib/Data/CodingTheory/ProximityGap/SmoothFiberCount.lean#L30) — Any fiber of the `m`-power map inside a set of field elements has at most `m` points (`m ≥ 1`): they
+- `lemma TwoGenPackingCapacity.fiber_card_le` [ArkLib/Data/CodingTheory/ProximityGap/TwoGenPackingCapacity.lean:181](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoGenPackingCapacity.lean#L181) — Bases below `s` in a fixed residue class mod `G` (`G ∣ s`) number at most `s / G`.
+
+### `g_def` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.g_def` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:368](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L368) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.g_def` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1132](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1132) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.g_def` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1176](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1176) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.g_def` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1118](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1118) — (no docstring)
 
 ### `honestTranscriptDist_oracleReduction_evalDist` (4 declarations, 4 files)
 
@@ -340,6 +391,20 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma CoprimePacketMinpoly.isIntegral_of_pow_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/CoprimePacketMinpoly.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/CoprimePacketMinpoly.lean#L42) — (no docstring)
 - `lemma DeBruijnLamLeungSmallWeights.isIntegral_of_pow_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/DeBruijnLamLeungSmallWeights.lean:109](../../../ArkLib/Data/CodingTheory/ProximityGap/DeBruijnLamLeungSmallWeights.lean#L109) — Roots of unity are integral over ℚ.
 - `lemma ThreadSplit.isIntegral_of_pow_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/ThreadSplit.lean:64](../../../ArkLib/Data/CodingTheory/ProximityGap/ThreadSplit.lean#L64) — Roots of unity are integral over any base field of the ambient field.
+
+### `nodePoly` (4 declarations, 4 files)
+
+- `def ProximityGap.DeepPairIndependence.nodePoly` [ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean:153](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean#L153) — The monic vanishing polynomial of the node set `J`.
+- `def ProximityGap.Ownership.nodePoly` [ArkLib/Data/CodingTheory/ProximityGap/GenericFarSeparation.lean:46](../../../ArkLib/Data/CodingTheory/ProximityGap/GenericFarSeparation.lean#L46) — The node polynomial of a subset of the domain.
+- `def ProximityGap.MonomialSupply.nodePoly` [ArkLib/Data/CodingTheory/ProximityGap/MonomialSupplyWitness.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/MonomialSupplyWitness.lean#L54) — The node polynomial of a subset.
+- `def ProximityGap.NodalSupplyK.nodePoly` [ArkLib/Data/CodingTheory/ProximityGap/NodalSupplyGeneralK.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/NodalSupplyGeneralK.lean#L54) — The node polynomial of a subset.
+
+### `nodePoly_monic` (4 declarations, 4 files)
+
+- `theorem ProximityGap.DeepPairIndependence.nodePoly_monic` [ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean:156](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean#L156) — (no docstring)
+- `theorem ProximityGap.Ownership.nodePoly_monic` [ArkLib/Data/CodingTheory/ProximityGap/GenericFarSeparation.lean:55](../../../ArkLib/Data/CodingTheory/ProximityGap/GenericFarSeparation.lean#L55) — (no docstring)
+- `theorem ProximityGap.MonomialSupply.nodePoly_monic` [ArkLib/Data/CodingTheory/ProximityGap/MonomialSupplyWitness.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/MonomialSupplyWitness.lean#L57) — (no docstring)
+- `theorem ProximityGap.NodalSupplyK.nodePoly_monic` [ArkLib/Data/CodingTheory/ProximityGap/NodalSupplyGeneralK.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/NodalSupplyGeneralK.lean#L57) — (no docstring)
 
 ### `oracleReduction_isHVZK` (4 declarations, 4 files)
 
@@ -369,6 +434,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ReduceClaim.oracleReduction_statisticalHVZK` [ArkLib/ProofSystem/Component/ReduceClaim.lean:412](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L412) — Perfect HVZK implies statistical HVZK for the plain `ReduceClaim` oracle reduction at every error bu
 - `theorem SendClaim.oracleReduction_statisticalHVZK` [ArkLib/ProofSystem/Component/SendClaim.lean:275](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L275) — Perfect HVZK implies statistical HVZK for `SendClaim` at every error budget.
 
+### `orderOf_gP` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.orderOf_gP` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:371](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L371) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.orderOf_gP` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1138](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1138) — **The order-32 certificate.**
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.orderOf_gP` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1182](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1182) — The order-64 certificate.
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.orderOf_gP` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1124](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1124) — The order-64 certificate.
+
 ### `packet_mul_coeff` (4 declarations, 4 files)
 
 - `lemma DeBruijnTwoPrime.packet_mul_coeff` [ArkLib/Data/CodingTheory/ProximityGap/DeBruijnTwoPrime.lean:89](../../../ArkLib/Data/CodingTheory/ProximityGap/DeBruijnTwoPrime.lean#L89) — Slices of a geometric-packet multiple: if `deg R < q` then `(Σ_{i<p} X^(iq) · R).coeff (iq + s) = R.
@@ -383,12 +455,803 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ProximityGap.MCAZeta8Census.phi` [ArkLib/Data/CodingTheory/ProximityGap/MCAZeta8Census.lean:69](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAZeta8Census.lean#L69) — Evaluation of a coordinate vector at `ζ`.
 - `def Logup.phi` [ArkLib/ProofSystem/Logup/Common.lean:685](../../../ArkLib/ProofSystem/Logup/Common.lean#L685) — The denominator term `φᵢ(u)` from Protocol 2.
 
+### `pow_inj_below_order` (4 declarations, 4 files)
+
+- `lemma ArkLib.ProximityGap.DeepQuotientTransfer.pow_inj_below_order` [ArkLib/Data/CodingTheory/ProximityGap/DeepQuotientTransfer.lean:87](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepQuotientTransfer.lean#L87) — Injectivity of `i ↦ g^i` below the order of `g`, for nonzero `g` in a field. (Local copy of the priv
+- `lemma ArkLib.ProximityGap.KKH26DimGeneral.pow_inj_below_order` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean:369](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean#L369) — Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `KKH26WitnessSpread` cancellation
+- `lemma ArkLib.ProximityGap.KKH26DimTwo.pow_inj_below_order` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimTwoPin.lean:508](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimTwoPin.lean#L508) — Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `KKH26WitnessSpread` cancellation
+- `lemma ArkLib.ProximityGap.KKH26.pow_inj_below_order` [ArkLib/Data/CodingTheory/ProximityGap/KKH26WitnessSpread.lean:79](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26WitnessSpread.lean#L79) — Injectivity of `i ↦ g^i` below the order of `g`, for nonzero `g` in a field (elementary cancellation
+
+### `pow_two_pow_succ` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.pow_two_pow_succ` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L60) — Squaring-chain glue: `a^(2^(k+1)) = (a^(2^k))^2`.
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.pow_two_pow_succ` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:51](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L51) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.pow_two_pow_succ` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:103](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L103) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.pow_two_pow_succ` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:43](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L43) — (no docstring)
+
+### `prime_P` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.prime_P` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:350](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L350) — **`P` is prime** — Lucas certificate with witness `3`, cofactors `{2, 65581}`.
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.prime_P` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1114](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1114) — **`P` is prime** — Lucas certificate with witness `3`, cofactors `{2, 1314883}`.
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.prime_P` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1160](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1160) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.prime_P` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1102](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1102) — (no docstring)
+
 ### `reduction_completeness` (4 declarations, 4 files)
 
 - `theorem CheckClaim.reduction_completeness` [ArkLib/ProofSystem/Component/CheckClaim.lean:71](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L71) — The `CheckClaim` reduction satisfies perfect completeness with respect to the predicate as the input
 - `theorem NoInteraction.reduction_completeness` [ArkLib/ProofSystem/Component/NoInteraction.lean:93](../../../ArkLib/ProofSystem/Component/NoInteraction.lean#L93) — Completeness of a no-interaction reduction. **Faithfulness of the hypothesis `hRel`.** `Reduction.ru
 - `theorem ReduceClaim.reduction_completeness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:69](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L69) — The `ReduceClaim` reduction satisfies perfect completeness for any relation.
 - `theorem SendWitness.reduction_completeness` [ArkLib/ProofSystem/Component/SendWitness.lean:174](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L174) — The `SendWitness` reduction satisfies perfect completeness.
+
+### `t10` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t10` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:86](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L86) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t10` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:95](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L95) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t10` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:145](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L145) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t10` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:85](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L85) — (no docstring)
+
+### `t11` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t11` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:88](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L88) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t11` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:99](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L99) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t11` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:149](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L149) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t11` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:89](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L89) — (no docstring)
+
+### `t12` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t12` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:90](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L90) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t12` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:103](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L103) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t12` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:153](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L153) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t12` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:93](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L93) — (no docstring)
+
+### `t13` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t13` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:92](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L92) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t13` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:107](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L107) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t13` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:157](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L157) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t13` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:97](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L97) — (no docstring)
+
+### `t14` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t14` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:94](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L94) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t14` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:111](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L111) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t14` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:161](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L161) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t14` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:101](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L101) — (no docstring)
+
+### `t15` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t15` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L96) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t15` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:115](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L115) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t15` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:165](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L165) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t15` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:105](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L105) — (no docstring)
+
+### `t16` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t16` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:98](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L98) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t16` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:119](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L119) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t16` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:169](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L169) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t16` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:109](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L109) — (no docstring)
+
+### `t17` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t17` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:100](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L100) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t17` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:123](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L123) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t17` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:173](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L173) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t17` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:113](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L113) — (no docstring)
+
+### `t18` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t18` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:102](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L102) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t18` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:127](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L127) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t18` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:177](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L177) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t18` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:117](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L117) — (no docstring)
+
+### `t19` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t19` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:104](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L104) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t19` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:131](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L131) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t19` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:181](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L181) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t19` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:121](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L121) — (no docstring)
+
+### `t20` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t20` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:106](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L106) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t20` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:135](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L135) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t20` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:185](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L185) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t20` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:125](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L125) — (no docstring)
+
+### `t21` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t21` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:108](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L108) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t21` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:139](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L139) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t21` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:189](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L189) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t21` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:129](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L129) — (no docstring)
+
+### `t22` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t22` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:110](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L110) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t22` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:143](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L143) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t22` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:193](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L193) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t22` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:133](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L133) — (no docstring)
+
+### `t23` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t23` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:112](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L112) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t23` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:147](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L147) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t23` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:197](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L197) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t23` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:137](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L137) — (no docstring)
+
+### `t24` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t24` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:114](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L114) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t24` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:151](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L151) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t24` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:201](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L201) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t24` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:141](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L141) — (no docstring)
+
+### `t25` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t25` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:116](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L116) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t25` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:155](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L155) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t25` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:205](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L205) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t25` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:145](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L145) — (no docstring)
+
+### `t26` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t26` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:118](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L118) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t26` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:159](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L159) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t26` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:209](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L209) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t26` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:149](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L149) — (no docstring)
+
+### `t27` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t27` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:120](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L120) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t27` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:163](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L163) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t27` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:213](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L213) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t27` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:153](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L153) — (no docstring)
+
+### `t28` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t28` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:122](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L122) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t28` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:167](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L167) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t28` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:217](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L217) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t28` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:157](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L157) — (no docstring)
+
+### `t29` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t29` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:124](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L124) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t29` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:171](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L171) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t29` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:221](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L221) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t29` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:161](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L161) — (no docstring)
+
+### `t30` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t30` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:126](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L126) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t30` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:175](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L175) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t30` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:225](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L225) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t30` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:165](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L165) — (no docstring)
+
+### `t31` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t31` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:128](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L128) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t31` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:179](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L179) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t31` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:229](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L229) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t31` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:169](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L169) — (no docstring)
+
+### `t32` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t32` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:130](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L130) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t32` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:183](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L183) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t32` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:233](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L233) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t32` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:173](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L173) — (no docstring)
+
+### `t33` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t33` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:132](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L132) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t33` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:187](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L187) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t33` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:237](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L237) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t33` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:177](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L177) — (no docstring)
+
+### `t34` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t34` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:134](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L134) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t34` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:191](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L191) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t34` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:241](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L241) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t34` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:181](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L181) — (no docstring)
+
+### `t35` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t35` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:136](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L136) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t35` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:195](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L195) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t35` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:245](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L245) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t35` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:185](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L185) — (no docstring)
+
+### `t36` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t36` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:138](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L138) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t36` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:199](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L199) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t36` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:249](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L249) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t36` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:189](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L189) — (no docstring)
+
+### `t37` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t37` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:140](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L140) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t37` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:203](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L203) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t37` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:253](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L253) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t37` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:193](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L193) — (no docstring)
+
+### `t38` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t38` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:142](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L142) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t38` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:207](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L207) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t38` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:257](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L257) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t38` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:197](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L197) — (no docstring)
+
+### `t39` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t39` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:144](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L144) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t39` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:211](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L211) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t39` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:261](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L261) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t39` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:201](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L201) — (no docstring)
+
+### `t40` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t40` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:146](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L146) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t40` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:215](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L215) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t40` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:265](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L265) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t40` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:205](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L205) — (no docstring)
+
+### `t41` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t41` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:148](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L148) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t41` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:219](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L219) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t41` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:269](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L269) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t41` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:209](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L209) — (no docstring)
+
+### `t42` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t42` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:150](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L150) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t42` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:223](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L223) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t42` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:273](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L273) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t42` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:213](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L213) — (no docstring)
+
+### `t43` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t43` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:152](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L152) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t43` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:227](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L227) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t43` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:277](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L277) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t43` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:217](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L217) — (no docstring)
+
+### `t44` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t44` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:154](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L154) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t44` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:231](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L231) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t44` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:281](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L281) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t44` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:221](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L221) — (no docstring)
+
+### `t45` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t45` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:156](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L156) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t45` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:235](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L235) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t45` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:285](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L285) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t45` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:225](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L225) — (no docstring)
+
+### `t46` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t46` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:158](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L158) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t46` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:239](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L239) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t46` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:289](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L289) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t46` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:229](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L229) — (no docstring)
+
+### `t47` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t47` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:160](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L160) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t47` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:243](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L243) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t47` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:293](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L293) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t47` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:233](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L233) — (no docstring)
+
+### `t48` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t48` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:162](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L162) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t48` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:247](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L247) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t48` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:297](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L297) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t48` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:237](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L237) — (no docstring)
+
+### `t49` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t49` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:164](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L164) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t49` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:251](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L251) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t49` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:301](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L301) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t49` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:241](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L241) — (no docstring)
+
+### `t50` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t50` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:166](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L166) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t50` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:255](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L255) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t50` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:305](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L305) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t50` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:245](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L245) — (no docstring)
+
+### `t51` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t51` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:168](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L168) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t51` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:259](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L259) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t51` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:309](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L309) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t51` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:249](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L249) — (no docstring)
+
+### `t52` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t52` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:170](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L170) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t52` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:263](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L263) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t52` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:313](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L313) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t52` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:253](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L253) — (no docstring)
+
+### `t53` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t53` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:172](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L172) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t53` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:267](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L267) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t53` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:317](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L317) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t53` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:257](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L257) — (no docstring)
+
+### `t54` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t54` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:174](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L174) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t54` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:271](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L271) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t54` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:321](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L321) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t54` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:261](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L261) — (no docstring)
+
+### `t55` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t55` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:176](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L176) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t55` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:275](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L275) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t55` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:325](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L325) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t55` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:265](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L265) — (no docstring)
+
+### `t56` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t56` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:178](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L178) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t56` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:279](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L279) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t56` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:329](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L329) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t56` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:269](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L269) — (no docstring)
+
+### `t57` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t57` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:180](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L180) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t57` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:283](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L283) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t57` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:333](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L333) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t57` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:273](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L273) — (no docstring)
+
+### `t58` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t58` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:182](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L182) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t58` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:287](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L287) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t58` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:337](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L337) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t58` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:277](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L277) — (no docstring)
+
+### `t59` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t59` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:184](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L184) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t59` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:291](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L291) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t59` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:341](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L341) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t59` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:281](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L281) — (no docstring)
+
+### `t60` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t60` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:186](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L186) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t60` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:295](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L295) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t60` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:345](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L345) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t60` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:285](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L285) — (no docstring)
+
+### `t61` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t61` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:188](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L188) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t61` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:299](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L299) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t61` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:349](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L349) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t61` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:289](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L289) — (no docstring)
+
+### `t62` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t62` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:190](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L190) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t62` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:303](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L303) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t62` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:353](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L353) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t62` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:293](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L293) — (no docstring)
+
+### `t63` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t63` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:192](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L192) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t63` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:307](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L307) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t63` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:357](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L357) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t63` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:297](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L297) — (no docstring)
+
+### `t64` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.t64` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:194](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L194) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t64` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:311](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L311) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t64` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:361](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L361) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t64` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:301](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L301) — (no docstring)
+
+### `u10` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u10` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:225](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L225) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u10` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:623](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L623) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u10` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:672](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L672) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u10` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:614](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L614) — (no docstring)
+
+### `u11` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u11` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:227](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L227) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u11` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:627](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L627) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u11` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:676](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L676) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u11` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:618](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L618) — (no docstring)
+
+### `u12` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u12` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:229](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L229) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u12` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:631](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L631) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u12` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:680](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L680) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u12` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:622](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L622) — (no docstring)
+
+### `u13` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u13` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:231](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L231) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u13` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:635](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L635) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u13` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:684](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L684) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u13` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:626](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L626) — (no docstring)
+
+### `u14` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u14` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:233](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L233) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u14` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:639](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L639) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u14` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:688](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L688) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u14` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:630](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L630) — (no docstring)
+
+### `u15` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u15` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:235](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L235) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u15` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:643](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L643) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u15` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:692](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L692) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u15` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:634](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L634) — (no docstring)
+
+### `u16` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u16` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:237](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L237) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u16` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:647](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L647) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u16` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:696](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L696) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u16` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:638](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L638) — (no docstring)
+
+### `u17` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u17` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:239](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L239) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u17` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:651](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L651) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u17` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:700](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L700) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u17` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:642](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L642) — (no docstring)
+
+### `u18` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u18` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:241](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L241) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u18` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:655](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L655) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u18` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:704](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L704) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u18` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:646](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L646) — (no docstring)
+
+### `u19` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u19` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:243](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L243) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u19` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:659](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L659) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u19` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:708](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L708) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u19` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:650](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L650) — (no docstring)
+
+### `u20` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u20` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:245](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L245) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u20` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:663](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L663) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u20` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:712](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L712) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u20` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:654](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L654) — (no docstring)
+
+### `u21` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u21` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:247](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L247) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u21` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:667](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L667) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u21` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:716](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L716) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u21` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:658](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L658) — (no docstring)
+
+### `u22` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u22` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:249](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L249) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u22` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:671](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L671) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u22` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:720](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L720) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u22` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:662](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L662) — (no docstring)
+
+### `u23` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u23` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:251](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L251) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u23` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:675](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L675) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u23` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:724](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L724) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u23` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:666](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L666) — (no docstring)
+
+### `u24` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u24` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:253](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L253) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u24` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:679](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L679) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u24` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:728](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L728) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u24` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:670](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L670) — (no docstring)
+
+### `u25` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u25` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:255](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L255) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u25` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:683](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L683) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u25` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:732](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L732) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u25` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:674](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L674) — (no docstring)
+
+### `u26` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u26` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:257](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L257) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u26` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:687](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L687) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u26` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:736](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L736) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u26` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:678](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L678) — (no docstring)
+
+### `u27` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u27` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:259](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L259) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u27` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:691](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L691) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u27` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:740](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L740) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u27` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:682](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L682) — (no docstring)
+
+### `u28` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u28` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:261](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L261) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u28` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:695](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L695) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u28` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:744](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L744) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u28` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:686](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L686) — (no docstring)
+
+### `u29` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u29` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:263](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L263) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u29` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:699](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L699) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u29` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:748](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L748) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u29` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:690](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L690) — (no docstring)
+
+### `u30` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u30` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:265](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L265) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u30` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:703](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L703) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u30` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:752](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L752) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u30` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:694](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L694) — (no docstring)
+
+### `u31` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u31` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:267](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L267) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u31` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:707](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L707) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u31` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:756](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L756) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u31` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:698](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L698) — (no docstring)
+
+### `u32` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u32` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:269](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L269) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u32` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:711](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L711) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u32` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:760](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L760) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u32` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:702](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L702) — (no docstring)
+
+### `u33` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u33` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:271](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L271) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u33` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:715](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L715) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u33` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:764](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L764) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u33` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:706](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L706) — (no docstring)
+
+### `u34` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u34` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:273](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L273) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u34` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:719](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L719) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u34` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:768](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L768) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u34` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:710](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L710) — (no docstring)
+
+### `u35` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u35` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:275](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L275) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u35` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:723](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L723) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u35` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:772](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L772) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u35` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:714](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L714) — (no docstring)
+
+### `u36` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u36` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:277](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L277) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u36` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:727](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L727) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u36` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:776](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L776) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u36` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:718](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L718) — (no docstring)
+
+### `u37` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u37` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:279](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L279) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u37` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:731](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L731) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u37` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:780](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L780) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u37` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:722](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L722) — (no docstring)
+
+### `u38` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u38` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:281](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L281) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u38` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:735](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L735) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u38` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:784](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L784) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u38` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:726](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L726) — (no docstring)
+
+### `u39` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u39` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:283](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L283) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u39` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:739](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L739) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u39` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:788](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L788) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u39` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:730](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L730) — (no docstring)
+
+### `u40` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u40` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:285](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L285) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u40` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:743](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L743) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u40` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:792](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L792) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u40` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:734](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L734) — (no docstring)
+
+### `u41` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u41` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:287](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L287) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u41` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:747](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L747) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u41` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:796](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L796) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u41` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:738](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L738) — (no docstring)
+
+### `u42` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u42` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:289](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L289) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u42` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:751](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L751) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u42` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:800](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L800) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u42` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:742](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L742) — (no docstring)
+
+### `u43` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u43` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:291](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L291) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u43` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:755](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L755) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u43` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:804](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L804) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u43` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:746](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L746) — (no docstring)
+
+### `u44` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u44` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:293](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L293) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u44` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:759](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L759) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u44` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:808](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L808) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u44` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:750](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L750) — (no docstring)
+
+### `u45` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u45` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:295](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L295) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u45` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:763](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L763) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u45` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:812](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L812) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u45` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:754](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L754) — (no docstring)
+
+### `u46` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u46` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:297](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L297) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u46` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:767](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L767) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u46` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:816](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L816) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u46` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:758](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L758) — (no docstring)
+
+### `u47` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u47` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:299](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L299) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u47` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:771](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L771) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u47` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:820](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L820) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u47` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:762](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L762) — (no docstring)
+
+### `u48` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u48` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:301](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L301) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u48` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:775](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L775) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u48` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:824](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L824) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u48` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:766](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L766) — (no docstring)
+
+### `u49` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u49` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:303](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L303) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u49` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:779](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L779) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u49` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:828](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L828) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u49` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:770](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L770) — (no docstring)
+
+### `u50` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u50` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:305](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L305) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u50` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:783](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L783) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u50` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:832](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L832) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u50` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:774](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L774) — (no docstring)
+
+### `u51` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u51` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:307](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L307) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u51` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:787](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L787) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u51` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:836](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L836) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u51` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:778](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L778) — (no docstring)
+
+### `u52` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u52` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:309](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L309) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u52` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:791](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L791) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u52` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:840](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L840) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u52` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:782](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L782) — (no docstring)
+
+### `u53` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u53` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:311](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L311) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u53` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:795](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L795) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u53` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:844](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L844) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u53` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:786](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L786) — (no docstring)
+
+### `u54` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u54` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:313](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L313) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u54` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:799](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L799) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u54` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:848](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L848) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u54` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:790](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L790) — (no docstring)
+
+### `u55` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u55` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:315](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L315) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u55` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:803](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L803) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u55` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:852](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L852) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u55` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:794](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L794) — (no docstring)
+
+### `u56` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u56` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:317](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L317) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u56` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:807](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L807) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u56` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:856](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L856) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u56` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:798](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L798) — (no docstring)
+
+### `u57` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u57` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:319](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L319) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u57` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:811](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L811) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u57` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:860](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L860) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u57` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:802](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L802) — (no docstring)
+
+### `u58` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u58` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:321](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L321) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u58` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:815](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L815) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u58` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:864](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L864) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u58` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:806](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L806) — (no docstring)
+
+### `u59` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u59` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:323](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L323) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u59` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:819](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L819) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u59` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:868](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L868) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u59` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:810](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L810) — (no docstring)
+
+### `u60` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u60` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:325](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L325) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u60` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:823](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L823) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u60` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:872](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L872) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u60` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:814](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L814) — (no docstring)
+
+### `u61` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u61` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:327](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L327) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u61` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:827](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L827) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u61` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:876](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L876) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u61` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:818](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L818) — (no docstring)
+
+### `u62` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u62` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:329](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L329) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u62` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:831](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L831) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u62` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:880](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L880) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u62` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:822](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L822) — (no docstring)
+
+### `u63` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u63` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:331](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L331) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u63` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:835](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L835) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u63` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:884](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L884) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u63` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:826](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L826) — (no docstring)
+
+### `u64` (4 declarations, 4 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.u64` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:333](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L333) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u64` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:839](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L839) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u64` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:888](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L888) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u64` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:830](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L830) — (no docstring)
 
 ### `coeffPoly` (4 declarations, 4 files)
 
@@ -589,6 +1452,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ArkLib.ProximityGap.CollinearityMatchingFrame.Balanced` [ArkLib/Data/CodingTheory/ProximityGap/CollinearityMatchingFrame.lean:78](../../../ArkLib/Data/CodingTheory/ProximityGap/CollinearityMatchingFrame.lean#L78) — Antipodal balance of an exponent family: every residue fiber `t < 2^(m−1)` is matched exactly by its
 - `def WitnessLayer.Balanced` [ArkLib/Data/CodingTheory/ProximityGap/WitnessLayerCount.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/WitnessLayerCount.lean#L62) — Antipodal balance of the layer multiset at half-period `h`: the multiplicity at `e` equals the multi
 
+### `ExplainableOn` (3 declarations, 3 files)
+
+- `def ProximityGap.Ownership.ExplainableOn` [ArkLib/Data/CodingTheory/ProximityGap/DeepBandMultiplicity.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepBandMultiplicity.lean#L45) — A word is explainable on a core when some codeword agrees with it there.
+- `def ProximityGap.DeltaStarExactPin.ExplainableOn` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:114](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L114) — Explainability of a single row on a coordinate set: some codeword agrees with `w` everywhere on `S`.
+- `def ArkLib.ProximityGap.KKH26CeilingMarch.ExplainableOn` [ArkLib/Data/CodingTheory/ProximityGap/KKH26CeilingMarch.lean:105](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26CeilingMarch.lean#L105) — A word is explainable on a set `S` at degree `d` when it agrees on `S` with the evaluation of a poly
+
 ### `F17` (3 declarations, 3 files)
 
 - `abbrev ProximityGap.DeltaStarSecondPin.F17` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean#L49) — (no docstring)
@@ -746,6 +1615,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.ProximityGap.SubgroupAdditiveEnergyFermat65537.cards` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupAdditiveEnergyFermat65537.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupAdditiveEnergyFermat65537.lean#L54) — (no docstring)
 - `theorem ArkLib.ProximityGap.SubgroupAdditiveEnergyTowerF17.cards` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupAdditiveEnergyTowerF17.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupAdditiveEnergyTowerF17.lean#L49) — (no docstring)
 
+### `choose_32_8` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.choose_32_8` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:386](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L386) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.choose_32_8` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1151](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1151) — (no docstring)
+- `lemma ArkLib.ProximityGap.OwnershipCensus.choose_32_8` [ArkLib/Data/CodingTheory/ProximityGap/OwnershipCensusSharpened.lean:789](../../../ArkLib/Data/CodingTheory/ProximityGap/OwnershipCensusSharpened.lean#L789) — (no docstring)
+
 ### `choose_le_add_add` (3 declarations, 3 files)
 
 - `theorem Round14ConstantGap.choose_le_add_add` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean#L56) — **The Pascal shift.** `C(n, m) ≤ C(n + j, m + j)` for every `j` (iterate the one-step).
@@ -770,12 +1645,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Round20CliqueKernel.cliqueLocator_eval_self_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueKernelStructure.lean:178](../../../ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueKernelStructure.lean#L178) — Locator self-evaluation is nonzero (distinct nodes).
 - `theorem Round21Relations.cliqueLocator_eval_self_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueRelationModule.lean:86](../../../ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueRelationModule.lean#L86) — Locator self-evaluation is nonzero.
 
-### `coeffVec` (3 declarations, 3 files)
-
-- `def Round19Clique.coeffVec` [ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueBeachhead.lean:121](../../../ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueBeachhead.lean#L121) — The coefficient vector of a polynomial, truncated to `Fin N`.
-- `def ArkLib.CodingTheory.Round7GeneralT.coeffVec` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorUnconditionalGeneralT.lean:188](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorUnconditionalGeneralT.lean#L188) — The **top-`t`-coefficient vector** of the monic root product `∏_{i∈S}(X − D i)` over the index windo
-- `def CPoly.CMvPolynomial.degreeLE.coeffVec` [ArkLib/Data/MvPolynomial/ComputableDegreeLE.lean:111](../../../ArkLib/Data/MvPolynomial/ComputableDegreeLE.lean#L111) — Coefficient vector for a bounded-degree computable univariate polynomial.
-
 ### `coeff_pow_sub_at` (3 declarations, 3 files)
 
 - `theorem ProximityPrize.HenselExistence.coeff_pow_sub_at` [ArkLib/Data/Polynomial/HenselExistence.lean:89](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L89) — Local copy of `NewtonLinearization.coeff_pow_sub_at` (order-`t` Newton linearization).
@@ -787,6 +1656,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ProximityPrize.HenselExistence.coeff_pow_sub_below` [ArkLib/Data/Polynomial/HenselExistence.lean:72](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L72) — Local copy of `NewtonLinearization.coeff_pow_sub_below` (truncation propagation).
 - `theorem ProximityPrize.HenselSeriesCoeff.coeff_pow_sub_below` [ArkLib/Data/Polynomial/HenselSeriesCoeff.lean:76](../../../ArkLib/Data/Polynomial/HenselSeriesCoeff.lean#L76) — **LEMMA A (truncation propagation).** Agreement below order `t` propagates to every power. Local cop
 - `theorem ProximityPrize.NewtonLinearization.coeff_pow_sub_below` [ArkLib/Data/Polynomial/NewtonLinearization.lean:62](../../../ArkLib/Data/Polynomial/NewtonLinearization.lean#L62) — **Truncation propagation.** If `γ₁ γ₂ : R⟦X⟧` agree at every coefficient `j < t`, then so do `γ₁^i`
+
+### `coeffs` (3 declarations, 3 files)
+
+- `def MobiusCoincidenceWitness.coeffs` [ArkLib/Data/CodingTheory/ProximityGap/MobiusCoincidenceWitness.lean:430](../../../ArkLib/Data/CodingTheory/ProximityGap/MobiusCoincidenceWitness.lean#L430) — Coefficient vector of a cubic `c₀ + c₁·z + c₂·z² + c₃·z³`, as a function `ℕ → ℚ` (the shape consumed
+- `def Polynomial.Bivariate.coeffs` [ArkLib/Data/Polynomial/Bivariate.lean:34](../../../ArkLib/Data/Polynomial/Bivariate.lean#L34) — The set of coefficients of a bivariate polynomial.
+- `def UniPoly.coeffs` [ArkLib/Data/UniPoly/Basic.lean:41](../../../ArkLib/Data/UniPoly/Basic.lean#L41) — (no docstring)
 
 ### `commit` (3 declarations, 3 files)
 
@@ -854,12 +1729,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma DeBruijnWeightedCardTwoPrime.exp_twelfth_primitive` [ArkLib/Data/CodingTheory/ProximityGap/DeBruijnWeightedCardTwoPrime.lean:97](../../../ArkLib/Data/CodingTheory/ProximityGap/DeBruijnWeightedCardTwoPrime.lean#L97) — (no docstring)
 - `lemma ThreadSplit.exp_twelfth_primitive` [ArkLib/Data/CodingTheory/ProximityGap/ThreadSplit.lean:297](../../../ArkLib/Data/CodingTheory/ProximityGap/ThreadSplit.lean#L297) — (no docstring)
 
-### `fiber_card_le` (3 declarations, 3 files)
-
-- `theorem ProximityGap.MonomialStripExplosion.fiber_card_le` [ArkLib/Data/CodingTheory/ProximityGap/MonomialStripExplosion.lean:131](../../../ArkLib/Data/CodingTheory/ProximityGap/MonomialStripExplosion.lean#L131) — The fiber `{i : dom i ^ g = c}` has at most `g` elements (roots of `X^g − c`).
-- `theorem ArkLib.ProximityGap.SmoothFiberCount.fiber_card_le` [ArkLib/Data/CodingTheory/ProximityGap/SmoothFiberCount.lean:30](../../../ArkLib/Data/CodingTheory/ProximityGap/SmoothFiberCount.lean#L30) — Any fiber of the `m`-power map inside a set of field elements has at most `m` points (`m ≥ 1`): they
-- `lemma TwoGenPackingCapacity.fiber_card_le` [ArkLib/Data/CodingTheory/ProximityGap/TwoGenPackingCapacity.lean:181](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoGenPackingCapacity.lean#L181) — Bases below `s` in a fixed residue class mod `G` (`G ∣ s`) number at most `s / G`.
-
 ### `finalSumcheckOracleReduction` (3 declarations, 3 files)
 
 - `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:127](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L127) — (no docstring)
@@ -894,19 +1763,19 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:98](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L98) — The full Binary Basefold protocol as a Proof
 - `def Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171) — The full Binary Basefold protocol as a Proof
-- `def RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:111](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L111) — The full Binary Basefold protocol as a Proof
+- `def RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:114](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L114) — The full Binary Basefold protocol as a Proof
 
 ### `fullOracleReduction` (3 declarations, 3 files)
 
 - `def Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:70](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L70) — The reduction for the full Binary Basefold protocol
 - `def Binius.FRIBinius.FullFRIBinius.fullOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:140](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L140) — The reduction for the full Binary Basefold protocol
-- `def RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:99](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L99) — The reduction for the full Binary Basefold protocol
+- `def RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:101](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L101) — The reduction for the full Binary Basefold protocol, using the strict-track batching/core relation n
 
 ### `fullOracleReduction_perfectCompleteness` (3 declarations, 3 files)
 
 - `theorem Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:113](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L113) — Perfect completeness for the full Binary Basefold protocol (reduction)
 - `theorem Binius.FRIBinius.FullFRIBinius.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:191](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L191) — Perfect completeness for the full Binary Basefold protocol (reduction)
-- `theorem fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/RingSwitching/General.lean:489](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L489) — **Issue #29: end-to-end RingSwitching perfect completeness (unconditional core).** The former five a
+- `theorem fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/RingSwitching/General.lean:516](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L516) — **Issue #29: end-to-end RingSwitching perfect completeness (unconditional core).** The former five a
 
 ### `fullOracleVerifier` (3 declarations, 3 files)
 
@@ -918,19 +1787,25 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:145](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L145) — Round-by-round knowledge soundness for the full Binary Basefold oracle verifier
 - `theorem Binius.FRIBinius.FullFRIBinius.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:237](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L237) — Round-by-round knowledge soundness for the full FRI-Binius oracle verifier.
-- `theorem RingSwitching.FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/General.lean:212](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L212) — Round-by-round knowledge soundness for the full ring-switching oracle verifier. `IsDomain K` (with t
+- `theorem RingSwitching.FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/General.lean:215](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L215) — Round-by-round knowledge soundness for the full ring-switching oracle verifier. `IsDomain K` (with t
 
 ### `fullRbrKnowledgeError` (3 declarations, 3 files)
 
 - `def Binius.BinaryBasefold.FullBinaryBasefold.fullRbrKnowledgeError` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:135](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L135) — Combined RBR knowledge soundness error for the full protocol
 - `def Binius.FRIBinius.FullFRIBinius.fullRbrKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:227](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L227) — Combined RBR knowledge error for full FRI-Binius.
-- `def RingSwitching.FullRingSwitching.fullRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/General.lean:196](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L196) — (no docstring)
+- `def RingSwitching.FullRingSwitching.fullRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/General.lean:199](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L199) — (no docstring)
 
 ### `gapPoly` (3 declarations, 3 files)
 
 - `def ArkLib.ProximityGap.GeneralGapCensus.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/GeneralGapCensusLaw.lean:58](../../../ArkLib/Data/CodingTheory/ProximityGap/GeneralGapCensusLaw.lean#L58) — The general-gap line polynomial `X^s + λX^t − q`.
 - `def CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCapture.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25CurveCapture.lean#L60) — The per-coordinate gap polynomial `∑ⱼ C(dⱼ(x))·Xʲ`.
 - `def ArkLib.ProximityGap.KKH26.gapPoly` [ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean:48](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26GapCensusLaw.lean#L48) — The line-minus-explanation polynomial `X^A + λ·X^B − q`.
+
+### `half_add_half` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.ChordConverseWrapper.half_add_half` [ArkLib/Data/CodingTheory/ProximityGap/ChordConverseWrapper.lean:74](../../../ArkLib/Data/CodingTheory/ProximityGap/ChordConverseWrapper.lean#L74) — The half-period doubles to zero.
+- `theorem ArkLib.ProximityGap.ChordFamilyCount.half_add_half` [ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean:66](../../../ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean#L66) — `2^(m−1)` is self-negative in `ZMod (2^m)`: `h + h = 0`.
+- `lemma ArkLib.ProximityGap.KKH26.half_add_half` [ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean:545](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean#L545) — (no docstring)
 
 ### `hammingBall` (3 declarations, 3 files)
 
@@ -1112,6 +1987,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma RingSwitching.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1521](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1521) — **`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t₁ t₂
 - `lemma ToyProblem.Spec.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:718](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L718) — `simOracle2` message-query collapse (`OracleComp` form), RIGHT (message) family.
 
+### `smoothDom` (3 declarations, 3 files)
+
+- `def ProximityGap.Ownership.smoothDom` [ArkLib/Data/CodingTheory/ProximityGap/KKH26AlignmentSupply.lean:71](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26AlignmentSupply.lean#L71) — The smooth domain embedding `i ↦ g^i`.
+- `def ProximityGap.MCADeltaStarLiteralEps.smoothDom` [ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarLiteralEps.lean:159](../../../ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarLiteralEps.lean#L159) — The smooth evaluation domain of the prize's shape: the cyclic 2-power group `⟨g⟩ ≤ F_pˣ` of order `n
+- `def ProximityGap.SmoothLadderInstance.smoothDom` [ArkLib/Data/CodingTheory/ProximityGap/SmoothLadderInstance.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/SmoothLadderInstance.lean#L59) — The smooth domain: the cyclic group `⟨γ⟩` in generator order.
+
 ### `squeeze` (3 declarations, 3 files)
 
 - `def DomainSeparator.squeeze` [ArkLib/Data/Hash/DomainSep.lean:241](../../../ArkLib/Data/Hash/DomainSep.lean#L241) — Squeeze `count` native elements. Rust interface: ```rust pub fn squeeze(self, count: usize, label: &
@@ -1148,6 +2029,390 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Round25General.sval_eq_sum` [ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean:88](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityGeneralT1.lean#L88) — (no docstring)
 - `theorem Round24Triples.sval_eq_sum` [ArkLib/Data/CodingTheory/ProximityGap/RigidityTriplesSunflower.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityTriplesSunflower.lean#L63) — Each `sval` expands over the half basis with its integer coefficient profile.
 
+### `t100` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t100` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:455](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L455) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t100` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:505](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L505) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t100` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:445](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L445) — (no docstring)
+
+### `t101` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t101` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:459](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L459) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t101` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:509](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L509) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t101` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:449](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L449) — (no docstring)
+
+### `t102` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t102` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:463](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L463) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t102` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:513](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L513) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t102` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:453](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L453) — (no docstring)
+
+### `t103` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t103` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:467](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L467) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t103` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:517](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L517) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t103` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:457](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L457) — (no docstring)
+
+### `t104` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t104` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:471](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L471) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t104` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:521](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L521) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t104` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:461](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L461) — (no docstring)
+
+### `t105` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t105` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:475](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L475) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t105` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:525](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L525) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t105` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:465](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L465) — (no docstring)
+
+### `t106` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t106` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:479](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L479) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t106` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:529](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L529) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t106` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:469](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L469) — (no docstring)
+
+### `t107` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t107` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:483](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L483) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t107` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:533](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L533) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t107` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:473](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L473) — (no docstring)
+
+### `t108` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t108` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:487](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L487) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t108` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:537](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L537) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t108` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:477](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L477) — (no docstring)
+
+### `t109` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t109` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:491](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L491) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t109` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:541](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L541) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t109` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:481](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L481) — (no docstring)
+
+### `t110` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t110` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:495](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L495) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t110` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:545](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L545) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t110` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:485](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L485) — (no docstring)
+
+### `t111` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t111` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:499](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L499) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t111` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:549](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L549) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t111` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:489](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L489) — (no docstring)
+
+### `t112` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t112` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:503](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L503) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t112` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:553](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L553) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t112` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:493](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L493) — (no docstring)
+
+### `t113` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t113` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:507](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L507) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t113` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:557](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L557) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t113` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:497](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L497) — (no docstring)
+
+### `t114` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t114` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:511](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L511) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t114` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:561](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L561) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t114` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:501](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L501) — (no docstring)
+
+### `t115` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t115` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:515](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L515) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t115` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:565](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L565) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t115` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:505](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L505) — (no docstring)
+
+### `t116` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t116` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:519](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L519) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t116` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:569](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L569) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t116` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:509](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L509) — (no docstring)
+
+### `t117` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t117` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:523](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L523) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t117` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:573](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L573) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t117` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:513](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L513) — (no docstring)
+
+### `t118` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t118` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:527](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L527) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t118` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:577](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L577) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t118` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:517](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L517) — (no docstring)
+
+### `t119` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t119` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:531](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L531) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t119` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:581](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L581) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t119` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:521](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L521) — (no docstring)
+
+### `t120` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t120` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:535](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L535) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t120` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:585](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L585) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t120` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:525](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L525) — (no docstring)
+
+### `t121` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t121` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:539](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L539) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t121` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:589](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L589) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t121` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:529](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L529) — (no docstring)
+
+### `t122` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t122` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:543](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L543) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t122` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:593](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L593) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t122` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:533](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L533) — (no docstring)
+
+### `t123` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t123` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:547](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L547) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t123` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:597](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L597) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t123` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:537](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L537) — (no docstring)
+
+### `t124` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t124` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:551](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L551) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t124` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:601](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L601) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t124` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:541](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L541) — (no docstring)
+
+### `t125` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t125` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:555](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L555) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t125` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:605](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L605) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t125` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:545](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L545) — (no docstring)
+
+### `t126` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t126` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:559](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L559) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t126` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:609](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L609) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t126` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:549](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L549) — (no docstring)
+
+### `t127` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t127` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:563](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L563) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t127` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:613](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L613) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t127` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:553](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L553) — (no docstring)
+
+### `t128` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t128` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:567](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L567) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t128` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:617](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L617) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t128` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:557](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L557) — (no docstring)
+
+### `t65` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t65` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:315](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L315) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t65` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:365](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L365) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t65` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:305](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L305) — (no docstring)
+
+### `t66` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t66` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:319](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L319) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t66` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:369](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L369) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t66` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:309](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L309) — (no docstring)
+
+### `t67` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t67` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:323](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L323) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t67` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:373](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L373) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t67` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:313](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L313) — (no docstring)
+
+### `t68` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t68` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:327](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L327) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t68` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:377](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L377) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t68` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:317](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L317) — (no docstring)
+
+### `t69` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t69` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:331](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L331) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t69` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:381](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L381) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t69` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:321](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L321) — (no docstring)
+
+### `t70` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t70` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:335](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L335) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t70` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:385](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L385) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t70` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:325](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L325) — (no docstring)
+
+### `t71` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t71` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:339](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L339) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t71` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:389](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L389) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t71` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:329](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L329) — (no docstring)
+
+### `t72` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t72` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:343](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L343) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t72` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:393](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L393) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t72` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:333](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L333) — (no docstring)
+
+### `t73` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t73` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:347](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L347) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t73` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:397](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L397) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t73` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:337](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L337) — (no docstring)
+
+### `t74` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t74` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:351](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L351) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t74` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:401](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L401) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t74` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:341](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L341) — (no docstring)
+
+### `t75` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t75` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:355](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L355) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t75` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:405](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L405) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t75` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:345](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L345) — (no docstring)
+
+### `t76` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t76` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:359](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L359) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t76` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:409](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L409) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t76` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:349](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L349) — (no docstring)
+
+### `t77` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t77` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:363](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L363) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t77` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:413](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L413) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t77` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:353](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L353) — (no docstring)
+
+### `t78` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t78` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:367](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L367) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t78` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:417](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L417) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t78` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:357](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L357) — (no docstring)
+
+### `t79` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t79` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:371](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L371) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t79` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:421](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L421) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t79` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:361](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L361) — (no docstring)
+
+### `t80` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t80` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:375](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L375) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t80` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:425](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L425) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t80` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:365](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L365) — (no docstring)
+
+### `t81` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t81` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:379](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L379) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t81` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:429](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L429) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t81` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:369](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L369) — (no docstring)
+
+### `t82` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t82` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:383](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L383) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t82` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:433](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L433) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t82` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:373](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L373) — (no docstring)
+
+### `t83` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t83` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:387](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L387) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t83` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:437](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L437) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t83` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:377](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L377) — (no docstring)
+
+### `t84` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t84` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:391](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L391) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t84` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:441](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L441) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t84` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:381](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L381) — (no docstring)
+
+### `t85` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t85` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:395](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L395) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t85` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:445](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L445) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t85` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:385](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L385) — (no docstring)
+
+### `t86` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t86` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:399](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L399) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t86` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:449](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L449) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t86` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:389](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L389) — (no docstring)
+
+### `t87` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t87` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:403](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L403) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t87` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:453](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L453) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t87` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:393](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L393) — (no docstring)
+
+### `t88` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t88` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:407](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L407) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t88` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:457](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L457) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t88` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:397](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L397) — (no docstring)
+
+### `t89` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t89` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:411](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L411) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t89` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:461](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L461) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t89` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:401](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L401) — (no docstring)
+
+### `t90` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t90` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:415](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L415) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t90` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:465](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L465) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t90` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:405](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L405) — (no docstring)
+
+### `t91` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t91` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:419](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L419) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t91` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:469](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L469) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t91` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:409](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L409) — (no docstring)
+
+### `t92` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t92` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:423](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L423) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t92` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:473](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L473) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t92` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:413](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L413) — (no docstring)
+
+### `t93` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t93` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:427](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L427) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t93` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:477](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L477) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t93` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:417](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L417) — (no docstring)
+
+### `t94` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t94` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:431](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L431) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t94` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:481](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L481) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t94` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:421](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L421) — (no docstring)
+
+### `t95` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t95` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:435](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L435) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t95` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:485](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L485) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t95` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:425](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L425) — (no docstring)
+
+### `t96` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t96` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:439](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L439) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t96` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:489](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L489) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t96` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:429](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L429) — (no docstring)
+
+### `t97` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t97` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:443](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L443) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t97` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:493](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L493) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t97` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:433](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L433) — (no docstring)
+
+### `t98` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t98` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:447](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L447) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t98` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:497](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L497) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t98` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:437](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L437) — (no docstring)
+
+### `t99` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.t99` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:451](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L451) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.t99` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:501](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L501) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.t99` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:441](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L441) — (no docstring)
+
 ### `toVerifier` (3 declarations, 3 files)
 
 - `def Interaction.OracleDecoration.OracleReduction.toVerifier` [ArkLib/Interaction/Oracle/Core.lean:1096](../../../ArkLib/Interaction/Oracle/Core.lean#L1096) — (no docstring)
@@ -1156,7 +2421,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `totient_two_pow` (3 declarations, 3 files)
 
-- `lemma ArkLib.ProximityGap.KKH26.totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean:135](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean#L135) — (no docstring)
+- `lemma ArkLib.ProximityGap.KKH26.totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean:159](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean#L159) — (no docstring)
 - `theorem R12.totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean:140](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean#L140) — `φ(2^m) = 2^{m-1}` for `m ≥ 1`.
 - `theorem ArkLib.ProximityGap.SubsetSumLowerLoop50.totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/SubsetSumLowerLoop50.lean:183](../../../ArkLib/Data/CodingTheory/ProximityGap/SubsetSumLowerLoop50.lean#L183) — `φ(2^m) = 2^{m-1}` for `m ≥ 1`.
 
@@ -1165,6 +2430,390 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def RandomQuery.transcriptSimulator` [ArkLib/ProofSystem/Component/RandomQuery.lean:203](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L203) — The simulator for `RandomQuery`: the protocol is witness-free, so the simulator can rerun the honest
 - `def SendClaim.transcriptSimulator` [ArkLib/ProofSystem/Component/SendClaim.lean:246](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L246) — The simulator for `SendClaim`: the component has no private witness, so the simulator can run the ho
 - `def SendWitness.transcriptSimulator` [ArkLib/ProofSystem/Component/SendWitness.lean:103](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L103) — The simulator for the `SendWitness` reduction when the relation's witness is determined by the input
+
+### `u100` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u100` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:983](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L983) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u100` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1032](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1032) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u100` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:974](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L974) — (no docstring)
+
+### `u101` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u101` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:987](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L987) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u101` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1036](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1036) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u101` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:978](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L978) — (no docstring)
+
+### `u102` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u102` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:991](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L991) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u102` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1040](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1040) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u102` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:982](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L982) — (no docstring)
+
+### `u103` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u103` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:995](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L995) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u103` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1044](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1044) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u103` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:986](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L986) — (no docstring)
+
+### `u104` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u104` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:999](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L999) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u104` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1048](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1048) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u104` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:990](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L990) — (no docstring)
+
+### `u105` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u105` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1003](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1003) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u105` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1052](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1052) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u105` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:994](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L994) — (no docstring)
+
+### `u106` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u106` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1007](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1007) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u106` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1056](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1056) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u106` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:998](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L998) — (no docstring)
+
+### `u107` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u107` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1011](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1011) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u107` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1060](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1060) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u107` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1002](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1002) — (no docstring)
+
+### `u108` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u108` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1015](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1015) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u108` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1064](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1064) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u108` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1006](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1006) — (no docstring)
+
+### `u109` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u109` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1019](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1019) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u109` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1068](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1068) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u109` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1010](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1010) — (no docstring)
+
+### `u110` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u110` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1023](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1023) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u110` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1072](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1072) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u110` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1014](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1014) — (no docstring)
+
+### `u111` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u111` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1027](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1027) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u111` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1076](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1076) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u111` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1018](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1018) — (no docstring)
+
+### `u112` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u112` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1031](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1031) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u112` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1080](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1080) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u112` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1022](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1022) — (no docstring)
+
+### `u113` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u113` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1035](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1035) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u113` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1084](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1084) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u113` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1026](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1026) — (no docstring)
+
+### `u114` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u114` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1039](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1039) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u114` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1088](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1088) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u114` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1030](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1030) — (no docstring)
+
+### `u115` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u115` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1043](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1043) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u115` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1092](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1092) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u115` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1034](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1034) — (no docstring)
+
+### `u116` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u116` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1047](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1047) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u116` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1096](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1096) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u116` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1038](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1038) — (no docstring)
+
+### `u117` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u117` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1051](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1051) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u117` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1100](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1100) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u117` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1042](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1042) — (no docstring)
+
+### `u118` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u118` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1055](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1055) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u118` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1104](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1104) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u118` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1046](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1046) — (no docstring)
+
+### `u119` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u119` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1059](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1059) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u119` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1108](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1108) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u119` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1050](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1050) — (no docstring)
+
+### `u120` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u120` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1063](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1063) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u120` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1112](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1112) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u120` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1054](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1054) — (no docstring)
+
+### `u121` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u121` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1067](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1067) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u121` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1116](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1116) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u121` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1058](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1058) — (no docstring)
+
+### `u122` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u122` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1071](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1071) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u122` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1120](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1120) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u122` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1062](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1062) — (no docstring)
+
+### `u123` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u123` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1075](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1075) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u123` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1124](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1124) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u123` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1066](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1066) — (no docstring)
+
+### `u124` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u124` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1079](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1079) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u124` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1128](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1128) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u124` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1070](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1070) — (no docstring)
+
+### `u125` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u125` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1083](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1083) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u125` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1132](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1132) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u125` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1074](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1074) — (no docstring)
+
+### `u126` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u126` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1087](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1087) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u126` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1136](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1136) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u126` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1078](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1078) — (no docstring)
+
+### `u127` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u127` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1091](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1091) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u127` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1140](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1140) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u127` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1082](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1082) — (no docstring)
+
+### `u128` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u128` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1095](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1095) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u128` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1144](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1144) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u128` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:1086](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L1086) — (no docstring)
+
+### `u65` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u65` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:843](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L843) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u65` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:892](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L892) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u65` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:834](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L834) — (no docstring)
+
+### `u66` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u66` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:847](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L847) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u66` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:896](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L896) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u66` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:838](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L838) — (no docstring)
+
+### `u67` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u67` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:851](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L851) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u67` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:900](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L900) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u67` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:842](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L842) — (no docstring)
+
+### `u68` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u68` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:855](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L855) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u68` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:904](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L904) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u68` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:846](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L846) — (no docstring)
+
+### `u69` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u69` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:859](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L859) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u69` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:908](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L908) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u69` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:850](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L850) — (no docstring)
+
+### `u70` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u70` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:863](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L863) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u70` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:912](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L912) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u70` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:854](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L854) — (no docstring)
+
+### `u71` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u71` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:867](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L867) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u71` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:916](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L916) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u71` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:858](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L858) — (no docstring)
+
+### `u72` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u72` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:871](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L871) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u72` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:920](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L920) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u72` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:862](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L862) — (no docstring)
+
+### `u73` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u73` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:875](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L875) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u73` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:924](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L924) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u73` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:866](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L866) — (no docstring)
+
+### `u74` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u74` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:879](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L879) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u74` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:928](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L928) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u74` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:870](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L870) — (no docstring)
+
+### `u75` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u75` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:883](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L883) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u75` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:932](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L932) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u75` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:874](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L874) — (no docstring)
+
+### `u76` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u76` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:887](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L887) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u76` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:936](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L936) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u76` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:878](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L878) — (no docstring)
+
+### `u77` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u77` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:891](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L891) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u77` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:940](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L940) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u77` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:882](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L882) — (no docstring)
+
+### `u78` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u78` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:895](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L895) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u78` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:944](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L944) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u78` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:886](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L886) — (no docstring)
+
+### `u79` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u79` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:899](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L899) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u79` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:948](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L948) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u79` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:890](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L890) — (no docstring)
+
+### `u80` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u80` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:903](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L903) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u80` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:952](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L952) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u80` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:894](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L894) — (no docstring)
+
+### `u81` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u81` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:907](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L907) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u81` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:956](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L956) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u81` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:898](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L898) — (no docstring)
+
+### `u82` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u82` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:911](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L911) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u82` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:960](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L960) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u82` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:902](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L902) — (no docstring)
+
+### `u83` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u83` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:915](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L915) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u83` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:964](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L964) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u83` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:906](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L906) — (no docstring)
+
+### `u84` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u84` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:919](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L919) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u84` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:968](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L968) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u84` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:910](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L910) — (no docstring)
+
+### `u85` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u85` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:923](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L923) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u85` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:972](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L972) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u85` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:914](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L914) — (no docstring)
+
+### `u86` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u86` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:927](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L927) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u86` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:976](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L976) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u86` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:918](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L918) — (no docstring)
+
+### `u87` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u87` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:931](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L931) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u87` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:980](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L980) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u87` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:922](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L922) — (no docstring)
+
+### `u88` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u88` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:935](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L935) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u88` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:984](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L984) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u88` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:926](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L926) — (no docstring)
+
+### `u89` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u89` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:939](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L939) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u89` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:988](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L988) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u89` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:930](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L930) — (no docstring)
+
+### `u90` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u90` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:943](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L943) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u90` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:992](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L992) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u90` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:934](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L934) — (no docstring)
+
+### `u91` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u91` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:947](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L947) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u91` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:996](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L996) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u91` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:938](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L938) — (no docstring)
+
+### `u92` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u92` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:951](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L951) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u92` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1000](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1000) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u92` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:942](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L942) — (no docstring)
+
+### `u93` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u93` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:955](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L955) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u93` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1004](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1004) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u93` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:946](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L946) — (no docstring)
+
+### `u94` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u94` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:959](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L959) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u94` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1008](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1008) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u94` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:950](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L950) — (no docstring)
+
+### `u95` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u95` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:963](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L963) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u95` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1012](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1012) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u95` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:954](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L954) — (no docstring)
+
+### `u96` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u96` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:967](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L967) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u96` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1016](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1016) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u96` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:958](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L958) — (no docstring)
+
+### `u97` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u97` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:971](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L971) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u97` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1020](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1020) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u97` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:962](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L962) — (no docstring)
+
+### `u98` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u98` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:975](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L975) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u98` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1024](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1024) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u98` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:966](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L966) — (no docstring)
+
+### `u99` (3 declarations, 3 files)
+
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.u99` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:979](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L979) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.u99` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1028](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1028) — (no docstring)
+- `theorem ArkLib.ProximityGap.Mu6DeepRung.u99` [ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean:970](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6DeepRung.lean#L970) — (no docstring)
 
 ### `ubad` (3 declarations, 3 files)
 
@@ -1213,6 +2862,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma GSInterp.coeffPoly_evalEval` [ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean:119](../../../ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean#L119) — (no docstring)
 - `lemma R15.coeffPoly_evalEval` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean:126](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean#L126) — (no docstring)
 - `lemma R15.coeffPoly_evalEval` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean:126](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean#L126) — (no docstring)
+
+### `dom8` (3 declarations, 3 files)
+
+- `def ProximityGap.PairRank.dom8` [ArkLib/Data/CodingTheory/ProximityGap/CubicSupplyZeroF73.lean:41](../../../ArkLib/Data/CodingTheory/ProximityGap/CubicSupplyZeroF73.lean#L41) — The NTT evaluation domain `μ_8 ⊂ F₇₃` as an embedding (injective by `decide`).
+- `def ProximityGap.PairRank.dom8` [ArkLib/Data/CodingTheory/ProximityGap/QuarticSupplyDichotomy.lean:128](../../../ArkLib/Data/CodingTheory/ProximityGap/QuarticSupplyDichotomy.lean#L128) — The evaluation domain `μ_8 ⊂ F₁₇` as an embedding (injective by `decide`).
+- `def ProximityGap.SmoothWindowSaturation.dom8` [ArkLib/Data/CodingTheory/ProximityGap/SmoothWindowSaturation.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/SmoothWindowSaturation.lean#L57) — The smooth domain `μ₈ = ⟨2⟩ ⊆ F₁₇ˣ` in generator order.
 
 ### `evalAtPoints` (3 declarations, 3 files)
 
@@ -1543,6 +3198,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma Domain.CosetFftDomain.mem_toFinset_iff_mem` [ArkLib/Data/Domain/CosetFftDomain/Mem.lean:117](../../../ArkLib/Data/Domain/CosetFftDomain/Mem.lean#L117) — (no docstring)
 - `lemma Domain.FftDomain.mem_toFinset_iff_mem` [ArkLib/Data/Domain/FftDomain/Mem.lean:69](../../../ArkLib/Data/Domain/FftDomain/Mem.lean#L69) — (no docstring)
 
+### `mu8` (3 declarations, 2 files)
+
+- `def ArkLib.ProximityGap.EnergyMinimalF73.mu8` [ArkLib/Data/CodingTheory/ProximityGap/EnergyMinimalF73.lean:40](../../../ArkLib/Data/CodingTheory/ProximityGap/EnergyMinimalF73.lean#L40) — The order-8 multiplicative subgroup `μ_8 ⊂ F₇₃` (generated by `10`).
+- `def ArkLib.ProximityGap.EnergyMinimalF17.mu8` [ArkLib/Data/CodingTheory/ProximityGap/EnergyMinimalF73.lean:58](../../../ArkLib/Data/CodingTheory/ProximityGap/EnergyMinimalF73.lean#L58) — The order-8 multiplicative subgroup `μ_8 ⊂ F₁₇`.
+- `def ProximityGap.JohnsonExactPoint.mu8` [ArkLib/Data/CodingTheory/ProximityGap/JohnsonExactPoint.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/JohnsonExactPoint.lean#L56) — The domain as a Finset (`μ₈`).
+
 ### `rdrop` (3 declarations, 2 files)
 
 - `abbrev Fin.rdrop` [ArkLib/Data/Fin/Tuple/Defs.lean:68](../../../ArkLib/Data/Fin/Tuple/Defs.lean#L68) — Drop the last `m` elements of an `n`-tuple where `m ≤ n`, returning an `(n - m)`-tuple. This is defi
@@ -1560,6 +3221,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Prover.snd` [ArkLib/OracleReduction/Composition/Sequential/SeamDecomposition.lean:90](../../../ArkLib/OracleReduction/Composition/Sequential/SeamDecomposition.lean#L90) — **Phase-2 seam restriction of a (malicious) prover** over `pSpec₁ ++ₚ pSpec₂`. Resumes from `P`'s se
 - `def ProtocolSpec.Transcript.snd` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:141](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L141) — The second half of a partial transcript for a concatenated protocol.
 - `def ProtocolSpec.FullTranscript.snd` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:223](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L223) — The second half of a transcript for a concatenated protocol
+
+### `Admissible` (2 declarations, 2 files)
+
+- `def ArkLib.ProximityGap.SubgroupSumset.Admissible` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetConjecture.lean:327](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetConjecture.lean#L327) — **Definition 1.11 (BCHKS25).** `(q, a, b)` is *admissible* if there is a multiplicative subgroup `G
+- `def ReedSolomon.Folded.Admissible` [ArkLib/Data/CodingTheory/ReedSolomon/Folded.lean:63](../../../ArkLib/Data/CodingTheory/ReedSolomon/Folded.lean#L63) — **ABF26 Definition 2.14 (strengthened).** An element `ω : F` is `(L, s)`-admissible if **every evalu
 
 ### `AntipodallyClosed` (2 declarations, 2 files)
 
@@ -1676,6 +3342,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `abbrev Commitment.ExtractabilityAdversary` [ArkLib/CommitmentScheme/Basic.lean:183](../../../ArkLib/CommitmentScheme/Basic.lean#L183) — An adversary in the extractability game is an oracle computation that returns a commitment, a query,
 - `structure CommitmentScheme.ExtractabilityAdversary` [ArkLib/CommitmentScheme/CommitmentScheme.lean:137](../../../ArkLib/CommitmentScheme/CommitmentScheme.lean#L137) — An adversary in the extractability game returns a commitment, a claimed message/opening pair, and au
 
+### `F101` (2 declarations, 2 files)
+
+- `abbrev ProximityGap.MCARSBoundaryArithmetic.F101` [ArkLib/Data/CodingTheory/ProximityGap/MCARSBoundaryArithmetic.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/MCARSBoundaryArithmetic.lean#L49) — (no docstring)
+- `abbrev ProximityGap.TwoBranch.F101` [ArkLib/Data/CodingTheory/ProximityGap/TwoBranchSupplyCountermodel.lean:107](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoBranchSupplyCountermodel.lean#L107) — The field `F₁₀₁`.
+
 ### `F11` (2 declarations, 2 files)
 
 - `abbrev ProximityGap.MCAHalfDistanceGeneralRefuted.F11` [ArkLib/Data/CodingTheory/ProximityGap/MCAHalfDistanceGeneralRefuted.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAHalfDistanceGeneralRefuted.lean#L56) — (no docstring)
@@ -1735,6 +3406,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def ProtocolSpec.MessageIdx` [ArkLib/OracleReduction/ProtocolSpec/Basic.lean:61](../../../ArkLib/OracleReduction/ProtocolSpec/Basic.lean#L61) — Subtype of `Fin n` for the indices corresponding to messages in a protocol specification
 - `def ProtocolSpec.VectorSpec.MessageIdx` [ArkLib/OracleReduction/VectorIOR.lean:50](../../../ArkLib/OracleReduction/VectorIOR.lean#L50) — The type of indices for messages in a `VectorSpec`.
+
+### `N_pos` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.SubgroupSumset.N_pos` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetConjecture.lean:99](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetConjecture.lean#L99) — (no docstring)
+- `lemma SpongeSize.N_pos` [ArkLib/Data/Hash/DuplexSponge.lean:225](../../../ArkLib/Data/Hash/DuplexSponge.lean#L225) — (no docstring)
 
 ### `NoRedundantEntryDSPaper` (2 declarations, 2 files)
 
@@ -1862,10 +3538,45 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def RandomQuery.WitIn` [ArkLib/ProofSystem/Component/RandomQuery.lean:39](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L39) — (no docstring)
 - `def Logup.WitIn` [ArkLib/ProofSystem/Logup/Common.lean:368](../../../ArkLib/ProofSystem/Logup/Common.lean#L368) — Protocol 2 has no private witness beyond the input oracles at this layer.
 
+### `additiveEnergy` (2 declarations, 2 files)
+
+- `def ArkLib.ProximityGap.AddEnergyGroupRepBound.additiveEnergy` [ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean:38](../../../ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean#L38) — The additive energy `E(S) = ∑_{a,b∈S} #{y∈S : (a+b)−y∈S}`.
+- `def ArkLib.ProximityGap.AdditiveEnergyRepBound.additiveEnergy` [ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean:46](../../../ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean#L46) — The additive energy `E(G) = ∑_{a,b∈G} #{y∈G : (a+b)−y∈G} = #{(a,b,c,d)∈G⁴ : a+b = c+d}`.
+
+### `additiveEnergy_eq_iff_sidonModNeg` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.AdditiveEnergySidonModNeg.additiveEnergy_eq_iff_sidonModNeg` [ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyCharacterization.lean:92](../../../ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyCharacterization.lean#L92) — **The energy characterization of Sidon-modulo-negation.**  For a negation-closed `G ∌ 0` (char `≠ 2`
+- `theorem ArkLib.ProximityGap.WF2EnergySidon.additiveEnergy_eq_iff_sidonModNeg` [ArkLib/Data/CodingTheory/ProximityGap/EnergyExcessStructure.lean:232](../../../ArkLib/Data/CodingTheory/ProximityGap/EnergyExcessStructure.lean#L232) — **THE ENERGY BICONDITIONAL — `E(G) = 3\|G\|²−3\|G\| ⟺ SidonModNeg G`.**  The two-sided pin of the additi
+
+### `additiveEnergy_ge` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.AdditiveEnergySidonModNeg.additiveEnergy_ge` [ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyLowerBound.lean:87](../../../ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyLowerBound.lean#L87) — **THE ADDITIVE-ENERGY LOWER BOUND — Sidon-mod-negation is the *minimum* energy.**  Every negation-cl
+- `theorem ArkLib.ProximityGap.WF2EnergySidon.additiveEnergy_ge` [ArkLib/Data/CodingTheory/ProximityGap/EnergyExcessStructure.lean:120](../../../ArkLib/Data/CodingTheory/ProximityGap/EnergyExcessStructure.lean#L120) — **THE LOWER BOUND (always).**  For any negation-closed `G` with `0 ∉ G`, char `≠ 2`, the additive en
+
+### `additiveEnergy_le_of_repBound` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.AddEnergyGroupRepBound.additiveEnergy_le_of_repBound` [ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean:47](../../../ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean#L47) — **Additive energy from a representation bound, over any abelian group.** If every nonzero `t` has at
+- `theorem ArkLib.ProximityGap.AdditiveEnergyRepBound.additiveEnergy_le_of_repBound` [ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean:55](../../../ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean#L55) — **Additive energy from a representation bound (works over any field, e.g. `F_q`).** If every nonzero
+
+### `additiveEnergy_le_three_of_repTwo` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.AddEnergyGroupRepBound.additiveEnergy_le_three_of_repTwo` [ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean:92](../../../ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean#L92) — **Minimal-energy specialization**: `r(t) ≤ 2` for `t ≠ 0` ⟹ `E(S) ≤ 3·\|S\|²`, over any abelian group
+- `theorem ArkLib.ProximityGap.AdditiveEnergyRepBound.additiveEnergy_le_three_of_repTwo` [ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean:100](../../../ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean#L100) — **Specialization: representation bound `2` ⟹ minimal additive energy `E(G) ≤ 3\|G\|²`.** This is the f
+
+### `aeval_psum` (2 declarations, 2 files)
+
+- `lemma ArkLib.ProximityGap.MomentCollisionRigidity.aeval_psum` [ArkLib/Data/CodingTheory/ProximityGap/MomentCollisionRigidity.lean:55](../../../ArkLib/Data/CodingTheory/ProximityGap/MomentCollisionRigidity.lean#L55) — (no docstring)
+- `lemma ArkLib.ProximityGap.KKH26.aeval_psum` [ArkLib/Data/CodingTheory/ProximityGap/NewtonPowerSumWindow.lean:35](../../../ArkLib/Data/CodingTheory/ProximityGap/NewtonPowerSumWindow.lean#L35) — `aeval f (psum σ ℤ k) = ∑ i, (f i)^k`.
+
 ### `agree_add_hammingDist` (2 declarations, 2 files)
 
 - `theorem CodeGeometry.agree_add_hammingDist` [ArkLib/Data/CodingTheory/CodeGeometry.lean:42](../../../ArkLib/Data/CodingTheory/CodeGeometry.lean#L42) — Agreement and Hamming distance partition the coordinate set.
 - `theorem ArkLib.JohnsonBound.agree_add_hammingDist` [ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean:57](../../../ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean#L57) — Agreement plus Hamming distance equals the block length.
+
+### `agree_card_le` (2 declarations, 2 files)
+
+- `theorem ProximityGap.EsymmFiber.agree_card_le` [ArkLib/Data/CodingTheory/ProximityGap/EsymmFiberCodewordList.lean:41](../../../ArkLib/Data/CodingTheory/ProximityGap/EsymmFiberCodewordList.lean#L41) — A degree-`<k` RS codeword agrees with a degree-`t=k+m+1` polynomial word on `≤ t` points (root-count
+- `theorem ProximityGap.PairRank.agree_card_le` [ArkLib/Data/CodingTheory/ProximityGap/GeneralOrchardIdentity.lean:40](../../../ArkLib/Data/CodingTheory/ProximityGap/GeneralOrchardIdentity.lean#L40) — A listed codeword's agreement with `x^{k+1}` is at most `k+1`: `X^{k+1} − P` is a degree- `(k+1)` po
 
 ### `agreement` (2 declarations, 2 files)
 
@@ -1937,6 +3648,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Fin.append_right_injective` [ArkLib/Data/Fin/Basic.lean:270](../../../ArkLib/Data/Fin/Basic.lean#L270) — (no docstring)
 - `theorem ProtocolSpec.append_right_injective` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:78](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L78) — (no docstring)
+
+### `append_soundness_challenge` (2 declarations, 2 files)
+
+- `theorem Verifier.append_soundness_challenge` [ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessChallengeProof.lean:292](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessChallengeProof.lean#L292) — **Unconditional binary append-soundness, challenge-seam case** (the conclusion of `Verifier.append_s
+- `theorem OracleVerifier.append_soundness_challenge` [ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessTotal.lean:130](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSoundnessTotal.lean#L130) — **OracleVerifier-level plain-soundness append keystone, challenge seam (unconditional).** The challe
 
 ### `append_soundness_msg` (2 declarations, 2 files)
 
@@ -2011,7 +3727,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `batchingCoreRbrKnowledgeError` (2 declarations, 2 files)
 
 - `def Binius.FRIBinius.FullFRIBinius.batchingCoreRbrKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:217](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L217) — Combined RBR knowledge error for batching + core interaction.
-- `def RingSwitching.FullRingSwitching.batchingCoreRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/General.lean:190](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L190) — (no docstring)
+- `def RingSwitching.FullRingSwitching.batchingCoreRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/General.lean:193](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L193) — (no docstring)
 
 ### `batchingCoreReduction` (2 declarations, 2 files)
 
@@ -2103,10 +3819,25 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.CodingTheory.BallVolume.card_filter_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/BallVolume.lean:33](../../../ArkLib/Data/CodingTheory/ProximityGap/BallVolume.lean#L33) — The number of nonzero field elements is `q - 1`.
 - `theorem ArkLib.RandomLinearCode.card_filter_ne_zero` [ArkLib/Data/CodingTheory/RandomLinearCodeFirstMoment.lean:53](../../../ArkLib/Data/CodingTheory/RandomLinearCodeFirstMoment.lean#L53) — The number of nonzero messages is `qᵏ − 1`.
 
+### `card_le` (2 declarations, 2 files)
+
+- `lemma BCIKS20.HenselNumerator.card_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2KeystoneReindex.lean:170](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2KeystoneReindex.lean#L170) — The number of parts is at most the partitioned number, since every part is `≥ 1`.
+- `theorem ProximityGap.FamilyBad.card_le` [ArkLib/Data/CodingTheory/ProximityGap/FamilyBadBound.lean:58](../../../ArkLib/Data/CodingTheory/ProximityGap/FamilyBadBound.lean#L58) — **The per-family bound**: at radius `δ` with `δ·n ≤ w` and `δ ≤ 1`, at most `w + 1` nonzero scalars
+
+### `card_locus_le` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MonomialDominantCoset.card_locus_le` [ArkLib/Data/CodingTheory/ProximityGap/MonomialDominantCoset.lean:167](../../../ArkLib/Data/CodingTheory/ProximityGap/MonomialDominantCoset.lean#L167) — **The locus is small**: at most `2d` domain points satisfy `x^{2d} = A²` (they inject into the roots
+- `theorem ProximityGap.MonomialLocusCollapse.card_locus_le` [ArkLib/Data/CodingTheory/ProximityGap/MonomialLocusCollapse.lean:142](../../../ArkLib/Data/CodingTheory/ProximityGap/MonomialLocusCollapse.lean#L142) — **The off-locus count**: at most `a−1` domain points satisfy `x^{a−1} = c` (they inject into the roo
+
 ### `card_wordStack_eq` (2 declarations, 2 files)
 
 - `theorem CS25.card_wordStack_eq` [ArkLib/Data/CodingTheory/ProximityGap/CS25JointProxBound.lean:255](../../../ArkLib/Data/CodingTheory/ProximityGap/CS25JointProxBound.lean#L255) — **`#stacks = Q^n`** for the interleaved alphabet `Q = \|κ→A\|`, `n = \|ι\|`.
 - `theorem CodingTheory.card_wordStack_eq` [ArkLib/Data/CodingTheory/ProximityGap/CS25SecondMomentIsolation.lean:38](../../../ArkLib/Data/CodingTheory/ProximityGap/CS25SecondMomentIsolation.lean#L38) — The number of two-row stacks over `ι → F` equals `\|ι→F\|²`.
+
+### `castHom_injOn_signedPowers` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.PrimitiveFactorCovering.castHom_injOn_signedPowers` [ArkLib/Data/CodingTheory/ProximityGap/PrimitiveFactorCovering.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/PrimitiveFactorCovering.lean#L59) — **Distinctness mod a primitive factor (odd order).**
+- `theorem ArkLib.ProximityGap.SubgroupSumset.castHom_injOn_signedPowers` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetFactorWitness.lean:144](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetFactorWitness.lean#L144) — The reduction `ZMod (2^p−1) → ZMod q` is **injective on the signed powers** `{±2^i : i<p}` (they sta
 
 ### `cert5` (2 declarations, 2 files)
 
@@ -2123,6 +3854,41 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ArkLib.CodingTheory.HasseWeilInstances.charSum` [ArkLib/Data/CodingTheory/ProximityGap/HasseWeilBoundInstances.lean:88](../../../ArkLib/Data/CodingTheory/ProximityGap/HasseWeilBoundInstances.lean#L88) — The complete quadratic character sum `∑ₓ χ(f x)`.
 - `def ArkLib.ProximityGap.MomentCollisionSpectral.charSum` [ArkLib/Data/CodingTheory/ProximityGap/MomentCollisionSpectral.lean:66](../../../ArkLib/Data/CodingTheory/ProximityGap/MomentCollisionSpectral.lean#L66) — The Fourier coefficient `T ψ = ∑_S ψ (stat S)`.
 
+### `chiC` (2 declarations, 2 files)
+
+- `def ArkLib.ProximityGap.QRExpSum.chiC` [ArkLib/Data/CodingTheory/ProximityGap/QRExponentialSum.lean:35](../../../ArkLib/Data/CodingTheory/ProximityGap/QRExponentialSum.lean#L35) — The quadratic character of `ZMod p` valued in `ℂ`.
+- `def ArkLib.ProximityGap.Round9SalieQuartic.chiC` [ArkLib/Data/CodingTheory/ProximityGap/Round9SalieQuarticReduction.lean:114](../../../ArkLib/Data/CodingTheory/ProximityGap/Round9SalieQuarticReduction.lean#L114) — `chiC F` is the quadratic character pushed into `ℂ`.
+
+### `chiC_apply` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.QRExpSum.chiC_apply` [ArkLib/Data/CodingTheory/ProximityGap/QRExponentialSum.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/QRExponentialSum.lean#L42) — (no docstring)
+- `lemma ArkLib.ProximityGap.Round9SalieQuartic.chiC_apply` [ArkLib/Data/CodingTheory/ProximityGap/Round9SalieQuarticReduction.lean:117](../../../ArkLib/Data/CodingTheory/ProximityGap/Round9SalieQuarticReduction.lean#L117) — (no docstring)
+
+### `chiC_isQuadratic` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.QRExpSum.chiC_isQuadratic` [ArkLib/Data/CodingTheory/ProximityGap/QRExponentialSum.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/QRExponentialSum.lean#L60) — The pushed quadratic character is quadratic.
+- `lemma ArkLib.ProximityGap.Round9SalieQuartic.chiC_isQuadratic` [ArkLib/Data/CodingTheory/ProximityGap/Round9SalieQuarticReduction.lean:120](../../../ArkLib/Data/CodingTheory/ProximityGap/Round9SalieQuarticReduction.lean#L120) — (no docstring)
+
+### `chiC_ne_one` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.QRExpSum.chiC_ne_one` [ArkLib/Data/CodingTheory/ProximityGap/QRExponentialSum.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/QRExponentialSum.lean#L54) — The pushed quadratic character is nontrivial for odd prime fields.
+- `lemma ArkLib.ProximityGap.Round9SalieQuartic.chiC_ne_one` [ArkLib/Data/CodingTheory/ProximityGap/Round9SalieQuarticReduction.lean:122](../../../ArkLib/Data/CodingTheory/ProximityGap/Round9SalieQuarticReduction.lean#L122) — (no docstring)
+
+### `choose_16_8` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.choose_16_8` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:388](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L388) — (no docstring)
+- `theorem ArkLib.ProximityGap.LiteralBudgetPin.choose_16_8` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1153](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1153) — (no docstring)
+
+### `choose_32_7` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.choose_32_7` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:381](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L381) — (no docstring)
+- `lemma ArkLib.ProximityGap.OwnershipCensus.choose_32_7` [ArkLib/Data/CodingTheory/ProximityGap/OwnershipCensusSharpened.lean:785](../../../ArkLib/Data/CodingTheory/ProximityGap/OwnershipCensusSharpened.lean#L785) — (no docstring)
+
+### `choose_32_9` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.CertifiedRungPrime.choose_32_9` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:391](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L391) — (no docstring)
+- `lemma ArkLib.ProximityGap.OwnershipCensus.choose_32_9` [ArkLib/Data/CodingTheory/ProximityGap/OwnershipCensusSharpened.lean:793](../../../ArkLib/Data/CodingTheory/ProximityGap/OwnershipCensusSharpened.lean#L793) — (no docstring)
+
 ### `choose_anti_above_half` (2 declarations, 2 files)
 
 - `theorem ProximityGap.CrossingPin.choose_anti_above_half` [ArkLib/Data/CodingTheory/ProximityGap/CrossingPin.lean:48](../../../ArkLib/Data/CodingTheory/ProximityGap/CrossingPin.lean#L48) — Binomials are anti-monotone above the middle: `C(n,b) ≤ C(n,a)` for `a ≤ b` with `n ≤ 2a`.
@@ -2137,6 +3903,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma ProximityGap.LinearizedPolynomialHasse.choose_prime_pow_cast_eq_zero` [ArkLib/Data/CodingTheory/ProximityGap/LinearizedPolynomialHasse.lean:70](../../../ArkLib/Data/CodingTheory/ProximityGap/LinearizedPolynomialHasse.lean#L70) — **Char-`p` middle binomial vanishing.** For a commutative ring of characteristic `p` (prime), `(p^a)
 - `lemma ArkLib.ProximityGap.Issue232Bricks.choose_prime_pow_cast_eq_zero` [ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean:73](../../../ArkLib/Data/CodingTheory/ProximityGap/VerifiedBricks.lean#L73) — **Char-`p` middle binomial vanishing.** In a commutative ring of prime characteristic `p`, `C(p^a, m
+
+### `choose_sandwich` (2 declarations, 2 files)
+
+- `theorem EntropyGateBinomial.choose_sandwich` [ArkLib/Data/CodingTheory/ProximityGap/EntropyGateBinomial.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/EntropyGateBinomial.lean#L32) — **Binomial two-sided sandwich (ℕ form).** For any `n a`, `(n+1-a)^a ≤ a! · C(n,a) ≤ n^a`. The left w
+- `theorem ProximityGap.PairRank.choose_sandwich` [ArkLib/Data/CodingTheory/ProximityGap/EntropyGateDeltaStar.lean:47](../../../ArkLib/Data/CodingTheory/ProximityGap/EntropyGateDeltaStar.lean#L47) — **Binomial two-sided sandwich.** `(n+1-a)^a ≤ a!·C(n,a) ≤ n^a`.
 
 ### `cliqueLocator_natDegree` (2 declarations, 2 files)
 
@@ -2202,11 +3973,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ProximityPrize.HenselExistence.coeff_γ_eq_S` [ArkLib/Data/Polynomial/HenselExistence.lean:236](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L236) — `γ` agrees with the `t`-th partial sum below order `t + 1`.
 - `theorem ProximityPrize.HenselSeriesCoeff.coeff_γ_eq_S` [ArkLib/Data/Polynomial/HenselSeriesCoeff.lean:312](../../../ArkLib/Data/Polynomial/HenselSeriesCoeff.lean#L312) — `γ` agrees with the `t`-th partial sum below order `t + 1`.
-
-### `coeffs` (2 declarations, 2 files)
-
-- `def Polynomial.Bivariate.coeffs` [ArkLib/Data/Polynomial/Bivariate.lean:34](../../../ArkLib/Data/Polynomial/Bivariate.lean#L34) — The set of coefficients of a bivariate polynomial.
-- `def UniPoly.coeffs` [ArkLib/Data/UniPoly/Basic.lean:41](../../../ArkLib/Data/UniPoly/Basic.lean#L41) — (no docstring)
 
 ### `collision` (2 declarations, 2 files)
 
@@ -2369,6 +4135,26 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def UniPoly.degree` [ArkLib/Data/UniPoly/Basic.lean:66](../../../ArkLib/Data/UniPoly/Basic.lean#L66) — Return the degree of a `UniPoly`.
 - `def StirIOP.degree` [ArkLib/ProofSystem/Stir/MainThm.lean:45](../../../ArkLib/ProofSystem/Stir/MainThm.lean#L45) — **Degree after `i` folds:** The starting degree is `deg`; every fold divides it by `foldingParamⱼ (j
 
+### `deltaStar_dimFour_pin_F4294967377` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.KKH26DimGeneralSharp.deltaStar_dimFour_pin_F4294967377` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralSharpPin.lean:475](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralSharpPin.lean#L475) — **THE CONCRETE PAST-THE-WALL PIN:** `δ* = 11/16` exactly, for the degree-`3` (dimension-four) code o
+- `theorem ArkLib.ProximityGap.OwnershipCensus.deltaStar_dimFour_pin_F4294967377` [ArkLib/Data/CodingTheory/ProximityGap/OwnershipCensusSharpened.lean:740](../../../ArkLib/Data/CodingTheory/ProximityGap/OwnershipCensusSharpened.lean#L740) — **THE FOURTH RUNG (new, unreachable by the landed bound):** `δ* = 11/16` exactly, for the dimension-
+
+### `deltaStar_pin_mu6_dim4` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4` [ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean:1300](../../../ArkLib/Data/CodingTheory/ProximityGap/Mu6ConditionalPin.lean#L1300) — **Promoted μ = 6 dimension-4 literal pin.**  The Parseval + AM-GM proof of `cyclotomicLandauSqBound
+- `theorem ArkLib.ProximityGap.SharpThresholdDischarge.deltaStar_pin_mu6_dim4` [ArkLib/Data/CodingTheory/ProximityGap/SharpThresholdDischarge.lean:159](../../../ArkLib/Data/CodingTheory/ProximityGap/SharpThresholdDischarge.lean#L159) — **THE UNCONDITIONAL μ = 6 LITERAL-BUDGET PIN**: `δ* = 59/64` exactly at `ε* = 2⁻¹²⁸` for the dimensi
+
+### `desc_ratio` (2 declarations, 2 files)
+
+- `lemma ArkLib.ProximityGap.KKH26DimGeneral.desc_ratio` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean:492](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean#L492) — **The falling-product ratio bound** (induction core): `(2h)^{(r)}·(4h − 2r(r−1)) ≤ 2^r·h^{(r)}·4h` —
+- `lemma ArkLib.ProximityGap.KKH26DimGeneralSharp.desc_ratio` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralSharpPin.lean:350](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralSharpPin.lean#L350) — Falling-product ratio bound (copy of the general count's `desc_ratio`).
+
+### `desc_step` (2 declarations, 2 files)
+
+- `lemma ArkLib.ProximityGap.KKH26DimGeneral.desc_step` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean:464](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean#L464) — The per-step inequality of the falling-product induction: `(2h − k)(4h − 2k(k+1)) ≤ (2h − 2k)(4h − 2
+- `lemma ArkLib.ProximityGap.KKH26DimGeneralSharp.desc_step` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralSharpPin.lean:324](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralSharpPin.lean#L324) — Per-step inequality of the falling-product induction (copy of the general count's `desc_step`, which
+
 ### `disagree_card_le` (2 declarations, 2 files)
 
 - `theorem CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.Hab25JohnsonDichotomyData.disagree_card_le` [ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonDichotomy.lean:98](../../../ArkLib/Data/CodingTheory/ProximityGap/Hab25JohnsonDichotomy.lean#L98) — **The dichotomy counting theorem (proven).**  Every factor contributes at most `max T n` exceptional
@@ -2379,6 +4165,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Code.dist` [ArkLib/Data/CodingTheory/Basic/Distance.lean:216](../../../ArkLib/Data/CodingTheory/Basic/Distance.lean#L216) — The Hamming distance of a code `C` is the minimum Hamming distance between any two distinct elements
 - `def dist` [ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean:21](../../../ArkLib/Data/CodingTheory/Quarantine/Hypotheses.lean#L21) — (no docstring)
 
+### `dom16` (2 declarations, 2 files)
+
+- `def ProximityGap.PairRank.dom16` [ArkLib/Data/CodingTheory/ProximityGap/CubicSupplyZeroNTT.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/CubicSupplyZeroNTT.lean#L56) — The NTT evaluation domain `μ_16 ⊂ F₂₅₇` as an embedding (injective by `decide`).
+- `def ProximityGap.VVectorN16.dom16` [ArkLib/Data/CodingTheory/ProximityGap/VVectorN16.lean:36](../../../ArkLib/Data/CodingTheory/ProximityGap/VVectorN16.lean#L36) — The full multiplicative domain: `dom16 i = 3^i`, all sixteen units of `F₁₇`.
+
+### `domEmb` (2 declarations, 2 files)
+
+- `def ArkLib.ProximityGap.KKH26.domEmb` [ArkLib/Data/CodingTheory/ProximityGap/KKH26ExactListLowerBound.lean:306](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26ExactListLowerBound.lean#L306) — The smooth evaluation domain `i ↦ g^i : Fin n ↪ F_p` when `g` has order `n`.
+- `def ProximityGap.MCAMDSStaircaseRefuted.domEmb` [ArkLib/Data/CodingTheory/ProximityGap/MCAMDSStaircaseRefuted.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAMDSStaircaseRefuted.lean#L62) — (no docstring)
+
+### `domZ` (2 declarations, 2 files)
+
+- `def ProximityGap.RSBridge.domZ` [ArkLib/Data/CodingTheory/ProximityGap/RSDivisorListBound.lean:39](../../../ArkLib/Data/CodingTheory/ProximityGap/RSDivisorListBound.lean#L39) — The domain vanishing polynomial `Z = ∏_i (X − dom i)`.
+- `def ProximityGap.WBPencil.domZ` [ArkLib/Data/CodingTheory/ProximityGap/WindowReconstructionPencil.lean:48](../../../ArkLib/Data/CodingTheory/ProximityGap/WindowReconstructionPencil.lean#L48) — The domain vanishing polynomial.
+
 ### `domain_implies_char_ne_2` (2 declarations, 2 files)
 
 - `lemma Domain.CosetFftDomainClass.domain_implies_char_ne_2` [ArkLib/Data/Domain/CosetFftDomain/Ops.lean:98](../../../ArkLib/Data/Domain/CosetFftDomain/Ops.lean#L98) — (no docstring)
@@ -2388,6 +4189,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `abbrev OracleSpec.duplexSpongeTraceEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:371](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L371) — The type of a single entry in a duplex sponge query trace. Implicit-parameter companion to `DSTraceS
 - `abbrev DuplexSpongeFS.DSTraceStorage.duplexSpongeTraceEntry` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceDataStructures.lean:48](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceDataStructures.lean#L48) — A single query-answer entry of a `DuplexSpongeTrace`, i.e. one element of the underlying `QueryLog`
+
+### `embed_W𝒪` (2 declarations, 2 files)
+
+- `theorem BCIKS20.Claim510KillC.embed_W𝒪` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedKill.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedKill.lean#L62) — The embedding of `W𝒪` is the lifted leading coefficient `Ŵ`.
+- `theorem BCIKS20.HenselNumerator.embed_W𝒪` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2BijectionApply.lean:298](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2BijectionApply.lean#L298) — **Embedding of the leading-coefficient unit `W𝒪`.**  `W𝒪 = ⟦C(lc H)⟧` embeds to the function-field l
 
 ### `empty` (2 declarations, 2 files)
 
@@ -2504,6 +4310,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6727](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6727) — Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the
 - `lemma ArkLib.Claim511.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean:129](../../../ArkLib/ToMathlib/BCIKS20CorrelatedAgreement.lean#L129) — **Complement-to-incidence selection.** If at least `r` coordinates are *not* heavy (each bad for `<
 
+### `exists_interpolant` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.KKH26DimGeneral.exists_interpolant` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean:110](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean#L110) — **Interpolation existence**: through any `d + 1` indices (distinct domain points) there is a degree-
+- `theorem ArkLib.Prop55.exists_interpolant` [ArkLib/ToMathlib/BasefoldSingleRoundSoundness.lean:86](../../../ArkLib/ToMathlib/BasefoldSingleRoundSoundness.lean#L86) — **Prop-5.5, interpolant half.**  Given a finite point set `pts` (the close-codeword graphs of §5), a
+
 ### `exists_monic_irreducible_factorization` (2 declarations, 2 files)
 
 - `theorem Polynomial.exists_monic_irreducible_factorization` [ArkLib/ToMathlib/MonicIrreducibleFactorization.lean:29](../../../ArkLib/ToMathlib/MonicIrreducibleFactorization.lean#L29) — Every monic polynomial of positive degree over a domain is a product of monic irreducible factors.
@@ -2573,11 +4384,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Reduction.fiatShamir_completeness_unroll_of_runEq` [ArkLib/OracleReduction/FiatShamir/Basic.lean:387](../../../ArkLib/OracleReduction/FiatShamir/Basic.lean#L387) — The named run-equality residual is enough to unroll basic-Fiat-Shamir completeness to the explicit h
 - `theorem Issue116.fiatShamir_completeness_unroll_of_runEq` [ArkLib/OracleReduction/FiatShamir/CompletenessUnroll.lean:65](../../../ArkLib/OracleReduction/FiatShamir/CompletenessUnroll.lean#L65) — Completeness of the transformed one-message basic Fiat-Shamir reduction is equivalent to the explici
-
-### `fiberCount` (2 declarations, 2 files)
-
-- `def AveragingCrossover.fiberCount` [ArkLib/Data/CodingTheory/ProximityGap/AveragingFiberConservation.lean:85](../../../ArkLib/Data/CodingTheory/ProximityGap/AveragingFiberConservation.lean#L85) — The fiber count over a target.
-- `def Round18Bracket.fiberCount` [ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketScale.lean:47](../../../ArkLib/Data/CodingTheory/ProximityGap/TwoSidedBracketScale.lean#L47) — The fiber count `m x = #{c : x ∈ A c}`.
 
 ### `fiber_scaling` (2 declarations, 2 files)
 
@@ -2700,6 +4506,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Round14ConstantGap.four_pow_le_shift_choose` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean:68](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarConstantGapBelowCapacity.lean#L68) — **Rate-1/2 engine.** For `t < m`: `4^{m−t} ≤ 2(m−t) · C(2m, m+t)`. Chain: `C(2m, m+t) ≥ C(2(m−t), m−
 - `theorem R15Bracket.four_pow_le_shift_choose` [ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean:292](../../../ArkLib/Data/CodingTheory/ProximityGap/ScaleBracketFull.lean#L292) — Central-binomial lower bound after a Pascal shift by `2t`: `4^(m−t) ≤ 2(m−t) · C(2m, m+t)` for `t <
 
+### `four_pow_totient_two_pow` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.AdditiveEnergyRepBound.four_pow_totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/SidonLiftDevacuated.lean:275](../../../ArkLib/Data/CodingTheory/ProximityGap/SidonLiftDevacuated.lean#L275) — For `n = 2^m` (`m ≥ 1`), `4^{φ(n)} = 2^n`: the resultant bound is exactly `2^n`.
+- `theorem four_pow_totient_two_pow` [ArkLib/Data/CodingTheory/ProximityGap/SidonSubgroupClosed.lean:136](../../../ArkLib/Data/CodingTheory/ProximityGap/SidonSubgroupClosed.lean#L136) — `4^{φ(2^m)} = 2^{2^m}` for `m ≥ 1` (`φ(2^m) = 2^{m-1}`).
+
 ### `fullOracleVerifier_rbrKnowledgeSoundness_wired` (2 declarations, 2 files)
 
 - `theorem Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier_rbrKnowledgeSoundness_wired` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:255](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L255) — **Round-by-round knowledge soundness of the full Binary Basefold oracle verifier, wired** (stateless
@@ -2709,6 +4520,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def Binius.FRIBinius.FullFRIBinius.fullPspec` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:54](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L54) — (no docstring)
 - `def RingSwitching.fullPspec` [ArkLib/ProofSystem/RingSwitching/Spec.lean:57](../../../ArkLib/ProofSystem/RingSwitching/Spec.lean#L57) — (no docstring)
+
+### `g_ne_zero` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.SubgroupSumset.Widen.g_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetWiden.lean:78](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetWiden.lean#L78) — `g ≠ 0` (else `g^p = 0 ≠ 1`, contradicting `g^p = 1` for `p ≥ 1`).
+- `theorem ProximityGap.Tower.g_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/TowerMonotonicityRS.lean:76](../../../ArkLib/Data/CodingTheory/ProximityGap/TowerMonotonicityRS.lean#L76) — (no docstring)
+
+### `g_pow_inj` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.SubgroupSumset.Widen.g_pow_inj` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetWiden.lean:107](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetWiden.lean#L107) — `g^i = g^j` forces `i = j` for `i, j < p` (from `orderOf g = p`).
+- `theorem ProximityGap.Tower.g_pow_inj` [ArkLib/Data/CodingTheory/ProximityGap/TowerMonotonicityRS.lean:86](../../../ArkLib/Data/CodingTheory/ProximityGap/TowerMonotonicityRS.lean#L86) — Power equality below the order, routed through the unit group (fields are not left-cancellative at z
 
 ### `gapAgreeSet` (2 declarations, 2 files)
 
@@ -2724,6 +4545,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def Fold.genMutualCorrParamsUDR` [ArkLib/ProofSystem/Whir/FoldingGenMutualCorrParamsUDR.lean:63](../../../ArkLib/ProofSystem/Whir/FoldingGenMutualCorrParamsUDR.lean#L63) — **The unique-decoding-window instance of `Fold.GenMutualCorrParams`.** Given the per-level power-dom
 - `def WhirIOP.genMutualCorrParamsUDR` [ArkLib/ProofSystem/Whir/GenMutualCorrParamsUDR.lean:148](../../../ArkLib/ProofSystem/Whir/GenMutualCorrParamsUDR.lean#L148) — **The unique-decoding-window instance of `GenMutualCorrParams`.** Given the per-round power-domain d
+
+### `genPoly_add` (2 declarations, 2 files)
+
+- `theorem ProximityGap.DeepPairIndependence.genPoly_add` [ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean:71](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean#L71) — (no docstring)
+- `theorem ProximityGap.DeepStratumSurviving.genPoly_add` [ArkLib/Data/CodingTheory/ProximityGap/DeepStratumSurvivingCoord.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepStratumSurvivingCoord.lean#L42) — (no docstring)
+
+### `genPoly_smul` (2 declarations, 2 files)
+
+- `theorem ProximityGap.DeepPairIndependence.genPoly_smul` [ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean:80](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean#L80) — (no docstring)
+- `theorem ProximityGap.DeepStratumSurviving.genPoly_smul` [ArkLib/Data/CodingTheory/ProximityGap/DeepStratumSurvivingCoord.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepStratumSurvivingCoord.lean#L49) — (no docstring)
 
 ### `getBit_eq_testBit` (2 declarations, 2 files)
 
@@ -2760,10 +4591,10 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.ProximityGap.PromotedHypotheses.h30_agreement_lower_bound` [ArkLib/Data/CodingTheory/ProximityGap/PromotedHypotheses.lean:40](../../../ArkLib/Data/CodingTheory/ProximityGap/PromotedHypotheses.lean#L40) — (no docstring)
 - `theorem h30_agreement_lower_bound` [ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesC.lean:11](../../../ArkLib/Data/CodingTheory/ProximityGap/PromotedHypothesesC.lean#L11) — H30: Any vector must agree with some codeword on `k` coordinates. Since we can interpolate on any se
 
-### `half_add_half` (2 declarations, 2 files)
+### `half_ne_zero` (2 declarations, 2 files)
 
-- `theorem ArkLib.ProximityGap.ChordFamilyCount.half_add_half` [ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean:66](../../../ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean#L66) — `2^(m−1)` is self-negative in `ZMod (2^m)`: `h + h = 0`.
-- `lemma ArkLib.ProximityGap.KKH26.half_add_half` [ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean:461](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean#L461) — (no docstring)
+- `theorem ArkLib.ProximityGap.ChordConverseWrapper.half_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/ChordConverseWrapper.lean:66](../../../ArkLib/Data/CodingTheory/ProximityGap/ChordConverseWrapper.lean#L66) — The half-period is nonzero in `ZMod (2^m)`.
+- `theorem ArkLib.ProximityGap.ChordFamilyCount.half_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/ChordFamilyCount.lean#L57) — `2^(m−1)` is nonzero in `ZMod (2^m)`.
 
 ### `ham_c0_c1` (2 declarations, 2 files)
 
@@ -3189,6 +5020,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ProximityGap.lineAgreeSet` [ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:106](../../../ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean#L106) — The agreement domain of the line `u₀ + γ • u₁` with a codeword `w`. GCXK/GKL maximal-domain argument
 - `def ArkLib.ProximityGap.KKH26.lineAgreeSet` [ArkLib/Data/CodingTheory/ProximityGap/KKH26CensusLaw.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26CensusLaw.lean#L54) — The agreement set of the line word `x ↦ x^r + λ·x^{r−1}` with the polynomial `q`, inside the evaluat
 
+### `linePoly` (2 declarations, 2 files)
+
+- `def ArkLib.ProximityGap.KKH26.linePoly` [ArkLib/Data/CodingTheory/ProximityGap/KKH26CensusLaw.lean:58](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26CensusLaw.lean#L58) — The line-minus-explanation polynomial `X^r + λ·X^{r−1} − q`.
+- `def ProximityGap.Ownership.linePoly` [ArkLib/Data/CodingTheory/ProximityGap/SubplaneSupplyFloor.lean:148](../../../ArkLib/Data/CodingTheory/ProximityGap/SubplaneSupplyFloor.lean#L148) — The degree-`< 2` polynomial whose graph contains the sheared image of a `K`-line.
+
 ### `listAt` (2 declarations, 2 files)
 
 - `def ArkLib.ProximityGap.RSPrizeDataPoint.listAt` [ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean:57](../../../ArkLib/Data/CodingTheory/ProximityGap/RSListSizeDataPoint.lean#L57) — The list-decoding list at agreement radius `a` for received word `w`, as a `Finset` of the coefficie
@@ -3218,6 +5054,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma DuplexSpongeFS.Hyb23Bricks.lookupEncodedMessageAlphaHat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean:96](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb23Bricks.lean#L96) — **H23-1.** Looking up the encoded block for message index `j` in the flattened `EncodedMessagesBefor
 - `def DuplexSpongeFS.TraceTransform.lookupEncodedMessageAlphaHat` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean:123](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/TraceTransform.lean#L123) — Looks up the encoded message block `α̂_j` from the flat list of extracted sponge queries.
+
+### `lowPart` (2 declarations, 2 files)
+
+- `def ArkLib.ProximityGap.KKH26.lowPart` [ArkLib/Data/CodingTheory/ProximityGap/LadderSpectrumFusion.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/LadderSpectrumFusion.lean#L42) — The low part of a subset of exponents: members `< h`.
+- `def Binius.BinaryBasefold.lowPart` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/SoundnessCase2FarLift.lean:91](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/SoundnessCase2FarLift.lean#L91) — The low part of an index in `Fin (2^(n+1))`.
 
 ### `map` (2 declarations, 2 files)
 
@@ -3329,6 +5170,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def StirIOP.MultiRound.msgAns` [ArkLib/ProofSystem/Stir/CheckingVerifier.lean:184](../../../ArkLib/ProofSystem/Stir/CheckingVerifier.lean#L184) — The honest answer of a message oracle (ascribed at `F`).
 - `def Whir302Checked.msgAns` [ArkLib/ProofSystem/Whir/CheckedVerifier.lean:125](../../../ArkLib/ProofSystem/Whir/CheckedVerifier.lean#L125) — The honest answer of a message oracle (ascribed at `F`).
 
+### `muN` (2 declarations, 2 files)
+
+- `def ArkLib.ProximityGap.muN` [ArkLib/Data/CodingTheory/ProximityGap/RepCountCurve.lean:33](../../../ArkLib/Data/CodingTheory/ProximityGap/RepCountCurve.lean#L33) — The `n`-th roots of unity in `F`, as a `Finset`.
+- `abbrev ArkLib.ProximityGap.EnergyEqualitySidonModNeg.muN` [ArkLib/Data/CodingTheory/ProximityGap/SidonModNegEnergyEquality.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/SidonModNegEnergyEquality.lean#L42) — The 2-power NTT subgroup `μ_n = {z ∈ F_p : z^n = 1}`, as the `n`-th-roots Finset of `1`.
+
+### `mul_conj_eq_one` (2 declarations, 2 files)
+
+- `theorem ProximityGap.SidonModNegComplex.mul_conj_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/SidonModNegComplex.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/SidonModNegComplex.lean#L56) — A unit complex number times its conjugate is `1`.
+- `theorem ProximityGap.ThreeRoots.mul_conj_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/ThreeRootsSumZeroCharZero.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/ThreeRootsSumZeroCharZero.lean#L45) — A unit complex number times its conjugate is `1`.
+
+### `mult` (2 declarations, 2 files)
+
+- `def GCXK25SecondMoment.mult` [ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean:99](../../../ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean#L99) — Per-coordinate multiplicity: how many of the sets `A α` (for `α ∈ T`) contain `x`.
+- `def ArkLib.ProximityGap.HighMultiplicity.mult` [ArkLib/Data/CodingTheory/ProximityGap/HighMultiplicityBadCount.lean:58](../../../ArkLib/Data/CodingTheory/ProximityGap/HighMultiplicityBadCount.lean#L58) — The **multiplicity** of a scalar `γ` on the affine error line `e₀ + γ·e₁`: the number of support coo
+
 ### `multilinearWeight` (2 declarations, 2 files)
 
 - `def multilinearWeight` [ArkLib/Data/CodingTheory/Prelims.lean:23](../../../ArkLib/Data/CodingTheory/Prelims.lean#L23) — The tensor product weight `⊗_{i=0}^{ϑ-1}(1 - rᵢ, rᵢ)` for a specific index `i` given randomness `r`.
@@ -3374,6 +5230,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma BCIKS20.HenselNumerator.WeightWitness.myR_natDegree` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P1MonicWeightRefutation.lean:79](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P1MonicWeightRefutation.lean#L79) — (no docstring)
 - `lemma BCIKS20.HenselNumerator.Witness.myR_natDegree` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutationWitness.lean:92](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutationWitness.lean#L92) — (no docstring)
 
+### `natAbs_resultant_cyclotomic_le` (2 declarations, 2 files)
+
+- `theorem natAbs_resultant_cyclotomic_le` [ArkLib/Data/CodingTheory/ProximityGap/CyclotomicResultantBound.lean:117](../../../ArkLib/Data/CodingTheory/ProximityGap/CyclotomicResultantBound.lean#L117) — **The integer cyclotomic-resultant magnitude bound.** If `g : ℤ[X]` evaluates with norm `≤ 4` at eve
+- `theorem ArkLib.ProximityGap.KKH26.natAbs_resultant_cyclotomic_le` [ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean:172](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26SumsOfRootsOfUnity.lean#L172) — **Archimedean bound for the cyclotomic resultant.** For `R : ℤ[X]` of degree `< 2^{m-1} = deg Φ_{2^m
+
 ### `natDegree_lt_of_mem_degreeLT` (2 declarations, 2 files)
 
 - `lemma ReedSolomon.natDegree_lt_of_mem_degreeLT` [ArkLib/Data/CodingTheory/ReedSolomon.lean:118](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L118) — (no docstring)
@@ -3394,10 +5255,25 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem CodingTheory.Bridge.AllButOne.nearCertainBadLine_of_allButOne` [ArkLib/ToMathlib/BGKS20AllButOne.lean:86](../../../ArkLib/ToMathlib/BGKS20AllButOne.lean#L86) — **"All but one scalar" producer (BGKS20 line-witness shape).** Given a stack `u` that is **not** joi
 - `theorem CodingTheory.Bridge.nearCertainBadLine_of_allButOne` [ArkLib/ToMathlib/NearCertainBadLineProof.lean:84](../../../ArkLib/ToMathlib/NearCertainBadLineProof.lean#L84) — **All-but-one producer for `NearCertainBadLine`.** If a stack is not jointly close and every scalar
 
+### `neg_pow_eq_one_of_even` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MonomialSpectrum.neg_pow_eq_one_of_even` [ArkLib/Data/CodingTheory/ProximityGap/MonomialDomainRootSpectrum.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/MonomialDomainRootSpectrum.lean#L59) — Even-order root domains are closed under negation at the level of the equation `x^n = 1`.
+- `theorem ArkLib.ProximityGap.SubgroupSumsetLoop49.neg_pow_eq_one_of_even` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetLoop49.lean:94](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupSumsetLoop49.lean#L94) — **Negation closure of even-power roots of unity.** If `d` is even and `x^d = 1` in a commutative rin
+
 ### `nodal_ne_zero` (2 declarations, 2 files)
 
 - `theorem Round21Relations.nodal_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueRelationModule.lean:71](../../../ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueRelationModule.lean#L71) — The nodal polynomial is nonzero.
 - `theorem Round27Core.nodal_ne_zero` [ArkLib/Data/CodingTheory/ProximityGap/RigiditySunflowerCore.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/RigiditySunflowerCore.lean#L49) — (no docstring)
+
+### `nodePoly_eval_eq_zero` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MonomialSupply.nodePoly_eval_eq_zero` [ArkLib/Data/CodingTheory/ProximityGap/MonomialSupplyWitness.lean:61](../../../ArkLib/Data/CodingTheory/ProximityGap/MonomialSupplyWitness.lean#L61) — (no docstring)
+- `theorem ProximityGap.NodalSupplyK.nodePoly_eval_eq_zero` [ArkLib/Data/CodingTheory/ProximityGap/NodalSupplyGeneralK.lean:71](../../../ArkLib/Data/CodingTheory/ProximityGap/NodalSupplyGeneralK.lean#L71) — (no docstring)
+
+### `nodePoly_natDegree` (2 declarations, 2 files)
+
+- `theorem ProximityGap.DeepPairIndependence.nodePoly_natDegree` [ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean:160](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepPairIndependence.lean#L160) — (no docstring)
+- `theorem ProximityGap.NodalSupplyK.nodePoly_natDegree` [ArkLib/Data/CodingTheory/ProximityGap/NodalSupplyGeneralK.lean:61](../../../ArkLib/Data/CodingTheory/ProximityGap/NodalSupplyGeneralK.lean#L61) — (no docstring)
 
 ### `nonvacuity_zmod5` (2 declarations, 2 files)
 
@@ -3614,10 +5490,10 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ProximityGap.MultiplicativeRigidity.pow_eq_card_eq_zero_or_gcd` [ArkLib/Data/CodingTheory/ProximityGap/MultiplicativeRigidityFiber.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/MultiplicativeRigidityFiber.lean#L63) — **Lemma 1 (monomial agreement / coset rigidity).** In a finite cyclic commutative group `G` of order
 - `theorem MultiplicativeRigidity.pow_eq_card_eq_zero_or_gcd` [ArkLib/Data/CodingTheory/ProximityGap/MultiplicativeRigidityZMod.lean:99](../../../ArkLib/Data/CodingTheory/ProximityGap/MultiplicativeRigidityZMod.lean#L99) — **Coset rigidity / monomial agreement (core).** In a finite cyclic group `G` of order `n = Fintype.c
 
-### `pow_inj_below_order` (2 declarations, 2 files)
+### `pow_inj_below_order''` (2 declarations, 2 files)
 
-- `lemma ArkLib.ProximityGap.DeepQuotientTransfer.pow_inj_below_order` [ArkLib/Data/CodingTheory/ProximityGap/DeepQuotientTransfer.lean:87](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepQuotientTransfer.lean#L87) — Injectivity of `i ↦ g^i` below the order of `g`, for nonzero `g` in a field. (Local copy of the priv
-- `lemma ArkLib.ProximityGap.KKH26.pow_inj_below_order` [ArkLib/Data/CodingTheory/ProximityGap/KKH26WitnessSpread.lean:79](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26WitnessSpread.lean#L79) — Injectivity of `i ↦ g^i` below the order of `g`, for nonzero `g` in a field (elementary cancellation
+- `lemma ProximityGap.Ownership.pow_inj_below_order''` [ArkLib/Data/CodingTheory/ProximityGap/KKH26AlignmentSupply.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26AlignmentSupply.lean#L45) — Power injectivity below the order (elementary cancellation, valid at a field).
+- `lemma ArkLib.ProximityGap.Level1Rung.pow_inj_below_order''` [ArkLib/Data/CodingTheory/ProximityGap/Level1RungPin.lean:147](../../../ArkLib/Data/CodingTheory/ProximityGap/Level1RungPin.lean#L147) — Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
 
 ### `probEvent_bind_eq_one` (2 declarations, 2 files)
 
@@ -3634,6 +5510,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem RingSwitching.BatchingPhase.probEvent_uniformSample_eq_Pr_uniform` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:57](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L57) — Bridge the framework's `SampleableType` uniform sampler to the PMF uniform notation used by Schwartz
 - `theorem RingSwitching.SumcheckPhase.probEvent_uniformSample_eq_Pr_uniform` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:63](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L63) — Bridge the framework's `SampleableType` uniform sampler to the PMF uniform notation used by some sta
 
+### `prodXsubC_dvd_of_roots` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.SinglePencilSharper.prodXsubC_dvd_of_roots` [ArkLib/Data/CodingTheory/ProximityGap/DeepBandSubsetSumSpectrum.lean:21](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepBandSubsetSumSpectrum.lean#L21) — The product of `(X − ζ)` over a finset of roots of `P` divides `P`.
+- `theorem ArkLib.ProximityGap.SinglePencilQIndependence.prodXsubC_dvd_of_roots` [ArkLib/Data/CodingTheory/ProximityGap/SinglePencilQIndependence.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/SinglePencilQIndependence.lean#L62) — The product of `(X − ζ)` over a finset of roots of `P` divides `P`.
+
+### `prodXsubC_natDegree` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.SinglePencilSharper.prodXsubC_natDegree` [ArkLib/Data/CodingTheory/ProximityGap/DeepBandSubsetSumSpectrum.lean:29](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepBandSubsetSumSpectrum.lean#L29) — (no docstring)
+- `theorem ArkLib.ProximityGap.SinglePencilQIndependence.prodXsubC_natDegree` [ArkLib/Data/CodingTheory/ProximityGap/SinglePencilQIndependence.lean:150](../../../ArkLib/Data/CodingTheory/ProximityGap/SinglePencilQIndependence.lean#L150) — (no docstring)
+
 ### `prod_X_sub_C_injOn_subsets` (2 declarations, 2 files)
 
 - `theorem ArkLib.CodingTheory.Round4InteriorList.prod_X_sub_C_injOn_subsets` [ArkLib/Data/CodingTheory/ProximityGap/InteriorListCountBridge.lean:128](../../../ArkLib/Data/CodingTheory/ProximityGap/InteriorListCountBridge.lean#L128) — The two root products are equal as polynomials iff the subsets are equal (`D` injective).
@@ -3648,6 +5534,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def MutualCorrAgreement.proximityCondition` [ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean:56](../../../ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean#L56) — For `parℓ` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽` and linea
 - `def Generator.proximityCondition` [ArkLib/ProofSystem/Whir/ProximityGen.lean:38](../../../ArkLib/ProofSystem/Whir/ProximityGen.lean#L38) — For `l` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽ˡ` and linear
+
+### `punctureWord` (2 declarations, 2 files)
+
+- `def ProximityGap.Ownership.punctureWord` [ArkLib/Data/CodingTheory/ProximityGap/BelowUDRPuncture.lean:68](../../../ArkLib/Data/CodingTheory/ProximityGap/BelowUDRPuncture.lean#L68) — The divided-difference puncture of a word at `i₀`.
+- `def R14Derand.punctureWord` [ArkLib/Data/CodingTheory/ProximityGap/DerandomizationFrontier.lean:160](../../../ArkLib/Data/CodingTheory/ProximityGap/DerandomizationFrontier.lean#L160) — Restriction of a word to the domain with the coordinate `x` deleted.
 
 ### `queryCodeword` (2 declarations, 2 files)
 
@@ -3714,6 +5605,26 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem OracleSpec.QueryLog.removeRedundantEntryDSPaper_fst_eq_self_of_noRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean:88](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean#L88) — First-projection form of the fixpoint lemma.
 - `theorem DuplexSpongeFS.Paper.removeRedundantEntryDSPaper_fst_eq_self_of_noRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/PaperBadEvents.lean:99](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/PaperBadEvents.lean#L99) — First-projection form of the fixpoint lemma.
 
+### `repCount` (2 declarations, 2 files)
+
+- `def ArkLib.ProximityGap.AddEnergyGroupRepBound.repCount` [ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean:35](../../../ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean#L35) — Ordered representations `t = c + (t−c)` inside `S`.
+- `def ArkLib.ProximityGap.AdditiveEnergyRepBound.repCount` [ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean:43](../../../ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean#L43) — The number of ordered representations `t = c + (t−c)` of `t` inside `G`.
+
+### `repCount_ge_structured` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.AdditiveEnergySidonModNeg.repCount_ge_structured` [ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyLowerBound.lean:67](../../../ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyLowerBound.lean#L67) — Pointwise: the representation count is at least the structural value (negation-closure).
+- `theorem ArkLib.ProximityGap.WF2EnergySidon.repCount_ge_structured` [ArkLib/Data/CodingTheory/ProximityGap/EnergyExcessStructure.lean:48](../../../ArkLib/Data/CodingTheory/ProximityGap/EnergyExcessStructure.lean#L48) — **Pointwise rep-count lower bound (always, negation-closed).**  For any `a, b ∈ G` with `G` negation
+
+### `repCount_le_two_of_sidonModNeg` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.AdditiveEnergyRepBound.repCount_le_two_of_sidonModNeg` [ArkLib/Data/CodingTheory/ProximityGap/SidonGVClosure.lean:94](../../../ArkLib/Data/CodingTheory/ProximityGap/SidonGVClosure.lean#L94) — **Sharp rep bound under Sidon-mod-negation: `r(c) ≤ 2`.**  Every nonzero shift `c` has at most the t
+- `theorem ArkLib.ProximityGap.WF2SidonRepTwo.repCount_le_two_of_sidonModNeg` [ArkLib/Data/CodingTheory/ProximityGap/SmallSubgroupGVRepTwo.lean:61](../../../ArkLib/Data/CodingTheory/ProximityGap/SmallSubgroupGVRepTwo.lean#L61) — **The sharp rep-two bound — the HONEST derivation of `M = 2`.** `SidonModNeg G` *says*, for `t ≠ 0`,
+
+### `repCount_zero_le` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.AddEnergyGroupRepBound.repCount_zero_le` [ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean:41](../../../ArkLib/Data/CodingTheory/ProximityGap/AddEnergyGroupRepBound.lean#L41) — `r(0) ≤ \|S\|` (the map `y ↦ −y` is injective).
+- `theorem ArkLib.ProximityGap.AdditiveEnergyRepBound.repCount_zero_le` [ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyRepBound.lean#L49) — The representation count of `t = 0` is at most `\|G\|` (the map `y ↦ −y` is injective).
+
 ### `rewindingKnowledgeSoundness` (2 declarations, 2 files)
 
 - `abbrev DuplexSpongeFS.NARG.rewindingKnowledgeSoundness` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean:159](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean#L159) — Paper-facing alias for CO25 Definition 3.8 rewinding knowledge soundness.
@@ -3738,6 +5649,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.KoalaBearAttack.rsPoint_injective` [ArkLib/ToMathlib/KoalaBearAttackInstance.lean:77](../../../ArkLib/ToMathlib/KoalaBearAttackInstance.lean#L77) — Distinct `Fin 4` points give distinct field points (characteristic `p > 4`).
 - `theorem KoalaBear.rsPoint_injective` [ArkLib/ToMathlib/KoalaIRSAccounting.lean:66](../../../ArkLib/ToMathlib/KoalaIRSAccounting.lean#L66) — The four evaluation points `rsPoint j = (j.val : Sextic)` are pairwise distinct: each `j.val` is `<
+
+### `rs_eq_of_agree` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAJumpValueExact.rs_eq_of_agree` [ArkLib/Data/CodingTheory/ProximityGap/MCAJumpValueExact.lean:242](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAJumpValueExact.lean#L242) — Two codewords agreeing on `≥ k` coordinates are equal.
+- `lemma ProximityGap.Ownership.rs_eq_of_agree` [ArkLib/Data/CodingTheory/ProximityGap/SubJohnsonCorradiEnvelope.lean:47](../../../ArkLib/Data/CodingTheory/ProximityGap/SubJohnsonCorradiEnvelope.lean#L47) — Two `rsCode` codewords agreeing on `k` common points coincide.
 
 ### `rs_lambda_high_rate_jh01` (2 declarations, 2 files)
 
@@ -3959,6 +5875,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Domain.CosetFftDomainClass.subdomainZeroEquiv` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:133](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L133) — The zeroth subdomain has the same finite set of field points as the ambient domain.
 - `def Fri.subdomainZeroEquiv` [ArkLib/ProofSystem/BatchedFri/Security.lean:1626](../../../ArkLib/ProofSystem/BatchedFri/Security.lean#L1626) — The round-zero Batched FRI subdomain is equivalent to the original evaluation domain.
 
+### `subgroup_gaussSum_moment` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.SubgroupGaussSumMoment.subgroup_gaussSum_moment` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupGaussSumMoment.lean:52](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupGaussSumMoment.lean#L52) — **The general `2r`-th moment: `∑_b ‖η_b‖^{2r} = q · E_r(G)`.**
+- `theorem ArkLib.ProximityGap.SubgroupGaussSumMomentLadder.subgroup_gaussSum_moment` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupGaussSumMomentLadder.lean:72](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupGaussSumMomentLadder.lean#L72) — **The full moment ladder: `∑_b ‖η_b‖^{2r} = q · E_r(G)`.** Pure orthogonality; no Weil.
+
 ### `subgroup_mixed_sum_is_partial` (2 declarations, 2 files)
 
 - `theorem ArkLib.ProximityGap.Round8CompleteSquare.subgroup_mixed_sum_is_partial` [ArkLib/Data/CodingTheory/ProximityGap/MixedGaussSumCompleteSquare.lean:192](../../../ArkLib/Data/CodingTheory/ProximityGap/MixedGaussSumCompleteSquare.lean#L192) — **The subgroup mixed sum is a PARTIAL sum — the open delimiter.** The complete-the-square reduction
@@ -4013,6 +5934,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def C2CoreBound.syndr` [ArkLib/Data/CodingTheory/ProximityGap/C2CoreEliminationBound.lean:65](../../../ArkLib/Data/CodingTheory/ProximityGap/C2CoreEliminationBound.lean#L65) — The `r`-shifted syndrome functional of a support.
 - `def TopLine.syndr` [ArkLib/Data/CodingTheory/ProximityGap/TopDirectionLineCount.lean:58](../../../ArkLib/Data/CodingTheory/ProximityGap/TopDirectionLineCount.lean#L58) — The `r`-shifted syndrome functional.
+
+### `the` (2 declarations, 2 files)
+
+- `structure ArkLib.ProximityGap.Rigidity.the` [ArkLib/Data/CodingTheory/ProximityGap/SeedCensusDyadicChain.lean:169](../../../ArkLib/Data/CodingTheory/ProximityGap/SeedCensusDyadicChain.lean#L169) — (no docstring)
+- `instance ToyProblem.the` [ArkLib/ProofSystem/ToyProblem/SoundnessBounds.lean:416](../../../ArkLib/ProofSystem/ToyProblem/SoundnessBounds.lean#L416) — (no docstring)
 
 ### `toMLE_evalC_eq_sum` (2 declarations, 2 files)
 
@@ -4083,6 +6009,26 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def GSMultInterp.vanishesToOrder` [ArkLib/Data/CodingTheory/GuruswamiSudan/MultiplicityInterpolation.lean:153](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/MultiplicityInterpolation.lean#L153) — `Q` (given by coefficient vector `c`) **vanishes to order `m`** at `(x₀, y₀)`: every Hasse coefficie
 - `def ArkLib.GS.vanishesToOrder` [ArkLib/Data/CodingTheory/ProximityGap/BivariateVanishing.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/BivariateVanishing.lean#L60) — `Q : F[X][Y]` **vanishes to order `m` at `(a, b)`** when, for every `Y`-index `j`, the inner Taylor
+
+### `vanishingPoly` (2 declarations, 2 files)
+
+- `def ProximityGap.WBPencil.vanishingPoly` [ArkLib/Data/CodingTheory/ProximityGap/SplitPencilBound.lean:47](../../../ArkLib/Data/CodingTheory/ProximityGap/SplitPencilBound.lean#L47) — The vanishing polynomial of an index set, through the domain embedding.
+- `def Quotienting.vanishingPoly` [ArkLib/ProofSystem/Stir/Quotienting.lean:41](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L41) — VanishingPoly is the vanishing polynomial on S, i.e. the unique polynomial of degree \|S\|+1 that is 0
+
+### `vanishingPoly_eval_eq_zero` (2 declarations, 2 files)
+
+- `theorem ProximityGap.WBPencil.vanishingPoly_eval_eq_zero` [ArkLib/Data/CodingTheory/ProximityGap/SplitPencilBound.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/SplitPencilBound.lean#L63) — (no docstring)
+- `lemma Quotienting.vanishingPoly_eval_eq_zero` [ArkLib/ProofSystem/Stir/Quotienting.lean:46](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L46) — The vanishing polynomial vanishes at every point of `S`.
+
+### `vanishingPoly_monic` (2 declarations, 2 files)
+
+- `theorem ProximityGap.WBPencil.vanishingPoly_monic` [ArkLib/Data/CodingTheory/ProximityGap/SplitPencilBound.lean:50](../../../ArkLib/Data/CodingTheory/ProximityGap/SplitPencilBound.lean#L50) — (no docstring)
+- `lemma Quotienting.vanishingPoly_monic` [ArkLib/ProofSystem/Stir/Quotienting.lean:64](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L64) — The vanishing polynomial is monic.
+
+### `vanishingPoly_natDegree` (2 declarations, 2 files)
+
+- `theorem ProximityGap.WBPencil.vanishingPoly_natDegree` [ArkLib/Data/CodingTheory/ProximityGap/SplitPencilBound.lean:58](../../../ArkLib/Data/CodingTheory/ProximityGap/SplitPencilBound.lean#L58) — (no docstring)
+- `lemma Quotienting.vanishingPoly_natDegree` [ArkLib/ProofSystem/Stir/Quotienting.lean:69](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L69) — The vanishing polynomial has degree exactly `\|S\|`.
 
 ### `vanishing_sum_antipodal` (2 declarations, 2 files)
 
@@ -4674,6 +6620,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem DuplexSpongeFS.EagerLazyDS.consistent_inv_hit_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:785](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L785) — A consistent inverse hit puts the entry's exact pair in the cache.
 - `theorem DuplexSpongeFS.EagerLazyDS.consistent_inv_hit_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:785](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L785) — A consistent inverse hit puts the entry's exact pair in the cache.
+
+### `crossing_double_count_general` (2 declarations, 2 files)
+
+- `theorem ProximityGap.PairRank.crossing_double_count_general` [ArkLib/Data/CodingTheory/ProximityGap/CrossingCountGeneral.lean:35](../../../ArkLib/Data/CodingTheory/ProximityGap/CrossingCountGeneral.lean#L35) — **The general crossing double-count**: pairwise intersection `≤ s` gives `Σ_x d_x(d_x−1) ≤ s·L(L−1)`
+- `theorem ProximityGap.PairRank.crossing_double_count_general` [ArkLib/Data/CodingTheory/ProximityGap/MeanDegreeCauchySchwarz.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/MeanDegreeCauchySchwarz.lean#L59) — **The general crossing double-count**: for a family pairwise intersecting in `≤ s` points, `Σ_x d_x(
 
 ### `decodeLT_ne_of_val_ne` (2 declarations, 2 files)
 
@@ -5481,11 +7432,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem DuplexSpongeFS.Sponge316.hash_step_separation_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean:388](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkPaperFork.lean#L388) — Off `BadEventDSPaper.E`, a hash anchor capacity cannot occur as the answer capacity of a family chai
 - `theorem DuplexSpongeFS.Sponge316.hash_step_separation_paper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:388](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean#L388) — Off `BadEventDSPaper.E`, a hash anchor capacity cannot occur as the answer capacity of a family chai
-
-### `hasseDerivY_coeff` (2 declarations, 2 files)
-
-- `theorem BCIKS20.HenselNumerator.hasseDerivY_coeff` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HasseIndexShift.lean:34](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HasseIndexShift.lean#L34) — The coefficient identity for the in-tree `Δ_Y`: the `j`-th coefficient of `Δ_Y^{m} R` is the binomia
-- `theorem BCIKS20.HenselNumerator.hasseDerivY_coeff` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2Vanish.lean:164](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2Vanish.lean#L164) — **Y-Hasse binomial extraction.**  `(Δ_Y^{m} R).coeff i = C(i+m, m) · R.coeff (i+m)` (the `F[X][X]`-c
 
 ### `hbig_radical_of_coeff_budget` (2 declarations, 2 files)
 
@@ -6355,6 +8301,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def DuplexSpongeFS.Sponge316.ForkCounter.seqTwo` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean:112](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/ForkFalse.lean#L112) — Chain 2: the alternating loop `t3 → t4 → (cap t3 = cap t1)` on the second pair, ending at the same t
 - `def DuplexSpongeFS.Sponge316.ForkCounter.seqTwo` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:112](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean#L112) — Chain 2: the alternating loop `t3 → t4 → (cap t3 = cap t1)` on the second pair, ending at the same t
 
+### `sidonModNeg_of_additiveEnergy_eq` (2 declarations, 2 files)
+
+- `theorem ArkLib.ProximityGap.AdditiveEnergySidonModNeg.sidonModNeg_of_additiveEnergy_eq` [ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyCharacterization.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/AdditiveEnergyCharacterization.lean#L32) — **Energy-minimal ⟹ Sidon-mod-negation.**  If a negation-closed `G ∌ 0` (char `≠ 2`) attains the mini
+- `theorem ArkLib.ProximityGap.AdditiveEnergySidonModNeg.sidonModNeg_of_additiveEnergy_eq` [ArkLib/Data/CodingTheory/ProximityGap/SidonEnergyIff.lean:41](../../../ArkLib/Data/CodingTheory/ProximityGap/SidonEnergyIff.lean#L41) — **Converse of `additiveEnergy_eq_of_sidonModNeg`.** If the additive energy attains its negation-clos
+
 ### `slotList_length_le` (2 declarations, 2 files)
 
 - `lemma DuplexSpongeFS.EagerLazyDS.slotList_length_le` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean:160](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Flag.lean#L160) — The slot list is at most twice the cache size.
@@ -6770,7 +8721,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:188](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L188) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/XiCertReduction.lean:219](../../../ArkLib/ToMathlib/XiCertReduction.lean#L219) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 241 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 258 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 
@@ -6810,9 +8761,45 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `ArkLib.JohnsonList.agree_card_add_hammingDist` [ArkLib/Data/CodingTheory/ProximityGap/JohnsonListBound.lean:132](../../../ArkLib/Data/CodingTheory/ProximityGap/JohnsonListBound.lean#L132) vs `Code.agreementCols_card_add_hammingDist` [ArkLib/Data/CodingTheory/Basic/Distance.lean:178](../../../ArkLib/Data/CodingTheory/Basic/Distance.lean#L178)
     - a: Agreement count plus Hamming distance partitions the coordinate set.
     - b: Agreement count plus Hamming distance partitions the coordinate set.
+- **1.00** `ArkLib.ProximityGap.AllWitnessFloor.exists_erase_unfit` [ArkLib/Data/CodingTheory/ProximityGap/AllWitnessOwnershipFloor.lean:152](../../../ArkLib/Data/CodingTheory/ProximityGap/AllWitnessOwnershipFloor.lean#L152) vs `ProximityGap.Ownership.exists_erase_unfit_dom` [ArkLib/Data/CodingTheory/ProximityGap/AllWitnessFloorGeneric.lean:157](../../../ArkLib/Data/CodingTheory/ProximityGap/AllWitnessFloorGeneric.lean#L157)
+    - a: For `w ≥ d+3`, some erasure of an unfit set stays unfit: otherwise two fitting erasures glue through
+    - b: For `w ≥ d+3`, some erasure of an unfit set stays unfit: otherwise two fitting erasures glue through
+- **1.00** `ArkLib.ProximityGap.AllWitnessFloor.fit_mono` [ArkLib/Data/CodingTheory/ProximityGap/AllWitnessOwnershipFloor.lean:88](../../../ArkLib/Data/CodingTheory/ProximityGap/AllWitnessOwnershipFloor.lean#L88) vs `ArkLib.ProximityGap.KKH26DimGeneralSharp.polyFitOn_mono` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralSharpPin.lean:52](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralSharpPin.lean#L52)
+    - a: `polyFitOn` restricts to subsets (the same interpolant works).
+    - b: `polyFitOn` restricts to subsets (the same interpolant works).
+- **1.00** `ArkLib.ProximityGap.BadFamilyCensus.pow_inj_below_order'''` [ArkLib/Data/CodingTheory/ProximityGap/BadFamilyCensus.lean:109](../../../ArkLib/Data/CodingTheory/ProximityGap/BadFamilyCensus.lean#L109) vs `ArkLib.ProximityGap.Level1Rung.pow_inj_below_order''` [ArkLib/Data/CodingTheory/ProximityGap/Level1RungPin.lean:147](../../../ArkLib/Data/CodingTheory/ProximityGap/Level1RungPin.lean#L147)
+    - a: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+    - b: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+- **1.00** `ArkLib.ProximityGap.BadFamilyCensus.pow_inj_below_order'''` [ArkLib/Data/CodingTheory/ProximityGap/BadFamilyCensus.lean:109](../../../ArkLib/Data/CodingTheory/ProximityGap/BadFamilyCensus.lean#L109) vs `ArkLib.ProximityGap.PackingEnvelope.pow_inj_below_order''''` [ArkLib/Data/CodingTheory/ProximityGap/PackingEnvelope.lean:92](../../../ArkLib/Data/CodingTheory/ProximityGap/PackingEnvelope.lean#L92)
+    - a: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+    - b: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+- **1.00** `ArkLib.ProximityGap.BadFamilyCensus.pow_inj_below_order'''` [ArkLib/Data/CodingTheory/ProximityGap/BadFamilyCensus.lean:109](../../../ArkLib/Data/CodingTheory/ProximityGap/BadFamilyCensus.lean#L109) vs `ArkLib.ProximityGap.RatioPigeonhole.pow_inj_below_order'''''` [ArkLib/Data/CodingTheory/ProximityGap/RatioPigeonholeGoodSide.lean:85](../../../ArkLib/Data/CodingTheory/ProximityGap/RatioPigeonholeGoodSide.lean#L85)
+    - a: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+    - b: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+- **1.00** `ArkLib.ProximityGap.CertifiedRungPrime.prime_P` [ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean:350](../../../ArkLib/Data/CodingTheory/ProximityGap/CertifiedRungPrime.lean#L350) vs `ArkLib.ProximityGap.LiteralBudgetPin.prime_P` [ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean:1114](../../../ArkLib/Data/CodingTheory/ProximityGap/LiteralBudgetPin.lean#L1114)
+    - a: **`P` is prime** — Lucas certificate with witness `3`, cofactors `{2, 65581}`.
+    - b: **`P` is prime** — Lucas certificate with witness `3`, cofactors `{2, 1314883}`.
 - **1.00** `ArkLib.ProximityGap.DeepQuotientTransfer.pow_inj_below_order` [ArkLib/Data/CodingTheory/ProximityGap/DeepQuotientTransfer.lean:87](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepQuotientTransfer.lean#L87) vs `ArkLib.ProximityGap.KKH26.pow_inj_lt_orderOf` [ArkLib/Data/CodingTheory/ProximityGap/KKH26StratifiedSpread.lean:394](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26StratifiedSpread.lean#L394)
     - a: Injectivity of `i ↦ g^i` below the order of `g`, for nonzero `g` in a field. (Local copy of the priv
     - b: Injectivity of `i ↦ g^i` below the order of `g`, for nonzero `g` in a field (local copy of the `priv
+- **1.00** `ArkLib.ProximityGap.KKH26DimGeneral.pow_inj_below_order` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean:369](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimGeneralPin.lean#L369) vs `ArkLib.ProximityGap.KKH26DimTwo.pow_inj_below_order` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimTwoPin.lean:508](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimTwoPin.lean#L508)
+    - a: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `KKH26WitnessSpread` cancellation
+    - b: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `KKH26WitnessSpread` cancellation
+- **1.00** `ArkLib.ProximityGap.KKH26DimOne.dimOne_ceiling_below_capacity` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimOnePin.lean:332](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimOnePin.lean#L332) vs `ArkLib.ProximityGap.KKH26DimTwo.dimTwo_ceiling_below_capacity` [ArkLib/Data/CodingTheory/ProximityGap/KKH26DimTwoPin.lean:622](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26DimTwoPin.lean#L622)
+    - a: **Below capacity:** the pinned radius `1 − 2/2^μ` is strictly below capacity `1 − ρ = 1 − (2^μ)⁻¹` f
+    - b: **Below capacity:** the pinned radius `1 − 3/2^μ` is strictly below capacity `1 − ρ = 1 − 2/2^μ` for
+- **1.00** `ArkLib.ProximityGap.Level1Rung.pow_inj_below_order''` [ArkLib/Data/CodingTheory/ProximityGap/Level1RungPin.lean:147](../../../ArkLib/Data/CodingTheory/ProximityGap/Level1RungPin.lean#L147) vs `ArkLib.ProximityGap.PackingEnvelope.pow_inj_below_order''''` [ArkLib/Data/CodingTheory/ProximityGap/PackingEnvelope.lean:92](../../../ArkLib/Data/CodingTheory/ProximityGap/PackingEnvelope.lean#L92)
+    - a: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+    - b: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+- **1.00** `ArkLib.ProximityGap.Level1Rung.pow_inj_below_order''` [ArkLib/Data/CodingTheory/ProximityGap/Level1RungPin.lean:147](../../../ArkLib/Data/CodingTheory/ProximityGap/Level1RungPin.lean#L147) vs `ArkLib.ProximityGap.RatioPigeonhole.pow_inj_below_order'''''` [ArkLib/Data/CodingTheory/ProximityGap/RatioPigeonholeGoodSide.lean:85](../../../ArkLib/Data/CodingTheory/ProximityGap/RatioPigeonholeGoodSide.lean#L85)
+    - a: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+    - b: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+- **1.00** `ArkLib.ProximityGap.PackingEnvelope.pow_inj_below_order''''` [ArkLib/Data/CodingTheory/ProximityGap/PackingEnvelope.lean:92](../../../ArkLib/Data/CodingTheory/ProximityGap/PackingEnvelope.lean#L92) vs `ArkLib.ProximityGap.RatioPigeonhole.pow_inj_below_order'''''` [ArkLib/Data/CodingTheory/ProximityGap/RatioPigeonholeGoodSide.lean:85](../../../ArkLib/Data/CodingTheory/ProximityGap/RatioPigeonholeGoodSide.lean#L85)
+    - a: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+    - b: Injectivity of `i ↦ g^i` below the order of `g` (local copy of the `private` helper of the sibling f
+- **1.00** `ArkLib.ProximityGap.SinglePencilQIndependence.prodXsubC_dvd_of_roots` [ArkLib/Data/CodingTheory/ProximityGap/SinglePencilQIndependence.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/SinglePencilQIndependence.lean#L62) vs `ArkLib.ProximityGap.SinglePencilSharper.prodXsubC_dvd_of_roots` [ArkLib/Data/CodingTheory/ProximityGap/DeepBandSubsetSumSpectrum.lean:21](../../../ArkLib/Data/CodingTheory/ProximityGap/DeepBandSubsetSumSpectrum.lean#L21)
+    - a: The product of `(X − ζ)` over a finset of roots of `P` divides `P`.
+    - b: The product of `(X − ζ)` over a finset of roots of `P` divides `P`.
 - **1.00** `ArkLib.SeqComposeRbrKnowledge.idxToSigma_inl` [ArkLib/OracleReduction/Composition/Sequential/SeqComposeRbrKnowledgeProof.lean:69](../../../ArkLib/OracleReduction/Composition/Sequential/SeqComposeRbrKnowledgeProof.lean#L69) vs `ArkLib.SeqComposeRbrSoundness.idxToSigma_inl` [ArkLib/ProofSystem/Sumcheck/Spec/SeqComposeRbrSoundness.lean:91](../../../ArkLib/ProofSystem/Sumcheck/Spec/SeqComposeRbrSoundness.lean#L91)
     - a: `seqComposeChallengeIdxToSigma` along the `inl` embedding of a head challenge index lands in the fir
     - b: `seqComposeChallengeIdxToSigma` along the `inl` embedding of a head challenge index lands in the fir
@@ -6822,16 +8809,16 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `ArkLib.SeqComposeRbrKnowledge.seqComposeError_eq_append` [ArkLib/OracleReduction/Composition/Sequential/SeqComposeRbrKnowledgeProof.lean:130](../../../ArkLib/OracleReduction/Composition/Sequential/SeqComposeRbrKnowledgeProof.lean#L130) vs `ArkLib.SeqComposeRbrSoundness.seqComposeError_eq_append` [ArkLib/ProofSystem/Sumcheck/Spec/SeqComposeRbrSoundness.lean:152](../../../ArkLib/ProofSystem/Sumcheck/Spec/SeqComposeRbrSoundness.lean#L152)
     - a: **The composed RBR error, indexed via `seqComposeChallengeIdxToSigma` over the global challenge inde
     - b: **The composed RBR error, indexed via `seqComposeChallengeIdxToSigma` over the global challenge inde
+- **1.00** `BCIKS20.Claim510Kill.coeff_sum_eq_ground_of_large_fin` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Kill.lean:203](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Kill.lean#L203) vs `BCIKS20.Claim510KillC.coeff_sum_eq_ground_of_largeC_fin` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedKill.lean:207](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedKill.lean#L207)
+    - a: **The Fin-indexed corollary** in exactly the `hvals` shape consumed by `Claim59Lagrange.gammaGenuine
+    - b: **The Fin-indexed corollary** in exactly the `hvals` shape consumed by `Claim59Lagrange.gammaGenuine
 - **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:98](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L98) vs `Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171)
     - a: The full Binary Basefold protocol as a Proof
     - b: The full Binary Basefold protocol as a Proof
-- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:98](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L98) vs `RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:111](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L111)
+- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:98](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L98) vs `RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:114](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L114)
     - a: The full Binary Basefold protocol as a Proof
     - b: The full Binary Basefold protocol as a Proof
 - **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:70](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L70) vs `Binius.FRIBinius.FullFRIBinius.fullOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:140](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L140)
-    - a: The reduction for the full Binary Basefold protocol
-    - b: The reduction for the full Binary Basefold protocol
-- **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:70](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L70) vs `RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:99](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L99)
     - a: The reduction for the full Binary Basefold protocol
     - b: The reduction for the full Binary Basefold protocol
 - **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:113](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L113) vs `Binius.FRIBinius.FullFRIBinius.fullOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:191](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L191)
@@ -6858,12 +8845,9 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1320](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1320) vs `RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1516](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1516)
     - a: The round-by-round extractor for the final sumcheck step
     - b: The round-by-round extractor for the final sumcheck step
-- **1.00** `Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171) vs `RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:111](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L111)
+- **1.00** `Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171) vs `RingSwitching.FullRingSwitching.fullOracleProof` [ArkLib/ProofSystem/RingSwitching/General.lean:114](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L114)
     - a: The full Binary Basefold protocol as a Proof
     - b: The full Binary Basefold protocol as a Proof
-- **1.00** `Binius.FRIBinius.FullFRIBinius.fullOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:140](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L140) vs `RingSwitching.FullRingSwitching.fullOracleReduction` [ArkLib/ProofSystem/RingSwitching/General.lean:99](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L99)
-    - a: The reduction for the full Binary Basefold protocol
-    - b: The reduction for the full Binary Basefold protocol
 - **1.00** `Binius.FRIBinius.FullFRIBinius.fullOracleVerifier` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:114](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L114) vs `RingSwitching.FullRingSwitching.fullOracleVerifier` [ArkLib/ProofSystem/RingSwitching/General.lean:63](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L63)
     - a: The oracle verifier for the full Binary Basefold protocol
     - b: The oracle verifier for the full Binary Basefold protocol
@@ -6981,37 +8965,4 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:227](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean#L227) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:330](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L330)
     - a: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
     - b: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
-- **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:227](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L227) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:330](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L330)
-    - a: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
-    - b: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
-- **1.00** `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:227](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean#L227) vs `DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean:330](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512Honest.lean#L330)
-    - a: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
-    - b: Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the deduplica
-- **1.00** `GSHasse.gsSupport` [ArkLib/Data/CodingTheory/ProximityGap/GSHasseMultiplicity.lean:69](../../../ArkLib/Data/CodingTheory/ProximityGap/GSHasseMultiplicity.lean#L69) vs `GSInterp.gsSupport` [ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean:55](../../../ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean#L55)
-    - a: Monomial support of the GS interpolation space: pairs `(i, j)` with `i + (k-1)·j < D`, organized as
-    - b: Monomial support of the GS interpolation space: pairs `(i, j)` with `i + (k-1)·j < D`, organized as
-- **1.00** `GSInterp.evalAtPoints` [ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean:133](../../../ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean#L133) vs `R15.evalAtPoints` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean:140](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBound.lean#L140)
-    - a: The linear map sending a coefficient vector supported on `S` to the values of the associated bivaria
-    - b: The linear map sending a coefficient vector supported on `S` to the values of the associated bivaria
-- **1.00** `GSInterp.evalAtPoints` [ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean:133](../../../ArkLib/Data/CodingTheory/ProximityGap/GSInterpolationExistence.lean#L133) vs `R15.evalAtPoints` [ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean:140](../../../ArkLib/Data/CodingTheory/ProximityGap/SudanListBoundFull.lean#L140)
-    - a: The linear map sending a coefficient vector supported on `S` to the values of the associated bivaria
-    - b: The linear map sending a coefficient vector supported on `S` to the values of the associated bivaria
-- **1.00** `Groups.exists_zmod_power_of_generator` [ArkLib/CommitmentScheme/KZG/Algebra.lean:105](../../../ArkLib/CommitmentScheme/KZG/Algebra.lean#L105) vs `KZG.CommitmentScheme.binding_exists_zmod_power_of_generator` [ArkLib/CommitmentScheme/KZG/Binding.lean:167](../../../ArkLib/CommitmentScheme/KZG/Binding.lean#L167)
-    - a: Every element of a prime-order group is a `ZMod p` power of a nontrivial generator.
-    - b: Every element of a prime-order group is a `ZMod p` power of a nontrivial generator.
-- **1.00** `Groups.orderOf_eq_prime_of_ne_one` [ArkLib/CommitmentScheme/KZG/Algebra.lean:61](../../../ArkLib/CommitmentScheme/KZG/Algebra.lean#L61) vs `KZG.CommitmentScheme.binding_order_of_eq_prime_of_ne_one` [ArkLib/CommitmentScheme/KZG/Binding.lean:157](../../../ArkLib/CommitmentScheme/KZG/Binding.lean#L157)
-    - a: A nontrivial element of a prime-order group has order `p`.
-    - b: A nontrivial element of a prime-order group has order `p`.
-- **1.00** `IntegerThreadSplit.int_sum_eq_thread_sum` [ArkLib/Data/CodingTheory/ProximityGap/IntegerThreadSplit.lean:40](../../../ArkLib/Data/CodingTheory/ProximityGap/IntegerThreadSplit.lean#L40) vs `WeightedThreadSplit.weighted_sum_eq_thread_sum` [ArkLib/Data/CodingTheory/ProximityGap/WeightedThreadSplit.lean:52](../../../ArkLib/Data/CodingTheory/ProximityGap/WeightedThreadSplit.lean#L52)
-    - a: **The ℤ-weighted digit decomposition** (any commutative ring): a ℤ-weighted power sum over `[0, p·m)
-    - b: **The weighted digit decomposition** (any commutative ring): an ℕ-weighted power sum over `[0, p·m)`
-- **1.00** `IntegerThreadSplit.int_thread_split_iff` [ArkLib/Data/CodingTheory/ProximityGap/IntegerThreadSplit.lean:136](../../../ArkLib/Data/CodingTheory/ProximityGap/IntegerThreadSplit.lean#L136) vs `WeightedThreadSplit.weighted_thread_split_iff` [ArkLib/Data/CodingTheory/ProximityGap/WeightedThreadSplit.lean:148](../../../ArkLib/Data/CodingTheory/ProximityGap/WeightedThreadSplit.lean#L148)
-    - a: **ℤ thread-split as an iff**: for `p² ∣ n`, a ℤ-weighted power sum vanishes at `ζ` iff all `p` ℤ-wei
-    - b: **Weighted thread-split as an iff**: for `p² ∣ n`, an ℕ-weighted power sum vanishes at `ζ` iff all `
-- **1.00** `IntegerThreadSplit.int_vanishing_of_thread_vanishing` [ArkLib/Data/CodingTheory/ProximityGap/IntegerThreadSplit.lean:126](../../../ArkLib/Data/CodingTheory/ProximityGap/IntegerThreadSplit.lean#L126) vs `WeightedThreadSplit.weighted_vanishing_of_thread_vanishing` [ArkLib/Data/CodingTheory/ProximityGap/WeightedThreadSplit.lean:138](../../../ArkLib/Data/CodingTheory/ProximityGap/WeightedThreadSplit.lean#L138)
-    - a: **The trivial converse** (pure linearity, any commutative ring).
-    - b: **The trivial converse** (pure linearity, any commutative ring).
-- **1.00** `KZG.CommitmentScheme.map_binding_instance_drag` [ArkLib/CommitmentScheme/KZG/Binding.lean:639](../../../ArkLib/CommitmentScheme/KZG/Binding.lean#L639) vs `KZG.CommitmentScheme.map_instance_drag` [ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean:534](../../../ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean#L534)
-    - a: Transition 3: dragging the map into the probability event.
-    - b: Transition 3: dragging the map into the probability event
 

@@ -1298,15 +1298,22 @@ theorem mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
   · intro γ _hγ
     exact linePetal_subset_compl D u₀ u₁ w γ
 
-/-- **Strict-expansion-only max-corr residual.**  This is a smaller producer surface for the
-GKL24/GCXK25 first-moment route.  Compared with `GKL24MaxCorrWitnessCoverHypothesis`, it asks only
-for a close-codeword carrier and, for each carried codeword, a maximal correlated-agreement domain
-that is strictly expanded by every bad line-agreement domain.
+/-- **False-as-stated strict-expansion-only max-corr surface.**  This is a historical producer
+shape for the GKL24/GCXK25 first-moment route. Compared with
+`GKL24MaxCorrWitnessCoverHypothesis`, it asks only for a close-codeword carrier and, for each
+carried codeword, a maximal correlated-agreement domain that is strictly expanded by every bad
+line-agreement domain.
+
+The quantified `∀ u` form is too strong: stacks with an isolated bad scalar and no large
+joint-agreement domain make the per-`w` maximal-domain clause unsatisfiable. The live open
+interface is therefore the bounded carrier/list-size residual
+`GKL24FirstMomentWitnessCoverResidual`; this declaration is retained only so older conditional
+front doors keep naming exactly which over-strong certificate they consume.
 
 The pairwise large-intersection clause is derived by
 `GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover` from the witness-size lower bounds when the
 Johnson parameter relation `2 * δ_mca ≤ p` holds. -/
-def GKL24MaxCorrStrictWitnessCoverResidual
+def GKL24MaxCorrStrictWitnessCoverFalseAsStated
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) (B_T : ℝ) : Prop :=
   ∀ u : WordStack F (Fin 2) ι,
     ∃ T : Finset (ι → F),
@@ -1322,7 +1329,7 @@ def GKL24MaxCorrStrictWitnessCoverResidual
                     (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
                   D ⊂ lineAgreeSet (u 0) (u 1) w γ
 
-/-- **Maximal-domain form of the GKL24/GCXK25 witness-cover residual.**  This is the
+/-- **Maximal-domain form of the GKL24/GCXK25 witness-cover hypothesis.**  This is the
 carrier-level version of `mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain`: every
 stack has a close-codeword carrier, and each carried codeword has a maximal
 correlated-agreement domain whose bad line-agreement domains strictly expand it while pairwise
@@ -1351,14 +1358,14 @@ def GKL24MaxCorrWitnessCoverHypothesis
                         (((lineAgreeSet (u 0) (u 1) w γ ∩
                             lineAgreeSet (u 0) (u 1) w γ').card : ℕ) : ℝ≥0))
 
-/-- A strict-expansion-only max-corr residual gives the full max-corr hypothesis whenever
+/-- A strict-expansion-only max-corr certificate gives the full max-corr hypothesis whenever
 `2 * δ ≤ p` and `p ≤ 1`.  The missing pairwise large-intersection clause follows from
 `lineAgreeSet_inter_card_ge_of_mem_mcaBadWitness`. -/
 theorem GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hp_le_one : p ≤ 1)
     (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
-    (hstrict : GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T) :
+    (hstrict : GKL24MaxCorrStrictWitnessCoverFalseAsStated MC δ p B_T) :
     GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T := by
   intro u
   obtain ⟨T, hTsub, hcover, hcard, hstrictT⟩ := hstrict u
@@ -1371,7 +1378,7 @@ theorem GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover
     lineAgreeSet_inter_card_ge_of_mem_mcaBadWitness
       MC δ p (u 0) (u 1) w w hp_le_one hδp hγ hγ'
 
-/-- A maximal-domain witness-cover residual instantiates the corrected first-moment
+/-- A maximal-domain witness-cover hypothesis instantiates the corrected first-moment
 witness-cover residual with per-codeword count `p · n`. -/
 theorem GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
@@ -1389,12 +1396,12 @@ theorem GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover
 /-- Strict-expansion-only max-corr certificates instantiate the corrected first-moment
 witness-cover residual under the Johnson parameter relation `2 * δ ≤ p`.  This is only a
 composition wrapper around the strict-cover-to-max-corr bridge; the construction of the strict
-cover remains the hard GKL24 input. -/
+cover is kept as a false-as-stated historical input, not a live residual. -/
 theorem GKL24FirstMomentWitnessCoverResidual_of_strict_cover
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hp_le_one : p ≤ 1)
     (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
-    (hstrict : GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T) :
+    (hstrict : GKL24MaxCorrStrictWitnessCoverFalseAsStated MC δ p B_T) :
     GKL24FirstMomentWitnessCoverResidual MC δ B_T
       ((p : ℝ) * (Fintype.card ι : ℝ)) :=
   GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover MC δ p
@@ -1470,7 +1477,7 @@ theorem GKL24PetalWitnessCoverHypothesis_of_strict_cover
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hp_le_one : p ≤ 1)
     (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
-    (hstrict : GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T) :
+    (hstrict : GKL24MaxCorrStrictWitnessCoverFalseAsStated MC δ p B_T) :
     GKL24PetalWitnessCoverHypothesis MC δ B_T (p : ℝ) :=
   GKL24PetalWitnessCoverHypothesis_of_maxCorr_cover MC δ p
     (GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp hstrict)
@@ -1598,7 +1605,7 @@ theorem mcaBad_card_le_of_gkl24_witnessCover_residual
     (MC : Set (ι → F)) δ (u 0) (u 1) T hcover hb0 hcard hper
 
 /-- Count-level front door from the maximal-domain witness-cover residual. -/
-theorem mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual
+theorem mcaBad_card_le_of_gkl24_maxCorr_witnessCover_hypothesis
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hres : GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T)
     (u : WordStack F (Fin 2) ι) :
@@ -1607,16 +1614,16 @@ theorem mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual
   mcaBad_card_le_of_gkl24_witnessCover_residual MC δ (by positivity)
     (GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover MC δ p hres) u
 
-/-- Count-level front door from the strict-expansion-only max-corr residual. -/
-theorem mcaBad_card_le_of_gkl24_strict_witnessCover_residual
+/-- Count-level front door from the strict-expansion-only max-corr false surface. -/
+theorem mcaBad_card_le_of_gkl24_strict_witnessCover_falseAsStated
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hp_le_one : p ≤ 1)
     (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
-    (hres : GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T)
+    (hres : GKL24MaxCorrStrictWitnessCoverFalseAsStated MC δ p B_T)
     (u : WordStack F (Fin 2) ι) :
     ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤
       B_T * ((p : ℝ) * (Fintype.card ι : ℝ)) :=
-  mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual MC δ p
+  mcaBad_card_le_of_gkl24_maxCorr_witnessCover_hypothesis MC δ p
     (GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp hres) u
 
 /-- Probability-level companion to `mcaBad_card_le_of_gkl24_witnessCover_residual`. -/
@@ -1630,25 +1637,25 @@ theorem mcaEvent_prob_le_ofReal_of_gkl24_witnessCover_residual
     (mcaBad_card_le_of_gkl24_witnessCover_residual MC δ hb0 hres u)
 
 /-- Probability-level front door from the maximal-domain witness-cover residual. -/
-theorem mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_residual
+theorem mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_hypothesis
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hres : GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T)
     (u : WordStack F (Fin 2) ι) :
     Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) γ] ≤
       ENNReal.ofReal ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
   mcaEvent_prob_le_of_mcaBad_card_le (MC : Set (ι → F)) δ (u 0) (u 1)
-    (mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual MC δ p hres u)
+    (mcaBad_card_le_of_gkl24_maxCorr_witnessCover_hypothesis MC δ p hres u)
 
-/-- Probability-level front door from the strict-expansion-only max-corr residual. -/
-theorem mcaEvent_prob_le_ofReal_of_gkl24_strict_witnessCover_residual
+/-- Probability-level front door from the strict-expansion-only max-corr false surface. -/
+theorem mcaEvent_prob_le_ofReal_of_gkl24_strict_witnessCover_falseAsStated
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hp_le_one : p ≤ 1)
     (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
-    (hres : GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T)
+    (hres : GKL24MaxCorrStrictWitnessCoverFalseAsStated MC δ p B_T)
     (u : WordStack F (Fin 2) ι) :
     Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) γ] ≤
       ENNReal.ofReal ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
-  mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_residual MC δ p
+  mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_hypothesis MC δ p
     (GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp hres) u
 
 /-- **Alias for the witness-cover residual in the canonical ABF26 T5.1 parameter shape.**
@@ -1693,7 +1700,7 @@ theorem epsMCA_le_ofReal_of_gkl24_witnessCover_residual
   exact mcaBad_card_le_of_gkl24_witnessCover_residual MC δ hb0 hres u
 
 /-- `ε_mca` front door from the maximal-domain witness-cover residual. -/
-theorem epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_residual
+theorem epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_hypothesis
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hres : GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T) :
     epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
@@ -1701,18 +1708,18 @@ theorem epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_residual
         ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) := by
   refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
   intro u
-  exact mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual MC δ p hres u
+  exact mcaBad_card_le_of_gkl24_maxCorr_witnessCover_hypothesis MC δ p hres u
 
-/-- `ε_mca` front door from the strict-expansion-only max-corr residual. -/
-theorem epsMCA_le_ofReal_of_gkl24_strict_witnessCover_residual
+/-- `ε_mca` front door from the strict-expansion-only max-corr false surface. -/
+theorem epsMCA_le_ofReal_of_gkl24_strict_witnessCover_falseAsStated
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hp_le_one : p ≤ 1)
     (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
-    (hres : GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T) :
+    (hres : GKL24MaxCorrStrictWitnessCoverFalseAsStated MC δ p B_T) :
     epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
       ENNReal.ofReal
         ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
-  epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_residual MC δ p
+  epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_hypothesis MC δ p
     (GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp hres)
 
 /-- **Fully in-tree `ε_mca` first-moment relaxation.** This is the residual corollary obtained from
@@ -1784,15 +1791,15 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_residual
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_witnessCover_residual
-#print axioms ProximityGap.mcaBad_card_le_of_gkl24_maxCorr_witnessCover_residual
-#print axioms ProximityGap.mcaBad_card_le_of_gkl24_strict_witnessCover_residual
+#print axioms ProximityGap.mcaBad_card_le_of_gkl24_maxCorr_witnessCover_hypothesis
+#print axioms ProximityGap.mcaBad_card_le_of_gkl24_strict_witnessCover_falseAsStated
 #print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_witnessCover_residual
-#print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_residual
-#print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_strict_witnessCover_residual
+#print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_maxCorr_witnessCover_hypothesis
+#print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_strict_witnessCover_falseAsStated
 #print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_witnessCover_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_witnessCover_residual
-#print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_residual
-#print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_strict_witnessCover_residual
+#print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_maxCorr_witnessCover_hypothesis
+#print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_strict_witnessCover_falseAsStated
 #print axioms ProximityGap.epsMCA_le_ofReal_inTree_firstMoment_card
 #print axioms ProximityGap.epsMCA_le_ofReal_inTree_firstMoment_witnessCover_two_delta_card
 #print axioms ProximityGap.u1_zero_of_mem_both_witness

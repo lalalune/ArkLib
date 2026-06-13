@@ -17,7 +17,8 @@ several files:
 * the GCXK25/ABF26 Johnson lift is named once as `johnsonLift`;
 * any `ε_mca` bound at that lift becomes an `MCALowerWitness`, a faithful threshold existence
   proof, and a threshold lower bracket;
-* the GKL24 first-moment residual surfaces, including the newer atomic maximal-domain residual
+* the GKL24 first-moment residual surfaces, including the retired atomic maximal-domain
+  false-as-stated surface
   from `Issue67Scratch`, now feed those lower-witness consumers directly.
 
 Mathematically, the consolidation is that every route
@@ -134,8 +135,8 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual_johnsonL
       C L δ η hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ
       (by simpa [johnsonLift] using hres))
 
-/-- Maximal-correlated-domain residual, normalized to the named Johnson lift. -/
-theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_residual_johnsonLift
+/-- Maximal-correlated-domain hypothesis, normalized to the named Johnson lift. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_hypothesis_johnsonLift
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
@@ -147,30 +148,30 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_residual_johnsonLift
       ENNReal.ofReal
         (((L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η) / Fintype.card F) := by
   simpa [johnsonLift] using
-    (linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual
+    (linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_hypothesis
       C L δ η hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ
       (by simpa [johnsonLift] using hres))
 
-/-- Strict-expansion residual, normalized to the named Johnson lift. -/
-theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_strict_residual_johnsonLift
+/-- Strict-expansion false-as-stated surface, normalized to the named Johnson lift. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_strict_falseAsStated_johnsonLift
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hstrict_radius : 2 * ((johnsonLift δ η : ℝ≥0) : ℝ) ≤ (δ.toNNReal : ℝ))
     (hres :
-      GKL24MaxCorrStrictWitnessCoverResidual C (johnsonLift δ η)
+      GKL24MaxCorrStrictWitnessCoverFalseAsStated C (johnsonLift δ η)
         δ.toNNReal ((L : ℝ) ^ 2)) :
     epsMCA (F := F) (A := F) ((C : Set (ι → F))) (johnsonLift δ η) ≤
       ENNReal.ofReal
         (((L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η) / Fintype.card F) := by
   simpa [johnsonLift] using
-    (linear_listSize_to_epsMCA_gcxk25_of_gkl24_strict_witnessCover_residual
+    (linear_listSize_to_epsMCA_gcxk25_of_gkl24_strict_witnessCover_falseAsStated
       C L δ η hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ
       (by simpa [johnsonLift] using hstrict_radius)
       (by simpa [johnsonLift] using hres))
 
-/-- The atomic maximal-domain residual supplies the first-moment summand at the named
+/-- The atomic maximal-domain false-as-stated surface supplies the first-moment summand at the named
 Johnson lift. -/
 theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_atomic_maxDomainWitnessCover
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
@@ -178,7 +179,7 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_atomic_maxDomainWitnessC
     (_hη_pos : 0 < η) (_hη_lt : η < 1) (_hη_le_δ : η ≤ δ)
     (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-      Issue67Scratch.GKL24MaxDomainWitnessCoverResidual C (johnsonLift δ η)
+      Issue67Scratch.GKL24MaxDomainWitnessCoverFalseAsStated C (johnsonLift δ η)
         ((L : ℝ) ^ 2) δ.toNNReal) :
     epsMCA (F := F) (A := F) ((C : Set (ι → F))) (johnsonLift δ η) ≤
       ENNReal.ofReal (((L : ℝ) ^ 2 * (δ * Fintype.card ι)) / Fintype.card F) := by
@@ -186,14 +187,14 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_atomic_maxDomainWitnessC
     C (johnsonLift δ η) hres
   simpa [Real.toNNReal_of_nonneg (le_of_lt hδ_pos), mul_assoc] using h
 
-/-- Atomic maximal-domain residual front door for the full ABF26/GCXK25 T5.1 bound. -/
+/-- Atomic maximal-domain false-as-stated front door for the full ABF26/GCXK25 T5.1 bound. -/
 theorem linear_listSize_to_epsMCA_gcxk25_of_atomic_maxDomainWitnessCover
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-      Issue67Scratch.GKL24MaxDomainWitnessCoverResidual C (johnsonLift δ η)
+      Issue67Scratch.GKL24MaxDomainWitnessCoverFalseAsStated C (johnsonLift δ η)
         ((L : ℝ) ^ 2) δ.toNNReal) :
     epsMCA (F := F) (A := F) ((C : Set (ι → F))) (johnsonLift δ η) ≤
       ENNReal.ofReal
@@ -220,14 +221,14 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_atomic_maxDomainWitnessCover
           _ ≤ (L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η :=
             le_add_of_nonneg_right (by positivity)))
 
-/-- Prop-level T5.1 wrapper from the atomic maximal-domain residual. -/
+/-- Prop-level T5.1 wrapper from the atomic maximal-domain false-as-stated surface. -/
 theorem linear_listSize_to_epsMCA_gcxk25_of_atomic_maxDomainWitnessCover_prop
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-      Issue67Scratch.GKL24MaxDomainWitnessCoverResidual C (johnsonLift δ η)
+      Issue67Scratch.GKL24MaxDomainWitnessCoverFalseAsStated C (johnsonLift δ η)
         ((L : ℝ) ^ 2) δ.toNNReal) :
     linear_listSize_to_epsMCA_gcxk25 C L δ η
       hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ := by
@@ -376,8 +377,8 @@ theorem le_mcaThreshold_ofListSizeGCXK25_of_gkl24_witnessCover_residual
     (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_witnessCover_residual
       C L δ η ε_star hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres hle)
 
-/-- Max-correlation GKL24 residual data produce an MCA lower witness at the Johnson lift. -/
-noncomputable def GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_maxCorr_residual
+/-- Max-correlation GKL24 hypothesis data produce an MCA lower witness at the Johnson lift. -/
+noncomputable def GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_maxCorr_hypothesis
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
@@ -393,12 +394,12 @@ noncomputable def GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_maxC
   GrandChallenges.MCALowerWitness.ofJohnsonLiftEpsMCABound
     ((C : Set (ι → F))) δ η ε_star hδ_lt hη_pos
     (le_trans
-      (linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_residual_johnsonLift
+      (linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_hypothesis_johnsonLift
         C L δ η hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres)
       hle)
 
-/-- Max-correlation GKL24 residual data make the faithful MCA lattice threshold exist. -/
-theorem mcaThresholdExists_ofListSizeGCXK25_of_gkl24_maxCorr_residual
+/-- Max-correlation GKL24 hypothesis data make the faithful MCA lattice threshold exist. -/
+theorem mcaThresholdExists_ofListSizeGCXK25_of_gkl24_maxCorr_hypothesis
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
@@ -412,11 +413,11 @@ theorem mcaThresholdExists_ofListSizeGCXK25_of_gkl24_maxCorr_residual
           (ε_star : ENNReal)) :
     mcaThresholdExists ((C : Set (ι → F))) ε_star :=
   mcaThresholdExists_of_MCALowerWitness _ _
-    (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_maxCorr_residual
+    (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_maxCorr_hypothesis
       C L δ η ε_star hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres hle)
 
-/-- Max-correlation GKL24 residual data lower-bound the faithful MCA threshold. -/
-theorem le_mcaThreshold_ofListSizeGCXK25_of_gkl24_maxCorr_residual
+/-- Max-correlation GKL24 hypothesis data lower-bound the faithful MCA threshold. -/
+theorem le_mcaThreshold_ofListSizeGCXK25_of_gkl24_maxCorr_hypothesis
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
@@ -432,18 +433,18 @@ theorem le_mcaThreshold_ofListSizeGCXK25_of_gkl24_maxCorr_residual
     latticeIndexOf (ι := ι) (johnsonLift δ η) (johnsonLift_le_one hδ_lt hη_pos) ≤
       mcaThreshold ((C : Set (ι → F))) ε_star hne :=
   MCALowerWitness_le_mcaThreshold _ _ hne
-    (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_maxCorr_residual
+    (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_maxCorr_hypothesis
       C L δ η ε_star hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres hle)
 
-/-- Strict-cover GKL24 residual data produce an MCA lower witness at the Johnson lift. -/
-noncomputable def GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_strict_residual
+/-- Strict-cover GKL24 false-as-stated data produce an MCA lower witness at the Johnson lift. -/
+noncomputable def GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_strict_falseAsStated
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hstrict_radius : 2 * ((johnsonLift δ η : ℝ≥0) : ℝ) ≤ (δ.toNNReal : ℝ))
     (hres :
-      GKL24MaxCorrStrictWitnessCoverResidual C (johnsonLift δ η)
+      GKL24MaxCorrStrictWitnessCoverFalseAsStated C (johnsonLift δ η)
         δ.toNNReal ((L : ℝ) ^ 2))
     (hle :
       ENNReal.ofReal
@@ -453,19 +454,19 @@ noncomputable def GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_stri
   GrandChallenges.MCALowerWitness.ofJohnsonLiftEpsMCABound
     ((C : Set (ι → F))) δ η ε_star hδ_lt hη_pos
     (le_trans
-      (linear_listSize_to_epsMCA_gcxk25_of_gkl24_strict_residual_johnsonLift
+      (linear_listSize_to_epsMCA_gcxk25_of_gkl24_strict_falseAsStated_johnsonLift
         C L δ η hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hstrict_radius hres)
       hle)
 
-/-- Strict-cover GKL24 residual data make the faithful MCA lattice threshold exist. -/
-theorem mcaThresholdExists_ofListSizeGCXK25_of_gkl24_strict_residual
+/-- Strict-cover GKL24 false-as-stated data make the faithful MCA lattice threshold exist. -/
+theorem mcaThresholdExists_ofListSizeGCXK25_of_gkl24_strict_falseAsStated
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hstrict_radius : 2 * ((johnsonLift δ η : ℝ≥0) : ℝ) ≤ (δ.toNNReal : ℝ))
     (hres :
-      GKL24MaxCorrStrictWitnessCoverResidual C (johnsonLift δ η)
+      GKL24MaxCorrStrictWitnessCoverFalseAsStated C (johnsonLift δ η)
         δ.toNNReal ((L : ℝ) ^ 2))
     (hle :
       ENNReal.ofReal
@@ -473,19 +474,19 @@ theorem mcaThresholdExists_ofListSizeGCXK25_of_gkl24_strict_residual
           (ε_star : ENNReal)) :
     mcaThresholdExists ((C : Set (ι → F))) ε_star :=
   mcaThresholdExists_of_MCALowerWitness _ _
-    (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_strict_residual
+    (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_strict_falseAsStated
       C L δ η ε_star hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ
       hstrict_radius hres hle)
 
-/-- Strict-cover GKL24 residual data lower-bound the faithful MCA threshold. -/
-theorem le_mcaThreshold_ofListSizeGCXK25_of_gkl24_strict_residual
+/-- Strict-cover GKL24 false-as-stated data lower-bound the faithful MCA threshold. -/
+theorem le_mcaThreshold_ofListSizeGCXK25_of_gkl24_strict_falseAsStated
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hstrict_radius : 2 * ((johnsonLift δ η : ℝ≥0) : ℝ) ≤ (δ.toNNReal : ℝ))
     (hres :
-      GKL24MaxCorrStrictWitnessCoverResidual C (johnsonLift δ η)
+      GKL24MaxCorrStrictWitnessCoverFalseAsStated C (johnsonLift δ η)
         δ.toNNReal ((L : ℝ) ^ 2))
     (hle :
       ENNReal.ofReal
@@ -495,18 +496,18 @@ theorem le_mcaThreshold_ofListSizeGCXK25_of_gkl24_strict_residual
     latticeIndexOf (ι := ι) (johnsonLift δ η) (johnsonLift_le_one hδ_lt hη_pos) ≤
       mcaThreshold ((C : Set (ι → F))) ε_star hne :=
   MCALowerWitness_le_mcaThreshold _ _ hne
-    (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_strict_residual
+    (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_gkl24_strict_falseAsStated
       C L δ η ε_star hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ
       hstrict_radius hres hle)
 
-/-- Atomic maximal-domain residual data produce an MCA lower witness at the Johnson lift. -/
+/-- Atomic maximal-domain false-as-stated data produce an MCA lower witness at the Johnson lift. -/
 noncomputable def GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_atomic_maxDomainWitnessCover
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-      Issue67Scratch.GKL24MaxDomainWitnessCoverResidual C (johnsonLift δ η)
+      Issue67Scratch.GKL24MaxDomainWitnessCoverFalseAsStated C (johnsonLift δ η)
         ((L : ℝ) ^ 2) δ.toNNReal)
     (hle :
       ENNReal.ofReal
@@ -520,14 +521,14 @@ noncomputable def GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_atomic_max
         C L δ η hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres)
       hle)
 
-/-- Atomic maximal-domain residual data make the faithful MCA lattice threshold exist. -/
+/-- Atomic maximal-domain false-as-stated data make the faithful MCA lattice threshold exist. -/
 theorem mcaThresholdExists_ofListSizeGCXK25_of_atomic_maxDomainWitnessCover
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-      Issue67Scratch.GKL24MaxDomainWitnessCoverResidual C (johnsonLift δ η)
+      Issue67Scratch.GKL24MaxDomainWitnessCoverFalseAsStated C (johnsonLift δ η)
         ((L : ℝ) ^ 2) δ.toNNReal)
     (hle :
       ENNReal.ofReal
@@ -538,14 +539,14 @@ theorem mcaThresholdExists_ofListSizeGCXK25_of_atomic_maxDomainWitnessCover
     (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_atomic_maxDomainWitnessCover
       C L δ η ε_star hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres hle)
 
-/-- Atomic maximal-domain residual data lower-bound the faithful MCA threshold. -/
+/-- Atomic maximal-domain false-as-stated data lower-bound the faithful MCA threshold. -/
 theorem le_mcaThreshold_ofListSizeGCXK25_of_atomic_maxDomainWitnessCover
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-      Issue67Scratch.GKL24MaxDomainWitnessCoverResidual C (johnsonLift δ η)
+      Issue67Scratch.GKL24MaxDomainWitnessCoverFalseAsStated C (johnsonLift δ η)
         ((L : ℝ) ^ 2) δ.toNNReal)
     (hle :
       ENNReal.ofReal
@@ -558,14 +559,15 @@ theorem le_mcaThreshold_ofListSizeGCXK25_of_atomic_maxDomainWitnessCover
     (GrandChallenges.MCALowerWitness.ofListSizeGCXK25_of_atomic_maxDomainWitnessCover
       C L δ η ε_star hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres hle)
 
-/-- The threshold obtained from atomic maximal-domain residual data satisfies the MCA predicate. -/
+/-- The threshold obtained from atomic maximal-domain false-as-stated data satisfies the MCA
+predicate. -/
 theorem mcaThreshold_spec_ofListSizeGCXK25_of_atomic_maxDomainWitnessCover
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ) (ε_star : ℝ≥0)
     (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
     (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
     (hres :
-      Issue67Scratch.GKL24MaxDomainWitnessCoverResidual C (johnsonLift δ η)
+      Issue67Scratch.GKL24MaxDomainWitnessCoverFalseAsStated C (johnsonLift δ η)
         ((L : ℝ) ^ 2) δ.toNNReal)
     (hle :
       ENNReal.ofReal
