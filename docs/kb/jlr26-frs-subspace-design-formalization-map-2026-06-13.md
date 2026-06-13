@@ -116,3 +116,38 @@ subspace-design / line-decoding edifice (JLR26, GG25, my Claim 5.8 + Lemma 5.4, 
 **FRS-only** and provably does not reach plain-RS `s=1`. The plain-RS prize's genuine open core is
 the **√-loss removal in the list⇒CA bridge** (a clean, named, closed target — not an open-ended
 search), with the near-capacity lower bound (Table 1) capping how far it can possibly go.
+
+## 7. The reduction: both challenges share one δ* (the syndrome/list collapse)
+
+Combining the two converses with the bridge pins the relationship exactly:
+- **MCA ⟹ list (ABF26 Thm 5.2 [BCHKS25 1.9], Thm 5.3 [CS25 2]):** `ε_ca(C,δ)` small ⟹
+  `|Λ(C,δ)| < |F|`; quantitatively `|Λ(C⁺,δ)| ≤ (|F|/(1−η))·ε_ca(C,δ)`. So `ε_mca ≤ ε*` forces
+  `|Λ| ≲ ε*·|F|`.
+- **list ⟹ MCA (ABF26 Thm 5.1 [GCXK25 3]):** `|Λ(C,δ)| ≤ L` ⟹ `ε_mca(C, 1−√(1−δ+η)) ≤ L²δn/(η|F|)`.
+
+For the prize, `ε* = 2⁻¹²⁸`, `q ≈ n·2¹²⁸`, so `ε*·|F| ≈ n`. Hence **both grand challenges share the
+same threshold**:
+
+```
+δ*_prize  =  the radius where  |Λ(RS[F, μ_n, k], δ)|  crosses  ε*·|F| ≈ n.
+```
+
+This IS the genuine open core, stated cleanly: pin the radius where the worst-case list size of
+*explicit smooth-domain* RS equals `~n`. Everything else (MCA error, the interleaved list challenge)
+is tied to it by the bridges above.
+
+## 8. The three routes and their fatal gaps for the prize (exhaustive)
+
+| route | gives | gap for prize (plain RS / μ_n / window) |
+|---|---|---|
+| **List decoding ⟹ CA** (GCXK25 Thm 3) | `ε_mca` from a list bound | **√-loss in the radius** (`δ→1−√(1−δ)`), and ABF26 proves it is **false to remove in general** (Thm 5.4 [BGKS20]: `RS[F,F,|F|/8]` is list-decodable but lacks CA at `1−ρ^{1/3}`). Needs the smooth structure. |
+| **Subspace design / line stitching** (JLR26/GG25) | `ε_mca` up to capacity | **FRS-only** (`τ(r)=R+O(r/m)` needs folding `m=Ω(η⁻²)`); plain RS `s=1` has `τ(r)=R+O(r)`, useless. |
+| **Syndrome-space + witness reduction** (Yuan–Zhu 2605.07595) | `ρ < 1−R−ε` up to capacity, *no list decoding* | **random linear codes only** (random parity-check model); explicit smooth RS is the open line–ball incidence (character-sum / incomplete-Gauss-sum face, in-tree W4). |
+
+**Net for the prize.** The plain-RS smooth-domain window is open, and the reduction above shows the
+open core is *one* object: the worst-case list size `|Λ(RS/μ_n, δ)|` in the window. The syndrome-space
+route is the most promising NON-list, NON-folding angle — it works for random codes precisely because
+the random syndrome avoids the additive structure of `μ_n`; transferring it to explicit `μ_n` is
+exactly the character-sum/line–ball incidence problem (face iv), where the additive-energy / Sidon
+structure of `μ_n` (this session's energy+antipodal work) is the controlling quantity. That is the
+single named open target — not an open-ended search.
