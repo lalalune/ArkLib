@@ -84,9 +84,45 @@ theorem sv11_wronskian_full_pow_dvd {l : ℕ} (c : F) (t : ℕ) (idx : Fin l →
   · unfold sv11Gen
     exact dvd_mul_left _ _
 
+/-- **The reduced SV11 Wronskian has degree `≤ ∑ a_j` (no `t`).** Dividing the Wronskian by its
+`(X−c)^{t·∑b_j − C(l,2)}` factor leaves a nonzero quotient `Q` of degree `≤ ∑_j a_j ≈ lD` — the
+`t`-power is entirely gone. This is the completed degree-reduction: the Wronskian-as-auxiliary `Q` has
+the small `~lD` degree (vs the imposed combination's `~tB`), which with the multiplicity yields the
+sharp `O(t^{2/3})` Stepanov bound. -/
+theorem sv11_reduced_wronskian_natDegree_le {l : ℕ} (c : F) (t : ℕ) (idx : Fin l → ℕ × ℕ)
+    (hlt : l - 1 ≤ t) (hb : ∀ j, 1 ≤ (idx j).2)
+    (hW : wronskianDet (fun j => sv11Gen c t (idx j)) ≠ 0) :
+    ∃ Q : F[X], wronskianDet (fun j => sv11Gen c t (idx j))
+        = (X - C c) ^ (t * (∑ j, (idx j).2) - l.choose 2) * Q
+      ∧ Q.natDegree ≤ ∑ j, (idx j).1 := by
+  obtain ⟨Q, hQ⟩ := sv11_wronskian_full_pow_dvd c t idx hlt hb
+  refine ⟨Q, hQ, ?_⟩
+  set e := t * (∑ j, (idx j).2) - l.choose 2 with he
+  have hd : ((X - C c) ^ e : F[X]) ≠ 0 := pow_ne_zero e (X_sub_C_ne_zero c)
+  have hQ0 : Q ≠ 0 := by rintro rfl; rw [mul_zero] at hQ; exact hW hQ
+  have hdegW : (wronskianDet (fun j => sv11Gen c t (idx j))).natDegree = e + Q.natDegree := by
+    rw [hQ, Polynomial.natDegree_mul hd hQ0, Polynomial.natDegree_pow,
+      Polynomial.natDegree_X_sub_C, mul_one]
+  have hbound : (wronskianDet (fun j => sv11Gen c t (idx j))).natDegree
+      ≤ (∑ j, (idx j).1) + t * (∑ j, (idx j).2) - l.choose 2 := by
+    refine le_trans (natDegree_wronskianDet_le _) ?_
+    rw [Finset.sum_congr rfl (fun j _ => sv11Gen_natDegree c t (idx j)),
+      Finset.sum_add_distrib, ← Finset.mul_sum]
+  rw [hdegW] at hbound
+  have hCle : l.choose 2 ≤ t * (∑ j, (idx j).2) := by
+    have hsb : l ≤ ∑ j, (idx j).2 := by
+      calc l = ∑ _j : Fin l, 1 := by simp
+        _ ≤ ∑ j, (idx j).2 := Finset.sum_le_sum (fun j _ => hb j)
+    have hthis : l.choose 2 ≤ (l - 1) * l := by
+      rw [Nat.choose_two_right, Nat.mul_comm l (l - 1)]; omega
+    calc l.choose 2 ≤ (l - 1) * l := hthis
+      _ ≤ t * (∑ j, (idx j).2) := Nat.mul_le_mul hlt hsb
+  omega
+
 end ProximityGap.BinomialDet
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.BinomialDet.sv11_wronskian_pow_dvd
 #print axioms ProximityGap.BinomialDet.pow_dvd_wronskianDet_nonuniform
 #print axioms ProximityGap.BinomialDet.sv11_wronskian_full_pow_dvd
+#print axioms ProximityGap.BinomialDet.sv11_reduced_wronskian_natDegree_le
