@@ -282,7 +282,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.AttackLoop46
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
-import ArkLib.Data.CodingTheory.ProximityGap.BadScalarSingleWord
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.BWMatrix
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.GoodCoeffs
@@ -435,6 +434,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
 import ArkLib.Data.CodingTheory.ProximityGap.BGKSolSetSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.BadFamilyCensus
 import ArkLib.Data.CodingTheory.ProximityGap.BadGammaAffineCount
+import ArkLib.Data.CodingTheory.ProximityGap.BadScalarSingleWord
 import ArkLib.Data.CodingTheory.ProximityGap.BalancedFiveLaw
 import ArkLib.Data.CodingTheory.ProximityGap.BalancedFourLaw
 import ArkLib.Data.CodingTheory.ProximityGap.BallIntersectionSecondMomentLinear
@@ -1213,12 +1213,14 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProofLoop42
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
+import ArkLib.Data.CodingTheory.ProximityGap.QRCubicExactList
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicOrderedClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicSupplyLower
 import ArkLib.Data.CodingTheory.ProximityGap.QRShiftPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.QRZeroSumTripleScaling
 import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
 import ArkLib.Data.CodingTheory.ProximityGap.QuartetTowerLaw
+import ArkLib.Data.CodingTheory.ProximityGap.QuarticPowerSumFiber
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
