@@ -1088,6 +1088,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MannFiberCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MasterLoop45
 import ArkLib.Data.CodingTheory.ProximityGap.MatchingDomainUniqueness
 import ArkLib.Data.CodingTheory.ProximityGap.MeanDegreeDeepBand
+import ArkLib.Data.CodingTheory.ProximityGap.MeanDegreeGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.MinimalVanishingReduction
 import ArkLib.Data.CodingTheory.ProximityGap.MissingLineDefeater
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumCompleteSquare
