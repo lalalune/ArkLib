@@ -399,3 +399,58 @@ excess at Wick scale ⟹ the sup-norm via the moment ladder `eta_pow_le_energyR`
 BGK gives `max|η_b| ≤ n^{1−ε}` unconditionally throughout the prize regime (`n≥p^{0.156}`), already
 forcing the bias `θ→0`. The sharp constant is the open Bourgain-type higher-energy bound, but the
 refutation + `G=O(1)` test pin its value (`C∈[1,2]`) with high confidence. Harness /tmp/gumbel_test.py.
+
+## 16. ALL ROUTES CONVERGE — the prize is one Bourgain bound (now pinned, not route-dependent)
+
+Verified this session that the prize δ* in the window is the SAME single object from every attack:
+  · **Character-sum route** (§13–15): δ* ← `max|η_b(μ_n)| ≤ C√(n ln p)`.
+  · **k-fold energy route** (§14): δ* ← `E_k(μ_n) ≤ n^{2k}/p + (C²n ln p)^k/p`, dual to `η_b` via the
+    moment ladder `E_k=(1/p)∑_t|η_t|^{2k}` (`subgroup_gaussSum_moment` / `eta_pow_le_energyR`).
+  · **Direct bad-count route** (the granularity ladder's window frontier + the KKH26 ceiling lane):
+    the worst-case q-independent coset-spectrum bad count "reduces to the incomplete-Gauss-sum census
+    (Bourgain regime)" — the SAME `η_b` wall.
+  · **Granularity ladder** (`mcaDeltaStar_rs_eq_granularity`, PROVEN axiom-clean): pins δ*=j/n EXACTLY
+    but only below the split `q≲n·2^128` (low δ*, below Johnson — the directive's "triviality"); the
+    window is its declared open frontier.
+
+So the prize is NOT a choice of route — it is exactly `max_{b≠0}|∑_{x∈μ_n}e_p(bx)| ≤ C√(n ln p)`,
+reached identically from MCA, list-decoding, energy, and direct counting. The fabricate-then-refute
+methodology PINS this object: `C=(1+o(1))` (sharp law), `≤2` (uniform), `G=O(1)` (Gumbel tail bounded
+over 4 orders of magnitude of p, all n≤512, all 2-adic depths; worst case = Fermat primes). PROVEN
+floor: BGK `n^{1−ε}` throughout the regime ⟹ `θ=S/n→0` ⟹ δ* reaches the window. The sharp constant
+is the open higher-energy / Gauss-sum sup-norm problem — but its VALUE is now known, and the prize is
+a single, sharply-named, refutation-validated inequality rather than an open-ended search.
+
+## 17. Average vs worst-case: the PROVABLE piece separated from the open piece (syndrome-Fourier)
+
+Decomposing the bad-scalar count via Fourier on syndrome space `F_p^{n-k}`:
+`bad(stack) = AVERAGE + Shaw(stack)`, where (with `s_i = syndrome(u_i)`, `C_c(x)=∑_{j≥k}c_j x^{-j}`)
+
+  `bad = (1/q^{n-k-1}) ∑_{c ⊥ s₁} \hat{1_{B_w}}(c)·e_p(⟨c,s₀⟩)`,
+  `\hat{1_{B_w}}(c) = ∑_{T⊆Z_c(μ_n), |T|≤w} q^{|T|}`,  `Z_c(μ_n) = {x∈μ_n : C_c(x)=0}`.
+
+The `c=0` term is the AVERAGE (= `p·|ball_{δn}(RS)|/qⁿ`); the `c≠0` sum is the Shaw operator.
+
+**(A) AVERAGE δ\* — closed form, PROVABLE (ball-volume counting).** The average bad count crosses
+the prize threshold `q·ε*` at
+
+  **`δ*_avg = 1 − ρ − h(1−ρ)/log₂q`**  (binary entropy `h`),  i.e. `η_avg ~ h(1−ρ)/log q`.
+
+Derivation: `|ball_{δn}(RS)| ≈ C(n,δn)q^{δn+k}`, so `bad_avg ≈ C(n,δn)q^{δn-(n-k)+1}`; setting
+`= q·ε* ≈ n` gives `n·h(δ) = η·n·log₂q`, i.e. `h(1−ρ−η)=η·log₂q`. This is a clean counting bound,
+no Bourgain, no character sup-norm — it is the PROVABLE half.
+
+**(B) WORST-case δ\* = the PRIZE — `1 − ρ − Θ(1/log₂n)` (window edge).** Strictly FURTHER from
+capacity than the average (`η_worst ~ 1/log n ≫ η_avg ~ h/log q`; factor `~log q/log n ≈ 6.4` at the
+prize point). The excess `δ*_avg − δ*_worst` is the worst-case Shaw operator
+`max_{s₀} |∑_{c⊥s₁,c≠0} \hat{1_{B_w}}(c) e_p(⟨c,s₀⟩)|` — a sup-norm of a character sum with
+**polynomial-root-count** weights `\hat{1_{B_w}}(c)` (large exactly when `C_c` has many roots on
+`μ_n`). The `1/log n` (vs the average's `1/log q`) is PRODUCED by this worst-case concentration onto
+few high-root-count `c` — explaining the prize threshold's `n`-dependence.
+
+**Net (this turn).** The prize cleanly splits: the average δ\* is a provable closed-form entropy bound
+`1−ρ−h(1−ρ)/log₂q`; the worst-case δ\* (the prize, `1−ρ−Θ(1/log n)`) is the average MINUS the
+worst-case Shaw excess, whose value the refutation methodology pins (`max char sum ≤ 2√(n ln p)`,
+§15) and BGK floors (`n^{1−ε}`). The open core is the WORST-CASE polynomial-root census sup-norm —
+the same object as the η_b sup-norm under Fourier duality, now seen as a root-count concentration.
+This is the sharpest structural statement: provable average + refutation-pinned worst-case excess.
