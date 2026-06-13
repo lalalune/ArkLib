@@ -91,11 +91,10 @@ theorem plane_incidence_card_le (u v c : ι → F) {k : ℕ}
       have hss : s = s' := heq
       subst hss
       obtain ⟨i, j, hij, hs⟩ := Finset.card_eq_two.mp hps.2.2
-      have hi_sp : i ∈ S p := hps.2.1 (by rw [hs]; exact mem_insert_self i {j})
-      have hj_sp : j ∈ S p := hps.2.1 (by rw [hs]; exact mem_insert_of_mem (mem_singleton_self j))
-      have hi_sp' : i ∈ S p' := hps'.2.1 (by rw [hs]; exact mem_insert_self i {j})
-      have hj_sp' : j ∈ S p' := hps'.2.1 (by rw [hs]; exact mem_insert_of_mem (mem_singleton_self j))
-      have hpp : p = p' := huniq p p' i j hij hi_sp hj_sp hi_sp' hj_sp'
+      have hmi : i ∈ s := by rw [hs]; exact mem_insert_self i {j}
+      have hmj : j ∈ s := by rw [hs]; exact mem_insert_of_mem (mem_singleton_self j)
+      have hpp : p = p' :=
+        huniq p p' i j hij (hps.2.1 hmi) (hps.2.1 hmj) (hps'.2.1 hmi) (hps'.2.1 hmj)
       subst hpp; rfl
   have hlb : Heavy.card * k.choose 2 ≤ ∑ p ∈ Heavy, (S p).card.choose 2 := by
     rw [← smul_eq_mul, ← Finset.sum_const]
