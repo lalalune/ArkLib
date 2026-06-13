@@ -7,6 +7,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GranularityLadderRS
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.FieldTheory.KummerExtension
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
 
 /-!
 # The degree-`t` supply = elementary-symmetric fiber (#389)
@@ -365,6 +366,27 @@ theorem rootsOfUnity_dyadic_supply {ζ : F} (hζ : IsPrimitiveRoot ζ n)
     hcoset hsd
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
+open scoped Classical in
+open Polynomial in
+/-- **The issue's supply statement is FALSE for `μ_n` at subexponential `B`.**  The
+degree-`t` word `wt·X^t + lowPart` already has `≥ C(r,s)` explainable `(k+m+1)`-cores on
+the roots-of-unity domain, so `ExplainableCoreSupply` cannot hold with any `B < C(r,s)` —
+for `n = 2^μ`, constant rate, `B` must be exponential. -/
+theorem not_explainableCoreSupply_rootsOfUnity {ζ : F} (hζ : IsPrimitiveRoot ζ n)
+    {k m d r : ℕ} (hk : 1 ≤ k) (hd : m + 2 ≤ d) (hnr : n = d * r)
+    (wt : F) (hwt : wt ≠ 0) (lowPart : Polynomial F) (hlow : lowPart.degree < (k : WithBot ℕ))
+    {s : ℕ} (hsd : s * d = k + m + 1) {B : ℕ} (hB : B < r.choose s) :
+    ¬ ProximityGap.Ownership.ExplainableCoreSupply (domRU hζ) k m B := by
+  intro hsupply
+  have hle := hsupply (fun i => (C wt * X ^ (k + m + 1) + lowPart).eval (domRU hζ i))
+  have hge := rootsOfUnity_dyadic_supply hζ hk hd hnr wt hwt lowPart hlow hsd
+  have hchain : r.choose s ≤ B := by
+    refine le_trans hge ?_
+    convert hle using 2
+    ext T
+    simp only [ProximityGap.Ownership.ExplainableOn, Finset.mem_filter]
+  omega
+
 end ProximityGap.EsymmFiber
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -372,3 +394,4 @@ end ProximityGap.EsymmFiber
 #print axioms ProximityGap.EsymmFiber.explainable_of_expand
 #print axioms ProximityGap.EsymmFiber.smooth_dyadic_supply_lower_bound
 #print axioms ProximityGap.EsymmFiber.rootsOfUnity_dyadic_supply
+#print axioms ProximityGap.EsymmFiber.not_explainableCoreSupply_rootsOfUnity
