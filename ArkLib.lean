@@ -784,6 +784,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveBudgetDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCaptureUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellGivenFamily
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellBudgeted
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellStrictExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveNumericCount
