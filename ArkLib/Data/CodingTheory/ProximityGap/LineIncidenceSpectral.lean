@@ -113,4 +113,43 @@ theorem lineIncidence_spectral {F V : Type*} [Field F] [Fintype F]
     rw [← Finset.sum_mul, mul_comm]
   · simp only [hd, if_false, mul_zero, Finset.sum_const_zero, mul_zero]
 
+/-! ### The Parseval mass identity (the quantitative core of wall W4) -/
+
+/-- **Parseval pairing / L²-mass identity.** For any finset `S` in a finite group `V`, summing the
+"squared" character mass over the *full* dual group is exactly `|V|·|S|`:
+`Σ_ψ (Σ_{s∈S} ψ s)·(Σ_{t∈S} ψ⁻¹ t) = |V|·|S|`. This is the exact total spectral energy of the
+indicator `1_S`. The W4 wall is the Cauchy–Schwarz consequence
+`|Σ_{ψ ∈ W} (Σ_{s∈S} ψ s)| ≤ √(|W|·|V|·|S|)`: restricting the spectral sum to any set of
+characters `W` (e.g. `s₁^⊥`) loses a square root, which is W4-weak in the prize regime `n ≪ √q`.
+Proved purely algebraically from character orthogonality — no complex conjugation, no norms. -/
+theorem charSum_l2_pairing {V : Type*} [AddCommGroup V] [Fintype V] [DecidableEq V]
+    (S : Finset V) :
+    (∑ ψ : AddChar V ℂ, (∑ s ∈ S, ψ s) * (∑ t ∈ S, ψ⁻¹ t))
+      = (Fintype.card V : ℂ) * (S.card : ℂ) := by
+  classical
+  have step : ∀ ψ : AddChar V ℂ, (∑ s ∈ S, ψ s) * (∑ t ∈ S, ψ⁻¹ t)
+      = ∑ s ∈ S, ∑ t ∈ S, ψ (s - t) := by
+    intro ψ
+    rw [Finset.sum_mul_sum]
+    refine Finset.sum_congr rfl (fun s _ => Finset.sum_congr rfl (fun t _ => ?_))
+    rw [AddChar.inv_apply, ← AddChar.map_add_eq_mul]
+    congr 1; abel
+  rw [Finset.sum_congr rfl (fun ψ _ => step ψ)]
+  -- reorder ∑_ψ ∑_s ∑_t  →  ∑_s ∑_t ∑_ψ
+  have hreorder : (∑ ψ : AddChar V ℂ, ∑ s ∈ S, ∑ t ∈ S, ψ (s - t))
+      = ∑ s ∈ S, ∑ t ∈ S, ∑ ψ : AddChar V ℂ, ψ (s - t) := by
+    rw [Finset.sum_comm]
+    refine Finset.sum_congr rfl (fun s _ => ?_)
+    rw [Finset.sum_comm]
+  rw [hreorder]
+  -- inner orthogonality: ∑_ψ ψ(s-t) = |V|·[s = t]
+  have hinner : ∀ s ∈ S, (∑ t ∈ S, ∑ ψ : AddChar V ℂ, ψ (s - t))
+      = (Fintype.card V : ℂ) := by
+    intro s hs
+    have e : ∀ t ∈ S, (∑ ψ : AddChar V ℂ, ψ (s - t))
+        = if s = t then (Fintype.card V : ℂ) else 0 := by
+      intro t _; rw [AddChar.sum_apply_eq_ite]; simp only [sub_eq_zero]
+    rw [Finset.sum_congr rfl e, Finset.sum_ite_eq S s (fun _ => (Fintype.card V : ℂ)), if_pos hs]
+  rw [Finset.sum_congr rfl hinner, Finset.sum_const, nsmul_eq_mul, mul_comm]
+
 end ArkLib.ProximityGap.LineIncidenceSpectral
