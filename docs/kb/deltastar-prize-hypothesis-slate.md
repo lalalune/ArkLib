@@ -255,3 +255,43 @@ proximity 8 (Johnson scale = window edge, the real regime), feasibility 6
 extension is the open step).** This is the first slate entry clearing the
 bar on three of four axes. Reading-list add: Mann 1965 "On linear relations
 between roots of unity"; Conway–Jones 1976.
+
+## DECISIVE clarification: core count (exp) vs list size (poly) diverge at Johnson scale
+
+`probe_prize_coreVSlist` (extremal coset word, k=2, n=12..32, Johnson radius):
+| n | a | explainable CORES (subsets) | LIST (codewords) | max-agree |
+|---|---|---|---|---|
+| 12 | 4 | 50 | **2** | 7 |
+| 16 | 5 | 182 | **2** | 9 |
+| 20 | 6 | 672 | **2** | 11 |
+| 24 | 6 | 2640 | **2** | 13 |
+| 28 | 7 | 9867 | **2** | 15 |
+| 32 | 7 | 30888 | **2** | 17 |
+
+The CORE count (explainable a-subsets) is `~C(n/2,a)` = EXPONENTIAL; the LIST
+(codewords agreeing on ≥a) is CONSTANT (2). The divergence is structural: two
+cosets of `n/2` points each lie on one line (one codeword, agreement `n/2 ≫ a`),
+so each covers `C(n/2,a)` a-subcores. `ExplainableCoreSupply` counts CORES, so
+its proven exponential blow-up (`not_explainableCoreSupply_exponential`)
+reflects **rich codewords covering many subsets, NOT many codewords.**
+
+**Consequence for the prize.** The δ*-relevant quantity is #bad scalars,
+governed by the LIST size (codewords), which is poly (here O(1)) at Johnson
+scale. The supply-via-core-count is intrinsically lossy by the factor
+`Σ_codewords C(agreement,a)`. So the exponential supply does NOT imply δ*
+fails — it implies the core-counting route is the wrong gauge. The clean
+target is the **list bound** (codeword count), where the coset word
+(extremal) is poly. This unifies with the Mann lead: the FEW codewords are
+exactly the coset-structured ones Mann's theorem produces. The
+positive-direction conjecture sharpens to:
+
+  **PrizeListBound (codeword form):** for explicit `μ_{2^μ}` and Johnson-scale
+  `a`, the number of degree-`<k` codewords agreeing with any word on `≥ a`
+  points is poly(n) — with the extremal words being coset-structured (Mann),
+  and the bound following from the rich-line / Szemerédi–Trotter incidence
+  geometry of `μ_n` (the in-tree `epsMCA_ge_far_incidence` lane).
+
+This is the honest synthesis of the session's prize work: the open core is the
+**codeword-list bound** (not the core-supply count), the extremal structure is
+coset/Mann, and the route is incidence-geometric — a concrete, literature-
+backed program, not the wall the core-supply route hit.
