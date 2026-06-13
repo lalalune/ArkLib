@@ -166,9 +166,87 @@ theorem bigAgreeCodewords_card_shift {ζ : F} (hζ : IsPrimitiveRoot ζ n) {k m 
   · intro c _; exact unShift_shift c
   · intro c _; exact shift_unShift c
 
+/-- The core-shift embedding `i ↦ i+1` on index sets. -/
+def coreShift : Fin n ↪ Fin n := (Equiv.addRight (1 : Fin n)).toEmbedding
+
+/-- Its inverse embedding `i ↦ i-1`. -/
+def coreUnShift : Fin n ↪ Fin n := (Equiv.addRight (1 : Fin n)).symm.toEmbedding
+
+@[simp] theorem coreShift_apply (i : Fin n) : coreShift i = i + 1 := rfl
+@[simp] theorem coreUnShift_apply (i : Fin n) : coreUnShift i = i - 1 := by
+  show (Equiv.addRight (1 : Fin n)).symm i = i - 1
+  rw [Equiv.addRight_symm]; exact (sub_eq_add_neg i 1).symm
+
+theorem map_coreShift_unShift (T : Finset (Fin n)) :
+    (T.map coreShift).map coreUnShift = T := by
+  have hcomp : coreShift.trans coreUnShift = Function.Embedding.refl (Fin n) := by
+    ext i
+    simp only [Function.Embedding.trans_apply, coreShift_apply, coreUnShift_apply,
+      Function.Embedding.refl_apply, add_sub_cancel_right]
+  rw [Finset.map_map, hcomp, Finset.map_refl]
+
+theorem map_coreUnShift_shift (T : Finset (Fin n)) :
+    (T.map coreUnShift).map coreShift = T := by
+  have hcomp : coreUnShift.trans coreShift = Function.Embedding.refl (Fin n) := by
+    ext i
+    simp only [Function.Embedding.trans_apply, coreShift_apply, coreUnShift_apply,
+      Function.Embedding.refl_apply, sub_add_cancel]
+  rw [Finset.map_map, hcomp, Finset.map_refl]
+
+open Classical in
+/-- **Explainability is shift-equivariant.**  `w` is explainable on the shifted core
+`T.map coreShift` iff `shiftWord w` is explainable on `T` (transport the explaining
+codeword by the shift). -/
+theorem explainableOn_shift_iff {ζ : F} (hζ : IsPrimitiveRoot ζ n) {k : ℕ}
+    (w : Fin n → F) (T : Finset (Fin n)) :
+    ExplainableOn (domRU hζ) k w (T.map coreShift)
+      ↔ ExplainableOn (domRU hζ) k (shiftWord w) T := by
+  constructor
+  · rintro ⟨c, hcC, hcag⟩
+    refine ⟨shiftWord c, rsCode_shiftWord_mem hζ hcC, fun i hi => ?_⟩
+    have : (i + 1) ∈ T.map coreShift := by
+      rw [Finset.mem_map]; exact ⟨i, hi, by simp⟩
+    have hc := hcag _ this
+    simpa [shiftWord] using hc
+  · rintro ⟨c, hcC, hcag⟩
+    refine ⟨unShiftWord c, rsCode_unShiftWord_mem hζ hcC, fun j hj => ?_⟩
+    rw [Finset.mem_map] at hj
+    obtain ⟨i, hi, rfl⟩ := hj
+    have hc := hcag i hi
+    simpa [unShiftWord, shiftWord, coreShift_apply, add_sub_cancel_right] using hc
+
+open Classical in
+/-- **The explainable-core count (`ExplainableCoreSupply`'s quantity) is shift-invariant.**
+The core-shift `T ↦ T.map coreShift` bijects the explainable `(k+m+1)`-cores of `w`
+onto those of `shiftWord w`.  Hence `ExplainableCoreSupply` is a *cyclic-orbit
+invariant* on `μ_n`: if it fails for one word it fails for every shift, and the
+exponential deep-band lower bound `not_explainableCoreSupply_exponential` propagates
+across the whole orbit. -/
+theorem explainableCoreCount_shift {ζ : F} (hζ : IsPrimitiveRoot ζ n) {k m : ℕ}
+    (w : Fin n → F) :
+    (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+        (fun T => ExplainableOn (domRU hζ) k (shiftWord w) T)).card
+      = (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+        (fun T => ExplainableOn (domRU hζ) k w T)).card := by
+  refine Finset.card_bij' (fun T _ => T.map coreShift) (fun T _ => T.map coreUnShift) ?_ ?_ ?_ ?_
+  · -- s = explainable for shiftWord w → t = explainable for w
+    intro T hT
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at hT ⊢
+    obtain ⟨⟨-, hcard⟩, hexpl⟩ := hT
+    exact ⟨⟨Finset.subset_univ _, by rw [Finset.card_map]; exact hcard⟩,
+      (explainableOn_shift_iff hζ w T).mpr hexpl⟩
+  · intro T hT
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at hT ⊢
+    obtain ⟨⟨-, hcard⟩, hexpl⟩ := hT
+    refine ⟨⟨Finset.subset_univ _, by rw [Finset.card_map]; exact hcard⟩, ?_⟩
+    exact (explainableOn_shift_iff hζ w (T.map coreUnShift)).mp (by rwa [map_coreUnShift_shift])
+  · intro T _; exact map_coreShift_unShift T
+  · intro T _; exact map_coreUnShift_shift T
+
 end ProximityGap.RUCyclic
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.RUCyclic.domRU_succ
 #print axioms ProximityGap.RUCyclic.rsCode_shiftWord_mem
 #print axioms ProximityGap.RUCyclic.bigAgreeCodewords_card_shift
+#print axioms ProximityGap.RUCyclic.explainableCoreCount_shift
