@@ -7,11 +7,16 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 
 /-!
-# GKL24 petal-witness-cover residual + reduction (issue #67)
+# GKL24 petal-witness-cover false surface + reduction (issue #67)
 
-NEW atomic named residual `GKL24MaxDomainWitnessCoverResidual` + the proven reduction to the
-in-tree petal-disjointness cover; tightens the ABF26 T5.1 first-moment residual to the
-atomic GKL24 maximal-agree-domain count.
+Historical atomic max-domain surface `GKL24MaxDomainWitnessCoverFalseAsStated` plus the proven
+reduction to the in-tree petal-disjointness cover. The original residual form was intentionally
+retired from the strict census after the #363 audit found isolated-bad-scalar stacks where the
+per-carrier maximal-domain clause is unsatisfiable.
+
+The useful live content of this file is the conditional reduction: if a future theorem supplies
+this stronger certificate under repaired side conditions, it still tightens the ABF26 T5.1
+first-moment residual to the atomic GKL24 maximal-agree-domain count.
 -/
 
 set_option linter.unusedSectionVars false
@@ -45,15 +50,16 @@ theorem lineAgreeSet_strict_of_card_lt
     D ⊂ lineAgreeSet u₀ u₁ w γ :=
   strict_of_subset_of_card_lt hsub hlt
 
-/-! ## 1. The atomic maximal-domain witness-cover residual.
+/-! ## 1. The false-as-stated atomic maximal-domain witness-cover surface.
 
 Per stack: a close-codeword carrier `T u` covering the bad scalars, and for every `w ∈ T u`, the
 GKL24 maximal-domain data for `Γ_w := mcaBadWitness w`: a max domain `D`, per-γ codeword `wOf`,
 inclusions, strict expansions, and the pairwise large-intersection bound (the genuine GKL24
-Lemma 1 content). All fields are `Prop`; this is the named residual. The radius `p` is `ℝ≥0`
+Lemma 1 content). All fields are `Prop`; this is the retired over-strong surface. The radius `p`
+is `ℝ≥0`
 (matching `maxCorrAgreeDomain` and the in-tree `linePetal_pairwise_disjoint_of_maxCorrAgreeDomain`
 intersection bound), with the petal-counting consumer using `(p:ℝ)`. -/
-def GKL24MaxDomainWitnessCoverResidual
+def GKL24MaxDomainWitnessCoverFalseAsStated
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) (B_T : ℝ) (p : ℝ≥0) : Prop :=
   ∀ u : WordStack F (Fin 2) ι,
     ∃ T : Finset (ι → F),
@@ -76,14 +82,14 @@ def GKL24MaxDomainWitnessCoverResidual
                 (((lineAgreeSet (u 0) (u 1) (wOf γ) γ ∩
                     lineAgreeSet (u 0) (u 1) (wOf γ') γ').card : ℕ) : ℝ≥0))
 
-/-! ## 2. PROOF: the atomic residual ⇒ the in-tree petal witness-cover residual.
+/-! ## 2. PROOF: the atomic false surface ⇒ the in-tree petal witness-cover hypothesis.
 
 We derive the disjoint petals from the certificate via the in-tree
 `linePetal_pairwise_disjoint_of_maxCorrAgreeDomain` (per-γ `wOf` form), plus petal nonemptiness
 and subset-of-complement. The petal function we exhibit is `petal γ := linePetal D (wOf γ) γ`. -/
 theorem gkl24PetalWitnessCoverHypothesis_of_maxDomainWitnessCover
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ} {p : ℝ≥0}
-    (hres : GKL24MaxDomainWitnessCoverResidual MC δ B_T p) :
+    (hres : GKL24MaxDomainWitnessCoverFalseAsStated MC δ B_T p) :
     GKL24PetalWitnessCoverHypothesis MC δ B_T (p : ℝ) := by
   classical
   intro u
@@ -108,35 +114,35 @@ theorem gkl24PetalWitnessCoverHypothesis_of_maxDomainWitnessCover
     intro γ _hγ
     exact linePetal_subset_compl D (u 0) (u 1) (wOf γ) γ
 
-/-! ## 3. Front doors: atomic residual ⇒ sharp T5.1 first-moment `b = p·n`.
+/-! ## 3. Front doors: atomic false surface ⇒ sharp T5.1 first-moment `b = p·n`.
 
 Composing §2 with the proven in-tree consumers gives the `B_T · (p·n)` count and `ε_mca` bound.
 With `B_T := L²`, `p := δ_list` this is exactly the `L²·δ_list·n` first-moment summand of ABF26
 T5.1; adding `GCXK25SecondMoment.card_lt_one_div_of_second_moment_rs` (`1/η`) closes the RHS. -/
 
-/-- **Sharp per-stack first-moment count from the atomic maximal-domain residual.** -/
+/-- **Sharp per-stack first-moment count from the atomic maximal-domain surface.** -/
 theorem mcaBad_card_le_t51_firstMoment_of_maxDomainWitnessCover
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ} {p : ℝ≥0}
-    (hres : GKL24MaxDomainWitnessCoverResidual MC δ B_T p)
+    (hres : GKL24MaxDomainWitnessCoverFalseAsStated MC δ B_T p)
     (u : WordStack F (Fin 2) ι) :
     ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤
       B_T * ((p : ℝ) * (Fintype.card ι : ℝ)) :=
   mcaBad_card_le_of_gkl24_petal_witnessCover_hypothesis MC δ (p.coe_nonneg)
     (gkl24PetalWitnessCoverHypothesis_of_maxDomainWitnessCover MC δ hres) u
 
-/-- **Sharp `ε_mca` first-moment bound from the atomic maximal-domain residual.** -/
+/-- **Sharp `ε_mca` first-moment bound from the atomic maximal-domain surface.** -/
 theorem epsMCA_le_ofReal_t51_firstMoment_of_maxDomainWitnessCover
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ} {p : ℝ≥0}
-    (hres : GKL24MaxDomainWitnessCoverResidual MC δ B_T p) :
+    (hres : GKL24MaxDomainWitnessCoverFalseAsStated MC δ B_T p) :
     epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
       ENNReal.ofReal ((B_T * ((p : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
   epsMCA_le_ofReal_of_gkl24_petal_witnessCover_hypothesis MC δ (p.coe_nonneg)
     (gkl24PetalWitnessCoverHypothesis_of_maxDomainWitnessCover MC δ hres)
 
-/-! ## 4. Regression sanity: the in-tree relaxed residual is still reachable.
+/-! ## 4. Regression sanity: the in-tree relaxed carrier plumbing is still reachable.
 
 We re-derive that the trivially-relaxed setting is consistent: a single-codeword carrier still
-satisfies the COVER and MEMBERSHIP halves of the atomic residual (the certificate fields are the
+satisfies the COVER and MEMBERSHIP halves of the atomic surface (the certificate fields are the
 genuine GKL24 content and are NOT claimed here). This documents that the only new obligation over
 the in-tree state is the maximal-domain certificate, not the carrier plumbing. -/
 theorem maxDomainWitnessCover_carrier_cover_inTree

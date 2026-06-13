@@ -14,8 +14,9 @@ set_option autoImplicit false
 /-!
 # GKL24 max-corr witness cover via the common-zero domain (#389)
 
-This file sharpens the `GKL24MaxCorrStrictWitnessCoverResidual` reduction by removing the
-two-distinct-witnesses case split of `exists_maxCorrAgreeDomain_strict_of_two_witnesses`.
+This file sharpens the historical `GKL24MaxCorrStrictWitnessCoverFalseAsStated` reduction by
+removing the two-distinct-witnesses case split of
+`exists_maxCorrAgreeDomain_strict_of_two_witnesses`.
 
 The key object is `commonZero u₀ u₁ w = {i : u₁ i = 0 ∧ w i = u₀ i}`, the canonical candidate
 maximal correlated-agreement domain of GKL24 Lemma 1.  Its containment in every line-agreement
@@ -29,15 +30,15 @@ Consequences:
   `corrAgreeDomain` + code-determination `hCodeDet`, for codewords of ANY witness multiplicity.
 * `exists_maxCorrAgreeDomain_strict_of_commonZero_maximal` — the per-`w` strict subset-cover
   clause from maximality of `commonZero`, no witness split.
-* `CommonZeroMaximalDomainResidual` — the strictly smaller named residual (per stack, per
-  carried `w`, `commonZero` is a maximal domain; the carrier is automatic from
+* `CommonZeroMaximalDomainFalseAsStated` — the smaller but still too-strong historical surface
+  (per stack, per carried `w`, `commonZero` is a maximal domain; the carrier is automatic from
   `mcaBad_subset_biUnion_mcaBadWitness`).
 * `GKL24MaxCorrWitnessCoverHypothesis_of_commonZeroMaximal` — the end-to-end route to the full
   max-corr hypothesis under `2δ ≤ p ≤ 1`.
 
-The **entire** remaining open content of the GKL24 first-moment / max-corr route is now the
-single inequality `(1−p)·n ≤ |commonZero u₀ u₁ w|` (the joint-agreement on `commonZero` being
-already proven); `hCodeDet` is the Johnson-regime `p·n < minDist` consequence, not a new wall.
+This is useful as a reduction lemma, but not as a live residual: the unrestricted `∀ u` version is
+false in the same isolated-bad-scalar regime as the older max-domain surfaces. The live open
+interface remains the bounded carrier/list-size residual `GKL24FirstMomentWitnessCoverResidual`.
 -/
 
 namespace ProximityGap
@@ -67,7 +68,7 @@ theorem commonZero_subset_lineAgreeSet (u₀ u₁ w : ι → F) (γ : F) :
 
 /-- **Uniform per-codeword discharge (subset form), conditional on maximality of `commonZero`.**
 If `commonZero u₀ u₁ w` is a maximal correlated-agreement domain at rate `p`, then it witnesses
-the per-`w` clause of `GKL24MaxCorrStrictWitnessCoverResidual_of_subset_cover`: a maximal
+the per-`w` clause of `GKL24MaxCorrStrictWitnessCoverFalseAsStated_of_subset_cover`: a maximal
 correlated-agreement domain contained in every bad witness's line-agreement set.
 
 Crucially this holds for `w` with ANY number of bad witnesses — zero, one, or many — because the
@@ -83,7 +84,7 @@ theorem exists_maxCorrAgreeDomain_subset_of_commonZero_maximal
   ⟨commonZero u₀ u₁ w, hmax, fun γ _ => commonZero_subset_lineAgreeSet u₀ u₁ w γ⟩
 
 /-- **Strict-expansion form, conditional on maximality of `commonZero`.**  Same hypothesis,
-delivering the strict residual's per-`w` clause directly (the strict expansion follows from the
+delivering the strict false surface's per-`w` clause directly (the strict expansion follows from the
 containment via `ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn`, since `commonZero` is a
 joint-agreement domain). -/
 theorem exists_maxCorrAgreeDomain_strict_of_commonZero_maximal
@@ -148,12 +149,14 @@ theorem exists_maxCorrAgreeDomain_subset_of_commonZero_large
   exists_maxCorrAgreeDomain_strict_of_commonZero_maximal (δ := δ)
     (maxCorrAgreeDomain_commonZero_of_corrAgreeDomain hw hcorr hCodeDet)
 
-/-- **The strictly smaller named residual.**  Per stack and per carried codeword `w` in the
-automatic biUnion carrier, the common zero-agreement set `commonZero u₀ u₁ w` is a maximal
-correlated-agreement domain at rate `p`. This is the GKL24 first-moment kernel in its sharpest
-isolated form: the *only* remaining content is that `commonZero` is large (`≥ (1−p)·n`) and
-maximal — exactly the place where genuine first-moment / code-determination input enters. -/
-def CommonZeroMaximalDomainResidual
+/-- **The strictly smaller false-as-stated surface.**  Per stack and per carried codeword `w` in
+the automatic biUnion carrier, the common zero-agreement set `commonZero u₀ u₁ w` is a maximal
+correlated-agreement domain at rate `p`.
+
+This is no longer counted as a residual because the unrestricted statement is too strong:
+arbitrary stacks can have isolated bad scalars without a large common-zero maximal domain. It is
+retained only as a named historical certificate for conditional reductions. -/
+def CommonZeroMaximalDomainFalseAsStated
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) (B_T : ℝ) : Prop :=
   ∀ u : WordStack F (Fin 2) ι,
     ∃ T : Finset (ι → F),
@@ -162,15 +165,15 @@ def CommonZeroMaximalDomainResidual
         (T.card : ℝ) ≤ B_T ∧
         ∀ w ∈ T, maxCorrAgreeDomain MC p (u 0) (u 1) (commonZero (u 0) (u 1) w)
 
-/-- **`CommonZeroMaximalDomainResidual ⟹ GKL24MaxCorrStrictWitnessCoverResidual`.**
+/-- **`CommonZeroMaximalDomainFalseAsStated ⟹ GKL24MaxCorrStrictWitnessCoverFalseAsStated`.**
 The reduction: the carrier `T` covers all of `MC`, so `mcaBad ⊆ biUnion mcaBadWitness`
 automatically (`mcaBad_subset_biUnion_mcaBadWitness`); and each carried `w` has its per-`w`
 strict clause discharged by `exists_maxCorrAgreeDomain_strict_of_commonZero_maximal`. No
 parameter relation, no `hCodeDet`, no witness-multiplicity split. -/
-theorem GKL24MaxCorrStrictWitnessCoverResidual_of_commonZeroMaximal
+theorem GKL24MaxCorrStrictWitnessCoverFalseAsStated_of_commonZeroMaximal
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
-    (hres : CommonZeroMaximalDomainResidual MC δ p B_T) :
-    GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T := by
+    (hres : CommonZeroMaximalDomainFalseAsStated MC δ p B_T) :
+    GKL24MaxCorrStrictWitnessCoverFalseAsStated MC δ p B_T := by
   intro u
   obtain ⟨T, hTsub, hTcover, hcard, hTmax⟩ := hres u
   refine ⟨T, hTsub, ?_, hcard, fun w hw => ?_⟩
@@ -178,7 +181,7 @@ theorem GKL24MaxCorrStrictWitnessCoverResidual_of_commonZeroMaximal
     exact mcaBad_subset_biUnion_mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) T hTcover
   · exact exists_maxCorrAgreeDomain_strict_of_commonZero_maximal (δ := δ) (hTmax w hw)
 
-/-- **End-to-end: `CommonZeroMaximalDomainResidual ⟹ GKL24MaxCorrWitnessCoverHypothesis`**
+/-- **End-to-end: `CommonZeroMaximalDomainFalseAsStated ⟹ GKL24MaxCorrWitnessCoverHypothesis`**
 under the Johnson parameter relation `2δ ≤ p ≤ 1` (the pairwise large-intersection clause is
 recovered by the in-tree `_of_strict_cover` bridge). This routes the full max-corr hypothesis
 all the way down to the single isolated kernel `commonZero` is a maximal domain. -/
@@ -186,9 +189,9 @@ theorem GKL24MaxCorrWitnessCoverHypothesis_of_commonZeroMaximal
     (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
     (hp_le_one : p ≤ 1)
     (hδp : 2 * (δ : ℝ) ≤ (p : ℝ))
-    (hres : CommonZeroMaximalDomainResidual MC δ p B_T) :
+    (hres : CommonZeroMaximalDomainFalseAsStated MC δ p B_T) :
     GKL24MaxCorrWitnessCoverHypothesis MC δ p B_T :=
   GKL24MaxCorrWitnessCoverHypothesis_of_strict_cover MC δ p hp_le_one hδp
-    (GKL24MaxCorrStrictWitnessCoverResidual_of_commonZeroMaximal MC δ p hres)
+    (GKL24MaxCorrStrictWitnessCoverFalseAsStated_of_commonZeroMaximal MC δ p hres)
 
 end ProximityGap

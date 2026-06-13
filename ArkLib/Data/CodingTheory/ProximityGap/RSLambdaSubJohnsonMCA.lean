@@ -51,7 +51,7 @@ theorem rsCode_epsMCA_subJohnson_le_of_residual (dom : Fin n ↪ F) {k a : ℕ} 
       ENNReal.ofReal
         ((((n.choose k / a.choose k : ℕ) : ℝ) ^ 2 * δ * Fintype.card (Fin n) + 1 / η)
           / Fintype.card F) :=
-  CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual
+  CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_hypothesis
     (rsCode dom k) (n.choose k / a.choose k) δ η
     hδ_pos hδ_lt hη_pos hη_lt hη_le_δ
     (rsCode_Lambda_subJohnson_le dom hk hka hn ha)
