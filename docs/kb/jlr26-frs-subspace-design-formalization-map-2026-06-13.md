@@ -186,3 +186,34 @@ That magnitude (BGK/Bourgain) is the genuine open core. It is bracketed in-tree 
 the prize**. No published work pins it; the directive's "internal team solution," if it exists, is a
 new additive-combinatorics bound on `μ_n` energy that is not in any of the surveyed papers. This is
 the exhaustively-confirmed single named target; the workbench §R points the next solver at it.
+
+## 11. The exact ABF26 §4 brackets — they pin the conjecture form precisely
+
+| thm | regime | bound | meaning for δ* |
+|---|---|---|---|
+| 4.12 [BCHKS25 4.6] | `δ < 1−√ρ⁺−η` (Johnson) | `ε_mca ≤ O_ρ(n/(η⁵|F|))` | lower bracket: δ* ≥ Johnson−o(1) |
+| 4.14 [GG25 4.10] | FRS, `s>16/η²` | `ε_mca(1−ρ−η) ≤ O(n/(η|F|)+1/(η³|F|))` | **the target FORM** (FRS reaches capacity−η) |
+| 4.13 [GG25 4.9] | τ-design | `ε_mca(1−τ(t+1)−3/(2t)) ≤ (tn+4t²)/|F|` | the general subspace-design bound |
+| 4.16 [BCHKS25;KK25] | smooth RS, poly `|F|`, `ρ<1/2` | `ε_ca(1−ρ−Θ(1/log n)) ≥ n^c/|F|` (∀c, ∃ code) | **UPPER bracket: δ* ≤ 1−ρ−Θ(1/log n)** |
+| 4.17 [CS25 1] | RS | `ε_ca(δ)=1` for `η ≈ 1/√(n log q)` from capacity | total breakdown nearer capacity |
+| 4.18 [BCHKS25 1.7] | **char 2** | `ε_ca(Johnson) ≥ Ω(n²/|F|)` | **char-2 jump AT Johnson — prime/smooth OPEN** |
+
+**Key for the prize:** Thm 4.18's Johnson jump is **characteristic 2 only**; ABF26 says explicitly
+"it may still be the case that MCA holds with small error beyond the Johnson bound for our main
+point of interest, prime fields over smooth domains." So the *prize regime* (prime F, smooth μ_n)
+is exactly where the jump is NOT known to apply — the window is open ABOVE Johnson there.
+
+**THE PRECISE PRIZE CONJECTURE (closed form, bracket-grounded; the natural answer):**
+```
+δ*(RS[F, μ_n, k], ε*=2⁻¹²⁸) = 1 − ρ − Θ(1/log n),
+ε_mca(RS[F, μ_n, k], 1−ρ−η) ≤ C₁·(n/η + 1/η³)/|F|   for all  η ≥ c₀/log₂ n,
+```
+i.e. **smooth plain RS conjecturally matches the FRS bound (Thm 4.14) throughout the window
+`η ≥ c₀/log n`, and fails below it (Thm 4.16)** — so `δ* = 1−ρ−c₀/log n` is SHARP, matching the
+upper bracket exactly. This is closed-form, consistent with every bracket above, and is the
+conjecture a winning proof must establish for plain RS. The open content is proving the upper
+`ε_mca` bound (= the μ_n additive-energy magnitude, §9–10) for `s=1`; the conjecture STATEMENT is
+complete and closed. The constant `c₀` is the threshold in Thm 4.16's `Θ(1/log n)`; pinning `c₀`
+exactly is the quantitative heart, and the `1/η³` blow-up (from line-stitching `a=Θ(1/η³)` in the
+FRS analysis) is conjectured to carry over via the `μ_n` 2-adic tower providing depth-`log n`
+effective folding.
