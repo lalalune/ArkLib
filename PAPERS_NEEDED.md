@@ -111,8 +111,10 @@ Added by the δ* lane. The prize reduces (fleet's `MCAShawConjecture` = small-su
 energy = beyond-Johnson RS list decoding) to **square-root cancellation for character sums over the
 small multiplicative subgroup `μ_{2^k}` (`n ≈ p^{1/5}`)** — specifically the **sup** (L^∞) of the
 incomplete sum `S(t)=Σ_{a∈μ_n} e_p(ta)`, which the moment-vs-max gap makes up to `√n` larger than the
-provable L²/L⁴ (=additive-energy) average. These 5 (all NEW to the catalog, verified absent) target
-that exact gap from adjacent domains. None is on disk; URLs given for fetch.
+provable L²/L⁴ (=additive-energy) average. These (all NEW to the catalog, verified absent) target
+that exact gap from adjacent domains. None is on disk; URLs given for fetch. (O6–O7 added by the
+demand/list-decoding seat from the O173 research sweep — the two newest Stepanov-method handles on
+the exact `S(t)` / additive-`μ_n` object, verified absent by arXiv id.)
 
 | # | paper | id / venue | URL | why it attacks the open core |
 |---|---|---|---|---|
@@ -121,6 +123,8 @@ that exact gap from adjacent domains. None is on disk; URLs given for fetch.
 | O3 | Shkredov, **On common energies and sumsets** (J. Combin. Theory Ser. A, 2025, in press) | DOI **S0097316525000214** | https://www.sciencedirect.com/science/article/abs/pii/S0097316525000214 | Newest Shkredov: a *polynomial criterion* for small doubling via **common energy of subsets** — directly bears on WHEN `μ_n` has anomalous additive energy (the GAP/sumset worst case = the bad-prime spread we measured). |
 | O4 | Demirci Akarsu–Marklof, **The value distribution of incomplete Gauss sums** (2012) | arXiv **1207.1607** | https://arxiv.org/abs/1207.1607 | A limit law for the **value distribution** of incomplete Gauss sums — the direct study of the L^∞ tail / large-value statistics of exactly the sum class `S(t)`; gives the conjectured `√(n log)` sup-norm its distributional shape. |
 | O5 | **Multiplicative character sums over two classes of subsets of quadratic extensions of finite fields** (Finite Fields Appl., Dec 2025) | DOI **S1071579725001972** | https://www.sciencedirect.com/science/article/abs/pii/S1071579725001972 | Freshest (Dec-2025) explicit character-sum bounds over structured subsets of finite-field extensions; check whether its method gives better-than-BGK savings for the smooth (2-power) subgroup structure. |
+| O6 | Kopparty, **Recovering polynomials over finite fields from noisy character values** (Jan 2026) | arXiv **2601.07137** | https://arxiv.org/abs/2601.07137 | The freshest **Stepanov-method / "algorithmic Weil bound"** handle on *exactly* our incomplete sum class: poly-time recovery of degree-`o(q^{1/2})` `g` from values of `χ∘g` with a constant error fraction, via Stepanov's polynomial method + **"pseudopolynomials"**, framed as decoding dual-BCH codes. The pseudopolynomial construction is a candidate per-frequency √-cancellation tool for the L^∞ sup-norm of `S(t)` precisely in the sub-`√q` degree regime where `μ_n` (`n≈p^{1/5}`) lives — the closest modern Stepanov-on-character-values to the open core (algorithmic, so it informs the technique, not yet the extremal bound). |
+| O7 | Kalmynin, **On additive irreducibility of multiplicative subgroups** (Apr 2025) | arXiv **2504.10202** | https://arxiv.org/abs/2504.10202 | Hanson–Petridis **Stepanov on sumsets of `d`-th roots of unity** (resolves Sárközy's QR conjecture; `A−A=μ_d∪{0} ⟹ d∈{2,6}`). Studies the **additive structure of `μ_d` itself** — the same spurious-additive-relation / sumset-of-roots-of-unity object that governs the `E_j` excess (`SubsetSumHaloEnergy`) and `B(μ_n)`'s bad-prime spread; an impossibility-type result (`μ_d` additively irreducible bar `d∈{2,6}`) is the structural input the energy/halo route's worst case needs. |
 
 **Honest scope:** these are LEADS on the open core, not a closure. The prize remains open: no known
 technique gives √-cancellation for `μ_n` at `n ≈ p^{1/5}` (BGK gives only `n^{1−ν}`, astronomically
