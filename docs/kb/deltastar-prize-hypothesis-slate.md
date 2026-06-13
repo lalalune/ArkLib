@@ -336,3 +336,40 @@ optimistic state, it is not a new closure.
 No fabrication; every claim is probe-backed or marked open. The prize remains
 the universal constant-rate bound; the session's value is the precise
 gauge-correction (core vs scalar) + the Mann structural connection.
+
+## VERIFIED PLACEMENT: the whole rung programme = the GKL24 upper-bound (petal) lane, instance level
+
+Read `GKL24FirstMoment.lean` and verified the two-lane structure precisely:
+- **Lower-bound / bad side** = the SUPPLY (`ExplainableCoreSupply`, core count):
+  `#badSet ≥ C(n,k+m+1)/(q^m·B)`. Exponential `B` ⟹ weak lower bound ⟹ the
+  supply route is CLOSED NEGATIVELY (it cannot show #badSet large). This is
+  what `not_explainableCoreSupply_exponential` settles. (My core-vs-scalar
+  observation is correct but already structurally present here.)
+- **Upper-bound / good side / POSITIVE DIRECTION** = the PETAL lane:
+  `badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals` — if the
+  bad scalars have a large common core `D` and pairwise-DISJOINT nonempty
+  petals in `Dᶜ`, then `#badSet ≤ p·n`.
+
+**My entire rung programme IS this petal lane at the instance level.**
+`maximal_frame_offparts_disjoint` (`RungMaximalFrame`) = the disjoint-petal
+certificate; `disjoint_offparts_card_le` = the `#Γ ≤ n−|A|` count;
+`RungCoverAssembly`/`RungCoverSplit` = the per-class realization. The
+`paired_scalars_share_class` keystone supplies the common core `D = A`.
+
+**So the prize's positive direction is exactly: establish the GKL24
+disjoint-petal / common-core certificate UNIVERSALLY (every word, constant
+rate, q=2^128).** My rung work proves it at `p=12289` modulo the
+class-coexistence count; the universal certificate is the wall. Mann's
+theorem governs the EXTREMAL words (coset-structured), where petals are
+hardest to keep disjoint; `sparse_divisors_card_le` bounds the structured
+(coset) codewords feeding the certificate.
+
+**Complete honest map of the prize (this session's synthesis):**
+1. bad side (lower) = supply/cores = exponential = closed negative;
+2. good side (upper) = GKL24 petals = needs universal common-core+disjoint-
+   petal certificate = THE OPEN CORE;
+3. my rung machinery = the instance certificate (p=12289);
+4. Mann/Conway–Jones = extremal (coset) structure control;
+5. `sparse_divisors_card_le ≤ n` = the formalized first piece (coset codewords).
+The wall is the UNIVERSAL petal certificate at constant rate — sub-Johnson
+list decoding of explicit RS, ~25y open. No closure; precise placement.
