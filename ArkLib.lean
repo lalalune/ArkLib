@@ -626,6 +626,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEps
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEpsSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentSharp
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSupplyTheorem
 import ArkLib.Data.CodingTheory.ProximityGap.DeepPairIndependence
 import ArkLib.Data.CodingTheory.ProximityGap.DeepQuotientTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.DeepStratumMovingDirection
