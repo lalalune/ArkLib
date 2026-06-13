@@ -663,6 +663,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CrossingCountBound
 import ArkLib.Data.CodingTheory.ProximityGap.CrossingCountGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.CrossingPin
 import ArkLib.Data.CodingTheory.ProximityGap.CubeDichotomyCharZero
+import ArkLib.Data.CodingTheory.ProximityGap.CubicCosetSupplyGrowth
 import ArkLib.Data.CodingTheory.ProximityGap.CubicOrchardIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyCosetBridge
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyCountermodel
