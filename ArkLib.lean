@@ -2269,6 +2269,7 @@ import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncondSumcheck
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessWired
 import ArkLib.ProofSystem.Logup.Security.LogupHonestSupport
 import ArkLib.ProofSystem.Logup.Security.LogupInitImplFacts
+import ArkLib.ProofSystem.Logup.Security.LogupOuterCompletenessDischarge
 import ArkLib.ProofSystem.Logup.Security.LogupProtocol2Status
 import ArkLib.ProofSystem.Logup.Security.LogupResidualDischarge
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessClose
