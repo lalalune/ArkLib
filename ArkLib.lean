@@ -1332,6 +1332,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RungThresholdRouter
 import ArkLib.Data.CodingTheory.ProximityGap.RungTopCancel
 import ArkLib.Data.CodingTheory.ProximityGap.RungTripleRelation
 import ArkLib.Data.CodingTheory.ProximityGap.SV11GeneratorFamily
+import ArkLib.Data.CodingTheory.ProximityGap.SV11JetStructure
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleBracketFull
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleJohnsonInstance
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleThresholdBracket
