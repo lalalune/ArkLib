@@ -1295,6 +1295,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StepanovVanisherExistence
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilSubstrate
 import ArkLib.Data.CodingTheory.ProximityGap.StripEdgeDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.StripSupExactness
+import ArkLib.Data.CodingTheory.ProximityGap.StronglyFarSubsetLaw
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop27
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop28
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop29
@@ -1387,6 +1388,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBelowUDR
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBoundaryBound
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalGSArchitecture
+import ArkLib.Data.CodingTheory.ProximityGap.UniversalRatioInjection
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalSpikeFloor
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalStaircaseCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityFalseGeneral
