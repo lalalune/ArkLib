@@ -32,7 +32,7 @@ theorem eval_fourTerm_map {K : Type*} [CommRing K] (φ : ℤ →+* K) (ζ : K) (
 is nontrivial over ℂ — guaranteed by `fourTerm_ne_zero_of_pair_ne`), then the integer resultant is
 nonzero. -/
 theorem resultant_fourTerm_ne_zero {n : ℕ} (hn : n ≠ 0) {i j k l : ℕ}
-    (hne : ∀ ζ : ℂ, ζ ^ n = 1 → ζ ^ i + ζ ^ j - ζ ^ k - ζ ^ l ≠ 0) :
+    (hne : ∀ ζ : ℂ, IsPrimitiveRoot ζ n → ζ ^ i + ζ ^ j - ζ ^ k - ζ ^ l ≠ 0) :
     resultant (cyclotomic n ℤ) (fourTerm i j k l) ≠ 0 := by
   haveI : NeZero (n : ℂ) := ⟨Nat.cast_ne_zero.mpr hn⟩
   intro hR
@@ -41,7 +41,17 @@ theorem resultant_fourTerm_ne_zero {n : ℕ} (hn : n ≠ 0) {i j k l : ℕ}
   rw [eq_comm, Multiset.prod_eq_zero_iff] at hcast
   obtain ⟨x, hx, hx0⟩ := Multiset.mem_map.mp hcast
   rw [eval_fourTerm_map] at hx0
-  exact hne x (((isRoot_cyclotomic_iff (n := n) (R := ℂ)).mp (isRoot_of_mem_roots hx)).pow_eq_one) hx0
+  exact hne x ((isRoot_cyclotomic_iff (n := n) (R := ℂ)).mp (isRoot_of_mem_roots hx)) hx0
+
+/-- **`hne` is satisfiable** (the theorems below are NOT vacuous): for a parallelogram that is a
+genuine non-matched pair with nonzero partial sum at every primitive root, the four-term value is
+nonzero — directly from `fourTerm_ne_zero_of_pair_ne`. -/
+theorem fourTerm_ne_zero_primitive {n : ℕ} (hn : n ≠ 0) {i j k l : ℕ}
+    (hsum : ∀ ζ : ℂ, IsPrimitiveRoot ζ n → ζ ^ i + ζ ^ j ≠ 0)
+    (hpair : ∀ ζ : ℂ, IsPrimitiveRoot ζ n →
+      ¬ ((ζ ^ i = ζ ^ k ∧ ζ ^ j = ζ ^ l) ∨ (ζ ^ i = ζ ^ l ∧ ζ ^ j = ζ ^ k))) :
+    ∀ ζ : ℂ, IsPrimitiveRoot ζ n → ζ ^ i + ζ ^ j - ζ ^ k - ζ ^ l ≠ 0 :=
+  fun ζ hζ => fourTerm_ne_zero_of_pair_ne hn hζ.pow_eq_one (hsum ζ hζ) (hpair ζ hζ)
 
 /-- **THE CLOSED "NO PARALLELOGRAM" THEOREM.**  Let `n = 2^m`, `p` a prime with a primitive `n`-th
 root `ω ∈ ZMod p`.  If `ω^i + ω^j = ω^k + ω^l` is a parallelogram that is nontrivial over ℂ for
@@ -52,7 +62,7 @@ theorem prime_le_of_parallelogram {n : ℕ} (hn : n ≠ 0) {p : ℕ} [Fact p.Pri
     {ω : ZMod p} (hω : IsPrimitiveRoot ω n) {i j k l : ℕ}
     (hfdeg : ((fourTerm i j k l).map (Int.castRingHom (ZMod p))).natDegree = (fourTerm i j k l).natDegree)
     (hpara : ω ^ i + ω ^ j - ω ^ k - ω ^ l = 0)
-    (hne : ∀ ζ : ℂ, ζ ^ n = 1 → ζ ^ i + ζ ^ j - ζ ^ k - ζ ^ l ≠ 0) :
+    (hne : ∀ ζ : ℂ, IsPrimitiveRoot ζ n → ζ ^ i + ζ ^ j - ζ ^ k - ζ ^ l ≠ 0) :
     p ≤ 4 ^ n.totient := by
   set R := resultant (cyclotomic n ℤ) (fourTerm i j k l) with hR
   -- `p ∣ R` from the parallelogram
