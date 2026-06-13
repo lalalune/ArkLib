@@ -1625,6 +1625,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumZeroInflation
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceAvoidance
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignFullVanish
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignJointAgree
+import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignLineDecodable
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignListDim
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
