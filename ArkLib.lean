@@ -596,6 +596,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
 import ArkLib.Data.CodingTheory.ProximityGap.CommonCenterJohnsonRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ComplementQuadric
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstance
+import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu4
 import ArkLib.Data.CodingTheory.ProximityGap.ConditionalSqrtCancellation
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
@@ -1428,6 +1429,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusBound
 import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusDyadicChain
+import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusDyadicChainCorollaries
 import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SidonEnergyIff
