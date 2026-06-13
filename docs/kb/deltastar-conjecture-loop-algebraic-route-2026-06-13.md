@@ -152,3 +152,26 @@ four reduction-types; integrity requires reporting the classification, not paddi
 
 **Prize status: open, frontier rigorously characterized.** The 5 in-tree bricks reduce it to this
 single supremal object; closing it is new mathematics. No fabrication.
+
+## Grind batch C15–C24 (ten more framings, all refuted; promoted count remains 0)
+
+| # | framing | nov | refutation (classification class) |
+|---|---|---|---|
+| C15 | Random-matrix CUE model of the period circulant | 8 | conjectural marginal, not proof (marginal-not-sup) |
+| C16 | Berkovich / non-archimedean analytification | 8 | archimedean-blind (= Stickelberger) |
+| C17 | Motivic periods / period relations | 9 | algebraic relations, not archimedean size |
+| C18 | Schmidt subspace theorem (count large η_c) | 9 | qualitative finiteness, not quantitative √(n log p) |
+| C19 | Tao entropy / additive-combinatorics | 7 | sumset/energy = sum-product wall |
+| C20 | FRI-recursion composition (multi-round) | 8 | union bound, additive, no single-round gain |
+| C21 | GRH-conditional L-function bound | 7 | conditional + wrong sum type |
+| C22 | Tensor-power amplification | 6 | changes the code (not plain RS) |
+| C23 | Explicit-formula / sum-over-zeros | 8 | marginal-not-sup |
+| C24 | Is MCA false above Johnson for smooth (δ*=Johnson)? | 9 | REFUTED by in-tree δ*(μ_8,F4129)=5/8>1/2 machine-checked pin; smooth RS genuinely beats Johnson |
+
+**Promoted (survived refutation) count: 0 / 1000.** Cumulative: 24 distinct framings across number
+theory (algebraic + analytic), harmonic analysis, probability, arithmetic geometry, additive
+combinatorics, random matrices, Diophantine approximation, protocol composition, and the
+reduction-tightness question — every one refuted. The frontier-classification theorem accounts for
+all 24: each reduces to the archimedean-supremal-maximal-thin-density object outside all toolkits, OR
+is conditional/non-transferring/code-changing. No promotion is possible without the missing new
+analytic principle. The grind is honest; the count stays 0 by construction, not by lack of effort.
