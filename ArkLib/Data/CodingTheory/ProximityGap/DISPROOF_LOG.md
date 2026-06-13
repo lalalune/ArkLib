@@ -8378,3 +8378,43 @@ E=3n(n−1) is the INERT/char-0 case; production primes are split, where it is t
 NET (honest): O168/O169 stand as correct lemmas but contribute nothing to the prize 2-power supply
 question (they bound 0). The energy-supply leg for the prize is NOT closed — it remains the open
 GV/additive-energy bound. This entry corrects the record; no fabricated closure.
+
+### O171 — FALSIFY-FIRST ON THE $1M PROP: the deep-band #bad-SCALAR count HOLDS vs the KKH26 budget K=2^r·C(n/2,r) with 2.5×–20× margin at n=16 (faithful, triple-verified) — first direct positive evidence CensusDomination is true at the demand level; the literal alignable-SETS form is FALSE (lossy overcount) so the obligation must be the bad-scalar form (nubs, 2026-06-13)
+
+The δ* prize (#389) reduces to CensusDomination: deep-band bad count ≤ budget K. The packing
+route (PackingDeepBandMiss) provably MISSES the deep band (its upper bound exceeds K there:
+n=16 r=7 pack=1430 > K=1024) — but that is the BOUND being weak; the TRUE count was uncomputed.
+Computed it exactly (Opus 4.8, falsify-first, pin→compute→adversarial-verify).
+
+* **HOLDS WITH MARGIN [COMPUTED, faithful BabyBear p²=4×10¹⁸ ≫ C(16,8)=12,870 — no O164
+  saturation].** Worst-case-over-stacks deep-band #bad-scalar at n=16 (exhaustive over 240
+  monomial pairs + 200 random/structured): r=3..8 → #bad = 97, 145, 89, 113, **225, 104** vs
+  K = 448, 1120, 1792, 1792, **1024, 256** — margin 2.5×–20×, tightest at the deepest prize
+  bands r=7 (4.6×) and r=8 (2.5×). Every count ≤ the packing bound C(16,a₀)/(a₀+1)
+  (calibration). The maximizer is a high-frequency monomial pair (x⁸=−1), NOT canonical
+  KKH26 — which gives #bad=0 at the deep band (its supply lives at the ceiling band a=rm:
+  #bad=113,464,1233,2256,3025,3280,3281, validated). **First direct faithful positive evidence
+  the prize Prop is true at the demand level.**
+* **The LITERAL alignable-SETS CensusDomination is FALSE at the deep band** — a degenerate
+  codeword stack (u₀ constant in deg<k_c) makes γ=0 own all C(n,a₀) a-sets (#align up to
+  12,870 ≫ K, 12.6× at r=7) while pinning exactly ONE bad scalar. NOT a δ* refutation: the
+  documented lossy overcount (SinglePencilQIndependence L19-23). **The correct in-tree
+  obligation is the #bad-SCALAR form (badScalars_card_le_alignable / the SinglePencil route),
+  not the alignable-sets cap.** Verified the degenerate stack is a genuine alignment respecting
+  the non-degeneracy clause.
+* **Triple-verified:** the counts reproduce digit-for-digit across THREE distinct code paths
+  (builder's Gauss/ratio C; Laplace+Vandermonde-minor C; from-scratch Python Bareiss+itertools)
+  and are invariant across three faithful primes (kills the O164 pigeonhole artifact).
+  Residual def cross-checked vs OwnershipBound/UniversalAlignmentLaw/CensusDominationWeld.
+* **Honest scope:** n=16 is the exact worst-case frontier; n=32 worst-case is INFEASIBLE
+  (C(32,17)≈5.7×10⁸/stack, search ~days; syndrome route q^{2(n-k)} astronomically infeasible).
+  Char-0-faithful, m=1 rate family — direct EVIDENCE the Prop holds in the form that matters,
+  NOT a proof for all n (that is the swarm's analytic Stepanov/Weil route). Complements the
+  other NubsCarson seat's O164 (fiber/supply side = O(1)): #alignable ≈ #bad × fiber, both
+  measured small.
+
+**Where it lands:** the census-domination route to δ* is NOT killed by the deep band (the
+honest worst case I could most fear) — the gating bad-scalar count holds with comfortable
+margin at the computable frontier, and the only failure (the literal set-form) is a known
+overcount that re-statement fixes. The prize obligation sharpens to: prove the #bad-scalar
+deep-band bound for all n (the analytic core). Dossier: scripts/probes/genlaw/o165_census_demand/.
