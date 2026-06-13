@@ -680,6 +680,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSubfieldBlowup
+import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSupplyExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Affine
