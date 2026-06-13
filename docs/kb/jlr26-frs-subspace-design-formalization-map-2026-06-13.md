@@ -475,3 +475,26 @@ does not exceed the refutation-pinned value. The average, the Johnson/Fisher pai
 re-derived gives EXACTLY `δ_J=1−√ρ` and fails beyond — the trivial agreement `k=ρn` saturates it),
 and the granularity ladder (low-δ\*) are all strictly inside and provably not the prize. This is the
 sharpest correct localization: one open inequality, the worst-case lower bracket, value known.
+
+## 18. Ruled-out methods (all give EXACTLY Johnson — do not re-attempt for the lower bracket)
+
+Documenting attempts that provably stop at the Johnson barrier `δ_J=1−√ρ`, so the beyond-Johnson
+lower bracket (`δ*≥1−ρ−Θ(1/log n)`) needs something genuinely past all of them:
+
+  · **Fisher / pairwise-intersection.** Bad sets `S_γ` (size `(1−δ)n`) pairwise meet in
+    `≤ agr(u₁,RS)`. Convexity ⟹ many bad γ force `agr(u₁,RS) ≥ (1−δ)²n`; the trivial agreement
+    `k=ρn` saturates this exactly at `(1−δ)²=ρ ⟺ δ=1−√ρ`. Gives Johnson, fails beyond.
+  · **Guruswami–Sudan polynomial method.** Bivariate `Q(X,Y)` interpolation degree budget runs out
+    at the GS radius `=1−√ρ` (the (1,k)-weighted-degree count). Gives Johnson, fails beyond.
+  · **FRI / 2-adic tower recursion (NEW attempt this session).** Fold `P(x)=P_e(x²)+xP_o(x²)`:
+    RS[μ_n,k]→RS[μ_{n/2},k/2], list folds to list. But folding PRESERVES the rate `ρ`, so a window
+    radius `δ>1−√ρ` is beyond-Johnson at EVERY level — the recursion reproduces the barrier, not
+    breaks it. (FRI soundness itself USES the proximity gap, so it is circular here.) Fails.
+  · **Character/Fourier (η_b) and energy (E_k).** Give the sharp answer's VALUE but the proof is the
+    open Bourgain higher-energy / Gauss-sum sup-norm. Refutation-pinned (`≤2√(n ln p)`), BGK-floored.
+
+The convergence is total: every classical method (combinatorial, algebraic, recursive, analytic)
+either stops at Johnson or reduces to the open Bourgain sup-norm. The beyond-Johnson lower bracket
+for EXPLICIT `μ_n` is past all known techniques — consistent with it being a genuine prize-grade open
+problem whose VALUE is now pinned but whose PROOF requires a new idea (random-point methods like
+Brakensiek–Gopi–Makam do not transfer to the fixed `μ_n` domain).
