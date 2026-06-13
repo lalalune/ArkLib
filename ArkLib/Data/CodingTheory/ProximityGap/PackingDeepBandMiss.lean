@@ -59,8 +59,51 @@ theorem packing_exceeds_budget_deep_band {m : ℕ} (hm : 5 ≤ m) :
       _ < m * (2 * m).choose m := h4
   exact Nat.lt_of_mul_lt_mul_left key
 
+/-- **Positive coverage of the packing route below `√n`.** If `j·(j+3) ≤ 2N` for every `j < r`
+(i.e. `r ≲ √(2N)`), the packing upper bound `C(2N,r)/(r+1)` is at most the supply budget
+`2^r·C(N,r)`: precisely, `C(2N,r) ≤ (r+1)·2^r·C(N,r)`.  So the q-independent packing route proves
+`CensusDomination` for `r` up to `Θ(√n)`.  Together with `packing_exceeds_budget_deep_band` (which
+fails it at `r = n/2`), this **sandwiches** the elementary route's reach: covered for `r ≲ √n`,
+missed at the deep band — the open core is exactly the band in between (`Θ(√(n log n))` ↔ `n/2`). -/
+theorem packing_covers (N : ℕ) :
+    ∀ r, (∀ j, j < r → j * (j + 3) ≤ 2 * N) →
+      (2 * N).choose r ≤ (r + 1) * 2 ^ r * N.choose r := by
+  intro r
+  induction r with
+  | zero => intro _; simp
+  | succ r ih =>
+    intro hcond
+    have hr : r * (r + 3) ≤ 2 * N := hcond r (Nat.lt_succ_self r)
+    have hP : (2 * N).choose r ≤ (r + 1) * 2 ^ r * N.choose r :=
+      ih (fun j hj => hcond j (Nat.lt_succ_of_lt hj))
+    have hrN : r ≤ N := by nlinarith [hr]
+    have e1 : (2 * N).choose (r + 1) * (r + 1) = (2 * N).choose r * (2 * N - r) :=
+      Nat.choose_succ_right_eq (2 * N) r
+    have e2 : N.choose (r + 1) * (r + 1) = N.choose r * (N - r) :=
+      Nat.choose_succ_right_eq N r
+    obtain ⟨a, ha⟩ : ∃ a, N = r + a := ⟨N - r, by omega⟩
+    have hsub2 : 2 * N - r = r + 2 * a := by omega
+    have hsubN : N - r = a := by omega
+    have hnum : (r + 1) * (2 * N - r) ≤ 2 * (r + 2) * (N - r) := by
+      rw [hsub2, hsubN]
+      have hra : r * r + r ≤ 2 * a := by nlinarith [hr, ha]
+      nlinarith [hra]
+    have hstep : (2 * N).choose (r + 1) * (r + 1)
+        ≤ ((r + 1 + 1) * 2 ^ (r + 1) * N.choose (r + 1)) * (r + 1) := by
+      calc (2 * N).choose (r + 1) * (r + 1)
+          = (2 * N).choose r * (2 * N - r) := e1
+        _ ≤ ((r + 1) * 2 ^ r * N.choose r) * (2 * N - r) := Nat.mul_le_mul_right _ hP
+        _ = (2 ^ r * N.choose r) * ((r + 1) * (2 * N - r)) := by ring
+        _ ≤ (2 ^ r * N.choose r) * (2 * (r + 2) * (N - r)) := Nat.mul_le_mul_left _ hnum
+        _ = ((r + 1 + 1) * 2 ^ (r + 1) * N.choose r) * (N - r) := by ring
+        _ = ((r + 1 + 1) * 2 ^ (r + 1)) * (N.choose r * (N - r)) := by ring
+        _ = ((r + 1 + 1) * 2 ^ (r + 1)) * (N.choose (r + 1) * (r + 1)) := by rw [e2]
+        _ = ((r + 1 + 1) * 2 ^ (r + 1) * N.choose (r + 1)) * (r + 1) := by ring
+    exact Nat.le_of_mul_le_mul_right hstep (Nat.succ_pos r)
+
 end ArkLib.ProximityGap.PackingDeepBandMiss
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.PackingDeepBandMiss.two_pow_ge_sq_add
 #print axioms ArkLib.ProximityGap.PackingDeepBandMiss.packing_exceeds_budget_deep_band
+#print axioms ArkLib.ProximityGap.PackingDeepBandMiss.packing_covers
