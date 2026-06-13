@@ -289,6 +289,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultant
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultantProduct
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyLowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyCharacterization
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySixDvd
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyThreeDvd
 import ArkLib.Data.CodingTheory.ProximityGap.AdjacentPairDepthOneClean
