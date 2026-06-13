@@ -145,3 +145,19 @@ Probes: `scripts/probes/probe_conj_nthpower.py`, `probe_conj_gvrep_twocircles.py
   **Prize relevance:** r(c)≤2 over ℂ is the "split regime" GV condition; the OPEN deployed prize is
   the transfer of this bound to small p (p~n⁴), where bad primes (the energy P_max) may break it.
   The ℂ version here is the clean provable base case. Promoted: G (+1); F refuted. Running ≈ 15.
+
+## Theme H/E5 — norm moments & the even-n zero-sum symmetry
+
+Probe: `scripts/probes/probe_conj_norm_moments.py`.
+
+- **H (PROVED; moderate novelty — exact-quadrature flavor).** Over ℂ, for `k < n`:
+    `Σ_{ζ∈μ_n} |1+ζ|^{2k} = n·C(2k,k)` (the central binomial = the 2k-th moment of `|1+e^{iθ}|`).
+  Proof: `|1+ζ|² = 2+ζ+ζ⁻¹`; expand `(2+ζ+ζ⁻¹)^k`, only exponent-0 terms survive `Σ_ζ` for k<n
+  (root-of-unity filter / exactness of n-point quadrature for trig-poly degree <n), giving the constant
+  term `Σ_j C(k,j)2^{k-j}... = C(2k,k)`, times n. Verified n=5,7,11, k=1..4. Links to the in-tree
+  `TwoElementEnergy` `E_r({1,−1})=C(2r,r)` (same central binomial — the |1+ζ| ↔ {1,−1} correspondence).
+- **E5 (PROVED; corollary).** For EVEN `n` (where `−μ_n = μ_n`): `Z_{2r}(μ_n) = E_r(μ_n)`.
+  Proof: negate `r` of the `2r` summands; the bijection `(a₁..a_r,b₁..b_r)↦(a₁..a_r,−b₁..−b_r)` maps
+  `{Σa=Σb}` (E_r) onto `{Σ(2r terms)=0}` (Z_{2r}). Verified n=4,6,8,12,16, r=2,3. (So all even-n higher
+  zero-sums reduce to the energies of A1/B3/D — closing the even branch of the zero-sum theorem E.)
+  Promoted: +2 (running ≈ 17). Novelty flags: H = clean but classical-quadrature; E5 = negation corollary.
