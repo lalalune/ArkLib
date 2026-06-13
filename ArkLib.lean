@@ -915,6 +915,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26CensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26CharZeroCollisionLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ConstrainedCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DeltaStarReduction
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26DeltaStarPinAllWitness
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DimGeneralPin
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DimGeneralSharpInterleavedPin
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26DimGeneralSharpPin
