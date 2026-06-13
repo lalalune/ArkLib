@@ -122,4 +122,20 @@ theorem quartic_explainable_iff_powersum (dom : Fin n ↪ F) (h2 : (2 : F) ≠ 0
     rw [hsimp]
     exact lt_of_le_of_lt degree_linear_le (by norm_num)
 
+open Classical in
+/-- **The m=1 supply is the power-sum variety count** (the analogue of
+`cubicSupply_eq_sumZeroCard`): the number of explainable 4-cores of the quartic word
+equals the number of 4-subsets of the domain on which both power sums vanish.  Char `≠ 2`. -/
+theorem quartic_supply_eq_powersum_card (dom : Fin n ↪ F) (h2 : (2 : F) ≠ 0) :
+    (((Finset.univ : Finset (Fin n)).powersetCard 4).filter
+        (fun T => ∃ c ∈ (rsCode dom 2 : Submodule F (Fin n → F)),
+          ∀ i ∈ T, c i = (dom i) ^ 4)).card
+      = (((Finset.univ : Finset (Fin n)).powersetCard 4).filter
+          (fun T => ∑ i ∈ T, dom i = 0 ∧ ∑ i ∈ T, (dom i) ^ 2 = 0)).card := by
+  congr 1
+  apply Finset.filter_congr
+  intro T hT
+  rw [quartic_explainable_iff_powersum dom h2
+    (Finset.mem_powersetCard.mp hT).2]
+
 end ProximityGap.EsymmFiber
