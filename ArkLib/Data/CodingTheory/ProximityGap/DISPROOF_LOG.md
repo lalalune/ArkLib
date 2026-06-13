@@ -8214,3 +8214,15 @@ Conjecture M holds only where the answer is already the classical Johnson bound.
 
 Campaign: E''(O160), J(O161), J'(O162), L(O163), M(O164) — 5 direct conjectures, all refuted or
 reduced to the open explicit-RS sub-Johnson list-decoding bound. No fabricated closure.
+
+## 2026-06-13 — "E(μ_n) ≤ C·n²·log n for ALL p≡1 mod n" is FALSE (Fermat-prime degeneracy); restrict to n ≤ √p (Fable fleet)
+
+The over-general energy conjecture (B10) is refuted by the **Fermat-prime family** p = 2^m+1,
+n = p−1 = 2^m (a 2-power, p≡1 mod n): then μ_n = F_p^× (the WHOLE multiplicative group), so
+E(μ_n) = n² + n(n−1)² ≈ n³ ≫ n²log n. The conjecture fails whenever the subgroup fills the
+field (n ≈ p). The correct, surviving form restricts to the **small/boundary subgroup regime
+n ≤ √p** (the production NTT range, n ≤ √p for Goldilocks): there the worst-case energy is
+≈ 1.3·n²·ln n (probe_worstcase_energy, probe_boundary; ratio E/(n²ln n) BOUNDED and DECREASING
+2.62→0.74 across n=8..256). So: the n²log n bound is FALSE universally, TRUE (empirically) for
+n ≤ √p — exactly the deployed regime. The boundary n≈√p bound remains the open core (= GV/HBK
+square-root-cancellation, faces B2/B3 below n^{5/2}).

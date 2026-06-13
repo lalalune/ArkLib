@@ -297,6 +297,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AttackLoop46
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.B5DeepBandSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.BWMatrix
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.GoodCoeffs
@@ -475,6 +476,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardStrictInteriorRefutatio
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryDefectBound
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryGenericFarExact
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdLeaf
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryListJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceEveryLine
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceExact
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceUnconditional
@@ -1404,6 +1406,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftDevacuated
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegComplex
+import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegEnergyEquality
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupGVBound
