@@ -22,11 +22,12 @@ closed form**:
 
 1. the **doubling reduction** `badScalars_card_le_cosetLowWeight` collapses the one-parameter family
    of correlated-agreement events into a single static low-weight coset count (axiom-clean);
-2. the **closed-form δ*** `deltaStar_closedForm = H_q⁻¹(1 − ρ − log_q(1/ε*)/n)` — no `∃`-over-objects,
-   no incomputable lemma;
+2. the **closed-form δ*** `deltaStar_closedForm = H_q⁻¹(1 − ρ − log_q(1/ε*)/n)` — a computable
+   *random UPPER bound* (the true δ* is the q-independent monomial-extremal radius below it, R9);
 3. the **Shaw operator** `𝖲_D` whose single spectral invariant `B(μ_n)` *is* every "unknown
-   quantity" the prize has been reduced to, and whose **flatness** is the lone residual closing both
-   challenges at once (`ShawFlatnessConjecture`).
+   quantity" the prize has been reduced to, and whose **corrected gap law** `B ≤ C·√(n·log(q/n))`
+   (the `√2·√n` form is refuted, R3) is the lone residual — the W4/Shkredov wall
+   (`ShawFlatnessConjecture`).
 
 --------------------------------------------------------------------------------------------------
 ## 0. THE CENSUS OF UNKNOWNS — and the proof they are ONE quantity (the Shaw operator)
@@ -95,13 +96,18 @@ exactly the *gap* problem, at all depths simultaneously.
 
 Production: `n = 2^25`, `q ≈ n·2^128 ≈ 2^153`, `ε* = 2^{-128}`, `ρ = 1/2`. Two decisive facts:
 
-* `n ≤ √q` holds with enormous room (`2^25 ≤ 2^{76.5}`), so the transport hypothesis of
-  `sidon_order_of_sqrt_charSum` is met and `n^4/q = 2^{100}/2^{153}` is negligible: **if** `B ≤ C√n`,
-  the chain closes and `δ*` lands at its random value.
-* the subgroup is **small**, `n = p^{0.16}`; square-root cancellation `B = n^{1/2+o(1)}` is the
-  classical open problem (Shkredov; HBK; BGK). **MRSS does not suffice for the prize**: the excess
-  exponent `0.225` is a *constant*, not `o(1)`, and with `q` exponentially large the line–ball
-  error blows up as `q^{Ω(n)}`. The prize needs the genuine `o(1)`.
+* `n ≤ √q` holds with enormous room (`2^25 ≤ 2^{76.5}`), so the transport hypothesis is met and
+  `n^4/q = 2^{100}/2^{153}` is negligible: **if** the corrected gap law `B ≤ C·√(n·log(q/n))` holds,
+  the chain gives `E = n^{2+o(1)}` and `δ*` lands at its (random-UPPER-bound) closed form.
+* the subgroup is **small**, `n = p^{0.16}`; the worst-case gap is `B = Θ(√(n·log(q/n))) =
+  n^{1/2+o(1)}` (NOT `√2·√n` — the moment floor bounds the average, not the max; see R3/§8), and the
+  *upper* bound `B ≤ C·√(n·log(q/n))` is the classical open W4/Bourgain problem (Shkredov; HBK; BGK).
+  **MRSS does not suffice for the prize**: the excess exponent `0.225` is a *constant*, not `o(1)`,
+  and with `q` exponentially large the line–ball error blows up as `q^{Ω(n)}`.
+* **δ* itself is structured, not random** (R9): BCHKS 2025/169 + Crites–Stewart prove the
+  smooth domain gives counterexamples below the capacity/random value, and the worst-case far line
+  above Johnson is provably a MONOMIAL `x^a` — so the true `δ*` is the explicit, q-independent
+  monomial-extremal radius, with `H_q⁻¹(...)` only its upper bound.
 
 --------------------------------------------------------------------------------------------------
 ## Honesty statement (campaign contract)
@@ -248,12 +254,15 @@ and solving for `δ` gives the closed form. `(R)` is precisely "worst ≤ averag
 /-- `qaryEntropyInv q` — the inverse `q`-ary entropy on `[0, 1-1/q]`. -/
 noncomputable opaque qaryEntropyInv (q : ℕ) : ℝ → ℝ
 
-/-- **THE CLOSED-FORM δ*.** `δ*(ρ, ε*, n, q) = H_q⁻¹( 1 − ρ − (log_q(1/ε*))/n )`.
+/-- **THE CLOSED-FORM δ* (random UPPER bound).** `δ*_avg(ρ, ε*, n, q) = H_q⁻¹( 1 − ρ − log_q(1/ε*)/n )`.
 
 A single computable expression: no `∃`-over-objects, no incomputable lemma; lands on the
 Crites–Stewart capacity boundary as `ε*→1` (`H_q(δ*) = 1−ρ`); equals `1−ρ−Θ(1/log n)` at the prize
-budget `q ≈ n·2^128`, strictly inside `(1−√ρ, 1−ρ)`. A *theorem* exactly when `(R)` holds in the
-prize regime; `badScalars_card_le_of_worstCase` is the discharge. -/
+budget `q ≈ n·2^128`, strictly inside `(1−√ρ, 1−ρ)`. **Honest caveat (R9):** this is the *average*
+threshold — an UPPER bound that the smooth domain does NOT achieve (BCHKS 2025/169 + Crites–Stewart:
+smoothness gives counterexamples below it). The TRUE δ* is the explicit q-independent monomial-extremal
+radius `≤ δ*_avg`. This form is exact only if the corrected `ShawGapLaw` (§8) AND monomial optimality
+(R9) both hold; `badScalars_card_le_of_worstCase` is the discharge of `(R)`. -/
 noncomputable def deltaStar_closedForm (q : ℕ) (ρ : ℝ) (εStar : ℝ) (n : ℕ) : ℝ :=
   qaryEntropyInv q (1 - ρ - (Real.logb q (1 / εStar)) / n)
 
@@ -333,12 +342,14 @@ theorem energy_le_of_flatness {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (D : F
     (addEnergy D : ℝ) ≤ (1 + C ^ 2) * (D.card : ℝ) ^ 2 :=
   sidon_order_of_sqrt_charSum hψ D hq hsq hflat
 
-/-- **THE SHARP FLATNESS CONSTANT.** The exact additive energy of an even smooth domain is the
-parallelogram floor `E(μ_n) = 3n²−3n` (in-tree `unitCircle_negClosed_additiveEnergy_eq`, taken here
-as `hfloor`). Combined with the forward transport, this forces **`C² ≥ 2 − 3/n`** — so any valid
-flatness constant satisfies `C ≥ √2` asymptotically. The naive "perfectly Sidon" `C = 1` is
-therefore **refuted**, and `ShawFlatnessConjecture` is stated with `C ≥ √2`. (Stated in the
-cleared, division-free form `2n − 3 ≤ C²·n`, i.e. `C² ≥ 2 − 3/n → 2` as `n → ∞`.) -/
+/-- **THE MOMENT (AVERAGE) CONSTANT LOWER BOUND — `C ≥ √2`.** The exact even-domain energy
+`E(μ_n) = 3n²−3n` (in-tree `unitCircle_negClosed_additiveEnergy_eq`, as `hfloor`) + the forward
+transport force `2n − 3 ≤ C²·n` for any `C` with `‖η_b‖ ≤ C√n`, i.e. `C² ≥ 2 − 3/n → 2`. **Honest
+caveat (R3):** this constrains the `L⁴/L²`-weighted *average* of `|η_b|`; it does NOT bound the
+*max* `B = max_{b≠0}‖η_b‖`, which empirically `= Θ(√(n·log(q/n)))` — the max exceeds every
+moment-derived bound by `√(log #cosets)` (the W4 moment-vs-max gap). So this theorem is a true lower
+bound on the flat constant but does **not** pin the prize conjecture, which is the corrected
+`ShawGapLaw` `B ≤ C·√(n·log(q/n))` (§8). Stated in the cleared, division-free form `2n − 3 ≤ C²·n`. -/
 theorem shaw_flatness_constant_ge_sqrt_two {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (D : Finset F)
     {C : ℝ} (hq : 0 < Fintype.card F) (hn : 0 < D.card)
     (hsq : (D.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ))
@@ -351,21 +362,40 @@ theorem shaw_flatness_constant_ge_sqrt_two {ψ : AddChar F ℂ} (hψ : ψ.IsPrim
     le_trans hfloor hupper
   nlinarith [hchain, hnR]
 
-/-! ## §8  THE PROXIMITY PRIZE CONJECTURE (closed, no residuals) -/
+/-! ## §8  THE PROXIMITY PRIZE CONJECTURE (corrected scale — closed, no residuals)
 
-/-- **THE PROXIMITY PRIZE CONJECTURE.** There is an absolute constant `C ≥ √2` such that the
-production smooth domain `μ_n` (`n² ≤ q`, NTT prime `q`) is Shaw-flat at `C`. Equivalently — by
-§5,§6,§7 + §3,§4 — the closed-form `δ*` of §4 is the true MCA threshold and explicit RS on `μ_n`
-list-decodes to capacity. This single statement solves **both** grand challenges; every quantity in
-it is explicit and finite-instance-decidable, with **no `∃`-over-objects and no incomputable
-lemma**. It is exactly the Shkredov-type gap bound for the small production subgroup — the prize, in
-closed form, and nothing else. -/
+**Refutation update (2026-06-13, `probe_shaw_flatness_refute.py`, `6a073c50e`).** The first form of
+this conjecture — `B(μ_n) ≤ √2·√n` — is **empirically FALSE**: direct computation gives
+`B(μ_n) = Θ(√(n·log(q/n)))`, i.e. `B/√n` grows like `√(log(q/n))`. The `3n²−3n` energy floor is the
+**4th moment**, which bounds the `L⁴/L²`-weighted *average* of `|η_b|²` (≈ `3n`), NOT the *maximum*;
+the max exceeds any moment-derived bound by a `√(log(#cosets)) = √(log(q/n))` factor (the classic
+moment-method-cannot-reach-the-max / W4 gap). So `shaw_flatness_constant_ge_sqrt_two` is a valid
+LOWER bound on the *average* constant; it does **not** pin the max. The corrected — and now
+refutation-surviving — scale is below. (For the prize `q/n ≈ 1/ε* = 2^128`, so the correction is
+`B ≈ √128·√n ≈ 11.3·√n`, and the surviving `√(log(1/ε*))` IS the window's `Θ(1/log n)` lower-order
+content.) Crucially the corrected bound **still yields the Shkredov target** `E ≤ n²·O(log q) =
+n^{2+o(1)}` (the log is subpolynomial), so it is the right open W4 core, not a weaker statement. -/
+
+/-- **Corrected Shaw gap law** at constant `C`: `‖η_b‖ ≤ C·√(|D|·log_2(q/|D|))` — the worst-case
+incomplete character sum at its true scale (max, not moment-average). -/
+noncomputable def ShawGapLaw (ψ : AddChar F ℂ) (D : Finset F) (C : ℝ) : Prop :=
+  ∀ b : F, b ≠ 0 →
+    ‖eta ψ D b‖ ≤ C * Real.sqrt ((D.card : ℝ) * Real.logb 2 ((Fintype.card F : ℝ) / D.card))
+
+/-- **THE PROXIMITY PRIZE CONJECTURE (corrected).** There is an absolute constant `C` such that the
+production smooth domain `μ_n` (`n² ≤ q`, NTT prime `q`) obeys the Shaw gap law
+`B(μ_n) ≤ C·√(n·log(q/n))`. This is the worst-case incomplete-character-sum bound for a small
+multiplicative subgroup (`n ≪ √q`) — the recognized open **W4 / Bourgain–Konyagin** problem,
+provably NOT decidable from the energy floor (the √log moment-vs-max gap). By §6 it controls every
+moment, hence every face; with it the closed-form `δ*` of §4 holds *with the `√(log(1/ε*))`-corrected
+lower-order term*. Every quantity is explicit and finite-instance-decidable (no `∃`-over-objects, no
+incomputable lemma) — it is the prize, reduced to this one bound and nothing else. -/
 def ShawFlatnessConjecture : Prop :=
-  ∃ C : ℝ, Real.sqrt 2 ≤ C ∧
+  ∃ C : ℝ, 0 < C ∧
     ∀ {F : Type} [Field F] [Fintype F] [DecidableEq F]
       (ψ : AddChar F ℂ) (D : Finset F),
       ψ.IsPrimitive → (D.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ) →
-      ShawFlatness ψ D C
+      ShawGapLaw ψ D C
 
 /-
 ### §9  Refutation ledger (the conjecture SURVIVES all of these — they fix its sharp form)
@@ -376,8 +406,10 @@ R1. "δ* = Johnson = 1−√ρ"                    — REFUTED: in-tree `kkh26_d
 R2. "δ* = capacity = 1−ρ exactly"            — REFUTED: finite ε* forces δ* = 1−ρ − Θ(1/log n)
     (the `log_q(1/ε*)/n` term of `deltaStar_closedForm` is nonzero).
 
-R3. "perfectly Sidon, C = 1"                 — REFUTED: `shaw_flatness_constant_ge_sqrt_two` (the
-    3n²−3n floor) forces C ≥ √2 for even n = 2^μ. Hence the conjecture carries `√2 ≤ C`.
+R3. "B(μ_n) ≤ √2·√n, pinned sharp by the energy floor" — REFUTED (`probe_shaw_flatness_refute.py`):
+    direct computation gives B = Θ(√(n·log(q/n))), so B/√n ~ √(log(q/n)) is UNBOUNDED. The √2 floor
+    bounds the L⁴/L²-AVERAGE of |η_b|, not the MAX; the max exceeds it by √(log #cosets). The
+    corrected, refutation-surviving conjecture is `ShawGapLaw`: B ≤ C·√(n·log(q/n)) (§8).
 
 R4. "worst-case incidence = average exactly" — REFUTED: the gap term is nonzero, so `(R)` is `≤`
     (one-sided) with a genuine (1+o(1)), not equality.
@@ -397,8 +429,21 @@ R7. "N_fib, SplitLocusBound, WindowRationalBounded, CensusDomination are differe
 R8. "the bad-scalar count needs a per-γ argument"— REFUTED (§2): `badScalars_card_le_cosetLowWeight`
     removes the quantifier over γ — the whole line family is one static coset count.
 
-What remains genuinely open is exactly `ShawFlatnessConjecture` ⟺ `WorstCaseIncidenceBound` — the
-Shkredov-type gap bound for the small production subgroup — and nothing else. That is the prize.
+R9. "δ* = H_q⁻¹(...) is the exact threshold"  — REFUTED (BCHKS 2025/169 §1.4.3 + Crites–Stewart):
+    the smooth domain gives COUNTEREXAMPLES below the capacity/random value, so H_q⁻¹ is only an
+    UPPER bound. The exact worst-case far line above Johnson is a MONOMIAL direction `x^a`
+    (`probe_monomial_extremal.py`: I_mono = I(δ) at every above-Johnson radius), so the true δ* is
+    the STRUCTURED (q-independent, char-0-computable) monomial-extremal radius — strictly between
+    Johnson and the H_q⁻¹ upper bound. The open core is its optimality (≡ the same W4/BCHKS object).
+
+R10. "the corrected bound is weaker than Shkredov" — REFUTED: `B ≤ C·√(n·log(q/n))` still gives
+    `E ≤ n²·O(log q) = n^{2+o(1)}` (log is subpolynomial), the exact Shkredov target. The √log is
+    the genuine `√(log(1/ε*))` lower-order content, not a weakening.
+
+What remains genuinely open is exactly `ShawFlatnessConjecture` (the corrected `ShawGapLaw`
+`B ≤ C·√(n·log(q/n))`) ⟺ `WorstCaseIncidenceBound` ⟺ monomial-extremal optimality — the W4/Bourgain
+worst-case character-sum bound for the small production subgroup, equivalently (BCHKS 2025/169
+Thm 1.9) explicit-μ_n-RS beyond-Johnson list-decoding — and nothing else. That is the prize.
 
 --------------------------------------------------------------------------------------------------
 ### §10  Status ledger (honest)
@@ -412,14 +457,16 @@ Shkredov-type gap bound for the small production subgroup — and nothing else. 
 | `punctured_secondMoment` (Parseval, punctured) | **PROVEN, axiom-clean** |
 | `shaw_offdiag_moment_le` (gap controls ALL moments) | **PROVEN, axiom-clean** |
 | `energy_le_of_flatness` (flatness ⟹ Sidon energy) | **PROVEN, axiom-clean** |
-| `shaw_flatness_constant_ge_sqrt_two` (sharp C ≥ √2) | **PROVEN, axiom-clean** |
-| `deltaStar_closedForm` (closed-form δ*) | **CONJECTURE** (computable; consistent both ends) |
-| `ShawFlatnessConjecture` = `WorstCaseIncidenceBound` `(R)` | **OPEN CORE** = classical Shkredov wall |
+| `shaw_flatness_constant_ge_sqrt_two` (moment/avg lower bound C ≥ √2) | **PROVEN, axiom-clean** |
+| `deltaStar_closedForm` (closed-form δ*, random UPPER bound) | **CONJECTURE** (computable) |
+| `ShawGapLaw` `B ≤ C·√(n·log(q/n))` = `ShawFlatnessConjecture` = `(R)` | **OPEN CORE** = W4/Shkredov wall |
 
 **One sentence.** Every face of the prize is one spectral statistic of the Shaw operator `𝖲_D`; a
-single bound on its gap `B(μ_n) ≤ √2·√n` controls all of them at once and yields the closed form
-`δ*(ρ,ε*,n,q) = H_q⁻¹(1 − ρ − log_q(1/ε*)/n)`; everything above the gap is machine-checked here, and
-the gap bound is exactly the classical additive-energy wall `E(μ_n)=n^{2+o(1)}` — the prize, closed.
+single bound on its gap — the corrected `B(μ_n) ≤ C·√(n·log(q/n))` (the `√2·√n` form is refuted, R3) —
+controls all of them at once and yields the closed form `δ*_avg = H_q⁻¹(1−ρ−log_q(1/ε*)/n)` (a random
+UPPER bound; the true δ* is the q-independent monomial-extremal radius, R9); everything above the gap
+is machine-checked here, and the gap bound is exactly the classical W4/Shkredov wall `E(μ_n)=n^{2+o(1)}`
+— the prize, reduced to that one bound and nothing else.
 -/
 
 end ProximityPrize
