@@ -85,7 +85,45 @@ theorem gvRepBound_rootsOfUnity {n : ℕ} (hn2 : 2 ∣ n) (hn0 : n ≠ 0)
   exact gvRepBound_of_sidonModNeg (by omega : 1 ≤ n) hGmem hcard h2 h0 hneg hS hM
     (by rw [hcard]; exact hM3)
 
+/-! ## The sharp constant bound: `r(c) ≤ 2`, optimal `M = 2`. -/
+
+open ArkLib.ProximityGap.AdditiveEnergySidonModNeg in
+/-- **Sharp rep bound under Sidon-mod-negation: `r(c) ≤ 2`.**  Every nonzero shift `c` has at most
+the two trivial representations `{a, b}` (the unordered pair of any one representation), so
+`repCount ≤ 2` — the exact Garcia–Voloch value, stronger than the `√(3n)` energy route. -/
+theorem repCount_le_two_of_sidonModNeg {F : Type*} [Field F] [DecidableEq F]
+    {G : Finset F} (hS : SidonModNeg G) {c : F} (hc : c ≠ 0) :
+    repCount G c ≤ 2 := by
+  classical
+  unfold repCount
+  rcases (G.filter (fun y => c - y ∈ G)).eq_empty_or_nonempty with he | ⟨y₀, hy₀⟩
+  · rw [he]; simp
+  · rw [Finset.mem_filter] at hy₀
+    obtain ⟨hy₀G, hcy₀⟩ := hy₀
+    have hc_eq : y₀ + (c - y₀) = c := by ring
+    have hsum_ne : y₀ + (c - y₀) ≠ 0 := by rw [hc_eq]; exact hc
+    have hpair := filter_eq_pair hS hy₀G hcy₀ hsum_ne
+    rw [hc_eq] at hpair
+    rw [hpair]
+    exact le_trans (Finset.card_insert_le _ _) (by simp)
+
+open ArkLib.ProximityGap.AdditiveEnergySidonModNeg in
+/-- **The optimal Garcia–Voloch bound `GVRepBound (μ_n) 2`** in the small-subgroup regime
+`p > 4^{φ(n)}`: every nonzero shift has at most `2` representations — the constant, char-0 value,
+unconditional.  Sharper than `gvRepBound_rootsOfUnity` (`M = O(√n)`). -/
+theorem gvRepBound_rootsOfUnity_two {n : ℕ} (hn2 : 2 ∣ n) (hn0 : n ≠ 0)
+    {p : ℕ} [Fact p.Prime] [NeZero (n : ZMod p)] (hp : 4 ^ n.totient < p)
+    {ω : ZMod p} (hω : IsPrimitiveRoot ω n) :
+    GVRepBound ((Finset.range n).image (ω ^ ·)) 2 := by
+  have hS : SidonModNeg ((Finset.range n).image (ω ^ ·)) := sidonModNeg_rootsOfUnity hn2 hn0 hp hω
+  have hcard : ((Finset.range n).image (ω ^ ·)).card = n := by
+    rw [image_eq_nthRootsFinset hn0 hω, hω.card_nthRootsFinset]
+  refine ⟨fun t ht => repCount_le_two_of_sidonModNeg hS ht, ?_⟩
+  rw [hcard]; nlinarith [Nat.one_le_iff_ne_zero.mpr hn0]
+
 end ArkLib.ProximityGap.AdditiveEnergyRepBound
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.gvRepBound_rootsOfUnity
+#print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.repCount_le_two_of_sidonModNeg
+#print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.gvRepBound_rootsOfUnity_two
