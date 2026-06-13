@@ -1461,6 +1461,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergyExact
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityCyclicList
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityEnergyExact
+import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityVandermonde
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CollisionOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetWall
