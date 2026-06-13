@@ -1281,6 +1281,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProofLoop42
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
+import ArkLib.Data.CodingTheory.ProximityGap.QRAdditiveEnergyClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.QRAdditiveEnergyGaussSum
 import ArkLib.Data.CodingTheory.ProximityGap.QRAdditiveEnergyIngredients
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicClosedForm
@@ -1633,6 +1634,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowTwoLayerThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
+import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianNonVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianStepanovBridge
