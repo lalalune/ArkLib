@@ -57,7 +57,7 @@ theorem subspaceDesign_jointAgree_card_le {s : ℕ} {τ : ℕ → ℝ}
     rw [hA, Submodule.span_le]
     rintro x ⟨j, rfl⟩
     rw [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.proj_apply]
-    show (c j.succ - c 0) i = 0
+    change (c j.succ - c 0) i = 0
     rw [Pi.sub_apply, hS i hi j.succ, hS i hi 0, sub_self]
   calc (S.card : ℝ)
       ≤ ((univ.filter (fun i : ι => A ≤ LinearMap.ker
