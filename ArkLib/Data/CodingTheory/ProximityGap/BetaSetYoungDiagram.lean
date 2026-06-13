@@ -98,4 +98,18 @@ theorem card_youngDiagramOfBeta (h : B.card = n) :
   omega
 
 
+/-- **Geometric rim-hook size law.** Removing a rim `n`-hook removes exactly `n` cells from the
+Young diagram: `card (YD of B') + n = card (YD of B)`. Combined with `card_youngDiagramOfBeta`
+this realizes the abacus bead-move as the removal of `n` genuine Young-diagram cells. -/
+theorem youngDiagram_card_removeRimHook {B B' : Finset ℕ} {n : ℕ}
+    (hB : B.card = n) (hstep : RemovesRimHook B B' n) :
+    (youngDiagramOfBeta (show B'.card = n from (card_removeRimHook hstep).trans hB)).card + n
+      = (youngDiagramOfBeta hB).card := by
+  have hB' : B'.card = n := (card_removeRimHook hstep).trans hB
+  have h1 : ((youngDiagramOfBeta hB').card : ℤ) = area B' := card_youngDiagramOfBeta hB'
+  have h2 : ((youngDiagramOfBeta hB).card : ℤ) = area B := card_youngDiagramOfBeta hB
+  have h3 : area B' = area B - n := area_removeRimHook hstep
+  omega
+
+
 end ArkLib.ProximityGap.BetaSetYoungDiagram
