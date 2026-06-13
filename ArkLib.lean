@@ -593,6 +593,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CrossingPin
 import ArkLib.Data.CodingTheory.ProximityGap.CubicOrchardIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyCountermodel
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyExact
+import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyZeroNTT
 import ArkLib.Data.CodingTheory.ProximityGap.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBound
@@ -622,6 +623,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWindowedLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Decision
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandCeilingWindow
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandDeltaStarCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureClosedForm

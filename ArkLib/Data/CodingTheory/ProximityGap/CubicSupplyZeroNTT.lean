@@ -45,14 +45,11 @@ namespace ProximityGap.PairRank
 
 open ProximityGap.SpikeFloor ProximityGap ProximityGap.Ownership Code
 
-local instance : Fact (Nat.Prime 257) := ⟨by norm_num⟩
+local instance : Fact (Nat.Prime 257) := ⟨by decide⟩
 
 /-- The 16 elements of the order-16 multiplicative subgroup `μ_16 ⊆ F₂₅₇^×`. -/
-def mu16vals : Fin 16 → ZMod 257
-  | 0 => 1   | 1 => 2   | 2 => 4   | 3 => 8
-  | 4 => 16  | 5 => 32  | 6 => 64  | 7 => 128
-  | 8 => 129 | 9 => 193 | 10 => 225 | 11 => 241
-  | 12 => 249 | 13 => 253 | 14 => 255 | 15 => 256
+def mu16vals : Fin 16 → ZMod 257 :=
+  ![1, 2, 4, 8, 16, 32, 64, 128, 129, 193, 225, 241, 249, 253, 255, 256]
 
 /-- The NTT evaluation domain `μ_16 ⊂ F₂₅₇` as an embedding (injective by `decide`). -/
 def dom16 : Fin 16 ↪ ZMod 257 :=
@@ -73,6 +70,7 @@ theorem mu16_F257_zeroSum_triples_eq_zero :
 with it on `3` points.  Via the cubic orchard identity, this is the zero-sum-triple count,
 which is `0`.  A concrete δ* lower-bound data point: at radius `13/16` (one step below
 capacity), this word produces no bad scalars. -/
+open Classical in
 theorem cubicSupply_mu16_F257_eq_zero :
     ((Finset.univ : Finset (Fin 16 → ZMod 257)).filter (fun c =>
         c ∈ (rsCode dom16 2 : Submodule (ZMod 257) (Fin 16 → ZMod 257))
