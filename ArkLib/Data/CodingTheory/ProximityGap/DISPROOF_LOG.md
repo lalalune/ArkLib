@@ -8061,3 +8061,36 @@ production-blocked. HONEST SCOPE: proves two specific mechanisms cannot fire; do
 prove `CensusDomination` (no exponential supply from ANY source). Remaining: the max
 e-symm fiber census over all targets (H-MAX) + the inverse theorem that structured families
 are the only supply sources (H-EXT) — in progress, `scripts/probes/incidence/landscape/`.
+
+### O160 — SidonModNeg(μ_n) holds far below √p but the threshold is NOT universal-in-√p (probe + refutation, 2026-06-13)
+
+Direct attack on the energyExcess core (`EnergyExcessCore.lean`): the whole #389 cubic/energy
+wall closes iff `energyExcess(μ_n) = E⁺(μ_n) − (3n²−3n) = 0`, i.e. iff `μ_n` is `SidonModNeg`
+(`AdditiveEnergySidonModNeg.lean`; in-tree `E ≤ 3n²` is conditional on it).
+
+**Probe (`scripts/probes/probe_sidonmodneg_threshold.py`, exact `E⁺` in `F_p`):** small
+multiplicative subgroups are EXACTLY Sidon-mod-negation (`excess = 0`, `E = 3n²−3n` exactly) far
+below the random heuristic — e.g. `p=786433, n=256`: `n³/p ≈ 21` exotic quadruples predicted,
+**0 observed**. Holds for any order (not just 2-power): `n=6..192 | p−1` all zero-excess.
+
+**Bold conjecture E'' (exact universal minimality, `n ≤ c√p ⟹ excess 0`): REFUTED.** No universal
+multiplicative-in-√p constant exists:
+- `p=786433`: zero excess at `n=256` (`n/√p = 0.289`).
+- `p=23068673`: ALREADY nonzero at `n=1024` (`n/√p = 0.213`).
+Since `0.213 < 0.289`, no constant `c` with `n ≤ c√p ⟹ excess 0` fits both. The
+Sidon-mod-negation threshold is genuinely p-dependent (number-theoretic), not a clean power law.
+(Flip points `n/√p`: 0.32, 0.58, 0.38, 0.21 across p = 40961, 786433, 7340033, 23068673.)
+
+**What survives (honest):** the PRIZE regime `n ≲ 2³⁰ ≪ √q ≈ 2¹²⁸` sits ~2⁹⁸ below every observed
+flip, so `SidonModNeg(μ_n)` (hence `energyExcess = 0`, `E = 3n²−3n`) is empirically overwhelming
+there — but proving it needs the p-dependent threshold, which Weil/character-sum bounds do NOT
+force to exactly zero (the observed suppression is stronger than Weil predicts; an open
+number-theoretic fact).
+
+**Why this does NOT pin δ* (the load-bearing caveat):** even with `energyExcess = 0`, δ* is not
+closed. Zero excess controls the additive-energy / cubic-supply front only. The **capacity-edge
+supply is a SEPARATE mechanism** (`CS25*`: deep-hole + random-word combinations cover
+small-distance balls, `ε_mca → 1` at capacity, NOT additive-energy-governed), which sets the upper
+bracket `δ* ≤ 1−ρ−Θ(1/log n)`. Residual-free δ* therefore requires BOTH the subgroup sum-product
+front (this entry) AND the covering / list-decoding-capacity front (CS25/BCHKS Conj 1.12) —
+two independent recognized-hard problems. No fabricated closure.
