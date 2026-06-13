@@ -1371,9 +1371,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGVClosure
+import ArkLib.Data.CodingTheory.ProximityGap.SidonGaussSum4thMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftClosed
-import ArkLib.Data.CodingTheory.ProximityGap.SidonGaussSum4thMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftDevacuated
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegComplex
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
@@ -1463,6 +1463,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumLadderMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMarkov
