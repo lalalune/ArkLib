@@ -59,3 +59,34 @@ if __name__ == "__main__":
     for (n, k, q) in [(8, 2, 41), (16, 4, 97), (16, 4, 193), (16, 4, 257)]:
         nb, cos = bad_via_symmetric(n, k, q)
         print(f"  n={n} k={k} q={q}: #bad={nb}  #cosets={cos}  #bad/n={nb/n:.2f}")
+
+
+# ── The rigidity MECHANISM (added): constrained subsets form O(1) dilation orbits ──
+# Generic enumeration (n=8,k=2,q=41; mu_8 = [1,3,9,27,40,38,32,14]): the 4-subsets S with
+# e_2(S)=0 split into:
+#   * 2 subsets with e_1=0 (EXCLUDED, gamma=0): the two mu_4-cosets {g^even},{g^odd}
+#     (a mu_4-coset has prod(X-x)=X^4-1, so e_1=e_2=e_3=0).
+#   * 8 subsets with e_1 != 0: EXACTLY ONE dilation orbit of [0,1,2,5] (index +1 mod 8 cycles
+#     through all 8), so #bad = |orbit| = 8 = n = one mu_8-coset.
+# So the rigidity = "the e_2=0, e_1!=0 subsets form O(1) dilation orbits". For dir(k+1,k+2) the
+# count is 1 orbit (n=8,16 verified); the WORST direction (dir(5,7), b-a=2) has a few orbits
+# (#bad ~ 4n). The OPEN conjecture, sharpened: the symmetric-constraint variety on (k+2)-subsets
+# of mu_n has O(1) dilation orbits with nonzero e_1 -- a finite cyclotomic-combinatorics statement.
+def orbit_structure(n=8, k=2, q=41):
+    dom = gen_mu(q, n)
+    valid = [S for S in itertools.combinations(dom, k + 2) if e1_e2(S, q)[1] == 0]
+    nz = [S for S in valid if e1_e2(S, q)[0] != 0]
+    z = [S for S in valid if e1_e2(S, q)[0] == 0]
+    # dilation orbits of nz (index +1 mod n)
+    idxset = {tuple(sorted(dom.index(x) for x in S)) for S in nz}
+    orbits = 0; seen = set()
+    for s in idxset:
+        if s in seen:
+            continue
+        orbits += 1
+        cur = s
+        for _ in range(n):
+            cur = tuple(sorted((i + 1) % n for i in cur))
+            seen.add(cur)
+    print(f"n={n} k={k} q={q}: e2=0 subsets: {len(z)} with e1=0 (excluded, mu_(n/2)-cosets), "
+          f"{len(nz)} with e1!=0 forming {orbits} dilation orbit(s)")
