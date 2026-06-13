@@ -307,3 +307,31 @@ hill-climb, multi-block, glued, structured-escape, e-symmetric,
 incidence-3class, constructive-3class, size-6-kernel + thin-set). The
 clean formalizable theorem is "≤2 size-6 classes when overlap-monics
 independent"; the 1.1% needs the attachment count. Empirical max stays 22.
+
+## Assembly scope: three_class_collapse caps size-6 MULTIPLICITY; class COUNT is attachment-gated for all sizes
+
+A scoping clarification for the `ClassPackingBound` assembly. The landed
+pieces bound different axes:
+* `RungSharpCap` bounds class SIZE-contribution: size-a class caps at
+  `(n−a)/(t−a)` (a=5→5, a=4→4, a=3→3; a=6→10).
+* `three_class_collapse` bounds size-6 MULTIPLICITY: ≤2 size-6 classes
+  when overlap-quadratics independent (generic, 98.9%).
+
+But NEITHER bounds the NUMBER of small (size 3–5) classes: the agreement
+Fisher allows up to `C(16,3)=560` size-3 quadratics, each capped at 3 — so
+structural caps alone permit a huge sum. The reason the real total stays
+≤ 22 is the ATTACHMENT GATE (a quadratic carries ≥2 bad scalars only with
+the shared-R₀ frame structure), which limits class count for ALL sizes.
+
+Probe `probe_wb371_classprofile.py` (record-22 stack): only **2**
+quadratics have agreement ≥ 4 (both size-6), ZERO at size 4–5; the 22 bad
+scalars = 2 size-6 classes + size-3-quadratic remainder. So empirically
+size-6 dominates and small classes do NOT proliferate — but that is the
+attachment gate at work, not the structural caps.
+
+**Corrected residual scope**: `ClassPackingBound` needs an
+attachment-gated CLASS-COUNT bound (how many quadratics carry ≥2 bad
+scalars), which is the irreducible core for every size — `three_class_collapse`
++ `RungSharpCap` are genuine partial results (size-6 multiplicity, per-class
+size) but the count bound (shared-R₀ attachment) remains open. Empirical
+ceiling 22 ≤ 31 across nine attack modes.
