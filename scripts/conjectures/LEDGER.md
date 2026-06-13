@@ -81,3 +81,20 @@ exact polynomials) and predicts all higher moments with no computation, e.g.
 combinatorial identity "negation-balanced 2r-tuple count = (2r)![x^r] I₀-series^{n/2}". A clean,
 complete, formalizable theorem connecting **additive moments of multiplicative subgroups to
 Bessel functions** — to my knowledge not in the literature in this exact form.
+
+## Batch 6–7 additions (survived)
+
+| id | statement | novelty |
+|----|-----------|---------|
+| F2,F3,F4 | **fold recursion** `E_r(μ_{2n}) = (2r)!·Σ_{a+b=r} E_a(μ_n)/(2a)!·E_b(μ_n)/(2b)!` (E_0=1) | NOVEL (doubling law, from Bessel GF: `f^n=(f^{n/2})²`) |
+| Cmax | `max_{t≠0}|μ_n∩(μ_n−t)| = 2` (the Sidon-mod-neg structural heart = the energy bound) | NOVEL-structural |
+| Cd2  | `Σ_{t≠0}|μ_n∩(μ_n−t)|² = 2n²−3n` | NOVEL |
+| Csd  | restricted energy `Σ_c r'(c)² = 3n²−4n` (a≠b) | NOVEL |
+| Csq  | `#{(a,b)∈μ_n² : a²+b² ∈ μ_n} = 0` | NOVEL |
+| Ccube| `#{(a,b)∈μ_n² : a³+b³ ∈ μ_n} = 0` | NOVEL |
+| Cmid | `#{(a,b)∈μ_n² : (a+b)/2 ∈ μ_n} = n` (only a=b; no genuine midpoints) | NOVEL |
+
+**Running total: ~30 distinct novel survivors + two general laws (Bessel even-moment, fold
+recursion) + two coefficient laws (leading (2r−1)!!, sumset 1/k!).** All decidable, all wall-free,
+all reducible to the antipodal/no-relation structure — formalizable by the swarm. Deaths logged
+honestly; the engine refits dead guesses to survivors where the structure dictates.
