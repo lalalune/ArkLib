@@ -764,6 +764,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.GG25ExactPreservation
+import ArkLib.Data.CodingTheory.ProximityGap.GG25MCAFromCurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.GG25MarkedCurve
 import ArkLib.Data.CodingTheory.ProximityGap.GG25MarkedEquivalence
 import ArkLib.Data.CodingTheory.ProximityGap.GG25NonCovering
