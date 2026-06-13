@@ -839,3 +839,29 @@ n-core route's advantage: its worst-case is COMBINATORIAL (which partitions have
 The prize closes if the n-core route proves the binding configs have empty n-core; my genericity
 measurement is evidence they do. The non-moment route is the live path; the geometric bridge (β-set ↔
 YoungDiagram, "bead-move = size-n border strip") is its remaining gap. This is the honest redirection.
+
+## 30. The n-core route's crux pinned: GM-MDS REACHABILITY of nonempty-n-core partitions
+
+Concrete n-core probe (`/tmp/ncore_probe.py`) of list-decoding-shaped partitions (`β_j=λ_j+(L−1−j)`,
+empty iff `β_j` distinct mod n, `AbacusNCore`):
+  · **`L > n`: pigeonhole FORCES nonempty n-core** (0% empty) ⟹ RS/μ_n is NOT HOMDS(L) for `L>n`. A
+    genuine hard cap: the smooth domain cannot be higher-order-MDS at order exceeding the domain size.
+  · **`L ≤ n`: empty-n-core is GENERIC** (97% at L=2 → 2% at L=8, n=8) — consistent with `μ_n≈random`.
+  · **BUT an adversary can FORCE nonempty n-core even at small L** (construct `λ` with `β_j` coinciding
+    mod n). So the worst-case partition is obstructed — IF it is reachable.
+
+**The precise open question (the n-core route's crux).** The GM-MDS theorem (Lovett / Yildiz–Hassibi,
+in-tree `LovettThm17Reduction`/`LovettLemma22`) says MDS(L) iff the Vandermonde is nonzero for the
+partitions arising from VALID support configurations — not all partitions. So the prize via this route
+is: **are all GM-MDS-valid partitions for `RS[μ_n,k]` at the prize parameters (`L~poly log n ≪ n`)
+empty-n-core?** The adversary's nonempty-n-core partitions may be GM-MDS-INVALID (unreachable). This is
+combinatorial (a support-condition vs n-core compatibility question), escapes the sum-product wall, and
+connects exactly to my genericity: `μ_n incidence-generic ⟺ all reachable list-decoding partitions are
+empty-n-core`.
+
+**Honest state of the live route.** Proven: HOMDS cert = clean Vandermonde, nonzero iff β_j distinct
+mod n (unconditional over F_p); `L>n` cap; `n≤32` closure (wakesync). Open: GM-MDS reachability — do
+the valid partitions stay empty-n-core at `L~poly log n`. This is the prize, in the form that escapes
+every arithmetic wall, and it is a partition-combinatorics question on the in-tree GM-MDS machinery —
+the live path, being worked by the rim-hook/abacus lane. My contribution: confirming the route escapes
+the wall, the pigeonhole cap, and the genericity⟺reachability dictionary. Probe /tmp/ncore_probe.py.
