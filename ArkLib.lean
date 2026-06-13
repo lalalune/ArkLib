@@ -1352,6 +1352,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalVanish
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountEnergyNfold
+import ArkLib.Data.CodingTheory.ProximityGap.RepCountFiber
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusGeneral
