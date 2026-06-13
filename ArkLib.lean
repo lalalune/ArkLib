@@ -327,6 +327,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AllRatesJohnsonInstances
 import ArkLib.Data.CodingTheory.ProximityGap.AllWitnessFloorGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.AllWitnessOwnershipFloor
 import ArkLib.Data.CodingTheory.ProximityGap.AttackLoop46
+import ArkLib.Data.CodingTheory.ProximityGap.AutocorrelationMax
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
@@ -500,6 +501,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIJointProximity
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
 import ArkLib.Data.CodingTheory.ProximityGap.BelowUDRPuncture
 import ArkLib.Data.CodingTheory.ProximityGap.BestProvableBracket
+import ArkLib.Data.CodingTheory.ProximityGap.BetaSetSize
+import ArkLib.Data.CodingTheory.ProximityGap.BetaSetYoungDiagram
 import ArkLib.Data.CodingTheory.ProximityGap.BinomialMatrixDet
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardLatticeSlice
@@ -622,6 +625,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ChordConverseWrapper
 import ArkLib.Data.CodingTheory.ProximityGap.ChordFamilyCount
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.ClassSupplyFloor
+import ArkLib.Data.CodingTheory.ProximityGap.CleanRangeNorm
 import ArkLib.Data.CodingTheory.ProximityGap.CodewordHeavyScalar
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
 import ArkLib.Data.CodingTheory.ProximityGap.CollinearityCensusTransfer
@@ -1471,6 +1475,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.RigidityIterated2kLift
 import ArkLib.Data.CodingTheory.ProximityGap.RigiditySunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityWindowHalving
+import ArkLib.Data.CodingTheory.ProximityGap.RimHookArea
+import ArkLib.Data.CodingTheory.ProximityGap.RimHookConfluence
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergyExact
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityCyclicList
