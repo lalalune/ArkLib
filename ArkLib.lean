@@ -1448,6 +1448,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonGaussSum4thMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftDevacuated
+import ArkLib.Data.CodingTheory.ProximityGap.SidonInjTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegComplex
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegEnergyEquality
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
