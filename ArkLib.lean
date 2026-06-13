@@ -759,6 +759,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSPipelineAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.GSReachesJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.GSRootOrderStep
 import ArkLib.Data.CodingTheory.ProximityGap.GSYDegreeListCap
+import ArkLib.Data.CodingTheory.ProximityGap.GVDvdSuccClosure
 import ArkLib.Data.CodingTheory.ProximityGap.GVHBKEnergyReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GVObjectTowerDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.GVRepBoundFermat257
