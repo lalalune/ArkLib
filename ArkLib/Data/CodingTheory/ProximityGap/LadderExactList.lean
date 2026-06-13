@@ -46,7 +46,7 @@ namespace ProximityGap.LadderList
 
 open ProximityGap.SpikeFloor ProximityGap.Ownership
 
-variable {L : Type} [Field L] [CharZero L]
+variable {L : Type} [Field L]
 variable {ν n r k : ℕ} {ζ lam : L} {dom : Fin n ↪ L}
 
 /-- The `m = 2` ladder word `x^{2r} + λ·x^{2r−2}` over the domain. -/
@@ -390,7 +390,8 @@ open Classical in
 /-- **THE RIGIDITY HALF (char-0 core)**: over 2-power root-of-unity domains in
 characteristic zero, the closure principle is the in-tree subset Lam–Leung engine,
 and the fibre law's upper bound holds unconditionally. -/
-theorem ladder_explainer_fiber (hν : 1 ≤ ν) (hζ : IsPrimitiveRoot ζ (2 ^ ν))
+theorem ladder_explainer_fiber [CharZero L] (hν : 1 ≤ ν)
+    (hζ : IsPrimitiveRoot ζ (2 ^ ν))
     (hn : n = 2 ^ ν) (hroot : ∀ i, (dom i) ^ n = 1)
     (hk : 1 ≤ k) (hk2 : k ≤ 2 * r - 2)
     {c : Fin n → L} (hc : c ∈ (rsCode dom k : Submodule L (Fin n → L)))
