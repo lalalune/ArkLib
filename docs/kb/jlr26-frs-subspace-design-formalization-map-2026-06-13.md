@@ -749,3 +749,28 @@ capacity term (with constant `≤2` rather than the clean `√2`). The excess is
 deployed scale; the uniform `o(Wick)` bound is the open core (= the refutation `C≤2`, = wakesync's
 small-P-points = the k-uniform Katz wall). My §26 "exactly 0" overstated it; this corrects to the true,
 still-positive, statement. Probe /tmp/threshold_n16.py.
+
+## 27. The cleanest form + quantitative reconciliation of both lanes (C=1.633 from moment = measured)
+
+The right comparison for the excess is NOT vs Wick but vs the **equidistribution baseline `n^{2r}/q`**.
+The moment bound is `max|η_b|^{2r} ≤ q·E_r^{(p)} − n^{2r} = q(E_r^∞ + excess) − n^{2r}`. Since
+`E_r^∞ = Wick` and `q·baseline = n^{2r}`, this is `≈ q·Wick + q·(excess − baseline) + ...`; the bound is
+clean `√2` iff `excess = baseline`, and inflates with `excess`.
+
+**Quantitative reconciliation (n=16, r=6, p=65537):** `excess/baseline = 0.28 < 1` (the r-fold sums are
+SUB-equidistributed — less clustered than random). Feeding this into the moment bound gives
+`max|η_b| ≤ 21.75 = 1.633·√(n ln p)`, i.e. **`C = 1.633 ≈ √e` — EXACTLY my measured refutation constant.**
+So the Bessel/excess lane (L²) and the character/refutation lane (L∞) are now QUANTITATIVELY identical:
+`excess/baseline ≈ 0.28 ⟺ C ≈ 1.63`.
+
+**The prize in its cleanest form:** the `r`-fold sums of `μ_n` **equidistribute mod p** —
+`E_r^{(p)}(μ_n) ≤ n^{2r}/q + O((2r−1)!!·n^r)`, equivalently `excess ≤ O(baseline)`, equivalently
+`max|η_b| ≤ C√(n ln p)` with `C=O(1)` — **uniformly to `r~log p`**. This is the single open core, the
+same Bourgain-type equidistribution of `μ_n`'s higher sumsets, now with:
+  · PROVEN: char-0 baseline (Bessel `E_r^∞≤(2r−1)!!n^r`); `excess=0` for `p>(2r)^{n/2}`; log-short
+    family; `C≥Ω(1)` (4th moment); fixed-k Katz; BGK `C≤n^{1/2−ε}` floor.
+  · MEASURED/CERTIFIED: `excess/baseline<1` (sub-equidistributed), `C≤2`, `G=O(1)`, μ_n≤random,
+    excess negligible at the prize ratio β=4.2 (n≤512 / n=16 exact).
+  · OPEN: the uniform `C=O(1)` (≡ excess `O(baseline)`) at `n=2⁴⁰`, `r~log p`.
+The closed-form δ* (capacity term, `prizeDeltaStar`) + proven ceiling are in the workbench; this is the
+sharpest, two-lane-reconciled statement of the one remaining open inequality.
