@@ -1372,6 +1372,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StepanovHighMultVanisher
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovNonVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovPointCountEngine
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovVanisherExistence
+import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilEngine
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilSubstrate
 import ArkLib.Data.CodingTheory.ProximityGap.StripEdgeDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.StripSupExactness
