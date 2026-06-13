@@ -116,6 +116,7 @@ import ArkLib.Data.CodingTheory.Erasure
 import ArkLib.Data.CodingTheory.ExtensionCodes
 import ArkLib.Data.CodingTheory.ExternalDebt
 import ArkLib.Data.CodingTheory.GMMDS.LovettBaseCase
+import ArkLib.Data.CodingTheory.GMMDS.LovettBlockDecomp
 import ArkLib.Data.CodingTheory.GMMDS.LovettBlockDim
 import ArkLib.Data.CodingTheory.GMMDS.LovettBlockSpan
 import ArkLib.Data.CodingTheory.GMMDS.LovettCombinatorial
