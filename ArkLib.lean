@@ -633,6 +633,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepQuotientTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.DeepStratumMovingDirection
 import ArkLib.Data.CodingTheory.ProximityGap.DeepStratumRankUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.DeepStratumSurviving
+import ArkLib.Data.CodingTheory.ProximityGap.DeepStratumSurvivingCoord
 import ArkLib.Data.CodingTheory.ProximityGap.DegeneracyLocusRank
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarCeilingTightTheory
