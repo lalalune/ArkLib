@@ -1333,6 +1333,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorCovering
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionBoundaryFailure
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionJohnsonBudget
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionRegimeBracket
+import ArkLib.Data.CodingTheory.ProximityGap.QuadZeroSumEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesA
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesB
