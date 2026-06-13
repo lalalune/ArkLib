@@ -1523,6 +1523,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowMatrix
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedPrimePowerPacket
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
+import ArkLib.Data.CodingTheory.ProximityGap.WeilRegimeClosure
 import ArkLib.Data.CodingTheory.ProximityGap.WideCircuitTrichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.WindowChainStructure
