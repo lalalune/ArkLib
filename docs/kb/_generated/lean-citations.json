@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 355,
+    "files_with_citations": 358,
     "keys_cited": 30,
-    "total_citation_edges": 402
+    "total_citation_edges": 405
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -178,7 +178,16 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Capture.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedKill.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedLiftIdentity.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedRecursion.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedWeld.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean": [
@@ -1204,7 +1213,10 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Arith.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Bundle.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Capture.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedKill.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedLiftIdentity.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedRecursion.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ClearedWeld.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/AgreementCount.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtraction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtractionResidual.lean",
