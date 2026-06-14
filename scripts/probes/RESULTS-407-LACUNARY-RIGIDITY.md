@@ -378,3 +378,43 @@ recognized-hard residual. δ* = prizeDeltaStar is thus PROVEN in the norm regime
 norm-OK: e.g. ρ=1/2 ladder side), with the full-floor residual at large n being the equidistribution
 of cyclotomic power-sums mod q — a genuinely softer, more localized form of the wall than the
 worst-case sup-norm.
+
+## 13. INDEPENDENT VERIFICATION of the CUMULANT route (corrects the deep-moment "wall") + unification
+
+A cross-agent insight (lalalune) corrected a real error in the deep-moment analysis, which I
+**independently verified** (`probe_cumulant_kappa_407.py`): the sup-norm floor `M ≤ √(2n·ln m)`
+follows from `M^{2r} ≤ n·Σ_i|η_i|^{2r}` (the **CUMULANT**), and the M-relevant ratio is
+`κ_r = (Σ_i|η_i|^{2r}/m)/((2r−1)!!·n^r)` — NOT the raw moment `E_r` (whose `n^{2r}/p` term explodes
+but **cancels** and is M-irrelevant). My earlier "deep-moment wall" cited the raw `E_r` explosion —
+a **raw-vs-cumulant artifact**; corrected here.
+
+**Independent measurement (gate `Σ|η_i|²=p−n` exact, n=32,64, β=4):**
+
+| n | prime type | v₂(p−1) | r*≈ln p | κ@r* | C=M/√(2n ln m) |
+|---|---|---|---|---|---|
+| 32 | generic | 5–6 | 14 | 0.023–0.030 | 0.88–0.89 |
+| 32 | FFT (high 2-adic) | 12–13 | 14 | 0.023–0.034 | 0.89–0.91 |
+| 64 | generic | 6 | 17 | 0.012–0.015 | 0.88–0.90 |
+| 64 | FFT (high 2-adic) | 14–15 | 17 | 0.009 | 0.85–0.88 |
+
+**`κ@r* ≪ 1` (≈0.01–0.03), decreasing in n, identical for generic and FFT-friendly primes.** So
+the cumulant moment route **does give the floor** numerically, robustly, with room to spare — and
+the FFT/2-power-structured primes (the real protocol primes) behave **identically** to generic
+(the earlier "structured-prime explosion" was a sub-β `β≈2.7` artifact, not a prize-regime
+obstruction).
+
+**Unification of the routes.** `κ_r ≪ 1` (period 2r-th cumulant ≤ Gaussian = **period
+sub-Gaussianity to depth ln p**) is precisely the **dual** of the combinatorial **excess
+suppression / equidistribution** of §10–12: both say the periods/power-sums are Gaussian/well-spread,
+numerically with room to spare. So the analytic (Gauss-period) and combinatorial (cyclic-code /
+lacunary) routes meet at the **same residual**, now cleanly stated three ways:
+- **analytic:** `κ_r ≤ 1` to depth `r ≈ ln p` (period sub-Gaussianity);
+- **combinatorial:** window-edge excess ≤ budget (cyclotomic power-sums equidistribute mod q);
+- **coding:** sparse-cyclic `C'_{a,b}` list size ≤ budget beyond Johnson (wakesync).
+
+**Honest residual (final, precise & cross-agent-consistent):** `κ_r ≤ 1` asymptotically (to depth
+`r ≈ ln p`). PROVEN anchors: `r=1` (Var=n), `r=2` (E₂=3n²−3n), `r=3` (E₃=15n³−45n²+40n) — all give
+`κ ≤ 1`. MEASURED `κ ≪ 1` and decreasing in n through n=64–128, prime-type-independent. The
+asymptotic proof (deep-moment validity / Lam–Leung char-0 energy transferred to depth ln p) is the
+recognized open core. No agent has closed it; it is now stated with maximal precision and strong
+numerical support, the floor route confirmed sound.
