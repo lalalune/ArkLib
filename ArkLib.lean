@@ -42,6 +42,7 @@ import ArkLib.Data.CodingTheory.AGL24AgreementForcing
 import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
 import ArkLib.Data.CodingTheory.AGL24AppendixAssembly
 import ArkLib.Data.CodingTheory.AGL24ConditionalAssembly
+import ArkLib.Data.CodingTheory.AGL24CutNetChange
 import ArkLib.Data.CodingTheory.AGL24CutSupply
 import ArkLib.Data.CodingTheory.AGL24DeletionRobustness
 import ArkLib.Data.CodingTheory.AGL24DetDegree
