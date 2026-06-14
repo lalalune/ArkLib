@@ -1366,3 +1366,42 @@ non-symmetric cofactor `X^{b*}(X^{a*−b*}+…+γ)`, here #bad=16) is the larger
 Probes (all reproducible, exact): `scripts/probes/probe_407_close_r1_{lineball,enum,ball}.py`,
 `/tmp/R1{CHECK108,MECH,ANTIPODAL,GAP}.py`. Refutation conf 0.9 (two exact methods, 4 primes,
 ratio exactly 2.00, mechanism pinned to antipodal-closure of agreement sets).
+
+## LEDGER 2026-06-14 (close-everything workflow, adversarially verified) — synthesis CORRECTED on two points
+
+A batched 12-lane attack→verify workflow ran (existence-semantics, R1, R2, D-height fully; later lanes
+rate-stalled). Adversarial verifiers CORRECTED the prior "floor closes modulo R1+D-height" synthesis:
+
+- **EXISTENCE-SEMANTICS — RESOLVED (existential).** Confirmed via Kambiré Thm 1 (existential, chooses p in
+  [4^s,8^s] via Linnik). The floor pigeonhole gives a GOOD prime EXISTS (margin ≫0 at every prize row),
+  matching Kambiré's published mechanism. It does NOT make an ARBITRARY p good (bad primes are a nonempty
+  sparse set) — so it serves the EXISTENTIAL floor (choose p), which is the prize's own semantics. ✓ STANDS.
+
+- **R1 (monomial extremality) — REFUTED.** `probe_407_close_r1_refutation_crossprime.py`: for the (10,8)
+  pencil at a=9 (beyond Johnson=8, n=16,k=4), the MONOMIAL line `X^10+γX^8` has bad count 8, but the
+  COMBINATION line `f=X^10+cX^9, g=X^8` has bad count **16 — exactly 2× — at p=97,193,257,353** (ratio
+  2.00, structurally exact, from `X^8(X²+cX+γ)` vs `X^8(X²+γ)`). So MONOMIALS ARE NOT EXTREMAL; the general
+  pencil doubles the count. R2's verifier independently concurs: "R2b-max is REFUTED for monomials (general
+  cofactor doubles it) ⟹ the floor must bound the GENERAL pencil." **This breaks the count route's monomial
+  reduction** — the floor must bound `#bad` over ALL lines (a,b)+cofactor, not just monomials.
+
+- **D-HEIGHT BOUND — my "#bad primes ≤ O(n log n)" is UNSUPPORTED.** `probe_407_close_countlane_VERDICT.py`:
+  each individual bad prime is `≤ (n²+n)^{n/2}` (proven e₂-rigidity SPECIES) ✓, but there is NO single
+  integer of height `2^{O(n log n)}` whose factors cover all floor-bad primes: the sumset poly `G_r` has
+  height `≫ n log n` (n=32,r=3 → log₂=301>160, grows with r since deg=|Σ_r|=2^{Θ(s)}), and the per-config
+  product is `2^{Θ(n)}` (a UNION over `2^{Θ(n)}` configs, not a single integer). So `#floor-bad ≤ log D =
+  O(n log n)` does NOT follow from e₂-rigidity. The bad-prime COUNT is empirically tiny (n=8→0, n=16→≤11)
+  but that is observation, not the size-bound pigeonhole.
+
+- **R2 — Kambiré's optimization gives the worst-case (m,r,s) = (s~K log n, r=ρs+2, m=n/s)** for the CEILING;
+  he does NOT prove the floor's UPPER bound (no line beats |H^{(+r)}|). The floor must bound the general
+  pencil over all s|n.
+
+**CORRECTED honest status.** The existence-pigeonhole STRUCTURE is valid (a good prime exists, existential
+semantics confirmed). But it bounds the WRONG object as previously stated: (a) R1 refuted ⟹ the floor count
+is the GENERAL-pencil bad count (≥2× monomial), so the δ* formula must be re-derived for general pencils OR
+the doubling shown to be absorbed by the max over (m,r,s); (b) the `#bad-primes ≤ log D` step needs the bad
+primes to divide a single small-height integer, which is NOT provided by e₂-rigidity. So the prize floor is
+NOT closed even in existence form; the two new gaps (general-pencil extremality, single-integer D-height)
+are the corrected open core — still OFF-WALL (combinatorial/resultant), not BGK. Probes:
+`scripts/probes/probe_407_close_*.py` (R1/R2/existence/D-height families).
