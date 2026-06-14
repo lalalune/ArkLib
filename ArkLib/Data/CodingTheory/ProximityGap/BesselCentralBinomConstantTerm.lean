@@ -138,6 +138,38 @@ theorem besselCoeff_eq_centralBinom_sum (d r : ℕ) :
   intro β _
   exact besselTerm_mul_eq_centralBinomTerm β
 
+/-- **The `r = 0` normalization anchor of the Bessel even-moment ladder.**
+At rung `r = 0`, `antidiagonalTuple d 0 = {0}` (the single zero tuple), so each
+per-coordinate factor is `1/(0!)² = 1` (Bessel) resp. `1/0! = 1` (Gaussian), and the
+product over the `d` coordinates is `1`.  Hence both the Bessel coefficient
+`besselCoeff d 0 = [x⁰] I₀(2√x)^d` and the Gaussian coefficient
+`gaussianCoeff d 0 = [x⁰] e^{d x²}` normalize to `1`.  This pins the base case of the
+even-moment recursion `E_r^{char0}(μ_n) = (2r)!·[x^r] I₀(2√x)^{n/2}`. -/
+theorem besselCoeff_zero (d : ℕ) : besselCoeff d 0 = 1 ∧ gaussianCoeff d 0 = 1 := by
+  constructor
+  · unfold besselCoeff
+    rw [Finset.Nat.antidiagonalTuple_zero_right, Finset.sum_singleton]
+    simp [Nat.factorial_zero, Finset.prod_const_one]
+  · unfold gaussianCoeff
+    rw [Finset.Nat.antidiagonalTuple_zero_right, Finset.sum_singleton]
+    simp [Nat.factorial_zero, Finset.prod_const_one]
+
+
+/-- **Sign anchor for the Bessel coefficient**: `0 ≤ besselCoeff d r`.
+`besselCoeff d r = Σ_{|m|=r} ∏_i 1/(mᵢ!)²` is a sum over the antidiagonal tuple of
+products of factors `1/(mᵢ!)² ≥ 0`, hence nonnegative.  This pins the sign of the exact
+char-0 additive-energy coefficient `[x^{2r}]I₀(2x)^d` (so `(2r)!·besselCoeff d r =
+E_r^{char0}(μ_n) ≥ 0`), the trivial-but-load-bearing positivity baseline of the Bessel
+even-moment law (#407). -/
+theorem besselCoeff_nonneg (d r : ℕ) : 0 ≤ besselCoeff d r := by
+  unfold besselCoeff
+  apply Finset.sum_nonneg
+  intro x _
+  apply Finset.prod_nonneg
+  intro i _
+  positivity
+
+
 end ProximityGap.PrizeWorkbench
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -145,3 +177,5 @@ end ProximityGap.PrizeWorkbench
 #print axioms ProximityGap.PrizeWorkbench.one_div_sq_factorial_eq
 #print axioms ProximityGap.PrizeWorkbench.besselTerm_mul_eq_centralBinomTerm
 #print axioms ProximityGap.PrizeWorkbench.besselCoeff_eq_centralBinom_sum
+#print axioms ProximityGap.PrizeWorkbench.besselCoeff_zero
+#print axioms ProximityGap.PrizeWorkbench.besselCoeff_nonneg

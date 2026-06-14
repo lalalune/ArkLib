@@ -159,4 +159,29 @@ theorem no_odd_length_allpositive_vanishing_sum {k : ℕ} {M : Multiset L}
   intro hsum
   exact (Nat.not_even_iff_odd.mpr hodd) (even_card_of_vanishing_dyadic_multiset hM hsum)
 
+/-- **Length-1 base case of the odd-moment ledger.** A single `2^k`-th root of unity has nonzero
+sum: a multiset of `2^k`-th roots of unity with cardinality one cannot vanish. This is the
+base case (`card = 1`, odd) of `no_odd_length_allpositive_vanishing_sum`. -/
+theorem ne_zero_of_card_one_dyadic {k : ℕ} {M : Multiset L}
+    (hM : ∀ z ∈ M, z ^ (2 ^ k) = 1) (hcard : Multiset.card M = 1) :
+    M.sum ≠ 0 :=
+  no_odd_length_allpositive_vanishing_sum hM (hcard ▸ odd_one)
+
+
+/-- **Minimal vanishing relation at cardinality two.** A two-element multiset of `2^k`-th roots
+of unity whose sum vanishes is an antipodal pair `{z, -z}`. This is the base case of the
+Lam–Leung antipodal structure theorem in the dyadic context: the only way two roots of unity can
+cancel is `z + (-z) = 0`. -/
+theorem card_two_vanishing_antipodal {k : ℕ} {M : Multiset L}
+    (hM : ∀ z ∈ M, z ^ (2 ^ k) = 1) (hcard : Multiset.card M = 2) (hsum : M.sum = 0) :
+    ∃ z : L, M = {z, -z} := by
+  obtain ⟨x, y, rfl⟩ := Multiset.card_eq_two.mp hcard
+  refine ⟨x, ?_⟩
+  have hs : x + y = 0 := by simpa using hsum
+  have hy : y = -x := eq_neg_of_add_eq_zero_right hs
+  rw [hy]
+
+
 end DyadicOddMomentVanishing
+#print axioms DyadicOddMomentVanishing.ne_zero_of_card_one_dyadic
+#print axioms DyadicOddMomentVanishing.card_two_vanishing_antipodal

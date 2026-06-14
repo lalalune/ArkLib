@@ -294,6 +294,33 @@ theorem norm_halfSum_pow_eq {m : ℕ} (hm : 1 ≤ m) {ζ : L} (k : ℕ) (hk : Od
   exact norm_halfSum_eq hm hζk hirr
 
 
+/-- **A root of unity is an algebraic integer.** If `ζ ^ n = 1` (with `0 < n`), then `ζ` is a
+root of the monic integer polynomial `X ^ n - 1`, hence integral over `ℤ`. -/
+theorem rootOfUnity_isIntegral {n : ℕ} (hn : 0 < n) {ζ : L} (hζ : ζ ^ n = 1) :
+    IsIntegral ℤ ζ := by
+  refine ⟨X ^ n - 1, ?_, ?_⟩
+  · exact monic_X_pow_sub (by simp [Polynomial.degree_one]; exact_mod_cast hn)
+  · -- eval₂ (algebraMap ℤ L) ζ (X^n - 1) = ζ^n - 1 = 0
+    have : (Polynomial.aeval ζ) ((X : ℤ[X]) ^ n - 1) = 0 := by
+      simp [map_sub, aeval_X_pow, hζ]
+    simpa [Polynomial.aeval_def] using this
+
+/-- **Any ℤ-sum of `n`-th roots of unity is an algebraic integer.** For `ζ ^ n = 1` (`0 < n`)
+and any finite index set `S`, the subset sum `∑ a ∈ S, ζ ^ a` is integral over `ℤ`.
+
+This is the foundation of the candidate-bad-prime method of the Half-Sum ledger (#407): each
+`ζ ^ a` is a root of the monic integer polynomial `X ^ n - 1` (since `(ζ ^ a) ^ n = (ζ ^ n) ^ a
+= 1`), hence `IsIntegral ℤ (ζ ^ a)`; integrality is closed under finite sums. Consequently the
+algebraic norm `N_{K/ℚ}(∑ u)` of a subset sum lies in `ℤ`, so a bad prime can divide it. -/
+theorem rootPow_sum_isIntegral {n : ℕ} (hn : 0 < n) {ζ : L} (hζ : ζ ^ n = 1)
+    (S : Finset ℕ) : IsIntegral ℤ (∑ a ∈ S, ζ ^ a) := by
+  refine IsIntegral.sum (fun a => ζ ^ a) (fun a _ => ?_)
+  -- each ζ^a is itself an n-th root of unity: (ζ^a)^n = (ζ^n)^a = 1
+  have hpow : (ζ ^ a) ^ n = 1 := by
+    rw [← pow_mul, mul_comm, pow_mul, hζ, one_pow]
+  exact rootOfUnity_isIntegral hn hpow
+
+
 end ArkLib.ProximityGap.HalfSumNorm
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_halfSum_eq
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_rotated_halfSum_eq
@@ -302,3 +329,5 @@ end ArkLib.ProximityGap.HalfSumNorm
 #print axioms ArkLib.ProximityGap.HalfSumNorm.antipodal_symmetric_sum_zero
 #print axioms ArkLib.ProximityGap.HalfSumNorm.full_group_sum_eq_zero
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_halfSum_pow_eq
+#print axioms ArkLib.ProximityGap.HalfSumNorm.rootOfUnity_isIntegral
+#print axioms ArkLib.ProximityGap.HalfSumNorm.rootPow_sum_isIntegral
