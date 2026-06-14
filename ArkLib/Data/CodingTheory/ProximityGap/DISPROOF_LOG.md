@@ -9132,6 +9132,38 @@ sup-norm M(n)=max_b|eta_b|:
   corr(|eta_i|, 2-adic-val(i)) = 0.019 ~ 0 — the p-adic structure gives ZERO handle on archimedean size.
   REFUTED.
 
+## 2026-06-14 — HANDLE A3 (Stickelberger/Gauss-sum DFT-of-phases) REFUTED (probe_a3_*.py)
+
+Sharper than the crude correlation entry above. The explicit-formula identity is VERIFIED to ~1e-13:
+`eta_b = (1/m)[-1 + sqrt(q)*P(b)]`, `P(b) = sum_{chi!=1 in H^perp} u_chi * conj(chi)(b)` = the DFT (on
+Z/m, m=(q-1)/n) of the UNIMODULAR Gauss-sum phases `u_chi = g(chi)/sqrt(q)`. So
+`M(n) = (sqrt(q)/m)*max_b|P(b)|`, exactly the sup-norm of the DFT of the phases.
+
+A3 hope: Stickelberger/Gross-Koblitz forces `max_b|P(b)| <= sqrt(2 m log m)` (=> M <= sqrt(2 n log q)).
+MEASURED (n=8,16,32,64; p~n^4; |g|err~1e-13 confirms |g(chi)|=sqrt(q) exactly, phases truly unimodular):
+  Psup/sqrt(2 m log m) = 0.756, 0.848, 0.891, 0.964  (below the GENEROUS target but RISING toward 1)
+  Psup/random-unimodular-DFT-sup = 1.04, 1.16, 1.27, 1.26  (phases give NO cancellation vs random;
+      slightly ABOVE random — mild positive tail correlation, sup/mean 4.3..6.0 vs Rayleigh 2.3..2.8)
+  M/sqrt(2 n log p) = 0.655, 0.735, 0.772, 0.835  (the ACTUAL prize ratio, also creeping up)
+Phase diagnostics: angle chi^2/df ≈ 1 (equidistributed), adjacent-phase corr -> 0 (decorrelated); the
+sup is mildly diffuse (2-4 freqs within 90%, ~20 within 80%, top1/top2 ≈ 1.05-1.09), worst frequency j*
+has NO fixed arithmetic label (j*=0,6986,238435; v2 varies).
+
+EXACT OBSTRUCTION. Stickelberger/Gross-Koblitz pins only the **p-adic valuation** (prime-ideal
+factorization = base-p digit sum) of g(chi); the **archimedean PHASE** is intrinsically ambiguous — the
+sign/unit-root ambiguity is unresolved even for the index-2 and index-4 cases (Yang-Xia 0912.1414;
+Aoki, "evaluation of Gauss sums of 2-power order", only the semiprimitive p^j≡-1 case is clean). By
+Katz/Deligne (Rojas-Leon) the phases EQUIDISTRIBUTE, i.e. behave as random unimodular. Therefore the DFT
+sup-norm is governed by the random-phase model — which is EXACTLY what Katz already gives asymptotically
+(KatzEffectiveGaussSum.lean). Stickelberger adds NOTHING to control the archimedean DFT sup-norm; the
+p-adic structure and the archimedean size live on opposite sides. The route reaches the random/Wick scale
+`M ~ sqrt(c n log q)` only HEURISTICALLY (same as the moment route), not as a proof for the fixed
+deterministic prime — proving the random-phase upper bound for THIS specific deterministic phase family IS
+the open BGK/Paley sup-norm problem (best PROVEN n^{1-o(1)} BGK; di Benedetto n^{0.989} only for n>q^{1/4}).
+GAP TO sqrt(n): the exponent stays at di Benedetto's 0.989 (no improvement); A3 is an exact REFRAMING of
+the open object, not a new bound. NOT dyadic-specific (the DFT-of-phases identity holds for any subgroup;
+n=2^mu only forces eta_b real). Probes: /tmp/probe_a3_fast.py, /tmp/probe_a3_g3.py, /tmp/probe_a3_final.py.
+
 ## 2026-06-14 — Okamoto "Syndrome-Space Lens" (eprint 2025/1712) READ IN FULL: does NOT solve the prize
 
 User supplied the PDF (~/Desktop/newmath/syndrome_space_lens.pdf); read in full. Careful & correct,
