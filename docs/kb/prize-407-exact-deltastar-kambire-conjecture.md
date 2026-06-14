@@ -773,3 +773,26 @@ statement for `r ~ log n`). The combinatorial coset-saturation route and the ene
 independent routes one of which bypasses the other. So δ* is pinned EXACTLY in the provable regime
 (`q > (rm)^{n/2}`) and over ℂ, axiom-clean in Lean; the prize regime (`q = n^β ≪ n^{n/2}`, `n=2^30`)
 reduces to this one named arithmetic transfer = the recognized open core. No fabricated closure.
+
+## UPDATE — the wall localized to the SYMMETRIC FUNCTIONS e_i, 2m≤i≤rm, m∤i (r=2 unconditional; prize r≈11)
+
+A sharper structural split than "char-0 vs char-p", obtained by reading the bad-scalar condition
+`e_i(S)=0 ∀i∈{1,…,2m−1}\{m}`, `|S|=rm`, directly through `P(X):=∏_{x∈S}(X−x)`:
+
+- **`r=2` is CLOSED UNCONDITIONALLY (pure algebra, char-`p`-SAFE, no Lam–Leung/norm bound).** With
+  `|S|=2m`, the vanishing `e_1..e_{2m−1}` (all but `e_m`) leave `P(X)=X^{2m}±e_m X^m+e_{2m} ∈ F_q[X^m]`,
+  so by `FactorizationRigidity` (already Lean) `S` is a `μ_m`-coset-union. The whole polynomial is forced
+  `m`-sparse because degree `2m` is fully covered by the window — there is no unconstrained "tail".
+- **`r≥3` needs the cyclotomic bridge (= the wall).** For `r≥3` the symmetric functions `e_i(S)` with
+  `2m≤i≤rm`, `m∤i` are UNCONSTRAINED by the window. Coset-union ⟺ `e_i(S)=0` for ALL `m∤i`; the window
+  delivers only `i<2m`. The low→all bridge is `P | X^n−1` (i.e. `S⊆μ_n`): over ℂ it forces the tail to
+  vanish (Lam–Leung / `full_tower`), over `F_q` at prize scale it does not. So the OPEN CORE is exactly:
+  **the tail symmetric functions `e_i(S)`, `2m≤i≤rm`, `m∤i`, are forced to `0` by `P|X^n−1` over `F_q`.**
+- **The prize sits at `r≈11`** (window-edge fit, `μ=30,ρ=1/4`: `s≈44`, `m≈2^{24.5}`, `|S|=ρn≈2^{28}`,
+  `log₂|H^{(+r)}|≈30.4≈μ`). So the prize is firmly on the `r≥3` side; the `r=2` unconditional corner does
+  not reach it. (And there is no parameter freedom to force `r=2`: the window edge pins `r`.)
+
+This is the same wall, but now stated as a CONCRETE finite algebraic obligation (tail-`e_i` vanishing from
+`P|X^n−1` over `F_q`), not a vague "transfer". A `poly(n)`-height proof of the tail-vanishing would close
+the prize; the only known route (generic elimination/Nullstellensatz/norm) is doubly-exponential (see
+DISPROOF_LOG "good-prime dodge"). No new math in the literature (PAPERS_NEEDED P1–P6) supplies it.
