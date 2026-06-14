@@ -8700,3 +8700,16 @@ ratio→√2). The open gap is exactly whether the descent-fluctuations (the tra
 exponent, cf `probe_dyadic_cocycle_recursion.py`) average to ≤(1/2)log2 with no worst-case upward bias —
 the same moment-vs-max / sqrt-cancellation core, NOT closed by the descent reframing.
 Probe: `scripts/probes/probe_descent_inequality.py`.
+
+## (#407) Sharpening: the descent open core = a phase-alignment large-deviation, NOT a uniform descent
+Following the refutation of the clean `M(n)≤√2 M(n/2)` descent (above): at the worst b, `S_b(μ_n)=A+B`,
+`A=η_b(μ_{n/2})`, `B=η_{bζ}(μ_{n/2})` (fleet `GaussPeriodTower.lean`). The per-level ratio
+`r=|A+B|/max(|A|,|B|) ∈ [√2, 2]`: `=√2` iff `A⊥B`, `=2` iff phase-ALIGNED (`cos=1`). So
+`M(n)=∏_{j=1}^{k} r_j` and (since measured `M(n)~√(n log p)`) `Σ_j log(r_j/√2) ≈ ½ log log p` — MOST
+levels are ≈√2 with small upward fluctuations. **The open core is therefore a WORST-CASE-PATH
+(large-deviation) bound on the phase-alignment cocycle**, NOT a uniform per-step inequality: δ* closes
+iff no frequency b has a persistently-aligned path down the 2-adic tower (which would give M(n)~n).
+Empirically M~√(n log p)≪n ⟹ no fully-aligned path exists (prize morally true), but PROVING the
+worst-path accumulation ≤ √(log p) is the recognized-open sup-norm/Lyapunov large-deviation problem.
+This bounds what `GaussPeriodTower` (exact recursion) can yield: the recursion is exact, the closure
+needs the cocycle large-deviation, which is the open analytic input. Probe: `probe_descent_inequality.py`.
