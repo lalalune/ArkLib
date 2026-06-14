@@ -469,3 +469,25 @@ genericity fails ⟹ the subgroup character-sum bound. 5 papers:
 - **G5** arXiv:1712.00761 "Improved bounds on Gauss sums in arbitrary finite fields" — subgroup
   Gauss sums to `q^{1/2+1/68}` (improves Zhelezov); directly the MCA object, small power-saving
   above √q. DOWNLOAD.
+
+## 2026-06-14 (g): continuation web scan — newest adjacent hits, no closure
+
+Fresh web scan for 2025-2026 papers around Gaussian periods, generalized Paley graphs, subgroup
+character sums, and RS list decoding.  These are either already cataloged above or newly noted here;
+none supplies the missing `M(μ_n) ≤ √(n log m)` / centered deep-moment estimate.
+
+- arXiv:2604.06513, Podestá–Videla, "The nature of the spectrum of generalized Paley graphs and
+  weak Waring numbers over finite fields" — already cataloged as P1; structural Gaussian-period
+  spectrum, no new magnitude bound.
+- arXiv:2603.03841, Kumar–Ron-Zewi, "Advances in List Decoding of Polynomial Codes" — already
+  cataloged; capacity progress routes through generic/MDS-style structure, not the fixed smooth
+  multiplicative subgroup.
+- arXiv:2602.22167, "Estimates for Character Sums in Finite Fields, F_p^n" — extension-field /
+  polynomial-argument character-sum estimates; adjacent technique only, not an additive-character
+  sup-norm bound over `μ_n ⊂ F_p`.
+- arXiv:2511.18304, "The automorphism groups and identification of some Generalized Paley graphs" —
+  graph structure/isomorphism side of generalized Paley graphs; confirms relevance of the Paley
+  object but does not bound Gaussian-period eigenvalue magnitudes.
+- arXiv:2502.14436, Cheng–Winterhof, "New estimates for character sums over sparse elements of
+  finite fields" — already cataloged; multiplicative-character/sparse-set estimates, not the
+  required additive-character subgroup period bound.
