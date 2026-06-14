@@ -41,6 +41,49 @@ variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r} -- ℓ ∈ {1, ..., r-1}
 variable {𝓑 : Fin 2 ↪ L}
 variable [hdiv : Fact (ϑ ∣ ℓ)]
 
+/-- The `pSpecFold` challenge types carry the standard `challengeOracleInterface`. Declared
+locally because the in-file `Message` interface instance (`Spec.lean`) shadows discrimination so
+the generic `ProtocolSpec.challengeOracleInterface` is not reached for `.Challenge` goals. -/
+instance instOracleInterfaceChallengePSpecFold :
+    ∀ j, OracleInterface ((pSpecFold (L := L)).Challenge j) :=
+  ProtocolSpec.challengeOracleInterface
+
+instance instFintypeChallengePSpecFold : ∀ j, Fintype ((pSpecFold (L := L)).Challenge j)
+  | ⟨j, hj⟩ => by
+    have h_i_eq_1 : j = 1 := by
+      cases j using Fin.cases with
+      | zero => simp only [pSpecFold, Matrix.cons_val_zero, reduceCtorEq] at hj
+      | succ j1 =>
+        cases j1 using Fin.cases with
+        | zero => rfl
+        | succ k => exact k.elim0 (α := k.succ.succ = 1)
+    subst h_i_eq_1
+    simp only [Challenge, pSpecFold, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_zero]
+    infer_instance
+
+instance instInhabitedChallengePSpecFold : ∀ j, Inhabited ((pSpecFold (L := L)).Challenge j)
+  | ⟨j, hj⟩ => by
+    have h_i_eq_1 : j = 1 := by
+      cases j using Fin.cases with
+      | zero => simp only [pSpecFold, Matrix.cons_val_zero, reduceCtorEq] at hj
+      | succ j1 =>
+        cases j1 using Fin.cases with
+        | zero => rfl
+        | succ k => exact k.elim0 (α := k.succ.succ = 1)
+    subst h_i_eq_1
+    simp only [Challenge, pSpecFold, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_zero]
+    exact ⟨(0 : L)⟩
+
+instance instFintypeChallengeOraclePSpecFold :
+    OracleSpec.Fintype [(pSpecFold (L := L)).Challenge]ₒ where
+  fintype_B
+  | ⟨⟨⟨1, _⟩, _⟩, _⟩ => inferInstanceAs (Fintype L)
+
+instance instInhabitedChallengeOraclePSpecFold :
+    OracleSpec.Inhabited [(pSpecFold (L := L)).Challenge]ₒ where
+  inhabited_B
+  | ⟨⟨⟨1, _⟩, _⟩, _⟩ => ⟨(0 : L)⟩
+
 section SingleIteratedSteps
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context} -- Sumcheck context
 
