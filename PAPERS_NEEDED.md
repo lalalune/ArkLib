@@ -354,3 +354,13 @@ sums}. Decisive refs (verdict: count is OPEN for t,a=Θ(n) on explicit μ_n; = t
 - **Ben-Sasson–Kopparty–Radhakrishnan, *Subspace Polynomials and Limits to List Decoding of RS*** (IEEE-IT 56(1) 2010) — https://www.math.toronto.edu/swastik/rsld.pdf — for explicit ADDITIVE/subspace domains the near-codeword count is SUPER-POLYNOMIAL just past Johnson. Cautionary precedent; additive not multiplicative, so does NOT settle the μ_n (dyadic FFT) case — exactly the open question.
 - **Kumar–Senthil Kumar, *Note on vanishing power sums of roots of unity*** — arXiv:1503.07281 — closest to the power-sum formulation; SINGLE power, existence/characterization only, NO count (the t=Θ(n) simultaneous count is the open extension).
 - **Li–Wan exact subset-sum fibre** `C(s,k)/s` (JCTA 119(1) Cor 1.4) — the t=2 (single-constraint) slice, proven in-tree (`subsetSum_fibre_card_mul`).
+
+### 2026-06-13 (#407) — ideal-lattice / lattice-crypto domain (the GoN reformulation's literature)
+The residual reformulated as a cyclotomic prime-ideal house-count (lattice-crypto territory). Sweep
+verdict: the fully-split case q≡1 mod 2^μ (N(𝔮)=q) = the PRIZE = the explicitly-OPEN hard case.
+- **Fukshansky–Petersen, *On Well-Rounded Ideal Lattices*** — arXiv:1101.4442 (IJNT 2012) — cyclotomic ideal lattices are WELL-ROUNDED (λ_1=…=λ_{n/2}); |minimal vectors|=r_1+r_2. PROVEN shape fact for 𝔮; does NOT bound the box point-count.
+- **Cheng et al., *Solution counts and sums of roots of unity*** — J. Number Theory (2022), https://doi.org/10.1016/j.jnt.2022.01.... — EQUATES the additive p-defect count to lower bounds on the house of sums of roots of unity (the exact dictionary); no worst-case poly bound.
+- **Pan–Xu–Wadleigh–Cheng, *Ideal SVP over random rational primes*** — arXiv:2004.10278 (EUROCRYPT 2021) — cyclotomic prime-ideal SVP poly only for non-split q (q≡±3 mod 8); EXPLICITLY excludes N(𝔮)=q (fully split) = the prize regime. "will not improve matters if q splits completely."
+- **Cui–Li–Zhuang, *Principal ideal & ideal-SVP over rational primes in power-of-2 cyclotomics*** — arXiv:2601.07511 (2026) — exact λ_1 for non-split classes only; fully-split worst-case left open.
+- **Felderhoff–Pellet-Mary–Stehlé–Wesolowski, *Ideal-SVP Hard for Small-Norm Uniform Prime Ideals*** — ePrint 2023/1370 (TCC 2023) — worst-case-to-average over uniform small-norm prime ideals; assumes their distribution.
+Verdict: NO known worst-case (or almost-all-q) bound on #{α∈𝔮: house≤B~log q} by poly/q^{o(1)} for split q. The prize regime is the recognized open case in the ideal-lattice domain too.
