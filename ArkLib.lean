@@ -314,7 +314,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.A3InstanceBadness
 import ArkLib.Data.CodingTheory.ProximityGap.A3InstanceCore
 import ArkLib.Data.CodingTheory.ProximityGap.A3ProportionalityTrap
 import ArkLib.Data.CodingTheory.ProximityGap.A4CensusValue
+import ArkLib.Data.CodingTheory.ProximityGap.A4CyclotomicGaloisAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.A5CensusValue
+import ArkLib.Data.CodingTheory.ProximityGap.A5CompositeEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.A8CosetStructure
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
@@ -807,6 +809,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicEnergyK1
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicOddMomentVanishing
+import ArkLib.Data.CodingTheory.ProximityGap.E2CharFreeLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.E2SquaringRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishRigidityModP
@@ -844,6 +847,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FarCosetExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.FarLineIncidenceEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.FarPairRankBound
 import ArkLib.Data.CodingTheory.ProximityGap.FarPairRankSupply
+import ArkLib.Data.CodingTheory.ProximityGap.FarThresholdMaximality
 import ArkLib.Data.CodingTheory.ProximityGap.FarWordSupplyCounting
 import ArkLib.Data.CodingTheory.ProximityGap.Fermat257EnergyCrossover
 import ArkLib.Data.CodingTheory.ProximityGap.FiberEnergyListBound
@@ -874,8 +878,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2NearAffine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2OwnedTriples
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Universal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.KKH26ConcreteCeilingN8
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LaneB_Q2_SparsityExclusive
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LineBallSingleCodewordEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Q1ArisingFamilyDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgroup
@@ -893,6 +899,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2NegationStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2VanishWidthFourLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEscape
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RingHomBadScalarMono
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RungListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
@@ -944,7 +951,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBoundSlack
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodParsevalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodSpectralFrame
-import ArkLib.Data.CodingTheory.ProximityGap.PeriodMomentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodTower
 import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyFromPairing
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
@@ -1456,6 +1462,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PencilDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.PencilDegreeGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
 import ArkLib.Data.CodingTheory.ProximityGap.PencilSplitCount
+import ArkLib.Data.CodingTheory.ProximityGap.PeriodMomentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PinBeyondJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.PointwiseEnergyCeilingNoGo
