@@ -226,6 +226,7 @@ import ArkLib.Data.CodingTheory.HigherOrderMDS
 import ArkLib.Data.CodingTheory.HigherOrderMDSFrame
 import ArkLib.Data.CodingTheory.HigherOrderMDSList
 import ArkLib.Data.CodingTheory.HigherOrderMDSListGenPos
+import ArkLib.Data.CodingTheory.HigherOrderMDSOrderKNormal
 import ArkLib.Data.CodingTheory.HigherOrderMDSOrderThreeChar
 import ArkLib.Data.CodingTheory.HigherOrderMDSOrderThreeFail
 import ArkLib.Data.CodingTheory.HigherOrderMDSOrderTwo
