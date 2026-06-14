@@ -935,3 +935,50 @@ The anomalous energy `A_k := E_k(μ_n) − n^{2k}/p = (1/p)·Σ_{b≠0}|μ̂_n(b
 Hence L2 is the sup-norm via moments — which is WHY its naive (relation-counting) form caps at Johnson.
 A genuine closure needs a STRUCTURAL `A_k` bound (not the moment hierarchy); the "un-refuted path" label is
 about the structural version only. Probes: `probe_407_{minimal_subsum,n128_maxbad}.py`.
+
+## UPDATE 2026-06-14 (CONNECTION C2) — the moment crossover r* is pinned at ≈β, but the COUNT lane sits a factor ~n ABOVE it (re-hits BGK, does NOT bypass)
+
+Tested the directive's hypothesis (v): "the bad-scalar COUNT `N₀=#bad` is a SINGLE q-independent count at
+the worst-case `r`, NOT a moment hierarchy, so it bypasses the BGK deep-moment wall." **Decisively measured;
+the bypass FAILS.** Three facts, all probe-verified:
+
+**FACT 1 — the moment crossover r* is real and ≈ β (NOT β+1, slightly below).** Computed the per-moment
+char-`p` anomaly `#spurious_r := E_r(F_p) − E_r^0(ring)` EXACTLY (ring-vs-F_p collision count via coord-vector
+convolution; `E_r^0` is the genuine cyclotomic-ring count, NOT the naive Wick `(2r−1)‼·n^r` — correction: the
+ring count is strictly below Wick, `E_r^0/n^r → (2r−1)‼` only as `n→∞`; e.g. n=16,r=2 gives 720 vs Wick 768).
+At prize `p~n^4` (β=4): **`#spurious_r = 0` EXACTLY for r=2,3 (=β−1) and turns on at r=4 (=β)** — μ=6:
+ratio `#spurious_r/(n^{2r}/p)` = 0, 0, **0.81** at r=2,3,4; μ=7: 0, 0 at r=2,3 (r=4 capped). `r*` tracks β
+(n=32 at β=3: ratios 0.000, 0.059, 0.506, 0.775, 0.902 climbing to ~1 by r≈β+1). So **r* ≈ β to β+1**, a
+small CONSTANT. Probe `probe_407_conn_c2_crossover_scan.py`.
+
+**FACT 2 — the COUNT-lane depth is config size `r_count = ρ·n/m`, which GROWS LINEARLY in n.** δ* is set by
+the worst-case agreement set of size `|S| = ρ·n` (a FIXED FRACTION of n), so the count-lane multiplicity is
+`r_count = ρn/m ≈ n/4` (m=2, ρ≈7/16): μ=6→14, μ=16→14336, μ=30→**2.3×10⁸**. This is NOT a small fixed r — it
+is unbounded in n.
+
+**FACT 3 — the count-lane "spurious⟹saturated⟹safe" escape FAILS at the prize config size.** Verified
+"spurious⟹saturated" directly: across 400 non-saturated primes (n=8,12,16,24; r=2..4), ZERO gap-constrained
+non-coset (spurious) configs — the ONLY spurious case is n=16,r=3 at p=17 (deeply saturated, p/|Σ_r|=0.20).
+So the count IS char-0-clean WHEN `p > |Σ_r|`. **But the TRUE distinct-sumset `|Σ_r|` crosses `p=n^4` at a
+SMALL onset r ≈ β+1 (n=8→10, n=16→7, n=32→6, n=64→5 — roughly CONSTANT, slightly DECREASING toward β), while
+`r_count ≈ n/4` GROWS.** So at the prize config size `r_count`, `|Σ_{r_count}| ≫ p` by `~2^{Θ(n)}` — the prize
+prime is DEEPLY SATURATED there, and "spurious⟹saturated" no longer protects. Probes
+`probe_407_conn_c2_gap_vs_generic.py`, `probe_407_conn_c2_verdict.py`.
+
+**VERDICT (C2 answers).**
+- **(a)** Crossover `r* ≈ β` (for p~n^4, β=4): anomaly is EXACTLY 0 for r≤β−1, turns on at r=β. Tracks β.
+- **(b)** The count-lane worst-case depth `r_count = ρn/m` sits a factor `~n/(4β)` **ABOVE** the crossover r*
+  (and above the saturation onset, both ≈β). So the count lane is ABOVE the crossover ⟹ **it RE-HITS the wall.**
+  The directive's "single q-independent count bypasses BGK" is a SMALL-config-size artifact: the empirically
+  observed q-independence of `#bad` holds only while `r_count ≤` saturation-onset (small n), and breaks at the
+  prize config depth `r_count ≈ ρn`.
+- **(c)** NO finite low-degree resultant proves excess=0 at the prize config size: the norm/height certificate
+  `p ≤ L^{n/2}` (L=config length=ρn) is VACUOUS for all μ≥4 (`p=n^4 ≪ (ρn)^{n/2}`). The residual is exactly
+  the recognized char-`p` energy transfer `Excess(r) ≤ (2r−1)‼·n^r` at depth `r ≈ ρn` — the SAME BGK/L²→L^∞
+  wall the sup-norm lane terminates at (consistent with the live #407 7-technique sweep). The count lane and
+  the moment lane are one wall, confirmed by the crossover-vs-depth gap; the count lane does NOT bypass it.
+
+NET: this CLOSES the "count-lane bypass" hope as a route — it is refuted as a bypass (re-reduces to BGK), but
+the crossover r*≈β is a clean, correctly-located fact, and the new structural separation (moment-depth r* vs
+config-depth r_count, with the saturation onset pinned ≈β-constant while r_count grows ~n) sharpens WHY the
+two lanes coincide. Probes `probe_407_conn_c2_{crossover_scan,gap_vs_generic,verdict,crossover_decisive}.py`.

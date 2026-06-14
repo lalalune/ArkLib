@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Data.Finset.Card
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Surface 2: the restricted-large-values route over monomial frequencies does not escape (#407)
@@ -128,9 +129,16 @@ prize-window agreement cap) and there are many live windows (`≥ N`, the list s
 then the bad-scalar count is at least `N / m` — super-linear in `n` whenever `N = 2^{Θ(n)}` and
 `m` is polynomial.  No field-size / character-sum input is used. -/
 theorem badScalars_card_ge_of_many_windows (W : WindowCollision ι Scalar)
-    (m N : ℕ) (hm : 0 < m) (hfibre : ∀ c, (fibre W c).card ≤ m)
+    (m N : ℕ) (hfibre : ∀ c, (fibre W c).card ≤ m)
     (hN : N ≤ (liveWindows W).card) :
     N ≤ (badScalars W).card * m :=
   le_trans hN (windows_le_support_mul_maxFibre W m hfibre)
 
 end ProximityGap.Frontier.MonomialLineSpectrumNoEscape
+
+-- Axiom audit (must be only `propext, Classical.choice, Quot.sound`):
+#print axioms ProximityGap.Frontier.MonomialLineSpectrumNoEscape.badScalars_card_le_windows
+#print axioms
+  ProximityGap.Frontier.MonomialLineSpectrumNoEscape.windows_le_support_mul_maxFibre
+#print axioms
+  ProximityGap.Frontier.MonomialLineSpectrumNoEscape.badScalars_card_ge_of_many_windows
