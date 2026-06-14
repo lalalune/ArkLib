@@ -284,6 +284,125 @@ theorem dividedDifferencePow_card_add_two (hvs : Set.InjOn v s) (hs : 3 ≤ #s) 
   rw [hcc1, hcc2, hcard_pred]
   ring
 
+
+/-- **Bridge anchor, `b = #s + 3`: the fourth Schur value
+`h_4 = e_1⁴ − 3 e_1² e_2 + e_2² + 2 e_1 e_3 − e_4`.**
+The recurrence at `b = #s+3` leaves the top **four** summands (anchors `h_0=1`, `h_1=Σv_i`,
+`h_2` = `dividedDifferencePow_card_add_one`, `h_3` = `dividedDifferencePow_card_add_two`); with
+`e_2 = P.coeff (#s−2)`, `e_3 = −P.coeff (#s−3)`, `e_4 = P.coeff (#s−4)`,
+`P.coeff (#s−1) = −Σv_i` this collapses to
+`[s]x^{#s+3} = (Σv_i)⁴ − 3·(Σv_i)²·P.coeff (#s−2) + P.coeff (#s−2)² − 2·(Σv_i)·P.coeff (#s−3) − P.coeff (#s−4)`.
+Extends the character-sum-free Schur ledger to the sixth value `h_4`. -/
+theorem dividedDifferencePow_card_add_three (hvs : Set.InjOn v s) (hs : 4 ≤ #s) :
+    dividedDifferencePow s v (#s + 3)
+      = (∑ i ∈ s, v i) ^ 4
+        - 3 * (∑ i ∈ s, v i) ^ 2 * (∏ i ∈ s, (X - C (v i))).coeff (#s - 2)
+        + (∏ i ∈ s, (X - C (v i))).coeff (#s - 2) ^ 2
+        - 2 * (∑ i ∈ s, v i) * (∏ i ∈ s, (X - C (v i))).coeff (#s - 3)
+        - (∏ i ∈ s, (X - C (v i))).coeff (#s - 4) := by
+  classical
+  have hsne : s.Nonempty := Finset.card_pos.mp (by omega)
+  set P : F[X] := ∏ i ∈ s, (X - C (v i)) with hP
+  rw [dividedDifferencePow_recurrence (#s + 3) (by omega), ← hP]
+  have hidx : ∀ m, (#s + 3) - #s + m = 3 + m := fun m => by omega
+  simp only [hidx]
+  have hrw : (#s : ℕ) = (#s - 4) + 1 + 1 + 1 + 1 := by omega
+  conv_lhs => rw [hrw]
+  rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ]
+  -- low block vanishes
+  have hlow : ∀ m ∈ Finset.range (#s - 4),
+      P.coeff m * dividedDifferencePow s v (3 + m) = 0 := by
+    intro m hm
+    have : dividedDifferencePow s v (3 + m) = 0 := by
+      apply dividedDifferencePow_eq_zero_of_lt hvs
+      have := Finset.mem_range.mp hm; omega
+    rw [this, mul_zero]
+  rw [Finset.sum_eq_zero hlow, zero_add]
+  -- normalise the dd-indices to the anchors
+  have ha : (3 : ℕ) + (#s - 4) = #s - 1 := by omega
+  have hb : (3 : ℕ) + (#s - 4 + 1) = #s := by omega
+  have hc : (3 : ℕ) + (#s - 4 + 1 + 1) = #s + 1 := by omega
+  have hd : (3 : ℕ) + (#s - 4 + 1 + 1 + 1) = #s + 2 := by omega
+  rw [ha, hb, hc, hd, dividedDifferencePow_eq_one hvs hsne,
+      dividedDifferencePow_card_eq_sum hvs hsne,
+      dividedDifferencePow_card_add_one hvs (by omega),
+      dividedDifferencePow_card_add_two hvs (by omega), mul_one]
+  -- normalise the coeff-indices and use Vieta for P.coeff (#s-1)
+  have hcc1 : (#s - 4 + 1) = #s - 3 := by omega
+  have hcc2 : (#s - 4 + 1 + 1) = #s - 2 := by omega
+  have hcc3 : (#s - 4 + 1 + 1 + 1) = #s - 1 := by omega
+  have hcard_pred : P.coeff (#s - 1) = - ∑ i ∈ s, v i := by
+    have h := prod_X_sub_C_coeff_card_pred s v (Finset.card_pos.mpr hsne); simpa using h
+  rw [hcc1, hcc2, hcc3, hcard_pred]
+  ring
+
+
+/-- **`dividedDifferencePow` is invariant under relabeling the node set by an equivalence.**
+Reindexing the nodes by an `Equiv` `e : ι' ≃ ι` (transporting the value function to `v ∘ e`)
+leaves the divided difference of `x^b` unchanged: it is a symmetric function of the node values.
+Proof: unfold the sum, push the `Finset.map e.toEmbedding` through the outer `∑` (`Finset.sum_map`),
+through each inner `erase` (`Finset.map_erase`, using injectivity of the embedding) and inner `∏`
+(`Finset.prod_map`); the integrands match termwise since `(v ∘ e) i = v (e i)`. -/
+theorem dividedDifferencePow_reindex {ι' : Type*} [DecidableEq ι'] (e : ι' ≃ ι)
+    (s' : Finset ι') (b : ℕ) :
+    dividedDifferencePow (s'.map e.toEmbedding) v b = dividedDifferencePow s' (v ∘ e) b := by
+  unfold dividedDifferencePow
+  rw [Finset.sum_map]
+  refine Finset.sum_congr rfl (fun i _ => ?_)
+  simp only [Function.Embedding.coeFn_mk, Function.comp_apply]
+  congr 2
+  rw [show (e i) = e.toEmbedding i from rfl, ← Finset.map_erase, Finset.prod_map]
+  simp only [Function.Embedding.coeFn_mk]
+
+
+/-- **Local complete-homogeneous surrogate `schurH`.** Mathlib has no complete-homogeneous
+symmetric polynomial, so we define the sequence pinned by the *same* backward recurrence the
+divided differences obey: `schurH s v b` is `1` if `b = #s − 1`, `0` if `b < #s − 1`, and for
+`b ≥ #s` it is `− Σ_{m<#s} P.coeff m · schurH s v (b − #s + m)` (`P = ∏(X − v i)`). Indexing by
+the *raw monomial degree* `b` keeps the recurrence strictly backward (`b − #s + m < b` for
+`m < #s`), so this is a well-founded definition; the recursion is taken over `(range #s).attach`
+so each summand carries its membership proof `m < #s`, certifying the descent. -/
+noncomputable def schurH (s : Finset ι) (v : ι → F) : ℕ → F
+  | b =>
+    if _hlt : b < #s - 1 then 0
+    else if _heq : b = #s - 1 then 1
+    else
+      - ∑ m ∈ (range #s).attach, (∏ i ∈ s, (X - C (v i))).coeff m.1 *
+          schurH s v (b - #s + m.1)
+  decreasing_by
+    have hm : m.1 < #s := Finset.mem_range.mp m.2
+    omega
+
+/-- **The general Schur bridge (`schurH` form).** For every monomial degree `b` and nonempty
+node set `s`, the divided difference of `x^b` over `s` equals the local complete-homogeneous
+surrogate: `[s] x^b = schurH s v b`. Proved by strong induction on `b`: the three regimes of
+`schurH` are discharged by `dividedDifferencePow_eq_zero_of_lt` (`b < #s−1`),
+`dividedDifferencePow_eq_one` (`b = #s−1`), and `dividedDifferencePow_recurrence` (`b ≥ #s`,
+with the induction hypothesis applied at each strictly-smaller index `b − #s + m`). This is the
+full character-sum-free bridge: it turns the two-monomial bad-α criterion into the vanishing of
+a Schur value `schurH s v b = h_{b−#s+1}(v_s) = 0`. -/
+theorem dividedDifferencePow_eq_schurH (hvs : Set.InjOn v s) (hs : s.Nonempty) (b : ℕ) :
+    dividedDifferencePow s v b = schurH s v b := by
+  induction b using Nat.strong_induction_on with
+  | _ b ih =>
+    rw [schurH]
+    split_ifs with hlt heq
+    · exact dividedDifferencePow_eq_zero_of_lt hvs hlt
+    · subst heq; exact dividedDifferencePow_eq_one hvs hs
+    · have hb : #s ≤ b := by omega
+      rw [dividedDifferencePow_recurrence b hb]
+      have hattach : (∑ m ∈ (range #s).attach,
+            (∏ i ∈ s, (X - C (v i))).coeff m.1 * schurH s v (b - #s + m.1))
+          = ∑ m ∈ range #s, (∏ i ∈ s, (X - C (v i))).coeff m * schurH s v (b - #s + m) :=
+        Finset.sum_attach (range #s)
+          (fun m => (∏ i ∈ s, (X - C (v i))).coeff m * schurH s v (b - #s + m))
+      rw [hattach]
+      refine congrArg Neg.neg (Finset.sum_congr rfl fun m hm => ?_)
+      have hmlt : m < #s := Finset.mem_range.mp hm
+      have hlt2 : b - #s + m < b := by omega
+      rw [ih (b - #s + m) hlt2]
+
+
 end ProximityGap.SchurLagrange
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -295,3 +414,6 @@ end ProximityGap.SchurLagrange
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_recurrence
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_add_one
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_add_two
+#print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_add_three
+#print axioms ProximityGap.SchurLagrange.dividedDifferencePow_reindex
+#print axioms ProximityGap.SchurLagrange.dividedDifferencePow_eq_schurH

@@ -169,7 +169,136 @@ theorem antipodal_pair_sum_zero {m : ℕ} {ζ : L} (hζ : IsPrimitiveRoot ζ (2 
     ζ ^ a + ζ ^ (a + 2 ^ m) = 0 := by
   rw [pow_add, pow_half_eq_neg_one hζ, mul_neg_one, add_neg_cancel]
 
+
+/-- **Antipodal pairs cancel over a half-run** — the run-level lift of `antipodal_pair_sum_zero`.
+Summing the `2^m` antipodal pairs `ζ^{a+i} + ζ^{(a+i)+2^m}` over `i ∈ range (2^m)` gives `0`,
+since each summand is an antipodal pair and vanishes by `antipodal_pair_sum_zero hζ (a + i)`. -/
+theorem antipodal_run_sum_zero {m : ℕ} {ζ : L} (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1))) (a : ℕ) :
+    (∑ i ∈ Finset.range (2 ^ m), (ζ ^ (a + i) + ζ ^ (a + i + 2 ^ m))) = 0 := by
+  refine Finset.sum_eq_zero (fun i _ => ?_)
+  have h := antipodal_pair_sum_zero hζ (a + i)
+  -- `h : ζ ^ (a + i) + ζ ^ ((a + i) + 2 ^ m) = 0`; goal exponent `a + i + 2^m = (a+i) + 2^m`.
+  simpa using h
+
+/-- **Antipodal-closed sets vanish** — the structural form. For a set `A ⊆ range (2^(m+1))` of
+canonical residues closed under the antipodal involution `a ↦ (a + 2^m) % 2^(m+1)`, the sum
+`∑_{a ∈ A} ζ^a = 0`. Each antipodal pair `{a, g a}` contributes `ζ^a + ζ^{g a} = 0` by
+`antipodal_pair_sum_zero`, and `g` is a fixed-point-free involution on `range (2^(m+1))`. -/
+theorem antipodal_symmetric_sum_zero {m : ℕ} {ζ : L}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1))) (A : Finset ℕ)
+    (hAsub : A ⊆ Finset.range (2 ^ (m + 1)))
+    (hA : ∀ a ∈ A, (a + 2 ^ m) % 2 ^ (m + 1) ∈ A) :
+    (∑ a ∈ A, ζ ^ a) = 0 := by
+  -- `g a = (a + 2^m) % 2^(m+1)`.  `ζ^{g a} = ζ^{a + 2^m}` for all `a` (order `2^(m+1)`).
+  -- Generic fact: `ζ ^ (k % 2^(m+1)) = ζ ^ k` since `ζ ^ 2^(m+1) = 1`.
+  have hpowmod : ∀ k : ℕ, ζ ^ (k % 2 ^ (m + 1)) = ζ ^ k := by
+    intro k
+    set n := 2 ^ (m + 1) with hn
+    conv_rhs => rw [← Nat.mod_add_div k n]
+    rw [pow_add]
+    have hone : ζ ^ (n * (k / n)) = 1 := by
+      rw [pow_mul]
+      rw [show ζ ^ n = 1 from by rw [hn]; exact hζ.pow_eq_one]
+      rw [one_pow]
+    rw [hone, mul_one]
+  have hmod : ∀ a : ℕ, ζ ^ ((a + 2 ^ m) % 2 ^ (m + 1)) = ζ ^ (a + 2 ^ m) := fun a => hpowmod _
+  -- `2^m < 2^(m+1)`, and `2^m ≠ 0`.
+  have hlt : (2 : ℕ) ^ m < 2 ^ (m + 1) := by
+    have h2 : (1 : ℕ) < 2 := one_lt_two
+    have := Nat.pow_lt_pow_right h2 (Nat.lt_succ_self m)
+    simpa using this
+  have hpos : 0 < (2 : ℕ) ^ (m + 1) := by positivity
+  refine Finset.sum_involution (fun a _ => (a + 2 ^ m) % 2 ^ (m + 1)) ?_ ?_ ?_ ?_
+  · -- pairing cancels: `ζ^a + ζ^{g a} = 0`.
+    intro a ha
+    rw [hmod a]
+    exact antipodal_pair_sum_zero hζ a
+  · -- `g a ≠ a` for `a ∈ A` (since `a < 2^(m+1)` and adding `2^m` mod changes the residue).
+    intro a ha _ hcontra
+    simp only [] at hcontra
+    -- `hcontra : (a + 2^m) % 2^(m+1) = a`.  `a < 2^(m+1)`, so `a % 2^(m+1) = a`.
+    have halt : a < 2 ^ (m + 1) := Finset.mem_range.mp (hAsub ha)
+    have ha' : a % 2 ^ (m + 1) = a := Nat.mod_eq_of_lt halt
+    -- congruence: `(a + 2^m) ≡ a [MOD 2^(m+1)]` ⟹ `2^m ≡ 0 [MOD 2^(m+1)]`, impossible.
+    have hcong : (a + 2 ^ m) ≡ a [MOD 2 ^ (m + 1)] := by
+      unfold Nat.ModEq; rw [hcontra, ha']
+    have hcong0 : (a + 2 ^ m) ≡ (a + 0) [MOD 2 ^ (m + 1)] := by simpa using hcong
+    have hz : (2 : ℕ) ^ m ≡ 0 [MOD 2 ^ (m + 1)] := (Nat.ModEq.add_left_cancel' a hcong0)
+    have : (2 : ℕ) ^ m % 2 ^ (m + 1) = 0 := by simpa [Nat.ModEq, Nat.zero_mod] using hz
+    rw [Nat.mod_eq_of_lt hlt] at this
+    exact (pow_ne_zero m (by norm_num : (2 : ℕ) ≠ 0)) this
+  · -- membership: `g` maps `A` into `A`.
+    intro a ha
+    exact hA a ha
+  · -- involutivity: `g (g a) = a` for `a ∈ A` (uses `a < 2^(m+1)`).
+    intro a ha
+    simp only []
+    have halt : a < 2 ^ (m + 1) := Finset.mem_range.mp (hAsub ha)
+    -- `g (g a) ≡ (a + 2^m) + 2^m = a + 2^(m+1) ≡ a [MOD 2^(m+1)]`, and `g(g a) < 2^(m+1)`.
+    set n := 2 ^ (m + 1) with hn
+    -- congruence `(a + 2^m) % n + 2^m ≡ a [MOD n]`.
+    have e1 : ((a + 2 ^ m) % n + 2 ^ m) ≡ ((a + 2 ^ m) + 2 ^ m) [MOD n] :=
+      (Nat.mod_modEq (a + 2 ^ m) n).add_right (2 ^ m)
+    have e2 : (a + 2 ^ m) + 2 ^ m = a + n := by
+      rw [hn, pow_succ]; ring
+    have e3 : ((a + 2 ^ m) % n + 2 ^ m) ≡ a [MOD n] := by
+      calc ((a + 2 ^ m) % n + 2 ^ m) ≡ ((a + 2 ^ m) + 2 ^ m) [MOD n] := e1
+        _ = a + n := e2
+        _ ≡ a + 0 [MOD n] := (Nat.modEq_zero_iff_dvd.mpr (dvd_refl n)).add_left a
+        _ = a := by rw [add_zero]
+    -- both sides `< n`, so the `[MOD n]` equality is an equality.
+    have hlhs : ((a + 2 ^ m) % n + 2 ^ m) % n < n := Nat.mod_lt _ (by rw [hn]; positivity)
+    have := e3
+    unfold Nat.ModEq at this
+    rw [Nat.mod_eq_of_lt halt] at this
+    exact this
+
+
+/-- **The full-group sum of all `n`-th roots vanishes** (`n = 2^{m+1}`).
+
+The base-ledger member: the full geometric sum `∑_{i < 2^{m+1}} ζ^i` over a primitive
+`2^{m+1}`-th root of unity collapses to `0`. Indeed `(ζ - 1) · ∑ = ζ^{2^{m+1}} - 1 = 0` by
+the telescoping geometric identity (`mul_geom_sum`) and `ζ^{2^{m+1}} = 1`
+(`hζ.pow_eq_one`); cancel the nonzero factor `ζ - 1` (since `ζ ≠ 1`, as `1 < 2^{m+1}`).
+
+Hence the **full-group subset sum is trivially non-bad** — it contributes no odd-prime
+candidate to the Half-Sum bad-prime ledger. -/
+theorem full_group_sum_eq_zero {m : ℕ} {ζ : L} (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1))) :
+    (∑ i ∈ Finset.range (2 ^ (m + 1)), ζ ^ i) = 0 := by
+  have h1lt : 1 < 2 ^ (m + 1) := by
+    have : (2:ℕ) ^ (m + 1) ≥ 2 ^ 1 := Nat.pow_le_pow_right (by norm_num) (by omega)
+    omega
+  have hne : ζ - 1 ≠ 0 := sub_ne_zero.mpr (hζ.ne_one h1lt)
+  have hfac : (ζ - 1) * (∑ i ∈ Finset.range (2 ^ (m + 1)), ζ ^ i) = 0 := by
+    rw [mul_geom_sum, hζ.pow_eq_one]; ring
+  exact (mul_eq_zero.mp hfac).resolve_left hne
+
+
+/-- **Galois/rotation symmetry of the half-sum norm.** For `k` odd, `ζ^k` is again a
+primitive `2^{m+1}`-th root of unity (since `gcd(k, 2^{m+1}) = 1` because `2^{m+1}` is a
+power of 2 and `k` is odd), so the power-rotated half-sum `∑_{i<2^m} (ζ^k)^i` has the **same**
+closed-form norm `2^{2^m-1}` as the all-ones half-sum. This extends the Half-Sum base ledger
+across the whole Galois `(ℤ/2^{m+1})^×`-orbit of generators: every odd power `ζ^k` of a fixed
+primitive root yields the identical pure-power-of-2 norm, hence contributes **no** odd-prime
+bad-prime candidate, uniformly in `m`. -/
+theorem norm_halfSum_pow_eq {m : ℕ} (hm : 1 ≤ m) {ζ : L} (k : ℕ) (hk : Odd k)
+    [NeZero ((2:ℕ)^(m+1))] (hζ : IsPrimitiveRoot ζ ((2:ℕ)^(m+1)))
+    [IsCyclotomicExtension {(2:ℕ)^(m+1)} K L] (hirr : Irreducible (cyclotomic ((2:ℕ)^(m+1)) K)) :
+    Algebra.norm K (∑ i ∈ range (2 ^ m), (ζ ^ k) ^ i) = (2 : K) ^ (2 ^ m - 1) := by
+  have hcop : Nat.Coprime k ((2:ℕ)^(m+1)) := by
+    rw [Nat.coprime_pow_right_iff (by omega)]
+    have h2 : ¬ (2 ∣ k) := by
+      rw [Nat.two_dvd_ne_zero]; exact Nat.odd_iff.mp hk
+    exact (Nat.Prime.coprime_iff_not_dvd Nat.prime_two |>.mpr h2).symm
+  have hζk : IsPrimitiveRoot (ζ ^ k) ((2:ℕ)^(m+1)) := hζ.pow_of_coprime k hcop
+  exact norm_halfSum_eq hm hζk hirr
+
+
 end ArkLib.ProximityGap.HalfSumNorm
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_halfSum_eq
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_rotated_halfSum_eq
 #print axioms ArkLib.ProximityGap.HalfSumNorm.antipodal_pair_sum_zero
+#print axioms ArkLib.ProximityGap.HalfSumNorm.antipodal_run_sum_zero
+#print axioms ArkLib.ProximityGap.HalfSumNorm.antipodal_symmetric_sum_zero
+#print axioms ArkLib.ProximityGap.HalfSumNorm.full_group_sum_eq_zero
+#print axioms ArkLib.ProximityGap.HalfSumNorm.norm_halfSum_pow_eq
