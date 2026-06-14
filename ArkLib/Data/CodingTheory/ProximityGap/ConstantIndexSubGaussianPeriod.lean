@@ -174,6 +174,84 @@ theorem worstCaseIncompleteSumBound_of_energyAnchor {ψ : AddChar F ℂ} (hψ : 
         ^ ((r : ℝ)⁻¹)) :=
   worstCaseIncompleteSumBound_of_energyBound hψ hr h
 
+/-! ## Deep centered-moment residual -/
+
+/--
+The nontrivial `2r`-th moment of the Gaussian periods.
+
+This is the `Σ_{b≠0} |η_b|^{2r}` side of the latest #407 deep-moment formulation.  The issue
+comment writes the centered residual as `R_r`; this finite sum is the deployed period-side object
+whose expected size is `≈ q · K^r · r! · |G|^r` at the decisive depth `r ≈ log q`.
+-/
+noncomputable def nontrivialPeriodMoment (ψ : AddChar F ℂ) (G : Finset F) (r : ℕ) : ℝ :=
+  ∑ b ∈ (Finset.univ.filter fun b : F => b ≠ 0), ‖eta ψ G b‖ ^ (2 * r)
+
+/--
+The sharpened deep-moment residual from the latest #407 discussion.
+
+At the decisive moment depth `r ≈ log |F|`, prove the nontrivial period moment is bounded by
+`q · K^r · r! · |G|^r`.  This is intentionally a `Prop`: it is the remaining analytic/arithmetic
+input, not asserted here.
+-/
+def CenteredDeepMomentBound (ψ : AddChar F ℂ) (G : Finset F) (r : ℕ) (K : ℝ) : Prop :=
+  nontrivialPeriodMoment ψ G r
+    ≤ (Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r
+
+/-- A centered deep-moment bound controls every nonzero period at the same `2r`-th power. -/
+theorem period_pow_le_of_centeredDeepMomentBound
+    {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K : ℝ} {b : F}
+    (hb : b ≠ 0) (h : CenteredDeepMomentBound ψ G r K) :
+    ‖eta ψ G b‖ ^ (2 * r)
+      ≤ (Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r := by
+  classical
+  have hmem : b ∈ (Finset.univ.filter fun b : F => b ≠ 0) := by
+    simp [hb]
+  have hterm_le : ‖eta ψ G b‖ ^ (2 * r) ≤ nontrivialPeriodMoment ψ G r := by
+    simpa [nontrivialPeriodMoment] using
+      (Finset.single_le_sum
+        (s := Finset.univ.filter fun b : F => b ≠ 0)
+        (f := fun b : F => ‖eta ψ G b‖ ^ (2 * r))
+        (fun _ _ => pow_nonneg (norm_nonneg _) _) hmem)
+  exact hterm_le.trans h
+
+/--
+Centered deep moments discharge the in-tree per-frequency residual.
+
+This is the direct consumer for the latest #407 centered formulation: a bound on the nonzero
+period moment at depth `r ≥ 1` yields `WorstCaseIncompleteSumBound` at the `r`-th-root scale
+`(q · K^r · r! · |G|^r)^(1/r)`.  The centered moment hypothesis is still the open input.
+-/
+theorem worstCaseIncompleteSumBound_of_centeredDeepMomentBound
+    {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K : ℝ}
+    (hr : 1 ≤ r) (hK : 0 ≤ K) (h : CenteredDeepMomentBound ψ G r K) :
+    WorstCaseIncompleteSumBound ψ G
+      (((Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r)
+        ^ ((r : ℝ)⁻¹)) := by
+  intro b hb
+  set X : ℝ := (Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r
+    with hX
+  have hXnonneg : 0 ≤ X := by
+    rw [hX]
+    positivity
+  have hpow : (‖eta ψ G b‖ ^ 2) ^ r ≤ X := by
+    rw [← pow_mul]
+    exact period_pow_le_of_centeredDeepMomentBound hb h
+  calc ‖eta ψ G b‖ ^ 2
+      = ((‖eta ψ G b‖ ^ 2) ^ r) ^ ((r : ℝ)⁻¹) :=
+        (Real.pow_rpow_inv_natCast (sq_nonneg _) (Nat.one_le_iff_ne_zero.mp hr)).symm
+    _ ≤ X ^ ((r : ℝ)⁻¹) := Real.rpow_le_rpow (by positivity) hpow (by positivity)
+
+/-- A single nonzero period above the centered-moment budget refutes that deep-moment residual. -/
+theorem not_centeredDeepMomentBound_of_period_pow_gt
+    {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K : ℝ} {b : F}
+    (hb : b ≠ 0)
+    (hbad :
+      (Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r
+        < ‖eta ψ G b‖ ^ (2 * r)) :
+    ¬ CenteredDeepMomentBound ψ G r K := by
+  intro h
+  exact not_lt_of_ge (period_pow_le_of_centeredDeepMomentBound hb h) hbad
+
 /-! ## Refutation hook -/
 
 /-- A measured nonzero period above the sub-Gaussian threshold refutes the conjecture at that
@@ -193,4 +271,11 @@ end ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod
 #print axioms ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.addEnergy_div_le_of_subGaussian
 #print axioms
   ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.worstCaseIncompleteSumBound_of_energyAnchor
+#print axioms
+  ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.period_pow_le_of_centeredDeepMomentBound
+#print axioms
+  ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod
+    .worstCaseIncompleteSumBound_of_centeredDeepMomentBound
+#print axioms
+  ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.not_centeredDeepMomentBound_of_period_pow_gt
 #print axioms ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.not_subGaussian_of_period_gt

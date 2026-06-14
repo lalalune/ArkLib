@@ -447,3 +447,25 @@ antipodal reduction (this session) restates it as: count short bounded-coeff pol
 - [Bur-GAP25] Burgess-type character sum estimates over generalized arithmetic progressions of rank 2 (arXiv 2509.07765, Sep 2025). {0..k-1,a,b} = rank-2 GAP; candidate direct I(δ) bound.
 - [BG-small24] Exponential sums over small subgroups, revisited (arXiv 2401.04756, 2024). Best explicit small-subgroup BGK exponents.
 - [Shp-open] Shparlinski — Open Problems on Exponential and Character Sums (web.maths.unsw.edu.au/~igorshparlinski/CharSumProjects.pdf). Confirms explicit BGK is OPEN.
+
+## 2026-06-14 (f): recent LD-capacity breakthroughs + improved subgroup Gauss sums — why they MISS the prize
+
+The 2022-2024 RS-list-decoding-capacity results all certify capacity via **higher-order MDS /
+MDS(ℓ) / GM-MDS genericity**, which the smooth-domain prize code `μ_n` PROVABLY LACKS
+(`HigherOrderMDSOrderThreeFail.lean`; `MuTwoPowDerandRefutation.lean:272` "capacity machinery
+fails on μ_8"). So they do NOT transfer to the explicit `s=1` smooth prize — both grand
+challenges (MCA + LD) collapse to the SAME obstruction: explicit smooth structure where
+genericity fails ⟹ the subgroup character-sum bound. 5 papers:
+
+- **G1** arXiv:2206.05256 Brakensiek–Gopi–Makam "Generic Reed–Solomon Codes Achieve List-decoding
+  Capacity" — resolves Shangguan–Tamo; the MDS(ℓ) route. The prize is the NON-generic case it
+  excludes. DOWNLOAD.
+- **G2** arXiv:2304.09445 "Random RS Codes Achieve List-Decoding Capacity, Linear-Sized Alphabets".
+- **G3** arXiv:2304.01403 "Randomly Punctured RS Codes Achieve LD Capacity, Poly-Size Alphabets" —
+  the prize's `μ_n` is EXPLICIT not randomly-punctured (the gap). DOWNLOAD.
+- **G4** arXiv:2401.15034 "Explicit Subcodes of RS that Efficiently Achieve LD Capacity" — closest
+  to explicit; check whether its construction is smooth-domain-compatible or needs subcoding the
+  prize forbids. DOWNLOAD.
+- **G5** arXiv:1712.00761 "Improved bounds on Gauss sums in arbitrary finite fields" — subgroup
+  Gauss sums to `q^{1/2+1/68}` (improves Zhelezov); directly the MCA object, small power-saving
+  above √q. DOWNLOAD.
