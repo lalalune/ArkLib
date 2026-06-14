@@ -135,7 +135,7 @@ def main():
                     tag = "R1-OK" if not excess else "*** R1 REFUTED ***"
                     print(f"  (a*,b*)=({astar},{bstar}) a={a}: mono={bc_mono} trials={trials} "
                           f"ties={ties} excess={len(excess)} {tag}", flush=True)
-                    for bc, u0c, u1c in sorted(excess, reverse=True)[:3]:
+                    for bc, u0c, u1c in sorted(excess, key=lambda t: -t[0])[:5]:
                         print(f"      EXCESS bc={bc}: U0={u0c} U1={u1c}", flush=True)
 
 if __name__ == "__main__":

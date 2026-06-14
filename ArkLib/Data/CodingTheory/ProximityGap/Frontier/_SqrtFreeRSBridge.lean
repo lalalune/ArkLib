@@ -27,17 +27,17 @@ worst-case Johnson √ (tight for general codes, [Gur02; GS03]); the open questi
 
 For **plain RS on a smooth domain** there is an *exact* far-line incidence identity that the generic
 proof has no access to. The far monomial direction `u₁ = X^k` is **nowhere zero** on `μ_n`
-(smoothness) and the line `u₀ + γ·X^k` meeting a degree-`<k` codeword on a coordinate set `S` is, by
-the **+1-degree lift** (`MonomialLineListBridge.badScalars_monomial_eq_degreeLTSucc`), the *same* as a
-degree-`<k+1` codeword (with `X^k`-coefficient `−γ`) meeting `u₀` on `S` — **at the same radius `δ`**.
-So:
+(smoothness) and the line `u₀ + γ·X^k` meeting a degree-`<k` codeword on a coordinate set `S` is,
+by the **+1-degree lift** (`MonomialLineListBridge.badScalars_monomial_eq_degreeLTSucc`), the
+*same* as a degree-`<k+1` codeword (with `X^k`-coefficient `−γ`) meeting `u₀` on `S` — **at the
+same radius `δ`**. So:
 
 * **No radius map.** RS[k] bad-count at radius `δ` ↔ RS[k+1] agreement-list at radius `δ`. The
   Johnson transform `δ ↦ 1−√(1−δ)` is *gone* — both sides use the identical `δ`.
 * **Linear, not L².** The fiber count (`LineCodewordIncidence.line_codeword_incidence_le`: a
-  nowhere-zero direction meets a *fixed* word on `≥ w` coords for at most `⌊n/w⌋` scalars `γ`) bounds
-  the incidence by `⌊n/w⌋ · L` — **linear** in the list size, not `L²`. The Cauchy–Schwarz pairwise
-  step is replaced by a deterministic per-codeword fiber partition of `Fin n`.
+  nowhere-zero direction meets a *fixed* word on `≥ w` coords for at most `⌊n/w⌋` scalars `γ`)
+  bounds the incidence by `⌊n/w⌋ · L` — **linear** in the list size, not `L²`. The Cauchy–Schwarz
+  pairwise step is replaced by a deterministic per-codeword fiber partition of `Fin n`.
 
 Hence the in-tree `epsMCA_ge_far_incidence` is *literally* the RS-special, √-removed avatar of ABF
 Thm 5.1: it equates `ε_mca` with `#bad/q` exactly (`= I_far/q`), and the monomial bridge bounds
