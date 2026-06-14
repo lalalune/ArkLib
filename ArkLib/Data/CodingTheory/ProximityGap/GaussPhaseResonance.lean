@@ -32,13 +32,20 @@ is **exactly** `R ≤ sqrt(2 m log m)` — equivalently `T r ≤ (2 m log m)^r` 
 states that as the named open `Prop` `ResonanceConjecture` and proves the elementary facts. The deep
 inequality (`r ≍ log m`) is the recognized open Gauss-period / BGK content; it is NOT proved here.
 
-## What "Gauss is reducible" gives (recorded, not used here)
+## What "Gauss is reducible" gives — and why it does NOT collapse the wall (settled)
 
-For composite index `m = q₁ q₂` the Hasse–Davenport relation `tau(chi^{q₂}) tau(chi^{q₁}) = J · tau(chi^{q₁+q₂})`
-(verified exactly) factors the order-`m` Gauss sum into prime-order pieces, reducing the `m` phases to
-`O(sum qᵢ + log² m)` fundamental phases. It does NOT cleanly tensorize the resonance (the Jacobi phase
-`J/sqrt p` couples the factors; measured `M_m / (M_{q₁} M_{q₂}/sqrt p) ≈ 1.3–1.4`), but it is a genuine
-dimensional reduction of the free variable. See `scripts/probes/probe_gauss_reducibility_tensor.py`.
+The Gauss sum IS reducible: Hasse–Davenport `tau(chi^{q₂}) tau(chi^{q₁}) = J · tau(chi^{q₁+q₂})` (verified
+exactly) factors composite-order Gauss sums, and down the 2-adic tower it is an exact linear relation on the
+unit phases `theta_a = arg(u_a)`. But the reduction was QUANTIFIED on the issue and does not break the prize:
+building the full HD + conjugation relation system, the **free phase DOF is exactly `n/4`** (= the
+Katz/Deligne primitive-Gauss-sum monodromy count `φ(2^μ)/2`), residual `Θ(n)` — NOT `O(log n)`. So HD strips
+the determined `3n/4` of the structure but the irreducible `n/4` free phases are precisely the object whose
+joint concentration IS the BGK wall (`√(n/4 · log) = Θ(√(n log))`). HD + reflection are the complete
+archimedean relation set (Katz ceiling); there is no further exact reduction. The earlier per-prime
+"multi-factor favorability" of the resonance was an `M`-saturation artifact at small `n` (corrected;
+`scripts/probes/probe_resonance_freeness_unsaturated.py`). The honest takeaway for `T_r`: it is the
+`sqrt p`-free, manifestly-nonnegative form of that same `n/4`-DOF concentration object — a clean restatement
+of the wall, not a removal of it.
 
 Axiom-clean (`propext, Classical.choice, Quot.sound`). Issue #407.
 -/
