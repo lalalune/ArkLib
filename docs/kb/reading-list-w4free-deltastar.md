@@ -46,6 +46,21 @@ Companion survey: **Arnon–Boneh–Fenzi, "Open Problems in List Decoding and C
   high-priority read for the #407 upper-bracket / Kambire edge formalization path, but it is still a
   near-capacity failure construction rather than a closed delta-star pin for the smooth dyadic
   prize regime.
+- **Chen Yuan & Ruiqi Zhu, "A Syndrome-Space Approach to Proximity Gaps and Correlated Agreement
+  for Random Linear Codes"** — arXiv:2605.07595. Gives a direct parity-check / syndrome-space proof
+  of proximity gaps and correlated agreement for random linear codes, conceptually separating the
+  mechanism from list decoding in the random-code ensemble. Watch for reusable syndrome-space
+  witness reductions, but this does not settle fixed smooth Reed--Solomon domains.
+- **Fernando Granha Jeronimo, Lenny Liu & Pranav Rajpal, "Optimal Proximity Gap for Folded
+  Reed--Solomon Codes via Subspace Designs"** — arXiv:2601.10047. Proves up-to-capacity proximity
+  gaps for folded RS/subspace-design codes via line stitching, pruning, and affine lifting. Useful
+  for transfer machinery and for separating folded-code capacity mechanisms from the fixed smooth
+  RS delta-star obstruction.
+- **"Explicit Constant-Alphabet Subspace Design Codes"** — arXiv:2604.15218. Relevant to the
+  subspace-design / curve-decodability transfer path: it records that subspace-design structure
+  implies curve decoding and hence proximity-gap/correlated-agreement consequences in the
+  folded/subspace-design world. This is a transfer input, not a plain fixed-domain RS delta-star
+  closure.
 
 ## Honest resolution (W4-free question)
 - The imprimitive 2-power-tower monomial lines fold SELF-SIMILARLY W4-free (even/odd code split,

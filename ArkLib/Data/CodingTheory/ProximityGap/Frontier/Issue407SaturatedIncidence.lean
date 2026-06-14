@@ -130,6 +130,51 @@ integer version of "`δ*` is the inverse saturated-incidence profile".  It says:
 def IsSaturatedThreshold (Iinf : IncidenceProfile) (B W wStar : ℕ) : Prop :=
   wStar ≤ W ∧ Iinf wStar ≤ B ∧ ∀ w, w ≤ W → wStar < w → B < Iinf w
 
+/--
+`wStar` is the largest good agreement level through `W`.
+
+This is the operational inverse-profile form: agreement levels are good exactly while the incidence
+count is within the bad-scalar budget, and `wStar` is the maximal in-window level satisfying that
+budget.
+-/
+def IsMaxGoodAgreement (I : IncidenceProfile) (B W wStar : ℕ) : Prop :=
+  wStar ≤ W ∧ I wStar ≤ B ∧ ∀ w, w ≤ W → I w ≤ B → w ≤ wStar
+
+/-- The saturated-threshold certificate is equivalent to saying that `wStar` is the largest
+good agreement level through the finite window. -/
+theorem isSaturatedThreshold_iff_isMaxGoodAgreement
+    {I : IncidenceProfile} {B W wStar : ℕ} :
+    IsSaturatedThreshold I B W wStar ↔ IsMaxGoodAgreement I B W wStar := by
+  constructor
+  · intro hthr
+    refine ⟨hthr.1, hthr.2.1, ?_⟩
+    intro w hw hgood
+    by_contra hnot
+    have hlt : wStar < w := Nat.lt_of_not_ge hnot
+    exact not_lt_of_ge hgood (hthr.2.2 w hw hlt)
+  · intro hmax
+    refine ⟨hmax.1, hmax.2.1, ?_⟩
+    intro w hw hlt
+    by_contra hnot
+    have hgood : I w ≤ B := Nat.le_of_not_gt hnot
+    have hwle : w ≤ wStar := hmax.2.2 w hw hgood
+    exact not_lt_of_ge hwle hlt
+
+/-- A maximal-good certificate can be used wherever the saturated-threshold certificate is
+expected. -/
+theorem saturatedThreshold_of_isMaxGoodAgreement
+    {I : IncidenceProfile} {B W wStar : ℕ}
+    (hmax : IsMaxGoodAgreement I B W wStar) :
+    IsSaturatedThreshold I B W wStar :=
+  isSaturatedThreshold_iff_isMaxGoodAgreement.2 hmax
+
+/-- A saturated-threshold certificate gives the maximal-good inverse-profile formulation. -/
+theorem isMaxGoodAgreement_of_saturatedThreshold
+    {I : IncidenceProfile} {B W wStar : ℕ}
+    (hthr : IsSaturatedThreshold I B W wStar) :
+    IsMaxGoodAgreement I B W wStar :=
+  isSaturatedThreshold_iff_isMaxGoodAgreement.1 hthr
+
 /-- The same finite threshold certificate, packaged with its radius value. This
 does not add any mathematical assumption; it only records that the radius named
 by the certificate is `1 - wStar/n`. -/
@@ -147,6 +192,15 @@ theorem actualThreshold_of_saturatedThreshold {I Iinf : IncidenceProfile} {B W w
   · simpa [hsat wStar hthr.1] using hthr.2.1
   · intro w hw hlt
     simpa [hsat w hw] using hthr.2.2 w hw hlt
+
+/-- Saturation transports the maximal-good inverse-profile certificate to the actual profile. -/
+theorem actualMaxGoodAgreement_of_saturatedMaxGoodAgreement
+    {I Iinf : IncidenceProfile} {B W wStar : ℕ}
+    (hsat : SaturatedThrough I Iinf W)
+    (hmax : IsMaxGoodAgreement Iinf B W wStar) :
+    IsMaxGoodAgreement I B W wStar :=
+  isMaxGoodAgreement_of_saturatedThreshold <|
+    actualThreshold_of_saturatedThreshold hsat (saturatedThreshold_of_isMaxGoodAgreement hmax)
 
 /-- Radius-packaged version of `actualThreshold_of_saturatedThreshold`: once the
 saturated profile is proved equal to the actual profile through the relevant
@@ -329,6 +383,94 @@ theorem badReduction_of_profile_ne
   by_contra hnot
   exact hne (hfaith w hw hnot)
 
+/-! ## Finite bad-prime gate -/
+
+/--
+A deployed characteristic-`p` profile family.  `Ip p w` is the deployed incidence count at
+agreement level `w` in characteristic/field parameter `p`.
+-/
+abbrev PrimeIndexedProfile := ℕ → IncidenceProfile
+
+/--
+Bad reduction indexed by the deployed prime/field parameter.  `Bad p w` means that at agreement
+level `w`, characteristic `p` may fail to match the characteristic-zero complete-homogeneous
+profile because the eliminant/discriminant/denominator has bad reduction.
+-/
+abbrev PrimeBadReductionProfile := ℕ → BadReductionProfile
+
+/-- No bad reduction occurs for a fixed deployed prime through a finite agreement window. -/
+def NoBadReductionForPrimeThrough
+    (Bad : PrimeBadReductionProfile) (p W : ℕ) : Prop :=
+  NoBadReductionThrough (Bad p) W
+
+/--
+A finite bad-prime certificate through a finite agreement window: every prime/field parameter
+outside `badPrimes` has no bad reduction through `W`.
+
+This is the profile-level form of the latest #407 localization.  The remaining hard arithmetic
+task is to produce such a finite set from the eliminant denominator and show the deployed field
+parameter is not in it.
+-/
+def BadPrimesCoverThrough
+    (Bad : PrimeBadReductionProfile) (badPrimes : Finset ℕ) (W : ℕ) : Prop :=
+  ∀ p, p ∉ badPrimes → NoBadReductionForPrimeThrough Bad p W
+
+/-- Outside a finite bad-prime certificate, deployed and characteristic-zero profiles saturate. -/
+theorem saturatedThrough_of_prime_notMem_badPrimes
+    {Ip : PrimeIndexedProfile} {I0 : IncidenceProfile}
+    {Bad : PrimeBadReductionProfile} {badPrimes : Finset ℕ} {p W : ℕ}
+    (hfaith : ∀ p, FaithfulOutsideBadReduction (Ip p) I0 (Bad p) W)
+    (hcover : BadPrimesCoverThrough Bad badPrimes W)
+    (hp : p ∉ badPrimes) :
+    SaturatedThrough (Ip p) I0 W := by
+  exact saturatedThrough_of_faithfulOutsideBadReduction (hfaith p) (hcover p hp)
+
+/--
+Finite bad-prime consumer for the deployed threshold.  A characteristic-zero threshold transfers
+to the deployed profile for any prime/field parameter outside the finite bad-prime certificate.
+-/
+theorem deployedThreshold_of_charZeroThreshold_prime_notMem_badPrimes
+    {Ip : PrimeIndexedProfile} {I0 : IncidenceProfile}
+    {Bad : PrimeBadReductionProfile} {badPrimes : Finset ℕ} {p B W wStar : ℕ}
+    (hfaith : ∀ p, FaithfulOutsideBadReduction (Ip p) I0 (Bad p) W)
+    (hcover : BadPrimesCoverThrough Bad badPrimes W)
+    (hp : p ∉ badPrimes)
+    (hthr : IsSaturatedThreshold I0 B W wStar) :
+    wStar ≤ W ∧ Ip p wStar ≤ B ∧ ∀ w, w ≤ W → wStar < w → B < Ip p w :=
+  actualThreshold_of_saturatedThreshold
+    (saturatedThrough_of_prime_notMem_badPrimes hfaith hcover hp) hthr
+
+/--
+Finite bad-prime consumer in the inverse-profile form.  Outside the finite bad-prime set, a
+characteristic-zero largest-good certificate for the complete-homogeneous profile is also the
+deployed largest-good certificate.
+-/
+theorem deployedMaxGoodAgreement_of_charZeroMaxGood_prime_notMem_badPrimes
+    {Ip : PrimeIndexedProfile} {I0 : IncidenceProfile}
+    {Bad : PrimeBadReductionProfile} {badPrimes : Finset ℕ} {p B W wStar : ℕ}
+    (hfaith : ∀ p, FaithfulOutsideBadReduction (Ip p) I0 (Bad p) W)
+    (hcover : BadPrimesCoverThrough Bad badPrimes W)
+    (hp : p ∉ badPrimes)
+    (hmax : IsMaxGoodAgreement I0 B W wStar) :
+    IsMaxGoodAgreement (Ip p) B W wStar :=
+  actualMaxGoodAgreement_of_saturatedMaxGoodAgreement
+    (saturatedThrough_of_prime_notMem_badPrimes hfaith hcover hp) hmax
+
+/--
+Refutation hook for a proposed finite bad-prime certificate.  If an outside prime has a
+profile mismatch in the certified window, then it must in fact belong to the finite bad-prime set.
+-/
+theorem badPrime_mem_of_profile_ne
+    {Ip : PrimeIndexedProfile} {I0 : IncidenceProfile}
+    {Bad : PrimeBadReductionProfile} {badPrimes : Finset ℕ} {p W w : ℕ}
+    (hfaith : ∀ p, FaithfulOutsideBadReduction (Ip p) I0 (Bad p) W)
+    (hcover : BadPrimesCoverThrough Bad badPrimes W)
+    (hw : w ≤ W) (hne : Ip p w ≠ I0 w) :
+    p ∈ badPrimes := by
+  by_contra hp
+  have hno : ¬ Bad p w := hcover p hp w hw
+  exact hne (hfaith p w hw hno)
+
 /-- The scorecard used for the current #407 survivor.  A score below `9` is a
 machine-readable warning that the item is not a claimed closure of the prize. -/
 structure ConjectureScore where
@@ -357,7 +499,11 @@ end ProximityGap.Frontier.Issue407
 #print axioms ProximityGap.Frontier.Issue407.goodAgreementSet_eq_of_saturatedThrough
 #print axioms ProximityGap.Frontier.Issue407.not_saturatedThrough_of_profile_ne
 #print axioms ProximityGap.Frontier.Issue407.not_saturatedThrough_of_false_good
+#print axioms ProximityGap.Frontier.Issue407.isSaturatedThreshold_iff_isMaxGoodAgreement
+#print axioms ProximityGap.Frontier.Issue407.saturatedThreshold_of_isMaxGoodAgreement
+#print axioms ProximityGap.Frontier.Issue407.isMaxGoodAgreement_of_saturatedThreshold
 #print axioms ProximityGap.Frontier.Issue407.actualThreshold_of_saturatedThreshold
+#print axioms ProximityGap.Frontier.Issue407.actualMaxGoodAgreement_of_saturatedMaxGoodAgreement
 #print axioms ProximityGap.Frontier.Issue407.actualRadiusThreshold_of_saturatedRadiusThreshold
 #print axioms ProximityGap.Frontier.Issue407.readout_mem_constrainedReadoutImage
 #print axioms ProximityGap.Frontier.Issue407.readout_le_finiteReadoutEnvelope
@@ -369,4 +515,10 @@ end ProximityGap.Frontier.Issue407
 #print axioms ProximityGap.Frontier.Issue407.saturatedThrough_of_faithfulOutsideBadReduction
 #print axioms ProximityGap.Frontier.Issue407.deployedThreshold_of_charZeroThreshold_noBadReduction
 #print axioms ProximityGap.Frontier.Issue407.badReduction_of_profile_ne
+#print axioms ProximityGap.Frontier.Issue407.saturatedThrough_of_prime_notMem_badPrimes
+#print axioms
+  ProximityGap.Frontier.Issue407.deployedThreshold_of_charZeroThreshold_prime_notMem_badPrimes
+#print axioms
+  ProximityGap.Frontier.Issue407.deployedMaxGoodAgreement_of_charZeroMaxGood_prime_notMem_badPrimes
+#print axioms ProximityGap.Frontier.Issue407.badPrime_mem_of_profile_ne
 #print axioms ProximityGap.Frontier.Issue407.saturatedIncidenceScore_not_closure
