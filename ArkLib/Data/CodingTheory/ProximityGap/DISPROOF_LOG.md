@@ -24,6 +24,29 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
+## 2026-06-14 (#407 laneLB): Chai–Fan Q1 route (i) self-similarity bootstrap is REFUTED in char-p at d=32
+**Lane LB = Action-Orbit Q1 (Chai–Fan 2026/861, Conj 4.12): `Norm_{K_d/ℚ}(F_d(α))≠0` on `V_d^prim`,
+rigorous d∈{4,8}, OPEN d≥16.** The paper's promising **route (i)** is the self-similarity hypothesis
+`(∗)_d : on V_d^prim, x₁=0 ⟹ x_a=0 for every odd a` (`x_a = p_a` = power sum), extended {4,8}→all 2^j
+by dyadic doubling.
+
+**Machine-checked answer: route (i) FAILS in char-p at d=32 (refuted).**
+`scripts/probes/probe_wfLB_q1_route_i_charp_break.py` (exhaustive/MITM, 8 prize-band primes per level):
+- char-0: `V_d^prim(x₁=0)` EMPTY for d=8,16,32 (Lam–Leung) → route (i) vacuous over ℂ.
+- char-p (p≡1 mod d, p~d⁴): d=8,16 have NO antipodal-free p₁=0 config in band (route (i) intact;
+  **d=16 is the last clean dyadic level**); d=32 has **384/384** antipodal-free configs with p₁=0 but
+  p₃≠0 mod p. Explicit witness (independently re-derived): p=1048609, primitive 32nd root w=415330,
+  `Y={2,12,13,20,21,22,23,24,25,27,30,31}⊂ℤ/32`, antipodal-free, char-0-nonzero, p₁≡0 but p₃≡298602≠0
+  (and p₅…p₃₁ all ≠0). So `x₁=0` does NOT force `x₃=0` in char-p once d≥32.
+
+**Constraint lemma / why it does not close or kill Q1.** The in-tree `EvenOddAntipodalCharFree.lean`
+proves char-FREE the STRONG form (all odd e_i vanish ⟹ S=−S) — the correct sufficient input. Route (i)
+is the strictly weaker bootstrap (derive higher odd vanishings from x₁=0 alone); it has NO char-free
+proof and breaks at the actual prize object (finite F_p) for d≥32. The paper's resultant form `R_d≠0`
+is NOT recomputed (companion-repo chain-ideal vars V,W non-public); Q1 in resultant form stays open.
+Landed: `Frontier/_wfLB_Q1RouteICharPGap.lean` — `route_i_strictly_weaker` (route-(i) hyp insufficient
++ strong hyp sufficient), axiom-clean `[propext, Classical.choice, Quot.sound]`.
+
 ## 2026-06-14 (#407 laneB): Action-Orbit per-line bound is MONOMIAL-EXCLUSIVE — general-f gap-localized
 **Lane B = R4 Action-Orbit general-`f` (gcd-irreducible / primitive direction).** Question: does the
 `n·#orbits` per-line bad-scalar bound (`ActionOrbitFRI.badSet_orbit_closed`, for the two-monomial
@@ -9628,3 +9651,37 @@ incidence I, on which char-p > char-0 at thin primes. The monotonicity does NOT 
 object. Consistent with this thread's own 21:32 "Prong A" self-refutation (denominator vanishing = saturation,
 not deletion) — independently reconfirmed here with both objects implemented side by side. Probes:
 scripts/probes/probe_407_mono_objecta_vs_objectb.py, probe_407_saturation_gap.py, probe_407_ringhom_mono_two_objects.py.
+
+================================================================================
+2026-06-14  wf-LF  REFUTED (diagonal form): the Shkredov sub-trivial DIAGONAL bound on crossCell
+--------------------------------------------------------------------------------
+CLAIM (the swing-for-closure lever, Conn #78/#100, diagonal form): there is a uniform-over-primes
+eps < 1 with crossCell(H,zeta,r) <= eps * (2 * N0(H,r)) for the 2-power subgroup, where
+crossCell = N0(G,r) - 2*N0(H,r) is the off-diagonal cross-resonance count (BCHKS Conj 1.12), so the
+dyadic-descent diagonal floor 2*N0(H,r) would be a NEAR-EQUALITY and iterate to a clean closed form.
+
+VERDICT: FALSE in the diagonal form. Machine-verified countermodel: exact char-p relation counts,
+multiple primes p in {137,257,521,2081,8209, ... 65537}, n in {8,16,32}, r up to 10
+(scripts/probes/probe_wfLF_crosscell_shkredov.py). The ratio crossCell/(2*N0(H,r)) does NOT stay
+below 1 -- it GROWS WITHOUT BOUND in r:
+    n=8:  diag-frac = 1.33 (r=4) -> 5.4 (r=6) -> 18.4 (r=8) -> 85.0 (r=10)
+    n=16: diag-frac = 1.14 (r=4) -> 3.9 (r=6) -> 11.2..51.5 (r=8) -> up to 271 (r=10)
+    n=32: diag-frac = 1.07..2.93 (r=4) -> ... -> 47..459 (r=10)
+So the cross term DOMINATES the diagonal exponentially; the descent floor is NOT a near-equality and
+the "Shkredov diagonal saving" shape cannot exist.
+
+WHY Shkredov's higher-additive-energy machinery gives nothing (the precise pin, uniform over primes):
+- crossCell tracks the RANDOM BCHKS-1.12 expectation (2^r-2)*|H|^r/p to within O(1) (ratio 0.7..1.3 at
+  the thinnest reachable primes p=577 idx=16 for n=32). No anomalous excess, no cancellation.
+- H = mu_{n/2} is SIDON-LIKE: third additive energy E3(H)/|H|^3 -> 1 monotonically (1.56 at |H|=4,
+  1.39 at |H|=8, 1.22 at |H|=16; second energy E2(H)/|H|^2 ~ 2.6). A multiplicative subgroup has
+  additive energy ~ random, so BSG / third-energy / sum-product -- which convert additive STRUCTURE
+  (energy excess over |H|^2) into a saving -- have no structure to feed on. The fixed power-of-|H|
+  saving they could extract does not reach depth r ~ ln q. This is the di Benedetto/BGK exponent gap
+  0.989 - 0.5 = 0.489 made concrete: additive combinatorics is NOT the missing mechanism.
+
+WHAT SURVIVES (still open, NOT refuted): the ABSOLUTE form crossCell*q <= 2^r*|H|^r (= BCHKS Conj 1.12),
+which IS the wall. Named axiom-clean in CrossCellShkredovBound.lean as CrossCellAbsoluteBound, with the
+exact decomposition 2*N0(H,r)+crossCell = N0(G,r) and the consumer N0_gap_of_absoluteBound. The
+genuinely-new input the body asks for must come from the arithmetic of the q-reduction (spurious mod-p
+collisions), not from sum-product/BSG. Probe: scripts/probes/probe_wfLF_crosscell_shkredov.py.
