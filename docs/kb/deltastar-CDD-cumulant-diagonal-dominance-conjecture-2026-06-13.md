@@ -37,3 +37,25 @@ novelty 8 (the Gauss-sum cumulant-moment diagonal-dominance form is the cleanest
 the core, new) / insight 9 (unifies cumulant + Gauss-sum + Katz monodromy into one dominance
 inequality) / proximity 10 (pins δ* exactly) / feasibility 4 (proof = open uniform equidistribution;
 the marginal is Katz-proven, the uniformity is the wall). NOT claimed proven; promoted per contract.
+
+## PROOF ATTEMPT on CDD — reduced to one explicit √-cancellation inequality (grind 76 cont.)
+
+Split S = Σ_{Σj≡Σj'(m)} ∏τ(χ_{j_i})conj(τ(χ_{j'_i})) = D (diagonal {j}={j'}) + O (off-diagonal).
+
+DIAGONAL: each term ∏|τ(χ_{j_i})|²=p^r; #diag pairs ≈ r!m^r; D≈r!m^r p^r ⟹ C_r^{diag}/n=r!pn^{r-1}.
+  ⟹ B ≤ (pn^r)^{1/2r} minimized at r≈ln p gives B ≤ √(n ln p). THE DIAGONAL ALONE GIVES THE PRIZE BOUND.
+
+OFF-DIAGONAL trivial bound: |O| ≤ m^{2r-1}p^r ⟹ C_r^{offdiag}/n ≤ p^r, which SWAMPS the diagonal
+  (ratio m^{r-1}/r! ≫ 1). So trivial bound fails; CDD genuinely needs off-diagonal cancellation.
+
+EXACT REQUIREMENT (the crisp open inequality):
+  CDD ⟺ |O| ≤ D ≈ r!m^r p^r ⟺ off-diagonal beats its trivial bound by factor m^{r-1}/r!
+  ⟺ cancel r−1 of the 2r−1 free m-exponents ⟺ SQUARE-ROOT CANCELLATION of the off-diagonal Gauss-sum sum.
+  (Slack √m·r! between needed and full-sqrt is lower-order ⟹ genuinely sqrt-cancellation.)
+
+PROVABLE vs OPEN: horizontal per-character pieces are Weil-bounded (Jacobi collapse ∏τ(χ_{j_i})=
+  (Jacobi)·τ(χ_{Σj_i}), |J|=√p); the VERTICAL sum over the m−1 characters with Σj≡Σj' is the open
+  uniformity (Katz = marginal only). So CDD's proof = √-cancellation of ONE explicit structured
+  Gauss-sum sum. Cleanest statement of the core to date: diagonal delivers √(n ln p) UNCONDITIONALLY;
+  the entire prize is the off-diagonal √-cancellation. Still open (uniform Katz), now maximally
+  localized. NOT claimed proven.
