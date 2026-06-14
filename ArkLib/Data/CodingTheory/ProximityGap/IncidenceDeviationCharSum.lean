@@ -12,6 +12,22 @@ This file proves the **deviation-of-incidence brick**: the quantitative step tha
 uniform per-frequency bound `‖η_b‖ ≤ B` (`b ≠ 0`) on the subgroup Gauss period into a bound on
 how far the far-line incidence `I(s₀, s₁)` can stray from its first-moment mean `|G|`.
 
+## WHAT IS AND IS NOT PROVEN (honesty header — read before reusing)
+
+The bound proven here is the **naive `(#frequencies)·B` triangle bound** over the deviation-support
+hyperplane, summed *with no cancellation between distinct frequencies*:
+
+  > `I(s₀, s₁) ≤ |G| + (#deviationSupport s₁)·B ≤ |G| + q·B`   (`q = |F|`).
+
+It is the per-*term* bound `‖η_b‖ ≤ B` applied independently to each of the up-to-`q` annihilating
+frequencies and then triangle-summed.  It is **NOT** a claim that the char-sum bound `B` "feeds
+far-line incidence linearly with no √-loss into the prize budget", and it is **NOT** a per-frequency
+`I ≲ B` bound.  The factor of `q` on `B` is real: the deviation support is a whole hyperplane of
+size up to `q`, and this brick assumes worst-case alignment (no oscillatory cancellation among the
+`#deviationSupport` error terms).  Whether those terms *do* cancel down to `√q · B`-scale (the
+square-root-cancellation that the prize budget needs) is exactly the **open Paley/BCHKS-1.12
+square-root** and is **not** addressed here.
+
 The mechanism is the exact term-by-term spectral identity
 `IncidencePeriodBridge.lineIncidence_period_sum`:
 
@@ -20,15 +36,19 @@ The mechanism is the exact term-by-term spectral identity
 The trivial frequency `b = 0` always satisfies `b·s₁ = 0`, contributes `conj(η₀)·ψ(0) = |G|`
 (the average / first moment), and the remaining `s₁^⊥ \ {0}` frequencies carry the spectral
 error.  Each error term has modulus `‖conj(η_b)·ψ(b·s₀)‖ = ‖η_b‖ · 1 ≤ B` (additive characters
-have unit modulus, conjugation is an isometry), so the total deviation is bounded by
+have unit modulus, conjugation is an isometry), so the **triangle-summed** total deviation is
 
-  > `|I(s₀, s₁) − |G|| ≤ (#{b ≠ 0 : b·s₁ = 0}) · B`.
+  > `|I(s₀, s₁) − |G|| ≤ (#{b ≠ 0 : b·s₁ = 0}) · B ≤ q·B`.
 
-**Why this is the right (√-loss-free) lane.**  The competing energy lane
-(`addEnergy_le_of_worstCase`) loses a square root (`T² ≤ |G|·E`), which is *fatal* for the prize
-(it only reaches sub-Johnson).  The incidence-deviation bound here is *linear* in `B`: a
-power-saving bound `B ≤ n^{1−c}` feeds straight through with no square-root loss, exactly the
-calibration the prize regime requires.
+**Relation to the energy lane.**  The competing energy lane (`addEnergy_le_of_worstCase`) loses a
+square root (`T² ≤ |G|·E`).  This brick avoids *that particular* loss because it is the raw
+`(#frequencies)·B` count, but the trade is that it pays a full factor of `q` on `B` (one per error
+term, no inter-term cancellation).  It is **linear in `B`** only in the sense that `B` enters
+once per term; it does **not** make the prize budget reachable for any nonzero `B` (see
+`CharSumDeltaStarBridge` for the budget arithmetic: `(|G| + q·B)/q ≤ ε*` at the prize budget
+`q·ε* ≈ n` forces `B ≲ 0`).  Reaching `q·ε* ≈ n` requires the per-frequency square-root
+cancellation `∑_b conj(η_b)ψ(b·s₀) ≲ √q · B`, which is the open Paley/BCHKS-1.12 problem and is
+NOT supplied by this file.
 
 This is the intermediate brick consumed by the bridge theorem
 `CharSumDeltaStarBridge.le_mcaDeltaStar_of_uniformCharSumBound`.
@@ -96,8 +116,11 @@ most the number of nonzero annihilating frequencies times `B`:
   `|I(s₀, s₁) − |G|| ≤ (#deviationSupport s₁) · B`.
 
 Pure triangle inequality on `incidence_sub_mean`; each error term has modulus
-`‖η_b‖·‖ψ(b·s₀)‖ = ‖η_b‖ ≤ B`.  This is **linear** in `B` — no square-root loss — so a
-power-saving Gauss-period bound feeds straight through. -/
+`‖η_b‖·‖ψ(b·s₀)‖ = ‖η_b‖ ≤ B`.  This is the **naive `(#frequencies)·B` count** — `B` is paid once
+per annihilating frequency, with **no cancellation assumed between distinct frequencies**, and
+`#deviationSupport` is a hyperplane of size up to `q` (`deviationSupport_card_le`).  It is NOT a
+per-frequency `I ≲ B` bound and does NOT escape the prize budget for nonzero `B` (the genuine
+square-root cancellation `∑_b ≲ √q·B` is the open Paley/BCHKS-1.12 problem, not proven here). -/
 theorem incidence_dev_le {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
     (G : Finset F) (s₀ s₁ : F) {B : ℝ}
     (hB : ∀ b : F, b ≠ 0 → ‖eta ψ G b‖ ≤ B) :
@@ -118,8 +141,10 @@ theorem incidence_dev_le {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
 
 /-- **The deviation support is bounded by `q`.** A coarse but unconditional cardinality bound:
 `#deviationSupport s₁ ≤ #{b : b·s₁ = 0} ≤ |F| = q`.  Combined with `incidence_dev_le` this gives
-the worst-case incidence bound `I ≤ |G| + q·B`; the prize's spectral support is in fact a single
-hyperplane (`≤ q/|s₁-line|`), but the `≤ q` bound already suffices for the bridge calibration. -/
+the worst-case incidence bound `I ≤ |G| + q·B`.  Note the support is genuinely a hyperplane of
+size up to `q`; this `q` factor on `B` is what makes the resulting budget hypothesis in
+`CharSumDeltaStarBridge` vacuous at the prize budget for nonzero `B` (it is the naive per-frequency
+count, not a square-root-cancelled sum). -/
 theorem deviationSupport_card_le (s₁ : F) :
     (deviationSupport s₁).card ≤ Fintype.card F := by
   classical
@@ -133,8 +158,13 @@ incidence satisfies
 
   `I(s₀, s₁) ≤ |G| + q·B`.
 
-This is the form the bridge consumes: a small `B` (power-saving) forces the incidence close to
-its mean `|G|`, hence below the budget `q·ε*`. -/
+This is the **naive `(#frequencies)·B` form** the bridge consumes: the `q·B` term is the full
+hyperplane count (one `B` per annihilating frequency, no inter-frequency cancellation), NOT a
+square-root-cancelled `√q·B`.  WARNING for the prize budget: at `q·ε* ≈ n` with `|G| ≈ n`, the
+bridge's budget `(|G| + q·B)/q ≤ ε*` reduces to `B ≲ ε* − |G|/q ≈ 0`, so this bound clears the
+prize budget only for `B = 0`.  A power-saving `B = n^{1−c}` does NOT clear it through this brick;
+reaching the budget needs the open per-frequency square-root cancellation (Paley/BCHKS-1.12),
+which this file does not supply. -/
 theorem lineIncidence_le_mean_add {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
     (G : Finset F) (s₀ s₁ : F) {B : ℝ} (hB0 : 0 ≤ B)
     (hB : ∀ b : F, b ≠ 0 → ‖eta ψ G b‖ ≤ B) :
