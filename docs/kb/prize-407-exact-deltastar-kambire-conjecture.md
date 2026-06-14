@@ -240,3 +240,34 @@ transfer, this is strong evidence `q∤D` (equivalently, the bound) holds at the
   math is the explicit arithmetic condition `q∤D` (not a vague LD/MCA core, not the Weil/Gauss-sum wall).
   Per the honesty contract: the prize is NOT fully closed — `q∤D` is unproven for the prize prime, even
   though empirically robust. The ℂ optimality and the `p∤D` `F_p` bound ARE proven.
+
+## UPDATE — the residual is the SAME core two independent routes reach: char-p cyclotomic-coincidence suppression
+
+The `q∤D` residual is precisely: `bad ⊆ roots(G mod p)` where `G(γ)=∏_{J:|J|=r}(γ−σ_J)` is the
+INTEGER-coefficient sumset polynomial (`σ_J=∑_{ζ∈J}ζ`, symmetric in `μ_s` ⟹ ℤ coeffs). Equivalently
+`G(e_m(S))≡0` for every gap-valid `S` over `F_p` — i.e. NO char-p-spurious non-coset `S` contributes an
+`e_m` outside the ℂ-sumset. Tested: 0 violations across all accessible primes; spurious non-coset `S`
+appear only at saturated small `p` (where `roots(G)`=field, trivially no new value). The norm bound puts
+spurious primes at `≤ (rm)^{n/2}`, above saturation, so a non-saturated spurious prime is not excluded —
+that is the open content.
+
+**Convergence (issue #407, lane G — `lalalune` comments).** The independent Gaussian-period route
+(`max_i|η_i| ≤ √(2n log m)`) is ALSO reduced to exactly this: its sole open link is "the number of
+`(x,y)∈μ_{2^μ}^{2r}` with `∑x_i ≡ ∑y_j (mod p)` but `≠` in `ℤ[ζ_n]` is `o(E_r^0)`" — char-`p`-genuine
+balanced cyclotomic relations being suppressed. That same lane PROVED the char-0 MOMENT route is dead in
+the prize regime (depth caps at `β+1`, anomaly forced positive by Fourier positivity). So the moment
+route cannot reach the floor; the live cores are (a) my coset-saturation/sumset route and (b) the
+sup-norm route — and BOTH bottom out at char-p cyclotomic-coincidence suppression. This is the genuine
+prize-hard core, now reached by two independent derivations.
+
+**Why my route is the cleaner of the two:** it PROVES the ℂ side completely (iterated Lam–Leung ⟹
+coset-saturation ⟹ `#bad=|H^{(+r)}|` over ℂ, NO moment estimates) and reduces the char-p side to a
+single ideal-membership/divisibility `G(e_m)∈I_ℤ` (= `q∤D`), whereas the sup-norm route needs the full
+BGK/`√(2n log m)` sub-Gaussian tail. The remaining open math is identical and minimal in both.
+
+**HONEST FINAL STANDING (this is NOT a closure).** δ* = `1−ρ−2ρ ln(1/2ρ)/log₂(qε*)`, exact. PROVEN:
+upper bracket (Kambiré); ℂ optimality (Lam–Leung induction); `F_p` optimality for `p∤D` (Nullstellensatz).
+OPEN: `G(e_m)∈I_ℤ` / `q∤D` = char-p cyclotomic-coincidence suppression — the recognized prize-hard core,
+confirmed by two-route convergence, supported by exhaustive q-independence scans but UNPROVEN for the
+prize prime. Per the honesty contract I do not claim the prize closed; I claim a clean ℂ-complete
+reduction whose only residual is the same minimal arithmetic core both prize routes reach.
