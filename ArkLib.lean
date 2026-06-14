@@ -810,6 +810,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ExplainableCoreExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.ExplainableCoreSupplyInstance
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.FactorizableStacks
+import ArkLib.Data.CodingTheory.ProximityGap.FactorizationRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.FamilyBadBound
 import ArkLib.Data.CodingTheory.ProximityGap.FarCosetExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.FarLineIncidenceEquivariance
