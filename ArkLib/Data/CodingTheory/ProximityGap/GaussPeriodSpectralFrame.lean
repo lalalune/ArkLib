@@ -87,6 +87,18 @@ theorem spectral_frame {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F
   obtain ⟨b, hbne, hfloor⟩ := exists_eta_sq_ge_parseval_floor hψ G hq
   exact ⟨b, hbne, hfloor, worstCaseIncompleteSumBound_of_nearRamanujan hcard hC h b hbne⟩
 
+/-- **General scalar guardrail.** Any proposed worst-case incomplete-sum square bound `M` must
+clear the unconditional Parseval floor. This is the reusable obstruction behind every spectral
+ceiling route: an upper bound on all nonzero periods is impossible unless
+`(q·n-n²)/(q-1) ≤ M`. -/
+theorem parseval_floor_le_worstCaseIncompleteSumBound {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (G : Finset F) {M : ℝ} (hq : 2 ≤ Fintype.card F)
+    (hM : WorstCaseIncompleteSumBound ψ G M) :
+    ((Fintype.card F : ℝ) * G.card - (G.card : ℝ) ^ 2) / ((Fintype.card F : ℝ) - 1)
+      ≤ M := by
+  obtain ⟨b, hbne, hfloor⟩ := exists_eta_sq_ge_parseval_floor hψ G hq
+  exact le_trans hfloor (hM b hbne)
+
 /-- **Scalar compatibility guardrail.** Any near-Ramanujan-up-to-`√log` ceiling must clear the
 unconditional Parseval floor. This is the compact scalar obstruction behind the two-sided frame:
 proving a smaller ceiling immediately has to beat
@@ -98,11 +110,12 @@ theorem parseval_floor_le_nearRamanujan_ceiling {ψ : AddChar F ℂ} (hψ : ψ.I
       ≤ C ^ 2 * ((G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card)) := by
   have hcard : (G.card : ℝ) ≤ Fintype.card F := by
     exact_mod_cast Finset.card_le_univ G
-  obtain ⟨_b, _hbne, hfloor, hceil⟩ := spectral_frame hψ G hq hcard hC h
-  exact le_trans hfloor hceil
+  exact parseval_floor_le_worstCaseIncompleteSumBound hψ G hq
+    (worstCaseIncompleteSumBound_of_nearRamanujan hcard hC h)
 
 end ArkLib.ProximityGap.GaussPeriodSpectralFrame
 
 #print axioms ArkLib.ProximityGap.GaussPeriodSpectralFrame.worstCaseIncompleteSumBound_of_nearRamanujan
 #print axioms ArkLib.ProximityGap.GaussPeriodSpectralFrame.spectral_frame
+#print axioms ArkLib.ProximityGap.GaussPeriodSpectralFrame.parseval_floor_le_worstCaseIncompleteSumBound
 #print axioms ArkLib.ProximityGap.GaussPeriodSpectralFrame.parseval_floor_le_nearRamanujan_ceiling
