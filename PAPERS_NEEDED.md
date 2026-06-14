@@ -361,3 +361,15 @@ This sweep maps the two literatures that bound that exact object. NONE reach the
 VERDICT: the two literatures that bound the char-p transfer object (Paley spectrum = Gauss periods;
 char-p Lam–Leung weight sets) are STRUCTURAL — neither gives a magnitude/lift bound reaching the prize
 `q=n^β` for `n~q^{1/4}`. Confirms the residual is the recognized open core, not a literature lookup.
+
+## 2026-06-13 (#407): CURRENT open-problem status of the reduced core (Paley graph conjecture)
+The prize floor = BCHKS Conj 1.12 = Paley-graph-conjecture territory. Most up-to-date literature status:
+| # | Paper | Identifier | Bearing |
+|---|---|---|---|
+| Q1 | *Randomstrasse101: Open Problems of 2025* | arXiv 2603.29571 (31 Mar 2026) | **DECISIVE**: curated random-structures open-problem list, dated 3 months ago, STILL lists the Paley-graph clique number `ω(G_p)=O(polylog p)?` as OPEN. The reduced core is open in the current literature, full stop. |
+| Q2 | Hanson–Petridis, *clique number of the Paley graph* (via Stepanov/polynomial method) | — | best PROVEN upper bound `ω(G_p) ≤ (1+o(1))√(p/2)` — the `√p` barrier, FAR from `polylog`/`√(n log q)`. The bound the prize needs to beat is exactly here, and it hasn't moved. |
+VERDICT (current as of Jun 2026): the object the prize floor reduces to is on the March-2026 official
+open-problems list. There is no known-math closure. A prize solution "reducing to proven math" must
+supply a NEW sub-`√p` thin-subgroup character-sum / Paley bound that the 2026 open-problems list says
+does not yet exist. (The "Paley graph conjecture on double character sums implies many character-sum
+estimates" — it is the governing open conjecture, not a side lemma.)
