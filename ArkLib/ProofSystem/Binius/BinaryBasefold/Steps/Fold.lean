@@ -290,10 +290,12 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
       rw [OptionT.support_run]
     intro vStmtOut h_vStmtOut_mem_support
     conv at h_vStmtOut_mem_support =>
-      erw [simulateQ_bind]
-      -- turn the simulated oracle query into OracleInterface.answer form
-      change vStmtOut ∈ _root_.support (Bind.bind (m := (OracleComp []ₒ)) _ _)
-      erw [_root_.bind_pure_simulateQ_comp]
+      -- all-OptionT reduction: split the verify bind, reduce the message-read query to its clean
+      -- answer `OptionT.pure inputState.1` (T₂ simOracle2 lemma), then inline it via the OptionT
+      -- pure-bind law — leaving the verifier message as the syntactic `inputState.1`.
+      erw [OptionT.simulateQ_bind]
+      erw [OptionT.simulateQ_simOracle2_liftM_query_T2]
+      erw [OptionT.bind_pure_simulateQ_comp]
       simp only [Matrix.cons_val_zero, guard_eq]
       -- simp  [bind_pure_comp,
       -- OptionT.simulateQ_map, OptionT.simulateQ_ite, OptionT.simulateQ_pure,
@@ -329,7 +331,11 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
           exact hj_ne hj
         | 1 => exact r_i'
       )
-    have h_V_check_is_true : V_check := h_V_check
+    -- the verifier reads `inputState.1` as the prover message; the prover sent
+    -- `foldProverComputeMsg` (so `inputState = ⟨foldProverComputeMsg, …⟩`), matching `h_V_check`.
+    have h_V_check_is_true : V_check := by
+      rw [h_V_check_def, hInputState_mem_support]
+      exact h_V_check
     simp only [h_V_check_is_true, ↓reduceIte, support_pure, Set.mem_singleton_iff, Fin.isValue,
       exists_eq_left, OptionT.support_OptionT_pure_run] at h_vStmtOut_mem_support
     rw [h_vStmtOut_mem_support]
