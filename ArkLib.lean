@@ -1518,6 +1518,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RigidityWindowHalving
 import ArkLib.Data.CodingTheory.ProximityGap.RimHookArea
 import ArkLib.Data.CodingTheory.ProximityGap.RimHookBorderStrip
 import ArkLib.Data.CodingTheory.ProximityGap.RimHookConfluence
+import ArkLib.Data.CodingTheory.ProximityGap.RootSumNormBound
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergyExact
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityCyclicList
