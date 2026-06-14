@@ -1721,3 +1721,18 @@ prize is irreducibly BGK; no dyadic-specific advance past di Benedetto n^{0.989}
 **Net:** prize ⟺ BGK/Paley √-cancellation for n=q^{1/4} dyadic subgroups, UNCONDITIONALLY (budget cancels,
 no q-independent bypass [cyclotomic dichotomy], no dyadic-tower reduction, phases are random). This is
 the sharpest available delimitation of the open core.
+
+## FIXED-INDEX LOCALIZATION — exactly why Weil (the only unconditional tool) fails
+
+Prize index m=(q-1)/n=2^128 is FIXED. Reframe: η_b=(1/m)[−1+√q·Σ_{χ∈H^⊥}u_χ χ̄(b)], u_χ=g(χ)/√q unimodular,
+|H^⊥|=m. The per-character Weil bound |g(χ)|=√q gives the UNCONDITIONAL triangle bound:
+  M(n) ≤ (m−1)/m·√q = (m−1)/m·√(mn) ~ √m·√n.
+Measured (probe /tmp/probe_fixed_index.py, fixed m, growing p): this triangle bound is TIGHT for small m
+(m=2: 0.71√n vs measured 0.81; m=4: 1.5 vs 1.54 — NO cancellation), and cancellation only kicks in as m
+grows (m=8: 2.47 vs 2.10; m=16: 3.75 vs 2.31 ratio 0.62). Crucially M/√(2n log p) stays BOUNDED <1 and
+does NOT grow with p (conjecture holds; no refutation).
+**The gap is exactly √m vs √(log m):** Weil gives √m·√n (per-character, provable); prize needs √(2 log m)·√n
+(cross-character Gauss-sum-DFT cancellation). For m=2^128: 2^64√n (Weil) vs 13.3√n (prize). The √-cancellation
+among the m Gauss sums g(χ)·χ̄(b) is the ENTIRE open content — Weil is blind to it because it is per-character.
+This is the sharpest localization of the wall: not "BGK is open" but "the cross-character cancellation of m
+fixed Gauss sums, which no per-character (Weil) or per-moment (Lam–Leung char-0) tool reaches."
