@@ -107,6 +107,35 @@ form is rigorous and `C²≈1.7` is the diagonal inflation, with proven leading 
 > Gauss-sum-DFT identity (verified), the proven `3/2` leading inflation, and the precise location of
 > the residual.
 
+## 4b. NEW — WHERE the deep-moment wall bites (the p-defect onset, measured)
+`probe_energy_pdefect_depth.py` measures `E_r(μ_n) mod p` (exact, via r-fold cyclic convolution of
+the `μ_n` indicator) against the **char-0 Bessel value** `E_r^{(0)}=(2r)![x^r]I₀(2√x)^{n/2}`. The
+ratio `E_r/E_r^{(0)}` is `1.000` exactly while char-0 holds and `>1` once extra mod-`p` additive
+coincidences ("p-defect") appear — the concrete location of the moment-route wall:
+
+| n | β | p/n | r=2 | r=3 | r=4 | r=5 |
+|---|---|---|---|---|---|---|
+| 16 | 4 | 4101 | 1.0000 | 1.0000 | 1.0000 | 1.0002 |
+| 16 | 5 | 65538 | 1.0000 | 1.0000 | 1.0000 | **1.0000** |
+| 32 | 4 | 32769 | 1.0000 | 1.0000 | **1.0071** | **1.0408** |
+
+Onset depth ≈ β and **shrinks as n grows** (n=32 defects at r=4; n=16 only at r=5; deeper p/n holds
+longer). So for the prize `n=2^30` the char-0/Gaussian regime fails at *shallow* r — far below the
+`r≈ln q` the moment method would need for `√(n log)`. This **concretely confirms the moment-route
+no-go** ([[deep-moment-wall]], TECHNIQUE-6) and identifies these accumulating p-defects in the deep
+moments as the mechanism that both (i) blocks the bound's proof and (ii) inflates the constant from
+the Gaussian/4th-moment value up to the measured `C²≈1.75`. The 4th moment (r=2) is char-0-exact
+everywhere — consistent with the proven `E₂=3n²−3n` — so the leading `3/2` is rigorous; the excess
+`1.75−1.5` lives entirely in the p-defected deep moments.
+
+## 4c. NEW — the inflation `C²` is ~universal (not β-scaling)
+`probe_constant_beta_dependence.py` sweeps β=3..5 at fixed n: `C²` clusters in **[1.5, 1.9]** with
+no monotone β-trend (n=32: 1.73,1.79,1.53,1.52,1.51; n=64: 1.63,1.86,1.92,1.74,1.66), and `C²/β`
+*decreases* — so `C²` does **not** scale with β. The inflation is a genuine, roughly-universal extra
+factor `≈1.7` sitting just above the proven 4th-moment floor `3/2`; the explicit `1/β` in
+`δ*=1−ρ−C²·H(ρ)/(β log n)` is *not* cancelled by it. Single-prime extreme-value noise prevents a
+3-digit pin — consistent with the exact value being gated on the deep (p-defected) moments (§4b).
+
 ## 5. Reproduce
 - `scripts/probes/probe_tower_alignment_law.py` — true maximizer + per-level alignment trace.
 - `scripts/probes/probe_betascaling_tail_law.py` — B² vs log(p/n), tail exponent, Gauss-sum identity (1e-12).
