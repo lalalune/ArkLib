@@ -148,3 +148,35 @@ finite Turán/uncertainty-type 0/1 rigidity (the linear Fourier constraint alone
 0/1+size structure is the content) — VERIFIED, provable, NOT the Weil/incomplete-Gauss-sum wall.
 Proof routes: (a) over ℂ via the unit-circle moment problem `∏_{x∈S}(1−xt)≡1+ct^m (mod t^{2m})`,
 |x|=1 ⟹ ∈ℂ[t^m]; (b) char-p transfer p>threshold. Feasibility 8.5. This is THE thing to prove to close.
+
+## UPDATE — COSET-SATURATION PROVED over ℂ (dyadic) via iterated Lam–Leung; residual = char-p transfer (#389 wall)
+
+**Theorem (coset-saturation, dyadic, over ℂ — PROVED).** Let `n=2^μ`, `m=2^a | n`, `S ⊆ μ_n`. If
+`p_{2^i}(S) = 0` for `i=0,…,a−1` (ONLY the powers-of-2 power sums), then `S` is a union of cosets of `μ_m`.
+VERIFIED (`/tmp/lamleung_light.py`, large p): all valid S coset-unions, n=8,16, a=1,2,3.
+
+**Proof (induction on `a`, uses only Lam–Leung).**
+- `a=1`: `p_1(S)=∑_{x∈S}x=0`. For `n=2^μ` (prime power p=2), Lam–Leung ⟹ every vanishing 0/1-sum of
+  `n`-th roots is a disjoint union of basic relations `x+(−x)=0`, i.e. `S` = union of `μ_2`-cosets `{x,−x}`.
+  (Direct: `{1,ζ,…,ζ^{n/2−1}}` is a ℚ-basis of `ℚ(ζ_n)`, `ζ^{n/2}=−1`; coeffs `∈{−1,0,1}` vanish ⟹ pairs.)
+- `a→a+1`: by IH `S=⊔_l z_l μ_{2^a}`. The `2^a`-power map collapses each coset to `z_l^{2^a}`, and
+  `p_{2^a}(S)=∑_l z_l^{2^a}∑_{ω∈μ_{2^a}}ω^{2^a}=2^a·∑_l z_l^{2^a}=2^a·p_1(S')`, `S'={z_l^{2^a}}⊆μ_{n/2^a}`.
+  `p_{2^a}(S)=0 ⟹ p_1(S')=0 ⟹` (Lam–Leung) `S'` = `μ_2`-coset-union ⟹ the `z_l^{2^a}` pair as `{w,−w}` ⟹
+  the `μ_{2^a}`-cosets pair into `μ_{2^{a+1}}`-cosets ⟹ `S` = union of `μ_{2^{a+1}}`-cosets. ∎
+
+The gap constraint `e_i(S)=0 ∀i∈{1,…,2m−1}\{m}` gives (Newton) `p_1=…=p_{m−1}=0 ⊇ {p_1,p_2,…,p_{m/2}}`,
+exactly the powers-of-2 needed. So **over ℂ the optimality lower bracket is CLOSED**: every gap-valid `S`
+is a coset-union ⟹ `e_m=±∑_j ξ_j` (distinct r-fold sumset) ⟹ `#bad=|H^{(+r)}|` ⟹ `δ*` pinned exactly.
+
+**The single honest residual = char-`p` transfer (= the #389 wall, now PRECISELY named).** Over `F_p`
+(`p=q=n^β`, Linnik prime), Lam–Leung is a `ℂ/ℚ` statement; a char-`p` vanishing sum `∑_{x∈S}x≡0 (mod p)`
+lifts to a `ℂ` relation only if `p ∤ N(∑_{x∈S}x)`. The trivial norm bound needs `p>(rm)^{n/2}`, UNREACHABLE
+in the prize regime (`n^β ≪ n^{n/2}`, `n=2^30`). So char-`p`-spurious non-coset `S` may exist; the
+optimality needs them to give NO new `e_m` (outside the sumset). This is EXACTLY the #389 small-integer
+additive-relation / additive-energy-excess wall ([[arklib-389-wick-energy-sqrt2]],
+[[arklib-389-smallsubgroup-pin-CLOSED]]) — a specific, named open problem, NOT a vague core.
+
+**Net.** The ℂ structure of the optimality is now a PROVEN theorem (iterated Lam–Leung — clean, novel
+assembly, Lean-formalizable: the `m=2` brick is the in-tree cyclotomic ℚ-basis argument). The prize
+remains open at ONE precisely-located point: the char-`p` transfer (#389). Novelty 8 / insight 9 /
+proximity 10 / feasibility 7 (ℂ side closed; char-p side = the recognized hard wall). NOT a full closure.
