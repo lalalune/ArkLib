@@ -8782,3 +8782,17 @@ open core (issue #407 contract). Genuine partial: orbit-count law + A↔P inject
 **Conclusion.** The live L^∞/phase-chaining route's single open input is FALSE as a per-level worst-case inequality. The phase alignment `cos=1.0000` is an exact algebraic identity (confirmed), but it is the OBSTRUCTION to submaximality, not the lever. Consistent with #7.2 (no per-step/L² inequality reaches the floor) and the prior `M(n)≤√2·M(n/2)` refutation: the residual is genuinely a **worst-case-PATH (Lyapunov / large-deviation) bound on the phase-alignment cocycle** `∏ r_j`, `r_j∈[√2,2]` — NOT any single-level submaximality. The `_DyadicPhaseChaining.lean` consumer chain stays valid as stated (it is conditional); its hypothesis is just not instantiable at the real Gauss-period level.
 
 Probe: `scripts/probes/probe_local_aligned_child_submaximality.py` (self-contained, no sympy). Machine-checked countermodel: `Frontier/_DyadicPhaseChainingSubmaxRefuted.lean` (the def↔√2-descent equivalence `localAlignedChildSubmaximality_iff_sqrt2_descent` + the concrete violation `not_localAlignedChildSubmaximality_submaxCounterexample`; axiom-clean `[propext, Classical.choice, Quot.sound]`).
+
+## 2026-06-14 (wakesync/#407): N-scaling test — CONSISTENT with sharp-threshold conjecture (not refuted) + rigidity scope correction
+N-scaling (orbit reps, worst far pencil, agr=k+1): n=8→N=5, n=12→N=435. NOT a refutation:
+agr=k+1 puts δ=1−(k+1)/n just ABOVE the conjectured δ*=1−ρ−H(ρ)/(β log₂n) (n=12: δ*≈0.407,
+agr=7 gives δ=0.417>δ*). So N exploding there = the expected SHARP proximity-gap threshold
+(N small below δ*, Θ(q) above). At the actual threshold I=budget≈n, N=I/S=gcd=O(1) automatically.
+Numerics bracket δ* between agr=8(δ=0.333) and agr=7(δ=0.417), consistent with conjectured 0.407.
+1/n granularity too coarse to pin δ* sharply at n≤12. So: conjectured δ* SUPPORTED, threshold
+LOCATION (= beyond-Johnson list onset) = the open core. NOT closed.
+RIGIDITY SCOPE CORRECTION (honest): pencil_unique_of_large_agreement needs |A|>b, but the window
+has |A|=(1−δ)n≤b (since deg P=b≥|A| to have |A| roots). So the landed rigidity lemma applies to the
+DEGENERATE near-full-agreement regime, NOT the prize window. The empirical n=8 bijection (40 bad α ↔
+40 distinct A at |A|=5<b=7) is a generic-distinctness phenomenon, not covered by the lemma. The lemma
+is correct math but its window-relevance was overstated; the window injectivity is separate/open.
