@@ -306,3 +306,38 @@ axiom-clean; probes `probe_subset_sum_fibre_lattice_407.py`,
 `probe_prize_regime_relation_free_407.py`, `probe_fibre_inflation_growth_407.py`,
 `probe_lacbad_crossover_407.py`, `probe_secondmoment_codeword_count_407.py`,
 `probe_char0_variety_407.py`, `probe_excess_suppression_407.py`.
+
+## 11. HONEST CORRECTION + the provable NORM regime (the sharp boundary at μ=7)
+
+⚠️ **Correction to §10's "empirically airtight" claim.** The "excess = 0 for all swept q" was at
+n=8,16 — the **norm-protected** regime. The clean provable mechanism is the **norm bound**: a
+non-char-0 subset sum `α = Σ_{x∈S} x ∈ ℤ[ζ_n]` is nonzero with every archimedean `|σ(α)| ≤ a`, so
+`|N(α)| ≤ a^{φ(n)} = a^{n/2}`; if `q > a^{n/2}` then `q ∤ N(α)` ⟹ `α ≢ 0 mod 𝔮` ⟹ **excess = 0,
+PROVABLY**. Combined with the char-0 Lam–Leung coset count this gives:
+
+> **THEOREM-SHAPED (norm regime).** For dyadic `RS[F_q, μ_n, k]` with `q > (k+t₀)^{n/2}` (the norm
+> regime), `δ* = prizeDeltaStar` EXACTLY, PROVABLY — the F_q excess vanishes by the norm bound and
+> the count is the char-0 Lam–Leung μ_{2^j}-coset count. (Generalizes the in-tree tiny concrete
+> pins to all n in the norm regime.)
+
+**The sharp boundary, with the prize field `q ≈ n·2^128`** (`probe`, ρ=1/4):
+
+| μ | n | log₂(a^{n/2}) | log₂ q | norm holds? | excess |
+|---|---|---|---|---|---|
+| 4 | 16 | 20.7 | 132 | **yes** | PROVABLY 0 |
+| 5 | 32 | 53.2 | 133 | **yes** | PROVABLY 0 |
+| 6 | 64 | 133 | 134 | **yes** | PROVABLY 0 |
+| 7 | 128 | 326 | 135 | **NO** | WALL |
+| 40 | 2^40 | ~2·10¹³ | 168 | **NO** | WALL |
+
+So the norm bound (provable closure) holds **exactly up to n=64 (μ≤6)** at the prize field, and
+**fails sharply at μ=7**. **The prize n=2^40 is far on the wall side.** The small-n excess=0 empirics
+do NOT extend to the prize scale; at prize scale pigeonhole (`3^{n/2} ≫ q`) *forces* non-char-0
+relations, so the excess is the genuine wall.
+
+**Net honest verdict (final, precise):** δ* = prizeDeltaStar is
+- **PROVEN** (norm bound + char-0 Lam–Leung) for `q > a^{n/2}`, i.e. **n ≤ 64** at the prize field —
+  a genuine closed pin, but below the prize's `n = 2^40`;
+- **OPEN** (the genuine wall) for the prize `n = 2^40`, where the F_q excess at the binding
+  window-edge is the recognized-hard character-sum/equidistribution problem. The char-0 part stays
+  provable (Lam–Leung); the excess is the wall. No fabricated closure.
