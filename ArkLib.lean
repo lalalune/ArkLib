@@ -124,6 +124,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettCombinatorial
 import ArkLib.Data.CodingTheory.GMMDS.LovettCoordMerge
 import ArkLib.Data.CodingTheory.GMMDS.LovettCounting
 import ArkLib.Data.CodingTheory.GMMDS.LovettDivisibility
+import ArkLib.Data.CodingTheory.GMMDS.LovettDualRowsDischarge
 import ArkLib.Data.CodingTheory.GMMDS.LovettDualSpanConnector
 import ArkLib.Data.CodingTheory.GMMDS.LovettFractionField
 import ArkLib.Data.CodingTheory.GMMDS.LovettInduction
