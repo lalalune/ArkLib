@@ -9156,3 +9156,36 @@ bypasses the DECODER not the combinatorial LIST SIZE (the grand challenge). Abst
 resolution up to capacity" = a trichotomy CLASSIFICATION, not a window-interior plain-RS pin. CONSISTENT
 with capacity-impossible + the open BGK/√n wall. Prize remains OPEN. (Full assessment: #407 comment
 4701138629.)
+
+## 2026-06-14 (#407 cumulant2power): REFUTED — cumulant explosion is NOT confined to the imprimitive 2-power tower
+HYPOTHESIS (issue407-cumulant-dichotomy + poisson-concentration-tower): the cumulant
+K_r = Σ_{b≠0}|η_b|^{2r} = p·E_r(μ_n) − n^{2r} escapes the moment no-go generically but EXPLODES at
+2-power primes (prize n=2^μ); the hope was that the explosion is CONFINED to the O(log n) IMPRIMITIVE
+tower directions (the μ_n-sub-tower {b: η_b factors through μ_{n/2^j}}), with PRIMITIVE directions
+staying sub-Gaussian — which would reduce the floor to a FINITE STRUCTURED set.
+PROBE (probe_cumulant_primitive_split.py, multi-prime, PROPER subgroups μ_n, n up to 256, r up to 8,
+r*~ln p): η_b is constant on cosets b·μ_n; split K_r by the 2-adic tower invariant v2(ord b) (imp set
+= {b: v2(ord b) ≤ v2(n)}, the μ_n-sub-tower incl μ_n itself), measure K_tot/Wick vs K_imp/Wick, plus
+min #cosets carrying 90/99% of K_{r*}.
+RESULTS — the confinement is FALSE:
+  • Explosion is REAL and ONLY at 2-power-structured primes (v2(p−1)≫v2(n), Fermat 65537=2^16+1):
+    K_r/Wick → {6.7 @ n=32, 302 @ n=64, 123 @ n=128} at r=8. Generic primes (577,1153,2113,40961,
+    12289,786433,7340033): K_r/Wick ≤ ~1.6 (NO excess to control — Wick already holds).
+  • DECISIVE COUNTEREXAMPLE (p=65537, n=128): K_tot/Wick = 123 (massive explosion) but the imprimitive
+    tower carries K_imp/Wick = 0.016 — the entire excess lives in the COMPLEMENT of the μ_n-tower. The
+    heaviest cosets there (b∈{129,33,63,3,225,7}) have v2(ord b)∈{15,11,16,16,13,16} = GENERIC
+    multiplicative order, i.e. NOT imprimitive. Flagged "excess NOT in imp tower!" at every r.
+  • The clean "concentrates on μ_n itself" picture is a COINCIDENCE of (65537, n≤64), where r* aligned
+    with the subgroup (argmax_in_mu_n=True there); it BREAKS at n≥128 (argmax_in_mu_n=False) and at all
+    other primes (heaviest cosets are large-height, large-order, prime-dependent).
+  • Additive-height is ALSO not the label: corr(min-coset-|b|, |η_b|^2) ∈ [−0.14,+0.11] ≈ 0; for the
+    larger generic primes the heaviest cosets have LARGE height (6747, 177881).
+WHAT SURVIVES (honest narrowing, NOT closure): WHEN the cumulant explodes it IS concentrated on O(1)
+cosets (90% from <1 coset, 99% from ~1–4 cosets) — but those carrying cosets carry no uniform
+multiplicative or additive structural label, so they do NOT form a fixed describable finite set across
+primes. The explosion is exactly the 2-power-prime resonance, and it lives on the DIFFUSE
+incidence/additive-energy face — consistent with the line-ball-incidence wall (face 4) and the BGK/Paley
+floor, NOT a finite imprimitive set that could be controlled by enumeration.
+CONSEQUENCE: the "reduce floor to a finite structured set" route via imprimitive/primitive splitting is
+WITHDRAWN. The cumulant-2-power explosion is genuine but unstructured-at-the-coset-level; it relocates,
+not narrows, the open core. NOT closure. Probe committed.
