@@ -491,13 +491,12 @@ def foldKStateProp {i : Fin ℓ} (m : Fin (2 + 1))
     Prop :=
   -- Ground-truth polynomial from witness
   match m with
-  | ⟨0, _⟩ => -- Same as relIn (roundRelation at i.castSucc)
-    masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (stmtIdx := i.castSucc) (oracleIdx := OracleFrontierIndex.mkFromStmtIdx i.castSucc)
-      (h_le := OracleFrontierIndex.val_le_i i.castSucc
-        (OracleFrontierIndex.mkFromStmtIdx i.castSucc))
-      (stmt := stmtMid) (wit := witMid) (oStmt := oStmtMid)
-      (localChecks := sumcheckConsistencyProp (𝓑 := 𝓑) stmtMid.sumcheck_target witMid.H)
+  | ⟨0, _⟩ => -- Exactly relIn (roundRelation at i.castSucc): the round-0 KState must equal the
+    -- input relation (`toFun_empty`). The `badEvent ∨ oracleWitnessConsistency` design of
+    -- `masterKStateCore` already carries sumcheck consistency on the good branch, so no extra
+    -- top-level localCheck (which would wrongly gate the bad-event branch).
+    roundRelationProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      i.castSucc ((stmtMid, oStmtMid), witMid)
   | ⟨1, _⟩ => -- After P sends hᵢ(X), before V sends r_i'
     let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := witMid.H)
     let h_i : ↥L⦃≤ 2⦄[X] := tr.messages ⟨0, rfl⟩
@@ -573,15 +572,11 @@ def foldKnowledgeStateFunction (i : Fin ℓ) :
     -- verifier check `explicitVCheck ∧ localizedRoundPolyCheck`; the round-0 `localChecks` is
     -- `sumcheckConsistencyProp`.  The `masterKStateCore` (bad ∨ oracleWitnessConsistency) is at the
     -- same `(stmtIdx, oracleIdx, stmt, wit, oStmt)` on both sides, so it transfers unchanged.
-    obtain ⟨h_localChecks, h_core⟩ := h_kState_round1
-    have h_explicit := h_localChecks.1
-    have h_localized := h_localChecks.2
-    have h_sumcheck : sumcheckConsistencyProp (𝓑 := 𝓑) stmtMid.sumcheck_target witMid.H := by
-      simp_rw [h_localized] at h_explicit
-      rw [h_explicit.symm]
-      exact Sumcheck.Structured.getSumcheckRoundPoly_sum_eq (L := L) ℓ (𝓑 := 𝓑)
-        (i := i) (h := witMid.H)
-    exact ⟨h_sumcheck, h_core⟩
+    -- round-0 KState is now exactly `roundRelationProp` (= `masterKStateCore`, the
+    -- `badEvent ∨ oracleWitnessConsistency`), so the core transfers from round-1 unchanged; the
+    -- round-1 localChecks (verifier check) are no longer needed.
+    obtain ⟨_h_localChecks, h_core⟩ := h_kState_round1
+    exact h_core
   toFun_full := fun ⟨stmtIn, oStmtIn⟩ tr witOut probEvent_relOut_gt_0 => by
     -- h_relOut: ∃ stmtOut oStmtOut, verifier outputs (stmtOut, oStmtOut) with prob > 0
     --   and ((stmtOut, oStmtOut), witOut) ∈ foldStepRelOut
@@ -733,13 +728,12 @@ def foldKStateProps {i : Fin ℓ} (m : Fin (2 + 1))
     Prop :=
   -- Ground-truth polynomial from witness
   match m with
-  | ⟨0, _⟩ => -- Same as relIn (roundRelation at i.castSucc)
-    masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (stmtIdx := i.castSucc) (oracleIdx := OracleFrontierIndex.mkFromStmtIdx i.castSucc)
-      (h_le := OracleFrontierIndex.val_le_i i.castSucc
-        (OracleFrontierIndex.mkFromStmtIdx i.castSucc))
-      (stmt := stmtMid) (wit := witMid) (oStmt := oStmtMid)
-      (localChecks := sumcheckConsistencyProp (𝓑 := 𝓑) stmtMid.sumcheck_target witMid.H)
+  | ⟨0, _⟩ => -- Exactly relIn (roundRelation at i.castSucc): the round-0 KState must equal the
+    -- input relation (`toFun_empty`). The `badEvent ∨ oracleWitnessConsistency` design of
+    -- `masterKStateCore` already carries sumcheck consistency on the good branch, so no extra
+    -- top-level localCheck (which would wrongly gate the bad-event branch).
+    roundRelationProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      i.castSucc ((stmtMid, oStmtMid), witMid)
   | ⟨1, _⟩ => -- After P sends hᵢ(X), before V sends r_i'
     let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := witMid.H)
     let h_i : ↥L⦃≤ 2⦄[X] := tr.messages ⟨0, rfl⟩
