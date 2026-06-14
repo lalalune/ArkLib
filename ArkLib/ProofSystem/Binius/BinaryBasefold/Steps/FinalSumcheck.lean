@@ -208,6 +208,30 @@ def finalSumcheckKnowledgeError (m : pSpecFinalSumcheckStep (L := L).ChallengeId
   match m with
   | ⟨0, h0⟩ => nomatch h0
 
+omit [SampleableType L] in
+/-- Bridge: `getFirstOracle 𝔽q β oStmt` is the level-0 oracle `oStmt ⟨0,h⟩` (its domain reindex is
+the identity), up to heterogeneous equality. Discharges the `getFirstOracle ↔ oStmt ⟨0,·⟩` HEq
+sites cleanly via `oracle_heq_congr`. -/
+private theorem getFirstOracle_heq {i : Fin (ℓ + 1)}
+    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)
+    (h : 0 < toOutCodewordsCount ℓ ϑ i) :
+    HEq (getFirstOracle 𝔽q β oStmt) (oStmt ⟨0, h⟩) := by
+  have hidx : (0 : Fin r) = ⟨(⟨0, h⟩ : Fin (toOutCodewordsCount ℓ ϑ i)).val * ϑ, by
+      have := toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i ⟨0, h⟩; omega⟩ :=
+    Fin.eq_of_val_eq (by simp)
+  unfold getFirstOracle
+  apply Function.hfunext
+  · rw [hidx]
+  · intro a b hab
+    apply heq_of_eq
+    apply OracleStatement.oracle_eval_congr 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (oStmtIn := oStmt)
+      (j := ⟨0, h⟩) (j' := ⟨0, (instNeZeroNatToOutCodewordsCount ℓ ϑ i).pos⟩)
+      (h_j := Fin.eq_of_val_eq rfl)
+    rw [eq_cast_iff_heq]
+    refine HEq.trans (b := a) ?_ hab
+    exact (Subtype.heq_iff_coe_eq (fun x => by rw [hidx])).mpr rfl
+
 set_option maxHeartbeats 8000000 in
 omit [SampleableType L] in
 lemma firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency
@@ -287,7 +311,7 @@ lemma firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency
         (h_fw_dist_lt := h_fw_dist_lt)
     convert h_close using 1
     · exact h_zeroIdxLast_eq.symm
-    · exact (cast_heq _ _).trans (OracleStatement.oracle_heq_congr 𝔽q β
+    · exact (getFirstOracle_heq 𝔽q β oStmt _).trans (OracleStatement.oracle_heq_congr 𝔽q β
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (oStmtIn := oStmt)
         (j := ⟨0, by
           letI := instNeZeroNatToOutCodewordsCount ℓ ϑ (Fin.last ℓ)
@@ -361,7 +385,7 @@ lemma firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency
     have h_zeroIdx0_eq : zeroIdx0 = (0 : Fin r) := Fin.eq_of_val_eq (by simp [zeroIdx0, j0])
     convert h_close using 1
     · exact h_zeroIdx0_eq.symm
-    · exact (cast_heq _ _).trans (OracleStatement.oracle_heq_congr 𝔽q β
+    · exact (getFirstOracle_heq 𝔽q β oStmt _).trans (OracleStatement.oracle_heq_congr 𝔽q β
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (oStmtIn := oStmt)
         (j := ⟨0, by
           letI := instNeZeroNatToOutCodewordsCount ℓ ϑ (Fin.last ℓ)
@@ -730,7 +754,7 @@ private theorem finalOracleRaw_zero_heq_getFirstOracle
         exact Nat.pos_of_neZero (toOutCodewordsCount ℓ ϑ (Fin.last ℓ))⟩ := by
     apply Fin.eq_of_val_eq
     rfl
-  dsimp only [getFirstOracle, finalOracleRaw]
+  dsimp only [finalOracleRaw]
   exact (OracleStatement.oracle_heq_congr 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (oStmtIn := oStmtOut)
     (j := ⟨0, ht⟩)
@@ -740,7 +764,7 @@ private theorem finalOracleRaw_zero_heq_getFirstOracle
     (h_j := (Fin.eq_of_val_eq rfl :
       (⟨0, ht⟩ : Fin (toOutCodewordsCount ℓ ϑ (Fin.last ℓ))) = ⟨0, by
         letI := instNeZeroNatToOutCodewordsCount ℓ ϑ (Fin.last ℓ)
-        exact Nat.pos_of_neZero _⟩))).trans (cast_heq _ _).symm
+        exact Nat.pos_of_neZero _⟩))).trans (getFirstOracle_heq 𝔽q β oStmtOut _).symm
 
 omit [SampleableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [NeZero ϑ] in
 /-- Transport `UDRClose` across an index equality and a heterogeneous function equality. -/
