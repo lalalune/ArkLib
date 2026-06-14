@@ -36,10 +36,11 @@ to prove `x^2 + y^2 <= M(n)^2`; the elementary inequality
 namespace ProximityGap.Frontier.DyadicPhaseChaining
 
 open Finset
+open scoped BigOperators
 
 /-- The additive chaining budget accumulated along the first `N` dyadic levels. -/
 def PhaseChainingBudget (A inc : ℕ → ℝ) (N : ℕ) : ℝ :=
-  A 0 + ∑ i in range N, inc i
+  A 0 + ∑ i ∈ range N, inc i
 
 /--
 A phase-increment law consists of a levelwise recursion plus a global budget for
@@ -72,7 +73,7 @@ theorem level_le_phaseChainingBudget {A inc : ℕ → ℝ} {N : ℕ}
         A (N + 1) ≤ A N + inc N := hN
         _ ≤ PhaseChainingBudget A inc N + inc N := by linarith
         _ = PhaseChainingBudget A inc (N + 1) := by
-          simp [PhaseChainingBudget, sum_range_succ, add_assoc, add_comm, add_left_comm]
+          simp [PhaseChainingBudget, sum_range_succ, add_assoc, add_comm]
 
 /-- A certified phase-increment law immediately bounds the top level. -/
 theorem level_le_of_phaseIncrementLaw {A inc : ℕ → ℝ} {N : ℕ} {B : ℝ}
@@ -93,7 +94,7 @@ theorem not_phaseIncrementLaw_of_budget_lt {A inc : ℕ → ℝ} {N : ℕ} {B : 
 
 /-- The multiplicative budget accumulated along the first `N` dyadic levels. -/
 def MultiplicativeChainingBudget (Q step : ℕ → ℝ) (N : ℕ) : ℝ :=
-  (∏ i in range N, step i) * Q 0
+  (∏ i ∈ range N, step i) * Q 0
 
 /--
 The square-descent law requested by the #407 phase-alignment reduction.
@@ -131,7 +132,7 @@ theorem level_le_multiplicativeChainingBudget {Q step : ℕ → ℝ} {N : ℕ}
         _ ≤ step N * MultiplicativeChainingBudget Q step N := by
           exact mul_le_mul_of_nonneg_left ihN (hnonneg N (Nat.lt_succ_self N))
         _ = MultiplicativeChainingBudget Q step (N + 1) := by
-          simp [MultiplicativeChainingBudget, prod_range_succ, mul_assoc, mul_comm, mul_left_comm]
+          simp [MultiplicativeChainingBudget, prod_range_succ, mul_assoc, mul_comm]
 
 /-- A certified square-descent law immediately bounds the top level. -/
 theorem level_le_of_squareDescentLaw {Q step : ℕ → ℝ} {N : ℕ} {B : ℝ}
@@ -161,7 +162,7 @@ factor `2` is the random-scale doubling and the drift product is the entire
 excess over the target `sqrt (n * log (p / n))` envelope.
 -/
 def DyadicSquareDriftBudget (Q drift : ℕ → ℝ) (N : ℕ) : ℝ :=
-  (∏ i in range N, (2 : ℝ) * (1 + drift i)) * Q 0
+  (∏ i ∈ range N, (2 : ℝ) * (1 + drift i)) * Q 0
 
 /--
 `DyadicSquareDriftLaw` is the closed deterministic consumer for the live
@@ -248,7 +249,7 @@ theorem level_le_affineSquareDescentBudget {Q drift : ℕ → ℝ} {c : ℝ} {N 
       calc
         Q (N + 1) ≤ c * Q N + drift N := hN
         _ ≤ c * AffineSquareDescentBudget c (Q 0) drift N + drift N := by
-          exact add_le_add_right (mul_le_mul_of_nonneg_left ihN hc) (drift N)
+          nlinarith [mul_le_mul_of_nonneg_left ihN hc]
         _ = AffineSquareDescentBudget c (Q 0) drift (N + 1) := by
           simp [AffineSquareDescentBudget]
 
@@ -322,8 +323,23 @@ theorem squareDescentLaw_of_localAlignedChildSubmaximality {M : ℕ → ℝ} {N 
     norm_num
   · intro i hi
     obtain ⟨x, y, hsum, hsq⟩ := hlocal i hi
-    rw [hsum]
-    exact aligned_sum_sq_le_two_mul_of_sq_add_sq_le hsq
+    simpa [hsum] using aligned_sum_sq_le_two_mul_of_sq_add_sq_le hsq
+
+/--
+Direct falsification hook for the aligned-child route.
+
+If a probe or theorem produces a terminal square mass above the exact `2`-per-level budget, then
+the local aligned-child submaximality hypothesis cannot hold through that tower window.
+-/
+theorem not_localAlignedChildSubmaximality_of_budget_lt {M : ℕ → ℝ} {N : ℕ}
+    (hbad :
+      MultiplicativeChainingBudget (fun i => M i ^ 2) (fun _ => (2 : ℝ)) N < M N ^ 2) :
+    ¬ LocalAlignedChildSubmaximality M N := by
+  intro hlocal
+  exact not_squareDescentLaw_of_budget_lt
+    (Q := fun i => M i ^ 2) (step := fun _ => (2 : ℝ)) (N := N)
+    (B := MultiplicativeChainingBudget (fun i => M i ^ 2) (fun _ => (2 : ℝ)) N) hbad
+    (squareDescentLaw_of_localAlignedChildSubmaximality hlocal)
 
 end ProximityGap.Frontier.DyadicPhaseChaining
 
@@ -344,3 +360,5 @@ end ProximityGap.Frontier.DyadicPhaseChaining
   ProximityGap.Frontier.DyadicPhaseChaining.aligned_sum_sq_le_two_mul_of_sq_add_sq_le
 #print axioms
   ProximityGap.Frontier.DyadicPhaseChaining.squareDescentLaw_of_localAlignedChildSubmaximality
+#print axioms
+  ProximityGap.Frontier.DyadicPhaseChaining.not_localAlignedChildSubmaximality_of_budget_lt

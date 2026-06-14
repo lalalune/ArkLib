@@ -852,6 +852,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusImmunityMuN
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSubfieldBlowup
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSupplyExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BesselDeviationLower
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConstantIndexGaussBarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
@@ -861,6 +862,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2NearAffine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2OwnedTriples
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Universal
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LineBallSingleCodewordEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
@@ -875,7 +877,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChaining
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChainingSubmaxRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2NegationStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2VanishWidthFourLaw
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._LineBallSingleCodewordEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RungListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw

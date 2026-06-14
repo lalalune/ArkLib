@@ -73,6 +73,34 @@ theorem quarter_fieldSize_le_constantIndexGaussScale {q m : ℝ} (hq : 0 ≤ q) 
     _ ≤ constantIndexGaussScale q m := principal_part_le_constantIndexGaussScale hq (by linarith)
 
 /--
+Square-root field-size bounds are above a target `C * n` exactly once `(C * n)^2 < q`.
+
+This packages the arithmetic reason `√q`-scale Weil bounds are vacuous for the prize budget when
+the proper subgroup size `n` is far below `√q`.
+-/
+theorem target_below_sqrt_fieldSize {q n C : ℝ}
+    (hCn : 0 ≤ C * n) (hsmall : (C * n) ^ 2 < q) :
+    C * n < Real.sqrt q :=
+  (Real.lt_sqrt hCn).2 hsmall
+
+/--
+Exact subgroup-index version of `target_below_sqrt_fieldSize`.
+
+If `q = m * n + 1` and `C^2 * n < m`, then the `√q` method scale is already larger than the
+target `C * n`.  In the prize regime the index `m ≈ q/n` is polynomial in `n`, while acceptable
+`C` is at most polylogarithmic, so this is the arithmetic obstruction behind the "Weil is
+vacuous below `√q`" warning.
+-/
+theorem target_below_sqrt_fieldSize_of_index_dominates
+    {q m n C : ℝ} (hq : q = m * n + 1) (hn : 0 < n) (hC : 0 ≤ C)
+    (hdom : C ^ 2 * n < m) :
+    C * n < Real.sqrt q := by
+  have hCn : 0 ≤ C * n := mul_nonneg hC hn.le
+  refine target_below_sqrt_fieldSize hCn ?_
+  rw [hq]
+  nlinarith [sq_nonneg C, sq_nonneg n]
+
+/--
 Idealized subgroup-size normalization of `quarter_fieldSize_le_constantIndexGaussScale`.
 
 If `q = m * n`, then the constant-index Gauss-triangle scale is at least `(m / 4) * n`.
@@ -137,6 +165,37 @@ theorem target_below_index_loss_lt_constantIndexGaussScale_exact
   exact lt_of_lt_of_le htarget hfloor
 
 /--
+Contrapositive-friendly form of the same barrier in the idealized normalization.
+If the constant-index Gauss-triangle scale fits a squared target `C * n`, then the index is
+forced below the target multiplier: `m / 4 ≤ C`.
+-/
+theorem index_le_four_targetMultiplier_of_constantIndexGaussScale_le_target
+    {q m n C : ℝ} (hq : q = m * n) (hn : 0 < n) (hm : 2 ≤ m)
+    (hfit : constantIndexGaussScale q m ≤ C * n) :
+    m / 4 ≤ C := by
+  have hfloor := index_over_four_subgroupSize_le_constantIndexGaussScale
+    (q := q) (m := m) (n := n) hq (le_of_lt hn) hm
+  have hmul : (m / 4) * n ≤ C * n := le_trans hfloor hfit
+  nlinarith
+
+/--
+Exact multiplicative-subgroup form of
+`index_le_four_targetMultiplier_of_constantIndexGaussScale_le_target`.
+
+Thus any argument whose only input is the constant-index Gauss-triangle scale can meet a prize
+target `C * n` only when the subgroup index is `O(C)`.  In the prize thin-subgroup regime the
+index is polynomial in `n`, while `C` is only polylogarithmic.
+-/
+theorem index_le_four_targetMultiplier_of_constantIndexGaussScale_le_target_exact
+    {q m n C : ℝ} (hq : q = m * n + 1) (hn : 0 < n) (hm : 2 ≤ m)
+    (hfit : constantIndexGaussScale q m ≤ C * n) :
+    m / 4 ≤ C := by
+  have hfloor := index_over_four_subgroupSize_le_constantIndexGaussScale_exact
+    (q := q) (m := m) (n := n) hq (le_of_lt hn) hm
+  have hmul : (m / 4) * n ≤ C * n := le_trans hfloor hfit
+  nlinarith
+
+/--
 Field-size normalization of the same obstruction.  If a desired target `C * n` lies below `q/4`,
 then it is below the constant-index Gauss-triangle scale for every index `m ≥ 2`.
 
@@ -151,10 +210,14 @@ theorem target_below_quarter_fieldSize_lt_constantIndexGaussScale
 
 #print axioms principal_part_le_constantIndexGaussScale
 #print axioms quarter_fieldSize_le_constantIndexGaussScale
+#print axioms target_below_sqrt_fieldSize
+#print axioms target_below_sqrt_fieldSize_of_index_dominates
 #print axioms index_over_four_subgroupSize_le_constantIndexGaussScale
 #print axioms index_over_four_subgroupSize_le_constantIndexGaussScale_exact
 #print axioms target_below_index_loss_lt_constantIndexGaussScale
 #print axioms target_below_index_loss_lt_constantIndexGaussScale_exact
+#print axioms index_le_four_targetMultiplier_of_constantIndexGaussScale_le_target
+#print axioms index_le_four_targetMultiplier_of_constantIndexGaussScale_le_target_exact
 #print axioms target_below_quarter_fieldSize_lt_constantIndexGaussScale
 
 end ProximityGap.Frontier.ConstantIndexGaussBarrier
