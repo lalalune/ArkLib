@@ -516,3 +516,24 @@ if doing the BGK lane):
 
 NET: the reduced forms confirm the in-tree map — best energy `|A|^{5/2}` (√-lossy), best sup BGK `n^{1-o(1)}`
 (di Benedetto `n^{0.989}`), Ramanujan only semiprimitive (not prize point). No citable closure exists.
+
+## §5.0 Mahler-measure / flat-Littlewood lens — 2026-06-14 (KILLS the "structure-aware norm bound" route)
+
+NEW reformulation: (BIND) `|N_{ℚ(ζ_n)/ℚ}(Σ_{i∈S}ζ^i)| = |Res(x^{n/2}+1, f_S)|`, `f_S=Σ_{i∈S}x^i` a
+**0/1 (Littlewood-type) polynomial**; `|N| ≈ M(f_S)^{n/2}·U(S)` with `M`=Mahler measure dominating.
+The §5.0 hope (house bound loose by ~2⁶¹ ⟹ structure-aware bound proves `|N|<p`) is **REFUTED** by
+the flat-polynomial literature: `M(f_S)` of 0/1 polys is `Θ(√|S|)` and **saturated** (flat
+Littlewood polys exist; Choi–Erdélyi `M/√n>0.954`), so `|N(β_S)|` reaches the AM-GM bound
+`|S|^{n/4}` up to a lower-order deficit. Verified (`probe_flat_littlewood_norm.py`): Rudin–Shapiro
+0/1 subset gives `|N|>p` at n=128. So §5.0 cannot be closed by a norm UPPER bound — it reduces to
+the COUNTING (#non-antipodal S with `p|N` at the binding band) = the BGK √-cancellation. All on disk.
+
+| # | paper | id | bearing |
+|---|---|---|---|
+| ML1 | Beck (et al.), **Flat Littlewood Polynomials Exist** | arXiv **1907.09464** | flat ±1 polys with sup-norm `≤Δ√n` exist ⟹ Mahler measure `~√n` achievable ⟹ AM-GM/house bound for (BIND) is tight; the structure-aware-bound route cannot beat it. |
+| ML2 | **Mahler measure of the Rudin–Shapiro polynomials** | arXiv **1406.2233** | explicit flat family; `M~√(2n/e)` (Saffari). The extremal 0/1 sets for the (BIND) norm. |
+| ML3 | **Asymptotic value of the Mahler measure of Rudin–Shapiro** | arXiv **1708.01189** | proves `M(RS_n)~√(2n/e)` — quantifies the saturation (deficit from `√n` is the constant `√(2/e)`, lower-order). |
+| ML4 | **Mahler's problem and Turyn polynomials** | arXiv **2405.08281** (2024) | newest on extremal/flat Mahler measure — the sharp constants the (BIND) max-norm needs. |
+| ML5 | **Distribution of mixed character sums and extremal problems for Littlewood polynomials** | arXiv **2510.06161** (2025) | ties Littlewood-extremal problems to character sums — the bridge between the Mahler lens and the BGK character-sum lens (same wall, two communities). |
+
+**Honest net:** the Mahler/Littlewood lens is a genuine NEW equivalent framing (different community, ML5 even bridges to character sums), and it DECIDES the §5.0 norm-bound sub-question NEGATIVELY: flat polynomials obstruct any `|N|<p` upper bound, so the wall is the counting/√-cancellation, not a loose house bound.
