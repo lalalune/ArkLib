@@ -9560,3 +9560,18 @@ TOO STRONG — REFUTED by adversarial verification (exactly what it's for). What
 vs-simultaneous DICHOTOMY and the proven p≤(2k)^{2k/r} bound for the ANTIPODAL config (genuine, unrefuted);
 (b) δ* is q-DEPENDENT (the wall) — now DIRECTLY confirmed by I(δ) instability above (2k)^4, reinforcing
 NOVEL-C, NOT a closure. The far-line incidence is genuinely floppy at prize scale ⟹ BGK/Paley wall stands.
+
+## 2026-06-14 (wakesync/#407): AIRTIGHT wall confirmation — binding radius is DIRTY for ρ=1/2
+Tested the structural escape "worst-case δ* is char-independent because the dirty (q-dependent) region sits
+ABOVE δ*, while the binding radius (where I_0≈budget) is deep+clean". The escape REQUIRES the binding radius
+to be clean. DIRECT TEST (probe_binding_radius_dirty.py, n=16, k=8 = ρ=1/2, deep τ=10, r=τ−k=2):
+  threshold (2k)^{2k/r}=16^8=2^32; I(δ) over primes q=97,193,257,353,449,... = 928,656,632,536,480,... —
+  ALL DISTINCT ⟹ DIRTY (q-dependent). Every accessible prime is < 2^32 ⟹ all in the dirty range.
+So for ρ=1/2 the BINDING radius itself is q-dependent (its bad-prime threshold (2k)^{2k/r}=2^32 ≫ q). The
+structural escape FAILS: δ* (worst case) is genuinely q-dependent for ρ=1/2 ⟹ the BGK/Paley sharp-constant
+WALL, airtight. (For the prize ρ=1/2, binding r*=η*n~n/log n, threshold (2k)^{2ρ/η*}=n^{Θ(log n)} ≫ q=n^β.)
+The worst-case δ*(ρ=1/2) = inf_p δ*(p) is set by the worst-case bad-prime spike = worst-case B-constant =
+the Paley sharp constant = OPEN. CONCLUSION (whole session): δ* exact-worst-case = Paley/BGK sharp constant,
+genuinely open; every closure route this session reduces to it or was refuted. The campaign's genuine yield
+is the SHARP LOCALIZATION: prize ⟺ Paley sharp constant, with the clean/dirty crossover law clean⟺η*>2ρ/β
+pinning exactly why (ρ=1/2 dirty at the binding radius for all n past ~2^8).
