@@ -210,7 +210,7 @@ input.
 -/
 
 /-- Documentation anchor for the wiring note above. -/
-theorem wiringNote : True := trivial
+def wiringNote : Unit := ()
 
 end ProximityGap.Frontier.RingHomBadScalarMono
 

@@ -189,7 +189,7 @@ thread's conclusion that R-THIN = explicit-RS curve-decodability, a recognized o
 
 This file therefore *recharacterizes* R-THIN as a 2-adic ragged-case uncertainty principle and
 **closes off** the rank lever; it does **not** prove R-THIN. -/
-theorem raggednessNote : True := trivial
+def raggednessNote : Unit := ()
 
 end ProximityGap.Frontier.FoldRankNoGo
 

@@ -876,6 +876,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FoldedSumThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.FpReductionHom
 import ArkLib.Data.CodingTheory.ProximityGap.FpVanishingBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusImmunityMuN
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSubfieldBlowup
@@ -907,6 +908,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalEvenOddDescent
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
@@ -1080,6 +1082,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseWeilBoundInstances
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianPoly
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateNormBound
+import ArkLib.Data.CodingTheory.ProximityGap.HeightGateThresholdAnalysis
 import ArkLib.Data.CodingTheory.ProximityGap.HenselNumeratorWeightWitness
 import ArkLib.Data.CodingTheory.ProximityGap.HighMultiplicityBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.HigherIntersectionEnergy
@@ -1172,6 +1175,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread
 import ArkLib.Data.CodingTheory.ProximityGap.KambireSumsetR2
 import ArkLib.Data.CodingTheory.ProximityGap.KatzEffectiveGaussSum
 import ArkLib.Data.CodingTheory.ProximityGap.KrawtchoukPoly
+import ArkLib.Data.CodingTheory.ProximityGap.L2MahlerNormBound
 import ArkLib.Data.CodingTheory.ProximityGap.LDAttainment
 import ArkLib.Data.CodingTheory.ProximityGap.LDEliasCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.LDFourRate
@@ -1414,6 +1418,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MarkedCurveDecodableVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.MasterLoop45
 import ArkLib.Data.CodingTheory.ProximityGap.MatchingDomainUniqueness
 import ArkLib.Data.CodingTheory.ProximityGap.MatchingForcingLemmas
+import ArkLib.Data.CodingTheory.ProximityGap.MaximalEnergyUniformBound
 import ArkLib.Data.CodingTheory.ProximityGap.MeanDegreeCauchySchwarz
 import ArkLib.Data.CodingTheory.ProximityGap.MeanDegreeDeepBand
 import ArkLib.Data.CodingTheory.ProximityGap.MeanDegreeGeneral
