@@ -185,6 +185,8 @@ namespace ProximityGap.LDLeMCANoGo.Instance
 
 open ProximityGap.LDLeMCANoGo
 
+instance : Fact (Nat.Prime 5) := ⟨by norm_num⟩
+
 /-- The constant code over `ZMod 5` on a 3-point domain (Reed–Solomon, `k = 1`). -/
 def Ccode : Finset (Fin 3 → ZMod 5) :=
   Finset.univ.image fun c : ZMod 5 => fun _ => c
