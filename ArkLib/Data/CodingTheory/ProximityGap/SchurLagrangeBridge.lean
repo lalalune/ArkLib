@@ -239,6 +239,51 @@ theorem dividedDifferencePow_card_add_one (hvs : Set.InjOn v s) (hs : 2 ≤ #s) 
   rw [hcc, hcard_pred]
   ring
 
+
+/-- **Bridge anchor, `b = #s + 2`: the third Schur value `h_3 = e_1³ − 2 e_1 e_2 + e_3`.**
+The recurrence at `b = #s+2` leaves the top **three** summands (anchors `h_0=1`, `h_1=Σv_i`,
+`h_2` = `dividedDifferencePow_card_add_one`); with `e_2 = P.coeff (#s−2)`, `e_3 = −P.coeff (#s−3)`,
+`P.coeff (#s−1) = −Σv_i` this collapses to
+`[s]x^{#s+2} = (Σv_i)³ − 2·(Σv_i)·P.coeff (#s−2) − P.coeff (#s−3)`.
+Extends the character-sum-free Schur ledger to the fifth value `h_3`. -/
+theorem dividedDifferencePow_card_add_two (hvs : Set.InjOn v s) (hs : 3 ≤ #s) :
+    dividedDifferencePow s v (#s + 2)
+      = (∑ i ∈ s, v i) ^ 3
+        - 2 * (∑ i ∈ s, v i) * (∏ i ∈ s, (X - C (v i))).coeff (#s - 2)
+        - (∏ i ∈ s, (X - C (v i))).coeff (#s - 3) := by
+  classical
+  have hsne : s.Nonempty := Finset.card_pos.mp (by omega)
+  set P : F[X] := ∏ i ∈ s, (X - C (v i)) with hP
+  rw [dividedDifferencePow_recurrence (#s + 2) (by omega), ← hP]
+  have hidx : ∀ m, (#s + 2) - #s + m = 2 + m := fun m => by omega
+  simp only [hidx]
+  have hrw : (#s : ℕ) = (#s - 3) + 1 + 1 + 1 := by omega
+  conv_lhs => rw [hrw]
+  rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ]
+  -- low block vanishes
+  have hlow : ∀ m ∈ Finset.range (#s - 3),
+      P.coeff m * dividedDifferencePow s v (2 + m) = 0 := by
+    intro m hm
+    have : dividedDifferencePow s v (2 + m) = 0 := by
+      apply dividedDifferencePow_eq_zero_of_lt hvs
+      have := Finset.mem_range.mp hm; omega
+    rw [this, mul_zero]
+  rw [Finset.sum_eq_zero hlow, zero_add]
+  -- normalise the dd-indices to the anchors
+  have ha : (2 : ℕ) + (#s - 3) = #s - 1 := by omega
+  have hb : (2 : ℕ) + (#s - 3 + 1) = #s := by omega
+  have hc : (2 : ℕ) + (#s - 3 + 1 + 1) = #s + 1 := by omega
+  rw [ha, hb, hc, dividedDifferencePow_eq_one hvs hsne,
+      dividedDifferencePow_card_eq_sum hvs hsne,
+      dividedDifferencePow_card_add_one hvs (by omega), mul_one]
+  -- normalise the coeff-indices and use Vieta for P.coeff (#s-1)
+  have hcc1 : (#s - 3 + 1) = #s - 2 := by omega
+  have hcc2 : (#s - 3 + 1 + 1) = #s - 1 := by omega
+  have hcard_pred : P.coeff (#s - 1) = - ∑ i ∈ s, v i := by
+    have h := prod_X_sub_C_coeff_card_pred s v (Finset.card_pos.mpr hsne); simpa using h
+  rw [hcc1, hcc2, hcard_pred]
+  ring
+
 end ProximityGap.SchurLagrange
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -249,3 +294,4 @@ end ProximityGap.SchurLagrange
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_eq_sum
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_recurrence
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_add_one
+#print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_add_two

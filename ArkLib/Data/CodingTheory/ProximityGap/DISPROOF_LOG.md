@@ -8899,3 +8899,47 @@ the CHAR-P WALL: forcing tail e_i (2m≤i≤rm, m∤i) to vanish needs P|X^n−1
 Kambiré route ALSO ⟹ open core (BCHKS 1.12 / Paley graph, open Mar-2026 arXiv 2603.29571). My empirical R1 test
 (mu_16,k=2) saturated above δ*, inconclusive. CORRECTION (per swarm ba96383b): earlier "K=O(1)/K≈1.28" was a crude
 misreading; conductor is rank-driven n^{2r-1}, real core=BGK eigenvalue cancellation, dimension-obstructed (n≪√p).
+
+## 2026-06-14 (wakesync/#407): independent corroboration of structural spurious-suppression (the bad-prime bound is multi-constraint, not subset-sum)
+Probed the bad-prime object directly (probe: bad primes p≡1 mod n with a NON-negation-symmetric subset
+of μ_n summing to 0 mod p — char-p-only "spurious" since over ℂ only neg-symmetric subsets sum to 0).
+FINDING: the BROAD object (any subset-sum=0) has MANY bad primes for n=16 (17,97,113,193,241,353,401,
+433,577,...), far more than the swarm's STRUCTURED bad-scalar config (n=16 bad set={17} only). So the
+spurious suppression genuinely lives in the MULTIPLE simultaneous window constraints (e_1=0 ∧ e_3=0
+anti-correlation per swarm), NOT in subset-sum-to-0 alone — independent corroboration of the swarm's
+"structurally suppressed" finding. The precise open core: bound the largest bad prime (for the
+structured config) by N₀=|H^{(+r)}|~ε*q, so prize q≫N₀ ⟹ clean. = the BGK/spurious-config-suppression
+open core, very precisely stated; proven n≤16 computationally, general proof open (the multi-constraint
+anti-correlation that makes the structured spurious vanish at ~N₀). Not closed; genuine engagement +
+corroboration. n=8 has NO broad bad primes (size≤6) in first 40 — even more suppressed.
+
+## 2026-06-14 (wakesync/#407): |H^{(+r)}(μ_s)| ~ s^r (poly count) + small-subgroup synthesis assessment
+Engaged the swarm's most promising lead (small-subgroup synthesis: if worst-case is subgroup μ_s with
+s~log n, bad primes ≤ (s)^{s/2}~√n ≪ q ⟹ prize clean, via Dvornicich-Zannier 2002, NOT Paley graph).
+GENUINE DATA: computed |H^{(+r)}(μ_{2^t})| (distinct r-fold sums of 2^t-th roots over ℂ):
+  r=3: t=1..5 → 4,16,96,704,5504 ≈ 0.17·s^3.  ⟹ |H^{(+r)}(μ_s)| ~ C·s^r (POLYNOMIAL in s, degree r),
+  NOT exponential 2^s. (At fixed s=8, grows with r: 33,96,225,...,2241 < C(s-1+r,r) trivial bound.)
+ASSESSMENT: poly count supports the synthesis structure, BUT the closure hinges on the WORST-CASE
+subgroup being SMALL (s*~log n/log log n). Determining the worst s = the R1/R2 optimality (Kambiré
+stack maximizes |H^{(+r)}| over all stacks) = the tail-e_i char-p wall (open). If worst-case is
+small-subgroup AND R1/R2 holds there, bad primes ≤ √n ≪ q ⟹ closure (non-Paley!). The synthesis
+TRANSFORMS the open core to "prove worst-case is small-subgroup + R1/R2 for small s" — potentially more
+tractable (small finite configs) than general BGK. Swarm flags "promising, needs verification, not
+closure." My Galois-prime mechanism (p^r|N(α)) + this poly-count are the two genuine count-lane bricks;
+the worst-case-s determination remains open. NOT a closure; the most promising open route.
+
+## 2026-06-14 (wakesync/#407): small-subgroup synthesis CLARIFIED — Kambiré tie r=ρs+2 makes worst-s small
+Resolved the worst-case-s direction (I'd confused free-r with the Kambiré tie). WITH the construction's
+tie r=ρs+2 (δ=1−ρ−2/s) and the poly count |H^{(+r)}(μ_s)|~s^r:
+  count=budget n  ⟹  s^{ρs+2}=n  ⟹  ρs·log s ~ log n  ⟹  **s* ~ log n/(ρ log log n)** (SMALL).
+δ*=1−ρ−2/s* ≈ 1−ρ−Θ(log log n/log n) (vs conjectured 1−ρ−Θ(1/log n); same leading 1−ρ, correction
+term in the same ballpark). So the worst subgroup is SMALL (s*~log n/log log n), and bad primes there
+≤ (s*)^{s*/2} ~ √n ≪ q ⟹ prize prime CLEAN. The small-subgroup synthesis is STRUCTURALLY CONSISTENT.
+[Earlier confusion: with FREE r at fixed δ, larger s wins; but r is TIED to s by the window/agreement
+ structure, which forces small s* at the count=budget threshold.]
+REMAINING OPEN PIECE: R1/R2 optimality (the Kambiré μ_{s*} stack is the WORST — no monomial stack
+(X^a,X^b) beats it) = the tail-e_i char-p rigidity, BUT now over SMALL finite configs (s*~log n/log log n,
+so ~log n elements). This is the genuine open core of the count lane — potentially more tractable than
+general BGK (finite small-subgroup rigidity vs infinite character-sum cancellation). Two genuine bricks
+landed (Galois p^r|N, poly count |H|~s^r); the small-s R1/R2 is the concrete next target. NOT closure;
+the most promising non-Paley route, now structurally clarified.

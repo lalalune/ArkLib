@@ -871,3 +871,48 @@ non-saturated regime). Evidence: bad primes empirically all `< N₀` (n=16,32,64
 so a proof needs the second-moment / structural cancellation that makes spurious vanish sharply at `~N₀`.
 This is a config-existence / good-reduction statement (bad-reduction primes of the gap variety all `≲ N₀`),
 strictly cleaner than the e₂-value "Half-Sum Lemma". PROVEN n=8,16; reduces the prize to this single bound.
+
+## UPDATE 2026-06-13 (ultracode session) — count-lane open core = "sharpen the resultant threshold from n^{n/2} to poly(n)"; multi-lane workflow + robustness
+
+A multi-lane attack workflow (count/Half-Sum, e₂-rigidity, constant-index energy, R4 sup-norm ×2,
+Action-Orbit, odd-order, split-ideal-SVP — each adversarially verified) was launched but DIED on
+API rate/session limits (re-runnable after reset). Main-loop findings this session:
+
+**Robustness of the count-lane reduction (★) "no spurious config for p>N₀":**
+  · **n=16**: ALL bad primes scanned to **50000** (sizes 4,6,8) = **{17}** only (N₀∈[25,41]). No large bad
+    prime exists → δ* exact for n=16 at every prize prime q>17. (`probe_407_badprime_robustness.py`)
+  · **n=128**: size-4 spurious = NONE across the first 10 primes ≡1 mod 128 (indices 2–39).
+    (`probe_407_n128_check.py`)
+
+**The count lane = the SAME crux as the in-tree e₂-rigidity, now precisely located.** `E2VanishRigidityModP.lean`
+PROVES `e2_extra_solution_threshold`: a new mod-p `e₂=0` solution forces `p ≤ (n²+n)^{n/2}` — i.e. above that
+EXPLICIT threshold the `e₂=0` locus over F_p IS the char-0 locus. But `(n²+n)^{n/2}` is EXPONENTIAL (≫ the
+prize prime q=n·2^128 for n>~256), while the MEASURED bad primes are `≲ n³ ≪ q`. So the entire off-wall
+closure = **sharpen this resultant threshold from `n^{n/2}` (proven, crude size bound) to `poly(n)` (measured)**
+— equivalently, prove the relevant cyclotomic RESULTANT (whose prime factors are the bad primes) has only
+**small** prime factors, not just small size. The bad primes are exactly **non-lifting vanishing-sum
+collisions** `Σ_{ζ∈J△J'}±ζ ≡ 0 (mod p)` among the sumset roots — governed by **Dvornicich–Zannier**
+("Sums of roots of unity vanishing modulo a prime", Archiv Math 79, 2002 — Conway–Jones inequality for the
+congruence case). [LEAD: get its exact inequality; it may bound the modulus p in terms of weight+order.]
+
+**Promising synthesis (FLAG — needs verification):** the prize δ* worst-case sits at a subgroup μ_s with
+`s ~ log n` (the sumset count N₀≈ε*q=n forces small s). For such s, the small-subgroup pin
+([[arklib-389-smallsubgroup-pin-CLOSED]], [[arklib-389-sidon-smallsubgroup]]) gives bad primes bounded by
+the cyclotomic resultant `≤ 2^s`. Since the worst-case `s~log n` ⟹ `2^s ~ n ≪ q`, the prize prime cannot
+divide the resultant ⟹ clean ⟹ δ*=window-edge. CAVEAT (the known wall): the small-subgroup pin gives the
+agreement/energy structure (`r(c)≤2`) cleanly but DEPLOYING to the bad-scalar COUNT in the window interior
+historically hit "beyond-Johnson LD". The count lane (this lane) is precisely the attempt to get the COUNT
+directly (off the energy wall) — whether the resultant≤2^s bound transfers to the count is the open question
+to verify when the workflow re-runs. NOT a claimed closure; a promising thread to verify.
+
+## CORRECTION 2026-06-13 — the small-subgroup-pin synthesis does NOT close the prize (crude vs measured)
+
+The prior "promising synthesis" (small-subgroup pin ⟹ bad primes ≤ 2^s ⟹ prize clean) is CORRECTED.
+Data (`probe_407_smallsubgroup_resultant.py`): for the eval-domain subgroup μ_s, bad primes are `< 2^s`
+AND `< s³` (μ_8: none; μ_16: {17}<4096). BUT the spurious configs live in the **eval domain μ_n** (n=2^30,
+LARGE), so the pin's crude bound is `2^n ≫ q` — it does NOT make the prize prime clean. The s~log n that
+appears in the worst-case SUMSET does not shrink the eval-domain bound. So the small-subgroup pin gives the
+same CRUDE exponential threshold as `e2_extra_solution_threshold` (n^{n/2}); neither reaches poly(n).
+**Net: the open core is unchanged** — prove bad primes ≤ **poly(n)** (measured ≈n³) vs the proven crude
+`2^n`/`n^{n/2}`. This sharpening is the genuine unproven step; no closure. Honest correction of an
+over-optimistic thread.
