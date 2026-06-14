@@ -302,12 +302,14 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
       -- Set.mem_singleton_iff, and_true, exists_const, Prod.mk.injEq, existsAndEq]
       rw [bind_pure_comp]
       dsimp only [Functor.map]
-      rw [OptionT.simulateQ_bind]
+      -- the `guard >>= …` desugars to the OptionT Monad-instance `Bind.bind` (defeq to but not
+      -- syntactically `OptionT.bind`), so bridge with `erw`.
+      erw [OptionT.simulateQ_bind]
       erw [support_bind]
-      rw [simulateQ_ite]
+      erw [OptionT.simulateQ_ite]
       simp only [Fin.isValue, Message, Matrix.cons_val_zero, id_eq, MessageIdx, support_ite,
-        toPFunctor_emptySpec, Function.comp_apply, OptionT.simulateQ_pure, Set.mem_iUnion,
-        exists_prop]
+        toPFunctor_emptySpec, Function.comp_apply, OptionT.simulateQ_pure, OptionT.simulateQ_failure,
+        Set.mem_iUnion, exists_prop]
       simp only [OptionT.simulateQ_failure]
       erw [_root_.simulateQ_pure]
     set V_check := step.verifierCheck stmtIn
