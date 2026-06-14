@@ -100,4 +100,23 @@ theorem tzPrimeSupply_8_three : TZPrimeSupply 8 (3 : ℝ) 8 := by
       = ({521, 569, 577, 593, 601, 617, 641, 673} : Finset ℕ).card := by decide
     _ ≤ (tzWindow 8 (3 : ℝ)).card := Finset.card_le_card hsub
 
+/-- **Concrete discharge for `n = 128, β = 2`.**  The window `[128², 2·128²] = [16384, 32768]`
+contains the ten primes `17921, 18049, 18433, 19073, 19457, 19841, 20353, 21121, 21377, 22273`, all
+`≡ 1 (mod 128)`.  (The supply ladder is now `4, 6, 6, 8, 10` across `n = 8, 16, 32, 64, 128` — the
+`n^{β−1}`-type growth of the [TZ24] window, extending the concrete ceiling toward larger `s`.) -/
+theorem tzPrimeSupply_128_two : TZPrimeSupply 128 (2 : ℝ) 10 := by
+  refine ⟨?_⟩
+  have hpow : ((128 : ℕ) : ℝ) ^ (2 : ℝ) = 16384 := by
+    rw [show (2 : ℝ) = ((2 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+  have hsub : ({17921, 18049, 18433, 19073, 19457, 19841, 20353, 21121, 21377, 22273} : Finset ℕ)
+      ⊆ tzWindow 128 (2 : ℝ) := by
+    intro p hp
+    rw [mem_tzWindow]
+    fin_cases hp <;>
+      exact ⟨by norm_num, by decide, by rw [hpow]; norm_num, by rw [hpow]; norm_num⟩
+  calc (10 : ℕ)
+      = ({17921, 18049, 18433, 19073, 19457, 19841, 20353, 21121, 21377, 22273} : Finset ℕ).card :=
+        by decide
+    _ ≤ (tzWindow 128 (2 : ℝ)).card := Finset.card_le_card hsub
+
 end ArkLib.ProximityGap.KKH26
