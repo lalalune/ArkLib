@@ -1081,6 +1081,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWeilBoundInstances
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianPoly
+import ArkLib.Data.CodingTheory.ProximityGap.HeightGateAMGM
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateNormBound
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateThresholdAnalysis
 import ArkLib.Data.CodingTheory.ProximityGap.HenselNumeratorWeightWitness
