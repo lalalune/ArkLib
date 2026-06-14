@@ -16,13 +16,11 @@ bound carries a `√log` factor. The correct lever is **near-Ramanujan up to √
 
 > `NearRamanujanSqrtLog ψ G C : ∀ b≠0, ‖η_b‖ ≤ C·√(|G|·log(q/|G|))`.
 
-This file:
-* defines that (correctly-scaled) target and its bridge to the in-tree open residual
-  `WorstCaseIncompleteSumBound` at scale `C²·|G|·log(q/|G|)` (generalizing the too-strong `4|G|`
-  bridge), and
-* assembles the **two-sided frame**: the Parseval floor (`GaussPeriodParsevalFloor`, PROVEN lower
-  half, `M² ≥ n(q−n)/(q−1) ≈ n`) together with `NearRamanujanSqrtLog` (the named-OPEN upper half)
-  brackets `M²`:  `n(q−n)/(q−1) ≤ M² ≤ C²·n·log(q/n)`.
+This file defines that (correctly-scaled) target and its bridge to the in-tree open residual
+`WorstCaseIncompleteSumBound` at scale `C²·|G|·log(q/|G|)` (generalizing the too-strong `4|G|`
+bridge), and assembles the **two-sided frame**: the Parseval floor (`GaussPeriodParsevalFloor`,
+PROVEN lower half, `M² ≥ n(q−n)/(q−1) ≈ n`) together with `NearRamanujanSqrtLog` (the named-OPEN
+upper half) brackets `M²`:  `n(q−n)/(q−1) ≤ M² ≤ C²·n·log(q/n)`.
 
 Lower half proven (Parseval); upper half = the recognized-open BGK / Paley sub-`√q` cancellation
 (F4), kept as a named hypothesis. This is the most-promising δ* lever (ledger "lever D"): the floor
@@ -61,21 +59,16 @@ theorem worstCaseIncompleteSumBound_of_nearRamanujan {ψ : AddChar F ℂ} {G : F
   set L : ℝ := (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card) with hL
   have hLnn : 0 ≤ L := by
     rw [hL]
-    by_cases hG0 : G.card = 0
+    rcases Nat.eq_zero_or_pos G.card with hG0 | hGpos
     · simp [hG0]
-    · have hGposNat : 0 < G.card := Nat.pos_of_ne_zero hG0
-      have hGpos : (0 : ℝ) < (G.card : ℝ) := by exact_mod_cast hGposNat
-      have hdiv : (1 : ℝ) ≤ (Fintype.card F : ℝ) / G.card := by
-        rw [le_div_iff₀ hGpos]
-        simpa using hq
-      have hlog : 0 ≤ Real.log ((Fintype.card F : ℝ) / G.card) :=
-        Real.log_nonneg hdiv
-      positivity
+    · have hGposR : (0 : ℝ) < (G.card : ℝ) := by exact_mod_cast hGpos
+      have h1 : (1 : ℝ) ≤ (Fintype.card F : ℝ) / G.card :=
+        (le_div_iff₀ hGposR).mpr (by simpa using hq)
+      exact mul_nonneg (le_of_lt hGposR) (Real.log_nonneg h1)
   have hb2 : ‖eta ψ G b‖ ≤ C * Real.sqrt L := h b hb
   have hsqL : Real.sqrt L ^ 2 = L := Real.sq_sqrt hLnn
   have h0 : (0 : ℝ) ≤ ‖eta ψ G b‖ := norm_nonneg _
-  have hright : 0 ≤ C * Real.sqrt L := mul_nonneg hC (Real.sqrt_nonneg L)
-  calc ‖eta ψ G b‖ ^ 2 ≤ (C * Real.sqrt L) ^ 2 := by nlinarith [h0, hb2, hright]
+  calc ‖eta ψ G b‖ ^ 2 ≤ (C * Real.sqrt L) ^ 2 := by nlinarith [Real.sqrt_nonneg L, h0, hb2]
     _ = C ^ 2 * L := by rw [mul_pow, hsqL]
 
 /-- **The two-sided spectral frame.** Under the (open) near-Ramanujan-up-to-√log ceiling, the
