@@ -1822,12 +1822,14 @@ theorem foldOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ) :
     -- rw [OracleComp.probEvent_map]
     -- `probEvent_map` leaves the predicate in `g ∘ f` form; normalize to a lambda so the
     -- `probEvent_StateT_run_ignore_state` pattern `fun x => ?P x.1` can unify the state-projection.
-    simp only [Fin.isValue, probEvent_map, Function.comp_def]
+    -- Also unfold `getChallenge` to `query` so the whole proof stays in `query q.input` form
+    -- (matching the downstream `q`-based rewrites).
+    simp only [Fin.isValue, probEvent_map, Function.comp_def, ProtocolSpec.getChallenge]
     let q : OracleQuery [(pSpecFold (L := L)).Challenge]ₒ _ :=
       OracleSpec.query ⟨⟨1, by rfl⟩, ()⟩
     erw [OracleReduction.probEvent_StateT_run_ignore_state
       (comp := simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
-        (liftM (pSpecFold.getChallenge ⟨1, by rfl⟩)))
+        (liftM (query q.input)))
       (s := x.2)]
     rw [probEvent_eq_tsum_ite]
     erw [simulateQ_query]
