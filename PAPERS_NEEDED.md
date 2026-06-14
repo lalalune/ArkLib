@@ -347,3 +347,10 @@ Two refs underpin the moment-method anchor and the average-size confirmation (ad
 - **Habegger, *The Norm of Gaussian Periods*** — arXiv **1611.07287** (Q. J. Math. 2018) — `m(1+X_1+…+X_{f−1}) ≤ ½ log f`: the *geometric mean* of `|η_b|` is `√f`-controlled (average-size confirmation; fixed odd prime `f`, no sup-norm).
 These confirm `√(n log)` is correct *on average* but unreachable as a *max* — exactly why the
 deliverable bypasses the analytic route via the `e_t`-homogeneity coset-rigidity engine instead.
+
+### 2026-06-13 (#407) — coding-theory reformulation refs (the count = binary RS codewords)
+The floor = #{weight-a 0/1 codewords of RS[n,n-t+1]} = #{subsets of μ_n with t-1 vanishing power
+sums}. Decisive refs (verdict: count is OPEN for t,a=Θ(n) on explicit μ_n; = the wall):
+- **Ben-Sasson–Kopparty–Radhakrishnan, *Subspace Polynomials and Limits to List Decoding of RS*** (IEEE-IT 56(1) 2010) — https://www.math.toronto.edu/swastik/rsld.pdf — for explicit ADDITIVE/subspace domains the near-codeword count is SUPER-POLYNOMIAL just past Johnson. Cautionary precedent; additive not multiplicative, so does NOT settle the μ_n (dyadic FFT) case — exactly the open question.
+- **Kumar–Senthil Kumar, *Note on vanishing power sums of roots of unity*** — arXiv:1503.07281 — closest to the power-sum formulation; SINGLE power, existence/characterization only, NO count (the t=Θ(n) simultaneous count is the open extension).
+- **Li–Wan exact subset-sum fibre** `C(s,k)/s` (JCTA 119(1) Cor 1.4) — the t=2 (single-constraint) slice, proven in-tree (`subsetSum_fibre_card_mul`).

@@ -204,6 +204,49 @@ The general `t` is governed by the in-tree granularity staircase `GranularityLad
 with the quantization engine proven. The exact δ* is the granularity staircase (in-tree); the
 remaining theorem is the relation-free variety-count = entropy crossover (q-independent, decidable).
 
-Files: `DyadicLacunaryDeltaStar.lean` (engine, axiom-clean), probes
-`probe_subset_sum_fibre_lattice_407.py`, `probe_prize_regime_relation_free_407.py`,
-`probe_fibre_inflation_growth_407.py`, `probe_lacbad_crossover_407.py`.
+## 7. THE CODING-THEORETIC HEART (BCH/Vandermonde) + the uncertainty-principle view
+
+The vanishing-power-sum variety has a clean coding-theoretic identity, proven axiom-clean in
+`BCHVarietyRigidity.lean`:
+
+> `{S ⊆ μ_n : |S|=a, p_1(S)=…=p_{t-1}(S)=0}` = the **weight-`a` `{0,1}`-codewords of the
+> Reed–Solomon / BCH cyclic code with consecutive zeros `g^1,…,g^{t-1}`**.
+
+- **PROVEN (`bch_vandermonde_rigidity`, `bch_rigidity`):** the **BCH bound** via the Vandermonde
+  determinant — a nonzero vector with `t-1` vanishing consecutive power sums has support `≥ t`.
+  Hence (`variety_eq_of_powerSums_eq`) distinct variety members differ in `≥ t` positions: the
+  variety is a **constant-weight code of minimum distance `≥ t`**.
+- **Fourier / uncertainty view:** equivalently, `{0,1}`-sequences on `ℤ/n` whose DFT vanishes on
+  `t-1` *consecutive* frequencies. For *prime* `n`, Tao's sharp uncertainty principle would force
+  rigidity outright; the dyadic `n=2^μ` is *highly composite*, so subgroup-Fourier-supported
+  "sparse–sparse" sequences exist — exactly the `μ_t`-coset unions (the rigid family). **The floor
+  is a strong Fourier uncertainty/rigidity for `ℤ/2^μ`** — which is *why the dyadic case is the hard
+  one*. (New framing; the in-tree engine `lacBad_smul_closed` is its coset-quantization half.)
+
+## 8. LITERATURE VERDICT on the count (2nd sweep, coding-theory angle) — confirms OPEN
+
+Bottom line: **no known result bounds the count of weight-`a` `{0,1}` codewords of an RS code by
+`poly(n)` when `t,a=Θ(n)` on explicit `μ_n`.** It is the prize's open core, equivalent to the
+`B(μ_n)=O(√n)` Paley-graph wall. Decisive references:
+- **Ben-Sasson–Kopparty–Radhakrishnan** (IEEE-IT 2010, `math.toronto.edu/swastik/rsld.pdf`): for
+  explicit **additive/subfield** domains the analogous count is **super-polynomial just past
+  Johnson** — the cautionary precedent. BUT it is additive, *not* multiplicative `μ_n`, so it does
+  **not** settle the dyadic-FFT case (which is exactly the open question — does `μ_n` escape the
+  BKR blow-up?).
+- **Kumar–Senthil Kumar** (arXiv:1503.07281): vanishing *power sums* of roots of unity — closest to
+  our formulation, but **single power, existence-only, no count** (stops exactly short).
+- **Li–Wan** (JCTA 119(1) Cor 1.4): exact subset-sum fibre `C(s,k)/s` — the **`t=2` slice**,
+  proven in-tree (`subsetSum_fibre_card_mul`). The `t=Θ(n)` simultaneous version is the open part.
+- **Lam–Leung** (J. Algebra 2000): `W(2^a)=2`, minimal vanishing sums = antipodal pairs — the
+  char-0 base for the `t=2` count; no fixed-weight simultaneous count.
+- **KKH26** (2604.09724, dyadic-native): a **lower** bound — proximity gaps FAIL at
+  `1−ρ−Θ(1/log n)` with `poly(n)` near-codewords ⟹ the count is *not* `O(n)` up to capacity,
+  pinning `δ*` at the window edge from below (consistent with `prizeDeltaStar`).
+
+So: BKR (additive, super-poly) above, Johnson (poly) below Johnson, KKH26 (window-edge) — and the
+multiplicative `μ_n` window-interior count is the genuine open theorem. Refs logged in `PAPERS_NEEDED.md`.
+
+Files: `DyadicLacunaryDeltaStar.lean` (engine), `BCHVarietyRigidity.lean` (BCH bound), all
+axiom-clean; probes `probe_subset_sum_fibre_lattice_407.py`,
+`probe_prize_regime_relation_free_407.py`, `probe_fibre_inflation_growth_407.py`,
+`probe_lacbad_crossover_407.py`.
