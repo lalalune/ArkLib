@@ -116,42 +116,24 @@ theorem completeHomReadout_smul (s : Finset ι) (v : ι → F) (j : ℕ) {c : F}
       mul_inv_cancel₀ (pow_ne_zero _ hc), mul_one]
   rw [mul_assoc, ← mul_assoc (c ^ (#s - 1 + j)), hpow]
 
-/-- The set of distinct top-direction ratios `h_{n-1-k}(R)` over all `(k+1)`-subsets `R` of a
-node set `nodes : Finset ι` with `v` injective.  Abstractly: the image of
-`R ↦ completeHomReadout R v (n-1-k)` over `(k+1)`-subsets. -/
-noncomputable def topRatioValues (nodes : Finset ι) (v : ι → F) (n k : ℕ) : Finset F :=
-  (nodes.powersetCard (k + 1)).image
-    (fun R => completeHomReadout R v (n - 1 - k))
+/-! ## The top-direction count law — now PROVED in `B1TopDirectionCountLaw.lean`.
 
-/-- **B1 TOP-DIRECTION COUNT LAW (named OPEN Prop).** For `μ_n` (the `n`-th roots of unity,
-`#nodes = n`, `v` the inclusion), the number of distinct top-direction divided-difference
-ratios `h_{n-1-k}(R)` over `(k+1)`-subsets is exactly `n`, for every `1 ≤ k ≤ n-2`.
+An earlier draft of this file carried a named Prop `TopDirectionDistinctCountEqN` asserting the
+distinct top-direction count is `n` for any injective `v` with `#nodes = n`.  That is **false as
+stated**: over generic injective `v` the count is `C(n,k+1)`, not `n`; the value `n` genuinely
+requires the roots-of-unity hypothesis `v i ^ n = 1`.  The corrected, *proved* statements live in
+`ProximityGap.B1CountLaw` (`B1TopDirectionCountLaw.lean`), built on the covariance lemmas above:
 
-p-independent; verified exhaustively for `n ∈ {7,8,9,11,12,16,20,32}`.  NOT proved here. -/
-def TopDirectionDistinctCountEqN : Prop :=
-  ∀ (nodes : Finset ι) (v : ι → F) (n k : ℕ),
-    nodes.card = n → 1 ≤ k → k ≤ n - 2 → Set.InjOn v ↑nodes →
-    -- (μ_n hypothesis would be added: v ''nodes = n-th roots of unity)
-    (topRatioValues nodes v n k).card = n
+* `topDirectionReadout_eq` — the closed form `dividedDifferencePow R v (n-1) = (-1)^{#R-1}·(∏ v_i)⁻¹`
+  (Lagrange partition-of-unity at `x = 0`; char-independent, no roots of unity);
+* `topReadouts_card_le` — the distinct top-direction readout count is `≤ n` (unconditional, via
+  `subsetProducts_subset_nthRoots`);
+* `topReadouts_card_eq_n_of_surjects` — `= n` exactly, conditional on the elementary residual
+  `SubsetProductSurjectsMu` (the `(k+1)`-subset sums surject onto `ℤ/n`), verified incl. prize `n=32`.
 
-/-- **B1 BALANCED-FIBER Prop (named OPEN, the `gcd=1` refinement).** When `gcd(n,k+1)=1`, the
-`Z_n` rotation action on `(k+1)`-subsets is free, so each of the `n` top-direction value-fibers
-has size exactly `C(n,k+1)/n`.  Stated abstractly as: the fibers all share one cardinality.
-Verified for all `gcd(n,k+1)=1` rows in the enumeration. NOT proved here. -/
-def TopDirectionBalancedFibers : Prop :=
-  ∀ (nodes : Finset ι) (v : ι → F) (n k : ℕ),
-    nodes.card = n → 1 ≤ k → k ≤ n - 2 → Nat.gcd n (k + 1) = 1 → Set.InjOn v ↑nodes →
-    ∀ w ∈ topRatioValues nodes v n k,
-      ((nodes.powersetCard (k + 1)).filter
-        (fun R => completeHomReadout R v (n - 1 - k) = w)).card
-        * n = (nodes.card.choose (k + 1))
-
-/- **REFUTED sub-claim (numeric, not a Lean theorem).** The intermediate-direction
-distinct count is NOT a function of `gcd(n, a-k)` alone.  Concretely at `n=16`: direction
-`d=4` (`gcd=4`) gives `713` distinct values while `d=8` (`gcd=8`) gives `428`, and BOTH differ
-from a pure-gcd prediction.  We record only that no `gcd`-only law exists; the witness lives in
-`probe_farline_incidence_exact` output, not in Lean. -/
--- (no Lean Prop; the gcd-only law is refuted numerically: n=16 d=4->713 vs d=8->428)
+That residual is additive combinatorics in `(ℤ/n,+)` — structurally DISTINCT from the C1
+character-sum wall (no cancellation, no field needed).  (The intermediate-direction count is NOT a
+function of `gcd(n,a−k)` alone: `n=16`, `d=4 → 713` vs `d=8 → 428`, refuted numerically.) -/
 
 end ProximityGap.Frontier.B1XkIncidenceForm
 
