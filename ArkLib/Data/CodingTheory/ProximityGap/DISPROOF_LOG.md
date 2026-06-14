@@ -9189,3 +9189,39 @@ floor, NOT a finite imprimitive set that could be controlled by enumeration.
 CONSEQUENCE: the "reduce floor to a finite structured set" route via imprimitive/primitive splitting is
 WITHDRAWN. The cumulant-2-power explosion is genuine but unstructured-at-the-coset-level; it relocates,
 not narrows, the open core. NOT closure. Probe committed.
+
+---
+
+## #407 laneF — cross-parity (butterfly cross-term) first moment CLEAN; positive-part confinement REFUTED (2026-06-14)
+
+CONTEXT. The dyadic FFT butterfly splits a subgroup Gauss sum into two children:
+`η_b(H)=η_b(G)+η_{ζb}(G)`, `H=G⊔ζ•G`. The CROSS-PARITY term
+`X(b):=‖η_b(H)‖²−‖η_b(G)‖²−‖η_{ζb}(G)‖²=2Re(η_b(G)·conj η_{ζb}(G))`
+is the alignment-excess / odd-part contribution to the far-line incidence. The lane asked:
+is the odd-part amplification confined to O(log n) imprimitive directions, with a clean
+cross-parity bound?
+
+LANDED (axiom-clean, `CrossParityAggregate.lean`, Parseval-only, q-INDEPENDENT):
+  • `crossTerm_sum_zero`: `∑_{b∈F} X(b) = 0` (full first moment vanishes).
+  • `crossTerm_sum_nonzero_eq`: `∑_{b≠0} X(b) = −2|G|²` (off-zero aggregate, exact, negative).
+  • non-vacuous on real dyadic tower (`dyadic_dilate_split`, `crossTerm_sum_nonzero_eq_dyadic`).
+  Interpretation: on AGGREGATE across frequencies the butterfly children are ANTI-aligned —
+  cross-parity SUPPRESSES, never amplifies. The only positive cross-parity in aggregate is the
+  trivial b=0 term (X(0)=2|G|²=n²/2). Verified p-indep across n∈{8,16,32,64}, ≥5 primes each
+  (`probe_407_crossparity_identity.py`).
+
+REFUTED (machine, `probe_407_crossparity_localize.py`, prize regime proper subgroups, multi-prime):
+the conjecture that the POSITIVE (amplifying) cross-parity is confined to O(log n) imprimitive
+FREQUENCIES is FALSE. The positive part `∑_{X(b)>0} X(b)` and #{b:X(b)>0} scale with Θ(q) (a
+constant fraction of all frequencies), NOT O(log n). The aggregate is held NEGATIVE by an even
+larger negative mass, not by sparsity of the positive part. (Corroborates the earlier cumulant
+2-power-explosion entry: the heavy part is diffuse/unstructured at the coset level, not a finite
+imprimitive set.)
+
+PRECISE REDUCTION TO NAMED CORE: only the L¹/first-moment of X is q-independent. The worst single
+frequency `max_b X(b)` (~√(n log q)) and the energy `∑_b X(b)²` (~q·E₂(G), `probe_407_crossparity_L2.py`)
+are NOT q-independent = exactly the BGK / additive-energy sup-norm wall already named in
+`SubgroupGaussSumDilationRecursion` (√2-vs-2 gap) and `_DyadicDeviationDecayEnvelope`. So the
+cross-parity decomposes cleanly into an elementary first moment (this brick) + the open BGK core
+(L∞/L²). The Pan–Xu cross-parity split does NOT escape the floor; it relocates the open content to
+the per-frequency worst case, with the aggregate now provably anti-aligned. NOT closure.
