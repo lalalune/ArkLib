@@ -933,6 +933,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodCosetReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBoundSlack
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodParsevalFloor
+import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodSpectralFrame
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodTower
 import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyFromPairing
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
