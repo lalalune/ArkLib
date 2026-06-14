@@ -189,10 +189,13 @@ prime-power, 2-power `H`; only the average (`√|H|`) side works." Pairs with th
 
 **Corrected identifiers (fix in the inventory / citations):**
 
-- **"KKH26 = ePrint 2026/782" does not exist** as described. The near-capacity result is
-  **Goyal–Guruswami, ECCC TR25-166 = ePrint 2025/2054 = arXiv 2601.10047**. The in-tree
-  `KKH26*`/`kkh26_*` names should be re-attributed (the *content* — near-capacity strip for
-  folded/subspace-design codes — is Goyal–Guruswami, and it does **not** apply to plain RS).
+- **Post-refresh correction (2026-06-14): `ePrint 2026/782` now exists, but not as the
+  folded/subspace-design result.** It is **Krachun--Kazanin--Habock, "Failure of proximity gaps close
+  to capacity"**, a near-capacity failure paper. The near-capacity positive result for folded /
+  subspace-design / random RS remains **Goyal--Guruswami, ECCC TR25-166 = ePrint 2025/2054 =
+  arXiv 2601.10047**. The in-tree `KKH26*`/`kkh26_*` names therefore still need careful
+  re-attribution by content: use them only for the Krachun--Kazanin--Habock failure lane, not for the
+  Goyal--Guruswami positive lane, and do **not** apply the latter to plain fixed-domain RS.
 - **BCHKS25 = ePrint 2025/2055 = ECCC TR25-169** (not "ECCC 2025/169").
 - **CS25 covering / capacity-failure = Crites–Stewart ePrint 2025/2046** + Diamond–Gruen 2025/2010;
   no separate "KK25" surfaced.
