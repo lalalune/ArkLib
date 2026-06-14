@@ -7,6 +7,8 @@ import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPow
+import ArkLib.Data.CodingTheory.ProximityGap.VanishingRootSumHeightGate
 
 /-!
 # Converse Lam–Leung direction for 2-power order (#407)
@@ -170,3 +172,50 @@ end ArkLib.ProximityGap.RouVanishingCount
 
 #print axioms ArkLib.ProximityGap.RouVanishingCount.lowHalf_powers_linearIndependent
 #print axioms ArkLib.ProximityGap.RouVanishingCount.zero_sum_imp_antipodal
+
+namespace ArkLib.ProximityGap.RouVanishingCount
+
+variable {F : Type*} [Field F]
+
+/-- A nonzero-order root of unity is nonzero. -/
+private theorem ne_zero_of_pow_eq_one {n : ℕ} (hn : n ≠ 0) {x : F} (hx : x ^ n = 1) :
+    x ≠ 0 := by
+  intro h0
+  rw [h0, zero_pow hn] at hx
+  exact zero_ne_one hx
+
+variable [CharZero F]
+
+/-- **Char-zero converse Lam--Leung, in the `NoSpuriousVanishing` interface.**
+
+For a primitive `2^(m+1)`-th root `ζ`, every subset of the corresponding root
+group with zero sum is antipodal; conversely every antipodal subset has zero sum.
+Thus the `NoSpuriousVanishing` predicate is unconditional in characteristic zero.
+-/
+theorem noSpuriousVanishing_charZero_twoPower {m : ℕ} {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1))) :
+    NoSpuriousVanishing (Polynomial.nthRootsFinset (2 ^ (m + 1)) (1 : F)) := by
+  classical
+  intro R hR
+  constructor
+  · intro hsum
+    left
+    refine ⟨?_, ?_⟩
+    · intro h0
+      have hroot : (0 : F) ^ (2 ^ (m + 1)) = 1 := by
+        rw [← Polynomial.mem_nthRootsFinset (by positivity : 0 < 2 ^ (m + 1))]
+        exact hR h0
+      exact ne_zero_of_pow_eq_one (by positivity) hroot rfl
+    · exact LamLeungTwoPow.vanishing_sum_antipodal hζ
+        (fun x hx => by
+          rw [← Polynomial.mem_nthRootsFinset (by positivity : 0 < 2 ^ (m + 1))]
+          exact hR hx)
+        hsum
+  · intro h
+    rcases h with hanti | rfl
+    · exact sum_eq_zero_of_antipodal (by exact_mod_cast (two_ne_zero : (2 : F) ≠ 0)) hanti
+    · simp
+
+end ArkLib.ProximityGap.RouVanishingCount
+
+#print axioms ArkLib.ProximityGap.RouVanishingCount.noSpuriousVanishing_charZero_twoPower

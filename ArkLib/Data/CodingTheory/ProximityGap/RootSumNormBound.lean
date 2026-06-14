@@ -70,7 +70,37 @@ theorem abs_norm_lt_of_card_pow_lt {ι : Type*} (s : Finset ι) (u : ι → K)
     ((|Algebra.norm ℚ (∑ i ∈ s, u i)| : ℚ) : ℝ) < p :=
   lt_of_le_of_lt (abs_norm_sum_rootsOfUnity_le s u k hk hu) hp
 
+/-- A nonzero integer whose absolute value is smaller than `p` is not divisible by `p`. -/
+theorem int_not_dvd_of_natAbs_lt {N : ℤ} {p : ℕ} (hN0 : N ≠ 0) (hlt : N.natAbs < p) :
+    ¬ (p : ℤ) ∣ N := by
+  intro hdvd
+  have hpdvd : p ∣ N.natAbs := by
+    exact_mod_cast (Int.dvd_natAbs.mpr hdvd)
+  have hNpos : 0 < N.natAbs := Int.natAbs_pos.mpr hN0
+  exact (Nat.not_le.mpr hlt) (Nat.le_of_dvd hNpos hpdvd)
+
+/-- **Integer norm non-divisibility corollary.**  Suppose the rational norm of the root-of-unity
+sum is represented by an integer `N`.  If `(#s)^[K:ℚ] < p` and `N ≠ 0`, then `p` does not divide
+that integer norm.  This is the executable form of the clean-range transfer used by the #407
+char-`p` anomaly analysis. -/
+theorem prime_not_dvd_int_norm_sum_rootsOfUnity {ι : Type*} (s : Finset ι) (u : ι → K)
+    (k : ι → ℕ) (hk : ∀ i ∈ s, k i ≠ 0) (hu : ∀ i ∈ s, u i ^ (k i) = 1)
+    {p : ℕ} {N : ℤ} (hN : (N : ℚ) = Algebra.norm ℚ (∑ i ∈ s, u i)) (hN0 : N ≠ 0)
+    (hp : (s.card : ℝ) ^ finrank ℚ K < p) :
+    ¬ (p : ℤ) ∣ N := by
+  have hlt_rat :
+      ((|Algebra.norm ℚ (∑ i ∈ s, u i)| : ℚ) : ℝ) < p :=
+    abs_norm_lt_of_card_pow_lt s u k hk hu hp
+  have hlt_int : (N.natAbs : ℝ) < p := by
+    have habs : |Algebra.norm ℚ (∑ i ∈ s, u i)| = (N.natAbs : ℚ) := by
+      rw [← hN]
+      simp
+    simpa [habs] using hlt_rat
+  exact int_not_dvd_of_natAbs_lt hN0 (by exact_mod_cast hlt_int)
+
 end ArkLib.ProximityGap.RootSumNorm
 
 #print axioms ArkLib.ProximityGap.RootSumNorm.abs_norm_sum_rootsOfUnity_le
 #print axioms ArkLib.ProximityGap.RootSumNorm.abs_norm_lt_of_card_pow_lt
+#print axioms ArkLib.ProximityGap.RootSumNorm.int_not_dvd_of_natAbs_lt
+#print axioms ArkLib.ProximityGap.RootSumNorm.prime_not_dvd_int_norm_sum_rootsOfUnity

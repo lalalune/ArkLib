@@ -142,6 +142,28 @@ theorem abs_norm_diff_lt_of_card_pow_lt {ι κ : Type*} (s : Finset ι) (t : Fin
     ((|Algebra.norm ℚ ((∑ i ∈ s, u i) - ∑ j ∈ t, v j)| : ℚ) : ℝ) < p :=
   lt_of_le_of_lt (abs_norm_diff_le s t u v ku kv hku hkv hu hv) hp
 
+/-- **No wraparound, integer-divisibility form.**  If the norm of the difference of two
+root-of-unity sums is represented by an integer `N`, then past the clean range
+`(s.card + t.card)^[K:ℚ] < p` a nonzero `N` is not divisible by `p`.  This is the direct
+arithmetic form of the obstruction: a genuine mod-`p` wraparound would force `p ∣ N`. -/
+theorem prime_not_dvd_int_norm_diff_of_card_pow_lt {ι κ : Type*} (s : Finset ι) (t : Finset κ)
+    (u : ι → K) (v : κ → K) (ku : ι → ℕ) (kv : κ → ℕ)
+    (hku : ∀ i ∈ s, ku i ≠ 0) (hkv : ∀ j ∈ t, kv j ≠ 0)
+    (hu : ∀ i ∈ s, u i ^ (ku i) = 1) (hv : ∀ j ∈ t, v j ^ (kv j) = 1)
+    {p : ℕ} {N : ℤ}
+    (hN : (N : ℚ) = Algebra.norm ℚ ((∑ i ∈ s, u i) - ∑ j ∈ t, v j)) (hN0 : N ≠ 0)
+    (hp : ((s.card + t.card : ℕ) : ℝ) ^ finrank ℚ K < p) :
+    ¬ (p : ℤ) ∣ N := by
+  have hlt_rat :
+      ((|Algebra.norm ℚ ((∑ i ∈ s, u i) - ∑ j ∈ t, v j)| : ℚ) : ℝ) < p :=
+    abs_norm_diff_lt_of_card_pow_lt s t u v ku kv hku hkv hu hv hp
+  have hlt_int : (N.natAbs : ℝ) < p := by
+    have habs : |Algebra.norm ℚ ((∑ i ∈ s, u i) - ∑ j ∈ t, v j)| = (N.natAbs : ℚ) := by
+      rw [← hN]
+      simp
+    simpa [habs] using hlt_rat
+  exact RootSumNorm.int_not_dvd_of_natAbs_lt hN0 (by exact_mod_cast hlt_int)
+
 /-- **No wraparound: distinct sums over `K` stay distinct, and a vanishing-difference is impossible
 to be merely `p`-divisible past the threshold.** Past the threshold `(s.card + t.card)^{[K:ℚ]} < p`,
 if the difference `D = (Σ u_i) − (Σ v_j)` is nonzero then its norm is a nonzero rational integer of
@@ -184,5 +206,6 @@ end ArkLib.ProximityGap.Wraparound
 #print axioms ArkLib.ProximityGap.Wraparound.neg_rootOfUnity
 #print axioms ArkLib.ProximityGap.Wraparound.abs_norm_diff_le
 #print axioms ArkLib.ProximityGap.Wraparound.abs_norm_diff_lt_of_card_pow_lt
+#print axioms ArkLib.ProximityGap.Wraparound.prime_not_dvd_int_norm_diff_of_card_pow_lt
 #print axioms ArkLib.ProximityGap.Wraparound.no_wraparound_of_lt
 #print axioms ArkLib.ProximityGap.Wraparound.no_wraparound_depth
