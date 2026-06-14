@@ -196,6 +196,49 @@ theorem dividedDifferencePow_recurrence (b : ℕ) (hb : #s ≤ b) :
         refine Finset.sum_congr rfl fun m _ => ?_
         rw [dividedDifferencePow, Finset.mul_sum]
 
+
+/-- **Bridge anchor, `b = #s + 1`: the second Schur value `h_2(v_s) = e_1² − e_2`.** A direct
+corollary of `dividedDifferencePow_recurrence` + the three anchors: in the recurrence for
+`b = #s+1` only the top two summands survive (`[s]x^{1+m} = 0` for `1+m < #s−1`), leaving
+`[s]x^{#s+1} = −(P.coeff (#s−2) · h_0 + P.coeff (#s−1) · h_1)` with `h_0 = 1`, `h_1 = Σ v_i`,
+`P.coeff (#s−1) = −Σ v_i`. Here `e_2 = P.coeff (#s−2)` (Vieta). This extends the Schur ledger
+to the fourth value `h_2`, character-sum-free. -/
+theorem dividedDifferencePow_card_add_one (hvs : Set.InjOn v s) (hs : 2 ≤ #s) :
+    dividedDifferencePow s v (#s + 1)
+      = (∑ i ∈ s, v i) ^ 2 - (∏ i ∈ s, (X - C (v i))).coeff (#s - 2) := by
+  classical
+  have hsne : s.Nonempty := Finset.card_pos.mp (by omega)
+  set P : F[X] := ∏ i ∈ s, (X - C (v i)) with hP
+  rw [dividedDifferencePow_recurrence (#s + 1) (by omega)]
+  rw [← hP]
+  -- the dd-index `(#s+1) - #s + m` is `1 + m`
+  have hidx : ∀ m, (#s + 1) - #s + m = 1 + m := fun m => by omega
+  simp only [hidx]
+  -- peel the top two terms of `range #s = range ((#s-2)+1+1)`
+  have hrw : (#s : ℕ) = (#s - 2) + 1 + 1 := by omega
+  conv_lhs => rw [hrw]
+  rw [Finset.sum_range_succ, Finset.sum_range_succ]
+  -- the low block vanishes: for m < #s-2, `[s]x^{1+m} = 0`
+  have hlow : ∀ m ∈ Finset.range (#s - 2),
+      P.coeff m * dividedDifferencePow s v (1 + m) = 0 := by
+    intro m hm
+    have : dividedDifferencePow s v (1 + m) = 0 := by
+      apply dividedDifferencePow_eq_zero_of_lt hvs
+      have := Finset.mem_range.mp hm; omega
+    rw [this, mul_zero]
+  rw [Finset.sum_eq_zero hlow, zero_add]
+  -- evaluate the two surviving anchors
+  have h1 : (1 : ℕ) + (#s - 2) = #s - 1 := by omega
+  have h2 : (1 : ℕ) + (#s - 2 + 1) = #s := by omega
+  rw [h1, h2, dividedDifferencePow_eq_one hvs hsne,
+      dividedDifferencePow_card_eq_sum hvs hsne, mul_one]
+  -- `(#s-2)+1 = #s-1`, and `P.coeff (#s-1) = -Σ v_i`
+  have hcard_pred : P.coeff (#s - 1) = - ∑ i ∈ s, v i := by
+    have h := prod_X_sub_C_coeff_card_pred s v (Finset.card_pos.mpr hsne); simpa using h
+  have hcc : (#s - 2 + 1) = #s - 1 := by omega
+  rw [hcc, hcard_pred]
+  ring
+
 end ProximityGap.SchurLagrange
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -205,3 +248,4 @@ end ProximityGap.SchurLagrange
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_eq_one
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_eq_sum
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_recurrence
+#print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_add_one
