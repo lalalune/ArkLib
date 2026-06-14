@@ -161,6 +161,75 @@ theorem actualRadiusThreshold_of_saturatedRadiusThreshold
   refine ⟨hthr.1, ?_⟩
   exact actualThreshold_of_saturatedThreshold hsat hthr.2
 
+/-! ## Complete-homogeneous envelope correction -/
+
+/--
+A family of direction/readout profiles.  In the newest #407 complete-homogeneous reformulation,
+`H j w` is the number of distinct `h_{j+1}` readouts on `w`-sets satisfying `h_j = 0`.
+-/
+abbrev ReadoutProfileFamily := ℕ → IncidenceProfile
+
+/--
+Concrete constrained-readout profile for the complete-homogeneous formulation.  Given statistics
+`h j T`, this counts distinct `h (j+1)` values among `w`-subsets satisfying `h j = 0`.
+-/
+noncomputable def constrainedReadoutProfile {α β : Type*}
+    [Fintype α] [DecidableEq α] [DecidableEq β] [Zero β]
+    (h : ℕ → Finset α → β) : ReadoutProfileFamily :=
+  fun j w =>
+    (((Finset.univ : Finset α).powersetCard w).filter fun T => h j T = 0).image
+      (fun T => h (j + 1) T) |>.card
+
+/-- A constrained witness set contributes its `h_{j+1}` value to the readout image. -/
+theorem readout_mem_constrainedReadoutImage {α β : Type*}
+    [Fintype α] [DecidableEq α] [DecidableEq β] [Zero β]
+    (h : ℕ → Finset α → β) {j w : ℕ} {T : Finset α}
+    (hcard : T.card = w) (hzero : h j T = 0) :
+    h (j + 1) T ∈
+      (((Finset.univ : Finset α).powersetCard w).filter fun U => h j U = 0).image
+        (fun U => h (j + 1) U) := by
+  refine Finset.mem_image.mpr ⟨T, ?_, rfl⟩
+  simp [hcard, hzero]
+
+/-- `J` envelopes a readout family through the finite agreement window `W`. -/
+def EnvelopeThrough (H : ReadoutProfileFamily) (J : IncidenceProfile) (W : ℕ) : Prop :=
+  ∀ j w, w ≤ W → H j w ≤ J w
+
+/-- A pointwise profile comparison through a finite agreement window. -/
+def ProfileLeThrough (A B : IncidenceProfile) (W : ℕ) : Prop :=
+  ∀ w, w ≤ W → A w ≤ B w
+
+/-- A good certificate for the complete-homogeneous envelope certifies each indexed readout. -/
+theorem readout_good_of_envelope_good {H : ReadoutProfileFamily} {J : IncidenceProfile}
+    {B W j w : ℕ} (henv : EnvelopeThrough H J W) (hw : w ≤ W)
+    (hgood : GoodAgreement J B w) :
+    GoodAgreement (H j) B w :=
+  (henv j w hw).trans hgood
+
+/--
+If the elementary/spectrum profile `E` undercounts the complete-homogeneous envelope `J`, then a
+band where `E` is good but `J` is bad refutes using `E` as the saturated actual profile.
+-/
+theorem not_saturatedThrough_of_profile_undercount
+    {E J : IncidenceProfile} {B W w : ℕ}
+    (hw : w ≤ W) (hEgood : E w ≤ B) (hJbad : B < J w) :
+    ¬ SaturatedThrough J E W := by
+  exact not_saturatedThrough_of_false_good (I := J) (Iinf := E) hw hEgood hJbad
+
+/--
+Deterministic part of the newest #407 correction: a threshold must be certified against the
+complete-homogeneous envelope `J`, not merely against a smaller elementary/spectrum profile `E`.
+-/
+theorem spectrum_threshold_bounded_by_completeHomEnvelope
+    {E J : IncidenceProfile} {B W wJ : ℕ}
+    (hEJ : ProfileLeThrough E J W)
+    (hthrJ : IsSaturatedThreshold J B W wJ) :
+    wJ ≤ W ∧ J wJ ≤ B ∧
+      ∀ w, w ≤ W → wJ < w → E w ≤ J w ∧ B < J w := by
+  refine ⟨hthrJ.1, hthrJ.2.1, ?_⟩
+  intro w hw hlt
+  exact ⟨hEJ w hw, hthrJ.2.2 w hw hlt⟩
+
 /-- The scorecard used for the current #407 survivor.  A score below `9` is a
 machine-readable warning that the item is not a claimed closure of the prize. -/
 structure ConjectureScore where
@@ -191,4 +260,8 @@ end ProximityGap.Frontier.Issue407
 #print axioms ProximityGap.Frontier.Issue407.not_saturatedThrough_of_false_good
 #print axioms ProximityGap.Frontier.Issue407.actualThreshold_of_saturatedThreshold
 #print axioms ProximityGap.Frontier.Issue407.actualRadiusThreshold_of_saturatedRadiusThreshold
+#print axioms ProximityGap.Frontier.Issue407.readout_mem_constrainedReadoutImage
+#print axioms ProximityGap.Frontier.Issue407.readout_good_of_envelope_good
+#print axioms ProximityGap.Frontier.Issue407.not_saturatedThrough_of_profile_undercount
+#print axioms ProximityGap.Frontier.Issue407.spectrum_threshold_bounded_by_completeHomEnvelope
 #print axioms ProximityGap.Frontier.Issue407.saturatedIncidenceScore_not_closure
