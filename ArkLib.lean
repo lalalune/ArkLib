@@ -1059,6 +1059,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HigherIntersectionEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.HybridConcentrationDepthNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.HybridPinInstance
 import ArkLib.Data.CodingTheory.ProximityGap.IidCoordinateHit
+import ArkLib.Data.CodingTheory.ProximityGap.IncidencePeriodBridge
 import ArkLib.Data.CodingTheory.ProximityGap.IntSquarefreeClassification
 import ArkLib.Data.CodingTheory.ProximityGap.IntegerThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorGeneral
