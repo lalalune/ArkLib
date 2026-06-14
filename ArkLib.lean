@@ -687,6 +687,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetFamilyAttainment
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetReducedEnergyBound
+import ArkLib.Data.CodingTheory.ProximityGap.CumulantDyadicDescent
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.CosetSplittingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CosetStrip
