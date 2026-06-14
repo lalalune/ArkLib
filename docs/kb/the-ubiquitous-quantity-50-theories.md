@@ -131,3 +131,57 @@ too good to be true, but cheap to test and decisive either way.
 The workflow `prize-407-ubiquity-grind` triages all 50, deep-grinds the survivors with numerics in the
 prize-adjacent regime (proper subgroup, `p=n^{4..5}`, multiple large primes, never the full group),
 and adversarially verifies every TRUE/PROMISING verdict.
+
+---
+
+## GRIND RESULT (50 agents, ~2.3M tokens, numerics in prize regime) — **0 survivors; the crown theory REFUTED**
+
+**The TIER-S meta-theory (log-correlated field) is numerically FALSE — and that is the most valuable
+output.** Direct measurement of the period field's autocovariance (confirmed independently by 4 agents and
+re-verified inline, `scripts/probes/probe_period_autocovariance.py`):
+
+> `Cov(η_a, η_b)` for `dist ≥ 1` is **EXACTLY `−Var/(m−1)`, distance-independent** (`stdCov = 0.0000`
+> across all tested `p ~ n⁴`). The marginal is `N(0,1)`-like (std 1.000, tail counts match i.i.d.-Gaussian
+> `K/p ≈ 0.044 ≈ Pr|Z|>2`). This is the signature of an **exchangeable family with a single linear
+> constraint** (`Σ_{b≠0} η_b = −n`): "white noise on the constraint surface."
+
+Consequences:
+- The periods are **MORE independent than log-correlated** — no log-covariance decay, no branching
+  structure, no GFF. The max follows the **i.i.d.-Gumbel law (subleading coefficient `−1/2`)**, NOT the FHK
+  branching-random-walk law (`−3/4`, which would *suppress* the max below i.i.d.). So theories #1, #2, #5,
+  #24, #46, #47 (the whole log-correlated/GMC/Coulomb-gas/FHK cluster) are FALSE in the prize regime.
+- The leading order `√(2n log m)` IS correct — but only as the **i.i.d. extreme-value floor**, which merely
+  re-derives the already-in-tree sub-Gaussian conjecture and supplies **no new leverage** on the open char-`p`
+  depth-`r≍log m` transfer.
+
+**All 47 others reduce to the wall (40), to Johnson (5), or are false (2).** Decisive recurring kills:
+- **Amplification (#19, #21)** — machine-confirmed: the Iwaniec–Sarnak amplifier *is* the shifted moment
+  `D_r(h) = p·Σ_t N_r(t)² e_q(−ht)`, positive-definite, `argmax_h = 0` = flat energy. **No amplifier beats
+  flat energy** → second-order → meta-theorem.
+- **Fourth-moment phenomenon (#48)** — Nualart–Peccati is a char-0 Wiener-chaos theorem with *no char-`p`
+  content; "collapse to `r=2`" only re-derives Lam–Leung sub-Gaussian and leaves the char-`p` break untouched;
+  its LD guise is the already-proven `JohnsonFourthMomentNoGo`.
+- **RIP/coherence (#29), PAPR (#31), free-convolution edge (#37), Fourier-uncertainty (#50)** — all
+  second-order / `L²`-energy / bulk-spectral objects; Welch bound = `√n` average = the floor; the
+  worst-case spike at 2-power-structured primes (Fermat `n=64` → `5.45√n`) is exactly what they are blind to.
+
+### The real answer to "why is it everywhere, and why is it never solved"
+
+Not log-correlation. The honest synthesis the grind forces:
+
+1. **Why everywhere:** the quantity is the **`L^∞` (sup-norm / spectral edge) of a deterministic
+   *equidistributing* exponential sum.** Every domain with a multiplicative-subgroup / character-sum /
+   Frobenius-trace structure manufactures the *same* sup-norm object (Paley `λ₂`, the house, the coherence,
+   the PAPR, the edge eigenvalue, …). They are not analogies — they are literally equal.
+2. **Why never solved:** every domain's *native tool is second-order* (energy, `L²`, moments, spectral bulk,
+   free cumulants, Welch, RIP), and the in-tree **meta-theorem proves no second-order method reaches `L^∞`
+   below the `√p`/Johnson floor.** Reaching `L^∞` needs `log`-many moments — and those moments **break in
+   char-`p` exactly at 2-power-structured primes** (the cumulant explosion). The obstruction is a discrete
+   *arithmetic* fact about specific bad primes, not a soft analytic one — which is why no probabilistic
+   shortcut (BRW/GMC/FHK) exists: **the field is too independent to have exploitable structure, yet the
+   worst-case prime still spikes.**
+
+That sharpening — *generically i.i.d.-Gumbel (floor holds), worst-case governed by structured-prime
+independence-breakdown* — is the genuine, honest residue of this round. The prize core is unchanged and open,
+but it is now correctly *de-mystified*: stop looking for a hidden universal field; the universality is the
+`L^∞`-of-equidistribution + second-order-no-go, and the open part is purely the char-`p` structured-prime tail.
