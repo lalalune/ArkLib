@@ -213,12 +213,14 @@ open VectorIOP
 
 variable [Nonempty ι]
 
-/-- **The named open residual (Johnson-CA-gated soundness leg)**: round-by-round knowledge
-soundness of the multi-round STIR verifier with respect to the δ-far soundness relation. This
-is the genuine open mathematics of #301: it consumes the per-round proximity-gap machinery
-(`Combine.combine_theorem` / `STIR.proximity_gap`, themselves conditioned on
-`ProximityGap.StrictCoeffPolysResidual` in the √ρ regime) plus the not-yet-built per-round
-soundness checks of a checking verifier. Consumed as a hypothesis below; NOT fabricated. -/
+/-- **SHELL-verifier residual — LIKELY FALSE for sub-1 budgets; superseded.**  Round-by-round
+knowledge soundness of the multi-round STIR verifier with respect to the δ-far soundness
+relation — but for the SHELL verifier (`verify = pure true`), which accepts everything, so no
+nontrivial rbr budget can be discharged (see the warning at `stirCheckingRbrSoundnessResidual`,
+`CheckingVerifier.lean`).  The genuine open obligation of #301 lives on the CHECKING verifier:
+`stirCheckingRbrSoundnessResidual` + `stirCheckingCABridge` (`CheckingVerifier.lean`).  This def
+is retained only because `stirMultiRoundIOP_isSecureWithGap` below is general wiring over it;
+do not try to discharge it at a sub-1 budget.  Consumed as a hypothesis below; NOT fabricated. -/
 def stirMultiRoundRbrSoundnessResidual (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0)
     (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0) : Prop :=
   OracleProof.rbrKnowledgeSoundness (pure ()) isEmptyElim

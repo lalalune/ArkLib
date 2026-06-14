@@ -33,6 +33,9 @@ Current audit pages:
 - [`issue-314-fiat-shamir-closeout-2026-06-10.md`](issue-314-fiat-shamir-closeout-2026-06-10.md)
   - DSFS grant closeout classification: executable/spec in scope, CO25 Lemma 5.1 residuals
     post-grant security hardening.
+- [`issue-321-blueprint-closeout-2026-06-10.md`](issue-321-blueprint-closeout-2026-06-10.md)
+  - STIR/WHIR blueprint closeout audit: issue #301/#302 status, external research trail, and
+    exact conditional-vs-unconditional theorem caveats.
 - [`issue-33-binius-branch-harvest-2026-06-06.md`](issue-33-binius-branch-harvest-2026-06-06.md)
   - Binius branch-harvest note for stale `origin/CompBinius` and related proof branches.
 - [`issue-60-toolchain-branch-harvest-2026-06-06.md`](issue-60-toolchain-branch-harvest-2026-06-06.md)

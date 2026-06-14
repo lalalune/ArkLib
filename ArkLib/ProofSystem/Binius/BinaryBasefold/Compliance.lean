@@ -188,7 +188,7 @@ def foldingBadEvent (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     let folded_f_bar_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := i) (steps := steps) (destIdx := destIdx)
       (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_bar_i r_challenges
-    ¬ (fiberwiseDisagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    ¬ (fiberwiseDisagreementSetPerFiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (i := i) (steps := steps) (destIdx := destIdx)
         (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i f_bar_i ⊆
       disagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -239,7 +239,7 @@ def incrementalFoldingBadEvent
           (i := block_start_idx) (steps := ϑ) (destIdx := destIdx)
           (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
           f_block_start h_block_close)
-    let Δ_fiber := fiberwiseDisagreementSet 𝔽q β
+    let Δ_fiber := fiberwiseDisagreementSetPerFiber 𝔽q β
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := block_start_idx) (steps := ϑ) (destIdx := destIdx)
       (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
@@ -253,7 +253,7 @@ def incrementalFoldingBadEvent
       (h_destIdx := by omega) (h_destIdx_le := by omega)
       f_bar_block_start r_challenges
     ¬ (Δ_fiber ⊆
-      fiberwiseDisagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      fiberwiseDisagreementSetPerFiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (i := midIdx) (steps := ϑ - k) (destIdx := destIdx)
         (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
         fold_k_f fold_k_f_bar)

@@ -515,7 +515,7 @@ theorem prependRLCTarget_perfectCompleteness {σ : Type} {init : ProbComp σ}
 omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
 /-- The honest RLC-target output relation refines the **bridge-free** second-sum-check input
 relation `secondSumcheckRelInBF` — the exact `relG` endpoint demanded by the composed-PC
-consumer (`composedCompletenessResidual_of_five_leaves`, hypothesis `h₆`). Twin of
+consumer (`composedCompletenessStatement_of_five_leaves`, hypothesis `h₆`). Twin of
 `prependRLCTargetRelOut_subset_secondSumcheckRelIn` for the `BF` restatement. -/
 theorem prependRLCTargetRelOut_subset_secondSumcheckRelInBF :
     prependRLCTargetRelOut (R := R) pp ⊆ secondSumcheckRelInBF (R := R) pp := by
@@ -527,7 +527,7 @@ theorem prependRLCTargetRelOut_subset_secondSumcheckRelInBF :
 
 /-- **Consumer-endpoint form of the honest RLC-target adapter completeness**: perfectly complete
 from `prependRLCTargetRelIn` into `secondSumcheckRelInBF`. This discharges hypothesis `h₆` of
-`composedCompletenessResidual_of_five_leaves` (with `relF := prependRLCTargetRelIn`): the output
+`composedCompletenessStatement_of_five_leaves` (with `relF := prependRLCTargetRelIn`): the output
 relation is exactly the bridge-free second-sum-check input relation pinned by the consumer. -/
 theorem prependRLCTarget_perfectCompleteness_secondSumcheckRelInBF {σ : Type}
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)} :

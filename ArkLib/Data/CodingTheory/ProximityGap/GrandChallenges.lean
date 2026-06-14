@@ -273,6 +273,140 @@ def MCAUpperWitness.monoEps {C : Set (ι → F)} {ε_star ε_star' : ℝ≥0}
     MCAUpperWitness C ε_star' :=
   ⟨w.δ, lt_of_le_of_lt hε w.exceeds⟩
 
+/-! ### The shared order skeleton behind one-sided MCA witnesses
+
+The next lemmas expose the real mathematical shape hidden by the witness records: once a
+full Grand-MCA resolution exists, lower witnesses are exactly the closed ray `δ ≤ δ*`, while
+upper witnesses inside the unit interval are exactly the open ray `δ* < δ`. This turns the
+partial-progress API into a cutoff theorem, and mirrors the list-decoding package below. -/
+
+/-- A full MCA resolution is itself a lower witness at its cutoff radius. -/
+def GrandMCAResolution.toLowerWitness {C : Set (ι → F)} {ε_star : ℝ≥0}
+    (R : GrandMCAResolution C ε_star) : MCALowerWitness C ε_star :=
+  ⟨R.δStar, R.le_one, R.bound⟩
+
+/-- Every radius strictly above a resolved MCA cutoff, while still in `[0,1]`, is an upper
+witness. -/
+def GrandMCAResolution.upperWitnessOfGt {C : Set (ι → F)} {ε_star δ : ℝ≥0}
+    (R : GrandMCAResolution C ε_star) (hgt : R.δStar < δ) (hδ : δ ≤ 1) :
+    MCAUpperWitness C ε_star :=
+  ⟨δ, R.maximal δ hgt hδ⟩
+
+/-- MCA lower witnesses are downward closed in the radius. -/
+def MCALowerWitness.monoRadius {C : Set (ι → F)} {ε_star δ' : ℝ≥0}
+    (w : MCALowerWitness C ε_star) (hδ : δ' ≤ w.δ) :
+    MCALowerWitness C ε_star :=
+  ⟨δ', le_trans hδ w.le_one, le_trans (epsMCA_mono C hδ) w.bound⟩
+
+/-- MCA upper witnesses are upward closed in the radius. -/
+def MCAUpperWitness.monoRadius {C : Set (ι → F)} {ε_star δ' : ℝ≥0}
+    (w : MCAUpperWitness C ε_star) (hδ : w.δ ≤ δ') :
+    MCAUpperWitness C ε_star :=
+  ⟨δ', lt_of_lt_of_le w.exceeds (epsMCA_mono C hδ)⟩
+
+/-- Combined monotonicity for MCA lower witnesses: decrease the radius and relax the target. -/
+def MCALowerWitness.mono {C : Set (ι → F)} {ε_star ε_star' δ' : ℝ≥0}
+    (w : MCALowerWitness C ε_star) (hδ : δ' ≤ w.δ)
+    (hε : (ε_star : ENNReal) ≤ (ε_star' : ENNReal)) :
+    MCALowerWitness C ε_star' :=
+  MCALowerWitness.monoEps (w.monoRadius hδ) hε
+
+/-- Combined monotonicity for MCA upper witnesses: increase the radius and tighten the target. -/
+def MCAUpperWitness.mono {C : Set (ι → F)} {ε_star ε_star' δ' : ℝ≥0}
+    (w : MCAUpperWitness C ε_star) (hδ : w.δ ≤ δ')
+    (hε : (ε_star' : ENNReal) ≤ (ε_star : ENNReal)) :
+    MCAUpperWitness C ε_star' :=
+  MCAUpperWitness.monoEps (w.monoRadius hδ) hε
+
+/-- The set of radii certified by MCA lower witnesses. -/
+def mcaLowerWitnessRadii (C : Set (ι → F)) (ε_star : ℝ≥0) : Set ℝ≥0 :=
+  {δ | ∃ w : MCALowerWitness C ε_star, w.δ = δ}
+
+/-- The set of radii certified by MCA upper witnesses. -/
+def mcaUpperWitnessRadii (C : Set (ι → F)) (ε_star : ℝ≥0) : Set ℝ≥0 :=
+  {δ | ∃ w : MCAUpperWitness C ε_star, w.δ = δ}
+
+/-- The resolved cutoff radius belongs to the lower-witness radius set. -/
+theorem GrandMCAResolution.δStar_mem_lowerWitnessRadii {C : Set (ι → F)}
+    {ε_star : ℝ≥0} (R : GrandMCAResolution C ε_star) :
+    R.δStar ∈ mcaLowerWitnessRadii C ε_star :=
+  ⟨R.toLowerWitness, rfl⟩
+
+/-- Under a full MCA resolution, the lower-witness radii are exactly the radii below `δ*`. -/
+theorem GrandMCAResolution.mem_lowerWitnessRadii_iff {C : Set (ι → F)}
+    {ε_star δ : ℝ≥0} (R : GrandMCAResolution C ε_star) :
+    δ ∈ mcaLowerWitnessRadii C ε_star ↔ δ ≤ R.δStar := by
+  constructor
+  · rintro ⟨w, hw⟩
+    rw [← hw]
+    exact w.le_δStar R
+  · intro hδ
+    exact ⟨R.toLowerWitness.monoRadius hδ, rfl⟩
+
+/-- Set form of `GrandMCAResolution.mem_lowerWitnessRadii_iff`: the lower side is `Iic δ*`. -/
+theorem GrandMCAResolution.lowerWitnessRadii_eq_Iic {C : Set (ι → F)}
+    {ε_star : ℝ≥0} (R : GrandMCAResolution C ε_star) :
+    mcaLowerWitnessRadii C ε_star = Set.Iic R.δStar := by
+  ext δ
+  exact R.mem_lowerWitnessRadii_iff
+
+/-- Inside `[0,1]`, MCA upper-witness radii are exactly the radii strictly above `δ*`. -/
+theorem GrandMCAResolution.mem_upperWitnessRadii_iff_of_le_one {C : Set (ι → F)}
+    {ε_star δ : ℝ≥0} (R : GrandMCAResolution C ε_star) (hδ : δ ≤ 1) :
+    δ ∈ mcaUpperWitnessRadii C ε_star ↔ R.δStar < δ := by
+  constructor
+  · rintro ⟨w, hw⟩
+    by_contra hnot
+    have hle : δ ≤ R.δStar := le_of_not_gt hnot
+    have hbound : epsMCA (F := F) (A := F) C δ ≤ (ε_star : ENNReal) :=
+      le_trans (epsMCA_mono C hle) R.bound
+    rw [← hw] at hbound
+    exact (not_le_of_gt w.exceeds) hbound
+  · intro hgt
+    exact ⟨R.upperWitnessOfGt hgt hδ, rfl⟩
+
+/-- No resolved MCA cutoff is itself an upper witness. -/
+theorem GrandMCAResolution.not_δStar_mem_upperWitnessRadii {C : Set (ι → F)}
+    {ε_star : ℝ≥0} (R : GrandMCAResolution C ε_star) :
+    R.δStar ∉ mcaUpperWitnessRadii C ε_star := by
+  rw [R.mem_upperWitnessRadii_iff_of_le_one R.le_one]
+  exact lt_irrefl R.δStar
+
+/-- Any lower/upper MCA witness pair brackets correctly once a resolution exists. -/
+theorem mcaWitness_le_upper_of_resolution {C : Set (ι → F)} {ε_star : ℝ≥0}
+    (wlo : MCALowerWitness C ε_star) (whi : MCAUpperWitness C ε_star)
+    (R : GrandMCAResolution C ε_star) :
+    wlo.δ ≤ whi.δ :=
+  le_trans (wlo.le_δStar R) (whi.δStar_le R)
+
+/-- A resolved MCA instance forbids crossed one-sided witnesses. -/
+theorem not_mcaWitnesses_crossed_of_resolution {C : Set (ι → F)} {ε_star : ℝ≥0}
+    (wlo : MCALowerWitness C ε_star) (whi : MCAUpperWitness C ε_star)
+    (R : GrandMCAResolution C ε_star) :
+    ¬ whi.δ < wlo.δ :=
+  not_lt_of_ge (mcaWitness_le_upper_of_resolution wlo whi R)
+
+/-- A lower witness at radius `1` forces the resolved MCA cutoff to be `1`. -/
+theorem GrandMCAResolution.δStar_eq_one_of_lowerWitness {C : Set (ι → F)}
+    {ε_star : ℝ≥0} (R : GrandMCAResolution C ε_star) (w : MCALowerWitness C ε_star)
+    (hw : w.δ = 1) : R.δStar = 1 := by
+  have hle : (1 : ℝ≥0) ≤ R.δStar := by
+    simpa [hw] using w.le_δStar R
+  exact le_antisymm R.le_one hle
+
+/-- An upper witness at radius `0` forces the resolved MCA cutoff to be `0`. -/
+theorem GrandMCAResolution.δStar_eq_zero_of_upperWitness {C : Set (ι → F)}
+    {ε_star : ℝ≥0} (R : GrandMCAResolution C ε_star) (w : MCAUpperWitness C ε_star)
+    (hw : w.δ = 0) : R.δStar = 0 := by
+  have hle : R.δStar ≤ 0 := by
+    simpa [hw] using w.δStar_le R
+  exact le_antisymm hle (zero_le R.δStar)
+
+/-- The cutoff radius of a Grand-MCA resolution is unique. -/
+theorem GrandMCAResolution.δStar_eq {C : Set (ι → F)} {ε_star : ℝ≥0}
+    (R S : GrandMCAResolution C ε_star) : R.δStar = S.δStar :=
+  le_antisymm (R.toLowerWitness.le_δStar S) (S.toLowerWitness.le_δStar R)
+
 /-! ## Concrete bridges from `CapacityBounds`
 
 One representative of each direction, consuming an actual external-admit bound. The
@@ -854,6 +988,142 @@ def ListUpperWitness.monoThreshold {C : Set (ι → F)} {m : ℕ} {ε_star ε_st
       (ε_star : ENNReal) * (Fintype.card F : ENNReal)) :
     ListUpperWitness C m ε_star' :=
   ⟨w.δ, lt_of_le_of_lt hε w.exceeds⟩
+
+/-! ### The same cutoff skeleton for list-decoding witnesses -/
+
+/-- A full list-decoding resolution is itself a lower witness at its cutoff radius. -/
+def GrandListResolution.toLowerWitness {C : Set (ι → F)} {m : ℕ} {ε_star : ℝ≥0}
+    (R : GrandListResolution C m ε_star) : ListLowerWitness C m ε_star :=
+  ⟨R.δStar, R.le_one, R.bound⟩
+
+/-- Every radius strictly above a resolved list-decoding cutoff, while still in `[0,1]`, is
+an upper witness. -/
+def GrandListResolution.upperWitnessOfGt {C : Set (ι → F)} {m : ℕ} {ε_star δ : ℝ≥0}
+    (R : GrandListResolution C m ε_star) (hgt : R.δStar < δ) (hδ : δ ≤ 1) :
+    ListUpperWitness C m ε_star :=
+  ⟨δ, R.maximal δ hgt hδ⟩
+
+/-- List lower witnesses are downward closed in the radius. -/
+def ListLowerWitness.monoRadius {C : Set (ι → F)} {m : ℕ} {ε_star δ' : ℝ≥0}
+    (w : ListLowerWitness C m ε_star) (hδ : δ' ≤ w.δ) :
+    ListLowerWitness C m ε_star :=
+  ⟨δ', le_trans hδ w.le_one, le_trans (lambda_coe_mono hδ) w.bound⟩
+
+/-- List upper witnesses are upward closed in the radius. -/
+def ListUpperWitness.monoRadius {C : Set (ι → F)} {m : ℕ} {ε_star δ' : ℝ≥0}
+    (w : ListUpperWitness C m ε_star) (hδ : w.δ ≤ δ') :
+    ListUpperWitness C m ε_star :=
+  ⟨δ', lt_of_lt_of_le w.exceeds (lambda_coe_mono hδ)⟩
+
+/-- Combined monotonicity for list lower witnesses: decrease the radius and relax the
+list-size target. -/
+def ListLowerWitness.mono {C : Set (ι → F)} {m : ℕ} {ε_star ε_star' δ' : ℝ≥0}
+    (w : ListLowerWitness C m ε_star) (hδ : δ' ≤ w.δ)
+    (hε : (ε_star : ENNReal) * (Fintype.card F : ENNReal) ≤
+      (ε_star' : ENNReal) * (Fintype.card F : ENNReal)) :
+    ListLowerWitness C m ε_star' :=
+  ListLowerWitness.monoThreshold (w.monoRadius hδ) hε
+
+/-- Combined monotonicity for list upper witnesses: increase the radius and tighten the
+list-size target. -/
+def ListUpperWitness.mono {C : Set (ι → F)} {m : ℕ} {ε_star ε_star' δ' : ℝ≥0}
+    (w : ListUpperWitness C m ε_star) (hδ : w.δ ≤ δ')
+    (hε : (ε_star' : ENNReal) * (Fintype.card F : ENNReal) ≤
+      (ε_star : ENNReal) * (Fintype.card F : ENNReal)) :
+    ListUpperWitness C m ε_star' :=
+  ListUpperWitness.monoThreshold (w.monoRadius hδ) hε
+
+/-- The set of radii certified by list lower witnesses. -/
+def listLowerWitnessRadii (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0) : Set ℝ≥0 :=
+  {δ | ∃ w : ListLowerWitness C m ε_star, w.δ = δ}
+
+/-- The set of radii certified by list upper witnesses. -/
+def listUpperWitnessRadii (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0) : Set ℝ≥0 :=
+  {δ | ∃ w : ListUpperWitness C m ε_star, w.δ = δ}
+
+/-- The resolved list-decoding cutoff radius belongs to the lower-witness radius set. -/
+theorem GrandListResolution.δStar_mem_lowerWitnessRadii {C : Set (ι → F)}
+    {m : ℕ} {ε_star : ℝ≥0} (R : GrandListResolution C m ε_star) :
+    R.δStar ∈ listLowerWitnessRadii C m ε_star :=
+  ⟨R.toLowerWitness, rfl⟩
+
+/-- Under a full list-decoding resolution, the lower-witness radii are exactly the radii below
+`δ*`. -/
+theorem GrandListResolution.mem_lowerWitnessRadii_iff {C : Set (ι → F)}
+    {m : ℕ} {ε_star δ : ℝ≥0} (R : GrandListResolution C m ε_star) :
+    δ ∈ listLowerWitnessRadii C m ε_star ↔ δ ≤ R.δStar := by
+  constructor
+  · rintro ⟨w, hw⟩
+    rw [← hw]
+    exact w.le_δStar R
+  · intro hδ
+    exact ⟨R.toLowerWitness.monoRadius hδ, rfl⟩
+
+/-- Set form of `GrandListResolution.mem_lowerWitnessRadii_iff`: the lower side is `Iic δ*`. -/
+theorem GrandListResolution.lowerWitnessRadii_eq_Iic {C : Set (ι → F)}
+    {m : ℕ} {ε_star : ℝ≥0} (R : GrandListResolution C m ε_star) :
+    listLowerWitnessRadii C m ε_star = Set.Iic R.δStar := by
+  ext δ
+  exact R.mem_lowerWitnessRadii_iff
+
+/-- Inside `[0,1]`, list upper-witness radii are exactly the radii strictly above `δ*`. -/
+theorem GrandListResolution.mem_upperWitnessRadii_iff_of_le_one {C : Set (ι → F)}
+    {m : ℕ} {ε_star δ : ℝ≥0} (R : GrandListResolution C m ε_star) (hδ : δ ≤ 1) :
+    δ ∈ listUpperWitnessRadii C m ε_star ↔ R.δStar < δ := by
+  constructor
+  · rintro ⟨w, hw⟩
+    by_contra hnot
+    have hle : δ ≤ R.δStar := le_of_not_gt hnot
+    have hbound :
+        (ListDecodable.Lambda (C^⋈ (Fin m)) (δ : ℝ) : ENNReal) ≤
+          ((ε_star : ENNReal) * (Fintype.card F : ENNReal)) :=
+      le_trans (lambda_coe_mono hle) R.bound
+    rw [← hw] at hbound
+    exact (not_le_of_gt w.exceeds) hbound
+  · intro hgt
+    exact ⟨R.upperWitnessOfGt hgt hδ, rfl⟩
+
+/-- No resolved list-decoding cutoff is itself an upper witness. -/
+theorem GrandListResolution.not_δStar_mem_upperWitnessRadii {C : Set (ι → F)}
+    {m : ℕ} {ε_star : ℝ≥0} (R : GrandListResolution C m ε_star) :
+    R.δStar ∉ listUpperWitnessRadii C m ε_star := by
+  rw [R.mem_upperWitnessRadii_iff_of_le_one R.le_one]
+  exact lt_irrefl R.δStar
+
+/-- Any lower/upper list witness pair brackets correctly once a resolution exists. -/
+theorem listWitness_le_upper_of_resolution {C : Set (ι → F)} {m : ℕ} {ε_star : ℝ≥0}
+    (wlo : ListLowerWitness C m ε_star) (whi : ListUpperWitness C m ε_star)
+    (R : GrandListResolution C m ε_star) :
+    wlo.δ ≤ whi.δ :=
+  le_trans (wlo.le_δStar R) (whi.δStar_le R)
+
+/-- A resolved list-decoding instance forbids crossed one-sided witnesses. -/
+theorem not_listWitnesses_crossed_of_resolution {C : Set (ι → F)} {m : ℕ}
+    {ε_star : ℝ≥0} (wlo : ListLowerWitness C m ε_star)
+    (whi : ListUpperWitness C m ε_star) (R : GrandListResolution C m ε_star) :
+    ¬ whi.δ < wlo.δ :=
+  not_lt_of_ge (listWitness_le_upper_of_resolution wlo whi R)
+
+/-- A lower witness at radius `1` forces the resolved list-decoding cutoff to be `1`. -/
+theorem GrandListResolution.δStar_eq_one_of_lowerWitness {C : Set (ι → F)}
+    {m : ℕ} {ε_star : ℝ≥0} (R : GrandListResolution C m ε_star)
+    (w : ListLowerWitness C m ε_star) (hw : w.δ = 1) : R.δStar = 1 := by
+  have hle : (1 : ℝ≥0) ≤ R.δStar := by
+    simpa [hw] using w.le_δStar R
+  exact le_antisymm R.le_one hle
+
+/-- An upper witness at radius `0` forces the resolved list-decoding cutoff to be `0`. -/
+theorem GrandListResolution.δStar_eq_zero_of_upperWitness {C : Set (ι → F)}
+    {m : ℕ} {ε_star : ℝ≥0} (R : GrandListResolution C m ε_star)
+    (w : ListUpperWitness C m ε_star) (hw : w.δ = 0) : R.δStar = 0 := by
+  have hle : R.δStar ≤ 0 := by
+    simpa [hw] using w.δStar_le R
+  exact le_antisymm hle (zero_le R.δStar)
+
+/-- The cutoff radius of a Grand List-Decoding resolution is unique. -/
+theorem GrandListResolution.δStar_eq {C : Set (ι → F)} {m : ℕ} {ε_star : ℝ≥0}
+    (R S : GrandListResolution C m ε_star) : R.δStar = S.δStar :=
+  le_antisymm (R.toLowerWitness.le_δStar S) (S.toLowerWitness.le_δStar R)
 
 /-! ## First instantiation: the symbolic ρ = 1/2 interval (Phase 1 scaffold)
 

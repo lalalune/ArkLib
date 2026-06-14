@@ -3,9 +3,10 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.CRTPacketMinpoly
 import Mathlib
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 3100
 
 /-!
 # Issue #232 — the two-prime de Bruijn structure: the CRT double-slice theorems (O67–O68)
@@ -42,9 +43,7 @@ T2/T3 tiers:
 
 * `minpoly_qadjoin_eq_cyclotomic` — **the linear-disjointness DISCHARGE**: `Φ_{p^(a+1)}`
   IS the minimal polynomial of `ζ_p` over `ℚ⟮ζ_q⟯` (`q ≠ p` primes, `ζ_q` of order
-  `q^b`).  Engine: `minpoly ∣ Φ` pinched against the totient tower-degree bound (the
-  packet form `minpoly_adjoin_primitiveRoot_eq_packet`, copied with provenance from the
-  parallel step-(1) lane `CRTPacketMinpoly.lean`).
+  `q^b`).  Engine: the shared packet minimal-polynomial theorem in `CRTPacketMinpoly`.
 
 * `two_prime_qside_slices` / `two_prime_deBruijn_double_slice` — the headline two-prime
   instantiations with `K := ℚ⟮ζ_q⟯`, now **unconditional**: no hypotheses beyond
@@ -62,13 +61,10 @@ extraction (disjoint rotated full packets) needs an induction with packet subtra
 on top of these slice relations (the genuinely de Bruijn positivity step, residual (3)
 of the O67 program); the slice relations themselves are now hypothesis-free.
 
-Engine provenance: `packet_mul_coeff` and the body of `vanishing_coeff_slices_over` are
-the `K`-generalizations of `LamLeungTwoPow.packet_mul_coeff` and
-`LamLeungTwoPow.vanishing_coeff_slices`
-(`ArkLib/Data/CodingTheory/ProximityGap/LamLeungTwoPow.lean`), and
-`minpoly_adjoin_primitiveRoot_eq_packet` is copied from `CRTPacketMinpoly.lean` —
-both copied with provenance since those files' `.olean`s are outside this file's
-import budget; dedup is flagged for the next maintenance pass.
+Engine provenance: the packet coefficient calculation and weighted slice engine live in
+`CRTDoubleSlice`; the coprime cyclotomic minimal-polynomial discharge lives in
+`CRTPacketMinpoly`.  This file keeps the de Bruijn-facing theorem names as stable wrappers
+around those shared engines.
 -/
 
 namespace DeBruijnTwoPrime
@@ -89,43 +85,21 @@ section CoefficientSlicesOver
 
 /-- Slices of a geometric-packet multiple: if `deg R < q` then
 `(Σ_{i<p} X^(iq) · R).coeff (iq + s) = R.coeff s` for `i < p`, `s < q`.
-(Provenance: `LamLeungTwoPow.packet_mul_coeff`, with `ℚ` generalized to `K`.) -/
+(Wrapper around `CRTDoubleSlice.packet_slice_coeff`.) -/
 lemma packet_mul_coeff {K : Type*} [Field K] {p q : ℕ} (_hq : 0 < q) {R : K[X]}
     (hR : R.natDegree < q) {i s : ℕ} (hi : i < p) (hs : s < q) :
     ((∑ i ∈ Finset.range p, (Polynomial.X : K[X]) ^ (i * q)) * R).coeff (i * q + s)
       = R.coeff s := by
-  rw [Finset.sum_mul, Polynomial.finset_sum_coeff]
-  rw [Finset.sum_eq_single i]
-  · rw [show i * q + s = s + i * q from by ring, Polynomial.coeff_X_pow_mul]
-  · intro j hj hji
-    rw [Polynomial.coeff_X_pow_mul']
-    rcases lt_or_ge (i * q + s) (j * q) with hlt | hge
-    · rw [if_neg (by omega)]
-    · rw [if_pos hge]
-      apply Polynomial.coeff_eq_zero_of_natDegree_lt
-      rcases lt_or_ge j i with hji' | hji'
-      · have : i * q + s - j * q ≥ q := by
-          have h1 : (j + 1) * q ≤ i * q := Nat.mul_le_mul_right q (by omega)
-          have h2 : j * q + q ≤ i * q := by
-            calc j * q + q = (j + 1) * q := by ring
-            _ ≤ i * q := h1
-          omega
-        omega
-      · have hj1 : i + 1 ≤ j := by omega
-        have : i * q + q ≤ j * q := by
-          calc i * q + q = (i + 1) * q := by ring
-          _ ≤ j * q := Nat.mul_le_mul_right q hj1
-        omega
-  · intro hnotin
-    exact absurd (Finset.mem_range.mpr hi) hnotin
+  exact CRTDoubleSlice.packet_slice_coeff (K := K) (p := p) (q := q) (R := R)
+    hR hi hs
 
 /-- **The K-coefficient prime-power slice theorem** (the linear-disjointness slice
 engine): if `Φ_{p^(m+1)}` is still the minimal polynomial of the primitive `p^(m+1)`-th
 root `ζ ∈ F` over the coefficient field `K` (hypothesis `hmin`), then any vanishing
 `K`-linear combination of `ζ^e`, `e < p^(m+1)`, has all `p` of its length-`p^m`
 coefficient slices equal.
-(Provenance: body mirrors `LamLeungTwoPow.vanishing_coeff_slices`, `ℚ ↝ K`, with
-`cyclotomic_eq_minpoly_rat` replaced by `hmin`.) -/
+(Wrapper around `CRTDoubleSlice.slice_of_packet_minpoly`, with `hmin` first rewritten
+to the geometric packet form of the prime-power cyclotomic.) -/
 theorem vanishing_coeff_slices_over (K : Type*) [Field K] [Algebra K F]
     {p m : ℕ} (hp : p.Prime) {ζ : F}
     (_hζ : IsPrimitiveRoot ζ (p ^ (m + 1)))
@@ -134,90 +108,17 @@ theorem vanishing_coeff_slices_over (K : Type*) [Field K] [Algebra K F]
     (hsum : ∑ e ∈ Finset.range (p ^ (m + 1)), algebraMap K F (c e) * ζ ^ e = 0) :
     ∀ s < p ^ m, ∀ i < p, ∀ i' < p, c (i * p ^ m + s) = c (i' * p ^ m + s) := by
   classical
-  set n := p ^ (m + 1) with hn
-  set q := p ^ m with hq
-  have hppos : 0 < p := hp.pos
-  have hqpos : 0 < q := by positivity
-  have hnq : n = p * q := by rw [hn, hq]; ring
-  have hnpos : 0 < n := by rw [hn]; positivity
-  set P : K[X] := ∑ e ∈ Finset.range n, Polynomial.C (c e) * X ^ e with hP
-  have hPcoeff : ∀ j < n, P.coeff j = c j := by
-    intro j hj
-    rw [hP, Polynomial.finset_sum_coeff]
-    rw [Finset.sum_congr rfl (fun e _ => by
-      rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow])]
-    rw [Finset.sum_eq_single j (fun e _ hej => by
-      rw [if_neg (fun h => hej h.symm), mul_zero]) (fun h =>
-      absurd (Finset.mem_range.mpr hj) h)]
-    rw [if_pos rfl, mul_one]
-  have hPζ : Polynomial.aeval ζ P = 0 := by
-    rw [hP, map_sum]
-    rw [Finset.sum_congr rfl (fun e _ => by
-      rw [map_mul, Polynomial.aeval_C, map_pow, Polynomial.aeval_X])]
-    exact hsum
-  have hdvd : (∑ i ∈ Finset.range p, (X : K[X]) ^ (i * q)) ∣ P := by
-    have hmin' := minpoly.dvd K ζ hPζ
-    rw [hmin] at hmin'
-    have hcyc : Polynomial.cyclotomic n K
-        = ∑ i ∈ Finset.range p, (X : K[X]) ^ (i * q) := by
-      rw [hn, Polynomial.cyclotomic_prime_pow_eq_geom_sum hp]
-      refine Finset.sum_congr rfl fun i _ => ?_
-      rw [← pow_mul, hq, mul_comm]
-    rwa [hcyc] at hmin'
   intro s hs i hi i' hi'
-  have hb : ∀ j < p, j * q + s < n := by
-    intro j hj
-    rw [hnq]
-    have h1 : (j + 1) * q ≤ p * q := Nat.mul_le_mul_right q (by omega)
-    have : j * q + q ≤ p * q := by
-      calc j * q + q = (j + 1) * q := by ring
-      _ ≤ p * q := h1
-    omega
-  rw [← hPcoeff _ (hb i hi), ← hPcoeff _ (hb i' hi')]
-  obtain ⟨R, hR⟩ := hdvd
-  by_cases hP0 : P = 0
-  · simp [hP0]
-  have hR0 : R ≠ 0 := fun h => hP0 (by rw [hR, h, mul_zero])
-  have hG : (∑ i ∈ Finset.range p, (X : K[X]) ^ (i * q)) ≠ 0 := by
-    intro h
-    have := congrArg (fun Q : K[X] => Q.coeff 0) h
-    simp only [Polynomial.finset_sum_coeff] at this
-    rw [Finset.sum_eq_single 0 (fun j _ hj => by
-      rw [Polynomial.coeff_X_pow]
-      rw [if_neg (by
-        intro h0
-        rcases Nat.mul_eq_zero.mp h0.symm with h | h
-        · exact hj h
-        · omega)]) (fun h0 => absurd (Finset.mem_range.mpr hppos) h0)] at this
-    simp at this
-  have hdegP : P.natDegree < n := by
-    rw [hP]
-    have hle : (∑ e ∈ Finset.range n, Polynomial.C (c e) * (X : K[X]) ^ e).natDegree
-        ≤ n - 1 :=
-      Polynomial.natDegree_sum_le_of_forall_le _ _ fun e he => by
-        refine le_trans (Polynomial.natDegree_C_mul_le _ _) ?_
-        rw [Polynomial.natDegree_X_pow]
-        have := Finset.mem_range.mp he
-        omega
-    omega
-  have hdegR : R.natDegree < q := by
-    have hmul := Polynomial.natDegree_mul hG hR0
-    rw [← hR] at hmul
-    have hGlow : (p - 1) * q ≤ (∑ i ∈ Finset.range p, (X : K[X]) ^ (i * q)).natDegree := by
-      apply Polynomial.le_natDegree_of_ne_zero
-      rw [Polynomial.finset_sum_coeff]
-      rw [Finset.sum_eq_single (p - 1) (fun j hj hjne => by
-        rw [Polynomial.coeff_X_pow, if_neg (fun h => hjne (by
-          have := Nat.eq_of_mul_eq_mul_right hqpos h
-          omega))]) (fun h0 => absurd (Finset.mem_range.mpr (by omega)) h0)]
-      rw [Polynomial.coeff_X_pow, if_pos rfl]
-      exact one_ne_zero
-    have hcount : (p - 1) * q + q = n := by
-      rw [hnq]
-      calc (p - 1) * q + q = ((p - 1) + 1) * q := by ring
-      _ = p * q := by congr 1; omega
-    omega
-  rw [hR, packet_mul_coeff hqpos hdegR hi hs, packet_mul_coeff hqpos hdegR hi' hs]
+  have hpacket :
+      minpoly K ζ = ∑ t ∈ Finset.range p, (X : K[X]) ^ (t * p ^ m) := by
+    rw [hmin, Polynomial.cyclotomic_prime_pow_eq_geom_sum hp]
+    refine Finset.sum_congr rfl fun t _ => ?_
+    rw [mul_comm t (p ^ m), pow_mul]
+  have hpow : p * p ^ m = p ^ (m + 1) := by ring
+  have hsum' : ∑ e ∈ Finset.range (p * p ^ m), c e • ζ ^ e = 0 := by
+    rw [hpow]
+    simpa [Algebra.smul_def] using hsum
+  exact CRTDoubleSlice.slice_of_packet_minpoly hpacket hsum' hi hi' hs
 
 /-- The `K = ℚ` instance: the rational coefficient-slice theorem, with the
 linear-disjointness hypothesis discharged by `Polynomial.cyclotomic_eq_minpoly_rat`.
@@ -455,120 +356,26 @@ end QSideGrouping
 /-! ## Discharging the linear-disjointness hypothesis
 
 `Φ_{p^(a+1)}` stays the minimal polynomial of `ζ_p` over the coprime cyclotomic
-extension `ℚ(ζ_{q^b})`.  Engine: `minpoly ℚ⟮ζq⟯ ζp ∣ Φ_{p^(a+1)}` pinched against the
-totient tower bound `φ(q^b)·φ(p^(a+1)) = φ(q^b·p^(a+1)) = [ℚ(ζ_qζ_p):ℚ] ≤
-φ(q^b)·[ℚ⟮ζq⟯⟮ζp⟯:ℚ⟮ζq⟯]`, then monic divisor of matching degree.
-
-Provenance: `minpoly_adjoin_primitiveRoot_eq_packet` (and its integrality helper) is
-copied verbatim, modulo namespace, from
-`ArkLib/Data/CodingTheory/ProximityGap/CRTPacketMinpoly.lean` (the parallel de Bruijn
-step-(1) lane of this corpus), because this file's import budget is Mathlib-only;
-dedup to a shared home is flagged for the next maintenance pass. -/
+extension `ℚ(ζ_{q^b})`.  The totient-tower proof now lives once, in
+`CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet`; this section packages the
+same fact in the theorem names used by the de Bruijn double-slice layer. -/
 
 section LinearDisjointness
 
-open IntermediateField Module
-
-/-- Roots of unity are integral over any base field of the ambient field.
-(Provenance: `CRTPacketMinpoly.isIntegral_of_pow_eq_one`.) -/
-private lemma isIntegral_of_pow_eq_one {K L : Type*} [Field K] [Field L] [Algebra K L]
-    {x : L} {m : ℕ} (hm : 0 < m) (hx : x ^ m = 1) : IsIntegral K x :=
-  ⟨X ^ m - 1, by simpa using monic_X_pow_sub_C (1 : K) hm.ne', by simp [hx]⟩
+open IntermediateField
 
 /-- **The packet minimal polynomial over the coprime cyclotomic extension**: for
 distinct primes `p ≠ q`, `0 < b`, a primitive `p^a`-th root `ξ` and a primitive
 `q^b`-th root `η` in a characteristic-zero field `L`, the minimal polynomial of `η`
 over `ℚ⟮ξ⟯ = ℚ(ζ_{p^a})` is the geometric packet `Σ_{t<q} X^(t·q^(b-1))` — i.e.
 `Φ_{q^b}` remains irreducible over the coprime cyclotomic extension.
-(Provenance: `CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet`.) -/
+(Wrapper around `CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet`.) -/
 theorem minpoly_adjoin_primitiveRoot_eq_packet
     {L : Type*} [Field L] [CharZero L] {p q a b : ℕ}
     (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q) (hb : 0 < b)
     {ξ η : L} (hξ : IsPrimitiveRoot ξ (p ^ a)) (hη : IsPrimitiveRoot η (q ^ b)) :
     minpoly ℚ⟮ξ⟯ η = ∑ t ∈ Finset.range q, (X : Polynomial ℚ⟮ξ⟯) ^ (t * q ^ (b - 1)) := by
-  classical
-  have hpa : 0 < p ^ a := pow_pos hp.pos a
-  have hqb : 0 < q ^ b := pow_pos hq.pos b
-  have hn : 0 < p ^ a * q ^ b := Nat.mul_pos hpa hqb
-  have hco : Nat.Coprime (p ^ a) (q ^ b) :=
-    Nat.Coprime.pow a b ((Nat.coprime_primes hp hq).mpr hpq)
-  -- integrality of the three roots involved
-  have hintξ : IsIntegral ℚ ξ := isIntegral_of_pow_eq_one hpa hξ.pow_eq_one
-  have hintηK : IsIntegral ℚ⟮ξ⟯ η := isIntegral_of_pow_eq_one hqb hη.pow_eq_one
-  -- `ξ * η` is a primitive `(p^a * q^b)`-th root of unity (coprime orders multiply)
-  have h1 : orderOf ξ = p ^ a := hξ.eq_orderOf.symm
-  have h2 : orderOf η = q ^ b := hη.eq_orderOf.symm
-  have horder : orderOf (ξ * η) = p ^ a * q ^ b := by
-    rw [(Commute.all ξ η).orderOf_mul_eq_mul_orderOf_of_coprime
-      (by rw [h1, h2]; exact hco), h1, h2]
-  have hζ : IsPrimitiveRoot (ξ * η) (p ^ a * q ^ b) :=
-    horder ▸ IsPrimitiveRoot.orderOf (ξ * η)
-  have hintζ : IsIntegral ℚ (ξ * η) := isIntegral_of_pow_eq_one hn hζ.pow_eq_one
-  -- absolute degrees over ℚ, via unconditional rationals-cyclotomic irreducibility
-  have hrkK : finrank ℚ ℚ⟮ξ⟯ = (p ^ a).totient := by
-    rw [IntermediateField.adjoin.finrank hintξ, ← cyclotomic_eq_minpoly_rat hξ hpa,
-      natDegree_cyclotomic]
-  have hrkZ : finrank ℚ ℚ⟮ξ * η⟯ = (p ^ a * q ^ b).totient := by
-    rw [IntermediateField.adjoin.finrank hintζ, ← cyclotomic_eq_minpoly_rat hζ hn,
-      natDegree_cyclotomic]
-  -- finite dimensionality up the tower
-  haveI : FiniteDimensional ℚ ℚ⟮ξ⟯ := IntermediateField.adjoin.finiteDimensional hintξ
-  haveI : FiniteDimensional ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := IntermediateField.adjoin.finiteDimensional hintηK
-  haveI : FiniteDimensional ℚ ℚ⟮ξ⟯⟮η⟯ := Module.Finite.trans ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯
-  -- `ξ * η` lives in `ℚ⟮ξ⟯⟮η⟯`
-  have hξE : ξ ∈ ℚ⟮ξ⟯⟮η⟯ := by
-    have h := ℚ⟮ξ⟯⟮η⟯.algebraMap_mem ⟨ξ, mem_adjoin_simple_self ℚ ξ⟩
-    simpa using h
-  have hηE : η ∈ ℚ⟮ξ⟯⟮η⟯ := mem_adjoin_simple_self ℚ⟮ξ⟯ η
-  have hsub : ∀ {x : L}, x ∈ ℚ⟮ξ * η⟯ → x ∈ ℚ⟮ξ⟯⟮η⟯ := by
-    intro x hx
-    have hle : ℚ⟮ξ * η⟯ ≤ (ℚ⟮ξ⟯⟮η⟯).restrictScalars ℚ := by
-      rw [adjoin_le_iff]
-      intro y hy
-      rw [Set.mem_singleton_iff] at hy
-      subst hy
-      -- membership in `restrictScalars` is definitionally membership (`Iff.rfl`)
-      exact mul_mem hξE hηE
-    exact hle hx
-  -- ℚ-linear embedding `ℚ⟮ξ * η⟯ ↪ ℚ⟮ξ⟯⟮η⟯` gives the degree lower bound
-  let f : ℚ⟮ξ * η⟯ →ₗ[ℚ] ℚ⟮ξ⟯⟮η⟯ :=
-    { toFun := fun x => ⟨x.1, hsub x.2⟩
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl }
-  have hinj : Function.Injective f := fun x y hxy => by
-    have h1 := congrArg Subtype.val hxy
-    exact Subtype.ext h1
-  have hle : finrank ℚ ℚ⟮ξ * η⟯ ≤ finrank ℚ ℚ⟮ξ⟯⟮η⟯ :=
-    LinearMap.finrank_le_finrank_of_injective hinj
-  have htower : finrank ℚ ℚ⟮ξ⟯ * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ = finrank ℚ ℚ⟮ξ⟯⟮η⟯ :=
-    Module.finrank_mul_finrank ℚ ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯
-  -- the totient tower bound: `φ(q^b) ≤ natDegree (minpoly ℚ⟮ξ⟯ η)`
-  have hdeg_ge : (q ^ b).totient ≤ (minpoly ℚ⟮ξ⟯ η).natDegree := by
-    have hmul : (p ^ a).totient * (q ^ b).totient
-        ≤ (p ^ a).totient * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := by
-      calc (p ^ a).totient * (q ^ b).totient
-          = (p ^ a * q ^ b).totient := (Nat.totient_mul hco).symm
-        _ = finrank ℚ ℚ⟮ξ * η⟯ := hrkZ.symm
-        _ ≤ finrank ℚ ℚ⟮ξ⟯⟮η⟯ := hle
-        _ = finrank ℚ ℚ⟮ξ⟯ * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := htower.symm
-        _ = (p ^ a).totient * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := by rw [hrkK]
-    have h2 : (q ^ b).totient ≤ finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ :=
-      Nat.le_of_mul_le_mul_left hmul (Nat.totient_pos.mpr hpa)
-    rwa [IntermediateField.adjoin.finrank hintηK] at h2
-  -- divisibility: `minpoly ℚ⟮ξ⟯ η ∣ Φ_{q^b}` over `ℚ⟮ξ⟯`
-  have hdvd : minpoly ℚ⟮ξ⟯ η ∣ cyclotomic (q ^ b) ℚ⟮ξ⟯ := by
-    apply minpoly.dvd
-    rw [aeval_def, ← eval_map, map_cyclotomic]
-    exact hη.isRoot_cyclotomic hqb
-  -- monic divisor of matching degree: the minimal polynomial IS the cyclotomic
-  have heq : cyclotomic (q ^ b) ℚ⟮ξ⟯ = minpoly ℚ⟮ξ⟯ η :=
-    Polynomial.eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic hintηK)
-      (cyclotomic.monic _ _) hdvd (by rwa [natDegree_cyclotomic])
-  -- and at a prime power the cyclotomic is the geometric packet
-  obtain ⟨b', rfl⟩ : ∃ b', b = b' + 1 := ⟨b - 1, (Nat.succ_pred_eq_of_pos hb).symm⟩
-  rw [← heq, cyclotomic_prime_pow_eq_geom_sum hq]
-  refine Finset.sum_congr rfl fun t _ => ?_
-  rw [Nat.add_sub_cancel, mul_comm t (q ^ b'), pow_mul]
+  exact CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet hp hq hpq hb hξ hη
 
 /-- **The `hdisj` discharge in the headline's shape**: `Φ_{p^(a+1)}` IS the minimal
 polynomial of `ζ_p` over `ℚ⟮ζ_q⟯` for any primitive `q^b`-th root `ζ_q`, `q ≠ p` —
@@ -634,8 +441,20 @@ theorem two_prime_deBruijn_double_slice {p q a b : ℕ} (hp : p.Prime) (hq : q.P
 /-- Satisfiability of the headline's hypothesis spine in a concrete field: the two
 primitive roots exist in `ℂ` and the headline theorem fires (instantiated at the
 empty vanishing sum) — no hypothesis hides an unsatisfiable assumption. -/
-example : True := by
+example :
+    let ζp : ℂ := Complex.exp (2 * Real.pi * Complex.I / 4)
+    let ζq : ℂ := Complex.exp (2 * Real.pi * Complex.I / 3)
+    ∀ s < 2 ^ 1, ∀ i < 2, ∀ i' < 2, ∀ t < 3 ^ 0, ∀ j < 3, ∀ j' < 3,
+      (if ζp ^ (i * 2 ^ 1 + s) * ζq ^ (j * 3 ^ 0 + t) ∈ (∅ : Finset ℂ) then
+          (1 : ℚ) else 0)
+        - (if ζp ^ (i' * 2 ^ 1 + s) * ζq ^ (j * 3 ^ 0 + t) ∈ (∅ : Finset ℂ) then
+          (1 : ℚ) else 0)
+      = (if ζp ^ (i * 2 ^ 1 + s) * ζq ^ (j' * 3 ^ 0 + t) ∈ (∅ : Finset ℂ) then
+          (1 : ℚ) else 0)
+        - (if ζp ^ (i' * 2 ^ 1 + s) * ζq ^ (j' * 3 ^ 0 + t) ∈ (∅ : Finset ℂ) then
+          (1 : ℚ) else 0) := by
   classical
+  dsimp
   have he4 : IsPrimitiveRoot (Complex.exp (2 * Real.pi * Complex.I / 4)) 4 := by
     have h := Complex.isPrimitiveRoot_exp 4 (by norm_num)
     norm_num at h
@@ -650,7 +469,7 @@ example : True := by
     norm_num [he3]
   have h := two_prime_deBruijn_double_slice Nat.prime_two Nat.prime_three (by norm_num)
     h4 h3 (S := (∅ : Finset ℂ)) (fun z hz => absurd hz (Finset.notMem_empty z)) (by simp)
-  trivial
+  exact h
 
 end TwoPrimeHeadline
 
@@ -1775,5 +1594,1354 @@ theorem coset_lift_sq {q : ℕ} (hq : 0 < q) {S : Finset F} {x : F} (hx0 : x ≠
   rwa [← pow_two]
 
 end UpwardRung
+
+/-! ## The dichotomy–spectrum export and the first reassembly trichotomy
+
+The wiring of descent + cover + rung into the first full windowed-law statement: the
+export lemma strengthens the spectral construction with a membership dichotomy — every
+element of `S` is `μ_p`-closed in `S` (it sits in a `μ_p`-packet) or its `q`-th power
+lies in the spectrum. The trichotomy theorem then assembles: with window `{1, q}`, the
+spectrum vanishes, the COVER (O76) applies to it one level down, and the upward rung
+(O83) converts spectrum-level `μ_p`/`μ_q`-coverage of `x^q` into `μ_{pq}`/`μ_{q²}`
+closure at `x` — the `d`-coset reassembly (`d ∈ {p, q², pq}`: the divisors exceeding
+`q`) that the exhaustively-verified O70 law displays at `t = q`. -/
+
+section DichotomySpectrum
+
+variable [DecidableEq F]
+
+/-- **The dichotomy–spectrum export**: every element is `μ_p`-closed in `S` or maps
+into the spectrum; the spectrum keeps the orbit property and the `e = 1` transfer. -/
+theorem packetUnion_dichotomy_spectrum {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hPU : PacketUnion p q a b ζp ζq S) :
+    ∃ R : Finset F,
+      (∀ r ∈ R, ∃ w ∈ S, w ^ q = r ∧ ∀ g : F, g ^ q = 1 → g * w ∈ S) ∧
+      (∀ x ∈ S, (∀ g : F, g ^ p = 1 → g * x ∈ S) ∨ x ^ q ∈ R) ∧
+      (∑ y ∈ S, y ^ q = (q : F) * ∑ r ∈ R, r) := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  haveI : NeZero q := ⟨hq.pos.ne'⟩
+  have hζp0 : ζp ≠ 0 := prim_ne_zero hζp (pow_pos hp.pos _)
+  have hζq0 : ζq ≠ 0 := prim_ne_zero hζq (pow_pos hq.pos _)
+  have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+    hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+  have hωq : IsPrimitiveRoot (ζq ^ (q ^ b)) q :=
+    hζq.pow (pow_pos hq.pos _) (by rw [pow_succ])
+  have hωpq : IsPrimitiveRoot ((ζp ^ (p ^ a)) ^ q) p :=
+    hωp.pow_of_coprime q ((Nat.coprime_primes hq hp).mpr (Ne.symm hpq))
+  induction hPU with
+  | empty =>
+    exact ⟨∅, fun r hr => absurd hr (Finset.notMem_empty r),
+      fun x hx => absurd hx (Finset.notMem_empty x), by simp⟩
+  | @addP S₀ s j t hsub hnot IH =>
+    obtain ⟨R, hRorbit, hRdich, hRsum⟩ := IH
+    set P : Finset F := (Finset.range p).image
+      (fun i'' => ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) with hPdef
+    have hdis : Disjoint S₀ P := by
+      rw [Finset.disjoint_left]
+      intro y hyS hyP
+      obtain ⟨i'', hi'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hyP)
+      exact hnot i'' (Finset.mem_range.mp hi'') hyS
+    have hPclosed : ∀ y ∈ P, ∀ g : F, g ^ p = 1 → g * y ∈ P := by
+      intro y hy g hg
+      obtain ⟨i'', hi'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hy)
+      obtain ⟨k, hk, hkg⟩ := hωp.eq_pow_of_pow_eq_one hg
+      refine hPdef ▸ Finset.mem_image.mpr
+        ⟨(k + i'') % p, Finset.mem_range.mpr (Nat.mod_lt _ hp.pos), ?_⟩
+      have hgz : g * ζp ^ (i'' * p ^ a + s)
+          = ζp ^ (((k + i'') % p) * p ^ a + s) := by
+        rw [← hkg, ← pow_mul, ← pow_add]
+        have hsplit : k + i'' = p * ((k + i'') / p) + (k + i'') % p :=
+          (Nat.div_add_mod _ p).symm
+        have hdecomp : p ^ a * k + (i'' * p ^ a + s)
+            = p ^ (a + 1) * ((k + i'') / p) + (((k + i'') % p) * p ^ a + s) := by
+          calc p ^ a * k + (i'' * p ^ a + s) = (k + i'') * p ^ a + s := by ring
+          _ = (p * ((k + i'') / p) + (k + i'') % p) * p ^ a + s := by rw [← hsplit]
+          _ = (p * p ^ a) * ((k + i'') / p) + (((k + i'') % p) * p ^ a + s) := by ring
+          _ = p ^ (a + 1) * ((k + i'') / p) + (((k + i'') % p) * p ^ a + s) := by
+              rw [← pow_succ']
+        rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
+      rw [← mul_assoc]
+      exact congrArg (· * ζq ^ (j * q ^ b + t)) hgz.symm
+    have hinj : ∀ x1 ∈ Finset.range p, ∀ x2 ∈ Finset.range p,
+        ζp ^ (x1 * p ^ a + s) * ζq ^ (j * q ^ b + t)
+          = ζp ^ (x2 * p ^ a + s) * ζq ^ (j * q ^ b + t) → x1 = x2 := by
+      intro x1 hx1 x2 hx2 hxe
+      have hconst0 : ζq ^ (j * q ^ b + t) ≠ 0 := pow_ne_zero _ hζq0
+      have hs0 : ζp ^ s ≠ 0 := pow_ne_zero _ hζp0
+      have hpow : ζp ^ (x1 * p ^ a) = ζp ^ (x2 * p ^ a) := by
+        have hcancel := mul_right_cancel₀ hconst0 hxe
+        rw [pow_add, pow_add] at hcancel
+        exact mul_right_cancel₀ hs0 hcancel
+      have hpow' : (ζp ^ (p ^ a)) ^ x1 = (ζp ^ (p ^ a)) ^ x2 := by
+        rw [← pow_mul, ← pow_mul, Nat.mul_comm (p ^ a) x1, Nat.mul_comm (p ^ a) x2]
+        exact hpow
+      exact hωp.pow_inj (Finset.mem_range.mp hx1) (Finset.mem_range.mp hx2) hpow'
+    have hPsum : ∑ y ∈ P, y ^ q = 0 := by
+      rw [hPdef, Finset.sum_image hinj]
+      have hterm : ∀ i'' ∈ Finset.range p,
+          (ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) ^ q
+            = ((ζp ^ (p ^ a)) ^ q) ^ i''
+              * ((ζp ^ s) ^ q * (ζq ^ (j * q ^ b + t)) ^ q) := by
+        intro i'' _
+        ring
+      rw [Finset.sum_congr rfl hterm]
+      exact prime_packet_sum_zero hp hωpq _
+    refine ⟨R, ?_, ?_, ?_⟩
+    · intro r hr
+      obtain ⟨w, hw, hwq, horbit⟩ := hRorbit r hr
+      exact ⟨w, Finset.mem_union_left _ hw, hwq,
+        fun g hg => Finset.mem_union_left _ (horbit g hg)⟩
+    · intro x hx
+      rcases Finset.mem_union.mp hx with hxS | hxP
+      · rcases hRdich x hxS with hcl | hsp
+        · exact Or.inl fun g hg => Finset.mem_union_left _ (hcl g hg)
+        · exact Or.inr hsp
+      · exact Or.inl fun g hg => Finset.mem_union_right _ (hPclosed x hxP g hg)
+    · rw [Finset.sum_union hdis, hRsum, hPsum, add_zero]
+  | @addQ S₀ s i t hsub hnot IH =>
+    obtain ⟨R, hRorbit, hRdich, hRsum⟩ := IH
+    set P : Finset F := (Finset.range q).image
+      (fun j'' => ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) with hPdef
+    set z₀ : F := ζp ^ (i * p ^ a + s) * ζq ^ t with hz₀
+    have hz₀P : z₀ ∈ P := by
+      rw [hPdef]
+      exact Finset.mem_image.mpr ⟨0, Finset.mem_range.mpr hq.pos, by
+        rw [hz₀, Nat.zero_mul, Nat.zero_add]⟩
+    have hdis : Disjoint S₀ P := by
+      rw [Finset.disjoint_left]
+      intro y hyS hyP
+      obtain ⟨j'', hj'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hyP)
+      exact hnot j'' (Finset.mem_range.mp hj'') hyS
+    have hinj : ∀ x1 ∈ Finset.range q, ∀ x2 ∈ Finset.range q,
+        ζp ^ (i * p ^ a + s) * ζq ^ (x1 * q ^ b + t)
+          = ζp ^ (i * p ^ a + s) * ζq ^ (x2 * q ^ b + t) → x1 = x2 := by
+      intro x1 hx1 x2 hx2 hxe
+      have hconst0 : ζp ^ (i * p ^ a + s) ≠ 0 := pow_ne_zero _ hζp0
+      have ht0 : ζq ^ t ≠ 0 := pow_ne_zero _ hζq0
+      have hpow : ζq ^ (x1 * q ^ b) = ζq ^ (x2 * q ^ b) := by
+        have hcancel := mul_left_cancel₀ hconst0 hxe
+        rw [pow_add, pow_add] at hcancel
+        exact mul_right_cancel₀ ht0 hcancel
+      have hpow' : (ζq ^ (q ^ b)) ^ x1 = (ζq ^ (q ^ b)) ^ x2 := by
+        rw [← pow_mul, ← pow_mul, Nat.mul_comm (q ^ b) x1, Nat.mul_comm (q ^ b) x2]
+        exact hpow
+      exact hωq.pow_inj (Finset.mem_range.mp hx1) (Finset.mem_range.mp hx2) hpow'
+    -- the q-packet is the full μ_q-orbit of z₀, and all members share the q-th power
+    have hPorbit : ∀ g : F, g ^ q = 1 → g * z₀ ∈ P := by
+      intro g hg
+      obtain ⟨k, hk, hkg⟩ := hωq.eq_pow_of_pow_eq_one hg
+      refine hPdef ▸ Finset.mem_image.mpr
+        ⟨k % q, Finset.mem_range.mpr (Nat.mod_lt _ hq.pos), ?_⟩
+      symm
+      rw [← hkg, hz₀]
+      have hsplit : k = q * (k / q) + k % q := (Nat.div_add_mod _ q).symm
+      have hdecomp : q ^ b * k + t = q ^ (b + 1) * (k / q) + ((k % q) * q ^ b + t) := by
+        calc q ^ b * k + t = q ^ b * (q * (k / q) + k % q) + t := by rw [← hsplit]
+        _ = (q ^ b * q) * (k / q) + ((k % q) * q ^ b + t) := by ring
+        _ = q ^ (b + 1) * (k / q) + ((k % q) * q ^ b + t) := by rw [← pow_succ]
+      have hqeq : ζq ^ (q ^ b * k) * ζq ^ t = ζq ^ ((k % q) * q ^ b + t) := by
+        rw [← pow_add, hdecomp, pow_add, pow_mul, hζq.pow_eq_one, one_pow, one_mul]
+      calc (ζq ^ (q ^ b)) ^ k * (ζp ^ (i * p ^ a + s) * ζq ^ t)
+          = ζp ^ (i * p ^ a + s) * (ζq ^ (q ^ b * k) * ζq ^ t) := by
+            rw [← pow_mul]
+            ring
+        _ = ζp ^ (i * p ^ a + s) * ζq ^ ((k % q) * q ^ b + t) := by rw [hqeq]
+    have hcommon : ∀ y ∈ P, y ^ q = z₀ ^ q := by
+      intro y hy
+      obtain ⟨j'', _, rfl⟩ := Finset.mem_image.mp (hPdef ▸ hy)
+      have hone : ((ζq ^ (j'' * q ^ b)) : F) ^ q = 1 := by
+        rw [← pow_mul, show j'' * q ^ b * q = q ^ (b + 1) * j'' from by ring,
+          pow_mul, hζq.pow_eq_one, one_pow]
+      calc (ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) ^ q
+          = (ζp ^ (i * p ^ a + s)) ^ q
+            * ((ζq ^ (j'' * q ^ b)) ^ q * (ζq ^ t) ^ q) := by
+            rw [pow_add (a := ζq)]
+            ring
+        _ = (ζp ^ (i * p ^ a + s)) ^ q * (ζq ^ t) ^ q := by rw [hone, one_mul]
+        _ = z₀ ^ q := by rw [hz₀]; ring
+    have hfresh : z₀ ^ q ∉ R := by
+      intro hmem
+      obtain ⟨w, hwS, hwq, horbit⟩ := hRorbit (z₀ ^ q) hmem
+      have hz₀0 : z₀ ≠ 0 :=
+        mul_ne_zero (pow_ne_zero _ hζp0) (pow_ne_zero _ hζq0)
+      have hw0 : w ≠ 0 := by
+        intro h0
+        rw [h0] at hwq
+        exact pow_ne_zero q hz₀0 (by rw [← hwq, zero_pow hq.pos.ne'])
+      have hg : (z₀ / w) ^ q = 1 := by
+        rw [div_pow, hwq, div_self (pow_ne_zero q hz₀0)]
+      have hz₀S : z₀ ∈ S₀ := by
+        have := horbit (z₀ / w) hg
+        rwa [div_mul_cancel₀ z₀ hw0] at this
+      exact (Finset.disjoint_left.mp hdis hz₀S) hz₀P
+    have hPsum : ∑ y ∈ P, y ^ q = (q : F) * z₀ ^ q := by
+      rw [Finset.sum_congr rfl hcommon, Finset.sum_const]
+      have hPcard : P.card = q := by
+        rw [hPdef, Finset.card_image_of_injOn (fun x1 hx1 x2 hx2 h =>
+          hinj x1 (Finset.mem_coe.mp hx1) x2 (Finset.mem_coe.mp hx2) h),
+          Finset.card_range]
+      rw [hPcard, nsmul_eq_mul]
+    refine ⟨insert (z₀ ^ q) R, ?_, ?_, ?_⟩
+    · intro r hr
+      rcases Finset.mem_insert.mp hr with rfl | hrR
+      · exact ⟨z₀, Finset.mem_union_right _ hz₀P, rfl,
+          fun g hg => Finset.mem_union_right _ (hPorbit g hg)⟩
+      · obtain ⟨w, hw, hwq, horbit⟩ := hRorbit r hrR
+        exact ⟨w, Finset.mem_union_left _ hw, hwq,
+          fun g hg => Finset.mem_union_left _ (horbit g hg)⟩
+    · intro x hx
+      rcases Finset.mem_union.mp hx with hxS | hxP
+      · rcases hRdich x hxS with hcl | hsp
+        · exact Or.inl fun g hg => Finset.mem_union_left _ (hcl g hg)
+        · exact Or.inr (Finset.mem_insert_of_mem hsp)
+      · refine Or.inr ?_
+        rw [hcommon x hxP]
+        exact Finset.mem_insert_self _ _
+    · rw [Finset.sum_union hdis, hRsum, hPsum, Finset.sum_insert hfresh, mul_add]
+      ring
+
+end DichotomySpectrum
+
+/-! ## THE FIRST REASSEMBLY: the window-{1,q} trichotomy
+
+The wiring of decomposition (O77), the dichotomy–spectrum export, the cover (O76), and
+the upward rung (O83): with window `{1, q}`, every element of a two-prime vanishing set
+is `μ_p`-, `μ_{q²}`-, or `μ_{pq}`-covered inside `S` — the `d`-coset reassembly over the
+divisors `d ∈ {p, q², pq}` exceeding `q`, exactly the shape of the exhaustively-verified
+mixed-radix law at `t = q`: the window kills bare `μ_q`-packets, and their mass can
+reappear only inside the two larger coset types, reconstructed here by lifting the
+spectrum-level cover through the power map. -/
+
+section Trichotomy
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The window-`{1,q}` trichotomy**: every element is `μ_p`-, `μ_{q²}`-, or
+`μ_{pq}`-covered. -/
+theorem two_prime_window_trichotomy {p q a b' : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b' + 2)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b' + 2)) = 1)
+    (hsum : ∑ z ∈ S, z = 0) (hsumq : ∑ z ∈ S, z ^ q = 0) :
+    ∀ x ∈ S,
+      (∀ h : F, h ^ p = 1 → h * x ∈ S) ∨
+      (∀ h : F, h ^ (q * q) = 1 → h * x ∈ S) ∨
+      (∀ h : F, h ^ (q * p) = 1 → h * x ∈ S) := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  haveI : NeZero q := ⟨hq.pos.ne'⟩
+  have hζqb : IsPrimitiveRoot ζq (q ^ ((b' + 1) + 1)) := hζq
+  have hSb : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ ((b' + 1) + 1)) = 1 := hS
+  have hPU := two_prime_packet_decomposition hp hq hpq hζp hζqb hSb hsum
+  obtain ⟨R, hRorbit, hRdich, hRsum⟩ :=
+    packetUnion_dichotomy_spectrum hp hq hpq hζp hζqb hPU
+  have hRsum0 : ∑ r ∈ R, r = 0 := by
+    have hq0 : ((q : F)) ≠ 0 := by exact_mod_cast hq.pos.ne'
+    have := hRsum.symm.trans hsumq
+    rcases mul_eq_zero.mp this with h | h
+    · exact absurd h hq0
+    · exact h
+  have hRtor : ∀ r ∈ R, r ^ (p ^ (a + 1) * q ^ (b' + 1)) = 1 := by
+    intro r hr
+    obtain ⟨w, hwS, hwq, _⟩ := hRorbit r hr
+    rw [← hwq, ← pow_mul]
+    calc w ^ (q * (p ^ (a + 1) * q ^ (b' + 1)))
+        = w ^ (p ^ (a + 1) * q ^ (b' + 2)) := by
+          congr 1
+          rw [pow_succ]
+          ring
+      _ = 1 := hS w hwS
+  have hζq' : IsPrimitiveRoot (ζq ^ q) (q ^ (b' + 1)) := by
+    refine hζq.pow (pow_pos hq.pos _) ?_
+    rw [pow_succ']
+  have hcover := two_prime_packet_cover (a := a) (b := b') hp hq hpq hζp hζq'
+    hRtor hRsum0
+  intro x hx
+  rcases hRdich x hx with hP | hR1
+  · exact Or.inl hP
+  have hx0 : x ≠ 0 := by
+    intro h0
+    have := hS x hx
+    rw [h0, zero_pow (Nat.mul_pos (pow_pos hp.pos _) (pow_pos hq.pos _)).ne'] at this
+    exact zero_ne_one this
+  have hcop' : Nat.Coprime (p ^ (a + 1)) (q ^ (b' + 1)) :=
+    Nat.Coprime.pow _ _ ((Nat.coprime_primes hp hq).mpr hpq)
+  obtain ⟨u, hu, v, hv, huv⟩ := box_pair_surj hζp hζq' hcop'
+    (pow_pos hp.pos _) (pow_pos hq.pos _) (hRtor _ hR1)
+  obtain ⟨i, s, rfl, hs⟩ : ∃ i' s', u = i' * p ^ a + s' ∧ s' < p ^ a :=
+    ⟨u / p ^ a, u % p ^ a, (Nat.div_add_mod' u (p ^ a)).symm,
+      Nat.mod_lt _ (pow_pos hp.pos a)⟩
+  obtain ⟨j, t, rfl, ht⟩ : ∃ j' t', v = j' * q ^ b' + t' ∧ t' < q ^ b' :=
+    ⟨v / q ^ b', v % q ^ b', (Nat.div_add_mod' v (q ^ b')).symm,
+      Nat.mod_lt _ (pow_pos hq.pos b')⟩
+  have hi : i < p := by
+    by_contra hge
+    push Not at hge
+    have h1 : p * p ^ a ≤ i * p ^ a := Nat.mul_le_mul_right _ hge
+    have h2 : i * p ^ a + s < p ^ (a + 1) := hu
+    rw [pow_succ'] at h2
+    omega
+  have hj : j < q := by
+    by_contra hge
+    push Not at hge
+    have h1 : q * q ^ b' ≤ j * q ^ b' := Nat.mul_le_mul_right _ hge
+    have h2 : j * q ^ b' + t < q ^ (b' + 1) := hv
+    rw [pow_succ'] at h2
+    omega
+  have hxqmem : ζp ^ (i * p ^ a + s) * (ζq ^ q) ^ (j * q ^ b' + t) ∈ R := by
+    rwa [huv]
+  rcases hcover s hs i hi t ht j hj hxqmem with hProw | hQcol
+  · -- μ_p-row of x^q ⊆ R ⟹ μ_{q·p}-closure of x
+    refine Or.inr (Or.inr ?_)
+    have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+      hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+    refine coset_lift hq.pos hp.pos hx0 ?_
+    intro g hg
+    obtain ⟨k, hk, hkg⟩ := hωp.eq_pow_of_pow_eq_one hg
+    have hrow := hProw ((k + i) % p) (Nat.mod_lt _ hp.pos)
+    have hgz : g * ζp ^ (i * p ^ a + s) = ζp ^ (((k + i) % p) * p ^ a + s) := by
+      rw [← hkg, ← pow_mul, ← pow_add]
+      have hsplit : k + i = p * ((k + i) / p) + (k + i) % p := (Nat.div_add_mod _ p).symm
+      have hdecomp : p ^ a * k + (i * p ^ a + s)
+          = p ^ (a + 1) * ((k + i) / p) + (((k + i) % p) * p ^ a + s) := by
+        calc p ^ a * k + (i * p ^ a + s) = (k + i) * p ^ a + s := by ring
+        _ = (p * ((k + i) / p) + (k + i) % p) * p ^ a + s := by rw [← hsplit]
+        _ = (p * p ^ a) * ((k + i) / p) + (((k + i) % p) * p ^ a + s) := by ring
+        _ = p ^ (a + 1) * ((k + i) / p) + (((k + i) % p) * p ^ a + s) := by
+            rw [← pow_succ']
+      rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
+    have hgxq : g * x ^ q
+        = ζp ^ (((k + i) % p) * p ^ a + s) * (ζq ^ q) ^ (j * q ^ b' + t) := by
+      rw [← huv, ← mul_assoc, hgz]
+    obtain ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hrow
+    exact ⟨w, hwS, by rw [hwq, hgxq], horbit⟩
+  · -- μ_q-column of x^q ⊆ R ⟹ μ_{q·q}-closure of x
+    refine Or.inr (Or.inl ?_)
+    have hωq' : IsPrimitiveRoot ((ζq ^ q) ^ (q ^ b')) q :=
+      hζq'.pow (pow_pos hq.pos _) (by rw [pow_succ])
+    refine coset_lift hq.pos hq.pos hx0 ?_
+    intro g hg
+    obtain ⟨k, hk, hkg⟩ := hωq'.eq_pow_of_pow_eq_one hg
+    have hcol := hQcol ((k + j) % q) (Nat.mod_lt _ hq.pos)
+    have hgz : g * (ζq ^ q) ^ (j * q ^ b' + t)
+        = (ζq ^ q) ^ (((k + j) % q) * q ^ b' + t) := by
+      rw [← hkg, ← pow_mul, ← pow_add]
+      have hsplit : k + j = q * ((k + j) / q) + (k + j) % q := (Nat.div_add_mod _ q).symm
+      have hdecomp : q ^ b' * k + (j * q ^ b' + t)
+          = q ^ (b' + 1) * ((k + j) / q) + (((k + j) % q) * q ^ b' + t) := by
+        calc q ^ b' * k + (j * q ^ b' + t) = (k + j) * q ^ b' + t := by ring
+        _ = (q * ((k + j) / q) + (k + j) % q) * q ^ b' + t := by rw [← hsplit]
+        _ = (q * q ^ b') * ((k + j) / q) + (((k + j) % q) * q ^ b' + t) := by ring
+        _ = q ^ (b' + 1) * ((k + j) / q) + (((k + j) % q) * q ^ b' + t) := by
+            rw [← pow_succ']
+      rw [hdecomp, pow_add, pow_mul, hζq'.pow_eq_one, one_pow, one_mul]
+    have hgxq : g * x ^ q
+        = ζp ^ (i * p ^ a + s) * (ζq ^ q) ^ (((k + j) % q) * q ^ b' + t) := by
+      rw [← huv]
+      calc g * (ζp ^ (i * p ^ a + s) * (ζq ^ q) ^ (j * q ^ b' + t))
+          = ζp ^ (i * p ^ a + s) * (g * (ζq ^ q) ^ (j * q ^ b' + t)) := by ring
+        _ = ζp ^ (i * p ^ a + s) * (ζq ^ q) ^ (((k + j) % q) * q ^ b' + t) := by
+            rw [hgz]
+    obtain ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hcol
+    exact ⟨w, hwS, by rw [hwq, hgxq], horbit⟩
+
+end Trichotomy
+
+/-! ## The full export: one spectrum with orbit + dichotomy + complete transfer
+
+The merge of the dichotomy export and the spectral transfer: a SINGLE spectrum `R`
+simultaneously carries the orbit property, the membership dichotomy, and the full
+syndrome transfer at every exponent `p ∤ e` — the package the general-`t` reassembly
+induction consumes. -/
+
+section FullExport
+
+variable [DecidableEq F]
+
+/-- **The full spectrum export**: orbit property + membership dichotomy + complete
+transfer, one `R`. -/
+theorem packetUnion_full_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hPU : PacketUnion p q a b ζp ζq S) :
+    ∃ R : Finset F,
+      (∀ r ∈ R, ∃ w ∈ S, w ^ q = r ∧ ∀ g : F, g ^ q = 1 → g * w ∈ S) ∧
+      (∀ x ∈ S, (∀ g : F, g ^ p = 1 → g * x ∈ S) ∨ x ^ q ∈ R) ∧
+      (∀ e : ℕ, ¬ p ∣ e →
+        ∑ y ∈ S, y ^ (q * e) = (q : F) * ∑ r ∈ R, r ^ e) := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  haveI : NeZero q := ⟨hq.pos.ne'⟩
+  have hζp0 : ζp ≠ 0 := prim_ne_zero hζp (pow_pos hp.pos _)
+  have hζq0 : ζq ≠ 0 := prim_ne_zero hζq (pow_pos hq.pos _)
+  have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+    hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+  have hωq : IsPrimitiveRoot (ζq ^ (q ^ b)) q :=
+    hζq.pow (pow_pos hq.pos _) (by rw [pow_succ])
+  induction hPU with
+  | empty =>
+    exact ⟨∅, fun r hr => absurd hr (Finset.notMem_empty r),
+      fun x hx => absurd hx (Finset.notMem_empty x), fun e _ => by simp⟩
+  | @addP S₀ s j t hsub hnot IH =>
+    obtain ⟨R, hRorbit, hRdich, hRsum⟩ := IH
+    set P : Finset F := (Finset.range p).image
+      (fun i'' => ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) with hPdef
+    have hdis : Disjoint S₀ P := by
+      rw [Finset.disjoint_left]
+      intro y hyS hyP
+      obtain ⟨i'', hi'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hyP)
+      exact hnot i'' (Finset.mem_range.mp hi'') hyS
+    have hPclosed : ∀ y ∈ P, ∀ g : F, g ^ p = 1 → g * y ∈ P := by
+      intro y hy g hg
+      obtain ⟨i'', hi'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hy)
+      obtain ⟨k, hk, hkg⟩ := hωp.eq_pow_of_pow_eq_one hg
+      refine hPdef ▸ Finset.mem_image.mpr
+        ⟨(k + i'') % p, Finset.mem_range.mpr (Nat.mod_lt _ hp.pos), ?_⟩
+      have hgz : g * ζp ^ (i'' * p ^ a + s)
+          = ζp ^ (((k + i'') % p) * p ^ a + s) := by
+        rw [← hkg, ← pow_mul, ← pow_add]
+        have hsplit : k + i'' = p * ((k + i'') / p) + (k + i'') % p :=
+          (Nat.div_add_mod _ p).symm
+        have hdecomp : p ^ a * k + (i'' * p ^ a + s)
+            = p ^ (a + 1) * ((k + i'') / p) + (((k + i'') % p) * p ^ a + s) := by
+          calc p ^ a * k + (i'' * p ^ a + s) = (k + i'') * p ^ a + s := by ring
+          _ = (p * ((k + i'') / p) + (k + i'') % p) * p ^ a + s := by rw [← hsplit]
+          _ = (p * p ^ a) * ((k + i'') / p) + (((k + i'') % p) * p ^ a + s) := by ring
+          _ = p ^ (a + 1) * ((k + i'') / p) + (((k + i'') % p) * p ^ a + s) := by
+              rw [← pow_succ']
+        rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
+      rw [← mul_assoc]
+      exact congrArg (· * ζq ^ (j * q ^ b + t)) hgz.symm
+    have hinj : ∀ x1 ∈ Finset.range p, ∀ x2 ∈ Finset.range p,
+        ζp ^ (x1 * p ^ a + s) * ζq ^ (j * q ^ b + t)
+          = ζp ^ (x2 * p ^ a + s) * ζq ^ (j * q ^ b + t) → x1 = x2 := by
+      intro x1 hx1 x2 hx2 hxe
+      have hconst0 : ζq ^ (j * q ^ b + t) ≠ 0 := pow_ne_zero _ hζq0
+      have hs0 : ζp ^ s ≠ 0 := pow_ne_zero _ hζp0
+      have hpow : ζp ^ (x1 * p ^ a) = ζp ^ (x2 * p ^ a) := by
+        have hcancel := mul_right_cancel₀ hconst0 hxe
+        rw [pow_add, pow_add] at hcancel
+        exact mul_right_cancel₀ hs0 hcancel
+      have hpow' : (ζp ^ (p ^ a)) ^ x1 = (ζp ^ (p ^ a)) ^ x2 := by
+        rw [← pow_mul, ← pow_mul, Nat.mul_comm (p ^ a) x1, Nat.mul_comm (p ^ a) x2]
+        exact hpow
+      exact hωp.pow_inj (Finset.mem_range.mp hx1) (Finset.mem_range.mp hx2) hpow'
+    refine ⟨R, ?_, ?_, ?_⟩
+    · intro r hr
+      obtain ⟨w, hw, hwq, horbit⟩ := hRorbit r hr
+      exact ⟨w, Finset.mem_union_left _ hw, hwq,
+        fun g hg => Finset.mem_union_left _ (horbit g hg)⟩
+    · intro x hx
+      rcases Finset.mem_union.mp hx with hxS | hxP
+      · rcases hRdich x hxS with hcl | hsp
+        · exact Or.inl fun g hg => Finset.mem_union_left _ (hcl g hg)
+        · exact Or.inr hsp
+      · exact Or.inl fun g hg => Finset.mem_union_right _ (hPclosed x hxP g hg)
+    · intro e hpe
+      have hωpe : IsPrimitiveRoot ((ζp ^ (p ^ a)) ^ (q * e)) p := by
+        refine hωp.pow_of_coprime _ ?_
+        have hqp : Nat.Coprime q p := (Nat.coprime_primes hq hp).mpr (Ne.symm hpq)
+        have hep : Nat.Coprime e p := by
+          rcases Nat.coprime_or_dvd_of_prime hp e with h | h
+          · exact h.symm
+          · exact absurd h hpe
+        exact Nat.Coprime.mul_left hqp hep
+      have hPsum : ∑ y ∈ P, y ^ (q * e) = 0 := by
+        rw [hPdef, Finset.sum_image hinj]
+        have hterm : ∀ i'' ∈ Finset.range p,
+            (ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) ^ (q * e)
+              = ((ζp ^ (p ^ a)) ^ (q * e)) ^ i''
+                * ((ζp ^ s) ^ (q * e) * (ζq ^ (j * q ^ b + t)) ^ (q * e)) := by
+          intro i'' _
+          ring
+        rw [Finset.sum_congr rfl hterm]
+        exact prime_packet_sum_zero hp hωpe _
+      rw [Finset.sum_union hdis, hRsum e hpe, hPsum, add_zero]
+  | @addQ S₀ s i t hsub hnot IH =>
+    obtain ⟨R, hRorbit, hRdich, hRsum⟩ := IH
+    set P : Finset F := (Finset.range q).image
+      (fun j'' => ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) with hPdef
+    set z₀ : F := ζp ^ (i * p ^ a + s) * ζq ^ t with hz₀
+    have hz₀P : z₀ ∈ P := by
+      rw [hPdef]
+      exact Finset.mem_image.mpr ⟨0, Finset.mem_range.mpr hq.pos, by
+        rw [hz₀, Nat.zero_mul, Nat.zero_add]⟩
+    have hdis : Disjoint S₀ P := by
+      rw [Finset.disjoint_left]
+      intro y hyS hyP
+      obtain ⟨j'', hj'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hyP)
+      exact hnot j'' (Finset.mem_range.mp hj'') hyS
+    have hinj : ∀ x1 ∈ Finset.range q, ∀ x2 ∈ Finset.range q,
+        ζp ^ (i * p ^ a + s) * ζq ^ (x1 * q ^ b + t)
+          = ζp ^ (i * p ^ a + s) * ζq ^ (x2 * q ^ b + t) → x1 = x2 := by
+      intro x1 hx1 x2 hx2 hxe
+      have hconst0 : ζp ^ (i * p ^ a + s) ≠ 0 := pow_ne_zero _ hζp0
+      have ht0 : ζq ^ t ≠ 0 := pow_ne_zero _ hζq0
+      have hpow : ζq ^ (x1 * q ^ b) = ζq ^ (x2 * q ^ b) := by
+        have hcancel := mul_left_cancel₀ hconst0 hxe
+        rw [pow_add, pow_add] at hcancel
+        exact mul_right_cancel₀ ht0 hcancel
+      have hpow' : (ζq ^ (q ^ b)) ^ x1 = (ζq ^ (q ^ b)) ^ x2 := by
+        rw [← pow_mul, ← pow_mul, Nat.mul_comm (q ^ b) x1, Nat.mul_comm (q ^ b) x2]
+        exact hpow
+      exact hωq.pow_inj (Finset.mem_range.mp hx1) (Finset.mem_range.mp hx2) hpow'
+    -- the q-packet is the full μ_q-orbit of z₀, and all members share the q-th power
+    have hPorbit : ∀ g : F, g ^ q = 1 → g * z₀ ∈ P := by
+      intro g hg
+      obtain ⟨k, hk, hkg⟩ := hωq.eq_pow_of_pow_eq_one hg
+      refine hPdef ▸ Finset.mem_image.mpr
+        ⟨k % q, Finset.mem_range.mpr (Nat.mod_lt _ hq.pos), ?_⟩
+      symm
+      rw [← hkg, hz₀]
+      have hsplit : k = q * (k / q) + k % q := (Nat.div_add_mod _ q).symm
+      have hdecomp : q ^ b * k + t = q ^ (b + 1) * (k / q) + ((k % q) * q ^ b + t) := by
+        calc q ^ b * k + t = q ^ b * (q * (k / q) + k % q) + t := by rw [← hsplit]
+        _ = (q ^ b * q) * (k / q) + ((k % q) * q ^ b + t) := by ring
+        _ = q ^ (b + 1) * (k / q) + ((k % q) * q ^ b + t) := by rw [← pow_succ]
+      have hqeq : ζq ^ (q ^ b * k) * ζq ^ t = ζq ^ ((k % q) * q ^ b + t) := by
+        rw [← pow_add, hdecomp, pow_add, pow_mul, hζq.pow_eq_one, one_pow, one_mul]
+      calc (ζq ^ (q ^ b)) ^ k * (ζp ^ (i * p ^ a + s) * ζq ^ t)
+          = ζp ^ (i * p ^ a + s) * (ζq ^ (q ^ b * k) * ζq ^ t) := by
+            rw [← pow_mul]
+            ring
+        _ = ζp ^ (i * p ^ a + s) * ζq ^ ((k % q) * q ^ b + t) := by rw [hqeq]
+    have hcommon : ∀ e' : ℕ, ∀ y ∈ P, y ^ (q * e') = (z₀ ^ q) ^ e' := by
+      intro e' y hy
+      obtain ⟨j'', _, rfl⟩ := Finset.mem_image.mp (hPdef ▸ hy)
+      have hone : ((ζq ^ (j'' * q ^ b)) : F) ^ (q * e') = 1 := by
+        rw [← pow_mul, show j'' * q ^ b * (q * e') = q ^ (b + 1) * (j'' * e') from by
+          ring, pow_mul, hζq.pow_eq_one, one_pow]
+      calc (ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) ^ (q * e')
+          = (ζp ^ (i * p ^ a + s)) ^ (q * e')
+            * ((ζq ^ (j'' * q ^ b)) ^ (q * e') * (ζq ^ t) ^ (q * e')) := by
+            rw [pow_add (a := ζq)]
+            ring
+        _ = (ζp ^ (i * p ^ a + s)) ^ (q * e') * (ζq ^ t) ^ (q * e') := by
+            rw [hone, one_mul]
+        _ = (z₀ ^ q) ^ e' := by rw [hz₀]; ring
+    have hcommon1 : ∀ y ∈ P, y ^ q = z₀ ^ q := by
+      intro y hy
+      have := hcommon 1 y hy
+      rwa [mul_one, pow_one] at this
+    have hfresh : z₀ ^ q ∉ R := by
+      intro hmem
+      obtain ⟨w, hwS, hwq, horbit⟩ := hRorbit (z₀ ^ q) hmem
+      have hz₀0 : z₀ ≠ 0 :=
+        mul_ne_zero (pow_ne_zero _ hζp0) (pow_ne_zero _ hζq0)
+      have hw0 : w ≠ 0 := by
+        intro h0
+        rw [h0] at hwq
+        exact pow_ne_zero q hz₀0 (by rw [← hwq, zero_pow hq.pos.ne'])
+      have hg : (z₀ / w) ^ q = 1 := by
+        rw [div_pow, hwq, div_self (pow_ne_zero q hz₀0)]
+      have hz₀S : z₀ ∈ S₀ := by
+        have := horbit (z₀ / w) hg
+        rwa [div_mul_cancel₀ z₀ hw0] at this
+      exact (Finset.disjoint_left.mp hdis hz₀S) hz₀P
+    refine ⟨insert (z₀ ^ q) R, ?_, ?_, ?_⟩
+    · intro r hr
+      rcases Finset.mem_insert.mp hr with rfl | hrR
+      · exact ⟨z₀, Finset.mem_union_right _ hz₀P, rfl,
+          fun g hg => Finset.mem_union_right _ (hPorbit g hg)⟩
+      · obtain ⟨w, hw, hwq, horbit⟩ := hRorbit r hrR
+        exact ⟨w, Finset.mem_union_left _ hw, hwq,
+          fun g hg => Finset.mem_union_left _ (horbit g hg)⟩
+    · intro x hx
+      rcases Finset.mem_union.mp hx with hxS | hxP
+      · rcases hRdich x hxS with hcl | hsp
+        · exact Or.inl fun g hg => Finset.mem_union_left _ (hcl g hg)
+        · exact Or.inr (Finset.mem_insert_of_mem hsp)
+      · refine Or.inr ?_
+        rw [hcommon1 x hxP]
+        exact Finset.mem_insert_self _ _
+    · intro e hpe
+      have hPsum : ∑ y ∈ P, y ^ (q * e) = (q : F) * (z₀ ^ q) ^ e := by
+        rw [Finset.sum_congr rfl (hcommon e), Finset.sum_const]
+        have hPcard : P.card = q := by
+          rw [hPdef, Finset.card_image_of_injOn (fun x1 hx1 x2 hx2 h =>
+            hinj x1 (Finset.mem_coe.mp hx1) x2 (Finset.mem_coe.mp hx2) h),
+            Finset.card_range]
+        rw [hPcard, nsmul_eq_mul]
+      rw [Finset.sum_union hdis, hRsum e hpe, hPsum, Finset.sum_insert hfresh, mul_add]
+      ring
+
+end FullExport
+
+/-! ## THE GENERAL-t WINDOWED LAW (q-direction): the full reassembly induction
+
+The capstone of the reassembly arc: with the `q`-power window of depth `m`, every
+element of a two-prime vanishing set is `μ_{q^c·p}`-covered for some `c ≤ m` or
+`μ_{q^{m+1}}`-covered — the complete `d`-coset reassembly in the `q`-direction, for
+EVERY window depth, by induction: each level of window kills one more `μ_{q^c}`-packet
+tier, the spectrum inherits the shallower window (full export), the inductive
+hypothesis reassembles the spectrum one level down, and the upward rung multiplies the
+recovered coset order by `q`. At the floor (`b = 0`) the spectrum lives in `μ_{p^{a+1}}`
+and the prime-power slice machinery closes it. This is the O70-verified law's
+`q`-direction in full generality — `m = 0` is de Bruijn (O77-cover form), `m = 1` is the
+trichotomy. -/
+
+section GeneralWindowedLaw
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The general-`t` windowed coset cover, `q`-direction**. -/
+theorem windowed_coset_cover_q {p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q)
+    {a : ℕ} {ζp : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1))) :
+    ∀ m : ℕ, ∀ b : ℕ, m ≤ b + 1 → ∀ ζq : F, IsPrimitiveRoot ζq (q ^ (b + 1)) →
+      ∀ S : Finset F, (∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1) →
+      (∀ c, c ≤ m → ∑ z ∈ S, z ^ (q ^ c) = 0) →
+      ∀ x ∈ S,
+        (∃ c, c ≤ m ∧ ∀ h : F, h ^ (q ^ c * p) = 1 → h * x ∈ S) ∨
+        (∀ h : F, h ^ (q ^ (m + 1)) = 1 → h * x ∈ S) := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  haveI : NeZero q := ⟨hq.pos.ne'⟩
+  have hqF0 : ((q : F)) ≠ 0 := by exact_mod_cast hq.pos.ne'
+  intro m
+  induction m with
+  | zero =>
+    intro b _ ζq hζq S hS hwin x hx
+    have hsum : ∑ z ∈ S, z = 0 := by
+      have := hwin 0 le_rfl
+      simpa using this
+    have hPU := two_prime_packet_decomposition hp hq hpq hζp hζq hS hsum
+    obtain ⟨R, hRorbit, hRdich, _⟩ :=
+      packetUnion_full_export hp hq hpq hζp hζq hPU
+    rcases hRdich x hx with hP | hR1
+    · exact Or.inl ⟨0, le_rfl, fun h hh => hP h (by simpa using hh)⟩
+    · refine Or.inr ?_
+      obtain ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hR1
+      have hx0 : x ≠ 0 := by
+        intro h0
+        have := hS x hx
+        rw [h0, zero_pow (Nat.mul_pos (pow_pos hp.pos _) (pow_pos hq.pos _)).ne']
+          at this
+        exact zero_ne_one this
+      have hw0 : w ≠ 0 := by
+        intro h0
+        rw [h0, zero_pow hq.pos.ne'] at hwq
+        exact pow_ne_zero q hx0 hwq.symm
+      intro h hh
+      have hhq : h ^ q = 1 := by
+        rw [← pow_one (q : ℕ)] at hh ⊢
+        simpa [pow_one] using hh
+      have hgx : ((h * x) / w) ^ q = 1 := by
+        rw [div_pow, mul_pow, hhq, one_mul, ← hwq, div_self (pow_ne_zero _ hw0)]
+      have := horbit ((h * x) / w) hgx
+      rwa [div_mul_cancel₀ (h * x) hw0] at this
+  | succ m IH =>
+    intro b hm1 ζq hζq S hS hwin x hx
+    have hsum : ∑ z ∈ S, z = 0 := by
+      have := hwin 0 (Nat.zero_le _)
+      simpa using this
+    have hPU := two_prime_packet_decomposition hp hq hpq hζp hζq hS hsum
+    obtain ⟨R, hRorbit, hRdich, hRtransfer⟩ :=
+      packetUnion_full_export hp hq hpq hζp hζq hPU
+    rcases hRdich x hx with hP | hR1
+    · exact Or.inl ⟨0, Nat.zero_le _, fun h hh => hP h (by simpa using hh)⟩
+    have hx0 : x ≠ 0 := by
+      intro h0
+      have := hS x hx
+      rw [h0, zero_pow (Nat.mul_pos (pow_pos hp.pos _) (pow_pos hq.pos _)).ne'] at this
+      exact zero_ne_one this
+    -- the spectrum's window, one level shallower
+    have hpqc : ∀ c : ℕ, ¬ p ∣ q ^ c := by
+      intro c hdvd
+      rcases Nat.Prime.dvd_of_dvd_pow hp hdvd with h
+      exact hpq ((Nat.prime_dvd_prime_iff_eq hp hq).mp h)
+    have hRwin : ∀ c, c ≤ m → ∑ r ∈ R, r ^ (q ^ c) = 0 := by
+      intro c hc
+      have htr := hRtransfer (q ^ c) (hpqc c)
+      have hSwin := hwin (c + 1) (by omega)
+      have hexp : q * q ^ c = q ^ (c + 1) := by rw [pow_succ']
+      rw [hexp] at htr
+      rw [hSwin] at htr
+      rcases mul_eq_zero.mp htr.symm with h | h
+      · exact absurd h hqF0
+      · exact h
+    -- the spectrum's torsion
+    rcases Nat.eq_zero_or_pos b with rfl | hbpos
+    · -- floor case: b = 0, so m = 0 and R ⊆ μ_{p^(a+1)} is μ_p-closed
+      have hm0 : m = 0 := by omega
+      subst hm0
+      have hRtor : ∀ r ∈ R, r ^ (p ^ (a + 1)) = 1 := by
+        intro r hr
+        obtain ⟨w, hwS, hwq, _⟩ := hRorbit r hr
+        have hw := hS w hwS
+        rw [← hwq, ← pow_mul]
+        calc w ^ (q * p ^ (a + 1)) = (w ^ (p ^ (a + 1) * q ^ (0 + 1))) := by
+              congr 1
+              ring
+          _ = 1 := hw
+      have hRsum0 : ∑ r ∈ R, r = 0 := by
+        have := hRwin 0 le_rfl
+        simpa using this
+      -- μ_p-closure of R at the prime-power floor
+      have hslices := mu_p_membership_slices (m := a) hp hζp hRtor hRsum0
+      have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+        hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+      have hRclosed : ∀ r ∈ R, ∀ g : F, g ^ p = 1 → g * r ∈ R := by
+        intro r hr g hg
+        obtain ⟨k, hk, hkg⟩ := hωp.eq_pow_of_pow_eq_one hg
+        obtain ⟨u, hu, hur⟩ := hζp.eq_pow_of_pow_eq_one (hRtor r hr)
+        obtain ⟨i, s, rfl, hs⟩ : ∃ i' s', u = i' * p ^ a + s' ∧ s' < p ^ a :=
+          ⟨u / p ^ a, u % p ^ a, (Nat.div_add_mod' u (p ^ a)).symm,
+            Nat.mod_lt _ (pow_pos hp.pos a)⟩
+        have hi : i < p := by
+          by_contra hge
+          push Not at hge
+          have h1 : p * p ^ a ≤ i * p ^ a := Nat.mul_le_mul_right _ hge
+          have h2 : i * p ^ a + s < p ^ (a + 1) := hu
+          rw [pow_succ'] at h2
+          omega
+        set i2 := (k + i) % p with hi2
+        have hi2p : i2 < p := Nat.mod_lt _ hp.pos
+        have hgr : g * r = ζp ^ (i2 * p ^ a + s) := by
+          rw [← hkg, ← hur, ← pow_mul, ← pow_add]
+          have hsplit : k + i = p * ((k + i) / p) + (k + i) % p :=
+            (Nat.div_add_mod _ p).symm
+          have hdecomp : p ^ a * k + (i * p ^ a + s)
+              = p ^ (a + 1) * ((k + i) / p) + (i2 * p ^ a + s) := by
+            calc p ^ a * k + (i * p ^ a + s) = (k + i) * p ^ a + s := by ring
+            _ = (p * ((k + i) / p) + (k + i) % p) * p ^ a + s := by rw [← hsplit]
+            _ = (p * p ^ a) * ((k + i) / p) + (((k + i) % p) * p ^ a + s) := by ring
+            _ = p ^ (a + 1) * ((k + i) / p) + (i2 * p ^ a + s) := by
+                rw [← pow_succ', hi2]
+          rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
+        rw [hgr]
+        exact (hslices s hs i2 hi2p i hi).mpr (by rwa [hur])
+      -- rung at A := p
+      refine Or.inl ⟨1, le_rfl, ?_⟩
+      have hcov := coset_lift (S := S) hq.pos hp.pos hx0 (fun g hg =>
+        let hgR := hRclosed _ hR1 g hg
+        let ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hgR
+        ⟨w, hwS, by rw [hwq], horbit⟩)
+      intro h hh
+      exact hcov h (by rwa [pow_one] at hh)
+    · -- descent case: b = b'' + 1
+      obtain ⟨b'', rfl⟩ : ∃ b'', b = b'' + 1 := ⟨b - 1, by omega⟩
+      have hRtor : ∀ r ∈ R, r ^ (p ^ (a + 1) * q ^ (b'' + 1)) = 1 := by
+        intro r hr
+        obtain ⟨w, hwS, hwq, _⟩ := hRorbit r hr
+        have hw := hS w hwS
+        rw [← hwq, ← pow_mul]
+        calc w ^ (q * (p ^ (a + 1) * q ^ (b'' + 1)))
+            = w ^ (p ^ (a + 1) * q ^ (b'' + 1 + 1)) := by
+              congr 1
+              rw [pow_succ]
+              ring
+          _ = 1 := hw
+      have hζq' : IsPrimitiveRoot (ζq ^ q) (q ^ (b'' + 1)) := by
+        refine hζq.pow (pow_pos hq.pos _) ?_
+        rw [pow_succ']
+      have hIH := IH (b'') (by omega) (ζq ^ q) hζq' R hRtor hRwin _ hR1
+      rcases hIH with ⟨c, hc, hcov⟩ | hcov
+      · -- rung at A := q^c · p
+        refine Or.inl ⟨c + 1, by omega, ?_⟩
+        have hlift := coset_lift (S := S) hq.pos
+          (Nat.mul_pos (pow_pos hq.pos c) hp.pos) hx0 (fun g hg =>
+            let hgR := hcov g hg
+            let ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hgR
+            ⟨w, hwS, by rw [hwq], horbit⟩)
+        intro h hh
+        refine hlift h ?_
+        rw [show q * (q ^ c * p) = q ^ (c + 1) * p from by rw [pow_succ']; ring]
+        exact hh
+      · -- rung at A := q^{m+1}
+        refine Or.inr ?_
+        have hlift := coset_lift (S := S) hq.pos (pow_pos hq.pos (m + 1)) hx0
+          (fun g hg =>
+            let hgR := hcov g hg
+            let ⟨w, hwS, hwq, horbit⟩ := hRorbit _ hgR
+            ⟨w, hwS, by rw [hwq], horbit⟩)
+        intro h hh
+        refine hlift h ?_
+        rw [show q * q ^ (m + 1) = q ^ (m + 1 + 1) from by
+          rw [pow_succ', pow_succ']
+          ring]
+        exact hh
+
+/-- **The general-`t` windowed coset cover, `p`-direction** — the role-swap
+instantiation: with `p`-power window of depth `m`, every element is
+`μ_{p^c·q}`-covered (some `c ≤ m`) or `μ_{p^{m+1}}`-covered. -/
+theorem windowed_coset_cover_p {p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q)
+    {b : ℕ} {ζq : F} (hζq : IsPrimitiveRoot ζq (q ^ (b + 1))) :
+    ∀ m : ℕ, ∀ a : ℕ, m ≤ a + 1 → ∀ ζp : F, IsPrimitiveRoot ζp (p ^ (a + 1)) →
+      ∀ S : Finset F, (∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1) →
+      (∀ c, c ≤ m → ∑ z ∈ S, z ^ (p ^ c) = 0) →
+      ∀ x ∈ S,
+        (∃ c, c ≤ m ∧ ∀ h : F, h ^ (p ^ c * q) = 1 → h * x ∈ S) ∨
+        (∀ h : F, h ^ (p ^ (m + 1)) = 1 → h * x ∈ S) := by
+  intro m a hm ζp hζp S hS hwin x hx
+  exact windowed_coset_cover_q hq hp (Ne.symm hpq) hζq m a hm ζp hζp S
+    (fun z hz => by rw [mul_comm]; exact hS z hz) hwin x hx
+
+end GeneralWindowedLaw
+
+/-! ## The designated-first-peel export: decomposition choice puts a chosen orbit in the spectrum
+
+The enabling lemma of the joint (mixed-window) law: if `x ∈ S` has its full `μ_q`-orbit
+inside `S`, then there is a decomposition of `S` whose spectrum CONTAINS `x^q` (with all
+export properties) — peel `x`'s `q`-packet first; the remainder still vanishes (packets
+sum to zero) and decomposes by O77; the export of the extended derivation inserts `x^q`
+into the spectrum. This converts "x is `μ_q`-closed" (a dead end when `q ≤ t`) into "the
+`q`-side recursion applies to `x`" — the move the joint induction needs in its
+both-closed case. -/
+
+section FirstPeel
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The designated-first-peel export**: a full `μ_q`-orbit can be sent into the
+spectrum. -/
+theorem first_peel_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hsum : ∑ z ∈ S, z = 0)
+    {x : F} (hx : x ∈ S) (hxorb : ∀ g : F, g ^ q = 1 → g * x ∈ S) :
+    ∃ R : Finset F,
+      (∀ r ∈ R, ∃ w ∈ S, w ^ q = r ∧ ∀ g : F, g ^ q = 1 → g * w ∈ S) ∧
+      (∀ e : ℕ, ¬ p ∣ e →
+        ∑ y ∈ S, y ^ (q * e) = (q : F) * ∑ r ∈ R, r ^ e) ∧
+      x ^ q ∈ R := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  haveI : NeZero q := ⟨hq.pos.ne'⟩
+  have hζq0 : ζq ≠ 0 := prim_ne_zero hζq (pow_pos hq.pos _)
+  have hωq : IsPrimitiveRoot (ζq ^ (q ^ b)) q :=
+    hζq.pow (pow_pos hq.pos _) (by rw [pow_succ])
+  -- x's μ_q-orbit as a Finset
+  set P : Finset F := S.filter (fun y => ∃ g : F, g ^ q = 1 ∧ y = g * x) with hPdef
+  have hxP : x ∈ P := by
+    rw [hPdef]
+    exact Finset.mem_filter.mpr ⟨hx, 1, one_pow q, (one_mul x).symm⟩
+  have hPsub : P ⊆ S := Finset.filter_subset _ _
+  have hPmem : ∀ g : F, g ^ q = 1 → g * x ∈ P := by
+    intro g hg
+    rw [hPdef]
+    exact Finset.mem_filter.mpr ⟨hxorb g hg, g, hg, rfl⟩
+  have hx0 : x ≠ 0 := by
+    intro h0
+    have := hS x hx
+    rw [h0, zero_pow (Nat.mul_pos (pow_pos hp.pos _) (pow_pos hq.pos _)).ne'] at this
+    exact zero_ne_one this
+  -- P = image of μ_q-roots; card q; common q-th power x^q; sum zero
+  have hPimg : P = (Finset.range q).image (fun k => (ζq ^ (q ^ b)) ^ k * x) := by
+    apply Finset.Subset.antisymm
+    · intro y hy
+      obtain ⟨-, g, hg, rfl⟩ := Finset.mem_filter.mp (hPdef ▸ hy)
+      obtain ⟨k, hk, hkg⟩ := hωq.eq_pow_of_pow_eq_one hg
+      exact Finset.mem_image.mpr ⟨k, Finset.mem_range.mpr hk, by rw [hkg]⟩
+    · intro y hy
+      obtain ⟨k, hk, rfl⟩ := Finset.mem_image.mp hy
+      refine hPdef ▸ Finset.mem_filter.mpr ⟨?_, (ζq ^ (q ^ b)) ^ k, ?_, rfl⟩
+      · refine hxorb _ ?_
+        rw [← pow_mul, ← pow_mul,
+          show q ^ b * (k * q) = q ^ (b + 1) * k from by rw [pow_succ']; ring,
+          pow_mul, hζq.pow_eq_one, one_pow]
+      · rw [← pow_mul, ← pow_mul,
+          show q ^ b * (k * q) = q ^ (b + 1) * k from by rw [pow_succ']; ring,
+          pow_mul, hζq.pow_eq_one, one_pow]
+  have hPcommon : ∀ y ∈ P, y ^ q = x ^ q := by
+    intro y hy
+    obtain ⟨-, g, hg, rfl⟩ := Finset.mem_filter.mp (hPdef ▸ hy)
+    rw [mul_pow, hg, one_mul]
+  have hPinj : Set.InjOn (fun k => (ζq ^ (q ^ b)) ^ k * x) (Finset.range q : Set ℕ) := by
+    intro k1 hk1 k2 hk2 hke
+    have hke' : (ζq ^ (q ^ b)) ^ k1 = (ζq ^ (q ^ b)) ^ k2 :=
+      mul_right_cancel₀ hx0 hke
+    exact hωq.pow_inj (Finset.mem_range.mp (Finset.mem_coe.mp hk1))
+      (Finset.mem_range.mp (Finset.mem_coe.mp hk2)) hke'
+  have hPcard : P.card = q := by
+    rw [hPimg, Finset.card_image_of_injOn hPinj, Finset.card_range]
+  have hPsum : ∑ y ∈ P, y = 0 := by
+    rw [hPimg, Finset.sum_image (fun k1 hk1 k2 hk2 h =>
+      hPinj (Finset.mem_coe.mpr hk1) (Finset.mem_coe.mpr hk2) h)]
+    exact prime_packet_sum_zero hq hωq x
+  -- the remainder vanishes and is torsion
+  set S' : Finset F := S \ P with hS'def
+  have hS'sum : ∑ z ∈ S', z = 0 := by
+    have hsd := Finset.sum_sdiff (f := fun y : F => y) hPsub
+    rw [hPsum, add_zero] at hsd
+    rw [hS'def, hsd]
+    exact hsum
+  have hS'tor : ∀ z ∈ S', z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1 :=
+    fun z hz => hS z (Finset.mem_sdiff.mp hz).1
+  -- decompose the remainder and export it
+  have hPU' := two_prime_packet_decomposition hp hq hpq hζp hζq hS'tor hS'sum
+  obtain ⟨R', hR'orbit, hR'dich, hR'transfer⟩ :=
+    packetUnion_full_export hp hq hpq hζp hζq hPU'
+  -- the assembled spectrum: insert x^q
+  have hfresh : x ^ q ∉ R' := by
+    intro hmem
+    obtain ⟨w, hwS', hwq, horbit⟩ := hR'orbit (x ^ q) hmem
+    have hw0 : w ≠ 0 := by
+      intro h0
+      rw [h0, zero_pow hq.pos.ne'] at hwq
+      exact pow_ne_zero q hx0 hwq.symm
+    have hg : (x / w) ^ q = 1 := by
+      rw [div_pow, hwq, div_self (pow_ne_zero q hx0)]
+    have hxS' : x ∈ S' := by
+      have := horbit (x / w) hg
+      rwa [div_mul_cancel₀ x hw0] at this
+    exact (Finset.mem_sdiff.mp hxS').2 hxP
+  refine ⟨insert (x ^ q) R', ?_, ?_, Finset.mem_insert_self _ _⟩
+  · intro r hr
+    rcases Finset.mem_insert.mp hr with rfl | hrR
+    · exact ⟨x, hx, rfl, hxorb⟩
+    · obtain ⟨w, hwS', hwq, horbit⟩ := hR'orbit r hrR
+      exact ⟨w, (Finset.mem_sdiff.mp hwS').1, hwq,
+        fun g hg => (Finset.mem_sdiff.mp (horbit g hg)).1⟩
+  · intro e hpe
+    have hPsume : ∑ y ∈ P, y ^ (q * e) = (q : F) * (x ^ q) ^ e := by
+      have hPcommon' : ∀ y ∈ P, y ^ (q * e) = (x ^ q) ^ e := by
+        intro y hy
+        rw [pow_mul, hPcommon y hy]
+      rw [Finset.sum_congr rfl hPcommon', Finset.sum_const, hPcard, nsmul_eq_mul]
+    have hsplit : ∑ y ∈ S, y ^ (q * e)
+        = ∑ y ∈ S', y ^ (q * e) + ∑ y ∈ P, y ^ (q * e) := by
+      rw [hS'def]
+      exact (Finset.sum_sdiff (f := fun y : F => y ^ (q * e)) hPsub).symm
+    rw [hsplit, hR'transfer e hpe, hPsume, Finset.sum_insert hfresh, mul_add]
+    ring
+
+end FirstPeel
+
+/-! ## The full divisor-form law below `p`: window `t < p` ⟹ `μ_d`-covered, `d ∣ n`, `d > t`
+
+In the regime `t < p` the `q`-direction law alone already yields the complete
+O70/divisor form: the left case's coset order `q^c·p ≥ p` clears the window for free,
+and the right case's `q^{m+1}` clears it by the window-depth choice. This is the full
+mixed-radix law on the half of the parameter space where one prime exceeds the window —
+hypothesis: only the `q`-power window, conclusion: a genuine divisor of `n` above `t`
+whose full coset covers each element. -/
+
+section BelowP
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The divisor-form windowed law below `p`**. -/
+theorem windowed_coset_cover_below_p {p q : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {a b m t : ℕ} (hm : m ≤ b) (htp : t < p) (htq : t < q ^ (m + 1))
+    {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hwin : ∀ c, c ≤ m → ∑ z ∈ S, z ^ (q ^ c) = 0) :
+    ∀ x ∈ S, ∃ d : ℕ, d ∣ p ^ (a + 1) * q ^ (b + 1) ∧ t < d ∧
+      (∀ h : F, h ^ d = 1 → h * x ∈ S) := by
+  intro x hx
+  rcases windowed_coset_cover_q hp hq hpq hζp m b (by omega) ζq hζq S hS hwin x hx
+    with ⟨c, hc, hcov⟩ | hcov
+  · refine ⟨q ^ c * p, ?_, ?_, hcov⟩
+    · rw [mul_comm (q ^ c) p]
+      exact Nat.mul_dvd_mul (dvd_pow_self p (by omega)) (pow_dvd_pow q (by omega))
+    · calc t < p := htp
+      _ ≤ q ^ c * p := Nat.le_mul_of_pos_left p (pow_pos hq.pos c)
+  · refine ⟨q ^ (m + 1), ?_, htq, hcov⟩
+    exact Dvd.dvd.mul_left (pow_dvd_pow q (by omega)) _
+
+end BelowP
+
+/-! ## The bilateral export and the mixed identity: O118's first brick
+
+One decomposition, BOTH spectra: `R` (the `μ_q`-packet `q`-th-power spectrum) and `T`
+(the `μ_p`-packet `p`-th-power spectrum), each collision-free with its orbit property —
+and the **mixed identity** coupling them at the punctured exponents:
+`Σ_S y^{q·e} = q·Σ_R r^e + p·Σ_T τ^{q·e/p}` for `p ∣ e` (at such exponents BOTH packet
+types survive: `μ_q`-packets contribute `q·r^e`, `μ_p`-packets contribute `p·τ^{qe/p}`
+through their common `p`-th power). This is the equation the valuation induction (O118)
+resolves; with it, every nested spectrum inherits the full scaled window. -/
+
+section BilateralExport
+
+variable [DecidableEq F]
+
+/-- **The bilateral export**: both spectra, both orbit properties, the clean transfer
+on the `R`-side, and the mixed identity at `p ∣ e`. -/
+theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hPU : PacketUnion p q a b ζp ζq S) :
+    ∃ R T : Finset F,
+      (∀ r ∈ R, ∃ w ∈ S, w ^ q = r ∧ ∀ g : F, g ^ q = 1 → g * w ∈ S) ∧
+      (∀ τ ∈ T, ∃ w ∈ S, w ^ p = τ ∧ ∀ g : F, g ^ p = 1 → g * w ∈ S) ∧
+      (∀ e : ℕ, ¬ p ∣ e →
+        ∑ y ∈ S, y ^ (q * e) = (q : F) * ∑ r ∈ R, r ^ e) ∧
+      (∀ e : ℕ, p ∣ e →
+        ∑ y ∈ S, y ^ (q * e)
+          = (q : F) * ∑ r ∈ R, r ^ e + (p : F) * ∑ τ ∈ T, τ ^ (q * e / p)) ∧
+      (∀ e : ℕ, ¬ q ∣ e →
+        ∑ y ∈ S, y ^ (p * e) = (p : F) * ∑ τ ∈ T, τ ^ e) := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  haveI : NeZero q := ⟨hq.pos.ne'⟩
+  have hζp0 : ζp ≠ 0 := prim_ne_zero hζp (pow_pos hp.pos _)
+  have hζq0 : ζq ≠ 0 := prim_ne_zero hζq (pow_pos hq.pos _)
+  have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+    hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+  have hωq : IsPrimitiveRoot (ζq ^ (q ^ b)) q :=
+    hζq.pow (pow_pos hq.pos _) (by rw [pow_succ])
+  induction hPU with
+  | empty =>
+    exact ⟨∅, ∅, fun r hr => absurd hr (Finset.notMem_empty r),
+      fun τ hτ => absurd hτ (Finset.notMem_empty τ),
+      fun e _ => by simp, fun e _ => by simp, fun e _ => by simp⟩
+  | @addP S₀ s j t hsub hnot IH =>
+    obtain ⟨R, T, hRorb, hTorb, hRtr, hMix, hTtr⟩ := IH
+    set P : Finset F := (Finset.range p).image
+      (fun i'' => ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) with hPdef
+    set τ₀ : F := (ζp ^ s * ζq ^ (j * q ^ b + t)) ^ p with hτ₀
+    have hdis : Disjoint S₀ P := by
+      rw [Finset.disjoint_left]
+      intro y hyS hyP
+      obtain ⟨i'', hi'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hyP)
+      exact hnot i'' (Finset.mem_range.mp hi'') hyS
+    -- every member of the p-packet has p-th power τ₀
+    have hcommon : ∀ y ∈ P, y ^ p = τ₀ := by
+      intro y hy
+      obtain ⟨i'', _, rfl⟩ := Finset.mem_image.mp (hPdef ▸ hy)
+      have hone : ((ζp ^ (i'' * p ^ a)) : F) ^ p = 1 := by
+        rw [← pow_mul, show i'' * p ^ a * p = p ^ (a + 1) * i'' from by
+          rw [pow_succ]; ring, pow_mul, hζp.pow_eq_one, one_pow]
+      calc (ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) ^ p
+          = (ζp ^ (i'' * p ^ a)) ^ p * ((ζp ^ s * ζq ^ (j * q ^ b + t)) ^ p) := by
+            rw [pow_add (a := ζp)]
+            ring
+        _ = τ₀ := by rw [hone, one_mul, hτ₀]
+    -- the packet is x₀'s full μ_p-orbit (x₀ := the i'' = 0 member)
+    set x₀ : F := ζp ^ s * ζq ^ (j * q ^ b + t) with hx₀
+    have hx₀P : x₀ ∈ P := by
+      rw [hPdef]
+      exact Finset.mem_image.mpr ⟨0, Finset.mem_range.mpr hp.pos, by
+        rw [hx₀, Nat.zero_mul, Nat.zero_add]⟩
+    have hPorbit : ∀ g : F, g ^ p = 1 → g * x₀ ∈ P := by
+      intro g hg
+      obtain ⟨k, hk, hkg⟩ := hωp.eq_pow_of_pow_eq_one hg
+      refine hPdef ▸ Finset.mem_image.mpr
+        ⟨k % p, Finset.mem_range.mpr (Nat.mod_lt _ hp.pos), ?_⟩
+      symm
+      rw [← hkg, hx₀]
+      have hdecomp : p ^ a * k + s = p ^ (a + 1) * (k / p) + ((k % p) * p ^ a + s) := by
+        calc p ^ a * k + s
+            = p ^ a * (p * (k / p) + k % p) + s := by rw [Nat.div_add_mod]
+        _ = (p ^ a * p) * (k / p) + ((k % p) * p ^ a + s) := by ring
+        _ = p ^ (a + 1) * (k / p) + ((k % p) * p ^ a + s) := by rw [← pow_succ]
+      calc (ζp ^ (p ^ a)) ^ k * (ζp ^ s * ζq ^ (j * q ^ b + t))
+          = ζp ^ (p ^ a * k + s) * ζq ^ (j * q ^ b + t) := by
+            rw [← pow_mul, pow_add]
+            ring
+        _ = ζp ^ ((k % p) * p ^ a + s) * ζq ^ (j * q ^ b + t) := by
+            rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
+    -- freshness of τ₀ in T by the p-side orbit argument
+    have hfresh : τ₀ ∉ T := by
+      intro hmem
+      obtain ⟨w, hwS, hwp, horbit⟩ := hTorb τ₀ hmem
+      have hx₀0 : x₀ ≠ 0 :=
+        mul_ne_zero (pow_ne_zero _ hζp0) (pow_ne_zero _ hζq0)
+      have hw0 : w ≠ 0 := by
+        intro h0
+        rw [h0, zero_pow hp.pos.ne'] at hwp
+        have : τ₀ ≠ 0 := by
+          rw [hτ₀]
+          exact pow_ne_zero _ hx₀0
+        exact this hwp.symm
+      have hg : (x₀ / w) ^ p = 1 := by
+        rw [div_pow, hwp, hτ₀, div_self (pow_ne_zero _ hx₀0)]
+      have hx₀S : x₀ ∈ S₀ := by
+        have := horbit (x₀ / w) hg
+        rwa [div_mul_cancel₀ x₀ hw0] at this
+      exact (Finset.disjoint_left.mp hdis hx₀S) hx₀P
+    -- packet injectivity and cardinality
+    have hinj : ∀ x1 ∈ Finset.range p, ∀ x2 ∈ Finset.range p,
+        ζp ^ (x1 * p ^ a + s) * ζq ^ (j * q ^ b + t)
+          = ζp ^ (x2 * p ^ a + s) * ζq ^ (j * q ^ b + t) → x1 = x2 := by
+      intro x1 hx1 x2 hx2 hxe
+      have hconst0 : ζq ^ (j * q ^ b + t) ≠ 0 := pow_ne_zero _ hζq0
+      have hs0 : ζp ^ s ≠ 0 := pow_ne_zero _ hζp0
+      have hpow : ζp ^ (x1 * p ^ a) = ζp ^ (x2 * p ^ a) := by
+        have hcancel := mul_right_cancel₀ hconst0 hxe
+        rw [pow_add, pow_add] at hcancel
+        exact mul_right_cancel₀ hs0 hcancel
+      have hpow' : (ζp ^ (p ^ a)) ^ x1 = (ζp ^ (p ^ a)) ^ x2 := by
+        rw [← pow_mul, ← pow_mul, Nat.mul_comm (p ^ a) x1, Nat.mul_comm (p ^ a) x2]
+        exact hpow
+      exact hωp.pow_inj (Finset.mem_range.mp hx1) (Finset.mem_range.mp hx2) hpow'
+    have hPcard : P.card = p := by
+      rw [hPdef, Finset.card_image_of_injOn (fun x1 hx1 x2 hx2 h =>
+        hinj x1 (Finset.mem_coe.mp hx1) x2 (Finset.mem_coe.mp hx2) h),
+        Finset.card_range]
+    refine ⟨R, insert τ₀ T, ?_, ?_, ?_, ?_, ?_⟩
+    · intro r hr
+      obtain ⟨w, hw, hwq, horbit⟩ := hRorb r hr
+      exact ⟨w, Finset.mem_union_left _ hw, hwq,
+        fun g hg => Finset.mem_union_left _ (horbit g hg)⟩
+    · intro τ hτ
+      rcases Finset.mem_insert.mp hτ with rfl | hτT
+      · exact ⟨x₀, Finset.mem_union_right _ hx₀P, (hcommon x₀ hx₀P).symm ▸ rfl,
+          fun g hg => Finset.mem_union_right _ (hPorbit g hg)⟩
+      · obtain ⟨w, hw, hwp, horbit⟩ := hTorb τ hτT
+        exact ⟨w, Finset.mem_union_left _ hw, hwp,
+          fun g hg => Finset.mem_union_left _ (horbit g hg)⟩
+    · -- clean R-transfer: p-packet dies at q·e with p ∤ e
+      intro e hpe
+      have hωpe : IsPrimitiveRoot ((ζp ^ (p ^ a)) ^ (q * e)) p := by
+        refine hωp.pow_of_coprime _ ?_
+        have hqp : Nat.Coprime q p := (Nat.coprime_primes hq hp).mpr (Ne.symm hpq)
+        have hep : Nat.Coprime e p := by
+          rcases Nat.coprime_or_dvd_of_prime hp e with h | h
+          · exact h.symm
+          · exact absurd h hpe
+        exact Nat.Coprime.mul_left hqp hep
+      have hPsum : ∑ y ∈ P, y ^ (q * e) = 0 := by
+        rw [hPdef, Finset.sum_image hinj]
+        have hterm : ∀ i'' ∈ Finset.range p,
+            (ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) ^ (q * e)
+              = ((ζp ^ (p ^ a)) ^ (q * e)) ^ i''
+                * ((ζp ^ s) ^ (q * e) * (ζq ^ (j * q ^ b + t)) ^ (q * e)) := by
+          intro i'' _
+          ring
+        rw [Finset.sum_congr rfl hterm]
+        exact prime_packet_sum_zero hp hωpe _
+      rw [Finset.sum_union hdis, hRtr e hpe, hPsum, add_zero]
+    · -- the mixed identity at p ∣ e: the p-packet contributes p·τ₀^{qe/p}
+      intro e hpe
+      obtain ⟨e', rfl⟩ := hpe
+      have hPsum : ∑ y ∈ P, y ^ (q * (p * e')) = (p : F) * τ₀ ^ (q * e') := by
+        have hcom : ∀ y ∈ P, y ^ (q * (p * e')) = τ₀ ^ (q * e') := by
+          intro y hy
+          rw [show q * (p * e') = p * (q * e') from by ring, pow_mul, hcommon y hy]
+        rw [Finset.sum_congr rfl hcom, Finset.sum_const, hPcard, nsmul_eq_mul]
+      have hdiv : q * (p * e') / p = q * e' := by
+        rw [show q * (p * e') = p * (q * e') from by ring]
+        exact Nat.mul_div_cancel_left _ hp.pos
+      rw [Finset.sum_union hdis, hMix (p * e') ⟨e', rfl⟩, hPsum, hdiv,
+        Finset.sum_insert hfresh, mul_add]
+      have hdiv2 : q * (p * e') / p = q * e' := hdiv
+      ring
+    · -- the mirror T-transfer: the new p-packet contributes p·τ₀^e
+      intro e hqe
+      have hPsum : ∑ y ∈ P, y ^ (p * e) = (p : F) * τ₀ ^ e := by
+        have hcom : ∀ y ∈ P, y ^ (p * e) = τ₀ ^ e := by
+          intro y hy
+          rw [pow_mul, hcommon y hy]
+        rw [Finset.sum_congr rfl hcom, Finset.sum_const, hPcard, nsmul_eq_mul]
+      rw [Finset.sum_union hdis, hTtr e hqe, hPsum, Finset.sum_insert hfresh, mul_add]
+      ring
+  | @addQ S₀ s i t hsub hnot IH =>
+    obtain ⟨R, T, hRorb, hTorb, hRtr, hMix, hTtr⟩ := IH
+    set P : Finset F := (Finset.range q).image
+      (fun j'' => ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) with hPdef
+    set z₀ : F := ζp ^ (i * p ^ a + s) * ζq ^ t with hz₀
+    have hz₀P : z₀ ∈ P := by
+      rw [hPdef]
+      exact Finset.mem_image.mpr ⟨0, Finset.mem_range.mpr hq.pos, by
+        rw [hz₀, Nat.zero_mul, Nat.zero_add]⟩
+    have hdis : Disjoint S₀ P := by
+      rw [Finset.disjoint_left]
+      intro y hyS hyP
+      obtain ⟨j'', hj'', rfl⟩ := Finset.mem_image.mp (hPdef ▸ hyP)
+      exact hnot j'' (Finset.mem_range.mp hj'') hyS
+    have hinj : ∀ x1 ∈ Finset.range q, ∀ x2 ∈ Finset.range q,
+        ζp ^ (i * p ^ a + s) * ζq ^ (x1 * q ^ b + t)
+          = ζp ^ (i * p ^ a + s) * ζq ^ (x2 * q ^ b + t) → x1 = x2 := by
+      intro x1 hx1 x2 hx2 hxe
+      have hconst0 : ζp ^ (i * p ^ a + s) ≠ 0 := pow_ne_zero _ hζp0
+      have ht0 : ζq ^ t ≠ 0 := pow_ne_zero _ hζq0
+      have hpow : ζq ^ (x1 * q ^ b) = ζq ^ (x2 * q ^ b) := by
+        have hcancel := mul_left_cancel₀ hconst0 hxe
+        rw [pow_add, pow_add] at hcancel
+        exact mul_right_cancel₀ ht0 hcancel
+      have hpow' : (ζq ^ (q ^ b)) ^ x1 = (ζq ^ (q ^ b)) ^ x2 := by
+        rw [← pow_mul, ← pow_mul, Nat.mul_comm (q ^ b) x1, Nat.mul_comm (q ^ b) x2]
+        exact hpow
+      exact hωq.pow_inj (Finset.mem_range.mp hx1) (Finset.mem_range.mp hx2) hpow'
+    have hPcard : P.card = q := by
+      rw [hPdef, Finset.card_image_of_injOn (fun x1 hx1 x2 hx2 h =>
+        hinj x1 (Finset.mem_coe.mp hx1) x2 (Finset.mem_coe.mp hx2) h),
+        Finset.card_range]
+    have hcommon : ∀ e' : ℕ, ∀ y ∈ P, y ^ (q * e') = (z₀ ^ q) ^ e' := by
+      intro e' y hy
+      obtain ⟨j'', _, rfl⟩ := Finset.mem_image.mp (hPdef ▸ hy)
+      have hone : ((ζq ^ (j'' * q ^ b)) : F) ^ (q * e') = 1 := by
+        rw [← pow_mul, show j'' * q ^ b * (q * e') = q ^ (b + 1) * (j'' * e') from by
+          ring, pow_mul, hζq.pow_eq_one, one_pow]
+      calc (ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) ^ (q * e')
+          = (ζp ^ (i * p ^ a + s)) ^ (q * e')
+            * ((ζq ^ (j'' * q ^ b)) ^ (q * e') * (ζq ^ t) ^ (q * e')) := by
+            rw [pow_add (a := ζq)]
+            ring
+        _ = (ζp ^ (i * p ^ a + s)) ^ (q * e') * (ζq ^ t) ^ (q * e') := by
+            rw [hone, one_mul]
+        _ = (z₀ ^ q) ^ e' := by rw [hz₀]; ring
+    have hPorbit : ∀ g : F, g ^ q = 1 → g * z₀ ∈ P := by
+      intro g hg
+      obtain ⟨k, hk, hkg⟩ := hωq.eq_pow_of_pow_eq_one hg
+      refine hPdef ▸ Finset.mem_image.mpr
+        ⟨k % q, Finset.mem_range.mpr (Nat.mod_lt _ hq.pos), ?_⟩
+      symm
+      rw [← hkg, hz₀]
+      have hdecomp : q ^ b * k + t = q ^ (b + 1) * (k / q) + ((k % q) * q ^ b + t) := by
+        calc q ^ b * k + t
+            = q ^ b * (q * (k / q) + k % q) + t := by rw [Nat.div_add_mod]
+        _ = (q ^ b * q) * (k / q) + ((k % q) * q ^ b + t) := by ring
+        _ = q ^ (b + 1) * (k / q) + ((k % q) * q ^ b + t) := by rw [← pow_succ]
+      calc (ζq ^ (q ^ b)) ^ k * (ζp ^ (i * p ^ a + s) * ζq ^ t)
+          = ζp ^ (i * p ^ a + s) * ζq ^ (q ^ b * k + t) := by
+            rw [← pow_mul, pow_add]
+            ring
+        _ = ζp ^ (i * p ^ a + s) * ζq ^ ((k % q) * q ^ b + t) := by
+            rw [hdecomp, pow_add (a := ζq), pow_mul (a := ζq), hζq.pow_eq_one, one_pow, one_mul]
+    have hfresh : z₀ ^ q ∉ R := by
+      intro hmem
+      obtain ⟨w, hwS, hwq, horbit⟩ := hRorb (z₀ ^ q) hmem
+      have hz₀0 : z₀ ≠ 0 :=
+        mul_ne_zero (pow_ne_zero _ hζp0) (pow_ne_zero _ hζq0)
+      have hw0 : w ≠ 0 := by
+        intro h0
+        rw [h0, zero_pow hq.pos.ne'] at hwq
+        exact pow_ne_zero q hz₀0 hwq.symm
+      have hg : (z₀ / w) ^ q = 1 := by
+        rw [div_pow, hwq, div_self (pow_ne_zero q hz₀0)]
+      have hz₀S : z₀ ∈ S₀ := by
+        have := horbit (z₀ / w) hg
+        rwa [div_mul_cancel₀ z₀ hw0] at this
+      exact (Finset.disjoint_left.mp hdis hz₀S) hz₀P
+    refine ⟨insert (z₀ ^ q) R, T, ?_, ?_, ?_, ?_, ?_⟩
+    · intro r hr
+      rcases Finset.mem_insert.mp hr with rfl | hrR
+      · exact ⟨z₀, Finset.mem_union_right _ hz₀P, rfl,
+          fun g hg => Finset.mem_union_right _ (hPorbit g hg)⟩
+      · obtain ⟨w, hw, hwq, horbit⟩ := hRorb r hrR
+        exact ⟨w, Finset.mem_union_left _ hw, hwq,
+          fun g hg => Finset.mem_union_left _ (horbit g hg)⟩
+    · intro τ hτ
+      obtain ⟨w, hw, hwp, horbit⟩ := hTorb τ hτ
+      exact ⟨w, Finset.mem_union_left _ hw, hwp,
+        fun g hg => Finset.mem_union_left _ (horbit g hg)⟩
+    · intro e hpe
+      have hPsum : ∑ y ∈ P, y ^ (q * e) = (q : F) * (z₀ ^ q) ^ e := by
+        rw [Finset.sum_congr rfl (hcommon e), Finset.sum_const, hPcard, nsmul_eq_mul]
+      rw [Finset.sum_union hdis, hRtr e hpe, hPsum, Finset.sum_insert hfresh, mul_add]
+      ring
+    · intro e hpe
+      obtain ⟨e', rfl⟩ := hpe
+      have hPsum : ∑ y ∈ P, y ^ (q * (p * e')) = (q : F) * (z₀ ^ q) ^ (p * e') := by
+        rw [Finset.sum_congr rfl (hcommon (p * e')), Finset.sum_const, hPcard,
+          nsmul_eq_mul]
+      rw [Finset.sum_union hdis, hMix (p * e') ⟨e', rfl⟩, hPsum,
+        Finset.sum_insert hfresh, mul_add]
+      ring
+    · -- the mirror T-transfer: the q-packet dies at p·e when q ∤ e
+      intro e hqe
+      have hωqe : IsPrimitiveRoot ((ζq ^ (q ^ b)) ^ (p * e)) q := by
+        refine hωq.pow_of_coprime _ ?_
+        have hpq' : Nat.Coprime p q := (Nat.coprime_primes hp hq).mpr hpq
+        have heq' : Nat.Coprime e q := by
+          rcases Nat.coprime_or_dvd_of_prime hq e with h | h
+          · exact h.symm
+          · exact absurd h hqe
+        exact Nat.Coprime.mul_left hpq' heq'
+      have hPsum : ∑ y ∈ P, y ^ (p * e) = 0 := by
+        rw [hPdef, Finset.sum_image hinj]
+        have hterm : ∀ j'' ∈ Finset.range q,
+            (ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) ^ (p * e)
+              = ((ζq ^ (q ^ b)) ^ (p * e)) ^ j''
+                * ((ζp ^ (i * p ^ a + s)) ^ (p * e) * (ζq ^ t) ^ (p * e)) := by
+          intro j'' _
+          ring
+        rw [Finset.sum_congr rfl hterm]
+        exact prime_packet_sum_zero hq hωqe _
+      rw [Finset.sum_union hdis, hTtr e hqe, hPsum, add_zero]
+
+end BilateralExport
+
+/-! ## The set-form law and the two-prime budget below `p`
+
+From the divisor-form coverage (O117): a windowed set IS the union of its members'
+alive covering cosets — the set-level law — and is therefore DETERMINED by which alive
+cosets it contains: the windowed family injects into the power set of alive cosets,
+giving the two-prime analogue of the 2-power budget (`tower_count`/O55) in the
+below-`p` regime. -/
+
+section BelowPBudget
+
+variable [DecidableEq F] [CharZero F]
+
+open Classical in
+/-- **The set-form law below `p`**: a windowed set equals the union of the alive full
+cosets it contains. -/
+theorem windowed_eq_union_alive_below_p {p q : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {a b m t : ℕ} (hm : m ≤ b) (htp : t < p) (htq : t < q ^ (m + 1))
+    {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hwin : ∀ c, c ≤ m → ∑ z ∈ S, z ^ (q ^ c) = 0) :
+    ∀ x ∈ S, ∃ d : ℕ, d ∣ p ^ (a + 1) * q ^ (b + 1) ∧ t < d ∧
+      x ∈ S.filter (fun y => ∀ h : F, h ^ d = 1 → h * y ∈ S) := by
+  intro x hx
+  obtain ⟨d, hdvd, htd, hcov⟩ :=
+    windowed_coset_cover_below_p hp hq hpq hm htp htq hζp hζq hS hwin x hx
+  exact ⟨d, hdvd, htd, Finset.mem_filter.mpr ⟨hx, hcov⟩⟩
+
+/-- **The recovery injection**: a windowed set is determined by its trace on the alive
+cosets — concretely, `S` is recovered from the data `x ↦ (d_x, coset of x)`; the
+counting consequence is that the windowed family injects into the set of functions from
+the (finite) alive-coset family to `Bool`. We package the budget as: two windowed sets
+with the same alive-coset trace are equal. -/
+theorem windowed_determined_by_alive_trace {p q : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {a b m t : ℕ} (hm : m ≤ b) (htp : t < p) (htq : t < q ^ (m + 1))
+    {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S₁ S₂ : Finset F}
+    (hS₁ : ∀ z ∈ S₁, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hS₂ : ∀ z ∈ S₂, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hwin₁ : ∀ c, c ≤ m → ∑ z ∈ S₁, z ^ (q ^ c) = 0)
+    (hwin₂ : ∀ c, c ≤ m → ∑ z ∈ S₂, z ^ (q ^ c) = 0)
+    -- equal traces: for every alive divisor d and every point y, the full μ_d-coset of
+    -- y lies in S₁ iff it lies in S₂
+    (htrace : ∀ d : ℕ, d ∣ p ^ (a + 1) * q ^ (b + 1) → t < d → ∀ y : F,
+      ((∀ h : F, h ^ d = 1 → h * y ∈ S₁) ↔ (∀ h : F, h ^ d = 1 → h * y ∈ S₂))) :
+    S₁ = S₂ := by
+  apply Finset.Subset.antisymm
+  · intro x hx
+    obtain ⟨d, hdvd, htd, hcov⟩ :=
+      windowed_coset_cover_below_p hp hq hpq hm htp htq hζp hζq hS₁ hwin₁ x hx
+    have hcov₂ := (htrace d hdvd htd x).mp hcov
+    have := hcov₂ 1 (one_pow d)
+    rwa [one_mul] at this
+  · intro x hx
+    obtain ⟨d, hdvd, htd, hcov⟩ :=
+      windowed_coset_cover_below_p hp hq hpq hm htp htq hζp hζq hS₂ hwin₂ x hx
+    have hcov₁ := (htrace d hdvd htd x).mpr hcov
+    have := hcov₁ 1 (one_pow d)
+    rwa [one_mul] at this
+
+end BelowPBudget
+
+/-! ## Coverage monotonicity and the upgrade question
+
+Coverage is divisor-monotone (`μ_d`-coverage implies `μ_{d'}`-coverage for every
+`d' ∣ d`), so the directional laws' existentials certify a coverage IDEAL; the all-`t`
+law asks whether the window forces this ideal to reach above `t`. The missing engine is
+the UPGRADE: small certified coverage + full window ⟹ alive coverage — with the
+contracted-fold (valued, general-radix) route as the mapped candidate. -/
+
+section CoverageMono
+
+/-- Coverage is divisor-monotone: a full `μ_d`-coset inside `S` contains the full
+`μ_{d'}`-coset for every divisor `d' ∣ d`. -/
+theorem coverage_mono {S : Finset F} {x : F} {d d' : ℕ} (hdvd : d' ∣ d)
+    (hcov : ∀ h : F, h ^ d = 1 → h * x ∈ S) :
+    ∀ h : F, h ^ d' = 1 → h * x ∈ S := by
+  intro h hh
+  obtain ⟨k, rfl⟩ := hdvd
+  refine hcov h ?_
+  rw [pow_mul, hh, one_pow]
+
+end CoverageMono
 
 end DeBruijnTwoPrime

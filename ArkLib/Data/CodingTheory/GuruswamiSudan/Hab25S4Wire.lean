@@ -21,7 +21,7 @@ open Polynomial Polynomial.Bivariate
 attribute [local instance] Classical.propDecidable
 
 /-- Wiring of the separable specialization hypothesis (`hnosq`) using `Hab25SeparableSupply`. -/
-theorem exists_specialized_factor_assignment_charZero {F : Type*} [Field F] [CharZero F]
+theorem exists_specialized_factor_assignment_charZero {F : Type} [Field F] [CharZero F]
     {Q : (RatFunc F)[X][Y]} {d : F[X]} {Q₀ : (F[X])[X][Y]}
     (hd : d ≠ 0) (hQ0 : Q ≠ 0)
     (hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F[X] (RatFunc F))) =
@@ -49,20 +49,20 @@ theorem exists_specialized_factor_assignment_charZero {F : Type*} [Field F] [Cha
             (Polynomial.X - Polynomial.C q) ∣
                 (rep R').map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) →
             R = R') := by
-  obtain ⟨g, hg_ne_zero, hg_nosq⟩ :=
-    exists_good_specialization_no_sq_linear hdeg hdiscr
+  have h_spec := @exists_good_specialization_no_sq_linear F _ Q₀ hdeg hdiscr
+  obtain ⟨g, hg_ne_zero, hg_nosq⟩ := h_spec
   obtain ⟨rep, bad', hbad_ne_zero, h1, h2, h3⟩ :=
     exists_specialized_factor_assignment_sep hd hQ0 hrep
   refine ⟨rep, bad' * g, mul_ne_zero hbad_ne_zero hg_ne_zero, ?_, ?_, ?_⟩
   · intro R hR
     obtain ⟨dR, hdR_ne_zero, hrepR, hbad_eval⟩ := h1 R hR
     refine ⟨dR, hdR_ne_zero, hrepR, fun z hz => ?_⟩
-    exact hbad_eval z (right_ne_zero_of_mul hz)
+    exact hbad_eval z (fun h => hz (by simp [h]))
   · intro z hz q hq
-    exact h2 z (right_ne_zero_of_mul hz) q hq
+    exact h2 z (fun h => hz (by simp [h])) q hq
   · intro z hz q R hR hqR hrepR R' hR' hrepR'
-    have hbad' : bad'.eval z ≠ 0 := right_ne_zero_of_mul hz
-    have hg : g.eval z ≠ 0 := left_ne_zero_of_mul hz
-    exact h3 z hbad' (hg_nosq z hg) q R hR hqR hrepR R' hR' hrepR'
+    have hbad' : bad'.eval z ≠ 0 := fun h => hz (by simp [h])
+    have hg : g.eval z ≠ 0 := fun h => hz (by simp [h])
+    exact h3 z hbad' (hg_nosq z hg) q R hR R' hR' hrepR hrepR'
 
 end GuruswamiSudan.OverRatFunc

@@ -39,23 +39,24 @@ namespace STIR
   then ∃ S ⊆ ι, |S| ≥ (1 - δ) * |ι| and
   ∀ i : m, ∃ u : C, u(S) = fᵢ(S)
 
-  STATUS (audit refreshed 2026-06-06, #122). This is still an inert STIR
-  front-door `Prop`, but the old "flat sorry keystone" provenance is stale:
-  the downstream BCIKS20/Combine surface is now expressed through named,
-  explicit residual hypotheses rather than hidden proof holes.
+  STATUS (audit refreshed 2026-06-10). This `Prop` is a statement-shaped front door, kept
+  for reference; the honest *proved* routes live elsewhere:
 
-  Two independent blockers remain:
+  * `STIR.proximity_gap_of_residuals` (`ProximityGapProof.lean`) — the conclusion proven at
+    the pinned monomial generator, conditional on the named BCIKS20 Johnson-regime residuals
+    (`StrictCoeffPolysResidual`, `BoundaryProbabilityResidual` — NOTE the latter is refuted
+    in general, see its docstring; consumers must stay explicitly conditional).
+  * `STIR.proximity_gap_of_card_le` (`ProximityGapSmallField.lean`) — unconditional in the
+    small-field regime.
 
-  1. STATEMENT DEFECT (free `GenFun`). As written, `GenFun : F → Fin m → F` is universally
-     quantified with no constraint, so the statement is FALSE: instantiate `GenFun r j = 0`,
-     then the combination `∑ⱼ GenFun r j * f j x ≡ 0 ∈ C`, so the hypothesis `Pr[… ≤ δ] = 1 >
-     err'` holds for every `f`, yet arbitrary `fᵢ` need not agree with any codeword on a large
-     set. The intended instance is the monomial / Vandermonde generator `GenFun r j = r^j`
-     (cf. `RSGenerator.genRSC`, ProofSystem/Whir/ProximityGen.lean: `Gen = {r ↦ (j ↦ r^(exp j))}`,
-     and `Generator.ProximityGenerator.proximity`, which is this exact statement specialised to
-     that generator — itself still open). A faithful repair fixes `GenFun r j = r^j` (or adds
-     a `ProximityGenerator`-style hypothesis on `GenFun`). This file has no consumers
-     (`grep STIR.proximity_gap` ⇒ only its own definition), so the statement is currently inert.
+  1. STATEMENT DEFECT (free `GenFun`) — REPAIRED IN PLACE. The original statement with an
+     unconstrained `GenFun : F → Fin m → F` was FALSE (instantiate `GenFun r j = 0`: the
+     combination `∑ⱼ GenFun r j * f j x ≡ 0 ∈ C`, so the probability hypothesis holds with
+     probability 1 while arbitrary `fᵢ` need not agree with any codeword on a large set).
+     The def below now carries the `_hGen : ∀ r j, GenFun r j = r ^ j` hypothesis pinning the
+     monomial / Vandermonde generator (cf. `RSGenerator.genRSC`,
+     ProofSystem/Whir/ProximityGen.lean, and `Generator.ProximityGenerator.proximity`), which
+     removes the counterexample.
 
   2. SOURCE residuals (Johnson/√ρ regime). Even the monomial instance reduces to BCIKS20
      Thm 1.5, `ProximityGap.correlatedAgreement_affine_curves`
@@ -69,11 +70,10 @@ namespace STIR
      takes `StrictCoeffPolysResidual` as an explicit argument and routes through
      `correlatedAgreement_affine_curves_of_strict_coeff_polys`.
 
-  Honest residual: repair this front door by specializing to the monomial generator and
-  thread the current residual arguments (`StrictCoeffPolysResidual` plus the boundary
-  branch when needed) through the BCIKS20 curve theorem / STIR combine layer. The
-  statement-level STIR ownership remains #24; the correlated-agreement residual owners
-  are #7/#61/#64. -/
+  Honest residual: this threading is DONE in `ProximityGapProof.lean`
+  (`proximity_gap_of_residuals`), which routes `StrictCoeffPolysResidual` + the boundary
+  branch through the BCIKS20 curve theorem / STIR combine layer. The statement-level STIR
+  ownership remains #24; the correlated-agreement residual owners are #7/#61/#64. -/
 def proximity_gap
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
   {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}

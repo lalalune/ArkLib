@@ -32,7 +32,7 @@ raw `sorry` holes and should not block the grant's duplex-sponge specification c
 | `DuplexSpongeFS.KeyLemmaResidual` | Post-grant | The legacy per-prover key lemma statement over the current `SPMF` game surface. It is intentionally consumed by `duplexSpongeToFSGameStatDist`. |
 | `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual` | Post-grant | CO25 Lemma 5.12 honest bad-event implication: off `E`, no backtrack chain step is inverse-anchored. |
 | `Lemma5_14HonestResidual` | Post-grant | CO25 Lemma 5.14 honest bad-event implication: off `E`, there is at most one maximal backtrack sequence. |
-| `Lemma5_16HonestResidual` | Post-grant | CO25 Lemma 5.16 honest bad-event implication: off `E`, all relevant chain queries are time-ordered. |
+| `Lemma5_16HonestFalseAsStated` | Post-grant | CO25 Lemma 5.16 honest bad-event implication: off `E`, all relevant chain queries are time-ordered. |
 | `SimulatedProverChallengeBudgetResidual` | Post-grant | Lemma 5.1 witness-prover challenge-query budget for the simulated FS prover. |
 | `SimulatedProverSharedBudgetResidual` | Post-grant | Lemma 5.1 witness-prover shared-oracle budget for the simulated FS prover. |
 | `KeyLemmaEagerResidual` | Post-grant | The repaired eager-oracle, coin-equipped statement of the full CO25 Lemma 5.1 proof. |

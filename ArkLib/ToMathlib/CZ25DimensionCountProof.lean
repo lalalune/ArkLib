@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25DesignToLambda
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanDimension
+import ArkLib.Data.CodingTheory.Basic.Distance
 import Mathlib.InformationTheory.Hamming
 
 /-!
@@ -64,8 +65,8 @@ definition `hammingDist x y = #{i | x i ≠ y i}`, made explicit so downstream a
 counts can split the universe into agreeing/disagreeing parts. -/
 lemma hammingDist_eq_card_filter_ne (f c : ι → α) :
     hammingDist f c = (Finset.univ.filter (fun i => f i ≠ c i)).card := by
-  classical
-  rw [hammingDist]
+  simpa [Code.disagreementCols] using
+    Code.hammingDist_eq_disagreementCols_card (u := f) (v := c)
 
 /-- **Agreement count = `n − hammingDist`.** The number of block coordinates on which `f`
 and `c` *agree* is `n − hammingDist f c`. Splits the universe of coordinates into the
@@ -73,14 +74,8 @@ agreeing and disagreeing parts. -/
 lemma card_agree_eq (f c : ι → α) :
     (Finset.univ.filter (fun i => f i = c i)).card =
       Fintype.card ι - hammingDist f c := by
-  classical
-  rw [hammingDist_eq_card_filter_ne]
-  have hsplit : (Finset.univ.filter (fun i => f i = c i)).card +
-      (Finset.univ.filter (fun i => f i ≠ c i)).card = Fintype.card ι := by
-    simpa [Finset.card_univ] using
-      Finset.card_filter_add_card_filter_not (s := (Finset.univ : Finset ι))
-        (p := fun i : ι => f i = c i)
-  omega
+  simpa [Code.agreementCols] using
+    Code.agreementCols_card_eq_card_sub_hammingDist (u := f) (v := c)
 
 /-- **Real-valued disagreement bound from a relative-distance radius.** If the *real* relative
 Hamming distance is bounded by `δ`, i.e. `(δᵣ(f, c) : ℝ) ≤ δ`, then the disagreement count is

@@ -15,7 +15,7 @@ closed-boundary residual `ProximityGap.BoundaryCardResidual` at **square** Johns
 (`ArkLib.BoundaryCardResidual`) reduces the **non-lattice** bulk of the boundary to the
 strict-interior supply
 
-* `BoundaryCardStrictInteriorResidual` — for every stack `u` and every strict sub-radius
+* `BoundaryCardStrictInteriorFalseAsStated` — for every stack `u` and every strict sub-radius
   `δ' < δ` sharing the boundary's floor, a *nonempty* good set at `δ'` implies `jointAgreement`
   at `δ'`,
 
@@ -41,8 +41,8 @@ no linear polynomial agrees with `x ↦ x²` on three of the four points `{0,1,2
 
 * **Refuted as stated**: `BoundaryCardResidual` at square endpoints (in-tree, `k ∈ {1, 2}`),
   `BoundaryCardResidual` at a *non-square* endpoint (`not_boundaryCardResidual_nonSquareEndpoint`
-  here), and the strict-interior supply `BoundaryCardStrictInteriorResidual`
-  (`not_boundaryCardStrictInteriorResidual` here).  Nonemptiness of the good set is *never* a
+  here), and the strict-interior supply `BoundaryCardStrictInteriorFalseAsStated`
+  (`not_boundaryCardStrictInteriorFalseAsStated` here).  Nonemptiness of the good set is *never* a
   sufficient boundary hypothesis, on or off the `1/n`-lattice.
 * **Corrected statement**: the boundary obligation must carry the §5 *probability threshold* at a
   floor-matched strict radius — `Pr[good at δ'] > k · errorBound δ'` with `errorBound δ' > 0` —
@@ -292,12 +292,12 @@ theorem good_nonempty_boundary :
   exact good_nonempty_quarter
 
 /-- **The strict-interior supply of the quantization split is false.**  The witness satisfies
-every hypothesis of `BoundaryCardStrictInteriorResidual` at `δ' = 1/4 < δ = 1 − √(1/2)` with
+every hypothesis of `BoundaryCardStrictInteriorFalseAsStated` at `δ' = 1/4 < δ = 1 − √(1/2)` with
 matching floors and a nonempty good set, yet `jointAgreement` at `δ'` fails.  Together with the
 in-tree square-endpoint refutations of `BoundaryCardLatticeResidual`, **both** leaves of the
 boundary quantization split are unsatisfiable as bare nonemptiness statements. -/
-theorem not_boundaryCardStrictInteriorResidual :
-    ¬ ArkLib.BoundaryCardResidual.BoundaryCardStrictInteriorResidual
+theorem not_boundaryCardStrictInteriorFalseAsStated :
+    ¬ ArkLib.BoundaryCardResidual.BoundaryCardStrictInteriorFalseAsStated
       (k := 1) (deg := 2) (domain := domain)
       (δ := 1 - ReedSolomon.sqrtRate 2 domain) := by
   intro h
@@ -328,6 +328,6 @@ end ArkLib
 #print axioms ArkLib.BoundaryCardStrictInteriorRefutation.not_jointAgreement_quarter
 #print axioms ArkLib.BoundaryCardStrictInteriorRefutation.not_jointAgreement_boundary
 #print axioms
-  ArkLib.BoundaryCardStrictInteriorRefutation.not_boundaryCardStrictInteriorResidual
+  ArkLib.BoundaryCardStrictInteriorRefutation.not_boundaryCardStrictInteriorFalseAsStated
 #print axioms
   ArkLib.BoundaryCardStrictInteriorRefutation.not_boundaryCardResidual_nonSquareEndpoint

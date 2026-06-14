@@ -348,9 +348,10 @@ lemma irreducible_factorization_of_gs_solution
         (Rᵢ.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable) ∧
     (∀ Rᵢ ∈ R, Irreducible Rᵢ) ∧
     (∀ Rᵢ ∈ R, 0 < Rᵢ.natDegree) ∧
-    Q = (Polynomial.C C) *
+    (Q = (Polynomial.C C) *
         ∏ i ∈ Finset.range R.length,
-          ((R.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0
+          ((R.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0) ∧
+    (∀ fᵢ ∈ f, 1 ≤ fᵢ)
     := by
   classical
   have hQ0 : Q ≠ 0 := h_gs.Q_ne_0
@@ -427,7 +428,7 @@ lemma irreducible_factorization_of_gs_solution
     L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.2),
     by simp only [List.length_map],
     by simp only [List.length_map],
-    ?_, ?_, ?_, ?_, ?_⟩
+    ?_, ?_, ?_, ?_, ?_, ?_⟩
   · -- ∀ eᵢ ∈ e, 1 ≤ eᵢ
     intro eᵢ hmem
     rw [hL] at hmem
@@ -502,6 +503,22 @@ lemma irreducible_factorization_of_gs_solution
           = (∏ g ∈ P, (uu g) ^ (S.count g)) * z₀ * wc by ring]
     rw [map_mul, map_mul]
     ring
+  · -- ∀ fᵢ ∈ f, 1 ≤ fᵢ : each `expand`-exponent `nn g ≥ 1` (else the positive-degree factor collapses)
+    intro fᵢ hmem
+    rw [hL] at hmem
+    simp only [List.map_map, List.mem_map, Finset.mem_toList] at hmem
+    obtain ⟨g, hgP, rfl⟩ := hmem
+    simp only [Function.comp]
+    obtain ⟨_, _, hu, hgeq⟩ := hspec g hgP
+    have hgpos : 0 < g.natDegree := by
+      rw [hP, Finset.mem_filter] at hgP; exact hgP.2
+    have hgnat : g.natDegree = (rr g).natDegree * (nn g) := by
+      conv_lhs => rw [hgeq]
+      rw [Polynomial.natDegree_C_mul_of_isUnit hu, Polynomial.natDegree_expand]
+    rw [hgnat] at hgpos
+    rcases Nat.eq_zero_or_pos (nn g) with h | h
+    · rw [h, Nat.mul_zero] at hgpos; exact absurd hgpos (lt_irrefl 0)
+    · exact h
 
 
 /-- *Discriminant–map bridge*: the (univariate) discriminant `Polynomial.discr` commutes with an

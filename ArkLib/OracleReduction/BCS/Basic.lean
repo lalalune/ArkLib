@@ -832,6 +832,45 @@ theorem BCSPhaseRealizationFrontier.ofOpeningLogBridge {StmtMid WitMid : Type}
     BCSPhaseRealizationFrontier phases :=
   ⟨hInteraction, hBridge hLog⟩
 
+/-- **Proof-carrying compiled phases** (issue #342, the API-level repair): a
+`BCSCompiledPhases` together with *proofs* of its two realization payloads.  The base
+structure keeps its `Prop` payload fields (the eventual generic compiler must be able to
+*state* the obligations before constructing the proofs, and their final shape depends on
+the query-log API), but instances of this extension cannot smuggle vacuous payloads:
+whatever propositions the payload fields carry must actually be proved.  Downstream
+files that want the realization content as hypotheses should take a
+`BCSCompiledPhasesLawful` (or its `realizationFrontier`) instead of a bare
+`BCSCompiledPhases`. -/
+structure BCSCompiledPhasesLawful {StmtMid WitMid : Type}
+    (CommitmentType : pSpec.MessageIdx → Type) (e : pSpec.MessageIdx ≃ Fin m) extends
+    BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e where
+  /-- The interaction phase's realization payload is proved, not merely stated. -/
+  interaction_realization_holds : toBCSCompiledPhases.interaction_realizes_oracle_messages
+  /-- The opening phase's realization payload is proved, not merely stated. -/
+  opening_realization_holds : toBCSCompiledPhases.opening_realizes_query_log
+
+omit Oₘ in
+/-- Lawful compiled phases satisfy the phase-realization frontier outright. -/
+theorem BCSCompiledPhasesLawful.realizationFrontier {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (phases : BCSCompiledPhasesLawful (oSpec := oSpec) (pSpec := pSpec)
+      (pSpecCom := pSpecCom) (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut)
+      (WitOut := WitOut) (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e) :
+    BCSPhaseRealizationFrontier phases.toBCSCompiledPhases :=
+  ⟨phases.interaction_realization_holds, phases.opening_realization_holds⟩
+
+/-- Lawful compiled phases supply the opening-log bridge for any typed opening log. -/
+theorem BCSCompiledPhasesLawful.openingLogBridge {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (phases : BCSCompiledPhasesLawful (oSpec := oSpec) (pSpec := pSpec)
+      (pSpecCom := pSpecCom) (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut)
+      (WitOut := WitOut) (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e)
+    (log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    BCSOpeningLogBridge phases.toBCSCompiledPhases log :=
+  fun _ => phases.opening_realization_holds
+
 /-- `BCSCompiledPhases.toReduction` is exactly the appended BCS transform on the packaged
 interaction and opening phases. This small bridge lets downstream code unfold the current compiler
 frontier through a named theorem rather than through record projections. -/
@@ -1824,3 +1863,5 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSCompilerFrontierReady.iff_phase_and_security
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofOpeningLogBridge
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofOpeningLogBridgeAndSecurity
+#print axioms OracleReduction.BCSCompiledPhasesLawful.realizationFrontier
+#print axioms OracleReduction.BCSCompiledPhasesLawful.openingLogBridge

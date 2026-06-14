@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchMonic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoExtract
 
 /-!
@@ -77,6 +78,16 @@ theorem faaDiBrunoFullSumVanishes_of_monic (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hlc : H.leadingCoeff = 1) :
     FaaDiBrunoFullSumVanishes H x₀ R hHyp :=
   (restrictedMatch_iff_fullVanishes H x₀ R hHyp).1
+    (restrictedFaaDiBrunoMatch_of_monic H x₀ R hHyp hlc)
+
+/-- **Legacy successor-sum residual for monic `H` (axiom-clean).**
+The monic carved match also discharges the older `FaaDiBrunoSuccSumZeroResidual` package consumed
+by legacy §5 callers. This is the same bridge as the root-side full-vanishing theorem above, but
+with the historical residual shape exposed under the monic endpoint name. -/
+theorem faaDiBrunoSuccSumZeroResidual_of_monic (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hlc : H.leadingCoeff = 1) :
+    FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp :=
+  faaDiBrunoSuccSumZeroResidual_of_restrictedMatch H x₀ R hHyp
     (restrictedFaaDiBrunoMatch_of_monic H x₀ R hHyp hlc)
 
 /-- **Per-order full Faà-di-Bruno sum vanishing for monic `H` (axiom-clean).**
@@ -183,6 +194,7 @@ end BCIKS20.HenselNumerator
 
 section AxiomAudit
 #print axioms BCIKS20.HenselNumerator.faaDiBrunoFullSumVanishes_of_monic
+#print axioms BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_of_monic
 #print axioms BCIKS20.HenselNumerator.faaDiBrunoFullSum_succ_eq_zero_of_monic
 #print axioms BCIKS20.HenselNumerator.coeff_succ_eval_βHenselAssembled_eq_zero_of_monic
 #print axioms BCIKS20.HenselNumerator.assembledSeries_isRoot_of_monic

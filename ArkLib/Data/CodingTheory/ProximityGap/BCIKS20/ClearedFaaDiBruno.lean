@@ -60,7 +60,7 @@ theorem cleared_iff_restricted_of_monic (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hlc : H.leadingCoeff = 1) :
     ClearedFaaDiBrunoMatch H x₀ R hHyp ↔ RestrictedFaaDiBrunoMatch H x₀ R hHyp := by
   unfold ClearedFaaDiBrunoMatch RestrictedFaaDiBrunoMatch
-  unfold ClearedFaaDiBrunoMatchAt RestrictedFaaDiBrunoMatchAt
+  unfold ClearedFaaDiBrunoMatchAt
   unfold ClearedRestrictedFaaDiBrunoSum
   rw [hlc]
   simp only [map_one, one_pow, one_mul, mul_one]

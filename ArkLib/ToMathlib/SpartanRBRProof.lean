@@ -27,7 +27,7 @@ open scoped NNReal ProbabilityTheory
 
 /-- **Issue #114 residual checkpoint (honest pass-through).** For any composed Spartan oracle
 reduction `Rc`, its RBR knowledge-soundness surface is exactly the named residual
-`composedRbrKnowledgeSoundnessResidual` exposed by `SpartanBricks`.
+`composedRbrKnowledgeSoundnessStatement` exposed by `SpartanBricks`.
 
 This is deliberately an implication `hResidual → hResidual`: it lets downstream work *name* the
 checkpoint without laundering the open obligation. It is **not** an unconditional proof — arbitrary
@@ -46,9 +46,9 @@ theorem spartan_rbr_knowledge_soundness_checkpoint {R : Type}
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
     (hResidual :
-      Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual R pp oSpec Rc init impl
+      Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessStatement R pp oSpec Rc init impl
         rbrKnowledgeError) :
-    Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual R pp oSpec Rc init impl
+    Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessStatement R pp oSpec Rc init impl
       rbrKnowledgeError :=
   hResidual
 

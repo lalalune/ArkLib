@@ -34,8 +34,8 @@ security obligations. It is the staging ground for the integration into
 
 * **Brick D** — the composition of all phases into the Spartan PIOP via the proven
   `OracleReduction.append` machinery, with perfect completeness and round-by-round knowledge
-  soundness reduced to (a) the per-component proven security theorems and (b) precisely-named
-  composition residuals, discharged through `OracleReduction.append_perfectCompleteness` /
+  soundness reduced to (a) the per-component proven security theorems and (b) parameterized
+  composition statements, discharged through `OracleReduction.append_perfectCompleteness` /
   `OracleVerifier.append_rbrKnowledgeSoundness`.
 
 ## Honesty discipline
@@ -973,8 +973,9 @@ context), the composite
 
 is a well-typed `OracleReduction` once the two sum-check phases (Brick B) are available.
 
-The composed completeness and round-by-round knowledge soundness are stated as named residuals
-discharged through the proven append reduction theorems. Each is the additive combination of the
+The composed completeness and round-by-round knowledge soundness are stated as parameterized
+properties discharged through the proven append reduction theorems. Each is the additive combination
+of the
 per-component guarantees:
 * completeness error `0` (all components are perfectly complete);
 * rbr knowledge error the per-round sum, with each sum-check round contributing `deg/|R| = 2/|R|`
@@ -1066,15 +1067,16 @@ theorem composedPIOPWithClaimResidual_of_reduction
     composedPIOPWithClaimResidual R pp oSpec :=
   ⟨N, pSpecC, inferInstance, inferInstance, ⟨Rc⟩⟩
 
-/-- **NAMED RESIDUAL — composed Spartan PIOP perfect completeness.** Discharged, once the composed
+/-- **Named statement — composed Spartan PIOP perfect completeness.** Discharged, once the composed
 reduction `Rc` (over its combined spec `pSpecC`) is available, by iterated
 `OracleReduction.append_perfectCompleteness`: each leaf is perfectly complete
 (`SendSingleWitness.oracleReduction`, `RandomQuery.oracleReduction_completeness`, the two sum-checks
 via `Sumcheck.Spec.oracleReduction_perfectCompleteness` transferred through `liftContext`,
 `sendEvalClaim`/`linearCombination` as pure forwardings, and `finalCheck` via `CheckClaim`), and
 `append_perfectCompleteness` combines them with total error `0` (resting on the `Prover.append_run`
-keystone, the single deep residual of the append layer). -/
-def composedCompletenessResidual
+keystone, the single deep residual of the append layer). This is a parameterized property alias,
+not an independent strict residual surface; concrete Spartan reductions prove instances of it. -/
+def composedCompletenessStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1084,17 +1086,17 @@ def composedCompletenessResidual
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)
 
 -- **No `composedCompleteness_holds` here.**  An earlier revision asserted
--- `composedCompletenessResidual … (composedPIOP …) …` via `noncomputable constant` — a disguised
+-- `composedCompletenessStatement … (composedPIOP …) …` via `noncomputable constant` — a disguised
 -- axiom (an unproven inhabitant of the perfect-completeness `Prop`) that, moreover, does not parse
 -- in Lean 4 and is not caught by `scripts/forbidden_tokens.py` (which flags `axiom`, not
 -- `constant`/`opaque`).  Composed perfect completeness is *not* available: it would follow from
 -- `OracleReduction.append_perfectCompleteness`, which is itself an unproven library-wide residual
 -- (the `Prover.append_run` / `simulateQ`-support keystone, #25/#433).  The honest surface is the
--- `composedCompletenessResidual` obligation above; it has no proof yet.
+-- `composedCompletenessStatement` obligation above; it has no proof yet.
 
-/-- Target-carrying version of `composedCompletenessResidual`, for a composed Spartan reduction
+/-- Target-carrying version of `composedCompletenessStatement`, for a composed Spartan reduction
 ending at `finalCheckWithClaim`. -/
-def composedCompletenessWithClaimResidual
+def composedCompletenessWithClaimStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1111,10 +1113,23 @@ theorem finalCheckWithClaimValueRelIn_subset_finalCheckWithClaimRelOut :
   intro x _hx
   trivial
 
-/-- Stronger target-carrying composed completeness residual, where the composed Spartan reduction
+/-- Stronger target-carrying composed completeness statement, where the composed Spartan reduction
 must output the semantic value relation tying the carried target to the algebraic final expected
-claim value. This is a compatibility target for future terminal `CheckClaim` completeness work. -/
-def composedCompletenessWithClaimValueRelResidual
+claim value. This is a compatibility target for future terminal `CheckClaim` completeness work.
+
+**Audit status (2026-06-10): genuine remaining content — semantic target threading (D1).**
+The composed-`Rc` instance of this statement is NOT dischargeable from
+`composedCompletenessWithClaimStatement_proven` by output-relation monotonicity: that theorem's
+relOut is weakened to `univ` (its final step is `completeness_relOut_mono (Set.subset_univ _)`),
+while this statement demands the *semantic* value relation (carried target = second-sum-check
+terminal eval). The adapter `prependClaim` emits the literal target `0` (`prependSlot`'s
+`pure (0, stmt)`), so the discharge must thread Spartan's zero-check semantics — the honest
+run's terminal eval IS `0` for satisfying R1CS witnesses — which requires re-landing the base
+composition with a contentful relOut recording the terminal-eval fact (not `univ`). Until
+then, this statement and its `SecondSumcheckEval` twin (equivalent via
+`composedCompletenessWithClaimSecondSumcheckEvalStatement_iff_valueRel`) are honest open
+engineering, tracked under issue #329. -/
+def composedCompletenessWithClaimValueRelStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1123,9 +1138,9 @@ def composedCompletenessWithClaimValueRelResidual
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckWithClaimValueRelIn R pp)
 
-/-- Target-carrying composed completeness residual where the final output relation is stated
+/-- Target-carrying composed completeness statement where the final output relation is stated
 directly as equality with the second-sum-check terminal endpoint. -/
-def composedCompletenessWithClaimSecondSumcheckEvalResidual
+def composedCompletenessWithClaimSecondSumcheckEvalStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1136,25 +1151,25 @@ def composedCompletenessWithClaimSecondSumcheckEvalResidual
     (spartanRelIn R pp) (finalCheckWithClaimSecondSumcheckEvalRelOut R pp)
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
-/-- The second-sum-check endpoint completeness residual and the semantic value-relation residual
-are the same residual under the terminal endpoint bridge. -/
-theorem composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+/-- The second-sum-check endpoint completeness statement and the semantic value-relation statement
+are the same target under the terminal endpoint bridge. -/
+theorem composedCompletenessWithClaimSecondSumcheckEvalStatement_iff_valueRel
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) :
-    composedCompletenessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl ↔
-      composedCompletenessWithClaimValueRelResidual R pp oSpec Rc init impl := by
-  unfold composedCompletenessWithClaimSecondSumcheckEvalResidual
-  unfold composedCompletenessWithClaimValueRelResidual
+    composedCompletenessWithClaimSecondSumcheckEvalStatement R pp oSpec Rc init impl ↔
+      composedCompletenessWithClaimValueRelStatement R pp oSpec Rc init impl := by
+  unfold composedCompletenessWithClaimSecondSumcheckEvalStatement
+  unfold composedCompletenessWithClaimValueRelStatement
   rw [finalCheckWithClaimSecondSumcheckEvalRelOut_eq_valueRelIn]
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- Completeness into the second-sum-check endpoint relation gives completeness into the semantic
 value relation. -/
-theorem composedCompletenessWithClaimValueRelResidual_of_secondSumcheckEval
+theorem composedCompletenessWithClaimValueRelStatement_of_secondSumcheckEval
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1162,15 +1177,15 @@ theorem composedCompletenessWithClaimValueRelResidual_of_secondSumcheckEval
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (hEndpoint :
-      composedCompletenessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl) :
-    composedCompletenessWithClaimValueRelResidual R pp oSpec Rc init impl :=
-  (composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+      composedCompletenessWithClaimSecondSumcheckEvalStatement R pp oSpec Rc init impl) :
+    composedCompletenessWithClaimValueRelStatement R pp oSpec Rc init impl :=
+  (composedCompletenessWithClaimSecondSumcheckEvalStatement_iff_valueRel
     R pp oSpec Rc init impl).1 hEndpoint
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- Completeness into the semantic value relation gives completeness into the direct
 second-sum-check endpoint relation. -/
-theorem composedCompletenessWithClaimSecondSumcheckEvalResidual_of_valueRel
+theorem composedCompletenessWithClaimSecondSumcheckEvalStatement_of_valueRel
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1178,25 +1193,25 @@ theorem composedCompletenessWithClaimSecondSumcheckEvalResidual_of_valueRel
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (hValue :
-      composedCompletenessWithClaimValueRelResidual R pp oSpec Rc init impl) :
-    composedCompletenessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl :=
-  (composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+      composedCompletenessWithClaimValueRelStatement R pp oSpec Rc init impl) :
+    composedCompletenessWithClaimSecondSumcheckEvalStatement R pp oSpec Rc init impl :=
+  (composedCompletenessWithClaimSecondSumcheckEvalStatement_iff_valueRel
     R pp oSpec Rc init impl).2 hValue
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- Completeness into the semantic target-carrying value relation implies the existing broad
-target-carrying composed completeness residual by output-relation weakening. -/
-theorem composedCompletenessWithClaimResidual_of_valueRel
+target-carrying composed completeness statement by output-relation weakening. -/
+theorem composedCompletenessWithClaimStatement_of_valueRel
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-    (hValue : composedCompletenessWithClaimValueRelResidual R pp oSpec Rc init impl) :
-    composedCompletenessWithClaimResidual R pp oSpec Rc init impl := by
-  unfold composedCompletenessWithClaimValueRelResidual at hValue
-  unfold composedCompletenessWithClaimResidual
+    (hValue : composedCompletenessWithClaimValueRelStatement R pp oSpec Rc init impl) :
+    composedCompletenessWithClaimStatement R pp oSpec Rc init impl := by
+  unfold composedCompletenessWithClaimValueRelStatement at hValue
+  unfold composedCompletenessWithClaimStatement
   unfold OracleReduction.perfectCompleteness Reduction.perfectCompleteness at hValue ⊢
   exact Reduction.completeness_relOut_mono
     (init := init) (impl := impl)
@@ -1209,8 +1224,8 @@ theorem composedCompletenessWithClaimResidual_of_valueRel
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- Completeness into the second-sum-check endpoint relation implies the existing broad
-target-carrying composed completeness residual. -/
-theorem composedCompletenessWithClaimResidual_of_secondSumcheckEval
+target-carrying composed completeness statement. -/
+theorem composedCompletenessWithClaimStatement_of_secondSumcheckEval
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1218,20 +1233,22 @@ theorem composedCompletenessWithClaimResidual_of_secondSumcheckEval
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (hEndpoint :
-      composedCompletenessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl) :
-    composedCompletenessWithClaimResidual R pp oSpec Rc init impl :=
-  composedCompletenessWithClaimResidual_of_valueRel R pp oSpec Rc init impl <|
-    (composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+      composedCompletenessWithClaimSecondSumcheckEvalStatement R pp oSpec Rc init impl) :
+    composedCompletenessWithClaimStatement R pp oSpec Rc init impl :=
+  composedCompletenessWithClaimStatement_of_valueRel R pp oSpec Rc init impl <|
+    (composedCompletenessWithClaimSecondSumcheckEvalStatement_iff_valueRel
       R pp oSpec Rc init impl).1 hEndpoint
 
-/-- **NAMED RESIDUAL — composed Spartan PIOP round-by-round knowledge soundness.** Discharged, once
+/-- **Named statement — composed Spartan PIOP round-by-round knowledge soundness.** Discharged, once
 the composed verifier is available, by iterated `OracleVerifier.append_rbrKnowledgeSoundness`: each
 leaf satisfies rbr knowledge soundness (`RandomQuery.oracleVerifier_rbrKnowledgeSoundness`, the two
 sum-checks via the per-round `Sumcheck.Spec` `oracleVerifier_rbrKnowledgeSoundness` transferred
 through `liftContext`, and `CheckClaim.verifier_rbr_knowledge_soundness`), and
 `append_rbrKnowledgeSoundness` combines the per-round errors through `ChallengeIdx.sumEquiv`. Each
-sum-check round contributes `2/|R|`; the zero-round components contribute `0`. -/
-def composedRbrKnowledgeSoundnessResidual
+sum-check round contributes `2/|R|`; the zero-round components contribute `0`. This is a
+parameterized property alias, not an independent strict residual surface; concrete Spartan
+reductions prove instances of it. -/
+def composedRbrKnowledgeSoundnessStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1247,11 +1264,11 @@ def composedRbrKnowledgeSoundnessResidual
 -- disguised, non-parsing axiom.  RBR knowledge soundness for the composition is *not* available: it
 -- would follow from `OracleVerifier.append_rbrKnowledgeSoundness` (per-round `2/|R|` sum-check error
 -- combined via `ChallengeIdx.sumEquiv`), which is an unproven library-wide residual.  The honest
--- surface is the `composedRbrKnowledgeSoundnessResidual` obligation above; it has no proof yet.
+-- surface is the `composedRbrKnowledgeSoundnessStatement` obligation above; it has no proof yet.
 
-/-- Target-carrying version of `composedRbrKnowledgeSoundnessResidual`, for composed Spartan
+/-- Target-carrying version of `composedRbrKnowledgeSoundnessStatement`, for composed Spartan
 verifiers ending at `finalCheckWithClaim`. -/
-def composedRbrKnowledgeSoundnessWithClaimResidual
+def composedRbrKnowledgeSoundnessWithClaimStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1262,9 +1279,9 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
   Rc.verifier.rbrKnowledgeSoundness init impl
     (spartanRelIn R pp) (finalCheckWithClaimRelOut R pp) rbrKnowledgeError
 
-/-- Stronger target-carrying RBR knowledge-soundness residual where extracted terminal witnesses
+/-- Stronger target-carrying RBR knowledge-soundness statement where extracted terminal witnesses
 land in the semantic final-check value relation. -/
-def composedRbrKnowledgeSoundnessWithClaimValueRelResidual
+def composedRbrKnowledgeSoundnessWithClaimValueRelStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1275,9 +1292,9 @@ def composedRbrKnowledgeSoundnessWithClaimValueRelResidual
   Rc.verifier.rbrKnowledgeSoundness init impl
     (spartanRelIn R pp) (finalCheckWithClaimValueRelIn R pp) rbrKnowledgeError
 
-/-- Target-carrying RBR knowledge-soundness residual whose terminal output relation is stated
+/-- Target-carrying RBR knowledge-soundness statement whose terminal output relation is stated
 directly as equality with the second-sum-check endpoint. -/
-def composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual
+def composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1289,9 +1306,9 @@ def composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual
     (spartanRelIn R pp) (finalCheckWithClaimSecondSumcheckEvalRelOut R pp) rbrKnowledgeError
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
-/-- The second-sum-check endpoint RBR residual and the semantic value-relation RBR residual are
+/-- The second-sum-check endpoint RBR statement and the semantic value-relation RBR statement are
 the same target under the terminal endpoint bridge. -/
-theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_iff_valueRel
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1299,18 +1316,18 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_val
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) :
-    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl
+    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement R pp oSpec Rc init impl
         rbrKnowledgeError ↔
-      composedRbrKnowledgeSoundnessWithClaimValueRelResidual R pp oSpec Rc init impl
+      composedRbrKnowledgeSoundnessWithClaimValueRelStatement R pp oSpec Rc init impl
         rbrKnowledgeError := by
-  unfold composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual
-  unfold composedRbrKnowledgeSoundnessWithClaimValueRelResidual
+  unfold composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement
+  unfold composedRbrKnowledgeSoundnessWithClaimValueRelStatement
   rw [finalCheckWithClaimSecondSumcheckEvalRelOut_eq_valueRelIn]
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- RBR knowledge soundness into the second-sum-check endpoint relation gives RBR knowledge
 soundness into the semantic value relation. -/
-theorem composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval
+theorem composedRbrKnowledgeSoundnessWithClaimValueRelStatement_of_secondSumcheckEval
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1319,17 +1336,17 @@ theorem composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheck
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
     (hEndpoint :
-      composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl
+      composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement R pp oSpec Rc init impl
         rbrKnowledgeError) :
-    composedRbrKnowledgeSoundnessWithClaimValueRelResidual R pp oSpec Rc init impl
+    composedRbrKnowledgeSoundnessWithClaimValueRelStatement R pp oSpec Rc init impl
       rbrKnowledgeError :=
-  (composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+  (composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_iff_valueRel
     R pp oSpec Rc init impl rbrKnowledgeError).1 hEndpoint
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- RBR knowledge soundness into the semantic value relation gives RBR knowledge soundness into
 the direct second-sum-check endpoint relation. -/
-theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel
+theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_of_valueRel
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1338,11 +1355,11 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valu
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
     (hValue :
-      composedRbrKnowledgeSoundnessWithClaimValueRelResidual R pp oSpec Rc init impl
+      composedRbrKnowledgeSoundnessWithClaimValueRelStatement R pp oSpec Rc init impl
         rbrKnowledgeError) :
-    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl
+    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement R pp oSpec Rc init impl
       rbrKnowledgeError :=
-  (composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+  (composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_iff_valueRel
     R pp oSpec Rc init impl rbrKnowledgeError).2 hValue
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
@@ -1350,7 +1367,7 @@ omit [IsDomain R] [Fintype R] [SampleableType R] in
 knowledge soundness for the semantic value relation. This direction is the RBR analogue of relation
 weakening on the terminal target: the broad relation is `Set.univ`, so any positive-probability
 semantic terminal event is also a positive-probability broad terminal event. -/
-theorem composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual
+theorem composedRbrKnowledgeSoundnessWithClaimValueRelStatement_of_broadStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1358,15 +1375,15 @@ theorem composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
-    (hResidual :
-      composedRbrKnowledgeSoundnessWithClaimResidual R pp oSpec Rc init impl
+    (hStatement :
+      composedRbrKnowledgeSoundnessWithClaimStatement R pp oSpec Rc init impl
         rbrKnowledgeError) :
-    composedRbrKnowledgeSoundnessWithClaimValueRelResidual R pp oSpec Rc init impl
+    composedRbrKnowledgeSoundnessWithClaimValueRelStatement R pp oSpec Rc init impl
       rbrKnowledgeError := by
-  unfold composedRbrKnowledgeSoundnessWithClaimResidual at hResidual
-  unfold composedRbrKnowledgeSoundnessWithClaimValueRelResidual
-  unfold OracleVerifier.rbrKnowledgeSoundness Verifier.rbrKnowledgeSoundness at hResidual ⊢
-  rcases hResidual with ⟨WitMid, extractor, kSF, hProb⟩
+  unfold composedRbrKnowledgeSoundnessWithClaimStatement at hStatement
+  unfold composedRbrKnowledgeSoundnessWithClaimValueRelStatement
+  unfold OracleVerifier.rbrKnowledgeSoundness Verifier.rbrKnowledgeSoundness at hStatement ⊢
+  rcases hStatement with ⟨WitMid, extractor, kSF, hProb⟩
   let kSFValue :
       Rc.verifier.toVerifier.KnowledgeStateFunction init impl
         (spartanRelIn R pp) (finalCheckWithClaimValueRelIn R pp) extractor :=
@@ -1385,7 +1402,7 @@ theorem composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- RBR knowledge soundness for the broad target-carrying final-check relation implies RBR
 knowledge soundness for the direct second-sum-check endpoint relation. -/
-theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_residual
+theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_of_broadStatement
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1393,15 +1410,15 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_resi
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
-    (hResidual :
-      composedRbrKnowledgeSoundnessWithClaimResidual R pp oSpec Rc init impl
+    (hStatement :
+      composedRbrKnowledgeSoundnessWithClaimStatement R pp oSpec Rc init impl
         rbrKnowledgeError) :
-    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl
+    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement R pp oSpec Rc init impl
       rbrKnowledgeError :=
-  composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel
+  composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_of_valueRel
     R pp oSpec Rc init impl rbrKnowledgeError <|
-      composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual
-        R pp oSpec Rc init impl rbrKnowledgeError hResidual
+      composedRbrKnowledgeSoundnessWithClaimValueRelStatement_of_broadStatement
+        R pp oSpec Rc init impl rbrKnowledgeError hStatement
 
 /-! ### Axiom audit for the target-carrying final-check frontier and encoding residual -/
 
@@ -1455,26 +1472,26 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_resi
 #print axioms secondSumcheckResidual
 #print axioms spartanRelIn
 #print axioms composedPIOPResidual
-#print axioms composedCompletenessResidual
-#print axioms composedRbrKnowledgeSoundnessResidual
+#print axioms composedCompletenessStatement
+#print axioms composedRbrKnowledgeSoundnessStatement
 #print axioms composedPIOPWithClaimResidual
-#print axioms composedCompletenessWithClaimResidual
+#print axioms composedCompletenessWithClaimStatement
 #print axioms finalCheckWithClaimValueRelIn_subset_finalCheckWithClaimRelOut
-#print axioms composedCompletenessWithClaimValueRelResidual
-#print axioms composedCompletenessWithClaimSecondSumcheckEvalResidual
-#print axioms composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel
-#print axioms composedCompletenessWithClaimValueRelResidual_of_secondSumcheckEval
-#print axioms composedCompletenessWithClaimSecondSumcheckEvalResidual_of_valueRel
-#print axioms composedCompletenessWithClaimResidual_of_valueRel
-#print axioms composedCompletenessWithClaimResidual_of_secondSumcheckEval
-#print axioms composedRbrKnowledgeSoundnessWithClaimResidual
-#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelResidual
-#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual
-#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
-#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval
-#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel
-#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual
-#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_residual
+#print axioms composedCompletenessWithClaimValueRelStatement
+#print axioms composedCompletenessWithClaimSecondSumcheckEvalStatement
+#print axioms composedCompletenessWithClaimSecondSumcheckEvalStatement_iff_valueRel
+#print axioms composedCompletenessWithClaimValueRelStatement_of_secondSumcheckEval
+#print axioms composedCompletenessWithClaimSecondSumcheckEvalStatement_of_valueRel
+#print axioms composedCompletenessWithClaimStatement_of_valueRel
+#print axioms composedCompletenessWithClaimStatement_of_secondSumcheckEval
+#print axioms composedRbrKnowledgeSoundnessWithClaimStatement
+#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelStatement
+#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement
+#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_iff_valueRel
+#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelStatement_of_secondSumcheckEval
+#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_of_valueRel
+#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelStatement_of_broadStatement
+#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalStatement_of_broadStatement
 
 /-! ## Brick D (final) — composed Spartan PIOP security, parameterized on the composed reduction
 
@@ -1487,19 +1504,19 @@ message-seam keystone `OracleReduction.append_perfectCompleteness_msg_proof` doe
 phase boundary is a *challenge* seam, as for `firstChallenge`/`linearCombination`).
 
 We therefore take the assembled reduction `Rc` and its two end-to-end security guarantees as
-explicit hypotheses and derive the *named composed residuals* of this file from them. The
+explicit hypotheses and derive the named composed statements of this file from them. The
 hypotheses are exactly the composed perfect-completeness / round-by-round knowledge soundness facts
 that an iterated-`append` assembly would produce (total completeness error `0`; per-round RBR error
 `2/|R|` on the two sum-check phases, `0` elsewhere), so no probabilistic or relational content is
 hidden — only the assembly of `Rc` and the append keystones remain open. These theorems are
-axiom-clean and non-vacuous: each conclusion is the corresponding named `…Residual` `Prop`, and each
-hypothesis is its defeq unfolding. -/
+axiom-clean and non-vacuous: each conclusion is the corresponding named `…Statement` `Prop`, and
+each hypothesis is its defeq unfolding. -/
 
 omit [IsDomain R] [Fintype R] [DecidableEq R] in
 /-- **Composed Spartan PIOP perfect completeness (parameterized).** Given the assembled composed
 reduction `Rc` together with its end-to-end perfect-completeness `hc` from the Spartan input
-relation to the terminal final-check relation, the named composed-completeness residual holds. -/
-theorem composedCompletenessResidual_of_perfectCompleteness
+relation to the terminal final-check relation, the named composed-completeness statement holds. -/
+theorem composedCompletenessStatement_of_perfectCompleteness
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1507,12 +1524,12 @@ theorem composedCompletenessResidual_of_perfectCompleteness
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (hc : Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)) :
-    composedCompletenessResidual R pp oSpec Rc init impl :=
+    composedCompletenessStatement R pp oSpec Rc init impl :=
   hc
 
 omit [IsDomain R] [Fintype R] [DecidableEq R] in
 /-- **Composed Spartan PIOP perfect completeness, target-carrying (parameterized).** -/
-theorem composedCompletenessWithClaimResidual_of_perfectCompleteness
+theorem composedCompletenessWithClaimStatement_of_perfectCompleteness
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1521,17 +1538,17 @@ theorem composedCompletenessWithClaimResidual_of_perfectCompleteness
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (hc : Rc.perfectCompleteness init impl
       (spartanRelIn R pp) (finalCheckWithClaimRelOut R pp)) :
-    composedCompletenessWithClaimResidual R pp oSpec Rc init impl :=
+    composedCompletenessWithClaimStatement R pp oSpec Rc init impl :=
   hc
 
 omit [IsDomain R] [Fintype R] [DecidableEq R] in
 /-- **Composed Spartan PIOP round-by-round knowledge soundness (parameterized).** Given the
 assembled composed reduction `Rc` together with its end-to-end RBR knowledge soundness `hks` (with
-per-round error `rbrKnowledgeError`), the named composed RBR-knowledge-soundness residual holds. For
-the seven-phase Spartan composition the per-round error is `2/|R|` on each of the two sum-check
+per-round error `rbrKnowledgeError`), the named composed RBR-knowledge-soundness statement holds.
+For the seven-phase Spartan composition the per-round error is `2/|R|` on each of the two sum-check
 phases' rounds and `0` on the (zero-round) `firstChallenge`/`linearCombination`/`finalCheck`/
 `firstMessage`/`sendEvalClaim` phases, combined across phases through `ChallengeIdx.sumEquiv`. -/
-theorem composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness
+theorem composedRbrKnowledgeSoundnessStatement_of_rbrKnowledgeSoundness
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1541,12 +1558,13 @@ theorem composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
     (hks : Rc.verifier.rbrKnowledgeSoundness init impl
       (spartanRelIn R pp) (finalCheckRelOut R pp) rbrKnowledgeError) :
-    composedRbrKnowledgeSoundnessResidual R pp oSpec Rc init impl rbrKnowledgeError :=
+    composedRbrKnowledgeSoundnessStatement R pp oSpec Rc init impl rbrKnowledgeError :=
   hks
 
 omit [IsDomain R] [Fintype R] [DecidableEq R] in
-/-- **Composed Spartan PIOP round-by-round knowledge soundness, target-carrying (parameterized).** -/
-theorem composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness
+/-- **Composed Spartan PIOP round-by-round knowledge soundness, target-carrying
+(parameterized).** -/
+theorem composedRbrKnowledgeSoundnessWithClaimStatement_of_rbrKnowledgeSoundness
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
@@ -1556,7 +1574,7 @@ theorem composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
     (hks : Rc.verifier.rbrKnowledgeSoundness init impl
       (spartanRelIn R pp) (finalCheckWithClaimRelOut R pp) rbrKnowledgeError) :
-    composedRbrKnowledgeSoundnessWithClaimResidual R pp oSpec Rc init impl rbrKnowledgeError :=
+    composedRbrKnowledgeSoundnessWithClaimStatement R pp oSpec Rc init impl rbrKnowledgeError :=
   hks
 
 /-! ### End-to-end Spartan PIOP security: where the genuine theorems live
@@ -1565,31 +1583,32 @@ An earlier revision declared two theorems here named `spartan_piop_perfect_compl
 `spartan_piop_rbr_knowledge_soundness`, documented as "the headline theorems of issue #114". As
 the external audit (2026-06-10) observed, each took an *arbitrary* `Rc` **plus its own security
 property as a hypothesis** and merely repackaged it into the residual `Prop` — i.e. they were
-exact duplicates of `composedCompletenessResidual_of_perfectCompleteness` /
-`composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness` above, converters rather than
+exact duplicates of `composedCompletenessStatement_of_perfectCompleteness` /
+`composedRbrKnowledgeSoundnessStatement_of_rbrKnowledgeSoundness` above, converters rather than
 end-to-end results. They have been **retired** so converter names cannot masquerade as headline
 results. The genuine statements about the actual assembled composition
 (`Bricks.composedPIOP_Rc`, `ArkLib/ProofSystem/Spartan/Composition.lean`) are:
 
 * **Perfect completeness (PROVEN, no leaf hypotheses):**
-  `Bricks.composedCompletenessResidual_proven_114c`
-  (`ArkLib/ProofSystem/Spartan/ComposedCompletenessProven.lean`) — only the standard
+  `Bricks.composedCompletenessStatement_proven`
+  (`ArkLib/ProofSystem/Spartan/ComposedCompletenessFinal.lean`) — only the standard
   honest-implementation side conditions on `init`/`impl` remain as inputs.
 * **Round-by-round knowledge soundness (assembled, conditional):**
-  `Bricks.composedRbrKnowledgeSoundnessResidual_of_leaves`
+  `Bricks.composedRbrKnowledgeSoundnessStatement_of_leaves`
   (`ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean`) — the seven-seam keystone
-  fold at `Rc := composedPIOP_Rc`, reducing the obligation to the eight per-phase rbr-KS leaves,
-  the seven verifier determinism witnesses, and the two challenge-seam `hSeamZero` residuals.
+  fold at `Rc := composedPIOP_Rc`, reducing the obligation to the eight per-phase rbr-KS leaves
+  and the seven verifier determinism witnesses (the former challenge-seam `hSeamZero` residuals
+  are discharged by `appendRbrKnowledgeSeamZero_proven`).
 
 Hold the `spartan_piop_*` names until the rbr layer's remaining inputs are discharged and the
 headline statements are instantiable. -/
 
 #print axioms composedPIOPResidual_of_reduction
 #print axioms composedPIOPWithClaimResidual_of_reduction
-#print axioms composedCompletenessResidual_of_perfectCompleteness
-#print axioms composedCompletenessWithClaimResidual_of_perfectCompleteness
-#print axioms composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness
-#print axioms composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness
+#print axioms composedCompletenessStatement_of_perfectCompleteness
+#print axioms composedCompletenessWithClaimStatement_of_perfectCompleteness
+#print axioms composedRbrKnowledgeSoundnessStatement_of_rbrKnowledgeSoundness
+#print axioms composedRbrKnowledgeSoundnessWithClaimStatement_of_rbrKnowledgeSoundness
 
 end Bricks
 

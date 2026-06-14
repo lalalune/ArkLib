@@ -659,28 +659,45 @@ To define round-by-round (knowledge) soundness, we need to define the notion of 
 
 \subsubsection{Implications Between Security Notions}
 
-We have a lattice of security notions, with knowledge and round-by-round being two strengthenings of soundness.
+We have a lattice of security notions, with knowledge and round-by-round being two strengthenings
+of soundness.  The formalized lattice (in \texttt{Security/ImplicationsCore.lean}) records two
+honesty caveats discovered during formalization: (a) the current Lean definition of straightline
+knowledge soundness is \emph{trivially satisfiable} (the extractor is \texttt{OptionT}-valued and
+extraction failure silently erases the bad event --- machine-checked as
+\texttt{Verifier.knowledgeSoundness\_vacuous}), so the genuine content of the
+RBR-KS~$\Rightarrow$~KS implication lives in the variant exhibiting the real fold-of-%
+\texttt{extractMid} extractor; and (b) the unconditional RBR~$\Rightarrow$~plain implications are
+\emph{false} for state-mutating shared-oracle implementations, so the formalized statements are
+conditional on a marginal-domination side condition dischargeable for honest implementations.
 
-\begin{theorem}[Knowledge Soundness Implies Soundness]
+\begin{theorem}[Knowledge Soundness Implies Soundness (open; false as literally stated)]
     \label{thm:knowledge_soundness_implies_soundness}
     Knowledge soundness with knowledge error $\epsilon < 1$ implies soundness with the same
     soundness error $\epsilon$, and for the corresponding input and output languages.
-    \lean{Verifier.knowledgeSoundness_implies_soundness}
+    \emph{Status: not formalizable as stated} — under the current definitions the hypothesis is
+    vacuous (see above), the knowledge game tests the prover's own output witness while soundness
+    tests language membership, and the witness types are quantified differently.  The proposed
+    honest variant (never-failing extractor + output-relation side condition) is documented in
+    \texttt{Security/ImplicationsCore.lean}.
     \uses{def:knowledge_soundness, def:soundness}
 \end{theorem}
 
 \begin{theorem}[RBR Soundness Implies Soundness]
     \label{thm:rbr_soundness_implies_soundness}
     Round-by-round soundness with error function $\epsilon$ implies soundness with error
-    $\sum_i \epsilon(i)$, where the sum is over all challenge rounds $i$.
-    \lean{Verifier.rbrSoundness_implies_soundness}
+    $\sum_i \epsilon(i)$, where the sum is over all challenge rounds $i$ --- \emph{conditional on
+    the marginal-domination side condition} (the unconditional statement is false for
+    state-mutating shared-oracle implementations; the side condition is discharged generically
+    for state-preserving, never-failing, value-blind implementations).
+    \lean{Verifier.rbrSoundness_implies_soundness_of_marginal}
     \uses{def:round_by_round_soundness, def:soundness}
 \end{theorem}
 
 \begin{theorem}[RBR Knowledge Soundness Implies RBR Soundness]
     \label{thm:rbr_knowledge_soundness_implies_rbr_soundness}
     Round-by-round knowledge soundness with error function $\epsilon$ implies round-by-round
-    soundness with the same error function $\epsilon$.
+    soundness with the same error function $\epsilon$ (for the languages of the relations;
+    nonemptiness of the witness types is required to adapt arbitrary-witness provers).
     \lean{Verifier.rbrKnowledgeSoundness_implies_rbrSoundness}
     \uses{def:round_by_round_knowledge_soundness, def:round_by_round_soundness}
 \end{theorem}
@@ -688,7 +705,12 @@ We have a lattice of security notions, with knowledge and round-by-round being t
 \begin{theorem}[RBR Knowledge Soundness Implies Knowledge Soundness]
     \label{thm:rbr_knowledge_soundness_implies_knowledge_soundness}
     Round-by-round knowledge soundness with error function $\epsilon$ implies knowledge soundness
-    with error $\sum_i \epsilon(i)$, where the sum is over all challenge rounds $i$.
+    with error $\sum_i \epsilon(i)$, where the sum is over all challenge rounds $i$.  The literal
+    statement is proven (but vacuous --- see above); the genuine variant, exhibiting the
+    straightline extractor obtained by folding the round-by-round extractor along the realized
+    transcript and proving the $\sum_i \epsilon(i)$ bound for \emph{that} extractor, is
+    \texttt{rbrKnowledgeSoundness\_implies\_knowledgeSoundness\_genuine}, conditional on two named
+    transport residuals (fresh-init seam and per-round marginal transport).
     \lean{Verifier.rbrKnowledgeSoundness_implies_knowledgeSoundness}
     \uses{def:round_by_round_knowledge_soundness, def:knowledge_soundness}
 \end{theorem}

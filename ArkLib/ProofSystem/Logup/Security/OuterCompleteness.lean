@@ -119,7 +119,7 @@ example {ι : Type} {oSpec : OracleSpec ι} {α β γ : Type} (pr : α) (sv : β
   · rw [if_pos h, if_pos h]; rfl
   · rw [if_neg h, if_neg h]; rfl
 
-lemma OptionT_collapse_lemma {ι : Type} {oSpec : OracleSpec ι} {α β γ : Type} (pr : α) (sv : β) (e : γ) (P : Prop) [Decidable P] :
+lemma optionT_liftM_run_getM_collapse {ι : Type} {oSpec : OracleSpec ι} {α β γ : Type} (pr : α) (sv : β) (e : γ) (P : Prop) [Decidable P] :
     (do
       let stmtOut ← (liftM (((fun a => (a, e)) <$> (if P then pure sv else (failure : OptionT (OracleComp oSpec) β))).run)
           : OptionT (OracleComp oSpec) (Option (β × γ)))
@@ -129,25 +129,23 @@ lemma OptionT_collapse_lemma {ι : Type} {oSpec : OracleSpec ι} {α β γ : Typ
   · rw [if_pos h, if_pos h]; rfl
   · rw [if_neg h, if_neg h]; rfl
 
-/-- Honest residual for the unfinished outer LogUp completeness run-unfolding.
+/-- The outer LogUp completeness run-unfolding statement — **proven**, see
+`outerCompletenessRunResidual_proved` below (issue #337 closeout).
 
-The verifier-side pole bound is already proved in `OuterAcceptance.lean`, and
-`OptionT_collapse_lemma` above records the local verifier-tail simplification that the previous
-proof attempt used. The remaining work is the full prover-run marginal calculation: unfold
-`Reduction.run (outerOracleReduction ...)`, show the `x` challenge supplied to the verifier is
-uniform, and transport the `none` output probability to the pole event. This is a real
-probability/formalization obligation, so this module keeps it as a named `Prop` rather than a
-broken theorem body. -/
+Historical note: this was originally an honest residual for the then-unfinished prover-run
+marginal calculation; the verifier-side pole bound was proved first in `OuterAcceptance.lean`
+and the run-level facts (`outer_completenessRunFactsResidual` below) completed the calculation.
+The `Prop` name is retained for downstream statement stability. -/
 def OuterCompletenessRunResidual : Prop :=
   NeverFail init →
     (outerOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) (midRelation F n M params) (logupCompletenessError F n)
 
-/-- Two explicit run-level facts that imply the outer completeness residual.
+/-- Two explicit run-level facts that imply the outer completeness residual — **proven**, see
+`outer_completenessRunFactsResidual` below (issue #337 closeout).
 
 The first says every successful standard outer run satisfies the completeness predicate. The second
-says the only failed runs have probability bounded by `logupCompletenessError`. This is the precise
-front door for the remaining run-unfolding/marginal calculation. -/
+says the only failed runs have probability bounded by `logupCompletenessError`. -/
 def OuterCompletenessRunFactsResidual : Prop :=
   NeverFail init →
     (∀ stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i),
@@ -856,7 +854,7 @@ end OuterCompleteness
 end Logup
 
 /- Axiom audit for the honest outer completeness frontier. -/
-#print axioms Logup.OptionT_collapse_lemma
+#print axioms Logup.optionT_liftM_run_getM_collapse
 #print axioms Logup.OuterCompletenessRunResidual
 #print axioms Logup.OuterCompletenessRunFactsResidual
 #print axioms Logup.completenessFromRun_of_compl_zero_failure_bound

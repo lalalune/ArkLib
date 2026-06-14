@@ -2564,7 +2564,17 @@ theorem strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual
     (u := u) P₀ hCoeff₀ huniq P hP
 
 /-- Explicit residual for the closed square-root boundary assembly needed by the final
-correlated-agreement keystone. -/
+correlated-agreement keystone.
+
+**REFUTED — this Prop is FALSE as stated** (axiom-clean, in-tree):
+`BoundaryCardResidualRefutation.not_boundaryCardResidual`
+(`BoundaryCardResidualRefutation.lean`), with further counterexample families in
+`not_boundaryCardResidual_affineLine` (`BoundaryCardResidualAffineLineRefutation.lean`) and
+`not_boundaryCardResidual_nonSquareEndpoint` (`BoundaryCardStrictInteriorRefutation.lean`).
+Even the formalized Thm-1.5 conclusion fails at the closed boundary
+(`not_delta_epsilon_correlatedAgreementCurves_boundary`).  This def is retained ONLY as a
+documented-false assumption surface for explicitly-conditional adapters
+(e.g. `correlatedAgreement_affine_curves_of_boundaryCardResidual`); do not try to discharge it. -/
 def BoundaryCardResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     δ = 1 - ReedSolomon.sqrtRate deg domain →
@@ -2578,7 +2588,12 @@ Johnson-side hypotheses available at the branch point, so callers do not have
 to prove `jointAgreement` for every merely nonempty good-coefficient set in
 strict branches. At the exact square-root endpoint, however, `errorBound = 0`,
 so this is still only an explicit assumption surface rather than an automatic
-boundary theorem. -/
+boundary theorem.
+
+**REFUTED — this Prop is FALSE as stated** (axiom-clean, in-tree):
+`BoundaryCardResidualRefutation.not_boundaryProbabilityResidual`
+(`BoundaryCardResidualRefutation.lean`).  Retained ONLY as a documented-false assumption
+surface for explicitly-conditional adapters; do not try to discharge it. -/
 def BoundaryProbabilityResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     Pr_{

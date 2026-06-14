@@ -49,8 +49,10 @@ theorem cleared_iff_restricted (x₀ : F) (R : F[X][X][Y])
     ClearedFaaDiBrunoMatch H x₀ R hHyp ↔ RestrictedFaaDiBrunoMatch H x₀ R hHyp := by
   have hw : (liftToFunctionField (H := H) H.leadingCoeff) ≠ 0 :=
     liftToFunctionField_leadingCoeff_ne_zero (H := H)
+  -- `RestrictedFaaDiBrunoMatch` is defined directly via `restrictedFaaDiBrunoSum` (no longer through
+  -- `RestrictedFaaDiBrunoMatchAt`), so that name is not in the goal — dropped from the unfold list.
   unfold ClearedFaaDiBrunoMatch RestrictedFaaDiBrunoMatch
-    ClearedFaaDiBrunoMatchAt RestrictedFaaDiBrunoMatchAt ClearedRestrictedFaaDiBrunoSum
+    ClearedFaaDiBrunoMatchAt ClearedRestrictedFaaDiBrunoSum
   constructor
   · intro h t
     have ht := h t

@@ -12,7 +12,7 @@ import Mathlib.FieldTheory.Finite.GaloisField
 
 This file makes the Proximity-Prize leaderboard's *opaque* `koalaCode` carrier
 concrete. The leaderboard
-(`ArkLib/ProofSystem/ToyProblem/Leaderboard.lean`) fixes the KoalaBear-sextic
+(`ArkLib.ProofSystem.ToyProblem.Metrics.lean`) fixes the KoalaBear-sextic
 regime numerically (`q = 2^31 - 2^24 + 1`, sextic extension, `ρ = 1/2`,
 `t = 128`) but, for soundness-faithfulness, ran over a same-order *stand-in*
 field `GaloisField 2 128` with an `opaque` code (so the two anchor inequalities

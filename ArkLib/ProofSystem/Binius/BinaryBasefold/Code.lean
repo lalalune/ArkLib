@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chung Thai Nguyen, Quang Dao
 -/
 
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Prelude
+import ArkLib.ProofSystem.Binius.BinaryBasefold.BaseFoldDetBrick
 
 /-!
 # Binary Basefold Codes and Soundness Tools
@@ -17,14 +17,21 @@ across folding steps.
 -/
 
 set_option maxHeartbeats 400000
+set_option linter.style.longFile 1700
+set_option linter.style.longLine false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedSimpArgs false
+set_option linter.unusedVariables false
+set_option linter.unnecessarySimpa false
 
 namespace Binius.BinaryBasefold
 
-open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
+open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial
   Binius.BinaryBasefold
 open scoped NNReal
 open ReedSolomon Code BerlekampWelch Function
-open Finset AdditiveNTT Polynomial MvPolynomial Nat Matrix
+open Finset AdditiveNTT Polynomial Nat Matrix
 open ProbabilityTheory
 
 noncomputable section SoundnessTools
@@ -101,6 +108,327 @@ def getBBF_Codeword_of_poly (i : Fin r) (h_i : i ≤ ℓ) (P : L⦃< 2 ^ (ℓ - 
       simp [g, polyToOracleFunc, ReedSolomon.evalOnPoints]⟩
   exact ⟨g, h_g_mem⟩
 
+/-- The binary quotient map is a nonzero scalar multiple of `X^2 - X`. -/
+lemma qMap_eq_C_mul_X_sq_sub_X (i : Fin r) :
+    ∃ c : L, c ≠ 0 ∧ qMap 𝔽q β i = C c * (X ^ 2 - X) := by
+  let c : L := ((W 𝔽q β i).eval (β i))^(Fintype.card 𝔽q)
+    / ((W 𝔽q β (i + 1)).eval (β (i + 1)))
+  refine ⟨c, ?_, ?_⟩
+  · unfold c
+    apply div_ne_zero
+    · exact pow_ne_zero _ (AdditiveNTT.Wᵢ_eval_βᵢ_neq_zero 𝔽q β i)
+    · exact AdditiveNTT.Wᵢ_eval_βᵢ_neq_zero 𝔽q β (i + 1)
+  · rw [qMap, prod_poly_sub_C_eq_poly_pow_card_sub_poly_in_L (p := X)]
+    simp [hF₂.out, c]
+
+lemma degree_X_sq_sub_X : (X ^ 2 - X : L[X]).degree = (2 : WithBot ℕ) := by
+  have hdegX : (X : L[X]).degree < (X ^ 2 : L[X]).degree := by
+    rw [degree_X, degree_X_pow]
+    norm_num
+  rw [degree_sub_eq_left_of_degree_lt hdegX]
+  rw [degree_X_pow]
+  norm_num
+
+lemma qMap_degree (i : Fin r) : (qMap 𝔽q β i).degree = (2 : WithBot ℕ) := by
+  obtain ⟨c, hc, hq⟩ := qMap_eq_C_mul_X_sq_sub_X (𝔽q := 𝔽q) (β := β) (i := i)
+  rw [hq, degree_C_mul hc, degree_X_sq_sub_X]
+
+lemma qMap_natDegree (i : Fin r) : (qMap 𝔽q β i).natDegree = 2 := by
+  apply Polynomial.natDegree_eq_of_degree_eq_some
+  exact qMap_degree (𝔽q := 𝔽q) (β := β) (i := i)
+
+lemma qMap_leadingCoeff_ne_zero (i : Fin r) :
+    (qMap 𝔽q β i).leadingCoeff ≠ 0 := by
+  intro h
+  exact qMap_ne_zero (𝔽q := 𝔽q) (β := β) i (Polynomial.leadingCoeff_eq_zero.mp h)
+
+lemma degree_even_qMap_term (i : Fin r) (a : L) (ha : a ≠ 0) (d : ℕ) :
+    ((C a * X ^ d).comp (qMap 𝔽q β i)).degree = ((2 * d : ℕ) : WithBot ℕ) := by
+  have hqpos : (0 : WithBot ℕ) < (qMap 𝔽q β i).degree := by
+    rw [qMap_degree (𝔽q := 𝔽q) (β := β) (i := i)]
+    norm_num
+  rw [Polynomial.degree_comp hqpos]
+  rw [Polynomial.degree_C_mul_X_pow d ha]
+  rw [qMap_degree (𝔽q := 𝔽q) (β := β) (i := i)]
+  norm_num
+  ring
+
+lemma leadingCoeff_even_qMap_term (i : Fin r) (a : L) (ha : a ≠ 0) (d : ℕ) :
+    ((C a * X ^ d).comp (qMap 𝔽q β i)).leadingCoeff =
+      a * (qMap 𝔽q β i).leadingCoeff ^ d := by
+  rw [Polynomial.leadingCoeff_comp]
+  · rw [Polynomial.leadingCoeff_C_mul_X_pow]
+    rw [Polynomial.natDegree_C_mul_X_pow d a ha]
+  · rw [qMap_natDegree (𝔽q := 𝔽q) (β := β) (i := i)]
+    norm_num
+
+lemma degree_odd_qMap_term (i : Fin r) (a : L) (ha : a ≠ 0) (d : ℕ) :
+    (X * (C a * X ^ d).comp (qMap 𝔽q β i)).degree =
+      ((2 * d + 1 : ℕ) : WithBot ℕ) := by
+  rw [Polynomial.degree_mul]
+  rw [Polynomial.degree_X]
+  rw [degree_even_qMap_term (𝔽q := 𝔽q) (β := β) (i := i) a ha d]
+  norm_num
+  ring
+
+lemma leadingCoeff_odd_qMap_term (i : Fin r) (a : L) (d : ℕ) :
+    (X * (C a * X ^ d).comp (qMap 𝔽q β i)).leadingCoeff =
+      a * (qMap 𝔽q β i).leadingCoeff ^ d := by
+  rw [Polynomial.leadingCoeff_mul]
+  rw [Polynomial.leadingCoeff_X]
+  by_cases ha : a = 0
+  · simp [ha]
+  · rw [leadingCoeff_even_qMap_term (𝔽q := 𝔽q) (β := β) (i := i) a ha d]
+    ring
+
+lemma natDegree_C_mul_X_pow_lt {a : L} (ha : a ≠ 0) {d m : ℕ} (hd : d < m) :
+    (C a * X ^ d : L[X]).natDegree < m := by
+  rw [Polynomial.natDegree_C_mul_X_pow d a ha]
+  exact hd
+
+lemma natDegree_add_lt_of_lt {P Q : L[X]} {m : ℕ}
+    (hP : P.natDegree < m) (hQ : Q.natDegree < m) :
+    (P + Q).natDegree < m := by
+  exact lt_of_le_of_lt (Polynomial.natDegree_add_le P Q) (max_lt hP hQ)
+
+/-- Every polynomial of degree `< 2m` decomposes as `A(qᵢ(X)) + X B(qᵢ(X))` with
+`A, B` of degree `< m`. This is the quadratic `qMap` replacement for the old intermediate
+novel-basis round trip. -/
+lemma qMap_quadratic_decomp_of_natDegree_lt
+    (i : Fin r) (m : ℕ) (hm : 0 < m) (P : L[X])
+    (hPbound : P.natDegree < 2 * m) :
+    ∃ A B : L[X], A.natDegree < m ∧ B.natDegree < m ∧
+      P = A.comp (qMap 𝔽q β i) + X * B.comp (qMap 𝔽q β i) := by
+  classical
+  let q := qMap 𝔽q β i
+  let c := q.leadingCoeff
+  have hc : c ≠ 0 := qMap_leadingCoeff_ne_zero (𝔽q := 𝔽q) (β := β) i
+  refine (Nat.strong_induction_on
+    (p := fun n => ∀ (P : L[X]) (m : ℕ), 0 < m → P.natDegree < 2 * m →
+      P.natDegree = n →
+      ∃ A B : L[X], A.natDegree < m ∧ B.natDegree < m ∧
+        P = A.comp (qMap 𝔽q β i) + X * B.comp (qMap 𝔽q β i))
+    P.natDegree ?_) P m hm hPbound rfl
+  intro n ih P m hm hPbound hn
+  subst hn
+  by_cases hPzero : P = 0
+  · refine ⟨0, 0, ?_, ?_, ?_⟩
+    · simpa [hm] using hm
+    · simpa [hm] using hm
+    · simp [hPzero]
+  let n := P.natDegree
+  have hPdeg : P.degree = (n : WithBot ℕ) := Polynomial.degree_eq_natDegree hPzero
+  have hP_lc_ne : P.leadingCoeff ≠ 0 := by
+    intro h
+    exact hPzero (Polynomial.leadingCoeff_eq_zero.mp h)
+  by_cases h_even : n % 2 = 0
+  · let d := n / 2
+    have hn_eq : n = 2 * d := by
+      have hmod := Nat.mod_add_div n 2
+      dsimp [d]
+      omega
+    have hd_lt_m : d < m := by
+      have := hPbound
+      dsimp [d]
+      omega
+    let a : L := P.leadingCoeff / c ^ d
+    have hc_pow : c ^ d ≠ 0 := pow_ne_zero _ hc
+    have ha : a ≠ 0 := by
+      dsimp [a]
+      exact div_ne_zero hP_lc_ne hc_pow
+    let T : L[X] := (C a * X ^ d).comp q
+    have hTdeg : T.degree = (n : WithBot ℕ) := by
+      dsimp [T, q]
+      rw [degree_even_qMap_term (𝔽q := 𝔽q) (β := β) (i := i) a ha d]
+      rw [hn_eq]
+    have hTlc : T.leadingCoeff = P.leadingCoeff := by
+      dsimp [T, q, c, a]
+      rw [leadingCoeff_even_qMap_term (𝔽q := 𝔽q) (β := β) (i := i) a ha d]
+      change (P.leadingCoeff / c ^ d) * c ^ d = P.leadingCoeff
+      rw [div_eq_mul_inv, mul_assoc, inv_mul_cancel₀ hc_pow, mul_one]
+    let P' : L[X] := P - T
+    by_cases hP'zero : P' = 0
+    · refine ⟨C a * X ^ d, 0, ?_, ?_, ?_⟩
+      · exact natDegree_C_mul_X_pow_lt ha hd_lt_m
+      · simpa [hm] using hm
+      · have hPT : P = T := by
+          dsimp [P'] at hP'zero
+          exact sub_eq_zero.mp hP'zero
+        rw [hPT]
+        simp [T, q]
+    · have hP'deg_lt : P'.degree < P.degree := by
+        dsimp [P']
+        exact Polynomial.degree_sub_lt (by rw [hPdeg, hTdeg]) hPzero (by rw [hTlc])
+      have hP'nat_lt : P'.natDegree < n := by
+        have hdegP' := Polynomial.degree_eq_natDegree hP'zero
+        rw [hPdeg, hdegP'] at hP'deg_lt
+        exact WithBot.coe_lt_coe.mp hP'deg_lt
+      have hP'bound : P'.natDegree < 2 * m := lt_trans hP'nat_lt hPbound
+      obtain ⟨A, B, hA, hB, hrep⟩ := ih P'.natDegree hP'nat_lt P' m hm hP'bound rfl
+      refine ⟨A + C a * X ^ d, B, ?_, hB, ?_⟩
+      · exact natDegree_add_lt_of_lt hA (natDegree_C_mul_X_pow_lt ha hd_lt_m)
+      · have hP_eq : P = P' + T := by
+          dsimp [P']
+          abel
+        rw [hP_eq, hrep]
+        dsimp [T, q]
+        simp [Polynomial.add_comp]
+        ring
+  · let d := n / 2
+    have hn_mod_one : n % 2 = 1 := by
+      have hlt : n % 2 < 2 := Nat.mod_lt n (by norm_num)
+      omega
+    have hn_eq : n = 2 * d + 1 := by
+      have hmod := Nat.mod_add_div n 2
+      dsimp [d]
+      omega
+    have hd_lt_m : d < m := by
+      have := hPbound
+      dsimp [d]
+      omega
+    let a : L := P.leadingCoeff / c ^ d
+    have hc_pow : c ^ d ≠ 0 := pow_ne_zero _ hc
+    have ha : a ≠ 0 := by
+      dsimp [a]
+      exact div_ne_zero hP_lc_ne hc_pow
+    let T : L[X] := X * (C a * X ^ d).comp q
+    have hTdeg : T.degree = (n : WithBot ℕ) := by
+      dsimp [T, q]
+      rw [degree_odd_qMap_term (𝔽q := 𝔽q) (β := β) (i := i) a ha d]
+      rw [hn_eq]
+    have hTlc : T.leadingCoeff = P.leadingCoeff := by
+      dsimp [T, q, c, a]
+      rw [leadingCoeff_odd_qMap_term (𝔽q := 𝔽q) (β := β) (i := i) a d]
+      change (P.leadingCoeff / c ^ d) * c ^ d = P.leadingCoeff
+      rw [div_eq_mul_inv, mul_assoc, inv_mul_cancel₀ hc_pow, mul_one]
+    let P' : L[X] := P - T
+    by_cases hP'zero : P' = 0
+    · refine ⟨0, C a * X ^ d, ?_, ?_, ?_⟩
+      · simpa [hm] using hm
+      · exact natDegree_C_mul_X_pow_lt ha hd_lt_m
+      · have hPT : P = T := by
+          dsimp [P'] at hP'zero
+          exact sub_eq_zero.mp hP'zero
+        rw [hPT]
+        simp [T, q]
+    · have hP'deg_lt : P'.degree < P.degree := by
+        dsimp [P']
+        exact Polynomial.degree_sub_lt (by rw [hPdeg, hTdeg]) hPzero (by rw [hTlc])
+      have hP'nat_lt : P'.natDegree < n := by
+        have hdegP' := Polynomial.degree_eq_natDegree hP'zero
+        rw [hPdeg, hdegP'] at hP'deg_lt
+        exact WithBot.coe_lt_coe.mp hP'deg_lt
+      have hP'bound : P'.natDegree < 2 * m := lt_trans hP'nat_lt hPbound
+      obtain ⟨A, B, hA, hB, hrep⟩ := ih P'.natDegree hP'nat_lt P' m hm hP'bound rfl
+      refine ⟨A, B + C a * X ^ d, hA, ?_, ?_⟩
+      · exact natDegree_add_lt_of_lt hB (natDegree_C_mul_X_pow_lt ha hd_lt_m)
+      · have hP_eq : P = P' + T := by
+          dsimp [P']
+          abel
+        rw [hP_eq, hrep]
+        dsimp [T, q]
+        simp [Polynomial.add_comp]
+        ring
+
+lemma qMap_eval_qMap_total_fiber_one
+    (i : Fin r) (h_i : i.val + 1 < ℓ + 𝓡) (h_le : i.val + 1 ≤ ℓ)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, by omega⟩) (k : Fin 2) :
+    (qMap 𝔽q β i).eval
+      ((qMap_total_fiber 𝔽q β (i := i) (steps := 1)
+        (h_i_add_steps := h_i) (y := y) k).val : L) = y.val := by
+  have hiℓ : i.val < ℓ := by omega
+  let iℓ : Fin ℓ := ⟨i.val, hiℓ⟩
+  let x : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨iℓ.val, by omega⟩) :=
+    qMap_total_fiber 𝔽q β (i := ⟨iℓ.val, by omega⟩) (steps := 1)
+      (h_i_add_steps := by omega) (y := y) k
+  have hx : x = qMap_total_fiber 𝔽q β (i := i) (steps := 1)
+      (h_i_add_steps := h_i) (y := y) k := by
+    apply Subtype.ext
+    rfl
+  have hq := iteratedQuotientMap_k_eq_1_is_qMap 𝔽q β h_ℓ_add_R_rate iℓ (by omega) x
+  simp only [Subtype.ext_iff] at hq
+  rw [← hx]
+  rw [← hq]
+  have h_res := is_fiber_iff_generates_quotient_point 𝔽q β iℓ (steps := 1) (by omega)
+      (x := x) (y := y)
+  exact congrArg Subtype.val (h_res.mpr (by
+    rw [pointToIterateQuotientIndex_qMap_total_fiber_eq_self])).symm
+
+lemma qMap_total_fiber_one_val_sub
+    (i : Fin r) (h_i : i.val + 1 < ℓ + 𝓡) (h_le : i.val + 1 ≤ ℓ)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, by omega⟩) :
+    ((qMap_total_fiber 𝔽q β (i := i) (steps := 1)
+        (h_i_add_steps := h_i) (y := y) 1).val : L)
+      - ((qMap_total_fiber 𝔽q β (i := i) (steps := 1)
+        (h_i_add_steps := h_i) (y := y) 0).val : L) = 1 := by
+  have hsub := qMap_total_fiber_one_sub 𝔽q β i h_i h_le y
+  have hcoe := congrArg
+    (fun v : sDomain 𝔽q β h_ℓ_add_R_rate i => (v : L)) hsub
+  push_cast at hcoe
+  rw [get_sDomain_first_basis_eq_1 𝔽q β h_ℓ_add_R_rate i (by omega)] at hcoe
+  exact hcoe
+
+lemma fold_legacy_eval_qMap_decomp
+    (i : Fin r) (h_i : i.val + 1 < ℓ + 𝓡) (h_le : i.val + 1 ≤ ℓ)
+    (A B P : L[X])
+    (hP : P = A.comp (qMap 𝔽q β i) + X * B.comp (qMap 𝔽q β i))
+    (r_chal : L)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, by omega⟩) :
+    fold_legacy 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (h_i := h_i) (f := fun x => P.eval x.val) (r_chal := r_chal) y =
+      (C (1 - r_chal) * A + C r_chal * B).eval y.val := by
+  unfold fold_legacy
+  set fiberMap := qMap_total_fiber 𝔽q β (i := i) (steps := 1)
+    (h_i_add_steps := h_i) (y := y)
+  set x₀ := fiberMap 0
+  set x₁ := fiberMap 1
+  have hq0 : (qMap 𝔽q β i).eval x₀.val = y.val := by
+    simpa [x₀, fiberMap] using
+      qMap_eval_qMap_total_fiber_one (𝔽q := 𝔽q) (β := β) (i := i) h_i h_le y 0
+  have hq1 : (qMap 𝔽q β i).eval x₁.val = y.val := by
+    simpa [x₁, fiberMap] using
+      qMap_eval_qMap_total_fiber_one (𝔽q := 𝔽q) (β := β) (i := i) h_i h_le y 1
+  have hdiff : x₁.val - x₀.val = (1 : L) := by
+    simpa [x₁, x₀, fiberMap] using
+      qMap_total_fiber_one_val_sub (𝔽q := 𝔽q) (β := β) (i := i) h_i h_le y
+  have hP_x₀ : P.eval x₀.val = A.eval y.val + x₀.val * B.eval y.val := by
+    rw [hP]
+    simp [Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_comp, hq0]
+  have hP_x₁ : P.eval x₁.val = A.eval y.val + x₁.val * B.eval y.val := by
+    rw [hP]
+    simp [Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_comp, hq1]
+  calc
+    P.eval x₀.val * ((1 - r_chal) * x₁.val - r_chal) +
+        P.eval x₁.val * (r_chal - (1 - r_chal) * x₀.val)
+        = (A.eval y.val + x₀.val * B.eval y.val) *
+            ((1 - r_chal) * x₁.val - r_chal) +
+          (A.eval y.val + x₁.val * B.eval y.val) *
+            (r_chal - (1 - r_chal) * x₀.val) := by
+          rw [hP_x₀, hP_x₁]
+    _ = A.eval y.val * ((1 - r_chal) * (x₁.val - x₀.val)) +
+        B.eval y.val * ((x₁.val - x₀.val) * r_chal) := by ring
+    _ = A.eval y.val * (1 - r_chal) + B.eval y.val * r_chal := by
+      rw [hdiff]
+      ring
+    _ = (C (1 - r_chal) * A + C r_chal * B).eval y.val := by
+      simp [Polynomial.eval_add, Polynomial.eval_mul]
+      ring
+
+lemma natDegree_of_mem_degreeLT {n : ℕ} (hn : 0 < n) {P : L[X]}
+    (hP : P ∈ Polynomial.degreeLT L n) :
+    P.natDegree < n := by
+  have hdeg : P.degree < (n : WithBot ℕ) := Polynomial.mem_degreeLT.mp hP
+  by_cases hzero : P = 0
+  · simp [hzero, hn]
+  · exact (Polynomial.natDegree_lt_iff_degree_lt hzero).2 hdeg
+
+lemma natDegree_C_mul_add_C_mul_lt {m : ℕ} {A B : L[X]} (r_chal : L)
+    (hA : A.natDegree < m) (hB : B.natDegree < m) :
+    (C (1 - r_chal) * A + C r_chal * B : L[X]).natDegree < m := by
+  apply natDegree_add_lt_of_lt
+  · exact lt_of_le_of_lt (Polynomial.natDegree_C_mul_le (1 - r_chal) A) hA
+  · exact lt_of_le_of_lt (Polynomial.natDegree_C_mul_le r_chal B) hB
+
 /-- The (minimum) distance d_i of the code C^(i) : `dᵢ := 2^(ℓ + R - i) - 2^(ℓ - i) + 1` -/
 abbrev BBF_CodeDistance (i : Fin r) : ℕ :=
   ‖((BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
@@ -153,6 +481,53 @@ def fiberwiseDisagreementSet (i : Fin r) {destIdx : Fin r} (steps : ℕ)
   else
     Finset.univ.filter fun _y => ∃ x, f x ≠ g x
 
+/-- Honest per-fiber disagreement set.
+
+Unlike the legacy `fiberwiseDisagreementSet`, the positive-step predicate depends on the
+quotient point `y`: `y` is bad exactly when some point in the iterated quotient fiber over
+`y` has different `f` and `g` values. This is the surface needed by the Proposition 4.21
+case-1 union-bound argument. -/
+def fiberwiseDisagreementSetPerFiber (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
+  Finset ((sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :=
+  Finset.univ.filter fun y =>
+    ∃ idx : Fin (2 ^ steps),
+      fiberEvaluations 𝔽q β (i := i) (destIdx := destIdx) (steps := steps)
+        h_destIdx h_destIdx_le f y idx ≠
+      fiberEvaluations 𝔽q β (i := i) (destIdx := destIdx) (steps := steps)
+        h_destIdx h_destIdx_le g y idx
+
+@[simp]
+lemma mem_fiberwiseDisagreementSetPerFiber
+    (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
+    y ∈ fiberwiseDisagreementSetPerFiber 𝔽q β (i := i) (destIdx := destIdx)
+      (steps := steps) h_destIdx h_destIdx_le f g ↔
+      ∃ idx : Fin (2 ^ steps),
+        fiberEvaluations 𝔽q β (i := i) (destIdx := destIdx) (steps := steps)
+          h_destIdx h_destIdx_le f y idx ≠
+        fiberEvaluations 𝔽q β (i := i) (destIdx := destIdx) (steps := steps)
+          h_destIdx h_destIdx_le g y idx := by
+  simp [fiberwiseDisagreementSetPerFiber]
+
+lemma fiberwiseDisagreementSetPerFiber_subset_legacy_of_ne_zero
+    (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_steps : steps ≠ 0)
+    (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
+    fiberwiseDisagreementSetPerFiber 𝔽q β (i := i) (destIdx := destIdx)
+      (steps := steps) h_destIdx h_destIdx_le f g ⊆
+    fiberwiseDisagreementSet 𝔽q β (i := i) (destIdx := destIdx)
+      (steps := steps) h_destIdx h_destIdx_le f g := by
+  intro y hy
+  rw [mem_fiberwiseDisagreementSetPerFiber] at hy
+  rcases hy with ⟨idx, hne⟩
+  unfold fiberEvaluations at hne
+  have h_exists : ∃ x, f x ≠ g x := ⟨_, hne⟩
+  simp [fiberwiseDisagreementSet, h_steps, h_exists]
+
 lemma fiberwiseDisagreementSet_congr_sourceDomain_index (sourceIdx₁ sourceIdx₂ : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_sourceIdx_eq : sourceIdx₁ = sourceIdx₂)
   (h_destIdx : destIdx = sourceIdx₁.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
@@ -180,26 +555,67 @@ lemma fiberwiseDisagreementSet_steps_zero_eq_disagreementSet
 def pair_fiberwiseDistance (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
   (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) : ℕ :=
-  0
+  (fiberwiseDisagreementSetPerFiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (destIdx := destIdx) (steps := steps)
+    h_destIdx h_destIdx_le f g).card
 
 /-- Fiber-wise distance d^(i) : The minimum size of the fiber-wise disagreement set
 between f^(i) and any codeword in C^(i). -/
 def fiberwiseDistance (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) : ℕ :=
-  0
+  let C_i : Set ((sDomain 𝔽q β h_ℓ_add_R_rate) i → L) :=
+    BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
+  sInf ((fun g : C_i =>
+    pair_fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (destIdx := destIdx) (steps := steps)
+      h_destIdx h_destIdx_le f g) '' Set.univ)
 
 /-- Fiberwise closeness : f^(i) is fiberwise close to C^(i) if
 2 * d^(i)(f^(i), C^(i)) < d_{i+steps} -/
 def fiberwiseClose (i : Fin r) {destIdx : Fin r} (steps : ℕ) [NeZero steps] (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       i) : Prop :=
-  2 * Δ₀(f, (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) <
-    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+  (2 * Δ₀(f, (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) <
+    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)) ∧
+  2 * fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (destIdx := destIdx) (steps := steps) h_destIdx h_destIdx_le f <
+    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx)
 
 def pair_fiberwiseClose (i : Fin r) {destIdx : Fin r} (steps : ℕ) [NeZero steps] (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) : Prop :=
-  2 * Δ₀(f, g) < BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+  2 * pair_fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (destIdx := destIdx) (steps := steps) h_destIdx h_destIdx_le f g <
+    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx)
+
+lemma exists_fiberwiseClosestCodeword (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
+    let S_i := sDomain 𝔽q β h_ℓ_add_R_rate i
+    let C_i : Set (S_i → L) :=
+      BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
+    ∃ (g : S_i → L), g ∈ C_i ∧
+      fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (destIdx := destIdx) (steps := steps) h_destIdx h_destIdx_le f =
+      pair_fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (destIdx := destIdx) (steps := steps) h_destIdx h_destIdx_le f g := by
+  classical
+  simp only [SetLike.mem_coe]
+  let S_i := sDomain 𝔽q β h_ℓ_add_R_rate i
+  let C_i : Set (S_i → L) :=
+    BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
+  let values : Set ℕ := (fun g : C_i =>
+    pair_fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (destIdx := destIdx) (steps := steps)
+      h_destIdx h_destIdx_le f g) '' Set.univ
+  have hvalues_nonempty : values.Nonempty := by
+    exact Set.image_nonempty.mpr Set.univ_nonempty
+  have hsInf_mem : sInf values ∈ values := Nat.sInf_mem hvalues_nonempty
+  rw [Set.mem_image] at hsInf_mem
+  rcases hsInf_mem with ⟨g, _, hg⟩
+  refine ⟨g, g.property, ?_⟩
+  dsimp [fiberwiseDistance, values, C_i] at hg ⊢
+  exact hg.symm
 
 /-- Hamming UDR-closeness : f is close to C in Hamming distance if `2 * d(f, C) < d_i` -/
 def UDRClose (i : Fin r) (h_i : i ≤ ℓ) (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
@@ -965,56 +1381,176 @@ theorem UDRClose_of_fiberwiseClose (i : Fin r) {destIdx : Fin r}
     (h_fw_dist_lt : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f)) :
     UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i (h_i := by omega) f :=
-  h_fw_dist_lt
-
-/-- **Explicit residual for single-step BBF code membership preservation**
-(the Lemma 4.13 consequence): folding a codeword of the `i`-th code produces a codeword of the
-`destIdx = i + 1`-st code.
-
-NAMED RESIDUAL (documented, #33). This replaces the former global `axiom` with a theorem-scope
-typeclass hypothesis, in the exact convention of the `IteratedFoldLastResidual` /
-`IteratedFoldMatrixFormResidual` residuals (commit `feat(#33): make fold-matrix residuals
-explicit`). Consumers that need single-step preservation now carry
-`[FoldPreservesBBFCodeMembershipResidual ...]`, so the remaining proof obligation is visible in
-theorem statements instead of living in global kernel state.
-
-Why it is a residual rather than a proof: the full proof exists in the disabled legacy region
-above (the `fold_advances_evaluation_poly` route, the commented block ending just before
-`UDRClose_of_fiberwiseClose`), but it consumes the reconstruction lemma
-`intermediateEvaluationPoly_from_inovel_coeffs_eq_self` (polynomial ↦ iNovel coefficients ↦
-`intermediateEvaluationPoly` round-trip at a general level `i`). That lemma — together with its
-supporting infrastructure (`degree_intermediateNovelBasisX`, the intermediate change-of-basis
-matrix, its triangularity/invertibility, and the monomial↔novel conversions) — was dropped in
-the new-API migration and has no counterpart in the current
-`CompPoly.Fields.Binary.AdditiveNTT.Intermediate` surface, where `intermediate_poly_P_base` is
-the `i = 0` instance only. Restoring the proof = porting that general-`i` reconstruction stack.
-Consumed by `iterated_fold_preserves_BBF_Code_membership_nat` below. -/
-class FoldPreservesBBFCodeMembershipResidual : Prop where
-  holds : ∀ (i : Fin r) {destIdx : Fin r}
-    (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
-    (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) (r_chal : L),
-    (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
-      h_destIdx h_destIdx_le (f := f) (r_chal := r_chal)) ∈
-      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
-
-variable [FoldPreservesBBFCodeMembershipResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+  h_fw_dist_lt.1
 
 /-- **Single-step BBF code membership preservation** (the Lemma 4.13 consequence): folding a
-codeword of the `i`-th code produces a codeword of the `destIdx = i + 1`-st code.
-
-Proven by reduction to the explicit `FoldPreservesBBFCodeMembershipResidual` hypothesis (see that
-class for the full port-debt rationale). -/
+codeword of the `i`-th code produces a codeword of the `destIdx = i + 1`-st code. -/
 theorem fold_preserves_BBF_Code_membership
     (i : Fin r) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
     (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) (r_chal : L) :
     (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
       h_destIdx h_destIdx_le (f := f) (r_chal := r_chal)) ∈
-      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) :=
-  FoldPreservesBBFCodeMembershipResidual.holds i h_destIdx h_destIdx_le f r_chal
+      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) := by
+  classical
+  obtain ⟨Psub, hPsub_eval⟩ := exists_BBF_poly_of_codeword
+    (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i f
+  let P : L[X] := Psub.val
+  have hP_eval_fun :
+      (fun x : sDomain 𝔽q β h_ℓ_add_R_rate i => P.eval x.val) = f := by
+    simpa [P, polyToOracleFunc] using hPsub_eval
+  have ha_lt0 : i.val + 1 < r := by
+    have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+    omega
+  have hdest : destIdx = (⟨i.val + 1, ha_lt0⟩ : Fin r) := Fin.eq_of_val_eq h_destIdx
+  subst hdest
+  let m : ℕ := 2 ^ (ℓ - (i.val + 1))
+  have hm : 0 < m := by
+    dsimp [m]
+    exact Nat.two_pow_pos _
+  have hPnat : P.natDegree < 2 * m := by
+    have hPdeg := natDegree_of_mem_degreeLT (L := L)
+      (n := 2 ^ (ℓ - i.val)) (by exact Nat.two_pow_pos _) (P := P) Psub.property
+    have hpow : 2 ^ (ℓ - i.val) = 2 * m := by
+      dsimp [m]
+      have hsub : ℓ - i.val = ℓ - (i.val + 1) + 1 := by omega
+      rw [hsub, pow_succ, Nat.mul_comm]
+    simpa [hpow] using hPdeg
+  obtain ⟨A, B, hA, hB, hPdecomp⟩ :=
+    qMap_quadratic_decomp_of_natDegree_lt (𝔽q := 𝔽q) (β := β)
+      (i := i) (m := m) hm P hPnat
+  let Q : L[X] := C (1 - r_chal) * A + C r_chal * B
+  unfold BBF_Code
+  rw [ReedSolomon.mem_code_iff_exists_polynomial]
+  refine ⟨Q, ?_, ?_⟩
+  · have hQnat : Q.natDegree < m :=
+      natDegree_C_mul_add_C_mul_lt (r_chal := r_chal) hA hB
+    by_cases hQzero : Q = 0
+    · rw [hQzero, Polynomial.degree_zero]
+      exact WithBot.bot_lt_coe _
+    · have hQdeg := (Polynomial.natDegree_lt_iff_degree_lt hQzero).1 hQnat
+      simpa [m] using hQdeg
+  · ext y
+    dsimp [ReedSolomon.evalOnPoints]
+    unfold fold
+    simp only [cast_eq]
+    rw [← fold_legacy_eval_qMap_decomp (𝔽q := 𝔽q) (β := β)
+      (i := i) (h_i := by have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡; omega)
+      (h_le := by omega)
+      (A := A) (B := B) (P := P) hPdecomp (r_chal := r_chal) (y := y)]
+    rw [hP_eval_fun]
 
-/-- The unique fiberwise closest codeword is represented by the UDR decoded codeword. -/
-lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : Fin r}
+/-- Two destination codewords can be unfolded to one source codeword whose binary folds are them.
+
+This is the one-step surjectivity counterpart to `fold_preserves_BBF_Code_membership`: if
+`u₀ = A` and `u₁ = B` are destination Reed-Solomon words, then the source polynomial
+`A(qᵢ(X)) + X B(qᵢ(X))` folds to `u₀` at challenge `0` and to `u₁` at challenge `1`. -/
+theorem exists_unfold_of_binary_BBF_Codewords
+    (i : Fin r) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (u₀ u₁ : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+    (hu₀ : u₀ ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+    (hu₁ : u₁ ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) :
+    ∃ g, g ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i ∧
+      fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+        h_destIdx h_destIdx_le g 0 = u₀ ∧
+      fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+        h_destIdx h_destIdx_le g 1 = u₁ := by
+  classical
+  have ha_lt0 : i.val + 1 < r := by
+    have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+    omega
+  have hdest : destIdx = (⟨i.val + 1, ha_lt0⟩ : Fin r) := Fin.eq_of_val_eq h_destIdx
+  subst destIdx
+  let destIdx' : Fin r := ⟨i.val + 1, ha_lt0⟩
+  let u₀cw : BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx' :=
+    ⟨u₀, by simpa [destIdx'] using hu₀⟩
+  let u₁cw : BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx' :=
+    ⟨u₁, by simpa [destIdx'] using hu₁⟩
+  obtain ⟨A_sub, hA_eval⟩ := exists_BBF_poly_of_codeword
+    (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx' u₀cw
+  obtain ⟨B_sub, hB_eval⟩ := exists_BBF_poly_of_codeword
+    (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx' u₁cw
+  let A : L[X] := A_sub.val
+  let B : L[X] := B_sub.val
+  let P : L[X] := A.comp (qMap 𝔽q β i) + X * B.comp (qMap 𝔽q β i)
+  let m : ℕ := 2 ^ (ℓ - destIdx'.val)
+  have hm_pos : 0 < m := by
+    dsimp [m]
+    exact Nat.two_pow_pos _
+  have hi_le : i ≤ ℓ := by omega
+  have hpow : 2 ^ (ℓ - i.val) = 2 * m := by
+    dsimp [m]
+    have hsub : ℓ - i.val = ℓ - destIdx'.val + 1 := by omega
+    rw [hsub, pow_succ, Nat.mul_comm]
+  have hA_nat : A.natDegree < m := by
+    exact natDegree_of_mem_degreeLT (L := L) hm_pos A_sub.property
+  have hB_nat : B.natDegree < m := by
+    exact natDegree_of_mem_degreeLT (L := L) hm_pos B_sub.property
+  have hA_comp : (A.comp (qMap 𝔽q β i)).natDegree < 2 * m := by
+    rw [Polynomial.natDegree_comp, qMap_natDegree (𝔽q := 𝔽q) (β := β) (i := i)]
+    omega
+  have hB_comp_le : (B.comp (qMap 𝔽q β i)).natDegree ≤ B.natDegree * 2 := by
+    rw [Polynomial.natDegree_comp, qMap_natDegree (𝔽q := 𝔽q) (β := β) (i := i)]
+  have hX_B_comp : (X * B.comp (qMap 𝔽q β i)).natDegree < 2 * m := by
+    calc
+      (X * B.comp (qMap 𝔽q β i)).natDegree
+          ≤ (X : L[X]).natDegree + (B.comp (qMap 𝔽q β i)).natDegree :=
+            Polynomial.natDegree_mul_le
+      _ ≤ 1 + B.natDegree * 2 := by
+            rw [Polynomial.natDegree_X]
+            omega
+      _ < 2 * m := by omega
+  have hP_nat : P.natDegree < 2 ^ (ℓ - i.val) := by
+    dsimp [P]
+    rw [hpow]
+    exact natDegree_add_lt_of_lt hA_comp hX_B_comp
+  let P_sub : L⦃< 2 ^ (ℓ - i.val)⦄[X] := ⟨P, by
+    apply Polynomial.mem_degreeLT.mpr
+    by_cases hPzero : P = 0
+    · rw [hPzero, Polynomial.degree_zero, hpow]
+      exact WithBot.bot_lt_coe _
+    · exact (Polynomial.natDegree_lt_iff_degree_lt hPzero).1 hP_nat⟩
+  let g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i :=
+    polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := i) (P := P_sub)
+  have hg_mem : g ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i := by
+    unfold BBF_Code
+    rw [ReedSolomon.mem_code_iff_exists_polynomial]
+    exact ⟨P, Polynomial.mem_degreeLT.mp P_sub.2, by
+      ext y
+      simp [g, P_sub, polyToOracleFunc, ReedSolomon.evalOnPoints]⟩
+  refine ⟨g, hg_mem, ?_, ?_⟩
+  · funext y
+    have hA_fun :
+        (fun y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx' => A.eval y.val) = u₀ := by
+      simpa [A, u₀cw, polyToOracleFunc] using hA_eval
+    unfold fold
+    simp only [cast_eq, g, polyToOracleFunc]
+    change fold_legacy 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (h_i := by have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡; omega)
+        (f := fun x => P.eval x.val) (r_chal := 0) y = u₀ y
+    rw [fold_legacy_eval_qMap_decomp (𝔽q := 𝔽q) (β := β)
+      (i := i) (h_i := by have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡; omega)
+      (h_le := by omega) (A := A) (B := B) (P := P) (by rfl)
+      (r_chal := 0) (y := y)]
+    simpa using congrFun hA_fun y
+  · funext y
+    have hB_fun :
+        (fun y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx' => B.eval y.val) = u₁ := by
+      simpa [B, u₁cw, polyToOracleFunc] using hB_eval
+    unfold fold
+    simp only [cast_eq, g, polyToOracleFunc]
+    change fold_legacy 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (h_i := by have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡; omega)
+        (f := fun x => P.eval x.val) (r_chal := 1) y = u₁ y
+    rw [fold_legacy_eval_qMap_decomp (𝔽q := 𝔽q) (β := β)
+      (i := i) (h_i := by have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡; omega)
+      (h_le := by omega) (A := A) (B := B) (P := P) (by rfl)
+      (r_chal := 1) (y := y)]
+    simpa using congrFun hB_fun y
+
+/-- A fiberwise-closest source codeword exists whenever the close-branch hypothesis is available. -/
+lemma exists_fiberwiseClosestCodeword_within_close (i : Fin r) {destIdx : Fin r}
     (steps : ℕ) [NeZero steps] (h_destIdx : destIdx = i + steps)
     (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
@@ -1022,24 +1558,13 @@ lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : F
       (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f)) :
     let S_i := sDomain 𝔽q β h_ℓ_add_R_rate i
     let C_i : Set (S_i → L) := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
-    ∃! (g : S_i → L), (g ∈ C_i) ∧
+    ∃ (g : S_i → L), (g ∈ C_i) ∧
       (fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (i := i) steps h_destIdx h_destIdx_le (f := f) =
         pair_fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (i := i) steps h_destIdx h_destIdx_le (f := f) (g := g)) ∧
-      (g = UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i (h_i := by omega) f
-        (h_within_radius :=
-          UDRClose_of_fiberwiseClose 𝔽q β i steps h_destIdx h_destIdx_le f h_fw_close)) := by
-  let h_close :=
-    UDRClose_of_fiberwiseClose 𝔽q β i steps h_destIdx h_destIdx_le f h_fw_close
-  let u := UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i (h_i := by omega) f h_close
-  refine ⟨u, ?_, ?_⟩
-  · refine ⟨?_, ?_, rfl⟩
-    · exact UDRCodeword_mem_BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (i := i) (h_i := by omega) (f := f) (h_within_radius := h_close)
-    · simp [fiberwiseDistance, pair_fiberwiseDistance, fiberwiseDisagreementSet]
-  · intro y hy
-    exact hy.2.2
+          (i := i) steps h_destIdx h_destIdx_le (f := f) (g := g)) := by
+  exact exists_fiberwiseClosestCodeword 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f
 
 /-- Nat-indexed helper for `iterated_fold_preserves_BBF_Code_membership`.
 

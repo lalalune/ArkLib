@@ -50,7 +50,22 @@ variable {R : Type} [CommSemiring R] [SampleableType R] [DecidableEq R] [Fintype
 oracle reduction: the `Verifier` image of the `seqCompose`d oracle reduction equals the `Reduction`
 obtained from `seqCompose`ing the plain reductions. The provers are definitionally equal, so this is
 the *entire* remaining content of the oracle-level completeness — the verifier analogue of
-`Prover.append_run`, lifted along `seqCompose`. -/
+`Prover.append_run`, lifted along `seqCompose`.
+
+**SUPERSEDED + SUSPECTED FALSE AS STATED (audit 2026-06-10).**  The per-round reduction of this
+bridge (`SingleRoundBridge.lean`) bottoms out in the single-round equation
+`(Simple.oracleReduction).toReduction = Simple.reduction`, which is the documented suspected-false
+`oracleReduction_eq_reduction` (the two verifiers check different objects, so the syntactic
+equality is not expected to hold).  The live, bridge-FREE apex is
+`oracleReduction_perfectCompleteness_unconditional`
+(`OracleCompletenessUncondCorrect.lean`), proven via the CubeFiber coherence instance with no
+bridge anywhere; Spartan consumers are routed around this Prop by `FirstSumcheckBridgeFree` /
+`SecondSumcheckBridgeFree`.  Remaining consumers of this Prop form a legacy conditional chain
+(`OracleCompletenessUncond`, `SingleRoundBridge`, `SpartanSumcheckUnconditional`, Logup's
+`BridgeAndAppendResiduals`); do not build new work on it.
+
+Ledger status (#351): legacy surface, superseded; the live apex is bridge-free (#114).
+Kept only for the conditional chain above; build nothing new on it. -/
 abbrev oracleReductionToReductionResidual (R : Type) [CommSemiring R] [SampleableType R]
     [DecidableEq R] (deg : ℕ) {m : ℕ} (D : Fin m ↪ R) (n : ℕ) {ι : Type} (oSpec : OracleSpec ι) :
     Prop :=

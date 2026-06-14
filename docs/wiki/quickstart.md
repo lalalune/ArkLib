@@ -90,7 +90,7 @@ git -C .lake/packages/mathlib checkout -f <manifest-pinned-rev>
 lake exe cache get
 
 # 4. Verify a real build completes.
-lake build ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
+lake build ArkLib.Data.CodingTheory.ProximityGap.Collapse
 ```
 
 Prevention: never run `lake update` for cache repair (see above); let a single coordinator do
@@ -256,3 +256,23 @@ Hard-won rules for multi-agent sessions where several agents land commits on
   collision source. One designated writer appends to shared logs; everyone
   else ships new modules and lets `./scripts/update-lib.sh` regenerate the
   import index at commit time.
+- **After landing, confirm your commit survived: `git branch -r --contains
+  <sha>`.** Concurrent lanes rewrite history; locally-green commits get
+  dropped while the file content survives untracked on disk. Recovery is
+  cheap — `git add` + re-commit the surviving file (byte-identical to the
+  orphan blob), then push via a detached worktree if the main tree has other
+  lanes' unstaged edits: `git worktree add /tmp/wt FETCH_HEAD && cd /tmp/wt &&
+  git cherry-pick <sha> && git push fork HEAD:main`.
+- **Agent deaths leave complete orphan files — check before re-proving.** A
+  prover that hits its session limit after writing but before verifying
+  leaves a finished (often fully correct) file at its target path. Before
+  relaunching the brick, `git status --short` the target directory, compile
+  the orphan, and fix at most the 1–2 mechanical tactic errors (recurring
+  shapes: `Set.injOn_id` unification → introduce the `InjOn` proof as a
+  `have`; `WithBot` casts → `WithBot.coe_le_coe.mpr`; `smul_eq_mul`
+  commutation → `simp [smul_eq_mul]` then `ring`, since `simp [mul_comm]`
+  loops).
+- **A surprise `sorryAx` in `#print axioms` for a sorry-free file means stale
+  imports, not a tainted proof.** Rebuild the import closure
+  (`lake build <each imported module>`) and re-check before debugging the
+  proof. Confirmed twice on 2026-06-10/11.

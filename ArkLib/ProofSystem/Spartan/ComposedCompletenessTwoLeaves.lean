@@ -9,7 +9,7 @@ import ArkLib.ProofSystem.Spartan.LinearCombinationComplete
 /-!
 # Spartan composed completeness residual, reduced to TWO leaves (#114)
 
-`composedCompletenessResidual_of_five_leaves` (`ComposedCompleteness.lean`) leaves five leaf
+`composedCompletenessStatement_of_five_leaves` (`ComposedCompleteness.lean`) leaves five leaf
 perfect-completeness obligations. Three of them are now discharged on the canonical relation
 chain:
 
@@ -39,11 +39,11 @@ variable {R : Type 0} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [Inh
   {ι : Type} (oSpec : OracleSpec ι) [oSpec.Fintype] [oSpec.Inhabited]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
-/-- **`composedCompletenessResidual` reduced to the two remaining leaf perfect-completenesses**
+/-- **`composedCompletenessStatement` reduced to the two remaining leaf perfect-completenesses**
 (`firstChallenge` and `finalCheck`): the `sendEvalClaim`, `linearCombination` and honest
 RLC-target leaves are discharged on the canonical chain
 `firstSumcheckRelOutBF → sendEvalClaimRelOut … → prependRLCTargetRelIn → secondSumcheckRelInBF`. -/
-theorem composedCompletenessResidual_of_two_leaves
+theorem composedCompletenessStatement_of_two_leaves
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     (h₂ : (oracleReduction.firstChallenge R pp oSpec).perfectCompleteness init impl
       (firstMessageRelOut (R := R) pp) (firstSumcheckRelInBF (R := R) pp))
@@ -56,8 +56,8 @@ theorem composedCompletenessResidual_of_two_leaves
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
-    composedCompletenessResidual R pp oSpec (composedPIOP_Rc pp oSpec) init impl :=
-  composedCompletenessResidual_of_five_leaves.{0} pp oSpec hm hn h₂
+    composedCompletenessStatement R pp oSpec (composedPIOP_Rc pp oSpec) init impl :=
+  composedCompletenessStatement_of_five_leaves.{0, 0, 0} pp oSpec hm hn h₂
     (sendEvalClaim_perfectCompleteness R pp oSpec init impl
       (firstSumcheckRelOutBF (R := R) pp))
     (linearCombination_perfectCompleteness_sendEvalClaimBF pp oSpec)
@@ -67,4 +67,4 @@ theorem composedCompletenessResidual_of_two_leaves
 end Spartan.Spec.Bricks
 
 -- Axiom check
-#print axioms Spartan.Spec.Bricks.composedCompletenessResidual_of_two_leaves
+#print axioms Spartan.Spec.Bricks.composedCompletenessStatement_of_two_leaves

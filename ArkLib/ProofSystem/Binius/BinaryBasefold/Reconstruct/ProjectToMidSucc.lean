@@ -68,6 +68,22 @@ theorem projectToMidSumcheckPoly_succ (ℓ : ℕ) [NeZero ℓ] (t m : Multilinea
     = rename (finCongr _) (projectToMidSumcheckPoly ℓ t m i.succ (Fin.cons r_i' challenges)).val
   rw [RingSwitching.fixFirstVariablesOfMQP_projectToMid_step ℓ t m i challenges r_i']
 
+/-- **Round-transition recursion for the projected sumcheck polynomial (unrenamed form).**
+
+This packages `RingSwitching.fixFirstVariablesOfMQP_projectToMid_succ` at the
+`projectToNextSumcheckPoly` API level, avoiding repeated unfolding at downstream call sites. -/
+theorem projectToNextSumcheckPoly_eq_projectToMidSumcheckPoly_succ
+    (ℓ : ℕ) [NeZero ℓ] (t m : MultilinearPoly L ℓ)
+    (i : Fin ℓ) (challenges : Fin i.castSucc → L) (r_i' : L) :
+    projectToNextSumcheckPoly ℓ i
+        (projectToMidSumcheckPoly ℓ t m i.castSucc challenges) r_i' =
+      projectToMidSumcheckPoly ℓ t m i.succ (Fin.cons r_i' challenges) := by
+  apply Subtype.ext
+  dsimp only [projectToNextSumcheckPoly]
+  exact RingSwitching.fixFirstVariablesOfMQP_projectToMid_succ (L := L) (ℓ := ℓ)
+    (t := t) (m := m) (i := i) (challenges := challenges) (r' := r_i')
+
 end Sumcheck.Structured
 
 #print axioms Sumcheck.Structured.projectToMidSumcheckPoly_succ
+#print axioms Sumcheck.Structured.projectToNextSumcheckPoly_eq_projectToMidSumcheckPoly_succ

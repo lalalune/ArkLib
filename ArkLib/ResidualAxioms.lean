@@ -21,19 +21,18 @@ open scoped NNReal ProbabilityTheory
 /-- **Issue #29 residual surface (Schwartz–Zippel core).** The per-round ring-switching KState
 weakening price: a uniform challenge collides on two distinct degree-`≤ 2` round polynomials with
 probability `≤ 2/|F|`. This particular surface is *discharged* below by
-`ring_switching_kstate_residual_holds` (it is a theorem, not an open gap); the full protocol-level
+`ringSwitchingKStateResidual_holds` (it is a theorem, not an open gap); the full protocol-level
 #29 obligation — composing this per-round price into the end-to-end ring-switching knowledge
 soundness — remains the open item tracked by the issue. -/
-def ring_switching_kstate_residual {F : Type} [Field F] [Fintype F] {p q : F[X]}
-    (hp : p.natDegree ≤ 2) (hq : q.natDegree ≤ 2) : Prop :=
+def RingSwitchingKStateResidual {F : Type} [Field F] [Fintype F] {p q : F[X]}
+    (_hp : p.natDegree ≤ 2) (_hq : q.natDegree ≤ 2) : Prop :=
   Pr_{ let r ←$ᵖ F }[ KStateWeaken.badPolyAgreement r p q ] ≤ (2 : ℝ≥0) / (Fintype.card F : ℝ≥0)
 
 /-- **#29 Schwartz–Zippel surface, discharged.** The per-round ring-switching KState weakening
-price `ring_switching_kstate_residual` is a genuine theorem: it is exactly the degree-2
+price `RingSwitchingKStateResidual` is a genuine theorem: it is exactly the degree-2
 Schwartz–Zippel bound `KStateWeaken.prob_badPolyAgreement_degree_two_le`. (The full protocol-level
 #29 — composing this into end-to-end ring-switching knowledge soundness — remains open.) -/
-theorem ring_switching_kstate_residual_holds {F : Type} [Field F] [Fintype F] {p q : F[X]}
+theorem ringSwitchingKStateResidual_holds {F : Type} [Field F] [Fintype F] {p q : F[X]}
     (hp : p.natDegree ≤ 2) (hq : q.natDegree ≤ 2) :
-    ring_switching_kstate_residual hp hq :=
+    RingSwitchingKStateResidual hp hq :=
   KStateWeaken.prob_badPolyAgreement_degree_two_le hp hq
-

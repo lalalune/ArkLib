@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ProximityGap.StackJointAgreement
 
 /-!
 # ℓ-ary (curve) mutual correlated agreement: `mcaEventCurve` and `epsMCACurve`
@@ -15,8 +15,8 @@ provides the **ℓ-ary curve generalization** — the combiner is the polynomial
 `parℓ > 2` power generator of WHIR (`RSGenerator.genRSC`) and the "powers of z" general
 combinations of Hab25 (ePrint 2025/2110, remark after Theorem 2):
 
-* `stackJointAgreesOn` — `L`-ary `pairJointAgreesOn`: a full stack of codewords agrees with
-  `u` row-wise on `S`;
+* `stackJointAgreesOn` — imported row-index-general `pairJointAgreesOn`: a full stack of
+  codewords agrees with `u` row-wise on `S`;
 * `mcaEventCurve` — `L`-ary `mcaEvent`: a witness set `S` of size `≥ (1−δ)·n` on which the
   curve `∑ j, γ^j • uⱼ` equals some codeword, while no codeword stack jointly agrees with
   `u` on `S`;
@@ -47,13 +47,6 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
-/-- **`L`-ary joint agreement on a set** (the `L`-row generalization of
-`pairJointAgreesOn`): there is a full stack of codewords `v j ∈ C` agreeing with the stack
-`u` row-wise on every position of `S`. Equivalent in spirit to
-`Δ_S(u, C^≡L) = 0` from ABF26 §4. -/
-def stackJointAgreesOn {κ : Type} (C : Set (ι → A)) (S : Finset ι) (u : κ → ι → A) : Prop :=
-  ∃ v : κ → ι → A, (∀ j, v j ∈ C) ∧ ∀ i ∈ S, ∀ j, v j i = u j i
-
 /-- **The `L`-ary curve MCA bad event** (ABF26 Definition 4.3, curve/power-combiner form):
 there is a witness set `S` of size at least `(1−δ)·n` on which the polynomial curve
 `∑ j, γ^j • u j` exactly equals some codeword of `C`, but no stack of codewords jointly
@@ -72,20 +65,6 @@ noncomputable def epsMCACurve (C : Set (ι → A)) (L : ℕ) (δ : ℝ≥0) : EN
     Pr_{let γ ← $ᵖ F}[mcaEventCurve C δ u γ]
 
 /-! ## Pair compatibility: `L = 2` recovers the affine-line notions -/
-
-/-- At `κ = Fin 2`, `stackJointAgreesOn` is `pairJointAgreesOn`. -/
-theorem stackJointAgreesOn_pair_iff (C : Set (ι → A)) (S : Finset ι) (u : Fin 2 → ι → A) :
-    stackJointAgreesOn C S u ↔ pairJointAgreesOn C S (u 0) (u 1) := by
-  constructor
-  · rintro ⟨v, hv_mem, hv_agree⟩
-    exact ⟨v 0, hv_mem 0, v 1, hv_mem 1, fun i hi => ⟨hv_agree i hi 0, hv_agree i hi 1⟩⟩
-  · rintro ⟨v₀, hv₀, v₁, hv₁, hagree⟩
-    refine ⟨fun j => if j = 0 then v₀ else v₁, fun j => ?_, fun i hi j => ?_⟩
-    · by_cases hj : j = 0 <;> simp [hj, hv₀, hv₁]
-    · by_cases hj : j = 0
-      · simpa [hj] using (hagree i hi).1
-      · have hj1 : j = 1 := by omega
-        simpa [hj, hj1] using (hagree i hi).2
 
 /-- The two-row curve `∑ j : Fin 2, γ^j • u j` is the affine line `u 0 + γ • u 1`. -/
 theorem curve_two_eq_line (u : Fin 2 → ι → A) (γ : F) (i : ι) :

@@ -281,9 +281,12 @@ theorem append_completeness_msg
   exact Reduction.append_completeness_msg R₁.toReduction R₂.toReduction h₁ h₂ hn hDir hDir₂
     himplSP himplNF himplVB
 
-/-- **The named oracle-level append-completeness residual is a theorem (message seam).** The
+/-- **The named oracle-level append-completeness residual is a theorem (message seam).** The exact
 `Prop` `OracleReduction.appendCompletenessResidual R₁ R₂ h₁ h₂` — the completeness `hAppend`
-consumed throughout the LogUp issue-#13 assembly — discharged by the keystone. -/
+consumed throughout the LogUp issue-#13 assembly — discharged by the keystone. The `Oₛ₃` instance
+is consumed only by the fusion bridge in the proof, so its `OracleInterface` output universe is a
+free parameter of this theorem undetermined by the arguments — consumers with concrete (`Type 0`)
+oracle interfaces should pin it explicitly (e.g. `.{0, 0}`). -/
 theorem appendCompletenessResidual_msg
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]

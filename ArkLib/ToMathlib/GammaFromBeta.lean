@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
-import ArkLib.ToMathlib.Claim59Conditional
+import ArkLib.ToMathlib.BCIKS20PointwiseConditional
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 
 /-!

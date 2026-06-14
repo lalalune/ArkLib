@@ -80,8 +80,8 @@ theorem firstDiff?_eq_some_ne {T : Type*} [DecidableEq T] {n : Nat}
 The weak opening structure `Opening` and the weak verifier `verify_weak` are defined in
 `InnerOuter.Scheme` (where they back the bundled `commitmentScheme`); this file reuses them. -/
 
-/-- The trivial fallback witness, used on the branch where the other matrix yields a witness. -/
-def dummySolution (cols : Nat) : ModuleSIS.Solution Φ cols := fun _ => 0
+/-- The zero fallback witness, used on the branch where the other matrix yields a witness. -/
+def zeroSolution (cols : Nat) : ModuleSIS.Solution Φ cols := fun _ => 0
 
 /-- Weak openings differ when they contain different message tuples `(sᵢ)`. -/
 def openingsDiffer
@@ -420,7 +420,7 @@ def innerAdvToModuleSIS
     let (_u, opening₁, opening₂) ← adv { innerMatrix := A, outerMatrix := B }
     match outputToModuleSIS Φ opening₁ opening₂ with
     | Sum.inl z => pure z
-    | Sum.inr _ => pure (dummySolution Φ (messageRows * messageDigits))
+    | Sum.inr _ => pure (zeroSolution Φ (messageRows * messageDigits))
 
 /-- Reduction attacking the outer Module-SIS matrix. -/
 def outerAdvToModuleSIS
@@ -431,7 +431,7 @@ def outerAdvToModuleSIS
     let A ← $ᵗ (Simple.PublicParams Φ innerRows (messageRows * messageDigits))
     let (_u, opening₁, opening₂) ← adv { innerMatrix := A, outerMatrix := B }
     match outputToModuleSIS Φ opening₁ opening₂ with
-    | Sum.inl _ => pure (dummySolution Φ (blocks * (innerRows * innerDigits)))
+    | Sum.inl _ => pure (zeroSolution Φ (blocks * (innerRows * innerDigits)))
     | Sum.inr z => pure z
 
 /-- Pointwise weak-binding to Module-SIS bound for fixed samples (over `𝓜(q, α)`). -/
@@ -451,11 +451,11 @@ theorem sample_advantage_le_moduleSIS (base : ZMod q)
       Pr[= true | ((pure (ModuleSIS.relation 𝓜(q, α) (innerShort 𝓜(q, α) κ βSq)
           A (match outputToModuleSIS 𝓜(q, α) opening₁ opening₂ with
             | Sum.inl z => z
-            | Sum.inr _ => dummySolution 𝓜(q, α) (messageRows * messageDigits)))) :
+            | Sum.inr _ => zeroSolution 𝓜(q, α) (messageRows * messageDigits)))) :
           ProbComp Bool)] +
       Pr[= true | ((pure (ModuleSIS.relation 𝓜(q, α) (outerShort 𝓜(q, α) γ)
           B (match outputToModuleSIS 𝓜(q, α) opening₁ opening₂ with
-            | Sum.inl _ => dummySolution 𝓜(q, α) (blocks * (innerRows * innerDigits))
+            | Sum.inl _ => zeroSolution 𝓜(q, α) (blocks * (innerRows * innerDigits))
             | Sum.inr z => z))) :
           ProbComp Bool)] := by
   let pp : PublicParams 𝓜(q, α)

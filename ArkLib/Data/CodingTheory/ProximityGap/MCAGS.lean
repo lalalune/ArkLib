@@ -8,7 +8,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
-import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
+import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingCapacityGap
 
 /-!
 # Guruswami–Sudan-degree-exposed mutual-correlated-agreement (MCAGS)
@@ -530,9 +530,12 @@ floor is supplied by steps 1–3 of this file:
 The remaining gap to the full statement is the *beyond-UDR* GS list-decoder mass bound (radius up
 to the Johnson/capacity bound `1 - ρ - η`), which is exactly the external prize content.
 
-This is a named `Prop`, not a theorem: carrying it as a theorem with `sorry` would launder the
-open prize into `sorryAx`. Downstream formal developments should take this proposition as an
-explicit hypothesis until the beyond-UDR GS mass bound is actually proved. -/
+**STATUS UPDATE: proven as stated** — because the domain (hence the field) is fixed before the
+constant triple, this per-domain form admits the fixed-field inflation `c₁ = c₂ = 0`,
+`c₃ = n` with `(15/16)^n ≤ 1/|F|`; see `epsMCAgs_prizeBound_conjecture_holds`
+(`GrandChallenge141UniformResolved.lean`). The genuinely open content lives in the
+field-universal `epsMCAgsPrizeUniversalConjecture` (`GrandChallenge141PrizeReduction.lean`),
+whose open core is the beyond-UDR GS list-decoder mass bound. -/
 def epsMCAgs_prizeBound_conjecture
     (domain : ι ↪ F) (m : ℕ) : Prop :=
   ∃ c₁ c₂ c₃ : ℝ,
@@ -558,9 +561,17 @@ theorem epsMCAgs_prizeBound_of_uniform_listSize
     epsMCAgs_prizeBound_conjecture domain m :=
   h_reduction h_listSize
 
-/-- **The genuine uniform open prize form.** 
-The beyond-UDR Guruswami-Sudan mass bound, stated with universal constants 
-across all domains, rates, and parameters. -/
+/-- **REFUTED — this ∀-`L` fully-uniform statement is FALSE** (it is NOT the genuine open
+prize form: the formalization dropped the FAITHFUL clause on `L`).
+
+Unconditionally refuted in-tree, axiom-clean: `not_uniformEpsMCAgsPrizeBoundConjecture`
+(`MCAGSPrizeRefutation.lean`; duplicate record in `MCAGSRefutationCore.lean`) — a
+non-faithful `L = {w₀}` forces `epsMCAgs = 1` over `ZMod p` for `p > 2^(c₂+c₃)`, beating any
+candidate constants.  Kept ONLY as the documented-false statement; the genuinely open
+faithful field-universal surface is `epsMCAgsPrizeUniversalConjecture`.
+
+(Historical statement: the beyond-UDR Guruswami-Sudan mass bound with universal constants
+across all domains, rates, and parameters — but quantified over *all* `L`, faithful or not.) -/
 def uniformEpsMCAgsPrizeBoundConjecture : Prop :=
   ∃ c₁ c₂ c₃ : ℝ,
     ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
@@ -575,8 +586,15 @@ def uniformEpsMCAgsPrizeBoundConjecture : Prop :=
       ≤ ENNReal.ofReal
           (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)
 
-/-- The point-wise conjecture follows directly from the uniform conjecture. 
-This is the bridge that resolves the point-wise tracker using the uniform open prize. -/
+/-- The point-wise conjecture follows directly from the uniform conjecture.
+
+**WARNING — the hypothesis is refuted:** `uniformEpsMCAgsPrizeBoundConjecture` (the ∀-`L`
+fully-uniform form, which dropped the FAITHFUL clause) is *unconditionally refuted* in-tree
+(`not_uniformEpsMCAgsPrizeBoundConjecture`, `MCAGSPrizeRefutation.lean` — a non-faithful
+`L = {w₀}` forces `epsMCAgs = 1` over a large prime field). This bridge therefore has no live
+use (its hypothesis is false); it is kept only as a record of the implication's shape. The
+per-domain conclusion is separately *proven* (`epsMCAgs_prizeBound_conjecture_holds`), and the
+genuinely open surface is the faithful field-universal `epsMCAgsPrizeUniversalConjecture`. -/
 theorem epsMCAgs_prizeBound_conjecture_of_uniform (h : uniformEpsMCAgsPrizeBoundConjecture) :
     ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
       {F : Type} [Field F] [Fintype F] [DecidableEq F]

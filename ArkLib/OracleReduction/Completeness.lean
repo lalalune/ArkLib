@@ -49,6 +49,15 @@ open OracleSpec OracleComp ProtocolSpec ProbComp
 def _root_.ProtocolSpec.FullTranscript.mk1 {pSpec : ProtocolSpec 1} (msg0 : pSpec.«Type» 0) :
     FullTranscript pSpec := fun | ⟨0, _⟩ => msg0
 
+theorem _root_.ProtocolSpec.FullTranscript.mk1_eq_snoc {pSpec : ProtocolSpec 1}
+    (msg0 : pSpec.«Type» 0) :
+    FullTranscript.mk1 msg0 = (default : pSpec.Transcript 0).concat msg0 := by
+  unfold FullTranscript.mk1 Transcript.concat
+  funext i
+  have hi : i = 0 := by omega
+  subst hi
+  simp [Fin.snoc]
+
 variable {ι : Type} {σ : Type}
 
 /-! ## Supporting Lemmas for Safety Biconditionals

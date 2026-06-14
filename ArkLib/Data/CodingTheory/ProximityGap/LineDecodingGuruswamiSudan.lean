@@ -9,7 +9,7 @@ Authors: ArkLib Contributors
 
 The `(1, k-1)`-weighted Guruswami–Sudan interpolant existence used for the line-decoding
 `MCAForallDoubleCover` argument is already **fully proved** as `exists_interpolant` in
-`ArkLib.ToMathlib.Prop55` (built on `SiegelInterpolation.GS.exists_gs_interpolant`).
+`ArkLib.ToMathlib.BasefoldSingleRoundSoundness` (built on `SiegelInterpolation.GS.exists_gs_interpolant`).
 
 This module previously re-derived a weaker `exists_interpolant` here but left the
 list-index/`Fin S.card` bijection step as a `sorry`. That incomplete duplicate was removed in

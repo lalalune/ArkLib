@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice2
 
 /-!
 # List-size → MCA witnesses: wiring the smooth-domain derandomization route

@@ -10,7 +10,7 @@ import ArkLib.ProofSystem.Spartan.FirstSumcheckBridgeFree
 # `sendEvalClaim` leaf perfect completeness, pinned to the bridge-free chain (#114)
 
 Discharges the `h₄` hypothesis of
-`Spartan.Spec.Bricks.composedCompletenessResidual_of_five_leaves`
+`Spartan.Spec.Bricks.composedCompletenessStatement_of_five_leaves`
 (`ArkLib/ProofSystem/Spartan/ComposedCompleteness.lean`): the 1-message `P_to_V` phase
 `oracleReduction.sendEvalClaim` is perfectly complete from the pinned input relation
 `firstSumcheckRelOutBF` into the pinned output relation `sendEvalClaimRelOutBF`
@@ -64,7 +64,7 @@ sum-check output relation `firstSumcheckRelOutBF`, the 1-message `P_to_V` phase
 input oracles and sends the bundled eval-claim `evalClaimValue`; the verifier performs no check,
 so both the relation pass-through and the eval-claim honesty are deterministic.
 
-This is exactly the `h₄` obligation of `composedCompletenessResidual_of_five_leaves` with
+This is exactly the `h₄` obligation of `composedCompletenessStatement_of_five_leaves` with
 `relE := sendEvalClaimRelOutBF R pp`. -/
 theorem sendEvalClaim_perfectCompleteness_BF :
     (oracleReduction.sendEvalClaim R pp oSpec).perfectCompleteness init impl

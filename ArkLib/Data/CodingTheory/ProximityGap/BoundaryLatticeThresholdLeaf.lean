@@ -211,6 +211,78 @@ theorem boundaryCardLatticeThresholdResidual_of_extraction {k deg : ℕ} {domain
     jointAgreement_of_latticeThreshold_of_coeffPolys hk u hprob
       (hExt u (card_gt_of_prob_gt_latticeThreshold u hprob))
 
+/-!
+### Next reduction layer: the canonical-family form of the lattice extraction
+
+`LatticeCoeffPolyExtraction` quantifies over *every* decoded family `P`.  What BCIKS20 §5
+actually supplies at the endpoint is more structured: ONE canonical decoded family `P₀` (the
+GS-factor roots), coefficient-polynomial witnesses for it, and uniqueness of decoding on the
+good set.  `LatticeCanonicalCoeffPolyExtraction` is that canonical surface — the exact lattice
+mirror of `ProximityGap.StrictCanonicalCoeffPolysResidual` (`BCIKS20/Curves.lean`) with the
+strict-Johnson window hypotheses replaced by the quantitative count threshold
+`(n+1)·k < card` — and `latticeCoeffPolyExtraction_of_canonical` discharges the all-families
+residual from it via the (radius-generic, proven) canonical-agreement transport
+`coeff_polys_for_all_decoded_of_canonical_agreement`.
+
+This is a reduction layer, not a closure: the canonical Prop is still open (its content is
+BCIKS20 §5 list-decoding at the exact endpoint — same open core as
+`StrictCanonicalCoeffPolysResidual`, with the strict-radius slack no longer available). -/
+
+omit [Nonempty ι] in
+/-- **Canonical-family form of the lattice extraction residual.**  For every stack over the
+quantitative count threshold there is one decoded family `P₀` carrying coefficient-polynomial
+witnesses and unique among decoded families on the good set. -/
+def LatticeCanonicalCoeffPolyExtraction {k deg : ℕ} (domain : ι ↪ F) (δ : ℝ≥0) : Prop :=
+  ∀ u : WordStack F (Fin (k + 1)) ι,
+    (Fintype.card ι + 1) * k
+        < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+    ∃ P₀ : F → Polynomial F,
+      (∃ B : ℕ → Polynomial F,
+        (∀ j < deg, (B j).natDegree < k + 1) ∧
+          ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+            ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
+          ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+            P z = P₀ z
+
+omit [Nonempty ι] in
+/-- **The reduction.**  The canonical-family form discharges the all-families extraction
+residual, by the proven canonical-agreement transport. -/
+theorem latticeCoeffPolyExtraction_of_canonical {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hCanon :
+      LatticeCanonicalCoeffPolyExtraction (k := k) (deg := deg) (domain := domain) δ) :
+    LatticeCoeffPolyExtraction (k := k) (deg := deg) (domain := domain) δ := by
+  intro u hcard P hP
+  obtain ⟨P₀, hCoeff₀, huniq⟩ := hCanon u hcard
+  exact coeff_polys_for_all_decoded_of_canonical_agreement
+    (deg := deg) (domain := domain) (δ := δ)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (u := u) P₀ hCoeff₀ huniq P hP
+
+/-- The corrected lattice leaf from the canonical-family residual alone. -/
+theorem boundaryCardLatticeThresholdResidual_of_canonical {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0} [NeZero deg]
+    (hCanon :
+      LatticeCanonicalCoeffPolyExtraction (k := k) (deg := deg) (domain := domain) δ) :
+    BoundaryCardLatticeThresholdResidual (k := k) (deg := deg) (domain := domain) δ :=
+  boundaryCardLatticeThresholdResidual_of_extraction
+    (latticeCoeffPolyExtraction_of_canonical hCanon)
+
+/-- Consumer shape from the canonical-family residual: curve correlated agreement with
+`ε = (n+1)/|F|`. -/
+theorem correlatedAgreementCurves_of_latticeCanonical {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0} [NeZero deg] (hk : 0 < k)
+    (hCanon :
+      LatticeCanonicalCoeffPolyExtraction (k := k) (deg := deg) (domain := domain) δ) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := (ReedSolomon.code domain deg : Set (ι → F))) (δ := δ)
+      (ε := latticeThresholdEps ι F) :=
+  correlatedAgreementCurves_of_latticeExtraction hk
+    (latticeCoeffPolyExtraction_of_canonical hCanon)
+
 end BoundaryLatticeThresholdLeaf
 
 namespace BoundaryLatticeThresholdWitness
@@ -373,6 +445,12 @@ end ArkLib
   ArkLib.BoundaryLatticeThresholdLeaf.correlatedAgreementCurves_of_latticeExtraction
 #print axioms
   ArkLib.BoundaryLatticeThresholdLeaf.boundaryCardLatticeThresholdResidual_of_extraction
+#print axioms
+  ArkLib.BoundaryLatticeThresholdLeaf.latticeCoeffPolyExtraction_of_canonical
+#print axioms
+  ArkLib.BoundaryLatticeThresholdLeaf.boundaryCardLatticeThresholdResidual_of_canonical
+#print axioms
+  ArkLib.BoundaryLatticeThresholdLeaf.correlatedAgreementCurves_of_latticeCanonical
 #print axioms ArkLib.BoundaryLatticeThresholdWitness.sqrtRateW_mul_card
 #print axioms ArkLib.BoundaryLatticeThresholdWitness.latticeW
 #print axioms ArkLib.BoundaryLatticeThresholdWitness.goodW_eq_univ

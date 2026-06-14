@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ToMathlib.GGR11Interleaved
+import ArkLib.Data.CodingTheory.Basic.Distance
 import ArkLib.Data.CodingTheory.JohnsonBound.Family
 
 /-!
@@ -100,11 +101,8 @@ theorem agreement_inter_card_le
   -- |{i : V i = V' i}| = n − hammingDist V V'
   have hcompl : (Finset.univ.filter (fun i => V i = V' i)).card
       = Fintype.card ι - hammingDist V V' := by
-    have hsplit : (Finset.univ.filter (fun i => V i = V' i)).card
-        + (Finset.univ.filter (fun i => ¬ (V i = V' i))).card = Fintype.card ι := by
-      rw [Finset.card_filter_add_card_filter_not, Finset.card_univ]
-    have hham : hammingDist V V' = (Finset.univ.filter (fun i => ¬ (V i = V' i))).card := rfl
-    omega
+    simpa [Code.agreementCols] using
+      Code.agreementCols_card_eq_card_sub_hammingDist (u := V) (v := V')
   -- minDist ≤ hammingDist
   have hmin := hammingDist_ge_minDist_of_mem_closeCodewordsRel_ne hV hV' hne
   calc (Finset.univ.filter (fun i => V i = f i ∧ V' i = f i)).card

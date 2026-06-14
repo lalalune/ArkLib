@@ -34,7 +34,7 @@ theorem query_tuple_someQueryOut_card_eq {ι : Type*} [Fintype ι] [DecidableEq 
     (G : Finset ι) (t : ℕ) :
     (Finset.univ.filter (fun q : Fin t → ι => ¬ ∀ j, q j ∈ G)).card
       = Fintype.card ι ^ t - G.card ^ t := by
-  exact Finset.card_someQueryOut_eq G t
+  exact card_someQueryOut_eq G t
 
 end Issue14
 end ProximityGap

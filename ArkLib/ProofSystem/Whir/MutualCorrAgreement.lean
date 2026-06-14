@@ -359,7 +359,15 @@ literature, so the former `sorry` was permanently undischargeable — a `theorem
 mis-advertises it as a pending proof obligation. As a named `Prop` it remains the
 faithful record of the (refuted) conjecture, usable in hypothetical reasoning.
 Blast radius: zero (no in-tree consumers; grep-verified). The provable replacement
-remains `mca_johnson_bound_CONJECTURE` above. -/
+remains `mca_johnson_bound_CONJECTURE` above.
+
+**Audit addendum (2026-06-10) — doubly dead.** Beyond the literature disproof of the genuine
+claim, the *formalized* `Prop` below is VACUOUSLY TRUE as written: the `∃ c₁ c₂` is unbounded
+and the bound is not required to be `< 1`, so `c₁ = 0, c₂ = |F|` inflates the RHS past `1`
+(proven in-tree: `mca_capacity_bound_CONJECTURE_trivially_true`,
+`ArkLib/MCACapacityTrivial.lean`).  So "unprovable as written" in the STATUS note applies
+to the *genuine* sub-1 capacity bound, NOT to this Lean statement, which carries zero proof
+obligation either way.  Kept purely as a historical record of the refuted conjecture's shape. -/
 def mca_capacity_bound_CONJECTURE
     (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
   (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=

@@ -112,7 +112,7 @@ predicate/function field. -/
 Because `φ_i` (via `instSerializeMessageInjective`) is strictly injective and the message domain
 is finite, we can invert the serialization computationally via brute-force search.
 -/
-private def decodeMessagePhiInv?
+def decodeMessagePhiInv?
     (msgIdx : pSpec.MessageIdx)
     (encoded : Vector U (messageSize msgIdx)) :
     Option (pSpec.Message msgIdx) := by
@@ -120,7 +120,7 @@ private def decodeMessagePhiInv?
     Serialize.serialize msg = encoded)
 
 /-- Looks up the encoded message block `α̂_j` from the flat list of extracted sponge queries. -/
-private def lookupEncodedMessageAlphaHat?
+def lookupEncodedMessageAlphaHat?
     (encodedMessages :
       List (Sigma fun msgIdx : pSpec.MessageIdx => Vector U (messageSize msgIdx)))
     (msgIdx : pSpec.MessageIdx) :
@@ -136,32 +136,37 @@ private def lookupEncodedMessageAlphaHat?
 /-- One step of the `decodeMessagesPrefixPhiInv?` walk: extend the partial `MessagesUpTo` prefix
 by one round. On a `P_to_V` round, extract the encoded message `α̂_j` and apply `φ_j⁻¹`
 (`decodeMessagePhiInv?`); on a `V_to_P` round, extend the prefix with no payload. -/
-private noncomputable def decodeMessagesPrefixStepPhiInv
+noncomputable def decodeMessagesPrefixStepPhiInv
     (encodedList :
       List (Sigma fun msgIdx : pSpec.MessageIdx => Vector U (messageSize msgIdx)))
     (j : Fin n) (messages : pSpec.MessagesUpTo j.castSucc) :
-    Option (pSpec.MessagesUpTo j.succ) := by
-  exact
-    match hDir : pSpec.dir j with
-    | .P_to_V =>
-        let msgIdx : pSpec.MessageIdx := ⟨j, hDir⟩
-        match lookupEncodedMessageAlphaHat? (pSpec := pSpec) encodedList msgIdx with
+    Option (pSpec.MessagesUpTo j.succ) :=
+  -- `dite` rather than an eq-binder `match` on the direction: the `dif_pos`/`dif_neg`
+  -- equation lemmas hand the branch its hypothesis verbatim, so downstream step equations
+  -- (`Hyb23Bricks.decodeMessagesPrefixStepPhiInv_pToV`/`_vToP`) rewrite cleanly — the
+  -- eq-binder form left `Eq.trans`-mangled proofs inside the compiled matcher that no
+  -- tactic could align (see the issue #316 H23 notes).
+  if hDir : pSpec.dir j = .P_to_V then
+    match lookupEncodedMessageAlphaHat? (pSpec := pSpec) encodedList ⟨j, hDir⟩ with
+    | none => none
+    | some encodedMsg =>
+        match decodeMessagePhiInv?
+            (pSpec := pSpec) (U := U) ⟨j, hDir⟩ encodedMsg with
         | none => none
-        | some encodedMsg =>
-            match decodeMessagePhiInv?
-                (pSpec := pSpec) (U := U) msgIdx encodedMsg with
-            | none => none
-            | some msg =>
-                some
-                  (ProtocolSpec.MessagesUpTo.concat
-                    (pSpec := pSpec) messages hDir msg)
-    | .V_to_P =>
-        some (ProtocolSpec.MessagesUpTo.extend (pSpec := pSpec) messages hDir)
+        | some msg =>
+            some
+              (ProtocolSpec.MessagesUpTo.concat
+                (pSpec := pSpec) messages hDir msg)
+  else
+    some (ProtocolSpec.MessagesUpTo.extend (pSpec := pSpec) messages (by
+      cases hd : pSpec.dir j with
+      | P_to_V => exact absurd hd hDir
+      | V_to_P => rfl))
 
 /-- Implements the full `φ⁻¹` map over a structured prefix of encoded messages up to round `i`.
 Walks the rounds `0..i-1` and iteratively applies `decodeMessagesPrefixStepPhiInv` to return
 the unencoded message sequence `α_{<i}`. -/
-private noncomputable def decodeMessagesPrefixPhiInv?
+noncomputable def decodeMessagesPrefixPhiInv?
     (roundIdx : pSpec.ChallengeIdx)
     (encodedMessages : pSpec.EncodedMessagesBefore U roundIdx.1.castSucc) :
     Option (pSpec.MessagesUpTo roundIdx.1.castSucc) := by

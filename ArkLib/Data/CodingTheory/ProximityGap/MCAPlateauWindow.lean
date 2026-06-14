@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOne
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
+import ArkLib.Data.CodingTheory.ProximityGap.RadiusOne
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice2
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 import ArkLib.ToMathlib.RestrictedSumsetGeneral

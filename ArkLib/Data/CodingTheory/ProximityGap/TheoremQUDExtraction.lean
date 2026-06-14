@@ -454,7 +454,18 @@ local instance fact_prime_13 : Fact (Nat.Prime 13) := ⟨by norm_num⟩
 
 /-- The headline theorem *fires* at the satisfiable instance (certifying the hypotheses
 are jointly consistent, not merely individually satisfiable). -/
-example : True := by
+example :
+    ∃ B : ℕ,
+      Nat.choose 2 2 * (Fintype.card (ZMod 13) - 4)
+          ≤ B * ((Fintype.card (ZMod 13) - 4) + Nat.choose 2 2 * ((2 - 1) * 2)) ∧
+      (B : ℝ≥0∞) / (Fintype.card (ZMod 13) : ℝ≥0∞)
+          ≤ epsMCA (F := ZMod 13) (A := ZMod 13)
+              (TheoremQAssembly.evalCode ({1, 5, 8, 12} : Finset (ZMod 13))
+                ((2 - 1) * 2)) 0 ∧
+      epsMCA (F := ZMod 13) (A := ZMod 13)
+          (TheoremQAssembly.evalCode ({1, 5, 8, 12} : Finset (ZMod 13)) ((2 - 1) * 2)) 0
+        ≤ ((2 * (4 - ⌈(1 - (0 : ℝ≥0)) * ((4 : ℕ) : ℝ≥0)⌉₊) + 1 : ℕ) : ℝ≥0∞)
+            / (Fintype.card (ZMod 13) : ℝ≥0∞) := by
   have hmem : (1 : ZMod 13) ∈ ({1, 5, 8, 12} : Finset (ZMod 13)) := by decide
   haveI hne : Nonempty {x : ZMod 13 // x ∈ ({1, 5, 8, 12} : Finset (ZMod 13))} :=
     ⟨⟨1, hmem⟩⟩
@@ -474,7 +485,7 @@ example : True := by
         exact_mod_cast Nat.ceil_natCast 4
       rw [hceil]
       norm_num)
-  trivial
+  exact h
 
 end ArkLib.ProximityGap.TheoremQUDExtraction
 

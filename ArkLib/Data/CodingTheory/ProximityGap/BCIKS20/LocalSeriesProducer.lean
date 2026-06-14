@@ -5,7 +5,8 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim57Pigeonhole
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RemainingCore
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Pigeonhole
 import ArkLib.ToMathlib.ConditionDiscProduct
 import ArkLib.ToMathlib.RationalRootSupply
 
@@ -464,6 +465,24 @@ structure RawGSCargo {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
   /-- deep residual 2: the §5 Claim-5.9 base-rational reading. -/
   htrunc : TruncReadingOn u P hHyp n c hfiber
 
+/-- A producer for raw Guruswami-Sudan cargo in the reduced large-good-set branch of issue #304.
+The small-good-set branch is handled separately by interpolation, so this producer is only asked
+to build cargo when `k + 1 < |RS_goodCoeffsCurve|`. -/
+def RawGSCargoLargeProducer {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Type :=
+  ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+    Pr_{
+      let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+        ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+    (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+    δ < 1 - ReedSolomon.sqrtRate deg domain →
+    k + 1 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+    ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
+      RawGSCargo (k := k) (deg := deg) (domain := domain) (δ := δ) u P
+
 /-- The bundled raw cargo produces the landed `LocalSeriesDatumOn`. -/
 noncomputable def localSeriesDatumOn_of_rawGSCargo
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
@@ -500,6 +519,52 @@ theorem strictCoeffPolysResidual_of_rawGSCargo
     (fun hk u hprob hJ hsqrt P hP =>
       localSeriesDatumOn_of_rawGSCargo (hInput hk u hprob hJ hsqrt P hP))
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- **End-to-end large-sector form:** per-`(u, P)` raw GS cargo discharges the reduced
+`StrictCoeffPolysLargeResidual` surface directly.  This is the producer-facing shape of the
+remaining #304 core after the small-good-set sector is removed. -/
+theorem strictCoeffPolysLargeResidual_of_rawGSCargo
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      k + 1 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
+        RawGSCargo (k := k) (deg := deg) (domain := domain) (δ := δ) u P) :
+    ProximityGap.StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain)
+      (δ := δ) :=
+  FaithfulCurveExtraction.strictCoeffPolysLargeResidual_of_localSeriesDatumOn
+    (fun hk u hprob hJ hsqrt hcard P hP =>
+      localSeriesDatumOn_of_rawGSCargo (hInput hk u hprob hJ hsqrt hcard P hP))
+
+/-- Named-predicate version of `strictCoeffPolysLargeResidual_of_rawGSCargo`. -/
+theorem strictCoeffPolysLargeResidual_of_rawGSCargoProducer
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hInput : RawGSCargoLargeProducer (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    ProximityGap.StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain)
+      (δ := δ) :=
+  strictCoeffPolysLargeResidual_of_rawGSCargo
+    (k := k) (deg := deg) (domain := domain) (δ := δ)
+    (fun hk u hprob hJ hsqrt hcard P hP => hInput hk u hprob hJ hsqrt hcard P hP)
+
+/-- **Raw-GS producer package for the named issue-#304 core.**  Two large-sector raw-cargo
+producers, one at the target radius and one at the floor-matched working radius, assemble the
+single `BCIKS20RemainingCore` Prop consumed by WHIR/STIR/BCIKS wiring. -/
+theorem remainingCore_of_rawGSCargoLarge
+    {k deg : ℕ} {domain : ι ↪ F} {δ δ' : ℝ≥0}
+    (hδ : RawGSCargoLargeProducer (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ' : RawGSCargoLargeProducer (k := k) (deg := deg) (domain := domain) (δ := δ')) :
+    ProximityGap.BCIKS20RemainingCore k deg domain δ δ' :=
+  ⟨strictCoeffPolysLargeResidual_of_rawGSCargoProducer hδ,
+    strictCoeffPolysLargeResidual_of_rawGSCargoProducer hδ'⟩
+
 end Weld
 
 end RawGS304
@@ -530,5 +595,9 @@ end ArkLib
 #print axioms ArkLib.RawGS304.localSeriesDatumOn_of_rawGS
 #print axioms ArkLib.RawGS304.localSeriesDatumOn_of_cell
 #print axioms ArkLib.RawGS304.RawGSCargo
+#print axioms ArkLib.RawGS304.RawGSCargoLargeProducer
 #print axioms ArkLib.RawGS304.localSeriesDatumOn_of_rawGSCargo
 #print axioms ArkLib.RawGS304.strictCoeffPolysResidual_of_rawGSCargo
+#print axioms ArkLib.RawGS304.strictCoeffPolysLargeResidual_of_rawGSCargo
+#print axioms ArkLib.RawGS304.strictCoeffPolysLargeResidual_of_rawGSCargoProducer
+#print axioms ArkLib.RawGS304.remainingCore_of_rawGSCargoLarge

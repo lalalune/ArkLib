@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdStrictRate12
+import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingCapacityOverflow
 
 set_option exponentiation.threshold 4096
 

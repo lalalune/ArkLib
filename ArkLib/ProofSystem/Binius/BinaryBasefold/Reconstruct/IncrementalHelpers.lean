@@ -15,8 +15,8 @@ This file provides:
 * `iterated_fold_first` — the "peel first step" analogue of `iterated_fold_last`: folding
   `steps + 1` times starting at level `i` with challenges `Fin.cons r_new rest` equals folding
   `steps` times starting at level `midIdx = i + 1` of the single-step fold `fold(f, r_new)`.
-* `fiberwiseClose_steps_zero_iff_UDRClose` — `fiberwiseClose` at `steps = 1` (the minimal
-  `NeZero` step count) coincides with `UDRClose`, since both unfold to the same inequality.
+* `fiberwiseClose_implies_UDRClose` — the close-branch hypothesis carries the ordinary source
+  UDR closeness fact needed by codeword extraction.
 -/
 
 set_option maxHeartbeats 1000000
@@ -120,17 +120,16 @@ theorem iterated_fold_first (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
     congr 1
     all_goals first | exact h_ih | rfl
 
-/-- **`fiberwiseClose` coincides with `UDRClose`.** Both `fiberwiseClose i steps … f` and
-`UDRClose i … f` unfold to the same inequality `2 · Δ₀(f, BBF_Code i) < BBF_CodeDistance i`
-(neither the `steps`/`destIdx` data nor the `[NeZero steps]` instance enters the body), so the two
-predicates are definitionally the same proposition. -/
-lemma fiberwiseClose_steps_zero_iff_UDRClose
+/-- The close-branch hypothesis carries ordinary source UDR closeness. -/
+lemma fiberwiseClose_implies_UDRClose
     (i : Fin r) {destIdx : Fin r} (steps : ℕ) [NeZero steps]
     (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ) (h_i : i ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
-    fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f ↔
-    UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i f :=
-  Iff.rfl
+    fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f →
+    UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i f := by
+  intro hclose
+  exact UDRClose_of_fiberwiseClose 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f hclose
 
 end
 

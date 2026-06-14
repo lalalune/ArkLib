@@ -470,7 +470,7 @@ theorem mca_johnson_bound_CONJECTURE_ellary_of_curveJohnsonNumericBound
     refine ENNReal.ofReal_le_ofReal ?_
     rw [mul_div_assoc]
     exact mul_le_mul_of_nonneg_left
-      (johnsonBoundReal_le_errStar_real φ m hk δ hδ0 hδB) (by linarith)
+      (johnsonBoundReal_le_errStar_real φ m hk δ hδB) (by linarith)
   unfold mca_johnson_bound_CONJECTURE
   exact hmca
 

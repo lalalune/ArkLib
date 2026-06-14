@@ -5,19 +5,22 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallengeBody
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2ReconcileProof
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeSeamZero
 
 /-!
-# Challenge-seam rbr knowledge-soundness append keystone (`Subsingleton σ`)
+# Challenge-seam rbr knowledge-soundness append keystone (`Subsingleton σ`) — RESIDUAL-FREE
 
 The `V_to_P`-seam analogue of `append_rbrKnowledgeSoundness_keystone_subsingleton`. The phase-2
 discharge case-splits on the phase-2 challenge index: strictly past the seam (`i₂ > 0`) it mirrors
 the message-seam discharge through the challenge-seam body factoring `phase2_body_heq_challenge`
-(built on the *syntactic* split-prover seam commutation — `Prover.fst.output` is pure); at the seam
+(built on the *syntactic* split-prover seam commutation — `Prover.fst.output` is pure), closed by
+the proven inner reconciliation `appendRbrKnowledgePhase2SeamReconcile_proof_pos`; at the seam
 challenge itself (`i₂ = 0`, which exists only at a challenge seam) the per-round flip bound is
-isolated as the named residual `hSeamZero`, alongside the (pre-existing, message-seam-shared) inner
-reconciliation `hReconcile`. Together with the message keystone and the residual-free empty-seam
-keystone (`AppendRbrKnowledgeEmpty.lean`), every seam direction of an appended reduction now has an
-rbr knowledge-soundness keystone.
+discharged by the proven `appendRbrKnowledgeSeamZero_proven`
+(`AppendRbrKnowledgeSeamZero.lean` — zero body factoring + semantic seam glue). The keystone
+therefore carries **no named residual**. Together with the message keystone and the residual-free
+empty-seam keystone (`AppendRbrKnowledgeEmpty.lean`), every seam direction of an appended
+reduction has a residual-free rbr knowledge-soundness keystone in the `Subsingleton σ` regime.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -389,30 +392,6 @@ theorem appendRbrKnowledgeSoundnessPhase2_subsingleton_challenge [Subsingleton �
               let challenge ← liftComp (pSpec₂.getChallenge i) _
               return (transcript, challenge, proveQueryLog))).run' (← init)] ≤
           rbrKnowledgeError₂ i)
-    -- The seam-challenge case (`i₂ = 0`, only possible at a `V_to_P` seam): the per-round flip
-    -- bound at the seam challenge itself, isolated as a named residual.
-    (hSeamZero : ∀ (stmtIn : Stmt₁) (witIn : Wit₁)
-      (prover : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (i₂ : pSpec₂.ChallengeIdx),
-      ((i₂.1 : Fin n) : ℕ) = 0 →
-      Pr[fun ⟨transcript, challenge⟩ =>
-          ∃ witMid,
-            ¬ (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
-                (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn transcript
-                ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid
-                  (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1 stmtIn
-                  (transcript.concat challenge) witMid) ∧
-              (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
-                (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.succ stmtIn
-                (transcript.concat challenge) witMid
-        | do
-          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
-            (do
-              let ⟨transcript, _⟩ ←
-                prover.runToRound (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn witIn
-              let challenge ← OracleComp.liftComp
-                ((pSpec₁ ++ₚ pSpec₂).getChallenge (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂))
-                (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
-              return (transcript, challenge))).run' (← init)] ≤ rbrKnowledgeError₂ i₂)
     (hReconcilePos : appendRbrKnowledgePhase2SeamReconcilePos (init := init) (impl := impl)
       V₁ V₂ kSF₁ kSF₂ verify hVerify hInit) :
     appendRbrKnowledgeSoundnessPhase2Residual (init := init) (impl := impl) V₁ V₂
@@ -420,7 +399,11 @@ theorem appendRbrKnowledgeSoundnessPhase2_subsingleton_challenge [Subsingleton �
   intro stmtIn witIn prover i₂
   classical
   rcases Nat.eq_zero_or_pos ((i₂.1 : Fin n) : ℕ) with hz | hpos
-  · exact hSeamZero stmtIn witIn prover i₂ hz
+  · -- The seam-challenge case (`i₂ = 0`, only possible at a `V_to_P` seam): the per-round flip
+    -- bound at the seam challenge itself — discharged by the proven zero body factoring +
+    -- semantic seam glue (`AppendRbrKnowledgeSeamZero.lean`).
+    exact appendRbrKnowledgeSeamZero_proven V₁ V₂ kSF₁ kSF₂ verify hVerify hInit hNEW₂ hInitNF
+      hn hDir hDir₂ hBound₂ stmtIn witIn prover i₂ hz
   · -- Abbreviations for the appended phase-2 per-round event `E` and the seam-factored experiment body.
     set E : (pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc
         × (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂) → Prop :=
@@ -537,13 +520,15 @@ theorem appendRbrKnowledgeSoundnessPhase2_subsingleton_challenge [Subsingleton �
     exact le_of_eq_of_le (hReconcilePos stmtIn prover i₂ hpos s ctx) hb
 
 
-/-- **Round-by-round knowledge soundness append keystone, `Subsingleton σ` CHALLENGE-seam case.**
-The `V_to_P`-seam analogue of `append_rbrKnowledgeSoundness_keystone_subsingleton`: the phase-2
-discharge routes through the challenge-seam body factoring (`phase2_body_heq_challenge`, built on
-the syntactic split-prover seam commutation), with the seam-challenge case (`i₂ = 0`, which exists
-only at a challenge seam) and the inner seam reconciliation isolated as the two named residuals
-`hSeamZero` / `hReconcile`, each quantified over the destructured inner extractors / knowledge
-state functions. -/
+/-- **Round-by-round knowledge soundness append keystone, `Subsingleton σ` CHALLENGE-seam case —
+RESIDUAL-FREE.** The `V_to_P`-seam analogue of `append_rbrKnowledgeSoundness_keystone_subsingleton`:
+the phase-2 discharge routes through the challenge-seam body factoring
+(`phase2_body_heq_challenge`, built on the syntactic split-prover seam commutation), with the
+inner seam reconciliation discharged by `appendRbrKnowledgePhase2SeamReconcile_proof_pos` and the
+seam-challenge case (`i₂ = 0`, which exists only at a challenge seam) discharged by
+`appendRbrKnowledgeSeamZero_proven` (`AppendRbrKnowledgeSeamZero.lean`). No named residual
+remains: the keystone needs only the two per-phase rbr knowledge-soundness hypotheses and the
+determinism/side conditions. -/
 theorem append_rbrKnowledgeSoundness_keystone_subsingleton_challenge [Subsingleton σ]
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
     {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
@@ -557,36 +542,7 @@ theorem append_rbrKnowledgeSoundness_keystone_subsingleton_challenge [Subsinglet
     (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
     (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
     (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
-    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂)
-    (hSeamZero : ∀ {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
-      {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
-      {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
-      (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
-      (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂),
-      ∀ (stmtIn : Stmt₁) (witIn : Wit₁)
-        (prover : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
-        (i₂ : pSpec₂.ChallengeIdx),
-        ((i₂.1 : Fin n) : ℕ) = 0 →
-        Pr[fun ⟨transcript, challenge⟩ =>
-            ∃ witMid,
-              ¬ (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
-                  (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn transcript
-                  ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid
-                    (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1 stmtIn
-                    (transcript.concat challenge) witMid) ∧
-                (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
-                  (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.succ stmtIn
-                  (transcript.concat challenge) witMid
-          | do
-            (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
-              (do
-                let ⟨transcript, _⟩ ←
-                  prover.runToRound (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn witIn
-                let challenge ← OracleComp.liftComp
-                  ((pSpec₁ ++ₚ pSpec₂).getChallenge (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂))
-                  (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
-                return (transcript, challenge))).run' (← init)] ≤ rbrKnowledgeError₂ i₂)
- :
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
       (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
         (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
   obtain ⟨WitMid₁, E₁, kSF₁, hBound₁⟩ := h₁
@@ -595,7 +551,7 @@ theorem append_rbrKnowledgeSoundness_keystone_subsingleton_challenge [Subsinglet
     KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit,
     appendRbrKnowledgeSoundnessPerRound V₁ V₂ kSF₁ kSF₂ verify hVerify hInit hNE₂ hNEW₂
       hBound₁ (appendRbrKnowledgeSoundnessPhase2_subsingleton_challenge V₁ V₂ kSF₁ kSF₂ verify
-        hVerify hInit hNEW₂ hInitNF hn hDir hDir₂ hBound₂ (hSeamZero kSF₁ kSF₂)
+        hVerify hInit hNEW₂ hInitNF hn hDir hDir₂ hBound₂
         (appendRbrKnowledgePhase2SeamReconcile_proof_pos V₁ V₂ kSF₁ kSF₂ verify
           hVerify hInit))⟩
 

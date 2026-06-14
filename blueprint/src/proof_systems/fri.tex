@@ -5,10 +5,12 @@
 
 FRI (Fast Reed--Solomon Interactive Oracle Proof of Proximity) tests whether an oracle
 $f : \evaldomain \to \field$ is close to a Reed--Solomon code.  The ArkLib formalization
-follows the usual two-phase structure: a folding phase, implemented as a sequential composition
-of single-round oracle reductions, and a query phase checking round-to-round consistency.  The
-main formal design point is that protocol assembly, completeness, and soundness accounting are
-expressed through the generic oracle-reduction composition infrastructure from
+follows the generalized FRI low-degree-test presentation in \cite{FRI1216} and the
+proximity-gap and Batched-FRI analysis of \cite{BCIKS20}.  It uses the usual two-phase structure:
+a folding phase, implemented as a sequential composition of single-round oracle reductions, and a
+query phase checking round-to-round consistency.  The main formal design point is that protocol
+assembly, completeness, and soundness accounting are expressed through the generic
+oracle-reduction composition infrastructure from
 Chapter~\ref{chap:oracle_reductions}.
 
 \subsection{Protocol specification}\label{sec:fri_spec}
@@ -45,24 +47,46 @@ Chapter~\ref{chap:oracle_reductions}.
 
 \subsection{Perfect completeness}\label{sec:fri_completeness}
 
-Completeness is layered.  Per-round honest-protocol obligations are named as bricks; the
-folding phase, query phase, and full reduction are then assembled by the generic append and
-sequential-composition theorems.
+Completeness is layered.  Per-round honest-protocol obligations were originally named as
+bricks; as of 2026-06-11 every fold-side brick is a proved theorem, and the query-round brick
+--- which was \emph{false as stated} (the query verifier checks round consistency for every
+round, while the chained relation constrained only the last fold) --- has been repaired and
+proved against the full-chain consistency invariant.
 
-\begin{definition}[Completeness residuals]\label{def:fri_completeness_residual}
-\lean{Fri.Spec.Completeness.foldPhasePerfectCompletenessResidual,Fri.Spec.Completeness.queryRoundPerfectCompletenessResidual,Fri.Spec.Completeness.reductionPerfectCompletenessResidual}
+\begin{theorem}[Fold-side completeness, discharged]\label{thm:fri_fold_completeness}
+\lean{Fri.Spec.Completeness.foldRoundPerfectCompletenessResidual_holds,Fri.Spec.Completeness.finalFoldRoundPerfectCompletenessResidual_holds,Fri.Spec.Completeness.foldPhasePerfectCompletenessResidual_holds,Fri.Spec.Completeness.reductionPerfectCompletenessResidual_holds}
 \uses{def:fri_reduction}
-    These predicates isolate the per-phase completeness obligations consumed by the composed
-    FRI completeness theorem.
+    The non-final fold rounds, the final fold round, the assembled folding phase, and the
+    reduction-level composition are each perfectly complete; all four former residuals carry
+    axiom-clean \texttt{\_holds} theorems, assembled through the generic append and
+    sequential-composition keystones.
+\end{theorem}
+
+\begin{definition}[Query-round chain invariant]\label{def:fri_query_chain_invariant}
+\lean{Fri.Spec.Completeness.queryCheckerAccepts,Fri.Spec.Completeness.queryRoundChainRelation}
+\uses{def:fri_output_relation}
+    The full-chain consistency invariant, stated in the checker's own currency: the compiled
+    query verifier never fails on the statement, at any transcript.  Conjoining it onto the
+    base relation makes a relation/check mismatch impossible by design.
 \end{definition}
 
-\begin{theorem}[FRI perfect completeness]\label{thm:fri_completeness}
-\lean{Fri.Spec.Completeness.foldPhase_perfectCompleteness,Fri.Spec.Completeness.queryRound_perfectCompleteness,Fri.Spec.Completeness.reduction_perfectCompleteness}
-\uses{def:fri_reduction,def:fri_completeness_residual}
-    Assuming the named per-round and per-phase completeness bricks, the composed FRI reduction is
-    perfectly complete.  The proof uses the generic composition keystones rather than duplicating
-    FRI-specific append reasoning.
+\begin{theorem}[Query-round completeness, repaired]\label{thm:fri_query_completeness}
+\lean{Fri.Spec.Completeness.queryRound_perfectCompleteness_repaired}
+\uses{def:fri_query_chain_invariant}
+    The query-round oracle reduction is perfectly complete from the chain relation to the base
+    relation.  The original residual statement
+    (\texttt{queryRoundPerfectCompletenessResidual}) is retained, documented as false as
+    stated, with a pointer to this repair.
 \end{theorem}
+
+\begin{definition}[Chain-delivery residual]\label{def:fri_chain_delivery_residual}
+\lean{Fri.Spec.Completeness.queryRoundChainDeliveryResidual}
+\uses{thm:fri_fold_completeness,def:fri_query_chain_invariant}
+    The single remaining completeness obligation: the folding phase delivers the chain
+    invariant (honest folding produces oracles the query checker accepts).  Unlike the
+    original query residual this is true by design for honest runs; the proof route is the
+    proved fold-phase completeness strengthened on the honest-run support.
+\end{definition}
 
 \subsection{Soundness accounting}\label{sec:fri_soundness}
 
@@ -107,10 +131,11 @@ per-phase soundness obligations.
 
 Batched FRI reduces a batch of polynomial oracles to the base FRI protocol through a batching
 round and a virtual oracle lens.  Its security development is where ArkLib connects the FRI
-query phase to BCIKS20 correlated-agreement statements.
+query phase to the correlated-agreement and proximity-gap statements from
+Section~\ref{sec:proximity_gap_defs}.
 
 \begin{definition}[Batched FRI reduction]\label{def:batched_fri_reduction}
-\lean{BatchedFri.Spec.batchOracleReduction,BatchedFri.Spec.batchedFRIOracleLens,BatchedFri.Spec.liftedFRI,BatchedFri.Spec.batchedFRIreduction}
+\lean{BatchedFri.Spec.BatchingRound.batchOracleReduction,BatchedFri.Spec.batchedFRIOracleLens,BatchedFri.Spec.liftedFRI,BatchedFri.Spec.batchedFRIreduction}
 \uses{def:fri_reduction,def:reed_solomon_code}
     The single batched round forms a random linear combination of the batch and feeds it to a
     lifted base FRI reduction.  The oracle lens routes the lifted FRI oracle queries back to the
@@ -124,13 +149,50 @@ query phase to BCIKS20 correlated-agreement statements.
     constructed lens and lifted reduction have the advertised shape.
 \end{definition}
 
-\begin{theorem}[Batched FRI query soundness adapters]\label{thm:batched_fri_query_soundness}
-\lean{Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens,Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndRSAffineLine,Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndRSCurve}
-\uses{def:batched_fri_lens_package,lem:joint_proximity_bridges}
-    The query-round soundness adapters combine the probability bound for the query sampling
-    experiment, the batched FRI oracle lens, and a correlated-agreement input.  The affine-line
-    and polynomial-curve front doors specialize those adapters to the BCIKS20 Reed--Solomon
-    inputs.
+\begin{lemma}[Batched FRI query-round probability and density]\label{lem:batched_fri_query_round_probability}
+\lean{Fri.queryRoundAcceptanceBound,Fri.queryRoundAcceptanceBound_holds,Fri.queryRoundAcceptanceBound_of_density,Fri.queryRoundDensityBound,Fri.queryRoundDensityBound_holds,Fri.QueryRound.probabilityAcceptanceBound,Fri.QueryRound.probabilityAcceptanceBound_holds,Fri.QueryRound.probabilityDetectionBound,Fri.QueryRound.probabilityDetectionBound_holds,Fri.Spec.QueryRound.getChallenge_probOutput_uniform_eq_Pr}
+\uses{def:batched_fri_lens_package}
+    The local query-round analysis is no longer a placeholder.  ArkLib proves both a normalized
+    density route, bounding the probability that all repeated queries land in a good set by
+    $(1-\delta)^t$, and a probability-space route for the verifier's independent-uniform query
+    tuple.  The latter includes the bridge from the concrete FRI query challenge oracle to the
+    product PMF used in the standalone probability theorem.
+\end{lemma}
+
+\begin{definition}[Batched FRI Claim 8.2 frontier]\label{def:batched_fri_claim82_frontier}
+\lean{Fri.fri_query_soundness,Fri.FriQuerySoundnessParts,Fri.fri_query_soundness_of_parts,Fri.fri_query_soundness_of_jointProximity}
+\uses{lem:batched_fri_query_round_probability,def:batched_fri_lens_package,lem:joint_proximity_bridges}
+    Claim 8.2 of \cite{BCIKS20} is represented as a faithful residual frontier rather than as a
+    vacuous theorem.  The split fields isolate the proved query-round bound, the proved
+    batching/oracle-lens reduction, and the coding-theoretic bridge from correlated agreement to
+    joint agreement.
+\end{definition}
+
+\begin{theorem}[Batched FRI Claim 8.2 adapters]\label{thm:batched_fri_query_soundness}
+\lean{Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens,Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens,Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine,Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndRSAffineLine,Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSCurve,Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndRSCurve}
+\uses{def:batched_fri_claim82_frontier,thm:bciks_rs_gap}
+    The density and probability adapters reassemble Claim 8.2 once the remaining
+    correlated-agreement bridge is supplied.  Specialized affine-line and polynomial-curve front
+    doors package the BCIKS20 Reed--Solomon inputs, including the strict coefficient-polynomial,
+    boundary, radius, and probability-trigger obligations.
+\end{theorem}
+
+\begin{definition}[Batched FRI Claim 8.3 frontier]\label{def:batched_fri_claim83_frontier}
+\lean{Fri.fri_soundness,Fri.FriSoundnessParts,Fri.fri_soundness_of_parts,Fri.friSoundnessQueryLift,Fri.friSoundnessSequentialComposition,Fri.friSoundnessTotalErrorAccounting,Fri.friBatchPhaseErrorBound,Fri.friTailPhaseErrorBound}
+\uses{thm:batched_fri_query_soundness,def:fri_reduction}
+    Claim 8.3 is the end-to-end Batched-FRI soundness residual.  ArkLib splits it into a
+    query-soundness lift from Claim 8.2, the sequential composition of the batching round with the
+    lifted FRI tail, and total-error accounting for the
+    $\epsilon_C + \alpha^\ell$ budget.
+\end{definition}
+
+\begin{theorem}[Batched FRI Claim 8.3 assembly]\label{thm:batched_fri_claim83_assembly}
+\lean{Fri.batchedFRIreduction_verifier_eq_append,Fri.batchedFRISequentialCompositionSoundness_of_append,Fri.friSoundnessSequentialComposition_of_append,Fri.friSoundnessTotalErrorAccounting_of_phase_bounds,Fri.friSoundnessTotalErrorAccounting_of_named_phase_bounds,Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds}
+\uses{def:batched_fri_claim83_frontier}
+    The current Claim 8.3 assembly proves the structural append seam, exposes the generic
+    sequential-composition theorem for the concrete Batched-FRI reduction, and reduces the
+    total-error field to named batching-phase and FRI-tail phase bounds.  The remaining obligations
+    are explicit inputs, not hidden assumptions.
 \end{theorem}
 
 \begin{theorem}[Small-field batched FRI query soundness]\label{thm:batched_fri_small_field}
@@ -140,3 +202,11 @@ query phase to BCIKS20 correlated-agreement statements.
     the in-tree unconditional correlated-agreement instances, yielding concrete batched FRI
     query-soundness consequences.
 \end{theorem}
+
+\begin{remark}[Status of Batched FRI]\label{rem:batched_fri_status}
+    The blueprint separates proved protocol plumbing from the still-hard coding-theory fronts.
+    Query counting/probability, the structural oracle lens, and several specialized
+    Reed--Solomon adapters are proved.  General correlated agreement at the target radius,
+    virtual-oracle preservation for every tail context, and the per-phase error bounds needed for
+    a fully unconditional Claim 8.3 remain named obligations.
+\end{remark}

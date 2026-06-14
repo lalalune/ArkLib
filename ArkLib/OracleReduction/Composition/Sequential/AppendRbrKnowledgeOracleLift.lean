@@ -85,6 +85,31 @@ theorem append_rbrKnowledgeSoundness_subsingleton [Subsingleton σ]
   exact Verifier.append_rbrKnowledgeSoundness_keystone_subsingleton_unconditional
     V₁.toVerifier V₂.toVerifier verify hVerify hInit hInitNF hNE₂ hNEW₂ hn hDir hDir₂ h₁ h₂
 
+/-- **Discharge of the named residual `OracleVerifier.appendRbrKnowledgeSoundnessResidual`**
+(`Append.lean`) in the deterministic-`V₁` / `Subsingleton σ` / prover-message-seam regime. The
+residual's conclusion is precisely the keystone's, so this is definitional from
+`append_rbrKnowledgeSoundness_subsingleton`. With this,
+`OracleVerifier.append_rbrKnowledgeSoundness` no longer needs an unproved hypothesis in the
+stateless regime. -/
+theorem appendRbrKnowledgeSoundnessResidual_msg_subsingleton [Subsingleton σ]
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (verify : (Stmt₁ × ∀ i, OStmt₁ i) → pSpec₁.FullTranscript → (Stmt₂ × ∀ i, OStmt₂ i))
+    (hVerify : V₁.toVerifier = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    (hInit : ∃ s, s ∈ support init) (hInitNF : Pr[⊥ | init] = 0)
+    (hNE₂ : Nonempty (Stmt₂ × ∀ i, OStmt₂ i)) (hNEW₂ : Nonempty Wit₂)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+    appendRbrKnowledgeSoundnessResidual (init := init) (impl := impl) V₁ V₂ h₁ h₂ :=
+  append_rbrKnowledgeSoundness_subsingleton V₁ V₂ verify hVerify hInit hInitNF hNE₂ hNEW₂
+    hn hDir hDir₂ h₁ h₂
+
 /-- **Generic determinism witness from a `simulateQ` collapse.** If an oracle verifier's `verify`,
 simulated against the transcript-message oracle, collapses to `pure (v (stmt, oStmt) tr)` for every
 input (the shape of the RingSwitching `*_verify_collapse` lemmas), then its compiled `toVerifier` is
@@ -138,5 +163,6 @@ end Verifier
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
+#print axioms OracleVerifier.appendRbrKnowledgeSoundnessResidual_msg_subsingleton
 #print axioms Verifier.append_pure_pure
 #print axioms OracleVerifier.toVerifier_eq_pure_of_collapse

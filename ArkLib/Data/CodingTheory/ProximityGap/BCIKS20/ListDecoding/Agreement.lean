@@ -7,7 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
-import ArkLib.ToMathlib.Claim511
+import ArkLib.ToMathlib.BCIKS20CorrelatedAgreement
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module

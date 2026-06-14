@@ -13,7 +13,7 @@ import ArkLib.ProofSystem.Spartan.FirstSumcheckBridgeFree
 `ComposedCompletenessLeaves.linearCombination_perfectCompleteness` proves the Spartan RLC
 challenge phase perfectly complete for the *pinned* R1CS pass-through relations
 (`linearCombinationRelIn` → `linearCombinationRelOut`). The composed-PC fold
-(`composedCompletenessResidual_of_five_leaves`, `ComposedCompleteness.lean`) however pins the
+(`composedCompletenessStatement_of_five_leaves`, `ComposedCompleteness.lean`) however pins the
 phase's **input** relation to whatever the upstream `sendEvalClaim` leaf emits —
 `sendEvalClaimRelOut … (firstSumcheckRelOutBF …)`, which carries the bundled eval-claim *honesty*
 conjunct that the pinned relations drop (and which the downstream honest RLC-target adapter
@@ -36,7 +36,7 @@ proves exactly that:
   downstream `prependRLCTarget_perfectCompleteness_secondSumcheckRelInBF`;
 * `linearCombination_perfectCompleteness_sendEvalClaimBF` — the consumer-endpoint `h₅` instance:
   perfectly complete from `sendEvalClaimRelOut … (firstSumcheckRelOutBF …)` into
-  `prependRLCTargetRelIn`, so `h₄`/`h₅`/`h₆` of `composedCompletenessResidual_of_five_leaves` now
+  `prependRLCTargetRelIn`, so `h₄`/`h₅`/`h₆` of `composedCompletenessStatement_of_five_leaves` now
   chain with `relE := sendEvalClaimRelOut … (firstSumcheckRelOutBF …)` and
   `relF := prependRLCTargetRelIn`.
 -/
@@ -72,7 +72,7 @@ omit [DecidableEq R] [SampleableType R] in
 /-- **The `linearCombination` phase is perfectly complete from any input relation** to its
 challenge-stripped pushforward `linearCombinationRelOutOf rel`: the phase samples the RLC
 challenge, records it, and passes statement/oracles/witness through unchanged. This is the
-parametric form of the leaf hypothesis `h₅` of `composedCompletenessResidual_of_five_leaves`
+parametric form of the leaf hypothesis `h₅` of `composedCompletenessStatement_of_five_leaves`
 (instantiate `rel` with the output relation of the `sendEvalClaim` leaf). -/
 theorem linearCombination_perfectCompleteness_of
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -151,7 +151,7 @@ theorem linearCombination_perfectCompleteness_of
 
 omit [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R] in
 /-- **Seam weld (h₅ → h₆).** On the canonical relation chain of
-`composedCompletenessResidual_of_five_leaves` — with
+`composedCompletenessStatement_of_five_leaves` — with
 `relE := sendEvalClaimRelOut … (firstSumcheckRelOutBF …)`,
 the output the proven `sendEvalClaim_perfectCompleteness` emits from the consumer-pinned
 `firstSumcheckRelOutBF` — the natural pushforward output relation of the `linearCombination`
@@ -168,7 +168,7 @@ theorem linearCombinationRelOutOf_sendEvalClaimBF_subset_prependRLCTargetRelIn :
 
 omit [DecidableEq R] [SampleableType R] in
 /-- **Consumer-endpoint form of the `linearCombination` leaf completeness** (`h₅` of
-`composedCompletenessResidual_of_five_leaves`): perfectly complete from
+`composedCompletenessStatement_of_five_leaves`): perfectly complete from
 `sendEvalClaimRelOut … (firstSumcheckRelOutBF …)` (the proven `sendEvalClaim` leaf output at the
 consumer-pinned `relD`) into `prependRLCTargetRelIn` (the proven input of
 `prependRLCTarget_perfectCompleteness_secondSumcheckRelInBF`). With this, hypotheses `h₄`, `h₅`,

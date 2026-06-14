@@ -14,7 +14,8 @@ regime that IS elementary: when `|F| ≤ (parℓ-1)·2^{2m}·10^7`, `errStar δ 
 `errStar < 1` and Johnson list-decoding combinatorics bite.
 
 Key: `min_val = min(1-√ρ-δ, √ρ/20) ≤ √ρ/20 ≤ 1/20`, so `(2·min_val)^7 ≤ (1/10)^7 = 10^{-7}`, hence
-`errStar δ = (parℓ-1)2^{2m}/(|F|·(2 min_val)^7) ≥ (parℓ-1)2^{2m}·10^7/|F| ≥ 1`. NOT in build. -/
+`errStar δ = (parℓ-1)2^{2m}/(|F|·(2 min_val)^7) ≥ (parℓ-1)2^{2m}·10^7/|F| ≥ 1`.
+(Status correction 2026-06-10: this file IS in the build — imported by `ArkLib.lean`.) -/
 
 open scoped NNReal ENNReal
 open MutualCorrAgreement ProbabilityTheory ReedSolomon Generator

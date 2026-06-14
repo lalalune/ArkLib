@@ -6,6 +6,8 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.BadBlocks
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.FoldDistance
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseFoldedValue
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseHelpers
 
 /-!
 ## Binary Basefold Soundness Query Phase Theorems
@@ -270,20 +272,68 @@ lemma point_disagreement_mem_fiberwiseDisagreement
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v)) :
     queryBlockDestSuffix (𝔽q := 𝔽q) (β := β)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v ∈
-    fiberwiseDisagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (queryBlockSourceIdx
+    fiberwiseDisagreementSetPerFiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := queryBlockSourceIdx
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
-      ϑ (h_destIdx := by rfl)
+      (steps := ϑ) (h_destIdx := by rfl)
       (h_destIdx_le := queryBlockDestIdx_le
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
       (oStmtIn j) g := by
-  simp only [fiberwiseDisagreementSet, Finset.mem_filter, Finset.mem_univ, true_and]
-  refine ⟨queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v,
-    queryBlockSourceSuffix_maps_to_destSuffix
+  rw [mem_fiberwiseDisagreementSetPerFiber]
+  let idx : Fin (2 ^ ϑ) :=
+    extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v := v)
+      (i := ⟨(queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j).val * ϑ,
+        k_mul_ϑ_lt_ℓ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j)⟩)
+      (steps := ϑ)
+  refine ⟨idx, ?_⟩
+  have h_source_suffix_eq :
+      queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v =
+      getFiberPoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) v idx :=
+    previousSuffix_eq_getFiberPoint_extractMiddleFinMask
       (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (ℓ := ℓ) (ϑ := ϑ) (j := j) (v := v),
-    h_point_ne⟩
+      (j := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) (v := v)
+  have h_eval :
+      ∀ f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (queryBlockSourceIdx
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j),
+        fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := queryBlockSourceIdx
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+          (destIdx := queryBlockDestIdx
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+          (steps := ϑ) (h_destIdx := by rfl)
+          (h_destIdx_le := queryBlockDestIdx_le
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+          (f := f)
+          (y := queryBlockDestSuffix (𝔽q := 𝔽q) (β := β)
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v) idx =
+        f (queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v) := by
+    intro f
+    rw [fiberEvaluations_apply_eq_qMap_total_fiber 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := queryBlockSourceIdx
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+      (steps := ϑ)
+      (h_i_add_steps_le := queryBlockDestIdx_le
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+      (h_i_add_steps_lt_r :=
+        (queryBlockDestIdx
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j).isLt)
+      (f := f)
+      (y := queryBlockDestSuffix (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v)
+      (idx := idx)]
+    change
+      f (getFiberPoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) v idx) =
+      f (queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v)
+    rw [← h_source_suffix_eq]
+  rw [h_eval (oStmtIn j), h_eval g]
+  exact h_point_ne
 
 set_option maxHeartbeats 200000 in
 lemma goodBlock_point_disagreement_step
@@ -378,10 +428,10 @@ lemma goodBlock_point_disagreement_step
   have h_mem_fiber :
       queryBlockDestSuffix (𝔽q := 𝔽q) (β := β)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v ∈
-    fiberwiseDisagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (queryBlockSourceIdx
+    fiberwiseDisagreementSetPerFiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := queryBlockSourceIdx
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
-        ϑ (h_destIdx := by rfl)
+        (steps := ϑ) (h_destIdx := by rfl)
         (h_destIdx_le := queryBlockDestIdx_le
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
         (oStmtIn j)
@@ -454,7 +504,8 @@ lemma goodBlock_point_disagreement_step
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v := by
       rfl
     rw [h_suffix_eq] at h_eval_eq
-    exact h_eval_eq.symm.trans (h_eq.trans h_fold_eq_eval.symm)
+    simpa [queryBlockIdx] using
+      h_eval_eq.symm.trans (h_eq.trans h_fold_eq_eval.symm)
   have h_pos_next : 0 < j_next.val := by
     dsimp only [j_next]
     omega
@@ -622,10 +673,8 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
     let f_bar_next := UDRCodeword 𝔽q β destIdx h_destIdx_le
       (f := f_next) (h_within_radius := h_next_close)
     let v_suffix :=
-      iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := (0 : Fin r)) (destIdx := destIdx)
-        (k := destIdx.val)
-        (h_destIdx := by simp only [Fin.coe_ofNat_eq_mod, zero_mod, zero_add])
-        (h_destIdx_le := h_destIdx_le) (x := v)
+      extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (v := v) (destIdx := destIdx) (h_destIdx_le := h_destIdx_le)
     v_suffix ∈ disagreementSet 𝔽q β (i := destIdx) (destIdx := destIdx) (h_destIdx := rfl) (f := folded_f) (g := f_bar_next) →
     ¬ logical_checkSingleRepetition 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         oStmtIn v stmtIn stmtIn.final_constant := by
@@ -705,51 +754,7 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
             (v := v) (stmt := stmtIn)
         have h_eval_eq_fold' := h_eval_eq_fold_raw
         rw [h_v_suffix_eq] at h_eval_eq_fold'
-        have h_folded_f_eq :
-            folded_f v_suffix =
-              iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-                (i := ⟨j_star_idx.val * ϑ, by
-                  exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-                    (h := k_mul_ϑ_lt_ℓ (k := j_star_idx))⟩)
-                (steps := ϑ) (h_destIdx := by rfl)
-                (h_destIdx_le := k_succ_mul_ϑ_le_ℓ_₂ (k := j_star_idx))
-                (f := oStmtIn ⟨j_star_idx.val, by
-                  simpa [nBlocks, toOutCodewordsCount_last, j_star_idx] using h_j_star_lt_div⟩)
-                (r_challenges := fun j =>
-                  stmtIn.challenges ⟨j_star_idx.val * ϑ + j.val, by
-                    have h_le : j_star_idx.val * ϑ + ϑ ≤ ℓ :=
-                      k_succ_mul_ϑ_le_ℓ_₂ (k := j_star_idx)
-                    have h_lt : j_star_idx.val * ϑ + j.val < j_star_idx.val * ϑ + ϑ := by
-                      exact Nat.add_lt_add_left j.isLt (j_star_idx.val * ϑ)
-                    exact lt_of_lt_of_le h_lt h_le⟩)
-                (y := v_suffix) := by
-          unfold folded_f f_star
-          rw [h_r_challenges]
-          rfl
-        calc
-          logical_computeFoldedValue 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-              j_star_idx v stmtIn
-              (logical_queryFiberPoints 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-                oStmtIn j_star_idx v)
-              =
-            iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-              (i := ⟨j_star_idx.val * ϑ, by
-                exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-                  (h := k_mul_ϑ_lt_ℓ (k := j_star_idx))⟩)
-              (steps := ϑ) (h_destIdx := by rfl)
-              (h_destIdx_le := k_succ_mul_ϑ_le_ℓ_₂ (k := j_star_idx))
-              (f := oStmtIn ⟨j_star_idx.val, by
-                simpa [nBlocks, toOutCodewordsCount_last, j_star_idx] using h_j_star_lt_div⟩)
-              (r_challenges := fun j =>
-                stmtIn.challenges ⟨j_star_idx.val * ϑ + j.val, by
-                  have h_le : j_star_idx.val * ϑ + ϑ ≤ ℓ :=
-                    k_succ_mul_ϑ_le_ℓ_₂ (k := j_star_idx)
-                  have h_lt : j_star_idx.val * ϑ + j.val < j_star_idx.val * ϑ + ϑ := by
-                    exact Nat.add_lt_add_left j.isLt (j_star_idx.val * ϑ)
-                  exact lt_of_lt_of_le h_lt h_le⟩)
-              (y := v_suffix) := h_eval_eq_fold'
-          _ = folded_f v_suffix := by
-            exact h_folded_f_eq.symm
+        simpa [folded_f, f_star, j_star_idx, h_r_challenges] using h_eval_eq_fold'
       have h_disagree_val : folded_f v_suffix ≠ f_bar_next v_suffix := by
         have h_disagree_val := h_disagree
         simp only [disagreementSet, Finset.mem_filter, Finset.mem_univ, true_and, cast_eq]
@@ -1103,10 +1108,10 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
         have h_mem_fiber_last :
             queryBlockDestSuffix (𝔽q := 𝔽q) (β := β)
               (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_end v ∈
-            fiberwiseDisagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-              (queryBlockSourceIdx
+            fiberwiseDisagreementSetPerFiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+              (i := queryBlockSourceIdx
                 (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_end)
-              ϑ (h_destIdx := by rfl)
+              (steps := ϑ) (h_destIdx := by rfl)
               (h_destIdx_le := queryBlockDestIdx_le
                 (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_end)
               (oStmtIn j_end)
@@ -1206,7 +1211,7 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
                 (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_end)
               (c := stmtIn.final_constant)]
           rw [h_suffix_eq] at h_eval_eq_last
-          exact
+          simpa [queryBlockIdx] using
             h_eval_eq_last.symm.trans
               ((h_eq.trans h_const_eval.symm).trans h_fold_eq_eval.symm)
         rw [h_last_idx_eq] at h_eval_ne_last
@@ -1311,8 +1316,11 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
               (i := Fin.last ℓ) (challenges := stmtIn.challenges) (oStmt := oStmtIn) ∧
             final_compliance) := by
       have h_not_and := h_not_consistent
-      simp only [not_and, finalSumcheckStepOracleConsistencyProp, Fin.val_last] at h_not_and ⊢
-      exact h_not_and
+      simp only [not_and, finalSumcheckStepOracleConsistencyProp, Fin.val_last] at h_not_and
+      intro h_pair
+      exact h_not_and h_pair.1 (by
+        dsimp only [final_compliance] at h_pair
+        simpa only [j_last, k, id_eq, Fin.val_last, getFoldingChallenges] using h_pair.2)
     by_cases h_final_ok : final_compliance
     · -- Final block compliant: then oracleFoldingConsistencyProp must fail.
       have h_oracle_bad :
@@ -1630,7 +1638,7 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
       let f_bar_next := UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         destIdx h_destIdx_le (f := f_next) (h_within_radius := h_next_close)
       ¬ pair_UDRClose 𝔽q β destIdx h_destIdx_le f_i_star_folded f_bar_next := by
-    exact
+    simpa only using
       lemma_4_24_dist_folded_ge_of_last_noncompliant (𝔽q := 𝔽q) (β := β)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i_star := i_star) (steps := ϑ)
         (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
@@ -1689,8 +1697,8 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
         extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (v := v) (destIdx := destIdx) (h_destIdx_le := h_destIdx_le) ∉ D
       ] := by
-    apply prob_mono
-    exact h_accept_subset
+    exact Pr_le_Pr_of_implies ($ᵖ (sDomain 𝔽q β h_ℓ_add_R_rate 0)) _ _
+      h_accept_subset
   -- Evaluate the suffix probability for the complement set.
   have h_prob_suffix_not :
       Pr_{ let v ←$ᵖ (sDomain 𝔽q β h_ℓ_add_R_rate 0) }[

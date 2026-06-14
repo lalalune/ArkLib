@@ -52,10 +52,11 @@ proven minimum-distance argument.
 
 - `deepHoleJointFar_holds` — `DeepHoleJointFar` holds under the arithmetic side condition
   `k < n − ⌊δ.toNNReal·n⌋` and `a` off the evaluation domain.
-- `rs_epsCA_implies_lambda_extended_cs25_complete` — the **fully-discharged** ABF26 T5.3 /
-  CS25 Thm 2 list-size bound: the deep-hole residual is closed with no remaining geometric
-  side condition, only the standard parameter regime plus the documented arithmetic rate
-  condition `k < n − ⌊δ·n⌋` at every sampling point.
+- `rs_epsCA_implies_lambda_extended_cs25_complete` — the ABF26 T5.3 / CS25 Thm 2 list-size
+  bound with the deep-hole geometric/probabilistic content discharged under the standard
+  parameter regime plus the documented arithmetic rate condition `k < n − ⌊δ·n⌋` at every
+  sampling point.  The unconditional `DeepHoleProbResidual` wrapper remains open in the strict
+  residual census because these side conditions are real hypotheses, not implicit facts.
 
 ## References
 
@@ -184,22 +185,23 @@ theorem deepHoleJointFar_holds
 
 /-! ### Direct instantiation of `DeepHoleProbResidual` (Issue #22, criterion 1)
 
-The probabilistic residual `DeepHoleProbResidual` (defined in `CS25DeepHoleFinish.lean`) is now
-instantiated by a **single named result with no extra geometric side condition** — the only
-hypothesis is the documented arithmetic rate condition `k < n − ⌊δ·n⌋`, which is the genuine
-parameter regime `δ < 1 − k/n`, not a residual. This composes the joint-far discharge
+The probabilistic residual `DeepHoleProbResidual` (defined in `CS25DeepHoleFinish.lean`) is
+instantiated by a single named result under the documented nonnegativity and arithmetic rate
+conditions.  The rate condition `k < n − ⌊δ·n⌋` is the genuine parameter regime
+`δ < 1 − k/n`, not a residual. This composes the joint-far discharge
 (`deepHoleProbResidual_of_jointFar`, proven in `CS25DeepHoleFinish2.lean`) with the
 minimum-distance proof of the joint-far property (`deepHoleJointFar_holds`, above). -/
 
 /-- **`DeepHoleProbResidual` discharged (Issue #22).** For any received word `u` and degree-`< k+1`
 polynomial family `p`, the CS25 deep-hole probability residual holds at every sampling point with
-**no remaining geometric/probabilistic side condition** — only the arithmetic rate condition
-`k < n − ⌊δ.toNNReal·n⌋`.
+no remaining geometric/probabilistic side condition once the documented nonnegativity and
+arithmetic rate conditions are supplied.
 
 This is the explicit answer to Issue #22's first criterion ("identify the smallest remaining
-statement needed to instantiate `DeepHoleProbResidual` without extra side conditions"): that
-statement is the rate condition `hkS`, and the deep-hole probability bound follows from the proven
-minimum-distance argument `deepHoleJointFar_holds`. -/
+statement needed to instantiate `DeepHoleProbResidual` without extra geometric side conditions"):
+that statement is the rate condition `hkS` (along with `hδ0` for radius coercions), and the
+deep-hole probability bound follows from the proven minimum-distance argument
+`deepHoleJointFar_holds`. -/
 theorem deepHoleProbResidual_holds
     (domain : ι ↪ F) (u : ι → F) {k L : ℕ} {δ : ℝ}
     (p : Fin L → F[X]) (hδ0 : 0 ≤ δ)
@@ -215,10 +217,10 @@ theorem deepHoleProbResidual_holds
 
 /-- **ABF26 Theorem 5.3 [CS25 Theorem 2] — fully discharged.**
 
-The complete list-size bound for `RS[k+1]`, with the deep-hole residual chain closed down to
-**no remaining geometric side condition** — only the standard CS25 parameter regime plus the
-documented arithmetic rate condition `k < n − ⌊δ·n⌋` (the in-chain equivalent of `δ < 1 − k/n`),
-which discharges the joint-far property `DeepHoleJointFar` via `deepHoleJointFar_holds`.
+The complete list-size bound for `RS[k+1]`, with the deep-hole geometric/probabilistic chain
+closed under the standard CS25 parameter regime plus the documented arithmetic rate condition
+`k < n − ⌊δ·n⌋` (the in-chain equivalent of `δ < 1 − k/n`), which discharges the joint-far
+property `DeepHoleJointFar` via `deepHoleJointFar_holds`.
 
 Side conditions:
 - `hk_pos`, `hη_lo`, `hη_lt` — the standard CS25 parameter regime.

@@ -388,37 +388,38 @@ The argument:
   independent family of polynomials admits a distinct-degree basis with invertible
   transition matrix (Gaussian elimination on degrees).
 
-This is captured precisely by `GK16Lemma12HardResidual` below: a named Prop isolating
-exactly the echelon step, with a *proven reduction* `…_reduces_hard` from it to the full
-hard direction — and `gk16Lemma12HardResidual_holds` now *proves* that Prop, so the
-hard direction is unconditional (`foldedWronskian_ne_zero_of_linearIndependent`). -/
+The echelon step is now exposed directly as the theorem `GK16Lemma12HardResidual`;
+the hard direction is unconditional modulo only the genuinely necessary
+admissibility hypothesis on `ω` (`foldedWronskian_ne_zero_of_linearIndependent`). -/
 
-/-- **Named residual for the general GK16 Lemma 12 hard direction (echelon step).**
+/-- **GK16 Lemma 12 echelon step (formerly the named hard residual).**
 A linearly independent family `P` admits a distinct-degree, nonzero-leading recombination
 `Q j = ∑ i, c j i • P i` by an invertible scalar matrix `c`. This is exactly Gaussian
-elimination on the degrees of `P`; it is the only remaining gap in Lemma 12. -/
-def GK16Lemma12HardResidual : Prop :=
-  ∀ (F : Type) (_ : Field F) (s : ℕ) (P : Fin s → F[X]),
-    LinearIndependent F P →
+elimination on the degrees of `P`, supplied by `exists_distinctDegree_recombination`. -/
+theorem GK16Lemma12HardResidual (F : Type) (hF : Field F) (s : ℕ) (P : Fin s → F[X])
+    (hindep : LinearIndependent F P) :
     ∃ (Q : Fin s → F[X]) (c : Fin s → Fin s → F),
       (Matrix.of c).det ≠ 0 ∧
       (∀ j, Q j = ∑ i, c j i • P i) ∧
       (∀ j, Q j ≠ 0) ∧
-      Function.Injective (fun j => (Q j).natDegree)
+      Function.Injective (fun j => (Q j).natDegree) := by
+  letI := hF
+  exact exists_distinctDegree_recombination P hindep
 
-/-- **Proven reduction: the echelon residual implies the full hard direction.**
-Assuming `GK16Lemma12HardResidual` and that `ω` separates the resulting pivot degrees,
-`LinearIndependent F P → foldedWronskian P ω ≠ 0`. The proof is the change-of-basis
-transfer composed with the distinct-degree engine; it is itself `sorry`-free. -/
+/-- **Proven reduction: the echelon theorem implies the full hard direction.**
+If `ω` separates the resulting pivot degrees, `LinearIndependent F P →
+foldedWronskian P ω ≠ 0`. The proof is the change-of-basis transfer composed
+with the distinct-degree engine; it is itself `sorry`-free. -/
 theorem GK16Lemma12HardResidual_reduces_hard
-    (H : GK16Lemma12HardResidual) {s : ℕ} {F₀ : Type} [hF : Field F₀]
+    {s : ℕ} {F₀ : Type} [hF : Field F₀]
     (P : Fin s → F₀[X]) (ω : F₀)
     (hindep : LinearIndependent F₀ P)
     (hω_sep : ∀ Q : Fin s → F₀[X], (∀ j, Q j ≠ 0) →
         Function.Injective (fun j => (Q j).natDegree) →
         Function.Injective (fun j => ω ^ (Q j).natDegree)) :
     foldedWronskian P ω ≠ 0 := by
-  obtain ⟨Q, c, hc_det, hQ, hQ_ne, hQ_deg⟩ := H F₀ hF s P hindep
+  obtain ⟨Q, c, hc_det, hQ, hQ_ne, hQ_deg⟩ :=
+    GK16Lemma12HardResidual F₀ hF s P hindep
   -- `foldedWronskian Q ω ≠ 0` by the distinct-degree engine.
   have hQW : foldedWronskian Q ω ≠ 0 :=
     foldedWronskian_ne_zero_of_distinct_natDegree Q ω hQ_ne (hω_sep Q hQ_ne hQ_deg)
@@ -430,18 +431,15 @@ theorem GK16Lemma12HardResidual_reduces_hard
   rw [hPzero, mul_zero] at hcb
   exact hQW hcb
 
-/-- **The echelon residual is a theorem (Gaussian elimination on degrees).**
-`GK16Lemma12HardResidual` holds: every linearly independent family of polynomials
-admits an invertible recombination with pairwise-distinct degrees. This is
-`ArkLib.FRS.GK16.exists_distinctDegree_recombination` (file `ToMathlib/GK16Finish.lean`),
-which carries out the Gaussian elimination on degrees by strong induction on the
-total degree. With this, `GK16Lemma12HardResidual_reduces_hard` becomes an
-unconditional reduction (see `foldedWronskian_ne_zero_of_linearIndependent`). -/
-theorem gk16Lemma12HardResidual_holds : GK16Lemma12HardResidual := by
-  intro F _ s P hindep
-  obtain ⟨Q, c, hc_det, hQ_rec, hQ_ne, hQ_inj⟩ :=
-    exists_distinctDegree_recombination P hindep
-  exact ⟨Q, c, hc_det, hQ_rec, hQ_ne, hQ_inj⟩
+/-- Lowercase alias kept for downstream references to the now-proven echelon step. -/
+theorem gk16Lemma12HardResidual_holds (F : Type) (hF : Field F) (s : ℕ)
+    (P : Fin s → F[X]) (hindep : LinearIndependent F P) :
+    ∃ (Q : Fin s → F[X]) (c : Fin s → Fin s → F),
+      (Matrix.of c).det ≠ 0 ∧
+      (∀ j, Q j = ∑ i, c j i • P i) ∧
+      (∀ j, Q j ≠ 0) ∧
+      Function.Injective (fun j => (Q j).natDegree) :=
+  GK16Lemma12HardResidual F hF s P hindep
 
 /-- **GK16 Lemma 12, hard direction — fully general, no residual.**
 For any linearly independent family `P : Fin s → F₀[X]` over a field `F₀`, if `ω`
@@ -449,7 +447,7 @@ separates the degrees of *every* nonzero, distinct-degree family (the admissibil
 hypothesis `hω_sep`), then `foldedWronskian P ω ≠ 0`.
 
 This is `GK16Lemma12HardResidual_reduces_hard` discharged with the now-proven
-echelon residual `gk16Lemma12HardResidual_holds`; the only remaining input is the
+echelon theorem `GK16Lemma12HardResidual`; the only remaining input is the
 genuinely-necessary order/admissibility hypothesis on `ω` (without which the
 statement is false, cf. `not_lemma12_bare`). -/
 theorem foldedWronskian_ne_zero_of_linearIndependent
@@ -460,6 +458,12 @@ theorem foldedWronskian_ne_zero_of_linearIndependent
         Function.Injective (fun j => (Q j).natDegree) →
         Function.Injective (fun j => ω ^ (Q j).natDegree)) :
     foldedWronskian P ω ≠ 0 :=
-  GK16Lemma12HardResidual_reduces_hard gk16Lemma12HardResidual_holds P ω hindep hω_sep
+  GK16Lemma12HardResidual_reduces_hard P ω hindep hω_sep
 
 end ArkLib.FRS.GK16
+
+/-! ## Axiom audit -/
+#print axioms ArkLib.FRS.GK16.GK16Lemma12HardResidual
+#print axioms ArkLib.FRS.GK16.GK16Lemma12HardResidual_reduces_hard
+#print axioms ArkLib.FRS.GK16.gk16Lemma12HardResidual_holds
+#print axioms ArkLib.FRS.GK16.foldedWronskian_ne_zero_of_linearIndependent

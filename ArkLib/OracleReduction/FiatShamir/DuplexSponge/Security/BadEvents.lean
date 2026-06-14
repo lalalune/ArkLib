@@ -17,6 +17,17 @@ These bad events capture conditions under which the simulator deviates from the 
 such as capacity segment collisions or inconsistent query evaluations. We establish the logical
 implications between these events (e.g., that the combined bad event $E$ bounds other failure modes
 like permutation inconsistency or out-of-order execution).
+
+**Placeholder-honesty note (audit 2026-06-10)**: the per-state events `inv`, `fork`,
+`outOfOrderHash`, and `outOfOrderPerm` defined near the end of this file are literally
+`E trace ∧ state = 0` — placeholders that make the trace-event forms `lemma_5_12` /
+`lemma_5_14` / `lemma_5_16` in this file trivially true. They are NOT the genuine
+CO25 §5.6 events. The honest per-state versions (`E_inv_honest`, `E_fork_honest`,
+`E_time_honest`) live in `KeyLemmaFoundations.lean`, where the corresponding honest
+residuals are tracked: 5.12 is discharged (`Lemma512Honest.lean`), while 5.14 and 5.16
+are REFUTED as stated (`Lemma514ForkFalse.lean`, `Lemma516TimePFalse.lean`) due to the
+`redundantEntryDS` deviation from CO25 Def. 5.5; only the `E_{time,h}` half is proven
+(`Lemma516HashHalf.lean`). Do not cite the trivial forms here as discharging CO25 §5.6.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -48,7 +59,19 @@ variable {StmtIn : Type} {n : ℕ} {pSpec : ProtocolSpec n}
 
 /-- The definition of a redundant entry in a duplex sponge challenge oracle trace
 (Definition 5.5 in [CO25]).
-An entry is redundant if it represents a duplicate query that has been answered in a prior step. -/
+An entry is redundant if it represents a duplicate query that has been answered in a prior step.
+
+**Audit warning (2026-06-10): deviates from CO25 Def. 5.5.** The paper's swapped
+certificate for a permutation entry is the *opposite-direction* entry
+(`(p, x, y)` redundant given earlier `(p⁻¹, y, x)`, and vice versa); the two swapped
+disjuncts below instead use the *same direction* with the state pair reversed
+(`(p, y, x)` resp. `(p⁻¹, x, y)`). Machine-checked consequence: the M2c honest residual
+`Lemma5_16HonestFalseAsStated` is FALSE against this definition
+(`Lemma516TimePFalse.lemma5_16HonestFalseAsStated_false`), and the `Lemma5_14HonestFalseStatement`
+fork analysis carries the same risk. Repairing this definition (swap `.inl ↦ .inr` in the
+second disjunct of the forward arm and `.inr ↦ .inl` in the inverse arm) changes the
+meaning of `E`; downstream proofs in `Lemma512Honest.lean` use the current certificates
+and must be reworked together with the repair. -/
 def redundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (idx : Fin log.length) : Prop :=
   match log[idx] with
@@ -89,6 +112,28 @@ decreasing_by
     have heq : (log.eraseIdx (Classical.choose h).val).length + 1 = log.length :=
       List.length_eraseIdx_add_one hlt
     omega)
+
+/-- `removeRedundantEntryDS` is a fixpoint on traces already satisfying `NoRedundantEntryDS`. -/
+theorem removeRedundantEntryDS_eq_self_of_noRedundantEntryDS
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : log.NoRedundantEntryDS) :
+    removeRedundantEntryDS log = ⟨log, h⟩ := by
+  have hnone : ¬ ∃ idx : Fin log.length, log.redundantEntryDS idx := not_exists.mpr h
+  rw [removeRedundantEntryDS]
+  simp [hnone]
+
+/-- First-projection form of `removeRedundantEntryDS_eq_self_of_noRedundantEntryDS`. -/
+theorem removeRedundantEntryDS_fst_eq_self_of_noRedundantEntryDS
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : log.NoRedundantEntryDS) :
+    (removeRedundantEntryDS log).1 = log := by
+  rw [removeRedundantEntryDS_eq_self_of_noRedundantEntryDS log h]
+
+/-- Subtype fixpoint form for the canonical output of `removeRedundantEntryDS`. -/
+theorem removeRedundantEntryDS_eq_self
+    (base : {log : QueryLog (duplexSpongeChallengeOracle StmtIn U) | log.NoRedundantEntryDS}) :
+    removeRedundantEntryDS base.1 = base := by
+  cases base with
+  | mk log h =>
+      exact removeRedundantEntryDS_eq_self_of_noRedundantEntryDS log h
 
 namespace BadEventDS
 
@@ -153,7 +198,7 @@ def capacitySegmentDupPermInv : Prop :=
         (∃ j' ≤ j, ∃ stateIn3 stateOut3, baseTrace[j'] = ⟨.inr <|.inl stateIn3, stateOut3⟩ ∧
           stateIn3.capacitySegment = capSeg) ∨
         (∃ j' ≤ j, ∃ stateIn4 stateOut4, baseTrace[j'] = ⟨.inr <|.inr stateOut4, stateIn4⟩ ∧
-          stateOut4.capacitySegment = capSeg)
+          CanonicalSpongeState.capacitySegment stateIn4 = capSeg)
       )
 
 alias E_pinv := capacitySegmentDupPermInv
@@ -181,6 +226,25 @@ def combined : Prop :=
   capacitySegmentDup trace ∨ notFunction trace
 
 alias E := combined
+
+/-- The combined bad event only depends on the deduplicated base trace. -/
+theorem E_removeRedundantEntryDS_iff :
+    E (removeRedundantEntryDS trace).1 ↔ E trace := by
+  let base := removeRedundantEntryDS trace
+  have hbase : removeRedundantEntryDS base.1 = base := removeRedundantEntryDS_eq_self base
+  constructor
+  · intro h
+    unfold E combined capacitySegmentDup capacitySegmentDupHash
+      capacitySegmentDupPerm capacitySegmentDupPermInv notFunction at h ⊢
+    dsimp only at h ⊢
+    rw [hbase] at h
+    simpa [base] using h
+  · intro h
+    unfold E combined capacitySegmentDup capacitySegmentDupHash
+      capacitySegmentDupPerm capacitySegmentDupPermInv notFunction at h ⊢
+    dsimp only at h ⊢
+    rw [hbase]
+    simpa [base] using h
 
 /-!
 We define supplementary collision events (forward-forward, backward-backward, and mixed collisions)

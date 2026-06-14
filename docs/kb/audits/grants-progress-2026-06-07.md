@@ -102,7 +102,7 @@ construction exists and the FS transform is built on it (not a generic RO model)
 **Closeout classification:** the grant's executable/specification target is met. The remaining
 strict DSFS residuals are post-grant security hardening for the full CO25 Lemma 5.1 hybrid proof:
 `DuplexSpongeFS.KeyLemmaResidual`,
-`Lemma5_12HonestResidual`, `Lemma5_14HonestResidual`, `Lemma5_16HonestResidual`,
+`Lemma5_12HonestResidual`, `Lemma5_14HonestResidual`, `Lemma5_16HonestFalseAsStated`,
 `SimulatedProverChallengeBudgetResidual`, `SimulatedProverSharedBudgetResidual`,
 `KeyLemmaEagerResidual`, `D2sQueryStepGSpecBudgetResidual`, and
 `D2fOuterImplSharedBudgetResidual`. See

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
+import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 
 /-!
 # Challenge-seam discharge of the distributional run-factoring residual
@@ -16,9 +17,9 @@ trees.  They are, however, equal **as distributions**, because the seam `getChal
 sample independent of the `oSpec` computation `P₁.output`, and `SPMF` is commutative
 (`OracleComp.evalDist_bind_comm`).
 
-This file discharges the *distributional* residual `Prover.appendRunRightResidualDist` for the
+This file discharges the *distributional* residual `Prover.appendRunRightDistResidual` for the
 challenge seam (`pSpec₂.dir 0 = .V_to_P`), the analogue of the message-seam discharge
-`Prover.appendRunRightResidualDist_holds_msg` in `AppendRunEvalDist.lean`.  The single genuinely
+`Prover.appendRunRightDistResidual_holds_msg` in `AppendRunEvalDist.lean`.  The single genuinely
 distributional step is one application of `evalDist_bind_comm` swapping the seam `getChallenge` with
 `P₁.output`; everything else reuses the proven syntactic challenge-seam machinery
 (`append_continueFromTo_seam_start_challenge_split`, `append_continueFromTo_right_interior`,
@@ -258,18 +259,18 @@ theorem append_continueFromTo_right_challenge_evalDist
     (append_right_block_from_seam_boundary_heq stmt wit hn T₁ rSeam))
 
 /-- **Challenge-seam discharge of the distributional residual.**  When the seam round (`pSpec₂`'s
-round 0) is a verifier challenge, the *distributional* residual `appendRunRightResidualDist` holds.
-The analogue of `appendRunRightResidualDist_holds_msg`; the syntactic `appendRunRightResidual` is
+round 0) is a verifier challenge, the *distributional* residual `appendRunRightDistResidual` holds.
+The analogue of `appendRunRightDistResidual_holds_msg`; the syntactic `appendRunRightResidual` is
 *false* here, so this genuinely needs `evalDist_bind_comm` (inside
 `append_continueFromTo_right_challenge_evalDist`). -/
-theorem appendRunRightResidualDist_holds_challenge
+theorem appendRunRightDistResidual_holds_challenge
     [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
     [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
     (stmt : Stmt₁) (wit : Wit₁) (hn : 0 < n)
     (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
     (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P) :
-    appendRunRightResidualDist (P₁ := P₁) (P₂ := P₂) stmt wit := by
-  unfold appendRunRightResidualDist
+    appendRunRightDistResidual (P₁ := P₁) (P₂ := P₂) stmt wit := by
+  unfold appendRunRightDistResidual
   rw [bind_assoc]
   rw [show (⟨m, by omega⟩ : Fin (m + n + 1))
       = (⟨m, by omega⟩ : Fin (m + n)).castSucc from by ext; simp]
@@ -319,7 +320,7 @@ theorem appendRunRightResidualDist_holds_challenge
 
 /-- **Sequential-composition run-factoring at `evalDist`, for a challenge-first `P₂`.**  Combines the
 conditional `append_run_evalDist` with the challenge-seam discharge
-`appendRunRightResidualDist_holds_challenge`.  This is the distribution-level keystone for inter-phase
+`appendRunRightDistResidual_holds_challenge`.  This is the distribution-level keystone for inter-phase
 Spartan composition where a phase opens with a verifier challenge. -/
 theorem append_run_evalDist_challenge
     [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
@@ -334,6 +335,33 @@ theorem append_run_evalDist_challenge
           return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) :
             OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
               (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × Wit₃)) :=
-  append_run_evalDist stmt wit (appendRunRightResidualDist_holds_challenge stmt wit hn hDir hDir₂)
+  append_run_evalDist stmt wit (appendRunRightDistResidual_holds_challenge stmt wit hn hDir hDir₂)
+
+/-- **Seam-agnostic discharge of the distributional run-factoring residual.** Total case split:
+empty trailing protocol (the syntactic residual holds, `appendRunRightResidual_holds_empty`,
+and `evalDist` is `congrArg`), message seam (`appendRunRightDistResidual_holds_msg`), or
+challenge seam (`appendRunRightDistResidual_holds_challenge`). With this, the named
+distributional residual holds for *every* pair of provers — the syntactic
+`appendRunRightResidual` remains genuinely FALSE at challenge seams (see the challenge
+discharge's docstring), so the distributional form is the honest live statement. -/
+theorem appendRunRightDistResidual_holds
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
+    (stmt : Stmt₁) (wit : Wit₁) :
+    appendRunRightDistResidual (P₁ := P₁) (P₂ := P₂) stmt wit := by
+  rcases Nat.eq_zero_or_pos n with hn | hn
+  · subst hn
+    exact congrArg evalDist (appendRunRightResidual_holds_empty (P₁ := P₁) (P₂ := P₂) stmt wit)
+  · have hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n))
+        = pSpec₂.dir (⟨0, hn⟩ : Fin n) := by
+      rw [show (⟨m, by omega⟩ : Fin (m + n)) = Fin.natAdd m ⟨0, hn⟩ from by ext; simp,
+        Prover.append_dir_natAdd]
+    cases hd : pSpec₂.dir (⟨0, hn⟩ : Fin n) with
+    | V_to_P => exact appendRunRightDistResidual_holds_challenge stmt wit hn (hDir.trans hd) hd
+    | P_to_V => exact appendRunRightDistResidual_holds_msg stmt wit hn (hDir.trans hd) hd
 
 end Prover
+
+
+-- Axiom audit (seam-agnostic total): only [propext, Classical.choice, Quot.sound].
+#print axioms Prover.appendRunRightDistResidual_holds

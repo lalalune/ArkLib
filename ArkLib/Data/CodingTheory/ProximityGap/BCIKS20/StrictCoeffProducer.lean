@@ -7,6 +7,7 @@ import ArkLib.ToMathlib.HcardDischarge
 import ArkLib.ToMathlib.BetaMatchingVanishesOn
 import ArkLib.ToMathlib.CurveHenselDatumProducers
 import ArkLib.ToMathlib.GenuineMonicCapstone
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5GenuineMonic
 
 /-!
@@ -35,7 +36,9 @@ consumer chain; this file transports the remaining total-root surfaces of the pr
 * **Part 4 — the weld to the issue-named core**:
   `LocalSeriesDatumOn` — the satisfiable per-`(u, P)` restricted-root analytic §5 datum — and
   the front doors `strictCoeffPolysResidual_of_localSeriesDatumOn` (discharging the exact
-  `ProximityGap.StrictCoeffPolysResidual` of `Curves.lean`) and
+  `ProximityGap.StrictCoeffPolysResidual` of `Curves.lean`),
+  `strictCoeffPolysLargeResidual_of_localSeriesDatumOn` (the same producer in the reduced
+  large-good-set residual shape), and
   `correlatedAgreement_affine_curves_johnson_of_localSeriesDatumOn_strict` (reaching the §5
   keystone `δ_ε_correlatedAgreementCurves` in the strict Johnson regime).
 
@@ -439,6 +442,31 @@ theorem strictCoeffPolysResidual_of_localSeriesDatumOn
   exact hcoeffPoly_witness_of_curveFamilyData
     (curveFamilyData_of_localSeriesDatumOn (hInput hk u hprob hJ hsqrt P hP))
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- **`StrictCoeffPolysLargeResidual` from a per-`(u, P)` restricted-root analytic producer.**
+This is the producer-facing form of the #304 residual after
+`StrictCoeffLargeReduction.lean` removes the small-good-set sector: the analytic producer may
+assume the actual remaining hypothesis `k + 1 < |RS_goodCoeffsCurve|` directly. -/
+theorem strictCoeffPolysLargeResidual_of_localSeriesDatumOn
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      k + 1 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
+        LocalSeriesDatumOn (k := k) (deg := deg) (domain := domain) (δ := δ) u P) :
+    StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk u hprob hJ hsqrt hcard P hP
+  exact hcoeffPoly_witness_of_curveFamilyData
+    (curveFamilyData_of_localSeriesDatumOn (hInput hk u hprob hJ hsqrt hcard P hP))
+
 omit [DecidableEq ι] in
 /-- **Strict square-root-radius keystone front door from the restricted-root analytic
 producer.**  The §5 keystone goal `δ_ε_correlatedAgreementCurves` in the strict Johnson
@@ -594,6 +622,7 @@ end ArkLib
 #print axioms ArkLib.FaithfulCurveExtraction.LocalSeriesDatumOn
 #print axioms ArkLib.FaithfulCurveExtraction.curveFamilyData_of_localSeriesDatumOn
 #print axioms ArkLib.FaithfulCurveExtraction.strictCoeffPolysResidual_of_localSeriesDatumOn
+#print axioms ArkLib.FaithfulCurveExtraction.strictCoeffPolysLargeResidual_of_localSeriesDatumOn
 #print axioms ArkLib.FaithfulCurveExtraction.correlatedAgreement_affine_curves_johnson_of_localSeriesDatumOn_strict
 #print axioms ArkLib.FaithfulCurveExtraction.localSeriesDatumOn_of_matching_gradedDisc
 #print axioms ArkLib.FaithfulCurveExtraction.localSeriesDatumOn_of_SβLarge

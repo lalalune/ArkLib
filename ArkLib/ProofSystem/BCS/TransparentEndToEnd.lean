@@ -481,10 +481,36 @@ instance instSampleableBCSTransform :
       ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
         (e (Data := Data)))).Challenge i))
 
+/-- Concrete realization obligation for the transparent interaction phase: the prover's unique
+message is the source commitment and the phase forwards the original statement/witness pair. -/
+def interactionRealizesOracleMessages : Prop :=
+  ∀ (stmt : OpeningStmt (Data := Data)) (wit : OpeningWit (Data := Data)),
+    (interactionProver (oSpec := oSpec) (Data := Data)).sendMessage
+        (srcMsgIdx (Data := Data)) (stmt, wit)
+      = pure (stmt.1, (stmt, wit))
+
+theorem interactionRealizesOracleMessages_holds :
+    interactionRealizesOracleMessages (oSpec := oSpec) (Data := Data) := by
+  intro stmt wit
+  rfl
+
+/-- Concrete realization obligation for the transparent opening phase: the verifier accepts exactly
+when the claimed response matches the transparent oracle answer at the queried point. -/
+def openingRealizesQueryLog : Prop :=
+  ∀ (cm : Data) (q : O.Query) (y : O.Response q)
+    (tr : ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+      (e (Data := Data))).FullTranscript),
+    (openingRed (oSpec := oSpec) (Data := Data)).verifier.verify (cm, ⟨q, y⟩) tr
+      = (pure (decide (O.answer cm q = y)) : OptionT (OracleComp oSpec) Bool)
+
+theorem openingRealizesQueryLog_holds :
+    openingRealizesQueryLog (oSpec := oSpec) (Data := Data) := by
+  intro cm q y tr
+  rfl
+
 /-- The BCS-compiled phases of the transparent end-to-end instance: the "commit and forward"
-interaction phase and the transparent opening phase. The two realization `Prop` fields are set to
-`True` (the keystones below only carry them; they are not used to derive completeness or soundness).
--/
+interaction phase and the transparent opening phase, carrying concrete realization obligations for
+the message and query-log behavior. -/
 def phases :
     OracleReduction.BCSCompiledPhases (oSpec := oSpec) (pSpec := srcPSpec (Data := Data))
       (pSpecCom := pSpecCom (Data := Data))
@@ -494,8 +520,35 @@ def phases :
       (CommitmentType (Data := Data)) (e (Data := Data)) where
   interaction := interactionRed
   opening := openingRed
-  interaction_realizes_oracle_messages := True
-  opening_realizes_query_log := True
+  interaction_realizes_oracle_messages := interactionRealizesOracleMessages (oSpec := oSpec)
+    (Data := Data)
+  opening_realizes_query_log := openingRealizesQueryLog (oSpec := oSpec) (Data := Data)
+
+theorem phases_realizationFrontier :
+    OracleReduction.BCSPhaseRealizationFrontier
+      (phases (oSpec := oSpec) (Data := Data)) := by
+  exact ⟨interactionRealizesOracleMessages_holds (oSpec := oSpec) (Data := Data),
+    openingRealizesQueryLog_holds (oSpec := oSpec) (Data := Data)⟩
+
+/-- The transparent end-to-end phases in **proof-carrying** form (issue #342): the semantic
+realization payloads (`interactionRealizesOracleMessages` / `openingRealizesQueryLog`) come
+packaged with their proofs, so no consumer can treat them as unconstrained payload data. -/
+def phasesLawful :
+    OracleReduction.BCSCompiledPhasesLawful (oSpec := oSpec) (pSpec := srcPSpec (Data := Data))
+      (pSpecCom := pSpecCom (Data := Data))
+      (StmtIn := OpeningStmt (Data := Data)) (WitIn := OpeningWit (Data := Data))
+      (StmtOut := Bool) (WitOut := Unit)
+      (StmtMid := OpeningStmt (Data := Data)) (WitMid := OpeningWit (Data := Data))
+      (CommitmentType (Data := Data)) (e (Data := Data)) where
+  toBCSCompiledPhases := phases (oSpec := oSpec) (Data := Data)
+  interaction_realization_holds :=
+    interactionRealizesOracleMessages_holds (oSpec := oSpec) (Data := Data)
+  opening_realization_holds := openingRealizesQueryLog_holds (oSpec := oSpec) (Data := Data)
+
+/-- The lawful packaging projects back to the original phases (sanity seam). -/
+theorem phasesLawful_toBCSCompiledPhases :
+    (phasesLawful (oSpec := oSpec) (Data := Data)).toBCSCompiledPhases
+      = phases (oSpec := oSpec) (Data := Data) := rfl
 
 section Final
 
@@ -583,3 +636,7 @@ end Final
 
 end BCSTransparentEndToEnd
 
+#print axioms BCSTransparentEndToEnd.phases_realizationFrontier
+#print axioms BCSTransparentEndToEnd.phasesLawful
+#print axioms BCSTransparentEndToEnd.transparentBCS_perfectCompleteness
+#print axioms BCSTransparentEndToEnd.transparentBCS_soundness

@@ -103,4 +103,105 @@ theorem phase2_body_heq_challenge
     show _ >>= K' = _
     simp only [K', bind_assoc, pure_bind]
 
+theorem phase2_body_heq_challenge_zero
+    (prover : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (stmtIn : Stmt₁) (witIn : Wit₁) (i₂ : pSpec₂.ChallengeIdx) (hn : 0 < n) (hz : ((i₂.1 : Fin n) : ℕ) = 0)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P) :
+    HEq
+      (do
+        let ⟨transcript, _⟩ ←
+          prover.runToRound (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn witIn
+        let challenge ← OracleComp.liftComp
+          ((pSpec₁ ++ₚ pSpec₂).getChallenge (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂))
+          (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+        pure (transcript, challenge))
+      (do
+        let ⟨transcript₁, ctxIn₂⟩ ← liftM ((Prover.fst prover).run stmtIn witIn)
+        let r ← liftM ((Prover.snd prover).runToRound i₂.1.castSucc ctxIn₂.1 ctxIn₂.2)
+        let challenge ← OracleComp.liftComp
+          ((pSpec₁ ++ₚ pSpec₂).getChallenge (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂))
+          (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+        pure (Transcript.appendRight transcript₁ r.1, challenge)) := by
+  classical
+  -- Index transports at `i₂.val = 0`: the appended index is the seam `⟨m⟩` (= castLE of `last m`),
+  -- and the phase-2 index is `0`.
+  have hn : 0 < n := Fin.pos_iff_nonempty.mpr ⟨i₂.1⟩
+  have hcs0 : (i₂.1.castSucc : Fin (n + 1)) = 0 := by
+    ext; simp [hz]
+  have hidx : (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc
+      = ((Fin.last m).castLE (show m + 1 ≤ m + n + 1 by omega) : Fin (m + n + 1)) := by
+    ext; simp [ChallengeIdx.inr, hz]
+  -- LHS prover run ~ `fst`'s full partial run (seam factoring, no right block at the seam).
+  have hseam : HEq
+      (prover.runToRound (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc stmtIn witIn)
+      (liftM ((Prover.fst prover).runToRound (Fin.last m) stmtIn witIn) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) := by
+    refine HEq.trans (Prover.runToRound_heq_index hidx prover stmtIn witIn) ?_
+    refine HEq.trans (Prover.merge_runToRound prover stmtIn witIn _).symm ?_
+    exact Prover.append_runToRound_seam (P₁ := Prover.fst prover) (P₂ := Prover.snd prover)
+      (stmt := stmtIn) (wit := witIn)
+  -- RHS: `fst.run = runToRound last >>= pure`-pack; `snd.runToRound 0 = pure`.
+  have hsnd : ∀ (c : prover.PrvState ((Fin.last m).castLE
+      (show m + 1 ≤ m + n + 1 by omega)) × Unit), HEq
+      ((Prover.snd prover).runToRound i₂.1.castSucc c.1 c.2)
+      (pure ((default : pSpec₂.Transcript 0),
+        (Prover.snd prover).input (c.1, c.2)) :
+        OracleComp (oSpec + [pSpec₂.Challenge]ₒ) _) := by
+    intro c
+    refine HEq.trans (Prover.runToRound_heq_index hcs0 (Prover.snd prover) c.1 c.2) ?_
+    rfl
+  -- Unfold `fst.run` (pure output) and collapse `snd.runToRound 0` on the RHS.
+  conv_rhs => rw [Prover.run_eq_runToRound_last]
+  simp only [liftM_bind, bind_assoc, liftM_pure, pure_bind]
+  -- Both sides now head with the phase-1 partial run; reduce along `hseam`.
+  refine Prover.bind_heq_congr ?_ ?_ hseam (fun x x' hx => ?_)
+  · rw [hidx, Prover.append_Transcript_castLE (Fin.last m)]
+    rfl
+  · rw [show (⟨m + ((i₂.1.castSucc : Fin (n + 1)) : ℕ), by omega⟩ : Fin (m + n + 1))
+        = (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc from by
+      ext; simp [ChallengeIdx.inr]]
+  · -- Collapse the (pure) `fst.output`, exposing the `snd.runToRound 0` bind.
+    simp only [show prover.fst.output x'.2 = pure (x'.2, ()) from rfl, liftM_pure, pure_bind]
+    -- Collapse `snd.runToRound (castSucc i₂ = 0)` definitionally after the index rewrite.
+    rw [show (i₂.1.castSucc : Fin (n + 1)) = 0 from hcs0]
+    simp only [liftM_pure, pure_bind,
+      show ∀ (a) (b), Prover.runToRound (0 : Fin (n + 1)) a b prover.snd
+        = pure (default, prover.snd.input (a, b)) from fun _ _ => rfl]
+    -- Both sides: `challenge ≫ pure`; the transcript components match via the seam transport.
+    have hidxm : (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc
+        = ((⟨m, by omega⟩ : Fin (m + n)).castSucc : Fin (m + n + 1)) := by
+      ext; simp [ChallengeIdx.inr, hz]
+    refine Prover.bind_heq_congr rfl ?_ HEq.rfl (fun c c' hc => ?_)
+    · rw [show (⟨m + ((0 : Fin (n + 1)) : ℕ), by omega⟩ : Fin (m + n + 1))
+          = (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc from by
+        ext; simp [ChallengeIdx.inr, hz]]
+    · obtain rfl := eq_of_heq hc
+      refine Prover.pure_heq_pure (by
+        rw [show (⟨m + ((0 : Fin (n + 1)) : ℕ), by omega⟩ : Fin (m + n + 1))
+            = (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc from by
+          ext; simp [ChallengeIdx.inr, hz]]) ?_
+      refine Prover.prodMk_heq (by
+        rw [show (⟨m + ((0 : Fin (n + 1)) : ℕ), by omega⟩ : Fin (m + n + 1))
+            = (ChallengeIdx.inr (pSpec₁ := pSpec₁) i₂).1.castSucc from by
+          ext; simp [ChallengeIdx.inr, hz]]) rfl ?_ HEq.rfl
+      -- the transcript component: `x.1 ≍ appendRight x'.1 default` via the seam transport
+      obtain ⟨ht, hs⟩ := Prover.prod_heq_split
+        (by rw [hidx, Prover.append_Transcript_castLE (Fin.last m)])
+        (by rw [hidx]; rfl) hx
+      -- transport `x.1` to the `⟨m⟩.castSucc` index and apply the free-`hT` seam decomposition
+      have hx1m : HEq x.1 (cast (congrArg ((pSpec₁ ++ₚ pSpec₂).Transcript) hidxm) x.1) :=
+        (cast_heq _ _).symm
+      have hseamT := Prover.seam_transcript_appendRight (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂)
+        hn (cast (congrArg ((pSpec₁ ++ₚ pSpec₂).Transcript) hidxm) x.1)
+      refine HEq.trans hx1m ?_
+      rw [hseamT]
+      -- `appendRight (cast …) default ≍ appendRight x'.1 default`: the casts compose to `ht`
+      have hcc : cast (Prover.append_Transcript_seam_castSucc hn)
+          (cast (congrArg ((pSpec₁ ++ₚ pSpec₂).Transcript) hidxm) x.1) = x'.1 := by
+        apply eq_of_heq
+        exact ((cast_heq _ _).trans (cast_heq _ _)).trans ht
+      rw [hcc]
+      exact HEq.rfl
+
 end Verifier

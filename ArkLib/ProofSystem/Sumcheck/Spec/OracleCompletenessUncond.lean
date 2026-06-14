@@ -35,7 +35,7 @@ The binary fusion `(★)` is now **PROVEN** (sorry-free, axiom-clean) as
 discharges the named hypothesis `OracleVerifier.BinaryVerifierFusion oSpec` directly from it
 (`binaryVerifierFusion_proof`), and feeds that into `oracleReductionToReductionResidual_of_binary`
 to obtain the Sumcheck bridge `hBridge` from `hPerRound` *alone*
-(`oracleReductionToReductionResidual_of_perRound`).
+(`oracleReductionToReduction_of_perRound`).
 
 Consequently the multi-round oracle-level completeness theorem
 `oracleReduction_perfectCompleteness_uncond` no longer carries `hBridge`: the only remaining
@@ -81,8 +81,17 @@ set_option linter.unusedSectionVars false in
 `oracleReductionToReductionResidual_of_binary` reduces the bridge `hBridge` to the two ingredients
 `hBinaryFusion` and `hPerRound`. The first is now discharged unconditionally
 (`binaryVerifierFusion_proof`), so the whole bridge follows from the single-round
-`liftContext`-commutation fact `hPerRound`. -/
-theorem oracleReductionToReductionResidual_of_perRound
+`liftContext`-commutation fact `hPerRound`.
+
+**LEGACY (audit 2026-06-10).** The target Prop `oracleReductionToReductionResidual` is
+superseded and suspected false as stated (its per-round input `hPerRound` is the documented
+suspected-false single-round `oracleReduction_eq_reduction`; see the note on the residual def
+in `OracleCompleteness.lean`).  The binary-fusion half proven here is genuine
+(`binaryVerifierFusion_proof` via `oracleVerifier_append_toVerifier`), but nothing on the live
+path consumes this implication — the bridge-free apex is
+`oracleReduction_perfectCompleteness_unconditional` (`OracleCompletenessUncondCorrect.lean`).
+Kept as a historical reduction record. -/
+theorem oracleReductionToReduction_of_perRound
     (hPerRound : ∀ i, (SingleRound.oracleReduction R n deg D oSpec i).toReduction =
       SingleRound.reduction R n deg D oSpec i) :
     oracleReductionToReductionResidual R deg D n oSpec :=
@@ -112,10 +121,10 @@ theorem oracleReduction_perfectCompleteness_uncond
     (oracleReduction R deg D n oSpec).perfectCompleteness init impl
       (relationRound R n deg D 0) (relationRound R n deg D (Fin.last n)) :=
   oracleReduction_perfectCompleteness_of_bridge
-    (oracleReductionToReductionResidual_of_perRound hPerRound) hInit hImplSupp
+    (oracleReductionToReduction_of_perRound hPerRound) hInit hImplSupp
 
 end Sumcheck.Spec
 
 #print axioms Sumcheck.Spec.binaryVerifierFusion_proof
-#print axioms Sumcheck.Spec.oracleReductionToReductionResidual_of_perRound
+#print axioms Sumcheck.Spec.oracleReductionToReduction_of_perRound
 #print axioms Sumcheck.Spec.oracleReduction_perfectCompleteness_uncond

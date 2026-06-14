@@ -49,6 +49,7 @@ open scoped ENNReal
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
          {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 
+omit [DecidableEq ι] in
 /-- **Corollary 4.11 in the unique-decoding regime.** The pair power generator
 `genRSC (Fin 2) φ m exp` (exponents `(0, 1)`, affine-line combiner `(1, γ)`) is a proximity
 generator with mutual correlated agreement for every smooth Reed–Solomon code

@@ -5,6 +5,7 @@ Authors: Eliza
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ProximityGap.MCACurveEvent
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
 
 /-!
@@ -37,12 +38,15 @@ exponent map `exp : Fin parℓ → ℕ` is left general; the canonical RS choice
 ## Main results
 
 - `ProximityGapP.epsMCAP_mono` — monotonicity in `δ` (analogue of `ProximityGap.epsMCA_mono`).
+- `ProximityGapP.pairJointAgreesOnP_iff_stackJointAgreesOn` — identifies the `epsMCAP`
+  joint-agreement clause with the row-index-general stack-agreement API.
+- `ProximityGapP.mcaEventP_val_iff_mcaEventCurve` — identifies the canonical exponent
+  `exp j = j` specialization with `ProximityGap.mcaEventCurve`.
+- `ProximityGapP.epsMCAP_val_eq_epsMCACurve` — the corresponding equality of error functions.
 - `ProximityGapP.pairJointAgreesOnP_two_iff` — the `Fin 2` specialization of
   `pairJointAgreesOnP` is equivalent to `ProximityGap.pairJointAgreesOn`.
-- `ProximityGapP.epsMCAP_two_le_epsMCA` — the `Fin 2` / `exp = id` specialization of
-  `epsMCAP` is `≤` the existing `ProximityGap.epsMCA` (bridge lemma; in fact the per-`u`
-  events coincide, so the supremum is dominated). This directly relates the general layer
-  back to the established `Fin 2` ceiling.
+- `ProximityGapP.epsMCAP_two_eq_epsMCA` — the `Fin 2` / `exp = id` specialization of
+  `epsMCAP` is exactly the existing `ProximityGap.epsMCA`.
 - `ProximityGapP.Pr_proximityConditionP_le_epsMCAP` — the general-`parℓ` analogue of
   `MutualCorrAgreement.Pr_proximityCondition_le_epsMCA`: the probability over `γ ←$ᵖ F` of
   WHIR's `proximityCondition` with the power-generator `r = fun j ↦ γ^(exp j)` is bounded
@@ -105,6 +109,93 @@ noncomputable def epsMCAP {parℓ : ℕ} (C : Set (ι → A)) (exp : Fin parℓ 
   ⨆ u : WordStack A (Fin parℓ) ι,
     Pr_{let γ ← $ᵖ F}[mcaEventP C exp δ u γ]
 
+/-! ## Bridges to the row-index-general stack and curve MCA APIs -/
+
+/-- The `pairJointAgreesOnP` predicate is definitionally the same row-index-general
+stack-agreement predicate as `ProximityGap.stackJointAgreesOn`. This bridge lets
+`epsMCAP` arguments reuse the rowwise product API from `StackJointAgreement.lean`. -/
+theorem pairJointAgreesOnP_iff_stackJointAgreesOn {parℓ : ℕ}
+    (C : Set (ι → A)) (S : Finset ι) (u : WordStack A (Fin parℓ) ι) :
+    pairJointAgreesOnP C S u ↔ ProximityGap.stackJointAgreesOn C S u := by
+  rfl
+
+/-- Rowwise split for `pairJointAgreesOnP`: a stack agrees jointly on `S` iff each row
+independently has a codeword agreeing with it on `S`. -/
+theorem pairJointAgreesOnP_iff_forall_row {parℓ : ℕ}
+    (C : Set (ι → A)) (S : Finset ι) (u : WordStack A (Fin parℓ) ι) :
+    pairJointAgreesOnP C S u ↔ ∀ j : Fin parℓ, ∃ v ∈ C, ∀ i ∈ S, v i = u j i := by
+  rw [pairJointAgreesOnP_iff_stackJointAgreesOn]
+  exact ProximityGap.stackJointAgreesOn_iff_forall_row C S u
+
+/-- A single row that cannot agree with any codeword on `S` rules out joint agreement for
+the whole `pairJointAgreesOnP` stack. -/
+theorem not_pairJointAgreesOnP_of_not_row {parℓ : ℕ}
+    (C : Set (ι → A)) (S : Finset ι) (u : WordStack A (Fin parℓ) ι) (j : Fin parℓ)
+    (hrow : ¬ ∃ v ∈ C, ∀ i ∈ S, v i = u j i) :
+    ¬ pairJointAgreesOnP C S u := by
+  rw [pairJointAgreesOnP_iff_stackJointAgreesOn]
+  exact ProximityGap.not_stackJointAgreesOn_of_not_row C S u j hrow
+
+/-- The old `jointAgreement` API is equivalent to the existence of a large
+`pairJointAgreesOnP` witness set. -/
+theorem jointAgreement_iff_exists_pairJointAgreesOnP {parℓ : ℕ}
+    (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin parℓ) ι) :
+    jointAgreement (C := C) (W := u) δ ↔
+      ∃ S : Finset ι,
+        (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧ pairJointAgreesOnP C S u := by
+  rw [ProximityGap.jointAgreement_iff_exists_stackJointAgreesOn C δ u]
+  rfl
+
+/-- Contrapositive transport from `jointAgreement` to the `pairJointAgreesOnP` witness
+shape used in `mcaEventP`. -/
+theorem not_pairJointAgreesOnP_of_not_jointAgreement {parℓ : ℕ}
+    (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin parℓ) ι) (S : Finset ι)
+    (hcard : (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι)
+    (hnja : ¬ jointAgreement (C := C) (W := u) δ) :
+    ¬ pairJointAgreesOnP C S u := by
+  rw [pairJointAgreesOnP_iff_stackJointAgreesOn]
+  exact ProximityGap.not_stackJointAgreesOn_of_not_jointAgreement C δ u S hcard hnja
+
+@[simp]
+theorem curveComb_val_apply {parℓ : ℕ} (u : WordStack A (Fin parℓ) ι) (γ : F) (i : ι) :
+    curveComb (ι := ι) (A := A) (fun j : Fin parℓ => (j : ℕ)) u γ i =
+      ∑ j : Fin parℓ, γ ^ (j : ℕ) • u j i := rfl
+
+/-- With the canonical exponent map `j ↦ j`, `curveComb` is the curve combiner used by
+`ProximityGap.mcaEventCurve`. -/
+theorem curveComb_val_eq_curve {parℓ : ℕ} (u : WordStack A (Fin parℓ) ι) (γ : F) :
+    curveComb (ι := ι) (A := A) (fun j : Fin parℓ => (j : ℕ)) u γ =
+      fun i => ∑ j : Fin parℓ, γ ^ (j : ℕ) • u j i := rfl
+
+/-- The canonical-exponent `mcaEventP` is exactly the existing curve MCA event. -/
+theorem mcaEventP_val_iff_mcaEventCurve {parℓ : ℕ}
+    (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin parℓ) ι) (γ : F) :
+    mcaEventP C (fun j : Fin parℓ => (j : ℕ)) δ u γ ↔
+      ProximityGap.mcaEventCurve C δ u γ := by
+  rw [mcaEventP, ProximityGap.mcaEventCurve]
+  rfl
+
+open Classical in
+/-- The canonical-exponent power-generator MCA error is the curve MCA error. This is the
+DRY bridge between the arbitrary-exponent `epsMCAP` API and the fixed Vandermonde-curve
+`epsMCACurve` API. -/
+theorem epsMCAP_val_eq_epsMCACurve {parℓ : ℕ} (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCAP (F := F) C (fun j : Fin parℓ => (j : ℕ)) δ =
+      ProximityGap.epsMCACurve (F := F) C parℓ δ := by
+  unfold epsMCAP ProximityGap.epsMCACurve
+  exact iSup_congr fun u =>
+    le_antisymm
+      (Pr_le_Pr_of_implies _ _ _ fun γ h =>
+        (mcaEventP_val_iff_mcaEventCurve C δ u γ).mp h)
+      (Pr_le_Pr_of_implies _ _ _ fun γ h =>
+        (mcaEventP_val_iff_mcaEventCurve C δ u γ).mpr h)
+
+/-- Reverse-orientation alias for callers starting from `epsMCACurve`. -/
+theorem epsMCACurve_eq_epsMCAP_val {parℓ : ℕ} (C : Set (ι → A)) (δ : ℝ≥0) :
+    ProximityGap.epsMCACurve (F := F) C parℓ δ =
+      epsMCAP (F := F) C (fun j : Fin parℓ => (j : ℕ)) δ :=
+  (epsMCAP_val_eq_epsMCACurve (F := F) C δ).symm
+
 /-! ## Monotonicity in `δ` -/
 
 /-- **`epsMCAP` is monotone in `δ`.** A larger proximity radius `δ` only *weakens* the size
@@ -124,6 +215,44 @@ theorem epsMCAP_mono {parℓ : ℕ} (C : Set (ι → A)) (exp : Fin parℓ → �
   obtain ⟨S, hS_card, hcurve, hpair⟩ := h_event
   exact ⟨S, le_trans (mul_le_mul_of_nonneg_right (tsub_le_tsub_left h 1) (zero_le _)) hS_card,
     hcurve, hpair⟩
+
+open Classical in
+/-- The general power-generator MCA error is bounded by total probability mass. -/
+theorem epsMCAP_le_one {parℓ : ℕ} (C : Set (ι → A)) (exp : Fin parℓ → ℕ) (δ : ℝ≥0) :
+    epsMCAP (F := F) C exp δ ≤ 1 := by
+  unfold epsMCAP
+  refine iSup_le fun u => ?_
+  exact ProximityGap.Pr_le_one ($ᵖ F) fun γ => mcaEventP C exp δ u γ
+
+/-- Any `mcaEventP` witness makes the corresponding power-generator curve `δ`-close to
+the code. This is the arbitrary-exponent analogue of
+`ProximityGap.mcaEventCurve_imp_relCloseToCode`. -/
+theorem mcaEventP_imp_relCloseToCode {parℓ : ℕ}
+    (C : Set (ι → A)) (exp : Fin parℓ → ℕ) (δ : ℝ≥0)
+    (u : WordStack A (Fin parℓ) ι) (γ : F)
+    (h : mcaEventP C exp δ u γ) :
+    δᵣ(curveComb exp u γ, C) ≤ δ := by
+  classical
+  obtain ⟨S, hS_card, ⟨w, hw_mem, hw_eq⟩, _hpair⟩ := h
+  rw [relCloseToCode_iff_relCloseToCodeword_of_minDist]
+  refine ⟨w, hw_mem, ?_⟩
+  rw [relCloseToWord_iff_exists_agreementCols]
+  refine ⟨S, (relDist_floor_bound_iff_complement_bound _ _ _).mpr hS_card, ?_⟩
+  intro j
+  refine ⟨fun hj => ?_, fun hne hj => ?_⟩
+  · exact (hw_eq j hj).symm
+  · exact hne ((hw_eq j hj).symm)
+
+open Classical in
+/-- Per-stack event domination: bad power-generator seeds are contained in the seeds where
+the combined curve is `δ`-close to the code. -/
+theorem mcaEventP_probability_le_curve_close_probability {parℓ : ℕ}
+    (C : Set (ι → A)) (exp : Fin parℓ → ℕ) (δ : ℝ≥0)
+    (u : WordStack A (Fin parℓ) ι) :
+    Pr_{let γ ← $ᵖ F}[mcaEventP C exp δ u γ] ≤
+      Pr_{let γ ← $ᵖ F}[δᵣ(curveComb exp u γ, C) ≤ δ] := by
+  exact Pr_le_Pr_of_implies _ _ _ fun γ h =>
+    mcaEventP_imp_relCloseToCode C exp δ u γ h
 
 /-! ## `Fin 2` specialization recovers the existing `epsMCA`
 
@@ -146,17 +275,30 @@ theorem curveComb_two_eq (u : WordStack A (Fin 2) ι) (γ : F) :
 theorem pairJointAgreesOnP_two_iff (C : Set (ι → A)) (S : Finset ι)
     (u : WordStack A (Fin 2) ι) :
     pairJointAgreesOnP C S u ↔ ProximityGap.pairJointAgreesOn C S (u 0) (u 1) := by
-  constructor
-  · rintro ⟨v, hv_mem, hv_agree⟩
-    refine ⟨v 0, hv_mem 0, v 1, hv_mem 1, ?_⟩
-    intro i hi
-    exact ⟨hv_agree i hi 0, hv_agree i hi 1⟩
-  · rintro ⟨v₀, hv₀, v₁, hv₁, hagree⟩
-    refine ⟨fun j => if j = 0 then v₀ else v₁, ?_, ?_⟩
-    · intro j; fin_cases j
-      · simpa using hv₀
-      · simpa using hv₁
-    · intro i hi j; fin_cases j <;> simp [(hagree i hi).1, (hagree i hi).2]
+  rw [pairJointAgreesOnP_iff_stackJointAgreesOn]
+  exact ProximityGap.stackJointAgreesOn_pair_iff C S u
+
+/-- At two rows, the canonical-exponent `mcaEventP` is the affine-line MCA event. -/
+theorem mcaEventP_two_iff_mcaEvent (C : Set (ι → A)) (δ : ℝ≥0)
+    (u : WordStack A (Fin 2) ι) (γ : F) :
+    mcaEventP C (fun j : Fin 2 => (j : ℕ)) δ u γ ↔
+      ProximityGap.mcaEvent C δ (u 0) (u 1) γ := by
+  rw [mcaEventP_val_iff_mcaEventCurve]
+  exact ProximityGap.mcaEventCurve_pair_iff C δ u γ
+
+/-- Forward event bridge from `mcaEventP` to affine-line `mcaEvent`. -/
+theorem mcaEventP_two_imp_mcaEvent (C : Set (ι → A)) (δ : ℝ≥0)
+    (u : WordStack A (Fin 2) ι) (γ : F)
+    (h : mcaEventP C (fun j : Fin 2 => (j : ℕ)) δ u γ) :
+    ProximityGap.mcaEvent C δ (u 0) (u 1) γ :=
+  (mcaEventP_two_iff_mcaEvent C δ u γ).mp h
+
+/-- Reverse event bridge from affine-line `mcaEvent` to canonical two-row `mcaEventP`. -/
+theorem mcaEvent_imp_mcaEventP_two (C : Set (ι → A)) (δ : ℝ≥0)
+    (u : WordStack A (Fin 2) ι) (γ : F)
+    (h : ProximityGap.mcaEvent C δ (u 0) (u 1) γ) :
+    mcaEventP C (fun j : Fin 2 => (j : ℕ)) δ u γ :=
+  (mcaEventP_two_iff_mcaEvent C δ u γ).mpr h
 
 /-- **Bridge lemma (`Fin 2`).** With the canonical RS exponent `exp j = (j : ℕ)`, the
 general-`parℓ` MCA error at `parℓ = 2` is bounded by the existing affine-line
@@ -179,6 +321,32 @@ theorem epsMCAP_two_le_epsMCA (C : Set (ι → A)) (δ : ℝ≥0) :
   · -- `¬ pairJointAgreesOn` from `¬ pairJointAgreesOnP` via the two-row equivalence.
     intro hpa
     exact hpair ((pairJointAgreesOnP_two_iff C S u).mpr hpa)
+
+open Classical in
+/-- Reverse inequality for the `Fin 2` specialization. Together with the older
+`epsMCAP_two_le_epsMCA`, this upgrades the bridge to equality. -/
+theorem epsMCA_le_epsMCAP_two (C : Set (ι → A)) (δ : ℝ≥0) :
+    ProximityGap.epsMCA (F := F) C δ ≤
+      epsMCAP (F := F) C (fun j : Fin 2 => (j : ℕ)) δ := by
+  unfold ProximityGap.epsMCA epsMCAP
+  apply iSup_mono
+  intro u
+  exact Pr_le_Pr_of_implies _ _ _ fun γ h =>
+    mcaEvent_imp_mcaEventP_two C δ u γ h
+
+/-- **Exact `Fin 2` bridge.** The general power-generator MCA error at the canonical
+two-row exponent is exactly the affine-line `epsMCA`. -/
+theorem epsMCAP_two_eq_epsMCA (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCAP (F := F) C (fun j : Fin 2 => (j : ℕ)) δ =
+      ProximityGap.epsMCA (F := F) C δ :=
+  le_antisymm (epsMCAP_two_le_epsMCA C δ) (epsMCA_le_epsMCAP_two C δ)
+
+/-- The two-row monotonicity theorem is a specialization of the arbitrary-exponent
+`epsMCAP_mono`, hence also of the curve-MCA monotonicity bridge. -/
+theorem epsMCA_mono_via_epsMCAP (C : Set (ι → A)) {δ δ' : ℝ≥0} (h : δ ≤ δ') :
+    ProximityGap.epsMCA (F := F) C δ ≤ ProximityGap.epsMCA (F := F) C δ' := by
+  rw [← epsMCAP_two_eq_epsMCA (F := F) C δ, ← epsMCAP_two_eq_epsMCA (F := F) C δ']
+  exact epsMCAP_mono C (fun j : Fin 2 => (j : ℕ)) h
 
 /-! ## WHIR `proximityCondition` (general `parℓ`) bound by `epsMCAP`
 

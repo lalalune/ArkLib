@@ -147,6 +147,19 @@ noncomputable def hyb2Line4TraceEager
             some ⟨.inr ⟨roundIdx, (stmt, messagesBefore)⟩,
               (challenge : pSpec.Challenge roundIdx)⟩)
 
+/-- CO25 §5.8 `Hyb₃` line 4, unsalted output surface: the salt-erasing per-entry remap.
+`Hyb₃` queries the **salted** basic-FS oracle `fᵢ((𝕩, τ̌), msgs)` (CO25 Eq. 54); the eager
+output surface is the unsalted `fsChallengeOracle`, so the trace map projects the salt out
+of every challenge-entry key. Shared-`oSpec` entries pass through verbatim. -/
+noncomputable def hyb3Line4SaltErase (Salt : Type)
+    (log : QueryLog (oSpec + fsChallengeOracle (StmtIn × Salt) pSpec)) :
+    UnitSampleM U (QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :=
+  pure (log.filterMap fun entry =>
+    match entry with
+    | ⟨.inl q, r⟩ => some ⟨.inl q, r⟩
+    | ⟨.inr ⟨roundIdx, ((stmt, _salt), messagesBefore)⟩, challenge⟩ =>
+        some ⟨.inr ⟨roundIdx, (stmt, messagesBefore)⟩, challenge⟩)
+
 end LineFourEager
 
 /-! ## Per-hybrid `gᵢ`-realizations (CO25 §5.8 / §5.4 Eq. 16) -/
@@ -195,6 +208,77 @@ noncomputable def gImplDecodedChallenge :
           (challengeSpec := eSpec (U := U) StmtIn pSpec δ) challenge
 
 variable {Salt : Type} [SaltCodec U δ Salt]
+
+/-- **Memoized `Hyb₁` `gᵢ`-realization** (CO25 §5.4 D2SAlgo Item 3): the `tr_i` memo is part
+of the simulator itself and therefore present in *every* hybrid, not only the `Hyb₃` bridge.
+On a fresh full key `(i, 𝕩, τ̂, α̂)` the encoded challenge oracle is queried once and the
+response committed; repeated keys replay the committed response without an external query.
+(The memo-free forward realization is kept above as `gImplEncodedForward` for reference; the
+ladder uses this memoized form so that the per-key log shapes and response stability agree
+across `Hyb₁`–`Hyb₃` — see the issue #314 ladder-repair note.) -/
+noncomputable def gImplEncodedForwardMemo (Salt : Type) [SaltCodec U δ Salt] :
+    GImpl (U := U) (StmtIn := StmtIn) (pSpec := pSpec) (δ := δ)
+      (gSpec (U := U) StmtIn pSpec δ) (D2SAlgoMemo StmtIn U δ Salt pSpec) :=
+  fun q => do
+    let memo ← get
+    match lookupD2SAlgoMemo (StmtIn := StmtIn) (U := U) (δ := δ) (Salt := Salt)
+        (pSpec := pSpec) memo q.1 q.2.1
+        (SaltCodec.encode (U := U) (δ := δ) (Salt := Salt) q.2.2.1) q.2.2.2 with
+    | some response => pure response
+    | none => do
+        let response ←
+          StateT.lift <|
+            OptionT.lift <|
+              (show OracleComp
+                  (D2SChallengePlusUnitOracle (U := U) (gSpec (U := U) StmtIn pSpec δ))
+                  (Vector U (challengeSize (pSpec := pSpec) q.1)) from
+                query
+                  (spec := D2SChallengePlusUnitOracle (U := U) (gSpec (U := U) StmtIn pSpec δ))
+                  (.inl q))
+        modify (fun m =>
+          insertD2SAlgoMemo (StmtIn := StmtIn) (U := U) (δ := δ) (Salt := Salt)
+            (pSpec := pSpec) m
+            { roundIdx := q.1, stmt := q.2.1,
+              salt := SaltCodec.encode (U := U) (δ := δ) (Salt := Salt) q.2.2.1,
+              encodedMessages := q.2.2.2, response := response })
+        pure response
+
+/-- **Memoized `Hyb₂` `gᵢ`-realization** (CO25 §5.4 Items 3 + 4(e)i): on a fresh full key,
+query the decoded challenge oracle `eᵢ`, sample one uniform `ψᵢ⁻¹` preimage, and commit it to
+the `tr_i` memo; repeated keys replay the committed encoding. Without the memo, a repeated
+key would re-sample a fresh `ψ⁻¹` preimage (visible to the prover) and re-log the external
+query — both divergences from the paper's simulator and from the `Hyb₃` bridge. -/
+noncomputable def gImplDecodedChallengeMemo (Salt : Type) [SaltCodec U δ Salt] :
+    GImpl (U := U) (StmtIn := StmtIn) (pSpec := pSpec) (δ := δ)
+      (eSpec (U := U) StmtIn pSpec δ) (D2SAlgoMemo StmtIn U δ Salt pSpec) :=
+  fun q => do
+    let memo ← get
+    match lookupD2SAlgoMemo (StmtIn := StmtIn) (U := U) (δ := δ) (Salt := Salt)
+        (pSpec := pSpec) memo q.1 q.2.1
+        (SaltCodec.encode (U := U) (δ := δ) (Salt := Salt) q.2.2.1) q.2.2.2 with
+    | some response => pure response
+    | none => do
+        let challenge ←
+          StateT.lift <|
+            OptionT.lift <|
+              (show OracleComp
+                  (D2SChallengePlusUnitOracle (U := U) (eSpec (U := U) StmtIn pSpec δ))
+                  (pSpec.Challenge q.1) from
+                query
+                  (spec := D2SChallengePlusUnitOracle (U := U) (eSpec (U := U) StmtIn pSpec δ))
+                  (.inl q))
+        let response ←
+          StateT.lift <|
+            OptionT.lift <|
+              uniformDeserializePreimage (pSpec := pSpec) (U := U)
+                (challengeSpec := eSpec (U := U) StmtIn pSpec δ) challenge
+        modify (fun m =>
+          insertD2SAlgoMemo (StmtIn := StmtIn) (U := U) (δ := δ) (Salt := Salt)
+            (pSpec := pSpec) m
+            { roundIdx := q.1, stmt := q.2.1,
+              salt := SaltCodec.encode (U := U) (δ := δ) (Salt := Salt) q.2.2.1,
+              encodedMessages := q.2.2.2, response := response })
+        pure response
 
 /-- Salt-erasing spec re-keying for the §5.4 Eq. 16 bridge target: a salted basic-FS challenge
 query `fᵢ((𝕩, τ̌), msgs)` is forwarded to the **unsalted** oracle as `fᵢ(𝕩, msgs)`; the
@@ -331,9 +415,11 @@ noncomputable def Hyb0 [SampleableType U]
 
 /-- CO25 §5.8 `Hyb₁`: prover and verifier run against the §5.4 simulator `D2SQuery^g` with
 the encoded challenge functions `g = (gᵢ)ᵢ ← 𝒟_Σ` sampled eagerly as one uniform table
-(CO25 Eq. 15); line-4 map `(φ⁻¹, ψ)`. -/
+(CO25 Eq. 15), `gᵢ` realized through the `tr_i`-memoized forward (D2SAlgo Item 3 — the memo
+is part of the simulator and present in every hybrid); line-4 map `(φ⁻¹, ψ)`. -/
 noncomputable def Hyb1 [SampleableType U]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
+    (Salt : Type) [SaltCodec U δ Salt]
     [SampleableType (OracleFamily (gSpec (U := U) StmtIn pSpec δ))]
     (oImpl : QueryImpl oSpec ProbComp)
     (V : Verifier oSpec StmtIn StmtOut pSpec)
@@ -344,15 +430,16 @@ noncomputable def Hyb1 [SampleableType U]
       × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))) :=
   𝒟[hybGameEager (T_H := T_H) (T_P := T_P) δ
       (OracleDistribution.uniform (gSpec (U := U) StmtIn pSpec δ))
-      (gImplEncodedForward (StmtIn := StmtIn) (δ := δ))
+      (gImplEncodedForwardMemo (StmtIn := StmtIn) (δ := δ) Salt)
       (hyb1Line4TraceEager (δ := δ)) oImpl V P]
 
 /-- CO25 §5.8 `Hyb₂`: the decoded challenge functions `e = (eᵢ)ᵢ ← 𝒟_e` sampled eagerly as
-one uniform table (CO25 Eq. 52), `gᵢ` realized as `ψᵢ⁻¹ ∘ eᵢ` (uniform preimage sampling,
-CO25 §5.4 Item 4(e)i); line-4 map `φ⁻¹`. -/
+one uniform table (CO25 Eq. 52), `gᵢ` realized as the `tr_i`-memoized `ψᵢ⁻¹ ∘ eᵢ` (uniform
+preimage sampling on fresh keys, CO25 §5.4 Items 3 + 4(e)i); line-4 map `φ⁻¹`. -/
 noncomputable def Hyb2 [SampleableType U]
     [∀ i, Fintype (pSpec.Challenge i)] [∀ i, DecidableEq (pSpec.Challenge i)]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
+    (Salt : Type) [SaltCodec U δ Salt]
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
     (oImpl : QueryImpl oSpec ProbComp)
     (V : Verifier oSpec StmtIn StmtOut pSpec)
@@ -363,18 +450,21 @@ noncomputable def Hyb2 [SampleableType U]
       × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))) :=
   𝒟[hybGameEager (T_H := T_H) (T_P := T_P) δ
       (OracleDistribution.uniform (eSpec (U := U) StmtIn pSpec δ))
-      (gImplDecodedChallenge (StmtIn := StmtIn) (δ := δ))
+      (gImplDecodedChallengeMemo (StmtIn := StmtIn) (δ := δ) Salt)
       (hyb2Line4TraceEager (δ := δ)) oImpl V P]
 
-/-- CO25 §5.8 `Hyb₃`: the basic-FS challenge functions `f = (fᵢ)ᵢ ← 𝒟_IP` sampled eagerly as
-one uniform table (CO25 Eq. 54 — the **same** distribution as the `Hyb₄` endpoint), `gᵢ`
-realized by the §5.4 Eq. 16 memoized codec bridge with salt erased at the `fᵢ` boundary
-(`d2sCodecBridgeImplMemoEager`); line-4 map = identity. -/
+/-- CO25 §5.8 `Hyb₃`: the **salted** basic-FS challenge functions `f = (fᵢ)ᵢ ← 𝒟_IP`
+(CO25 Eq. 54 keys `fᵢ` on the salted statement `(𝕩, τ̌)`), `gᵢ` realized by the §5.4 Eq. 16
+memoized codec bridge `ψᵢ⁻¹ ∘ fᵢ ∘ φᵢ⁻¹` (`d2sCodecBridgeImplMemo`, **without** salt
+erasure — the salt-erased bridge made `Δ(Hyb₂, Hyb₃) = 0` false by correlating challenges
+across salts; see the issue #314 ladder-repair note); line-4 map = the salt-erasing log
+projection onto the unsalted eager output surface. The salt-collision cost moves to the
+`Hyb₃ → Hyb₄` leg, where the Claim 5.24 verifier-replay budget lives. -/
 noncomputable def Hyb3 [SampleableType U]
     [∀ i, Fintype (pSpec.Challenge i)] [∀ i, DecidableEq (pSpec.Challenge i)]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
     (Salt : Type) [SaltCodec U δ Salt]
-    [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
@@ -383,9 +473,9 @@ noncomputable def Hyb3 [SampleableType U]
       × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)
       × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))) :=
   𝒟[hybGameEager (T_H := T_H) (T_P := T_P) δ
-      (OracleDistribution.uniform (fsChallengeOracle StmtIn pSpec))
-      (d2sCodecBridgeImplMemoEager (StmtIn := StmtIn) (δ := δ) (Salt := Salt))
-      (fun log => pure log) oImpl V P]
+      (OracleDistribution.uniform (fsChallengeOracle (StmtIn × Salt) pSpec))
+      (d2sCodecBridgeImplMemo (StmtIn := StmtIn) (δ := δ) (Salt := Salt))
+      (hyb3Line4SaltErase Salt) oImpl V P]
 
 /-- CO25 §5.8 `Hyb₄`: the eager basic-FS game with `f ← 𝒟_IP` (uniform, the same distribution
 as `Hyb₃`) against a basic-FS prover `P'`. **Definitionally** the left-hand side of
@@ -620,6 +710,7 @@ def Hyb01StepResidual [SampleableType U]
     [SampleableType (StmtIn → Vector U SpongeSize.C)]
     [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
+    (Salt : Type) [SaltCodec U δ Salt]
     [SampleableType (OracleFamily (gSpec (U := U) StmtIn pSpec δ))]
     (oImpl : QueryImpl oSpec ProbComp) : Prop :=
   ∀ (V : Verifier oSpec StmtIn StmtOut pSpec)
@@ -630,7 +721,7 @@ def Hyb01StepResidual [SampleableType U]
     IsQueryBoundP P (fun j => dsQueryFlavor j = .hash) tₕ →
     IsQueryBoundP P (fun j => dsQueryFlavor j = .perm) tₚ →
     IsQueryBoundP P (fun j => dsQueryFlavor j = .permInv) tₚᵢ →
-    SPMF.tvDist (Hyb0 T_H T_P δ oImpl V P) (Hyb1 T_H T_P δ oImpl V P)
+    SPMF.tvDist (Hyb0 T_H T_P δ oImpl V P) (Hyb1 T_H T_P δ Salt oImpl V P)
       ≤ claim5_21Bound U tₕ tₚ tₚᵢ L
 
 /-- CO25 Claim 5.22 residual (Eq. 53) — `Δ(Hyb₁, Hyb₂) ≤ θ★ · maxᵢ ε_cdc,i + Σᵢ ε_cdc,i`:
@@ -640,6 +731,7 @@ the verifier side. Open: requires `Codec.decode_isBiased` pushed through the sim
 def Hyb12StepResidual [SampleableType U]
     [∀ i, Fintype (pSpec.Challenge i)] [∀ i, DecidableEq (pSpec.Challenge i)]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
+    (Salt : Type) [SaltCodec U δ Salt]
     [SampleableType (OracleFamily (gSpec (U := U) StmtIn pSpec δ))]
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
     (oImpl : QueryImpl oSpec ProbComp) : Prop :=
@@ -651,7 +743,7 @@ def Hyb12StepResidual [SampleableType U]
     IsQueryBoundP P (fun j => dsQueryFlavor j = .hash) tₕ →
     IsQueryBoundP P (fun j => dsQueryFlavor j = .perm) tₚ →
     IsQueryBoundP P (fun j => dsQueryFlavor j = .permInv) tₚᵢ →
-    SPMF.tvDist (Hyb1 T_H T_P δ oImpl V P) (Hyb2 T_H T_P δ oImpl V P)
+    SPMF.tvDist (Hyb1 T_H T_P δ Salt oImpl V P) (Hyb2 T_H T_P δ Salt oImpl V P)
       ≤ claim5_22Bound (pSpec := pSpec) tₕ tₚ tₚᵢ codec.decodingBias
 
 /-- CO25 Claim 5.23 residual — `Δ(Hyb₂, Hyb₃) = 0`: the two hybrids differ only in the query
@@ -664,12 +756,12 @@ def Hyb23StepResidual [SampleableType U]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
     (Salt : Type) [SaltCodec U δ Salt]
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
-    [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp) : Prop :=
   ∀ (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
       (StmtIn × pSpec.Messages)),
-    SPMF.tvDist (Hyb2 T_H T_P δ oImpl V P) (Hyb3 T_H T_P δ Salt oImpl V P) = 0
+    SPMF.tvDist (Hyb2 T_H T_P δ Salt oImpl V P) (Hyb3 T_H T_P δ Salt oImpl V P) = 0
 
 /-- CO25 Claim 5.24 residual (Eq. 55) —
 `Δ(Hyb₃, Hyb₄) ≤ 7L(2tₕ+2+2tₚ+L+2tₚᵢ)/(2|Σ|^c) − 5(L+1)/|Σ|^c`: `Hyb₃` and `Hyb₄` use the
@@ -683,7 +775,9 @@ def Hyb34StepResidual [SampleableType U]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
     (Salt : Type) [SaltCodec U δ Salt]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp) : Prop :=
   ∀ (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
@@ -724,11 +818,12 @@ theorem keyLemmaEager_of_steps
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
     (Salt : Type) [SaltCodec U δ Salt]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (h01 : Hyb01StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h12 : Hyb12StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h23 : Hyb23StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
       (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h34 : Hyb34StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
@@ -752,7 +847,8 @@ theorem keyLemmaEager_of_steps
   · -- the total-variation bound, assembled across the ladder
     have hchain :=
       tvDist_chain4
-        (Hyb0 T_H T_P δ oImpl V P) (Hyb1 T_H T_P δ oImpl V P) (Hyb2 T_H T_P δ oImpl V P)
+        (Hyb0 T_H T_P δ oImpl V P) (Hyb1 T_H T_P δ Salt oImpl V P)
+        (Hyb2 T_H T_P δ Salt oImpl V P)
         (Hyb3 T_H T_P δ Salt oImpl V P)
         (Hyb4 oImpl V
           (eagerSimulatedProver (T_H := T_H) (T_P := T_P) (δ' := δ) (Salt' := Salt) P))

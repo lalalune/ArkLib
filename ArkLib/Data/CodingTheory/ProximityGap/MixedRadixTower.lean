@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib
+import ArkLib.Data.CodingTheory.ProximityGap.CRTDoubleSlice
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
 
 /-!
@@ -495,49 +496,23 @@ lemma base_case_window_ge_level [DecidableEq F] {M p w : ℕ} (hM : 0 < M) (hw :
 
 end BaseCaseDischarges
 
-/-! ## Lam–Leung at prime powers (the proven base case), copied with provenance
+/-! ## Lam–Leung at prime powers (the proven base case)
 
-The two lemmas of this section are copied verbatim from
-`ArkLib/Data/CodingTheory/ProximityGap/LamLeungTwoPow.lean`
-(`LamLeungTwoPow.packet_mul_coeff`, `LamLeungTwoPow.vanishing_sum_mu_p_closed`,
-DISPROOF_LOG O66): that file has no compiled `.olean` in the shared tree, so it cannot be
-imported here. They make the base-case family PROVEN at every prime-power level, which
-the next section uses to close the skeleton unconditionally on pure prime-power
-domains. -/
+The sparse packet coefficient calculation is shared with the CRT double-slice layer via
+`CRTDoubleSlice.packet_slice_coeff`; the closure theorem below packages the resulting
+prime-power Lam–Leung base case in the form consumed by the mixed-radix tower. -/
 
 section PrimePowerBase
 
 /-- Slices of a geometric-packet multiple: if `deg R < q` then
 `(Σ_{i<p} X^{iq} · R).coeff (iq + s) = R.coeff s` for `i < p`, `s < q`.
-(Provenance: `LamLeungTwoPow.packet_mul_coeff`, verbatim.) -/
+(Wrapper around `CRTDoubleSlice.packet_slice_coeff`.) -/
 lemma packet_mul_coeff {p q : ℕ} (_hq : 0 < q) {R : ℚ[X]} (hR : R.natDegree < q)
     {i s : ℕ} (hi : i < p) (hs : s < q) :
     ((∑ i ∈ Finset.range p, (Polynomial.X : ℚ[X]) ^ (i * q)) * R).coeff (i * q + s)
       = R.coeff s := by
-  rw [Finset.sum_mul, Polynomial.finset_sum_coeff]
-  rw [Finset.sum_eq_single i]
-  · rw [show i * q + s = s + i * q from by ring, Polynomial.coeff_X_pow_mul]
-  · intro j hj hji
-    rw [Polynomial.coeff_X_pow_mul']
-    rcases lt_or_ge (i * q + s) (j * q) with hlt | hge
-    · rw [if_neg (by omega)]
-    · rw [if_pos hge]
-      apply Polynomial.coeff_eq_zero_of_natDegree_lt
-      rcases lt_or_ge j i with hji' | hji'
-      · have : i * q + s - j * q ≥ q := by
-          have h1 : (j + 1) * q ≤ i * q := Nat.mul_le_mul_right q (by omega)
-          have h2 : j * q + q ≤ i * q := by
-            calc j * q + q = (j + 1) * q := by ring
-            _ ≤ i * q := h1
-          omega
-        omega
-      · have hj1 : i + 1 ≤ j := by omega
-        have : i * q + q ≤ j * q := by
-          calc i * q + q = (i + 1) * q := by ring
-          _ ≤ j * q := Nat.mul_le_mul_right q hj1
-        omega
-  · intro hnotin
-    exact absurd (Finset.mem_range.mpr hi) hnotin
+  exact CRTDoubleSlice.packet_slice_coeff (K := ℚ) (p := p) (q := q) (R := R)
+    hR hi hs
 
 /-- **Lam–Leung at prime powers**: in characteristic zero, a finite set of `p^(m+1)`-th
 roots of unity with vanishing sum is closed under multiplication by every `p`-th root of

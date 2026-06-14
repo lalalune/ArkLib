@@ -43,7 +43,7 @@ entire `Soundness/` subtree is **never-compiled** (all 7 oleans absent) and curr
   for `lt_r_of_lt_ℓ`/`lt_r_of_le_ℓ`/`k_mul_ϑ_lt_ℓ`/`queryBlockDestIdx_eq_queryBlockSourceIdx_succ`/
   `UDRClose_of_fin_eq`, kernel `unknown constant extractSuffixFromChallenge_congr_destIdx`, and two
   `whnf` heartbeat timeouts (`:833`, `:951`).
-- `Soundness/{Proposition4_21,Incremental,FoldDistance,BadBlocks,QueryPhaseSoundness}` — also
+- `Soundness/{Proposition421,Incremental,FoldDistance,BadBlocks,QueryPhaseSoundness}` — also
   uncompiled (oleans absent); `BadBlocks` imports `QueryPhasePrelims`.
 
 Repairing this whole layer is a substantial multi-session port against the refactored Binius

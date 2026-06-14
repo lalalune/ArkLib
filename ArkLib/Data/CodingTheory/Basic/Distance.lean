@@ -161,6 +161,53 @@ lemma hammingDist_eq_disagreementCols_card (u v : n → R) :
     hammingDist u v = (disagreementCols u v).card := by
   simp only [hammingDist, disagreementCols, ne_eq]
 
+/-- The **agreement set** of two `(ι → R)`-words: the coordinates where they agree.
+
+This is the pointwise dual of `disagreementCols`. Its cardinality is the usual agreement
+count, and it partitions the coordinate set with `hammingDist`; see
+`agreementCols_card_add_hammingDist` and its two inequality corollaries below. -/
+def agreementCols (u v : n → R) : Finset n :=
+  Finset.filter (fun i => u i = v i) Finset.univ
+
+@[simp]
+lemma mem_agreementCols {u v : n → R} {i : n} :
+    i ∈ agreementCols u v ↔ u i = v i := by
+  simp [agreementCols]
+
+/-- Agreement count plus Hamming distance partitions the coordinate set. -/
+lemma agreementCols_card_add_hammingDist (u v : n → R) :
+    (agreementCols u v).card + hammingDist u v = Fintype.card n := by
+  classical
+  simpa [agreementCols, hammingDist] using
+    (Finset.card_filter_add_card_filter_not
+      (s := (Finset.univ : Finset n)) (p := fun i : n => u i = v i))
+
+/-- The agreement count is the complement of the Hamming distance. -/
+lemma agreementCols_card_eq_card_sub_hammingDist (u v : n → R) :
+    (agreementCols u v).card = Fintype.card n - hammingDist u v := by
+  have hpartition := agreementCols_card_add_hammingDist u v
+  omega
+
+/-- The Hamming distance is the complement of the agreement count. -/
+lemma hammingDist_eq_card_sub_agreementCols_card (u v : n → R) :
+    hammingDist u v = Fintype.card n - (agreementCols u v).card := by
+  have hpartition := agreementCols_card_add_hammingDist u v
+  omega
+
+/-- A lower bound on agreement gives the complementary upper bound on Hamming distance. -/
+lemma hammingDist_le_card_sub_of_agreementCols_card_ge {u v : n → R} {a : ℕ}
+    (ha : a ≤ (agreementCols u v).card) :
+    hammingDist u v ≤ Fintype.card n - a := by
+  have hpartition := agreementCols_card_add_hammingDist u v
+  omega
+
+/-- A lower bound on Hamming distance gives the complementary upper bound on agreement. -/
+lemma agreementCols_card_le_card_sub_of_hammingDist_ge {u v : n → R} {d : ℕ}
+    (hd : d ≤ hammingDist u v) :
+    (agreementCols u v).card ≤ Fintype.card n - d := by
+  have hpartition := agreementCols_card_add_hammingDist u v
+  omega
+
 /-- The Hamming distance of a code `C` is the minimum Hamming distance between any two distinct
   elements of the code.
 We formalize this as the infimum `sInf` over all `d : ℕ` such that there exist `u v : n → R` in the

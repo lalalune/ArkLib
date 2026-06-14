@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeam
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDistChallenge
+import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 
 /-!
 # Challenge-seam append game-factoring (`hGameFactor` discharge for a `V_to_P` seam)
@@ -190,7 +191,7 @@ set_option maxHeartbeats 1600000 in
 /-- **Simulated analogue of `Prover.append_run_evalDist_challenge` (per-seed, under the honest
 state-preserving implementation).** The appended prover's run, simulated under
 `impl.addLift challengeQueryImpl` from any seed `s`, has the same `run'`-distribution as the
-sequential `P₁.run ≫ P₂.run`. Mirrors the bare `appendRunRightResidualDist_holds_challenge`:
+sequential `P₁.run ≫ P₂.run`. Mirrors the bare `appendRunRightDistResidual_holds_challenge`:
 the seam-split backbone and the final fold are syntactic; the per-seam right-block replacement is
 `simulateQ_continueFromTo_right_challenge_evalDist`, threaded through
 `evalDist_simulateQ_run'_bind`. -/
@@ -236,7 +237,7 @@ private theorem simulateQ_append_run_challenge_evalDist
       ← evalDist_simulateQ_run'_bind _ hso]
   rw [← evalDist_simulateQ_run'_bind _ hso]
   -- The appended LHS is now the message-discharge shape; close by the same syntactic factoring as
-  -- the bare `appendRunRightResidualDist_holds_challenge` ending, under the simulated `evalDist`.
+  -- the bare `appendRunRightDistResidual_holds_challenge` ending, under the simulated `evalDist`.
   refine congrArg (fun X => evalDist (StateT.run'
       (simulateQ (impl.addLift challengeQueryImpl :
         QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp)) X) s)) ?_
@@ -273,7 +274,7 @@ reduction run is, as an `OptionT` value, the appended prover's run followed by t
 on the two transcript halves. Mirror of `append_run_natural_msg`'s refold with the prover-side
 factoring *omitted* (it is false at a challenge seam); the verifier-side split is the definitional
 `Verifier.append`. -/
-private theorem append_run_eq_seamChain
+theorem append_run_eq_seamChain
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
     (stmt : Stmt₁) (wit : Wit₁) :
@@ -408,5 +409,86 @@ theorem append_completeness_challenge_via_seamFactor
     (fun stmt wit _ =>
       append_game_factor_challenge R₁ R₂ stmt wit hn hDir hDir₂ himplSP himplNF)
     hStage1Bridge hStage2Bridge hTot
+
+/-- **Challenge-seam factoring of the *malicious-prover* soundness game (`evalDist`-level,
+per-seed).** The soundness analogue of `append_game_factor_challenge`: the simulated run of an
+*arbitrary* malicious prover over `pSpec₁ ++ₚ pSpec₂` against the appended verifier `V₁.append V₂`
+has, per seed `s` under the state-preserving honest implementation, the same distribution as the
+**natural-order seam chain** `fst ≫ snd ≫ V₁ ≫ V₂` — the exact shape the union-bound machinery
+(`probComp_seam_swap_union_le`) consumes.
+
+The prover-side factoring is *distributional only* at a challenge seam (the appended prover samples
+the seam `getChallenge` before replaying `fst`'s output; syntactic `Prover.run_seam_factor` is
+false here): `Prover.merge_run` identifies the malicious prover with `fst ≫ snd` merged, and the
+simulated seam-challenge commute `simulateQ_append_run_challenge_evalDist` reorders it. The
+verifier-side split is the definitional `Verifier.append`. -/
+theorem soundness_game_factor_challenge
+    {WitIn WitOut : Type}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    (prover : Prover oSpec Stmt₁ WitIn Stmt₃ WitOut (pSpec₁ ++ₚ pSpec₂))
+    (stmt : Stmt₁) (wit : WitIn) (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (s : σ) :
+    evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp))
+        ((Reduction.run stmt wit ⟨prover, V₁.append V₂⟩).run)) s)
+      = evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp))
+        ((liftM (liftM (prover.fst.run stmt wit) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) >>= fun x =>
+          liftM (liftM (prover.snd.run x.2.1 x.2.2) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) >>= fun a =>
+          (MonadLift.monadLift (V₁.verify stmt x.1) :
+            OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) Stmt₂) >>= fun s₂ =>
+          (MonadLift.monadLift (V₂.verify s₂ a.1) :
+            OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) Stmt₃) >>= fun s₃ =>
+          pure ((x.1 ++ₜ a.1, a.2.1, a.2.2), s₃)).run)) s) := by
+  have hso := addLift_state_preserving (pSpec := pSpec₁ ++ₚ pSpec₂) impl himplSP
+  -- Syntactic seam chain (prover unfactored): mirror of `append_run_eq_seamChain` for the
+  -- malicious-prover reduction `⟨prover, V₁.append V₂⟩`.
+  have hchain : (Reduction.run stmt wit ⟨prover, V₁.append V₂⟩)
+      = ((liftM (prover.run stmt wit) :
+          OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+            (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × WitOut)) >>= fun pr =>
+        (MonadLift.monadLift (V₁.verify stmt pr.1.fst) :
+            OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) Stmt₂) >>= fun s₂ =>
+        (MonadLift.monadLift (V₂.verify s₂ pr.1.snd) :
+            OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) Stmt₃) >>= fun s₃ =>
+        pure (pr, s₃)) := by
+    simp only [Reduction.run, Verifier.append, Verifier.run, liftM_bind, bind_assoc,
+      OptionT.liftM_run_getM_bind, liftM_pure, pure_bind]
+    rfl
+  rw [hchain]
+  -- Strip the `OptionT` layer so the prover prefix is a plain `OracleComp` bind.
+  simp only [OptionT.run_bind, Option.elimM, lift_run_elim, OptionT.run_pure]
+  -- The simulated seam-challenge swap of the malicious prover's run (via `merge_run`).
+  have hPswap : evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp))
+        (prover.run stmt wit)) s)
+      = evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp))
+        ((do
+          let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (prover.fst.run stmt wit)
+          let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (prover.snd.run stmt₂ wit₂)
+          return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × WitOut))) s) := by
+    rw [show prover.run stmt wit
+        = ((Prover.fst prover).append (Prover.snd prover)).run stmt wit from
+      (Prover.merge_run prover hn stmt wit).symm]
+    exact simulateQ_append_run_challenge_evalDist (Prover.fst prover) (Prover.snd prover)
+      stmt wit hn hDir hDir₂ himplSP s
+  -- Split off the prover head, swap, refold.
+  rw [evalDist_simulateQ_run'_bind _ hso (prover.run stmt wit), hPswap,
+    ← evalDist_simulateQ_run'_bind _ hso]
+  -- Both sides are now the factored chain; the residual is the syntactic verifier-leg relabel.
+  refine congrArg (fun X => evalDist (StateT.run'
+      (simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp)) X) s)) ?_
+  simp only [OptionT.run_bind, Option.elimM, lift_run_elim, OptionT.run_pure, bind_assoc,
+    pure_bind, FullTranscript.append_fst, FullTranscript.append_snd]
 
 end Reduction

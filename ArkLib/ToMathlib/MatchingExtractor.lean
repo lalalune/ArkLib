@@ -9,7 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
 /-!
 # The `MatchingExtractor` residual of Proposition 5.5 — the GS matching-polynomial extraction
 
-`ArkLib.ToMathlib.Prop55` reduces Proposition 5.5 of [BCIKS20] to two named inputs: the GS-count
+`ArkLib.ToMathlib.BasefoldSingleRoundSoundness` reduces Proposition 5.5 of [BCIKS20] to two named inputs: the GS-count
 inequality `hcount` (discharged numerically) and the **matching-polynomial extraction predicate**
 `MatchingExtractor`.  The interpolant-existence half (`exists_interpolant`) is fully discharged by
 `SiegelInterpolation`'s engine; the *residual* is exactly `extract : MatchingExtractor prop Q pts`

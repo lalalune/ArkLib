@@ -162,33 +162,16 @@ theorem logup_soundness_full (sumcheckSoundnessError : ℝ≥0)
     (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
     hOuter hSumcheck hAppend
 
-/-- **Packaging form: end-to-end LogUp soundness from a single bundled residual.**
-
-Bundles the three obligations of `logup_soundness_full` into one `Prop` (dependent on the two
-soundness proofs, since the append residual is indexed by them) and re-derives the headline. This is
-the consumer-facing "one residual" front door for the corrected #13 soundness close. -/
-def LogupSoundnessFullResidual (sumcheckSoundnessError : ℝ≥0) : Prop :=
-  ∃ hOuter :
-      (outerVerifier oSpec F n M params).soundness init impl
-        (inputRelation F n M).language (midSoundnessProtocolLanguage F n M params)
-        (outerSoundnessError F n M params),
-    ∃ hSumcheck :
-        (sumcheckVerifier oSpec F n M params).soundness init impl
-          (midSoundnessProtocolLanguage F n M params) outputRelation.language
-          sumcheckSoundnessError,
-      OracleVerifier.appendSoundnessResidual (init := init) (impl := impl)
-        (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
-        hOuter hSumcheck
-
-/-- **End-to-end LogUp soundness from the bundled residual.** -/
-theorem logup_soundness_full_of_residual (sumcheckSoundnessError : ℝ≥0)
-    (h : LogupSoundnessFullResidual oSpec F n M params init impl sumcheckSoundnessError) :
-    (logupVerifier oSpec F n M params).soundness init impl
-      (inputRelation F n M).language outputRelation.language
-      (logupSoundnessError F n M params sumcheckSoundnessError) := by
-  obtain ⟨hOuter, hSumcheck, hAppend⟩ := h
-  exact logup_soundness_full oSpec F n M params init impl sumcheckSoundnessError
-    hOuter hSumcheck hAppend
+/-! The historical bundled front door `LogupSoundnessFullResidual` (and its consumer
+`logup_soundness_full_of_residual`) was DELETED in the #351 burn-down (2026-06-11): the
+2026-06-10 audit showed its `hOuter` conjunct (typed at `midSoundnessProtocolLanguage` with the
+paper error `outerSoundnessError`) is refuted in the typical (small-support, large-field)
+regime by `prob_midSoundnessLanguage_ge_compl_support` (`OuterSoundnessSharp.lean`), making the
+bundle uninstantiable there and every consumer vacuously conditional.  Live routes:
+`logup_soundness_end_to_end` (`OuterMaliciousSoundness.lean`, hOuter@`midLanguage` discharged)
+and the sharp-language route `outerVerifier_soundness_sharp` (`OuterRbrSoundness.lean`).
+Consumers holding the three obligations individually can still apply `logup_soundness_full`
+directly. -/
 
 end SoundnessClose
 
@@ -198,5 +181,3 @@ end Logup
 #print axioms Logup.midSoundnessProtocolLanguage
 #print axioms Logup.mem_midSoundnessProtocolLanguage_iff
 #print axioms Logup.logup_soundness_full
-#print axioms Logup.LogupSoundnessFullResidual
-#print axioms Logup.logup_soundness_full_of_residual

@@ -75,9 +75,14 @@ theorem BCSCompilerFrontierReady_iff :
       BCSPhaseRealizationFrontier phases ∧ BCSSecurityFrontierTargets frontier :=
   BCSCompilerFrontierSatisfied_iff
 
+-- NOTE: `BCSCompilerFrontierReady.security` is now provided by `BCS/Basic.lean`
+-- (af7ade8e8, returning the definitionally identical `BCSSecurityFrontierSatisfied`),
+-- which made the copy here a duplicate declaration. We keep only the `Targets`-typed
+-- variant under a distinct name for consumers of the packaged-conjunction interface.
+
 /-- **Project the five security targets** from a ready BCS compiler frontier. The security
-counterpart of `BCSCompilerFrontierReady.phase`. -/
-theorem BCSCompilerFrontierReady.security
+counterpart of `BCSCompilerFrontierReady.phase`, stated via `BCSSecurityFrontierTargets`. -/
+theorem BCSCompilerFrontierReady.securityTargets
     (h : BCSCompilerFrontierReady phases frontier) :
     BCSSecurityFrontierTargets frontier :=
   (BCSCompilerFrontierReady_iff.mp h).2
@@ -134,6 +139,7 @@ theorem BCSSecurityFrontierTargets.knowledge_soundness_preservation_target
 #print axioms BCSCompilerFrontierSatisfied_iff
 #print axioms BCSCompilerFrontierReady_iff
 #print axioms BCSCompilerFrontierReady.security
+#print axioms BCSCompilerFrontierReady.securityTargets
 #print axioms BCSCompilerFrontierReady.ofParts
 #print axioms BCSSecurityFrontierTargets.intro
 #print axioms BCSSecurityFrontierTargets.commitment_correctness_available

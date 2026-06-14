@@ -160,6 +160,73 @@ theorem X_pow_card_sub_X_eq_prod :
 
 end FinitePoints
 
+/-! ## The Hasse-derivative power rule — multiplicity of `g^r`-weighted auxiliaries.
+
+A Stepanov auxiliary that carries a factor `g^r` vanishes to *root multiplicity* `≥ r` at every
+root of `g`, in **every** characteristic. The mechanism is the char-free power rule
+`g^(r−k) ∣ E^k(g^r)` (Hanson, *Stepanov's Method for Hyperelliptic Curves*, Lemma 2): a `g^r`
+prefactor survives `k` Hasse derivatives as `g^(r−k)`. This is the missing multiplicity input the
+point-count engine consumes; it makes the order-`r` vanishing of a `g^r`-weighted auxiliary
+automatic instead of a per-construction computation. -/
+section PowerRule
+
+/-- **Hasse-derivative power rule (divisibility form).** `g^(r−k) ∣ E^k(g^r)` — taking `k` Hasse
+derivatives of `g^r` leaves a factor `g^(r−k)`. Characteristic-free. -/
+theorem hasseDeriv_pow_dvd {R : Type*} [CommSemiring R] (g : R[X]) (r k : ℕ) :
+    g ^ (r - k) ∣ hasseDeriv k (g ^ r) := by
+  induction r generalizing k with
+  | zero => simp
+  | succ r ih =>
+    rw [pow_succ', hasseDeriv_mul]
+    apply Finset.dvd_sum
+    intro ij hij
+    rw [Finset.mem_antidiagonal] at hij
+    obtain ⟨i, j⟩ := ij
+    simp only at hij ⊢
+    rcases Nat.eq_zero_or_pos i with hi0 | hi1
+    · subst hi0
+      have hjk : j = k := by omega
+      subst hjk
+      rw [hasseDeriv_zero, LinearMap.id_coe, id_eq]
+      calc g ^ (r + 1 - j) ∣ g ^ (1 + (r - j)) := pow_dvd_pow g (by omega)
+        _ = g * g ^ (r - j) := by rw [pow_add, pow_one]
+        _ ∣ g * hasseDeriv j (g ^ r) := mul_dvd_mul_left g (ih j)
+    · have : g ^ (r + 1 - k) ∣ g ^ (r - j) := pow_dvd_pow g (by omega)
+      exact this.trans ((ih j).trans (Dvd.dvd.mul_left (dvd_refl _) _))
+
+/-- **Power rule with a prefactor.** `g^(r−k) ∣ E^k(f·g^r)`. -/
+theorem hasseDeriv_mul_pow_dvd {R : Type*} [CommSemiring R] (f g : R[X]) (r k : ℕ) :
+    g ^ (r - k) ∣ hasseDeriv k (f * g ^ r) := by
+  rw [hasseDeriv_mul]
+  apply Finset.dvd_sum
+  intro ij hij
+  rw [Finset.mem_antidiagonal] at hij
+  obtain ⟨i, j⟩ := ij
+  simp only at hij ⊢
+  have : g ^ (r - k) ∣ g ^ (r - j) := pow_dvd_pow g (by omega)
+  exact (this.trans (hasseDeriv_pow_dvd g r j)).mul_left _
+
+/-- **Multiplicity from the power rule.** If `a` is a root of `g`, then `f·g^r` vanishes to
+Hasse-order `≥ r` at `a` (every `E^k(f·g^r)`, `k < r`, vanishes at `a`) — hence, by
+`rootMultiplicity_ge_of_hasseDeriv_vanish`, to root multiplicity `≥ r` when `f·g^r ≠ 0`. -/
+theorem hasseDeriv_eval_eq_zero_of_root {F : Type*} [Field F]
+    (f g : F[X]) (a : F) (ha : g.eval a = 0) (r k : ℕ) (hk : k < r) :
+    (hasseDeriv k (f * g ^ r)).eval a = 0 := by
+  obtain ⟨h, hh⟩ := hasseDeriv_mul_pow_dvd f g r k
+  rw [hh, eval_mul, eval_pow, ha, zero_pow (by omega), zero_mul]
+
+/-- **Root multiplicity from the power rule (the engine feeder).** A root `a` of `g` is a root of
+`f·g^r` of multiplicity `≥ r` — in every characteristic. Directly supplies the
+`∀ a ∈ V, M ≤ Ψ.rootMultiplicity a` hypothesis of `stepanov_card_mul_mult_le_natDegree` for a
+`g^r`-weighted Stepanov auxiliary. -/
+theorem rootMultiplicity_mul_pow_ge {F : Type*} [Field F]
+    (f g : F[X]) (a : F) (ha : g.eval a = 0) (r : ℕ) (hne : f * g ^ r ≠ 0) :
+    r ≤ (f * g ^ r).rootMultiplicity a :=
+  rootMultiplicity_ge_of_hasseDeriv_vanish hne a r
+    (fun k hk => hasseDeriv_eval_eq_zero_of_root f g a ha r k hk)
+
+end PowerRule
+
 end ArkLib.CodingTheory.HasseMultiplicityBridge
 
 /-! ## Axiom audit -/
@@ -169,4 +236,8 @@ open ArkLib.CodingTheory.HasseMultiplicityBridge
 #print axioms rootMultiplicity_ge_of_hasseDeriv_vanish
 #print axioms stepanov_card_le_of_hasseDeriv
 #print axioms X_pow_card_sub_X_eq_prod
+#print axioms hasseDeriv_pow_dvd
+#print axioms hasseDeriv_mul_pow_dvd
+#print axioms hasseDeriv_eval_eq_zero_of_root
+#print axioms rootMultiplicity_mul_pow_ge
 end AxiomAudit

@@ -7,6 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.ToMathlib.CS25DeepHole
 import ArkLib.ToMathlib.CS25Claim3
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # CS25 "Claim 3" deep-hole — assembling the `hDeepHole` residual
@@ -249,21 +250,65 @@ closeness transfer `relHammingDist_deepHoleLine_eq`, the joint-far side conditio
 `(u⁰, u¹)` is not jointly `δ`-close, and the uniform-`γ` counting lemma
 `prob_uniform_eq_card_filter_div_card`) is the probabilistic argument.
 
-**Issue #22 disposition — CLOSED (no remaining external input).** This residual is fully
-discharged in-tree:
+**Issue #22 disposition — conditionally discharged in-tree.** The geometric/probabilistic core of
+this residual is proven, but the unconditional `DeepHoleProbResidual` surface remains a strict
+residual in the global census because the provider requires the standard arithmetic side
+conditions (`0 ≤ δ` and `k < n − ⌊δ·n⌋`):
 - `CS25DeepHoleFinish2.deepHoleProbResidual_of_jointFar` reduces it to the geometric joint-far
   property `DeepHoleJointFar`;
 - `CS25JointFar.deepHoleJointFar_holds` proves `DeepHoleJointFar` outright by the
   minimum-distance argument, leaving only the arithmetic rate condition `k < n − ⌊δ·n⌋`;
 - `CS25JointFar.deepHoleProbResidual_holds` composes both, instantiating `DeepHoleProbResidual`
-  with **no extra side condition** beyond that rate condition.
+  under the nonnegativity and rate side conditions.
 The joint-far line probability and counting lemmas referenced above are therefore all proven
-in-tree, not external. -/
+in-tree; what remains open in the strict residual ledger is only the unconditional wrapper. -/
 def DeepHoleProbResidual
     (domain : ι ↪ F) (k L : ℕ) (δ ε : ℝ) (u : ι → F) (p : Fin L → F[X]) : Prop :=
   (∀ j, p j ∈ Polynomial.degreeLT F (k + 1)) →
   (∀ j, ReedSolomon.evalOnPoints domain (p j) ∈ relHammingBall u δ) →
   ∀ a ∈ sampleSet domain, (numDistinct p a : ℝ) ≤ ε * (Fintype.card F : ℝ)
+
+/-- A one-point domain inside `ZMod 2`, used to exhibit that the unconditional
+`DeepHoleProbResidual` wrapper is too broad when `ε` is negative. -/
+def zmod2SingletonDomain : PUnit ↪ ZMod 2 where
+  toFun := fun _ => 0
+  inj' := by
+    intro x y _
+    cases x
+    cases y
+    rfl
+
+/-- The unconditional probability residual is false without a nonnegative probability bound.
+
+The side-conditioned provider `CS25JointFar.deepHoleProbResidual_holds` remains the intended true
+surface for the CS25 argument; this counterexample records why the strict wrapper itself should be
+tracked as refuted rather than as an open mathematical obligation. -/
+theorem not_deepHoleProbResidual_negativeEpsilon_zmod2 :
+    ¬ DeepHoleProbResidual
+        zmod2SingletonDomain 0 1 (0 : ℝ) (-1 : ℝ)
+        (fun _ : PUnit => (0 : ZMod 2))
+        (fun _ : Fin 1 => (0 : (ZMod 2)[X])) := by
+  intro h
+  have hdeg : ∀ j : Fin 1, (fun _ : Fin 1 => (0 : (ZMod 2)[X])) j ∈
+      Polynomial.degreeLT (ZMod 2) (0 + 1) := by
+    intro j
+    exact Polynomial.mem_degreeLT.mpr (by simp)
+  have hclose : ∀ j : Fin 1,
+      ReedSolomon.evalOnPoints zmod2SingletonDomain
+          ((fun _ : Fin 1 => (0 : (ZMod 2)[X])) j) ∈
+        _root_.ListDecodable.relHammingBall (fun _ : PUnit => (0 : ZMod 2)) (0 : ℝ) := by
+    intro j
+    have hzero : ReedSolomon.evalOnPoints zmod2SingletonDomain
+        ((fun _ : Fin 1 => (0 : (ZMod 2)[X])) j) = fun _ : PUnit => (0 : ZMod 2) := by
+      ext x
+      simp [ReedSolomon.evalOnPoints]
+    rw [_root_.ListDecodable.relHammingBall, Set.mem_setOf_eq]
+    rw [hzero]
+    norm_num [Code.relHammingDist, hammingDist_self]
+  have hsample : (1 : ZMod 2) ∈ sampleSet zmod2SingletonDomain := by
+    simp [sampleSet, zmod2SingletonDomain]
+  have hbad := h hdeg hclose (1 : ZMod 2) hsample
+  norm_num [numDistinct] at hbad
 
 /-! ### Assembling `hDeepHole` -/
 
@@ -273,8 +318,10 @@ exact `hDeepHole` data demanded by `claim3_of_deepHole` / the in-tree reduction:
 `¬ (Λ(RS[k+1], δ) ≤ L0)`, an injective degree-`< k+1` family `p : Fin (L0 + 1) → F[X]` and the
 sampling set `T = F ∖ range domain` of real size `s`, with `numDistinct p a ≤ ε·q` on `T`.
 
-The only external input is `DeepHoleProbResidual` for the extracted data — everything else
-(extraction, lift, sampling-set cardinality / nonemptiness) is proven. -/
+The only parameterized input here is `DeepHoleProbResidual` for the extracted data — everything
+else (extraction, lift, sampling-set cardinality / nonemptiness) is proven.  Downstream
+`CS25JointFar.deepHoleProbResidual_holds` supplies this input under the documented nonnegativity
+and rate side conditions. -/
 theorem hDeepHole_of_probResidual
     (domain : ι ↪ F) (k : ℕ) (δ ε : ℝ) (L0 : ℕ) (s : ℝ)
     (hkn : k + 1 ≤ Fintype.card ι)
@@ -299,9 +346,10 @@ theorem hDeepHole_of_probResidual
 
 The full list-size bound, consuming the proven reduction
 `rs_epsCA_implies_lambda_extended_cs25_proved` (whose only residual was `hDeepHole`) with
-`hDeepHole` discharged via `hDeepHole_of_probResidual`.  The single remaining external input is
-the genuinely-probabilistic `DeepHoleProbResidual` (deep-hole probability bound + joint-far side
-condition), plus the standard parameter side conditions `k + 1 ≤ |ι|` and `0 < |F| − |ι|`. -/
+`hDeepHole` discharged via `hDeepHole_of_probResidual`.  The remaining parameterized input is
+`DeepHoleProbResidual`; the geometric/probabilistic proof of that input is available in
+`CS25JointFar.deepHoleProbResidual_holds` under the standard nonnegativity and rate side
+conditions. -/
 theorem rs_epsCA_implies_lambda_extended_cs25_final
     (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (η : ℝ)
     (hk_pos : 0 < k)

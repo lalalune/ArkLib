@@ -209,10 +209,11 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 omit [Fintype L] [Fintype K] [DecidableEq K] in
-/-- Local algebraic capstone residual for the profile-specialized structured sumcheck round.
-The previous proof body stopped at the honest-round algebra/run-shape transition. It is named as a
-`Prop` so downstream results must receive the missing algebra explicitly rather than importing a
-kernel axiom. -/
+/-- The profile-specialized structured sumcheck round completeness statement — **proven**:
+see `iteratedSumcheckRound_perfectCompleteness_residual_holds`
+(`SumcheckRoundCompleteness.lean`, from `NeverFail init` alone) and the unconditional
+per-round consumer there (issue #338 closeout). The `Prop` name is retained for downstream
+statement stability; the conditional wrapper below is a documented adapter. -/
 def iteratedSumcheckOracleReduction_perfectCompleteness_residual : Prop :=
   ∀ i : Fin ℓ',
     OracleReduction.perfectCompleteness
@@ -774,11 +775,10 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
 
   match m with
   | ⟨0, _⟩ => -- equiv s relIn
-    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l
+    RingSwitching.masterKStateCore κ L K P ℓ ℓ' h_l
       aOStmtIn
       (stmtIdx := i.castSucc)
       (stmt := stmt) (oStmt := oStmt) (wit := witMid)
-      (localChecks := True)
   | ⟨1, h1⟩ => -- P sends hᵢ(X)
     let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := witMid.H)
     RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
@@ -824,15 +824,16 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
         (i := i) (m := 0) (tr := default) (stmt := stmtIn.1) (witMid := witMid)
         (oStmt := stmtIn.2))
     simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.val_castSucc, cast_eq,
-      Set.mem_setOf_eq, iteratedSumcheckKStateProp, masterKStateProp,
-      iteratedSumcheckRbrExtractor, true_and]
+      Set.mem_setOf_eq, iteratedSumcheckKStateProp, masterKStateCore,
+      iteratedSumcheckRbrExtractor]
   toFun_next := fun m hDir stmtIn tr msg witMid h_succ => by
     obtain ⟨stmt, oStmt⟩ := stmtIn
     fin_cases m
     · -- m = 0: succ = 1, castSucc = 0
-      dsimp [iteratedSumcheckKStateProp, masterKStateProp, iteratedSumcheckRbrExtractor]
+      dsimp [iteratedSumcheckKStateProp, masterKStateProp, masterKStateCore,
+        iteratedSumcheckRbrExtractor]
         at h_succ ⊢
-      exact ⟨trivial, h_succ.2⟩
+      exact h_succ.2
     · -- m = 1: dir 1 = V_to_P, contradicts hDir
       simp [pSpecSumcheckRound] at hDir
   toFun_full := fun ⟨stmtIn, oStmtIn⟩ tr witOut probEvent_relOut_gt_0 => by
@@ -856,7 +857,7 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       injection h_pair_eq with h_stmtOut_eq h_oStmtOut_eq
       simp only [Fin.reduceLast, Fin.isValue]
 
-      dsimp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp] at h_relOut
+      dsimp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateCore] at h_relOut
       simp only [Fin.val_succ, Set.mem_setOf_eq] at h_relOut
       dsimp only [iteratedSumcheckKStateProp]
       set h_i : ↥L⦃≤ 2⦄[X] :=
@@ -876,10 +877,10 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
           OracleVerifier.mkVerifierOStmtOut_inl, cast_eq]
       rw [h_oStmtOut_eq_oStmtIn] at h_relOut
       rw [← h_stmtOut_eq] at h_relOut
-      dsimp only [masterKStateProp]
+      dsimp only [masterKStateProp, masterKStateCore]
       constructor
       · simpa [h_i] using h_V_check_passed
-      · obtain ⟨h_wit_struct_In, h_sumcheck_In, h_oStmtIn_compat⟩ := h_relOut.2
+      · obtain ⟨h_wit_struct_In, h_sumcheck_In, h_oStmtIn_compat⟩ := h_relOut
         constructor
         · exact h_wit_struct_In
         · exact ⟨h_sumcheck_In, h_oStmtIn_compat⟩
@@ -936,7 +937,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
   unfold iteratedSumcheckKStateProp at h_kState_before_false h_kState_after_true
   simp only [Fin.isValue, Fin.castSucc_one, Fin.succ_one_eq_two, Nat.reduceAdd] at h_kState_before_false h_kState_after_true
   simp only [Transcript.concat] at h_kState_before_false h_kState_after_true
-  unfold masterKStateProp witnessStructuralInvariant at h_kState_before_false h_kState_after_true
+  unfold masterKStateProp masterKStateCore witnessStructuralInvariant at h_kState_before_false h_kState_after_true
   simp only [iteratedSumcheckRbrExtractor, Fin.isValue] at h_kState_before_false h_kState_after_true
   have h_explicit_after :
       (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmtOStmtIn.1.sumcheck_target := by
@@ -1033,9 +1034,9 @@ theorem iteratedSumcheck_round_logic_complete (i : Fin ℓ')
           (stmt, oStmt, wit, getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) wit.H, r'))
         ∈ sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ := by
   -- Unpack the input relation conjuncts.
-  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
+  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateCore,
     witnessStructuralInvariant, Set.mem_setOf_eq] at hrel
-  obtain ⟨_, h_struct_in, h_cons_in, h_compat_in⟩ := hrel
+  obtain ⟨h_struct_in, h_cons_in, h_compat_in⟩ := hrel
   -- `h_struct_in : wit.H = projectToMid … i.castSucc stmt.challenges`
   -- `h_cons_in   : stmt.sumcheck_target = ∑_{cube (ℓ'-i.castSucc)} wit.H.val.eval`
   -- `h_compat_in : aOStmtIn.initialCompatibility ⟨wit.t', oStmt⟩`
@@ -1046,9 +1047,9 @@ theorem iteratedSumcheck_round_logic_complete (i : Fin ℓ')
     exact h_cons_in.symm
   · -- Conjunct 2: the honest output lies in the round-`i.succ` relation.
     simp only [getRoundProverFinalOutput, sumcheckRoundRelation, sumcheckRoundRelationProp,
-      masterKStateProp, witnessStructuralInvariant, Set.mem_setOf_eq]
+      masterKStateCore, witnessStructuralInvariant, Set.mem_setOf_eq]
     -- The honest next-round witness polynomial, as a `Fin (ℓ' - i.succ)` polynomial.
-    refine ⟨trivial, ?_, ?_, h_compat_in⟩
+    refine ⟨?_, ?_, h_compat_in⟩
     · -- conjunct 2 (structural invariant advance)
       apply Subtype.ext
       show fixFirstVariablesOfMQP (ℓ' - ↑i) ⟨1, by have := i.2; omega⟩ wit.H.val (fun _ => r')
@@ -1459,9 +1460,9 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
     (hImplSupp := by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])]
   intro stmtIn oStmtIn witIn h_relIn
   -- Unpack relIn = masterKStateProp into the structural invariant + consistency facts.
-  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
+  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateCore,
     Set.mem_setOf_eq] at h_relIn
-  obtain ⟨-, h_struct, h_consist, h_compat⟩ := h_relIn
+  obtain ⟨h_struct, h_consist, h_compat⟩ := h_relIn
   -- `s'` is the prover's single message: `witIn.t'(challenges)`. The verifier check passes.
   have h_msg_eval : witIn.t'.val.eval stmtIn.challenges = witIn.t'.val.eval stmtIn.challenges := rfl
   have h_check : stmtIn.sumcheck_target
@@ -1538,10 +1539,9 @@ def finalSumcheckKStateProp {m : Fin (1 + 1)} (tr : Transcript m (pSpecFinalSumc
     (oStmt : ∀ j, aOStmtIn.OStmtIn j) : Prop :=
   match m with
   | ⟨0, _⟩ => -- same as relIn
-    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
+    RingSwitching.masterKStateCore κ L K P ℓ ℓ' h_l aOStmtIn
       (stmtIdx := Fin.last ℓ')
       (stmt := stmt) (oStmt := oStmt) (wit := witMid)
-      (localChecks := True)
   | ⟨1, _⟩ => -- implied by relOut + local checks via extractOut proofs
     let tr_so_far := (pSpecFinalSumcheck L).take 1 (by omega)
     let i_msg0 : tr_so_far.MessageIdx := ⟨⟨0, by omega⟩, rfl⟩
@@ -1583,15 +1583,15 @@ noncomputable def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] 
     (m := m) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
   toFun_empty := fun stmt witMid => by
     simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.val_last, cast_eq,
-      Set.mem_setOf_eq, finalSumcheckKStateProp, masterKStateProp, true_and]
+      Set.mem_setOf_eq, finalSumcheckKStateProp, masterKStateCore]
   toFun_next := fun m hDir stmt tr msg witMid h => by
     obtain ⟨stmt, oStmt⟩ := stmt
     fin_cases m
     -- `m.succ = ⟨1, _⟩` (the last index): `h` is the full `masterKStateProp` with the round-local
-    -- checks. `m.castSucc = ⟨0, _⟩`: the goal is the same `masterKStateProp` with
-    -- `localChecks := True`. `extractMid` returns `witMid` unchanged, so we drop the local checks.
-    simp only [finalSumcheckKStateProp, masterKStateProp, true_and] at h ⊢
-    exact ⟨h.2.1, h.2.2.1, h.2.2.2⟩
+    -- checks. `m.castSucc = ⟨0, _⟩`: the goal is the same core invariant.
+    -- `extractMid` returns `witMid` unchanged, so we drop the local checks.
+    simp only [finalSumcheckKStateProp, masterKStateProp, masterKStateCore] at h ⊢
+    exact h.2
   toFun_full := fun stmt tr witOut h => by
     obtain ⟨stmt, oStmt⟩ := stmt
     -- Abbreviate the message the prover sent (the single P→V message of `pSpecFinalSumcheck`),
@@ -1653,14 +1653,16 @@ noncomputable def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] 
       -- The KState index is `Fin.last 1 = ⟨1, _⟩` (the protocol's single, last message round);
       -- reduce
       -- the `match` to that branch before splitting into the four KState conjuncts.
-      simp only [finalSumcheckKStateProp, masterKStateProp, witnessStructuralInvariant,
-        finalSumcheckRbrExtractor, Fin.last, Fin.isValue, true_and]
-      refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+      simp only [finalSumcheckKStateProp, masterKStateProp, masterKStateCore,
+        witnessStructuralInvariant, finalSumcheckRbrExtractor, Fin.last, Fin.isValue]
+      refine ⟨⟨?_, ?_⟩, ?_, ?_, ?_⟩
       · -- `sumcheckFinalLocalCheck`: `sumcheck_target = compute_final_eq_value · c`. `c` is the
         -- local abbreviation of the transcript message, exactly what `hcheck` states.
         exact hcheck
       · -- `final_eval`: `(MvPolynomial.eval challenges) witOut.t = c`, i.e. `hEval.symm`.
         exact hEval.symm
+      · -- The terminal structural invariant is definitionally trivial after `extractOut`.
+        trivial
       · -- `sumcheckConsistencyProp`:
         -- `sumcheck_target = ∑_{0-cube} (projectToMidSumcheckPoly …).eval`.
         -- The 0-cube sum equals `compute_final_eq_value · witOut.t(challenges)` by the shared
@@ -1697,7 +1699,7 @@ noncomputable def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] 
       rw [show (failure : OptionT (StateT σ ProbComp) (MLPEvalStatement L ℓ'
             × (∀ j, aOStmtIn.OStmtIn j))) = (pure none : StateT σ ProbComp _) from rfl] at hx
       rw [StateT.run'_eq, StateT.run_pure] at hx
-      simp only [map_pure, support_pure, Set.mem_singleton_iff] at hx
+      simp only [_root_.map_pure, support_pure, Set.mem_singleton_iff] at hx
       exact absurd hx (by simp)
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/

@@ -233,34 +233,15 @@ theorem logup_soundness_uncond (sumcheckSoundnessError : ℝ≥0)
     (logupAppendSoundnessResidual_of_plain oSpec F n M params init impl sumcheckSoundnessError
       hOuter hSumcheck hPlainAppend)
 
-/-- **Bundled-residual front door for the most-unconditional LogUp soundness.**
-
-Packages the three remaining obligations of `logup_soundness_uncond` (the corrected outer half, the
-sumcheck half, and the plain-verifier append residual) into one existential `Prop` and re-derives the
-headline. This is the consumer-facing "smallest residual set" entry point. -/
-def LogupSoundnessUncondResidual (sumcheckSoundnessError : ℝ≥0) : Prop :=
-  ∃ _hOuter :
-      (outerVerifier oSpec F n M params).soundness init impl
-        (inputRelation F n M).language (midSoundnessProtocolLanguage F n M params)
-        (outerSoundnessError F n M params),
-    ∃ _hSumcheck :
-        (sumcheckVerifier oSpec F n M params).soundness init impl
-          (midSoundnessProtocolLanguage F n M params) outputRelation.language
-          sumcheckSoundnessError,
-      (Verifier.append (outerVerifier oSpec F n M params).toVerifier
-          (sumcheckVerifier oSpec F n M params).toVerifier).soundness init impl
-        (inputRelation F n M).language outputRelation.language
-        (outerSoundnessError F n M params + sumcheckSoundnessError)
-
-/-- **Most-unconditional LogUp soundness from the bundled residual.** -/
-theorem logup_soundness_uncond_of_residual (sumcheckSoundnessError : ℝ≥0)
-    (h : LogupSoundnessUncondResidual oSpec F n M params init impl sumcheckSoundnessError) :
-    (logupVerifier oSpec F n M params).soundness init impl
-      (inputRelation F n M).language outputRelation.language
-      (logupSoundnessError F n M params sumcheckSoundnessError) := by
-  obtain ⟨hOuter, hSumcheck, hPlainAppend⟩ := h
-  exact logup_soundness_uncond oSpec F n M params init impl sumcheckSoundnessError
-    hOuter hSumcheck hPlainAppend
+/-! The historical bundled front door `LogupSoundnessUncondResidual` (and its consumer
+`logup_soundness_uncond_of_residual`) was DELETED in the #351 burn-down (2026-06-11): the
+2026-06-10 audit showed its `hOuter` conjunct (typed at `midSoundnessProtocolLanguage` with the
+paper error `outerSoundnessError`) is refuted in the typical (small-support, large-field) regime
+by `prob_midSoundnessLanguage_ge_compl_support` (`OuterSoundnessSharp.lean`), making the bundle
+uninstantiable there and every consumer vacuously conditional.  Live routes:
+`logup_soundness_end_to_end` (`OuterMaliciousSoundness.lean`) and
+`outerVerifier_soundness_sharp` (`OuterRbrSoundness.lean`).  Consumers holding the three
+obligations individually can still apply `logup_soundness_uncond` directly. -/
 
 end SoundnessUncond
 
@@ -270,5 +251,3 @@ end Logup
 #print axioms OracleVerifier.oracleAppendSoundnessResidual_of_plain
 #print axioms Logup.logupAppendSoundnessResidual_of_plain
 #print axioms Logup.logup_soundness_uncond
-#print axioms Logup.LogupSoundnessUncondResidual
-#print axioms Logup.logup_soundness_uncond_of_residual

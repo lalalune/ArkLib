@@ -1541,4 +1541,412 @@ theorem nonvanishing_of_unpaired {m : ℕ} {ζ : F}
 
 end KernelCharacterization
 
+/-! ## The valued 2-power windowed law: window-invariance modulo `2^(m−k)`
+
+The multiplicity-door base case of the valued-fold frontier: a ℚ-coefficient vector on
+`μ_{2^(m+1)}`-exponents whose 2-power window `{2^0, …, 2^k}` vanishes is invariant on
+exponent classes modulo `2^(m−k)` — the valued analogue of `full_tower`. Induction on
+`k`: the `j = 0` relation gives antipodal symmetry (O74), under which the folded vector
+`c₁(s) = c(s) + c(s + 2^m) = 2·c(s)` inherits the shallower window at the halved level;
+the inductive congruence-invariance of `c₁` pulls back through the antipodal reduction.
+For integer multiplicity vectors (contracted folds of windowed sets, branch-weight
+profiles) this pins the structure completely at 2-power levels. -/
+
+section ValuedWindowedLaw
+
+/-- **The valued 2-power windowed law** (congruence-invariance form). -/
+theorem windowed_coeff_congr_invariant {k : ℕ} :
+    ∀ {m : ℕ}, k ≤ m → ∀ {ζ : F}, IsPrimitiveRoot ζ (2 ^ (m + 1)) →
+    ∀ (c : ℕ → ℚ),
+    (∀ j, j ≤ k → ∑ e ∈ Finset.range (2 ^ (m + 1)), (c e : F) * ζ ^ (2 ^ j * e) = 0) →
+    ∀ e e', e < 2 ^ (m + 1) → e' < 2 ^ (m + 1) →
+      e % 2 ^ (m - k) = e' % 2 ^ (m - k) → c e = c e' := by
+  induction k with
+  | zero =>
+    intro m _ ζ hζ c hwin e e' he he' hmod
+    have h0 := hwin 0 le_rfl
+    simp only [pow_zero, one_mul] at h0
+    have hsym := (vanishing_iff_antipodal_coeffs hζ c).mp h0
+    rw [Nat.sub_zero] at hmod
+    -- e ≡ e' mod 2^m with both < 2^{m+1}: equal or differ by exactly 2^m
+    rcases Nat.lt_or_ge e (2 ^ m) with hlow | hhigh
+    · rcases Nat.lt_or_ge e' (2 ^ m) with hlow' | hhigh'
+      · -- both low: e = e'
+        rw [Nat.mod_eq_of_lt hlow, Nat.mod_eq_of_lt hlow'] at hmod
+        rw [hmod]
+      · -- e low, e' high: e' = e + 2^m
+        have he'm : e' - 2 ^ m < 2 ^ m := by
+          have : (2:ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+          omega
+        have hmod' : e' % 2 ^ m = e' - 2 ^ m := by
+          rw [Nat.mod_eq_sub_mod hhigh', Nat.mod_eq_of_lt he'm]
+        rw [Nat.mod_eq_of_lt hlow, hmod'] at hmod
+        have : e' = e + 2 ^ m := by omega
+        rw [this]
+        exact hsym e hlow
+    · rcases Nat.lt_or_ge e' (2 ^ m) with hlow' | hhigh'
+      · have hem : e - 2 ^ m < 2 ^ m := by
+          have : (2:ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+          omega
+        have hmod'' : e % 2 ^ m = e - 2 ^ m := by
+          rw [Nat.mod_eq_sub_mod hhigh, Nat.mod_eq_of_lt hem]
+        rw [hmod'', Nat.mod_eq_of_lt hlow'] at hmod
+        have : e = e' + 2 ^ m := by omega
+        rw [this]
+        exact (hsym e' hlow').symm
+      · -- both high: e − 2^m = e' − 2^m
+        have hem : e - 2 ^ m < 2 ^ m := by
+          have : (2:ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+          omega
+        have he'm : e' - 2 ^ m < 2 ^ m := by
+          have : (2:ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+          omega
+        have h1 : e % 2 ^ m = e - 2 ^ m := by
+          rw [Nat.mod_eq_sub_mod hhigh, Nat.mod_eq_of_lt hem]
+        have h2 : e' % 2 ^ m = e' - 2 ^ m := by
+          rw [Nat.mod_eq_sub_mod hhigh', Nat.mod_eq_of_lt he'm]
+        rw [h1, h2] at hmod
+        have : e = e' := by omega
+        rw [this]
+  | succ k IH =>
+    intro m hkm ζ hζ c hwin e e' he he' hmod
+    have h0 := hwin 0 (Nat.zero_le _)
+    simp only [pow_zero, one_mul] at h0
+    have hsym := (vanishing_iff_antipodal_coeffs hζ c).mp h0
+    obtain ⟨m', rfl⟩ : ∃ m', m = m' + 1 := ⟨m - 1, by omega⟩
+    have hζ2 : IsPrimitiveRoot (ζ ^ 2) (2 ^ (m' + 1)) := by
+      refine hζ.pow (pow_pos two_pos _) ?_
+      rw [pow_succ']
+    set c₁ : ℕ → ℚ := fun s => c s + c (s + 2 ^ (m' + 1)) with hc₁
+    have hfold : ∀ j, j ≤ k →
+        ∑ s ∈ Finset.range (2 ^ (m' + 1)), (c₁ s : F) * (ζ ^ 2) ^ (2 ^ j * s) = 0 := by
+      intro j hj
+      have hrel := hwin (j + 1) (by omega)
+      have hsplit : (2:ℕ) ^ (m' + 1 + 1) = 2 ^ (m' + 1) + 2 ^ (m' + 1) := by ring
+      rw [hsplit, Finset.sum_range_add] at hrel
+      have hterm : ∀ s ∈ Finset.range (2 ^ (m' + 1)),
+          (c (2 ^ (m' + 1) + s) : F) * ζ ^ (2 ^ (j + 1) * (2 ^ (m' + 1) + s))
+            = (c (s + 2 ^ (m' + 1)) : F) * ζ ^ (2 ^ (j + 1) * s) := by
+        intro s _
+        rw [Nat.add_comm (2 ^ (m' + 1)) s]
+        congr 1
+        rw [Nat.mul_add, pow_add]
+        have hkill : ζ ^ (2 ^ (j + 1) * 2 ^ (m' + 1)) = 1 := by
+          rw [show (2:ℕ) ^ (j + 1) * 2 ^ (m' + 1) = 2 ^ (m' + 1 + 1) * 2 ^ j from by
+            rw [← pow_add, ← pow_add]
+            congr 1
+            omega]
+          rw [pow_mul, hζ.pow_eq_one, one_pow]
+        rw [hkill, mul_one]
+      rw [Finset.sum_congr rfl hterm, ← Finset.sum_add_distrib] at hrel
+      calc ∑ s ∈ Finset.range (2 ^ (m' + 1)), (c₁ s : F) * (ζ ^ 2) ^ (2 ^ j * s)
+          = ∑ s ∈ Finset.range (2 ^ (m' + 1)),
+              ((c s : F) * ζ ^ (2 ^ (j + 1) * s)
+                + (c (s + 2 ^ (m' + 1)) : F) * ζ ^ (2 ^ (j + 1) * s)) := by
+            refine Finset.sum_congr rfl fun s _ => ?_
+            rw [hc₁]
+            push_cast
+            rw [← pow_mul, show 2 * (2 ^ j * s) = 2 ^ (j + 1) * s from by
+              rw [pow_succ']; ring]
+            ring
+        _ = 0 := hrel
+    have hIH := IH (m := m') (by omega) hζ2 c₁ hfold
+    -- antipodal reduction to the lower half, then the IH congruence
+    have hreduce : ∀ x, x < 2 ^ (m' + 1 + 1) → c x = c (x % 2 ^ (m' + 1)) := by
+      intro x hx
+      rcases Nat.lt_or_ge x (2 ^ (m' + 1)) with hlow | hhigh
+      · rw [Nat.mod_eq_of_lt hlow]
+      · have hxm : x - 2 ^ (m' + 1) < 2 ^ (m' + 1) := by
+          have : (2:ℕ) ^ (m' + 1 + 1) = 2 ^ (m' + 1) + 2 ^ (m' + 1) := by ring
+          omega
+        rw [Nat.mod_eq_sub_mod hhigh, Nat.mod_eq_of_lt hxm]
+        have := hsym (x - 2 ^ (m' + 1)) hxm
+        rw [show x - 2 ^ (m' + 1) + 2 ^ (m' + 1) = x from by omega] at this
+        exact this.symm
+    have hhalf : ∀ s, s < 2 ^ (m' + 1) → c s = c₁ s / 2 := by
+      intro s hsl
+      simp only [hc₁]
+      rw [← hsym s hsl]
+      ring
+    have hmodsub : m' + 1 - (k + 1) = m' - k := by omega
+    rw [hmodsub] at hmod
+    have hdvd : (2:ℕ) ^ (m' - k) ∣ 2 ^ (m' + 1) := pow_dvd_pow 2 (by omega)
+    have hē : (e % 2 ^ (m' + 1)) % 2 ^ (m' - k) = (e' % 2 ^ (m' + 1)) % 2 ^ (m' - k) := by
+      rw [Nat.mod_mod_of_dvd _ hdvd, Nat.mod_mod_of_dvd _ hdvd]
+      exact hmod
+    have hēlt : e % 2 ^ (m' + 1) < 2 ^ (m' + 1) := Nat.mod_lt _ (pow_pos two_pos _)
+    have hē'lt : e' % 2 ^ (m' + 1) < 2 ^ (m' + 1) := Nat.mod_lt _ (pow_pos two_pos _)
+    calc c e = c (e % 2 ^ (m' + 1)) := hreduce e he
+    _ = c₁ (e % 2 ^ (m' + 1)) / 2 := hhalf _ hēlt
+    _ = c₁ (e' % 2 ^ (m' + 1)) / 2 := by
+        rw [hIH (e % 2 ^ (m' + 1)) (e' % 2 ^ (m' + 1)) hēlt hē'lt hē]
+    _ = c (e' % 2 ^ (m' + 1)) := (hhalf _ hē'lt).symm
+    _ = c e' := (hreduce e' he').symm
+
+end ValuedWindowedLaw
+
+/-! ## Contracted multiplicity rigidity: the branch program's first formal constraint
+
+The O125 valued law applied to fold multiplicities: for a windowed subset of
+`μ_{2^(m+1)}`, the fiber-count function of the `2^s`-power contraction is an INTEGER
+vector inheriting the window at scaled exponents — hence coset-constant by the valued
+law. Branch-weight profiles of windowed sets down the 2-adic tower are RIGID: at every
+depth, the multiplicity a windowed set lays over the contracted domain is invariant on
+`μ`-coset classes. This is the first machine-checked structural constraint the program
+places on the branch-count objects themselves. -/
+
+section MultiplicityRigidity
+
+variable [DecidableEq F]
+
+/-- The fiber-sum identity: a power sum of `S` at a `2^s`-multiple exponent is the
+multiplicity-weighted power sum of the contraction. -/
+lemma contraction_fiber_sum {m s : ℕ} (hsm : s ≤ m) {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (2 ^ (m + 1)) = 1) (j : ℕ) :
+    ∑ z ∈ S, z ^ (2 ^ s * j)
+      = ∑ e ∈ Finset.range (2 ^ (m + 1 - s)),
+          ((S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)).card : F)
+            * ((ζ ^ (2 ^ s)) ^ e) ^ j := by
+  classical
+  have hζ' : IsPrimitiveRoot (ζ ^ (2 ^ s)) (2 ^ (m + 1 - s)) := by
+    refine hζ.pow (pow_pos two_pos _) ?_
+    rw [← pow_add]
+    congr 1
+    omega
+  haveI : NeZero ((2:ℕ) ^ (m + 1 - s)) := ⟨(pow_pos two_pos _).ne'⟩
+  -- the filters partition S
+  have hcover : S = (Finset.range (2 ^ (m + 1 - s))).biUnion
+      (fun e => S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)) := by
+    apply Finset.Subset.antisymm
+    · intro x hx
+      have hxc : (x ^ (2 ^ s)) ^ (2 ^ (m + 1 - s)) = 1 := by
+        rw [← pow_mul, ← pow_add, show s + (m + 1 - s) = m + 1 from by omega]
+        exact hS x hx
+      obtain ⟨e, he, hxe⟩ := hζ'.eq_pow_of_pow_eq_one hxc
+      exact Finset.mem_biUnion.mpr ⟨e, Finset.mem_range.mpr he,
+        Finset.mem_filter.mpr ⟨hx, hxe.symm⟩⟩
+    · intro x hx
+      obtain ⟨e, _, hxf⟩ := Finset.mem_biUnion.mp hx
+      exact (Finset.mem_filter.mp hxf).1
+  have hdisj : ∀ e₁ ∈ Finset.range (2 ^ (m + 1 - s)),
+      ∀ e₂ ∈ Finset.range (2 ^ (m + 1 - s)), e₁ ≠ e₂ →
+      Disjoint (S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e₁))
+        (S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e₂)) := by
+    intro e₁ he₁ e₂ he₂ hne
+    rw [Finset.disjoint_left]
+    intro x hx₁ hx₂
+    have h₁ := (Finset.mem_filter.mp hx₁).2
+    have h₂ := (Finset.mem_filter.mp hx₂).2
+    exact hne (hζ'.pow_inj (Finset.mem_range.mp he₁) (Finset.mem_range.mp he₂)
+      (h₁ ▸ h₂ ▸ rfl))
+  conv_lhs => rw [hcover]
+  rw [Finset.sum_biUnion hdisj]
+  refine Finset.sum_congr rfl fun e _ => ?_
+  have hconst : ∀ x ∈ S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e),
+      x ^ (2 ^ s * j) = ((ζ ^ (2 ^ s)) ^ e) ^ j := by
+    intro x hx
+    rw [pow_mul, (Finset.mem_filter.mp hx).2]
+  rw [Finset.sum_congr rfl hconst, Finset.sum_const, nsmul_eq_mul]
+
+/-- **Contracted multiplicity rigidity**: for a set with the scaled 2-power window, the
+contraction's fiber-count function is invariant on exponent classes modulo
+`2^(m−s−k)`. -/
+theorem contracted_multiplicity_invariant {m s k : ℕ} (hsk : s + k ≤ m) {ζ : F}
+    [CharZero F]
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (2 ^ (m + 1)) = 1)
+    (hwin : ∀ j, j ≤ k → ∑ z ∈ S, z ^ (2 ^ (s + j)) = 0) :
+    ∀ e e', e < 2 ^ (m + 1 - s) → e' < 2 ^ (m + 1 - s) →
+      e % 2 ^ (m - s - k) = e' % 2 ^ (m - s - k) →
+      (S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)).card
+        = (S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e')).card := by
+  classical
+  have hζ' : IsPrimitiveRoot (ζ ^ (2 ^ s)) (2 ^ (m + 1 - s)) := by
+    refine hζ.pow (pow_pos two_pos _) ?_
+    rw [← pow_add]
+    congr 1
+    omega
+  obtain ⟨m', hm'⟩ : ∃ m', m + 1 - s = m' + 1 := ⟨m - s, by omega⟩
+  set c : ℕ → ℚ := fun e =>
+    ((S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)).card : ℚ) with hc
+  have hcwin : ∀ j, j ≤ k →
+      ∑ e ∈ Finset.range (2 ^ (m' + 1)), (c e : F) * (ζ ^ (2 ^ s)) ^ (2 ^ j * e)
+        = 0 := by
+    intro j hj
+    have hfib := contraction_fiber_sum (le_trans (by omega : s ≤ s + k) (by omega))
+      hζ hS (2 ^ j)
+    rw [hm'] at hfib
+    have hSwin := hwin j hj
+    rw [show (2:ℕ) ^ (s + j) = 2 ^ s * 2 ^ j from by rw [pow_add]] at hSwin
+    rw [hSwin] at hfib
+    have halign : ∀ e ∈ Finset.range (2 ^ (m' + 1)),
+        (c e : F) * (ζ ^ (2 ^ s)) ^ (2 ^ j * e)
+          = ((S.filter (fun x => x ^ (2 ^ s) = (ζ ^ (2 ^ s)) ^ e)).card : F)
+            * ((ζ ^ (2 ^ s)) ^ e) ^ (2 ^ j) := by
+      intro e _
+      simp only [hc]
+      push_cast
+      rw [← pow_mul]
+      congr 1
+      ring
+    rw [Finset.sum_congr rfl halign]
+    exact hfib.symm
+  have hζ'' : IsPrimitiveRoot (ζ ^ (2 ^ s)) (2 ^ (m' + 1)) := hm' ▸ hζ'
+  have hinv := windowed_coeff_congr_invariant (k := k) (m := m') (by omega) hζ'' c hcwin
+  intro e e' he he' hmod
+  have hres := hinv e e' (by rw [← hm']; exact he) (by rw [← hm']; exact he')
+    (by rw [show m' - k = m - s - k from by omega]; exact hmod)
+  simp only [hc] at hres
+  exact_mod_cast hres
+
+end MultiplicityRigidity
+
+/-! ## The sparse tower theorem: full_tower from exponentially fewer conditions
+
+O126 at depth `s = 0`: the indicator of a subset is its own depth-0 multiplicity
+vector, so the rigidity law applies — and yields `full_tower`'s coset-union conclusion
+from ONLY the 2-power window `{2^0, …, 2^k}` (`k+1` exponents) instead of the full
+window `[1, 2^(k+1))` (`2^(k+1) − 1` exponents): the original pillar of the session,
+strengthened exponentially in hypothesis by its newest theorem. -/
+
+section SparseTower
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The sparse tower theorem**: 2-power window alone forces `μ_{2^(k+1)}`-closure. -/
+theorem full_tower_sparse {m k : ℕ} (hk : k ≤ m) {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (2 ^ (m + 1)) = 1)
+    (hwin : ∀ j, j ≤ k → ∑ z ∈ S, z ^ (2 ^ j) = 0) :
+    ∀ x ∈ S, ∀ h : F, h ^ (2 ^ (k + 1)) = 1 → h * x ∈ S := by
+  classical
+  haveI : NeZero ((2:ℕ) ^ (k + 1)) := ⟨(pow_pos two_pos _).ne'⟩
+  -- depth-0 rigidity: the indicator is invariant mod 2^(m−k)
+  have hrig := contracted_multiplicity_invariant (m := m) (s := 0) (k := k)
+    (by omega) hζ hS (fun j hj => by rw [Nat.zero_add]; exact hwin j hj)
+  have hfid : ∀ f : ℕ, S.filter (fun x => x ^ 2 ^ 0 = (ζ ^ 2 ^ 0) ^ f)
+      = S.filter (fun y => y = ζ ^ f) := by
+    intro f
+    refine Finset.filter_congr fun y _ => ?_
+    norm_num
+  -- the μ_{2^(k+1)}-roots are powers of ζ^(2^(m−k))
+  have hωk : IsPrimitiveRoot (ζ ^ (2 ^ (m - k))) (2 ^ (k + 1)) := by
+    refine hζ.pow (pow_pos two_pos _) ?_
+    rw [← pow_add]
+    congr 1
+    omega
+  intro x hx h hh
+  obtain ⟨i, hi, hig⟩ := hωk.eq_pow_of_pow_eq_one hh
+  obtain ⟨e, he, hex⟩ := hζ.eq_pow_of_pow_eq_one (hS x hx)
+  -- h·x = ζ^{e + i·2^(m−k) mod 2^(m+1)}, same residue mod 2^(m−k)
+  set e2 := (e + i * 2 ^ (m - k)) % 2 ^ (m + 1) with he2
+  have he2lt : e2 < 2 ^ (m + 1) := Nat.mod_lt _ (pow_pos two_pos _)
+  have hhx : h * x = ζ ^ e2 := by
+    rw [← hig, ← hex, ← pow_mul, ← pow_add]
+    rw [show 2 ^ (m - k) * i + e = e + i * 2 ^ (m - k) from by ring]
+    conv_lhs => rw [← Nat.div_add_mod (e + i * 2 ^ (m - k)) (2 ^ (m + 1))]
+    rw [pow_add, pow_mul, hζ.pow_eq_one, one_pow, one_mul, he2]
+  have hdvd : (2:ℕ) ^ (m - k) ∣ 2 ^ (m + 1) := pow_dvd_pow 2 (by omega)
+  have hres : e2 % 2 ^ (m - k) = e % 2 ^ (m - k) := by
+    rw [he2, Nat.mod_mod_of_dvd _ hdvd, Nat.add_mul_mod_self_right]
+  -- indicator invariance: the filter cards at e2 and e agree
+  have hcards := hrig e2 e (by simpa using he2lt) (by simpa using he)
+    (by simpa using hres)
+  rw [hfid, hfid] at hcards
+  -- the filter at exponent f is {ζ^f} ∩ S: card 1 iff ζ^f ∈ S
+  have hcard_mem : ∀ f, f < 2 ^ (m + 1) →
+      ((S.filter (fun y => y = ζ ^ f)).card = 1 ↔ ζ ^ f ∈ S) := by
+    intro f hf
+    constructor
+    · intro h1
+      obtain ⟨y, hy⟩ := Finset.card_eq_one.mp h1
+      have : y ∈ S.filter (fun y => y = ζ ^ f) := hy ▸ Finset.mem_singleton_self y
+      obtain ⟨hyS, rfl⟩ := Finset.mem_filter.mp this
+      exact hyS
+    · intro hmem
+      rw [Finset.card_eq_one]
+      refine ⟨ζ ^ f, Finset.eq_singleton_iff_unique_mem.mpr
+        ⟨Finset.mem_filter.mpr ⟨hmem, rfl⟩, ?_⟩⟩
+      intro y hy
+      exact (Finset.mem_filter.mp hy).2
+  -- conclude membership transfer
+  have hxmem : ζ ^ e ∈ S := by rwa [hex]
+  have hc_e : (S.filter (fun y => y = ζ ^ e)).card = 1 := (hcard_mem e he).mpr hxmem
+  have hc_e2 : (S.filter (fun y => y = ζ ^ e2)).card = 1 := by
+    rw [show (S.filter (fun y => y = ζ ^ e2)).card
+        = (S.filter (fun y => y = ζ ^ e)).card from hcards]
+    exact hc_e
+  rw [hhx]
+  exact (hcard_mem e2 he2lt).mp hc_e2
+
+end SparseTower
+
+/-! ## The sparse budget: tower_count under 2-power-only syndromes
+
+`tower_count`'s recovery-injection bound with `full_tower_sparse` supplying the closure:
+the same `2^{#classes}` budget from only `k+1` syndrome conditions — the exponentially
+lighter verifier obligation, as a counting theorem. -/
+
+section SparseBudget
+
+theorem sparse_tower_count [DecidableEq F] {m : ℕ} {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1)))
+    {k : ℕ} (hk : k ≤ m) {D₀ : Finset F} (hD₀ : ∀ x ∈ D₀, x ^ (2 ^ (m + 1)) = 1)
+    (w : ℕ) :
+    ((D₀.powersetCard w).filter (fun S =>
+        ∀ j, j ≤ k → ∑ x ∈ S, x ^ (2 ^ j) = 0)).card
+      ≤ 2 ^ (D₀.image (· ^ (2 ^ (k + 1)))).card := by
+  classical
+  rw [← Finset.card_powerset]
+  apply Finset.card_le_card_of_injOn (fun S => S.image (· ^ (2 ^ (k + 1))))
+  · intro S hS
+    have hS2 := Finset.mem_coe.mp hS
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at hS2
+    simp only [Finset.mem_coe, Finset.mem_powerset]
+    intro y hy
+    obtain ⟨x, hx, rfl⟩ := Finset.mem_image.mp hy
+    exact Finset.mem_image.mpr ⟨x, hS2.1.1 hx, rfl⟩
+  · intro S hSm S' hSm' himg
+    have hmem := Finset.mem_coe.mp hSm
+    have hmem' := Finset.mem_coe.mp hSm'
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at hmem hmem'
+    obtain ⟨⟨hSD, _⟩, hPS⟩ := hmem
+    obtain ⟨⟨hSD', _⟩, hPS'⟩ := hmem'
+    have hclos : ∀ x ∈ S, ∀ h : F, h ^ (2 ^ (k + 1)) = 1 → h * x ∈ S :=
+      full_tower_sparse hk hζ (fun x hx => hD₀ x (hSD hx)) hPS
+    have hclos' : ∀ x ∈ S', ∀ h : F, h ^ (2 ^ (k + 1)) = 1 → h * x ∈ S' :=
+      full_tower_sparse hk hζ (fun x hx => hD₀ x (hSD' hx)) hPS'
+    have hrec : ∀ (T : Finset F), T ⊆ D₀ →
+        (∀ x ∈ T, ∀ h : F, h ^ (2 ^ (k + 1)) = 1 → h * x ∈ T) →
+        (∀ x ∈ T, x ≠ 0) →
+        T = D₀.filter (fun x => x ^ (2 ^ (k + 1)) ∈ T.image (· ^ (2 ^ (k + 1)))) := by
+      intro T hTD hTclos hT0
+      apply Finset.Subset.antisymm
+      · intro x hx
+        exact Finset.mem_filter.mpr ⟨hTD hx, Finset.mem_image.mpr ⟨x, hx, rfl⟩⟩
+      · intro x hx
+        obtain ⟨hxD, hxim⟩ := Finset.mem_filter.mp hx
+        obtain ⟨x₀, hx₀, hpow⟩ := Finset.mem_image.mp hxim
+        have hx₀0 : x₀ ≠ 0 := hT0 x₀ hx₀
+        have hx00 : x₀ ^ (2 ^ (k + 1)) ≠ 0 := pow_ne_zero _ hx₀0
+        have hq : (x / x₀) ^ (2 ^ (k + 1)) = 1 := by
+          rw [div_pow, ← hpow, div_self hx00]
+        have := hTclos x₀ hx₀ (x / x₀) hq
+        rwa [div_mul_cancel₀ x hx₀0] at this
+    have hT0S : ∀ x ∈ S, x ≠ 0 := by
+      intro x hx h0
+      have := hD₀ x (hSD hx)
+      rw [h0, zero_pow (by positivity : (0:ℕ) < 2 ^ (m + 1)).ne'] at this
+      exact one_ne_zero (α := F) this.symm
+    have hT0S' : ∀ x ∈ S', x ≠ 0 := by
+      intro x hx h0
+      have := hD₀ x (hSD' hx)
+      rw [h0, zero_pow (by positivity : (0:ℕ) < 2 ^ (m + 1)).ne'] at this
+      exact one_ne_zero (α := F) this.symm
+    simp only [] at himg
+    rw [hrec S hSD hclos hT0S, hrec S' hSD' hclos' hT0S', himg]
+
+end SparseBudget
+
 end LamLeungTwoPow

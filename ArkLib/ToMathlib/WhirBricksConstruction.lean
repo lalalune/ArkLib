@@ -674,6 +674,43 @@ structure PaperFoldDomainBridge {M : ℕ} {ιs : Fin (M + 1) → Type}
           (P.foldingParam i.castSucc)
 
 omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Domain bridge for the *input* oracle.
+
+`PaperFoldDomainBridge` identifies every next folded-oracle paper domain `ιs (i+1)` with the
+power-domain used by the folding library.  The first transition also needs an identification of the
+original input-oracle domain `ιs 0` with the source power-domain `indexPowT ... 0`; this structure
+keeps that extra assumption explicit instead of hiding it inside the verifier binding check. -/
+structure PaperInputDomainBridge {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F) (S : ∀ i : Fin (M + 1), Finset (ιs i)) where
+  sourceDomainEquiv :
+    ιs 0 ≃ BlockRelDistance.indexPowT (S 0) (P.φ 0) 0
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperInputDomainBridge_sourceDomainEquiv_apply {M : ℕ}
+    {ιs : Fin (M + 1) → Type} (P : Params ιs F)
+    (S : ∀ i : Fin (M + 1), Finset (ιs i)) (bridge : PaperInputDomainBridge P S)
+    (x : ιs 0) :
+    bridge.sourceDomainEquiv x = (bridge.sourceDomainEquiv) x :=
+  rfl
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Transport an input oracle to the source domain used by the first WHIR fold. -/
+noncomputable def paperInputSourceFromOracle {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperInputDomainBridge P S) (oracle : OracleStatement (ιs 0) F ()) :
+    BlockRelDistance.indexPowT (S 0) (P.φ 0) 0 → F :=
+  fun x => oracle (bridge.sourceDomainEquiv.symm x)
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperInputSourceFromOracle_apply {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperInputDomainBridge P S) (oracle : OracleStatement (ιs 0) F ())
+    (x : BlockRelDistance.indexPowT (S 0) (P.φ 0) 0) :
+    paperInputSourceFromOracle P S bridge oracle x =
+      oracle (bridge.sourceDomainEquiv.symm x) :=
+  rfl
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperFoldDomainBridge_nextDomainEquiv_apply {M : ℕ}
     {ιs : Fin (M + 1) → Type} (P : Params ιs F)
     (S : ∀ i : Fin (M + 1), Finset (ιs i)) (bridge : PaperFoldDomainBridge P S)
@@ -1765,6 +1802,10 @@ end RBRSoundnessAssembly
 #print axioms paperTranscriptFoldingChallenge_zero
 #print axioms paperTranscriptFoldingChallenge_succ
 #print axioms PaperFoldDomainBridge
+#print axioms PaperInputDomainBridge
+#print axioms paperInputDomainBridge_sourceDomainEquiv_apply
+#print axioms paperInputSourceFromOracle
+#print axioms paperInputSourceFromOracle_apply
 #print axioms paperFoldDomainBridge_nextDomainEquiv_apply
 #print axioms paperFoldedOracleFrom
 #print axioms paperFoldedOracleFrom_apply

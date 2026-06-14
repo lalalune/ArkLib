@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.InformationTheory.Hamming
+import ArkLib.Data.CodingTheory.Basic.Distance
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Chebyshev
 
@@ -35,11 +36,8 @@ variable {F : Type*} [DecidableEq F]
 /-- Agreement count of `c` with `f` equals `n - d(c,f)`. -/
 theorem agree_card (c f : ι → F) :
     (Finset.univ.filter (fun i => c i = f i)).card = Fintype.card ι - hammingDist c f := by
-  have hcompl : (Finset.univ.filter (fun i => c i = f i)).card
-      + (Finset.univ.filter (fun i => c i ≠ f i)).card = Fintype.card ι := by
-    rw [Finset.filter_card_add_filter_neg_card_eq_card (p := fun i => c i = f i), Finset.card_univ]
-  have : hammingDist c f = (Finset.univ.filter (fun i => c i ≠ f i)).card := rfl
-  omega
+  simpa [Code.agreementCols] using
+    Code.agreementCols_card_eq_card_sub_hammingDist (u := c) (v := f)
 
 /-- **Pairwise overlap bound.** Two codewords at distance `≥ d` agree with `f` simultaneously on at
 most `n - d` coordinates (their mutual-agreement set is contained in `{i : c i = c' i}`). -/
@@ -51,7 +49,8 @@ theorem overlap_le (c c' f : ι → F) (d : ℕ) (hd : d ≤ hammingDist c c') :
     simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hi ⊢
     rw [hi.1, hi.2]
   have hcard : (Finset.univ.filter (fun i => c i = c' i)).card = Fintype.card ι - hammingDist c c' :=
-    agree_card c c'
+    by simpa [Code.agreementCols] using
+      Code.agreementCols_card_eq_card_sub_hammingDist (u := c) (v := c')
   calc (Finset.univ.filter (fun i => c i = f i ∧ c' i = f i)).card
       ≤ (Finset.univ.filter (fun i => c i = c' i)).card := Finset.card_le_card hsub
     _ = Fintype.card ι - hammingDist c c' := hcard

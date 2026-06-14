@@ -330,11 +330,6 @@ named residual. We make this honest split precise: the per-round RBR error is bo
 keystone CA bound PLUS the named sumcheck residual `ε_sc i`.
 -/
 
-/-- **The folded stack of a round.** Abstractly: the round's word stack `u : WordStack F κ ι`
-whose poly-curve `∑ rⁱ • uᵢ` is the folded word the verifier tests for proximity. Its CA error
-is the keystone's `epsCA_curves`. This names the object the keystone speaks about. -/
-def FoldedStackOfRound : Prop := True  -- structural anchor (the stack lives in the protocol)
-
 /-- **Named sumcheck/folding bridge residual.** `RoundProxGapBoundedByKeystone` states that the
 round's per-round RBR error `roundErr` is bounded by the keystone-supplied curve bound
 `k · errorBound δ deg domain` PLUS a named sumcheck-round residual `ε_sc` (the soundness error of

@@ -10,7 +10,10 @@ formalization has two layers.  The paper-level theorem statements
 \texttt{StirIOP.stir\_main} and \texttt{StirIOP.stir\_rbr\_soundness} are front doors.  The
 protocol layer builds single-round, multi-round, and checking-verifier objects and proves their
 completeness.  The remaining soundness work is isolated as named correlated-agreement and
-round-by-round bridge residuals.
+round-by-round bridge residuals.  The live implementation tracker is
+\href{https://github.com/lalalune/ArkLib/issues/301}{STIR issue \#301}; this blueprint records
+that tracker's current Lean state and should not be read as unconditional closure of the paper
+soundness theorem.
 
 \subsection{Tools for Reed--Solomon codes}\label{sec:stir_tools}
 
@@ -78,27 +81,27 @@ round-by-round bridge residuals.
 \subsubsection{Folding univariate functions}\label{sec:folding_uf}
 
 \begin{lemma}[Polynomial folding decomposition]\label{fact:poly_folding}
-\lean{Folding.exists_unique_bivariate,Folding.degree_bound_bivariate}
+\lean{Polynomial.FoldingPolynomial.folding_polynomial_is_unique,Polynomial.FoldingPolynomial.substitution_property_of_folding_polynomial,Polynomial.FoldingPolynomial.folding_polynomial_deg_y_bound,Polynomial.FoldingPolynomial.folding_polynomial_deg_x_bound}
     A univariate polynomial can be uniquely represented as a bivariate polynomial in
     $(q(Z),Z)$ with the expected degree bounds.  This is the algebraic basis for STIR folding.
 \end{lemma}
 
 \begin{definition}[Polynomial folding]\label{def:poly_folding}
-\lean{Folding.polyFold}
+\lean{Polynomial.FoldingPolynomial.polyFold}
 \uses{fact:poly_folding}
     Given $\hat f$, a folding parameter $k$, and a challenge $r$, \texttt{polyFold} evaluates the
     bivariate decomposition of $\hat f$ at $Y=r$.
 \end{definition}
 
 \begin{definition}[Function folding]\label{def:fn_folding}
-\lean{Folding.fold}
+\lean{ProximityGap.foldWord,ProximityGap.foldValue}
 \uses{def:poly_folding}
     The function fold interpolates the values on a $k$-fiber and evaluates the resulting
     degree-$<k$ polynomial at the verifier challenge.
 \end{definition}
 
 \begin{lemma}[Folding preserves distance]\label{lemma:folding}
-\lean{Folding.folding}
+\lean{ProximityGap.folding_preserves_distance}
 \uses{def:reed_solomon_code,def:fn_folding,def:distance_from_code,thm:proximity_gap}
     If a word is far from the Reed--Solomon code, then with probability controlled by the
     STIR proximity-gap error its fold remains far from the folded Reed--Solomon code.
@@ -236,10 +239,67 @@ round-by-round bridge residuals.
     residual family in the corresponding BCIKS routes and leave only the protocol-level bridge.
 \end{theorem}
 
+
+\subsection{Genuine sub-unit soundness, tightness, and repetition}\label{sec:stir_subunit}
+
+\begin{theorem}[Multi-flip knowledge state functions]\label{thm:stir_multiflip_ksf}
+\lean{ThresholdKSF.predKSF,ThresholdKSF.rbrKnowledgeSoundness_of_flipBounds}
+\uses{def:stir_checking_residuals}
+    An un-truncated round-indexed predicate family that matches the input relation on the
+    empty transcript, never flips upward at prover rounds, and is forced at the final round
+    by acceptance, is a knowledge state function; round-by-round knowledge soundness follows
+    from per-challenge bounds on the genuine flip events
+    $\neg\mathrm{pred}(\text{before}) \wedge \mathrm{pred}(\text{after the fresh challenge})$.
+    This generalizes the single-threshold state functions used by the WHIR discharge and is
+    the upgrade required to consume challenge-dependent flip estimates at sub-unit budgets.
+\end{theorem}
+
+\begin{theorem}[Genuine budget discharge]\label{thm:stir_subunit_discharge}
+\lean{StirIOP.MultiRound.stirCheckingPred,StirIOP.MultiRound.stirEpsStar,StirIOP.MultiRound.stirCheckingRbrSoundness_genuine,StirIOP.MultiRound.stirCheckingCABridge_genuine,StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_genuine,StirIOP.MultiRound.stir_main_of_checkingIOP_genuine}
+\uses{thm:stir_multiflip_ksf,lem:stir_checking_predicate,thm:stir_checking_completeness}
+    The retired-prefix winnable state predicate (committed point-checks pass, the
+    fully-committed pair with pending binding challenge is locked, and the last committed
+    message is a codeword) yields round-by-round knowledge soundness of the checking
+    verifier \emph{outright} at the explicit budget $\varepsilon^\star$: zero at the fold and
+    shift challenges, $(|F|-(\lfloor\delta|\iota|\rfloor+1))/|F|$ at the round-two input-link
+    challenge, and $(|F|-1)/|F|$ at the later pair-binding challenges.  In the single-domain
+    identity-fold wire model no correlated-agreement input is needed, so the named bridge
+    residual holds a fortiori, the checking IOP is secure-with-gap with no residual
+    hypotheses, and Theorem~\ref{thm:stir} is instantiated with a proven soundness leg.
+\end{theorem}
+
+\begin{theorem}[Switch-prover tightness]\label{thm:stir_switch_attack}
+\lean{StirIOP.MultiRound.stirChecking_switch_decision,StirIOP.MultiRound.stirChecking_switch_attack}
+\uses{thm:stir_subunit_discharge}
+    Against the constant nearest-codeword strategy the checking decision reduces to the
+    single input-link check, and acceptance has probability at least
+    $|\{x \mid f(x)=u(x)\}|/|F|$ over the round-two challenge.  Hence no budget family
+    summing below $(|\iota|-\Delta(f,\mathrm{code}))/|F|$ is sound for this verifier:
+    $\varepsilon^\star$ is essentially tight, and $2^{-\lambda}$ budgets at large $\lambda$
+    are unachievable in the single-query wire model.
+\end{theorem}
+
+\begin{theorem}[The $t$-repetition wire model]\label{thm:stir_rep_wire}
+\lean{StirIOP.MultiRound.stirMultiVSpecRep,StirIOP.MultiRound.stirCheckingIOPRep_perfectCompleteness,StirIOP.MultiRound.stirEpsStarRep,StirIOP.MultiRound.stirCheckingRepRbrSoundness_genuine,StirIOP.MultiRound.stirCheckingIOPRep_isSecureWithGap_genuine,StirIOP.MultiRound.stir_main_of_checkingIOP_rep}
+\uses{thm:stir_subunit_discharge,thm:stir_switch_attack}
+    Repeating every binding check at all $t$ coordinates of one length-$t$ vector challenge
+    preserves perfect completeness and yields round-by-round knowledge soundness at the
+    $t$-fold power budgets $((|F|-(\lfloor\delta|\iota|\rfloor+1))/|F|)^t$ and
+    $((|F|-1)/|F|)^t$, via a product-marginal domination lemma for one uniformly drawn
+    vector challenge.  Every security-parameter target is met at sufficiently large $t$,
+    giving the first fully proven soundness leg for Theorem~\ref{thm:stir} at arbitrary
+    security parameters within the identity-fold model.
+\end{theorem}
+
 \begin{remark}[Current STIR status]\label{rem:stir_status}
-    The blueprint is complete as a dependency map for the current formalization: protocol
-    objects and completeness are represented in Lean, the paper front doors are wired to those
-    objects, and the remaining unconditional soundness work is explicitly named.  The checker is
-    still a single-domain model: its folds are identity folds of the current code, so paper-STIR's
-    full degree-reduction behavior is not yet represented as an unconditional theorem.
+    Protocol objects, completeness, and the soundness layer are represented in Lean
+    end-to-end: the checking verifier's round-by-round knowledge soundness is proven
+    outright at its genuine budget (Theorem~\ref{thm:stir_subunit_discharge}), shown
+    essentially tight (Theorem~\ref{thm:stir_switch_attack}), and lifted to arbitrary
+    security parameters by $t$-fold repetition (Theorem~\ref{thm:stir_rep_wire}).  The
+    checker remains a single-domain model: its folds are identity folds, so paper-STIR's
+    degree-reduction behavior and the Johnson-regime correlated-agreement budgets are
+    represented by the conditional front doors of
+    Theorem~\ref{thm:stir_checking_front_doors}, whose remaining inputs are tracked by the
+    BCIKS correlated-agreement issues.
 \end{remark}

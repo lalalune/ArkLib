@@ -24,7 +24,7 @@ friends), and the fiber-coefficient maps (`fiber_coeff`, `qMap_total_fiber`) rel
 points across folding levels.
 -/
 
-set_option linter.style.longFile 2500
+set_option linter.style.longFile 2800
 
 namespace Binius.BinaryBasefold
 
@@ -123,6 +123,12 @@ this branch's `sDomain` takes a bare `Fin r` index with no in-range proof obliga
 pre-split `Fin (ℓ + 1)` form is recovered by coercing the level into `Fin r`. -/
 abbrev OracleFunction (domainIdx : Fin r) : Type _ :=
   sDomain 𝔽q β h_ℓ_add_R_rate domainIdx → L
+
+omit [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 in
+/-- Domain carriers at propositionally equal indices are equal types. -/
+lemma sDomain_eq_of_eq {i j : Fin r} (h : i = j) :
+    (↥(sDomain 𝔽q β h_ℓ_add_R_rate i) : Type) = ↥(sDomain 𝔽q β h_ℓ_add_R_rate j) := by
+  rw [h]
 
 omit [NeZero ℓ] in
 lemma fin_ℓ_lt_ℓ_add_one (i : Fin ℓ) : i < ℓ + 1 :=
@@ -1223,7 +1229,7 @@ seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 Transitivity of iterated_fold : folding for `steps₁` and then for `steps₂`
 equals folding for `steps₁ + steps₂` with concatenated challenges.
 -/
-lemma iterated_fold_transitivity
+lemma iterated_fold_steps_transitivity
     (i : Fin r) (steps₁ steps₂ : Fin (ℓ + 1))
     (h_bounds : i.val + steps₁ + steps₂ ≤ ℓ) -- A single, sufficient bounds check
     (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := i) → L)
@@ -1271,6 +1277,60 @@ lemma iterated_fold_transitivity
     (ha := by omega) (hb := by omega) (h := by omega) (g := _) (y := _)
     (z := ⟨y.val, by have := y.property; simpa only [Nat.add_assoc] using this⟩)
     (hz := rfl))
+
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/--
+Transitivity of the public `iterated_fold` API: folding for `steps₁` and then for `steps₂`
+equals folding once for `steps₁ + steps₂` with appended challenges.
+-/
+lemma iterated_fold_transitivity
+    (i : Fin r) {midIdx destIdx : Fin r} (steps₁ steps₂ : ℕ)
+    {h_midIdx : midIdx.val = i.val + steps₁} {h_midIdx_le : midIdx ≤ ℓ}
+    (h_destIdx : destIdx.val = midIdx.val + steps₂) {h_destIdx_le : destIdx ≤ ℓ}
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_challenges₁ : Fin steps₁ → L) (r_challenges₂ : Fin steps₂ → L) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := midIdx) (steps := steps₂) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (steps := steps₁) (destIdx := midIdx)
+        (h_destIdx := h_midIdx) (h_destIdx_le := h_midIdx_le)
+        (f := f) (r_challenges := r_challenges₁))
+      (r_challenges := r_challenges₂) =
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps₁ + steps₂) (destIdx := destIdx)
+      (h_destIdx := by rw [h_destIdx, h_midIdx, Nat.add_assoc])
+      (h_destIdx_le := h_destIdx_le)
+      (f := f) (r_challenges := Fin.append r_challenges₁ r_challenges₂) := by
+  have h_full : destIdx.val = i.val + steps₁ + steps₂ := by
+    rw [h_destIdx, h_midIdx, Nat.add_assoc]
+  have h_mid_bound : i.val + steps₁ < r := by
+    rw [← h_midIdx]
+    exact midIdx.isLt
+  have h_dest_bound : i.val + steps₁ + steps₂ < r := by
+    rw [← h_full]
+    exact destIdx.isLt
+  have h_mid_eq : midIdx = (⟨i.val + steps₁, h_mid_bound⟩ : Fin r) :=
+    Fin.eq_of_val_eq h_midIdx
+  have h_dest_eq : destIdx = (⟨i.val + steps₁ + steps₂, h_dest_bound⟩ : Fin r) :=
+    Fin.eq_of_val_eq h_full
+  subst h_mid_eq
+  subst h_dest_eq
+  funext y
+  unfold iterated_fold
+  simp only [Fin.val_mk, id_eq, eq_mp_eq_cast, eq_mpr_eq_cast, eqRec_eq_cast, cast_cast,
+    cast_eq]
+  rw [iterated_fold_steps_transitivity 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (steps₁ := ⟨steps₁, by
+      have hle : i.val + steps₁ ≤ ℓ := le_of_add_right_le h_destIdx_le
+      omega⟩)
+    (steps₂ := ⟨steps₂, by
+      have hle : i.val + steps₁ + steps₂ ≤ ℓ := h_destIdx_le
+      omega⟩)
+    (h_bounds := h_destIdx_le)
+    (f := f) (r_challenges₁ := r_challenges₁) (r_challenges₂ := r_challenges₂)]
+  conv_lhs => rw [id_eq, eq_mp_eq_cast]
 
 /-- Tensor product of challenge vectors : for a local fold length `steps`,
 ⨂_{j=0}^{steps-1}(1-r_j, r_j). -/
@@ -1687,6 +1747,385 @@ theorem iterated_fold_steps_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_
     funext y'
     exact ih (by omega) f (fun j => r_challenges j.castSucc) y'
 
+/-!
+### Intermediate-basis reconstruction helpers
+
+These helpers restore the general-level intermediate novel-basis change-of-basis API that the
+single-step BBF code-membership proof uses.  CompPoly currently exposes the intermediate basis
+and the base-level `i = 0` reconstruction lemma; the BBF code proof also needs the same triangular
+change-of-basis argument at every level `i ≤ ℓ`.
+-/
+
+omit [DecidableEq L] [DecidableEq 𝔽q] h_Fq_char_prime h_β₀_eq_1 in
+/-- The quotient map `qMap` has degree `2` under the binary-field hypothesis. -/
+lemma natDegree_qMap (i : Fin r) : (qMap 𝔽q β i).natDegree = 2 := by
+  let q := Fintype.card 𝔽q
+  let constMultiplier := ((W 𝔽q β i).eval (β i)) ^ q /
+    ((W 𝔽q β (i + 1)).eval (β (i + 1)))
+  have h_q_poly_form :
+      qMap 𝔽q β i = Polynomial.C constMultiplier *
+        (Polynomial.X ^ q - Polynomial.X) := by
+    rw [qMap, prod_poly_sub_C_eq_poly_pow_card_sub_poly_in_L (p := Polynomial.X)]
+  rw [h_q_poly_form, Polynomial.natDegree_C_mul]
+  · rw [Polynomial.natDegree_sub_eq_left_of_natDegree_lt]
+    · rw [Polynomial.natDegree_X_pow]
+      unfold q
+      rw [hF₂.out]
+    · rw [Polynomial.natDegree_X_pow, Polynomial.natDegree_X]
+      unfold q
+      rw [hF₂.out]
+      norm_num
+  · intro h_zero
+    have h_num_ne_zero : ((W 𝔽q β i).eval (β i)) ^ q ≠ 0 :=
+      pow_ne_zero q (AdditiveNTT.Wᵢ_eval_βᵢ_neq_zero 𝔽q β i)
+    rw [div_eq_zero_iff] at h_zero
+    cases h_zero with
+    | inl h => exact h_num_ne_zero h
+    | inr h =>
+        exact (AdditiveNTT.Wᵢ_eval_βᵢ_neq_zero 𝔽q β (i + 1)) h
+
+omit [DecidableEq L] [DecidableEq 𝔽q] h_Fq_char_prime h_β₀_eq_1 in
+lemma qMap_ne_zero (i : Fin r) : (qMap 𝔽q β i) ≠ 0 := by
+  apply Polynomial.ne_zero_of_natDegree_gt (n := 0)
+  rw [natDegree_qMap (𝔽q := 𝔽q) (β := β) i]
+  norm_num
+
+omit [DecidableEq L] [DecidableEq 𝔽q] h_Fq_char_prime h_β₀_eq_1 in
+/-- The quotient map `qMap` has `WithBot` degree `2`. -/
+lemma degree_qMap (i : Fin r) : (qMap 𝔽q β i).degree = (2 : WithBot ℕ) := by
+  rw [Polynomial.degree_eq_natDegree (qMap_ne_zero (𝔽q := 𝔽q) (β := β) i),
+    natDegree_qMap (𝔽q := 𝔽q) (β := β) i]
+  norm_num
+
+omit [DecidableEq L] [DecidableEq 𝔽q] h_Fq_char_prime h_β₀_eq_1 in
+/-- The nat-degree of the intermediate normalized quotient polynomial is `2^k`. -/
+lemma natDegree_intermediateNormVpoly_nat
+    (i : Fin (ℓ + 1)) {k : ℕ} (hk : k < ℓ - i.val + 1) :
+    (intermediateNormVpoly 𝔽q β h_ℓ_add_R_rate i ⟨k, hk⟩).natDegree = 2 ^ k := by
+  induction k with
+  | zero =>
+      unfold intermediateNormVpoly
+      simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Fin.foldl_zero, Polynomial.natDegree_X,
+        pow_zero]
+  | succ k ih =>
+      unfold intermediateNormVpoly
+      rw [Fin.foldl_succ_last]
+      simp only [Fin.val_last, Fin.val_castSucc]
+      rw [Polynomial.natDegree_comp, natDegree_qMap (𝔽q := 𝔽q) (β := β)]
+      have h_acc_eq_prev :
+          Fin.foldl (↑k) (fun acc j =>
+              (qMap 𝔽q β ⟨↑i + ↑j, by omega⟩).comp acc) X =
+            intermediateNormVpoly 𝔽q β h_ℓ_add_R_rate i ⟨k, by omega⟩ := rfl
+      rw [h_acc_eq_prev, ih (by omega)]
+      rw [pow_succ']
+
+omit [DecidableEq L] [DecidableEq 𝔽q] h_Fq_char_prime h_β₀_eq_1 in
+/-- The degree of the intermediate normalized quotient polynomial is `2^k`. -/
+lemma degree_intermediateNormVpoly
+    (i : Fin (ℓ + 1)) (k : Fin (ℓ - i.val + 1)) :
+    (intermediateNormVpoly 𝔽q β h_ℓ_add_R_rate i k).degree =
+      (2 ^ k.val : WithBot ℕ) := by
+  rw [Polynomial.degree_eq_natDegree]
+  · rw [natDegree_intermediateNormVpoly_nat (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i k.isLt]
+    norm_num
+  · apply Polynomial.ne_zero_of_natDegree_gt (n := 0)
+    rw [natDegree_intermediateNormVpoly_nat (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i k.isLt]
+    exact Nat.two_pow_pos k.val
+
+omit [DecidableEq L] [DecidableEq 𝔽q] h_Fq_char_prime h_β₀_eq_1 in
+/-- The degree of an intermediate novel-basis vector `X_j^(i)` is exactly `j`. -/
+lemma degree_intermediateNovelBasisX (i : Fin r) (h_i : i ≤ ℓ)
+    (j : Fin (2 ^ (ℓ - i.val))) :
+    (intermediateNovelBasisX 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩ j).degree =
+      (j.val : WithBot ℕ) := by
+  rw [intermediateNovelBasisX, Polynomial.degree_prod]
+  have deg_each : ∀ k : Fin (ℓ - i.val),
+      ((intermediateNormVpoly 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩
+          ⟨k.val, by
+            change k.val < ℓ - i.val + 1
+            exact Nat.lt.step k.isLt⟩) ^ Nat.getBit k.val j.val).degree =
+        if Nat.getBit k.val j.val = 1 then (2 ^ k.val : WithBot ℕ) else 0 := by
+    intro k
+    rw [Polynomial.degree_pow]
+    rw [degree_intermediateNormVpoly (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+    have hbit := Nat.getBit_lt_2 (k := k.val) (n := j.val)
+    by_cases h : Nat.getBit k.val j.val = 1
+    · simp [h]
+    · have hbit_zero : Nat.getBit k.val j.val = 0 := by omega
+      simp [h, hbit_zero]
+  simp_rw [deg_each]
+  have hnat :
+      (∑ k : Fin (ℓ - i.val),
+        if Nat.getBit k.val j.val = 1 then (2 : ℕ) ^ k.val else 0) = j.val := by
+    calc
+      (∑ k : Fin (ℓ - i.val),
+          if Nat.getBit k.val j.val = 1 then (2 : ℕ) ^ k.val else 0)
+          = ∑ k : Fin (ℓ - i.val), Nat.getBit k.val j.val * 2 ^ k.val := by
+            apply Finset.sum_congr rfl
+            intro k _
+            have hbit := Nat.getBit_lt_2 (k := k.val) (n := j.val)
+            by_cases h : Nat.getBit k.val j.val = 1
+            · simp [h]
+            · have hbit_zero : Nat.getBit k.val j.val = 0 := by omega
+              simp [h, hbit_zero]
+      _ = j.val := by
+            exact (Nat.getBit_repr_univ (ℓ := ℓ - i.val) (j := j.val) (by omega)).symm
+  have hcast_ite :
+      (∑ k : Fin (ℓ - i.val),
+        (if Nat.getBit k.val j.val = 1 then
+          (((2 : ℕ) ^ k.val : ℕ) : WithBot ℕ) else 0)) =
+      (∑ k : Fin (ℓ - i.val),
+        (((if Nat.getBit k.val j.val = 1 then (2 : ℕ) ^ k.val else 0 : ℕ)) :
+          WithBot ℕ)) := by
+    apply Finset.sum_congr rfl
+    intro k _
+    by_cases h : Nat.getBit k.val j.val = 1
+    · simp [h]
+    · simp [h]
+  change
+      (∑ k : Fin (ℓ - i.val),
+        (if Nat.getBit k.val j.val = 1 then
+          (((2 : ℕ) ^ k.val : ℕ) : WithBot ℕ) else 0)) =
+      (j.val : WithBot ℕ)
+  rw [hcast_ite]
+  exact ((WithBot.coe_sum (Finset.univ : Finset (Fin (ℓ - i.val)))
+    (fun k => (if Nat.getBit k.val j.val = 1 then (2 : ℕ) ^ k.val else 0 : ℕ))).symm).trans
+      (congrArg (fun n : ℕ => (n : WithBot ℕ)) hnat)
+
+omit [DecidableEq L] [DecidableEq 𝔽q] h_Fq_char_prime h_β₀_eq_1 in
+/-- Intermediate evaluation polynomials have the expected degree bound. -/
+lemma degree_intermediateEvaluationPoly_lt (i : Fin r) (h_i : i ≤ ℓ)
+    (coeffs : Fin (2 ^ (ℓ - i.val)) → L) :
+    (intermediateEvaluationPoly 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩ coeffs).degree <
+      (2 ^ (ℓ - i.val) : WithBot ℕ) := by
+  unfold intermediateEvaluationPoly
+  apply (Polynomial.degree_sum_le Finset.univ
+    (fun j : Fin (2 ^ (ℓ - i.val)) =>
+      Polynomial.C (coeffs ⟨j.val, by
+        change j.val < 2 ^ (ℓ - i.val)
+        exact j.isLt⟩) *
+        intermediateNovelBasisX 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩
+          ⟨j.val, by
+            change j.val < 2 ^ (ℓ - i.val)
+            exact j.isLt⟩)).trans_lt
+  apply (Finset.sup_lt_iff ?_).mpr ?_
+  · exact compareOfLessAndEq_eq_lt.mp rfl
+  · intro j _
+    calc
+      (Polynomial.C (coeffs ⟨j.val, by
+          change j.val < 2 ^ (ℓ - i.val)
+          exact j.isLt⟩) *
+          intermediateNovelBasisX 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩
+            ⟨j.val, by
+              change j.val < 2 ^ (ℓ - i.val)
+              exact j.isLt⟩).degree
+          ≤ (Polynomial.C (coeffs ⟨j.val, by
+              change j.val < 2 ^ (ℓ - i.val)
+              exact j.isLt⟩)).degree +
+              (intermediateNovelBasisX 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩
+                ⟨j.val, by
+                  change j.val < 2 ^ (ℓ - i.val)
+                  exact j.isLt⟩).degree := by
+            exact Polynomial.degree_mul_le _ _
+      _ ≤ 0 +
+              (intermediateNovelBasisX 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩
+                ⟨j.val, by
+                  change j.val < 2 ^ (ℓ - i.val)
+                  exact j.isLt⟩).degree := by
+            gcongr
+            exact Polynomial.degree_C_le
+      _ = (j.val : WithBot ℕ) := by
+            rw [degree_intermediateNovelBasisX (𝔽q := 𝔽q) (β := β)
+              (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i ⟨j.val, by
+                change j.val < 2 ^ (ℓ - i.val)
+                exact j.isLt⟩]
+            simp
+      _ < (2 ^ (ℓ - i.val) : WithBot ℕ) := by
+            exact WithBot.coe_lt_coe.mpr j.isLt
+
+section IntermediateNovelPolynomialBasis
+
+/-- The basis vectors for the intermediate level `i`. -/
+noncomputable def intermediateBasisVectors (i : Fin r) (h_i : i ≤ ℓ) :
+    Fin (2 ^ (ℓ - i.val)) → L⦃<2 ^ (ℓ - i.val)⦄[X] :=
+  fun j => ⟨intermediateNovelBasisX 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩ j, by
+    rw [Polynomial.mem_degreeLT]
+    rw [degree_intermediateNovelBasisX (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i j]
+    exact WithBot.coe_lt_coe.mpr j.isLt⟩
+
+abbrev IntermediateCoeffVecSpace (i : Fin r) := Fin (2 ^ (ℓ - i.val)) → L
+
+/-- The monomial coefficient vector of a bounded polynomial at intermediate level `i`. -/
+def intermediateToCoeffsVec (i : Fin r) :
+    L⦃<2 ^ (ℓ - i.val)⦄[X] →ₗ[L] IntermediateCoeffVecSpace (L := L) (ℓ := ℓ) i where
+  toFun := fun p => fun k => p.val.coeff k.val
+  map_add' := fun p q => by
+    ext k
+    simp [Polynomial.coeff_add]
+  map_smul' := fun c p => by
+    ext k
+    simp [Polynomial.coeff_smul, smul_eq_mul]
+
+/-- Change-of-basis matrix from intermediate novel basis coefficients to monomial coefficients. -/
+noncomputable def intermediateChangeOfBasisMatrix (i : Fin r) (h_i : i ≤ ℓ) :
+    Matrix (Fin (2 ^ (ℓ - i.val))) (Fin (2 ^ (ℓ - i.val))) L :=
+  fun j k => (intermediateToCoeffsVec (L := L) (ℓ := ℓ) i
+    (intermediateBasisVectors (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i j)) k
+
+omit h_Fq_char_prime in
+theorem intermediateChangeOfBasisMatrix_lower_triangular (i : Fin r) (h_i : i ≤ ℓ) :
+    (intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i).BlockTriangular
+      ⇑OrderDual.toDual := by
+  intro j k h_jk
+  simp only [OrderDual.toDual_lt_toDual] at h_jk
+  dsimp only [intermediateChangeOfBasisMatrix, intermediateToCoeffsVec,
+    intermediateBasisVectors, LinearMap.coe_mk, AddHom.coe_mk]
+  apply Polynomial.coeff_eq_zero_of_natDegree_lt
+  rw [Polynomial.natDegree_eq_of_degree_eq_some
+    (degree_intermediateNovelBasisX (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i j)]
+  exact h_jk
+
+omit h_Fq_char_prime in
+theorem intermediateChangeOfBasisMatrix_diag_ne_zero (i : Fin r) (h_i : i ≤ ℓ) :
+    ∀ j, (intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i) j j ≠ 0 := by
+  intro j
+  dsimp [intermediateChangeOfBasisMatrix, intermediateToCoeffsVec, intermediateBasisVectors]
+  apply Polynomial.coeff_ne_zero_of_eq_degree
+  exact degree_intermediateNovelBasisX (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i j
+
+omit h_Fq_char_prime in
+theorem intermediateChangeOfBasisMatrix_det_ne_zero (i : Fin r) (h_i : i ≤ ℓ) :
+    (intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i).det ≠ 0 := by
+  let A := intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i
+  rw [Matrix.det_of_lowerTriangular A]
+  · exact prod_ne_zero_iff.mpr fun j _ =>
+      intermediateChangeOfBasisMatrix_diag_ne_zero (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i j
+  · exact intermediateChangeOfBasisMatrix_lower_triangular (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i
+
+/-- The intermediate change-of-basis matrix is invertible. -/
+noncomputable instance intermediateChangeOfBasisMatrix_invertible (i : Fin r) (h_i : i ≤ ℓ) :
+    Invertible (intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i) := by
+  refine (intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i).invertibleOfIsUnitDet ?_
+  exact Ne.isUnit (intermediateChangeOfBasisMatrix_det_ne_zero (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i)
+
+/-- Convert monomial coefficients to intermediate novel coefficients at level `i`. -/
+noncomputable def monomialToINovelCoeffs (i : Fin r) (h_i : i ≤ ℓ)
+    (monomial_coeffs : Fin (2 ^ (ℓ - i.val)) → L) : Fin (2 ^ (ℓ - i.val)) → L :=
+  let A := intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i
+  Matrix.vecMul monomial_coeffs A⁻¹
+
+/-- Convert intermediate novel coefficients to monomial coefficients at level `i`. -/
+noncomputable def iNovelToMonomialCoeffs (i : Fin r) (h_i : i ≤ ℓ)
+    (novel_coeffs : Fin (2 ^ (ℓ - i.val)) → L) : Fin (2 ^ (ℓ - i.val)) → L :=
+  let A := intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i
+  Matrix.vecMul novel_coeffs A
+
+/-- Read intermediate novel coefficients from a polynomial's monomial coefficients. -/
+noncomputable def getINovelCoeffs (i : Fin r) (h_i : i ≤ ℓ)
+    (P : L[X]) : Fin (2 ^ (ℓ - i.val)) → L :=
+  monomialToINovelCoeffs (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i (fun k => P.coeff k.val)
+
+omit h_Fq_char_prime in
+theorem monomialToINovel_iNovelToMonomial_inverse (i : Fin r) (h_i : i ≤ ℓ)
+    (coeffs : Fin (2 ^ (ℓ - i.val)) → L) :
+    iNovelToMonomialCoeffs (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i
+      (monomialToINovelCoeffs (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i coeffs) = coeffs := by
+  unfold monomialToINovelCoeffs iNovelToMonomialCoeffs
+  dsimp only
+  let A := intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i
+  rw [Matrix.vecMul_vecMul]
+  rw [Matrix.nonsing_inv_mul A (Matrix.isUnit_det_of_invertible A)]
+  rw [Matrix.vecMul_one]
+
+omit h_Fq_char_prime in
+theorem iNovelToMonomial_monomialToINovel_inverse (i : Fin r) (h_i : i ≤ ℓ)
+    (coeffs : Fin (2 ^ (ℓ - i.val)) → L) :
+    monomialToINovelCoeffs (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i
+      (iNovelToMonomialCoeffs (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i coeffs) = coeffs := by
+  unfold monomialToINovelCoeffs iNovelToMonomialCoeffs
+  dsimp only
+  let A := intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i
+  rw [Matrix.vecMul_vecMul]
+  rw [Matrix.mul_inv_of_invertible]
+  rw [Matrix.vecMul_one]
+
+omit h_Fq_char_prime in
+/-- Reconstruct a bounded polynomial from its intermediate novel coefficients. -/
+lemma intermediateEvaluationPoly_from_inovel_coeffs_eq_self
+    (i : Fin r) (h_i : i ≤ ℓ) (P : L[X])
+    (hP_deg : P.degree < (2 ^ (ℓ - i.val) : WithBot ℕ)) :
+    intermediateEvaluationPoly 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩
+      (getINovelCoeffs (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i P) = P := by
+  apply Polynomial.ext
+  intro k
+  let N := 2 ^ (ℓ - i.val)
+  set novelCoeffs := getINovelCoeffs (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i P
+  by_cases hk : k < N
+  · let k_fin : Fin N := ⟨k, hk⟩
+    conv_lhs => rw [intermediateEvaluationPoly]
+    simp only [finset_sum_coeff, Polynomial.coeff_C_mul]
+    let A := intermediateChangeOfBasisMatrix (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i
+    have h_matrix_def : ∀ j : Fin N,
+        (intermediateNovelBasisX 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩ j).coeff k =
+          A j k_fin := by
+      intro j
+      dsimp only [intermediateChangeOfBasisMatrix, intermediateToCoeffsVec,
+        intermediateBasisVectors, LinearMap.coe_mk, AddHom.coe_mk, A, k_fin]
+    simp_rw [h_matrix_def]
+    have h_left_eq : ∑ x, novelCoeffs x * A x k_fin =
+        Matrix.vecMul novelCoeffs A k_fin := by
+      dsimp only [Matrix.vecMul, dotProduct]
+    rw [h_left_eq]
+    unfold novelCoeffs getINovelCoeffs monomialToINovelCoeffs
+    rw [Matrix.vecMul_vecMul]
+    rw [Matrix.nonsing_inv_mul A (Matrix.isUnit_det_of_invertible A)]
+    rw [Matrix.vecMul_one]
+  · push_neg at hk
+    rw [Polynomial.coeff_eq_zero_of_degree_lt (n := k)
+      (p := intermediateEvaluationPoly 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩ novelCoeffs)]
+    · have hP_coeff : P.coeff k = 0 := by
+        exact Polynomial.coeff_eq_zero_of_degree_lt (n := k) (p := P) (by
+          calc
+            P.degree < (2 ^ (ℓ - i.val) : WithBot ℕ) := hP_deg
+            _ ≤ k := by exact WithBot.coe_le_coe.mpr hk)
+      rw [hP_coeff]
+    · calc
+        (intermediateEvaluationPoly 𝔽q β h_ℓ_add_R_rate ⟨i.val, by omega⟩
+          novelCoeffs).degree < (2 ^ (ℓ - i.val) : WithBot ℕ) := by
+            exact degree_intermediateEvaluationPoly_lt (𝔽q := 𝔽q) (β := β)
+              (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i (coeffs := novelCoeffs)
+        _ ≤ k := by exact WithBot.coe_le_coe.mpr hk
+
+end IntermediateNovelPolynomialBasis
+
 
 omit [CharP L 2] [NeZero ℓ] in
 /-- Lemma 4.13 (LEGACY form): if f⁽ⁱ⁾ is evaluation of P⁽ⁱ⁾(X) over S⁽ⁱ⁾, then
@@ -1898,8 +2337,9 @@ The definitions below are the canonical entry points consumed by `Code`, `Compli
 `Relations`, `QueryPhase`, and the `Soundness/*` modules. They are stated against
 `(steps : ℕ) {destIdx : Fin r} (h_destIdx) (h_destIdx_le)` (the post-split convention) and are
 built on top of the legacy `*_steps`/`*_legacy`/`foldMatrixNat`/`localized_fold_eval` machinery
-above. `challengeTensorExpansion` is `multilinearWeight`; the raw single-point matrix expression
-below unfolds to `challengeTensorExpansion steps r ᵥ* foldMatrix … y ⬝ᵥ fiberEvaluations … f y`.
+above. `challengeTensorExpansion` remains the multilinear-weight tensor used by the soundness
+polynomial layer; the raw single-point matrix expression below uses the legacy fold-order tensor,
+whose row order matches `foldMatrixNat`.
 -/
 
 /-- **Challenge tensor expansion** `⨂_{j}(1 - r_j, r_j)` as a function `Fin (2^n) → L`. This is
@@ -1916,15 +2356,12 @@ lemma challengeTensorExpansion_one (c : L) :
     simp [Fin.prod_univ_one, Nat.testBit]
 
 -- NOTE: the entrywise identity `challengeTensorProduct.get idx = challengeTensorExpansion idx`
--- that a previous pass kept as an assumed bridge here is *false as stated*: the legacy
--- `challengeTensorProduct` recursion places the last challenge in the LSB (`idx % 2` selects
--- `r (last n)`), whereas `challengeTensorExpansion = multilinearWeight` places it in the MSB
--- (`testBit idx j` ↔ challenge `j`). Concretely, for `n = 2`, `challengeTensorProduct rc 2 =
--- (1 - r₁) * r₀` while `challengeTensorExpansion rc 2 = (1 - r₀) * r₁`; they are related by a
--- *bit-reversal* permutation of the index, not the identity. The exported oracle-level
--- `localized_fold_matrix_form` below therefore delegates to `iterated_fold`; relating the raw
--- `single_point_localized_fold_matrix_form` to the legacy proved matrix evaluator still requires
--- reconciling that bit-reversal across the tensor vector, the fold matrix rows, and the fiber index.
+-- is *false as stated*: the legacy `challengeTensorProduct` recursion places the last challenge in
+-- the LSB (`idx % 2` selects `r (last n)`), whereas
+-- `challengeTensorExpansion = multilinearWeight` places it in the MSB (`testBit idx j` ↔ challenge
+-- `j`). The single-point matrix evaluator therefore uses `challengeTensorProduct` directly; the
+-- multilinear-weight tensor remains available as `challengeTensorExpansion` for the soundness
+-- polynomial basis.
 
 /-- The (in-range) arithmetic bound `i.val + steps < ℓ + 𝓡` derived from a destination index
 `destIdx.val = i.val + steps` with `destIdx ≤ ℓ`. Shared by the new-API matrix/fiber definitions
@@ -1959,34 +2396,6 @@ noncomputable def foldMatrix (i : Fin r) {destIdx : Fin r} (steps : ℕ)
   foldMatrixNat 𝔽q β i steps (newAPI_i_add_steps_lt h_destIdx h_destIdx_le)
     (newAPI_liftPoint 𝔽q β h_destIdx h_destIdx_le y)
 
-/-- **Explicit residual for fold-matrix nonsingularity.**
-
-The soundness proof of Proposition 4.21 needs every new-API fold matrix `M_y` to be nonsingular.
-This should ultimately follow from the AdditiveNTT quotient-fiber basis change, but the current
-API only exposes the matrix evaluator. Naming the residual keeps the dependency visible instead of
-leaving downstream files to reference an undeclared constant. -/
-class FoldMatrixDetNeZeroResidual : Prop where
-  holds : ∀ (i : Fin r) {destIdx : Fin r} (steps : ℕ)
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx),
-    (foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
-      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) y).det ≠ 0
-
-/-- Fold matrices are nonsingular, reduced to the explicit `FoldMatrixDetNeZeroResidual`.
-
-This theorem preserves the public name expected by the Binius soundness layer while making the
-remaining AdditiveNTT matrix-invertibility obligation a theorem-scope typeclass hypothesis. -/
-theorem foldMatrix_det_ne_zero (i : Fin r) {destIdx : Fin r} (steps : ℕ)
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    [FoldMatrixDetNeZeroResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
-    (foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
-      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) y).det ≠ 0 :=
-  FoldMatrixDetNeZeroResidual.holds i steps h_destIdx h_destIdx_le y
-
-#print axioms FoldMatrixDetNeZeroResidual
-#print axioms foldMatrix_det_ne_zero
-
 /-- **Fiber evaluations** `[f(x_0), …, f(x_{2^steps-1})]` of `f` over the iterated-quotient fiber
 of `y` (canonical new-API). `f : S⁽ⁱ⁾ → L`, `y : S⁽ᵈᵉˢᵗ⁾` (lifted to the legacy `⟨i + steps, _⟩`
 index by its underlying value). Equals `fiberEvaluationMapping` composed with the index lift. -/
@@ -1999,16 +2408,41 @@ noncomputable def fiberEvaluations (i : Fin r) {destIdx : Fin r} (steps : ℕ)
       (h_i_add_steps := newAPI_i_add_steps_lt h_destIdx h_destIdx_le)
       (y := newAPI_liftPoint 𝔽q β h_destIdx h_destIdx_le y) idx)
 
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 in
+/-- Evaluation of `fiberEvaluations` at the canonical destination index `i + steps`.
+
+This is the public, cast-free form of the definition; it hides the private new-API lift used to
+bridge from `{destIdx}` to the legacy `⟨i + steps, _⟩` fiber API. -/
+lemma fiberEvaluations_apply_eq_qMap_total_fiber
+    (i : Fin r) (steps : ℕ) (h_i_add_steps_le : i.val + steps ≤ ℓ)
+    (h_i_add_steps_lt_r : i.val + steps < r)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate (⟨i.val + steps, h_i_add_steps_lt_r⟩ : Fin r))
+    (idx : Fin (2 ^ steps)) :
+    fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (destIdx := ⟨i.val + steps, h_i_add_steps_lt_r⟩) (steps := steps)
+      (h_destIdx := rfl) (h_destIdx_le := by simpa only [Fin.val_mk] using h_i_add_steps_le)
+      (f := f) (y := y) idx =
+    f (qMap_total_fiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps)
+      (h_i_add_steps := Nat.lt_of_le_of_lt h_i_add_steps_le
+        (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡)))
+      (y := y) idx) := by
+  unfold fiberEvaluations
+  rfl
+
 /-- **Single-point localized fold matrix form** (canonical new-API):
-`challengeTensorExpansion steps r ⬝ᵥ (foldMatrix … y *ᵥ fiber_eval_mapping)`. The `Soundness/*`
-proofs `unfold` this to exactly the `challengeTensorExpansion … ⬝ᵥ foldMatrix … *ᵥ …` shape. -/
+the fold-order challenge tensor dotted with `(foldMatrix … y *ᵥ fiber_eval_mapping)`. The tensor is
+`challengeTensorProduct`, not `challengeTensorExpansion`, because `foldMatrixNat` peels the last fold
+step into the low row bit. -/
 noncomputable def single_point_localized_fold_matrix_form (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (r_challenges : Fin steps → L)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx)
     (fiber_eval_mapping : Fin (2 ^ steps) → L) : L :=
   let challenge_vec : Fin (2 ^ steps) → L :=
-    challengeTensorExpansion (L := L) steps r_challenges
+    fun idx => (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r)
+      steps r_challenges).get idx
   let fold_mat : Matrix (Fin (2 ^ steps)) (Fin (2 ^ steps)) L :=
     foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
       h_destIdx h_destIdx_le y
@@ -2052,6 +2486,36 @@ lemma iterated_fold_eq_iterated_fold_steps (i : Fin r) (steps : ℕ)
   -- destIdx`; here `destIdx = ⟨i+steps,_⟩`, so `hidx = rfl` and the `cast` is `cast rfl`.
   unfold iterated_fold
   simp only [cast_eq]
+
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- The `{destIdx}` single-point matrix evaluator is the legacy localized-fold evaluator when the
+destination is the canonical `i + steps` index. -/
+private lemma single_point_localized_fold_matrix_form_eq_localized_fold_eval (i : Fin ℓ)
+    (steps : ℕ) (h_i_add_steps : i.val + steps ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (r_challenges : Fin steps → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i.val + steps, by omega⟩) :
+    single_point_localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := steps) (destIdx := ⟨i.val + steps, by omega⟩)
+      (h_destIdx := rfl) (h_destIdx_le := by omega) (r_challenges := r_challenges)
+      (y := y)
+      (fiber_eval_mapping := fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (steps := steps) (destIdx := ⟨i.val + steps, by omega⟩)
+        (h_destIdx := rfl) (h_destIdx_le := by omega) (f := f) (y := y)) =
+    localized_fold_eval 𝔽q β i (steps := steps) (h_i_add_steps := h_i_add_steps)
+      f r_challenges y := by
+  unfold single_point_localized_fold_matrix_form localized_fold_eval
+    localized_fold_matrix_form_legacy fiberEvaluations fiberEvaluationMapping foldMatrix foldMatrix_steps
+  have hy_lift :
+      newAPI_liftPoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := (⟨i, by omega⟩ : Fin r)) (destIdx := ⟨i.val + steps, by omega⟩)
+        (steps := steps) (h_destIdx := rfl) (h_destIdx_le := by omega) y = y := by
+    exact Subtype.ext rfl
+  rw [hy_lift]
+  rw [Vector.dotProduct_eq_root_dotProduct]
+  unfold _root_.dotProduct
+  simp only [Vector.get_ofFn]
 
 set_option maxHeartbeats 1000000 in
 seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
@@ -2121,6 +2585,91 @@ theorem iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
   -- reindexings (`castSucc`-of-`mk` vs `mk`-of-`castSucc`), the `Fin.last` instances,
   -- and the subtype re-`mk` of `y` are all definitional.
   rfl
+
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- **Lemma 4.9 (new-API single-point form).** When the source index is an actual quotient level
+`i < ℓ`, the raw single-point matrix evaluator over the fiber evaluations of `f` equals the
+`steps`-fold of `f`. -/
+theorem single_point_localized_fold_matrix_form_eq_iterated_fold
+    (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (h_i_lt : i.val < ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_challenges : Fin steps → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
+    single_point_localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) (r_challenges := r_challenges) (y := y)
+      (fiber_eval_mapping := fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (steps := steps) (destIdx := destIdx) (h_destIdx := h_destIdx)
+        (h_destIdx_le := h_destIdx_le) (f := f) (y := y)) =
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := f) (r_challenges := r_challenges) y := by
+  rcases i with ⟨iVal, hiVal⟩
+  simp only [Fin.val_mk] at h_destIdx h_i_lt
+  let iℓ : Fin ℓ := ⟨iVal, h_i_lt⟩
+  have hsrc : (⟨iℓ, by omega⟩ : Fin r) = (⟨iVal, hiVal⟩ : Fin r) :=
+    Fin.eq_of_val_eq rfl
+  cases hsrc
+  rcases destIdx with ⟨destVal, hdestVal⟩
+  simp only [Fin.val_mk] at h_destIdx h_destIdx_le
+  have hdest :
+      (⟨destVal, hdestVal⟩ : Fin r) =
+        (⟨iℓ.val + steps, by
+          have hlt : iℓ.val + steps < ℓ + 𝓡 := by
+            have hle : iℓ.val + steps ≤ ℓ := by
+              rw [← h_destIdx]
+              exact h_destIdx_le
+            exact Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
+          exact Nat.lt_trans hlt h_ℓ_add_R_rate⟩ : Fin r) := by
+    exact Fin.eq_of_val_eq (by simpa [iℓ] using h_destIdx)
+  cases hdest
+  calc
+    single_point_localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := steps)
+        (destIdx := ⟨iℓ.val + steps, by omega⟩)
+        (h_destIdx := rfl) (h_destIdx_le := by omega) (r_challenges := r_challenges)
+        (y := y)
+        (fiber_eval_mapping := fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := steps)
+          (destIdx := ⟨iℓ.val + steps, by omega⟩)
+          (h_destIdx := rfl) (h_destIdx_le := by omega) (f := f) (y := y))
+        = localized_fold_eval 𝔽q β iℓ (steps := steps)
+            (h_i_add_steps := by
+              have hle : iℓ.val + steps ≤ ℓ := by
+                simpa using h_destIdx_le
+              exact hle)
+            f r_challenges y := by
+          exact single_point_localized_fold_matrix_form_eq_localized_fold_eval 𝔽q β iℓ
+            (steps := steps) (h_i_add_steps := by simpa using h_destIdx_le)
+            (f := f) (r_challenges := r_challenges) (y := y)
+    _ = iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := ⟨steps, by
+            have hle : iℓ.val + steps ≤ ℓ := by simpa using h_destIdx_le
+            omega⟩)
+          (h_i_add_steps := by
+            have hle : iℓ.val + steps ≤ ℓ := by simpa using h_destIdx_le
+            exact Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡)))
+          (f := f) (r_challenges := r_challenges) y := by
+        exact (iterated_fold_steps_eq_matrix_form 𝔽q β iℓ (steps := steps)
+          (h_i_add_steps := by simpa using h_destIdx_le)
+          (f := f) (r_challenges := r_challenges) (y := y)).symm
+    _ = iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := steps)
+          (destIdx := ⟨iℓ.val + steps, by omega⟩) (h_destIdx := rfl)
+          (h_destIdx_le := by omega) (f := f) (r_challenges := r_challenges) y := by
+        exact (iterated_fold_eq_iterated_fold_steps 𝔽q β
+          (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := steps)
+          (h_steps := by
+            have hle : iℓ.val + steps ≤ ℓ := by simpa using h_destIdx_le
+            omega)
+          (h_i_add_steps := by
+            have hle : iℓ.val + steps ≤ ℓ := by simpa using h_destIdx_le
+            exact Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡)))
+          (h_destIdx_le := by omega) (f := f) (r_challenges := r_challenges)
+          (y := y)).symm
 
 /-- **Lemma 4.9 (new-API).** The exported new-API localized fold form is definitionally the
 new-API iterated fold. The raw matrix expression is kept separately as

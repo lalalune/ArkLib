@@ -20,7 +20,7 @@ formalization debt:
 ## What was proved (Issue #141 math)
 
 New module
-[GrandChallenge141PrizeMath.lean](../../../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141PrizeMath.lean),
+[MCAGSBounds.lean](../../../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSBounds.lean),
 all declarations axiom-clean `[propext, Classical.choice, Quot.sound]`, sorry-free:
 
 - `epsMCAgs_le_one`, `epsMCA_le_one` — both prize errors are suprema of probabilities, hence `≤ 1`.
@@ -47,9 +47,9 @@ all declarations axiom-clean `[propext, Classical.choice, Quot.sound]`, sorry-fr
   the permitted partial progress and are linked to #141:
   - `mcaConjecture`: `nonempty_mcaLowerWitness_of_mcaConjecture`,
     `exists_mcaLowerWitness_of_mcaConjecture`, the `ignoredSource` adapters, and the
-    lattice-threshold links in `GrandChallengesLattice.lean`.
+    lattice-threshold links in `Lattice2.lean`.
   - `epsMCAgs_prizeBound_conjecture`: `MCAGSWitness.epsMCAgs_prizeBound_of_massBound` and the new
-    `GrandChallenge141PrizeMath.epsMCAgs_prizeBound_of_listSize_clears`.
+    `MCAGS.epsMCAgs_prizeBound_of_listSize_clears`.
 - Leave #141 **open**: the uniform prize remains genuinely unproved. Closing would require either
   laundering or upstreaming classical GS list decoding (absent from mathlib).
 
@@ -65,10 +65,10 @@ genuinely-provable surrounding mathematics.
 ```sh
 rg -n 'mcaConjecture|epsMCAgs_prizeBound_conjecture|epsMCAgsPrizeUniformConjecture|#141' \
   ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean \
-  ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLattice.lean \
+  ArkLib/Data/CodingTheory/ProximityGap/Lattice2.lean \
   ArkLib/Data/CodingTheory/ProximityGap/MCAGS.lean \
   ArkLib/Data/CodingTheory/ProximityGap/MCAGSWitness.lean \
-  ArkLib/Data/CodingTheory/ProximityGap/GrandChallenge141PrizeMath.lean \
+  ArkLib/Data/CodingTheory/ProximityGap/MCAGSBounds.lean \
   docs/kb/audits/proximity-prize
 ```
 

@@ -15,13 +15,17 @@
 #ifdef CAL16
 #define N 16
 #define K 8
+#ifndef A
 #define A 9
+#endif
 #define E_HI 10
 #define E_LO 8
 #else
 #define N 32
 #define K 16
+#ifndef A
 #define A 18
+#endif
 #define E_HI 18
 #define E_LO 16
 #endif

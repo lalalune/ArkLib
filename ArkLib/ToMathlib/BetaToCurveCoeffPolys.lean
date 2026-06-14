@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.ToMathlib.BetaMatchingVanishes
 import ArkLib.ToMathlib.IngredientCBridge
-import ArkLib.ToMathlib.Claim59Conditional
+import ArkLib.ToMathlib.BCIKS20PointwiseConditional
 
 /-!
 # Curve Coefficient Polynomial Reconstruction from the Beta Recursion

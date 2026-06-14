@@ -7,6 +7,8 @@ Authors: ArkLib Contributors
 import ArkLib.ProofSystem.Spartan.FirstSumcheckReduction
 import ArkLib.ProofSystem.Spartan.FirstSumcheckRelComplete
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
+import ArkLib.OracleReduction.LiftContext.HonestKnowledgeLens
+import ArkLib.ProofSystem.Sumcheck.Spec.RbrKnowledgeSoundnessOracle
 
 /-!
 # The Spartan first sum-check phase preserves completeness (issue #114)
@@ -170,5 +172,63 @@ theorem firstSumcheck_rbrSoundness
   exact OracleVerifier.liftContext_rbrSoundness_pullback
     (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier
     (subset_refl _) h_inner
+
+/-- The honest pullback input relation used by the first sum-check rbr knowledge transfer. It says
+that the projected inner sum-check round-`0` claim holds. -/
+def firstSumcheckHonestRelIn :
+    Set (((Statement.AfterFirstChallenge R pp ×
+        (∀ i, OracleStatement.AfterFirstChallenge R pp i)) × Unit)) :=
+  Extractor.Lens.Honest.pullbackRelIn
+    (firstSumcheckOracleLens pp oSpec).toLens
+    (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1)))
+
+/-- The honest transported output relation used by the first sum-check rbr knowledge transfer. It
+is the canonical outer relation induced by the inner final sum-check relation and the first
+sum-check lens. -/
+def firstSumcheckHonestRelOut :
+    Set (((Statement.AfterFirstSumcheck R pp ×
+        (∀ i, OracleStatement.AfterFirstSumcheck R pp i)) × Unit)) :=
+  Extractor.Lens.Honest.transportedRelOut
+    (firstSumcheckOracleLens pp oSpec).toLens
+    (Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (Fin.last pp.ℓ_m))
+    (Verifier.compatStatement (firstSumcheckOracleLens pp oSpec).toLens
+      (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier.toVerifier)
+
+/-- **First sum-check phase round-by-round knowledge soundness (issue #114).** The Spartan lift of
+the generic sum-check verifier is rbr knowledge sound on the honest pullback/transported claim
+relations. This is the knowledge-sound analogue of `firstSumcheck_rbrSoundness`; it deliberately
+uses the sum-check claim relations rather than the R1CS-carrying relations, avoiding the false
+single-point implication described above. -/
+theorem firstSumcheck_rbrKnowledgeSoundness_honest
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    [Inhabited R] [Subsingleton σ]
+    (hInit : ∃ s, s ∈ support init) (hInitNF : Pr[⊥ | init] = 0) :
+    (firstSumcheckReduction pp oSpec).verifier.rbrKnowledgeSoundness init impl
+      (firstSumcheckHonestRelIn (R := R) pp oSpec)
+      (firstSumcheckHonestRelOut (R := R) pp oSpec)
+      (fun _ => (3 : ℝ≥0) / (Fintype.card R)) := by
+  haveI := firstSumcheckCoherent (R := R) pp oSpec
+  change (OracleVerifier.liftContext (firstSumcheckOracleLens pp oSpec)
+    (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier).rbrKnowledgeSoundness
+      init impl
+      (firstSumcheckHonestRelIn (R := R) pp oSpec)
+      (firstSumcheckHonestRelOut (R := R) pp oSpec)
+      (fun _ => (3 : ℝ≥0) / (Fintype.card R))
+  exact OracleVerifier.liftContext_rbr_knowledgeSoundness
+    (V := (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier)
+    (stmtLens := firstSumcheckOracleLens pp oSpec)
+    (witLens := Witness.InvLens.trivial)
+    (lensKS := Extractor.Lens.Honest.honestLensKS
+      (stmtLens := (firstSumcheckOracleLens pp oSpec).toLens)
+      (innerRelIn :=
+        Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (0 : Fin (pp.ℓ_m + 1)))
+      (innerRelOut :=
+        Sumcheck.Spec.relationRound R pp.ℓ_m 3 (boolEmbedding R) (Fin.last pp.ℓ_m))
+      (compatStmt :=
+        Verifier.compatStatement (firstSumcheckOracleLens pp oSpec).toLens
+          (Sumcheck.Spec.oracleReduction R 3 (boolEmbedding R) pp.ℓ_m oSpec).verifier.toVerifier))
+    (h := Sumcheck.Spec.oracleVerifier_rbrKnowledgeSoundness
+      (R := R) (deg := 3) (D := boolEmbedding R) (n := pp.ℓ_m)
+      (oSpec := oSpec) (init := init) (impl := impl) hInit hInitNF)
 
 end Spartan.Spec

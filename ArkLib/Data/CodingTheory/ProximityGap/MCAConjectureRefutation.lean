@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
+import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 
 /-!
 # Refuting the ABF26 §4.5 MCA conjecture from the CS25 complete-CA-breakdown (#141 / #232)
@@ -89,5 +90,84 @@ theorem cs25BreakdownBelowBound_of_breakdownFamily
   intro c₁ c₂ c₃
   obtain ⟨ιC, hFι, hNι, hDι, FC, hFld, hFF, hDF, domain, k, δ, hk, hδ, hca1, hbnd⟩ := W c₁ c₂ c₃
   exact ⟨ιC, hFι, hNι, hDι, FC, hFld, hFF, hDF, domain, k, δ, hk, hδ, hca1.ge, hbnd⟩
+
+/-!
+## Wiring to the single named external Prop
+
+The reduction above (`cs25BreakdownBelowBound_of_breakdownFamily`) consumes an anonymous family
+hypothesis bundling *both* the CS25 breakdown and the quantitative regime. The declarations below
+split that family into its two honest ingredients, following the `ExternalDebt.lean` convention
+(named `Prop` residual + proven `_of_residuals` reduction):
+
+1. `CS25BreakdownLowerResidualUniversal` — the **external** input: the universal (over the
+   domain/field types) form of `CodingTheory.cs25_rs_epsCA_breakdown_lower_residual`
+   (CapacityBoundsProofs, T4.17 / Issue #82), i.e. CS25 Corollary 1's hard `1 ≤ ε_ca` half in the
+   entropy band. This is the *only* paper-level gap.
+2. `CS25BandInstanceBelowConjectureBound` — the **regime** input: for every choice of the
+   conjecture's constants there is an RS instance inside the CS25 entropy band, strictly below
+   capacity, whose conjecture bound is `< 1`. This is number-theoretic bookkeeping (pick `δ` with
+   `H_q(δ) > 1 − ρ` but `δ < 1 − ρ`, then grow `|F|` until `n^{c₁}/(|F|·ρ^{c₂}·η^{c₃}) < 1`) and is
+   in principle provable in tree; it is kept as a named Prop until that arithmetic is formalized.
+
+`not_mcaConjecture_of_bandInstances_and_cs25Lower` then derives `¬ mcaConjecture` from exactly
+these two named Props, with the `ε_ca = 1 ⇒ 1 ≤ ε_mca` glue and the `≤ 1` half of the breakdown
+(`rs_epsCA_breakdown_cs25_of_lower_bound`) all proven in tree.
+-/
+
+/-- **The single external input (CS25, Corollary 1).** Universal-over-types form of
+`CodingTheory.cs25_rs_epsCA_breakdown_lower_residual`: for every finite RS instance in the CS25
+entropy band, the hard `1 ≤ ε_ca` lower half of the complete CA breakdown holds. -/
+def CS25BreakdownLowerResidualUniversal : Prop :=
+  ∀ (ιC : Type) (iFι : Fintype ιC) (iNι : Nonempty ιC) (iDι : DecidableEq ιC)
+    (FC : Type) (iFld : Field FC) (iFF : Fintype FC) (iDF : DecidableEq FC),
+    letI := iFι; letI := iNι; letI := iDι; letI := iFld; letI := iFF; letI := iDF
+    CodingTheory.cs25_rs_epsCA_breakdown_lower_residual (ι := ιC) (F := FC)
+
+/-- **The quantitative regime input.** For every choice of the conjecture's polynomial constants
+`(c₁,c₂,c₃)` there is an RS instance lying inside the CS25 entropy band (so the external breakdown
+applies), strictly below capacity (`δ < 1 − ρ`), with the conjecture's own bound `< 1`. Purely
+arithmetic/number-theoretic; no proximity-gaps content. -/
+def CS25BandInstanceBelowConjectureBound : Prop :=
+  ∀ c₁ c₂ c₃ : ℝ,
+    ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC)
+      (FC : Type) (_ : Field FC) (_ : Fintype FC) (_ : DecidableEq FC)
+      (domain : ιC ↪ FC) (k : ℕ) (δ : ℝ≥0),
+      0 < k ∧
+      (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC ∧
+      10 ≤ Fintype.card FC ∧
+      (1 - CodingTheory.qEntropy (Fintype.card FC) (δ : ℝ) + 2 / (Fintype.card ιC : ℝ)
+          + ((CodingTheory.qEntropy (Fintype.card FC) (δ : ℝ) - (δ : ℝ))
+              / (Fintype.card ιC : ℝ)) ^ ((1 : ℝ) / 2)
+        ≤ (k : ℝ) / Fintype.card ιC) ∧
+      ((k : ℝ) / Fintype.card ιC ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ιC : ℝ)) ∧
+      mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃ < 1
+
+/-- The band-instance regime plus the universal CS25 lower residual discharge
+`CS25BreakdownBelowConjectureBound`. Axiom-clean; the only unproven inputs are the two named
+hypotheses. -/
+theorem cs25BreakdownBelowBound_of_bandInstances
+    (hBand : CS25BandInstanceBelowConjectureBound)
+    (hCS25 : CS25BreakdownLowerResidualUniversal) :
+    CS25BreakdownBelowConjectureBound := by
+  intro c₁ c₂ c₃
+  obtain ⟨ιC, hFι, hNι, hDι, FC, hFld, hFF, hDF, domain, k, δ,
+    hk, hδ, hq, hlo, hhi, hbnd⟩ := hBand c₁ c₂ c₃
+  letI := hFι; letI := hNι; letI := hDι; letI := hFld; letI := hFF; letI := hDF
+  exact ⟨ιC, hFι, hNι, hDι, FC, hFld, hFF, hDF, domain, k, δ, hk, hδ,
+    hCS25 ιC hFι hNι hDι FC hFld hFF hDF domain k δ hq hlo hhi, hbnd⟩
+
+/-- **`¬ mcaConjecture` from exactly two named Props**: the external CS25 Cor-1 lower residual and
+the arithmetic regime check. All other glue is proven in tree. -/
+theorem not_mcaConjecture_of_bandInstances_and_cs25Lower
+    (hBand : CS25BandInstanceBelowConjectureBound)
+    (hCS25 : CS25BreakdownLowerResidualUniversal) :
+    ¬ mcaConjecture :=
+  not_mcaConjecture_of_cs25BreakdownBelowBound
+    (cs25BreakdownBelowBound_of_bandInstances hBand hCS25)
+
+#print axioms not_mcaConjecture_of_cs25BreakdownBelowBound
+#print axioms cs25BreakdownBelowBound_of_breakdownFamily
+#print axioms cs25BreakdownBelowBound_of_bandInstances
+#print axioms not_mcaConjecture_of_bandInstances_and_cs25Lower
 
 end ProximityGap.GrandChallenges

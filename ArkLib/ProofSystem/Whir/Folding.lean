@@ -724,8 +724,9 @@ remaining content — exhibiting the per-round events `Q i` and discharging each
 (`params.h i`), together with the strictness of the final `<` — is exactly what the
 inductive lemmas `folding_preserves_listdecoding_base` (L4.21) /
 `…_bound` (L4.22) / `…_base_ne_subset` (L4.23) supply, and is not derivable from the
-loose `indexPowT` data available here. The capstone Theorem 4.20 below therefore remains
-`sorry` (its honest closure is a multi-step ABF26 §4 formalization, not a leaf proof);
+loose `indexPowT` data available here. The capstone Theorem 4.20 below therefore remains a
+statement-only `def : Prop` (`folding_listdecoding_if_genMutualCorrAgreement` — no `sorry`
+exists; its honest closure is a multi-step ABF26 §4 formalization, not a leaf proof);
 this lemma is integrated as honest partial progress on its probabilistic accounting. -/
 theorem Pr_le_finset_sum_of_implies {α : Type} (D : PMF.{0} α) {β : Type} [DecidableEq β]
     (P : α → Prop) (Q : β → α → Prop) (s : Finset β)
@@ -784,14 +785,22 @@ lemma Pr_set_ne_le_Pr_not_subset_of_subset {α β : Type} (D : PMF.{0} α)
 -/
 
 -- NOTE: need to align this better with the inductive way this is shown via the other lemmas below.
--- DISPOSITION (2026-06-04): open — gated on the MCA chain. This probabilistic list-decoding
--- equivalence is the `k`-fold composite of the single-step base lemmas below
+-- DISPOSITION (2026-06-04, updated 2026-06-10): open — gated on the MCA chain. This probabilistic
+-- list-decoding equivalence is the `k`-fold composite of the single-step base lemmas below
 -- (`folding_preserves_listdecoding_base`/`_bound`, L4.21/4.22), whose `errStar` accounting is in
 -- turn supplied by `MutualCorrAgreement.hasMutualCorrAgreement` via `params.h`. Until the MCA
 -- bounds (`mca_rsc`/`mca_linearCode`, themselves open — see their dispositions) are available, the
 -- per-round error budget summed here cannot be discharged. The deterministic structural
 -- ingredient (`fold_f_g`/`fold_f_g_poly`, the fold tracks a degree-halving polynomial) is proven
 -- above; what remains is the probabilistic list-set equality, not a folding-algebra fact.
+-- UPDATE (2026-06-10): the probabilistic accounting layer is now DISCHARGED:
+-- `Fold.folding_listdecoding_of_round_events` (`Whir/FoldingListDecodingReduction.lean`,
+-- axiom-clean) proves this capstone from named per-round bad events `Q` with the telescoping
+-- implication and per-round `errStar` bounds (union bound + strict finite-sum comparison).
+-- The remaining open content is exhibiting `Q` and its bounds from `params.h` (the ABF26 §4
+-- per-level induction; see that file's module docstring). A UDR-regime instance of
+-- `GenMutualCorrParams` is constructible via `Fold.genMutualCorrParamsUDR`
+-- (`Whir/FoldingGenMutualCorrParamsUDR.lean`).
 def folding_listdecoding_if_genMutualCorrAgreement
     [Fintype F] {S : Finset ι} {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ] {k m : ℕ}
   {S' : Finset (indexPowT S φ 0)} {φ' : (indexPowT S φ 0) ↪ F}

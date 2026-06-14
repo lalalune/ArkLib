@@ -132,6 +132,120 @@ theorem challenge_hStage2Bridge_perfect
   · exact absurd h (probOutput_ne_zero_of_mem_support hs')
   · exact h
 
+
+/-- **General (error-ful) stage-2 bad-event bridge at a challenge seam.** Unlike
+`challenge_hStage2Bridge_perfect` (which shortcuts through the RHS being `0` under a perfect
+`h₂`), this needs no completeness at all: after the same distributional pushes, the stage-2
+game from the reachable seed `s'` *equals* `R₂`'s completeness game — state-blind
+implementations make the per-seed value distribution constant, and `NeverFail init` collapses
+the init-mixture. Consumed by the error-ful `append_completeness_challenge` below. -/
+theorem challenge_hStage2Bridge_general
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (stmt : Stmt₁) (wit : Wit₁) (hmem : (stmt, wit) ∈ rel₁)
+    (a : (FullTranscript pSpec₁ × Stmt₂ × Wit₂) × Stmt₂) (s' : σ)
+    (hsupp : (some a, s') ∈ support
+      (init >>= fun s =>
+        StateT.run (simulateQ (impl.addLift challengeQueryImpl)
+          (OptionT.run (appendStage₁ R₁ R₂ stmt wit))) s))
+    (hgood : goodOf m pSpec₁ rel₂ a)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s'))
+    (hInit : NeverFail init) :
+    Pr[fun o => ¬ Option.elim o False (goodOf (m + n) (pSpec₁ ++ₚ pSpec₂) rel₃ ·)
+        | (StateT.run' (simulateQ (impl.addLift challengeQueryImpl)
+            (OptionT.run (appendStage₂ R₁ R₂ a))) s' : ProbComp (Option _))]
+      ≤ Pr[fun o => ¬ Option.elim o False (goodOf n pSpec₂ rel₃ ·)
+          | gameOf init impl R₂ a.2 a.1.2.2] := by
+  obtain ⟨hrel₂, hag⟩ := hgood
+  rw [appendStage₂_run_eq_liftM R₁ R₂ a hag,
+    probEvent_congr'
+      (q := fun o => ¬ Option.elim o False (goodOf (m + n) (pSpec₁ ++ₚ pSpec₂) rel₃ ·))
+      (fun _ _ => Iff.rfl)
+      (OracleReduction.evalDist_run'_challengeSeam_right impl
+        ((fun r : (FullTranscript pSpec₂ × Stmt₃ × Wit₃) × Stmt₃ =>
+            ((a.1.1 ++ₜ r.1.1, r.1.2.1, r.1.2.2), r.2)) <$> R₂.run a.2 a.1.2.2).run s'),
+    show ((fun r : (FullTranscript pSpec₂ × Stmt₃ × Wit₃) × Stmt₃ =>
+          ((a.1.1 ++ₜ r.1.1, r.1.2.1, r.1.2.2), r.2)) <$> R₂.run a.2 a.1.2.2).run
+        = Option.map (fun r : (FullTranscript pSpec₂ × Stmt₃ × Wit₃) × Stmt₃ =>
+            ((a.1.1 ++ₜ r.1.1, r.1.2.1, r.1.2.2), r.2)) <$> (R₂.run a.2 a.1.2.2).run from
+      OptionT.run_map _ _,
+    simulateQ_map, StateT.run'_map_comm, probEvent_map,
+    show (fun o => ¬ Option.elim o False (goodOf (m + n) (pSpec₁ ++ₚ pSpec₂) rel₃ ·)) ∘
+          Option.map (fun r : (FullTranscript pSpec₂ × Stmt₃ × Wit₃) × Stmt₃ =>
+            ((a.1.1 ++ₜ r.1.1, r.1.2.1, r.1.2.2), r.2))
+        = (fun o => ¬ Option.elim o False (goodOf n pSpec₂ rel₃ ·)) from by
+      funext o; cases o <;> rfl]
+  have hconst : ∀ s : σ,
+      Pr[fun o => ¬ Option.elim o False (goodOf n pSpec₂ rel₃ ·)
+        | (StateT.run' (simulateQ (impl.addLift challengeQueryImpl)
+            (R₂.run a.2 a.1.2.2).run) s : ProbComp (Option _))]
+      = Pr[fun o => ¬ Option.elim o False (goodOf n pSpec₂ rel₃ ·)
+        | (StateT.run' (simulateQ (impl.addLift challengeQueryImpl)
+            (R₂.run a.2 a.1.2.2).run) s' : ProbComp (Option _))] := fun s =>
+    probEvent_congr' (fun _ _ => Iff.rfl)
+      (evalDist_simulateQ_run'_state_indep (impl.addLift challengeQueryImpl)
+        (addLift_state_preserving impl himplSP)
+        (addLift_value_blind impl himplVB) _ s s')
+  have hmass : (∑' s : σ, Pr[= s | init]) = 1 := by
+    have h := tsum_probOutput_add_probFailure init
+    rw [hInit.probFailure_eq_zero, add_zero] at h
+    exact h
+  refine le_of_eq (Eq.symm ?_)
+  calc Pr[fun o => ¬ Option.elim o False (goodOf n pSpec₂ rel₃ ·)
+        | gameOf init impl R₂ a.2 a.1.2.2]
+      = ∑' s : σ, Pr[= s | init] *
+          Pr[fun o => ¬ Option.elim o False (goodOf n pSpec₂ rel₃ ·)
+            | (StateT.run' (simulateQ (impl.addLift challengeQueryImpl)
+                (R₂.run a.2 a.1.2.2).run) s : ProbComp (Option _))] :=
+        probEvent_bind_eq_tsum _ _ _
+    _ = ∑' s : σ, Pr[= s | init] *
+          Pr[fun o => ¬ Option.elim o False (goodOf n pSpec₂ rel₃ ·)
+            | (StateT.run' (simulateQ (impl.addLift challengeQueryImpl)
+                (R₂.run a.2 a.1.2.2).run) s' : ProbComp (Option _))] :=
+        tsum_congr (fun s => by rw [hconst s])
+    _ = (∑' s : σ, Pr[= s | init]) *
+          Pr[fun o => ¬ Option.elim o False (goodOf n pSpec₂ rel₃ ·)
+            | (StateT.run' (simulateQ (impl.addLift challengeQueryImpl)
+                (R₂.run a.2 a.1.2.2).run) s' : ProbComp (Option _))] :=
+        ENNReal.tsum_mul_right
+    _ = Pr[fun o => ¬ Option.elim o False (goodOf n pSpec₂ rel₃ ·)
+            | (StateT.run' (simulateQ (impl.addLift challengeQueryImpl)
+                (R₂.run a.2 a.1.2.2).run) s' : ProbComp (Option _))] := by
+        rw [hmass, one_mul]
+
+
+/-- **Challenge-seam append completeness (error-ful, unconditional).** From components complete
+with errors `e₁`/`e₂`, the appended reduction is complete with error `e₁ + e₂` at a `V_to_P`
+seam: the via-seamFactor engine with the three challenge bridges, the stage-2 one in its
+general (`challenge_hStage2Bridge_general`) form. The error-ful analogue of
+`append_perfectCompleteness_challenge` and the challenge twin of
+`Reduction.append_completeness_msg`. -/
+theorem append_completeness_challenge
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    {e₁ e₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ e₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ e₂)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s'))
+    (hInit : NeverFail init) :
+    (R₁.append R₂).completeness init impl rel₁ rel₃ (e₁ + e₂) :=
+  append_completeness_challenge_via_seamFactor R₁ R₂ h₁ h₂ hn hDir hDir₂ himplSP himplNF
+    (fun stmt wit _ => challenge_hStage1Bridge R₁ R₂ stmt wit)
+    (fun stmt wit hmem a s' hsupp hgood =>
+      challenge_hStage2Bridge_general R₁ R₂ himplSP stmt wit hmem a s' hsupp hgood
+        himplVB hInit)
+    (fun stmt wit _ => challenge_hTot R₁ R₂ himplNF hInit stmt wit)
+
 /-- **Challenge-seam append perfect completeness.** The `V_to_P`-seam analogue of
 `append_perfectCompleteness_message`: from perfectly-complete components `R₁`, `R₂`, the appended
 reduction `R₁.append R₂` is perfectly complete. Routes through the proven challenge-seam completeness
@@ -159,3 +273,7 @@ theorem append_perfectCompleteness_challenge
   simpa [perfectCompleteness] using key
 
 end Reduction
+
+-- Axiom audit (error-ful challenge additions): only [propext, Classical.choice, Quot.sound].
+#print axioms Reduction.challenge_hStage2Bridge_general
+#print axioms Reduction.append_completeness_challenge

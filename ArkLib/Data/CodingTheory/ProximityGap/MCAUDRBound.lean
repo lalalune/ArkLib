@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.UDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.JointAgreement
@@ -29,27 +30,24 @@ namespace ProximityGap.UDRwire
 open Finset ProximityGap
 open scoped NNReal ENNReal
 
+/-- The standalone UDR engine's local pair predicate is definitionally the global
+`pairJointAgreesOn` predicate once the submodule code is viewed as a set. -/
+theorem pairJoint_iff_pairJointAgreesOn {ι F : Type} [Field F]
+    (C : Submodule F (ι → F)) (S : Finset ι)
+    (u₀ u₁ : ι → F) :
+    UDR.pairJoint C S u₀ u₁ ↔ pairJointAgreesOn (C : Set (ι → F)) S u₀ u₁ :=
+  Iff.rfl
+
 variable {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+omit [DecidableEq ι] in
 theorem badGamma_le (e₀ e₁ : ι → F) :
     (univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0)).card
-      ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := by
-  classical
-  apply Finset.card_le_card_of_injOn
-    (fun γ => if h : ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0 then h.choose else Classical.arbitrary ι)
-  · intro γ hγ
-    simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hγ
-    simp only [dif_pos hγ, coe_filter, mem_univ, true_and, Set.mem_setOf_eq]
-    exact hγ.choose_spec.1
-  · intro γ₁ hγ₁ γ₂ hγ₂ heq
-    simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hγ₁ hγ₂
-    simp only [dif_pos hγ₁, dif_pos hγ₂] at heq
-    have h1 := hγ₁.choose_spec; have h2 := hγ₂.choose_spec
-    rw [← heq] at h2
-    exact mul_right_cancel₀ h1.1
-      (by linear_combination h1.2 - h2.2 : γ₁ * e₁ hγ₁.choose = γ₂ * e₁ hγ₁.choose)
+      ≤ (univ.filter (fun i => e₁ i ≠ 0)).card :=
+  UDR.badGamma_le e₀ e₁
 
+omit [DecidableEq ι] [Fintype F] in
 theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t : ℕ)
     (htn : t < Fintype.card ι)
     (hmd : ∀ a ∈ C, ∀ b ∈ C, (univ.filter (fun i => a i ≠ b i)).card < d → a = b)
@@ -60,105 +58,20 @@ theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t
     (hwS : ∀ γ ∈ G, ∀ i ∈ S γ, w γ i = u₀ i + γ • u₁ i)
     (hno : ∀ γ ∈ G, ¬ pairJointAgreesOn (C : Set (ι → F)) (S γ) u₀ u₁) :
     G.card ≤ 2 * (Fintype.card ι - t) := by
-  classical
-  by_cases hG : ∃ γa ∈ G, ∃ γb ∈ G, γa ≠ γb
-  · obtain ⟨γa, haG, γb, hbG, hab⟩ := hG
-    set T : Finset ι := S γa ∩ S γb with hTdef
-    have hd_ab : γa - γb ≠ 0 := sub_ne_zero.mpr hab
-    set c₁ : ι → F := (γa - γb)⁻¹ • (w γa - w γb) with hc₁def
-    have hc₁C : c₁ ∈ C := C.smul_mem _ (C.sub_mem (hwC γa haG) (hwC γb hbG))
-    have hc₁T : ∀ i ∈ T, c₁ i = u₁ i := by
-      intro i hi
-      rw [hTdef, mem_inter] at hi
-      have ea := hwS γa haG i hi.1
-      have eb := hwS γb hbG i hi.2
-      have hwi : (w γa - w γb) i = (γa - γb) • u₁ i := by
-        simp only [Pi.sub_apply, ea, eb, sub_smul]; abel
-      simp only [hc₁def, Pi.smul_apply, hwi, inv_smul_smul₀ hd_ab]
-    set c₀ : ι → F := w γa - γa • c₁ with hc₀def
-    have hc₀C : c₀ ∈ C := C.sub_mem (hwC γa haG) (C.smul_mem _ hc₁C)
-    have hc₀T : ∀ i ∈ T, c₀ i = u₀ i := by
-      intro i hi
-      have hci := hc₁T i hi
-      have hmem := hi; rw [hTdef, mem_inter] at hmem
-      have ea := hwS γa haG i hmem.1
-      simp only [hc₀def, Pi.sub_apply, Pi.smul_apply, hci, ea, smul_eq_mul]; ring
-    have hTcard : 2 * t ≤ Fintype.card ι + T.card := by
-      have hun : (S γa ∪ S γb).card ≤ Fintype.card ι := by simpa using card_le_univ (S γa ∪ S γb)
-      have hui : (S γa ∪ S γb).card + T.card = (S γa).card + (S γb).card :=
-        card_union_add_card_inter (S γa) (S γb)
-      have ha := hSt γa haG; have hb := hSt γb hbG
-      omega
-    set e₀ : ι → F := u₀ - c₀ with he₀def
-    set e₁ : ι → F := u₁ - c₁ with he₁def
-    have he₁T : ∀ i ∈ T, e₁ i = 0 := by
-      intro i hi; simp only [he₁def, Pi.sub_apply, hc₁T i hi, sub_self]
-    have hsupp : (univ.filter (fun i => e₁ i ≠ 0)).card ≤ 2 * (Fintype.card ι - t) := by
-      have hsub : (univ.filter (fun i => e₁ i ≠ 0)) ⊆ Tᶜ := by
-        intro i hi; simp only [mem_filter, mem_univ, true_and] at hi
-        simp only [mem_compl]; intro hiT; exact hi (he₁T i hiT)
-      calc (univ.filter (fun i => e₁ i ≠ 0)).card ≤ Tᶜ.card := card_le_card hsub
-        _ = Fintype.card ι - T.card := card_compl T
-        _ ≤ 2 * (Fintype.card ι - t) := by omega
-    have hGsub : G ⊆ univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0) := by
-      intro γ hγ
-      simp only [mem_filter, mem_univ, true_and]
-      have hcollapse : w γ = c₀ + γ • c₁ := by
-        apply hmd _ (hwC γ hγ) _ (C.add_mem hc₀C (C.smul_mem _ hc₁C))
-        have hsub2 : (univ.filter (fun i => w γ i ≠ (c₀ + γ • c₁) i)) ⊆ (T ∩ S γ)ᶜ := by
-          intro i hi; simp only [mem_filter, mem_univ, true_and] at hi
-          simp only [mem_compl, mem_inter, not_and]; intro hiT hiS
-          apply hi
-          have e1 := hc₀T i hiT; have e2 := hc₁T i hiT; have e3 := hwS γ hγ i hiS
-          simp only [Pi.add_apply, Pi.smul_apply, e1, e2, e3, smul_eq_mul]
-        have hcardle : (univ.filter (fun i => w γ i ≠ (c₀ + γ • c₁) i)).card < d := by
-          have hle := card_le_card hsub2
-          rw [card_compl] at hle
-          have hun : (T ∪ S γ).card ≤ Fintype.card ι := by simpa using card_le_univ (T ∪ S γ)
-          have hui : (T ∪ S γ).card + (T ∩ S γ).card = T.card + (S γ).card :=
-            card_union_add_card_inter T (S γ)
-          have hsg := hSt γ hγ
-          omega
-        exact hcardle
-      have hnpj := hno γ hγ
-      have hexi : ∃ i ∈ S γ, ¬ (c₀ i = u₀ i ∧ c₁ i = u₁ i) := by
-        by_contra hcon; push_neg at hcon
-        exact hnpj ⟨c₀, hc₀C, c₁, hc₁C, fun i hi => hcon i hi⟩
-      obtain ⟨i, hiS, hidis⟩ := hexi
-      have hci := congrFun hcollapse i
-      simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul] at hci
-      have hsi := hwS γ hγ i hiS
-      rw [smul_eq_mul] at hsi
-      have hc : u₀ i + γ * u₁ i = c₀ i + γ * c₁ i := by rw [← hsi, hci]
-      have haff : e₀ i + γ * e₁ i = 0 := by
-        simp only [he₀def, he₁def, Pi.sub_apply]; linear_combination hc
-      have he₁i : e₁ i ≠ 0 := by
-        intro h0
-        rw [h0, mul_zero, add_zero] at haff
-        apply hidis
-        refine ⟨?_, ?_⟩
-        · have hz : u₀ i - c₀ i = 0 := by simpa only [he₀def, Pi.sub_apply] using haff
-          exact (sub_eq_zero.mp hz).symm
-        · have hz : u₁ i - c₁ i = 0 := by simpa only [he₁def, Pi.sub_apply] using h0
-          exact (sub_eq_zero.mp hz).symm
-      exact ⟨i, he₁i, haff⟩
-    calc G.card
-        ≤ (univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0)).card := card_le_card hGsub
-      _ ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := badGamma_le e₀ e₁
-      _ ≤ 2 * (Fintype.card ι - t) := hsupp
-  · push_neg at hG
-    have h1 : G.card ≤ 1 := Finset.card_le_one.mpr (fun a ha b hb => hG a ha b hb)
-    omega
+  exact UDR.badCount_udr_le C u₀ u₁ d t htn hmd hreg G S w hSt hwC hwS
+    (fun γ hγ hpair => hno γ hγ ((pairJoint_iff_pairJointAgreesOn C (S γ) u₀ u₁).mp hpair))
 
+omit [DecidableEq ι] [Nonempty ι] [Fintype F] in
 /-- RS minimum-distance, agreement form: degree-`<k` codewords disagreeing on `< n − k + 1`
 coordinates are equal (via `ReedSolomon.code_eq_of_agree`). -/
 theorem rs_min_dist (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintype.card ι) :
     ∀ a ∈ (ReedSolomon.code α k : Set (ι → F)), ∀ b ∈ (ReedSolomon.code α k : Set (ι → F)),
       (univ.filter (fun i => a i ≠ b i)).card < Fintype.card ι - k + 1 → a = b := by
+  classical
   intro a ha b hb hdis
   refine ReedSolomon.code_eq_of_agree hk ha hb (S := univ.filter (fun i => a i = b i))
     (fun i hi => (mem_filter.mp hi).2) ?_
-  have hpart := Finset.filter_card_add_filter_neg_card_eq_card (s := (univ : Finset ι))
+  have hpart := Finset.card_filter_add_card_filter_not (s := (univ : Finset ι))
     (p := fun i => a i = b i)
   rw [Finset.card_univ] at hpart
   have hpart' : (univ.filter (fun i => a i = b i)).card
@@ -166,6 +79,7 @@ theorem rs_min_dist (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintype.car
   have hk1 : 1 ≤ k := Nat.one_le_iff_ne_zero.mpr (NeZero.ne k)
   omega
 
+omit [DecidableEq ι] [DecidableEq F] in
 open Classical in
 /-- **Connected UDR MCA bound for Reed–Solomon (from scratch, no admit).** For `RS[F,α,k]` with
 `k ≤ n` and the unique-decoding regime `3(n − ⌈(1-δ)n⌉) < n − k + 1`,
@@ -174,16 +88,21 @@ theorem epsMCA_rs_udr_le (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintyp
     (htn : ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊ < Fintype.card ι)
     (hreg : 3 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) < Fintype.card ι - k + 1) :
     epsMCA (F := F) (A := F) (ReedSolomon.code α k : Set (ι → F)) δ
-      ≤ (2 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) : ℕ) / (Fintype.card F : ℝ≥0∞) := by
+      ≤ ((2 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) : ℕ)
+          : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
   set t : ℕ := ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊ with htdef
   have hmd := rs_min_dist α k hk
   apply epsMCA_le_of_badCount_le (F := F) (A := F) (ReedSolomon.code α k : Set (ι → F)) δ
     (2 * (Fintype.card ι - t))
   intro u
   set G : Finset F :=
-    univ.filter (fun γ : F => mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ) with hGdef
+    univ.filter (fun γ : F =>
+      mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ) with hGdef
   set S : F → Finset ι := fun γ =>
-    if h : mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ then h.choose else ∅ with hSdef
+    if h : mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ then
+      h.choose
+    else
+      ∅ with hSdef
   set w : F → ι → F := fun γ =>
     if h : mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ
       then (h.choose_spec.2.1).choose else 0 with hwdef
@@ -252,6 +171,7 @@ and a third witness intersection costs another `(n − t)`). The Polishchuk–Sp
 size-`t` set, removing one factor: the regime relaxes to `2(n − t) < d`, i.e. the *full*
 unique-decoding radius `δ ≤ (d−1)/(2n)`. -/
 
+omit [DecidableEq ι] [Fintype F] in
 /-- **Bad-scalar bound with a handed-in global pair (e.g. from `jointAgreement`).** Needs only
 `2(n − t) < d`. The pair `(c₀, c₁)` agreeing with `(u₀, u₁)` on a single size-`t` set `S₀` lets the
 min-distance step pin `w γ = c₀ + γ • c₁` (agreement on `S₀ ∩ S γ`, size `≥ 2t − n`), after which
@@ -281,9 +201,9 @@ theorem badCount_udr_le_jointAgreement (C : Submodule F (ι → F)) (u₀ u₁ :
     calc (univ.filter (fun i => e₁ i ≠ 0)).card ≤ S₀ᶜ.card := card_le_card hsub
       _ = Fintype.card ι - S₀.card := card_compl S₀
       _ ≤ Fintype.card ι - t := by omega
-  have hGsub : G ⊆ univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0) := by
+  have hGsub : G ⊆ G.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0) := by
     intro γ hγ
-    simp only [mem_filter, mem_univ, true_and]
+    simp only [mem_filter, hγ, true_and]
     have hcollapse : w γ = c₀ + γ • c₁ := by
       apply hmd _ (hwC γ hγ) _ (C.add_mem hc₀C (C.smul_mem _ hc₁C))
       have hsub2 : (univ.filter (fun i => w γ i ≠ (c₀ + γ • c₁) i)) ⊆ (S₀ ∩ S γ)ᶜ := by
@@ -303,7 +223,7 @@ theorem badCount_udr_le_jointAgreement (C : Submodule F (ι → F)) (u₀ u₁ :
       exact hcardle
     have hnpj := hno γ hγ
     have hexi : ∃ i ∈ S γ, ¬ (c₀ i = u₀ i ∧ c₁ i = u₁ i) := by
-      by_contra hcon; push_neg at hcon
+      by_contra hcon; push Not at hcon
       exact hnpj ⟨c₀, hc₀C, c₁, hc₁C, fun i hi => hcon i hi⟩
     obtain ⟨i, hiS, hidis⟩ := hexi
     have hci := congrFun hcollapse i
@@ -324,10 +244,13 @@ theorem badCount_udr_le_jointAgreement (C : Submodule F (ι → F)) (u₀ u₁ :
         exact (sub_eq_zero.mp hz).symm
     exact ⟨i, he₁i, haff⟩
   calc G.card
-      ≤ (univ.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0)).card := card_le_card hGsub
-    _ ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := badGamma_le e₀ e₁
+      ≤ (G.filter (fun γ : F => ∃ i, e₁ i ≠ 0 ∧ e₀ i + γ * e₁ i = 0)).card :=
+        card_le_card hGsub
+    _ ≤ (univ.filter (fun i => e₁ i ≠ 0)).card :=
+        _root_.ProximityGap.UDR.badGammaOn_le G e₀ e₁
     _ ≤ Fintype.card ι - t := hsupp
 
+omit [DecidableEq ι] in
 open Code Classical in
 /-- **Full-UDR MCA bound for Reed–Solomon.** For `RS[F, α, k]` with `k ≤ n`, *below the unique-
 decoding radius* (`δ ≤ relUDR`) and in the regime `2(n − ⌈(1−δ)n⌉) < n − k + 1`,
@@ -384,7 +307,7 @@ theorem epsMCA_rs_udr_le_full (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ F
     · intro γ hγ
       rw [hGdef, mem_filter] at hγ; have h := hγ.2
       simp only [hSdef, dif_pos h]; exact h.choose_spec.2.2
-  · push_neg at hgt
+  · push Not at hgt
     refine le_trans (badCount_le_lineCloseCount (ReedSolomon.code α k : Set (ι → F)) δ u) ?_
     have heq : (univ.filter (fun γ : F => δᵣ(u 0 + γ • u 1,
         (ReedSolomon.code α k : Set (ι → F))) ≤ δ))

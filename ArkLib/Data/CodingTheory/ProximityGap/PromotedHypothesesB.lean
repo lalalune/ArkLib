@@ -25,7 +25,8 @@ def H_matrix : Matrix (Fin 2) (Fin 4) F :=
     ![0, 1, 1, 2]]
 
 -- A codeword is in C if its syndrome is zero
-def C (x : Fin 4 → F) : Prop :=
+-- `abbrev` (reducible) so `decide` can see through to the decidable matrix equation.
+abbrev C (x : Fin 4 → F) : Prop :=
   Matrix.mulVec H_matrix x = 0
 
 instance (x : Fin 4 → F) : Decidable (C x) :=

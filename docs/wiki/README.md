@@ -11,6 +11,11 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
 - [`quickstart.md`](quickstart.md) - canonical agent command and validation playbook.
 - [`repo-map.md`](repo-map.md) - where to edit and how the main subtrees relate.
 - [`generated-files.md`](generated-files.md) - derived outputs and their sources of truth.
+- [`optiont-lift-coherence-walls.md`](optiont-lift-coherence-walls.md) - the per-branch-defeq
+- [`deltastar-programme.md`](deltastar-programme.md) - **the δ* programme hub**: where every
+  result, refutation, probe, and attack vector lives; the fast build path.
+- [`census-programme.md`](census-programme.md) - the #357 δ* census architecture: theorem stack, empirical layer, conditional answer, working rules.
+  technique for instance-path walls in run-unrolling proofs.
 - [`blueprint-and-citations.md`](blueprint-and-citations.md) - blueprint workflow, paper
   references, and citation keys.
 - [`knowledge-base.md`](knowledge-base.md) - when to use `docs/kb/` and how it relates to the
@@ -36,6 +41,15 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
   named open (Weil/sum-product) root.
 - [`stir-issue-301.md`](stir-issue-301.md) - STIR #301 scratchpad: source trail, local theorem
   map, proof status, and the honest residuals for `stir_main` / `stir_rbr_soundness`.
+- [`issue-329-tight-rbrks-patterns.md`](issue-329-tight-rbrks-patterns.md) - the target-carrying
+  lift patterns from the Spartan tight rbr-KS campaign: why dropped lift data forces per-round
+  error 1, the oracle-pinning keystone's two consumption directions, the kernel-leaf shape, the
+  conjoin-at-unchanged-error recipe, guarded-terminal honesty, and the assembly mechanics.
+- [`append-residuals-and-elaboration-patterns.md`](append-residuals-and-elaboration-patterns.md) -
+  the #340 append-residual→discharge map (including the documented straightline-KS phase-1
+  obstruction — do not attempt the direct extractor composition) and recurring elaboration
+  walls: Pi-sum defeq bridges, the probe-bisection method, junk-completion for covering
+  lemmas, and fold-generalization gotchas.
 
 ## Maintenance Contract
 

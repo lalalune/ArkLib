@@ -24,8 +24,6 @@ This file packages:
 
 namespace Binius.BinaryBasefold
 
-set_option maxHeartbeats 400000
-
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
   Binius.BinaryBasefold
 open scoped NNReal
@@ -245,6 +243,8 @@ lemma goodBlock_implies_UDRClose
         (i := Fin.last ℓ) (j := getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)))
       (oStmtIn (getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ))) h_fw
 
+set_option maxHeartbeats 1200000 in
+-- This counting lemma unfolds the uniform distribution over a dependent `sDomain` suffix map.
 open Classical in
 lemma prob_uniform_suffix_mem
     (destIdx : Fin r) (h_destIdx_le : destIdx ≤ ℓ)
@@ -260,6 +260,26 @@ lemma prob_uniform_suffix_mem
   let Sdest := sDomain 𝔽q β h_ℓ_add_R_rate destIdx
   let steps : ℕ := destIdx.val
   have h_destIdx : destIdx.val = (0 : Fin r).val + steps := by simp [steps]
+  let i0 : Fin ℓ := 0
+  have h_i0_steps_le : i0.val + steps ≤ ℓ := by
+    dsimp only [i0, steps]
+    simpa only [Fin.val_zero, zero_add] using h_destIdx_le
+  have h_dest_eq_canon :
+      destIdx = (⟨i0.val + steps, by omega⟩ : Fin r) := by
+    apply Fin.eq_of_val_eq
+    dsimp only [i0, steps]
+    simpa only [Fin.val_zero, zero_add] using h_destIdx
+  let toCanonDest :
+      Sdest → sDomain 𝔽q β h_ℓ_add_R_rate ⟨i0.val + steps, by omega⟩ := fun y =>
+    cast (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j : Type))
+      (Fin.eq_of_val_eq (by
+        dsimp only [i0, steps]
+        simpa only [Fin.val_zero, zero_add] using h_destIdx))) y
+  have h_toCanonDest_val : ∀ y : Sdest, (toCanonDest y).val = y.val := by
+    intro y
+    dsimp only [toCanonDest]
+    exact val_of_cast_sDomain 𝔽q β destIdx ⟨i0.val + steps, by omega⟩
+      h_dest_eq_canon _ y
   let suffix : S0 → Sdest :=
     extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (destIdx := destIdx) (h_destIdx_le := h_destIdx_le)
@@ -269,31 +289,36 @@ lemma prob_uniform_suffix_mem
   let preimage : Finset S0 := Finset.univ.filter (fun v => suffix v ∈ D)
   -- Each fiber over y has size 2^steps
   let fiberSet : Sdest → Finset S0 := fun y =>
-    (Set.image (qMap_total_fiber 𝔽q β (i := (0 : Fin r)) (steps := steps)
-      h_destIdx h_destIdx_le (y := y)) (Set.univ : Set (Fin (2 ^ steps)))).toFinset
+    (Set.image (qMap_total_fiber 𝔽q β
+      (i := (⟨i0.val, by omega⟩ : Fin r)) (steps := steps)
+      (h_i_add_steps := fin_ℓ_steps_lt_ℓ_add_R i0 steps h_i0_steps_le)
+      (y := toCanonDest y)) (Set.univ : Set (Fin (2 ^ steps)))).toFinset
   have h_fiber_card : ∀ y : Sdest, (fiberSet y).card = 2 ^ steps := by
     intro y
     have h :=
       card_qMap_total_fiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (i := (0 : Fin r)) (steps := steps) (h_destIdx := h_destIdx)
-        (h_destIdx_le := h_destIdx_le) (y := y)
+        (i := i0) (steps := steps) (h_i_add_steps := h_i0_steps_le)
+        (y := toCanonDest y)
     -- Convert Fintype.card of the set to Finset.card
     have h_card :
         (fiberSet y).card =
           Fintype.card
             (Set.image (qMap_total_fiber 𝔽q β (i := (0 : Fin r)) (steps := steps)
-              h_destIdx h_destIdx_le (y := y)) (Set.univ : Set (Fin (2 ^ steps)))) := by
+              (h_i_add_steps := fin_ℓ_steps_lt_ℓ_add_R i0 steps h_i0_steps_le)
+              (y := toCanonDest y)) (Set.univ : Set (Fin (2 ^ steps)))) := by
       classical
       dsimp [fiberSet]
       exact
         Set.toFinset_card
           (s := Set.image (qMap_total_fiber 𝔽q β (i := (0 : Fin r)) (steps := steps)
-            h_destIdx h_destIdx_le (y := y)) (Set.univ : Set (Fin (2 ^ steps))))
+            (h_i_add_steps := fin_ℓ_steps_lt_ℓ_add_R i0 steps h_i0_steps_le)
+            (y := toCanonDest y)) (Set.univ : Set (Fin (2 ^ steps))))
     calc
       (fiberSet y).card =
           Fintype.card
             (Set.image (qMap_total_fiber 𝔽q β (i := (0 : Fin r)) (steps := steps)
-              h_destIdx h_destIdx_le (y := y)) (Set.univ : Set (Fin (2 ^ steps)))) := h_card
+              (h_i_add_steps := fin_ℓ_steps_lt_ℓ_add_R i0 steps h_i0_steps_le)
+              (y := toCanonDest y)) (Set.univ : Set (Fin (2 ^ steps)))) := h_card
       _ = 2 ^ steps := h
   -- Preimage equals union of fibers over D
   have h_preimage_eq :
@@ -309,28 +334,32 @@ lemma prob_uniform_suffix_mem
         -- Use the fiber index corresponding to v
         let k :=
           pointToIterateQuotientIndex 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-            (i := (0 : Fin r)) (steps := steps) h_destIdx h_destIdx_le (x := v)
+            (i := (0 : Fin (ℓ + 1))) (steps := steps) h_i0_steps_le (x := v)
         have hk :
             qMap_total_fiber 𝔽q β (i := (0 : Fin r)) (steps := steps)
-              h_destIdx h_destIdx_le (y := suffix v) k = v := by
+              (h_i_add_steps := fin_ℓ_steps_lt_ℓ_add_R i0 steps h_i0_steps_le)
+              (y := toCanonDest (suffix v)) k = v := by
           -- suffix v is exactly the iterated quotient of v
           have h_eq :
-              suffix v =
-                iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := (0 : Fin r))
-                  (destIdx := destIdx) (k := steps) (h_destIdx := h_destIdx)
-                  (h_destIdx_le := h_destIdx_le) (x := v) := by
-            simp [suffix, extractSuffixFromChallenge, steps]
+              toCanonDest (suffix v) =
+                iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := i0)
+                  (k := steps) (h_bound := h_i0_steps_le) (x := v) := by
+            apply Subtype.ext
+            dsimp [toCanonDest, suffix, extractSuffixFromChallenge, steps, i0]
+            simp
           -- Use the characterization of fibers
           exact (is_fiber_iff_generates_quotient_point 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-            (i := (0 : Fin r)) (steps := steps) (h_destIdx := h_destIdx)
-            (h_destIdx_le := h_destIdx_le) (x := v) (y := suffix v)).1 h_eq
+            (i := i0) (steps := steps) (h_i_add_steps := h_i0_steps_le)
+            (x := v) (y := toCanonDest (suffix v))).1 h_eq
         -- Show membership in the fiber set
         have : v ∈ Set.image (qMap_total_fiber 𝔽q β (i := (0 : Fin r)) (steps := steps)
-              h_destIdx h_destIdx_le (y := suffix v)) (Set.univ : Set (Fin (2 ^ steps))) := by
+              (h_i_add_steps := fin_ℓ_steps_lt_ℓ_add_R i0 steps h_i0_steps_le)
+              (y := toCanonDest (suffix v))) (Set.univ : Set (Fin (2 ^ steps))) := by
           refine ⟨k, by simp, hk⟩
         change
           v ∈ (Set.image (qMap_total_fiber 𝔽q β (i := (0 : Fin r)) (steps := steps)
-            h_destIdx h_destIdx_le (y := suffix v)) (Set.univ : Set (Fin (2 ^ steps)))).toFinset
+            (h_i_add_steps := fin_ℓ_steps_lt_ℓ_add_R i0 steps h_i0_steps_le)
+            (y := toCanonDest (suffix v))) (Set.univ : Set (Fin (2 ^ steps)))).toFinset
         rw [Set.mem_toFinset]
         exact this
       -- Put together
@@ -341,29 +370,39 @@ lemma prob_uniform_suffix_mem
       -- From v ∈ fiberSet y, deduce suffix v = y
       have hv_fiber' :
           v ∈ Set.image (qMap_total_fiber 𝔽q β (i := (0 : Fin r)) (steps := steps)
-            h_destIdx h_destIdx_le (y := y)) (Set.univ : Set (Fin (2 ^ steps))) := by
+            (h_i_add_steps := fin_ℓ_steps_lt_ℓ_add_R i0 steps h_i0_steps_le)
+            (y := toCanonDest y)) (Set.univ : Set (Fin (2 ^ steps))) := by
         change
           v ∈ (Set.image (qMap_total_fiber 𝔽q β (i := (0 : Fin r)) (steps := steps)
-            h_destIdx h_destIdx_le (y := y)) (Set.univ : Set (Fin (2 ^ steps)))).toFinset at hv_fiber
+            (h_i_add_steps := fin_ℓ_steps_lt_ℓ_add_R i0 steps h_i0_steps_le)
+            (y := toCanonDest y)) (Set.univ : Set (Fin (2 ^ steps)))).toFinset at hv_fiber
         rw [Set.mem_toFinset] at hv_fiber
         exact hv_fiber
       rcases hv_fiber' with ⟨k, hk_mem, hk_eq⟩
       have h_eq :
-          y =
-            iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := (0 : Fin r))
-              (destIdx := destIdx) (k := steps) (h_destIdx := h_destIdx)
-              (h_destIdx_le := h_destIdx_le) (x := v) := by
+          toCanonDest y =
+            iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := i0)
+              (k := steps) (h_bound := h_i0_steps_le) (x := v) := by
         -- v is in the fiber of y, so y is the iterated quotient of v
         apply generates_quotient_point_if_is_fiber_of_y 𝔽q β
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := (0 : Fin r)) (steps := steps)
-          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-          (x := v) (y := y)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i0) (steps := steps)
+          (h_i_add_steps := h_i0_steps_le) (x := v) (y := toCanonDest y)
         refine ⟨k, ?_⟩
         exact hk_eq.symm
       have : suffix v = y := by
-        -- Rewrite suffix v as iteratedQuotientMap
-        dsimp [suffix, extractSuffixFromChallenge, steps]
-        exact h_eq.symm
+        have h_suffix_canon :
+            toCanonDest (suffix v) =
+              iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := i0)
+                (k := steps) (h_bound := h_i0_steps_le) (x := v) := by
+          apply Subtype.ext
+          dsimp [toCanonDest, suffix, extractSuffixFromChallenge, steps, i0]
+          simp
+        have hcanon : toCanonDest (suffix v) = toCanonDest y := h_suffix_canon.trans h_eq.symm
+        apply Subtype.ext
+        calc
+          (suffix v).val = (toCanonDest (suffix v)).val := (h_toCanonDest_val (suffix v)).symm
+          _ = (toCanonDest y).val := congrArg Subtype.val hcanon
+          _ = y.val := h_toCanonDest_val y
       -- Conclude v ∈ preimage
       apply Finset.mem_filter.mpr
       constructor
@@ -379,10 +418,18 @@ lemma prob_uniform_suffix_mem
           Disjoint (fiberSet y₁) (fiberSet y₂) := by
       intro y₁ hy₁ y₂ hy₂ hy_ne
       -- Apply fiber disjointness lemma
+      have hy_ne_canon : toCanonDest y₁ ≠ toCanonDest y₂ := by
+        intro hcanon
+        apply hy_ne
+        apply Subtype.ext
+        calc
+          y₁.val = (toCanonDest y₁).val := (h_toCanonDest_val y₁).symm
+          _ = (toCanonDest y₂).val := congrArg Subtype.val hcanon
+          _ = y₂.val := h_toCanonDest_val y₂
       have h :=
         qMap_total_fiber_disjoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (i := (0 : Fin r)) (steps := steps) (h_destIdx := h_destIdx)
-          (h_destIdx_le := h_destIdx_le) (y₁ := y₁) (y₂ := y₂) hy_ne
+          (i := i0) (steps := steps) (h_i_add_steps := h_i0_steps_le)
+          (y₁ := toCanonDest y₁) (y₂ := toCanonDest y₂) hy_ne_canon
       simp only [fiberSet] at h ⊢
       exact h
     -- Now compute the card via biUnion

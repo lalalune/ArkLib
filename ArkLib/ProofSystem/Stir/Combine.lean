@@ -424,7 +424,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
          {ι : Type} [Fintype ι]
 
 open scoped NNReal NNRat in
-private lemma glorious_lemma
+private lemma rho_add_inv_card_lt_one_sub_delta
   {n m : ℕ}
   {δ : ℝ≥0} {rho : ℚ≥0}
   (hδLt : δ < (min (1 - NNReal.sqrt rho)
@@ -435,7 +435,7 @@ private lemma glorious_lemma
   ring_nf at *
   exact hδLt.2.trans_le' (by norm_cast)
 
-private lemma even_more_glorious_lemma
+private lemma succ_lt_one_sub_delta_mul_of_ratio_bound
   {n m : ℕ}
   {δ : ℝ≥0}
   (hm : 0 < m)
@@ -448,7 +448,7 @@ private lemma even_more_glorious_lemma
 set_option maxHeartbeats 0 in
 omit [DecidableEq F] [Fintype F] in
 open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
-lemma master_lemma
+lemma degree_lt_shifted_block_degree_of_large_agreement
     [Nonempty ι]
   {φ : ι ↪ F} {dstar m : ℕ}
   {fs : Fin m → ι → F} {degs : Fin m → ℕ} (hdegs : ∀ i, degs i ≤ dstar)
@@ -517,7 +517,7 @@ lemma master_lemma
           simp only [Nat.cast_id, ge_iff_le, Order.add_one_le_iff]
           rw [Finset.card_image_of_injective _ (fun x y hxy ↦ by aesop)]
           have h : ↑(rate (code φ dstar)) + 1 / ↑(Fintype.card ι) < 1 - δ :=
-            glorious_lemma
+            rho_add_inv_card_lt_one_sub_delta
               (by simpa using hδLt)
               (by {
                 simp only [rate]
@@ -526,7 +526,7 @@ lemma master_lemma
           have h :=
             le_trans
               (le_of_lt <|
-                even_more_glorious_lemma (m := Fintype.card ι)
+                succ_lt_one_sub_delta_mul_of_ratio_bound (m := Fintype.card ι)
                   (by simp) (by {
                     rw [ReedSolomon.rateOfLinearCode_eq_min_div,
                         min_eq_left (by omega)] at h
@@ -702,8 +702,8 @@ theorem combine_theorem
             simp only [Option.elim]
             rw [add_tsub_cancel_left, mul_comm]
       rcases proximity_gap with ⟨S, ⟨hS_card, ⟨v, hv⟩⟩⟩
-      have master_lemma :=
-        @master_lemma _ _ _ _ hempty
+      have degree_lt_shifted_block :=
+        @degree_lt_shifted_block_degree_of_large_agreement _ _ _ _ hempty
           _ _ _ _ hdegs _
           hδLt _ (by aesop) (v := v) (fs := fs)
         (by aesop)
@@ -719,10 +719,10 @@ theorem combine_theorem
         simp only [Polynomial.degreeLT, ge_iff_le, Submodule.mem_iInf, LinearMap.mem_ker,
           Polynomial.lcoeff_apply, and_true]
         intro j hj
-        specialize master_lemma i ⟨0, hf i⟩
-        simp only [WithBot.coe_zero, add_zero] at master_lemma
-        rw [Polynomial.degree_lt_iff_coeff_zero] at master_lemma
-        exact (master_lemma _ hj)
+        specialize degree_lt_shifted_block i ⟨0, hf i⟩
+        simp only [WithBot.coe_zero, add_zero] at degree_lt_shifted_block
+        rw [Polynomial.degree_lt_iff_coeff_zero] at degree_lt_shifted_block
+        exact (degree_lt_shifted_block _ hj)
       · intro x hx
         simp only [evalOnPoints, LinearMap.coe_mk, AddHom.coe_mk, mem_filter, mem_univ, true_and]
         specialize (hv i ⟨0, hf i⟩)

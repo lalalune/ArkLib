@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import subprocess
 
 from common import DEFAULT_DECLARATIONS_JSON, DEFAULT_LEAN_ROOT, REPO_ROOT, write_json
 
@@ -189,6 +190,32 @@ def parse_file(path: Path) -> list[dict]:
     return decls
 
 
+def lean_files_under(root: Path) -> list[Path]:
+    """Return tracked Lean files under ``root``.
+
+    Generated KB artifacts must describe the committed library, not local
+    scratch files that happen to exist in an agent checkout.
+    """
+
+    try:
+        root_rel = root.relative_to(REPO_ROOT)
+    except ValueError:
+        return sorted(root.rglob("*.lean"))
+
+    result = subprocess.run(
+        ["git", "ls-files", "-z", "--", str(root_rel)],
+        cwd=REPO_ROOT,
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    return [
+        REPO_ROOT / rel
+        for rel in result.stdout.decode("utf-8", errors="replace").split("\0")
+        if rel.endswith(".lean")
+    ]
+
+
 def extract_declarations(roots: list[Path]) -> dict[str, object]:
     """Scan ``roots`` and build the file → declarations catalog with stats."""
 
@@ -197,7 +224,7 @@ def extract_declarations(roots: list[Path]) -> dict[str, object]:
     for root in roots:
         root_count = 0
         root_decls = 0
-        for path in sorted(root.rglob("*.lean")):
+        for path in lean_files_under(root):
             rel = str(path.relative_to(REPO_ROOT))
             decls = parse_file(path)
             files[rel] = {"declarations": decls}

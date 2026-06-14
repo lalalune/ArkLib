@@ -10,7 +10,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
-import ArkLib.ToMathlib.Section5ConcreteJohnson
+import ArkLib.ToMathlib.BCIKS20ConcreteJohnson
 /-!
 # BCIKS20 §5 → §6 list-decoding bridge for degree-one curves
 

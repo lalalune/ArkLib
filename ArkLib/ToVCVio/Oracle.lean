@@ -34,3 +34,7 @@ def OracleSpec.FunctionType (spec : OracleSpec ι) := QueryImpl spec Id
 implementation `f : spec.FunctionType`, returning the final result of type `α`. -/
 def runWithOracle (f : spec.FunctionType) : OracleComp spec α → α :=
   fun mx => Id.run <| simulateQ f mx
+
+/-- The empty oracle spec is (vacuously) inhabited: it has no oracles, hence no domains. -/
+instance : OracleSpec.Inhabited []ₒ where
+  inhabited_B := fun t => PEmpty.elim t

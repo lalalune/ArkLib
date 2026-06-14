@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chung Thai Nguyen, Quang Dao
 -/
 import ArkLib.ProofSystem.Binius.BinaryBasefold.ReductionLogic
+import ArkLib.ProofSystem.Binius.BinaryBasefold.ExtractMLPCorrectness
 import ArkLib.ToVCVio.Oracle
 import ArkLib.ToVCVio.Simulation
 import ArkLib.OracleReduction.Completeness
@@ -768,19 +769,9 @@ lemma firstOracleWitnessConsistency_unique (i : Fin ℓ)
     (h₂ : firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       t₂ (getFirstOracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt)) :
     t₁ = t₂ := by
-  classical
-  have h₁_some :
-      extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0
-        (getFirstOracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt) = some t₁ :=
-    (extractMLP_eq_some_iff_pair_UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (f := getFirstOracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt) (tpoly := t₁)).2 h₁
-  have h₂_some :
-      extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0
-        (getFirstOracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt) = some t₂ :=
-    (extractMLP_eq_some_iff_pair_UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (f := getFirstOracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt) (tpoly := t₂)).2 h₂
-  rw [h₁_some] at h₂_some
-  injection h₂_some with h_t
+  exact firstOracleWitnessConsistencyProp_unique' 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) t₁ t₂
+    (getFirstOracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt) h₁ h₂
 
 /-! Extract the round-`i` witness (before the verifier challenge) from a fold-step output
 witness. -/

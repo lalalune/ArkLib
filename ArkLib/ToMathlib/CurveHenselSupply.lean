@@ -269,6 +269,24 @@ theorem curve_fold_decoded_divides_specialization {n k m L : ℕ}
   exact GuruswamiSudan.gs_divisibility (m := m) hk hm p
     (curve_specialized_conditions ωs f hQ hrep z hz) h_dist
 
+/-- **The composed `L`-ary GS existence chain — the `hQ`/`hrep` supply of `GSCurveInput`.**
+From the numeric Johnson-regime conditions alone (`2 ≤ deg`, `n ≠ 0`, `1 ≤ m`), the
+`K = F(Z)`-level GS interpolant for the `L`-ary generic curve fold exists together with an
+integer representative: `gs_existence_curve` composed with `exists_integer_representative`
+(both fold-agnostic) — the `L`-ary `GSLineInputSupply.exists_gs_chain`. -/
+theorem exists_gs_curve_chain {n L : ℕ} (deg m : ℕ) (ωs : Fin n ↪ F) (f : Fin L → Fin n → F)
+    (hdeg2 : 2 ≤ deg) (hn : n ≠ 0) (hm : 1 ≤ m) :
+    ∃ (Q : (RatFunc F)[X][Y]) (d : F[X]) (Q₀ : (F[X])[X][Y]),
+      d ≠ 0 ∧
+      GuruswamiSudan.Conditions deg m (gs_degree_bound deg n m)
+        (liftedDomain ωs) (curveFold f) Q ∧
+      Q₀.map (Polynomial.mapRingHom (algebraMap F[X] (RatFunc F))) =
+        Polynomial.C (Polynomial.C (algebraMap F[X] (RatFunc F) d)) * Q := by
+  classical
+  obtain ⟨Q, hQ⟩ := gs_existence_curve deg m ωs f (by omega) hn hm
+  obtain ⟨d, Q₀, hd, hrep⟩ := exists_integer_representative Q
+  exact ⟨Q, d, Q₀, hd, hQ, hrep⟩
+
 end GuruswamiSudan.OverRatFunc
 
 namespace ArkLib
@@ -723,6 +741,7 @@ end ArkLib
 #print axioms GuruswamiSudan.OverRatFunc.eval_intPointYCurve
 #print axioms GuruswamiSudan.OverRatFunc.curve_specialized_conditions
 #print axioms GuruswamiSudan.OverRatFunc.curve_fold_decoded_divides_specialization
+#print axioms GuruswamiSudan.OverRatFunc.exists_gs_curve_chain
 #print axioms ArkLib.CurveHenselSupply.curve_dvd_specialization_of_close
 #print axioms ArkLib.CurveHenselSupply.curveWord_fold_eq
 #print axioms ArkLib.CurveHenselSupply.mem_goodCoeffsCurve_iff_fold

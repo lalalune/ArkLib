@@ -328,6 +328,74 @@ theorem grid_vanishing_iff_pure {p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq :
       rw [Finset.sum_product]
       simp [← Finset.mul_sum, ← Finset.sum_mul, h0]
 
+/-! ## The weighted squarefree converse -/
+
+section WeightedConverse
+
+variable {K : Type*} [Field K]
+
+/-- **Weighted packet-combination sufficiency at `pq`**: any ℕ-combination of full
+row and column packets on the CRT grid has vanishing weighted sum.  The weight at
+`(j,c)` is `A j + B c`, where `A j` is the multiplicity of the full `q`-packet in
+row `j` and `B c` is the multiplicity of the full `p`-packet in column `c`.
+
+This is the easy/converse half of the weighted squarefree de Bruijn theorem: the
+double sum factors into two terms, each killed by one full geometric sum. -/
+theorem weighted_grid_packet_combination_sum_eq_zero {p q : ℕ} (hp : p.Prime)
+    (hq : q.Prime) {ξ η : K} (hξ : IsPrimitiveRoot ξ p) (hη : IsPrimitiveRoot η q)
+    (A : ℕ → ℕ) (B : ℕ → ℕ) :
+    ∑ x ∈ Finset.range p ×ˢ Finset.range q,
+        (((A x.1 : K) + (B x.2 : K)) * (ξ ^ x.1 * η ^ x.2)) = 0 := by
+  classical
+  have hηsum : ∑ c ∈ Finset.range q, η ^ c = 0 := hη.geom_sum_eq_zero hq.one_lt
+  have hξsum : ∑ j ∈ Finset.range p, ξ ^ j = 0 := hξ.geom_sum_eq_zero hp.one_lt
+  rw [Finset.sum_product]
+  calc
+    ∑ j ∈ Finset.range p, ∑ c ∈ Finset.range q,
+        (((A j : K) + (B c : K)) * (ξ ^ j * η ^ c))
+        = (∑ j ∈ Finset.range p, ∑ c ∈ Finset.range q,
+            (A j : K) * (ξ ^ j * η ^ c))
+          + (∑ j ∈ Finset.range p, ∑ c ∈ Finset.range q,
+            (B c : K) * (ξ ^ j * η ^ c)) := by
+          rw [← Finset.sum_add_distrib]
+          refine Finset.sum_congr rfl fun j _ => ?_
+          rw [← Finset.sum_add_distrib]
+          refine Finset.sum_congr rfl fun c _ => ?_
+          ring
+    _ = (∑ j ∈ Finset.range p,
+            ((A j : K) * ξ ^ j) * (∑ c ∈ Finset.range q, η ^ c))
+          + (∑ j ∈ Finset.range p,
+            ξ ^ j * (∑ c ∈ Finset.range q, (B c : K) * η ^ c)) := by
+          congr 1
+          · refine Finset.sum_congr rfl fun j _ => ?_
+            calc
+              ∑ c ∈ Finset.range q, (A j : K) * (ξ ^ j * η ^ c)
+                  = (A j : K) * (∑ c ∈ Finset.range q, ξ ^ j * η ^ c) := by
+                    rw [← Finset.mul_sum]
+              _ = (A j : K) * (ξ ^ j * (∑ c ∈ Finset.range q, η ^ c)) := by
+                    rw [← Finset.mul_sum]
+              _ = ((A j : K) * ξ ^ j) * (∑ c ∈ Finset.range q, η ^ c) := by
+                    ring
+          · refine Finset.sum_congr rfl fun j _ => ?_
+            calc
+              ∑ c ∈ Finset.range q, (B c : K) * (ξ ^ j * η ^ c)
+                  = ∑ c ∈ Finset.range q, ξ ^ j * ((B c : K) * η ^ c) := by
+                    refine Finset.sum_congr rfl fun c _ => ?_
+                    ring
+              _ = ξ ^ j * (∑ c ∈ Finset.range q, (B c : K) * η ^ c) := by
+                    rw [← Finset.mul_sum]
+    _ = (∑ j ∈ Finset.range p,
+            ((A j : K) * ξ ^ j) * (∑ c ∈ Finset.range q, η ^ c))
+          + (∑ j ∈ Finset.range p, ξ ^ j)
+            * (∑ c ∈ Finset.range q, (B c : K) * η ^ c) := by
+          congr 1
+          rw [Finset.sum_mul]
+    _ = 0 := by
+          rw [hηsum, hξsum]
+          simp
+
+end WeightedConverse
+
 /-- **The headline (subset-sum form)**: for distinct primes `p ≠ q` and a primitive
 `pq`-th root of unity `ζ` in a characteristic-zero field, a subset sum of `μ_{pq}`
 vanishes **iff** its CRT grid set (O82 `gridSet`) is a pure product — a union of full
@@ -479,6 +547,7 @@ end DeBruijnSquarefreePQ
 #print axioms DeBruijnSquarefreePQ.vanishing_combination_const
 #print axioms DeBruijnSquarefreePQ.subset_sum_rigidity
 #print axioms DeBruijnSquarefreePQ.grid_vanishing_iff_pure
+#print axioms DeBruijnSquarefreePQ.weighted_grid_packet_combination_sum_eq_zero
 #print axioms DeBruijnSquarefreePQ.vanishing_subset_sum_iff_pure_packets
 #print axioms DeBruijnSquarefreePQ.vanishing_subset_sum_iff_packet_union
 #print axioms DeBruijnSquarefreePQ.card_of_vanishing_subset_sum

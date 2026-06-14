@@ -33,10 +33,10 @@ clash (`Issue13Status.lean`), and this file must remain importable from the comp
   and the append blocker closed: residual surface = `{hSumcheck}` (the embedded-sumcheck
   completeness half) plus `NeverFail init`, `0 < n`, and the honest-`impl` side conditions.
 
-⚠️ Caveat on the remaining `hSumcheck`: as currently *stated*, `SumcheckCompletenessResidual`
+Caveat on the remaining `hSumcheck`: as currently *stated*, `SumcheckCompletenessResidual`
 ranges over `midRelation = Set.univ` and is therefore unsatisfiable in general (the completeness
-twin of the fixed soundness `midLanguage` degeneracy — see the 2026-06-09 issue-#13 de-larp
-comment). The append discharge below is relation-agnostic (the keystone
+twin of the fixed soundness `midLanguage` degeneracy noted in the 2026-06-09 issue-#13 audit).
+The append discharge below is relation-agnostic (the keystone
 `OracleReduction.append_completeness_msg` is generic in the relations), so it survives the
 upcoming corrected claim-true `midRelation` unchanged; only the *consumer* statements
 re-elaborate against the corrected relation.
@@ -97,7 +97,7 @@ theorem seam_dir (hn : 0 < n) :
   cases n with
   | zero => omega
   | succ n' =>
-    show Fin.vappend (outerPSpec F (n' + 1) params).dir
+    change Fin.vappend (outerPSpec F (n' + 1) params).dir
       (logupSumcheckPSpec F (n' + 1) M params).dir _ = _
     rw [Fin.vappend_right_of_not_lt _ _ _ (by norm_num)]
     exact first_dir F (n' + 1) M params (by omega)

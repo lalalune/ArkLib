@@ -9,7 +9,7 @@ import ArkLib.OracleReduction.LiftContext.OracleReduction
 /-!
 # The single-round sum-check `toReduction = reduction` bridge (`hPerRound`, issue #13)
 
-`Sumcheck.Spec.oracleReductionToReductionResidual_of_perRound`
+`Sumcheck.Spec.oracleReductionToReduction_of_perRound`
 (`OracleCompletenessUncond.lean`) reduces the whole multi-round sum-check
 `oracleReduction.toReduction = reduction` bridge to the single, *orthogonal* per-round fact
 
@@ -55,7 +55,7 @@ hypotheses
 
 No `sorry`/`admit`. The main theorem `singleRound_toReduction_eq_reduction_of` is the per-round
 bridge **conditional on exactly those two named residuals**, and `perRound_of` packages the
-`∀ i`-form consumed by `oracleReductionToReductionResidual_of_perRound`.
+`∀ i`-form consumed by `oracleReductionToReduction_of_perRound`.
 -/
 
 open ProtocolSpec OracleComp OracleSpec
@@ -114,7 +114,7 @@ theorem singleRound_toReduction_eq_reduction_of (i : Fin n)
 
 /-- **The `∀ i`-form `hPerRound`, modulo the two named residuals.**
 
-This is the shape consumed by `Sumcheck.Spec.oracleReductionToReductionResidual_of_perRound`
+This is the shape consumed by `Sumcheck.Spec.oracleReductionToReduction_of_perRound`
 (`OracleCompletenessUncond.lean`). The structural plumbing is fully discharged; the inputs are
 exactly the per-round routing coherence instances `coh` and the simple-level base bridge
 `hSimpleBridge`. -/

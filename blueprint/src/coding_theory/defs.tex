@@ -43,7 +43,7 @@ corresponding mathematics is still open in ArkLib.
 \end{definition}
 
 \begin{definition}[Interleaved code]\label{def:interleaved_code}
-    \lean{InterleavedCode}
+    \lean{interleavedCodeSet,CodeInterleavable}
     \uses{def:linear_code}
     The interleaved code of a base code records stacks of codewords sharing the same coordinate
     set. It is the ambient object behind joint agreement and list-recovery style arguments.
@@ -163,5 +163,10 @@ corresponding mathematics is still open in ArkLib.
     The core APIs above are active dependencies of the proof-system formalizations. The strongest
     Reed--Solomon proximity and MCA statements remain a research frontier in places, so downstream
     STIR, WHIR, and Batched FRI theorems state the missing mathematical legs as named residuals
-    instead of hiding them behind untracked assumptions.
+    instead of hiding them behind untracked assumptions.  Within the identity-fold wire models the
+    protocol-level soundness no longer consumes these residuals at all: the STIR checking
+    verifier's round-by-round soundness is proven outright at its genuine (tight) budget and
+    lifted to arbitrary security parameters by repetition
+    (Theorems~\ref{thm:stir_subunit_discharge}--\ref{thm:stir_rep_wire}); the correlated-agreement
+    residuals remain exactly the inputs of the degree-reducing fold regime.
 \end{remark}

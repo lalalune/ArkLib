@@ -42,6 +42,7 @@ open scoped NNReal ENNReal
 variable {ι₀ : Type} [Fintype ι₀] [Nonempty ι₀] [DecidableEq ι₀]
 variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
 
+omit [DecidableEq ι₀] [Fintype F₀] in
 /-- **The rate identity**: for `2^m ≤ n`, the rate of the smooth RS code is exactly
 `2^m/n` (as a real number). -/
 theorem rate_smoothCode_coe (φ : ι₀ ↪ F₀) [ReedSolomon.Smooth φ] (m : ℕ)
@@ -81,7 +82,8 @@ theorem johnsonM_ceil_bound {n k : ℕ} {μ s : ℝ} (hμ0 : 0 < μ)
     _ = s + 6 * μ + μ := by rw [hcancel]
     _ ≤ s + (7 / 2) * (2 * μ) := by linarith
 
-/-- **The real-level comparison**: for `2^m ≤ n` and `0 < δ < 1 − √(2^m/n)`, with
+omit [DecidableEq ι₀] [DecidableEq F₀] in
+/-- **The real-level comparison**: for `2^m ≤ n` and `δ < 1 − √(2^m/n)`, with
 `μ := min (1 − √(2^m/n) − δ) (√(2^m/n)/20)`,
 
   `johnsonBoundReal φ (2^m) μ.toNNReal δ ≤ 2^{2m} / (|F| · (2μ)⁷)`
@@ -89,7 +91,7 @@ theorem johnsonM_ceil_bound {n k : ℕ} {μ s : ℝ} (hμ0 : 0 < μ)
 — the (pair-case) WHIR Johnson-conjecture error with `ρ = 2^m/n`. -/
 theorem johnsonBoundReal_le_errStar_real
     (φ : ι₀ ↪ F₀) (m : ℕ) (hk : 2 ^ m ≤ Fintype.card ι₀)
-    (δ : ℝ≥0) (hδ0 : 0 < δ)
+    (δ : ℝ≥0)
     (hδB : (δ : ℝ) < 1 - Real.sqrt ((2 ^ m : ℝ) / (Fintype.card ι₀ : ℝ))) :
     Hab25Johnson.johnsonBoundReal (F := F₀) (ι := ι₀) φ (2 ^ m)
       (min (1 - Real.sqrt ((2 ^ m : ℝ) / (Fintype.card ι₀ : ℝ)) - (δ : ℝ))

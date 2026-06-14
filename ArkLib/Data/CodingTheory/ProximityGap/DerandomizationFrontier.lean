@@ -40,6 +40,7 @@ What is NOT proven here: `DerandomizationCore` itself (whether existence of a go
 evaluation set implies the smooth subgroup domains are good).  That is the open research
 content; it is stated as a `def ... : Prop` only and never claimed.
 -/
+import ArkLib.Data.CodingTheory.CodeGeometry
 import Mathlib.Tactic
 
 set_option autoImplicit false
@@ -64,11 +65,19 @@ def agreement (w c : ι → F) : ℕ :=
 def hammingDistance (w c : ι → F) : ℕ :=
   (Finset.univ.filter fun i => ¬ w i = c i).card
 
+/-- The derandomization frontier's local agreement count is the Johnson-geometry agreement
+count. This connects the absolute-threshold language here to the Gram/Johnson layer. -/
+lemma agreement_eq_codeGeometry_agree (w c : ι → F) :
+    agreement w c = CodeGeometry.agree w c := rfl
+
+/-- The local Hamming-distance spelling is Mathlib's `hammingDist`. -/
+lemma hammingDistance_eq_hammingDist (w c : ι → F) :
+    hammingDistance w c = hammingDist w c := rfl
+
 lemma agreement_add_hammingDistance (w c : ι → F) :
     agreement w c + hammingDistance w c = Fintype.card ι := by
-  have h := Finset.card_filter_add_card_filter_not
-    (s := (Finset.univ : Finset ι)) (p := fun i => w i = c i)
-  simpa [agreement, hammingDistance] using h
+  simpa [agreement_eq_codeGeometry_agree, hammingDistance_eq_hammingDist] using
+    CodeGeometry.agree_add_hammingDist w c
 
 lemma agreement_le_card (w c : ι → F) : agreement w c ≤ Fintype.card ι := by
   unfold agreement

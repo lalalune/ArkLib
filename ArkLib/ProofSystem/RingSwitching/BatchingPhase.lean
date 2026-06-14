@@ -544,10 +544,10 @@ noncomputable def batchingKnowledgeStateFunction :
 
 /-! ## Security Properties -/
 
-/-- Local algebraic capstone residual for batching completeness.
-The previous proof body reduced the result to the DP24 row-decomposition residual documented below.
-It is named as a `Prop` so downstream results must receive the missing algebra explicitly rather
-than importing a kernel axiom. -/
+/-- The batching completeness statement — **proven**: see
+`batchingReduction_perfectCompleteness_proved` below (from `NeverFail init`, `IsDomain L/K`;
+issue #338 closeout). The `Prop` name is retained for downstream statement stability; the
+conditional wrapper below is a documented adapter. -/
 def batchingReduction_perfectCompleteness_residual : Prop :=
   OracleReduction.perfectCompleteness
     (oracleReduction := batchingOracleReduction κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))
@@ -740,7 +740,7 @@ theorem batchingReduction_perfectCompleteness_proved [IsDomain L] [IsDomain K]
              0 Fin.elim0 } : SumcheckWitness L ℓ' 0))
         ∈ sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0 := by
     intro r1
-    refine ⟨trivial, rfl, ?_, h_compat⟩
+    refine ⟨rfl, ?_, h_compat⟩
     exact batching_consistency_honest (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
       (h_l := h_l) (t' := witIn.t') (r := stmtIn.t_eval_point) (y := r1)
   rw [probEvent_eq_one_iff]
@@ -1001,9 +1001,9 @@ lemma batching_rbrExtractionFailureEvent_accept_pack_or_embed
     Fin.mk_one] at hBeforeFalse hAfterTrue
   simp only [batchingRbrExtractor, Fin.mk_one] at hBeforeFalse
   rw [if_pos hAccept] at hAfterTrue
-  unfold sumcheckRoundRelationProp masterKStateProp at hAfterTrue
+  unfold sumcheckRoundRelationProp masterKStateCore at hAfterTrue
   have hCompat : aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ := by
-    simpa using hAfterTrue.2.2.2
+    simpa using hAfterTrue.2.2
   refine ⟨witMid, hCompat, ?_⟩
   by_cases hPack : witMid.t' =
       packMLE κ L K ℓ ℓ' h_l P.basis
@@ -1094,9 +1094,9 @@ lemma batching_doom_accept_imply_bad_of_bridges
       (batchingAcceptStatement κ L K P ℓ ℓ' stmtOStmtIn.1 msg0 y) stmtOStmtIn.2 witMid := by
     simpa [batchingAcceptStatement] using hAfterTrue
   have hRelUnfold := hRel
-  unfold sumcheckRoundRelationProp masterKStateProp at hRelUnfold
+  unfold sumcheckRoundRelationProp masterKStateCore at hRelUnfold
   have hCompat : aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ := by
-    simpa using hRelUnfold.2.2.2
+    simpa using hRelUnfold.2.2
   have hPack := hCanonical witMid hRel
   have hEmbedNe :
       embedded_MLP_eval κ L K P ℓ ℓ' h_l witMid.t' stmtOStmtIn.1.t_eval_point ≠ msg0 := by

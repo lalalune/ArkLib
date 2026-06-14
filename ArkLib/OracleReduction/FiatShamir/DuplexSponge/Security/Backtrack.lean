@@ -181,6 +181,165 @@ def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtI
       else
         ⟨trace.length, Nat.lt_succ_self trace.length⟩) -- last pair
 
+/-- The hash component of `BacktrackSequence.Index` points to the recorded hash query. -/
+theorem BacktrackSequence.index_hash_getElem?
+    (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state) :
+    GetElem?.getElem? trace (BacktrackSequence.Index trace state seq).1.val =
+      some (⟨.inl seq.stmt,
+        Vector.drop (seq.inputState[0]'(by
+          rw [seq.inputState_length_eq_outputState_length_succ]
+          exact Nat.succ_pos _)) SpongeSize.R⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  classical
+  dsimp [BacktrackSequence.Index, firstOccurrenceIndex]
+  let entry : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+    ⟨.inl seq.stmt,
+      Vector.drop (seq.inputState[0]'(by
+        rw [seq.inputState_length_eq_outputState_length_succ]
+        exact Nat.succ_pos _)) SpongeSize.R⟩
+  have hlt : trace.findIdx (fun x => decide (x = entry)) < trace.length :=
+    List.findIdx_lt_length_of_exists ⟨entry, seq.hash_in_trace, decide_eq_true rfl⟩
+  have hpred :
+      decide (trace.get ⟨trace.findIdx (fun x => decide (x = entry)), hlt⟩ = entry) = true :=
+    List.findIdx_getElem (xs := trace) (p := fun x => decide (x = entry)) (w := hlt)
+  have hget : trace.get ⟨trace.findIdx (fun x => decide (x = entry)), hlt⟩ = entry :=
+    of_decide_eq_true hpred
+  rw [List.getElem?_eq_getElem hlt]
+  simpa [entry] using congrArg some hget
+
+/-- The hash component of `BacktrackSequence.Index` is the first occurrence of the sequence's
+hash anchor: no strictly earlier trace slot contains the same hash entry. -/
+theorem BacktrackSequence.index_hash_no_prior
+    (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state)
+    (j : Fin trace.length) (hj : j.val < (BacktrackSequence.Index trace state seq).1.val) :
+    trace.get j ≠
+      (⟨.inl seq.stmt,
+        Vector.drop (seq.inputState[0]'(by
+          rw [seq.inputState_length_eq_outputState_length_succ]
+          exact Nat.succ_pos _)) SpongeSize.R⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  classical
+  dsimp [BacktrackSequence.Index, firstOccurrenceIndex] at hj ⊢
+  let entry : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+    ⟨.inl seq.stmt,
+      Vector.drop (seq.inputState[0]'(by
+        rw [seq.inputState_length_eq_outputState_length_succ]
+        exact Nat.succ_pos _)) SpongeSize.R⟩
+  have hlt : trace.findIdx (fun x => decide (x = entry)) < trace.length :=
+    List.findIdx_lt_length_of_exists ⟨entry, seq.hash_in_trace, decide_eq_true rfl⟩
+  have hfirst :=
+    (List.findIdx_eq (p := fun x => decide (x = entry)) (xs := trace) hlt).mp rfl
+  intro hentry
+  have hfalse := hfirst.2 j.val hj
+  simp [entry, hentry] at hfalse
+
+/-- Each nonterminal permutation component of `BacktrackSequence.Index` points to a recorded
+forward or inverse permutation query for that chain step. -/
+theorem BacktrackSequence.index_perm_getElem?_of_lt
+    (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state)
+    (pairIdx : Fin seq.inputState.length) (hpair : pairIdx.val < seq.outputState.length) :
+    GetElem?.getElem? trace ((BacktrackSequence.Index trace state seq).2 pairIdx).val =
+        some (⟨.inr (.inl seq.inputState[pairIdx]),
+          seq.outputState[pairIdx.val]'hpair⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∨
+      GetElem?.getElem? trace ((BacktrackSequence.Index trace state seq).2 pairIdx).val =
+        some (⟨.inr (.inr (seq.outputState[pairIdx.val]'hpair)), seq.inputState[pairIdx]⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  classical
+  let outputIdx : Fin seq.outputState.length := ⟨pairIdx.val, hpair⟩
+  let entryA : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+    ⟨.inr (.inl seq.inputState[pairIdx]), seq.outputState[outputIdx]⟩
+  let entryB : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+    ⟨.inr (.inr seq.outputState[outputIdx]), seq.inputState[pairIdx]⟩
+  have hEntry : entryA ∈ trace ∨ entryB ∈ trace := by
+    simpa [entryA, entryB, outputIdx] using seq.permute_or_inv_in_trace (i := outputIdx)
+  have hlt : trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)) < trace.length :=
+    List.findIdx_lt_length_of_exists (by
+      rcases hEntry with hA | hB
+      · exact ⟨entryA, hA, decide_eq_true (Or.inl rfl)⟩
+      · exact ⟨entryB, hB, decide_eq_true (Or.inr rfl)⟩)
+  have hpred :
+      decide
+        (trace.get ⟨trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)), hlt⟩ =
+            entryA ∨
+          trace.get ⟨trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)), hlt⟩ =
+            entryB) = true :=
+    List.findIdx_getElem (xs := trace) (p := fun x => decide (x = entryA ∨ x = entryB))
+      (w := hlt)
+  have hcase :
+      trace.get ⟨trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)), hlt⟩ =
+          entryA ∨
+        trace.get ⟨trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)), hlt⟩ =
+          entryB :=
+    of_decide_eq_true hpred
+  have hidx :
+      ((BacktrackSequence.Index trace state seq).2 pairIdx).val =
+        trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)) := by
+    dsimp [BacktrackSequence.Index, firstOccurrenceOfEither, entryA, entryB, outputIdx]
+    simp [hpair]
+  rcases hcase with hA | hB
+  · left
+    rw [hidx]
+    rw [List.getElem?_eq_getElem hlt]
+    simpa [entryA] using congrArg some hA
+  · right
+    rw [hidx]
+    rw [List.getElem?_eq_getElem hlt]
+    simpa [entryB] using congrArg some hB
+
+/-- Each nonterminal permutation component of `BacktrackSequence.Index` is the first occurrence
+of either recorded permutation direction for that chain step: no strictly earlier trace slot
+contains the same forward entry or the corresponding inverse entry. -/
+theorem BacktrackSequence.index_perm_no_prior_of_lt
+    (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state)
+    (pairIdx : Fin seq.inputState.length) (hpair : pairIdx.val < seq.outputState.length)
+    (j : Fin trace.length)
+    (hj : j.val < ((BacktrackSequence.Index trace state seq).2 pairIdx).val) :
+    trace.get j ≠
+        (⟨.inr (.inl seq.inputState[pairIdx]),
+          seq.outputState[pairIdx.val]'hpair⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+      trace.get j ≠
+        (⟨.inr (.inr (seq.outputState[pairIdx.val]'hpair)),
+          seq.inputState[pairIdx]⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  classical
+  let outputIdx : Fin seq.outputState.length := ⟨pairIdx.val, hpair⟩
+  let entryA : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+    ⟨.inr (.inl seq.inputState[pairIdx]), seq.outputState[outputIdx]⟩
+  let entryB : OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+    ⟨.inr (.inr seq.outputState[outputIdx]), seq.inputState[pairIdx]⟩
+  have hEntry : entryA ∈ trace ∨ entryB ∈ trace := by
+    simpa [entryA, entryB, outputIdx] using seq.permute_or_inv_in_trace (i := outputIdx)
+  have hlt : trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)) < trace.length :=
+    List.findIdx_lt_length_of_exists (by
+      rcases hEntry with hA | hB
+      · exact ⟨entryA, hA, decide_eq_true (Or.inl rfl)⟩
+      · exact ⟨entryB, hB, decide_eq_true (Or.inr rfl)⟩)
+  have hidx :
+      ((BacktrackSequence.Index trace state seq).2 pairIdx).val =
+        trace.findIdx (fun x => decide (x = entryA ∨ x = entryB)) := by
+    dsimp [BacktrackSequence.Index, firstOccurrenceOfEither, entryA, entryB, outputIdx]
+    simp [hpair]
+  rw [hidx] at hj
+  have hfirst :=
+    (List.findIdx_eq (p := fun x => decide (x = entryA ∨ x = entryB)) (xs := trace) hlt).mp rfl
+  constructor
+  · intro hentry
+    have hfalse := hfirst.2 j.val hj
+    have hnot : ¬ (trace.get j = entryA ∨ trace.get j = entryB) := by
+      simpa using hfalse
+    exact hnot (Or.inl (by simpa [entryA, outputIdx] using hentry))
+  · intro hentry
+    have hfalse := hfirst.2 j.val hj
+    have hnot : ¬ (trace.get j = entryA ∨ trace.get j = entryB) := by
+      simpa using hfalse
+    exact hnot (Or.inr (by simpa [entryB, outputIdx] using hentry))
+
 /-- The backtracking sequence family $S_{\mathrm{BT}}(\mathrm{tr}, s)$ (CO25, Definition 5.3).
 This represents the set of all maximal backtracking sequences starting from some statement and
 terminating at the target state $s$, where maximality prevents one sequence from being a strict

@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.BetaInputSupply
-import ArkLib.ToMathlib.Section5Concrete
+import ArkLib.ToMathlib.BCIKS20Concrete
 
 /-!
 # `BetaIdentify` — the honest minimisation of the `hβ` numerator-identification residual

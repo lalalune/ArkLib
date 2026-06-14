@@ -15,8 +15,7 @@ def Grid (σ : Type*) (F : Type*) [CommRing F] :=
 noncomputable def Grid.size {σ : Type*} [Fintype σ] {F : Type*} [CommRing F] (S : Grid σ F) : ℕ :=
   ∏ i : σ, (S i).card
 
-/-- 
-Degree bounding condition: the degree of the polynomial in each variable `i` 
+/-- Degree bounding condition: the degree of the polynomial in each variable `i`
 is strictly less than the number of points in the grid along dimension `i`.
 -/
 def satisfies_degree_bound {σ F : Type*} [CommRing F] (S : Grid σ F) (P : MvPolynomial σ F) : Prop :=

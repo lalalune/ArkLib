@@ -2523,3 +2523,23 @@ lemma map_pure (f : α → β) (a : α) :
     (f <$> pure a : OracleComp spec β) = pure (f a) := rfl
 
 end MapLemmas
+
+
+/-- **`simulateQ` tower collapse**: simulating a simulation is one simulation through the
+composed implementation. Collapses the per-lift-step `simulateQ` towers produced by composite
+`MonadLiftT` instance paths (see `docs/wiki/optiont-lift-coherence-walls.md`). -/
+theorem OracleComp.simulateQ_simulateQ
+    {ι₁ ι₂ ι₃ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    {spec₃ : OracleSpec ι₃}
+    (i₁ : QueryImpl spec₁ (OracleComp spec₂)) (i₂ : QueryImpl spec₂ (OracleComp spec₃))
+    {α : Type} (X : OracleComp spec₁ α) :
+    simulateQ i₂ (simulateQ i₁ X) = simulateQ (fun t => simulateQ i₂ (i₁ t)) X := by
+  induction X using OracleComp.inductionOn with
+  | pure a => simp
+  | query_bind t oa ih =>
+    simp only [simulateQ_bind, simulateQ_query, OracleQuery.input_query,
+      OracleQuery.cont_query, id_map]
+    exact bind_congr fun a => ih a
+
+-- Axiom audit: [propext, Quot.sound].
+#print axioms OracleComp.simulateQ_simulateQ

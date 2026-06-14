@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.ToVCVio.OracleComp.SimSemantics.SubsingletonState
+import ArkLib.ToVCVio.Lemmas
 
 /-!
 # Challenge-oracle support agreement across the left append embedding
@@ -265,11 +266,14 @@ theorem mem_support_run_of_marginals (stmt : StmtIn) (wit : WitIn)
   simp only [Option.elim_some, bind_assoc]
   rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff]
   refine ⟨some (some sv), ?_, ?_⟩
-  · show some (some sv) ∈ support ((simulateQ c (Option.some <$>
-        (liftM ((R.verifier.run stmt pres.1).run) :
-          OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option StmtOut)))).run' u)
-    exact (mem_support_some_map u c _ (some sv)).mpr hv
-  · simp only [Option.elim_some, Option.getM_some, simulateQ_pure, StateT.run'_eq, StateT.run_pure,
-      map_pure, support_pure, Set.mem_singleton_iff]
+  · -- The peeled verifier marginal differs from the `some`-map support lemma's input only in the
+    -- `OptionT`-run vs `Option.some <$> _` *path* to the same content; `convert` isolates exactly that
+    -- subterm and the definitional run-of-`liftM` identity closes it.
+    have key := (mem_support_some_map u c _ (some sv)).mpr hv
+    convert key using 4
+    rw [OptionT.run_liftM_run]
+    rfl
+  · simp only [OptionT.run_pure, pure_bind, Option.elim_some, Option.getM_some, simulateQ_pure,
+      StateT.run'_eq, StateT.run_pure, map_pure, support_pure, Set.mem_singleton_iff]
 
 end Reduction

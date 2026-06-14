@@ -758,6 +758,67 @@ theorem d2sCodecBridgeImplMemoEagerHitOnly_run_eq_of_hit
   rw [d2sCodecBridgeImplMemoEagerHitOnly_run_hit gq memo r hl,
     d2sCodecBridgeImplMemoEager_run_hit gq memo r hl]
 
+/-- The **hit-only** salted bridge: identical to `d2sCodecBridgeImplMemo` on `tr_i` memo
+hits, but **aborts** on any miss. This is the salted-surface twin of
+`d2sCodecBridgeImplMemoEagerHitOnly`, matching the repaired `Hyb₃` (salted `fᵢ` table, salt
+erased only in the line-4 log projection). It never queries the external oracle. -/
+noncomputable def d2sCodecBridgeImplMemoHitOnly :
+    GImpl (U := U) (StmtIn := StmtIn) (pSpec := pSpec) (δ := δ)
+      (fsChallengeOracle (StmtIn × Salt) pSpec) (D2SAlgoMemo StmtIn U δ Salt pSpec) :=
+  fun gq => do
+    let memo ← get
+    match lookupD2SAlgoMemo (StmtIn := StmtIn) (U := U) (δ := δ) (Salt := Salt)
+        (pSpec := pSpec) memo gq.1 gq.2.1
+        (SaltCodec.encode (U := U) (δ := δ) (Salt := Salt) gq.2.2.1) gq.2.2.2 with
+    | some r => pure r
+    | none => StateT.lift failure
+
+/-- On a memo hit the salted hit-only bridge is pure (twin of
+`d2sCodecBridgeImplMemoEagerHitOnly_run_hit`). -/
+lemma d2sCodecBridgeImplMemoHitOnly_run_hit
+    (gq : (gSpec (U := U) StmtIn pSpec δ).Domain)
+    (memo : D2SAlgoMemo StmtIn U δ Salt pSpec)
+    (r : Vector U (challengeSize (pSpec := pSpec) gq.1))
+    (hl : lookupD2SAlgoMemo (StmtIn := StmtIn) (U := U) (δ := δ) (Salt := Salt) (pSpec := pSpec)
+        memo gq.1 gq.2.1 (SaltCodec.encode (U := U) (δ := δ) (Salt := Salt) gq.2.2.1) gq.2.2.2
+      = some r) :
+    ((d2sCodecBridgeImplMemoHitOnly (U := U) (StmtIn := StmtIn) (pSpec := pSpec)
+        (δ := δ) (Salt := Salt) gq).run memo).run
+      = pure (some (r, memo)) := by
+  unfold d2sCodecBridgeImplMemoHitOnly
+  simp only [StateT.run_bind, StateT.run_get, pure_bind, hl]
+  rfl
+
+/-- On a memo miss the salted hit-only bridge aborts. -/
+lemma d2sCodecBridgeImplMemoHitOnly_run_miss
+    (gq : (gSpec (U := U) StmtIn pSpec δ).Domain)
+    (memo : D2SAlgoMemo StmtIn U δ Salt pSpec)
+    (hl : lookupD2SAlgoMemo (StmtIn := StmtIn) (U := U) (δ := δ) (Salt := Salt) (pSpec := pSpec)
+        memo gq.1 gq.2.1 (SaltCodec.encode (U := U) (δ := δ) (Salt := Salt) gq.2.2.1) gq.2.2.2
+      = none) :
+    ((d2sCodecBridgeImplMemoHitOnly (U := U) (StmtIn := StmtIn) (pSpec := pSpec)
+        (δ := δ) (Salt := Salt) gq).run memo).run
+      = pure none := by
+  unfold d2sCodecBridgeImplMemoHitOnly
+  simp only [StateT.run_bind, StateT.run_get, pure_bind, hl, StateT.run_lift]
+  simp
+
+/-- The salted hit-only bridge agrees with the real salted bridge on every memo hit —
+identical-until-bad for the Eq. 55 split on the repaired `Hyb₃` surface. -/
+theorem d2sCodecBridgeImplMemoHitOnly_run_eq_of_hit
+    (gq : (gSpec (U := U) StmtIn pSpec δ).Domain)
+    (memo : D2SAlgoMemo StmtIn U δ Salt pSpec)
+    (r : Vector U (challengeSize (pSpec := pSpec) gq.1))
+    (hl : lookupD2SAlgoMemo (StmtIn := StmtIn) (U := U) (δ := δ) (Salt := Salt) (pSpec := pSpec)
+        memo gq.1 gq.2.1 (SaltCodec.encode (U := U) (δ := δ) (Salt := Salt) gq.2.2.1) gq.2.2.2
+      = some r) :
+    ((d2sCodecBridgeImplMemoHitOnly (U := U) (StmtIn := StmtIn) (pSpec := pSpec)
+        (δ := δ) (Salt := Salt) gq).run memo).run
+      = ((d2sCodecBridgeImplMemo (U := U) (StmtIn := StmtIn) (pSpec := pSpec)
+          (δ := δ) (Salt := Salt) gq).run memo).run := by
+  rw [d2sCodecBridgeImplMemoHitOnly_run_hit gq memo r hl,
+    d2sCodecBridgeImplMemo_run_hit gq memo r hl]
+
 end StrictSplit
 
 /-! ## The split skeleton and the strict hybrid -/
@@ -843,7 +904,7 @@ leaves the replay path); `Δ(Hyb3Strict, Hyb₄)` is the pure-replay collapse. -
 noncomputable def Hyb3Strict [SampleableType U]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
     (Salt : Type) [SaltCodec U δ Salt]
-    [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
@@ -852,10 +913,10 @@ noncomputable def Hyb3Strict [SampleableType U]
       × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)
       × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))) :=
   𝒟[hybGameEagerSplit (T_H := T_H) (T_P := T_P) δ
-      (OracleDistribution.uniform (fsChallengeOracle StmtIn pSpec))
-      (d2sCodecBridgeImplMemoEager (StmtIn := StmtIn) (δ := δ) (Salt := Salt))
-      (d2sCodecBridgeImplMemoEagerHitOnly (StmtIn := StmtIn) (δ := δ) (Salt := Salt))
-      (fun log => pure log) oImpl V P]
+      (OracleDistribution.uniform (fsChallengeOracle (StmtIn × Salt) pSpec))
+      (d2sCodecBridgeImplMemo (StmtIn := StmtIn) (δ := δ) (Salt := Salt))
+      (d2sCodecBridgeImplMemoHitOnly (StmtIn := StmtIn) (δ := δ) (Salt := Salt))
+      (hyb3Line4SaltErase Salt) oImpl V P]
 
 end SplitSkeleton
 
@@ -874,7 +935,9 @@ theorem hyb34Step_of_strictSplit [SampleableType U]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] (δ : ℕ)
     (Salt : Type) [SaltCodec U δ Salt]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (εA εB : ℕ → ℕ → ℕ → ℕ → ℝ)
     (hA : ∀ (V : Verifier oSpec StmtIn StmtOut pSpec)
@@ -937,6 +1000,9 @@ end Assembly
 #print axioms DuplexSpongeFS.VerifierReplay.d2sCodecBridgeImplMemoEagerHitOnly_run_hit
 #print axioms DuplexSpongeFS.VerifierReplay.d2sCodecBridgeImplMemoEagerHitOnly_run_miss
 #print axioms DuplexSpongeFS.VerifierReplay.d2sCodecBridgeImplMemoEagerHitOnly_run_eq_of_hit
+#print axioms DuplexSpongeFS.VerifierReplay.d2sCodecBridgeImplMemoHitOnly_run_hit
+#print axioms DuplexSpongeFS.VerifierReplay.d2sCodecBridgeImplMemoHitOnly_run_miss
+#print axioms DuplexSpongeFS.VerifierReplay.d2sCodecBridgeImplMemoHitOnly_run_eq_of_hit
 #print axioms DuplexSpongeFS.VerifierReplay.hybGameEagerSplit_diag
 #print axioms DuplexSpongeFS.VerifierReplay.hyb34Step_of_strictSplit
 

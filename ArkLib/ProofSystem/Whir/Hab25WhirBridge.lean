@@ -39,10 +39,12 @@ open CodingTheory.ProximityGap.Hab25Core.Hab25Johnson
 open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 open scoped Polynomial
 
+attribute [local instance] Classical.propDecidable
+
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
          {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 
-open Classical in
+omit [DecidableEq ι] in
 /-- **WHIR pair-generator MCA from the Johnson numeric residual.** If
 `JohnsonNumericBound φ (2^m) η δ` holds on the admissible range and the closed-form
 comparison `ofReal (johnsonBoundReal …) ≤ errStar δ` holds there too, the affine-line
@@ -58,12 +60,13 @@ theorem hasMutualCorrAgreement_genRSC_pair_of_johnsonNumericBound
     haveI : Fintype (RSGenerator.genRSC (Fin 2) φ m exp).parℓ :=
       (RSGenerator.genRSC (Fin 2) φ m exp).hℓ
     hasMutualCorrAgreement (RSGenerator.genRSC (Fin 2) φ m exp) BStar errStar := by
+  classical
   refine hasMutualCorrAgreement_genRSC_pair_of_epsMCA_le φ m exp hexp0 hexp1
     BStar hB errStar ?_
   intro δ h1 h2
   exact le_trans (hJNB δ h1 h2) (hcmp δ h1 h2)
 
-open Classical in
+omit [DecidableEq ι] in
 /-- **The end-to-end conditional: per-stack Claim-1 cells ⟹ WHIR pair-generator MCA.**
 
 For every admissible `δ`, suppose every word stack's bad scalars decompose into `≤ L`
@@ -77,12 +80,11 @@ theorem hasMutualCorrAgreement_genRSC_pair_of_claim1_cells
     (hexp0 : exp 0 = 0) (hexp1 : exp 1 = 1)
     (η : ℝ≥0) (BStar : ℝ) (hB : 0 ≤ BStar) (errStar : ℝ → ENNReal) (L : ℕ)
     (hk : 2 ^ m ≤ Fintype.card ι)
-    (hL : (L : ℝ) ≤ (hab25M (Fintype.card ι) (2 ^ m) η + 1/2) /
+    (hL : (L : ℝ) ≤ (hab25M (Fintype.card ι) (2 ^ m) η + 1 / 2) /
       hab25RhoPlus (Fintype.card ι) (2 ^ m) ^ ((1 : ℝ) / 2))
     (hdata : ∀ δ : ℝ≥0, 0 < δ → (δ : ℝ) < 1 - BStar →
       ∀ u : Code.WordStack F (Fin 2) ι,
-        ∃ (Idx : Type) (_ : DecidableEq Idx) (Index : Finset Idx)
-          (Ecell : Idx → Finset F),
+        ∃ (Idx : Type) (Index : Finset Idx) (Ecell : Idx → Finset F),
           Index.card ≤ L ∧
           (Finset.univ.filter
             (fun γ : F => _root_.ProximityGap.mcaEvent (F := F)
@@ -97,6 +99,7 @@ theorem hasMutualCorrAgreement_genRSC_pair_of_claim1_cells
     haveI : Fintype (RSGenerator.genRSC (Fin 2) φ m exp).parℓ :=
       (RSGenerator.genRSC (Fin 2) φ m exp).hℓ
     hasMutualCorrAgreement (RSGenerator.genRSC (Fin 2) φ m exp) BStar errStar := by
+  classical
   refine hasMutualCorrAgreement_genRSC_pair_of_johnsonNumericBound φ m exp hexp0 hexp1
     η BStar hB errStar ?_ hcmp
   intro δ h1 h2

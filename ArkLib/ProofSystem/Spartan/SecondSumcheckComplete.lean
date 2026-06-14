@@ -8,6 +8,8 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
+import ArkLib.OracleReduction.LiftContext.HonestKnowledgeLens
+import ArkLib.ProofSystem.Sumcheck.Spec.RbrKnowledgeSoundnessOracle
 
 /-!
 # The Spartan second sum-check phase preserves completeness (issue #114)
@@ -163,5 +165,10 @@ theorem secondSumcheck_rbrSoundness
   exact OracleVerifier.liftContext_rbrSoundness_pullback
     (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier
     (subset_refl _) h_inner
+
+/- The honest pullback/transported rbr-KS relations and the second sum-check
+rbr knowledge-soundness leaf were moved to `SumcheckKnowledgeLeaves.lean`
+(`secondSumcheckRbrRelIn`/`secondSumcheckRbrRelOut`/`secondSumcheck_rbrKnowledgeSoundness_honest`);
+the copies that lived here were deleted to resolve the duplicate-declaration clash (#329). -/
 
 end Spartan.Spec

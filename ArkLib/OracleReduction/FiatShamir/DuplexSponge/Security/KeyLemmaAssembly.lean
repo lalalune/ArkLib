@@ -36,10 +36,11 @@ Open residuals **on the eager key-lemma critical path** (each one consumed by
 
 1. `KeyLemmaHybrids.Hyb01StepResidual` — CO25 Claim 5.21 (Lemma 5.8 birthday switch,
    `D_DS` permutation → random encoded-challenge functions). Toolkit ready in
-   `BirthdayBound` (accumulator + collision/landing bounds +
-   `lemma5_8Bound_eq_claim5_21Bound`); the open core is
-   `BirthdayBound.Lemma5_8EagerBirthdayResidual` (PRP/RF carrier coupling, event
-   decomposition into capacity-segment families, budget recombination).
+   `BirthdayBound` / `BirthdayBoundPaper` (accumulator + collision/landing bounds +
+   `lemma5_8Bound_eq_claim5_21Bound`, plus the paper-event honest domination theorem);
+   the active open probability core is `BirthdayBoundPaper.Lemma5_8EagerPaperResidual`
+   (PRP/RF carrier coupling, event decomposition into capacity-segment families, budget
+   recombination).
 2. `KeyLemmaHybrids.Hyb12StepResidual` — CO25 Claim 5.22 (codec decoding bias, Eq. 53);
    needs `Codec.decode_isBiased` pushed through the simulator. No lane attacked it this
    round.
@@ -51,14 +52,16 @@ Open residuals **on the eager key-lemma critical path** (each one consumed by
    coupling keystone, strict split), leaving the two coupling bounds of
    `hyb34Step_of_strictSplit` (consumed here by `keyLemmaEager_of_steps_strictSplit`).
 
-Open residuals **off the critical path** (bad-event bookkeeping for the §5.6 analysis,
-feeding the Claim 5.21/5.24 trace arguments):
+Refuted / superseded residuals **off the active path**:
 
-5. `KeyLemmaFoundations.Lemma5_12HonestResidual` / `Lemma5_14HonestResidual` /
-   `Lemma5_16HonestResidual` (M2) — `¬E ⇒ ¬E_*honest` backtrack case analyses;
-   consumed by `BirthdayBound.probEvent_honestBad_le_probEvent_E` and
-   `BirthdayBound.honestBad_birthday_of_residuals`.
-6. `BirthdayBound.Lemma5_8EagerBirthdayResidual` — see item 1.
+5. `BirthdayBound.Lemma5_8EagerBirthdayFalseStatement` is false over the deviant in-tree event
+   (`Lemma58EagerFalse.lean`). Its paper-faithful replacement is
+   `BirthdayBoundPaper.Lemma5_8EagerPaperResidual`.
+6. `KeyLemmaFoundations.Lemma5_14HonestFalseStatement` / `Lemma5_16HonestFalseAsStated` are false over
+   the deviant in-tree event (`Lemma514ForkFalse.lean`, `Lemma516TimePFalse.lean`). The
+   CO25-faithful M2 block is proved over `Paper.EPaper` by `lemma512Paper`,
+   `lemma514Paper`, and `lemma516Paper`, and `BirthdayBoundPaper` consumes those theorems
+   directly with no M2 residual hypotheses.
 
 **Closed this campaign** (formerly open in `KeyLemmaFoundations`):
 `D2sQueryStepGSpecBudgetResidual` (F4), `D2fOuterImplSharedBudgetResidual` (F4b),
@@ -106,11 +109,12 @@ theorem keyLemmaEager_of_hybSteps
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
     (Salt : Type) [SaltCodec U δ Salt]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (h01 : Hyb01StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h12 : Hyb12StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h23 : Hyb23StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
       (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h34 : Hyb34StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
@@ -139,11 +143,12 @@ theorem keyLemmaEager_of_steps_strictSplit
     [SampleableType (OracleFamily (eSpec (U := U) StmtIn pSpec δ))]
     (Salt : Type) [SaltCodec U δ Salt]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (h01 : Hyb01StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h12 : Hyb12StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
-      (pSpec := pSpec) (U := U) T_H T_P δ oImpl)
+      (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (h23 : Hyb23StepResidual (oSpec := oSpec) (StmtIn := StmtIn) (StmtOut := StmtOut)
       (pSpec := pSpec) (U := U) T_H T_P δ Salt oImpl)
     (εA εB : ℕ → ℕ → ℕ → ℕ → ℝ)

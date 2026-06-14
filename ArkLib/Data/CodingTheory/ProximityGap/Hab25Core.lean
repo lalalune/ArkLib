@@ -10,7 +10,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Push
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice2
 
 /-!
 # Hab25 core: from collinearity to correlated agreement (Lemma 1, [AHIV17/BKS18])

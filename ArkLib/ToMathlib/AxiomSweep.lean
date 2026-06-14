@@ -1,5 +1,5 @@
 -- Flagship axiom sweep — every declaration must show only [propext, Classical.choice, Quot.sound]
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
+import ArkLib.Data.CodingTheory.ProximityGap.Lattice2
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.ToMathlib.CS25JointFar
 import ArkLib.ToMathlib.L13Milestone

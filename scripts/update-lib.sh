@@ -42,7 +42,8 @@ readonly UMBRELLA_IMPORT_EXCLUDES_RE='^ArkLib/ToMathlib/GHSZ02LargeNProof\.lean$
 git ls-files -- 'ArkLib/*.lean' \
   | grep -Ev "$UMBRELLA_IMPORT_EXCLUDES_RE" \
   | LC_ALL=C sort \
-  | sed 's/\.lean//;s,/,.,g;s/^/import /' > "$tmp_file"
+  | sed 's/\.lean//;s,/,.,g;s/^/import /' \
+  | sed -E 's/([.])([0-9][^.]*)/\1«\2»/g' > "$tmp_file"
 
 if grep -q $'\r$' ArkLib.lean; then
   perl -0pi -e 's/\n/\r\n/g' "$tmp_file"

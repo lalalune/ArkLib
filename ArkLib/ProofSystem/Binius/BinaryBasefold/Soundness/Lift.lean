@@ -37,7 +37,6 @@ variable (β : Fin r → L) [hβ_lin_indep : Fact (LinearIndependent 𝔽q β)]
 variable {ℓ 𝓡 ϑ : ℕ} [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ]
 variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r}
 variable {𝓑 : Fin 2 ↪ L}
-variable [FoldPreservesBBFCodeMembershipResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
 
 private lemma getBit_eq_testBit (n k : ℕ) :
     Nat.getBit k n = 1 ↔ n.testBit k = true := by

@@ -378,6 +378,27 @@
       "venue": "",
       "year": "2025"
     },
+    "CO25": {
+      "authors": [
+        "Chiesa, Alessandro",
+        "Orr{\\`u}, Michele"
+      ],
+      "authors_text": "Chiesa, Alessandro and Orr{\\`u}, Michele",
+      "doi": "",
+      "entry_type": "misc",
+      "fields": {
+        "author": "Chiesa, Alessandro and Orr{\\`u}, Michele",
+        "howpublished": "Cryptology {ePrint} Archive, Paper 2025/536",
+        "title": "A Fiat--Shamir Transformation From Duplex Sponges",
+        "url": "https://eprint.iacr.org/2025/536",
+        "year": "2025"
+      },
+      "key": "CO25",
+      "title": "A Fiat--Shamir Transformation From Duplex Sponges",
+      "url": "https://eprint.iacr.org/2025/536",
+      "venue": "",
+      "year": "2025"
+    },
     "ChiesaYogev2024": {
       "authors": [
         "Chiesa, Alessandro",
@@ -877,16 +898,16 @@
     },
     "NOZ26": {
       "authors": [
-        "Nguyen, Ngoc Khanh",
-        "O'Rourke, George",
-        "Zhang, Jiapeng"
+        "Ngoc Khanh Nguyen",
+        "George O'Rourke",
+        "Jiapeng Zhang"
       ],
-      "authors_text": "Nguyen, Ngoc Khanh and O'Rourke, George and Zhang, Jiapeng",
+      "authors_text": "Ngoc Khanh Nguyen and George O'Rourke and Jiapeng Zhang",
       "doi": "",
       "entry_type": "misc",
       "fields": {
-        "author": "Nguyen, Ngoc Khanh and O'Rourke, George and Zhang, Jiapeng",
-        "howpublished": "Cryptology ePrint Archive, Paper 2026/156",
+        "author": "Ngoc Khanh Nguyen and George O'Rourke and Jiapeng Zhang",
+        "howpublished": "Cryptology {ePrint} Archive, Paper 2026/156",
         "title": "Hachi: Efficient Lattice-Based Multilinear Polynomial Commitments over Extension Fields",
         "url": "https://eprint.iacr.org/2026/156",
         "year": "2026"
@@ -1189,5 +1210,5 @@
       "year": "2020"
     }
   },
-  "source_bib": "blueprint\\src\\references.bib"
+  "source_bib": "blueprint/src/references.bib"
 }

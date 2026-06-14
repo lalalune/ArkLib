@@ -134,7 +134,7 @@ def stir_main
   ∧ ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar)
   ∧ ∃ c > 0, M ≤ c * (Real.log degree / Real.log k)
   ∧ ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree)
-  ∧ (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ))
+  ∧ (qNumtoInput : ℝ) ≥ secpar / (-Real.log (1 - δ))
   ∧ ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
     (cₖ k) * ((Real.log degree) +
       secpar * (Real.log ((Real.log degree) / Real.log (1/rate (code φ degree)))))

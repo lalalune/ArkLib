@@ -15,7 +15,7 @@ This file is the missing glue between the four corrected-boundary bricks of issu
 
 * **O70** (`StrictCoeffLargeReduction.lean`) — the §5 strict-Johnson front door
   `correlatedAgreement_affine_curves_of_largeResidual` from the *large-sector* residual
-  `StrictCoeffPolysResidualLarge` (boundary residual vacuous at strict radii);
+  `StrictCoeffPolysLargeResidual` (boundary residual vacuous at strict radii);
 * **O76** (`BoundaryCardStrictInteriorRefutation.lean`) — both *nonemptiness* leaves of the
   boundary quantization split are refuted; the corrected same-`ε` floor transport
   `correlatedAgreementCurves_boundary_of_floorEq_strict` is the honest replacement;
@@ -41,7 +41,7 @@ This file is the missing glue between the four corrected-boundary bricks of issu
    half of the keystone is needed **only at exact lattice points** `δ = j/n`: every other radius
    transports there and back with the same `ε`.
 3. **The cell-minimum composite** `correlatedAgreementCurves_boundary_of_largeResidual_cellMin`:
-   O70 ∘ O79 ∘ O76 pinned at the canonical cell radius — a single `StrictCoeffPolysResidualLarge`
+   O70 ∘ O79 ∘ O76 pinned at the canonical cell radius — a single `StrictCoeffPolysLargeResidual`
    supply at `⌊δ·n⌋/n` yields the closed statement at `δ` with `ε = errorBound δ'` for *every*
    floor-matched `δ' < 1 − √ρ`.  This discharges in Lean the floor-matching side conditions that
    `correlatedAgreement_of_remainingCore` leaves to the caller (previously only probe-checked).
@@ -50,7 +50,7 @@ This file is the missing glue between the four corrected-boundary bricks of issu
    `δ = 1 − √ρ` (with `√ρ ≤ 1`, `deg ≤ n`), the keystone statement holds with the explicit
    positive error `ε = max (errorBound (⌊δ·n⌋/n)) ((n+1)/|F|)` from exactly the two genuine
    open leaves, split by the perfect-square arithmetic of `deg · n`:
-   * `¬ IsSquare (deg·n)` (non-lattice bulk) — `StrictCoeffPolysResidualLarge` at the cell
+   * `¬ IsSquare (deg·n)` (non-lattice bulk) — `StrictCoeffPolysLargeResidual` at the cell
      radius (BCIKS20 §5 Steps 5–7 content at a strict radius);
    * `IsSquare (deg·n)` (lattice endpoint) — `LatticeCoeffPolyExtraction` at `δ` (BCIKS20 §5
      extraction at the endpoint).
@@ -167,7 +167,7 @@ theorem correlatedAgreementCurves_iff_boundaryCellRadius
 
 /-! ## The cell-minimum composite: O70 ∘ O79 ∘ O76 pinned at `⌊δ·n⌋/n` -/
 
-/-- **The cell-minimum composite.**  A single `StrictCoeffPolysResidualLarge` supply at the
+/-- **The cell-minimum composite.**  A single `StrictCoeffPolysLargeResidual` supply at the
 canonical cell radius `⌊δ·n⌋/n` yields the closed correlated-agreement statement at `δ` with
 `ε = errorBound δ'` for *every* floor-matched `δ' < 1 − √ρ`:
 
@@ -187,7 +187,7 @@ theorem correlatedAgreementCurves_boundary_of_largeResidual_cellMin
     (hdeg : 0 < deg)
     (hδ' : δ' < 1 - ReedSolomon.sqrtRate deg domain)
     (hfloor' : Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι))
-    (hLarge : ProximityGap.StrictCoeffPolysResidualLarge (k := k) (deg := deg)
+    (hLarge : ProximityGap.StrictCoeffPolysLargeResidual (k := k) (deg := deg)
       (domain := domain) (δ := boundaryCellRadius (Fintype.card ι) δ)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := (ReedSolomon.code domain deg : Set (ι → F))) (δ := δ)
@@ -217,7 +217,7 @@ boundary `δ = 1 − √ρ` (with `√ρ ≤ 1` and `deg ≤ n`), the [BCIKS20] 
 statement holds with the explicit error `ε = max (errorBound (⌊δ·n⌋/n)) ((n+1)/|F|)` from:
 
 * `hLarge` — at *non-square* `deg·n` (the non-lattice bulk): the §5 large-sector extraction
-  residual `StrictCoeffPolysResidualLarge` at the canonical cell radius `⌊δ·n⌋/n`, which is
+  residual `StrictCoeffPolysLargeResidual` at the canonical cell radius `⌊δ·n⌋/n`, which is
   then *strictly* interior (`boundaryCellRadius_lt_of_not_lattice` via
   `boundary_not_lattice_of_not_isSquare_deg_mul_card`), where `errorBound > 0` and the §5
   machinery is genuinely applicable;
@@ -227,7 +227,7 @@ statement holds with the explicit error `ε = max (errorBound (⌊δ·n⌋/n)) (
 
 Both inputs are honest named open obligations (BCIKS20 §5 Steps 5–7 content); the refuted
 nonemptiness surfaces (`BoundaryCardResidual`, `BoundaryCardLatticeResidual`,
-`BoundaryCardStrictInteriorResidual`) appear nowhere, and the export error is strictly
+`BoundaryCardStrictInteriorFalseAsStated`) appear nowhere, and the export error is strictly
 positive (`johnsonClosed_eps_pos`) — never the vacuous `errorBound (1 − √ρ) = 0`. -/
 theorem correlatedAgreementCurves_johnsonClosed_of_leaves
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
@@ -238,7 +238,7 @@ theorem correlatedAgreementCurves_johnsonClosed_of_leaves
     (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
     (hdeg_le : deg ≤ Fintype.card ι)
     (hLarge : ¬ IsSquare (deg * Fintype.card ι) →
-      ProximityGap.StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain)
+      ProximityGap.StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain)
         (δ := boundaryCellRadius (Fintype.card ι) δ))
     (hExt : IsSquare (deg * Fintype.card ι) →
       ArkLib.BoundaryLatticeThresholdLeaf.LatticeCoeffPolyExtraction
@@ -288,7 +288,7 @@ theorem exists_pos_eps_correlatedAgreementCurves_johnsonClosed
     (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
     (hdeg_le : deg ≤ Fintype.card ι)
     (hLarge : ¬ IsSquare (deg * Fintype.card ι) →
-      ProximityGap.StrictCoeffPolysResidualLarge (k := k) (deg := deg) (domain := domain)
+      ProximityGap.StrictCoeffPolysLargeResidual (k := k) (deg := deg) (domain := domain)
         (δ := boundaryCellRadius (Fintype.card ι) δ))
     (hExt : IsSquare (deg * Fintype.card ι) →
       ArkLib.BoundaryLatticeThresholdLeaf.LatticeCoeffPolyExtraction

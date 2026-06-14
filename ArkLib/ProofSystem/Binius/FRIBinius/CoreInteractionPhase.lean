@@ -5,6 +5,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.CoreInteractionPhase
+import ArkLib.ProofSystem.Binius.BinaryBasefold.ExtractMLPCorrectness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.ReductionLogic
 import ArkLib.ProofSystem.Binius.FRIBinius.Prelude
 
@@ -1348,9 +1349,10 @@ noncomputable def finalSumcheckRbrExtractor :
       }
     | some tpoly =>
       exact {
-        t := tpoly,
+        t := revIndexMLP tpoly,
         H := H_constant,
-        f := getMidCodewords K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly stmtMid.challenges
+        f := getMidCodewords K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (revIndexMLP tpoly) stmtMid.challenges
       }
   extractOut := fun ⟨stmtIn, oStmtIn⟩ tr witOut => ()
 
@@ -1456,7 +1458,7 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
         simp only [Fin.val_last, Fin.mk_zero', h_extractMLP, Fin.coe_ofNat_eq_mod, and_true]
         refine SetLike.coe_eq_coe.mp ?_
         rw [projectToMidSumcheckPoly_at_last_eq]
-        have h_s'_eq : s' = tpoly.val.eval stmtIn.challenges := by
+        have h_s'_eq : s' = (revIndexMLP tpoly).val.eval stmtIn.challenges := by
           exact BinaryBasefold.CoreInteraction.extracted_t_poly_eval_eq_final_constant K β
             (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (oStmtOut := oStmtIn) (stmtOut := stmtOut)
             (tpoly := tpoly) (h_extractMLP := h_extractMLP)
@@ -1472,7 +1474,7 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
           (MvPolynomial.eval stmtIn.challenges
             ((RingSwitching_SumcheckMultParam κ L K
               (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l).multpoly stmtIn.ctx).val) *
-            (MvPolynomial.eval stmtIn.challenges tpoly.val) := by
+            (MvPolynomial.eval stmtIn.challenges (revIndexMLP tpoly).val) := by
           calc
             stmtIn.sumcheck_target
                 = compute_final_eq_value κ L K (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l
@@ -1480,21 +1482,30 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
                   h_sumcheckFinalCheck
             _ = compute_final_eq_value κ L K (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l
                   stmtIn.ctx.t_eval_point stmtIn.challenges stmtIn.ctx.r_batching *
-                  (MvPolynomial.eval stmtIn.challenges tpoly.val) := by
+                  (MvPolynomial.eval stmtIn.challenges (revIndexMLP tpoly).val) := by
                     rw [h_s'_eq]
             _ = (MvPolynomial.eval stmtIn.challenges
                   ((RingSwitching_SumcheckMultParam κ L K
                     (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l).multpoly stmtIn.ctx).val) *
-                  (MvPolynomial.eval stmtIn.challenges tpoly.val) := by
+                  (MvPolynomial.eval stmtIn.challenges (revIndexMLP tpoly).val) := by
                     rw [h_mult_eq]
         simp only [h_sumcheck_target_eq, Fin.val_last, Fin.coe_ofNat_eq_mod, MvPolynomial.C_mul]
       · -- initial compatibility via first-oracle consistency
         dsimp only [finalSumcheckRbrExtractor, BinaryBasefold.firstOracleWitnessConsistencyProp]
         simp only [Fin.mk_zero', h_extractMLP, Fin.coe_ofNat_eq_mod, Fin.val_last,
           OracleFrontierIndex.val_mkFromStmtIdx]
-        exact (extractMLP_eq_some_iff_pair_UDRClose K β
+        have h_close_first :=
+          BinaryBasefold.CoreInteraction.firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency K β
+            (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (stmtOut := stmtOut) (oStmt := oStmtIn) hConsistent
+        have hUDR : 2 * Code.distFromCode (u := getFirstOracle K β oStmtIn)
+            (C := BBF_Code K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin (2 ^ κ))) <
+          (BBF_CodeDistance K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (0 : Fin (2 ^ κ)) : ℕ∞) := by
+          simpa [UDRClose] using h_close_first
+        exact firstOracleWitnessConsistency_revIndexMLP_of_extractMLP_eq_some K β
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (f := getFirstOracle K β oStmtIn) (tpoly := tpoly)).mp h_extractMLP
+          (f := getFirstOracle K β oStmtIn) (tpoly := tpoly) hUDR h_extractMLP
       · exact hConsistent.1
     | inr hBad =>
       -- Convert terminal block bad-event to incremental bad-event.
@@ -1593,7 +1604,7 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
           -- ({ toStatement := stmtIn, final_constant := c }, oStmtIn)
         rw [h_oStmtOut_eq_oStmtIn] at h_relOut
         exact h_relOut
-    · simp only [Fin.isValue, h_V_check, ↓reduceIte, OptionT.run_failure, simulateQ_pure,
+    · simp only [Fin.isValue, ↓reduceIte, OptionT.run_failure, simulateQ_pure,
         Set.mem_iUnion, exists_prop, Prod.exists] at h_output_mem_V_run_support
       erw [simulateQ_bind] at h_output_mem_V_run_support
       simp only [simulateQ_pure, Fin.isValue, Function.comp_apply,

@@ -133,22 +133,23 @@ full Faà-di-Bruno sum at Y-degree `j = card m`, the full weight `countPerms m` 
 recursion weight: the Y-Hasse binomial `C(j, Σλ)` times the positive-part multinomial
 `countPerms λ`.  By `countPerms_replicate_zero_add_choose_sl` this **is** an identity
 (`countPerms m = C(j, Σλ)·countPerms λ`); it is named here as the explicit hinge of the
-`coeff_eval_Q_faaDiBruno ↔ βHensel_succ` match so the residual is a single, inspectable `Prop`.
+`coeff_eval_Q_faaDiBruno ↔ βHensel_succ` match.  The identity is now exposed directly
+as the theorem below, not as a residual-shaped proposition.
 
 The remaining genuinely-open step is not this `Nat` identity; it is proving the full
 `RestrictedFaaDiBrunoMatch` equality of sums from the definitions of `B_coeff`,
 `βHensel_succ`, and the restricted Faà-di-Bruno expansion. -/
-def PrefactorWeightMatch : Prop :=
-  ∀ (j0 : ℕ) (lam : Multiset ℕ), (0 : ℕ) ∉ lam →
+theorem PrefactorWeightMatch (j0 : ℕ) (lam : Multiset ℕ) (h0 : (0 : ℕ) ∉ lam) :
     (Multiset.replicate j0 0 + lam).countPerms
-      = (j0 + lam.card).choose lam.card * lam.countPerms
+      = (j0 + lam.card).choose lam.card * lam.countPerms :=
+  countPerms_replicate_zero_add_choose_sl j0 lam h0
 
-/-- **`PrefactorWeightMatch` holds unconditionally (PROVEN, axiom-clean).**  It is exactly the
-zero-peel reindex re-keyed by `Nat.choose_symm`; this certifies the named hinge of §3 is genuine
-(not a secretly-false or vacuous placeholder), and that the *combinatorial* half of the
-Faà-di-Bruno match is fully discharged. -/
-theorem prefactorWeightMatch_holds : PrefactorWeightMatch :=
-  fun j0 lam h0 => countPerms_replicate_zero_add_choose_sl j0 lam h0
+/-- Lowercase alias kept as the local axiom-audit anchor for the proven prefactor
+identity. -/
+theorem prefactorWeightMatch_holds (j0 : ℕ) (lam : Multiset ℕ) (h0 : (0 : ℕ) ∉ lam) :
+    (Multiset.replicate j0 0 + lam).countPerms
+      = (j0 + lam.card).choose lam.card * lam.countPerms :=
+  PrefactorWeightMatch j0 lam h0
 
 /-! ## 4. The Y-Hasse binomial extraction (PROVEN, axiom-clean)
 
@@ -224,6 +225,7 @@ section AxiomAudit
 #print axioms fullSum_ξ_exponent
 #print axioms exponent_balance_ξ
 #print axioms exponent_balance_W
+#print axioms PrefactorWeightMatch
 #print axioms prefactorWeightMatch_holds
 #print axioms hasseDerivY_coeff
 #print axioms fullVanishes_of_restrictedMatch

@@ -33,13 +33,16 @@ We split this into two parts, exactly as [CS25] does:
    geometric content (deep-hole construction + minimum-distance joint-far argument +
    the `epsCA`-probability lower bound), surfaced here as a hypothesis.
 
-   **Issue #22 update — this `hDeepHole` step is now CLOSED in-tree.** The deep-hole probability
-   bound was subsequently proven, not left external: `CS25DeepHoleFinish.DeepHoleProbResidual`
-   packages it, and `CS25JointFar.deepHoleProbResidual_holds` discharges it via the proven
-   minimum-distance joint-far argument (`deepHoleJointFar_holds`), leaving only the arithmetic
-   rate condition `k < n − ⌊δ·n⌋`. The fully-discharged top-level bound is
-   `CS25JointFar.rs_epsCA_implies_lambda_extended_cs25_complete`. The "external" framing below
-   is the historical surfacing; the content itself is no longer an open residual.
+   **Issue #22 update — this `hDeepHole` step is conditionally closed in-tree.** The deep-hole
+   geometric/probabilistic bound was subsequently proven, not left external:
+   `CS25DeepHoleFinish.DeepHoleProbResidual` packages it, and
+   `CS25JointFar.deepHoleProbResidual_holds` discharges it via the proven minimum-distance
+   joint-far argument (`deepHoleJointFar_holds`), under the documented nonnegativity and
+   arithmetic rate conditions (`0 ≤ δ`, `k < n − ⌊δ·n⌋`). The top-level bound carrying those
+   side conditions is `CS25JointFar.rs_epsCA_implies_lambda_extended_cs25_complete`. The
+   "external" framing below is the historical surfacing; the geometric/probabilistic content
+   itself is no longer the open part, but the unconditional residual wrapper remains open in the
+   strict census.
 
 2. **The combinatorial count** (`CS25.cs25_claim4_strict_margin`): on that family there is a
    point `a` whose distinct-value count *strictly* exceeds `E(L0)`.  **Fully proven** here via

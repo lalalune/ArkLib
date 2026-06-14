@@ -24,11 +24,10 @@ keystones —
   proven at message seams, `appendRbrKnowledgePhase2SeamReconcile_proof`);
 * **empty seam** (`secondSumcheck ▷ finalCheck`): the residual-free
   `OracleVerifier.append_rbrKnowledgeSoundness_failingDet_empty`;
-* **challenge seams** (`firstMessage ▷ …`, `sendEvalClaim ▷ …`):
-  `OracleVerifier.append_rbrKnowledgeSoundness_subsingleton_challenge`, whose **single**
-  genuinely-open per-seam residual (`hSeamZero` — the flip bound at the seam challenge itself) is
-  threaded as the named hypothesis `Verifier.appendRbrKnowledgeSeamZeroResidual` (the former
-  `hReconcile` is discharged by `appendRbrKnowledgePhase2SeamReconcile_proof_pos`).
+* **challenge seams** (`firstMessage ▷ …`, `sendEvalClaim ▷ …`): the **residual-free**
+  `OracleVerifier.append_rbrKnowledgeSoundness_subsingleton_challenge` (the former `hReconcile`
+  is discharged by `appendRbrKnowledgePhase2SeamReconcile_proof_pos`, the former `hSeamZero` —
+  the flip bound at the seam challenge itself — by `appendRbrKnowledgeSeamZero_proven`).
 
 The assembly is stated in the stateless (`Subsingleton σ`, e.g. `σ = Unit`) regime — the canonical
 instantiation of the composed Spartan PIOP — and is **relation-chain agnostic** (like the
@@ -36,24 +35,22 @@ completeness fold): any chain `relA → … → relI` of intermediate relations 
 
 ## What this reduces #114's rbr layer to
 
-`composedRbrKnowledgeSoundnessResidual_of_leaves` discharges the official
-`SpartanBricks.composedRbrKnowledgeSoundnessResidual` (at `Rc := composedPIOP_Rc`, error
+`composedRbrKnowledgeSoundnessStatement_of_leaves` discharges the official
+`SpartanBricks.composedRbrKnowledgeSoundnessStatement` (at `Rc := composedPIOP_Rc`, error
 `composedRbrError`) from:
 
 1. the **eight per-phase rbr knowledge-soundness leaves** (`h₁`–`h₈`);
 2. the **seven per-phase verifier determinism witnesses** (`hV₁`–`hV₇`: pure for the forwarding
    phases, failing-deterministic for the two sum-checks — supplied by
-   `toVerifier_eq_pure_of_collapse` / `toVerifier_eq_failingDet_of_collapse` style lemmas);
-3. the **two challenge-seam `hSeamZero` residuals** (at `firstMessage ▷ …` and
-   `sendEvalClaim ▷ …`; one residual per challenge seam — the former `hReconcile` companion is
-   discharged in-library).
+   `toVerifier_eq_pure_of_collapse` / `toVerifier_eq_failingDet_of_collapse` style lemmas).
 
-No other obligation remains: every message/empty seam is discharged unconditionally.
+No other obligation remains: every seam (message, empty, and challenge alike) is discharged
+unconditionally by a residual-free keystone.
 
 ## Honesty
 
-No `sorry`/`axiom`; nothing is asserted beyond the fold. The leaves (1), witnesses (2), and
-challenge-seam residuals (3) are open, named hypotheses — exactly the remaining #114 rbr surface.
+No `sorry`/`axiom`; nothing is asserted beyond the fold. The leaves (1) and witnesses (2) are
+open, named hypotheses — exactly the remaining #114 rbr surface.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -369,8 +366,9 @@ private theorem rbrStep6 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
     verify₅ hV₅ hInit hInitNF hNE ⟨()⟩ (by omega)
     (sfx4_dir_seam pp hn (by omega)) (sfx5_dir_zero pp hn (by omega)) h₅ hRest
 
-/-- Seam 4 (`sendEvalClaim ▷ …`, **challenge** seam; pure-deterministic left verifier). The
-single open challenge-seam residual (`hSeamZero`) is threaded as a named hypothesis. -/
+/-- Seam 4 (`sendEvalClaim ▷ …`, **challenge** seam; pure-deterministic left verifier).
+Residual-free under `Subsingleton σ` (the former `hSeamZero` is discharged by
+`appendRbrKnowledgeSeamZero_proven`). -/
 private theorem rbrStep5 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
     {err₄ : (⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ : ProtocolSpec 1).ChallengeIdx → ℝ≥0}
     {errRest : (sfx4 (R := R) pp).ChallengeIdx → ℝ≥0}
@@ -387,13 +385,7 @@ private theorem rbrStep5 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
       relD relE err₄)
     (hRest : ((oracleReduction.linearCombination R pp oSpec).append
         ((prependRLCTargetKS pp oSpec).append ((secondSumcheckReduction pp oSpec).append
-          (finalCheck R pp oSpec)))).verifier.rbrKnowledgeSoundness init impl relE relI errRest)
-    (hSeamZero : Verifier.appendRbrKnowledgeSeamZeroResidual (init := init) (impl := impl)
-      (oracleReduction.sendEvalClaim R pp oSpec).verifier.toVerifier
-      ((oracleReduction.linearCombination R pp oSpec).append
-        ((prependRLCTargetKS pp oSpec).append ((secondSumcheckReduction pp oSpec).append
-          (finalCheck R pp oSpec)))).verifier.toVerifier
-      relD relE relI verify₄ hV₄ hInit errRest) :
+          (finalCheck R pp oSpec)))).verifier.rbrKnowledgeSoundness init impl relE relI errRest) :
     ((oracleReduction.sendEvalClaim R pp oSpec).append
         ((oracleReduction.linearCombination R pp oSpec).append
           ((prependRLCTargetKS pp oSpec).append ((secondSumcheckReduction pp oSpec).append
@@ -406,7 +398,7 @@ private theorem rbrStep5 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
       ((prependRLCTargetKS pp oSpec).append ((secondSumcheckReduction pp oSpec).append
         (finalCheck R pp oSpec)))).verifier
     verify₄ hV₄ hInit hInitNF hNE ⟨()⟩ (by omega)
-    (sfx3_dir_seam pp (by omega)) (sfx4_dir_zero pp (by omega)) h₄ hRest hSeamZero
+    (sfx3_dir_seam pp (by omega)) (sfx4_dir_zero pp (by omega)) h₄ hRest
 
 /-- Seam 3 (`firstSumcheck ▷ …`, message seam; **failing**-deterministic left verifier, the
 sum-check shape). Residual-free under `Subsingleton σ`. -/
@@ -484,12 +476,11 @@ private theorem rbrStep3 [Subsingleton σ] (hm : 0 < pp.ℓ_m)
     (sfx1_dir_seam pp hm (by omega)) (sfx2_dir_zero pp hm (by omega)) h₂ hRest
 
 /-- **Composed Spartan PIOP round-by-round knowledge soundness, reduced to the eight per-phase
-rbr-KS leaves** (issue #114), in the stateless (`Subsingleton σ`) regime. Seam 1
-(`firstMessage ▷ …`) and seam 4 (`sendEvalClaim ▷ …`) are **challenge** seams: their single
-genuinely-open per-seam residual is threaded as the two named hypotheses
-`hSeamZero₁`/`hSeamZero₄` (the former `hReconcile` companions are discharged in-library). All
-five remaining seams (four message, one empty) are discharged **residual-free** by the proven
-keystones. -/
+rbr-KS leaves** (issue #114), in the stateless (`Subsingleton σ`) regime. All seven seams (four
+message, one empty, two challenge — seam 1 `firstMessage ▷ …` and seam 4 `sendEvalClaim ▷ …`)
+are discharged **residual-free** by the proven keystones (the former challenge-seam
+`hSeamZero₁`/`hSeamZero₄` residuals are discharged by `appendRbrKnowledgeSeamZero_proven`, the
+former `hReconcile` companions by `appendRbrKnowledgePhase2SeamReconcile_proof_pos`). -/
 theorem composedPIOP_Rc_rbrKnowledgeSoundness_of_leaves [Subsingleton σ]
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     [Inhabited (FinalStatement R pp × ∀ i, FinalOracleStatement R pp i)]
@@ -574,36 +565,13 @@ theorem composedPIOP_Rc_rbrKnowledgeSoundness_of_leaves [Subsingleton σ]
     (hNE_F : Nonempty (Statement.AfterLinearCombination R pp ×
       ∀ i, OracleStatement.AfterLinearCombination R pp i))
     (hNE_G : Nonempty ((R × Statement.AfterLinearCombination R pp) ×
-      ∀ i, OracleStatement.AfterLinearCombination R pp i))
-    -- the two challenge-seam residuals (seam 1: firstMessage ▷ …; seam 4: sendEvalClaim ▷ …)
-    (hSeamZero₄ : Verifier.appendRbrKnowledgeSeamZeroResidual (init := init) (impl := impl)
-      (oracleReduction.sendEvalClaim R pp oSpec).verifier.toVerifier
-      ((oracleReduction.linearCombination R pp oSpec).append
-        ((prependRLCTargetKS pp oSpec).append ((secondSumcheckReduction pp oSpec).append
-          (finalCheck R pp oSpec)))).verifier.toVerifier
-      relD relE relI verify₄ hV₄ hInit
-      (Sum.elim err₅ (Sum.elim err₆ (Sum.elim err₇ err₈ ∘ ChallengeIdx.sumEquiv.symm)
-        ∘ ChallengeIdx.sumEquiv.symm) ∘ ChallengeIdx.sumEquiv.symm))
-    (hSeamZero₁ : Verifier.appendRbrKnowledgeSeamZeroResidual (init := init) (impl := impl)
-      (oracleReduction.firstMessage R pp oSpec).verifier.toVerifier
-      ((oracleReduction.firstChallenge R pp oSpec).append
-        ((firstSumcheckReduction pp oSpec).append
-          ((oracleReduction.sendEvalClaim R pp oSpec).append
-            ((oracleReduction.linearCombination R pp oSpec).append
-              ((prependRLCTargetKS pp oSpec).append
-                ((secondSumcheckReduction pp oSpec).append
-                  (finalCheck R pp oSpec))))))).verifier.toVerifier
-      relA relB relI verify₁ hV₁ hInit
-      (Sum.elim err₂ (Sum.elim err₃ (Sum.elim err₄ (Sum.elim err₅ (Sum.elim err₆
-        (Sum.elim err₇ err₈ ∘ ChallengeIdx.sumEquiv.symm) ∘ ChallengeIdx.sumEquiv.symm)
-        ∘ ChallengeIdx.sumEquiv.symm) ∘ ChallengeIdx.sumEquiv.symm)
-        ∘ ChallengeIdx.sumEquiv.symm) ∘ ChallengeIdx.sumEquiv.symm)) :
+      ∀ i, OracleStatement.AfterLinearCombination R pp i)) :
     (composedPIOP_Rc (R := R) pp oSpec).verifier.rbrKnowledgeSoundness init impl relA relI
       (composedRbrError pp err₁ err₂ err₃ err₄ err₅ err₆ err₇ err₈) := by
   have hS8 := rbrStep8 pp oSpec verify₇? hV₇ hInit h₇ h₈
   have hS7 := rbrStep7 pp oSpec hn verify₆ hV₆ hInit hInitNF hNE_G h₆ hS8
   have hS6 := rbrStep6 pp oSpec hn verify₅ hV₅ hInit hInitNF hNE_F h₅ hS7
-  have hS5 := rbrStep5 pp oSpec hn verify₄ hV₄ hInit hInitNF hNE_E h₄ hS6 hSeamZero₄
+  have hS5 := rbrStep5 pp oSpec hn verify₄ hV₄ hInit hInitNF hNE_E h₄ hS6
   have hS4 := rbrStep4 pp oSpec verify₃? hV₃ hInit hInitNF h₃ hS5
   have hS3 := rbrStep3 pp oSpec hm verify₂ hV₂ hInit hInitNF hNE_C h₂ hS4
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton_challenge
@@ -615,15 +583,13 @@ theorem composedPIOP_Rc_rbrKnowledgeSoundness_of_leaves [Subsingleton σ]
             (finalCheck R pp oSpec))))))).verifier
     verify₁ hV₁ hInit hInitNF hNE_B ⟨()⟩ (by omega)
     (composedPSpec_dir_seam pp (by omega)) (sfx1_dir_zero pp (by omega)) h₁ hS3
-    hSeamZero₁
 
-/-- **`composedRbrKnowledgeSoundnessResidual` reduced to the eight per-phase rbr-KS leaves** (+
-the seven determinism witnesses + the two challenge-seam `hSeamZero` residuals): the official
-composed rbr knowledge-soundness obligation of `SpartanBricks`, with input relation `spartanRelIn`
-and output relation `finalCheckRelOut`, holds — at `Rc := composedPIOP_Rc`, with the folded error
-`composedRbrError` — as soon as the eight phases are rbr knowledge sound along *any* chain of
-intermediate relations. -/
-theorem composedRbrKnowledgeSoundnessResidual_of_leaves [Subsingleton σ]
+/-- **`composedRbrKnowledgeSoundnessStatement` reduced to the eight per-phase rbr-KS leaves** (+
+the seven determinism witnesses): the official composed rbr knowledge-soundness obligation of
+`SpartanBricks`, with input relation `spartanRelIn` and output relation `finalCheckRelOut`,
+holds — at `Rc := composedPIOP_Rc`, with the folded error `composedRbrError` — as soon as the
+eight phases are rbr knowledge sound along *any* chain of intermediate relations. -/
+theorem composedRbrKnowledgeSoundnessStatement_of_leaves [Subsingleton σ]
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
     [Inhabited (FinalStatement R pp × ∀ i, FinalOracleStatement R pp i)]
     [Inhabited (Statement.AfterFirstSumcheck R pp ×
@@ -705,35 +671,12 @@ theorem composedRbrKnowledgeSoundnessResidual_of_leaves [Subsingleton σ]
     (hNE_F : Nonempty (Statement.AfterLinearCombination R pp ×
       ∀ i, OracleStatement.AfterLinearCombination R pp i))
     (hNE_G : Nonempty ((R × Statement.AfterLinearCombination R pp) ×
-      ∀ i, OracleStatement.AfterLinearCombination R pp i))
-    (hSeamZero₄ : Verifier.appendRbrKnowledgeSeamZeroResidual (init := init) (impl := impl)
-      (oracleReduction.sendEvalClaim R pp oSpec).verifier.toVerifier
-      ((oracleReduction.linearCombination R pp oSpec).append
-        ((prependRLCTargetKS pp oSpec).append ((secondSumcheckReduction pp oSpec).append
-          (finalCheck R pp oSpec)))).verifier.toVerifier
-      relD relE (finalCheckRelOut R pp) verify₄ hV₄ hInit
-      (Sum.elim err₅ (Sum.elim err₆ (Sum.elim err₇ err₈ ∘ ChallengeIdx.sumEquiv.symm)
-        ∘ ChallengeIdx.sumEquiv.symm) ∘ ChallengeIdx.sumEquiv.symm))
-    (hSeamZero₁ : Verifier.appendRbrKnowledgeSeamZeroResidual (init := init) (impl := impl)
-      (oracleReduction.firstMessage R pp oSpec).verifier.toVerifier
-      ((oracleReduction.firstChallenge R pp oSpec).append
-        ((firstSumcheckReduction pp oSpec).append
-          ((oracleReduction.sendEvalClaim R pp oSpec).append
-            ((oracleReduction.linearCombination R pp oSpec).append
-              ((prependRLCTargetKS pp oSpec).append
-                ((secondSumcheckReduction pp oSpec).append
-                  (finalCheck R pp oSpec))))))).verifier.toVerifier
-      (spartanRelIn R pp) relB (finalCheckRelOut R pp) verify₁ hV₁ hInit
-      (Sum.elim err₂ (Sum.elim err₃ (Sum.elim err₄ (Sum.elim err₅ (Sum.elim err₆
-        (Sum.elim err₇ err₈ ∘ ChallengeIdx.sumEquiv.symm) ∘ ChallengeIdx.sumEquiv.symm)
-        ∘ ChallengeIdx.sumEquiv.symm) ∘ ChallengeIdx.sumEquiv.symm)
-        ∘ ChallengeIdx.sumEquiv.symm) ∘ ChallengeIdx.sumEquiv.symm)) :
-    composedRbrKnowledgeSoundnessResidual R pp oSpec (composedPIOP_Rc pp oSpec) init impl
+      ∀ i, OracleStatement.AfterLinearCombination R pp i)) :
+    composedRbrKnowledgeSoundnessStatement R pp oSpec (composedPIOP_Rc pp oSpec) init impl
       (composedRbrError pp err₁ err₂ err₃ err₄ err₅ err₆ err₇ err₈) :=
   composedPIOP_Rc_rbrKnowledgeSoundness_of_leaves pp oSpec hm hn
     verify₁ hV₁ verify₂ hV₂ verify₃? hV₃ verify₄ hV₄ verify₅ hV₅ verify₆ hV₆ verify₇? hV₇
     h₁ h₂ h₃ h₄ h₅ h₆ h₇ h₈ hInit hInitNF hNE_B hNE_C hNE_E hNE_F hNE_G
-    hSeamZero₄ hSeamZero₁
 
 
 /-! ### Determinism witnesses for the forwarding phase verifiers
@@ -817,7 +760,7 @@ end Spartan.Spec.Bricks
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms Spartan.Spec.Bricks.composedRbrError
 #print axioms Spartan.Spec.Bricks.composedPIOP_Rc_rbrKnowledgeSoundness_of_leaves
-#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual_of_leaves
+#print axioms Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessStatement_of_leaves
 #print axioms Spartan.Spec.Bricks.firstMessage_toVerifier_pure
 #print axioms Spartan.Spec.Bricks.firstChallenge_toVerifier_pure
 #print axioms Spartan.Spec.Bricks.sendEvalClaim_toVerifier_pure

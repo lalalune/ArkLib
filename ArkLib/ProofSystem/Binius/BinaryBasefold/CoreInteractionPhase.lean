@@ -37,14 +37,6 @@ We define `(P, V)` as the following IOP, in which both parties have the common i
 - P sends V the final constant `c := f^(ℓ)(0, ..., 0)`
 - V verifies: `s_ℓ = eqTilde(r, r') * c`
 => `c` should be equal to `t(r'_0, ..., r'_{ℓ-1})`
-
-## Residual surface
-
-The theorem wrappers in this file intentionally expose remaining composition obligations as
-explicit hypotheses. Each pass-through hypothesis is named by its protocol role (for example
-`hFoldRelayAppendCompleteness`, `hNonLastBlocksRbrKnowledgeSoundness`, and
-`hCoreInteractionCompleteness`) rather than by a generic residual name, so audits can distinguish
-which append/composition proof is still missing.
 -/
 namespace Binius.BinaryBasefold.CoreInteraction
 

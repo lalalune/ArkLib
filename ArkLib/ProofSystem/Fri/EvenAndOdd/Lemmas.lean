@@ -65,7 +65,7 @@ private lemma x_times_fₒ'_eq_x_times_fₒ' {f : Polynomial F} :
   intro n
   rcases n with _ | n <;> try simp [Nat.odd_add_one]
 
-private lemma really_glorious_lemma {f f' : Polynomial F} (h : 2 * f = 2 * f') :
+private lemma eq_of_two_mul_eq_two_mul {f f' : Polynomial F} (h : 2 * f = 2 * f') :
     f = f' := by
     apply Polynomial.ext
     intro n
@@ -74,7 +74,7 @@ private lemma really_glorious_lemma {f f' : Polynomial F} (h : 2 * f = 2 * f') :
     aesop
 
 private lemma fₑ_eq_fₑ' {f : Polynomial F} : fₑ f = fₑ' f := by
-  apply really_glorious_lemma
+  apply eq_of_two_mul_eq_two_mul
   rw [fₑ_by_2]
   apply Polynomial.ext
   intro n

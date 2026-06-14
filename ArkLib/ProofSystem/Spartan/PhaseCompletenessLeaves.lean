@@ -20,10 +20,10 @@ missing ones:
 
 * `firstMessage_perfectCompleteness` — re-points the generic `SendSingleWitness` completeness at
   the Spartan seam relations `spartanRelIn → firstChallengeRelIn`;
-* `sendEvalClaimRelOut` + `sendEvalClaim_perfectCompleteness` — the eval-claim send carries the
+* `sendEvalClaimRelOutHonest` + `sendEvalClaim_perfectCompleteness` — the eval-claim send carries the
   R1CS relation through *and* records that the bundled claim oracle is honest (equals
   `evalClaimValue`); this honesty is exactly what the downstream second-sum-check target needs;
-* `linearCombinationRelOut` + `linearCombination_perfectCompleteness` — the RLC challenge round
+* `linearCombinationRelOutHonest` + `linearCombination_perfectCompleteness` — the RLC challenge round
   carries both facts through unchanged;
 * `prependRLCTarget` + `prependRLCTarget_perfectCompleteness` — the **honest second-sum-check
   target adapter** (the design fix for #114): a zero-round adapter whose prover *and* verifier
@@ -51,17 +51,17 @@ evaluation-claim oracle is honest — it equals `evalClaimValue` of the underlyi
 the first sum-check challenge point. The honesty conjunct is what lets the downstream honest target
 adapter (`prependRLCTarget`) produce the second-sum-check target demanded by
 `secondSumcheckRelInBF`. -/
-def sendEvalClaimRelOut :
+def sendEvalClaimRelOutHonest :
     Set ((Statement.AfterSendEvalClaim R pp ×
         (∀ i, OracleStatement.AfterSendEvalClaim R pp i)) × Unit) :=
   { x | R1CS.relation R pp.toSizeR1CS x.1.1.2.2
         (fun idx => x.1.2 (.inr (.inl idx))) (x.1.2 (.inr (.inr 0)))
       ∧ x.1.2 (.inl 0) = evalClaimValue R pp x.1.1 (fun i => x.1.2 (.inr i)) }
 
-/-- Output relation of the `linearCombination` phase: same content as `sendEvalClaimRelOut`, with
+/-- Output relation of the `linearCombination` phase: same content as `sendEvalClaimRelOutHonest`, with
 the freshly-sampled RLC challenge `γ` prepended to the statement (the relation does not constrain
 `γ`). -/
-def linearCombinationRelOut :
+def linearCombinationRelOutHonest :
     Set ((Statement.AfterLinearCombination R pp ×
         (∀ i, OracleStatement.AfterLinearCombination R pp i)) × Unit) :=
   { x | R1CS.relation R pp.toSizeR1CS x.1.1.2.2.2
@@ -80,6 +80,6 @@ theorem firstMessage_perfectCompleteness (hInit : NeverFail init) :
     (oSpec := oSpec) (Statement := Statement R pp) (OStatement := OracleStatement R pp)
     (Witness := Witness R pp) (init := init) (impl := impl)
     (oRelIn := Bricks.spartanRelIn R pp) hInit
-  exact Reduction.completeness_relOut_mono (fun x hx => hx) h
+  exact Reduction.completeness_relOut_mono init impl (fun x hx => hx) h
 
 end Spartan.Spec
