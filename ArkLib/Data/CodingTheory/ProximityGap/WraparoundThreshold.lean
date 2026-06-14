@@ -56,8 +56,9 @@ larger — this is the clean *sufficient* side, which is what is formalizable fr
 The whole BGK / W4 wall is `B = max_{b≠0}‖η_b‖`, and the moment route bounds `B` via `p·E_r`
 (Plancherel). The periods match the Gaussian moments **exactly** to depth `r*` (this file's
 threshold), and the wall is *precisely* extending that match to the needed depth `r ≈ ln q`. This
-file lands the exact, uniform, machine-checked statement of *where the char-0 match is unconditional*
-— the boundary of the wall, as a theorem, not the closure of it. It does **not** close the prize:
+file lands the exact, uniform, machine-checked statement of *where the char-0 match is
+unconditional* — the boundary of the wall, as a theorem, not the closure of it. It does **not**
+close the prize:
 the prize needs `r ≈ ln q = β ln n ≫ ½ p^{2/n}`, so `r*/needed → 0`, and the open residual is the
 char-`p` transfer **above** this threshold (the recognized BGK / Lam–Leung char-`p` wall).
 
@@ -77,13 +78,15 @@ namespace ArkLib.ProximityGap.Wraparound
 
 variable {K : Type*} [Field K] [NumberField K]
 
+set_option linter.unusedSectionVars false in
 /-- **The negation of a root of unity is a root of unity.** If `u ^ k = 1` then `(-u) ^ (2*k) = 1`,
 the atom that lets a *difference* of root-of-unity sums be re-expressed as a *sum* of roots of
 unity (the `−ζ^b = ζ^{b + n/2}` step, valid because `−1 ∈ μ_n` for the dyadic group `n = 2^μ`). -/
 theorem neg_rootOfUnity {u : K} {k : ℕ} (hu : u ^ k = 1) : (-u) ^ (2 * k) = 1 := by
-  have : (-u) ^ (2 * k) = (u ^ k) ^ 2 := by
-    rw [mul_comm 2 k, pow_mul, neg_sq, ← pow_mul, mul_comm k 2, pow_mul]
-  rw [this, hu, one_pow]
+  have h1 : ((-1 : K)) ^ (2 * k) = 1 := by
+    rw [pow_mul]; simp
+  have h2 : u ^ (2 * k) = 1 := by rw [mul_comm, pow_mul, hu, one_pow]
+  rw [neg_eq_neg_one_mul, mul_pow, h1, h2, one_mul]
 
 /-- **A difference of two root-of-unity sums is a sum of `≤ m₁ + m₂` roots of unity, with norm
 bounded by `(m₁ + m₂)^{[K:ℚ]}`.** Writing `D = (Σ_{i∈s} u_i) − (Σ_{j∈t} v_j) = Σ u_i + Σ (−v_j)`,

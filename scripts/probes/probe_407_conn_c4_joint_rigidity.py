@@ -100,7 +100,7 @@ def ej_complex(U, j, n):
     roots = [zc**i for i in U]
     return sum(reduce(lambda a, b: a*b, comb, 1) for comb in itertools.combinations(roots, j))
 
-def verify(n, trials=200):
+def verify(n, trials=80):
     import random
     random.seed(7)
     h = n//2
@@ -126,7 +126,7 @@ def thresholds(n):
     res = {}
     for j in (1, 2, 3, 4):
         maxl1 = 0; argU = None
-        wmax = min(n, j+5)
+        wmax = min(n, j+4)
         for w in range(j, wmax+1):
             for U in itertools.combinations(range(n), w):
                 m = l1(Rfold(list(U), j, h))

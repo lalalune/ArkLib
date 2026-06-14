@@ -1917,6 +1917,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentRatioLower
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodSidonBound
+import ArkLib.Data.CodingTheory.ProximityGap.WraparoundThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianNonVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianStepanovBridge
