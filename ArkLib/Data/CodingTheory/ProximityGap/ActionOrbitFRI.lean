@@ -89,9 +89,53 @@ theorem badSet_orbit_closed
   · rw [natDegree_gtilde μ hμ a g]; exact hgdeg
   · rw [← agreement_orbit_invariance D μ hμ hDinv hDmul a b hab α g]; exact hgw
 
+/-- **Substitution Principle (fibre-counting core)** (Chai–Fan 2026/861, Prop 2.4 core).
+If `φ : F → F` maps the deployment domain `D` into the base domain `D'` with every fibre over `D'`
+of size exactly `d` (the `z ↦ z^d` `d:1` map on a cyclic domain), and the deployment agreement
+predicate `Q` pulls back the base predicate `P` (`Q z ↔ P (φ z)` on `D`), then
+`#{z ∈ D : Q z} = d · #{u ∈ D' : P u}`.  With `Q z := h_α(z)=g̃(z)`, `P u := h'_α(u)=g'(u)`,
+`φ = (·^d)`, this is the exact agreement reduction collapsing every deployment-scale two-monomial
+pencil to one of finitely many base cases — the second pillar (with `badSet_orbit_closed`) of the
+"reduce to a finite base panel" toolkit.  Elementary; pure fibre counting. -/
+theorem agreement_substitution (D D' : Finset F) (φ : F → F) (d : ℕ)
+    (hmap : ∀ z ∈ D, φ z ∈ D')
+    (hfib : ∀ u ∈ D', (D.filter (fun z => φ z = u)).card = d)
+    (P : F → Prop) [DecidablePred P] (Q : F → Prop) [DecidablePred Q]
+    (hPQ : ∀ z ∈ D, (Q z ↔ P (φ z))) :
+    (D.filter Q).card = d * (D'.filter P).card := by
+  classical
+  rw [Finset.card_eq_sum_card_fiberwise
+        (f := φ) (t := D') (s := D.filter Q)
+        (fun z hz => hmap z (Finset.mem_filter.mp hz).1)]
+  rw [← Finset.sum_filter_add_sum_filter_not D' P]
+  have hzero : ∑ u ∈ D'.filter (fun u => ¬ P u),
+      ((D.filter Q).filter (fun z => φ z = u)).card = 0 := by
+    apply Finset.sum_eq_zero
+    intro u hu
+    rw [Finset.mem_filter] at hu
+    rw [Finset.card_eq_zero, Finset.filter_filter]
+    apply Finset.filter_false_of_mem
+    intro z hz hcon
+    exact hu.2 (by rw [← hcon.2]; exact (hPQ z hz).mp hcon.1)
+  have hpos : ∑ u ∈ D'.filter P,
+      ((D.filter Q).filter (fun z => φ z = u)).card = ∑ _u ∈ D'.filter P, d := by
+    apply Finset.sum_congr rfl
+    intro u hu
+    rw [Finset.mem_filter] at hu
+    rw [Finset.filter_filter]
+    have heq : (D.filter (fun z => Q z ∧ φ z = u)) = D.filter (fun z => φ z = u) := by
+      apply Finset.filter_congr
+      intro z hz
+      constructor
+      · rintro ⟨_, h2⟩; exact h2
+      · intro h2; exact ⟨(hPQ z hz).mpr (by rw [h2]; exact hu.2), h2⟩
+    rw [heq, hfib u hu.1]
+  rw [hzero, add_zero, hpos, Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+
 end ArkLib.ProximityGap.ActionOrbitFRI
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.ActionOrbitFRI.agreement_orbit_invariance
 #print axioms ArkLib.ProximityGap.ActionOrbitFRI.natDegree_gtilde
 #print axioms ArkLib.ProximityGap.ActionOrbitFRI.badSet_orbit_closed
+#print axioms ArkLib.ProximityGap.ActionOrbitFRI.agreement_substitution
