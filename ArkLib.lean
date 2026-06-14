@@ -798,6 +798,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicEnergyK1
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicOddMomentVanishing
+import ArkLib.Data.CodingTheory.ProximityGap.E2SquaringRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
@@ -816,6 +817,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedUD
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiber
 import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiberCodewordList
+import ArkLib.Data.CodingTheory.ProximityGap.EvenOddAntipodalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.EvenTowerSupplyGrowth
 import ArkLib.Data.CodingTheory.ProximityGap.ExactCoherenceCount
 import ArkLib.Data.CodingTheory.ProximityGap.ExactnessWithoutCoverability
@@ -852,11 +854,13 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BesselDeviationLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Issue407SaturatedIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Affine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2NearAffine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2OwnedTriples
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Universal
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgroup
@@ -1893,6 +1897,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodSidonBound
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianNonVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianStepanovBridge
+import ArkLib.Data.CodingTheory.ProximityGap._E2SquaringRecursion
 import ArkLib.Data.CodingTheory.ProximityLeaves
 import ArkLib.Data.CodingTheory.ProximityLeaves2
 import ArkLib.Data.CodingTheory.QEntropyMonotone
