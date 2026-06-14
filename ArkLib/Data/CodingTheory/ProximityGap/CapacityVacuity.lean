@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ReedSolomon
+import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.InformationTheory.Hamming
 import Mathlib.LinearAlgebra.Lagrange
+import Mathlib.Tactic
 
 /-!
 # Capacity-vacuity of the correlated-agreement premise (Issue #232)
@@ -33,7 +35,13 @@ parity-check machinery:
   open prize (#232), and it confirms (consistently with CS25/BCHKS25) that correlated agreement
   *cannot* hold unconditionally up to capacity.
 
-Both results are `sorry`-free and axiom-clean.
+* `okamoto_rank_condition_below_johnson` — **Okamoto's unconditional rank condition is
+  sub-Johnson.** The paper's unconditional `r ≥ 2` branch needs `(r+1)δ < 1−ρ`, hence
+  `δ < (1−ρ)/3`, and this cutoff is strictly below the Johnson radius `1−√ρ` for every
+  `ρ ∈ (0,1)`. This arithmetic pin is the reason the syndrome-space lens does not close the
+  prize window.
+
+All closed results in this file are `sorry`-free and axiom-clean.
 
 ## References
 - [Oka25] R. Okamoto. *The Syndrome-Space Lens*. eprint 2025/1712. (Theorem 5.1, capacity vacuity.)
@@ -97,7 +105,47 @@ theorem forall_exists_codeword_hammingDist_le_of_capacity
   obtain ⟨c, hc, hdist⟩ := exists_codeword_hammingDist_le_redundancy domain deg hdeg w
   exact ⟨c, hc, le_trans hdist ht⟩
 
+/-- **Okamoto's best unconditional radius cutoff is below Johnson.** For every rate
+`ρ ∈ (0,1)`, `(1−ρ)/3 < 1−√ρ`. Thus any theorem whose largest unconditional reach is
+`δ < (1−ρ)/3` is strictly sub-Johnson and cannot touch the prize window. -/
+theorem okamoto_unconditional_cutoff_below_johnson {ρ : ℝ} (hρ0 : 0 < ρ) (hρ1 : ρ < 1) :
+    (1 - ρ) / 3 < 1 - Real.sqrt ρ := by
+  have hsq : Real.sqrt ρ ^ 2 = ρ := Real.sq_sqrt hρ0.le
+  have hslt1 : Real.sqrt ρ < 1 := by
+    rw [show (1 : ℝ) = Real.sqrt 1 by rw [Real.sqrt_one]]
+    exact Real.sqrt_lt_sqrt hρ0.le hρ1
+  have hsnonneg : 0 ≤ Real.sqrt ρ := Real.sqrt_nonneg ρ
+  nlinarith [hsq, hslt1, hsnonneg]
+
+/-- **The Okamoto rank condition forces the one-third cutoff.** If `r ≥ 2`, `δ ≥ 0`, and
+`(r+1)δ < 1−ρ`, then necessarily `δ < (1−ρ)/3`. This is the exact arithmetic translation of
+the paper's `(r+1)k < m+1` hypothesis after normalizing by block length. -/
+theorem okamoto_rank_condition_radius_lt_third {ρ δ : ℝ} {r : ℕ}
+    (hδ0 : 0 ≤ δ) (hr : 2 ≤ r)
+    (hcond : ((r + 1 : ℕ) : ℝ) * δ < 1 - ρ) :
+    δ < (1 - ρ) / 3 := by
+  have h3 : (3 : ℝ) ≤ ((r + 1 : ℕ) : ℝ) := by
+    exact_mod_cast Nat.succ_le_succ hr
+  have h3δ : 3 * δ ≤ ((r + 1 : ℕ) : ℝ) * δ :=
+    mul_le_mul_of_nonneg_right h3 hδ0
+  have h3δ_lt : 3 * δ < 1 - ρ := lt_of_le_of_lt h3δ hcond
+  nlinarith
+
+/-- **Okamoto's unconditional rank condition is strictly below Johnson.** Combining the previous two
+arithmetic facts: in rate `ρ ∈ (0,1)`, any nonnegative radius satisfying the unconditional
+syndrome-space rank hypothesis with `r ≥ 2` lies below `1−√ρ`, hence outside the Johnson-to-capacity
+prize window. -/
+theorem okamoto_rank_condition_below_johnson {ρ δ : ℝ} {r : ℕ}
+    (hρ0 : 0 < ρ) (hρ1 : ρ < 1) (hδ0 : 0 ≤ δ) (hr : 2 ≤ r)
+    (hcond : ((r + 1 : ℕ) : ℝ) * δ < 1 - ρ) :
+    δ < 1 - Real.sqrt ρ :=
+  lt_trans (okamoto_rank_condition_radius_lt_third hδ0 hr hcond)
+    (okamoto_unconditional_cutoff_below_johnson hρ0 hρ1)
+
 end ArkLib.ProximityGap.CapacityVacuity
 
 #print axioms ArkLib.ProximityGap.CapacityVacuity.exists_codeword_hammingDist_le_redundancy
 #print axioms ArkLib.ProximityGap.CapacityVacuity.forall_exists_codeword_hammingDist_le_of_capacity
+#print axioms ArkLib.ProximityGap.CapacityVacuity.okamoto_unconditional_cutoff_below_johnson
+#print axioms ArkLib.ProximityGap.CapacityVacuity.okamoto_rank_condition_radius_lt_third
+#print axioms ArkLib.ProximityGap.CapacityVacuity.okamoto_rank_condition_below_johnson
