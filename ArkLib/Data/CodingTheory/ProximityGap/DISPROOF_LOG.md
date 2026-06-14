@@ -8713,3 +8713,14 @@ Empirically M~√(n log p)≪n ⟹ no fully-aligned path exists (prize morally t
 worst-path accumulation ≤ √(log p) is the recognized-open sup-norm/Lyapunov large-deviation problem.
 This bounds what `GaussPeriodTower` (exact recursion) can yield: the recursion is exact, the closure
 needs the cocycle large-deviation, which is the open analytic input. Probe: `probe_descent_inequality.py`.
+
+---
+## 2026-06-13 #407 — COSET-SATURATION refuted (the "all valid S are coset-unions" form)
+Refuted: "monomial-line bad-scalar agreement set S (|S|=rm, gap e_i(S)=0 ∀i∈{1..2m-1}\{m}) is always
+a union of r cosets of μ_m." Countermodel (/tmp/pure_claim.py, full enum): n=24,m=2,r=4,p=73 has
+NON-coset valid S = (0,1,2,3,7,20,21,22). SURVIVES: bad COUNT still = distinct r-fold sumset in all 6
+instances incl this one (non-coset S give e_m values already realized by coset S; no new bad scalars).
+So exact δ* NOT refuted, only the coset MECHANISM. Corrected linchpin (Newton, provable):
+e_m(S)=(±1/m)∑_ξ c_ξ·ξ, c_ξ=#{x∈S:x^m=ξ}∈{0..m}, ∑c_ξ=rm; the true claim is e_m-IMAGE of gap-variety
+= distinct sumset (concrete finite combinatorics on c_ξ under e_{m+1}..e_{2m-1}=0, char-p-free).
+Lesson: count can be robust even when structure (coset rigidity) is refutable — verify the count.
