@@ -1452,3 +1452,24 @@ primes to divide a single small-height integer, which is NOT provided by e₂-ri
 NOT closed even in existence form; the two new gaps (general-pencil extremality, single-integer D-height)
 are the corrected open core — still OFF-WALL (combinatorial/resultant), not BGK. Probes:
 `scripts/probes/probe_407_close_*.py` (R1/R2/existence/D-height families).
+
+## UPDATE 2026-06-14 — R1 refutation SEVERITY: constant 2× (plateaus over #terms) but m-dependence UNRESOLVED
+
+Follow-up to the R1 refutation (monomial not extremal). Severity analysis (`probe_407_close_r1_grow_terms.py`,
+`probe_407_close_r1_factor_vs_m.py`), n=16, k=4, beyond-Johnson:
+- Kambiré's construction is MONOMIAL (`f=X^{rm}, g=X^{(r-1)m}`, read from arXiv:2604.09724).
+- For (a,b)=(10,8), m=gcd(a−b,n)=2: monomial #bad=8, general f gives 16 (factor **exactly 2.00** at
+  p=193,257,353, NON-saturated). Adding MORE free terms to f (X^9 then X^9+X^7) does NOT grow it past 16 —
+  the overcount **PLATEAUS at 2×** (not growing with #terms). A CONSTANT factor shifts δ* by `O(1/n) ≪
+  Ω(1/log n)` = Kambiré's own window ambiguity ⟹ HARMLESS to the leading δ* formula.
+- BUT the factor 2 traces to the cofactor period m=2 (g=X^{n/2}). Whether the factor SCALES with m (worst
+  case m=n/s ~ n/log n, which would be SERIOUS) is UNRESOLVED: at n=16 the m=4,8 pencils have NO
+  beyond-Johnson bad scalars to measure (n too small). Needs larger n (build_ball too slow there).
+
+**Honest severity verdict:** R1 is strictly refuted, but the overcount is a CONSTANT factor (≈2×, plateaus
+over #terms) at the only measurable config (m=2, n=16). IF the factor stays O(1) or polylog across (m,n),
+R1's refutation is HARMLESS — it shifts δ* within Kambiré's Ω(1/log n) ambiguity and the count route's
+LEADING-order δ*=window-edge survives (the floor bounds the general pencil = O(1)·monomial). IF the factor
+scales with m~n/log n, the count route is genuinely broken. **This single question — overcount-factor vs
+cofactor-period m, at large n — is now the deciding item for whether the count/floor route closes δ* to
+leading order.** Off-wall (combinatorial), needs a larger-n (or structural) computation. Probes added.
