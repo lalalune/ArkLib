@@ -852,6 +852,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChaining
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChainingSubmaxRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RungListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
@@ -1436,6 +1437,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QREnergyCubicLower
 import ArkLib.Data.CodingTheory.ProximityGap.QRExponentialSum
 import ArkLib.Data.CodingTheory.ProximityGap.QRFrequencySumEval
 import ArkLib.Data.CodingTheory.ProximityGap.QRShiftPairCount
+import ArkLib.Data.CodingTheory.ProximityGap.QRWorstCaseIncompleteSum
 import ArkLib.Data.CodingTheory.ProximityGap.QRZeroSumTripleScaling
 import ArkLib.Data.CodingTheory.ProximityGap.QuadZeroSumEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
