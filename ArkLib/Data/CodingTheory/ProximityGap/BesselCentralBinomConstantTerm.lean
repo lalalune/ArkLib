@@ -170,6 +170,42 @@ theorem besselCoeff_nonneg (d r : ℕ) : 0 ≤ besselCoeff d r := by
   positivity
 
 
+/-- **Strict positivity of the Bessel coefficient (energy non-degeneracy baseline):**
+`0 < besselCoeff d r` for `d ≥ 1`.  Since `(2r)!·besselCoeff d r = E_r^{char0}(μ_n)`
+(the exact char-0 additive-energy coefficient of the multiplicative group `μ_n`, with
+`d = n/2`), this is the strict non-degeneracy statement `E_r^{char0}(μ_n) > 0`: the
+energy of any nonempty signed-unit-vector set is strictly positive.
+
+`besselCoeff d r = Σ_{m ∈ antidiagonalTuple d r} ∏_i 1/(mᵢ!)²` is a sum of nonnegative
+terms (`besselCoeff_nonneg`); the witness tuple putting all mass on coordinate `0`,
+`m = (fun i => if i = ⟨0,hd⟩ then r else 0)`, lies in `antidiagonalTuple d r` (its
+coordinate-sum is `r`) and contributes a product of strictly positive factors `1/(mᵢ!)² > 0`.
+`Finset.sum_pos'` (nonnegativity + one strictly-positive member) upgrades the trivial
+`besselCoeff_nonneg` baseline to strict positivity whenever `d ≥ 1`. -/
+theorem besselCoeff_pos {d : ℕ} (hd : 0 < d) (r : ℕ) : 0 < besselCoeff d r := by
+  unfold besselCoeff
+  -- The witness tuple: all mass on coordinate ⟨0, hd⟩.
+  set m₀ : Fin d → ℕ := fun i => if i = (⟨0, hd⟩ : Fin d) then r else 0 with hm₀
+  -- Membership: its coordinate-sum is r.
+  have hmem : m₀ ∈ Finset.Nat.antidiagonalTuple d r := by
+    rw [Finset.Nat.mem_antidiagonalTuple]
+    rw [hm₀]
+    rw [Finset.sum_ite_eq' Finset.univ (⟨0, hd⟩ : Fin d) (fun _ => r)]
+    simp
+  -- The witness term is a strictly positive product of strictly positive factors.
+  have hpos : (0 : ℚ) < ∏ i, (1 : ℚ) / (Nat.factorial (m₀ i)) ^ 2 := by
+    apply Finset.prod_pos
+    intro i _
+    positivity
+  -- Sum is strictly positive: all terms nonnegative + one strictly positive member.
+  apply Finset.sum_pos'
+  · intro x _
+    apply Finset.prod_nonneg
+    intro i _
+    positivity
+  · exact ⟨m₀, hmem, hpos⟩
+
+
 end ProximityGap.PrizeWorkbench
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -179,3 +215,4 @@ end ProximityGap.PrizeWorkbench
 #print axioms ProximityGap.PrizeWorkbench.besselCoeff_eq_centralBinom_sum
 #print axioms ProximityGap.PrizeWorkbench.besselCoeff_zero
 #print axioms ProximityGap.PrizeWorkbench.besselCoeff_nonneg
+#print axioms ProximityGap.PrizeWorkbench.besselCoeff_pos

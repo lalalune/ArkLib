@@ -432,6 +432,31 @@ theorem schurH_reindex {ι ι' : Type*} [DecidableEq ι] [DecidableEq ι'] (e : 
   rw [dividedDifferencePow_eq_schurH hvs hs b]
 
 
+/-- **`schurH` vanishing anchor, `b < #s − 1`.** The complete-homogeneous surrogate `schurH`
+inherits the divided-difference vanishing anchor: for `b < #s − 1` the surrogate is `0`. Proved
+by pushing the general bridge `dividedDifferencePow_eq_schurH` backward and applying the proven
+dd anchor `dividedDifferencePow_eq_zero_of_lt`. -/
+theorem schurH_eq_zero_of_lt (hvs : Set.InjOn v s) (hs : s.Nonempty) {b : ℕ}
+    (hb : b < #s - 1) : schurH s v b = 0 := by
+  rw [← dividedDifferencePow_eq_schurH hvs hs b]
+  exact dividedDifferencePow_eq_zero_of_lt hvs hb
+
+/-- **`schurH` unit anchor, `b = #s − 1` (`h_0 = 1`).** The surrogate at degree `#s − 1` is `1`,
+read off the proven dd anchor `dividedDifferencePow_eq_one` through the general bridge. -/
+theorem schurH_eq_one (hvs : Set.InjOn v s) (hs : s.Nonempty) :
+    schurH s v (#s - 1) = 1 := by
+  rw [← dividedDifferencePow_eq_schurH hvs hs (#s - 1)]
+  exact dividedDifferencePow_eq_one hvs hs
+
+/-- **`schurH` first Schur value, `b = #s` (`h_1 = e_1 = Σ v_i`).** The surrogate at degree `#s`
+is the point sum `Σ_{i ∈ s} v i`, pushed onto `schurH` from the proven dd anchor
+`dividedDifferencePow_card_eq_sum` via the general bridge. -/
+theorem schurH_card_eq_sum (hvs : Set.InjOn v s) (hs : s.Nonempty) :
+    schurH s v (#s) = ∑ i ∈ s, v i := by
+  rw [← dividedDifferencePow_eq_schurH hvs hs (#s)]
+  exact dividedDifferencePow_card_eq_sum hvs hs
+
+
 end ProximityGap.SchurLagrange
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -447,3 +472,6 @@ end ProximityGap.SchurLagrange
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_reindex
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_eq_schurH
 #print axioms ProximityGap.SchurLagrange.schurH_reindex
+#print axioms ProximityGap.SchurLagrange.schurH_eq_zero_of_lt
+#print axioms ProximityGap.SchurLagrange.schurH_eq_one
+#print axioms ProximityGap.SchurLagrange.schurH_card_eq_sum

@@ -182,6 +182,21 @@ theorem card_two_vanishing_antipodal {k : ℕ} {M : Multiset L}
   rw [hy]
 
 
+/-- **Minimal-relation length floor.** A nonzero multiset of `2^k`-th roots of unity whose sum
+vanishes has cardinality at least two. This sharpens the even-card law
+(`even_card_of_vanishing_dyadic_multiset`, which gives `card = 2c`) by ruling out the empty
+case: a genuine (nonempty) vanishing relation among dyadic roots of unity needs at least the
+antipodal pair `{z, -z}`. There is no length-1 cancellation (a single root is nonzero), so the
+shortest vanishing relation has length exactly two. -/
+theorem two_le_card_of_vanishing_dyadic {k : ℕ} {M : Multiset L}
+    (hM : ∀ z ∈ M, z ^ (2 ^ k) = 1) (hsum : M.sum = 0) (hne : M ≠ 0) :
+    2 ≤ Multiset.card M := by
+  have hpos : 0 < Multiset.card M := Multiset.card_pos.mpr hne
+  obtain ⟨c, hc⟩ := even_card_of_vanishing_dyadic_multiset hM hsum
+  omega
+
+
 end DyadicOddMomentVanishing
 #print axioms DyadicOddMomentVanishing.ne_zero_of_card_one_dyadic
 #print axioms DyadicOddMomentVanishing.card_two_vanishing_antipodal
+#print axioms DyadicOddMomentVanishing.two_le_card_of_vanishing_dyadic
