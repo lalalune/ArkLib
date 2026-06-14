@@ -47,9 +47,17 @@ value I_sat (fraction I/p→0). Saturation p-threshold p\* = smallest prime (p>n
 |----|-----------|-----------|-------------|-------|---------|--------|
 | 16 | 0.750 | w=5 (δ=0.688) | +0.062 = 1/16 | 1992–3984 | 40961–65537 | 10–16 |
 | 32 | 0.875 | w=5 (δ=0.844) | +0.031 = 1/32 | 49088–98336 | 557057–1179649 | 17–36 |
-| 64 | 0.938 | w=5 (δ=0.922) | +0.016 = 1/64 | (see probe) | (see probe) | (see probe) |
+| 64 | 0.938 | w=6 (δ=0.906)*| +0.031 = 2/64 | still rising at 22·n³ | > 5.77M | **> 22** |
 
-**Band w=k+2:** n=16 p\*/n³≈1; n=32 p\*/n³≈17–24; n=64 (see probe).
+\* At n=64 the w=k+1=5 band IS the C(n,k+1) noise floor (≈p); the smallest meaningful
+near-capacity grower is w=k+2=6. Its incidence I GROWS through the whole measured range and is
+NOT yet saturated even at p=22·n³ (47→194→613→915→2696 for p/n³=0.25→22; I/p stays ≈7e-4 then
+only begins falling to 4.7e-4 at 22·n³). So the n=64 near-capacity clearing threshold p\*/n³ is
+> 22 and still climbing — strictly larger than the n=32 w=k+2 threshold (≈17–24) and the n=16
+w=k+2 threshold (≈1).
+
+**Band w=k+2 monotone growth of p\*/n³:** n=16 ≈ 1 → n=32 ≈ 17–24 → n=64 > 22 (rising). The
+saturation/clearing prime for a near-capacity band GROWS by roughly an order of magnitude per octave.
 
 ### Implication for the BGK wall (honest)
 Two competing effects as n→∞ at constant rate:
