@@ -165,6 +165,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettUnion
 import ArkLib.Data.CodingTheory.GMMDS.LovettVStarReduce
 import ArkLib.Data.CodingTheory.GMMDS.LovettWitnessCounterexample
 import ArkLib.Data.CodingTheory.GMMDS.SchwartzZippelMinorSpecialization
+import ArkLib.Data.CodingTheory.GMMDS.SymbolicFullRankLovettFree
 import ArkLib.Data.CodingTheory.GVCounting
 import ArkLib.Data.CodingTheory.GilbertVarshamov
 import ArkLib.Data.CodingTheory.GilbertVarshamovExistence
@@ -318,6 +319,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AbacusNCore
 import ArkLib.Data.CodingTheory.ProximityGap.AbacusReduction
 import ArkLib.Data.CodingTheory.ProximityGap.ActionOrbitFRI
+import ArkLib.Data.CodingTheory.ProximityGap.ActionOrbitGeneralF
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyCubeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGcdDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGroupRepBound
