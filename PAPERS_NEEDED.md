@@ -283,3 +283,29 @@ and the only non-moment hope is a Stepanov/Burgess amplification that does not y
 - arXiv:1905.07355 — Costa-Dalai, gap in slice rank of k-tensors. Slice rank fails for >=8-term systems; energy is in the weak regime.
 - arXiv:2304.13801 / 2309.09124 — Hanson-Petridis, additive decompositions / multiplicative structure of shifted subgroups. Most-adaptable Stepanov refinement; still cannot break the degree-vs-multiplicity balance.
 - Slice-rank survey (Surveys in Combinatorics 2024, Cambridge) — confirms slice rank is an avoidance-size method needing F_q^n; no subgroup-energy application exists.
+## δ* EFFECTIVE-EQUIDISTRIBUTION cluster — 2026-06-14 (the FIXED-INDEX wall, NOT thin-BGK)
+
+Added by the regime-clarification lane (probe `probe_fixed_index_supnorm_ratio.py`). **Key
+reframing:** the prize fixes `q≈n·2^128`, i.e. index `m=(q−1)/n≈2^128` HELD CONSTANT as the
+FFT domain `n→∞`. This is a *fixed-index, positive-proportion* (`n=Θ(p)`) subgroup family — the
+`β∈[4,5]` figure is the *derived* `β=1+128/log₂n`, NOT a fixed thin-subgroup exponent. So the
+analytic wall is **effective Gauss-sum equidistribution** (the `m` fixed Gauss-sum phases must
+avoid alignment at the specific `p≈2^160`), geometrically distinct from additive-combinatorial
+BGK/Paley (thin `n=p^{δ}`, `δ<1`). All 5 ON DISK at `~/papers/arklib/`.
+
+| # | paper | id | why it bears on the FIXED-INDEX wall |
+|---|---|---|---|
+| EQ1 | Perret-Gentil (et al.), **Wasserstein metrics and quantitative equidistribution of exponential sums over finite fields** | arXiv **2505.22059** (2025) | THE effective version of Deligne/Katz equidistribution. Gives `W₁`-discrepancy of trace-function families via Weyl sums — `√p`-quality (conductor/`√p`). **Confirms the no-go:** this quality is `≫ 1/m` needed to certify flatness of `m=2^128` phases at `p≈2^160`, so effective-Katz alone cannot close the prize (but is the right machine for the fixed-index framing). |
+| EQ2 | Rojas-León, **Equidistribution and independence of Gauss sums** | arXiv **2207.12439** | Proves joint independence/equidistribution of Gauss sums for `n` monomials in `r`-variable mult. characters — the QUALITATIVE (q→∞) non-conspiracy of exactly our phases `τ(ψ^j)/√p`. The prize is its EFFECTIVE form. |
+| EQ3 | **On an uncertainty principle for small index subgroups of finite fields** | arXiv **2310.09992** | ★ DECISIVE BRIDGE. The **nonvanishing-minors (NVM) property of the compressed Fourier matrix of a subgroup H** = the higher-order-MDS / repeated-degree generalized-Vandermonde nonsingularity that **R3 `LovettPrimitiveStep` needs** — and it is characterized **via Gauss sums** (Chebotarëv on roots of unity). Solves index 2,3; **"larger index remains open"** (quote). So R3 (algebraic) and the analytic Gauss-period sup-norm are the **SAME open object**; the campaign's "independent routes" collapse. |
+| EQ4 | **Improved bounds on Gauss sums in arbitrary finite fields** | arXiv **1712.00761** | SOTA effective single Gauss-sum / subgroup-sum bounds in `F_q`; the quantitative input feeding both walls. |
+| EQ5 | Perret-Gentil, **Ultra-short sums of trace functions** | arXiv **2302.13670** | Equidistribution of *very short* trace-function sums over zeros of integral polynomials — the short-interval analogue of the incomplete `S(t)=Σ_{x∈μ_n}e_p(tx)` sup-norm tail. |
+
+**Honest scope:** the fixed-index reframing moves the prize OFF the (hopeless) thin-BGK wall onto
+the effective-equidistribution wall — but `probe_fixed_index_supnorm_ratio.py` + the conductor
+estimate (EQ1) show BOTH walls, and the moment/Betti route, give only **poly(m)·p^{−1/2}** quality
+while certifying no-alignment of `m≈2^128` phases needs **`≤1/m`** quality. The wall is therefore
+*framing-independent* (triangulated 3 ways), and remains open. New empirical law (the one clean
+positive): `R(n,m) := M/√(n·ln m)` is FLAT ≈ 1.1–1.5 across `n:16→2048` and index `m:13→8206`
+(thinning to `n=p^{1/2.63}`) — so the `log(p/n)` factor in `δ*=1−ρ−H(ρ)/(β log₂n)` is the EXACT
+normalization, worst-case constant `C≈1.5`, not merely an upper bound.
