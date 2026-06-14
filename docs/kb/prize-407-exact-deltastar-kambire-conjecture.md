@@ -745,3 +745,31 @@ remove it for general r.
 All four reduce, rigorously, to the additive-energy `E_r(μ_s)` = diagonal-value (no char-p anomaly)
 statement for `r ~ log n` — the recognized open core. The campaign has PROVEN the boundary (r=2, ℂ) and
 built the reusable bricks; the interior (r≥3, char-p) is the moment wall, unbroken.
+
+## UPDATE — LEAN STATUS of the optimality chain (2026-06-13): the ℂ side is now AXIOM-CLEAN LEAN; residual precisely localized
+
+Auditing the in-tree state, the entire **characteristic-0** optimality chain is now machine-checked
+axiom-clean (`[propext, Classical.choice, Quot.sound]`), not just paper+numerics:
+
+| Piece | Lean theorem | file | axioms | build |
+|---|---|---|---|---|
+| (1) factorization rigidity | `mem_range_expand_iff`, `isRoot_smul_of_mem_range_expand` | `FactorizationRigidity.lean` | clean | green |
+| (2) coset-saturation, ℂ (iterated Lam–Leung) | `full_tower`, `tower_count` | `LamLeungTwoPow.lean` | clean | 3299 jobs |
+| (2) base (vanishing 2^μ-root 0/1-sum = ± pairs) | `count_antipodal_of_sum_eq_zero`, `multiset_antipodal_iff` | `LamLeungMultisetAntipodal.lean` | clean | green |
+| (2) key-identity structural core (MDS dichotomy) | `monomialPencil_quasi_homogeneous`, `expand_eval_mu_d_invariant` | `MonomialPencilQuasiHomog.lean` | clean | 3297 jobs |
+
+`full_tower` is exactly the ℂ coset-saturation: over `[Field F][CharZero F]`, a `2^M`-th-root set whose
+power sums vanish on `1 ≤ j < 2^s` is closed under `×μ_{2^s}` (a `μ_{2^s}`-coset-union). The two new
+monomial-pencil lemmas formalize the "key identity" face of piece (2): the pencil `U=X^a+γX^b` is
+`μ_d`-quasi-homogeneous (`U(ωx)=ω^a U(x)` for `ω^(a−b)=1`) and the `a`-residue codeword part is
+`μ_d`-eval-invariant — so agreement transports along `μ_d`-orbits (the codeword-side of the dichotomy).
+
+**THE UNIFICATION (honest headline).** The SINGLE remaining mathematical residual is the **char-`p`
+transfer** of `full_tower` — i.e. `q ∤ D` at the prize prime (`D` = the elimination resultant, factors
+`≤ (rm)^{n/2}`; equivalently: does a short `±1` relation of `2^μ`-th roots vanish mod `q=n^β`?). This is
+**bit-for-bit the same wall as the #389 energy/moment/Burgess core** (the additive-energy = diagonal-value
+statement for `r ~ log n`). The combinatorial coset-saturation route and the energy route are both
+**char-0-CLOSED and char-`p`-OPEN at the identical point** — they are one wall in two dresses, not two
+independent routes one of which bypasses the other. So δ* is pinned EXACTLY in the provable regime
+(`q > (rm)^{n/2}`) and over ℂ, axiom-clean in Lean; the prize regime (`q = n^β ≪ n^{n/2}`, `n=2^30`)
+reduces to this one named arithmetic transfer = the recognized open core. No fabricated closure.

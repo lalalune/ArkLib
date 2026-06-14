@@ -17,13 +17,14 @@ The Kambiré δ* optimality reduces (piece (2), "coset-saturation") to: for a MO
 * **`monomialPencil_quasi_homogeneous`** (pencil side) — if `ω^(a−b) = 1` then
   `(ω·x)^a + γ·(ω·x)^b = ω^a · (x^a + γ·x^b)`  (so `U(ωx) = ω^a U(x)`).
 * **`expand_eval_mu_d_invariant`** (codeword side) — a `d`-sparse polynomial `expand R d g`
-  (a polynomial in `Xᵈ`) is `μ_d`-eval-invariant: `(expand R d g).eval (ω·x) = (expand R d g).eval x`
-  for `ω^d = 1`.
+  (a polynomial in `Xᵈ`) is `μ_d`-eval-invariant:
+  `(expand R d g).eval (ω·x) = (expand R d g).eval x` for `ω^d = 1`.
 
 Together with the proven `FactorizationRigidity`, the agreement of `U` with the `a`-residue codeword
 part `c_a = X^{a₀}·(expand R d g)` (`a₀ = a mod d`) transports along every `μ_d`-orbit, so that
-agreement set is a union of `μ_d`-cosets.  This reduces piece (2) to a Johnson bound on the OFF-residue
-codeword part — replacing the analytic char-`p`/Gauss-sum (Burgess) wall with combinatorics.
+agreement set is a union of `μ_d`-cosets.  This reduces piece (2) to a Johnson bound on the
+OFF-residue codeword part — replacing the analytic char-`p`/Gauss-sum (Burgess) wall with
+combinatorics.
 Verified `scripts/probes/probe_coset_sat_structure.py` (12/12, n=16,32,64).  Axiom-clean.
 -/
 
