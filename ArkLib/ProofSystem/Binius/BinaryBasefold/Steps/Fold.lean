@@ -1564,6 +1564,7 @@ lemma foldStep_rbrExtractionFailureEvent_imply_sumcheck_or_badEvent (i : Fin ℓ
   5. **Bad event**: Bound `Pr[BE]` using the incremental folding bad-event probability
     (`prop_4_21_2_incremental_bad_event_probability`).
   6. **Combine**: Add the two bounds and match the RHS to `foldKnowledgeError`. -/
+set_option maxHeartbeats 1000000 in
 lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
     (stmtOStmtIn : (Statement (L := L) Context i.castSucc) × (∀ j,
       OracleStatement 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc j))
@@ -1668,7 +1669,10 @@ lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
       dsimp only [oraclePositionToDomainIndex, curOracleDomainIdx]
       omega
     ⟩
-    let r_prefix : Fin kBefore → L := fun cId => challengesBefore
+    -- Mirror the newest-first challenge ordering used by `foldStepFreshDoomPreservationEvent`
+    -- (see FIX in that definition): block-index challenges through `foldOrderChallenges` so the
+    -- bad-event probability `h_res` matches the event appearing in the goal.
+    let r_prefix : Fin kBefore → L := fun cId => foldOrderChallenges (ℓ := ℓ) challengesBefore
       ⟨curOracleDomainIdx.val + cId.val, by
         have h_k_le_stmt : kBefore ≤ stmtIdxBefore.val - curOracleDomainIdx.val :=
           Nat.min_le_right ϑ (stmtIdxBefore.val - curOracleDomainIdx.val)
@@ -1727,22 +1731,6 @@ lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
       simp only [Fin.val_succ]
       rw [h_sub_succ, ← h_kBefore_eq']
       exact Nat.min_eq_right (Nat.succ_le_of_lt h_kBefore_lt)
-    have h_snoc_eq :
-        ∀ r_new : L,
-          (fun cId : Fin (kBefore + 1) =>
-            if h : curOracleDomainIdx.val + cId.val < stmtIdxBefore.val then
-              challengesBefore ⟨curOracleDomainIdx.val + cId.val, h⟩
-            else
-              r_new) = Fin.snoc r_prefix r_new := by
-      intro r_new
-      funext cId
-      by_cases h_lt : cId.val < kBefore
-      · have h_guard : curOracleDomainIdx.val + cId.val < stmtIdxBefore.val := by
-          omega
-        simp [Fin.snoc, r_prefix, h_lt, h_guard]
-      · have h_guard_false : ¬ curOracleDomainIdx.val + cId.val < stmtIdxBefore.val := by
-          omega
-        simp [Fin.snoc, h_lt, h_guard_false]
     conv_rhs => simp only [ne_eq, Nat.cast_eq_zero, Fintype.card_ne_zero, not_false_eq_true,
       ENNReal.coe_div, ENNReal.coe_natCast]
     exact h_res
@@ -1833,7 +1821,8 @@ theorem foldOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ) :
     intro x
     -- rw [OracleComp.probEvent_map]
     simp only [Fin.isValue, probEvent_map]
-    let q : OracleQuery [(pSpecFold (L := L)).Challenge]ₒ _ := query ⟨⟨1, by rfl⟩, ()⟩
+    let q : OracleQuery [(pSpecFold (L := L)).Challenge]ₒ _ :=
+      OracleSpec.query ⟨⟨1, by rfl⟩, ()⟩
     erw [OracleReduction.probEvent_StateT_run_ignore_state
       (comp := simulateQ (impl.addLift challengeQueryImpl) (liftM (query q.input)))
       (s := x.2)
