@@ -150,6 +150,15 @@ open (M4-at-k=2 cell and tail quantification = next cycle). Unplanned finds: exa
 coset/affine invariance of all moments; the t₂ spectral gap {4,5,6} = ∅ for subgroup
 domains at n=16. Full discussion: RESULTS-M3.md.
 
+**Appended 2026-06-14 (D1 / #407, `probe_m3_prize_regime_excess.py`):** A3 now QUANTIFIED
+at prize shape (proper 2-power μ_n, p ~ n^β). (a) Rigidity is sharper than H5: BOTH Σ_φ t₂
+AND **Σ_φ t₂²** are exactly domain-independent — separation enters ONLY at Σ_φ t₂³. (b) The
+absolute third-moment excess D3 = Σt₂³(μ_n) − E_rand is q-INDEPENDENT and → n⁴/8 (the
+torus-normalizer involution-energy, verified n ≤ 128); the relative excess decays only
+POLYNOMIALLY in q (q^{−0.14…−0.58}), NOT the raw-tensor q⁻⁴. Transfer verdict: smooth M3
+> random ALWAYS (smooth measurably worse, transfer fails as a moment inequality), but the
+signal is polynomial and BGK-INDEPENDENT (a Weil-pencil count, not a char sum).
+
 ## Probe protocol (exact arithmetic, no sampling on any claimed verdict)
 
 1. `probe_agreement_m3_bruteforce.py` — full enumeration over all q^n received words,

@@ -80,6 +80,39 @@ at prize parameters. The honest A3 statement stands as the working expectation:
 moment-3 information distinguishes smooth from random, but plausibly cannot move δ*
 by magnitude — to be quantified through the Chebyshev/third-moment tail machinery.
 
+## A3 quantified — the prize-regime answer (2026-06-14, D1 / #407)
+
+`probe_m3_prize_regime_excess.py` (this dir) runs the separation at PRIZE shape: PROPER
+2-power subgroups μ_n = μ_{2^μ} of F_p\* with p = n·m+1, p ~ n^β, β ∈ {2,3,4}, single +
+multi prime. Two exact new facts:
+
+* **Rigidity sharpened.** Not only Σ_φ t₂ (the published H5) but ALSO **Σ_φ t₂²** is
+  EXACTLY domain-independent (subgroup == random, to the integer, every cell). The
+  agreement-spectrum's domain-dependence enters the pencil census ONLY at the THIRD
+  power-sum **Σ_φ t₂³** — sharper than the "t₂ variance" framing.
+* **The structured signal is q-INDEPENDENT and → n⁴/8; relative excess decays only
+  polynomially.** The *absolute* third-moment excess
+  `D3 := Σ_φ t₂³(μ_n) − E_rand[Σ_φ t₂³]` is essentially q-independent (≈ 0.057·n⁴ at
+  n=8 across q = 17…1049, a 60× span) and equals the torus-normalizer-band mass
+  `(n+1)·(n/2)³ = n⁴/8` (verified → 1/8, n up to 128 at p ~ n⁴). The random baseline
+  grows ~q, so the *relative* excess r3 = D3/E_rand decays — but only **polynomially in
+  q** (fitted exponent in (−1, 0), range-dependent ≈ q^{−0.14…−0.58}), NOT the q⁻⁴ that
+  the raw-tensor |ΔM3|/M3 above measured. The q⁻⁴ was the wrong normalization for a tail
+  argument (it divides by the full M3 ~ q^{n+3k}); the decision-relevant ratio is the
+  t₂-cube excess.
+
+**Transfer-direction verdict (D1).** The smooth domain M3 is STRICTLY LARGER than random
+at every cell, same sign, argmax always (k−1,k−1,k−1): smooth does **not inherit** the
+random third moment — it exceeds it by the involution-energy of the torus normalizer.
+The literal derandomization "random good ⇒ smooth good at the same (t,L)" therefore FAILS
+*as a moment inequality*. But the excess is a fixed q-independent structured signal ~n⁴/8
+(polynomial), so whether it moves δ* is an upper-tail question against 2⁻¹²⁸ resolution —
+plausibly NO by magnitude, but only polynomially (not exponentially) small relative excess.
+Crucially the object is a Weil-(1,1)-pencil involution count, **NOT** a character sum:
+this thread is BGK-INDEPENDENT (it does not reduce to the max_b‖η_b‖ Paley/BCHKS wall).
+The open quantitative core is the spectral-gap theorem (non-normalizer t₂ = O(n²/q+1) by
+Weil) feeding a 3rd-moment tail bound at prize resolution.
+
 ## What this changes for the program
 
 1. O120's question "does the smooth domain's tail exceed the random domain's?" now
