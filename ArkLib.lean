@@ -53,6 +53,7 @@ import ArkLib.Data.CodingTheory.AGL24EvalToSymbolic
 import ArkLib.Data.CodingTheory.AGL24ExtensionLift
 import ArkLib.Data.CodingTheory.AGL24FrankDescent
 import ArkLib.Data.CodingTheory.AGL24FrankInterface
+import ArkLib.Data.CodingTheory.AGL24FrankUncrossingStep
 import ArkLib.Data.CodingTheory.AGL24FrontDoorBridge
 import ArkLib.Data.CodingTheory.AGL24GMMDSInterface
 import ArkLib.Data.CodingTheory.AGL24GenericZeroPattern
