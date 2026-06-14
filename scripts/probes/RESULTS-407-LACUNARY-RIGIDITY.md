@@ -266,7 +266,41 @@ i.e. **relation-free at depth `t/2` — the deep-moment wall** again. So the L²
 independent angle** (after analytic, lattice/energy, coding/BCH, Fourier-uncertainty) and bottoms
 out in the *same* recognized-open wall — strong convergent evidence the core is genuinely open.
 
+## 10. THE EXCESS-SUPPRESSION REFRAMING — softening the wall from worst-case to average-over-q
+
+The decisive structural split (probes `probe_char0_variety_407.py`, `probe_excess_suppression_407.py`):
+the F_q vanishing-power-sum variety = **char-0 members** (S with `e_1=…=e_{t-1}=0` *exactly* in ℂ)
+**+ F_q-random excess** (S vanishing only mod q). These behave oppositely:
+
+- **Char-0 members (PROVABLE):** by Lam–Leung, `e_1=0` ⟹ antipodal, and iterating, char-0 vanishing
+  ⟹ **μ_{2^j}-coset union** (`all-coset=True`, confirmed n=8,16) — the **tower rigidity**. The
+  char-0 count is the coset-union count; its image `L_0 ≤ qε*` below prizeDeltaStar is a char-0
+  combinatorial crossover (the ladder/`N_fib` analysis), **q-independent, provable**. Measured
+  char-0 crossover δ* = 0.562 ≈ prizeDeltaStar = 0.547 (n=16, ρ=1/4).
+- **F_q excess (the old 'wall'):** `≈ C(n,k+t)/q^{t-1}`. **At the binding window-edge `t₀`, in the
+  prize regime (security gap λ=128), this is suppressed by `log₂(excess) ≈ −10⁹…−10¹²`** across all
+  4 rates × n=2^20..2^40 — because `q^{t₀-1} ≫ C(n,a)`. **Control:** the suppression is λ-driven —
+  at λ=0 the excess is *positive* (the wall), flipping massively negative for λ≥8. So **the wall
+  lives only at small t (near capacity), ABOVE δ*; below δ* (the binding region) the excess is
+  negligible for typical q.**
+
+**Consequence (the reframing):** for *typical* q, δ* = prizeDeltaStar, governed entirely by the
+**provable char-0 Lam–Leung coset count**, with the excess irrelevant below δ*. The rigorous
+residual **softens from the worst-case Paley/BGK wall to an AVERAGE-over-q equidistribution**
+("almost all prizes-regime q have negligible window-edge excess") — a **large-sieve-type** statement
+that is plausibly provable precisely *because it is an average, not a worst case*. ⚠️ Honest caveat:
+the suppression is the typical-q heuristic (`C(n,a)/q^{t-1}`) + small-case verification; the
+rigorous average bound (large sieve over q) is **not proven here** — but it is a genuinely softer
+and more tractable target than the worst-case single-q sup-norm.
+
+This is the session's sharpest reduction: **δ* = prizeDeltaStar  ⟸  (char-0 Lam–Leung coset
+rigidity, PROVABLE)  +  (average-over-q window-edge equidistribution, large-sieve, SOFTER than the
+worst-case wall)** — and the prize is for an *explicit* code, so "pick a good q (almost all are)"
+is the natural route, certifiable for small n (in-tree concrete pins) and average-provable in
+principle for large n.
+
 Files: `DyadicLacunaryDeltaStar.lean` (engine), `BCHVarietyRigidity.lean` (BCH bound), both
 axiom-clean; probes `probe_subset_sum_fibre_lattice_407.py`,
 `probe_prize_regime_relation_free_407.py`, `probe_fibre_inflation_growth_407.py`,
-`probe_lacbad_crossover_407.py`, `probe_secondmoment_codeword_count_407.py`.
+`probe_lacbad_crossover_407.py`, `probe_secondmoment_codeword_count_407.py`,
+`probe_char0_variety_407.py`, `probe_excess_suppression_407.py`.
