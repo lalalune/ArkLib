@@ -88,4 +88,32 @@ theorem worstCaseIncompleteSumBound_of_resonanceFree
         apply pow_le_pow_left₀ heta_nonneg heta_le
   _ = (R / ((Fintype.card F - 1) / d : ℕ)) ^ 2 := by norm_num [ht]
 
+/-- **Worst-case incomplete-sum bound ⟹ resonance-free (the converse, same factor `t`).**  A
+per-frequency period bound `‖η_b‖² ≤ M` transfers losslessly back to the Gauss-sum side:
+`‖Σ_{j<t} g(χ^{dj},ψ_b)‖ = t·‖η_b‖ ≤ t·√M`, i.e. `ResonanceFreeBound` with `R = t·√M`.  Together with
+`worstCaseIncompleteSumBound_of_resonanceFree` this gives the full equivalence — resonance-freeness is
+**exactly** the BGK sup-norm in the dual basis, neither stronger nor weaker. -/
+theorem resonanceFree_of_worstCaseIncompleteSumBound
+    {d : ℕ} (hd : d ∣ Fintype.card F - 1) (hd0 : 0 < d)
+    {χ : MulChar F ℂ} (hord : orderOf χ = Fintype.card F - 1)
+    (ψ : AddChar F ℂ) {M : ℝ} (hM : 0 ≤ M)
+    (hW : WorstCaseIncompleteSumBound ψ (torsion F d) M) :
+    ResonanceFreeBound (d := d) (χ := χ) ψ
+      (((Fintype.card F - 1) / d : ℕ) * Real.sqrt M) := by
+  set t : ℕ := (Fintype.card F - 1) / d with ht
+  intro b hb
+  have hcomp := completion_identity (F := F) hd hd0 hord ψ b
+  have hnorm : ‖∑ j ∈ Finset.range t, gaussSum (χ ^ (d * j)) (AddChar.mulShift ψ b)‖
+      = (t : ℝ) * ‖eta ψ (torsion F d) b‖ := by
+    have := congrArg norm hcomp
+    rw [norm_mul, Complex.norm_natCast] at this
+    exact this.symm
+  have hsq : ‖eta ψ (torsion F d) b‖ ^ 2 ≤ M := hW b hb
+  have heta_le : ‖eta ψ (torsion F d) b‖ ≤ Real.sqrt M := by
+    nlinarith [Real.sq_sqrt hM, Real.sqrt_nonneg M, norm_nonneg (eta ψ (torsion F d) b), hsq,
+      sq_nonneg (‖eta ψ (torsion F d) b‖ - Real.sqrt M)]
+  rw [hnorm]
+  have htnn : (0 : ℝ) ≤ (t : ℝ) := by positivity
+  exact mul_le_mul_of_nonneg_left heta_le htnn
+
 end ArkLib.ProximityGap.ResonanceFreeBridge
