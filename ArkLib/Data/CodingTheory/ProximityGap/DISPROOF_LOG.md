@@ -8927,3 +8927,19 @@ TRANSFORMS the open core to "prove worst-case is small-subgroup + R1/R2 for smal
 tractable (small finite configs) than general BGK. Swarm flags "promising, needs verification, not
 closure." My Galois-prime mechanism (p^r|N(α)) + this poly-count are the two genuine count-lane bricks;
 the worst-case-s determination remains open. NOT a closure; the most promising open route.
+
+## 2026-06-14 (wakesync/#407): small-subgroup synthesis CLARIFIED — Kambiré tie r=ρs+2 makes worst-s small
+Resolved the worst-case-s direction (I'd confused free-r with the Kambiré tie). WITH the construction's
+tie r=ρs+2 (δ=1−ρ−2/s) and the poly count |H^{(+r)}(μ_s)|~s^r:
+  count=budget n  ⟹  s^{ρs+2}=n  ⟹  ρs·log s ~ log n  ⟹  **s* ~ log n/(ρ log log n)** (SMALL).
+δ*=1−ρ−2/s* ≈ 1−ρ−Θ(log log n/log n) (vs conjectured 1−ρ−Θ(1/log n); same leading 1−ρ, correction
+term in the same ballpark). So the worst subgroup is SMALL (s*~log n/log log n), and bad primes there
+≤ (s*)^{s*/2} ~ √n ≪ q ⟹ prize prime CLEAN. The small-subgroup synthesis is STRUCTURALLY CONSISTENT.
+[Earlier confusion: with FREE r at fixed δ, larger s wins; but r is TIED to s by the window/agreement
+ structure, which forces small s* at the count=budget threshold.]
+REMAINING OPEN PIECE: R1/R2 optimality (the Kambiré μ_{s*} stack is the WORST — no monomial stack
+(X^a,X^b) beats it) = the tail-e_i char-p rigidity, BUT now over SMALL finite configs (s*~log n/log log n,
+so ~log n elements). This is the genuine open core of the count lane — potentially more tractable than
+general BGK (finite small-subgroup rigidity vs infinite character-sum cancellation). Two genuine bricks
+landed (Galois p^r|N, poly count |H|~s^r); the small-s R1/R2 is the concrete next target. NOT closure;
+the most promising non-Paley route, now structurally clarified.
