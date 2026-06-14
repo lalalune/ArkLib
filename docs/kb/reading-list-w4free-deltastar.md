@@ -105,3 +105,28 @@ but REFUTED-as-general at n=32 (Norm(h_11) has many ≡1-mod-32 factors: 97,193,
 5. **"Polynomials arising in factoring generalized Vandermonde determinants" (di.univr.it allegato700388)**
    + ACTA ARITH XCV.2 "Generalized Vandermonde determinants" — factoring genVandermonde = Vandermonde·Schur,
    the structural identity underlying the 2-power-safe split.
+
+## 2026-06-14 (turn 2) — the reduction lands on the recognized GENERICITY gap of RS list-decoding
+
+Literature confirms the δ* prize reduces EXACTLY to the open explicit/non-generic RS list-decoding gap:
+the BGM-type genericity condition (intersection/Vandermonde determinants nonzero), specialized to the
+explicit dyadic subgroup μ_{2^μ}, IS the generalized-Vandermonde/Schur values that VANISH for μ_n
+(= the bad-subset/Schur-vanishing of this session). So μ_{2^μ} is provably NON-generic for BGM; the
+capacity results do NOT transfer. Papers:
+
+6. **Brakensiek–Gopi–Makam, "Generic Reed-Solomon codes achieve list-decoding capacity" (STOC'23,
+   arXiv:2206.05256)** — generic RS is (1−R−ε, O(1/ε))-list-decodable; proof needs genericity
+   (Schwartz–Zippel on intersection matrices). The genericity determinants = the μ_n Schur values.
+7. **"Random/Randomly-Punctured RS achieve LD capacity, linear/poly alphabets" (arXiv:2304.09445,
+   updated Aug 2025)** — RANDOM evaluation points; the prize's μ_n is a SPECIFIC (non-random) set.
+8. **"Explicit Subcodes of RS that efficiently achieve LD capacity" (arXiv:2401.15034)** — explicit, but
+   SUBCODES (tensor + cyclic shift), NOT plain RS on μ_n.
+9. **"Explicit Folded RS and Multiplicity Codes Achieve Relaxed Generalized Singleton Bounds" (STOC'25)**
+   — FOLDED RS, not plain RS (FRS≠RS, the JLR26 route doesn't transfer, see [[arklib-389-jlr26-frs-research-map]]).
+10. **"List-decoding RS up to the Singleton bound" + "Efficient LD of Polynomial Ideal Codes optimal list
+    size" (arXiv:2401.14517)** — algorithmic, generic/ideal-code structure, not the explicit μ_n point set.
+
+VERDICT: no 2023–2026 result list-decodes PLAIN RS on the explicit multiplicative subgroup μ_{2^μ} in the
+window. The prize's positive direction = closing this genericity gap for μ_n (the Schur-vanishing is the
+explicit obstruction). OPEN. My reduction is the correct map onto it; the closed δ* = Kambiré edge is
+exact iff μ_n's Schur values don't vanish "too much" at the prize prime (the open NVM, = this gap).
