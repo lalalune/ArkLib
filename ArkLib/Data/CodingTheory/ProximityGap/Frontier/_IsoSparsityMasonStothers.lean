@@ -152,7 +152,7 @@ def IsolatedNonCosetCountResidual (F : Type*) [Field F] (k : ℕ) : Prop :=
 
 /-- Documentation anchor: MS-direct = proven `O(k)` sparsity + vacuous naive MS feed; the remaining
 `|iso| ≤ k+1` is the named isolated / non-coset root residual, NOT closed by Mason–Stothers. -/
-theorem msDirectNote : True := trivial
+def msDirectNote : Unit := ()
 
 end ProximityGap.Frontier.IsoSparsityMasonStothers
 

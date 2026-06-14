@@ -130,7 +130,9 @@ theorem parallelogram_secondMoment_invariant {ψ : AddChar F ℂ} {ζ : F} (hζ 
     _ = ∑ b : F, 2 * (‖eta ψ G b‖ ^ 2 + ‖eta ψ G (ζ * b)‖ ^ 2) :=
         Finset.sum_congr rfl (fun b _ => hpt b)
     _ = 2 * ((∑ b : F, ‖eta ψ G b‖ ^ 2) + ∑ b : F, ‖eta ψ G (ζ * b)‖ ^ 2) := by
-        rw [Finset.mul_sum, Finset.sum_add_distrib]
+        rw [← Finset.mul_sum]
+        congr 1
+        rw [Finset.sum_add_distrib]
     _ = 2 * ((∑ b : F, ‖eta ψ G b‖ ^ 2) + ∑ b : F, ‖eta ψ G b‖ ^ 2) := by
         rw [sum_eta_sq_transition hζ G]
     _ = 4 * ∑ b : F, ‖eta ψ G b‖ ^ 2 := by ring
@@ -143,7 +145,7 @@ the two characters and conserved up the tower — the exact statement of the A5 
 theorem twisted_secondMoment_eq {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) {ζ : F} (hζ : ζ ≠ 0)
     (G : Finset F) (hdisj : Disjoint G (dilate ζ G)) :
     ∑ b : F, ‖etaTwist ψ G ζ b‖ ^ 2 = 2 * ∑ b : F, ‖eta ψ G b‖ ^ 2 := by
-  have hinv := parallelogram_secondMoment_invariant hζ G hdisj
+  have hinv := parallelogram_secondMoment_invariant (ψ := ψ) hζ G hdisj
   have hdbl := eta_dilate_secondMoment_doubling hψ G hζ hdisj
   -- 4·S = 2·S + twisted  ⟹  twisted = 2·S
   rw [hdbl] at hinv

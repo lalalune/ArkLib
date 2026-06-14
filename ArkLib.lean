@@ -938,6 +938,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BetaGatedRatioGate
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BindingRadiusAffineFiber
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub

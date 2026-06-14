@@ -102,7 +102,7 @@ def KelleyGeneralPositionConjecture : Prop :=
 /-- Documentation anchor: the isolated count is `q`-independent (numeric, flat over `q≈2⁹…2⁴⁰`),
 flat in `n`, and `≈ k+2` (NOT `k+1`); the `q`-independent `poly(k)` cap is the open Kelley
 general-position conjecture for `t = k+2`.  Mason–Stothers does not close it. -/
-theorem residualNote : True := trivial
+def residualNote : Unit := ()
 
 end ProximityGap.Frontier.IsolatedCountKelley
 

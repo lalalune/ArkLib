@@ -154,7 +154,7 @@ def SecondDescentStuckResidual (F : Type*) [Field F] (k : ℕ) : Prop :=
 /-- Documentation anchor: the second descent peels `v₂(gcd(a,b)) − 1` head-even levels, then stalls
 at the head-odd level on `SecondDescentStuckResidual`, which is the BGK/Kelley count — NOT closed
 by the descent. -/
-theorem secondDescentNote : True := trivial
+def secondDescentNote : Unit := ()
 
 end ProximityGap.Frontier.SecondDescentParity
 

@@ -84,7 +84,7 @@ theorem prize_direction_no_matching (A O : F[X])
 (`deg P = a`, no top matching); the isolated count is the degree-`a` sparse subgroup-root count,
 i.e. the open Kelley/BGK quantity — `_IsolatedCountKelley.KelleyGeneralPositionConjecture`.  The
 mechanism does NOT close `isolated ≤ poly(k)` char-free. -/
-theorem dichFiberNoGoNote : True := trivial
+def dichFiberNoGoNote : Unit := ()
 
 end ProximityGap.Frontier.DichMechFiberNoGo
 
