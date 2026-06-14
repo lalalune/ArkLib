@@ -141,5 +141,24 @@ theorem norm_halfSum_eq {m : ℕ} (hm : 1 ≤ m) {ζ : L} [NeZero ((2:ℕ) ^ (m 
   rw [hpow] at hmul
   exact mul_left_cancel₀ (two_ne_zero_of_cyclotomic (m := m) (L := L)) hmul
 
+
+/-- **Rotated half-sums share the closed form.** For any exponent `a`, the rotation
+`ζ^a · (1 + ζ + ⋯ + ζ^{n/2-1})` of the all-ones half-sum has the same norm `2^{n/2-1}`,
+because `ζ` is a unit with `N_{K/ℚ}(ζ) = 1` (`IsPrimitiveRoot.norm_eq_one`, `n = 2^{m+1} ≠ 2`).
+Hence the **entire `⟨ζ⟩`-rotation orbit** of the half-run subset sum has norm a pure power of
+`2` and contributes **no** odd-prime bad-prime candidate — extending the Half-Sum base ledger
+from the single all-ones run to its whole `n/2`-element rotation orbit, uniformly in `m`. -/
+theorem norm_rotated_halfSum_eq {m : ℕ} (hm : 1 ≤ m) {ζ : L} (a : ℕ)
+    [NeZero ((2:ℕ) ^ (m + 1))]
+    (hζ : IsPrimitiveRoot ζ ((2:ℕ) ^ (m + 1)))
+    [IsCyclotomicExtension {(2:ℕ) ^ (m + 1)} K L]
+    (hirr : Irreducible (cyclotomic ((2:ℕ) ^ (m + 1)) K)) :
+    Algebra.norm K (ζ ^ a * ∑ i ∈ range (2 ^ m), ζ ^ i) = (2 : K) ^ (2 ^ m - 1) := by
+  have hn : ((2:ℕ) ^ (m + 1)) ≠ 2 := by
+    have : (2:ℕ) ^ (m + 1) ≥ 2 ^ 2 := Nat.pow_le_pow_right (by norm_num) (by omega)
+    omega
+  rw [map_mul, map_pow, hζ.norm_eq_one hn hirr, one_pow, one_mul, norm_halfSum_eq hm hζ hirr]
+
 end ArkLib.ProximityGap.HalfSumNorm
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_halfSum_eq
+#print axioms ArkLib.ProximityGap.HalfSumNorm.norm_rotated_halfSum_eq
