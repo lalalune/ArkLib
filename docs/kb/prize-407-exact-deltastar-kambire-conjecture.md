@@ -796,3 +796,36 @@ This is the same wall, but now stated as a CONCRETE finite algebraic obligation 
 `P|X^n−1` over `F_q`), not a vague "transfer". A `poly(n)`-height proof of the tail-vanishing would close
 the prize; the only known route (generic elimination/Nullstellensatz/norm) is doubly-exponential (see
 DISPROOF_LOG "good-prime dodge"). No new math in the literature (PAPERS_NEEDED P1–P6) supplies it.
+
+## UPDATE 2026-06-13 (near-miss → reframe) — spurious configs are a SATURATION artifact; prize regime is spurious-FREE
+
+A targeted refutation hunt at n=64 surfaced an apparent counterexample — antipodal-free `U⊆μ_64` at
+`p=2113` with `∑u=∑u³=0` but `e₂=357 ∉ Σ_3` (independently verified: `2113≡1 mod 64`, g primitive,
+antipodal-free, both power sums vanish). It is **NOT a prize refutation** — it is a SATURATION artifact:
+the char-0 count `N₀ = |Σ_3(μ_32)| = 4512 > 2113`, so `Σ_3` cannot fit in `F_2113` and collapses to 1984
+(94% of the field); `357` is one of the 129 leftover values, hit by a degenerate small-p coincidence.
+
+**The decisive structural fact (`probe_407_saturation_boundary.py`):** spurious (non-coset) gap-valid
+configs exist ONLY for small `p ≲ N₀`, and VANISH above a small threshold:
+  · n=16 (N₀=40): spurious only at `p=17`; ZERO at `p=97,113,193,…`
+  · n=32 (N₀=464): spurious only at `p=97`; ZERO at `p=193,257,353,449,577,…`
+  · n=64 (N₀=4512): spurious at `p=2113`; ZERO at every non-saturated `p=10177,…,40961` (MITM-exhaustive
+    over 4-subsets, `probe_407_n64_mitm.py`).
+The prize regime is `q ≈ ε*·q·2^128 = |H^{(+r)}|·2^128 ≫ N₀` — MASSIVELY non-saturated. So **in the prize
+regime there are NO spurious configs**: every gap-valid config is a genuine `μ_2`-coset-union, exactly as
+over ℂ, hence `#bad = |H^{(+r)}|` and `δ* =` window-edge, worst case included.
+
+**This REFRAMES the open core** (and corrects the prior "Half-Sum Lemma about e₂-values" framing): the
+e₂-value question is MOOT in the prize regime because there are no spurious configs whose e₂ to worry
+about. The actual remaining statement is **coset-saturation over `F_q` for `q ≫ N₀`** — a CONFIG-EXISTENCE
+fact: "for `p` above the (small) bad-reduction threshold, the gap variety `{e_1=e_3=0}` over `F_p` has only
+its char-0 (coset-union) points." Pigeonhole intuition: for `p > N₀` the `N₀` coset-union e₂-values don't
+collide, the variety reduces well, no spurious points appear. This is a GOOD-REDUCTION / Johnson-type
+statement — much closer to provable than the e₂-value rigidity, and it is what actually pins `δ*` in the
+prize regime. Probes: `probe_407_{saturation_boundary,n64_mitm,n64_saturation_artifact,nonsaturated_n64}.py`.
+
+**Honest status update.** Apparent n=64 refutation REFUTED (saturation artifact). δ* = window-edge holds in
+the prize regime IFF coset-saturation holds for `q ≫ N₀` — a config-existence/good-reduction statement,
+empirically true (spurious vanish far below the prize scale) and structurally tied to a Johnson-type bound.
+The open problem is sharper and more tractable than before: prove the bad-reduction primes of the gap
+variety are all `≲ N₀` (≪ the prize prime). PROVEN n=8,16; the prize-regime claim reduces to this bound.
