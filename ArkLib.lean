@@ -793,6 +793,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeviationSupSplit
 import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicEnergyK1
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicHalvingRecursion
+import ArkLib.Data.CodingTheory.ProximityGap.DyadicOddMomentVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction

@@ -17,8 +17,9 @@ the period power sums `T_{2k+1} = Σ_{b≠0} S_b^{2k+1}`. Expanding `S_b^{2k+1}`
 subgroup `μ_n` (`n = 2^μ`) collects, at each `b`, the count of `(2k+1)`-tuples of `μ_n`-elements
 summing to zero — an **odd-length all-positive vanishing sum**. The structure theorem of
 Lam–Leung at the prime 2 says every vanishing sum of `2^μ`-th roots is a `ℕ`-combination of the
-two-term antipodal relations `x + (-x) = 0` (`LamLeungMultisetAntipodal.count_antipodal_of_sum_eq_zero`:
-`count z = count (-z)`). Antipodal pairing forces **even** length, since `-z ≠ z` for any root of
+two-term antipodal relations `x + (-x) = 0`
+(`LamLeungMultisetAntipodal.count_antipodal_of_sum_eq_zero`: `count z = count (-z)`).
+Antipodal pairing forces **even** length, since `-z ≠ z` for any root of
 unity of order `> 1`. Hence `T_{2k+1} = 0` has no genuine (multiplicity-positive) contributors of
 odd length, which is the char-0 input to the odd-moment law `Σ_i η_i^{2k+1} = -n^{2k}`.
 
@@ -45,7 +46,7 @@ open Finset
 /-- **Durable combinatorial lemma.** A `ℕ`-valued sum over a finset `s` closed under a
 fixed-point-free involution `g`, with `f` invariant under `g`, is even: the finset partitions into
 two-element orbits `{x, g x}`, each contributing `2 · f x`. -/
-theorem even_sum_of_fpf_involution {α : Type*} [DecidableEq α]
+theorem even_sum_of_fpf_involution {α : Type*}
     (s : Finset α) (g : α → α)
     (hg : ∀ x ∈ s, g x ∈ s) (hgg : ∀ x ∈ s, g (g x) = x)
     (hfix : ∀ x ∈ s, g x ≠ x) (f : α → ℕ) (hf : ∀ x ∈ s, f (g x) = f x) :
