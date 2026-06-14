@@ -110,3 +110,7 @@ if __name__=="__main__":
 
 # BandExactness oracle-validation: in-band |mcaBad|(j)=j+1 confirmed on F5/F7 instances;
 # spikes outside 3j<n-k+1. Production delta* lives in the census/spike band (list-decoding regime).
+
+# S2 REFUTED: smooth-domain (mu_n) worst-case census = generic-domain census (n=4: both [1,4,4,4]
+# at rho=.5). Coset/multiplicative structure does NOT ease the worst-case floor - adversary picks
+# the worst stack regardless of domain. Prize smooth-domain restriction does not help the census wall.
