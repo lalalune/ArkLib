@@ -697,6 +697,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyExact
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplySilentPrizeScale
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyZeroF73
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyZeroNTT
+import ArkLib.Data.CodingTheory.ProximityGap.CumulantGaussPeriodBound
 import ArkLib.Data.CodingTheory.ProximityGap.CurveAgreementThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.CurveCloseSetTargetBound
 import ArkLib.Data.CodingTheory.ProximityGap.CurveDecodability
