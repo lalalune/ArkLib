@@ -329,3 +329,26 @@ and more likely tractable than generic BGK, but I have NOT proved it. The prize 
 this point; I will not claim otherwise. (The full integrality `G(e_m)∈I_ℤ`, if provable via the rigidity
 of the dyadic relation lattice, would close the optimality unconditionally for all odd p — that is the
 single, explicit, now-fully-concrete proof target.)
+
+## STRUCTURE — the residual is a self-similar dyadic recursion bottoming out at char-p vanishing sums
+
+A clean recursion for the m=2 bad scalar (derived this round). For gap-valid `S` (`e_1(S)=e_3(S)=0`),
+split fibres over `μ_{n/2}` into FULL (`c_ζ=2`) and PARTIAL (`c_ζ=1`); the partial elements form `Y`
+(one per partial fibre, distinct squares ⟹ no ±-pairs). Then:
+- `∑_Y y = e_1(S)-related = 0`, and `∑_Y y³ = 0` ⟹ (Newton, `p≠3`) `e_1(Y)=e_3(Y)=0` — **`Y` is itself a
+  gap-valid config** (smaller, fully-partial, no ±-pairs).
+- `e_2(S) = -σ_{full} + e_2(Y)`, where `σ_{full}=∑_{full fibres}ζ` is a genuine sub-sum.
+
+So `e_2(S) ∈ sumset ⟺ e_2(Y) ∈ (sumset shifted)`, and `Y` is a SMALLER instance of the same problem.
+**Over ℂ the recursion terminates at `Y=∅`** (Lam–Leung: a fully-partial, no-±-pair, `e_1=0` config is
+empty) ⟹ `e_2(S)=-σ_{full} ∈ sumset` — re-proving ℂ optimality cleanly. **Over `F_p` the recursion
+bottoms out at a char-p fully-partial `Y≠∅`** = a dyadic vanishing sum (`∑_Y y≡∑_Y y³≡0 mod p`, no
+±-pairs), whose `e_2(Y)=-½∑_{Z_Y}ζ` carries the `½` and need not lie in the sumset. THAT is the entire
+residual, exhibited as the base case of a self-similar recursion.
+
+This is the cleanest possible statement of the open core: **`G(e_m)∈I_ℤ` holds ⟺ every char-p
+fully-partial dyadic config has `e_2 ∈ sumset`** — a finite, explicit, self-referential dyadic
+vanishing-sum condition. It is NOT closable by the recursion alone (the base case IS the BGK-type
+coincidence), but it is the most reduced form: no codes, no Johnson, no Gauss sums, no moments — just
+`{−1,0,1}` vanishing sums of `2^μ`-th roots of unity at odd `p=n^β`. Honest standing unchanged: ℂ side
+PROVEN, `F_p` for `p∤D` PROVEN, this base case OPEN (= the prize-hard core). I do not claim it closed.
