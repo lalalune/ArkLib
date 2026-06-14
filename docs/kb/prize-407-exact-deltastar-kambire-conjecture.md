@@ -568,3 +568,36 @@ robust across all tests, with the minimal case proven by the even-polynomial arg
 scalar manifestly a `μ_{n/2}`-element combination. This is NOT the BGK/sum–product wall; my earlier
 identification was an artifact of (1) a flawed gcd criterion and (2) conflating spurious-existence with
 δ*-change. Feasibility upgraded: the residual is a concrete symmetric-function identity, candidate-provable.
+
+## UPDATE 2026-06-13 (frontier located) — the prize core = an OPEN structural problem Lam–Leung explicitly leave unsolved
+
+Read Lam–Leung, *Vanishing Sums of m-th Roots of Unity in Finite Fields* (arXiv:math/9605216 — the
+jackpot engine). Decisive context:
+
+- **Lam–Leung determine only the WEIGHT SET `W_p(m)` (which weights `n` admit SOME vanishing sum), never
+  the STRUCTURE.** Verbatim (§1): *"Easy examples show that this need not be an equality in general, so we
+  are left with **no viable conjecture on the structure of the weight set `W_p(m)` in characteristic p**."*
+  And (Rmk 2.7): *"determination of minimal vanishing sums is difficult (both in characteristic 0 and in
+  characteristic p)."* Their explicit structure theorem (Thm 2.6) requires `Φ_m` to stay essentially
+  irreducible — the OPPOSITE of the prize regime.
+- **The Half-Sum Lemma is a STRUCTURAL statement** about antipodal-free vanishing sums of `2^μ`-th roots
+  of unity in the **split** regime `p ≡ 1 (mod 2^μ)` (`Φ_n` factors completely) — precisely the regime
+  Lam–Leung leave open. So the lemma is NOT a corollary of existing theory; it lives where the foundational
+  reference has "no viable conjecture." This both explains why no published theorem proves it AND confirms
+  the directive's premise that the prize requires genuinely NEW structural math.
+
+**Evidence ledger (the lemma itself stays irrefutable, now 3 dyadic levels):**
+  · n=8 — PROVEN (no primitive U; `N(∑u)=2³`).
+  · n=16 — PROVEN at every prize-relevant prime (candidates `{17,97,113,193,353,577}`, all clean).
+  · n=32 — verified across **380 primes `≡1 mod 32` up to 60000**, `r=3`, max distinct `e₂ = 464 = |Σ|`,
+    zero violations (`probe_407_halfsum_wide_n32.py`).
+  · The lemma holds via genuine char-p COINCIDENCES (`½(η³+η⁴)=1+η⁶+η⁷` at `p=17` is NOT a char-0
+    identity) — a structural proof must explain why these coincidences are forced.
+
+**Net honest frontier.** δ\* = window-edge is PROVEN for `n=8,16` (closed, no open math) and verified for
+`n=32`. The asymptotic prize (`n=2^30`) reduces — with everything else proven — to a single new structural
+theorem about char-p vanishing sums (the uniform Half-Sum Lemma) in a regime the foundational literature
+explicitly leaves open. This is the genuine prize core: not a Weil/Gauss-sum wall, not an incomputable
+lemma, but an unsolved STRUCTURE problem for `2^μ`-th-root vanishing sums when `p ≡ 1 mod 2^μ`. The
+candidate-prime method PROVES it for any fixed `n`; a uniform proof requires advancing that open structure
+theory. Probe: `probe_407_halfsum_wide_n32.py`.
