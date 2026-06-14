@@ -8943,3 +8943,19 @@ so ~log n elements). This is the genuine open core of the count lane — potenti
 general BGK (finite small-subgroup rigidity vs infinite character-sum cancellation). Two genuine bricks
 landed (Galois p^r|N, poly count |H|~s^r); the small-s R1/R2 is the concrete next target. NOT closure;
 the most promising non-Paley route, now structurally clarified.
+
+## 2026-06-14 (wakesync/#407): dichotomy RESOLVED — worst-s small at δ* (given R1/R2); entire prize = R1/R2
+Resolved the "small vs large s" tension. The Kambiré stack (X^{rm},X^{(r-1)m}) has b−a=m=n/s, so its
+Action-Orbit orbit size is S=n/gcd(n/s,n)=s. So each subgroup μ_s ↔ the Kambiré stack at ITS OWN radius
+δ_s=1−ρ−2/s (r=ρs+2 ties δ to s). NO free-δ conflict: at the threshold δ* where count=budget, the
+binding stack is the UNIQUE s* with s*^{ρs*+2}=n ⟹ s*~log n/log log n (SMALL). [The "orbit data shows
+large s" was at a DIFFERENT fixed δ, not δ*.] So given R1/R2 (Kambiré stack is worst), the worst-case at
+δ* is the small subgroup μ_{s*}, bad primes ≤ (s*)^{s*/2}~√n ≪ q ⟹ clean ⟹ δ* pinned.
+CLEAN LOCALIZATION: the ENTIRE prize (count lane) reduces to **R1/R2 alone** — "the Kambiré coset stack
+maximizes the bad count over all monomial stacks (X^a,X^b)". Everything else is proven/computed:
+(i) Action-Orbit orbit-closure [proven], (ii) |H^{(+r)}(μ_s)|~s^r poly count [computed], (iii) s*~log n
+/log log n small [derived], (iv) Galois p^r|N + bad-prime ≤(s*)^{s*/2}~√n<q [verified], (v) no spurious
+⟹ coset-union ⟹ clean [norm bound]. R1/R2 = the single open piece = the tail-e_i char-p rigidity, but
+the count lane shows it is the ONLY thing left. More tractable target than general BGK (a combinatorial
+optimality over monomial stacks, worst-case a small μ_{s*}). NOT closure — R1/R2 open — but the cleanest
+reduction yet: prize ⟺ R1/R2.
