@@ -303,3 +303,29 @@ SOTA `n^{1-1/2880}` and Shparlinski's problem list both confirm the prize core i
 problem in analytic number theory. Moment methods are exhausted (energy ≤ `n^{2+o(1)}`, the 7/3
 barrier). E1+E3 are the most relevant — the revisited-small-subgroup technique and the trinomial
 (= monomial-line) energy bound, in the live `n~p^{1/4}` regime.
+## Proximity-prize reduced-form: the EXACT Gauss-sum-sup-norm / resonance face (added 2026-06-13b)
+
+The δ* conjecture `max_b|η_b(μ_n)| ≤ √2·√(n log(q/n))` reduces to **resonance-freeness of the Gauss-sum
+phases {τ(χ)}** (no `b` aligns Ω(f) of them) = the large-values/sup-norm problem for `∑_χ χ̄(b)τ(χ)`.
+Targeted research (this session) — this input is NEITHER proven NOR resonance-refutable:
+
+8.  arXiv:1604.01007 "On period polynomials of degree 2^m for finite fields" — the DYADIC period
+    polynomials; explicit factorizations for `p≡3,5 (mod 8)`, but NOT root-magnitude (sup-norm) bounds
+    in the `n~q^{1/4}` regime. Closest structural match; check if its 2-adic factorization constrains
+    the max real period.
+9.  Bondarenko–Seip, "The resonance method for large character sums", Mathematika — resonance LOWER
+    bounds `√N·exp(c√(log N/log log N))` for multiplicative character sums over intervals. Refutation
+    direction. Does NOT transfer to `∑_χ χ̄(b)τ(χ)` (rigid orthogonal dual-group sum, not a
+    multiplicative interval sum; combination law contractive) — consistent with measured `C→√2`, no
+    resonance blow-up. So the conjecture is NOT resonance-refutable.
+10. arXiv:1712.00761 "Improved bounds on Gauss sums in arbitrary finite fields" — upper bounds for
+    `∑χ(x^n)` up to order `q^{1/2+1/68}`; power-saving, not the sup-norm √-cancellation.
+11. arXiv:1207.1607 Demirci Akarsu–Marklof "The value distribution of incomplete Gauss sums" — limit
+    law for QUADRATIC incomplete Gauss sums (interval-restricted); different object (quadratic phase),
+    but the "incomplete sum has richer value distribution than the complete √q-normalized one" theme is
+    the same flavor as the subgroup sup-norm.
+12. arXiv:2406.01519 (2024) — flagged by search under resonance/large-character-sums; obtain & check.
+
+VERDICT (this session): the prize's open input (Gauss-sum resonance-freeness / sup-norm `≤√(n log)`) is
+at the genuine research frontier — no proven bound reaches it, and resonance does not refute it. Cannot
+be closed by citation; not fabricated.

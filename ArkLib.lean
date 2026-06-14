@@ -311,6 +311,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AbacusNCore
 import ArkLib.Data.CodingTheory.ProximityGap.AbacusReduction
+import ArkLib.Data.CodingTheory.ProximityGap.ActionOrbitFRI
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyCubeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGcdDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGroupRepBound
@@ -810,6 +811,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ExplainableCoreExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.ExplainableCoreSupplyInstance
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.FactorizableStacks
+import ArkLib.Data.CodingTheory.ProximityGap.FactorizationRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.FamilyBadBound
 import ArkLib.Data.CodingTheory.ProximityGap.FarCosetExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.FarLineIncidenceEquivariance
@@ -1338,6 +1340,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominationPin
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialGammaFibration
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialLineListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialLocusCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.MonomialPencilQuasiHomog
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialRowFullSupport
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSpectrumEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialStripExplosion

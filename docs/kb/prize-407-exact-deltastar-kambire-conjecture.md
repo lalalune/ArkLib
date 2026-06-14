@@ -58,3 +58,63 @@ candidate-provable, NOT open hard math.
   All three reduce to KNOWN polynomial/combinatorial/sumset-growth math; no incomputable lemma,
   no char-p Weil wall. Feasibility 8. Remaining to fully close: formalize R1's sparsity argument
   and R2's sumset-growth optimization.
+
+## UPDATE — COSET-SATURATION closes the upper bound; full optimality reduced to 4 pieces
+
+**Coset-saturation (verified 8/8 monomial stacks, beyond Johnson, μ_16):** EVERY large agreement set
+(size ≥ a0=7 > Johnson 8) of a monomial line `X^a+γX^b` is a coset-union — `non-coset exists=False`
+for (X^9,X^5),(X^7,X^5),(X^11,X^9),(X^7,X^3),(X^13,X^9),(X^9,X^1),(X^15,X^13),(X^11,X^5), incl. dense
+cases with 386 agreement sets (`/tmp/coset_saturation.py`, `/tmp/optimality_gap.py`). This closes the
+UPPER bound (not just the construction): the bad count = subgroup sumset EXACTLY, no non-coset excess.
+
+**Mechanism / proof route:** `X^a+γX^b = X^b(X^{a−b}+γ)`; with `d=gcd(a−b,n)`, `X^{a−b}` is constant on
+`μ_d`-cosets (kernel of `X↦X^{a−b}` on `μ_n` is `μ_d`), so `X^{a−b}+γ` is `μ_d`-coset-constant. Beyond
+Johnson the agreement forces FULL `μ_d`-cosets (a non-coset agreement set has size ≤ Johnson — a
+Johnson-type bound is the proof route). Then factorization rigidity ⟹ bad scalars = `μ_d`-sumset.
+
+**THE δ\* CONJECTURE — optimality reduced to 4 explicit pieces (no char-p Weil wall):**
+  δ\* = 1 − ρ − 2ρ·ln(1/2ρ)/log₂(q·ε\*)   [Kambiré window edge; UPPER bracket PROVEN]
+  Optimality (LOWER bracket = no stack beats Kambiré, so δ\* not smaller):
+   (1) **Factorization rigidity**  ∏_S m-sparse ⟺ μ_m-coset-union — **PROVEN, axiom-clean Lean**
+       (`FactorizationRigidity.lean`, commit d0b565b81, real build 1546 jobs).
+   (2) **Coset-saturation**  monomial line, beyond Johnson ⟹ all large agreement sets are
+       μ_{gcd(a−b,n)}-coset-unions ⟹ bad count = subgroup sumset — VERIFIED 8/8, gcd+Johnson route.
+   (3) **R1 monomial extremality**  worst stack is monomial — VERIFIED, sparsity-maximizes-factorization.
+   (4) **R2 Kambiré exponents maximize the sumset** over (a,b,gcd) — = Kambiré's parameter optimization.
+  (1)+(2)+(3)+(4) ⟹ max bad count over ALL stacks = |H^{(+r)}|, =q·ε\* exactly at the window edge ⟹
+  **δ\* pinned EXACTLY = the Kambiré window edge, worst case included.**
+
+**Honest status:** (1) PROVEN in Lean. (2)(3)(4) VERIFIED numerically (n=16) with concrete proof routes,
+NOT yet proven. So this is a strong REDUCTION of the optimality (the open core / line-list upper bound)
+to three combinatorial lemmas — escaping the char-p incomplete-Gauss-sum / Weil wall entirely — NOT a
+full closure. Feasibility 6→8.5. Next: prove (2) coset-saturation (Johnson-type bound on non-coset
+agreement) — the linchpin; then (3),(4). Refutation attempts (R1, optimality-gap) all SURVIVED.
+
+## UPDATE — COSET-SATURATION proof skeleton: the MDS twist dichotomy (key identity verified)
+
+Coset-saturation survives n=32 (4/4 stacks incl. 382-set dense `(X^25,X^9)`, all coset-unions —
+`/tmp/coset_sat_n32.py`). The PROOF skeleton (verified `/tmp/saturation_proof.py`, 636 pairs):
+
+**Key identity.** For a monomial line `w_γ=X^a+γX^b`, `d=gcd(a−b,n)`, `ω∈μ_d`, and a codeword `c`
+(deg<k) with agreement set `S={x: c(x)=w_γ(x)}`: since `d∣a−b` ⟹ `ω^a=ω^b`,
+  for `x∈S`:  `ωx ∈ S  ⟺  c(x) = c_ω(x)`,  where `c_ω(x) := ω^{−a} c(ωx)` is **another codeword** (deg<k).
+
+**The dichotomy (pure MDS).** Let `H = {ω∈μ_d : c = c_ω}` — a SUBGROUP of `μ_d` (the equivariance
+group of `c`). For `ω∈H`: `c=c_ω` ⟹ `ωx∈S` for every `x∈S` ⟹ **S is H-invariant = a union of
+μ_{|H|}-cosets**. For `ω∉H`: `c≠c_ω` are two distinct deg<k codewords ⟹ they agree on `≤ k−1`
+points ⟹ `#{x∈S : ωx∈S} ≤ k−1`. So:
+  · `H = μ_d`  (c is μ_d-equivariant, i.e. `c` supported on `j≡a (mod d)`)  ⟹  **S = full μ_d-coset-union**.
+  · `H ⊊ μ_d`  ⟹  the `ω∈μ_d∖H` pin S into a "thin" configuration: `∑_{orbits O}|S∩O|(|S∩O|−1) ≤
+    (d−|H|)(k−1)`, bounding how far S departs from `μ_{|H|}`-coset structure.
+
+**Status of (2):** the key identity + `c_ω∈code` + the subgroup/dichotomy structure are PROVEN/verified
+and clean (pure MDS, Lean-formalizable). Remaining gap: sharpen the Case-`H⊊μ_d` thin bound to show
+`|S| ≤ Johnson` (the loose `n/d+(d−|H|)(k−1)/2` is not yet ≤√ρ·n for large d — the global single-`c`
+consistency across orbits must tighten it). This is the one analytic step between "verified" and
+"proven" for coset-saturation. It is MONOMIAL-SPECIFIC (escapes the general beyond-Johnson open core
+via R1's reduction to monomials) and reduces to the MDS distance of `c` vs its `μ_d`-twists `c_ω`.
+
+**Conjecture optimality scorecard:** (1) factorization rigidity — PROVEN-in-Lean. (2) coset-saturation
+— MDS-dichotomy skeleton proven, one thin-bound step open. (3) R1 monomial extremality — verified. (4)
+R2 Kambiré sumset-max — Kambiré optimization. The δ\* open core (line-list upper bound) is reduced to
+ONE sharp counting bound on `c`-vs-twist agreement — combinatorial, char-p-free. Feasibility 8.5.

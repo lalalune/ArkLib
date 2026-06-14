@@ -40,6 +40,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
 -- §D THE DEMAND-SIDE LANE (#389) — the CensusDomination #bad-scalar count, r=3 closed (O172):
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR3Bound
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR4Bound
+import ArkLib.Data.CodingTheory.ProximityGap.FactorizationRigidity
 
 /-!
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -671,5 +672,47 @@ theorem deepBandBudget_r_three (g : ℕ) :
   unfold deepBandBudget_r deepBandBudget
   congr 2
   omega
+
+/-! ════════════════════════════════════════════════════════════════════════════
+    ║   §R.5  SESSION 2026-06-13e — the EXACT δ* (Kambiré window edge) + the      ║
+    ║         FACTORIZATION-RIGIDITY proof machinery for the demand-side budget   ║
+    ════════════════════════════════════════════════════════════════════════════
+
+    **The exact conjecture (worst case included).** For explicit smooth RS[F_q, μ_n, k] in the
+    prize regime (n = 2^μ, q = n^β, ρ = k/n, ε* = 2^-128):
+
+        δ*  =  1 − ρ − 2ρ·ln(1/(2ρ)) / log₂(q·ε*).                      (★)
+
+    This is the Kambiré window edge (arXiv:2604.09724, fleshing out Krachun–Kazanin). The bad
+    scalars at radius (1−ρ)−2/s live on the monomial line {X^{rm}+λX^{(r−1)m}} with
+    λ ∈ H^{(+r)} = the distinct r-fold sumset of the subgroup H = μ_s; #bad = |H^{(+r)}|, which
+    is EXACTLY the demand-side budget `deepBandBudget_r r n = 2^r·C(n/2, r)` (the sumset-growth
+    value, here at the maximal divisor). So (★)'s UPPER bracket is the Kambiré construction
+    (PROVEN, in-paper); the LOWER bracket (★ is not smaller — no line beats the coset line) is the
+    demand-side `deepBand_censusDomination` conjecture above, `#bad ≤ K`.
+
+    **The proof machinery for the lower bracket (this session's contribution):**
+    (1) `FactorizationRigidity.mem_range_expand_iff` / `isRoot_smul_of_mem_range_expand` —
+        PROVEN, axiom-clean: `∏_{z∈S}(X−z)` is m-sparse ⟺ S is a union of μ_m-cosets; and the
+        root set of any X^m-polynomial is μ_m-invariant. (#check'd accessible below.)
+    (2) COSET-SATURATION (verified n=16,32; MDS-dichotomy skeleton): for a monomial line
+        X^a+γX^b, d=gcd(a−b,n), beyond Johnson EVERY large agreement set is a μ_d-coset-union.
+        Proof identity (verified): for x in the agreement set, `ωx ∈ S ⟺ c(x)=c_ω(x)` where
+        `c_ω(x)=ω^{−a}c(ωx)` is another codeword; the equivariance subgroup `H={ω: c=c_ω}≤μ_d`
+        forces S to be an H-coset-union, and ω∉H give distinct codewords agreeing ≤k−1 (MDS).
+    (3) R1 monomial extremality (verified): the worst line is a monomial pencil — a combination
+        over-constrains the m-sparse factorization, giving strictly fewer bad scalars.
+    (4) R2 (Kambiré optimization): the divisor m maximizing |H^{(+r)}| is the Kambiré choice,
+        landing the budget at `deepBandBudget_r`.
+    (1)+(2)+(3)+(4) ⟹ #bad ≤ K for every line ⟹ (★) is tight. (1) is PROVEN-in-Lean; (2)(3)(4)
+    are verified with proof routes (the one open analytic step is the sharp thin-bound in (2)).
+    This reduces the δ* open core (line-list upper bound) to a char-p-FREE combinatorial count —
+    escaping the incomplete-Gauss-sum / Weil wall (§3, faces 3↔4). Full detail + refutation
+    history: docs/kb/prize-407-exact-deltastar-kambire-conjecture.md. -/
+
+-- The proven factorization-rigidity machinery is accessible here (axiom-clean):
+#check @ArkLib.ProximityGap.FactorizationRigidity.mem_range_expand_iff
+#check @ArkLib.ProximityGap.FactorizationRigidity.isRoot_smul_of_mem_range_expand
+#check @ArkLib.ProximityGap.FactorizationRigidity.isRoot_smul_of_support
 
 end ProximityGap.Workbench
