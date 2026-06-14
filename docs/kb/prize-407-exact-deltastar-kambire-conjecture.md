@@ -829,3 +829,25 @@ the prize regime IFF coset-saturation holds for `q ≫ N₀` — a config-existe
 empirically true (spurious vanish far below the prize scale) and structurally tied to a Johnson-type bound.
 The open problem is sharper and more tractable than before: prove the bad-reduction primes of the gap
 variety are all `≲ N₀` (≪ the prize prime). PROVEN n=8,16; the prize-regime claim reduces to this bound.
+
+## UPDATE 2026-06-13 (count heuristic REFUTED; spurious are structurally suppressed, not random)
+
+Tested whether spurious configs follow the random heuristic `#spurious ≈ #configs/p²` (which, if true,
+would give a clean ε\*-based closure: at δ\*, `N₀≈ε*q` ⟹ `#configs≈N₀²` ⟹ `#spurious≈ε*²≪1`).
+**The heuristic OVER-predicts badly** (`probe_407_spurious_count_heuristic.py`):
+  · n=16 size6: actual spurious 16 at p=17, then **0 at p=97** (heuristic 0.19) and ALL larger p.
+  · n=32 size6: actual 96 at p=97, then **0 at p=193** (heuristic predicts **13.76**!), 0 at p=257 (7.76),
+    p=449 (2.54), p=673 (1.13) — actual is 0 everywhere the heuristic still predicts many.
+So spurious configs vanish FAR faster than a random density — there is strong STRUCTURAL CANCELLATION:
+the joint condition `∑u≡0 ∧ ∑u³≡0` is not two independent ~1/p events; configs with `∑u≡0` are
+anti-correlated with `∑u³≡0` except at special small primes. Spurious existence is governed by specific
+char-p algebraic coincidences (e.g. `1+η⁵=−2η⁶ mod 17`), NOT by counting.
+
+**Consequence (honest):** the clean ε\*-counting closure does NOT work (its premise, the random count, is
+false). The fast structural vanishing STRENGTHENS the empirical claim "no spurious in the prize regime"
+(spurious die out even faster than the ε\* margin would need), but it removes the easy proof: closing the
+prize still requires characterizing WHICH small primes are bad and proving the largest is `< q`. The bad
+primes are empirically tied to the smallest few primes `≡1 mod n` and a handful of special primes
+(n=16:{17}, n=32:{97}, n=64:~{2113}), all `≪` any prize prime — but this is an arithmetic
+coincidence-counting problem, not a density bound. Core remains open; the saturation-artifact and
+fast-vanishing findings are robust and prize-relevant.
