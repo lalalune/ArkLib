@@ -874,6 +874,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicDeviationDecayEnvelope
@@ -930,6 +931,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodCosetReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBoundSlack
+import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodParsevalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodTower
 import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyFromPairing
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
