@@ -9029,3 +9029,24 @@ equality; the worst-s<=64 claim rests on a 1-anchor heuristic (s*=8@n=16, 2^{s/2
 => cannot prove worst active s<=64 => cannot conclude clean-vs-BGK for the prize. The calibration is the
 concrete remaining gap. SOLID: closed form + s=64 boundary. OPEN: the calibration (which s is worst at
 delta*). Genuine bricks, not closure. Probe committed.
+
+## 2026-06-14 (wakesync/#407): REFUTED — bad-scalar count ≠ |H^{(+r)}(mu_s)| (calibration kills the closed-form route)
+Calibration (probe_calibration_Hr_vs_badcount.py): for the canonical FAR mu_s Kambire stack
+(a=n-1-n/s, b=n-1, a,b>=k), exact bad-scalar count at each agreement tau vs the closed form |H^{(+r)}|.
+RESULT — the identification FAILS hard:
+  • s=16 stack: badcount=0 at tau=k+2 (delta=0.375), but |H^{(+2)}(mu_16)|=129. Bad count dies; |H| does not.
+  • Counts (40,36,4) at the threshold edge match NO consistent |H^{(+r)}| value (33,9,25,...).
+  • Spurious bad count is large at tau=k+1 (explosion), drops to small spurious at tau=k+2 (only s<=8),
+    then per-subgroup trivial baseline = s (one orbit). |H^{(+r)}| has none of this τ-structure.
+CONSEQUENCE: the prior-commit "closed form |H^{(+r)}|=L1-ball + s=64 clean/BGK boundary => prize"
+route is WITHDRAWN as a bad-count computation. The L1-ball closed form is a CORRECT theorem about
+distinct r-fold sums of 2^mu-th roots (verified), and char-p-faithful for 2r<q (Lam-Leung), BUT it is
+NOT the prize bad-scalar count — the Kambire identification bad-count=|H^{(+r)}| is FALSE against ground
+truth. So the s=64 boundary does NOT bound the prize; that computation is moot for delta*.
+WHAT SURVIVES (honest): (a) the L1-ball closed form as a standalone verified combinatorial identity;
+(b) the ground-truth structure — spurious bad count dies at ~tau=k+2 for n=16 (worst-s=8), trivial
+baseline = s per subgroup; (c) delta* location ~1-rho-O(1/log n) still corroborated.
+WHAT DIED: my hope that the closed form computes the prize bad count and lets s*(n)/clean-vs-BGK be read
+in closed form. The bad-count object is MORE RESTRICTIVE than |H^{(+r)}| (s=16 dies where |H| is large).
+Its true closed form is unknown; the n-scaling of the spurious-survival depth (k+2 at n=16) is still
+walled at n=16. Code-and-refute: the turn's headline thread self-refuted. NOT closure. Probe committed.
