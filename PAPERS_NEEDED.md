@@ -469,3 +469,50 @@ genericity fails ⟹ the subgroup character-sum bound. 5 papers:
 - **G5** arXiv:1712.00761 "Improved bounds on Gauss sums in arbitrary finite fields" — subgroup
   Gauss sums to `q^{1/2+1/68}` (improves Zhelezov); directly the MCA object, small power-saving
   above √q. DOWNLOAD.
+
+## 2026-06-14 (g): continuation web scan — newest adjacent hits, no closure
+
+Fresh web scan for 2025-2026 papers around Gaussian periods, generalized Paley graphs, subgroup
+character sums, and RS list decoding.  These are either already cataloged above or newly noted here;
+none supplies the missing `M(μ_n) ≤ √(n log m)` / centered deep-moment estimate.
+
+- arXiv:2604.06513, Podestá–Videla, "The nature of the spectrum of generalized Paley graphs and
+  weak Waring numbers over finite fields" — already cataloged as P1; structural Gaussian-period
+  spectrum, no new magnitude bound.
+- arXiv:2603.03841, Kumar–Ron-Zewi, "Advances in List Decoding of Polynomial Codes" — already
+  cataloged; capacity progress routes through generic/MDS-style structure, not the fixed smooth
+  multiplicative subgroup.
+- arXiv:2602.22167, "Estimates for Character Sums in Finite Fields, F_p^n" — extension-field /
+  polynomial-argument character-sum estimates; adjacent technique only, not an additive-character
+  sup-norm bound over `μ_n ⊂ F_p`.
+- arXiv:2511.18304, "The automorphism groups and identification of some Generalized Paley graphs" —
+  graph structure/isomorphism side of generalized Paley graphs; confirms relevance of the Paley
+  object but does not bound Gaussian-period eigenvalue magnitudes.
+- arXiv:2502.14436, Cheng–Winterhof, "New estimates for character sums over sparse elements of
+  finite fields" — already cataloged; multiplicative-character/sparse-set estimates, not the
+  required additive-character subgroup period bound.
+
+## 2026-06-14 — fresh lit sweep against the REDUCED forms (max Gauss period = Paley λ₂ = additive energy = subset-sum)
+
+Searched for any 2025/2026 work moving the prize's reduced forms. **Conclusion: landscape unchanged;
+no paper breaks the BGK/5-2 wall at the prize point.** Logged for the record (all open-access; download
+if doing the BGK lane):
+- **arXiv:2602.22167**, Chattopadhyay, "Burgess-Type Bounds for Character Sums over F_{p^n}" (Apr 2026) —
+  genuinely 2026, but EXTENSION fields F_{p^n} / boxes, not the prime-field thin multiplicative subgroup;
+  does not bound the max incomplete Gauss sum over μ_n ⊂ F_p. Not applicable.
+- **arXiv:1706.05651**, "Incomplete Gauss sums modulo primes" (Vinogradov method) — incomplete sums over
+  INTERVALS, power-saving not √n; wrong truncation (interval, not subgroup).
+- **arXiv:1207.1607**, "The value distribution of incomplete Gauss sums" — a limit LAW for interval-
+  truncated Gauss sums (distributional), not a worst-case sup-norm over a subgroup.
+- **"Refined estimates concerning sumsets contained in the roots of unity"** (ResearchGate 341796922) —
+  the additive/subset-sum structure of roots of unity = the BCHKS Conj 1.12 reduced form; same Lam–Leung
+  vanishing-sums machinery already in-tree; no new 2-power-subgroup count bound that helps.
+- **arXiv:1303.2729**, "A note on sumsets of subgroups in Z_p*" — the Stepanov-method `E(A) ≪ |A|^{5/2}`
+  for `|A| ≪ p^{2/3}` (the 5/2 energy barrier). Confirms the energy route is √-lossy for δ* (FATAL).
+- **Alon–Bourgain, "Additive Patterns in Multiplicative Subgroups"** — vanishing sums of roots of unity
+  (Lam–Leung) for additive-equation-free subgroups; same machinery, no sup-norm.
+- **arXiv:2603.29571**, "Randomstrasse101: Open Problems of 2025" — open-problems collection; check whether
+  it lists the thin-subgroup Gauss-period sup / Paley-eigenvalue status (likely confirms OPEN).
+
+NET: the reduced forms confirm the in-tree map — best energy `|A|^{5/2}` (√-lossy), best sup BGK `n^{1-o(1)}`
+(di Benedetto `n^{0.989}`), Ramanujan only semiprimitive (not prize point). No citable closure exists.

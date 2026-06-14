@@ -154,6 +154,63 @@ square in `μ_{n/2}`. -/
 theorem offDiag_antipodal_contribution (ζ : F) :
     ζ * (-ζ) = -(ζ ^ 2) := by ring
 
+/-- **First power sum vanishes for a negation-closed set in char ≠ 2.** If `S` is closed under
+negation (`∀ x ∈ S, -x ∈ S`) and char `F ≠ 2`, then `e₁(S) = ∑_{s∈S} s = 0`. Pair `S` under the
+fixed-point-free involution `x ↦ -x` (`add_neg_cancel`); the fixed-point-free obligation `-a ≠ a`
+when `a ≠ 0` follows from char `≠ 2` (`-a = a ⟹ 2a = 0 ⟹ a = 0`). The zero-free hypothesis is not
+needed: an `a = 0` summand is harmless (it contributes `0`), so the `f a ≠ 0` premise the involution
+lemma supplies is exactly enough. This is the algebraic seed of the Lam–Leung / SidonModNeg negation
+pairing underlying the `e₂ = 0` energy locus. -/
+theorem e1_eq_zero_of_neg_closed (h2 : (2 : F) ≠ 0) {S : Finset F}
+    (hcl : ∀ x ∈ S, -x ∈ S) : e1 S = 0 := by
+  unfold e1
+  refine Finset.sum_involution (fun a _ => -a) ?_ ?_ ?_ ?_
+  · -- pairing: a + (-a) = 0
+    intro a _
+    exact add_neg_cancel a
+  · -- fixed-point-free: a ≠ 0 → -a ≠ a
+    intro a _ ha hfix
+    -- hfix : -a = a, so 2*a = 0, and char ≠ 2 forces a = 0, contradicting ha
+    apply ha
+    have h2a : (2 : F) * a = 0 := by
+      have : (-a : F) = a := hfix
+      linear_combination -this
+    rcases mul_eq_zero.mp h2a with h | h
+    · exact absurd h h2
+    · exact h
+  · -- membership: -a ∈ S
+    intro a ha
+    exact hcl a ha
+  · -- involution: -(-a) = a
+    intro a _
+    exact neg_neg a
+
+
+/-- **`2·e₂` is the off-diagonal sum (integral/division-free form).** In characteristic `≠ 2`,
+clearing the `/2` in the definition of `e₂` gives `2 · e₂(S) = ∑_{offDiag} a·b`, the
+order-free off-diagonal product sum with no division. This is the division-free companion to
+`e2_eq`, convenient when transporting the energy identity into rings/contexts where dividing by
+`2` is undesirable. -/
+theorem two_mul_e2_eq_offDiag (h2 : (2 : F) ≠ 0) (S : Finset F) :
+    2 * e2 S = ∑ p ∈ S.offDiag, p.1 * p.2 := by
+  unfold e2
+  rw [mul_div_cancel₀ _ h2]
+
+
+/-- **Cross-thread connector: a negation-closed set is never a two-monomial bad-`α` witness.**
+The two-monomial-pencil bad-scalar criterion (`badScalar_of_energy`) fires on exactly the
+*energy locus* `{S : e₁(S)² = p₂(S) ∧ e₁(S) ≠ 0}` (the `(hen, hne)` pair that produces the bad
+scalar `α = −1/e₁(S)`). This connector ties that locus to the *antipodal-free reduction*: in
+characteristic `≠ 2`, a set `S` closed under negation (`∀ x ∈ S, -x ∈ S`) can **never** sit on the
+bad-scalar locus, because the negation pairing forces `e₁(S) = 0`
+(`e1_eq_zero_of_neg_closed`), directly contradicting the `e₁(S) ≠ 0` component. Hence the energy
+locus `e₁² = p₂` that the SidonModNeg / antipodal count bounds is automatically **disjoint** from
+the negation-closed sets — a structural witness-suppression on the antipodal-free side. -/
+theorem no_badScalar_of_neg_closed (h2 : (2 : F) ≠ 0) {S : Finset F}
+    (hcl : ∀ x ∈ S, -x ∈ S) : ¬ (e1 S ^ 2 = p2 S ∧ e1 S ≠ 0) :=
+  fun ⟨_, hne⟩ => hne (e1_eq_zero_of_neg_closed h2 hcl)
+
+
 end ArkLib.ProximityGap.E2VanishEnergy
 
 /-! ## Axiom audit -/
@@ -164,3 +221,6 @@ end ArkLib.ProximityGap.E2VanishEnergy
 #print axioms ArkLib.ProximityGap.E2VanishEnergy.e2_pair
 #print axioms ArkLib.ProximityGap.E2VanishEnergy.e2_pair_ne_zero
 #print axioms ArkLib.ProximityGap.E2VanishEnergy.offDiag_antipodal_contribution
+#print axioms ArkLib.ProximityGap.E2VanishEnergy.e1_eq_zero_of_neg_closed
+#print axioms ArkLib.ProximityGap.E2VanishEnergy.two_mul_e2_eq_offDiag
+#print axioms ArkLib.ProximityGap.E2VanishEnergy.no_badScalar_of_neg_closed

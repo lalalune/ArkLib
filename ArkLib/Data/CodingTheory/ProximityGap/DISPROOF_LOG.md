@@ -24,6 +24,43 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
+## 2026-06-14 (#407 laneB): Action-Orbit per-line bound is MONOMIAL-EXCLUSIVE — general-f gap-localized
+**Lane B = R4 Action-Orbit general-`f` (gcd-irreducible / primitive direction).** Question: does the
+`n·#orbits` per-line bad-scalar bound (`ActionOrbitFRI.badSet_orbit_closed`, for the two-monomial
+pencil `z^a+α z^b`) generalize to a GENERAL direction `f` (an arbitrary polynomial / non-monomial)?
+
+**Machine-checked answer: NO — and the obstruction is exact.** New axiom-clean file
+`ActionOrbitGeneralF.lean` (6 thms, `[propext, Classical.choice, Quot.sound]`, real `lake build`):
+- `agreement_dilation_general` (POSITIVE): for *any* base `g₀` and *any* direction `f`, the line-level
+  dilation invariance `#{x∈D : g₀+γf=h} = #{y∈D : (g₀∘μ·)+γ(f∘μ·)=(h∘μ·)}` holds with NO eigenvector
+  hypothesis — the dilated *direction* is `f∘(μ·)`. This is the only structure that survives for
+  general `f` (= the across-line equivariance, same content as `FarLineIncidenceEquivariance.
+  explainableScalars_comp_aut`).
+- `dilation_eigen_coeff` + `eigen_forces_monomial` (the PIN): `f∘(C μ·X)=C c·f` forces `μ^j=c` on the
+  ENTIRE support of `f`; when `orderOf μ > deg f` (prize regime `deg f < n` on `μ_n`) the powers
+  `μ^j` are distinct, so the support is a singleton — `f` is a MONOMIAL. The per-line `γ`-orbit
+  closure exists **iff** the direction is a dilation eigenvector **iff** `f` is a monomial.
+
+**Probe (prize regime, proper `μ_8⊂F_401`, full `F_p` sweep, exact deg<k agreement)** —
+`scripts/probes/probe_407_actionorbit_generalf_{perline,linelevel}.py`:
+- MONOMIAL `f=x^k` (control): bad set is exactly ONE dilation orbit, `|bad|=n=8`, `#orb=1`, `n·K=8`
+  (mechanism works).
+- GENERAL `f=x^k+x^{k+1}` (primitive, `gcd(1,8)=1`): in the **window interior** (above Johnson),
+  `|bad|≈40–56` and **NO nontrivial dilation closure** of the bad-`γ` set at all — per-line orbit
+  mechanism completely fails.
+- GENERAL `f=x^k+3x^{k+2}` (`gcd(2,8)=2`): closure only at the coarse `w^{n/2}` subgroup with
+  `#orb≈27`, `n·K≈216–224` ≫ `|bad|≈54` — orbit count GROSSLY over-counts (≈4×), useless as a bound.
+- Line-level equivariance `|bad(f)|=|bad(f∘D_μ)|` VERIFIED for all directions incl. general `f`
+  (8↔8, 47↔47, 54↔54) — confirms `agreement_dilation_general` numerically.
+
+**Gap-localization (outcome c).** The action-orbit *count* lever is intrinsically restricted to the
+monomial (eigendirection) strata; it gives NO `O(1)`/`n·#orbits` bound for primitive directions.
+Lane B therefore reduces to the **across-line incidence** — exactly Chai-Fan's Q1 (Conj 4.12 NT
+non-vanishing) / Q2 (Conj 7.1 sparse dominance) = the BGK / Paley wall, NOT an orbit count. This is
+why "the forward lift cannot see primitive directions" (no `d>1` fold exists for gcd-irreducible `f`):
+there is no per-line orbit to lift. The monomial-exclusivity is now a theorem, not a heuristic.
+Consistent with the KB warning ("orbit *count* = BGK at window interior, refuted as O(1) at n=8").
+
 ## #357 R2 refutation — KKH26 one-fold strict shrink fails at even cofactor (2026-06-11)
 
 **Attempt.** Use binary/Fri fold transport to make the KKH26 near-capacity ceiling strictly
@@ -9050,3 +9087,445 @@ WHAT DIED: my hope that the closed form computes the prize bad count and lets s*
 in closed form. The bad-count object is MORE RESTRICTIVE than |H^{(+r)}| (s=16 dies where |H| is large).
 Its true closed form is unknown; the n-scaling of the spurious-survival depth (k+2 at n=16) is still
 walled at n=16. Code-and-refute: the turn's headline thread self-refuted. NOT closure. Probe committed.
+
+## R2 / GW kernel mis-wiring catch — `GWDirectionFinrankLe` is false for genuine codes (2026-06-14)
+
+**Attempt audited.** The CZ25/Guruswami–Wang `|L|>1` capacity kernel reduction
+(`GWKernelReduction.lean:cz25CoordFiberCap_of_interp_and_multiplicity`) discharges
+`CZ25CoordFiberCap` from `{BRICK-I, BRICK-V}` plus two "orchestrator-wired" brick conclusions
+`{BRICK-W = GWDirectionFinrankLe, BRICK-L = GWAffineFiberCharge}`. The headline docstring claims
+`hW : GWDirectionFinrankLe s C` is "the conclusion of BRICK-W (proven in lane `GWBrickW`)".
+
+**Disproof (machine-checked, `GWDirectionScopedWiring.lean`).**
+`GWDirectionFinrankLe s C := ∀ A ≤ C, finrank A ≤ s − 1` instantiated at `A := C` gives
+`finrank C ≤ s − 1` (`gwDirectionFinrankLe_forces_small`). On the whole code space `C := ⊤`,
+`finrank ⊤ = |ι|·s`, so for `s ≥ 2` it exceeds `s − 1` and the Prop is **false**
+(`gwDirectionFinrankLe_refuted`, axiom-clean). Hence `hW` holds *only* for codes of dimension
+`≤ s − 1` — never for a capacity-regime folded-RS code (`dim C = k ≫ s`). The proven BRICK-W lane
+(`GWAffinePinning.gw_solutionSet_finrank_le`) bounds the finrank of the *single* GW solution
+submodule `W₀ = gwHomogSolution A γ k`, **not** of every `A ≤ C`; the named Prop over-states the
+scope and is not its conclusion. The conditional headline is `sorry`-free but consumable only with
+an unsatisfiable premise.
+
+**Repair landed (axiom-clean).** Drop the universal `hW`; carry the genuine BRICK-W bound
+`finrank A ≤ s − 1` *with* the BRICK-V output `A` via `GWAgreeForcesDirectionScoped` (the shape the
+proven lane actually delivers). `cz25CoordFiberCap_of_interp_and_multiplicity_scoped` re-derives the
+identical `CZ25CoordFiberCap` from `{BRICK-I, BRICK-V-scoped, BRICK-L}` + `0 ≤ τ(r₀)`, reusing the
+arithmetic collapse verbatim. The scoped Prop is satisfiable
+(`gwAgreeForcesDirectionScoped_holds_of_close_list_singleton`, take `A := ⊥` on the sub-Johnson
+slice), unlike `GWDirectionFinrankLe`.
+
+**Remaining open core (untouched).** The genuinely-deep `|L|>1` content is the affine-flat charge
+`GWAffineFiberCharge` (BRICK-L), i.e. the per-coordinate `card(fiber) ≤ finrank(span of fiber diffs)`
+cap — the `q^{dim}` vs `dim+1` obstruction documented at `CZ25SpanDimension.lean:292–302`. Not a
+closure: a leg-statement was corrected, not the kernel solved.
+
+## 2026-06-14 — Galois/house and p-adic/Stickelberger angles REFUTED (probe_galois_house_padic.py)
+
+Two structural angles NOT in the prior 1149-conjecture sweep, both reduce to the open archimedean
+sup-norm M(n)=max_b|eta_b|:
+- **Galois/house:** the m periods are Galois conjugates; M = house (max conjugate). house/|norm|^{1/m}
+  = 5.0, 6.4, 7.6 (n=8,16,32, growing); min|eta| ~ 0.002 (conjugates wildly unequal). The computable
+  NORM (Habegger "Norm of Gaussian Periods") UNDER-estimates the house 5-8x and does NOT determine it.
+  House = the open sup-norm. REFUTED.
+- **p-adic/Stickelberger:** Gauss-sum p-adic valuation = digit-sum (Gross-Koblitz, exact/proven). But
+  corr(|eta_i|, 2-adic-val(i)) = 0.019 ~ 0 — the p-adic structure gives ZERO handle on archimedean size.
+  REFUTED.
+
+## 2026-06-14 — Okamoto "Syndrome-Space Lens" (eprint 2025/1712) READ IN FULL: does NOT solve the prize
+
+User supplied the PDF (~/Desktop/newmath/syndrome_space_lens.pdf); read in full. Careful & correct,
+NOT flawed, but NOT a plain-RS unconditional window-interior pin of δ*. Resolves the prior
+"suspect-pending-verification" flag.
+
+Param dict (Okamoto→ours): d=dim(=our k=ρn), m=n−d parity checks, t=agreement=(1−δ)n, k=n−t=δn error
+budget, ∆:=t−d=(1−δ−ρ)n rank margin, m−k=∆.
+
+TRICHOTOMY: ∆=0 (capacity) VACUOUS / no rigidity w/o structure (Thm 5.1/5.2 = capacity impossible,
+consistent); ∆=1 knife-edge conditional; ∆≥2 "unconditional rigidity" ONLY under (r+1)k<m+1, r≥2
+(Thm 7.1 = r-th vanishing-differences / divided-diff / GG25-Hankel route + double-counting Thm 7.2).
+
+DECISIVE: (r+1)k<m+1 ⟺ ∆ > m·r/(r+1); minimal r=2 ⟹ ∆ > 2m/3 ⟺ δ < (1−ρ)/3 = BELOW Johnson. The
+prize window (δ∈(1−√ρ, 1−ρ−Θ(1/log n))) has ∆ ≤ √ρ(1−√ρ)n < 2m/3 throughout (e.g. ρ=1/4: 0.25n<0.5n),
+so Thm 7.1/7.2 and the soundness law Pr[FA]≤q^{−∆s} DO NOT APPLY in the window. Unconditional plain-RS
+content stops at δ<(1−ρ)/3 (= the granularity-ladder reach + the divided-diff route already known
+vacuous above Johnson). Window interior: the paper's OWN text requires "additional protocol-level
+structure (independent two-fold MCA checks, DEEP/STIR out-of-domain sampling, global error locator)" =
+folded/structured, NOT plain RS (consistent w/ BCDZ25 folded-is-solved). "Bypasses list-decoding" =
+bypasses the DECODER not the combinatorial LIST SIZE (the grand challenge). Abstract's "complete
+resolution up to capacity" = a trichotomy CLASSIFICATION, not a window-interior plain-RS pin. CONSISTENT
+with capacity-impossible + the open BGK/√n wall. Prize remains OPEN. (Full assessment: #407 comment
+4701138629.)
+
+## 2026-06-14 (#407 cumulant2power): REFUTED — cumulant explosion is NOT confined to the imprimitive 2-power tower
+HYPOTHESIS (issue407-cumulant-dichotomy + poisson-concentration-tower): the cumulant
+K_r = Σ_{b≠0}|η_b|^{2r} = p·E_r(μ_n) − n^{2r} escapes the moment no-go generically but EXPLODES at
+2-power primes (prize n=2^μ); the hope was that the explosion is CONFINED to the O(log n) IMPRIMITIVE
+tower directions (the μ_n-sub-tower {b: η_b factors through μ_{n/2^j}}), with PRIMITIVE directions
+staying sub-Gaussian — which would reduce the floor to a FINITE STRUCTURED set.
+PROBE (probe_cumulant_primitive_split.py, multi-prime, PROPER subgroups μ_n, n up to 256, r up to 8,
+r*~ln p): η_b is constant on cosets b·μ_n; split K_r by the 2-adic tower invariant v2(ord b) (imp set
+= {b: v2(ord b) ≤ v2(n)}, the μ_n-sub-tower incl μ_n itself), measure K_tot/Wick vs K_imp/Wick, plus
+min #cosets carrying 90/99% of K_{r*}.
+RESULTS — the confinement is FALSE:
+  • Explosion is REAL and ONLY at 2-power-structured primes (v2(p−1)≫v2(n), Fermat 65537=2^16+1):
+    K_r/Wick → {6.7 @ n=32, 302 @ n=64, 123 @ n=128} at r=8. Generic primes (577,1153,2113,40961,
+    12289,786433,7340033): K_r/Wick ≤ ~1.6 (NO excess to control — Wick already holds).
+  • DECISIVE COUNTEREXAMPLE (p=65537, n=128): K_tot/Wick = 123 (massive explosion) but the imprimitive
+    tower carries K_imp/Wick = 0.016 — the entire excess lives in the COMPLEMENT of the μ_n-tower. The
+    heaviest cosets there (b∈{129,33,63,3,225,7}) have v2(ord b)∈{15,11,16,16,13,16} = GENERIC
+    multiplicative order, i.e. NOT imprimitive. Flagged "excess NOT in imp tower!" at every r.
+  • The clean "concentrates on μ_n itself" picture is a COINCIDENCE of (65537, n≤64), where r* aligned
+    with the subgroup (argmax_in_mu_n=True there); it BREAKS at n≥128 (argmax_in_mu_n=False) and at all
+    other primes (heaviest cosets are large-height, large-order, prime-dependent).
+  • Additive-height is ALSO not the label: corr(min-coset-|b|, |η_b|^2) ∈ [−0.14,+0.11] ≈ 0; for the
+    larger generic primes the heaviest cosets have LARGE height (6747, 177881).
+WHAT SURVIVES (honest narrowing, NOT closure): WHEN the cumulant explodes it IS concentrated on O(1)
+cosets (90% from <1 coset, 99% from ~1–4 cosets) — but those carrying cosets carry no uniform
+multiplicative or additive structural label, so they do NOT form a fixed describable finite set across
+primes. The explosion is exactly the 2-power-prime resonance, and it lives on the DIFFUSE
+incidence/additive-energy face — consistent with the line-ball-incidence wall (face 4) and the BGK/Paley
+floor, NOT a finite imprimitive set that could be controlled by enumeration.
+CONSEQUENCE: the "reduce floor to a finite structured set" route via imprimitive/primitive splitting is
+WITHDRAWN. The cumulant-2-power explosion is genuine but unstructured-at-the-coset-level; it relocates,
+not narrows, the open core. NOT closure. Probe committed.
+
+---
+
+## #407 laneF — cross-parity (butterfly cross-term) first moment CLEAN; positive-part confinement REFUTED (2026-06-14)
+
+CONTEXT. The dyadic FFT butterfly splits a subgroup Gauss sum into two children:
+`η_b(H)=η_b(G)+η_{ζb}(G)`, `H=G⊔ζ•G`. The CROSS-PARITY term
+`X(b):=‖η_b(H)‖²−‖η_b(G)‖²−‖η_{ζb}(G)‖²=2Re(η_b(G)·conj η_{ζb}(G))`
+is the alignment-excess / odd-part contribution to the far-line incidence. The lane asked:
+is the odd-part amplification confined to O(log n) imprimitive directions, with a clean
+cross-parity bound?
+
+LANDED (axiom-clean, `CrossParityAggregate.lean`, Parseval-only, q-INDEPENDENT):
+  • `crossTerm_sum_zero`: `∑_{b∈F} X(b) = 0` (full first moment vanishes).
+  • `crossTerm_sum_nonzero_eq`: `∑_{b≠0} X(b) = −2|G|²` (off-zero aggregate, exact, negative).
+  • non-vacuous on real dyadic tower (`dyadic_dilate_split`, `crossTerm_sum_nonzero_eq_dyadic`).
+  Interpretation: on AGGREGATE across frequencies the butterfly children are ANTI-aligned —
+  cross-parity SUPPRESSES, never amplifies. The only positive cross-parity in aggregate is the
+  trivial b=0 term (X(0)=2|G|²=n²/2). Verified p-indep across n∈{8,16,32,64}, ≥5 primes each
+  (`probe_407_crossparity_identity.py`).
+
+REFUTED (machine, `probe_407_crossparity_localize.py`, prize regime proper subgroups, multi-prime):
+the conjecture that the POSITIVE (amplifying) cross-parity is confined to O(log n) imprimitive
+FREQUENCIES is FALSE. The positive part `∑_{X(b)>0} X(b)` and #{b:X(b)>0} scale with Θ(q) (a
+constant fraction of all frequencies), NOT O(log n). The aggregate is held NEGATIVE by an even
+larger negative mass, not by sparsity of the positive part. (Corroborates the earlier cumulant
+2-power-explosion entry: the heavy part is diffuse/unstructured at the coset level, not a finite
+imprimitive set.)
+
+PRECISE REDUCTION TO NAMED CORE: only the L¹/first-moment of X is q-independent. The worst single
+frequency `max_b X(b)` (~√(n log q)) and the energy `∑_b X(b)²` (~q·E₂(G), `probe_407_crossparity_L2.py`)
+are NOT q-independent = exactly the BGK / additive-energy sup-norm wall already named in
+`SubgroupGaussSumDilationRecursion` (√2-vs-2 gap) and `_DyadicDeviationDecayEnvelope`. So the
+cross-parity decomposes cleanly into an elementary first moment (this brick) + the open BGK core
+(L∞/L²). The Pan–Xu cross-parity split does NOT escape the floor; it relocates the open content to
+the per-frequency worst case, with the aggregate now provably anti-aligned. NOT closure.
+
+## 2026-06-14 — GM-MDS cone (#346/#354/#389): the AGL24 Theorem A.2 target `GMMDSDualZeroPatternTheorem` is FALSE as stated (13th machine-checked catch)
+
+Attack `gmmds_a2`: prove `AGL24.GMMDSDualZeroPatternTheorem` — the named GM-MDS import of
+`symbolicFullRank_of_classical_imports` (`AGL24GrandAssembly.lean:65`, consumed via
+`gmmDsResidual_of_dualZeroPatternTheorem`). FINDING: the *target boundary itself* is over-stated
+and refutable, the same dimensional obstruction that already refuted the connector residual
+`DualRowsFromNonsingularEval` (12th catch, `LovettDualRowsDischarge.lean`) hoisted one level up.
+
+REFUTATION (axiom-clean, `AGL24.not_gmmDsDualZeroPatternTheorem`, concrete `..._fin2` over
+`ι=Fin 2, F=ZMod 2, k=1`): the target quantifies over **every** `δ` with `GZPCondition e δ k`,
+demanding edge-supported dual rows `h : GZPCopyIdx δ → (ι→F)` whose span is the **entire**
+Reed–Solomon dual (finrank `card ι − k`). But `GZPCopyIdx δ = Σⱼ Fin(δ j)` has cardinality
+`∑ⱼ δⱼ`, and `GZPCondition` is satisfied **vacuously by `δ≡0`** (no `κ≤0` has positive total),
+giving an EMPTY index, span `⊥` — yet the RS dual is nonzero whenever `k < card ι`. So
+`⊥ = (RS dual)` is impossible. Instantiated at `t=0` (the `0×0` minor side condition is automatic).
+
+REPAIR (faithful, non-vacuous, SUFFICIENT for the assembly), in
+`ArkLib/Data/CodingTheory/AGL24DualZeroPatternPinned.lean`:
+* `GMMDSDualZeroPatternTheoremPinned` — restrict to `δ` carrying the genuine GM-MDS dimension
+  count `∑ⱼ δⱼ = card ι − k` (the count the unpinned target silently dropped).
+* `gzp_of_orientation_delta_sum` (axiom-clean) — the `δ` that `gzp_of_orientation` ACTUALLY
+  produces (`δⱼ = indeg j` off the root, `δᵣ = indeg r − k`) sums to `(∑ⱼ indeg j) − k =
+  card ι − k`, i.e. **satisfies the pin**. Since the assembly only ever feeds GM-MDS the
+  orientation-derived `δ`, the pinned form is all it needs.
+* `symbolicFullRank_of_classical_imports_pinned` (axiom-clean) — the campaign capstone
+  RE-ROUTED: Frank's orientation + the *pinned* target discharge the symbolic Theorem 2.11
+  interface, identical conclusion, dimensionally faithful import.
+* Non-vacuity certificates: `pinned_hypothesis_inhabited` (a GZP satisfying both `GZPCondition`
+  and the pin exists for every orientation with `k ≤ indeg r`) and `pinned_dimension_consistent`
+  (under the pin `card (GZPCopyIdx δ) = finrank(RS dual)` exactly — a spanning family is
+  feasible; re-exports the in-tree `gzpCopyIdx_card_eq_dual_finrank`).
+
+NOTE: the pinned target itself is NOT proven here (and `DualRowsFromNonsingularEvalPinned`, the
+repaired connector residual, remains the genuine open GM-MDS kernel construction: build the
+`∑δ = card ι − k` edge-supported dual vectors from the evaluated RIM kernel and apply
+`LinearIndependent.span_eq_top_of_card_eq_finrank`). What this catch delivers is: (i) the named
+target as stated is unprovable (false), so any "proof" of it would be vacuous/laundered; (ii) the
+precise faithful re-statement; (iii) the verification that the re-statement fully suffices for the
+assembly, with the pin shown to hold at every consumed `δ`. The Lovett algebraic core
+(`lovettThm17_unconditional`) is proven; the remaining genuine GM-MDS content is exactly the
+pinned dual-row span construction.
+
+## 2026-06-14 (#407 Lane C): "bad-prime density SPARSE (~4%)" REFUTED → off-BGK density route hits the SAME n=128 wall
+The prior Half-Sum probe (`probe_halfsum_candidate_density.py`, commit a309cf75c) reported the
+candidate-bad-prime density at n=32 as ~3.95% and proposed an OFF-BGK density bound as the open part.
+That 3.95% is an ARTIFACT of capping the antipodal-free subset size at r<=6. New EXACT probe
+(`scripts/probes/probe_halfsum_density_exact.py`), two independent methods cross-validated to agree
+EXACTLY on n=16 (both give the same 11 candidate-bad primes {17,97,113,193,241,337,353,401,433,577,881},
+max 881):
+  (A) integer cyclotomic norm = Sylvester/Bareiss resultant Res(Phi_n, sum_{i in S} zeta^i) (no floats);
+  (B) direct mod-p: p=1 mod n is candidate-bad <=> exists d in {0,+-1}^{n/2}, d!=0, with sum d_j g^j ≡ 0
+      mod p (g a primitive n-th root; zeta^{j+n/2}=-zeta^j). Meet-in-the-middle subset-sum mod p.
+
+WITH NO SUBSET CAP (the full antipodal-free family) the density is NOT sparse:
+  n=32, window [n^3,n^4): density = 0.93 (747/800), NOT 0.04.  =>  the "sparse density" headline is FALSE.
+
+CORRECT STRUCTURE (the genuine localization): the candidate-bad prime set is FINITE for every fixed n
+— it is exactly the primes p≡1 mod n dividing one of the finitely many norms |N(sum d_j zeta^j)|,
+d in {0,+-1}^{n/2}, all bounded by  C(n) := max_d |N(sum d_j zeta^j)|.  ANY prime p > C(n) is CLEAN.
+So density(window) -> 0 as the window height -> infinity, EXACTLY 0 above C(n). Measured cutoff at n=32:
+density 0.997 (p~2^12) -> 0.77 (2^20) -> 0.057 (2^24) -> 0.000 (p>=2^32), tracking C(32) ~ 2^31.
+
+C(n) SCALING (exact n=8,16; hill-climb LB n=32,64):
+  log2 C(8)=3.17, log2 C(16)=11.23, log2 C(32)=31.1, log2 C(64)=79.1.
+  Proven lower bound log2 C(n) >= n/2 - 1 (the all-ones half-sum has norm EXACTLY 2^{n/2-1},
+  HalfSumNormClosedForm.lean); Hadamard upper bound (n/2)·log2(n/2).
+
+THE PRIZE CROSSOVER (why density does NOT help): prize prime has log2 p ~ log2 n + 128.
+  n <= 64 : log2 C(64)=79.1 < log2 p ~ 134  => p > C(n)  => EVERY prize prime CLEAN (density 0). [genuine
+            unconditional off-BGK clean result for small subgroups n<=64]
+  n >= 128: log2 C(n) extrapolates above log2 p ~ 135  => norms exceed p, density GENERICALLY positive.
+This INDEPENDENTLY reproduces the s=64-clean / s>=128-BGK boundary of the Lam-Leung route (DISPROOF_LOG
+entry "VERIFIED closed form for |H^{(+r)}|... s=64 boundary", same day): the off-BGK DENSITY argument
+does NOT bypass the wall — it hits the SAME n≈128 crossover via a different (norm-SIZE vs char-p-
+faithfulness) mechanism.
+
+NET (honest outcome = machine-checked refutation + precise localization):
+ • REFUTED: "candidate-bad density sparse (~4%) / floor holds for almost-all primes by sparsity." Density
+   is ~1 at the prize window for n>=128. The 4% was a small-subset-cap artifact.
+ • TRUE & USABLE: for fixed n, density->0 in p (finiteness, p>C(n) clean); for n<=64 every prize prime
+   is UNCONDITIONALLY clean (p>C(n)). This is a real off-BGK partial, but only for small subgroups.
+ • The open core is NOT a density bound — it is exactly the n>=128 crossover C(n) vs p, i.e. the same
+   wall (BCHKS 1.12 / BGK / Paley). Probe committed; no Lean brick (the statement is a refutation +
+   numeric localization, not a clean axiom-clean Prop beyond the already-landed n/2-1 norm LB).
+
+## Cyclic-sieving / n-core list-growth route — NO super-poly boost, NO refutation (2026-06-14)
+
+**Attempt.** The cyclic-sieving / Schur-at-roots-of-unity lever (memory
+`issue389-schur-roots-of-unity-lever`): the smooth-domain `μ_n` GM-MDS / HOMDS list certificate for
+a degree-pattern `λ` is `det(ζ^{β_j i})`, `β_j = λ_j+(n−1−j)`; it VANISHES iff two `β_j` collide
+mod `n` (abacus `n`-core NONEMPTY) — exactly the in-tree axiom-clean
+`HOMDSSmoothObstruction.homds_det_ne_zero_iff_nCoreEmpty`. Each vanishing certificate is an extra
+linear dependence = a candidate spurious list codeword. OPEN QUESTION the lever poses: does
+cyclic-sieving / hook-content vanishing boost the smooth-`μ_n` coset list ABOVE the trivial
+single-coset `O(1/ρ)` to SUPER-POLY (⟹ floor FALSE for plain RS) or stay poly?
+
+**Machine-checked finding (PRIZE regime: proper subgroup `μ_{2^μ}`, multi-prime; probe
+`scripts/probes/probe_cyclicsieving_listgrowth.py`, full `C(n,k)` exact enumeration as ground
+truth).** The route does **NOT** boost the list and does **NOT** refute the floor:
+
+* **(A) The "super-poly" is a SUPPORT/dependence over-count, not codewords.** An intermediate
+  enumeration that multiplied a per-coset kernel dimension by `C(#cosets, #needed)` (counting
+  coset-UNION supports) grows super-poly — but a single coset support of `m=k+1` columns has NO
+  `β`-collision mod `n` in the list window `a>k` (count `0`). The explosion lived entirely in the
+  binomial coset-union factor, i.e. it is exactly the **proven** core-vs-list factor
+  `#cores ≤ L·C(A,k+m+1)` (`SubJohnsonListSupply.explainableCoreSupply_of_listBound`,
+  `ExplainableCoreExactCount.explainable_cores_eq_sum_agreement`, both axiom-clean in-tree). The
+  `n`-core enumeration counts the `C(A,·)` SUPPORTS, NOT the list `L`. (Same "cores exp, list poly"
+  catch as `probe_prize_coreVSlist`.)
+* **(B) EXACT worst-case CODEWORD list (full `C(n,k)`) in the strict interior window is
+  `O(1/ρ)`, `p`-independent.** `ρ=1/2`, agreement `a≥k+2`: list `∈ {0,1,3}` across `n=8,12,16` and
+  multiple primes — a handful, no growth.
+* **(C) DECISIVE: the only large list is the GENERIC `a=k+1` MDS boundary spike, identical for
+  smooth and random domains.** At `a=k+1`, SMOOTH `μ_n` list vs a RANDOM (non-smooth) evaluation
+  domain of the same size: `n=8` 3 vs 2, `n=12` 11 vs 12, `n=16` **70 vs 70**. The spike decays to
+  `O(1/ρ)` within 1–2 steps as `a` rises off `k+1` (it is `outside` the prize's strict-interior
+  window). The smooth/cyclic-sieving structure provides **no** advantage over a random domain.
+
+**Status.** Neither closure nor refutation: a **precise reduction to the named open core**. The
+cyclic-sieving lever does not independently bound or blow up the list; it reduces to the same
+generic-MDS worst-case list bound `L` of `SubJohnsonListBound dom k m L A`
+(`SubJohnsonListSupply.lean`, the recognized explicit-RS-beyond-Johnson open problem = BGK / Paley
+/ BCHKS Conj 1.12), with smooth `μ_n` behaving like a random domain on the list axis. Do not
+re-attempt "n-core / hook-content vanishing super-poly-boosts the smooth list": the boost is the
+`C(A,·)` support factor, already proven worst-case vacuous, not the list `L`.
+
+## 2026-06-14 (#407 laneB / Chai-Fan Q2): orbit-COMPRESSION ratio quantifies the sparsity-exclusivity — multi-prime CORROBORATION + 3-monomial algebraic root
+**CONTEXT / overlap (honest).** The "Action-Orbit per-line bound is MONOMIAL-EXCLUSIVE" entry above
+(`ActionOrbitGeneralF.lean`, same day) already PROVED the core: per-line `γ`-orbit closure exists iff
+the direction `f` is a monomial (the dilation-eigenvector pin), and probed (n=8, single prime) that
+general `f` has no closure. THIS entry CORROBORATES and QUANTIFIES that result from a complementary
+angle — the MCA correlated-agreement object itself, multi-prime — and lands the algebraic root in Lean.
+It is a refinement, NOT an independent discovery; the monomial-exclusivity headline belongs to the
+entry above.
+
+**New angle: the affine line `u+αv` of TWO arbitrary words** (= the exact `V_δ` / `ε_mca` object of
+`BridgeLoop43`, not a single-direction `g₀+γf` line). On the proper subgroup `μ_16 ⊂ F_p*` for
+p ∈ {40961, 65537, 786433} (multi-prime, far directions, interior δ at t=k+1), exact bad set
+`{α : u+αv is t-close to RS_k}` via the linear-in-α divided-difference syndrome (`-A/B` per
+(k+1)-subset, exact), and the COMPRESSION RATIO `r = |bad|/N` (N = orbit count under `α↦α·w`).
+`scripts/probes/probe_407_laneB_q2_compression_ratio.py`:
+* SPARSE far pencil `(a,b)`: `r = S = n/gcd(b−a,n)` **EXACTLY** ({16,8,4}), orbit-CLOSED, and the
+  orbit count `N` is **p-INDEPENDENT** (≈250 @ k=4 across all three primes) — `N` small + `q`-uniform.
+* DENSE line (random / superposition of many far monomials): orbit-closed in **0/40 trials, every
+  config**; `r → 1` as p grows (`1.98→1.57→1.04` @ k=4) — NO compression, `N ≈ |bad|` grows with `q`.
+The p-INDEPENDENCE of sparse N vs the `q`-GROWTH of dense N is the quantitative statement of why
+`ε_mca = N·S/q²` is `O(1)/|F|` only for sparse: the orbit compression is the entire lever and it is
+sparsity-exclusive. (NB: the bad-COUNT |bad| ≈ #subsets for any line at t=k+1 — a union artifact; only
+the ORBIT count N is meaningful. Compare N, never |bad|.)
+
+**Algebraic root in Lean (axiom-clean, real `lake build` 3297 jobs).**
+`Frontier/LaneB_Q2_SparsityExclusive.lean`:
+- `pencil_subst_two`: dilation rescales the pencil into ANOTHER pencil, single coeff shift `α↦α μ^{b−a}`.
+- `triexp_subst` + `triexp_no_single_orbit`: a 3-monomial's two free coeffs rescale by DIFFERENT
+  factors `μ^{b−a} ≠ μ^{c−a}` (witnessed `2≠4` over ZMod 17) ⟹ no single cyclic action closes the bad
+  set — the exact algebraic reason dense bad sets are not orbit-closed.
+- `badCount_eq_orbitSize_mul_orbitCount`: orbit-closure ⟹ `|B|=S·N` (the compression); its hypotheses
+  fail for dense lines.
+Reduces to the SAME open core as the entry above: Lane B = across-line incidence = Q1/Q2 = BGK/Paley.
+Outcome: precise-reduction-to-named-core (corroboration). NOT closure. Lean + probe committed.
+
+---
+
+## R1 assessment (2026-06-14): GG25 curve-decodability for EXPLICIT PLAIN RS — precise obstruction (honest-open)
+
+**Question.** The in-tree GG25 chain (curve-decodability ⇒ MCA, Lemma 3.2) is built and
+axiom-clean. Does any new angle give curve-decodability for *explicit plain* smooth-domain RS
+in the prize window, or what is the precise obstruction?
+
+**Verified in-tree structure (everything downstream of curve-decodability is PROVEN; the input is not).**
+- `GG25CurveDecodability.CurveDecodable` — the Def 3.1 predicate (the HYPOTHESIS).
+- `GG25SpreadBound.{disagree_spread_bound, all_seeds_close}` — Lemma 3.2 (proven).
+- `GG25MCAFromCurveDecodability.all_seeds_close_of_curveDecodable` — Thm 3.3, MCA from
+  curve-decodability (proven). All consume `CurveDecodable` as a hypothesis.
+- The ONLY in-tree *producers* of `CurveDecodable` at the nontrivial regime `b > ℓ+1`:
+  * `CurveDecodability.{markedCurveDecodable_interleaved, curveDecodable_interleaved}` (Jo26 Thm 5.7):
+    transfers curve-decodability of a BASE code to its `s`-fold INTERLEAVING under `a.choose b ≤ q`.
+    **Takes base curve-decodability as hypothesis.**
+  * `FarWordSupplyCounting.markedCurveDecodable_interleaved_of_curveDecodable_rs:280`:
+    same, specialized to RS — line 280 takes `hC : CurveDecodable F (ReedSolomon.code domain k) ℓ δ a b`
+    **as an explicit hypothesis.**
+  * Small-witness `b ≤ ℓ+1`: `Jo26CurveInterpolationRegime.curveDecodable_interpolation` /
+    `GG25SmallWitness.markedCurveDecodable_of_small_witness` — FREE via Lagrange, ANY linear code,
+    but **trivial regime** (Jo26 Remark 5.3: applications need `b > ℓ+1`).
+- In-tree subspace-design is established ONLY for FOLDED RS over a geometric domain
+  (`ReedSolomon.Folded.frs_geomDomain_isSubspaceDesign_cz25Profile`, used by `CapacityBounds*`).
+  **Plain RS is NEVER shown subspace-design anywhere in-tree.**
+
+**The paper-level obstruction (GG25 = ECCC TR25-166 / ePrint 2025/2054), read from the PDF.**
+The ONLY production engine for curve-decodability at `b > ℓ+1` is **Theorem 4.7**: *every
+`τ`-subspace-design code `C` is `(ℓ, 1−τ(r)−ε, a, ε/(r+ε)·a)`-curve-decodable for `ε ≥ (ℓ+1)/r`*.
+Its proof (Theorem 4.5 [AHS25]-pruning + Lemma 4.1 dimension bound) uses the subspace-design
+property (Def 2.17) at the decisive step. To reach the prize window radius `δ ≈ 1−ρ` one needs
+`τ(r)+ε ≤ ρ + Θ(1/log n)`, hence (since `ε ≥ (ℓ+1)/r`) `r = Ω(log n)` AND `τ(r) ≈ ρ` up to
+`r = Ω(log n)` — i.e. a **strong subspace design** (Def 2.19). GG25 gets this for FRS /
+multiplicity (via [GK16]) and for RANDOM RS / RLC (via the [LMS25, BCDZ25b] LCL-threshold
+transfer, which needs random evaluation points). The paper itself states curve/line-decodability
+**does not fit the LCL framework directly** and gets random RS only through the V-decodability
+detour (Prop 5.3), which itself needs **`|F| > a·2^{ℓ+2}`** — exponential in ℓ — and random eval points.
+
+**Why explicit plain RS at constant rate is excluded — quantified.**
+`/tmp/probe_407_R1_plainRS_curvedecodability_obstruction.py` measures `τ(r)` for plain RS over
+F_p (eval set = F_p) directly from Def 2.17. Result: `τ(1) ≈ ρ` (single codeword = MDS, ≤k−1 roots),
+but `τ(r)` **blows up toward 1 as r grows** (F_17, k=8, ρ=0.47: τ(1)=0.06, τ(2)=0.53, τ(7)=0.87;
+same shape F_{11,13,19,23}). A low-dim subspace of plain RS can concentrate zeros (the MDS bound
+controls one codeword, not a basis sharing roots), so plain RS is NOT a strong subspace design;
+Theorem 4.7 gives a VACUOUS radius (`1−τ(r)−ε ≪ 1−ρ`, below Johnson). The missing statement is
+exactly **list-recovery of explicit plain RS into a low-dimensional (not small) subspace** (Lemma 4.1
+for plain RS at growing r) — an OPEN list-decoding-theory problem, the same wall as the δ* core.
+
+**Conclusion.** No new angle bridges GG25 curve-decodability to explicit plain RS in the prize
+regime via the in-tree chain. The precise obstruction is a single named gap: **plain RS is not a
+(strong) subspace-design code and the dimension-bound input (Lemma 4.1 / Thm 4.7 with τ(r)≈ρ to
+r=Ω(log n)) is unproven for it** — equivalently, low-dim list-recovery of explicit plain RS, the
+list-decoding-theory open problem GG25 explicitly side-steps by restricting to FRS/multiplicity/
+random RS (field linear in n / random eval points). Honest-open; obstruction pinned to one Prop.
+
+## n-core-EMPTY certificate count is EXACTLY `C(S+n-1,n-1)` (super-poly) — codeword list stays poly; multi-n {16..256} + axiom-clean Lean brick (2026-06-14)
+
+**Sharpens the "Cyclic-sieving / n-core list-growth route" entry above** (the single most
+prize-decisive remaining cyclic-sieving experiment, run multi-n to the prize scale `n=256` and
+backed by a landed Lean theorem). The earlier entry concluded "super-poly support, poly list" from
+`n=8,12,16`; this pins the exact certificate count and proves the super-poly half in Lean.
+
+**The exact certificate count (validated against brute force, ALL `n`).** The in-tree object
+(`AbacusNCore.nCoreEmpty`, `n` beads; `HOMDSSmoothObstruction`; `RootsOfUnityVandermonde`):
+`β_j = λ_j+(n−1−j)`, `λ` with `≤n` parts; `nCoreEmpty(λ) ⟺ {β_j mod n}` pairwise distinct
+`⟺ det(ζ^{β_j i})≠0` on `μ_n` `⟺ s_λ(μ_n)≠0` (RSW hook-content). Reparametrize: an `n`-core-EMPTY
+config is `β = desc-sort{r + n·c_r : r∈Fin n}` for a unique `c : Fin n → ℕ`, with `|λ| = n·∑_r c_r`.
+Hence **`#{n-core-EMPTY λ of size n·S} = #{c : ∑c_r = S} = C(S+n−1, n−1)`** (stars-and-bars).
+Probe `scripts/probes/probe_ncore_empty_listgrowth_prize.py` validates this closed form against
+brute enumeration for `n∈{4,6,8,10}` (exact match) and cross-validates hook-content(`d=n`) ==
+abacus-`n`-core (0 mismatches, `n∈{8,12,16}`). NB: it is **NOT** the `n`-quotient
+`n`-tuple-of-partitions count (a different statistic that over-counts here — caught and corrected).
+
+**Multi-n at PRIZE parameters (`μ_{2^μ}`, `ρ=1/2`, Johnson agreement `a=⌈√(kn)⌉`, multi-prime).**
+Size-capped `n`-core-EMPTY certificate count (`Σ_{S} C(S+n−1,n−1)`):
+`n=16 →153`, `n=32 →6545`, `n=64 →1.33e9`, `n=128 →7.90e17`, `n=256 →4.03e37`
+(log-log slope 28.2, lin-log slope 0.34 ⟹ **SUPER-POLY**, far exceeding `q·ε*=n`). BUT the EXACT
+`F_p` codeword list at Johnson `a` is `1` (n=16); the worst over coset-glued + planted + random
+words: at Johnson **1**, at `k+2` **3**, at the `k+1` boundary **20** with SMOOTH≈RANDOM (n=12:
+20 vs 14), confirming the spike is generic MDS, not cyclic-sieving. The agreement sweep at `n=16`
+is the smoking gun: certificate count `1→17→153→969` while the exact list **collapses to 1** for
+all `a>k+1`.
+
+**Landed Lean brick (axiom-clean, real `lake build`, 743 jobs).**
+`ArkLib/Data/CodingTheory/ProximityGap/NCoreEmptyCParametrization.lean`:
+* `cParam c r := r + n·c r`; `cParam_mod : cParam c r % n = r` (one bead per runner);
+* `nCoreEmpty_cParam : ∀ c, nCoreEmpty (cParam c)` (every `c`-config is `n`-core-EMPTY);
+* `cParam_injective` (distinct `c` ⟹ distinct configs);
+* `exists_injection_nCoreEmpty`, `infinite_nCoreEmpty` (for `n≥1` the `n`-core-EMPTY set is
+  infinite), `nCoreEmpty_card_unbounded` (exceeds any finite `N`).
+All `#print axioms = [propext, Classical.choice, Quot.sound]`.
+
+**Status — precise reduction, NOT closure, NOT refutation.** The super-poly is the `C(A,k+m+1)`
+SUPPORT/core factor of the proven `#cores ≤ L·C(A,k+m+1)`
+(`SubJohnsonListSupply.explainableCoreSupply_of_listBound`) — exactly what the certificate
+enumeration counts — **not** the codeword list `L`. The cyclic-sieving lever gives no list boost
+over a random domain; the route reduces to the same named open core `SubJohnsonListBound`'s `L`
+(= BGK / Paley / BCHKS Conj 1.12). Do not re-attempt "n-core/hook-content vanishing super-poly-boosts
+the smooth list": the super-poly is now CLOSED-FORM `C(S+n−1,n−1)` and PROVEN to be the support
+factor, not the list.
+
+---
+
+## REFUTED 2026-06-14: the "Mann-mod-P minimum-weight" reduction (W(n,p) ≥ 2⌈log m⌉) — moment route is DEAD, floor survives
+
+**The proposed reduction (now refuted).** The char-`p` sub-Gaussian moment bound `E_r(μ_n,F_p) ≤ (2r−1)!!·n^r`
+to depth `r≍log m` (which via the moment method gives the prize floor `M ≤ √(2n log m)`) was reframed as a
+**minimum-distance** claim: every `±`-/integer-sum `D = Σ a_c ζ^c` of `n`-th roots of unity with `D ∈ P`
+(`Σ a_c h^c ≡ 0 mod p`) but `D ≠ 0` over ℂ has L1-weight `W(n,p) ≥ 2⌈log m⌉` ("Mann's theorem mod P").
+
+**Refuted — rigorous theorem + machine-verified witnesses (20-agent army, all 19 angles concur).**
+- **Pigeonhole theorem (rigorous, multiple independent proofs G1/G10/R2):** `W(n,p) ≤ 2·w₁`,
+  `w₁ = min{w : C(n/2, w) > p}`. Over the `n/2`-element fundamental-domain basis `{ζ^0..ζ^{n/2−1}}`
+  (`Φ_n = x^{n/2}+1`), `C(n/2,w) > p` forces a mod-`p` collision of two distinct basis subsets; their
+  difference is in `P`, weight `≤ 2w`, and `≠ 0` over ℂ AUTOMATICALLY (distinct basis subsets ⟹ distinct
+  integer coordinate vectors — ℂ-nonzero is free, NOT a generic lattice bound, uses the cyclotomic basis
+  essentially so it escapes the vacuous `p^{2/n}`). In the prize regime `p ~ n^4`, `w₁ → 5` (CONSTANT), so
+  `W(n,p) = O(1)`, vs the target `2⌈log m⌉ ≍ 6 log₂ n → ∞`. **False by an unbounded factor** (4× at n=32 …
+  30× at n=2^50).
+- **Machine-verified witnesses (independently re-verified, `probe_407_excess_witness_verify.py`):** weight-6
+  excess relations, each `Σ ε_i h^{c_i} ≡ 0 (mod p)` AND `|D|_ℂ > 0`, at — n=64 p=16778497 `D=z^0+z^1+z^7−z^9−z^10−z^61`
+  (|D|=0.85); n=128 p=268440449 (all `+1`, |D|=3.65); n=256 p=4294968833 (|D|=3.69); n=4096 p=281474976768001.
+- **Scaling (G3/G9/G11 LLL+MITM, exact minima):** median `W` = 9,7,8,9,9,10,11 for n=32…2048 — essentially
+  constant (drifts ~`log` slowly), gap to target `2⌈log m⌉` widens without bound.
+
+**Consequence — the MOMENT/ENERGY route is DEAD, not merely hard.** Short excess relations of constant weight
+exist, so `E_r(μ_n,F_p) > E_r(μ_n,ℂ)` from constant order `r ≈ w₁/2`, and `E_r^{F_p}` crosses the Wick value
+`(2r−1)!!n^r` near the optimal moment depth `r ≍ log m` at some structured primes (prime-dependent; e.g.
+n=32 p=1048609 crosses at r≈9 < depth, but n=16 Fermat p=65537 never crosses in-window). So the only
+meta-theorem-permitted route (high moments) is **provably insufficient** to reach the floor.
+
+**BUT δ* = floor SURVIVES (not refuted).** The actual sup-norm stays strictly below the floor:
+`max_{b≠0}|η_b| < √(2n log m)` for every tested prize-regime prime (ratio 0.75–0.96), with
+`c = M/√(n log m) → √2 from below` (1.06, 1.15, 1.25, 1.36 at n=8,16,32,64). The minimum-weight bound was a
+SUFFICIENT-not-necessary condition; refuting it does not move δ*.
+
+**Net:** the prize requires a **direct sup-norm (BGK/Paley) bound** on `max_b|η_b|`; the
+moment/energy/min-distance/second-order routes are now all rigorously eliminated. The `[propext,…]`-clean
+in-tree `GaussianEnergyBound` hypothesis (`E_r ≤ (2r−1)!!n^r` at `r≍log m`) is **FALSE at some prize-regime
+primes** — do not attempt to prove it; it is refuted. Witnesses + theorem: `probe_407_excess_witness_verify.py`,
+`probe_407_excess_lll_*.py`, `probe_407_G1_galois_norm_power_spread.py`.

@@ -1,63 +1,70 @@
-#!/usr/bin/env python3
-"""Probe: 2-power tower recursion for the Gauss-period bound B = max_{b!=0}|eta_b(mu_n)|.
-
-Issue #389 / Gaussian Bound Conjecture. Tests the exact coset-split recursion
-    eta_b^{(2n)} = eta_b^{(n)} + eta_{b*zeta}^{(n)},   zeta = primitive 2n-th root,
-and whether it contracts to give B(mu_{2^m}) <~ sqrt(2^m) (Ramanujan) without an
-external sum-product / additive-energy input.
-
-FINDINGS (see StructuredOutput in the workflow transcript):
- - Recursion is EXACT (verified to 1e-14).
- - eta_b^{(n)} is REAL for n even (since -1 in mu_n) => recursion is a signed real recursion.
- - Cross-correlation over b is ~0 (Parseval-consistent) => sqrt-law preserved ON AVERAGE.
- - Per-step contraction kappa=B(2n)/B(n): =2.0 while n<=log2(q); drops to [0.94,1.78] for n>>log2 q.
-   NOT uniformly <= sqrt(2)=1.414, so the recursion does NOT telescope to sqrt(n) by itself.
- - The provable (triangle) bound is only kappa<=2 => B(2^m)<=2^m=n (TRIVIAL).
- - Energy recursion: E_2(2n) = 2 E_2(n) + (cross-coset energy)/q; the cross term is the
-   OPEN sum-product input (E_2(mu_n)=n^{2+o(1)} is the unproved 7/3-barrier quantity).
-"""
-import cmath, math
-from collections import Counter
-
-def primitive_root(p):
-    n=p-1; m=n; factors=set(); d=2
+# 2-adic tower recursion test: eta^(mu)_b = T_b + T_{bg}.  Is the cross term non-amplifying?
+# If B_mu^2 / B_{mu-1}^2 ~ 2 (clean), the recursion -> sqrt-growth = the bound (proof route).
+# If cross term amplifies at some level, that localizes the obstruction.
+import math, cmath
+def isprime(x):
+    if x<2: return False
+    if x%2==0: return x==2
+    d=3
+    while d*d<=x:
+        if x%d==0: return False
+        d+=2
+    return True
+def primroot(p):
+    fac=set(); m=p-1; d=2
     while d*d<=m:
         if m%d==0:
-            factors.add(d)
+            fac.add(d)
             while m%d==0: m//=d
         d+=1
-    if m>1: factors.add(m)
-    for g in range(2,p):
-        if all(pow(g,n//q,p)!=1 for q in factors): return g
-    raise RuntimeError
-
-def field_subgroup(p,n):
-    assert (p-1)%n==0
-    h=pow(primitive_root(p),(p-1)//n,p); sub=[]; x=1
-    for _ in range(n): sub.append(x); x=(x*h)%p
-    return sub
-
-def eta(p,sub,b):
-    return sum(cmath.exp(2j*math.pi*((b*y)%p)/p) for y in sub)
-
-def B_max_fast(p,n):
-    sub=field_subgroup(p,n); seen=set(); best=-1.0
-    for b in range(1,p):
-        if b in seen: continue
-        for y in sub: seen.add((b*y)%p)
-        v=abs(eta(p,sub,b)); best=max(best,v)
-    return best
-
-if __name__=="__main__":
-    for p in [40961,12289]:
-        print(f"\n=== p={p}, log2(p)={math.log2(p):.2f} ===")
-        Bs={0:1.0}
-        for m in range(1,14):
-            n=2**m
-            if (p-1)%n: break
-            Bs[m]=B_max_fast(p,n)
-        ms=sorted(Bs)
-        print(f"{'m':>3}{'n':>7}{'B':>10}{'B/sqrt(n)':>11}{'kappa':>8}")
-        for i,m in enumerate(ms):
-            n=2**m; k = Bs[m+1]/Bs[m] if (m+1) in Bs else float('nan')
-            print(f"{m:>3}{n:>7}{Bs[m]:>10.3f}{Bs[m]/math.sqrt(n):>11.4f}{k:>8.4f}")
+    if m>1: fac.add(m)
+    for a in range(2,p):
+        if all(pow(a,(p-1)//q,p)!=1 for q in fac): return a
+def v2(x):
+    k=0
+    while x%2==0: x//=2; k+=1
+    return k
+# find a prime with large 2-adic valuation of p-1 (for a deep tower), p ~ 10^6
+MUMAX=13
+p=None
+cand = (1<<MUMAX)*70 + 1
+while cand < 4_000_000:
+    if isprime(cand) and v2(cand-1)>=MUMAX: p=cand; break
+    cand += (1<<MUMAX)
+print(f"p={p}, v2(p-1)={v2(p-1)}, building tower mu=1..{MUMAX}",flush=True)
+g0=primroot(p)
+# generator of the full 2^MUMAX subgroup:
+gfull=pow(g0,(p-1)//(1<<MUMAX),p)
+pe=[cmath.exp(2j*math.pi*t/p) for t in range(p)]
+def eta(b, sub):  # sum_{x in sub} e_p(b x)
+    s=0j
+    for x in sub: s+=pe[(b*x)%p]
+    return s
+prevB=None
+print(f"{'mu':<4}{'n':<7}{'B_mu':<10}{'B^2/(n log p)':<15}{'B_mu^2/B_{mu-1}^2':<18}{'cross/|T|^2 @worst':<18}",flush=True)
+for mu in range(1, MUMAX+1):
+    n=1<<mu
+    step=1<<(MUMAX-mu)
+    g=pow(gfull, step, p)               # primitive 2^mu-th root
+    sub=[pow(g,j,p) for j in range(n)]  # mu_{2^mu}
+    subhalf=[pow(g,j,p) for j in range(n//2)] if mu>=1 else [1]  # mu_{2^{mu-1}}
+    gg=pow(g,1,p)                       # coset rep: g itself (non-square)
+    # B over cosets: eta constant on cosets of sub; reps = g0^i, i=0..(p-1)/n -1
+    m=(p-1)//n
+    bestB=0.0; bestb=1
+    gi=1
+    for i in range(m):
+        val=abs(eta(gi, sub))
+        if val>bestB: bestB=val; bestb=gi
+        gi=gi*g0%p
+    # decompose at worst b: eta = T_b + T_{b*g} over the half-subgroup
+    if mu>=2:
+        Tb=eta(bestb, subhalf); Tbg=eta((bestb*gg)%p, subhalf)
+        cross=2*(Tb.conjugate()*Tbg).real
+        denom=abs(Tb)**2+abs(Tbg)**2
+        crossratio=cross/denom if denom>0 else 0
+    else:
+        crossratio=float('nan')
+    ratio=bestB**2/prevB**2 if prevB else float('nan')
+    print(f"{mu:<4}{n:<7}{bestB:<10.3f}{bestB**2/(n*math.log(p)):<15.4f}{ratio:<18.4f}{crossratio:<18.4f}",flush=True)
+    prevB=bestB

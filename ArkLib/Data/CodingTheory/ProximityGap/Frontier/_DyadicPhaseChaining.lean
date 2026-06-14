@@ -275,6 +275,61 @@ theorem level_le_of_twoAdicAffineSquareDescentLaw {Q drift : ℕ → ℝ} {N : �
     Q N ≤ B :=
   level_le_of_affineSquareDescentLaw hlaw
 
+/-- With zero additive drift, the affine budget is the pure geometric budget `c^N * Q0`. -/
+theorem affineSquareDescentBudget_zero_drift (c Q0 : ℝ) (N : ℕ) :
+    AffineSquareDescentBudget c Q0 (fun _ => (0 : ℝ)) N = c ^ N * Q0 := by
+  induction N with
+  | zero =>
+      simp [AffineSquareDescentBudget]
+  | succ N ih =>
+      simp [AffineSquareDescentBudget, ih, pow_succ]
+      ring
+
+/-- The zero-drift two-adic affine budget is exactly `2^N * Q0`. -/
+theorem twoAdicAffineSquareDescentBudget_zero_drift (Q0 : ℝ) (N : ℕ) :
+    AffineSquareDescentBudget (2 : ℝ) Q0 (fun _ => (0 : ℝ)) N = (2 : ℝ) ^ N * Q0 := by
+  exact affineSquareDescentBudget_zero_drift (2 : ℝ) Q0 N
+
+/--
+Zero-drift two-adic affine descent is the deterministic `Q N <= 2^N Q 0` bound.
+
+This is the refutable pure-random-scale form of the phase-alignment route: any measured terminal
+square envelope above `2^N Q0` forces a nonzero drift or a different mechanism.
+-/
+theorem level_le_of_twoAdicAffineSquareDescentLaw_zero_drift {Q : ℕ → ℝ} {N : ℕ} :
+    TwoAdicAffineSquareDescentLaw Q (fun _ => (0 : ℝ)) N
+      ((2 : ℝ) ^ N * Q 0) →
+      Q N ≤ (2 : ℝ) ^ N * Q 0 := by
+  intro hlaw
+  exact level_le_of_twoAdicAffineSquareDescentLaw hlaw
+
+/--
+Direct refutation hook for the zero-drift dyadic phase route.
+
+If the terminal square envelope exceeds the pure `2^N` budget, then no local recurrence
+`Q(i+1) <= 2 * Q(i)` can hold through the whole window with that terminal budget.
+-/
+theorem not_twoAdicAffineSquareDescentLaw_zero_drift_of_budget_lt {Q : ℕ → ℝ} {N : ℕ}
+    (hbad : (2 : ℝ) ^ N * Q 0 < Q N) :
+    ¬ TwoAdicAffineSquareDescentLaw Q (fun _ => (0 : ℝ)) N ((2 : ℝ) ^ N * Q 0) := by
+  intro hlaw
+  exact not_lt_of_ge (level_le_of_twoAdicAffineSquareDescentLaw_zero_drift hlaw) hbad
+
+/--
+If the affine two-adic recurrence holds while the terminal square envelope exceeds the pure
+`2^N Q0` budget, then the accumulated additive drift budget is genuinely above the pure budget.
+
+This is the quantitative form of the #407 phase-route correction: finite-level excess cannot be
+hidden in the telescope; it must appear as positive accumulated drift.
+-/
+theorem pure_budget_lt_affineBudget_of_level_gt_pure {Q drift : ℕ → ℝ} {N : ℕ}
+    (hlaw :
+      TwoAdicAffineSquareDescentLaw Q drift N
+        (AffineSquareDescentBudget (2 : ℝ) (Q 0) drift N))
+    (hbad : (2 : ℝ) ^ N * Q 0 < Q N) :
+    (2 : ℝ) ^ N * Q 0 < AffineSquareDescentBudget (2 : ℝ) (Q 0) drift N := by
+  exact hbad.trans_le (level_le_of_twoAdicAffineSquareDescentLaw hlaw)
+
 /--
 Falsification form for the affine square-descent law. A measured top-level
 value above the proposed recursive budget refutes the candidate local drift
@@ -341,24 +396,28 @@ theorem not_localAlignedChildSubmaximality_of_budget_lt {M : ℕ → ℝ} {N : �
     (B := MultiplicativeChainingBudget (fun i => M i ^ 2) (fun _ => (2 : ℝ)) N) hbad
     (squareDescentLaw_of_localAlignedChildSubmaximality hlocal)
 
-end ProximityGap.Frontier.DyadicPhaseChaining
+/-! ## Axiom audit -/
 
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.level_le_phaseChainingBudget
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.level_le_of_phaseIncrementLaw
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.not_phaseIncrementLaw_of_budget_lt
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.level_le_multiplicativeChainingBudget
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.level_le_of_squareDescentLaw
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.not_squareDescentLaw_of_budget_lt
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.level_le_dyadicSquareDriftBudget
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.level_le_of_dyadicSquareDriftLaw
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.not_dyadicSquareDriftLaw_of_budget_lt
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.level_le_affineSquareDescentBudget
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.level_le_of_affineSquareDescentLaw
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.level_le_of_twoAdicAffineSquareDescentLaw
-#print axioms ProximityGap.Frontier.DyadicPhaseChaining.not_affineSquareDescentLaw_of_budget_lt
-#print axioms
-  ProximityGap.Frontier.DyadicPhaseChaining.aligned_sum_sq_le_two_mul_of_sq_add_sq_le
-#print axioms
-  ProximityGap.Frontier.DyadicPhaseChaining.squareDescentLaw_of_localAlignedChildSubmaximality
-#print axioms
-  ProximityGap.Frontier.DyadicPhaseChaining.not_localAlignedChildSubmaximality_of_budget_lt
+#print axioms level_le_phaseChainingBudget
+#print axioms level_le_of_phaseIncrementLaw
+#print axioms not_phaseIncrementLaw_of_budget_lt
+#print axioms level_le_multiplicativeChainingBudget
+#print axioms level_le_of_squareDescentLaw
+#print axioms not_squareDescentLaw_of_budget_lt
+#print axioms level_le_dyadicSquareDriftBudget
+#print axioms level_le_of_dyadicSquareDriftLaw
+#print axioms not_dyadicSquareDriftLaw_of_budget_lt
+#print axioms level_le_affineSquareDescentBudget
+#print axioms level_le_of_affineSquareDescentLaw
+#print axioms level_le_of_twoAdicAffineSquareDescentLaw
+#print axioms affineSquareDescentBudget_zero_drift
+#print axioms twoAdicAffineSquareDescentBudget_zero_drift
+#print axioms level_le_of_twoAdicAffineSquareDescentLaw_zero_drift
+#print axioms not_twoAdicAffineSquareDescentLaw_zero_drift_of_budget_lt
+#print axioms pure_budget_lt_affineBudget_of_level_gt_pure
+#print axioms not_affineSquareDescentLaw_of_budget_lt
+#print axioms aligned_sum_sq_le_two_mul_of_sq_add_sq_le
+#print axioms squareDescentLaw_of_localAlignedChildSubmaximality
+#print axioms not_localAlignedChildSubmaximality_of_budget_lt
+
+end ProximityGap.Frontier.DyadicPhaseChaining
