@@ -1847,28 +1847,36 @@ theorem foldOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ) :
     rw [bind_pure_comp]
     conv =>
       enter [1, 1, x_1, 2]
-      rw [Functor.map_map]
+      -- The two maps compose to `id`: the outer extracts the value via `.cont` (= `id` for a
+      -- query, lifted) applied to `a.1`, the inner pairs with the state. Reduce `fst_query`,
+      -- the monadLift, and `cont_query` first so `Functor.map_map` can collapse the composition,
+      -- leaving the bare challenge sampler `challengeQueryImpl q.input`.
+      simp only [OracleQuery.fst_query, OracleQuery.cont_apply, OracleQuery.cont_query,
+        Functor.map_map, Function.comp_def, MonadLift.monadLift, id_eq]
       rw [← probEvent_eq_eq_probOutput]
       rw [probEvent_map]
-      rw [OracleQuery.cont_apply]
-      dsimp only [MonadLift.monadLift]
-      rw [OracleQuery.cont_apply]
       dsimp only [q]
-    simp_rw [OracleQuery.input_query, OracleQuery.snd_query]
     conv_lhs => change (∑' (x_1 : L), _)
-    simp only [Function.comp_id]
     conv =>
       enter [1, 1, x_1, 2]
+      -- Reduce the lifted query's `.input`/`.cont` structure projections
+      -- (`⟨Sum.inr _, id⟩.input = Sum.inr _`, `.cont = id`) so the dependent types align, then
+      -- push the residual `(·, x.2)` pairing map into the predicate (`fun a => a = x_1`).
+      dsimp only [OracleSpec.query, OracleQuery.input, OracleQuery.cont, Function.comp]
+      erw [probEvent_map]
+      -- collapse the residual composition `((· = x_1) ∘ (id ·.1)) ∘ (·, x.2)` to `· = x_1`
+      simp only [Function.comp_def, id_eq]
       rw [probEvent_eq_eq_probOutput]
       change Pr[=x_1 | $ᵗ L]
       rw [OracleReduction.probOutput_uniformOfFintype_eq_Pr (L := _) (x := x_1)]
-    rw [OracleReduction.tsum_uniform_Pr_eq_Pr
-      (L := L) (P := fun x_1 => P (FullTranscript.mk1 x.1.1) (q.2 x_1))]
-      -- Now the goal is in do-notation form, which is exactly what Pr_ notation expands to
-    -- Make this explicit using change
-    change Pr_{ let y ← $ᵖ L }[ P (FullTranscript.mk1 x.1.1) y ] ≤
-      foldKnowledgeError 𝔽q β i ⟨1, by rfl⟩
-    -- Apply the per-transcript bound
+    -- Fold the uniform-challenge tsum into `Pr_{y}[…]` (P inferred from the goal), then discharge
+    -- directly by the per-transcript doom-escape bound: the goal's `P (Transcript.concat x.1.1
+    -- default) y` is defeq to the lemma's `rbrExtractionFailureEvent … (FullTranscript.mk1 x.1.1)
+    -- y` (unfold the local `P`; `FullTranscript.mk1 x.1.1` reduces to `Transcript.concat x.1.1 default`).
+    rw [OracleReduction.tsum_uniform_Pr_eq_Pr (L := L)]
+    -- the migrated transcript `(default : Transcript 0).concat x.1.1` is `mk1_eq_snoc`-equal (not
+    -- defeq) to `FullTranscript.mk1 x.1.1`; align it so the doom-escape bound applies directly.
+    rw [← ProtocolSpec.FullTranscript.mk1_eq_snoc]
     exact foldStep_doom_escape_probability_bound 𝔽q β (i := i)
       (stmtOStmtIn := stmtOStmtIn) (h_i := x.1.1) (init := init) (impl := impl) (mp := mp)
       (𝓑 := 𝓑) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
