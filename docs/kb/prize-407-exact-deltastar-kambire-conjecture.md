@@ -352,3 +352,38 @@ vanishing-sum condition. It is NOT closable by the recursion alone (the base cas
 coincidence), but it is the most reduced form: no codes, no Johnson, no Gauss sums, no moments — just
 `{−1,0,1}` vanishing sums of `2^μ`-th roots of unity at odd `p=n^β`. Honest standing unchanged: ℂ side
 PROVEN, `F_p` for `p∤D` PROVEN, this base case OPEN (= the prize-hard core). I do not claim it closed.
+
+## LITERATURE — the residual is the small-weight genuine-vanishing-sum gap (Lam–Leung finite-field paper)
+
+Directed literature search (#407 directive: "find 5 papers, research what the conjecture reduces to").
+The residual `G(e_m)∈I_ℤ` reduces to: do SMALL-weight char-`p`-genuine (non-±-pair) vanishing sums of
+`2^μ`-th roots of unity exist at `p=n^β`? The exact machinery is **Lam–Leung, "Vanishing Sums of m-th
+Roots of Unity in Finite Fields"** (arXiv:math/9605216 / J. Algebra). Their Theorem (uniform): the weight
+set `W_p(m) ⊇ [(p−1)/m + 1, ∞)` (here roots are `n`-th roots, so `W_p(n) ⊇ [(p−1)/n + 1, ∞)`). KEY
+consequence for the prize:
+  · char-`p` genuine vanishing sums are GUARANTEED only for weight `w ≥ (p−1)/n ≈ n^{β−1}`.
+  · my spurious configs have weight `w = |Y| ≤ n/2 = 2^{μ−1} ≪ n^{β−1}` (since `β≥2`).
+  · so they live STRICTLY BELOW Lam–Leung's existence threshold — the small-weight regime the paper
+    does NOT characterize (it gives existence above `n^{β−1}`, not non-existence below).
+The norm/height bound gives only `w ≥ p^{2/n} ≈ 1` (useless). So the residual sits in the GAP
+`[p^{2/n}, (p−1)/n] = [≈1, ≈n^{β−1}]` — precisely the BGK/sum–product regime for a small multiplicative
+subgroup of `F_p^*`, where neither existence nor non-existence of short genuine relations is known.
+Two simultaneous conditions (`∑y=∑y³=0`) make them rarer still: weight 3 is killed identically
+(`∑y³=3∏y≠0`), and NO genuine config was found up to `p=30000` for `n=16,32`.
+
+**Reading list (5 papers, for download):**
+1. Lam–Leung, *Vanishing Sums of m-th Roots of Unity in Finite Fields*, arXiv:math/9605216 — `W_p(m)`,
+   the EXACT machinery for the char-`p` residual; gives `[(p−1)/m+1,∞)⊆W_p(m)` (existence threshold).
+2. Lam–Leung, *On Vanishing Sums for Roots of Unity*, arXiv:math/9511209 — the char-0 structure
+   `W(m)=ℕp₁+…+ℕpᵣ` (`W(2^μ)`=evens=pairs); the basis of the proven ℂ-side optimality.
+3. Łaba–Zhai et al., *Vanishing sums of roots of unity and the Favard length of self-similar product
+   sets*, arXiv:2202.07555 — vanishing-sum structure under self-similarity (matches my e_2 recursion).
+4. Bourgain–Glibichuk–Konyagin, *Estimates for the number of sums and products and for exponential sums
+   in fields of prime order* (J. LMS 2006) — the sum–product/incidence bound for small subgroups = the
+   BGK regime the residual's small-weight gap falls into. [NEED: not on arXiv; J. LMS 73 (2006).]
+5. Arnon–Boneh–Fenzi, *Open Problems in List Decoding and Correlated Agreement* (ePrint 2026/680) — the
+   prize source; the MCA/LD challenges the residual is the last obstruction to.
+
+**Honest net:** the residual is now LITERATURE-GROUNDED as a specific small-weight question strictly
+below the Lam–Leung existence threshold and inside the BGK gap — not closed, but precisely placed. No
+paper found that resolves the small-weight regime; that is the open core. Prize remains open.
