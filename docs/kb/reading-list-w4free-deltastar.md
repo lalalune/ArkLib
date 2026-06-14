@@ -35,6 +35,18 @@ Compiled by a multi-agent research workflow (13 agents, 2026-06-13).
 Companion survey: **Arnon–Boneh–Fenzi, "Open Problems in List Decoding and Correlated Agreement"**
 (eprint 2026/680).
 
+## 2026 refresh items for #407
+
+- **Krachun, Kazanin & Habock, "Failure of proximity gaps close to capacity"** — eprint 2026/782.
+  This is the current identifier for the near-capacity failure lane; do not confuse it with the
+  Goyal--Guruswami positive folded/subspace-design/random-RS lane.
+- **Antonio Kambire, "Proximity Gaps Conjecture Fails Near Capacity over Prime Fields"** —
+  arXiv:2604.09724. Gives a self-contained prime-field version of the Krachun--Kazanin sketch:
+  a family of prime-field RS codes with failure at radius `1 - k/n - Omega(1 / log n)`. This is a
+  high-priority read for the #407 upper-bracket / Kambire edge formalization path, but it is still a
+  near-capacity failure construction rather than a closed delta-star pin for the smooth dyadic
+  prize regime.
+
 ## Honest resolution (W4-free question)
 - The imprimitive 2-power-tower monomial lines fold SELF-SIMILARLY W4-free (even/odd code split,
   geometric telescope to ~n/2 < budget). But every fold bottoms out on a PRIMITIVE base line, and
