@@ -1070,12 +1070,16 @@ lemma incrementalBadEventExistsProp_fold_step_backward (i : Fin ℓ)
         ⟨j.val * ϑ + cId.val, by
           exact lt_of_lt_of_le (Nat.add_lt_add_left cId.isLt (j.val * ϑ)) h_k_full⟩
     have h_challenges : afterSlice = beforeSlice := by
-      have h_slice :=
-        getFoldingChallenges_init_succ_eq (r := r) (L := L) (𝓡 := 𝓡) (ϑ := ϑ)
-          (i := i) (j := j) (challenges := Fin.snoc stmtOStmtIn.1.challenges r_i')
-          (h := h_k_full)
-      simp at h_slice
-      exact h_slice.symm
+      -- Each accessed index `j*ϑ + cId < i.val` lies strictly below the `Fin.snoc` position
+      -- `i.val`, so `Fin.snoc challenges r_i'` agrees with `challenges` there (`Fin.snoc_castSucc`).
+      funext cId
+      dsimp only [afterSlice, beforeSlice]
+      have h_idx_lt : j.val * ϑ + cId.val < ↑i.castSucc :=
+        lt_of_lt_of_le (Nat.add_lt_add_left cId.isLt (j.val * ϑ)) h_k_full
+      -- The accessed index is `Fin.val`-equal to `Fin.castSucc ⟨j*ϑ+cId, h_idx_lt⟩`, so
+      -- `Fin.snoc_castSucc` (snoc agrees with the base tuple below the appended slot) applies.
+      exact Fin.snoc_castSucc (α := fun _ => L) r_i' stmtOStmtIn.1.challenges
+          ⟨j.val * ϑ + cId.val, h_idx_lt⟩
     let blockStart : Fin r := ⟨j.val * ϑ, by
       exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ) j).isLt⟩
