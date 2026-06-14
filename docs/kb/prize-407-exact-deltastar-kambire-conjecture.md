@@ -1602,3 +1602,26 @@ side is EXACTLY Gaussian (Lam–Leung: no connected ℂ-relation among 2^μ-th r
 `DyadicEnergyK1.lean` proves `E_r^{(0)} ≤ Wick`). The entire open content is the char-p connected-relation
 count to depth `r ~ log p` — the BGK/Paley wall, but now reduced to ONE clean inequality with the prize
 constant pinned to `√2`. The proof-strategies workflow targets exactly this Lemma. Probe added.
+
+## PROOF PROGRAM (cont.) — the SELF-CONTAINED remaining lemma (dyadic-tower lane, verifier-confirmed); di Benedetto boundary
+
+The proof-strategies workflow's dyadic-tower-induction lane completed (adversarial verify: CONFIRMED,
+status: blocked_at_known_wall) and produced the precise self-contained remaining claim:
+
+> **ANOMALY SUPPRESSION LEMMA (the sole open content).** Let μ≥1, n=2^μ, p prime with p≡1 (mod n), p≥n^4.
+> Identify μ_n⊂F_p with the n-th roots of unity; lift `x_i=ζ_n^{a_i}` to ℂ. For `1 ≤ r ≤ ⌈2 ln p⌉` define
+> `Anom_r(p) := #{(x_1,…,x_r,y_1,…,y_r)∈μ_n^{2r} : Σx_i ≡ Σy_j (mod p) but Σζ_n^{a_i} ≠ Σζ_n^{b_j} in ℤ[ζ_n]}`.
+> Then **`Anom_r(p) ≤ n^{2r}/p`**.
+> [With the PROVEN `R_r ≤ (2r−1)‼·n^r` (matching/char-0 part, Lam–Leung), this gives `A_r ≤ (2r−1)‼·n^r`,
+>  hence `M(n) ≤ √(2n log p)` by the elementary `r~log p` optimization.]
+
+**The wall, pinned (verifier-confirmed):** this single inequality is EQUIVALENT (up to constants) to the
+prize sup-norm `M(n) ≤ C√(n log p)` = the Paley-graph / √-cancellation conjecture for a size-`n`
+multiplicative subgroup. The char-0 floor (Lam–Leung/Wick) controls ONLY `R_r` (matching tuples); the entire
+open content is `Anom_r` (non-matching, collide-only-mod-p), the BGK/incomplete-character-sum object. SOTA
+**di Benedetto n^{0.989} holds only for n > p^{1/4}**, so the prize `p = n^4` (n = p^{1/4}) is the EXACT
+UNPROVEN BOUNDARY; for `p > n^4` (n < p^{1/4}, thinner) di Benedetto does not apply at all. The 2-adic
+moment recursion provably does NOT cross this gap (the L^∞ alignment obstruction survives the L^{2r}
+averaging). Remaining proof strategies (Stepanov depth-r collision count, multiplicative→additive energy,
+Katz effective flatness, completion/large-sieve) were rate-limited before completing; they are the only
+candidates for a provable bound (likely n^{1−δ}, not √n) or a dyadic improvement past the boundary.
