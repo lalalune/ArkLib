@@ -8833,3 +8833,19 @@ closed deterministic consumer in `Frontier/_DyadicCocycleLargeDeviation.lean` (a
 `floor_of_cocycleGeometricMeanLaw` chains it to the floor, `not_cocycleProductBudget_of_level_gt` is the
 refutation hook should a future probe find a sustained near-2 path). This remains the BGK/MRSS
 incomplete-character-sum 25-yr-open problem; the consumer is closed, the analytic input is not.
+
+## 2026-06-14 (wakesync/#407): Kambiré/factorization-rigidity route investigated — reduces to the SAME char-p tail-e_i wall; + K=O(1) correction
+Investigated the Kambiré exact-δ* conjecture (prize-407-exact-deltastar-kambire doc): δ*=1−ρ−2ρln(1/2ρ)/log₂(qε*),
+optimality reduced via Factorization Rigidity (∏(X−z) m-sparse ⟺ S=μ_m-coset-union, char-p-SAFE/proven) to
+R1 (monomial extremality) + R2 (Kambiré stack maximizes |H^{(+r)}|). KB doc rated these "combinatorial, not
+open hard math" (feasibility 8). HONEST FINDING: the swarm's later tail-symmetric-function analysis (commit
+b8088a3e) supersedes — R1/R2 for r≥3 (prize needs r≈11) hit the CHAR-P WALL: the window constrains only low
+e_i; forcing tail e_i (2m≤i≤rm, m∤i) to vanish (⟹ coset-union ⟹ optimality) needs P|X^n−1 = Lam–Leung over
+ℂ, a WALL over F_q. So the Kambiré route's optimality ALSO reduces to the open core (= BCHKS Conj 1.12 / Paley
+graph, OPEN per arXiv 2603.29571 Mar-2026). My empirical R1 test (mu_16, k=2) saturated above δ* — inconclusive,
+analytic conclusion stands.
+CORRECTION (mine, per swarm ba96383b): my earlier "conductor K=O(1), K≈1.28" was a CRUDE MISREADING. The
+sheaf conductor is rank-driven n^{2r-1} (Swan=0), so K=O(1) is FALSE as stated; the real open input is the
+effective eigenvalue-cancellation base = BGK, dimension-obstructed (effective Deligne needs f≤√q ⟺ n≳√p, but
+prize has n≪√p — over-dimensioned, geometric route blocked). So even the geometric/Katz framing is obstructed
+in the prize regime; the floor is an EXTREME-VALUE (not concentration) problem. All faces ⟹ BGK/Paley, no closure.
