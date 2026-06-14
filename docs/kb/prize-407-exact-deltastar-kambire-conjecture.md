@@ -538,3 +538,33 @@ about the lemma. So the open problem is now precisely: a **uniform-in-n** proof 
 "all candidates clean", i.e. that `e₂(U) ∈ Σ` for every primitive `U` (the general Half-Sum Lemma). This
 is the genuine remaining math; everything else (per-n) is now a closed finite computation. Probes:
 `probe_407_halfsum_{proof_n8,candidates_n16,proof_n16}.py`.
+
+## MAJOR CORRECTION — the residual is FINITE ALGEBRA, not BGK; minimal case PROVEN even-polynomial
+
+Two errors in the prior "BGK wall" conclusion, both now corrected:
+
+**(1) The "counterexamples" were false positives.** `p | gcd(N(∑y), N(∑y³))` only means *some Galois
+conjugate* of each vanishes — possibly at DIFFERENT primes `𝔭`. A genuine spurious config needs
+`∑y≡0` AND `∑y³≡0` at the SAME embedding. Correct DIRECT enumeration (`/tmp/correct_scan.py`): genuine
+spurious configs are vanishingly rare — n=16 has one only at `p=17` (= the smallest prime ≡1 mod 16),
+n=32 has NONE up to p=20000. All far below the prize regime `n^β`. The scaling "c→4.3" was a gcd artifact.
+
+**(2) "Spurious exists" ≠ "δ* changes".** What matters is whether a config yields a bad scalar OUTSIDE
+the sumset. Direct `#bad` counts (`/tmp/corrected.py`, `/tmp/n64test.py`) give `#bad = |Σ_r|` EXACTLY,
+`NEW=0`, at EVERY prime tested — n=16 (91 primes), n=32 (incl. p=7937), n=64 (p=65456257). The
+integrality `e₂(S) ∈ Σ_r` is char-`p`-ROBUST. The bad scalar is `e₂(S) = −½∑_{x∈S}x²` with `x²∈μ_{n/2}`,
+`−1∈μ_{n/2}` — it lives NATIVELY in the `μ_{n/2}` sumset, no char-`p` arithmetic involved.
+
+**Minimal case PROVEN (char-`p`-free).** A size-4 config `S` with the m=2 gap `e₁(S)=e₃(S)=0` has
+`∏_{x∈S}(X−x) = X⁴ + e₂X² + e₄` — an EVEN polynomial. So `p(X)=p(−X)`: every root `y` forces `−y` a root,
+hence `S = {±y₁, ±y₂}` is a union of ±-pairs (= `μ_2`-cosets). **No no-±-pair size-4 config exists, over
+any field.** So the minimal spurious config is impossible by elementary algebra — NOT a BGK question.
+(Spurious configs need size ≥ 6, where `e₅` enters and the polynomial is no longer even; these are the
+rare large-weight configs, and even they give `e₂∈Σ_r`.)
+
+**Corrected standing.** δ* = `1−ρ−2ρ ln(1/2ρ)/log₂(qε*)`. Upper bracket PROVEN; ℂ optimality PROVEN;
+and now the `F_p` residual is the FINITE-ALGEBRAIC integrality `e₂(S) ∈ Σ_r` (`G(e_m)∈I_ℤ`) — char-`p`-
+robust across all tests, with the minimal case proven by the even-polynomial argument, and the bad
+scalar manifestly a `μ_{n/2}`-element combination. This is NOT the BGK/sum–product wall; my earlier
+identification was an artifact of (1) a flawed gcd criterion and (2) conflating spurious-existence with
+δ*-change. Feasibility upgraded: the residual is a concrete symmetric-function identity, candidate-provable.
