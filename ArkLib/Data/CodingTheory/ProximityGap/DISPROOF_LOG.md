@@ -24,29 +24,6 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
-## 2026-06-14 (#407 laneLB): Chai–Fan Q1 route (i) self-similarity bootstrap is REFUTED in char-p at d=32
-**Lane LB = Action-Orbit Q1 (Chai–Fan 2026/861, Conj 4.12): `Norm_{K_d/ℚ}(F_d(α))≠0` on `V_d^prim`,
-rigorous d∈{4,8}, OPEN d≥16.** The paper's promising **route (i)** is the self-similarity hypothesis
-`(∗)_d : on V_d^prim, x₁=0 ⟹ x_a=0 for every odd a` (`x_a = p_a` = power sum), extended {4,8}→all 2^j
-by dyadic doubling.
-
-**Machine-checked answer: route (i) FAILS in char-p at d=32 (refuted).**
-`scripts/probes/probe_wfLB_q1_route_i_charp_break.py` (exhaustive/MITM, 8 prize-band primes per level):
-- char-0: `V_d^prim(x₁=0)` EMPTY for d=8,16,32 (Lam–Leung) → route (i) vacuous over ℂ.
-- char-p (p≡1 mod d, p~d⁴): d=8,16 have NO antipodal-free p₁=0 config in band (route (i) intact;
-  **d=16 is the last clean dyadic level**); d=32 has **384/384** antipodal-free configs with p₁=0 but
-  p₃≠0 mod p. Explicit witness (independently re-derived): p=1048609, primitive 32nd root w=415330,
-  `Y={2,12,13,20,21,22,23,24,25,27,30,31}⊂ℤ/32`, antipodal-free, char-0-nonzero, p₁≡0 but p₃≡298602≠0
-  (and p₅…p₃₁ all ≠0). So `x₁=0` does NOT force `x₃=0` in char-p once d≥32.
-
-**Constraint lemma / why it does not close or kill Q1.** The in-tree `EvenOddAntipodalCharFree.lean`
-proves char-FREE the STRONG form (all odd e_i vanish ⟹ S=−S) — the correct sufficient input. Route (i)
-is the strictly weaker bootstrap (derive higher odd vanishings from x₁=0 alone); it has NO char-free
-proof and breaks at the actual prize object (finite F_p) for d≥32. The paper's resultant form `R_d≠0`
-is NOT recomputed (companion-repo chain-ideal vars V,W non-public); Q1 in resultant form stays open.
-Landed: `Frontier/_wfLB_Q1RouteICharPGap.lean` — `route_i_strictly_weaker` (route-(i) hyp insufficient
-+ strong hyp sufficient), axiom-clean `[propext, Classical.choice, Quot.sound]`.
-
 ## 2026-06-14 (#407 laneB): Action-Orbit per-line bound is MONOMIAL-EXCLUSIVE — general-f gap-localized
 **Lane B = R4 Action-Orbit general-`f` (gcd-irreducible / primitive direction).** Question: does the
 `n·#orbits` per-line bad-scalar bound (`ActionOrbitFRI.badSet_orbit_closed`, for the two-monomial
@@ -9617,113 +9594,75 @@ antipodal-config bad-prime bound p≤(2k)^{2k/r} + single-vs-simultaneous dichot
 Paley wall. δ* exact-worst-case = Paley sharp constant, OPEN. Genuine yield = bricks (1),(2) + the sharp
 reduction prize⟺Paley + two honest self-corrections. NOT a closure.
 
-## 2026-06-14 (verify/#407): ring-hom monotonicity is TRUE but about the WRONG object — line incidence (the deployed δ*) EXCEEDS char-0 at thin primes
-Independent verify-or-refute of the 08:41 "Cyclic-sieving attack" claim:
-N(char-p) ≤ N(char-0) for the divided-difference bad-SCALAR count N = #{distinct γ_T = −DD_T(x^a)/DD_T(x^b) :
-T eligible}, claimed scale-independently via the ring hom ℤ[ζ_n]→𝔽_q (merge-only + eligibility-shrink-only).
-Built BOTH objects from scratch (probe_407_mono_objecta_vs_objectb.py, probe_407_saturation_gap.py): (a) the
-divided-difference count N, exact char-0 in ℤ[ζ_n] (ζ^{n/2}=−1) and mod-q; (b) the LINE-INCIDENCE count
-I(a,b,w)=#{distinct γ : closest-codeword agreement ≥ w}, the object the governing law I(δ)=max#{α:line δ-close}
-actually uses. μ_n proper subgroup, p≡1 mod n, n=8,16, thin (p<n³) and faithful (p>n⁴) primes.
+## 2026-06-14 (#407 c4700736246 review): all seven open directions attacked; same-radius LD⇒MCA shortcut Lean-refuted
 
-VERDICT (two parts, both reproducible):
-(1) Monotonicity is TRUE for object (a) N — 0 violations across all directions/primes — but NEAR-VACUOUS:
-    N(char-p) ≤ p, so at thin primes the count cannot exceed the (large) char-0 N, and at faithful primes
-    N(char-p)=N(char-0). At the documented EXCESS prime q=8161 (n=16, dir(4,7); h_3(ζ^T)≡0 on 16 subsets),
-    16 subsets become INELIGIBLE (denominator vanishes mod q), so N drops 3376→2704 ≤ char-0. Monotone — by
-    deletion, exactly as claimed.
-(2) The DEPLOYED δ* object is line incidence I, and there char-p EXCEEDS char-0 at thin primes. Witness
-    (n=16, k=4, dir(6,7), faithful char-0 has I=0 at bands w=6,7):
-        p=113: I(w=6)=10   p=17: I(w=6)=6, I(w=7)=1   p=257: I(w=6)=4   — all char-p > char-0 = 0.
-    Reproduces the sibling μ_16 line-incidence finding (char-p > char-0 at thin primes) independently.
+Reviewed the linked #407 direction map plus later corrections through c4703070507, then split the open
+directions across agents. Verdicts:
 
-MECHANISM (the gap, confirmed): the SAME event — a divided-difference denominator DD_T(x^b)=h_{b−k}(ζ^T)
-that is nonzero over ℂ but ≡0 mod q (an excess prime) — DELETES the finite scalar γ_T from N (so N can only
-drop, monotone) while by the Schur-bridge dichotomy it SATURATES the monomial line (bad for EVERY α) and
-pushes I UP. (a) and (b) move in OPPOSITE directions on the same event. Schur-dichotomy saturating-subset
-count, n=16 k=4 b=7: char-0 = 0, q=8161 = 16, q=4129 = 0 (probe_407_saturation_gap.py). Sub-claim H1
-("a char-0-zero denominator can't become nonzero mod p / eligibility shrinks harmlessly") is FALSE as a
-statement about δ*: the denominator vanishing is not harmless, it saturates the line.
+* constant-index Gauss periods: the prize-shaped surviving conjecture is **value distribution/MGF
+  sub-Gaussianity** of the `m` coset periods; fixed-index DFT/energy bridges are useful consumers, but
+  moment/min-distance routes are dead and Katz/Rojas-León effectiveness is vacuous in thin prize rows.
+* action-orbit/Chai-Fan: orbit closure is real for monomial/eigen directions, but dense/general inputs are
+  blocked by `eigen_forces_monomial`; naive constant orbit count is probe-refuted.
+* half-sum/lacunary: small fixed-`n` identities are real, but sparse-candidate-prime folklore is false and
+  the asymptotic lane re-enters char-`p` transfer/BGK.
+* GLT/Fermat fixed-`r`: r=2 is useful calibration; r=3 already looks surface-weight, and any fixed `r`
+  leaves the `q^(1/r)` extraction factor.
+* Katz/Rojas-León: existing conductor/effective-equidistribution window needs `n ≳ √q`, outside prize
+  production rows such as `q ≈ n·2^128`, `n=2^30`.
+* cross-parity/ideal-lattice: the literal split leak is a tautology; the aggregate identity is first-moment
+  only and local sup-norm remains the BGK/Paley wall.
+* e₂=0/cyclotomic face: formal algebra and dilation reduction are solid, but #400's `O(n)` hope is refuted
+  (`#bad = n*K` with super-linear `K` in probes), and the cyclotomic height threshold is exponential. This
+  lane is δ*-connected only conditionally through saturated incidence / `q`-stability; as a raw invariant it
+  does not independently reach the prize regime.
 
-NOT a refutation of the monotonicity itself (it holds for N). It REFUTES the RELEVANCE of the monotonicity to
-the prize: the ring-hom argument controls the finite-scalar count N, but the δ* governing law uses line
-incidence I, on which char-p > char-0 at thin primes. The monotonicity does NOT transfer to the deployed
-object. Consistent with this thread's own 21:32 "Prong A" self-refutation (denominator vanishing = saturation,
-not deletion) — independently reconfirmed here with both objects implemented side by side. Probes:
-scripts/probes/probe_407_mono_objecta_vs_objectb.py, probe_407_saturation_gap.py, probe_407_ringhom_mono_two_objects.py.
+**Lean brick landed.** `InterleavedListMCACollapse.SameRadiusCounterexample.same_radius_interleaved_collapse_refuted`
+formalizes the documented `F₃`, length-4 counterexample:
+`#mcaBadSet = 3`, same-floor interleaved list `#Λ₂(3)=0`, hence the tempting same-radius bound
+`#bad ≤ 1+(n-t)#Λ₂(t)` is false. The existing doubled-radius theorem is therefore not an artifact; the
+loss to `2t-n` is forced by a concrete finite code. Axiom audit is standard `[propext, Classical.choice,
+Quot.sound]`. This kills another LD⇒MCA shortcut, but does not touch the true prize wall.
 
-================================================================================
-2026-06-14  wf-LF  REFUTED (diagonal form): the Shkredov sub-trivial DIAGONAL bound on crossCell
---------------------------------------------------------------------------------
-CLAIM (the swing-for-closure lever, Conn #78/#100, diagonal form): there is a uniform-over-primes
-eps < 1 with crossCell(H,zeta,r) <= eps * (2 * N0(H,r)) for the 2-power subgroup, where
-crossCell = N0(G,r) - 2*N0(H,r) is the off-diagonal cross-resonance count (BCHKS Conj 1.12), so the
-dyadic-descent diagonal floor 2*N0(H,r) would be a NEAR-EQUALITY and iterate to a clean closed form.
+---
 
-VERDICT: FALSE in the diagonal form. Machine-verified countermodel: exact char-p relation counts,
-multiple primes p in {137,257,521,2081,8209, ... 65537}, n in {8,16,32}, r up to 10
-(scripts/probes/probe_wfLF_crosscell_shkredov.py). The ratio crossCell/(2*N0(H,r)) does NOT stay
-below 1 -- it GROWS WITHOUT BOUND in r:
-    n=8:  diag-frac = 1.33 (r=4) -> 5.4 (r=6) -> 18.4 (r=8) -> 85.0 (r=10)
-    n=16: diag-frac = 1.14 (r=4) -> 3.9 (r=6) -> 11.2..51.5 (r=8) -> up to 271 (r=10)
-    n=32: diag-frac = 1.07..2.93 (r=4) -> ... -> 47..459 (r=10)
-So the cross term DOMINATES the diagonal exponentially; the descent floor is NOT a near-equality and
-the "Shkredov diagonal saving" shape cannot exist.
+## REGIME MAP 2026-06-14: direct per-frequency BGK exponent at the prize point β=4 (12-angle army)
 
-WHY Shkredov's higher-additive-energy machinery gives nothing (the precise pin, uniform over primes):
-- crossCell tracks the RANDOM BCHKS-1.12 expectation (2^r-2)*|H|^r/p to within O(1) (ratio 0.7..1.3 at
-  the thinnest reachable primes p=577 idx=16 for n=32). No anomalous excess, no cancellation.
-- H = mu_{n/2} is SIDON-LIKE: third additive energy E3(H)/|H|^3 -> 1 monotonically (1.56 at |H|=4,
-  1.39 at |H|=8, 1.22 at |H|=16; second energy E2(H)/|H|^2 ~ 2.6). A multiplicative subgroup has
-  additive energy ~ random, so BSG / third-energy / sum-product -- which convert additive STRUCTURE
-  (energy excess over |H|^2) into a saving -- have no structure to feed on. The fixed power-of-|H|
-  saving they could extract does not reach depth r ~ ln q. This is the di Benedetto/BGK exponent gap
-  0.989 - 0.5 = 0.489 made concrete: additive combinatorics is NOT the missing mechanism.
+After all aggregate routes were eliminated, a 12-angle army attacked the ONLY live route — the direct
+per-frequency bound `M(n)=max_b|η_b| ≤ n^{1/2+o(1)}`. No exponent improvement (that gap IS the Paley Graph
+Conjecture), but a precise, corrected regime map:
 
-WHAT SURVIVES (still open, NOT refuted): the ABSOLUTE form crossCell*q <= 2^r*|H|^r (= BCHKS Conj 1.12),
-which IS the wall. Named axiom-clean in CrossCellShkredovBound.lean as CrossCellAbsoluteBound, with the
-exact decomposition 2*N0(H,r)+crossCell = N0(G,r) and the consumer N0_gap_of_absoluteBound. The
-genuinely-new input the body asks for must come from the arithmetic of the q-reduction (spurious mod-p
-collisions), not from sum-product/BSG. Probe: scripts/probes/probe_wfLF_crosscell_shkredov.py.
+**CORRECTION to prior belief (`issue407-sota-exponent-localization`): the sum-product ITERATION is non-trivial
+at n~p^{1/4}** (the prior flat "di Benedetto vanishes at p^{1/4}" was too pessimistic). Two careful distinctions
+(two army runs, reconciled honestly):
+- **Single-polynomial Stepanov is VACUOUS at the prize:** `M ~ n^{(β+1)/4} = n^{5/4}` at β=4 (worse than
+  trivial), nontrivial only for β<3 (the `x^n−1=0` budget caps the auxiliary at `s<n`, contradicted when
+  H~p^{3/4}≫n). Confirms the §3 HBK "vacuous below q^{1/3}" face exactly.
+- **The sum-product ITERATION (BGK / di Benedetto / Kowalski) IS non-trivial at β=4:** di Benedetto JNT 2020
+  Thm 3.3 gives ~**n^{1−31/960}=n^{0.968}** at H~p^{1/4} (Thm 3.1's strict range p^{1/2}>H>p^{1/4} makes β=4 a
+  boundary endpoint; the safest survivor strictly at the boundary is Bourgain–Garaev n^{1−175/9437184}≈n^{0.99998}).
+  Best rigorous in-regime bound is between **n^{0.968} and ~n^{0.99}** by boundary handling — a tiny fixed
+  power-saving constant in every reading, nowhere near n^{1/2}. Vacuity cliff: Thm 3.1 dies at β=4.775.
 
-================================================================================
-2026-06-14  wf-LD  REFUTED: the cross-parity leak does NOT lower-bound the EVEN-sublattice ideal-SVP
---------------------------------------------------------------------------------
-LANE F11 (cyclotomic ideal-lattice / split-prime SVP). SWING: r*(n,p)=(1/2)*lambda_1^{L1,even}(P|p),
-the even-sublattice shortest vector of the fully-split prime ideal in Z[zeta_n]. Pan-Xu (EUROCRYPT'21)
-give poly ideal-SVP only for NON-split q; the prize q is FULLY SPLIT (the named open gap). HOPE: the
-structured cross-parity leak A == -g*B (mod q) (96-100% of defects) forces lambda_1^{L1,even} ABOVE the
-random-lattice Gaussian heuristic, pinning r* below the window.
+**The prize point β=1/4 (n=p^{1/4}) is EXACTLY the Burgess barrier (D4, four independent confirmations).**
+Burgess 2r-th moment gives α(r)−1/4 = 1/(4r²)>0 for all finite r ⟹ trivial exactly at θ=1/4; nontrivial only
+for θ>1/4 (e.g. n=p^{1/2} → n^{0.8125} Konyagin). So the prize sits at the hardest possible Burgess point.
 
-VERDICT: FALSE. Two machine-checked facts.
+**NEW structural fact (D3): the dyadic tower is MAXIMALLY ANTI-CANCELLING at the worst frequency.** Since n is
+even, −1 = h^{n/2} ∈ μ_n, so **η_b is REAL for every b** (verified |Im|~1e-15). In the tower split
+`η_b(μ_{2n}) = η_b(μ_n) + η_{bθ}(μ_n)`, the worst-b maximizer ALWAYS selects same-sign children
+(`cos(eE,eT)=+1.0000`, 0/100 top maximizers cancel), so `M(2n)=|eE|+|eT|` — the cross term is `+M²/2`, the
+OPPOSITE of cancellation. The per-level ratio `R=M(2n)/M(n) > √2` in 100% of 40 primes (min 1.442). So the
+tower-cancellation route to `M(2^μ) ≤ √n·poly` is REFUTED worst-case; the only rigorous per-level bound is the
+trivial triangle `R≤2`. The √-cancellation lives entirely in the sub-maximality of the larger child
+(frac→0.74–0.83), which IS the BGK sup-norm bound itself (circular).
 
-(1) The cross-parity law is SHARPER than billed (probe_407_laneF_crossparity_leak.py, n=16/p=17,
-    n=32/p=97): g0 = -A/B = 1 for 100% of defects under EVERY splitting -> the law is exactly A = -B
-    (even-index half-sum = - odd-index half-sum), a coupling constraint between the two parity halves.
+**Numeric calibration (D10): `M(n) = n^{1/2+o(1)}` CONFIRMED — the target is correct.** Best model
+`M = 0.69·√n·(ln m)^{0.75}`, R²=0.994; local doubling exponent decreases 0.94→0.58 (μ=4..9), extrapolates to
+α_∞ = 0.45±0.03 (consistent with 1/2). No worst-b counterexample exists (D11): all `M ≈ 1.3·√(n log m)`, well
+below every rigorous bound. So `α>1/2` is ruled out; the conjecture/target is right, just unproven.
 
-(2) The even-sublattice SVP does NOT grow (scripts/probes/probe_wfLD_evenlattice_svp.py, EXACT genuine
-    L1 girth via coefficient enumeration in the power basis Z^{d}, d=phi(n)=n/2; zeta^j -> g^j mod p,
-    split primes p == 1 mod n):
-        n=16:  lambda_1^L1 FULL=3..5  EVEN=5..7  EVEN/FULL=1.25..1.75
-        n=32:  lambda_1^L1 FULL=3..4  EVEN=3..5  EVEN/FULL=1.00..1.33
-        n=64:  lambda_1^L1 FULL=3..4  EVEN=3..4  EVEN/FULL=1.00 (uniform over p=193..2113)
-    Both FULL and EVEN girths track the COUNTING girth ~ log_n p / the Gaussian heuristic for an index-p
-    sublattice; NEITHER grows like a power of n. The even-sublattice gain factor DECAYS to 1 as n grows
-    -- the WRONG direction for closure. So r* = (1/2)*lambda_1^{L1,even} ~ 2 at n=64, far below the
-    prize window. The SVP handle, even restricted to the structured even sublattice, lands back on the
-    same counting girth as the generic route (IdealSVPGirthVerdict.lean / O39).
-
-WHY (the precise mechanism, PROVEN axiom-clean in _wfLD_crossparity_evensvp.lean):
-    A = -B is a constraint on the COUPLING of the two halves, not a lower bound on either half alone.
-    A pure-even short relation has odd part B=0, hence A = -B = 0 satisfies the identity VACUOUSLY --
-    yet A is a nonzero even-support combination summing to 0, i.e. a genuine short even-sublattice
-    vector. The identity cannot exclude pure-even short vectors, and the probe confirms they exist at
-    the counting girth. Theorems: crossParity_of_vanish (A+B=0 => A=-B, unconditional),
-    pureEven_witness_satisfies_crossParity_vacuously, crossParity_does_not_lowerBound_even (the no-go).
-    Axiom audit [propext, Classical.choice, Quot.sound], 0 sorryAx, real lake build green (3297 jobs).
-
-This SHARPENS IdealSVPGirthVerdict.lean (#92/LEVER 3): that brick refuted the GENERIC SVP route (wrong
-direction/norm/count); this brick additionally refutes the one STRUCTURED upgrade (cross-parity even
-sublattice) -- the Pan-Xu split-prime gap is not closed by the cross-parity handle. Ring-LWE/ideal-SVP
-territory is fully exhausted for #407. Probes: probe_wfLD_evenlattice_svp.py,
-probe_407_laneF_crossparity_leak.py.
+**NET: the prize point is the hardest spot of the hardest open problem** (thin-subgroup BGK at the Burgess
+barrier). Best proven n^{0.968}; needs n^{0.5}; gap = the fixed sum-product constant → 1/2 = Paley Graph
+Conjecture. Aggregate routes (energy D2, slice-rank D7, decoupling D8) all trivial-n / reduce-to-wall.
+Probes: probe_407_direct_bgk_*.py (army-landed). Do not re-run D1–D12; the map is complete.
