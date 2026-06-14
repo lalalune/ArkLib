@@ -118,8 +118,52 @@ theorem eta_quartic_le_uncond {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) {G : F
   rw [h44] at hbound
   exact hbound
 
+/-- **The first unconditional sub-√q ceiling, in norm form.** Taking the 4-th root of
+`eta_quartic_le_uncond`: for every nonzero frequency `b₀`,
+`‖η_{b₀}‖ ≤ √n · (q − n)^{1/4}`,  `q = |F|`, `n = |G|`.
+Since this holds for *every* `b₀ ≠ 0` it bounds the worst-case period
+`M(n) = max_{b≠0}‖η_b‖ ≤ √n·(q−n)^{1/4}`. Genuinely sub-`√q`: the square is
+`n·√(q−n) < n·√q`, and `M < √q ⟺ n^2 < q`, binding in the band `q ~ n^2`.
+Unconditional — no char-`p` energy hypothesis, no BGK, no Lam–Leung. -/
+theorem eta_le_uncond_norm {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) {G : Finset F}
+    (hbij : ∀ u ∈ G, G.image (fun y => u * y) = G) (h0 : (0 : F) ∉ G) (hne : G.Nonempty)
+    {b₀ : F} (hb₀ : b₀ ≠ 0) :
+    ‖eta ψ G b₀‖
+      ≤ Real.sqrt (G.card : ℝ)
+        * ((Fintype.card F : ℝ) - (G.card : ℝ)) ^ ((4 : ℕ)⁻¹ : ℝ) := by
+  have hquartic := eta_quartic_le_uncond hψ hbij h0 hne hb₀
+  have hcardpos : 0 < (G.card : ℝ) := by exact_mod_cast Finset.card_pos.mpr hne
+  -- `q − n ≥ 0`: else the rhs `n²·(q−n)` is `< 0`, contradicting `‖η‖⁴ ≥ 0`.
+  have hqn : (0 : ℝ) ≤ (Fintype.card F : ℝ) - (G.card : ℝ) := by
+    by_contra hlt
+    rw [not_le] at hlt
+    have hrhs_neg : (G.card : ℝ) ^ 2 * ((Fintype.card F : ℝ) - (G.card : ℝ)) < 0 :=
+      mul_neg_of_pos_of_neg (by positivity) hlt
+    have : (0 : ℝ) ≤ ‖eta ψ G b₀‖ ^ 4 := by positivity
+    linarith
+  set R : ℝ := Real.sqrt (G.card : ℝ)
+      * ((Fintype.card F : ℝ) - (G.card : ℝ)) ^ ((4 : ℕ)⁻¹ : ℝ) with hR
+  have hRnonneg : 0 ≤ R := by
+    rw [hR]; positivity
+  -- the 4-th power of the rhs is exactly `n²·(q−n)`
+  have hR4 : R ^ 4 = (G.card : ℝ) ^ 2 * ((Fintype.card F : ℝ) - (G.card : ℝ)) := by
+    rw [hR, mul_pow]
+    have hsq4 : (Real.sqrt (G.card : ℝ)) ^ 4 = (G.card : ℝ) ^ 2 := by
+      have h2 : (Real.sqrt (G.card : ℝ)) ^ 2 = (G.card : ℝ) := Real.sq_sqrt hcardpos.le
+      calc (Real.sqrt (G.card : ℝ)) ^ 4
+          = ((Real.sqrt (G.card : ℝ)) ^ 2) ^ 2 := by ring
+        _ = (G.card : ℝ) ^ 2 := by rw [h2]
+    have hroot4 : (((Fintype.card F : ℝ) - (G.card : ℝ)) ^ ((4 : ℕ)⁻¹ : ℝ)) ^ 4
+        = (Fintype.card F : ℝ) - (G.card : ℝ) :=
+      Real.rpow_inv_natCast_pow hqn (by norm_num)
+    rw [hsq4, hroot4]
+  -- 4-th root monotonicity: `‖η‖⁴ ≤ R⁴` with `0 ≤ R` gives `‖η‖ ≤ R`.
+  have hpow_le : ‖eta ψ G b₀‖ ^ 4 ≤ R ^ 4 := by rw [hR4]; exact hquartic
+  exact le_of_pow_le_pow_left₀ (by norm_num) hRnonneg hpow_le
+
 end ArkLib.ProximityGap.EtaQuarticUncond
 
 #print axioms ArkLib.ProximityGap.EtaQuarticUncond.card_fiber_le_card
 #print axioms ArkLib.ProximityGap.EtaQuarticUncond.rEnergy_two_le_card_cubed
 #print axioms ArkLib.ProximityGap.EtaQuarticUncond.eta_quartic_le_uncond
+#print axioms ArkLib.ProximityGap.EtaQuarticUncond.eta_le_uncond_norm
