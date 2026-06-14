@@ -458,3 +458,55 @@ All ten converge on: **the deep-order sub-Gaussianity / additive-energy validity
 to depth `r ≈ ln p`** — measured ≪1 with room to spare, proven at low order and in the norm regime,
 asymptotically open (the recognized $1M core). No fabricated closure; the open step is named, located
 ten ways, and numerically airtight.
+
+## 15. SIX-TECHNIQUE WORKFLOW (adversarially verified) — definitive synthesis
+
+A 7-agent Workflow attacked the precise residual from six techniques in parallel, each
+adversarially verified (no claimed bound survived that a skeptic could refute). **VERDICT: the
+prize regime (n=2^40) is NOT closed by any technique; all six returned `reconfirms_wall` as
+rigorously-proven NEGATIVE/localization results.** The honesty contract held — zero false closures.
+
+### Genuinely-new VERIFIED results (the value of the exhaustive pass)
+1. **The κ_r = kA_r + kD_r decomposition (sharpest localization).** The archimedean (char-0) part
+   `kA_r = (2r−1)!!·(1 − r(r−1)/2n + O(1/n²)) ≤ 1` (Lam–Leung) deviates only at depth `r_half =
+   Θ(√n)`. Since `√n = 2^20 ≫ r_opt = ln q ≈ 110` at the prize, **kA_r is unconditionally clean at
+   prize scale — the ENTIRE residual is the mod-q defect `kD_r`.** Equidistribution / analytic
+   theory (Habegger, Kowalski–Untrau) governs *only* kA_r; it is structurally blind to kD_r.
+2. **Well-roundedness is a NO-GO AMPLIFIER (not a tool).** For the ℓ^∞ house-box, well-roundedness
+   (Fukshansky–Petersen) + Banaszczyk smoothing **pin the lattice point-count two-sided at
+   `Θ((4r)^N/q)`** — exp(N) above the baseline `n^{2r}/q`. The matching *lower* bound proves no
+   loose-upper-bound rescue exists: norm-blind geometry of numbers provably cannot see the
+   sparse-support arithmetic subvariety. (The Euclidean form is *strictly worse than trivial*.)
+3. **Dyadic √2 house floor (new, proven).** Every nonzero *balanced* sparse ±sum of 2^μ-th roots
+   of unity has `house ≥ √2`, with no balanced house in `(1, √2)` (floor at `ζ^a − ζ^{a+n/4}`) —
+   lifting the worst-case house bound from Habegger/Myerson's exponentially-small `(n+1)^{−p}` to a
+   constant in the dyadic case. (But `|N|≥2` is automatic, so it doesn't advance δ*.)
+4. **Large-sieve finite-φ artifact.** Averaging over q is *strictly weaker* than fixing one q
+   (covering depth `r ≲ ½log_n Q`, vs per-q norm reach `2log_n q`): the favorable large-norm
+   thinning collapses because `Q^{1/φ} → 1` at `φ = 2^31`, so essentially every defect-difference
+   reaches norm ≥ Q.
+5. **Cohomology Betti = ambient dimension for r ≥ 3.** The energy torus has Adolphson–Sperber Betti
+   `~ n^{2r}` = the ambient count, so Weil/Deligne square-root cancellation buys nothing past the
+   r=2 (bounded-genus-curve) 4th moment.
+6. **Cross-parity leak structure (the one structured feature).** 96–100% of defects satisfy
+   `A ≡ −g·B mod q` with A,B both nonzero in ℂ — a specific bilinear resonance, the only non-generic
+   structure any technique surfaced; the natural target for a future attack.
+
+### The precise open residual (final, recognized open, literature-concordant)
+> For `r ≈ ln q`, `κ_r ≤ 1` ⟺ `D_r(μ_n) = E_r^{F_q} − E_r^{ℂ} ≤ n^{2r}/q`: the sparse ≤2r-term
+> differences of 2^40-th roots of unity that vanish mod the **fully-split degree-1 prime
+> `𝔮 ⊂ ℤ[ζ_{2^40}]`** (N(𝔮)=q) do not cluster at 0 beyond baseline. ≡ `max_b|η_b| ≤ √(2n ln q)` ≡
+> growing-n Gauss-period sub-Gaussianity ≡ Paley-graph eigenvalue ≡ **fully-split ideal-SVP count**.
+
+Confirmed open from all six techniques + the literature: **Pan–Xu (EUROCRYPT'21)** prove cyclotomic
+ideal-SVP poly *only for non-split q* and explicitly exclude the fully-split `N(𝔮)=q` case = the
+prize; **Cheng et al.** equate the count to house lower bounds (only exponential worst-case known);
+**BGK** give best proven sup-norm `n^{1−o(1)}`. The obstruction is an **arithmetic / resonant-
+divisibility count over a thin sparse-support subvariety mod the split prime** — precisely why every
+archimedean, geometric, additive-energy, and cohomological tool is structurally blind to it.
+
+### Most promising future direction (honest)
+Attack `kD_r` directly as a sparse-arithmetic count mod the fully-split `𝔮`, exploiting the
+cross-parity leak `A ≡ −g·B`, via a **fully-split ideal-SVP / split-prime house upper bound** — the
+exact gap Pan–Xu and Cheng et al. leave open. No closure should be expected without genuinely new
+number theory; this is a direction, not a mechanism.
