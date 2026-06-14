@@ -33,7 +33,7 @@ Issue #407.
 
 open ArkLib.ProximityGap.GaussPeriodMomentBound
 
-namespace ProximityGap.Frontier.GaussPeriodOptimizedBound
+namespace ArkLib.ProximityGap.GaussPeriodOptimizedBound
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
@@ -108,10 +108,7 @@ theorem eta_sq_le_optimized {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
       _ = 2 * (r : ℝ) := by push_cast; ring
   calc ‖eta ψ G b‖ ^ 2
       ≤ q ^ ((r : ℝ)⁻¹) * (Nat.doubleFactorial (2 * r - 1) : ℝ) ^ ((r : ℝ)⁻¹) * nc := hstep1
-    _ ≤ Real.exp 1 * (2 * (r : ℝ)) * nc := by
-        gcongr
-        · exact hbq
-        · exact hbd
+    _ ≤ Real.exp 1 * (2 * (r : ℝ)) * nc := by gcongr
     _ = 2 * Real.exp 1 * nc * (r : ℝ) := by ring
 
 /-- **The optimized Gauss-period bound (norm form).**  `‖η_b‖ ≤ √(2e · |G| · r)` — the
@@ -126,7 +123,7 @@ theorem eta_le_optimized {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
   calc ‖eta ψ G b‖ = Real.sqrt (‖eta ψ G b‖ ^ 2) := (Real.sqrt_sq (norm_nonneg _)).symm
     _ ≤ Real.sqrt (2 * Real.exp 1 * (G.card : ℝ) * (r : ℝ)) := Real.sqrt_le_sqrt hsq
 
-end ProximityGap.Frontier.GaussPeriodOptimizedBound
+end ArkLib.ProximityGap.GaussPeriodOptimizedBound
 
-#print axioms ProximityGap.Frontier.GaussPeriodOptimizedBound.eta_sq_le_optimized
-#print axioms ProximityGap.Frontier.GaussPeriodOptimizedBound.eta_le_optimized
+#print axioms ArkLib.ProximityGap.GaussPeriodOptimizedBound.eta_sq_le_optimized
+#print axioms ArkLib.ProximityGap.GaussPeriodOptimizedBound.eta_le_optimized

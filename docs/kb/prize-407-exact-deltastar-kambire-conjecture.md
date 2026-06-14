@@ -1625,3 +1625,28 @@ moment recursion provably does NOT cross this gap (the L^∞ alignment obstructi
 averaging). Remaining proof strategies (Stepanov depth-r collision count, multiplicative→additive energy,
 Katz effective flatness, completion/large-sieve) were rate-limited before completing; they are the only
 candidates for a provable bound (likely n^{1−δ}, not √n) or a dyadic improvement past the boundary.
+
+## LANDED — the optimization step formalized: `GaussianEnergyBound at r≈ln q ⟹ ‖η_b‖ ≤ √(2e·n·ln q)`
+
+`GaussPeriodOptimizedBound.lean` (axiom-clean `[propext, Classical.choice, Quot.sound]`, real
+`lake build`). Closes the previously-INFORMAL final step of the reduction — `GaussPeriodMomentBound`'s
+docstring said "minimizing `M_r` over `r` (optimum `r*≈ln q`) yields `√(2n ln q)`" but only the
+**per-order** bound `‖η_b‖² ≤ (q·(2r-1)‼·n^r)^{1/r}` was machine-checked. Now the optimization is too:
+
+- `doubleFactorial_le_pow`: `(2r-1)‼ ≤ (2r)^r` (crude; product of `r` odd factors each `≤ 2r`).
+- `rpow_inv_le_exp_one`: `q^{1/r} ≤ e` for any order `r ≥ log q` — the field-size collapse that
+  makes `r ≈ ln q` optimal.
+- `eta_sq_le_optimized`: from `GaussianEnergyBound G r` at `1 ≤ r`, `log q ≤ r`:
+  `‖η_b‖² ≤ 2e·|G|·r`. At `r = ⌈ln q⌉`: `‖η_b‖² ≤ 2e·|G|·⌈ln q⌉`.
+- `eta_le_optimized`: `‖η_b‖ ≤ √(2e·|G|·r)` — the √-cancellation sup-norm, constant `√(2e)≈2.33`
+  (the sharp `√2` needs Stirling `(2r-1)‼∼√2(2r/e)^r` in place of the crude `(2r)^r`).
+
+**Status of the chain (all conditional links now PROVEN + formalized):**
+`GaussianEnergyBound G r` (hyp) ⟹ `‖η_b‖²≤(q·(2r-1)‼·n^r)^{1/r}` (`GaussPeriodMomentBound`, proven)
+⟹ `‖η_b‖ ≤ √(2e·n·ln q)` (`GaussPeriodOptimizedBound`, proven) ⟹ `WorstCaseIncompleteSumBound`
+⟹ interior δ\* consumer chain. The char-0 input `GaussianEnergyBound` is proven (Lam–Leung,
+`GaussianEnergyFromPairing`), and its char-`p` transfer is proven for `q > (2r)^{n/2}`
+(`EffectiveTransfer`). **The SOLE open residual is unchanged**: the char-`p` transfer of
+`GaussianEnergyBound` at the prize parameters (`n=2^μ`, `q≈n^4`, `r≈ln q`), i.e. the Anomaly
+Suppression inequality = BGK/Paley √-cancellation. The entire scaffold around that one inequality
+is now machine-checked end to end.
