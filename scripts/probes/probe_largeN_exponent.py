@@ -60,11 +60,11 @@ def verify_modmul():
 
 def main():
     assert verify_modmul(); print("modmul verified OK (overflow-safe)\n")
-    rng=np.random.default_rng(407); S=2_000_000
+    rng=np.random.default_rng(407); S=800_000
     print(f"LARGE-n exponent test (beta=4, sample S={S}, EV-extrapolate to full population)")
     print(f"{'n':>6} {'p':>16} {'log2(p/n)':>9} {'sampleMax':>10} {'C_eff':>7} {'impliedB':>10} {'a=logB/logn':>11}")
     rows=[]
-    for n in (128, 256, 512, 1024, 2048):
+    for n in (128, 256, 512, 1024):
         p=find_p(n,4.0)
         if p >= (1<<47):
             print(f"{n:>6} p={p} exceeds 2^47 (modmul limit) -- skip"); continue
