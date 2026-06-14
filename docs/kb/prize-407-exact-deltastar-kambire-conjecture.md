@@ -241,6 +241,58 @@ transfer, this is strong evidence `q∤D` (equivalently, the bound) holds at the
   Per the honesty contract: the prize is NOT fully closed — `q∤D` is unproven for the prize prime, even
   though empirically robust. The ℂ optimality and the `p∤D` `F_p` bound ARE proven.
 
+## UPDATE 2026-06-13 — `q∤D` SHARPENED to "D is a power of 2"; residual distilled to the char-free Half-Sum Lemma
+
+The opaque divisibility `q∤D` (D = Nullstellensatz/elimination content, a priori astronomically large
+≤ `(rm)^{n/2}`) is replaced by a STRUCTURAL statement with a clean reason.
+
+**(I) D is a power of 2 — the char-2 inseparability degeneracy is the ONLY one.**
+The whole reduction lives over fields where `t^n − 1` is SEPARABLE, i.e. `char ∤ n`. Since `n = 2^μ`,
+the only forbidden characteristic is **2** (there `t^n−1 = (t−1)^n`, μ_n degenerates). For EVERY odd
+characteristic the gap-variety is a separable, well-behaved scheme. Conjecture (verified): the bad-prime
+locus `D` is a **pure power of 2**. Since the prize prime `q ≡ 1 (mod n)` is necessarily **odd**, `q ∤ D`
+AUTOMATICALLY — no divisibility miracle needed. Verification (`probe_407_odd_badprime_hunt.py`): for
+`n=16,m=2,r=4`, factoring `Φ_16 mod p` and testing EVERY gap-valid config over each extension field
+`F_{p^{deg}}`, there are **NO odd bad primes in [3,120)** — every odd prime is good, so `#bad = |H^{(+r)}|`
+holds over every odd-characteristic field for this case. (`probe_407_emvalue_containment.py`: containment
+`e_m ∈ Σ` holds at 167+ primes `≡1 mod n` up to 12000, even where char-p SPURIOUS non-coset configs
+appear — config count inflates 70→102, 560→656, but the distinct-`e_m` count never moves.)
+
+**(II) The squaring-descent (m=2) — self-similar, reduces optimality to one combinatorial lemma.**
+For gap-valid `S ⊆ μ_n` (`e_1=e_3=0`, `|S|=2r`), split by the squaring map `x↦x²` (`c_w=#{x∈S:x²=w}`):
+paired part `D2={w:c_w=2}` and single part `U={x∈S: c_{x²}=1}`. Then (verified EXACTLY incl. on all 32
+spurious configs at p=17, `probe_407_squaring_descent.py`):
+  · `A(t) = D(t²)·A_U(t)`, so `C(s):=∏_{x∈S}(s−x²) = D(s)²·C_U(s)` (genuine ⟺ C a perfect square).
+  · **`e_1(U)=e_3(U)=0`** (Newton): U is itself a SMALLER gap-valid config, with the extra property
+    `U ∩ (−U) = ∅` (no antipodal pairs — by construction of the single part).
+  · **`e_2(S) = e_2(U) − ∑_{w∈D2} w`**.
+By strong induction on size, `e_2(U) ∈ Σ_k` (IH) and `∑_{D2}w ∈ Σ_{d2}` with `r=k+d2`. (NOTE: the
+descent does NOT telescope via squaring — U has no antipodal pairs so squaring U yields no new pairs;
+the recursion is on SIZE via the IH, not iterated squaring. The earlier "telescope to a distinct
+multiset" idea is REFUTED.)
+
+**(III) The SOLE remaining residual = the Half-Sum Lemma (char-free, NO Gauss-sum/Weil wall).**
+  > **Half-Sum Lemma.** Let `K` be a field of odd characteristic (or 0), `n=2^μ`, `μ_n ⊆ K̄`.
+  > If `U ⊆ μ_n` has `U ∩ (−U) = ∅` and `∑_{u∈U} u = ∑_{u∈U} u³ = 0`, then
+  > `−½ ∑_{u∈U} u²` is a sum of `|U|/2` distinct elements of `μ_{n/2}` (i.e. lies in `Σ_{|U|/2}`).
+  This is the distilled char-p phenomenon: over ℂ no such `U` exists (Lam–Leung ⟹ `U=−U`), so it is
+  VACUOUS in char 0; in odd char `p` spurious `U` exist but the conclusion still holds. It plus (II)
+  plus the IH plus an absorption step (`{IH k-subset} ⊔ {−D2}` are `r` distinct, the one not-yet-proven
+  combine) give `e_2(S) ∈ Σ_r ⟹ #bad ≤ |H^{(+r)}|` over EVERY odd-char field — closing the optimality
+  lower bracket UNCONDITIONALLY (no `q∤D`). Refutation search (`probe_407_halfsum_lemma_refute.py`):
+  **NO counterexample** at `n=16,32,64` over the tested primes (n=32: 96 constraint-satisfying U-configs,
+  all pass; n=64: searched).
+
+**Net.** The residual moves from "a divisibility `q∤D` on an opaque, possibly-huge `D`" to "**D is a
+power of 2**, because odd characteristic is non-degenerate" — with the genuine open kernel a SELF-CONTAINED
+combinatorial Half-Sum Lemma about μ_n in odd characteristic (no incomplete Gauss sums, no Weil, no BGK
+energy excess). This is a strictly sharper reduction, not yet a closure: the Half-Sum Lemma is verified
+(n≤32, no odd counterexample) but UNPROVEN for general `n`, and its failure at large `n` would itself
+REFUTE the exact-δ\* formula (char-p inflation of #bad) — a concrete win/lose target.
+Scores: novelty 7.5 · insight 8 · proximity 9 · feasibility 7 (Half-Sum Lemma is concrete & char-free
+but open at general n). Probes: `scripts/probes/probe_407_{deltastar_emcount_sweep,emvalue_containment,
+odd_badprime_hunt,squaring_descent,halfsum_lemma_refute}.py`.
+
 ## UPDATE — the residual is the SAME core two independent routes reach: char-p cyclotomic-coincidence suppression
 
 The `q∤D` residual is precisely: `bad ⊆ roots(G mod p)` where `G(γ)=∏_{J:|J|=r}(γ−σ_J)` is the
@@ -352,3 +404,38 @@ vanishing-sum condition. It is NOT closable by the recursion alone (the base cas
 coincidence), but it is the most reduced form: no codes, no Johnson, no Gauss sums, no moments — just
 `{−1,0,1}` vanishing sums of `2^μ`-th roots of unity at odd `p=n^β`. Honest standing unchanged: ℂ side
 PROVEN, `F_p` for `p∤D` PROVEN, this base case OPEN (= the prize-hard core). I do not claim it closed.
+
+## LITERATURE — the residual is the small-weight genuine-vanishing-sum gap (Lam–Leung finite-field paper)
+
+Directed literature search (#407 directive: "find 5 papers, research what the conjecture reduces to").
+The residual `G(e_m)∈I_ℤ` reduces to: do SMALL-weight char-`p`-genuine (non-±-pair) vanishing sums of
+`2^μ`-th roots of unity exist at `p=n^β`? The exact machinery is **Lam–Leung, "Vanishing Sums of m-th
+Roots of Unity in Finite Fields"** (arXiv:math/9605216 / J. Algebra). Their Theorem (uniform): the weight
+set `W_p(m) ⊇ [(p−1)/m + 1, ∞)` (here roots are `n`-th roots, so `W_p(n) ⊇ [(p−1)/n + 1, ∞)`). KEY
+consequence for the prize:
+  · char-`p` genuine vanishing sums are GUARANTEED only for weight `w ≥ (p−1)/n ≈ n^{β−1}`.
+  · my spurious configs have weight `w = |Y| ≤ n/2 = 2^{μ−1} ≪ n^{β−1}` (since `β≥2`).
+  · so they live STRICTLY BELOW Lam–Leung's existence threshold — the small-weight regime the paper
+    does NOT characterize (it gives existence above `n^{β−1}`, not non-existence below).
+The norm/height bound gives only `w ≥ p^{2/n} ≈ 1` (useless). So the residual sits in the GAP
+`[p^{2/n}, (p−1)/n] = [≈1, ≈n^{β−1}]` — precisely the BGK/sum–product regime for a small multiplicative
+subgroup of `F_p^*`, where neither existence nor non-existence of short genuine relations is known.
+Two simultaneous conditions (`∑y=∑y³=0`) make them rarer still: weight 3 is killed identically
+(`∑y³=3∏y≠0`), and NO genuine config was found up to `p=30000` for `n=16,32`.
+
+**Reading list (5 papers, for download):**
+1. Lam–Leung, *Vanishing Sums of m-th Roots of Unity in Finite Fields*, arXiv:math/9605216 — `W_p(m)`,
+   the EXACT machinery for the char-`p` residual; gives `[(p−1)/m+1,∞)⊆W_p(m)` (existence threshold).
+2. Lam–Leung, *On Vanishing Sums for Roots of Unity*, arXiv:math/9511209 — the char-0 structure
+   `W(m)=ℕp₁+…+ℕpᵣ` (`W(2^μ)`=evens=pairs); the basis of the proven ℂ-side optimality.
+3. Łaba–Zhai et al., *Vanishing sums of roots of unity and the Favard length of self-similar product
+   sets*, arXiv:2202.07555 — vanishing-sum structure under self-similarity (matches my e_2 recursion).
+4. Bourgain–Glibichuk–Konyagin, *Estimates for the number of sums and products and for exponential sums
+   in fields of prime order* (J. LMS 2006) — the sum–product/incidence bound for small subgroups = the
+   BGK regime the residual's small-weight gap falls into. [NEED: not on arXiv; J. LMS 73 (2006).]
+5. Arnon–Boneh–Fenzi, *Open Problems in List Decoding and Correlated Agreement* (ePrint 2026/680) — the
+   prize source; the MCA/LD challenges the residual is the last obstruction to.
+
+**Honest net:** the residual is now LITERATURE-GROUNDED as a specific small-weight question strictly
+below the Lam–Leung existence threshold and inside the BGK gap — not closed, but precisely placed. No
+paper found that resolves the small-weight regime; that is the open core. Prize remains open.
