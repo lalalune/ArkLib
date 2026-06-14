@@ -241,6 +241,32 @@ theorem worstCaseIncompleteSumBound_of_centeredDeepMomentBound
         (Real.pow_rpow_inv_natCast (sq_nonneg _) (Nat.one_le_iff_ne_zero.mp hr)).symm
     _ ≤ X ^ ((r : ℝ)⁻¹) := Real.rpow_le_rpow (by positivity) hpow (by positivity)
 
+/--
+Centered deep moments give the downstream additive-energy budget.
+
+This composes `worstCaseIncompleteSumBound_of_centeredDeepMomentBound` with the existing
+`addEnergy_le_of_worstCase` consumer, so a future proof of the centered residual immediately feeds
+the δ-star energy ledger.
+-/
+theorem addEnergy_le_of_centeredDeepMomentBound
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) {G : Finset F} {r : ℕ} {K : ℝ}
+    (hr : 1 ≤ r) (hK : 0 ≤ K) (h : CenteredDeepMomentBound ψ G r K) :
+    (Fintype.card F : ℝ)
+        * (ArkLib.ProximityGap.SubgroupGaussSumFourthMoment.addEnergy G : ℝ)
+      ≤ (G.card : ℝ) ^ 4
+        + (((Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r)
+            ^ ((r : ℝ)⁻¹))
+          * ((Fintype.card F : ℝ) * G.card) := by
+  set M : ℝ :=
+    ((Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r)
+      ^ ((r : ℝ)⁻¹)
+    with hM
+  have hMnonneg : 0 ≤ M := by
+    rw [hM]
+    exact Real.rpow_nonneg (by positivity) _
+  exact addEnergy_le_of_worstCase hψ G hMnonneg
+    (worstCaseIncompleteSumBound_of_centeredDeepMomentBound hr hK h)
+
 /-- A single nonzero period above the centered-moment budget refutes that deep-moment residual. -/
 theorem not_centeredDeepMomentBound_of_period_pow_gt
     {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K : ℝ} {b : F}
@@ -265,17 +291,16 @@ theorem not_subGaussian_of_period_gt {ψ : AddChar F ℂ} {G : Finset F} {m : �
 end ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only.
-#print axioms
-  ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.worstCaseIncompleteSumBound_of_subGaussian
-#print axioms ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.addEnergy_le_of_subGaussian
-#print axioms ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.addEnergy_div_le_of_subGaussian
-#print axioms
-  ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.worstCaseIncompleteSumBound_of_energyAnchor
-#print axioms
-  ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.period_pow_le_of_centeredDeepMomentBound
-#print axioms
-  ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod
-    .worstCaseIncompleteSumBound_of_centeredDeepMomentBound
-#print axioms
-  ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.not_centeredDeepMomentBound_of_period_pow_gt
-#print axioms ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod.not_subGaussian_of_period_gt
+namespace ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod
+
+#print axioms worstCaseIncompleteSumBound_of_subGaussian
+#print axioms addEnergy_le_of_subGaussian
+#print axioms addEnergy_div_le_of_subGaussian
+#print axioms worstCaseIncompleteSumBound_of_energyAnchor
+#print axioms period_pow_le_of_centeredDeepMomentBound
+#print axioms worstCaseIncompleteSumBound_of_centeredDeepMomentBound
+#print axioms addEnergy_le_of_centeredDeepMomentBound
+#print axioms not_centeredDeepMomentBound_of_period_pow_gt
+#print axioms not_subGaussian_of_period_gt
+
+end ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod
