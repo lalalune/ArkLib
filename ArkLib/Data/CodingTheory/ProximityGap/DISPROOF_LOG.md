@@ -8882,3 +8882,145 @@ small primes, not at scale Q. No closure; honesty contract holds. Probes:
 `probe_largesieve_avgq_407.py`, `probe_largesieve_avgq_deep_407.py`, `probe_largesieve_cover_407.py`,
 `probe_largesieve_prizescale_407.py`, `probe_largesieve_finalcount_407.py`,
 `probe_largesieve_secondmoment_407.py`, `probe_largesieve_dual_407.py`.
+
+---
+
+## 2026-06-13 — LARGE SIEVE / AVERAGE-OVER-q, SECOND PASS (Galois dedup + smooth-q + structural no-go)
+
+Re-attack of the same route with the three flagged new levers: (a) Galois/orbit-aware second moment,
+(b) restrict q to a smooth/structured family, (c) a genuine large-sieve inequality for cyclotomic-
+prime divisibility. **Verdict: still refuted as a floor path; but TWO genuinely-new sub-results.**
+
+**NEW PARTIAL RESULT (real, conservative, verified) — the Galois-orbit dedup.** The prior union bound
+overcounts each genuine bad prime q by a measured factor that **plateaus at exactly `n·φ(n) = n²/2`**
+(probe `probe_largesieve_density_407.py`: UB/true → 32 at n=8, 128 at n=16, 512 at n=32, all `= n·φ(n)`).
+Mechanism: `𝔮 | α ⟺ q | N(ζ^k·α)` for all `n` rotations (μ_n orbit) AND `q | N(σ(α))` for all `φ(n)`
+Galois conjugates `σ∈(ℤ/n)^*` — so the distinct α that one rational prime q can be responsible for come
+in orbits of size `n·φ(n)`, all sharing the same q. Direct measurement (raw incidence / true distinct
+bad q) gives 37.8, 43.5, 160.7 — at or ABOVE `n·φ(n)` (32, 32, 128), so the dedup factor `n·φ(n)` is a
+safe LOWER bound and the resulting count bound is conservative. **Exact statement:**
+
+> `B_r(Q) := #{prime q≡1 (mod n) in [Q,2Q] : ∃ nonzero sparse α (≤2r roots), 𝔮|α} ≤ n^{2r−1}·log(2r)/log Q`
+
+(vs prior `n^{2r}·φ·log(2r)/log Q`; improvement factor `n·φ = n²/2` in the count, i.e. `+½` in depth).
+A good EXPLICIT q exists if `Q > n^{2r−1}·φ·log(2r)`. **Regime:** certifies `r ≤ (log_n Q + 1)/2` — a
+constant `+½` over the prior `½log_n Q`, SLOPE 1/2 UNCHANGED. Prize `r≈ln q≈177` still unreached
+(reach 3–16). The dominating `n^{2r}` (sheer count of α) is untouched: dedup removes ONE unit from the
+exponent `2r`, not the slope. Honest: a real sharpening of the union bound, NOT a path to the floor.
+
+**SMOOTH-q FAMILY — definitively NOT a lever (size confound).** A first look (probe `_density`) showed
+bad q have `lpf(m)/m` ~2× larger than good q (m=(q−1)/n). Pinned the mechanism (probe
+`probe_largesieve_smoothm_407.py`): the H1 bucket trend (defect rate falls 67%→0% as `lpf(m)` grows) is
+**entirely a size confound**. The SIZE-CONTROLLED test (H2, restrict to `q > Q/2`): smooth-m vs rough-m
+defect rates are EQUAL — `0.00% vs 0.00%` (n=8,r=4/5; n=16,r=3, all q past the defect cap) and
+`3.09% vs 2.15%` (n=32,r=2, smooth slightly WORSE). Defects live only below the cap `(2r)^φ`; small
+primes happen to have small `m` hence small `lpf(m)` — the smoothness of m is arithmetically independent
+of `q | N(α)`. **Restricting to a smooth/structured q-family removes no defects.**
+
+**STRUCTURAL NO-GO for the large sieve itself.** The bad-q condition `q | N(α)` is a **divisor
+condition** (q is a prime factor of a fixed large integer), NOT a residue-class / equidistribution
+condition. The Montgomery–Vaughan large sieve bounds character sums over RESIDUE CLASSES mod d; it is
+structurally silent on divisor sets. There is no modulus-equidistribution to exploit, so no large-sieve
+inequality can beat the union/first-moment bound here. This is a STRUCTURAL obstruction, not a tuning
+failure — it explains WHY every moment variant reproduces the same wall.
+
+**ALMOST-ALL-q = WORST-CASE-q in ORDER.** Because `D(q) ≥ 0` is an integer defect count,
+`P_q[D(q)≥1] ≤ E_q[D(q)]` (Markov) and `P_q[D(q)≥1] ≥ E_q[D(q)]/max_q D(q)` with `max_q D(q)` small at
+scale Q (a window prime is hit only by heavy-norm α). So the almost-all threshold and the
+first-moment-covering threshold coincide up to a bounded factor — both `Q ~ n^{2r}/(n·φ)`. **Averaging
+buys no order improvement over choosing one q.** The variance can lower the constant, never the slope.
+
+**Net.** Route still REFUTED for the floor; the `n·φ(n)` Galois-orbit dedup is the one genuinely-new
+verified sharpening (constant `+½` in reachable depth); smooth-q is a confound; the large sieve is
+structurally inapplicable to a divisor condition. The prize residual (growing-n Gauss-period house /
+generalized-Paley eigenvalue) is untouched. No closure; honesty contract holds. New probes:
+`probe_largesieve_density_407.py`, `probe_largesieve_smoothm_407.py`.
+
+---
+
+## C076 (#407) — REFUTED: odd-moment law adds NO tightening to the max-atom LP in the prize regime
+
+**Claim attacked.** The proven char-0 odd-moment law `Σ_i η_i^{2k+1} = −n^{2k}` (PR #415) is an
+exact all-`r` left-skew that the even-moment-only (Bessel / Markov–Krein) machinery "throws away."
+Conjecture: re-coupling the odd-moment equalities into the Chebyshev–Markov max-atom LP shrinks the
+far atom `B = max_i |η_i|` below the even-moment Markov bound `min_r E_r^{1/2r}`.
+
+**Premise confirmed (exact).** `probe_C076_moments_exact.py` verifies the odd law by exact integer
+tuple-counting: in char-0 (`q > n^{2k+1}`) the count `T_{2k+1} = #{tuples in μ_n summing to 0 mod p}`
+is `0`, so `Σ η_i^{2k+1} = (q·T − n^{2k+1})/n = −n^{2k}` (e.g. `q=32833, n=8`: `−1,−64,−4096,−262144`).
+The law breaks exactly when char-0 fails (`T>0`), as the connection states.
+
+**Refutation (exact LP).** `probe_C076_lp.py` solves the max-far-atom LP (HiGHS, exact integer moment
+RHS) with even-only rows vs even+odd rows. In every genuine prize-regime case the odd rows are
+**inactive**:
+
+| q | n | β | B_even | B_all | ratio |
+|---|---|---|---|---|---|
+| 32833 | 8 | 5.00 | n (8) | n (8) | **1.0000** |
+| 65537 | 16 | 4.00 | n (16) | n (16) | **1.0000** |
+| 8089 | 8 | 4.33 | n (8) | n (8) | **1.0000** |
+| 8161 | 32 | 2.60 | 26.72 | 23.21 | 0.87 (binds) |
+
+The even moments alone already permit the far atom at the trivial cap `n`; adding the odd rows changes
+nothing. The ONE case where the odd rows bind (`q=8161, n=32, β=2.60`) is **outside the prize regime**
+(`n≈√q`, the #400 small-β trap).
+
+**Mechanism (rigorous, regime-uniform).** `probe_C076_mechanism.py`: the even/odd moment-magnitude
+ratio is
+`p_{2k}/|p_{2k+1}| = E_k / n^{2k} ≈ q·T_{2k}/(n·n^{2k}) = c_k·q/n^{k+1} = c_k·n^{β−k−1}`,
+which is `≫1` for every usable order `k ≤ β−1` once `β ≥ 4` (measured ratios 11×–500× in-regime, →1
+only at `β≈2.6`). A balanced atom pair `{+x,−x}` is **invisible to every odd moment** but contributes
+only `2x^{2k} ≪ E_k` to the even moments. Hence the LP can saturate the far atom at the trivial maximum
+`+n` while matching every even AND odd row by a symmetric bulk adjustment (explicitly verified feasible
+with all 7 rows). The far atom location is set entirely by the even moments.
+
+**Why "every route symmetrizes first" is correct, not wasteful.** `B = max|η_i|` is a *magnitude*; the
+odd moments pin only the *signed asymmetry* of the bulk — an orthogonal degree of freedom that the
+extreme atom does not touch. Symmetrization discards sign information that is genuinely irrelevant to
+`B`. The Markov bound `B^{2r} ≤ Σ η_i^{2r} = E_r` is one-sided by construction and uses only the
+nonnegative even-moment sum; no odd equality can enter it.
+
+**Net.** REFUTED as a tightening of `B` in the prize regime. The max-atom remains bounded only by the
+existing even-moment route `min_r E_r^{1/2r}`; the BGK / generalized-Paley `√`-cancellation core is
+untouched. No closure; honesty contract holds. Probes: `scripts/probes/_407_conn/probe_C076_{moments_exact,lp,mechanism}.py`.
+
+## #407 — NO-GO: the height-gate "structure-aware norm bound" lever cannot reach the prize (2026-06-14)
+
+**Attempt (the c.157/c.159 lever).** The spurious-vanishing height gate (`HeightGateNormBound.gate_2power_antipodal`)
+certifies `NoSpuriousVanishing` (`p ∣ N(Σ_{i∈S}ζ^i) ⟹ S` antipodal) whenever, for every non-antipodal
+`S ⊆ range(n)`, `|N_{ℚ(ζ_n)/ℚ}(Σ_{i∈S}ζ^i)| < p`. The current Lean proof uses the loose house bound
+`(#S)^{φ(n)} = n^{n/2}`, closing only `n ≤ 32` at the prize prime `p ~ 2^128`. c.157/c.159 flagged the
+"realized n=128 norm ~2^131 ≪ house ~2^192" gap and proposed a *structure-aware (resultant/Newton-polygon)
+norm bound* to push the proved-closed regime "well past n=32" — the one concrete formalizable next step.
+
+**Verdict: NO-GO for the prize (the lever is a small-n shadow).** Two facts settle it.
+
+1. **The exact norm of the explicit non-antipodal block `S = {0,…,n/2−1}` is `2^{n/2−1}` (PROVEN, axiom-clean).**
+   `Σ_{i<n/2} ζ^i = (ζ^{n/2}−1)/(ζ−1) = −2/(ζ−1)`; `N(ζ−1) = Φ_{2^a}(1) = 2`, `N(−2) = (−2)^{φ(n)} = 2^{n/2}`,
+   so `N = 2^{n/2−1}`. Formalized in `ArkLib/.../Frontier/BlockSumNormNoGo.lean`
+   (`block_sum_norm`, `block_sum_norm_ge_prize`; `[propext, Classical.choice, Quot.sound]`, real `lake env lean`).
+   This single explicit `S` already has `|N| = 2^{n/2−1} ≥ p` for all `n ≥ 512`, and `2^{2^{29}−1} ≫ p ~ 2^{158}`
+   at the prize point `n = 2^{30}` — a ~5.4×10⁸-bit violation. So *no* norm bound, however tight, makes the
+   gate's `|N| < p` contradiction fire there.
+
+2. **The worst-case `max_S |N|` IS the √-cancellation wall.** Hill-climb over non-antipodal `S` (probe) gives
+   best-found vs the AM-GM/Parseval value `(#S)^{φ(n)/2} = (#S)^{n/4}`: 11.2/12.7, 31.1/32, 78.8/80, 189.6/192
+   (log₂, n=16/32/64/128). So `max_S |N| ≈ (#S)^{n/4}`, crossing `p ~ 2^128` already at `n ≈ 128`. Bounding it
+   below `p` for worst-case `S` is exactly house-maximization = the thin-subgroup BGK problem.
+
+**Net.** REFUTED as a path to the prize. An exact-norm gate closes only to `n ≈ 128–256`; the prize point
+`n = 2^{30}` is unreachable by any norm bound because `max_S |N|` grows super-exponentially (`≈(#S)^{n/4}`,
+exact `2^{n/2−1}` already on the block) while the prize prime stays `~2^128`. The gate's `n ≤ 32` closure
+(§5.0) stands as a genuine small-n shadow; pushing it further is the BGK/Paley √-cancellation core itself.
+No closure; honesty contract holds. Probe: `scripts/probes/probe_heightgate_nogo_407.py`. Lean:
+`Frontier/BlockSumNormNoGo.lean`.
+
+## #407 — VERIFIED (not a refutation): short non-antipodal ±1 excess relations exist at structured primes (2026-06-14)
+
+Confirms the load-bearing c.150/c.151 finding that `GaussianEnergyBound` (`E_r ≤ Wick` at `r≈log m`) is FALSE
+at prize-regime structured primes. Exhaustive search finds weight-4/6 non-antipodal `±1` relations among `μ_n`
+vanishing mod structured `p` (e.g. `p=97,n=16: g⁰+g¹−g³−g⁵≡0`; `p=12289,n=64: g⁰−g¹−g²−g³−g⁷−g²⁵≡0`),
+none decomposable into antipodal pairs. So the min-weight `W(n,p) = O(1)` (NOT `≥ 2⌈log m⌉`), and `E_r^{F_p}`
+crosses the char-0 Wick value near optimal depth — the moment-certificate route stays REFUTED, and `δ*=floor`,
+though empirically true, must be proven by a non-moment, thinness-essential argument.
+Probe: `scripts/probes/probe_short_excess_relation_407.py`.
