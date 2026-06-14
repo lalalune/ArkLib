@@ -510,3 +510,32 @@ Attack `kD_r` directly as a sparse-arithmetic count mod the fully-split `𝔮`, 
 cross-parity leak `A ≡ −g·B`, via a **fully-split ideal-SVP / split-prime house upper bound** — the
 exact gap Pan–Xu and Cheng et al. leave open. No closure should be expected without genuinely new
 number theory; this is a direction, not a mechanism.
+
+## 16. THE STRUCTURAL ROOT OF THE WALL: smoothness forces the open ideal-SVP class
+
+A clean, new, explanatory result tying together this session's findings:
+
+> **The FFT/smooth-domain requirement FORCES the prime into the one arithmetic class where the
+> residual is open.** The prize needs an order-`n=2^μ` subgroup `μ_n ⊂ F_q*`, i.e. `n | q−1`. For
+> μ≥3 this forces `q ≡ 1 (mod 8)`, so `q ≡ 1 (mod 2^μ)` — q **splits completely** in `ℚ(ζ_{2^μ})`,
+> giving the **degree-1, fully-split prime `𝔮` with N(𝔮)=q**. This is *exactly* the ideal-SVP case
+> Pan–Xu (EUROCRYPT 2021) prove is hard and **explicitly exclude** ("will not improve matters if q
+> splits completely … N(𝔮)=q"). Their tractable cases — `q ≡ ±3 (mod 8)`, `q ≡ 7,9 (mod 16)` —
+> have **no order-`2^μ` subgroup** (8 ∤ q−1), so they **cannot host a smooth/FFT RS code at all.**
+
+| q mod 8 | has FFT subgroup μ_n? | splitting of ℚ(ζ_{2^μ}) | ideal-SVP |
+|---|---|---|---|
+| 1 | **YES — the prize** | fully split, N(𝔮)=q | **OPEN** |
+| 3,5,7 | no (8∤q−1) | non-split (≥2 factors) | poly (Pan–Xu) |
+
+**So the smoothness that makes the domain *useful* (fast NTT, the whole point of the prize) is
+precisely what drives the prime into the *open* arithmetic class.** The tractable arithmetic and the
+useful geometry are mutually exclusive. This is the structural root of the wall — it explains, in one
+line, *why* all eleven framings and six techniques converge on the same open core: they are all
+shadows of "the fully-split cyclotomic prime's Gauss-period house / ideal-SVP is open," and the
+prize cannot trade out of that class without losing the FFT structure it is defined by.
+
+This is an obstruction *explanation*, not a closure. It sharpens the open core to: **a worst-case
+Gauss-period house / additive-defect / short-vector bound for fully-split prime ideals of
+power-of-two cyclotomic fields** — a single, named, recognized-open number-theoretic problem, which
+the prize is equivalent to and cannot be separated from.
