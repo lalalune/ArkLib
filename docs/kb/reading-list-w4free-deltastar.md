@@ -183,3 +183,63 @@ the SUBSET-level excess need not promote the deployed distinct-bad-SCALAR count 
 issue's collision-capping/cliff-confinement claim — which my probes could not resolve at n=32 because
 the deep-band scalar enumeration is computationally out of reach; that scalar-level faithfulness, not
 subset-level, is the actual prize gate and remains the open input.)
+
+## 2026-06-14 — R-THIN via the SPARSE-POLYNOMIAL-ON-ROOTS-OF-UNITY literature (fewnomial / vanishing-sums)
+
+R-thin reformulated (issue #407 sparse-poly form): `P(x)=x^a+γx^b−c(x)`, `deg c < k`, is a
+`(k+2)`-term (`t`-sparse, `t=k+2`) polynomial; `S = {x∈μ_n : P(x)=0}` (`n=2^μ`) is the agreement
+set of a monomial line vs a single deg-`<k` codeword. Claim was: every "genuinely ragged" `S`
+(not a `μ_{d'}`-coset-union) has `|S| ≤ √(nk)` (Johnson). The relevant body of work is the
+**fewnomial-roots-of-unity / vanishing-sums** literature (NOT a character-sum estimate):
+
+1. **Beukers–Smyth, "Cyclotomic points on curves"** (Number Theory for the Millennium I, 2002;
+   webhomes.maths.ed.ac.uk/~chris/preprints/beukers_smyth.pdf). MAIN THEOREM: a plane curve
+   `f(x,y)=0/ℂ` has either `≤ 22·V(f)` cyclotomic points (`V` = Newton-polytope area; sharper
+   `4V` non-reciprocal; Bézout-equivalent `11(deg f)²`) **or infinitely many, the latter iff `f`
+   has a factor `xⁱyʲ−ω`** (a torsion coset). So roots-of-unity solutions split as
+   **(finitely many ISOLATED points) + (families on torsion cosets `xⁱyʲ=ω`)** — EXACTLY the
+   R-thin "ragged-minus-coset vs coset-union" dichotomy. §2 gives the univariate cyclotomic-part
+   algorithm. THE structural source for R-thin.
+
+2. **Mann, "On linear relations between roots of unity"** (Mathematika 12, 1965) + **Conway–Jones,
+   "Trigonometric diophantine equations (on vanishing sums of roots of unity)"** (Acta Arith. 30,
+   1976). A NON-DEGENERATE vanishing relation `Σ_{e∈T} c_e ω^e = 0` (no proper subsum vanishes)
+   forces all `ω^e` to be `d`-th roots with `d = ∏ pᵢ`, `Σ(pᵢ−2) ≤ |T|−1` (Conway–Jones; Mann:
+   `pᵢ ≤ |T|`). **For `μ_n`, `n=2^μ`, the only prime is 2 ⟹ the only minimal 2-power relation is
+   `z+(−z)=0`** — every structured (coset) part is antipodal-built (matches in-tree
+   `LamLeungTwoPow`/`LamLeungMultisetAntipodal`, `W(2^μ)=ℕ·2`). The non-antipodal mass is the
+   isolated part.
+
+3. **Schlickewei (1996) / Evertse, "The number of solutions of linear equations in roots of unity"**
+   (Acta Arith. 89, 1999; pub.math.leidenuniv.nl/~evertsejh/98-roots.pdf). DECISIVE BOUND: the
+   number of NON-DEGENERATE solutions of a `t`-term equation `a₁x₁+···+a_tx_t=0` in roots of unity,
+   for **arbitrary COMPLEX coefficients** (char 0), is `≤ (t+1)^{3(t+1)²}` (Evertse's exact constant;
+   exponent `3` improvable to `2+ε`; Mann/Conway–Jones give `≤ e^{c·t}`-type variants for ℚ-coeffs)
+   — **depending ONLY on `t` = the number of terms, NOT on the order `n` of the roots.** For R-thin
+   `t=k+2`, so the isolated count is `≤ (k+3)^{3(k+3)²}`, n-independent. The citable theorem behind
+   R-thin's isolated part.
+
+### Verdict: the literature REFUTES R-thin as literally stated, but SHARPENS the correct quantity
+- **Literal R-thin is FALSE** (char-0 numerics, exact, n=8,16): a set `μ_8 ∪ {one extra point}`
+  (`|S|=9` at `n=16,k=2`) is "ragged" by the strict not-a-pure-coset-union definition yet exceeds
+  `√(nk)=5.66`. Mechanism: the binomial `x^a+γx^b` vanishes on a large coset family, the deg-`<k`
+  part adds a few isolated points; "coset ∪ few points" is wrongly classified ragged.
+- **The CORRECT R-thin = Beukers–Smyth isolated part** (S minus all maximal `μ_d`-coset families).
+  Char-0 numerics (exact `n≤16`, sampled `n≤128`): the isolated count is **`n-INDEPENDENT`** —
+  fixed `k=2,3` give isolated `=4` flat across `n=16→128` (while `√(nk)` grows). At rate `ρ=k/n`
+  the isolated count scales `~2k–1` (linear in `k`, indep of `n`), `≪ √(nk)` for `n≫k`. This is
+  exactly the Schlickewei/Evertse degree-independence and is **STRONGER than Johnson** in the thin
+  (prize) regime.
+- **But NO usable explicit constant.** Evertse's `k^{3k²}` is astronomical vs the prize budget
+  `q·ε*≈n`; Mann/Conway–Jones constants are likewise exponential in `k`. So the literature gives
+  the right SHAPE (term-count-bounded, n-independent ragged part) and the right STRUCTURE
+  (coset+isolated, antipodal-only cosets at `2^μ`) but does not deliver the tight `≤budget` bound
+  the lower bracket needs at prize rate `k=n/4` — there the measured `~2k=n/2=√(nk)` coincides with
+  Johnson and the constant must come from the realizability/Hankel (single-deg-`<k`) constraint the
+  count-level theory discards (consistent with the issue's "realizability is the live lever").
+
+### Probes (char-0 exact + sampled): `/tmp/rthin_*.py`, `/tmp/isolated_*.py`, `/tmp/nindep_check.py`
+Honest net: the sparse-poly route is the RIGHT framing (the ragged/coset dichotomy IS Beukers–Smyth
+isolated/torsion-coset; the n-independence IS Schlickewei–Evertse) and improves the demand-side
+characterization from `√(nk)` to a term-count-bounded n-independent ragged count — but supplies no
+prize-tight constant. Companion open input unchanged: realizability + char-p transfer of the count.

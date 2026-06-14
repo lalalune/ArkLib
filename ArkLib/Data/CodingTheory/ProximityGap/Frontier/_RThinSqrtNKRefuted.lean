@@ -59,10 +59,24 @@ is *not* contained in any single `m'·ℤ` (`m' > 1`), so its root set is ragged
 large (`n/2 + 1`).  The ragged part is therefore **not** Johnson-bounded; the correct
 ceiling is `Θ(n)`, governed by the polynomial degree, not `√(nk)`.
 
+## Scope of the refutation (what survives)
+
+Only the **raw-size** form `|S_ragged| ≤ √(nk)` is refuted.  In the counterexample the
+ragged set decomposes as `S = (μ_m-coset of size m = n/2) ∪ {one straggler}`: the
+*coset-union core* is `n/2` and the **ragged excess** over that core is just `1 = O(k)`.
+So the **salvageable** (and prize-relevant) statement — *"the ragged excess of `S` over its
+largest coset-union core is `O(k)` (equivalently `√(nk)` after the core is subtracted)"* —
+is **not** refuted here, and matches the in-tree autocorrelation bound
+`|S| ≤ n/(2d) + Θ(s)` (the `n/(2d)` is the coset core; only the additive `Θ(s)` is genuine
+ragged content).  The takeaway: any R-thin reduction must bound the **excess**, not the raw
+size — a Mann/Lam–Leung argument on the *coefficients* cannot give `√(nk)` on `|S|` because
+the coefficients are arbitrary field elements (not roots of unity), and a few-term-sparse
+`Q_S` with non-progression support has a large ragged root set.
+
 This does **not** touch the genuine δ* open core: the prize lower bound only needs the
 **coset-union** (Kambiré) bad-side count at the edge, and the in-tree
 `badScalar_charP_card_le_charZero` monotonicity is unaffected.  It removes one *proposed
-reduction* (the sparse-poly Johnson bound) as a dead end.
+reduction* (the raw-size sparse-poly Johnson bound) as a dead end.
 -/
 
 namespace ProximityGap.Frontier.RThinSqrtNKRefuted
