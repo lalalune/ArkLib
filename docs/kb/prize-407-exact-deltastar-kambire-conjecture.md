@@ -649,3 +649,42 @@ that a uniform proof needs arithmetic/analytic methods in the split regime, not 
 **Frontier, final form.** PROVEN n=8,16 (finite candidate-prime method); verified n=32 (380 primes),
 n=64. Open core = uniform Half-Sum Lemma, a non-constructive char-p structure statement Lam–Leung leave
 open. Probe: `probe_407_halfsum_mechanism_ruleout.py`.
+
+## UPDATE 2026-06-13 (tool landscape) — every attack on the uniform Half-Sum Lemma maps to the Johnson-vs-open gap
+
+Cross-domain literature sweep (verified papers) for tools to prove the uniform Half-Sum Lemma. Result:
+**no existing theorem proves it**, and the landscape of attacks each fails for a precise, identifiable reason:
+
+- **PROVABLY BLOCKED — Z/2^μ uncertainty principle.** Tao's sharp `|supp f|+|supp f̂|≥p+1` (arXiv:math/0308286)
+  needs PRIME order (Chebotarev: all DFT minors ≠0), which FAILS for composite/prime-power modulus.
+  Murty–Whang (LAA 437, 2012) degrades to the trivial product bound for `Z/2^μ`; the 2024 frontier
+  (Loukaki arXiv:2412.08600) reaches only `N=pq`, never prime powers. So no `Z/2^μ` Fourier-support bound
+  exists off the shelf — the Fourier-flat reformulation route is dead.
+- **REACHES ONLY JOHNSON — Stepanov method (Weil-free).** Hanson–Petridis "Refined estimates concerning
+  sumsets contained in the roots of unity" (arXiv:1905.09134, PLMS 2020) and Kalmynin "On additive
+  irreducibility of multiplicative subgroups" (arXiv:2504.10202, 2025) pin `A±B` structure of `μ_d⊆F_p`
+  Weil-free — the RIGHT hammer — but Stepanov bounds are Johnson-type; the prize is BEYOND Johnson, so it
+  cannot reach. (Per the directive: anything reducing to Johnson is discarded.)
+- **UNEXPLORED, likely non-transferable — slice rank / Croot–Lev–Pach.** Sauermann (arXiv:1904.09560) is the
+  closest "distinct elements summing to zero" via slice rank, but lives in `F_p^n` (product structure); a
+  single multiplicative subgroup `μ_n⊆F_p` lacks the tensor structure slice rank needs, with TWO power-sum
+  constraints. Genuinely untried, but no reason it transfers.
+- **RULED OUT — combinatorial structure** (this lane): pairing & subset-of-`U²` certificates hold at n=16
+  but fail at n≥32 (above) — the realizing k-subset is global/non-constructive.
+
+**Closest char-p structural result that exists:** Dvornicich–Zannier "Sums of roots of unity vanishing
+modulo a prime" (Archiv Math 79, 2002, DOI 10.1007/s00013-002-8291-4) — extends Conway–Jones to mod-ℓ
+congruences, but order-general (not 2^μ/split) and no power-sum/antipodal structure.
+
+**Reading list additions (verified this sweep):** Dvornicich–Zannier (Archiv Math 79, 2002); Kalmynin
+arXiv:2504.10202; Hanson–Petridis arXiv:1905.09134; Yip arXiv:2309.10950; Sauermann arXiv:1904.09560;
+Kumar–Senthil Kumar arXiv:1503.07281; Murty–Whang (LAA 437, 2012); Loukaki arXiv:2412.08600;
+Díaz Padilla–Ochoa Arango arXiv:2310.09992; Konyagin–Shparlinski–Vyugin arXiv:2005.05315.
+
+**NET (definitive frontier).** The uniform Half-Sum Lemma sits exactly in the gap between Johnson-reaching
+tools (Stepanov/Weil — too weak) and an OPEN structure problem (char-p `2^μ`-th-root vanishing sums in the
+split regime — Lam–Leung leave it open, no post-1997 result closes it, the sharp Fourier tool is blocked at
+composite modulus). PROVEN n=8,16; verified n=32,64. This is a *complete map* of why the prize is hard:
+not a missing computation, but a genuine open problem requiring new arithmetic in a literature-confirmed gap.
+The one untried plausible attack is redirecting the Hanson–Petridis/Kalmynin Stepanov machinery at
+power-sum-constrained antipodal-free subsets — a research program, not an off-the-shelf citation.
