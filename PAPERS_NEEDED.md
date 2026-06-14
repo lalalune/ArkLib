@@ -283,3 +283,67 @@ and the only non-moment hope is a Stepanov/Burgess amplification that does not y
 - arXiv:1905.07355 — Costa-Dalai, gap in slice rank of k-tensors. Slice rank fails for >=8-term systems; energy is in the weak regime.
 - arXiv:2304.13801 / 2309.09124 — Hanson-Petridis, additive decompositions / multiplicative structure of shifted subgroups. Most-adaptable Stepanov refinement; still cannot break the degree-vs-multiplicity balance.
 - Slice-rank survey (Surveys in Combinatorics 2024, Cambridge) — confirms slice rank is an avoidance-size method needing F_q^n; no subgroup-energy application exists.
+## 2026-06-14 (#407) — the SHARP residual object: growing-n Gauss-period sup-norm (5 new papers)
+
+This session re-derived (from independent probes, `scripts/probes/probe_moment_growth_law_407.py`) that
+the prize floor is, *exactly*, the worst-case incomplete subgroup sum
+`B(μ_n) = max_{b≠0}|Σ_{x∈μ_n} e_p(bx)|`, and that **`b ↦ Σ` is constant on μ_n-cosets** (proven:
+`GaussPeriodCosetReduction.eta_mul_invariant`), so `B = max` over the **`m=(p−1)/n` Gauss periods** of
+the order-`n` subgroup. The empirical law is `B = (1+o(1))·√(n·log₂((p−1)/n))` (constant ≈ 1, n=8..128).
+The residual is therefore the **growing-n distribution / sup-norm of Gauss periods** = the generalized
+Paley-graph eigenvalue (Paley Graph Conjecture). The 5 papers below bear *directly* on that object (none
+already in `docs/references/proximity-gap-paley-spectrum/`; Kunisky 2303.16475 is already on disk, excluded).
+
+| # | paper | id | URL | bearing on the residual |
+|---|---|---|---|---|
+| P1 | **Kowalski–Untrau, *Ultra-short sums of trace functions*** | arXiv **2302.13670** | https://arxiv.org/abs/2302.13670 | equidistribution of incomplete subgroup/trace sums as the length grows — the exact object `η_b`; gives the *fixed-n* hypocycloid limit. The growing-n sup-norm is the gap. |
+| P2 | **Kowalski–Untrau, *Wasserstein metrics and quantitative equidistribution of exponential sums over finite fields*** (2025) | arXiv **2505.22059** | https://arxiv.org/abs/2505.22059 | **the frontier**: *quantitative* (Wasserstein) equidistribution rate for these sums — the only route to a growing-n tail/sup-norm bound. Get full PDF; check if the rate is uniform enough to bound `max_b` at `n=2^32`. |
+| P3 | **Habegger, *The Norm of Gaussian Periods*** (Q. J. Math 2018) | arXiv **1611.07287** | https://arxiv.org/abs/1611.07287 | rate of convergence in **Myerson's conjecture** for Gauss-period norms — directly the resultant/transfer object `∏_j η_j = Res(f_c, X^n−1)` (`CharSumTransferNoGo`); the norm controls the char-0→F_p transfer threshold. |
+| P4 | **Garcia et al., *Visual aspects of Gaussian periods and analogues*** (IJNT 2024) | arXiv **2308.05220** | https://arxiv.org/abs/2308.05220 | the limiting **geometry** (hypocycloid / bounded support) of the period distribution for fixed n; documents *why* fixed-n gives `B=O(√n)` and growing-n is the open inflation. |
+| P5 | **Randomstrasse101, *Open Problems of 2025*** (Paley-graph problems 25–29) | arXiv **2603.29571** | https://arxiv.org/abs/2603.29571 | compiles the Paley-graph clique/eigenvalue open problems — confirms `B≤2√n ⟺ Ramanujan` and the SoS `O(p^{1/2−ε})` clique conjecture are *recognized 2025 open*, i.e. the prize floor is not a local gap but a frontier wall. |
+
+**Honest scope:** P1/P4 give the *fixed-n* answer (`B=O(√n)`, bounded hypocycloid); P2 is the only
+*quantitative growing-n* lead and is the one to read in full; P3 controls the *transfer* (Myerson norm);
+P5 certifies the wall is a named open problem. None is a closure — consistent with this session's
+moment-arrow NO-GO (`probe_moment_growth_law_407.py`: the only elementary handle provably overshoots).
+
+### 2026-06-14 (#407) — two more, the live-literature confirmation of the wall
+- **Shparlinski, *Open Problems on Exponential and Character Sums*** — https://web.maths.unsw.edu.au/~igorshparlinski/CharSumProjects.pdf — the canonical open-problem list; the growing/small-subgroup incomplete-sum sup-norm (the prize residual) is listed open. Confirms the prize floor is a named open problem, not a local gap.
+- **Bourgain–Glibichuk(–Konyagin), *Bounds on exponential sums over small multiplicative subgroups*** — arXiv **0705.4573** — establishes nontrivial cancellation only for `|H| ≫ p^{3/7}` (later `p^{1/4}` via di Benedetto). Prize `n~p^{1/5}` is BELOW these thresholds ⟹ no published bound applies — the precise statement of the wall.
+
+## 2026-06-13 (#407 tangent) — the IN-REGIME toolbox (5 new, the n<p^{1/4} side)
+
+This session derived a **new exact identity** (`probe_autocorrelation_identity_407.py`, all checks 1e-14):
+the Gauss-period power-spectrum autocorrelation factors as `A_h = m·conj(τ_h)·T_h` with `τ_h` the Gauss
+sum (`|τ_h|=√p` EXACTLY, Weil/Deligne, proven) and `T_h = Σ_{w∈μ_n} χ^h(1−w) = (1/m)Σ_i J(χ^i,χ^h)`
+the **subgroup tangent sum**. Since the Gauss factor is perfectly flat, the entire house concentration
+is carried by `T_h` — relocating the open core onto the multiplicative tangent geometry of `{1−w:w∈μ_n}`
+(an average of Jacobi sums). The papers below are the **in-regime** tools for that object (the prize has
+`n≈2^30 < p^{1/4}≈2^39`, so the BGK/Burgess additive lineage is *out of regime* — re-confirmed). These 5
+are NOT already on disk (verified distinct from the 2026-06-14 set and the BGK/Shparlinski entries above).
+
+| # | paper | id | URL | bearing |
+|---|---|---|---|---|
+| T1 | **Ostafe–Shparlinski–Voloch, *Weil sums over small subgroups*** (2022) | arXiv **2211.07739** | https://arxiv.org/abs/2211.07739 | the ONLY recent paper targeting `\|G\|<p^{1/4}` (where Weil/√p is vacuous): bounds `Σ_{x∈G}χ(f(x))` via alg-geom + additive combinatorics. `T_h=Σ_{w∈μ_n}χ^h(1−w)` IS this object (f=1−w). Asymptotic (o(1)/p^ε), not effective at the instance — but the right surface. |
+| T2 | **Rojas-León, *Equidistribution and independence of Gauss sums*** (2022, rev 2024) | arXiv **2207.12439** | https://arxiv.org/abs/2207.12439 | the only relations among the Gauss-sum family `{τ(χ^j)}` are conjugation / Galois / Hasse–Davenport ⟹ joint equidistribution. Characterizes the correlation structure of the `τ_j` whose DFT is `η_b` — exactly the "incoherence" the house needs. Qualitative (q→∞, no rate). |
+| T3 | **Lu–Zheng, *On the distribution of multivariate Jacobi sums*** (2020/2021) | arXiv **2005.14358** | https://arxiv.org/abs/2005.14358 | normalized (multivariate) Jacobi sums equidistribute on the torus as q→∞. `J(χ^i,χ^h)` is the exact summand of `T_h`; the most on-point recent paper for the multiplicative/tangent side. No discrepancy rate. |
+| T4 | **Fu–Lau–Li–Xi, *Equidistribution of Kloosterman sums over function fields*** (2024, IMRN 2025) | arXiv **2406.10106** | https://arxiv.org/abs/2406.10106 | best *effective* (explicit-error) Sato–Tate of the five + a *joint* law for two sums — the methods template for an effective Erdős–Turán/discrepancy attack on the `{χ̄(b)τ(χ^j)}` phases. Function-field, angle-distribution (not single max-modulus). |
+| T5 | **Di Benedetto–Garaev–García–González-Sánchez–Shparlinski–Trujillo, *New estimates for exponential sums over multiplicative subgroups and intervals*** (2020) | arXiv **2003.06165** | https://arxiv.org/abs/2003.06165 | current SOTA additive subgroup-sum exponent `\|Σ\|≤H^{1−31/2880+o(1)}` — but needs `H>p^{1/4}`, so OUT of regime at the prize. Included to pin *exactly why* the standard machinery stops, i.e. the boundary the prize sits beyond. |
+
+**Honest scope:** T1 is the right surface (small-subgroup multiplicative), T4 the effective-method template;
+T2/T3 describe the exact algebraic objects but are qualitative; T5 delimits the wall. None effective at
+`p≈2^158`. The residual — an effective bound on `B`/`T_h` in the `n<p^{1/4}` regime — is unchanged-open.
+(Deliberately NOT slotted, to save re-search: flat/ultraflat-polynomial lineage el-Abdalaoui–Nadkarni
+arXiv:2504.21499, 1402.5457 — about ±1 Littlewood coeffs, no link to the Gauss-sum unimodular sequence;
+house *lower* bounds Pritsker 2101.06710, Munsch 1805.07163 — wrong direction; Garcia–Eischen 2012.10015
+visual survey, no theorems.)
+
+### 2026-06-13 (#407) — the LACUNARY reframing moves the core OFF the analytic wall
+The session's deliverable (`scripts/probes/RESULTS-407-LACUNARY-RIGIDITY.md`,
+`ArkLib/.../ProximityGap/DyadicLacunaryDeltaStar.lean`) recasts the prize floor as a
+**lacunary-polynomial / cyclotomic-rigidity** count (NOT the incomplete-sum sup-norm).
+Two refs underpin the moment-method anchor and the average-size confirmation (add if absent):
+- **Garcia–Lorenz–Todd, *Moments of Gaussian Periods and Modified Fermat Curves*** — arXiv **2112.13886** (Ramanujan J. 2025) — the 4th absolute moment `V_4 = E(μ_d)` is an exact modified-Fermat-curve point count; the rigorous backbone of the moment method (fixed `d`).
+- **Habegger, *The Norm of Gaussian Periods*** — arXiv **1611.07287** (Q. J. Math. 2018) — `m(1+X_1+…+X_{f−1}) ≤ ½ log f`: the *geometric mean* of `|η_b|` is `√f`-controlled (average-size confirmation; fixed odd prime `f`, no sup-norm).
+These confirm `√(n log)` is correct *on average* but unreachable as a *max* — exactly why the
+deliverable bypasses the analytic route via the `e_t`-homogeneity coset-rigidity engine instead.

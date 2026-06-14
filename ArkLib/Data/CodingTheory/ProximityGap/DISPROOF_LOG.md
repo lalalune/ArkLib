@@ -8667,3 +8667,75 @@ primes — `p=65537` gives `p−1=2^16`, fully dyadic, the #400 trap; require `o
 is gated on the BGK/Shkredov square-root-cancellation wall. New papers: `~/papers/arklib/_407/`
 (di Benedetto 2003.06165 record `t^{0.989}`; Bober–Goldmakher 1110.0078; Demirci–Marklof 1207.1607
 non-Gaussian; Untrau 2112.05441 hypocycloids; Kowalski 2401.04756).
+
+## 2026-06-14 (#407) — REFUTED: "the house constant depends on the 2-adic structure v2(m)"
+
+A bold session conjecture (probe `scripts/probes/probe_house_2adic_dependence_407.py`): the
+Gauss-period house constant `C = B/√(n·ln m)` (`m=(p−1)/n`) is inflated by the EXCESS 2-adic
+smoothness `v2(m) = v2(p−1) − a` (motivated by the `p=65537` Fermat spike `C=2.07`). **REFUTED**:
+- Binning `C` by `v2(m)` within DEEP-sparse bands, the worst-case `C` occurs at `v2(m)=0` (odd `m`)
+  as often as at high `v2(m)` (n=64: worst `C=1.723` @ v2=0; n=32: worst `1.511` @ v2=1). Median flat
+  across `v2(m)`. No monotone v2-law.
+- The `p=65537` spike is **purely near-threshold** (the known #400 Fermat trap): at n=64 it is
+  `p/n^2.5=2.0` → `C=2.07`, but at n=16 the SAME prime is deep (`p/n^2.5=64`) → `C=1.199`. The driver
+  is **depth `p/n^2.5`** (HBK density), not 2-adic structure. Fermat primes (`p−1` pure 2-power) stay
+  excluded as the degenerate `odd_part(m)=1` case, not a continuous effect.
+
+**Net (constraint kept):** deep in the sparse regime, the house constant is **uniform (q-independent)
+across `v2(m)` for non-Fermat primes** — bounded ~1.16–1.33, consistent with the prize-diagonal
+plateau `C²≈1.75` (entry (1)). This SUPPORTS a universal-constant closed form (no arithmetic
+v2-correction), but the universal constant remains gated on the BGK/Shkredov √-cancellation wall —
+no closure. The session's positive Lean artifact is `GaussPeriodCosetReduction.lean` (coset-invariance
+⟹ `B` = max over `(p−1)/n` Gauss periods, axiom-clean, real build EXIT 0).
+
+## 2026-06-14 (#407) — the HEIGHT OBSTRUCTION (unifying no-go for ALL char-0 algebraic floor routes)
+
+Verified arithmetic (`probe` inline): any char-0 algebraic certificate that the floor holds at the
+prize list scale — additive-energy quadruple, higher-order-MDS/BGM determinant, or symmetric-function
+vanishing — is the assertion that a specific algebraic integer `α ∈ ℤ[ζ_n]` (resultant / determinant /
+norm of the construction) is `≠ 0 mod p`. In char 0, `α ≠ 0` (the proven char-0 floor). It transfers
+to `F_p` iff `p ∤ N(α)`. But `|N(α)| ≤ house(α)^{φ(n)}`, `φ(n)=2^{a−1}`; the transfer is FORCED (height
+excludes `p|N`) only if `φ(n)·log₂ house(α) < log₂ p = 256`. The per-conjugate budget `256/φ(n)`:
+`a=8 → 2.0`, `a=16 → 2^{−7}`, **`a=32 → 2^{−23}`**. So for the prize (`a=32`, `φ=2^{31}`) ANY
+nontrivial certificate (`house>1`) has `N(α)` astronomically `> p`, hence CAN vanish mod `p`.
+
+**Consequence (covers BGM/higher-order-MDS too, not just energy):** at the prize list scale there is
+**no char-0-transferable algebraic certificate** of the floor; the only certificates with height `< p`
+are at Johnson scale. So the BGM route (`list ≤ L ⟺ points (L+1)-MDS ⟺ dets ≠ 0`) fails for the
+*structured* `μ_n` for the SAME height reason it fails generically — the dets are `M×M` (M at list
+scale) with norm `≫ p`. Proof of the floor therefore REQUIRES an analytic input (character-sum /
+equidistribution = the Paley/Gauss-period wall); it cannot be closed by char-0→F_p transfer. This is
+the sharpest unifying statement of the irreducibility (extends `EffectiveTransfer.esymm_eq_zero_iff`,
+which is the `a`-specific energy case, to every algebraic certificate). NOT a closure — a no-go.
+
+## 2026-06-13 (#407) — the LACUNARY-RIGIDITY reformulation + the small-gap refutation
+
+**New deliverable** (`DyadicLacunaryDeltaStar.lean`, axiom-clean engine; full record
+`scripts/probes/RESULTS-407-LACUNARY-RIGIDITY.md`). The operative quantity for `δ*` is the
+**image** `#bad γ` (count of distinct bad scalars), settled from `Errors.lean:231`
+(`epsMCA = ⨆_u Pr_γ[mcaEvent] = max_line(#bad γ)/q`), NOT the analytic sup-norm. Via the proven
+Vieta pin, for monomial direction `(a,b)`:
+`#bad γ = #{ e_{a-b}(S) : S⊆μ_n, |S|=a, e_1(S)=…=e_{a-b-1}(S)=0 }` = the count of degree-`a`
+lacunary polys `X^a+γX^b+(deg<k)` splitting over `μ_n`.
+
+**PROVEN (rigidity engine, axiom-clean):** `e_t(g·S)=g^t e_t(S)` ⟹ the bad-scalar set is a
+**union of `⟨g^t⟩`-cosets** ⟹ `#bad γ` is a multiple of `n/gcd(t,n)` (incidence quantized in
+units `≈ n`). This is the structural reason worst-case incidence is `Θ(n)`.
+
+**REFUTED naive form (the small-gap trap, machine-reasoned):** "the lacunary floor `#bad γ ≤ C·n`
+holds for ALL gaps `t ≥ 1`" is **FALSE**: for small `t` (e.g. `t=2`, near *capacity*
+`δ=1−ρ−2/n`), the vanishing constraint `e_1=0` makes (Lam–Leung) `S` a union of antipodal pairs
+and `e_2(S)=−Σ ζ_i²`, so `#bad γ = #{m-subset-sums of μ_{n/2}}` which is `≫ n` (sum-product). This
+is the **ceiling side** `δ* ≤ prizeDeltaStar` (correct, proven in-tree), NOT a floor. ⟹ the floor
+must be quantified over **window-interior** directions only, `t ≥ t₀ = ⌈H(ρ)·n/log₂(q·ε*)⌉`
+(`DyadicLacunaryFloor` carries `t₀`). Do not state the floor for all `t`.
+
+**Char-p transfer = relation-free criterion, VERIFIED for all prize params**
+(`probe_prize_regime_relation_free_407.py`): the relevant level `s*=2log₂(q·ε*)/H(ρ)` carries no
+low-weight `{-1,0,1}` lattice relation at `q≈n·2^128` (four rates, `n≤2^40`); the analytic wall
+lives at the *full* subgroup `μ_n` (`n≫log q`), the wrong level. Onset of short relations is
+exactly `n≳log_q` (`probe_subset_sum_fibre_lattice_407.py`: `w_min` None→8→6→5 over `n=16..64`).
+
+**Residual (the prize, OPEN, off the analytic wall):** the **window-interior** lacunary floor
+`#bad γ ≤ C·n` = a Lam–Leung simultaneous-vanishing-symmetric-function rigidity for `2^μ` roots
+(`O(1)` cosets). Measured `Θ(n)` (in-tree R4). NOT closed; honestly labeled a `Prop`.
