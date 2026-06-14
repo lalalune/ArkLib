@@ -120,3 +120,27 @@ CONSTANT level — a general pencil doubles the count — which does NOT move th
 Scores: novelty 8 (reframe analytic→additive-combinatorial), insight 9 (δ* = subgroup-sumset
 extremality over lines), proximity 10 (the literal failure construction), feasibility = the open
 question the extremality probe decides (poly-bounded ⟹ tractable/char-free; super-poly ⟹ still BGK).
+
+## SELF-REFUTATION of "δ* = Kambiré formula (exact)" + the precise floor decomposition
+
+Tested the closed conjecture (δ* = 1−ρ−2ρln(1/2ρ)/log(qε*)) by computing the worst CHAR-FREE direction.
+Result (combinatorial, exact): the worst monomial direction's complete-homogeneous count
+`h_j=C(s+r−1,r)` vs Kambiré's subset-sum `e_j=C(s,r)` has `log(h_j/e_j)/s → ~0.26` (CONSTANT), so
+`h_j ≈ 2^{1.26 s} = e_j · n^{0.26 K log2}` — a STRICTLY LARGER leading exponent (≈1.26×), not a constant.
+
+**Consequence:** Kambiré's subset-sum ceiling is NOT tight. The complete-homogeneous monomial direction
+realizes a larger bad-scalar count ⟹ failure at a SMALLER δ ⟹ the true `δ* < Kambiré formula`. So the
+clean closed formula is REFUTED as exact (self-refuted, the requested method).
+
+**The exact floor decomposes (precisely):**
+`worst-line bad-count exponent = (char-free complete-homogeneous, COMPUTED ≈1.26× Kambiré) + (char-p excess)`.
+- The **char-free part** (complete-homogeneous Mann-sum readout over monomial directions) is combinatorial,
+  computable, closed (`signedSumStratum_card` in-tree) — but it gives a DIFFERENT, larger exponent than
+  the subset-sum, so it changes δ* at leading order.
+- The **char-p residual** (non-monomial conspiracies realizable only at bad primes = the additive-energy
+  anomaly) is the IRREDUCIBLE open core = BGK. It can further change the exponent.
+
+So the EXACT δ* (worst case) = char-free-complete-homogeneous-exponent shifted by the char-p excess, and
+the char-p excess is BGK. There is no exact closed δ* without resolving the char-p anomaly exponent =
+square-root cancellation. **The clean Kambiré formula is only an upper bracket; exactness needs BGK.**
+This is the precise, final decomposition — the open math is isolated to the char-p anomaly exponent.
