@@ -9992,3 +9992,56 @@ approaches the Wick exponent for r≥3; the school's ceiling is the 7/3 barrier 
 VERDICT: dead-precise-why. Best achievable exponent: E_r ≤ n^{2r-2}log n ⟹ M ≤ ~n (trivial). Exact gap:
 (r−2) factors of n at the optimal order r≈log_n q≈79 (M-bound overshoots target by 11.9 log₂ bits at best,
 vs Wick's 0.20). `result_type = dead-wrong-exponent+thickness-monotone+is-a-moment`.
+
+---
+
+## PFR / Marton CONTRAPOSITIVE on crossCell (R2) — DEAD, three obstructions + measured premise-failure (2026-06-14)
+
+(Companion to the Chang-spectrum entry; that sweeps the SPECTRUM deployment, this sweeps the DIRECT
+contrapositive on the additive energy / crossCell residual the prompt proposed.)
+
+**Proposed route:** apply proven Polynomial-Freiman-Ruzsa / Marton (GGMT 2023) in CONTRAPOSITIVE — if
+crossCell (R2) / additive energy E(μ_n) were large, PFR forces μ_n near a coset of an additive subgroup;
+μ_n is MULTIPLICATIVE (sum–product) ⟹ contradiction ⟹ crossCell small. Probes `/tmp/pfr_probe2.py`,
+`/tmp/pfr_analysis.py`, `/tmp/pfr_contrapositive.py`, `/tmp/pfr_thinness.py` (prize-shaped p≈n⁴, μ=3..7).
+
+**Measured profile of μ_n — PFR's ONLY input (the premise it needs SMALL):**
+| n | p | \|A+A\| | K_dbl=\|A+A\|/n | E(A) | E/n² | K_E=n³/E |
+|---|---|---|---|---|---|---|
+| 8 | 4129 | 33 | 4.12 | 168 | 2.63 | 3.05 |
+| 16 | 65537 (=F4) | 129 | 8.06 | 720 | 2.81 | 5.69 |
+| 32 | 1048609 | 513 | 16.03 | 2976 | 2.91 | 11.01 |
+| 64 | 16777601 | 2049 | 32.02 | 12096 | 2.95 | 21.67 |
+| 128 | 268437889 | 8193 | 64.01 | 48768 | 2.98 | 43.00 |
+
+`|A+A| ≈ n²/2` (near-SIDON, doubling K≈n/2 = MAXIMAL); `E≈3n²` (Sidon floor, energy-doubling K_E≈n/3 =
+MAXIMAL). μ_n is additively as UN-structured as possible.
+
+**OBSTRUCTION 1 — PFR's premise is FALSE for μ_n (wrong dichotomy branch).** PFR is non-trivial only for
+SMALL doubling (K=n^{o(1)}); its conclusion "A ⊆ K^C cosets of |H|≤|A|" is vacuous once K^C≥|A|. Here
+K≈n/2 ⟹ K^C≫n at every measured row (`K_dbl^9≥n` AND `K_E^9≥n` both TRUE for all n). The dichotomy is
+{small additive doubling ⟹ PFR} XOR {small mult structure}; μ_n is on branch 2 (`muN_doubling_eq_one`,
+σ_m=1). The contrapositive's middle link ("E large") describes a regime μ_n is never in — its energy is
+already at the FLOOR 3n². No slack.
+
+**OBSTRUCTION 2 — wrong tensor order + the proven √-cap.** crossCell/R2 live at r≈log q≈128; PFR/energy
+are r=2. Even the sharp r=2 E=3n² feeds only the moment route M^{2r}≤q·E_r, capped (re-verified) at
+M≤√(2n ln q)=n^{0.6296} (n=2³⁰) vs needed n^{0.5}; residual √(2 ln q)=14.8 is a √log not a power. PFR
+cannot remove a √log: it sits one tensor order below the loss, on an energy that is already minimal.
+
+**OBSTRUCTION 3 — PFR is THICKNESS-MONOTONE (disqualified).** Measured E/|A|² vs β=log_n p at n=16:
+β=2.00→3.56, 2.54→2.81, 3.00→2.81, 3.50→2.81, 4.00→2.81 (incl. p=65537=F4, where BCHKS 1.12 is FALSE for
+thick subgroups). PFR's input is scale-free in p — IDENTICAL at structured vs generic primes. But the
+conjecture is FALSE for β∈(2.3,3.2) at structured primes, TRUE for β≥4: a thickness-blind method "proves"
+it uniformly ⟹ contradiction. PFR's bound is VACUOUS at thin β or FALSE at thick β. Violates the proven
+THINNESS-ESSENTIAL constraint.
+
+**NEEDS-EXTERNAL-INPUT:** a structure theorem whose INPUT is the MULTIPLICATIVE profile (σ_m[A]=1), not
+additive doubling — converting "perfect mult + maximal additive doubling" into M=O(√n) at β=4 uniformly
+over structured primes. That IS the Paley Graph Conjecture / BCHKS 1.12 (the open core). PFR is the
+additive half of a dichotomy whose multiplicative half is exactly the missing input.
+
+VERDICT: dead-precise-why. Premise (small additive doubling) measured FALSE (K≈n/2); conclusion vacuous
+(K^C≥n); thickness-monotone; the only live deployment is the already-capped Bourgain–Garaev sum–product
+engine (M≤n^{0.99998} at β=4). Exact gap: M-exponent 0.99998 vs needed 0.5. `result_type =
+dead-wrong-branch+wrong-order+thickness-monotone+collapses-to-mapped-sumproduct-wall`.
