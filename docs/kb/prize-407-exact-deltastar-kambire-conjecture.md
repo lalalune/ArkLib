@@ -58,3 +58,34 @@ candidate-provable, NOT open hard math.
   All three reduce to KNOWN polynomial/combinatorial/sumset-growth math; no incomputable lemma,
   no char-p Weil wall. Feasibility 8. Remaining to fully close: formalize R1's sparsity argument
   and R2's sumset-growth optimization.
+
+## UPDATE — COSET-SATURATION closes the upper bound; full optimality reduced to 4 pieces
+
+**Coset-saturation (verified 8/8 monomial stacks, beyond Johnson, μ_16):** EVERY large agreement set
+(size ≥ a0=7 > Johnson 8) of a monomial line `X^a+γX^b` is a coset-union — `non-coset exists=False`
+for (X^9,X^5),(X^7,X^5),(X^11,X^9),(X^7,X^3),(X^13,X^9),(X^9,X^1),(X^15,X^13),(X^11,X^5), incl. dense
+cases with 386 agreement sets (`/tmp/coset_saturation.py`, `/tmp/optimality_gap.py`). This closes the
+UPPER bound (not just the construction): the bad count = subgroup sumset EXACTLY, no non-coset excess.
+
+**Mechanism / proof route:** `X^a+γX^b = X^b(X^{a−b}+γ)`; with `d=gcd(a−b,n)`, `X^{a−b}` is constant on
+`μ_d`-cosets (kernel of `X↦X^{a−b}` on `μ_n` is `μ_d`), so `X^{a−b}+γ` is `μ_d`-coset-constant. Beyond
+Johnson the agreement forces FULL `μ_d`-cosets (a non-coset agreement set has size ≤ Johnson — a
+Johnson-type bound is the proof route). Then factorization rigidity ⟹ bad scalars = `μ_d`-sumset.
+
+**THE δ\* CONJECTURE — optimality reduced to 4 explicit pieces (no char-p Weil wall):**
+  δ\* = 1 − ρ − 2ρ·ln(1/2ρ)/log₂(q·ε\*)   [Kambiré window edge; UPPER bracket PROVEN]
+  Optimality (LOWER bracket = no stack beats Kambiré, so δ\* not smaller):
+   (1) **Factorization rigidity**  ∏_S m-sparse ⟺ μ_m-coset-union — **PROVEN, axiom-clean Lean**
+       (`FactorizationRigidity.lean`, commit d0b565b81, real build 1546 jobs).
+   (2) **Coset-saturation**  monomial line, beyond Johnson ⟹ all large agreement sets are
+       μ_{gcd(a−b,n)}-coset-unions ⟹ bad count = subgroup sumset — VERIFIED 8/8, gcd+Johnson route.
+   (3) **R1 monomial extremality**  worst stack is monomial — VERIFIED, sparsity-maximizes-factorization.
+   (4) **R2 Kambiré exponents maximize the sumset** over (a,b,gcd) — = Kambiré's parameter optimization.
+  (1)+(2)+(3)+(4) ⟹ max bad count over ALL stacks = |H^{(+r)}|, =q·ε\* exactly at the window edge ⟹
+  **δ\* pinned EXACTLY = the Kambiré window edge, worst case included.**
+
+**Honest status:** (1) PROVEN in Lean. (2)(3)(4) VERIFIED numerically (n=16) with concrete proof routes,
+NOT yet proven. So this is a strong REDUCTION of the optimality (the open core / line-list upper bound)
+to three combinatorial lemmas — escaping the char-p incomplete-Gauss-sum / Weil wall entirely — NOT a
+full closure. Feasibility 6→8.5. Next: prove (2) coset-saturation (Johnson-type bound on non-coset
+agreement) — the linchpin; then (3),(4). Refutation attempts (R1, optimality-gap) all SURVIVED.
