@@ -37,11 +37,16 @@ recognized 25-year subgroup-character-sum problem — sharpened here to its empi
   closed form is *exactly* where the equidistributed list value crosses the budget `q·ε*`) and
   `deltaStar_le_of_listBound` (the budget-vs-list reduction).
 - **The single conjectural input `ShawGapLaw`**: `B(μ_n) ≤ C√(n·log(q/n))`. This session's FFT probes
-  (`scripts/probes/probe_energy_transfer_threshold.py`) confirm `B/√(n·log(q/n)) ≈ 1` and that the
-  additive energy `E(μ_n) = 3n²−3n` exactly for `p ≳ n³` — but the *worst-case max* `B` is the
-  deep-moment/L∞ quantity, the recognized open analytic wall at `n < p^{1/4}` (no proof in any
+  (`scripts/probes/probe_energy_transfer_threshold.py`) and the #407 multi-prime diagonal sweeps
+  (`probe_prize_diagonal_constant.py`, `probe_constant_additive_vs_mult.py`) confirm the *form* and
+  fix the constant: `B/√(n·log(q/n))` **plateaus at `C ≈ 1.33` (`C² ≈ 1.75`) for `n ≥ 64`** on the
+  prize diagonal `q = n^β` — NOT `≈ 1`. (The bare-Gaussian `→ 1` holds only in the off-regime
+  fixed-`n`, `q → ∞` limit, a CLT artifact; see `docs/kb/deltastar-407-exact-constant-2026-06-13.md`.)
+  The additive energy `E₂(μ_n) = 3n²−3n` exactly for `p ≳ n³` gives the proven leading inflation `3/2`;
+  the excess `C² ≈ 1.75 − 1.5` lives in the deep (p-defected) moments. The *worst-case max* `B` is the
+  deep-moment/L∞ quantity — the recognized open analytic wall at `n < p^{1/4}` (no proof in any
   literature, confirmed by exhaustive 2026 search). The conjecture is **not proven**; per the honesty
-  contract its open core is named, not manufactured.
+  contract its open core — including the exact constant `C` — is named, not manufactured.
 -/
 
 namespace ProximityPrizeConjecture
