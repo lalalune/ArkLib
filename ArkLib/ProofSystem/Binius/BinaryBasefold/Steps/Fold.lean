@@ -403,7 +403,6 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
     simp only [Fin.isValue, support_pure, Set.mem_singleton_iff, Option.some.injEq,
       Prod.mk.injEq] at h_verOut_mem_support
     rcases h_verOut_mem_support with ⟨verStmtOut_eq, verOStmtOut_eq⟩
-    dsimp only [foldStepLogic, foldProverComputeMsg, step, getFoldProverFinalOutput] at prvOut_eq
     rw [Prod.mk.injEq, Prod.mk.injEq] at prvOut_eq
     obtain ⟨⟨prvStmtOut_eq, prvOStmtOut_eq⟩, prvWitOut_eq⟩ := prvOut_eq
     constructor
