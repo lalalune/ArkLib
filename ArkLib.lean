@@ -938,6 +938,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinSqrtNKRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RaggedRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RingHomBadScalarMono
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RungListBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SecondMomentGapQuantified
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLD_crossparity_evensvp
