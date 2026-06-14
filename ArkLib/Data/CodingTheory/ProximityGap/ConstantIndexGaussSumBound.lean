@@ -87,9 +87,38 @@ theorem mulChar_pow_sum_all (χ : MulChar F ℂ) (a : F) :
         rw [← hp, pow_orderOf_eq_one χ, MulChar.one_apply hunit]
       rw [hm, sub_self, zero_div]
 
+/-- The index-`m` multiplicative subgroup `G_χ = {a : χ a = 1}` cut out by `χ` (`m = orderOf χ`). -/
+noncomputable def Gchi (χ : MulChar F ℂ) : Finset F :=
+  Finset.univ.filter (fun a => χ a = 1)
+
+/-- **The index-`m` period decomposition.** `m·η_b(G_χ) = ∑_{j<m} gaussSum(χ^j, ψ_b)`, `ψ_b = ψ(b·)`.
+The subgroup period over `G_χ` is the average of the `m` twisted Gauss sums — the index-`m`
+generalization of the index-2 `eta_QR_eq`. -/
+theorem eta_constIndex_decomp (χ : MulChar F ℂ) (ψ : AddChar F ℂ) (b : F) :
+    (orderOf χ : ℂ) * eta ψ (Gchi χ) b
+      = ∑ j ∈ Finset.range (orderOf χ), gaussSum (χ ^ j) (AddChar.mulShift ψ b) := by
+  classical
+  symm
+  calc ∑ j ∈ Finset.range (orderOf χ), gaussSum (χ ^ j) (AddChar.mulShift ψ b)
+      = ∑ j ∈ Finset.range (orderOf χ), ∑ a : F, (χ ^ j) a * ψ (b * a) := by
+        refine Finset.sum_congr rfl (fun j _ => ?_)
+        rw [gaussSum]
+        exact Finset.sum_congr rfl (fun a _ => by rw [AddChar.mulShift_apply])
+    _ = ∑ a : F, ∑ j ∈ Finset.range (orderOf χ), (χ ^ j) a * ψ (b * a) := Finset.sum_comm
+    _ = ∑ a : F, (∑ j ∈ Finset.range (orderOf χ), (χ ^ j) a) * ψ (b * a) := by
+        refine Finset.sum_congr rfl (fun a _ => ?_); rw [Finset.sum_mul]
+    _ = ∑ a : F, (if χ a = 1 then (orderOf χ : ℂ) else 0) * ψ (b * a) := by
+        refine Finset.sum_congr rfl (fun a _ => by rw [mulChar_pow_sum_all])
+    _ = ∑ a : F, if χ a = 1 then (orderOf χ : ℂ) * ψ (b * a) else 0 := by
+        refine Finset.sum_congr rfl (fun a _ => ?_); simp only [ite_mul, zero_mul]
+    _ = ∑ a ∈ Gchi χ, (orderOf χ : ℂ) * ψ (b * a) := by rw [Gchi, Finset.sum_filter]
+    _ = (orderOf χ : ℂ) * ∑ a ∈ Gchi χ, ψ (b * a) := by rw [Finset.mul_sum]
+    _ = (orderOf χ : ℂ) * eta ψ (Gchi χ) b := by rw [eta]
+
 end ArkLib.ProximityGap.ConstantIndexGaussSum
 
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.norm_mulChar_unit
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.conj_gaussSum
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.norm_gaussSum_eq_sqrt
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.mulChar_pow_sum_all
+#print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.eta_constIndex_decomp
