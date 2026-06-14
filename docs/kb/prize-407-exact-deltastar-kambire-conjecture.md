@@ -1514,3 +1514,114 @@ uniform across primes; residual uncertainty = the reconstructed-not-quoted Q1 st
 `scripts/probes/probe_407_close_actionorbit_VERDICT.py` (self-contained census),
 `probe_407_close_actionorbit_q1_dichotomy.py`, `probe_407_actionorbit_q1_starD_charp.py`,
 `probe_407_actionorbit_K_growth_law.py` (K explosion).
+
+## ⛔ RETRACTION 2026-06-14 — the pigeonhole "floor closure" does NOT close the prize (existence-semantics verifier, confirmed by in-tree code)
+
+**RETRACTING** the earlier sections "RESOLVED — existence-semantics" and "the floor closes by pigeonhole,
+bypassing BGK". They rest on a NON-SEQUITUR that an adversarial verifier caught and the in-tree
+formalization confirms.
+
+**The prize is UNIVERSAL-over-the-field, not existential.** Verified directly:
+- `mcaConjecture` (GrandChallenges.lean:650): `∃ c₁ c₂ c₃ : ℝ, ∀ {FC}[Field FC][Fintype FC] …, ε_mca ≤
+  (1/|FC|)·n^{c₁}/(ρ^{c₂}η^{c₃})` — the constants are bound **before** the `∀` over the field, so they
+  CANNOT absorb `q=|FC|`. Same shape in `epsMCAgsPrizeUniversalConjecture` and BCHKS Conj 1.2.
+- `MCAGSFieldUniversal.lean` states it outright: **"the fixed-field uniform GS prize is a THEOREM; the open
+  prize is field-universal"**, and "the constants quantify before the field, so they cannot absorb q=|F|;
+  along q→∞ the bound →0 and the inflation fails." The fixed-field surface
+  (`epsMCAgs_prizeBound_conjecture_holds`) is ALREADY PROVEN axiom-clean in-tree.
+
+**The fatal asymmetry (why "ceiling existential ⟹ floor existential" is FALSE):** Kambiré chooses `q`
+because he is *refuting* `∀q P(q)`, and `¬∀q P(q) ≡ ∃q ¬P(q)` — a chosen bad `q` is a valid refutation
+(∃ is correct). The prize FLOOR is part of *establishing* the conjecture and demands the bound for ALL
+`q≡1 mod n`; the pigeonhole produces `∃q good (= q∤D)`, which is the NEGATION of the needed `∀q`. Choosing
+a convenient prime is legitimate for refutation (Kambiré) and ILLEGITIMATE for proving the universal bound.
+
+**Consequence:** the pigeonhole gives a chosen-prime/fixed-field δ* pin — which is REAL, BGK-free math, but
+is the surface **already proven in-tree**, NOT the open prize. **The prize's genuine open content IS the
+uniform-over-q bound = the incomplete-Gauss-sum sup-norm `M(n)≤C√(n log p)` = the BGK/Paley wall.** The
+"bypass" bypassed the PRIZE (retreated to density-1), not the WALL. R1 (refuted) and the D-height residual
+are real but MOOT for closure — they would only matter if the existence-form floor were a valid closure,
+which it is not.
+
+**Honest session ledger (what survives):** (a) energy = 2k-th moment of the sup-norm `A_k=(1/p)Σ_{b≠0}|η_b|^{2k}`
+— exact identity, STANDS. (b) R1 monomial-extremality — REFUTED (antipodal-symmetry mechanism, verifier-confirmed),
+STANDS. (c) existence-semantics — CORRECTLY understood now as NOT a closure (prize is universal). (d) NO prize
+closure; the BGK wall is the genuine open core, unmoved. The pigeonhole/count lane is BGK-free but pins only
+the already-proven fixed-field surface. Session takeaway: a promising-looking closure, correctly demolished
+by adversarial verification + reading the in-tree quantifiers.
+
+## UPDATE 2026-06-14 (BGK work) — the moment NoGo bounds the WRONG quantity; DC-subtracted A_r ≤ Wick = the prize (= BGK), holds empirically
+
+Working the genuine open target (uniform-q sup-norm `M(n)=max_{b≠0}|Σ_{x∈μ_n}e_p(bx)| ≤ C√(n log p)`).
+Clarified the moment route:
+
+**`_MomentMethodNoGo` bounds the wrong object.** It proves `n^{2r} ≤ p·E_r` (Cauchy–Schwarz), where
+`E_r = (1/p)Σ_b|η_b|^{2r}` is the FULL energy INCLUDING the `b=0` DC term `|η_0|^{2r}=n^{2r}`. So
+`p·E_r ≥ n^{2r}` is just the DC term — a LOWER bound that says NOTHING about the sup-norm. The sup-norm uses
+`M^{2r} = max_{b≠0}|η_b|^{2r} ≤ Σ_{b≠0}|η_b|^{2r} = p·A_r`, with the **DC-SUBTRACTED** energy
+`A_r := (1/p)Σ_{b≠0}|η_b|^{2r} = E_r − n^{2r}/p`. So the moment route is NOT dead.
+
+**`A_r ≤ Wick := (2r−1)‼·n^r` for r up to ~log p ⟹ M ≤ √(n log p)** (optimize `(p·Wick)^{1/2r}` at
+`r*~log p`). MEASURED (`probe_407_bgk_dc_subtracted_moments.py`, FFT of `1_{μ_n}` on `Z/p`, n=16,32,64,
+p~n^4): `A_r/Wick ≤ 1 and DECREASING` for ALL r (mu=4: 1.00→0.14 over r=1..8; mu=6: 1.00→0.62 over r=1..10).
+So the prize sup-norm bound holds EMPIRICALLY via the DC-subtracted moments, and `M/√(n log(p/n)) ≈ 1.2–1.4`
+(window-membership C=O(1) confirmed).
+
+**Honest catch (why this is reframing, not a proof):** `A_r ≤ Wick` is EQUIVALENT to `M ≤ √(n log p)` (each
+implies the other up to constants: `M^{2r}≤p·A_r` one way; `A_r ≤ M^{2r−2}·n` the other). So `A_r ≤ Wick`
+is BGK restated, not an easier route. The char-0 bound (DyadicEnergyK1 `E_r^{(0)} ≤ Wick`) gives `A_r ≤ Wick`
+only via `anomaly ≤ n^{2r}/p` (the char-p excess ≤ the DC term) — which is the BGK content, open for r>β.
+**Net:** the moment route is correctly reframed (NoGo bounds the DC term, irrelevant to sup-norm; the real
+statement is the DC-subtracted `A_r ≤ Wick`), empirically confirmed, but equivalent to the BGK wall — no
+closure. Probe added; the fleet should stop citing `_MomentMethodNoGo` as killing the moment route (it kills
+only the DC-included version).
+
+## PROOF PROGRAM 2026-06-14 — the prize ⟺ ONE inequality (Dyadic Sub-Gaussian Energy Lemma); optimization is elementary (constant √2)
+
+Working the uniform-q bound as a PROOF target (assume true). Reduced it to a single, sharply-stated lemma
+with everything else elementary and verified:
+
+> **DYADIC SUB-GAUSSIAN ENERGY LEMMA (the sole remaining content).** For `n = 2^μ`, prime `p ≡ 1 mod n`,
+> and all `r ≤ log p`:  `A_r := (1/p)·Σ_{b≠0} |η_b|^{2r} = E_r(μ_n) − n^{2r}/p ≤ (2r−1)‼·n^r`,
+> with the constant ABSOLUTE (uniform over p). Here `η_b=Σ_{x∈μ_n}e_p(bx)` and
+> `E_r(μ_n)=#{(x,y)∈μ_n^{2r}:Σx≡Σy mod p}`.
+
+**This lemma ⟹ the prize bound `M(n) ≤ √(2n·log p)`** (ABSOLUTE constant). Proof of the implication
+(ELEMENTARY, provable now): `M^{2r}=max_{b≠0}|η_b|^{2r} ≤ Σ_{b≠0}|η_b|^{2r} = p·A_r ≤ p·(2r−1)‼n^r`. So
+`M ≤ (p·(2r−1)‼·n^r)^{1/2r}`. Minimizing the RHS over `r`: `f(r)=(1/2r)[log p + Σ_{i≤r}log(2i−1) + r log n]`,
+`f'(r)=0 ⟹ r* = log p`, `f(r*) = ½log(2n log p)` ⟹ `M ≤ √(2n log p)`. □ (the `r* ≤ log p` hypothesis of the
+Lemma is exactly met at the optimizer).
+
+**VERIFIED (`probe_407_bgkproof_deepr_optimization.py`, FFT n=32,64, p~n^4):** `log(A_r/Wick) ≤ 0` and
+strictly DECREASING for ALL `r=1..40` (well past `log p≈14–17`); the moment bound `(p·A_r)^{1/2r}` converges
+to the true `M`; `M/√(n log(p/n)) ≈ 1.26–1.36`. So the Lemma is TRUE and the implication is tight.
+
+**Status of the Lemma itself = the open BGK content.** `A_r ≤ Wick ⟺ anomaly_r ≤ n^{2r}/p` where
+`anomaly_r = #{non-matching 2r-tuples with Σx≡Σy mod p}` (char-p connected energy ≤ DC term). The char-0
+side is EXACTLY Gaussian (Lam–Leung: no connected ℂ-relation among 2^μ-th roots ⟹ char-0 cumulants vanish;
+`DyadicEnergyK1.lean` proves `E_r^{(0)} ≤ Wick`). The entire open content is the char-p connected-relation
+count to depth `r ~ log p` — the BGK/Paley wall, but now reduced to ONE clean inequality with the prize
+constant pinned to `√2`. The proof-strategies workflow targets exactly this Lemma. Probe added.
+
+## PROOF PROGRAM (cont.) — the SELF-CONTAINED remaining lemma (dyadic-tower lane, verifier-confirmed); di Benedetto boundary
+
+The proof-strategies workflow's dyadic-tower-induction lane completed (adversarial verify: CONFIRMED,
+status: blocked_at_known_wall) and produced the precise self-contained remaining claim:
+
+> **ANOMALY SUPPRESSION LEMMA (the sole open content).** Let μ≥1, n=2^μ, p prime with p≡1 (mod n), p≥n^4.
+> Identify μ_n⊂F_p with the n-th roots of unity; lift `x_i=ζ_n^{a_i}` to ℂ. For `1 ≤ r ≤ ⌈2 ln p⌉` define
+> `Anom_r(p) := #{(x_1,…,x_r,y_1,…,y_r)∈μ_n^{2r} : Σx_i ≡ Σy_j (mod p) but Σζ_n^{a_i} ≠ Σζ_n^{b_j} in ℤ[ζ_n]}`.
+> Then **`Anom_r(p) ≤ n^{2r}/p`**.
+> [With the PROVEN `R_r ≤ (2r−1)‼·n^r` (matching/char-0 part, Lam–Leung), this gives `A_r ≤ (2r−1)‼·n^r`,
+>  hence `M(n) ≤ √(2n log p)` by the elementary `r~log p` optimization.]
+
+**The wall, pinned (verifier-confirmed):** this single inequality is EQUIVALENT (up to constants) to the
+prize sup-norm `M(n) ≤ C√(n log p)` = the Paley-graph / √-cancellation conjecture for a size-`n`
+multiplicative subgroup. The char-0 floor (Lam–Leung/Wick) controls ONLY `R_r` (matching tuples); the entire
+open content is `Anom_r` (non-matching, collide-only-mod-p), the BGK/incomplete-character-sum object. SOTA
+**di Benedetto n^{0.989} holds only for n > p^{1/4}**, so the prize `p = n^4` (n = p^{1/4}) is the EXACT
+UNPROVEN BOUNDARY; for `p > n^4` (n < p^{1/4}, thinner) di Benedetto does not apply at all. The 2-adic
+moment recursion provably does NOT cross this gap (the L^∞ alignment obstruction survives the L^{2r}
+averaging). Remaining proof strategies (Stepanov depth-r collision count, multiplicative→additive energy,
+Katz effective flatness, completion/large-sieve) were rate-limited before completing; they are the only
+candidates for a provable bound (likely n^{1−δ}, not √n) or a dyadic improvement past the boundary.

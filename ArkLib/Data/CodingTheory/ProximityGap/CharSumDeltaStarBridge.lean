@@ -41,7 +41,7 @@ The budget hypothesis is `(|G| + q·B)/q ≤ ε*`, i.e. `|G|/q + B ≤ ε*`.  At
 budget is `q·ε* ≈ n` (so `ε* ≈ n/q`) and the smooth subgroup has `|G| ≈ n` (so `|G|/q ≈ n/q ≈ ε*`).
 Substituting gives `B ≤ ε* − |G|/q ≈ 0`, i.e. the hypothesis demands `q·B ≤ 0`, i.e. **`B = 0`**.
 Any nonzero power-saving bound `B = n^{1−c}` overshoots the prize budget by a factor `≈ q·B / n ≈
-n^{1−c}` (on the order of `1e44` at the prize point), so it does **NOT** satisfy `hBudget`.  The
+n^{1−c}` (on the order of `1e47` at the prize point), so it does **NOT** satisfy `hBudget`.  The
 conditional is therefore VACUOUS at the prize budget — it is satisfiable only away from the prize
 budget (small `q`, or `ε*` not at the window value), where it carries no prize content.
 
@@ -104,7 +104,10 @@ theorem epsMCA_le_of_forall_badCount_le (C : Set (ι → A)) (δ : ℝ≥0) (M :
   gcongr
   exact_mod_cast hM u
 
-/-! ### Step 2+3: the worst-case incidence bound from the char-sum bound (no √-loss) -/
+/-! ### Step 2+3: the worst-case incidence bound from the char-sum bound (the NAIVE
+`(#freq)·B = |G| + q·B` triangle bound over the deviation-support hyperplane — NOT per-frequency
+`B`; this is VACUOUS at the prize budget `q·ε* ≈ n`, which needs the open per-frequency
+√-cancellation `∑_{b·s₁=0} conj(η_b)ψ(b·s₀) ≲ √q·B` = Paley / BCHKS Conj 1.12, not supplied here) -/
 
 /-- **Worst-case far-line incidence below the NAIVE budget `|G| + q·B`, from the uniform char-sum
 bound.** For the syndrome-field geometry `V = F` (where `IncidencePeriodBridge` proves
@@ -212,7 +215,7 @@ is VACUOUS at the prize budget (corrected per the adversarial refutation `wf_9db
 * Hence `hBudget` reads `|G|/q + B ≤ ε*`.  At the prize budget `q·ε* ≈ n` with `|G| ≈ n` this is
   `B ≤ ε* − |G|/q ≈ 0`, i.e. it requires `q·B ≤ 0`, i.e. **`B = 0`**.  Any nonzero power-saving
   `B = n^{1−c}` (Di Benedetto `B ≤ n^{1−31/2880}` is PROVEN) overshoots the prize budget by
-  `≈ q·B/n = n^{1−c}` (`≈ 1e44` at the prize point), so it does NOT satisfy `hBudget`.
+  `≈ q·B/n = n^{1−c}` (`≈ 1e47` at the prize point), so it does NOT satisfy `hBudget`.
 * Reaching the prize budget for nonzero `B` requires the **per-frequency square-root cancellation**
   `∑_{b·s₁=0} conj(η_b)ψ(b·s₀) ≲ √q·B`, the open **Paley-graph / BCHKS Conjecture 1.12** floor.
   This brick does NOT supply it.  The conditional is honest and reusable, but its prize-budget

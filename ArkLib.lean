@@ -361,6 +361,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AutocorrelationMax
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.B1CountLawUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.B1TopDirectionCountLaw
 import ArkLib.Data.CodingTheory.ProximityGap.B5DeepBandSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20
