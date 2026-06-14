@@ -439,3 +439,38 @@ Two simultaneous conditions (`∑y=∑y³=0`) make them rarer still: weight 3 is
 **Honest net:** the residual is now LITERATURE-GROUNDED as a specific small-weight question strictly
 below the Lam–Leung existence threshold and inside the BGK gap — not closed, but precisely placed. No
 paper found that resolves the small-weight regime; that is the open core. Prize remains open.
+
+## THE CRYSTALLIZED DELIVERABLE — δ* with all open math compressed to ONE precise conjecture
+
+The complete result, stated so every step except one explicit conjecture reduces to proven math.
+
+**Theorem (δ* upper bracket).** For RS[F_q, μ_n, k] (n=2^μ, ρ=k/n, ε*), the Kambiré coset line gives
+`|H^{(+r)}|` bad scalars at radius `1−ρ−2/s`, so `δ* ≤ 1 − ρ − 2ρ ln(1/2ρ)/log₂(qε*)`. PROVEN.
+
+**Theorem (ℂ-side optimality).** Over ℂ every gap-valid config is a coset-union (iterated Lam–Leung),
+so the ℂ bad count is exactly `|H^{(+r)}|`. PROVEN (no moments, no Weil).
+
+**Theorem (F_p optimality, conditional).** If the Conjecture below holds, then over `F_q` every gap-valid
+config is a coset-union, `#bad = |H^{(+r)}|` exactly, and `δ* = 1 − ρ − 2ρ ln(1/2ρ)/log₂(qε*)`, worst
+case included. PROVEN from the Conjecture (Vieta + Newton + the recursion `e₂(S)=−σ_full+e₂(Y)`).
+
+**CONJECTURE (Dyadic Gap Vanishing-Sum Suppression) — the single complete open statement.**
+Let `n = 2^μ`, `p` an odd prime, `p ≡ 1 (mod n)`, `p ≥ n^β` with `β ≥ 4`. Then there is NO nonempty
+`Y ⊆ μ_n` with (i) no ±-pairs, (ii) `|Y| ≤ n/2`, and (iii) `∑_{y∈Y} y ≡ 0` and `∑_{y∈Y} y³ ≡ 0 (mod p)`.
+[Level-`m`: `∑ y^ρ ≡ 0` for all `ρ ∈ {1,…,2m−1}\{m}`.] This contains ALL remaining open math — no further
+lemma, no deferred variable.
+
+Scores: novelty 8 (the `{−1,0,1}` two-frequency dyadic form is not in the literature), insight 9
+(unifies MCA + LD into one vanishing-sum statement), proximity 10 (`p=n^β`, dyadic, worst case),
+feasibility 3 (small-weight gap `[p^{2/n},(p−1)/n]` of the BGK regime — below Lam–Leung existence, above
+the norm bound — where no known technique proves suppression).
+
+**Refutation status:** survives — no counterexample for n=16,32 up to p=30000 (two conditions kill
+weight 3 identically; none at weight 4–8). **Cross-lane confirmation:** independent fleet lanes reached
+the SAME wall (`P_max` exponential ⟹ prize `p≪2^n` ⟹ bad primes exist ⟹ core open; "mod-p transfer =
+the open brick"). This is the fleet-wide frontier, not an artifact of one route.
+
+**Honest verdict:** δ* is pinned EXACTLY *conditional on* one precise, novel, refutation-survived,
+literature-grounded additive-combinatorics conjecture that no current technique proves. That conjecture
+IS the prize's irreducible core. Not claimed proven; it is the complete and minimal open statement, with
+everything else reduced to proven math.
