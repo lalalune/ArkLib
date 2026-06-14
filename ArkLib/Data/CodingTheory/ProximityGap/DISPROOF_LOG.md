@@ -9885,3 +9885,49 @@ genuinely new correction to the *prompt's own SOTA framing* and one sharper nume
 subgroup at the Burgess barrier). One framing correction landed: Kowalski 2024 is expository, not an
 explicit improvement; SOTA single-frequency cap is di Benedetto `n^{0.989}` (open) / Bourgain–Garaev
 `n^{0.99998}` (the exact prize boundary). `result_type = maps-the-cap`.
+
+## REFUTED 2026-06-14 (wf-LC / #407): worst-direction char-faithfulness at constant rate FAILS for n≥32 — exact prize-scale excess prime n=32
+
+LANE LC (R4 char-faithfulness at constant rate, §5.3) tested whether worst-direction char-p
+invariance of the bad-scalar count (= far-line incidence = list size) PERSISTS at constant rate as
+n→∞ at the exact prize prime, for n≥32. **It does NOT** — exact countermodel at n=32.
+
+OBJECT. Char-p saturation of a far monomial direction dir(a,b) on a readout-subset T (incidence
+jumps to q = char-p EXCESS over the small char-0 value) ⟺ the complete-homogeneous readout
+`h_{b-k}(ζ_n^T) = 0` mod p but ≠ 0 over ℂ (in-tree Schur-bridge dichotomy 02:28 /
+probe_mergeonly_saturation_refute.py). The set of such "excess primes" for a band = prime factors of
+the integer field norm `N(h_{b-k}(ζ_n^T))`. Define `β_excess(n) = log_n(max prime factor over all
+w-subsets T with N(T)≠0)`. β_excess < β=4 ⟹ no prize-scale prime saturates ⟹ FAITHFUL at prize;
+β_excess ≥ 4 ⟹ a prize prime saturates ⟹ char-p EXCESS ⟹ δ* < char-0 Kambiré edge.
+
+EXACT DATA (full subset enumeration + exact integer-resultant norm, cross-checked vs mpmath dps=80
+product-over-conjugates, round err < 1e-71; char0_zero counts confirm none of the hits are char-0
+vanishings reduced):
+
+  n=16 h_3 readout (deg3) w=5 [b=11,k=4]:   max excess prime 8161        = n^3.249  FAITHFUL@prize
+  n=16 WORST dir(4,10) deg6 w=5:            max excess prime 337         = n^2.099  FAITHFUL@prize
+  n=16 WORST dir(4,10) deg6 w=6:            max excess prime 1873        = n^2.718  FAITHFUL@prize
+  n=16 WORST dir(4,10) deg6 w=7:            max excess prime 593         = n^2.303  FAITHFUL@prize
+  n=32 h_3 readout (deg3) w=5 [b=11,k=8]:   max excess prime 206889121   = n^5.525  EXCESS@prize ***
+
+The n=32 excess prime **p = 206889121 is itself PRIME, ≡ 1 mod 32** (so μ_32 ⊂ F_p* exists), and
+= n^5.525 (prize regime β∈[4,5.5], q ≥ n^4). On T=(0,1,3,7,10) the readout h_3 vanishes mod p for
+the primitive 32nd root ω^15 (exactly 1 of 16 conjugates — consistent with the norm carrying p to
+the first power), while N(h_3(ζ_32^T)) ≠ 0 over ℂ. So the far line saturates (incidence = q) at a
+prize-scale prime where char-0 incidence is small ⟹ genuine char-p EXCESS at constant rate, n=32.
+
+CROSSOVER. β_excess jumps 2.7–3.25 (n=16, all below β=4 ⟹ n=16 IS faithful, matching the direct
+F_p scan: worst dir (4,10) faithful across prize primes 65537/65617/65633) to 5.525 (n=32, above β).
+This makes EXACT the live-session trend (h_3 max excess 3.25→3.95→≥5.99 for n=16/32/64, where the
+n=32 value 3.95 was sub-prize and n=64 was a 7-sample lower bound): the true n=32 max excess prime
+is n^5.525, comfortably prize-scale, and confirmed prime/≡1-mod-n. The n=16-only faithfulness
+(VandermondeInterpolationSafe + the in-window n=16 verification) does NOT extend to n≥32.
+
+VERDICT: worst-direction char-faithfulness at constant rate is **REFUTED for n≥32** — the §5.3 route
+to a closure (δ* = Kambiré edge via char-p invariance of the bad-scalar count) is dead at the prize
+point. δ*_worst-case < char-0 Kambiré edge strictly, by an explicit prize-scale excess prime. This
+is consistent with the prize being the field-universal (∀q) BGK wall, NOT a fixed-field statement.
+Tag: refuted (exact, per-fixed-n countermodel; mechanism = Schur-bridge dichotomy, in-tree).
+Probes: scripts/probes/probe_wfLC_worstdir_norm2.py (exact norm, the decisive one),
+probe_wfLC_excess_prime_exponent.py (sympy-resultant validation), probe_wfLC_charfaithful_constrate.py
+(n=16 direct F_p faithfulness control), probe_wfLC_prize_saturation_scan.py.
