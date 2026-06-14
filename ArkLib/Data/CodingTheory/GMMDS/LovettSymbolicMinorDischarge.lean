@@ -151,6 +151,7 @@ symbolic full-rank interface holds, the RIM kernel is trivial — exactly
 inhabited; it does **not** close the residual (a bare `GZPCondition` does not supply WPC — that
 is the refuted shortcut), it only certifies the residual is satisfiable. -/
 
+omit [DecidableEq ι] in
 /-- **The ring-change conclusion is satisfiable from the symbolic full-rank interface + a WPC
 witness.**  If `SymbolicFullRankResidual F k` holds and the edge family is weakly partition
 connected, then `RIM F e` has trivial polynomial kernel — the conclusion shape of
@@ -160,7 +161,6 @@ This is the honest non-vacuity certificate: the conclusion is reachable on the W
 `SymbolicFullRankResidual` is the named (paper Appendix-A) input.  The residual proper asks for
 the same conclusion from the *strictly weaker* `GZPCondition` hypothesis via Lovett — that
 strengthening of the hypothesis class is the GM-MDS content still to be formalized. -/
-omit [DecidableEq ι] in
 theorem rimKernelTrivial_conclusion_of_symbolicFullRank_wpc {k : ℕ}
     (hsym : AGL24.SymbolicFullRankResidual (ι := ι) F k)
     {t : ℕ} (ht : 1 ≤ t) (e : ι → Finset (Fin (t + 1)))
@@ -192,13 +192,13 @@ noncomputable def rimCols_equiv_pFamUnion_index_of_shape
   rw [card_pFamUnion_index, hshape]
   rw [Fintype.card_prod, Fintype.card_fin, Fintype.card_fin]
 
+omit [DecidableEq ι] in
 /-- **The genuine shape is realizable** (non-vacuity of the bijection brick): the all-zero
 `V*(k)`-shaped system over `m = t` rows has `∑ᵢ (k − |vᵢ|) = t · k`, so the column-index
 bijection is inhabited at the generic shape.  (This is a *shape* witness for the bijection, not
 a claim that the all-zero system is `V*(k)` — `IsVStar` fails for `t ≥ 2`; the genuine `vᵢ`
 encode the edge structure.  The point is only that the cardinality identity `∑(k−|vᵢ|)=t·k` is
 satisfiable, so `rimCols_equiv_pFamUnion_index_of_shape` is non-vacuous.)  Axiom-clean. -/
-omit [DecidableEq ι] in
 theorem rimCols_shape_satisfiable (t k : ℕ) :
     ∑ _i : Fin t, (k - vAbs (Function.const (Fin (Fintype.card ι)) (0 : ℕ)))
       = t * k := by

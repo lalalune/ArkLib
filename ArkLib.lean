@@ -1340,6 +1340,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionWeilConditional
 import ArkLib.Data.CodingTheory.ProximityGap.MomentLogConvex
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupNormBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupplyIdentity
+import ArkLib.Data.CodingTheory.ProximityGap.MonodromyConductorScaffold
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDivisorWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDomainRootSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominantCoset
@@ -1371,6 +1372,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedPairingCount
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedPairingLifting
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedSumZero
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedWalkBound
+import ArkLib.Data.CodingTheory.ProximityGap.NegationClosure
 import ArkLib.Data.CodingTheory.ProximityGap.NewtonPowerSumWindow
 import ArkLib.Data.CodingTheory.ProximityGap.NoJohnsonSidonBound
 import ArkLib.Data.CodingTheory.ProximityGap.NodalSupplyGeneralK
