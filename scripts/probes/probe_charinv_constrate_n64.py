@@ -109,7 +109,7 @@ def bandcounts(p, n, k, a, b, batch=200000, verbose=False):
         powr[:, j] = (powr[:, j - 1] * pts) % p
     # all (k+1)-subsets; process in batches
     ga = {}  # gamma -> agreement (computed lazily, only first time gamma seen)
-    seen_gamma = set()
+    seen_gamma = {}  # gamma -> g-coeff tuple (first witness), for distinct gammas only
     combos = itertools.combinations(range(n), k + 1)
     t0 = time.time()
     total = 0
@@ -125,31 +125,36 @@ def bandcounts(p, n, k, a, b, batch=200000, verbose=False):
         M[:, :, k] = (-za[idx]) % p                  # (Bc,k+1)
         rhs = zb[idx]                                # (Bc,k+1)
         sols, ok = batch_solve_mod(M, rhs, p)
-        gammas = sols[:, k]
-        gs = sols[:, :k]
-        # collect distinct new gammas in this batch
-        for r in np.nonzero(ok)[0]:
+        okr = np.nonzero(ok)[0]
+        gammas = sols[okr, k]
+        gs = sols[okr, :k]
+        # keep first g for each distinct gamma not yet seen
+        for r in range(len(okr)):
             gm = int(gammas[r])
-            if gm in seen_gamma:
-                continue
-            seen_gamma.add(gm)
-            g = gs[r]
-            # agreement of this gamma: count i with g(pts[i]) == zb[i]+gm*za[i]
-            gi = np.zeros(n, dtype=np.int64)
-            for j in range(k - 1, -1, -1):
-                gi = (gi * pts + int(g[j])) % p
-            target = (zb + gm * za) % p
-            ga[gm] = int(np.count_nonzero(gi == target))
+            if gm not in seen_gamma:
+                seen_gamma[gm] = gs[r].copy()
         total += Bc
         if verbose:
             sys.stderr.write(
                 f"\r    p={p} pencil({a},{b}): {total}/{math.comb(n,k+1)} "
-                f"({100*total/math.comb(n,k+1):.0f}%) {time.time()-t0:.0f}s")
+                f"({100*total/math.comb(n,k+1):.0f}%) {time.time()-t0:.0f}s ngamma={len(seen_gamma)}")
             sys.stderr.flush()
     if verbose:
         sys.stderr.write("\n")
-    vals = list(ga.values())
-    return {w: sum(1 for v in vals if v >= w) for w in range(k + 1, n + 1)}
+    # VECTORIZED agreement: for all G distinct gammas at once.
+    G = len(seen_gamma)
+    if G == 0:
+        return {w: 0 for w in range(k + 1, n + 1)}
+    gam_arr = np.fromiter(seen_gamma.keys(), dtype=np.int64, count=G)          # (G,)
+    coef = np.stack(list(seen_gamma.values())).astype(np.int64)               # (G,k)
+    # g(pts[i]) for all gammas, all points: Horner over k coeffs.
+    # gi[G, n]; pts (n,). Build with broadcasting, mod p each step.
+    gi = np.zeros((G, n), dtype=np.int64)
+    for j in range(k - 1, -1, -1):
+        gi = (gi * pts[None, :] + coef[:, j][:, None]) % p                    # (G,n)
+    target = (zb[None, :] + (gam_arr[:, None] * za[None, :]) % p) % p          # (G,n)
+    agree = np.count_nonzero(gi == target, axis=1)                            # (G,)
+    return {w: int(np.count_nonzero(agree >= w)) for w in range(k + 1, n + 1)}
 
 
 def main():
