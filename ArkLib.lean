@@ -156,6 +156,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettSubstitutionDvd
 import ArkLib.Data.CodingTheory.GMMDS.LovettThm17Reduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettToGMMDSBridge
 import ArkLib.Data.CodingTheory.GMMDS.LovettToGZPDualBridgeReduction
+import ArkLib.Data.CodingTheory.GMMDS.LovettUnconditionalWiring
 import ArkLib.Data.CodingTheory.GMMDS.LovettUnion
 import ArkLib.Data.CodingTheory.GMMDS.LovettVStarReduce
 import ArkLib.Data.CodingTheory.GMMDS.LovettWitnessCounterexample
