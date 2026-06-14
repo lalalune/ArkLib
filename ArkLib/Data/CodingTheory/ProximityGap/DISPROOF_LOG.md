@@ -9386,3 +9386,59 @@ the ORBIT count N is meaningful. Compare N, never |bad|.)
   fail for dense lines.
 Reduces to the SAME open core as the entry above: Lane B = across-line incidence = Q1/Q2 = BGK/Paley.
 Outcome: precise-reduction-to-named-core (corroboration). NOT closure. Lean + probe committed.
+
+---
+
+## R1 assessment (2026-06-14): GG25 curve-decodability for EXPLICIT PLAIN RS — precise obstruction (honest-open)
+
+**Question.** The in-tree GG25 chain (curve-decodability ⇒ MCA, Lemma 3.2) is built and
+axiom-clean. Does any new angle give curve-decodability for *explicit plain* smooth-domain RS
+in the prize window, or what is the precise obstruction?
+
+**Verified in-tree structure (everything downstream of curve-decodability is PROVEN; the input is not).**
+- `GG25CurveDecodability.CurveDecodable` — the Def 3.1 predicate (the HYPOTHESIS).
+- `GG25SpreadBound.{disagree_spread_bound, all_seeds_close}` — Lemma 3.2 (proven).
+- `GG25MCAFromCurveDecodability.all_seeds_close_of_curveDecodable` — Thm 3.3, MCA from
+  curve-decodability (proven). All consume `CurveDecodable` as a hypothesis.
+- The ONLY in-tree *producers* of `CurveDecodable` at the nontrivial regime `b > ℓ+1`:
+  * `CurveDecodability.{markedCurveDecodable_interleaved, curveDecodable_interleaved}` (Jo26 Thm 5.7):
+    transfers curve-decodability of a BASE code to its `s`-fold INTERLEAVING under `a.choose b ≤ q`.
+    **Takes base curve-decodability as hypothesis.**
+  * `FarWordSupplyCounting.markedCurveDecodable_interleaved_of_curveDecodable_rs:280`:
+    same, specialized to RS — line 280 takes `hC : CurveDecodable F (ReedSolomon.code domain k) ℓ δ a b`
+    **as an explicit hypothesis.**
+  * Small-witness `b ≤ ℓ+1`: `Jo26CurveInterpolationRegime.curveDecodable_interpolation` /
+    `GG25SmallWitness.markedCurveDecodable_of_small_witness` — FREE via Lagrange, ANY linear code,
+    but **trivial regime** (Jo26 Remark 5.3: applications need `b > ℓ+1`).
+- In-tree subspace-design is established ONLY for FOLDED RS over a geometric domain
+  (`ReedSolomon.Folded.frs_geomDomain_isSubspaceDesign_cz25Profile`, used by `CapacityBounds*`).
+  **Plain RS is NEVER shown subspace-design anywhere in-tree.**
+
+**The paper-level obstruction (GG25 = ECCC TR25-166 / ePrint 2025/2054), read from the PDF.**
+The ONLY production engine for curve-decodability at `b > ℓ+1` is **Theorem 4.7**: *every
+`τ`-subspace-design code `C` is `(ℓ, 1−τ(r)−ε, a, ε/(r+ε)·a)`-curve-decodable for `ε ≥ (ℓ+1)/r`*.
+Its proof (Theorem 4.5 [AHS25]-pruning + Lemma 4.1 dimension bound) uses the subspace-design
+property (Def 2.17) at the decisive step. To reach the prize window radius `δ ≈ 1−ρ` one needs
+`τ(r)+ε ≤ ρ + Θ(1/log n)`, hence (since `ε ≥ (ℓ+1)/r`) `r = Ω(log n)` AND `τ(r) ≈ ρ` up to
+`r = Ω(log n)` — i.e. a **strong subspace design** (Def 2.19). GG25 gets this for FRS /
+multiplicity (via [GK16]) and for RANDOM RS / RLC (via the [LMS25, BCDZ25b] LCL-threshold
+transfer, which needs random evaluation points). The paper itself states curve/line-decodability
+**does not fit the LCL framework directly** and gets random RS only through the V-decodability
+detour (Prop 5.3), which itself needs **`|F| > a·2^{ℓ+2}`** — exponential in ℓ — and random eval points.
+
+**Why explicit plain RS at constant rate is excluded — quantified.**
+`/tmp/probe_407_R1_plainRS_curvedecodability_obstruction.py` measures `τ(r)` for plain RS over
+F_p (eval set = F_p) directly from Def 2.17. Result: `τ(1) ≈ ρ` (single codeword = MDS, ≤k−1 roots),
+but `τ(r)` **blows up toward 1 as r grows** (F_17, k=8, ρ=0.47: τ(1)=0.06, τ(2)=0.53, τ(7)=0.87;
+same shape F_{11,13,19,23}). A low-dim subspace of plain RS can concentrate zeros (the MDS bound
+controls one codeword, not a basis sharing roots), so plain RS is NOT a strong subspace design;
+Theorem 4.7 gives a VACUOUS radius (`1−τ(r)−ε ≪ 1−ρ`, below Johnson). The missing statement is
+exactly **list-recovery of explicit plain RS into a low-dimensional (not small) subspace** (Lemma 4.1
+for plain RS at growing r) — an OPEN list-decoding-theory problem, the same wall as the δ* core.
+
+**Conclusion.** No new angle bridges GG25 curve-decodability to explicit plain RS in the prize
+regime via the in-tree chain. The precise obstruction is a single named gap: **plain RS is not a
+(strong) subspace-design code and the dimension-bound input (Lemma 4.1 / Thm 4.7 with τ(r)≈ρ to
+r=Ω(log n)) is unproven for it** — equivalently, low-dim list-recovery of explicit plain RS, the
+list-decoding-theory open problem GG25 explicitly side-steps by restricting to FRS/multiplicity/
+random RS (field linear in n / random eval points). Honest-open; obstruction pinned to one Prop.
