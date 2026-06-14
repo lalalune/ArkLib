@@ -8834,18 +8834,68 @@ closed deterministic consumer in `Frontier/_DyadicCocycleLargeDeviation.lean` (a
 refutation hook should a future probe find a sustained near-2 path). This remains the BGK/MRSS
 incomplete-character-sum 25-yr-open problem; the consumer is closed, the analytic input is not.
 
+## REFUTED (2026-06-13, #407): the Nullstellensatz/PNT "good-prime dodge" of the char-p transfer
+
+**The idea (bold, looked like it might CLOSE the prize).** The char-0 optimality is axiom-clean Lean:
+every gap-vanishing config `S⊆μ_{2^μ}` over a char-0 field is a coset-union (`LamLeungTwoPow.full_tower`),
+so `e_m(S)` lies in the `r`-fold sumset `H^{(+r)}` = roots of a fixed integer polynomial `F` of
+`deg F = |H^{(+r)}|`. Over ℚ̄, `F(e_m)` vanishes on the gap-variety `V(I)`, so `F(e_m)∈√I` (Hilbert
+Nullstellensatz). Clearing denominators in the certificate gives `D·F(e_m)^t ∈ I_ℤ` for some `D∈ℤ`.
+Then for ANY prime `q ∤ D`: every gap-valid `S` over `F_q` has `F(e_m(S))≡0`, so `#bad ≤ deg F =
+|H^{(+r)}|` — the optimality upper bound, UNCONDITIONALLY, with NO char-p Lam–Leung. And a "good" prime
+`q ∤ D`, `q ≡ 1 (mod n)`, `q = Θ(n^β)` should EXIST: `D` has `≤ log₂ D` prime factors, and Thorner–Zaman
+PNT-in-AP gives `≫ n^{β}/φ(n)` primes `≡1 (mod n)` in `[n^β, 2n^β]`. Pick one coprime to `D`. Closed —
+inputs are KNOWN proven math (effective Nullstellensatz + PNT-in-AP). δ* pinned in the prize regime.
+
+**Why it FAILS (quantitative kill).** `D` is DOUBLY exponential, vastly larger than the prize prime:
+- The gap ideal `I` lives in `N` variables — either `N≈|S|≈ρn≈2^28` (point coords) or `N≈2m−1≈n`
+  (elementary-symmetric coords); both are `Θ(n)`, NOT `O(polylog n)`. The generators (power sums `p_j`,
+  `j<2m`) have degree `d≈n`.
+- Effective arithmetic Nullstellensatz (Krick–Pardo–Sombra, sharp): `log|D| ≲ d^{N+1}·(h+…)`. Here
+  `d^N ≈ (2^30)^{2^28} = 2^{30·2^28} ≈ 2^{8×10^9}`. So `log₂ D ≈ 2^{8×10^9}` and
+  `#{prime factors of D} ≤ log₂ D ≈ 2^{8×10^9}`.
+- Candidate primes `≡1 (mod n)` in `[n^β,2n^β]` number only `≈ n^β/φ(n) ≈ 2^{30β−29} ≈ 2^{91}` (`β=4`).
+- `2^{8×10^9} ≫ 2^{91}`: the bad primes (factors of `D`) GENERICALLY include every candidate — the prize
+  prime cannot be dodged. The pigeonhole runs the WRONG way.
+- Same kill for the single-power-sum NORM-bound lift: `Σ_{x∈S}x≡0 (mod q)` lifts to ℂ only if
+  `q ∤ N(Σx)`, and `|N(Σx)| ≤ |S|^{φ(2^μ)} = |S|^{2^{29}}`, so the lift needs `q > |S|^{2^{29}} ≈
+  2^{1.5×10^{10}}` — unreachable (prize `q≈2^{120}`).
+
+**Conclusion (sharpens the open core).** NO generic-elimination / norm route yields a `poly(n)`-height
+transfer; every one has a denominator `exp(2^{Θ(μ)})` that the prize prime `q=n^β` cannot exceed. Closing
+the prize regime requires a STRUCTURAL certificate — `poly(n)`-height, exploiting the 2-adic cyclotomic
+structure and the SIMULTANEOUS gap window (not one power sum) — and no such certificate is known. That
+missing certificate is exactly the Gauss-period sup-norm / char-p Lam–Leung coset-saturation open core
+(Paley Graph Conjecture territory; SOTA Di Benedetto `n^{1−31/2880}`). The dodge therefore DEFERS to the
+open math; it is not a closed route. (Same wall, restated with a quantitative denominator bound.)
+
+## Dual-assault refutations (2026-06-13, 11-expert adversarial workflow, #407)
+
+These M(n)/floor proof routes are REFUTED with machine-checkable evidence (probes in scripts/probes/, /tmp):
+- **Stepanov auxiliary polynomial**: heavy set K(c)=#{b≠0:|η_b|>c√n}=Θ(p) uniformly in β (η_b/√n→N(0,1),
+  measured K/p≈0.044 at c=2 matching Pr|Z|>2=0.0455, all β); auxiliary on heavy set needs deg≥K=Θ(p) ⟹
+  Stepanov multiplicity m<p/K=O(1) ⟹ collapses to m=1 moment. + Frobenius effective-degree cap <p (in-tree).
+- **Amplification / shifted moments**: D_r(h)=Σ_b η_b^r η̄_{b+h}^r = p·Σ_t N_r(t)²e_q(−ht), N_r≥0 ⟹
+  max_h|D_r(h)|=D_r(0)=p·E_r (positive-definite, argmax h=0 verified n∈{8,16,32}). No amplifier beats flat energy.
+- **2-adic dyadic descent** M(n)²≤2M(n/2)²: self-referential — M(n)²≤2max_b(|A|²+|B|²)=M(n)²+M_χ(n)²,
+  M_χ=quadratic-twisted level-n sup-norm SAME size (M_χ/M~1). cos(A,B)=1 is trivial realness, not alignment.
+  Strict form FALSE at finite n (ratio 1.89,1.76,1.58 > √2); true law M(n)²≤(2+Θ(1/log n))M(n/2)².
+- **Average + concentration (floor)**: MDS average E_line[I]≈C(n,k+m)q^{1-m}=q^{-Θ(n/log n)} at the WINDOW
+  INTERIOR (≈2^{-1e7} at μ=30, NOT ≈n); floor is EXTREME-VALUE, worst/avg gap q^{Θ(n/log n)} unbridgeable.
+- **B4 interleaved LD⇒MCA**: circular — Λ(C^{≡m})≤(b+r choose r)Λ(C)^r (GGR11 r=4-5) is a monotone
+  amplification of the single-code list; forcing ≤n needs Λ(C)≤O(1)=the prize. Λ(C)≤Λ(C^{≡m}) exact.
+- **K=O(1) sheaf conductor**: FALSE in the rank reading — conductor=dim H¹_c~n^{2r-1}, Swan=0 (all tame);
+  Weil-II lossy by √rank=n^{r-1/2}. The cancellation is in the WEIGHTS, not the conductor (= BGK, open).
+- **Large-sieve / effective Deligne in-regime**: dimension-obstructed — effective only when f≤√q ⟺ n≳√p;
+  prize n≪√p is over-dimensioned by √p/n. (Σ_b|η_b|^{2r}=q·E_r exact, zero slack.)
+- **2-power exact Sidon ⟹ BGK gain**: ZERO — μ_n jointly Sidon with every dilate (E^+(μ_n,ξμ_n)=n² diag-only),
+  best possible additive input, yet BSG losses are seed-energy-independent (regime-driven κ=log n/log p).
+
 ## 2026-06-14 (wakesync/#407): Kambiré/factorization-rigidity route investigated — reduces to the SAME char-p tail-e_i wall; + K=O(1) correction
-Investigated the Kambiré exact-δ* conjecture (prize-407-exact-deltastar-kambire doc): δ*=1−ρ−2ρln(1/2ρ)/log₂(qε*),
-optimality reduced via Factorization Rigidity (∏(X−z) m-sparse ⟺ S=μ_m-coset-union, char-p-SAFE/proven) to
-R1 (monomial extremality) + R2 (Kambiré stack maximizes |H^{(+r)}|). KB doc rated these "combinatorial, not
-open hard math" (feasibility 8). HONEST FINDING: the swarm's later tail-symmetric-function analysis (commit
-b8088a3e) supersedes — R1/R2 for r≥3 (prize needs r≈11) hit the CHAR-P WALL: the window constrains only low
-e_i; forcing tail e_i (2m≤i≤rm, m∤i) to vanish (⟹ coset-union ⟹ optimality) needs P|X^n−1 = Lam–Leung over
-ℂ, a WALL over F_q. So the Kambiré route's optimality ALSO reduces to the open core (= BCHKS Conj 1.12 / Paley
-graph, OPEN per arXiv 2603.29571 Mar-2026). My empirical R1 test (mu_16, k=2) saturated above δ* — inconclusive,
-analytic conclusion stands.
-CORRECTION (mine, per swarm ba96383b): my earlier "conductor K=O(1), K≈1.28" was a CRUDE MISREADING. The
-sheaf conductor is rank-driven n^{2r-1} (Swan=0), so K=O(1) is FALSE as stated; the real open input is the
-effective eigenvalue-cancellation base = BGK, dimension-obstructed (effective Deligne needs f≤√q ⟺ n≳√p, but
-prize has n≪√p — over-dimensioned, geometric route blocked). So even the geometric/Katz framing is obstructed
-in the prize regime; the floor is an EXTREME-VALUE (not concentration) problem. All faces ⟹ BGK/Paley, no closure.
+Investigated the Kambiré exact-δ* conjecture: δ*=1−ρ−2ρln(1/2ρ)/log₂(qε*), optimality reduced via Factorization
+Rigidity (∏(X−z) m-sparse ⟺ S=μ_m-coset-union, char-p-SAFE/proven) to R1 (monomial extremality)+R2 (Kambiré stack
+maximizes |H^{(+r)}|). The swarm's tail-symmetric-function analysis (b8088a3e) shows R1/R2 for r≥3 (prize r≈11) hit
+the CHAR-P WALL: forcing tail e_i (2m≤i≤rm, m∤i) to vanish needs P|X^n−1 = Lam–Leung over ℂ, open over F_q. So the
+Kambiré route ALSO ⟹ open core (BCHKS 1.12 / Paley graph, open Mar-2026 arXiv 2603.29571). My empirical R1 test
+(mu_16,k=2) saturated above δ*, inconclusive. CORRECTION (per swarm ba96383b): earlier "K=O(1)/K≈1.28" was a crude
+misreading; conductor is rank-driven n^{2r-1}, real core=BGK eigenvalue cancellation, dimension-obstructed (n≪√p).

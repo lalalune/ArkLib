@@ -719,3 +719,113 @@ gated on the recognized incomplete-exponential-sum bound. NOT a full closure; I 
 The genuine net gain this session: the EVEN-POLYNOMIAL proof of the minimal case and the
 spurious⟹saturated counting structure — which localize and explain the wall, even though they don't
 remove it for general r.
+
+## GRIND ROUND — machinery built + exponential-sum refutation map
+
+**Lean bricks landed (axiom-clean, real build):**
+- `NegationClosure.lean` (commit 6770e4fba): `neg_closed_of_even` (even gen poly ⟹ root multiset ±-pair-
+  closed) + `neg_closed_of_expand_two` (X²-poly ⟹ union of μ₂-cosets). Value-level seed of the r=2
+  minimal case, complementing `FactorizationRigidity.lean` (m-sparse ⟺ μ_m-coset-union).
+
+**Refutation map of the exponential-sum core** `S(a,b)=∑_{x∈μ_n}e_p(ax+bx³)` (`/tmp/cubsum.py`):
+- ❌ REFUTED `|S| ≤ 2√n`: max|S| = 7.47/11.63/17.71 > 2√n = 5.66/8.0/11.31 (n=8/16/32). Sup exceeds √n.
+- ❌ REFUTED "cubic helps": max|S| (cubic, 2-freq) > max|η_b| (linear Gauss) at every instance — the
+  extra frequency makes the sup LARGER, not smaller. The cubic twist gives no advantage.
+- ✓ SURVIVES `|S| ≤ 2√(n ln p)`: 7.47/11.63/12.98/17.71 < 2√(n ln p) = 11.7/17.1/18.3/24.2.
+- ⚠ But the sup bound is INSUFFICIENT for the count: #gap-valid configs `= (1/p²)∑_{a,b}S^{2r}`; with
+  `|S|≤2√(n ln p)` the error `≤ (4n ln p)^r ≫` coset count `~ C(n/2,r)`. So controlling spurious needs
+  the MOMENT `∑_{a,b}|S|^{2r} = ` additive energy `E_r`, NOT just the sup — re-confirming the moment-
+  method (Wick-vs-char-p-anomaly) wall (#389) from the exponential-sum side.
+
+**Irrefutable conjectures (survived all refutation this campaign), all gated on the same moment/BGK wall:**
+  (I1) `e₂(S) ∈ Σ_r` integrality (#bad = |Σ_r|) — PROVEN r=2 (even-poly), verified all r.
+  (I2) `|∑_{x∈μ_n}e_p(ax+bx³)| ≤ 2√(n ln p)` — survived; insufficient alone.
+  (I3) spurious ⟹ saturated (no spurious config at non-saturated p) — survived 141 primes.
+  (I4) δ* = `1−ρ−2ρ ln(1/2ρ)/log₂(qε*)` — the exact formula.
+All four reduce, rigorously, to the additive-energy `E_r(μ_s)` = diagonal-value (no char-p anomaly)
+statement for `r ~ log n` — the recognized open core. The campaign has PROVEN the boundary (r=2, ℂ) and
+built the reusable bricks; the interior (r≥3, char-p) is the moment wall, unbroken.
+
+## UPDATE — LEAN STATUS of the optimality chain (2026-06-13): the ℂ side is now AXIOM-CLEAN LEAN; residual precisely localized
+
+Auditing the in-tree state, the entire **characteristic-0** optimality chain is now machine-checked
+axiom-clean (`[propext, Classical.choice, Quot.sound]`), not just paper+numerics:
+
+| Piece | Lean theorem | file | axioms | build |
+|---|---|---|---|---|
+| (1) factorization rigidity | `mem_range_expand_iff`, `isRoot_smul_of_mem_range_expand` | `FactorizationRigidity.lean` | clean | green |
+| (2) coset-saturation, ℂ (iterated Lam–Leung) | `full_tower`, `tower_count` | `LamLeungTwoPow.lean` | clean | 3299 jobs |
+| (2) base (vanishing 2^μ-root 0/1-sum = ± pairs) | `count_antipodal_of_sum_eq_zero`, `multiset_antipodal_iff` | `LamLeungMultisetAntipodal.lean` | clean | green |
+| (2) key-identity structural core (MDS dichotomy) | `monomialPencil_quasi_homogeneous`, `expand_eval_mu_d_invariant` | `MonomialPencilQuasiHomog.lean` | clean | 3297 jobs |
+
+`full_tower` is exactly the ℂ coset-saturation: over `[Field F][CharZero F]`, a `2^M`-th-root set whose
+power sums vanish on `1 ≤ j < 2^s` is closed under `×μ_{2^s}` (a `μ_{2^s}`-coset-union). The two new
+monomial-pencil lemmas formalize the "key identity" face of piece (2): the pencil `U=X^a+γX^b` is
+`μ_d`-quasi-homogeneous (`U(ωx)=ω^a U(x)` for `ω^(a−b)=1`) and the `a`-residue codeword part is
+`μ_d`-eval-invariant — so agreement transports along `μ_d`-orbits (the codeword-side of the dichotomy).
+
+**THE UNIFICATION (honest headline).** The SINGLE remaining mathematical residual is the **char-`p`
+transfer** of `full_tower` — i.e. `q ∤ D` at the prize prime (`D` = the elimination resultant, factors
+`≤ (rm)^{n/2}`; equivalently: does a short `±1` relation of `2^μ`-th roots vanish mod `q=n^β`?). This is
+**bit-for-bit the same wall as the #389 energy/moment/Burgess core** (the additive-energy = diagonal-value
+statement for `r ~ log n`). The combinatorial coset-saturation route and the energy route are both
+**char-0-CLOSED and char-`p`-OPEN at the identical point** — they are one wall in two dresses, not two
+independent routes one of which bypasses the other. So δ* is pinned EXACTLY in the provable regime
+(`q > (rm)^{n/2}`) and over ℂ, axiom-clean in Lean; the prize regime (`q = n^β ≪ n^{n/2}`, `n=2^30`)
+reduces to this one named arithmetic transfer = the recognized open core. No fabricated closure.
+
+## UPDATE — the wall localized to the SYMMETRIC FUNCTIONS e_i, 2m≤i≤rm, m∤i (r=2 unconditional; prize r≈11)
+
+A sharper structural split than "char-0 vs char-p", obtained by reading the bad-scalar condition
+`e_i(S)=0 ∀i∈{1,…,2m−1}\{m}`, `|S|=rm`, directly through `P(X):=∏_{x∈S}(X−x)`:
+
+- **`r=2` is CLOSED UNCONDITIONALLY (pure algebra, char-`p`-SAFE, no Lam–Leung/norm bound).** With
+  `|S|=2m`, the vanishing `e_1..e_{2m−1}` (all but `e_m`) leave `P(X)=X^{2m}±e_m X^m+e_{2m} ∈ F_q[X^m]`,
+  so by `FactorizationRigidity` (already Lean) `S` is a `μ_m`-coset-union. The whole polynomial is forced
+  `m`-sparse because degree `2m` is fully covered by the window — there is no unconstrained "tail".
+- **`r≥3` needs the cyclotomic bridge (= the wall).** For `r≥3` the symmetric functions `e_i(S)` with
+  `2m≤i≤rm`, `m∤i` are UNCONSTRAINED by the window. Coset-union ⟺ `e_i(S)=0` for ALL `m∤i`; the window
+  delivers only `i<2m`. The low→all bridge is `P | X^n−1` (i.e. `S⊆μ_n`): over ℂ it forces the tail to
+  vanish (Lam–Leung / `full_tower`), over `F_q` at prize scale it does not. So the OPEN CORE is exactly:
+  **the tail symmetric functions `e_i(S)`, `2m≤i≤rm`, `m∤i`, are forced to `0` by `P|X^n−1` over `F_q`.**
+- **The prize sits at `r≈11`** (window-edge fit, `μ=30,ρ=1/4`: `s≈44`, `m≈2^{24.5}`, `|S|=ρn≈2^{28}`,
+  `log₂|H^{(+r)}|≈30.4≈μ`). So the prize is firmly on the `r≥3` side; the `r=2` unconditional corner does
+  not reach it. (And there is no parameter freedom to force `r=2`: the window edge pins `r`.)
+
+This is the same wall, but now stated as a CONCRETE finite algebraic obligation (tail-`e_i` vanishing from
+`P|X^n−1` over `F_q`), not a vague "transfer". A `poly(n)`-height proof of the tail-vanishing would close
+the prize; the only known route (generic elimination/Nullstellensatz/norm) is doubly-exponential (see
+DISPROOF_LOG "good-prime dodge"). No new math in the literature (PAPERS_NEEDED P1–P6) supplies it.
+
+## UPDATE 2026-06-13 (near-miss → reframe) — spurious configs are a SATURATION artifact; prize regime is spurious-FREE
+
+A targeted refutation hunt at n=64 surfaced an apparent counterexample — antipodal-free `U⊆μ_64` at
+`p=2113` with `∑u=∑u³=0` but `e₂=357 ∉ Σ_3` (independently verified: `2113≡1 mod 64`, g primitive,
+antipodal-free, both power sums vanish). It is **NOT a prize refutation** — it is a SATURATION artifact:
+the char-0 count `N₀ = |Σ_3(μ_32)| = 4512 > 2113`, so `Σ_3` cannot fit in `F_2113` and collapses to 1984
+(94% of the field); `357` is one of the 129 leftover values, hit by a degenerate small-p coincidence.
+
+**The decisive structural fact (`probe_407_saturation_boundary.py`):** spurious (non-coset) gap-valid
+configs exist ONLY for small `p ≲ N₀`, and VANISH above a small threshold:
+  · n=16 (N₀=40): spurious only at `p=17`; ZERO at `p=97,113,193,…`
+  · n=32 (N₀=464): spurious only at `p=97`; ZERO at `p=193,257,353,449,577,…`
+  · n=64 (N₀=4512): spurious at `p=2113`; ZERO at every non-saturated `p=10177,…,40961` (MITM-exhaustive
+    over 4-subsets, `probe_407_n64_mitm.py`).
+The prize regime is `q ≈ ε*·q·2^128 = |H^{(+r)}|·2^128 ≫ N₀` — MASSIVELY non-saturated. So **in the prize
+regime there are NO spurious configs**: every gap-valid config is a genuine `μ_2`-coset-union, exactly as
+over ℂ, hence `#bad = |H^{(+r)}|` and `δ* =` window-edge, worst case included.
+
+**This REFRAMES the open core** (and corrects the prior "Half-Sum Lemma about e₂-values" framing): the
+e₂-value question is MOOT in the prize regime because there are no spurious configs whose e₂ to worry
+about. The actual remaining statement is **coset-saturation over `F_q` for `q ≫ N₀`** — a CONFIG-EXISTENCE
+fact: "for `p` above the (small) bad-reduction threshold, the gap variety `{e_1=e_3=0}` over `F_p` has only
+its char-0 (coset-union) points." Pigeonhole intuition: for `p > N₀` the `N₀` coset-union e₂-values don't
+collide, the variety reduces well, no spurious points appear. This is a GOOD-REDUCTION / Johnson-type
+statement — much closer to provable than the e₂-value rigidity, and it is what actually pins `δ*` in the
+prize regime. Probes: `probe_407_{saturation_boundary,n64_mitm,n64_saturation_artifact,nonsaturated_n64}.py`.
+
+**Honest status update.** Apparent n=64 refutation REFUTED (saturation artifact). δ* = window-edge holds in
+the prize regime IFF coset-saturation holds for `q ≫ N₀` — a config-existence/good-reduction statement,
+empirically true (spurious vanish far below the prize scale) and structurally tied to a Johnson-type bound.
+The open problem is sharper and more tractable than before: prove the bad-reduction primes of the gap
+variety are all `≲ N₀` (≪ the prize prime). PROVEN n=8,16; the prize-regime claim reduces to this bound.

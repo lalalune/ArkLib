@@ -154,6 +154,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettSeparateStep
 import ArkLib.Data.CodingTheory.GMMDS.LovettSeparation
 import ArkLib.Data.CodingTheory.GMMDS.LovettSubstitutionDvd
+import ArkLib.Data.CodingTheory.GMMDS.LovettSymbolicMinorDischarge
 import ArkLib.Data.CodingTheory.GMMDS.LovettThm17Reduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettToGMMDSBridge
 import ArkLib.Data.CodingTheory.GMMDS.LovettToGZPDualBridgeReduction
@@ -518,6 +519,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIJointProximity
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
 import ArkLib.Data.CodingTheory.ProximityGap.BelowUDRPuncture
+import ArkLib.Data.CodingTheory.ProximityGap.BesselCentralBinomConstantTerm
 import ArkLib.Data.CodingTheory.ProximityGap.BestProvableBracket
 import ArkLib.Data.CodingTheory.ProximityGap.BetaSetSize
 import ArkLib.Data.CodingTheory.ProximityGap.BetaSetYoungDiagram
@@ -791,6 +793,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeviationSupSplit
 import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicEnergyK1
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicHalvingRecursion
+import ArkLib.Data.CodingTheory.ProximityGap.DyadicOddMomentVanishing
+import ArkLib.Data.CodingTheory.ProximityGap.E2VanishEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
@@ -856,6 +860,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChaining
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChainingSubmaxRefuted
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RungListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
@@ -1339,6 +1344,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionWeilConditional
 import ArkLib.Data.CodingTheory.ProximityGap.MomentLogConvex
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupNormBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupplyIdentity
+import ArkLib.Data.CodingTheory.ProximityGap.MonodromyConductorScaffold
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDivisorWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDomainRootSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominantCoset
@@ -1370,6 +1376,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedPairingCount
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedPairingLifting
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedSumZero
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedWalkBound
+import ArkLib.Data.CodingTheory.ProximityGap.NegationClosure
 import ArkLib.Data.CodingTheory.ProximityGap.NewtonPowerSumWindow
 import ArkLib.Data.CodingTheory.ProximityGap.NoJohnsonSidonBound
 import ArkLib.Data.CodingTheory.ProximityGap.NodalSupplyGeneralK
@@ -1712,6 +1719,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentLevelSet
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumRawMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMoment

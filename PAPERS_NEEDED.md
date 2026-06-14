@@ -345,3 +345,31 @@ VERDICT: the SOTA char-sum bound (Di Benedetto `n^{1−31/2880}`) and the beyond
 that gap = the recognized open grand list-decoding / Gauss-sum-sup-norm challenge. No 2024–2026 paper
 closes the structured dyadic case. Confirms (literature-grounded) the open core every campaign framing
 converges to.
+
+## 2026-06-13 (#407): second sweep — the Paley-spectrum + char-p Lam–Leung faces (the char-p transfer wall)
+The char-0 optimality is now axiom-clean Lean (`full_tower` etc.); the SOLE residual is the **char-p
+transfer** (does a short gap-vanishing config of `2^μ`-th roots over `F_q` lift to a char-0 coset-union).
+This sweep maps the two literatures that bound that exact object. NONE reach the prize scale.
+| # | Paper | Identifier | Bearing |
+|---|---|---|---|
+| P1 | Podestá–Videla, *The nature of the spectrum of generalized Paley graphs and weak Waring numbers* | arXiv 2604.06513 (Apr 2026) | freshest; spectrum of `Cay(F_q,μ_k)` = Gaussian periods = the `η_b`. **STRUCTURAL ONLY** (when real/integral, period ≥3) — confirms NO new eigenvalue-MAGNITUDE bound exists for thin subgroups. |
+| P2 | Podestá–Videla, *Spectral properties of generalized Paley graphs* | arXiv 2310.15378 | explicit Gauss-period spectra for index `k≤4`, `k=5` — the eigenvalues ARE the open-core periods; no thin-`n~q^{1/4}` magnitude bound. |
+| P3 | Lam–Leung, *On vanishing sums of roots of unity* (+ char-p `W_p(m)` extension, arXiv math/9605216) | — | the char-p transfer = `W_p(2^μ)=ℕp+2ℕ`: gives weight-PARITY of a vanishing sum (`w<p ⟹ w even`) but NOT coset structure; the only general lift = norm bound `w^{φ(m)}<p`, unreachable at prize scale. |
+| P4 | *Note on vanishing power sums of roots of unity* | arXiv 1503.07281 | simultaneous power-sum vanishing structure (our gap window is many `p_j=0` at once — the one place a poly-height argument could live). |
+| P5 | Alsetri, *Burgess-type character sum estimates over generalized arithmetic progressions of rank 2* | arXiv 2509.07765 (BLMS 2026) | closest recent TECHNIQUE (mult-energy + Bohr-set/geometry-of-numbers à la Konyagin) but rank-2 GAP ≠ mult subgroup; does not transfer to `μ_n`. |
+| P6 | Kambiré, *Proximity Gaps Conjecture Fails Near Capacity over Prime Fields* | arXiv 2604.09724 / eprint 2026/782 | the construction paper itself (the δ* lower bracket = monomial line `X^{rm}+λX^{(r−1)m}`, `λ∈H^{(+r)}`). |
+VERDICT: the two literatures that bound the char-p transfer object (Paley spectrum = Gauss periods;
+char-p Lam–Leung weight sets) are STRUCTURAL — neither gives a magnitude/lift bound reaching the prize
+`q=n^β` for `n~q^{1/4}`. Confirms the residual is the recognized open core, not a literature lookup.
+
+## 2026-06-13 (#407): CURRENT open-problem status of the reduced core (Paley graph conjecture)
+The prize floor = BCHKS Conj 1.12 = Paley-graph-conjecture territory. Most up-to-date literature status:
+| # | Paper | Identifier | Bearing |
+|---|---|---|---|
+| Q1 | *Randomstrasse101: Open Problems of 2025* | arXiv 2603.29571 (31 Mar 2026) | **DECISIVE**: curated random-structures open-problem list, dated 3 months ago, STILL lists the Paley-graph clique number `ω(G_p)=O(polylog p)?` as OPEN. The reduced core is open in the current literature, full stop. |
+| Q2 | Hanson–Petridis, *clique number of the Paley graph* (via Stepanov/polynomial method) | — | best PROVEN upper bound `ω(G_p) ≤ (1+o(1))√(p/2)` — the `√p` barrier, FAR from `polylog`/`√(n log q)`. The bound the prize needs to beat is exactly here, and it hasn't moved. |
+VERDICT (current as of Jun 2026): the object the prize floor reduces to is on the March-2026 official
+open-problems list. There is no known-math closure. A prize solution "reducing to proven math" must
+supply a NEW sub-`√p` thin-subgroup character-sum / Paley bound that the 2026 open-problems list says
+does not yet exist. (The "Paley graph conjecture on double character sums implies many character-sum
+estimates" — it is the governing open conjecture, not a side lemma.)

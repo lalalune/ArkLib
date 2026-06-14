@@ -59,10 +59,18 @@ def DeligneEffectiveEquidistribution (G : Finset F) (r : ℕ) (cond : ℝ) : Pro
     ≤ (Fintype.card F : ℝ) * ((Nat.doubleFactorial (2 * r - 1) : ℝ) * (G.card : ℝ) ^ r)
       + cond * Real.sqrt (Fintype.card F)
 
-/-- **(II) Geometric conductor bound, as a named hypothesis = the OPEN core.**  The conductor of the
-`r`-fold multiplicative convolution of the Gauss-sum sheaf is `≤ K^r`.  In the prize regime `n ≪ √q`
-this holds with `K = O(1)` (numerically `K ≈ 1.28`, `probe_conductor_prize_regime.py`), but the proof is
-the recognized open problem (BGK square-root cancellation; étale large-monodromy gives it only as `q→∞`). -/
+/-- **(II) The effective-cancellation bound, as a named hypothesis = the OPEN core.**  The cumulant
+deviation is `≤ K^r·√q` with `K = O(1)`.
+**SHARPENED (dual-assault conductor angle, 2026-06-13):** the *crude* sheaf conductor reading of (II) is
+FALSE — the conductor of `M^{*r}` (= `dim H¹_c` of the moment sheaf) is **rank-driven `~ n^{2r-1}`** with
+**Swan = 0** (all Kummer sheaves tame, NOT factorial-from-wild-ramification), so the naive Weil-II bound
+`cond ≤ K^r` with `K=O(1)` does NOT hold from the conductor; Weil-II over the `n^{2r-1}`-dim `H¹_c` is
+lossy by `√rank = n^{r-1/2}` (exactly the `n^{1/2}`-per-step L² deficit).  The genuine `K` here is the
+**effective Frobenius-eigenvalue-cancellation base** (measured `K ≈ 1.28`, `probe_conductor_prize_regime.py`)
+— it captures the actual cancellation in the WEIGHTS, which requires the joint equidistribution of the
+Gauss-sum arguments at fixed `q`, NOT a small conductor.  That is the recognized open core (BGK; the
+large-sieve angle shows it is dimension-obstructed in-regime: effective only when `f ≤ √q ⟺ n ≳ √p`,
+which the prize `n ≪ √p` violates by construction). -/
 def ConductorGeometricBound (cond K : ℝ) (r : ℕ) : Prop :=
   cond ≤ K ^ r
 
