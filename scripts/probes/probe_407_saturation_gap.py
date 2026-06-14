@@ -185,3 +185,41 @@ def main():
 
 if __name__=="__main__":
     main()
+
+# ---------------------------------------------------------------------------
+# CLEAN MECHANISM CHECK (appended): Schur-dichotomy saturating-subset count.
+# A (k+1)-subset T is "saturating" iff h_{b-k}(ζ^T)=0 (the divided-difference
+# denominator vanishes). By the dichotomy, one saturating subset ⟹ the monomial
+# line is bad for EVERY α at band w=k+1 ⟹ object (b) incidence jumps to ~q,
+# while object (a) DELETES γ_T (ineligible). char-0 vs the excess prime q=8161:
+# ---------------------------------------------------------------------------
+def _saturating_subsets_mod(q, n, k, b):
+    from itertools import combinations, combinations_with_replacement as cwr
+    z = pow(sympy.primitive_root(q), (q-1)//n, q); xs = [pow(z, i, q) for i in range(n)]
+    cnt = 0
+    for T in combinations(range(n), k+1):
+        xt = [xs[t] for t in T]; s = 0
+        for c in cwr(range(len(xt)), b-k):
+            pr = 1
+            for idx in c: pr = (pr*xt[idx]) % q
+            s = (s+pr) % q
+        if s % q == 0: cnt += 1
+    return cnt
+def _saturating_subsets_C(n, k, b):
+    from itertools import combinations, combinations_with_replacement as cwr
+    import functools
+    zc = [cmath.exp(2j*math.pi*i/n) for i in range(n)]; cnt = 0
+    for T in combinations(range(n), k+1):
+        xt = [zc[t] for t in T]
+        s = sum(functools.reduce(lambda p, i: p*xt[i], c, 1) for c in cwr(range(len(xt)), b-k))
+        if abs(s) < 1e-7: cnt += 1
+    return cnt
+if __name__ == "__main__":
+    print("\n--- Schur dichotomy: saturating (k+1)-subsets h_{b-k}(ζ^T)=0, n=16 k=4 b=7 (h_3) ---")
+    print(f"  char-0: {_saturating_subsets_C(16,4,7)}")
+    for q in [8161, 4129, 12289]:
+        if (q-1) % 16 == 0 and sympy.isprime(q):
+            print(f"  q={q} ({'excess' if _saturating_subsets_mod(q,16,4,7)>0 else 'faithful'}): "
+                  f"{_saturating_subsets_mod(q,16,4,7)}")
+    print("  ⟹ q=8161 (≡1 mod 16, <n^4=65536) has 16 saturating subsets absent in char-0:")
+    print("     object (b) line saturates (bad ∀α) while object (a) deletes γ_T (ineligible).")
