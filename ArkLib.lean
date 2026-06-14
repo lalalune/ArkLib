@@ -1492,6 +1492,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QuarticPowerSumFiber
 import ArkLib.Data.CodingTheory.ProximityGap.QuarticSupplyDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
+import ArkLib.Data.CodingTheory.ProximityGap.R4LaneDCosetPoint
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
 import ArkLib.Data.CodingTheory.ProximityGap.RSDeltaStarLDGoodSide
 import ArkLib.Data.CodingTheory.ProximityGap.RSDeltaStarLargeField

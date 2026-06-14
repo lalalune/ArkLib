@@ -9153,3 +9153,40 @@ the cross-power/e₂ variants have g varying over Θ(#defects) values. The only 
 of the dyadic tower remains the butterfly cross-correlation 2 Re(period·conj(period')) — already the
 NAMED open core ProximityGap.Frontier.DyadicDeviationDecay (period_butterfly, f52018869) = the BGK
 incomplete-character-sum sup-norm wall. NOT closure; a clean refute-and-localize. Brick + this entry committed.
+
+## 2026-06-14 (laneD/#407): R4 lane D w=5 — forward construction PROVEN char-free; converse rigidity char-INDEPENDENCE REFUTED at small primes (= char-p Lam-Leung wall)
+R4 lane D = the e2=0 dilation-orbit count K(n) at FIXED width w. The R4 conjecture is K=O(1) for fixed w;
+probe (/tmp/laneD_probe.py, prize regime q>=n^3, q-independent) confirms exactly:
+  • w=5 (ODD): K=1 for ALL n=8,12,16,20,24 — single coset (the clean case).
+  • w=4: K=1,2,3,4,5 = n/4 (GROWS, NOT O(1)).
+  • w=6: erratic (K=0,1,0,1,4 for n=8,12,16,20,24).
+STRUCTURE (probe /tmp/laneD_decomp.py): every w=5 e2=0 set in mu_n (4|n) = (a full coset of mu_4) ∪ {one
+extra point x in mu_n}, AND conversely every (mu_4-coset)∪{x} IS an e2=0 set with e1 = x. Reason: a
+mu_4-coset (root set of X^4-c) has e1=e2=e3=0; inserting x gives e1=x, e2 = e2(coset)+x*e1(coset) = 0.
+The e1 values = the extra points = all of mu_n = ONE dilation orbit => K=1.
+
+PROVEN (axiom-clean, real lake build 3303 jobs, [propext,Classical.choice,Quot.sound], no sorry) in
+ArkLib/Data/CodingTheory/ProximityGap/R4LaneDCosetPoint.lean — the FORWARD direction, char-free (only 2≠0):
+  • offDiag_sum_eq_two_powersetCard_two, e1_eq_esymm_one, e2_eq_esymm_two (Vieta bridges; new in cone)
+  • coset_e1_e2_zero: a 4-elt mu_4-coset has e1=e2=0
+  • insert_e1_e2: e1(T)=e2(T)=0 ⟹ e1(insert x T)=x, e2(insert x T)=0  (Newton single-point insert)
+  • cosetPoint_e2_zero: every mu_4-coset ∪ {point} is e2=0 with e1 = point
+  • cosetPoint_e1_single_orbit: HEADLINE K=1 — e1 values of any two family members lie in one mu_n-orbit.
+
+REFUTED (machine-checked, /tmp/laneD_charp.py): the CONVERSE (every w=5 e2=0 set IS a mu_4-coset+point,
+hence char-independent K=1) is FALSE at small structured primes:
+  • n=12, p=13: 36 decomposition-violators (K still 1 but extra coincidental sets).
+  • n=12, p=37: K=2, 12 violators.
+  • n=16, p=17: 176 violators; n=16, p=97: K=2; n=16, p=113: K=3, 32 violators.
+  • n=20: violators at p up to 1801.
+THRESHOLD (/tmp/laneD_threshold.py): ALL violating primes lie BELOW n^3 (n=8: none; n=12: <=37; n=16:
+<=673<4096; n=20: <=1801<8000). In the PRIZE regime q>=n^3 (≈n·2^128): ZERO violators, K=1 exactly.
+This is the char-p Lam-Leung wall — extra short ±1-relations among roots of unity mod a small prime create
+spurious e2=0 sets. It is ALREADY handled by the explicit resultant threshold of
+E2VanishRigidityModP.e2_extra_solution_threshold (p>(n^2+n)^{n/2} ⟹ mod-p locus = char-0 locus), so the
+converse holds in the prize regime with massive margin. 
+
+VERDICT: lane D w=5 splits cleanly — (a) FORWARD = new char-free axiom-clean theorem (K=1 family realized);
+(c) CONVERSE = char-0 fact + the NAMED resultant/Lam-Leung threshold (already in-tree), NOT a new wall on
+this algebraic lane. The char-INDEPENDENCE of the converse is refuted (small-prime violators), localizing
+to BCHKS Conj 1.12 / char-p Lam-Leung. Both outcomes are honest successes. NOT a closure of the open core.
