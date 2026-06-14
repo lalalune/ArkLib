@@ -1072,6 +1072,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZaman
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZamanConstructor
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26TightCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread
+import ArkLib.Data.CodingTheory.ProximityGap.KambireSumsetR2
+import ArkLib.Data.CodingTheory.ProximityGap.KatzEffectiveGaussSum
 import ArkLib.Data.CodingTheory.ProximityGap.KrawtchoukPoly
 import ArkLib.Data.CodingTheory.ProximityGap.LDAttainment
 import ArkLib.Data.CodingTheory.ProximityGap.LDEliasCertificate
