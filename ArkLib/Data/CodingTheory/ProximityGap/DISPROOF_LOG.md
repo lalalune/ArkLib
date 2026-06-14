@@ -9886,48 +9886,109 @@ subgroup at the Burgess barrier). One framing correction landed: Kowalski 2024 i
 explicit improvement; SOTA single-frequency cap is di Benedetto `n^{0.989}` (open) / Bourgain–Garaev
 `n^{0.99998}` (the exact prize boundary). `result_type = maps-the-cap`.
 
-## REFUTED 2026-06-14 (wf-LC / #407): worst-direction char-faithfulness at constant rate FAILS for n≥32 — exact prize-scale excess prime n=32
+## 2026-06-14 (#407 method-sweep): Bloom-Sisask quantitative Roth / Sanders Bogolyubov-Ruzsa — DEAD, exactly why
 
-LANE LC (R4 char-faithfulness at constant rate, §5.3) tested whether worst-direction char-p
-invariance of the bad-scalar count (= far-line incidence = list size) PERSISTS at constant rate as
-n→∞ at the exact prize prime, for n≥32. **It does NOT** — exact countermodel at n=32.
+METHOD. The SOTA additive-combinatorics quantitative Roth/Bogolyubov technology (Bloom-Sisask
+`n/exp(c(log n)^{1/?})` Roth; Sanders Bogolyubov-Ruzsa; Chang's lemma; Plünnecke-Ruzsa; BSG) applied to
+the additive structure of `μ_n ⊂ F_p` (additive group), against the three live faces R1 (`|μ_n^{(+r)}|`),
+R3 (DFT sup-norm `max_b|η_b|`), and the additive energy `E(μ_n)`. 0 in-tree files prior; the cone's
+"spectrum" probes are about the Paley/Gauss-sum spectrum, a different object.
 
-OBJECT. Char-p saturation of a far monomial direction dir(a,b) on a readout-subset T (incidence
-jumps to q = char-p EXCESS over the small char-0 value) ⟺ the complete-homogeneous readout
-`h_{b-k}(ζ_n^T) = 0` mod p but ≠ 0 over ℂ (in-tree Schur-bridge dichotomy 02:28 /
-probe_mergeonly_saturation_refute.py). The set of such "excess primes" for a band = prime factors of
-the integer field norm `N(h_{b-k}(ζ_n^T))`. Define `β_excess(n) = log_n(max prime factor over all
-w-subsets T with N(T)≠0)`. β_excess < β=4 ⟹ no prize-scale prime saturates ⟹ FAITHFUL at prize;
-β_excess ≥ 4 ⟹ a prize prime saturates ⟹ char-p EXCESS ⟹ δ* < char-0 Kambiré edge.
+PROBES: /tmp/bsr_regime.py, /tmp/bsr_subsetsum.py, /tmp/bsr_spectrum.py, /tmp/spectrum_empirical.py,
+/tmp/bsr_constraints.py (exact subgroup spectra computed for (p,n) up to (65537,128)).
 
-EXACT DATA (full subset enumeration + exact integer-resultant norm, cross-checked vs mpmath dps=80
-product-over-conjugates, round err < 1e-71; char0_zero counts confirm none of the hits are char-0
-vanishings reduced):
+FOUR INDEPENDENT KILLS, all in-regime (rechecked, not dismissed out-of-regime):
+- **(1) WRONG DIRECTION.** The prize wants UPPER bounds on SMALL objects (sumset small ≤ n, max|η_b|
+  small ≤ C√(n log m), energy small ~ n²). Roth/Bogolyubov machinery is *triggered by LARGE energy /
+  SMALL doubling* and *produces* structure from it (BSG: large energy ⟹ structured subset; Bogolyubov:
+  2A−2A ⊇ large Bohr set). `μ_n` thin is the SMALL-energy (`E~3n²−3n` Sidon, proven for n<log p),
+  LARGE-doubling (`|A+A|~n²`, `K~n`) regime — the machinery's hypotheses are on the opposite side. The
+  Cauchy-Schwarz LOWER bound `E≥|A|⁴/|A+A|~n²` is the floor and is already known; BSG adds nothing below
+  it.
+- **(2) DENSITY VACUITY.** Every Roth/B-S/BR bound enters the ambient `F_p` through the additive density
+  `α=n/p=2^-128`. The Bloom-Sisask no-3AP density ceiling is `~1/(ln p)^{1.04}≈2^-7.5`; `α=2^-128` is
+  `~2^120` BELOW it. `μ_n` is far too sparse to trigger any Roth conclusion. Plünnecke-Ruzsa `|rA|≤K^r|A|`
+  with `K~n` gives `|μ_n^{(+r)}|≤2^3191 ≫ p` = worse than the trivial `≤p`. Sanders BR with doubling
+  `K~n=2^30` yields a Bohr set of rank `O(K polylog)=exp-large`, density `exp(−log⁴K)=0` = vacuous.
+- **(3) CHANG GAP = √n (the sharp obstruction on R3).** Chang's lemma / Bloom-Sisask spectral boosting
+  bound the SIZE and DIMENSION of the large spectrum `Δ_ρ={b:|η_b|≥ρ·|A|}`, NOT the single MAX. Parseval
+  `∑_b|η_b|²=p·n` ⟹ RMS`=√n`; the conjecture needs `sup≤√n·√(log m)` (only `√(log m)` above RMS). To
+  bound the max Chang must push `ρ→1` (`|η_b|~n=|A|`, the L¹-trivial value); there it gives `|Δ_1|≤ln(1/α)
+  ≈89` — a FINITE set of ≤89 frequencies is *allowed* to have `|η_b|~n`. Chang/B-S NEVER rule out one
+  `√n`-larger spike. Off by a full `√n` factor — the same `L∞/L²` wall already named at faces 3↔4
+  (BGK/Paley sub-Gaussianity). EMPIRICALLY the rho~1 spectrum (`|η_b|≥0.9n`) is EMPTY in every case
+  (p,n)≤(65537,128) and `max|η_b|` tracks `√(n log p)` (conjecture holds) — but that is a *char-sum/BGK*
+  fact, not a Chang fact; Chang's provable bound stays at `n`.
+- **(4) EXCLUDED BY PROVEN CONSTRAINT C1 (thickness-monotone).** Density-increment / doubling methods
+  improve monotonically as the set gets denser or has smaller doubling — thickness-monotone by
+  construction. The program PROVED the conjecture is thinness-ESSENTIAL (FALSE for thick β∈[2.3,3.2] at
+  Fermat, TRUE for thin β≥4), so ANY thickness-monotone method is excluded — exactly as di Benedetto /
+  generic sum-product were. Additionally Chang's proof is an `L^{2k}`-moment (Rudin) argument and
+  Bloom-Sisask uses Croot-Sisask almost-periodicity (high moments), so its core inherits the proven
+  Fermat moment-explosion failure (`E_r^p` crosses Wick at r=5) — also barred by C2/C3.
 
-  n=16 h_3 readout (deg3) w=5 [b=11,k=4]:   max excess prime 8161        = n^3.249  FAITHFUL@prize
-  n=16 WORST dir(4,10) deg6 w=5:            max excess prime 337         = n^2.099  FAITHFUL@prize
-  n=16 WORST dir(4,10) deg6 w=6:            max excess prime 1873        = n^2.718  FAITHFUL@prize
-  n=16 WORST dir(4,10) deg6 w=7:            max excess prime 593         = n^2.303  FAITHFUL@prize
-  n=32 h_3 readout (deg3) w=5 [b=11,k=8]:   max excess prime 206889121   = n^5.525  EXCESS@prize ***
+NEEDS-EXTERNAL-INPUT (the single fact that would resurrect it): a Bloom-Sisask-style result that bounds
+the L∞ / single-max of the spectrum (not its count/dimension) for a thin MULTIPLICATIVELY-structured set,
+i.e. a `√n`-improvement of Chang at `ρ~1` exploiting that `Δ_ρ` is a union of `b·μ_n` cosets. No such
+result exists; it would BE the Paley Graph / BGK sub-Gaussianity bound — the open core itself.
 
-The n=32 excess prime **p = 206889121 is itself PRIME, ≡ 1 mod 32** (so μ_32 ⊂ F_p* exists), and
-= n^5.525 (prize regime β∈[4,5.5], q ≥ n^4). On T=(0,1,3,7,10) the readout h_3 vanishes mod p for
-the primitive 32nd root ω^15 (exactly 1 of 16 conjugates — consistent with the norm carrying p to
-the first power), while N(h_3(ζ_32^T)) ≠ 0 over ℂ. So the far line saturates (incidence = q) at a
-prize-scale prime where char-0 incidence is small ⟹ genuine char-p EXCESS at constant rate, n=32.
+VERDICT: dead-precise-why. NOT thinness-applicable (thickness-monotone, density-vacuous, wrong direction,
+Chang off by √n). Records the method as swept. `result_type = dead-direction+density+chang-sqrtn-gap`.
 
-CROSSOVER. β_excess jumps 2.7–3.25 (n=16, all below β=4 ⟹ n=16 IS faithful, matching the direct
-F_p scan: worst dir (4,10) faithful across prize primes 65537/65617/65633) to 5.525 (n=32, above β).
-This makes EXACT the live-session trend (h_3 max excess 3.25→3.95→≥5.99 for n=16/32/64, where the
-n=32 value 3.95 was sub-prize and n=64 was a 7-sample lower bound): the true n=32 max excess prime
-is n^5.525, comfortably prize-scale, and confirmed prime/≡1-mod-n. The n=16-only faithfulness
-(VandermondeInterpolationSafe + the in-window n=16 verification) does NOT extend to n≥32.
+## SWEEP (#407, 2026-06-14): Shkredov higher-energy SOTA → exact crossCell residual — DEAD, exact gap
 
-VERDICT: worst-direction char-faithfulness at constant rate is **REFUTED for n≥32** — the §5.3 route
-to a closure (δ* = Kambiré edge via char-p invariance of the bad-scalar count) is dead at the prize
-point. δ*_worst-case < char-0 Kambiré edge strictly, by an explicit prize-scale excess prime. This
-is consistent with the prize being the field-universal (∀q) BGK wall, NOT a fixed-field statement.
-Tag: refuted (exact, per-fixed-n countermodel; mechanism = Schur-bridge dichotomy, in-tree).
-Probes: scripts/probes/probe_wfLC_worstdir_norm2.py (exact norm, the decisive one),
-probe_wfLC_excess_prime_exponent.py (sympy-resultant validation), probe_wfLC_charfaithful_constrate.py
-(n=16 direct F_p faithfulness control), probe_wfLC_prize_saturation_scan.py.
+CONTEXT: complements prior lane wf-LF (commit eef47ce41, CrossCellShkredovBound.lean) which refuted the
+DIAGONAL form `crossCell ≤ ε·(2N0(H,r))` and noted H=μ_{n/2} is Sidon-like (E_3(H)/|H|^3→1, no additive
+structure for BSG to feed on). THIS entry adds the quantitative EXPONENT analysis of the MOMENT-method
+face (M-bound), which that file did not have.
+
+METHOD: feed best-known Shkredov-school higher additive-energy bounds E_k(G) for multiplicative
+subgroups G ⊂ F_p through the EXACT dyadic split `N0(G,r)=2·N0(H,r)+crossCell` (H=μ_{n/2}), where
+`crossCell(G,2k)=E_k(G)−2·E_k(H)` (CumulantDyadicDescent.lean; cumulant `Σ_{b≠0}|η_b|^{2r}=q·E_r−n^{2r}`).
+RECHECKED IN-REGIME (thin prize point n=2^30 < p^{1/4}, q≈2^158, ε*=2^-128).
+
+SOTA confirmed from literature (MRSS 2019 arXiv:1712.00410; Shkredov surveys):
+- E_2(G) ≤ |G|^{49/20}=|G|^{2.45} (best PROVEN; 7/3≈2.333 = conjectured barrier; sum-product conj = |G|^2).
+- E_3(G) ≤ |G|^3 log|G|.
+- E_k(G) ≤ |G|^{2k-2} log|G| (general k≥2; trivial+log, saves one factor of n over trivial n^{2k-1}).
+- ALL valid in the regime |G| ≤ p^{2/3}, SATISFIED in the thin prize regime — so NOT a regime-vacuity kill.
+
+THREE INDEPENDENT KILLS (all rechecked in-regime, probes /tmp/shkredov_*.py, /tmp/*crosscell*.py,
+/tmp/which_regime.py, /tmp/faceA_exact.py, /tmp/exact_gap.py):
+
+- **(1) EXACT GAP = (r−2) factors of n; Shkredov saves only 1 of the (r−1) needed.** In-tree trivial
+  bound (MaximalEnergyUniformBound.N0_le_card_pow) is E_r ≤ n^{2r-1}; the Wick target the prize needs is
+  E_r ~ (2r-1)!!·n^r (saves r−1 factors of n); Shkredov gives E_r ≤ n^{2r-2}log n (saves EXACTLY 1 factor
+  of n). At the moment optimum r* ≈ log_n q ≈ 79 ("r ~ log q"), Shkredov deficit is (r*−2)=77 factors of
+  n. M-bound M=(q·E_r)^{1/2r} → n (TRIVIAL full-period), NOT √n: log₂M = 30 + 49/r → 30 = log₂n. Best
+  Shkredov M over all r is 2^30.65 (11.9 bits above target 2^18.74); best Wick M is 2^18.93 (0.20 bits, at
+  r=79). Full √q-to-Wick chasm plus (r−2) extra factors of n.
+
+- **(2) WRONG REGIME OF DESIGN — bounds LOOSE (above the TRUE value) precisely in the thin prize regime.**
+  Empirically (exact N0(G,2k), thin q≫n^4, /tmp/which_regime.py): E_k(G)/Wick → 1 from below (E_2:
+  0.75→0.94, E_3: 0.42→0.82, n:4→16), E_k/trivial → 0. Thin-regime subgroup energy IS Gaussian/Wick
+  (~n^k), BELOW every Shkredov bound. Shkredov's improving exponents (49/20, 5/8-regime) are SHARP at
+  |G|~p^{2/3} (THICK), incidence/sum-product based ⟹ THICKNESS-MONOTONE = the EXCLUDED class (conjecture
+  proven thinness-ESSENTIAL). The thin-uniform Shkredov bound is the trivial n^{2k-2}. Either way the
+  bound lies strictly ABOVE the true Wick energy — can only PROVE a weaker statement than the truth.
+
+- **(3) IS A MOMENT, STRUCTURE-BLIND ⟹ DEAD at Fermat by the proven non-moment requirement.** E_k(G) IS a
+  2k-th moment; feeding through M^{2r}≤q·E_r IS the moment method, already proven to CAP (CumulantFermat-
+  Obstruction: Fermat p=65537,n=64, certificate 38.27 < true M=43.63). Shkredov subgroup-energy bounds are
+  char-uniform (identical at Fermat 2^16+1 and generic p of same size) and ≥ Wick ⟹ NO extra info where
+  the residual bites (structured primes where E_r^p EXCEEDS Wick). Fails constraints (3) NON-MOMENT and
+  (2) Fermat-uniformity.
+
+NOTE (the one competitive sub-case, still dies): E_3 Shkredov (n^3 log n) is within O(log n) of Wick
+(15 n^3) — the only order where SOTA ≈ Wick. But a single LOW order r=3 cannot reach M~√n:
+M≤(q·n^3 log n)^{1/6}=2^42.1 (23 bits over target). Moment method needs SMALL E_r at LARGE r≈log q;
+Shkredov DEGRADES to trivial n^{2r-2} exactly as r grows — useful only where the method does not need it.
+
+NEEDS-EXTERNAL-INPUT (single fact that would resurrect): a higher-energy bound E_r(μ_n) ≤ C^r·n^r (Wick
+exponent, saving ALL r−1 factors) UNIFORMLY up to r≈log q AND over Fermat primes = the char-p Lam–Leung
+transfer / BCHKS Conj 1.12 / Paley sub-Gaussianity = the open core itself. No Shkredov-school bound
+approaches the Wick exponent for r≥3; the school's ceiling is the 7/3 barrier at r=2 only.
+
+VERDICT: dead-precise-why. Best achievable exponent: E_r ≤ n^{2r-2}log n ⟹ M ≤ ~n (trivial). Exact gap:
+(r−2) factors of n at the optimal order r≈log_n q≈79 (M-bound overshoots target by 11.9 log₂ bits at best,
+vs Wick's 0.20). `result_type = dead-wrong-exponent+thickness-monotone+is-a-moment`.
