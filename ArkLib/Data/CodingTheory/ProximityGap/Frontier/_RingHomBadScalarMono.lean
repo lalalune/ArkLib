@@ -68,28 +68,25 @@ open Finset
 
 /-! ## Tier 1 — the bare Finset image core (merge-only) -/
 
-variable {ι S : Type*} [DecidableEq S]
-
 /--
 **Merge-only core.** The set of char-`p` scalar values realized over an index
 finset `T` is the image of `T` under the value map `v`, so its cardinality is at
 most `#T`. Distinct indices that collide onto the same scalar are *merged*; the
 count can only drop.
 -/
-theorem card_image_le_index (T : Finset ι) (v : ι → S) :
+theorem card_image_le_index {ι S : Type*} [DecidableEq S]
+    (T : Finset ι) (v : ι → S) :
     (T.image v).card ≤ T.card :=
   Finset.card_image_le
 
 /-! ## Tier 2 — eligibility filter (delete-only) on top of merge-only -/
-
-variable {ι' : Type*} [DecidableEq ι']
 
 /--
 **Delete + merge.** With an eligibility predicate `elig` (think:
 `φ(denominator) ≠ 0`), the realized char-`p` scalar set is the image of the
 *eligible* indices, so its cardinality is at most the number of eligible indices.
 -/
-theorem card_eligible_image_le_card_eligible
+theorem card_eligible_image_le_card_eligible {ι S : Type*} [DecidableEq S]
     (T : Finset ι) (elig : ι → Prop) [DecidablePred elig] (v : ι → S) :
     ((T.filter elig).image v).card ≤ (T.filter elig).card :=
   Finset.card_image_le
@@ -98,14 +95,12 @@ theorem card_eligible_image_le_card_eligible
 **Delete + merge, against the full index count.** Dropping ineligible indices and
 merging collisions, the char-`p` scalar count is at most the *total* index count.
 -/
-theorem card_eligible_image_le_index
+theorem card_eligible_image_le_index {ι S : Type*} [DecidableEq S]
     (T : Finset ι) (elig : ι → Prop) [DecidablePred elig] (v : ι → S) :
     ((T.filter elig).image v).card ≤ T.card :=
   le_trans Finset.card_image_le (Finset.card_le_card (Finset.filter_subset _ _))
 
 /-! ## Tier 3 — the ring-homomorphism specialization -/
-
-variable {R : Type*} [CommRing R] [CommRing S] [DecidableEq S]
 
 /--
 **Ring-hom bad-scalar count bound.** Let `num den : ι → R` be the
@@ -118,16 +113,14 @@ char-`p` bad-scalar count
 is at most the total index count `#T`. (Reduction is `0 ↦ 0`; vanishing
 denominators delete, collisions merge — never create.)
 -/
-theorem ringHom_badScalar_card_le
-    [Field S] (T : Finset ι) (num den : ι → R) (φ : R →+* S) :
+theorem ringHom_badScalar_card_le {ι R S : Type*} [CommRing R] [Field S] [DecidableEq S]
+    (T : Finset ι) (num den : ι → R) (φ : R →+* S) :
     ((T.filter (fun t => φ (den t) ≠ 0)).image
         (fun t => φ (num t) * (φ (den t))⁻¹)).card ≤ T.card :=
   card_eligible_image_le_index T (fun t => φ (den t) ≠ 0)
     (fun t => φ (num t) * (φ (den t))⁻¹)
 
 /-! ## Tier 4 — the headline merge-only monotonicity `N(char-p) ≤ N(char-0)` -/
-
-variable {K : Type*} [DecidableEq K]
 
 /--
 **Merge-only monotonicity (the prize brick): `N(char-p) ≤ N(char-0)`.**
@@ -150,7 +143,7 @@ most the char-0 distinct-scalar count over *all* indices:
 
 That is `N(char-p) ≤ N(char-0)`, characteristic-free and scale-independent.
 -/
-theorem badScalar_charP_card_le_charZero
+theorem badScalar_charP_card_le_charZero {ι K S : Type*} [DecidableEq K] [DecidableEq S]
     (T : Finset ι) (elig : ι → Prop) [DecidablePred elig]
     (charZero : ι → K) (charP : ι → S) (red : K → S)
     (hfactor : ∀ t ∈ T, elig t → charP t = red (charZero t)) :
@@ -177,7 +170,7 @@ theorem badScalar_charP_card_le_charZero
 Kambiré budget `B`, then so is the char-`p` count — char-`p` never exceeds the
 char-0 budget.
 -/
-theorem badScalar_charP_card_le_budget
+theorem badScalar_charP_card_le_budget {ι K S : Type*} [DecidableEq K] [DecidableEq S]
     (T : Finset ι) (elig : ι → Prop) [DecidablePred elig]
     (charZero : ι → K) (charP : ι → S) (red : K → S) {B : ℕ}
     (hfactor : ∀ t ∈ T, elig t → charP t = red (charZero t))
