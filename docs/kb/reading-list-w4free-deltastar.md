@@ -130,3 +130,56 @@ VERDICT: no 2023–2026 result list-decodes PLAIN RS on the explicit multiplicat
 window. The prize's positive direction = closing this genericity gap for μ_n (the Schur-vanishing is the
 explicit obstruction). OPEN. My reduction is the correct map onto it; the closed δ* = Kambiré edge is
 exact iff μ_n's Schur values don't vanish "too much" at the prize prime (the open NVM, = this gap).
+
+## 2026-06-14 — NVM / Chebotarev route to the prize index: literature is a hard NO, but a NEW char-0 structure invariant (reflection-symmetry) found
+
+GOAL of this turn: extend Chebotarev/NVM (which settles prime-order subgroups — all minors nonzero —
+and index 2,3) to the prize index 2^μ, and find a STRUCTURE THEOREM for exactly which generalized-
+Vandermonde / Schur (h_j) minors of μ_{2^μ} vanish.
+
+### Literature verdict (read in full)
+- **arXiv:2310.09992** ("uncertainty principle for small-index subgroups", Garcia–Karaali–Katz lineage):
+  the NVM property they characterize is for the COMPRESSED Fourier matrix (whole-subgroup symmetry),
+  via a Gauss-sum condition — and it is ALL-OR-NOTHING (does NVM hold or not), with NO per-minor
+  vanishing-locus structure theorem. Index 2 = [ref 7] Gauss-sum-of-extensions condition; index 3 =
+  Thm 3.2 (NVM ⟺ T₀=∑Gᵢ≠0 and Gᵢ≠Gⱼ), tractable ONLY because ζ₃²+ζ₃+1=0 collapses the 3×3 to a
+  circulant. Remark 3.4 explicitly leaves index ≥4 OPEN; the circulant collapse does NOT exist for
+  2-power index. So this route gives the prize index NEITHER all-nonzero NOR a vanishing structure.
+- **arXiv:2403.10817** ("Schur polynomials in all primitive nth roots of unity"): s_λ ∈ {−1,0,1} for n
+  with ≤2 distinct odd prime factors (⊇ all 2-powers), via unimodular/maximal-circuit machinery. But it
+  (i) covers ONLY the full primitive-root set, NOT arbitrary w-subsets/cosets (the prize object), and
+  (ii) gives NO criterion for WHEN the value is 0 vs ±1 — the authors call the vanishing question open.
+- **Lam–Leung "Vanishing sums of roots of unity"** + **arXiv:1503.07281 "vanishing power sums"**: give the
+  COMPLETE structure theorem ONLY for the e_1 / power-sum p_k face (for p=2: vanishing ⟺ disjoint union
+  of antipodal pairs {t, t+n/2}, count C(n/2, w/2)). NEITHER addresses h_j / Schur for j≥2.
+  CONCLUSION: no paper in the literature gives a vanishing-locus structure theorem for h_j/Schur minors
+  of arbitrary subsets of μ_{2^μ}. The prize object is genuinely outside the published NVM/Chebotarev
+  and vanishing-sum literature. The 2-power index helps ONLY the e_1 face (Lam–Leung), not the deep h_j.
+
+### NEW structural result this turn (probes /tmp/nvm_*.py, /tmp/refl_charp.py; n=8,16,32 exhaustive)
+A char-0 vanishing minor of μ_{2^μ} (worst genuine direction, NO wraparound j+w−1<n) is one of:
+  (P) **antipodal-union** (the Lam–Leung e_1 face: disjoint {t,t+n/2} pairs), OR
+  (I) **imprimitive**: all index-differences even ⟹ T lies in a μ_{n/2} coset, a self-similar 2-adic
+      dilation of a smaller vanishing (recurse down the 2-tower to base case = antipodal pairs).
+  REFINED INVARIANT: EVERY char-0 no-wraparound vanishing T is **REFLECTION-SYMMETRIC** (T = c−T mod n
+  for some center c) — verified 100% at n=8,16,32 for h_1,h_2,h_3,w=4. (Necessary; antipodal-union and
+  imprimitive both imply it.) This dihedral closure is the candidate clean char-0 structure rule.
+
+### The CHAR-P discriminator (the crux, measured n=32 at prize-shaped primes q≡1 mod 32)
+At n=8 the Schur-vanishing SUBSET locus is FULLY char-faithful (q=17,41,...,4129 all match char-0).
+At n=32 it DEVIATES HEAVILY at small bad primes: per (h_j,w=4), 32–384 EXTRA subsets vanish mod q
+(q=97,193,257,...) beyond char-0. CLEAN SEPARATION: char-0 vanishings are 100% reflection-symmetric;
+the char-p extras are 0–9% reflection-symmetric (q=193,257: 0%). So reflection-symmetry / dihedral
+closure is a SHARP characteristic discriminator: the char-faithful core is exactly the reflection-
+symmetric (Lam–Leung ⊕ imprimitive-tower) set; the char-p excess is the structureless, prime-specific
+remainder. This is the algebraic shape of the open char-p excess — it is NOT a clean count, it tracks
+which q≡1 mod n divide the (non-2-power-safe) Schur norm Norm(h_j(ζ^T)).
+
+HONEST NET (no closure): the NVM/Chebotarev literature does NOT pin the prize index — it gives neither
+all-nonzero (false for 2^μ) nor a vanishing structure theorem (only e_1 face is settled, by Lam–Leung).
+The new contribution is the reflection-symmetry invariant cleanly separating char-faithful core from
+char-p excess, but the excess at the SUBSET level is large and structureless at n=32. OPEN. (Caveat:
+the SUBSET-level excess need not promote the deployed distinct-bad-SCALAR count at GOOD bands — the
+issue's collision-capping/cliff-confinement claim — which my probes could not resolve at n=32 because
+the deep-band scalar enumeration is computationally out of reach; that scalar-level faithfulness, not
+subset-level, is the actual prize gate and remains the open input.)
