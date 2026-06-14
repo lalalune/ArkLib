@@ -33,6 +33,7 @@ namespace Binius.BinaryBasefold.QueryPhase
 noncomputable section
 open OracleSpec OracleComp
 open AdditiveNTT Polynomial MvPolynomial ProtocolSpec
+open Binius.BinaryBasefold.CoreInteraction
 
 variable {r : ℕ} [NeZero r]
 variable {L : Type} [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
@@ -65,6 +66,47 @@ This encapsulates the pure logic of the query phase:
 - `verifierOut`: Returns `true` (acceptance) or `false` (rejection)
 - `honestProverTranscript`: The honest transcript just receives the challenges
 - `proverOut`: The honest prover always outputs `(true, ())` -/
+instance instQueryChallengeFintype : ∀ j, Fintype ((pSpecQuery 𝔽q β γ_repetitions
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j)
+  | ⟨0, _⟩ => by
+    haveI : Fintype (sDomain 𝔽q β h_ℓ_add_R_rate 0) :=
+      fintype_sDomain 𝔽q β h_ℓ_add_R_rate 0
+    exact inferInstanceAs
+      (Fintype (Fin γ_repetitions → sDomain 𝔽q β h_ℓ_add_R_rate 0))
+
+instance instQuerySpecFintype :
+    OracleSpec.Fintype [(pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge]ₒ where
+  fintype_B
+  | ⟨⟨⟨0, _⟩, _⟩, _⟩ => by
+    haveI : Fintype (sDomain 𝔽q β h_ℓ_add_R_rate 0) := fintype_sDomain 𝔽q β h_ℓ_add_R_rate 0
+    exact inferInstanceAs (Fintype (Fin γ_repetitions → sDomain 𝔽q β h_ℓ_add_R_rate 0))
+
+instance instQuerySpecInhabited :
+    OracleSpec.Inhabited [(pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge]ₒ where
+  inhabited_B
+  | ⟨⟨⟨0, _⟩, _⟩, _⟩ => ⟨fun _ => 0⟩
+
+instance instQueryChallengeInhabited : ∀ j, Inhabited ((pSpecQuery 𝔽q β γ_repetitions
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenge j)
+  | ⟨0, _⟩ => ⟨fun _ => 0⟩
+
+/-- Congruence of `single_point_localized_fold_matrix_form` under a (propositionally equal)
+change of destination index. Reconstructed (the original was deleted); models
+`extractSuffixFromChallenge_congr_destIdx`. -/
+lemma single_point_localized_fold_matrix_form_congr_dest_index
+    {i : Fin r} {steps : ℕ} {destIdx destIdx' : Fin r}
+    {h_destIdx : destIdx.val = i.val + steps} {h_destIdx_le : destIdx ≤ ℓ}
+    {r_challenges : Fin steps → L} {y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx}
+    {fiber_eval_mapping : Fin (2 ^ steps) → L}
+    (h_destIdx_eq_destIdx' : destIdx = destIdx') :
+    single_point_localized_fold_matrix_form 𝔽q β i steps h_destIdx h_destIdx_le r_challenges y
+        fiber_eval_mapping
+      = single_point_localized_fold_matrix_form 𝔽q β i steps
+          (h_destIdx_eq_destIdx' ▸ h_destIdx) (h_destIdx_eq_destIdx' ▸ h_destIdx_le) r_challenges
+          (h_destIdx_eq_destIdx' ▸ y) fiber_eval_mapping := by
+  subst h_destIdx_eq_destIdx'
+  rfl
+
 noncomputable def queryPhaseLogicStep :
     OracleAwareReductionLogicStep
       -- oSpec is the base/shared oracle (empty for query phase - no random oracles)
@@ -139,8 +181,7 @@ noncomputable def queryOracleProver :
     let transcript := FullTranscript.mk1 (pSpec :=
       pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) (challenges)
     -- Delegate to proverOut from the logic step
-    pure ((queryPhaseLogicStep 𝔽q β (ϑ:=ϑ) γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).proverOut stmtIn witIn oStmtIn transcript)
+    pure ((queryPhaseLogicStep 𝔽q β γ_repetitions).proverOut stmtIn witIn oStmtIn transcript)
 
 /-- The oracle verifier for the final query phase.
 
@@ -160,15 +201,16 @@ noncomputable def queryOracleVerifier :
   verify := fun stmtIn challenges => do
     let transcript := FullTranscript.mk1 (pSpec := pSpecQuery 𝔽q β γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) (challenges ⟨0, by rfl⟩)
-    let logic := queryPhaseLogicStep 𝔽q β (ϑ:=ϑ) γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    let _ ← (logic.verifierCheck stmtIn transcript)
+    let logic : OracleAwareReductionLogicStep []ₒ (FinalSumcheckStatementOut (L:=L) (ℓ:=ℓ)) Unit
+        (OracleStatement 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ))
+        (fun _ : Empty => Unit) Bool Unit
+        (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
+      queryPhaseLogicStep 𝔽q β γ_repetitions
+    let _ ← liftM (logic.verifierCheck stmtIn transcript)
     pure (logic.verifierOut stmtIn transcript)
   -- Use embed and hEq from the logic step
-  embed := (queryPhaseLogicStep 𝔽q β (ϑ:=ϑ) γ_repetitions
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).embed
-  hEq := (queryPhaseLogicStep 𝔽q β (ϑ:=ϑ) γ_repetitions
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).hEq
+  embed := (queryPhaseLogicStep 𝔽q β γ_repetitions).embed
+  hEq := (queryPhaseLogicStep 𝔽q β γ_repetitions).hEq
 
 /-- The oracle reduction for the final query phase. -/
 noncomputable def queryOracleReduction :
@@ -213,8 +255,7 @@ lemma mem_support_queryFiberPoints
     (challenges : (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenges)
     -- Hypothesis: The fiber evaluations come from the simulated oracle query
     (h_fiber_mem :
-      let step := queryPhaseLogicStep 𝔽q β (ϑ := ϑ) γ_repetitions
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      let step := queryPhaseLogicStep 𝔽q β γ_repetitions
       let transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges
       let so := OracleInterface.simOracle2.{0, 0, 0, 0, 0} []ₒ oStmtIn transcript.messages
       some (f_i_on_fiber) ∈
@@ -228,8 +269,11 @@ lemma mem_support_queryFiberPoints
       f_i_on_fiber.get fiberIndex =
       (oStmtIn k_th_oracleIdx (getFiberPoint 𝔽q β oraclePositionIdx v fiberIndex)) := by
   simp only [MessageIdx] at h_fiber_mem
-  set step := queryPhaseLogicStep 𝔽q β (ϑ := ϑ) γ_repetitions
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) with h_step
+  set step : OracleAwareReductionLogicStep []ₒ (FinalSumcheckStatementOut (L:=L) (ℓ:=ℓ)) Unit
+      (OracleStatement 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ))
+      (fun _ : Empty => Unit) Bool Unit
+      (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
+    queryPhaseLogicStep 𝔽q β γ_repetitions with h_step
   set transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges with h_transcript
   set so := OracleInterface.simOracle2 []ₒ oStmtIn transcript.messages with h_so
   -- rw [simulateQ_liftComp] at h_fiber_mem
@@ -313,19 +357,17 @@ lemma getBit_eq_testBit (n k : ℕ) : Nat.getBit k n = 1 ↔ Nat.testBit n k = t
     subst h_m_0
     simp
 
-set_option maxHeartbeats 200000 in
+set_option maxHeartbeats 1000000 in
 lemma iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask
     (i : Fin r) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps)
     (h_destIdx_le : destIdx.val ≤ ℓ)
     (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by omega⟩) :
     iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, by omega⟩) (k := i.val)
-      (h_destIdx := by simp only [zero_add])
-      (h_destIdx_le := by omega) v =
-    qMap_total_fiber 𝔽q β i steps h_destIdx h_destIdx_le
+      (h_bound := by have : 0 < 𝓡 := NeZero.pos 𝓡; omega) v =
+    qMap_total_fiber 𝔽q β i steps (by have : 0 < 𝓡 := NeZero.pos 𝓡; omega)
       (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, by omega⟩) (k := destIdx.val)
-        (h_destIdx := by simp only [zero_add])
-        (h_destIdx_le := h_destIdx_le) v)
+        (h_bound := by have : 0 < 𝓡 := NeZero.pos 𝓡; omega) v)
       (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) v i steps) := by
   have h_R_pos : 0 < 𝓡 := NeZero.pos 𝓡
   have h_i_le : i.val ≤ ℓ := by omega
@@ -411,22 +453,21 @@ lemma query_phase_consistency_guard_safe
     -- Hypothesis: c_k is the correct iterated fold value up to this point
     (h_c_k_correct :
       let := k_mul_ϑ_lt_ℓ (k := k)
-      let := k_succ_mul_ϑ_le_ℓ (k := k)
+      let := k_succ_mul_ϑ_le_ℓ_₂ (k := k)
       c_k = iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0) (steps := k.val * ϑ)
         (destIdx := ⟨k.val * ϑ, by omega⟩) (h_destIdx_le := by simp only; omega)
         (f := getFirstOracle 𝔽q β oStmtIn)
         (r_challenges := getFoldingChallenges (𝓡 := 𝓡) (r := r) (Fin.last ℓ)
           stmtIn.challenges 0 (by simp only [zero_add, Fin.val_last]; omega))
-        (y := extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v := v)
-          (destIdx := ⟨k.val * ϑ, by omega⟩) (h_destIdx_le := by simp only; omega))
-        (h_destIdx := by simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, zero_add]))
+        (h_destIdx := by simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, zero_add])
+        (extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v := v)
+          (destIdx := ⟨k.val * ϑ, by omega⟩) (h_destIdx_le := by simp only; omega)))
     -- Hypothesis: We are at a step > 0 where a check actually happens
     (h_k_pos : k.val * ϑ > 0)
     (challenges : (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenges)
     -- Hypothesis: The fiber evaluations come from the simulated oracle query
     (h_fiber_mem :
-      let step := queryPhaseLogicStep 𝔽q β (ϑ := ϑ) γ_repetitions
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      let step := queryPhaseLogicStep 𝔽q β γ_repetitions
       let transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges
       let so := OracleInterface.simOracle2.{0, 0, 0, 0, 0} []ₒ oStmtIn transcript.messages
       some (f_i_on_fiber) ∈
@@ -505,7 +546,7 @@ lemma query_phase_step_preserves_fold
       ((stmtIn, oStmtIn), ()))
     (h_c_k_correct_of_k_pos :
       let := k_mul_ϑ_lt_ℓ (k := k)
-      let := k_succ_mul_ϑ_le_ℓ (k := k)
+      let := k_succ_mul_ϑ_le_ℓ_₂ (k := k)
       if _ : k.val > 0 then
         c_k = iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0) (steps := k.val * ϑ)
           (destIdx := ⟨k.val * ϑ, by omega⟩) (h_destIdx_le := by simp only; omega)
@@ -519,7 +560,7 @@ lemma query_phase_step_preserves_fold
     -- Hypothesis: s' is a valid output of the simulated step function
     (challenges : (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenges)
     (h_s'_mem :
-      let step := queryPhaseLogicStep 𝔽q β (ϑ := ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      let step := queryPhaseLogicStep 𝔽q β γ_repetitions
       let witIn : Unit := ()
       let transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges
       let so := OracleInterface.simOracle2.{0, 0, 0, 0, 0} []ₒ oStmtIn transcript.messages
@@ -528,7 +569,7 @@ lemma query_phase_step_preserves_fold
         (simulateQ.{0, 0, 0} so
           ((checkSingleFoldingStep 𝔽q β (γ_repetitions := γ_repetitions) (ϑ := ϑ)
             (h_ℓ_add_R_rate := h_ℓ_add_R_rate) k c_k v stmtIn))))) :
-    let := k_succ_mul_ϑ_le_ℓ (k := k)
+    let := k_succ_mul_ϑ_le_ℓ_₂ (k := k)
     s' = iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0) (steps := (k.val + 1) * ϑ)
         (destIdx := ⟨(k.val + 1) * ϑ, by omega⟩) (h_destIdx_le := by simp only; omega)
         (f := getFirstOracle 𝔽q β oStmtIn)
@@ -537,7 +578,7 @@ lemma query_phase_step_preserves_fold
         (y := extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v := v)
           (destIdx := ⟨(k.val + 1) * ϑ, by omega⟩) (h_destIdx_le := by simp only; omega))
           (h_destIdx := by simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, zero_add];) := by
-  let step := queryPhaseLogicStep 𝔽q β (ϑ := ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  let step := queryPhaseLogicStep 𝔽q β γ_repetitions
   let witIn : Unit := ()
   let transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges
   let so := OracleInterface.simOracle2 []ₒ oStmtIn transcript.messages
@@ -546,7 +587,7 @@ lemma query_phase_step_preserves_fold
   dsimp only [checkSingleFoldingStep] at h_s'_mem
   -- 2. Handle the conditional guard (k > 0 vs k = 0)
   --    In both cases, the core computation (query + fold) is the same.
-  have h₁ := k_succ_mul_ϑ_le_ℓ (k := k)
+  have h₁ := k_succ_mul_ϑ_le_ℓ_₂ (k := k)
   have h₂ := k_succ_mul_ϑ_le_ℓ_₂ (k := k)
   have h_ϑ_pos : ϑ > 0 := Nat.pos_of_neZero ϑ
   have h_ϑ_le_ℓ : ϑ ≤ ℓ := Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) (by exact hdiv.out)
@@ -1116,8 +1157,7 @@ lemma checkSingleRepetition_inner_forIn_probFailure_eq_zero
     (rep : Fin γ_repetitions)
     (challenges : (pSpecQuery 𝔽q β γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenges) :
-      let step := queryPhaseLogicStep 𝔽q β (ϑ := ϑ) γ_repetitions
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      let step := queryPhaseLogicStep 𝔽q β γ_repetitions
       let transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges
       let so := OracleInterface.simOracle2.{0, 0, 0, 0, 0} []ₒ oStmtIn transcript.messages
       let v := (FullTranscript.mk1 (challenges ⟨0, by rfl⟩)).challenges ⟨0, by rfl⟩ rep
@@ -1295,7 +1335,7 @@ lemma checkSingleRepetition_probFailure_eq_zero
       ((stmtIn, oStmtIn), witIn))
     (rep : Fin γ_repetitions)
     (challenges : (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Challenges) :
-      let step := queryPhaseLogicStep 𝔽q β (ϑ := ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      let step := queryPhaseLogicStep 𝔽q β γ_repetitions
       let transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges
       let so := OracleInterface.simOracle2.{0, 0, 0, 0, 0} []ₒ oStmtIn transcript.messages
       let v := (FullTranscript.mk1 (challenges ⟨0, by rfl⟩)).challenges ⟨0, by rfl⟩ rep
@@ -2246,13 +2286,12 @@ This proves that for any valid input satisfying `strictFinalSumcheckRelOut`,
 the verifier check succeeds with probability 1, and the output satisfies
 `acceptRejectOracleRel` (i.e., the statement is `true`). -/
 theorem queryPhaseLogicStep_isStronglyComplete :
-    (queryPhaseLogicStep 𝔽q β (ϑ:=ϑ) γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).IsStronglyCompleteUnderSimulation := by
+    (queryPhaseLogicStep 𝔽q β γ_repetitions).IsStronglyCompleteUnderSimulation := by
   intro stmtIn witIn oStmtIn challenges h_relIn
   let f₀ := getFirstOracle 𝔽q β oStmtIn
   have h_ϑ_pos : ϑ > 0 := by exact Nat.pos_of_neZero ϑ
   have h_ϑ_le_ℓ : ϑ ≤ ℓ := by apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ); exact hdiv.out
-  let step := queryPhaseLogicStep 𝔽q β (ϑ:=ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  let step := queryPhaseLogicStep 𝔽q β γ_repetitions
   -- 1. Generate the Honest Transcript (Deterministic given challenges)
   let transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges
   -- 2. Define the honest oracle simulator
@@ -2385,7 +2424,7 @@ theorem queryOracleProof_perfectCompleteness {σ : Type}
   -- Step 3: Unfold protocol definitions
   -- dsimp only [queryOracleProof, queryOracleProver, queryOracleVerifier,
   dsimp only [OracleVerifier.toVerifier, FullTranscript.mk1]
-  let step := (queryPhaseLogicStep 𝔽q β (ϑ:=ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+  let step := (queryPhaseLogicStep 𝔽q β γ_repetitions)
   let strongly_complete : step.IsStronglyCompleteUnderSimulation :=
     queryPhaseLogicStep_isStronglyComplete (L := L)
       𝔽q β (ϑ := ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
