@@ -8724,3 +8724,26 @@ So exact δ* NOT refuted, only the coset MECHANISM. Corrected linchpin (Newton, 
 e_m(S)=(±1/m)∑_ξ c_ξ·ξ, c_ξ=#{x∈S:x^m=ξ}∈{0..m}, ∑c_ξ=rm; the true claim is e_m-IMAGE of gap-variety
 = distinct sumset (concrete finite combinatorics on c_ξ under e_{m+1}..e_{2m-1}=0, char-p-free).
 Lesson: count can be robust even when structure (coset rigidity) is refutable — verify the count.
+
+---
+## 2026-06-13 #407 — DEEP-MOMENT VALIDITY refuted (provably false in the prize regime)
+Refuted the §3 "single open input": that `E_r(μ_n)` stays near its char-0 Bessel value for `r ≍ log q`,
+which would let the moment arrow `B ≤ (q·E_r − n^{2r})^{1/2r}` yield the floor `√(n log q)`.
+
+DISPROOF (rigorous + numeric, `/tmp/char0_floor.py`, `forced_anomaly.py`; Bessel law verified exact
+r=2..7, computed for any n via `E_r^{char0}=Σ_k C(n/2,k)g_{r,k}`):
+1. The char-0 moment bound `(q E_r^{char0} − n^{2r})^{1/2r}/floor` EXPLODES with n: 1.15, 1.96, 3.73,
+   10.9, 19.8, 68.7, 246, 1724, 6420 for n=2^4..2^30 (β=4). It does NOT → 1. The "yields the floor at
+   r≍log q" claim holds ONLY at small n (n=16: optimal r=11≈log q, 1.15×floor) — a small-n artifact.
+2. WHY: `E_r^{char0} ~ (2r)!·C(n/2,r) ~ n^r`, but the trivial `b=0` term is `n^{2r}/q = n^{2r−β}`. For
+   `r>β`, `n^r < n^{2r−β}`, so `q·E_r^{char0} < n^{2r}`. Crossover `r*` → β+1 as n→∞ (β=3→4, 4→5, 5→6,
+   6→7). So char-0 energy is EXHAUSTED by the diagonal at depth ≈β+1, far below floor depth ~log q.
+3. FOURIER POSITIVITY forces the anomaly: `Σ_{b≠0}|η_b|^{2r} = q E_r^{Fp} − n^{2r} ≥ 0` (η_0=n) and
+   `E^{char0} ≤ E^{Fp}` (ℂ-collisions ⊆ 𝔽_p-collisions), so for r>r*: `q(E^{Fp}−E^{char0}) ≥ n^{2r} −
+   q E^{char0} > 0`. Deep-moment validity (E^{Fp}≈E^{char0}) is thus IMPOSSIBLE past r≈β+1 — it
+   contradicts positivity. Not merely unproven: structurally false.
+Prize regime (n=2^32, β=4): char-0 caps at r*≈5 ≪ log q≈89; bound ~10^4×floor. So the moment route
+(char-0 OR char-p) provably cannot reach the floor. The only provable moment-side fragment is the norm
+bound `A_r=0 for (2r)^{n/2}<p` (formalized, `RootSumNormBound.lean`), securing depth r≈2 only.
+CONSEQUENCE: stop pursuing deep-moment validity; the prize is purely the L^∞/BGK Gauss-phase sup-norm
+(= the phase-cocycle worst-path large-deviation in the entry above). Probes: char0_floor.py, forced_anomaly.py.
