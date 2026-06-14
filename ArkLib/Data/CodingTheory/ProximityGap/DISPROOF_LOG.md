@@ -8912,3 +8912,18 @@ structured config) by N₀=|H^{(+r)}|~ε*q, so prize q≫N₀ ⟹ clean. = the B
 open core, very precisely stated; proven n≤16 computationally, general proof open (the multi-constraint
 anti-correlation that makes the structured spurious vanish at ~N₀). Not closed; genuine engagement +
 corroboration. n=8 has NO broad bad primes (size≤6) in first 40 — even more suppressed.
+
+## 2026-06-14 (wakesync/#407): |H^{(+r)}(μ_s)| ~ s^r (poly count) + small-subgroup synthesis assessment
+Engaged the swarm's most promising lead (small-subgroup synthesis: if worst-case is subgroup μ_s with
+s~log n, bad primes ≤ (s)^{s/2}~√n ≪ q ⟹ prize clean, via Dvornicich-Zannier 2002, NOT Paley graph).
+GENUINE DATA: computed |H^{(+r)}(μ_{2^t})| (distinct r-fold sums of 2^t-th roots over ℂ):
+  r=3: t=1..5 → 4,16,96,704,5504 ≈ 0.17·s^3.  ⟹ |H^{(+r)}(μ_s)| ~ C·s^r (POLYNOMIAL in s, degree r),
+  NOT exponential 2^s. (At fixed s=8, grows with r: 33,96,225,...,2241 < C(s-1+r,r) trivial bound.)
+ASSESSMENT: poly count supports the synthesis structure, BUT the closure hinges on the WORST-CASE
+subgroup being SMALL (s*~log n/log log n). Determining the worst s = the R1/R2 optimality (Kambiré
+stack maximizes |H^{(+r)}| over all stacks) = the tail-e_i char-p wall (open). If worst-case is
+small-subgroup AND R1/R2 holds there, bad primes ≤ √n ≪ q ⟹ closure (non-Paley!). The synthesis
+TRANSFORMS the open core to "prove worst-case is small-subgroup + R1/R2 for small s" — potentially more
+tractable (small finite configs) than general BGK. Swarm flags "promising, needs verification, not
+closure." My Galois-prime mechanism (p^r|N(α)) + this poly-count are the two genuine count-lane bricks;
+the worst-case-s determination remains open. NOT a closure; the most promising open route.
