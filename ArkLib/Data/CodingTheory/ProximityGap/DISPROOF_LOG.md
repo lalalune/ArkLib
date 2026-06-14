@@ -9542,3 +9542,21 @@ wrong; the raw per-prime I-values are what matter). Smaller r=τ−k (window TOP
 ⟹ floppy up to huge q. This is exactly why the prize's binding window-top radius (η*=Θ(1/log n), r*=η*n)
 is dirty: T*=(2k)^{2ρ/η*}=n^{Θ(log n)} ≫ q. Confirms the crossover law clean⟺η*>2ρ/β and the WALL at prize
 scale. The earlier τ=6 stabilization was a shallower-radius (larger-r, smaller-threshold) artifact. NOT closure.
+
+## 2026-06-14 (wakesync/#407): CORRECTION — "I(δ) stable above (2k)^4" is REFUTED (adversarial workflow)
+The verification workflow's ADVERSARIAL phase (primes pushed well above (2k)^4) REFUTED my earlier
+"I(δ) char-independent for q>(2k)^4" claim. My direct run (q=4129,4721,8161,12289,16193,65537 → all 1040)
+was a CHERRY-PICKED artifact: it happened to miss the bad primes above (2k)^4.
+WORKFLOW SMOKING GUN (n=16,k=4, primes q=9041..10193, ALL > (2k)^4=4096):
+  • τ=6: I ∈ {1040, 1044} — 11 primes give 1040, OUTLIER q=9649 gives 1044. UNSTABLE above threshold.
+  • τ=5: ALL 12 above-threshold primes give DISTINCT I-values (125900..129088). Maximally UNSTABLE.
+⟹ the threshold (2k)^4 does NOT bound I(δ)'s bad primes; instability persists to q≈10^4 ≫ 4096. So the
+chain "I(δ) char-independent above poly threshold ⟹ δ* char-independent at prize scale ⟹ closure" is
+NOT established. The norm bound p^r|N(f(ζ)) ⟹ p≤(2k)^{2k/r} applies to the ANTIPODAL/Q1 sign-vector
+config; the FAR-LINE incidence I(δ) has bad primes EXCEEDING (2k)^4, so its effective config is NOT the
+clean r=τ−k antipodal one (the far-line bad config is floppier). Only n=8 (smallest dyadic) was stable.
+HONEST NET: my "norm-bound rigidity closes the exponent / I stable above (2k)^4" commits this turn were
+TOO STRONG — REFUTED by adversarial verification (exactly what it's for). What SURVIVES: (a) the single-
+vs-simultaneous DICHOTOMY and the proven p≤(2k)^{2k/r} bound for the ANTIPODAL config (genuine, unrefuted);
+(b) δ* is q-DEPENDENT (the wall) — now DIRECTLY confirmed by I(δ) instability above (2k)^4, reinforcing
+NOVEL-C, NOT a closure. The far-line incidence is genuinely floppy at prize scale ⟹ BGK/Paley wall stands.
