@@ -664,6 +664,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ConditionalSqrtCancellation
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
+import ArkLib.Data.CodingTheory.ProximityGap.ConstantIndexGaussSumBound
 import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
 import ArkLib.Data.CodingTheory.ProximityGap.CorePartitionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CosetAugmentation
