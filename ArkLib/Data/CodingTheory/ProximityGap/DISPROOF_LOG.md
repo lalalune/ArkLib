@@ -8833,3 +8833,38 @@ closed deterministic consumer in `Frontier/_DyadicCocycleLargeDeviation.lean` (a
 `floor_of_cocycleGeometricMeanLaw` chains it to the floor, `not_cocycleProductBudget_of_level_gt` is the
 refutation hook should a future probe find a sustained near-2 path). This remains the BGK/MRSS
 incomplete-character-sum 25-yr-open problem; the consumer is closed, the analytic input is not.
+
+## REFUTED (2026-06-13, #407): the Nullstellensatz/PNT "good-prime dodge" of the char-p transfer
+
+**The idea (bold, looked like it might CLOSE the prize).** The char-0 optimality is axiom-clean Lean:
+every gap-vanishing config `S⊆μ_{2^μ}` over a char-0 field is a coset-union (`LamLeungTwoPow.full_tower`),
+so `e_m(S)` lies in the `r`-fold sumset `H^{(+r)}` = roots of a fixed integer polynomial `F` of
+`deg F = |H^{(+r)}|`. Over ℚ̄, `F(e_m)` vanishes on the gap-variety `V(I)`, so `F(e_m)∈√I` (Hilbert
+Nullstellensatz). Clearing denominators in the certificate gives `D·F(e_m)^t ∈ I_ℤ` for some `D∈ℤ`.
+Then for ANY prime `q ∤ D`: every gap-valid `S` over `F_q` has `F(e_m(S))≡0`, so `#bad ≤ deg F =
+|H^{(+r)}|` — the optimality upper bound, UNCONDITIONALLY, with NO char-p Lam–Leung. And a "good" prime
+`q ∤ D`, `q ≡ 1 (mod n)`, `q = Θ(n^β)` should EXIST: `D` has `≤ log₂ D` prime factors, and Thorner–Zaman
+PNT-in-AP gives `≫ n^{β}/φ(n)` primes `≡1 (mod n)` in `[n^β, 2n^β]`. Pick one coprime to `D`. Closed —
+inputs are KNOWN proven math (effective Nullstellensatz + PNT-in-AP). δ* pinned in the prize regime.
+
+**Why it FAILS (quantitative kill).** `D` is DOUBLY exponential, vastly larger than the prize prime:
+- The gap ideal `I` lives in `N` variables — either `N≈|S|≈ρn≈2^28` (point coords) or `N≈2m−1≈n`
+  (elementary-symmetric coords); both are `Θ(n)`, NOT `O(polylog n)`. The generators (power sums `p_j`,
+  `j<2m`) have degree `d≈n`.
+- Effective arithmetic Nullstellensatz (Krick–Pardo–Sombra, sharp): `log|D| ≲ d^{N+1}·(h+…)`. Here
+  `d^N ≈ (2^30)^{2^28} = 2^{30·2^28} ≈ 2^{8×10^9}`. So `log₂ D ≈ 2^{8×10^9}` and
+  `#{prime factors of D} ≤ log₂ D ≈ 2^{8×10^9}`.
+- Candidate primes `≡1 (mod n)` in `[n^β,2n^β]` number only `≈ n^β/φ(n) ≈ 2^{30β−29} ≈ 2^{91}` (`β=4`).
+- `2^{8×10^9} ≫ 2^{91}`: the bad primes (factors of `D`) GENERICALLY include every candidate — the prize
+  prime cannot be dodged. The pigeonhole runs the WRONG way.
+- Same kill for the single-power-sum NORM-bound lift: `Σ_{x∈S}x≡0 (mod q)` lifts to ℂ only if
+  `q ∤ N(Σx)`, and `|N(Σx)| ≤ |S|^{φ(2^μ)} = |S|^{2^{29}}`, so the lift needs `q > |S|^{2^{29}} ≈
+  2^{1.5×10^{10}}` — unreachable (prize `q≈2^{120}`).
+
+**Conclusion (sharpens the open core).** NO generic-elimination / norm route yields a `poly(n)`-height
+transfer; every one has a denominator `exp(2^{Θ(μ)})` that the prize prime `q=n^β` cannot exceed. Closing
+the prize regime requires a STRUCTURAL certificate — `poly(n)`-height, exploiting the 2-adic cyclotomic
+structure and the SIMULTANEOUS gap window (not one power sum) — and no such certificate is known. That
+missing certificate is exactly the Gauss-period sup-norm / char-p Lam–Leung coset-saturation open core
+(Paley Graph Conjecture territory; SOTA Di Benedetto `n^{1−31/2880}`). The dodge therefore DEFERS to the
+open math; it is not a closed route. (Same wall, restated with a quantitative denominator bound.)

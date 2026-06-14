@@ -345,3 +345,19 @@ VERDICT: the SOTA char-sum bound (Di Benedetto `n^{1−31/2880}`) and the beyond
 that gap = the recognized open grand list-decoding / Gauss-sum-sup-norm challenge. No 2024–2026 paper
 closes the structured dyadic case. Confirms (literature-grounded) the open core every campaign framing
 converges to.
+
+## 2026-06-13 (#407): second sweep — the Paley-spectrum + char-p Lam–Leung faces (the char-p transfer wall)
+The char-0 optimality is now axiom-clean Lean (`full_tower` etc.); the SOLE residual is the **char-p
+transfer** (does a short gap-vanishing config of `2^μ`-th roots over `F_q` lift to a char-0 coset-union).
+This sweep maps the two literatures that bound that exact object. NONE reach the prize scale.
+| # | Paper | Identifier | Bearing |
+|---|---|---|---|
+| P1 | Podestá–Videla, *The nature of the spectrum of generalized Paley graphs and weak Waring numbers* | arXiv 2604.06513 (Apr 2026) | freshest; spectrum of `Cay(F_q,μ_k)` = Gaussian periods = the `η_b`. **STRUCTURAL ONLY** (when real/integral, period ≥3) — confirms NO new eigenvalue-MAGNITUDE bound exists for thin subgroups. |
+| P2 | Podestá–Videla, *Spectral properties of generalized Paley graphs* | arXiv 2310.15378 | explicit Gauss-period spectra for index `k≤4`, `k=5` — the eigenvalues ARE the open-core periods; no thin-`n~q^{1/4}` magnitude bound. |
+| P3 | Lam–Leung, *On vanishing sums of roots of unity* (+ char-p `W_p(m)` extension, arXiv math/9605216) | — | the char-p transfer = `W_p(2^μ)=ℕp+2ℕ`: gives weight-PARITY of a vanishing sum (`w<p ⟹ w even`) but NOT coset structure; the only general lift = norm bound `w^{φ(m)}<p`, unreachable at prize scale. |
+| P4 | *Note on vanishing power sums of roots of unity* | arXiv 1503.07281 | simultaneous power-sum vanishing structure (our gap window is many `p_j=0` at once — the one place a poly-height argument could live). |
+| P5 | Alsetri, *Burgess-type character sum estimates over generalized arithmetic progressions of rank 2* | arXiv 2509.07765 (BLMS 2026) | closest recent TECHNIQUE (mult-energy + Bohr-set/geometry-of-numbers à la Konyagin) but rank-2 GAP ≠ mult subgroup; does not transfer to `μ_n`. |
+| P6 | Kambiré, *Proximity Gaps Conjecture Fails Near Capacity over Prime Fields* | arXiv 2604.09724 / eprint 2026/782 | the construction paper itself (the δ* lower bracket = monomial line `X^{rm}+λX^{(r−1)m}`, `λ∈H^{(+r)}`). |
+VERDICT: the two literatures that bound the char-p transfer object (Paley spectrum = Gauss periods;
+char-p Lam–Leung weight sets) are STRUCTURAL — neither gives a magnitude/lift bound reaching the prize
+`q=n^β` for `n~q^{1/4}`. Confirms the residual is the recognized open core, not a literature lookup.
