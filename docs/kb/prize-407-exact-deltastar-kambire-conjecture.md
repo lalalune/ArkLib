@@ -302,3 +302,30 @@ char-p-FREE, fully proven ℂ-side optimality via iterated Lam–Leung (replacin
 (iii) the elimination/Nullstellensatz transfer giving the bound for `p∤D`; (iv) a PROOF that the sole
 residual is the BGK wall (not a vague core, not closable by heights) — converging with the independent
 sup-norm route. The prize is reduced to its irreducible additive-combinatorics core, but NOT closed.
+
+## REFINEMENT — the dyadic residual is a {−1,0,1}-coefficient two-condition vanishing problem (sharper than generic BGK)
+
+For dyadic `n=2^μ`, the integral basis `{ζ^j}_{0≤j<n/2}` of `ℤ[ζ_n]` (`ζ^{n/2}=−1`) turns the m=2 spurious
+condition into a fully explicit form. A spurious `Y⊆μ_n` (no ±-pairs) writes `y=c_j·ζ^j` with exactly
+`|Y|` nonzero `c_j∈{±1}` (one per element, no-±-pair ⟺ ≤one of `ζ^j,−ζ^j` in `Y`). Then
+`∑_Y y = ∑_j c_j ζ^j` and `∑_Y y³ = ∑_j c_j ζ^{3j}`. So a char-p spurious config exists ⟺ there is a
+`{−1,0,1}` vector `(c_j)` (support a no-±-pair set) with
+  `∑_j c_j ω^j ≡ 0` AND `∑_j c_j ω^{3j} ≡ 0  (mod p)`,  `ω` = primitive `n`-th root in `F_p`.
+
+This is **much more rigid than the generic BGK sum-product problem**: coefficients are restricted to
+`{−1,0,1}` and there are TWO simultaneous frequency conditions (1 and 3). It is a concrete, finite,
+explicitly-stated Diophantine problem over `F_p` — NOT the black-box BGK incidence bound. However:
+  · `F_p` is 1-dimensional, so `≥3` basis elements are always `F_p`-dependent ⟹ ±1 vanishing combos
+    DO exist for the single condition; the two conditions + sumset-membership of the resulting `e_m`
+    are what must fail.
+  · The norm/height bound only gives `p ≤ (n/2)^{n/2}`, so prize primes `p=n^β` are not excluded.
+  · Computationally: NO spurious no-±-pair 4-subset with `e_1=e_3=0` exists at any odd `p≡1 mod n`
+    up to 30000 for n=16,32 (`/tmp/odd_bad_prime.py`) — consistent with bad primes being large/rare,
+    but not a proof.
+
+**This is the sharpest form of the open residual:** suppression of `{−1,0,1}`-coefficient two-frequency
+vanishing sums of dyadic roots of unity at `p=n^β` (equivalently `G(e_m)∈I_ℤ`). It is more structured
+and more likely tractable than generic BGK, but I have NOT proved it. The prize remains open at exactly
+this point; I will not claim otherwise. (The full integrality `G(e_m)∈I_ℤ`, if provable via the rigidity
+of the dyadic relation lattice, would close the optimality unconditionally for all odd p — that is the
+single, explicit, now-fully-concrete proof target.)
