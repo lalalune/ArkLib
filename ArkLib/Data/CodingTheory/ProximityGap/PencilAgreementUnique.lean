@@ -93,3 +93,7 @@ theorem pencil_unique_of_large_agreement
   exact (sub_eq_zero.mp hgg).symm
 
 end ArkLib.ProximityGap.PencilRigidity
+
+/-! ## Axiom audit -/
+#print axioms ArkLib.ProximityGap.PencilRigidity.eq_zero_of_eval_zero_on_card_gt
+#print axioms ArkLib.ProximityGap.PencilRigidity.pencil_unique_of_large_agreement
