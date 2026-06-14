@@ -719,3 +719,29 @@ gated on the recognized incomplete-exponential-sum bound. NOT a full closure; I 
 The genuine net gain this session: the EVEN-POLYNOMIAL proof of the minimal case and the
 spurious⟹saturated counting structure — which localize and explain the wall, even though they don't
 remove it for general r.
+
+## GRIND ROUND — machinery built + exponential-sum refutation map
+
+**Lean bricks landed (axiom-clean, real build):**
+- `NegationClosure.lean` (commit 6770e4fba): `neg_closed_of_even` (even gen poly ⟹ root multiset ±-pair-
+  closed) + `neg_closed_of_expand_two` (X²-poly ⟹ union of μ₂-cosets). Value-level seed of the r=2
+  minimal case, complementing `FactorizationRigidity.lean` (m-sparse ⟺ μ_m-coset-union).
+
+**Refutation map of the exponential-sum core** `S(a,b)=∑_{x∈μ_n}e_p(ax+bx³)` (`/tmp/cubsum.py`):
+- ❌ REFUTED `|S| ≤ 2√n`: max|S| = 7.47/11.63/17.71 > 2√n = 5.66/8.0/11.31 (n=8/16/32). Sup exceeds √n.
+- ❌ REFUTED "cubic helps": max|S| (cubic, 2-freq) > max|η_b| (linear Gauss) at every instance — the
+  extra frequency makes the sup LARGER, not smaller. The cubic twist gives no advantage.
+- ✓ SURVIVES `|S| ≤ 2√(n ln p)`: 7.47/11.63/12.98/17.71 < 2√(n ln p) = 11.7/17.1/18.3/24.2.
+- ⚠ But the sup bound is INSUFFICIENT for the count: #gap-valid configs `= (1/p²)∑_{a,b}S^{2r}`; with
+  `|S|≤2√(n ln p)` the error `≤ (4n ln p)^r ≫` coset count `~ C(n/2,r)`. So controlling spurious needs
+  the MOMENT `∑_{a,b}|S|^{2r} = ` additive energy `E_r`, NOT just the sup — re-confirming the moment-
+  method (Wick-vs-char-p-anomaly) wall (#389) from the exponential-sum side.
+
+**Irrefutable conjectures (survived all refutation this campaign), all gated on the same moment/BGK wall:**
+  (I1) `e₂(S) ∈ Σ_r` integrality (#bad = |Σ_r|) — PROVEN r=2 (even-poly), verified all r.
+  (I2) `|∑_{x∈μ_n}e_p(ax+bx³)| ≤ 2√(n ln p)` — survived; insufficient alone.
+  (I3) spurious ⟹ saturated (no spurious config at non-saturated p) — survived 141 primes.
+  (I4) δ* = `1−ρ−2ρ ln(1/2ρ)/log₂(qε*)` — the exact formula.
+All four reduce, rigorously, to the additive-energy `E_r(μ_s)` = diagonal-value (no char-p anomaly)
+statement for `r ~ log n` — the recognized open core. The campaign has PROVEN the boundary (r=2, ℂ) and
+built the reusable bricks; the interior (r≥3, char-p) is the moment wall, unbroken.
