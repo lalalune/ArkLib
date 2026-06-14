@@ -436,7 +436,7 @@ def foldKStateProp {i : Fin ℓ} (m : Fin (2 + 1))
       (stmt := stmtMid) (wit := witMid) (oStmt := oStmtMid)
       (localChecks := sumcheckConsistencyProp (𝓑 := 𝓑) stmtMid.sumcheck_target witMid.H)
   | ⟨1, _⟩ => -- After P sends hᵢ(X), before V sends r_i'
-    let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ 𝓑 (i := i) (h := witMid.H)
+    let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := witMid.H)
     let h_i : ↥L⦃≤ 2⦄[X] := tr.messages ⟨0, rfl⟩
     masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIdx := i.castSucc) (oracleIdx := OracleFrontierIndex.mkFromStmtIdx i.castSucc)
@@ -677,7 +677,7 @@ def foldKStateProps {i : Fin ℓ} (m : Fin (2 + 1))
       (stmt := stmtMid) (wit := witMid) (oStmt := oStmtMid)
       (localChecks := sumcheckConsistencyProp (𝓑 := 𝓑) stmtMid.sumcheck_target witMid.H)
   | ⟨1, _⟩ => -- After P sends hᵢ(X), before V sends r_i'
-    let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ 𝓑 (i := i) (h := witMid.H)
+    let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := witMid.H)
     let h_i : ↥L⦃≤ 2⦄[X] := tr.messages ⟨0, rfl⟩
     masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIdx := i.castSucc) (oracleIdx := OracleFrontierIndex.mkFromStmtIdx i.castSucc)
@@ -795,7 +795,7 @@ def foldStepHStarFromWitMid (i : Fin ℓ)
     L⦃≤ 2⦄[X] :=
   let witBefore := foldStepWitBeforeFromWitMid
     (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i stmtOStmtIn h_i r_i' witMid
-  getSumcheckRoundPoly ℓ 𝓑 (i := i) (h := witBefore.H)
+  getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := witBefore.H)
 
 /-! At the same fold-step output state, `witnessStructuralInvariant`
 and `firstOracleWitnessConsistencyProp` determine a unique witness.
@@ -1415,7 +1415,7 @@ lemma foldStep_rbrExtractionFailureEvent_imply_sumcheck_or_badEvent (i : Fin ℓ
         projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := witMid.t)
           (m := mp.multpoly stmtOStmtIn.1.ctx) (i := i.castSucc)
           (challenges := stmtOStmtIn.1.challenges)
-      let h_star_extracted : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ 𝓑 (i := i) (h := H_before)
+      let h_star_extracted : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := H_before)
       have h_eval_eq_extracted :
           Polynomial.eval r_i' h_i.val = Polynomial.eval r_i' h_star_extracted.val := by
         unfold sumcheckConsistencyProp at h_sumcheck_after
@@ -1694,7 +1694,7 @@ lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
         projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := t_fixed)
           (m := mp.multpoly stmtOStmtIn.1.ctx)
           (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges)
-      let h_star_fixed : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ 𝓑 (i := i) (h := H_fixed)
+      let h_star_fixed : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := H_fixed)
       have h_prob_mono_sum := prob_mono (D := $ᵖ L)
         (f := fun y => sumcheckBadEvent y)
         (g := fun y => badSumcheckEventProp y h_i h_star_fixed)
