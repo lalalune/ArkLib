@@ -871,6 +871,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusImmunityMuN
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSubfieldBlowup
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSupplyExact
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BGKMultiplicativeInput
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BesselDeviationLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConstantIndexGaussBarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
