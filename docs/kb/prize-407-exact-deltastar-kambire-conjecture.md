@@ -538,3 +538,184 @@ about the lemma. So the open problem is now precisely: a **uniform-in-n** proof 
 "all candidates clean", i.e. that `e₂(U) ∈ Σ` for every primitive `U` (the general Half-Sum Lemma). This
 is the genuine remaining math; everything else (per-n) is now a closed finite computation. Probes:
 `probe_407_halfsum_{proof_n8,candidates_n16,proof_n16}.py`.
+
+## MAJOR CORRECTION — the residual is FINITE ALGEBRA, not BGK; minimal case PROVEN even-polynomial
+
+Two errors in the prior "BGK wall" conclusion, both now corrected:
+
+**(1) The "counterexamples" were false positives.** `p | gcd(N(∑y), N(∑y³))` only means *some Galois
+conjugate* of each vanishes — possibly at DIFFERENT primes `𝔭`. A genuine spurious config needs
+`∑y≡0` AND `∑y³≡0` at the SAME embedding. Correct DIRECT enumeration (`/tmp/correct_scan.py`): genuine
+spurious configs are vanishingly rare — n=16 has one only at `p=17` (= the smallest prime ≡1 mod 16),
+n=32 has NONE up to p=20000. All far below the prize regime `n^β`. The scaling "c→4.3" was a gcd artifact.
+
+**(2) "Spurious exists" ≠ "δ* changes".** What matters is whether a config yields a bad scalar OUTSIDE
+the sumset. Direct `#bad` counts (`/tmp/corrected.py`, `/tmp/n64test.py`) give `#bad = |Σ_r|` EXACTLY,
+`NEW=0`, at EVERY prime tested — n=16 (91 primes), n=32 (incl. p=7937), n=64 (p=65456257). The
+integrality `e₂(S) ∈ Σ_r` is char-`p`-ROBUST. The bad scalar is `e₂(S) = −½∑_{x∈S}x²` with `x²∈μ_{n/2}`,
+`−1∈μ_{n/2}` — it lives NATIVELY in the `μ_{n/2}` sumset, no char-`p` arithmetic involved.
+
+**Minimal case PROVEN (char-`p`-free).** A size-4 config `S` with the m=2 gap `e₁(S)=e₃(S)=0` has
+`∏_{x∈S}(X−x) = X⁴ + e₂X² + e₄` — an EVEN polynomial. So `p(X)=p(−X)`: every root `y` forces `−y` a root,
+hence `S = {±y₁, ±y₂}` is a union of ±-pairs (= `μ_2`-cosets). **No no-±-pair size-4 config exists, over
+any field.** So the minimal spurious config is impossible by elementary algebra — NOT a BGK question.
+(Spurious configs need size ≥ 6, where `e₅` enters and the polynomial is no longer even; these are the
+rare large-weight configs, and even they give `e₂∈Σ_r`.)
+
+**Corrected standing.** δ* = `1−ρ−2ρ ln(1/2ρ)/log₂(qε*)`. Upper bracket PROVEN; ℂ optimality PROVEN;
+and now the `F_p` residual is the FINITE-ALGEBRAIC integrality `e₂(S) ∈ Σ_r` (`G(e_m)∈I_ℤ`) — char-`p`-
+robust across all tests, with the minimal case proven by the even-polynomial argument, and the bad
+scalar manifestly a `μ_{n/2}`-element combination. This is NOT the BGK/sum–product wall; my earlier
+identification was an artifact of (1) a flawed gcd criterion and (2) conflating spurious-existence with
+δ*-change. Feasibility upgraded: the residual is a concrete symmetric-function identity, candidate-provable.
+
+## UPDATE 2026-06-13 (frontier located) — the prize core = an OPEN structural problem Lam–Leung explicitly leave unsolved
+
+Read Lam–Leung, *Vanishing Sums of m-th Roots of Unity in Finite Fields* (arXiv:math/9605216 — the
+jackpot engine). Decisive context:
+
+- **Lam–Leung determine only the WEIGHT SET `W_p(m)` (which weights `n` admit SOME vanishing sum), never
+  the STRUCTURE.** Verbatim (§1): *"Easy examples show that this need not be an equality in general, so we
+  are left with **no viable conjecture on the structure of the weight set `W_p(m)` in characteristic p**."*
+  And (Rmk 2.7): *"determination of minimal vanishing sums is difficult (both in characteristic 0 and in
+  characteristic p)."* Their explicit structure theorem (Thm 2.6) requires `Φ_m` to stay essentially
+  irreducible — the OPPOSITE of the prize regime.
+- **The Half-Sum Lemma is a STRUCTURAL statement** about antipodal-free vanishing sums of `2^μ`-th roots
+  of unity in the **split** regime `p ≡ 1 (mod 2^μ)` (`Φ_n` factors completely) — precisely the regime
+  Lam–Leung leave open. So the lemma is NOT a corollary of existing theory; it lives where the foundational
+  reference has "no viable conjecture." This both explains why no published theorem proves it AND confirms
+  the directive's premise that the prize requires genuinely NEW structural math.
+
+**Evidence ledger (the lemma itself stays irrefutable, now 3 dyadic levels):**
+  · n=8 — PROVEN (no primitive U; `N(∑u)=2³`).
+  · n=16 — PROVEN at every prize-relevant prime (candidates `{17,97,113,193,353,577}`, all clean).
+  · n=32 — verified across **380 primes `≡1 mod 32` up to 60000**, `r=3`, max distinct `e₂ = 464 = |Σ|`,
+    zero violations (`probe_407_halfsum_wide_n32.py`).
+  · The lemma holds via genuine char-p COINCIDENCES (`½(η³+η⁴)=1+η⁶+η⁷` at `p=17` is NOT a char-0
+    identity) — a structural proof must explain why these coincidences are forced.
+
+**Net honest frontier.** δ\* = window-edge is PROVEN for `n=8,16` (closed, no open math) and verified for
+`n=32`. The asymptotic prize (`n=2^30`) reduces — with everything else proven — to a single new structural
+theorem about char-p vanishing sums (the uniform Half-Sum Lemma) in a regime the foundational literature
+explicitly leaves open. This is the genuine prize core: not a Weil/Gauss-sum wall, not an incomputable
+lemma, but an unsolved STRUCTURE problem for `2^μ`-th-root vanishing sums when `p ≡ 1 mod 2^μ`. The
+candidate-prime method PROVES it for any fixed `n`; a uniform proof requires advancing that open structure
+theory. Probe: `probe_407_halfsum_wide_n32.py`.
+
+## CONFIRMED — general-r integrality is char-p-robust; precise remaining target = eliminant is content-free
+
+r=3 (size 6) test across 10 primes (`/tmp/r3test.py`): `#bad = |Σ_3|` EXACTLY, `NEW=0` at every prime,
+INCLUDING p=97 where 96 genuine spurious size-6 configs exist (they give `e₂∈Σ_3`, adding nothing). At
+non-saturated primes (257..7937) NO spurious exist and all configs are cosets. So `e₂(S)∈Σ_r` holds
+whether or not spurious configs exist — fully char-p-robust.
+
+**The precise remaining target (finite algebra, candidate-provable).** The bad scalars are the roots of
+the eliminant `Res(γ) ∈ ℤ[γ]` of the system `{e₁(S)=0, e₃(S)=0, e₂(S)=γ, xᵢⁿ=1}`. Over ℂ its roots are
+exactly `Σ_r` (Lam–Leung), so `Res = c·G^a` over ℚ with `G(γ)=∏_J(γ−σ_J)` (monic, integer, `deg`=
+`|Σ_r|` distinct roots). The bound `#bad ≤ |Σ_r|` holds over `F_p` **iff** the content `c` is a unit (or
+`p∤c`). The char-p-robustness (no new bad scalar at ANY tested prime, incl. spurious-heavy p=97) is
+direct evidence `c = ±1` — i.e. **the eliminant is content-free / monic**. Proving `c=±1` closes the
+optimality UNCONDITIONALLY. This is a concrete elimination-theory statement about a 0-dimensional
+cyclotomic scheme — NOT BGK, NOT a recognized open problem.
+
+**Minimal case PROVEN** (r=2): the gap forces `X⁴+e₂X²+e₄` (even) ⟹ ±-pair roots ⟹ all-coset ⟹
+`e₂∈Σ_2`. **Structure for general r:** `e₂(S) = −½∑_{x∈S}x²`, `x²∈μ_{n/2}`; for all-coset configs the
+2r squares double up (`∑=2∑ζᵢ`), giving `e₂=−∑ζᵢ∈Σ_r`; the spurious (partial) configs are the rare
+char-p exceptions that STILL land in `Σ_r` — equivalently the resolvent `R(u)=A(u)²−uB(u)²` (roots =
+the squares) has square-sum `−2e₂` forced into `2·Σ_r`. The general proof = `c=±1` (eliminant monic).
+
+**Standing:** δ* exact; upper bracket + ℂ optimality + minimal-r `F_p` PROVEN; general-r `F_p` = the
+content-free eliminant statement (finite algebra, char-p-robust, candidate-provable). The earlier "BGK
+wall" verdict is RETRACTED — it was a gcd-criterion artifact. Feasibility of full closure: 6 (concrete
+algebra) — up from 3 (was wrongly BGK-gated). NOT yet closed; the eliminant-monicity is the live target.
+
+## UPDATE 2026-06-13 (mechanisms ruled out) — no simple combinatorial certificate for the Half-Sum Lemma
+
+Searched for a constructive structural proof (an explicit k-subset realizing `e₂(U) ∈ Σ_k`). Tested and
+RULED OUT (`probe_407_halfsum_mechanism_ruleout.py`):
+- **Squaring-telescope** (iterate `x↦x²`): REFUTED — the antipodal-free primitive part has no pairs, so
+  squaring stalls; no descent.
+- **Pairing** `U² = ⊔{w,w'}` with `w+w'=−2c`, `c∈μ_{n/2}` distinct, `∑c=e₂`: holds 16/16 at n=16
+  (mechanism `1+η⁵=−2η⁶` mod 17) but **FAILS 0/96 at n=32**.
+- **Subset-of-U²** (`e₂ = ∑` of a k-subset of the 2k squares `U²`): holds 16/16 at n=16, **FAILS 32/96 at
+  n=32, 16/400 at n=64**.
+
+So the k-subset of `μ_{n/2}` realizing `e₂(U)` is **global** (uses elements outside `U²`) for `n≥32` — there
+is NO local/combinatorial certificate. `e₂(U) ∈ Σ_k` holds (verified n≤64) but only via genuine char-p
+arithmetic, not a structural pairing/partition. This is a concrete NEGATIVE result: it rules out the
+natural constructive proofs and confirms (matching Lam–Leung's "no viable conjecture on the structure")
+that a uniform proof needs arithmetic/analytic methods in the split regime, not combinatorial structure.
+
+**Frontier, final form.** PROVEN n=8,16 (finite candidate-prime method); verified n=32 (380 primes),
+n=64. Open core = uniform Half-Sum Lemma, a non-constructive char-p structure statement Lam–Leung leave
+open. Probe: `probe_407_halfsum_mechanism_ruleout.py`.
+
+## UPDATE 2026-06-13 (tool landscape) — every attack on the uniform Half-Sum Lemma maps to the Johnson-vs-open gap
+
+Cross-domain literature sweep (verified papers) for tools to prove the uniform Half-Sum Lemma. Result:
+**no existing theorem proves it**, and the landscape of attacks each fails for a precise, identifiable reason:
+
+- **PROVABLY BLOCKED — Z/2^μ uncertainty principle.** Tao's sharp `|supp f|+|supp f̂|≥p+1` (arXiv:math/0308286)
+  needs PRIME order (Chebotarev: all DFT minors ≠0), which FAILS for composite/prime-power modulus.
+  Murty–Whang (LAA 437, 2012) degrades to the trivial product bound for `Z/2^μ`; the 2024 frontier
+  (Loukaki arXiv:2412.08600) reaches only `N=pq`, never prime powers. So no `Z/2^μ` Fourier-support bound
+  exists off the shelf — the Fourier-flat reformulation route is dead.
+- **REACHES ONLY JOHNSON — Stepanov method (Weil-free).** Hanson–Petridis "Refined estimates concerning
+  sumsets contained in the roots of unity" (arXiv:1905.09134, PLMS 2020) and Kalmynin "On additive
+  irreducibility of multiplicative subgroups" (arXiv:2504.10202, 2025) pin `A±B` structure of `μ_d⊆F_p`
+  Weil-free — the RIGHT hammer — but Stepanov bounds are Johnson-type; the prize is BEYOND Johnson, so it
+  cannot reach. (Per the directive: anything reducing to Johnson is discarded.)
+- **UNEXPLORED, likely non-transferable — slice rank / Croot–Lev–Pach.** Sauermann (arXiv:1904.09560) is the
+  closest "distinct elements summing to zero" via slice rank, but lives in `F_p^n` (product structure); a
+  single multiplicative subgroup `μ_n⊆F_p` lacks the tensor structure slice rank needs, with TWO power-sum
+  constraints. Genuinely untried, but no reason it transfers.
+- **RULED OUT — combinatorial structure** (this lane): pairing & subset-of-`U²` certificates hold at n=16
+  but fail at n≥32 (above) — the realizing k-subset is global/non-constructive.
+
+**Closest char-p structural result that exists:** Dvornicich–Zannier "Sums of roots of unity vanishing
+modulo a prime" (Archiv Math 79, 2002, DOI 10.1007/s00013-002-8291-4) — extends Conway–Jones to mod-ℓ
+congruences, but order-general (not 2^μ/split) and no power-sum/antipodal structure.
+
+**Reading list additions (verified this sweep):** Dvornicich–Zannier (Archiv Math 79, 2002); Kalmynin
+arXiv:2504.10202; Hanson–Petridis arXiv:1905.09134; Yip arXiv:2309.10950; Sauermann arXiv:1904.09560;
+Kumar–Senthil Kumar arXiv:1503.07281; Murty–Whang (LAA 437, 2012); Loukaki arXiv:2412.08600;
+Díaz Padilla–Ochoa Arango arXiv:2310.09992; Konyagin–Shparlinski–Vyugin arXiv:2005.05315.
+
+**NET (definitive frontier).** The uniform Half-Sum Lemma sits exactly in the gap between Johnson-reaching
+tools (Stepanov/Weil — too weak) and an OPEN structure problem (char-p `2^μ`-th-root vanishing sums in the
+split regime — Lam–Leung leave it open, no post-1997 result closes it, the sharp Fourier tool is blocked at
+composite modulus). PROVEN n=8,16; verified n=32,64. This is a *complete map* of why the prize is hard:
+not a missing computation, but a genuine open problem requiring new arithmetic in a literature-confirmed gap.
+The one untried plausible attack is redirecting the Hanson–Petridis/Kalmynin Stepanov machinery at
+power-sum-constrained antipodal-free subsets — a research program, not an off-the-shelf citation.
+
+## HONEST REFINEMENT — heuristic is clean (spurious⟹saturated), but the RIGOROUS general-r count IS BGK
+
+Scan (`/tmp/scan6.py`): 141 NON-saturated primes p≡1 mod 32 in (577, 20000), ZERO fully-partial size-6
+spurious configs. So at non-saturated primes every gap-valid config is a coset-union ⟹ `e₂∈Σ_3` trivially.
+The p=97 spurious were at a SATURATED prime (`|Σ_3|=96≈p`), so uninformative.
+
+**Counting heuristic (explains it, NOT rigorous).** #{gap-valid size-2r configs} ≈ `C(n,2r)/p²` (two
+conditions e₁=e₃=0); #{coset configs} ≈ `C(n/2,r)`. Spurious exist iff `C(n,2r)/p² > C(n/2,r)`, i.e.
+`p ≲ n^{r/2}`. Saturation bound `p ≲ |Σ_r| ≈ n^r/(2^r r!)`. For large n, `n^{r/2} < n^r/(2^r r!)`, so
+**spurious ⟹ p below saturation ⟹ none in the non-saturated prize regime** (`p=n^β`, β≥4 ≫ r/2). This
+matches all data and gives `e₂∈Σ_r` ⟹ δ*=window edge.
+
+**But the rigorous version re-hits BGK — honest correction of last round's "not BGK".** Making the count
+rigorous needs the error term: #configs `= (1/p²)∑_{a,b} S(a,b)^{2r}`, `S(a,b)=∑_{x∈μ_n}e_p(ax+bx³)` an
+incomplete cubic exponential sum over the subgroup `μ_n`. To show the non-coset (spurious) count is 0 in
+the non-saturated regime needs a nontrivial bound `|S(a,b)| < n`. Weil gives `|S|≤3√p`, which is TRIVIAL
+(worse than `n`) precisely when `p > n²` — and the prize has `p=n^β ≫ n²`. So the rigorous bound is the
+incomplete-sum / BGK regime, OPEN for prize parameters. My last-round "feasibility 6, finite algebra not
+BGK" was correct for the HEURISTIC and for r=2, but the RIGOROUS general-r proof reduces to the same
+small-subgroup character-sum wall.
+
+**Accurate final standing.** δ* = `1−ρ−2ρ ln(1/2ρ)/log₂(qε*)`. PROVEN: upper bracket; ℂ optimality;
+**r=2 `F_p` case (even-polynomial, rigorous, char-p-free)**. Heuristically clear for all r (spurious⟹
+saturated, verified 141 non-sat primes). The rigorous general-r proof = nontrivial bound on
+`∑_{x∈μ_n}e_p(ax+bx³)` for `p≫n²` = BGK/incomplete-sum, open. So: the optimality is RIGOROUSLY proven at
+r=2 and heuristically/empirically certain for all r, but the worst-case rigorous proof for general r is
+gated on the recognized incomplete-exponential-sum bound. NOT a full closure; I will not claim otherwise.
+The genuine net gain this session: the EVEN-POLYNOMIAL proof of the minimal case and the
+spurious⟹saturated counting structure — which localize and explain the wall, even though they don't
+remove it for general r.

@@ -8796,3 +8796,40 @@ has |A|=(1−δ)n≤b (since deg P=b≥|A| to have |A| roots). So the landed rig
 DEGENERATE near-full-agreement regime, NOT the prize window. The empirical n=8 bijection (40 bad α ↔
 40 distinct A at |A|=5<b=7) is a generic-distinctness phenomenon, not covered by the lemma. The lemma
 is correct math but its window-relevance was overstated; the window injectivity is separate/open.
+
+## 2026-06-13 (#407): cocycle worst-case-PATH probe — route SURVIVES (no sustained near-2 path) but "GM = exactly √2" sub-conjecture REFUTED
+
+**Object.** The alignment cocycle `r_i = M(i+1)/M(i)`, `M(i)=max_{b≠0}|S_b(μ_{2^i})|`, telescoping
+`M(K)=M(2)·∏_{i=2}^{K-1} r_i`. The refuted uniform-step input demanded `r_i ≤ √2` at every `i`; the
+re-localized open core (issue #407 §3) is a worst-case-PATH bound: does the *product* (geometric mean)
+stay near √2, or does some frequency sustain `r_i ≈ 2` down the whole tower (⟹ `M(K)≈2^K=n`, floor refuted)?
+
+**Probe** `scripts/probes/probe_cocycle_worst_path.py` (FFT-exact, 5 large primes p∈[1.5M,8M], proper
+subgroups μ_{2^μ}⊊F_p*, n up to 4096). Measures the REALIZED sup-norm cocycle `r_i=M_max(i+1)/M_max(i)`:
+
+| prime | p | GM(cocycle) | max single step | M/√(n·log(q/n)) |
+|---|---|---|---|---|
+| A | 2021377 | 1.5154 | 1.9934 | 1.4188 |
+| C | 1502209 | 1.5384 | 1.9935 | 1.4527 |
+| D | 4005889 | 1.5045 | 1.9956 | 1.4151 |
+| E | 8040449 | 1.5043 | 1.9975 | 1.3467 |
+
+**Findings (all FFT-exact, no sampling):**
+1. **Route SURVIVES.** No sustained near-2 path: the realized geometric mean is `≈ 1.50–1.54 < 2`.
+   The naive per-frequency "fixed-b path GM" and "envelope-of-ratios GM" both blow up (6–10⁵), but
+   those are *near-zero-denominator artifacts* (`min_b|S_b(μ_4)|≈0` at low levels), NOT the controlling
+   cocycle. The controlling object is the realized sup-norm cocycle, whose GM is bounded below 2.
+2. **Floor holds numerically.** `M/√(n·log(q/n)) ∈ [1.34, 1.45]` — bounded, constant, the BGK/MRSS
+   envelope. And `(GM/√2)^{K-2} ≈ 0.7·√(log(q/n))` across all primes: the excess of GM over √2 supplies
+   *exactly* the polylog factor. This pins the right SHAPE: `G = √2·(1+Θ(1/μ))`, drift product = polylog.
+3. **"GM = exactly √2" REFUTED.** GM ≈ 1.51 > √2 = 1.414 at every prime — a uniform `r_i≤√2` (and even a
+   `√2`-geometric-mean) bound is impossible; the correct statement carries the `(1+Θ(1/μ))` drift.
+
+**Conclusion.** The cocycle large-deviation route is the right open core and is NOT refuted by the data:
+no persistently-aligned path exists, individual steps approach but never exceed 2, and the geometric mean
+sits at `√2·(1+o(1))` reproducing the floor. The genuine open input is therefore the **geometric-mean
+(Lyapunov) bound** `(∏r_i)^{1/L} ≤ √2·(1+Θ(1/μ))`, i.e. `CocycleGeometricMeanLaw` — formalized as a
+closed deterministic consumer in `Frontier/_DyadicCocycleLargeDeviation.lean` (axiom-clean;
+`floor_of_cocycleGeometricMeanLaw` chains it to the floor, `not_cocycleProductBudget_of_level_gt` is the
+refutation hook should a future probe find a sustained near-2 path). This remains the BGK/MRSS
+incomplete-character-sum 25-yr-open problem; the consumer is closed, the analytic input is not.
