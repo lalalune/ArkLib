@@ -161,3 +161,16 @@ Probe: `scripts/probes/probe_conj_norm_moments.py`.
   `{Σa=Σb}` (E_r) onto `{Σ(2r terms)=0}` (Z_{2r}). Verified n=4,6,8,12,16, r=2,3. (So all even-n higher
   zero-sums reduce to the energies of A1/B3/D — closing the even branch of the zero-sum theorem E.)
   Promoted: +2 (running ≈ 17). Novelty flags: H = clean but classical-quadrature; E5 = negation corollary.
+
+## Theme G (cont., #407) — GV rep bound r(c)≤2 holds GENERICALLY at prize scale (NOT a closure)
+
+Probes: `scripts/probes/probe_gv_prizescale.py`, `probe_gv_badprime_sweep.py`.
+- **G2 (SURVIVOR, prize-scale; explicitly NOT a closure).** For dyadic `μ_n` and prime `p~n^β` (β=4,5):
+  `max_{c≠0} r(c) = 2` where `r(c)=#{a∈μ_n : c−a∈μ_n}` — the García–Voloch rep bound holds with constant
+  2 at prize scale. Verified ALL of 80 primes/n for n=8,16,32,64 (zero bad primes), and β=4,5,8 agree.
+  This matches G (two-circles ≤2 over ℂ) and shows it is robust generically down to small p.
+  **HONEST non-closure (logged):** (i) GENERIC not worst-case — 80 random primes can't exclude sparse
+  bad primes `p|Res(x^n−1,(c−x)^n−1)` (the triple-intersection residual; same P_max structure as energy);
+  (ii) even `r(c)≤2` only gives `list ≲ n^{3/2}` via the √-lossy energy route (E→list loses √) = SUB-Johnson,
+  NOT the capacity window — the prize needs the L²→L^∞ Shaw sup-norm, which r(c)≤2 does not supply.
+  So G2 is a clean prize-RELEVANT fact, but the δ*-closure gap (worst-case + √-loss) is intact. Running ≈ 18.

@@ -283,3 +283,23 @@ and the only non-moment hope is a Stepanov/Burgess amplification that does not y
 - arXiv:1905.07355 — Costa-Dalai, gap in slice rank of k-tensors. Slice rank fails for >=8-term systems; energy is in the weak regime.
 - arXiv:2304.13801 / 2309.09124 — Hanson-Petridis, additive decompositions / multiplicative structure of shifted subgroups. Most-adaptable Stepanov refinement; still cannot break the degree-vs-multiplicity balance.
 - Slice-rank survey (Surveys in Combinatorics 2024, Cambridge) — confirms slice rank is an avoidance-size method needing F_q^n; no subgroup-energy application exists.
+## 2026-06-13 (d) — 5 new papers on the EXACT prize core (incomplete additive char sum over μ_n)
+
+The #407 core localizes to `M(n) = max_{b≠0} |Σ_{x∈μ_n} e_p(bx)| ≤ n^{1/2+o(1)}` at `n ~ p^{1/4}`
+(the additive character over a small multiplicative subgroup — the Gauss-sum-like object, distinct
+from the multiplicative-char sums already cataloged). SOTA = BGK power-saving `n^{1-1/2880}`
+(Di Benedetto et al, 2003.06165). 5 leads, 2 downloaded to `~/papers/arklib/`:
+
+| # | paper | id / source | status | bearing on the core |
+|---|---|---|---|---|
+| E1 | **Exponential sums over small subgroups, revisited** (2024) | arXiv **2401.04756** | DOWNLOADED | THE exact object — revisits BGK-type bounds for `Σ e_p(bx)`, `x∈μ_n` small; the current best-technique reference for the prize core. |
+| E2 | **Bounds on exponential sums over small multiplicative subgroups** (Bourgain–Chang) | arXiv **0705.4573** | needs DL | the original small-subgroup additive-character cancellation; foundation for the `n^{1/2}` target and where the power-saving started. |
+| E3 | **Multiplicative Energy of Shifted Subgroups and Bounds on Exponential Sums with Trinomials** | Canad. J. Math (Cambridge) | needs DL | shifted-subgroup energy + **trinomial** exp sums — the trinomial is precisely the monomial-far-line direction `X^b+γX^a`; the energy route in the live regime. |
+| E4 | **Multiplicative character sums over subsets of quadratic extensions** (2025) | arXiv **2502.14436** | DOWNLOADED | recent char-sum machinery over structured subsets of `F_{p^2}` — technique transfer to the subgroup case. |
+| E5 | **Shparlinski — Open Problems on Exponential and Character Sums** | web.maths.unsw.edu.au/~igorshparlinski/CharSumProjects.pdf | reference | the canonical open-problem list; confirms the prize core is recognized-open and names the adjacent attackable sub-problems (Burgess/Stepanov amplification — the only non-moment hope). |
+
+**Honest scope (unchanged):** none of these is a `n^{1/2}` √-cancellation breakthrough; the published
+SOTA `n^{1-1/2880}` and Shparlinski's problem list both confirm the prize core is a recognized open
+problem in analytic number theory. Moment methods are exhausted (energy ≤ `n^{2+o(1)}`, the 7/3
+barrier). E1+E3 are the most relevant — the revisited-small-subgroup technique and the trinomial
+(= monomial-line) energy bound, in the live `n~p^{1/4}` regime.

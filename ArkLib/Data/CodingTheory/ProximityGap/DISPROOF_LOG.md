@@ -8630,3 +8630,61 @@ E_{1,2} over μ_{2^k} in the prize regime. The literature does not supply it; th
 antipodal/Lam–Leung structure of μ_{2^k} (the in-tree O108/O130 engine) is the most promising
 lever the general additive-combinatorics literature cannot use. That is the named new-math
 target for the demand side. Dossiers: scripts/probes/genlaw/o174_general_r/{,analytic/}.
+
+### O177 — THE r=4 RUNG PROVEN (axiom-clean Lean, #bad₄ ≤ K AND ≤ K/2 all n=2^k) extends the demand frontier r=3→r=4; equivariance orbit-reduction proven; and the open core is now ANCHORED to the quadratic Vinogradov / PTE framework (Mansfield–Mudgal 2024) — correcting O176, with a concrete forward lead (nubs, demand seat, 2026-06-14)
+
+Three results this cycle (new-math fan-out B1/B2 + a deep literature sweep), all adversarially
+verified (0.9, zero fatal); the r=4 Lean brick re-verified by me independently (EXIT 0, axiom-clean).
+
+* **r=4 RUNG PROVEN [Lean axiom-clean, DeepBandR4Bound.lean].** On the order-2 character line
+  (the r=4 maximizer, full mono sweep), the deep-band #bad-scalar count has the closed form
+  `#bad₄(n) = g⁴ − 2g³ + 4g + 1` (g=n/4) `= 1 + n·deepBandBadCount(n/8)` — a clean **2-adic
+  descent to the proven r=3 form** (the ev1/ev4 parity classes biject, even-sublattice→μ_{n/2},
+  onto the r=3 maximizer). `deepBandBadCount4_le_budget` (#bad₄ ≤ K, g≥2) AND
+  `deepBandBadCount4_two_mul_le_budget` (#bad₄ ≤ **K/2**, g≥3 = whole prize domain) are
+  Lean-machine-checked polynomial facts (re-verified [propext,Classical.choice,Quot.sound]).
+  Exactness #bad=formula is [COMPUTED] (descent bijection, kernel n=16=145/32=3105/64=57409);
+  the ≤K and ≤K/2 BOUNDS are [PROVEN] — same standard as the landed r=3 brick. **The parity-split
+  STOPS at r=4**: the r=5 maximizer is the full-order line (not order-2), so this lever cannot
+  pin r≥5. HONESTY CATCH: a prior-session DeepBandR4Bound.lean carried `sorryAx` + 3 failing
+  tactic blocks — caught, all three fixed, re-verified genuinely axiom-clean before landing.
+* **Equivariance orbit-reduction [PROVEN structural law, B2].** `#bad = d·orbits + [0∈bad]`,
+  `d = n/gcd(n,e−f)`, orbit invariant `γ^d` (γ = −e₁, Vieta-pinned); the bad set is μ_d-invariant
+  and negation-closed (0 violations, n=16 r=3..8 / n=32 / n=64). For n=2^k, negation g^{n/2} is
+  already a power of the rotation (antipodal-subsumption), so Lam–Leung gives no extra global
+  collapse — it must act on the orbit-reps. REFUTED the clean uniform bounds orbits ≤ C(n/2,2)
+  and C(n/2,r−1) (both asymptotically false). So uniform #bad ≤ K for r≥4 reduces to the
+  **orbit-rep census** = the joint (e₁,e₂) deficit-2 level-set mod rotation.
+* **The open core ANCHORED + O176 CORRECTED [literature sweep].** The deep-band (Σx, Σx²)
+  joint constraint is *literally* a degree-2 Prouhet–Tarry–Escott / **k=2 quadratic Vinogradov
+  mean value system**; the collision count Σ N₂² = the summed joint energy. **Mansfield–Mudgal,
+  "A Quadratic Vinogradov MVT in Finite Fields" (arXiv:2310.02950, QJM 2024)** bounds it:
+  `J_s(A) ≪ |A|^{2s−2−1/9}` for arbitrary `A ⊆ F_p`, `s≥3` — covering our whole range. This
+  **CORRECTS O176's claim that "the joint higher-order energy is itself open"**: the *summed*
+  energy IS bounded in the literature. BUT it still does not pay the prize — three verified gaps:
+  (1) WRONG DIRECTION (decisive): it upper-bounds the *energy*; Cauchy–Schwarz then gives a
+  *lower* bound on the support, while #bad is a support *upper* bound; (2) WRONG FUNCTIONAL:
+  J_s = Σ N₂² (full collision count), not its e₁-axis projection (#bad); (3) FIELD: stated over
+  F_p (Rudnev–Wheeler / Stevens–de Zeeuw incidence engine), F_q transfer carries an unproven
+  no-large-subfield condition. **FORWARD LEAD (concrete, literature-grounded):** extract a
+  *per-fiber* `N₂(c1,c2)` bound from Mansfield–Mudgal's incidence machinery (rather than the
+  summed J_s) → converts the energy bound into the support bound `#bad ≤ K`. No paper does this
+  for μ_n; that is the precise new-math step.
+
+**Where it lands:** demand-side proven frontier is now **r=3 AND r=4** (both #bad ≤ K/2,
+axiom-clean Lean); a=4 slice proven. General-r (r≥5) reduces-to-open, but the open object is now
+sharply named (orbit-rep census = per-fiber quadratic-Vinogradov count over μ_{2^k}) WITH a
+literature anchor (Mansfield–Mudgal) and a concrete forward attack (per-fiber incidence
+extraction). Dossiers: scripts/probes/genlaw/o174_general_r/{,analytic/,research/}; bricks
+DeepBandR3Bound.lean, DeepBandR4Bound.lean.
+
+## (#407, conjecture campaign) GV rep bound r(c)≤2 WORST-CASE at prize scale — REFUTED
+Bold conjecture: `max_{c≠0} r(c) ≤ 2` for ALL primes p~n^β (β=4–5), dyadic μ_n — would close the GV face.
+REFUTED: the rep-bound bad primes (where r(c)>2) are IDENTICAL to the energy P_max bad primes
+(8→41, 16→337, 32→194977 in a truncated sweep; the EXACT P_max ~ n^{4.87} is EXPONENTIAL, per
+`probe_energy_pmax_growth.py`), which lie INSIDE the prize regime p~n^{4–5}. So `r(c)≤2` holds only
+GENERICALLY (G2, 80 random primes/n) — worst-case `r(c)>2` at bad primes ⟹ the García–Voloch rep-bound
+face is OPEN at prize scale. Clean by-product (kept): **rep-bound P_max = energy P_max** (the triple-
+intersection obstruction `p|Res(x^n−1,(c−x)^n−1)` is the same cyclotomic-norm divisibility as the
+4-term additive-energy coincidence). Probe: `scripts/probes/probe_gv_repbound_pmax.py`.
+Lesson re-confirmed: sweep to the EXACT P_max (cyclotomic norm), not a truncated prime range.
