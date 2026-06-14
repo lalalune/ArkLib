@@ -107,7 +107,7 @@ theorem pencil_card_core {G : Type*} [DecidableEq G] (univ : Finset G)
   have hDcard : D.card = r * (r - 1) := by
     rw [hD, Finset.card_biUnion]
     · rw [Finset.sum_congr rfl (fun i _ => hCcard i)]
-      simp [Finset.sum_const, Finset.card_univ, mul_comm]
+      simp [Finset.sum_const, Finset.card_univ]
     · intro i _ j _ hij; exact hCdisj i j hij
   have hpnotD : p ∉ D := by
     rw [hD, Finset.mem_biUnion]; rintro ⟨i, _, hi⟩; exact hpnotC i hi

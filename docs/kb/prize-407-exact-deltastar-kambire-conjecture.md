@@ -1367,6 +1367,53 @@ Probes (all reproducible, exact): `scripts/probes/probe_407_close_r1_{lineball,e
 `/tmp/R1{CHECK108,MECH,ANTIPODAL,GAP}.py`. Refutation conf 0.9 (two exact methods, 4 primes,
 ratio exactly 2.00, mechanism pinned to antipodal-closure of agreement sets).
 
+## RESOLVED 2026-06-14 — constant-index A_k structural bound is PROVEN (axiom-clean Lean), but is VACUOUS at the prize index = it FOLDS TO BGK exactly there (decisive verdict on the L2/sup-norm OPEN ITEM)
+
+Direct attack on the alternative sup-norm closure: prove `A_k := E_k(μ_n) − n^{2k}/p ≤ C^k·k!·n^k` for
+ALL k at constant index `m=(p−1)/n`, via a STRUCTURAL/L^∞ bound (the L²/moment-relation-counting route is
+already refuted in `_MomentMethodNoGo.lean`). **Decisively answered: bounded C at constant index, but it
+DOES fold to BGK at the prize index 2^128.**
+
+**(1) Exact Fourier identity (re-verified by FFT, V1):** `A_k = (1/p)·Σ_{b≠0}|η_b|^{2k}`, `η_b=Σ_{x∈μ_n}e_p(bx)`
+— the `2k`-th moment of the sup-norm (`b=0` term `=n^{2k}/p` is the subtracted trivial mode).
+
+**(2) The structural bound, PROVEN axiom-clean (NO moment-counting, NO BGK, NO open input).** Compose two
+already-landed axiom-clean theorems:
+  · `eta_constIndex_norm_le` (`ConstantIndexGaussSumBound.lean`): `M:=max_{b≠0}‖η_b‖ ≤ ((m−1)√p+1)/m =: B ≤ √(mn)`.
+  · `subgroup_gaussSum_secondMoment` (Parseval): `Σ_b‖η_b‖²=p·n`, so `Σ_{b≠0}‖η_b‖² ≤ p·n`.
+  Pure Hölder/sup step: `Σ_{b≠0}‖η_b‖^{2k} = Σ_{b≠0}‖η_b‖²·‖η_b‖^{2(k−1)} ≤ B^{2(k−1)}·Σ_{b≠0}‖η_b‖² ≤ B^{2(k−1)}·pn`.
+  ⟹ **`A_k ≤ n·B^{2(k−1)} ≤ m^{k−1}·n^k`** — so the implied `C(m)=m` is BOUNDED at constant index, and the
+  conjectured `C^k·k!·n^k` is IMPLIED (since `m^{k−1}n^k ≤ m^k·k!·n^k`). Formalized + axiom-clean
+  (`[propext,Classical.choice,Quot.sound]`, no sorryAx): `/tmp/ConstIndexMomentStructural.lean`,
+  `momentTail_structural_le` + `secondMoment_tail` (built against the in-tree substrate; dep
+  `ConstantIndexGaussSumBound` real-`lake build` green, 3315 jobs).
+
+**(3) FFT verification (n=2^μ, μ≤21, p≤2.3×10⁷, k=2..6, indices m=2..82).** `R_struct:=A_k/(m^{k−1}n^k) ≤ 0.32`
+EVERYWHERE (worst 0.3157); `R_holder:=A_k/(n·M^{2(k−1)}) ≤ 0.73`. `C_k:=(A_k/(k!n^k))^{1/k} ∈ [0,1.8]`, FLAT
+in n at fixed index. Regression `log(M/√n) ~ a·log(log p)` gives `a∈{+0.19,+0.07,−0.09,−0.02,+0.15}` for
+`m∈{2,4,8,16,64}` (mean |a|=0.10 **≪ 0.5**) ⟹ `M/√n` is BOUNDED (Ramanujan-like), NOT BGK-growing `√(log p)`,
+*at fixed constant index*. Probes `probe_407_close_constindex_Ak_fft.py`, `_Ak_decision.py`,
+`_structural_bound.py`.
+
+**(4) DECISIVE caveat — it FOLDS TO BGK exactly at the prize index (why the bound exists is also why it is
+useless for the prize).** The bound's constant is `C(m)=m`, growing LINEARLY in the index. The prize has
+`p≈n·2^128`, so the index is `m=(p−1)/n≈2^128` (NOT constant). There `B=((m−1)√p+1)/m → √p` = the **trivial
+Weil bound**, and `C(m)=m≈2^128` is `~2^60`× larger than the required absolute/sub-Gaussian constant
+(`M≲√(n log p)≈3.4×10⁵` needed vs `√(mn)=√p≈6×10²³` proven). So the structural bound degrades to the open
+BGK/Paley sup-norm wall precisely at the prize 2-power index. The mechanism is fundamental: at constant
+index the Gauss-period IS the average of `m` Gauss sums (`m·η_b=Σ_{j<m}gaussSum(χ^j,ψ_b)`), giving an L^∞
+bound `√m·√n` FOR FREE — a *completion* bound, not a sub-Gaussian cancellation. The free L^∞ bound is `√m·√n`,
+which is `≪√q` only while `m≪n` (constant index); at `m=2^128≫n` it is the trivial `√q`.
+
+**VERDICT (the OPEN ITEM, answered): bounded C at constant index = TRUE and PROVEN (axiom-clean), but FOLDS
+TO BGK at the prize index.** The trivial-mode (j=0) subtraction `A_k=E_k−n^{2k}/p` is already in the
+identity and does not help — the residual `m−1` Gauss-sum modes each contribute `√q`, and only their
+constant count `m` (not any cancellation among them) keeps `C` bounded. So this lane does NOT close the
+prize: it confirms (machine-checked) that the prize's `n=2^μ`, index-`2^128` regime is exactly the regime
+where the constant-index √-cancellation degrades to the trivial Weil/BGK wall. Conf 0.9 (proven Lean bound
++ exact FFT at prize-scale index). No closure claimed; this is a clean machine-checked DELINEATION of where
+the constant-index method dies (the index, not n, is the prize obstruction).
+
 ## LEDGER 2026-06-14 (close-everything workflow, adversarially verified) — synthesis CORRECTED on two points
 
 A batched 12-lane attack→verify workflow ran (existence-semantics, R1, R2, D-height fully; later lanes
