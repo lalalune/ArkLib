@@ -815,6 +815,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.E2DilationDirectCount
 import ArkLib.Data.CodingTheory.ProximityGap.E2SquaringRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishRigidityModP
+import ArkLib.Data.CodingTheory.ProximityGap.E2W4CyclotomicNonCollision
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyCharacterTransport
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction
