@@ -1309,3 +1309,60 @@ per-coset count (like the moment circulant) discards.** Two independent routes (
 per-coset/entropy) now agree: R-thin's `√(nk)` closure is realizability-gated, not moment/per-coset
 reachable. The proven per-coset dichotomy is the reusable structural brick; the open step is the
 single-`c` rank argument. No closure claimed. New file: `Frontier/_PerCosetDichotomy.lean`.
+
+## REFUTATION 2026-06-14 — R1 (monomial extremality) is FALSE; the monomial is the MINIMUM, not the maximum (antipodal-symmetry penalty)
+
+**R1 as stated ("the worst pencil (max #bad) is the MONOMIAL pencil X^a+γX^b; a combination
+adds high-freq terms, over-constraining ⟹ STRICTLY FEWER bad γ") is REFUTED**, robustly,
+**beyond Johnson**, with a clean structural mechanism. Two independent exact methods agree
+(ball/line-incidence `probe_407_close_r1_ball.py` + direct k-subset agreement count
+`probe_407_close_r1_enum.badset_direct`).
+
+**The counterexample (n=16, k=4, beyond-Johnson a=9 > √(nk)=8, cofactor deg m=1).**
+Leading degrees (a*,b*)=(10,8). The pencil is `X^10 + γ X^8` (monomial) vs `X^10 + c·X^9 + γ X^8`.
+Both are GENUINE FAR directions (self-agreement 8 < a=9). Across p=97,193,257,353 the ratio is
+EXACTLY 2.00:
+  · MONOMIAL `(X^10, X^8)`: **#bad = 8**.
+  · GENERAL `(X^10+c X^9, X^8)`: **#bad = 16** (for 64 of the ~177 far values of c; median 15).
+The monomial `s=0` is the UNIQUE worst case — every other far value of the X^9 coefficient gives
+#bad > 8 (`/tmp/R1MECH.py`). So the monomial is the **MINIMUM**, not the maximum.
+
+**Mechanism — the antipodal-symmetry penalty (verified `/tmp/R1ANTIPODAL.py`).** Write the pencil
+as `X^{b*}·q(X)`. For the monomial `X^10+γX^8 = X^8(X^2+γ)`: the cofactor `q=X^2+γ` is EVEN, so
+its roots are a ±-pair `±√(−γ)` ⟹ every bad-γ agreement set `S⊆μ_16` is **antipodal-closed**
+(closed under `z↦−z`, verified). For the general `X^8(X^2+cX+γ)`: `q` is a FULL quadratic, no
+±-symmetry ⟹ agreement sets are **NOT antipodal-closed**, so it realizes the asymmetric configs
+TOO. The monomial's even-cofactor symmetry HALVES its supply (the `#389` antipodal/negation-closure
+excess, now on the bad-scalar count side): monomial 8 = full 16 / 2.
+
+**Exact discriminator = `gcd(a*,b*)` even (`/tmp/R1GAP.py`, n=16,k=4,p=193, deep band a=a*−1):**
+  · `(10,9)` gap 1, gcd 1: mono=16, max=16 — **EXTREMAL**.
+  · `(11,9)` gap 2, gcd 1 (both odd): mono=8, max=8 — **EXTREMAL**.
+  · `(10,8)` gap 2, gcd 2 (both even): mono=8, max=16 — **BEATEN ×2**.
+So monomial extremality holds iff `gcd(a*,b*)` is odd (no antipodal/coset symmetry forced on the
+cofactor); it FAILS when `a*,b*` share an even common factor — which is **exactly the Kambiré
+exponents** `a*=rm, b*=(r−1)m` with `m` even (the 2-power/dyadic prize case `n=2^μ`, m=2^j).
+
+**Within-Johnson (a<√(nk)) the monomial is ALSO beaten** (different mechanism: thick ball; e.g.
+`(7,5)` a=6 mono=64 beaten to 67 by an `X^4=X^k` perturbation). So R1 fails on both sides of
+Johnson; the beyond-Johnson even-gcd failure is the structurally clean and prize-relevant one.
+
+**CONSEQUENCE for the floor / Kambiré.** The naive "both-monomial pencil" UNDER-counts the bad
+scalars by the antipodal factor; it is NOT the extremal construction. The directive's R1 intuition
+("minimal high-support 2 terms ⟹ most γ") is exactly BACKWARDS: minimal support = maximal
+symmetry = FEWEST γ. **What this does NOT do: it does not lower δ\*** — the TRUE max (general
+non-symmetric cofactor `X^{b*}(X^{a*−b*}+…+γ)`, here #bad=16) is the larger count, so the floor's
+"#bad = N₀" target is realized by the GENERAL construction, not the monomial. The honest upshot:
+  (a) R1 (monomial = worst case) is FALSE → the floor's worst-case bound must range over ALL far
+      pencils of given degrees, not just monomials. The good news is the max is still an explicit
+      structured pencil (general cofactor), and #bad there is the full subgroup-coset-sumset count.
+  (b) The line-list / floor UPPER bound `#bad ≤ N₀` must therefore be proven for the general
+      cofactor pencil (the actual maximiser), not reduced to monomials. The "sparsity-maximizes-
+      factorization-count" reduction is INVALID.
+  (c) This re-opens the optimality residual: coset-saturation (#bad = sumset) must be shown for the
+      maximiser directly. Factorization rigidity still applies (the maximiser `X^{b*}·q(X)` mod
+      deg<k is still constrained), but the clean "reduce to monomial" step is gone.
+
+Probes (all reproducible, exact): `scripts/probes/probe_407_close_r1_{lineball,enum,ball}.py`,
+`/tmp/R1{CHECK108,MECH,ANTIPODAL,GAP}.py`. Refutation conf 0.9 (two exact methods, 4 primes,
+ratio exactly 2.00, mechanism pinned to antipodal-closure of agreement sets).
