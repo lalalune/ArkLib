@@ -89,3 +89,32 @@ NOT yet proven. So this is a strong REDUCTION of the optimality (the open core /
 to three combinatorial lemmas — escaping the char-p incomplete-Gauss-sum / Weil wall entirely — NOT a
 full closure. Feasibility 6→8.5. Next: prove (2) coset-saturation (Johnson-type bound on non-coset
 agreement) — the linchpin; then (3),(4). Refutation attempts (R1, optimality-gap) all SURVIVED.
+
+## UPDATE — COSET-SATURATION proof skeleton: the MDS twist dichotomy (key identity verified)
+
+Coset-saturation survives n=32 (4/4 stacks incl. 382-set dense `(X^25,X^9)`, all coset-unions —
+`/tmp/coset_sat_n32.py`). The PROOF skeleton (verified `/tmp/saturation_proof.py`, 636 pairs):
+
+**Key identity.** For a monomial line `w_γ=X^a+γX^b`, `d=gcd(a−b,n)`, `ω∈μ_d`, and a codeword `c`
+(deg<k) with agreement set `S={x: c(x)=w_γ(x)}`: since `d∣a−b` ⟹ `ω^a=ω^b`,
+  for `x∈S`:  `ωx ∈ S  ⟺  c(x) = c_ω(x)`,  where `c_ω(x) := ω^{−a} c(ωx)` is **another codeword** (deg<k).
+
+**The dichotomy (pure MDS).** Let `H = {ω∈μ_d : c = c_ω}` — a SUBGROUP of `μ_d` (the equivariance
+group of `c`). For `ω∈H`: `c=c_ω` ⟹ `ωx∈S` for every `x∈S` ⟹ **S is H-invariant = a union of
+μ_{|H|}-cosets**. For `ω∉H`: `c≠c_ω` are two distinct deg<k codewords ⟹ they agree on `≤ k−1`
+points ⟹ `#{x∈S : ωx∈S} ≤ k−1`. So:
+  · `H = μ_d`  (c is μ_d-equivariant, i.e. `c` supported on `j≡a (mod d)`)  ⟹  **S = full μ_d-coset-union**.
+  · `H ⊊ μ_d`  ⟹  the `ω∈μ_d∖H` pin S into a "thin" configuration: `∑_{orbits O}|S∩O|(|S∩O|−1) ≤
+    (d−|H|)(k−1)`, bounding how far S departs from `μ_{|H|}`-coset structure.
+
+**Status of (2):** the key identity + `c_ω∈code` + the subgroup/dichotomy structure are PROVEN/verified
+and clean (pure MDS, Lean-formalizable). Remaining gap: sharpen the Case-`H⊊μ_d` thin bound to show
+`|S| ≤ Johnson` (the loose `n/d+(d−|H|)(k−1)/2` is not yet ≤√ρ·n for large d — the global single-`c`
+consistency across orbits must tighten it). This is the one analytic step between "verified" and
+"proven" for coset-saturation. It is MONOMIAL-SPECIFIC (escapes the general beyond-Johnson open core
+via R1's reduction to monomials) and reduces to the MDS distance of `c` vs its `μ_d`-twists `c_ω`.
+
+**Conjecture optimality scorecard:** (1) factorization rigidity — PROVEN-in-Lean. (2) coset-saturation
+— MDS-dichotomy skeleton proven, one thin-bound step open. (3) R1 monomial extremality — verified. (4)
+R2 Kambiré sumset-max — Kambiré optimization. The δ\* open core (line-list upper bound) is reduced to
+ONE sharp counting bound on `c`-vs-twist agreement — combinatorial, char-p-free. Feasibility 8.5.
