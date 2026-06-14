@@ -810,6 +810,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.E2SquaringRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
+import ArkLib.Data.CodingTheory.ProximityGap.EnergyCharacterTransport
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessStructure
@@ -880,6 +881,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicLatticeWrapOnset
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicDeviationDecayEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChaining
@@ -887,6 +889,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChainingSubmax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2NegationStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2VanishWidthFourLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEscape
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RungListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
