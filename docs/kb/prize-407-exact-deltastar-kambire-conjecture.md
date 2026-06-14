@@ -688,3 +688,34 @@ composite modulus). PROVEN n=8,16; verified n=32,64. This is a *complete map* of
 not a missing computation, but a genuine open problem requiring new arithmetic in a literature-confirmed gap.
 The one untried plausible attack is redirecting the Hanson–Petridis/Kalmynin Stepanov machinery at
 power-sum-constrained antipodal-free subsets — a research program, not an off-the-shelf citation.
+
+## HONEST REFINEMENT — heuristic is clean (spurious⟹saturated), but the RIGOROUS general-r count IS BGK
+
+Scan (`/tmp/scan6.py`): 141 NON-saturated primes p≡1 mod 32 in (577, 20000), ZERO fully-partial size-6
+spurious configs. So at non-saturated primes every gap-valid config is a coset-union ⟹ `e₂∈Σ_3` trivially.
+The p=97 spurious were at a SATURATED prime (`|Σ_3|=96≈p`), so uninformative.
+
+**Counting heuristic (explains it, NOT rigorous).** #{gap-valid size-2r configs} ≈ `C(n,2r)/p²` (two
+conditions e₁=e₃=0); #{coset configs} ≈ `C(n/2,r)`. Spurious exist iff `C(n,2r)/p² > C(n/2,r)`, i.e.
+`p ≲ n^{r/2}`. Saturation bound `p ≲ |Σ_r| ≈ n^r/(2^r r!)`. For large n, `n^{r/2} < n^r/(2^r r!)`, so
+**spurious ⟹ p below saturation ⟹ none in the non-saturated prize regime** (`p=n^β`, β≥4 ≫ r/2). This
+matches all data and gives `e₂∈Σ_r` ⟹ δ*=window edge.
+
+**But the rigorous version re-hits BGK — honest correction of last round's "not BGK".** Making the count
+rigorous needs the error term: #configs `= (1/p²)∑_{a,b} S(a,b)^{2r}`, `S(a,b)=∑_{x∈μ_n}e_p(ax+bx³)` an
+incomplete cubic exponential sum over the subgroup `μ_n`. To show the non-coset (spurious) count is 0 in
+the non-saturated regime needs a nontrivial bound `|S(a,b)| < n`. Weil gives `|S|≤3√p`, which is TRIVIAL
+(worse than `n`) precisely when `p > n²` — and the prize has `p=n^β ≫ n²`. So the rigorous bound is the
+incomplete-sum / BGK regime, OPEN for prize parameters. My last-round "feasibility 6, finite algebra not
+BGK" was correct for the HEURISTIC and for r=2, but the RIGOROUS general-r proof reduces to the same
+small-subgroup character-sum wall.
+
+**Accurate final standing.** δ* = `1−ρ−2ρ ln(1/2ρ)/log₂(qε*)`. PROVEN: upper bracket; ℂ optimality;
+**r=2 `F_p` case (even-polynomial, rigorous, char-p-free)**. Heuristically clear for all r (spurious⟹
+saturated, verified 141 non-sat primes). The rigorous general-r proof = nontrivial bound on
+`∑_{x∈μ_n}e_p(ax+bx³)` for `p≫n²` = BGK/incomplete-sum, open. So: the optimality is RIGOROUSLY proven at
+r=2 and heuristically/empirically certain for all r, but the worst-case rigorous proof for general r is
+gated on the recognized incomplete-exponential-sum bound. NOT a full closure; I will not claim otherwise.
+The genuine net gain this session: the EVEN-POLYNOMIAL proof of the minimal case and the
+spurious⟹saturated counting structure — which localize and explain the wall, even though they don't
+remove it for general r.
