@@ -400,3 +400,21 @@ open-problems list. There is no known-math closure. A prize solution "reducing t
 supply a NEW sub-`√p` thin-subgroup character-sum / Paley bound that the 2026 open-problems list says
 does not yet exist. (The "Paley graph conjecture on double character sums implies many character-sum
 estimates" — it is the governing open conjecture, not a side lemma.)
+
+## δ* — the "does smoothness beat BGK?" check (2026-06-14, NO-LEVER confirmed)
+
+Tested whether the prize subgroup's 2-power/smooth order gives better-than-generic-BGK
+cancellation for the sup bound. **Answer: NO** (size-governed, not smoothness-governed). 3 papers
+on disk `~/papers/arklib/`.
+
+| # | paper | id | finding |
+|---|---|---|---|
+| SC1 | Bourgain–Chang, **Bounds on exponential sums over small multiplicative subgroups** | arXiv **0705.4573** | Thm 1.1: `\|H\|>p^α ⟹ \|Σ_{x∈H}e_p(x)\| < \|H\|·p^{−β(α)}`, `β=β(α)` via sum-product. The saving depends ONLY on the SIZE ratio `α=log\|H\|/log p` — **no smoothness/factorization dependence**. So the prize's 2-power order does NOT improve the analytic sup exponent; smoothness only feeds the moment/energy side (which caps at the Betti wall). Confirms the sup bound is the genuine size-governed BGK wall. |
+| SC2 | **A supercharacter approach to Heilbronn sums** | arXiv **1312.1034** | Supercharacter/Gaussian-period toolset (Duke–Garcia–Lutz lineage) for subgroup sums; the structural (not exponent-improving) lens on `μ_n` periods. |
+| SC3 | **Supercharacters, exponential sums, and the uncertainty principle** | arXiv **1208.5271** | Supercharacter uncertainty principle = the NVM/compressed-Fourier face (ties to 2310.09992 / R3 NVM). |
+
+**Honest finding:** the analytic sup bound `M ≤ C√(n log m)` is the BGK size-wall, NOT improvable by
+the 2-power smoothness. The smoothness is genuinely useful ONLY on the char-0 moment scaffold
+(Lam–Leung antipodal, `E_r ≤ (2r−1)‼·n^r`), which provably caps at the Betti depth `r=2` and cannot
+reach the sup. So the two faces are decoupled: smoothness helps the (capped) moment side, the sup
+side is size-governed and open. No smoothness lever exists for the prize.
