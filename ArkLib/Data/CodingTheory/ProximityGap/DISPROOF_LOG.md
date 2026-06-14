@@ -8688,3 +8688,28 @@ face is OPEN at prize scale. Clean by-product (kept): **rep-bound P_max = energy
 intersection obstruction `p|Res(x^n−1,(c−x)^n−1)` is the same cyclotomic-norm divisibility as the
 4-term additive-energy coincidence). Probe: `scripts/probes/probe_gv_repbound_pmax.py`.
 Lesson re-confirmed: sweep to the EXACT P_max (cyclotomic norm), not a truncated prime range.
+
+## (#407) The clean 2-adic descent `M(n) ≤ √2·M(n/2)` (fleet 00:16 reframing) — REFUTED as a uniform inequality
+`M(n)=max_b|S_b(μ_n)|`, the L^∞ sup-norm. The fleet reframed the open core as the descent
+`M(n)≤√2·M(n/2)` (telescopes to √n). Measured ratio `M(n)/M(n/2)` over a fixed prime, FFT-exact:
+n=8,16,32 → 1.99,1.88,1.51 (VIOLATE, boundary); n=64..1024 → 1.36,1.44,1.45,1.31,1.31. The ratio
+oscillates AROUND √2≈1.414 and EXCEEDS it at n=128 (1.4374) and n=256 (1.4496). So the CLEAN uniform
+`≤√2` descent is FALSE — the per-step cancellation has upward fluctuations and does not telescope to a
+clean √n bound. The descent holds only in GEOMETRIC-MEAN / asymptotic sense (consistent with M~√(n log p),
+ratio→√2). The open gap is exactly whether the descent-fluctuations (the transfer-cocycle Lyapunov
+exponent, cf `probe_dyadic_cocycle_recursion.py`) average to ≤(1/2)log2 with no worst-case upward bias —
+the same moment-vs-max / sqrt-cancellation core, NOT closed by the descent reframing.
+Probe: `scripts/probes/probe_descent_inequality.py`.
+
+## (#407) Sharpening: the descent open core = a phase-alignment large-deviation, NOT a uniform descent
+Following the refutation of the clean `M(n)≤√2 M(n/2)` descent (above): at the worst b, `S_b(μ_n)=A+B`,
+`A=η_b(μ_{n/2})`, `B=η_{bζ}(μ_{n/2})` (fleet `GaussPeriodTower.lean`). The per-level ratio
+`r=|A+B|/max(|A|,|B|) ∈ [√2, 2]`: `=√2` iff `A⊥B`, `=2` iff phase-ALIGNED (`cos=1`). So
+`M(n)=∏_{j=1}^{k} r_j` and (since measured `M(n)~√(n log p)`) `Σ_j log(r_j/√2) ≈ ½ log log p` — MOST
+levels are ≈√2 with small upward fluctuations. **The open core is therefore a WORST-CASE-PATH
+(large-deviation) bound on the phase-alignment cocycle**, NOT a uniform per-step inequality: δ* closes
+iff no frequency b has a persistently-aligned path down the 2-adic tower (which would give M(n)~n).
+Empirically M~√(n log p)≪n ⟹ no fully-aligned path exists (prize morally true), but PROVING the
+worst-path accumulation ≤ √(log p) is the recognized-open sup-norm/Lyapunov large-deviation problem.
+This bounds what `GaussPeriodTower` (exact recursion) can yield: the recursion is exact, the closure
+needs the cocycle large-deviation, which is the open analytic input. Probe: `probe_descent_inequality.py`.

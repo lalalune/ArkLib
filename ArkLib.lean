@@ -136,6 +136,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25Opening
 import ArkLib.Data.CodingTheory.GMMDS.LovettMeetReplace
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeBranch
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeIdentity
+import ArkLib.Data.CodingTheory.GMMDS.LovettMergeIndepProof
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeMeet
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReindex
@@ -846,6 +847,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChaining
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RungListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
@@ -891,6 +893,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GWFoldedDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBound
+import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodTower
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralGapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralKMultiplicity
