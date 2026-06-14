@@ -97,7 +97,8 @@ noncomputable def houseVec (ω : F) (G : Fin m → F) (j : Fin m) : F :=
 (taken in `Fin m`, i.e. mod `m`). In particular the `1×1` minors of the CFT matrix are exactly the
 house values `T_j`. -/
 theorem cftMat_apply (ω : F) (G : Fin m → F) (a b : Fin m) :
-    cftMat ω G a b = (m : F)⁻¹ * ∑ i : Fin m, ω ^ ((a : ℕ) * (i : ℕ) + (i : ℕ) * (b : ℕ)) * G i := by
+    cftMat ω G a b
+      = (m : F)⁻¹ * ∑ i : Fin m, ω ^ ((a : ℕ) * (i : ℕ) + (i : ℕ) * (b : ℕ)) * G i := by
   -- `(F · diag G · Fᵀ)_{a,b} = ∑_i ω^{a i} G_i ω^{b i}`, then pull out the `m⁻¹` scalar.
   have hentry : (fourierMat ω m * Matrix.diagonal G * (fourierMat ω m)ᵀ) a b
       = ∑ i : Fin m, ω ^ ((a : ℕ) * (i : ℕ) + (i : ℕ) * (b : ℕ)) * G i := by
@@ -166,8 +167,8 @@ The `k=1` (house) and `k=m` (full determinant) minors are tractable (§1–§2).
 is genuinely controlled by the **intermediate** minors, the smallest of which (worst at `k≈m/2`)
 are signed sums that *can* cancel even though every individual term is nonzero. The `2×2` case
 exhibits this explicitly: a minor is a sum over **pairs** `{i,j}` of products of `2×2` generalized
-Vandermonde determinants `V_{I,{i,j}}` (each nonzero by `genVandermonde_rootsOfUnity_det_ne_zero_iff`)
-with the Gauss-sum product `G_i G_j`. The vanishing of this signed pair-sum is the open phenomenon
+Vandermonde determinants `V_{I,{i,j}}` (each nonzero by the gen-Vandermonde criterion) with the
+Gauss-sum product `G_i G_j`. The vanishing of this signed pair-sum is the open phenomenon
 (and at power-of-2 index, the FFT-butterfly resonance — see the file header). -/
 
 /-- The `2×2` generalized Vandermonde determinant at roots of unity, for rows `a, a'` (points
@@ -177,7 +178,8 @@ def vand2 (ω : F) (a a' i j : ℕ) : F := ω ^ (a * i + a' * j) - ω ^ (a * j +
 
 /-- **The `2×2` minor is a Cauchy–Binet double sum in the Gauss sums.** For rows `{a,a'}` and
 columns `{b,b'}`, the `2×2` minor `M_{a,b}M_{a',b'} − M_{a,b'}M_{a',b}` of `cftMat` equals `(m⁻¹)²`
-times the double sum over `(i,j)` of `(ω^{a i + i b}·ω^{a' j + j b'} − ω^{a i + i b'}·ω^{a' j + j b})·G_i G_j`.
+times the double sum over `(i,j)` of
+`(ω^{a i + i b}·ω^{a' j + j b'} − ω^{a i + i b'}·ω^{a' j + j b})·G_i G_j`.
 
 This is the exact algebraic structure behind the open intermediate-minor NVM conditions: it is a
 **signed sum** of `G_i G_j`-weighted root-of-unity terms. Pairing `(i,j) ↔ (j,i)` collapses the
