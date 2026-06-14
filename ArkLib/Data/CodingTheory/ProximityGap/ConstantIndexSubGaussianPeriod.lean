@@ -197,6 +197,41 @@ def CenteredDeepMomentBound (ψ : AddChar F ℂ) (G : Finset F) (r : ℕ) (K : �
   nontrivialPeriodMoment ψ G r
     ≤ (Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r
 
+/--
+A worst-case period bound gives the centered deep-moment residual after summing over nonzero
+frequencies and checking the explicit scale inequality.
+
+This is the reverse deterministic bridge to `worstCaseIncompleteSumBound_of_centeredDeepMomentBound`:
+the L∞ residual and the centered-moment residual differ only by the stated counting/scale
+normalization.  No analytic input is hidden here.
+-/
+theorem centeredDeepMomentBound_of_worstCase
+    {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K M : ℝ}
+    (hM0 : 0 ≤ M) (h : WorstCaseIncompleteSumBound ψ G M)
+    (hscale :
+      (Fintype.card F : ℝ) * M ^ r
+        ≤ (Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r) :
+    CenteredDeepMomentBound ψ G r K := by
+  classical
+  unfold CenteredDeepMomentBound nontrivialPeriodMoment
+  set s : Finset F := Finset.univ.filter fun b : F => b ≠ 0
+  have hsum_le : ∑ b ∈ s, ‖eta ψ G b‖ ^ (2 * r) ≤ ∑ _b ∈ s, M ^ r := by
+    refine Finset.sum_le_sum ?_
+    intro b hb
+    have hb_ne : b ≠ 0 := by
+      simpa [s] using hb
+    calc ‖eta ψ G b‖ ^ (2 * r)
+        = (‖eta ψ G b‖ ^ 2) ^ r := by rw [pow_mul]
+      _ ≤ M ^ r := pow_le_pow_left₀ (sq_nonneg _) (h b hb_ne) r
+  calc ∑ b ∈ s, ‖eta ψ G b‖ ^ (2 * r)
+      ≤ ∑ _b ∈ s, M ^ r := hsum_le
+    _ = (s.card : ℝ) * M ^ r := by simp
+    _ ≤ (Fintype.card F : ℝ) * M ^ r := by
+        have hcard : (s.card : ℝ) ≤ (Fintype.card F : ℝ) := by
+          exact_mod_cast Finset.card_le_univ (s := s)
+        exact mul_le_mul_of_nonneg_right hcard (pow_nonneg hM0 r)
+    _ ≤ (Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r := hscale
+
 /-- A centered deep-moment bound controls every nonzero period at the same `2r`-th power. -/
 theorem period_pow_le_of_centeredDeepMomentBound
     {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K : ℝ} {b : F}
@@ -242,6 +277,107 @@ theorem worstCaseIncompleteSumBound_of_centeredDeepMomentBound
     _ ≤ X ^ ((r : ℝ)⁻¹) := Real.rpow_le_rpow (by positivity) hpow (by positivity)
 
 /--
+Centered deep moments imply the named sub-Gaussian period conjecture once their root scale is below
+the conjectural `2 |G| log m` variance proxy.
+
+This keeps the #407 formulations synchronized: the deep centered-moment residual is the stronger
+input, and the explicit scale inequality is the only arithmetic optimization needed to recover the
+constant-index period statement.
+-/
+theorem subGaussian_of_centeredDeepMomentBound
+    {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K : ℝ} {m : ℕ}
+    (hr : 1 ≤ r) (hK : 0 ≤ K) (h : CenteredDeepMomentBound ψ G r K)
+    (hscale :
+      (((Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r)
+          ^ ((r : ℝ)⁻¹))
+        ≤ 2 * (G.card : ℝ) * Real.log (m : ℝ)) :
+    ConstantIndexSubGaussianPeriodBound ψ G m := by
+  intro b hb
+  have hwc := worstCaseIncompleteSumBound_of_centeredDeepMomentBound
+    (ψ := ψ) (G := G) (r := r) (K := K) hr hK h
+  have hsq :
+      ‖eta ψ G b‖ ^ 2 ≤ 2 * (G.card : ℝ) * Real.log (m : ℝ) :=
+    (hwc b hb).trans hscale
+  have htarget_nonneg : 0 ≤ 2 * (G.card : ℝ) * Real.log (m : ℝ) :=
+    (sq_nonneg ‖eta ψ G b‖).trans hsq
+  have hsqrt_sq :
+      (Real.sqrt (2 * (G.card : ℝ) * Real.log (m : ℝ))) ^ 2 =
+        2 * (G.card : ℝ) * Real.log (m : ℝ) :=
+    Real.sq_sqrt htarget_nonneg
+  have heta_nonneg : 0 ≤ ‖eta ψ G b‖ := norm_nonneg _
+  have hsqrt_nonneg : 0 ≤ Real.sqrt (2 * (G.card : ℝ) * Real.log (m : ℝ)) :=
+    Real.sqrt_nonneg _
+  nlinarith [sq_nonneg (‖eta ψ G b‖ - Real.sqrt (2 * (G.card : ℝ) * Real.log (m : ℝ)))]
+
+/--
+The named sub-Gaussian conjecture also controls the centered moment family.
+
+This closes the formal comparison in the opposite direction: if every nonzero period has squared
+size at most `2 |G| log m`, then summing over all nonzero frequencies gives a centered moment bound
+with `K = 2 log m` (and the extra `r!` factor only weakens the target).
+-/
+theorem centeredDeepMomentBound_of_subGaussian
+    {ψ : AddChar F ℂ} {G : Finset F} {r m : ℕ}
+    (hm : 1 ≤ m) (h : ConstantIndexSubGaussianPeriodBound ψ G m) :
+    CenteredDeepMomentBound ψ G r (2 * Real.log (m : ℝ)) := by
+  classical
+  have hmR : (1 : ℝ) ≤ (m : ℝ) := by exact_mod_cast hm
+  have hlog : 0 ≤ Real.log (m : ℝ) := Real.log_nonneg hmR
+  have hscale_nonneg : 0 ≤ 2 * (G.card : ℝ) * Real.log (m : ℝ) := by positivity
+  have hterm :
+      ∀ b ∈ (Finset.univ.filter fun b : F => b ≠ 0),
+        ‖eta ψ G b‖ ^ (2 * r)
+          ≤ ((2 * Real.log (m : ℝ)) ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r) := by
+    intro b hb
+    have hbne : b ≠ 0 := by simpa using (Finset.mem_filter.mp hb).2
+    have hb_le := h b hbne
+    have heta_nonneg : 0 ≤ ‖eta ψ G b‖ := norm_nonneg _
+    have hsq : ‖eta ψ G b‖ ^ 2 ≤ 2 * (G.card : ℝ) * Real.log (m : ℝ) := by
+      calc ‖eta ψ G b‖ ^ 2
+          ≤ (Real.sqrt (2 * (G.card : ℝ) * Real.log (m : ℝ))) ^ 2 := by
+            apply pow_le_pow_left₀ heta_nonneg hb_le
+        _ = 2 * (G.card : ℝ) * Real.log (m : ℝ) := Real.sq_sqrt hscale_nonneg
+    have hpow : (‖eta ψ G b‖ ^ 2) ^ r
+        ≤ (2 * (G.card : ℝ) * Real.log (m : ℝ)) ^ r :=
+      pow_le_pow_left₀ (sq_nonneg _) hsq r
+    have hfact : (1 : ℝ) ≤ (r.factorial : ℝ) := by
+      exact_mod_cast Nat.succ_le_iff.mp (Nat.factorial_pos r)
+    calc ‖eta ψ G b‖ ^ (2 * r)
+        = (‖eta ψ G b‖ ^ 2) ^ r := by rw [pow_mul]
+      _ ≤ (2 * (G.card : ℝ) * Real.log (m : ℝ)) ^ r := hpow
+      _ = (2 * Real.log (m : ℝ)) ^ r * (G.card : ℝ) ^ r := by ring
+      _ ≤ (2 * Real.log (m : ℝ)) ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r := by
+        have hleft_nonneg : 0 ≤ (2 * Real.log (m : ℝ)) ^ r := by positivity
+        have hcard_nonneg : 0 ≤ (G.card : ℝ) ^ r := by positivity
+        calc
+          (2 * Real.log (m : ℝ)) ^ r * (G.card : ℝ) ^ r
+              = (2 * Real.log (m : ℝ)) ^ r * 1 * (G.card : ℝ) ^ r := by ring
+          _ ≤ (2 * Real.log (m : ℝ)) ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r := by
+            exact mul_le_mul_of_nonneg_right
+              (mul_le_mul_of_nonneg_left hfact hleft_nonneg) hcard_nonneg
+  unfold CenteredDeepMomentBound nontrivialPeriodMoment
+  calc
+    ∑ b ∈ (Finset.univ.filter fun b : F => b ≠ 0), ‖eta ψ G b‖ ^ (2 * r)
+        ≤ ∑ b ∈ (Finset.univ.filter fun b : F => b ≠ 0),
+            ((2 * Real.log (m : ℝ)) ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r) :=
+          Finset.sum_le_sum hterm
+    _ = ((Finset.univ.filter fun b : F => b ≠ 0).card : ℝ)
+        * ((2 * Real.log (m : ℝ)) ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r) := by
+          rw [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ (Fintype.card F : ℝ)
+        * ((2 * Real.log (m : ℝ)) ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r) := by
+          have hcard : ((Finset.univ.filter fun b : F => b ≠ 0).card : ℝ)
+              ≤ (Fintype.card F : ℝ) := by
+            exact_mod_cast Finset.card_le_card (Finset.filter_subset _ _)
+          have hconst_nonneg :
+              0 ≤ (2 * Real.log (m : ℝ)) ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r := by
+            positivity
+          exact mul_le_mul_of_nonneg_right hcard hconst_nonneg
+    _ = (Fintype.card F : ℝ)
+        * (2 * Real.log (m : ℝ)) ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r := by
+          ring
+
+/--
 Centered deep moments give the downstream additive-energy budget.
 
 This composes `worstCaseIncompleteSumBound_of_centeredDeepMomentBound` with the existing
@@ -267,6 +403,57 @@ theorem addEnergy_le_of_centeredDeepMomentBound
   exact addEnergy_le_of_worstCase hψ G hMnonneg
     (worstCaseIncompleteSumBound_of_centeredDeepMomentBound hr hK h)
 
+/--
+Centered deep moments give the deployed-regime additive-energy budget.
+
+When the field is large enough for `q ≥ |G|²`, the principal `|G|⁴/q` term collapses and the
+centered residual contributes only the root-scale multiplier times `|G|`.
+-/
+theorem addEnergy_div_le_of_centeredDeepMomentBound
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) {G : Finset F} {r : ℕ} {K : ℝ}
+    (hr : 1 ≤ r) (hK : 0 ≤ K) (h : CenteredDeepMomentBound ψ G r K)
+    (hq : (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) (hqpos : 0 < Fintype.card F) :
+    (ArkLib.ProximityGap.SubgroupGaussSumFourthMoment.addEnergy G : ℝ)
+      ≤ (G.card : ℝ) ^ 2
+        + (((Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r)
+            ^ ((r : ℝ)⁻¹))
+          * (G.card : ℝ) := by
+  set M : ℝ :=
+    ((Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r)
+      ^ ((r : ℝ)⁻¹)
+    with hM
+  have hMnonneg : 0 ≤ M := by
+    rw [hM]
+    exact Real.rpow_nonneg (by positivity) _
+  exact addEnergy_le_div hψ G hMnonneg
+    (worstCaseIncompleteSumBound_of_centeredDeepMomentBound hr hK h) hq hqpos
+
+/--
+Centered deep moments at the sub-Gaussian root scale give the same deployed energy budget as the
+named constant-index period conjecture.
+
+This is the direct #407 consumer: the centered deep-moment route reaches the `O(|G|² log m)` energy
+ledger as soon as its optimized root scale is at most `2 |G| log m`.
+-/
+theorem addEnergy_div_le_of_centeredDeepMomentBound_subGaussianScale
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) {G : Finset F} {r : ℕ} {K : ℝ} {m : ℕ}
+    (hr : 1 ≤ r) (hK : 0 ≤ K) (h : CenteredDeepMomentBound ψ G r K)
+    (hscale :
+      (((Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r)
+          ^ ((r : ℝ)⁻¹))
+        ≤ 2 * (G.card : ℝ) * Real.log (m : ℝ))
+    (hq : (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) (hqpos : 0 < Fintype.card F) :
+    (ArkLib.ProximityGap.SubgroupGaussSumFourthMoment.addEnergy G : ℝ)
+      ≤ (G.card : ℝ) ^ 2
+        + (2 * (G.card : ℝ) * Real.log (m : ℝ)) * (G.card : ℝ) := by
+  have hbase := addEnergy_div_le_of_centeredDeepMomentBound hψ hr hK h hq hqpos
+  have htail :
+      (((Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r)
+          ^ ((r : ℝ)⁻¹)) * (G.card : ℝ)
+        ≤ (2 * (G.card : ℝ) * Real.log (m : ℝ)) * (G.card : ℝ) :=
+    mul_le_mul_of_nonneg_right hscale (by positivity)
+  exact hbase.trans (add_le_add (le_refl ((G.card : ℝ) ^ 2)) htail)
+
 /-- A single nonzero period above the centered-moment budget refutes that deep-moment residual. -/
 theorem not_centeredDeepMomentBound_of_period_pow_gt
     {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K : ℝ} {b : F}
@@ -277,6 +464,24 @@ theorem not_centeredDeepMomentBound_of_period_pow_gt
     ¬ CenteredDeepMomentBound ψ G r K := by
   intro h
   exact not_lt_of_ge (period_pow_le_of_centeredDeepMomentBound hb h) hbad
+
+/--
+Root-scale falsification hook for the centered residual.
+
+This is the probe-facing form: if a measured nonzero period has squared norm above the
+`r`-th-root scale certified by `CenteredDeepMomentBound`, then the centered residual is false.
+-/
+theorem not_centeredDeepMomentBound_of_period_sq_gt_rootScale
+    {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K : ℝ} {b : F}
+    (hr : 1 ≤ r) (hK : 0 ≤ K) (hb : b ≠ 0)
+    (hbad :
+      (((Fintype.card F : ℝ) * K ^ r * (r.factorial : ℝ) * (G.card : ℝ) ^ r)
+          ^ ((r : ℝ)⁻¹)) < ‖eta ψ G b‖ ^ 2) :
+    ¬ CenteredDeepMomentBound ψ G r K := by
+  intro h
+  have hwc := worstCaseIncompleteSumBound_of_centeredDeepMomentBound
+    (ψ := ψ) (G := G) (r := r) (K := K) hr hK h
+  exact not_lt_of_ge (hwc b hb) hbad
 
 /-! ## Refutation hook -/
 
@@ -297,10 +502,16 @@ namespace ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod
 #print axioms addEnergy_le_of_subGaussian
 #print axioms addEnergy_div_le_of_subGaussian
 #print axioms worstCaseIncompleteSumBound_of_energyAnchor
+#print axioms centeredDeepMomentBound_of_worstCase
 #print axioms period_pow_le_of_centeredDeepMomentBound
 #print axioms worstCaseIncompleteSumBound_of_centeredDeepMomentBound
+#print axioms subGaussian_of_centeredDeepMomentBound
+#print axioms centeredDeepMomentBound_of_subGaussian
 #print axioms addEnergy_le_of_centeredDeepMomentBound
+#print axioms addEnergy_div_le_of_centeredDeepMomentBound
+#print axioms addEnergy_div_le_of_centeredDeepMomentBound_subGaussianScale
 #print axioms not_centeredDeepMomentBound_of_period_pow_gt
+#print axioms not_centeredDeepMomentBound_of_period_sq_gt_rootScale
 #print axioms not_subGaussian_of_period_gt
 
 end ArkLib.ProximityGap.ConstantIndexSubGaussianPeriod
