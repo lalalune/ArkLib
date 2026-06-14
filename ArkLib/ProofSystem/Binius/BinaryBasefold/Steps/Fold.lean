@@ -366,17 +366,18 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
     rcases h_trace_support with ⟨prvOut_eq, h_verOut_mem_support⟩
     -- Step 2c: Simplify the verifier computation
     conv at h_verOut_mem_support =>
-      erw [simulateQ_bind]
-      rw [simulateQ_pure]
-      erw [_root_.bind_pure_simulateQ_comp]
+      -- same clean all-OptionT verifier-run reduction as GOAL 1.
+      erw [OptionT.simulateQ_bind]
+      erw [OptionT.simulateQ_simOracle2_liftM_query_T2]
+      erw [OptionT.bind_pure_simulateQ_comp]
       simp only [Matrix.cons_val_zero, guard_eq]
       erw [simulateQ_bind]
       simp only [show OptionT.pure (m := (OracleComp ([]ₒ + ([OracleStatement 𝔽q β ϑ i.castSucc]ₒ +
         [pSpecFold.Message]ₒ)))) = pure by rfl]
-      rw [simulateQ_ite]
+      erw [OptionT.simulateQ_ite]
       simp only [Fin.isValue, Message, Matrix.cons_val_zero, id_eq, MessageIdx, support_ite,
-        toPFunctor_emptySpec, Function.comp_apply, simulateQ_pure, Set.mem_iUnion,
-        exists_prop]
+        toPFunctor_emptySpec, Function.comp_apply, simulateQ_pure, OptionT.simulateQ_pure,
+        OptionT.simulateQ_failure, Set.mem_iUnion, exists_prop]
       simp only [OptionT.simulateQ_failure]
       erw [_root_.simulateQ_pure]
     set V_check := step.verifierCheck stmtIn
