@@ -1549,3 +1549,29 @@ STANDS. (c) existence-semantics — CORRECTLY understood now as NOT a closure (p
 closure; the BGK wall is the genuine open core, unmoved. The pigeonhole/count lane is BGK-free but pins only
 the already-proven fixed-field surface. Session takeaway: a promising-looking closure, correctly demolished
 by adversarial verification + reading the in-tree quantifiers.
+
+## UPDATE 2026-06-14 (BGK work) — the moment NoGo bounds the WRONG quantity; DC-subtracted A_r ≤ Wick = the prize (= BGK), holds empirically
+
+Working the genuine open target (uniform-q sup-norm `M(n)=max_{b≠0}|Σ_{x∈μ_n}e_p(bx)| ≤ C√(n log p)`).
+Clarified the moment route:
+
+**`_MomentMethodNoGo` bounds the wrong object.** It proves `n^{2r} ≤ p·E_r` (Cauchy–Schwarz), where
+`E_r = (1/p)Σ_b|η_b|^{2r}` is the FULL energy INCLUDING the `b=0` DC term `|η_0|^{2r}=n^{2r}`. So
+`p·E_r ≥ n^{2r}` is just the DC term — a LOWER bound that says NOTHING about the sup-norm. The sup-norm uses
+`M^{2r} = max_{b≠0}|η_b|^{2r} ≤ Σ_{b≠0}|η_b|^{2r} = p·A_r`, with the **DC-SUBTRACTED** energy
+`A_r := (1/p)Σ_{b≠0}|η_b|^{2r} = E_r − n^{2r}/p`. So the moment route is NOT dead.
+
+**`A_r ≤ Wick := (2r−1)‼·n^r` for r up to ~log p ⟹ M ≤ √(n log p)** (optimize `(p·Wick)^{1/2r}` at
+`r*~log p`). MEASURED (`probe_407_bgk_dc_subtracted_moments.py`, FFT of `1_{μ_n}` on `Z/p`, n=16,32,64,
+p~n^4): `A_r/Wick ≤ 1 and DECREASING` for ALL r (mu=4: 1.00→0.14 over r=1..8; mu=6: 1.00→0.62 over r=1..10).
+So the prize sup-norm bound holds EMPIRICALLY via the DC-subtracted moments, and `M/√(n log(p/n)) ≈ 1.2–1.4`
+(window-membership C=O(1) confirmed).
+
+**Honest catch (why this is reframing, not a proof):** `A_r ≤ Wick` is EQUIVALENT to `M ≤ √(n log p)` (each
+implies the other up to constants: `M^{2r}≤p·A_r` one way; `A_r ≤ M^{2r−2}·n` the other). So `A_r ≤ Wick`
+is BGK restated, not an easier route. The char-0 bound (DyadicEnergyK1 `E_r^{(0)} ≤ Wick`) gives `A_r ≤ Wick`
+only via `anomaly ≤ n^{2r}/p` (the char-p excess ≤ the DC term) — which is the BGK content, open for r>β.
+**Net:** the moment route is correctly reframed (NoGo bounds the DC term, irrelevant to sup-norm; the real
+statement is the DC-subtracted `A_r ≤ Wick`), empirically confirmed, but equivalent to the BGK wall — no
+closure. Probe added; the fleet should stop citing `_MomentMethodNoGo` as killing the moment route (it kills
+only the DC-included version).
