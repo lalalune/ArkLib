@@ -9442,3 +9442,49 @@ regime via the in-tree chain. The precise obstruction is a single named gap: **p
 r=Ω(log n)) is unproven for it** — equivalently, low-dim list-recovery of explicit plain RS, the
 list-decoding-theory open problem GG25 explicitly side-steps by restricting to FRS/multiplicity/
 random RS (field linear in n / random eval points). Honest-open; obstruction pinned to one Prop.
+
+## n-core-EMPTY certificate count is EXACTLY `C(S+n-1,n-1)` (super-poly) — codeword list stays poly; multi-n {16..256} + axiom-clean Lean brick (2026-06-14)
+
+**Sharpens the "Cyclic-sieving / n-core list-growth route" entry above** (the single most
+prize-decisive remaining cyclic-sieving experiment, run multi-n to the prize scale `n=256` and
+backed by a landed Lean theorem). The earlier entry concluded "super-poly support, poly list" from
+`n=8,12,16`; this pins the exact certificate count and proves the super-poly half in Lean.
+
+**The exact certificate count (validated against brute force, ALL `n`).** The in-tree object
+(`AbacusNCore.nCoreEmpty`, `n` beads; `HOMDSSmoothObstruction`; `RootsOfUnityVandermonde`):
+`β_j = λ_j+(n−1−j)`, `λ` with `≤n` parts; `nCoreEmpty(λ) ⟺ {β_j mod n}` pairwise distinct
+`⟺ det(ζ^{β_j i})≠0` on `μ_n` `⟺ s_λ(μ_n)≠0` (RSW hook-content). Reparametrize: an `n`-core-EMPTY
+config is `β = desc-sort{r + n·c_r : r∈Fin n}` for a unique `c : Fin n → ℕ`, with `|λ| = n·∑_r c_r`.
+Hence **`#{n-core-EMPTY λ of size n·S} = #{c : ∑c_r = S} = C(S+n−1, n−1)`** (stars-and-bars).
+Probe `scripts/probes/probe_ncore_empty_listgrowth_prize.py` validates this closed form against
+brute enumeration for `n∈{4,6,8,10}` (exact match) and cross-validates hook-content(`d=n`) ==
+abacus-`n`-core (0 mismatches, `n∈{8,12,16}`). NB: it is **NOT** the `n`-quotient
+`n`-tuple-of-partitions count (a different statistic that over-counts here — caught and corrected).
+
+**Multi-n at PRIZE parameters (`μ_{2^μ}`, `ρ=1/2`, Johnson agreement `a=⌈√(kn)⌉`, multi-prime).**
+Size-capped `n`-core-EMPTY certificate count (`Σ_{S} C(S+n−1,n−1)`):
+`n=16 →153`, `n=32 →6545`, `n=64 →1.33e9`, `n=128 →7.90e17`, `n=256 →4.03e37`
+(log-log slope 28.2, lin-log slope 0.34 ⟹ **SUPER-POLY**, far exceeding `q·ε*=n`). BUT the EXACT
+`F_p` codeword list at Johnson `a` is `1` (n=16); the worst over coset-glued + planted + random
+words: at Johnson **1**, at `k+2` **3**, at the `k+1` boundary **20** with SMOOTH≈RANDOM (n=12:
+20 vs 14), confirming the spike is generic MDS, not cyclic-sieving. The agreement sweep at `n=16`
+is the smoking gun: certificate count `1→17→153→969` while the exact list **collapses to 1** for
+all `a>k+1`.
+
+**Landed Lean brick (axiom-clean, real `lake build`, 743 jobs).**
+`ArkLib/Data/CodingTheory/ProximityGap/NCoreEmptyCParametrization.lean`:
+* `cParam c r := r + n·c r`; `cParam_mod : cParam c r % n = r` (one bead per runner);
+* `nCoreEmpty_cParam : ∀ c, nCoreEmpty (cParam c)` (every `c`-config is `n`-core-EMPTY);
+* `cParam_injective` (distinct `c` ⟹ distinct configs);
+* `exists_injection_nCoreEmpty`, `infinite_nCoreEmpty` (for `n≥1` the `n`-core-EMPTY set is
+  infinite), `nCoreEmpty_card_unbounded` (exceeds any finite `N`).
+All `#print axioms = [propext, Classical.choice, Quot.sound]`.
+
+**Status — precise reduction, NOT closure, NOT refutation.** The super-poly is the `C(A,k+m+1)`
+SUPPORT/core factor of the proven `#cores ≤ L·C(A,k+m+1)`
+(`SubJohnsonListSupply.explainableCoreSupply_of_listBound`) — exactly what the certificate
+enumeration counts — **not** the codeword list `L`. The cyclic-sieving lever gives no list boost
+over a random domain; the route reduces to the same named open core `SubJohnsonListBound`'s `L`
+(= BGK / Paley / BCHKS Conj 1.12). Do not re-attempt "n-core/hook-content vanishing super-poly-boosts
+the smooth list": the super-poly is now CLOSED-FORM `C(S+n−1,n−1)` and PROVEN to be the support
+factor, not the list.
