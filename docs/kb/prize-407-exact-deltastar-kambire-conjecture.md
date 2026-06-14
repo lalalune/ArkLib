@@ -983,6 +983,68 @@ the crossover r*≈β is a clean, correctly-located fact, and the new structural
 config-depth r_count, with the saturation onset pinned ≈β-constant while r_count grows ~n) sharpens WHY the
 two lanes coincide. Probes `probe_407_conn_c2_{crossover_scan,gap_vs_generic,verdict,crossover_decisive}.py`.
 
+## UPDATE 2026-06-14 — THIN BOUND: correctly scoped it is TRUE & char-independent; its provable route (orbit-Johnson) has a constant-factor gap EXACTLY at the prize Kambiré direction
+
+Direct attack on the flagged linchpin ("the thin bound": a non-coset agreement set of a genuine monomial
+line beyond Johnson has size ≤ Johnson). Four corrections + one precise obstruction (probes in `/tmp`:
+`thin_correct.py`, `thin_maximal.py`, `thin_final.py`, `d2_route.py`, `proof_route_final.py`,
+`orbit_threshold_exact.py`, `budget_calibration.py`, `badprime_N0.py`):
+
+**(1) The thin bound MUST be scoped to the equivariance LADDER, not μ_d alone, and to genuine
+directions d=gcd(a−b,n)≥2.** Naive "non-(μ_d-coset) ⟹ ≤ Johnson" is FALSE: the maximal "non-μ_d-coset"
+agreement sets are coset-unions of a *smaller* subgroup μ_{d'} (d'|d, d'<d) — fully structured, just at a
+lower tower level (e.g. n=32,k=4: a size-16 set that is a μ_8-coset-union but not μ_16). And d=1
+directions (gcd(a−b,n)=1) admit genuinely ragged sets of size 9>Johnson=8 at n=16,k=4 — but those are NOT
+Kambiré coset directions. **Correctly stated** — *genuine direction (d≥2), agreement set GENUINELY RAGGED
+(not a coset-union of ANY nontrivial μ_{d'}, d'|d)* — the thin bound HOLDS with **zero violations**,
+char-independent: max-ragged = 6,8,10 (n=16, k=4,6,8) ≤ Johnson 8,9,11; n=32 k=8/12 max-ragged 12,15 ≤
+Johnson 16,19; k=12 is TIGHT (13=Johnson). (The earlier raw "REAL VIOLATION" was a subset artifact: my first
+probe interpolated proper SUBSETS of a coset-union agreement set — the FULL agreement set is always a coset
+union beyond Johnson.) `R=k+n/8` fits n=16/32 at low rate but BREAKS at k≥10 (n=16 k=10→11 not 12); no clean
+closed form for max-ragged, but `≤ ⌊√(nk)⌋` is robust.
+
+**(2) Char-0 budget calibration is char-INDEPENDENT in the non-saturated regime, with the ring-hom
+direction confirmed at the count level.** Measured `|H^{(+r)}(μ_s)|`: char-p count ≤ char-0 count
+ALWAYS (0 upward violations over thousands of primes ≡1 mod n) — the merge-only ring-hom monotonicity, at the
+deployed distinct-sumset-count level. Equality (char-p = char-0) holds once `q` exceeds the bad-prime
+threshold N0; bad primes are sparse and bounded (n=16,s=16,r=3: char0=464; bad primes all <4049≈8.7·char0,
+<n^3.5=16384; NONE above), confirming N0~poly. Prize `q≈n·2^128 ≫ N0`, char0≈ε*q. So the calibration IS
+char-independent and provable-in-principle; its residual = the effective bound "N0(n) ≤ poly(n)" (=the in-tree
+`e2_extra_solution_threshold` sharpened from the proven crude `(n²+n)^{2^{k-1}}` to measured poly).
+
+**(3) The thin bound's PROVABLE route is full-twist-orbit list-Johnson — and it covers large d but NOT the
+prize direction.** Clean char-free proof: for ragged S (trivial equivariance H, e=1) the μ_d-twist orbit
+`{c_ω = ω^{−a}c(ω·) : ω∈μ_d}` is L=d DISTINCT deg<k codewords, each agreeing with the SAME line-word in |S|
+positions, pairwise ≤k−1 (MDS). The L-codeword 2nd-moment (Johnson list) bound gives
+`|S| ≤ √(n(k−1)·(1−1/L)) + O(n/L)`, which is ≤ √(nk) **iff L=d ≥ ~√(nk) ≈ n√ρ**. So:
+  · LARGE d (d ≥ n√ρ): the orbit-Johnson PROVES |S| ≤ √(nk) — char-free, Lean-formalizable (substrate:
+    `MonomialPencilQuasiHomog` + `JohnsonListBound`). The d=n/2 case always works (n=16/32/64: 7.56/15.53/31.51).
+  · The Kambiré WORST-CASE direction has d = m = n/s with s≈44 (small subgroup forces the budget), so
+    d ≈ n/44 ≈ 2^{24.5} (μ=30). The orbit-proof threshold is d ≥ √(nk) ≈ 2^{28.5} (ρ=1/4). **The Kambiré
+    direction sits a factor √ρ·44 ≈ 11–22 BELOW the orbit-proof threshold** → orbit-Johnson is loose there by
+    a constant factor (>√(nk)), NOT a proof. This is the precise content of the in-tree note
+    (`MonomialPencilQuasiHomog` "the loose bound is not yet ≤√ρ·n for large d").
+
+**(4) The small-d (d=2) ragged case has a DIFFERENT clean provable bound — also insufficient.** At d=2 the
+twist orbit is only L=2, so orbit-Johnson is loose. There IS a clean char-free constraint: antipodal pairs in
+a d=2-ragged S satisfy |S∩(−S)| ≤ k−1 (both c and c_{−1} equal W there ⟹ ≤ MDS agreement), giving the
+half-distance bound `|S| ≤ (n+k−1)/2`. But `(n+k−1)/2 > √(nk)` at all prize rates (n=1024,k=256: 639>512).
+Yet exhaustive n=16: d=2-ragged max is STRICTLY below √(nk) (6<8, 10<11, 8<9) — the half-distance bound is
+loose; the TRUE d=2 max is ≤√(nk) by a finer (unidentified) argument.
+
+**NET — honest verdict on the linchpin.** The thin bound is TRUE and char-independent (verified n=16 exhaustive,
+n=32 sampled, all rates/primes); the char-0 budget calibration is genuinely char-independent (ring-hom merge
+direction confirmed at the count level, N0~poly). BUT the thin bound is NOT proven: the two clean char-free
+provable routes (full-orbit list-Johnson for large d; antipodal half-distance for d=2) BOTH fall a constant
+factor short of √(nk) precisely at/below the prize-relevant intermediate direction d≈n/44. So the open
+residual is a **constant-factor sharpening of an explicit list-Johnson/second-moment incidence bound at
+intermediate d** — combinatorial, char-INDEPENDENT, NOT the BGK/√n wall (which lives only in the char-p
+budget-equality / N0 residual). Two genuinely distinct open residuals isolated: (R-thin) the intermediate-d
+constant-factor list-Johnson gap (char-free combinatorics), and (R-N0) the poly bad-prime threshold (char-p,
+the residual that touches BGK). The thin bound is the cleaner target; its proof needs the *global single-c*
+consistency across the n/d cosets (the orbit twists are not independent shifts — they share one codeword c),
+which neither the pairwise-MDS nor the generic-list 2nd-moment uses. Probes listed above; no closure claimed.
+
 ## UPDATE 2026-06-14 (CONNECTION SYNTHESIS) — the equivalent quantities are NOT equally hard: the COUNT/floor closes by Kambiré PIGEONHOLE, bypassing BGK (existence version)
 
 A connection workflow (energy↔sup-norm↔count↔e₂-rigidity↔Gauss-tower, each substitution adversarially
@@ -1087,3 +1149,73 @@ exists (both bad sets `≪ T`). For it, `#bad = N₀` exactly ⟹ **δ* = window
       hence `#factors(D)=O(n log n)`. Same fold/resultant species as the PROVEN `e2_extra_solution_threshold`.
 Both are combinatorial/algebraic, NEITHER is the BGK sup-norm wall. The existence-semantics — the piece I
 flagged as load-bearing — is RESOLVED in favor of the closure by Kambiré's own framing.
+
+## CORRECTION 2026-06-14 (decisive paper read) — the existence-semantics does NOT transfer; the floor-bypass is NOT a prize closure (refutes the section above)
+
+A direct read of BOTH primary sources (Kambiré arXiv:2604.09724 full PDF; BCHKS On-Proximity-Gaps
+Conjecture 1.2; the in-tree `mcaConjecture`/`epsMCAgsPrizeUniversalConjecture`) settles the load-bearing
+question — and the conclusion is the OPPOSITE of the "RESOLVED" section. Quoted statements, then the logic.
+
+**(1) The prize conjecture quantifies UNIVERSALLY over the field (∃ constants, ∀ primes).**
+  · **BCHKS Conj 1.2** (the canonical area conjecture, verbatim): *"Let δ∈(0,1) be a constant.* ***For every
+    Reed Solomon code C = RS[F_q, D, k]*** *with length |D|=n and distance δ, and for every η>0, C has
+    proximity gaps up to radius γ=δ−η, with proximity loss ε*=o_η(1) and a=O_η(n^τ)."* — the constant `τ`
+    (and the o/O implicit constants) are fixed FIRST, then `∀` ranges over **every** RS code, i.e. every
+    prime field `F_q`. There is **no `∃ q`**; `q` is universally bound.
+  · **In-tree `mcaConjecture`** (`GrandChallenges.lean:650`) and **`epsMCAgsPrizeUniversalConjecture`**
+    (`MCAGSFieldUniversal.lean:126`): both are `∃ c₁ c₂ c₃ : ℝ, ∀ {F} [Field F] [Fintype F] … (domain) …,
+    ε_mca(RS[F,domain,k], δ) ≤ bound(c₁,c₂,c₃)` — **constants existentially bound BEFORE the `∀` over the
+    field `F`.** This is the field-universal form.
+  · The repo has ALREADY adjudicated this. `MCAGSFieldUniversal.lean` PROVES the **fixed-field** surface
+    (`epsMCAgs_prizeBound_conjecture_holds`, axiom-clean) — where `F` is fixed and the constants come after —
+    is a THEOREM, and states explicitly: *"The genuinely open prize is field-universal … it quantifies the
+    constants **before the field**, so they cannot absorb `q=|F|`; along a family with `q→∞` the bound `→0`
+    for fixed `η` and the inflation above fails."* **The open prize is the ∀-over-primes form, full stop.**
+
+**(2) Kambiré's Theorem 1 is EXISTENTIAL — but that is exactly what a REFUTATION needs, not a proof.**
+  · Title: *"Proximity Gaps Conjecture **FAILS** Near Capacity over Prime Fields."* It is a **negative**
+    result. Theorem 1: *"there exist infinitely many block lengths n … **There exists** a prime p<n^A with
+    p≡1 (mod n) … **there exist** f,g with #{z:Δ(f+zg,C)≤δ}≥n^C, Δ([f,g],C²)>δ."* Proof: *"there must exist
+    a good prime in the interval [4^s,8^s] … so we can pick A=K log 8."* He **constructs ONE instance** (one
+    n, one p, one f,g) where proximity gaps fail. **One counterexample suffices to refute a `∀` statement** —
+    that is the entire logic of his paper. His existential quantifier is the NEGATION of the prize's `∀`.
+
+**(3) THE ASYMMETRY the "RESOLVED" section missed — fatal to the bypass-as-closure.** Kambiré chooses `q`
+  because he is **breaking** `∀q P(q)`: `¬∀q P(q) ≡ ∃q ¬P(q)`, so a chosen bad `q` is a valid refutation.
+  The prize FLOOR ("δ*≤edge", `#bad≤N₀`) is a piece of **establishing** the bound — it must hold **for the
+  given code over its field**, and the open conjecture demands it **for ALL primes `q≡1 mod n`** (constants
+  fixed first). The pigeonhole produces a chosen GOOD prime `q∤D`; this is `∃q (good)`, which is the
+  **negation** of the relevant universal `∀q`, NOT the universal itself. **Choosing a convenient prime is
+  legitimate for refutation (Kambiré) and ILLEGITIMATE for proving the universal conjecture (the prize).**
+  Symmetry between ceiling and floor FAILS precisely because the ceiling lives on the refutation side (∃)
+  and the proof-side floor needs the universal (∀). So "Kambiré's ceiling is existential and accepted ⟹ the
+  floor is too" is a **non-sequitur**: his ceiling is accepted *as a refutation ingredient*, where ∃ is
+  correct; the prize floor needs ∀, where ∃ is insufficient.
+
+**(4) What the pigeonhole DOES legitimately give (verified, off-wall) — and its true scope.**
+  · The pigeonhole margin is genuine and enormous: `#bad-primes ≤ log₂ D ≈ 3.2×10¹⁰ = 2³⁵` (at n=2³⁰) vs
+    `#window-primes T ~ 2⁷¹³` — margin `2⁶⁷⁸` (probe `probe_407_close_existence_semantics.py`; the earlier
+    "negative margin" scare was a **count-vs-log-count** mistake: compare COUNTS `2³⁵ ≪ 2⁷¹³`, not `log D`
+    vs `log T`). So **a floor-good prime EXISTS** — this is sound.
+  · But "exists a good prime" pins `δ*` only **for a SPECIFICALLY-CONSTRUCTED code/prime** — it is a
+    `density-1`/`for-some-instance` statement. It does NOT pin `δ*` "in the prize regime" per the prize's
+    own `∀`-over-`F` semantics (point 1). Per the in-tree `mcaConjecture` quantifier, **`δ*` for a chosen
+    good `q` is not progress on the open prize** — the fixed-`q` surface is already a proven theorem; the
+    OPEN content is exactly the part the pigeonhole cannot reach (uniformity over `q`).
+
+**(5) VERDICT (decisive, the answer to the OPEN ITEM).**
+  (a) **The prize quantifies `δ*` over ALL primes `q≡1 mod n` in the regime** (constants-before-field;
+      BCHKS Conj 1.2 "for every RS code"; in-tree `mcaConjecture`/`epsMCAgsPrizeUniversalConjecture`). It
+      does NOT accept a constructed/chosen instance for a POSITIVE resolution.
+  (b) **Kambiré's ceiling IS existence-based (chooses `q`) — but it is a REFUTATION, where ∃ is the correct
+      and only quantifier.** Symmetry to the floor FAILS: the floor is on the proof side and needs ∀.
+  (c) **Therefore the existence-form floor closure (pigeonhole) does NOT pin `δ*` "in the prize regime" per
+      the prize's own semantics.** It pins `δ*` for a chosen-prime instance (density-1) — real and BGK-free,
+      but NOT the open prize, which is the uniform-over-`q` statement = the BGK/Paley sup-norm wall.
+  **The BGK-bypass is real ONLY at the density-1/chosen-instance level; it is NOT a closure of the prize.**
+  The honest residual (1) flagged in the CONNECTION SYNTHESIS — "if the prize demands worst-case-over-primes,
+  (b) gives only density-1" — is the ACTUAL state, and the prize DOES demand the ∀-form. The two earlier
+  "RESOLVED" claims (existence-semantics resolved in favor of closure) are **WITHDRAWN**: the semantics is
+  resolved AGAINST the closure. Probes: `probe_407_close_existence_semantics.py`; sources:
+  `/tmp/kambire.txt` (arXiv:2604.09724), `/tmp/bchks.txt` (BCHKS Conj 1.2),
+  `MCAGSFieldUniversal.lean` + `GrandChallenges.lean` (in-tree quantifiers).
