@@ -504,7 +504,7 @@ def foldKStateProp {i : Fin ℓ} (m : Fin (2 + 1))
         -- same  as in Verifier's output & getFoldProverFinalOutput
       ctx := stmtMid.ctx,
       sumcheck_target := newSumcheckTarget,
-      challenges := Fin.snoc stmtMid.challenges r_i'
+      challenges := Fin.cons r_i' stmtMid.challenges
     }
     let oStmtOut := oStmtMid
     let witOut := witMid
@@ -658,7 +658,7 @@ def foldKnowledgeStateFunction (i : Fin ℓ) :
           Fin.eta, Fin.zero_eta, Fin.mk_one, Function.Embedding.coeFn_mk, Sum.inl.injEq,
           OracleVerifier.mkVerifierOStmtOut_inl, cast_eq]
       have h_stmtOut_challenges_eq :
-        ((Fin.snoc stmtIn.challenges r_i') : Fin (↑i + 1) → L) = stmtOut.challenges := by
+        ((Fin.cons r_i' stmtIn.challenges) : Fin (↑i + 1) → L) = stmtOut.challenges := by
         -- use the h_stmtOut_eq to prove this
         rw [h_stmtOut_eq]
         unfold foldStepLogic foldVerifierStmtOut
@@ -678,7 +678,7 @@ def foldKnowledgeStateFunction (i : Fin ℓ) :
       | inl h_bad =>
         have h_bad' : incrementalBadEventExistsProp 𝔽q β i.succ
             (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i) oStmtIn
-            (Fin.snoc stmtIn.challenges r_i') := by
+            (Fin.cons r_i' stmtIn.challenges) := by
           have h_bad'' := h_bad
           simp only [h_stmtOut_challenges_eq] at h_bad'' ⊢
           exact h_bad''
@@ -745,7 +745,7 @@ def foldKStateProps {i : Fin ℓ} (m : Fin (2 + 1))
     let stmtOut : Statement (L := L) Context i.succ := { -- same as in getFoldProverFinalOutput
       ctx := stmtMid.ctx,
       sumcheck_target := newSumcheckTarget,
-      challenges := Fin.snoc stmtMid.challenges r_i'
+      challenges := Fin.cons r_i' stmtMid.challenges
     }
     let oStmtOut := oStmtMid
     let witOut := witMid
@@ -902,14 +902,14 @@ lemma foldStepHStarFromWitMid_eq_of_oracleWitnessConsistency (i : Fin ℓ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       {
         sumcheck_target := h_i.val.eval r_i',
-        challenges := Fin.snoc stmtOStmtIn.1.challenges r_i',
+        challenges := Fin.cons r_i' stmtOStmtIn.1.challenges,
         ctx := stmtOStmtIn.1.ctx
       } witMid₁)
     (h_struct₂ : witnessStructuralInvariant 𝔽q β (mp := mp)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       {
         sumcheck_target := h_i.val.eval r_i',
-        challenges := Fin.snoc stmtOStmtIn.1.challenges r_i',
+        challenges := Fin.cons r_i' stmtOStmtIn.1.challenges,
         ctx := stmtOStmtIn.1.ctx
       } witMid₂)
     (h_init₁ : firstOracleWitnessConsistencyProp 𝔽q β witMid₁.t
@@ -926,7 +926,7 @@ lemma foldStepHStarFromWitMid_eq_of_oracleWitnessConsistency (i : Fin ℓ)
         (i := i)
         (stmtOut := {
           sumcheck_target := h_i.val.eval r_i',
-          challenges := Fin.snoc stmtOStmtIn.1.challenges r_i',
+          challenges := Fin.cons r_i' stmtOStmtIn.1.challenges,
           ctx := stmtOStmtIn.1.ctx
         })
         (oStmt := stmtOStmtIn.2) h_struct₁ h_struct₂ h_init₁ h_init₂
@@ -1042,7 +1042,7 @@ def foldStepWitMidOracleConsistency (i : Fin ℓ)
     (witMid : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) : Prop :=
   let stmt : Statement (L := L) Context i.succ := {
       sumcheck_target := h_i.val.eval r_i',
-      challenges := Fin.snoc stmtOStmtIn.1.challenges r_i',
+      challenges := Fin.cons r_i' stmtOStmtIn.1.challenges,
       ctx := stmtOStmtIn.1.ctx
   }
   let structural := witnessStructuralInvariant 𝔽q β (mp := mp)
@@ -1083,7 +1083,7 @@ lemma incrementalBadEventExistsProp_fold_step_backward (i : Fin ℓ)
     (r_i' : L)
     (h_bad_after : incrementalBadEventExistsProp 𝔽q β i.succ
       (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i) stmtOStmtIn.2
-      (Fin.snoc stmtOStmtIn.1.challenges r_i'))
+      (Fin.cons r_i' stmtOStmtIn.1.challenges))
     (h_not_fresh : ¬ foldStepFreshDoomPreservationEvent 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) i stmtOStmtIn r_i') :
   incrementalBadEventExistsProp 𝔽q β i.castSucc
@@ -1103,25 +1103,28 @@ lemma incrementalBadEventExistsProp_fold_step_backward (i : Fin ℓ)
     have hk_before : min ϑ (i.val - j.val * ϑ) = ϑ := by
       omega
     let afterSlice : Fin ϑ → L := fun cId =>
-      Fin.snoc (α := fun _ => L) stmtOStmtIn.1.challenges r_i'
+      foldOrderChallenges (ℓ := ℓ) (i := i.succ)
+        (Fin.cons (α := fun _ => L) r_i' stmtOStmtIn.1.challenges)
         ⟨j.val * ϑ + cId.val, by
           have h_idx_lt : j.val * ϑ + cId.val < i.val := by
             exact lt_of_lt_of_le (Nat.add_lt_add_left cId.isLt (j.val * ϑ)) h_k_full
           exact lt_trans h_idx_lt (Nat.lt_succ_self i.val)⟩
     let beforeSlice : Fin ϑ → L := fun cId =>
-      stmtOStmtIn.1.challenges
+      foldOrderChallenges (ℓ := ℓ) (i := i.castSucc) stmtOStmtIn.1.challenges
         ⟨j.val * ϑ + cId.val, by
           exact lt_of_lt_of_le (Nat.add_lt_add_left cId.isLt (j.val * ϑ)) h_k_full⟩
     have h_challenges : afterSlice = beforeSlice := by
-      -- Each accessed index `j*ϑ + cId < i.val` lies strictly below the `Fin.snoc` position
-      -- `i.val`, so `Fin.snoc challenges r_i'` agrees with `challenges` there (`Fin.snoc_castSucc`).
+      -- Newest-first storage: the appended challenge is `Fin.cons`ed at index 0, so the
+      -- fold-order view `foldOrderChallenges (cons r_i' challenges)` is `Fin.snoc
+      -- (foldOrderChallenges challenges) r_i'` (`foldOrderChallenges_cons`), which agrees with
+      -- `foldOrderChallenges challenges` on every block index `j*ϑ + cId < i.val`.
       funext cId
       dsimp only [afterSlice, beforeSlice]
+      rw [foldOrderChallenges_cons]
       have h_idx_lt : j.val * ϑ + cId.val < ↑i.castSucc :=
         lt_of_lt_of_le (Nat.add_lt_add_left cId.isLt (j.val * ϑ)) h_k_full
-      -- The accessed index is `Fin.val`-equal to `Fin.castSucc ⟨j*ϑ+cId, h_idx_lt⟩`, so
-      -- `Fin.snoc_castSucc` (snoc agrees with the base tuple below the appended slot) applies.
-      exact Fin.snoc_castSucc (α := fun _ => L) r_i' stmtOStmtIn.1.challenges
+      exact Fin.snoc_castSucc (α := fun _ => L) r_i'
+          (foldOrderChallenges (ℓ := ℓ) (i := i.castSucc) stmtOStmtIn.1.challenges)
           ⟨j.val * ϑ + cId.val, h_idx_lt⟩
     let blockStart : Fin r := ⟨j.val * ϑ, by
       exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -1150,7 +1153,8 @@ lemma incrementalBadEventExistsProp_fold_step_backward (i : Fin ℓ)
       · have h_afterSlice_heq :
             HEq
               (fun cId : Fin (min ϑ (i.val + 1 - j.val * ϑ)) =>
-                Fin.snoc (α := fun _ => L) stmtOStmtIn.1.challenges r_i'
+                foldOrderChallenges (ℓ := ℓ) (i := i.succ)
+                  (Fin.cons (α := fun _ => L) r_i' stmtOStmtIn.1.challenges)
                   ⟨j.val * ϑ + cId.val, by
                     have h_cId_lt :
                         cId.val < i.val + 1 - j.val * ϑ := by
@@ -1222,7 +1226,7 @@ lemma incrementalBadEventExistsProp_fold_step_backward (i : Fin ℓ)
     · have h_beforeSlice_heq :
           HEq
             (fun cId : Fin (min ϑ (i.val - j.val * ϑ)) =>
-              stmtOStmtIn.1.challenges
+              foldOrderChallenges (ℓ := ℓ) (i := i.castSucc) stmtOStmtIn.1.challenges
                 ⟨j.val * ϑ + cId.val, by
                   have h_cId_lt :
                       cId.val < i.val - j.val * ϑ := by
@@ -1284,7 +1288,7 @@ lemma incrementalBadEventExistsProp_fold_step_backward (i : Fin ℓ)
       omega
     let kBefore : ℕ := min ϑ (i.val - (getLastOraclePositionIndex ℓ ϑ i.castSucc).val * ϑ)
     let prefixSlice : Fin kBefore → L := fun cId =>
-      stmtOStmtIn.1.challenges
+      foldOrderChallenges (ℓ := ℓ) (i := i.castSucc) stmtOStmtIn.1.challenges
         ⟨(getLastOraclePositionIndex ℓ ϑ i.castSucc).val * ϑ + cId.val, by
           have h_min_le :
               kBefore ≤ i.val - (getLastOraclePositionIndex ℓ ϑ i.castSucc).val * ϑ := by
@@ -1298,7 +1302,8 @@ lemma incrementalBadEventExistsProp_fold_step_backward (i : Fin ℓ)
             omega
           exact h_idx_lt⟩
     let afterSlice : Fin (kBefore + 1) → L := fun cId =>
-      Fin.snoc (α := fun _ => L) stmtOStmtIn.1.challenges r_i'
+      foldOrderChallenges (ℓ := ℓ) (i := i.succ)
+        (Fin.cons (α := fun _ => L) r_i' stmtOStmtIn.1.challenges)
         ⟨(getLastOraclePositionIndex ℓ ϑ i.castSucc).val * ϑ + cId.val, by
           have h_cId_le : cId.val ≤ kBefore := by
             exact Nat.lt_succ_iff.mp cId.isLt
@@ -1370,7 +1375,7 @@ lemma incrementalBadEventExistsProp_fold_step_backward (i : Fin ℓ)
             HEq
               (fun cId : Fin
                   (min ϑ (i.val + 1 - (getLastOraclePositionIndex ℓ ϑ i.castSucc).val * ϑ)) =>
-                Fin.snoc (α := fun _ => L) stmtOStmtIn.1.challenges r_i'
+                Fin.cons (α := fun _ => L) r_i' stmtOStmtIn.1.challenges
                   ⟨(getLastOraclePositionIndex ℓ ϑ i.castSucc).val * ϑ + cId.val, by
                     have h_cId_lt :
                         cId.val <
@@ -1463,7 +1468,7 @@ lemma foldStep_rbrExtractionFailureEvent_imply_sumcheck_or_badEvent (i : Fin ℓ
       have h_wit_struct_after :
           witMid.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := witMid.t)
             (m := mp.multpoly stmtOStmtIn.1.ctx) (i := i.succ)
-            (challenges := Fin.snoc stmtOStmtIn.1.challenges r_i') := by
+            (challenges := Fin.cons r_i' stmtOStmtIn.1.challenges) := by
         exact h_consistency.1.1
       let H_before : L⦃≤ 2⦄[X Fin (ℓ - i.castSucc)] :=
         projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := witMid.t)
@@ -1521,7 +1526,7 @@ lemma foldStep_rbrExtractionFailureEvent_imply_sumcheck_or_badEvent (i : Fin ℓ
           have h_gc (y : L) :
               getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i.castSucc
                 (Fin.take ↑i.castSucc (Nat.le_succ ↑i.castSucc)
-                  (Fin.snoc (α := fun _ : Fin i.succ => L) stmtOStmtIn.1.challenges y))
+                  (Fin.cons (α := fun _ : Fin i.succ => L) y stmtOStmtIn.1.challenges))
                 (↑j * ϑ) (h := by
                   exact oracle_block_k_next_le_i (ℓ := ℓ) (ϑ := ϑ) (i := i.castSucc)
                     (j := j) (hj := hj)) =
