@@ -14,9 +14,49 @@ For a convenient routine check, run:
 On a cold clone, fetch precompiled dependencies first:
 
 ```bash
-lake exe cache get
+./scripts/lake-locked.sh exe cache get
 ./scripts/validate.sh
 ```
+
+## Concurrent Agent Builds (`lake-locked.sh`)
+
+When several agents share a machine (even in different checkouts/worktrees), never run bare
+`lake build` or `lake exe cache get`. Use the serialized wrapper, a drop-in replacement for
+`lake`:
+
+```bash
+./scripts/lake-locked.sh build ArkLib.Some.Target
+./scripts/lake-locked.sh exe cache get
+```
+
+What it does (observed failure mode 2026-06-11: 7 concurrent lake builds plus a racing
+`cache get` in shared checkouts produced 60+ lean workers on 12 cores, corrupted oleans, and
+four builds silently recompiling all of Mathlib from source):
+
+- **Per-checkout exclusive lock** (`.lake/agent-build.lock`): at most one lake invocation per
+  checkout. A second invocation waits and then gets a warm incremental build instead of a
+  corrupting race. Lake has no built-in lock and no `--jobs` cap in the pinned version.
+- **Machine-wide build slots** (`~/.cache/lake-build-slots`, default 2, override with
+  `LAKE_LOCKED_SLOTS`): caps total concurrent builds across all checkouts so each gets real
+  cores instead of thrashing.
+- **Mathlib cache guard**: if `.lake/packages/mathlib` is present but its root olean is
+  missing, it runs `lake exe cache get` first (inside the lock). A build must never fall back
+  to compiling Mathlib from source — that is hours of CPU and the main melt-down mode.
+- **Stale-lock stealing**: locks carry a heartbeat refreshed every 30s; a lock whose heartbeat
+  is older than `LAKE_LOCKED_STALE_SECS` (default 300) is presumed killed and stolen, so a
+  `taskkill`ed build never wedges the queue.
+
+`./scripts/validate.sh` and `./scripts/build-project.sh` already route their builds through the
+wrapper. `LAKE_LOCKED_DISABLE=1` bypasses it (single-tenant machines, CI debugging).
+
+Build hygiene on shared machines:
+
+- One `lake exe cache get` to **completion** before the first build in a fresh checkout; never
+  run it concurrently with builds in the same checkout (the wrapper enforces this).
+- A build process tree (lake + lean workers) that has been running for far longer than the
+  target warrants — for example a small-target build past 20–30 minutes that is grinding
+  through `Mathlib/` files — usually indicates a clobbered cache, not a slow build. Kill the
+  build tree (never agent processes), restore the cache, retry through the wrapper.
 
 Do not use bare `lake update` as a routine cache-repair command. It re-resolves
 `lake-manifest.json` and may delete/re-clone package directories while other checks are running.

@@ -6,7 +6,11 @@ This directory contains various utility scripts for the ArkLib project.
 
 ### Build and Validation
 - **`validate.sh`** - Recommended convenience wrapper for routine local validation
-- **`build-project.sh`** - Compile-only helper (`lake build`)
+- **`lake-locked.sh`** - Serialized `lake` wrapper for multi-agent checkouts: per-checkout
+  exclusive lock + machine-wide build slots + mathlib olean-cache auto-repair. Use it instead of
+  bare `lake build` whenever other agents may be building on the same machine
+  (`./scripts/lake-locked.sh build <targets>`)
+- **`build-project.sh`** - Compile-only helper (`lake build` via `lake-locked.sh`)
 - **`build_timing_report.sh`** - CI timing/report helper for clean builds, warm rebuilds, and the validation wrapper
 - **`update-lib.sh`** - Update ArkLib.lean with all imports from source files
 - **`check-imports.sh`** - Check if ArkLib.lean is up to date with all imports

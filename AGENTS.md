@@ -27,6 +27,13 @@ Start with [`README.md`](README.md) for project overview.
 
 ## Guardrails
 
+- Never run bare `lake build` / `lake exe cache get` when other agents may be building on the
+  same machine: use `./scripts/lake-locked.sh build <targets>` (and
+  `./scripts/lake-locked.sh exe cache get`). It serializes builds per checkout, caps
+  machine-wide build concurrency, and auto-repairs a missing mathlib olean cache before
+  building. Unserialized concurrent builds corrupt `.lake` artifacts and silently fall back to
+  compiling Mathlib from source. See
+  [`docs/wiki/quickstart.md`](docs/wiki/quickstart.md).
 - Lean defaults: `autoImplicit = false`; the long-file linter cap is `1500` unless a file opts
   out locally.
 - `ArkLib.lean` is generated; do not hand-edit it.

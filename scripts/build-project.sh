@@ -8,4 +8,4 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
 echo "# Building project"
-lake build
+./scripts/lake-locked.sh build
