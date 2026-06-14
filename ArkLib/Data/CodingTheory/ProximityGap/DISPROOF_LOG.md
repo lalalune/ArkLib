@@ -9727,3 +9727,49 @@ direction/norm/count); this brick additionally refutes the one STRUCTURED upgrad
 sublattice) -- the Pan-Xu split-prime gap is not closed by the cross-parity handle. Ring-LWE/ideal-SVP
 territory is fully exhausted for #407. Probes: probe_wfLD_evenlattice_svp.py,
 probe_407_laneF_crossparity_leak.py.
+
+================================================================================
+[#407 wf-LE 2026-06-14] LEVER H height-gate: the structure-aware bound CANNOT push
+the proved-closed regime past n=64, and is VACUOUS at the binding depth at the prize
+================================================================================
+
+CLAIM TESTED (mission hypothesis): a structure-aware norm bound (resultant / Newton-polygon /
+Mahler measure of Σ_{i∈S} ζ^i) could push the height-gate proved-closed regime well past n=32/64,
+because the n=128 witness showed a 2^61 gap between realized norm (~2^131) and the house bound (~2^192).
+
+VERDICT: REFUTED. The gap is real but the realized worst-case norm is itself too large.
+
+(1) Worst-case norm formula is EXACT (probe_wfLE_worstnorm_exact.py, FULL enumeration, exact
+    integer resultants |N(Σ_S)| = Res(Σ_{i∈S} x^i, Φ_n)):
+        n=8:  realized max log2|N| = 3.170 = log2(3^2)   = (n/2-1)^{n/4}   ratio 1.0000
+        n=16: realized max log2|N| = 11.229 = log2(7^4)  = (n/2-1)^{n/4}   ratio 1.0000
+    So the live session's HeightGateThresholdAnalysis claim (realized worst = (n/2-1)^{n/4}) is
+    EXACT. Any valid structure-aware bound is >= this realized worst, so NONE can push past n=64.
+    The mission hypothesis (worst-case over-estimated) is wrong: it IS the realized object.
+
+(2) Realized DEPTH-t norm grows as t^{n/4} (probe_wfLE_realized_depth.py, product over primitive roots):
+        n=32: t=2 -> 8.000 (=pred 8.000); t=3 -> 12.680 (=pred 12.680); ratio realized/t^{n/4} -> 1.0 from below
+        n=64: t=2 -> 16.000; t=3 -> 25.359; t=16 -> 60.116/64.0 (0.939, AM-GM slack)
+    => realized worst depth-t norm ~ t^{n/4} is a valid LOWER bound on the worst-case at depth t.
+
+(3) Binding-depth vacuity at the prize (probe_wfLE_depth_arith.py / inline): the deep-moment floor
+    needs depth t = 2*ceil(log2 m) = 256 (m = (q-1)/n = 2^128 fixed). L2/Mahler gate (2t)^{n/4} <= p
+    closes #S=t iff log2(2t) <= 4(128+a)/2^a:
+        a=7  (n=128):  closes #S <= ~9    (binding depth 256 NOT reached)
+        a=30 (prize):  closes #S <= 0     (RHS = 5.9e-7; not even #S=1's BOUND)  binding depth NOT reached
+        a=43:          closes #S <= 0
+    At the prize the realized worst binding-depth norm >= 256^{2^28} = 2^{2^31}, dwarfing
+    p <= 2^158 by ~2^{2e9}. The gate is VACUOUS where the floor needs it: spurious mod-p vanishing
+    of binding-depth relations is abundant; the height gate cannot exclude it.
+
+LANDED (axiom-clean, [propext, Classical.choice, Quot.sound], 0 sorryAx):
+    HeightGateBindingDepthVacuity.lean -- gate_vacuous_at_prize_binding_depth (158 < 2^31),
+    prize_prime_lt_realized_binding_norm (2^158 < 256^(2^28)), gate_vacuous_above_prize (monotone,
+    Nat.le_induction growth), leverH_binding_depth_dead_at_prize (packaged dichotomy).
+
+SHARPENS HeightGateThresholdAnalysis.lean (live session, n=64 full-subset ceiling): LEVER H is now
+dead at the prize from BOTH directions -- full-subset (norm ~ Theta(n log n) bits) AND
+low-exponent/binding-depth (closes 0 subsets at n=2^30; realized binding-depth norm ~2^{2^31}).
+The prize residual is pinned to the char-p transfer at depth r ~ log m (BGK/Paley wall, LEVER B/X);
+structure-aware norm bounds provably cannot reach it. Probes: probe_wfLE_worstnorm_exact.py,
+probe_wfLE_realized_depth.py, probe_wfLE_depth_arith.py.
