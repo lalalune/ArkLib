@@ -504,28 +504,23 @@ def foldKnowledgeStateFunction (i : Fin ℓ) :
         Matrix.cons_val_fin_one, Direction.not_V_to_P_eq_P_to_V] at hDir
     subst h_m_eq_0
     intro h_kState_round1
-    unfold foldKStateProp at h_kState_round1 ⊢
+    unfold foldKStateProp masterKStateProp at h_kState_round1 ⊢
     simp only [Fin.isValue, Fin.succ_zero_eq_one, Nat.reduceAdd, Fin.mk_one,
       Fin.coe_ofNat_eq_mod, Nat.reduceMod] at h_kState_round1
     simp only [Fin.castSucc_zero]
-    -- At round 1: bad ∨ (localChecks ∧ structural ∧ initial ∧ oracleFoldingConsistency)
-    -- At round 0: bad ∨ (sumcheckConsistency ∧ structural ∧ initial ∧ oracleFoldingConsistency)
-    cases h_kState_round1 with
-    | inl h_bad =>
-      exact Or.inl h_bad
-    | inr h_good =>
-      have h_explicit := h_good.1.1
-      have h_localized := h_good.1.2
-      have h_struct : witnessStructuralInvariant 𝔽q β (mp := mp)
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtMid witMid := h_good.2.1
-      have h_init : firstOracleWitnessConsistencyProp 𝔽q β witMid.t
-          (getFirstOracle 𝔽q β oStmtMid) := h_good.2.2.1
-      have h_fold := h_good.2.2.2
-      have h_sumcheck : sumcheckConsistencyProp (𝓑 := 𝓑) stmtMid.sumcheck_target witMid.H := by
-        simp_rw [h_localized] at h_explicit
-        rw [h_explicit.symm]
-        exact getSumcheckRoundPoly_sum_eq (L := L) (ℓ := ℓ) (𝓑 := 𝓑) (i := i) (h := witMid.H)
-      exact Or.inr ⟨h_sumcheck, h_struct, h_init, h_fold⟩
+    -- `masterKStateProp = localChecks ∧ masterKStateCore`.  The round-1 `localChecks` is the
+    -- verifier check `explicitVCheck ∧ localizedRoundPolyCheck`; the round-0 `localChecks` is
+    -- `sumcheckConsistencyProp`.  The `masterKStateCore` (bad ∨ oracleWitnessConsistency) is at the
+    -- same `(stmtIdx, oracleIdx, stmt, wit, oStmt)` on both sides, so it transfers unchanged.
+    obtain ⟨h_localChecks, h_core⟩ := h_kState_round1
+    have h_explicit := h_localChecks.1
+    have h_localized := h_localChecks.2
+    have h_sumcheck : sumcheckConsistencyProp (𝓑 := 𝓑) stmtMid.sumcheck_target witMid.H := by
+      simp_rw [h_localized] at h_explicit
+      rw [h_explicit.symm]
+      exact Sumcheck.Structured.getSumcheckRoundPoly_sum_eq (L := L) ℓ (𝓑 := 𝓑)
+        (i := i) (h := witMid.H)
+    exact ⟨h_sumcheck, h_core⟩
   toFun_full := fun ⟨stmtIn, oStmtIn⟩ tr witOut probEvent_relOut_gt_0 => by
     -- h_relOut: ∃ stmtOut oStmtOut, verifier outputs (stmtOut, oStmtOut) with prob > 0
     --   and ((stmtOut, oStmtOut), witOut) ∈ foldStepRelOut
@@ -1568,7 +1563,7 @@ lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
   refine le_trans h_prob_mono ?_
   dsimp only [incrementalBadFoldEvent_or_sumcheckBadEvent, foldKnowledgeError]
   apply le_trans (
-      Pr_or_le ($ᵖ L) (f := incrementalBadFoldEvent) (g := sumcheckBadEvent)
+      PrUnion.Pr_or_le ($ᵖ L) (P := incrementalBadFoldEvent) (Q := sumcheckBadEvent)
   )
   conv_rhs => simp only [ENNReal.coe_add]; rw [add_comm]
   apply add_le_add
