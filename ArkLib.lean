@@ -139,6 +139,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettMergeMeet
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReindex
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeSubstitution
+import ArkLib.Data.CodingTheory.GMMDS.LovettMergeDescent
 import ArkLib.Data.CodingTheory.GMMDS.LovettNLtK
 import ArkLib.Data.CodingTheory.GMMDS.LovettPairwise
 import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
