@@ -121,6 +121,20 @@ roots-of-unity/Littlewood-Offord sources from the 2026-06-13 findings sweep). **
 - Paywalled (Elsevier): Li–Wan char-2 k-subset-sum (S1071579719300462); "subgroup is not a
   sumset" (S1071579720300149).
 
+## 2026-06-14 — #407 successor priority bundle (action-orbit vs Gaussian-period wall)
+
+Latest issue state: #389 and #400 are closed in favor of #407. The live non-BGK lead is the
+action-orbit route, while the Gaussian-period/deep-moment route remains the best-understood analytic
+wall. Five papers to keep on the immediate desk:
+
+| # | Paper | Identifier | Fetch / status | Why now |
+|---|---|---|---|---|
+| A1 | Chai–Fan, *Action-Orbit FRI Soundness Above the Johnson Radius* | IACR ePrint 2026/861 | already listed/fetched as `eprint-2026-861.pdf`; re-read against #407 | Claimed route around the character-sum/BGK wall: bad challenges form multiplicative orbits. Next formal target is the orbit-counting `K` bound beyond `badSet_orbit_closed`, not another Gaussian-period estimate. |
+| A2 | Mansfield–Mudgal, *A Quadratic Vinogradov MVT in Finite Fields* | arXiv 2310.02950 / QJM 2024 | add/fetch if absent | Anchors the demand-side r≥5 residual as a quadratic Vinogradov/PTE count. The missing piece is a **per-fiber** bound over `μ_n`, because summed energy gives the wrong support direction. |
+| A3 | Okamoto, *Syndrome-Space Lens* / syndrome-space CA paper | IACR ePrint 2025/1712; arXiv 2605.07595 | manual/adversarial review still flagged | Must be read as a refutation target: local notes say the unconditional theorem only reaches `δ < (1-ρ)/3`, but the #407 action-orbit route should be checked against its syndrome-space basis change. |
+| A4 | Diamond–Gruen, proximity-gap counterexamples | IACR ePrint 2025/2010 | manual fetch still needed | Capacity/up-to-capacity barrier check. Any proposed action-orbit δ* pin must avoid the same rank-margin/capacity failure mechanism. |
+| A5 | Cornelissen–Hokken–Ringeling, Gaussian-period average norm paper | arXiv 2507.09303 | add/fetch if absent | Average/house evidence for Gaussian periods: useful sanity check for the old analytic wall, but not a max bound. Helps distinguish "generic small periods" from the needed worst-coset `L^∞` control. |
+
 ## 2026-06-13 — δ* prize-regime scan (new papers)
 - arXiv:2603.03841 — Kumar–Ron-Zewi survey (2026). GM-MDS/higher-order-MDS = GENERICITY; cannot certify a fixed multiplicative subgroup (Open Problem 1). Open-access.
 - arXiv:2408.10977 — Kong–Tamo, point-variety incidence (spectral). Candidate new counting surface; variety-form (monomial graph) ≠ low-weight ball, not drop-in. Open-access. PRIORITY.
