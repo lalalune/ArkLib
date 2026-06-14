@@ -8,6 +8,7 @@ import { Results } from "@/components/sections/Results";
 import { Refutations } from "@/components/sections/Refutations";
 import { OpenCore } from "@/components/sections/OpenCore";
 import { Discussion } from "@/components/sections/Discussion";
+import { Contribute } from "@/components/sections/Contribute";
 import { Timeline } from "@/components/sections/Timeline";
 import { References } from "@/components/sections/References";
 import { DegenProvider } from "@/components/degen/DegenProvider";
@@ -23,6 +24,7 @@ const toc = [
   { href: "#refutations", label: "4 \u2002Refutations" },
   { href: "#open-core", label: "5 \u2002The open core" },
   { href: "#discussion", label: "6 \u2002Discussion" },
+  { href: "#contribute", label: "Mine it yourself" },
   { href: "#timeline", label: "Timeline" },
   { href: "#contributors", label: "Contributors" },
   { href: "#references", label: "References" },
@@ -62,6 +64,7 @@ export default function Page() {
       <OpenCore />
       <Eli5 k="discussion" />
       <Discussion />
+      <Contribute />
       <Timeline />
       <Contributors />
       <References />

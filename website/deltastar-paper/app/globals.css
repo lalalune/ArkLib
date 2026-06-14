@@ -401,6 +401,90 @@ table.paper-table .num {
   font-variant-numeric: tabular-nums;
 }
 
+/* ------------------------------ miner cards ------------------------------ */
+
+.miner-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .miner-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.miner-card {
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--accent);
+  background: var(--paper-raised);
+  border-radius: 2px;
+  padding: 1.15rem 1.25rem 1.3rem;
+  box-shadow: 0 1px 2px rgba(33, 29, 24, 0.04);
+}
+
+.miner-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.miner-step {
+  font-size: 0.8rem;
+  color: var(--ink-secondary);
+  margin: 0.7rem 0 0.4rem;
+}
+
+.miner-step:first-of-type { margin-top: 0; }
+
+.miner-hint {
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  margin-top: 0.7rem;
+}
+
+/* click-to-copy shell command */
+.cmd {
+  display: block;
+  position: relative;
+  width: 100%;
+  text-align: left;
+  background: var(--code-bg);
+  border: 1px solid var(--rule-faint);
+  border-radius: 4px;
+  padding: 0.6rem 3.4rem 0.6rem 0.7rem;
+  cursor: pointer;
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.cmd:hover { border-color: var(--accent); }
+
+.cmd code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.cmd-copy {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.55rem;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+}
+
+.cmd:hover .cmd-copy { color: var(--accent); }
+
 /* -------------------------------- print ---------------------------------- */
 
 @media print {
@@ -414,7 +498,8 @@ table.paper-table .num {
     --rule: rgba(0, 0, 0, 0.35);
     --rule-faint: rgba(0, 0, 0, 0.15);
   }
-  .toc-nav, .site-footer-cta { display: none !important; }
+  .toc-nav, .site-footer-cta, .cmd-copy { display: none !important; }
+  .cmd { border: 1px solid rgba(0, 0, 0, 0.25); }
   body { font-size: 10.5pt; }
   .thm { break-inside: avoid; }
   table.paper-table { break-inside: avoid; }
