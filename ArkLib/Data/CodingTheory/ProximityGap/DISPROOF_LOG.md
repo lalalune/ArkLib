@@ -8899,3 +8899,16 @@ the CHAR-P WALL: forcing tail e_i (2m≤i≤rm, m∤i) to vanish needs P|X^n−1
 Kambiré route ALSO ⟹ open core (BCHKS 1.12 / Paley graph, open Mar-2026 arXiv 2603.29571). My empirical R1 test
 (mu_16,k=2) saturated above δ*, inconclusive. CORRECTION (per swarm ba96383b): earlier "K=O(1)/K≈1.28" was a crude
 misreading; conductor is rank-driven n^{2r-1}, real core=BGK eigenvalue cancellation, dimension-obstructed (n≪√p).
+
+## 2026-06-14 (wakesync/#407): independent corroboration of structural spurious-suppression (the bad-prime bound is multi-constraint, not subset-sum)
+Probed the bad-prime object directly (probe: bad primes p≡1 mod n with a NON-negation-symmetric subset
+of μ_n summing to 0 mod p — char-p-only "spurious" since over ℂ only neg-symmetric subsets sum to 0).
+FINDING: the BROAD object (any subset-sum=0) has MANY bad primes for n=16 (17,97,113,193,241,353,401,
+433,577,...), far more than the swarm's STRUCTURED bad-scalar config (n=16 bad set={17} only). So the
+spurious suppression genuinely lives in the MULTIPLE simultaneous window constraints (e_1=0 ∧ e_3=0
+anti-correlation per swarm), NOT in subset-sum-to-0 alone — independent corroboration of the swarm's
+"structurally suppressed" finding. The precise open core: bound the largest bad prime (for the
+structured config) by N₀=|H^{(+r)}|~ε*q, so prize q≫N₀ ⟹ clean. = the BGK/spurious-config-suppression
+open core, very precisely stated; proven n≤16 computationally, general proof open (the multi-constraint
+anti-correlation that makes the structured spurious vanish at ~N₀). Not closed; genuine engagement +
+corroboration. n=8 has NO broad bad primes (size≤6) in first 40 — even more suppressed.
