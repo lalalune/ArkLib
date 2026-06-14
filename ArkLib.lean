@@ -720,6 +720,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBound
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRCoefficients
+import ArkLib.Data.CodingTheory.ProximityGap.CyclotomicLatticeWrapOnset
 import ArkLib.Data.CodingTheory.ProximityGap.CyclotomicResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.CyclotomicSidonLift
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
