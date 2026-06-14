@@ -1820,13 +1820,15 @@ theorem foldOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ) :
   · -- Bound the conditional probability for each transcript
     intro x
     -- rw [OracleComp.probEvent_map]
-    simp only [Fin.isValue, probEvent_map]
+    -- `probEvent_map` leaves the predicate in `g ∘ f` form; normalize to a lambda so the
+    -- `probEvent_StateT_run_ignore_state` pattern `fun x => ?P x.1` can unify the state-projection.
+    simp only [Fin.isValue, probEvent_map, Function.comp_def]
     let q : OracleQuery [(pSpecFold (L := L)).Challenge]ₒ _ :=
       OracleSpec.query ⟨⟨1, by rfl⟩, ()⟩
     erw [OracleReduction.probEvent_StateT_run_ignore_state
-      (comp := simulateQ (impl.addLift challengeQueryImpl) (liftM (query q.input)))
-      (s := x.2)
-      (P := fun a => P (FullTranscript.mk1 x.1.1) (q.cont a))]
+      (comp := simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+        (liftM (pSpecFold.getChallenge ⟨1, by rfl⟩)))
+      (s := x.2)]
     rw [probEvent_eq_tsum_ite]
     erw [simulateQ_query]
     simp only [ChallengeIdx, Challenge, Fin.isValue, Nat.reduceAdd, Fin.castSucc_one,
@@ -1836,7 +1838,7 @@ theorem foldOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ) :
     have h_L_inhabited : Inhabited L := ⟨0⟩
     conv_lhs =>
       enter [1, x_1, 2, 1, 2]
-      rw [addLift_challengeQueryImpl_input_run_eq_liftM_run (impl := impl) (q := q) (s := x.2)]
+      rw [addLift_challengeQueryImpl_input_run_eq_liftM_run (impl := impl) (t := q.input) (s := x.2)]
     erw [StateT.run_monadLift, monadLift_self, liftComp_id]
     rw [bind_pure_comp]
     conv =>
