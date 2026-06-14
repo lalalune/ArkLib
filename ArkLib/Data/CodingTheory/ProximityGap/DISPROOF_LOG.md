@@ -8688,3 +8688,15 @@ face is OPEN at prize scale. Clean by-product (kept): **rep-bound P_max = energy
 intersection obstruction `p|Res(x^n−1,(c−x)^n−1)` is the same cyclotomic-norm divisibility as the
 4-term additive-energy coincidence). Probe: `scripts/probes/probe_gv_repbound_pmax.py`.
 Lesson re-confirmed: sweep to the EXACT P_max (cyclotomic norm), not a truncated prime range.
+
+## (#407) The clean 2-adic descent `M(n) ≤ √2·M(n/2)` (fleet 00:16 reframing) — REFUTED as a uniform inequality
+`M(n)=max_b|S_b(μ_n)|`, the L^∞ sup-norm. The fleet reframed the open core as the descent
+`M(n)≤√2·M(n/2)` (telescopes to √n). Measured ratio `M(n)/M(n/2)` over a fixed prime, FFT-exact:
+n=8,16,32 → 1.99,1.88,1.51 (VIOLATE, boundary); n=64..1024 → 1.36,1.44,1.45,1.31,1.31. The ratio
+oscillates AROUND √2≈1.414 and EXCEEDS it at n=128 (1.4374) and n=256 (1.4496). So the CLEAN uniform
+`≤√2` descent is FALSE — the per-step cancellation has upward fluctuations and does not telescope to a
+clean √n bound. The descent holds only in GEOMETRIC-MEAN / asymptotic sense (consistent with M~√(n log p),
+ratio→√2). The open gap is exactly whether the descent-fluctuations (the transfer-cocycle Lyapunov
+exponent, cf `probe_dyadic_cocycle_recursion.py`) average to ≤(1/2)log2 with no worst-case upward bias —
+the same moment-vs-max / sqrt-cancellation core, NOT closed by the descent reframing.
+Probe: `scripts/probes/probe_descent_inequality.py`.
