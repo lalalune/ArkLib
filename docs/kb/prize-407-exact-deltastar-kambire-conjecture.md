@@ -904,3 +904,15 @@ agreement/energy structure (`r(c)≤2`) cleanly but DEPLOYING to the bad-scalar 
 historically hit "beyond-Johnson LD". The count lane (this lane) is precisely the attempt to get the COUNT
 directly (off the energy wall) — whether the resultant≤2^s bound transfers to the count is the open question
 to verify when the workflow re-runs. NOT a claimed closure; a promising thread to verify.
+
+## CORRECTION 2026-06-13 — the small-subgroup-pin synthesis does NOT close the prize (crude vs measured)
+
+The prior "promising synthesis" (small-subgroup pin ⟹ bad primes ≤ 2^s ⟹ prize clean) is CORRECTED.
+Data (`probe_407_smallsubgroup_resultant.py`): for the eval-domain subgroup μ_s, bad primes are `< 2^s`
+AND `< s³` (μ_8: none; μ_16: {17}<4096). BUT the spurious configs live in the **eval domain μ_n** (n=2^30,
+LARGE), so the pin's crude bound is `2^n ≫ q` — it does NOT make the prize prime clean. The s~log n that
+appears in the worst-case SUMSET does not shrink the eval-domain bound. So the small-subgroup pin gives the
+same CRUDE exponential threshold as `e2_extra_solution_threshold` (n^{n/2}); neither reaches poly(n).
+**Net: the open core is unchanged** — prove bad primes ≤ **poly(n)** (measured ≈n³) vs the proven crude
+`2^n`/`n^{n/2}`. This sharpening is the genuine unproven step; no closure. Honest correction of an
+over-optimistic thread.
