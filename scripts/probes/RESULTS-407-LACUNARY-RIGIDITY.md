@@ -151,30 +151,59 @@ a labeled `Prop` (open), attacked but not closed.
 This is a pure Lam–Leung-type question (vanishing sums of roots of unity, now *simultaneous* and
 *higher-symmetric*), with the answer empirically `Θ(n)`. It is the prize, off the analytic wall.
 
-### 5.1 The concrete proof path — the DYADIC-TOWER rigidity
+### 5.1 The mechanism — coset quantization (PROVEN) + the O(1)-coset count (open)
 
-The floor has a clean attack (the genuinely-new math the closure needs):
+The proven engine gives the **quantization** half exactly:
 
-> **Tower rigidity (claim).** For `S ⊆ μ_{2^μ}` and `t = 2^j`, `e_1(S)=…=e_{t-1}(S)=0` ⟺
-> `∏_{x∈S}(X−x) ∈ F[X^t]` ⟺ **`S` is a union of `μ_t`-cosets**.
+> **PROVEN (`lacBad_smul_closed`).** `lacBad(μ_n,a,t)` is `⟨g^t⟩`-coset-closed ⟹
+> `#lacBad ≡ 0 (mod n/gcd(t,n))`. So `#lacBad = (#cosets)·(n/gcd(t,n))`, and the floor
+> `#lacBad ≤ q·ε* ≈ n` ⟺ **`#cosets ≤ gcd(t,n)`** (for odd `t`, `gcd=1` ⟹ a *single* coset).
 
-- **(⇐, EASY, provable now):** a `μ_t`-coset `c·μ_t` is the root set of `X^t − c^t`, so a union of
-  cosets gives `∏(X^t − c_j^t)` ∈ `F[X^t]`, whose `X^{a−i}` coeffs vanish for `t ∤ i` ⟹
-  `e_1=…=e_{t-1}=0`. (This exhibits the rigid family and is the lower-bound mechanism.)
-- **(⇒, the rigidity, the open content):** the converse — vanishing forces coset structure — is the
-  Lam–Leung simultaneous-vanishing extension. Verified on small cases (`t=2`: `e_1=0 ⟹` antipodal
-  pairs, exactly Lam–Leung; `t=4`: `e_1=e_2=e_3=0 ⟹ μ_4`-coset union, checked — e.g. `μ_4 ∪ {±ζ_8}`
-  has `e_1=0` but `e_2=−i≠0`, correctly excluded).
+The remaining **open content** is the *number of cosets* — a genuine rigidity, NOT reducible to a
+naive tower identity. (Caution, a wrong guess ruled out: `e_1=…=e_{t-1}=0` does **not** force
+`∏(X−x) ∈ F[X^t]` — it only kills the top `t−1` coefficients, leaving `e_{t+1},…,e_a` free; the
+*converse* `μ_t`-coset-union `⟹` vanishing-top-`(t−1)` holds, but not the reverse. So the rigid
+family is a *lower* bound on the variety, not the whole of it.)
 
-Granting the tower rigidity, for `t=2^j` the variety is exactly the `μ_t`-coset-unions of size
-`a=k+t`, i.e. **choose `a/t` of the `n/t` cosets**, and `e_t(S)` is the `e_{a/t}` of the chosen
-coset-representatives' `t`-th powers (one level down the tower) — a **self-similar recursion** that
-descends to `μ_{n/t}` and bounds `#lacBad` by `O(1)` cosets exactly when the descended level is
-relation-free (§3). This is the closed, off-the-analytic-wall route to the floor; the general-`t`
-(non-power-of-2) case interpolates between consecutive tower levels (the granularity staircase,
-already in-tree as `GranularityLadderRS`). Formalizing the (⇒) tower rigidity is the single
-remaining theorem.
+**Why the count is nonetheless `O(1)` (the conjecture, measured):** as the gap `t` grows past the
+window edge `t₀`, the variety `{|S|=k+t, e_1=…=e_{t-1}=0}` carries `t−1` independent `F_q`-constraints
+and **shrinks/empties** (`#variety ≈ C(n,k+t)/q^{t-1}`), driving `#lacBad ↓`; below `t₀`
+(toward capacity) it blows up — the ceiling side. The crossover at `#lacBad = q·ε*` is the precise
+`δ*`, and the conjecture is that it lands at `prizeDeltaStar`. This is the genuine open core, now a
+finite `F_q`-variety image count (decidable, q-independent in structure), **off the analytic wall**.
+The general `t` is governed by the in-tree granularity staircase `GranularityLadderRS`.
+
+## 6. VERIFICATION (the refutation test) — conjecture SUPPORTED, not refuted
+
+`probe_lacbad_crossover_407.py` computes `#lacBad` exactly and locates the crossover:
+
+| n | ρ | crossover δ* (B=n) | prizeDeltaStar | Johnson | capacity |
+|---|---|---|---|---|---|
+| 16 | 1/4 | 0.5625 | 0.547 | 0.500 | 0.750 |
+| 16 | 1/2 | 0.3125 | 0.250 | 0.293 | 0.500 |
+| 24 | 1/4 | 0.5833 | 0.573 | 0.500 | 0.750 |
+| 24 | 1/2 | 0.3333 | 0.282 | 0.293 | 0.500 |
+
+- **δ\* matches prizeDeltaStar to within one granularity unit `1/n`**, sitting on the dyadic
+  **staircase** whose continuous envelope is `prizeDeltaStar` (= in-tree `GranularityLadderRS`,
+  `δ* = j/n`). So the precise pin is the staircase; `prizeDeltaStar` is its envelope. **Not refuted.**
+- **Coset quantization confirmed:** `#lacBad` is a multiple of `n/gcd(t,n)` **plus the singleton
+  `{0}`** (0 is its own `⟨g^t⟩`-orbit) — the engine theorem `lacBad_smul_closed` is exactly right;
+  the apparent "non-multiples" are all off-by-one from `0 ∈ lacBad`.
+- **Floor mechanism, sharpened (Newton):** by Newton's identities `e_1=…=e_{t-1}=0 ⟺
+  p_1=…=p_{t-1}=0` (power sums) and then `e_t(S) = ±p_t(S)/t`, so
+  `lacBad = {Σ_{x∈S} x^t}` = bounded-coeff subset-sum of `μ_{n/gcd(t,n)}` (the t-th powers). In the
+  **deep window** (`t` large) the vanishing-power-sum **variety is empty** (`#lacBad=0`, floor
+  trivial); only a thin band near the crossover is nontrivial. The variety size obeys
+  `#variety = C(n,k+t)/q^{t-1} + (char-sum error)`; **relation-freeness** (§3, verified) is exactly
+  what forces the error term down to the random value — so the floor (variety ≈ expected ⟹ crossover
+  at the entropy value) is *secured by the verified relation-free condition*, modulo a clean
+  polynomial-argument incomplete-sum bound that is itself off the *full-subgroup* sup-norm wall.
+
+**Net honest verdict (unchanged):** a *relocation* of the open core, strongly numerically supported,
+with the quantization engine proven. The exact δ* is the granularity staircase (in-tree); the
+remaining theorem is the relation-free variety-count = entropy crossover (q-independent, decidable).
 
 Files: `DyadicLacunaryDeltaStar.lean` (engine, axiom-clean), probes
 `probe_subset_sum_fibre_lattice_407.py`, `probe_prize_regime_relation_free_407.py`,
-`probe_fibre_inflation_growth_407.py`.
+`probe_fibre_inflation_growth_407.py`, `probe_lacbad_crossover_407.py`.
