@@ -50,7 +50,7 @@ namespace Q1ClaimA
 
 variable {F : Type*} [Field F] [DecidableEq F] [CharZero F]
 
-omit [CharZero F] in
+omit [DecidableEq F] [CharZero F] in
 /-- **Converse direction (the easy half).**  A negation-closed finite set of nonzero elements of
 a field of characteristic `≠ 2` has vanishing sum: pairing `x ↔ −x` is a fixed-point-free
 involution that cancels the sum. -/
@@ -75,6 +75,7 @@ theorem sum_eq_zero_of_neg_closed [NeZero (2 : F)] {S : Finset F} (h0 : (0 : F) 
   · -- involution: `-(-a) = a`
     intro a _; ring
 
+omit [CharZero F] in
 /-- Negation-closedness as a pointwise statement upgrades to the set equality `S.image (−·) = S`,
 since negation is injective. -/
 theorem image_neg_eq_of_neg_closed {S : Finset F} (hsym : ∀ x ∈ S, -x ∈ S) :
@@ -105,7 +106,7 @@ theorem image_neg_eq_of_sum_eq_zero {m : ℕ} {ζ : F}
     S.image (fun x => -x) = S :=
   image_neg_eq_of_neg_closed (LamLeungTwoPow.vanishing_sum_antipodal hζ hS hsum)
 
-omit [CharZero F] in
+omit [DecidableEq F] [CharZero F] in
 /-- The `2^(m+1)`-th roots of unity are nonzero, so `0 ∉ S` for any set of them. -/
 theorem zero_not_mem {m : ℕ} {S : Finset F}
     (hS : ∀ x ∈ S, x ^ (2 ^ (m + 1)) = 1) :
