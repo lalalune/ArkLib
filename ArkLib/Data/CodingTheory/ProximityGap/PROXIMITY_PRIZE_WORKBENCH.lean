@@ -39,6 +39,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ShawSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
 -- §D THE DEMAND-SIDE LANE (#389) — the CensusDomination #bad-scalar count, r=3 closed (O172):
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR3Bound
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR4Bound
 
 /-!
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -607,6 +608,16 @@ open ArkLib.ProximityGap.DeepBandR3
 /-- The r = 3 deep-band CensusDomination bound is in scope and usable (sanity handle). -/
 example (g : ℕ) (hg : 2 ≤ g) : deepBandBadCount g ≤ deepBandBudget g :=
   deepBandBadCount_le_budget g hg
+
+/-! §D.2  THE r = 4 RUNG — PROVEN axiom-clean (`DeepBandR4Bound`, O177). 2-adic descent to r=3:
+      `deepBandBadCount4 g = g^4 - 2g^3 + 4g + 1 = 1 + n·deepBandBadCount(n/8)` (n=4g).
+      `deepBandBadCount4_le_budget` (#bad₄ ≤ K, g≥2) AND `deepBandBadCount4_le_half_budget_of_prize`
+      (#bad₄ ≤ K/2, g≥3, the whole prize domain) — both Lean-proven. Exactness #bad=formula is
+      COMPUTED (descent bijection, n=16/32/64); the ≤K and ≤K/2 bounds are PROVEN. -/
+open ArkLib.ProximityGap.DeepBandR4 in
+example (g : ℕ) (hg : 3 ≤ g) :
+    2 * deepBandBadCount4 g ≤ deepBandBudget4 g :=
+  deepBandBadCount4_two_mul_le_budget g hg
 
 /-! ════════════════════════════════════════════════════════════════════════════
     ║              ▼▼▼   DEMAND-SIDE GENERAL-r CONJECTURE HERE   ▼▼▼             ║
