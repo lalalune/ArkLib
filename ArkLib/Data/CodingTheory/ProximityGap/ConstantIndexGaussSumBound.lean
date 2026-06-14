@@ -199,8 +199,23 @@ theorem worstCaseIncompleteSumBound_constIndex {χ : MulChar F ℂ} {ψ : AddCha
   have hnn : (0 : ℝ) ≤ ‖eta ψ (Gchi χ) b‖ := norm_nonneg _
   gcongr
 
+/-- **End-to-end additive-energy budget** for the index-`m` subgroup.  Feeding the worst-case bound
+into the in-tree consumer `addEnergy_le_of_worstCase` gives an unconditional envelope
+`q·E(G_χ) ≤ |G_χ|⁴ + (((m−1)√q+1)/m)²·(q·|G_χ|)` — no regime hypothesis. -/
+theorem addEnergy_constIndex_le {χ : MulChar F ℂ} {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (hm : 2 ≤ orderOf χ) :
+    (Fintype.card F : ℝ)
+        * (ArkLib.ProximityGap.SubgroupGaussSumFourthMoment.addEnergy (Gchi χ) : ℝ)
+      ≤ (Gchi χ).card ^ 4
+        + ((((orderOf χ - 1 : ℝ) * Real.sqrt (Fintype.card F : ℝ) + 1) / (orderOf χ : ℝ)) ^ 2)
+          * ((Fintype.card F : ℝ) * (Gchi χ).card) := by
+  refine ArkLib.ProximityGap.InteriorWorstCaseIncompleteSum.addEnergy_le_of_worstCase hψ (Gchi χ)
+    ?_ (worstCaseIncompleteSumBound_constIndex hψ hm)
+  positivity
+
 end ArkLib.ProximityGap.ConstantIndexGaussSum
 
+#print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.addEnergy_constIndex_le
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.norm_mulChar_unit
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.conj_gaussSum
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.norm_gaussSum_eq_sqrt
