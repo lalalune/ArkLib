@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Tactic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # SURFACE 5 — Geometry of numbers controls the wrap-around energy `Q4` (#407)
@@ -157,9 +158,28 @@ theorem coversNeededDepth_of_threshold {d p L needed : ℕ}
   unfold GeometryCoversNeededDepth
   omega
 
+
+/-- **The arithmetic-norm core of the Minkowski obligation (the AM-GM step) — DISCHARGES it modulo two
+standard number-theory facts.** If `α` is a nonzero element of the degree-1 prime `𝔭 ∣ p`, its norm is
+a nonzero integer divisible by `N(𝔭)=p`, so `p ≤ |N(α)| = ∏_j |σ_j(α)|`, while each embedding has
+`|σ_j(α)| ≤ l1Norm c` (unit-modulus generators). Abstracting `a j := |σ_j(α)|`, `L := l1Norm c`:
+`d` terms each `≤ L` with product `≥ p` force `p ≤ L^d` = `MinkowskiL1ShortestVectorBound d p L`. Reduces
+the obligation to `p ≤ ∏ a_j` (ideal-norm divisibility) + `a_j ≤ L` (unit-modulus embeddings).
+
+HONEST SCOPE (corrects the synthesis over-claim): the provable threshold is `L = ⌈p^{1/d}⌉`, `d=n/2`, so
+onset `r* ~ ½p^{1/d}`. As `p = n^β`, `p^{1/d} = n^{2β/n} → 1`, the provable onset is `O(1)`, NOT `≫ ln q`
+— the LOOSE side. The true onset `r* ~ β` needs the deeper cyclotomic minimal-weight (Mann/Lam–Leung).
+Completes the Surface-5 wrap-around face; does NOT cover the prize depth. -/
+theorem minkowski_of_norm_bound {d : ℕ} (p L : ℕ) (a : Fin d → ℕ)
+    (hbound : ∀ j, a j ≤ L) (hnorm : p ≤ ∏ j, a j) : p ≤ L ^ d := by
+  calc p ≤ ∏ j, a j := hnorm
+    _ ≤ ∏ _j : Fin d, L := Finset.prod_le_prod' (fun j _ => hbound j)
+    _ = L ^ d := by rw [Finset.prod_const, Finset.card_univ, Fintype.card_fin]
+
 end ArkLib.ProximityGap.CyclotomicLatticeWrapOnset
 
 #print axioms ArkLib.ProximityGap.CyclotomicLatticeWrapOnset.l1Norm_eq_zero_iff
 #print axioms ArkLib.ProximityGap.CyclotomicLatticeWrapOnset.ideal_below_threshold_eq_zero
 #print axioms ArkLib.ProximityGap.CyclotomicLatticeWrapOnset.wrapExcess_eq_zero_below_minWeight
 #print axioms ArkLib.ProximityGap.CyclotomicLatticeWrapOnset.coversNeededDepth_of_threshold
+#print axioms ArkLib.ProximityGap.CyclotomicLatticeWrapOnset.minkowski_of_norm_bound

@@ -982,3 +982,646 @@ NET: this CLOSES the "count-lane bypass" hope as a route — it is refuted as a 
 the crossover r*≈β is a clean, correctly-located fact, and the new structural separation (moment-depth r* vs
 config-depth r_count, with the saturation onset pinned ≈β-constant while r_count grows ~n) sharpens WHY the
 two lanes coincide. Probes `probe_407_conn_c2_{crossover_scan,gap_vs_generic,verdict,crossover_decisive}.py`.
+
+## UPDATE 2026-06-14 — THIN BOUND: correctly scoped it is TRUE & char-independent; its provable route (orbit-Johnson) has a constant-factor gap EXACTLY at the prize Kambiré direction
+
+Direct attack on the flagged linchpin ("the thin bound": a non-coset agreement set of a genuine monomial
+line beyond Johnson has size ≤ Johnson). Four corrections + one precise obstruction (probes in `/tmp`:
+`thin_correct.py`, `thin_maximal.py`, `thin_final.py`, `d2_route.py`, `proof_route_final.py`,
+`orbit_threshold_exact.py`, `budget_calibration.py`, `badprime_N0.py`):
+
+**(1) The thin bound MUST be scoped to the equivariance LADDER, not μ_d alone, and to genuine
+directions d=gcd(a−b,n)≥2.** Naive "non-(μ_d-coset) ⟹ ≤ Johnson" is FALSE: the maximal "non-μ_d-coset"
+agreement sets are coset-unions of a *smaller* subgroup μ_{d'} (d'|d, d'<d) — fully structured, just at a
+lower tower level (e.g. n=32,k=4: a size-16 set that is a μ_8-coset-union but not μ_16). And d=1
+directions (gcd(a−b,n)=1) admit genuinely ragged sets of size 9>Johnson=8 at n=16,k=4 — but those are NOT
+Kambiré coset directions. **Correctly stated** — *genuine direction (d≥2), agreement set GENUINELY RAGGED
+(not a coset-union of ANY nontrivial μ_{d'}, d'|d)* — the thin bound HOLDS with **zero violations**,
+char-independent: max-ragged = 6,8,10 (n=16, k=4,6,8) ≤ Johnson 8,9,11; n=32 k=8/12 max-ragged 12,15 ≤
+Johnson 16,19; k=12 is TIGHT (13=Johnson). (The earlier raw "REAL VIOLATION" was a subset artifact: my first
+probe interpolated proper SUBSETS of a coset-union agreement set — the FULL agreement set is always a coset
+union beyond Johnson.) `R=k+n/8` fits n=16/32 at low rate but BREAKS at k≥10 (n=16 k=10→11 not 12); no clean
+closed form for max-ragged, but `≤ ⌊√(nk)⌋` is robust.
+
+**(2) Char-0 budget calibration is char-INDEPENDENT in the non-saturated regime, with the ring-hom
+direction confirmed at the count level.** Measured `|H^{(+r)}(μ_s)|`: char-p count ≤ char-0 count
+ALWAYS (0 upward violations over thousands of primes ≡1 mod n) — the merge-only ring-hom monotonicity, at the
+deployed distinct-sumset-count level. Equality (char-p = char-0) holds once `q` exceeds the bad-prime
+threshold N0; bad primes are sparse and bounded (n=16,s=16,r=3: char0=464; bad primes all <4049≈8.7·char0,
+<n^3.5=16384; NONE above), confirming N0~poly. Prize `q≈n·2^128 ≫ N0`, char0≈ε*q. So the calibration IS
+char-independent and provable-in-principle; its residual = the effective bound "N0(n) ≤ poly(n)" (=the in-tree
+`e2_extra_solution_threshold` sharpened from the proven crude `(n²+n)^{2^{k-1}}` to measured poly).
+
+**(3) The thin bound's PROVABLE route is full-twist-orbit list-Johnson — and it covers large d but NOT the
+prize direction.** Clean char-free proof: for ragged S (trivial equivariance H, e=1) the μ_d-twist orbit
+`{c_ω = ω^{−a}c(ω·) : ω∈μ_d}` is L=d DISTINCT deg<k codewords, each agreeing with the SAME line-word in |S|
+positions, pairwise ≤k−1 (MDS). The L-codeword 2nd-moment (Johnson list) bound gives
+`|S| ≤ √(n(k−1)·(1−1/L)) + O(n/L)`, which is ≤ √(nk) **iff L=d ≥ ~√(nk) ≈ n√ρ**. So:
+  · LARGE d (d ≥ n√ρ): the orbit-Johnson PROVES |S| ≤ √(nk) — char-free, Lean-formalizable (substrate:
+    `MonomialPencilQuasiHomog` + `JohnsonListBound`). The d=n/2 case always works (n=16/32/64: 7.56/15.53/31.51).
+  · The Kambiré WORST-CASE direction has d = m = n/s with s≈44 (small subgroup forces the budget), so
+    d ≈ n/44 ≈ 2^{24.5} (μ=30). The orbit-proof threshold is d ≥ √(nk) ≈ 2^{28.5} (ρ=1/4). **The Kambiré
+    direction sits a factor √ρ·44 ≈ 11–22 BELOW the orbit-proof threshold** → orbit-Johnson is loose there by
+    a constant factor (>√(nk)), NOT a proof. This is the precise content of the in-tree note
+    (`MonomialPencilQuasiHomog` "the loose bound is not yet ≤√ρ·n for large d").
+
+**(4) The small-d (d=2) ragged case has a DIFFERENT clean provable bound — also insufficient.** At d=2 the
+twist orbit is only L=2, so orbit-Johnson is loose. There IS a clean char-free constraint: antipodal pairs in
+a d=2-ragged S satisfy |S∩(−S)| ≤ k−1 (both c and c_{−1} equal W there ⟹ ≤ MDS agreement), giving the
+half-distance bound `|S| ≤ (n+k−1)/2`. But `(n+k−1)/2 > √(nk)` at all prize rates (n=1024,k=256: 639>512).
+Yet exhaustive n=16: d=2-ragged max is STRICTLY below √(nk) (6<8, 10<11, 8<9) — the half-distance bound is
+loose; the TRUE d=2 max is ≤√(nk) by a finer (unidentified) argument.
+
+**NET — honest verdict on the linchpin.** The thin bound is TRUE and char-independent (verified n=16 exhaustive,
+n=32 sampled, all rates/primes); the char-0 budget calibration is genuinely char-independent (ring-hom merge
+direction confirmed at the count level, N0~poly). BUT the thin bound is NOT proven: the two clean char-free
+provable routes (full-orbit list-Johnson for large d; antipodal half-distance for d=2) BOTH fall a constant
+factor short of √(nk) precisely at/below the prize-relevant intermediate direction d≈n/44. So the open
+residual is a **constant-factor sharpening of an explicit list-Johnson/second-moment incidence bound at
+intermediate d** — combinatorial, char-INDEPENDENT, NOT the BGK/√n wall (which lives only in the char-p
+budget-equality / N0 residual). Two genuinely distinct open residuals isolated: (R-thin) the intermediate-d
+constant-factor list-Johnson gap (char-free combinatorics), and (R-N0) the poly bad-prime threshold (char-p,
+the residual that touches BGK). The thin bound is the cleaner target; its proof needs the *global single-c*
+consistency across the n/d cosets (the orbit twists are not independent shifts — they share one codeword c),
+which neither the pairwise-MDS nor the generic-list 2nd-moment uses. Probes listed above; no closure claimed.
+
+## UPDATE 2026-06-14 (CONNECTION SYNTHESIS) — the equivalent quantities are NOT equally hard: the COUNT/floor closes by Kambiré PIGEONHOLE, bypassing BGK (existence version)
+
+A connection workflow (energy↔sup-norm↔count↔e₂-rigidity↔Gauss-tower, each substitution adversarially
+verified) produced one decisive structural insight.
+
+**The exact unification (verified identities).** (i) `M(n)=max_{b≠0}|Σ_{x∈μ_n}e_p(bx)|=max_b|η_b|` (sup-norm).
+(ii) `A_k:=E_k(μ_n)−n^{2k}/p = (1/p)Σ_{b≠0}|η_b|^{2k}` — the additive ENERGY is the **2k-th moment** of the
+sup-norm (exact Fourier identity, V1-verified). (iii) char-0 energy = Wick `(2r−1)‼n^r`. (iv) `E_k(F_p)=
+E_k(char0)+#{char-p-spurious solutions}` — the count-lane "spurious configs" ARE the energy anomaly.
+So sup-norm, energy, count, e₂-rigidity are ONE phenomenon (√-cancellation of μ_n) at different L^p faces.
+
+**BUT they are NOT equally hard — the key asymmetry:**
+  · The **sup-norm / energy** route needs `M(n)≤C√(n log p)` for the SPECIFIC prize prime AND uniformly
+    over all `b` — an L^∞ uniform bound = the **BGK/Paley wall** (25-year, SOTA n^0.989 vs needed n^0.5).
+    The worst-case moment depth `r=ρs+2=Θ(log n)` is DEEP (crossover r*≈β+1 is O(1)) — verified, so the
+    energy route genuinely re-hits the deep-moment anomaly.
+  · The **count / floor** route needs only that ONE good prime EXIST in the construction window. This is a
+    Kambiré-style PIGEONHOLE, NOT a sup-norm bound:
+      - floor-bad primes (where a spurious config gives `e_m∉Σ`, i.e. `#bad>N₀`) divide the cyclotomic
+        resultant `gcd(N(Σu),N(Σu³))`, height `≤(2r)^{φ(s)}≤s^s` (verified: μ_16 candidates ≤577≪4^{16}≈4·10⁹).
+      - #spurious-config "shapes" `≤2^{(H(ρ)+ρ)s}` and each gives `≤O(log s)` bad primes in `[4^s,8^s]`, so
+        **bad (config,prime) triples `≲2^{(H(ρ)+ρ)s} ≪ 2^{3s}/s = #primes in [4^s,8^s]`** — VERIFIED with
+        huge margin at prize scale s≤256, r≤64, ρ∈{1/2,1/4} (`probe_407_conn_floor_pigeonhole.py`). Even
+        restricted to primes `≡1 mod n` (`~n^{β−1}/log` in the window) the margin holds (bad `~n^{1.5K}`).
+  ⟹ **a prime `q≡1 mod n` good for the floor EXISTS in the prize window `[n^{2K},n^{3K}]`** — and for it,
+  `#bad=N₀` exactly. Combined with Kambiré's CEILING (the coset construction realizes `N₀` bad scalars at
+  the window edge, the SAME pigeonhole he already uses), **`δ*=window-edge EXACTLY` at a chosen prize prime,
+  with NO sup-norm / BGK bound.**
+
+**Honest scope — what this closes and what remains:**
+  - This is the **EXISTENCE version**: it pins `δ*` for a code with a SUITABLY-CHOSEN prime `q≡1 mod n` in
+    the window (Linnik guarantees the residue class is nonempty; the window has `≫` good primes). Kambiré's
+    published CEILING is *also* existence-based and accepted, so by symmetry the floor should be too — BUT
+    if the prize demands the SPECIFIC smallest/Linnik prime (worst-case over primes), the pigeonhole gives
+    only density-1, not that specific prime; that residual = the per-prime resultant-prime-factor bound
+    (still off-wall, NOT BGK).
+  - The count route's worst-case validity rests on **R1 (monomial extremality)** — UNPROVEN but
+    refutation-survived, and **combinatorial** (sparsity-maximizes-factorization), NOT BGK.
+  - So: the floor (existence) reduces to **{Kambiré pigeonhole (elementary, proven) + R1 (combinatorial)}**,
+    with the sup-norm/BGK wall **entirely bypassed**. The deep insight: the count and sup-norm are equivalent
+    as VALUES of δ* but the count is an EXISTENCE/resultant statement while the sup-norm is a UNIFORM L^∞
+    statement — and only the latter is BGK-hard. Probes: `probe_407_conn_floor_{pigeonhole,height}.py`,
+    `probe_407_conn_c1_*.py`.
+
+## CORRECTION+UPGRADE 2026-06-14 — the floor pigeonhole is via #bad-primes ≤ log D (PROVABLE), not config-count
+
+The previous section's "config-count" phrasing was imprecise (floor configs in μ_n number exp(n), so a
+sum-over-configs bound fails). The CORRECT and STRONGER argument:
+  · ALL floor-bad primes divide a SINGLE integer `D` (the Nullstellensatz/elimination obstruction of
+    `{e_1=e_3=0, F(e_m)≠0}`), whose height is `≤ (n²+n)^{n/2}` — the SAME species as the PROVEN
+    `e2_extra_solution_threshold` (E2VanishRigidityModP.lean).
+  · Therefore `#{distinct floor-bad primes} ≤ log₂ D ≤ (n/2)·log₂(n²+n) = O(n·log n)` — a COUNT bound,
+    independent of the exponential config count.
+  · The Kambiré window `[n^{2K},n^{3K}]` contains `~ n^{β−1}/log` primes `≡1 mod n` (Dirichlet),
+    `≫ n·log n` (verified: at n=2^30, #bad `≲2^35` vs window primes `~2^142`;
+    `probe_407_conn_floor_pigeonhole_corrected.py`).
+  ⟹ a prime `q≡1 mod n` that is FLOOR-GOOD (`∤D`) EXISTS in the prize window — PROVABLY (the bad-prime
+  count bound is of the proven e₂-rigidity species). For it `#bad=N₀`; with Kambiré's ceiling, `δ*=window
+  edge` exactly.
+
+**The crisp deep insight (the answer to "connect the quantities"):** the q∤D residual has TWO versions.
+  (a) "the SPECIFIC prize prime `q∤D`" — HARD (q could be one of the `O(n log n)` bad primes), equivalent
+      to the uniform sup-norm bound = **BGK wall**.
+  (b) "SOME good prime exists in the window" — EASY: `#bad primes ≤ log D = O(n log n) ≪ #window primes`,
+      a pure counting bound from the resultant HEIGHT (proven species), **no sup-norm, no BGK**.
+  The sup-norm/energy route forces (a) (it's an L^∞ uniform statement). The COUNT/floor route only needs
+  (b) (existence — the construction picks `q`, exactly as Kambiré's CEILING does). **So the prize floor,
+  in its existence/construction form, closes by an elementary counting bound and BYPASSES BGK entirely.**
+
+**Honest residuals (NOT BGK):** (1) existence-semantics — does the prize accept a chosen good `q` (as
+Kambiré's ceiling does) vs demand the worst-case prime? If the latter, (b) gives only density-1, and the
+specific-prime residual remains (still off-wall: prime-factor bound on D). (2) R1 (monomial extremality,
+combinatorial, refutation-survived) — makes `#bad=#distinct e_m` the true worst case. (3) formalize that the
+count-lane D's height bound is the e₂-rigidity species (very likely; same fold/resultant machinery).
+
+## RESOLVED 2026-06-14 — the EXISTENCE-SEMANTICS is settled by Kambiré's own Theorem 1 (the floor pigeonhole is the SAME structure)
+
+Read Kambiré arXiv:2604.09724 directly (PDF extracted: `scripts/probes/kambire_2604.09724_extracted.txt`).
+**Theorem 1 is EXISTENTIAL and CHOOSES the prime:**
+> "For every C>0 and ρ∈(0,½), there exist infinitely many block lengths n, dimensions k, such that with
+> `δ = (1−k/n) − Ω(1/log n)`: • **There exists a prime p < n^A with p ≡ 1 (mod n)** ... Let ω be a primitive
+> n-th root, D=⟨ω⟩, C=RS[F_p,D,k]. Then **there exist f,g** with `#{z∈F_p: Δ(f+zg,C)≤δ} ≥ n^C`."
+
+Key structural facts (matching the floor pigeonhole EXACTLY):
+- His **window is `[4^s, 8^s]`** (`s=2^α`); he counts `T := #{p∈[4^s,8^s] prime : p≡1 mod n}` via the
+  **quantitative Linnik theorem** and picks a GOOD prime — explicitly avoiding "collision primes" (line 367:
+  "if this value vanishes in F_p ... the prime allows for different sums to collide"). This is the CEILING.
+- Theorem 1 gives ONLY the ceiling (`#bad ≥ n^C`, i.e. δ*≥edge). It says NOTHING about the floor.
+
+**Consequence — the existence-form floor closure is GENUINE prize progress (not a weakening):**
+the prize is existential and the construction CHOOSES `p` in `[4^s,8^s]` via Linnik. My floor pigeonhole
+adds the FLOOR (`#bad ≤ N₀`, δ*≤edge) by choosing `p∤D` (D = the single obstruction integer over ALL
+configs/lines, `#factors(D) ≤ log D = O(n log n) ≪ T`). It is the SAME window, SAME Linnik count, SAME
+"avoid the bad primes" mechanism Kambiré already uses (and the prize community accepts) for the ceiling.
+So: pick `p∈[4^s,8^s]`, `p≡1 mod n`, good for BOTH (collision-free [ceiling] AND `∤D` [floor]); such `p`
+exists (both bad sets `≪ T`). For it, `#bad = N₀` exactly ⟹ **δ* = window-edge EXACTLY**, EXISTENTIAL form,
+**no BGK**.
+
+**The remaining open set is now MINIMAL and entirely OFF-WALL:**
+  (1) **R1** (monomial extremality) — makes `#bad = #distinct e_m` the worst case over lines. Combinatorial.
+  (2) **D-height bound** — the count-lane obstruction `D` (of `{e_1=e_3=0, F(e_m)≠0}`) has height `2^{O(n log n)}`,
+      hence `#factors(D)=O(n log n)`. Same fold/resultant species as the PROVEN `e2_extra_solution_threshold`.
+Both are combinatorial/algebraic, NEITHER is the BGK sup-norm wall. The existence-semantics — the piece I
+flagged as load-bearing — is RESOLVED in favor of the closure by Kambiré's own framing.
+
+## CORRECTION 2026-06-14 (decisive paper read) — the existence-semantics does NOT transfer; the floor-bypass is NOT a prize closure (refutes the section above)
+
+A direct read of BOTH primary sources (Kambiré arXiv:2604.09724 full PDF; BCHKS On-Proximity-Gaps
+Conjecture 1.2; the in-tree `mcaConjecture`/`epsMCAgsPrizeUniversalConjecture`) settles the load-bearing
+question — and the conclusion is the OPPOSITE of the "RESOLVED" section. Quoted statements, then the logic.
+
+**(1) The prize conjecture quantifies UNIVERSALLY over the field (∃ constants, ∀ primes).**
+  · **BCHKS Conj 1.2** (the canonical area conjecture, verbatim): *"Let δ∈(0,1) be a constant.* ***For every
+    Reed Solomon code C = RS[F_q, D, k]*** *with length |D|=n and distance δ, and for every η>0, C has
+    proximity gaps up to radius γ=δ−η, with proximity loss ε*=o_η(1) and a=O_η(n^τ)."* — the constant `τ`
+    (and the o/O implicit constants) are fixed FIRST, then `∀` ranges over **every** RS code, i.e. every
+    prime field `F_q`. There is **no `∃ q`**; `q` is universally bound.
+  · **In-tree `mcaConjecture`** (`GrandChallenges.lean:650`) and **`epsMCAgsPrizeUniversalConjecture`**
+    (`MCAGSFieldUniversal.lean:126`): both are `∃ c₁ c₂ c₃ : ℝ, ∀ {F} [Field F] [Fintype F] … (domain) …,
+    ε_mca(RS[F,domain,k], δ) ≤ bound(c₁,c₂,c₃)` — **constants existentially bound BEFORE the `∀` over the
+    field `F`.** This is the field-universal form.
+  · The repo has ALREADY adjudicated this. `MCAGSFieldUniversal.lean` PROVES the **fixed-field** surface
+    (`epsMCAgs_prizeBound_conjecture_holds`, axiom-clean) — where `F` is fixed and the constants come after —
+    is a THEOREM, and states explicitly: *"The genuinely open prize is field-universal … it quantifies the
+    constants **before the field**, so they cannot absorb `q=|F|`; along a family with `q→∞` the bound `→0`
+    for fixed `η` and the inflation above fails."* **The open prize is the ∀-over-primes form, full stop.**
+
+**(2) Kambiré's Theorem 1 is EXISTENTIAL — but that is exactly what a REFUTATION needs, not a proof.**
+  · Title: *"Proximity Gaps Conjecture **FAILS** Near Capacity over Prime Fields."* It is a **negative**
+    result. Theorem 1: *"there exist infinitely many block lengths n … **There exists** a prime p<n^A with
+    p≡1 (mod n) … **there exist** f,g with #{z:Δ(f+zg,C)≤δ}≥n^C, Δ([f,g],C²)>δ."* Proof: *"there must exist
+    a good prime in the interval [4^s,8^s] … so we can pick A=K log 8."* He **constructs ONE instance** (one
+    n, one p, one f,g) where proximity gaps fail. **One counterexample suffices to refute a `∀` statement** —
+    that is the entire logic of his paper. His existential quantifier is the NEGATION of the prize's `∀`.
+
+**(3) THE ASYMMETRY the "RESOLVED" section missed — fatal to the bypass-as-closure.** Kambiré chooses `q`
+  because he is **breaking** `∀q P(q)`: `¬∀q P(q) ≡ ∃q ¬P(q)`, so a chosen bad `q` is a valid refutation.
+  The prize FLOOR ("δ*≤edge", `#bad≤N₀`) is a piece of **establishing** the bound — it must hold **for the
+  given code over its field**, and the open conjecture demands it **for ALL primes `q≡1 mod n`** (constants
+  fixed first). The pigeonhole produces a chosen GOOD prime `q∤D`; this is `∃q (good)`, which is the
+  **negation** of the relevant universal `∀q`, NOT the universal itself. **Choosing a convenient prime is
+  legitimate for refutation (Kambiré) and ILLEGITIMATE for proving the universal conjecture (the prize).**
+  Symmetry between ceiling and floor FAILS precisely because the ceiling lives on the refutation side (∃)
+  and the proof-side floor needs the universal (∀). So "Kambiré's ceiling is existential and accepted ⟹ the
+  floor is too" is a **non-sequitur**: his ceiling is accepted *as a refutation ingredient*, where ∃ is
+  correct; the prize floor needs ∀, where ∃ is insufficient.
+
+**(4) What the pigeonhole DOES legitimately give (verified, off-wall) — and its true scope.**
+  · The pigeonhole margin is genuine and enormous: `#bad-primes ≤ log₂ D ≈ 3.2×10¹⁰ = 2³⁵` (at n=2³⁰) vs
+    `#window-primes T ~ 2⁷¹³` — margin `2⁶⁷⁸` (probe `probe_407_close_existence_semantics.py`; the earlier
+    "negative margin" scare was a **count-vs-log-count** mistake: compare COUNTS `2³⁵ ≪ 2⁷¹³`, not `log D`
+    vs `log T`). So **a floor-good prime EXISTS** — this is sound.
+  · But "exists a good prime" pins `δ*` only **for a SPECIFICALLY-CONSTRUCTED code/prime** — it is a
+    `density-1`/`for-some-instance` statement. It does NOT pin `δ*` "in the prize regime" per the prize's
+    own `∀`-over-`F` semantics (point 1). Per the in-tree `mcaConjecture` quantifier, **`δ*` for a chosen
+    good `q` is not progress on the open prize** — the fixed-`q` surface is already a proven theorem; the
+    OPEN content is exactly the part the pigeonhole cannot reach (uniformity over `q`).
+
+**(5) VERDICT (decisive, the answer to the OPEN ITEM).**
+  (a) **The prize quantifies `δ*` over ALL primes `q≡1 mod n` in the regime** (constants-before-field;
+      BCHKS Conj 1.2 "for every RS code"; in-tree `mcaConjecture`/`epsMCAgsPrizeUniversalConjecture`). It
+      does NOT accept a constructed/chosen instance for a POSITIVE resolution.
+  (b) **Kambiré's ceiling IS existence-based (chooses `q`) — but it is a REFUTATION, where ∃ is the correct
+      and only quantifier.** Symmetry to the floor FAILS: the floor is on the proof side and needs ∀.
+  (c) **Therefore the existence-form floor closure (pigeonhole) does NOT pin `δ*` "in the prize regime" per
+      the prize's own semantics.** It pins `δ*` for a chosen-prime instance (density-1) — real and BGK-free,
+      but NOT the open prize, which is the uniform-over-`q` statement = the BGK/Paley sup-norm wall.
+  **The BGK-bypass is real ONLY at the density-1/chosen-instance level; it is NOT a closure of the prize.**
+  The honest residual (1) flagged in the CONNECTION SYNTHESIS — "if the prize demands worst-case-over-primes,
+  (b) gives only density-1" — is the ACTUAL state, and the prize DOES demand the ∀-form. The two earlier
+  "RESOLVED" claims (existence-semantics resolved in favor of closure) are **WITHDRAWN**: the semantics is
+  resolved AGAINST the closure. Probes: `probe_407_close_existence_semantics.py`; sources:
+  `/tmp/kambire.txt` (arXiv:2604.09724), `/tmp/bchks.txt` (BCHKS Conj 1.2),
+  `MCAGSFieldUniversal.lean` + `GrandChallenges.lean` (in-tree quantifiers).
+
+## UPDATE 2026-06-14 — R-THIN via the twist-orbit CIRCULANT / higher-moment route: REDUCES (mult→additive Θ(s)), does NOT close; the spectrum is provably vacuous beyond its lowest mode
+
+Direct attack on the char-free R-thin residual (the orbit-Johnson constant-factor gap at intermediate
+`d`, flagged in the 2026-06-14 THIN-BOUND section as needing "the global single-`c` consistency across
+the `n/d` cosets that pairwise-MDS does not use"). Route = the higher-moment argument on the `L=d` twist
+codewords `c_ω=ω^{−a}c(ω·)` sharing ONE `c`. Probe: `scripts/probes/probe_407_rthin_circulant_route.py`
+(self-contained, runs clean; identity check + scipy LP + n=64 truth sample).
+
+**The structure (all exact).** For ragged `S` (trivial equivariance `H`), the `A_ω = ω^{−1}S` are
+rotates of one set; the pairwise-agreement matrix `M_{s,t}=|A_{ω^s}∩A_{ω^t}|` is **exactly a CIRCULANT**
+(verified, fraction 1.000) whose first row is the autocorrelation `v_t=|S∩ω^t S|`: `v_0=|S|`, `v_t≤k−1`
+(MDS, `t≠0`). Eigenvalues `λ_j=Σ_t v_t ζ_d^{jt} = |proj|² ≥ 0` (PSD, automatic from autocorrelation).
+
+**(1) KEY IDENTITY (exact, verified on concrete ragged `S`):**
+  `Σ_{t=0}^{d−1} v_t = Σ_{orbits O} |S∩O|²`  (orbit incidence; each `M`-row sums to the mu_d-orbit
+  self-incidence of `S`). With `v_t≤k−1` and Cauchy–Schwarz over the `n/d` orbits this gives the
+  **AUTOCORRELATION BOUND** `|S| ≤ n/(2d) + √((n/2d)² + n(d−1)(k−1)/d)`. This **BEATS list-Johnson**:
+  the gap to `√(nk)` drops from MULTIPLICATIVE (×1.04–1.5 at the prize direction) to **ADDITIVE Θ(s)**,
+  `s=n/d`. It CLOSES `|S|≤√(nk)` for large `d` (`d≳√(nk)`, small `s`), exactly the regime the in-tree
+  note already covers.
+
+**(2) THE SPECTRUM IS PROVABLY VACUOUS beyond the lowest mode (the decisive obstruction).** An LP over
+  `v` (maximize `|S|` s.t. `0≤v_t≤k−1`, ALL eigenvalues `λ_j≥0`, orbit-incidence `λ_0≥` balanced-min)
+  gives `LP(full-PSD + orbit) == LP(orbit-only)` at EVERY prize direction (s=8/16/44/64, n=256/1024).
+  The higher modes `j≠0` constrain only the SHAPE of `v`, never `|S|`; only `λ_0=Σ_t v_t` (the orbit
+  incidence) binds. **So 3rd/4th/higher moments and the PSD constraint ADD NOTHING** — the route caps at
+  the orbit-incidence lowest-mode bound. This kills the "higher-moment / circulant-spectrum closes it"
+  hope outright. (PSD-only without orbit is vacuous, `=n`.)
+
+**(3) The residual gap is a CONSTANT `≈s/2 ≈10`, independent of `n`,** at `d=n/44` (n=2^10…2^30 all give
+  gap ≈10). Char-FREE / combinatorial (NOT the BGK sup-norm wall) — but the circulant relaxation cannot
+  remove it.
+
+**(4) The relaxation is LOOSE — the true obstruction is REALIZABILITY, not moments.** Sampled true max
+  ragged `|S|` (n=64, k=16) is `≤18` at every `d`, vs `√(nk)=32` and the relaxation bound 39/35/33/32. So
+  `|S|≤√(nk)` is TRUE with large margin; the measured off-diagonals (e.g. `v=[5,1,0,1]`) sit FAR below the
+  MDS bound `k−1=3`. The binding constraint is that `S` is the agreement set of a **single deg<k
+  polynomial** `c` — a rank/realizability condition the circulant-of-agreement-COUNTS throws away.
+
+**NET (honest).** The higher-moment/circulant route is a genuine REDUCTION of R-thin (multiplicative →
+additive Θ(s) gap, char-free, on existing `MonomialPencilQuasiHomog`+`JohnsonListBound` substrate) but
+**NOT a closure**. New negative knowledge, machine-tested: the single-`c` circulant spectrum is
+determined by its lowest (orbit-incidence) mode alone, so no moment/PSD/spectral sharpening can close the
+additive `Θ(s)` gap at the prize direction. Closing R-thin requires a **realizability argument** (the
+deg-`<k` rank constraint on `c`), which is a different lever than the moment ladder. No closure claimed.
+Probe: `scripts/probes/probe_407_rthin_circulant_route.py`.
+
+## UPDATE 2026-06-14 (per-coset route) — per-coset DICHOTOMY proven axiom-clean; R-thin closure confirmed realizability-gated (converges with circulant route)
+
+Attacked R-thin via the per-coset / degree-counting route (alternative to moments). Two concrete
+deliverables + one methodological correction; net verdict CONVERGES with the circulant route above
+(R-thin true with margin; binding lever = single-`c` deg-`<k` REALIZABILITY, not per-coset/moments).
+
+### (1) METHODOLOGICAL CORRECTION — R-thin must be tested on MAXIMAL agreement sets with `γ≠0`
+Earlier exploratory probes that "violated R-thin" (e.g. ragged `|S|=6 > √(nk)=5.66` at `n=16,k=2`)
+were ARTIFACTS of (a) enumerating arbitrary point-subsets instead of the genuine object — the
+*maximal* agreement set `S={x∈μ_n : c(x)=wγ(x)}` of an actual codeword — and (b) the degenerate
+`γ=0` (line collapses to the bare monomial `x^a`, on `μ_n` equal to `x^{a mod n}`, a codeword when
+`a mod n < k`). Restricting to maximal agreement sets with `γ≠0`: **R-thin HOLDS with margin in EVERY
+exhaustive case** (`n=16`, ALL `p^k` codewords, `p=17`): `max |S|²/(nk) = 0.766` (worst at `k=4,d=4`:
+`|S|=7 < √(nk)=8`), never reaching 1; sampled `n=32` gives ratios `0.27–0.53` (margin GROWS with `n`).
+Probes: `/tmp/rthin_exhaustive_max.py`, `/tmp/rthin_globalineq2.py`, `/tmp/rthin_maximal.py`,
+`/tmp/rthin_n32.py`.
+
+### (2) PROVEN, axiom-clean Lean — the per-coset agreement dichotomy
+`Frontier/_PerCosetDichotomy.lean` (real `lake build` green, 3297 jobs, `[propext,Classical.choice,
+Quot.sound]`). On each `μ_d`-coset (a `d`-point set `T`), the agreement of a codeword with the
+`μ_d`-quasi-homogeneous pencil is governed by ONE polynomial `Q` of degree `<d` (the `μ_d`-fold of
+`c−wγ`), so:
+- `coset_agreement_dichotomy` — agreement on the coset is **either full (`=d`) or thin (`<d`)** — there
+  is no "almost-full" intermediate. (Pure `Polynomial.card_roots'`: `#roots ≤ natDegree < d`.)
+- `coset_partial_le` — a *partial* coset contributes `≤ Q.natDegree` agreement points.
+This formalizes the codeword-side of the MDS twist dichotomy (`MonomialPencilQuasiHomog`) as a clean
+root-count, char-free. **Verified: zero per-coset violations** over all `p^k` codewords `n=16` + sampled
+`n=32` (`rthin_exhaustive_max.py`, `rthin_n32.py`).
+
+### (3) HONEST verdict — the per-coset route is LOOSE at the prize direction (same as circulant)
+The per-coset dichotomy gives `|S| ≤ Σ_z (m_z−1)` (sum over partial cosets, `m_z` = #active
+frequencies of `c` on coset `z`, `+1` for the pencil's single frequency, `m_z ≤ min(k,d)+1`). At the
+worst ragged `S` this is LOOSE: `n=16,k=4,d=4` has actual `|S|=7` but `Σ(m_z−1)=12`; in the prize
+direction `d≈n/44`, `Σ(m_z−1)≈(n/d)·min(k,d)≫√(nk)`. So the per-coset/entropy/degree-counting route
+recovers the all-or-thin STRUCTURE (proven) but **NOT the tight `√(nk)` radius**. The reason is exactly
+the one the circulant route found independently: `m_z` is ~uniform across cosets (every `C_r(z)≠0`
+generically), and what actually keeps `|S|` small is the GLOBAL constraint that all cosets' `Q_z` come
+from a *single* deg-`<k` `c` — i.e. **the deg-`<k` REALIZABILITY of `c`, a rank condition the
+per-coset count (like the moment circulant) discards.** Two independent routes (moments/circulant +
+per-coset/entropy) now agree: R-thin's `√(nk)` closure is realizability-gated, not moment/per-coset
+reachable. The proven per-coset dichotomy is the reusable structural brick; the open step is the
+single-`c` rank argument. No closure claimed. New file: `Frontier/_PerCosetDichotomy.lean`.
+
+## REFUTATION 2026-06-14 — R1 (monomial extremality) is FALSE; the monomial is the MINIMUM, not the maximum (antipodal-symmetry penalty)
+
+**R1 as stated ("the worst pencil (max #bad) is the MONOMIAL pencil X^a+γX^b; a combination
+adds high-freq terms, over-constraining ⟹ STRICTLY FEWER bad γ") is REFUTED**, robustly,
+**beyond Johnson**, with a clean structural mechanism. Two independent exact methods agree
+(ball/line-incidence `probe_407_close_r1_ball.py` + direct k-subset agreement count
+`probe_407_close_r1_enum.badset_direct`).
+
+**The counterexample (n=16, k=4, beyond-Johnson a=9 > √(nk)=8, cofactor deg m=1).**
+Leading degrees (a*,b*)=(10,8). The pencil is `X^10 + γ X^8` (monomial) vs `X^10 + c·X^9 + γ X^8`.
+Both are GENUINE FAR directions (self-agreement 8 < a=9). Across p=97,193,257,353 the ratio is
+EXACTLY 2.00:
+  · MONOMIAL `(X^10, X^8)`: **#bad = 8**.
+  · GENERAL `(X^10+c X^9, X^8)`: **#bad = 16** (for 64 of the ~177 far values of c; median 15).
+The monomial `s=0` is the UNIQUE worst case — every other far value of the X^9 coefficient gives
+#bad > 8 (`/tmp/R1MECH.py`). So the monomial is the **MINIMUM**, not the maximum.
+
+**Mechanism — the antipodal-symmetry penalty (verified `/tmp/R1ANTIPODAL.py`).** Write the pencil
+as `X^{b*}·q(X)`. For the monomial `X^10+γX^8 = X^8(X^2+γ)`: the cofactor `q=X^2+γ` is EVEN, so
+its roots are a ±-pair `±√(−γ)` ⟹ every bad-γ agreement set `S⊆μ_16` is **antipodal-closed**
+(closed under `z↦−z`, verified). For the general `X^8(X^2+cX+γ)`: `q` is a FULL quadratic, no
+±-symmetry ⟹ agreement sets are **NOT antipodal-closed**, so it realizes the asymmetric configs
+TOO. The monomial's even-cofactor symmetry HALVES its supply (the `#389` antipodal/negation-closure
+excess, now on the bad-scalar count side): monomial 8 = full 16 / 2.
+
+**Exact discriminator = `gcd(a*,b*)` even (`/tmp/R1GAP.py`, n=16,k=4,p=193, deep band a=a*−1):**
+  · `(10,9)` gap 1, gcd 1: mono=16, max=16 — **EXTREMAL**.
+  · `(11,9)` gap 2, gcd 1 (both odd): mono=8, max=8 — **EXTREMAL**.
+  · `(10,8)` gap 2, gcd 2 (both even): mono=8, max=16 — **BEATEN ×2**.
+So monomial extremality holds iff `gcd(a*,b*)` is odd (no antipodal/coset symmetry forced on the
+cofactor); it FAILS when `a*,b*` share an even common factor — which is **exactly the Kambiré
+exponents** `a*=rm, b*=(r−1)m` with `m` even (the 2-power/dyadic prize case `n=2^μ`, m=2^j).
+
+**Within-Johnson (a<√(nk)) the monomial is ALSO beaten** (different mechanism: thick ball; e.g.
+`(7,5)` a=6 mono=64 beaten to 67 by an `X^4=X^k` perturbation). So R1 fails on both sides of
+Johnson; the beyond-Johnson even-gcd failure is the structurally clean and prize-relevant one.
+
+**CONSEQUENCE for the floor / Kambiré.** The naive "both-monomial pencil" UNDER-counts the bad
+scalars by the antipodal factor; it is NOT the extremal construction. The directive's R1 intuition
+("minimal high-support 2 terms ⟹ most γ") is exactly BACKWARDS: minimal support = maximal
+symmetry = FEWEST γ. **What this does NOT do: it does not lower δ\*** — the TRUE max (general
+non-symmetric cofactor `X^{b*}(X^{a*−b*}+…+γ)`, here #bad=16) is the larger count, so the floor's
+"#bad = N₀" target is realized by the GENERAL construction, not the monomial. The honest upshot:
+  (a) R1 (monomial = worst case) is FALSE → the floor's worst-case bound must range over ALL far
+      pencils of given degrees, not just monomials. The good news is the max is still an explicit
+      structured pencil (general cofactor), and #bad there is the full subgroup-coset-sumset count.
+  (b) The line-list / floor UPPER bound `#bad ≤ N₀` must therefore be proven for the general
+      cofactor pencil (the actual maximiser), not reduced to monomials. The "sparsity-maximizes-
+      factorization-count" reduction is INVALID.
+  (c) This re-opens the optimality residual: coset-saturation (#bad = sumset) must be shown for the
+      maximiser directly. Factorization rigidity still applies (the maximiser `X^{b*}·q(X)` mod
+      deg<k is still constrained), but the clean "reduce to monomial" step is gone.
+
+Probes (all reproducible, exact): `scripts/probes/probe_407_close_r1_{lineball,enum,ball}.py`,
+`/tmp/R1{CHECK108,MECH,ANTIPODAL,GAP}.py`. Refutation conf 0.9 (two exact methods, 4 primes,
+ratio exactly 2.00, mechanism pinned to antipodal-closure of agreement sets).
+
+## RESOLVED 2026-06-14 — constant-index A_k structural bound is PROVEN (axiom-clean Lean), but is VACUOUS at the prize index = it FOLDS TO BGK exactly there (decisive verdict on the L2/sup-norm OPEN ITEM)
+
+Direct attack on the alternative sup-norm closure: prove `A_k := E_k(μ_n) − n^{2k}/p ≤ C^k·k!·n^k` for
+ALL k at constant index `m=(p−1)/n`, via a STRUCTURAL/L^∞ bound (the L²/moment-relation-counting route is
+already refuted in `_MomentMethodNoGo.lean`). **Decisively answered: bounded C at constant index, but it
+DOES fold to BGK at the prize index 2^128.**
+
+**(1) Exact Fourier identity (re-verified by FFT, V1):** `A_k = (1/p)·Σ_{b≠0}|η_b|^{2k}`, `η_b=Σ_{x∈μ_n}e_p(bx)`
+— the `2k`-th moment of the sup-norm (`b=0` term `=n^{2k}/p` is the subtracted trivial mode).
+
+**(2) The structural bound, PROVEN axiom-clean (NO moment-counting, NO BGK, NO open input).** Compose two
+already-landed axiom-clean theorems:
+  · `eta_constIndex_norm_le` (`ConstantIndexGaussSumBound.lean`): `M:=max_{b≠0}‖η_b‖ ≤ ((m−1)√p+1)/m =: B ≤ √(mn)`.
+  · `subgroup_gaussSum_secondMoment` (Parseval): `Σ_b‖η_b‖²=p·n`, so `Σ_{b≠0}‖η_b‖² ≤ p·n`.
+  Pure Hölder/sup step: `Σ_{b≠0}‖η_b‖^{2k} = Σ_{b≠0}‖η_b‖²·‖η_b‖^{2(k−1)} ≤ B^{2(k−1)}·Σ_{b≠0}‖η_b‖² ≤ B^{2(k−1)}·pn`.
+  ⟹ **`A_k ≤ n·B^{2(k−1)} ≤ m^{k−1}·n^k`** — so the implied `C(m)=m` is BOUNDED at constant index, and the
+  conjectured `C^k·k!·n^k` is IMPLIED (since `m^{k−1}n^k ≤ m^k·k!·n^k`). Formalized + axiom-clean
+  (`[propext,Classical.choice,Quot.sound]`, no sorryAx): `/tmp/ConstIndexMomentStructural.lean`,
+  `momentTail_structural_le` + `secondMoment_tail` (built against the in-tree substrate; dep
+  `ConstantIndexGaussSumBound` real-`lake build` green, 3315 jobs).
+
+**(3) FFT verification (n=2^μ, μ≤21, p≤2.3×10⁷, k=2..6, indices m=2..82).** `R_struct:=A_k/(m^{k−1}n^k) ≤ 0.32`
+EVERYWHERE (worst 0.3157); `R_holder:=A_k/(n·M^{2(k−1)}) ≤ 0.73`. `C_k:=(A_k/(k!n^k))^{1/k} ∈ [0,1.8]`, FLAT
+in n at fixed index. Regression `log(M/√n) ~ a·log(log p)` gives `a∈{+0.19,+0.07,−0.09,−0.02,+0.15}` for
+`m∈{2,4,8,16,64}` (mean |a|=0.10 **≪ 0.5**) ⟹ `M/√n` is BOUNDED (Ramanujan-like), NOT BGK-growing `√(log p)`,
+*at fixed constant index*. Probes `probe_407_close_constindex_Ak_fft.py`, `_Ak_decision.py`,
+`_structural_bound.py`.
+
+**(4) DECISIVE caveat — it FOLDS TO BGK exactly at the prize index (why the bound exists is also why it is
+useless for the prize).** The bound's constant is `C(m)=m`, growing LINEARLY in the index. The prize has
+`p≈n·2^128`, so the index is `m=(p−1)/n≈2^128` (NOT constant). There `B=((m−1)√p+1)/m → √p` = the **trivial
+Weil bound**, and `C(m)=m≈2^128` is `~2^60`× larger than the required absolute/sub-Gaussian constant
+(`M≲√(n log p)≈3.4×10⁵` needed vs `√(mn)=√p≈6×10²³` proven). So the structural bound degrades to the open
+BGK/Paley sup-norm wall precisely at the prize 2-power index. The mechanism is fundamental: at constant
+index the Gauss-period IS the average of `m` Gauss sums (`m·η_b=Σ_{j<m}gaussSum(χ^j,ψ_b)`), giving an L^∞
+bound `√m·√n` FOR FREE — a *completion* bound, not a sub-Gaussian cancellation. The free L^∞ bound is `√m·√n`,
+which is `≪√q` only while `m≪n` (constant index); at `m=2^128≫n` it is the trivial `√q`.
+
+**VERDICT (the OPEN ITEM, answered): bounded C at constant index = TRUE and PROVEN (axiom-clean), but FOLDS
+TO BGK at the prize index.** The trivial-mode (j=0) subtraction `A_k=E_k−n^{2k}/p` is already in the
+identity and does not help — the residual `m−1` Gauss-sum modes each contribute `√q`, and only their
+constant count `m` (not any cancellation among them) keeps `C` bounded. So this lane does NOT close the
+prize: it confirms (machine-checked) that the prize's `n=2^μ`, index-`2^128` regime is exactly the regime
+where the constant-index √-cancellation degrades to the trivial Weil/BGK wall. Conf 0.9 (proven Lean bound
++ exact FFT at prize-scale index). No closure claimed; this is a clean machine-checked DELINEATION of where
+the constant-index method dies (the index, not n, is the prize obstruction).
+
+## LEDGER 2026-06-14 (close-everything workflow, adversarially verified) — synthesis CORRECTED on two points
+
+A batched 12-lane attack→verify workflow ran (existence-semantics, R1, R2, D-height fully; later lanes
+rate-stalled). Adversarial verifiers CORRECTED the prior "floor closes modulo R1+D-height" synthesis:
+
+- **EXISTENCE-SEMANTICS — RESOLVED (existential).** Confirmed via Kambiré Thm 1 (existential, chooses p in
+  [4^s,8^s] via Linnik). The floor pigeonhole gives a GOOD prime EXISTS (margin ≫0 at every prize row),
+  matching Kambiré's published mechanism. It does NOT make an ARBITRARY p good (bad primes are a nonempty
+  sparse set) — so it serves the EXISTENTIAL floor (choose p), which is the prize's own semantics. ✓ STANDS.
+
+- **R1 (monomial extremality) — REFUTED.** `probe_407_close_r1_refutation_crossprime.py`: for the (10,8)
+  pencil at a=9 (beyond Johnson=8, n=16,k=4), the MONOMIAL line `X^10+γX^8` has bad count 8, but the
+  COMBINATION line `f=X^10+cX^9, g=X^8` has bad count **16 — exactly 2× — at p=97,193,257,353** (ratio
+  2.00, structurally exact, from `X^8(X²+cX+γ)` vs `X^8(X²+γ)`). So MONOMIALS ARE NOT EXTREMAL; the general
+  pencil doubles the count. R2's verifier independently concurs: "R2b-max is REFUTED for monomials (general
+  cofactor doubles it) ⟹ the floor must bound the GENERAL pencil." **This breaks the count route's monomial
+  reduction** — the floor must bound `#bad` over ALL lines (a,b)+cofactor, not just monomials.
+
+- **D-HEIGHT BOUND — my "#bad primes ≤ O(n log n)" is UNSUPPORTED.** `probe_407_close_countlane_VERDICT.py`:
+  each individual bad prime is `≤ (n²+n)^{n/2}` (proven e₂-rigidity SPECIES) ✓, but there is NO single
+  integer of height `2^{O(n log n)}` whose factors cover all floor-bad primes: the sumset poly `G_r` has
+  height `≫ n log n` (n=32,r=3 → log₂=301>160, grows with r since deg=|Σ_r|=2^{Θ(s)}), and the per-config
+  product is `2^{Θ(n)}` (a UNION over `2^{Θ(n)}` configs, not a single integer). So `#floor-bad ≤ log D =
+  O(n log n)` does NOT follow from e₂-rigidity. The bad-prime COUNT is empirically tiny (n=8→0, n=16→≤11)
+  but that is observation, not the size-bound pigeonhole.
+
+- **R2 — Kambiré's optimization gives the worst-case (m,r,s) = (s~K log n, r=ρs+2, m=n/s)** for the CEILING;
+  he does NOT prove the floor's UPPER bound (no line beats |H^{(+r)}|). The floor must bound the general
+  pencil over all s|n.
+
+**CORRECTED honest status.** The existence-pigeonhole STRUCTURE is valid (a good prime exists, existential
+semantics confirmed). But it bounds the WRONG object as previously stated: (a) R1 refuted ⟹ the floor count
+is the GENERAL-pencil bad count (≥2× monomial), so the δ* formula must be re-derived for general pencils OR
+the doubling shown to be absorbed by the max over (m,r,s); (b) the `#bad-primes ≤ log D` step needs the bad
+primes to divide a single small-height integer, which is NOT provided by e₂-rigidity. So the prize floor is
+NOT closed even in existence form; the two new gaps (general-pencil extremality, single-integer D-height)
+are the corrected open core — still OFF-WALL (combinatorial/resultant), not BGK. Probes:
+`scripts/probes/probe_407_close_*.py` (R1/R2/existence/D-height families).
+
+## UPDATE 2026-06-14 — R1 refutation SEVERITY: constant 2× (plateaus over #terms) but m-dependence UNRESOLVED
+
+Follow-up to the R1 refutation (monomial not extremal). Severity analysis (`probe_407_close_r1_grow_terms.py`,
+`probe_407_close_r1_factor_vs_m.py`), n=16, k=4, beyond-Johnson:
+- Kambiré's construction is MONOMIAL (`f=X^{rm}, g=X^{(r-1)m}`, read from arXiv:2604.09724).
+- For (a,b)=(10,8), m=gcd(a−b,n)=2: monomial #bad=8, general f gives 16 (factor **exactly 2.00** at
+  p=193,257,353, NON-saturated). Adding MORE free terms to f (X^9 then X^9+X^7) does NOT grow it past 16 —
+  the overcount **PLATEAUS at 2×** (not growing with #terms). A CONSTANT factor shifts δ* by `O(1/n) ≪
+  Ω(1/log n)` = Kambiré's own window ambiguity ⟹ HARMLESS to the leading δ* formula.
+- BUT the factor 2 traces to the cofactor period m=2 (g=X^{n/2}). Whether the factor SCALES with m (worst
+  case m=n/s ~ n/log n, which would be SERIOUS) is UNRESOLVED: at n=16 the m=4,8 pencils have NO
+  beyond-Johnson bad scalars to measure (n too small). Needs larger n (build_ball too slow there).
+
+**Honest severity verdict:** R1 is strictly refuted, but the overcount is a CONSTANT factor (≈2×, plateaus
+over #terms) at the only measurable config (m=2, n=16). IF the factor stays O(1) or polylog across (m,n),
+R1's refutation is HARMLESS — it shifts δ* within Kambiré's Ω(1/log n) ambiguity and the count route's
+LEADING-order δ*=window-edge survives (the floor bounds the general pencil = O(1)·monomial). IF the factor
+scales with m~n/log n, the count route is genuinely broken. **This single question — overcount-factor vs
+cofactor-period m, at large n — is now the deciding item for whether the count/floor route closes δ* to
+leading order.** Off-wall (combinatorial), needs a larger-n (or structural) computation. Probes added.
+
+## REFUTATION 2026-06-14 — Action-Orbit (Chai-Fan 2026/861) Q1 self-similarity (*)_d FAILS char-p at d>=32; the lane collapses to BGK at the open boundary (does NOT bypass it)
+
+Attack on the OPEN ITEM (Action-Orbit non-BGK lane, Q1 = "norm non-vanishing, d>=16 OPEN; d in {4,8}
+settled"). **PROVENANCE WARNING (load-bearing): the actual paper eprint 2026/861 is Cloudflare-blocked**
+— `~/papers/arklib/2026_861.pdf` and `/tmp/2026_861.pdf` are BOTH "Just a moment..." HTML, NOT the PDF.
+WebFetch returns 403. So Q1's precise form (Conj 4.12 / `Norm_{K_d/Q}(F_d)`) is RECONSTRUCTED from
+`ActionOrbitFRI.lean` + KB + issue comments, NOT quoted. Operative reconstructed Q1 (route i), the
+self-similarity hypothesis: on the orbit-PRIMITIVE gap stratum `V_d^prim` (antipodal-free `Y⊆μ_d`,
+`p_1(Y)=0`), `(*)_d : p_1=0 ⟹ p_a=0` for every odd `a`. `K=O(1)` soundness holds iff `(*)_d` holds for
+all dyadic `d=2^j`; `(*)_d` fail char-p == norm vanishes mod p == spurious primitive point == K inflates.
+
+**THE DECISIVE COMPUTATION (all EXACT exhaustive MITM, antipodal-free verified; prize band p≈d^4, p=1 mod d):**
+- `badSet_orbit_closed` (`ActionOrbitFRI.lean`) is correct + axiom-clean; genuine-RS check (n=8) confirms
+  the bad set IS a union of `⟨w^{b-a}⟩`-orbits of size `S=n/gcd(b-a,n)`, so **K = |bad|/S EXACTLY** —
+  orbit compression buys a factor `S` and NO MORE.
+- **K=1 ESCAPE ⟺ V_d^prim empty.** Genuine-RS structured `(3k/2,2k)` bad-ρ = `{ρ^8=16}` (one orbit, K=1)
+  EXACTLY at d=2,3 (n=16,24, locator method) — the `(*)_d`-clean regime. So the K=1 escape is BECAUSE
+  V^prim is empty, NOT a realizability artifact.
+- **`(*)_d` char-p census:** d=8: V^prim empty (0 pts). d=16: V^prim empty in the prize band (0 pts, p~16^4..16^6).
+  **d=32: 192/192 primitive points VIOLATE** (p_1=0, p_3≠0), all 4 prize-scale primes; **d=64: 100/100 violate**
+  (sampled). So the norm VANISHES mod every tested prize-scale prime for **d≥32**.
+- **The onset is a height/L_min threshold in (d,p) = the BGK object.** d=16 is NOT unconditionally clean:
+  at p=337 (≈16^2.1) V_16^prim has 16 points, **all 16 violate `(*)_16`** (e.g. 7-element Y). d=16's prize
+  band p~16^4 just sits ABOVE the d=16 spurious-onset (last nonempty at p=113≈16^1.71); d=32's onset reaches
+  INTO its prize band p~32^4. As `d=2^μ` grows (prize regime), the threshold only worsens — all d≥32 fail.
+- K-growth (|Σ_r| value-spectrum proxy): K explodes ×19.5 (ρ=1/4) / ×34 (ρ=1/2) per n-doubling at fixed depth.
+
+**VERDICT (answer to the OPEN ITEM): Q1 is SETTLED at d≤16 only because V_d^prim is empty in the narrow
+prize band (so `(*)_d` is VACUOUS, not proven); it is REFUTED at d≥32 — the norm VANISHES mod p at prize
+scale, spurious primitive points exist, `(*)_d` self-similarity FAILS.** Therefore **Action-Orbit does NOT
+give O(1)/|F| on plain RS over μ_n in the window interior at the prize regime** (`n=2^μ ⟹ d=2^μ≥2^30≫32`):
+it delivers K=1 ONLY while V_d^prim is empty (d≤16), and inflates once the char-p spurious primitive stratum
+opens (d≥32). That stratum = short antipodal-free vanishing `2^μ`-th-root sums mod a poly-norm split prime
+= **EXACTLY the BGK/sum-product wall** (Lam-Leung controls it char-0; BGK only reaches `n^{1-1/2880}`). The
+lane COLLAPSES to BGK precisely at the open boundary; it does not bypass it. The orbit MECHANISM is real and
+axiom-clean — but the O(1) BOUND it is supposed to carry is false beyond d=16. Refutation conf 0.85 (exact,
+uniform across primes; residual uncertainty = the reconstructed-not-quoted Q1 statement). Probes:
+`scripts/probes/probe_407_close_actionorbit_VERDICT.py` (self-contained census),
+`probe_407_close_actionorbit_q1_dichotomy.py`, `probe_407_actionorbit_q1_starD_charp.py`,
+`probe_407_actionorbit_K_growth_law.py` (K explosion).
+
+## ⛔ RETRACTION 2026-06-14 — the pigeonhole "floor closure" does NOT close the prize (existence-semantics verifier, confirmed by in-tree code)
+
+**RETRACTING** the earlier sections "RESOLVED — existence-semantics" and "the floor closes by pigeonhole,
+bypassing BGK". They rest on a NON-SEQUITUR that an adversarial verifier caught and the in-tree
+formalization confirms.
+
+**The prize is UNIVERSAL-over-the-field, not existential.** Verified directly:
+- `mcaConjecture` (GrandChallenges.lean:650): `∃ c₁ c₂ c₃ : ℝ, ∀ {FC}[Field FC][Fintype FC] …, ε_mca ≤
+  (1/|FC|)·n^{c₁}/(ρ^{c₂}η^{c₃})` — the constants are bound **before** the `∀` over the field, so they
+  CANNOT absorb `q=|FC|`. Same shape in `epsMCAgsPrizeUniversalConjecture` and BCHKS Conj 1.2.
+- `MCAGSFieldUniversal.lean` states it outright: **"the fixed-field uniform GS prize is a THEOREM; the open
+  prize is field-universal"**, and "the constants quantify before the field, so they cannot absorb q=|F|;
+  along q→∞ the bound →0 and the inflation fails." The fixed-field surface
+  (`epsMCAgs_prizeBound_conjecture_holds`) is ALREADY PROVEN axiom-clean in-tree.
+
+**The fatal asymmetry (why "ceiling existential ⟹ floor existential" is FALSE):** Kambiré chooses `q`
+because he is *refuting* `∀q P(q)`, and `¬∀q P(q) ≡ ∃q ¬P(q)` — a chosen bad `q` is a valid refutation
+(∃ is correct). The prize FLOOR is part of *establishing* the conjecture and demands the bound for ALL
+`q≡1 mod n`; the pigeonhole produces `∃q good (= q∤D)`, which is the NEGATION of the needed `∀q`. Choosing
+a convenient prime is legitimate for refutation (Kambiré) and ILLEGITIMATE for proving the universal bound.
+
+**Consequence:** the pigeonhole gives a chosen-prime/fixed-field δ* pin — which is REAL, BGK-free math, but
+is the surface **already proven in-tree**, NOT the open prize. **The prize's genuine open content IS the
+uniform-over-q bound = the incomplete-Gauss-sum sup-norm `M(n)≤C√(n log p)` = the BGK/Paley wall.** The
+"bypass" bypassed the PRIZE (retreated to density-1), not the WALL. R1 (refuted) and the D-height residual
+are real but MOOT for closure — they would only matter if the existence-form floor were a valid closure,
+which it is not.
+
+**Honest session ledger (what survives):** (a) energy = 2k-th moment of the sup-norm `A_k=(1/p)Σ_{b≠0}|η_b|^{2k}`
+— exact identity, STANDS. (b) R1 monomial-extremality — REFUTED (antipodal-symmetry mechanism, verifier-confirmed),
+STANDS. (c) existence-semantics — CORRECTLY understood now as NOT a closure (prize is universal). (d) NO prize
+closure; the BGK wall is the genuine open core, unmoved. The pigeonhole/count lane is BGK-free but pins only
+the already-proven fixed-field surface. Session takeaway: a promising-looking closure, correctly demolished
+by adversarial verification + reading the in-tree quantifiers.
+
+## UPDATE 2026-06-14 (BGK work) — the moment NoGo bounds the WRONG quantity; DC-subtracted A_r ≤ Wick = the prize (= BGK), holds empirically
+
+Working the genuine open target (uniform-q sup-norm `M(n)=max_{b≠0}|Σ_{x∈μ_n}e_p(bx)| ≤ C√(n log p)`).
+Clarified the moment route:
+
+**`_MomentMethodNoGo` bounds the wrong object.** It proves `n^{2r} ≤ p·E_r` (Cauchy–Schwarz), where
+`E_r = (1/p)Σ_b|η_b|^{2r}` is the FULL energy INCLUDING the `b=0` DC term `|η_0|^{2r}=n^{2r}`. So
+`p·E_r ≥ n^{2r}` is just the DC term — a LOWER bound that says NOTHING about the sup-norm. The sup-norm uses
+`M^{2r} = max_{b≠0}|η_b|^{2r} ≤ Σ_{b≠0}|η_b|^{2r} = p·A_r`, with the **DC-SUBTRACTED** energy
+`A_r := (1/p)Σ_{b≠0}|η_b|^{2r} = E_r − n^{2r}/p`. So the moment route is NOT dead.
+
+**`A_r ≤ Wick := (2r−1)‼·n^r` for r up to ~log p ⟹ M ≤ √(n log p)** (optimize `(p·Wick)^{1/2r}` at
+`r*~log p`). MEASURED (`probe_407_bgk_dc_subtracted_moments.py`, FFT of `1_{μ_n}` on `Z/p`, n=16,32,64,
+p~n^4): `A_r/Wick ≤ 1 and DECREASING` for ALL r (mu=4: 1.00→0.14 over r=1..8; mu=6: 1.00→0.62 over r=1..10).
+So the prize sup-norm bound holds EMPIRICALLY via the DC-subtracted moments, and `M/√(n log(p/n)) ≈ 1.2–1.4`
+(window-membership C=O(1) confirmed).
+
+**Honest catch (why this is reframing, not a proof):** `A_r ≤ Wick` is EQUIVALENT to `M ≤ √(n log p)` (each
+implies the other up to constants: `M^{2r}≤p·A_r` one way; `A_r ≤ M^{2r−2}·n` the other). So `A_r ≤ Wick`
+is BGK restated, not an easier route. The char-0 bound (DyadicEnergyK1 `E_r^{(0)} ≤ Wick`) gives `A_r ≤ Wick`
+only via `anomaly ≤ n^{2r}/p` (the char-p excess ≤ the DC term) — which is the BGK content, open for r>β.
+**Net:** the moment route is correctly reframed (NoGo bounds the DC term, irrelevant to sup-norm; the real
+statement is the DC-subtracted `A_r ≤ Wick`), empirically confirmed, but equivalent to the BGK wall — no
+closure. Probe added; the fleet should stop citing `_MomentMethodNoGo` as killing the moment route (it kills
+only the DC-included version).
+
+## PROOF PROGRAM 2026-06-14 — the prize ⟺ ONE inequality (Dyadic Sub-Gaussian Energy Lemma); optimization is elementary (constant √2)
+
+Working the uniform-q bound as a PROOF target (assume true). Reduced it to a single, sharply-stated lemma
+with everything else elementary and verified:
+
+> **DYADIC SUB-GAUSSIAN ENERGY LEMMA (the sole remaining content).** For `n = 2^μ`, prime `p ≡ 1 mod n`,
+> and all `r ≤ log p`:  `A_r := (1/p)·Σ_{b≠0} |η_b|^{2r} = E_r(μ_n) − n^{2r}/p ≤ (2r−1)‼·n^r`,
+> with the constant ABSOLUTE (uniform over p). Here `η_b=Σ_{x∈μ_n}e_p(bx)` and
+> `E_r(μ_n)=#{(x,y)∈μ_n^{2r}:Σx≡Σy mod p}`.
+
+**This lemma ⟹ the prize bound `M(n) ≤ √(2n·log p)`** (ABSOLUTE constant). Proof of the implication
+(ELEMENTARY, provable now): `M^{2r}=max_{b≠0}|η_b|^{2r} ≤ Σ_{b≠0}|η_b|^{2r} = p·A_r ≤ p·(2r−1)‼n^r`. So
+`M ≤ (p·(2r−1)‼·n^r)^{1/2r}`. Minimizing the RHS over `r`: `f(r)=(1/2r)[log p + Σ_{i≤r}log(2i−1) + r log n]`,
+`f'(r)=0 ⟹ r* = log p`, `f(r*) = ½log(2n log p)` ⟹ `M ≤ √(2n log p)`. □ (the `r* ≤ log p` hypothesis of the
+Lemma is exactly met at the optimizer).
+
+**VERIFIED (`probe_407_bgkproof_deepr_optimization.py`, FFT n=32,64, p~n^4):** `log(A_r/Wick) ≤ 0` and
+strictly DECREASING for ALL `r=1..40` (well past `log p≈14–17`); the moment bound `(p·A_r)^{1/2r}` converges
+to the true `M`; `M/√(n log(p/n)) ≈ 1.26–1.36`. So the Lemma is TRUE and the implication is tight.
+
+**Status of the Lemma itself = the open BGK content.** `A_r ≤ Wick ⟺ anomaly_r ≤ n^{2r}/p` where
+`anomaly_r = #{non-matching 2r-tuples with Σx≡Σy mod p}` (char-p connected energy ≤ DC term). The char-0
+side is EXACTLY Gaussian (Lam–Leung: no connected ℂ-relation among 2^μ-th roots ⟹ char-0 cumulants vanish;
+`DyadicEnergyK1.lean` proves `E_r^{(0)} ≤ Wick`). The entire open content is the char-p connected-relation
+count to depth `r ~ log p` — the BGK/Paley wall, but now reduced to ONE clean inequality with the prize
+constant pinned to `√2`. The proof-strategies workflow targets exactly this Lemma. Probe added.
+
+## PROOF PROGRAM (cont.) — the SELF-CONTAINED remaining lemma (dyadic-tower lane, verifier-confirmed); di Benedetto boundary
+
+The proof-strategies workflow's dyadic-tower-induction lane completed (adversarial verify: CONFIRMED,
+status: blocked_at_known_wall) and produced the precise self-contained remaining claim:
+
+> **ANOMALY SUPPRESSION LEMMA (the sole open content).** Let μ≥1, n=2^μ, p prime with p≡1 (mod n), p≥n^4.
+> Identify μ_n⊂F_p with the n-th roots of unity; lift `x_i=ζ_n^{a_i}` to ℂ. For `1 ≤ r ≤ ⌈2 ln p⌉` define
+> `Anom_r(p) := #{(x_1,…,x_r,y_1,…,y_r)∈μ_n^{2r} : Σx_i ≡ Σy_j (mod p) but Σζ_n^{a_i} ≠ Σζ_n^{b_j} in ℤ[ζ_n]}`.
+> Then **`Anom_r(p) ≤ n^{2r}/p`**.
+> [With the PROVEN `R_r ≤ (2r−1)‼·n^r` (matching/char-0 part, Lam–Leung), this gives `A_r ≤ (2r−1)‼·n^r`,
+>  hence `M(n) ≤ √(2n log p)` by the elementary `r~log p` optimization.]
+
+**The wall, pinned (verifier-confirmed):** this single inequality is EQUIVALENT (up to constants) to the
+prize sup-norm `M(n) ≤ C√(n log p)` = the Paley-graph / √-cancellation conjecture for a size-`n`
+multiplicative subgroup. The char-0 floor (Lam–Leung/Wick) controls ONLY `R_r` (matching tuples); the entire
+open content is `Anom_r` (non-matching, collide-only-mod-p), the BGK/incomplete-character-sum object. SOTA
+**di Benedetto n^{0.989} holds only for n > p^{1/4}**, so the prize `p = n^4` (n = p^{1/4}) is the EXACT
+UNPROVEN BOUNDARY; for `p > n^4` (n < p^{1/4}, thinner) di Benedetto does not apply at all. The 2-adic
+moment recursion provably does NOT cross this gap (the L^∞ alignment obstruction survives the L^{2r}
+averaging). Remaining proof strategies (Stepanov depth-r collision count, multiplicative→additive energy,
+Katz effective flatness, completion/large-sieve) were rate-limited before completing; they are the only
+candidates for a provable bound (likely n^{1−δ}, not √n) or a dyadic improvement past the boundary.
