@@ -147,6 +147,16 @@ theorem lacBad_smul_closed (G : Finset F) (a t : ℕ) {g : F} (hg : g ≠ 0)
   exact ⟨S.image (fun x => g * x), vanishingVariety_smul_closed G a t hg hG hS,
     esymmF_image_mul g hg S t⟩
 
+/-- **`#lacBad ≤ #vanishingVariety`** (an image is no larger than its domain). Load-bearing
+simplification: the floor follows from the **pure subset-count** `#vanishingVariety ≤ C·n` — no
+control of the image collapse is needed. And by Newton's identities the variety is
+`{S : |S|=a, p_1(S)=…=p_{t-1}(S)=0}` (vanishing power sums), so in the deep window (large gap `t`,
+many constraints) it is **empty** and the floor is *trivial* there; only the thin crossover band
+near `prizeDeltaStar` is nontrivial. -/
+theorem lacBad_card_le_variety (G : Finset F) (a t : ℕ) :
+    (lacBad G a t).card ≤ (vanishingVariety G a t).card :=
+  Finset.card_image_le
+
 /-! ## The closed conjecture (the prize floor, off the analytic wall) -/
 
 /-- **THE DYADIC LACUNARY FLOOR** — the single open core, as ONE closed, `q`-independent,
@@ -184,10 +194,22 @@ theorem floor_or_violated (G : Finset F) (k t₀ C : ℕ) :
     obtain ⟨t, ht1, htle, hgt⟩ := h
     exact Or.inr ⟨t, ht1, htle, hgt⟩
 
+/-- **The floor reduces to a PURE SUBSET-COUNT** (no image-collapse needed). If the
+vanishing-power-sum variety is small — `#{S ⊆ μ_n : |S|=k+t, e_1(S)=…=e_{t-1}(S)=0} ≤ C·n` — for
+every window-interior gap, then `DyadicLacunaryFloor` holds. This is the cleanest closed form of
+the open core: a `q`-independent, decidable count of subsets with vanishing intermediate symmetric
+functions, *empty* in the deep window (where the floor is automatic). -/
+theorem dyadicLacunaryFloor_of_variety_bound (G : Finset F) (k t₀ C : ℕ)
+    (h : ∀ t : ℕ, t₀ ≤ t → k + t ≤ G.card → (vanishingVariety G (k + t) t).card ≤ C * G.card) :
+    DyadicLacunaryFloor G k t₀ C :=
+  fun t ht htle => le_trans (lacBad_card_le_variety G (k + t) t) (h t ht htle)
+
 end ProximityGap.DyadicLacunary
 
 /-! ## Axiom audit (the proven rigidity engine must be `[propext, Classical.choice, Quot.sound]`). -/
 #print axioms ProximityGap.DyadicLacunary.esymmF_image_mul
 #print axioms ProximityGap.DyadicLacunary.vanishingVariety_smul_closed
 #print axioms ProximityGap.DyadicLacunary.lacBad_smul_closed
+#print axioms ProximityGap.DyadicLacunary.lacBad_card_le_variety
 #print axioms ProximityGap.DyadicLacunary.floor_or_violated
+#print axioms ProximityGap.DyadicLacunary.dyadicLacunaryFloor_of_variety_bound
