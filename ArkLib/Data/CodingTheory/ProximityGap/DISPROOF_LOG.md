@@ -8767,3 +8767,18 @@ P=x^b+αx^a−g (proven injective: P−P' deg≤a<|A|⟹=0). Verified n=8 pencil
 VERDICT: N = #achievable cyclic gap-patterns; bounded above by all patterns (exponential); whether
 ACHIEVABLE is poly = the beyond-Johnson list size viewed through the orbit action = the recognized
 open core (issue #407 contract). Genuine partial: orbit-count law + A↔P injectivity are clean/proven.
+
+---
+## 2026-06-13 #407 — LocalAlignedChildSubmaximality (the SINGLE open Lean input of the live phase-chaining route) is REFUTED worst-case
+
+**Target.** `Frontier/_DyadicPhaseChaining.lean:309` `LocalAlignedChildSubmaximality (M) (N) := ∀ i<N, ∃ x y, M(i+1)=x+y ∧ x²+y² ≤ M(i)²`. The conditional chain `squareDescentLaw_of_localAlignedChildSubmaximality → level_le_of_squareDescentLaw` derives the prize floor `B ≤ √(n·drift)` from it. Intended instantiation `M(i)=|S_{b*}(μ_{2^i})|`, split into the dyadic half-cosets `μ_{2^{i+1}}=μ_{2^i} ⊔ ζμ_{2^i}`, children `A=S_{b*}(μ_{2^i})`, `B=S_{b*ζ}(μ_{2^i})`.
+
+**Two independent refutations (FFT-exact, 4 large primes, proper subgroups, n up to 4096):**
+
+1. **Half-coset interpretation** (the intended `x=|A|, y=|B|`): the binding inequality `|A|²+|B|² ≤ M(i)²` FAILS worst-case at EVERY level and EVERY tested prime. Worst ratio `R=(|A|²+|B|²)/M(i)²` reaches `≈1.995` at the first level and stays `>1` throughout (n=2048→4096 at p=4005889: R=1.2456; submax@b*=1.2456). At the level-(i+1) maximizer b* the phase alignment is EXACT — `cos(A,B)=1.0000` to 4 dp across all rows/primes (the empirical anchor is REAL) — but that is precisely what breaks submaximality: aligned + comparable-magnitude children give `|A|²+|B|² → 2·M(i)²`.
+
+2. **Literal Lean def, ANY real split** (the def only needs *some* x,y): min of `x²+y²` s.t. `x+y=s` is `s²/2`, so a valid split EXISTS iff `M(i+1)²/2 ≤ M(i)²`, i.e. the def is **logically equivalent** to the uniform descent `M(i+1) ≤ √2·M(i)`. That descent is FALSE worst-case (re-confirmed independently, sharper than the earlier M-ratio entry): violations persist at large n — p=2021377 n=1024→2048 ratio 1.4743; p=4005889 n=2048→4096 ratio 1.5618. Not a boundary artifact.
+
+**Conclusion.** The live L^∞/phase-chaining route's single open input is FALSE as a per-level worst-case inequality. The phase alignment `cos=1.0000` is an exact algebraic identity (confirmed), but it is the OBSTRUCTION to submaximality, not the lever. Consistent with #7.2 (no per-step/L² inequality reaches the floor) and the prior `M(n)≤√2·M(n/2)` refutation: the residual is genuinely a **worst-case-PATH (Lyapunov / large-deviation) bound on the phase-alignment cocycle** `∏ r_j`, `r_j∈[√2,2]` — NOT any single-level submaximality. The `_DyadicPhaseChaining.lean` consumer chain stays valid as stated (it is conditional); its hypothesis is just not instantiable at the real Gauss-period level.
+
+Probe: `scripts/probes/probe_local_aligned_child_submaximality.py` (self-contained, no sympy). Machine-checked countermodel: `Frontier/_DyadicPhaseChainingSubmaxRefuted.lean` (the def↔√2-descent equivalence `localAlignedChildSubmaximality_iff_sqrt2_descent` + the concrete violation `not_localAlignedChildSubmaximality_submaxCounterexample`; axiom-clean `[propext, Classical.choice, Quot.sound]`).
