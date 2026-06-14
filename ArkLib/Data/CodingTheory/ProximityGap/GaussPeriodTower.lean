@@ -73,8 +73,45 @@ theorem period_eq_add {V : Type*} [DecidableEq V] (S0 S1 : Finset V) (hdisj : Di
     (∑ x ∈ S0 ∪ S1, f x) = (∑ x ∈ S0, f x) + (∑ x ∈ S1, f x) :=
   Finset.sum_union hdisj
 
+
+/-- Conjugation of a finite-group additive-character value is the negation pullback (root of unity). -/
+private theorem addChar_conj_aux {V : Type*} [AddCommGroup V] [Fintype V] (ψ : AddChar V ℂ) (a : V) :
+    (starRingEnd ℂ) (ψ a) = ψ (-a) := by
+  have hca : (Fintype.card V) • a = 0 :=
+    (addOrderOf_dvd_iff_nsmul_eq_zero).mp addOrderOf_dvd_card
+  have hpow : ψ a ^ (Fintype.card V) = 1 := by
+    rw [← AddChar.map_nsmul_eq_pow, hca, ψ.map_zero_eq_one]
+  have hnorm : ‖ψ a‖ = 1 := Complex.norm_eq_one_of_pow_eq_one hpow (by positivity)
+  rw [AddChar.map_neg_eq_inv]; exact (Complex.inv_eq_conj hnorm).symm
+
+/-- **The period of a negation-closed set is real (conjugation-fixed).** If `S = −S`, the Gauss
+period `∑_{x∈S} ψ(x)` is fixed by complex conjugation.  This is why the dyadic Gauss period
+`η_b(μ_n)` is real for every `b` (n even ⟹ `−1 ∈ μ_n` ⟹ `bμ_n` negation-closed): the structural
+handle that turns the prize's per-level descent into a *real-variable* extremal problem on a
+self-similar tower of real Gaussian periods. -/
+theorem period_conj_eq_of_neg_closed {V : Type*} [AddCommGroup V] [Fintype V]
+    (S : Finset V) (hS : ∀ x ∈ S, -x ∈ S) (ψ : AddChar V ℂ) :
+    (starRingEnd ℂ) (∑ x ∈ S, ψ x) = ∑ x ∈ S, ψ x := by
+  rw [map_sum]
+  simp only [addChar_conj_aux]
+  refine Finset.sum_nbij' (fun x => -x) (fun x => -x) ?_ ?_ ?_ ?_ ?_
+  · intro x hx; exact hS x hx
+  · intro x hx; exact hS x hx
+  · intro x _; exact neg_neg x
+  · intro x _; exact neg_neg x
+  · intro x _; rfl
+
+/-- The period of a negation-closed set has zero imaginary part — it is a real number. -/
+theorem period_im_zero_of_neg_closed {V : Type*} [AddCommGroup V] [Fintype V]
+    (S : Finset V) (hS : ∀ x ∈ S, -x ∈ S) (ψ : AddChar V ℂ) :
+    (∑ x ∈ S, ψ x).im = 0 := by
+  have h := period_conj_eq_of_neg_closed S hS ψ
+  rw [Complex.conj_eq_iff_im] at h; exact h
+
 end ArkLib.ProximityGap.GaussPeriodTower
 
 #print axioms ArkLib.ProximityGap.GaussPeriodTower.gaussPeriod_parallelogram_recursion
 #print axioms ArkLib.ProximityGap.GaussPeriodTower.twistedPeriod_eq_sub
 #print axioms ArkLib.ProximityGap.GaussPeriodTower.period_eq_add
+#print axioms ArkLib.ProximityGap.GaussPeriodTower.period_conj_eq_of_neg_closed
+#print axioms ArkLib.ProximityGap.GaussPeriodTower.period_im_zero_of_neg_closed
