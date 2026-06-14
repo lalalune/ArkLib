@@ -246,7 +246,27 @@ Bottom line: **no known result bounds the count of weight-`a` `{0,1}` codewords 
 So: BKR (additive, super-poly) above, Johnson (poly) below Johnson, KKH26 (window-edge) — and the
 multiplicative `μ_n` window-interior count is the genuine open theorem. Refs logged in `PAPERS_NEEDED.md`.
 
-Files: `DyadicLacunaryDeltaStar.lean` (engine), `BCHVarietyRigidity.lean` (BCH bound), all
+## 9. THE SECOND-MOMENT (L²) IDENTITY — a 5th route, same wall, with a proven √-saving
+
+Writing the binary-codeword count via the product representation (each `x_i ∈ {0,1}` independently)
+`N = #{S : 1_S ∈ C} = (1/q^{t-1}) Σ_{c∈F_q^{t-1}} ∏_{x∈μ_n}(1 + e_q(P_c(x)))`,
+`P_c(X)=Σ_{j=1}^{t-1} c_j X^j`, the Parseval/second-moment computation gives an **exact identity**
+(derived, then VERIFIED exactly — `probe_secondmoment_codeword_count_407.py`, `match=True` t=2,3):
+
+> **`Σ_c |term_c|² = q^{t-1} · 2^n · (1 + E)`,  `E = Σ_{0≠ε∈{-1,0,1}^n, p_1(ε)=…=p_{t-1}(ε)=0} 2^{-wt(ε)}`**
+
+— `E` is the **`{-1,0,1}`-codeword enumerator** of `C` (the differences of binary codewords; by BCH
+`wt ≥ t`, so `E ≤ (#min-wt codewords)·2^{-t}`). Cauchy–Schwarz then gives a **provable √-saving**
+
+> **`N ≤ 2^{n/2} · √(1 + E)`**   (`E ≈ 0` ⟺ relation-free ⟹ `N` concentrates at the main term `2^n/q^{t-1}`).
+
+This is a genuine new (non-trivial) bound — but `2^{n/2}` is still exponential, short of the floor
+`≤ n`. The `2k`-th moment sharpens it to `2^{n/2k}√(1+E_k)`, reaching `poly(n)` only as `k → t/2`,
+i.e. **relation-free at depth `t/2` — the deep-moment wall** again. So the L² route is the **fifth
+independent angle** (after analytic, lattice/energy, coding/BCH, Fourier-uncertainty) and bottoms
+out in the *same* recognized-open wall — strong convergent evidence the core is genuinely open.
+
+Files: `DyadicLacunaryDeltaStar.lean` (engine), `BCHVarietyRigidity.lean` (BCH bound), both
 axiom-clean; probes `probe_subset_sum_fibre_lattice_407.py`,
 `probe_prize_regime_relation_free_407.py`, `probe_fibre_inflation_growth_407.py`,
-`probe_lacbad_crossover_407.py`.
+`probe_lacbad_crossover_407.py`, `probe_secondmoment_codeword_count_407.py`.
