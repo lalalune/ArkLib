@@ -88,3 +88,35 @@ stays poly (→ δ* needs BGK) is the remaining question — at n=16 the excess 
 Thm 4.16 (KK25) PROVES some smooth code has super-poly excess near capacity. Determining the EXACT
 combinatorial floor of the n-core conspiracy count vs δ is the concrete open target (q-independent,
 computable in principle) — the one place a closed combinatorial δ* could still live.
+
+## KAMBIRÉ CEILING read in full (arXiv 2604.09724) — the open core REFRAMED as SUMSET EXTREMALITY
+
+Read the failure paper end to end. The proven ceiling `δ* ≤ 1−ρ−Θ(1/log n)` is a **subgroup-sumset
+construction**, NOT an abstract character sum:
+- Line `f=X^{rm}, g=X^{(r−1)m}`; for `λ=ξ_1+…+ξ_r ∈ H^{(+r)}` (r-fold RESTRICTED sumset of a
+  sub-subgroup `H=⟨ξ⟩`, |H|=s), the identity `∏_{a∈H_1∪…∪H_r}(X−a)=X^{rm}−λX^{(r−1)m}+R(X)` (deg R
+  ≤(r−2)m) makes `f+λg` agree with codeword `R` on `rm=(1−δ)n` points. So the bad-scalar count =
+  **`|H^{(+r)}|` (a sumset cardinality)** `≥ (s/2r)^r = n^C`.
+- Parameters: `s=2^α`, `n=sm`, `k=(r−2)m`, `r=ρs+2`, `δ=1−r/s`, `η=2/s=Θ(1/log n)`, `s=K log n`,
+  `K≈C/(ρ log(1/2ρ))` ⟹ **`δ* ≤ 1−ρ−2ρ ln(1/2ρ)/log(qε*)`** (the exact constant).
+- The "good prime" (where the `r`-sums are DISTINCT mod p, giving polynomially-many distinct λ) exists
+  by **quantitative Linnik**; bad primes = those dividing `Res(Φ_s, ΣX^i−ΣX^j)` (≤ log₄ s per pair).
+
+**THE REFRAME (key):** the open FLOOR (`δ* ≥` same) is exactly **SUMSET EXTREMALITY** — that the
+subgroup-sumset `|H^{(+r)}|` is the MAXIMAL bad-scalar count over ALL affine lines (f,g), up to a
+sub-polynomial factor. This is **char-free additive combinatorics** (a Cauchy–Davenport / Vosper /
+Plünnecke-flavoured extremality), NOT the L^∞ Gauss-period sup-norm. A poly(n) factor in the
+max-over-lines shifts η by `O(1/(log n)²)` (negligible), so the LEADING δ* is pinned IFF
+`max_line(bad count) ≤ poly(n)·|H^{(+r)}|`. This is a cleaner, possibly-tractable target than BGK —
+and is the precise content of the floor. (R1 "monomial extremality" was refuted only at the
+CONSTANT level — a general pencil doubles the count — which does NOT move the leading δ*.)
+
+**THE CLOSED CONJECTURE (the deliverable):**
+> `δ*(RS[F_p,μ_n,k], ε*) = 1 − ρ − 2ρ·ln(1/2ρ)/log(p·ε*)` (leading order), with
+> CEILING proven (Kambiré sumset construction + Linnik) and FLOOR = **Sumset Extremality**:
+> for every affine line `(f,g)` and `δ` below the threshold, `#{λ : Δ(f+λg, C) ≤ δ} ≤ poly(n)·|H^{(+r)}|`.
+> The novel math IS the sumset-extremality bound — char-free, the whole open content, no deferral to BGK.
+
+Scores: novelty 8 (reframe analytic→additive-combinatorial), insight 9 (δ* = subgroup-sumset
+extremality over lines), proximity 10 (the literal failure construction), feasibility = the open
+question the extremality probe decides (poly-bounded ⟹ tractable/char-free; super-poly ⟹ still BGK).
