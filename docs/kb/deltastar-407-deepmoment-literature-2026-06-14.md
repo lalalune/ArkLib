@@ -39,3 +39,18 @@ programme's tool) gives structure, not the high-moment count.
 transfer at depth, controlling only the spurious mod-p wrap-around collisions — the `[[issue407-no-excess-count-face]]`
 / T1-boundary observation that excess is 0 until `p~n^{r}`). The additive-combinatorics low-moment toolkit,
 even at 2026 SOTA, does not bridge to `r≍log p`. Consistent with `[[issue407-metatheorem-confirmed-airtight]]`.
+
+## SOTA exponent localization (lit search 2026-06-14, decisive)
+
+Fresh search on the EXACT object (subgroup exponential sum exponent). SOTA:
+- **di Benedetto–Garaev / arXiv:2401.04756** ("Exponential sums over small subgroups, revisited", Jan 2024):
+  `max_a |Σ_{x∈H} e_p(ax)| ≤ H^{1−31/2880+o(1)}` — **only for `H > p^{1/4}`**.
+- Limiting case `H ~ p^{1/4}` (Bourgain–Garaev): `H^{1−175/9437184+o(1)}`, exponent gain `≈1.85e−5`.
+
+**DECISIVE localization:** prize is `n=2^μ`, `q=n^β`, `β≈4–5` ⟹ `n = q^{1/β} ≤ q^{1/4}` — AT or BELOW the
+`p^{1/4}` threshold, exactly where the di Benedetto power-saving VANISHES and only BGK's *ineffective*
+`n^{1−o(1)}` survives. Prize needs exponent `1/2`; SOTA at the prize point is `1 − 1.85e−5`. The gap is a
+**full half-power at the single hardest point for every known method.** No 2025–26 breakthrough crosses it.
+Reading-list add: arXiv:2401.04756 (latest SOTA), arXiv:2003.06165, arXiv:2401.04756, arXiv:1401.4618 (elementary), arXiv:1809.06837.
+**Conclusion:** the "external math to apply" does not yet exist; the wall is unbroken in the literature and
+the prize occupies its worst case (`n ≤ p^{1/4}`).
