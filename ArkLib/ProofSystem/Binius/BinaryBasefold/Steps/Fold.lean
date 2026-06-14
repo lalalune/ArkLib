@@ -1840,8 +1840,10 @@ theorem foldOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ) :
     have h_L_inhabited : Inhabited L := ⟨0⟩
     conv_lhs =>
       enter [1, x_1, 2, 1, 2]
-      rw [addLift_challengeQueryImpl_input_run_eq_liftM_run (impl := impl) (t := q.input) (s := x.2)]
-    erw [StateT.run_monadLift, monadLift_self, liftComp_id]
+      -- the run argument is `(monadLift (query q.input)).input`, defeq to `Sum.inr q.input`
+      -- (`fst_query` + the OracleQuery→sum `MonadLift` lands in `.inr`); `erw` bridges the defeq.
+      erw [addLift_challengeQueryImpl_input_run_eq_liftM_run (impl := impl) (t := q.input) (s := x.2)]
+    erw [StateT.run_monadLift, monadLift_self]
     rw [bind_pure_comp]
     conv =>
       enter [1, 1, x_1, 2]
