@@ -48,8 +48,9 @@ This file proves the exact structural backbone of that excess bound:
 
 These are characteristic-independent (no char-`p` transfer needed) and axiom-clean. They
 do **not** prove the open `√(nk)` excess constant — that remains the genuine open quantity,
-now correctly localized to the reduced/fully-ragged set (granularity `1`), which is where
-the Lam–Leung / Mann minimal-sum structure theory must supply the missing combinatorics.
+now correctly localized to the reduced/fully-ragged set (granularity `1`), where the
+Beukers–Smyth / Schlickewei–Evertse isolated-torsion/fewnomial theory supplies the right
+shape but not yet prize-effective constants.
 -/
 
 namespace ProximityGap.Frontier.RaggedRootBound
@@ -179,6 +180,16 @@ theorem ragged_excess_le_degree {S : Finset F} {P : F[X]} (hP : P ≠ 0)
     exact rootProd_natDegree_le hP hroots
   omega
 
+/-- **Coset-count form of the ragged-excess bound.** If the largest coset core consists of
+`c` many `μ_g`-cosets, hence has size `g*c`, then the corrected R-thin quantity is bounded
+by the same degree budget after subtracting that full coset-core size:
+`|S| - g*c ≤ deg P - g*c`. This is just `ragged_excess_le_degree` with the core size made
+explicit, matching the Beukers–Smyth "isolated part after removing torsion cosets" interface. -/
+theorem ragged_excess_le_degree_mul_core {S : Finset F} {P : F[X]} (hP : P ≠ 0)
+    (hroots : ∀ x ∈ S, P.IsRoot x) (g c : ℕ) (hcore : g * c ≤ S.card) :
+    S.card - g * c ≤ P.natDegree - g * c :=
+  ragged_excess_le_degree hP hroots (g * c) hcore
+
 end ProximityGap.Frontier.RaggedRootBound
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -190,3 +201,4 @@ end ProximityGap.Frontier.RaggedRootBound
 #print axioms ProximityGap.Frontier.RaggedRootBound.rootProd_natDegree_le
 #print axioms ProximityGap.Frontier.RaggedRootBound.rootProd_natDegree_eq
 #print axioms ProximityGap.Frontier.RaggedRootBound.ragged_excess_le_degree
+#print axioms ProximityGap.Frontier.RaggedRootBound.ragged_excess_le_degree_mul_core

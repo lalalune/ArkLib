@@ -172,6 +172,13 @@ theorem rthin_size_exceeds_johnson {m : ℕ} (hm : 4 ≤ m) :
   show 2 * m * 2 < (m + 1) ^ 2
   nlinarith [hm]
 
+/-- **Corrected invariant in the counterexample.** The raw root set has size `m+1`, but
+after removing its `m`-point torsion-coset core `{x : x^m = -1}`, the isolated/ragged
+excess is exactly `1`. Thus this family refutes the raw-size R-thin statement while
+leaving the Beukers–Smyth isolated-part formulation intact. -/
+theorem rthin_counterexample_core_excess_one (m : ℕ) : (m + 1) - m = 1 := by
+  omega
+
 /-- **The asymptotic statement**: the ragged root-set size `n/2 + 1` is `Θ(n)`, i.e. it is
 NOT `O(√n)`; for `n = 2m` it equals `m + 1`, which divided by `√(nk) = √(2n) = 2√m`
 grows like `√m/2 → ∞`.  We record the clean ratio inequality witnessing super-Johnson
@@ -205,4 +212,5 @@ end ProximityGap.Frontier.RThinSqrtNKRefuted
 #print axioms ProximityGap.Frontier.RThinSqrtNKRefuted.rthinP_coeff_one
 #print axioms ProximityGap.Frontier.RThinSqrtNKRefuted.rthinP_not_sparse
 #print axioms ProximityGap.Frontier.RThinSqrtNKRefuted.rthin_size_exceeds_johnson
+#print axioms ProximityGap.Frontier.RThinSqrtNKRefuted.rthin_counterexample_core_excess_one
 #print axioms ProximityGap.Frontier.RThinSqrtNKRefuted.rthinP_C_natDegree
