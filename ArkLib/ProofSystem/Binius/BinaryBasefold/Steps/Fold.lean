@@ -402,9 +402,20 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
     erw [simulateQ_pure, liftM_pure] at h_verOut_mem_support
     simp only [Fin.isValue, support_pure, Set.mem_singleton_iff, Option.some.injEq,
       Prod.mk.injEq] at h_verOut_mem_support
-    rcases h_verOut_mem_support with ⟨verStmtOut_eq, verOStmtOut_eq⟩
-    rw [Prod.mk.injEq, Prod.mk.injEq] at prvOut_eq
-    obtain ⟨⟨prvStmtOut_eq, prvOStmtOut_eq⟩, prvWitOut_eq⟩ := prvOut_eq
+    -- migrated structure: `(prvOut_eq = honest-prover-fn) ∧ (prover-out equation) ∧
+    -- (verifier-out `pure`-membership)`.
+    obtain ⟨h_prvOut_fn, h_prvOut_eq, h_verOut_mem⟩ := h_verOut_mem_support
+    -- prover-output equations: substitute the prover function, reduce its projections at `r1`.
+    rw [h_prvOut_fn] at h_prvOut_eq
+    dsimp only [] at h_prvOut_eq
+    rw [Prod.mk.injEq, Prod.mk.injEq] at h_prvOut_eq
+    obtain ⟨⟨prvStmtOut_eq, prvOStmtOut_eq⟩, prvWitOut_eq⟩ := h_prvOut_eq
+    -- verifier-output equations: reduce the OptionT functor map, then `support (liftM (pure (some
+    -- y)))` to the singleton `{y}` and split (FriCompletePerRound pattern).
+    erw [_root_.map_pure] at h_verOut_mem
+    simp only [OptionT.mem_support_iff, OptionT.support_liftM, support_pure,
+      Set.mem_singleton_iff, Option.some.injEq, Prod.mk.injEq] at h_verOut_mem
+    obtain ⟨verStmtOut_eq, verOStmtOut_eq⟩ := h_verOut_mem
     constructor
     · rw [prvWitOut_eq, verStmtOut_eq, verOStmtOut_eq];
       exact h_rel
