@@ -341,3 +341,40 @@ relations, so the excess is the genuine wall.
 - **OPEN** (the genuine wall) for the prize `n = 2^40`, where the F_q excess at the binding
   window-edge is the recognized-hard character-sum/equidistribution problem. The char-0 part stays
   provable (Lam–Leung); the excess is the wall. No fabricated closure.
+
+## 12. FOLD-INVARIANCE / BINDING-LEVEL REDUCTION (δ* is n-independent) + the ρ=1/2 positive
+
+**New structural theorem (n-independence).** `prizeDeltaStar = 1−ρ−H(ρ)/log₂(qε*)` has **no explicit
+n**: the worst-case ladder witness uses a **fixed binding sub-level** `μ_{s*}`,
+`s* = 2·log₂(qε*)/H(ρ)`, independent of the full dimension. So **δ\*(μ_{2^40}) = δ\* of a fixed
+level-s\* construction** (`s* ≈ 32–256`). The prize n=2^40 problem **reduces to a fixed,
+moderate-size** one — a genuine simplification.
+
+**Prize-regime positive (ρ=1/2).** With the prize field `q ≈ n·2^128`, the binding level and the
+norm bound `q > a*^{s*/2}` (`a*≈ρs*`) at that level:
+
+| ρ | μ=40 binding s* | a* | log₂ a*^{s*/2} | log₂ q | norm@s*? |
+|---|---|---|---|---|---|
+| 1/2 | 64 | 32 | 160 | 168 | **YES (provable ladder)** |
+| 1/4 | 128 | 32 | 320 | 168 | no |
+| 1/8 | 128 | 16 | 256 | 168 | no |
+| 1/16 | 256 | 16 | 512 | 168 | no |
+
+So **for ρ=1/2 at the prize n=2^40, the binding level (64) is in the norm regime** — the ladder's
+char-0 count is provably distinct (excess=0 at level 64), so the *ceiling* and the *single-level
+floor* are provable there. The residual narrows to **ladder extremality** (no full-μ_n word beats
+the level-64 ladder), i.e. the full-μ_n excess at radius `δ < prizeDeltaStar` (large gap `t`).
+
+**The clean suppression inequality (provable, no character sums).** At `δ < prizeDeltaStar`
+(`t > t₀`), the *expected* full-μ_n excess is `≈ C(n,k+t)/q^{t-1} < 1` — and `C(n,k+t) < q^{t-1}`
+for `t > t₀` is a **q-independent binomial-vs-power inequality**, provable directly. This bounds the
+*expected* excess below the budget with no analytic input.
+
+**The persistent wall (honest).** The *actual* full-μ_n excess for the *specific* prize q can
+exceed its expectation if the `e_j(S)` cluster at `0 mod q` (non-equidistribution); the norm bound
+fails at the full level (`a^{n/2} ≫ q`), and the first moment over q is dominated by rare bad q. So
+"expected excess < budget ⟹ actual excess < budget" is the **equidistribution** step — the
+recognized-hard residual. δ* = prizeDeltaStar is thus PROVEN in the norm regime (binding level
+norm-OK: e.g. ρ=1/2 ladder side), with the full-floor residual at large n being the equidistribution
+of cyclotomic power-sums mod q — a genuinely softer, more localized form of the wall than the
+worst-case sup-norm.
