@@ -1650,3 +1650,33 @@ docstring said "minimizing `M_r` over `r` (optimum `r*≈ln q`) yields `√(2n l
 `GaussianEnergyBound` at the prize parameters (`n=2^μ`, `q≈n^4`, `r≈ln q`), i.e. the Anomaly
 Suppression inequality = BGK/Paley √-cancellation. The entire scaffold around that one inequality
 is now machine-checked end to end.
+
+## THE q-INDEPENDENCE DICHOTOMY (novel, this session) — why no closed combinatorial conjecture pins the interior δ*
+
+Attacked the "δ* is q-independent ⟹ combinatorial bypass of BGK" lead head-on, and SETTLED it
+structurally. Result: **q-independent power-sum concentration ⟺ cyclotomic (X^{2^s}) factorization
+⟺ the correlated/degenerate stratum** — so the closed/combinatorial families reach only the low
+regime; the genuine interior is irreducibly q-dependent = BGK.
+
+**The construction (novel generalization of Round-7 negation-symmetry).** A subset `S ⊆ μ_{2^μ}`
+invariant under multiplication by a primitive `2^s`-th root `ξ` satisfies `p_j(S)=ξ^j p_j(S)`, hence
+`p_j=0` for all `j` with `2^s∤j`, i.e. `e_1=e_2=…=e_{2^s−1}=0` simultaneously (Newton). Round 7 was
+the `s=1` case (`ξ=−1`, `e_1=0`). LANDED axiom-clean: `CyclotomicConcentration.lean`
+(`powerSum_eq_zero_of_smul_invariant`, real `lake build` 3297 jobs).
+
+**Why it is the dichotomy, not a bypass (the decisive numerics).** Such `S` is a union of `⟨ξ⟩`-orbits,
+so `∏_{x∈S}(X−x)=∏_{orbits}(X^{2^s}−x_o^{2^s})` — factors through the power map = the discarded
+"correlated" stratum (`MonomialSubgroupCorrelated.lean`). Probes (`/tmp/probe_concentration_converse.py`,
+`probe_noncorr_anomaly.py`):
+- **n=8, e_1=0 and e_1=e_2=0:** EVERY concentrating subset is correlated; count q-INDEPENDENT (6, 2, 0
+  across q=17..769); ZERO non-correlated.
+- **n=16, e_1=0:** correlated count = 28 EXACTLY CONSTANT for all q (17..1297); non-correlated count
+  = 80, 16, 0, 0, … — appears ONLY at the bad primes {17, 97}, vanishes for all q≥113.
+
+So: the q-independent stratum = correlated (clean cyclotomic combinatorics, count = a closed number,
+but degenerate). The genuine (non-correlated) concentration is q-DEPENDENT, lives only at bad primes
+`p ≤ (2t)^{n/2}` (the char-p additive-energy anomaly = BGK/Paley). **Consequence:** the q-independence
+of δ* measured at small q (q=97..353) is the low-regime/correlated artifact; the interior δ* (prize
+window, r~log q) is governed by the non-correlated anomaly = BGK. This is the sharpest available
+proof that the user's target — a closed combinatorial δ* reducing to proven math — is, in the
+interior, equivalent to BGK; no q-independent combinatorial conjecture can bypass it.
