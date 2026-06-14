@@ -16,10 +16,12 @@ L^∞/phase-alignment route: the dyadic Gauss period `η_b(μ_n)` and its quadra
 parallelogram recursion onto the level-`(n/2)` coset periods, turning the depth-`log p` estimate
 into a single per-level descent inequality (the remaining open input).
 
-Numerics (`scripts/probes/probe_par2.py`, `p ≈ n^4`, `n = 8,16,32`): at the level-`n` maximizer
-`b*` the two coset periods are phase-aligned `cos = 1.0000` EXACTLY, and the untwisted/twisted
-maxima are balanced (`M_untw ≈ M_tw`).  So `‖η_{b*}(μ_n)‖ = 2‖A‖` and the √2-descent reduces to
-sub-maximality of `‖A‖ = ‖η_{b*}(μ_{n/2})‖`.
+Numerics (`probe_gauss_period_{parallelogram,bstar}.py`, `p ≈ n^4`, `n = 8,16,32`): at `b*` the two
+coset periods are `cos = 1.0000` aligned EXACTLY — because for `4 ∣ n`, `−1 = ζ^{n/2} ∈ μ_{n/2}`, each
+coset is negation-symmetric, so `A, B` are **real for every `b`** (`η_b(μ_n)` is a real Gaussian
+period); the alignment is just *same sign* at `b*` (NOT `A = B`: `n=8`, `A=−3.70 ≠ B=−3.86`).  Maxima
+balanced (`M_untw ≈ M_tw`).  So `‖η_{b*}(μ_n)‖ = A_{b*}+B_{b*}` and the √2-descent reduces to the real
+two-term inequality `A_{b*}+B_{b*} ≤ √2·M_{n/2}·(1+log-corr)`.
 -/
 open Finset
 
@@ -38,9 +40,9 @@ law gives the EXACT recursion
 
 Taking `max_b` and using that `A, B` are values of the level-`(n/2)` subgroup period, this reduces
 the prize bound `max_b‖η_b(μ_n)‖ ≲ √(n·log(q/n))` to a **per-level descent**: at the level-`n`
-maximizer `b*` the two cosets are *phase-aligned* (`A = B`, verified `cos = 1.0000` exactly, all
-levels) so `‖η_{b*}(μ_n)‖ = 2‖A‖`, and the √2-descent needs the *sub-maximality* of `‖A‖ =
-‖η_{b*}(μ_{n/2})‖` relative to the level-`(n/2)` max — the structural (open) core, now stated as one
+maximizer `b*` the two cosets are *aligned* (`cos = 1.0000` exactly — `A, B` real for `4 ∣ n`, same
+sign at `b*`; not `A = B`) so `‖η_{b*}(μ_n)‖ = A_{b*}+B_{b*}`, and the √2-descent needs the
+*sub-maximality* of `‖A‖ = ‖η_{b*}(μ_{n/2})‖` (with its same-sign partner `B`) relative to the level-`(n/2)` max — the structural (open) core, now stated as one
 recursive inequality rather than a depth-`log q` moment estimate. This lemma is the exact, reusable
 backbone; the descent inequality is the single remaining (open) input. -/
 theorem gaussPeriod_parallelogram_recursion {V : Type*} (S0 S1 : Finset V) (f : V → ℂ) :
