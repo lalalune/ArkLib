@@ -431,15 +431,19 @@ def foldKStateProp {i : Fin ℓ} (m : Fin (2 + 1))
   -- Ground-truth polynomial from witness
   match m with
   | ⟨0, _⟩ => -- Same as relIn (roundRelation at i.castSucc)
-    masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIdx := i.castSucc) (oracleIdx := OracleFrontierIndex.mkFromStmtIdx i.castSucc)
+      (h_le := OracleFrontierIndex.val_le_i i.castSucc
+        (OracleFrontierIndex.mkFromStmtIdx i.castSucc))
       (stmt := stmtMid) (wit := witMid) (oStmt := oStmtMid)
       (localChecks := sumcheckConsistencyProp (𝓑 := 𝓑) stmtMid.sumcheck_target witMid.H)
   | ⟨1, _⟩ => -- After P sends hᵢ(X), before V sends r_i'
     let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := witMid.H)
     let h_i : ↥L⦃≤ 2⦄[X] := tr.messages ⟨0, rfl⟩
-    masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIdx := i.castSucc) (oracleIdx := OracleFrontierIndex.mkFromStmtIdx i.castSucc)
+      (h_le := OracleFrontierIndex.val_le_i i.castSucc
+        (OracleFrontierIndex.mkFromStmtIdx i.castSucc))
       (stmt := stmtMid) (wit := witMid) (oStmt := oStmtMid)
       (localChecks :=
         -- Verifier's explicit check: h_i(0) + h_i(1) = sumcheck_target
@@ -462,8 +466,10 @@ def foldKStateProp {i : Fin ℓ} (m : Fin (2 + 1))
     let oStmtOut := oStmtMid
     let witOut := witMid
     -- Use OUTPUT state: stmtIdx advances to i.succ, oracleIdx stays at i.castSucc (no new oracle)
-    masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIdx := i.succ) (oracleIdx := OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i)
+      (h_le := OracleFrontierIndex.val_le_i i.succ
+        (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i))
       (stmt := stmtOut) (wit := witOut) (oStmt := oStmtOut)
       (localChecks :=
         let explicitVCheck :=
@@ -672,15 +678,19 @@ def foldKStateProps {i : Fin ℓ} (m : Fin (2 + 1))
   -- Ground-truth polynomial from witness
   match m with
   | ⟨0, _⟩ => -- Same as relIn (roundRelation at i.castSucc)
-    masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIdx := i.castSucc) (oracleIdx := OracleFrontierIndex.mkFromStmtIdx i.castSucc)
+      (h_le := OracleFrontierIndex.val_le_i i.castSucc
+        (OracleFrontierIndex.mkFromStmtIdx i.castSucc))
       (stmt := stmtMid) (wit := witMid) (oStmt := oStmtMid)
       (localChecks := sumcheckConsistencyProp (𝓑 := 𝓑) stmtMid.sumcheck_target witMid.H)
   | ⟨1, _⟩ => -- After P sends hᵢ(X), before V sends r_i'
     let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := witMid.H)
     let h_i : ↥L⦃≤ 2⦄[X] := tr.messages ⟨0, rfl⟩
-    masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIdx := i.castSucc) (oracleIdx := OracleFrontierIndex.mkFromStmtIdx i.castSucc)
+      (h_le := OracleFrontierIndex.val_le_i i.castSucc
+        (OracleFrontierIndex.mkFromStmtIdx i.castSucc))
       (stmt := stmtMid) (wit := witMid) (oStmt := oStmtMid)
       (localChecks :=
         -- Verifier's explicit check: h_i(0) + h_i(1) = sumcheck_target
@@ -702,8 +712,10 @@ def foldKStateProps {i : Fin ℓ} (m : Fin (2 + 1))
     let oStmtOut := oStmtMid
     let witOut := witMid
     -- Use OUTPUT state: stmtIdx advances to i.succ, oracleIdx stays at i.castSucc (no new oracle)
-    masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIdx := i.succ) (oracleIdx := OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i)
+      (h_le := OracleFrontierIndex.val_le_i i.succ
+        (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i))
       (stmt := stmtOut) (wit := witOut) (oStmt := oStmtOut)
       (localChecks :=
         -- we reduce the sumcheck consistency check here
@@ -1535,9 +1547,9 @@ lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) i stmtOStmtIn y
   let incrementalBadFoldEvent_or_sumcheckBadEvent := fun y : L =>
     (incrementalBadFoldEvent y) ∨ (sumcheckBadEvent y)
-  have h_prob_mono := prob_mono (D := $ᵖ L)
-    (f := doomEvent) (g := incrementalBadFoldEvent_or_sumcheckBadEvent)
-    (h_imp := by
+  have h_prob_mono := PrUnion.Pr_mono ($ᵖ L)
+    (doomEvent) (incrementalBadFoldEvent_or_sumcheckBadEvent)
+    (by
       intro y h_doomEscape
       have h_imp := (foldStep_rbrExtractionFailureEvent_imply_sumcheck_or_badEvent
           (mp := mp) (𝓑 := 𝓑) (init := init) (impl := impl) 𝔽q β
@@ -1695,10 +1707,10 @@ lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
           (m := mp.multpoly stmtOStmtIn.1.ctx)
           (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges)
       let h_star_fixed : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := H_fixed)
-      have h_prob_mono_sum := prob_mono (D := $ᵖ L)
-        (f := fun y => sumcheckBadEvent y)
-        (g := fun y => badSumcheckEventProp y h_i h_star_fixed)
-        (h_imp := by
+      have h_prob_mono_sum := PrUnion.Pr_mono ($ᵖ L)
+        (fun y => sumcheckBadEvent y)
+        (fun y => badSumcheckEventProp y h_i h_star_fixed)
+        (by
           intro y h_sum
           rcases h_sum with ⟨_h_not_fresh, witMid, h_cons, h_bad⟩
           have h_t_eq : witMid.t = t_fixed :=
@@ -1717,10 +1729,10 @@ lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
           simp only [ne_eq, Nat.cast_eq_zero, Fintype.card_ne_zero, not_false_eq_true])]
         simp only [ENNReal.coe_ofNat, ENNReal.coe_natCast]
       exact h_sz
-    · have h_prob_mono_false := prob_mono (D := $ᵖ L)
-        (f := fun y => sumcheckBadEvent y)
-        (g := fun _ => False)
-        (h_imp := by
+    · have h_prob_mono_false := PrUnion.Pr_mono ($ᵖ L)
+        (fun y => sumcheckBadEvent y)
+        (fun _ => False)
+        (by
           intro y h_sum
           rcases h_sum with ⟨_h_not_fresh, witMid, h_cons, _h_bad⟩
           exact (hCompat ⟨witMid.t, h_cons.2⟩).elim
