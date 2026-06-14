@@ -159,6 +159,17 @@ theorem norm_rotated_halfSum_eq {m : ℕ} (hm : 1 ≤ m) {ζ : L} (a : ℕ)
     omega
   rw [map_mul, map_pow, hζ.norm_eq_one hn hirr, one_pow, one_mul, norm_halfSum_eq hm hζ hirr]
 
+
+/-- **Antipodal pairs cancel** — the atom of the antipodal-free reduction. Since `ζ^{2^m} = −1`
+(`pow_half_eq_neg_one`, the prime-2 negation), `ζ^{a + 2^m} = −ζ^a`, so `ζ^a + ζ^{a + 2^m} = 0`.
+Hence any `U ⊆ μ_n` closed under the antipodal involution `x ↦ −x = ζ^{2^m}·x` sums to `0`, and
+**only antipodal-free `U` contribute a candidate bad-prime norm** — the structural reduction the
+Half-Sum Lemma rests on. -/
+theorem antipodal_pair_sum_zero {m : ℕ} {ζ : L} (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1))) (a : ℕ) :
+    ζ ^ a + ζ ^ (a + 2 ^ m) = 0 := by
+  rw [pow_add, pow_half_eq_neg_one hζ, mul_neg_one, add_neg_cancel]
+
 end ArkLib.ProximityGap.HalfSumNorm
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_halfSum_eq
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_rotated_halfSum_eq
+#print axioms ArkLib.ProximityGap.HalfSumNorm.antipodal_pair_sum_zero
