@@ -8630,3 +8630,40 @@ E_{1,2} over μ_{2^k} in the prize regime. The literature does not supply it; th
 antipodal/Lam–Leung structure of μ_{2^k} (the in-tree O108/O130 engine) is the most promising
 lever the general additive-combinatorics literature cannot use. That is the named new-math
 target for the demand side. Dossiers: scripts/probes/genlaw/o174_general_r/{,analytic/}.
+
+---
+
+## [#407] 2026-06-13 — Two refutation-grade findings (constant-axis + phase-alignment)
+
+Two attempts this round produced *negative* results worth pinning so they are not re-tried. Full
+writeup: `docs/kb/deltastar-407-exact-constant-2026-06-13.md`; probes named below.
+
+### (1) REFUTED standing claim: "Salem–Zygmund sharp constant `B/√(n log(p/n)) → 1`."
+The standing `docs/kb/deltastar-salem-zygmund-gausssum-chaining` §R.3 reads the data as a *sharp
+Gaussian constant* → 1. **That holds only in the FIXED-`n`, `m=(p−1)/n → ∞` limit** — where the
+subgroup is negligibly thin, additive relations vanish, and an exact CLT forces constant 1 (probe
+`probe_constant_additive_vs_mult.py`: n=16, ratio `max|η|²/n / ln m → 1.04` at `ln m=14.3`). **This
+is the wrong axis for the prize.** On the **prize diagonal `m=n^{β−1}`** (β fixed, the actual NTT
+regime), the constant is *inflated and stable*: multi-prime `probe_prize_diagonal_constant.py` at β=4
+gives `C=B/√(n ln m)` plateauing at **≈1.33 (`C²≈1.75`)** across `n=64,128,256` — flat, not 1.
+Constraint kept: the conjectured exact pin `δ*=1−ρ−H(ρ)/(β log n)` uses the *bare-Gaussian* constant
+and is therefore **off by `C²≈1.75`**; the corrected form carries this factor. The inflation's
+**leading term is PROVEN** (4th-moment ratio `E₂/2n²=(3n²−3n)/2n²→3/2`, Duke–García) and `C²≈1.75 >
+3/2` shows deep moments contribute — so the exact constant is gated on the *same* deep-moment /
+square-root-cancellation wall as the bound (no independent closed form). Honest: form survives, bare
+constant refuted.
+
+### (2) REFUTED mechanism: "phase-alignment tower recursion as a non-average descent lemma."
+The standing hope (turn the `cos=1.0000` per-level child alignment into a named lemma) does not
+survive genericity. Exact recursion `F_μ(t)=F_{μ−1}(t)+F_{μ−1}(t·η_μ)`, `η_μ` primitive `2^μ`-th
+root (`probe_tower_alignment_law.py`). At the true maximizer the child `cos(A,B)` is `+1.000` at most
+levels for *structured/small* cofactors (n=32,64,128) **but degrades to a `±1` mix with
+near-cancellations for the generic cofactor** (n=256: `cos=−1` at μ=4,2, `|F₄|=0.20`). Alignment is a
+partial structural feature that washes out toward generic behaviour — **not** a universal tower law,
+so it cannot be the descent mechanism a proof needs. (Methodological catch kept: exclude Fermat
+primes — `p=65537` gives `p−1=2^16`, fully dyadic, the #400 trap; require `odd_part((p−1)/n)>1`.)
+
+**Net:** neither finding closes anything; both *constrain*. The exact constant — not just the bound —
+is gated on the BGK/Shkredov square-root-cancellation wall. New papers: `~/papers/arklib/_407/`
+(di Benedetto 2003.06165 record `t^{0.989}`; Bober–Goldmakher 1110.0078; Demirci–Marklof 1207.1607
+non-Gaussian; Untrau 2112.05441 hypocycloids; Kowalski 2401.04756).
