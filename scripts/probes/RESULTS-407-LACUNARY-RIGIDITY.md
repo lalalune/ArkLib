@@ -539,3 +539,19 @@ This is an obstruction *explanation*, not a closure. It sharpens the open core t
 Gauss-period house / additive-defect / short-vector bound for fully-split prime ideals of
 power-of-two cyclotomic fields** — a single, named, recognized-open number-theoretic problem, which
 the prize is equivalent to and cannot be separated from.
+
+## 17. The cross-parity "most promising direction" is ALSO the sum-product wall (loophole closed)
+
+Examining the cross-parity leak `A ≡ −g·B mod q` (96–100% of defects; A,B = μ_{n/2}-subset-sums,
+both ≠0 in ℂ) directly: for each B the value A is forced to `≡ −gB`, so
+**#cross-parity-defects = |S₀ ∩ (−g)·S₀|**, where `S₀ = (μ_{n/2}-subset-sum image) ⊂ F_q` and
+`(−g)·S₀` is its multiplicative g-dilate. This is an **additive-set ∩ multiplicative-dilate
+incidence = a sum-product quantity** for the subset-sum image. Small ⟺ S₀ has no multiplicative
+g-structure ⟺ sum-product expansion of μ-subset-sums — the BGK/Bourgain–Glibichuk–Konyagin wall.
+
+So the one structured feature the six-technique Workflow surfaced as "the most promising handle" is,
+on direct examination, the **same recognized open core** (sum-product / BGK). Every reduction — now
+including the cross-parity direction — terminates at: *the additive randomness of a multiplicative
+subgroup's subset-sums mod the fully-split prime*, which is precisely the 25-year-open
+sum-product/Paley/ideal-SVP problem. The map is complete; there is no remaining loophole that avoids
+it.
