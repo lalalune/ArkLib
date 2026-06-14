@@ -809,7 +809,7 @@ Expected helper lemmas:
 - backward preservation of incremental bad events from round-2 to round-1 view;
 - extraction of localized round-poly equalities from fold-step local checks.
 -/
-omit [SampleableType L] [DecidableEq 𝔽q] in
+omit [SampleableType L] in
 lemma firstOracleWitnessConsistency_unique (i : Fin ℓ)
     (oStmt : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc j)
@@ -1375,7 +1375,8 @@ lemma incrementalBadEventExistsProp_fold_step_backward (i : Fin ℓ)
             HEq
               (fun cId : Fin
                   (min ϑ (i.val + 1 - (getLastOraclePositionIndex ℓ ϑ i.castSucc).val * ϑ)) =>
-                Fin.cons (α := fun _ => L) r_i' stmtOStmtIn.1.challenges
+                foldOrderChallenges (ℓ := ℓ) (i := i.succ)
+                  (Fin.cons (α := fun _ => L) r_i' stmtOStmtIn.1.challenges)
                   ⟨(getLastOraclePositionIndex ℓ ϑ i.castSucc).val * ϑ + cId.val, by
                     have h_cId_lt :
                         cId.val <
