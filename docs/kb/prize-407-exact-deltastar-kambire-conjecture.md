@@ -628,3 +628,24 @@ the squares) has square-sum `−2e₂` forced into `2·Σ_r`. The general proof 
 content-free eliminant statement (finite algebra, char-p-robust, candidate-provable). The earlier "BGK
 wall" verdict is RETRACTED — it was a gcd-criterion artifact. Feasibility of full closure: 6 (concrete
 algebra) — up from 3 (was wrongly BGK-gated). NOT yet closed; the eliminant-monicity is the live target.
+
+## UPDATE 2026-06-13 (mechanisms ruled out) — no simple combinatorial certificate for the Half-Sum Lemma
+
+Searched for a constructive structural proof (an explicit k-subset realizing `e₂(U) ∈ Σ_k`). Tested and
+RULED OUT (`probe_407_halfsum_mechanism_ruleout.py`):
+- **Squaring-telescope** (iterate `x↦x²`): REFUTED — the antipodal-free primitive part has no pairs, so
+  squaring stalls; no descent.
+- **Pairing** `U² = ⊔{w,w'}` with `w+w'=−2c`, `c∈μ_{n/2}` distinct, `∑c=e₂`: holds 16/16 at n=16
+  (mechanism `1+η⁵=−2η⁶` mod 17) but **FAILS 0/96 at n=32**.
+- **Subset-of-U²** (`e₂ = ∑` of a k-subset of the 2k squares `U²`): holds 16/16 at n=16, **FAILS 32/96 at
+  n=32, 16/400 at n=64**.
+
+So the k-subset of `μ_{n/2}` realizing `e₂(U)` is **global** (uses elements outside `U²`) for `n≥32` — there
+is NO local/combinatorial certificate. `e₂(U) ∈ Σ_k` holds (verified n≤64) but only via genuine char-p
+arithmetic, not a structural pairing/partition. This is a concrete NEGATIVE result: it rules out the
+natural constructive proofs and confirms (matching Lam–Leung's "no viable conjecture on the structure")
+that a uniform proof needs arithmetic/analytic methods in the split regime, not combinatorial structure.
+
+**Frontier, final form.** PROVEN n=8,16 (finite candidate-prime method); verified n=32 (380 primes),
+n=64. Open core = uniform Half-Sum Lemma, a non-constructive char-p structure statement Lam–Leung leave
+open. Probe: `probe_407_halfsum_mechanism_ruleout.py`.
