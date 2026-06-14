@@ -984,7 +984,11 @@ def foldStepFreshDoomPreservationEvent (i : Fin ℓ)
     dsimp only [oraclePositionToDomainIndex, curOracleDomainIdx]
     omega
   ⟩
-  let r_prefix : Fin kBefore → L := fun cId => challengesBefore
+  -- Statement challenges are stored newest-first; `incrementalBadEventExistsProp` block-indexes
+  -- them through the chronological fold-order view `foldOrderChallenges`. Mirror that here so the
+  -- fresh-doom event speaks the same challenge ordering (otherwise the backward bridge lemma
+  -- cannot reconcile the two events).
+  let r_prefix : Fin kBefore → L := fun cId => foldOrderChallenges (ℓ := ℓ) challengesBefore
     ⟨curOracleDomainIdx.val + cId.val, by
       have h_k_le_stmt : kBefore ≤ stmtIdxBefore.val - curOracleDomainIdx.val :=
         Nat.min_le_right ϑ (stmtIdxBefore.val - curOracleDomainIdx.val)
@@ -1419,9 +1423,9 @@ lemma foldStep_rbrExtractionFailureEvent_imply_sumcheck_or_badEvent (i : Fin ℓ
       (∃ witMid : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ,
         (foldStepWitMidOracleConsistency (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)
           (i := i) stmtOStmtIn h_i r_i' witMid)
-        ∧ (badSumcheckEventProp r_i' h_i
-            (foldStepHStarFromWitMid (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-              (𝓑 := 𝓑) i stmtOStmtIn h_i r_i' witMid))
+        ∧ (badSumcheckEventProp r_i' (fun r => h_i.val.eval r)
+            (fun r => (foldStepHStarFromWitMid (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+              (𝓑 := 𝓑) i stmtOStmtIn h_i r_i' witMid).val.eval r))
       )
     ) := by
   classical
@@ -1586,9 +1590,9 @@ lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
         (∃ witMid : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ,
         (foldStepWitMidOracleConsistency (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)
           (i := i) stmtOStmtIn h_i y witMid)
-        ∧ (badSumcheckEventProp y h_i
-            (foldStepHStarFromWitMid (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-              (𝓑 := 𝓑) i stmtOStmtIn h_i y witMid))
+        ∧ (badSumcheckEventProp y (fun r => h_i.val.eval r)
+            (fun r => (foldStepHStarFromWitMid (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+              (𝓑 := 𝓑) i stmtOStmtIn h_i y witMid).val.eval r))
       ))
   let incrementalBadFoldEvent := fun y : L =>
     foldStepFreshDoomPreservationEvent 𝔽q β (ϑ := ϑ)
@@ -1757,7 +1761,7 @@ lemma foldStep_doom_escape_probability_bound (i : Fin ℓ)
       let h_star_fixed : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) (h := H_fixed)
       have h_prob_mono_sum := PrUnion.Pr_mono ($ᵖ L)
         (fun y => sumcheckBadEvent y)
-        (fun y => badSumcheckEventProp y h_i h_star_fixed)
+        (fun y => badSumcheckEventProp y (fun r => h_i.val.eval r) (fun r => h_star_fixed.val.eval r))
         (by
           intro y h_sum
           rcases h_sum with ⟨_h_not_fresh, witMid, h_cons, h_bad⟩
