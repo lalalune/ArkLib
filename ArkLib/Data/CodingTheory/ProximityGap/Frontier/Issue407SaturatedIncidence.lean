@@ -182,7 +182,7 @@ noncomputable def constrainedReadoutProfile {α β : Type*}
 
 /-- A constrained witness set contributes its `h_{j+1}` value to the readout image. -/
 theorem readout_mem_constrainedReadoutImage {α β : Type*}
-    [Fintype α] [DecidableEq α] [DecidableEq β] [Zero β]
+    [Fintype α] [DecidableEq β] [Zero β]
     (h : ℕ → Finset α → β) {j w : ℕ} {T : Finset α}
     (hcard : T.card = w) (hzero : h j T = 0) :
     h (j + 1) T ∈

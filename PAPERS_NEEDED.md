@@ -418,3 +418,25 @@ the 2-power smoothness. The smoothness is genuinely useful ONLY on the char-0 mo
 (Lam–Leung antipodal, `E_r ≤ (2r−1)‼·n^r`), which provably caps at the Betti depth `r=2` and cannot
 reach the sup. So the two faces are decoupled: smoothness helps the (capped) moment side, the sup
 side is size-governed and open. No smoothness lever exists for the prize.
+
+## 2026-06-14 (e): the reduced object = additive energy of multiplicative subgroups
+
+Face 3 reduces EXACTLY to `E_+(μ_n) ≤ n^{2+o(1)}` (equiv. `max_{b≠0}|Σ_{x∈μ_n}e_p(bx)| ≤
+n^{1/2+o(1)}`), open: best proven HBK `n^{5/2}` (`n<p^{2/3}`), BGK `n^{1-ε}` power-saving. The
+antipodal reduction (this session) restates it as: count short bounded-coeff polynomials
+`D(X)` (`deg<n/2`, `Σ|coeff|≤2r`) with `D(g)≡0 mod p`. 5 papers on this exact object:
+
+- **F1** arXiv:2602.01781 "On the distribution of additive energy revisited" (2026) — Fourier +
+  random-structure analysis of multiplicative-energy distribution; small-doubling covering
+  estimate. NOT a sub-HBK subgroup bound, but the distributional angle may bound the bad-prime
+  tail (the sparse exceptional set my probes found). DOWNLOAD.
+- **F2** Kim–Yip–Yoo "Multiplicative structure of shifted multiplicative subgroups and its
+  applications to Diophantine tuples", Canad. J. Math (2025) — shifted-subgroup multiplicative
+  structure; the shift `λ` is the far-line direction. DOWNLOAD (Cambridge Core).
+- **F3** arXiv:2103.09438 "Gauss sums and the maximum cliques in generalized Paley graphs of
+  square order" — direct Paley-eigenvalue/Gauss-sum link (face-3 graph). DOWNLOAD.
+- **F4** arXiv:2603.24788 "Algebraic Expander Codes" (2026) — algebraic expansion + codes; may
+  give a code-side route to list size avoiding the worst-case energy. DOWNLOAD.
+- **F5** Alon–Bourgain "Additive Patterns in Multiplicative Subgroups"
+  (web.math.princeton.edu/~nalon/PDFS/multip3.pdf) — additive structure forced/forbidden in
+  subgroups; directly bounds short additive relations = my short-poly count. DOWNLOAD.

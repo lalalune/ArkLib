@@ -22,6 +22,7 @@ readout value and records the deterministic anchors/recurrence:
 
 * `h_0(T)=1`;
 * `h_1(T)=sum(T)`;
+* `h_2(T)` and `h_3(T)` in terms of the node polynomial coefficients;
 * the general Schur recurrence transports directly to the `h_j` readout scale.
 
 No theorem here claims a closed form for the worst-direction profile `J(w)`.
@@ -61,6 +62,31 @@ theorem completeHomReadout_one {s : Finset ι} {v : ι → F}
   have hcard : #s - 1 + 1 = #s := Nat.sub_add_cancel (Finset.card_pos.mpr hs)
   rw [hcard]
   exact dividedDifferencePow_card_eq_sum hvs hs
+
+/-- Closed formula for `h_2`: `h_2 = e_1^2 - e_2`, with `e_2` read from the node polynomial. -/
+theorem completeHomReadout_two {s : Finset ι} {v : ι → F}
+    (hvs : Set.InjOn v s) (hs : 2 ≤ #s) :
+    completeHomReadout s v 2
+      = (∑ i ∈ s, v i) ^ 2 - (∏ i ∈ s, (X - C (v i))).coeff (#s - 2) := by
+  unfold completeHomReadout
+  have hcard : #s - 1 + 2 = #s + 1 := by omega
+  rw [hcard]
+  exact dividedDifferencePow_card_add_one hvs hs
+
+/--
+Closed formula for `h_3`: `h_3 = e_1^3 - 2 e_1 e_2 + e_3`, with `e_2,e_3` read from the
+node polynomial coefficient convention used by `SchurLagrangeBridge`.
+-/
+theorem completeHomReadout_three {s : Finset ι} {v : ι → F}
+    (hvs : Set.InjOn v s) (hs : 3 ≤ #s) :
+    completeHomReadout s v 3
+      = (∑ i ∈ s, v i) ^ 3
+        - 2 * (∑ i ∈ s, v i) * (∏ i ∈ s, (X - C (v i))).coeff (#s - 2)
+        - (∏ i ∈ s, (X - C (v i))).coeff (#s - 3) := by
+  unfold completeHomReadout
+  have hcard : #s - 1 + 3 = #s + 2 := by omega
+  rw [hcard]
+  exact dividedDifferencePow_card_add_two hvs hs
 
 /--
 Schur recurrence in complete-homogeneous coordinates.  For a node set of size `N = |s|`,
@@ -104,6 +130,10 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.Frontier.CompleteHomogeneousReadout.completeHomReadout_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.Frontier.CompleteHomogeneousReadout.completeHomReadout_one
+set_option linter.style.longLine false in
+#print axioms ProximityGap.Frontier.CompleteHomogeneousReadout.completeHomReadout_two
+set_option linter.style.longLine false in
+#print axioms ProximityGap.Frontier.CompleteHomogeneousReadout.completeHomReadout_three
 set_option linter.style.longLine false in
 #print axioms ProximityGap.Frontier.CompleteHomogeneousReadout.completeHomReadout_recurrence
 set_option linter.style.longLine false in
