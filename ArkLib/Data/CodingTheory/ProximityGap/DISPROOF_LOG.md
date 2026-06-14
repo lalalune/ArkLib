@@ -9488,3 +9488,44 @@ over a random domain; the route reduces to the same named open core `SubJohnsonL
 (= BGK / Paley / BCHKS Conj 1.12). Do not re-attempt "n-core/hook-content vanishing super-poly-boosts
 the smooth list": the super-poly is now CLOSED-FORM `C(S+n−1,n−1)` and PROVEN to be the support
 factor, not the list.
+
+---
+
+## REFUTED 2026-06-14: the "Mann-mod-P minimum-weight" reduction (W(n,p) ≥ 2⌈log m⌉) — moment route is DEAD, floor survives
+
+**The proposed reduction (now refuted).** The char-`p` sub-Gaussian moment bound `E_r(μ_n,F_p) ≤ (2r−1)!!·n^r`
+to depth `r≍log m` (which via the moment method gives the prize floor `M ≤ √(2n log m)`) was reframed as a
+**minimum-distance** claim: every `±`-/integer-sum `D = Σ a_c ζ^c` of `n`-th roots of unity with `D ∈ P`
+(`Σ a_c h^c ≡ 0 mod p`) but `D ≠ 0` over ℂ has L1-weight `W(n,p) ≥ 2⌈log m⌉` ("Mann's theorem mod P").
+
+**Refuted — rigorous theorem + machine-verified witnesses (20-agent army, all 19 angles concur).**
+- **Pigeonhole theorem (rigorous, multiple independent proofs G1/G10/R2):** `W(n,p) ≤ 2·w₁`,
+  `w₁ = min{w : C(n/2, w) > p}`. Over the `n/2`-element fundamental-domain basis `{ζ^0..ζ^{n/2−1}}`
+  (`Φ_n = x^{n/2}+1`), `C(n/2,w) > p` forces a mod-`p` collision of two distinct basis subsets; their
+  difference is in `P`, weight `≤ 2w`, and `≠ 0` over ℂ AUTOMATICALLY (distinct basis subsets ⟹ distinct
+  integer coordinate vectors — ℂ-nonzero is free, NOT a generic lattice bound, uses the cyclotomic basis
+  essentially so it escapes the vacuous `p^{2/n}`). In the prize regime `p ~ n^4`, `w₁ → 5` (CONSTANT), so
+  `W(n,p) = O(1)`, vs the target `2⌈log m⌉ ≍ 6 log₂ n → ∞`. **False by an unbounded factor** (4× at n=32 …
+  30× at n=2^50).
+- **Machine-verified witnesses (independently re-verified, `probe_407_excess_witness_verify.py`):** weight-6
+  excess relations, each `Σ ε_i h^{c_i} ≡ 0 (mod p)` AND `|D|_ℂ > 0`, at — n=64 p=16778497 `D=z^0+z^1+z^7−z^9−z^10−z^61`
+  (|D|=0.85); n=128 p=268440449 (all `+1`, |D|=3.65); n=256 p=4294968833 (|D|=3.69); n=4096 p=281474976768001.
+- **Scaling (G3/G9/G11 LLL+MITM, exact minima):** median `W` = 9,7,8,9,9,10,11 for n=32…2048 — essentially
+  constant (drifts ~`log` slowly), gap to target `2⌈log m⌉` widens without bound.
+
+**Consequence — the MOMENT/ENERGY route is DEAD, not merely hard.** Short excess relations of constant weight
+exist, so `E_r(μ_n,F_p) > E_r(μ_n,ℂ)` from constant order `r ≈ w₁/2`, and `E_r^{F_p}` crosses the Wick value
+`(2r−1)!!n^r` near the optimal moment depth `r ≍ log m` at some structured primes (prime-dependent; e.g.
+n=32 p=1048609 crosses at r≈9 < depth, but n=16 Fermat p=65537 never crosses in-window). So the only
+meta-theorem-permitted route (high moments) is **provably insufficient** to reach the floor.
+
+**BUT δ* = floor SURVIVES (not refuted).** The actual sup-norm stays strictly below the floor:
+`max_{b≠0}|η_b| < √(2n log m)` for every tested prize-regime prime (ratio 0.75–0.96), with
+`c = M/√(n log m) → √2 from below` (1.06, 1.15, 1.25, 1.36 at n=8,16,32,64). The minimum-weight bound was a
+SUFFICIENT-not-necessary condition; refuting it does not move δ*.
+
+**Net:** the prize requires a **direct sup-norm (BGK/Paley) bound** on `max_b|η_b|`; the
+moment/energy/min-distance/second-order routes are now all rigorously eliminated. The `[propext,…]`-clean
+in-tree `GaussianEnergyBound` hypothesis (`E_r ≤ (2r−1)!!n^r` at `r≍log m`) is **FALSE at some prize-regime
+primes** — do not attempt to prove it; it is refuted. Witnesses + theorem: `probe_407_excess_witness_verify.py`,
+`probe_407_excess_lll_*.py`, `probe_407_G1_galois_norm_power_spread.py`.

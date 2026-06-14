@@ -1,9 +1,22 @@
 # The open core as a "Mann's theorem mod P" for 2-power roots of unity (#407)
 
+> **⚠️ REFUTED 2026-06-14 (20-agent army, all 19 angles concur; see `DISPROOF_LOG.md`).** The minimum-weight
+> form proposed below — `W(n,p) ≥ 2⌈log m⌉` — is **FALSE**. Rigorous pigeonhole theorem: `W(n,p) ≤ 2·w₁`,
+> `w₁ = min{w : C(n/2,w) > p}`, which is `O(1)` (`→ 5·2`) in the prize regime `p~n^4` — short excess
+> relations of CONSTANT weight always exist (machine-verified weight-6 witnesses at n=64,128,256,4096). So
+> "Mann mod P" / the no-short-excess-relation condition does **not** hold. Consequence: the **moment/energy
+> route is dead** (`E_r ≤ (2r−1)!!n^r` is false at some prize primes near depth `r≍log m`), and the in-tree
+> `GaussianEnergyBound` hypothesis is refuted — do not attempt to prove it. **BUT δ*=floor survives**: the
+> sup-norm `max|η_b| < √(2n log m)` still holds (→ √2 from below); the weight bound was sufficient-not-
+> necessary. The prize now requires a **direct sup-norm (BGK) bound**, not a moment/distance one. The
+> geometry-of-numbers framing below is retained for the record (the `p^{2/n}` threshold analysis is correct;
+> only the conclusion that the suppression makes `W` large is wrong — the cyclotomic *basis* pigeonhole beats
+> it).
+
 A clean geometry-of-numbers localization of the prize's open core, connecting the moment form, the
 house/Minkowski form, and classical vanishing-sums-of-roots-of-unity theory. **Not a closure** — it
 restates the open problem in the sharpest, most classical terms found so far, and pinpoints exactly why
-the prize regime is the hard one.
+the prize regime is the hard one. (Superseded re: the minimum-weight target — see the refutation banner above.)
 
 ## The chain of equalities (all in-tree / proven)
 
