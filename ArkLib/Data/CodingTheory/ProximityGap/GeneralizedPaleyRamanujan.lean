@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorWorstCaseIncompleteSum
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeStructuralConstant
 
 set_option linter.unusedSectionVars false
 set_option linter.dupNamespace false
@@ -41,6 +42,7 @@ All proofs axiom-clean (`propext, Classical.choice, Quot.sound`). Issue #389.
 open ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 open ArkLib.ProximityGap.SubgroupGaussSumFourthMoment
 open ArkLib.ProximityGap.InteriorWorstCaseIncompleteSum
+open ArkLib.ProximityGap.PrizeStructuralConstant
 
 namespace ArkLib.ProximityGap.GeneralizedPaleyRamanujan
 
@@ -89,6 +91,66 @@ theorem addEnergy_le_of_nearRamanujan {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive
       positivity
   exact addEnergy_le_of_worstCase hψ G hM0
     (worstCaseIncompleteSumBound_of_nearRamanujan h)
+
+/-! ### Bridge to the single structural constant `Λ` -/
+
+/-- **The structural-constant face implies the Paley face.**  The open property
+`DepthLogSubGaussian` is the one-object bound `Λ² ≤ 2|G| log |F|`.  Whenever the regime arithmetic
+absorbs this into the near-Ramanujan envelope `C|G| log(|F|/|G|)`, it gives the generalized-Paley
+near-Ramanujan hypothesis pointwise.  This is only a dictionary bridge: the log inequality and
+`DepthLogSubGaussian` remain the actual inputs. -/
+theorem nearRamanujan_of_depthLogSubGaussian {ψ : AddChar F ℂ} {G : Finset F} {C : ℝ}
+    (hlog : 2 * Real.log (Fintype.card F : ℝ)
+      ≤ C * Real.log ((Fintype.card F : ℝ) / (G.card : ℝ)))
+    (h : DepthLogSubGaussian ψ G) :
+    GeneralizedPaleyNearRamanujan C ψ G := by
+  intro b hb
+  have hW :
+      WorstCaseIncompleteSumBound ψ G
+        (2 * (G.card : ℝ) * Real.log (Fintype.card F : ℝ)) :=
+    (worstCaseIncompleteSumBound_iff_prizeRadiusSq_le ψ G
+      (2 * (G.card : ℝ) * Real.log (Fintype.card F : ℝ))).mpr h
+  have hn : 0 ≤ (G.card : ℝ) := by positivity
+  calc ‖eta ψ G b‖ ^ 2
+      ≤ 2 * (G.card : ℝ) * Real.log (Fintype.card F : ℝ) := hW b hb
+    _ = (G.card : ℝ) * (2 * Real.log (Fintype.card F : ℝ)) := by ring
+    _ ≤ (G.card : ℝ) *
+          (C * Real.log ((Fintype.card F : ℝ) / (G.card : ℝ))) :=
+        mul_le_mul_of_nonneg_left hlog hn
+    _ = C * (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / (G.card : ℝ)) := by
+        ring
+
+/-- **The Paley face implies the structural-constant face under the reverse log comparison.**
+This is the converse dictionary bridge to `nearRamanujan_of_depthLogSubGaussian`: if the chosen
+near-Ramanujan envelope is no larger than `2|G| log |F|`, then it yields the one-object
+`DepthLogSubGaussian` predicate. -/
+theorem depthLogSubGaussian_of_nearRamanujan {ψ : AddChar F ℂ} {G : Finset F} {C : ℝ}
+    (hlog : C * Real.log ((Fintype.card F : ℝ) / (G.card : ℝ))
+      ≤ 2 * Real.log (Fintype.card F : ℝ))
+    (h : GeneralizedPaleyNearRamanujan C ψ G) :
+    DepthLogSubGaussian ψ G := by
+  have hW :
+      WorstCaseIncompleteSumBound ψ G
+        (C * (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / (G.card : ℝ))) :=
+    worstCaseIncompleteSumBound_of_nearRamanujan h
+  have hΛ :
+      prizeRadiusSq ψ G
+        ≤ C * (G.card : ℝ) *
+          Real.log ((Fintype.card F : ℝ) / (G.card : ℝ)) :=
+    (worstCaseIncompleteSumBound_iff_prizeRadiusSq_le ψ G
+      (C * (G.card : ℝ) *
+        Real.log ((Fintype.card F : ℝ) / (G.card : ℝ)))).mp hW
+  have hn : 0 ≤ (G.card : ℝ) := by positivity
+  have htarget :
+      C * (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / (G.card : ℝ))
+        ≤ 2 * (G.card : ℝ) * Real.log (Fintype.card F : ℝ) := by
+    calc C * (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / (G.card : ℝ))
+        = (G.card : ℝ) *
+            (C * Real.log ((Fintype.card F : ℝ) / (G.card : ℝ))) := by ring
+      _ ≤ (G.card : ℝ) * (2 * Real.log (Fintype.card F : ℝ)) :=
+          mul_le_mul_of_nonneg_left hlog hn
+      _ = 2 * (G.card : ℝ) * Real.log (Fintype.card F : ℝ) := by ring
+  exact le_trans hΛ htarget
 
 /-- **The historical strict Ramanujan ceiling.** Every nonzero Gauss period has modulus at most
 `2·√|G|`. The #407 ledger treats this as a backward-compatible, over-strong named residual: it
@@ -202,6 +264,10 @@ end ArkLib.ProximityGap.GeneralizedPaleyRamanujan
   ArkLib.ProximityGap.GeneralizedPaleyRamanujan.worstCaseIncompleteSumBound_of_nearRamanujan
 #print axioms
   ArkLib.ProximityGap.GeneralizedPaleyRamanujan.addEnergy_le_of_nearRamanujan
+#print axioms
+  ArkLib.ProximityGap.GeneralizedPaleyRamanujan.nearRamanujan_of_depthLogSubGaussian
+#print axioms
+  ArkLib.ProximityGap.GeneralizedPaleyRamanujan.depthLogSubGaussian_of_nearRamanujan
 #print axioms ArkLib.ProximityGap.GeneralizedPaleyRamanujan.nonzero_spectral_mass
 #print axioms
   ArkLib.ProximityGap.GeneralizedPaleyRamanujan.exists_nonzero_frequency_gaussSum_sq_ge_parseval
