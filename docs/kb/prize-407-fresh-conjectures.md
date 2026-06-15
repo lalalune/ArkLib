@@ -93,3 +93,13 @@ q-stability) is the provability of that concentration. The 4th moment Σ_b|η_b|
 clean at prize primes (proven p>2^n) ⟹ E_2 q-stable in the clean regime. Efron-Stein / bounded-difference
 on M from E_2-stability is a concrete (non-BGK) target for the CONCENTRATION (not the absolute bound).
 Feasibility 6; would prove worst≈typical, reducing the prize to the TYPICAL M (still √n-scaling = BGK).
+
+## CLEAN REFRAMING (from C1/C2) — prize ⟺ uniform positive tail rate
+- C1 RECURSION is LOSSY: V_μ≤(4·0.7)^μ V_0=n^{1.485} ⟹ M≤n^{0.74} (provable-if-deficit, beats di Benedetto
+  0.989, NOT prize). The multiplicative compounding loses the log-structure.
+- C2 reflects TRUE M: M²/n=log q/c, c≈0.7 ⟹ M=n^{0.5}·polylog (PRIZE exponent). Proving=BGK.
+- **PRIZE ⟺ the dyadic period histogram {|η_b|²/n} has exponential tail decay with a uniform-in-n
+  positive rate c≥c₀>0** (any constant c₀, not just 0.5: M≤√(n log q/c₀)=O(√(n log q))). Measured c≈0.7.
+  This is the cleanest distributional form: NOT "rate=1/2" but "rate bounded below" — weaker, but still
+  the uniform-in-n Gauss-period equidistribution-tail = BGK. The whole prize is: the n-fold period sum
+  is sub-exponential with n-independent rate.
