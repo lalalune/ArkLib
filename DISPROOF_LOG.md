@@ -840,3 +840,38 @@ is the wrong lever (hypothesis unsatisfiable for trivial reasons unrelated to th
 discriminating thin content lives ABOVE the bounded-relation-height floor (the Sidon-bootstrap object).
 CORE not closed. Python-only, no Lean changed => axiom-clean trivially. n=16 exact brute; n=32 exact MITM;
 scaling analytic + exact small-n confirmation.
+
+### CENSUS<->CORE EQUIVALENCE is OVERSTATED: CensusDomination is STRICTLY STRONGER than CORE (sufficient, not equivalent) (2026-06-15)
+
+Maps the brief's flagged open brick: the count/census face (CensusDomination, CensusDominationWeld.lean)
+whose EQUIVALENCE to CORE is asserted ("the $1M obligation in census normal form") but never proven.
+
+IN-TREE ARCHITECTURE (verified at source):
+  CORE handle:  epsMCA <= #bad / p          (epsMCA_le_of_badCount_le -- the deployed CORE bound)
+  proven (U):   #bad   <= #alignable-a-sets (badScalars_card_le_alignable, UniversalAlignmentLaw:284)
+  weld:         CensusDomination (#alignable <= K, all pairs, deep bands) => delta*-pin, with K/p <= eps*.
+So the chain is  epsMCA <= #bad/p <= #alignable/p <= K/p <= eps*.  CensusDomination bounds #alignable;
+CORE only needs #bad. The inserted step #bad <= #alignable is the ONLY place equivalence could fail, and
+it is the step that is proven as a ONE-WAY inequality, never as an equivalence.
+
+MEASUREMENT (exact mod-p, proper smooth subgroup mu_n, prize prime p~n^4, never n=q-1; semantics matched
+to in-tree probe_alignment_census.py; probes probe_407_census_core_{equivalence,deepband,bindingband_ratio}.py):
+At the BINDING deep band the ratio #alignable/#bad is LARGE and depth-decaying, NOT ~1:
+  smooth n=16, k=3 (m=2 deep-ceiling shape), p=65537:
+    KKH26 line [x^6,x^4]: a=4 1792/496(3.61), a=5 336/40(8.40), a=6(bind) 56/40(1.40)
+    hifreq    [x^9,x^7]:  a=5 112/1(112.0), a=6 56/1(56.0), a=7 16/1(16.0), a=8(bind) 2/1(2.0)
+  => at the hifreq line up to 112 alignable a-sets ALL pin ONE bad gamma (the many a-subsets of a SINGLE
+     far-line agreement locus). #alignable OVERCOUNTS #bad by up to 112x.
+
+THINNESS CONTROL (rule 3): thick n=12 shows the SAME inflation pattern (e.g. line [7,6]: a=5 180/12,
+a=6 72/12, a=7 12/12) => the #alignable/#bad slack is THICKNESS-INVARIANT (not 2-power-essential).
+
+VERDICT (refutation-grade for the EQUIVALENCE claim; NOT a CORE result, no overclaim):
+CensusDomination is a STRICTLY STRONGER hypothesis than CORE -- a SUFFICIENT condition (via the proven
+one-way (U)), NOT an equivalent encoding. The "$1M obligation in census normal form" wording overstates
+equivalence: proving #alignable<=K proves MORE than the prize needs, and CensusDomination could even be
+FALSE (too strong) while CORE holds. CONSEQUENCE: a CORE proof need NOT route through CensusDomination;
+census-route effort should target #bad directly (#bad COLLAPSES to O(1) at the hifreq line -- the real
+CORE signal -- while #alignable stays inflated). The (U) direction and the weld are correct as a
+sufficiency chain; only the EQUIVALENCE framing is corrected. CORE not closed. Python-only, no Lean
+changed => axiom-clean trivially. Exact small-n (n=8,12,16), prize primes, proper subgroups.
