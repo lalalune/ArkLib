@@ -1128,3 +1128,53 @@ implicit. The genuine open input (per the file's own conclusion) must come from 
 q-reduction (spurious mod-p collisions making crossCell sub-random), NOT from the granted absolute bound fed
 through the tower. Thinness-blind (a NO-GO need not be thin-essential, rule 3 OK for refutations). CORE not
 closed. Python-only, exact bigint, no Lean changed => axiom-clean trivially.
+
+## ⚠️ REFUTATION (surviving-lane, rule-3 PASS but WRONG SIGN) — the COLLECTIVE EVEN census/energy profile of mu_n is NOT suppressed below random; it is INFLATED, super-multiplicatively in r (2026-06-15, opus-4-8 subagent)
+
+LENS: the surviving live object isolated by the full-depth-BIND refutation (ef5f12fb1) + handoffs: "the
+COLLECTIVE thin depth profile (moment / sqrt-cancellation), NOT a per-S no-vanisher statement." Prior work
+measured only (a) r_min = smallest single vanisher (e7b5e6125: thin DEEPER), (b) d_odd onset (odd_moment
+entry: thin deeper, but A_r=-n^r RIGID, decouples from M), (c) A_r/Wick RATIO at the optimizer r* + its
+n-trend (step_at_rstar: margin erodes). NONE measured the per-r EVEN energy moment PROFILE E_{2r}(mu_n) =
+sum_{b!=0}|eta_b|^{2r} (the object feeding A_r = E_r - n^{2r}/q <= Wick, the genuine prize moment) against a
+thin-density RANDOM control, to test whether the thin advantage COMPOUNDS (collective) or is single-depth.
+This is that measurement -- and it kills the "thin advantage helps the moment route" hope at the EVEN level.
+
+METHOD (exact, rule-2 + rule-3 clean): eta_b = exact integer DFT of indicator(mu_n) in F_p; mu_n = <g^m>,
+m=(p-1)/n > 1 PROPER (NEVER n=q-1). prize-band primes p~n^beta, beta in {4.0,4.5}, incl. one non-Fermat.
+RANDOM control = median over 5 random n-element subsets of F_p* (same thin density). Probes
+scripts/probes/probe_407_even_census_profile.py + probe_407_even_census_dcsub.py (adversarial re-audit).
+
+RESULT 1 -- E_{2r}(thin)/E_{2r}(random) GROWS with r (thin is LARGER, not suppressed):
+| n  | beta | E2r ratio r=1..6                              |
+|----|------|----------------------------------------------|
+| 16 | 4.0  | 1.00, 1.45, 2.27, 3.59, 5.68, 8.85           |
+| 16 | 4.5  | 1.00, 1.45, 2.27, 3.59, 5.67, 8.80 [non-Fermat]|
+| 32 | 4.0  | 1.00, 1.48, 2.38, 3.98, 6.75, 11.57          |
+The thin even-energy moment is BIGGER than random at every r>=2 and the gap COMPOUNDS upward. Since A_{2r} =
+|F|*W_{2r} - n^{2r} tracks E_{2r}, the thin A_{2r} is FURTHER from suppression than random, worse with depth.
+
+RESULT 2 (ADVERSARIAL re-audit, rule 6 -- is this just the known "thin M>=random M" sup fact re-seen?): NO.
+(a) COLLECTIVE shape: the thin/random ratio of the t-th LARGEST |eta_b| is >=1.1 not only at t=1 (sup) but at
+    t=1,2,4,...,128, and GROWS into the spectrum body (n=32: 1.157 @t=1 -> 1.309 @t=128). The ENTIRE top of the
+    period spectrum is inflated in thin, not one extreme outlier -- genuine collective over-concentration.
+(b) The even-moment ratio EXCEEDS the sup-only prediction (M_thin/M_rand)^{2r} at deep r: n=16 r=6 ratio 8.58
+    vs sup-pred 3.47; n=32 r=6 ratio 11.40 vs sup-pred 5.77. So the moment growth is NOT explained by the sup
+    alone -- the BODY of the spectrum contributes a genuine extra (super-sup) factor. New collective signal.
+
+VERDICT (rule-4 mapped wall; rule-3 PASS but the thinness-essentiality has the WRONG SIGN for CORE):
+1. mu_n's even period-energy profile IS thinness-essential (thin differs from random) -- but in the direction
+   that makes the moment object HARDER, not easier: thin is collectively MORE concentrated (top-heavy at every
+   quantile), so A_{2r}(thin) > A_{2r}(random), and the excess COMPOUNDS super-multiplicatively in r.
+2. This WALLS the "surviving collective thin depth profile -> smaller M via moments" hope at the EVEN level:
+   the thin advantage that exists at the ODD signed-vanisher level (r_min, d_odd deeper) does NOT carry to the
+   EVEN energy moments -- the very ones in A_r <= Wick. The collective even profile is anti-helpful.
+3. RECONCILES + SHARPENS ILO (852e0fa27, "thin anti-concentrated worse, sup only") + the moment thickness-
+   invariance note: it's not only the sup -- the WHOLE even spectrum is collectively inflated, and the
+   inflation grows with moment order. The signed/odd thin depth and the even-energy concentration point
+   OPPOSITE ways; the moment route needs the even one, which is adverse.
+HONEST SCOPE: small n (16,32 exact), p~n^{4-4.5}. Random control is finite-sample median (5 draws). This is a
+COLLECTIVE refutation of the even-moment thin-suppression hope, NOT a CORE closure nor a prize refutation:
+the surviving structural hope is the ODD signed family-level Sidon bootstrap (B_inf<-B_{log n}), which lives
+in the signed/odd object, NOT the even energy profile measured here. CORE not closed. Python-only, no Lean =>
+axiom-clean trivially. Multi-prime (incl. non-Fermat) -> not a Fermat artifact.
