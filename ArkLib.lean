@@ -752,6 +752,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DCMomentSupBound
 import ArkLib.Data.CodingTheory.ProximityGap.DCOptimized
 import ArkLib.Data.CodingTheory.ProximityGap.DCSubtractedMoment
 import ArkLib.Data.CodingTheory.ProximityGap.DCSupNormBound
+import ArkLib.Data.CodingTheory.ProximityGap.DCWorstCaseWiring
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Contrapositive
