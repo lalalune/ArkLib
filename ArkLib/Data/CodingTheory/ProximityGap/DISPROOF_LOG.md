@@ -10167,3 +10167,28 @@ question-begging-free input (additive energy) reduces to the L4 no-go. `μ_n` la
 decay (`a_emp` p-dependent, ≈0.6–0.97 in `kappa`). `result_type = even-r-collapses-to-deep-moment +
 dual-is-circular(input=conclusion) + only-borrowable-input=L4-nogo + variety-not-Salem(decay-arithmetic-not-geometric)`.
 Finite-field restriction for `μ_n` ⟹ the deep-moment wall. No sub-trivial `M(n)` for any prime class.
+
+### O178 — wf-ND: the theta / approximate-functional-equation route is PINNED (no contraction)
+
+**Approach (new lens):** generalize Demirci–Akarsu–Marklof (arXiv:1207.1607) past the *quadratic*
+incomplete Gauss sum to the subgroup Gauss sum `η_b = Σ_{x∈μ_n} e_p(bx)`; hope for a self-similar
+theta value-distribution law whose continued-fraction-type renormalization gives a *contractive*
+recursion to the floor (distinct from the false magnitude descent M²≤2M(n/2)² and the geometric-phase
+FFT butterfly).
+
+**Refuted premise (exact, `probe_wf2ND_theta_fe.py`, n=8..64, multi-prime incl. p/n³=256, β≈5):**
+`{η_b/√n}` is **i.i.d. complex Gaussian**, NOT the DAM theta law. Kurtosis `E|z|⁴/(E|z|²)² → 2.0`
+(1.94→1.98), `E|z|⁶/(E|z|²)³ → 6.0`, Re-kurt → 3.0. Tail is **Rayleigh `e^{-R²}`**, ~2–3 orders
+BELOW the DAM heavy tail `R^{-4}` at R=3 (emp 2e-5 vs R^-4=1.2e-2), vanishing past R=3.5.
+`max|η|/√n ≈ 3.4` tracks Gaussian `√(2logp)`, not the DAM cusp `m^{1/4}≈8–16`. No self-similar law.
+
+**Constraint lemma (proven, axiom-clean `[propext,Classical.choice,Quot.sound]`):**
+`Frontier/_wf2ND_theta_fixedpoint.lean` — a Fourier-inversion-type involution `T` (`T(T f)=c•(f∘σ)`,
+`σ` bijection, `c≠0`) is length-preserving: `#supp(T(T f)) = #supp f`, hence `theta_no_contraction`
+`¬∃f, #supp(T(T f))<#supp f`. With `T=DFT, σ=neg, c=|F_p|` this is "the Poisson/theta transform does
+NOT shorten the subgroup sum" — verified numerically `dual_support_size = n` exactly (TEST C). The
+transform is a fixed point, not a contraction; no recursion to a smaller modulus.
+
+**result_type = value-dist-is-Gaussian-not-DAM-theta (no self-similar law) + Poisson-is-fixed-point
+(no contraction, proven) + geometric-phase≠quadratic-phase (no metaplectic horocycle).** Does NOT
+bound B; explains why the theta avenue cannot. Intrinsic pin, not a BGK/energy re-label.
