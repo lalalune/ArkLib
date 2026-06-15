@@ -1360,3 +1360,32 @@ RESULT (n=16, β=4.0 + β=4.5[non-Fermat]):
 NET: 6feb11b53's two claims (collective inflation; exceeds sup at deep r) both STAND under 21-draw
 self-consistent re-audit; the only adjustment is the precise onset (r≥4 strict, vs r≥3 loose). No overclaim
 survives; the finding is robust. Python-only => axiom-clean trivially.
+
+================================================================================
+2026-06-14 wf-D1 (#444): the binding wf-NH far-line incidence I(n) is QUARTIC, not a small constant
+--------------------------------------------------------------------------------
+REFUTED (as a reading of the closure path): "at the binding radius δ* is a SMALL p-independent
+computable combinatorial quantity off the √-cancellation wall, so the prize is a small number."
+The p-independence is REAL (confirmed). The "small" part is FALSE.
+
+OBJECT: FarCosetExplosion exact binding incidence, k=4, size=6 (s-k=2 over-determined), r=n-6,
+far dir x^b (b in [4,6)), offset x^a, budget n. I(a,b) = #{γ : x^a+γx^b agrees with RS[4] on >=6}.
+ENGINE: cofactor-factorized vectorized exact count (scripts/probes/probe_wf3D1_unified.py),
+cross-validated EXACTLY vs the proven reference probe_farline_incidence_exact.incidence at n=16
+(both 89, dir (10,4), p-independent across 3 primes). A colex-vs-lex CNS-rank bug was caught/fixed
+before any number was reported.
+
+VERIFIED (proven-per-fixed-n, p-INDEPENDENT):
+  I(16) = 89   dir (10,4)   p in {200017,5000081,16777441}   I/n^4 = 1.358e-3
+  I(32) = 1441 dir (18,4)   p in {1048609,1048897}           I/n^4 = 1.374e-3
+  log-log slope (16->32) = 4.017  =>  I(n) ~ 1.37e-3 * n^4  (clean p-independent QUARTIC)
+  binder = monomial x^4 = x^k (lowest far exponent), offset a ~ n/2+2.
+
+CONSEQUENCE: at the fixed over-det radius r=n-6 the incidence is quartic, so I/budget ~ n^3 and the
+radius sits FAR above δ* (consistent with the in-tree δ*=9/16 pin: r=10=n-6 is the FIRST bad radius,
+I=89 >> 16). The binding object is a genuine high-degree (quartic) cyclotomic incidence count, NOT a
+small constant. NET: the closure path's p-independence half STANDS and is reinforced (the whole δ*
+curve is computable p-FREE, no √-cancellation needed to EVALUATE it); the "small computable number"
+half is refuted. New open object: the r-PROFILE I(n,r) (δ* = largest r with I(n,r)<=n) — a finite
+exact p-free computation, not a char-sum bound.
+Python-only numerics => axiom-clean trivially. — wf-D1
