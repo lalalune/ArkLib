@@ -2673,3 +2673,36 @@ GENERIC (maximal in the prize-FALSE thick regime, ->0 in the thin limit), so it 
 carrier and the generic closed form is recovered deep in the thin regime. CORE not closed, not refuted.
 Pure-Python exact integer counts, no Lean => axiom-clean trivially.
 probe_407_Er_pdependence_onset_r4.py.
+
+## The thin Wick-deficit (1-W_r) is SUB-leading in r: D_r=(1-W_r)*n falls BELOW the leading r(r-1)/2 and the gap WIDENS with r => NO compounding deep-r thin advantage (BGK-tight direction). Exact char-0, control-free (2026-06-15, opus-4-8 subagent)
+
+LANE (uncontested, CHAR-0, control-free; distinct from the live mod-p anomaly-predictor + deep-hole
+workers): the DISPROOF_LOG residual asked whether, as the moment ORDER r grows toward prize depth
+r*~log n, the thin advantage GROWS (compounding -> could survive the joint limit) or stays tied to the
+leading knife-edge. The prior thin-vs-neg-random measurement was r=3 ONLY. probe_407_Wickratio_rtrend_exact.py.
+
+OBJECT (fully EXACT, NO stochastic control, NO prime): the Wick ratio W_r = E_r^(0)(mu_n)/((2r-1)!! n^r)
+(= the accumulated moment-step product, push 58f29f3f0). Gaussian/random model: W_r=1. Thin subgroup:
+W_r<1, deficit (1-W_r) = thin advantage. E_r^(0) via exact char-0 cyclotomic-lattice r-fold convolution
+(mu_n = n-th roots of unity in Z^{n/2}, n=2^a, zeta^{n/2}=-1). Define the rescaled deficit D_r=(1-W_r)*n.
+Leading expansion log W_R=-R(R-1)/(2n)+.. => D_r ~ r(r-1)/2. QUESTION: does the EXACT D_r EXCEED r(r-1)/2
+by a WIDENING margin (extra compounding thin advantage) or fall at/below it (knife-edge dominates)?
+
+RESULT (exact, r=2..8/7/6, n=8..64): D_r is consistently BELOW r(r-1)/2 and the gap WIDENS with r:
+  n=32: D_r/[r(r-1)/2] = 1.000, 0.972, 0.931, 0.878, 0.816  (r=2..6) -- MONOTONE DECREASING
+  n=16: D_r/[r(r-1)/2] = 1.000, 0.944, 0.865, 0.770, 0.669, 0.571 (r=2..7) -- MONOTONE DECREASING
+  n=8:  D_r-lead = 0, -0.33, -1.54, -4.05, -8.05, -13.48, -20.20 (r=2..8) -- gap grows fast
+  n=64: D_r/[r(r-1)/2] = 1.000, 0.986, 0.965 (r=2..4) -- same downward trend.
+  (W_r exact: n=32 -> 0.9688, 0.9089, 0.8255, 0.7258, 0.6175 at r=2..6, matching 98db97afc/caab0afb9.)
+
+VERDICT (rule-4 constraint, rule-6 honest, NOT a closure): the exact thin Wick-deficit is SUB-LEADING --
+(1-W_r) is SMALLER than the leading r(r-1)/(2n) prediction, and the shortfall GROWS with r. Equivalently
+W_r approaches 1 FASTER than the leading knife-edge 1-r(r-1)/2n, so the subleading correction is
++LOOSENING (toward the Gaussian W_r=1), NOT a compounding thin advantage. => the surviving thin lever
+(the moment-step / Wick-ratio route) does NOT gain EXTRA room at deep r; the deep-r structure is the
+BGK-tight direction. This CLOSES the "deep-r compounding thin advantage rescues the moment route" hope:
+the accumulated product W_{r*} (= prod g) is NOT held below 1 by a growing deep-r deficit -- the deficit
+is sub-leading and its rescaled form D_r/[r(r-1)/2] -> below 1 and falling. The moment/Wick-ratio route is
+the knife-edge or worse at every accessible r, consistent with the whole board. Pure-Python EXACT char-0
+integer cyclotomic-lattice convolution, no control, no prime, no Lean => axiom-clean trivially. CORE not
+closed, not refuted. probe_407_Wickratio_rtrend_exact.py.
