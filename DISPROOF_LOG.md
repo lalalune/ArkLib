@@ -1694,36 +1694,43 @@ delta* = sup{delta : I(delta) <= q*eps* ~= n}. So the e2=0 family is WITHIN the 
 The decisive question NObody mapped: K(n) is reported only at the SINGLE width w=n/2; is K<=1 (budget-OK)
 anywhere, and at WHICH radius? (n=64 enumeration is infeasible: C(64,32)~1.8e18, ~1.1e11 e2=0 sets.)
 
-METHOD: exact MITM width-sweep (in-tree probe_e2_widthsweep_directcount.py), proper mu_n, prize prime
-p=n^4, w from 3..n/2+1, report K(w) and the agreement frac w/n (radius delta=1-w/n).
+METHOD: exact MITM width-sweep over the FULL FLOOR WINDOW delta in (Johnson=1-sqrt(rho), cap=1-rho),
+proper mu_n, prize prime p=n^4, ALL w from 2..(Johnson width). (Prior sweep skipped w=3,6,7 -- I filled
+them.) k=2. /tmp/e2_floorwindow.py (+ in-tree probe_e2_widthsweep_directcount.py for the full 2..n/2).
 
-RESULT (exact, n=16 AND n=32):
-  n=16: w5 (delta=0.688) K=1; w4,8,9 K=3; (K<=1 ONLY at w=5, deep)
-  n=32 K(w) profile: w4:7  w5:1  w8:7  w9:23  w10:4  w11:2  w12:21  w13:32  w14:14  w15:18  w16:38  w17:33
-    => K<=1 ONLY at w=5 (delta=0.844); next-smallest K=2 at w=11 (delta=0.656). BOTH DEEPER than Johnson
-       (delta_Johnson = 1-sqrt(rho) = 1-sqrt(1/16) = 0.75 at n=32... w5 delta=0.844>0.75 deep; w11
-       delta=0.656<0.75 i.e. ABOVE Johnson but K=2>1 already over budget).
-  At/above the Johnson edge (w<=n/2, delta in [0.5,0.75]): K is LARGE (4..38) and the w=n/2 value
-  K=1,3,38 is SUPER-LINEAR (ratios 3x, 12.67x) -- confirming the in-tree "K does not collapse to O(n)".
+RESULT (exact, n=16 AND n=32 -- the COMPLETE floor window, w=odd parities included):
+  n=16 floor window delta in (0.646,0.875) = w in (2,5.7):  w2:K0  w3:K0  w4:K3  w5:K1  (w6:K0=Johnson)
+  n=32 floor window delta in (0.750,0.938) = w in (2,8):    w2:K0  w3:K0  w4:K7  w5:K1  w6:K0  w7:K0  (w8:K7=Johnson)
+  ABOVE Johnson (w>=8, n=32): K EXPLODES super-linearly: 7,23,4,2,21,32,14,18,38,33 (w8..17).
+  n=64 floor window delta in (0.823,0.969):  w2:K0  w3:K0  w4:K15  w5:K1  w6:K0  (w7+ Johnson-region, large)
+KEY: across the ENTIRE deep floor window the e2=0 census is WITHIN budget (K<=1) at EVERY width EXCEPT
+the single resonance w=4 (K=3,7,15 at n=16,32,64 = EXACTLY n/4-1). The super-linear K-explosion (the
+in-tree 1,3,38 at w=n/2) is a JOHNSON-EDGE-AND-BELOW phenomenon (w>=n/4), NOT a floor-window phenomenon.
+[CONVERGENCE: the w=4 value K=n/4-1 was independently pinned to a closed form in the entry below + ties
+to wf-D2's s*-k=n/4 (push ce8cb602e). MY unique contribution here is the COMPLEMENT: w=4 is the SOLE
+budget-overflow width across the WHOLE deep floor window -- every other window width has K<=1.]
 
-VERDICT (rule-4 mapped constraint; NOT a refutation of the sibling's thinness result, a COMPLEMENT):
-1. K(w) is NON-MONOTONE + width-divisibility-irregular (e.g. w=9,13,17 all coprime to 32 yet K=23,32,33;
-   w=5,11 coprime yet K=1,2). It is the additive-energy combinatorial count, no simple closed form.
-2. The e2=0 census stays WITHIN floor budget (K<=1) ONLY at DEEP radii (delta=0.844 at n=32, well below
-   Johnson). At the prize-relevant region (the floor edge is ABOVE Johnson, delta>1-sqrt(rho)) K is
-   already >1 (over budget) at EVERY width tested with delta in the window, and grows super-linearly with
-   n at w=n/2. So the e2=0 over-det family, while thinness-essential (sibling) and the EXACT Attack-2
-   reduction, does NOT stay within the floor budget at-or-above the Johnson edge -- it can be the binding
-   within-budget family only DEEPER than Johnson, not at the prize floor edge.
-3. NET: this PINS the obstruction precisely -- the e2=0 census R1 is a real thin-essential object but its
-   budget-crossing radius sits DEEPER than the prize edge, and its super-linear K(n) at the edge IS the
-   additive-energy/BGK wall (exactly as _E2DilationDirectCount's honest verdict states). So R1 ("e2=0 is
-   the binding within-budget family at the EDGE") needs the K-growth to be controlled at the edge width,
-   which the data says it is NOT (super-linear). The thin-essentiality is necessary-not-sufficient: it
-   makes e2=0 the RIGHT family structurally, but the K-count overflows budget at the edge.
-CORE not closed, not faked. K(64) enumeration infeasible (C(64,32)~1.8e18); growth law from n=8,16,32 +
-the width-profile is the available evidence. Python-only exact => axiom-clean trivially.
-probe_e2_widthsweep_directcount.py (+ probe_407_e2_census_K_n64.py: n=64 MITM scaffold, infeasible at full w).
+VERDICT (rule-4 mapped constraint; CORRECTS my first draft; a COMPLEMENT to the sibling thinness result):
+1. The e2=0 census R1 is WITHIN floor budget (K<=1) across essentially the whole floor window
+   (delta in (Johnson,cap)) -- K=0 or 1 at every floor-window width EXCEPT the isolated w=4 resonance.
+   This SUPPORTS R1's viability: deep in the window the binding e2=0 family does stay within budget.
+2. The lone obstruction in the window is the w=4 RESONANCE (K=3,7 at n=16,32): the smallest even-symmetric
+   vanishing locus (antipodal-quadruple sets {x,-x,y,-y}-flavored), where e2=0 has many solutions. It is
+   FINITE/characterizable, not a generic growth -- a single bad width, not the BGK wall.
+3. The super-linear K(n)=1,3,38 the in-tree file flags is the value AT w=n/2 (Johnson, delta=0.5), which
+   is the LOWER window edge / below the floor -- NOT the floor edge. So "K is super-linear" describes the
+   Johnson-region census, and does NOT by itself defeat the floor (which lives at delta>Johnson where
+   K<=1 except at w=4).
+4. NET (honest, rule-6): this is GOOD news for R1, sharply scoped -- the e2=0 binding family is
+   within-budget across the floor window with a SINGLE exceptional width w=4. The real remaining question
+   for R1 is whether that w=4 resonance (a) actually realizes a delta*-window-edge bad config, or (b) is
+   dominated/excluded (it sits at delta=1-4/n -> 1, the extreme deep end, possibly above cap for the true
+   k). The K-explosion above Johnson is consistent (the ceiling SHOULD overflow below the edge). This
+   does NOT close CORE, but it REFRAMES the obstruction from "K super-linear everywhere" to "K<=1 in the
+   window except the w=4 resonance" -- a finite, attackable object.
+CORE not closed, not faked. K(64) full-window enumeration feasible at SMALL w (the window is shallow):
+w<=7 needs only C(64,<=7) per side -- TRACTABLE, unlike w=n/2. Python-only exact => axiom-clean trivially.
+probe_e2_widthsweep_directcount.py + /tmp/e2_floorwindow.py.
 
 ================================================================================
 2026-06-15 EXACT CLOSED FORM for the shallow e2=0 census: K(n,4) = n/4 - 1,
@@ -1751,3 +1758,32 @@ census n/4 to wf-D2's s*-k=n/4. Formalizable target (the K(n,4)=n/4-1 closed for
 count). CORE not closed: the closed form CONFIRMS super-budget (n^2/4 >> n) => no within-budget floor at
 shallow width, consistent with Johnson-tracking. Python-only exact => axiom-clean trivially.
 probe_407_e2_K_w4_n64.py (5-point, multi-prime verified).
+
+================================================================================
+2026-06-15 The shallow-width e2=0 census MAP + the w=5 KNIFE-EDGE (#bad=budget=n
+exactly, single orbit, 2-pairs+singleton): cleanest formalization target (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Completed the shallow-width map of the e2=0 census (prize FLOOR's R1 object) for 2-power n, exact,
+p-independent (2 prize primes each), to n=64:
+  w<=3 : EMPTY (no e2=0 solutions)
+  w=4  : K = n/4 - 1, #bad = n*K = n^2/4 - n  (super-budget quadratic; closed form, f1d5de96e)
+  w=5  : K = 1 EXACTLY all n, #bad = n EXACTLY = budget  <-- THE KNIFE-EDGE  (1,1,1,1 @ n=8,16,32,64)
+  w=6  : EMPTY again
+  (then super-budget middle band, peaks w=n/2.)
+
+THE w=5 KNIFE-EDGE (confirmed n=8..64, p-independent):
+- #distinct-alpha = n EXACTLY = budget, single mu_n-orbit (K=1).
+- EVERY w=5 e2=0 subset = EXACTLY 2 antipodal pairs + 1 singleton {x,-x,y,-y,z} (8/8,48/48,224/224,
+  960/960). pairs cancel in e1 (=> e1=z), e2=0 forces a relation among x,y,z; bad-set={-1/z}=one orbit.
+- ELEGANT cross-relation: #w5-subsets = 8,48,224,960 = n^2/4 - n = the w=4 #bad-count. The n^2/4-n
+  width-5 subsets collapse (n/4-1)-to-1 onto exactly n bad-scalars (one orbit).
+
+VERDICT (rule-4, no overclaim): the shallow e2=0 census is fully mapped with EXACT p-independent closed
+forms: w=4 gives n/4-1 orbits (super-budget), w=5 gives exactly 1 orbit at #bad=n=budget (knife-edge),
+w=3,6 empty. The w=5 family is the cleanest object on the entire board: #bad=budget EXACTLY, single
+orbit, p-independent, explicit 2-pairs+singleton structure => a prime FORMALIZATION target (a clean
+cyclotomic count = n). It is the candidate BINDING edge family (proximity gap exactly at budget). This
+does NOT close floor-vs-Johnson (the w=5 family sits AT budget, neither above=fail nor strictly below=
+floor-slack; the binding among ALL widths/families is the R1 residual) but it pins the cleanest knife-
+edge witness. Consistent w/ wf-D2 Johnson-tracking + the shared n/4 structure. CORE not closed, not
+faked. Python-only exact => axiom-clean trivially. probe_407_e2_w5_knife_edge.py.
