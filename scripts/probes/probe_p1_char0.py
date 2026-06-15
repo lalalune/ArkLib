@@ -272,11 +272,16 @@ def _gamma_hist_np(S, p, k, a, b, batch=6000):
             for rr in range(ncols):
                 if rr == c: continue
                 fct = M[:, rr, c].copy(); M[:, rr, :] = (M[:, rr, :] - fct[:, None] * M[:, c, :]) % p
-        for bsys in range(B):
-            if not alive[bsys]: continue
-            Mb = M[bsys]
-            if Mb[k, k] % p == 1 and all(Mb[k, j] % p == 0 for j in range(ncols) if j != k):
-                g = int(Mb[k, ncols]) % p; hist[g] = hist.get(g, 0) + 1
+        # vectorized extraction: valid full-rank systems have M[:,k,k]==1 and M[:,k,j]==0 (j!=k);
+        # gamma = M[:,k,ncols].
+        rowk = M[:, k, :]                               # (B, k+2)
+        good = alive & (rowk[:, k] % p == 1)
+        for j in range(ncols):
+            if j == k: continue
+            good = good & (rowk[:, j] % p == 0)
+        gammas = (rowk[:, ncols] % p)[good]
+        for g in gammas.tolist():
+            hist[int(g)] = hist.get(int(g), 0) + 1
     for A in itertools.combinations(range(n), k + 1):
         buf.append(A)
         if len(buf) >= batch: flush(buf); buf = []
