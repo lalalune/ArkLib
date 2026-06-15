@@ -10077,3 +10077,49 @@ VERDICT: dead-precise-why. Premise (small additive doubling) measured FALSE (K�
 (K^C≥n); thickness-monotone; the only live deployment is the already-capped Bourgain–Garaev sum–product
 engine (M≤n^{0.99998} at β=4). Exact gap: M-exponent 0.99998 vs needed 0.5. `result_type =
 dead-wrong-branch+wrong-order+thickness-monotone+collapses-to-mapped-sumproduct-wall`.
+
+
+---
+
+## #407 tower-spike — the period sup-norm R>√2 spike is β-GATED (thickness), NOT 2-adicity; prize-relevance REFUTED (2026-06-14)
+
+CONTEXT. The refutation hunt flagged a structured-prime spike: at Fermat/2-power primes the Wick √2-floor
+on the Gauss-PERIOD sup-norm fails (`R = M/√(n ln m) > √2`, measured 1.49) while the min-relation-weight
+stays small. HYPOTHESIS (issue407-poisson-concentration-tower, "missed angle"): the spike is DRIVEN by
+the IMPRIMITIVE far-line directions `X^{n/2^j}` (the 2-power tower `μ_{n/2}` recursion), amplified by the
+odd part; and the heavy mass IS the imprimitive tower, sub-Poisson at thin β≥4. This is the PERIOD object
+(p-dependent), distinct from the prior `cumulant2power` (frequency-order object) and `laneF` (energy/L²
+object) refutations.
+
+PROBES (committed: `probe_tower_argmax_cosphi.py`, `probe_tower_ratio_beta_vs_v2.py`,
+`probe_R_up_tower_betagate.py`; proper subgroups μ_n, n=16/32/64, multi-prime, |·| via exact period sum).
+THREE exact measurements:
+  • **Argmax cross-parity is EXACTLY constructive.** At the global maximizer b* of ‖η_b(μ_n)‖, the two
+    child periods η_{b*}(μ_{n/2}), η_{ζb*}(μ_{n/2}) have cos(Δphase) = 1.000 to machine precision, for
+    EVERY prime/n. So the worst-case L∞ tower step is the FULL triangle equality M(μ_n)=‖child‖+‖dilate
+    child‖ (ratio 2), never the √2 averaging. (Sharpens substrate's "cos=1 empirically at the maximizer"
+    to EXACT-at-b*.) The exact single-level identity η_b(μ_n)=η_b(μ_{n/2})+η_{ζb}(μ_{n/2}) confirmed at
+    machine precision (already substrate `eta_union_dilate`).
+  • **The blow-up is β-GATED, not v2-gated** (`probe_tower_ratio_beta_vs_v2.py`, 34 curated primes ≡1 mod
+    16, n=16, β & v2(p−1) varied INDEPENDENTLY): corr(β, M(n)/M(n/2)) = **+0.62** (thinness drives the
+    ratio toward 2) but corr(v2, ratio) = **−0.04** (2-adic structure does NOT, once β is freed). The
+    "Fermat spike" in the naive sweep was a CONFOUND — larger primes carried larger v2.
+  • **Prize regime is SAFE.** Holding n=16 fixed at thin β≥4 on the WORST structured primes:
+    p=40961(v2=13,β3.83)→R=1.13; p=65537(FERMAT,v2=16,β4.00)→R=1.20; p=114689(v2=14,β4.20)→R=1.15;
+    p=163841(v2=15,β4.33)→R=1.15; and n=32 p=1179649(v2=17,β4.03)→R=1.26 — ALL below the Wick floor
+    √2=1.414, even at MAXIMAL 2-adicity. The R=2.07 blow-up only appears at n=64,p=65537 where β=2.67
+    (THICK subgroup, n→p, far outside the prize window). R climbs DOWN the tower (β shrinking), not up it.
+
+VERDICT: **dead-precise-why (prize regime) + new-precise-mechanism.** PARTIALLY confirmed — the tower
+recursion IS exact and the worst-case step IS full constructive amplification (cos=1 at b*, ratio→2). But
+the amplification is gated by subgroup THICKNESS β=log_n q, not by 2-adic prime structure, and at prize
+β≥4 the spike sits BELOW the Wick floor even at the Fermat prime. This LOCALIZES the R>√2 phenomenon to
+the non-prize thick regime and RECONCILES the prior cumulant2power refutation (heavy frequencies carry
+GENERIC multiplicative order — no finite imprimitive carrier) with the exact recursion: the period VALUE
+recurses cleanly through μ_{n/2}, the CARRIER frequency does not. So "imprimitive tower drives the prize
+spike" is REFUTED; the open content is the per-level worst ratio (√2 vs 2) along the worst trajectory,
+restated as the single β-gated scalar `BetaGatedRatio` in `Frontier/_TowerSpikeBetaGate.lean` (axiom-clean
+iterated-tower envelope + named obligation, NOT a closure). Exact gap: worst per-level ratio is empirically
+≤√2 at β≥4 but no PROOF the L²-tracking √2 holds along EVERY tower path = the BGK cocycle large-deviation
+bound, now β-conditioned. `result_type = β-gated-not-2adic-gated + prize-safe-below-floor + value-recurses-
+carrier-does-not + reduces-open-core-to-one-β-gated-scalar`.
