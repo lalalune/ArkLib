@@ -2564,3 +2564,34 @@ RESULT 3 -- VERDICT (rule-4 wall map, rule-6 honest, NOT a closure):
   (all-order / r*-resummed) effect, since every fixed perturbative order in 1/n vanishes at the
   joint limit. Pure-Python exact integer counts + Vandermonde over Q, no Lean => axiom-clean
   trivially. probe_407_Er_thirdcoeff_accumulated.py.
+
+## UNIFIED open inequality A_r<=Wick <=> Anom_r <= (r/n)*Wick: the bad-prime anomaly OUTGROWS 0xSolace's r/n char-0 margin ~18x/octave (kappa: 0.04 -> 1.53 -> 27.8 for n=16,32,64) (2026-06-15, opus-4-8 subagent)
+
+LANE: synthesize 0xSolace's exact general-r closed form E_r^(0)/Wick = 1 - r/n + O(1/n^2) (push 44234dc3d,
+2034615dc) with my bad-prime anomaly growth (caab0afb9, 219f17c7a). Since A_r/Wick = E0/Wick + Anom_r/Wick
+- n^{2r}/(p Wick) and E0/Wick = 1 - r/n + O(1/n^2), to LEADING ORDER:
+    A_r <= Wick  <=>  Anom_r <= (r/n)*Wick + n^{2r}/p.
+Define kappa_r := Anom_r / ((r/n)*Wick). Carrier (leading order) holds iff kappa_r <= ~1. This is the
+SHARPEST reformulation: prize <=> the bad-prime anomaly stays within the r/n char-0 margin.
+probe_407_anom_vs_rn_headroom.py. Exact integer counts (E0_ring==3n(n-1) validated; Ep brute-validated at
+n=64). PROPER mu_n, p>=n^4, NEVER n=q-1.
+
+RESULT -- peak kappa_r (over r=2..5) at each n's worst in-window bad prime:
+  n=16 (beta4.053, p=76001):    peak kappa = 0.04063 @ r=5
+  n=32 (beta4.050, p=1244993):  peak kappa = 1.52879 @ r=5
+  n=64 (beta4.008, p=17318209): peak kappa = 27.83765 @ r=5
+The anomaly outgrows the r/n char-0 margin ~18x/octave. kappa crosses 1 between n=16 and n=32.
+
+INTERPRETATION (rule-6, honest): the leading-order budget kappa<=1 is EXCEEDED at n=32 (kappa=1.53) yet the
+EXACT A_r/Wick=0.936<1 still holds at n=32 -- because the O(1/n^2) corrections in E0/Wick (=0.726 at n=32 r=5,
+below 1-r/n=0.844) and the DC term provide extra sub-leading headroom that the leading-order (r/n)Wick test
+ignores. At n=64 BOTH the leading-order budget AND the exact A_r/Wick fail (kappa=27.8, A_r/Wick=2.96 @ r=5).
+So: 0xSolace's g(r)=1-r/n is the GOOD-PRIME (char-0) margin; kappa measures how badly the bad-prime anomaly
+eats it. The margin is eaten ~18x/octave and the carrier A_r<=Wick (on the EXACT object, not leading-order)
+survives at n=32 only on the sub-leading O(1/n^2)+DC crumbs, and FAILS at n=64.
+
+HONEST SCOPE: refutes the leading-order r/n-margin SUFFICIENCY (kappa<=1) at n>=32 and the exact A_r<=Wick at
+n=64 at these bad primes -- NOT the prize (forall-field, deep r~log q; small-r per-prime A_r<=Wick is not the
+prize bound, M^4<=p A_2 -> M<=(3p)^{1/4}sqrt(n)). Maps EXACTLY how the char-0 r/n margin and the bad-prime
+anomaly race: the anomaly wins ~18x/octave. Pure-Python exact, no Lean => axiom-clean trivially.
+probe_407_anom_vs_rn_headroom.py.
