@@ -1582,10 +1582,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.PencilDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.PencilDegreeGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
 import ArkLib.Data.CodingTheory.ProximityGap.PencilSplitCount
-import ArkLib.Data.CodingTheory.ProximityGap.PeriodHistogramTailCount
 import ArkLib.Data.CodingTheory.ProximityGap.PeriodMomentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.PeriodTailMarkov
-import ArkLib.Data.CodingTheory.ProximityGap.PeriodTailMarkovClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PinBeyondJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.PointwiseEnergyCeilingNoGo
