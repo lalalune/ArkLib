@@ -21,7 +21,7 @@ def main():
     n3 = n**3                    # 262144
     pencil = (5, 7)              # near-capacity-active far pencil (gcd 2), as in prior probe
     # prime ladder bracketing n^3 (262144): a few below, several above, up to ~50 n^3.
-    cand = [193, 449, 65537, 262657, 786433, 1179649, 5767169, 13631489]
+    cand = [449, 786433, 5767169, 13631489]  # below n^3, 3x, 22x, 52x n^3 (4-prime ladder for feasibility)
     primes = sorted(p for p in cand if isp(p) and (p-1) % n == 0)
     print(f"A3 n={n} k={k} rho={k/n} pencil={pencil} n^3={n3} capacity delta=1-rho={1-k/n}", flush=True)
     print(f"primes (1 mod {n}): {primes}", flush=True)
