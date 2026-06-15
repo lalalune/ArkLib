@@ -18,7 +18,6 @@ import math
 # EXACT, p-INDEPENDENT data (from probe_p1_char0.py deltastar_fast):
 DATA = {
     # (n,k): {r: I_0(r)}  far-line worst-case incidence (b != n/2 excluded)
-    (8, 2):  {3:1, 4:97, 5:1},            # placeholder corrected below from groundtruth probe
     (16, 2): {3:1,4:1,5:1,6:1,7:1,8:2,9:5,10:5,11:17,12:97,13:464},
     (16, 4): {5:1,6:1,7:1,8:9,9:9,10:89,11:3696},
 }
@@ -27,6 +26,14 @@ DELTASTAR = {
     (16,2): (10/16, "r=11 I=17 binder (9,4)"),
     (16,4): (9/16,  "r=10 I=89 binder (10,4)=x^k"),
 }
+# n=32 PARTIAL (full worst-case far-pencil scan is compute-bound ~hours; these are CONFIRMED
+# data points from full-direction-scans that ran before timeout, p=100000193 >> n^3=32768):
+#   r=24 (delta=0.750): OVER-BUDGET worst I>=97 at pencil (a=18, b=4=x^k)  => r=24 is BAD.
+#   r=19..25, low-exp dirs (a=31,b=4),(a=28,b=4): I=0 (well below the crossing).
+#   Crossing is at r<=24; consistent with the parallel-agent rho=1/8 candidate (r*=23 => w*-k=5),
+#   but the closed-form REFUTATION rests on the rho-DEPENDENT crossing offset (4 at rho=1/8 vs
+#   3 at rho=1/4), independent of the n=32 point.
+N32_PARTIAL = {(32,4): {24: ">=97 (BAD, binder a=18 b=4=x^k)", "low-exp dirs r19-25": 0}}
 
 def closed_forms(n, k):
     rho = k/n
