@@ -220,6 +220,21 @@ theorem exists_nontrivial_shift_autocorr_ge {S H : Finset G}
     rw [Finset.card_singleton] at this; omega
   exact ⟨ρ, hρne, autocorr_ge_coset_core hHS hmul hinv hρH⟩
 
+/-- **Any full-set autocorrelation cap must include the coset core.**  If every nontrivial
+dilation overlap of `S` is bounded by `M`, and `S` contains a nontrivial subgroup core `H`,
+then necessarily `|H| ≤ M`.  This is the consumer form of the obstruction: a Kelley/Fisher
+argument over the *whole* root set cannot see below the largest torsion-coset core, so any
+sub-Johnson attack has to pass to the isolated/ragged excess after removing that core. -/
+theorem autocorr_bound_forces_coset_core_le {S H : Finset G} {M : ℕ}
+    (hM : ∀ ρ : G, ρ ≠ 1 → (S ∩ dilate ρ S).card ≤ M)
+    (hHS : H ⊆ S)
+    (hmul : ∀ a ∈ H, ∀ b ∈ H, a * b ∈ H)
+    (hinv : ∀ a ∈ H, a⁻¹ ∈ H)
+    (hcard : 2 ≤ H.card) :
+    H.card ≤ M := by
+  obtain ⟨ρ, hρne, hcore⟩ := exists_nontrivial_shift_autocorr_ge hHS hmul hinv hcard
+  exact le_trans hcore (hM ρ hρne)
+
 /-! ## The positive `t = 3` extreme: `M = 1` recovers the trinomial √n bound
 
 When the autocorrelation is `1` (the trinomial / `t=3` primitive face: distinct pencil members
@@ -272,4 +287,5 @@ end ProximityGap.Frontier.PencilAutocorrelation
 #print axioms ProximityGap.Frontier.PencilAutocorrelation.pencil_overlap_le_of_autocorr
 #print axioms ProximityGap.Frontier.PencilAutocorrelation.autocorr_ge_coset_core
 #print axioms ProximityGap.Frontier.PencilAutocorrelation.exists_nontrivial_shift_autocorr_ge
+#print axioms ProximityGap.Frontier.PencilAutocorrelation.autocorr_bound_forces_coset_core_le
 #print axioms ProximityGap.Frontier.PencilAutocorrelation.punctured_blocks_disjoint_of_autocorr_le_one
