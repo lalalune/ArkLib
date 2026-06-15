@@ -2489,3 +2489,31 @@ the prize). What is killed: any closure of A_r<=Wick that relies on monotone des
 DC-essential threshold q*(2r-1)!! < n^r does NOT fire here (5.2e7 >> 4096), so this is a SECOND, anomaly-
 driven mechanism breaking A_r<=Wick at bad primes that the known threshold does not flag. Pure-Python exact
 integer counts, no Lean => axiom-clean trivially. probe_407_headroom_race.py, probe_407_n64_monotonicity_break.py.
+
+================================================================================
+2026-06-15 RULE-3 on the E_r SUBLEADING coeff: the -C(r,2)(2r-1)!! subleading
+(E_3's -45) is ALSO neg-closure-generic (thin~neg~thick) -- BOTH leading AND
+subleading orders are thin-blind; the thin advantage is confined to the 3rd+
+coefficients (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: brick 4 showed the LEADING (Wick (2r-1)!!) coeff of E_r is neg-closure-generic. This gates the
+SUBLEADING coeff -(2r-1)!!*C(r,2) (E_3's -45 = -15*3): thin-essential or also generic? Thin 2-power mu_n
+vs neg-closed-random (same size) vs thick composite subgroup, exact integer E_3, PROPER mu_n.
+probe_407_Er_subleading_rule3.py.
+
+RESULT (exact, sub-coeff = (E_3 - 15n^3)/n^2 -> -45 as n->inf):
+  n=16: sub_thin=-42.50  sub_neg=-42.50  (identical)
+  n=32: sub_thin=-43.75  sub_neg=-42.66  sub_thick(d=33,contaminated diff-size)
+  n=64: sub_thin=-44.375 sub_neg=-43.657 sub_thick(d=70)=-44.43 (~thin)
+=> sub_thin -> -45, sub_neg -> -45, sub_thick(matched) ~ -44.4 ~ thin. The SUBLEADING coeff is
+   NEGATION-CLOSURE-GENERIC (thin ~ neg ~ thick, gap vanishing O(1/n) like the leading term).
+
+VERDICT (rule-3 FAIL on the subleading, rule-6 honest, NOT a closure): BOTH the leading (Wick (2r-1)!!)
+AND the subleading (-C(r,2)(2r-1)!!) coefficients of E_r(mu_n) are negation-closure-generic -- NOT
+thin-2-power-specific. The thin prize advantage is therefore CONFINED to the THIRD-and-deeper coefficients
+of E_r (the n^{r-2} term onward). This BOUNDS the thin content: the first two orders of the additive-energy
+expansion carry no 2-power signature, so any thinness-essential mechanism must extract its gain from the
+sub-subleading structure (exactly the term whose accumulated effect over r* steps is the open prize
+question). Tightens the brick-4 picture: g(r)=1-r/n is built from two neg-closure-generic orders; the thin
+deviation is below O(1/n^2) in the per-step margin. CORE not closed, no overclaim. Python-only exact =>
+axiom-clean trivially. probe_407_Er_subleading_rule3.py.
