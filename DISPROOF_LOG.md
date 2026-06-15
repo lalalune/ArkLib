@@ -2706,3 +2706,27 @@ is sub-leading and its rescaled form D_r/[r(r-1)/2] -> below 1 and falling. The 
 the knife-edge or worse at every accessible r, consistent with the whole board. Pure-Python EXACT char-0
 integer cyclotomic-lattice convolution, no control, no prime, no Lean => axiom-clean trivially. CORE not
 closed, not refuted. probe_407_Wickratio_rtrend_exact.py.
+
+================================================================================
+PHASE-ALIGNMENT TOWER lane: the "cos@b*=1.0000 tower-recursive" descent-handle
+premise is REFUTED -- it is antipodal symmetry (-1 in mu_n), a SIGN not a phase.
+(push b3ad58f20, receipt #444 ic-4705287464, probe_407_phase_alignment_is_antipodal_symmetry.py)
+
+CONSTRAINT LEMMA (rule-4): For n even, -1 = h^{n/2} in mu_n, so mu_n is closed
+under x -> -x. Hence S_b = sum_{x in mu_n} e_p(bx) is REAL for EVERY frequency b
+(antipodal pairing). mu_{n/2} also contains -1, so each half-coset sum S_0, S_1 is
+real too => cos(S_0, S_1) in {+1, -1} ALWAYS. The observed "cos=1.0000" at the worst
+frequency b* is therefore a SIGN (both real halves same sign), not a hidden phase
+alignment, and "same sign at b*" is tautologically WHY b* is the argmax (constructive
+real addition). => the phase-alignment tower is NOT a non-average descent/Stepanov
+handle; any proof attempt that leans on "exact phase alignment at b*" as structure is
+leaning on antipodal symmetry, which moment/average methods already see (S_b real =>
+the cancellation problem is purely in the SIGN PATTERN of {S_b}_b, no phase content).
+Confirmed exact: Im(S_0 conj S_1) = O(1e-15) machine zero at n=8,16,32, p~n^4.
+
+SECONDARY (false-alarm growth corrected): in the prize regime p~n^4, |S_b*|/sqrt(n)
+grows ~ sqrt(log n) (ratio/log2 n flattens 0.89->0.80 at n=8,16,32,64; ratio/sqrt(log2 n)
+turns over at n=64) = INSIDE the prize-allowed C*sqrt(log(p/n)) envelope. An earlier
+faster-than-sqrt-log read was a finite-size artifact. No prize-tension at accessible n.
+
+Does NOT close/refute CORE. Removes one hoped-for mechanism + one false-alarm read.
