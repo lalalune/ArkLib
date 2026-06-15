@@ -24,6 +24,48 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
+## 2026-06-14 (#444 C05): Freiman 3k−4 rigidity of the bad-coset — REFUTED-FALSE (multiplicative coset, not additive AP)
+
+**Conjecture C05 (additive-combinatorics):** "Claim the bad set `B_w ⊂ F_p` has small doubling
+`|B_w+B_w| ≤ 3|B_w|−4` because each antipodal `μ_d`-coset is an arithmetic progression in the
+cyclotomic exponent, so Freiman's 3k−4 theorem confines `B_w` to a rank-1 GAP forcing
+`|B_w| = n/gcd(b−a,n)` and `δ* = (1−ρ)−Θ(log n)/n` past Johnson."
+
+**Verdict: refuted-false.** The conjecture conflates an AP in the *cyclotomic exponent* (the
+additive group `ℤ/n`) with an AP in `F_p`. The exponent map `j ↦ ζ^j` is a **homomorphism
+`(ℤ/n,+) → (F_p^*,·)`, NOT `(ℤ/n,+) → (F_p,+)`.** An AP in the exponent `{j₀, j₀+s, j₀+2s,…}`
+therefore maps to a **geometric progression / multiplicative coset** `{ζ^{j₀}, ζ^{j₀}r, ζ^{j₀}r²,…}`
+(`r=ζ^s`) in `F_p`. Freiman 3k−4 is an *additive* doubling statement (`|A+A|`), and a generic
+geometric progression / multiplicative coset has additive doubling near the **Sidon maximum**
+`|A|(|A|+1)/2`, the opposite of `3|A|−4`.
+
+**Probe (`scripts/probes/probe_c05_freiman_doubling.py`, commit `e34d8ee29`):** built the actual
+single-codeword bad-α set `B = {−ζ^{j(a−b)} : j} ⊂ F_p` (the orbit-count law's coset) over proper
+`μ_n`, `p` prime `≈ n^4` (`p ≫ n³`, never `n=p−1`), `n ∈ {16,32,64,128}`. Measured additive doubling
+`|B+B|` vs `3|B|−4`:
+
+| n | (a,b) | gcd | \|B\| | \|B+B\| | 3\|B\|−4 | Freiman? | Sidon max |
+|---|---|---|---|---|---|---|---|
+| 16 | (4,12) | 8 | 2 | 3 | 2 | **False** | 3 |
+| 16 | (4,8) | 4 | 4 | 9 | 8 | **False** | 10 |
+| 16 | (6,8) | 2 | 8 | 33 | 20 | **False** | 36 |
+| 16 | (1,2) | 1 | 16 | 129 | 44 | **False** | 136 |
+| 64 | (24,32) | 8 | 8 | 33 | 20 | **False** | 36 |
+| 128 | (1,64) | 1 | 128 | 8193 | 380 | **False** | 8256 |
+
+`|B+B|` tracks `|B|(|B|+1)/2` (Sidon max), **not** `3|B|−4` — fails even at the minimal `|B|=2`
+(`|B+B|=3 > 2`). The bad-coset is maximally **non**-Freiman-structured additively.
+
+**Why the "fix" (read the AP in `ℤ/n`) is circular, not past-Johnson.** In the exponent group `ℤ/n`
+the bad set IS a subgroup-coset (an AP with step `a−b`), with trivially small doubling
+`|H+H|_{ℤ/n} = |H| = n/gcd(b−a,n)` (probe Part 2). But that just recovers the **in-tree orbit-size**
+`S = n/gcd(b−a,n)` — which `_B2DoorAOrbitCount.lean` explicitly flags as **circular**: the
+orbit-count law `I_pencil = N_pencil · S` has `S` already known; pinning `δ*` needs the *multiplicity*
+`N_pencil` bounded, and that is the open BGK character-sum count (`#bad = O(n)` is "the prize floor
+itself", B2-door docstring). Freiman-in-`ℤ/n` pins `S`, says **nothing** about `N`. So the conjecture
+is either false (in `F_p`, where Freiman 3k−4 is the literal claim) or vacuous/circular (in `ℤ/n`,
+where it reproduces the known orbit size and leaves the open multiplicity untouched). Confidence high.
+
 ## 2026-06-14 (#444 C43): GG25 curve-decodability ⟹ MCA for explicit plain RS — SECRETLY-OPEN (R1 route, pinned not closed)
 
 **Conjecture C43 (gmmds-homds):** "Via GG25 Thm 3.3 (done in-tree), MCA past Johnson follows from
