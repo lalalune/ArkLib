@@ -29,7 +29,7 @@ Issue #407.
 open Round25General Round29IteratedLift
 open ArkLib.ProximityGap.BoundedCyclotomicIndep
 
-namespace ProximityGap.Frontier.BridgeBounded
+namespace ArkLib.ProximityGap.BridgeBounded
 
 variable {F : Type*} [Field F] {N : ℕ} {ζ : F}
 
@@ -144,6 +144,6 @@ theorem disjoint_equal_sum_antipodal_int_bounded {C : ℕ} (hC : 4 ≤ C)
     unfold isgn at hcB
     rcases p with ⟨_, (_|_)⟩ <;> simp_all <;> omega
 
-end ProximityGap.Frontier.BridgeBounded
-#print axioms ProximityGap.Frontier.BridgeBounded.bridgeZ_bounded
-#print axioms ProximityGap.Frontier.BridgeBounded.disjoint_equal_sum_antipodal_int_bounded
+end ArkLib.ProximityGap.BridgeBounded
+#print axioms ArkLib.ProximityGap.BridgeBounded.bridgeZ_bounded
+#print axioms ArkLib.ProximityGap.BridgeBounded.disjoint_equal_sum_antipodal_int_bounded

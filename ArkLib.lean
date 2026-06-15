@@ -563,6 +563,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySupExactness
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryThresholdFloorCell
 import ArkLib.Data.CodingTheory.ProximityGap.BoundedCyclotomicIndep
+import ArkLib.Data.CodingTheory.ProximityGap.BridgeBounded
 import ArkLib.Data.CodingTheory.ProximityGap.BridgeClaim62Loop48
 import ArkLib.Data.CodingTheory.ProximityGap.BridgeLoop41
 import ArkLib.Data.CodingTheory.ProximityGap.BridgeLoop43
@@ -953,6 +954,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BetaGatedRatioGate
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BridgeBounded
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
