@@ -10369,3 +10369,11 @@ count: free `g`-coefficients + free `gamma` make the witness sets free-interpola
 arcs, not antipodal unions). The char-0 window-interior incidence is the SAME open BGK/counting
 object as the field-universal sup-norm wall -- it does NOT reduce to a proven closed form.
 Probes committed: `scripts/probes/probe_p1_char0.py`, `scripts/probes/probe_p1_analysis.py`.
+
+**UPDATE (n=32 confirmation, same probes):** the rho=1/8 crossing offset w*-k = log2(n) is now
+confirmed at TWO sizes (n=16: offset 4; n=32: r=23 GOOD worst I=2 binder (20,4)=x^k, r=24 BAD
+worst I>=97 binder (18,4)=x^k => delta*=23/32, offset 5 = log2(32)), while rho=1/4 n=16 gives
+offset 3 != log2(16)=4. So `delta*=(1-rho)-log2(n)/n` (probe_char0_deltastar_pin_constrate.py)
+holds ONLY at rho=1/8 -- the crossing offset is RATE-DEPENDENT, refuting it as a rho-uniform
+closed form. (n=32 used a binder-region a-scan justified by the n=16 binder=x^k low-exponent
+direction; the full a-sweep is compute-bound but the binder localizes the worst pencil.)
