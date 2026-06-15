@@ -9024,3 +9024,39 @@ none decomposable into antipodal pairs. So the min-weight `W(n,p) = O(1)` (NOT `
 crosses the char-0 Wick value near optimal depth — the moment-certificate route stays REFUTED, and `δ*=floor`,
 though empirically true, must be proven by a non-moment, thinness-essential argument.
 Probe: `scripts/probes/probe_short_excess_relation_407.py`.
+
+## #407 (T13-dyadic) — REFUTED: the 2-adic cocycle deviation `δ_i` is NOT `O(1/i)` (no positive accumulating excess) (2026-06-14)
+
+The dyadic-tower route's last live lever: the per-level worst-period doubling ratio
+`ρ_i = ‖η_{b*}(μ_{2^i})‖² / (2 M_{i-1}²)` (`M_{i-1}` = level-`(i-1)` worst period), with deviation
+`δ_i = ρ_i − 1` (`d_i = log₂ ρ_i`). A *constant* positive excess compounds to a **power** `n^{c}`
+overshoot (fatal); the hope was `δ_i = O(1/i)` (⟹ cumulative `Σ d_i = O(log log n)` = poly-log = floor
+survives). (TOWER-2 decoupling and `M(2n)²≤2M(n)²` were ALREADY refuted to 3.86; this is the finer
+*decay-rate* question.)
+
+**REFUTED, two exact probes (numpy, non-Fermat `p∈{12289,40961,786433,3145729}`, depth ≤14 levels
+`i=6..20`):**
+1. `d_i` does NOT decay (`decaying=NO`, 3/4 primes): the `O(1/i)` diagnostic `|d_i|·i` (flat ⟺ `O(1/i)`)
+   instead GROWS with depth (tail means 5.9/4.2/10.3/14.6); deep `|d_i|≈0.2–1.0` ≈ shallow. Constant-
+   amplitude OSCILLATION, not decay.
+2. The cumulative `Σ d_i` is BOUNDED and trends NEGATIVE (ends −1.6/−0.6/−3.8/−3.2): `M_i` grows
+   **at-or-below** the Gaussian doubling rate. There is NO positive accumulating excess — the premise
+   is misframed. `c_i = M_i²/(n ln m)−1` stays `O(1)` oscillating (no power drift): `M_i` tracks the
+   PROVEN √(n log m) EVT law with a bounded oscillating constant.
+3. `cos_i = Re(A·conj B)/(|A||B|) = +1.0000` EXACTLY at every non-degenerate level (389-T03, persistent
+   up the WHOLE tower at `b*`; stronger than the prior `### (2)` note which tracked the level-`i−1`
+   maximizer). But `cos=+1` does NOT force super-doubling: the worst-of-level-`i` children `A,B` are
+   SUB-maximal at level `i−1` (`|A|²+|B|² < 2 M_{i-1}²`), so coherent addition keeps `ρ_i` oscillating
+   *across* baseline 1, not above. Hand-verified witness `p=786433,i=15`: `b*=562804` (not 1),
+   `M₁₅=310.43 < M₁₄=370.73`, `A=−170.68,B=−139.75` (both real, same sign ⟹ cos=+1), `ρ₁₅=0.351 ≪ 1`,
+   split residual `|A+B−η_{b*}|=6.7e−14`.
+
+**Net.** REFUTED — `δ_i=O(1/i)` is false (`δ_i` doesn't decay and isn't positively signed; `δ_i<0` at
+many levels). No `O(1/i)`-cocycle mechanism exists. The floor `B=O(√(n log m))` survives, but for the
+ALREADY-KNOWN reason (bounded EVT/Salem–Zygmund oscillation of the `m=(q−1)/n` periods), NOT cocycle
+decay ⟹ the T13 route COLLAPSES onto the proven √(n log m) EVT / generalized-Paley wall. The
+persistent `cos=+1` is self-fulfilling (the untwisted branch IS the max by definition of `b*`) ⟹ no
+descent content. Honesty contract holds; no closure.
+Probes: `scripts/probes/wf407_T13-dyadic_deviation_decay.py`, `wf407_T13-dyadic_cocycle_cos_persistence.py`.
+Lean: `Frontier/WF407_T13DyadicDeviation.lean` (`doublingRatio_eq`, `deviation_decomp`,
+`deviation_not_sign_definite`; `[propext, Classical.choice, Quot.sound]`). KB: `docs/kb/wf407-T13-dyadic-deviation-decay.md`.

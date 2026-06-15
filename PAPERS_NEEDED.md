@@ -364,3 +364,91 @@ verdict: the fully-split case q≡1 mod 2^μ (N(𝔮)=q) = the PRIZE = the expli
 - **Cui–Li–Zhuang, *Principal ideal & ideal-SVP over rational primes in power-of-2 cyclotomics*** — arXiv:2601.07511 (2026) — exact λ_1 for non-split classes only; fully-split worst-case left open.
 - **Felderhoff–Pellet-Mary–Stehlé–Wesolowski, *Ideal-SVP Hard for Small-Norm Uniform Prime Ideals*** — ePrint 2023/1370 (TCC 2023) — worst-case-to-average over uniform small-norm prime ideals; assumes their distribution.
 Verdict: NO known worst-case (or almost-all-q) bound on #{α∈𝔮: house≤B~log q} by poly/q^{o(1)} for split q. The prize regime is the recognized open case in the ideal-lattice domain too.
+
+## 2026-06-13 (#407 FIXED-INDEX literature sweep) — REGIME PIN + fresh 2024–2026 leads (the "positive-proportion re-opens Burgess" directive, RESOLVED)
+
+**Directive tested (and REFUTED arithmetically — do not re-chase):** a #407 framing proposed that holding
+the security index `m=(p−1)/n≈2^128` *constant* as the FFT domain `n=2^μ` grows makes `μ_n` a
+**positive-proportion** subgroup (`n=Θ(p)`, `n≫√p`), which would put **Burgess / large-sieve / large-subgroup
+sum-product** bounds (e.g. `B≤p^{1/4}√n`, nontrivial iff `n>√p`) *in regime* and possibly close the floor.
+This is an **arithmetic error**, independently re-verified this session (`scripts/probes/_wf407_regime_check.py`):
+`p−1=n·m` with **both** `n=2^μ` (`μ≤40`) and `m≈2^128`; "m constant" ≠ "n=Θ(p)" (that needs `m=O(1)`, but
+`m=2^128` is a *huge* constant and `n≤2^40 ≪ m`). So **`n` is the SMALL factor**: density `n/p=1/m=2^{−128}`
+(the **thinnest** regime in the campaign, independent of μ), exponent `n=p^{μ/(μ+128)} ∈ [p^{0.072}, p^{0.238}]`
+— all **below `p^{1/4}`**, and `n≥√p` is false by `≥2^{44}`. The large-subgroup regime (`n>√p`) is **empty of
+prize instances**. Cf. `docs/kb/deltastar-407-positive-proportion-premise-refuted-2026-06-13.md` and the #407
+owner comment confirming Lane A (constant-index energy) survives only as a *recognized-hard* lane, its
+Plünnecke–Ruzsa sub-route **vacuous** (`|μ_n+μ_n|≈p`, doubling `K≈m`). **The corrected regime is THIN**, so the
+sweep below is scoped to thin-subgroup (`n<p^{1/4}`) tools, NOT Burgess/large-sieve.
+
+**Net of the fresh 2024–2026 sweep: NO breakthrough.** No 2024–2026 paper gives `√`-cancellation, the
+`√(n·log m)` sup-norm, or even a power-saving for *single-frequency* subgroup sums below `p^{1/4}`. The
+freshest "small-subgroup" SOTA (`2401.04756`) is **expository** (re-proves BGK, no new exponent). The 7 NEW
+catalog entries below are the closest live surfaces; each is honestly off-target in a specific way.
+
+| # | paper | id | URL | exact bearing / why it does NOT close |
+|---|---|---|---|---|
+| F1 | **Shparlinski et al., *Equations and character sums with matrix powers, Kloosterman sums over small subgroups, and quantum ergodicity*** (IMRN 2023) | arXiv **2110.10941** | https://arxiv.org/abs/2110.10941 | **The closest "below-√p" thin analytic surface.** Abstract: "a bound on Kloosterman sums over small subgroups, of size **below the square-root threshold**." This is the thin regime the prize lives in — but the object is the **two-frequency Kloosterman** sum `Σ_{x∈G}e_p(ax+b/x)`, not the **single-frequency** Gauss period `η_b=Σ_{x∈μ_n}e_p(bx)` the floor needs. Adjacent geometry, method = alg-geom × additive-combinatorics; its exponent does not transfer to `η_b`. Get full PDF, check the exact `|G|=p^α` range. |
+| F2 | **Shkredov–Shparlinski et al., *Polynomial Values in Small Subgroups of Finite Fields*** | arXiv **1401.0964** | https://arxiv.org/abs/1401.0964 | Foundational small-subgroup paper (the lineage 2110.10941/2003.06165 descend from); fixes the `|G|<p^{1/4}` toolbox (Stepanov + Cauchy–Schwarz amplification). Confirms `η_b` over thin `μ_n` has **no published nontrivial bound** — pins the wall's birth, not a closure. |
+| F3 | **Macourt–Shkredov–Shparlinski (?), *Multiplicative Energy of Shifted Subgroups and Bounds on Exponential Sums with Trinomials*** (Canad. J. Math 2025) | arXiv **1701.06192** | https://arxiv.org/abs/1701.06192 | **Freshest energy-route SOTA** for the Lane-A object: a *new bound on collinear triples in subgroups* (= the additive-incidence structure that controls `E^+(μ_n)` and the trinomial sum). BUT (i) it is **multi-frequency (trinomial)**, and (ii) the collinear-triple/energy gain is in the `|H|` range where energy is *anomalous*; at prize-thin `n` the in-tree value is the trivial char-0 `E^+=3n²−3n` (verified `=720` at n=16) — the energy route delivers only the Parseval RMS `√n`, never the `√(n log m)` MAX. Confirms the energy wall, sharpens nothing at the floor. |
+| F4 | **Kim–Yip–Yoo, *Multiplicative irreducibility of shifted multiplicative subgroups*** (2026) | arXiv **2602.20919** | https://arxiv.org/abs/2602.20919 | Freshest (2026) structural result on `μ_n` shifts (the `{1−w:w∈μ_n}` tangent geometry of the autocorrelation identity). Proves shifted subgroups can't factor as Cartesian products — but requires `n` **not too small** (polynomial-in-p thresholds), i.e. **out of the prize-thin regime**; no energy/sum bound. A structural-irreducibility input for the Action-Orbit lane (B), not the floor. |
+| F5 | **Demirci Akarsu, *Finite-dimensional distributions for short incomplete Gauss sums*** (2025) | (search: Demirci Akarsu 2025) | — | Freshest on the **value-distribution** thread (successor to 1207.1607). Gives a *limit law* (bounded, finite support, Gumbel-type tail) for **interval** incomplete Gauss sums `Σ_{x<N}e_p(x²α)` — a **different object** (sum over an *interval*, not a *multiplicative subgroup*). Reconfirms the fixed-shape distributional picture (cf. O4/SZ4); the **growing-`n` sup-norm** is the gap it does not bridge. |
+| F6 | **Lamzouri et al., *Large quadratic character sums* + *Note on large quadratic character sums*** (2025) | arXiv **2509.07651**, **2510.09005** | https://arxiv.org/abs/2509.07651 | **Refutation-oracle (the floor SURVIVES it).** Newest Ω-results pin the max partial sum between **Paley `Ω(√q·log log q)`** and **Pólya–Vinogradov `O(√q·log q)`** — i.e. a *full* `log` outside the `√`. If the *subgroup* Gauss period obeyed the PV law it would be `√n·log m`, **falsifying** the `√(n·log m)` floor. Probe `_wf407_floor_logpower.py` shows it does **not**: `B/√(n·ln m)∈[1.08,1.47]` (flat, n=16..1024) while `B/(√n·ln m)` *drifts down* (0.52→0.49) — the subgroup sum's log is **inside** the sqrt (half-power milder than PV). So the large-sums Ω-machinery does not refute the floor; it certifies the floor's log-power is correct. |
+| F7 | **Shkredov, *On the distribution of additive energy revisited*** (2026) | arXiv **2602.01781** *(=SZ5, already catalogued)* | https://arxiv.org/abs/2602.01781 | Re-surfaced as the energy-distribution SOTA; record `E(Γ)≪|Γ|^{5/2}` needs `|Γ|≤p^{2/3}` and the `√p`-threshold refinement needs `|Γ|=O(√p)` — **both far above** prize-thin `n≤p^{0.238}`. No prize-regime gain. (Listed for completeness; not a new row.) |
+
+**Honest scope (decisive):** the regime correction does **not** re-open Burgess/large-sieve — the prize subgroup
+is the *thinnest* (`density 2^{−128}`, `n<p^{1/4}`), so those tools stay out of regime (large-sieve route
+separately walled, `deltastar-407-largesieve-amplification-nogo`). Across the freshest 2024–2026 literature the
+single-frequency thin-subgroup sup-norm `B=max_b|η_b|` has **no nontrivial published bound** (SOTA `2003.06165`
+needs `n>p^{1/4}`; `2110.10941` is the only "below-√p" result and it is *Kloosterman*, two-frequency). The one
+**positive** finding is a *refutation that didn't fire*: the 2025 large-quadratic-sums Ω-results (F6) would
+falsify the `√(n·log m)` floor if the subgroup sum obeyed the Pólya–Vinogradov `√q·log q` law — measured, it
+does **not** (log is inside the sqrt), so the floor's exact log-power is *confirmed* against the strongest
+known large-values oracle. No closure; the thin-regime `√`-cancellation core is unchanged-open.
+
+## 2026-06-14 (#407 `anchors-import` J/H4) — DROPPED §8 external anchors, precise statements + verdicts
+
+Per-anchor literature acquisition for the anchors dropped from #407 §8's table. Verdict per anchor in
+`docs/kb/wf407-anchors-import-dropped-external-anchors.md`; elementary kernel in
+`Frontier/WF407_AnchorsImport.lean`; regime probe `scripts/probes/wf407_anchors-import_regime.py`. Net:
+**WALLED** — none supplies the prize `B`-form (linear Gauss period). All open-access; fetch if absent.
+
+| # | paper | id | exact statement | verdict |
+|---|-------|----|-----------------|---------|
+| AN1 | **Ostafe–Shparlinski–Voloch, *Weil Sums over Small Subgroups*** | arXiv **2211.07739** (MPCPS 176 (2024) 39–53) | bounds `Σ_{x∈G}ψ(f(x))` nontrivially where classical Weil is trivial (small `\|G\|`); requires `deg f = d ≥ 2`, `f ≠ g(x^k)`; **asymptotic** (`o(\|G\|)`), not effective. | **Wrong shape**: prize `B` is the linear `f(x)=b·x` (`d=1`), excluded by `d ≥ 2`. Matches only the tangent sum `T_h`, asymptotically. (= `WF407_AnchorsImport.osv_degree_excludes_linear_prize_object`.) |
+| AN2 | **Konyagin–Shparlinski–Vyugin, *Polynomial Equations in Subgroups and Applications*** | arXiv **2005.05315** (LNM "Number Theory…"; Springer 2022) | **Thm 1.2:** `Σᵢ#{(u,v)∈𝒢²:Pᵢ(u,v)=0} < 12mn(m+n)g·h^{5/3}·t^{2/3}`, valid `12p^{3/4}h^{−1/4} ≥ t ≥ max{h²,c₀}`. **Conj 1.3 (open):** `∃ε₀,A`: for `#𝒢 ≤ p^{ε₀}`, `(α₁₁u−α₁₂)/(α₂₁u−α₂₂)=v` has `≤A` sols `u,v∈𝒢`. **Thm 1.6 (cond. on 1.3):** Markoff `#(ℳₚ∖𝒞ₚ) ≤ (log p)^B`, `B=16 log A+c`. | **Right regime, wrong axis**: `t ≤ 12p^{3/4}` satisfied at prize (`a ≤ 40`), but `t^{2/3}` is an algebraic-coincidence **count** (cluster 3, wall W1), not the `B`-form. Conj 1.3 (subgroup Möbius coincidence, "production regime" `#𝒢 ≤ p^{ε₀}`) is **OPEN**. (= `WF407_AnchorsImport.ksv_upper_range_satisfied`, `ksv_count_exponent_lt_one`.) |
+| AN3 | **Corvaja–Zannier, *Greatest common divisors of u−1,v−1…*** | JEMS **15 (2013)** 1927–1942 | gcd `(u−1,v−1)` / subgroup poly-eqn `t^{2/3}`-type count (the ancestor of KSV Thm 1.2). | **Subsumed by KSV** (same count face, strictly weaker). |
+| AN4 | **Makarychev–Vyugin, *Solutions of Polynomial Equations in Subgroups of 𝔽_p*** | Arnold MJ **5 (2019)** 105–121 | `t^{2/3}` poly-equation solution count in `F_p` subgroups (the other ancestor of KSV). | **Subsumed by KSV** (count face). |
+| AN5 | **Myerson, *How small can a sum of roots of unity be?*** (+ Lehmer lacunary resultant maxima) | (classical; see also 2104.15057 small-five) | small-sum `f(k,n) ∈ [k^{−n}, n^{−k/4+o(1)}]` (upper only `k,n` even); companion house `\|N(Σ_{i∈S}ζ_n^i)\| ≤ (#S)^{φ(n)} ≤ n^{n/2}`. | **Same wall** as `HeightGateNormBound`: the house IS `(#S)^{φ(n)}`; Myerson refines the **min** (wrong direction), house `n^{n/2} > p` for all `a ≥ 8`. Height-obstruction wall. (= `WF407_AnchorsImport.myerson_house_exponent_eq_half`.) |
+| AN6 | **Chang–Shparlinski / Kerr–Macourt bilinear** (lineage BGK 0705.4573) | — | sub-`√q` double sums need two density-`> p^{3/7}` variables. | **Out of regime** (already `WF407_T02Shkredov.bilinear_factor_below_quarter`): `μ_n` has no second density-`p^{3/7}` factor at `a ≤ 40`. W4 / density gate. |
+
+**Honest scope:** WALLED. OSV = wrong shape, KSV/CZ/MV = right-regime-but-count-not-`B` (Conj 1.3 open),
+Myerson = height-obstruction wall, bilinear = density gate. New avenue: KSV Conj 1.3 is an *in-regime,
+unconditional-if-resolved* bilinear coincidence count lever (feeds the super-code list bridge 407-T11);
+OSV is the correct surface for `T_h` (effectivity unchecked). The prize `B`-form is unchanged-open.
+
+## 2026-06-14 (A34) — lacunary cyclotomic resultant maxima for the [KKH26] collision object
+
+A34 (merged `357-T13 / 334-T15`) chased the lacunary cyclotomic resultant / Mahler-measure literature
+(Myerson, Lehmer-adjacent) for a sharp upper bound on `|Res(Φ_{2^m}, g)|` for sparse `±1` polynomials
+`g`, to open the `s = 128` [KKH26] ceiling rows below the prize cap `q < 2^256` **without** Thorner–Zaman.
+
+**Verdict (PARTIAL — no new paper needed for the gain).** The operative literature object is
+**Landau's inequality** `M(g) ≤ ‖g‖₂` (Mahler measure ≤ ℓ²-norm), already in Mathlib
+(`Polynomial.mahlerMeasure_le_sqrt_sum_sq_norm_coeff`) and already in-tree
+(`SharpResultantBound.lean`, `KKH26.cyclotomicLandauSqBound_proved`). For the [KKH26] *collision*
+resultant `N = Res_ℤ(R, Φ_{2^m})`, `R` a `±1,0` poly with `‖R‖₂² ≤ 4r`, the Landau/Parseval+AM-GM
+envelope is `|N|² ≤ (4r)^{2^{m-1}}` and it is **sharp on this class** (probe
+`scripts/probes/sweep_A34_lacunary_maxima.py`: worst-case geo/arith ratio of `|R(ζ^{odd})|² ≈ 1`,
+AM-GM tight ⟹ no constant-factor improvement below `(4r)^{h/2}`). The `r`-refinement (vs the in-tree
+`r = h` freeze) opens `s = 128` at `ρ ≤ 1/4` (`Frontier/Sweep_A34_LacunaryResultantS128.lean`,
+axiom-clean), but **not** `ρ = 1/2` at `s = 128` nor any `s = 256` row.
+
+- **Myerson, *How small can a sum of roots of unity be?*** (Amer. Math. Monthly 93 (1986) 457–459) —
+  re-confirmed (cf. AN5): refines the **minimum** sum of roots of unity, the *wrong direction* for an
+  upper bound on `|Res|`. Not needed.
+- **Lehmer-adjacent / lacunary Mahler maxima** (e.g. Boyd, *Speculations concerning the range of
+  Mahler's measure*; Smyth surveys) — no upper bound on `M(g)` for sparse `±1` `g` tighter than the
+  trivial `‖g‖₂`; Landau is sharp here. Not needed for the proven bracket; the **prize-proper**
+  asymptotic `s = 2^μ → ∞` rows (polynomial field size `p = Θ(n^β)`) still require Thorner–Zaman
+  PNT-in-APs (`KKH26PolyFieldCeiling.lean`), unchanged.
