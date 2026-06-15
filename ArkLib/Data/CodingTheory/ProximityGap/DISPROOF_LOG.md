@@ -10574,3 +10574,55 @@ and the reverse leg that would fix it is now refuted. Mapped wall (rule-4 WIN), 
 change (the open Prop stands correctly named — this records that it is FALSE, so it cannot be discharged).
 Probe-first, exact, dual-checked. Does NOT refute the prize (the forward brick is sound; the reverse
 identity it leaves open is simply false, which is itself the obstruction).
+
+## DFT-uncertainty quantitative core: classical UP bound VACUOUS + genuine far-line max-zeros is SUB-Johnson (two-small-coset), with the n/2-growth EXPOSED as the μ_{n/2} even-subgroup artifact — 2026-06-15
+
+**Lane.** Adversarial audit of the freshest conceptual frame (KB `INSIGHT-smooth-domain-hardness-IS-the-
+uncertainty-principle.md`): the prize restated as the quantitative DFT-uncertainty question for Z_{2^μ} —
+for f on Z_n with DFT-support T={0..k−1,a,b}, is max-zeros s* = √(kn) (Johnson) or k+Θ(n/log n) (floor)?
+The INSIGHT asserts "smooth n=2^μ ⟹ s* grows ~√(kn) (Johnson)". Tested EXACTLY (rank characterization,
+no coeff search), proper μ_n, prize-band p≡1(n), index m=(p−1)/n≥2, multi-prime (incl. Fermat F_4=65537),
+NEVER n=q−1, k=3.
+
+**Object (exact).** s*(n,p,a,b) = max|Z|, Z⊆Z_n, with rank([w^{tz}]_{z∈Z,t∈T}) < |T|=k+2 (a nonzero
+T-spectral f vanishing on Z). Computed exactly over every (k+1)-subset = every minimal-support codeword,
+maximized over far-line directions (a,b).
+
+**RESULT 1 — classical uncertainty LOWER bound is VACUOUS for the prize.** Donoho–Stark
+|supp f|·|supp f^| ≥ n with |supp f^|=k+2 ⟹ s* ≤ n(1−1/(k+2)) = 0.8n (k=3). That is a FULL POWER OF n
+ABOVE Johnson √(kn) (n=2^20: DS-permitted 838860 vs Johnson 1773). Tao's strong UP (s*≤k+1=capacity)
+holds ONLY for n PRIME, not 2^μ. ⟹ the "weak UP" frame is NECESSARY-NOT-SUFFICIENT: weak UP only permits
+large s*, gives NO √(kn) ceiling. The uncertainty frame, via known quantitative bounds, does not separate
+Johnson from floor as a theorem. Probe: `scripts/probes/probe_407_uncertainty_bound.py`.
+
+**RESULT 2 — the INSIGHT's "smooth s*→Johnson/n-2 growth" is DEGENERATE (two-layer rule-2 trap, exact).**
+Maxing over directions gave ALL s*=6,10,18 (s*−k=3,7,15) at n=8,16,32 binding at a=n/2 — but witness audit
+EXPOSES these as subgroup-supported:
+- Layer 1: a=n/2 (antipodal / I=q−1 pencil) inflates s* by EXACTLY +1, p-independent across 4 primes each.
+- Layer 2 (the trap prior a≠n/2 filters MISS): the s*≈n/2 values are the EVEN-SUBGROUP μ_{n/2}=⟨2⟩ vanishing
+  set. n=32 dir(17,18) "nondeg" (a,b≠16, gcd odd) s*=17 witness = {all 16 EVEN residues}∪{1} = μ_16 + 1 pt.
+  When a or b sits near n/2, w^{ax} is ~constant on the even subgroup ⟹ rank collapse ⟹ spurious n/2 zeros.
+  Correct degeneracy notion = WITNESS contains a ≥n/4 subgroup-coset (NOT just a≠n/2).
+Probe: `scripts/probes/probe_407_uncertainty_witness_audit.py` (exact witness dump + subgroup/antipodal test).
+
+**RESULT 3 — the GENUINE (subgroup-saturation-excluded) far-line max-zeros is SUB-Johnson, two-small-coset.**
+Excluding witnesses containing a ≥n/4 subgroup-coset, exact, multi-prime:
+| n  | genuine s* | s*−k | Johnson √(kn) | witness structure |
+|----|-----------|------|---------------|-------------------|
+| 8  | 4         | 1    | 4.90          | interval {0,1,2,3} |
+| 16 | 6         | 3    | 6.93          | two μ_2-cosets {0,1,2}∪{8,9,10} |
+| 32 | 8         | 5    | 9.80          | two μ_4-cosets {0,1,8,9,16,17,24,25} |
+Genuine s* = 4,6,8 (s*−k=1,3,5, +2 per doubling) sits STRICTLY BELOW Johnson at all three n, gap WIDENING
+(Johnson ×√2 per doubling vs genuine +2). Binding witness is ALWAYS two cosets of a SMALL subgroup. This
+INDEPENDENTLY CONFIRMS c.348 (far-line max-agreement ≤ Johnson, cannot reach floor 1−ρ−Θ(1/log n)) from the
+DFT-uncertainty side, and pins the EXACT witness mechanism (super-(k+1) far-line agreement on μ_{2^μ} comes
+ONLY from low-subgroup coset blocks: saturated ⟹ n/2 degeneracy; two-small-coset ⟹ sub-Johnson).
+Probes: `scripts/probes/probe_407_maxzeros_exact.py`, `probe_407_maxzeros_sweep.py`.
+
+**VERDICT (mapped constraint, rule-4 WIN; CORE not closed, not faked).** Corrects the INSIGHT KB ("smooth s*
+grows ~√(kn)" — the apparent growth is the μ_{n/2} subgroup artifact; the GENUINE far-line s* is SUB-Johnson)
+and nails the exact TWO-LAYER degeneracy (a=n/2 → +1; even-subgroup witness → +n/2) that has been generating
+false floor-signals in the uncertainty/lacunary lanes. The classical uncertainty LOWER bound (DS/Meshulam) is
+vacuous (off by a full power of n). Does NOT refute the prize: it confirms (from a new, c.348-immune PROOF-
+object angle) that the far-line/uncertainty face cannot reach the floor; the open core remains the per-frequency
+BGK √-cancellation wall. p-independent, exact, multi-prime, proper subgroups, never n=q−1.

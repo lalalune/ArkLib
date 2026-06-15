@@ -1340,3 +1340,23 @@ proof route is empty (crossCell super-random); (3) HERE: the bound as stated is 
 depth.  All three pin the crossCell lever as mis-stated/non-closing in its current form; the live content is
 the char-0 structural count (sibling-active thin-Sidon object), not a new arithmetic mechanism. CORE not
 closed. probe_407_crosscell_absbound_false_at_prize.py. Exact DP, multi-prime, no Lean => axiom-clean trivially.
+
+## ✓ RULE-6 RE-AUDIT (confirms 6feb11b53 robustly + one honest onset refinement) (2026-06-15, opus-4-8 subagent)
+
+Adversarial re-audit of the even-moment-inflation push 6feb11b53, addressing two worries: (W1) "exceeds the
+(M_thin/M_rand)^{2r} sup prediction" could be a cross-draw artifact (random median moment vs random median sup
+from DIFFERENT draws); (W2) the inflation could be 5-draw variance. FIX: 21 random draws, per-draw
+self-consistent (each draw's M and E_{2r} from the SAME spectrum), apples-to-apples sup prediction (the
+max-MOMENT draw's OWN M). Probe scripts/probes/probe_407_even_reaudit.py.
+
+RESULT (n=16, β=4.0 + β=4.5[non-Fermat]):
+1. INFLATION IS ROBUST, NOT VARIANCE: thin E_{2r} exceeds the MAX-moment random draw (most concentrated of
+   21) at EVERY r≥2 — 21/21 draws below thin. Not a median artifact.
+2. "EXCEEDS sup prediction" CONFIRMED but onset is r≥4 (apples-to-apples), not r≥3 as the original
+   cross-draw comparison suggested at β=4.5: β=4.0 exceeds from r≥3 (thin/maxdraw 2.165 > sup-pred 1.943);
+   β=4.5[nf] exceeds from r≥4 (r=3: 2.162 vs 2.238, just BELOW; r=4: 3.281 > 2.927). HONEST REFINEMENT: the
+   "exceeds sup" claim holds at DEEP r (r≥4 robustly, r≥3 at β=4.0), with growing margin — my receipt's "at
+   deep r" wording is accurate; the exact onset is r≥4 under the strict apples-to-apples test.
+NET: 6feb11b53's two claims (collective inflation; exceeds sup at deep r) both STAND under 21-draw
+self-consistent re-audit; the only adjustment is the precise onset (r≥4 strict, vs r≥3 loose). No overclaim
+survives; the finding is robust. Python-only => axiom-clean trivially.
