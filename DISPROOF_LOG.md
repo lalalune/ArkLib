@@ -1681,3 +1681,73 @@ The census super-budget growth is the prize content; it points toward Johnson-tr
 off-budget floor, at probed n. CORE not closed, not faked. The thin-ONLY nature (417015191) stands; this
 adds the width profile + growth + the wf-D5 census-side corroboration. Python-only exact => axiom-clean.
 probe_407_e2_K_growth_antipodal.py (validated MIM) + probe_407_e2_K_width_profile.py.
+
+================================================================================
+2026-06-15 The e2=0 census K is WITHIN floor budget (K<=1) ONLY at radii DEEPER than
+Johnson; at/above the Johnson edge K is large + super-linear (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the load-bearing e2=0 census R1 object (DeltaStarEqEdge.lean hgood + _E2DilationDirectCount:
+#bad = n*K). The sibling just proved K is THINNESS-ESSENTIAL (random domains give 0; push 417015191).
+COMPLEMENTARY UNTESTED EDGE: the BUDGET question. Governing law (KB deltastar-orbit-count-reformulation):
+delta* = sup{delta : I(delta) <= q*eps* ~= n}. So the e2=0 family is WITHIN the floor budget IFF
+#bad = n*K <= n  <=>  K <= 1. In-tree K=1,3,38 at n=8,16,32 (w=n/2) already VIOLATES this for n>=16.
+The decisive question NObody mapped: K(n) is reported only at the SINGLE width w=n/2; is K<=1 (budget-OK)
+anywhere, and at WHICH radius? (n=64 enumeration is infeasible: C(64,32)~1.8e18, ~1.1e11 e2=0 sets.)
+
+METHOD: exact MITM width-sweep (in-tree probe_e2_widthsweep_directcount.py), proper mu_n, prize prime
+p=n^4, w from 3..n/2+1, report K(w) and the agreement frac w/n (radius delta=1-w/n).
+
+RESULT (exact, n=16 AND n=32):
+  n=16: w5 (delta=0.688) K=1; w4,8,9 K=3; (K<=1 ONLY at w=5, deep)
+  n=32 K(w) profile: w4:7  w5:1  w8:7  w9:23  w10:4  w11:2  w12:21  w13:32  w14:14  w15:18  w16:38  w17:33
+    => K<=1 ONLY at w=5 (delta=0.844); next-smallest K=2 at w=11 (delta=0.656). BOTH DEEPER than Johnson
+       (delta_Johnson = 1-sqrt(rho) = 1-sqrt(1/16) = 0.75 at n=32... w5 delta=0.844>0.75 deep; w11
+       delta=0.656<0.75 i.e. ABOVE Johnson but K=2>1 already over budget).
+  At/above the Johnson edge (w<=n/2, delta in [0.5,0.75]): K is LARGE (4..38) and the w=n/2 value
+  K=1,3,38 is SUPER-LINEAR (ratios 3x, 12.67x) -- confirming the in-tree "K does not collapse to O(n)".
+
+VERDICT (rule-4 mapped constraint; NOT a refutation of the sibling's thinness result, a COMPLEMENT):
+1. K(w) is NON-MONOTONE + width-divisibility-irregular (e.g. w=9,13,17 all coprime to 32 yet K=23,32,33;
+   w=5,11 coprime yet K=1,2). It is the additive-energy combinatorial count, no simple closed form.
+2. The e2=0 census stays WITHIN floor budget (K<=1) ONLY at DEEP radii (delta=0.844 at n=32, well below
+   Johnson). At the prize-relevant region (the floor edge is ABOVE Johnson, delta>1-sqrt(rho)) K is
+   already >1 (over budget) at EVERY width tested with delta in the window, and grows super-linearly with
+   n at w=n/2. So the e2=0 over-det family, while thinness-essential (sibling) and the EXACT Attack-2
+   reduction, does NOT stay within the floor budget at-or-above the Johnson edge -- it can be the binding
+   within-budget family only DEEPER than Johnson, not at the prize floor edge.
+3. NET: this PINS the obstruction precisely -- the e2=0 census R1 is a real thin-essential object but its
+   budget-crossing radius sits DEEPER than the prize edge, and its super-linear K(n) at the edge IS the
+   additive-energy/BGK wall (exactly as _E2DilationDirectCount's honest verdict states). So R1 ("e2=0 is
+   the binding within-budget family at the EDGE") needs the K-growth to be controlled at the edge width,
+   which the data says it is NOT (super-linear). The thin-essentiality is necessary-not-sufficient: it
+   makes e2=0 the RIGHT family structurally, but the K-count overflows budget at the edge.
+CORE not closed, not faked. K(64) enumeration infeasible (C(64,32)~1.8e18); growth law from n=8,16,32 +
+the width-profile is the available evidence. Python-only exact => axiom-clean trivially.
+probe_e2_widthsweep_directcount.py (+ probe_407_e2_census_K_n64.py: n=64 MITM scaffold, infeasible at full w).
+
+================================================================================
+2026-06-15 EXACT CLOSED FORM for the shallow e2=0 census: K(n,4) = n/4 - 1,
+#bad = n^2/4 - n; the census n/4 = wf-D2's s*-k=n/4 (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Beat the C(64,32) wall for the e2=0 census by enumerating the SHALLOWEST over-det width w=k+2=4 directly
+(4-subsets: C(n,4)~n^4/24, n=64 => 635k, no MIM). This is the cleanest census sub-sequence.
+
+RESULT (exact, p-INDEPENDENT across 2 prize primes each at n=16,32,64):
+- K(n, w=4) = 1, 3, 7, 15  at n = 8, 16, 32, 64  (2-powers; n=48 non-2-power gives 11 too).
+- CLOSED FORM (5/5 incl n=64): K(n,4) = n/4 - 1  EXACTLY. p-independent (char-0 cyclotomic).
+- => #bad(n,4) = n*K = n(n/4 - 1) = n^2/4 - n  EXACTLY QUADRATIC. The Theta(n^2) over-det object the
+  dossier names, now pinned to a clean closed form on the e2=0 antipodal census.
+- loglog-slopes of #bad converge cleanly 2.585->2.222->2.115->2.078 -> 2.0 (quadratic).
+
+CONNECTION: wf-D2 (e48d5ef59) + ce8cb602e found s*-k = n/4 => delta* = 3/4 - rho. The SAME n/4 is the
+census orbit-count: K(n,4) = n/4 - 1. The shallow e2=0 census orbit-count IS the n/4 over-determination
+depth, census-side. So the e2=0 antipodal census and the wf-D2 incidence law are TWO FACES of one n/4
+structure (consistent with my width-profile's wf-D5 free-mu_{n/2} corroboration). #bad = n^2/4 - n is
+super-budget (n^2 vs budget n), Johnson-tracking-consistent (wf-D2), NOT an off-budget floor.
+
+VERDICT (rule-4, no overclaim): an EXACT p-independent closed form for the shallow e2=0 census,
+K(n,4)=n/4-1, #bad=n^2/4-n. Sharpens the prior 3-point ~n^2.4 fit to an exact quadratic and ties the
+census n/4 to wf-D2's s*-k=n/4. Formalizable target (the K(n,4)=n/4-1 closed form is a clean cyclotomic
+count). CORE not closed: the closed form CONFIRMS super-budget (n^2/4 >> n) => no within-budget floor at
+shallow width, consistent with Johnson-tracking. Python-only exact => axiom-clean trivially.
+probe_407_e2_K_w4_n64.py (5-point, multi-prime verified).
