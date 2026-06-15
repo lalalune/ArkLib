@@ -525,3 +525,16 @@ NET: the open core reframes to the SINGLE consecutive-moment-ratio bound `A_{r+1
 which holds thin with MEASURED GROWING margin and fails thick (rule-3-correct). The growing thin margin at
 accessible r is encouraging but the deep-r limit A_{r+1}/A_r → M^2 = the prize; NOT a closure (proving the
 single step uniformly at r~log q in thin = BGK). Probe scripts/probes/probe_407_moment_ratio_step_thinness.py.
+
+## ⚠️ TEMPERING DATA — the thin single-step margin g(r*) at the OPTIMIZER ERODES as n grows (honest counter-weight to the "growing margin" reframing) (2026-06-15)
+
+Counter-weight to the A_{r+1}/A_r ≤ (2r+1)n reframing's encouraging "growing margin in r" note. The r-axis
+margin grows at FIXED n, but the prize is the n→∞ limit, so the decisive axis is g(r*) vs n at the optimizer
+r*=round(log p). Exact FFT spectrum, thin β=4:
+  n=8  r*=8  g(r*)=0.366 ; n=16 r*=11 g=0.468 ; n=32 r*=14 g=0.530 ; n=64 r*=17 g=0.643.
+g(r*) stays < 1 (STEP holds at the optimizer) at ALL accessible n, BUT INCREASES in n (0.37→0.64) — the
+margin SHRINKS. M^2/(2n ln p) similarly rises 0.43→0.70. So the "growing margin" optimism is r-axis only;
+on the n-axis the margin erodes toward 1. n≤64 is sub-linear but CANNOT distinguish "saturates below 1"
+(prize provable via this step) from "creeps to 1" (BGK-tight) — that crossover IS the open content. Honest:
+NO extrapolation claim, NO closure; this tempers the reframing rather than advancing it. Probe
+scripts/probes/probe_407_step_at_rstar_ntrend.py.
