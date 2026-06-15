@@ -1214,3 +1214,48 @@ the already-mapped char-0 antipodal/Sidon object (ConverseLamLeung2Power, the su
 NOT a new arithmetic mechanism. Combined with the tower no-go (ad90dc8d5): granting BCHKS-1.12 doesn't close
 (tower leaks to n), AND the proposed route to PROVE a sub-BCHKS crossCell bound (collisions) is empty. CORE
 not closed. Python-only, exact DP, multi-prime (Fermat + non-Fermat), no Lean => axiom-clean trivially.
+
+### A3 REVERSE-DICTIONARY FLOOR-PUSH is THICKNESS-INVARIANT at the (halfJ,J)-window radius -- not the thin lever (2026-06-15)
+
+LANE: #444 §1 A3 -- "push delta* UP past half-Johnson via the reverse LD=>MCA dictionary at larger n",
+the orchestrator's explicitly-flagged "genuinely-unattacked OTHER HALF of the prize" / fallback. First
+RULE-3 thinness gate applied to the reverse dictionary (ReverseDictionary.exists_interleavedList_card_gt_of_epsMCA_gt).
+
+OBJECT (exact, in-tree axiom-clean): forward eps_mca(C,delta) <= (1+(n-a)*L)/q; reverse contrapositive
+=> L_force = floor((incid-2)/(n-a)) is a machine-checkable LOWER bound on some pair's interleaved list
+size at collapse radius a, incid = eps_mca*q. Proven floor = half-Johnson delta* >= (1-sqrt rho)/2
+(HalfJohnsonDeltaStar); full Johnson 1-sqrt rho is the OPEN all-pairs target (SmallSubgroupGoodList).
+A3 hope: smooth mu_n forces a SMALLER list than random at radii in (halfJ,J) => a higher thin floor.
+
+METHOD (probe-first, exact mod-p, PROPER smooth subgroup mu_n, never n=q-1): exact eps_mca bad-LINE
+incidence at the (halfJ,J)-window radius, SMOOTH mu_n vs RANDOM domain, prime sweep (q-invariance +
+rule-3). n-k=2 exact-feasible cases. probe_407_a3_fast.py + probe_407_a3_window_map.py.
+
+RESULT (rule-4 mapped constraint; rule-3 verdict):
+| n | k | rho | window radius delta in (halfJ,J) | smooth incid | random incid | q-invariant | thin |
+|---|---|-----|----------------------------------|--------------|--------------|-------------|------|
+| 4 | 2 | 0.500 | 0.250 (halfJ 0.146, J 0.293) | 4 = n | 4 = n | YES (13,17,29,37,41) | smooth==random |
+| 6 | 4 | 0.667 | 0.167 (halfJ 0.092, J 0.184) | 6 = n | 6 = n | YES (7,13,19,31,37)  | smooth==random |
+Full radius profile: the UNIQUE radius in (halfJ,J) sits at incidence = n = the budget exactly; next
+radius down (delta=0, <halfJ) has incidence 1.
+
+VERDICT (two-sided, honest):
+ POSITIVE (generic): eps_mca = incid/q = n/q = budget eps* exactly at this radius => delta* reaches the
+   (halfJ,J) window (0.25 > halfJ 0.146) GENERICALLY; reverse L_force (>=2 at n=4, >=4 at n=6) is a real
+   forced interleaved-list lower bound at the budget-binding radius.
+ NEGATIVE (decisive): the mechanism is THICKNESS-INVARIANT -- smooth mu_n and a random generic domain
+   give the IDENTICAL incidence (=n) at every tested prime in (halfJ,J). By rule 3 (CORE false in the
+   thick window => thickness-invariant method neither proves nor refutes CORE), the reverse-dictionary
+   floor-push at the window-top radius is NOT thinness-essential: A3's hope (smooth smaller list => higher
+   thin floor) is REFUTED at the feasible radii -- no smooth-vs-random gap exists. The factor-of-two to
+   full Johnson 1-sqrt rho is NOT closable by the reverse dictionary here; it genuinely needs the
+   all-pairs / thin-essential input (SmallSubgroupGoodList), confirming HalfJohnsonDeltaStar's stated
+   open problem from the floor side.
+
+HONEST SCOPE (rule 6): only n-k=2 (rho 1/2, 2/3) is exact-feasible at small primes; the genuinely-thin
+prize cone (rho 1/4-1/8) needs small n-k at large n (exact-infeasible -- same wall every worker hits). So
+this is thickness-invariance at MODERATE rho; the DIRECTION (no thin gap at the window-top radius) is
+robust over both rho and all primes, but the thin-rho extrapolation is NOT proven (future work, needs MITM
+infra). WALLS the reverse-dictionary route to the floor-push at the tested radii; does NOT refute CORE.
+Python-only, no Lean changed => axiom-clean trivially. First rule-3 gate on the reverse dictionary (grep:
+"reverse" had 0 prior DISPROOF entries outside the lacunary one).
