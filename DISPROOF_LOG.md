@@ -2055,3 +2055,35 @@ collective thin signal -- it is non-monotone and small-n biased. CONSEQUENCE: th
 should target the HIGHER-ORDER collective moment profile (the L7 BGK aggregate the whole board converges
 to), NOT r_min. This CLOSES the smallest-vanisher sub-lane. CORE not closed, no overclaim. Python-only
 exact, no Lean changed => axiom-clean trivially. probe_407_thin_sidon_depth_n64_bracket.py.
+
+================================================================================
+2026-06-15 The OddExcessSpikeLaw value (the 2-adic even-direction collapse-failure
+margin) is THICKNESS-INVARIANT -> the even-direction descent's odd-excess is NOT the
+thin-specific prize mechanism (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the FRESH open core formalized by OddExcessLaw.lean (Shaw 80a89e78e): oddExcess = full_bad \
+half_bad, |oddExcess| = E = I_n(x^{2a'}) - I_{n/2}(x^{a'}), oddExcess=empty <=> EvenDirectionIncidence
+Collapse. The named-but-unproven OddExcessSpikeLaw: E=(n/2)^2 at the half binding rung. QUESTION nobody
+asked (rule-3): is the SPIKE VALUE thinness-essential, or does it persist in the thick prize-FALSE window?
+
+METHOD: exact per-witness-set affine-in-gamma incidence (probe_farline engine, NO floats, NO codeword
+enum), PROPER mu_16, NEVER n=q-1. Object I_n(x^4) over mu_16, code degree 4, binding rung r=10 (delta
+.625). Anchored I_n=89 EXACTLY (= in-tree probe_farline n=16 k=4 r=10). q-sweep index m=(p-1)/16 from
+thick to thin. probe_407_oddexcess_qsweep.py + probe_407_oddexcess_n16_validate.py.
+
+RESULT (exact):
+  m=6(p97):57  m=7(p113):89  m=12:89  m=16(beta2.0):89  m=21(p337):81  m=22:89  m=27(p433):81
+  m=36..75 (beta 2.29-2.56, the prize-FALSE thick window): 89,89,89,89,89,89,89,89  ALL 89
+  m=151,201,250 (beta 2.81-2.99): 89,89,89   m=501,2016,4096 (thin): 89,89,89
+  => I_n(x^4;r=10) = 89 IDENTICALLY across the thick beta=2.3-3.2 prize-FALSE window AND the thin regime.
+     The dips (81 at p=337/433, 57 at p=97) are SPORADIC small structured-prime artifacts, NOT a
+     thickness trend (89 returns at thicker p=113/193/257/353).
+
+VERDICT (rule-4 wall, rule-3 FAIL): the OddExcessSpikeLaw value (the even-direction collapse-failure
+margin) is a THICKNESS-INVARIANT cyclotomic constant. The 2-adic even-direction collapse fails by the
+SAME ~(n/2)^2 margin in the thick prize-false regime as in the thin prize regime => the collapse FAILURE
+is thin-blind. A thinness-essential proof of CORE cannot route through the even-direction descent's odd-
+excess value. Joins the board meta-pattern (every per-direction object is thickness-invariant + Johnson-
+tracking; only the aggregate BGK moment is open). RULE-6: does NOT close CORE, does NOT refute the in-
+tree oddExcess_card or the named Prop (the collapse genuinely fails; E IS the obstruction) -- it maps
+that the obstruction's VALUE is thin-independent. Python-only exact => axiom-clean trivially.
