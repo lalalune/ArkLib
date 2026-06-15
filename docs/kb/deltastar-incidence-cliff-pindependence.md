@@ -60,6 +60,20 @@ square-root-cancellation wall.
 4. The under-sampled-directions caveat for the exact δ* value at each n remains (the army's full-direction job),
    but it does NOT affect the p-INDEPENDENCE conclusion (max of p-indep values is p-indep).
 
+## Lean substrate now landed for the affine gate
+
+`ArkLib/Data/CodingTheory/ProximityGap/Frontier/_BindingRadiusAffineFiber.lean` formalizes the finite-field
+counting shell used by the cliff route:
+
+- `affineConstraint_eq_neg_div`: a non-heavy affine slot pins the scalar `γ = -A/B`;
+- `ratio_eq_of_two_affine_constraints`: two non-heavy slots on the same scalar force equal pinned ratios;
+- `badScalar_card_le_activeWitnesses`: bad scalars inject into active witnesses once a moving slot is chosen;
+- `badScalar_card_le_pairConsistentWitnesses`: in a fixed two-slot over-determined slice, bad scalars inject into
+  the ratio-consistency locus.
+
+This is **not** a proof of δ*.  It cleanly isolates the next real obligation: identify the correct cyclotomic
+two-slot witnesses and count the ratio-consistency locus / p-independent coincidence family.
+
 ---
 
 **Status: genuine structural finding, n=16 full + n=32/64 cliff confirmed; NOT a closure; one caveat + the large-n question open.**
