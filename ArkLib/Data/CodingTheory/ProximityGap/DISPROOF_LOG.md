@@ -10664,79 +10664,55 @@ theory adds nothing tighter. Probe: `scripts/probes/probe_wf3NK_fewnomial_incide
 contained, fast). Tag: **refuted** as a tight degree-free/p-free bound on I(n); the (k+2)-sparsity
 and the precise failure mode are proven-per-fixed-n. — wf-NK
 
-## 2026-06-14 (#444 A2): Mann/antipodal PINS the crossing incidence EXACTLY; the log2(n) candidate is REFUTED
+## cosh-MGF / exact-Bessel-saddle CORE bound CAPS at √(β/(β−1))·floor — "beats at n=8" is a small-n artifact (§7.8, #444) — 2026-06-15
 
-**Task A2.** Settle whether the char-0 worst-case far-line incidence I_0(δ), at the band where it
-crosses budget = n (which fixes δ* = (n−w_cross)/n), is derivable EXACTLY from antipodal-pairing
-(Mann / Conway–Jones: the only primitive vanishing relation over μ_{2^μ} is z + (−z) = 0). Method:
-the prime-size-independent (k+1)-subset solve (q-stable, char-0-faithful p ≫ n^3); for each
-(k+1)-subset solve the system for (g, γ), record γ → full-domain agreement set R; I_0(w) =
-#{distinct γ with |R| ≥ w}, worst over far pencils (a,b). Probes:
-`scripts/probes/probe_a2_mann_crossing_pin.py`, `probe_a2_corrected_crossing_mann.py`,
-`probe_a2_crossing_inclexcl_half.py`, `probe_a2_n32_orbit_plateau.py`, `probe_a2_mann_evenodd_n32.py`,
-`probe_a2_repro_candidate_logn.py`.
+**Lane.** §7.8 of #444: the cosh-MGF identity (`Frontier/CoshMGFIdentity.lean`, axiom-clean in-tree)
+`Σ_b cosh(‖η_b‖y) = Σ_r (q·E_r/(2r)!) y^{2r}` gives, by per-b domination, the root-free max-free CORE
+upper bound `M(n) = max_b‖η_b‖ ≤ B(y) = arccosh(Σ_b cosh(‖η_b‖y))/y` (∀y>0). For G=μ_n the char-0
+even-moment GF is the Bessel law (`DyadicEnergyK1.lean`): `Σ_r E_r y^{2r}/(2r)! = I₀(2y)^{n/2}`, so the
+CHAR-0-IDEALIZED bound (the BEST the mechanism gives IF char-0 energies held char-p) is
+`B_char0(n,p) = min_{y>0} arccosh(p·I₀(2y)^{n/2})/y`. The dossier (§7.8) flags it as beating the floor
+`√(2n log m)` at n=8 (8.56<9.99). NO prior worker probed whether this survives to larger n.
 
-### POSITIVE RESULT (the A2 question, ANSWERED YES): Mann closes the crossing incidence EXACTLY.
-At the crossing band w_cross, every rich witness set R (|R| ≥ w_cross) of the worst far pencil
-decomposes into antipodal pairs {j, j+n/2} plus AT MOST ONE leftover index (the single free
-interpolation slot beyond the k+1 anchors). Define Mann_core(w) = #{γ : best R has ≤ 1 unpaired
-index}. Then **I_0(w_cross) = Mann_core(w_cross) EXACTLY** (not just ≤), q-stable, on every tested
-point:
+**RESULT 1 — "beats at n=8" is a SMALL-n ARTIFACT; the bound asymptotes to ~1.155×floor, never AT it.**
+PART A (β=4, p~n^4, m~n^3, char-0-idealized, wide-saddle):
+| n | floor | B_char0 | B/floor | verdict |
+|---|-------|---------|---------|---------|
+| 8 | 9.99 | 7.90 | 0.791 | BEATS |
+| 16 | 16.32 | 15.06 | 0.923 | BEATS |
+| 32 | 25.80 | 26.58 | 1.030 | WORSE |
+| 256 | 92.29 | 105.75 | 1.146 | WORSE |
+| 16384 | 976.7 | 1137.1 | 1.164 | WORSE |
+| 1048576 | 9339 | 10851 | 1.162 | WORSE |
+B/floor → ~1.16 (a CONSTANT factor ABOVE the floor), never reaching it. BEATS only n≤16 at β=4
+(n≤512 at fixed prize m=2^128, then crosses + grows). The n=8 BEATS is finite-n only.
 
-| n  | k  | ρ    | w_cross | I_0 | Mann_core | EXACT |
-|----|----|------|---------|-----|-----------|-------|
-| 8  | 4  | 1/2  | 6 (even)| 4   | 4         | YES   |
-| 16 | 2  | 1/8  | 5 (odd) | 16  | 16        | YES   |
-| 16 | 4  | 1/4  | 7 (odd) | 8   | 8         | YES   |
-| 16 | 8  | 1/2  | 11(odd) | 4   | 4         | YES   |
-| 16 | 12 | 3/4  | 14(even)| 8   | 8         | YES   |
-| 32 | 4  | 1/8  | 6→plat  | 16  | 16        | YES   |
+**RESULT 2 — MECHANISM (analytic): the saddle COLLAPSES the exact Bessel to its GAUSSIAN/Wick leading term.**
+At small y, `log I₀(2y) = y² − (1/4)y⁴ + …`, so `(n/2)log I₀(2y) ~ (n/2)y²` — THE WICK TERM (the −y⁴/4
+curvature is lower-order). Then `B ~ min_y [log p + (n/2)y²]/y = √(2n log p)` at `y* = √(2 log p/n)`.
+Floor = `√(2n log m)`. So **B_char0/floor → √(log p/log m) = √(β/(β−1))** (m~n^{β−1}, p~n^β). β=4 ⟹
+**√(4/3)=1.1547** (numeric 1.16); β=5 ⟹ 1.118. NUMERIC CONFIRMATION (B_char0 vs √(2n log p), β=4):
+MATCH to <0.5% at n=256..16M. The Bessel curvature (the only place a thin advantage could live) is
+provably LOWER-ORDER and cannot close the log p/log m ratio.
 
-(Sub-finding: FULL antipodal-closure `anti(R)` — every index paired, no leftover — closes only when
-w_cross is EVEN, since an odd-size set cannot be antipodally closed; the correct invariant is the
-"≤1 leftover" core, which closes at both parities.) The only non-match is (8,2) under a literal
-budget = n first-crossing rule, a 1-band granularity artifact at tiny n where I_0 plateaus at 8 over
-w ∈ {4,5}; at the established gt crossing w = 5 there too Mann_core = I_0 = 8. **Mechanism, now
-explicit:** the crossing band is exactly where the incidence collapses onto a single *dilation
-orbit* of γ, and that orbit's agreement witnesses ARE antipodal-pair unions — so the crossing count
-= orbit size = n/gcd(b−a,n), which is a Mann/Lam–Leung object. This is the band where the earlier
-P4 refutation (`probe_407_mann_agreement_count.py`: Mann strictly undercounts I_0 in the WINDOW
-INTERIOR, w well below the crossing) STOPS applying — Mann is the wrong governing structure deep in
-the window (free-coefficient interpolation), but is the EXACT structure AT the crossing. The two
-results are consistent: the window interior is floppy/analytic, the crossing is rigid/antipodal.
+**RESULT 3 — the char-0 bound is a VALID upper bound on the TRUE char-p M (PART B, exact FFT, multi-prime).**
+n=8 at p=4129/28697/2000081 and n=16,32 at prize-band primes: B_char0 ≥ M_true (FFT period sup) at
+every prime — the idealized bound is a genuine over-estimate of the real periods, so the cap is on a
+VALID upper-bound mechanism, not a broken bound.
 
-### NEGATIVE RESULT (refutes the candidate `δ* = (1−ρ) − log2(n)/n`): w_cross − k ≠ log2(n).
-The candidate (`docs/kb/deltastar-407-char0-logn-over-n-candidate-2026-06-14.md`) claimed
-n·(cap − δ*) = w_cross − k = log2(n) exactly for ρ = 1/8 at n = 16, 32. Recomputed q-stably with the
-SAME (k+1)-subset method under the STANDARD crossing rule (smallest w with worst I_0 ≤ n and previous
-band > n), w_cross − k is **{2, 3}, NOT log2(n), at every point**, under BOTH the include-n/2 and
-exclude-n/2 direction conventions:
+**RESULT 4 — RULE-3 thinness gate (PART C): thin-sensitive but only LOWER-ORDER.**
+Thin 2-power Bessel `I₀(2y)^{n/2}` vs Gaussian/Wick `e^{ny²/2}` feeding the SAME bound: THIN-BEATS-GAUSS
+at EVERY n (n=8: 8.31<12.01; n=32768: 1664.1<1664.9). So the I₀ curvature IS a genuine thin advantage
+over generic-Wick (rule-3 PASS), but the gap thin-vs-gauss shrinks relative to the floor as n grows ⟹
+insufficient: the thin win is real but cannot cross the √(β/(β−1)) wall.
 
-| n  | k  | ρ    | w_cross − k | log2(n) | match |
-|----|----|------|-------------|---------|-------|
-| 8  | 4  | 1/2  | 2           | 3       | NO    |
-| 16 | 2  | 1/8  | 3           | 4       | NO    |
-| 16 | 4  | 1/4  | 3           | 4       | NO    |
-| 16 | 8  | 1/2  | 3           | 4       | NO    |
-
-**Root cause of the candidate's apparent log2(n) (reproduced exactly,
-`probe_a2_repro_candidate_logn.py`):** the original probe (i) EXCLUDED the a = n/2 antipodal-coset
-generator — the genuinely worst far line, which the in-tree δ* law maxes over — and (ii) used a
-first-crossing rule on a profile where the worst-direction incidence sits on a *plateau* equal to the
-dilation-orbit size (e.g. n = 16, ρ = 1/8: I_0 = 16 from the (8,9) orbit is constant across
-w = 5…9; n = 32, ρ = 1/8: I_0 = 16 from the (16,18) orbit, b−a = 2, is constant from w = 6 on). The
-"crossing" is then pinned by WHERE you enter the plateau, which is a function of the chosen direction's
-orbit size n/gcd(b−a,n) and the n/2-exclusion, NOT of log2(n). With the worst (n/2-touching) direction
-included and the standard crossing rule, the log2(n) coincidence (which held at only 2 hand-picked
-points) evaporates. δ* = (1−ρ) − log2(n)/n is therefore **not** the char-0 closed form. (The surviving
-honest constraint remains |δ* − (1−√ρ)| ≤ 1/n; this does NOT establish the Θ(log n/n) gap below
-capacity the candidate proposed.)
-
-### Consequence for the prize. The A2 positive result is real but LIMITED: Mann/Lam–Leung
-(PROVEN) pins the incidence only AT the crossing band, where it equals a dilation-orbit size — the
-already-classical regime. It does NOT pin the window-interior incidence (the prize target, recognized
-open / BGK-Paley sup-norm wall per the #444 synthesis), where coefficients are free and Mann
-undercounts. So A2 does NOT yield a Mann-only closure of δ*; it confirms (with exact witness
-decompositions) that the antipodal structure governs precisely the boundary, consistent with the
-standing reduction. No Lean change (empirical, q-stable, dual-convention; the open core stands
-correctly named). Probe-first, honest on scope, refutation of the log2(n) lead recorded.
+**VERDICT (rule-4 mapped wall; CORE not closed, not faked).** The cosh-MGF / exact-Bessel-saddle
+mechanism (§7.8) caps at **√(β/(β−1))·floor** (≈1.155× at β=4), NEVER at the floor, EVEN granted the
+char-0 energies — so it fails BEFORE the §2 char-p DC-term obstruction (independent of it). The dossier's
+"beats the floor at n=8" is a genuine small-n artifact. The decisive structural reason: at the saddle the
+exact Bessel `(n/2)log I₀(2y)` collapses to its Wick leading term `(n/2)y²` — so this IS the §4
+second-order/meta-theorem wall at the MGF level, now QUANTIFIED as the √(β/(β−1)) log-ratio gap. Removes
+§7.8 as a live hope: the cosh-MGF is a sharper SUBSTRATE but not a sharper BOUND. Probe:
+`scripts/probes/probe_407_cosh_bessel_saddle_scaling.py` (wide geometric-grid saddle, large-z I₀
+asymptotic, exact-FFT char-p cross-check, rule-3 thinness gate, analytic confirmation). Axiom-clean
+(Python-only, no Lean changed). Co-authored wakesync.

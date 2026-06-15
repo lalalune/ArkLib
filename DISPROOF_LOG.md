@@ -1509,3 +1509,116 @@ the odd part of |G| (depends only on the far-line/codeword incidence geometry, n
 structure)" -- formalizable as a statement that badScalars.card at the hifreq binding band factors
 through the single-far-line agreement locus, which is defined field-/subgroup-structure-free.
 CORE not closed, not faked. Python-only exact => axiom-clean trivially.
+
+================================================================================
+2026-06-15 LD plateau = single dilation orbit: EXACT numerical corroboration of in-tree
+wf3D4 monomial_badset_orbit_closed, extended to Fermat prime (#444) (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Probe-first verification of the MECHANISM behind the plateau-=-n (the prev two LD-radius entries).
+INDEPENDENTLY rediscovered + numerically confirmed the in-tree axiom-clean theorem
+_wf3D4_monomial_worst_orbit.lean::monomial_badset_orbit_closed ("the bad-gamma set of a monomial
+direction is a union of <mu^{b-a}>-orbits"). Exact, proper mu_n, binding direction extracted directly.
+
+RESULT (exact, all three cases incl. Fermat 257):
+- binding direction at the plateau is (a,b)=(k, k+1) => b-a=1, gcd(n,b-a)=1.
+- the bad-gamma set has |.|=n EXACTLY and is CLOSED under gamma -> gamma*h^{b-a} (the dilation z->hz
+  action, gamma reparametrised by h^{b-a} per monomial_dilated_line). gcd(n,1)=1 => <h^{b-a}>=full mu_n
+  => exactly ONE orbit of size n => plateau pins at n. Mechanism CONFIRMED.
+- Holds identically at generic primes (4129) AND the structured Fermat prime 257=2^8+1 (the in-tree
+  file only anchored n=16,k=4 generic; this adds n=8 k=2/k=3 + Fermat corroboration) — consistent with
+  the s*-is-structured-prime-blind entry: the orbit closure is a char-0/cyclotomic fact, p-free.
+
+NET: corroborates the orchestrator's wf3D4 brick numerically and extends its anchor to the Fermat
+structured prime; combined with the two prior LD-radius entries, the full picture is: the monomial
+dilation-orbit (proven, axiom-clean) FORCES the plateau=n quantization (thinness-essential), but that
+quantization pins s* AT-OR-ABOVE random + is structure-blind in value => the proven orbit mechanism is
+real but points the WRONG way for the floor (it is the residual open Prop "does the aligned orbit EXCEED
+budget" that carries the prize, and the orbit being exactly =budget at the binding is the knife-edge).
+CORE not closed. Python-only exact => axiom-clean trivially. probe_407_ld_plateau_dilation_orbit.py.
+
+================================================================================
+2026-06-15 The e2=0 over-det census (the prize FLOOR's load-bearing R1 object) is
+THINNESS-ESSENTIAL: built on antipodal pairing, VANISHES for random domains (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the in-tree prize skeleton. DeltaStarEqEdge.lean reduces the FLOOR to ONE open hyp (R1, `hgood`):
+the e2=0 over-det locus is the BINDING worst-case bad-scalar family at the window edge. _E2Dilation
+DirectCount.lean reduces that count EXACTLY to #bad = n*K, K = #dilation-orbits of e1(S) over
+{S subset mu_n, |S|=w=n/2, e2(S)=0, e1(S)!=0}. In-tree: K=1,3,38 at n=8,16,32. K(n) IS the open
+extremal census. NO live worker / report had applied a rule-3 thinness gate to K. UNCONTESTED.
+
+METHOD: exact e2=0 enumeration over all C(n,w) w-subsets (feasible n<=16), smooth mu_n vs 11 random
+non-subgroup domains, prize prime p~n^4, never n=q-1. + mechanism probe (antipodal/density/p-indep).
+
+RESULT (refutation-grade, rule-6 hardened):
+1. RANDOM domains have ZERO e2=0 bad-sets (0/11 draws at BOTH n=8 and n=16). Smooth has n*K (8, 48=#bad,
+   matching n*K exactly; bad-SETS 8, 64).
+2. NOT a density artifact: density baseline E[random hits] = C(n,w)/p = 0.017 (n=8), 0.196 (n=16); smooth
+   EXCESS over baseline = 7.98, 63.80 => overwhelmingly STRUCTURAL.
+3. p-INDEPENDENT (char-0 structural): #e2=0 subsets identical across 2 prize primes each (8,8 / 64,64) =>
+   genuine cyclotomic count, not a mod-p accident.
+4. MECHANISM: EVERY e2=0 subset contains >=1 ANTIPODAL PAIR (8/8, 64/64; none fully antipodal-closed). The
+   locus is built on the subgroup's antipodal pairing x,-x=h^{n/2}x both in mu_n — a structure random
+   domains lack entirely.
+
+VERDICT (rule-3 PASS, strongest form): the e2=0 over-det census K(n) — the load-bearing open object the
+ENTIRE prize FLOOR reduces to (DeltaStarEqEdge R1 + Attack-2 #bad=n*K) — is THINNESS-ESSENTIAL in the
+strongest sense: it is a pure subgroup-antipodal-pairing object and VANISHES identically for random
+domains. This is the RIGHT-DIRECTION thinness signature the prize needs (unlike the LD-radius plateau /
+even-moment profile, which were anti-helpful). The K(n) growth (1,3,38,...) is the genuine prize content,
+structurally anchored to antipodal pairs. Formalization target: K(n) = orbit-census of e1 over the
+antipodal-pair-supported e2=0 locus. CONSEQUENCE for R1: the e2=0 family being thin-only SUPPORTS its
+candidacy as the binding worst-case family (a random/generic family contributes 0 here), but does NOT by
+itself bound K(n) — the open content is purely the K growth law (the additive-energy twin). CORE not
+closed, not faked. Python-only exact => axiom-clean trivially.
+probe_407_e2_census_K_thinness.py + probe_407_e2_census_mechanism.py.
+
+================================================================================
+## ⚠️ REFUTATION + REPLACEMENT LAW — the char-0 far-line delta* candidate "delta* = (1-rho) - log2(n)/n" is FALSE at n=64; the true law is s*-k = n/4 i.e. delta* = 3/4 - rho (2026-06-15, opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the full-assault-synthesis "live lead" (docs/kb/deltastar-444-full-assault-synthesis + 
+deltastar-407-char0-logn-over-n-candidate): a NEW candidate char-0 worst-case far-line crossing
+gave n*(cap-delta*)=log2(n) at n=16,32 (rho=1/8), conjecturing delta*=(1-rho)-log2(n)/n (a
+Theta(log n/n) gap, "much closer to capacity than the standing Theta(1/log n)"). FLAGGED "NOT
+confirmed -- needs n=64". The n=16-vs-n=20 convention discrepancy (s*-k = log2(n) vs constant 3)
+was the explicit OPEN tension (DISPROOF "s*-k appears CONSTANT" entry: "n=32,64 must resolve it").
+I ran the decisive n=64 computation.
+
+METHOD: the in-tree char-0 (k+1)-subset-solve engine (scripts/probes/probe_char0_deltastar_n64_BIG.py),
+cross-validated EXACTLY vs the wf-D1 reference. Char-0 = q-free worst-case far-line incidence I_0(w)
+crossing budget=n, MAX over far pencils (a,b), a,b>=k, a,b != n/2, gcd-stratified pencil sampling +
+deep antipodal directions. PROPER subgroup mu_n, p>>n^3, p==1 mod n, NEVER n=q-1. k=2 FIXED (so
+rho=k/n SHRINKS with n -- the constant-k axis the candidate was stated on).
+
+RESULT (refutation-grade, Q-INVARIANT -- two primes per n, p/n^3 = 4 AND 40 identical):
+| n  | k | rho   | s*-k | n/4 | log2(n) | delta*=(n-w_cross)/n | worst pencil (a,b) gcd(b-a,n) |
+|----|---|-------|------|-----|---------|----------------------|-------------------------------|
+| 16 | 2 | 1/8   | 4    | 4   | 4       | 0.62500              | (5,9)   gcd=4=n/4              |
+| 32 | 2 | 1/16  | 8    | 8   | 5       | 0.68750              | (9,17)  gcd=8=n/4              |
+| 64 | 2 | 1/32  | 16   | 16  | 6       | 0.71875              | (2,34)  gcd=32=n/2            |
+s*-k = 4,8,16 = EXACTLY n/4 (NOT log2(n) = 4,5,6). At n=64: s*-k=16, log2(64)=6 => the candidate is
+OFF BY 10. Q-invariant: n=64 gives s*-k=16 at BOTH p=1048609 (p/n^3=4) AND p=10486337 (p/n^3=40),
+same worst pencil (2,34). [The n=16,32 coincidence s*-k=log2(n) was a small-n ARTIFACT: 4=4 at n=16,
+8 vs 5 already diverges at n=32 under the full-direction MAX convention -- the candidate doc used a
+coarser pencil set that under-sampled the d=n/4 worst direction.]
+
+THE TRUE LAW (exact at n=16,32,64): **s*-k = n/4**  =>  **delta*_charline = 1 - (k+n/4)/n = 3/4 - k/n
+= 3/4 - rho**. Verified: 3/4-1/8=0.625, 3/4-1/16=0.6875, 3/4-1/32=0.71875 -- EXACT. The worst pencil
+is the deeply-composite direction gcd(b-a,n) in {n/4, n/2} (the antipodal/subgroup-coset family), not
+a generic pencil -- consistent with the dyadic Mann/Conway-Jones antipodal-pair mechanism (the only
+primitive vanishing relation over mu_{2^mu}).
+
+VERDICT (rule-4 mapped: refutes a candidate + installs the correct law; rule-6 honest):
+1. The "delta* = (1-rho) - log2(n)/n" candidate (Theta(log n/n) gap, "the live lead" of the
+   full-assault synthesis) is FALSE. The char-0 far-line gap below capacity is a CONSTANT 1/4
+   (delta* = 3/4 - rho => cap - delta* = 1/4 - 0 = 1/4 for k=2... precisely cap-delta* = (1-rho)-(3/4-rho)
+   = 1/4, a CONSTANT, NOT log2(n)/n -> 0). So the char-0 far-line delta* sits a FIXED 1/4 BELOW capacity.
+2. s*-k = n/4 is LINEAR in n (like the rho=1/4 law s*-k=n/4-1), NOT Theta(n/log n). So -- exactly as the
+   prior over-det entries concluded for fixed-rho -- this char-0 worst-case FAR-LINE delta* does NOT
+   track the conjectured BGK floor delta*=1-rho-Theta(1/log n); it is the (rigorous UPPER bound)
+   far-line object, converging to 3/4-rho, a clean cyclotomic combinatorial value OFF the BGK wall.
+3. NET for the synthesis: the "much closer to capacity" optimism was a small-n sampling artifact; the
+   true char-0 far-line delta* = 3/4 - rho is a fixed 1/4 below capacity and carries NO sub-log gap.
+   The genuine prize content remains in the collective BGK aggregate (the L7 WorstCaseIncidenceBounded
+   Prop), NOT in this per-pencil char-0 crossing.
+CORE not closed, not faked. Python-only exact, q-invariant 2-prime => axiom-clean trivially.
+Probe scripts/probes/probe_char0_deltastar_n64_BIG.py (--n {16,32,64} --k 2 --allfar / select).
