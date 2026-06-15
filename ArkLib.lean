@@ -980,6 +980,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicLatticeWrapOnse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DecayLawPIndep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechFiberNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechWronskianNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DonohoStarkTight
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicDeviationDecayEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicJacobiCocycleNonContraction
