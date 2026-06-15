@@ -24,7 +24,7 @@ Issue #407.
 
 open Finset ArkLib.ProximityGap.SubgroupGaussSumSecondMoment ArkLib.ProximityGap.EtaCosetSplit
 
-namespace ProximityGap.Frontier.TotalTwist
+namespace ArkLib.ProximityGap.TotalTwist
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
@@ -58,5 +58,5 @@ theorem total_twist_eq {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) {G H : Finset
   rw [hcard] at hsum ⊢
   linear_combination hsum
 
-end ProximityGap.Frontier.TotalTwist
-#print axioms ProximityGap.Frontier.TotalTwist.total_twist_eq
+end ArkLib.ProximityGap.TotalTwist
+#print axioms ArkLib.ProximityGap.TotalTwist.total_twist_eq
