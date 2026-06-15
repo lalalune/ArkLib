@@ -570,3 +570,29 @@ CONSEQUENCE (honest, rule 4 = a mapped formula failure is a result):
   decider — and it is now OFF the BGK char-sum wall (pure cyclotomic over-det counting), exactly as the
   orchestrator localized. NOT a closure: small n (≤32 exact), maps the trend.
 Probe scripts/probes/probe_407_k2_sstar_formula_break.py (+ rust-pg bmax mode for cross-validation).
+
+## ⚠️ REFUTATION — the deployed `CensusDomination` Prop is FALSE at the prize budget (bounds SETS, not γ) (2026-06-15)
+
+`CensusDominationWeld.lean` proves `CensusDomination dom k a₀ K` (K/p ≤ ε*) ⟹ `δ* = 1 − r/2^μ`. The Prop bounds
+the alignable-SET count by K. Real budget (from `hεstar < (2^r·C(2^{μ-1},r))/p`) = `K < 2^r·C(2^{μ-1},r)` =
+the KKH26 fibre supply. PROBE (thin proper μ_n, prize β=4, exact pencil-ratio alignment; validated by exact
+n=8 SET-count=supply-count match 24,32):
+
+  n=16,r=3,a₀=4: worst #alignable-SETS = 896 (line x⁹,x⁸) > budget 448  [EXCEEDS 2×]; #distinct-γ = 97 ≤ 448.
+  n=16,r=4,a₀=5: worst #SETS = 1568 (x¹⁰,x⁸) > budget 1120; #distinct-γ = 40 ≤ 1120.
+  n=16,r=5,a₀=6: #SETS = 1456 ≤ 1792; #γ = 73 ≤ 1792.
+
+CONSTRAINT LEMMA: at n=16 the worst alignable-SET count exceeds the budget ⟹ the deployed `CensusDomination`
+hypothesis is FALSE at the prize budget ⟹ `kkh26_deltaStar_pin_of_censusDomination` cannot fire at the prize
+budget as stated. But #distinct-γ (the true MCA bad-scalar count, the object `badScalars_card_le_alignable`
+needs) stays under budget at EVERY config. The gap = the looseness of `#bad-scalars ≤ #alignable-SETS`
+(x⁹,x⁸: 896 sets, 16 distinct γ). The weld lifted the loose `badScalars_card_le_alignableSets` bound into its
+hypothesis, making the deployed Prop strictly stronger than necessary — over-strong enough to be false.
+The correct ⟺-CORE normal form must bound #distinct-γ, NOT the alignable-SET count.
+
+Prime-independent (non-Fermat p=65777: SETS 896>448, γ 97 OK — not a Fermat artifact). Distinct from
+`TakeoverCountermodel` (killed `CensusUpperExtremalFloor` = #bad-scalar upper-floor at a thick-prime death
+radius); this kills the SET-count budget of `CensusDomination` in the thin prize regime. NOT a CORE closure
+nor prize refutation — `#distinct-γ ≤ budget` is the open BGK content (margin large at n≤16, asymptotic
+untested). Probes scripts/probes/probe_407_census_domination_budget.py, probe_407_census_budget_nonfermat.py,
+probe_407_census_sets_vs_gamma.py. Receipt #issuecomment-4704035101.
