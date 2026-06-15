@@ -171,7 +171,7 @@ def IsolatedCountResidual (F : Type*) [Field F] (k : ℕ) : Prop :=
 
 /-- Documentation anchor: the descent reduces the ragged residual to `IsolatedCountResidual`, the
 Kelley count one `μ_2`-quotient level down — the genuine open quantity. -/
-theorem descentNote : True := trivial
+def descentNote : Unit := ()
 
 end ProximityGap.Frontier.AntipodalEvenOddDescent
 

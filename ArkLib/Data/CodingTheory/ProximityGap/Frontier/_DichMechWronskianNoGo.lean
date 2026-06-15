@@ -156,7 +156,7 @@ theorem wronskian_eq_derivative_of_O_one (A : F[X]) :
 collapses to the open Kelley `C = 1` subgroup-root count for `t = k + 2`
 (`_IsolatedCountKelley.KelleyGeneralPositionConjecture`).  The mechanism does NOT close
 `isolated ≤ poly(k)` char-free. -/
-theorem dichWronskianNoGoNote : True := trivial
+def dichWronskianNoGoNote : Unit := ()
 
 end ProximityGap.Frontier.DichMechWronskianNoGo
 
