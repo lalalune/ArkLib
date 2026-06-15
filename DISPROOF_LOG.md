@@ -1462,3 +1462,50 @@ prev entry (s* is thinness-essential in its plateau but anti-helpful + thinness-
 thinness-sensitive in QUANTIZATION but structure-blind in VALUE => it is a cyclotomic combinatorial
 invariant, not the moment/BGK object the prize ultimately needs. CORE not closed, not faked.
 Python-only exact => axiom-clean trivially. probe_407_ld_radius_structured_primes.py.
+
+================================================================================
+## ⚠️ REFUTATION (census->CORE lane) — the "#bad collapse to O(1) at the hifreq binding line" is THICKNESS-INVARIANT, NOT thinness-essential (2026-06-15, opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LENS: the census<->CORE map (probe_407_census_core_bindingband_ratio.py + c.1037) showed at the
+hifreq BINDING line #bad COLLAPSES to O(1) while #alignable overcounts up to 112x, and concluded
+"CORE-effort should target #bad directly -- the #bad collapse to O(1) at the hifreq line is the real
+CORE signal." NO probe had tested whether the #bad collapse ITSELF is THINNESS-ESSENTIAL (rule-3).
+This entry closes that gap.
+
+OBJECT (exact, the in-tree CORE/epsMCA object): #bad = number of distinct gamma s.t. the far line
+x^A + gamma*x^B agrees with a deg<k RS codeword on a size-a subset of the subgroup G = <g>, |G| = n.
+epsMCA <= #bad/p (epsMCA_le_of_badCount_le). The binding band = deepest a with align>0.
+
+METHOD (probe-first, rule-2/rule-3 clean): exact mod-p, proper subgroup, index m=(p-1)/n>=2,
+NEVER n=q-1, multi-prime (p-invariance check), k=3 (deep-ceiling m=2 weld shape). Cached inverse
+pairwise differences (no modpow in the inner Vandermonde leading-coeff test). Compare THIN n=2^a
+(prize family) vs THICK n with large odd part (n=12,18,20 -- where the prize is FALSE).
+Probe: scripts/probes/probe_407_badcollapse_thinness.py.
+
+RESULT (refutation-grade, p-INVARIANT across all primes tested):
+  THIN  2^4 hifreq[9,7] : #bad-profile a4:737, a5:1, a6:1, a7:1, a8:1 ; BINDING a=8 #bad=1.  (p=65537 & 160001 IDENTICAL)
+  THICK n=12 hifreq[7,5]: #bad-profile a4:163, a5:1, a6:1            ; BINDING a=6 #bad=1.  (p=20749 & 100057 IDENTICAL)
+  THICK n=18 hifreq[10,8]:#bad-profile a4:829,a5:82,a6:82,a7:1,a8:1,a9:1; BINDING a=9 #bad=1.
+  THICK n=20 hifreq[11,9]:#bad-profile a4:1881,a5:1,a6:1,a7:1,a8:1,a9:1,a10:1; BINDING a=10 #bad=1.
+The #bad=1 collapse at the hifreq binding line is reproduced EXACTLY in the THICK regime (n=12,18,20,
+large odd part, prize FALSE) -- a long #bad=1 plateau from a~5 up to the binding band, identical to the
+thin 2-power family. p-invariant on every prime. (Adjacent non-hifreq lines #bad=O(k) e.g. 8,12,18,40
+in BOTH regimes too -- also thickness-invariant.)
+
+VERDICT (rule-4 mapped wall; rule-3 FAIL): the #bad-collapse-to-O(1) at the hifreq binding line is
+THICKNESS-INVARIANT -- it is the single-far-line-root-locus geometry (one far line meets the subgroup
+in O(1) "explainable" gammas), present identically in thin AND thick subgroups. It is therefore a
+thickness-MONOTONE object and CANNOT be the thin-essential CORE mechanism (rule-3/§3: any method that
+behaves the same in the thick window where the prize is FALSE is wrong). The census map's "target #bad
+directly" recommendation inherits the SAME fate as the far-line incidence I(n) (wf-D1: p-independent
+quartic -> Johnson) and the antipodal-domination object (lalalune §7.3 -> Johnson): the per-line #bad
+geometry is computable, p-clean/thickness-clean, and converges to the Johnson/Plotkin proxy -- it gives
+NO beyond-Johnson, thin-only signal. The prize-distinguishing content is NOT in the per-line #bad count;
+it lives only in the COLLECTIVE/aggregate object (sum over directions = the BGK moment), consistent with
+the §4 meta-theorem and the route-elimination consensus that the Johnson radius is exactly the boundary
+between the closed/thickness-invariant per-line regime and the open/BGK aggregate regime.
+CONSTRAINT LEMMA (candidate, axiom-clean Lean): "per-line #bad at the binding band is invariant under
+the odd part of |G| (depends only on the far-line/codeword incidence geometry, not on 2-power
+structure)" -- formalizable as a statement that badScalars.card at the hifreq binding band factors
+through the single-far-line agreement locus, which is defined field-/subgroup-structure-free.
+CORE not closed, not faked. Python-only exact => axiom-clean trivially.
