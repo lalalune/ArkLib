@@ -1509,3 +1509,29 @@ the odd part of |G| (depends only on the far-line/codeword incidence geometry, n
 structure)" -- formalizable as a statement that badScalars.card at the hifreq binding band factors
 through the single-far-line agreement locus, which is defined field-/subgroup-structure-free.
 CORE not closed, not faked. Python-only exact => axiom-clean trivially.
+
+================================================================================
+2026-06-15 LD plateau = single dilation orbit: EXACT numerical corroboration of in-tree
+wf3D4 monomial_badset_orbit_closed, extended to Fermat prime (#444) (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Probe-first verification of the MECHANISM behind the plateau-=-n (the prev two LD-radius entries).
+INDEPENDENTLY rediscovered + numerically confirmed the in-tree axiom-clean theorem
+_wf3D4_monomial_worst_orbit.lean::monomial_badset_orbit_closed ("the bad-gamma set of a monomial
+direction is a union of <mu^{b-a}>-orbits"). Exact, proper mu_n, binding direction extracted directly.
+
+RESULT (exact, all three cases incl. Fermat 257):
+- binding direction at the plateau is (a,b)=(k, k+1) => b-a=1, gcd(n,b-a)=1.
+- the bad-gamma set has |.|=n EXACTLY and is CLOSED under gamma -> gamma*h^{b-a} (the dilation z->hz
+  action, gamma reparametrised by h^{b-a} per monomial_dilated_line). gcd(n,1)=1 => <h^{b-a}>=full mu_n
+  => exactly ONE orbit of size n => plateau pins at n. Mechanism CONFIRMED.
+- Holds identically at generic primes (4129) AND the structured Fermat prime 257=2^8+1 (the in-tree
+  file only anchored n=16,k=4 generic; this adds n=8 k=2/k=3 + Fermat corroboration) — consistent with
+  the s*-is-structured-prime-blind entry: the orbit closure is a char-0/cyclotomic fact, p-free.
+
+NET: corroborates the orchestrator's wf3D4 brick numerically and extends its anchor to the Fermat
+structured prime; combined with the two prior LD-radius entries, the full picture is: the monomial
+dilation-orbit (proven, axiom-clean) FORCES the plateau=n quantization (thinness-essential), but that
+quantization pins s* AT-OR-ABOVE random + is structure-blind in value => the proven orbit mechanism is
+real but points the WRONG way for the floor (it is the residual open Prop "does the aligned orbit EXCEED
+budget" that carries the prize, and the orbit being exactly =budget at the binding is the knife-edge).
+CORE not closed. Python-only exact => axiom-clean trivially. probe_407_ld_plateau_dilation_orbit.py.
