@@ -30,3 +30,15 @@ r-tuple pairs (Kambiré bad primes), and there are `≤ poly(n)·r` of them, eac
 `≤ |G|^{2r}/q`. If true, `Anom_r ≤ poly·|G|^{2r}/q` COMBINATORIALLY (char-free count of resultant
 factors), pinning the leading δ* without BGK. Attack: enumerate bad primes = resultant factors; check
 the count + per-prime contribution. (This is avenue 3+7 fused; the workflow is testing pieces.)
+
+## C4 evidence (goal-grind probe) — SUPPORTIVE
+Enumerated ALL bad primes for Anom_2 (E_2>3n²−3n), scan p<4n^4:
+- n=8: 2 bad primes {17, 41}, BOTH below n^4, NONE in [n^4,4n^4]. excess {96,32}.
+- n=16: 6 bad primes {17,97,113,193,257,337}, ALL below n^4, NONE at/above. excess {3136(=degenerate
+  full-group p=17),384,384,64,192,192}.
+Count poly-consistent (≤n). Bad primes SPARSE and BELOW prize n^4 ⟹ **Anom_2 = 0 in the prize regime
+(r=2)**; anomaly gated by sparse cyclotomic-resultant primes (matches av9 "norm divisibility ~2^n").
+C4 = the most promising combinatorial handle: IF the Anom_r bad primes stay poly(n)-many each
+contributing ≤|G|^{2r}/q for all r≤log q, the anomaly is combinatorially bounded ⟹ A_r≤Wick provable
+char-free. OPEN: extend the r=2 bad-prime sparsity+boundedness to r~log q (the genuine target).
+Probe /tmp/probe_c4_badprimes.py. (Caveat: r=2 only; high-r bad primes may spread — av7 didn't complete.)
