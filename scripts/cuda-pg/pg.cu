@@ -30,7 +30,9 @@
 #include <vector>
 #include <cuda_runtime.h>
 
-#define MAXN 48                 // compile-time cap on n (subset/value scratch size)
+#define MAXN 48                 // compile-time cap on n (host-side)
+#define MAXS 28                 // cap on agreement size s (device scratch) -- binding s* << n
+#define MAXK 16                 // cap on degree (ddk scratch)
 #define SENTINEL 0xFFFFFFFFu    // never a valid gamma (gamma <= p-1 <= 2^32-2)
 
 #define CUDA_OK(call) do { cudaError_t e_ = (call); if (e_ != cudaSuccess) { \
@@ -121,7 +123,7 @@ __device__ void d_unrank(uint64_t r, int n, int s, int* comb, const uint64_t* nc
 // order-k divided difference of vals[0..k] on node-indices idx[0..k] (mirrors ddk_idx).
 __device__ uint32_t d_ddk(const uint32_t* vals, const int* idx, int k, uint32_t p,
                           uint64_t bmu, const uint32_t* invd, int n) {
-  uint32_t vs[MAXN];
+  uint32_t vs[MAXK + 2];
   for (int t = 0; t <= k; t++) vs[t] = vals[t];
   for (int j = 1; j <= k; j++)
     for (int i = k; i >= j; i--) {
@@ -159,9 +161,9 @@ __global__ void incidence_kernel(
   uint64_t stride = (uint64_t)gridDim.x * blockDim.x;
   for (uint64_t r = (uint64_t)blockIdx.x * blockDim.x + threadIdx.x; r < total; r += stride) {
     if (*heavy) return;                              // a heavy witness already saturated this direction
-    int comb[MAXN];
+    int comb[MAXS];
     d_unrank(r, n, s, comb, nckt);
-    uint32_t u0[MAXN], u1[MAXN];
+    uint32_t u0[MAXS], u1[MAXS];
     for (int j = 0; j < s; j++) { u0[j] = mua[comb[j]]; u1[j] = mub[comb[j]]; }
 
     if (d_in_rs(u1, comb, k, p, bmu, invd, n, s)) {
@@ -171,7 +173,7 @@ __global__ void incidence_kernel(
       uint32_t a1 = d_ddk(u1, comb, k, p, bmu, invd, n);
       if (a1 != 0) {
         uint32_t gm = d_mulmod(d_submod(0, a0, p), d_invmod(a1, p, bmu), p, bmu);
-        uint32_t full[MAXN];
+        uint32_t full[MAXS];
         for (int i = 0; i < s; i++) full[i] = d_addmod(u0[i], d_mulmod(gm, u1[i], p, bmu), p);
         if (d_in_rs(full, comb, k, p, bmu, invd, n, s)) d_hash_insert(gm, htab, hmask, dcount);
       }
@@ -185,6 +187,7 @@ int main(int argc, char** argv) {
   uint64_t cap = (argc > 3) ? strtoull(argv[3], nullptr, 10) : 4000000000ull;
   uint32_t prime_override = (argc > 4) ? (uint32_t)strtoul(argv[4], nullptr, 10) : 0;
   if (n > MAXN) { fprintf(stderr, "n=%d exceeds MAXN=%d (raise MAXN, recompile)\n", n, MAXN); return 1; }
+  if (k + 1 > MAXK) { fprintf(stderr, "k=%d exceeds MAXK-1\n", k); return 1; }
 
   uint32_t p;
   if (prime_override) {
@@ -225,6 +228,7 @@ int main(int argc, char** argv) {
 
   int sstar = 0;
   for (int s = k + 2; s < n; s++) {
+    if (s > MAXS) { printf("  s=%d > MAXS=%d (raise MAXS), stop\n", s, MAXS); break; }
     uint64_t total = h_nck(n, s);
     if (total > cap) { printf("  s=%d C=%llu > cap %llu, stop\n", s,
                               (unsigned long long)total, (unsigned long long)cap); break; }
