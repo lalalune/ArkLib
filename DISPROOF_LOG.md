@@ -2761,3 +2761,30 @@ VERDICT (rule-4 wall map, rule-6 honest, NOT a closure/refutation):
   - Does NOT close/refute CORE; MAPS the precise depth-of-entry of the bad-prime anomaly and that it
     descends with n. Pure-Python exact integer counts, no Lean => axiom-clean trivially.
     probe_407_anomaly_onset_depth.py.
+
+## Wick best-case capability map: M <= sqrt(n)((2r-1)!!)^{1/2r} at r*~log m lands EXACTLY on the prize form sqrt(2/e) sqrt(n log m) (C~0.858 absolute) => the Wick VALUE is NOT a barrier; prize <=> A_{r*}<=Wick at r*~log m (2026-06-15, opus-4-8 subagent)
+
+LANE (uncontested, analytic+numeric): having reduced the moment route to the Wick ratio W_r (58f29f3f0)
+and shown its deficit sub-leading => W_{r*}->1 (b97f5a972), the BEST the moment route can give is A_r=Wick=
+(2r-1)!! n^r exactly (W_r=1). Open: even in that best case, what sup bound does it give at r*~log m, and
+does it reach the prize or does the Wick value itself encode a barrier? probe_407_wickbound_capability.py.
+
+DERIVATION: single-freq M^{2r} <= A_r => M <= (A_r)^{1/2r}. Best case A_r=Wick:
+    M <= sqrt(n) * ((2r-1)!!)^{1/2r}.
+((2r-1)!!)^{1/2r} ~ sqrt(2r/e) (Stirling, VERIFIED: f(r)/sqrt(2r/e) = 1.166,1.085,1.043,1.022,1.011 ->1 at
+r=1,2,4,8,16). The single-frequency-dominates-the-2r-th-moment step needs r ~ log(#freqs)=log m, so the
+prize depth is r*~log m. Then M <= sqrt(n) sqrt(2 r*/e) ~ sqrt(2/e) sqrt(n log m) = THE PRIZE FORM.
+
+NUMERIC (r*=round(log m), m=n^{beta-1}): C_eff = M_wick/sqrt(n log m) -> sqrt(2/e)=0.858 EXACTLY, CONSTANT
+across n=2^8..2^24, beta=4/4.5 (C_eff = 0.876,0.865,0.859,0.866,0.862 at n=2^8..2^24 beta4; ->0.858).
+M_wick << SOTA n^0.989 << trivial n at every scale (n=2^16: M_wick~1.27e3 vs SOTA 5.8e4 vs trivial 6.55e4).
+
+VERDICT (capability map + constant pin, rule-6 NOT a closure): (1) the Wick VALUE does NOT encode a
+barrier -- the moment route is prize-CAPABLE; the Wick best case lands on sqrt(2/e) sqrt(n log m), the prize
+form with absolute C~0.858. (2) the prize is EXACTLY EQUIVALENT to A_{r*} <= (2r*-1)!! n^{r*} at r*~log m
+(with the single-freq-dominates justification). This re-localizes ALL difficulty to the DEEP rung r*~log m
+(e.g. r*~14 at n=2^16/beta4) -- NOT the shallow r<=6 we compute exactly (W_r<1 sub-leading, b97f5a972).
+The accessible-r data is CONSISTENT with both A_{r*}<=Wick (prize) and A_{r*}>Wick (BGK-tight) and does NOT
+extrapolate (the deficit is sub-leading + vanishing). HONEST: no new bound proven; this PINS the prize-
+equivalent target + its absolute constant sqrt(2/e) + confirms moment-route capability. Numeric + exact
+Stirling, no Lean => axiom-clean trivially. CORE not closed, not refuted. probe_407_wickbound_capability.py.
