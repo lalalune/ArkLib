@@ -71,4 +71,29 @@ target.
 
 Probes: `scripts/probes/issue407-escapes/`. Bricks: `Frontier/_{VietaScopeGapNoGo,RThinResidueDegree,
 HankelPronyCore,MetaTheoremSecondOrderFloor,ConvergenceHub,RThinSparseRealizability,
-ChaiFanBasePanelGate,SecondMomentGapQuantified,MomentLadderExceedsPrize,MomentLadderAntitone}.lean`.
+ChaiFanBasePanelGate,SecondMomentGapQuantified,MomentLadderExceedsPrize,MomentLadderAntitone,
+GaussPeriodFirstMoment,GaussPeriodRealValued,EVTFloorRoute}.lean`.
+
+## 5. remaining-avenues workflow (8 angles) — verdict map (synthesis agent died on session limit; hand-extracted)
+
+Every route is either BGK or off-BGK-but-not-closable; the two off-BGK *landable* facts are already in-tree.
+
+- **count-lane / list-decoding → BGK at constant rate** — supply is exponential `2^{nH(ρ)}` across the
+  window at rate `ρ=Θ(1)` ⟹ vacuous certificate. **Resolves the c.248-vs-c.250 tension: the count-lane
+  is NOT a clean prize escape at the prize rate.**
+- **p-independence → real but radius/direction-gated** (p-indep at the peak `dir(n/2+1,n−1)`, but
+  BGK/additive-energy present in sub-maximal directions) — not a clean decoupling.
+- **ring-LWE ℓ¹-SVP → BGK** (`λ₁^{ℓ¹}≳2ln q` FALSE, girth ≈ `p^{1/d}`; confirms c.212). Dead.
+- **derandomization 3rd-moment → BGK-independent but NOT closable** (resolves only `q^{1/3}`-depth tail,
+  wrong-signed for `2⁻¹²⁸`).
+- **ratio-census inverse-LO & B2 orbit-count → landable, ALREADY in-tree** (`_ImprimitiveRatioLevelSet`:
+  `ratioMult = gcd(n,j)`, `#distinct = n/gcd`; badAlpha orbit count `= n/gcd(b−a,n)` = O(1) constant
+  `{2,4,8}` for the deployed directions).
+- **B1 realizability → off-BGK but bounds the agreement-SET excess, not the binding bad-scalar COUNT**
+  (the Vieta SET→SUMSET no-go).
+- **B2 door (a) → not refuted** by the c.173 `d=32` break (imposes only `o₁=0`, not the full odd-symmetric
+  window); residual is paper-fidelity, not BGK.
+
+**Open cores remaining:** the EVT/de-Finetti concentration (substrate now axiom-clean —
+`_GaussPeriodFirstMoment`, `_GaussPeriodRealValued`, `_EVTFloorRoute`) and the count-lane's
+beyond-Johnson p-independent incidence — neither closable by the routes swept here.
