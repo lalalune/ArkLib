@@ -978,6 +978,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadou
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicLatticeWrapOnset
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DeFinettiPeriodCovariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DecayLawPIndep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechFiberNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechWronskianNoGo
@@ -1025,6 +1026,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseRootCheck
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerSpikeBetaGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WickMonotonicityReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ZModDFTParseval
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ZModDonohoStark
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NA_restriction_moment_collapse
