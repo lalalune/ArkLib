@@ -183,6 +183,77 @@ theorem hammingNorm_line_ge_of_ratioMult_le (s₀ s₁ : ι → F) (γ : F) {m :
   have h := hammingNorm_line_eq_sub_ratio_mult s₀ s₁ γ
   omega
 
+/-! ### STEP 2 (D3): the incidence-at-radius level-set count + per-line binding-radius bound
+
+The far-line incidence at radius `w` for the raw line stack `(s₀, s₁)` is, by definition, the
+number of scalars whose line point has weight `≤ w`:
+`incidence(w) = #{γ : hammingNorm (s₀ + γ • s₁) ≤ w}`.  STEP 1 rewrites the weight via the ratio
+multiplicity, so STEP 2 below converts the incidence into the **level-set profile** of the ratio
+function: the incidence at radius `w` is *exactly* the number of scalars whose ratio multiplicity
+reaches `n − z₀ − w`.  This is the precise object the #407 D3 thread reasons about — far-line
+incidence IS the high-multiplicity census of the ratio sequence `r(x) = −s₀(x)/s₁(x)`.
+
+The honest first-moment consequence (`farIncidence_mul_le_support`, a pure Markov bound off
+`sum_ratioMult_eq_support`) bounds this **per fixed line `(s₀, s₁)`**:
+`incidence(w) · (n − z₀ − w) ≤ wt(s₁)`.  At the Johnson-scale *binding radius* (agreement
+`a = n − w ≈ √(k·n)`, i.e. `n − z₀ − w ≈ a`) this reads `incidence ≤ wt(s₁)/a ≤ n/a ≤ √(n/k)` —
+which would beat the budget `n`.  **But this is per a single fixed `(s₀, s₁)`.**  The MCA far-line
+incidence is a *union over the in-window codeword list*: each bad `γ` subtracts its **own** closest
+codeword `w_γ`, so there is no single fixed line stack carrying all the bad scalars (probe
+`scripts/probes/probe_407_d3step2_binding_count.py`: at the binding radius every bad `γ` has a
+*distinct* closest codeword — `#distinct = #bad` for the monomial adversary on smooth orbits, and
+no fixed surrogate line has ratio multiplicity `≥ a` at all bad scalars).  So this per-line Markov
+bound does **not** collapse the MCA count to `√(n/k)`; the open content is exactly the size of the
+codeword list it is summed against (the sub-Johnson supply core), which this file does not bound.
+The lemmas here are the exact, reusable, character-sum-free per-line incidence layer. -/
+
+/-- **STEP 2 (the incidence-at-radius level-set equality).** The far-line incidence at radius `w`
+— the scalars whose line point `s₀ + γ • s₁` has weight `≤ w` — is *exactly* the number of scalars
+whose ratio multiplicity reaches `n − z₀ − w`:
+`#{γ : hammingNorm (s₀ + γ • s₁) ≤ w} = #{γ : ratioMult s₀ s₁ γ ≥ n − z₀ − w}`,
+where `z₀ = #{i : s₁ᵢ = 0 ∧ s₀ᵢ = 0}` and `n = |ι|`.  This turns the far-line incidence into the
+high-multiplicity census of the ratio sequence — the exact STEP-1-to-STEP-2 bridge of the D3
+thread. -/
+theorem farIncidence_eq_ratioMult_level [Fintype F] (s₀ s₁ : ι → F) (w : ℕ) :
+    (univ.filter (fun γ : F => hammingNorm (s₀ + γ • s₁) ≤ w)).card
+      = (univ.filter (fun γ : F =>
+          Fintype.card ι - (univ.filter (fun i => s₁ i = 0 ∧ s₀ i = 0)).card - w
+            ≤ ratioMult s₀ s₁ γ)).card := by
+  congr 1
+  ext γ
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+  have h := hammingNorm_line_eq_sub_ratio_mult s₀ s₁ γ
+  omega
+
+/-- **The first-moment (Markov) far-line incidence bound, per fixed line.** Summing the
+incidence-at-radius level-set equality against the conservation law `∑_γ ratioMult = wt(s₁)`:
+the far-line incidence at radius `w` times the demanded agreement `(n − z₀ − w)` is at most the
+support size of the direction: `incidence(w) · (n − z₀ − w) ≤ wt(s₁)`.
+
+This is the honest per-line binding-radius count: at the Johnson-scale agreement `a = n − z₀ − w`
+it gives `incidence(w) ≤ wt(s₁)/a`.  It is character-sum-free and BGK-independent, but holds for a
+**single fixed** `(s₀, s₁)`; the MCA far-line incidence ranges over a list of distinct nearby
+codewords (one per bad `γ`), so it is the codeword-list size — not this per-line bound — that is the
+open core (see the section docstring and `probe_407_d3step2_binding_count.py`). -/
+theorem farIncidence_mul_le_support [Fintype F] (s₀ s₁ : ι → F) (w : ℕ) :
+    (univ.filter (fun γ : F => hammingNorm (s₀ + γ • s₁) ≤ w)).card
+        * (Fintype.card ι - (univ.filter (fun i => s₁ i = 0 ∧ s₀ i = 0)).card - w)
+      ≤ (univ.filter (fun i => s₁ i ≠ 0)).card := by
+  classical
+  set z₀ := (univ.filter (fun i => s₁ i = 0 ∧ s₀ i = 0)).card with hz₀
+  set μ₀ := Fintype.card ι - z₀ - w with hμ₀
+  -- rewrite the incidence as the level set, then bound by the conservation sum.
+  rw [farIncidence_eq_ratioMult_level s₀ s₁ w, ← hz₀, ← hμ₀,
+      ← sum_ratioMult_eq_support s₀ s₁]
+  calc (univ.filter (fun γ : F => μ₀ ≤ ratioMult s₀ s₁ γ)).card * μ₀
+      = ∑ _γ ∈ univ.filter (fun γ : F => μ₀ ≤ ratioMult s₀ s₁ γ), μ₀ := by
+        rw [Finset.sum_const, smul_eq_mul]
+    _ ≤ ∑ γ ∈ univ.filter (fun γ : F => μ₀ ≤ ratioMult s₀ s₁ γ), ratioMult s₀ s₁ γ :=
+        Finset.sum_le_sum (fun γ hγ => (Finset.mem_filter.mp hγ).2)
+    _ ≤ ∑ γ : F, ratioMult s₀ s₁ γ :=
+        Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
+          (fun _ _ _ => Nat.zero_le _)
+
 end ArkLib.ProximityGap.RatioCensus
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -191,3 +262,5 @@ end ArkLib.ProximityGap.RatioCensus
 #print axioms ArkLib.ProximityGap.RatioCensus.hammingNorm_line_eq_sub_ratio_mult
 #print axioms ArkLib.ProximityGap.RatioCensus.sum_ratioMult_eq_support
 #print axioms ArkLib.ProximityGap.RatioCensus.hammingNorm_line_ge_of_ratioMult_le
+#print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_eq_ratioMult_level
+#print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_mul_le_support
