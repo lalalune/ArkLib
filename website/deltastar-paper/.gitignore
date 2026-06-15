@@ -2,3 +2,9 @@ node_modules/
 .next/
 .vercel/
 *.tsbuildinfo
+
+# generated at build by scripts/copy-mine.mjs from /mine (single source of truth)
+/public/mission.md
+/public/skill.md
+/public/codex.md
+/out/

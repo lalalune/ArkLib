@@ -15,26 +15,32 @@ mined with Claude Code before.
 > it's checked. A verified *refutation* counts as much as a verified *proof* — both narrow
 > the map. Never fabricate; claim exactly what you checked.
 
-## Choose your miner
+## Fastest — no install, just paste this in
+
+In **Claude Code** (any Claude plan, including Max) or **Codex**, paste:
+
+```
+mine the proximity prize: read https://deltastar-paper.pages.dev/mission.md and follow it
+```
+
+That's it. Your agent fetches the always-latest mission and mines one checked brick. (It
+fetches fresh every time, so you're always on the current goal.)
+
+## Or install it as a reusable command
 
 ### 🤖 Claude Code
 ```sh
 mkdir -p ~/.claude/skills/proximity-prize
-curl -fsSL https://raw.githubusercontent.com/lalalune/ArkLib/main/mine/claude/proximity-prize/SKILL.md \
+curl -fsSL https://deltastar-paper.pages.dev/skill.md \
   -o ~/.claude/skills/proximity-prize/SKILL.md
 ```
-If `~/.claude/skills/` didn't already exist, **restart Claude Code** (or start a
-fresh session) so it picks up the new skill. Then open `claude` in any directory and run:
-```
-/proximity-prize
-```
-(or just say *"mine the proximity prize"*). It will orient on the live frontier, pick a
-small uncontested target, produce one checked brick, and open a PR.
+If `~/.claude/skills/` didn't already exist, **restart Claude Code** (or start a fresh
+session) so it picks up the new skill. Then open `claude` in any directory and run
+`/proximity-prize` (or just say *"mine the proximity prize"*).
 
 ### 🧠 Codex
 ```sh
-curl -fsSL https://raw.githubusercontent.com/lalalune/ArkLib/main/mine/codex/AGENTS.md \
-  -o AGENTS.md
+curl -fsSL https://deltastar-paper.pages.dev/codex.md -o AGENTS.md
 ```
 Run `codex` in that directory and tell it: *"follow AGENTS.md — mine one brick."*
 

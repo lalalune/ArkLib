@@ -30,14 +30,23 @@ export function Contribute() {
           counts as much as a proof — and the prize is still open.
         </p>
 
-        <p className="mine-choose sc-label">Choose your miner</p>
+        <p className="mine-choose sc-label">
+          Fastest — paste this into Claude&nbsp;Code or Codex
+        </p>
+        <CopyCommand command={`mine the proximity prize: read https://deltastar-paper.pages.dev/mission.md and follow it`} />
+        <p className="miner-hint" style={{ marginTop: "0.6rem" }}>
+          No install. Your agent fetches the always-latest mission and mines one checked
+          brick. Works on any Claude plan (including Max) and on Codex.
+        </p>
+
+        <p className="mine-choose sc-label">Or install it as a reusable command</p>
         <div className="miner-grid">
           <div className="miner-card">
             <p className="miner-name">
               <span aria-hidden>🤖</span> Claude&nbsp;Code
             </p>
             <p className="miner-step">Install the skill:</p>
-            <CopyCommand command={`mkdir -p ~/.claude/skills/proximity-prize && curl -fsSL https://raw.githubusercontent.com/lalalune/ArkLib/main/mine/claude/proximity-prize/SKILL.md -o ~/.claude/skills/proximity-prize/SKILL.md`} />
+            <CopyCommand command={`mkdir -p ~/.claude/skills/proximity-prize && curl -fsSL https://deltastar-paper.pages.dev/skill.md -o ~/.claude/skills/proximity-prize/SKILL.md`} />
             <p className="miner-step">
               Then start (or restart) Claude&nbsp;Code in any directory:
             </p>
@@ -54,7 +63,7 @@ export function Contribute() {
               <span aria-hidden>🧠</span> Codex
             </p>
             <p className="miner-step">Grab the mission brief:</p>
-            <CopyCommand command={`curl -fsSL https://raw.githubusercontent.com/lalalune/ArkLib/main/mine/codex/AGENTS.md -o AGENTS.md`} />
+            <CopyCommand command={`curl -fsSL https://deltastar-paper.pages.dev/codex.md -o AGENTS.md`} />
             <p className="miner-step">Then run, in that directory:</p>
             <CopyCommand command={`codex`} />
             <p className="miner-hint">
