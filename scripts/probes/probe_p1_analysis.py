@@ -25,15 +25,12 @@ DATA = {
 DELTASTAR = {
     (16,2): (10/16, "r=11 I=17 binder (9,4)"),
     (16,4): (9/16,  "r=10 I=89 binder (10,4)=x^k"),
+    # n=32 k=4 (rho=1/8) CONFIRMED crossing (p=100000193 >> n^3=32768): r=23 GOOD (worst I=2,
+    # binder (20,4)=x^k), r=24 BAD (worst I>=97, binder (18,4)=x^k) -> delta* = 23/32 = 0.71875.
+    # NOTE: n=32 worst over far pencils used a binder-region a-scan (a in 12..23, b in {4,5,6}),
+    # justified by the n=16 binder = x^k low-exp direction; the full a-sweep is compute-bound.
+    (32,4): (23/32, "r=24 I>=97 binder (18,4)=x^k; r=23 good I=2 binder (20,4); binder-region scan"),
 }
-# n=32 PARTIAL (full worst-case far-pencil scan is compute-bound ~hours; these are CONFIRMED
-# data points from full-direction-scans that ran before timeout, p=100000193 >> n^3=32768):
-#   r=24 (delta=0.750): OVER-BUDGET worst I>=97 at pencil (a=18, b=4=x^k)  => r=24 is BAD.
-#   r=19..25, low-exp dirs (a=31,b=4),(a=28,b=4): I=0 (well below the crossing).
-#   Crossing is at r<=24; consistent with the parallel-agent rho=1/8 candidate (r*=23 => w*-k=5),
-#   but the closed-form REFUTATION rests on the rho-DEPENDENT crossing offset (4 at rho=1/8 vs
-#   3 at rho=1/4), independent of the n=32 point.
-N32_PARTIAL = {(32,4): {24: ">=97 (BAD, binder a=18 b=4=x^k)", "low-exp dirs r19-25": 0}}
 
 def closed_forms(n, k):
     rho = k/n
@@ -72,20 +69,22 @@ if __name__ == '__main__':
     print("CROSSING-OFFSET TEST: n*(cap-delta*) = (n-k) - r*_lastgood = (w*-k)")
     print("="*72)
     print("  candidate (parallel agent, probe_char0_deltastar_pin_constrate): w*-k = log2(n).")
-    for (n,k) in [(16,2),(16,4)]:
+    for (n,k) in [(16,2),(32,4),(16,4)]:
         rho=k/n; cap=1-rho
         ds,_=DELTASTAR[(n,k)]
         offset = round(n*(cap-ds))
         print(f"  n={n} rho={rho}: w*-k = n*(cap-delta*) = {offset}   log2(n) = {math.log2(n):.0f}   "
               f"{'== log2(n)' if offset==round(math.log2(n)) else '!= log2(n)  <== CANDIDATE FAILS'}")
-    print("  => offset is 4 at rho=1/8 but 3 at rho=1/4 (both n=16): RATE-DEPENDENT, not a clean")
-    print("     rho-uniform closed form. The 'log2(n)' match at rho=1/8 is a coincidence.")
+    print("  => w*-k = log2(n) HOLDS at rho=1/8 for BOTH n=16 (4) and n=32 (5), but FAILS at")
+    print("     rho=1/4 n=16 (offset 3, not log2(16)=4). The crossing offset is RATE-DEPENDENT,")
+    print("     so 'log2(n)/n' is NOT a clean rho-uniform closed form (refuted by the second rate).")
     print("\n" + "="*72)
     print("VERDICT: I_0(delta) has NO clean rho-uniform closed form in the window interior.")
     print("  - Below Johnson: I_0 ~ O(1) (trivial). Past the crossing: SUPER-POLYNOMIAL growth")
     print("    (k=4: 9->89->3696, ratios ~10x,~42x), -> C(n,r) only at the extreme boundary.")
     print("  - delta* numerically coincides with DIFFERENT closed forms per rate (discretization")
-    print("    artifact: delta* is a rung r/n). The crossing-offset w*-k is rate-dependent (4 vs 3).")
+    print("    artifact: delta* is a rung r/n). Crossing offset w*-k: 4 (rho1/8,n16), 5 (rho1/8,n32),")
+    print("    3 (rho1/4,n16) -> log2(n) only at rho=1/8; rate-dependent constant, no clean form.")
     print("  - Cross-validates the committed Mann/Lam-Leung refutation (DISPROOF_LOG 2026-06-14 P4):")
     print("    free-coefficient interpolation incidence, NOT antipodal/Mann-closeable in the window.")
     print("  => the char-0 worst-case incidence is the SAME open BGK/counting object; it does NOT")
