@@ -661,3 +661,32 @@ the DEFAULT (no-bmax) path of the scratch binary. ALL reported/pushed data used 
 and was cross-validated against the unpatched original engine. The IN-REPO engine uses `k.saturating_add(bmax)`
 (correct) — every pushed point (n=16,32 k=2; n=16,20,24 k=4..6) RE-VERIFIED with the correct repo full-sweep
 binary, all identical. Scratch copy deleted. No pushed result was affected.
+
+## ★★ SHARP CRITERION — far-line incidence δ* sinks BELOW Johnson for ρ<1/4 (exact ρ=1/8 series; refines my own regime note) (2026-06-15)
+
+Self-refinement (rule 6) of the regime-clarification above. That note said far-line δ* "→ Johnson at fixed ρ"
+based on ρ=1/4 (where Johnson=½ = the formula limit, tangent). Tested a SECOND fixed ρ=1/8 (where Johnson≠½)
+to see which side it lands. EXACT (full-sweep rust-pg, valid subgroup p≡1 mod n verified, β=4; n=24 cross-
+checked full vs bmax — identical):
+
+| n  | k | s* | δ* | formula ½+(1/(2ρ)−1)/n | Johnson 1−√ρ | δ*−Johnson |
+|----|---|----|----|----|------|------|
+| 16 | 2 | 5  | 0.6875 | 0.6875 EXACT | 0.6464 | **+0.0411 (above)** |
+| 24 | 3 | 9  | 0.6250 | 0.6250 EXACT | 0.6464 | **−0.0214 (BELOW)** |
+
+THE CLEAN CRITERION (formula-exact at fixed ρ; the formula HOLDS at ρ=1/8, both points to the digit — it only
+"breaks" along k=2 where ρ=2/n→0 is NOT a fixed ρ): far-line δ* → ½ as n→∞ (the formula limit). Therefore:
+  δ* ends BELOW Johnson  ⟺  ½ < Johnson  ⟺  ½ < 1−√ρ  ⟺  **ρ < 1/4.**
+- ρ=1/4: Johnson=½=limit, δ* → Johnson FROM ABOVE (tangent; my prior note's case). Verified 0.5625→0.5417↓.
+- ρ<1/4 (e.g. 1/8): Johnson>½, so δ* CROSSES below Johnson (n=16 above → n=24 below). Verified.
+- ρ>1/4: Johnson<½, δ* stays strictly above Johnson.
+
+CONSEQUENCE (sharpens the prize picture): the far-line incidence δ* is a RIGOROUS UPPER bound on MCA δ*
+(epsMCA≥far_inc/q ⟹ δ*_MCA ≤ δ*_far-line). For ρ<1/4 this upper bound drops BELOW Johnson, while the
+conjectured window puts δ*_MCA ≥ Johnson. So at ρ<1/4 EITHER (a) MCA δ* < Johnson at these scales (the
+Johnson lower bound is asymptotic, not finite-n), OR (b) the far-monomial-witness validity (joint-agreement
+subtraction = 0) degrades for ρ<1/4 so the upper-bound chain loosens. EITHER WAY: the far-line incidence δ* is
+a SUB-JOHNSON object for ρ<1/4 — definitively NOT the prize δ* (which is in (1−√ρ, 1−ρ−Θ(1/log n)), strictly
+above Johnson). This RESOLVES "does far-line track the floor" with a sharp ρ-criterion: NO for ρ≤1/4 (it tends
+to ½ ≤ Johnson). The prize floor needs the true MCA object (BGK gap), exactly as localized. NOT a closure.
+Engine scripts/rust-pg (full + bmax cross-checked). n≤24 exact. Refines the regime note (rule-6 self-sharpening).
