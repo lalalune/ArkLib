@@ -255,3 +255,76 @@ HONEST CAVEAT: small-n / sub-prize p (p<=~12k, not 2^128); this maps the certifi
 shape, it does NOT itself prove or refute the prize. No Lean theorem claimed (the thickness-invariance is
 an empirical measurement; proving the constant-slack would itself require BGK). Reproducible probe + this
 constraint entry are the deliverable, per rule 4 (a precisely-mapped wall is a WIN).
+
+## thinness-discriminator search: normalized prize-ratio R and shallow Sidon-depth are NOT decisive rule-3 discriminators (2026-06-15)
+
+CONTEXT. Prior entry (82581fb79) showed the moment certificate is thickness-INVARIANT, so the prize
+lever must be a thinness-DISCRIMINATING object (certifying quantity bounded in thin beta~4-5, ill-behaved
+in thick beta~2.3-3.2). This entry tests the two most natural candidates and finds NEITHER is a clean
+discriminator at accessible scale -- narrowing where the real lever can live.
+
+PROBE (scripts/probes/probe_407_thinness_discriminator.py, exact FFT/enumeration, proper mu_n<F_p^*):
+
+D1 -- normalized prize ratio R(n,p) = M(n)/(sqrt(n)*sqrt(log(p/n))) (prize wants R<=C absolute):
+| n  | beta | R      |          | n  | beta | R      |
+|----|------|--------|          |----|------|--------|
+| 8  | 2.27 | 1.111  |          | 16 | 2.30 | 1.110  |
+| 8  | 2.71 | 1.137  |          | 16 | 2.70 | 1.251  |
+| 8  | 3.20 | 1.137  |          | 16 | 3.00 | 1.182  |
+| 8  | 3.60 | 1.096  |          | 16 | 3.30 | 1.205  |
+| 8  | 4.00 | 1.067  |          | 16 | 3.60 | 1.152  |
+| 8  | 4.50 | 1.006  |          |    |      |        |
+  n=8 avg R: thick(beta<3.3)=1.129, thin(beta>=3.9)=1.037 -- mild thin-TIGHTENING toward ~1.0.
+  n=16: R is NON-monotone, stays ~1.10-1.25 across all beta (no clean convergence; no thick blow-up).
+  VERDICT: R is O(1) in BOTH regimes. The n=8 convergence to 1.006 at beta=4.5 is suggestive but is
+  likely a small-n artifact (only n=8 reaches beta=4.5 cheaply); n=16 shows R bounded but NOT
+  thin-converging. R is NOT a decisive rule-3 discriminator -- it does not blow up in the thick window,
+  it just sits at a slightly higher O(1) constant there. (Consistent: sqrt(log(p/n)) is the right SCALE
+  in both regimes up to a constant; the prize's open content is the absolute CONSTANT, not the scale.)
+
+D2 -- shallow additive Sidon-depth signature (waste = 1 - distinct(r-fold sumset)/n^r; lower=more Sidon):
+| n  | beta | r=2 waste | r=3 waste | r=4 waste |
+|----|------|-----------|-----------|-----------|
+| 8  | 2.53 | 0.484     | 0.8125    | 0.9607    |
+| 8  | 4.00 | 0.484     | 0.8125    | 0.9451    |
+| 16 | 2.49 | 0.496     | 0.8359    | 0.9846    |
+| 16 | 4.00 | 0.496     | 0.8281    | 0.9560    |
+  VERDICT: r=2 and r=3 waste are IDENTICAL thick vs thin (field-blind) -- the shallow additive structure
+  of mu_n is determined by n, not p (consistent with brief's "mu_n is B_inf-Sidon to depth ~log n"
+  regardless of field). Only at r=4 does thin show modestly less waste (more distinct, 0.945 vs 0.961
+  n=8; 0.956 vs 0.985 n=16) -- the depth where small thick-p starts forcing extra collisions. So shallow
+  Sidon-depth is NOT a thinness discriminator; any signal would be DEEP (r ~ log n), exactly the
+  inaccessible-by-enumeration regime that IS the B_inf <- B_{log n} bootstrap wall.
+
+NET (mapping): the two natural discriminators both FAIL to cleanly separate thin from thick at accessible
+scale -- R stays O(1) in both (the open content is the absolute constant, scale is right in both regimes),
+and Sidon-structure is field-blind until depth r~log n (the inaccessible bootstrap regime). This narrows
+the rule-3 lever: it must live at DEEP additive order r~log n (the B_inf<-B_{log n} bootstrap), not in any
+shallow/normalized O(1) statistic -- consistent with the 25-yr wall being genuinely a deep-order phenomenon.
+
+HONEST CAVEAT: small-n / sub-prize p; reproducible probe maps the discriminator candidates' behavior, does
+not prove/refute the prize. No Lean theorem claimed. Per rule 4, a precisely-mapped non-discriminator is a WIN.
+
+## K1 / antipodal-pairing residual H FAILS at the prize scale — derivable refutation (2026-06-14)
+
+The in-tree GaussianEnergyFromPairing.gaussianEnergyBound_of_pairing derives the raw Wick carrier
+GaussianEnergyBound G r (E_r <= (2r-1)!!*|G|^r) from three inputs: unconditional henergy (negation-closure
+energy = zeroSumCount), unconditional hcount (#pairings <= (2r-1)!!), and the genuine open input H = the
+ANTIPODAL-PAIRING RESIDUAL ("every zero-sum 2r-tuple of G is antipodally paired").
+
+The 2026-06-14 ★★ correction (DCEnergyEssential.not_gaussianEnergyBound_of_card_pow_gt) PROVES the
+conclusion GaussianEnergyBound G r is FALSE when q*(2r-1)!! < |G|^r (the prize regime: n>=64 at r~log q,
+DC term |G|^{2r}/q >> Wick). By modus tollens (henergy, hcount unconditional), H ITSELF IS FALSE at prize.
+
+LANDED: PairingResidualFailsAtPrize.not_pairing_residual_of_card_pow_gt (axiom-clean
+{propext, Classical.choice, Quot.sound}): under henergy + hcount, q*(2r-1)!! < |G|^r => NOT H, i.e. there
+EXISTS a zero-sum 2r-tuple of G that is NOT antipodally paired.
+
+INTERPRETATION (mapped wall): the above-threshold antipodal-pairing structure (true in char 0 / Lam-Leung
+and at small n) is DESTROYED by the char-p anomaly at n>=64, r~log q. The non-antipodal zero-sum tuples
+are exactly the char-p extra solutions the DC term counts (E_r >= |G|^{2r}/q >> Wick). So the K1 / pairing
+route CANNOT supply the prize carrier E_r <= Wick at prize scale; only the DC-subtracted A_r <= Wick
+survives (the genuinely thinness-essential object — consistent with the A_r r-profile confirmation note
+above). The pairing/Lam-Leung char-0 route is prize-DEAD without DC subtraction; the bricks consuming raw
+GaussianEnergyBound (GaussianEnergyFromPairing, GaussianEnergyThreeRepThree's r=3 rung) are vacuous /
+have prize-false hypotheses at n>=64 exactly as eta_le_optimized is.
