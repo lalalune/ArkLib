@@ -131,3 +131,16 @@ C2 tail), tightening to the Gaussian 0.5 — the whole open content is this sing
   orbit-averaging. Likely circular (the symmetry is already used).
 - **C5 Gauss-sum cocycle** [feas 3]: Jacobi cocycle forces DFT sup-norm bound. SHOWN circular (the
   cocycle-DFT = period). Discard.
+
+## ★ STRUCTURAL CAP — tower recursion is global-blind (C7 refuted, caps C1 family)
+V_k = max|η^{(k)}|² measured (n=64): [1, 4, 16, 63.8, 235.5, 575.7, 1484.5]. KEY: **V_k = 4^k = n² at
+the BOTTOM levels** (k≤2) — i.e. M=n, NO cancellation for small subgroups (n=2,4,8). The deficit (ratio<1)
+appears ONLY at top levels.
+- **C7 REFUTED**: 2-level ratios [16,15.96,14.72,9.02,6.3] — gain only at top, same bottom-level cap as C1.
+- **THE CAP (deep insight)**: any LEVEL-BY-LEVEL tower recursion (C1/C7/C9) compounds the no-cancellation
+  bottom (V_k=4^k there) ⟹ M ≥ (bottom contribution) ⟹ capped at ~n^{0.74}. The dyadic √-cancellation is
+  **GLOBAL** (emerges from the whole subgroup at once), NOT local/recursive. This is *why* the prize
+  reduces to BGK and no elementary tower argument reaches √n: the tower is blind to the global cancellation.
+  ⟹ C1 family value = n^{0.74} (beats di Benedetto, provable-if-deficit), but PROVABLY cannot reach √n.
+- **C10 REFUTED by scale**: M²~n·log q ≪ Sidon defect n²; M² not controlled by the Sidon defect.
+This caps the elementary-dyadic program: √n needs a global (BGK) argument, confirmed structurally.
