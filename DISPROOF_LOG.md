@@ -2449,3 +2449,43 @@ content is unchanged and precisely localized: whether the JOINT (r*~log n, n->in
 bounded below the threshold (prize-true) or it -> 0 (BGK-tight) -- the clean-rung n=16,32 data shows the
 margin shrinking but CANNOT reach r*~log n cleanly (finite-field artifact at deep r/fixed p). CORE not
 closed, no overclaim. Python-only exact => axiom-clean trivially. probe_407_ArWick_ratio_profile.py.
+
+## The base-case + single-step-MONOTONICITY route to A_r<=Wick is DEAD at n=64 -- monotonicity FAILS in the THIN prize regime (refutes the d6b438478 reframing) (2026-06-15, opus-4-8 subagent)
+
+LANE (follow-up to caab0afb9): the n=32 worst-bad-prime work showed A_r<=Wick survives ONLY via the
+Wick-E0 headroom (proxy Anom_r<=n^{2r}/p dead 16x/octave). Made the TRUE headroom test explicit and ran
+the RACE across n. EXACT ALGEBRA: A_r = (E0 + Anom_r) - n^{2r}/p, so A_r<=Wick <=> Anom_r <= H_r where
+H_r := (Wick - E0) + n^{2r}/p. Race ratio rho_r := Anom_r/H_r; carrier holds iff rho_r<=1.
+probe_407_headroom_race.py + probe_407_n64_monotonicity_break.py. Exact integer counts (E0_ring VALIDATED
+== closed form 3n(n-1) for n=8,16,32,64; Ep VALIDATED by independent O(n^2) brute pair-count at n=64).
+PROPER mu_n, p>=n^4, NEVER n=q-1.
+
+RESULT 1 -- the headroom race ratio EXPLODES toward 1 in n (peak rho_r over r=2..6, at each n's worst
+in-window bad prime):
+  n=8  (beta4.10): peak rho = 0.00000
+  n=16 (beta4.05): peak rho = 0.03572
+  n=32 (beta4.05): peak rho = 0.91208
+  n=64 (beta4.01): rho > 1 at EVERY r (7.96, 8.93, 10.14 at r=2,3,4)  -> carrier A_r<=Wick FAILS at n=64.
+
+RESULT 2 (the sharp refutation) -- at n=64, BOTH in-window bad primes (p=17318209 beta4.008 index270597;
+p=19718977 beta4.039 index308109; both proper mu_64, NEVER n=q-1) have f(2)=A_2/Wick > 1 (1.1093, 1.0468).
+Moreover f(r)=A_r/Wick is INCREASING from the base case at the worst prime:
+  f(1)=1.00000 (base, = A_1/Wick = n/n, holds), f(2)=1.10930, f(3)=1.37464, f(4)=1.91127.
+  => the single-step monotonicity f(2)<=f(1) is FALSE (1.109 > 1.000) IN THE THIN PRIZE REGIME at n=64.
+VALIDATION: E_2^(p)=13632 confirmed by independent O(n^2) brute pair-count == convolution; A_2=13631.03 >
+Wick_2=12288 exact.
+
+CONSTRAINT LEMMA (rule-4): the d6b438478 reframing claimed a proof via [base case f(1)<=1, PROVEN] +
+[single-step monotonicity f(r+1)<=f(r)] is AUTOMATICALLY thinness-essential because THICK violates both while
+THIN satisfies them (validated n=16,32 where f IS decreasing). This is FALSE at n=64: the THIN prize-regime
+worst bad prime ALSO violates single-step monotonicity (f increases 1.0->1.11->1.37->1.91) and f(2) already
+exceeds 1. So the base+single-step-monotonicity STRATEGY does NOT close A_r<=Wick even in-regime; it dies at
+the first step at n=64. The route is DEAD.
+
+HONEST SCOPE (rule-6, NO overclaim): this refutes the PROOF STRATEGY (base+single-step monotonicity for
+A_r<=Wick), NOT the prize. The prize is forall-field-universal at deep r~log q; per-prime A_r<=Wick at SMALL
+r (r=2) is NOT the prize bound (M^4 <= p*A_2 gives only M <= (3p)^{1/4} sqrt(n), p-growing, far weaker than
+the prize). What is killed: any closure of A_r<=Wick that relies on monotone descent from the r=1 base. The
+DC-essential threshold q*(2r-1)!! < n^r does NOT fire here (5.2e7 >> 4096), so this is a SECOND, anomaly-
+driven mechanism breaking A_r<=Wick at bad primes that the known threshold does not flag. Pure-Python exact
+integer counts, no Lean => axiom-clean trivially. probe_407_headroom_race.py, probe_407_n64_monotonicity_break.py.
